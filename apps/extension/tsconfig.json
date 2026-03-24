@@ -1,0 +1,11 @@
+{
+	"extends": "../../tsconfig.base.json",
+	"compilerOptions": {
+		"jsx": "react-jsx",
+		"paths": {
+			"@madness/core": ["../../packages/core/src/index.ts"],
+			"@madness/core/*": ["../../packages/core/src/*"]
+		}
+	},
+	"include": [".wxt/types/**/*.d.ts", "entrypoints/**/*", "components/**/*"]
+}

@@ -1,0 +1,31 @@
+{
+	"name": "@madness/core",
+	"version": "0.1.0",
+	"description": "Pure TypeScript excitement scoring and ESPN API client for Madness",
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"import": "./dist/index.js",
+			"types": "./dist/index.d.ts"
+		},
+		"./constants": {
+			"import": "./dist/constants.js",
+			"types": "./dist/constants.d.ts"
+		},
+		"./types": {
+			"import": "./dist/types.js",
+			"types": "./dist/types.d.ts"
+		}
+	},
+	"scripts": {
+		"build": "tsc",
+		"test": "vitest run",
+		"typecheck": "tsc --noEmit"
+	},
+	"devDependencies": {
+		"typescript": "^5.7.3",
+		"vitest": "^2.1.8",
+		"@vitest/coverage-v8": "^2.1.8"
+	}
+}
