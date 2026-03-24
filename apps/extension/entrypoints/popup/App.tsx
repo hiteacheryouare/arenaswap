@@ -146,6 +146,28 @@ export default () => {
 					})
 				)}
 			</div>
+
+			{/* Upcoming games — shown only when nothing is live */}
+			{(() => {
+				const liveGames = games.filter(g => g.status === 'in');
+				const upcomingGames = games.filter(g => g.status === 'pre');
+				if (liveGames.length > 0 || upcomingGames.length === 0) return null;
+				return (
+					<div className='mt-3'>
+						<div className='text-gray-500 mb-2' style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+							Up Next
+						</div>
+						{upcomingGames.map(game => (
+							<GameCard
+								key={game.id}
+								tabId={-1}
+								game={game}
+								excitementResult={undefined}
+							/>
+						))}
+					</div>
+				);
+			})()}
 		</div>
 	);
 };

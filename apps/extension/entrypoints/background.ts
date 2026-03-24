@@ -1,4 +1,4 @@
-import { fetchLiveGames, computeExcitement } from '@madness/core';
+import { fetchGames, computeExcitement } from '@madness/core';
 import {
 	POLL_INTERVAL_MS,
 	MAX_HISTORY_SNAPSHOTS,
@@ -45,19 +45,22 @@ export default defineBackground(() => {
 	};
 
 	const tick = async () => {
-		if (!prefs.enabled) return;
-
 		try {
-			games = await fetchLiveGames();
-			updateHistory(games);
+			games = await fetchGames();
 		} catch (err) {
 			console.error('Madness: Failed to fetch games:', err);
 			return;
 		}
 
-		if (games.length === 0) return;
+		// Always broadcast so the popup can show upcoming games even when nothing is live
+		const liveGames = games.filter(g => g.status === 'in');
+		const scores = liveGames.map(g => computeExcitement(g, history.get(g.id) ?? [], prefs));
+		updateHistory(liveGames);
 
-		const scores = games.map(g => computeExcitement(g, history.get(g.id) ?? [], prefs));
+		browser.runtime.sendMessage({ type: 'SCORES_UPDATED', scores, games }).catch(() => {});
+
+		if (!prefs.enabled || liveGames.length === 0) return;
+
 		const [activeTab] = await browser.tabs.query({ active: true, currentWindow: true });
 		const activeReg = tabRegistry.find(r => r.tabId === activeTab?.id);
 		const activeScore = scores.find(s => s.gameId === activeReg?.gameId)?.total ?? 0;
@@ -85,9 +88,6 @@ export default defineBackground(() => {
 				message: best.reason,
 			});
 		}
-
-		// Broadcast to popup if open
-		browser.runtime.sendMessage({ type: 'SCORES_UPDATED', scores, games }).catch(() => {});
 	};
 
 	// Load persisted state on startup

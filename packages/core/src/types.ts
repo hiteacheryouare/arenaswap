@@ -12,6 +12,7 @@ export interface Game {
 	period: number;        // 1 = 1st half, 2 = 2nd half, 3+ = OT
 	clockSeconds: number;  // seconds remaining in current period
 	status: 'pre' | 'in' | 'post';
+	startTime?: string;    // ISO string, present for upcoming (pre) games
 }
 
 export interface ScoreSnapshot {
