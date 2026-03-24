@@ -15,7 +15,7 @@ import {
 } from './constants';
 import type { Game, ScoreSnapshot, ExcitementResult, UserPreferences } from './types';
 
-type Signal = { score: number; reason: string; };
+interface Signal { score: number; reason: string; };
 
 const getCloseness = (game: Game): Signal => {
 	const margin = Math.abs(game.homeTeam.score - game.awayTeam.score);

@@ -14,8 +14,8 @@
 		"@madness/core": "*"
 	},
 	"devDependencies": {
-		"wxt": "^0.19.21",
-		"@wxt-dev/module-react": "^1.1.0",
+		"wxt": "^0.20.20",
+		"@wxt-dev/module-react": "^1.2.2",
 		"react": "^18.3.1",
 		"react-dom": "^18.3.1",
 		"@types/react": "^18.3.18",

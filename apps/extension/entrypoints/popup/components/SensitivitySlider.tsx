@@ -8,7 +8,7 @@ const LABELS: Record<number, string> = {
 	2: 'Conservative',
 	3: 'Balanced',
 	4: 'Eager',
-	5: 'Flip happy',
+	5: 'Trigger Happy',
 };
 
 const SensitivitySlider = ({ value, onChange }: Props) => (
