@@ -1,10 +1,40 @@
-import type { ExcitementResult, Game } from '@madness/core/types';
+import { useState } from 'react';
+import type { ExcitementResult, Game, Team } from '@madness/core/types';
 
 interface Props {
 	tabId: number;
 	game: Game | undefined;
 	excitementResult: ExcitementResult | undefined;
 }
+
+const LOGO_SIZE = 24;
+
+const TeamLogo = ({ team }: { team: Team }) => {
+	const [failed, setFailed] = useState(false);
+
+	if (team.logo && !failed) {
+		return (
+			<img
+				src={team.logo}
+				alt={team.abbreviation}
+				width={LOGO_SIZE}
+				height={LOGO_SIZE}
+				onError={() => setFailed(true)}
+				style={{ objectFit: 'contain', flexShrink: 0 }}
+			/>
+		);
+	}
+
+	// Fallback: abbreviation initials in a small circle
+	return (
+		<div
+			className='d-flex align-items-center justify-content-center bg-gray-700 rounded-circle text-gray-300'
+			style={{ width: LOGO_SIZE, height: LOGO_SIZE, fontSize: '0.5rem', fontWeight: 700, flexShrink: 0 }}
+		>
+			{team.abbreviation.slice(0, 3)}
+		</div>
+	);
+};
 
 const formatStartTime = (iso: string): string => {
 	const d = new Date(iso);
@@ -28,14 +58,17 @@ const GameCard = ({ tabId, game, excitementResult }: Props) => {
 		);
 	}
 
-	const matchup = `${game.awayTeam.abbreviation} vs ${game.homeTeam.abbreviation}`;
-
-	// Upcoming game — no score or excitement bar, just show start time
+	// Upcoming game
 	if (game.status === 'pre') {
 		return (
 			<div className='card bg-gray-800 border-gray-700 mb-2 p-2'>
-				<div className='d-flex justify-content-between align-items-center'>
-					<span className='small fw-semibold text-gray-100'>{matchup}</span>
+				<div className='d-flex align-items-center gap-2'>
+					<TeamLogo team={game.awayTeam} />
+					<span className='small text-gray-400'>vs</span>
+					<TeamLogo team={game.homeTeam} />
+					<span className='small fw-semibold text-gray-100 flex-grow-1'>
+						{game.awayTeam.abbreviation} vs {game.homeTeam.abbreviation}
+					</span>
 					<span className='small text-gray-400'>
 						{game.startTime ? formatStartTime(game.startTime) : 'Soon'}
 					</span>
@@ -44,18 +77,26 @@ const GameCard = ({ tabId, game, excitementResult }: Props) => {
 		);
 	}
 
+	// Live game
 	return (
 		<div className='card bg-gray-800 border-gray-700 mb-2 p-2'>
 			{/* Teams + score */}
-			<div className='d-flex justify-content-between align-items-center'>
-				<span className='small fw-semibold text-gray-100'>{matchup}</span>
+			<div className='d-flex align-items-center gap-2'>
+				<TeamLogo team={game.awayTeam} />
+				<span className='small fw-semibold text-gray-100 flex-grow-1'>
+					{game.awayTeam.abbreviation}
+				</span>
 				<span className='small text-gray-300 font-monospace'>
 					{game.awayTeam.score} – {game.homeTeam.score}
 				</span>
+				<span className='small fw-semibold text-gray-100 text-end' style={{ minWidth: '2rem' }}>
+					{game.homeTeam.abbreviation}
+				</span>
+				<TeamLogo team={game.homeTeam} />
 			</div>
 
 			{/* Clock + period */}
-			<div className='text-gray-400' style={{ fontSize: '0.7rem' }}>
+			<div className='text-gray-400 mt-1' style={{ fontSize: '0.7rem' }}>
 				{game.period === 1 ? '1H' : game.period === 2 ? '2H' : `OT${game.period - 2}`}
 				{' · '}{Math.floor(game.clockSeconds / 60)}:{String(game.clockSeconds % 60).padStart(2, '0')}
 			</div>

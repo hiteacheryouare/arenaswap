@@ -3,6 +3,7 @@ export interface Team {
 	name: string;
 	abbreviation: string;
 	score: number;
+	logo?: string;
 }
 
 export interface Game {
