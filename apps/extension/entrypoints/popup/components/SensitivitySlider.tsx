@@ -14,8 +14,8 @@ const LABELS: Record<number, string> = {
 const SensitivitySlider = ({ value, onChange }: Props) => (
 	<div>
 		<div className='d-flex justify-content-between align-items-center mb-1'>
-			<label className='text-gray-400 small'>Switch sensitivity</label>
-			<span className='text-gray-300 small'>{LABELS[value]}</span>
+			<label className='sensitivity-label'>Switch sensitivity</label>
+			<span className='sensitivity-value'>{LABELS[value]}</span>
 		</div>
 		<input
 			type='range'
@@ -26,9 +26,9 @@ const SensitivitySlider = ({ value, onChange }: Props) => (
 			onChange={e => onChange(Number(e.target.value))}
 			className='form-range w-100'
 		/>
-		<div className='d-flex justify-content-between text-gray-600' style={{ fontSize: '0.6rem' }}>
-			<span>1</span>
-			<span>5</span>
+		<div className='d-flex justify-content-between'>
+			<span className='sensitivity-label'>1</span>
+			<span className='sensitivity-label'>5</span>
 		</div>
 	</div>
 );

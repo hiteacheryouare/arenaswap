@@ -24,9 +24,9 @@ const TabSetupRow = ({ tab, games, registry, onChange }: Props) => {
 
 	return (
 		<div className='mb-2'>
-			<div className='text-gray-300 small mb-1 text-truncate'>{tabTitle}</div>
+			<div className='sensitivity-label mb-1 text-truncate'>{tabTitle}</div>
 			<select
-				className='form-select form-select-sm bg-gray-800 text-gray-200 border-gray-600'
+				className='form-select form-select-sm'
 				value={current?.gameId ?? ''}
 				onChange={e => onSelect(e.target.value)}
 			>

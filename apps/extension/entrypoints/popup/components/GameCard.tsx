@@ -7,7 +7,29 @@ interface Props {
 	excitementResult: ExcitementResult | undefined;
 }
 
-const LOGO_SIZE = 24;
+const LOGO_SIZE = 22;
+
+const excitementLevel = (score: number): string =>
+	score >= 80 ? 'level-peak' :
+	score >= 60 ? 'level-high' :
+	score >= 30 ? 'level-mid' : 'level-low';
+
+const formatPeriod = (period: number): string => {
+	if (period === 1) return '1H';
+	if (period === 2) return '2H';
+	return `OT${period - 2}`;
+};
+
+const formatClock = (seconds: number): string => {
+	const m = Math.floor(seconds / 60);
+	const s = String(seconds % 60).padStart(2, '0');
+	return `${m}:${s}`;
+};
+
+const formatStartTime = (iso: string): string => {
+	const d = new Date(iso);
+	return d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+};
 
 const TeamLogo = ({ team }: { team: Team }) => {
 	const [failed, setFailed] = useState(false);
@@ -25,96 +47,95 @@ const TeamLogo = ({ team }: { team: Team }) => {
 		);
 	}
 
-	// Fallback: abbreviation initials in a small circle
 	return (
 		<div
-			className='d-flex align-items-center justify-content-center bg-gray-700 rounded-circle text-gray-300'
-			style={{ width: LOGO_SIZE, height: LOGO_SIZE, fontSize: '0.5rem', fontWeight: 700, flexShrink: 0 }}
+			style={{
+				width: LOGO_SIZE,
+				height: LOGO_SIZE,
+				fontSize: '0.45rem',
+				fontWeight: 700,
+				flexShrink: 0,
+				display: 'flex',
+				alignItems: 'center',
+				justifyContent: 'center',
+				background: '#30363d',
+				borderRadius: '50%',
+				color: '#8b949e',
+			}}
 		>
 			{team.abbreviation.slice(0, 3)}
 		</div>
 	);
 };
 
-const formatStartTime = (iso: string): string => {
-	const d = new Date(iso);
-	return d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-};
-
 const GameCard = ({ tabId, game, excitementResult }: Props) => {
-	const excitement = excitementResult?.total ?? 0;
-	const barWidth = Math.min(100, excitement);
-
-	const barColor =
-		excitement >= 70 ? 'bg-red-500' :
-		excitement >= 40 ? 'bg-yellow-500' :
-		'bg-gray-600';
-
 	if (!game) {
 		return (
-			<div className='card bg-gray-800 border-gray-700 mb-2 p-2'>
-				<span className='text-gray-500 small'>Tab #{tabId} — waiting for game data…</span>
+			<div className='game-card'>
+				<span className='sensitivity-label'>Tab #{tabId} — waiting for game data…</span>
 			</div>
 		);
 	}
 
-	// Upcoming game
 	if (game.status === 'pre') {
 		return (
-			<div className='card bg-gray-800 border-gray-700 mb-2 p-2'>
-				<div className='d-flex align-items-center gap-2'>
+			<div className='game-card game-card--pre'>
+				<div className='game-card__teams'>
 					<TeamLogo team={game.awayTeam} />
-					<span className='small text-gray-400'>vs</span>
+					<span className='game-card__team-name'>{game.awayTeam.abbreviation}</span>
+					<span className='game-card__score' style={{ fontSize: '0.75rem', color: '#8b949e' }}>vs</span>
+					<span className='game-card__team-name'>{game.homeTeam.abbreviation}</span>
 					<TeamLogo team={game.homeTeam} />
-					<span className='small fw-semibold text-gray-100 flex-grow-1'>
-						{game.awayTeam.abbreviation} vs {game.homeTeam.abbreviation}
-					</span>
-					<span className='small text-gray-400'>
-						{game.startTime ? formatStartTime(game.startTime) : 'Soon'}
-					</span>
+					{game.startTime && (
+						<span className='game-card__start-time ms-auto'>
+							{formatStartTime(game.startTime)}
+						</span>
+					)}
 				</div>
 			</div>
 		);
 	}
 
-	// Live game
+	const excitement = excitementResult?.total ?? 0;
+	const barWidth = Math.min(100, excitement);
+	const isOt = game.period >= 3;
+
 	return (
-		<div className='card bg-gray-800 border-gray-700 mb-2 p-2'>
+		<div className={`game-card${isOt ? ' is-ot' : ''}`}>
+			{/* Header: live badge + clock */}
+			<div className='game-card__header'>
+				<div className='game-card__live-badge'>
+					<span className='live-dot' />
+					LIVE
+				</div>
+				<span className='game-card__clock'>
+					{formatPeriod(game.period)} · {formatClock(game.clockSeconds)}
+				</span>
+			</div>
+
 			{/* Teams + score */}
-			<div className='d-flex align-items-center gap-2'>
+			<div className='game-card__teams'>
 				<TeamLogo team={game.awayTeam} />
-				<span className='small fw-semibold text-gray-100 flex-grow-1'>
-					{game.awayTeam.abbreviation}
+				<span className='game-card__team-name'>{game.awayTeam.abbreviation}</span>
+				<span className='game-card__score'>
+					{game.awayTeam.score} — {game.homeTeam.score}
 				</span>
-				<span className='small text-gray-300 font-monospace'>
-					{game.awayTeam.score} – {game.homeTeam.score}
-				</span>
-				<span className='small fw-semibold text-gray-100 text-end' style={{ minWidth: '2rem' }}>
-					{game.homeTeam.abbreviation}
-				</span>
+				<span className='game-card__team-name'>{game.homeTeam.abbreviation}</span>
 				<TeamLogo team={game.homeTeam} />
 			</div>
 
-			{/* Clock + period */}
-			<div className='text-gray-400 mt-1' style={{ fontSize: '0.7rem' }}>
-				{game.period === 1 ? '1H' : game.period === 2 ? '2H' : `OT${game.period - 2}`}
-				{' · '}{Math.floor(game.clockSeconds / 60)}:{String(game.clockSeconds % 60).padStart(2, '0')}
-			</div>
-
 			{/* Excitement bar */}
-			<div className='mt-1 bg-gray-700 rounded' style={{ height: 4 }}>
-				<div
-					className={`rounded ${barColor} transition-all`}
-					style={{ width: `${barWidth}%`, height: '100%' }}
-				/>
-			</div>
-
-			{/* Reason label */}
-			{excitementResult?.reason && (
-				<div className='text-gray-400 mt-1' style={{ fontSize: '0.65rem' }}>
-					{excitementResult.reason}
+			<div className='game-card__excitement'>
+				<div className='excitement-track'>
+					<div
+						className={`excitement-fill ${excitementLevel(excitement)}`}
+						style={{ width: `${barWidth}%` }}
+					/>
 				</div>
-			)}
+				{excitementResult?.reason && (
+					<div className='excitement-reason'>{excitementResult.reason}</div>
+				)}
+			</div>
 		</div>
 	);
 };
