@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import useSWR from 'swr';
 import type { Tabs } from 'webextension-polyfill';
-import { DEFAULT_SENSITIVITY, DEFAULT_COOLDOWN_SECS } from '@madness/core/constants';
-import { fetchGames } from '@madness/core';
-import type { ExcitementResult, Game, TabRegistration, UserPreferences } from '@madness/core/types';
+import { DEFAULT_SENSITIVITY, DEFAULT_COOLDOWN_SECS } from '@arenaswap/core/constants';
+import { fetchGames } from '@arenaswap/core';
+import type { ExcitementResult, Game, TabRegistration, UserPreferences } from '@arenaswap/core/types';
 import GameCard from './components/GameCard';
 import SensitivitySlider from './components/SensitivitySlider';
 import TabSetupRow from './components/TabSetupRow';
@@ -108,8 +108,8 @@ export default () => {
 	return (
 		<div style={{ width: 320, minHeight: 200, padding: '0.75rem', background: '#0d1117', color: '#e6edf3' }}>
 			{/* Header */}
-			<div className='madness-header'>
-				<div className='madness-wordmark'>MADNESS<span>.</span></div>
+			<div className='arenaswap-header'>
+				<div className='arenaswap-wordmark'>ARENASWAP<span>.</span></div>
 				<div className='d-flex align-items-center gap-2'>
 					<button
 						className='btn btn-sm p-0'

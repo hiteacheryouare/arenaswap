@@ -1,5 +1,5 @@
 import type { Tabs } from 'webextension-polyfill';
-import type { Game, TabRegistration } from '@madness/core/types';
+import type { Game, TabRegistration } from '@arenaswap/core/types';
 
 interface Props {
 	tab: Tabs.Tab;

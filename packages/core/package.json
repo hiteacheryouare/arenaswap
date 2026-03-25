@@ -1,7 +1,7 @@
 {
-	"name": "@madness/core",
+	"name": "@arenaswap/core",
 	"version": "0.1.0",
-	"description": "Pure TypeScript excitement scoring and ESPN API client for Madness",
+	"description": "Pure TypeScript excitement scoring and ESPN API client for ArenaSwap",
 	"main": "./dist/index.js",
 	"types": "./dist/index.d.ts",
 	"exports": {

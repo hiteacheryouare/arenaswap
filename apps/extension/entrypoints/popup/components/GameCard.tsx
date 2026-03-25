@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { ExcitementResult, Game, Team } from '@madness/core/types';
+import type { ExcitementResult, Game, Team } from '@arenaswap/core/types';
 
 interface Props {
 	tabId: number;

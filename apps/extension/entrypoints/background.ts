@@ -1,17 +1,17 @@
-import { fetchGames, computeExcitement } from '@madness/core';
+import { fetchGames, computeExcitement } from '@arenaswap/core';
 import {
 	POLL_INTERVAL_MS,
 	MAX_HISTORY_SNAPSHOTS,
 	DEFAULT_SENSITIVITY,
 	DEFAULT_COOLDOWN_SECS,
 	SENSITIVITY_THRESHOLDS,
-} from '@madness/core/constants';
+} from '@arenaswap/core/constants';
 import type {
 	Game,
 	ScoreSnapshot,
 	TabRegistration,
 	UserPreferences,
-} from '@madness/core/types';
+} from '@arenaswap/core/types';
 
 export default defineBackground(() => {
 	let games: Game[] = [];
@@ -48,7 +48,7 @@ export default defineBackground(() => {
 		try {
 			games = await fetchGames();
 		} catch (err) {
-			console.error('Madness: Failed to fetch games:', err);
+			console.error('Arenaswap: Failed to fetch games:', err);
 			return;
 		}
 
@@ -84,7 +84,7 @@ export default defineBackground(() => {
 			await browser.notifications.create({
 				type: 'basic',
 				iconUrl: '/icon/128.png',
-				title: `🏀 Madness → ${getGameLabel(best.gameId)}`,
+				title: `🏀 ArenaSwap → ${getGameLabel(best.gameId)}`,
 				message: best.reason,
 			});
 		}
@@ -112,4 +112,4 @@ export default defineBackground(() => {
 
 	setInterval(tick, POLL_INTERVAL_MS);
 	tick();
-});
+}) as unknown;

@@ -1,7 +1,7 @@
 {
-	"name": "@madness/extension",
+	"name": "@arenaswap/extension",
 	"version": "0.1.0",
-	"description": "Madness browser extension — automatically flip to the most exciting March Madness game",
+	"description": "ArenaSwap browser extension — automatically flip to the most exciting game",
 	"private": true,
 	"scripts": {
 		"dev": "wxt",
@@ -11,7 +11,7 @@
 		"typecheck": "wxt prepare && tsc --noEmit"
 	},
 	"dependencies": {
-		"@madness/core": "*",
+		"@arenaswap/core": "*",
 		"swr": "^2.4.1"
 	},
 	"devDependencies": {
