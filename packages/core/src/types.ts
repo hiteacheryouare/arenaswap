@@ -10,6 +10,7 @@ export interface Game {
 	id: string;
 	homeTeam: Team;
 	awayTeam: Team;
+	venueName?: string;
 	period: number;
 	clockSeconds: number;
 	status: 'pre' | 'in' | 'post';

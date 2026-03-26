@@ -63,7 +63,6 @@ const getMomentum = (game: Game, history: ScoreSnapshot[]): Signal => {
 export const computeExcitement = (
 	game: Game,
 	history: ScoreSnapshot[],
-	prefs: UserPreferences,
 ): ExcitementResult => {
 	const closeness = getCloseness(game);
 	const lateGame = getLateGame(game);

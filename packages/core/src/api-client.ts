@@ -37,6 +37,7 @@ const parseEvent = (event: any): Game => {
 			score: parseInt(away.score, 10) || 0,
 			logo: away.team.logo ?? undefined,
 		},
+		venueName: comp.venue?.fullName ?? comp.venue?.name ?? undefined,
 		period: status.period ?? 1,
 		clockSeconds: parseClockToSeconds(status.displayClock ?? '20:00'),
 		status: state,

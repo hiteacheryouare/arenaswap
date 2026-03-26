@@ -49,6 +49,44 @@ export default defineBackground(() => {
 		return game ? `${game.awayTeam.abbreviation} vs ${game.homeTeam.abbreviation}` : 'Unknown Game';
 	};
 
+	const getVenueName = (gameId: string): string => {
+		const game = games.find(g => g.id === gameId);
+		return game?.venueName ?? 'the arena';
+	};
+
+	const getRegisteredTabIds = (): number[] => {
+		return [...new Set(tabRegistry.map(reg => reg.tabId))];
+	};
+
+	const syncManagedTabMuteState = async (enabled: boolean) => {
+		const registeredTabIds = getRegisteredTabIds();
+		if (registeredTabIds.length === 0) return;
+
+		const allTabs = await browser.tabs.query({});
+		const openTabIds = new Set(
+			allTabs
+				.map(tab => tab.id)
+				.filter((tabId): tabId is number => tabId !== undefined)
+		);
+
+		const managedOpenTabIds = registeredTabIds.filter(tabId => openTabIds.has(tabId));
+		if (managedOpenTabIds.length === 0) return;
+
+		let watchedTabId: number | undefined;
+		if (enabled) {
+			const [activeTab] = await browser.tabs.query({ active: true, lastFocusedWindow: true });
+			if (activeTab?.id !== undefined && managedOpenTabIds.includes(activeTab.id)) {
+				watchedTabId = activeTab.id;
+			}
+		}
+
+		await Promise.all(
+			managedOpenTabIds.map(tabId =>
+				browser.tabs.update(tabId, { muted: enabled ? tabId !== watchedTabId : false })
+			)
+		);
+	};
+
 	const tick = async (allowTabSwitch = true) => {
 		if (demoMode && simulator) {
 			games = simulator.tick();
@@ -68,6 +106,8 @@ export default defineBackground(() => {
 
 		browser.runtime.sendMessage({ type: 'SCORES_UPDATED', scores, games }).catch(() => {});
 
+		await syncManagedTabMuteState(prefs.enabled);
+
 		if (!allowTabSwitch || !prefs.enabled || liveGames.length === 0) return;
 
 		const [activeTab] = await browser.tabs.query({ active: true, currentWindow: true });
@@ -86,15 +126,17 @@ export default defineBackground(() => {
 			best.total > activeScore + threshold &&
 			cooldownOk
 		) {
-			await browser.tabs.update(activeTab.id, { muted: true });
-			await browser.tabs.update(bestReg.tabId, { active: true, muted: false });
+			await browser.tabs.update(bestReg.tabId, { active: true });
 			lastSwitchTime = Date.now();
+			await syncManagedTabMuteState(true);
 
 			await browser.notifications.create({
 				type: 'basic',
 				iconUrl: 'icon/128.png',
 				title: `ArenaSwap → ${getGameLabel(best.gameId)}`,
-				message: best.reason,
+				message: best.reason
+					? `${best.reason} Taking you to ${getVenueName(best.gameId)} now!`
+					: `Taking you to ${getVenueName(best.gameId)} now!`,
 			});
 		}
 	};
@@ -140,15 +182,17 @@ export default defineBackground(() => {
 			return Promise.resolve({ games, scores: currentScores });
 		}
 		if (msg.type === 'UPDATE_PREFS') {
-			return stateReady.then(() => {
+			return stateReady.then(async () => {
 				prefs = msg.prefs;
-				return browser.storage.sync.set({ prefs });
+				await browser.storage.sync.set({ prefs });
+				await syncManagedTabMuteState(prefs.enabled);
 			});
 		}
 		if (msg.type === 'UPDATE_REGISTRY') {
-			return stateReady.then(() => {
+			return stateReady.then(async () => {
 				tabRegistry = msg.tabRegistry;
-				return browser.storage.session.set({ tabRegistry });
+				await browser.storage.session.set({ tabRegistry });
+				await syncManagedTabMuteState(prefs.enabled);
 			});
 		}
 		if (msg.type === 'SET_DEMO_MODE') {
@@ -163,5 +207,9 @@ export default defineBackground(() => {
 				await refreshScores(false); // immediately refresh
 			});
 		}
+	});
+
+	browser.tabs.onActivated.addListener(() => {
+		void stateReady.then(() => syncManagedTabMuteState(prefs.enabled));
 	});
 }) as unknown;
