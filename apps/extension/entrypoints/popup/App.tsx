@@ -18,8 +18,8 @@ const defaultPrefs: UserPreferences = {
 
 type BackgroundState = { games: Game[]; scores: ExcitementResult[] };
 
-const fetchState = async (): Promise<BackgroundState> => {
-	const state = await browser.runtime.sendMessage({ type: 'GET_STATE' });
+const fetchState = async (forceRefresh = false): Promise<BackgroundState> => {
+	const state = await browser.runtime.sendMessage({ type: 'GET_STATE', forceRefresh });
 	return (state as BackgroundState) ?? { games: [], scores: [] };
 };
 
@@ -30,16 +30,27 @@ export default () => {
 	const [openTabs, setOpenTabs] = useState<Tabs.Tab[]>([]);
 	const [demoMode, setDemoMode] = useState(false);
 
-	const { data, isLoading, mutate } = useSWR('bg-state', fetchState, {
-		refreshInterval: 15_000,
-		revalidateOnFocus: true,
+	const [initialLoadDone, setInitialLoadDone] = useState(false);
+
+	const { data, mutate } = useSWR('bg-state', () => fetchState(false), {
+		revalidateOnMount: false,
+		revalidateOnFocus: false,
 		revalidateOnReconnect: false,
 	});
+	const isLoading = !initialLoadDone;
 
 	const games = data?.games ?? [];
 	const scores = data?.scores ?? [];
 
 	useEffect(() => {
+		fetchState(true)
+			.then(state => {
+				mutate(state, { revalidate: false });
+			})
+			.finally(() => {
+				setInitialLoadDone(true);
+			});
+
 		browser.storage.sync.get({ prefs: null }).then(r => {
 			if (r.prefs) setPrefs(r.prefs as UserPreferences);
 		});

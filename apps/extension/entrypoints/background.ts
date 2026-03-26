@@ -27,6 +27,8 @@ export default defineBackground(() => {
 		enabled: true,
 	};
 	let lastSwitchTime = 0;
+	let pollTimer: ReturnType<typeof setInterval> | null = null;
+	let inFlightRefresh: Promise<void> | null = null;
 
 	const updateHistory = (currentGames: Game[]) => {
 		currentGames.forEach(game => {
@@ -47,7 +49,7 @@ export default defineBackground(() => {
 		return game ? `${game.awayTeam.abbreviation} vs ${game.homeTeam.abbreviation}` : 'Unknown Game';
 	};
 
-	const tick = async () => {
+	const tick = async (allowTabSwitch = true) => {
 		if (demoMode && simulator) {
 			games = simulator.tick();
 		} else {
@@ -66,7 +68,7 @@ export default defineBackground(() => {
 
 		browser.runtime.sendMessage({ type: 'SCORES_UPDATED', scores, games }).catch(() => {});
 
-		if (!prefs.enabled || liveGames.length === 0) return;
+		if (!allowTabSwitch || !prefs.enabled || liveGames.length === 0) return;
 
 		const [activeTab] = await browser.tabs.query({ active: true, currentWindow: true });
 		const activeReg = tabRegistry.find(r => r.tabId === activeTab?.id);
@@ -97,9 +99,16 @@ export default defineBackground(() => {
 		}
 	};
 
-	// Load ALL persisted state before starting the poll loop.
-	// This prevents the race where tick() runs before demoMode is loaded.
-	Promise.all([
+	const refreshScores = async (allowTabSwitch = true): Promise<void> => {
+		if (inFlightRefresh) return inFlightRefresh;
+		inFlightRefresh = tick(allowTabSwitch).finally(() => {
+			inFlightRefresh = null;
+		});
+		return inFlightRefresh;
+	};
+
+	// Load persisted state before any refresh to avoid race conditions on popup reopen.
+	const stateReady = Promise.all([
 		browser.storage.sync.get({ prefs: null }),
 		browser.storage.session.get({ tabRegistry: [] }),
 		browser.storage.local.get({ demoMode: false }),
@@ -108,34 +117,51 @@ export default defineBackground(() => {
 		tabRegistry = registryResult.tabRegistry as TabRegistration[];
 		demoMode = demoResult.demoMode as boolean;
 		if (demoMode) simulator = new MockGameSimulator();
+	});
 
-		setInterval(tick, POLL_INTERVAL_MS);
-		tick();
+	stateReady.then(() => {
+		refreshScores(false).finally(() => {
+			if (pollTimer) return;
+			pollTimer = setInterval(() => {
+				void refreshScores(true);
+			}, POLL_INTERVAL_MS);
+		});
 	});
 
 	// Handle messages from popup
 	browser.runtime.onMessage.addListener((msg: any) => {
 		if (msg.type === 'GET_STATE') {
-			if (games.length === 0) tick(); // wake up and fetch if we have no data (e.g. after service worker suspension)
+			if (msg.forceRefresh === true || games.length === 0) {
+				// Popup opened or worker just woke up; fetch fresh state before responding.
+				return stateReady
+					.then(() => refreshScores(false))
+					.then(() => ({ games, scores: currentScores }));
+			}
 			return Promise.resolve({ games, scores: currentScores });
 		}
 		if (msg.type === 'UPDATE_PREFS') {
-			prefs = msg.prefs;
-			browser.storage.sync.set({ prefs });
+			return stateReady.then(() => {
+				prefs = msg.prefs;
+				return browser.storage.sync.set({ prefs });
+			});
 		}
 		if (msg.type === 'UPDATE_REGISTRY') {
-			tabRegistry = msg.tabRegistry;
-			browser.storage.session.set({ tabRegistry });
+			return stateReady.then(() => {
+				tabRegistry = msg.tabRegistry;
+				return browser.storage.session.set({ tabRegistry });
+			});
 		}
 		if (msg.type === 'SET_DEMO_MODE') {
-			demoMode = msg.enabled;
-			if (demoMode) {
-				simulator = new MockGameSimulator();
-			} else {
-				simulator = null;
-			}
-			browser.storage.local.set({ demoMode });
-			tick(); // immediately refresh
+			return stateReady.then(async () => {
+				demoMode = msg.enabled;
+				if (demoMode) {
+					simulator = new MockGameSimulator();
+				} else {
+					simulator = null;
+				}
+				await browser.storage.local.set({ demoMode });
+				await refreshScores(false); // immediately refresh
+			});
 		}
 	});
 }) as unknown;

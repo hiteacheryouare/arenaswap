@@ -26,7 +26,7 @@ export class MockGameSimulator {
 		this.games = [
 			{
 				id: 'mock-1',
-				homeTeam: { id: '2305', name: 'Northeastern Huskies', abbreviation: 'NU', score: 45, logo: `${ESPN_CDN}/2305.png` },
+				homeTeam: { id: '111', name: 'Northeastern Huskies', abbreviation: 'NU', score: 45, logo: `${ESPN_CDN}/111.png` },
 				awayTeam: { id: '104', name: 'Boston University Terriers', abbreviation: 'BU', score: 42, logo: `${ESPN_CDN}/104.png` },
 				period: 2, clockSeconds: 162, status: 'in',
 			},
