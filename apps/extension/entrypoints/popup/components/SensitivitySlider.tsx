@@ -4,11 +4,13 @@ interface Props {
 }
 
 const LABELS: Record<number, string> = {
-	1: 'Critical only',
-	2: 'Conservative',
-	3: 'Balanced',
-	4: 'Eager',
-	5: 'Trigger Happy',
+	1: 'Barely Active',
+	2: 'Critical Only',
+	3: 'Conservative',
+	4: 'Balanced',
+	5: 'Eager',
+	6: 'Trigger Happy',
+	7: 'Overkill'
 };
 
 const SensitivitySlider = ({ value, onChange }: Props) => (
@@ -20,7 +22,7 @@ const SensitivitySlider = ({ value, onChange }: Props) => (
 		<input
 			type='range'
 			min={1}
-			max={5}
+			max={7}
 			step={1}
 			value={value}
 			onChange={e => onChange(Number(e.target.value))}

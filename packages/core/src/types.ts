@@ -10,10 +10,10 @@ export interface Game {
 	id: string;
 	homeTeam: Team;
 	awayTeam: Team;
-	period: number;        // 1 = 1st half, 2 = 2nd half, 3+ = OT
-	clockSeconds: number;  // seconds remaining in current period
+	period: number;
+	clockSeconds: number;
 	status: 'pre' | 'in' | 'post';
-	startTime?: string;    // ISO string, present for upcoming (pre) games
+	startTime?: string;
 }
 
 export interface ScoreSnapshot {
@@ -29,13 +29,11 @@ export interface ExcitementResult {
 	closeness: number;
 	lateGame: number;
 	momentum: number;
-	preference: number;
-	reason: string;  // human-readable, used verbatim in notifications
+	reason: string;
 }
 
 export interface UserPreferences {
 	sensitivity: 1 | 2 | 3 | 4 | 5;
-	favoriteTeamIds: string[];
 	cooldownSeconds: number;
 	enabled: boolean;
 }

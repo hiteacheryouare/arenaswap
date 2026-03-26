@@ -1,0 +1,349 @@
+
+> @arenaswap/extension@0.1.0 build
+> wxt build
+
+
+WXT 0.20.20
+ℹ Building chrome-mv3 for production with Vite 8.0.2
+- Preparing...
+DEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+   ╷
+35 │ @import 'bootstrap/scss/bootstrap';
+   │         ^^^^^^^^^^^^^^^^^^^^^^^^^^
+   ╵
+    assets/bootstrap.scss 35:9  root stylesheet
+
+DEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+   ╷
+39 │ @import 'bootstrap-icons/font/bootstrap-icons';
+   │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   ╵
+    assets/bootstrap.scss 39:9  root stylesheet
+
+DEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+  ╷
+1 │ @import "mixins/banner";
+  │         ^^^^^^^^^^^^^^^
+  ╵
+    ../../node_modules/bootstrap/scss/bootstrap.scss 1:9  @import
+    assets/bootstrap.scss 35:9                            root stylesheet
+
+DEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+  ╷
+7 │ @import "functions";
+  │         ^^^^^^^^^^^
+  ╵
+    ../../node_modules/bootstrap/scss/bootstrap.scss 7:9  @import
+    assets/bootstrap.scss 35:9                            root stylesheet
+
+DEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+  ╷
+8 │ @import "variables";
+  │         ^^^^^^^^^^^
+  ╵
+    ../../node_modules/bootstrap/scss/bootstrap.scss 8:9  @import
+    assets/bootstrap.scss 35:9                            root stylesheet
+
+DEPRECATION WARNING [if-function]: The Sass if() syntax is deprecated in favor of the modern CSS syntax.
+
+Suggestion: if(sass($arg == "$value"): $value; else: $arg)
+
+More info: https://sass-lang.com/d/if-function
+
+   ╷
+58 │       $_args: append($_args, if($arg == "$key", $key, if($arg == "$value", $value, $arg)));
+   │                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   ╵
+    ../../node_modules/bootstrap/scss/_functions.scss 58:55  @import
+    ../../node_modules/bootstrap/scss/bootstrap.scss 7:9     @import
+    assets/bootstrap.scss 35:9                               root stylesheet
+
+DEPRECATION WARNING [if-function]: The Sass if() syntax is deprecated in favor of the modern CSS syntax.
+
+Suggestion: if(sass($arg == "$key"): $key; else: if($arg == "$value", $value, $arg))
+
+More info: https://sass-lang.com/d/if-function
+
+   ╷
+58 │       $_args: append($_args, if($arg == "$key", $key, if($arg == "$value", $value, $arg)));
+   │                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   ╵
+    ../../node_modules/bootstrap/scss/_functions.scss 58:30  @import
+    ../../node_modules/bootstrap/scss/bootstrap.scss 7:9     @import
+    assets/bootstrap.scss 35:9                               root stylesheet
+
+DEPRECATION WARNING [if-function]: The Sass if() syntax is deprecated in favor of the modern CSS syntax.
+
+Suggestion: if(sass($l1 > $l2): divide($l1 + 0.05, $l2 + 0.05); else: divide($l2 + 0.05, $l1 + 0.05))
+
+More info: https://sass-lang.com/d/if-function
+
+    ╷
+177 │   @return if($l1 > $l2, divide($l1 + .05, $l2 + .05), divide($l2 + .05, $l1 + .05));
+    │           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ╵
+    ../../node_modules/bootstrap/scss/_functions.scss 177:11  @import
+    ../../node_modules/bootstrap/scss/bootstrap.scss 7:9      @import
+    assets/bootstrap.scss 35:9                                root stylesheet
+
+DEPRECATION WARNING [if-function]: The Sass if() syntax is deprecated in favor of the modern CSS syntax.
+
+Suggestion: if(sass(divide($value, 255) < 0.04045): divide(divide($value, 255), 12.92); else: nth($_luminance-list, $value + 1))
+
+More info: https://sass-lang.com/d/if-function
+
+    ╷
+191 │     $value: if(divide($value, 255) < .04045, divide(divide($value, 255), 12.92), nth($_luminance-list, $value + 1));
+    │             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ╵
+    ../../node_modules/bootstrap/scss/_functions.scss 191:13  @import
+    ../../node_modules/bootstrap/scss/bootstrap.scss 7:9      @import
+    assets/bootstrap.scss 35:9                                root stylesheet
+
+DEPRECATION WARNING [if-function]: The Sass if() syntax is deprecated in favor of the modern CSS syntax.
+
+Suggestion: if(sass($weight > 0): shade-color($color, $weight); else: tint-color($color, -$weight))
+
+More info: https://sass-lang.com/d/if-function
+
+    ╷
+217 │   @return if($weight > 0, shade-color($color, $weight), tint-color($color, -$weight));
+    │           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ╵
+    ../../node_modules/bootstrap/scss/_functions.scss 217:11  @import
+    ../../node_modules/bootstrap/scss/bootstrap.scss 7:9      @import
+    assets/bootstrap.scss 35:9                                root stylesheet
+
+DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+Use color.mix instead.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+    ╷
+207 │   @return mix(white, $color, $weight);
+    │           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ╵
+    ../../node_modules/bootstrap/scss/_functions.scss 207:11  tint-color()
+    ../../node_modules/bootstrap/scss/_variables.scss 79:12   @import
+    ../../node_modules/bootstrap/scss/bootstrap.scss 8:9      @import
+    assets/bootstrap.scss 35:9                                root stylesheet
+
+DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+Use color.mix instead.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+    ╷
+212 │   @return mix(black, $color, $weight);
+    │           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ╵
+    ../../node_modules/bootstrap/scss/_functions.scss 212:11  shade-color()
+    ../../node_modules/bootstrap/scss/_variables.scss 84:12   @import
+    ../../node_modules/bootstrap/scss/bootstrap.scss 8:9      @import
+    assets/bootstrap.scss 35:9                                root stylesheet
+
+DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+Use color.mix instead.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+    ╷
+342 │ $light-bg-subtle:         mix($gray-100, $white) !default;
+    │                           ^^^^^^^^^^^^^^^^^^^^^^
+    ╵
+    ../../node_modules/bootstrap/scss/_variables.scss 342:27  @import
+    ../../node_modules/bootstrap/scss/bootstrap.scss 8:9      @import
+    assets/bootstrap.scss 35:9                                root stylesheet
+
+DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+Use math.unit instead.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+   ╷
+11 │     @if $prev-num == null or unit($num) == "%" or unit($prev-num) == "%" {
+   │                              ^^^^^^^^^^
+   ╵
+    ../../node_modules/bootstrap/scss/_functions.scss 11:30  -assert-ascending()
+    ../../node_modules/bootstrap/scss/_variables.scss 494:1  @import
+    ../../node_modules/bootstrap/scss/bootstrap.scss 8:9     @import
+    assets/bootstrap.scss 35:9                               root stylesheet
+
+DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+Use math.unit instead.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+   ╷
+11 │     @if $prev-num == null or unit($num) == "%" or unit($prev-num) == "%" {
+   │                                                   ^^^^^^^^^^^^^^^
+   ╵
+    ../../node_modules/bootstrap/scss/_functions.scss 11:51  -assert-ascending()
+    ../../node_modules/bootstrap/scss/_variables.scss 494:1  @import
+    ../../node_modules/bootstrap/scss/bootstrap.scss 8:9     @import
+    assets/bootstrap.scss 35:9                               root stylesheet
+
+DEPRECATION WARNING [color-functions]: red() is deprecated. Suggestion:
+
+color.channel($color, "red", $space: rgb)
+
+More info: https://sass-lang.com/d/color-functions
+
+    ╷
+185 │     "r": red($color),
+    │          ^^^^^^^^^^^
+    ╵
+    ../../node_modules/bootstrap/scss/_functions.scss 185:10  luminance()
+    ../../node_modules/bootstrap/scss/_functions.scss 174:8   contrast-ratio()
+    ../../node_modules/bootstrap/scss/_functions.scss 159:22  color-contrast()
+    ../../node_modules/bootstrap/scss/_variables.scss 846:42  @import
+    ../../node_modules/bootstrap/scss/bootstrap.scss 8:9      @import
+    assets/bootstrap.scss 35:9                                root stylesheet
+
+DEPRECATION WARNING [color-functions]: green() is deprecated. Suggestion:
+
+color.channel($color, "green", $space: rgb)
+
+More info: https://sass-lang.com/d/color-functions
+
+    ╷
+186 │     "g": green($color),
+    │          ^^^^^^^^^^^^^
+    ╵
+    ../../node_modules/bootstrap/scss/_functions.scss 186:10  luminance()
+    ../../node_modules/bootstrap/scss/_functions.scss 174:8   contrast-ratio()
+    ../../node_modules/bootstrap/scss/_functions.scss 159:22  color-contrast()
+    ../../node_modules/bootstrap/scss/_variables.scss 846:42  @import
+    ../../node_modules/bootstrap/scss/bootstrap.scss 8:9      @import
+    assets/bootstrap.scss 35:9                                root stylesheet
+
+DEPRECATION WARNING [color-functions]: blue() is deprecated. Suggestion:
+
+color.channel($color, "blue", $space: rgb)
+
+More info: https://sass-lang.com/d/color-functions
+
+    ╷
+187 │     "b": blue($color)
+    │          ^^^^^^^^^^^^
+    ╵
+    ../../node_modules/bootstrap/scss/_functions.scss 187:10  luminance()
+    ../../node_modules/bootstrap/scss/_functions.scss 174:8   contrast-ratio()
+    ../../node_modules/bootstrap/scss/_functions.scss 159:22  color-contrast()
+    ../../node_modules/bootstrap/scss/_variables.scss 846:42  @import
+    ../../node_modules/bootstrap/scss/bootstrap.scss 8:9      @import
+    assets/bootstrap.scss 35:9                                root stylesheet
+
+DEPRECATION WARNING [color-functions]: red() is deprecated. Suggestion:
+
+color.channel($color, "red", $space: rgb)
+
+More info: https://sass-lang.com/d/color-functions
+
+   ╷
+37 │   @return red($value), green($value), blue($value);
+   │           ^^^^^^^^^^^
+   ╵
+    ../../node_modules/bootstrap/scss/_functions.scss 37:11   to-rgb()
+    ../../node_modules/bootstrap/scss/_variables.scss 846:31  @import
+    ../../node_modules/bootstrap/scss/bootstrap.scss 8:9      @import
+    assets/bootstrap.scss 35:9                                root stylesheet
+
+DEPRECATION WARNING [color-functions]: green() is deprecated. Suggestion:
+
+color.channel($color, "green", $space: rgb)
+
+More info: https://sass-lang.com/d/color-functions
+
+   ╷
+37 │   @return red($value), green($value), blue($value);
+   │                        ^^^^^^^^^^^^^
+   ╵
+    ../../node_modules/bootstrap/scss/_functions.scss 37:24   to-rgb()
+    ../../node_modules/bootstrap/scss/_variables.scss 846:31  @import
+    ../../node_modules/bootstrap/scss/bootstrap.scss 8:9      @import
+    assets/bootstrap.scss 35:9                                root stylesheet
+
+WARNING: 312 repetitive deprecation warnings omitted.
+Run in verbose mode to see all warnings.
+
+
+./fonts/bootstrap-icons.woff2?24e3eb84d0bcaf83d77f904c78ac1f47 referenced in ./fonts/bootstrap-icons.woff2?24e3eb84d0bcaf83d77f904c78ac1f47 didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+./fonts/bootstrap-icons.woff?24e3eb84d0bcaf83d77f904c78ac1f47 referenced in ./fonts/bootstrap-icons.woff?24e3eb84d0bcaf83d77f904c78ac1f47 didn't resolve at build time, it will remain unchanged to be resolved at runtime
+[lightningcss minify] Unknown at rule: @tailwind
+20365 |    color: #e6edf3;
+20366 |    font-weight: 600;
+20367 |  }@tailwind base;
+      |            ^
+20368 |  @tailwind components;
+20369 |  @tailwind utilities;
+[lightningcss minify] Unknown at rule: @tailwind
+20366 |    font-weight: 600;
+20367 |  }@tailwind base;
+20368 |  @tailwind components;
+      |           ^
+20369 |  @tailwind utilities;
+20370 |  
+[lightningcss minify] Unknown at rule: @tailwind
+20367 |  }@tailwind base;
+20368 |  @tailwind components;
+20369 |  @tailwind utilities;
+      |           ^
+20370 |  
+20371 |  /* ─── DM Sans ─────────────────────────────────────────────────────────────── */
+✔ Built extension in 1.606 s
+  ├─ .output/chrome-mv3/manifest.json                                         599 B    
+  ├─ .output/chrome-mv3/popup.html                                            404 B    
+  ├─ .output/chrome-mv3/background.js                                         9.77 kB  
+  ├─ .output/chrome-mv3/chunks/popup-Bir6VNRz.js                              161.84 kB
+  ├─ .output/chrome-mv3/assets/popup-L26pejfQ.css                             306.05 kB
+  ├─ .output/chrome-mv3/fonts/bootstrap-icons.woff                            180.29 kB
+  ├─ .output/chrome-mv3/fonts/bootstrap-icons.woff2                           134.04 kB
+  ├─ .output/chrome-mv3/fonts/DMSans-Bold.woff2                               36.93 kB 
+  ├─ .output/chrome-mv3/fonts/DMSans-Medium.woff2                             36.93 kB 
+  ├─ .output/chrome-mv3/fonts/DMSans-Regular.woff2                            36.93 kB 
+  ├─ .output/chrome-mv3/fonts/DMSans-SemiBold.woff2                           36.93 kB 
+  ├─ .output/chrome-mv3/fonts/Geist-Bold.woff2                                46.74 kB 
+  ├─ .output/chrome-mv3/fonts/Geist-Medium.woff2                              46.3 kB  
+  ├─ .output/chrome-mv3/fonts/Geist-Regular.woff2                             45.17 kB 
+  ├─ .output/chrome-mv3/fonts/Geist-SemiBold.woff2                            46.46 kB 
+  ├─ .output/chrome-mv3/fonts/Lekton-Bold.woff2                               9.38 kB  
+  ├─ .output/chrome-mv3/fonts/Lekton-Regular.woff2                            9.25 kB  
+  ├─ .output/chrome-mv3/icon/128.png                                          4.99 kB  
+  ├─ .output/chrome-mv3/icon/16.png                                           2.24 kB  
+  ├─ .output/chrome-mv3/icon/32.png                                           2.67 kB  
+  ├─ .output/chrome-mv3/icon/48.png                                           3.04 kB  
+  ├─ .output/chrome-mv3/icon/96.png                                           4.21 kB  
+  ├─ .output/chrome-mv3/images/AS markup.png                                  28.32 kB 
+  ├─ .output/chrome-mv3/images/as_markup_large.png                            127.68 kB
+  ├─ .output/chrome-mv3/images/full_logo_black_on_transparent.png             61.81 kB 
+  ├─ .output/chrome-mv3/images/full_logo_black.png                            61.05 kB 
+  ├─ .output/chrome-mv3/images/full_logo_white_on_black.png                   58.01 kB 
+  ├─ .output/chrome-mv3/images/full_logo_white_on_transparent.png             62.28 kB 
+  ├─ .output/chrome-mv3/images/full_text_compressed_black_on_transparent.png  99.22 kB 
+  ├─ .output/chrome-mv3/images/full_text_compressed_black_on_white.png        96.75 kB 
+  ├─ .output/chrome-mv3/images/full_text_compressed_white_on_black.png        91.7 kB  
+  ├─ .output/chrome-mv3/images/full_text_compressed_white_on_transparent.png  100.15 kB
+  ├─ .output/chrome-mv3/images/icon_black_on_transparent.png                  60.05 kB 
+  ├─ .output/chrome-mv3/images/icon_black_on_white.png                        61.29 kB 
+  ├─ .output/chrome-mv3/images/icon_white_on_black.png                        55.89 kB 
+  └─ .output/chrome-mv3/images/icon_white_on_transparent.png                  60.23 kB 
+Σ Total size: 2.19 MB                                                       
+✔ Finished in 1.629 s
+[1G

@@ -12,7 +12,7 @@ $border-color:              #30363d;
 $card-bg:                   #161b22;
 $card-border-color:         #30363d;
 $card-cap-bg:               transparent;
-$font-family-base:          'Geist', system-ui, -apple-system, sans-serif;
+$font-family-base:          'DM Sans', system-ui, -apple-system, sans-serif;
 $font-size-base:            0.9375rem;
 $font-size-sm:              0.8125rem;
 $headings-font-weight:      700;
@@ -26,6 +26,10 @@ $form-range-thumb-bg:       #F75C03;
 $form-range-track-bg:       #30363d;
 $btn-border-radius:         0.25rem;
 $enable-dark-mode:          false;
+
+$form-switch-checked-bg:    #F75C03;
+$form-check-input-checked-bg-color: #F75C03;
+$form-check-input-checked-border-color: #F75C03;
 
 // ─── Bootstrap source ────────────────────────────────────────────────────────
 @import 'bootstrap/scss/bootstrap';
@@ -45,21 +49,27 @@ $bootstrap-icons-font-path: '/fonts';
 	display:         flex;
 	justify-content: space-between;
 	align-items:     center;
-	margin-bottom:   0.75rem;
-	padding-bottom:  0.6rem;
-	border-bottom:   1px solid #30363d;
+	margin-bottom:   0.5rem;
+	padding-bottom:  0.5rem;
 }
 
-.arenaswap-wordmark {
-	font-size:      1rem;
-	font-weight:    900;
+.arenaswap-logo {
+	height: 36px;
+	width: auto;
+	object-fit: contain;
+}
+
+// ─── Section titles ──────────────────────────────────────────────────────────
+.section-title {
+	font-size:      1.15rem;
+	font-weight:    700;
 	color:          #e6edf3;
-	letter-spacing: -0.02em;
-
-	span { color: $primary; }
+	text-align:     center;
+	margin-bottom:  0.5rem;
+	margin-top:     0.25rem;
 }
 
-// ─── Section labels ───────────────────────────────────────────────────────────
+// ─── Section labels (for settings view) ──────────────────────────────────────
 .section-label {
 	font-size:      0.65rem;
 	font-weight:    700;
@@ -77,7 +87,7 @@ $bootstrap-icons-font-path: '/fonts';
 	background:    #161b22;
 	border:        1px solid #30363d;
 	border-radius: 0.5rem;
-	padding:       0.6rem 0.75rem;
+	padding:       0.75rem;
 	margin-bottom: 0.5rem;
 
 	&.is-ot {
@@ -88,7 +98,7 @@ $bootstrap-icons-font-path: '/fonts';
 
 .game-card__header {
 	display:         flex;
-	justify-content: space-between;
+	justify-content: center;
 	align-items:     center;
 	margin-bottom:   0.35rem;
 }
@@ -108,40 +118,110 @@ $bootstrap-icons-font-path: '/fonts';
 	width:         6px;
 	height:        6px;
 	border-radius: 50%;
-	background:    #F75C03;
+	background:    #e53935;
 	flex-shrink:   0;
 	animation:     livePulse 1.5s ease-in-out infinite;
 }
 
-.game-card__clock {
-	font-size:            0.7rem;
-	color:                #8b949e;
-	font-variant-numeric: tabular-nums;
+// ─── Teams row (new layout: logo+abbr | scores | logo+abbr) ─────────────────
+.game-card__teams {
+	display:         flex;
+	align-items:     center;
+	justify-content: center;
+	gap:             0.75rem;
 }
 
-.game-card__teams {
-	display:     flex;
-	align-items: center;
-	gap:         0.4rem;
+.game-card__team {
+	display:        flex;
+	flex-direction: column;
+	align-items:    center;
+	gap:            0.2rem;
+	min-width:      60px;
+}
+
+.game-card__team-logo {
+	width:      56px;
+	height:     56px;
+	object-fit: contain;
+	flex-shrink: 0;
+}
+
+.game-card__team-logo-fallback {
+	width:           56px;
+	height:          56px;
+	font-size:       0.7rem;
+	font-weight:     700;
+	flex-shrink:     0;
+	display:         flex;
+	align-items:     center;
+	justify-content: center;
+	background:      #30363d;
+	border-radius:   50%;
+	color:           #8b949e;
 }
 
 .game-card__team-name {
-	font-size:   0.8rem;
+	font-size:   0.7rem;
 	font-weight: 700;
 	color:       #e6edf3;
 	white-space: nowrap;
+	text-align:  center;
+}
+
+// ─── Scores center column ────────────────────────────────────────────────────
+.game-card__scores {
+	display:        flex;
+	flex-direction: column;
+	align-items:    center;
+	min-width:      80px;
+}
+
+.game-card__score-row {
+	display:     flex;
+	align-items: baseline;
+	gap:         1.25rem;
 }
 
 .game-card__score {
-	flex:                 1;
-	text-align:           center;
-	font-size:            1.1rem;
+	font-size:            1.75rem;
 	font-weight:          700;
 	font-variant-numeric: tabular-nums;
 	color:                #e6edf3;
 	letter-spacing:       0.02em;
+	line-height:          1;
 }
 
+.game-card__clock {
+	font-family:          'Lekton', monospace;
+	font-size:            0.85rem;
+	color:                #8b949e;
+	font-variant-numeric: tabular-nums;
+	margin-top:           0.15rem;
+}
+
+// ─── Tab assignment label ────────────────────────────────────────────────────
+.game-card__tab-label {
+	font-size:   0.65rem;
+	color:       #F75C03;
+	text-align:  center;
+	margin-top:  0.4rem;
+}
+
+// ─── Pre-game card variant ────────────────────────────────────────────────────
+.game-card--pre {
+	opacity: 0.85;
+}
+
+.game-card__start-time {
+	font-family: 'Lekton', monospace;
+	font-size:   0.75rem;
+	color:       #F1C40F;
+	white-space: nowrap;
+	text-align:  center;
+	margin-top:  0.15rem;
+}
+
+// ─── Excitement bar (kept for when needed) ───────────────────────────────────
 .game-card__excitement {
 	margin-top: 0.45rem;
 }
@@ -168,17 +248,6 @@ $bootstrap-icons-font-path: '/fonts';
 	font-size:  0.65rem;
 	color:      #8b949e;
 	margin-top: 0.2rem;
-}
-
-// ─── Pre-game card variant ────────────────────────────────────────────────────
-.game-card--pre {
-	opacity: 0.85;
-}
-
-.game-card__start-time {
-	font-size:   0.65rem;
-	color:       #F1C40F;
-	white-space: nowrap;
 }
 
 // ─── Setup view ──────────────────────────────────────────────────────────────

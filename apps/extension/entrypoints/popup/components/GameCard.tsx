@@ -2,17 +2,10 @@ import { useState } from 'react';
 import type { ExcitementResult, Game, Team } from '@arenaswap/core/types';
 
 interface Props {
-	tabId: number;
 	game: Game | undefined;
 	excitementResult: ExcitementResult | undefined;
+	tabTitle?: string;
 }
-
-const LOGO_SIZE = 22;
-
-const excitementLevel = (score: number): string =>
-	score >= 80 ? 'level-peak' :
-	score >= 60 ? 'level-high' :
-	score >= 30 ? 'level-mid' : 'level-low';
 
 const formatPeriod = (period: number): string => {
 	if (period === 1) return '1H';
@@ -31,6 +24,8 @@ const formatStartTime = (iso: string): string => {
 	return d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
 };
 
+const LOGO_SIZE = 56;
+
 const TeamLogo = ({ team }: { team: Team }) => {
 	const [failed, setFailed] = useState(false);
 
@@ -42,100 +37,85 @@ const TeamLogo = ({ team }: { team: Team }) => {
 				width={LOGO_SIZE}
 				height={LOGO_SIZE}
 				onError={() => setFailed(true)}
-				style={{ objectFit: 'contain', flexShrink: 0 }}
+				className='game-card__team-logo'
 			/>
 		);
 	}
 
 	return (
-		<div
-			style={{
-				width: LOGO_SIZE,
-				height: LOGO_SIZE,
-				fontSize: '0.45rem',
-				fontWeight: 700,
-				flexShrink: 0,
-				display: 'flex',
-				alignItems: 'center',
-				justifyContent: 'center',
-				background: '#30363d',
-				borderRadius: '50%',
-				color: '#8b949e',
-			}}
-		>
+		<div className='game-card__team-logo-fallback'>
 			{team.abbreviation.slice(0, 3)}
 		</div>
 	);
 };
 
-const GameCard = ({ tabId, game, excitementResult }: Props) => {
-	if (!game) {
-		return (
-			<div className='game-card'>
-				<span className='sensitivity-label'>Tab #{tabId} — waiting for game data…</span>
-			</div>
-		);
-	}
+const TeamColumn = ({ team }: { team: Team }) => (
+	<div className='game-card__team'>
+		<TeamLogo team={team} />
+		<span className='game-card__team-name'>{team.abbreviation}</span>
+	</div>
+);
+
+const GameCard = ({ game, excitementResult, tabTitle }: Props) => {
+	if (!game) return null;
 
 	if (game.status === 'pre') {
 		return (
 			<div className='game-card game-card--pre'>
 				<div className='game-card__teams'>
-					<TeamLogo team={game.awayTeam} />
-					<span className='game-card__team-name'>{game.awayTeam.abbreviation}</span>
-					<span className='game-card__score' style={{ fontSize: '0.75rem', color: '#8b949e' }}>vs</span>
-					<span className='game-card__team-name'>{game.homeTeam.abbreviation}</span>
-					<TeamLogo team={game.homeTeam} />
-					{game.startTime && (
-						<span className='game-card__start-time ms-auto'>
-							{formatStartTime(game.startTime)}
-						</span>
-					)}
+					<TeamColumn team={game.awayTeam} />
+					<div className='game-card__scores'>
+						<span style={{ fontSize: '0.8rem', color: '#8b949e' }}>vs</span>
+						{game.startTime && (
+							<span className='game-card__start-time'>
+								{formatStartTime(game.startTime)}
+							</span>
+						)}
+					</div>
+					<TeamColumn team={game.homeTeam} />
 				</div>
+				{tabTitle && (
+					<div className='game-card__tab-label'>
+						Assigned to tab: {tabTitle}
+					</div>
+				)}
 			</div>
 		);
 	}
 
-	const excitement = excitementResult?.total ?? 0;
-	const barWidth = Math.min(100, excitement);
 	const isOt = game.period >= 3;
 
 	return (
 		<div className={`game-card${isOt ? ' is-ot' : ''}`}>
-			{/* Header: live badge + clock */}
+			{/* LIVE badge */}
 			<div className='game-card__header'>
 				<div className='game-card__live-badge'>
 					<span className='live-dot' />
 					LIVE
 				</div>
-				<span className='game-card__clock'>
-					{formatPeriod(game.period)} · {formatClock(game.clockSeconds)}
-				</span>
 			</div>
 
-			{/* Teams + score */}
+			{/* Teams + scores */}
 			<div className='game-card__teams'>
-				<TeamLogo team={game.awayTeam} />
-				<span className='game-card__team-name'>{game.awayTeam.abbreviation}</span>
-				<span className='game-card__score'>
-					{game.awayTeam.score} — {game.homeTeam.score}
-				</span>
-				<span className='game-card__team-name'>{game.homeTeam.abbreviation}</span>
-				<TeamLogo team={game.homeTeam} />
+				<TeamColumn team={game.awayTeam} />
+				<div className='game-card__scores'>
+					<div className='game-card__score-row'>
+						<span className='game-card__score'>{game.awayTeam.score}</span>
+						<span className='game-card__score'>{game.homeTeam.score}</span>
+					</div>
+					<span className='game-card__clock'>
+						{formatClock(game.clockSeconds)}
+					</span>
+				</div>
+				<TeamColumn team={game.homeTeam} />
 			</div>
 
-			{/* Excitement bar */}
-			<div className='game-card__excitement'>
-				<div className='excitement-track'>
-					<div
-						className={`excitement-fill ${excitementLevel(excitement)}`}
-						style={{ width: `${barWidth}%` }}
-					/>
+			{/* Tab assignment */}
+			{tabTitle && (
+				<div className='game-card__tab-label'>
+					Assigned to tab: {tabTitle}
 				</div>
-				{excitementResult?.reason && (
-					<div className='excitement-reason'>{excitementResult.reason}</div>
-				)}
-			</div>
+			)}
 		</div>
 	);
 };

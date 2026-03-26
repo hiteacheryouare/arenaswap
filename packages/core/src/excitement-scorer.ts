@@ -2,7 +2,6 @@ import {
 	SCORE_MAX_CLOSENESS,
 	SCORE_MAX_LATE_GAME,
 	SCORE_MAX_MOMENTUM,
-	SCORE_MAX_PREFERENCE,
 	CLOSENESS_TIER_1_MARGIN,
 	CLOSENESS_TIER_2_MARGIN,
 	CLOSENESS_TIER_3_MARGIN,
@@ -61,14 +60,6 @@ const getMomentum = (game: Game, history: ScoreSnapshot[]): Signal => {
 	return { score: 0, reason: '' };
 };
 
-const getPreference = (game: Game, prefs: UserPreferences): Signal => {
-	const teamIds = [game.homeTeam.id, game.awayTeam.id];
-	const isFavorite = prefs.favoriteTeamIds.some(id => teamIds.includes(id));
-	return isFavorite
-		? { score: SCORE_MAX_PREFERENCE, reason: 'your team is playing' }
-		: { score: 0, reason: '' };
-};
-
 export const computeExcitement = (
 	game: Game,
 	history: ScoreSnapshot[],
@@ -77,12 +68,10 @@ export const computeExcitement = (
 	const closeness = getCloseness(game);
 	const lateGame = getLateGame(game);
 	const momentum = getMomentum(game, history);
-	const preference = getPreference(game, prefs);
 
-	const total = closeness.score + lateGame.score + momentum.score + preference.score;
+	const total = closeness.score + lateGame.score + momentum.score;
 
-	// Build reason string from the most significant signals (momentum first — most surprising)
-	const reason = [momentum.reason, lateGame.reason, closeness.reason, preference.reason]
+	const reason = [momentum.reason, lateGame.reason, closeness.reason]
 		.filter(Boolean)
 		.slice(0, 2)
 		.join(', ') || 'exciting game';
@@ -93,7 +82,6 @@ export const computeExcitement = (
 		closeness: closeness.score,
 		lateGame: lateGame.score,
 		momentum: momentum.score,
-		preference: preference.score,
 		reason,
 	};
 };

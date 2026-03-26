@@ -1,4 +1,4 @@
-import { fetchGames, computeExcitement } from '@arenaswap/core';
+import { fetchGames, computeExcitement, MockGameSimulator } from '@arenaswap/core';
 import {
 	POLL_INTERVAL_MS,
 	MAX_HISTORY_SNAPSHOTS,
@@ -8,6 +8,7 @@ import {
 } from '@arenaswap/core/constants';
 import type {
 	Game,
+	ExcitementResult,
 	ScoreSnapshot,
 	TabRegistration,
 	UserPreferences,
@@ -15,11 +16,13 @@ import type {
 
 export default defineBackground(() => {
 	let games: Game[] = [];
+	let currentScores: ExcitementResult[] = [];
 	const history = new Map<string, ScoreSnapshot[]>();
 	let tabRegistry: TabRegistration[] = [];
+	let demoMode = false;
+	let simulator: MockGameSimulator | null = null;
 	let prefs: UserPreferences = {
 		sensitivity: DEFAULT_SENSITIVITY,
-		favoriteTeamIds: [],
 		cooldownSeconds: DEFAULT_COOLDOWN_SECS,
 		enabled: true,
 	};
@@ -45,16 +48,20 @@ export default defineBackground(() => {
 	};
 
 	const tick = async () => {
-		try {
-			games = await fetchGames();
-		} catch (err) {
-			console.error('Arenaswap: Failed to fetch games:', err);
-			return;
+		if (demoMode && simulator) {
+			games = simulator.tick();
+		} else {
+			try {
+				games = await fetchGames();
+			} catch (err) {
+				console.error('Arenaswap: Failed to fetch games:', err);
+				return;
+			}
 		}
 
-		// Always broadcast so the popup can show upcoming games even when nothing is live
 		const liveGames = games.filter(g => g.status === 'in');
 		const scores = liveGames.map(g => computeExcitement(g, history.get(g.id) ?? [], prefs));
+		currentScores = scores;
 		updateHistory(liveGames);
 
 		browser.runtime.sendMessage({ type: 'SCORES_UPDATED', scores, games }).catch(() => {});
@@ -83,23 +90,35 @@ export default defineBackground(() => {
 
 			await browser.notifications.create({
 				type: 'basic',
-				iconUrl: '/icon/128.png',
+				iconUrl: 'icon/128.png',
 				title: `ArenaSwap → ${getGameLabel(best.gameId)}`,
 				message: best.reason,
 			});
 		}
 	};
 
-	// Load persisted state on startup
-	browser.storage.sync.get({ prefs: null }).then(result => {
-		if (result.prefs) prefs = result.prefs as UserPreferences;
-	});
-	browser.storage.session.get({ tabRegistry: [] }).then(result => {
-		tabRegistry = result.tabRegistry as TabRegistration[];
+	// Load ALL persisted state before starting the poll loop.
+	// This prevents the race where tick() runs before demoMode is loaded.
+	Promise.all([
+		browser.storage.sync.get({ prefs: null }),
+		browser.storage.session.get({ tabRegistry: [] }),
+		browser.storage.local.get({ demoMode: false }),
+	]).then(([prefsResult, registryResult, demoResult]) => {
+		if (prefsResult.prefs) prefs = prefsResult.prefs as UserPreferences;
+		tabRegistry = registryResult.tabRegistry as TabRegistration[];
+		demoMode = demoResult.demoMode as boolean;
+		if (demoMode) simulator = new MockGameSimulator();
+
+		setInterval(tick, POLL_INTERVAL_MS);
+		tick();
 	});
 
 	// Handle messages from popup
 	browser.runtime.onMessage.addListener((msg: any) => {
+		if (msg.type === 'GET_STATE') {
+			if (games.length === 0) tick(); // wake up and fetch if we have no data (e.g. after service worker suspension)
+			return Promise.resolve({ games, scores: currentScores });
+		}
 		if (msg.type === 'UPDATE_PREFS') {
 			prefs = msg.prefs;
 			browser.storage.sync.set({ prefs });
@@ -108,8 +127,15 @@ export default defineBackground(() => {
 			tabRegistry = msg.tabRegistry;
 			browser.storage.session.set({ tabRegistry });
 		}
+		if (msg.type === 'SET_DEMO_MODE') {
+			demoMode = msg.enabled;
+			if (demoMode) {
+				simulator = new MockGameSimulator();
+			} else {
+				simulator = null;
+			}
+			browser.storage.local.set({ demoMode });
+			tick(); // immediately refresh
+		}
 	});
-
-	setInterval(tick, POLL_INTERVAL_MS);
-	tick();
 }) as unknown;

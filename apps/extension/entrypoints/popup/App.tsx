@@ -2,33 +2,42 @@ import { useState, useEffect } from 'react';
 import useSWR from 'swr';
 import type { Tabs } from 'webextension-polyfill';
 import { DEFAULT_SENSITIVITY, DEFAULT_COOLDOWN_SECS } from '@arenaswap/core/constants';
-import { fetchGames } from '@arenaswap/core';
 import type { ExcitementResult, Game, TabRegistration, UserPreferences } from '@arenaswap/core/types';
 import GameCard from './components/GameCard';
 import SensitivitySlider from './components/SensitivitySlider';
+import CooldownSlider from './components/CooldownSlider';
 import TabSetupRow from './components/TabSetupRow';
 
 type View = 'main' | 'setup';
 
 const defaultPrefs: UserPreferences = {
 	sensitivity: DEFAULT_SENSITIVITY,
-	favoriteTeamIds: [],
 	cooldownSeconds: DEFAULT_COOLDOWN_SECS,
 	enabled: true,
 };
 
+type BackgroundState = { games: Game[]; scores: ExcitementResult[] };
+
+const fetchState = async (): Promise<BackgroundState> => {
+	const state = await browser.runtime.sendMessage({ type: 'GET_STATE' });
+	return (state as BackgroundState) ?? { games: [], scores: [] };
+};
+
 export default () => {
 	const [view, setView] = useState<View>('main');
-	const [scores, setScores] = useState<ExcitementResult[]>([]);
 	const [prefs, setPrefs] = useState<UserPreferences>(defaultPrefs);
 	const [registry, setRegistry] = useState<TabRegistration[]>([]);
 	const [openTabs, setOpenTabs] = useState<Tabs.Tab[]>([]);
+	const [demoMode, setDemoMode] = useState(false);
 
-	const { data: games = [], isLoading, mutate: mutateGames } = useSWR('games', fetchGames, {
-		refreshInterval: 0,
+	const { data, isLoading, mutate } = useSWR('bg-state', fetchState, {
+		refreshInterval: 15_000,
 		revalidateOnFocus: true,
 		revalidateOnReconnect: false,
 	});
+
+	const games = data?.games ?? [];
+	const scores = data?.scores ?? [];
 
 	useEffect(() => {
 		browser.storage.sync.get({ prefs: null }).then(r => {
@@ -37,16 +46,19 @@ export default () => {
 		browser.storage.session.get({ tabRegistry: [] }).then(r => {
 			setRegistry(r.tabRegistry as TabRegistration[]);
 		});
+		browser.storage.local.get({ demoMode: false }).then(r => {
+			setDemoMode(r.demoMode as boolean);
+		});
 
+		// Listen for ongoing updates from background
 		const handleMessage = (msg: any) => {
 			if (msg.type === 'SCORES_UPDATED') {
-				setScores(msg.scores);
-				mutateGames(msg.games as Game[], { revalidate: false });
+				mutate({ games: msg.games as Game[], scores: msg.scores as ExcitementResult[] }, { revalidate: false });
 			}
 		};
 		browser.runtime.onMessage.addListener(handleMessage);
 		return () => browser.runtime.onMessage.removeListener(handleMessage);
-	}, [mutateGames]);
+	}, [mutate]);
 
 	const loadOpenTabs = async () => {
 		const tabs = await browser.tabs.query({ currentWindow: true });
@@ -67,6 +79,20 @@ export default () => {
 		browser.runtime.sendMessage({ type: 'UPDATE_PREFS', prefs: updated });
 	};
 
+	const onCooldownChange = (val: number) => {
+		const updated = { ...prefs, cooldownSeconds: val };
+		setPrefs(updated);
+		browser.storage.sync.set({ prefs: updated });
+		browser.runtime.sendMessage({ type: 'UPDATE_PREFS', prefs: updated });
+	};
+
+	const onToggleDemo = () => {
+		const next = !demoMode;
+		setDemoMode(next);
+		browser.runtime.sendMessage({ type: 'SET_DEMO_MODE', enabled: next });
+		// Background calls tick() immediately → sends SCORES_UPDATED → SWR cache updates
+	};
+
 	const onRegistryChange = (updated: TabRegistration[]) => {
 		setRegistry(updated);
 		browser.storage.session.set({ tabRegistry: updated });
@@ -78,6 +104,15 @@ export default () => {
 		setView('setup');
 	};
 
+	/** Find the tab title for a registered game */
+	const getTabTitle = (gameId: string): string | undefined => {
+		const reg = registry.find(r => r.gameId === gameId);
+		if (!reg) return undefined;
+		const tab = openTabs.find(t => t.id === reg.tabId);
+		if (tab?.title) return tab.title.slice(0, 30);
+		return `Tab #${reg.tabId}`;
+	};
+
 	if (view === 'setup') {
 		return (
 			<div style={{ width: 320, minHeight: 200, padding: '0.75rem', background: '#0d1117', color: '#e6edf3' }}>
@@ -85,7 +120,29 @@ export default () => {
 					<i className='bi bi-arrow-left' />
 					Settings
 				</button>
-				<div className='section-label'>Assign tabs to games</div>
+
+				{/* Sensitivity slider in settings */}
+				<SensitivitySlider value={prefs.sensitivity} onChange={onSensitivityChange} />
+
+				<div className='mt-2'>
+					<CooldownSlider value={prefs.cooldownSeconds} onChange={onCooldownChange} />
+				</div>
+
+				{/* Demo mode toggle */}
+				<div className='d-flex justify-content-between align-items-center mt-3'>
+					<label className='sensitivity-label' htmlFor='demoToggle'>Demo mode (fake games)</label>
+					<div className='form-check form-switch mb-0'>
+						<input
+							className='form-check-input'
+							type='checkbox'
+							id='demoToggle'
+							checked={demoMode}
+							onChange={onToggleDemo}
+						/>
+					</div>
+				</div>
+
+				<div className='section-label mt-3'>Assign tabs to games</div>
 				{openTabs.length === 0 && (
 					<p className='sensitivity-label mt-2'>No open tabs found.</p>
 				)}
@@ -105,17 +162,24 @@ export default () => {
 	const liveGames = games.filter(g => g.status === 'in');
 	const upcomingGames = games.filter(g => g.status === 'pre');
 
+	const registeredGameIds = new Set(registry.map(r => r.gameId));
+	const assignedLiveGames = liveGames.filter(g => registeredGameIds.has(g.id));
+	const unassignedLiveGames = liveGames.filter(g => !registeredGameIds.has(g.id));
+
 	return (
 		<div style={{ width: 320, minHeight: 200, padding: '0.75rem', background: '#0d1117', color: '#e6edf3' }}>
-			{/* Header */}
 			<div className='arenaswap-header'>
-				<div className='arenaswap-wordmark'>ARENASWAP<span>.</span></div>
+				<img
+					src='/images/full_logo_white_on_transparent.png'
+					alt='ArenaSwap'
+					className='arenaswap-logo'
+				/>
 				<div className='d-flex align-items-center gap-2'>
 					<button
 						className='btn btn-sm p-0'
 						style={{ color: '#8b949e', background: 'none', border: 'none', lineHeight: 1 }}
 						onClick={openSetup}
-						title='Setup tabs'
+						title='Settings'
 					>
 						<i className='bi bi-gear-fill' style={{ fontSize: '0.9rem' }} />
 					</button>
@@ -131,10 +195,6 @@ export default () => {
 				</div>
 			</div>
 
-			{/* Sensitivity */}
-			<SensitivitySlider value={prefs.sensitivity} onChange={onSensitivityChange} />
-
-			{/* Loading state */}
 			{isLoading && (
 				<div className='d-flex justify-content-center align-items-center mt-4' style={{ minHeight: 64 }}>
 					<div
@@ -142,55 +202,60 @@ export default () => {
 						role='status'
 						style={{ color: '#F75C03', width: '1.5rem', height: '1.5rem', borderWidth: '0.2em' }}
 					>
-						<span className='visually-hidden'>Loading…</span>
+						<span className='visually-hidden'>Loading...</span>
 					</div>
 				</div>
 			)}
 
-			{/* Registered game tabs */}
-			{!isLoading && (
-				registry.length === 0 ? (
-					<p className='sensitivity-label text-center mt-3'>
-						No game tabs registered.{' '}
-						<button
-							className='btn btn-link btn-sm p-0'
-							style={{ fontSize: '0.65rem', color: '#2274A5' }}
-							onClick={openSetup}
-						>
-							Set them up →
-						</button>
-					</p>
-				) : (
-					<div className='mt-3'>
-						{liveGames.length > 0 && (
-							<div className='section-label section-label--live'>● Live</div>
-						)}
-						{registry.map(reg => {
-							const game = games.find(g => g.id === reg.gameId);
-							const score = scores.find(s => s.gameId === reg.gameId);
-							return (
-								<GameCard
-									key={reg.tabId}
-									tabId={reg.tabId}
-									game={game}
-									excitementResult={score}
-								/>
-							);
-						})}
-					</div>
-				)
+			{!isLoading && assignedLiveGames.length > 0 && (
+				<div>
+					<div className='section-title'>Active Tabs</div>
+					{assignedLiveGames.map(game => (
+						<GameCard
+							key={game.id}
+							game={game}
+							excitementResult={scores.find(s => s.gameId === game.id)}
+							tabTitle={getTabTitle(game.id)}
+						/>
+					))}
+				</div>
 			)}
 
-			{/* Upcoming games — shown only when nothing is live */}
-			{!isLoading && liveGames.length === 0 && upcomingGames.length > 0 && (
-				<div className='mt-3'>
-					<div className='section-label section-label--next'>▸ Up Next</div>
+			{!isLoading && unassignedLiveGames.length > 0 && (
+				<div className='mt-2'>
+					<div className='section-title'>Other Games</div>
+					{unassignedLiveGames.map(game => (
+						<GameCard
+							key={game.id}
+							game={game}
+							excitementResult={scores.find(s => s.gameId === game.id)}
+						/>
+					))}
+				</div>
+			)}
+
+			{!isLoading && liveGames.length === 0 && registry.length === 0 && upcomingGames.length === 0 && (
+				<p className='sensitivity-label text-center mt-3'>
+					No games right now.{' '}
+					<button
+						className='btn btn-link btn-sm p-0'
+						style={{ fontSize: '0.65rem', color: '#2274A5' }}
+						onClick={openSetup}
+					>
+						Set up tabs →
+					</button>
+				</p>
+			)}
+
+			{!isLoading && upcomingGames.length > 0 && (
+				<div className='mt-2'>
+					<div className='section-title'>Up Next</div>
 					{upcomingGames.map(game => (
 						<GameCard
 							key={game.id}
-							tabId={-1}
 							game={game}
 							excitementResult={undefined}
+							tabTitle={getTabTitle(game.id)}
 						/>
 					))}
 				</div>
