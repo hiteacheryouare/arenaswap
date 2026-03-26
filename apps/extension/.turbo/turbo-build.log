@@ -3,28 +3,28 @@
 > @arenaswap/extension@0.1.0 build
 > wxt build
 
-                                                                                                           [90m11:52:12 PM[39m
+                                                                                                                                                                                        [90m12:00:45 AM[39m
 [90mWXT[39m [90m[1m0.20.20[22m[39m
-[36mℹ[39m Building [36mchrome-mv3[39m for [36mproduction[39m with [32mVite 8.0.2[39m                                                      [90m11:52:12 PM[39m
-[?25l[1G[33m⠋[39m Preparing...[?25l[1G[2K[1G[33m⠙[39m [2m[1/2][22m background[33m[1mDeprecation Warning[0m [[34mimport[0m]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+[36mℹ[39m Building [36mchrome-mv3[39m for [36mproduction[39m with [32mVite 8.0.2[39m                                                                                                                                   [90m12:00:45 AM[39m
+[?25l[1G[33m⠋[39m Preparing...[?25l[1G[2K[1G[33m⠙[39m [2m[2/2][22m popup[33m[1mDeprecation Warning[0m [[34mimport[0m]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
 
 More info and automated migrator: https://sass-lang.com/d/import
 
 [34m   ╷[0m
-[34m35 │[0m @import [31m'bootstrap/scss/bootstrap'[0m;
+[34m36 │[0m @import [31m'bootstrap/scss/bootstrap'[0m;
 [34m   │[0m [31m        ^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
 [34m   ╵[0m
-    assets/bootstrap.scss 35:9  root stylesheet
+    assets/bootstrap.scss 36:9  root stylesheet
 
 [33m[1mDeprecation Warning[0m [[34mimport[0m]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
 
 More info and automated migrator: https://sass-lang.com/d/import
 
 [34m   ╷[0m
-[34m39 │[0m @import [31m'bootstrap-icons/font/bootstrap-icons'[0m;
+[34m40 │[0m @import [31m'bootstrap-icons/font/bootstrap-icons'[0m;
 [34m   │[0m [31m        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
 [34m   ╵[0m
-    assets/bootstrap.scss 39:9  root stylesheet
+    assets/bootstrap.scss 40:9  root stylesheet
 
 [?25l[1G[2K[1G[33m⠹[39m [2m[2/2][22m popup[33m[1mDeprecation Warning[0m [[34mimport[0m]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
 
@@ -35,7 +35,7 @@ More info and automated migrator: https://sass-lang.com/d/import
 [34m  │[0m [31m        ^^^^^^^^^^^^^^^[0m
 [34m  ╵[0m
     ../../node_modules/bootstrap/scss/bootstrap.scss 1:9  @import
-    assets/bootstrap.scss 35:9                            root stylesheet
+    assets/bootstrap.scss 36:9                            root stylesheet
 
 [33m[1mDeprecation Warning[0m [[34mimport[0m]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
 
@@ -46,7 +46,7 @@ More info and automated migrator: https://sass-lang.com/d/import
 [34m  │[0m [31m        ^^^^^^^^^^^[0m
 [34m  ╵[0m
     ../../node_modules/bootstrap/scss/bootstrap.scss 7:9  @import
-    assets/bootstrap.scss 35:9                            root stylesheet
+    assets/bootstrap.scss 36:9                            root stylesheet
 
 [33m[1mDeprecation Warning[0m [[34mimport[0m]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
 
@@ -57,7 +57,7 @@ More info and automated migrator: https://sass-lang.com/d/import
 [34m  │[0m [31m        ^^^^^^^^^^^[0m
 [34m  ╵[0m
     ../../node_modules/bootstrap/scss/bootstrap.scss 8:9  @import
-    assets/bootstrap.scss 35:9                            root stylesheet
+    assets/bootstrap.scss 36:9                            root stylesheet
 
 [33m[1mDeprecation Warning[0m [[34mif-function[0m]: The Sass if() syntax is deprecated in favor of the modern CSS syntax.
 
@@ -71,7 +71,7 @@ More info: https://sass-lang.com/d/if-function
 [34m   ╵[0m
     ../../node_modules/bootstrap/scss/_functions.scss 58:55  @import
     ../../node_modules/bootstrap/scss/bootstrap.scss 7:9     @import
-    assets/bootstrap.scss 35:9                               root stylesheet
+    assets/bootstrap.scss 36:9                               root stylesheet
 
 [33m[1mDeprecation Warning[0m [[34mif-function[0m]: The Sass if() syntax is deprecated in favor of the modern CSS syntax.
 
@@ -85,7 +85,7 @@ More info: https://sass-lang.com/d/if-function
 [34m   ╵[0m
     ../../node_modules/bootstrap/scss/_functions.scss 58:30  @import
     ../../node_modules/bootstrap/scss/bootstrap.scss 7:9     @import
-    assets/bootstrap.scss 35:9                               root stylesheet
+    assets/bootstrap.scss 36:9                               root stylesheet
 
 [33m[1mDeprecation Warning[0m [[34mif-function[0m]: The Sass if() syntax is deprecated in favor of the modern CSS syntax.
 
@@ -99,7 +99,7 @@ More info: https://sass-lang.com/d/if-function
 [34m    ╵[0m
     ../../node_modules/bootstrap/scss/_functions.scss 177:11  @import
     ../../node_modules/bootstrap/scss/bootstrap.scss 7:9      @import
-    assets/bootstrap.scss 35:9                                root stylesheet
+    assets/bootstrap.scss 36:9                                root stylesheet
 
 [33m[1mDeprecation Warning[0m [[34mif-function[0m]: The Sass if() syntax is deprecated in favor of the modern CSS syntax.
 
@@ -113,7 +113,7 @@ More info: https://sass-lang.com/d/if-function
 [34m    ╵[0m
     ../../node_modules/bootstrap/scss/_functions.scss 191:13  @import
     ../../node_modules/bootstrap/scss/bootstrap.scss 7:9      @import
-    assets/bootstrap.scss 35:9                                root stylesheet
+    assets/bootstrap.scss 36:9                                root stylesheet
 
 [33m[1mDeprecation Warning[0m [[34mif-function[0m]: The Sass if() syntax is deprecated in favor of the modern CSS syntax.
 
@@ -127,7 +127,7 @@ More info: https://sass-lang.com/d/if-function
 [34m    ╵[0m
     ../../node_modules/bootstrap/scss/_functions.scss 217:11  @import
     ../../node_modules/bootstrap/scss/bootstrap.scss 7:9      @import
-    assets/bootstrap.scss 35:9                                root stylesheet
+    assets/bootstrap.scss 36:9                                root stylesheet
 
 [33m[1mDeprecation Warning[0m [[34mglobal-builtin[0m]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
 Use color.mix instead.
@@ -141,7 +141,7 @@ More info and automated migrator: https://sass-lang.com/d/import
     ../../node_modules/bootstrap/scss/_functions.scss 207:11  tint-color()
     ../../node_modules/bootstrap/scss/_variables.scss 79:12   @import
     ../../node_modules/bootstrap/scss/bootstrap.scss 8:9      @import
-    assets/bootstrap.scss 35:9                                root stylesheet
+    assets/bootstrap.scss 36:9                                root stylesheet
 
 [33m[1mDeprecation Warning[0m [[34mglobal-builtin[0m]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
 Use color.mix instead.
@@ -155,7 +155,7 @@ More info and automated migrator: https://sass-lang.com/d/import
     ../../node_modules/bootstrap/scss/_functions.scss 212:11  shade-color()
     ../../node_modules/bootstrap/scss/_variables.scss 84:12   @import
     ../../node_modules/bootstrap/scss/bootstrap.scss 8:9      @import
-    assets/bootstrap.scss 35:9                                root stylesheet
+    assets/bootstrap.scss 36:9                                root stylesheet
 
 [33m[1mDeprecation Warning[0m [[34mglobal-builtin[0m]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
 Use color.mix instead.
@@ -168,7 +168,7 @@ More info and automated migrator: https://sass-lang.com/d/import
 [34m    ╵[0m
     ../../node_modules/bootstrap/scss/_variables.scss 342:27  @import
     ../../node_modules/bootstrap/scss/bootstrap.scss 8:9      @import
-    assets/bootstrap.scss 35:9                                root stylesheet
+    assets/bootstrap.scss 36:9                                root stylesheet
 
 [33m[1mDeprecation Warning[0m [[34mglobal-builtin[0m]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
 Use math.unit instead.
@@ -182,7 +182,7 @@ More info and automated migrator: https://sass-lang.com/d/import
     ../../node_modules/bootstrap/scss/_functions.scss 11:30  -assert-ascending()
     ../../node_modules/bootstrap/scss/_variables.scss 494:1  @import
     ../../node_modules/bootstrap/scss/bootstrap.scss 8:9     @import
-    assets/bootstrap.scss 35:9                               root stylesheet
+    assets/bootstrap.scss 36:9                               root stylesheet
 
 [33m[1mDeprecation Warning[0m [[34mglobal-builtin[0m]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
 Use math.unit instead.
@@ -196,7 +196,7 @@ More info and automated migrator: https://sass-lang.com/d/import
     ../../node_modules/bootstrap/scss/_functions.scss 11:51  -assert-ascending()
     ../../node_modules/bootstrap/scss/_variables.scss 494:1  @import
     ../../node_modules/bootstrap/scss/bootstrap.scss 8:9     @import
-    assets/bootstrap.scss 35:9                               root stylesheet
+    assets/bootstrap.scss 36:9                               root stylesheet
 
 [33m[1mDeprecation Warning[0m [[34mcolor-functions[0m]: red() is deprecated. Suggestion:
 
@@ -213,7 +213,7 @@ More info: https://sass-lang.com/d/color-functions
     ../../node_modules/bootstrap/scss/_functions.scss 159:22  color-contrast()
     ../../node_modules/bootstrap/scss/_variables.scss 846:42  @import
     ../../node_modules/bootstrap/scss/bootstrap.scss 8:9      @import
-    assets/bootstrap.scss 35:9                                root stylesheet
+    assets/bootstrap.scss 36:9                                root stylesheet
 
 [33m[1mDeprecation Warning[0m [[34mcolor-functions[0m]: green() is deprecated. Suggestion:
 
@@ -230,7 +230,7 @@ More info: https://sass-lang.com/d/color-functions
     ../../node_modules/bootstrap/scss/_functions.scss 159:22  color-contrast()
     ../../node_modules/bootstrap/scss/_variables.scss 846:42  @import
     ../../node_modules/bootstrap/scss/bootstrap.scss 8:9      @import
-    assets/bootstrap.scss 35:9                                root stylesheet
+    assets/bootstrap.scss 36:9                                root stylesheet
 
 [33m[1mDeprecation Warning[0m [[34mcolor-functions[0m]: blue() is deprecated. Suggestion:
 
@@ -247,7 +247,7 @@ More info: https://sass-lang.com/d/color-functions
     ../../node_modules/bootstrap/scss/_functions.scss 159:22  color-contrast()
     ../../node_modules/bootstrap/scss/_variables.scss 846:42  @import
     ../../node_modules/bootstrap/scss/bootstrap.scss 8:9      @import
-    assets/bootstrap.scss 35:9                                root stylesheet
+    assets/bootstrap.scss 36:9                                root stylesheet
 
 [33m[1mDeprecation Warning[0m [[34mcolor-functions[0m]: red() is deprecated. Suggestion:
 
@@ -262,7 +262,7 @@ More info: https://sass-lang.com/d/color-functions
     ../../node_modules/bootstrap/scss/_functions.scss 37:11   to-rgb()
     ../../node_modules/bootstrap/scss/_variables.scss 846:31  @import
     ../../node_modules/bootstrap/scss/bootstrap.scss 8:9      @import
-    assets/bootstrap.scss 35:9                                root stylesheet
+    assets/bootstrap.scss 36:9                                root stylesheet
 
 [33m[1mDeprecation Warning[0m [[34mcolor-functions[0m]: green() is deprecated. Suggestion:
 
@@ -277,12 +277,12 @@ More info: https://sass-lang.com/d/color-functions
     ../../node_modules/bootstrap/scss/_functions.scss 37:24   to-rgb()
     ../../node_modules/bootstrap/scss/_variables.scss 846:31  @import
     ../../node_modules/bootstrap/scss/bootstrap.scss 8:9      @import
-    assets/bootstrap.scss 35:9                                root stylesheet
+    assets/bootstrap.scss 36:9                                root stylesheet
 
-[?25l[1G[2K[1G[33m⠸[39m [2m[2/2][22m popup[?25l[1G[2K[1G[33m⠼[39m [2m[2/2][22m popup[?25l[1G[2K[1G[33m⠴[39m [2m[2/2][22m popup[?25l[1G[2K[1G[33m⠦[39m [2m[2/2][22m popup[?25l[1G[2K[1G[33m⠧[39m [2m[2/2][22m popup[?25l[1G[2K[1G[33m⠇[39m [2m[2/2][22m popup[?25l[1G[2K[1G[33m⠏[39m [2m[2/2][22m popup[?25l[1G[2K[1G[33m⠋[39m [2m[2/2][22m popup[?25l[1G[2K[1G[33m⠙[39m [2m[2/2][22m popup[?25l[1G[2K[1G[33m⠹[39m [2m[2/2][22m popup[?25l[1G[2K[1G[33m⠸[39m [2m[2/2][22m popup[?25l[1G[2K[1G[33m⠼[39m [2m[2/2][22m popup[?25l[1G[2K[1G[33m⠴[39m [2m[2/2][22m popup[33m[1mWarning[0m: 312 repetitive deprecation warnings omitted.
+[?25l[1G[2K[1G[33m⠸[39m [2m[2/2][22m popup[?25l[1G[2K[1G[33m⠼[39m [2m[2/2][22m popup[?25l[1G[2K[1G[33m⠴[39m [2m[2/2][22m popup[?25l[1G[2K[1G[33m⠦[39m [2m[2/2][22m popup[?25l[1G[2K[1G[33m⠧[39m [2m[2/2][22m popup[?25l[1G[2K[1G[33m⠇[39m [2m[2/2][22m popup[?25l[1G[2K[1G[33m⠏[39m [2m[2/2][22m popup[?25l[1G[2K[1G[33m⠋[39m [2m[2/2][22m popup[?25l[1G[2K[1G[33m⠙[39m [2m[2/2][22m popup[33m[1mWarning[0m: 312 repetitive deprecation warnings omitted.
 Run in verbose mode to see all warnings.
 
-[?25l[1G[2K[1G[33m⠦[39m [2m[2/2][22m popup
+[?25l[1G[2K[1G[33m⠹[39m [2m[2/2][22m popup
 ./fonts/bootstrap-icons.woff2?24e3eb84d0bcaf83d77f904c78ac1f47 referenced in ./fonts/bootstrap-icons.woff2?24e3eb84d0bcaf83d77f904c78ac1f47 didn't resolve at build time, it will remain unchanged to be resolved at runtime
 
 ./fonts/bootstrap-icons.woff?24e3eb84d0bcaf83d77f904c78ac1f47 referenced in ./fonts/bootstrap-icons.woff?24e3eb84d0bcaf83d77f904c78ac1f47 didn't resolve at build time, it will remain unchanged to be resolved at runtime
@@ -307,12 +307,12 @@ Run in verbose mode to see all warnings.
       |           ^
 20370 |  
 20371 |  /* ─── DM Sans ─────────────────────────────────────────────────────────────── */[39m
-[?25l[1G[2K[1G[33m⠧[39m [2m[2/2][22m popup[1G[2K[1G[1G[?25h[32m✔[39m Built extension in 2.220 s                                                                              [90m11:52:14 PM[39m
+[?25l[1G[2K[1G[33m⠸[39m [2m[2/2][22m popup[1G[2K[1G[1G[?25h[32m✔[39m Built extension in 1.601 s                                                                                                                                                           [90m12:00:47 AM[39m
 [90m  ├─[39m [2m.output/chrome-mv3/[22m[34mmanifest.json[39m                                         [2m599 B[22m    
 [90m  ├─[39m [2m.output/chrome-mv3/[22m[32mpopup.html[39m                                            [2m404 B[22m    
 [90m  ├─[39m [2m.output/chrome-mv3/[22m[36mbackground.js[39m                                         [2m10.05 kB[22m 
-[90m  ├─[39m [2m.output/chrome-mv3/[22m[36mchunks/popup-qadfzi7C.js[39m                              [2m161.95 kB[22m
-[90m  ├─[39m [2m.output/chrome-mv3/[22m[35massets/popup-L26pejfQ.css[39m                             [2m306.05 kB[22m
+[90m  ├─[39m [2m.output/chrome-mv3/[22m[36mchunks/popup-D-oq5QX0.js[39m                              [2m161.95 kB[22m
+[90m  ├─[39m [2m.output/chrome-mv3/[22m[35massets/popup-D6-1rj4q.css[39m                             [2m306.04 kB[22m
 [90m  ├─[39m [2m.output/chrome-mv3/[22m[34mfonts/bootstrap-icons.woff[39m                            [2m180.29 kB[22m
 [90m  ├─[39m [2m.output/chrome-mv3/[22m[34mfonts/bootstrap-icons.woff2[39m                           [2m134.04 kB[22m
 [90m  ├─[39m [2m.output/chrome-mv3/[22m[34mfonts/DMSans-Bold.woff2[39m                               [2m36.93 kB[22m 
@@ -345,5 +345,5 @@ Run in verbose mode to see all warnings.
 [90m  ├─[39m [2m.output/chrome-mv3/[22m[34mimages/icon_white_on_black.png[39m                        [2m55.89 kB[22m 
 [90m  └─[39m [2m.output/chrome-mv3/[22m[34mimages/icon_white_on_transparent.png[39m                  [2m60.23 kB[22m 
 [36mΣ Total size:[39m 2.19 MB                                                                          
-[32m✔[39m Finished in 2.256 s                                                                                     [90m11:52:14 PM[39m
+[32m✔[39m Finished in 1.625 s                                                                                                                                                                  [90m12:00:47 AM[39m
 ⠙[1G[0K
