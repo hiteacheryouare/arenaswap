@@ -23,3 +23,5 @@ dist/
 # macOS
 .DS_Store
 
+*.log
+.turbo/
