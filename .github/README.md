@@ -3,6 +3,8 @@
 
 **ArenaSwap** (stylized as arenaswap.) is a browser extension that automatically scans the status of sports games and then swaps your tabs automatically so you are always watching the most exciting game.
 
+Think [NFL RedZone](https://www.nfl.com/redzone) but for everything!
+
 > [!WARNING]
 > As of right now, this extension is in an extremely early beta stage. It is not yet available on the Chrome Web Store, and you will need to load it locally to use it. The extension is also currently only designed for desktop Chrome, so it may not work on mobile or other browsers. Use at your own risk, and please report any bugs you find!
 
