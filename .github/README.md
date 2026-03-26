@@ -21,8 +21,7 @@ Think [NFL RedZone](https://www.nfl.com/redzone) but for everything!
 5. If you want to get more granular, you can adjust the sensitiity of the scoring algorith, as well as the cooldown between tab switches.
 
 ## License
-At the moment, we have chosen not to include a license. This means the code is technically proprietary and cannot be used or modified by others without explicit permission from PorkyProductions.
-
+We use the ISC License. See the [LICENSE](../LICENSE) file for more details.
 
 ## Authors
 
