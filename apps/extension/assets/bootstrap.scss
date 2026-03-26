@@ -1,4 +1,5 @@
 // ─── Bootstrap variable overrides ───────────────────────────────────────────
+$prefix: 				  	'as-';
 $primary:                   #F75C03;
 $secondary:                 #2274A5;
 $success:                   #00CC66;
@@ -84,8 +85,8 @@ $bootstrap-icons-font-path: '/fonts';
 
 // ─── Game card ────────────────────────────────────────────────────────────────
 .game-card {
-	background:    #161b22;
-	border:        1px solid #30363d;
+	background:    #ffffff;
+	border:        1px solid #dee2e6;
 	border-radius: 0.5rem;
 	padding:       0.75rem;
 	margin-bottom: 0.5rem;
@@ -155,15 +156,15 @@ $bootstrap-icons-font-path: '/fonts';
 	display:         flex;
 	align-items:     center;
 	justify-content: center;
-	background:      #30363d;
+	background:      #e9ecef;
 	border-radius:   50%;
-	color:           #8b949e;
+	color:           #6c757d;
 }
 
 .game-card__team-name {
 	font-size:   0.7rem;
 	font-weight: 700;
-	color:       #e6edf3;
+	color:       #111827;
 	white-space: nowrap;
 	text-align:  center;
 }
@@ -186,7 +187,7 @@ $bootstrap-icons-font-path: '/fonts';
 	font-size:            1.75rem;
 	font-weight:          700;
 	font-variant-numeric: tabular-nums;
-	color:                #e6edf3;
+	color:                #111827;
 	letter-spacing:       0.02em;
 	line-height:          1;
 }
@@ -194,7 +195,7 @@ $bootstrap-icons-font-path: '/fonts';
 .game-card__clock {
 	font-family:          'Lekton', monospace;
 	font-size:            0.85rem;
-	color:                #8b949e;
+	color:                #374151;
 	font-variant-numeric: tabular-nums;
 	margin-top:           0.15rem;
 }
@@ -228,7 +229,7 @@ $bootstrap-icons-font-path: '/fonts';
 
 .excitement-track {
 	height:        3px;
-	background:    #30363d;
+	background:    #dee2e6;
 	border-radius: 2px;
 	overflow:      hidden;
 }
@@ -238,7 +239,7 @@ $bootstrap-icons-font-path: '/fonts';
 	border-radius: 2px;
 	transition:    width 0.5s ease;
 
-	&.level-low  { background: #30363d; }
+	&.level-low  { background: #dee2e6; }
 	&.level-mid  { background: #F1C40F; }
 	&.level-high { background: #F75C03; }
 	&.level-peak { background: #D90368; }
@@ -246,7 +247,7 @@ $bootstrap-icons-font-path: '/fonts';
 
 .excitement-reason {
 	font-size:  0.65rem;
-	color:      #8b949e;
+	color:      #6c757d;
 	margin-top: 0.2rem;
 }
 
