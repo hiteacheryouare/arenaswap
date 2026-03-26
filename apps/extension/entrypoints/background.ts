@@ -84,7 +84,7 @@ export default defineBackground(() => {
 			await browser.notifications.create({
 				type: 'basic',
 				iconUrl: '/icon/128.png',
-				title: `🏀 ArenaSwap → ${getGameLabel(best.gameId)}`,
+				title: `ArenaSwap → ${getGameLabel(best.gameId)}`,
 				message: best.reason,
 			});
 		}
