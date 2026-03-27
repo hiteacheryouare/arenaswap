@@ -9,7 +9,7 @@ interface Props {
 }
 
 const SPORT_LABELS: Record<string, string> = { nba: 'NBA', ncaab: 'NCAA Basketball', nfl: 'NFL', ncaaf: 'NCAA Football', nhl: 'NHL', mlb: 'MLB' };
-const SPORT_ORDER: Record<string, number> = { nba: 0, ncaab: 1, nfl: 2, ncaaf: 3, nhl: 4, mlb: 5 };
+const SPORT_ORDER: Record<string, number> = { nba: 2, ncaab: 6, nfl: 4, ncaaf: 5, nhl: 3, mlb: 1 };
 
 const groupBySport = (games: Game[]) =>
 	[...games]
