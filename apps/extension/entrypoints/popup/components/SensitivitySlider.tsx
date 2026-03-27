@@ -30,7 +30,7 @@ const SensitivitySlider = ({ value, onChange }: Props) => (
 		/>
 		<div className='d-flex justify-content-between'>
 			<span className='sensitivity-label'>1</span>
-			<span className='sensitivity-label'>5</span>
+			<span className='sensitivity-label'>7</span>
 		</div>
 	</div>
 );
