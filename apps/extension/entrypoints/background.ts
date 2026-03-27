@@ -100,7 +100,7 @@ export default defineBackground(() => {
 		}
 
 		const liveGames = games.filter(g => g.status === 'in');
-		const scores = liveGames.map(g => computeExcitement(g, history.get(g.id) ?? [], prefs));
+		const scores = liveGames.map(g => computeExcitement(g, history.get(g.id) ?? []));
 		currentScores = scores;
 		updateHistory(liveGames);
 

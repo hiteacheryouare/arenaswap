@@ -1,3 +1,5 @@
+export type SportId = 'nba' | 'nhl' | 'mlb' | 'nfl' | 'ncaab' | 'ncaaf';
+
 export interface Team {
 	id: string;
 	name: string;
@@ -8,6 +10,7 @@ export interface Team {
 
 export interface Game {
 	id: string;
+	sport: SportId;
 	homeTeam: Team;
 	awayTeam: Team;
 	venueName?: string;

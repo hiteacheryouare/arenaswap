@@ -83,7 +83,8 @@ const GameCard = ({ game, excitementResult, tabTitle }: Props) => {
 		);
 	}
 
-	const isOt = game.period >= 3;
+	const REGULAR_PERIODS: Partial<Record<string, number>> = { nba: 4, nfl: 4, ncaaf: 4, nhl: 3, mlb: 9, ncaab: 2 };
+	const isOt = game.period > (REGULAR_PERIODS[game.sport] ?? 2);
 
 	return (
 		<div className={`game-card${isOt ? ' is-ot' : ''}`}>

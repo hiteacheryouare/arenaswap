@@ -1,5 +1,8 @@
-import { ESPN_SCOREBOARD_URL } from './constants';
-import type { Game } from './types';
+import { SPORT_CONFIGS } from './constants';
+import type { SportConfig } from './constants';
+import type { Game, SportId } from './types';
+
+const ESPN_BASE = 'https://site.api.espn.com/apis/site/v2/sports';
 
 const parseClockToSeconds = (clock: string): number => {
 	const parts = clock.split(':');
@@ -14,7 +17,7 @@ const parseStatus = (state: string): Game['status'] => {
 	return 'post';
 };
 
-const parseEvent = (event: any): Game => {
+const parseEvent = (event: any, sport: SportId): Game => {
 	const comp = event.competitions[0];
 	const home = comp.competitors.find((c: any) => c.homeAway === 'home');
 	const away = comp.competitors.find((c: any) => c.homeAway === 'away');
@@ -23,6 +26,7 @@ const parseEvent = (event: any): Game => {
 
 	return {
 		id: event.id,
+		sport,
 		homeTeam: {
 			id: home.id,
 			name: home.team.displayName,
@@ -39,26 +43,34 @@ const parseEvent = (event: any): Game => {
 		},
 		venueName: comp.venue?.fullName ?? comp.venue?.name ?? undefined,
 		period: status.period ?? 1,
-		clockSeconds: parseClockToSeconds(status.displayClock ?? '20:00'),
+		clockSeconds: parseClockToSeconds(status.displayClock ?? '0:00'),
 		status: state,
 		startTime: state === 'pre' ? event.date : undefined,
 	};
 };
 
-// Returns all live + upcoming games (excludes finished games)
-export const fetchGames = async (): Promise<Game[]> => {
-	const res = await fetch(ESPN_SCOREBOARD_URL, {
+const fetchSportGames = async (config: SportConfig): Promise<Game[]> => {
+	const url = `${ESPN_BASE}/${config.espnPath}/scoreboard`;
+	const res = await fetch(url, {
 		headers: {
 			'User-Agent': navigator.userAgent,
 			'Accept': 'application/json',
 		},
 	});
-	if (!res.ok) throw new Error(`ESPN API returned ${res.status}`);
+	if (!res.ok) throw new Error(`ESPN ${config.id} API returned ${res.status}`);
 	const data = await res.json();
 
 	return (data.events ?? [])
 		.filter((e: any) => e.status?.type?.state !== 'post')
-		.map(parseEvent);
+		.map((e: any) => parseEvent(e, config.id));
+};
+
+// Returns all live + upcoming games across all supported sports (excludes finished games)
+export const fetchGames = async (): Promise<Game[]> => {
+	const results = await Promise.allSettled(SPORT_CONFIGS.map(fetchSportGames));
+	return results
+		.filter((r): r is PromiseFulfilledResult<Game[]> => r.status === 'fulfilled')
+		.flatMap(r => r.value);
 };
 
 // Convenience: only live games (for switching logic)
