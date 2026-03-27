@@ -8,8 +8,21 @@ Think [NFL RedZone](https://www.nfl.com/redzone) but for everything!
 > [!WARNING]
 > As of right now, this extension is in an extremely early beta stage. It is not yet available on the Chrome Web Store, and you will need to load it locally to use it. The extension is also currently only designed for desktop Chrome, so it may not work on mobile or other browsers. Use at your own risk, and please report any bugs you find!
 
-> [!NOTE]
-> The extension currently only supports NCAA Men's Basketball. In the near term we plan to add support for many other sports, as well as cross-sport comparisons.
+
+## The Story
+Inspired by [this TikTok](https://www.tiktok.com/@gfedgocrazy/video/7620585631143496974?is_from_webapp=1&sender_device=pc&web_id=7621724919189866014) from one of my favorite TikTokers, [@gfedgocrazy](https://www.tiktok.com/@gfedgocrazy), I realized that there was a gap in the market for optimizing the way you watch sports.
+
+I was also inspired by NFL RedZone, which is a channel that covers the most exicing plays and games all day on every NFL Sunday of the regular season.
+
+These things in mind, I basically created ArenaSwap to be like a RedZone for all sports, and to be the ultimate tool for sports fans who want to stay on top of all the action without having to constantly switch between tabs or channels manually (yuck!).
+
+## How it Works
+ArenaSwap sits on top of the public ESPN scoreboard API. From your browser, it calls the API every 15 seconds to get the latest game status. It then calculates an "excitement score" for each game based on a variety of factors, such as the current score, time remaining, and momentum shifts. 
+
+ArenaSwap operates on the "bring your own tabs" model. This means you have to provide the means for actually watching each game. Once you have them open in seperate tabs, use the settings panel to assign each tab to a game. Then ArenaSwap will automatically switch to the tab of the most exciting game based on our scoring algorithm.
+
+In the settings, you can also adjust the sensitivity of the swaps, as well as the minimum time to wait before switching again.
+
 
 ## How to Use
 1. We are not on the Chrome Web Store yet, but you can load the extension locally:
