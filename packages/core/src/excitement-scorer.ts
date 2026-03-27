@@ -79,6 +79,9 @@ export const computeExcitement = (
 	game: Game,
 	history: ScoreSnapshot[],
 ): ExcitementResult => {
+	if (game.intermission)
+		return { gameId: game.id, total: 0, closeness: 0, lateGame: 0, momentum: 0, reason: '' };
+
 	const config = SPORT_CONFIG_MAP[game.sport] ?? SPORT_CONFIG_MAP['ncaab'];
 
 	const closeness = getCloseness(game, config);

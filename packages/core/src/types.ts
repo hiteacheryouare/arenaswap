@@ -18,6 +18,8 @@ export interface Game {
 	clockSeconds: number;
 	status: 'pre' | 'in' | 'post';
 	startTime?: string;
+	/** True while the game is in halftime or between-period intermission */
+	intermission?: boolean;
 }
 
 export interface ScoreSnapshot {

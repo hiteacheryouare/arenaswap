@@ -46,6 +46,7 @@ const parseEvent = (event: any, sport: SportId): Game => {
 		clockSeconds: parseClockToSeconds(status.displayClock ?? '0:00'),
 		status: state,
 		startTime: state === 'pre' ? event.date : undefined,
+		intermission: /HALFTIME|END_PERIOD|INTERMISSION/i.test(status.type?.name ?? ''),
 	};
 };
 
