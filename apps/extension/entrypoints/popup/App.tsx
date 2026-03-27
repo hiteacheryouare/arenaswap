@@ -136,6 +136,8 @@ export default () => {
 		return `Tab #${reg.tabId}`;
 	};
 
+	const oneWeekFromNow = Date.now() + 7 * 24 * 60 * 60 * 1000;
+
 	if (view === 'setup') {
 		return (
 			<div style={{ width: 320, minHeight: 200, padding: '0.75rem', background: '#0d1117', color: '#e6edf3' }}>
@@ -173,7 +175,7 @@ export default () => {
 					<TabSetupRow
 						key={tab.id}
 						tab={tab}
-						games={games}
+						games={games.filter(g => !g.startTime || new Date(g.startTime).getTime() <= oneWeekFromNow)}
 						registry={registry}
 						onChange={onRegistryChange}
 					/>
@@ -183,7 +185,6 @@ export default () => {
 	}
 
 	const liveGames = games.filter(g => g.status === 'in');
-	const oneWeekFromNow = Date.now() + 7 * 24 * 60 * 60 * 1000;
 	const upcomingGames = games
 		.filter(g => g.status === 'pre')
 		.filter(g => !g.startTime || new Date(g.startTime).getTime() <= oneWeekFromNow)
