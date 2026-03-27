@@ -10,6 +10,18 @@ import TabSetupRow from './components/TabSetupRow';
 
 type View = 'main' | 'setup';
 
+const SPORT_ORDER: Record<string, number> = { nba: 0, ncaab: 1, nfl: 2, ncaaf: 3, nhl: 4, mlb: 5 };
+const bySport = (a: Game, b: Game) => (SPORT_ORDER[a.sport] ?? 99) - (SPORT_ORDER[b.sport] ?? 99);
+
+const SPORT_LABELS: Record<string, string> = { nba: 'NBA', ncaab: 'NCAA Basketball', nfl: 'NFL', ncaaf: 'NCAA Football', nhl: 'NHL', mlb: 'MLB' };
+
+const groupBySport = (games: Game[]) =>
+	games.reduce<{ sport: string; games: Game[] }[]>((groups, game) => {
+		const last = groups[groups.length - 1];
+		if (last?.sport === game.sport) { last.games.push(game); return groups; }
+		return [...groups, { sport: game.sport, games: [game] }];
+	}, []);
+
 const defaultPrefs: UserPreferences = {
 	sensitivity: DEFAULT_SENSITIVITY,
 	cooldownSeconds: DEFAULT_COOLDOWN_SECS,
@@ -171,11 +183,15 @@ export default () => {
 	}
 
 	const liveGames = games.filter(g => g.status === 'in');
-	const upcomingGames = games.filter(g => g.status === 'pre');
+	const oneWeekFromNow = Date.now() + 7 * 24 * 60 * 60 * 1000;
+	const upcomingGames = games
+		.filter(g => g.status === 'pre')
+		.filter(g => !g.startTime || new Date(g.startTime).getTime() <= oneWeekFromNow)
+		.sort(bySport);
 
 	const registeredGameIds = new Set(registry.map(r => r.gameId));
-	const assignedLiveGames = liveGames.filter(g => registeredGameIds.has(g.id));
-	const unassignedLiveGames = liveGames.filter(g => !registeredGameIds.has(g.id));
+	const assignedLiveGames = liveGames.filter(g => registeredGameIds.has(g.id)).sort(bySport);
+	const unassignedLiveGames = liveGames.filter(g => !registeredGameIds.has(g.id)).sort(bySport);
 
 	return (
 		<div style={{ width: 320, minHeight: 200, padding: '0.75rem', background: '#0d1117', color: '#e6edf3' }}>
@@ -221,13 +237,18 @@ export default () => {
 			{!isLoading && assignedLiveGames.length > 0 && (
 				<div>
 					<div className='section-title'>Active Tabs</div>
-					{assignedLiveGames.map(game => (
-						<GameCard
-							key={game.id}
-							game={game}
-							excitementResult={scores.find(s => s.gameId === game.id)}
-							tabTitle={getTabTitle(game.id)}
-						/>
+					{groupBySport(assignedLiveGames).map(({ sport, games }) => (
+						<div key={sport}>
+							<div className='section-label mt-1'>{SPORT_LABELS[sport] ?? sport.toUpperCase()}</div>
+							{games.map(game => (
+								<GameCard
+									key={game.id}
+									game={game}
+									excitementResult={scores.find(s => s.gameId === game.id)}
+									tabTitle={getTabTitle(game.id)}
+								/>
+							))}
+						</div>
 					))}
 				</div>
 			)}
@@ -235,12 +256,17 @@ export default () => {
 			{!isLoading && unassignedLiveGames.length > 0 && (
 				<div className='mt-2'>
 					<div className='section-title'>Other Games</div>
-					{unassignedLiveGames.map(game => (
-						<GameCard
-							key={game.id}
-							game={game}
-							excitementResult={scores.find(s => s.gameId === game.id)}
-						/>
+					{groupBySport(unassignedLiveGames).map(({ sport, games }) => (
+						<div key={sport}>
+							<div className='section-label mt-1'>{SPORT_LABELS[sport] ?? sport.toUpperCase()}</div>
+							{games.map(game => (
+								<GameCard
+									key={game.id}
+									game={game}
+									excitementResult={scores.find(s => s.gameId === game.id)}
+								/>
+							))}
+						</div>
 					))}
 				</div>
 			)}
@@ -261,13 +287,18 @@ export default () => {
 			{!isLoading && upcomingGames.length > 0 && (
 				<div className='mt-2'>
 					<div className='section-title'>Up Next</div>
-					{upcomingGames.map(game => (
-						<GameCard
-							key={game.id}
-							game={game}
-							excitementResult={undefined}
-							tabTitle={getTabTitle(game.id)}
-						/>
+					{groupBySport(upcomingGames).map(({ sport, games }) => (
+						<div key={sport}>
+							<div className='section-label mt-1'>{SPORT_LABELS[sport] ?? sport.toUpperCase()}</div>
+							{games.map(game => (
+								<GameCard
+									key={game.id}
+									game={game}
+									excitementResult={undefined}
+									tabTitle={getTabTitle(game.id)}
+								/>
+							))}
+						</div>
 					))}
 				</div>
 			)}
