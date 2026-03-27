@@ -63,7 +63,7 @@ export class MockGameSimulator {
 			{
 				id: 'mock-3',
 				sport: 'nhl',
-				homeTeam: { id: '4', name: 'Philadelphia Flyers', abbreviation: 'PHI', score: 2, logo: `${ESPN_CDN}/nhl/500/4.png` },
+				homeTeam: { id: '15', name: 'Philadelphia Flyers', abbreviation: 'PHI', score: 2, logo: `${ESPN_CDN}/nhl/500/15.png` },
 				awayTeam: { id: '9', name: 'Pittsburgh Penguins', abbreviation: 'PIT', score: 1, logo: `${ESPN_CDN}/nhl/500/9.png` },
 				venueName: 'Wells Fargo Center',
 				period: 3, clockSeconds: 412, status: 'in',

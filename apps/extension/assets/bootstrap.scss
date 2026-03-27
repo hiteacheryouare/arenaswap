@@ -200,6 +200,20 @@ $bootstrap-icons-font-dir: '/fonts';
 	margin-top:           0.15rem;
 }
 
+.game-card__period {
+	font-family: 'Lekton', monospace;
+	font-size:   0.7rem;
+	color:       #6c757d;
+	margin-top:  0.1rem;
+}
+
+.game-card__venue {
+	font-size:   0.6rem;
+	color:       #6c757d;
+	text-align:  center;
+	margin-top:  0.35rem;
+}
+
 // ─── Tab assignment label ────────────────────────────────────────────────────
 .game-card__tab-label {
 	font-size:   0.65rem;

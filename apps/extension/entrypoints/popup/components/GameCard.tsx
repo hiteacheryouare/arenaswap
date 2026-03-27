@@ -7,10 +7,18 @@ interface Props {
 	tabTitle?: string;
 }
 
-const formatPeriod = (period: number): string => {
-	if (period === 1) return '1H';
-	if (period === 2) return '2H';
-	return `OT${period - 2}`;
+const REGULAR_PERIODS: Record<string, number> = { nba: 4, nfl: 4, ncaaf: 4, nhl: 3, mlb: 9, ncaab: 2 };
+
+const formatPeriod = (period: number, sport: string): string => {
+	const regular = REGULAR_PERIODS[sport] ?? 2;
+	if (period > regular) {
+		if (sport === 'nhl') return 'OT';
+		return `OT${period - regular}`;
+	}
+	if (sport === 'ncaab') return period === 1 ? '1H' : '2H';
+	if (sport === 'nhl') return `P${period}`;
+	if (sport === 'mlb') return `Inn ${period}`;
+	return `Q${period}`;
 };
 
 const formatClock = (seconds: number): string => {
@@ -74,6 +82,9 @@ const GameCard = ({ game, excitementResult, tabTitle }: Props) => {
 					</div>
 					<TeamColumn team={game.homeTeam} />
 				</div>
+				{game.venueName && (
+					<div className='game-card__venue'>{game.venueName}</div>
+				)}
 				{tabTitle && (
 					<div className='game-card__tab-label'>
 						Assigned to tab: {tabTitle}
@@ -83,7 +94,6 @@ const GameCard = ({ game, excitementResult, tabTitle }: Props) => {
 		);
 	}
 
-	const REGULAR_PERIODS: Partial<Record<string, number>> = { nba: 4, nfl: 4, ncaaf: 4, nhl: 3, mlb: 9, ncaab: 2 };
 	const isOt = game.period > (REGULAR_PERIODS[game.sport] ?? 2);
 
 	return (
@@ -104,12 +114,21 @@ const GameCard = ({ game, excitementResult, tabTitle }: Props) => {
 						<span className='game-card__score'>{game.awayTeam.score}</span>
 						<span className='game-card__score'>{game.homeTeam.score}</span>
 					</div>
-					<span className='game-card__clock'>
-						{formatClock(game.clockSeconds)}
+					{game.sport !== 'mlb' && (
+						<span className='game-card__clock'>
+							{formatClock(game.clockSeconds)}
+						</span>
+					)}
+					<span className='game-card__period'>
+						{formatPeriod(game.period, game.sport)}
 					</span>
 				</div>
 				<TeamColumn team={game.homeTeam} />
 			</div>
+
+			{game.venueName && (
+				<div className='game-card__venue'>{game.venueName}</div>
+			)}
 
 			{/* Tab assignment */}
 			{tabTitle && (
