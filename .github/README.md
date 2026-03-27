@@ -39,9 +39,3 @@ We use the ISC License. See the [LICENSE](../LICENSE) file for more details.
 ## Authors
 
 Primary Author: [Ryan Mullin](https://github.com/hiteacheryouare)
-
-ArenaSwap is developed by PorkyProductions.
-
-![hedgehog logo](https://avatars.githubusercontent.com/u/82683662?s=200&v=4)
-
-![arenaswap logo](../apps/extension/public/images/full_text_compressed_black_on_white.png)
