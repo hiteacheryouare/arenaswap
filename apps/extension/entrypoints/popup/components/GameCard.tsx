@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { Tabs } from 'webextension-polyfill';
+import { SCORE_MAX_TOTAL } from '@arenaswap/core/constants';
 import type { ExcitementResult, Game, TabRegistration, Team } from '@arenaswap/core/types';
 import TabAssignSelect from './TabAssignSelect';
 
@@ -35,6 +36,15 @@ const formatClock = (seconds: number): string => {
 const formatStartTime = (iso: string): string => {
 	const d = new Date(iso);
 	return d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+};
+
+const powerScoreColor = (score: number, max: number): string => {
+	const ratio = Math.min(score / max, 1);
+	// #8b949e (139,148,158) → #F75C03 (247,92,3)
+	const r = Math.round(139 + (247 - 139) * ratio);
+	const g = Math.round(148 + (92 - 148) * ratio);
+	const b = Math.round(158 + (3 - 158) * ratio);
+	return `rgb(${r},${g},${b})`;
 };
 
 const LOGO_SIZE = 56;
@@ -105,12 +115,20 @@ const GameCard = ({ game, excitementResult, openTabs, registry, onRegistryChange
 
 	return (
 		<div className={`game-card${isOt ? ' is-ot' : ''}`}>
-			{/* LIVE badge */}
+			{/* LIVE badge + PowerScore */}
 			<div className='game-card__header'>
 				<div className='game-card__live-badge'>
 					<span className='live-dot' />
 					LIVE
 				</div>
+				{excitementResult && (
+					<div
+						className='game-card__powerscore'
+						style={{ backgroundColor: powerScoreColor(excitementResult.total, SCORE_MAX_TOTAL) }}
+					>
+						PowerScore: {excitementResult.total} / {SCORE_MAX_TOTAL}
+					</div>
+				)}
 			</div>
 
 			{/* Teams + scores */}
