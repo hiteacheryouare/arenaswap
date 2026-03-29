@@ -110,7 +110,7 @@ export default defineBackground(() => {
 
 		if (!allowTabSwitch || !prefs.enabled || liveGames.length === 0) return;
 
-		const [activeTab] = await browser.tabs.query({ active: true, currentWindow: true });
+		const [activeTab] = await browser.tabs.query({ active: true, lastFocusedWindow: true });
 		const activeReg = tabRegistry.find(r => r.tabId === activeTab?.id);
 		const activeScore = scores.find(s => s.gameId === activeReg?.gameId)?.total ?? 0;
 
