@@ -1,160 +1,291 @@
 # ArenaSwap Contribution Guidelines
 
-These guidelines define the standards for contributing to the ArenaSwap monorepo:
-- `packages/core` (excitement scoring engine + ESPN client)
-- `apps/extension` (WXT + React browser extension)
 
-Non-compliant contributions may be rejected.
+This document defines the mandatory standards for contributing to the ArenaSwap monorepo, including:
+- `packages/core` the core engine for ArenaSwap
+- `apps/extension` The WXT extension built for multiple browsers
 
-## Repository Architecture
+This project operates under a centralized governance model, strict architectural standards, a controlled branching system (feature/* → dev → Stable), and explicit formatting and dependency rules.
 
-ArenaSwap is organized as:
+Non-compliant contributions will be rejected.
 
-```text
-/
-├── apps/extension
-├── packages/core
-├── turbo.json
-└── package.json
-```
+Method / Reasoning
 
-Turbo build/test/typecheck tasks are run from the repository root.
+These guidelines exist to:
+- Preserve long-term extensibility
+- Protect production stability
+- Maintain deterministic Turbo builds
+- Prevent architectural decay
+- Enforce formatting and style uniformity
+- Protect Firebase-hosted production deployments
+- Safeguard the integrity of the published demotivator npm package
+
+This is not a consensus-driven repository. Final authority rests with maintainers.
+
 
 ## Governance Model
 
-This repository is maintainer-governed.
+This repository operates under centralized maintainership.
+- **Primary Maintainer:** Ryan Mullin
 
-Maintainers retain final authority on:
+Maintainers retain unilateral authority over:
 - Merge approvals
 - Branch protections
 - Release timing
-- Access control
-- Policy updates
+- npm publishing
+- Firebase deployment
+- Contributor access
 
 Contribution does not grant governance rights.
 
-## Branching & PR Policy
+## Branching Policy (Mandatory)
 
-### Branch hierarchy
-- `mega` → integration/stable branch
-- `feature/*`, `fix/*`, `refactor/*` → contribution branches
+### Branch Hierarchy
 
-### Required flow
+The repository uses a controlled branching structure:
+- Stable → Production-ready branch
+- dev → Integration branch
+- `feature/*` , `fix/*` , `refactor/*` → Individual development branches
 
-All changes should follow:
 
-`feature/* (or fix/*) → mega`
+### Required Merge Flow
 
-### Feature branch expectations
-- Start from latest `mega`
-- Keep scope focused
-- Avoid unrelated refactors
-- Name branches clearly (`feature/popup-score-legend`, `fix/tab-switch-loop`)
+All work must follow:
+
+`feature/* → dev → Stable`
+
+Direct merges into Stable are prohibited.
+
+Pull Requests must target dev.
+
+
+### Feature Branch Rules
+
+Feature branches must:
+- Be created from dev
+- Be singular in scope
+- Avoid unrelated changes
+- Remain focused and clean
+
+Naming examples:
+
+- `feature/add-more-sports`
+- `fix/espn-broke`
+- `refactor/ui-refactor`
+
+
+### Promotion to Stable
+
+dev may only be merged into Stable when:
+- Lint passes
+- Type checking passes
+- Full Turbo build succeeds
+- Manual QA checklist completed
+- No runtime regressions
+- No Firebase rule regressions
+- No performance degradation
+- No architectural violations
+
+Promotion is typically performed solely by Ryan Mullin.
+
+This is not a voting process.
+
+
+### Emergency Policy
+
+If Stable is compromised:
+- Immediate revert
+- Root cause identification
+- Patch in dev
+- Re-validation
+- Controlled re-promotion
+
+Hotfix authority remains with maintainers.
+
 
 ## Development Setup
 
-Prerequisites:
-- Node.js 25+
-- npm 10+
+Prerequisites
+- Node 18+ (25 preferred)
+- npm
+- No global installs unless unavoidable
 
-Install:
+Install
 
 ```bash
 npm install
 ```
 
-Core commands (root):
+Development (Turbo)
 
 ```bash
 npm run dev
-npm run typecheck
-npm run test
-npm run build
 ```
 
-Workspace commands:
+## Formatting & Code Standards (Non-Negotiable)
 
-```bash
-npm run dev --workspace @arenaswap/extension
-npm run build --workspace @arenaswap/core
-npm run test --workspace @arenaswap/core
-npm run test:unit --workspace @arenaswap/core
-npm run test:e2e --workspace @arenaswap/core
-```
+Formatting is enforced via ESLint at the repository root.
 
-## Code Standards
-
-Formatting and style should follow repository conventions:
+Mandatory rules:
 - Tabs for indentation
-- Single quotes
+- CRLF line endings
+- Single quotes '
 - Semicolons required
-- camelCase for identifiers and utility file names
-- Prefer small, purpose-focused modules
+- camelCase naming for all identifiers
+- camelCase file names
 
-Function policy:
-- Prefer arrow functions for new code
-- Avoid large all-in-one modules
-
-## Package-Specific Standards
-
-### `packages/core`
-- Keep logic deterministic and testable.
-- Avoid browser-only APIs.
-- Keep exported types stable and well-scoped.
-- Place parsing/scoring logic in reusable helpers.
-
-### `apps/extension`
-- Keep popup UI responsive and readable.
-- Preserve compatibility with extension APIs and WXT conventions.
-- Avoid hidden behavior that switches tabs without visible user control.
-- Keep user preference storage explicit (`sync`, `session`, `local` as intended).
-
-## Dependency Policy
-
-Use project-scoped dependencies only.
+## Function Declaration Policy
 
 Allowed:
-- Workspace-local npm dependencies
 
-Avoid:
-- Unnecessary dependency additions
-- Remote runtime imports
-- Tooling bloat without clear value
+```js
+const myFunction = () => {
+	// body
+};
 
-## Testing & Validation Requirements
-
-Before opening a PR, run:
-
-```bash
-npm run typecheck
-npm run test
-npm run build
+export default () => {
+	// component
+};
 ```
 
-If any check fails, include context in the PR and explain why.
+Forbidden:
+
+```js
+function myFunction() {}
+export default function MyComponent() {}
+``` 
+
+Arrow functions only.
+
+## Web Application Standards (apps/web)
+
+### Framework
+- React
+- TypeScript for complex components
+- JavaScript for simple reusable components
+
+### Component Limits
+- Maximum 200 lines per component
+- Extract logic to /src/utils
+- Separate data for `.map()` blocks
+- Keep components maintainable
+
+
+### Styling Policy (Mandatory)
+- Bootstrap → structural components only
+- TailwindCSS → utility classes
+- Dark mode support required
+- .scss only (no .sass)
+- No raw CSS except global overrides
+
+### Prohibited:
+- External UI libraries (MUI, Chakra, shadcn, headlessui, etc.)
+- Alternative CSS frameworks
+- Custom component libraries
+
+
+## Dependency Philosophy
+
+Local-first, project-scoped dependency management only.
+
+Allowed:
+- Local npm installs
+- Tangible node_modules
+
+Prohibited:
+- CDN imports
+- URL-based package imports
+- Forced remote coupling
+- Global-only dependency reliance
+
+> [!WARNING]
+If it cannot be deleted with rm -rf, it does not belong here.
+
+
+## Testing Policy
+
+This project uses manual testing.
+
+Do not introduce:
+- Jest
+- Vitest
+- Cypress
+- Playwright
+- Any testing framework
+
+If a change breaks functionality:
+- Revert
+- Attempt alternative solution
+- Keep it simple
 
 ## Pull Request Requirements
 
-PRs must:
-- Target `mega`
-- Be focused in scope
-- Include clear summary and rationale
-- Include screenshots/video for popup UI changes when relevant
-- Note any API changes in `@arenaswap/core`
+All PRs must:
+- Target `dev`
+- Pass lint
+- Pass typeCheck
+- Build successfully
+- Remain focused in scope
+- Avoid opportunistic refactors
 
-Maintainers may request changes or close PRs that do not align with project direction.
+PRs may be closed without merge.
 
-## Commit Guidance
+Maintainer decisions are final.
 
-Use concise, descriptive commit titles.
 
-In commit bodies (when useful), include:
-- What changed
-- Why it changed
-- Any tradeoffs or follow-up work
+## Commit Policy
 
-## Security & Responsible Disclosure
+Commit frequently.
 
-Do not publicly post exploitable extension/browser security details before maintainers have a chance to respond.
+### Commit Title
+- Short
+- Clear
+- Emoji permitted
 
-Report security-sensitive issues privately through maintainer contact channels when available.
+### Commit Body
+
+Must be:
+- Detailed
+- Explicit
+- Long-form
+- Reference issues, PRs, contributors, files changed
+
+Superficial commit messages will be rejected.
+
+
+## Prohibited Contributions
+
+The following will be rejected:
+- Overengineering
+- Magic abstractions
+- Dependency creep
+- Testing frameworks
+- External UI libraries
+- Raw CSS overuse
+- Hardcoded architecture
+- ESLint violations
+- Breaking dark mode
+- Direct Stable merges
+
+Repeated violations may result in access removal.
+
+
+## Stability Philosophy
+- Stable protects production users and npm consumers.
+- dev absorbs risk.
+- Feature branches isolate change.
+- Architecture is preserved deliberately.
+
+This structure is enforced.
+
+
+## Final Authority Clause
+
+ArenaSwap and its maintainers reserve full discretion over:
+- Branch protections
+- Merge approvals
+- Release timing
+- Contributor access
+- Policy modification
+
+Participation in this repository constitutes acceptance of these guidelines.
