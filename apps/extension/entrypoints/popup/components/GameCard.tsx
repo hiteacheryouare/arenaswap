@@ -1,10 +1,15 @@
 import { useState } from 'react';
-import type { ExcitementResult, Game, Team } from '@arenaswap/core/types';
+import type { Tabs } from 'webextension-polyfill';
+import type { ExcitementResult, Game, TabRegistration, Team } from '@arenaswap/core/types';
+import TabAssignSelect from './TabAssignSelect';
 
 interface Props {
 	game: Game | undefined;
 	excitementResult: ExcitementResult | undefined;
-	tabTitle?: string;
+	openTabs: Tabs.Tab[];
+	registry: TabRegistration[];
+	onRegistryChange: (updated: TabRegistration[]) => void;
+	formatTabLabel: (tab: Tabs.Tab) => string;
 }
 
 const REGULAR_PERIODS: Record<string, number> = { nba: 4, nfl: 4, ncaaf: 4, nhl: 3, mlb: 9, ncaab: 2 };
@@ -64,7 +69,7 @@ const TeamColumn = ({ team }: { team: Team }) => (
 	</div>
 );
 
-const GameCard = ({ game, excitementResult, tabTitle }: Props) => {
+const GameCard = ({ game, excitementResult, openTabs, registry, onRegistryChange, formatTabLabel }: Props) => {
 	if (!game) return null;
 
 	if (game.status === 'pre') {
@@ -85,11 +90,13 @@ const GameCard = ({ game, excitementResult, tabTitle }: Props) => {
 				{game.venueName && (
 					<div className='game-card__venue'>{game.venueName}</div>
 				)}
-				{tabTitle && (
-					<div className='game-card__tab-label'>
-						Assigned to tab: {tabTitle}
-					</div>
-				)}
+				<TabAssignSelect
+					gameId={game.id}
+					openTabs={openTabs}
+					registry={registry}
+					onChange={onRegistryChange}
+					formatTabLabel={formatTabLabel}
+				/>
 			</div>
 		);
 	}
@@ -131,11 +138,13 @@ const GameCard = ({ game, excitementResult, tabTitle }: Props) => {
 			)}
 
 			{/* Tab assignment */}
-			{tabTitle && (
-				<div className='game-card__tab-label'>
-					Assigned to tab: {tabTitle}
-				</div>
-			)}
+			<TabAssignSelect
+				gameId={game.id}
+				openTabs={openTabs}
+				registry={registry}
+				onChange={onRegistryChange}
+				formatTabLabel={formatTabLabel}
+			/>
 		</div>
 	);
 };

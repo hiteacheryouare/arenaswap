@@ -6,8 +6,6 @@ import type { ExcitementResult, Game, TabRegistration, UserPreferences } from '@
 import GameCard from './components/GameCard';
 import SensitivitySlider from './components/SensitivitySlider';
 import CooldownSlider from './components/CooldownSlider';
-import TabSetupRow from './components/TabSetupRow';
-
 type View = 'main' | 'setup';
 
 const SPORT_ORDER: Record<string, number> = { nba: 0, ncaab: 1, nfl: 2, ncaaf: 3, nhl: 4, mlb: 5 };
@@ -33,6 +31,20 @@ type BackgroundState = { games: Game[]; scores: ExcitementResult[] };
 const fetchState = async (forceRefresh = false): Promise<BackgroundState> => {
 	const state = await browser.runtime.sendMessage({ type: 'GET_STATE', forceRefresh });
 	return (state as BackgroundState) ?? { games: [], scores: [] };
+};
+
+const formatTabLabel = (tab: Tabs.Tab, allTabs: Tabs.Tab[]): string => {
+	const title = tab.title ?? '';
+	if (!title) return `Tab #${tab.id}`;
+	const duplicates = allTabs.filter(t => t.title === title);
+	if (duplicates.length <= 1) return title.slice(0, 35);
+	try {
+		const pathname = new URL(tab.url ?? '').pathname;
+		const truncated = pathname.length > 25 ? pathname.slice(0, 22) + '...' : pathname;
+		return `${title.slice(0, 25)} (${truncated})`;
+	} catch {
+		return `${title.slice(0, 30)} (#${tab.id})`;
+	}
 };
 
 export default () => {
@@ -72,6 +84,7 @@ export default () => {
 		browser.storage.local.get({ demoMode: false }).then(r => {
 			setDemoMode(r.demoMode as boolean);
 		});
+		loadOpenTabs();
 
 		// Listen for ongoing updates from background
 		const handleMessage = (msg: any) => {
@@ -122,19 +135,7 @@ export default () => {
 		browser.runtime.sendMessage({ type: 'UPDATE_REGISTRY', tabRegistry: updated });
 	};
 
-	const openSetup = async () => {
-		await loadOpenTabs();
-		setView('setup');
-	};
-
-	/** Find the tab title for a registered game */
-	const getTabTitle = (gameId: string): string | undefined => {
-		const reg = registry.find(r => r.gameId === gameId);
-		if (!reg) return undefined;
-		const tab = openTabs.find(t => t.id === reg.tabId);
-		if (tab?.title) return tab.title.slice(0, 30);
-		return `Tab #${reg.tabId}`;
-	};
+	const openSetup = () => setView('setup');
 
 	const oneWeekFromNow = Date.now() + 7 * 24 * 60 * 60 * 1000;
 
@@ -166,20 +167,6 @@ export default () => {
 						/>
 					</div>
 				</div>
-
-				<div className='section-label mt-3'>Assign tabs to games</div>
-				{openTabs.length === 0 && (
-					<p className='sensitivity-label mt-2'>No open tabs found.</p>
-				)}
-				{openTabs.map(tab => (
-					<TabSetupRow
-						key={tab.id}
-						tab={tab}
-						games={games.filter(g => !g.startTime || new Date(g.startTime).getTime() <= oneWeekFromNow)}
-						registry={registry}
-						onChange={onRegistryChange}
-					/>
-				))}
 			</div>
 		);
 	}
@@ -246,7 +233,10 @@ export default () => {
 									key={game.id}
 									game={game}
 									excitementResult={scores.find(s => s.gameId === game.id)}
-									tabTitle={getTabTitle(game.id)}
+									openTabs={openTabs}
+									registry={registry}
+									onRegistryChange={onRegistryChange}
+									formatTabLabel={tab => formatTabLabel(tab, openTabs)}
 								/>
 							))}
 						</div>
@@ -265,6 +255,10 @@ export default () => {
 									key={game.id}
 									game={game}
 									excitementResult={scores.find(s => s.gameId === game.id)}
+									openTabs={openTabs}
+									registry={registry}
+									onRegistryChange={onRegistryChange}
+									formatTabLabel={tab => formatTabLabel(tab, openTabs)}
 								/>
 							))}
 						</div>
@@ -280,7 +274,7 @@ export default () => {
 						style={{ fontSize: '0.65rem', color: '#2274A5' }}
 						onClick={openSetup}
 					>
-						Set up tabs →
+						Settings →
 					</button>
 				</p>
 			)}
@@ -296,7 +290,10 @@ export default () => {
 									key={game.id}
 									game={game}
 									excitementResult={undefined}
-									tabTitle={getTabTitle(game.id)}
+									openTabs={openTabs}
+									registry={registry}
+									onRegistryChange={onRegistryChange}
+									formatTabLabel={tab => formatTabLabel(tab, openTabs)}
 								/>
 							))}
 						</div>
