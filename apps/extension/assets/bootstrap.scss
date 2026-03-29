@@ -214,12 +214,24 @@ $bootstrap-icons-font-dir: '/fonts';
 	margin-top:  0.35rem;
 }
 
-// ─── Tab assignment label ────────────────────────────────────────────────────
-.game-card__tab-label {
-	font-size:   0.65rem;
-	color:       #F75C03;
-	text-align:  center;
-	margin-top:  0.4rem;
+// ─── Tab assignment dropdown (on game card) ─────────────────────────────────
+.game-card__tab-assign {
+	margin-top: 0.4rem;
+
+	.form-select {
+		background-color: #f8f9fa;
+		color:            #374151;
+		border-color:     #dee2e6;
+		font-size:        0.6rem;
+		padding:          0.15rem 1.5rem 0.15rem 0.4rem;
+		height:           auto;
+		line-height:      1.4;
+
+		&:focus {
+			border-color: #F75C03;
+			box-shadow:   0 0 0 0.15rem rgba(#F75C03, 0.2);
+		}
+	}
 }
 
 // ─── Pre-game card variant ────────────────────────────────────────────────────
