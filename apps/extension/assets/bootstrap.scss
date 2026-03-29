@@ -321,16 +321,16 @@ $bootstrap-icons-font-dir: '/fonts';
 }
 
 .sensitivity-stops {
-	display:         flex;
-	justify-content: space-between;
-	margin-top:      0.15rem;
+	position:   relative;
+	height:     0.85rem;
+	margin:     0.15rem 0.5rem 0; // left/right matches range thumb offset
 
 	&__label {
+		position:   absolute;
+		transform:  translateX(-50%);
 		font-size:  0.5rem;
 		color:      #8b949e;
-		text-align: center;
-		width:      0;
-		overflow:   visible;
+		white-space: nowrap;
 	}
 }
 

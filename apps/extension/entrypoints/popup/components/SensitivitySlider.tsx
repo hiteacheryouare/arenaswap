@@ -19,7 +19,7 @@ const SensitivitySlider = ({ value, onChange }: Props) => (
 	<div>
 		<div className='d-flex justify-content-between align-items-center mb-1'>
 			<label className='sensitivity-label'>Switch sensitivity</label>
-			<span className='sensitivity-value'>{LABELS[value]}</span>
+			<span className='sensitivity-value'>{LABELS[value]} (gap ≥ {SENSITIVITY_THRESHOLDS[value]})</span>
 		</div>
 		<input
 			type='range'
@@ -31,9 +31,13 @@ const SensitivitySlider = ({ value, onChange }: Props) => (
 			className='form-range w-100'
 		/>
 		<div className='sensitivity-stops'>
-			{[1, 2, 3, 4, 5, 6, 7].map(level => (
-				<span key={level} className='sensitivity-stops__label'>
-					Δ{SENSITIVITY_THRESHOLDS[level]}
+			{[1, 2, 3, 4, 5, 6, 7].map((level, i) => (
+				<span
+					key={level}
+					className='sensitivity-stops__label'
+					style={{ left: `${(i / 6) * 100}%` }}
+				>
+					{SENSITIVITY_THRESHOLDS[level]}
 				</span>
 			))}
 		</div>
