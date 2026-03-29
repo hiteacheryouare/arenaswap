@@ -1,3 +1,5 @@
+import { SENSITIVITY_THRESHOLDS } from '@arenaswap/core/constants';
+
 interface Props {
 	value: number;
 	onChange: (val: number) => void;
@@ -28,9 +30,12 @@ const SensitivitySlider = ({ value, onChange }: Props) => (
 			onChange={e => onChange(Number(e.target.value))}
 			className='form-range w-100'
 		/>
-		<div className='d-flex justify-content-between'>
-			<span className='sensitivity-label'>1</span>
-			<span className='sensitivity-label'>5</span>
+		<div className='sensitivity-stops'>
+			{[1, 2, 3, 4, 5, 6, 7].map(level => (
+				<span key={level} className='sensitivity-stops__label'>
+					Δ{SENSITIVITY_THRESHOLDS[level]}
+				</span>
+			))}
 		</div>
 	</div>
 );
