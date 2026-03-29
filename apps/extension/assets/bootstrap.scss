@@ -99,7 +99,7 @@ $bootstrap-icons-font-dir: '/fonts';
 
 .game-card__header {
 	display:         flex;
-	justify-content: center;
+	justify-content: space-between;
 	align-items:     center;
 	margin-bottom:   0.35rem;
 }
@@ -122,6 +122,16 @@ $bootstrap-icons-font-dir: '/fonts';
 	background:    #e53935;
 	flex-shrink:   0;
 	animation:     livePulse 1.5s ease-in-out infinite;
+}
+
+.game-card__powerscore {
+	font-size:      0.55rem;
+	font-weight:    700;
+	color:          #ffffff;
+	padding:        0.1rem 0.4rem;
+	border-radius:  0.25rem;
+	white-space:    nowrap;
+	letter-spacing: 0.03em;
 }
 
 // ─── Teams row (new layout: logo+abbr | scores | logo+abbr) ─────────────────
@@ -308,6 +318,20 @@ $bootstrap-icons-font-dir: '/fonts';
 .sensitivity-label {
 	font-size:  0.65rem;
 	color:      #8b949e;
+}
+
+.sensitivity-stops {
+	display:         flex;
+	justify-content: space-between;
+	margin-top:      0.15rem;
+
+	&__label {
+		font-size:  0.5rem;
+		color:      #8b949e;
+		text-align: center;
+		width:      0;
+		overflow:   visible;
+	}
 }
 
 .sensitivity-value {
