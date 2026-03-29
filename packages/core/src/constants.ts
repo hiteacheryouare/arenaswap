@@ -12,7 +12,8 @@ export const MAX_HISTORY_SNAPSHOTS = 8;
 // Excitement scoring — max points per signal (total possible: 95, sport-agnostic)
 export const SCORE_MAX_CLOSENESS = 40;
 export const SCORE_MAX_LATE_GAME = 35;
-export const SCORE_MAX_MOMENTUM = 20;
+export const SCORE_MAX_MOMENTUM = 25;
+export const SCORE_MAX_TOTAL = SCORE_MAX_CLOSENESS + SCORE_MAX_LATE_GAME + SCORE_MAX_MOMENTUM;
 
 // Switch behavior defaults
 export const DEFAULT_SENSITIVITY = 4 as const;
