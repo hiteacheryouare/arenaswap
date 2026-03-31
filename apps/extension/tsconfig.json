@@ -5,7 +5,8 @@
 		"paths": {
 			"@arenaswap/core": ["../../packages/core/src/index.ts"],
 			"@arenaswap/core/*": ["../../packages/core/src/*"]
-		}
+		},
+		"removeComments": true
 	},
 	"include": [".wxt/types/**/*.d.ts", "entrypoints/**/*", "components/**/*"]
 }
