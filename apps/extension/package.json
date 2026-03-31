@@ -5,9 +5,9 @@
 	"private": true,
 	"scripts": {
 		"dev": "wxt",
-		"dev:firefox": "wxt --browser firefox",
+		"dev:firefox": "wxt --browser firefox --mv3",
 		"build": "wxt build",
-		"build:firefox": "wxt build --browser firefox",
+		"build:firefox": "wxt build --browser firefox --mv3",
 		"typecheck": "wxt prepare && tsc --noEmit"
 	},
 	"dependencies": {

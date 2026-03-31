@@ -54,7 +54,6 @@ const fetchSportGames = async (config: SportConfig): Promise<Game[]> => {
 	const url = `${ESPN_BASE}/${config.espnPath}/scoreboard`;
 	const res = await fetch(url, {
 		headers: {
-			'User-Agent': navigator.userAgent,
 			'Accept': 'application/json',
 		},
 	});
