@@ -57,7 +57,7 @@ export class MockGameSimulator {
 				sport: 'nba',
 				homeTeam: { id: '20', name: 'Philadelphia 76ers', abbreviation: 'PHI', score: 68, logo: `${ESPN_CDN}/nba/500/20.png` },
 				awayTeam: { id: '4', name: 'Chicago Bulls', abbreviation: 'CHI', score: 65, logo: `${ESPN_CDN}/nba/500/4.png` },
-				venueName: 'Wells Fargo Center',
+				venueName: 'Xfinity Mobile Arena',
 				period: 3, clockSeconds: 284, status: 'in',
 			},
 			{
@@ -65,7 +65,7 @@ export class MockGameSimulator {
 				sport: 'nhl',
 				homeTeam: { id: '15', name: 'Philadelphia Flyers', abbreviation: 'PHI', score: 2, logo: `${ESPN_CDN}/nhl/500/15.png` },
 				awayTeam: { id: '9', name: 'Pittsburgh Penguins', abbreviation: 'PIT', score: 1, logo: `${ESPN_CDN}/nhl/500/9.png` },
-				venueName: 'Wells Fargo Center',
+				venueName: 'Xfinity Mobile Arena',
 				period: 3, clockSeconds: 412, status: 'in',
 			},
 			{
