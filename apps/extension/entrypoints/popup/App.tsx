@@ -54,14 +54,10 @@ export default () => {
 	const [openTabs, setOpenTabs] = useState<Tabs.Tab[]>([]);
 	const [demoMode, setDemoMode] = useState(false);
 
-	const [initialLoadDone, setInitialLoadDone] = useState(false);
-
-	const { data, mutate } = useSWR('bg-state', () => fetchState(false), {
-		revalidateOnMount: false,
+	const { data, error, isLoading, mutate } = useSWR('bg-state', () => fetchState(true), {
 		revalidateOnFocus: false,
 		revalidateOnReconnect: false,
 	});
-	const isLoading = !initialLoadDone;
 
 	const games = data?.games ?? [];
 	const scores = data?.scores ?? [];
@@ -219,6 +215,13 @@ export default () => {
 					>
 						<span className='visually-hidden'>Loading...</span>
 					</div>
+				</div>
+			)}
+
+			{error && !data && (
+				<div className='alert alert-danger d-flex align-items-center gap-2 mt-3 py-2 px-3' role='alert' style={{ fontSize: '0.7rem' }}>
+					<i className='bi bi-exclamation-triangle-fill' />
+					Failed to load games. Retrying&hellip;
 				</div>
 			)}
 
