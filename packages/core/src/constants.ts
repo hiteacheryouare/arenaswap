@@ -9,6 +9,10 @@ export const APP_DESCRIPTION = pkg.description;
 export const POLL_INTERVAL_MS = 15_000;
 export const MAX_HISTORY_SNAPSHOTS = 8;
 
+// Clock stall detection — penalty applied when clock is frozen (commercial breaks, stoppages)
+export const STALL_THRESHOLD_POLLS = 5; // ~75 seconds at 15s poll interval
+export const STALL_PENALTY_MULTIPLIER = 0.7; // 30% PowerScore reduction
+
 // Excitement scoring — max points per signal (total possible: 95, sport-agnostic)
 export const SCORE_MAX_CLOSENESS = 40;
 export const SCORE_MAX_LATE_GAME = 35;

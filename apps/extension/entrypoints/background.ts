@@ -5,6 +5,7 @@ import {
 	DEFAULT_SENSITIVITY,
 	DEFAULT_COOLDOWN_SECS,
 	SENSITIVITY_THRESHOLDS,
+	SPORT_CONFIG_MAP,
 } from '@arenaswap/core/constants';
 import type {
 	Game,
@@ -18,6 +19,7 @@ export default defineBackground(() => {
 	let games: Game[] = [];
 	let currentScores: ExcitementResult[] = [];
 	const history = new Map<string, ScoreSnapshot[]>();
+	const clockStallMap = new Map<string, { lastClock: number; stallCount: number }>();
 	let tabRegistry: TabRegistration[] = [];
 	let demoMode = false;
 	let simulator: MockGameSimulator | null = null;
@@ -100,7 +102,27 @@ export default defineBackground(() => {
 		}
 
 		const liveGames = games.filter(g => g.status === 'in');
-		const scores = liveGames.map(g => computeExcitement(g, history.get(g.id) ?? []));
+
+		// Track clock stall state for clock-based sports
+		for (const game of liveGames) {
+			const config = SPORT_CONFIG_MAP[game.sport];
+			if (!config?.clockBased) continue;
+
+			const entry = clockStallMap.get(game.id);
+			if (!entry) {
+				clockStallMap.set(game.id, { lastClock: game.clockSeconds, stallCount: 0 });
+			} else if (game.clockSeconds === entry.lastClock) {
+				entry.stallCount++;
+			} else {
+				entry.lastClock = game.clockSeconds;
+				entry.stallCount = 0;
+			}
+		}
+
+		const scores = liveGames.map(g => {
+			const stallCount = clockStallMap.get(g.id)?.stallCount ?? 0;
+			return computeExcitement(g, history.get(g.id) ?? [], stallCount);
+		});
 		currentScores = scores;
 		updateHistory(liveGames);
 
@@ -111,17 +133,22 @@ export default defineBackground(() => {
 		if (!allowTabSwitch || !prefs.enabled || liveGames.length === 0) return;
 
 		const [activeTab] = await browser.tabs.query({ active: true, lastFocusedWindow: true });
-		const activeReg = tabRegistry.find(r => r.tabId === activeTab?.id);
+		if (activeTab?.id === undefined) return;
+
+		const activeReg = tabRegistry.find(r => r.tabId === activeTab.id);
 		const activeScore = scores.find(s => s.gameId === activeReg?.gameId)?.total ?? 0;
 
-		const best = scores.reduce((a, b) => a.total > b.total ? a : b);
-		const bestReg = tabRegistry.find(r => r.gameId === best.gameId);
+		// Only consider games that have a tab assigned
+		const registeredGameIds = new Set(tabRegistry.map(r => r.gameId));
+		const registeredScores = scores.filter(s => registeredGameIds.has(s.gameId));
+		if (registeredScores.length === 0) return;
+
+		const best = registeredScores.reduce((a, b) => a.total > b.total ? a : b);
+		const bestReg = tabRegistry.find(r => r.gameId === best.gameId)!;
 		const threshold = SENSITIVITY_THRESHOLDS[prefs.sensitivity];
 		const cooldownOk = Date.now() - lastSwitchTime > prefs.cooldownSeconds * 1000;
 
 		if (
-			bestReg &&
-			activeTab?.id !== undefined &&
 			bestReg.tabId !== activeTab.id &&
 			best.total > activeScore + threshold &&
 			cooldownOk
@@ -135,7 +162,7 @@ export default defineBackground(() => {
 				iconUrl: 'icon/128.png',
 				title: `ArenaSwap → ${getGameLabel(best.gameId)}`,
 				message: best.reason
-					? `${best.reason} Taking you to ${getVenueName(best.gameId)} now!`
+					? `${best.reason}. Taking you to ${getVenueName(best.gameId)} now!`
 					: `Taking you to ${getVenueName(best.gameId)} now!`,
 			});
 		}

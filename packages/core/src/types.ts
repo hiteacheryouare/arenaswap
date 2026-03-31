@@ -36,10 +36,11 @@ export interface ExcitementResult {
 	lateGame: number;
 	momentum: number;
 	reason: string;
+	stalled?: boolean;
 }
 
 export interface UserPreferences {
-	sensitivity: 1 | 2 | 3 | 4 | 5;
+	sensitivity: 1 | 2 | 3 | 4 | 5 | 6 | 7;
 	cooldownSeconds: number;
 	enabled: boolean;
 }

@@ -1,4 +1,4 @@
-import { SPORT_CONFIG_MAP, SCORE_MAX_CLOSENESS, SCORE_MAX_LATE_GAME, SCORE_MAX_MOMENTUM } from './constants';
+import { SPORT_CONFIG_MAP, SCORE_MAX_CLOSENESS, SCORE_MAX_LATE_GAME, SCORE_MAX_MOMENTUM, STALL_THRESHOLD_POLLS, STALL_PENALTY_MULTIPLIER } from './constants';
 import type { SportConfig } from './constants';
 import type { Game, ScoreSnapshot, ExcitementResult } from './types';
 
@@ -78,9 +78,10 @@ const getMomentum = (game: Game, history: ScoreSnapshot[], config: SportConfig):
 export const computeExcitement = (
 	game: Game,
 	history: ScoreSnapshot[],
+	stallCount: number = 0,
 ): ExcitementResult => {
 	if (game.intermission)
-		return { gameId: game.id, total: 0, closeness: 0, lateGame: 0, momentum: 0, reason: '' };
+		return { gameId: game.id, total: 0, closeness: 0, lateGame: 0, momentum: 0, reason: '', stalled: false };
 
 	const config = SPORT_CONFIG_MAP[game.sport] ?? SPORT_CONFIG_MAP['ncaab'];
 
@@ -88,7 +89,9 @@ export const computeExcitement = (
 	const lateGame = getLateGame(game, config);
 	const momentum = getMomentum(game, history, config);
 
-	const total = closeness.score + lateGame.score + momentum.score;
+	const stalled = stallCount >= STALL_THRESHOLD_POLLS;
+	const rawTotal = closeness.score + lateGame.score + momentum.score;
+	const total = stalled ? Math.round(rawTotal * STALL_PENALTY_MULTIPLIER) : rawTotal;
 
 	const reason = [momentum.reason, lateGame.reason, closeness.reason]
 		.filter(Boolean)
@@ -102,5 +105,6 @@ export const computeExcitement = (
 		lateGame: lateGame.score,
 		momentum: momentum.score,
 		reason,
+		stalled,
 	};
 };
