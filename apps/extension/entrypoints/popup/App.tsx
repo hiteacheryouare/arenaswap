@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import type { CSSProperties } from 'react';
 import useSWR from 'swr';
 import {
 	createDefaultUserPreferences,
@@ -15,6 +16,14 @@ import CooldownSlider from './components/CooldownSlider';
 type View = 'main' | 'setup';
 type LeagueGroup = { league: LeagueId; games: Game[] };
 type LeagueConfig = (typeof LEAGUE_CONFIGS)[number];
+const POPUP_CONTAINER_STYLE: CSSProperties = {
+	width: 320,
+	height: 560,
+	padding: '0.75rem',
+	background: '#0d1117',
+	color: '#e6edf3',
+	overflowY: 'auto',
+};
 
 const LEAGUE_ORDER = Object.fromEntries(LEAGUE_CONFIGS.map((config, index) => [config.id, index])) as Record<LeagueId, number>;
 const SPORT_TYPE_ORDER: Record<SportType, number> = {
@@ -212,7 +221,7 @@ export default () => {
 
 	if (view === 'setup') {
 		return (
-			<div style={{ width: 320, minHeight: 200, padding: '0.75rem', background: '#0d1117', color: '#e6edf3' }}>
+			<div style={POPUP_CONTAINER_STYLE}>
 				<button className='setup-header' onClick={closeSetup}>
 					<i className='bi bi-arrow-left' />
 					Settings
@@ -279,7 +288,7 @@ export default () => {
 	const unassignedLiveGames = liveGames.filter(g => !registeredGameIds.has(g.id)).sort(byLeague);
 
 	return (
-		<div style={{ width: 320, minHeight: 200, padding: '0.75rem', background: '#0d1117', color: '#e6edf3' }}>
+		<div style={POPUP_CONTAINER_STYLE}>
 			<div className='arenaswap-header'>
 				<img
 					src='/images/full_logo_white_on_transparent.png'
