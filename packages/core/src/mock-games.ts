@@ -1,4 +1,5 @@
-import type { Game, SportId } from './types';
+import { LEAGUE_CONFIG_MAP } from './constants';
+import type { Game } from './types';
 
 const ESPN_CDN = 'https://a.espncdn.com/i/teamlogos';
 
@@ -12,9 +13,8 @@ interface SimState {
 
 const CLOCK_TICK = 15; // seconds of game time per tick (matches poll interval)
 
-/** Sport-specific simulation params (local to mock simulator only) */
-const SPORT_PARAMS: Record<SportId, {
-	periodDurationSecs: number;
+/** Sport-family simulation params (local to mock simulator only) */
+const SPORT_PARAMS: Record<Game['sportType'], {
 	/** Points/goals scored per tick for each team on normal play */
 	normalScoreProb: number;
 	streakScoreProb: number;
@@ -22,16 +22,10 @@ const SPORT_PARAMS: Record<SportId, {
 	/** Score values: [frequent, rare] */
 	scoreValues: [number, number];
 }> = {
-	nba:   { periodDurationSecs: 720,  normalScoreProb: 0.25, streakScoreProb: 0.55, offScoreProb: 0.1,  scoreValues: [2, 3] },
-	ncaab: { periodDurationSecs: 1200, normalScoreProb: 0.25, streakScoreProb: 0.55, offScoreProb: 0.1,  scoreValues: [2, 3] },
-	nhl:   { periodDurationSecs: 1200, normalScoreProb: 0.06, streakScoreProb: 0.18, offScoreProb: 0.02, scoreValues: [1, 1] },
-	mlb:   { periodDurationSecs: 0,    normalScoreProb: 0.12, streakScoreProb: 0.35, offScoreProb: 0.04, scoreValues: [1, 2] },
-	nfl:   { periodDurationSecs: 900,  normalScoreProb: 0.15, streakScoreProb: 0.4,  offScoreProb: 0.05, scoreValues: [7, 3] },
-	ncaaf: { periodDurationSecs: 900,  normalScoreProb: 0.15, streakScoreProb: 0.4,  offScoreProb: 0.05, scoreValues: [7, 3] },
-};
-
-const REGULAR_PERIODS: Record<SportId, number> = {
-	nba: 4, ncaab: 2, nhl: 3, mlb: 9, nfl: 4, ncaaf: 4,
+	basketball: { normalScoreProb: 0.25, streakScoreProb: 0.55, offScoreProb: 0.1, scoreValues: [2, 3] },
+	hockey: { normalScoreProb: 0.06, streakScoreProb: 0.18, offScoreProb: 0.02, scoreValues: [1, 1] },
+	baseball: { normalScoreProb: 0.12, streakScoreProb: 0.35, offScoreProb: 0.04, scoreValues: [1, 2] },
+	football: { normalScoreProb: 0.15, streakScoreProb: 0.4, offScoreProb: 0.05, scoreValues: [7, 3] },
 };
 
 /**
@@ -46,15 +40,17 @@ export class MockGameSimulator {
 		this.games = [
 			{
 				id: 'mock-1',
-				sport: 'ncaab',
+				league: 'ncaab',
+				sportType: 'basketball',
 				homeTeam: { id: '111', name: 'Northeastern Huskies', abbreviation: 'NU', score: 45, logo: `${ESPN_CDN}/ncaa/500/111.png` },
 				awayTeam: { id: '104', name: 'Boston University Terriers', abbreviation: 'BU', score: 42, logo: `${ESPN_CDN}/ncaa/500/104.png` },
 				venueName: 'Matthews Arena',
-				period: 2, clockSeconds: 162, status: 'in',
+				period: 4, clockSeconds: 162, status: 'in',
 			},
 			{
 				id: 'mock-2',
-				sport: 'nba',
+				league: 'nba',
+				sportType: 'basketball',
 				homeTeam: { id: '20', name: 'Philadelphia 76ers', abbreviation: 'PHI', score: 68, logo: `${ESPN_CDN}/nba/500/20.png` },
 				awayTeam: { id: '4', name: 'Chicago Bulls', abbreviation: 'CHI', score: 65, logo: `${ESPN_CDN}/nba/500/4.png` },
 				venueName: 'Xfinity Mobile Arena',
@@ -62,7 +58,8 @@ export class MockGameSimulator {
 			},
 			{
 				id: 'mock-3',
-				sport: 'nhl',
+				league: 'nhl',
+				sportType: 'hockey',
 				homeTeam: { id: '15', name: 'Philadelphia Flyers', abbreviation: 'PHI', score: 2, logo: `${ESPN_CDN}/nhl/500/15.png` },
 				awayTeam: { id: '9', name: 'Pittsburgh Penguins', abbreviation: 'PIT', score: 1, logo: `${ESPN_CDN}/nhl/500/9.png` },
 				venueName: 'Xfinity Mobile Arena',
@@ -70,7 +67,8 @@ export class MockGameSimulator {
 			},
 			{
 				id: 'mock-4',
-				sport: 'mlb',
+				league: 'mlb',
+				sportType: 'baseball',
 				homeTeam: { id: '22', name: 'Philadelphia Phillies', abbreviation: 'PHI', score: 3, logo: `${ESPN_CDN}/mlb/500/22.png` },
 				awayTeam: { id: '21', name: 'New York Mets', abbreviation: 'NYM', score: 2, logo: `${ESPN_CDN}/mlb/500/21.png` },
 				venueName: 'Citizens Bank Park',
@@ -78,7 +76,8 @@ export class MockGameSimulator {
 			},
 			{
 				id: 'mock-5',
-				sport: 'nfl',
+				league: 'nfl',
+				sportType: 'football',
 				homeTeam: { id: '21', name: 'Philadelphia Eagles', abbreviation: 'PHI', score: 17, logo: `${ESPN_CDN}/nfl/500/21.png` },
 				awayTeam: { id: '6', name: 'Dallas Cowboys', abbreviation: 'DAL', score: 14, logo: `${ESPN_CDN}/nfl/500/6.png` },
 				venueName: 'Lincoln Financial Field',
@@ -86,7 +85,8 @@ export class MockGameSimulator {
 			},
 			{
 				id: 'mock-6',
-				sport: 'ncaaf',
+				league: 'ncaaf',
+				sportType: 'football',
 				homeTeam: { id: '218', name: 'Temple Owls', abbreviation: 'TEM', score: 0, logo: `${ESPN_CDN}/ncaa/500/218.png` },
 				awayTeam: { id: '213', name: 'Penn State Nittany Lions', abbreviation: 'PSU', score: 0, logo: `${ESPN_CDN}/ncaa/500/213.png` },
 				venueName: 'Lincoln Financial Field',
@@ -132,10 +132,10 @@ export class MockGameSimulator {
 	}
 
 	private advanceLive(game: Game, s: SimState) {
-		const params = SPORT_PARAMS[game.sport];
-		const regularPeriods = REGULAR_PERIODS[game.sport];
+		const params = SPORT_PARAMS[game.sportType];
+		const regularPeriods = LEAGUE_CONFIG_MAP[game.league].regularPeriods;
 
-		if (game.sport === 'mlb') {
+		if (game.sportType === 'baseball') {
 			// MLB: simulate half-innings; advance inning every few ticks
 			this.scorePoints(game, s);
 			if (Math.random() < 0.15) {
@@ -156,7 +156,7 @@ export class MockGameSimulator {
 		if (game.clockSeconds <= 0) {
 			if (game.period < regularPeriods) {
 				game.period++;
-				game.clockSeconds = params.periodDurationSecs;
+				game.clockSeconds = LEAGUE_CONFIG_MAP[game.league].periodDurationSecs;
 			} else if (game.homeTeam.score === game.awayTeam.score) {
 				// Tied → overtime
 				game.period++;
@@ -169,7 +169,7 @@ export class MockGameSimulator {
 	}
 
 	private scorePoints(game: Game, s: SimState) {
-		const params = SPORT_PARAMS[game.sport];
+		const params = SPORT_PARAMS[game.sportType];
 
 		// Manage scoring streaks
 		if (s.streak) {
@@ -191,14 +191,14 @@ export class MockGameSimulator {
 		if (Math.random() < awayProb) game.awayTeam.score += pts();
 
 		// Late-game drama: trailing team gets a boost when losing badly
-		const regularPeriods = REGULAR_PERIODS[game.sport];
-		const isLate = game.sport === 'mlb'
+		const regularPeriods = LEAGUE_CONFIG_MAP[game.league].regularPeriods;
+		const isLate = game.sportType === 'baseball'
 			? game.period >= 7
 			: game.period >= regularPeriods && game.clockSeconds < 300;
 
 		if (isLate) {
 			const margin = Math.abs(game.homeTeam.score - game.awayTeam.score);
-			const bigMargin = game.sport === 'nhl' ? 2 : game.sport === 'mlb' ? 3 : 10;
+			const bigMargin = game.sportType === 'hockey' ? 2 : game.sportType === 'baseball' ? 3 : 10;
 			if (margin > bigMargin && Math.random() < 0.4) {
 				const trailing = game.homeTeam.score < game.awayTeam.score ? game.homeTeam : game.awayTeam;
 				trailing.score += pts();
@@ -209,10 +209,10 @@ export class MockGameSimulator {
 	private advancePost(game: Game, s: SimState) {
 		s.postTicks++;
 		if (s.postTicks >= 4) {
-			const params = SPORT_PARAMS[game.sport];
+			const leagueConfig = LEAGUE_CONFIG_MAP[game.league];
 			game.status = 'in';
 			game.period = 1;
-			game.clockSeconds = params.periodDurationSecs;
+			game.clockSeconds = leagueConfig.periodDurationSecs;
 			game.homeTeam.score = 0;
 			game.awayTeam.score = 0;
 			s.streak = null;
@@ -224,10 +224,10 @@ export class MockGameSimulator {
 		if (s.preTicks > 0) {
 			s.preTicks--;
 		} else {
-			const params = SPORT_PARAMS[game.sport];
+			const leagueConfig = LEAGUE_CONFIG_MAP[game.league];
 			game.status = 'in';
 			game.period = 1;
-			game.clockSeconds = params.periodDurationSecs;
+			game.clockSeconds = leagueConfig.periodDurationSecs;
 		}
 	}
 }

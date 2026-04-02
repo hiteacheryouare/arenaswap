@@ -1,6 +1,6 @@
-import { SPORT_CONFIGS } from './constants';
-import type { SportConfig } from './constants';
-import type { Game, SportId } from './types';
+import { LEAGUE_CONFIG_MAP, resolveLeagueLogoUrl } from './constants';
+import type { LeagueConfig } from './constants';
+import type { Game, LeagueId, LeagueLogoMap } from './types';
 
 const ESPN_BASE = 'https://site.api.espn.com/apis/site/v2/sports';
 
@@ -17,28 +17,90 @@ const parseStatus = (state: string): Game['status'] => {
 	return 'post';
 };
 
-const parseEvent = (event: any, sport: SportId): Game => {
+interface EspnLeagueLogo {
+	href?: string;
+}
+
+interface EspnLeague {
+	id?: string;
+	logos?: EspnLeagueLogo[];
+}
+
+interface EspnTeam {
+	displayName: string;
+	abbreviation: string;
+	logo?: string;
+}
+
+interface EspnCompetitor {
+	id: string;
+	homeAway: 'home' | 'away' | string;
+	score?: string;
+	team: EspnTeam;
+}
+
+interface EspnCompetitionStatus {
+	period?: number;
+	displayClock?: string;
+	type?: {
+		state?: string;
+		name?: string;
+	};
+}
+
+interface EspnCompetitionVenue {
+	fullName?: string;
+	name?: string;
+}
+
+interface EspnCompetition {
+	competitors: EspnCompetitor[];
+	status: EspnCompetitionStatus;
+	venue?: EspnCompetitionVenue;
+}
+
+interface EspnEvent {
+	id: string;
+	date?: string;
+	status?: {
+		type?: {
+			state?: string;
+		};
+	};
+	competitions: EspnCompetition[];
+}
+
+interface EspnScoreboardResponse {
+	events?: EspnEvent[];
+	leagues?: EspnLeague[];
+}
+
+const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 	const comp = event.competitions[0];
-	const home = comp.competitors.find((c: any) => c.homeAway === 'home');
-	const away = comp.competitors.find((c: any) => c.homeAway === 'away');
+	if (!comp) return null;
+	const home = comp.competitors.find(c => c.homeAway === 'home');
+	const away = comp.competitors.find(c => c.homeAway === 'away');
+	if (!home || !away) return null;
 	const status = comp.status;
 	const state = parseStatus(status.type?.state ?? 'post');
+	const leagueConfig = LEAGUE_CONFIG_MAP[league];
 
 	return {
 		id: event.id,
-		sport,
+		league,
+		sportType: leagueConfig.sportType,
 		homeTeam: {
 			id: home.id,
 			name: home.team.displayName,
 			abbreviation: home.team.abbreviation,
-			score: parseInt(home.score, 10) || 0,
+			score: parseInt(home.score ?? '0', 10) || 0,
 			logo: home.team.logo ?? undefined,
 		},
 		awayTeam: {
 			id: away.id,
 			name: away.team.displayName,
 			abbreviation: away.team.abbreviation,
-			score: parseInt(away.score, 10) || 0,
+			score: parseInt(away.score ?? '0', 10) || 0,
 			logo: away.team.logo ?? undefined,
 		},
 		venueName: comp.venue?.fullName ?? comp.venue?.name ?? undefined,
@@ -50,7 +112,13 @@ const parseEvent = (event: any, sport: SportId): Game => {
 	};
 };
 
-const fetchSportGames = async (config: SportConfig): Promise<Game[]> => {
+interface LeagueGamesResult {
+	leagueId: LeagueId;
+	games: Game[];
+	logoUrl: string;
+}
+
+const fetchLeagueGames = async (config: LeagueConfig): Promise<LeagueGamesResult> => {
 	const url = `${ESPN_BASE}/${config.espnPath}/scoreboard`;
 	const res = await fetch(url, {
 		headers: {
@@ -58,23 +126,53 @@ const fetchSportGames = async (config: SportConfig): Promise<Game[]> => {
 		},
 	});
 	if (!res.ok) throw new Error(`ESPN ${config.id} API returned ${res.status}`);
-	const data = await res.json();
+	const data = await res.json() as EspnScoreboardResponse;
+	const espnLogo = data.leagues?.[0]?.logos?.[0]?.href;
+	const logoUrl = resolveLeagueLogoUrl(config.id, espnLogo);
 
-	return (data.events ?? [])
-		.filter((e: any) => e.status?.type?.state !== 'post')
-		.map((e: any) => parseEvent(e, config.id));
+	const games = (data.events ?? [])
+		.filter(event => event.status?.type?.state !== 'post')
+		.map(event => parseEvent(event, config.id))
+		.filter((game): game is Game => Boolean(game));
+
+	return { leagueId: config.id, games, logoUrl };
 };
 
-// Returns all live + upcoming games across all supported sports (excludes finished games)
-export const fetchGames = async (): Promise<Game[]> => {
-	const results = await Promise.allSettled(SPORT_CONFIGS.map(fetchSportGames));
-	return results
-		.filter((r): r is PromiseFulfilledResult<Game[]> => r.status === 'fulfilled')
-		.flatMap(r => r.value);
+const getEnabledLeagueConfigs = (enabledLeagues: LeagueId[]): LeagueConfig[] => (
+	enabledLeagues
+		.map(league => LEAGUE_CONFIG_MAP[league])
+		.filter((config): config is LeagueConfig => Boolean(config))
+);
+
+export const fetchGamesWithLeagueLogos = async (enabledLeagues: LeagueId[]): Promise<{ games: Game[]; leagueLogos: LeagueLogoMap }> => {
+	if (enabledLeagues.length === 0) return { games: [], leagueLogos: {} };
+	const leagueConfigs = getEnabledLeagueConfigs(enabledLeagues);
+	const results = await Promise.allSettled(leagueConfigs.map(fetchLeagueGames));
+	const fulfilled = results
+		.filter((r): r is PromiseFulfilledResult<LeagueGamesResult> => r.status === 'fulfilled')
+		.map(r => r.value);
+	const games = fulfilled.flatMap(result => result.games);
+	const leagueLogos = fulfilled.reduce<LeagueLogoMap>((acc, result) => {
+		acc[result.leagueId] = result.logoUrl;
+		return acc;
+	}, {});
+	return { games, leagueLogos };
+};
+
+// Returns all live + upcoming games for enabled leagues (excludes finished games)
+export const fetchGames = async (enabledLeagues: LeagueId[]): Promise<Game[]> => {
+	if (enabledLeagues.length === 0) return [];
+	const { games } = await fetchGamesWithLeagueLogos(enabledLeagues);
+	return games;
 };
 
 // Convenience: only live games (for switching logic)
-export const fetchLiveGames = async (): Promise<Game[]> => {
-	const games = await fetchGames();
+export const fetchLiveGames = async (enabledLeagues: LeagueId[]): Promise<Game[]> => {
+	const games = await fetchGames(enabledLeagues);
 	return games.filter(g => g.status === 'in');
+};
+
+export const fetchLeagueLogos = async (enabledLeagues: LeagueId[]): Promise<LeagueLogoMap> => {
+	const { leagueLogos } = await fetchGamesWithLeagueLogos(enabledLeagues);
+	return leagueLogos;
 };

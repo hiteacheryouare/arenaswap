@@ -1,4 +1,7 @@
-export type SportId = 'nba' | 'nhl' | 'mlb' | 'nfl' | 'ncaab' | 'ncaaf';
+export type SportType = 'basketball' | 'football' | 'hockey' | 'baseball';
+export type LeagueId = 'nba' | 'nhl' | 'mlb' | 'nfl' | 'ncaab' | 'ncaaf';
+/** @deprecated Use LeagueId */
+export type SportId = LeagueId;
 
 export interface Team {
 	id: string;
@@ -10,7 +13,8 @@ export interface Team {
 
 export interface Game {
 	id: string;
-	sport: SportId;
+	league: LeagueId;
+	sportType: SportType;
 	homeTeam: Team;
 	awayTeam: Team;
 	venueName?: string;
@@ -43,6 +47,7 @@ export interface UserPreferences {
 	sensitivity: 1 | 2 | 3 | 4 | 5 | 6 | 7;
 	cooldownSeconds: number;
 	enabled: boolean;
+	enabledLeagues: LeagueId[];
 }
 
 export interface TabRegistration {
@@ -50,10 +55,19 @@ export interface TabRegistration {
 	gameId: string;
 }
 
+export type LeagueLogoMap = Partial<Record<LeagueId, string>>;
+
+export interface BackgroundState {
+	games: Game[];
+	scores: ExcitementResult[];
+	leagueLogos: LeagueLogoMap;
+}
+
 export type ScoresUpdatedMessage = {
 	type: 'SCORES_UPDATED';
 	scores: ExcitementResult[];
 	games: Game[];
+	leagueLogos: LeagueLogoMap;
 };
 
 export type UpdatePrefsMessage = {
