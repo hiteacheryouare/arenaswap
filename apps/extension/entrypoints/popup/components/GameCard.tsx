@@ -1,29 +1,29 @@
 import { useState } from 'react';
-import type { Tabs } from 'webextension-polyfill';
-import { SCORE_MAX_TOTAL } from '@arenaswap/core/constants';
+import type { Browser } from 'wxt/browser';
+import { LEAGUE_CONFIG_MAP, SCORE_MAX_TOTAL } from '@arenaswap/core/constants';
 import type { ExcitementResult, Game, TabRegistration, Team } from '@arenaswap/core/types';
 import TabAssignSelect from './TabAssignSelect';
 
 interface Props {
 	game: Game | undefined;
 	excitementResult: ExcitementResult | undefined;
-	openTabs: Tabs.Tab[];
+	openTabs: Browser.tabs.Tab[];
 	registry: TabRegistration[];
 	onRegistryChange: (updated: TabRegistration[]) => void;
-	formatTabLabel: (tab: Tabs.Tab) => string;
+	formatTabLabel: (tab: Browser.tabs.Tab) => string;
 }
 
-const REGULAR_PERIODS: Record<string, number> = { nba: 4, nfl: 4, ncaaf: 4, nhl: 3, mlb: 9, ncaab: 2 };
-
-const formatPeriod = (period: number, sport: string): string => {
-	const regular = REGULAR_PERIODS[sport] ?? 2;
+const formatPeriod = (game: Game): string => {
+	const config = LEAGUE_CONFIG_MAP[game.league];
+	const regular = config.regularPeriods;
+	const period = game.period;
 	if (period > regular) {
-		if (sport === 'nhl') return 'OT';
+		if (config.periodFormat === 'periods') return 'OT';
 		return `OT${period - regular}`;
 	}
-	if (sport === 'ncaab') return period === 1 ? '1H' : '2H';
-	if (sport === 'nhl') return `P${period}`;
-	if (sport === 'mlb') return `Inn ${period}`;
+	if (config.periodFormat === 'halves') return period === 1 ? '1H' : '2H';
+	if (config.periodFormat === 'periods') return `P${period}`;
+	if (config.periodFormat === 'innings') return `Inn ${period}`;
 	return `Q${period}`;
 };
 
@@ -111,7 +111,7 @@ const GameCard = ({ game, excitementResult, openTabs, registry, onRegistryChange
 		);
 	}
 
-	const isOt = game.period > (REGULAR_PERIODS[game.sport] ?? 2);
+	const isOt = game.period > LEAGUE_CONFIG_MAP[game.league].regularPeriods;
 
 	return (
 		<div className={`game-card${isOt ? ' is-ot' : ''}`}>
@@ -139,13 +139,13 @@ const GameCard = ({ game, excitementResult, openTabs, registry, onRegistryChange
 						<span className='game-card__score'>{game.awayTeam.score}</span>
 						<span className='game-card__score'>{game.homeTeam.score}</span>
 					</div>
-					{game.sport !== 'mlb' && (
+					{game.sportType !== 'baseball' && (
 						<span className='game-card__clock'>
 							{formatClock(game.clockSeconds)}
 						</span>
 					)}
 					<span className='game-card__period'>
-						{formatPeriod(game.period, game.sport)}
+						{formatPeriod(game)}
 					</span>
 				</div>
 				<TeamColumn team={game.homeTeam} />

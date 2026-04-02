@@ -1,46 +1,98 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import useSWR from 'swr';
-import type { Tabs } from 'webextension-polyfill';
-import { DEFAULT_SENSITIVITY, DEFAULT_COOLDOWN_SECS } from '@arenaswap/core/constants';
-import type { ExcitementResult, Game, TabRegistration, UserPreferences } from '@arenaswap/core/types';
+import {
+	createDefaultUserPreferences,
+	LEAGUE_CONFIGS,
+	normalizeUserPreferences,
+	resolveLeagueLogoUrl,
+} from '@arenaswap/core/constants';
+import type { Browser } from 'wxt/browser';
+import type { BackgroundState, ExcitementResult, Game, LeagueId, LeagueLogoMap, SportType, TabRegistration, UserPreferences } from '@arenaswap/core/types';
 import GameCard from './components/GameCard';
 import SensitivitySlider from './components/SensitivitySlider';
 import CooldownSlider from './components/CooldownSlider';
+
 type View = 'main' | 'setup';
+type LeagueGroup = { league: LeagueId; games: Game[] };
+type LeagueConfig = (typeof LEAGUE_CONFIGS)[number];
 
-const SPORT_ORDER: Record<string, number> = { nba: 0, ncaab: 1, nfl: 2, ncaaf: 3, nhl: 4, mlb: 5 };
-const bySport = (a: Game, b: Game) => (SPORT_ORDER[a.sport] ?? 99) - (SPORT_ORDER[b.sport] ?? 99);
+const LEAGUE_ORDER = Object.fromEntries(LEAGUE_CONFIGS.map((config, index) => [config.id, index])) as Record<LeagueId, number>;
+const SPORT_TYPE_ORDER: Record<SportType, number> = {
+	basketball: 0,
+	football: 1,
+	hockey: 2,
+	baseball: 3,
+};
+const SPORT_TYPE_LABELS: Record<SportType, string> = {
+	basketball: 'Basketball',
+	football: 'Football',
+	hockey: 'Hockey',
+	baseball: 'Baseball',
+};
+const LEAGUE_LABELS = Object.fromEntries(LEAGUE_CONFIGS.map(config => [config.id, config.label])) as Record<LeagueId, string>;
+const LEAGUES_BY_SPORT_TYPE = LEAGUE_CONFIGS.reduce<Record<SportType, typeof LEAGUE_CONFIGS>>((groups, config) => {
+	groups[config.sportType].push(config);
+	return groups;
+}, {
+	basketball: [],
+	football: [],
+	hockey: [],
+	baseball: [],
+});
+const toLeagueInitials = (league: LeagueConfig): string => (
+	league
+		.label
+		.split(/\s+/)
+		.map(part => part[0] ?? '')
+		.join('')
+		.slice(0, 3)
+		.toUpperCase()
+);
 
-const SPORT_LABELS: Record<string, string> = { nba: 'NBA', ncaab: 'NCAA Basketball', nfl: 'NFL', ncaaf: 'NCAA Football', nhl: 'NHL', mlb: 'MLB' };
+const LeagueLogo = ({ league, leagueLogos }: { league: LeagueConfig; leagueLogos: LeagueLogoMap }) => {
+	const [imageFailed, setImageFailed] = useState(false);
+	const logoUrl = resolveLeagueLogoUrl(league.id, leagueLogos[league.id]);
+	if (imageFailed) {
+		return <span className='league-toggle-logo league-toggle-logo--fallback'>{toLeagueInitials(league)}</span>;
+	}
 
-const groupBySport = (games: Game[]) =>
-	games.reduce<{ sport: string; games: Game[] }[]>((groups, game) => {
-		const last = groups[groups.length - 1];
-		if (last?.sport === game.sport) { last.games.push(game); return groups; }
-		return [...groups, { sport: game.sport, games: [game] }];
-	}, []);
-
-const defaultPrefs: UserPreferences = {
-	sensitivity: DEFAULT_SENSITIVITY,
-	cooldownSeconds: DEFAULT_COOLDOWN_SECS,
-	enabled: true,
+	return (
+		<img
+			src={logoUrl}
+			alt={`${league.label} logo`}
+			className='league-toggle-logo'
+			loading='lazy'
+			onError={() => setImageFailed(true)}
+		/>
+	);
 };
 
-type BackgroundState = { games: Game[]; scores: ExcitementResult[] };
+const byLeague = (a: Game, b: Game) => (LEAGUE_ORDER[a.league] ?? 99) - (LEAGUE_ORDER[b.league] ?? 99);
+
+const groupByLeague = (games: Game[]): LeagueGroup[] => (
+	games.reduce<LeagueGroup[]>((groups, game) => {
+		const last = groups[groups.length - 1];
+		if (last?.league === game.league) {
+			last.games.push(game);
+			return groups;
+		}
+		return [...groups, { league: game.league, games: [game] }];
+	}, [])
+);
 
 const fetchState = async (forceRefresh = false): Promise<BackgroundState> => {
 	const state = await browser.runtime.sendMessage({ type: 'GET_STATE', forceRefresh });
-	return (state as BackgroundState) ?? { games: [], scores: [] };
+	return (state as BackgroundState) ?? { games: [], scores: [], leagueLogos: {} };
 };
 
-const formatTabLabel = (tab: Tabs.Tab, allTabs: Tabs.Tab[]): string => {
+const formatTabLabel = (tab: Browser.tabs.Tab, allTabs: Browser.tabs.Tab[]): string => {
 	const title = tab.title ?? '';
 	if (!title) return `Tab #${tab.id}`;
 	const duplicates = allTabs.filter(t => t.title === title);
 	if (duplicates.length <= 1) return title.slice(0, 35);
 	try {
 		const pathname = new URL(tab.url ?? '').pathname;
-		const truncated = pathname.length > 25 ? pathname.slice(0, 22) + '...' : pathname;
+		const truncated = pathname.length > 25 ? `${pathname.slice(0, 22)}...` : pathname;
 		return `${title.slice(0, 25)} (${truncated})`;
 	} catch {
 		return `${title.slice(0, 30)} (#${tab.id})`;
@@ -49,11 +101,10 @@ const formatTabLabel = (tab: Tabs.Tab, allTabs: Tabs.Tab[]): string => {
 
 export default () => {
 	const [view, setView] = useState<View>('main');
-	const [prefs, setPrefs] = useState<UserPreferences>(defaultPrefs);
+	const [prefs, setPrefs] = useState<UserPreferences>(createDefaultUserPreferences());
 	const [registry, setRegistry] = useState<TabRegistration[]>([]);
-	const [openTabs, setOpenTabs] = useState<Tabs.Tab[]>([]);
+	const [openTabs, setOpenTabs] = useState<Browser.tabs.Tab[]>([]);
 	const [demoMode, setDemoMode] = useState(false);
-
 	const [initialLoadDone, setInitialLoadDone] = useState(false);
 
 	const { data, mutate } = useSWR('bg-state', () => fetchState(false), {
@@ -61,10 +112,11 @@ export default () => {
 		revalidateOnFocus: false,
 		revalidateOnReconnect: false,
 	});
-	const isLoading = !initialLoadDone;
 
+	const isLoading = !initialLoadDone;
 	const games = data?.games ?? [];
 	const scores = data?.scores ?? [];
+	const leagueLogos = data?.leagueLogos ?? {};
 
 	useEffect(() => {
 		fetchState(true)
@@ -75,21 +127,27 @@ export default () => {
 				setInitialLoadDone(true);
 			});
 
-		browser.storage.sync.get({ prefs: null }).then(r => {
-			if (r.prefs) setPrefs(r.prefs as UserPreferences);
+		browser.storage.sync.get({ prefs: null }).then(result => {
+			setPrefs(normalizeUserPreferences(result.prefs));
 		});
-		browser.storage.session.get({ tabRegistry: [] }).then(r => {
-			setRegistry(r.tabRegistry as TabRegistration[]);
+		browser.storage.session.get({ tabRegistry: [] }).then(result => {
+			setRegistry(result.tabRegistry as TabRegistration[]);
 		});
-		browser.storage.local.get({ demoMode: false }).then(r => {
-			setDemoMode(r.demoMode as boolean);
+		browser.storage.local.get({ demoMode: false }).then(result => {
+			setDemoMode(result.demoMode as boolean);
 		});
-		loadOpenTabs();
+		void loadOpenTabs();
 
-		// Listen for ongoing updates from background
 		const handleMessage = (msg: any) => {
 			if (msg.type === 'SCORES_UPDATED') {
-				mutate({ games: msg.games as Game[], scores: msg.scores as ExcitementResult[] }, { revalidate: false });
+				mutate(
+					{
+						games: msg.games as Game[],
+						scores: msg.scores as ExcitementResult[],
+						leagueLogos: (msg.leagueLogos as LeagueLogoMap) ?? {}
+					},
+					{ revalidate: false }
+				);
 			}
 		};
 		browser.runtime.onMessage.addListener(handleMessage);
@@ -98,46 +156,51 @@ export default () => {
 
 	const loadOpenTabs = async () => {
 		const tabs = await browser.tabs.query({ currentWindow: true });
-		setOpenTabs(tabs.filter(t => t.url && !t.url.startsWith('chrome://') && !t.url.startsWith('about:')));
+		setOpenTabs(tabs.filter(tab => tab.url && !tab.url.startsWith('chrome://') && !tab.url.startsWith('about:')));
+	};
+
+	const persistPrefs = (nextPrefs: UserPreferences) => {
+		const normalized = normalizeUserPreferences(nextPrefs);
+		setPrefs(normalized);
+		void browser.storage.sync.set({ prefs: normalized });
+		void browser.runtime.sendMessage({ type: 'UPDATE_PREFS', prefs: normalized });
 	};
 
 	const onToggleEnabled = () => {
-		const updated = { ...prefs, enabled: !prefs.enabled };
-		setPrefs(updated);
-		browser.storage.sync.set({ prefs: updated });
-		browser.runtime.sendMessage({ type: 'UPDATE_PREFS', prefs: updated });
+		persistPrefs({ ...prefs, enabled: !prefs.enabled });
 	};
 
 	const onSensitivityChange = (val: number) => {
-		const updated = { ...prefs, sensitivity: val as UserPreferences['sensitivity'] };
-		setPrefs(updated);
-		browser.storage.sync.set({ prefs: updated });
-		browser.runtime.sendMessage({ type: 'UPDATE_PREFS', prefs: updated });
+		persistPrefs({ ...prefs, sensitivity: val as UserPreferences['sensitivity'] });
 	};
 
 	const onCooldownChange = (val: number) => {
-		const updated = { ...prefs, cooldownSeconds: val };
-		setPrefs(updated);
-		browser.storage.sync.set({ prefs: updated });
-		browser.runtime.sendMessage({ type: 'UPDATE_PREFS', prefs: updated });
+		persistPrefs({ ...prefs, cooldownSeconds: val });
+	};
+
+	const onToggleLeague = (leagueId: LeagueId) => {
+		const current = new Set(prefs.enabledLeagues);
+		if (current.has(leagueId)) current.delete(leagueId);
+		else current.add(leagueId);
+		const enabledLeagues = [...current].sort((a, b) => LEAGUE_ORDER[a] - LEAGUE_ORDER[b]);
+		persistPrefs({ ...prefs, enabledLeagues });
 	};
 
 	const onToggleDemo = () => {
 		const next = !demoMode;
 		setDemoMode(next);
-		browser.runtime.sendMessage({ type: 'SET_DEMO_MODE', enabled: next });
-		// Background calls tick() immediately → sends SCORES_UPDATED → SWR cache updates
+		void browser.runtime.sendMessage({ type: 'SET_DEMO_MODE', enabled: next });
 	};
 
 	const onRegistryChange = (updated: TabRegistration[]) => {
 		setRegistry(updated);
-		browser.storage.session.set({ tabRegistry: updated });
-		browser.runtime.sendMessage({ type: 'UPDATE_REGISTRY', tabRegistry: updated });
+		void browser.storage.session.set({ tabRegistry: updated });
+		void browser.runtime.sendMessage({ type: 'UPDATE_REGISTRY', tabRegistry: updated });
 	};
 
 	const openSetup = () => setView('setup');
-
 	const oneWeekFromNow = Date.now() + 7 * 24 * 60 * 60 * 1000;
+	const noLeaguesSelected = prefs.enabledLeagues.length === 0;
 
 	if (view === 'setup') {
 		return (
@@ -147,14 +210,40 @@ export default () => {
 					Settings
 				</button>
 
-				{/* Sensitivity slider in settings */}
 				<SensitivitySlider value={prefs.sensitivity} onChange={onSensitivityChange} />
 
 				<div className='mt-2'>
 					<CooldownSlider value={prefs.cooldownSeconds} onChange={onCooldownChange} />
 				</div>
 
-				{/* Demo mode toggle */}
+				<div className='section-label mt-3'>Leagues</div>
+				<div className='league-toggle-list'>
+					{(Object.keys(SPORT_TYPE_ORDER) as SportType[])
+						.sort((a, b) => SPORT_TYPE_ORDER[a] - SPORT_TYPE_ORDER[b])
+						.map(sportType => (
+							<div key={sportType} className='league-toggle-group'>
+								<div className='sensitivity-label fw-semibold'>{SPORT_TYPE_LABELS[sportType]}</div>
+								{LEAGUES_BY_SPORT_TYPE[sportType].map(league => (
+									<div key={league.id} className='league-toggle-item mt-1'>
+										<div className='league-toggle-item__meta'>
+											<LeagueLogo league={league} leagueLogos={leagueLogos} />
+											<label className='league-toggle-item__label mb-0' htmlFor={`league-${league.id}`}>{league.label}</label>
+										</div>
+										<div className='form-check form-switch mb-0'>
+											<input
+												className='form-check-input'
+												type='checkbox'
+												id={`league-${league.id}`}
+												checked={prefs.enabledLeagues.includes(league.id)}
+												onChange={() => onToggleLeague(league.id)}
+											/>
+										</div>
+									</div>
+								))}
+							</div>
+						))}
+				</div>
+
 				<div className='d-flex justify-content-between align-items-center mt-3'>
 					<label className='sensitivity-label' htmlFor='demoToggle'>Demo mode (fake games)</label>
 					<div className='form-check form-switch mb-0'>
@@ -175,11 +264,11 @@ export default () => {
 	const upcomingGames = games
 		.filter(g => g.status === 'pre')
 		.filter(g => !g.startTime || new Date(g.startTime).getTime() <= oneWeekFromNow)
-		.sort(bySport);
+		.sort(byLeague);
 
 	const registeredGameIds = new Set(registry.map(r => r.gameId));
-	const assignedLiveGames = liveGames.filter(g => registeredGameIds.has(g.id)).sort(bySport);
-	const unassignedLiveGames = liveGames.filter(g => !registeredGameIds.has(g.id)).sort(bySport);
+	const assignedLiveGames = liveGames.filter(g => registeredGameIds.has(g.id)).sort(byLeague);
+	const unassignedLiveGames = liveGames.filter(g => !registeredGameIds.has(g.id)).sort(byLeague);
 
 	return (
 		<div style={{ width: 320, minHeight: 200, padding: '0.75rem', background: '#0d1117', color: '#e6edf3' }}>
@@ -210,6 +299,18 @@ export default () => {
 				</div>
 			</div>
 
+			{!isLoading && noLeaguesSelected && (
+				<div className='empty-state-cta'>
+					<h2 className='empty-state-cta__title'>Choose leagues to get started</h2>
+					<p className='empty-state-cta__body'>
+						ArenaSwap needs at least one league selected before it can find games to swap between.
+					</p>
+					<button className='btn btn-primary btn-lg w-100' onClick={openSetup}>
+						Select Leagues in Settings
+					</button>
+				</div>
+			)}
+
 			{isLoading && (
 				<div className='d-flex justify-content-center align-items-center mt-4' style={{ minHeight: 64 }}>
 					<div
@@ -222,13 +323,13 @@ export default () => {
 				</div>
 			)}
 
-			{!isLoading && assignedLiveGames.length > 0 && (
+			{!isLoading && !noLeaguesSelected && assignedLiveGames.length > 0 && (
 				<div>
 					<div className='section-title'>Active Tabs</div>
-					{groupBySport(assignedLiveGames).map(({ sport, games }) => (
-						<div key={sport}>
-							<div className='section-label mt-1'>{SPORT_LABELS[sport] ?? sport.toUpperCase()}</div>
-							{games.map(game => (
+					{groupByLeague(assignedLiveGames).map(({ league, games: groupedGames }) => (
+						<div key={league}>
+							<div className='section-label mt-1'>{LEAGUE_LABELS[league] ?? league.toUpperCase()}</div>
+							{groupedGames.map(game => (
 								<GameCard
 									key={game.id}
 									game={game}
@@ -244,13 +345,13 @@ export default () => {
 				</div>
 			)}
 
-			{!isLoading && unassignedLiveGames.length > 0 && (
+			{!isLoading && !noLeaguesSelected && unassignedLiveGames.length > 0 && (
 				<div className='mt-2'>
 					<div className='section-title'>Other Games</div>
-					{groupBySport(unassignedLiveGames).map(({ sport, games }) => (
-						<div key={sport}>
-							<div className='section-label mt-1'>{SPORT_LABELS[sport] ?? sport.toUpperCase()}</div>
-							{games.map(game => (
+					{groupByLeague(unassignedLiveGames).map(({ league, games: groupedGames }) => (
+						<div key={league}>
+							<div className='section-label mt-1'>{LEAGUE_LABELS[league] ?? league.toUpperCase()}</div>
+							{groupedGames.map(game => (
 								<GameCard
 									key={game.id}
 									game={game}
@@ -266,9 +367,9 @@ export default () => {
 				</div>
 			)}
 
-			{!isLoading && liveGames.length === 0 && registry.length === 0 && upcomingGames.length === 0 && (
+			{!isLoading && !noLeaguesSelected && liveGames.length === 0 && registry.length === 0 && upcomingGames.length === 0 && (
 				<p className='sensitivity-label text-center mt-3'>
-					No games right now.{' '}
+					No games right now.
 					<button
 						className='btn btn-link btn-sm p-0'
 						style={{ fontSize: '0.65rem', color: '#2274A5' }}
@@ -279,13 +380,13 @@ export default () => {
 				</p>
 			)}
 
-			{!isLoading && upcomingGames.length > 0 && (
+			{!isLoading && !noLeaguesSelected && upcomingGames.length > 0 && (
 				<div className='mt-2'>
 					<div className='section-title'>Up Next</div>
-					{groupBySport(upcomingGames).map(({ sport, games }) => (
-						<div key={sport}>
-							<div className='section-label mt-1'>{SPORT_LABELS[sport] ?? sport.toUpperCase()}</div>
-							{games.map(game => (
+					{groupByLeague(upcomingGames).map(({ league, games: groupedGames }) => (
+						<div key={league}>
+							<div className='section-label mt-1'>{LEAGUE_LABELS[league] ?? league.toUpperCase()}</div>
+							{groupedGames.map(game => (
 								<GameCard
 									key={game.id}
 									game={game}

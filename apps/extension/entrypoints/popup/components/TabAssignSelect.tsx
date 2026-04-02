@@ -1,12 +1,12 @@
-import type { Tabs } from 'webextension-polyfill';
+import type { Browser } from 'wxt/browser';
 import type { TabRegistration } from '@arenaswap/core/types';
 
 interface Props {
 	gameId: string;
-	openTabs: Tabs.Tab[];
+	openTabs: Browser.tabs.Tab[];
 	registry: TabRegistration[];
 	onChange: (updated: TabRegistration[]) => void;
-	formatTabLabel: (tab: Tabs.Tab) => string;
+	formatTabLabel: (tab: Browser.tabs.Tab) => string;
 }
 
 const TabAssignSelect = ({ gameId, openTabs, registry, onChange, formatTabLabel }: Props) => {

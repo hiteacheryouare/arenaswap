@@ -1,15 +1,17 @@
-import { fetchGames, computeExcitement, MockGameSimulator } from '@arenaswap/core';
+import { fetchGamesWithLeagueLogos, computeExcitement, MockGameSimulator } from '@arenaswap/core';
 import {
+	createDefaultUserPreferences,
+	LEAGUE_LOGO_FALLBACKS,
+	normalizeUserPreferences,
 	POLL_INTERVAL_MS,
 	MAX_HISTORY_SNAPSHOTS,
-	DEFAULT_SENSITIVITY,
-	DEFAULT_COOLDOWN_SECS,
 	SENSITIVITY_THRESHOLDS,
-	SPORT_CONFIG_MAP,
+	SPORT_TYPE_CONFIG_MAP,
 } from '@arenaswap/core/constants';
 import type {
 	Game,
 	ExcitementResult,
+	LeagueLogoMap,
 	ScoreSnapshot,
 	TabRegistration,
 	UserPreferences,
@@ -18,16 +20,13 @@ import type {
 export default defineBackground(() => {
 	let games: Game[] = [];
 	let currentScores: ExcitementResult[] = [];
+	let leagueLogos: LeagueLogoMap = {};
 	const history = new Map<string, ScoreSnapshot[]>();
 	const clockStallMap = new Map<string, { lastClock: number; stallCount: number }>();
 	let tabRegistry: TabRegistration[] = [];
 	let demoMode = false;
 	let simulator: MockGameSimulator | null = null;
-	let prefs: UserPreferences = {
-		sensitivity: DEFAULT_SENSITIVITY,
-		cooldownSeconds: DEFAULT_COOLDOWN_SECS,
-		enabled: true,
-	};
+	let prefs: UserPreferences = createDefaultUserPreferences();
 	let lastSwitchTime = 0;
 	let pollTimer: ReturnType<typeof setInterval> | null = null;
 	let inFlightRefresh: Promise<void> | null = null;
@@ -90,11 +89,18 @@ export default defineBackground(() => {
 	};
 
 	const tick = async (allowTabSwitch = true) => {
+		const enabledLeagues = prefs.enabledLeagues;
 		if (demoMode && simulator) {
-			games = simulator.tick();
+			games = simulator.tick().filter(game => enabledLeagues.includes(game.league));
+			leagueLogos = enabledLeagues.reduce<LeagueLogoMap>((acc, leagueId) => {
+				acc[leagueId] = LEAGUE_LOGO_FALLBACKS[leagueId];
+				return acc;
+			}, {});
 		} else {
 			try {
-				games = await fetchGames();
+				const fetchResult = await fetchGamesWithLeagueLogos(enabledLeagues);
+				games = fetchResult.games;
+				leagueLogos = fetchResult.leagueLogos;
 			} catch (err) {
 				console.error('Arenaswap: Failed to fetch games:', err);
 				return;
@@ -105,7 +111,7 @@ export default defineBackground(() => {
 
 		// Track clock stall state for clock-based sports
 		for (const game of liveGames) {
-			const config = SPORT_CONFIG_MAP[game.sport];
+			const config = SPORT_TYPE_CONFIG_MAP[game.sportType];
 			if (!config?.clockBased) continue;
 
 			const entry = clockStallMap.get(game.id);
@@ -126,7 +132,7 @@ export default defineBackground(() => {
 		currentScores = scores;
 		updateHistory(liveGames);
 
-		browser.runtime.sendMessage({ type: 'SCORES_UPDATED', scores, games }).catch(() => {});
+		browser.runtime.sendMessage({ type: 'SCORES_UPDATED', scores, games, leagueLogos }).catch(() => {});
 
 		await syncManagedTabMuteState(prefs.enabled);
 
@@ -182,10 +188,11 @@ export default defineBackground(() => {
 		browser.storage.session.get({ tabRegistry: [] }),
 		browser.storage.local.get({ demoMode: false }),
 	]).then(([prefsResult, registryResult, demoResult]) => {
-		if (prefsResult.prefs) prefs = prefsResult.prefs as UserPreferences;
+		prefs = normalizeUserPreferences(prefsResult.prefs);
 		tabRegistry = registryResult.tabRegistry as TabRegistration[];
 		demoMode = demoResult.demoMode as boolean;
 		if (demoMode) simulator = new MockGameSimulator();
+		return browser.storage.sync.set({ prefs });
 	}).catch(err => {
 		console.error('ArenaSwap: Failed to load persisted state, using defaults:', err);
 	});
@@ -206,13 +213,13 @@ export default defineBackground(() => {
 				// Popup opened or worker just woke up; fetch fresh state before responding.
 				return stateReady
 					.then(() => refreshScores(false))
-					.then(() => ({ games, scores: currentScores }));
+					.then(() => ({ games, scores: currentScores, leagueLogos }));
 			}
-			return Promise.resolve({ games, scores: currentScores });
+			return Promise.resolve({ games, scores: currentScores, leagueLogos });
 		}
 		if (msg.type === 'UPDATE_PREFS') {
 			return stateReady.then(async () => {
-				prefs = msg.prefs;
+				prefs = normalizeUserPreferences(msg.prefs);
 				await browser.storage.sync.set({ prefs });
 				await syncManagedTabMuteState(prefs.enabled);
 			});
