@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import useSWR from 'swr';
 import {
 	createDefaultUserPreferences,
@@ -106,6 +106,7 @@ export default () => {
 	const [openTabs, setOpenTabs] = useState<Browser.tabs.Tab[]>([]);
 	const [demoMode, setDemoMode] = useState(false);
 	const [initialLoadDone, setInitialLoadDone] = useState(false);
+	const prefsSyncRef = useRef<Promise<void>>(Promise.resolve());
 
 	const { data, mutate } = useSWR('bg-state', () => fetchState(false), {
 		revalidateOnMount: false,
@@ -159,11 +160,22 @@ export default () => {
 		setOpenTabs(tabs.filter(tab => tab.url && !tab.url.startsWith('chrome://') && !tab.url.startsWith('about:')));
 	};
 
+	const refreshStateFromBackground = async () => {
+		const refreshed = await fetchState(true);
+		mutate(refreshed, { revalidate: false });
+	};
+
 	const persistPrefs = (nextPrefs: UserPreferences) => {
 		const normalized = normalizeUserPreferences(nextPrefs);
 		setPrefs(normalized);
-		void browser.storage.sync.set({ prefs: normalized });
-		void browser.runtime.sendMessage({ type: 'UPDATE_PREFS', prefs: normalized });
+		const syncPromise = (async () => {
+			await browser.storage.sync.set({ prefs: normalized });
+			await browser.runtime.sendMessage({ type: 'UPDATE_PREFS', prefs: normalized });
+		})();
+		prefsSyncRef.current = syncPromise;
+		void syncPromise.catch(err => {
+			console.error('ArenaSwap: Failed to persist preferences:', err);
+		});
 	};
 
 	const onToggleEnabled = () => {
@@ -199,13 +211,20 @@ export default () => {
 	};
 
 	const openSetup = () => setView('setup');
+	const closeSetup = () => {
+		setView('main');
+		void (async () => {
+			await prefsSyncRef.current.catch(() => {});
+			await refreshStateFromBackground();
+		})();
+	};
 	const oneWeekFromNow = Date.now() + 7 * 24 * 60 * 60 * 1000;
 	const noLeaguesSelected = prefs.enabledLeagues.length === 0;
 
 	if (view === 'setup') {
 		return (
 			<div style={{ width: 320, minHeight: 200, padding: '0.75rem', background: '#0d1117', color: '#e6edf3' }}>
-				<button className='setup-header' onClick={() => setView('main')}>
+				<button className='setup-header' onClick={closeSetup}>
 					<i className='bi bi-arrow-left' />
 					Settings
 				</button>
@@ -368,16 +387,16 @@ export default () => {
 			)}
 
 			{!isLoading && !noLeaguesSelected && liveGames.length === 0 && registry.length === 0 && upcomingGames.length === 0 && (
-				<p className='sensitivity-label text-center mt-3'>
-					No games right now.
+				<div className='no-games-empty'>
+					<div className='no-games-empty__title'>No games right now.</div>
 					<button
 						className='btn btn-link btn-sm p-0'
-						style={{ fontSize: '0.65rem', color: '#2274A5' }}
+						style={{ fontSize: '0.85rem', color: '#2274A5' }}
 						onClick={openSetup}
 					>
 						Settings →
 					</button>
-				</p>
+				</div>
 			)}
 
 			{!isLoading && !noLeaguesSelected && upcomingGames.length > 0 && (

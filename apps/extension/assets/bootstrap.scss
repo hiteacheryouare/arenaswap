@@ -355,6 +355,7 @@ $bootstrap-icons-font-dir: '/fonts';
 	align-items:     center;
 	justify-content: space-between;
 	gap:             0.5rem;
+	padding:         0.2rem 0;
 }
 
 .league-toggle-item__meta {
@@ -365,14 +366,15 @@ $bootstrap-icons-font-dir: '/fonts';
 }
 
 .league-toggle-item__label {
-	font-size:   0.72rem;
+	font-size:   0.82rem;
 	color:       #e6edf3;
 	font-weight: 600;
+	line-height: 1.2;
 }
 
 .league-toggle-logo {
-	width:         20px;
-	height:        20px;
+	width:         28px;
+	height:        28px;
 	border-radius: 50%;
 	object-fit:    contain;
 	flex-shrink:   0;
@@ -387,6 +389,13 @@ $bootstrap-icons-font-dir: '/fonts';
 	font-size:       0.5rem;
 	font-weight:     700;
 	letter-spacing:  0.04em;
+}
+
+.league-toggle-item {
+	.form-check-input {
+		width:  2.35rem;
+		height: 1.3rem;
+	}
 }
 
 .empty-state-cta {
@@ -411,4 +420,15 @@ $bootstrap-icons-font-dir: '/fonts';
 	line-height:   1.35;
 	color:         #e6edf3;
 	margin-bottom: 0.6rem;
+}
+
+.no-games-empty {
+	margin-top: 0.8rem;
+	text-align: center;
+}
+
+.no-games-empty__title {
+	font-size:   1rem;
+	font-weight: 700;
+	color:       #e6edf3;
 }
