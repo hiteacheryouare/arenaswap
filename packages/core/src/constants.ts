@@ -29,6 +29,7 @@ export interface ScorerTunables {
 	scores: {
 		closeness: {
 			tied: number;
+			zeroZero: number;
 			tight: number;
 			close: number;
 			fringe: number;
@@ -72,6 +73,7 @@ export const SCORER_TUNABLES: ScorerTunables = {
 	scores: {
 		closeness: {
 			tied: SCORE_MAX_CLOSENESS,
+			zeroZero: 28,
 			tight: 35,
 			close: 20,
 			fringe: 8,
