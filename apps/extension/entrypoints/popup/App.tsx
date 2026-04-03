@@ -25,6 +25,9 @@ const POPUP_CONTAINER_STYLE: CSSProperties = {
 	overflowY: 'auto',
 };
 
+const SECTION_TITLE_STYLE: CSSProperties = { fontSize: '1.35rem', letterSpacing: '-0.01em', marginBottom: '0.5rem', marginTop: '0.25rem' };
+const SECTION_LABEL_STYLE: CSSProperties = { fontSize: '0.75rem', letterSpacing: '0.1em', color: '#8b949e', marginBottom: '0.4rem' };
+
 const LEAGUE_ORDER = Object.fromEntries(LEAGUE_CONFIGS.map((config, index) => [config.id, index])) as Record<LeagueId, number>;
 const SPORT_TYPE_ORDER: Record<SportType, number> = {
 	basketball: 0,
@@ -233,7 +236,7 @@ export default () => {
 					<CooldownSlider value={prefs.cooldownSeconds} onChange={onCooldownChange} />
 				</div>
 
-				<div className='fw-bold text-uppercase mt-3' style={{ fontSize: '0.75rem', letterSpacing: '0.1em', color: '#8b949e', marginBottom: '0.4rem' }}>Leagues</div>
+				<div className='fw-bold text-uppercase mt-3' style={SECTION_LABEL_STYLE}>Leagues</div>
 				<div className='league-toggle-list'>
 					{(Object.keys(SPORT_TYPE_ORDER) as SportType[])
 						.sort((a, b) => SPORT_TYPE_ORDER[a] - SPORT_TYPE_ORDER[b])
@@ -357,10 +360,10 @@ export default () => {
 
 			{!isLoading && !noLeaguesSelected && assignedLiveGames.length > 0 && (
 				<div>
-					<div className='fw-bold text-body text-center' style={{ fontSize: '1.35rem', letterSpacing: '-0.01em', marginBottom: '0.5rem', marginTop: '0.25rem' }}>Active Tabs</div>
+					<div className='fw-bold text-body text-center' style={SECTION_TITLE_STYLE}>Active Tabs</div>
 					{groupByLeague(assignedLiveGames).map(({ league, games: groupedGames }) => (
 						<div key={league}>
-							<div className='fw-bold text-uppercase mt-1' style={{ fontSize: '0.75rem', letterSpacing: '0.1em', color: '#8b949e', marginBottom: '0.4rem' }}>{LEAGUE_LABELS[league] ?? league.toUpperCase()}</div>
+							<div className='fw-bold text-uppercase mt-1' style={SECTION_LABEL_STYLE}>{LEAGUE_LABELS[league] ?? league.toUpperCase()}</div>
 							{groupedGames.map(game => (
 								<GameCard
 									key={game.id}
@@ -379,10 +382,10 @@ export default () => {
 
 			{!isLoading && !noLeaguesSelected && unassignedLiveGames.length > 0 && (
 				<div className='mt-2'>
-					<div className='fw-bold text-body text-center' style={{ fontSize: '1.35rem', letterSpacing: '-0.01em', marginBottom: '0.5rem', marginTop: '0.25rem' }}>Other Games</div>
+					<div className='fw-bold text-body text-center' style={SECTION_TITLE_STYLE}>Other Games</div>
 					{groupByLeague(unassignedLiveGames).map(({ league, games: groupedGames }) => (
 						<div key={league}>
-							<div className='fw-bold text-uppercase mt-1' style={{ fontSize: '0.75rem', letterSpacing: '0.1em', color: '#8b949e', marginBottom: '0.4rem' }}>{LEAGUE_LABELS[league] ?? league.toUpperCase()}</div>
+							<div className='fw-bold text-uppercase mt-1' style={SECTION_LABEL_STYLE}>{LEAGUE_LABELS[league] ?? league.toUpperCase()}</div>
 							{groupedGames.map(game => (
 								<GameCard
 									key={game.id}
@@ -414,10 +417,10 @@ export default () => {
 
 			{!isLoading && !noLeaguesSelected && upcomingGames.length > 0 && (
 				<div className='mt-2'>
-					<div className='fw-bold text-body text-center' style={{ fontSize: '1.35rem', letterSpacing: '-0.01em', marginBottom: '0.5rem', marginTop: '0.25rem' }}>Up Next</div>
+					<div className='fw-bold text-body text-center' style={SECTION_TITLE_STYLE}>Up Next</div>
 					{groupByLeague(upcomingGames).map(({ league, games: groupedGames }) => (
 						<div key={league}>
-							<div className='fw-bold text-uppercase mt-1' style={{ fontSize: '0.75rem', letterSpacing: '0.1em', color: '#8b949e', marginBottom: '0.4rem' }}>{LEAGUE_LABELS[league] ?? league.toUpperCase()}</div>
+							<div className='fw-bold text-uppercase mt-1' style={SECTION_LABEL_STYLE}>{LEAGUE_LABELS[league] ?? league.toUpperCase()}</div>
 							{groupedGames.map(game => (
 								<GameCard
 									key={game.id}
