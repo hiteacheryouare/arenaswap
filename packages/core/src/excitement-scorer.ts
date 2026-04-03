@@ -13,6 +13,7 @@ const getCloseness = (game: Game, config: SportTypeConfig): Signal => {
 	const [t1, t2, t3] = config.closenessMargins;
 	const margin = Math.abs(game.homeTeam.score - game.awayTeam.score);
 	if (game.homeTeam.score === 0 && game.awayTeam.score === 0)
+		// reason string intentionally reuses 'tied' — UI label is the same
 		return { score: scores.closeness.zeroZero, reason: reasons.tied };
 	if (margin === 0) return { score: scores.closeness.tied, reason: reasons.tied };
 	if (margin <= t1) return { score: scores.closeness.tight, reason: `${margin}-${getClosenessUnit(game)} ${reasons.closenessGameSuffix}` };
