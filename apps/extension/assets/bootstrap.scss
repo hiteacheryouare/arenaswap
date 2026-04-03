@@ -45,6 +45,12 @@ $bootstrap-icons-font-dir: '/fonts';
 	50%       { opacity: 0.3; }
 }
 
+// ─── Lekton monospace helper ──────────────────────────────────────────────────
+.font-lekton {
+    font-family: 'Lekton', monospace;
+    font-variant-numeric: tabular-nums;
+}
+
 // ─── App header ──────────────────────────────────────────────────────────────
 .arenaswap-header {
 	display:         flex;
@@ -97,24 +103,6 @@ $bootstrap-icons-font-dir: '/fonts';
 	}
 }
 
-.game-card__header {
-	display:         flex;
-	justify-content: space-between;
-	align-items:     center;
-	margin-bottom:   0.35rem;
-}
-
-.game-card__live-badge {
-	display:        flex;
-	align-items:    center;
-	gap:            0.3rem;
-	font-size:      0.65rem;
-	font-weight:    700;
-	text-transform: uppercase;
-	letter-spacing: 0.08em;
-	color:          #F75C03;
-}
-
 .live-dot {
 	width:         6px;
 	height:        6px;
@@ -124,7 +112,7 @@ $bootstrap-icons-font-dir: '/fonts';
 	animation:     livePulse 1.5s ease-in-out infinite;
 }
 
-.game-card__powerscore {
+.powerscore {
 	font-size:      0.55rem;
 	font-weight:    700;
 	color:          #ffffff;
@@ -134,98 +122,8 @@ $bootstrap-icons-font-dir: '/fonts';
 	letter-spacing: 0.03em;
 }
 
-// ─── Teams row (new layout: logo+abbr | scores | logo+abbr) ─────────────────
-.game-card__teams {
-	display:         flex;
-	align-items:     center;
-	justify-content: center;
-	gap:             0.75rem;
-}
-
-.game-card__team {
-	display:        flex;
-	flex-direction: column;
-	align-items:    center;
-	gap:            0.2rem;
-	min-width:      60px;
-}
-
-.game-card__team-logo {
-	width:      56px;
-	height:     56px;
-	object-fit: contain;
-	flex-shrink: 0;
-}
-
-.game-card__team-logo-fallback {
-	width:           56px;
-	height:          56px;
-	font-size:       0.7rem;
-	font-weight:     700;
-	flex-shrink:     0;
-	display:         flex;
-	align-items:     center;
-	justify-content: center;
-	background:      #e9ecef;
-	border-radius:   50%;
-	color:           #6c757d;
-}
-
-.game-card__team-name {
-	font-size:   0.7rem;
-	font-weight: 700;
-	color:       #111827;
-	white-space: nowrap;
-	text-align:  center;
-}
-
-// ─── Scores center column ────────────────────────────────────────────────────
-.game-card__scores {
-	display:        flex;
-	flex-direction: column;
-	align-items:    center;
-	min-width:      80px;
-}
-
-.game-card__score-row {
-	display:     flex;
-	align-items: baseline;
-	gap:         1.25rem;
-}
-
-.game-card__score {
-	font-size:            1.75rem;
-	font-weight:          700;
-	font-variant-numeric: tabular-nums;
-	color:                #111827;
-	letter-spacing:       0.02em;
-	line-height:          1;
-}
-
-.game-card__clock {
-	font-family:          'Lekton', monospace;
-	font-size:            0.85rem;
-	color:                #374151;
-	font-variant-numeric: tabular-nums;
-	margin-top:           0.15rem;
-}
-
-.game-card__period {
-	font-family: 'Lekton', monospace;
-	font-size:   0.7rem;
-	color:       #6c757d;
-	margin-top:  0.1rem;
-}
-
-.game-card__venue {
-	font-size:   0.6rem;
-	color:       #6c757d;
-	text-align:  center;
-	margin-top:  0.35rem;
-}
-
 // ─── Tab assignment dropdown (on game card) ─────────────────────────────────
-.game-card__tab-assign {
+.game-card-tab-assign {
 	margin-top: 0.4rem;
 
 	.form-select {
@@ -242,25 +140,6 @@ $bootstrap-icons-font-dir: '/fonts';
 			box-shadow:   0 0 0 0.15rem rgba(#F75C03, 0.2);
 		}
 	}
-}
-
-// ─── Pre-game card variant ────────────────────────────────────────────────────
-.game-card--pre {
-	opacity: 0.85;
-}
-
-.game-card__start-time {
-	font-family: 'Lekton', monospace;
-	font-size:   0.75rem;
-	color:       #F1C40F;
-	white-space: nowrap;
-	text-align:  center;
-	margin-top:  0.15rem;
-}
-
-// ─── Excitement bar (kept for when needed) ───────────────────────────────────
-.game-card__excitement {
-	margin-top: 0.45rem;
 }
 
 .excitement-track {

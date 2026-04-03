@@ -27,7 +27,7 @@ const TabAssignSelect = ({ gameId, openTabs, registry, onChange, formatTabLabel 
 	);
 
 	return (
-		<div className='game-card__tab-assign'>
+		<div className='game-card-tab-assign'>
 			<select
 				className='form-select form-select-sm'
 				value={currentTabId ?? ''}
