@@ -88,8 +88,8 @@ const GameCard = ({ game, excitementResult, openTabs, registry, onRegistryChange
 
     if (game.status === 'pre') {
         return (
-            <div className='game-card opacity-75'>
-                <div className='d-flex align-items-center justify-content-center gap-3'>
+            <div className='game-card' style={{ opacity: 0.85 }}>
+                <div className='d-flex align-items-center justify-content-center' style={{ gap: '0.75rem' }}>
                     <TeamColumn team={game.awayTeam} />
                     <div className='d-flex flex-column align-items-center' style={{ minWidth: 80 }}>
                         <span style={{ fontSize: '0.8rem', color: '#8b949e' }}>vs</span>
@@ -141,7 +141,7 @@ const GameCard = ({ game, excitementResult, openTabs, registry, onRegistryChange
             </div>
 
             {/* Teams + scores */}
-            <div className='d-flex align-items-center justify-content-center gap-3'>
+            <div className='d-flex align-items-center justify-content-center' style={{ gap: '0.75rem' }}>
                 <TeamColumn team={game.awayTeam} />
                 <div className='d-flex flex-column align-items-center' style={{ minWidth: 80 }}>
                     <div className='d-flex align-items-baseline' style={{ gap: '1.25rem' }}>
