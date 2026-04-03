@@ -233,7 +233,7 @@ export default () => {
 					<CooldownSlider value={prefs.cooldownSeconds} onChange={onCooldownChange} />
 				</div>
 
-				<div className='section-label mt-3'>Leagues</div>
+				<div className='fw-bold text-uppercase mt-3' style={{ fontSize: '0.75rem', letterSpacing: '0.1em', color: '#8b949e', marginBottom: '0.4rem' }}>Leagues</div>
 				<div className='league-toggle-list'>
 					{(Object.keys(SPORT_TYPE_ORDER) as SportType[])
 						.sort((a, b) => SPORT_TYPE_ORDER[a] - SPORT_TYPE_ORDER[b])
@@ -289,7 +289,7 @@ export default () => {
 
 	return (
 		<div style={POPUP_CONTAINER_STYLE}>
-			<div className='arenaswap-header'>
+			<div className='d-flex justify-content-between align-items-center mb-2 pb-2'>
 				<img
 					src='/images/full_logo_white_on_transparent.png'
 					alt='ArenaSwap'
@@ -317,9 +317,17 @@ export default () => {
 			</div>
 
 			{!isLoading && noLeaguesSelected && (
-				<div className='empty-state-cta'>
-					<h2 className='empty-state-cta__title'>Choose leagues to get started</h2>
-					<p className='empty-state-cta__body'>
+				<div
+					className='text-center rounded mt-2 mb-3 p-3'
+					style={{ border: '1px solid rgba(247,92,3,0.45)', background: 'rgba(247,92,3,0.08)' }}
+				>
+					<h2
+						className='fw-bold text-white lh-sm mb-2'
+						style={{ fontSize: '1.2rem', letterSpacing: '-0.015em' }}
+					>
+						Choose leagues to get started
+					</h2>
+					<p className='mb-2 lh-sm' style={{ fontSize: '0.78rem', color: '#e6edf3' }}>
 						ArenaSwap needs at least one league selected before it can find games to swap between.
 					</p>
 					<button className='btn btn-primary btn-lg w-100' onClick={openSetup}>
@@ -349,10 +357,10 @@ export default () => {
 
 			{!isLoading && !noLeaguesSelected && assignedLiveGames.length > 0 && (
 				<div>
-					<div className='section-title'>Active Tabs</div>
+					<div className='fw-bold text-body text-center' style={{ fontSize: '1.35rem', letterSpacing: '-0.01em', marginBottom: '0.5rem', marginTop: '0.25rem' }}>Active Tabs</div>
 					{groupByLeague(assignedLiveGames).map(({ league, games: groupedGames }) => (
 						<div key={league}>
-							<div className='section-label mt-1'>{LEAGUE_LABELS[league] ?? league.toUpperCase()}</div>
+							<div className='fw-bold text-uppercase mt-1' style={{ fontSize: '0.75rem', letterSpacing: '0.1em', color: '#8b949e', marginBottom: '0.4rem' }}>{LEAGUE_LABELS[league] ?? league.toUpperCase()}</div>
 							{groupedGames.map(game => (
 								<GameCard
 									key={game.id}
@@ -371,10 +379,10 @@ export default () => {
 
 			{!isLoading && !noLeaguesSelected && unassignedLiveGames.length > 0 && (
 				<div className='mt-2'>
-					<div className='section-title'>Other Games</div>
+					<div className='fw-bold text-body text-center' style={{ fontSize: '1.35rem', letterSpacing: '-0.01em', marginBottom: '0.5rem', marginTop: '0.25rem' }}>Other Games</div>
 					{groupByLeague(unassignedLiveGames).map(({ league, games: groupedGames }) => (
 						<div key={league}>
-							<div className='section-label mt-1'>{LEAGUE_LABELS[league] ?? league.toUpperCase()}</div>
+							<div className='fw-bold text-uppercase mt-1' style={{ fontSize: '0.75rem', letterSpacing: '0.1em', color: '#8b949e', marginBottom: '0.4rem' }}>{LEAGUE_LABELS[league] ?? league.toUpperCase()}</div>
 							{groupedGames.map(game => (
 								<GameCard
 									key={game.id}
@@ -392,8 +400,8 @@ export default () => {
 			)}
 
 			{!isLoading && !noLeaguesSelected && liveGames.length === 0 && registry.length === 0 && upcomingGames.length === 0 && (
-				<div className='no-games-empty'>
-					<div className='no-games-empty__title'>No games right now.</div>
+				<div className='mt-3 text-center'>
+					<div className='fw-bold text-body mb-1' style={{ fontSize: '1rem' }}>No games right now.</div>
 					<button
 						className='btn btn-link btn-sm p-0'
 						style={{ fontSize: '0.85rem', color: '#2274A5' }}
@@ -406,10 +414,10 @@ export default () => {
 
 			{!isLoading && !noLeaguesSelected && upcomingGames.length > 0 && (
 				<div className='mt-2'>
-					<div className='section-title'>Up Next</div>
+					<div className='fw-bold text-body text-center' style={{ fontSize: '1.35rem', letterSpacing: '-0.01em', marginBottom: '0.5rem', marginTop: '0.25rem' }}>Up Next</div>
 					{groupByLeague(upcomingGames).map(({ league, games: groupedGames }) => (
 						<div key={league}>
-							<div className='section-label mt-1'>{LEAGUE_LABELS[league] ?? league.toUpperCase()}</div>
+							<div className='fw-bold text-uppercase mt-1' style={{ fontSize: '0.75rem', letterSpacing: '0.1em', color: '#8b949e', marginBottom: '0.4rem' }}>{LEAGUE_LABELS[league] ?? league.toUpperCase()}</div>
 							{groupedGames.map(game => (
 								<GameCard
 									key={game.id}
