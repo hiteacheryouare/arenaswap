@@ -65,7 +65,14 @@ const LeagueLogo = ({ league, leagueLogos }: { league: LeagueConfig; leagueLogos
 	const [imageFailed, setImageFailed] = useState(false);
 	const logoUrl = resolveLeagueLogoUrl(league.id, leagueLogos[league.id]);
 	if (imageFailed) {
-		return <span className='league-toggle-logo league-toggle-logo--fallback'>{toLeagueInitials(league)}</span>;
+		return (
+			<span
+				className='league-toggle-logo d-inline-flex align-items-center justify-content-center fw-bold'
+				style={{ background: '#30363d', color: '#e6edf3', fontSize: '0.5rem', letterSpacing: '0.04em' }}
+			>
+				{toLeagueInitials(league)}
+			</span>
+		);
 	}
 
 	return (
@@ -237,17 +244,17 @@ export default () => {
 				</div>
 
 				<div className='fw-bold text-uppercase mt-3' style={SECTION_LABEL_STYLE}>Leagues</div>
-				<div className='league-toggle-list'>
+				<div>
 					{(Object.keys(SPORT_TYPE_ORDER) as SportType[])
 						.sort((a, b) => SPORT_TYPE_ORDER[a] - SPORT_TYPE_ORDER[b])
 						.map(sportType => (
 							<div key={sportType} className='league-toggle-group'>
-								<div className='sensitivity-label fw-semibold'>{SPORT_TYPE_LABELS[sportType]}</div>
+								<div className='fw-semibold text-secondary' style={{ fontSize: '0.65rem' }}>{SPORT_TYPE_LABELS[sportType]}</div>
 								{LEAGUES_BY_SPORT_TYPE[sportType].map(league => (
-									<div key={league.id} className='league-toggle-item mt-1'>
-										<div className='league-toggle-item__meta'>
+									<div key={league.id} className='d-flex align-items-center justify-content-between gap-2 mt-1' style={{ padding: '0.2rem 0' }}>
+										<div className='d-flex align-items-center gap-2 min-w-0'>
 											<LeagueLogo league={league} leagueLogos={leagueLogos} />
-											<label className='league-toggle-item__label mb-0' htmlFor={`league-${league.id}`}>{league.label}</label>
+											<label className='fw-semibold text-body mb-0 lh-sm' style={{ fontSize: '0.82rem' }} htmlFor={`league-${league.id}`}>{league.label}</label>
 										</div>
 										<div className='form-check form-switch mb-0'>
 											<input
@@ -265,7 +272,7 @@ export default () => {
 				</div>
 
 				<div className='d-flex justify-content-between align-items-center mt-3'>
-					<label className='sensitivity-label' htmlFor='demoToggle'>Demo mode (fake games)</label>
+					<label className='text-secondary' style={{ fontSize: '0.65rem' }} htmlFor='demoToggle'>Demo mode (fake games)</label>
 					<div className='form-check form-switch mb-0'>
 						<input
 							className='form-check-input'
