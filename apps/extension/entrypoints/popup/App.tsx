@@ -249,7 +249,7 @@ export default () => {
 						.sort((a, b) => SPORT_TYPE_ORDER[a] - SPORT_TYPE_ORDER[b])
 						.map(sportType => (
 							<div key={sportType} className='league-toggle-group'>
-								<div className='fw-semibold text-secondary' style={{ fontSize: '0.65rem' }}>{SPORT_TYPE_LABELS[sportType]}</div>
+								<div className='fw-semibold text-body-secondary' style={{ fontSize: '0.65rem' }}>{SPORT_TYPE_LABELS[sportType]}</div>
 								{LEAGUES_BY_SPORT_TYPE[sportType].map(league => (
 									<div key={league.id} className='d-flex align-items-center justify-content-between gap-2 mt-1' style={{ padding: '0.2rem 0' }}>
 										<div className='d-flex align-items-center gap-2 min-w-0'>
@@ -272,7 +272,7 @@ export default () => {
 				</div>
 
 				<div className='d-flex justify-content-between align-items-center mt-3'>
-					<label className='text-secondary' style={{ fontSize: '0.65rem' }} htmlFor='demoToggle'>Demo mode (fake games)</label>
+					<label className='text-body-secondary' style={{ fontSize: '0.65rem' }} htmlFor='demoToggle'>Demo mode (fake games)</label>
 					<div className='form-check form-switch mb-0'>
 						<input
 							className='form-check-input'

@@ -18,7 +18,7 @@ const LABELS: Record<number, string> = {
 const SensitivitySlider = ({ value, onChange }: Props) => (
 	<div>
 		<div className='d-flex justify-content-between align-items-center mb-1'>
-			<label className='text-secondary' style={{ fontSize: '0.65rem' }}>Switch sensitivity</label>
+			<label className='text-body-secondary' style={{ fontSize: '0.65rem' }}>Switch sensitivity</label>
 			<span className='fw-semibold' style={{ fontSize: '0.6rem' }}>{LABELS[value]} (PowerScore gap ≥ {SENSITIVITY_THRESHOLDS[value]})</span>
 		</div>
 		<input
@@ -34,7 +34,7 @@ const SensitivitySlider = ({ value, onChange }: Props) => (
 			{[1, 2, 3, 4, 5, 6, 7].map((level, i) => (
 				<span
 					key={level}
-					className='position-absolute translate-middle-x text-secondary'
+					className='position-absolute translate-middle-x text-body-secondary'
 					style={{ left: `${(i / 6) * 100}%`, fontSize: '0.5rem', whiteSpace: 'nowrap' }}
 				>
 					{SENSITIVITY_THRESHOLDS[level]}

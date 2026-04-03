@@ -66,7 +66,7 @@ const TeamLogo = ({ team }: { team: Team }) => {
 
     return (
         <div
-            className='d-flex align-items-center justify-content-center bg-light rounded-circle flex-shrink-0 fw-bold text-secondary'
+            className='d-flex align-items-center justify-content-center bg-light rounded-circle flex-shrink-0 fw-bold text-body-secondary'
             style={{ width: LOGO_SIZE, height: LOGO_SIZE, fontSize: '0.7rem' }}
         >
             {team.abbreviation.slice(0, 3)}

@@ -19,7 +19,7 @@ const CooldownSlider = ({ value, onChange }: Props) => {
     return (
         <div>
             <div className='d-flex justify-content-between align-items-center mb-1'>
-                <label className='text-secondary' style={{ fontSize: '0.65rem' }}>Switch cooldown</label>
+                <label className='text-body-secondary' style={{ fontSize: '0.65rem' }}>Switch cooldown</label>
                 <span className='fw-semibold' style={{ fontSize: '0.6rem' }}>{formatSeconds(STEPS[currentIdx])}</span>
             </div>
             <input
@@ -32,8 +32,8 @@ const CooldownSlider = ({ value, onChange }: Props) => {
                 className='form-range w-100'
             />
             <div className='d-flex justify-content-between'>
-                <span className='text-secondary' style={{ fontSize: '0.65rem' }}>{formatSeconds(STEPS[0])}</span>
-                <span className='text-secondary' style={{ fontSize: '0.65rem' }}>{formatSeconds(STEPS[STEPS.length - 1])}</span>
+                <span className='text-body-secondary' style={{ fontSize: '0.65rem' }}>{formatSeconds(STEPS[0])}</span>
+                <span className='text-body-secondary' style={{ fontSize: '0.65rem' }}>{formatSeconds(STEPS[STEPS.length - 1])}</span>
             </div>
         </div>
     );
