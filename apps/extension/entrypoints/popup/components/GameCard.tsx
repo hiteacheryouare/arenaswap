@@ -69,6 +69,26 @@ const teamColorBackground = (awayColor?: string, homeColor?: string): string => 
 	return `linear-gradient(to right, ${left} 0%, ${left} 20%, #ffffff 20%, #ffffff 80%, ${right} 80%, ${right} 100%)`;
 };
 
+const TEAM_COLOR_MASK_SVG = [
+	'<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">',
+	'<defs>',
+	'<filter id="spray" x="-30%" y="-30%" width="160%" height="160%">',
+	'<feTurbulence type="turbulence" baseFrequency="0.04 0.15" numOctaves="4" seed="2" result="noise"/>',
+	'<feDisplacementMap in="SourceGraphic" in2="noise" scale="25" xChannelSelector="R" yChannelSelector="G"/>',
+	'</filter>',
+	'<linearGradient id="g" gradientUnits="objectBoundingBox" x1="0" y1="0" x2="1" y2="0">',
+	'<stop offset="0%" stop-color="white" stop-opacity="0"/>',
+	'<stop offset="20%" stop-color="white" stop-opacity="1"/>',
+	'<stop offset="80%" stop-color="white" stop-opacity="1"/>',
+	'<stop offset="100%" stop-color="white" stop-opacity="0"/>',
+	'</linearGradient>',
+	'</defs>',
+	'<rect width="100%" height="100%" fill="url(#g)" filter="url(#spray)"/>',
+	'</svg>',
+].join('');
+
+const TEAM_COLOR_MASK = `url("data:image/svg+xml,${encodeURIComponent(TEAM_COLOR_MASK_SVG)}")`;
+
 const formatOverUnder = (overUnder: number): string => (
 	Number.isInteger(overUnder) ? String(overUnder) : overUnder.toFixed(1)
 );
