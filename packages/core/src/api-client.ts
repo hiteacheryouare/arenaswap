@@ -30,6 +30,8 @@ interface EspnTeam {
 	displayName: string;
 	abbreviation: string;
 	logo?: string;
+	/** Primary team color as a hex string without '#' (e.g. "002B5C") */
+	color?: string;
 }
 
 interface EspnCompetitor {
@@ -95,6 +97,7 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 			abbreviation: home.team.abbreviation,
 			score: parseInt(home.score ?? '0', 10) || 0,
 			logo: home.team.logo ?? undefined,
+			color: home.team.color ? `#${home.team.color}` : undefined,
 		},
 		awayTeam: {
 			id: away.id,
@@ -102,6 +105,7 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 			abbreviation: away.team.abbreviation,
 			score: parseInt(away.score ?? '0', 10) || 0,
 			logo: away.team.logo ?? undefined,
+			color: away.team.color ? `#${away.team.color}` : undefined,
 		},
 		venueName: comp.venue?.fullName ?? comp.venue?.name ?? undefined,
 		period: status.period ?? 1,

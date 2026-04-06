@@ -9,6 +9,8 @@ export interface Team {
 	abbreviation: string;
 	score: number;
 	logo?: string;
+	/** Primary team color as a CSS hex string (e.g. "#002B5C"), sourced from the API */
+	color?: string;
 }
 
 export interface Game {

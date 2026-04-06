@@ -46,6 +46,25 @@ const powerScoreColor = (score: number, max: number): string => {
     return `rgb(${r},${g},${b})`;
 };
 
+/** Convert a CSS hex color (e.g. "#002B5C") to an "r, g, b" string for use in rgba(). */
+const hexToRgbComponents = (hex: string): string => {
+    const clean = hex.replace('#', '');
+    const r = parseInt(clean.substring(0, 2), 16);
+    const g = parseInt(clean.substring(2, 4), 16);
+    const b = parseInt(clean.substring(4, 6), 16);
+    return `${r}, ${g}, ${b}`;
+};
+
+/**
+ * Builds a subtle left-to-right background gradient tinted with each team's
+ * primary color.  Opacity is kept low so the white card background shows through.
+ */
+const teamColorBackground = (awayColor?: string, homeColor?: string): string => {
+    const leftStop  = awayColor ? `rgba(${hexToRgbComponents(awayColor)}, 0.09) 0%` : '#ffffff 0%';
+    const rightStop = homeColor ? `rgba(${hexToRgbComponents(homeColor)}, 0.09) 100%` : '#ffffff 100%';
+    return `linear-gradient(to right, ${leftStop}, #ffffff 38%, #ffffff 62%, ${rightStop})`;
+};
+
 const LOGO_SIZE = 56;
 
 const TeamLogo = ({ team }: { team: Team }) => {
@@ -88,7 +107,7 @@ const GameCard = ({ game, excitementResult, openTabs, registry, onRegistryChange
 
     if (game.status === 'pre') {
         return (
-            <div className='game-card' style={{ opacity: 0.85 }}>
+            <div className='game-card' style={{ opacity: 0.85, background: teamColorBackground(game.awayTeam.color, game.homeTeam.color) }}>
                 <div className='d-flex align-items-center justify-content-center' style={{ gap: '0.75rem' }}>
                     <TeamColumn team={game.awayTeam} />
                     <div className='d-flex flex-column align-items-center' style={{ minWidth: 80 }}>
@@ -120,7 +139,7 @@ const GameCard = ({ game, excitementResult, openTabs, registry, onRegistryChange
     const isOt = game.period > LEAGUE_CONFIG_MAP[game.league].regularPeriods;
 
     return (
-        <div className={`game-card${isOt ? ' is-ot' : ''}`}>
+        <div className={`game-card${isOt ? ' is-ot' : ''}`} style={{ background: teamColorBackground(game.awayTeam.color, game.homeTeam.color) }}>
             {/* LIVE badge + PowerScore */}
             <div className='d-flex justify-content-between align-items-center mb-1'>
                 <div
