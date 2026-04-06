@@ -46,9 +46,13 @@ const powerScoreColor = (score: number, max: number): string => {
     return `rgb(${r},${g},${b})`;
 };
 
+/** Opacity applied to each team's color tint on the card background. */
+const TEAM_COLOR_OPACITY = 0.09;
+
 /** Convert a CSS hex color (e.g. "#002B5C") to an "r, g, b" string for use in rgba(). */
-const hexToRgbComponents = (hex: string): string => {
+const hexToRgbComponents = (hex: string): string | null => {
     const clean = hex.replace('#', '');
+    if (!/^[0-9a-fA-F]{6}$/.test(clean)) return null;
     const r = parseInt(clean.substring(0, 2), 16);
     const g = parseInt(clean.substring(2, 4), 16);
     const b = parseInt(clean.substring(4, 6), 16);
@@ -60,8 +64,10 @@ const hexToRgbComponents = (hex: string): string => {
  * primary color.  Opacity is kept low so the white card background shows through.
  */
 const teamColorBackground = (awayColor?: string, homeColor?: string): string => {
-    const leftStop  = awayColor ? `rgba(${hexToRgbComponents(awayColor)}, 0.09) 0%` : '#ffffff 0%';
-    const rightStop = homeColor ? `rgba(${hexToRgbComponents(homeColor)}, 0.09) 100%` : '#ffffff 100%';
+    const leftRgb  = awayColor ? hexToRgbComponents(awayColor) : null;
+    const rightRgb = homeColor ? hexToRgbComponents(homeColor) : null;
+    const leftStop  = leftRgb  ? `rgba(${leftRgb}, ${TEAM_COLOR_OPACITY}) 0%`   : '#ffffff 0%';
+    const rightStop = rightRgb ? `rgba(${rightRgb}, ${TEAM_COLOR_OPACITY}) 100%` : '#ffffff 100%';
     return `linear-gradient(to right, ${leftStop}, #ffffff 38%, #ffffff 62%, ${rightStop})`;
 };
 
