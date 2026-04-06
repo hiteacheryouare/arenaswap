@@ -61,6 +61,18 @@ const hexToRgbComponents = (hex: string): string | null => {
 	return `${r}, ${g}, ${b}`;
 };
 
+const perceivedLightness = (hex?: string): number => {
+	if (!hex) return 1;
+	const rgb = hexToRgbComponents(hex);
+	if (!rgb) return 1;
+	const [r, g, b] = rgb.split(', ').map(Number);
+	const toLinear = (c: number) => {
+		const s = c / 255;
+		return s <= 0.04045 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
+	};
+	return 0.2126 * toLinear(r) + 0.7152 * toLinear(g) + 0.0722 * toLinear(b);
+};
+
 const teamColorBackground = (awayColor?: string, homeColor?: string): string => {
 	const leftRgb = awayColor ? hexToRgbComponents(awayColor) : null;
 	const rightRgb = homeColor ? hexToRgbComponents(homeColor) : null;
@@ -90,14 +102,16 @@ const TeamLogo = ({ team }: { team: Team }) => {
 
 	if (team.logo && !failed) {
 		return (
-			<img
-				src={team.logo}
-				alt={team.abbreviation}
-				width={LOGO_SIZE}
-				height={LOGO_SIZE}
-				onError={() => setFailed(true)}
-				className='object-fit-contain flex-shrink-0'
-			/>
+			<div style={{ background: '#ffffff', borderRadius: '50%', padding: 3, flexShrink: 0, lineHeight: 0 }}>
+				<img
+					src={team.logo}
+					alt={team.abbreviation}
+					width={LOGO_SIZE}
+					height={LOGO_SIZE}
+					onError={() => setFailed(true)}
+					className='object-fit-contain'
+				/>
+			</div>
 		);
 	}
 
@@ -114,7 +128,16 @@ const TeamLogo = ({ team }: { team: Team }) => {
 const TeamColumn = ({ team }: { team: Team }) => (
 	<div className='d-flex flex-column align-items-center gap-1' style={{ minWidth: 60 }}>
 		<TeamLogo team={team} />
-		<span className='fw-bold text-center text-nowrap' style={{ fontSize: '0.7rem', color: '#111827' }}>
+		<span
+			className='fw-bold text-center text-nowrap'
+			style={{
+				fontSize: '0.7rem',
+				color: perceivedLightness(team.color) > 0.18 ? '#111827' : '#ffffff',
+				textShadow: perceivedLightness(team.color) > 0.18
+					? '0 1px 2px rgba(255,255,255,0.6)'
+					: '0 1px 2px rgba(0,0,0,0.7)',
+			}}
+		>
 			{team.abbreviation}
 		</span>
 	</div>
@@ -150,7 +173,8 @@ const GameMeta = ({ game }: { game: Game }) => {
 	if (!hasMeta) return null;
 
 	return (
-		<div className='d-flex flex-column align-items-center mt-1' style={{ gap: '0.15rem' }}>
+		<div style={{ background: 'rgba(255,255,255,0.72)', borderRadius: '0.375rem', padding: '0.2rem 0.5rem', marginTop: '0.25rem' }}>
+		<div className='d-flex flex-column align-items-center' style={{ gap: '0.15rem' }}>
 			{game.venueName && (
 				<div className='text-center' style={{ fontSize: '0.6rem', color: '#6c757d' }}>
 					{game.venueName}
@@ -176,6 +200,7 @@ const GameMeta = ({ game }: { game: Game }) => {
 				</div>
 			)}
 		</div>
+		</div>
 	);
 };
 
@@ -187,7 +212,7 @@ const GameCard = ({ game, excitementResult, openTabs, registry, onRegistryChange
 			<div className='game-card' style={{ background: teamColorBackground(game.awayTeam.color, game.homeTeam.color) }}>
 				<div className='d-flex align-items-center justify-content-center' style={{ gap: '0.75rem' }}>
 					<TeamColumn team={game.awayTeam} />
-					<div className='d-flex flex-column align-items-center' style={{ minWidth: 80 }}>
+					<div className='d-flex flex-column align-items-center' style={{ minWidth: 80, background: 'rgba(255,255,255,0.72)', borderRadius: '0.375rem', padding: '0.25rem 0.5rem' }}>
 						<span style={{ fontSize: '0.8rem', color: '#8b949e' }}>vs</span>
 						{game.startTime && (
 							<span className='font-lekton text-center text-nowrap' style={{ fontSize: '0.7rem', color: '#F1C40F', marginTop: '0.15rem' }}>
@@ -233,7 +258,7 @@ const GameCard = ({ game, excitementResult, openTabs, registry, onRegistryChange
 
 			<div className='d-flex align-items-center justify-content-center' style={{ gap: '0.75rem' }}>
 				<TeamColumn team={game.awayTeam} />
-				<div className='d-flex flex-column align-items-center' style={{ minWidth: 80 }}>
+				<div className='d-flex flex-column align-items-center' style={{ minWidth: 80, background: 'rgba(255,255,255,0.72)', borderRadius: '0.375rem', padding: '0.25rem 0.5rem' }}>
 					<div className='d-flex align-items-baseline' style={{ gap: '1.25rem' }}>
 						<span className='fw-bold lh-1' style={{ fontSize: '1.75rem', color: '#111827', letterSpacing: '-0.02em', fontVariantNumeric: 'tabular-nums' }}>
 							{game.awayTeam.score}
