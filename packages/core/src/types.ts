@@ -1,5 +1,5 @@
-export type SportType = 'basketball' | 'football' | 'hockey' | 'baseball';
-export type LeagueId = 'nba' | 'nhl' | 'mlb' | 'nfl' | 'ncaab' | 'ncaaf';
+export type SportType = 'basketball' | 'football' | 'hockey' | 'baseball' | 'soccer';
+export type LeagueId = 'nba' | 'wnba' | 'nhl' | 'pwhl' | 'mlb' | 'nfl' | 'ncaab' | 'ncaaf' | 'mls';
 /** @deprecated Use LeagueId */
 export type SportId = LeagueId;
 

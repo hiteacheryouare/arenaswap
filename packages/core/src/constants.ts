@@ -103,6 +103,7 @@ export const SCORER_TUNABLES: ScorerTunables = {
 		tied: 'tied',
 		closenessUnitBySportType: {
 			hockey: 'goal',
+			soccer: 'goal',
 		},
 		defaultClosenessUnit: 'point',
 		closenessGameSuffix: 'game',
@@ -208,6 +209,16 @@ export const SPORT_TYPE_CONFIGS: SportTypeConfig[] = [
 		momentumBigRun: 14,
 		momentumSmallRun: 7,
 	},
+	{
+		id: 'soccer',
+		clockBased: true,
+		closenessMargins: [1, 2, 3],
+		lateGameCriticalSecs: 180,
+		lateGameTenseSecs: 600,
+		lateGamePrevPeriodSecs: 600,
+		momentumBigRun: 2,
+		momentumSmallRun: 1,
+	},
 ];
 
 export const LEAGUE_CONFIGS: LeagueConfig[] = [
@@ -218,6 +229,15 @@ export const LEAGUE_CONFIGS: LeagueConfig[] = [
 		espnPath: 'basketball/nba',
 		regularPeriods: 4,
 		periodDurationSecs: 720,
+		periodFormat: 'quarters',
+	},
+	{
+		id: 'wnba',
+		label: 'WNBA',
+		sportType: 'basketball',
+		espnPath: 'basketball/wnba',
+		regularPeriods: 4,
+		periodDurationSecs: 600,
 		periodFormat: 'quarters',
 	},
 	{
@@ -234,6 +254,15 @@ export const LEAGUE_CONFIGS: LeagueConfig[] = [
 		label: 'NHL',
 		sportType: 'hockey',
 		espnPath: 'hockey/nhl',
+		regularPeriods: 3,
+		periodDurationSecs: 1200,
+		periodFormat: 'periods',
+	},
+	{
+		id: 'pwhl',
+		label: 'PWHL',
+		sportType: 'hockey',
+		espnPath: 'hockey/pwhl',
 		regularPeriods: 3,
 		periodDurationSecs: 1200,
 		periodFormat: 'periods',
@@ -265,6 +294,15 @@ export const LEAGUE_CONFIGS: LeagueConfig[] = [
 		periodDurationSecs: 900,
 		periodFormat: 'quarters',
 	},
+	{
+		id: 'mls',
+		label: 'MLS',
+		sportType: 'soccer',
+		espnPath: 'soccer/usa.1',
+		regularPeriods: 2,
+		periodDurationSecs: 2700,
+		periodFormat: 'halves',
+	},
 ];
 
 export const ALL_LEAGUE_IDS = LEAGUE_CONFIGS.map(c => c.id) as LeagueId[];
@@ -279,11 +317,14 @@ export const LEAGUE_CONFIG_MAP = Object.fromEntries(
 
 export const LEAGUE_LOGO_FALLBACKS: Record<LeagueId, string> = {
 	nba: 'https://a.espncdn.com/i/teamlogos/leagues/500/nba.png',
+	wnba: 'https://a.espncdn.com/i/teamlogos/leagues/500/wnba.png',
 	ncaab: 'https://a.espncdn.com/redesign/assets/img/icons/ESPN-icon-basketball.png',
 	nhl: 'https://a.espncdn.com/i/teamlogos/leagues/500/nhl.png',
+	pwhl: 'https://a.espncdn.com/i/teamlogos/leagues/500/nhl.png',
 	mlb: 'https://a.espncdn.com/i/teamlogos/leagues/500/mlb.png',
 	nfl: 'https://a.espncdn.com/i/teamlogos/leagues/500/nfl.png',
 	ncaaf: 'https://a.espncdn.com/redesign/assets/img/icons/ESPN-icon-football-college.png',
+	mls: 'https://a.espncdn.com/i/teamlogos/leagues/500/mls.png',
 };
 
 export const resolveLeagueLogoUrl = (leagueId: LeagueId, espnLogoUrl?: string): string => (

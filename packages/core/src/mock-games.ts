@@ -26,6 +26,7 @@ const SPORT_PARAMS: Record<Game['sportType'], {
 	hockey: { normalScoreProb: 0.06, streakScoreProb: 0.18, offScoreProb: 0.02, scoreValues: [1, 1] },
 	baseball: { normalScoreProb: 0.12, streakScoreProb: 0.35, offScoreProb: 0.04, scoreValues: [1, 2] },
 	football: { normalScoreProb: 0.15, streakScoreProb: 0.4, offScoreProb: 0.05, scoreValues: [7, 3] },
+	soccer: { normalScoreProb: 0.05, streakScoreProb: 0.14, offScoreProb: 0.02, scoreValues: [1, 1] },
 };
 
 /**
@@ -92,6 +93,33 @@ export class MockGameSimulator {
 				venueName: 'Lincoln Financial Field',
 				period: 1, clockSeconds: 900, status: 'pre',
 				startTime: new Date(Date.now() + 120_000).toISOString(),
+			},
+			{
+				id: 'mock-7',
+				league: 'wnba',
+				sportType: 'basketball',
+				homeTeam: { id: '17', name: 'Las Vegas Aces', abbreviation: 'LVA', score: 71, logo: `${ESPN_CDN}/wnba/500/17.png` },
+				awayTeam: { id: '20', name: 'New York Liberty', abbreviation: 'NYL', score: 73, logo: `${ESPN_CDN}/wnba/500/20.png` },
+				venueName: 'Michelob Ultra Arena',
+				period: 4, clockSeconds: 128, status: 'in',
+			},
+			{
+				id: 'mock-8',
+				league: 'pwhl',
+				sportType: 'hockey',
+				homeTeam: { id: 'pwhl-min', name: 'Minnesota Frost', abbreviation: 'MIN', score: 1 },
+				awayTeam: { id: 'pwhl-bos', name: 'Boston Fleet', abbreviation: 'BOS', score: 2 },
+				venueName: 'Tsongas Center',
+				period: 3, clockSeconds: 356, status: 'in',
+			},
+			{
+				id: 'mock-9',
+				league: 'mls',
+				sportType: 'soccer',
+				homeTeam: { id: '183', name: 'New York City FC', abbreviation: 'NYC', score: 1, logo: `${ESPN_CDN}/soccer/500/183.png` },
+				awayTeam: { id: '190', name: 'Philadelphia Union', abbreviation: 'PHI', score: 1, logo: `${ESPN_CDN}/soccer/500/190.png` },
+				venueName: 'Yankee Stadium',
+				period: 2, clockSeconds: 742, status: 'in',
 			},
 		];
 
@@ -198,7 +226,7 @@ export class MockGameSimulator {
 
 		if (isLate) {
 			const margin = Math.abs(game.homeTeam.score - game.awayTeam.score);
-			const bigMargin = game.sportType === 'hockey' ? 2 : game.sportType === 'baseball' ? 3 : 10;
+			const bigMargin = game.sportType === 'hockey' || game.sportType === 'soccer' ? 2 : game.sportType === 'baseball' ? 3 : 10;
 			if (margin > bigMargin && Math.random() < 0.4) {
 				const trailing = game.homeTeam.score < game.awayTeam.score ? game.homeTeam : game.awayTeam;
 				trailing.score += pts();

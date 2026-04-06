@@ -34,12 +34,14 @@ const SPORT_TYPE_ORDER: Record<SportType, number> = {
 	football: 1,
 	hockey: 2,
 	baseball: 3,
+	soccer: 4,
 };
 const SPORT_TYPE_LABELS: Record<SportType, string> = {
 	basketball: 'Basketball',
 	football: 'Football',
 	hockey: 'Hockey',
 	baseball: 'Baseball',
+	soccer: 'Soccer',
 };
 const LEAGUE_LABELS = Object.fromEntries(LEAGUE_CONFIGS.map(config => [config.id, config.label])) as Record<LeagueId, string>;
 const LEAGUES_BY_SPORT_TYPE = LEAGUE_CONFIGS.reduce<Record<SportType, typeof LEAGUE_CONFIGS>>((groups, config) => {
@@ -50,6 +52,7 @@ const LEAGUES_BY_SPORT_TYPE = LEAGUE_CONFIGS.reduce<Record<SportType, typeof LEA
 	football: [],
 	hockey: [],
 	baseball: [],
+	soccer: [],
 });
 const toLeagueInitials = (league: LeagueConfig): string => (
 	league
