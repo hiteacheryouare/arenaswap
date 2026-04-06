@@ -64,9 +64,11 @@ const hexToRgbComponents = (hex: string): string | null => {
 const teamColorBackground = (awayColor?: string, homeColor?: string): string => {
 	const leftRgb = awayColor ? hexToRgbComponents(awayColor) : null;
 	const rightRgb = homeColor ? hexToRgbComponents(homeColor) : null;
-	const left = leftRgb ? `rgb(${leftRgb})` : '#ffffff';
-	const right = rightRgb ? `rgb(${rightRgb})` : '#ffffff';
-	return `linear-gradient(to right, ${left} 0%, #ffffff 10%, #ffffff 90%, ${right} 100%)`;
+	const left = leftRgb ? `rgb(${leftRgb})` : 'rgba(255,255,255,0)';
+	const leftMid = leftRgb ? `rgba(${leftRgb}, 0.35)` : 'rgba(255,255,255,0)';
+	const rightMid = rightRgb ? `rgba(${rightRgb}, 0.35)` : 'rgba(255,255,255,0)';
+	const right = rightRgb ? `rgb(${rightRgb})` : 'rgba(255,255,255,0)';
+	return `linear-gradient(to right, ${left} 0%, ${leftMid} 45%, ${rightMid} 55%, ${right} 100%)`;
 };
 
 const formatOverUnder = (overUnder: number): string => (
