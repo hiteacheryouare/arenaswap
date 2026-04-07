@@ -125,7 +125,7 @@ export class MockGameSimulator {
 				league: 'mls',
 				sportType: 'soccer',
 				homeTeam: { id: '190', name: 'Philadelphia Union', abbreviation: 'PHI', score: 2, logo: `${ESPN_CDN}/soccer/500/10739.png`, color: '#051c2c' },
-				awayTeam: { id: '183', name: 'New York Red Bull', abbreviation: 'NYR', score: 1, logo: `${ESPN_CDN}/soccer/500/190.png`, color: '#6CADDF' },
+				awayTeam: { id: '183', name: 'New York Red Bull', abbreviation: 'NYR', score: 1, logo: `${ESPN_CDN}/soccer/500/190.png`, color: '#b91f31' },
 				venueName: 'Subaru Park',
 				period: 2, clockSeconds: 742, status: 'in',
 				broadcasts: ['Apple TV'],
