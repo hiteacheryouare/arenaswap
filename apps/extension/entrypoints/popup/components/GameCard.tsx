@@ -48,41 +48,6 @@ const powerScoreColor = (score: number, max: number): string => {
 	return `rgb(${r},${g},${b})`;
 };
 
-/** Convert a CSS hex color to an "r, g, b" string for use in rgba(). */
-const hexToRgbComponents = (hex: string): string | null => {
-	const clean = hex.trim().replace('#', '');
-	const normalized = /^[0-9a-fA-F]{3}$/.test(clean)
-		? clean.split('').map(char => `${char}${char}`).join('')
-		: clean;
-	if (!/^[0-9a-fA-F]{6}$/.test(normalized)) return null;
-	const r = parseInt(normalized.substring(0, 2), 16);
-	const g = parseInt(normalized.substring(2, 4), 16);
-	const b = parseInt(normalized.substring(4, 6), 16);
-	return `${r}, ${g}, ${b}`;
-};
-
-const perceivedLightness = (hex?: string): number => {
-	if (!hex) return 1;
-	const rgb = hexToRgbComponents(hex);
-	if (!rgb) return 1;
-	const [r, g, b] = rgb.split(', ').map(Number);
-	const toLinear = (c: number) => {
-		const s = c / 255;
-		return s <= 0.04045 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
-	};
-	return 0.2126 * toLinear(r) + 0.7152 * toLinear(g) + 0.0722 * toLinear(b);
-};
-
-const teamColorBackground = (awayColor?: string, homeColor?: string): string => {
-	const leftRgb = awayColor ? hexToRgbComponents(awayColor) : null;
-	const rightRgb = homeColor ? hexToRgbComponents(homeColor) : null;
-	const left = leftRgb ? `rgb(${leftRgb})` : 'rgba(255,255,255,0)';
-	const leftMid = leftRgb ? `rgba(${leftRgb}, 0.35)` : 'rgba(255,255,255,0)';
-	const rightMid = rightRgb ? `rgba(${rightRgb}, 0.35)` : 'rgba(255,255,255,0)';
-	const right = rightRgb ? `rgb(${rightRgb})` : 'rgba(255,255,255,0)';
-	return `linear-gradient(to right, ${left} 0%, ${leftMid} 45%, ${rightMid} 55%, ${right} 100%)`;
-};
-
 const formatOverUnder = (overUnder: number): string => (
 	Number.isInteger(overUnder) ? String(overUnder) : overUnder.toFixed(1)
 );
@@ -102,16 +67,14 @@ const TeamLogo = ({ team }: { team: Team }) => {
 
 	if (team.logo && !failed) {
 		return (
-			<div style={{ background: '#ffffff', borderRadius: '50%', padding: 3, flexShrink: 0, lineHeight: 0 }}>
-				<img
-					src={team.logo}
-					alt={team.abbreviation}
-					width={LOGO_SIZE}
-					height={LOGO_SIZE}
-					onError={() => setFailed(true)}
-					className='object-fit-contain'
-				/>
-			</div>
+			<img
+				src={team.logo}
+				alt={team.abbreviation}
+				width={LOGO_SIZE}
+				height={LOGO_SIZE}
+				onError={() => setFailed(true)}
+				className='object-fit-contain flex-shrink-0'
+			/>
 		);
 	}
 
@@ -128,16 +91,7 @@ const TeamLogo = ({ team }: { team: Team }) => {
 const TeamColumn = ({ team }: { team: Team }) => (
 	<div className='d-flex flex-column align-items-center gap-1' style={{ minWidth: 60 }}>
 		<TeamLogo team={team} />
-		<span
-			className='fw-bold text-center text-nowrap'
-			style={{
-				fontSize: '0.7rem',
-				color: perceivedLightness(team.color) > 0.18 ? '#111827' : '#ffffff',
-				textShadow: perceivedLightness(team.color) > 0.18
-					? '0 1px 2px rgba(255,255,255,0.6)'
-					: '0 1px 2px rgba(0,0,0,0.7)',
-			}}
-		>
+		<span className='fw-bold text-center text-nowrap' style={{ fontSize: '0.7rem', color: '#111827' }}>
 			{team.abbreviation}
 		</span>
 	</div>
@@ -173,8 +127,7 @@ const GameMeta = ({ game }: { game: Game }) => {
 	if (!hasMeta) return null;
 
 	return (
-		<div style={{ background: 'rgba(255,255,255,0.72)', borderRadius: '0.375rem', padding: '0.2rem 0.5rem', marginTop: '0.25rem' }}>
-		<div className='d-flex flex-column align-items-center' style={{ gap: '0.15rem' }}>
+		<div className='d-flex flex-column align-items-center mt-1' style={{ gap: '0.15rem' }}>
 			{game.venueName && (
 				<div className='text-center' style={{ fontSize: '0.6rem', color: '#6c757d' }}>
 					{game.venueName}
@@ -200,7 +153,6 @@ const GameMeta = ({ game }: { game: Game }) => {
 				</div>
 			)}
 		</div>
-		</div>
 	);
 };
 
@@ -209,10 +161,10 @@ const GameCard = ({ game, excitementResult, openTabs, registry, onRegistryChange
 
 	if (game.status === 'pre') {
 		return (
-			<div className='game-card' style={{ background: teamColorBackground(game.awayTeam.color, game.homeTeam.color) }}>
+			<div className='game-card'>
 				<div className='d-flex align-items-center justify-content-center' style={{ gap: '0.75rem' }}>
 					<TeamColumn team={game.awayTeam} />
-					<div className='d-flex flex-column align-items-center' style={{ minWidth: 80, background: 'rgba(255,255,255,0.72)', borderRadius: '0.375rem', padding: '0.25rem 0.5rem' }}>
+					<div className='d-flex flex-column align-items-center' style={{ minWidth: 80 }}>
 						<span style={{ fontSize: '0.8rem', color: '#8b949e' }}>vs</span>
 						{game.startTime && (
 							<span className='font-lekton text-center text-nowrap' style={{ fontSize: '0.7rem', color: '#F1C40F', marginTop: '0.15rem' }}>
@@ -237,7 +189,7 @@ const GameCard = ({ game, excitementResult, openTabs, registry, onRegistryChange
 	const isOt = game.period > LEAGUE_CONFIG_MAP[game.league].regularPeriods;
 
 	return (
-		<div className={`game-card${isOt ? ' is-ot' : ''}`} style={{ background: teamColorBackground(game.awayTeam.color, game.homeTeam.color) }}>
+		<div className={`game-card${isOt ? ' is-ot' : ''}`}>
 			<div className='d-flex justify-content-between align-items-center mb-1'>
 				<div
 					className='d-flex align-items-center gap-1 fw-bold text-uppercase text-primary'
@@ -258,7 +210,7 @@ const GameCard = ({ game, excitementResult, openTabs, registry, onRegistryChange
 
 			<div className='d-flex align-items-center justify-content-center' style={{ gap: '0.75rem' }}>
 				<TeamColumn team={game.awayTeam} />
-				<div className='d-flex flex-column align-items-center' style={{ minWidth: 80, background: 'rgba(255,255,255,0.72)', borderRadius: '0.375rem', padding: '0.25rem 0.5rem' }}>
+				<div className='d-flex flex-column align-items-center' style={{ minWidth: 80 }}>
 					<div className='d-flex align-items-baseline' style={{ gap: '1.25rem' }}>
 						<span className='fw-bold lh-1' style={{ fontSize: '1.75rem', color: '#111827', letterSpacing: '-0.02em', fontVariantNumeric: 'tabular-nums' }}>
 							{game.awayTeam.score}
