@@ -152,6 +152,12 @@ export interface SportTypeConfig {
 	momentumBigRun: number;
 	/** Unanswered-scoring-run size that triggers half momentum score */
 	momentumSmallRun: number;
+	/** true when ESPN reports elapsed time (counts up), e.g. soccer; false = countdown */
+	clockCountsUp: boolean;
+	/** if true, 0-0 scores the same as any other tied game (appropriate for soccer/hockey) */
+	zeroZeroAsFullTie: boolean;
+	/** overrides MAX_HISTORY_SNAPSHOTS for momentum window; omit to use the global default */
+	maxHistorySnapshots?: number;
 }
 
 export interface LeagueConfig {
@@ -178,6 +184,8 @@ export const SPORT_TYPE_CONFIGS: SportTypeConfig[] = [
 		lateGamePrevPeriodSecs: 300,
 		momentumBigRun: 10,
 		momentumSmallRun: 5,
+		clockCountsUp: false,
+		zeroZeroAsFullTie: false,
 	},
 	{
 		id: 'hockey',
@@ -188,6 +196,8 @@ export const SPORT_TYPE_CONFIGS: SportTypeConfig[] = [
 		lateGamePrevPeriodSecs: 300,
 		momentumBigRun: 3,
 		momentumSmallRun: 2,
+		clockCountsUp: false,
+		zeroZeroAsFullTie: true,
 	},
 	{
 		id: 'baseball',
@@ -198,6 +208,9 @@ export const SPORT_TYPE_CONFIGS: SportTypeConfig[] = [
 		lateGamePrevPeriodSecs: 0,
 		momentumBigRun: 4,
 		momentumSmallRun: 2,
+		clockCountsUp: false,
+		zeroZeroAsFullTie: false,
+		maxHistorySnapshots: 20,
 	},
 	{
 		id: 'football',
@@ -208,6 +221,8 @@ export const SPORT_TYPE_CONFIGS: SportTypeConfig[] = [
 		lateGamePrevPeriodSecs: 180,
 		momentumBigRun: 14,
 		momentumSmallRun: 7,
+		clockCountsUp: false,
+		zeroZeroAsFullTie: false,
 	},
 	{
 		id: 'soccer',
@@ -218,6 +233,8 @@ export const SPORT_TYPE_CONFIGS: SportTypeConfig[] = [
 		lateGamePrevPeriodSecs: 600,
 		momentumBigRun: 2,
 		momentumSmallRun: 1,
+		clockCountsUp: true,
+		zeroZeroAsFullTie: true,
 	},
 ];
 

@@ -14,7 +14,7 @@ const getCloseness = (game: Game, config: SportTypeConfig): Signal => {
 	const margin = Math.abs(game.homeTeam.score - game.awayTeam.score);
 	if (game.homeTeam.score === 0 && game.awayTeam.score === 0)
 		// reason string intentionally reuses 'tied' — UI label is the same
-		return { score: scores.closeness.zeroZero, reason: reasons.tied };
+		return { score: config.zeroZeroAsFullTie ? scores.closeness.tied : scores.closeness.zeroZero, reason: reasons.tied };
 	if (margin === 0) return { score: scores.closeness.tied, reason: reasons.tied };
 	if (margin <= t1) return { score: scores.closeness.tight, reason: `${margin}-${getClosenessUnit(game)} ${reasons.closenessGameSuffix}` };
 	if (margin <= t2) return { score: scores.closeness.close, reason: `${margin}-${getClosenessUnit(game)} ${reasons.closenessGameSuffix}` };
@@ -59,11 +59,16 @@ const getLateGame = (game: Game, config: SportTypeConfig): Signal => {
 	const isLastPeriod = game.period === regularPeriods;
 	const isPrevPeriod = game.period === regularPeriods - 1;
 
-	if (isLastPeriod && game.clockSeconds <= config.lateGameCriticalSecs)
-		return { score: scores.lateGame.clockBased.critical, reason: `${formatClock(game.clockSeconds)} ${reasons.clockLeftSuffix}` };
-	if (isLastPeriod && game.clockSeconds <= config.lateGameTenseSecs)
+	// Soccer (and any future count-up sport) reports elapsed time; convert to time remaining.
+	const secsRemaining = config.clockCountsUp
+		? Math.max(0, leagueConfig.periodDurationSecs - game.clockSeconds)
+		: game.clockSeconds;
+
+	if (isLastPeriod && secsRemaining <= config.lateGameCriticalSecs)
+		return { score: scores.lateGame.clockBased.critical, reason: `${formatClock(secsRemaining)} ${reasons.clockLeftSuffix}` };
+	if (isLastPeriod && secsRemaining <= config.lateGameTenseSecs)
 		return { score: scores.lateGame.clockBased.tense, reason: `${reasons.underPrefix} ${config.lateGameTenseSecs / 60} ${reasons.minutesLeftSuffix}` };
-	if (isPrevPeriod && game.clockSeconds <= config.lateGamePrevPeriodSecs)
+	if (isPrevPeriod && secsRemaining <= config.lateGamePrevPeriodSecs)
 		return { score: scores.lateGame.clockBased.previousPeriod, reason: '' };
 	return { score: scores.lateGame.none, reason: '' };
 };

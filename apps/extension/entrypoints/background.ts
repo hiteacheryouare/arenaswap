@@ -40,7 +40,9 @@ export default defineBackground(() => {
 				homeScore: game.homeTeam.score,
 				awayScore: game.awayTeam.score,
 			});
-			if (snapshots.length > MAX_HISTORY_SNAPSHOTS) snapshots.shift();
+			const sportConfig = SPORT_TYPE_CONFIG_MAP[game.sportType] ?? SPORT_TYPE_CONFIG_MAP.basketball;
+			const maxSnapshots = sportConfig.maxHistorySnapshots ?? MAX_HISTORY_SNAPSHOTS;
+			if (snapshots.length > maxSnapshots) snapshots.shift();
 			history.set(game.id, snapshots);
 		});
 	};
