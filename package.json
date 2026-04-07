@@ -9,7 +9,7 @@
 	],
 	"scripts": {
 		"dev": "turbo dev",
-		"build": "turbo build",
+		"build": "turbo run build build:firefox",
 		"test": "turbo test",
 		"typecheck": "turbo typecheck"
 	},

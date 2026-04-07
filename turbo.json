@@ -5,15 +5,20 @@
 			"dependsOn": ["^build"],
 			"outputs": [".output/**", "dist/**"]
 		},
+		"build:firefox": {
+			"dependsOn": ["^build"],
+			"outputs": [".output/**"]
+		},
 		"dev": {
 			"persistent": true,
-			"cache": false
+			"cache": false,
+			"dependsOn": ["^build"]
 		},
 		"test": {
 			"dependsOn": ["^build"]
 		},
 		"typecheck": {
-			"dependsOn": ["^typecheck"]
+			"dependsOn": ["^build"]
 		}
 	}
 }
