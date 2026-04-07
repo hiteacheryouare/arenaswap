@@ -453,7 +453,8 @@ export default () => {
 
 			{hasEspnBranding && (
 				<div className='text-center mt-2 mb-1' style={{ fontSize: '0.56rem', color: '#8b949e', letterSpacing: '0.02em' }}>
-					Powered by ESPN data
+					Powered by ESPN. 
+					<br /> Built in Philadelphia & Boston with ❤️ by Ryan Mullin.
 				</div>
 			)}
 		</div>
