@@ -264,18 +264,36 @@ const fetchScoreboard = async (url: string, leagueId: LeagueId): Promise<EspnSco
 };
 
 const fetchLeagueGames = async (config: LeagueConfig): Promise<LeagueGamesResult> => {
-	const baseUrl = `${ESPN_BASE}/${config.espnPath}/scoreboard`;
+	const baseParams = new URLSearchParams();
+	// ESPN requires `groups=50` for reliable NCAA men's basketball scoreboard coverage
+	// and to avoid 404 responses on date-range queries.
+	if (config.id === 'ncaab') baseParams.set('groups', '50');
+
+	const scoreboardUrl = `${ESPN_BASE}/${config.espnPath}/scoreboard`;
+	const baseQuery = baseParams.toString();
+	const baseUrl = baseQuery ? `${scoreboardUrl}?${baseQuery}` : scoreboardUrl;
 	const upcomingDates = buildUpcomingDatesRangeQuery();
-	const upcomingUrl = `${baseUrl}?dates=${upcomingDates}`;
-	const [todayData, upcomingData] = await Promise.all([
+	const upcomingParams = new URLSearchParams(baseParams);
+	upcomingParams.set('dates', upcomingDates);
+	const upcomingUrl = `${scoreboardUrl}?${upcomingParams.toString()}`;
+	const [todayResult, upcomingResult] = await Promise.allSettled([
 		fetchScoreboard(baseUrl, config.id),
 		fetchScoreboard(upcomingUrl, config.id),
 	]);
-	const espnLogo = todayData.leagues?.[0]?.logos?.[0]?.href
-		?? upcomingData.leagues?.[0]?.logos?.[0]?.href;
+	if (todayResult.status === 'rejected' && upcomingResult.status === 'rejected') {
+		const error = todayResult.reason instanceof Error
+			? todayResult.reason
+			: upcomingResult.reason;
+		throw error;
+	}
+
+	const todayData = todayResult.status === 'fulfilled' ? todayResult.value : undefined;
+	const upcomingData = upcomingResult.status === 'fulfilled' ? upcomingResult.value : undefined;
+	const espnLogo = todayData?.leagues?.[0]?.logos?.[0]?.href
+		?? upcomingData?.leagues?.[0]?.logos?.[0]?.href;
 	const logoUrl = resolveLeagueLogoUrl(config.id, espnLogo);
 
-	const parsedGames = [...(todayData.events ?? []), ...(upcomingData.events ?? [])]
+	const parsedGames = [...(todayData?.events ?? []), ...(upcomingData?.events ?? [])]
 		.map(event => parseEvent(event, config.id))
 		.filter((game): game is Game => game !== null && game.status !== 'post');
 
