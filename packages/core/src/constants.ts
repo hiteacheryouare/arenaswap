@@ -268,6 +268,15 @@ export const LEAGUE_CONFIGS: LeagueConfig[] = [
 		periodFormat: 'periods',
 	},
 	{
+		id: 'ncaamh',
+		label: "NCAA Men's Hockey",
+		sportType: 'hockey',
+		espnPath: 'hockey/mens-college-hockey',
+		regularPeriods: 3,
+		periodDurationSecs: 1200,
+		periodFormat: 'periods',
+	},
+	{
 		id: 'mlb',
 		label: 'MLB',
 		sportType: 'baseball',
@@ -321,6 +330,7 @@ export const LEAGUE_LOGO_FALLBACKS: Record<LeagueId, string> = {
 	ncaab: 'https://a.espncdn.com/redesign/assets/img/icons/ESPN-icon-basketball.png',
 	nhl: 'https://a.espncdn.com/i/teamlogos/leagues/500/nhl.png',
 	pwhl: 'https://a.espncdn.com/i/teamlogos/leagues/500/nhl.png',
+	ncaamh: 'https://a.espncdn.com/i/teamlogos/leagues/500/nhl.png',
 	mlb: 'https://a.espncdn.com/i/teamlogos/leagues/500/mlb.png',
 	nfl: 'https://a.espncdn.com/i/teamlogos/leagues/500/nfl.png',
 	ncaaf: 'https://a.espncdn.com/redesign/assets/img/icons/ESPN-icon-football-college.png',

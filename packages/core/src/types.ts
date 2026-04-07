@@ -1,5 +1,5 @@
 export type SportType = 'basketball' | 'football' | 'hockey' | 'baseball' | 'soccer';
-export type LeagueId = 'nba' | 'wnba' | 'nhl' | 'pwhl' | 'mlb' | 'nfl' | 'ncaab' | 'ncaaf' | 'mls';
+export type LeagueId = 'nba' | 'wnba' | 'nhl' | 'pwhl' | 'ncaamh' | 'mlb' | 'nfl' | 'ncaab' | 'ncaaf' | 'mls';
 /** @deprecated Use LeagueId */
 export type SportId = LeagueId;
 
@@ -13,6 +13,17 @@ export interface Team {
 	color?: string;
 }
 
+export interface GameOddsProvider {
+	name: string;
+	logoUrl?: string;
+}
+
+export interface GameOdds {
+	details?: string;
+	overUnder?: number;
+	provider?: GameOddsProvider;
+}
+
 export interface Game {
 	id: string;
 	league: LeagueId;
@@ -24,6 +35,8 @@ export interface Game {
 	clockSeconds: number;
 	status: 'pre' | 'in' | 'post';
 	startTime?: string;
+	broadcasts?: string[];
+	odds?: GameOdds;
 	/** True while the game is in halftime or between-period intermission */
 	intermission?: boolean;
 }

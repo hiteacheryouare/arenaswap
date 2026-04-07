@@ -91,8 +91,9 @@ export default defineBackground(() => {
 	const tick = async (allowTabSwitch = true) => {
 		const enabledLeagues = prefs.enabledLeagues;
 		if (demoMode && simulator) {
-			games = simulator.tick().filter(game => enabledLeagues.includes(game.league));
-			leagueLogos = enabledLeagues.reduce<LeagueLogoMap>((acc, leagueId) => {
+			games = simulator.tick();
+			const demoLeagues = [...new Set(games.map(game => game.league))];
+			leagueLogos = demoLeagues.reduce<LeagueLogoMap>((acc, leagueId) => {
 				acc[leagueId] = LEAGUE_LOGO_FALLBACKS[leagueId];
 				return acc;
 			}, {});

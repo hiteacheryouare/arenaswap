@@ -299,6 +299,10 @@ export default () => {
 	const registeredGameIds = new Set(registry.map(r => r.gameId));
 	const assignedLiveGames = liveGames.filter(g => registeredGameIds.has(g.id)).sort(byLeague);
 	const unassignedLiveGames = liveGames.filter(g => !registeredGameIds.has(g.id)).sort(byLeague);
+	const hasEspnBranding = (
+		Object.values(leagueLogos).some(url => typeof url === 'string' && url.toLowerCase().includes('espn'))
+		|| games.some(game => (game.odds?.provider?.logoUrl ?? '').toLowerCase().includes('espn'))
+	);
 
 	return (
 		<div style={POPUP_CONTAINER_STYLE}>
@@ -444,6 +448,12 @@ export default () => {
 							))}
 						</div>
 					))}
+				</div>
+			)}
+
+			{hasEspnBranding && (
+				<div className='text-center mt-2 mb-1' style={{ fontSize: '0.56rem', color: '#8b949e', letterSpacing: '0.02em' }}>
+					Powered by ESPN data
 				</div>
 			)}
 		</div>
