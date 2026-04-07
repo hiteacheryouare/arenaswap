@@ -15,8 +15,9 @@ const parseClockToSeconds = (clock: string): number => {
 };
 
 const parseStatus = (state: string): Game['status'] => {
-	if (state === 'pre') return 'pre';
-	if (state === 'in') return 'in';
+	const normalized = state.trim().toLowerCase();
+	if (normalized === 'pre' || normalized === 'scheduled') return 'pre';
+	if (normalized === 'in' || normalized === 'in_progress' || normalized === 'inprogress' || normalized === 'live') return 'in';
 	return 'post';
 };
 
@@ -24,10 +25,11 @@ const toQueryDate = (date: Date): string => (
 	`${date.getUTCFullYear()}${String(date.getUTCMonth() + 1).padStart(2, '0')}${String(date.getUTCDate()).padStart(2, '0')}`
 );
 
-const buildDatesRangeQuery = (): string => {
+const buildUpcomingDatesRangeQuery = (): string => {
 	const start = new Date();
+	start.setUTCDate(start.getUTCDate() + 1);
 	const end = new Date(start);
-	end.setUTCDate(end.getUTCDate() + UPCOMING_DATE_WINDOW_DAYS);
+	end.setUTCDate(end.getUTCDate() + (UPCOMING_DATE_WINDOW_DAYS - 1));
 	return `${toQueryDate(start)}-${toQueryDate(end)}`;
 };
 
@@ -251,25 +253,33 @@ interface LeagueGamesResult {
 	logoUrl: string;
 }
 
-const fetchLeagueGames = async (config: LeagueConfig): Promise<LeagueGamesResult> => {
-	const dates = buildDatesRangeQuery();
-	const url = `${ESPN_BASE}/${config.espnPath}/scoreboard?dates=${dates}`;
+const fetchScoreboard = async (url: string, leagueId: LeagueId): Promise<EspnScoreboardResponse> => {
 	const res = await fetch(url, {
 		headers: {
 			'Accept': 'application/json',
 		},
 	});
-	if (!res.ok) throw new LeagueFetchError(config.id, res.status);
-	const data = await res.json() as EspnScoreboardResponse;
-	const espnLogo = data.leagues?.[0]?.logos?.[0]?.href;
+	if (!res.ok) throw new LeagueFetchError(leagueId, res.status);
+	return res.json() as Promise<EspnScoreboardResponse>;
+};
+
+const fetchLeagueGames = async (config: LeagueConfig): Promise<LeagueGamesResult> => {
+	const baseUrl = `${ESPN_BASE}/${config.espnPath}/scoreboard`;
+	const upcomingDates = buildUpcomingDatesRangeQuery();
+	const upcomingUrl = `${baseUrl}?dates=${upcomingDates}`;
+	const [todayData, upcomingData] = await Promise.all([
+		fetchScoreboard(baseUrl, config.id),
+		fetchScoreboard(upcomingUrl, config.id),
+	]);
+	const espnLogo = todayData.leagues?.[0]?.logos?.[0]?.href
+		?? upcomingData.leagues?.[0]?.logos?.[0]?.href;
 	const logoUrl = resolveLeagueLogoUrl(config.id, espnLogo);
 
-	const games = (data.events ?? [])
-		.filter(event => event.status?.type?.state !== 'post')
+	const parsedGames = [...(todayData.events ?? []), ...(upcomingData.events ?? [])]
 		.map(event => parseEvent(event, config.id))
-		.filter((game): game is Game => Boolean(game));
+		.filter((game): game is Game => game !== null && game.status !== 'post');
 
-	return { leagueId: config.id, games, logoUrl };
+	return { leagueId: config.id, games: parsedGames, logoUrl };
 };
 
 const getEnabledLeagueConfigs = (enabledLeagues: LeagueId[]): LeagueConfig[] => (
