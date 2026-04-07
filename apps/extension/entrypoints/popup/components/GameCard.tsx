@@ -161,7 +161,10 @@ const GameCard = ({ game, excitementResult, openTabs, registry, onRegistryChange
 
 	if (game.status === 'pre') {
 		return (
-			<div className='game-card'>
+			<div className='game-card' style={{
+				borderLeft: `3px solid ${game.awayTeam.color ?? '#dee2e6'}`,
+				borderRight: `3px solid ${game.homeTeam.color ?? '#dee2e6'}`,
+			}}>
 				<div className='d-flex align-items-center justify-content-center' style={{ gap: '0.75rem' }}>
 					<TeamColumn team={game.awayTeam} />
 					<div className='d-flex flex-column align-items-center' style={{ minWidth: 80 }}>
@@ -189,7 +192,10 @@ const GameCard = ({ game, excitementResult, openTabs, registry, onRegistryChange
 	const isOt = game.period > LEAGUE_CONFIG_MAP[game.league].regularPeriods;
 
 	return (
-		<div className={`game-card${isOt ? ' is-ot' : ''}`}>
+		<div className={`game-card${isOt ? ' is-ot' : ''}`} style={{
+			borderLeft: `3px solid ${game.awayTeam.color ?? '#dee2e6'}`,
+			borderRight: `3px solid ${game.homeTeam.color ?? '#dee2e6'}`,
+		}}>
 			<div className='d-flex justify-content-between align-items-center mb-1'>
 				<div
 					className='d-flex align-items-center gap-1 fw-bold text-uppercase text-primary'
