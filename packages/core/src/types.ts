@@ -63,6 +63,7 @@ export interface UserPreferences {
 	cooldownSeconds: number;
 	enabled: boolean;
 	enabledLeagues: LeagueId[];
+	showUpcomingGames: boolean;
 }
 
 export interface TabRegistration {

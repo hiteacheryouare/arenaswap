@@ -263,7 +263,8 @@ const fetchScoreboard = async (url: string, leagueId: LeagueId): Promise<EspnSco
 	return res.json() as Promise<EspnScoreboardResponse>;
 };
 
-const fetchLeagueGames = async (config: LeagueConfig): Promise<LeagueGamesResult> => {
+const fetchLeagueGames = async (config: LeagueConfig, options: { includeUpcoming?: boolean } = {}): Promise<LeagueGamesResult> => {
+	const { includeUpcoming = true } = options;
 	const baseParams = new URLSearchParams();
 	// ESPN requires `groups=50` for reliable NCAA men's basketball scoreboard coverage
 	// and to avoid 404 responses on date-range queries.
@@ -272,6 +273,17 @@ const fetchLeagueGames = async (config: LeagueConfig): Promise<LeagueGamesResult
 	const scoreboardUrl = `${ESPN_BASE}/${config.espnPath}/scoreboard`;
 	const baseQuery = baseParams.toString();
 	const baseUrl = baseQuery ? `${scoreboardUrl}?${baseQuery}` : scoreboardUrl;
+
+	if (!includeUpcoming) {
+		const todayResult = await fetchScoreboard(baseUrl, config.id);
+		const espnLogo = todayResult?.leagues?.[0]?.logos?.[0]?.href;
+		const logoUrl = resolveLeagueLogoUrl(config.id, espnLogo);
+		const parsedGames = (todayResult?.events ?? [])
+			.map(event => parseEvent(event, config.id))
+			.filter((game): game is Game => game !== null && game.status !== 'post');
+		return { leagueId: config.id, games: parsedGames, logoUrl };
+	}
+
 	const upcomingDates = buildUpcomingDatesRangeQuery();
 	const upcomingParams = new URLSearchParams(baseParams);
 	upcomingParams.set('dates', upcomingDates);
@@ -314,12 +326,12 @@ const shouldSessionDisableLeague = (error: LeagueFetchError): boolean => (
 	&& error.status < 500
 );
 
-export const fetchGamesWithLeagueLogos = async (enabledLeagues: LeagueId[]): Promise<{ games: Game[]; leagueLogos: LeagueLogoMap }> => {
+export const fetchGamesWithLeagueLogos = async (enabledLeagues: LeagueId[], options: { includeUpcoming?: boolean } = {}): Promise<{ games: Game[]; leagueLogos: LeagueLogoMap }> => {
 	if (enabledLeagues.length === 0) return { games: [], leagueLogos: {} };
 	const leagueConfigs = getEnabledLeagueConfigs(enabledLeagues);
 	if (leagueConfigs.length === 0) return { games: [], leagueLogos: {} };
 
-	const results = await Promise.allSettled(leagueConfigs.map(fetchLeagueGames));
+	const results = await Promise.allSettled(leagueConfigs.map(config => fetchLeagueGames(config, options)));
 	for (const result of results) {
 		if (result.status !== 'rejected') continue;
 		const reason = result.reason;

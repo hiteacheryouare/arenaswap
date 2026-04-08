@@ -209,6 +209,10 @@ export default () => {
 		persistPrefs({ ...prefs, enabledLeagues });
 	};
 
+	const onToggleShowUpcoming = () => {
+		persistPrefs({ ...prefs, showUpcomingGames: !prefs.showUpcomingGames });
+	};
+
 	const onToggleDemo = () => {
 		const next = !demoMode;
 		setDemoMode(next);
@@ -272,6 +276,19 @@ export default () => {
 								))}
 							</div>
 						))}
+				</div>
+
+				<div className='d-flex justify-content-between align-items-center mt-3'>
+					<label className='text-body-secondary' style={{ fontSize: '0.65rem' }} htmlFor='upcomingToggle'>Show upcoming games</label>
+					<div className='form-check form-switch mb-0'>
+						<input
+							className='form-check-input'
+							type='checkbox'
+							id='upcomingToggle'
+							checked={prefs.showUpcomingGames}
+							onChange={onToggleShowUpcoming}
+						/>
+					</div>
 				</div>
 
 				<div className='d-flex justify-content-between align-items-center mt-3'>
@@ -416,9 +433,9 @@ export default () => {
 				</div>
 			)}
 
-			{!isLoading && !noLeaguesSelected && liveGames.length === 0 && registry.length === 0 && upcomingGames.length === 0 && (
+			{!isLoading && !noLeaguesSelected && liveGames.length === 0 && registry.length === 0 && (!prefs.showUpcomingGames || upcomingGames.length === 0) && (
 				<div className='mt-3 text-center'>
-					<div className='fw-bold text-body mb-1' style={{ fontSize: '1rem' }}>No games right now.</div>
+					<div className='fw-bold text-body mb-1' style={{ fontSize: '1rem' }}>No games right now 💔</div>
 					<button
 						className='btn btn-link btn-sm p-0'
 						style={{ fontSize: '0.85rem', color: '#2274A5' }}
@@ -429,7 +446,7 @@ export default () => {
 				</div>
 			)}
 
-			{!isLoading && !noLeaguesSelected && upcomingGames.length > 0 && (
+			{!isLoading && !noLeaguesSelected && prefs.showUpcomingGames && upcomingGames.length > 0 && (
 				<div className='mt-2'>
 					<div className='fw-bold text-body text-center' style={SECTION_TITLE_STYLE}>Up Next</div>
 					{groupByLeague(upcomingGames).map(({ league, games: groupedGames }) => (
@@ -452,11 +469,27 @@ export default () => {
 			)}
 
 			{hasEspnBranding && (
-				<div className='text-center mt-2 mb-1' style={{ fontSize: '0.56rem', color: '#8b949e', letterSpacing: '0.02em' }}>
-					Powered by ESPN. 
-					<br /> Built in Philadelphia & Boston with ❤️ by Ryan Mullin.
+				<div className='text-center mt-2' style={{ fontSize: '0.56rem', color: '#8b949e', letterSpacing: '0.02em' }}>
+					Powered by <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0.01 799.993 197.49" style={{ height: '0.7rem', width: 'auto', verticalAlign: 'middle', display: 'inline' }} aria-label="ESPN"><path d="M181.064.348c-20.608-.027-34.256 10.836-36.176 27.079a1600.065 1600.065 0 0 1-1.384 11.257H411.64s.504-3.957.896-7.133C414.552 15.188 407.6.35 382.312.35v.002S191.928.36 181.064.348zM17.424.353l-4.706 38.331h121.6l4.688-38.33H17.422h.002zm408.184 0l-4.696 38.331h131.824s.16-1.386.744-5.898C556.688 7.626 540.456.353 524.784.353h-99.176zm-6.512 52.926l-10.272 83.656 45.48-.016 10.28-83.624-45.488-.018v.002zm86.4 0l-10.288 83.656 45.48-.016 10.28-83.624-45.472-.018v.002zm-494.552.012L.654 136.939h121.592l4.48-36.288-76.138-.008 1.926-15.648h76.108l3.896-31.702H10.95l-.006-.002zm130.776 0c-3.336 21.832 7.592 31.701 23.08 31.701 8.424 0 61.52-.024 61.52-.024l-1.92 15.672-88.488.008-4.456 36.288s96.336.032 100.24 0c3.224-.232 25.76-.848 33.432-19.28 2.488-5.984 4.688-27.44 5.304-31.944 3.544-26.16-14.568-32.397-28.832-32.397-7.864 0-84.352-.024-99.88-.024zm141.552 0L273 136.939h45.456l6.4-51.944h57.096c16.192 0 24.896-8.706 26.512-20.397a430.97 430.97 0 0 0 1.4-11.305H283.272v-.002z" fill="#FFFFFF"/></svg>
 				</div>
 			)}
+
+			<div style={{
+				display: 'flex',
+				justifyContent: 'center',
+				alignItems: 'center',
+				marginTop: '0.5rem',
+				marginLeft: '-0.75rem',
+				marginRight: '-0.75rem',
+				marginBottom: '-0.75rem',
+				padding: '0.3rem 0.5rem',
+				background: 'linear-gradient(to right, #fdb913, #f36f21, #c9234a, #645faa, #0089cf, #0db14b)',
+				color: 'white',
+				fontSize: '0.6rem',
+				letterSpacing: '0.02em',
+			}}>
+				Built with ❤️ by Ryan Mullin
+			</div>
 		</div>
 	);
 };

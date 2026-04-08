@@ -19,6 +19,7 @@ import type {
 
 export default defineBackground(() => {
 	let games: Game[] = [];
+	let upcomingGames: Game[] = [];
 	let currentScores: ExcitementResult[] = [];
 	let leagueLogos: LeagueLogoMap = {};
 	const history = new Map<string, ScoreSnapshot[]>();
@@ -90,6 +91,19 @@ export default defineBackground(() => {
 		);
 	};
 
+	const refreshUpcomingGames = async () => {
+		if (!prefs.showUpcomingGames) {
+			upcomingGames = [];
+			return;
+		}
+		try {
+			const result = await fetchGamesWithLeagueLogos(prefs.enabledLeagues, { includeUpcoming: true });
+			upcomingGames = result.games.filter(g => g.status === 'pre');
+		} catch (err) {
+			console.error('ArenaSwap: Failed to fetch upcoming games:', err);
+		}
+	};
+
 	const tick = async (allowTabSwitch = true) => {
 		const enabledLeagues = prefs.enabledLeagues;
 		if (demoMode && simulator) {
@@ -101,13 +115,17 @@ export default defineBackground(() => {
 			}, {});
 		} else {
 			try {
-				const fetchResult = await fetchGamesWithLeagueLogos(enabledLeagues);
+				const fetchResult = await fetchGamesWithLeagueLogos(enabledLeagues, { includeUpcoming: false });
 				games = fetchResult.games;
 				leagueLogos = fetchResult.leagueLogos;
 			} catch (err) {
 				console.error('Arenaswap: Failed to fetch games:', err);
 				return;
 			}
+			// Merge cached upcoming games, excluding any that have since gone live
+			const freshGameIds = new Set(games.map(g => g.id));
+			const stillUpcoming = upcomingGames.filter(g => !freshGameIds.has(g.id));
+			games = [...games, ...stillUpcoming];
 		}
 
 		const liveGames = games.filter(g => g.status === 'in');
@@ -200,7 +218,8 @@ export default defineBackground(() => {
 		console.error('ArenaSwap: Failed to load persisted state, using defaults:', err);
 	});
 
-	stateReady.then(() => {
+	stateReady.then(async () => {
+		await refreshUpcomingGames();
 		refreshScores(false).finally(() => {
 			if (pollTimer) return;
 			pollTimer = setInterval(() => {
@@ -222,9 +241,16 @@ export default defineBackground(() => {
 		}
 		if (msg.type === 'UPDATE_PREFS') {
 			return stateReady.then(async () => {
+				const prevShowUpcoming = prefs.showUpcomingGames;
 				prefs = normalizeUserPreferences(msg.prefs);
 				await browser.storage.sync.set({ prefs });
 				await syncManagedTabMuteState(prefs.enabled);
+				if (prefs.showUpcomingGames !== prevShowUpcoming) {
+					await refreshUpcomingGames();
+					// Rebuild games: keep live/in-progress games, replace upcoming slice with updated cache
+					games = [...games.filter(g => g.status !== 'pre'), ...upcomingGames];
+					browser.runtime.sendMessage({ type: 'SCORES_UPDATED', scores: currentScores, games, leagueLogos }).catch(() => {});
+				}
 			});
 		}
 		if (msg.type === 'UPDATE_REGISTRY') {

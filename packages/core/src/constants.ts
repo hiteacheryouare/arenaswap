@@ -373,6 +373,7 @@ export const createDefaultUserPreferences = (): UserPreferences => ({
 	cooldownSeconds: DEFAULT_COOLDOWN_SECS,
 	enabled: true,
 	enabledLeagues: [],
+	showUpcomingGames: true,
 });
 
 export const normalizeUserPreferences = (storedPrefs: unknown): UserPreferences => {
@@ -392,5 +393,6 @@ export const normalizeUserPreferences = (storedPrefs: unknown): UserPreferences 
 			: defaults.cooldownSeconds,
 		enabled: typeof candidate.enabled === 'boolean' ? candidate.enabled : defaults.enabled,
 		enabledLeagues: hasEnabledLeaguesField ? parsedEnabledLeagues : ALL_LEAGUE_IDS,
+		showUpcomingGames: typeof candidate.showUpcomingGames === 'boolean' ? candidate.showUpcomingGames : defaults.showUpcomingGames,
 	};
 };
