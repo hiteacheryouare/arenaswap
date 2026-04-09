@@ -12,6 +12,7 @@ import type { BackgroundState, ExcitementResult, Game, LeagueId, LeagueLogoMap, 
 import GameCard from './components/GameCard';
 import SensitivitySlider from './components/SensitivitySlider';
 import CooldownSlider from './components/CooldownSlider';
+import SwitchDelaySlider from './components/SwitchDelaySlider';
 
 type View = 'main' | 'setup';
 type LeagueGroup = { league: LeagueId; games: Game[] };
@@ -27,6 +28,7 @@ const POPUP_CONTAINER_STYLE: CSSProperties = {
 
 const SECTION_TITLE_STYLE: CSSProperties = { fontSize: '1.35rem', letterSpacing: '-0.01em', marginBottom: '0.5rem', marginTop: '0.25rem' };
 const SECTION_LABEL_STYLE: CSSProperties = { fontSize: '0.75rem', letterSpacing: '0.1em', color: '#8b949e', marginBottom: '0.4rem' };
+const SETTING_EXPLAINER_STYLE: CSSProperties = { fontSize: '0.55rem', lineHeight: 1.3, color: '#6e7681' };
 
 const LEAGUE_ORDER = Object.fromEntries(LEAGUE_CONFIGS.map((config, index) => [config.id, index])) as Record<LeagueId, number>;
 const SPORT_TYPE_ORDER: Record<SportType, number> = {
@@ -201,6 +203,10 @@ export default () => {
 		persistPrefs({ ...prefs, cooldownSeconds: val });
 	};
 
+	const onSwitchDelayChange = (val: number) => {
+		persistPrefs({ ...prefs, switchDelaySeconds: val });
+	};
+
 	const onToggleLeague = (leagueId: LeagueId) => {
 		const current = new Set(prefs.enabledLeagues);
 		if (current.has(leagueId)) current.delete(leagueId);
@@ -250,7 +256,14 @@ export default () => {
 					<CooldownSlider value={prefs.cooldownSeconds} onChange={onCooldownChange} />
 				</div>
 
+				<div className='mt-2'>
+					<SwitchDelaySlider value={prefs.switchDelaySeconds} onChange={onSwitchDelayChange} />
+				</div>
+
 				<div className='fw-bold text-uppercase mt-3' style={SECTION_LABEL_STYLE}>Leagues</div>
+				<div className='mb-2' style={SETTING_EXPLAINER_STYLE}>
+					Only selected leagues are tracked and considered for automatic switching.
+				</div>
 				<div>
 					{(Object.keys(SPORT_TYPE_ORDER) as SportType[])
 						.sort((a, b) => SPORT_TYPE_ORDER[a] - SPORT_TYPE_ORDER[b])
@@ -290,6 +303,9 @@ export default () => {
 						/>
 					</div>
 				</div>
+				<div className='mt-1' style={SETTING_EXPLAINER_STYLE}>
+					Keeps scheduled games visible so you can assign tabs before they go live.
+				</div>
 
 				<div className='d-flex justify-content-between align-items-center mt-3'>
 					<label className='text-body-secondary' style={{ fontSize: '0.65rem' }} htmlFor='demoToggle'>Demo mode (fake games)</label>
@@ -302,6 +318,9 @@ export default () => {
 							onChange={onToggleDemo}
 						/>
 					</div>
+				</div>
+				<div className='mt-1' style={SETTING_EXPLAINER_STYLE}>
+					Runs a simulated game feed so you can test swap behavior without live games.
 				</div>
 			</div>
 		);

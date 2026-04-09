@@ -61,6 +61,7 @@ export interface ExcitementResult {
 export interface UserPreferences {
 	sensitivity: 1 | 2 | 3 | 4 | 5 | 6 | 7;
 	cooldownSeconds: number;
+	switchDelaySeconds: number;
 	enabled: boolean;
 	enabledLeagues: LeagueId[];
 	showUpcomingGames: boolean;

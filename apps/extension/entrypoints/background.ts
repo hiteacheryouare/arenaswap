@@ -31,6 +31,8 @@ export default defineBackground(() => {
 	let lastSwitchTime = 0;
 	let pollTimer: ReturnType<typeof setInterval> | null = null;
 	let inFlightRefresh: Promise<void> | null = null;
+	let pendingSwitchTimer: ReturnType<typeof setTimeout> | null = null;
+	let pendingSwitch: { gameId: string; tabId: number; reason?: string } | null = null;
 
 	const updateHistory = (currentGames: Game[]) => {
 		currentGames.forEach(game => {
@@ -89,6 +91,59 @@ export default defineBackground(() => {
 				browser.tabs.update(tabId, { muted: enabled ? tabId !== watchedTabId : false })
 			)
 		);
+	};
+
+	const clearPendingSwitch = () => {
+		if (pendingSwitchTimer) {
+			clearTimeout(pendingSwitchTimer);
+			pendingSwitchTimer = null;
+		}
+		pendingSwitch = null;
+	};
+
+	const executeSwitch = async (tabId: number, gameId: string, reason?: string) => {
+		const [activeTab] = await browser.tabs.query({ active: true, lastFocusedWindow: true });
+		if (activeTab?.id === tabId) return;
+
+		const allTabs = await browser.tabs.query({});
+		const tabExists = allTabs.some(tab => tab.id === tabId);
+		if (!tabExists) return;
+
+		await browser.tabs.update(tabId, { active: true });
+		lastSwitchTime = Date.now();
+		await syncManagedTabMuteState(true);
+
+		await browser.notifications.create({
+			type: 'basic',
+			iconUrl: 'icon/128.png',
+			title: `ArenaSwap → ${getGameLabel(gameId)}`,
+			message: reason
+				? `${reason}. Taking you to ${getVenueName(gameId)} now!`
+				: `Taking you to ${getVenueName(gameId)} now!`,
+		});
+	};
+
+	const executePendingSwitch = async () => {
+		const queuedSwitch = pendingSwitch;
+		pendingSwitchTimer = null;
+		pendingSwitch = null;
+		if (!queuedSwitch || !prefs.enabled) return;
+
+		const matchingRegistration = tabRegistry.find(
+			reg => reg.gameId === queuedSwitch.gameId && reg.tabId === queuedSwitch.tabId
+		);
+		if (!matchingRegistration) return;
+
+		await executeSwitch(queuedSwitch.tabId, queuedSwitch.gameId, queuedSwitch.reason);
+	};
+
+	const queuePendingSwitch = (gameId: string, tabId: number, reason?: string) => {
+		if (pendingSwitchTimer || pendingSwitch) return;
+
+		pendingSwitch = { gameId, tabId, reason };
+		pendingSwitchTimer = setTimeout(() => {
+			void executePendingSwitch();
+		}, prefs.switchDelaySeconds * 1000);
 	};
 
 	const refreshUpcomingGames = async () => {
@@ -157,7 +212,12 @@ export default defineBackground(() => {
 
 		await syncManagedTabMuteState(prefs.enabled);
 
-		if (!allowTabSwitch || !prefs.enabled || liveGames.length === 0) return;
+		if (!allowTabSwitch || !prefs.enabled || liveGames.length === 0) {
+			if (!prefs.enabled || liveGames.length === 0) {
+				clearPendingSwitch();
+			}
+			return;
+		}
 
 		const [activeTab] = await browser.tabs.query({ active: true, lastFocusedWindow: true });
 		if (activeTab?.id === undefined) return;
@@ -169,6 +229,7 @@ export default defineBackground(() => {
 		const registeredGameIds = new Set(tabRegistry.map(r => r.gameId));
 		const registeredScores = scores.filter(s => registeredGameIds.has(s.gameId));
 		if (registeredScores.length === 0) return;
+		if (pendingSwitch) return;
 
 		const best = registeredScores.reduce((a, b) => a.total > b.total ? a : b);
 		const bestReg = tabRegistry.find(r => r.gameId === best.gameId)!;
@@ -180,18 +241,11 @@ export default defineBackground(() => {
 			best.total > activeScore + threshold &&
 			cooldownOk
 		) {
-			await browser.tabs.update(bestReg.tabId, { active: true });
-			lastSwitchTime = Date.now();
-			await syncManagedTabMuteState(true);
-
-			await browser.notifications.create({
-				type: 'basic',
-				iconUrl: 'icon/128.png',
-				title: `ArenaSwap → ${getGameLabel(best.gameId)}`,
-				message: best.reason
-					? `${best.reason}. Taking you to ${getVenueName(best.gameId)} now!`
-					: `Taking you to ${getVenueName(best.gameId)} now!`,
-			});
+			if (prefs.switchDelaySeconds > 0) {
+				queuePendingSwitch(best.gameId, bestReg.tabId, best.reason);
+			} else {
+				await executeSwitch(bestReg.tabId, best.gameId, best.reason);
+			}
 		}
 	};
 
@@ -243,6 +297,7 @@ export default defineBackground(() => {
 			return stateReady.then(async () => {
 				const prevShowUpcoming = prefs.showUpcomingGames;
 				prefs = normalizeUserPreferences(msg.prefs);
+				clearPendingSwitch();
 				await browser.storage.sync.set({ prefs });
 				await syncManagedTabMuteState(prefs.enabled);
 				if (prefs.showUpcomingGames !== prevShowUpcoming) {
@@ -256,12 +311,14 @@ export default defineBackground(() => {
 		if (msg.type === 'UPDATE_REGISTRY') {
 			return stateReady.then(async () => {
 				tabRegistry = msg.tabRegistry;
+				clearPendingSwitch();
 				await browser.storage.session.set({ tabRegistry });
 				await syncManagedTabMuteState(prefs.enabled);
 			});
 		}
 		if (msg.type === 'SET_DEMO_MODE') {
 			return stateReady.then(async () => {
+				clearPendingSwitch();
 				demoMode = msg.enabled;
 				if (demoMode) {
 					simulator = new MockGameSimulator();
