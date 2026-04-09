@@ -15,6 +15,8 @@ const LABELS: Record<number, string> = {
 	7: 'Overkill'
 };
 
+const EXPLAINER_STYLE = { fontSize: '0.55rem', lineHeight: 1.3, color: '#6e7681' } as const;
+
 const SensitivitySlider = ({ value, onChange }: Props) => (
 	<div>
 		<div className='d-flex justify-content-between align-items-center mb-1'>
@@ -40,6 +42,9 @@ const SensitivitySlider = ({ value, onChange }: Props) => (
 					{SENSITIVITY_THRESHOLDS[level]}
 				</span>
 			))}
+		</div>
+		<div className='mt-1' style={EXPLAINER_STYLE}>
+			Controls how big the PowerScore gap must be before ArenaSwap switches tabs.
 		</div>
 	</div>
 );

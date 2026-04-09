@@ -4,6 +4,7 @@ interface Props {
 }
 
 const STEPS = [15, 30, 45, 60, 90, 120, 180];
+const EXPLAINER_STYLE = { fontSize: '0.55rem', lineHeight: 1.3, color: '#6e7681' } as const;
 
 const formatSeconds = (secs: number): string => {
     if (secs < 60) return `${secs}s`;
@@ -34,6 +35,9 @@ const CooldownSlider = ({ value, onChange }: Props) => {
             <div className='d-flex justify-content-between'>
                 <span className='text-body-secondary' style={{ fontSize: '0.65rem' }}>{formatSeconds(STEPS[0])}</span>
                 <span className='text-body-secondary' style={{ fontSize: '0.65rem' }}>{formatSeconds(STEPS[STEPS.length - 1])}</span>
+            </div>
+            <div className='mt-1' style={EXPLAINER_STYLE}>
+                Sets the minimum time between automatic switches to reduce rapid tab flipping.
             </div>
         </div>
     );
