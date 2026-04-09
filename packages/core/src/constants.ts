@@ -116,13 +116,14 @@ export const SCORER_TUNABLES: ScorerTunables = {
 		momentumRunPrefix: 'on a',
 		momentumRunSuffix: 'run',
 		momentumRolling: 'rolling',
-		fallback: 'exciting game',
+		fallback: 'Best Available',
 	},
 };
 
 // Switch behavior defaults
 export const DEFAULT_SENSITIVITY = 4 as const;
 export const DEFAULT_COOLDOWN_SECS = 45;
+export const DEFAULT_SWITCH_DELAY_SECS = 0;
 
 // Sensitivity level → score delta required to trigger a tab switch
 export const SENSITIVITY_THRESHOLDS: Record<number, number> = {
@@ -368,9 +369,16 @@ const isSensitivityValue = (value: unknown): value is UserPreferences['sensitivi
 	typeof value === 'number' && value >= 1 && value <= 7
 );
 
+const normalizeSecondsPreference = (value: unknown, fallback: number): number => (
+	typeof value === 'number' && Number.isFinite(value)
+		? Math.max(0, Math.round(value))
+		: fallback
+);
+
 export const createDefaultUserPreferences = (): UserPreferences => ({
 	sensitivity: DEFAULT_SENSITIVITY,
 	cooldownSeconds: DEFAULT_COOLDOWN_SECS,
+	switchDelaySeconds: DEFAULT_SWITCH_DELAY_SECS,
 	enabled: true,
 	enabledLeagues: [],
 	showUpcomingGames: true,
@@ -388,9 +396,8 @@ export const normalizeUserPreferences = (storedPrefs: unknown): UserPreferences 
 
 	return {
 		sensitivity: isSensitivityValue(candidate.sensitivity) ? candidate.sensitivity : defaults.sensitivity,
-		cooldownSeconds: typeof candidate.cooldownSeconds === 'number' && Number.isFinite(candidate.cooldownSeconds)
-			? Math.max(0, Math.round(candidate.cooldownSeconds))
-			: defaults.cooldownSeconds,
+		cooldownSeconds: normalizeSecondsPreference(candidate.cooldownSeconds, defaults.cooldownSeconds),
+		switchDelaySeconds: normalizeSecondsPreference(candidate.switchDelaySeconds, defaults.switchDelaySeconds),
 		enabled: typeof candidate.enabled === 'boolean' ? candidate.enabled : defaults.enabled,
 		enabledLeagues: hasEnabledLeaguesField ? parsedEnabledLeagues : ALL_LEAGUE_IDS,
 		showUpcomingGames: typeof candidate.showUpcomingGames === 'boolean' ? candidate.showUpcomingGames : defaults.showUpcomingGames,
