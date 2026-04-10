@@ -267,7 +267,6 @@ export default defineBackground(() => {
 		tabRegistry = registryResult.tabRegistry as TabRegistration[];
 		demoMode = demoResult.demoMode as boolean;
 		if (demoMode) simulator = new MockGameSimulator();
-		return browser.storage.sync.set({ prefs });
 	}).catch(err => {
 		console.error('ArenaSwap: Failed to load persisted state, using defaults:', err);
 	});

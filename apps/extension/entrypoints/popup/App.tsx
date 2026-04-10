@@ -126,6 +126,7 @@ const formatTabLabel = (tab: Browser.tabs.Tab, allTabs: Browser.tabs.Tab[]): str
 export default () => {
 	const [view, setView] = useState<View>('main');
 	const [prefs, setPrefs] = useState<UserPreferences>(createDefaultUserPreferences());
+	const [prefsLoaded, setPrefsLoaded] = useState(false);
 	const [registry, setRegistry] = useState<TabRegistration[]>([]);
 	const [openTabs, setOpenTabs] = useState<Browser.tabs.Tab[]>([]);
 	const [demoMode, setDemoMode] = useState(false);
@@ -143,6 +144,7 @@ export default () => {
 	useEffect(() => {
 		browser.storage.sync.get({ prefs: null }).then(result => {
 			setPrefs(normalizeUserPreferences(result.prefs));
+			setPrefsLoaded(true);
 		});
 		browser.storage.session.get({ tabRegistry: [] }).then(result => {
 			setRegistry(result.tabRegistry as TabRegistration[]);
@@ -283,6 +285,7 @@ export default () => {
 												id={`league-${league.id}`}
 												checked={prefs.enabledLeagues.includes(league.id)}
 												onChange={() => onToggleLeague(league.id)}
+												disabled={!prefsLoaded}
 											/>
 										</div>
 									</div>
@@ -300,6 +303,7 @@ export default () => {
 							id='upcomingToggle'
 							checked={prefs.showUpcomingGames}
 							onChange={onToggleShowUpcoming}
+							disabled={!prefsLoaded}
 						/>
 					</div>
 				</div>
@@ -364,6 +368,7 @@ export default () => {
 							id='enableToggle'
 							checked={prefs.enabled}
 							onChange={onToggleEnabled}
+							disabled={!prefsLoaded}
 						/>
 					</div>
 				</div>
