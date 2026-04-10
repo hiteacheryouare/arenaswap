@@ -78,6 +78,8 @@ Workspace commands:
 npm run dev --workspace @arenaswap/extension
 npm run build --workspace @arenaswap/core
 npm run test --workspace @arenaswap/core
+npm run test:unit --workspace @arenaswap/core
+npm run test:e2e --workspace @arenaswap/core
 ```
 
 ## Code Standards

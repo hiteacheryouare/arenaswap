@@ -20,12 +20,15 @@
 	},
 	"scripts": {
 		"build": "tsc",
-		"test": "vitest run --passWithNoTests",
+		"test": "npm run test:unit && npm run test:e2e",
+		"test:unit": "jest --passWithNoTests --selectProjects unit",
+		"test:e2e": "jest --passWithNoTests --selectProjects e2e",
 		"typecheck": "tsc --noEmit"
 	},
 	"devDependencies": {
-		"@vitest/coverage-v8": "^2.1.9",
-		"typescript": "^5.9.3",
-		"vitest": "^2.1.8"
+		"@types/jest": "^30.0.0",
+		"jest": "^30.3.0",
+		"ts-jest": "^29.4.9",
+		"typescript": "^5.9.3"
 	}
 }

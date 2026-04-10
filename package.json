@@ -10,7 +10,7 @@
 	"scripts": {
 		"dev": "turbo dev",
 		"build": "turbo run build build:firefox",
-		"test": "turbo test",
+		"test": "turbo run test",
 		"typecheck": "turbo typecheck"
 	},
 	"devDependencies": {
