@@ -91,6 +91,63 @@ $bootstrap-icons-font-dir: '/fonts';
 	letter-spacing: 0.03em;
 }
 
+.powerscore-button {
+	border:      none;
+	display:     inline-flex;
+	align-items: center;
+	gap:         0.25rem;
+
+	&:hover {
+		filter: brightness(1.05);
+	}
+
+	&:focus-visible {
+		outline: 2px solid rgba(#111827, 0.9);
+		outline-offset: 1px;
+	}
+}
+
+.powerscore-breakdown {
+	margin-top:    0.4rem;
+	background:    #f8fafc;
+	border:        1px solid #e5e7eb;
+	border-radius: 0.35rem;
+	padding:       0.4rem 0.5rem;
+}
+
+.powerscore-breakdown-heading {
+	font-size:      0.58rem;
+	font-weight:    700;
+	color:          #111827;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+}
+
+.powerscore-breakdown-row {
+	display:         flex;
+	justify-content: space-between;
+	align-items:     baseline;
+	gap:             0.5rem;
+	font-size:       0.6rem;
+	color:           #374151;
+	margin-top:      0.15rem;
+}
+
+.powerscore-breakdown-row-total {
+	margin-top:  0.25rem;
+	padding-top: 0.2rem;
+	border-top:  1px solid #e5e7eb;
+	font-weight: 700;
+	color:       #111827;
+}
+
+.powerscore-breakdown-reason {
+	margin-top:  0.3rem;
+	font-size:   0.58rem;
+	line-height: 1.3;
+	color:       #4b5563;
+}
+
 // ─── Tab assignment dropdown (on game card) ─────────────────────────────────
 .game-card-tab-assign {
 	margin-top: 0.4rem;
@@ -149,4 +206,3 @@ $bootstrap-icons-font-dir: '/fonts';
 	object-fit:    contain;
 	flex-shrink:   0;
 }
-

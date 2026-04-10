@@ -1,6 +1,13 @@
 import { useState } from 'react';
 import type { Browser } from 'wxt/browser';
-import { LEAGUE_CONFIG_MAP, SCORE_MAX_TOTAL } from '@arenaswap/core/constants';
+import {
+	LEAGUE_CONFIG_MAP,
+	SCORE_MAX_CLOSENESS,
+	SCORE_MAX_LATE_GAME,
+	SCORE_MAX_MOMENTUM,
+	SCORE_MAX_TOTAL,
+	STALL_PENALTY_MULTIPLIER,
+} from '@arenaswap/core/constants';
 import type { ExcitementResult, Game, TabRegistration, Team } from '@arenaswap/core/types';
 import TabAssignSelect from './TabAssignSelect';
 
@@ -61,6 +68,7 @@ const oddsSummary = (game: Game): string | null => {
 };
 
 const LOGO_SIZE = 56;
+const STALL_PENALTY_PERCENT = Math.round((1 - STALL_PENALTY_MULTIPLIER) * 100);
 
 const TeamLogo = ({ team }: { team: Team }) => {
 	const [failed, setFailed] = useState(false);
@@ -157,6 +165,8 @@ const GameMeta = ({ game }: { game: Game }) => {
 };
 
 const GameCard = ({ game, excitementResult, openTabs, registry, onRegistryChange, formatTabLabel }: Props) => {
+	const [showPowerScoreDetails, setShowPowerScoreDetails] = useState(false);
+
 	if (!game) return null;
 
 	if (game.status === 'pre') {
@@ -190,6 +200,9 @@ const GameCard = ({ game, excitementResult, openTabs, registry, onRegistryChange
 	}
 
 	const isOt = game.period > LEAGUE_CONFIG_MAP[game.league].regularPeriods;
+	const rawPowerScore = excitementResult
+		? excitementResult.closeness + excitementResult.lateGame + excitementResult.momentum
+		: 0;
 
 	return (
 		<div className={`game-card${isOt ? ' is-ot' : ''}`} style={{
@@ -205,14 +218,56 @@ const GameCard = ({ game, excitementResult, openTabs, registry, onRegistryChange
 					LIVE
 				</div>
 				{excitementResult && (
-					<div
-						className='powerscore'
+					<button
+						type='button'
+						className='powerscore powerscore-button'
 						style={{ backgroundColor: powerScoreColor(excitementResult.total, SCORE_MAX_TOTAL) }}
+						onClick={() => setShowPowerScoreDetails(current => !current)}
+						aria-expanded={showPowerScoreDetails}
+						aria-label='Toggle PowerScore details'
 					>
 						PowerScore: {excitementResult.total} / {SCORE_MAX_TOTAL}
-					</div>
+						<i className={`bi ${showPowerScoreDetails ? 'bi-chevron-up' : 'bi-chevron-down'}`} />
+					</button>
 				)}
 			</div>
+			{excitementResult && showPowerScoreDetails && (
+				<div className='powerscore-breakdown'>
+					<div className='powerscore-breakdown-heading'>How this score was calculated</div>
+					<div className='powerscore-breakdown-row'>
+						<span>Closeness</span>
+						<span>{excitementResult.closeness} / {SCORE_MAX_CLOSENESS}</span>
+					</div>
+					<div className='powerscore-breakdown-row'>
+						<span>Late-game pressure</span>
+						<span>{excitementResult.lateGame} / {SCORE_MAX_LATE_GAME}</span>
+					</div>
+					<div className='powerscore-breakdown-row'>
+						<span>Momentum</span>
+						<span>{excitementResult.momentum} / {SCORE_MAX_MOMENTUM}</span>
+					</div>
+					<div className='powerscore-breakdown-row'>
+						<span>Raw subtotal</span>
+						<span>{excitementResult.closeness} + {excitementResult.lateGame} + {excitementResult.momentum} = {rawPowerScore}</span>
+					</div>
+					{excitementResult.stalled ? (
+						<div className='powerscore-breakdown-row'>
+							<span>Clock stall penalty</span>
+							<span>-{STALL_PENALTY_PERCENT}% ({rawPowerScore} x {STALL_PENALTY_MULTIPLIER} ~= {excitementResult.total})</span>
+						</div>
+					) : (
+						<div className='powerscore-breakdown-row'>
+							<span>Clock stall penalty</span>
+							<span>None</span>
+						</div>
+					)}
+					<div className='powerscore-breakdown-row powerscore-breakdown-row-total'>
+						<span>Final PowerScore</span>
+						<span>{excitementResult.total} / {SCORE_MAX_TOTAL}</span>
+					</div>
+					<div className='powerscore-breakdown-reason'>Why this score: {excitementResult.reason}</div>
+				</div>
+			)}
 
 			<div className='d-flex align-items-center justify-content-center' style={{ gap: '0.75rem' }}>
 				<TeamColumn team={game.awayTeam} />
