@@ -142,10 +142,18 @@ export default () => {
 	const leagueLogos = data?.leagueLogos ?? {};
 
 	useEffect(() => {
-		browser.storage.sync.get({ prefs: null }).then(result => {
-			setPrefs(normalizeUserPreferences(result.prefs));
-			setPrefsLoaded(true);
-		});
+		browser.storage.sync.get({ prefs: null })
+			.then(result => {
+				setPrefs(normalizeUserPreferences(result.prefs));
+			})
+			.catch(async err => {
+				console.warn('ArenaSwap: storage.sync unavailable, falling back to storage.local for prefs.', err);
+				const fallback = await browser.storage.local.get({ prefs: null });
+				setPrefs(normalizeUserPreferences(fallback.prefs));
+			})
+			.finally(() => {
+				setPrefsLoaded(true);
+			});
 		browser.storage.session.get({ tabRegistry: [] }).then(result => {
 			setRegistry(result.tabRegistry as TabRegistration[]);
 		});
@@ -184,7 +192,12 @@ export default () => {
 		const normalized = normalizeUserPreferences(nextPrefs);
 		setPrefs(normalized);
 		const syncPromise = (async () => {
-			await browser.storage.sync.set({ prefs: normalized });
+			try {
+				await browser.storage.sync.set({ prefs: normalized });
+			} catch (err) {
+				console.warn('ArenaSwap: storage.sync unavailable, persisting prefs to storage.local.', err);
+				await browser.storage.local.set({ prefs: normalized });
+			}
 			await browser.runtime.sendMessage({ type: 'UPDATE_PREFS', prefs: normalized });
 		})();
 		prefsSyncRef.current = syncPromise;
