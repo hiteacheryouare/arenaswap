@@ -1,0 +1,352 @@
+import {
+	SCORER_TUNABLES,
+	STALL_PENALTY_MULTIPLIER,
+	STALL_THRESHOLD_POLLS,
+} from '../src/constants';
+import { computePowerScore } from '../src/scorer';
+import type { Game, ScoreSnapshot } from '../src/types';
+
+const makeGame = (overrides: Partial<Game> = {}): Game => ({
+	id: 'game-1',
+	league: 'nba',
+	sportType: 'basketball',
+	homeTeam: { abbreviation: 'HOM', score: 80 },
+	awayTeam: { abbreviation: 'AWY', score: 78 },
+	period: 2,
+	clockSeconds: 600,
+	...overrides,
+});
+
+const makeHistory = (scores: Array<[number, number]>): ScoreSnapshot[] => (
+	scores.map(([homeScore, awayScore], index) => ({
+		gameId: 'game-1',
+		timestamp: index * 15_000,
+		homeScore,
+		awayScore,
+	}))
+);
+
+describe('computePowerScore', () => {
+	test('returns zeroed score for intermission games', () => {
+		const game = makeGame({ intermission: true });
+		expect(computePowerScore(game, makeHistory([[80, 78], [82, 78], [84, 78]]))).toEqual({
+			gameId: 'game-1',
+			total: 0,
+			closeness: 0,
+			lateGame: 0,
+			momentum: 0,
+			leadChanges: 0,
+			comeback: 0,
+			reason: '',
+			stalled: false,
+		});
+	});
+
+	test('scores 0-0 differently by sport type', () => {
+		const basketball = makeGame({
+			league: 'nba',
+			sportType: 'basketball',
+			homeTeam: { ...makeGame().homeTeam, score: 0 },
+			awayTeam: { ...makeGame().awayTeam, score: 0 },
+		});
+		const soccer = makeGame({
+			league: 'mls',
+			sportType: 'soccer',
+			period: 1,
+			clockSeconds: 1_000,
+			homeTeam: { ...makeGame().homeTeam, score: 0 },
+			awayTeam: { ...makeGame().awayTeam, score: 0 },
+		});
+
+		const basketballResult = computePowerScore(basketball, []);
+		const soccerResult = computePowerScore(soccer, []);
+
+		expect(basketballResult.closeness).toBe(SCORER_TUNABLES.scores.closeness.zeroZero);
+		expect(soccerResult.closeness).toBe(SCORER_TUNABLES.scores.closeness.tied);
+	});
+
+	test('applies basketball closeness thresholds at boundary margins', () => {
+		const cases = [
+			{ margin: 5, expected: SCORER_TUNABLES.scores.closeness.tight, expectedReason: '5-point game' },
+			{ margin: 6, expected: SCORER_TUNABLES.scores.closeness.close, expectedReason: '6-point game' },
+			{ margin: 10, expected: SCORER_TUNABLES.scores.closeness.close, expectedReason: '10-point game' },
+			{ margin: 11, expected: SCORER_TUNABLES.scores.closeness.fringe, expectedReason: SCORER_TUNABLES.reasons.fallback },
+			{ margin: 18, expected: SCORER_TUNABLES.scores.closeness.fringe, expectedReason: SCORER_TUNABLES.reasons.fallback },
+			{ margin: 19, expected: SCORER_TUNABLES.scores.closeness.none, expectedReason: SCORER_TUNABLES.reasons.fallback },
+		];
+
+		for (const { margin, expected, expectedReason } of cases) {
+			const game = makeGame({
+				period: 1,
+				clockSeconds: 600,
+				homeTeam: { ...makeGame().homeTeam, score: 90 },
+				awayTeam: { ...makeGame().awayTeam, score: 90 - margin },
+			});
+
+			const result = computePowerScore(game, []);
+			expect(result.closeness).toBe(expected);
+			expect(result.reason).toBe(expectedReason);
+		}
+	});
+
+	test('applies late-game clock pressure for countdown sports', () => {
+		const game = makeGame({
+			period: 4,
+			clockSeconds: 119,
+			homeTeam: { ...makeGame().homeTeam, score: 90 },
+			awayTeam: { ...makeGame().awayTeam, score: 88 },
+		});
+
+		const result = computePowerScore(game, []);
+		expect(result.lateGame).toBe(SCORER_TUNABLES.scores.lateGame.clockBased.critical);
+		expect(result.reason).toContain('left');
+		expect(result.reason).toContain('2-point game');
+	});
+
+	test('uses elapsed-clock conversion for soccer late-game scoring', () => {
+		const game = makeGame({
+			league: 'mls',
+			sportType: 'soccer',
+			period: 2,
+			clockSeconds: 2_600,
+			homeTeam: { ...makeGame().homeTeam, score: 1 },
+			awayTeam: { ...makeGame().awayTeam, score: 1 },
+		});
+
+		const result = computePowerScore(game, []);
+		expect(result.lateGame).toBe(SCORER_TUNABLES.scores.lateGame.clockBased.critical);
+	});
+
+	test('applies clock-based late-game thresholds at boundaries for countdown sports', () => {
+		const withClock = (period: number, clockSeconds: number) => makeGame({
+			period,
+			clockSeconds,
+			homeTeam: { ...makeGame().homeTeam, score: 110 },
+			awayTeam: { ...makeGame().awayTeam, score: 90 },
+		});
+
+		const critical = computePowerScore(withClock(4, 120), []);
+		expect(critical.lateGame).toBe(SCORER_TUNABLES.scores.lateGame.clockBased.critical);
+		expect(critical.reason).toBe('2:00 left');
+
+		const tenseAtBoundary = computePowerScore(withClock(4, 300), []);
+		expect(tenseAtBoundary.lateGame).toBe(SCORER_TUNABLES.scores.lateGame.clockBased.tense);
+		expect(tenseAtBoundary.reason).toBe('under 5 min left');
+
+		const tenseJustAfterCritical = computePowerScore(withClock(4, 121), []);
+		expect(tenseJustAfterCritical.lateGame).toBe(SCORER_TUNABLES.scores.lateGame.clockBased.tense);
+
+		const previousPeriodBoundary = computePowerScore(withClock(3, 300), []);
+		expect(previousPeriodBoundary.lateGame).toBe(SCORER_TUNABLES.scores.lateGame.clockBased.previousPeriod);
+		expect(previousPeriodBoundary.reason).toBe(SCORER_TUNABLES.reasons.fallback);
+
+		const none = computePowerScore(withClock(3, 301), []);
+		expect(none.lateGame).toBe(SCORER_TUNABLES.scores.lateGame.none);
+		expect(none.reason).toBe(SCORER_TUNABLES.reasons.fallback);
+	});
+
+	test('applies count-up late-game thresholds at boundaries for soccer', () => {
+		const withElapsed = (clockSeconds: number) => makeGame({
+			league: 'mls',
+			sportType: 'soccer',
+			period: 2,
+			clockSeconds,
+			homeTeam: { ...makeGame().homeTeam, score: 4 },
+			awayTeam: { ...makeGame().awayTeam, score: 0 },
+		});
+
+		const critical = computePowerScore(withElapsed(2_520), []);
+		expect(critical.lateGame).toBe(SCORER_TUNABLES.scores.lateGame.clockBased.critical);
+		expect(critical.reason).toBe('3:00 left');
+
+		const tense = computePowerScore(withElapsed(2_519), []);
+		expect(tense.lateGame).toBe(SCORER_TUNABLES.scores.lateGame.clockBased.tense);
+		expect(tense.reason).toBe('under 10 min left');
+
+		const tenseBoundary = computePowerScore(withElapsed(2_100), []);
+		expect(tenseBoundary.lateGame).toBe(SCORER_TUNABLES.scores.lateGame.clockBased.tense);
+
+		const none = computePowerScore(withElapsed(2_099), []);
+		expect(none.lateGame).toBe(SCORER_TUNABLES.scores.lateGame.none);
+		expect(none.reason).toBe(SCORER_TUNABLES.reasons.fallback);
+	});
+
+	test('scores extra innings for baseball overtime periods', () => {
+		const game = makeGame({
+			league: 'mlb',
+			sportType: 'baseball',
+			period: 10,
+			clockSeconds: 0,
+			homeTeam: { ...makeGame().homeTeam, score: 4 },
+			awayTeam: { ...makeGame().awayTeam, score: 4 },
+		});
+
+		const result = computePowerScore(game, []);
+		expect(result.lateGame).toBe(SCORER_TUNABLES.scores.lateGame.overtime);
+		expect(result.reason).toContain('extra innings');
+	});
+
+	test('detects big momentum runs from history snapshots', () => {
+		const game = makeGame({
+			homeTeam: { abbreviation: 'HOM', score: 70 },
+			awayTeam: { abbreviation: 'AWY', score: 60 },
+		});
+		const history = makeHistory([[60, 60], [64, 60], [70, 60]]);
+		const result = computePowerScore(game, history);
+
+		expect(result.momentum).toBe(SCORER_TUNABLES.scores.momentum.bigRun);
+		expect(result.reason).toContain('HOM on a 10-0 run');
+	});
+
+	test('applies momentum boundaries for none, small, and big runs', () => {
+		const game = makeGame({
+			homeTeam: { abbreviation: 'HOM', score: 100 },
+			awayTeam: { abbreviation: 'AWY', score: 70 },
+			period: 1,
+			clockSeconds: 720,
+		});
+
+		const noRun = computePowerScore(game, makeHistory([[90, 60], [92, 62], [94, 64]]));
+		expect(noRun.momentum).toBe(SCORER_TUNABLES.scores.momentum.none);
+		expect(noRun.reason).toBe(SCORER_TUNABLES.reasons.fallback);
+
+		const smallRun = computePowerScore(game, makeHistory([[90, 60], [93, 60], [95, 60]]));
+		expect(smallRun.momentum).toBe(SCORER_TUNABLES.scores.momentum.smallRun);
+		expect(smallRun.reason).toBe('HOM rolling');
+
+		const bigRun = computePowerScore(game, makeHistory([[90, 60], [95, 60], [100, 60]]));
+		expect(bigRun.momentum).toBe(SCORER_TUNABLES.scores.momentum.bigRun);
+		expect(bigRun.reason).toBe('HOM on a 10-0 run');
+	});
+
+	test('orders reasons by momentum then late game and truncates extra reasons', () => {
+		const game = makeGame({
+			period: 4,
+			clockSeconds: 119,
+			homeTeam: { abbreviation: 'HOM', score: 80 },
+			awayTeam: { abbreviation: 'AWY', score: 78 },
+		});
+		// Home led throughout with a 10-0 run — no lead change or comeback to interfere
+		const history = makeHistory([[60, 56], [65, 56], [70, 56]]);
+
+		const result = computePowerScore(game, history);
+		expect(result.reason).toBe('HOM on a 10-0 run, 1:59 left');
+		expect(result.reason).not.toContain('2-point game');
+	});
+
+	test('uses fallback reason when only non-reason scoring signals are present', () => {
+		const game = makeGame({
+			period: 3,
+			clockSeconds: 300,
+			homeTeam: { ...makeGame().homeTeam, score: 111 },
+			awayTeam: { ...makeGame().awayTeam, score: 100 },
+		});
+		// Home led throughout — no lead change or comeback; parallel scoring rate avoids momentum run
+		const history = makeHistory([[100, 90], [103, 93], [106, 96]]);
+
+		const result = computePowerScore(game, history);
+		expect(result.closeness).toBe(SCORER_TUNABLES.scores.closeness.fringe);
+		expect(result.lateGame).toBe(SCORER_TUNABLES.scores.lateGame.clockBased.previousPeriod);
+		expect(result.momentum).toBe(SCORER_TUNABLES.scores.momentum.none);
+		expect(result.total).toBe(result.closeness + result.lateGame + result.momentum + result.leadChanges + result.comeback);
+		expect(result.reason).toBe(SCORER_TUNABLES.reasons.fallback);
+	});
+
+	test('applies stall penalty when threshold is met', () => {
+		const game = makeGame({
+			homeTeam: { ...makeGame().homeTeam, score: 100 },
+			awayTeam: { ...makeGame().awayTeam, score: 92 },
+			period: 2,
+			clockSeconds: 600,
+		});
+
+		const raw = computePowerScore(game, [], STALL_THRESHOLD_POLLS - 1);
+		const stalled = computePowerScore(game, [], STALL_THRESHOLD_POLLS);
+
+		expect(raw.stalled).toBe(false);
+		expect(raw.total).toBe(raw.closeness + raw.lateGame + raw.momentum + raw.leadChanges + raw.comeback);
+		expect(stalled.stalled).toBe(true);
+		expect(stalled.total).toBe(Math.round(raw.total * STALL_PENALTY_MULTIPLIER));
+	});
+
+	test('falls back to default reason when no signal reasons are present', () => {
+		const game = makeGame({
+			homeTeam: { ...makeGame().homeTeam, score: 120 },
+			awayTeam: { ...makeGame().awayTeam, score: 80 },
+			period: 1,
+			clockSeconds: 650,
+		});
+
+		const result = computePowerScore(game, makeHistory([[120, 80], [120, 80], [120, 80]]));
+		expect(result.reason).toBe(SCORER_TUNABLES.reasons.fallback);
+		expect(result.momentum).toBe(0);
+		expect(result.lateGame).toBe(0);
+		expect(result.closeness).toBe(0);
+	});
+
+	test('scores lead changes: none, single, and multiple', () => {
+		const game = makeGame({ period: 2, clockSeconds: 600 });
+
+		// No lead change — home leads throughout
+		const noChange = computePowerScore(game, makeHistory([[50, 48], [52, 48], [54, 50]]));
+		expect(noChange.leadChanges).toBe(SCORER_TUNABLES.scores.leadChanges.none);
+
+		// Single lead change — away takes the lead directly without passing through a tie
+		const singleChange = computePowerScore(
+			makeGame({ homeTeam: { abbreviation: 'HOM', score: 55 }, awayTeam: { abbreviation: 'AWY', score: 58 } }),
+			makeHistory([[50, 48], [50, 54], [52, 56]]),
+		);
+		expect(singleChange.leadChanges).toBe(SCORER_TUNABLES.scores.leadChanges.single);
+		expect(singleChange.reason).toContain(SCORER_TUNABLES.reasons.leadChangeSingle);
+
+		// Multiple lead changes — lead flips twice
+		const multiChange = computePowerScore(
+			makeGame({ homeTeam: { abbreviation: 'HOM', score: 60 }, awayTeam: { abbreviation: 'AWY', score: 58 } }),
+			makeHistory([[50, 48], [50, 52], [54, 52], [54, 56], [60, 58]]),
+		);
+		expect(multiChange.leadChanges).toBe(SCORER_TUNABLES.scores.leadChanges.multiple);
+		expect(multiChange.reason).toContain(SCORER_TUNABLES.reasons.leadChangeMultiple);
+	});
+
+	test('scores comeback: none, moderate, and big', () => {
+		// No comeback — deficit unchanged
+		const noComeback = computePowerScore(
+			makeGame({ homeTeam: { ...makeGame().homeTeam, score: 90 }, awayTeam: { ...makeGame().awayTeam, score: 80 } }),
+			makeHistory([[80, 70], [84, 74], [90, 80]]),
+		);
+		expect(noComeback.comeback).toBe(SCORER_TUNABLES.scores.comeback.none);
+
+		// Moderate comeback — deficit shrinks by 4 (basketball comebackThresholdSmall=4)
+		const moderateComeback = computePowerScore(
+			makeGame({ homeTeam: { ...makeGame().homeTeam, score: 88 }, awayTeam: { ...makeGame().awayTeam, score: 84 } }),
+			makeHistory([[80, 70], [82, 74], [88, 84]]),
+		);
+		// oldDiff=10, newDiff=4, shrinkage=6 >= small(4)
+		expect(moderateComeback.comeback).toBe(SCORER_TUNABLES.scores.comeback.moderate);
+		expect(moderateComeback.reason).toContain(SCORER_TUNABLES.reasons.comebackModerate);
+
+		// Big comeback — deficit shrinks by 8+ (basketball comebackThresholdBig=8)
+		const bigComeback = computePowerScore(
+			makeGame({ homeTeam: { ...makeGame().homeTeam, score: 90 }, awayTeam: { ...makeGame().awayTeam, score: 88 } }),
+			makeHistory([[80, 70], [84, 74], [90, 88]]),
+		);
+		// oldDiff=10, newDiff=2, shrinkage=8 >= big(8)
+		expect(bigComeback.comeback).toBe(SCORER_TUNABLES.scores.comeback.big);
+		expect(bigComeback.reason).toContain(SCORER_TUNABLES.reasons.comebackBig);
+	});
+
+	test('reason priority: momentum > comeback > leadChanges > lateGame > closeness', () => {
+		// Home was up 10, away erased the deficit to tie; shrinkage=10 → comeback.big
+		// Momentum also fires (away on a run), so reason slot 1 = momentum, slot 2 = comeback
+		const game = makeGame({
+			period: 2,
+			clockSeconds: 600,
+			homeTeam: { ...makeGame().homeTeam, score: 84 },
+			awayTeam: { ...makeGame().awayTeam, score: 84 },
+		});
+		const history = makeHistory([[80, 70], [81, 75], [84, 84]]);
+		const result = computePowerScore(game, history);
+		expect(result.comeback).toBe(SCORER_TUNABLES.scores.comeback.big);
+		expect(result.reason).toContain(SCORER_TUNABLES.reasons.comebackBig);
+	});
+});
