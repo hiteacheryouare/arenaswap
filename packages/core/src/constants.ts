@@ -51,12 +51,12 @@ export const DEFAULT_SWITCH_DELAY_SECS = 0;
 // Sensitivity level → score delta required to trigger a tab switch
 export const SENSITIVITY_THRESHOLDS: Record<number, number> = {
 	1: 100,
-	2: 50,
-	3: 35,
-	4: 20,
-	5: 10,
-	6: 5,
-	7: 1
+	2: 60,
+	3: 45,
+	4: 28,
+	5: 16,
+	6: 8,
+	7: 3
 };
 
 export const LEAGUE_LOGO_FALLBACKS: Record<LeagueId, string> = {

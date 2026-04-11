@@ -233,6 +233,47 @@ describe('computePowerScore', () => {
 		expect(extraInningsResult.reason).toContain('extra innings');
 	});
 
+	test('pushes intense late regulation games into the 80s without maxing out', () => {
+		const game = makeGame({
+			period: 4,
+			clockSeconds: 12,
+			homeTeam: { abbreviation: 'HOM', score: 78 },
+			awayTeam: { abbreviation: 'AWY', score: 78 },
+		});
+		const history = makeHistory([
+			[70, 65],
+			[72, 73],
+			[75, 76],
+		]);
+
+		const result = computePowerScore(game, history);
+		expect(result.total).toBeGreaterThanOrEqual(80);
+		expect(result.total).toBeLessThan(SCORE_MAX_TOTAL);
+	});
+
+	test('reserves 100 for exceptional overtime scenarios', () => {
+		const game = makeGame({
+			period: 5,
+			clockSeconds: 120,
+			homeTeam: { abbreviation: 'HOM', score: 115 },
+			awayTeam: { abbreviation: 'AWY', score: 115 },
+		});
+		const history = makeHistory([
+			[95, 80],
+			[100, 102],
+			[110, 102],
+			[110, 112],
+		]);
+
+		const result = computePowerScore(game, history);
+		expect(result.closeness).toBe(SCORE_MAX_CLOSENESS);
+		expect(result.lateGame).toBe(SCORE_MAX_LATE_GAME);
+		expect(result.momentum).toBe(SCORE_MAX_MOMENTUM);
+		expect(result.leadChanges).toBe(SCORE_MAX_LEAD_CHANGES);
+		expect(result.comeback).toBe(SCORE_MAX_COMEBACK);
+		expect(result.total).toBe(SCORE_MAX_TOTAL);
+	});
+
 	test('detects big momentum runs from history snapshots', () => {
 		const game = makeGame({
 			homeTeam: { abbreviation: 'HOM', score: 70 },
@@ -364,21 +405,21 @@ describe('computePowerScore', () => {
 		);
 		expect(noComeback.comeback).toBe(SCORER_TUNABLES.scores.comeback.none);
 
-		// Moderate comeback — deficit shrinks by 4 (basketball comebackThresholdSmall=4)
+		// Moderate comeback — deficit shrinks by 5 (basketball small=3, big=6)
 		const moderateComeback = computePowerScore(
-			makeGame({ homeTeam: { ...makeGame().homeTeam, score: 88 }, awayTeam: { ...makeGame().awayTeam, score: 84 } }),
-			makeHistory([[80, 70], [82, 74], [88, 84]]),
+			makeGame({ homeTeam: { ...makeGame().homeTeam, score: 89 }, awayTeam: { ...makeGame().awayTeam, score: 84 } }),
+			makeHistory([[80, 70], [83, 75], [89, 84]]),
 		);
-		// oldDiff=10, newDiff=4, shrinkage=6 >= small(4)
+		// oldDiff=10, newDiff=5, shrinkage=5 => moderate
 		expect(moderateComeback.comeback).toBe(SCORER_TUNABLES.scores.comeback.moderate);
 		expect(moderateComeback.reason).toContain(SCORER_TUNABLES.reasons.comebackModerate);
 
-		// Big comeback — deficit shrinks by 8+ (basketball comebackThresholdBig=8)
+		// Big comeback — deficit shrinks by 8 (basketball big=6)
 		const bigComeback = computePowerScore(
 			makeGame({ homeTeam: { ...makeGame().homeTeam, score: 90 }, awayTeam: { ...makeGame().awayTeam, score: 88 } }),
 			makeHistory([[80, 70], [84, 74], [90, 88]]),
 		);
-		// oldDiff=10, newDiff=2, shrinkage=8 >= big(8)
+		// oldDiff=10, newDiff=2, shrinkage=8 >= big(6)
 		expect(bigComeback.comeback).toBe(SCORER_TUNABLES.scores.comeback.big);
 		expect(bigComeback.reason).toContain(SCORER_TUNABLES.reasons.comebackBig);
 	});
