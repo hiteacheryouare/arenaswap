@@ -1,0 +1,25 @@
+{
+	"name": "@arenaswap/powerscore",
+	"version": "1.0.0",
+	"description": "PowerScore algorithm — excitement scoring engine for ArenaSwap",
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"import": "./dist/index.js",
+			"types": "./dist/index.d.ts"
+		}
+	},
+	"scripts": {
+		"build": "tsc",
+		"test": "npm run test:unit",
+		"test:unit": "jest --passWithNoTests --selectProjects unit",
+		"typecheck": "tsc --noEmit"
+	},
+	"devDependencies": {
+		"@types/jest": "^30.0.0",
+		"jest": "^30.3.0",
+		"ts-jest": "^29.4.9",
+		"typescript": "^5.9.3"
+	}
+}
