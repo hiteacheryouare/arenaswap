@@ -3,17 +3,19 @@ import type { Browser } from 'wxt/browser';
 import {
 	LEAGUE_CONFIG_MAP,
 	SCORE_MAX_CLOSENESS,
+	SCORE_MAX_COMEBACK,
 	SCORE_MAX_LATE_GAME,
+	SCORE_MAX_LEAD_CHANGES,
 	SCORE_MAX_MOMENTUM,
 	SCORE_MAX_TOTAL,
 	STALL_PENALTY_MULTIPLIER,
 } from '@arenaswap/core/constants';
-import type { ExcitementResult, Game, TabRegistration, Team } from '@arenaswap/core/types';
+import type { PowerScoreResult, Game, TabRegistration, Team } from '@arenaswap/core/types';
 import TabAssignSelect from './TabAssignSelect';
 
 interface Props {
 	game: Game | undefined;
-	excitementResult: ExcitementResult | undefined;
+	excitementResult: PowerScoreResult | undefined;
 	openTabs: Browser.tabs.Tab[];
 	registry: TabRegistration[];
 	onRegistryChange: (updated: TabRegistration[]) => void;
@@ -201,7 +203,7 @@ const GameCard = ({ game, excitementResult, openTabs, registry, onRegistryChange
 
 	const isOt = game.period > LEAGUE_CONFIG_MAP[game.league].regularPeriods;
 	const rawPowerScore = excitementResult
-		? excitementResult.closeness + excitementResult.lateGame + excitementResult.momentum
+		? excitementResult.closeness + excitementResult.lateGame + excitementResult.momentum + excitementResult.leadChanges + excitementResult.comeback
 		: 0;
 
 	return (
@@ -247,8 +249,16 @@ const GameCard = ({ game, excitementResult, openTabs, registry, onRegistryChange
 						<span>{excitementResult.momentum} / {SCORE_MAX_MOMENTUM}</span>
 					</div>
 					<div className='powerscore-breakdown-row'>
+						<span>Lead changes</span>
+						<span>{excitementResult.leadChanges} / {SCORE_MAX_LEAD_CHANGES}</span>
+					</div>
+					<div className='powerscore-breakdown-row'>
+						<span>Comeback</span>
+						<span>{excitementResult.comeback} / {SCORE_MAX_COMEBACK}</span>
+					</div>
+					<div className='powerscore-breakdown-row'>
 						<span>Raw subtotal</span>
-						<span>{excitementResult.closeness} + {excitementResult.lateGame} + {excitementResult.momentum} = {rawPowerScore}</span>
+						<span>{excitementResult.closeness} + {excitementResult.lateGame} + {excitementResult.momentum} + {excitementResult.leadChanges} + {excitementResult.comeback} = {rawPowerScore}</span>
 					</div>
 					{excitementResult.stalled ? (
 						<div className='powerscore-breakdown-row'>
