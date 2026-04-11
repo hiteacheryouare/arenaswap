@@ -343,9 +343,10 @@ describe('core API + excitement e2e flow', () => {
 			.sort((a, b) => b.score.total - a.score.total);
 
 		expect(ranked.map(item => item.id)).toEqual(['nba-live-momentum', 'nba-live-critical', 'nba-live-fringe']);
-		expect(ranked.map(item => item.score.total)).toEqual([85, 53, 6]);
+		expect(ranked.map(item => item.score.total)).toEqual([81, 49, 6]);
 		expect(ranked[0]?.score.reason).toContain('HOM on a 10-0 run');
-		expect(ranked[1]?.score.reason).toContain('0:45 left');
+		expect(ranked[1]?.score.reason).toContain('under 5 min left');
+		expect(ranked[1]?.score.reason).toContain('tied');
 	});
 
 	it('keeps upcoming games when today fetch fails but date-range fetch succeeds', async () => {
