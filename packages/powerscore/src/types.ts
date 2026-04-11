@@ -40,6 +40,39 @@ export interface BaseballInningScoreTier {
 	includeReason: boolean;
 }
 
+export interface ExponentialLateGameCurve {
+	/** Minimum late-game score returned when the curve activates */
+	minScore: number;
+	/** Maximum late-game score for this curve segment (pre-overtime) */
+	maxScore: number;
+	/** Exponential steepness; larger values ramp score faster near game end */
+	growthRate: number;
+}
+
+export interface ClockLateGameCurveConfig {
+	model: 'clock';
+	/** Time-remaining window in the final period where the curve is active */
+	finalPeriodWindowSecs: number;
+	/** Time-remaining window in the previous period where mild pressure applies */
+	previousPeriodWindowSecs: number;
+	finalPeriodCurve: ExponentialLateGameCurve;
+	previousPeriodCurve: ExponentialLateGameCurve;
+}
+
+export interface BaseballLateGameCurveConfig {
+	model: 'baseball';
+	/** Regulation innings for this sport (MLB = 9) */
+	regulationInnings: number;
+	/** First inning where regulation late-game pressure should begin */
+	regulationStartInning: number;
+	/** Extra-innings baseline inning (typically regulationInnings + 1) */
+	extraInningsStartInning: number;
+	regulationCurve: ExponentialLateGameCurve;
+	extraInningsCurve: ExponentialLateGameCurve;
+}
+
+export type LateGameCurveConfig = ClockLateGameCurveConfig | BaseballLateGameCurveConfig;
+
 export interface ScorerTunables {
 	scores: {
 		closeness: {
@@ -104,11 +137,13 @@ export interface SportTypeConfig {
 	clockBased: boolean;
 	/** [tier1, tier2, tier3] score-margin thresholds for closeness signal */
 	closenessMargins: [number, number, number];
-	/** Seconds remaining in the final period to trigger "critical" late-game score */
+	/** Sport-aware exponential late-game model (future scorer path) */
+	lateGameCurve: LateGameCurveConfig;
+	/** @deprecated Legacy threshold tier (critical). Prefer lateGameCurve for new scorer logic. */
 	lateGameCriticalSecs: number;
-	/** Seconds remaining in the final period to trigger "tense" late-game score */
+	/** @deprecated Legacy threshold tier (tense). Prefer lateGameCurve for new scorer logic. */
 	lateGameTenseSecs: number;
-	/** Seconds remaining in the second-to-last period to trigger a mild late-game score */
+	/** @deprecated Legacy threshold tier (previous period). Prefer lateGameCurve for new scorer logic. */
 	lateGamePrevPeriodSecs: number;
 	/** Unanswered-scoring-run size that triggers max momentum score */
 	momentumBigRun: number;
