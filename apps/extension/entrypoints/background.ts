@@ -1,3 +1,4 @@
+import { randomInRange } from '@porkyproductions/hat';
 import { fetchGamesWithLeagueLogos, computePowerScore, normalizePowerScoreResult, MockGameSimulator } from '@arenaswap/core';
 import {
 	createDefaultUserPreferences,
@@ -10,6 +11,7 @@ import {
 } from '@arenaswap/core/constants';
 import type {
 	Game,
+	LeagueId,
 	PowerScoreResult,
 	LeagueLogoMap,
 	ScoreSnapshot,
@@ -29,7 +31,10 @@ export default defineBackground(() => {
 	let simulator: MockGameSimulator | null = null;
 	let prefs: UserPreferences = createDefaultUserPreferences();
 	let lastSwitchTime = 0;
-	let pollTimer: ReturnType<typeof setInterval> | null = null;
+	// Per-league timeouts for staggered live polling
+	const leagueTimers = new Map<string, ReturnType<typeof setTimeout>>();
+	// Interval used only in demo mode
+	let demoTimer: ReturnType<typeof setInterval> | null = null;
 	let inFlightRefresh: Promise<void> | null = null;
 	let pendingSwitchTimer: ReturnType<typeof setTimeout> | null = null;
 	let pendingSwitch: { gameId: string; tabId: number; reason?: string } | null = null;
@@ -159,6 +164,75 @@ export default defineBackground(() => {
 		}
 	};
 
+	// Shared post-fetch processing: stall tracking, score computation, broadcast, tab switching.
+	// Pass changedLeagueId to scope stall tracking and history to just the updated league;
+	// pass null (full refresh) to process all live games.
+	const afterFetch = async (changedLeagueId: LeagueId | null, allowTabSwitch: boolean) => {
+		const liveGames = games.filter(g => g.status === 'in');
+		const freshGames = changedLeagueId ? liveGames.filter(g => g.league === changedLeagueId) : liveGames;
+
+		for (const game of freshGames) {
+			const config = SPORT_TYPE_CONFIG_MAP[game.sportType];
+			if (!config?.clockBased) continue;
+
+			const entry = clockStallMap.get(game.id);
+			if (!entry) {
+				clockStallMap.set(game.id, { lastClock: game.clockSeconds, stallCount: 0 });
+			} else if (game.clockSeconds === entry.lastClock) {
+				entry.stallCount++;
+			} else {
+				entry.lastClock = game.clockSeconds;
+				entry.stallCount = 0;
+			}
+		}
+
+		const scores = liveGames.map(g => {
+			const stallCount = clockStallMap.get(g.id)?.stallCount ?? 0;
+			return normalizePowerScoreResult(computePowerScore(g, history.get(g.id) ?? [], stallCount));
+		});
+		currentScores = scores;
+		updateHistory(freshGames);
+
+		browser.runtime.sendMessage({ type: 'SCORES_UPDATED', scores, games, leagueLogos }).catch(() => {});
+
+		await syncManagedTabMuteState(prefs.enabled);
+
+		if (!allowTabSwitch || !prefs.enabled || liveGames.length === 0) {
+			if (!prefs.enabled || liveGames.length === 0) {
+				clearPendingSwitch();
+			}
+			return;
+		}
+
+		const [activeTab] = await browser.tabs.query({ active: true, lastFocusedWindow: true });
+		if (activeTab?.id === undefined) return;
+
+		const activeReg = tabRegistry.find(r => r.tabId === activeTab.id);
+		const activeScore = scores.find(s => s.gameId === activeReg?.gameId)?.total ?? 0;
+
+		const registeredGameIds = new Set(tabRegistry.map(r => r.gameId));
+		const registeredScores = scores.filter(s => registeredGameIds.has(s.gameId));
+		if (registeredScores.length === 0) return;
+		if (pendingSwitch) return;
+
+		const best = registeredScores.reduce((a, b) => a.total > b.total ? a : b);
+		const bestReg = tabRegistry.find(r => r.gameId === best.gameId)!;
+		const threshold = SENSITIVITY_THRESHOLDS[prefs.sensitivity];
+		const cooldownOk = Date.now() - lastSwitchTime > prefs.cooldownSeconds * 1000;
+
+		if (
+			bestReg.tabId !== activeTab.id &&
+			best.total > activeScore + threshold &&
+			cooldownOk
+		) {
+			if (prefs.switchDelaySeconds > 0) {
+				queuePendingSwitch(best.gameId, bestReg.tabId, best.reason);
+			} else {
+				await executeSwitch(bestReg.tabId, best.gameId, best.reason);
+			}
+		}
+	};
+
 	const tick = async (allowTabSwitch = true) => {
 		const enabledLeagues = prefs.enabledLeagues;
 		if (demoMode && simulator) {
@@ -183,69 +257,47 @@ export default defineBackground(() => {
 			games = [...games, ...stillUpcoming];
 		}
 
-		const liveGames = games.filter(g => g.status === 'in');
+		await afterFetch(null, allowTabSwitch);
+	};
 
-		// Track clock stall state for clock-based sports
-		for (const game of liveGames) {
-			const config = SPORT_TYPE_CONFIG_MAP[game.sportType];
-			if (!config?.clockBased) continue;
-
-			const entry = clockStallMap.get(game.id);
-			if (!entry) {
-				clockStallMap.set(game.id, { lastClock: game.clockSeconds, stallCount: 0 });
-			} else if (game.clockSeconds === entry.lastClock) {
-				entry.stallCount++;
-			} else {
-				entry.lastClock = game.clockSeconds;
-				entry.stallCount = 0;
-			}
+	// Fetch a single league and merge results into shared state, then reschedule.
+	// Each league runs on its own POLL_INTERVAL_MS rhythm with ±2s jitter to
+	// continuously spread requests across the window and prevent thundering herds.
+	const tickLeague = async (leagueId: LeagueId, allowTabSwitch: boolean) => {
+		try {
+			const fetchResult = await fetchGamesWithLeagueLogos([leagueId], { includeUpcoming: false });
+			const freshGameIds = new Set(fetchResult.games.map(g => g.id));
+			const otherGames = games.filter(g => g.league !== leagueId);
+			const leagueUpcoming = upcomingGames.filter(g => g.league === leagueId && !freshGameIds.has(g.id));
+			games = [...otherGames, ...fetchResult.games, ...leagueUpcoming];
+			leagueLogos = { ...leagueLogos, ...fetchResult.leagueLogos };
+		} catch (err) {
+			console.error(`ArenaSwap: Failed to fetch ${leagueId}:`, err);
 		}
 
-		const scores = liveGames.map(g => {
-			const stallCount = clockStallMap.get(g.id)?.stallCount ?? 0;
-			return normalizePowerScoreResult(computePowerScore(g, history.get(g.id) ?? [], stallCount));
-		});
-		currentScores = scores;
-		updateHistory(liveGames);
+		// Reschedule before awaiting post-processing so the next tick is always queued
+		scheduleLeagueTick(leagueId, POLL_INTERVAL_MS + randomInRange(-2_000, 2_000));
 
-		browser.runtime.sendMessage({ type: 'SCORES_UPDATED', scores, games, leagueLogos }).catch(() => {});
+		await afterFetch(leagueId, allowTabSwitch);
+	};
 
-		await syncManagedTabMuteState(prefs.enabled);
+	const scheduleLeagueTick = (leagueId: LeagueId, delayMs: number) => {
+		const existing = leagueTimers.get(leagueId);
+		if (existing !== undefined) clearTimeout(existing);
+		leagueTimers.set(leagueId, setTimeout(() => void tickLeague(leagueId, true), delayMs));
+	};
 
-		if (!allowTabSwitch || !prefs.enabled || liveGames.length === 0) {
-			if (!prefs.enabled || liveGames.length === 0) {
-				clearPendingSwitch();
-			}
-			return;
-		}
+	const stopLeaguePolling = () => {
+		for (const timer of leagueTimers.values()) clearTimeout(timer);
+		leagueTimers.clear();
+	};
 
-		const [activeTab] = await browser.tabs.query({ active: true, lastFocusedWindow: true });
-		if (activeTab?.id === undefined) return;
-
-		const activeReg = tabRegistry.find(r => r.tabId === activeTab.id);
-		const activeScore = scores.find(s => s.gameId === activeReg?.gameId)?.total ?? 0;
-
-		// Only consider games that have a tab assigned
-		const registeredGameIds = new Set(tabRegistry.map(r => r.gameId));
-		const registeredScores = scores.filter(s => registeredGameIds.has(s.gameId));
-		if (registeredScores.length === 0) return;
-		if (pendingSwitch) return;
-
-		const best = registeredScores.reduce((a, b) => a.total > b.total ? a : b);
-		const bestReg = tabRegistry.find(r => r.gameId === best.gameId)!;
-		const threshold = SENSITIVITY_THRESHOLDS[prefs.sensitivity];
-		const cooldownOk = Date.now() - lastSwitchTime > prefs.cooldownSeconds * 1000;
-
-		if (
-			bestReg.tabId !== activeTab.id &&
-			best.total > activeScore + threshold &&
-			cooldownOk
-		) {
-			if (prefs.switchDelaySeconds > 0) {
-				queuePendingSwitch(best.gameId, bestReg.tabId, best.reason);
-			} else {
-				await executeSwitch(bestReg.tabId, best.gameId, best.reason);
-			}
+	// Spread each enabled league's first tick randomly across POLL_INTERVAL_MS so
+	// they never all fire at the same moment after the initial full fetch.
+	const startLeaguePolling = () => {
+		stopLeaguePolling();
+		for (const leagueId of prefs.enabledLeagues) {
+			scheduleLeagueTick(leagueId, randomInRange(0, POLL_INTERVAL_MS));
 		}
 	};
 
@@ -274,10 +326,13 @@ export default defineBackground(() => {
 	stateReady.then(async () => {
 		await refreshUpcomingGames();
 		refreshScores(false).finally(() => {
-			if (pollTimer) return;
-			pollTimer = setInterval(() => {
-				void refreshScores(true);
-			}, POLL_INTERVAL_MS);
+			if (demoMode) {
+				if (!demoTimer) {
+					demoTimer = setInterval(() => void tick(true), POLL_INTERVAL_MS);
+				}
+			} else {
+				startLeaguePolling();
+			}
 		});
 	});
 
@@ -295,6 +350,7 @@ export default defineBackground(() => {
 		if (msg.type === 'UPDATE_PREFS') {
 			return stateReady.then(async () => {
 				const prevShowUpcoming = prefs.showUpcomingGames;
+				const prevLeagues = new Set(prefs.enabledLeagues);
 				prefs = normalizeUserPreferences(msg.prefs);
 				clearPendingSwitch();
 				await browser.storage.sync.set({ prefs });
@@ -304,6 +360,13 @@ export default defineBackground(() => {
 					// Rebuild games: keep live/in-progress games, replace upcoming slice with updated cache
 					games = [...games.filter(g => g.status !== 'pre'), ...upcomingGames];
 					browser.runtime.sendMessage({ type: 'SCORES_UPDATED', scores: currentScores, games, leagueLogos }).catch(() => {});
+				}
+				// Restart staggered polling when the league set changes
+				const newLeagues = new Set(prefs.enabledLeagues);
+				const leaguesChanged = prevLeagues.size !== newLeagues.size ||
+					[...prevLeagues].some(l => !newLeagues.has(l as LeagueId));
+				if (leaguesChanged && !demoMode) {
+					startLeaguePolling();
 				}
 			});
 		}
@@ -321,8 +384,14 @@ export default defineBackground(() => {
 				demoMode = msg.enabled;
 				if (demoMode) {
 					simulator = new MockGameSimulator();
+					stopLeaguePolling();
+					if (!demoTimer) {
+						demoTimer = setInterval(() => void tick(true), POLL_INTERVAL_MS);
+					}
 				} else {
 					simulator = null;
+					if (demoTimer) { clearInterval(demoTimer); demoTimer = null; }
+					startLeaguePolling();
 				}
 				await browser.storage.local.set({ demoMode });
 				await refreshScores(false); // immediately refresh

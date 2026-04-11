@@ -17,5 +17,8 @@
 		"turbo": "^2.9.5",
 		"typescript": "^5.9.3"
 	},
-	"packageManager": "npm@10.9.0"
+	"packageManager": "npm@10.9.0",
+	"dependencies": {
+		"@porkyproductions/hat": "^1.5.0"
+	}
 }
