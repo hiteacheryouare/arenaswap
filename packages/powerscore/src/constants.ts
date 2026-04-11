@@ -70,7 +70,7 @@ export const SCORER_TUNABLES: ScorerTunables = {
 		momentumRunPrefix: 'on a',
 		momentumRunSuffix: 'run',
 		momentumRolling: 'rolling',
-		leadChangeMultiple: 'back and forth',
+		leadChangeMultiple: 'back and forth scoring',
 		leadChangeSingle: 'lead change',
 		comebackBig: 'comeback',
 		comebackModerate: 'rallying',
