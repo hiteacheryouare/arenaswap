@@ -1,5 +1,17 @@
-import { LEAGUE_CONFIG_MAP, SPORT_TYPE_CONFIG_MAP, SCORER_TUNABLES, STALL_THRESHOLD_POLLS, STALL_PENALTY_MULTIPLIER } from './constants';
-import type { SportTypeConfig } from './types';
+import {
+	LEAGUE_CONFIG_MAP,
+	SPORT_TYPE_CONFIG_MAP,
+	SCORER_TUNABLES,
+	STALL_THRESHOLD_POLLS,
+	STALL_PENALTY_MULTIPLIER,
+	SCORE_MAX_CLOSENESS,
+	SCORE_MAX_LATE_GAME,
+	SCORE_MAX_MOMENTUM,
+	SCORE_MAX_LEAD_CHANGES,
+	SCORE_MAX_COMEBACK,
+	SCORE_MAX_TOTAL,
+} from './constants';
+import type { SportTypeConfig, ExponentialLateGameCurve, ClockLateGameCurveConfig, BaseballLateGameCurveConfig } from './types';
 import type { Game, ScoreSnapshot, PowerScoreResult } from './types';
 
 interface Signal { score: number; reason: string; }
@@ -8,16 +20,20 @@ const toFiniteNumber = (value: unknown, fallback = 0): number => (
 	typeof value === 'number' && Number.isFinite(value) ? value : fallback
 );
 
+const clamp = (value: number, min: number, max: number): number => (
+	Math.min(max, Math.max(min, value))
+);
+
 export const normalizePowerScoreResult = (
 	score: Partial<PowerScoreResult> & Pick<PowerScoreResult, 'gameId'>
 ): PowerScoreResult => {
-	const closeness = toFiniteNumber(score.closeness);
-	const lateGame = toFiniteNumber(score.lateGame);
-	const momentum = toFiniteNumber(score.momentum);
-	const leadChanges = toFiniteNumber(score.leadChanges);
-	const comeback = toFiniteNumber(score.comeback);
+	const closeness = clamp(toFiniteNumber(score.closeness), 0, SCORE_MAX_CLOSENESS);
+	const lateGame = clamp(toFiniteNumber(score.lateGame), 0, SCORE_MAX_LATE_GAME);
+	const momentum = clamp(toFiniteNumber(score.momentum), 0, SCORE_MAX_MOMENTUM);
+	const leadChanges = clamp(toFiniteNumber(score.leadChanges), 0, SCORE_MAX_LEAD_CHANGES);
+	const comeback = clamp(toFiniteNumber(score.comeback), 0, SCORE_MAX_COMEBACK);
 	const rawTotal = closeness + lateGame + momentum + leadChanges + comeback;
-	const total = toFiniteNumber(score.total, rawTotal);
+	const total = clamp(toFiniteNumber(score.total, rawTotal), 0, SCORE_MAX_TOTAL);
 
 	return {
 		gameId: score.gameId,
@@ -63,6 +79,112 @@ const ordinal = (n: number): string => {
 	return `${n}th`;
 };
 
+interface ClockRegulationProgress {
+	progress: number;
+	phase: 'none' | 'previous' | 'final';
+	secsRemaining: number;
+}
+
+const mapExponentialLateGameScore = (
+	progress: number,
+	curve: ExponentialLateGameCurve,
+): number => {
+	const normalizedProgress = clamp(progress, 0, 1);
+	const minScore = clamp(curve.minScore, 0, SCORE_MAX_LATE_GAME);
+	const maxScore = clamp(curve.maxScore, minScore, SCORE_MAX_LATE_GAME);
+	const scoreRange = maxScore - minScore;
+	if (scoreRange === 0) return maxScore;
+
+	const growthRate = Math.max(0, curve.growthRate);
+	const curveProgress = growthRate === 0
+		? normalizedProgress
+		: (Math.exp(growthRate * normalizedProgress) - 1) / (Math.exp(growthRate) - 1);
+
+	return clamp(Math.round(minScore + (scoreRange * curveProgress)), 0, SCORE_MAX_LATE_GAME);
+};
+
+const getClockSecondsRemaining = (
+	game: Game,
+	config: SportTypeConfig,
+	periodDurationSecs: number,
+): number => {
+	const boundedDuration = Math.max(0, periodDurationSecs);
+	const boundedClock = clamp(game.clockSeconds, 0, boundedDuration);
+	return config.clockCountsUp
+		? clamp(boundedDuration - boundedClock, 0, boundedDuration)
+		: boundedClock;
+};
+
+const getClockRegulationProgress = (
+	game: Game,
+	regularPeriods: number,
+	periodDurationSecs: number,
+	config: SportTypeConfig,
+	curve: ClockLateGameCurveConfig,
+): ClockRegulationProgress => {
+	const secsRemaining = getClockSecondsRemaining(game, config, periodDurationSecs);
+	const previousWindowSecs = Math.max(0, curve.previousPeriodWindowSecs);
+	const finalWindowSecs = Math.max(0, curve.finalPeriodWindowSecs);
+	const totalWindowSecs = previousWindowSecs + finalWindowSecs;
+
+	if (totalWindowSecs <= 0)
+		return { progress: 0, phase: 'none', secsRemaining };
+
+	const previousPeriod = regularPeriods - 1;
+	if (game.period < previousPeriod)
+		return { progress: 0, phase: 'none', secsRemaining };
+
+	if (game.period === previousPeriod) {
+		if (previousWindowSecs <= 0 || secsRemaining > previousWindowSecs)
+			return { progress: 0, phase: 'none', secsRemaining };
+
+		const elapsedPrevWindow = clamp(previousWindowSecs - secsRemaining, 0, previousWindowSecs);
+		return {
+			progress: clamp(elapsedPrevWindow / totalWindowSecs, 0, 1),
+			phase: 'previous',
+			secsRemaining,
+		};
+	}
+
+	if (game.period === regularPeriods) {
+		if (finalWindowSecs <= 0) {
+			if (previousWindowSecs <= 0)
+				return { progress: 0, phase: 'none', secsRemaining };
+
+			return { progress: 1, phase: 'previous', secsRemaining };
+		}
+
+		if (secsRemaining > finalWindowSecs) {
+			if (previousWindowSecs <= 0)
+				return { progress: 0, phase: 'none', secsRemaining };
+
+			return {
+				progress: clamp(previousWindowSecs / totalWindowSecs, 0, 1),
+				phase: 'previous',
+				secsRemaining,
+			};
+		}
+
+		const elapsedFinalWindow = clamp(finalWindowSecs - secsRemaining, 0, finalWindowSecs);
+		return {
+			progress: clamp((previousWindowSecs + elapsedFinalWindow) / totalWindowSecs, 0, 1),
+			phase: 'final',
+			secsRemaining,
+		};
+	}
+
+	return { progress: 0, phase: 'none', secsRemaining };
+};
+
+const getBaseballRegulationProgress = (
+	inning: number,
+	curve: BaseballLateGameCurveConfig,
+): number | null => {
+	if (inning < curve.regulationStartInning) return null;
+	const spanInnings = Math.max(1, curve.regulationInnings - curve.regulationStartInning);
+	return clamp((inning - curve.regulationStartInning) / spanInnings, 0, 1);
+};
+
 const getLateGame = (game: Game, config: SportTypeConfig): Signal => {
 	const { scores, reasons } = SCORER_TUNABLES;
 	const leagueConfig = LEAGUE_CONFIG_MAP[game.league];
@@ -74,31 +196,57 @@ const getLateGame = (game: Game, config: SportTypeConfig): Signal => {
 		return { score: scores.lateGame.overtime, reason: clockBased ? reasons.overtime : reasons.extraInnings };
 
 	if (!clockBased) {
-		// MLB: use inning number as a proxy for time pressure
-		const inningTier = scores.lateGame.baseballInningTiers.find(tier => game.period >= tier.minInning);
-		if (inningTier) {
-			const reason = inningTier.includeReason ? `${ordinal(game.period)} ${reasons.inningSuffix}` : '';
-			return { score: inningTier.score, reason };
-		}
-		return { score: scores.lateGame.none, reason: '' };
+		if (config.lateGameCurve.model !== 'baseball')
+			return { score: scores.lateGame.none, reason: '' };
+
+		const regulationProgress = getBaseballRegulationProgress(game.period, config.lateGameCurve);
+		if (regulationProgress === null)
+			return { score: scores.lateGame.none, reason: '' };
+
+		const score = mapExponentialLateGameScore(regulationProgress, config.lateGameCurve.regulationCurve);
+		const inning = Math.min(game.period, config.lateGameCurve.regulationInnings);
+		const reason = `${ordinal(inning)} ${reasons.inningSuffix}`;
+		return { score, reason };
 	}
 
-	// Clock-based sports
-	const isLastPeriod = game.period === regularPeriods;
-	const isPrevPeriod = game.period === regularPeriods - 1;
+	if (config.lateGameCurve.model !== 'clock')
+		return { score: scores.lateGame.none, reason: '' };
 
-	// Soccer (and any future count-up sport) reports elapsed time; convert to time remaining.
-	const secsRemaining = config.clockCountsUp
-		? Math.max(0, leagueConfig.periodDurationSecs - game.clockSeconds)
-		: game.clockSeconds;
+	const previousWindowSecs = Math.max(0, config.lateGameCurve.previousPeriodWindowSecs);
+	const finalWindowSecs = Math.max(0, config.lateGameCurve.finalPeriodWindowSecs);
+	const totalWindowSecs = previousWindowSecs + finalWindowSecs;
+	if (totalWindowSecs <= 0)
+		return { score: scores.lateGame.none, reason: '' };
 
-	if (isLastPeriod && secsRemaining <= config.lateGameCriticalSecs)
-		return { score: scores.lateGame.clockBased.critical, reason: `${formatClock(secsRemaining)} ${reasons.clockLeftSuffix}` };
-	if (isLastPeriod && secsRemaining <= config.lateGameTenseSecs)
-		return { score: scores.lateGame.clockBased.tense, reason: `${reasons.underPrefix} ${config.lateGameTenseSecs / 60} ${reasons.minutesLeftSuffix}` };
-	if (isPrevPeriod && secsRemaining <= config.lateGamePrevPeriodSecs)
-		return { score: scores.lateGame.clockBased.previousPeriod, reason: '' };
-	return { score: scores.lateGame.none, reason: '' };
+	const regulationProgress = getClockRegulationProgress(
+		game,
+		regularPeriods,
+		leagueConfig.periodDurationSecs,
+		config,
+		config.lateGameCurve,
+	);
+	if (regulationProgress.phase === 'none')
+		return { score: scores.lateGame.none, reason: '' };
+
+	const previousShare = previousWindowSecs / totalWindowSecs;
+	if (regulationProgress.phase === 'previous') {
+		const previousProgress = previousShare === 0
+			? 1
+			: clamp(regulationProgress.progress / previousShare, 0, 1);
+		const score = mapExponentialLateGameScore(previousProgress, config.lateGameCurve.previousPeriodCurve);
+		return { score, reason: '' };
+	}
+
+	const finalShare = 1 - previousShare;
+	const finalProgress = finalShare <= 0
+		? 1
+		: clamp((regulationProgress.progress - previousShare) / finalShare, 0, 1);
+	const score = mapExponentialLateGameScore(finalProgress, config.lateGameCurve.finalPeriodCurve);
+	const reason = finalWindowSecs >= 60
+		? `${reasons.underPrefix} ${Math.ceil(finalWindowSecs / 60)} ${reasons.minutesLeftSuffix}`
+		: `${formatClock(finalWindowSecs)} ${reasons.clockLeftSuffix}`;
+
+	return { score, reason };
 };
 
 const getMomentum = (game: Game, history: ScoreSnapshot[], config: SportTypeConfig): Signal => {
