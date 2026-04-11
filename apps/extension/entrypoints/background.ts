@@ -1,4 +1,4 @@
-import { fetchGamesWithLeagueLogos, computePowerScore, MockGameSimulator } from '@arenaswap/core';
+import { fetchGamesWithLeagueLogos, computePowerScore, normalizePowerScoreResult, MockGameSimulator } from '@arenaswap/core';
 import {
 	createDefaultUserPreferences,
 	LEAGUE_LOGO_FALLBACKS,
@@ -203,7 +203,7 @@ export default defineBackground(() => {
 
 		const scores = liveGames.map(g => {
 			const stallCount = clockStallMap.get(g.id)?.stallCount ?? 0;
-			return computePowerScore(g, history.get(g.id) ?? [], stallCount);
+			return normalizePowerScoreResult(computePowerScore(g, history.get(g.id) ?? [], stallCount));
 		});
 		currentScores = scores;
 		updateHistory(liveGames);

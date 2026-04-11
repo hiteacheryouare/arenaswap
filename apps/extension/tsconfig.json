@@ -4,7 +4,9 @@
 		"jsx": "react-jsx",
 		"paths": {
 			"@arenaswap/core": ["../../packages/core/src/index.ts"],
-			"@arenaswap/core/*": ["../../packages/core/src/*"]
+			"@arenaswap/core/*": ["../../packages/core/src/*"],
+			"@arenaswap/powerscore": ["../../packages/powerscore/src/index.ts"],
+			"@arenaswap/powerscore/*": ["../../packages/powerscore/src/*"]
 		},
 		"removeComments": true
 	},

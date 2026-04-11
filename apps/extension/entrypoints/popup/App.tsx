@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { CSSProperties } from 'react';
 import useSWR from 'swr';
+import { normalizePowerScoreResult } from '@arenaswap/core';
 import {
 	createDefaultUserPreferences,
 	LEAGUE_CONFIGS,
@@ -104,9 +105,42 @@ const groupByLeague = (games: Game[]): LeagueGroup[] => (
 	}, [])
 );
 
+const isObjectRecord = (value: unknown): value is Record<string, unknown> => (
+	typeof value === 'object' && value !== null
+);
+
+const isGameArray = (value: unknown): value is Game[] => (
+	Array.isArray(value)
+);
+
+const isLeagueLogoMap = (value: unknown): value is LeagueLogoMap => (
+	isObjectRecord(value)
+);
+
+const isPowerScoreLike = (value: unknown): value is Partial<PowerScoreResult> & Pick<PowerScoreResult, 'gameId'> => {
+	if (!isObjectRecord(value)) return false;
+	return typeof value.gameId === 'string';
+};
+
+const normalizeScores = (value: unknown): PowerScoreResult[] => {
+	if (!Array.isArray(value)) return [];
+	return value
+		.filter(isPowerScoreLike)
+		.map(score => normalizePowerScoreResult(score));
+};
+
+const normalizeBackgroundState = (value: unknown): BackgroundState => {
+	if (!isObjectRecord(value)) return { games: [], scores: [], leagueLogos: {} };
+	return {
+		games: isGameArray(value.games) ? value.games : [],
+		scores: normalizeScores(value.scores),
+		leagueLogos: isLeagueLogoMap(value.leagueLogos) ? value.leagueLogos : {},
+	};
+};
+
 const fetchState = async (forceRefresh = false): Promise<BackgroundState> => {
 	const state = await browser.runtime.sendMessage({ type: 'GET_STATE', forceRefresh });
-	return (state as BackgroundState) ?? { games: [], scores: [], leagueLogos: {} };
+	return normalizeBackgroundState(state);
 };
 
 const formatTabLabel = (tab: Browser.tabs.Tab, allTabs: Browser.tabs.Tab[]): string => {
@@ -164,12 +198,9 @@ export default () => {
 
 		const handleMessage = (msg: any) => {
 			if (msg.type === 'SCORES_UPDATED') {
+				const normalizedState = normalizeBackgroundState(msg);
 				mutate(
-					{
-						games: msg.games as Game[],
-						scores: msg.scores as PowerScoreResult[],
-						leagueLogos: (msg.leagueLogos as LeagueLogoMap) ?? {}
-					},
+					normalizedState,
 					{ revalidate: false }
 				);
 			}

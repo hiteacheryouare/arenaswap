@@ -4,6 +4,34 @@ import type { Game, ScoreSnapshot, PowerScoreResult } from './types';
 
 interface Signal { score: number; reason: string; }
 
+const toFiniteNumber = (value: unknown, fallback = 0): number => (
+	typeof value === 'number' && Number.isFinite(value) ? value : fallback
+);
+
+export const normalizePowerScoreResult = (
+	score: Partial<PowerScoreResult> & Pick<PowerScoreResult, 'gameId'>
+): PowerScoreResult => {
+	const closeness = toFiniteNumber(score.closeness);
+	const lateGame = toFiniteNumber(score.lateGame);
+	const momentum = toFiniteNumber(score.momentum);
+	const leadChanges = toFiniteNumber(score.leadChanges);
+	const comeback = toFiniteNumber(score.comeback);
+	const rawTotal = closeness + lateGame + momentum + leadChanges + comeback;
+	const total = toFiniteNumber(score.total, rawTotal);
+
+	return {
+		gameId: score.gameId,
+		total,
+		closeness,
+		lateGame,
+		momentum,
+		leadChanges,
+		comeback,
+		reason: typeof score.reason === 'string' ? score.reason : SCORER_TUNABLES.reasons.fallback,
+		stalled: score.stalled === true,
+	};
+};
+
 const getClosenessUnit = (game: Game): string => (
 	SCORER_TUNABLES.reasons.closenessUnitBySportType[game.sportType] ?? SCORER_TUNABLES.reasons.defaultClosenessUnit
 );
@@ -127,7 +155,17 @@ export const computePowerScore = (
 	stallCount: number = 0,
 ): PowerScoreResult => {
 	if (game.intermission)
-		return { gameId: game.id, total: 0, closeness: 0, lateGame: 0, momentum: 0, leadChanges: 0, comeback: 0, reason: '', stalled: false };
+		return normalizePowerScoreResult({
+			gameId: game.id,
+			total: 0,
+			closeness: 0,
+			lateGame: 0,
+			momentum: 0,
+			leadChanges: 0,
+			comeback: 0,
+			reason: '',
+			stalled: false,
+		});
 
 	const config = SPORT_TYPE_CONFIG_MAP[game.sportType] ?? SPORT_TYPE_CONFIG_MAP.basketball;
 
@@ -146,7 +184,7 @@ export const computePowerScore = (
 		.slice(0, 2)
 		.join(', ') || SCORER_TUNABLES.reasons.fallback;
 
-	return {
+	return normalizePowerScoreResult({
 		gameId: game.id,
 		total,
 		closeness: closeness.score,
@@ -156,5 +194,5 @@ export const computePowerScore = (
 		comeback: comeback.score,
 		reason,
 		stalled,
-	};
+	});
 };
