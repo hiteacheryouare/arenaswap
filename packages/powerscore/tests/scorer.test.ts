@@ -1,10 +1,11 @@
 import {
+	LEAGUE_CONFIGS,
 	SCORER_TUNABLES,
 	STALL_PENALTY_MULTIPLIER,
 	STALL_THRESHOLD_POLLS,
 } from '../src/constants';
-import { computePowerScore } from '../src/scorer';
-import type { Game, ScoreSnapshot } from '../src/types';
+import { computePowerScore, normalizePowerScoreResult } from '../src/scorer';
+import type { Game, PowerScoreResult, ScoreSnapshot } from '../src/types';
 
 const makeGame = (overrides: Partial<Game> = {}): Game => ({
 	id: 'game-1',
@@ -27,6 +28,22 @@ const makeHistory = (scores: Array<[number, number]>): ScoreSnapshot[] => (
 );
 
 describe('computePowerScore', () => {
+	test('normalizes legacy score payloads with missing new signals', () => {
+		const legacyResult: Partial<PowerScoreResult> & Pick<PowerScoreResult, 'gameId'> = {
+			gameId: 'legacy-game',
+			total: 35,
+			closeness: 35,
+			lateGame: 0,
+			momentum: 0,
+			reason: 'tied',
+		};
+
+		const normalized = normalizePowerScoreResult(legacyResult);
+		expect(normalized.leadChanges).toBe(0);
+		expect(normalized.comeback).toBe(0);
+		expect(normalized.total).toBe(35);
+	});
+
 	test('returns zeroed score for intermission games', () => {
 		const game = makeGame({ intermission: true });
 		expect(computePowerScore(game, makeHistory([[80, 78], [82, 78], [84, 78]]))).toEqual({
@@ -348,5 +365,31 @@ describe('computePowerScore', () => {
 		const result = computePowerScore(game, history);
 		expect(result.comeback).toBe(SCORER_TUNABLES.scores.comeback.big);
 		expect(result.reason).toContain(SCORER_TUNABLES.reasons.comebackBig);
+	});
+
+	test('produces numeric lead-change and comeback scores for every league', () => {
+		for (const league of LEAGUE_CONFIGS) {
+			const game = makeGame({
+				league: league.id,
+				sportType: league.sportType,
+				period: Math.max(1, league.regularPeriods - 1),
+				clockSeconds: league.periodDurationSecs > 0 ? Math.min(600, league.periodDurationSecs) : 0,
+				homeTeam: { abbreviation: 'HOM', score: 16 },
+				awayTeam: { abbreviation: 'AWY', score: 15 },
+			});
+
+			const history = makeHistory([
+				[10, 0],
+				[10, 12],
+				[14, 12],
+				[15, 14],
+			]);
+
+			const result = computePowerScore(game, history);
+			expect(Number.isFinite(result.leadChanges)).toBe(true);
+			expect(Number.isFinite(result.comeback)).toBe(true);
+			expect(result.leadChanges).toBeGreaterThan(0);
+			expect(result.comeback).toBeGreaterThan(0);
+		}
 	});
 });
