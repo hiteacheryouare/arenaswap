@@ -4,7 +4,10 @@
     "module": "CommonJS",
     "moduleResolution": "Node",
     "types": ["jest", "node"],
-    "noEmit": true
+    "noEmit": true,
+    "paths": {
+      "@arenaswap/powerscore": ["../powerscore/src/index.ts"]
+    }
   },
   "include": ["src/**/*", "tests/**/*", "jest.setup.ts"]
 }

@@ -1,5 +1,8 @@
 const commonProjectConfig = {
   testEnvironment: 'node',
+  moduleNameMapper: {
+    '^@arenaswap/powerscore$': '<rootDir>/../powerscore/src/index.ts',
+  },
   transform: {
     '^.+\\.tsx?$': [
       'ts-jest',

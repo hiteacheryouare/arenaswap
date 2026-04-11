@@ -1,7 +1,7 @@
 {
 	"name": "@arenaswap/core",
 	"version": "0.1.0",
-	"description": "Pure TypeScript excitement scoring and ESPN API client for ArenaSwap",
+	"description": "ESPN API client, game model, and preferences for ArenaSwap",
 	"main": "./dist/index.js",
 	"types": "./dist/index.d.ts",
 	"exports": {
@@ -24,6 +24,9 @@
 		"test:unit": "jest --passWithNoTests --selectProjects unit",
 		"test:e2e": "jest --passWithNoTests --selectProjects e2e",
 		"typecheck": "tsc --noEmit"
+	},
+	"dependencies": {
+		"@arenaswap/powerscore": "*"
 	},
 	"devDependencies": {
 		"@types/jest": "^30.0.0",
