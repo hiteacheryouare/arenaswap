@@ -1,6 +1,12 @@
 import {
 	LEAGUE_CONFIGS,
 	SCORER_TUNABLES,
+	SCORE_MAX_CLOSENESS,
+	SCORE_MAX_LATE_GAME,
+	SCORE_MAX_MOMENTUM,
+	SCORE_MAX_LEAD_CHANGES,
+	SCORE_MAX_COMEBACK,
+	SCORE_MAX_TOTAL,
 	STALL_PENALTY_MULTIPLIER,
 	STALL_THRESHOLD_POLLS,
 } from '../src/constants';
@@ -42,6 +48,25 @@ describe('computePowerScore', () => {
 		expect(normalized.leadChanges).toBe(0);
 		expect(normalized.comeback).toBe(0);
 		expect(normalized.total).toBe(35);
+	});
+
+	test('clamps normalized signal values and total to configured maxes', () => {
+		const normalized = normalizePowerScoreResult({
+			gameId: 'legacy-overflow',
+			closeness: 40,
+			lateGame: 100,
+			momentum: -1,
+			leadChanges: 99,
+			comeback: 15,
+			total: 999,
+		});
+
+		expect(normalized.closeness).toBe(SCORE_MAX_CLOSENESS);
+		expect(normalized.lateGame).toBe(SCORE_MAX_LATE_GAME);
+		expect(normalized.momentum).toBe(0);
+		expect(normalized.leadChanges).toBe(SCORE_MAX_LEAD_CHANGES);
+		expect(normalized.comeback).toBe(SCORE_MAX_COMEBACK);
+		expect(normalized.total).toBe(SCORE_MAX_TOTAL);
 	});
 
 	test('returns zeroed score for intermission games', () => {
@@ -106,35 +131,7 @@ describe('computePowerScore', () => {
 		}
 	});
 
-	test('applies late-game clock pressure for countdown sports', () => {
-		const game = makeGame({
-			period: 4,
-			clockSeconds: 119,
-			homeTeam: { ...makeGame().homeTeam, score: 90 },
-			awayTeam: { ...makeGame().awayTeam, score: 88 },
-		});
-
-		const result = computePowerScore(game, []);
-		expect(result.lateGame).toBe(SCORER_TUNABLES.scores.lateGame.clockBased.critical);
-		expect(result.reason).toContain('left');
-		expect(result.reason).toContain('2-point game');
-	});
-
-	test('uses elapsed-clock conversion for soccer late-game scoring', () => {
-		const game = makeGame({
-			league: 'mls',
-			sportType: 'soccer',
-			period: 2,
-			clockSeconds: 2_600,
-			homeTeam: { ...makeGame().homeTeam, score: 1 },
-			awayTeam: { ...makeGame().awayTeam, score: 1 },
-		});
-
-		const result = computePowerScore(game, []);
-		expect(result.lateGame).toBe(SCORER_TUNABLES.scores.lateGame.clockBased.critical);
-	});
-
-	test('applies clock-based late-game thresholds at boundaries for countdown sports', () => {
+	test('builds a monotonic late-game gradient for countdown sports', () => {
 		const withClock = (period: number, clockSeconds: number) => makeGame({
 			period,
 			clockSeconds,
@@ -142,53 +139,82 @@ describe('computePowerScore', () => {
 			awayTeam: { ...makeGame().awayTeam, score: 90 },
 		});
 
-		const critical = computePowerScore(withClock(4, 120), []);
-		expect(critical.lateGame).toBe(SCORER_TUNABLES.scores.lateGame.clockBased.critical);
-		expect(critical.reason).toBe('2:00 left');
+		const beforeWindow = computePowerScore(withClock(3, 301), []);
+		const early = computePowerScore(withClock(3, 299), []);
+		const mid = computePowerScore(withClock(4, 300), []);
+		const late = computePowerScore(withClock(4, 120), []);
+		const endOfRegulation = computePowerScore(withClock(4, 1), []);
 
-		const tenseAtBoundary = computePowerScore(withClock(4, 300), []);
-		expect(tenseAtBoundary.lateGame).toBe(SCORER_TUNABLES.scores.lateGame.clockBased.tense);
-		expect(tenseAtBoundary.reason).toBe('under 5 min left');
-
-		const tenseJustAfterCritical = computePowerScore(withClock(4, 121), []);
-		expect(tenseJustAfterCritical.lateGame).toBe(SCORER_TUNABLES.scores.lateGame.clockBased.tense);
-
-		const previousPeriodBoundary = computePowerScore(withClock(3, 300), []);
-		expect(previousPeriodBoundary.lateGame).toBe(SCORER_TUNABLES.scores.lateGame.clockBased.previousPeriod);
-		expect(previousPeriodBoundary.reason).toBe(SCORER_TUNABLES.reasons.fallback);
-
-		const none = computePowerScore(withClock(3, 301), []);
-		expect(none.lateGame).toBe(SCORER_TUNABLES.scores.lateGame.none);
-		expect(none.reason).toBe(SCORER_TUNABLES.reasons.fallback);
+		expect(beforeWindow.lateGame).toBe(0);
+		expect(early.lateGame).toBeGreaterThan(beforeWindow.lateGame);
+		expect(mid.lateGame).toBeGreaterThan(early.lateGame);
+		expect(late.lateGame).toBeGreaterThan(mid.lateGame);
+		expect(endOfRegulation.lateGame).toBeGreaterThan(late.lateGame);
+		expect(endOfRegulation.lateGame).toBeGreaterThanOrEqual(Math.ceil(SCORE_MAX_LATE_GAME * 0.8));
+		expect(endOfRegulation.lateGame).toBeLessThanOrEqual(SCORE_MAX_LATE_GAME);
+		expect(mid.reason).toContain('under 5 min left');
 	});
 
-	test('applies count-up late-game thresholds at boundaries for soccer', () => {
-		const withElapsed = (clockSeconds: number) => makeGame({
+	test('builds a monotonic late-game gradient for count-up sports', () => {
+		const withElapsed = (period: number, clockSeconds: number) => makeGame({
 			league: 'mls',
 			sportType: 'soccer',
-			period: 2,
+			period,
 			clockSeconds,
 			homeTeam: { ...makeGame().homeTeam, score: 4 },
 			awayTeam: { ...makeGame().awayTeam, score: 0 },
 		});
 
-		const critical = computePowerScore(withElapsed(2_520), []);
-		expect(critical.lateGame).toBe(SCORER_TUNABLES.scores.lateGame.clockBased.critical);
-		expect(critical.reason).toBe('3:00 left');
+		const beforeWindow = computePowerScore(withElapsed(1, 2_099), []);
+		const early = computePowerScore(withElapsed(1, 2_101), []);
+		const mid = computePowerScore(withElapsed(2, 2_100), []);
+		const late = computePowerScore(withElapsed(2, 2_520), []);
+		const endOfRegulation = computePowerScore(withElapsed(2, 2_699), []);
 
-		const tense = computePowerScore(withElapsed(2_519), []);
-		expect(tense.lateGame).toBe(SCORER_TUNABLES.scores.lateGame.clockBased.tense);
-		expect(tense.reason).toBe('under 10 min left');
-
-		const tenseBoundary = computePowerScore(withElapsed(2_100), []);
-		expect(tenseBoundary.lateGame).toBe(SCORER_TUNABLES.scores.lateGame.clockBased.tense);
-
-		const none = computePowerScore(withElapsed(2_099), []);
-		expect(none.lateGame).toBe(SCORER_TUNABLES.scores.lateGame.none);
-		expect(none.reason).toBe(SCORER_TUNABLES.reasons.fallback);
+		expect(beforeWindow.lateGame).toBe(0);
+		expect(early.lateGame).toBeGreaterThan(beforeWindow.lateGame);
+		expect(mid.lateGame).toBeGreaterThan(early.lateGame);
+		expect(late.lateGame).toBeGreaterThan(mid.lateGame);
+		expect(endOfRegulation.lateGame).toBeGreaterThan(late.lateGame);
+		expect(endOfRegulation.lateGame).toBeGreaterThanOrEqual(Math.ceil(SCORE_MAX_LATE_GAME * 0.8));
+		expect(endOfRegulation.lateGame).toBeLessThanOrEqual(SCORE_MAX_LATE_GAME);
+		expect(mid.reason).toContain('under 10 min left');
 	});
 
-	test('scores extra innings for baseball overtime periods', () => {
+	test('builds a monotonic late-game gradient for baseball innings', () => {
+		const withInning = (period: number) => makeGame({
+			league: 'mlb',
+			sportType: 'baseball',
+			period,
+			clockSeconds: 0,
+			homeTeam: { ...makeGame().homeTeam, score: 4 },
+			awayTeam: { ...makeGame().awayTeam, score: 2 },
+		});
+
+		const beforeWindow = computePowerScore(withInning(5), []);
+		const early = computePowerScore(withInning(6), []);
+		const mid = computePowerScore(withInning(7), []);
+		const late = computePowerScore(withInning(8), []);
+		const endOfRegulation = computePowerScore(withInning(9), []);
+
+		expect(beforeWindow.lateGame).toBe(0);
+		expect(early.lateGame).toBeGreaterThan(beforeWindow.lateGame);
+		expect(mid.lateGame).toBeGreaterThan(early.lateGame);
+		expect(late.lateGame).toBeGreaterThan(mid.lateGame);
+		expect(endOfRegulation.lateGame).toBeGreaterThan(late.lateGame);
+		expect(endOfRegulation.lateGame).toBeGreaterThanOrEqual(Math.ceil(SCORE_MAX_LATE_GAME * 0.8));
+		expect(endOfRegulation.lateGame).toBeLessThanOrEqual(SCORE_MAX_LATE_GAME);
+		expect(endOfRegulation.reason).toContain('inning');
+	});
+
+	test('scores overtime and extra innings at max late-game pressure', () => {
+		const overtime = makeGame({
+			period: 5,
+			clockSeconds: 120,
+			homeTeam: { ...makeGame().homeTeam, score: 105 },
+			awayTeam: { ...makeGame().awayTeam, score: 105 },
+		});
+
 		const game = makeGame({
 			league: 'mlb',
 			sportType: 'baseball',
@@ -198,9 +224,13 @@ describe('computePowerScore', () => {
 			awayTeam: { ...makeGame().awayTeam, score: 4 },
 		});
 
-		const result = computePowerScore(game, []);
-		expect(result.lateGame).toBe(SCORER_TUNABLES.scores.lateGame.overtime);
-		expect(result.reason).toContain('extra innings');
+		const overtimeResult = computePowerScore(overtime, []);
+		const extraInningsResult = computePowerScore(game, []);
+
+		expect(overtimeResult.lateGame).toBe(SCORE_MAX_LATE_GAME);
+		expect(overtimeResult.reason).toContain('overtime');
+		expect(extraInningsResult.lateGame).toBe(SCORE_MAX_LATE_GAME);
+		expect(extraInningsResult.reason).toContain('extra innings');
 	});
 
 	test('detects big momentum runs from history snapshots', () => {
@@ -247,7 +277,7 @@ describe('computePowerScore', () => {
 		const history = makeHistory([[60, 56], [65, 56], [70, 56]]);
 
 		const result = computePowerScore(game, history);
-		expect(result.reason).toBe('HOM on a 10-0 run, 1:59 left');
+		expect(result.reason).toBe('HOM on a 10-0 run, under 5 min left');
 		expect(result.reason).not.toContain('2-point game');
 	});
 
@@ -263,7 +293,8 @@ describe('computePowerScore', () => {
 
 		const result = computePowerScore(game, history);
 		expect(result.closeness).toBe(SCORER_TUNABLES.scores.closeness.fringe);
-		expect(result.lateGame).toBe(SCORER_TUNABLES.scores.lateGame.clockBased.previousPeriod);
+		expect(result.lateGame).toBeGreaterThan(0);
+		expect(result.lateGame).toBeLessThan(SCORE_MAX_LATE_GAME);
 		expect(result.momentum).toBe(SCORER_TUNABLES.scores.momentum.none);
 		expect(result.total).toBe(result.closeness + result.lateGame + result.momentum + result.leadChanges + result.comeback);
 		expect(result.reason).toBe(SCORER_TUNABLES.reasons.fallback);

@@ -8,6 +8,7 @@ import {
 	SCORER_TUNABLES,
 	ALL_LEAGUE_IDS,
 	LEAGUE_CONFIG_MAP,
+	SPORT_TYPE_CONFIGS,
 } from '../src/constants';
 
 describe('SCORE_MAX_TOTAL', () => {
@@ -41,6 +42,27 @@ describe('LEAGUE_CONFIG_MAP coverage', () => {
 		for (const id of ALL_LEAGUE_IDS) {
 			expect(LEAGUE_CONFIG_MAP[id]).toBeDefined();
 			expect(LEAGUE_CONFIG_MAP[id].id).toBe(id);
+		}
+	});
+});
+
+describe('SPORT_TYPE_CONFIGS late-game curve config', () => {
+	it('defines curve tunables for every sport with a matching model', () => {
+		for (const config of SPORT_TYPE_CONFIGS) {
+			if (config.clockBased) {
+				expect(config.lateGameCurve.model).toBe('clock');
+				if (config.lateGameCurve.model === 'clock') {
+					expect(config.lateGameCurve.finalPeriodCurve.maxScore).toBeLessThanOrEqual(SCORE_MAX_LATE_GAME);
+					expect(config.lateGameCurve.previousPeriodCurve.maxScore).toBeLessThanOrEqual(SCORE_MAX_LATE_GAME);
+				}
+				continue;
+			}
+
+			expect(config.lateGameCurve.model).toBe('baseball');
+			if (config.lateGameCurve.model === 'baseball') {
+				expect(config.lateGameCurve.regulationCurve.maxScore).toBeLessThanOrEqual(SCORE_MAX_LATE_GAME);
+				expect(config.lateGameCurve.extraInningsCurve.maxScore).toBeLessThanOrEqual(SCORE_MAX_LATE_GAME);
+			}
 		}
 	});
 });
