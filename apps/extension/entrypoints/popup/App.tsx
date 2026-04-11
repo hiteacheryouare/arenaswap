@@ -8,7 +8,7 @@ import {
 	resolveLeagueLogoUrl,
 } from '@arenaswap/core/constants';
 import type { Browser } from 'wxt/browser';
-import type { BackgroundState, ExcitementResult, Game, LeagueId, LeagueLogoMap, SportType, TabRegistration, UserPreferences } from '@arenaswap/core/types';
+import type { BackgroundState, PowerScoreResult, Game, LeagueId, LeagueLogoMap, SportType, TabRegistration, UserPreferences } from '@arenaswap/core/types';
 import GameCard from './components/GameCard';
 import SensitivitySlider from './components/SensitivitySlider';
 import CooldownSlider from './components/CooldownSlider';
@@ -167,7 +167,7 @@ export default () => {
 				mutate(
 					{
 						games: msg.games as Game[],
-						scores: msg.scores as ExcitementResult[],
+						scores: msg.scores as PowerScoreResult[],
 						leagueLogos: (msg.leagueLogos as LeagueLogoMap) ?? {}
 					},
 					{ revalidate: false }

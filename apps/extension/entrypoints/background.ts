@@ -1,4 +1,4 @@
-import { fetchGamesWithLeagueLogos, computeExcitement, MockGameSimulator } from '@arenaswap/core';
+import { fetchGamesWithLeagueLogos, computePowerScore, MockGameSimulator } from '@arenaswap/core';
 import {
 	createDefaultUserPreferences,
 	LEAGUE_LOGO_FALLBACKS,
@@ -10,7 +10,7 @@ import {
 } from '@arenaswap/core/constants';
 import type {
 	Game,
-	ExcitementResult,
+	PowerScoreResult,
 	LeagueLogoMap,
 	ScoreSnapshot,
 	TabRegistration,
@@ -20,7 +20,7 @@ import type {
 export default defineBackground(() => {
 	let games: Game[] = [];
 	let upcomingGames: Game[] = [];
-	let currentScores: ExcitementResult[] = [];
+	let currentScores: PowerScoreResult[] = [];
 	let leagueLogos: LeagueLogoMap = {};
 	const history = new Map<string, ScoreSnapshot[]>();
 	const clockStallMap = new Map<string, { lastClock: number; stallCount: number }>();
@@ -203,7 +203,7 @@ export default defineBackground(() => {
 
 		const scores = liveGames.map(g => {
 			const stallCount = clockStallMap.get(g.id)?.stallCount ?? 0;
-			return computeExcitement(g, history.get(g.id) ?? [], stallCount);
+			return computePowerScore(g, history.get(g.id) ?? [], stallCount);
 		});
 		currentScores = scores;
 		updateHistory(liveGames);
