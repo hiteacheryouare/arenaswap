@@ -1,6 +1,6 @@
 import * as apiClient from '../src/api-client';
 import * as constants from '../src/constants';
-import * as scorer from '../src/excitement-scorer';
+import * as scorer from '@arenaswap/powerscore';
 import * as indexExports from '../src/index';
 import * as mockGames from '../src/mock-games';
 
@@ -12,8 +12,8 @@ describe('index barrel exports', () => {
 		expect(indexExports.fetchGamesWithLeagueLogos).toBe(apiClient.fetchGamesWithLeagueLogos);
 	});
 
-	test('re-exports excitement scorer and mock simulator', () => {
-		expect(indexExports.computeExcitement).toBe(scorer.computeExcitement);
+	test('re-exports powerscore and mock simulator', () => {
+		expect(indexExports.computePowerScore).toBe(scorer.computePowerScore);
 		expect(indexExports.MockGameSimulator).toBe(mockGames.MockGameSimulator);
 	});
 

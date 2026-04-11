@@ -133,7 +133,7 @@ describe('core API + excitement e2e flow', () => {
 		});
 
 		const { fetchGames, fetchLiveGames } = await import('../../src/api-client');
-		const { computeExcitement } = await import('../../src/excitement-scorer');
+		const { computePowerScore } = await import('@arenaswap/powerscore');
 
 		const games = await fetchGames(['nba']);
 		expect(games.map(game => game.id).sort()).toEqual(['nba-live-1', 'nba-pre-1']);
@@ -154,14 +154,14 @@ describe('core API + excitement e2e flow', () => {
 		const rankedScores = games
 			.map(game => ({
 				game,
-				score: computeExcitement(game, historyByGameId[game.id] ?? []),
+				score: computePowerScore(game, historyByGameId[game.id] ?? []),
 			}))
 			.sort((a, b) => b.score.total - a.score.total);
 
 		expect(rankedScores[0]?.game.id).toBe('nba-live-1');
 		expect(rankedScores[0]?.score.total).toBeGreaterThan(rankedScores[1]?.score.total ?? 0);
 		expect(rankedScores[0]?.score.reason).toContain('10-0 run');
-		expect(rankedScores[0]?.score.reason).toContain('1:15 left');
+		expect(rankedScores[0]?.score.reason).toContain('comeback');
 
 		const requestedUrls = fetchSpy.mock.calls.map(([input]) => toUrl(input as RequestInfo | URL));
 		expect(requestedUrls.length).toBeGreaterThanOrEqual(4);
@@ -318,7 +318,7 @@ describe('core API + excitement e2e flow', () => {
 		});
 
 		const { fetchGamesWithLeagueLogos } = await import('../../src/api-client');
-		const { computeExcitement } = await import('../../src/excitement-scorer');
+		const { computePowerScore } = await import('@arenaswap/powerscore');
 
 		const result = await fetchGamesWithLeagueLogos(['nba'], { includeUpcoming: false });
 		const historyByGameId: Record<string, ScoreSnapshot[]> = {
@@ -338,12 +338,12 @@ describe('core API + excitement e2e flow', () => {
 		const ranked = result.games
 			.map(game => ({
 				id: game.id,
-				score: computeExcitement(game, historyByGameId[game.id] ?? []),
+				score: computePowerScore(game, historyByGameId[game.id] ?? []),
 			}))
 			.sort((a, b) => b.score.total - a.score.total);
 
 		expect(ranked.map(item => item.id)).toEqual(['nba-live-momentum', 'nba-live-critical', 'nba-live-fringe']);
-		expect(ranked.map(item => item.score.total)).toEqual([85, 70, 8]);
+		expect(ranked.map(item => item.score.total)).toEqual([85, 53, 6]);
 		expect(ranked[0]?.score.reason).toContain('HOM on a 10-0 run');
 		expect(ranked[1]?.score.reason).toContain('0:45 left');
 	});

@@ -6,11 +6,6 @@ import {
 	APP_VERSION,
 	LEAGUE_CONFIG_MAP,
 	LEAGUE_LOGO_FALLBACKS,
-	SCORER_TUNABLES,
-	SCORE_MAX_CLOSENESS,
-	SCORE_MAX_LATE_GAME,
-	SCORE_MAX_MOMENTUM,
-	SCORE_MAX_TOTAL,
 	createDefaultUserPreferences,
 	normalizeUserPreferences,
 	resolveLeagueLogoUrl,
@@ -21,13 +16,6 @@ describe('constants', () => {
 		expect(APP_NAME).toBe(pkg.name);
 		expect(APP_VERSION).toBe(pkg.version);
 		expect(APP_DESCRIPTION).toBe(pkg.description);
-	});
-
-	test('keeps total score max in sync with signal maxes', () => {
-		expect(SCORE_MAX_TOTAL).toBe(SCORE_MAX_CLOSENESS + SCORE_MAX_LATE_GAME + SCORE_MAX_MOMENTUM);
-		expect(SCORER_TUNABLES.scores.closeness.tied).toBe(SCORE_MAX_CLOSENESS);
-		expect(SCORER_TUNABLES.scores.lateGame.overtime).toBe(SCORE_MAX_LATE_GAME);
-		expect(SCORER_TUNABLES.scores.momentum.bigRun).toBe(SCORE_MAX_MOMENTUM);
 	});
 
 	test('resolves league logo URLs with ESPN value first, then fallback', () => {
