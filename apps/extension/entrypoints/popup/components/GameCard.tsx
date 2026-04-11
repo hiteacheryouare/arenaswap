@@ -202,9 +202,14 @@ const GameCard = ({ game, excitementResult, openTabs, registry, onRegistryChange
 	}
 
 	const isOt = game.period > LEAGUE_CONFIG_MAP[game.league].regularPeriods;
-	const rawPowerScore = excitementResult
-		? excitementResult.closeness + excitementResult.lateGame + excitementResult.momentum + excitementResult.leadChanges + excitementResult.comeback
-		: 0;
+	const closenessScore = excitementResult?.closeness ?? 0;
+	const lateGameScore = excitementResult?.lateGame ?? 0;
+	const momentumScore = excitementResult?.momentum ?? 0;
+	const leadChangesScore = excitementResult?.leadChanges ?? 0;
+	const comebackScore = excitementResult?.comeback ?? 0;
+	const totalPowerScore = excitementResult?.total ?? 0;
+	const reason = excitementResult?.reason ?? 'Best Available';
+	const rawPowerScore = closenessScore + lateGameScore + momentumScore + leadChangesScore + comebackScore;
 
 	return (
 		<div className={`game-card${isOt ? ' is-ot' : ''}`} style={{
@@ -223,12 +228,12 @@ const GameCard = ({ game, excitementResult, openTabs, registry, onRegistryChange
 					<button
 						type='button'
 						className='powerscore powerscore-button'
-						style={{ backgroundColor: powerScoreColor(excitementResult.total, SCORE_MAX_TOTAL) }}
+						style={{ backgroundColor: powerScoreColor(totalPowerScore, SCORE_MAX_TOTAL) }}
 						onClick={() => setShowPowerScoreDetails(current => !current)}
 						aria-expanded={showPowerScoreDetails}
 						aria-label='Toggle PowerScore details'
 					>
-						PowerScore: {excitementResult.total} / {SCORE_MAX_TOTAL}
+						PowerScore: {totalPowerScore} / {SCORE_MAX_TOTAL}
 						<i className={`bi ${showPowerScoreDetails ? 'bi-chevron-up' : 'bi-chevron-down'}`} />
 					</button>
 				)}
@@ -238,32 +243,32 @@ const GameCard = ({ game, excitementResult, openTabs, registry, onRegistryChange
 					<div className='powerscore-breakdown-heading'>How this score was calculated</div>
 					<div className='powerscore-breakdown-row'>
 						<span>Closeness</span>
-						<span>{excitementResult.closeness} / {SCORE_MAX_CLOSENESS}</span>
+						<span>{closenessScore} / {SCORE_MAX_CLOSENESS}</span>
 					</div>
 					<div className='powerscore-breakdown-row'>
 						<span>Late-game pressure</span>
-						<span>{excitementResult.lateGame} / {SCORE_MAX_LATE_GAME}</span>
+						<span>{lateGameScore} / {SCORE_MAX_LATE_GAME}</span>
 					</div>
 					<div className='powerscore-breakdown-row'>
 						<span>Momentum</span>
-						<span>{excitementResult.momentum} / {SCORE_MAX_MOMENTUM}</span>
+						<span>{momentumScore} / {SCORE_MAX_MOMENTUM}</span>
 					</div>
 					<div className='powerscore-breakdown-row'>
 						<span>Lead changes</span>
-						<span>{excitementResult.leadChanges} / {SCORE_MAX_LEAD_CHANGES}</span>
+						<span>{leadChangesScore} / {SCORE_MAX_LEAD_CHANGES}</span>
 					</div>
 					<div className='powerscore-breakdown-row'>
 						<span>Comeback</span>
-						<span>{excitementResult.comeback} / {SCORE_MAX_COMEBACK}</span>
+						<span>{comebackScore} / {SCORE_MAX_COMEBACK}</span>
 					</div>
 					<div className='powerscore-breakdown-row'>
 						<span>Raw subtotal</span>
-						<span>{excitementResult.closeness} + {excitementResult.lateGame} + {excitementResult.momentum} + {excitementResult.leadChanges} + {excitementResult.comeback} = {rawPowerScore}</span>
+						<span>{closenessScore} + {lateGameScore} + {momentumScore} + {leadChangesScore} + {comebackScore} = {rawPowerScore}</span>
 					</div>
 					{excitementResult.stalled ? (
 						<div className='powerscore-breakdown-row'>
 							<span>Clock stall penalty</span>
-							<span>-{STALL_PENALTY_PERCENT}% ({rawPowerScore} x {STALL_PENALTY_MULTIPLIER} ~= {excitementResult.total})</span>
+							<span>-{STALL_PENALTY_PERCENT}% ({rawPowerScore} x {STALL_PENALTY_MULTIPLIER} ~= {totalPowerScore})</span>
 						</div>
 					) : (
 						<div className='powerscore-breakdown-row'>
@@ -273,9 +278,9 @@ const GameCard = ({ game, excitementResult, openTabs, registry, onRegistryChange
 					)}
 					<div className='powerscore-breakdown-row powerscore-breakdown-row-total'>
 						<span>Final PowerScore</span>
-						<span>{excitementResult.total} / {SCORE_MAX_TOTAL}</span>
+						<span>{totalPowerScore} / {SCORE_MAX_TOTAL}</span>
 					</div>
-					<div className='powerscore-breakdown-reason'>Why this score: {excitementResult.reason}</div>
+					<div className='powerscore-breakdown-reason'>Why this score: {reason}</div>
 				</div>
 			)}
 
