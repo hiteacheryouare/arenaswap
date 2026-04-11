@@ -1,5 +1,5 @@
 export { fetchGames, fetchLiveGames, fetchLeagueLogos, fetchGamesWithLeagueLogos } from './api-client';
-export { computeExcitement } from './excitement-scorer';
+export { computePowerScore } from '@arenaswap/powerscore';
 export { MockGameSimulator } from './mock-games';
 export * from './types';
 export * from './constants';

@@ -1,5 +1,39 @@
 import pkg from '../package.json';
-import type { LeagueId, SportType, UserPreferences } from './types';
+import type { LeagueId, UserPreferences } from './types';
+import {
+	ALL_LEAGUE_IDS,
+	STALL_THRESHOLD_POLLS,
+	STALL_PENALTY_MULTIPLIER,
+	SCORE_MAX_CLOSENESS,
+	SCORE_MAX_LATE_GAME,
+	SCORE_MAX_MOMENTUM,
+	SCORE_MAX_LEAD_CHANGES,
+	SCORE_MAX_COMEBACK,
+	SCORE_MAX_TOTAL,
+	SCORER_TUNABLES,
+	SPORT_TYPE_CONFIGS,
+	SPORT_TYPE_CONFIG_MAP,
+	LEAGUE_CONFIGS,
+	LEAGUE_CONFIG_MAP,
+} from '@arenaswap/powerscore';
+
+// Re-export powerscore constants so existing import paths work unchanged
+export {
+	ALL_LEAGUE_IDS,
+	STALL_THRESHOLD_POLLS,
+	STALL_PENALTY_MULTIPLIER,
+	SCORE_MAX_CLOSENESS,
+	SCORE_MAX_LATE_GAME,
+	SCORE_MAX_MOMENTUM,
+	SCORE_MAX_LEAD_CHANGES,
+	SCORE_MAX_COMEBACK,
+	SCORE_MAX_TOTAL,
+	SCORER_TUNABLES,
+	SPORT_TYPE_CONFIGS,
+	SPORT_TYPE_CONFIG_MAP,
+	LEAGUE_CONFIGS,
+	LEAGUE_CONFIG_MAP,
+};
 
 // App identity (sourced from package.json)
 export const APP_NAME = pkg.name;
@@ -7,118 +41,7 @@ export const APP_VERSION = pkg.version;
 export const APP_DESCRIPTION = pkg.description;
 
 export const POLL_INTERVAL_MS = 15_000;
-export const MAX_HISTORY_SNAPSHOTS = 8;
-
-// Clock stall detection — penalty applied when clock is frozen (commercial breaks, stoppages)
-export const STALL_THRESHOLD_POLLS = 5; // ~75 seconds at 15s poll interval
-export const STALL_PENALTY_MULTIPLIER = 0.7; // 30% PowerScore reduction
-
-// Excitement scoring — max points per signal (total possible: 95, sport-agnostic)
-export const SCORE_MAX_CLOSENESS = 40;
-export const SCORE_MAX_LATE_GAME = 35;
-export const SCORE_MAX_MOMENTUM = 25;
-export const SCORE_MAX_TOTAL = SCORE_MAX_CLOSENESS + SCORE_MAX_LATE_GAME + SCORE_MAX_MOMENTUM;
-
-export interface BaseballInningScoreTier {
-	minInning: number;
-	score: number;
-	includeReason: boolean;
-}
-
-export interface ScorerTunables {
-	scores: {
-		closeness: {
-			tied: number;
-			tight: number;
-			zeroZero: number;
-			close: number;
-			fringe: number;
-			none: number;
-		};
-		lateGame: {
-			overtime: number;
-			clockBased: {
-				critical: number;
-				tense: number;
-				previousPeriod: number;
-			};
-			baseballInningTiers: BaseballInningScoreTier[];
-			none: number;
-		};
-		momentum: {
-			bigRun: number;
-			smallRun: number;
-			none: number;
-		};
-	};
-	reasons: {
-		tied: string;
-		closenessUnitBySportType: Partial<Record<SportType, string>>;
-		defaultClosenessUnit: string;
-		closenessGameSuffix: string;
-		overtime: string;
-		extraInnings: string;
-		inningSuffix: string;
-		clockLeftSuffix: string;
-		underPrefix: string;
-		minutesLeftSuffix: string;
-		momentumRunPrefix: string;
-		momentumRunSuffix: string;
-		momentumRolling: string;
-		fallback: string;
-	};
-}
-
-export const SCORER_TUNABLES: ScorerTunables = {
-	scores: {
-		closeness: {
-			tied: SCORE_MAX_CLOSENESS,   // 40
-			tight: 35,
-			zeroZero: 28,
-			close: 20,
-			fringe: 8,
-			none: 0,
-		},
-		lateGame: {
-			overtime: SCORE_MAX_LATE_GAME,
-			clockBased: {
-				critical: 30,
-				tense: 20,
-				previousPeriod: 10,
-			},
-			baseballInningTiers: [
-				{ minInning: 9, score: 30, includeReason: true },
-				{ minInning: 7, score: 20, includeReason: true },
-				{ minInning: 6, score: 10, includeReason: false },
-			],
-			none: 0,
-		},
-		momentum: {
-			bigRun: SCORE_MAX_MOMENTUM,
-			smallRun: 10,
-			none: 0,
-		},
-	},
-	reasons: {
-		tied: 'tied',
-		closenessUnitBySportType: {
-			hockey: 'goal',
-			soccer: 'goal',
-		},
-		defaultClosenessUnit: 'point',
-		closenessGameSuffix: 'game',
-		overtime: 'overtime',
-		extraInnings: 'extra innings',
-		inningSuffix: 'inning',
-		clockLeftSuffix: 'left',
-		underPrefix: 'under',
-		minutesLeftSuffix: 'min left',
-		momentumRunPrefix: 'on a',
-		momentumRunSuffix: 'run',
-		momentumRolling: 'rolling',
-		fallback: 'Best Available',
-	},
-};
+export const MAX_HISTORY_SNAPSHOTS = 20; // ~5 minutes of history at 15s poll interval
 
 // Switch behavior defaults
 export const DEFAULT_SENSITIVITY = 4 as const;
@@ -135,212 +58,6 @@ export const SENSITIVITY_THRESHOLDS: Record<number, number> = {
 	6: 5,
 	7: 1
 };
-
-// Per-sport scoring configuration used by the scorer
-export interface SportTypeConfig {
-	id: SportType;
-	/** false for sports without a game clock (MLB) */
-	clockBased: boolean;
-	/** [tier1, tier2, tier3] score-margin thresholds for closeness signal */
-	closenessMargins: [number, number, number];
-	/** Seconds remaining in the final period to trigger "critical" late-game score */
-	lateGameCriticalSecs: number;
-	/** Seconds remaining in the final period to trigger "tense" late-game score */
-	lateGameTenseSecs: number;
-	/** Seconds remaining in the second-to-last period to trigger a mild late-game score */
-	lateGamePrevPeriodSecs: number;
-	/** Unanswered-scoring-run size that triggers max momentum score */
-	momentumBigRun: number;
-	/** Unanswered-scoring-run size that triggers half momentum score */
-	momentumSmallRun: number;
-	/** true when ESPN reports elapsed time (counts up), e.g. soccer; false = countdown */
-	clockCountsUp: boolean;
-	/** if true, 0-0 scores the same as any other tied game (appropriate for soccer/hockey) */
-	zeroZeroAsFullTie: boolean;
-	/** overrides MAX_HISTORY_SNAPSHOTS for momentum window; omit to use the global default */
-	maxHistorySnapshots?: number;
-}
-
-export interface LeagueConfig {
-	id: LeagueId;
-	label: string;
-	sportType: SportType;
-	/** ESPN API path segment, e.g. 'basketball/nba' */
-	espnPath: string;
-	/** Number of regulation periods before overtime begins */
-	regularPeriods: number;
-	/** Seconds per period; 0 for sports without a game clock */
-	periodDurationSecs: number;
-	/** Human-readable period label style in UI */
-	periodFormat: 'quarters' | 'halves' | 'periods' | 'innings';
-}
-
-export const SPORT_TYPE_CONFIGS: SportTypeConfig[] = [
-	{
-		id: 'basketball',
-		clockBased: true,
-		closenessMargins: [5, 10, 18],
-		lateGameCriticalSecs: 120,
-		lateGameTenseSecs: 300,
-		lateGamePrevPeriodSecs: 300,
-		momentumBigRun: 10,
-		momentumSmallRun: 5,
-		clockCountsUp: false,
-		zeroZeroAsFullTie: false,
-	},
-	{
-		id: 'hockey',
-		clockBased: true,
-		closenessMargins: [1, 2, 3],
-		lateGameCriticalSecs: 120,
-		lateGameTenseSecs: 300,
-		lateGamePrevPeriodSecs: 300,
-		momentumBigRun: 3,
-		momentumSmallRun: 2,
-		clockCountsUp: false,
-		zeroZeroAsFullTie: true,
-	},
-	{
-		id: 'baseball',
-		clockBased: false,
-		closenessMargins: [1, 3, 5],
-		lateGameCriticalSecs: 0,
-		lateGameTenseSecs: 0,
-		lateGamePrevPeriodSecs: 0,
-		momentumBigRun: 4,
-		momentumSmallRun: 2,
-		clockCountsUp: false,
-		zeroZeroAsFullTie: false,
-		maxHistorySnapshots: 20,
-	},
-	{
-		id: 'football',
-		clockBased: true,
-		closenessMargins: [3, 8, 14],
-		lateGameCriticalSecs: 120,
-		lateGameTenseSecs: 300,
-		lateGamePrevPeriodSecs: 180,
-		momentumBigRun: 14,
-		momentumSmallRun: 7,
-		clockCountsUp: false,
-		zeroZeroAsFullTie: false,
-	},
-	{
-		id: 'soccer',
-		clockBased: true,
-		closenessMargins: [1, 2, 3],
-		lateGameCriticalSecs: 180,
-		lateGameTenseSecs: 600,
-		lateGamePrevPeriodSecs: 600,
-		momentumBigRun: 2,
-		momentumSmallRun: 1,
-		clockCountsUp: true,
-		zeroZeroAsFullTie: true,
-	},
-];
-
-export const LEAGUE_CONFIGS: LeagueConfig[] = [
-	{
-		id: 'nba',
-		label: 'NBA',
-		sportType: 'basketball',
-		espnPath: 'basketball/nba',
-		regularPeriods: 4,
-		periodDurationSecs: 720,
-		periodFormat: 'quarters',
-	},
-	{
-		id: 'wnba',
-		label: 'WNBA',
-		sportType: 'basketball',
-		espnPath: 'basketball/wnba',
-		regularPeriods: 4,
-		periodDurationSecs: 600,
-		periodFormat: 'quarters',
-	},
-	{
-		id: 'ncaab',
-		label: 'NCAA Basketball',
-		sportType: 'basketball',
-		espnPath: 'basketball/mens-college-basketball',
-		regularPeriods: 2,
-		periodDurationSecs: 1200,
-		periodFormat: 'halves',
-	},
-	{
-		id: 'nhl',
-		label: 'NHL',
-		sportType: 'hockey',
-		espnPath: 'hockey/nhl',
-		regularPeriods: 3,
-		periodDurationSecs: 1200,
-		periodFormat: 'periods',
-	},
-	{
-		id: 'pwhl',
-		label: 'PWHL',
-		sportType: 'hockey',
-		espnPath: 'hockey/pwhl',
-		regularPeriods: 3,
-		periodDurationSecs: 1200,
-		periodFormat: 'periods',
-	},
-	{
-		id: 'ncaamh',
-		label: "NCAA Men's Hockey",
-		sportType: 'hockey',
-		espnPath: 'hockey/mens-college-hockey',
-		regularPeriods: 3,
-		periodDurationSecs: 1200,
-		periodFormat: 'periods',
-	},
-	{
-		id: 'mlb',
-		label: 'MLB',
-		sportType: 'baseball',
-		espnPath: 'baseball/mlb',
-		regularPeriods: 9,
-		periodDurationSecs: 0,
-		periodFormat: 'innings',
-	},
-	{
-		id: 'nfl',
-		label: 'NFL',
-		sportType: 'football',
-		espnPath: 'football/nfl',
-		regularPeriods: 4,
-		periodDurationSecs: 900,
-		periodFormat: 'quarters',
-	},
-	{
-		id: 'ncaaf',
-		label: 'NCAA Football',
-		sportType: 'football',
-		espnPath: 'football/college-football',
-		regularPeriods: 4,
-		periodDurationSecs: 900,
-		periodFormat: 'quarters',
-	},
-	{
-		id: 'mls',
-		label: 'MLS',
-		sportType: 'soccer',
-		espnPath: 'soccer/usa.1',
-		regularPeriods: 2,
-		periodDurationSecs: 2700,
-		periodFormat: 'halves',
-	},
-];
-
-export const ALL_LEAGUE_IDS = LEAGUE_CONFIGS.map(c => c.id) as LeagueId[];
-
-export const SPORT_TYPE_CONFIG_MAP = Object.fromEntries(
-	SPORT_TYPE_CONFIGS.map(c => [c.id, c])
-) as Record<SportType, SportTypeConfig>;
-
-export const LEAGUE_CONFIG_MAP = Object.fromEntries(
-	LEAGUE_CONFIGS.map(c => [c.id, c])
-) as Record<LeagueId, LeagueConfig>;
 
 export const LEAGUE_LOGO_FALLBACKS: Record<LeagueId, string> = {
 	nba: 'https://a.espncdn.com/i/teamlogos/leagues/500/nba.png',

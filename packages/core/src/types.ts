@@ -1,7 +1,26 @@
-export type SportType = 'basketball' | 'football' | 'hockey' | 'baseball' | 'soccer';
-export type LeagueId = 'nba' | 'wnba' | 'nhl' | 'pwhl' | 'ncaamh' | 'mlb' | 'nfl' | 'ncaab' | 'ncaaf' | 'mls';
-/** @deprecated Use LeagueId */
-export type SportId = LeagueId;
+// Types that live in @arenaswap/powerscore — re-exported here so existing import paths work
+import type {
+	SportType,
+	LeagueId,
+	SportId,
+	ScoreSnapshot,
+	PowerScoreResult,
+	SportTypeConfig,
+	ScorerTunables,
+	BaseballInningScoreTier,
+	LeagueConfig,
+} from '@arenaswap/powerscore';
+export type {
+	SportType,
+	LeagueId,
+	SportId,
+	ScoreSnapshot,
+	PowerScoreResult,
+	SportTypeConfig,
+	ScorerTunables,
+	BaseballInningScoreTier,
+	LeagueConfig,
+};
 
 export interface Team {
 	id: string;
@@ -41,23 +60,6 @@ export interface Game {
 	intermission?: boolean;
 }
 
-export interface ScoreSnapshot {
-	gameId: string;
-	timestamp: number;
-	homeScore: number;
-	awayScore: number;
-}
-
-export interface ExcitementResult {
-	gameId: string;
-	total: number;
-	closeness: number;
-	lateGame: number;
-	momentum: number;
-	reason: string;
-	stalled?: boolean;
-}
-
 export interface UserPreferences {
 	sensitivity: 1 | 2 | 3 | 4 | 5 | 6 | 7;
 	cooldownSeconds: number;
@@ -76,13 +78,13 @@ export type LeagueLogoMap = Partial<Record<LeagueId, string>>;
 
 export interface BackgroundState {
 	games: Game[];
-	scores: ExcitementResult[];
+	scores: PowerScoreResult[];
 	leagueLogos: LeagueLogoMap;
 }
 
 export type ScoresUpdatedMessage = {
 	type: 'SCORES_UPDATED';
-	scores: ExcitementResult[];
+	scores: PowerScoreResult[];
 	games: Game[];
 	leagueLogos: LeagueLogoMap;
 };

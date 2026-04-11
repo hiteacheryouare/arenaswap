@@ -1,6 +1,5 @@
 import { LEAGUE_CONFIG_MAP, resolveLeagueLogoUrl } from './constants';
-import type { LeagueConfig } from './constants';
-import type { Game, GameOdds, LeagueId, LeagueLogoMap } from './types';
+import type { Game, GameOdds, LeagueConfig, LeagueId, LeagueLogoMap } from './types';
 
 const ESPN_BASE = 'https://site.api.espn.com/apis/site/v2/sports';
 const UPCOMING_DATE_WINDOW_DAYS = 4;
