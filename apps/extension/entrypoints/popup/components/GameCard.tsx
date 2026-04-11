@@ -12,6 +12,7 @@ import {
 } from '@arenaswap/core/constants';
 import type { PowerScoreResult, Game, TabRegistration, Team } from '@arenaswap/core/types';
 import TabAssignSelect from './TabAssignSelect';
+import FlipScore from './FlipScore';
 
 interface Props {
 	game: Game | undefined;
@@ -288,12 +289,8 @@ const GameCard = ({ game, excitementResult, openTabs, registry, onRegistryChange
 				<TeamColumn team={game.awayTeam} />
 				<div className='d-flex flex-column align-items-center' style={{ minWidth: 80 }}>
 					<div className='d-flex align-items-baseline' style={{ gap: '1.25rem' }}>
-						<span className='fw-bold lh-1' style={{ fontSize: '1.75rem', color: '#111827', letterSpacing: '-0.02em', fontVariantNumeric: 'tabular-nums' }}>
-							{game.awayTeam.score}
-						</span>
-						<span className='fw-bold lh-1' style={{ fontSize: '1.75rem', color: '#111827', letterSpacing: '-0.02em', fontVariantNumeric: 'tabular-nums' }}>
-							{game.homeTeam.score}
-						</span>
+						<FlipScore value={game.awayTeam.score} className='fw-bold lh-1' style={{ fontSize: '1.75rem', color: '#111827', letterSpacing: '-0.02em', fontVariantNumeric: 'tabular-nums' }} />
+						<FlipScore value={game.homeTeam.score} className='fw-bold lh-1' style={{ fontSize: '1.75rem', color: '#111827', letterSpacing: '-0.02em', fontVariantNumeric: 'tabular-nums' }} />
 					</div>
 					{game.sportType !== 'baseball' && (
 						<span className='font-lekton' style={{ fontSize: '0.85rem', color: '#374151', marginTop: '0.15rem' }}>

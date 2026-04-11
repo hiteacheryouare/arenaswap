@@ -45,6 +45,43 @@ $bootstrap-icons-font-dir: '/fonts';
 	50%       { opacity: 0.3; }
 }
 
+// ─── Flip-score (scoreboard slide) animation ─────────────────────────────────
+@keyframes scoreSlideOut {
+	from { transform: translateY(0%); }
+	to   { transform: translateY(110%); }
+}
+
+@keyframes scoreSlideIn {
+	from { transform: translateY(-110%); }
+	to   { transform: translateY(0%); }
+}
+
+.flip-score {
+	display:        inline-block;
+	position:       relative;
+	overflow:       hidden;
+	height:         1em;
+	vertical-align: baseline;
+}
+
+.flip-score-digit {
+	display:     block;
+	line-height: 1;
+}
+
+.flip-score-digit-out {
+	position:  absolute;
+	top:       0;
+	left:      0;
+	right:     0;
+	text-align: center;
+	animation: scoreSlideOut 0.3s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+.flip-score-digit-in {
+	animation: scoreSlideIn 0.3s cubic-bezier(0, 0, 0.6, 1) forwards;
+}
+
 // ─── Lekton monospace helper ──────────────────────────────────────────────────
 .font-lekton {
     font-family: 'Lekton', monospace;

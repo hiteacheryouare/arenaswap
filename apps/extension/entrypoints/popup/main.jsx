@@ -4,7 +4,7 @@ import '../../assets/bootstrap.scss';
 import '../../assets/global.css';
 import App from './App';
 
-RD.createRoot(document.getElementById('root')!).render(
+RD.createRoot(document.getElementById('root')).render(
 	<React.StrictMode>
 		<App />
 	</React.StrictMode>,
