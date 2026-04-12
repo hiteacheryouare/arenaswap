@@ -18,6 +18,8 @@ describe('types runtime smoke', () => {
 			switchDelaySeconds: 0,
 			enabled: true,
 			enabledLeagues: ['nba'],
+			favoriteTeamIds: ['2'],
+			favoriteTeamBonusPoints: 10,
 			showUpcomingGames: true,
 		};
 		const message: ExtensionMessage = { type: 'UPDATE_PREFS', prefs };

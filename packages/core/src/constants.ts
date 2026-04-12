@@ -47,6 +47,7 @@ export const MAX_HISTORY_SNAPSHOTS = 20; // ~5 minutes of history at 15s poll in
 export const DEFAULT_SENSITIVITY = 4 as const;
 export const DEFAULT_COOLDOWN_SECS = 45;
 export const DEFAULT_SWITCH_DELAY_SECS = 0;
+export const DEFAULT_FAVORITE_TEAM_BONUS_POINTS = 10;
 
 // Sensitivity level → score delta required to trigger a tab switch
 export const SENSITIVITY_THRESHOLDS: Record<number, number> = {
@@ -92,12 +93,31 @@ const normalizeSecondsPreference = (value: unknown, fallback: number): number =>
 		: fallback
 );
 
+const normalizeFavoriteTeamIds = (value: unknown): string[] => {
+	if (!Array.isArray(value)) return [];
+
+	const deduped: string[] = [];
+	const seen = new Set<string>();
+
+	for (const candidate of value) {
+		if (typeof candidate !== 'string') continue;
+		const teamId = candidate.trim();
+		if (teamId.length === 0 || seen.has(teamId)) continue;
+		seen.add(teamId);
+		deduped.push(teamId);
+	}
+
+	return deduped;
+};
+
 export const createDefaultUserPreferences = (): UserPreferences => ({
 	sensitivity: DEFAULT_SENSITIVITY,
 	cooldownSeconds: DEFAULT_COOLDOWN_SECS,
 	switchDelaySeconds: DEFAULT_SWITCH_DELAY_SECS,
 	enabled: true,
 	enabledLeagues: [],
+	favoriteTeamIds: [],
+	favoriteTeamBonusPoints: DEFAULT_FAVORITE_TEAM_BONUS_POINTS,
 	showUpcomingGames: true,
 });
 
@@ -105,7 +125,7 @@ export const normalizeUserPreferences = (storedPrefs: unknown): UserPreferences 
 	const defaults = createDefaultUserPreferences();
 	if (!storedPrefs || typeof storedPrefs !== 'object') return defaults;
 
-	const candidate = storedPrefs as Partial<UserPreferences> & { enabledLeagues?: unknown };
+	const candidate = storedPrefs as Partial<UserPreferences> & { enabledLeagues?: unknown; favoriteTeamIds?: unknown };
 	const hasEnabledLeaguesField = Object.prototype.hasOwnProperty.call(candidate, 'enabledLeagues');
 	const parsedEnabledLeagues = Array.isArray(candidate.enabledLeagues)
 		? candidate.enabledLeagues.filter(isLeagueId)
@@ -117,6 +137,8 @@ export const normalizeUserPreferences = (storedPrefs: unknown): UserPreferences 
 		switchDelaySeconds: normalizeSecondsPreference(candidate.switchDelaySeconds, defaults.switchDelaySeconds),
 		enabled: typeof candidate.enabled === 'boolean' ? candidate.enabled : defaults.enabled,
 		enabledLeagues: hasEnabledLeaguesField ? parsedEnabledLeagues : ALL_LEAGUE_IDS,
+		favoriteTeamIds: normalizeFavoriteTeamIds(candidate.favoriteTeamIds),
+		favoriteTeamBonusPoints: normalizeSecondsPreference(candidate.favoriteTeamBonusPoints, defaults.favoriteTeamBonusPoints),
 		showUpcomingGames: typeof candidate.showUpcomingGames === 'boolean' ? candidate.showUpcomingGames : defaults.showUpcomingGames,
 	};
 };

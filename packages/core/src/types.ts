@@ -66,6 +66,8 @@ export interface UserPreferences {
 	switchDelaySeconds: number;
 	enabled: boolean;
 	enabledLeagues: LeagueId[];
+	favoriteTeamIds: string[];
+	favoriteTeamBonusPoints: number;
 	showUpcomingGames: boolean;
 }
 
