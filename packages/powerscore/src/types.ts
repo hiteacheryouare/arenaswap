@@ -32,6 +32,9 @@ export interface PowerScoreResult {
 	comeback: number;
 	reason: string;
 	stalled?: boolean;
+	baseTotal?: number;
+	favoriteBonus?: number;
+	favoriteTeamCount?: number;
 }
 
 export interface BaseballInningScoreTier {

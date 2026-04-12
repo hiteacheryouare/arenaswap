@@ -69,6 +69,27 @@ describe('computePowerScore', () => {
 		expect(normalized.total).toBe(SCORE_MAX_TOTAL);
 	});
 
+	test('can preserve totals above 100 when overflow is allowed', () => {
+		const normalized = normalizePowerScoreResult({
+			gameId: 'favorite-overflow',
+			closeness: 30,
+			lateGame: 30,
+			momentum: 20,
+			leadChanges: 12,
+			comeback: 8,
+			baseTotal: 100,
+			favoriteBonus: 20,
+			favoriteTeamCount: 2,
+			total: 120,
+			reason: 'favorite bonus',
+		}, { allowTotalOverflow: true });
+
+		expect(normalized.total).toBe(120);
+		expect(normalized.baseTotal).toBe(100);
+		expect(normalized.favoriteBonus).toBe(20);
+		expect(normalized.favoriteTeamCount).toBe(2);
+	});
+
 	test('returns zeroed score for intermission games', () => {
 		const game = makeGame({ intermission: true });
 		expect(computePowerScore(game, makeHistory([[80, 78], [82, 78], [84, 78]]))).toEqual({

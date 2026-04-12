@@ -15,6 +15,7 @@ import type { SportTypeConfig, ExponentialLateGameCurve, ClockLateGameCurveConfi
 import type { Game, ScoreSnapshot, PowerScoreResult } from './types';
 
 interface Signal { score: number; reason: string; }
+interface NormalizePowerScoreOptions { allowTotalOverflow?: boolean; }
 
 const toFiniteNumber = (value: unknown, fallback = 0): number => (
 	typeof value === 'number' && Number.isFinite(value) ? value : fallback
@@ -25,7 +26,8 @@ const clamp = (value: number, min: number, max: number): number => (
 );
 
 export const normalizePowerScoreResult = (
-	score: Partial<PowerScoreResult> & Pick<PowerScoreResult, 'gameId'>
+	score: Partial<PowerScoreResult> & Pick<PowerScoreResult, 'gameId'>,
+	options: NormalizePowerScoreOptions = {},
 ): PowerScoreResult => {
 	const closeness = clamp(toFiniteNumber(score.closeness), 0, SCORE_MAX_CLOSENESS);
 	const lateGame = clamp(toFiniteNumber(score.lateGame), 0, SCORE_MAX_LATE_GAME);
@@ -33,7 +35,15 @@ export const normalizePowerScoreResult = (
 	const leadChanges = clamp(toFiniteNumber(score.leadChanges), 0, SCORE_MAX_LEAD_CHANGES);
 	const comeback = clamp(toFiniteNumber(score.comeback), 0, SCORE_MAX_COMEBACK);
 	const rawTotal = closeness + lateGame + momentum + leadChanges + comeback;
-	const total = clamp(toFiniteNumber(score.total, rawTotal), 0, SCORE_MAX_TOTAL);
+	const total = options.allowTotalOverflow
+		? Math.max(0, toFiniteNumber(score.total, rawTotal))
+		: clamp(toFiniteNumber(score.total, rawTotal), 0, SCORE_MAX_TOTAL);
+	const hasBaseTotal = typeof score.baseTotal === 'number' && Number.isFinite(score.baseTotal);
+	const hasFavoriteBonus = typeof score.favoriteBonus === 'number' && Number.isFinite(score.favoriteBonus);
+	const hasFavoriteTeamCount = typeof score.favoriteTeamCount === 'number' && Number.isFinite(score.favoriteTeamCount);
+	const baseTotal = hasBaseTotal ? clamp(toFiniteNumber(score.baseTotal), 0, SCORE_MAX_TOTAL) : undefined;
+	const favoriteBonus = hasFavoriteBonus ? Math.max(0, Math.round(toFiniteNumber(score.favoriteBonus))) : undefined;
+	const favoriteTeamCount = hasFavoriteTeamCount ? Math.max(0, Math.round(toFiniteNumber(score.favoriteTeamCount))) : undefined;
 
 	return {
 		gameId: score.gameId,
@@ -45,6 +55,9 @@ export const normalizePowerScoreResult = (
 		comeback,
 		reason: typeof score.reason === 'string' ? score.reason : SCORER_TUNABLES.reasons.fallback,
 		stalled: score.stalled === true,
+		...(hasBaseTotal ? { baseTotal } : {}),
+		...(hasFavoriteBonus ? { favoriteBonus } : {}),
+		...(hasFavoriteTeamCount ? { favoriteTeamCount } : {}),
 	};
 };
 
