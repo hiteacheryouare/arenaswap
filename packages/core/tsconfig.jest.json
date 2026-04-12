@@ -9,5 +9,5 @@
       "@arenaswap/powerscore": ["../powerscore/src/index.ts"]
     }
   },
-  "include": ["src/**/*", "tests/**/*", "jest.setup.ts"]
+  "include": ["src/**/*", "tests/**/*", "jestSetup.ts"]
 }

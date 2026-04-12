@@ -1,21 +1,21 @@
 import type { LeagueId, SportType, SportTypeConfig, ScorerTunables, LeagueConfig } from './types';
 
 // Clock stall detection — penalty applied when clock is frozen (commercial breaks, stoppages)
-export const STALL_THRESHOLD_POLLS = 5; // ~75 seconds at 15s poll interval
-export const STALL_PENALTY_MULTIPLIER = 0.7; // 30% PowerScore reduction
+export const stallThresholdPolls = 5; // ~75 seconds at 15s poll interval
+export const stallPenaltyMultiplier = 0.7; // 30% PowerScore reduction
 
 // PowerScore signal maxes (total possible: 100, sport-agnostic)
-export const SCORE_MAX_CLOSENESS = 30;
-export const SCORE_MAX_LATE_GAME = 30;
-export const SCORE_MAX_MOMENTUM = 20;
-export const SCORE_MAX_LEAD_CHANGES = 12;
-export const SCORE_MAX_COMEBACK = 8;
-export const SCORE_MAX_TOTAL = SCORE_MAX_CLOSENESS + SCORE_MAX_LATE_GAME + SCORE_MAX_MOMENTUM + SCORE_MAX_LEAD_CHANGES + SCORE_MAX_COMEBACK;
+export const scoreMaxCloseness = 30;
+export const scoreMaxLateGame = 30;
+export const scoreMaxMomentum = 20;
+export const scoreMaxLeadChanges = 12;
+export const scoreMaxComeback = 8;
+export const scoreMaxTotal = scoreMaxCloseness + scoreMaxLateGame + scoreMaxMomentum + scoreMaxLeadChanges + scoreMaxComeback;
 
-export const SCORER_TUNABLES: ScorerTunables = {
+export const scorerTunables: ScorerTunables = {
 	scores: {
 		closeness: {
-			tied: SCORE_MAX_CLOSENESS,
+			tied: scoreMaxCloseness,
 			tight: 26,
 			zeroZero: 20,
 			close: 14,
@@ -23,7 +23,7 @@ export const SCORER_TUNABLES: ScorerTunables = {
 			none: 0,
 		},
 		lateGame: {
-			overtime: SCORE_MAX_LATE_GAME,
+			overtime: scoreMaxLateGame,
 			clockBased: {
 				critical: 26,
 				tense: 18,
@@ -37,17 +37,17 @@ export const SCORER_TUNABLES: ScorerTunables = {
 			none: 0,
 		},
 		momentum: {
-			bigRun: SCORE_MAX_MOMENTUM,
+			bigRun: scoreMaxMomentum,
 			smallRun: 10,
 			none: 0,
 		},
 		leadChanges: {
-			multiple: SCORE_MAX_LEAD_CHANGES,
+			multiple: scoreMaxLeadChanges,
 			single: 10,
 			none: 0,
 		},
 		comeback: {
-			big: SCORE_MAX_COMEBACK,
+			big: scoreMaxComeback,
 			moderate: 6,
 			none: 0,
 		},
@@ -78,7 +78,7 @@ export const SCORER_TUNABLES: ScorerTunables = {
 	},
 };
 
-export const SPORT_TYPE_CONFIGS: SportTypeConfig[] = [
+export const sportTypeConfigs: SportTypeConfig[] = [
 	{
 		id: 'basketball',
 		clockBased: true,
@@ -155,7 +155,7 @@ export const SPORT_TYPE_CONFIGS: SportTypeConfig[] = [
 			},
 			extraInningsCurve: {
 				minScore: 24,
-				maxScore: SCORE_MAX_LATE_GAME,
+				maxScore: scoreMaxLateGame,
 				growthRate: 1.25,
 			},
 		},
@@ -232,11 +232,11 @@ export const SPORT_TYPE_CONFIGS: SportTypeConfig[] = [
 	},
 ];
 
-export const SPORT_TYPE_CONFIG_MAP = Object.fromEntries(
-	SPORT_TYPE_CONFIGS.map(c => [c.id, c])
+export const sportTypeConfigMap = Object.fromEntries(
+	sportTypeConfigs.map(c => [c.id, c])
 ) as Record<SportType, SportTypeConfig>;
 
-export const LEAGUE_CONFIGS: LeagueConfig[] = [
+export const leagueConfigs: LeagueConfig[] = [
 	{
 		id: 'nba',
 		label: 'NBA',
@@ -329,8 +329,8 @@ export const LEAGUE_CONFIGS: LeagueConfig[] = [
 	},
 ];
 
-export const ALL_LEAGUE_IDS = LEAGUE_CONFIGS.map(c => c.id) as LeagueId[];
+export const allLeagueIds = leagueConfigs.map(c => c.id) as LeagueId[];
 
-export const LEAGUE_CONFIG_MAP = Object.fromEntries(
-	LEAGUE_CONFIGS.map(c => [c.id, c])
+export const leagueConfigMap = Object.fromEntries(
+	leagueConfigs.map(c => [c.id, c])
 ) as Record<LeagueId, LeagueConfig>;

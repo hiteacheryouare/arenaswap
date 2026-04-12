@@ -1,11 +1,11 @@
 import pkg from '../package.json';
 import {
-	ALL_LEAGUE_IDS,
-	APP_DESCRIPTION,
-	APP_NAME,
-	APP_VERSION,
-	LEAGUE_CONFIG_MAP,
-	LEAGUE_LOGO_FALLBACKS,
+	allLeagueIds,
+	appDescription,
+	appName,
+	appVersion,
+	leagueConfigMap,
+	leagueLogoFallbacks,
 	createDefaultUserPreferences,
 	normalizeUserPreferences,
 	resolveLeagueLogoUrl,
@@ -13,13 +13,13 @@ import {
 
 describe('constants', () => {
 	test('exports app metadata from package.json', () => {
-		expect(APP_NAME).toBe(pkg.name);
-		expect(APP_VERSION).toBe(pkg.version);
-		expect(APP_DESCRIPTION).toBe(pkg.description);
+		expect(appName).toBe(pkg.name);
+		expect(appVersion).toBe(pkg.version);
+		expect(appDescription).toBe(pkg.description);
 	});
 
 	test('resolves league logo URLs with ESPN value first, then fallback', () => {
-		const fallback = LEAGUE_LOGO_FALLBACKS.nba;
+		const fallback = leagueLogoFallbacks.nba;
 		expect(resolveLeagueLogoUrl('nba', 'https://cdn.example/logo.png')).toBe('https://cdn.example/logo.png');
 		expect(resolveLeagueLogoUrl('nba', '')).toBe(fallback);
 		expect(resolveLeagueLogoUrl('nba')).toBe(fallback);
@@ -64,15 +64,15 @@ describe('constants', () => {
 
 	test('defaults to all leagues when enabledLeagues field is missing', () => {
 		const normalized = normalizeUserPreferences({ enabled: false });
-		expect(normalized.enabledLeagues).toEqual(ALL_LEAGUE_IDS);
+		expect(normalized.enabledLeagues).toEqual(allLeagueIds);
 		expect(normalized.enabled).toBe(false);
 		expect(normalized.favoriteTeamIds).toEqual([]);
 		expect(normalized.favoriteTeamBonusPoints).toBe(10);
 	});
 
 	test('contains league and sport configuration maps for each league id', () => {
-		for (const leagueId of ALL_LEAGUE_IDS) {
-			expect(LEAGUE_CONFIG_MAP[leagueId]).toBeDefined();
+		for (const leagueId of allLeagueIds) {
+			expect(leagueConfigMap[leagueId]).toBeDefined();
 		}
 	});
 });

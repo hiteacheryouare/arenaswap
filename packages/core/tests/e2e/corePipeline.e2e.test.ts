@@ -132,7 +132,7 @@ describe('core API + excitement e2e flow', () => {
 			return jsonResponse(todayPayload);
 		});
 
-		const { fetchGames, fetchLiveGames } = await import('../../src/api-client');
+		const { fetchGames, fetchLiveGames } = await import('../../src/apiClient');
 		const { computePowerScore } = await import('@arenaswap/powerscore');
 
 		const games = await fetchGames(['nba']);
@@ -209,7 +209,7 @@ describe('core API + excitement e2e flow', () => {
 			return jsonResponse(todayPayload);
 		});
 
-		const { fetchGamesWithLeagueLogos } = await import('../../src/api-client');
+		const { fetchGamesWithLeagueLogos } = await import('../../src/apiClient');
 
 		const result = await fetchGamesWithLeagueLogos(['nba'], { includeUpcoming: false });
 
@@ -262,7 +262,7 @@ describe('core API + excitement e2e flow', () => {
 			throw new Error(`Unexpected URL requested: ${url}`);
 		});
 
-		const { fetchGamesWithLeagueLogos } = await import('../../src/api-client');
+		const { fetchGamesWithLeagueLogos } = await import('../../src/apiClient');
 
 		const result = await fetchGamesWithLeagueLogos(['nba', 'nhl', 'wnba'], { includeUpcoming: false });
 
@@ -317,7 +317,7 @@ describe('core API + excitement e2e flow', () => {
 			return jsonResponse(todayPayload);
 		});
 
-		const { fetchGamesWithLeagueLogos } = await import('../../src/api-client');
+		const { fetchGamesWithLeagueLogos } = await import('../../src/apiClient');
 		const { computePowerScore } = await import('@arenaswap/powerscore');
 
 		const result = await fetchGamesWithLeagueLogos(['nba'], { includeUpcoming: false });
@@ -381,7 +381,7 @@ describe('core API + excitement e2e flow', () => {
 			return jsonResponse({ message: 'today scoreboard unavailable' }, 503);
 		});
 
-		const { fetchGamesWithLeagueLogos } = await import('../../src/api-client');
+		const { fetchGamesWithLeagueLogos } = await import('../../src/apiClient');
 
 		const result = await fetchGamesWithLeagueLogos(['nba']);
 
@@ -417,7 +417,7 @@ describe('core API + excitement e2e flow', () => {
 			throw new Error(`Unexpected URL requested: ${url}`);
 		});
 
-		const { fetchGamesWithLeagueLogos } = await import('../../src/api-client');
+		const { fetchGamesWithLeagueLogos } = await import('../../src/apiClient');
 
 		const firstResult = await fetchGamesWithLeagueLogos(['pwhl', 'nba'], { includeUpcoming: false });
 		expect(firstResult.games.map(game => game.league)).toEqual(['nba']);

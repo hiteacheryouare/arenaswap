@@ -1,10 +1,10 @@
 import React from 'react';
-import RD from 'react-dom/client';
+import reactDomClient from 'react-dom/client';
 import '../../assets/bootstrap.scss';
-import '../../assets/global.css';
-import App from './App';
+import '../../assets/global.scss';
+import App from './app';
 
-RD.createRoot(document.getElementById('root')).render(
+reactDomClient.createRoot(document.getElementById('root')).render(
 	<React.StrictMode>
 		<App />
 	</React.StrictMode>,

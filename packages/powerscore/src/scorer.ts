@@ -1,15 +1,15 @@
 import {
-	LEAGUE_CONFIG_MAP,
-	SPORT_TYPE_CONFIG_MAP,
-	SCORER_TUNABLES,
-	STALL_THRESHOLD_POLLS,
-	STALL_PENALTY_MULTIPLIER,
-	SCORE_MAX_CLOSENESS,
-	SCORE_MAX_LATE_GAME,
-	SCORE_MAX_MOMENTUM,
-	SCORE_MAX_LEAD_CHANGES,
-	SCORE_MAX_COMEBACK,
-	SCORE_MAX_TOTAL,
+	leagueConfigMap,
+	sportTypeConfigMap,
+	scorerTunables,
+	stallThresholdPolls,
+	stallPenaltyMultiplier,
+	scoreMaxCloseness,
+	scoreMaxLateGame,
+	scoreMaxMomentum,
+	scoreMaxLeadChanges,
+	scoreMaxComeback,
+	scoreMaxTotal,
 } from './constants';
 import type { SportTypeConfig, ExponentialLateGameCurve, ClockLateGameCurveConfig, BaseballLateGameCurveConfig } from './types';
 import type { Game, ScoreSnapshot, PowerScoreResult } from './types';
@@ -29,19 +29,19 @@ export const normalizePowerScoreResult = (
 	score: Partial<PowerScoreResult> & Pick<PowerScoreResult, 'gameId'>,
 	options: NormalizePowerScoreOptions = {},
 ): PowerScoreResult => {
-	const closeness = clamp(toFiniteNumber(score.closeness), 0, SCORE_MAX_CLOSENESS);
-	const lateGame = clamp(toFiniteNumber(score.lateGame), 0, SCORE_MAX_LATE_GAME);
-	const momentum = clamp(toFiniteNumber(score.momentum), 0, SCORE_MAX_MOMENTUM);
-	const leadChanges = clamp(toFiniteNumber(score.leadChanges), 0, SCORE_MAX_LEAD_CHANGES);
-	const comeback = clamp(toFiniteNumber(score.comeback), 0, SCORE_MAX_COMEBACK);
+	const closeness = clamp(toFiniteNumber(score.closeness), 0, scoreMaxCloseness);
+	const lateGame = clamp(toFiniteNumber(score.lateGame), 0, scoreMaxLateGame);
+	const momentum = clamp(toFiniteNumber(score.momentum), 0, scoreMaxMomentum);
+	const leadChanges = clamp(toFiniteNumber(score.leadChanges), 0, scoreMaxLeadChanges);
+	const comeback = clamp(toFiniteNumber(score.comeback), 0, scoreMaxComeback);
 	const rawTotal = closeness + lateGame + momentum + leadChanges + comeback;
 	const total = options.allowTotalOverflow
 		? Math.max(0, toFiniteNumber(score.total, rawTotal))
-		: clamp(toFiniteNumber(score.total, rawTotal), 0, SCORE_MAX_TOTAL);
+		: clamp(toFiniteNumber(score.total, rawTotal), 0, scoreMaxTotal);
 	const hasBaseTotal = typeof score.baseTotal === 'number' && Number.isFinite(score.baseTotal);
 	const hasFavoriteBonus = typeof score.favoriteBonus === 'number' && Number.isFinite(score.favoriteBonus);
 	const hasFavoriteTeamCount = typeof score.favoriteTeamCount === 'number' && Number.isFinite(score.favoriteTeamCount);
-	const baseTotal = hasBaseTotal ? clamp(toFiniteNumber(score.baseTotal), 0, SCORE_MAX_TOTAL) : undefined;
+	const baseTotal = hasBaseTotal ? clamp(toFiniteNumber(score.baseTotal), 0, scoreMaxTotal) : undefined;
 	const favoriteBonus = hasFavoriteBonus ? Math.max(0, Math.round(toFiniteNumber(score.favoriteBonus))) : undefined;
 	const favoriteTeamCount = hasFavoriteTeamCount ? Math.max(0, Math.round(toFiniteNumber(score.favoriteTeamCount))) : undefined;
 
@@ -53,7 +53,7 @@ export const normalizePowerScoreResult = (
 		momentum,
 		leadChanges,
 		comeback,
-		reason: typeof score.reason === 'string' ? score.reason : SCORER_TUNABLES.reasons.fallback,
+		reason: typeof score.reason === 'string' ? score.reason : scorerTunables.reasons.fallback,
 		stalled: score.stalled === true,
 		...(hasBaseTotal ? { baseTotal } : {}),
 		...(hasFavoriteBonus ? { favoriteBonus } : {}),
@@ -62,11 +62,11 @@ export const normalizePowerScoreResult = (
 };
 
 const getClosenessUnit = (game: Game): string => (
-	SCORER_TUNABLES.reasons.closenessUnitBySportType[game.sportType] ?? SCORER_TUNABLES.reasons.defaultClosenessUnit
+	scorerTunables.reasons.closenessUnitBySportType[game.sportType] ?? scorerTunables.reasons.defaultClosenessUnit
 );
 
 const getCloseness = (game: Game, config: SportTypeConfig): Signal => {
-	const { scores, reasons } = SCORER_TUNABLES;
+	const { scores, reasons } = scorerTunables;
 	const [t1, t2, t3] = config.closenessMargins;
 	const margin = Math.abs(game.homeTeam.score - game.awayTeam.score);
 	if (game.homeTeam.score === 0 && game.awayTeam.score === 0)
@@ -103,8 +103,8 @@ const mapExponentialLateGameScore = (
 	curve: ExponentialLateGameCurve,
 ): number => {
 	const normalizedProgress = clamp(progress, 0, 1);
-	const minScore = clamp(curve.minScore, 0, SCORE_MAX_LATE_GAME);
-	const maxScore = clamp(curve.maxScore, minScore, SCORE_MAX_LATE_GAME);
+	const minScore = clamp(curve.minScore, 0, scoreMaxLateGame);
+	const maxScore = clamp(curve.maxScore, minScore, scoreMaxLateGame);
 	const scoreRange = maxScore - minScore;
 	if (scoreRange === 0) return maxScore;
 
@@ -113,7 +113,7 @@ const mapExponentialLateGameScore = (
 		? normalizedProgress
 		: (Math.exp(growthRate * normalizedProgress) - 1) / (Math.exp(growthRate) - 1);
 
-	return clamp(Math.round(minScore + (scoreRange * curveProgress)), 0, SCORE_MAX_LATE_GAME);
+	return clamp(Math.round(minScore + (scoreRange * curveProgress)), 0, scoreMaxLateGame);
 };
 
 const getClockSecondsRemaining = (
@@ -199,8 +199,8 @@ const getBaseballRegulationProgress = (
 };
 
 const getLateGame = (game: Game, config: SportTypeConfig): Signal => {
-	const { scores, reasons } = SCORER_TUNABLES;
-	const leagueConfig = LEAGUE_CONFIG_MAP[game.league];
+	const { scores, reasons } = scorerTunables;
+	const leagueConfig = leagueConfigMap[game.league];
 	const regularPeriods = leagueConfig.regularPeriods;
 	const { clockBased } = config;
 
@@ -263,7 +263,7 @@ const getLateGame = (game: Game, config: SportTypeConfig): Signal => {
 };
 
 const getMomentum = (game: Game, history: ScoreSnapshot[], config: SportTypeConfig): Signal => {
-	const { scores, reasons } = SCORER_TUNABLES;
+	const { scores, reasons } = scorerTunables;
 	if (history.length < 3) return { score: 0, reason: '' };
 
 	const oldest = history[0];
@@ -281,7 +281,7 @@ const getMomentum = (game: Game, history: ScoreSnapshot[], config: SportTypeConf
 };
 
 const getLeadChanges = (history: ScoreSnapshot[]): Signal => {
-	const { scores, reasons } = SCORER_TUNABLES;
+	const { scores, reasons } = scorerTunables;
 	if (history.length < 3) return { score: 0, reason: '' };
 
 	let changes = 0;
@@ -298,7 +298,7 @@ const getLeadChanges = (history: ScoreSnapshot[]): Signal => {
 };
 
 const getComeback = (game: Game, history: ScoreSnapshot[], config: SportTypeConfig): Signal => {
-	const { scores, reasons } = SCORER_TUNABLES;
+	const { scores, reasons } = scorerTunables;
 	if (history.length < 3) return { score: 0, reason: '' };
 
 	const oldDiff = Math.abs(history[0].homeScore - history[0].awayScore);
@@ -328,7 +328,7 @@ export const computePowerScore = (
 			stalled: false,
 		});
 
-	const config = SPORT_TYPE_CONFIG_MAP[game.sportType] ?? SPORT_TYPE_CONFIG_MAP.basketball;
+	const config = sportTypeConfigMap[game.sportType] ?? sportTypeConfigMap.basketball;
 
 	const closeness = getCloseness(game, config);
 	const lateGame = getLateGame(game, config);
@@ -336,14 +336,14 @@ export const computePowerScore = (
 	const leadChanges = getLeadChanges(history);
 	const comeback = getComeback(game, history, config);
 
-	const stalled = stallCount >= STALL_THRESHOLD_POLLS;
+	const stalled = stallCount >= stallThresholdPolls;
 	const rawTotal = closeness.score + lateGame.score + momentum.score + leadChanges.score + comeback.score;
-	const total = stalled ? Math.round(rawTotal * STALL_PENALTY_MULTIPLIER) : rawTotal;
+	const total = stalled ? Math.round(rawTotal * stallPenaltyMultiplier) : rawTotal;
 
 	const reason = [momentum.reason, comeback.reason, leadChanges.reason, lateGame.reason, closeness.reason]
 		.filter(Boolean)
 		.slice(0, 2)
-		.join(', ') || SCORER_TUNABLES.reasons.fallback;
+		.join(', ') || scorerTunables.reasons.fallback;
 
 	return normalizePowerScoreResult({
 		gameId: game.id,

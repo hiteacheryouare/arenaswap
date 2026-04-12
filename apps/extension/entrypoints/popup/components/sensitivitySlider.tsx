@@ -1,11 +1,11 @@
-import { SENSITIVITY_THRESHOLDS } from '@arenaswap/core/constants';
+import { sensitivityThresholds } from '@arenaswap/core/constants';
 
-interface Props {
+interface sensitivitySliderProps {
 	value: number;
 	onChange: (val: number) => void;
 }
 
-const LABELS: Record<number, string> = {
+const labels: Record<number, string> = {
 	1: 'Barely Active',
 	2: 'Critical Only',
 	3: 'Conservative',
@@ -15,13 +15,11 @@ const LABELS: Record<number, string> = {
 	7: 'Overkill'
 };
 
-const EXPLAINER_STYLE = { fontSize: '0.55rem', lineHeight: 1.3, color: '#6e7681' } as const;
-
-const SensitivitySlider = ({ value, onChange }: Props) => (
+const sensitivitySlider = ({ value, onChange }: sensitivitySliderProps) => (
 	<div>
 		<div className='d-flex justify-content-between align-items-center mb-1'>
-			<label className='text-body-secondary' style={{ fontSize: '0.65rem' }}>Switch sensitivity</label>
-			<span className='fw-semibold' style={{ fontSize: '0.6rem' }}>{LABELS[value]} (PowerScore gap ≥ {SENSITIVITY_THRESHOLDS[value]})</span>
+			<label className='text-body-secondary setting-toggle-label'>Switch sensitivity</label>
+			<span className='fw-semibold setting-value-label'>{labels[value]} (PowerScore gap ≥ {sensitivityThresholds[value]})</span>
 		</div>
 		<input
 			type='range'
@@ -32,21 +30,20 @@ const SensitivitySlider = ({ value, onChange }: Props) => (
 			onChange={e => onChange(Number(e.target.value))}
 			className='form-range w-100'
 		/>
-		<div className='position-relative' style={{ height: '0.85rem', margin: '0.15rem 0.5rem 0' }}>
+		<div className='position-relative sensitivity-ticks'>
 			{[1, 2, 3, 4, 5, 6, 7].map((level, i) => (
 				<span
 					key={level}
-					className='position-absolute translate-middle-x text-body-secondary'
-					style={{ left: `${(i / 6) * 100}%`, fontSize: '0.5rem', whiteSpace: 'nowrap' }}
+					className={`position-absolute translate-middle-x text-body-secondary sensitivity-tick sensitivity-tick-${i}`}
 				>
-					{SENSITIVITY_THRESHOLDS[level]}
+					{sensitivityThresholds[level]}
 				</span>
 			))}
 		</div>
-		<div className='mt-1' style={EXPLAINER_STYLE}>
+		<div className='mt-1 setting-explainer'>
 			Controls how big the PowerScore gap must be before ArenaSwap switches tabs.
 		</div>
 	</div>
 );
 
-export default SensitivitySlider;
+export default sensitivitySlider;

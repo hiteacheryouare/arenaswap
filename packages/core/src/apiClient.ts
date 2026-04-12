@@ -1,9 +1,9 @@
-import { LEAGUE_CONFIG_MAP, resolveLeagueLogoUrl } from './constants';
+import { leagueConfigMap, resolveLeagueLogoUrl } from './constants';
 import type { Game, GameOdds, LeagueConfig, LeagueId, LeagueLogoMap } from './types';
 
-const ESPN_BASE = 'https://site.api.espn.com/apis/site/v2/sports';
-const UPCOMING_DATE_WINDOW_DAYS = 4;
-const SESSION_DISABLE_ON_FAILURE_LEAGUES = new Set<LeagueId>(['pwhl']);
+const espnBase = 'https://site.api.espn.com/apis/site/v2/sports';
+const upcomingDateWindowDays = 4;
+const sessionDisableOnFailureLeagues = new Set<LeagueId>(['pwhl']);
 const sessionDisabledLeagues = new Set<LeagueId>();
 
 const parseClockToSeconds = (clock: string): number => {
@@ -28,7 +28,7 @@ const buildUpcomingDatesRangeQuery = (): string => {
 	const start = new Date();
 	start.setUTCDate(start.getUTCDate() + 1);
 	const end = new Date(start);
-	end.setUTCDate(end.getUTCDate() + (UPCOMING_DATE_WINDOW_DAYS - 1));
+	end.setUTCDate(end.getUTCDate() + (upcomingDateWindowDays - 1));
 	return `${toQueryDate(start)}-${toQueryDate(end)}`;
 };
 
@@ -213,7 +213,7 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 	if (!home || !away) return null;
 	const status = comp.status;
 	const state = parseStatus(status.type?.state ?? 'post');
-	const leagueConfig = LEAGUE_CONFIG_MAP[league];
+	const leagueConfig = leagueConfigMap[league];
 
 	return {
 		id: event.id,
@@ -269,7 +269,7 @@ const fetchLeagueGames = async (config: LeagueConfig, options: { includeUpcoming
 	// and to avoid 404 responses on date-range queries.
 	if (config.id === 'ncaab') baseParams.set('groups', '50');
 
-	const scoreboardUrl = `${ESPN_BASE}/${config.espnPath}/scoreboard`;
+	const scoreboardUrl = `${espnBase}/${config.espnPath}/scoreboard`;
 	const baseQuery = baseParams.toString();
 	const baseUrl = baseQuery ? `${scoreboardUrl}?${baseQuery}` : scoreboardUrl;
 
@@ -313,13 +313,13 @@ const fetchLeagueGames = async (config: LeagueConfig, options: { includeUpcoming
 
 const getEnabledLeagueConfigs = (enabledLeagues: LeagueId[]): LeagueConfig[] => (
 	enabledLeagues
-		.map(league => LEAGUE_CONFIG_MAP[league])
+		.map(league => leagueConfigMap[league])
 		.filter((config): config is LeagueConfig => Boolean(config))
 		.filter(config => !sessionDisabledLeagues.has(config.id))
 );
 
 const shouldSessionDisableLeague = (error: LeagueFetchError): boolean => (
-	SESSION_DISABLE_ON_FAILURE_LEAGUES.has(error.leagueId)
+	sessionDisableOnFailureLeagues.has(error.leagueId)
 	&& error.status !== undefined
 	&& error.status >= 400
 	&& error.status < 500

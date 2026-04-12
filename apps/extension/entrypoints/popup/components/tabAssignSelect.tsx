@@ -1,7 +1,7 @@
 import type { Browser } from 'wxt/browser';
 import type { TabRegistration } from '@arenaswap/core/types';
 
-interface Props {
+interface tabAssignSelectProps {
 	gameId: string;
 	openTabs: Browser.tabs.Tab[];
 	registry: TabRegistration[];
@@ -9,7 +9,7 @@ interface Props {
 	formatTabLabel: (tab: Browser.tabs.Tab) => string;
 }
 
-const TabAssignSelect = ({ gameId, openTabs, registry, onChange, formatTabLabel }: Props) => {
+const tabAssignSelect = ({ gameId, openTabs, registry, onChange, formatTabLabel }: tabAssignSelectProps) => {
 	const currentTabId = registry.find(r => r.gameId === gameId)?.tabId;
 
 	const onSelect = (tabIdStr: string) => {
@@ -47,4 +47,4 @@ const TabAssignSelect = ({ gameId, openTabs, registry, onChange, formatTabLabel 
 	);
 };
 
-export default TabAssignSelect;
+export default tabAssignSelect;

@@ -61,11 +61,16 @@ Root structure:
 - Semicolons: ALWAYS required
 
 ### Naming (GLOBAL)
-Everything must be camelCase:
+Use camelCase for code you author:
 - Variables → myVariable
 - Functions → myFunction
 - Constants → myConstant (NOT UPPERCASE)
-- Files → myComponent.ts / myComponent.jsx
+- Files → myComponent.ts / myComponent.jsx (default)
+
+Practical exceptions (required):
+- Keep framework/tool-required filenames exactly as required (for example: package.json, package-lock.json, turbo.json, tsconfig*.json, wxt.config.ts).
+- Keep standards/integration-required filenames exactly as required (for example: AGENTS.md, CLAUDE.md, .github/copilot-instructions.md).
+- Never rename required entrypoint/config filenames just to force camelCase.
 
 ---
 
@@ -163,7 +168,7 @@ const module = await import('module');
 
 ⸻
 
-### UST DO
+### MUST DO
 	•	Use arrow functions ALWAYS
 	•	Keep logic explicit
 	•	Follow existing patterns in repo

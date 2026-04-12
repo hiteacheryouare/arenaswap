@@ -2,12 +2,12 @@ import { randomInRange } from '@porkyproductions/hat';
 import { fetchGamesWithLeagueLogos, computePowerScore, normalizePowerScoreResult, MockGameSimulator } from '@arenaswap/core';
 import {
 	createDefaultUserPreferences,
-	LEAGUE_LOGO_FALLBACKS,
+	leagueLogoFallbacks,
 	normalizeUserPreferences,
-	POLL_INTERVAL_MS,
-	MAX_HISTORY_SNAPSHOTS,
-	SENSITIVITY_THRESHOLDS,
-	SPORT_TYPE_CONFIG_MAP,
+	pollIntervalMs,
+	maxHistorySnapshots,
+	sensitivityThresholds,
+	sportTypeConfigMap,
 } from '@arenaswap/core/constants';
 import type {
 	Game,
@@ -55,8 +55,8 @@ export default defineBackground(() => {
 				homeScore: game.homeTeam.score,
 				awayScore: game.awayTeam.score,
 			});
-			const sportConfig = SPORT_TYPE_CONFIG_MAP[game.sportType] ?? SPORT_TYPE_CONFIG_MAP.basketball;
-			const maxSnapshots = sportConfig.maxHistorySnapshots ?? MAX_HISTORY_SNAPSHOTS;
+			const sportConfig = sportTypeConfigMap[game.sportType] ?? sportTypeConfigMap.basketball;
+			const maxSnapshots = sportConfig.maxHistorySnapshots ?? maxHistorySnapshots;
 			if (snapshots.length > maxSnapshots) snapshots.shift();
 			history.set(game.id, snapshots);
 		});
@@ -179,7 +179,7 @@ export default defineBackground(() => {
 		const freshGames = changedLeagueId ? liveGames.filter(g => g.league === changedLeagueId) : liveGames;
 
 		for (const game of freshGames) {
-			const config = SPORT_TYPE_CONFIG_MAP[game.sportType];
+			const config = sportTypeConfigMap[game.sportType];
 			if (!config?.clockBased) continue;
 
 			const entry = clockStallMap.get(game.id);
@@ -243,7 +243,7 @@ export default defineBackground(() => {
 
 		const best = registeredScores.reduce((a, b) => a.total > b.total ? a : b);
 		const bestReg = tabRegistry.find(r => r.gameId === best.gameId)!;
-		const threshold = SENSITIVITY_THRESHOLDS[prefs.sensitivity];
+		const threshold = sensitivityThresholds[prefs.sensitivity];
 		const cooldownOk = Date.now() - lastSwitchTime > prefs.cooldownSeconds * 1000;
 
 		if (
@@ -265,7 +265,7 @@ export default defineBackground(() => {
 			games = simulator.tick();
 			const demoLeagues = [...new Set(games.map(game => game.league))];
 			leagueLogos = demoLeagues.reduce<LeagueLogoMap>((acc, leagueId) => {
-				acc[leagueId] = LEAGUE_LOGO_FALLBACKS[leagueId];
+				acc[leagueId] = leagueLogoFallbacks[leagueId];
 				return acc;
 			}, {});
 		} else {
@@ -287,7 +287,7 @@ export default defineBackground(() => {
 	};
 
 	// Fetch a single league and merge results into shared state, then reschedule.
-	// Each league runs on its own POLL_INTERVAL_MS rhythm with ±2s jitter to
+	// Each league runs on its own pollIntervalMs rhythm with ±2s jitter to
 	// continuously spread requests across the window and prevent thundering herds.
 	const tickLeague = async (leagueId: LeagueId, allowTabSwitch: boolean) => {
 		try {
@@ -302,7 +302,7 @@ export default defineBackground(() => {
 		}
 
 		// Reschedule before awaiting post-processing so the next tick is always queued
-		scheduleLeagueTick(leagueId, POLL_INTERVAL_MS + randomInRange(-2_000, 2_000));
+		scheduleLeagueTick(leagueId, pollIntervalMs + randomInRange(-2_000, 2_000));
 
 		await afterFetch(leagueId, allowTabSwitch);
 	};
@@ -318,12 +318,12 @@ export default defineBackground(() => {
 		leagueTimers.clear();
 	};
 
-	// Spread each enabled league's first tick randomly across POLL_INTERVAL_MS so
+	// Spread each enabled league's first tick randomly across pollIntervalMs so
 	// they never all fire at the same moment after the initial full fetch.
 	const startLeaguePolling = () => {
 		stopLeaguePolling();
 		for (const leagueId of prefs.enabledLeagues) {
-			scheduleLeagueTick(leagueId, randomInRange(0, POLL_INTERVAL_MS));
+			scheduleLeagueTick(leagueId, randomInRange(0, pollIntervalMs));
 		}
 	};
 
@@ -354,7 +354,7 @@ export default defineBackground(() => {
 		refreshScores(false).finally(() => {
 			if (demoMode) {
 				if (!demoTimer) {
-					demoTimer = setInterval(() => void tick(true), POLL_INTERVAL_MS);
+					demoTimer = setInterval(() => void tick(true), pollIntervalMs);
 				}
 			} else {
 				startLeaguePolling();
@@ -412,7 +412,7 @@ export default defineBackground(() => {
 					simulator = new MockGameSimulator();
 					stopLeaguePolling();
 					if (!demoTimer) {
-						demoTimer = setInterval(() => void tick(true), POLL_INTERVAL_MS);
+						demoTimer = setInterval(() => void tick(true), pollIntervalMs);
 					}
 				} else {
 					simulator = null;

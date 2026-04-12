@@ -1,4 +1,4 @@
-import { LEAGUE_LOGO_FALLBACKS } from '../src/constants';
+import { leagueLogoFallbacks } from '../src/constants';
 
 interface MockResponseInit {
 	ok?: boolean;
@@ -84,12 +84,12 @@ const getCompetition = (event: Record<string, unknown>): Record<string, unknown>
 	(event.competitions as Record<string, unknown>[])[0]
 );
 
-const loadApiClient = (): typeof import('../src/api-client') => {
+const loadApiClient = (): typeof import('../src/apiClient') => {
 	jest.resetModules();
-	return require('../src/api-client') as typeof import('../src/api-client');
+	return require('../src/apiClient') as typeof import('../src/apiClient');
 };
 
-describe('api-client', () => {
+describe('apiClient', () => {
 	test('returns empty results and avoids fetch when enabled leagues list is empty', async () => {
 		const fetchMock = jest.fn();
 		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
@@ -194,7 +194,7 @@ describe('api-client', () => {
 		expect(fetchMock).toHaveBeenCalledTimes(1);
 		expect(result.games).toHaveLength(1);
 		expect(String(fetchMock.mock.calls[0][0])).not.toContain('dates=');
-		expect(result.leagueLogos.mlb).toBe(LEAGUE_LOGO_FALLBACKS.mlb);
+		expect(result.leagueLogos.mlb).toBe(leagueLogoFallbacks.mlb);
 	});
 
 	test('defensively handles malformed events, clocks, colors, and odds variants', async () => {
@@ -364,7 +364,7 @@ describe('api-client', () => {
 		const { fetchLeagueLogos } = loadApiClient();
 
 		const logos = await fetchLeagueLogos(['ncaab']);
-		expect(logos.ncaab).toBe(LEAGUE_LOGO_FALLBACKS.ncaab);
+		expect(logos.ncaab).toBe(leagueLogoFallbacks.ncaab);
 
 		const calledUrls = fetchMock.mock.calls.map(([url]) => String(url));
 		expect(calledUrls).toHaveLength(2);

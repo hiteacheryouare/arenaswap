@@ -1,5 +1,5 @@
-import { LEAGUE_CONFIG_MAP } from '../src/constants';
-import { MockGameSimulator } from '../src/mock-games';
+import { leagueConfigMap } from '../src/constants';
+import { MockGameSimulator } from '../src/mockGames';
 import type { Game } from '../src/types';
 
 type SimState = {
@@ -59,7 +59,7 @@ describe('MockGameSimulator', () => {
 		const nowLive = getGameById(games, 'mock-6');
 		expect(nowLive.status).toBe('in');
 		expect(nowLive.period).toBe(1);
-		expect(nowLive.clockSeconds).toBe(LEAGUE_CONFIG_MAP[nowLive.league].periodDurationSecs);
+		expect(nowLive.clockSeconds).toBe(leagueConfigMap[nowLive.league].periodDurationSecs);
 
 		randomSpy.mockRestore();
 	});
@@ -72,14 +72,14 @@ describe('MockGameSimulator', () => {
 		const nbaGame = mutableGames.find(game => game.id === 'mock-2');
 		if (!nbaGame) throw new Error('Expected mock-2 to exist');
 		nbaGame.status = 'in';
-		nbaGame.period = LEAGUE_CONFIG_MAP[nbaGame.league].regularPeriods;
+		nbaGame.period = leagueConfigMap[nbaGame.league].regularPeriods;
 		nbaGame.clockSeconds = 15;
 		nbaGame.homeTeam.score = 50;
 		nbaGame.awayTeam.score = 50;
 
 		const updated = getGameById(simulator.tick(), 'mock-2');
 		expect(updated.status).toBe('in');
-		expect(updated.period).toBe(LEAGUE_CONFIG_MAP[nbaGame.league].regularPeriods + 1);
+		expect(updated.period).toBe(leagueConfigMap[nbaGame.league].regularPeriods + 1);
 		expect(updated.clockSeconds).toBe(300);
 
 		randomSpy.mockRestore();
@@ -101,7 +101,7 @@ describe('MockGameSimulator', () => {
 		const updated = getGameById(simulator.tick(), game.id);
 		expect(updated.status).toBe('in');
 		expect(updated.period).toBe(3);
-		expect(updated.clockSeconds).toBe(LEAGUE_CONFIG_MAP[game.league].periodDurationSecs);
+		expect(updated.clockSeconds).toBe(leagueConfigMap[game.league].periodDurationSecs);
 		expect(updated.homeTeam.score).toBe(75);
 		expect(updated.awayTeam.score).toBe(72);
 
@@ -116,7 +116,7 @@ describe('MockGameSimulator', () => {
 		if (!game) throw new Error('Expected mock-2 to exist');
 
 		game.status = 'in';
-		game.period = LEAGUE_CONFIG_MAP[game.league].regularPeriods;
+		game.period = leagueConfigMap[game.league].regularPeriods;
 		game.clockSeconds = 15;
 		game.homeTeam.score = 90;
 		game.awayTeam.score = 82;
@@ -130,7 +130,7 @@ describe('MockGameSimulator', () => {
 
 		const updated = getGameById(simulator.tick(), game.id);
 		expect(updated.status).toBe('post');
-		expect(updated.period).toBe(LEAGUE_CONFIG_MAP[game.league].regularPeriods);
+		expect(updated.period).toBe(leagueConfigMap[game.league].regularPeriods);
 		expect(updated.clockSeconds).toBe(0);
 		expect(internals.state.get(game.id)?.postTicks).toBe(0);
 
@@ -159,7 +159,7 @@ describe('MockGameSimulator', () => {
 		const second = getGameById(simulator.tick(), game.id);
 		expect(second.status).toBe('in');
 		expect(second.period).toBe(1);
-		expect(second.clockSeconds).toBe(LEAGUE_CONFIG_MAP[second.league].periodDurationSecs);
+		expect(second.clockSeconds).toBe(leagueConfigMap[second.league].periodDurationSecs);
 
 		randomSpy.mockRestore();
 	});
@@ -188,7 +188,7 @@ describe('MockGameSimulator', () => {
 		const state = internals.state.get(game.id);
 		expect(reset.status).toBe('in');
 		expect(reset.period).toBe(1);
-		expect(reset.clockSeconds).toBe(LEAGUE_CONFIG_MAP[game.league].periodDurationSecs);
+		expect(reset.clockSeconds).toBe(leagueConfigMap[game.league].periodDurationSecs);
 		expect(reset.homeTeam.score).toBe(0);
 		expect(reset.awayTeam.score).toBe(0);
 		expect(state?.streak).toBeNull();
@@ -247,7 +247,7 @@ describe('MockGameSimulator', () => {
 				expect(internals.state.has(game.id)).toBe(true);
 
 				if (game.status === 'in') {
-					const maxClock = LEAGUE_CONFIG_MAP[game.league].periodDurationSecs;
+					const maxClock = leagueConfigMap[game.league].periodDurationSecs;
 					expect(game.clockSeconds).toBeGreaterThanOrEqual(0);
 					expect(game.clockSeconds).toBeLessThanOrEqual(maxClock);
 				}

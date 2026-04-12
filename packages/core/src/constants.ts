@@ -1,56 +1,56 @@
 import pkg from '../package.json';
 import type { LeagueId, UserPreferences } from './types';
 import {
-	ALL_LEAGUE_IDS,
-	STALL_THRESHOLD_POLLS,
-	STALL_PENALTY_MULTIPLIER,
-	SCORE_MAX_CLOSENESS,
-	SCORE_MAX_LATE_GAME,
-	SCORE_MAX_MOMENTUM,
-	SCORE_MAX_LEAD_CHANGES,
-	SCORE_MAX_COMEBACK,
-	SCORE_MAX_TOTAL,
-	SCORER_TUNABLES,
-	SPORT_TYPE_CONFIGS,
-	SPORT_TYPE_CONFIG_MAP,
-	LEAGUE_CONFIGS,
-	LEAGUE_CONFIG_MAP,
+	allLeagueIds,
+	stallThresholdPolls,
+	stallPenaltyMultiplier,
+	scoreMaxCloseness,
+	scoreMaxLateGame,
+	scoreMaxMomentum,
+	scoreMaxLeadChanges,
+	scoreMaxComeback,
+	scoreMaxTotal,
+	scorerTunables,
+	sportTypeConfigs,
+	sportTypeConfigMap,
+	leagueConfigs,
+	leagueConfigMap,
 } from '@arenaswap/powerscore';
 
 // Re-export powerscore constants so existing import paths work unchanged
 export {
-	ALL_LEAGUE_IDS,
-	STALL_THRESHOLD_POLLS,
-	STALL_PENALTY_MULTIPLIER,
-	SCORE_MAX_CLOSENESS,
-	SCORE_MAX_LATE_GAME,
-	SCORE_MAX_MOMENTUM,
-	SCORE_MAX_LEAD_CHANGES,
-	SCORE_MAX_COMEBACK,
-	SCORE_MAX_TOTAL,
-	SCORER_TUNABLES,
-	SPORT_TYPE_CONFIGS,
-	SPORT_TYPE_CONFIG_MAP,
-	LEAGUE_CONFIGS,
-	LEAGUE_CONFIG_MAP,
+	allLeagueIds,
+	stallThresholdPolls,
+	stallPenaltyMultiplier,
+	scoreMaxCloseness,
+	scoreMaxLateGame,
+	scoreMaxMomentum,
+	scoreMaxLeadChanges,
+	scoreMaxComeback,
+	scoreMaxTotal,
+	scorerTunables,
+	sportTypeConfigs,
+	sportTypeConfigMap,
+	leagueConfigs,
+	leagueConfigMap,
 };
 
 // App identity (sourced from package.json)
-export const APP_NAME = pkg.name;
-export const APP_VERSION = pkg.version;
-export const APP_DESCRIPTION = pkg.description;
+export const appName = pkg.name;
+export const appVersion = pkg.version;
+export const appDescription = pkg.description;
 
-export const POLL_INTERVAL_MS = 15_000;
-export const MAX_HISTORY_SNAPSHOTS = 20; // ~5 minutes of history at 15s poll interval
+export const pollIntervalMs = 15_000;
+export const maxHistorySnapshots = 20; // ~5 minutes of history at 15s poll interval
 
 // Switch behavior defaults
-export const DEFAULT_SENSITIVITY = 4 as const;
-export const DEFAULT_COOLDOWN_SECS = 45;
-export const DEFAULT_SWITCH_DELAY_SECS = 0;
-export const DEFAULT_FAVORITE_TEAM_BONUS_POINTS = 10;
+export const defaultSensitivity = 4 as const;
+export const defaultCooldownSecs = 45;
+export const defaultSwitchDelaySecs = 0;
+export const defaultFavoriteTeamBonusPoints = 10;
 
 // Sensitivity level → score delta required to trigger a tab switch
-export const SENSITIVITY_THRESHOLDS: Record<number, number> = {
+export const sensitivityThresholds: Record<number, number> = {
 	1: 100,
 	2: 60,
 	3: 45,
@@ -60,7 +60,7 @@ export const SENSITIVITY_THRESHOLDS: Record<number, number> = {
 	7: 3
 };
 
-export const LEAGUE_LOGO_FALLBACKS: Record<LeagueId, string> = {
+export const leagueLogoFallbacks: Record<LeagueId, string> = {
 	nba: 'https://a.espncdn.com/i/teamlogos/leagues/500/nba.png',
 	wnba: 'https://a.espncdn.com/i/teamlogos/leagues/500/wnba.png',
 	ncaab: 'https://a.espncdn.com/redesign/assets/img/icons/ESPN-icon-basketball.png',
@@ -76,11 +76,11 @@ export const LEAGUE_LOGO_FALLBACKS: Record<LeagueId, string> = {
 export const resolveLeagueLogoUrl = (leagueId: LeagueId, espnLogoUrl?: string): string => (
 	typeof espnLogoUrl === 'string' && espnLogoUrl.length > 0
 		? espnLogoUrl
-		: LEAGUE_LOGO_FALLBACKS[leagueId]
+		: leagueLogoFallbacks[leagueId]
 );
 
 const isLeagueId = (value: unknown): value is LeagueId => (
-	typeof value === 'string' && ALL_LEAGUE_IDS.includes(value as LeagueId)
+	typeof value === 'string' && allLeagueIds.includes(value as LeagueId)
 );
 
 const isSensitivityValue = (value: unknown): value is UserPreferences['sensitivity'] => (
@@ -111,13 +111,13 @@ const normalizeFavoriteTeamIds = (value: unknown): string[] => {
 };
 
 export const createDefaultUserPreferences = (): UserPreferences => ({
-	sensitivity: DEFAULT_SENSITIVITY,
-	cooldownSeconds: DEFAULT_COOLDOWN_SECS,
-	switchDelaySeconds: DEFAULT_SWITCH_DELAY_SECS,
+	sensitivity: defaultSensitivity,
+	cooldownSeconds: defaultCooldownSecs,
+	switchDelaySeconds: defaultSwitchDelaySecs,
 	enabled: true,
 	enabledLeagues: [],
 	favoriteTeamIds: [],
-	favoriteTeamBonusPoints: DEFAULT_FAVORITE_TEAM_BONUS_POINTS,
+	favoriteTeamBonusPoints: defaultFavoriteTeamBonusPoints,
 	showUpcomingGames: true,
 });
 
@@ -136,7 +136,7 @@ export const normalizeUserPreferences = (storedPrefs: unknown): UserPreferences 
 		cooldownSeconds: normalizeSecondsPreference(candidate.cooldownSeconds, defaults.cooldownSeconds),
 		switchDelaySeconds: normalizeSecondsPreference(candidate.switchDelaySeconds, defaults.switchDelaySeconds),
 		enabled: typeof candidate.enabled === 'boolean' ? candidate.enabled : defaults.enabled,
-		enabledLeagues: hasEnabledLeaguesField ? parsedEnabledLeagues : ALL_LEAGUE_IDS,
+		enabledLeagues: hasEnabledLeaguesField ? parsedEnabledLeagues : allLeagueIds,
 		favoriteTeamIds: normalizeFavoriteTeamIds(candidate.favoriteTeamIds),
 		favoriteTeamBonusPoints: normalizeSecondsPreference(candidate.favoriteTeamBonusPoints, defaults.favoriteTeamBonusPoints),
 		showUpcomingGames: typeof candidate.showUpcomingGames === 'boolean' ? candidate.showUpcomingGames : defaults.showUpcomingGames,

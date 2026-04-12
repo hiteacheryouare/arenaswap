@@ -8,7 +8,7 @@ const commonProjectConfig = {
       },
     ],
   },
-  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
+  setupFilesAfterEnv: ['<rootDir>/jestSetup.ts'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'json'],
 };
 

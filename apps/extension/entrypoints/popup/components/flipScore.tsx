@@ -1,20 +1,19 @@
 import { useState, useEffect, useRef } from 'react';
 
-interface FlipScoreProps {
+interface flipScoreProps {
 	value: number;
 	className?: string;
-	style?: React.CSSProperties;
 }
 
-interface FlipState {
+interface flipState {
 	current: number;
 	outgoing: number | null;
 	animKey: number;
 }
 
-const FlipScore = ({ value, className = '', style }: FlipScoreProps) => {
+const flipScore = ({ value, className = '' }: flipScoreProps) => {
 	const prevRef = useRef(value);
-	const [state, setState] = useState<FlipState>({ current: value, outgoing: null, animKey: 0 });
+	const [state, setState] = useState<flipState>({ current: value, outgoing: null, animKey: 0 });
 
 	useEffect(() => {
 		if (value !== prevRef.current) {
@@ -27,7 +26,7 @@ const FlipScore = ({ value, className = '', style }: FlipScoreProps) => {
 	}, [value]);
 
 	return (
-		<span className={`flip-score ${className}`} style={style}>
+		<span className={`flip-score ${className}`}>
 			{state.outgoing !== null && (
 				<span key={`out-${state.animKey}`} className='flip-score-digit flip-score-digit-out' aria-hidden='true'>
 					{state.outgoing}
@@ -40,4 +39,4 @@ const FlipScore = ({ value, className = '', style }: FlipScoreProps) => {
 	);
 };
 
-export default FlipScore;
+export default flipScore;

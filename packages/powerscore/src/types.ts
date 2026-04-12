@@ -160,7 +160,7 @@ export interface SportTypeConfig {
 	comebackThresholdBig: number;
 	/** Score-margin shrinkage (in the history window) that triggers a moderate comeback score */
 	comebackThresholdSmall: number;
-	/** overrides MAX_HISTORY_SNAPSHOTS for momentum window; omit to use the global default */
+	/** overrides maxHistorySnapshots for momentum window; omit to use the global default */
 	maxHistorySnapshots?: number;
 }
 

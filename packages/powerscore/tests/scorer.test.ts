@@ -1,14 +1,14 @@
 import {
-	LEAGUE_CONFIGS,
-	SCORER_TUNABLES,
-	SCORE_MAX_CLOSENESS,
-	SCORE_MAX_LATE_GAME,
-	SCORE_MAX_MOMENTUM,
-	SCORE_MAX_LEAD_CHANGES,
-	SCORE_MAX_COMEBACK,
-	SCORE_MAX_TOTAL,
-	STALL_PENALTY_MULTIPLIER,
-	STALL_THRESHOLD_POLLS,
+	leagueConfigs,
+	scorerTunables,
+	scoreMaxCloseness,
+	scoreMaxLateGame,
+	scoreMaxMomentum,
+	scoreMaxLeadChanges,
+	scoreMaxComeback,
+	scoreMaxTotal,
+	stallPenaltyMultiplier,
+	stallThresholdPolls,
 } from '../src/constants';
 import { computePowerScore, normalizePowerScoreResult } from '../src/scorer';
 import type { Game, PowerScoreResult, ScoreSnapshot } from '../src/types';
@@ -61,12 +61,12 @@ describe('computePowerScore', () => {
 			total: 999,
 		});
 
-		expect(normalized.closeness).toBe(SCORE_MAX_CLOSENESS);
-		expect(normalized.lateGame).toBe(SCORE_MAX_LATE_GAME);
+		expect(normalized.closeness).toBe(scoreMaxCloseness);
+		expect(normalized.lateGame).toBe(scoreMaxLateGame);
 		expect(normalized.momentum).toBe(0);
-		expect(normalized.leadChanges).toBe(SCORE_MAX_LEAD_CHANGES);
-		expect(normalized.comeback).toBe(SCORE_MAX_COMEBACK);
-		expect(normalized.total).toBe(SCORE_MAX_TOTAL);
+		expect(normalized.leadChanges).toBe(scoreMaxLeadChanges);
+		expect(normalized.comeback).toBe(scoreMaxComeback);
+		expect(normalized.total).toBe(scoreMaxTotal);
 	});
 
 	test('can preserve totals above 100 when overflow is allowed', () => {
@@ -124,18 +124,18 @@ describe('computePowerScore', () => {
 		const basketballResult = computePowerScore(basketball, []);
 		const soccerResult = computePowerScore(soccer, []);
 
-		expect(basketballResult.closeness).toBe(SCORER_TUNABLES.scores.closeness.zeroZero);
-		expect(soccerResult.closeness).toBe(SCORER_TUNABLES.scores.closeness.tied);
+		expect(basketballResult.closeness).toBe(scorerTunables.scores.closeness.zeroZero);
+		expect(soccerResult.closeness).toBe(scorerTunables.scores.closeness.tied);
 	});
 
 	test('applies basketball closeness thresholds at boundary margins', () => {
 		const cases = [
-			{ margin: 5, expected: SCORER_TUNABLES.scores.closeness.tight, expectedReason: '5-point game' },
-			{ margin: 6, expected: SCORER_TUNABLES.scores.closeness.close, expectedReason: '6-point game' },
-			{ margin: 10, expected: SCORER_TUNABLES.scores.closeness.close, expectedReason: '10-point game' },
-			{ margin: 11, expected: SCORER_TUNABLES.scores.closeness.fringe, expectedReason: SCORER_TUNABLES.reasons.fallback },
-			{ margin: 18, expected: SCORER_TUNABLES.scores.closeness.fringe, expectedReason: SCORER_TUNABLES.reasons.fallback },
-			{ margin: 19, expected: SCORER_TUNABLES.scores.closeness.none, expectedReason: SCORER_TUNABLES.reasons.fallback },
+			{ margin: 5, expected: scorerTunables.scores.closeness.tight, expectedReason: '5-point game' },
+			{ margin: 6, expected: scorerTunables.scores.closeness.close, expectedReason: '6-point game' },
+			{ margin: 10, expected: scorerTunables.scores.closeness.close, expectedReason: '10-point game' },
+			{ margin: 11, expected: scorerTunables.scores.closeness.fringe, expectedReason: scorerTunables.reasons.fallback },
+			{ margin: 18, expected: scorerTunables.scores.closeness.fringe, expectedReason: scorerTunables.reasons.fallback },
+			{ margin: 19, expected: scorerTunables.scores.closeness.none, expectedReason: scorerTunables.reasons.fallback },
 		];
 
 		for (const { margin, expected, expectedReason } of cases) {
@@ -171,8 +171,8 @@ describe('computePowerScore', () => {
 		expect(mid.lateGame).toBeGreaterThan(early.lateGame);
 		expect(late.lateGame).toBeGreaterThan(mid.lateGame);
 		expect(endOfRegulation.lateGame).toBeGreaterThan(late.lateGame);
-		expect(endOfRegulation.lateGame).toBeGreaterThanOrEqual(Math.ceil(SCORE_MAX_LATE_GAME * 0.8));
-		expect(endOfRegulation.lateGame).toBeLessThanOrEqual(SCORE_MAX_LATE_GAME);
+		expect(endOfRegulation.lateGame).toBeGreaterThanOrEqual(Math.ceil(scoreMaxLateGame * 0.8));
+		expect(endOfRegulation.lateGame).toBeLessThanOrEqual(scoreMaxLateGame);
 		expect(mid.reason).toContain('under 5 min left');
 	});
 
@@ -197,8 +197,8 @@ describe('computePowerScore', () => {
 		expect(mid.lateGame).toBeGreaterThan(early.lateGame);
 		expect(late.lateGame).toBeGreaterThan(mid.lateGame);
 		expect(endOfRegulation.lateGame).toBeGreaterThan(late.lateGame);
-		expect(endOfRegulation.lateGame).toBeGreaterThanOrEqual(Math.ceil(SCORE_MAX_LATE_GAME * 0.8));
-		expect(endOfRegulation.lateGame).toBeLessThanOrEqual(SCORE_MAX_LATE_GAME);
+		expect(endOfRegulation.lateGame).toBeGreaterThanOrEqual(Math.ceil(scoreMaxLateGame * 0.8));
+		expect(endOfRegulation.lateGame).toBeLessThanOrEqual(scoreMaxLateGame);
 		expect(mid.reason).toContain('under 10 min left');
 	});
 
@@ -223,8 +223,8 @@ describe('computePowerScore', () => {
 		expect(mid.lateGame).toBeGreaterThan(early.lateGame);
 		expect(late.lateGame).toBeGreaterThan(mid.lateGame);
 		expect(endOfRegulation.lateGame).toBeGreaterThan(late.lateGame);
-		expect(endOfRegulation.lateGame).toBeGreaterThanOrEqual(Math.ceil(SCORE_MAX_LATE_GAME * 0.8));
-		expect(endOfRegulation.lateGame).toBeLessThanOrEqual(SCORE_MAX_LATE_GAME);
+		expect(endOfRegulation.lateGame).toBeGreaterThanOrEqual(Math.ceil(scoreMaxLateGame * 0.8));
+		expect(endOfRegulation.lateGame).toBeLessThanOrEqual(scoreMaxLateGame);
 		expect(endOfRegulation.reason).toContain('inning');
 	});
 
@@ -248,9 +248,9 @@ describe('computePowerScore', () => {
 		const overtimeResult = computePowerScore(overtime, []);
 		const extraInningsResult = computePowerScore(game, []);
 
-		expect(overtimeResult.lateGame).toBe(SCORE_MAX_LATE_GAME);
+		expect(overtimeResult.lateGame).toBe(scoreMaxLateGame);
 		expect(overtimeResult.reason).toContain('overtime');
-		expect(extraInningsResult.lateGame).toBe(SCORE_MAX_LATE_GAME);
+		expect(extraInningsResult.lateGame).toBe(scoreMaxLateGame);
 		expect(extraInningsResult.reason).toContain('extra innings');
 	});
 
@@ -269,7 +269,7 @@ describe('computePowerScore', () => {
 
 		const result = computePowerScore(game, history);
 		expect(result.total).toBeGreaterThanOrEqual(80);
-		expect(result.total).toBeLessThan(SCORE_MAX_TOTAL);
+		expect(result.total).toBeLessThan(scoreMaxTotal);
 	});
 
 	test('reserves 100 for exceptional overtime scenarios', () => {
@@ -287,12 +287,12 @@ describe('computePowerScore', () => {
 		]);
 
 		const result = computePowerScore(game, history);
-		expect(result.closeness).toBe(SCORE_MAX_CLOSENESS);
-		expect(result.lateGame).toBe(SCORE_MAX_LATE_GAME);
-		expect(result.momentum).toBe(SCORE_MAX_MOMENTUM);
-		expect(result.leadChanges).toBe(SCORE_MAX_LEAD_CHANGES);
-		expect(result.comeback).toBe(SCORE_MAX_COMEBACK);
-		expect(result.total).toBe(SCORE_MAX_TOTAL);
+		expect(result.closeness).toBe(scoreMaxCloseness);
+		expect(result.lateGame).toBe(scoreMaxLateGame);
+		expect(result.momentum).toBe(scoreMaxMomentum);
+		expect(result.leadChanges).toBe(scoreMaxLeadChanges);
+		expect(result.comeback).toBe(scoreMaxComeback);
+		expect(result.total).toBe(scoreMaxTotal);
 	});
 
 	test('detects big momentum runs from history snapshots', () => {
@@ -303,7 +303,7 @@ describe('computePowerScore', () => {
 		const history = makeHistory([[60, 60], [64, 60], [70, 60]]);
 		const result = computePowerScore(game, history);
 
-		expect(result.momentum).toBe(SCORER_TUNABLES.scores.momentum.bigRun);
+		expect(result.momentum).toBe(scorerTunables.scores.momentum.bigRun);
 		expect(result.reason).toContain('HOM on a 10-0 run');
 	});
 
@@ -316,15 +316,15 @@ describe('computePowerScore', () => {
 		});
 
 		const noRun = computePowerScore(game, makeHistory([[90, 60], [92, 62], [94, 64]]));
-		expect(noRun.momentum).toBe(SCORER_TUNABLES.scores.momentum.none);
-		expect(noRun.reason).toBe(SCORER_TUNABLES.reasons.fallback);
+		expect(noRun.momentum).toBe(scorerTunables.scores.momentum.none);
+		expect(noRun.reason).toBe(scorerTunables.reasons.fallback);
 
 		const smallRun = computePowerScore(game, makeHistory([[90, 60], [93, 60], [95, 60]]));
-		expect(smallRun.momentum).toBe(SCORER_TUNABLES.scores.momentum.smallRun);
+		expect(smallRun.momentum).toBe(scorerTunables.scores.momentum.smallRun);
 		expect(smallRun.reason).toBe('HOM rolling');
 
 		const bigRun = computePowerScore(game, makeHistory([[90, 60], [95, 60], [100, 60]]));
-		expect(bigRun.momentum).toBe(SCORER_TUNABLES.scores.momentum.bigRun);
+		expect(bigRun.momentum).toBe(scorerTunables.scores.momentum.bigRun);
 		expect(bigRun.reason).toBe('HOM on a 10-0 run');
 	});
 
@@ -354,12 +354,12 @@ describe('computePowerScore', () => {
 		const history = makeHistory([[100, 90], [103, 93], [106, 96]]);
 
 		const result = computePowerScore(game, history);
-		expect(result.closeness).toBe(SCORER_TUNABLES.scores.closeness.fringe);
+		expect(result.closeness).toBe(scorerTunables.scores.closeness.fringe);
 		expect(result.lateGame).toBeGreaterThan(0);
-		expect(result.lateGame).toBeLessThan(SCORE_MAX_LATE_GAME);
-		expect(result.momentum).toBe(SCORER_TUNABLES.scores.momentum.none);
+		expect(result.lateGame).toBeLessThan(scoreMaxLateGame);
+		expect(result.momentum).toBe(scorerTunables.scores.momentum.none);
 		expect(result.total).toBe(result.closeness + result.lateGame + result.momentum + result.leadChanges + result.comeback);
-		expect(result.reason).toBe(SCORER_TUNABLES.reasons.fallback);
+		expect(result.reason).toBe(scorerTunables.reasons.fallback);
 	});
 
 	test('applies stall penalty when threshold is met', () => {
@@ -370,13 +370,13 @@ describe('computePowerScore', () => {
 			clockSeconds: 600,
 		});
 
-		const raw = computePowerScore(game, [], STALL_THRESHOLD_POLLS - 1);
-		const stalled = computePowerScore(game, [], STALL_THRESHOLD_POLLS);
+		const raw = computePowerScore(game, [], stallThresholdPolls - 1);
+		const stalled = computePowerScore(game, [], stallThresholdPolls);
 
 		expect(raw.stalled).toBe(false);
 		expect(raw.total).toBe(raw.closeness + raw.lateGame + raw.momentum + raw.leadChanges + raw.comeback);
 		expect(stalled.stalled).toBe(true);
-		expect(stalled.total).toBe(Math.round(raw.total * STALL_PENALTY_MULTIPLIER));
+		expect(stalled.total).toBe(Math.round(raw.total * stallPenaltyMultiplier));
 	});
 
 	test('falls back to default reason when no signal reasons are present', () => {
@@ -388,7 +388,7 @@ describe('computePowerScore', () => {
 		});
 
 		const result = computePowerScore(game, makeHistory([[120, 80], [120, 80], [120, 80]]));
-		expect(result.reason).toBe(SCORER_TUNABLES.reasons.fallback);
+		expect(result.reason).toBe(scorerTunables.reasons.fallback);
 		expect(result.momentum).toBe(0);
 		expect(result.lateGame).toBe(0);
 		expect(result.closeness).toBe(0);
@@ -399,23 +399,23 @@ describe('computePowerScore', () => {
 
 		// No lead change — home leads throughout
 		const noChange = computePowerScore(game, makeHistory([[50, 48], [52, 48], [54, 50]]));
-		expect(noChange.leadChanges).toBe(SCORER_TUNABLES.scores.leadChanges.none);
+		expect(noChange.leadChanges).toBe(scorerTunables.scores.leadChanges.none);
 
 		// Single lead change — away takes the lead directly without passing through a tie
 		const singleChange = computePowerScore(
 			makeGame({ homeTeam: { abbreviation: 'HOM', score: 55 }, awayTeam: { abbreviation: 'AWY', score: 58 } }),
 			makeHistory([[50, 48], [50, 54], [52, 56]]),
 		);
-		expect(singleChange.leadChanges).toBe(SCORER_TUNABLES.scores.leadChanges.single);
-		expect(singleChange.reason).toContain(SCORER_TUNABLES.reasons.leadChangeSingle);
+		expect(singleChange.leadChanges).toBe(scorerTunables.scores.leadChanges.single);
+		expect(singleChange.reason).toContain(scorerTunables.reasons.leadChangeSingle);
 
 		// Multiple lead changes — lead flips twice
 		const multiChange = computePowerScore(
 			makeGame({ homeTeam: { abbreviation: 'HOM', score: 60 }, awayTeam: { abbreviation: 'AWY', score: 58 } }),
 			makeHistory([[50, 48], [50, 52], [54, 52], [54, 56], [60, 58]]),
 		);
-		expect(multiChange.leadChanges).toBe(SCORER_TUNABLES.scores.leadChanges.multiple);
-		expect(multiChange.reason).toContain(SCORER_TUNABLES.reasons.leadChangeMultiple);
+		expect(multiChange.leadChanges).toBe(scorerTunables.scores.leadChanges.multiple);
+		expect(multiChange.reason).toContain(scorerTunables.reasons.leadChangeMultiple);
 	});
 
 	test('scores comeback: none, moderate, and big', () => {
@@ -424,7 +424,7 @@ describe('computePowerScore', () => {
 			makeGame({ homeTeam: { ...makeGame().homeTeam, score: 90 }, awayTeam: { ...makeGame().awayTeam, score: 80 } }),
 			makeHistory([[80, 70], [84, 74], [90, 80]]),
 		);
-		expect(noComeback.comeback).toBe(SCORER_TUNABLES.scores.comeback.none);
+		expect(noComeback.comeback).toBe(scorerTunables.scores.comeback.none);
 
 		// Moderate comeback — deficit shrinks by 5 (basketball small=3, big=6)
 		const moderateComeback = computePowerScore(
@@ -432,8 +432,8 @@ describe('computePowerScore', () => {
 			makeHistory([[80, 70], [83, 75], [89, 84]]),
 		);
 		// oldDiff=10, newDiff=5, shrinkage=5 => moderate
-		expect(moderateComeback.comeback).toBe(SCORER_TUNABLES.scores.comeback.moderate);
-		expect(moderateComeback.reason).toContain(SCORER_TUNABLES.reasons.comebackModerate);
+		expect(moderateComeback.comeback).toBe(scorerTunables.scores.comeback.moderate);
+		expect(moderateComeback.reason).toContain(scorerTunables.reasons.comebackModerate);
 
 		// Big comeback — deficit shrinks by 8 (basketball big=6)
 		const bigComeback = computePowerScore(
@@ -441,8 +441,8 @@ describe('computePowerScore', () => {
 			makeHistory([[80, 70], [84, 74], [90, 88]]),
 		);
 		// oldDiff=10, newDiff=2, shrinkage=8 >= big(6)
-		expect(bigComeback.comeback).toBe(SCORER_TUNABLES.scores.comeback.big);
-		expect(bigComeback.reason).toContain(SCORER_TUNABLES.reasons.comebackBig);
+		expect(bigComeback.comeback).toBe(scorerTunables.scores.comeback.big);
+		expect(bigComeback.reason).toContain(scorerTunables.reasons.comebackBig);
 	});
 
 	test('reason priority: momentum > comeback > leadChanges > lateGame > closeness', () => {
@@ -456,12 +456,12 @@ describe('computePowerScore', () => {
 		});
 		const history = makeHistory([[80, 70], [81, 75], [84, 84]]);
 		const result = computePowerScore(game, history);
-		expect(result.comeback).toBe(SCORER_TUNABLES.scores.comeback.big);
-		expect(result.reason).toContain(SCORER_TUNABLES.reasons.comebackBig);
+		expect(result.comeback).toBe(scorerTunables.scores.comeback.big);
+		expect(result.reason).toContain(scorerTunables.reasons.comebackBig);
 	});
 
 	test('produces numeric lead-change and comeback scores for every league', () => {
-		for (const league of LEAGUE_CONFIGS) {
+		for (const league of leagueConfigs) {
 			const game = makeGame({
 				league: league.id,
 				sportType: league.sportType,
