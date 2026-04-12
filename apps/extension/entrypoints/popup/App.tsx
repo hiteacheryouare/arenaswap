@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { CSSProperties } from 'react';
 import useSWR from 'swr';
 import { normalizePowerScoreResult } from '@arenaswap/core';
@@ -14,6 +14,7 @@ import GameCard from './components/GameCard';
 import SensitivitySlider from './components/SensitivitySlider';
 import CooldownSlider from './components/CooldownSlider';
 import SwitchDelaySlider from './components/SwitchDelaySlider';
+import FavoriteTeamBonusInput from './components/FavoriteTeamBonusInput';
 
 type View = 'main' | 'setup';
 type LeagueGroup = { league: LeagueId; games: Game[] };
@@ -126,7 +127,7 @@ const normalizeScores = (value: unknown): PowerScoreResult[] => {
 	if (!Array.isArray(value)) return [];
 	return value
 		.filter(isPowerScoreLike)
-		.map(score => normalizePowerScoreResult(score));
+		.map(score => normalizePowerScoreResult(score, { allowTotalOverflow: true }));
 };
 
 const normalizeBackgroundState = (value: unknown): BackgroundState => {
@@ -253,12 +254,23 @@ export default () => {
 		persistPrefs({ ...prefs, switchDelaySeconds: val });
 	};
 
+	const onFavoriteTeamBonusChange = (val: number) => {
+		persistPrefs({ ...prefs, favoriteTeamBonusPoints: val });
+	};
+
 	const onToggleLeague = (leagueId: LeagueId) => {
 		const current = new Set(prefs.enabledLeagues);
 		if (current.has(leagueId)) current.delete(leagueId);
 		else current.add(leagueId);
 		const enabledLeagues = [...current].sort((a, b) => LEAGUE_ORDER[a] - LEAGUE_ORDER[b]);
 		persistPrefs({ ...prefs, enabledLeagues });
+	};
+
+	const onToggleFavoriteTeam = (teamId: string) => {
+		const current = new Set(prefs.favoriteTeamIds);
+		if (current.has(teamId)) current.delete(teamId);
+		else current.add(teamId);
+		persistPrefs({ ...prefs, favoriteTeamIds: [...current] });
 	};
 
 	const onToggleShowUpcoming = () => {
@@ -287,6 +299,7 @@ export default () => {
 	};
 	const oneWeekFromNow = Date.now() + 7 * 24 * 60 * 60 * 1000;
 	const noLeaguesSelected = prefs.enabledLeagues.length === 0;
+	const favoriteTeamIds = useMemo(() => new Set(prefs.favoriteTeamIds), [prefs.favoriteTeamIds]);
 
 	if (view === 'setup') {
 		return (
@@ -304,6 +317,10 @@ export default () => {
 
 				<div className='mt-2'>
 					<SwitchDelaySlider value={prefs.switchDelaySeconds} onChange={onSwitchDelayChange} />
+				</div>
+
+				<div className='mt-2'>
+					<FavoriteTeamBonusInput value={prefs.favoriteTeamBonusPoints} onChange={onFavoriteTeamBonusChange} />
 				</div>
 
 				<div className='fw-bold text-uppercase mt-3' style={SECTION_LABEL_STYLE}>Leagues</div>
@@ -468,6 +485,8 @@ export default () => {
 									key={game.id}
 									game={game}
 									excitementResult={scores.find(s => s.gameId === game.id)}
+									favoriteTeamIds={favoriteTeamIds}
+									onToggleFavoriteTeam={onToggleFavoriteTeam}
 									openTabs={openTabs}
 									registry={registry}
 									onRegistryChange={onRegistryChange}
@@ -490,6 +509,8 @@ export default () => {
 									key={game.id}
 									game={game}
 									excitementResult={scores.find(s => s.gameId === game.id)}
+									favoriteTeamIds={favoriteTeamIds}
+									onToggleFavoriteTeam={onToggleFavoriteTeam}
 									openTabs={openTabs}
 									registry={registry}
 									onRegistryChange={onRegistryChange}
@@ -525,6 +546,8 @@ export default () => {
 									key={game.id}
 									game={game}
 									excitementResult={undefined}
+									favoriteTeamIds={favoriteTeamIds}
+									onToggleFavoriteTeam={onToggleFavoriteTeam}
 									openTabs={openTabs}
 									registry={registry}
 									onRegistryChange={onRegistryChange}

@@ -17,6 +17,8 @@ import FlipScore from './FlipScore';
 interface Props {
 	game: Game | undefined;
 	excitementResult: PowerScoreResult | undefined;
+	favoriteTeamIds: Set<string>;
+	onToggleFavoriteTeam: (teamId: string) => void;
 	openTabs: Browser.tabs.Tab[];
 	registry: TabRegistration[];
 	onRegistryChange: (updated: TabRegistration[]) => void;
@@ -99,12 +101,30 @@ const TeamLogo = ({ team }: { team: Team }) => {
 	);
 };
 
-const TeamColumn = ({ team }: { team: Team }) => (
+const TeamColumn = ({
+	team,
+	isFavorited,
+	onToggleFavoriteTeam,
+}: {
+	team: Team;
+	isFavorited: boolean;
+	onToggleFavoriteTeam: (teamId: string) => void;
+}) => (
 	<div className='d-flex flex-column align-items-center gap-1' style={{ minWidth: 60 }}>
 		<TeamLogo team={team} />
 		<span className='fw-bold text-center text-nowrap' style={{ fontSize: '0.7rem', color: '#111827' }}>
 			{team.abbreviation}
 		</span>
+		<button
+			type='button'
+			className='btn btn-link p-0 border-0 lh-1'
+			style={{ fontSize: '0.78rem', color: isFavorited ? '#f1c40f' : '#6c757d', textDecoration: 'none' }}
+			aria-label={isFavorited ? `Remove ${team.abbreviation} from favorites` : `Add ${team.abbreviation} to favorites`}
+			title={isFavorited ? 'Favorited' : 'Add to favorites'}
+			onClick={() => onToggleFavoriteTeam(team.id)}
+		>
+			<i className={`bi ${isFavorited ? 'bi-star-fill' : 'bi-star'}`} />
+		</button>
 	</div>
 );
 
@@ -167,19 +187,21 @@ const GameMeta = ({ game }: { game: Game }) => {
 	);
 };
 
-const GameCard = ({ game, excitementResult, openTabs, registry, onRegistryChange, formatTabLabel }: Props) => {
+const GameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavoriteTeam, openTabs, registry, onRegistryChange, formatTabLabel }: Props) => {
 	const [showPowerScoreDetails, setShowPowerScoreDetails] = useState(false);
 
 	if (!game) return null;
 
 	if (game.status === 'pre') {
+		const awayFavorited = favoriteTeamIds.has(game.awayTeam.id);
+		const homeFavorited = favoriteTeamIds.has(game.homeTeam.id);
 		return (
 			<div className='game-card' style={{
 				borderLeft: `5px solid ${game.awayTeam.color ?? '#dee2e6'}`,
 				borderRight: `5px solid ${game.homeTeam.color ?? '#dee2e6'}`,
 			}}>
 				<div className='d-flex align-items-center justify-content-center' style={{ gap: '0.75rem' }}>
-					<TeamColumn team={game.awayTeam} />
+					<TeamColumn team={game.awayTeam} isFavorited={awayFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} />
 					<div className='d-flex flex-column align-items-center' style={{ minWidth: 80 }}>
 						<span style={{ fontSize: '0.8rem', color: '#8b949e' }}>vs</span>
 						{game.startTime && (
@@ -188,7 +210,7 @@ const GameCard = ({ game, excitementResult, openTabs, registry, onRegistryChange
 							</span>
 						)}
 					</div>
-					<TeamColumn team={game.homeTeam} />
+					<TeamColumn team={game.homeTeam} isFavorited={homeFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} />
 				</div>
 				<GameMeta game={game} />
 				<TabAssignSelect
@@ -211,6 +233,14 @@ const GameCard = ({ game, excitementResult, openTabs, registry, onRegistryChange
 	const totalPowerScore = excitementResult?.total ?? 0;
 	const reason = excitementResult?.reason ?? 'Best Available';
 	const rawPowerScore = closenessScore + lateGameScore + momentumScore + leadChangesScore + comebackScore;
+	const baseTotal = excitementResult?.baseTotal ?? (excitementResult?.stalled ? Math.round(rawPowerScore * STALL_PENALTY_MULTIPLIER) : rawPowerScore);
+	const favoriteBonus = excitementResult?.favoriteBonus ?? 0;
+	const favoriteTeamCount = excitementResult?.favoriteTeamCount ?? 0;
+	const awayFavorited = favoriteTeamIds.has(game.awayTeam.id);
+	const homeFavorited = favoriteTeamIds.has(game.homeTeam.id);
+	const totalLabel = totalPowerScore > SCORE_MAX_TOTAL
+		? `${totalPowerScore} (base max ${SCORE_MAX_TOTAL})`
+		: `${totalPowerScore} / ${SCORE_MAX_TOTAL}`;
 
 	return (
 		<div className={`game-card${isOt ? ' is-ot' : ''}`} style={{
@@ -234,7 +264,7 @@ const GameCard = ({ game, excitementResult, openTabs, registry, onRegistryChange
 						aria-expanded={showPowerScoreDetails}
 						aria-label='Toggle PowerScore details'
 					>
-						PowerScore: {totalPowerScore} / {SCORE_MAX_TOTAL}
+						PowerScore: {totalLabel}
 						<i className={`bi ${showPowerScoreDetails ? 'bi-chevron-up' : 'bi-chevron-down'}`} />
 					</button>
 				)}
@@ -269,7 +299,7 @@ const GameCard = ({ game, excitementResult, openTabs, registry, onRegistryChange
 					{excitementResult.stalled ? (
 						<div className='powerscore-breakdown-row'>
 							<span>Clock stall penalty</span>
-							<span>-{STALL_PENALTY_PERCENT}% ({rawPowerScore} x {STALL_PENALTY_MULTIPLIER} ~= {totalPowerScore})</span>
+							<span>-{STALL_PENALTY_PERCENT}% ({rawPowerScore} x {STALL_PENALTY_MULTIPLIER} ~= {baseTotal})</span>
 						</div>
 					) : (
 						<div className='powerscore-breakdown-row'>
@@ -277,16 +307,28 @@ const GameCard = ({ game, excitementResult, openTabs, registry, onRegistryChange
 							<span>None</span>
 						</div>
 					)}
+					<div className='powerscore-breakdown-row'>
+						<span>Base total</span>
+						<span>{baseTotal}</span>
+					</div>
+					<div className='powerscore-breakdown-row'>
+						<span>Favorite team bonus</span>
+						<span>
+							{favoriteBonus > 0
+								? `+${favoriteBonus} (${favoriteTeamCount} team${favoriteTeamCount === 1 ? '' : 's'})`
+								: 'None'}
+						</span>
+					</div>
 					<div className='powerscore-breakdown-row powerscore-breakdown-row-total'>
 						<span>Final PowerScore</span>
-						<span>{totalPowerScore} / {SCORE_MAX_TOTAL}</span>
+						<span>{totalLabel}</span>
 					</div>
 					<div className='powerscore-breakdown-reason'>Why this score: {reason}</div>
 				</div>
 			)}
 
 			<div className='d-flex align-items-center justify-content-center' style={{ gap: '0.75rem' }}>
-				<TeamColumn team={game.awayTeam} />
+				<TeamColumn team={game.awayTeam} isFavorited={awayFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} />
 				<div className='d-flex flex-column align-items-center' style={{ minWidth: 80 }}>
 					<div className='d-flex align-items-baseline' style={{ gap: '1.25rem' }}>
 						<FlipScore value={game.awayTeam.score} className='fw-bold lh-1' style={{ fontSize: '1.75rem', color: '#111827', letterSpacing: '-0.02em', fontVariantNumeric: 'tabular-nums' }} />
@@ -301,7 +343,7 @@ const GameCard = ({ game, excitementResult, openTabs, registry, onRegistryChange
 						{formatPeriod(game)}
 					</span>
 				</div>
-				<TeamColumn team={game.homeTeam} />
+				<TeamColumn team={game.homeTeam} isFavorited={homeFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} />
 			</div>
 
 			<GameMeta game={game} />
