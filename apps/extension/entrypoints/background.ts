@@ -39,6 +39,13 @@ export default defineBackground(() => {
 	let pendingSwitchTimer: ReturnType<typeof setTimeout> | null = null;
 	let pendingSwitch: { gameId: string; tabId: number; reason?: string } | null = null;
 
+	const getFavoriteTeamCount = (game: Game, favoriteTeamIds: Set<string>): number => {
+		let count = 0;
+		if (favoriteTeamIds.has(game.homeTeam.id)) count++;
+		if (favoriteTeamIds.has(game.awayTeam.id)) count++;
+		return count;
+	};
+
 	const updateHistory = (currentGames: Game[]) => {
 		currentGames.forEach(game => {
 			const snapshots = history.get(game.id) ?? [];
@@ -186,9 +193,28 @@ export default defineBackground(() => {
 			}
 		}
 
+		const favoriteTeamIds = new Set(prefs.favoriteTeamIds);
+		const favoriteBonusPoints = prefs.favoriteTeamBonusPoints;
 		const scores = liveGames.map(g => {
 			const stallCount = clockStallMap.get(g.id)?.stallCount ?? 0;
-			return normalizePowerScoreResult(computePowerScore(g, history.get(g.id) ?? [], stallCount));
+			const baseScore = normalizePowerScoreResult(computePowerScore(g, history.get(g.id) ?? [], stallCount));
+			const favoriteTeamCount = getFavoriteTeamCount(g, favoriteTeamIds);
+			const favoriteBonus = favoriteTeamCount * favoriteBonusPoints;
+			const boostedReason = favoriteBonus > 0
+				? `${baseScore.reason}, favorite bonus (+${favoriteBonus})`
+				: baseScore.reason;
+
+			return normalizePowerScoreResult(
+				{
+					...baseScore,
+					baseTotal: baseScore.total,
+					favoriteBonus,
+					favoriteTeamCount,
+					total: baseScore.total + favoriteBonus,
+					reason: boostedReason,
+				},
+				{ allowTotalOverflow: true },
+			);
 		});
 		currentScores = scores;
 		updateHistory(freshGames);
