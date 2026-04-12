@@ -1,85 +1,260 @@
 # ArenaSwap Agent Instructions
 
-## Project Context
+## 🧠 Project Overview
+ArenaSwap is a browser extension that automatically switches tabs to the most exciting live sports game.
 
-ArenaSwap is a monorepo with two primary workspaces:
-- `packages/core`: Pure TypeScript game data + excitement scoring logic
-- `apps/extension`: WXT + React browser extension UI and background orchestration
+Think NFL RedZone, but across all sports.
 
-Primary product goal: automatically switch users to the most exciting live game while keeping behavior understandable and user-controlled.
+Core idea:
+- Monitor multiple live games
+- Score them using the PowerScore algorithm
+- Automatically surface the most exciting one
 
-## Architectural Priorities
+Target users:
+- Sports fans watching multiple games simultaneously
 
-1. Keep `@arenaswap/core` deterministic, reusable, and framework-agnostic.
-2. Keep extension behavior transparent (no hidden switching logic).
-3. Preserve clear separation between scoring logic and browser integration.
-4. Prefer explicit, maintainable solutions over clever abstractions.
+---
 
-## Repository Layout
+## 🏗️ Architecture
 
-```text
-/
-├── apps/extension
-│   ├── entrypoints/background.ts
-│   ├── entrypoints/popup/*
-│   ├── assets/*
-│   └── wxt.config.ts
-├── packages/core
-│   ├── src/api-client.ts
-│   ├── src/excitement-scorer.ts
-│   ├── src/constants.ts
-│   └── src/types.ts
-├── package.json
-└── turbo.json
+### Monorepo (Turborepo)
+
+Root structure:
+- /apps
+	- /extension → actual browser extension (UI + runtime logic)
+- /packages
+	- /powerScore → scoring algorithm
+	- /core → core business logic
+
+### Tech Stack
+- React (primary UI framework)
+- JavaScript + TypeScript (hybrid rules below)
+- WXT (extension framework)
+- Tailwind (utility styling)
+- Bootstrap (structural components)
+- Jest (testing)
+- npm ONLY (no pnpm, yarn, bun)
+
+---
+
+## ⚙️ Language Rules
+
+### React + TS Usage
+- Use TypeScript for:
+	- Helper functions
+	- Complex components
+	- Business logic
+
+- Use JavaScript ONLY when:
+	- No props
+	- Highly reusable
+	- No need for type safety
+
+---
+
+## 🧩 Code Style (STRICT)
+
+### Formatting
+- Indentation: TABS
+- Line endings: CRLF (Windows)
+- Quotes: SINGLE quotes only
+- Semicolons: ALWAYS required
+
+### Naming (GLOBAL)
+Everything must be camelCase:
+- Variables → myVariable
+- Functions → myFunction
+- Constants → myConstant (NOT UPPERCASE)
+- Files → myComponent.ts / myComponent.jsx
+
+---
+
+## 🔧 Function Rules (CRITICAL)
+
+### ✅ Allowed
+```js
+const myFunction = () => {};
+export default () => {};
+
+❌ Forbidden
+
+function myFunction() {}                // NEVER
+export default function MyComp() {}    // NEVER
 ```
 
-## Commands (run from repo root)
+⸻
 
-```bash
-npm install
-npm run dev
-npm run typecheck
-npm run test
-npm run build
-```
+## ⚛️ React Rules
+	•	File name MUST match component name
+	•	Max 200 lines per component
+	•	If >200 lines → split into smaller components
+	•	Move non-React logic OUT of components
 
-Workspace examples:
+Exception:
+	•	Reactive/component-critical logic can stay
 
-```bash
-npm run dev --workspace @arenaswap/extension
-npm run test --workspace @arenaswap/core
-npm run build --workspace @arenaswap/core
-```
+⸻
 
-## Coding Rules
+## 🎨 Styling Rules (MANDATORY)
 
-- Use TypeScript-first patterns.
-- Prefer arrow functions for new code.
-- Keep functions short and purpose-driven.
-- Use named constants for thresholds/weights.
-- Avoid introducing runtime dependencies unless clearly justified.
-- Keep browser API usage isolated to extension workspace.
+Allowed
+	1.	Bootstrap → STRUCTURE ONLY
+	2.	Tailwind → utilities (spacing, color, layout)
 
-## Extension-Specific Guidance
+Forbidden
+	•	No raw CSS (except global overrides)
+	•	No external UI libraries:
+	•	No shadcn
+	•	No MUI
+	•	No Chakra
+	•	No HeadlessUI
 
-- Respect user preferences (`enabled`, `sensitivity`, `cooldownSeconds`).
-- Persist state in correct storage scope (`sync`, `session`, `local`).
-- Ensure tab-switch behavior remains understandable in UI.
-- For popup changes, preserve readability on constrained width.
+SCSS
+	•	Only .scss allowed
+	•	Only for global styles if absolutely necessary
 
-## Core Package Guidance
+Dark Mode
+	•	ALWAYS include Tailwind dark: variants
 
-- Keep scoring logic deterministic and easy to test.
-- Export stable types and interfaces.
-- Avoid side effects in utility/scoring functions.
-- Keep API parsing defensive and explicit.
+⸻
 
-## Validation Expectations
+## 📦 Dependency Management (STRICT)
 
-Before finishing a change:
-1. Run `npm run typecheck`
-2. Run `npm run test`
-3. Run `npm run build`
-4. For UI/behavior changes, verify extension flow manually
+Philosophy: Local-first
 
-If existing checks fail before your change, record that clearly and avoid unrelated fixes unless requested.
+MUST:
+	•	All dependencies installed locally via npm
+	•	No global installs
+	•	Everything removable via deleting project folder
+
+FORBIDDEN:
+	•	CDN imports
+	•	URL imports
+	•	Remote-coupled dependencies
+
+Lazy Loading (IMPORTANT)
+	•	Use:
+
+const module = await import('module');
+
+	•	Apply to:
+	•	Non-critical dependencies
+	•	Heavy modules
+	•	DO NOT lazy load:
+	•	Entry points
+	•	Critical runtime logic
+
+⸻
+
+## 🔌 Data Fetching
+	•	Prefer native fetch
+	•	SWR allowed (ONLY advanced case)
+	•	No heavy data libraries
+
+⸻
+
+## 🧠 AI Behavior Rules (CRITICAL)
+
+### General Philosophy
+	•	Be pragmatic
+	•	Avoid overengineering
+	•	Prefer clarity over cleverness
+	•	Avoid “magic” abstractions
+
+⸻
+
+### UST DO
+	•	Use arrow functions ALWAYS
+	•	Keep logic explicit
+	•	Follow existing patterns in repo
+	•	Minimize dependencies
+	•	Keep components small and modular
+
+⸻
+
+### MUST NOT DO
+	•	Introduce new UI libraries
+	•	Use function declarations
+	•	Add unnecessary abstractions
+	•	Follow conventions blindly
+	•	Generate “magic” code based on naming tricks
+
+⸻
+
+## 🚫 Anti-Patterns
+
+Avoid:
+	•	Overly abstract architectures
+	•	Premature optimization
+	•	Deep nesting
+	•	Over-commenting simple code
+	•	“Smart” code that reduces readability
+
+⸻
+
+## 💬 Comments
+	•	ONLY explain complex or non-obvious logic
+	•	NO comments for obvious code
+	•	NO JSDoc unless absolutely necessary
+
+⸻
+
+## ❗ Error Handling Strategy
+
+When something breaks:
+	1.	Revert to last working state
+	2.	Try a different approach
+	3.	Keep solutions simple
+
+Do NOT:
+	•	Add complex defensive layers
+	•	Overengineer fixes
+
+⸻
+
+## 🧪 Testing
+	•	Use Jest
+	•	Keep tests simple and focused
+
+⸻
+
+## 🧾 Git Commit Rules
+
+Commit Title
+	•	Short
+	•	Slightly descriptive
+	•	Emoji allowed if funny
+
+Commit Body (VERY IMPORTANT)
+	•	Extremely detailed
+	•	Overexplain everything
+	•	Include:
+	•	Files changed
+	•	Why change was made
+	•	Related issues/PRs
+	•	Side effects
+
+⸻
+
+## ⚡ Decision Framework (When Unsure)
+
+Default to:
+	1.	Arrow functions
+	2.	Simpler implementation
+	3.	Fewer dependencies
+	4.	Explicit logic
+	5.	Smaller components
+
+⸻
+
+## 🧠 Core Principle
+
+If it feels overengineered, it probably is.
+
+⸻
+
+## 🦒 Misc
+
+Giraffes and hedgehogs are cool.
+
+---
