@@ -4,6 +4,8 @@ import {
 	appDescription,
 	appName,
 	appVersion,
+	createFavoriteTeamKey,
+	isFavoriteTeamKey,
 	leagueConfigMap,
 	leagueLogoFallbacks,
 	createDefaultUserPreferences,
@@ -47,7 +49,7 @@ describe('constants', () => {
 			switchDelaySeconds: 14.7,
 			enabled: 'true',
 			enabledLeagues: ['nba', 'not-a-league', 123],
-			favoriteTeamIds: ['team-a', ' team-a ', 123, 'team-b', ''],
+			favoriteTeamIds: ['team-a', ' nba:20 ', 123, 'nba:20', 'nfl:20', '', 'invalid:team'],
 			favoriteTeamBonusPoints: 10.8,
 			showUpcomingGames: false,
 		})).toEqual({
@@ -56,10 +58,35 @@ describe('constants', () => {
 			switchDelaySeconds: 15,
 			enabled: true,
 			enabledLeagues: ['nba'],
-			favoriteTeamIds: ['team-a', 'team-b'],
+			favoriteTeamIds: ['nba:20', 'nfl:20'],
 			favoriteTeamBonusPoints: 11,
 			showUpcomingGames: false,
 		});
+	});
+
+	test('resets legacy raw team ids while keeping valid league-scoped keys', () => {
+		const normalized = normalizeUserPreferences({
+			favoriteTeamIds: ['20', 'nba:20', '  mlb:20  ', 'nfl:21', 'bad-format', 'nba:'],
+		});
+
+		expect(normalized.favoriteTeamIds).toEqual(['nba:20', 'mlb:20', 'nfl:21']);
+	});
+
+	test('creates league-scoped favorite keys that prevent cross-league collisions', () => {
+		const nbaTeam = createFavoriteTeamKey('nba', '21');
+		const nflTeam = createFavoriteTeamKey('nfl', '21');
+
+		expect(nbaTeam).toBe('nba:21');
+		expect(nflTeam).toBe('nfl:21');
+		expect(nbaTeam).not.toBe(nflTeam);
+	});
+
+	test('validates favorite team key format', () => {
+		expect(isFavoriteTeamKey('nba:20')).toBe(true);
+		expect(isFavoriteTeamKey('  nfl:21 ')).toBe(true);
+		expect(isFavoriteTeamKey('20')).toBe(false);
+		expect(isFavoriteTeamKey('nba:')).toBe(false);
+		expect(isFavoriteTeamKey('notaleague:20')).toBe(false);
 	});
 
 	test('defaults to all leagues when enabledLeagues field is missing', () => {

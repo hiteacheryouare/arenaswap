@@ -2,6 +2,7 @@ import { randomInRange } from '@porkyproductions/hat';
 import { fetchGamesWithLeagueLogos, computePowerScore, normalizePowerScoreResult, MockGameSimulator } from '@arenaswap/core';
 import {
 	createDefaultUserPreferences,
+	createFavoriteTeamKey,
 	leagueLogoFallbacks,
 	normalizeUserPreferences,
 	pollIntervalMs,
@@ -41,8 +42,10 @@ export default defineBackground(() => {
 
 	const getFavoriteTeamCount = (game: Game, favoriteTeamIds: Set<string>): number => {
 		let count = 0;
-		if (favoriteTeamIds.has(game.homeTeam.id)) count++;
-		if (favoriteTeamIds.has(game.awayTeam.id)) count++;
+		const homeFavoriteTeamKey = createFavoriteTeamKey(game.league, game.homeTeam.id);
+		const awayFavoriteTeamKey = createFavoriteTeamKey(game.league, game.awayTeam.id);
+		if (favoriteTeamIds.has(homeFavoriteTeamKey)) count++;
+		if (favoriteTeamIds.has(awayFavoriteTeamKey)) count++;
 		return count;
 	};
 

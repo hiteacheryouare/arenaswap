@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import useSWR from 'swr';
-import { createDefaultUserPreferences, normalizeUserPreferences } from '@arenaswap/core/constants';
+import { createDefaultUserPreferences, createFavoriteTeamKey, normalizeUserPreferences } from '@arenaswap/core/constants';
 import type { LeagueId, TabRegistration, UserPreferences } from '@arenaswap/core/types';
 import type { Browser } from 'wxt/browser';
 import MainView from './components/mainView';
@@ -134,10 +134,11 @@ const app = () => {
 			openTabs={openTabs}
 			onOpenSetup={() => setView('setup')}
 			onToggleEnabled={() => persistPrefs({ ...prefs, enabled: !prefs.enabled })}
-			onToggleFavoriteTeam={teamId => {
+			onToggleFavoriteTeam={(leagueId, teamId) => {
+				const favoriteTeamKey = createFavoriteTeamKey(leagueId, teamId);
 				const current = new Set(prefs.favoriteTeamIds);
-				if (current.has(teamId)) current.delete(teamId);
-				else current.add(teamId);
+				if (current.has(favoriteTeamKey)) current.delete(favoriteTeamKey);
+				else current.add(favoriteTeamKey);
 				persistPrefs({ ...prefs, favoriteTeamIds: [...current] });
 			}}
 			onRegistryChange={onRegistryChange}

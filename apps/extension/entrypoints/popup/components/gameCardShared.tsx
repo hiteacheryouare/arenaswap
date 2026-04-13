@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { leagueConfigMap, stallPenaltyMultiplier } from '@arenaswap/core/constants';
-import type { Game, Team } from '@arenaswap/core/types';
+import type { Game, LeagueId, Team } from '@arenaswap/core/types';
 
 const logoSize = 56;
 export const stallPenaltyPercent = Math.round((1 - stallPenaltyMultiplier) * 100);
@@ -78,12 +78,14 @@ const TeamLogo = ({ team }: { team: Team }) => {
 
 export const teamColumn = ({
 	team,
+	leagueId,
 	isFavorited,
 	onToggleFavoriteTeam,
 }: {
 	team: Team;
+	leagueId: LeagueId;
 	isFavorited: boolean;
-	onToggleFavoriteTeam: (teamId: string) => void;
+	onToggleFavoriteTeam: (leagueId: LeagueId, teamId: string) => void;
 }) => (
 	<div className='d-flex flex-column align-items-center gap-1 team-column'>
 		<TeamLogo team={team} />
@@ -97,7 +99,7 @@ export const teamColumn = ({
 			data-team-star='true'
 			aria-label={isFavorited ? `Remove ${team.abbreviation} from favorites` : `Add ${team.abbreviation} to favorites`}
 			title={isFavorited ? 'Favorited' : 'Add to favorites'}
-			onClick={() => onToggleFavoriteTeam(team.id)}
+			onClick={() => onToggleFavoriteTeam(leagueId, team.id)}
 		>
 			<i className={`bi ${isFavorited ? 'bi-star-fill' : 'bi-star'}`} />
 		</button>

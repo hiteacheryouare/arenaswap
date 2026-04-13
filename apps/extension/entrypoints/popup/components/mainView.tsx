@@ -16,7 +16,7 @@ interface gameSectionProps {
 	games: Game[];
 	scores: PowerScoreResult[];
 	favoriteTeamIds: Set<string>;
-	onToggleFavoriteTeam: (teamId: string) => void;
+	onToggleFavoriteTeam: (leagueId: LeagueId, teamId: string) => void;
 	openTabs: Browser.tabs.Tab[];
 	registry: TabRegistration[];
 	onRegistryChange: (updated: TabRegistration[]) => void;
@@ -36,7 +36,7 @@ interface mainViewProps {
 	openTabs: Browser.tabs.Tab[];
 	onOpenSetup: () => void;
 	onToggleEnabled: () => void;
-	onToggleFavoriteTeam: (teamId: string) => void;
+	onToggleFavoriteTeam: (leagueId: LeagueId, teamId: string) => void;
 	onRegistryChange: (updated: TabRegistration[]) => void;
 	formatTabLabel: (tab: Browser.tabs.Tab) => string;
 }

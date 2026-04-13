@@ -83,6 +83,26 @@ const isLeagueId = (value: unknown): value is LeagueId => (
 	typeof value === 'string' && allLeagueIds.includes(value as LeagueId)
 );
 
+const parseFavoriteTeamKey = (value: string): { leagueId: LeagueId; teamId: string } | null => {
+	const trimmed = value.trim();
+	const separatorIndex = trimmed.indexOf(':');
+	if (separatorIndex <= 0 || separatorIndex >= trimmed.length - 1) return null;
+
+	const leagueCandidate = trimmed.slice(0, separatorIndex);
+	const teamCandidate = trimmed.slice(separatorIndex + 1).trim();
+	if (!isLeagueId(leagueCandidate) || teamCandidate.length === 0) return null;
+
+	return { leagueId: leagueCandidate, teamId: teamCandidate };
+};
+
+export const createFavoriteTeamKey = (leagueId: LeagueId, teamId: string): string => (
+	`${leagueId}:${teamId.trim()}`
+);
+
+export const isFavoriteTeamKey = (value: unknown): value is string => (
+	typeof value === 'string' && parseFavoriteTeamKey(value) !== null
+);
+
 const isSensitivityValue = (value: unknown): value is UserPreferences['sensitivity'] => (
 	typeof value === 'number' && value >= 1 && value <= 7
 );
@@ -101,10 +121,13 @@ const normalizeFavoriteTeamIds = (value: unknown): string[] => {
 
 	for (const candidate of value) {
 		if (typeof candidate !== 'string') continue;
-		const teamId = candidate.trim();
-		if (teamId.length === 0 || seen.has(teamId)) continue;
-		seen.add(teamId);
-		deduped.push(teamId);
+		const parsedFavoriteTeamKey = parseFavoriteTeamKey(candidate);
+		if (!parsedFavoriteTeamKey) continue;
+
+		const favoriteTeamKey = createFavoriteTeamKey(parsedFavoriteTeamKey.leagueId, parsedFavoriteTeamKey.teamId);
+		if (seen.has(favoriteTeamKey)) continue;
+		seen.add(favoriteTeamKey);
+		deduped.push(favoriteTeamKey);
 	}
 
 	return deduped;

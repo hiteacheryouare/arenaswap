@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import {
+	createFavoriteTeamKey,
 	leagueConfigMap,
 	scoreMaxCloseness,
 	scoreMaxComeback,
@@ -30,8 +31,10 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 	const baseTotal = excitementResult?.baseTotal ?? (excitementResult?.stalled ? Math.round(rawPowerScore * stallPenaltyMultiplier) : rawPowerScore);
 	const favoriteBonus = excitementResult?.favoriteBonus ?? 0;
 	const favoriteTeamCount = excitementResult?.favoriteTeamCount ?? 0;
-	const awayFavorited = favoriteTeamIds.has(game.awayTeam.id);
-	const homeFavorited = favoriteTeamIds.has(game.homeTeam.id);
+	const awayFavoriteTeamKey = createFavoriteTeamKey(game.league, game.awayTeam.id);
+	const homeFavoriteTeamKey = createFavoriteTeamKey(game.league, game.homeTeam.id);
+	const awayFavorited = favoriteTeamIds.has(awayFavoriteTeamKey);
+	const homeFavorited = favoriteTeamIds.has(homeFavoriteTeamKey);
 	const totalLabel = totalPowerScore > scoreMaxTotal
 		? `${totalPowerScore} (base max ${scoreMaxTotal})`
 		: `${totalPowerScore} / ${scoreMaxTotal}`;
@@ -71,7 +74,7 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 			)}
 
 			<div className='d-flex align-items-center justify-content-center game-card-matchup'>
-				<TeamColumn team={game.awayTeam} isFavorited={awayFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} />
+				<TeamColumn leagueId={game.league} team={game.awayTeam} isFavorited={awayFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} />
 				<div className='d-flex flex-column align-items-center game-card-center'>
 					<div className='d-flex align-items-baseline game-score-row'>
 						<FlipScore value={game.awayTeam.score} className='fw-bold lh-1 game-score-value' />
@@ -80,7 +83,7 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 					{game.sportType !== 'baseball' && <span className='font-lekton game-clock'>{formatClock(game.clockSeconds)}</span>}
 					<span className='font-lekton game-period'>{formatPeriod(game)}</span>
 				</div>
-				<TeamColumn team={game.homeTeam} isFavorited={homeFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} />
+				<TeamColumn leagueId={game.league} team={game.homeTeam} isFavorited={homeFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} />
 			</div>
 
 			<GameMeta game={game} />

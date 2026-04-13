@@ -66,6 +66,7 @@ export interface UserPreferences {
 	switchDelaySeconds: number;
 	enabled: boolean;
 	enabledLeagues: LeagueId[];
+	/** Stored as `${league}:${teamId}` keys (for example: `nba:20`) */
 	favoriteTeamIds: string[];
 	favoriteTeamBonusPoints: number;
 	showUpcomingGames: boolean;
