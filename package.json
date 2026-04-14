@@ -19,6 +19,7 @@
 	},
 	"packageManager": "npm@10.9.0",
 	"dependencies": {
-		"@porkyproductions/hat": "^1.5.0"
+		"@porkyproductions/hat": "^1.5.0",
+		"canvas-confetti": "^1.9.4"
 	}
 }
