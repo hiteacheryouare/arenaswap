@@ -2,6 +2,7 @@ import { useState } from 'react';
 import {
 	createFavoriteTeamKey,
 	leagueConfigMap,
+	scorerTunables,
 	scoreMaxCloseness,
 	scoreMaxComeback,
 	scoreMaxLateGame,
@@ -9,6 +10,7 @@ import {
 	scoreMaxMomentum,
 	scoreMaxTotal,
 	stallPenaltyMultiplier,
+	sportTypeConfigMap,
 } from '@arenaswap/core/constants';
 import FlipScore from './flipScore';
 import TabAssignSelect from './tabAssignSelect';
@@ -27,8 +29,14 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 	const comebackScore = excitementResult?.comeback ?? 0;
 	const totalPowerScore = excitementResult?.total ?? 0;
 	const reason = excitementResult?.reason ?? 'Best Available';
+	const sportTypeConfig = sportTypeConfigMap[game.sportType];
+	const isZeroZeroGame = game.homeTeam.score === 0 && game.awayTeam.score === 0;
+	const zeroZeroPenalty = isZeroZeroGame && !sportTypeConfig.zeroZeroAsFullTie
+		? scorerTunables.scores.closeness.tied - scorerTunables.scores.closeness.zeroZero
+		: 0;
 	const rawPowerScore = closenessScore + lateGameScore + momentumScore + leadChangesScore + comebackScore;
 	const baseTotal = excitementResult?.baseTotal ?? (excitementResult?.stalled ? Math.round(rawPowerScore * stallPenaltyMultiplier) : rawPowerScore);
+	const stallPenaltyPoints = excitementResult?.stalled ? Math.max(0, rawPowerScore - baseTotal) : 0;
 	const favoriteBonus = excitementResult?.favoriteBonus ?? 0;
 	const favoriteTeamCount = excitementResult?.favoriteTeamCount ?? 0;
 	const awayFavoriteTeamKey = createFavoriteTeamKey(game.league, game.awayTeam.id);
@@ -56,20 +64,27 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 
 			{excitementResult && showPowerScoreDetails && (
 				<div className='powerscore-breakdown'>
-					<div className='powerscore-breakdown-heading'>How this score was calculated</div>
+					<div className='powerscore-breakdown-heading'>Score breakdown</div>
 					<div className='powerscore-breakdown-row'><span>Closeness</span><span>{closenessScore} / {scoreMaxCloseness}</span></div>
 					<div className='powerscore-breakdown-row'><span>Late-game pressure</span><span>{lateGameScore} / {scoreMaxLateGame}</span></div>
 					<div className='powerscore-breakdown-row'><span>Momentum</span><span>{momentumScore} / {scoreMaxMomentum}</span></div>
 					<div className='powerscore-breakdown-row'><span>Lead changes</span><span>{leadChangesScore} / {scoreMaxLeadChanges}</span></div>
 					<div className='powerscore-breakdown-row'><span>Comeback</span><span>{comebackScore} / {scoreMaxComeback}</span></div>
-					<div className='powerscore-breakdown-row'><span>Raw subtotal</span><span>{closenessScore} + {lateGameScore} + {momentumScore} + {leadChangesScore} + {comebackScore} = {rawPowerScore}</span></div>
+					<div className='powerscore-breakdown-row powerscore-breakdown-row-subtotal'><span>Raw subtotal</span><span>{rawPowerScore} / {scoreMaxTotal}</span></div>
+					<div className='powerscore-breakdown-row powerscore-breakdown-row-penalty'><span>0-0 penalty</span><span>{zeroZeroPenalty > 0 ? `-${zeroZeroPenalty}` : '0'}</span></div>
+					{zeroZeroPenalty > 0 && <div className='powerscore-breakdown-note'>Included in closeness for scoreless ties.</div>}
 					{excitementResult.stalled
-						? <div className='powerscore-breakdown-row'><span>Clock stall penalty</span><span>-{stallPenaltyPercent}% ({rawPowerScore} x {stallPenaltyMultiplier} ~= {baseTotal})</span></div>
-						: <div className='powerscore-breakdown-row'><span>Clock stall penalty</span><span>None</span></div>}
-					<div className='powerscore-breakdown-row'><span>Base total</span><span>{baseTotal}</span></div>
-					<div className='powerscore-breakdown-row'><span>Favorite team bonus</span><span>{favoriteBonus > 0 ? `+${favoriteBonus} (${favoriteTeamCount} team${favoriteTeamCount === 1 ? '' : 's'})` : 'None'}</span></div>
+						? <div className='powerscore-breakdown-row powerscore-breakdown-row-penalty'><span>Clock stall penalty</span><span>-{stallPenaltyPoints}</span></div>
+						: <div className='powerscore-breakdown-row powerscore-breakdown-row-penalty'><span>Clock stall penalty</span><span>0</span></div>}
+					{excitementResult.stalled && (
+						<div className='powerscore-breakdown-note'>
+							-{stallPenaltyPercent}% applied ({rawPowerScore} x {stallPenaltyMultiplier} ~= {baseTotal})
+						</div>
+					)}
+					<div className='powerscore-breakdown-row'><span>Favorite team bonus</span><span>{favoriteBonus > 0 ? `+${favoriteBonus}` : '0'}</span></div>
+					{favoriteBonus > 0 && <div className='powerscore-breakdown-note'>{favoriteTeamCount} favorite team{favoriteTeamCount === 1 ? '' : 's'} in matchup</div>}
 					<div className='powerscore-breakdown-row powerscore-breakdown-row-total'><span>Final PowerScore</span><span>{totalLabel}</span></div>
-					<div className='powerscore-breakdown-reason'>Why this score: {reason}</div>
+					<div className='powerscore-breakdown-reason'>Headline reason: {reason}</div>
 				</div>
 			)}
 

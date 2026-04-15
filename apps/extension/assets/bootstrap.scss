@@ -147,17 +147,17 @@ $bootstrap-icons-font-dir: '/fonts';
 .powerscore-breakdown {
 	margin-top:    0.4rem;
 	background:    #f8fafc;
-	border:        1px solid #e5e7eb;
+	border:        1px solid #d1d5db;
 	border-radius: 0.35rem;
 	padding:       0.4rem 0.5rem;
+	color:         #111827;
 }
 
 .powerscore-breakdown-heading {
-	font-size:      0.58rem;
+	font-size:      0.62rem;
 	font-weight:    700;
-	color:          #111827;
-	text-transform: uppercase;
-	letter-spacing: 0.04em;
+	border-bottom:  1px solid #d1d5db;
+	padding-bottom: 0.16rem;
 }
 
 .powerscore-breakdown-row {
@@ -166,21 +166,50 @@ $bootstrap-icons-font-dir: '/fonts';
 	align-items:     baseline;
 	gap:             0.5rem;
 	font-size:       0.6rem;
-	color:           #374151;
-	margin-top:      0.15rem;
+	margin-top:      0.1rem;
+	padding-top:     0.1rem;
+	border-top:      1px solid #d1d5db;
+
+	span:last-child {
+		font-weight:    700;
+		letter-spacing: 0.01em;
+	}
 }
 
-.powerscore-breakdown-row-total {
-	margin-top:  0.25rem;
-	padding-top: 0.2rem;
-	border-top:  1px solid #e5e7eb;
+.powerscore-breakdown-row-subtotal {
+	margin-top:  0.16rem;
+	padding-top: 0.14rem;
+	border-top:  2px solid #111827;
+	font-size:   0.64rem;
 	font-weight: 700;
 	color:       #111827;
 }
 
+.powerscore-breakdown-row-penalty span:last-child {
+	color: #991b1b;
+}
+
+.powerscore-breakdown-note {
+	margin-top:  0.08rem;
+	font-size:   0.54rem;
+	line-height: 1.3;
+	color:       #4b5563;
+}
+
+.powerscore-breakdown-row-total {
+	margin-top:     0.22rem;
+	padding-top:    0.18rem;
+	border-top:     2px solid #111827;
+	font-size:      0.65rem;
+	font-weight: 700;
+	text-transform: uppercase;
+}
+
 .powerscore-breakdown-reason {
-	margin-top:  0.3rem;
-	font-size:   0.58rem;
+	margin-top:  0.2rem;
+	padding-top: 0.13rem;
+	border-top:  1px solid #d1d5db;
+	font-size:   0.55rem;
 	line-height: 1.3;
 	color:       #4b5563;
 }
