@@ -1,11 +1,13 @@
 import { randomInRange } from '@porkyproductions/hat';
-import { fetchGamesWithLeagueLogos, computePowerScore, normalizePowerScoreResult, MockGameSimulator } from '@arenaswap/core';
+import { fetchGamesWithLeagueLogos, computePowerScore, normalizePowerScoreResult, MockGameSimulator, createPollModeTracker } from '@arenaswap/core';
 import {
 	createDefaultUserPreferences,
 	createFavoriteTeamKey,
 	leagueLogoFallbacks,
 	normalizeUserPreferences,
 	pollIntervalMs,
+	pollDormantMinMs,
+	pollDormantMaxMs,
 	maxHistorySnapshots,
 	sensitivityThresholds,
 	sportTypeConfigMap,
@@ -34,6 +36,7 @@ export default defineBackground(() => {
 	let lastSwitchTime = 0;
 	// Per-league timeouts for staggered live polling
 	const leagueTimers = new Map<string, ReturnType<typeof setTimeout>>();
+	const pollModeTracker = createPollModeTracker();
 	// Interval used only in demo mode
 	let demoTimer: ReturnType<typeof setInterval> | null = null;
 	let inFlightRefresh: Promise<void> | null = null;
@@ -292,7 +295,10 @@ export default defineBackground(() => {
 	// Fetch a single league and merge results into shared state, then reschedule.
 	// Each league runs on its own pollIntervalMs rhythm with ±2s jitter to
 	// continuously spread requests across the window and prevent thundering herds.
+	// When a league has returned no live games for pollDormantThresholdPolls consecutive
+	// fetches it switches to dormant mode and polls every 2-3 min instead.
 	const tickLeague = async (leagueId: LeagueId, allowTabSwitch: boolean) => {
+		let fetchSucceeded = false;
 		try {
 			const fetchResult = await fetchGamesWithLeagueLogos([leagueId], { includeUpcoming: false });
 			const freshGameIds = new Set(fetchResult.games.map(g => g.id));
@@ -300,12 +306,19 @@ export default defineBackground(() => {
 			const leagueUpcoming = upcomingGames.filter(g => g.league === leagueId && !freshGameIds.has(g.id));
 			games = [...otherGames, ...fetchResult.games, ...leagueUpcoming];
 			leagueLogos = { ...leagueLogos, ...fetchResult.leagueLogos };
+			const hasLiveGames = fetchResult.games.some(g => g.status === 'in');
+			pollModeTracker.recordPollResult(leagueId, hasLiveGames);
+			fetchSucceeded = true;
 		} catch (err) {
 			console.error(`ArenaSwap: Failed to fetch ${leagueId}:`, err);
 		}
 
-		// Reschedule before awaiting post-processing so the next tick is always queued
-		scheduleLeagueTick(leagueId, pollIntervalMs + randomInRange(-2_000, 2_000));
+		// Reschedule before awaiting post-processing so the next tick is always queued.
+		// On error fall back to eager interval so we retry promptly.
+		const nextInterval = fetchSucceeded && pollModeTracker.getMode(leagueId) === 'dormant'
+			? pollDormantMinMs + randomInRange(0, pollDormantMaxMs - pollDormantMinMs)
+			: pollIntervalMs + randomInRange(-2_000, 2_000);
+		scheduleLeagueTick(leagueId, nextInterval);
 
 		await afterFetch(leagueId, allowTabSwitch);
 	};
@@ -325,6 +338,7 @@ export default defineBackground(() => {
 	// they never all fire at the same moment after the initial full fetch.
 	const startLeaguePolling = () => {
 		stopLeaguePolling();
+		pollModeTracker.reset();
 		for (const leagueId of prefs.enabledLeagues) {
 			scheduleLeagueTick(leagueId, randomInRange(0, pollIntervalMs));
 		}
