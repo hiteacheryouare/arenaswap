@@ -43,6 +43,11 @@ export const appDescription = pkg.description;
 export const pollIntervalMs = 15_000;
 export const maxHistorySnapshots = 20; // ~5 minutes of history at 15s poll interval
 
+// After this many consecutive empty polls a league switches to dormant mode
+export const pollDormantThresholdPolls = 2;
+export const pollDormantMinMs = 120_000;
+export const pollDormantMaxMs = 180_000;
+
 // Switch behavior defaults
 export const defaultSensitivity = 4 as const;
 export const defaultCooldownSecs = 45;
