@@ -1,6 +1,6 @@
 {
 	"name": "arenaswap",
-	"version": "0.1.0",
+	"version": "1.0.0",
 	"description": "Automatically flip to the most exciting game",
 	"private": true,
 	"workspaces": [

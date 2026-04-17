@@ -69,12 +69,12 @@ export const scorerTunables: ScorerTunables = {
 		minutesLeftSuffix: 'min left',
 		momentumRunPrefix: 'on a',
 		momentumRunSuffix: 'run',
-		momentumRolling: 'rolling',
+		momentumRolling: 'heating up',
 		leadChangeMultiple: 'back and forth scoring',
-		leadChangeSingle: 'lead change',
+		leadChangeSingle: 'just took the lead',
 		comebackBig: 'comeback',
 		comebackModerate: 'rallying',
-		fallback: 'Best Available',
+		fallback: 'Top game right now',
 	},
 };
 

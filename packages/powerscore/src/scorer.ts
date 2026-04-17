@@ -305,8 +305,12 @@ const getComeback = (game: Game, history: ScoreSnapshot[], config: SportTypeConf
 	const newDiff = Math.abs(game.homeTeam.score - game.awayTeam.score);
 	const shrinkage = oldDiff - newDiff;
 
-	if (shrinkage >= config.comebackThresholdBig) return { score: scores.comeback.big, reason: reasons.comebackBig };
-	if (shrinkage >= config.comebackThresholdSmall) return { score: scores.comeback.moderate, reason: reasons.comebackModerate };
+	const trailingTeam = history[0].homeScore < history[0].awayScore
+		? game.homeTeam.abbreviation
+		: game.awayTeam.abbreviation;
+
+	if (shrinkage >= config.comebackThresholdBig) return { score: scores.comeback.big, reason: `${trailingTeam} cutting into it` };
+	if (shrinkage >= config.comebackThresholdSmall) return { score: scores.comeback.moderate, reason: `${trailingTeam} closing the gap` };
 	return { score: scores.comeback.none, reason: '' };
 };
 

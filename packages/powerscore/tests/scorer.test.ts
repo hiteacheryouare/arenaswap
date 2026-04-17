@@ -321,7 +321,7 @@ describe('computePowerScore', () => {
 
 		const smallRun = computePowerScore(game, makeHistory([[90, 60], [93, 60], [95, 60]]));
 		expect(smallRun.momentum).toBe(scorerTunables.scores.momentum.smallRun);
-		expect(smallRun.reason).toBe('HOM rolling');
+		expect(smallRun.reason).toBe('HOM heating up');
 
 		const bigRun = computePowerScore(game, makeHistory([[90, 60], [95, 60], [100, 60]]));
 		expect(bigRun.momentum).toBe(scorerTunables.scores.momentum.bigRun);
@@ -433,7 +433,7 @@ describe('computePowerScore', () => {
 		);
 		// oldDiff=10, newDiff=5, shrinkage=5 => moderate
 		expect(moderateComeback.comeback).toBe(scorerTunables.scores.comeback.moderate);
-		expect(moderateComeback.reason).toContain(scorerTunables.reasons.comebackModerate);
+		expect(moderateComeback.reason).toContain('closing the gap');
 
 		// Big comeback — deficit shrinks by 8 (basketball big=6)
 		const bigComeback = computePowerScore(
@@ -442,7 +442,7 @@ describe('computePowerScore', () => {
 		);
 		// oldDiff=10, newDiff=2, shrinkage=8 >= big(6)
 		expect(bigComeback.comeback).toBe(scorerTunables.scores.comeback.big);
-		expect(bigComeback.reason).toContain(scorerTunables.reasons.comebackBig);
+		expect(bigComeback.reason).toContain('cutting into it');
 	});
 
 	test('reason priority: momentum > comeback > leadChanges > lateGame > closeness', () => {
@@ -457,7 +457,7 @@ describe('computePowerScore', () => {
 		const history = makeHistory([[80, 70], [81, 75], [84, 84]]);
 		const result = computePowerScore(game, history);
 		expect(result.comeback).toBe(scorerTunables.scores.comeback.big);
-		expect(result.reason).toContain(scorerTunables.reasons.comebackBig);
+		expect(result.reason).toContain('cutting into it');
 	});
 
 	test('produces numeric lead-change and comeback scores for every league', () => {

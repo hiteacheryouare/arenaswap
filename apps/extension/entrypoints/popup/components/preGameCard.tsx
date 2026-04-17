@@ -12,7 +12,7 @@ const preGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, openTabs, re
 	const homeFavorited = favoriteTeamIds.has(homeFavoriteTeamKey);
 
 	return (
-		<div className='game-card' style={{ borderLeft: `5px solid ${game.awayTeam.color ?? '#dee2e6'}`, borderRight: `5px solid ${game.homeTeam.color ?? '#dee2e6'}` }}>
+		<div className='game-card' style={{ borderLeft: `5px solid ${game.awayTeam.color ?? '#dee2e6'}`, borderRight: `5px solid ${game.homeTeam.color ?? '#dee2e6'}`, background: `linear-gradient(to right, ${game.awayTeam.color ?? '#dee2e6'}15, ${game.homeTeam.color ?? '#dee2e6'}15), #ffffff` }}>
 			<div className='d-flex align-items-center justify-content-center game-card-matchup'>
 				<TeamColumn leagueId={game.league} team={game.awayTeam} isFavorited={awayFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} />
 				<div className='d-flex flex-column align-items-center game-card-center'>

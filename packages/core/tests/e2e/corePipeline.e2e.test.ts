@@ -161,7 +161,7 @@ describe('core API + excitement e2e flow', () => {
 		expect(rankedScores[0]?.game.id).toBe('nba-live-1');
 		expect(rankedScores[0]?.score.total).toBeGreaterThan(rankedScores[1]?.score.total ?? 0);
 		expect(rankedScores[0]?.score.reason).toContain('10-0 run');
-		expect(rankedScores[0]?.score.reason).toContain('comeback');
+		expect(rankedScores[0]?.score.reason).toContain('cutting into it');
 
 		const requestedUrls = fetchSpy.mock.calls.map(([input]) => toUrl(input as RequestInfo | URL));
 		expect(requestedUrls.length).toBeGreaterThanOrEqual(4);
