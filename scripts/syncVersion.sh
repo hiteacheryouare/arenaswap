@@ -32,7 +32,7 @@ while IFS= read -r file; do
 	sed "s/\"version\": \"$current\"/\"version\": \"$version\"/" "$file" > "$tmp"
 	mv "$tmp" "$file"
 
-	echo "  $file  $current -> $version"
+	echo "  $file  $current ~> $version"
 	updated=$((updated + 1))
 done < <(find "$root" -name "package.json" -not -path "*/node_modules/*")
 

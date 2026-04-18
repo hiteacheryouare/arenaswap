@@ -24,7 +24,7 @@ foreach ($file in $files) {
 	$current = $Matches[1]
 	$newContent = $content -replace '"version"\s*:\s*"[^"]+"', """version"": ""$Version"""
 	Set-Content -Path $file.FullName -Value $newContent -NoNewline
-	Write-Host "  $($file.FullName)  $current -> $Version"
+	Write-Host "  $($file.FullName)  $current ~> $Version"
 	$updated++
 }
 
