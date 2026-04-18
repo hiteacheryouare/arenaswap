@@ -1,12 +1,18 @@
 import { useEffect, useRef } from 'react';
 import type { EChartsOption, EChartsType } from 'echarts';
 
+interface gameDetailChartLegendItem {
+	label: string;
+	color: string;
+}
+
 interface gameDetailChartProps {
 	title: string;
 	option: EChartsOption;
+	legendItems?: gameDetailChartLegendItem[];
 }
 
-const gameDetailChart = ({ title, option }: gameDetailChartProps) => {
+const gameDetailChart = ({ title, option, legendItems = [] }: gameDetailChartProps) => {
 	const chartElementRef = useRef<HTMLDivElement | null>(null);
 	const chartInstanceRef = useRef<EChartsType | null>(null);
 	const resizeHandlerRef = useRef<(() => void) | null>(null);
@@ -41,6 +47,16 @@ const gameDetailChart = ({ title, option }: gameDetailChartProps) => {
 	return (
 		<section className='game-detail-chart-card'>
 			<div className='game-detail-chart-title'>{title}</div>
+			{legendItems.length > 0 && (
+				<div className='game-detail-chart-inline-legend'>
+					{legendItems.map(item => (
+						<div key={item.label} className='game-detail-chart-legend-item'>
+							<span className='game-detail-chart-legend-swatch' style={{ backgroundColor: item.color }} />
+							<span>{item.label}</span>
+						</div>
+					))}
+				</div>
+			)}
 			<div ref={chartElementRef} className='game-detail-chart-canvas' />
 		</section>
 	);
