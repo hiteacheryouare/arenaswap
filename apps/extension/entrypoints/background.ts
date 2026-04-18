@@ -46,6 +46,63 @@ export default defineBackground(() => {
 	let inFlightRefresh: Promise<void> | null = null;
 	let pendingSwitchTimer: ReturnType<typeof setTimeout> | null = null;
 	let pendingSwitch: { gameId: string; tabId: number; reason?: string } | null = null;
+	const historyStorageDefaults = { scoreHistory: {}, powerScoreHistory: {} };
+
+	const isObjectRecord = (value: unknown): value is Record<string, unknown> => (
+		typeof value === 'object' && value !== null
+	);
+
+	const isFiniteNumber = (value: unknown): value is number => (
+		typeof value === 'number' && Number.isFinite(value)
+	);
+
+	const isScoreSnapshotLike = (value: unknown): value is ScoreSnapshot => (
+		isObjectRecord(value)
+		&& typeof value.gameId === 'string'
+		&& isFiniteNumber(value.timestamp)
+		&& isFiniteNumber(value.homeScore)
+		&& isFiniteNumber(value.awayScore)
+	);
+
+	const isPowerScoreSnapshotLike = (value: unknown): value is PowerScoreSnapshot => (
+		isObjectRecord(value)
+		&& typeof value.gameId === 'string'
+		&& isFiniteNumber(value.timestamp)
+		&& isFiniteNumber(value.total)
+		&& isFiniteNumber(value.closeness)
+		&& isFiniteNumber(value.lateGame)
+		&& isFiniteNumber(value.momentum)
+		&& isFiniteNumber(value.leadChanges)
+		&& isFiniteNumber(value.comeback)
+		&& isFiniteNumber(value.baseTotal)
+		&& isFiniteNumber(value.favoriteBonus)
+		&& isFiniteNumber(value.favoriteTeamCount)
+		&& typeof value.stalled === 'boolean'
+		&& typeof value.reason === 'string'
+	);
+
+	const hydrateHistoryMaps = (storedScoreHistory: unknown, storedPowerScoreHistory: unknown) => {
+		history.clear();
+		powerScoreHistory.clear();
+
+		if (isObjectRecord(storedScoreHistory)) {
+			Object.entries(storedScoreHistory).forEach(([gameId, snapshots]) => {
+				if (!Array.isArray(snapshots)) return;
+				const normalizedSnapshots = snapshots.filter(isScoreSnapshotLike).slice(-maxHistorySnapshots);
+				if (normalizedSnapshots.length === 0) return;
+				history.set(gameId, normalizedSnapshots);
+			});
+		}
+
+		if (isObjectRecord(storedPowerScoreHistory)) {
+			Object.entries(storedPowerScoreHistory).forEach(([gameId, snapshots]) => {
+				if (!Array.isArray(snapshots)) return;
+				const normalizedSnapshots = snapshots.filter(isPowerScoreSnapshotLike).slice(-maxHistorySnapshots);
+				if (normalizedSnapshots.length === 0) return;
+				powerScoreHistory.set(gameId, normalizedSnapshots);
+			});
+		}
+	};
 
 	const getFavoriteTeamCount = (game: Game, favoriteTeamIds: Set<string>): number => {
 		let count = 0;
@@ -116,6 +173,15 @@ export default defineBackground(() => {
 			[...powerScoreHistory.entries()].map(([gameId, snapshots]) => [gameId, snapshots.map(snapshot => ({ ...snapshot }))]),
 		)
 	);
+
+	const persistHistoryToSession = () => {
+		void browser.storage.session.set({
+			scoreHistory: serializeScoreHistory(),
+			powerScoreHistory: serializePowerScoreHistory(),
+		}).catch(err => {
+			console.error('ArenaSwap: Failed to persist score history:', err);
+		});
+	};
 
 	const buildBackgroundState = () => ({
 		games,
@@ -286,6 +352,7 @@ export default defineBackground(() => {
 		currentScores = scores;
 		updateHistory(freshGames);
 		updatePowerScoreHistory(liveGames, scores, changedLeagueId);
+		persistHistoryToSession();
 
 		broadcastScoresUpdated();
 
@@ -417,11 +484,12 @@ export default defineBackground(() => {
 	// Load persisted state before any refresh to avoid race conditions on popup reopen.
 	const stateReady = Promise.all([
 		browser.storage.sync.get({ prefs: null }),
-		browser.storage.session.get({ tabRegistry: [] }),
+		browser.storage.session.get({ tabRegistry: [], ...historyStorageDefaults }),
 		browser.storage.local.get({ demoMode: false }),
-	]).then(([prefsResult, registryResult, demoResult]) => {
+	]).then(([prefsResult, sessionResult, demoResult]) => {
 		prefs = normalizeUserPreferences(prefsResult.prefs);
-		tabRegistry = registryResult.tabRegistry as TabRegistration[];
+		tabRegistry = sessionResult.tabRegistry as TabRegistration[];
+		hydrateHistoryMaps(sessionResult.scoreHistory, sessionResult.powerScoreHistory);
 		demoMode = demoResult.demoMode as boolean;
 		if (demoMode) simulator = new MockGameSimulator();
 	}).catch(err => {

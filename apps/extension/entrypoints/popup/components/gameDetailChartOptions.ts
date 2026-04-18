@@ -85,6 +85,7 @@ const baseOption = (
 export const buildPowerScoreOption = (powerHistory: PowerScoreSnapshot[]): EChartsOption => {
 	const labels = powerHistory.map(point => formatTimeLabel(point.timestamp));
 	const totals = powerHistory.map(point => point.total);
+	const showSinglePointSymbols = totals.length === 1;
 	const option = baseOption(labels);
 	return {
 		...option,
@@ -96,7 +97,8 @@ export const buildPowerScoreOption = (powerHistory: PowerScoreSnapshot[]): EChar
 			{
 				type: 'line',
 				smooth: true,
-				showSymbol: false,
+				showSymbol: showSinglePointSymbols,
+				symbolSize: showSinglePointSymbols ? 7 : 0,
 				lineStyle: { width: 2.5, color: '#f75c03' },
 				areaStyle: { color: 'rgba(247, 92, 3, 0.2)' },
 				data: totals,
@@ -110,6 +112,7 @@ export const buildTeamScoreOption = (scoreHistory: ScoreSnapshot[], game: Game):
 	const labels = scoreHistory.map(point => formatTimeLabel(point.timestamp));
 	const awayScores = scoreHistory.map(point => point.awayScore);
 	const homeScores = scoreHistory.map(point => point.homeScore);
+	const showSinglePointSymbols = scoreHistory.length === 1;
 	const awayColor = resolveReadableSeriesColor(game.awayTeam.color, '#60a5fa');
 	const homeColor = resolveReadableSeriesColor(game.homeTeam.color, '#f87171');
 	return {
@@ -119,7 +122,8 @@ export const buildTeamScoreOption = (scoreHistory: ScoreSnapshot[], game: Game):
 				type: 'line',
 				name: game.awayTeam.abbreviation,
 				data: awayScores,
-				showSymbol: false,
+				showSymbol: showSinglePointSymbols,
+				symbolSize: showSinglePointSymbols ? 7 : 0,
 				lineStyle: { width: 2.4, color: awayColor },
 				itemStyle: { color: awayColor },
 			},
@@ -127,7 +131,8 @@ export const buildTeamScoreOption = (scoreHistory: ScoreSnapshot[], game: Game):
 				type: 'line',
 				name: game.homeTeam.abbreviation,
 				data: homeScores,
-				showSymbol: false,
+				showSymbol: showSinglePointSymbols,
+				symbolSize: showSinglePointSymbols ? 7 : 0,
 				lineStyle: { width: 2.4, color: homeColor },
 				itemStyle: { color: homeColor },
 			},

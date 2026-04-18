@@ -144,15 +144,15 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 				<div className='powerscore-breakdown-reason'>Headline reason: {reason}</div>
 			</section>
 
-			{orderedPowerScoreHistory.length > 1
+			{orderedPowerScoreHistory.length > 0
 				? <GameDetailChart title='PowerScore over time' option={powerScoreOption} />
 				: <div className='game-detail-empty-state'>PowerScore trend appears after a few refreshes.</div>}
 
-			{orderedScoreHistory.length > 1
+			{orderedScoreHistory.length > 0
 				? <GameDetailChart title='Game score over time' option={scoreTrendOption} legendItems={teamLegendItems} />
 				: <div className='game-detail-empty-state'>Score trend appears after a few refreshes.</div>}
 
-			{orderedPowerScoreHistory.length > 1
+			{orderedPowerScoreHistory.length > 0
 				? <GameDetailChart title='PowerScore components over time' option={componentOption} legendItems={componentLegendItems} />
 				: <div className='game-detail-empty-state'>Component trend appears after a few refreshes.</div>}
 		</div>
