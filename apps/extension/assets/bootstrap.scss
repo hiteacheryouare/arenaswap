@@ -56,6 +56,17 @@ $bootstrap-icons-font-dir: '/fonts';
 	to   { transform: translateY(0%); }
 }
 
+@keyframes popupViewSlideIn {
+	from {
+		opacity: 0;
+		transform: translateX(14px);
+	}
+	to {
+		opacity: 1;
+		transform: translateX(0);
+	}
+}
+
 .flip-score {
 	display:        inline-block;
 	position:       relative;
@@ -106,6 +117,21 @@ $bootstrap-icons-font-dir: '/fonts';
 	&.is-ot {
 		border-color: #D90368;
 		box-shadow:   0 0 0 1px rgba(#D90368, 0.25);
+	}
+}
+
+.game-card-clickable {
+	cursor: pointer;
+	transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+
+	&:hover {
+		transform: translateY(-1px);
+		box-shadow: 0 8px 18px rgba(15, 23, 42, 0.18);
+	}
+
+	&:focus-visible {
+		outline: 2px solid rgba(#f97316, 0.9);
+		outline-offset: 2px;
 	}
 }
 
@@ -288,6 +314,12 @@ $bootstrap-icons-font-dir: '/fonts';
 	position: relative;
 	width: 320px;
 	height: 560px;
+}
+
+.popup-view-shell {
+	width: 100%;
+	height: 100%;
+	animation: popupViewSlideIn 0.22s ease;
 }
 
 .popup-confetti-canvas {
@@ -526,6 +558,184 @@ $bootstrap-icons-font-dir: '/fonts';
 	color: #495057;
 	white-space: nowrap;
 	line-height: 1.2;
+}
+
+.game-detail-header {
+	display: flex;
+	align-items: center;
+	gap: 0.45rem;
+	margin-bottom: 0.75rem;
+}
+
+.game-detail-back-button {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35rem;
+	border: 1px solid #30363d;
+	color: #e5e7eb;
+	background: #111827;
+	font-size: 0.68rem;
+}
+
+.game-detail-back-button:hover {
+	background: #1f2937;
+	color: #ffffff;
+}
+
+.game-detail-title {
+	font-size: 1rem;
+	font-weight: 700;
+	letter-spacing: -0.01em;
+}
+
+.game-detail-matchup {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 0.7rem 0.75rem;
+	border: 1px solid #30363d;
+	border-radius: 0.5rem;
+	background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.95));
+	margin-bottom: 0.45rem;
+}
+
+.game-detail-team-wrap {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	min-width: 72px;
+}
+
+.game-detail-team-abbrev {
+	font-size: 0.9rem;
+	font-weight: 700;
+	color: #f8fafc;
+}
+
+.game-detail-team-score {
+	font-size: 1.55rem;
+	font-weight: 700;
+	line-height: 1;
+	color: #ffffff;
+	font-variant-numeric: tabular-nums;
+}
+
+.game-detail-center {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.18rem;
+}
+
+.game-detail-versus {
+	font-size: 0.62rem;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: #9ca3af;
+}
+
+.game-detail-period {
+	font-size: 0.63rem;
+	font-family: 'Lekton', monospace;
+	color: #facc15;
+}
+
+.game-detail-formula-card {
+	margin-top: 0.5rem;
+	margin-bottom: 0.6rem;
+	padding: 0.55rem 0.6rem;
+	border: 1px solid #30363d;
+	border-radius: 0.5rem;
+	background: #111827;
+}
+
+.game-detail-formula-title {
+	font-size: 0.66rem;
+	font-weight: 700;
+	color: #f8fafc;
+}
+
+.game-detail-formula-text {
+	font-size: 0.58rem;
+	color: #cbd5e1;
+	margin-top: 0.12rem;
+}
+
+.game-detail-formula-row {
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
+	gap: 0.45rem;
+	margin-top: 0.12rem;
+	padding-top: 0.12rem;
+	border-top: 1px solid #1f2937;
+	font-size: 0.58rem;
+	color: #d1d5db;
+
+	span:last-child {
+		font-weight: 700;
+		color: #f8fafc;
+	}
+}
+
+.game-detail-formula-row-subtotal {
+	border-top: 2px solid #334155;
+	color: #f8fafc;
+}
+
+.game-detail-formula-row-penalty span:last-child {
+	color: #fca5a5;
+}
+
+.game-detail-formula-row-total {
+	border-top: 2px solid #475569;
+	font-size: 0.62rem;
+	text-transform: uppercase;
+}
+
+.game-detail-formula-note {
+	margin-top: 0.12rem;
+	font-size: 0.56rem;
+	color: #9ca3af;
+}
+
+.game-detail-chart-card {
+	margin-top: 0.45rem;
+	padding: 0.45rem;
+	border: 1px solid #30363d;
+	border-radius: 0.5rem;
+	background: #111827;
+}
+
+.game-detail-chart-title {
+	font-size: 0.62rem;
+	font-weight: 700;
+	color: #e2e8f0;
+	margin-bottom: 0.25rem;
+}
+
+.game-detail-chart-canvas {
+	width: 100%;
+	height: 170px;
+}
+
+.game-detail-empty-state {
+	margin-top: 0.45rem;
+	padding: 0.5rem 0.55rem;
+	border: 1px dashed #334155;
+	border-radius: 0.45rem;
+	background: rgba(15, 23, 42, 0.7);
+	font-size: 0.6rem;
+	color: #94a3b8;
+	text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.popup-view-shell,
+	.game-card-clickable {
+		animation: none;
+		transition: none;
+	}
 }
 
 .footer-espn-note {
