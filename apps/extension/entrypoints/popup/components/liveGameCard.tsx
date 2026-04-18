@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import type { KeyboardEvent, MouseEvent } from 'react';
 import {
 	createFavoriteTeamKey,
 	leagueConfigMap,
@@ -15,9 +16,9 @@ import {
 import FlipScore from './flipScore';
 import TabAssignSelect from './tabAssignSelect';
 import type { gameCardProps } from './gameCardTypes';
-import { formatClock, formatPeriod, gameMeta as GameMeta, powerScoreColor, stallPenaltyPercent, teamColumn as TeamColumn } from './gameCardShared';
+import { formatClock, formatPeriod, gameMeta as GameMeta, isInteractiveCardTarget, powerScoreColor, stallPenaltyPercent, teamColumn as TeamColumn } from './gameCardShared';
 
-const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavoriteTeam, openTabs, registry, onRegistryChange, formatTabLabel }: gameCardProps) => {
+const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavoriteTeam, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail }: gameCardProps) => {
 	const [showPowerScoreDetails, setShowPowerScoreDetails] = useState(false);
 	if (!game) return null;
 
@@ -47,8 +48,28 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 		? `${totalPowerScore} (base max ${scoreMaxTotal})`
 		: `${totalPowerScore} / ${scoreMaxTotal}`;
 
+	const onCardClick = (event: MouseEvent<HTMLDivElement>) => {
+		if (isInteractiveCardTarget(event.target)) return;
+		onOpenGameDetail(game.id);
+	};
+
+	const onCardKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+		if (event.key !== 'Enter' && event.key !== ' ') return;
+		if (isInteractiveCardTarget(event.target)) return;
+		event.preventDefault();
+		onOpenGameDetail(game.id);
+	};
+
 	return (
-		<div className={`game-card${isOt ? ' is-ot' : ''}`} style={{ borderLeft: `5px solid ${game.awayTeam.color ?? '#dee2e6'}`, borderRight: `5px solid ${game.homeTeam.color ?? '#dee2e6'}`, background: `linear-gradient(to right, ${game.awayTeam.color ?? '#dee2e6'}28, ${game.homeTeam.color ?? '#dee2e6'}28), #ffffff` }}>
+		<div
+			className={`game-card game-card-clickable${isOt ? ' is-ot' : ''}`}
+			style={{ borderLeft: `5px solid ${game.awayTeam.color ?? '#dee2e6'}`, borderRight: `5px solid ${game.homeTeam.color ?? '#dee2e6'}`, background: `linear-gradient(to right, ${game.awayTeam.color ?? '#dee2e6'}28, ${game.homeTeam.color ?? '#dee2e6'}28), #ffffff` }}
+			role='button'
+			tabIndex={0}
+			onClick={onCardClick}
+			onKeyDown={onCardKeyDown}
+			aria-label={`Open details for ${game.awayTeam.abbreviation} vs ${game.homeTeam.abbreviation}`}
+		>
 			<div className='d-flex justify-content-between align-items-center mb-1'>
 				<div className='d-flex align-items-center gap-1 fw-bold text-uppercase text-primary live-status-label'>
 					<span className='live-dot' />

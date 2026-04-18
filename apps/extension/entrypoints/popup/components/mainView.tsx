@@ -21,6 +21,7 @@ interface gameSectionProps {
 	registry: TabRegistration[];
 	onRegistryChange: (updated: TabRegistration[]) => void;
 	formatTabLabel: (tab: Browser.tabs.Tab) => string;
+	onOpenGameDetail: (gameId: string) => void;
 }
 
 interface mainViewProps {
@@ -34,6 +35,7 @@ interface mainViewProps {
 	registry: TabRegistration[];
 	favoriteTeamIds: Set<string>;
 	openTabs: Browser.tabs.Tab[];
+	onOpenGameDetail: (gameId: string) => void;
 	onOpenSetup: () => void;
 	onToggleEnabled: () => void;
 	onToggleFavoriteTeam: (leagueId: LeagueId, teamId: string) => void;
@@ -51,6 +53,7 @@ const gameSection = ({
 	registry,
 	onRegistryChange,
 	formatTabLabel,
+	onOpenGameDetail,
 }: gameSectionProps) => (
 	<div className='mt-2'>
 		<div className='fw-bold text-body text-center popup-section-title'>{title}</div>
@@ -68,6 +71,7 @@ const gameSection = ({
 						registry={registry}
 						onRegistryChange={onRegistryChange}
 						formatTabLabel={formatTabLabel}
+						onOpenGameDetail={onOpenGameDetail}
 					/>
 				))}
 			</div>
@@ -86,6 +90,7 @@ const mainView = ({
 	registry,
 	favoriteTeamIds,
 	openTabs,
+	onOpenGameDetail,
 	onOpenSetup,
 	onToggleEnabled,
 	onToggleFavoriteTeam,
@@ -141,8 +146,8 @@ const mainView = ({
 			)}
 
 			{hasError && <div className='alert alert-danger d-flex align-items-center gap-2 mt-3 py-2 px-3 popup-error-banner' role='alert'><i className='bi bi-exclamation-triangle-fill' />Failed to load games. Retrying&hellip;</div>}
-			{!isLoading && !noLeaguesSelected && assignedLiveGames.length > 0 && gameSection({ title: 'Active Tabs', games: assignedLiveGames, scores, favoriteTeamIds, onToggleFavoriteTeam, openTabs, registry, onRegistryChange, formatTabLabel })}
-			{!isLoading && !noLeaguesSelected && unassignedLiveGames.length > 0 && gameSection({ title: 'Other Games', games: unassignedLiveGames, scores, favoriteTeamIds, onToggleFavoriteTeam, openTabs, registry, onRegistryChange, formatTabLabel })}
+			{!isLoading && !noLeaguesSelected && assignedLiveGames.length > 0 && gameSection({ title: 'Active Tabs', games: assignedLiveGames, scores, favoriteTeamIds, onToggleFavoriteTeam, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail })}
+			{!isLoading && !noLeaguesSelected && unassignedLiveGames.length > 0 && gameSection({ title: 'Other Games', games: unassignedLiveGames, scores, favoriteTeamIds, onToggleFavoriteTeam, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail })}
 
 			{!isLoading && !noLeaguesSelected && liveGames.length === 0 && registry.length === 0 && (!prefs.showUpcomingGames || upcomingGames.length === 0) && (
 				<div className='mt-3 text-center'>
@@ -168,6 +173,7 @@ const mainView = ({
 									registry={registry}
 									onRegistryChange={onRegistryChange}
 									formatTabLabel={formatTabLabel}
+									onOpenGameDetail={onOpenGameDetail}
 								/>
 							))}
 						</div>

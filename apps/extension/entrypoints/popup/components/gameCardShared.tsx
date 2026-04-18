@@ -40,6 +40,11 @@ export const powerScoreColor = (score: number, max: number): string => {
 	return `rgb(${red},${green},${blue})`;
 };
 
+export const isInteractiveCardTarget = (target: EventTarget | null): boolean => {
+	if (!(target instanceof HTMLElement)) return false;
+	return Boolean(target.closest('button, select, option, input, textarea, label, a, [data-card-control="true"]'));
+};
+
 const formatOverUnder = (overUnder: number): string => (
 	Number.isInteger(overUnder) ? String(overUnder) : overUnder.toFixed(1)
 );

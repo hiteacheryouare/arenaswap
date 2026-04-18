@@ -10,4 +10,5 @@ export interface gameCardProps {
 	registry: TabRegistration[];
 	onRegistryChange: (updated: TabRegistration[]) => void;
 	formatTabLabel: (tab: Browser.tabs.Tab) => string;
+	onOpenGameDetail: (gameId: string) => void;
 }

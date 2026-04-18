@@ -3,6 +3,7 @@ import useSWR from 'swr';
 import { createDefaultUserPreferences, createFavoriteTeamKey, normalizeUserPreferences } from '@arenaswap/core/constants';
 import type { LeagueId, TabRegistration, UserPreferences } from '@arenaswap/core/types';
 import type { Browser } from 'wxt/browser';
+import GameDetailView from './components/gameDetailView';
 import MainView from './components/mainView';
 import SetupView from './components/setupView';
 import { fetchState, formatTabLabel, leagueOrder, normalizeBackgroundState, popupView } from './popupHelpers';
@@ -17,6 +18,7 @@ const isScoreUpdateMessage = (value: unknown): value is { type: 'SCORES_UPDATED'
 
 const app = () => {
 	const [view, setView] = useState<popupView>('main');
+	const [selectedGameId, setSelectedGameId] = useState<string | null>(null);
 	const [prefs, setPrefs] = useState<UserPreferences>(createDefaultUserPreferences());
 	const [prefsLoaded, setPrefsLoaded] = useState(false);
 	const [registry, setRegistry] = useState<TabRegistration[]>([]);
@@ -32,6 +34,8 @@ const app = () => {
 	const games = data?.games ?? [];
 	const scores = data?.scores ?? [];
 	const leagueLogos = data?.leagueLogos ?? {};
+	const scoreHistory = data?.scoreHistory ?? {};
+	const powerScoreHistory = data?.powerScoreHistory ?? {};
 	const favoriteTeamIds = useMemo(() => new Set(prefs.favoriteTeamIds), [prefs.favoriteTeamIds]);
 	const confettiCanvasRef = useFavoriteScoreConfetti({ games, favoriteTeamIds });
 
@@ -59,6 +63,14 @@ const app = () => {
 		browser.runtime.onMessage.addListener(handleMessage);
 		return () => browser.runtime.onMessage.removeListener(handleMessage);
 	}, [mutate]);
+
+	useEffect(() => {
+		if (view !== 'detail' || !selectedGameId) return;
+		const selectedGameExists = games.some(game => game.id === selectedGameId);
+		if (selectedGameExists) return;
+		setSelectedGameId(null);
+		setView('main');
+	}, [games, selectedGameId, view]);
 
 	const persistPrefs = (nextPrefs: UserPreferences) => {
 		const normalized = normalizeUserPreferences(nextPrefs);
@@ -99,11 +111,21 @@ const app = () => {
 		})();
 	};
 
+	const openGameDetail = (gameId: string) => {
+		setSelectedGameId(gameId);
+		setView('detail');
+	};
+
+	const selectedGame = selectedGameId ? games.find(game => game.id === selectedGameId) : undefined;
+	const selectedScore = selectedGameId ? scores.find(score => score.gameId === selectedGameId) : undefined;
+	const selectedScoreHistory = selectedGameId ? scoreHistory[selectedGameId] ?? [] : [];
+	const selectedPowerScoreHistory = selectedGameId ? powerScoreHistory[selectedGameId] ?? [] : [];
+
 	return (
 		<div className='popup-root'>
 			<canvas ref={confettiCanvasRef} className='popup-confetti-canvas' aria-hidden='true' />
-			{view === 'setup'
-				? (
+			<div key={view} className='popup-view-shell'>
+				{view === 'setup' && (
 					<SetupView
 						prefs={prefs}
 						prefsLoaded={prefsLoaded}
@@ -122,8 +144,8 @@ const app = () => {
 							void browser.runtime.sendMessage({ type: 'SET_DEMO_MODE', enabled: next });
 						}}
 					/>
-				)
-				: (
+				)}
+				{view === 'main' && (
 					<MainView
 						prefs={prefs}
 						prefsLoaded={prefsLoaded}
@@ -135,6 +157,7 @@ const app = () => {
 						registry={registry}
 						favoriteTeamIds={favoriteTeamIds}
 						openTabs={openTabs}
+						onOpenGameDetail={openGameDetail}
 						onOpenSetup={() => setView('setup')}
 						onToggleEnabled={() => persistPrefs({ ...prefs, enabled: !prefs.enabled })}
 						onToggleFavoriteTeam={(leagueId, teamId) => {
@@ -148,6 +171,22 @@ const app = () => {
 						formatTabLabel={tab => formatTabLabel(tab, openTabs)}
 					/>
 				)}
+				{view === 'detail' && selectedGame && (
+					<GameDetailView
+						game={selectedGame}
+						excitementResult={selectedScore}
+						scoreHistory={selectedScoreHistory}
+						powerScoreHistory={selectedPowerScoreHistory}
+						onBack={() => setView('main')}
+					/>
+				)}
+				{view === 'detail' && !selectedGame && (
+					<div className='popup-container d-flex flex-column justify-content-center align-items-center gap-2'>
+						<div className='fw-bold text-body'>Game details unavailable</div>
+						<button type='button' className='btn btn-sm btn-primary' onClick={() => setView('main')}>Back to games</button>
+					</div>
+				)}
+			</div>
 		</div>
 	);
 };
