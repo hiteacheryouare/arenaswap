@@ -13,6 +13,7 @@
 	"dependencies": {
 		"@arenaswap/core": "*",
 		"@arenaswap/powerscore": "*",
+		"echarts": "^6.0.0",
 		"swr": "^2.4.1"
 	},
 	"devDependencies": {
