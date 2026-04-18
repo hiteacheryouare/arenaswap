@@ -48,7 +48,7 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 		: `${totalPowerScore} / ${scoreMaxTotal}`;
 
 	return (
-		<div className={`game-card${isOt ? ' is-ot' : ''}`} style={{ borderLeft: `5px solid ${game.awayTeam.color ?? '#dee2e6'}`, borderRight: `5px solid ${game.homeTeam.color ?? '#dee2e6'}`, background: `linear-gradient(to right, ${game.awayTeam.color ?? '#dee2e6'}15, ${game.homeTeam.color ?? '#dee2e6'}15), #ffffff` }}>
+		<div className={`game-card${isOt ? ' is-ot' : ''}`} style={{ borderLeft: `5px solid ${game.awayTeam.color ?? '#dee2e6'}`, borderRight: `5px solid ${game.homeTeam.color ?? '#dee2e6'}`, background: `linear-gradient(to right, ${game.awayTeam.color ?? '#dee2e6'}28, ${game.homeTeam.color ?? '#dee2e6'}28), #ffffff` }}>
 			<div className='d-flex justify-content-between align-items-center mb-1'>
 				<div className='d-flex align-items-center gap-1 fw-bold text-uppercase text-primary live-status-label'>
 					<span className='live-dot' />
