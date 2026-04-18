@@ -16,8 +16,11 @@ import type {
 	Game,
 	LeagueId,
 	PowerScoreResult,
+	PowerScoreSnapshot,
 	LeagueLogoMap,
+	PowerScoreHistoryMap,
 	ScoreSnapshot,
+	ScoreHistoryMap,
 	TabRegistration,
 	UserPreferences,
 } from '@arenaswap/core/types';
@@ -28,6 +31,7 @@ export default defineBackground(() => {
 	let currentScores: PowerScoreResult[] = [];
 	let leagueLogos: LeagueLogoMap = {};
 	const history = new Map<string, ScoreSnapshot[]>();
+	const powerScoreHistory = new Map<string, PowerScoreSnapshot[]>();
 	const clockStallMap = new Map<string, { lastClock: number; stallCount: number }>();
 	let tabRegistry: TabRegistration[] = [];
 	let demoMode = false;
@@ -52,6 +56,11 @@ export default defineBackground(() => {
 		return count;
 	};
 
+	const getMaxSnapshotsForGame = (game: Game): number => {
+		const sportConfig = sportTypeConfigMap[game.sportType] ?? sportTypeConfigMap.basketball;
+		return sportConfig.maxHistorySnapshots ?? maxHistorySnapshots;
+	};
+
 	const updateHistory = (currentGames: Game[]) => {
 		currentGames.forEach(game => {
 			const snapshots = history.get(game.id) ?? [];
@@ -61,11 +70,63 @@ export default defineBackground(() => {
 				homeScore: game.homeTeam.score,
 				awayScore: game.awayTeam.score,
 			});
-			const sportConfig = sportTypeConfigMap[game.sportType] ?? sportTypeConfigMap.basketball;
-			const maxSnapshots = sportConfig.maxHistorySnapshots ?? maxHistorySnapshots;
+			const maxSnapshots = getMaxSnapshotsForGame(game);
 			if (snapshots.length > maxSnapshots) snapshots.shift();
 			history.set(game.id, snapshots);
 		});
+	};
+
+	const updatePowerScoreHistory = (liveGames: Game[], scores: PowerScoreResult[], changedLeagueId: LeagueId | null) => {
+		const liveGameById = new Map(liveGames.map(game => [game.id, game]));
+		scores.forEach(score => {
+			const game = liveGameById.get(score.gameId);
+			if (!game) return;
+			if (changedLeagueId !== null && game.league !== changedLeagueId) return;
+
+			const snapshots = powerScoreHistory.get(score.gameId) ?? [];
+			snapshots.push({
+				gameId: score.gameId,
+				timestamp: Date.now(),
+				total: score.total,
+				closeness: score.closeness,
+				lateGame: score.lateGame,
+				momentum: score.momentum,
+				leadChanges: score.leadChanges,
+				comeback: score.comeback,
+				baseTotal: score.baseTotal ?? score.total,
+				favoriteBonus: score.favoriteBonus ?? 0,
+				favoriteTeamCount: score.favoriteTeamCount ?? 0,
+				stalled: score.stalled ?? false,
+				reason: score.reason,
+			});
+			const maxSnapshots = getMaxSnapshotsForGame(game);
+			if (snapshots.length > maxSnapshots) snapshots.shift();
+			powerScoreHistory.set(score.gameId, snapshots);
+		});
+	};
+
+	const serializeScoreHistory = (): ScoreHistoryMap => (
+		Object.fromEntries(
+			[...history.entries()].map(([gameId, snapshots]) => [gameId, snapshots.map(snapshot => ({ ...snapshot }))]),
+		)
+	);
+
+	const serializePowerScoreHistory = (): PowerScoreHistoryMap => (
+		Object.fromEntries(
+			[...powerScoreHistory.entries()].map(([gameId, snapshots]) => [gameId, snapshots.map(snapshot => ({ ...snapshot }))]),
+		)
+	);
+
+	const buildBackgroundState = () => ({
+		games,
+		scores: currentScores,
+		leagueLogos,
+		scoreHistory: serializeScoreHistory(),
+		powerScoreHistory: serializePowerScoreHistory(),
+	});
+
+	const broadcastScoresUpdated = () => {
+		browser.runtime.sendMessage({ type: 'SCORES_UPDATED', ...buildBackgroundState() }).catch(() => {});
 	};
 
 	const getGameLabel = (gameId: string): string => {
@@ -224,8 +285,9 @@ export default defineBackground(() => {
 		});
 		currentScores = scores;
 		updateHistory(freshGames);
+		updatePowerScoreHistory(liveGames, scores, changedLeagueId);
 
-		browser.runtime.sendMessage({ type: 'SCORES_UPDATED', scores, games, leagueLogos }).catch(() => {});
+		broadcastScoresUpdated();
 
 		await syncManagedTabMuteState(prefs.enabled);
 
@@ -386,9 +448,9 @@ export default defineBackground(() => {
 				// Popup opened or worker just woke up; fetch fresh state before responding.
 				return stateReady
 					.then(() => refreshScores(false))
-					.then(() => ({ games, scores: currentScores, leagueLogos }));
+					.then(() => buildBackgroundState());
 			}
-			return Promise.resolve({ games, scores: currentScores, leagueLogos });
+			return Promise.resolve(buildBackgroundState());
 		}
 		if (msg.type === 'UPDATE_PREFS') {
 			return stateReady.then(async () => {
@@ -402,7 +464,7 @@ export default defineBackground(() => {
 					await refreshUpcomingGames();
 					// Rebuild games: keep live/in-progress games, replace upcoming slice with updated cache
 					games = [...games.filter(g => g.status !== 'pre'), ...upcomingGames];
-					browser.runtime.sendMessage({ type: 'SCORES_UPDATED', scores: currentScores, games, leagueLogos }).catch(() => {});
+					broadcastScoresUpdated();
 				}
 				// Restart staggered polling when the league set changes
 				const newLeagues = new Set(prefs.enabledLeagues);

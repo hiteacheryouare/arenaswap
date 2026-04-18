@@ -78,11 +78,32 @@ export interface TabRegistration {
 }
 
 export type LeagueLogoMap = Partial<Record<LeagueId, string>>;
+export type ScoreHistoryMap = Record<string, ScoreSnapshot[]>;
+
+export interface PowerScoreSnapshot {
+	gameId: string;
+	timestamp: number;
+	total: number;
+	closeness: number;
+	lateGame: number;
+	momentum: number;
+	leadChanges: number;
+	comeback: number;
+	baseTotal: number;
+	favoriteBonus: number;
+	favoriteTeamCount: number;
+	stalled: boolean;
+	reason: string;
+}
+
+export type PowerScoreHistoryMap = Record<string, PowerScoreSnapshot[]>;
 
 export interface BackgroundState {
 	games: Game[];
 	scores: PowerScoreResult[];
 	leagueLogos: LeagueLogoMap;
+	scoreHistory: ScoreHistoryMap;
+	powerScoreHistory: PowerScoreHistoryMap;
 }
 
 export type ScoresUpdatedMessage = {
@@ -90,6 +111,8 @@ export type ScoresUpdatedMessage = {
 	scores: PowerScoreResult[];
 	games: Game[];
 	leagueLogos: LeagueLogoMap;
+	scoreHistory: ScoreHistoryMap;
+	powerScoreHistory: PowerScoreHistoryMap;
 };
 
 export type UpdatePrefsMessage = {

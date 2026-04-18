@@ -5,12 +5,16 @@ import type {
 	Game,
 	LeagueId,
 	LeagueLogoMap,
+	PowerScoreHistoryMap,
+	PowerScoreSnapshot,
 	PowerScoreResult,
+	ScoreHistoryMap,
+	ScoreSnapshot,
 	SportType,
 } from '@arenaswap/core/types';
 import type { Browser } from 'wxt/browser';
 
-export type popupView = 'main' | 'setup';
+export type popupView = 'main' | 'setup' | 'detail';
 export type leagueGroup = { league: LeagueId; games: Game[] };
 
 export const leagueOrder = Object.fromEntries(leagueConfigs.map((config, index) => [config.id, index])) as Record<LeagueId, number>;
@@ -77,12 +81,61 @@ const normalizeScores = (value: unknown): PowerScoreResult[] => {
 		.map(score => normalizePowerScoreResult(score, { allowTotalOverflow: true }));
 };
 
+const isNumberField = (value: unknown): value is number => (
+	typeof value === 'number' && Number.isFinite(value)
+);
+
+const isScoreSnapshotLike = (value: unknown): value is ScoreSnapshot => {
+	if (!isObjectRecord(value)) return false;
+	return typeof value.gameId === 'string'
+		&& isNumberField(value.timestamp)
+		&& isNumberField(value.homeScore)
+		&& isNumberField(value.awayScore);
+};
+
+const isPowerScoreSnapshotLike = (value: unknown): value is PowerScoreSnapshot => {
+	if (!isObjectRecord(value)) return false;
+	return typeof value.gameId === 'string'
+		&& isNumberField(value.timestamp)
+		&& isNumberField(value.total)
+		&& isNumberField(value.closeness)
+		&& isNumberField(value.lateGame)
+		&& isNumberField(value.momentum)
+		&& isNumberField(value.leadChanges)
+		&& isNumberField(value.comeback)
+		&& isNumberField(value.baseTotal)
+		&& isNumberField(value.favoriteBonus)
+		&& isNumberField(value.favoriteTeamCount)
+		&& typeof value.stalled === 'boolean'
+		&& typeof value.reason === 'string';
+};
+
+const normalizeScoreHistory = (value: unknown): ScoreHistoryMap => {
+	if (!isObjectRecord(value)) return {};
+	return Object.entries(value).reduce<ScoreHistoryMap>((acc, [gameId, snapshots]) => {
+		if (!Array.isArray(snapshots)) return acc;
+		acc[gameId] = snapshots.filter(isScoreSnapshotLike);
+		return acc;
+	}, {});
+};
+
+const normalizePowerScoreHistory = (value: unknown): PowerScoreHistoryMap => {
+	if (!isObjectRecord(value)) return {};
+	return Object.entries(value).reduce<PowerScoreHistoryMap>((acc, [gameId, snapshots]) => {
+		if (!Array.isArray(snapshots)) return acc;
+		acc[gameId] = snapshots.filter(isPowerScoreSnapshotLike);
+		return acc;
+	}, {});
+};
+
 export const normalizeBackgroundState = (value: unknown): BackgroundState => {
-	if (!isObjectRecord(value)) return { games: [], scores: [], leagueLogos: {} };
+	if (!isObjectRecord(value)) return { games: [], scores: [], leagueLogos: {}, scoreHistory: {}, powerScoreHistory: {} };
 	return {
 		games: isGameArray(value.games) ? value.games : [],
 		scores: normalizeScores(value.scores),
 		leagueLogos: isLeagueLogoMap(value.leagueLogos) ? value.leagueLogos : {},
+		scoreHistory: normalizeScoreHistory(value.scoreHistory),
+		powerScoreHistory: normalizePowerScoreHistory(value.powerScoreHistory),
 	};
 };
 
