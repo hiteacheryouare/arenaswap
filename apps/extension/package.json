@@ -11,7 +11,7 @@
 		"typecheck": "wxt prepare && tsc --noEmit"
 	},
 	"dependencies": {
-		"@arenaswap/core": "^0.1.0",
+		"@arenaswap/core": "*",
 		"@arenaswap/powerscore": "*",
 		"swr": "^2.4.1"
 	},
