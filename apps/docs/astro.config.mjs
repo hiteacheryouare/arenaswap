@@ -8,6 +8,7 @@ export default defineConfig({
 		plugins: [tailwindcss()],
 	},
 	outDir: '../../docs',
+	base: '/docs/',
 	build: {
 		emptyOutDir: true,
 	},
