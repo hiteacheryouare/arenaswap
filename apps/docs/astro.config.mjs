@@ -8,7 +8,7 @@ export default defineConfig({
 		plugins: [tailwindcss()],
 	},
 	outDir: '../../docs',
-	base: '/docs/',
+	base: '/arenaswap/',
 	build: {
 		emptyOutDir: true,
 	},
