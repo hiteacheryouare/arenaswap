@@ -3,7 +3,7 @@
 	"tasks": {
 		"build": {
 			"dependsOn": ["^build"],
-			"outputs": [".output/**", "dist/**"]
+			"outputs": [".output/**", "dist/**", "../../docs/**"]
 		},
 		"build:firefox": {
 			"dependsOn": ["^build"],

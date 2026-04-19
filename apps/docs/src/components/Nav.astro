@@ -1,0 +1,43 @@
+---
+---
+<nav id="main-nav" class="navbar navbar-expand-lg navbar-dark fixed-top py-3">
+	<div class="container">
+		<a class="navbar-brand" href="#hero">
+			<img src="/images/full_logo_white_on_transparent.png" alt="ArenaSwap" style="height:32px;width:auto;display:block;" />
+		</a>
+		<button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		<div class="collapse navbar-collapse" id="navMenu">
+			<ul class="navbar-nav mx-auto gap-1">
+				<li class="nav-item">
+					<a class="nav-link" href="#features">Features</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="#how-it-works">How It Works</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="#powerscore">PowerScore</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="#faq">FAQ</a>
+				</li>
+			</ul>
+			<a href="#" class="btn btn-cta btn-cta-pulse ms-lg-3 mt-3 mt-lg-0">
+				<i class="bi bi-download me-2"></i>Add to Chrome
+			</a>
+		</div>
+	</div>
+</nav>
+
+<script>
+const nav = document.getElementById('main-nav');
+const onScroll = () => {
+	if (window.scrollY > 40) {
+		nav?.classList.add('scrolled');
+	} else {
+		nav?.classList.remove('scrolled');
+	}
+};
+window.addEventListener('scroll', onScroll, { passive: true });
+</script>

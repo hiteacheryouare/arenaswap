@@ -1,0 +1,54 @@
+---
+const steps = [
+	{
+		n: '01',
+		icon: 'bi-window-stack',
+		title: 'Open your streams.',
+		body: 'Pull up your games in separate browser tabs — any service that works in a browser works with ArenaSwap. No special setup.',
+	},
+	{
+		n: '02',
+		icon: 'bi-link-45deg',
+		title: 'Assign each tab once.',
+		body: 'Open the extension, find each game in the list, and connect it to the right tab with a single dropdown. Done.',
+	},
+	{
+		n: '03',
+		icon: 'bi-stars',
+		title: 'The best game finds you.',
+		body: 'Every 15 seconds, ArenaSwap scores every live game and switches to the most exciting one. You just watch.',
+	},
+];
+---
+<section id="how-it-works" class="section-pad">
+	<div class="container">
+
+		<div class="mb-5 reveal">
+			<h2 class="section-title">Open.<br>Assign.<br>Done.</h2>
+		</div>
+
+		<div class="row g-0">
+			{steps.map((step, i) => (
+				<div class={`col-12 step-card reveal reveal-delay-${i + 1}`}>
+					<div class="row align-items-start g-4">
+						<div class="col-auto">
+							<span class="step-number">{step.n}</span>
+						</div>
+						<div class="col d-flex align-items-start gap-4 pt-3">
+							<i class={`bi ${step.icon}`} style="font-size:1.75rem;color:var(--color-primary);margin-top:4px;flex-shrink:0;"></i>
+							<div>
+								<h3 style="font-size:1.4rem;font-weight:700;letter-spacing:-0.03em;margin-bottom:0.5rem;color:var(--color-text);">
+									{step.title}
+								</h3>
+								<p style="font-size:1rem;color:var(--color-muted);line-height:1.65;max-width:600px;margin:0;">
+									{step.body}
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			))}
+		</div>
+
+	</div>
+</section>
