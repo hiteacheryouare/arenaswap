@@ -22,7 +22,7 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 	const [showPowerScoreDetails, setShowPowerScoreDetails] = useState(false);
 	if (!game) return null;
 
-	const isOt = game.period > leagueConfigMap[game.league].regularPeriods;
+	const isOt = game.period > (leagueConfigMap[game.league]?.regularPeriods ?? 4);
 	const closenessScore = excitementResult?.closeness ?? 0;
 	const lateGameScore = excitementResult?.lateGame ?? 0;
 	const momentumScore = excitementResult?.momentum ?? 0;

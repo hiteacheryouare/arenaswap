@@ -222,7 +222,7 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 		homeTeam: {
 			id: home.id,
 			name: home.team.displayName,
-			abbreviation: home.team.abbreviation,
+			abbreviation: home.team.abbreviation ?? home.team.displayName?.slice(0, 3).toUpperCase() ?? '?',
 			score: parseInt(home.score ?? '0', 10) || 0,
 			logo: home.team.logo ?? undefined,
 			color: normalizeTeamColor(home.team.color, home.team.alternateColor),
@@ -230,7 +230,7 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 		awayTeam: {
 			id: away.id,
 			name: away.team.displayName,
-			abbreviation: away.team.abbreviation,
+			abbreviation: away.team.abbreviation ?? away.team.displayName?.slice(0, 3).toUpperCase() ?? '?',
 			score: parseInt(away.score ?? '0', 10) || 0,
 			logo: away.team.logo ?? undefined,
 			color: normalizeTeamColor(away.team.color, away.team.alternateColor),

@@ -20,7 +20,7 @@ const detailTeamPill = ({ team }: detailTeamPillProps) => {
 							onError={() => setLogoFailed(true)}
 						/>
 					)
-					: <span className='game-detail-team-logo-fallback'>{team.abbreviation.slice(0, 3)}</span>}
+					: <span className='game-detail-team-logo-fallback'>{(team.abbreviation ?? '?').slice(0, 3)}</span>}
 			</div>
 			<div className='game-detail-team-abbrev'>{team.abbreviation}</div>
 		</div>

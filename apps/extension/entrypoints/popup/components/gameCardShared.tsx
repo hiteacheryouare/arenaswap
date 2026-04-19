@@ -7,6 +7,7 @@ export const stallPenaltyPercent = Math.round((1 - stallPenaltyMultiplier) * 100
 
 export const formatPeriod = (game: Game): string => {
 	const config = leagueConfigMap[game.league];
+	if (!config) return `P${game.period}`;
 	const regular = config.regularPeriods;
 	const period = game.period;
 	if (period > regular) {
@@ -76,7 +77,7 @@ const TeamLogo = ({ team }: { team: Team }) => {
 		<div
 			className='d-flex align-items-center justify-content-center bg-light rounded-circle flex-shrink-0 fw-bold text-body-secondary team-logo-fallback'
 		>
-			{team.abbreviation.slice(0, 3)}
+			{(team.abbreviation ?? '?').slice(0, 3)}
 		</div>
 	);
 };

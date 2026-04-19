@@ -95,7 +95,7 @@ export const findFavoriteTeamScoreConfettiBursts = (
 		const previous = previousSnapshots.get(gameId);
 		if (!previous) continue;
 
-		const regularPeriods = leagueConfigMap[next.league].regularPeriods;
+		const regularPeriods = leagueConfigMap[next.league]?.regularPeriods ?? 4;
 		const isOvertime = next.period > regularPeriods;
 
 		const homeFavoriteTeamKey = createFavoriteTeamKey(next.league, next.homeTeamId);
