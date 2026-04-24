@@ -27,7 +27,7 @@ const signals = [
 	},
 	{
 		name: 'Comeback',
-		desc: 'Is the trailing team clawing back? A big deficit being erased is one of the most thrilling narratives in sports.',
+		desc: 'Is the trailing team clawing back? A big comeback always adds excitement to any game.',
 		max: 8,
 		color: '#D90368',
 	},
