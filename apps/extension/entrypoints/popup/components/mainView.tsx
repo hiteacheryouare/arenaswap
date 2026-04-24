@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import type { Browser } from 'wxt/browser';
 import type {
 	Game,
@@ -7,6 +8,7 @@ import type {
 	TabRegistration,
 	UserPreferences,
 } from '@arenaswap/core/types';
+import { resolveLeagueLogoUrl } from '@arenaswap/core/constants';
 import GameCard from './gameCard';
 import PopupFooter from './popupFooter';
 import { byLeague, groupByLeague, leagueLabels } from '../popupHelpers';
@@ -15,6 +17,7 @@ interface gameSectionProps {
 	title: string;
 	games: Game[];
 	scores: PowerScoreResult[];
+	leagueLogos: LeagueLogoMap;
 	favoriteTeamIds: Set<string>;
 	onToggleFavoriteTeam: (leagueId: LeagueId, teamId: string) => void;
 	openTabs: Browser.tabs.Tab[];
@@ -23,6 +26,25 @@ interface gameSectionProps {
 	formatTabLabel: (tab: Browser.tabs.Tab) => string;
 	onOpenGameDetail: (gameId: string) => void;
 }
+
+const LeagueSectionHeader = ({ league, logos }: { league: LeagueId; logos: LeagueLogoMap }) => {
+	const [imgFailed, setImgFailed] = useState(false);
+	const logoUrl = resolveLeagueLogoUrl(league, logos[league]);
+	return (
+		<div className='fw-bold text-uppercase popup-section-label'>
+			{!imgFailed && logoUrl && (
+				<img
+					src={logoUrl}
+					alt=''
+					className='popup-league-logo'
+					loading='lazy'
+					onError={() => setImgFailed(true)}
+				/>
+			)}
+			{leagueLabels[league] ?? league.toUpperCase()}
+		</div>
+	);
+};
 
 interface mainViewProps {
 	prefs: UserPreferences;
@@ -47,6 +69,7 @@ const gameSection = ({
 	title,
 	games,
 	scores,
+	leagueLogos,
 	favoriteTeamIds,
 	onToggleFavoriteTeam,
 	openTabs,
@@ -59,7 +82,7 @@ const gameSection = ({
 		<div className='fw-bold text-body text-center popup-section-title'>{title}</div>
 		{groupByLeague(games).map(({ league, games: groupedGames }) => (
 			<div key={league}>
-				<div className='fw-bold text-uppercase mt-1 popup-section-label'>{leagueLabels[league] ?? league.toUpperCase()}</div>
+				<LeagueSectionHeader league={league} logos={leagueLogos} />
 				{groupedGames.map(game => (
 					<GameCard
 						key={game.id}
@@ -146,8 +169,8 @@ const mainView = ({
 			)}
 
 			{hasError && <div className='alert alert-danger d-flex align-items-center gap-2 mt-3 py-2 px-3 popup-error-banner' role='alert'><i className='bi bi-exclamation-triangle-fill' />Failed to load games. Retrying&hellip;</div>}
-			{!isLoading && !noLeaguesSelected && assignedLiveGames.length > 0 && gameSection({ title: 'Active Tabs', games: assignedLiveGames, scores, favoriteTeamIds, onToggleFavoriteTeam, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail })}
-			{!isLoading && !noLeaguesSelected && unassignedLiveGames.length > 0 && gameSection({ title: 'Other Games', games: unassignedLiveGames, scores, favoriteTeamIds, onToggleFavoriteTeam, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail })}
+			{!isLoading && !noLeaguesSelected && assignedLiveGames.length > 0 && gameSection({ title: 'Active Tabs', games: assignedLiveGames, scores, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail })}
+			{!isLoading && !noLeaguesSelected && unassignedLiveGames.length > 0 && gameSection({ title: 'Other Games', games: unassignedLiveGames, scores, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail })}
 
 			{!isLoading && !noLeaguesSelected && liveGames.length === 0 && registry.length === 0 && (!prefs.showUpcomingGames || upcomingGames.length === 0) && (
 				<div className='mt-3 text-center'>
@@ -156,30 +179,7 @@ const mainView = ({
 				</div>
 			)}
 
-			{!isLoading && !noLeaguesSelected && prefs.showUpcomingGames && upcomingGames.length > 0 && (
-				<div className='mt-2'>
-					<div className='fw-bold text-body text-center popup-section-title'>Up Next</div>
-					{groupByLeague(upcomingGames).map(({ league, games: groupedGames }) => (
-						<div key={league}>
-							<div className='fw-bold text-uppercase mt-1 popup-section-label'>{leagueLabels[league] ?? league.toUpperCase()}</div>
-							{groupedGames.map(game => (
-								<GameCard
-									key={game.id}
-									game={game}
-									excitementResult={undefined}
-									favoriteTeamIds={favoriteTeamIds}
-									onToggleFavoriteTeam={onToggleFavoriteTeam}
-									openTabs={openTabs}
-									registry={registry}
-									onRegistryChange={onRegistryChange}
-									formatTabLabel={formatTabLabel}
-									onOpenGameDetail={onOpenGameDetail}
-								/>
-							))}
-						</div>
-					))}
-				</div>
-			)}
+			{!isLoading && !noLeaguesSelected && prefs.showUpcomingGames && upcomingGames.length > 0 && gameSection({ title: 'Up Next', games: upcomingGames, scores: [], leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail })}
 
 			<PopupFooter hasEspnBranding={hasEspnBranding} />
 		</div>
