@@ -1,5 +1,5 @@
 import { normalizePowerScoreResult } from '@arenaswap/core';
-import { leagueConfigs } from '@arenaswap/core/constants';
+import { createFavoriteTeamKey, leagueConfigs } from '@arenaswap/core/constants';
 import type {
 	BackgroundState,
 	Game,
@@ -45,6 +45,23 @@ export const leaguesBySportType = leagueConfigs.reduce<Record<SportType, typeof 
 });
 
 export const byLeague = (a: Game, b: Game) => (leagueOrder[a.league] ?? 99) - (leagueOrder[b.league] ?? 99);
+
+export const isFavoriteTeamGame = (game: Game, favoriteTeamIds: Set<string>): boolean => (
+	favoriteTeamIds.has(createFavoriteTeamKey(game.league, game.homeTeam.id))
+	|| favoriteTeamIds.has(createFavoriteTeamKey(game.league, game.awayTeam.id))
+);
+
+export const buildFavoritePinnedComparator = (
+	favoriteTeamIds: Set<string>,
+	scoreByGameId: Map<string, number>,
+) => (a: Game, b: Game): number => {
+	const leagueDiff = (leagueOrder[a.league] ?? 99) - (leagueOrder[b.league] ?? 99);
+	if (leagueDiff !== 0) return leagueDiff;
+	const aFav = isFavoriteTeamGame(a, favoriteTeamIds);
+	const bFav = isFavoriteTeamGame(b, favoriteTeamIds);
+	if (aFav !== bFav) return aFav ? -1 : 1;
+	return (scoreByGameId.get(b.id) ?? 0) - (scoreByGameId.get(a.id) ?? 0);
+};
 
 export const groupByLeague = (games: Game[]): leagueGroup[] => (
 	games.reduce<leagueGroup[]>((groups, game) => {

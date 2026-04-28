@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import type { Browser } from 'wxt/browser';
 import type {
 	Game,
@@ -11,7 +11,7 @@ import type {
 import { resolveLeagueLogoUrl } from '@arenaswap/core/constants';
 import GameCard from './gameCard';
 import PopupFooter from './popupFooter';
-import { byLeague, groupByLeague, leagueLabels } from '../popupHelpers';
+import { buildFavoritePinnedComparator, groupByLeague, leagueLabels } from '../popupHelpers';
 
 interface gameSectionProps {
 	title: string;
@@ -120,17 +120,23 @@ const mainView = ({
 	onRegistryChange,
 	formatTabLabel,
 }: mainViewProps) => {
+	throw new Error('simulated crash for testing error boundary');
 	const oneWeekFromNow = Date.now() + 7 * 24 * 60 * 60 * 1000;
 	const noLeaguesSelected = prefs.enabledLeagues.length === 0;
+	const scoreByGameId = useMemo(() => new Map(scores.map(s => [s.gameId, s.total])), [scores]);
+	const sortGames = useMemo(
+		() => buildFavoritePinnedComparator(favoriteTeamIds, scoreByGameId),
+		[favoriteTeamIds, scoreByGameId],
+	);
 	const liveGames = games.filter(g => g.status === 'in');
 	const upcomingGames = games
 		.filter(g => g.status === 'pre')
 		.filter(g => !g.startTime || new Date(g.startTime).getTime() <= oneWeekFromNow)
-		.sort(byLeague);
+		.sort(sortGames);
 
 	const registeredGameIds = new Set(registry.map(r => r.gameId));
-	const assignedLiveGames = liveGames.filter(g => registeredGameIds.has(g.id)).sort(byLeague);
-	const unassignedLiveGames = liveGames.filter(g => !registeredGameIds.has(g.id)).sort(byLeague);
+	const assignedLiveGames = liveGames.filter(g => registeredGameIds.has(g.id)).sort(sortGames);
+	const unassignedLiveGames = liveGames.filter(g => !registeredGameIds.has(g.id)).sort(sortGames);
 	const hasEspnBranding = (
 		Object.values(leagueLogos).some(url => typeof url === 'string' && url.toLowerCase().includes('espn'))
 		|| games.some(game => (game.odds?.provider?.logoUrl ?? '').toLowerCase().includes('espn'))
