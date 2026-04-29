@@ -70,7 +70,6 @@ export const leagueLogoFallbacks: Record<LeagueId, string> = {
 	wnba: 'https://a.espncdn.com/i/teamlogos/leagues/500/wnba.png',
 	ncaab: 'https://a.espncdn.com/redesign/assets/img/icons/ESPN-icon-basketball.png',
 	nhl: 'https://a.espncdn.com/i/teamlogos/leagues/500/nhl.png',
-	pwhl: 'https://a.espncdn.com/i/teamlogos/leagues/500/nhl.png',
 	ncaamh: 'https://a.espncdn.com/i/teamlogos/leagues/500/nhl.png',
 	mlb: 'https://a.espncdn.com/i/teamlogos/leagues/500/mlb.png',
 	nfl: 'https://a.espncdn.com/i/teamlogos/leagues/500/nfl.png',

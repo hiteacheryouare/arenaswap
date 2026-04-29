@@ -3,8 +3,6 @@ import type { Game, GameOdds, LeagueConfig, LeagueId, LeagueLogoMap } from './ty
 
 const espnBase = 'https://site.api.espn.com/apis/site/v2/sports';
 const upcomingDateWindowDays = 4;
-const sessionDisableOnFailureLeagues = new Set<LeagueId>(['pwhl']);
-const sessionDisabledLeagues = new Set<LeagueId>();
 
 const parseClockToSeconds = (clock: string): number => {
 	const parts = clock.split(':');
@@ -315,14 +313,6 @@ const getEnabledLeagueConfigs = (enabledLeagues: LeagueId[]): LeagueConfig[] => 
 	enabledLeagues
 		.map(league => leagueConfigMap[league])
 		.filter((config): config is LeagueConfig => Boolean(config))
-		.filter(config => !sessionDisabledLeagues.has(config.id))
-);
-
-const shouldSessionDisableLeague = (error: LeagueFetchError): boolean => (
-	sessionDisableOnFailureLeagues.has(error.leagueId)
-	&& error.status !== undefined
-	&& error.status >= 400
-	&& error.status < 500
 );
 
 export const fetchGamesWithLeagueLogos = async (enabledLeagues: LeagueId[], options: { includeUpcoming?: boolean } = {}): Promise<{ games: Game[]; leagueLogos: LeagueLogoMap }> => {
@@ -331,13 +321,6 @@ export const fetchGamesWithLeagueLogos = async (enabledLeagues: LeagueId[], opti
 	if (leagueConfigs.length === 0) return { games: [], leagueLogos: {} };
 
 	const results = await Promise.allSettled(leagueConfigs.map(config => fetchLeagueGames(config, options)));
-	for (const result of results) {
-		if (result.status !== 'rejected') continue;
-		const reason = result.reason;
-		if (reason instanceof LeagueFetchError && shouldSessionDisableLeague(reason)) {
-			sessionDisabledLeagues.add(reason.leagueId);
-		}
-	}
 
 	const fulfilled = results
 		.filter((r): r is PromiseFulfilledResult<LeagueGamesResult> => r.status === 'fulfilled')
