@@ -1,5 +1,6 @@
 import {
 	leagueConfigs,
+	leagueConfigMap,
 	scorerTunables,
 	scoreMaxCloseness,
 	scoreMaxLateGame,
@@ -7,6 +8,7 @@ import {
 	scoreMaxLeadChanges,
 	scoreMaxComeback,
 	scoreMaxTotal,
+	sportTypeConfigMap,
 	stallPenaltyMultiplier,
 	stallThresholdPolls,
 } from '../src/constants';
@@ -226,6 +228,65 @@ describe('computePowerScore', () => {
 		expect(endOfRegulation.lateGame).toBeGreaterThanOrEqual(Math.ceil(scoreMaxLateGame * 0.8));
 		expect(endOfRegulation.lateGame).toBeLessThanOrEqual(scoreMaxLateGame);
 		expect(endOfRegulation.reason).toContain('inning');
+	});
+
+	test('spreads late-game pressure earlier across clock-sport final windows', () => {
+		const representativeLeagueIds = ['nba', 'nhl', 'nfl', 'mls'] as const;
+
+		for (const leagueId of representativeLeagueIds) {
+			const league = leagueConfigMap[leagueId];
+			const sportConfig = sportTypeConfigMap[league.sportType];
+			if (sportConfig.lateGameCurve.model !== 'clock')
+				throw new Error(`Expected clock late-game model for ${leagueId}`);
+
+			const finalWindowSecs = sportConfig.lateGameCurve.finalPeriodWindowSecs;
+			const toClockSeconds = (secsRemaining: number): number => (
+				sportConfig.clockCountsUp
+					? Math.max(0, league.periodDurationSecs - secsRemaining)
+					: secsRemaining
+			);
+			const withFinalWindowClock = (secsRemaining: number) => makeGame({
+				league: league.id,
+				sportType: league.sportType,
+				period: league.regularPeriods,
+				clockSeconds: toClockSeconds(secsRemaining),
+				homeTeam: { ...makeGame().homeTeam, score: 40 },
+				awayTeam: { ...makeGame().awayTeam, score: 10 },
+			});
+
+			const startFinal = computePowerScore(withFinalWindowClock(finalWindowSecs), []);
+			const midFinal = computePowerScore(withFinalWindowClock(Math.floor(finalWindowSecs / 2)), []);
+			const lateFinal = computePowerScore(withFinalWindowClock(Math.max(1, Math.floor(finalWindowSecs * 0.2))), []);
+			const curveRange = sportConfig.lateGameCurve.finalPeriodCurve.maxScore - sportConfig.lateGameCurve.finalPeriodCurve.minScore;
+			const expectedMidMin = Math.ceil(sportConfig.lateGameCurve.finalPeriodCurve.minScore + (curveRange * 0.3));
+			const expectedLateMin = Math.ceil(sportConfig.lateGameCurve.finalPeriodCurve.minScore + (curveRange * 0.6));
+
+			expect(midFinal.lateGame).toBeGreaterThan(startFinal.lateGame);
+			expect(midFinal.lateGame).toBeGreaterThanOrEqual(expectedMidMin);
+			expect(lateFinal.lateGame).toBeGreaterThan(midFinal.lateGame);
+			expect(lateFinal.lateGame).toBeGreaterThanOrEqual(expectedLateMin);
+		}
+	});
+
+	test('spreads baseball late-game pressure by the 8th inning', () => {
+		const baseballConfig = sportTypeConfigMap.baseball;
+		if (baseballConfig.lateGameCurve.model !== 'baseball')
+			throw new Error('Expected baseball late-game model');
+
+		const withInning = (period: number) => makeGame({
+			league: 'mlb',
+			sportType: 'baseball',
+			period,
+			clockSeconds: 0,
+			homeTeam: { ...makeGame().homeTeam, score: 4 },
+			awayTeam: { ...makeGame().awayTeam, score: 1 },
+		});
+
+		const eighthInning = computePowerScore(withInning(8), []);
+		const regulationRange = baseballConfig.lateGameCurve.regulationCurve.maxScore - baseballConfig.lateGameCurve.regulationCurve.minScore;
+		const expectedEighthInningMin = Math.ceil(baseballConfig.lateGameCurve.regulationCurve.minScore + (regulationRange * 0.5));
+
+		expect(eighthInning.lateGame).toBeGreaterThanOrEqual(expectedEighthInningMin);
 	});
 
 	test('scores overtime and extra innings at max late-game pressure', () => {
