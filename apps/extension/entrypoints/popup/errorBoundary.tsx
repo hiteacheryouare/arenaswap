@@ -20,16 +20,16 @@ class ErrorBoundary extends Component<errorBoundaryProps, errorBoundaryState> {
 		if (this.state.error) {
 			return (
 				<div className='popup-container d-flex flex-column align-items-center justify-content-center gap-3 text-center'>
-					<i className='bi bi-exclamation-triangle-fill text-danger error-boundary-icon' style={{ fontSize: '3rem' }} />
+					<i className='bi bi-exclamation-triangle-fill text-danger error-boundary-icon text-[3rem]' />
 					<div>
-						<div className='fw-bold text-danger' style={{ fontSize: '1.05rem', letterSpacing: '-0.01em' }}>
+						<div className='fw-bold text-danger text-[1.05rem] tracking-[-0.01em]'>
 							🚨 ARENASWAP HAS CRASHED 🚨
 						</div>
-						<div className='text-body-secondary mt-1' style={{ fontSize: '0.7rem' }}>
+						<div className='text-body-secondary mt-1 text-[0.7rem]'>
 							Something clearly went wrong during rendering.
 						</div>
 					</div>
-					<div className='alert alert-danger w-100 py-2 px-3 text-start' role='alert' style={{ fontSize: '0.65rem', wordBreak: 'break-word' }}>
+					<div className='alert alert-danger w-100 py-2 px-3 text-start text-[0.65rem] break-words' role='alert'>
 						<strong>error data:</strong> {this.state.error.message}
 					</div>
 					<button

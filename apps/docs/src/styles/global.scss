@@ -251,15 +251,6 @@ body {
 	padding: 7rem 0;
 }
 
-.section-label {
-	font-size: 0.75rem;
-	font-weight: 600;
-	letter-spacing: 0.12em;
-	text-transform: uppercase;
-	color: var(--color-primary);
-	margin-bottom: 1rem;
-}
-
 .section-title {
 	font-size: clamp(2rem, 5vw, 3.5rem);
 	font-weight: 700;
@@ -313,100 +304,6 @@ body {
 	}
 }
 
-// ─── Mock popup UI ────────────────────────────────────────────────────────────
-.mock-popup {
-	width: 300px;
-	background: #fff;
-	border-radius: 12px;
-	overflow: hidden;
-	box-shadow:
-		0 0 0 1px rgba(255,255,255,0.07),
-		0 32px 80px rgba(0, 0, 0, 0.7),
-		0 0 60px rgba(247, 92, 3, 0.12);
-	font-size: 13px;
-}
-
-.mock-header {
-	background: var(--color-bg);
-	padding: 10px 12px;
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	border-bottom: 1px solid var(--color-border);
-}
-
-.mock-logo {
-	font-family: 'DM Sans', sans-serif;
-	font-weight: 700;
-	font-size: 15px;
-	letter-spacing: -0.05em;
-	color: var(--color-text);
-}
-
-.mock-league-header {
-	background: var(--color-card);
-	padding: 5px 12px;
-	display: flex;
-	align-items: center;
-	gap: 6px;
-	font-size: 11px;
-	font-weight: 600;
-	letter-spacing: 0.05em;
-	text-transform: uppercase;
-	color: var(--color-muted);
-	border-bottom: 1px solid var(--color-border);
-}
-
-.mock-game-card {
-	background: #fff;
-	border-bottom: 1px solid #f0f0f0;
-	padding: 10px 12px;
-	cursor: pointer;
-	transition: background 0.15s ease;
-
-	&:hover { background: #fafafa; }
-}
-
-.mock-team-row {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	margin-bottom: 4px;
-}
-
-.mock-team-name {
-	font-weight: 600;
-	font-size: 13px;
-	color: #0d1117;
-	letter-spacing: -0.01em;
-}
-
-.mock-score {
-	font-family: 'Lekton', monospace;
-	font-weight: 700;
-	font-size: 14px;
-	color: #0d1117;
-	font-variant-numeric: tabular-nums;
-}
-
-.mock-clock {
-	font-family: 'Lekton', monospace;
-	font-size: 10px;
-	color: #8b949e;
-	font-variant-numeric: tabular-nums;
-}
-
-.mock-power-score {
-	display: inline-flex;
-	align-items: center;
-	gap: 4px;
-	font-size: 11px;
-	font-weight: 700;
-	padding: 2px 7px;
-	border-radius: 999px;
-	font-family: 'Lekton', monospace;
-}
-
 // ─── How it works steps ───────────────────────────────────────────────────────
 .step-number {
 	font-size: clamp(5rem, 12vw, 9rem);
@@ -445,29 +342,6 @@ body {
 	border-radius: 999px;
 	width: 0;
 	transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.ps-bar-fill.animate {
-	width: var(--target-width);
-}
-
-// ─── League pills ─────────────────────────────────────────────────────────────
-.league-pill {
-	display: inline-block;
-	padding: 0.3rem 0.75rem;
-	background: var(--color-card);
-	border: 1px solid var(--color-border);
-	border-radius: 999px;
-	font-size: 0.8rem;
-	font-weight: 600;
-	color: var(--color-muted);
-	letter-spacing: 0.02em;
-	transition: border-color 0.18s ease, color 0.18s ease;
-
-	&:hover {
-		border-color: var(--color-primary);
-		color: var(--color-text);
-	}
 }
 
 // ─── Settings preview ─────────────────────────────────────────────────────────
@@ -533,17 +407,6 @@ body {
 		font-weight: 700;
 		color: rgba(255, 255, 255, 0.85);
 	}
-}
-
-.footer-credit-pill {
-	display: inline-block;
-	font-weight: 700;
-	font-size: 0.78rem;
-	color: #fff;
-	background: var(--gradient-sig);
-	padding: 2px 10px;
-	border-radius: 999px;
-	letter-spacing: 0.01em;
 }
 
 .footer-icon-link {
@@ -642,7 +505,7 @@ body {
 .hero-headline {
 	font-size: clamp(3.5rem, 8vw, 5.5rem);
 	font-weight: 700;
-	letter-spacing: -0.05em;
+	letter-spacing: -0.04em;
 	line-height: 1.02;
 	margin-bottom: 1.5rem;
 }
@@ -934,25 +797,6 @@ body {
 	border-radius: 0.25rem;
 	font-size: 0.6rem;
 	padding: 0.15rem 0.4rem;
-}
-
-.demo-footer-bar {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	gap: 5px;
-	padding: 0.3rem 0.5rem;
-	background: linear-gradient(to right, #fdb913, #f36f21, #c9234a, #645faa, #0089cf, #0db14b);
-	font-size: 0.6rem;
-	letter-spacing: 0.02em;
-	color: #fff;
-	flex-shrink: 0;
-}
-
-.demo-espn-logo {
-	height: 0.7rem;
-	width: auto;
-	filter: brightness(0) invert(1);
 }
 
 .hero-scroll-indicator {

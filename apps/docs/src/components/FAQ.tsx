@@ -45,21 +45,19 @@ const FAQ = () => {
 			{items.map((item, i) => (
 				<div
 					key={i}
-					className='accordion-item'
-					style={{ borderRadius: i === 0 ? '0.75rem 0.75rem 0 0' : i === items.length - 1 ? '0 0 0.75rem 0.75rem' : '0' }}
+					className={`accordion-item ${i === 0 ? 'rounded-t-xl' : i === items.length - 1 ? 'rounded-b-xl' : 'rounded-none'}`}
 				>
 					<h3 className='accordion-header'>
 						<button
-							className={`accordion-button${open === i ? '' : ' collapsed'}`}
+							className={`accordion-button text-[0.95rem] fw-semibold tracking-[-0.01em]${open === i ? '' : ' collapsed'}`}
 							type='button'
 							onClick={() => toggle(i)}
-							style={{ fontSize: '0.95rem', fontWeight: 600, letterSpacing: '-0.01em' }}
 						>
 							{item.q}
 						</button>
 					</h3>
-					<div style={{ display: open === i ? 'block' : 'none' }}>
-						<div className='accordion-body' style={{ fontSize: '0.9rem', color: 'var(--color-muted)', lineHeight: 1.65 }}>
+					<div className={open === i ? 'd-block' : 'd-none'}>
+						<div className='accordion-body text-[0.9rem] leading-[1.65] text-[var(--color-muted)]'>
 							{item.a}
 						</div>
 					</div>

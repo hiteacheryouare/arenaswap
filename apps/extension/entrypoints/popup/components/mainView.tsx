@@ -142,7 +142,7 @@ const mainView = ({
 	);
 
 	return (
-		<div className='popup-container'>
+		<div className='popup-container d-flex flex-column'>
 			<div className='d-flex justify-content-between align-items-center mb-2 pb-2'>
 				<img src='/images/full_logo_white_on_transparent.png' alt='ArenaSwap' className='arenaswap-logo' />
 				<div className='d-flex align-items-center gap-2'>
