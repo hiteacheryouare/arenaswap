@@ -120,7 +120,6 @@ const mainView = ({
 	onRegistryChange,
 	formatTabLabel,
 }: mainViewProps) => {
-	throw new Error('simulated crash for testing error boundary');
 	const oneWeekFromNow = Date.now() + 7 * 24 * 60 * 60 * 1000;
 	const noLeaguesSelected = prefs.enabledLeagues.length === 0;
 	const scoreByGameId = useMemo(() => new Map(scores.map(s => [s.gameId, s.total])), [scores]);
