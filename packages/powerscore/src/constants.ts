@@ -274,15 +274,6 @@ export const leagueConfigs: LeagueConfig[] = [
 		periodFormat: 'periods',
 	},
 	{
-		id: 'pwhl',
-		label: 'PWHL',
-		sportType: 'hockey',
-		espnPath: 'hockey/pwhl',
-		regularPeriods: 3,
-		periodDurationSecs: 1200,
-		periodFormat: 'periods',
-	},
-	{
 		id: 'ncaamh',
 		label: "NCAA Men's Hockey",
 		sportType: 'hockey',
