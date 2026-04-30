@@ -1,0 +1,362 @@
+---
+import './_screenshot.scss';
+---
+<!doctype html>
+<html lang='en'>
+<head>
+	<meta charset='UTF-8' />
+	<title>Screenshot 3 — Assign Each Tab</title>
+</head>
+<body>
+	<div class='canvas'>
+		<div class='bottom-glow'></div>
+
+		<h1 class='headline'>Assign Each Tab<span class='dot'>.</span></h1>
+
+		<div class='over-glow'></div>
+
+		<div class='stage' style='bottom:60px;'>
+			<!-- Faded browser context behind -->
+			<div class='bg-browser'>
+				<div class='bg-browser-chrome'>
+					<div class='traffic'>
+						<span class='dot-r'></span>
+						<span class='dot-y'></span>
+						<span class='dot-g'></span>
+					</div>
+					<div class='bg-tabs'>
+						<div class='bg-tab'>
+							<div class='favicon-mini' style='background:#CC0000;'>E</div>
+							<span>ESPN+</span>
+						</div>
+						<div class='bg-tab active'>
+							<div class='favicon-mini' style='background:#1D428A;'>N</div>
+							<span>NBA League Pass</span>
+						</div>
+						<div class='bg-tab'>
+							<div class='favicon-mini' style='background:#041E42;'>M</div>
+							<span>MLB.TV</span>
+						</div>
+						<div class='bg-tab'>
+							<div class='favicon-mini' style='background:#000;'>H</div>
+							<span>NHL.tv</span>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- The actual extension popup, blown up, with dropdown OPEN -->
+			<div class='popup-stage'>
+				<div class='popup popup-large'>
+					<div class='popup-inner'>
+						<div class='popup-header'>
+							<img src='/arenaswap/images/full_logo_white_on_transparent.png' alt='ArenaSwap' class='popup-logo' />
+							<div class='popup-header-right'>
+								<i class='bi bi-gear-fill' style='color:#8b949e;font-size:0.9rem;'></i>
+								<div class='popup-switch'>
+									<div class='popup-switch-thumb'></div>
+								</div>
+							</div>
+						</div>
+
+						<div class='popup-section-title'>Active Tabs</div>
+
+						<!-- Card 1: assigned -->
+						<div class='popup-league-label'>NBA</div>
+						<div class='popup-card' style='border-left:5px solid #CE1141;border-right:5px solid #006BB6;background:linear-gradient(to right,#CE114128,#006BB628),#ffffff;'>
+							<div class='popup-card-top'>
+								<div class='popup-live'>
+									<span class='popup-live-dot'></span>
+									LIVE
+								</div>
+								<div class='popup-ps' style='background:#F75C03;'>
+									PowerScore: 84 / 100
+								</div>
+							</div>
+							<div class='popup-matchup'>
+								<div class='popup-team-col'>
+									<div style='width:40px;height:40px;border-radius:50%;background:#CE1141;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:0.7rem;'>CHI</div>
+									<i class='bi bi-star' style='font-size:0.7rem;color:#6c757d;'></i>
+									<span class='popup-team-abbr'>CHI</span>
+								</div>
+								<div class='popup-center-col'>
+									<div class='popup-scores'>
+										<span class='popup-score'>65</span>
+										<span class='popup-score'>68</span>
+									</div>
+									<span class='popup-clock'>4:44</span>
+									<span class='popup-period'>3rd</span>
+								</div>
+								<div class='popup-team-col'>
+									<div style='width:40px;height:40px;border-radius:50%;background:#006BB6;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:0.7rem;'>PHI</div>
+									<i class='bi bi-star-fill' style='font-size:0.7rem;color:#f1c40f;'></i>
+									<span class='popup-team-abbr'>PHI</span>
+								</div>
+							</div>
+							<div class='popup-meta'>
+								<span class='popup-meta-venue'>Xfinity Mobile Arena · Philadelphia, PA</span>
+								<span class='popup-meta-network'>NBA League Pass</span>
+							</div>
+							<div class='popup-tab-row'>
+								<select class='popup-select'>
+									<option>Tab 2: NBA League Pass</option>
+								</select>
+							</div>
+						</div>
+
+						<!-- Card 2: with dropdown OPEN — the focal moment -->
+						<div class='popup-league-label'>MLB</div>
+						<div class='popup-card popup-card-active' style='border-left:5px solid #BD3039;border-right:5px solid #003087;background:linear-gradient(to right,#BD303928,#00308728),#ffffff;'>
+							<div class='popup-card-top'>
+								<div class='popup-live'>
+									<span class='popup-live-dot'></span>
+									LIVE
+								</div>
+								<div class='popup-ps' style='background:#d06800;'>
+									PowerScore: 71 / 100
+								</div>
+							</div>
+							<div class='popup-matchup'>
+								<div class='popup-team-col'>
+									<div style='width:40px;height:40px;border-radius:50%;background:#BD3039;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:0.7rem;'>BOS</div>
+									<i class='bi bi-star' style='font-size:0.7rem;color:#6c757d;'></i>
+									<span class='popup-team-abbr'>BOS</span>
+								</div>
+								<div class='popup-center-col'>
+									<div class='popup-scores'>
+										<span class='popup-score'>3</span>
+										<span class='popup-score'>2</span>
+									</div>
+									<span class='popup-clock'>T 5</span>
+									<span class='popup-period'>1 OUT</span>
+								</div>
+								<div class='popup-team-col'>
+									<div style='width:40px;height:40px;border-radius:50%;background:#003087;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:0.7rem;'>NYY</div>
+									<i class='bi bi-star' style='font-size:0.7rem;color:#6c757d;'></i>
+									<span class='popup-team-abbr'>NYY</span>
+								</div>
+							</div>
+							<div class='popup-meta'>
+								<span class='popup-meta-venue'>Fenway Park · Boston, MA</span>
+								<span class='popup-meta-network'>MLB.TV</span>
+							</div>
+							<div class='popup-tab-row'>
+								<div class='popup-select-trigger'>
+									— Assign a tab —
+									<i class='bi bi-caret-down-fill'></i>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Detached open dropdown menu, anchored to MLB card -->
+				<div class='dropdown-menu-fake'>
+					<div class='dropdown-item dropdown-item-disabled'>
+						<i class='bi bi-1-circle'></i>
+						<span>Tab 1: ESPN+</span>
+						<span class='in-use'>(in use)</span>
+					</div>
+					<div class='dropdown-item dropdown-item-disabled'>
+						<i class='bi bi-2-circle'></i>
+						<span>Tab 2: NBA League Pass</span>
+						<span class='in-use'>(in use)</span>
+					</div>
+					<div class='dropdown-item dropdown-item-active'>
+						<i class='bi bi-3-circle-fill'></i>
+						<span>Tab 5: MLB.TV</span>
+						<i class='bi bi-check2 check'></i>
+					</div>
+					<div class='dropdown-item'>
+						<i class='bi bi-4-circle'></i>
+						<span>Tab 6: NHL.tv</span>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+	<style>
+		.bg-browser {
+			position: absolute;
+			left: 50%;
+			transform: translateX(-50%);
+			bottom: 0;
+			width: 1080px;
+			height: 540px;
+			background: #0d1117;
+			border-radius: 14px;
+			border: 1px solid rgba(255,255,255,0.1);
+			overflow: hidden;
+			filter: blur(2.5px) saturate(0.85);
+			opacity: 0.55;
+		}
+
+		.bg-browser-chrome {
+			background: #161b22;
+			padding: 10px 14px 0;
+			display: flex;
+			align-items: flex-end;
+			gap: 12px;
+		}
+
+		.traffic { display: flex; gap: 6px; padding-bottom: 12px; }
+		.traffic span { width: 11px; height: 11px; border-radius: 50%; display: block; }
+		.dot-r { background: #ff5f57; }
+		.dot-y { background: #febc2e; }
+		.dot-g { background: #28c840; }
+
+		.bg-tabs { display: flex; gap: 4px; align-items: flex-end; flex: 1; }
+
+		.bg-tab {
+			display: flex; align-items: center; gap: 6px;
+			padding: 8px 10px;
+			background: transparent;
+			border-radius: 8px 8px 0 0;
+			min-width: 130px;
+			color: #8b949e;
+			font-size: 0.7rem;
+			font-weight: 500;
+			border-bottom: none;
+		}
+
+		.bg-tab.active {
+			background: #0d1117;
+			color: #e6edf3;
+			border: 1px solid #30363d;
+			border-bottom: none;
+		}
+
+		.favicon-mini {
+			width: 14px; height: 14px; border-radius: 3px;
+			display: flex; align-items: center; justify-content: center;
+			color: #fff; font-size: 0.55rem; font-weight: 800;
+			flex-shrink: 0;
+		}
+
+		.popup-stage {
+			position: absolute;
+			left: 50%;
+			bottom: 0;
+			transform: translateX(-50%);
+			width: 1080px;
+			height: 540px;
+			z-index: 5;
+		}
+
+		.popup-large {
+			position: absolute;
+			left: 50%;
+			top: 30px;
+			transform: translateX(-50%);
+			width: 360px;
+			box-shadow:
+				0 0 0 1px rgba(255,255,255,0.08),
+				0 32px 80px rgba(0, 0, 0, 0.7),
+				0 0 80px rgba(247, 92, 3, 0.25);
+		}
+
+		.popup-card-active {
+			outline: 2px solid #F75C03;
+			outline-offset: 2px;
+			box-shadow: 0 0 0 4px rgba(247,92,3,0.18);
+		}
+
+		.popup-select-trigger {
+			width: 100%;
+			background: #fff;
+			color: #111827;
+			border: 1.5px solid #F75C03;
+			border-radius: 0.25rem;
+			font-size: 0.6rem;
+			padding: 3px 8px;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			font-weight: 600;
+		}
+
+		.popup-select-trigger i {
+			color: #F75C03;
+			font-size: 0.55rem;
+		}
+
+		.dropdown-menu-fake {
+			position: absolute;
+			left: calc(50% + 70px);
+			top: 380px;
+			width: 240px;
+			background: #ffffff;
+			border: 1px solid #d1d5db;
+			border-radius: 8px;
+			box-shadow:
+				0 12px 32px rgba(0,0,0,0.4),
+				0 0 0 1px rgba(0,0,0,0.04);
+			padding: 6px;
+			font-family: 'DM Sans', sans-serif;
+			z-index: 8;
+		}
+
+		.dropdown-menu-fake::before {
+			content: '';
+			position: absolute;
+			top: -7px;
+			left: 24px;
+			width: 12px;
+			height: 12px;
+			background: #ffffff;
+			border-left: 1px solid #d1d5db;
+			border-top: 1px solid #d1d5db;
+			transform: rotate(45deg);
+		}
+
+		.dropdown-item {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			padding: 8px 10px;
+			border-radius: 5px;
+			font-size: 0.78rem;
+			color: #1f2937;
+			font-weight: 500;
+		}
+
+		.dropdown-item i.bi {
+			color: #6b7280;
+			font-size: 0.95rem;
+			flex-shrink: 0;
+		}
+
+		.dropdown-item span {
+			flex: 1;
+		}
+
+		.dropdown-item-disabled {
+			color: #9ca3af;
+		}
+
+		.dropdown-item-disabled .in-use {
+			font-size: 0.65rem;
+			color: #d1d5db;
+			font-weight: 500;
+		}
+
+		.dropdown-item-active {
+			background: rgba(247,92,3,0.1);
+			color: #F75C03;
+			font-weight: 700;
+		}
+
+		.dropdown-item-active i.bi {
+			color: #F75C03;
+		}
+
+		.check {
+			color: #F75C03 !important;
+			font-size: 1rem !important;
+		}
+
+	</style>
+</body>
+</html>

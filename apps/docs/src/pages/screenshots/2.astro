@@ -1,0 +1,484 @@
+---
+import './_screenshot.scss';
+
+const tabs = [
+	{ name: 'ESPN+',           color: '#CC0000', initial: 'E' },
+	{ name: 'NBA League Pass', color: '#1D428A', initial: 'N' },
+	{ name: 'NFL+',            color: '#013369', initial: 'F' },
+	{ name: 'NHL.tv',          color: '#000000', initial: 'H' },
+	{ name: 'MLB.TV',          color: '#041E42', initial: 'M' },
+	{ name: 'MLS Season Pass', color: '#001E62', initial: 'M' },
+	{ name: 'Peacock',         color: '#000000', initial: 'P' },
+];
+---
+<!doctype html>
+<html lang='en'>
+<head>
+	<meta charset='UTF-8' />
+	<title>Screenshot 2 — Open Your Streams</title>
+</head>
+<body>
+	<div class='canvas'>
+		<div class='bottom-glow'></div>
+
+		<h1 class='headline'>Open Your Streams<span class='dot'>.</span></h1>
+
+		<div class='over-glow'></div>
+
+		<div class='stage' style='bottom:60px;'>
+			<div class='browser-window'>
+				<!-- Chrome window controls + tab strip -->
+				<div class='browser-chrome'>
+					<div class='traffic'>
+						<span class='dot-r'></span>
+						<span class='dot-y'></span>
+						<span class='dot-g'></span>
+					</div>
+					<div class='tabs'>
+						{tabs.map((s, i) => (
+							<div class={`browser-tab${i === 1 ? ' active' : ''}`}>
+								<div class='favicon' style={`background:${s.color};`}>{s.initial}</div>
+								<span class='tab-title'>{s.name}</span>
+								<i class='bi bi-x' style='font-size:0.7rem;opacity:0.5;'></i>
+							</div>
+						))}
+						<div class='new-tab'>+</div>
+					</div>
+				</div>
+
+				<!-- Address bar -->
+				<div class='address-bar'>
+					<div class='nav-buttons'>
+						<i class='bi bi-arrow-left'></i>
+						<i class='bi bi-arrow-right'></i>
+						<i class='bi bi-arrow-clockwise'></i>
+					</div>
+					<div class='url-bar'>
+						<i class='bi bi-lock-fill' style='color:#3fb950;font-size:0.7rem;'></i>
+						<span class='url-text'>watch.nba.com / live / chi-vs-phi</span>
+					</div>
+					<div class='ext-row'>
+						<div class='puzzle-icon'><i class='bi bi-puzzle-fill'></i></div>
+						<div class='ext-icon-active'>
+							<img src='/arenaswap/images/icon_white_on_transparent.png' alt='ArenaSwap' />
+							<div class='ext-badge'></div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Stream content area (very subtle - just a placeholder court) -->
+				<div class='stream-area'>
+					<div class='court-bg'></div>
+					<div class='player-overlay'>
+						<div class='player-bottom'>
+							<div class='player-controls'>
+								<i class='bi bi-pause-fill'></i>
+								<i class='bi bi-volume-up-fill'></i>
+								<div class='progress-track'><div class='progress-fill'></div></div>
+								<span class='timecode'>Q3  4:44</span>
+								<i class='bi bi-arrows-fullscreen'></i>
+							</div>
+						</div>
+						<div class='live-pill-stream'>
+							<span class='live-dot-stream'></span>
+							LIVE
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Floating popup showing extension detected the streams -->
+			<div class='popup-float'>
+				<div class='popup'>
+					<div class='popup-inner'>
+						<div class='popup-header'>
+							<img src='/arenaswap/images/full_logo_white_on_transparent.png' alt='ArenaSwap' class='popup-logo' />
+							<div class='popup-header-right'>
+								<i class='bi bi-gear-fill' style='color:#8b949e;font-size:0.9rem;'></i>
+								<div class='popup-switch'>
+									<div class='popup-switch-thumb'></div>
+								</div>
+							</div>
+						</div>
+
+						<div class='popup-section-title'>Active Tabs</div>
+
+						<div class='popup-league-label'>NBA</div>
+						<div class='popup-card' style='border-left:5px solid #CE1141;border-right:5px solid #006BB6;background:linear-gradient(to right,#CE114128,#006BB628),#ffffff;'>
+							<div class='popup-card-top'>
+								<div class='popup-live'>
+									<span class='popup-live-dot'></span>
+									LIVE
+								</div>
+								<div class='popup-ps' style='background:#F75C03;'>
+									PowerScore: 84 / 100
+								</div>
+							</div>
+							<div class='popup-matchup'>
+								<div class='popup-team-col'>
+									<div style='width:40px;height:40px;border-radius:50%;background:#CE1141;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:0.7rem;'>CHI</div>
+									<i class='bi bi-star' style='font-size:0.7rem;color:#6c757d;'></i>
+									<span class='popup-team-abbr'>CHI</span>
+								</div>
+								<div class='popup-center-col'>
+									<div class='popup-scores'>
+										<span class='popup-score'>65</span>
+										<span class='popup-score'>68</span>
+									</div>
+									<span class='popup-clock'>4:44</span>
+									<span class='popup-period'>3rd</span>
+								</div>
+								<div class='popup-team-col'>
+									<div style='width:40px;height:40px;border-radius:50%;background:#006BB6;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:0.7rem;'>PHI</div>
+									<i class='bi bi-star-fill' style='font-size:0.7rem;color:#f1c40f;'></i>
+									<span class='popup-team-abbr'>PHI</span>
+								</div>
+							</div>
+							<div class='popup-meta'>
+								<span class='popup-meta-venue'>Xfinity Mobile Arena · Philadelphia, PA</span>
+								<span class='popup-meta-network'>NBA League Pass</span>
+							</div>
+							<div class='popup-tab-row'>
+								<select class='popup-select'>
+									<option>Tab 2: NBA League Pass</option>
+								</select>
+							</div>
+						</div>
+
+						<div class='popup-league-label'>MLB</div>
+						<div class='popup-card' style='border-left:5px solid #BD3039;border-right:5px solid #003087;background:linear-gradient(to right,#BD303928,#00308728),#ffffff;'>
+							<div class='popup-card-top'>
+								<div class='popup-live'>
+									<span class='popup-live-dot'></span>
+									LIVE
+								</div>
+								<div class='popup-ps' style='background:#d06800;'>
+									PowerScore: 71 / 100
+								</div>
+							</div>
+							<div class='popup-matchup'>
+								<div class='popup-team-col'>
+									<div style='width:40px;height:40px;border-radius:50%;background:#BD3039;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:0.7rem;'>BOS</div>
+									<i class='bi bi-star' style='font-size:0.7rem;color:#6c757d;'></i>
+									<span class='popup-team-abbr'>BOS</span>
+								</div>
+								<div class='popup-center-col'>
+									<div class='popup-scores'>
+										<span class='popup-score'>3</span>
+										<span class='popup-score'>2</span>
+									</div>
+									<span class='popup-clock'>T 5</span>
+									<span class='popup-period'>1 OUT</span>
+								</div>
+								<div class='popup-team-col'>
+									<div style='width:40px;height:40px;border-radius:50%;background:#003087;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:0.7rem;'>NYY</div>
+									<i class='bi bi-star' style='font-size:0.7rem;color:#6c757d;'></i>
+									<span class='popup-team-abbr'>NYY</span>
+								</div>
+							</div>
+							<div class='popup-meta'>
+								<span class='popup-meta-venue'>Fenway Park · Boston, MA</span>
+								<span class='popup-meta-network'>MLB.TV</span>
+							</div>
+							<div class='popup-tab-row'>
+								<select class='popup-select'>
+									<option>Tab 5: MLB.TV</option>
+								</select>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<style>
+		.browser-window {
+			width: 1140px;
+			height: 580px;
+			background: #0d1117;
+			border-radius: 14px;
+			overflow: hidden;
+			border: 1px solid rgba(255,255,255,0.1);
+			box-shadow:
+				0 24px 80px rgba(0,0,0,0.7),
+				0 0 0 1px rgba(255,255,255,0.04);
+		}
+
+		.browser-chrome {
+			background: #161b22;
+			padding: 10px 14px 0;
+			display: flex;
+			align-items: flex-end;
+			gap: 14px;
+		}
+
+		.traffic {
+			display: flex;
+			gap: 6px;
+			padding-bottom: 14px;
+		}
+
+		.traffic span {
+			width: 12px;
+			height: 12px;
+			border-radius: 50%;
+			display: block;
+		}
+
+		.dot-r { background: #ff5f57; }
+		.dot-y { background: #febc2e; }
+		.dot-g { background: #28c840; }
+
+		.tabs {
+			display: flex;
+			gap: 2px;
+			align-items: flex-end;
+			flex: 1;
+			min-width: 0;
+		}
+
+		.browser-tab {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			padding: 8px 12px;
+			background: transparent;
+			border-radius: 8px 8px 0 0;
+			min-width: 150px;
+			max-width: 170px;
+			color: #8b949e;
+			font-size: 0.72rem;
+			font-weight: 500;
+			border: 1px solid transparent;
+			border-bottom: none;
+		}
+
+		.browser-tab.active {
+			background: #0d1117;
+			color: #e6edf3;
+			border-color: #30363d;
+			border-bottom: none;
+		}
+
+		.tab-title {
+			flex: 1;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			font-weight: 500;
+		}
+
+		.favicon {
+			width: 14px;
+			height: 14px;
+			border-radius: 3px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			color: #fff;
+			font-size: 0.55rem;
+			font-weight: 800;
+			flex-shrink: 0;
+		}
+
+		.new-tab {
+			color: #8b949e;
+			padding: 0 12px 14px;
+			font-size: 1rem;
+			font-weight: 400;
+		}
+
+		.address-bar {
+			background: #0d1117;
+			border-bottom: 1px solid #30363d;
+			padding: 8px 14px;
+			display: flex;
+			align-items: center;
+			gap: 12px;
+		}
+
+		.nav-buttons {
+			display: flex;
+			gap: 10px;
+			color: #8b949e;
+			font-size: 0.85rem;
+		}
+
+		.url-bar {
+			flex: 1;
+			background: #21262d;
+			border-radius: 999px;
+			padding: 6px 14px;
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			font-size: 0.78rem;
+			color: #c9d1d9;
+		}
+
+		.url-text {
+			font-family: 'Lekton', monospace;
+			letter-spacing: 0.01em;
+			color: #c9d1d9;
+		}
+
+		.ext-row {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+		}
+
+		.puzzle-icon {
+			color: #8b949e;
+			font-size: 0.95rem;
+		}
+
+		.ext-icon-active {
+			width: 28px;
+			height: 28px;
+			border-radius: 7px;
+			background: rgba(247,92,3,0.12);
+			border: 1px solid rgba(247,92,3,0.4);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			position: relative;
+		}
+
+		.ext-icon-active img {
+			width: 18px;
+			height: 18px;
+			object-fit: contain;
+		}
+
+		.ext-badge {
+			position: absolute;
+			top: -3px;
+			right: -3px;
+			width: 8px;
+			height: 8px;
+			border-radius: 50%;
+			background: #F75C03;
+			border: 2px solid #0d1117;
+		}
+
+		.stream-area {
+			position: relative;
+			height: calc(100% - 36px - 38px);
+			background: #000;
+			overflow: hidden;
+		}
+
+		.court-bg {
+			position: absolute;
+			inset: 0;
+			background:
+				linear-gradient(135deg, #6b3e1a 0%, #5d3416 30%, #4a2a10 70%, #3a200d 100%);
+		}
+
+		.court-bg::before {
+			content: '';
+			position: absolute;
+			inset: 12% 18% 18% 18%;
+			border: 4px solid rgba(255,255,255,0.18);
+			border-radius: 8px;
+			background:
+				radial-gradient(circle at 50% 50%, rgba(255,255,255,0.06), transparent 60%);
+		}
+
+		.court-bg::after {
+			content: '';
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			width: 140px;
+			height: 140px;
+			border: 4px solid rgba(255,255,255,0.18);
+			border-radius: 50%;
+			transform: translate(-50%, -50%);
+		}
+
+		.player-overlay {
+			position: absolute;
+			inset: 0;
+			pointer-events: none;
+		}
+
+		.live-pill-stream {
+			position: absolute;
+			top: 18px;
+			left: 22px;
+			display: flex;
+			align-items: center;
+			gap: 6px;
+			background: #e53935;
+			color: #fff;
+			padding: 4px 10px;
+			border-radius: 4px;
+			font-size: 0.72rem;
+			font-weight: 800;
+			letter-spacing: 0.1em;
+		}
+
+		.live-dot-stream {
+			width: 6px;
+			height: 6px;
+			border-radius: 50%;
+			background: #fff;
+			animation: popup-live-pulse 1.5s ease-in-out infinite;
+		}
+
+		.player-bottom {
+			position: absolute;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			background: linear-gradient(to top, rgba(0,0,0,0.85), transparent);
+			padding: 24px 22px 16px;
+		}
+
+		.player-controls {
+			display: flex;
+			align-items: center;
+			gap: 14px;
+			color: #fff;
+			font-size: 1.1rem;
+		}
+
+		.progress-track {
+			flex: 1;
+			height: 4px;
+			background: rgba(255,255,255,0.25);
+			border-radius: 999px;
+			overflow: hidden;
+		}
+
+		.progress-fill {
+			height: 100%;
+			width: 62%;
+			background: #F75C03;
+			border-radius: 999px;
+		}
+
+		.timecode {
+			font-family: 'Lekton', monospace;
+			font-size: 0.75rem;
+			color: rgba(255,255,255,0.85);
+			min-width: 64px;
+		}
+
+		.popup-float {
+			position: absolute;
+			right: 60px;
+			bottom: 30px;
+			z-index: 5;
+			transform: rotate(-1deg);
+		}
+
+		.popup-float .popup {
+			width: 300px;
+		}
+	</style>
+</body>
+</html>

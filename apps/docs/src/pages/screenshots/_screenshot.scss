@@ -1,0 +1,374 @@
+// Screenshot page shared styles — fixed 1280x800 canvas
+// These pages are intentionally throwaway routes used only to capture
+// promotional product screenshots for the Chrome Web Store.
+
+@font-face {
+	font-family: 'DM Sans';
+	src: url('/arenaswap/fonts/DMSans-Regular.woff2') format('woff2');
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'DM Sans';
+	src: url('/arenaswap/fonts/DMSans-Medium.woff2') format('woff2');
+	font-weight: 500;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'DM Sans';
+	src: url('/arenaswap/fonts/DMSans-SemiBold.woff2') format('woff2');
+	font-weight: 600;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'DM Sans';
+	src: url('/arenaswap/fonts/DMSans-Bold.woff2') format('woff2');
+	font-weight: 700;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Lekton';
+	src: url('/arenaswap/fonts/Lekton-Regular.woff2') format('woff2');
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Lekton';
+	src: url('/arenaswap/fonts/Lekton-Bold.woff2') format('woff2');
+	font-weight: 700;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'bootstrap-icons';
+	src: url('/arenaswap/fonts/bootstrap-icons.woff2') format('woff2'),
+	     url('/arenaswap/fonts/bootstrap-icons.woff') format('woff');
+	font-display: block;
+}
+
+* {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+html, body {
+	width: 1280px;
+	height: 800px;
+	overflow: hidden;
+	background: #000;
+	color: #fff;
+	font-family: 'DM Sans', system-ui, sans-serif;
+	-webkit-font-smoothing: antialiased;
+}
+
+.bi {
+	font-family: 'bootstrap-icons' !important;
+	font-style: normal;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	line-height: 1;
+	display: inline-block;
+}
+
+.canvas {
+	position: relative;
+	width: 1280px;
+	height: 800px;
+	overflow: hidden;
+	isolation: isolate;
+	background: #000;
+}
+
+// Glow is centred at the bottom of the device frames (devices sit at
+// bottom: 60-80px), so the warmest light emanates from right behind the
+// device's bottom edge — making it look like the laptop is sitting on
+// glowing ground rather than floating in front of an unrelated halo.
+.canvas::before {
+	content: '';
+	position: absolute;
+	left: 50%;
+	bottom: -120px;
+	transform: translateX(-50%);
+	width: 1500px;
+	height: 360px;
+	background: radial-gradient(ellipse at center, #ff8c2a 0%, rgba(247,92,3,0.85) 18%, rgba(247,92,3,0.45) 36%, rgba(247,92,3,0.18) 55%, transparent 72%);
+	z-index: 0;
+	pointer-events: none;
+	filter: blur(8px);
+}
+
+// Soft secondary halo at the very bottom — adds the warm "ground" wash
+// you see in Apple-style product shots.
+.canvas::after {
+	content: '';
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	height: 220px;
+	background: linear-gradient(to top, rgba(247,92,3,0.35) 0%, rgba(247,92,3,0.12) 50%, transparent 100%);
+	z-index: 0;
+	pointer-events: none;
+}
+
+// Bottom-glow is now baked into the .canvas background gradient.
+// The element is kept (no-op) so existing markup stays valid.
+.bottom-glow,
+.over-glow {
+	display: none;
+}
+
+.headline {
+	position: relative;
+	z-index: 2;
+	width: 100%;
+	text-align: center;
+	padding-top: 60px;
+	font-size: 92px;
+	font-weight: 700;
+	letter-spacing: -0.045em;
+	line-height: 1;
+	color: #fff;
+}
+
+.headline .dot {
+	color: #F75C03;
+}
+
+.stage {
+	position: absolute;
+	left: 50%;
+	bottom: 0;
+	transform: translateX(-50%);
+	z-index: 1;
+}
+
+// ─── Extension popup (shared across screenshots) ─────────────────────────────
+.popup {
+	width: 320px;
+	background: #0d1117;
+	border-radius: 14px;
+	overflow: hidden;
+	color: #e6edf3;
+	box-shadow:
+		0 0 0 1px rgba(255,255,255,0.08),
+		0 32px 80px rgba(0, 0, 0, 0.7),
+		0 0 80px rgba(247, 92, 3, 0.15);
+	font-family: 'DM Sans', system-ui, sans-serif;
+}
+
+.popup-inner {
+	padding: 12px;
+}
+
+.popup-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 8px;
+	padding-bottom: 8px;
+	border-bottom: 1px solid #30363d;
+}
+
+.popup-logo {
+	height: 32px;
+	width: auto;
+	object-fit: contain;
+}
+
+.popup-header-right {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.popup-switch {
+	width: 32px;
+	height: 18px;
+	background: #F75C03;
+	border-radius: 999px;
+	position: relative;
+	flex-shrink: 0;
+}
+
+.popup-switch-thumb {
+	position: absolute;
+	right: 2px;
+	top: 2px;
+	width: 14px;
+	height: 14px;
+	background: #fff;
+	border-radius: 50%;
+}
+
+.popup-section-title {
+	font-size: 1.2rem;
+	font-weight: 700;
+	text-align: center;
+	letter-spacing: -0.01em;
+	color: #e6edf3;
+	margin: 4px 0 8px;
+}
+
+.popup-league-label {
+	font-size: 0.7rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.1em;
+	color: #8b949e;
+	margin: 6px 0 4px;
+}
+
+.popup-card {
+	border-radius: 0.5rem;
+	padding: 10px;
+	margin-bottom: 8px;
+	border: 1px solid #dee2e6;
+}
+
+.popup-card-top {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 4px;
+}
+
+.popup-live {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	font-size: 0.62rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	color: #F75C03;
+}
+
+@keyframes popup-live-pulse {
+	0%, 100% { opacity: 1; }
+	50% { opacity: 0.3; }
+}
+
+.popup-live-dot {
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
+	background: #e53935;
+	animation: popup-live-pulse 1.5s ease-in-out infinite;
+	flex-shrink: 0;
+}
+
+.popup-ps {
+	font-size: 0.55rem;
+	font-weight: 700;
+	color: #fff;
+	padding: 2px 6px;
+	border-radius: 0.25rem;
+	letter-spacing: 0.03em;
+}
+
+.popup-matchup {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.65rem;
+	margin: 6px 0 4px;
+}
+
+.popup-team-col {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	min-width: 56px;
+	gap: 2px;
+}
+
+.popup-team-logo-img {
+	width: 40px;
+	height: 40px;
+	object-fit: contain;
+}
+
+.popup-team-abbr {
+	font-size: 0.68rem;
+	color: #111827;
+	font-weight: 700;
+}
+
+.popup-center-col {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	min-width: 80px;
+	gap: 2px;
+}
+
+.popup-scores {
+	display: flex;
+	gap: 1.1rem;
+	align-items: baseline;
+}
+
+.popup-score {
+	font-size: 1.6rem;
+	font-weight: 700;
+	color: #111827;
+	letter-spacing: -0.02em;
+	font-variant-numeric: tabular-nums;
+}
+
+.popup-clock {
+	font-family: 'Lekton', monospace;
+	font-size: 0.8rem;
+	color: #374151;
+}
+
+.popup-period {
+	font-family: 'Lekton', monospace;
+	font-size: 0.65rem;
+	color: #6c757d;
+}
+
+.popup-meta {
+	display: flex;
+	flex-direction: column;
+	gap: 1px;
+	margin-top: 4px;
+}
+
+.popup-meta-venue {
+	font-size: 0.58rem;
+	color: #6c757d;
+}
+
+.popup-meta-network {
+	font-size: 0.55rem;
+	color: #495057;
+}
+
+.popup-tab-row {
+	margin-top: 6px;
+}
+
+.popup-select {
+	width: 100%;
+	background: #f8f9fa;
+	color: #374151;
+	border: 1px solid #dee2e6;
+	border-radius: 0.25rem;
+	font-size: 0.6rem;
+	padding: 2px 6px;
+}
