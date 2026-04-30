@@ -8,6 +8,7 @@
 		"dev:firefox": "wxt --browser firefox --mv3",
 		"build": "npm run build --workspace @arenaswap/powerscore && npm run build --workspace @arenaswap/core && wxt build",
 		"build:firefox": "npm run build --workspace @arenaswap/powerscore && npm run build --workspace @arenaswap/core && wxt build --browser firefox --mv3",
+		"build:edge": "npm run build --workspace @arenaswap/powerscore && npm run build --workspace @arenaswap/core && wxt build --browser edge --mv3",
 		"typecheck": "wxt prepare && tsc --noEmit"
 	},
 	"dependencies": {

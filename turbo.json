@@ -9,6 +9,10 @@
 			"dependsOn": ["^build"],
 			"outputs": [".output/**"]
 		},
+		"build:edge": {
+			"dependsOn": ["^build"],
+			"outputs": [".output/**"]
+		},
 		"dev": {
 			"persistent": true,
 			"cache": false,
