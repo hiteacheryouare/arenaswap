@@ -5,6 +5,15 @@ export default defineConfig({
 	manifest: {
 		name: 'ArenaSwap',
 		description: 'Automatically flip to the most exciting game',
+		browser_specific_settings: {
+			gecko: {
+				id: 'arenaswap@hiteacheryouare.github.io',
+				strict_min_version: '109.0',
+				data_collection_permissions: {
+					required: ['none'],
+				},
+			},
+		},
 		permissions: ['tabs', 'storage', 'notifications'],
 		host_permissions: [
 			'https://site.api.espn.com/*',
