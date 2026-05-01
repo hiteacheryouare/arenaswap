@@ -1,6 +1,6 @@
 {
 	"name": "@arenaswap/powerscore",
-	"version": "1.0.0",
+	"version": "1.1.0",
 	"description": "PowerScore algorithm — excitement scoring engine for ArenaSwap",
 	"main": "./dist/index.js",
 	"types": "./dist/index.d.ts",
