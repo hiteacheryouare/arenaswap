@@ -336,6 +336,15 @@ export const leagueConfigs: LeagueConfig[] = [
 		periodDurationSecs: 2700,
 		periodFormat: 'halves',
 	},
+	{
+		id: 'fifawc',
+		label: 'FIFA World Cup',
+		sportType: 'soccer',
+		espnPath: 'soccer/fifa.world',
+		regularPeriods: 2,
+		periodDurationSecs: 2700,
+		periodFormat: 'halves',
+	},
 ];
 
 export const allLeagueIds = leagueConfigs.map(c => c.id) as LeagueId[];

@@ -103,15 +103,18 @@ describe('constants', () => {
 		}
 	});
 
-	test('has logo fallbacks defined for ncaaw and epl', () => {
+	test('has logo fallbacks defined for ncaaw, epl, and fifawc', () => {
 		expect(leagueLogoFallbacks.ncaaw).toMatch(/^https?:\/\//);
 		expect(leagueLogoFallbacks.epl).toMatch(/^https?:\/\//);
+		expect(leagueLogoFallbacks.fifawc).toMatch(/^https?:\/\//);
 	});
 
-	test('resolves ncaaw and epl league logo URLs with ESPN value first, then fallback', () => {
+	test('resolves ncaaw, epl, and fifawc league logo URLs with ESPN value first, then fallback', () => {
 		expect(resolveLeagueLogoUrl('ncaaw', 'https://cdn.example/ncaaw.png')).toBe('https://cdn.example/ncaaw.png');
 		expect(resolveLeagueLogoUrl('ncaaw')).toBe(leagueLogoFallbacks.ncaaw);
 		expect(resolveLeagueLogoUrl('epl', 'https://cdn.example/epl.png')).toBe('https://cdn.example/epl.png');
 		expect(resolveLeagueLogoUrl('epl')).toBe(leagueLogoFallbacks.epl);
+		expect(resolveLeagueLogoUrl('fifawc', 'https://cdn.example/fifawc.png')).toBe('https://cdn.example/fifawc.png');
+		expect(resolveLeagueLogoUrl('fifawc')).toBe(leagueLogoFallbacks.fifawc);
 	});
 });

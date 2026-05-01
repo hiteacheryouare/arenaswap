@@ -199,6 +199,16 @@ export class MockGameSimulator {
 				period: 2, clockSeconds: 1980, status: 'in',
 				broadcasts: ['Peacock'],
 			},
+			{
+				id: 'mock-13',
+				league: 'fifawc',
+				sportType: 'soccer',
+				homeTeam: { id: '564', name: 'United States', abbreviation: 'USA', score: 1, logo: `${espnCdn}/soccer/500/564.png`, color: '#002868' },
+				awayTeam: { id: '239', name: 'Mexico', abbreviation: 'MEX', score: 1, logo: `${espnCdn}/soccer/500/239.png`, color: '#006847' },
+				venueName: 'Lincoln Financial Field',
+				period: 2, clockSeconds: 2400, status: 'in',
+				broadcasts: ['Fox'],
+			},
 		];
 
 		this.state = new Map();

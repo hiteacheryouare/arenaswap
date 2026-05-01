@@ -270,6 +270,11 @@ describe('MockGameSimulator', () => {
 		expect(eplGame).toBeDefined();
 		expect(eplGame?.sportType).toBe('soccer');
 		expect(eplGame?.id).toBe('mock-12');
+
+		const fifawcGame = games.find(g => g.league === 'fifawc');
+		expect(fifawcGame).toBeDefined();
+		expect(fifawcGame?.sportType).toBe('soccer');
+		expect(fifawcGame?.id).toBe('mock-13');
 	});
 
 	test('simulates ncaaw basketball game correctly across ticks', () => {

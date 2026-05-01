@@ -429,6 +429,37 @@ describe('apiClient', () => {
 		expect(calledUrls[0]).not.toContain('groups=');
 	});
 
+	test('fetches FIFA World Cup scoreboard from correct ESPN path without groups param', async () => {
+		const fetchMock = jest.fn()
+			.mockResolvedValueOnce(createResponse({
+				leagues: [{ logos: [{ href: 'https://cdn.example/fifawc-logo.png' }] }],
+				events: [makeEvent({
+					id: 'fifawc-live',
+					state: 'in',
+					period: 2,
+					clock: '40:00',
+					homeScore: '1',
+					awayScore: '1',
+					withOdds: false,
+				})],
+			}))
+			.mockResolvedValueOnce(createResponse({ events: [] }));
+
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+		const { fetchGamesWithLeagueLogos } = loadApiClient();
+
+		const result = await fetchGamesWithLeagueLogos(['fifawc']);
+		expect(result.leagueLogos.fifawc).toBe('https://cdn.example/fifawc-logo.png');
+		expect(result.games).toHaveLength(1);
+		expect(result.games[0].id).toBe('fifawc-live');
+		expect(result.games[0].league).toBe('fifawc');
+		expect(result.games[0].sportType).toBe('soccer');
+
+		const calledUrls = fetchMock.mock.calls.map(([url]) => String(url));
+		expect(calledUrls[0]).toContain('/soccer/fifa.world/scoreboard');
+		expect(calledUrls[0]).not.toContain('groups=');
+	});
+
 	test('keeps fulfilled games when one scoreboard request fails for a league', async () => {
 		const fetchMock = jest.fn(async (url: string) => {
 			if (url.includes('/basketball/nba/scoreboard') && !url.includes('dates=')) {

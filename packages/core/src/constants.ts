@@ -77,6 +77,7 @@ export const leagueLogoFallbacks: Record<LeagueId, string> = {
 	ncaaf: 'https://a.espncdn.com/redesign/assets/img/icons/ESPN-icon-football-college.png',
 	mls: 'https://a.espncdn.com/i/teamlogos/leagues/500/mls.png',
 	epl: 'https://a.espncdn.com/i/teamlogos/soccer/500/eng.1.png',
+	fifawc: 'https://a.espncdn.com/i/teamlogos/soccer/500/fifa.world.png',
 };
 
 export const resolveLeagueLogoUrl = (leagueId: LeagueId, espnLogoUrl?: string): string => (
