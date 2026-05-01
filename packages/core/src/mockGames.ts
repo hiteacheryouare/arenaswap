@@ -174,6 +174,41 @@ export class MockGameSimulator {
 					provider: { name: 'Draft Kings', logoUrl: 'https://a.espncdn.com/i/betting/Draftkings_Light.svg' },
 				},
 			},
+			{
+				id: 'mock-11',
+				league: 'ncaaw',
+				sportType: 'basketball',
+				homeTeam: { id: '111', name: 'Northeastern Huskies', abbreviation: 'NU', score: 55, logo: `${espnCdn}/ncaa/500/111.png`, color: '#CC0000' },
+				awayTeam: { id: '222', name: 'Villanova Wildcats', abbreviation: 'VIL', score: 52, logo: `${espnCdn}/ncaa/500/222.png`, color: '#003366' },
+				venueName: 'Cabot Center',
+				period: 3, clockSeconds: 420, status: 'in',
+				broadcasts: ['ESPN2'],
+				odds: {
+					details: 'NU -3.5',
+					overUnder: 138.5,
+					provider: { name: 'Draft Kings', logoUrl: 'https://a.espncdn.com/i/betting/Draftkings_Light.svg' },
+				},
+			},
+			{
+				id: 'mock-12',
+				league: 'epl',
+				sportType: 'soccer',
+				homeTeam: { id: '364', name: 'Liverpool FC', abbreviation: 'LIV', score: 1, logo: `${espnCdn}/soccer/500/364.png`, color: '#C8102E' },
+				awayTeam: { id: '359', name: 'Arsenal', abbreviation: 'ARS', score: 1, logo: `${espnCdn}/soccer/500/359.png`, color: '#EF0107' },
+				venueName: 'Anfield',
+				period: 2, clockSeconds: 1980, status: 'in',
+				broadcasts: ['Peacock'],
+			},
+			{
+				id: 'mock-13',
+				league: 'fifawc',
+				sportType: 'soccer',
+				homeTeam: { id: '564', name: 'United States', abbreviation: 'USA', score: 1, logo: `${espnCdn}/soccer/500/564.png`, color: '#002868' },
+				awayTeam: { id: '239', name: 'Mexico', abbreviation: 'MEX', score: 1, logo: `${espnCdn}/soccer/500/239.png`, color: '#006847' },
+				venueName: 'Lincoln Financial Field',
+				period: 2, clockSeconds: 2400, status: 'in',
+				broadcasts: ['Fox'],
+			},
 		];
 
 		this.state = new Map();

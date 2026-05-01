@@ -256,4 +256,56 @@ describe('MockGameSimulator', () => {
 
 		randomSpy.mockRestore();
 	});
+
+	test('includes mock games for ncaaw and epl leagues', () => {
+		const simulator = new MockGameSimulator();
+		const games = simulator.tick();
+
+		const ncaawGame = games.find(g => g.league === 'ncaaw');
+		expect(ncaawGame).toBeDefined();
+		expect(ncaawGame?.sportType).toBe('basketball');
+		expect(ncaawGame?.id).toBe('mock-11');
+
+		const eplGame = games.find(g => g.league === 'epl');
+		expect(eplGame).toBeDefined();
+		expect(eplGame?.sportType).toBe('soccer');
+		expect(eplGame?.id).toBe('mock-12');
+
+		const fifawcGame = games.find(g => g.league === 'fifawc');
+		expect(fifawcGame).toBeDefined();
+		expect(fifawcGame?.sportType).toBe('soccer');
+		expect(fifawcGame?.id).toBe('mock-13');
+	});
+
+	test('simulates ncaaw basketball game correctly across ticks', () => {
+		const randomSpy = jest.spyOn(Math, 'random').mockReturnValue(0.99);
+		const simulator = new MockGameSimulator();
+
+		for (let i = 0; i < 5; i++) {
+			const games = simulator.tick();
+			const ncaawGame = games.find(g => g.id === 'mock-11')!;
+			expect(ncaawGame.league).toBe('ncaaw');
+			expect(ncaawGame.sportType).toBe('basketball');
+			expect(ncaawGame.homeTeam.score).toBeGreaterThanOrEqual(0);
+			expect(ncaawGame.awayTeam.score).toBeGreaterThanOrEqual(0);
+		}
+
+		randomSpy.mockRestore();
+	});
+
+	test('simulates epl soccer game correctly across ticks', () => {
+		const randomSpy = jest.spyOn(Math, 'random').mockReturnValue(0.99);
+		const simulator = new MockGameSimulator();
+
+		for (let i = 0; i < 5; i++) {
+			const games = simulator.tick();
+			const eplGame = games.find(g => g.id === 'mock-12')!;
+			expect(eplGame.league).toBe('epl');
+			expect(eplGame.sportType).toBe('soccer');
+			expect(eplGame.homeTeam.score).toBeGreaterThanOrEqual(0);
+			expect(eplGame.awayTeam.score).toBeGreaterThanOrEqual(0);
+		}
+
+		randomSpy.mockRestore();
+	});
 });

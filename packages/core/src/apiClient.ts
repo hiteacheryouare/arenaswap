@@ -266,6 +266,8 @@ const fetchLeagueGames = async (config: LeagueConfig, options: { includeUpcoming
 	// ESPN requires `groups=50` for reliable NCAA men's basketball scoreboard coverage
 	// and to avoid 404 responses on date-range queries.
 	if (config.id === 'ncaab') baseParams.set('groups', '50');
+	// ESPN requires `groups=49` for reliable NCAA women's basketball scoreboard coverage.
+	if (config.id === 'ncaaw') baseParams.set('groups', '49');
 
 	const scoreboardUrl = `${espnBase}/${config.espnPath}/scoreboard`;
 	const baseQuery = baseParams.toString();
