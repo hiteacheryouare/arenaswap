@@ -372,6 +372,63 @@ describe('apiClient', () => {
 		expect(calledUrls[1]).toContain('groups=50');
 	});
 
+	test('adds NCAA womens basketball groups=49 query and uses fallback league logo when needed', async () => {
+		const fetchMock = jest.fn()
+			.mockResolvedValueOnce(createResponse({ events: [makeEvent({
+				id: 'ncaaw-live',
+				state: 'live',
+				period: 3,
+				clock: '5:00',
+				homeScore: '60',
+				awayScore: '58',
+				withOdds: false,
+			})] }))
+			.mockResolvedValueOnce(createResponse({ events: [] }));
+
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+		const { fetchLeagueLogos } = loadApiClient();
+
+		const logos = await fetchLeagueLogos(['ncaaw']);
+		expect(logos.ncaaw).toBe(leagueLogoFallbacks.ncaaw);
+
+		const calledUrls = fetchMock.mock.calls.map(([url]) => String(url));
+		expect(calledUrls).toHaveLength(2);
+		expect(calledUrls[0]).toContain('groups=49');
+		expect(calledUrls[1]).toContain('groups=49');
+		expect(calledUrls[0]).toContain('/basketball/womens-college-basketball/scoreboard');
+	});
+
+	test('fetches EPL scoreboard from correct ESPN path without groups param', async () => {
+		const fetchMock = jest.fn()
+			.mockResolvedValueOnce(createResponse({
+				leagues: [{ logos: [{ href: 'https://cdn.example/epl-logo.png' }] }],
+				events: [makeEvent({
+					id: 'epl-live',
+					state: 'in',
+					period: 2,
+					clock: '25:00',
+					homeScore: '1',
+					awayScore: '0',
+					withOdds: false,
+				})],
+			}))
+			.mockResolvedValueOnce(createResponse({ events: [] }));
+
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+		const { fetchGamesWithLeagueLogos } = loadApiClient();
+
+		const result = await fetchGamesWithLeagueLogos(['epl']);
+		expect(result.leagueLogos.epl).toBe('https://cdn.example/epl-logo.png');
+		expect(result.games).toHaveLength(1);
+		expect(result.games[0].id).toBe('epl-live');
+		expect(result.games[0].league).toBe('epl');
+		expect(result.games[0].sportType).toBe('soccer');
+
+		const calledUrls = fetchMock.mock.calls.map(([url]) => String(url));
+		expect(calledUrls[0]).toContain('/soccer/eng.1/scoreboard');
+		expect(calledUrls[0]).not.toContain('groups=');
+	});
+
 	test('keeps fulfilled games when one scoreboard request fails for a league', async () => {
 		const fetchMock = jest.fn(async (url: string) => {
 			if (url.includes('/basketball/nba/scoreboard') && !url.includes('dates=')) {

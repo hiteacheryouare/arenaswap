@@ -318,6 +318,24 @@ export const leagueConfigs: LeagueConfig[] = [
 		periodDurationSecs: 2700,
 		periodFormat: 'halves',
 	},
+	{
+		id: 'ncaaw',
+		label: "NCAA Women's Basketball",
+		sportType: 'basketball',
+		espnPath: 'basketball/womens-college-basketball',
+		regularPeriods: 4,
+		periodDurationSecs: 600,
+		periodFormat: 'quarters',
+	},
+	{
+		id: 'epl',
+		label: 'English Premier League',
+		sportType: 'soccer',
+		espnPath: 'soccer/eng.1',
+		regularPeriods: 2,
+		periodDurationSecs: 2700,
+		periodFormat: 'halves',
+	},
 ];
 
 export const allLeagueIds = leagueConfigs.map(c => c.id) as LeagueId[];

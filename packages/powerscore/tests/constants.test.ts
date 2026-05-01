@@ -44,6 +44,22 @@ describe('leagueConfigMap coverage', () => {
 			expect(leagueConfigMap[id].id).toBe(id);
 		}
 	});
+
+	it('includes ncaaw as a basketball league with correct ESPN path', () => {
+		expect(leagueConfigMap.ncaaw).toBeDefined();
+		expect(leagueConfigMap.ncaaw.sportType).toBe('basketball');
+		expect(leagueConfigMap.ncaaw.espnPath).toBe('basketball/womens-college-basketball');
+		expect(leagueConfigMap.ncaaw.regularPeriods).toBe(4);
+		expect(leagueConfigMap.ncaaw.periodFormat).toBe('quarters');
+	});
+
+	it('includes epl as a soccer league with correct ESPN path', () => {
+		expect(leagueConfigMap.epl).toBeDefined();
+		expect(leagueConfigMap.epl.sportType).toBe('soccer');
+		expect(leagueConfigMap.epl.espnPath).toBe('soccer/eng.1');
+		expect(leagueConfigMap.epl.regularPeriods).toBe(2);
+		expect(leagueConfigMap.epl.periodFormat).toBe('halves');
+	});
 });
 
 describe('sportTypeConfigs late-game curve config', () => {

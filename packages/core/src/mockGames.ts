@@ -174,6 +174,31 @@ export class MockGameSimulator {
 					provider: { name: 'Draft Kings', logoUrl: 'https://a.espncdn.com/i/betting/Draftkings_Light.svg' },
 				},
 			},
+			{
+				id: 'mock-11',
+				league: 'ncaaw',
+				sportType: 'basketball',
+				homeTeam: { id: '41', name: 'UConn Huskies', abbreviation: 'CONN', score: 55, logo: `${espnCdn}/ncaa/500/41.png`, color: '#002868' },
+				awayTeam: { id: '2579', name: 'South Carolina Gamecocks', abbreviation: 'SC', score: 52, logo: `${espnCdn}/ncaa/500/2579.png`, color: '#73000a' },
+				venueName: 'Gampel Pavilion',
+				period: 3, clockSeconds: 420, status: 'in',
+				broadcasts: ['ESPN2'],
+				odds: {
+					details: 'CONN -3.5',
+					overUnder: 138.5,
+					provider: { name: 'Draft Kings', logoUrl: 'https://a.espncdn.com/i/betting/Draftkings_Light.svg' },
+				},
+			},
+			{
+				id: 'mock-12',
+				league: 'epl',
+				sportType: 'soccer',
+				homeTeam: { id: '364', name: 'Liverpool FC', abbreviation: 'LIV', score: 1, logo: `${espnCdn}/soccer/500/364.png`, color: '#C8102E' },
+				awayTeam: { id: '382', name: 'Manchester City', abbreviation: 'MCI', score: 1, logo: `${espnCdn}/soccer/500/382.png`, color: '#6CABDD' },
+				venueName: 'Anfield',
+				period: 2, clockSeconds: 1980, status: 'in',
+				broadcasts: ['Peacock'],
+			},
 		];
 
 		this.state = new Map();

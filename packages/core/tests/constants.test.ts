@@ -102,4 +102,16 @@ describe('constants', () => {
 			expect(leagueConfigMap[leagueId]).toBeDefined();
 		}
 	});
+
+	test('has logo fallbacks defined for ncaaw and epl', () => {
+		expect(leagueLogoFallbacks.ncaaw).toMatch(/^https?:\/\//);
+		expect(leagueLogoFallbacks.epl).toMatch(/^https?:\/\//);
+	});
+
+	test('resolves ncaaw and epl league logo URLs with ESPN value first, then fallback', () => {
+		expect(resolveLeagueLogoUrl('ncaaw', 'https://cdn.example/ncaaw.png')).toBe('https://cdn.example/ncaaw.png');
+		expect(resolveLeagueLogoUrl('ncaaw')).toBe(leagueLogoFallbacks.ncaaw);
+		expect(resolveLeagueLogoUrl('epl', 'https://cdn.example/epl.png')).toBe('https://cdn.example/epl.png');
+		expect(resolveLeagueLogoUrl('epl')).toBe(leagueLogoFallbacks.epl);
+	});
 });
