@@ -44,7 +44,7 @@ const pickTip = (context: proTipContext): string | null => {
 	return pool[Math.floor(Math.random() * pool.length)];
 };
 
-const proTip = ({ context = 'general', chance = 0.2 }: proTipProps) => {
+const proTip = ({ context = 'general', chance = 0.5 }: proTipProps) => {
 	const [tip] = useState<string | null>(() => (Math.random() < chance ? pickTip(context) : null));
 	if (!tip) return null;
 	return (
