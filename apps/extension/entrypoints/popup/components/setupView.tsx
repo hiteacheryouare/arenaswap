@@ -3,6 +3,7 @@ import { leagueConfigs, resolveLeagueLogoUrl } from '@arenaswap/core/constants';
 import type { LeagueId, LeagueLogoMap, SportType, UserPreferences } from '@arenaswap/core/types';
 import CooldownSlider from './cooldownSlider';
 import FavoriteTeamBonusInput from './favoriteTeamBonusInput';
+import ProTip from './proTip';
 import SensitivitySlider from './sensitivitySlider';
 import SwitchDelaySlider from './switchDelaySlider';
 import { leaguesBySportType, sportTypeLabels, sportTypeOrder } from '../popupHelpers';
@@ -71,6 +72,8 @@ const setupView = ({
 			<i className='bi bi-arrow-left' />
 			Settings
 		</button>
+
+		<ProTip context='setup' />
 
 		<SensitivitySlider value={prefs.sensitivity} onChange={onSensitivityChange} />
 

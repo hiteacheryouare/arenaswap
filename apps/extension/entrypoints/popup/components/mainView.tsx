@@ -11,6 +11,7 @@ import type {
 import { resolveLeagueLogoUrl } from '@arenaswap/core/constants';
 import GameCard from './gameCard';
 import PopupFooter from './popupFooter';
+import ProTip from './proTip';
 import { buildFavoritePinnedComparator, groupByLeague, leagueLabels } from '../popupHelpers';
 
 interface gameSectionProps {
@@ -174,6 +175,8 @@ const mainView = ({
 			)}
 
 			{hasError && <div className='alert alert-danger d-flex align-items-center gap-2 mt-3 py-2 px-3 popup-error-banner' role='alert'><i className='bi bi-exclamation-triangle-fill' />Failed to load games. Retrying&hellip;</div>}
+
+			{!isLoading && !noLeaguesSelected && <ProTip context='main' />}
 			{!isLoading && !noLeaguesSelected && assignedLiveGames.length > 0 && gameSection({ title: 'Active Tabs', games: assignedLiveGames, scores, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail })}
 			{!isLoading && !noLeaguesSelected && unassignedLiveGames.length > 0 && gameSection({ title: 'Other Games', games: unassignedLiveGames, scores, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail })}
 

@@ -14,6 +14,7 @@ import type { Game, PowerScoreResult, PowerScoreSnapshot, ScoreSnapshot } from '
 import DetailTeamPill from './detailTeamPill';
 import FlipScore from './flipScore';
 import GameDetailChart from './gameDetailChart';
+import ProTip from './proTip';
 import {
 	buildComponentContributionOption,
 	buildPowerScoreOption,
@@ -143,6 +144,8 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 				<div className='powerscore-breakdown-row powerscore-breakdown-row-total'><span>Final PowerScore</span><span>{totalLabel}</span></div>
 				<div className='powerscore-breakdown-reason'>Headline reason: {reason}</div>
 			</section>
+
+			<ProTip context='detail' />
 
 			{orderedPowerScoreHistory.length > 0
 				? <GameDetailChart title='PowerScore over time' option={powerScoreOption} />
