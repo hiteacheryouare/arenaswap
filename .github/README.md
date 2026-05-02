@@ -2,7 +2,7 @@
 
 <br>
 
-**ArenaSwap** (stylized as *arenaswap.*) is a browser extension that monitors every live sports game across 12 leagues and automatically switches your browser tab to the most exciting one — powered by a live scoring algorithm called **PowerScore**.
+**ArenaSwap** is a browser extension that monitors every live sports game across 12 leagues and automatically switches your browser tab to the most exciting one, powered by a live scoring algorithm called **PowerScore**.
 
 Think [NFL RedZone](https://www.nfl.com/redzone), but for every sport. All day. All season.
 
@@ -13,9 +13,9 @@ Think [NFL RedZone](https://www.nfl.com/redzone), but for every sport. All day. 
 
 ## The Idea
 
-Inspired by [this TikTok](https://www.tiktok.com/@gfedgocrazy/video/7620585631143496974?is_from_webapp=1&sender_device=pc&web_id=7621724919189866014) and the concept behind NFL RedZone, ArenaSwap was built to solve a simple problem: when you have five games open, you're always watching the wrong one.
+Inspired by [this TikTok](https://www.tiktok.com/@gfedgocrazy/video/7620585631143496974?is_from_webapp=1&sender_device=pc&web_id=7621724919189866014),from one of my favorite TikTokers, [@gfedgocrazy](https://www.tiktok.com/@gfedgocrazy), and the concept behind NFL RedZone, ArenaSwap was built to solve a simple problem: when you have many games open, its hard to always be watching the best one.
 
-ArenaSwap fixes that. It watches every game for you and puts the best one on screen — automatically.
+ArenaSwap fixes that. It watches every game for you and puts the best one on screen automatically.
 
 ---
 
@@ -24,7 +24,7 @@ ArenaSwap fixes that. It watches every game for you and puts the best one on scr
 ArenaSwap uses the **bring-your-own-tabs** model:
 
 **01 — Open your streams.**
-Pull up your games in separate browser tabs. Any service that works in a browser works with ArenaSwap — ESPN+, Peacock, Paramount+, YouTube TV, Hulu, whatever you've got.
+Pull up your games in separate browser tabs. Any service that works in a browser works with ArenaSwap; ESPN+, Peacock, Paramount+, YouTube TV, Hulu, whatever you've got.
 
 **02 — Assign each tab once.**
 Open the extension, find each game in the list, and connect it to the right tab with a single dropdown.
@@ -56,7 +56,7 @@ PowerScore is a 100-point live algorithm that measures how exciting a game is *r
 |---|---|---|
 | Closeness | 30 | How tight the margin is. A tied game scores maximum. |
 | Late-Game Pressure | 30 | Exponential boost as the clock winds down. Overtime maxes the scale. |
-| Momentum | 20 | Unanswered scoring runs — an 8-2 NBA run, a 3-goal hockey stretch. |
+| Momentum | 20 | Unanswered scoring runs |
 | Lead Changes | 12 | Back-and-forth games beat one-sided affairs. |
 | Comeback Factor | 8 | Is the trailing team clawing back? |
 
