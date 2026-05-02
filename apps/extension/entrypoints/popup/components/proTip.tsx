@@ -14,6 +14,7 @@ const tipsByContext: Record<proTipContext, string[]> = {
 		'Click any game card to dive into its PowerScore breakdown.',
 		'Mixing sports? Enable extra leagues in Settings to swap across all of them at once.',
 		'Giraffes and hedgehogs are cool. So is watching every game at once.',
+		'ArensSwap works better the longer you let it run!'
 	],
 	main: [
 		'Star your favorite teams to pin their games to the top of the list.',
