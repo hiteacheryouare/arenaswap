@@ -1,0 +1,1 @@
+ArenaSwap automatically switches your active browser tab to whichever live sports game is most exciting at any given moment, based on a transparent 0–100 PowerScore computed from public ESPN scoreboard data.
