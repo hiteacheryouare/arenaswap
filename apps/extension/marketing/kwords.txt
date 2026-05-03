@@ -1,0 +1,20 @@
+sports
+live scores
+nfl
+nba
+mlb
+nhl
+mls
+ncaa
+redzone
+multi-game
+auto-switcher
+tab-switcher
+espn
+streaming
+fantasy
+sports-betting
+live-sports
+game-tracker
+sports-dashboard
+powerscore
