@@ -1,4 +1,5 @@
 // ─── Bootstrap variable overrides ───────────────────────────────────────────
+$prefix: 		    'as-';
 $primary:           #F75C03;
 $secondary:         #2274A5;
 $success:           #00CC66;
@@ -29,6 +30,12 @@ $accordion-button-color:    #e6edf3;
 $accordion-button-active-color: #F75C03;
 $accordion-body-padding-x:  1.25rem;
 $accordion-body-padding-y:  1rem;
+* {
+	&::selection {
+		background: $primary;
+		color: #fff;
+	}
+}
 
 @import 'bootstrap/scss/bootstrap';
 @import 'bootstrap-icons/font/bootstrap-icons.scss';
