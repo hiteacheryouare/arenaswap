@@ -6,8 +6,6 @@
 
 Think [NFL RedZone](https://www.nfl.com/redzone), but for every sport. All day. All season.
 
-> [!WARNING]
-> ArenaSwap is in active early beta. It is not yet on the Chrome Web Store or Firefox Add-ons. Load it locally using the instructions below. Expect rough edges — and please report bugs!
 
 ---
 
