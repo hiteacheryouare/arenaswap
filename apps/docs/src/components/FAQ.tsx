@@ -3,7 +3,7 @@ import { useState } from 'react';
 const items = [
 	{
 		q: 'What leagues does ArenaSwap support?',
-		a: 'Currently: NBA, WNBA, NFL, NHL, MLB, MLS, NCAAB, NCAAF, and NCAAMH — nine leagues across basketball, football, hockey, baseball, and soccer. You can toggle each league on or off in settings.',
+		a: 'Currently: NBA, WNBA, NCAAB, NCAAW, NFL, NCAAF, NHL, NCAAMH, MLB, MLS, EPL, and FIFA World Cup — twelve leagues across basketball, football, hockey, baseball, and soccer. You can toggle each league on or off in settings.',
 	},
 	{
 		q: 'Do I need an account or subscription?',
