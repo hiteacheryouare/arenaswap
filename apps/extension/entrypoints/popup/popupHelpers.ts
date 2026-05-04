@@ -33,6 +33,72 @@ export const sportTypeLabels: Record<SportType, string> = {
 	soccer: 'Soccer',
 };
 export const leagueLabels = Object.fromEntries(leagueConfigs.map(config => [config.id, config.label])) as Record<LeagueId, string>;
+
+export const loadingMessages: string[] = [
+	'Reviewing the playbook...',
+	'Studying the game film...',
+	'Calling an audible...',
+	'Warming up the bench...',
+	'Hyping up the crowd...',
+	'Cueing the walk-out music...',
+	'Polishing the trophy...',
+	'Synchronizing the game clock...',
+	'Booting up the jumbotron...',
+	'Counting the timeouts...',
+	'Reviewing the replay booth...',
+	'Cracking open the rulebook...',
+	'Tuning the stadium speakers...',
+	'Filling the water bottles...',
+	'Adjusting the spotlights...',
+	'Bribing the refs...',
+	'Consulting the sports almanac...',
+	'Considering whether to go for it on fourth down...',
+	'Updating the GOAT debate...',
+	'Filling the press box...',
+	'Unfurling the banners...',
+	'Syncing the broadcast feed...',
+	'Counting the crowd...',
+	'Polishing the championship rings...',
+	'Hyping up the mascots...',
+	'Powering up the stadium lights...',
+	'Hitting the gym...',
+	'Filling the coolors...',
+	'Reviewing the highlight reels...',
+	'Booing the commissioner...',
+	'Finding the arenas...',
+	'Getting a cheesesteak...',
+	'Arguing with the sports bar patrons...',
+	'Rearranging the fantasy league standings...',
+	'Consulting the sports oracle...',
+	'Challenging that play...',
+	'Checking for a flag on the play...',
+	'Reviewing the instant replay...',
+	'Playing the hype video...',
+	'Considering a mid-game snack...',
+	'Planning the post-game celebration...',
+	'Wearing the lucky jersey...',
+	'Visualizing the victory dance...',
+	'Imagining the championship parade...',
+	'Polishing the trophy case...',
+	'Brushing up on sports trivia...',
+	'Organizing the tailgate party...',
+	'Getting the face paint ready...',
+	'Coordinating team uniforms...',
+	'Running the numbers...',
+	'Analyzing the stats...',
+	'Launching the fireworks...',
+	'Getting the light show ready...',
+	'Reviewing the pre-game rituals...',
+	'Checking the weather for game day...',
+	'Updating the fantasy football lineup...',
+	'Yelling at the TV...',
+	'Yelling at the refs...',
+	'go birds'
+];
+
+export const getRandomLoadingMessage = (): string => (
+	loadingMessages[Math.floor(Math.random() * loadingMessages.length)]
+);
 export const leaguesBySportType = leagueConfigs.reduce<Record<SportType, typeof leagueConfigs>>((groups, config) => {
 	groups[config.sportType].push(config);
 	return groups;

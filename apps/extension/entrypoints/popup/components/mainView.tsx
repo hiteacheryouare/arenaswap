@@ -12,7 +12,7 @@ import { resolveLeagueLogoUrl } from '@arenaswap/core/constants';
 import GameCard from './gameCard';
 import PopupFooter from './popupFooter';
 import ProTip from './proTip';
-import { buildFavoritePinnedComparator, groupByLeague, leagueLabels } from '../popupHelpers';
+import { buildFavoritePinnedComparator, getRandomLoadingMessage, groupByLeague, leagueLabels } from '../popupHelpers';
 
 interface gameSectionProps {
 	title: string;
@@ -123,6 +123,7 @@ const mainView = ({
 }: mainViewProps) => {
 	const oneWeekFromNow = Date.now() + 7 * 24 * 60 * 60 * 1000;
 	const noLeaguesSelected = prefs.enabledLeagues.length === 0;
+	const loadingMessage = useMemo(() => getRandomLoadingMessage(), []);
 	const scoreByGameId = useMemo(() => new Map(scores.map(s => [s.gameId, s.total])), [scores]);
 	const sortGames = useMemo(
 		() => buildFavoritePinnedComparator(favoriteTeamIds, scoreByGameId),
@@ -167,10 +168,11 @@ const mainView = ({
 			)}
 
 			{isLoading && (
-				<div className='d-flex justify-content-center align-items-center mt-4 popup-loading-wrap'>
+				<div className='d-flex flex-column justify-content-center align-items-center mt-4 popup-loading-wrap'>
 					<div className='spinner-border popup-loading-spinner' role='status'>
 						<span className='visually-hidden'>Loading...</span>
 					</div>
+					<div className='mt-2 text-center popup-loading-text'>{loadingMessage}</div>
 				</div>
 			)}
 
