@@ -5,7 +5,7 @@
 		"skipLibCheck": true,
 		"moduleResolution": "bundler",
 		"module": "ESNext",
-		"target": "ES2022",
+		"target": "ES2023",
 		"resolveJsonModule": true,
 		"declaration": true,
 		"declarationMap": true,

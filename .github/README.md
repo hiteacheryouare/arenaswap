@@ -1,17 +1,50 @@
-![arenaswap logo](../apps/extension/public/images/full_logo_white_on_black.png)
+<div align="center">
 
-<br>
+<img src="../apps/extension/public/images/full_logo_white_on_black.png" width="400" alt="arenaswap logo" />
 
-**ArenaSwap** is a browser extension that monitors every live sports game across 12 leagues and automatically switches your browser tab to the most exciting one, powered by a live scoring algorithm called **PowerScore**.
+<br />
 
-Think [NFL RedZone](https://www.nfl.com/redzone), but for every sport. All day. All season.
+**ArenaSwap** is a browser extension that monitors every live sports game across 12 leagues and automatically switches your browser tab to the most exciting one — powered by a live scoring algorithm called **PowerScore**.
 
+*Think [NFL RedZone](https://www.nfl.com/redzone), but for every sport. All day. All season.*
+
+<br />
+
+[![Available in the Chrome Web Store](https://developer.chrome.com/static/docs/webstore/branding/image/UV4C4ybeBTsZt43U4xis.png)](https://chromewebstore.google.com/detail/arenaswap/gibojibgihombdmmfnhnimajppamfeee)&nbsp;&nbsp;[![Get the Add-on](https://extensionworkshop.com/assets/img/documentation/publish/get-the-addon-178x60px.dad84b42.png)](https://addons.mozilla.org/addon/arenaswap/)
+
+<br />
+
+![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-ES2023-F7DF1E?logo=javascript&logoColor=black)
+![WXT](https://img.shields.io/badge/WXT-0.20-FF6B35?logo=googlechrome&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/TailwindCSS-4-06B6D4?logo=tailwindcss&logoColor=white)
+![Bootstrap](https://img.shields.io/badge/Bootstrap-5-7952B3?logo=bootstrap&logoColor=white)
+![Jest](https://img.shields.io/badge/Jest-30-C21325?logo=jest&logoColor=white)
+![Turborepo](https://img.shields.io/badge/Turborepo-2-EF4444?logo=turborepo&logoColor=white)
+![npm](https://img.shields.io/badge/npm-10-CB3837?logo=npm&logoColor=white)
+
+![Version](https://img.shields.io/badge/version-1.2.0-brightgreen)
+![License](https://img.shields.io/github/license/hiteacheryouare/arenaswap)
+![Stars](https://img.shields.io/github/stars/hiteacheryouare/arenaswap?logo=github)
+![Forks](https://img.shields.io/github/forks/hiteacheryouare/arenaswap?logo=github)
+![Issues](https://img.shields.io/github/issues/hiteacheryouare/arenaswap?logo=github)
+![Last Commit](https://img.shields.io/github/last-commit/hiteacheryouare/arenaswap?logo=git&logoColor=white)
+
+![Chrome](https://img.shields.io/badge/Chrome-Extension-4285F4?logo=googlechrome&logoColor=white)
+![Firefox](https://img.shields.io/badge/Firefox-Add--On-FF7139?logo=firefoxbrowser&logoColor=white)
+![Edge](https://img.shields.io/badge/Edge-Extension-0078D4?logo=microsoftedge&logoColor=white)
+![Leagues](https://img.shields.io/badge/Leagues-12-1DB954?logo=sportify&logoColor=white)
+![PowerScore](https://img.shields.io/badge/Powered%20by-PowerScore-orange)
+![ESPN API](https://img.shields.io/badge/Data-ESPN%20API-D00000)
+
+</div>
 
 ---
 
 ## The Idea
 
-Inspired by [this TikTok](https://www.tiktok.com/@gfedgocrazy/video/7620585631143496974?is_from_webapp=1&sender_device=pc&web_id=7621724919189866014),from one of my favorite TikTokers, [@gfedgocrazy](https://www.tiktok.com/@gfedgocrazy), and the concept behind NFL RedZone, ArenaSwap was built to solve a simple problem: when you have many games open, its hard to always be watching the best one.
+Inspired by [this TikTok](https://www.tiktok.com/@gfedgocrazy/video/7620585631143496974?is_from_webapp=1&sender_device=pc&web_id=7621724919189866014) from one of my favorite TikTokers, [@gfedgocrazy](https://www.tiktok.com/@gfedgocrazy), and the concept behind NFL RedZone, ArenaSwap was built to solve a simple problem: when you have many games open, it's hard to always be watching the best one.
 
 ArenaSwap fixes that. It watches every game for you and puts the best one on screen automatically.
 
@@ -22,7 +55,7 @@ ArenaSwap fixes that. It watches every game for you and puts the best one on scr
 ArenaSwap uses the **bring-your-own-tabs** model:
 
 **01 — Open your streams.**
-Pull up your games in separate browser tabs. Any service that works in a browser works with ArenaSwap; ESPN+, Peacock, Paramount+, YouTube TV, Hulu, whatever you've got.
+Pull up your games in separate browser tabs. Any service that works in a browser works with ArenaSwap — ESPN+, Peacock, Paramount+, YouTube TV, Hulu, whatever you've got.
 
 **02 — Assign each tab once.**
 Open the extension, find each game in the list, and connect it to the right tab with a single dropdown.
@@ -52,13 +85,13 @@ PowerScore is a 100-point live algorithm that measures how exciting a game is *r
 
 | Signal | Max Points | What It Measures |
 |---|---|---|
-| Closeness | 30 | How tight the margin is. A tied game scores maximum. |
+| Closeness | 30 | How tight the margin is — a tied game scores maximum. |
 | Late-Game Pressure | 30 | Exponential boost as the clock winds down. Overtime maxes the scale. |
-| Momentum | 20 | Unanswered scoring runs |
+| Momentum | 20 | Unanswered scoring runs. |
 | Lead Changes | 12 | Back-and-forth games beat one-sided affairs. |
 | Comeback Factor | 8 | Is the trailing team clawing back? |
 
-Games with frozen clocks (halftime, timeouts) take a penalty so ArenaSwap doesn't switch during stoppages. You can also add a **Favorite Team Bonus** to keep games involving your teams ranked higher.
+Games with frozen clocks (halftime, timeouts) take a penalty so ArenaSwap doesn't switch during stoppages. You can also set a **Favorite Team Bonus** to keep games involving your teams ranked higher.
 
 ---
 
@@ -76,7 +109,7 @@ Games with frozen clocks (halftime, timeouts) take a penalty so ArenaSwap doesn'
 
 ## Local Setup
 
-ArenaSwap isn't on the extension stores yet. To run it locally:
+To run ArenaSwap locally from source:
 
 ```bash
 # Clone and install
@@ -97,7 +130,8 @@ Then load the unpacked extension from the `apps/extension` build output in your 
 ```
 arenaswap/
 ├── apps/
-│   └── extension/      # Browser extension (WXT + React)
+│   ├── extension/      # Browser extension (WXT + React)
+│   └── docs/           # Documentation site
 └── packages/
     ├── core/           # Core business logic
     └── powerscore/     # PowerScore algorithm
@@ -129,8 +163,10 @@ ISC License. See the [LICENSE](../LICENSE) file for details.
 
 ---
 
-## Authors
+<div align="center">
 
 Primary Author: [Ryan Mullin](https://github.com/hiteacheryouare)
 
 *Not affiliated with or endorsed by ESPN, the NFL, NBA, NHL, MLB, MLS, or any other league tracked by this extension.*
+
+</div>
