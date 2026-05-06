@@ -25,7 +25,6 @@ This is a **living draft** based on [issue #13](https://github.com/hiteacheryoua
 ## 1.4 (control + confidence)
 
 - User controls for switching sensitivity (chill/normal/chaos style presets).
-- More transparent notifications (why we switched, and confidence level).
 - Performance/reliability pass for background polling and state sync.
 
 ## 1.5 (sports depth)
@@ -50,6 +49,5 @@ This is a **living draft** based on [issue #13](https://github.com/hiteacheryoua
 ## Open questions to workshop
 
 1. Where should the line be between **automatic switching** and **manual control** by default?
-2. Which sports should get first-class tuning priority after baseball?
-3. Should 2.0 include personalization by default, or ship in phases after PowerScore v2 stabilizes?
-4. What defines “done” for 2.0: algorithm quality, UX quality, or both at a specific bar?
+2. Should 2.0 include personalization by default, or ship in phases after PowerScore v2 stabilizes?
+3. What defines “done” for 2.0: algorithm quality, UX quality, or both at a specific bar?
