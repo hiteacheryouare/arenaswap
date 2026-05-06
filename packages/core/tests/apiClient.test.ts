@@ -15,12 +15,14 @@ const makeEvent = (params: {
 	id: string;
 	state: string;
 	statusName?: string;
+	shortDetail?: string;
 	period: number;
 	clock: string;
 	homeScore: string;
 	awayScore: string;
 	date?: string;
 	withOdds?: boolean;
+	situation?: { onFirst?: boolean; onSecond?: boolean; onThird?: boolean };
 }): Record<string, unknown> => ({
 	id: params.id,
 	date: params.date ?? '2026-10-05T00:00:00.000Z',
@@ -58,8 +60,10 @@ const makeEvent = (params: {
 				type: {
 					state: params.state,
 					name: params.statusName ?? 'STATUS',
+					...(params.shortDetail !== undefined && { shortDetail: params.shortDetail }),
 				},
 			},
+			situation: params.situation,
 			venue: { fullName: 'Arena Name' },
 			broadcasts: [{ names: [' ESPN ', 'ESPN'] }],
 			geoBroadcasts: [{ media: { shortName: 'ESPN2' } }],
@@ -529,6 +533,109 @@ describe('apiClient', () => {
 		expect(result.games.map(game => game.id).sort()).toEqual(['nba-live', 'nba-pre']);
 		expect(result.games.every(game => game.league === 'nba')).toBe(true);
 		expect(result.leagueLogos).toEqual({ nba: 'https://cdn.example/nba-logo.png' });
+	});
+
+	test('parses baseball top-of-inning and base runners from situation', async () => {
+		const fetchMock = jest.fn().mockResolvedValue(createResponse({
+			events: [
+				makeEvent({
+					id: 'mlb-top',
+					state: 'in',
+					period: 7,
+					clock: '0:00',
+					homeScore: '3',
+					awayScore: '2',
+					shortDetail: 'Top 7th',
+					situation: { onFirst: true, onSecond: false, onThird: true },
+				}),
+				makeEvent({
+					id: 'mlb-bot',
+					state: 'in',
+					period: 4,
+					clock: '0:00',
+					homeScore: '1',
+					awayScore: '1',
+					shortDetail: 'Bot 4th',
+					situation: { onFirst: false, onSecond: true, onThird: false },
+				}),
+			],
+		}));
+
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+		const { fetchGamesWithLeagueLogos } = loadApiClient();
+
+		const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
+		const top = result.games.find(g => g.id === 'mlb-top');
+		const bot = result.games.find(g => g.id === 'mlb-bot');
+
+		expect(top?.topOfInning).toBe(true);
+		expect(top?.baseRunners).toEqual({ first: true, second: false, third: true });
+
+		expect(bot?.topOfInning).toBe(false);
+		expect(bot?.baseRunners).toEqual({ first: false, second: true, third: false });
+	});
+
+	test('sets topOfInning=false for Mid inning and undefined baseRunners when no situation', async () => {
+		const fetchMock = jest.fn().mockResolvedValue(createResponse({
+			events: [
+				makeEvent({
+					id: 'mlb-mid',
+					state: 'in',
+					period: 5,
+					clock: '0:00',
+					homeScore: '2',
+					awayScore: '0',
+					shortDetail: 'Mid 5th',
+				}),
+				makeEvent({
+					id: 'mlb-no-shortdetail',
+					state: 'in',
+					period: 3,
+					clock: '0:00',
+					homeScore: '0',
+					awayScore: '0',
+				}),
+			],
+		}));
+
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+		const { fetchGamesWithLeagueLogos } = loadApiClient();
+
+		const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
+		const mid = result.games.find(g => g.id === 'mlb-mid');
+		const noDetail = result.games.find(g => g.id === 'mlb-no-shortdetail');
+
+		expect(mid?.topOfInning).toBe(false);
+		expect(mid?.baseRunners).toBeUndefined();
+
+		expect(noDetail?.topOfInning).toBeUndefined();
+		expect(noDetail?.baseRunners).toBeUndefined();
+	});
+
+	test('does not set topOfInning or baseRunners for non-baseball sports', async () => {
+		const fetchMock = jest.fn().mockResolvedValue(createResponse({
+			events: [
+				makeEvent({
+					id: 'nba-live',
+					state: 'in',
+					period: 3,
+					clock: '5:00',
+					homeScore: '88',
+					awayScore: '84',
+					shortDetail: 'Q3 5:00',
+					situation: { onFirst: true, onSecond: true, onThird: true },
+				}),
+			],
+		}));
+
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+		const { fetchGamesWithLeagueLogos } = loadApiClient();
+
+		const result = await fetchGamesWithLeagueLogos(['nba'], { includeUpcoming: false });
+		const game = result.games[0];
+
+		expect(game?.topOfInning).toBeUndefined();
+		expect(game?.baseRunners).toBeUndefined();
 	});
 
 	test('fetchLiveGames filters out pre-game entries', async () => {
