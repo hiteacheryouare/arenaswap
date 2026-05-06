@@ -11,6 +11,7 @@ import {
 	sportTypeConfigMap,
 } from '@arenaswap/core/constants';
 import type { Game, PowerScoreResult, PowerScoreSnapshot, ScoreSnapshot } from '@arenaswap/core/types';
+import BaseDiamond from './baseDiamond';
 import DetailTeamPill from './detailTeamPill';
 import FlipScore from './flipScore';
 import GameDetailChart from './gameDetailChart';
@@ -98,7 +99,12 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 		borderRight: `5px solid ${homeAccent}`,
 		background: `linear-gradient(to right, ${withMatchupAlpha(awayAccent, '#dee2e628')}, ${withMatchupAlpha(homeAccent, '#dee2e628')}), #ffffff`,
 	};
-	const statusDetail = game.status === 'in' ? `${formatPeriod(game)} • ${formatClock(game.clockSeconds)}` : game.status === 'pre' ? 'Starts soon' : 'Final';
+	const inningHalf = game.topOfInning !== undefined ? (game.topOfInning ? '▲ ' : '▼ ') : '';
+	const statusDetail = game.status === 'in'
+		? game.sportType === 'baseball'
+			? `${inningHalf}${formatPeriod(game)}`
+			: `${formatPeriod(game)} • ${formatClock(game.clockSeconds)}`
+		: game.status === 'pre' ? 'Starts soon' : 'Final';
 	const totalLabel = total > scoreMaxTotal
 		? `${total} (base max ${scoreMaxTotal})`
 		: `${total} / ${scoreMaxTotal}`;
@@ -116,6 +122,7 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 			<div className='game-card game-detail-matchup' style={matchupCardStyle}>
 				<DetailTeamPill team={game.awayTeam} />
 				<div className='game-detail-center'>
+					{game.sportType === 'baseball' && game.baseRunners && <BaseDiamond {...game.baseRunners} />}
 					<div className='d-flex align-items-baseline game-detail-score-row'>
 						<FlipScore value={game.awayTeam.score} className='fw-bold lh-1 game-detail-score-value' />
 						<FlipScore value={game.homeTeam.score} className='fw-bold lh-1 game-detail-score-value' />
