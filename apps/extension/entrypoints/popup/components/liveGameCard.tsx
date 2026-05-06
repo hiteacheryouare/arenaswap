@@ -113,21 +113,15 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 			<div className='d-flex align-items-center justify-content-center game-card-matchup'>
 				<TeamColumn leagueId={game.league} team={game.awayTeam} isFavorited={awayFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} />
 				<div className='d-flex flex-column align-items-center game-card-center'>
+					{game.sportType === 'baseball' && game.baseRunners && <BaseDiamond {...game.baseRunners} />}
 					<div className='d-flex align-items-baseline game-score-row'>
 						<FlipScore value={game.awayTeam.score} className='fw-bold lh-1 game-score-value' />
 						<FlipScore value={game.homeTeam.score} className='fw-bold lh-1 game-score-value' />
 					</div>
 					{game.sportType !== 'baseball' && <span className='font-lekton game-clock'>{formatClock(game.clockSeconds)}</span>}
-					{game.sportType === 'baseball' ? (
-						<div className='d-flex align-items-center gap-1'>
-							<span className='font-lekton game-period'>
-								{game.topOfInning !== undefined ? (game.topOfInning ? '▲ ' : '▼ ') : ''}{formatPeriod(game)}
-							</span>
-							{game.baseRunners && <BaseDiamond {...game.baseRunners} />}
-						</div>
-					) : (
-						<span className='font-lekton game-period'>{formatPeriod(game)}</span>
-					)}
+					<span className='font-lekton game-period'>
+						{game.sportType === 'baseball' && game.topOfInning !== undefined ? (game.topOfInning ? '▲ ' : '▼ ') : ''}{formatPeriod(game)}
+					</span>
 				</div>
 				<TeamColumn leagueId={game.league} team={game.homeTeam} isFavorited={homeFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} />
 			</div>
