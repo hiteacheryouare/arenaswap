@@ -258,14 +258,24 @@ export default defineBackground(() => {
 		lastSwitchTime = Date.now();
 		await syncManagedTabMuteState(true);
 
-		await browser.notifications.create({
-			type: 'basic',
-			iconUrl: 'icon/128.png',
-			title: `ArenaSwap → ${getGameLabel(gameId)}`,
-			message: reason
-				? `${reason}. Taking you to ${getVenueName(gameId)} now!`
-				: `Taking you to ${getVenueName(gameId)} now!`,
-		});
+		if (prefs.notificationsEnabled) {
+			const game = games.find(g => g.id === gameId);
+			const scoreTitle = game
+				? `${game.awayTeam.abbreviation} ${game.awayTeam.score}-${game.homeTeam.score} ${game.homeTeam.abbreviation}`
+				: getGameLabel(gameId);
+			const capitalizeFirst = (s: string) => s ? s[0].toUpperCase() + s.slice(1) : s;
+			const venue = getVenueName(gameId);
+			const message = reason
+				? `${capitalizeFirst(reason)}. Taking you to ${venue} now!`
+				: `Taking you to ${venue} now!`;
+
+			await browser.notifications.create({
+				type: 'basic',
+				iconUrl: 'icon/128.png',
+				title: `Switched → ${scoreTitle} | ArenaSwap`,
+				message,
+			});
+		}
 	};
 
 	const executePendingSwitch = async () => {

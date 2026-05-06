@@ -20,6 +20,7 @@ interface setupViewProps {
 	onFavoriteTeamBonusChange: (val: number) => void;
 	onToggleLeague: (leagueId: LeagueId) => void;
 	onToggleShowUpcoming: () => void;
+	onToggleNotifications: () => void;
 	onToggleDemo: () => void;
 }
 
@@ -65,6 +66,7 @@ const setupView = ({
 	onFavoriteTeamBonusChange,
 	onToggleLeague,
 	onToggleShowUpcoming,
+	onToggleNotifications,
 	onToggleDemo,
 }: setupViewProps) => (
 	<div className='popup-container'>
@@ -136,6 +138,23 @@ const setupView = ({
 		</div>
 		<div className='mt-1 setting-explainer'>
 			Keeps scheduled games visible so you can assign tabs before they go live.
+		</div>
+
+		<div className='d-flex justify-content-between align-items-center mt-3'>
+			<label className='text-body-secondary setting-toggle-label' htmlFor='notificationsToggle'>Switch notifications</label>
+			<div className='form-check form-switch mb-0'>
+				<input
+					className='form-check-input'
+					type='checkbox'
+					id='notificationsToggle'
+					checked={prefs.notificationsEnabled}
+					onChange={onToggleNotifications}
+					disabled={!prefsLoaded}
+				/>
+			</div>
+		</div>
+		<div className='mt-1 setting-explainer'>
+			Show a browser notification each time ArenaSwap switches tabs.
 		</div>
 
 		<div className='d-flex justify-content-between align-items-center mt-3'>

@@ -74,6 +74,7 @@ export interface UserPreferences {
 	favoriteTeamIds: string[];
 	favoriteTeamBonusPoints: number;
 	showUpcomingGames: boolean;
+	notificationsEnabled: boolean;
 }
 
 export interface TabRegistration {

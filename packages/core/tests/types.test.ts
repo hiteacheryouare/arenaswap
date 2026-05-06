@@ -28,6 +28,7 @@ describe('types runtime smoke', () => {
 			favoriteTeamIds: ['nba:2'],
 			favoriteTeamBonusPoints: 10,
 			showUpcomingGames: true,
+			notificationsEnabled: true,
 		};
 		const message: ExtensionMessage = { type: 'UPDATE_PREFS', prefs };
 
