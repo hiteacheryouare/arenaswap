@@ -58,6 +58,10 @@ export interface Game {
 	odds?: GameOdds;
 	/** True while the game is in halftime or between-period intermission */
 	intermission?: boolean;
+	/** Top of inning = true, bottom = false; undefined when unavailable (non-baseball or pre-game) */
+	topOfInning?: boolean;
+	/** Which bases have runners; undefined when unavailable (non-baseball or no active at-bat) */
+	baseRunners?: { first: boolean; second: boolean; third: boolean };
 }
 
 export interface UserPreferences {
