@@ -13,6 +13,7 @@ import {
 	stallPenaltyMultiplier,
 	sportTypeConfigMap,
 } from '@arenaswap/core/constants';
+import BaseDiamond from './baseDiamond';
 import FlipScore from './flipScore';
 import TabAssignSelect from './tabAssignSelect';
 import type { gameCardProps } from './gameCardTypes';
@@ -117,7 +118,16 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 						<FlipScore value={game.homeTeam.score} className='fw-bold lh-1 game-score-value' />
 					</div>
 					{game.sportType !== 'baseball' && <span className='font-lekton game-clock'>{formatClock(game.clockSeconds)}</span>}
-					<span className='font-lekton game-period'>{formatPeriod(game)}</span>
+					{game.sportType === 'baseball' ? (
+						<div className='d-flex align-items-center gap-1'>
+							<span className='font-lekton game-period'>
+								{game.topOfInning !== undefined ? (game.topOfInning ? '▲ ' : '▼ ') : ''}{formatPeriod(game)}
+							</span>
+							{game.baseRunners && <BaseDiamond {...game.baseRunners} />}
+						</div>
+					) : (
+						<span className='font-lekton game-period'>{formatPeriod(game)}</span>
+					)}
 				</div>
 				<TeamColumn leagueId={game.league} team={game.homeTeam} isFavorited={homeFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} />
 			</div>
