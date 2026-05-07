@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { EspnTeamEntry } from '@arenaswap/core';
 import type { LeagueId } from '@arenaswap/core/types';
-import { leagueOrder } from '../popupHelpers';
+import { leagueLabels, leagueOrder } from '../popupHelpers';
 
 interface onboardingTeamPickerProps {
 	teams: EspnTeamEntry[];
@@ -18,10 +18,11 @@ const collegeLeagues = new Set<LeagueId>(['ncaab', 'ncaaw', 'ncaaf', 'ncaamh']);
 
 const TeamLogo = ({ team }: { team: EspnTeamEntry }) => {
 	const [failed, setFailed] = useState(false);
+	const abbr = (team.abbreviation ?? team.name ?? '?').slice(0, 3);
 	if (!team.logo || failed) {
 		return (
-			<span className='league-toggle-logo league-toggle-logo-fallback d-inline-flex align-items-center justify-content-center fw-bold' style={{ fontSize: '0.55rem' }}>
-				{team.abbreviation.slice(0, 3)}
+			<span className='league-toggle-logo league-toggle-logo-fallback d-inline-flex align-items-center justify-content-center fw-bold small'>
+				{abbr}
 			</span>
 		);
 	}
@@ -50,7 +51,10 @@ const onboardingTeamPicker = ({
 	const lowerQuery = query.toLowerCase();
 
 	const filteredTeams = query
-		? teams.filter(t => t.name.toLowerCase().includes(lowerQuery) || t.abbreviation.toLowerCase().includes(lowerQuery))
+		? teams.filter(t =>
+			(t.name ?? '').toLowerCase().includes(lowerQuery)
+			|| (t.abbreviation ?? '').toLowerCase().includes(lowerQuery)
+		)
 		: teams;
 
 	const grouped = filteredTeams.reduce<Partial<Record<LeagueId, EspnTeamEntry[]>>>((acc, team) => {
@@ -65,38 +69,39 @@ const onboardingTeamPicker = ({
 	const hasCollegeLeague = teams.some(t => collegeLeagues.has(t.leagueId));
 
 	return (
-		<div className='popup-container d-flex flex-column' style={{ minHeight: 0 }}>
-			<div className='d-flex align-items-center gap-2 mb-1'>
-				<button className='btn btn-link btn-sm p-0 text-body-secondary' onClick={onBack} style={{ fontSize: '0.8rem' }}>
-					← Back
+		<div className='popup-container d-flex flex-column'>
+			<div className='d-flex align-items-center mb-1'>
+				<button className='btn btn-link btn-sm p-0 text-body-secondary small' onClick={onBack}>
+					<i className='bi bi-arrow-left me-1' />Back
 				</button>
-				<span className='text-body-secondary ms-auto' style={{ fontSize: '0.7rem', letterSpacing: '0.05em' }}>STEP 2 OF 2</span>
+				<span className='small text-body-secondary text-uppercase ms-auto'>Step 2 of 2</span>
 			</div>
-			<h2 className='fw-bold lh-sm mb-2' style={{ fontSize: '1.1rem' }}>Pick your teams</h2>
-			<p className='text-body-secondary mb-2' style={{ fontSize: '0.78rem' }}>
-				Optional — favorites get a scoring bonus so ArenaSwap favors them.
-			</p>
+
+			<div className='fw-bold lh-sm mb-1 fs-5'>Pick your teams</div>
+			<div className='setting-explainer mb-2'>
+				Favorites get a scoring bonus so ArenaSwap favors those games.
+			</div>
 
 			<input
 				type='search'
 				className='form-control form-control-sm mb-2'
-				placeholder={hasCollegeLeague ? 'Search teams (required for college leagues)…' : 'Search teams…'}
+				placeholder='Search teams…'
 				value={query}
 				onChange={e => setQuery(e.target.value)}
 				autoFocus
 			/>
 
 			{isLoading && (
-				<div className='d-flex justify-content-center align-items-center mt-4'>
+				<div className='d-flex justify-content-center align-items-center mt-4 gap-2'>
 					<div className='spinner-border spinner-border-sm' role='status'>
 						<span className='visually-hidden'>Loading teams…</span>
 					</div>
-					<span className='ms-2 text-body-secondary' style={{ fontSize: '0.8rem' }}>Loading teams…</span>
+					<span className='small text-body-secondary'>Loading teams…</span>
 				</div>
 			)}
 
 			{hasError && !isLoading && (
-				<div className='text-body-secondary text-center mt-3' style={{ fontSize: '0.8rem' }}>
+				<div className='small text-body-secondary text-center mt-3'>
 					Couldn't load teams. You can skip and add favorites later via game cards.
 				</div>
 			)}
@@ -105,7 +110,9 @@ const onboardingTeamPicker = ({
 				<div className='overflow-auto flex-grow-1'>
 					{sortedLeagues.map(leagueId => (
 						<div key={leagueId}>
-							<div className='fw-bold text-uppercase popup-section-label mt-2'>{leagueId.toUpperCase()}</div>
+							<div className='fw-bold text-uppercase popup-section-label mt-2'>
+								{leagueLabels[leagueId] ?? leagueId.toUpperCase()}
+							</div>
 							{(grouped[leagueId] ?? []).map(team => {
 								const key = `${leagueId}:${team.id}`;
 								const isFav = selectedFavorites.has(key);
@@ -113,7 +120,7 @@ const onboardingTeamPicker = ({
 									<div key={team.id} className='d-flex align-items-center justify-content-between gap-2 mt-1 league-toggle-row'>
 										<div className='d-flex align-items-center gap-2 min-w-0'>
 											<TeamLogo team={team} />
-											<span className='fw-semibold text-body lh-sm' style={{ fontSize: '0.82rem' }}>{team.name}</span>
+											<span className='fw-semibold text-body lh-sm small'>{team.name}</span>
 										</div>
 										<button
 											type='button'
@@ -121,7 +128,7 @@ const onboardingTeamPicker = ({
 											onClick={() => onToggleFavorite(key)}
 											aria-label={isFav ? `Remove ${team.name} from favorites` : `Add ${team.name} to favorites`}
 										>
-											<i className={isFav ? 'bi bi-star-fill' : 'bi bi-star'} style={{ fontSize: '1rem' }} />
+											<i className={`bi ${isFav ? 'bi-star-fill' : 'bi-star'} fs-6`} />
 										</button>
 									</div>
 								);
@@ -129,17 +136,19 @@ const onboardingTeamPicker = ({
 						</div>
 					))}
 					{sortedLeagues.length === 0 && query && (
-						<div className='text-body-secondary text-center mt-3' style={{ fontSize: '0.8rem' }}>No teams match "{query}"</div>
+						<div className='small text-body-secondary text-center mt-3'>
+							No teams match &ldquo;{query}&rdquo;
+						</div>
 					)}
 				</div>
 			)}
 
-			<div className='d-flex align-items-center justify-content-between mt-3 pt-2' style={{ borderTop: '1px solid var(--bs-border-color)' }}>
+			<div className='d-flex align-items-center justify-content-between mt-3 pt-2 border-top'>
 				<button type='button' className='btn btn-link btn-sm p-0 text-body-secondary' onClick={onSkip}>
 					Skip
 				</button>
 				<button type='button' className='btn btn-primary btn-sm' onClick={onDone}>
-					Done →
+					Done <i className='bi bi-check-lg' />
 				</button>
 			</div>
 		</div>
