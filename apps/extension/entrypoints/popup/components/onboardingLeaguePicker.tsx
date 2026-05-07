@@ -37,7 +37,7 @@ const LeagueLogo = ({ league, logos }: { league: leagueConfig; logos: LeagueLogo
 			src={logoUrl}
 			alt={`${league.label} logo`}
 			className='league-toggle-logo'
-			loading='lazy'
+			loading='eager'
 			onError={() => setImageFailed(true)}
 		/>
 	);
@@ -51,8 +51,8 @@ const onboardingLeaguePicker = ({
 	onNext,
 }: onboardingLeaguePickerProps) => (
 	<div className='popup-container'>
-		<div className='mb-1 text-body-secondary' style={{ fontSize: '0.7rem', letterSpacing: '0.05em' }}>STEP 1 OF 2</div>
-		<h2 className='fw-bold lh-sm mb-3' style={{ fontSize: '1.1rem' }}>Which sports do you watch?</h2>
+		<div className='small text-body-secondary text-uppercase mb-1'>Step 1 of 2</div>
+		<div className='fw-bold lh-sm mb-3 fs-5'>Which sports do you watch?</div>
 
 		<div>
 			{(Object.keys(sportTypeOrder) as SportType[])
@@ -66,34 +66,22 @@ const onboardingLeaguePicker = ({
 								<div className='fw-semibold text-body-secondary setting-toggle-label'>
 									{sportEmojis[sportType]} {sportTypeLabels[sportType]}
 								</div>
-								<div className='d-flex align-items-center gap-1'>
-									<label
-										className='text-body-secondary'
-										style={{ fontSize: '0.7rem' }}
-										htmlFor={`sport-all-${sportType}`}
-									>
+								<div className='form-check mb-0'>
+									<input
+										className='form-check-input'
+										type='checkbox'
+										id={`sport-all-${sportType}`}
+										checked={allSelected}
+										onChange={() => onToggleSport(sportType, !allSelected)}
+									/>
+									<label className='form-check-label small text-body-secondary' htmlFor={`sport-all-${sportType}`}>
 										All
 									</label>
-									<div className='form-check form-switch mb-0'>
-										<input
-											className='form-check-input'
-											type='checkbox'
-											id={`sport-all-${sportType}`}
-											checked={allSelected}
-											onChange={() => onToggleSport(sportType, !allSelected)}
-										/>
-									</div>
 								</div>
 							</div>
 							{leagues.map(league => (
-								<div key={league.id} className='d-flex align-items-center justify-content-between gap-2 mt-1 league-toggle-row' style={{ paddingLeft: '0.75rem' }}>
-									<div className='d-flex align-items-center gap-2 min-w-0'>
-										<LeagueLogo league={league} logos={leagueLogos} />
-										<label className='fw-semibold text-body mb-0 lh-sm league-toggle-label' htmlFor={`onb-league-${league.id}`}>
-											{league.label}
-										</label>
-									</div>
-									<div className='form-check form-switch mb-0'>
+								<div key={league.id} className='d-flex align-items-center gap-2 mt-1 ps-3 league-toggle-row'>
+									<div className='form-check mb-0'>
 										<input
 											className='form-check-input'
 											type='checkbox'
@@ -102,6 +90,10 @@ const onboardingLeaguePicker = ({
 											onChange={() => onToggleLeague(league.id)}
 										/>
 									</div>
+									<label className='d-flex align-items-center gap-2 min-w-0 mb-0 flex-grow-1' htmlFor={`onb-league-${league.id}`}>
+										<LeagueLogo league={league} logos={leagueLogos} />
+										<span className='fw-semibold text-body lh-sm league-toggle-label'>{league.label}</span>
+									</label>
 								</div>
 							))}
 						</div>
@@ -114,7 +106,7 @@ const onboardingLeaguePicker = ({
 			onClick={onNext}
 			disabled={selectedLeagues.size === 0}
 		>
-			Next →
+			Next <i className='bi bi-arrow-right' />
 		</button>
 	</div>
 );
