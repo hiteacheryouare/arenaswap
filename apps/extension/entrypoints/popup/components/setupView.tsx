@@ -107,25 +107,13 @@ const setupView = ({
 						<div key={sportType} className='league-toggle-group'>
 							<div className='d-flex align-items-center justify-content-between'>
 								<div className='fw-semibold text-body-secondary setting-toggle-label'>{sportTypeLabels[sportType]}</div>
-								<div className='d-flex align-items-center gap-1'>
-									<label
-										className='text-body-secondary'
-										style={{ fontSize: '0.7rem' }}
-										htmlFor={`setup-sport-all-${sportType}`}
-									>
-										All
-									</label>
-									<div className='form-check form-switch mb-0'>
-										<input
-											className='form-check-input'
-											type='checkbox'
-											id={`setup-sport-all-${sportType}`}
-											checked={allSelected}
-											onChange={() => onToggleSport(sportType, !allSelected)}
-											disabled={!prefsLoaded}
-										/>
-									</div>
-								</div>
+								<button
+									className='btn btn-outline-secondary btn-sm px-2 py-0 small'
+									onClick={() => onToggleSport(sportType, !allSelected)}
+									disabled={!prefsLoaded}
+								>
+									{allSelected ? 'none' : 'all'}
+								</button>
 							</div>
 							{leagues.map(league => (
 								<div key={league.id} className='d-flex align-items-center justify-content-between gap-2 mt-1 league-toggle-row'>
