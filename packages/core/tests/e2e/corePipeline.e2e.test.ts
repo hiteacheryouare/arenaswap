@@ -133,7 +133,7 @@ describe('core API + excitement e2e flow', () => {
 		});
 
 		const { fetchGames, fetchLiveGames } = await import('../../src/apiClient');
-		const { computePowerScore } = await import('@arenaswap/powerscore');
+		const { computePowerScore } = await import('powerscore');
 
 		const games = await fetchGames(['nba']);
 		expect(games.map(game => game.id).sort()).toEqual(['nba-live-1', 'nba-pre-1']);
@@ -318,7 +318,7 @@ describe('core API + excitement e2e flow', () => {
 		});
 
 		const { fetchGamesWithLeagueLogos } = await import('../../src/apiClient');
-		const { computePowerScore } = await import('@arenaswap/powerscore');
+		const { computePowerScore } = await import('powerscore');
 
 		const result = await fetchGamesWithLeagueLogos(['nba'], { includeUpcoming: false });
 		const historyByGameId: Record<string, ScoreSnapshot[]> = {

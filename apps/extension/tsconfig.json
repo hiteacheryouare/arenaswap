@@ -5,8 +5,8 @@
 		"paths": {
 			"@arenaswap/core": ["../../packages/core/src/index.ts"],
 			"@arenaswap/core/*": ["../../packages/core/src/*"],
-			"@arenaswap/powerscore": ["../../packages/powerscore/src/index.ts"],
-			"@arenaswap/powerscore/*": ["../../packages/powerscore/src/*"]
+			"powerscore": ["../../packages/powerscore/src/index.ts"],
+			"powerscore/*": ["../../packages/powerscore/src/*"]
 		},
 		"removeComments": true
 	},

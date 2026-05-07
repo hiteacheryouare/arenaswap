@@ -37,6 +37,7 @@ describe('constants', () => {
 			favoriteTeamIds: [],
 			favoriteTeamBonusPoints: 10,
 			showUpcomingGames: true,
+			notificationsEnabled: true,
 		});
 	});
 
@@ -61,6 +62,7 @@ describe('constants', () => {
 			favoriteTeamIds: ['nba:20', 'nfl:20'],
 			favoriteTeamBonusPoints: 11,
 			showUpcomingGames: false,
+			notificationsEnabled: true,
 		});
 	});
 

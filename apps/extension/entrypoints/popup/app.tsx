@@ -138,6 +138,7 @@ const app = () => {
 						onFavoriteTeamBonusChange={val => persistPrefs({ ...prefs, favoriteTeamBonusPoints: val })}
 						onToggleLeague={onToggleLeague}
 						onToggleShowUpcoming={() => persistPrefs({ ...prefs, showUpcomingGames: !prefs.showUpcomingGames })}
+						onToggleNotifications={() => persistPrefs({ ...prefs, notificationsEnabled: !prefs.notificationsEnabled })}
 						onToggleDemo={() => {
 							const next = !demoMode;
 							setDemoMode(next);

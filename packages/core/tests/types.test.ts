@@ -28,6 +28,7 @@ describe('types runtime smoke', () => {
 			favoriteTeamIds: ['nba:2'],
 			favoriteTeamBonusPoints: 10,
 			showUpcomingGames: true,
+			notificationsEnabled: true,
 		};
 		const message: ExtensionMessage = { type: 'UPDATE_PREFS', prefs };
 
@@ -76,6 +77,38 @@ describe('types runtime smoke', () => {
 		expect(message.type).toBe('SCORES_UPDATED');
 		expect(message.scoreHistory['game-1']?.length).toBe(2);
 		expect(message.powerScoreHistory['game-1']?.[0]?.total).toBe(21);
+	});
+
+	test('supports optional baseball-specific fields on Game', () => {
+		const game: Game = {
+			id: 'mlb-1',
+			league: 'mlb',
+			sportType: 'baseball',
+			homeTeam: { id: 'h', name: 'Home', abbreviation: 'HOM', score: 3 },
+			awayTeam: { id: 'a', name: 'Away', abbreviation: 'AWY', score: 2 },
+			period: 7,
+			clockSeconds: 0,
+			status: 'in',
+			topOfInning: true,
+			baseRunners: { first: true, second: false, third: true },
+		};
+		expect(game.topOfInning).toBe(true);
+		expect(game.baseRunners?.first).toBe(true);
+		expect(game.baseRunners?.second).toBe(false);
+		expect(game.baseRunners?.third).toBe(true);
+
+		const gameNoSituation: Game = {
+			id: 'mlb-2',
+			league: 'mlb',
+			sportType: 'baseball',
+			homeTeam: { id: 'h', name: 'Home', abbreviation: 'HOM', score: 0 },
+			awayTeam: { id: 'a', name: 'Away', abbreviation: 'AWY', score: 0 },
+			period: 1,
+			clockSeconds: 0,
+			status: 'pre',
+		};
+		expect(gameNoSituation.topOfInning).toBeUndefined();
+		expect(gameNoSituation.baseRunners).toBeUndefined();
 	});
 
 	test('has no meaningful runtime exports from types-only module', async () => {

@@ -80,7 +80,14 @@ interface EspnCompetitionStatus {
 	type?: {
 		state?: string;
 		name?: string;
+		shortDetail?: string;
 	};
+}
+
+interface EspnSituation {
+	onFirst?: boolean;
+	onSecond?: boolean;
+	onThird?: boolean;
 }
 
 interface EspnCompetitionVenue {
@@ -118,6 +125,7 @@ interface EspnCompetitionOdds {
 interface EspnCompetition {
 	competitors: EspnCompetitor[];
 	status: EspnCompetitionStatus;
+	situation?: EspnSituation;
 	venue?: EspnCompetitionVenue;
 	broadcasts?: EspnCompetitionBroadcast[];
 	geoBroadcasts?: EspnCompetitionGeoBroadcast[];
@@ -203,6 +211,13 @@ const parseOdds = (competition: EspnCompetition): GameOdds | undefined => {
 	return parsed;
 };
 
+const parseTopOfInning = (shortDetail?: string): boolean | undefined => {
+	if (!shortDetail) return undefined;
+	if (shortDetail.startsWith('Top')) return true;
+	if (shortDetail.startsWith('Bot') || shortDetail.startsWith('Mid')) return false;
+	return undefined;
+};
+
 const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 	const comp = event.competitions[0];
 	if (!comp) return null;
@@ -212,6 +227,8 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 	const status = comp.status;
 	const state = parseStatus(status.type?.state ?? 'post');
 	const leagueConfig = leagueConfigMap[league];
+	const isBaseball = leagueConfig.sportType === 'baseball';
+	const situation = comp.situation;
 
 	return {
 		id: event.id,
@@ -241,6 +258,12 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 		broadcasts: parseBroadcasts(comp),
 		odds: parseOdds(comp),
 		intermission: /HALFTIME|END_PERIOD|INTERMISSION/i.test(status.type?.name ?? ''),
+		topOfInning: isBaseball ? parseTopOfInning(status.type?.shortDetail) : undefined,
+		baseRunners: isBaseball && situation ? {
+			first: situation.onFirst ?? false,
+			second: situation.onSecond ?? false,
+			third: situation.onThird ?? false,
+		} : undefined,
 	};
 };
 

@@ -6,14 +6,14 @@
 	"scripts": {
 		"dev": "wxt",
 		"dev:firefox": "wxt --browser firefox --mv3",
-		"build": "npm run build --workspace @arenaswap/powerscore && npm run build --workspace @arenaswap/core && wxt build",
-		"build:firefox": "npm run build --workspace @arenaswap/powerscore && npm run build --workspace @arenaswap/core && wxt build --browser firefox --mv3",
-		"build:edge": "npm run build --workspace @arenaswap/powerscore && npm run build --workspace @arenaswap/core && wxt build --browser edge --mv3",
+		"build": "wxt build",
+		"build:firefox": "wxt build --browser firefox --mv3",
+		"build:edge": "wxt build --browser edge --mv3",
 		"typecheck": "wxt prepare && tsc --noEmit"
 	},
 	"dependencies": {
 		"@arenaswap/core": "*",
-		"@arenaswap/powerscore": "*",
+		"powerscore": "*",
 		"echarts": "^6.0.0",
 		"swr": "^2.4.1"
 	},

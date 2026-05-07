@@ -1,6 +1,16 @@
 {
-	"extends": "../../tsconfig.base.json",
 	"compilerOptions": {
+		"strict": true,
+		"esModuleInterop": true,
+		"skipLibCheck": true,
+		"moduleResolution": "bundler",
+		"module": "ESNext",
+		"target": "ES2023",
+		"resolveJsonModule": true,
+		"declaration": true,
+		"declarationMap": true,
+		"sourceMap": true,
+		"removeComments": true,
 		"outDir": "./dist",
 		"rootDir": "./src"
 	},

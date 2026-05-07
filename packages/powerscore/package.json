@@ -1,7 +1,8 @@
 {
-	"name": "@arenaswap/powerscore",
+	"name": "powerscore",
 	"version": "1.2.0",
-	"description": "PowerScore algorithm — excitement scoring engine for ArenaSwap",
+	"description": "The PowerScore excitement scoring engine for live sports games",
+	"type": "module",
 	"main": "./dist/index.js",
 	"types": "./dist/index.d.ts",
 	"exports": {
@@ -10,11 +11,42 @@
 			"types": "./dist/index.d.ts"
 		}
 	},
+	"files": [
+		"./dist/**/*.js",
+		"./dist/**/*.js.map",
+		"./dist/**/*.d.ts",
+		"./dist/**/*.d.ts.map",
+		"README.md",
+		"LICENSE"
+	],
 	"scripts": {
 		"build": "tsc",
+		"prepack": "npm run build",
 		"test": "npm run test:unit",
 		"test:unit": "jest --passWithNoTests --selectProjects unit",
 		"typecheck": "tsc --noEmit"
+	},
+	"keywords": [
+		"sports",
+		"powerscore",
+		"excitement",
+		"nfl",
+		"nba",
+		"mlb",
+		"nhl",
+		"soccer",
+		"algorithm"
+	],
+	"author": "hiteacheryouare",
+	"license": "ISC",
+	"homepage": "https://github.com/hiteacheryouare/arenaswap/tree/mega/packages/powerscore",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/hiteacheryouare/arenaswap.git",
+		"directory": "packages/powerScore"
+	},
+	"bugs": {
+		"url": "https://github.com/hiteacheryouare/arenaswap/issues"
 	},
 	"devDependencies": {
 		"@types/jest": "^30.0.0",

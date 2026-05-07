@@ -1,4 +1,4 @@
-// Types that live in @arenaswap/powerscore — re-exported here so existing import paths work
+// Types that live in powerscore — re-exported here so existing import paths work
 import type {
 	SportType,
 	LeagueId,
@@ -9,7 +9,7 @@ import type {
 	ScorerTunables,
 	BaseballInningScoreTier,
 	LeagueConfig,
-} from '@arenaswap/powerscore';
+} from 'powerscore';
 export type {
 	SportType,
 	LeagueId,
@@ -58,6 +58,10 @@ export interface Game {
 	odds?: GameOdds;
 	/** True while the game is in halftime or between-period intermission */
 	intermission?: boolean;
+	/** Top of inning = true, bottom = false; undefined when unavailable (non-baseball or pre-game) */
+	topOfInning?: boolean;
+	/** Which bases have runners; undefined when unavailable (non-baseball or no active at-bat) */
+	baseRunners?: { first: boolean; second: boolean; third: boolean };
 }
 
 export interface UserPreferences {
@@ -70,6 +74,7 @@ export interface UserPreferences {
 	favoriteTeamIds: string[];
 	favoriteTeamBonusPoints: number;
 	showUpcomingGames: boolean;
+	notificationsEnabled: boolean;
 }
 
 export interface TabRegistration {
