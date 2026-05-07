@@ -177,8 +177,12 @@ const parseBroadcasts = (competition: EspnCompetition): string[] | undefined => 
 	return parsed.length > 0 ? parsed : undefined;
 };
 
-const pickProviderLogo = (provider?: EspnOddsProvider): string | undefined => {
+const pickProviderLogo = (provider?: EspnOddsProvider, rel?: string): string | undefined => {
 	if (!provider?.logos?.length) return undefined;
+	if (rel) {
+		const match = provider.logos.find(logo => logo.rel?.includes(rel) && logo.href);
+		if (match?.href) return match.href;
+	}
 	const light = provider.logos.find(logo => logo.rel?.includes('light') && logo.href);
 	if (light?.href) return light.href;
 	return provider.logos.find(logo => Boolean(logo.href))?.href;
@@ -188,7 +192,8 @@ const parseOdds = (competition: EspnCompetition): GameOdds | undefined => {
 	const raw = competition.odds?.[0];
 	if (!raw) return undefined;
 	const providerName = raw.provider?.displayName ?? raw.provider?.name;
-	const providerLogoUrl = pickProviderLogo(raw.provider);
+	const providerLogoUrl = pickProviderLogo(raw.provider, 'light');
+	const providerDarkLogoUrl = pickProviderLogo(raw.provider, 'dark');
 	const overUnderValue = typeof raw.overUnder === 'number'
 		? raw.overUnder
 		: typeof raw.overUnder === 'string'
@@ -203,6 +208,7 @@ const parseOdds = (competition: EspnCompetition): GameOdds | undefined => {
 			? {
 				name: providerName,
 				logoUrl: providerLogoUrl,
+				darkLogoUrl: providerDarkLogoUrl,
 			}
 			: undefined,
 	};
@@ -374,4 +380,51 @@ export const fetchLiveGames = async (enabledLeagues: LeagueId[]): Promise<Game[]
 export const fetchLeagueLogos = async (enabledLeagues: LeagueId[]): Promise<LeagueLogoMap> => {
 	const { leagueLogos } = await fetchGamesWithLeagueLogos(enabledLeagues);
 	return leagueLogos;
+};
+
+export interface EspnTeamEntry {
+	leagueId: LeagueId;
+	id: string;
+	name: string;
+	abbreviation: string;
+	logo?: string;
+}
+
+interface EspnTeamsResponse {
+	sports?: Array<{
+		leagues?: Array<{
+			teams?: Array<{
+				team: {
+					id: string;
+					displayName: string;
+					abbreviation: string;
+					logos?: Array<{ href: string }>;
+				};
+			}>;
+		}>;
+	}>;
+}
+
+export const fetchTeamsForLeagues = async (leagueIds: LeagueId[]): Promise<EspnTeamEntry[]> => {
+	const results = await Promise.allSettled(
+		leagueIds.map(async (leagueId): Promise<EspnTeamEntry[]> => {
+			const config = leagueConfigMap[leagueId];
+			const params = new URLSearchParams({ limit: '200' });
+			if (leagueId === 'ncaab') params.set('groups', '50');
+			if (leagueId === 'ncaaw') params.set('groups', '49');
+			const url = `${espnBase}/${config.espnPath}/teams?${params.toString()}`;
+			const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+			if (!res.ok) return [];
+			const json = await res.json() as EspnTeamsResponse;
+			const rawTeams = json?.sports?.[0]?.leagues?.[0]?.teams ?? [];
+			return rawTeams.map(({ team }) => ({
+				leagueId,
+				id: team.id,
+				name: team.displayName,
+				abbreviation: team.abbreviation,
+				logo: team.logos?.[0]?.href,
+			}));
+		})
+	);
+	return results.flatMap(r => r.status === 'fulfilled' ? r.value : []);
 };

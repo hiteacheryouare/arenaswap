@@ -134,7 +134,7 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 				</div>
 				<DetailTeamPill team={game.homeTeam} />
 			</div>
-			<GameMeta game={game} />
+			<GameMeta game={game} dark />
 
 			<section className='powerscore-breakdown game-detail-formula-card'>
 				<div className='powerscore-breakdown-heading'>How PowerScore is calculated</div>

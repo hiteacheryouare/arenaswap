@@ -35,6 +35,7 @@ export interface Team {
 export interface GameOddsProvider {
 	name: string;
 	logoUrl?: string;
+	darkLogoUrl?: string;
 }
 
 export interface GameOdds {

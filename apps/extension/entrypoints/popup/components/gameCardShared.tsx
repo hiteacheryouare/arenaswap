@@ -112,16 +112,18 @@ export const teamColumn = ({
 	</div>
 );
 
-const OddsProvider = ({ game }: { game: Game }) => {
+const OddsProvider = ({ game, dark }: { game: Game; dark?: boolean }) => {
 	const [failed, setFailed] = useState(false);
 	const provider = game.odds?.provider;
 	if (!provider?.name) return null;
 
-	if (provider.logoUrl && !failed) {
+	const logoUrl = dark && provider.darkLogoUrl ? provider.darkLogoUrl : provider.logoUrl;
+
+	if (logoUrl && !failed) {
 		return (
 			<span className='d-inline-flex align-items-center odds-provider-wrap'>
 				<img
-					src={provider.logoUrl}
+					src={logoUrl}
 					alt={provider.name}
 					onError={() => setFailed(true)}
 					height={12}
@@ -134,7 +136,7 @@ const OddsProvider = ({ game }: { game: Game }) => {
 	return <span className='d-inline-flex align-items-center'>{provider.name}</span>;
 };
 
-export const gameMeta = ({ game }: { game: Game }) => {
+export const gameMeta = ({ game, dark }: { game: Game; dark?: boolean }) => {
 	const networks = game.broadcasts?.join(' • ');
 	const odds = oddsSummary(game);
 	const hasOddsProvider = Boolean(game.odds?.provider?.name);
@@ -153,7 +155,7 @@ export const gameMeta = ({ game }: { game: Game }) => {
 			{hasOddsProvider && (
 				<div className='d-flex align-items-center justify-content-center game-meta-provider'>
 					<span>Odds provided by:</span>
-					<OddsProvider game={game} />
+					<OddsProvider game={game} dark={dark} />
 				</div>
 			)}
 		</div>

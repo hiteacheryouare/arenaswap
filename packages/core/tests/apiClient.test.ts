@@ -162,6 +162,7 @@ describe('apiClient', () => {
 				provider: {
 					name: 'DraftKings',
 					logoUrl: 'https://cdn.example/light.png',
+					darkLogoUrl: 'https://cdn.example/dark.png',
 				},
 			},
 		});
@@ -287,6 +288,7 @@ describe('apiClient', () => {
 			provider: {
 				name: 'Caesars',
 				logoUrl: 'https://cdn.example/first-logo.png',
+				darkLogoUrl: 'https://cdn.example/first-logo.png',
 			},
 		});
 	});

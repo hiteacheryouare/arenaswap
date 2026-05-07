@@ -19,6 +19,7 @@ interface setupViewProps {
 	onSwitchDelayChange: (val: number) => void;
 	onFavoriteTeamBonusChange: (val: number) => void;
 	onToggleLeague: (leagueId: LeagueId) => void;
+	onToggleSport: (sport: SportType, selectAll: boolean) => void;
 	onToggleShowUpcoming: () => void;
 	onToggleNotifications: () => void;
 	onToggleDemo: () => void;
@@ -65,6 +66,7 @@ const setupView = ({
 	onSwitchDelayChange,
 	onFavoriteTeamBonusChange,
 	onToggleLeague,
+	onToggleSport,
 	onToggleShowUpcoming,
 	onToggleNotifications,
 	onToggleDemo,
@@ -98,29 +100,54 @@ const setupView = ({
 		<div>
 			{(Object.keys(sportTypeOrder) as SportType[])
 				.sort((a, b) => sportTypeOrder[a] - sportTypeOrder[b])
-				.map(sportType => (
-					<div key={sportType} className='league-toggle-group'>
-						<div className='fw-semibold text-body-secondary setting-toggle-label'>{sportTypeLabels[sportType]}</div>
-						{leaguesBySportType[sportType].map(league => (
-							<div key={league.id} className='d-flex align-items-center justify-content-between gap-2 mt-1 league-toggle-row'>
-								<div className='d-flex align-items-center gap-2 min-w-0'>
-									<LeagueLogo league={league} logos={leagueLogos} />
-									<label className='fw-semibold text-body mb-0 lh-sm league-toggle-label' htmlFor={`league-${league.id}`}>{league.label}</label>
-								</div>
-								<div className='form-check form-switch mb-0'>
-									<input
-										className='form-check-input'
-										type='checkbox'
-										id={`league-${league.id}`}
-										checked={prefs.enabledLeagues.includes(league.id)}
-										onChange={() => onToggleLeague(league.id)}
-										disabled={!prefsLoaded}
-									/>
+				.map(sportType => {
+					const leagues = leaguesBySportType[sportType];
+					const allSelected = leagues.every(l => prefs.enabledLeagues.includes(l.id));
+					return (
+						<div key={sportType} className='league-toggle-group'>
+							<div className='d-flex align-items-center justify-content-between'>
+								<div className='fw-semibold text-body-secondary setting-toggle-label'>{sportTypeLabels[sportType]}</div>
+								<div className='d-flex align-items-center gap-1'>
+									<label
+										className='text-body-secondary'
+										style={{ fontSize: '0.7rem' }}
+										htmlFor={`setup-sport-all-${sportType}`}
+									>
+										All
+									</label>
+									<div className='form-check form-switch mb-0'>
+										<input
+											className='form-check-input'
+											type='checkbox'
+											id={`setup-sport-all-${sportType}`}
+											checked={allSelected}
+											onChange={() => onToggleSport(sportType, !allSelected)}
+											disabled={!prefsLoaded}
+										/>
+									</div>
 								</div>
 							</div>
-						))}
-					</div>
-				))}
+							{leagues.map(league => (
+								<div key={league.id} className='d-flex align-items-center justify-content-between gap-2 mt-1 league-toggle-row'>
+									<div className='d-flex align-items-center gap-2 min-w-0'>
+										<LeagueLogo league={league} logos={leagueLogos} />
+										<label className='fw-semibold text-body mb-0 lh-sm league-toggle-label' htmlFor={`league-${league.id}`}>{league.label}</label>
+									</div>
+									<div className='form-check form-switch mb-0'>
+										<input
+											className='form-check-input'
+											type='checkbox'
+											id={`league-${league.id}`}
+											checked={prefs.enabledLeagues.includes(league.id)}
+											onChange={() => onToggleLeague(league.id)}
+											disabled={!prefsLoaded}
+										/>
+									</div>
+								</div>
+							))}
+						</div>
+					);
+				})}
 		</div>
 
 		<div className='d-flex justify-content-between align-items-center mt-3'>

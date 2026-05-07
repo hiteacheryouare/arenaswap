@@ -5,8 +5,9 @@ import type { LeagueId, TabRegistration, UserPreferences } from '@arenaswap/core
 import type { Browser } from 'wxt/browser';
 import GameDetailView from './components/gameDetailView';
 import MainView from './components/mainView';
+import OnboardingView from './components/onboardingView';
 import SetupView from './components/setupView';
-import { fetchState, formatTabLabel, leagueOrder, normalizeBackgroundState, popupView } from './popupHelpers';
+import { fetchState, formatTabLabel, leagueOrder, leaguesBySportType, normalizeBackgroundState, popupView } from './popupHelpers';
 import useFavoriteScoreConfetti from './useFavoriteScoreConfetti';
 
 const isScoreUpdateMessage = (value: unknown): value is { type: 'SCORES_UPDATED' } => (
@@ -24,6 +25,7 @@ const app = () => {
 	const [registry, setRegistry] = useState<TabRegistration[]>([]);
 	const [openTabs, setOpenTabs] = useState<Browser.tabs.Tab[]>([]);
 	const [demoMode, setDemoMode] = useState(false);
+	const [onboardingDone, setOnboardingDone] = useState<boolean | null>(null);
 	const prefsSyncRef = useRef<Promise<void>>(Promise.resolve());
 
 	const { data, error, isLoading, mutate } = useSWR('bg-state', () => fetchState(true), {
@@ -40,17 +42,35 @@ const app = () => {
 	const confettiCanvasRef = useFavoriteScoreConfetti({ games, favoriteTeamIds });
 
 	useEffect(() => {
-		browser.storage.sync.get({ prefs: null })
-			.then(result => setPrefs(normalizeUserPreferences(result.prefs)))
-			.catch(async err => {
+		const init = async () => {
+			let rawPrefs: unknown = null;
+			try {
+				const syncResult = await browser.storage.sync.get({ prefs: null });
+				rawPrefs = syncResult.prefs;
+			} catch (err) {
 				console.warn('ArenaSwap: storage.sync unavailable, falling back to storage.local for prefs.', err);
 				const fallback = await browser.storage.local.get({ prefs: null });
-				setPrefs(normalizeUserPreferences(fallback.prefs));
-			})
-			.finally(() => setPrefsLoaded(true));
+				rawPrefs = fallback.prefs;
+			}
+			setPrefs(normalizeUserPreferences(rawPrefs));
+			setPrefsLoaded(true);
+
+			const localResult = await browser.storage.local.get({ demoMode: false, onboardingCompleted: null });
+			setDemoMode(localResult.demoMode as boolean);
+
+			const onboardingFlag = localResult.onboardingCompleted === true;
+			const hasStoredPrefs = rawPrefs !== null;
+			if (!onboardingFlag && hasStoredPrefs) {
+				void browser.storage.local.set({ onboardingCompleted: true });
+				setOnboardingDone(true);
+			} else {
+				setOnboardingDone(onboardingFlag);
+			}
+		};
+
+		void init();
 
 		browser.storage.session.get({ tabRegistry: [] }).then(result => setRegistry(result.tabRegistry as TabRegistration[]));
-		browser.storage.local.get({ demoMode: false }).then(result => setDemoMode(result.demoMode as boolean));
 
 		void browser.tabs.query({ currentWindow: true }).then(tabs => {
 			setOpenTabs(tabs.filter(tab => tab.url && !tab.url.startsWith('chrome://') && !tab.url.startsWith('about:')));
@@ -88,10 +108,27 @@ const app = () => {
 		void syncPromise.catch(err => console.error('ArenaSwap: Failed to persist preferences:', err));
 	};
 
+	const onOnboardingComplete = (leagues: LeagueId[], favorites: string[]) => {
+		persistPrefs({ ...prefs, enabledLeagues: leagues, favoriteTeamIds: favorites });
+		void browser.storage.local.set({ onboardingCompleted: true });
+		setOnboardingDone(true);
+	};
+
 	const onToggleLeague = (leagueId: LeagueId) => {
 		const current = new Set<LeagueId>(prefs.enabledLeagues);
 		if (current.has(leagueId)) current.delete(leagueId);
 		else current.add(leagueId);
+		const enabledLeagues = [...current].sort((a, b) => leagueOrder[a] - leagueOrder[b]);
+		persistPrefs({ ...prefs, enabledLeagues });
+	};
+
+	const onToggleSport = (sport: import('@arenaswap/core/types').SportType, selectAll: boolean) => {
+		const sportLeagueIds = leaguesBySportType[sport].map(l => l.id);
+		const current = new Set<LeagueId>(prefs.enabledLeagues);
+		for (const id of sportLeagueIds) {
+			if (selectAll) current.add(id);
+			else current.delete(id);
+		}
 		const enabledLeagues = [...current].sort((a, b) => leagueOrder[a] - leagueOrder[b]);
 		persistPrefs({ ...prefs, enabledLeagues });
 	};
@@ -121,6 +158,17 @@ const app = () => {
 	const selectedScoreHistory = selectedGameId ? scoreHistory[selectedGameId] ?? [] : [];
 	const selectedPowerScoreHistory = selectedGameId ? powerScoreHistory[selectedGameId] ?? [] : [];
 
+	if (onboardingDone === null) return <div className='popup-root' />;
+
+	if (onboardingDone === false) {
+		return (
+			<OnboardingView
+				leagueLogos={leagueLogos}
+				onComplete={onOnboardingComplete}
+			/>
+		);
+	}
+
 	return (
 		<div className='popup-root'>
 			<canvas ref={confettiCanvasRef} className='popup-confetti-canvas' aria-hidden='true' />
@@ -137,6 +185,7 @@ const app = () => {
 						onSwitchDelayChange={val => persistPrefs({ ...prefs, switchDelaySeconds: val })}
 						onFavoriteTeamBonusChange={val => persistPrefs({ ...prefs, favoriteTeamBonusPoints: val })}
 						onToggleLeague={onToggleLeague}
+						onToggleSport={onToggleSport}
 						onToggleShowUpcoming={() => persistPrefs({ ...prefs, showUpcomingGames: !prefs.showUpcomingGames })}
 						onToggleNotifications={() => persistPrefs({ ...prefs, notificationsEnabled: !prefs.notificationsEnabled })}
 						onToggleDemo={() => {
