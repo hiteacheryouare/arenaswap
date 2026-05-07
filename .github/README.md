@@ -20,7 +20,7 @@
 ![WXT](https://img.shields.io/badge/WXT-0.20-FF6B35?logo=googlechrome&logoColor=white)
 ![TailwindCSS](https://img.shields.io/badge/TailwindCSS-4-06B6D4?logo=tailwindcss&logoColor=white)
 ![Bootstrap](https://img.shields.io/badge/Bootstrap-5-7952B3?logo=bootstrap&logoColor=white)
-![Jest](https://img.shields.io/badge/Jest-30-C21325?logo=jest&logoColor=white)
+[![jest tested](https://img.shields.io/badge/Jest-tested-eee.svg?logo=jest&labelColor=99424f)](https://github.com/jestjs/jest)
 ![Turborepo](https://img.shields.io/badge/Turborepo-2-EF4444?logo=turborepo&logoColor=white)
 ![npm](https://img.shields.io/badge/npm-10-CB3837?logo=npm&logoColor=white)
 
