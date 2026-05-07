@@ -1,7 +1,7 @@
 {
 	"name": "powerscore",
 	"version": "1.2.0",
-	"description": "PowerScore algorithm — excitement scoring engine for live sports games",
+	"description": "The PowerScore excitement scoring engine for live sports games",
 	"type": "module",
 	"main": "./dist/index.js",
 	"types": "./dist/index.d.ts",
@@ -39,10 +39,10 @@
 	],
 	"author": "hiteacheryouare",
 	"license": "ISC",
-	"homepage": "https://github.com/hiteacheryouare/arenaswap/tree/main/packages/powerScore",
+	"homepage": "https://github.com/hiteacheryouare/arenaswap/tree/mega/packages/powerscore",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/hiteacheryouare/arenaswap.git",
+		"url": "git+https://github.com/hiteacheryouare/arenaswap.git",
 		"directory": "packages/powerScore"
 	},
 	"bugs": {
