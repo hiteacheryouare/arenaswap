@@ -417,13 +417,15 @@ export const fetchTeamsForLeagues = async (leagueIds: LeagueId[]): Promise<EspnT
 			if (!res.ok) return [];
 			const json = await res.json() as EspnTeamsResponse;
 			const rawTeams = json?.sports?.[0]?.leagues?.[0]?.teams ?? [];
-			return rawTeams.map(({ team }) => ({
-				leagueId,
-				id: team.id,
-				name: team.displayName,
-				abbreviation: team.abbreviation,
-				logo: team.logos?.[0]?.href,
-			}));
+			return rawTeams
+				.filter(({ team }) => team.id && team.displayName)
+				.map(({ team }) => ({
+					leagueId,
+					id: team.id,
+					name: team.displayName,
+					abbreviation: team.abbreviation ?? team.displayName.slice(0, 3).toUpperCase(),
+					logo: team.logos?.[0]?.href,
+				}));
 		})
 	);
 	return results.flatMap(r => r.status === 'fulfilled' ? r.value : []);
