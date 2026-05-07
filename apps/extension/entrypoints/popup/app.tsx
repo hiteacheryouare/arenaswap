@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import useSWR from 'swr';
 import { createDefaultUserPreferences, createFavoriteTeamKey, normalizeUserPreferences } from '@arenaswap/core/constants';
-import type { LeagueId, TabRegistration, UserPreferences } from '@arenaswap/core/types';
+import type { LeagueId, SportType, TabRegistration, UserPreferences } from '@arenaswap/core/types';
 import type { Browser } from 'wxt/browser';
 import GameDetailView from './components/gameDetailView';
 import MainView from './components/mainView';
@@ -122,7 +122,7 @@ const app = () => {
 		persistPrefs({ ...prefs, enabledLeagues });
 	};
 
-	const onToggleSport = (sport: import('@arenaswap/core/types').SportType, selectAll: boolean) => {
+	const onToggleSport = (sport: SportType, selectAll: boolean) => {
 		const sportLeagueIds = leaguesBySportType[sport].map(l => l.id);
 		const current = new Set<LeagueId>(prefs.enabledLeagues);
 		for (const id of sportLeagueIds) {

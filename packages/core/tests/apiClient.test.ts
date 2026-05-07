@@ -88,6 +88,12 @@ const getCompetition = (event: Record<string, unknown>): Record<string, unknown>
 	(event.competitions as Record<string, unknown>[])[0]
 );
 
+const toUrl = (input: RequestInfo | URL): string => {
+	if (typeof input === 'string') return input;
+	if (input instanceof URL) return input.toString();
+	return input.url;
+};
+
 const loadApiClient = (): typeof import('../src/apiClient') => {
 	jest.resetModules();
 	return require('../src/apiClient') as typeof import('../src/apiClient');
@@ -102,6 +108,129 @@ describe('apiClient', () => {
 		expect(await fetchGamesWithLeagueLogos([])).toEqual({ games: [], leagueLogos: {} });
 		expect(await fetchGames([])).toEqual([]);
 		expect(fetchMock).not.toHaveBeenCalled();
+	});
+
+	test('fetches and parses teams for requested leagues, including NCAA groups params', async () => {
+		const fetchMock = jest.fn().mockImplementation(async (input: RequestInfo | URL) => {
+			const url = toUrl(input);
+			if (url.includes('/basketball/nba/teams')) {
+				return createResponse({
+					sports: [{
+						leagues: [{
+							teams: [{
+								team: {
+									id: '1610612738',
+									displayName: 'Boston Celtics',
+									abbreviation: 'BOS',
+									logos: [{ href: 'https://cdn.example/celtics.png' }],
+								},
+							}],
+						}],
+					}],
+				});
+			}
+			if (url.includes('/basketball/mens-college-basketball/teams')) {
+				return createResponse({
+					sports: [{
+						leagues: [{
+							teams: [{
+								team: {
+									id: '194',
+									displayName: 'Duke Blue Devils',
+									logos: [{ href: 'https://cdn.example/duke.png' }],
+								},
+							}, {
+								team: {
+									id: '',
+									displayName: 'Ignore Me',
+									abbreviation: 'IGN',
+								},
+							}],
+						}],
+					}],
+				});
+			}
+			throw new Error(`Unexpected URL requested: ${url}`);
+		});
+
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+		const { fetchTeamsForLeagues } = loadApiClient();
+
+		const teams = await fetchTeamsForLeagues(['nba', 'ncaab']);
+
+		expect(teams).toEqual([
+			{
+				leagueId: 'nba',
+				id: '1610612738',
+				name: 'Boston Celtics',
+				abbreviation: 'BOS',
+				logo: 'https://cdn.example/celtics.png',
+			},
+			{
+				leagueId: 'ncaab',
+				id: '194',
+				name: 'Duke Blue Devils',
+				abbreviation: 'DUK',
+				logo: 'https://cdn.example/duke.png',
+			},
+		]);
+
+		const requestedUrls = fetchMock.mock.calls.map(([input]) => new URL(toUrl(input as RequestInfo | URL)));
+		expect(requestedUrls.map(url => url.pathname)).toEqual([
+			'/apis/site/v2/sports/basketball/nba/teams',
+			'/apis/site/v2/sports/basketball/mens-college-basketball/teams',
+		]);
+		expect(requestedUrls[0]?.searchParams.get('limit')).toBe('200');
+		expect(requestedUrls[0]?.searchParams.get('groups')).toBeNull();
+		expect(requestedUrls[1]?.searchParams.get('limit')).toBe('200');
+		expect(requestedUrls[1]?.searchParams.get('groups')).toBe('50');
+	});
+
+	test('keeps successful team results when one league request fails', async () => {
+		const fetchMock = jest.fn().mockImplementation(async (input: RequestInfo | URL) => {
+			const url = toUrl(input);
+			if (url.includes('/basketball/nba/teams')) {
+				return createResponse({
+					sports: [{
+						leagues: [{
+							teams: [{
+								team: {
+									id: '1610612747',
+									displayName: 'Los Angeles Lakers',
+									abbreviation: 'LAL',
+								},
+							}],
+						}],
+					}],
+				});
+			}
+			if (url.includes('/football/nfl/teams')) return createResponse({ message: 'temporary outage' }, { ok: false, status: 503 });
+			throw new Error(`Unexpected URL requested: ${url}`);
+		});
+
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+		const { fetchTeamsForLeagues } = loadApiClient();
+
+		await expect(fetchTeamsForLeagues(['nba', 'nfl'])).resolves.toEqual([
+			{
+				leagueId: 'nba',
+				id: '1610612747',
+				name: 'Los Angeles Lakers',
+				abbreviation: 'LAL',
+				logo: undefined,
+			},
+		]);
+	});
+
+	test('throws when every team request fails', async () => {
+		const fetchMock = jest.fn()
+			.mockResolvedValueOnce(createResponse({ message: 'temporary outage' }, { ok: false, status: 503 }))
+			.mockRejectedValueOnce(new Error('network down'));
+
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+		const { fetchTeamsForLeagues } = loadApiClient();
+
+		await expect(fetchTeamsForLeagues(['nba', 'nfl'])).rejects.toThrow('Failed to fetch teams for nba: HTTP 503');
 	});
 
 	test('parses live and upcoming games with logos, broadcasts, odds, and colors', async () => {

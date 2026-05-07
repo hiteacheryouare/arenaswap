@@ -14,8 +14,6 @@ interface onboardingTeamPickerProps {
 	onDone: () => void;
 }
 
-const collegeLeagues = new Set<LeagueId>(['ncaab', 'ncaaw', 'ncaaf', 'ncaamh']);
-
 const TeamLogo = ({ team }: { team: EspnTeamEntry }) => {
 	const [failed, setFailed] = useState(false);
 	const abbr = (team.abbreviation ?? team.name ?? '?').slice(0, 3);
@@ -65,8 +63,6 @@ const onboardingTeamPicker = ({
 	const sortedLeagues = (Object.keys(grouped) as LeagueId[]).sort(
 		(a, b) => (leagueOrder[a] ?? 99) - (leagueOrder[b] ?? 99)
 	);
-
-	const hasCollegeLeague = teams.some(t => collegeLeagues.has(t.leagueId));
 
 	return (
 		<div className='popup-container d-flex flex-column'>

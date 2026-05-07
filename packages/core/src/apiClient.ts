@@ -406,21 +406,25 @@ interface EspnTeamsResponse {
 }
 
 export const fetchTeamsForLeagues = async (leagueIds: LeagueId[]): Promise<EspnTeamEntry[]> => {
+	if (leagueIds.length === 0) return [];
+
+	const leagueConfigs = getEnabledLeagueConfigs(leagueIds);
+	if (leagueConfigs.length === 0) return [];
+
 	const results = await Promise.allSettled(
-		leagueIds.map(async (leagueId): Promise<EspnTeamEntry[]> => {
-			const config = leagueConfigMap[leagueId];
+		leagueConfigs.map(async (config): Promise<EspnTeamEntry[]> => {
 			const params = new URLSearchParams({ limit: '200' });
-			if (leagueId === 'ncaab') params.set('groups', '50');
-			if (leagueId === 'ncaaw') params.set('groups', '49');
+			if (config.id === 'ncaab') params.set('groups', '50');
+			if (config.id === 'ncaaw') params.set('groups', '49');
 			const url = `${espnBase}/${config.espnPath}/teams?${params.toString()}`;
 			const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
-			if (!res.ok) return [];
+			if (!res.ok) throw new Error(`Failed to fetch teams for ${config.id}: HTTP ${res.status}`);
 			const json = await res.json() as EspnTeamsResponse;
 			const rawTeams = json?.sports?.[0]?.leagues?.[0]?.teams ?? [];
 			return rawTeams
 				.filter(({ team }) => team.id && team.displayName)
 				.map(({ team }) => ({
-					leagueId,
+					leagueId: config.id,
 					id: team.id,
 					name: team.displayName,
 					abbreviation: team.abbreviation ?? team.displayName.slice(0, 3).toUpperCase(),
@@ -428,5 +432,14 @@ export const fetchTeamsForLeagues = async (leagueIds: LeagueId[]): Promise<EspnT
 				}));
 		})
 	);
-	return results.flatMap(r => r.status === 'fulfilled' ? r.value : []);
+
+	const fulfilled = results
+		.filter((result): result is PromiseFulfilledResult<EspnTeamEntry[]> => result.status === 'fulfilled')
+		.flatMap(result => result.value);
+	if (fulfilled.length > 0) return fulfilled;
+
+	const firstError = results.find((result): result is PromiseRejectedResult => result.status === 'rejected');
+	throw (firstError?.reason instanceof Error
+		? firstError.reason
+		: new Error('Failed to fetch teams for selected leagues'));
 };
