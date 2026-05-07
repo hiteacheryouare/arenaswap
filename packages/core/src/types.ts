@@ -1,4 +1,4 @@
-// Types that live in @arenaswap/powerscore — re-exported here so existing import paths work
+// Types that live in powerscore — re-exported here so existing import paths work
 import type {
 	SportType,
 	LeagueId,
@@ -9,7 +9,7 @@ import type {
 	ScorerTunables,
 	BaseballInningScoreTier,
 	LeagueConfig,
-} from '@arenaswap/powerscore';
+} from 'powerscore';
 export type {
 	SportType,
 	LeagueId,

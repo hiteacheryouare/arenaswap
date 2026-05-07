@@ -15,7 +15,7 @@ import {
 	sportTypeConfigMap,
 	leagueConfigs,
 	leagueConfigMap,
-} from '@arenaswap/powerscore';
+} from 'powerscore';
 
 // Re-export powerscore constants so existing import paths work unchanged
 export {

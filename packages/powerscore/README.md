@@ -1,15 +1,23 @@
 <div align="center">
 
-# `@arenaswap/powerscore`
+# `powerscore`
 
-**PowerScore** is the excitement-scoring engine that drives ArenaSwap. It produces a 0–100 score for any live game, measuring how exciting that game is *right now* across five independent signals.
+**PowerScore** is an excitement-scoring algorithm for live sports games. It produces a 0–100 score measuring how exciting any game is *right now* across five independent signals.
 
+![npm](https://img.shields.io/npm/v/powerscore?color=CB3837&logo=npm&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)
 ![Jest](https://img.shields.io/badge/Jest-30-C21325?logo=jest&logoColor=white)
-![Version](https://img.shields.io/badge/version-1.2.0-brightgreen)
-![PowerScore](https://img.shields.io/badge/Powered%20by-PowerScore-orange)
+![License](https://img.shields.io/badge/license-ISC-blue)
 
 </div>
+
+---
+
+## Installation
+
+```bash
+npm install powerscore
+```
 
 ---
 
@@ -36,7 +44,7 @@ Games with frozen clocks (commercial breaks, stoppages) take a **30% stall penal
 The main entry point. Takes a game, its score history, and an optional stall count; returns a full `PowerScoreResult`.
 
 ```ts
-import { computePowerScore } from '@arenaswap/powerscore';
+import { computePowerScore } from 'powerscore';
 
 const result = computePowerScore(game, history, stallCount);
 // result.total → 0–100
@@ -55,7 +63,7 @@ const result = computePowerScore(game, history, stallCount);
 Clamps and sanitizes a partial result into a valid `PowerScoreResult`. Useful when constructing or patching results manually.
 
 ```ts
-import { normalizePowerScoreResult } from '@arenaswap/powerscore';
+import { normalizePowerScoreResult } from 'powerscore';
 
 const normalized = normalizePowerScoreResult({ gameId: 'abc', total: 110, ... });
 // total is clamped to 100
@@ -195,21 +203,19 @@ stallPenaltyMultiplier // 0.7
 ## Development
 
 ```bash
-# from the monorepo root
+# standalone (from packages/powerScore)
 npm install
+npm run build
+npm test
 
-# typecheck
-npm run typecheck --workspace @arenaswap/powerscore
-
-# test
-npm run test --workspace @arenaswap/powerscore
-
-# build
-npm run build --workspace @arenaswap/powerscore
+# from the ArenaSwap monorepo root
+npm run typecheck --workspace powerscore
+npm run test --workspace powerscore
+npm run build --workspace powerscore
 ```
 
 ---
 
 ## License
 
-ISC. See the [LICENSE](../../LICENSE) file for details.
+ISC. See the [LICENSE](./LICENSE) file for details.

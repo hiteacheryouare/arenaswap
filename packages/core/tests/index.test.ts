@@ -1,6 +1,6 @@
 import * as apiClient from '../src/apiClient';
 import * as constants from '../src/constants';
-import * as scorer from '@arenaswap/powerscore';
+import * as scorer from 'powerscore';
 import * as indexExports from '../src/index';
 import * as mockGames from '../src/mockGames';
 
