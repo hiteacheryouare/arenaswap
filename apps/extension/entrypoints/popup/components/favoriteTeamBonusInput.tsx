@@ -7,7 +7,7 @@ const favoriteTeamBonusInput = ({ value, onChange }: favoriteTeamBonusInputProps
 	<div>
 		<div className='d-flex justify-content-between align-items-center mb-1'>
 			<label className='text-body-secondary setting-toggle-label' htmlFor='favoriteTeamBonusInput'>
-				Favorite team bonus
+				<i className='bi bi-star me-1 text-primary' />Favorite team bonus
 			</label>
 			<span className='fw-semibold setting-value-label'>
 				+{value} per team

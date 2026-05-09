@@ -20,7 +20,7 @@ const switchDelaySlider = ({ value, onChange }: switchDelaySliderProps) => {
 	return (
 		<div>
 			<div className='d-flex justify-content-between align-items-center mb-1'>
-				<label className='text-body-secondary setting-toggle-label'>Switch delay</label>
+				<label className='text-body-secondary setting-toggle-label'><i className='bi bi-hourglass-split me-1 text-primary' />Switch delay</label>
 				<span className='fw-semibold setting-value-label'>{formatSeconds(steps[currentIdx])}</span>
 			</div>
 			<input

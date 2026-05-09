@@ -19,7 +19,7 @@ const cooldownSlider = ({ value, onChange }: cooldownSliderProps) => {
 	return (
 		<div>
 			<div className='d-flex justify-content-between align-items-center mb-1'>
-				<label className='text-body-secondary setting-toggle-label'>Switch cooldown</label>
+				<label className='text-body-secondary setting-toggle-label'><i className='bi bi-clock me-1 text-primary' />Switch cooldown</label>
 				<span className='fw-semibold setting-value-label'>{formatSeconds(steps[currentIdx])}</span>
 			</div>
 			<input
