@@ -90,7 +90,7 @@ const onboardingLeaguePicker = ({
 											onChange={() => onToggleLeague(league.id)}
 										/>
 									</div>
-									<label className='d-flex align-items-center gap-2 min-w-0 mb-0 flex-grow-1' htmlFor={`onb-league-${league.id}`}>
+									<label className='d-flex align-items-center gap-2 min-w-0 mb-0 grow' htmlFor={`onb-league-${league.id}`}>
 										<LeagueLogo league={league} logos={leagueLogos} />
 										<span className='fw-semibold text-body lh-sm league-toggle-label'>{league.label}</span>
 									</label>
