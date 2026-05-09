@@ -211,14 +211,24 @@ const normalizePowerScoreHistory = (value: unknown): PowerScoreHistoryMap => {
 	}, {});
 };
 
+const normalizeGameBoosts = (value: unknown): Record<string, number> => {
+	if (!isObjectRecord(value)) return {};
+	const result: Record<string, number> = {};
+	for (const [k, v] of Object.entries(value)) {
+		if (typeof v === 'number' && Number.isFinite(v) && v > 0) result[k] = v;
+	}
+	return result;
+};
+
 export const normalizeBackgroundState = (value: unknown): BackgroundState => {
-	if (!isObjectRecord(value)) return { games: [], scores: [], leagueLogos: {}, scoreHistory: {}, powerScoreHistory: {} };
+	if (!isObjectRecord(value)) return { games: [], scores: [], leagueLogos: {}, scoreHistory: {}, powerScoreHistory: {}, gameBoosts: {} };
 	return {
 		games: isGameArray(value.games) ? value.games : [],
 		scores: normalizeScores(value.scores),
 		leagueLogos: isLeagueLogoMap(value.leagueLogos) ? value.leagueLogos : {},
 		scoreHistory: normalizeScoreHistory(value.scoreHistory),
 		powerScoreHistory: normalizePowerScoreHistory(value.powerScoreHistory),
+		gameBoosts: normalizeGameBoosts(value.gameBoosts),
 	};
 };
 

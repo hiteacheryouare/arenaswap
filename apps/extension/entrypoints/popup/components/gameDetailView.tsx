@@ -29,6 +29,8 @@ interface gameDetailViewProps {
 	excitementResult: PowerScoreResult | undefined;
 	scoreHistory: ScoreSnapshot[];
 	powerScoreHistory: PowerScoreSnapshot[];
+	gameBoosts: Record<string, number>;
+	onSetGameBoost: (gameId: string, boost: number) => void;
 	onBack: () => void;
 }
 
@@ -44,7 +46,7 @@ const withMatchupAlpha = (color: string, fallback: string): string => (
 	/^#[\da-fA-F]{6}$/.test(color) ? `${color}28` : fallback
 );
 
-const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistory, onBack }: gameDetailViewProps) => {
+const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistory, gameBoosts, onSetGameBoost, onBack }: gameDetailViewProps) => {
 	const orderedScoreHistory = useMemo(
 		() => [...scoreHistory].sort((a, b) => a.timestamp - b.timestamp),
 		[scoreHistory],
@@ -66,6 +68,7 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 	const baseTotal = activePowerScore?.baseTotal ?? (activePowerScore?.stalled ? Math.round(rawSubtotal * stallPenaltyMultiplier) : rawSubtotal);
 	const favoriteBonus = activePowerScore?.favoriteBonus ?? 0;
 	const favoriteTeamCount = activePowerScore?.favoriteTeamCount ?? 0;
+	const currentBoost = gameBoosts[game.id] ?? 0;
 	const reason = activePowerScore?.reason ?? 'Best Available';
 	const stallPenaltyPoints = activePowerScore?.stalled ? Math.max(0, rawSubtotal - baseTotal) : 0;
 
@@ -148,9 +151,26 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 				<div className='powerscore-breakdown-row powerscore-breakdown-row-penalty'><span>Clock stall penalty</span><span>{stallPenaltyPoints > 0 ? `-${stallPenaltyPoints}` : '0'}</span></div>
 				<div className='powerscore-breakdown-row'><span>Favorite bonus</span><span>{favoriteBonus > 0 ? `+${favoriteBonus}` : '0'}</span></div>
 				{favoriteBonus > 0 && <div className='powerscore-breakdown-note'>{favoriteTeamCount} favorite team{favoriteTeamCount === 1 ? '' : 's'} in matchup</div>}
+				<div className='powerscore-breakdown-row'><span>Game boost</span><span>{currentBoost > 0 ? `+${currentBoost}` : '0'}</span></div>
 				<div className='powerscore-breakdown-row powerscore-breakdown-row-total'><span>Final PowerScore</span><span>{totalLabel}</span></div>
 				<div className='powerscore-breakdown-reason'>Headline reason: {reason}</div>
 			</section>
+
+			<div className='game-detail-boost-section'>
+				<div className='game-detail-boost-heading'>Game boost</div>
+				<div className='game-detail-boost-row'>
+					<span className='game-detail-boost-explainer'>Add points to this game's PowerScore to raise its priority.</span>
+					<input
+						id={`boost-detail-${game.id}`}
+						type='number'
+						min={0}
+						step={1}
+						value={currentBoost}
+						onChange={e => onSetGameBoost(game.id, Math.max(0, Math.round(Number(e.target.value) || 0)))}
+						className='powerscore-boost-input'
+					/>
+				</div>
+			</div>
 
 			<ProTip context='detail' />
 

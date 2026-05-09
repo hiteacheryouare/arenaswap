@@ -35,6 +35,7 @@ export interface PowerScoreResult {
 	baseTotal?: number;
 	favoriteBonus?: number;
 	favoriteTeamCount?: number;
+	gameBoost?: number;
 }
 
 export interface BaseballInningScoreTier {

@@ -21,6 +21,7 @@ interface gameSectionProps {
 	leagueLogos: LeagueLogoMap;
 	favoriteTeamIds: Set<string>;
 	onToggleFavoriteTeam: (leagueId: LeagueId, teamId: string) => void;
+	gameBoosts: Record<string, number>;
 	openTabs: Browser.tabs.Tab[];
 	registry: TabRegistration[];
 	onRegistryChange: (updated: TabRegistration[]) => void;
@@ -57,6 +58,7 @@ interface mainViewProps {
 	leagueLogos: LeagueLogoMap;
 	registry: TabRegistration[];
 	favoriteTeamIds: Set<string>;
+	gameBoosts: Record<string, number>;
 	openTabs: Browser.tabs.Tab[];
 	onOpenGameDetail: (gameId: string) => void;
 	onOpenSetup: () => void;
@@ -73,6 +75,7 @@ const gameSection = ({
 	leagueLogos,
 	favoriteTeamIds,
 	onToggleFavoriteTeam,
+	gameBoosts,
 	openTabs,
 	registry,
 	onRegistryChange,
@@ -91,6 +94,7 @@ const gameSection = ({
 						excitementResult={scores.find(s => s.gameId === game.id)}
 						favoriteTeamIds={favoriteTeamIds}
 						onToggleFavoriteTeam={onToggleFavoriteTeam}
+						gameBoosts={gameBoosts}
 						openTabs={openTabs}
 						registry={registry}
 						onRegistryChange={onRegistryChange}
@@ -113,6 +117,7 @@ const mainView = ({
 	leagueLogos,
 	registry,
 	favoriteTeamIds,
+	gameBoosts,
 	openTabs,
 	onOpenGameDetail,
 	onOpenSetup,
@@ -179,8 +184,8 @@ const mainView = ({
 			{hasError && <div className='alert alert-danger d-flex align-items-center gap-2 mt-3 py-2 px-3 popup-error-banner' role='alert'><i className='bi bi-exclamation-triangle-fill' />Failed to load games. Retrying&hellip;</div>}
 
 			{!isLoading && !noLeaguesSelected && <ProTip context='main' />}
-			{!isLoading && !noLeaguesSelected && assignedLiveGames.length > 0 && gameSection({ title: 'Active Tabs', games: assignedLiveGames, scores, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail })}
-			{!isLoading && !noLeaguesSelected && unassignedLiveGames.length > 0 && gameSection({ title: 'Other Games', games: unassignedLiveGames, scores, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail })}
+			{!isLoading && !noLeaguesSelected && assignedLiveGames.length > 0 && gameSection({ title: 'Active Tabs', games: assignedLiveGames, scores, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail })}
+			{!isLoading && !noLeaguesSelected && unassignedLiveGames.length > 0 && gameSection({ title: 'Other Games', games: unassignedLiveGames, scores, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail })}
 
 			{!isLoading && !noLeaguesSelected && liveGames.length === 0 && registry.length === 0 && (!prefs.showUpcomingGames || upcomingGames.length === 0) && (
 				<div className='mt-3 text-center'>
@@ -189,7 +194,7 @@ const mainView = ({
 				</div>
 			)}
 
-			{!isLoading && !noLeaguesSelected && prefs.showUpcomingGames && upcomingGames.length > 0 && gameSection({ title: 'Up Next', games: upcomingGames, scores: [], leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail })}
+			{!isLoading && !noLeaguesSelected && prefs.showUpcomingGames && upcomingGames.length > 0 && gameSection({ title: 'Up Next', games: upcomingGames, scores: [], leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail })}
 
 			<PopupFooter hasEspnBranding={hasEspnBranding} />
 		</div>

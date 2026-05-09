@@ -34,6 +34,7 @@ export default defineBackground(() => {
 	const powerScoreHistory = new Map<string, PowerScoreSnapshot[]>();
 	const clockStallMap = new Map<string, { lastClock: number; stallCount: number }>();
 	let tabRegistry: TabRegistration[] = [];
+	let gameBoosts: Record<string, number> = {};
 	let demoMode = false;
 	let simulator: MockGameSimulator | null = null;
 	let prefs: UserPreferences = createDefaultUserPreferences();
@@ -46,7 +47,7 @@ export default defineBackground(() => {
 	let inFlightRefresh: Promise<void> | null = null;
 	let pendingSwitchTimer: ReturnType<typeof setTimeout> | null = null;
 	let pendingSwitch: { gameId: string; tabId: number; reason?: string } | null = null;
-	const historyStorageDefaults = { scoreHistory: {}, powerScoreHistory: {} };
+	const historyStorageDefaults = { scoreHistory: {}, powerScoreHistory: {}, gameBoosts: {} };
 
 	const isObjectRecord = (value: unknown): value is Record<string, unknown> => (
 		typeof value === 'object' && value !== null
@@ -80,6 +81,15 @@ export default defineBackground(() => {
 		&& typeof value.stalled === 'boolean'
 		&& typeof value.reason === 'string'
 	);
+
+	const normalizeGameBoosts = (value: unknown): Record<string, number> => {
+		if (!isObjectRecord(value)) return {};
+		const result: Record<string, number> = {};
+		for (const [k, v] of Object.entries(value)) {
+			if (typeof k === 'string' && isFiniteNumber(v) && v > 0) result[k] = v;
+		}
+		return result;
+	};
 
 	const hydrateHistoryMaps = (storedScoreHistory: unknown, storedPowerScoreHistory: unknown) => {
 		history.clear();
@@ -153,6 +163,7 @@ export default defineBackground(() => {
 				baseTotal: score.baseTotal ?? score.total,
 				favoriteBonus: score.favoriteBonus ?? 0,
 				favoriteTeamCount: score.favoriteTeamCount ?? 0,
+				gameBoost: score.gameBoost ?? 0,
 				stalled: score.stalled ?? false,
 				reason: score.reason,
 			});
@@ -189,6 +200,7 @@ export default defineBackground(() => {
 		leagueLogos,
 		scoreHistory: serializeScoreHistory(),
 		powerScoreHistory: serializePowerScoreHistory(),
+		gameBoosts,
 	});
 
 	const broadcastScoresUpdated = () => {
@@ -343,9 +355,12 @@ export default defineBackground(() => {
 			const baseScore = normalizePowerScoreResult(computePowerScore(g, history.get(g.id) ?? [], stallCount));
 			const favoriteTeamCount = getFavoriteTeamCount(g, favoriteTeamIds);
 			const favoriteBonus = favoriteTeamCount * favoriteBonusPoints;
-			const boostedReason = favoriteBonus > 0
-				? `${baseScore.reason}, favorite bonus (+${favoriteBonus})`
-				: baseScore.reason;
+			const gameBoost = gameBoosts[g.id] ?? 0;
+			const reasonParts = [
+				baseScore.reason,
+				favoriteBonus > 0 && `favorite bonus (+${favoriteBonus})`,
+				gameBoost > 0 && `game boost (+${gameBoost})`,
+			].filter(Boolean);
 
 			return normalizePowerScoreResult(
 				{
@@ -353,8 +368,9 @@ export default defineBackground(() => {
 					baseTotal: baseScore.total,
 					favoriteBonus,
 					favoriteTeamCount,
-					total: baseScore.total + favoriteBonus,
-					reason: boostedReason,
+					gameBoost,
+					total: baseScore.total + favoriteBonus + gameBoost,
+					reason: reasonParts.join(', '),
 				},
 				{ allowTotalOverflow: true },
 			);
@@ -499,6 +515,7 @@ export default defineBackground(() => {
 	]).then(([prefsResult, sessionResult, demoResult]) => {
 		prefs = normalizeUserPreferences(prefsResult.prefs);
 		tabRegistry = sessionResult.tabRegistry as TabRegistration[];
+		gameBoosts = normalizeGameBoosts(sessionResult.gameBoosts);
 		hydrateHistoryMaps(sessionResult.scoreHistory, sessionResult.powerScoreHistory);
 		demoMode = demoResult.demoMode as boolean;
 		if (demoMode) simulator = new MockGameSimulator();
@@ -559,6 +576,18 @@ export default defineBackground(() => {
 				clearPendingSwitch();
 				await browser.storage.session.set({ tabRegistry });
 				await syncManagedTabMuteState(prefs.enabled);
+			});
+		}
+		if (msg.type === 'SET_GAME_BOOST') {
+			return stateReady.then(async () => {
+				const boost = Math.max(0, Math.round(Number(msg.boost) || 0));
+				if (boost === 0) {
+					delete gameBoosts[msg.gameId];
+				} else {
+					gameBoosts[msg.gameId] = boost;
+				}
+				await browser.storage.session.set({ gameBoosts });
+				await afterFetch(null, false);
 			});
 		}
 		if (msg.type === 'SET_DEMO_MODE') {

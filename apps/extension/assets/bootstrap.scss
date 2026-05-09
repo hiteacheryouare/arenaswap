@@ -240,6 +240,56 @@ $bootstrap-icons-font-dir: '/fonts';
 	color:       #4b5563;
 }
 
+.powerscore-boost-input {
+	width:         3.5rem;
+	font-size:     0.6rem;
+	padding:       0.1rem 0.25rem;
+	border:        1px solid #d1d5db;
+	border-radius: 0.2rem;
+	text-align:    right;
+	background:    #fff;
+	color:         #111827;
+	font-weight:   700;
+
+	&:focus {
+		outline:      none;
+		border-color: #6366f1;
+		box-shadow:   0 0 0 2px #6366f120;
+	}
+}
+
+// ─── Game boost section on detail view ───────────────────────────────────────
+.game-detail-boost-section {
+	background:    #f8fafc;
+	border:        1px solid #d1d5db;
+	border-radius: 0.35rem;
+	padding:       0.4rem 0.5rem;
+	margin-top:    0.5rem;
+	color:         #111827;
+}
+
+.game-detail-boost-heading {
+	font-size:      0.62rem;
+	font-weight:    700;
+	border-bottom:  1px solid #d1d5db;
+	padding-bottom: 0.16rem;
+	margin-bottom:  0.25rem;
+}
+
+.game-detail-boost-row {
+	display:         flex;
+	justify-content: space-between;
+	align-items:     center;
+	gap:             0.5rem;
+}
+
+.game-detail-boost-explainer {
+	font-size:   0.58rem;
+	color:       #4b5563;
+	line-height: 1.3;
+	flex:        1;
+}
+
 // ─── Tab assignment dropdown (on game card) ─────────────────────────────────
 .game-card-tab-assign {
 	margin-top: 0.4rem;

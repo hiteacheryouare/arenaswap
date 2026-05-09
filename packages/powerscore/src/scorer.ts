@@ -41,9 +41,11 @@ export const normalizePowerScoreResult = (
 	const hasBaseTotal = typeof score.baseTotal === 'number' && Number.isFinite(score.baseTotal);
 	const hasFavoriteBonus = typeof score.favoriteBonus === 'number' && Number.isFinite(score.favoriteBonus);
 	const hasFavoriteTeamCount = typeof score.favoriteTeamCount === 'number' && Number.isFinite(score.favoriteTeamCount);
+	const hasGameBoost = typeof score.gameBoost === 'number' && Number.isFinite(score.gameBoost);
 	const baseTotal = hasBaseTotal ? clamp(toFiniteNumber(score.baseTotal), 0, scoreMaxTotal) : undefined;
 	const favoriteBonus = hasFavoriteBonus ? Math.max(0, Math.round(toFiniteNumber(score.favoriteBonus))) : undefined;
 	const favoriteTeamCount = hasFavoriteTeamCount ? Math.max(0, Math.round(toFiniteNumber(score.favoriteTeamCount))) : undefined;
+	const gameBoost = hasGameBoost ? Math.max(0, Math.round(toFiniteNumber(score.gameBoost))) : undefined;
 
 	return {
 		gameId: score.gameId,
@@ -58,6 +60,7 @@ export const normalizePowerScoreResult = (
 		...(hasBaseTotal ? { baseTotal } : {}),
 		...(hasFavoriteBonus ? { favoriteBonus } : {}),
 		...(hasFavoriteTeamCount ? { favoriteTeamCount } : {}),
+		...(hasGameBoost ? { gameBoost } : {}),
 	};
 };
 

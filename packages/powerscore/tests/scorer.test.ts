@@ -92,6 +92,48 @@ describe('computePowerScore', () => {
 		expect(normalized.favoriteTeamCount).toBe(2);
 	});
 
+	test('passes through gameBoost field when overflow is allowed', () => {
+		const normalized = normalizePowerScoreResult({
+			gameId: 'boost-test',
+			closeness: 30,
+			lateGame: 30,
+			momentum: 20,
+			leadChanges: 12,
+			comeback: 8,
+			baseTotal: 100,
+			favoriteBonus: 0,
+			favoriteTeamCount: 0,
+			gameBoost: 25,
+			total: 125,
+			reason: 'late game, game boost (+25)',
+		}, { allowTotalOverflow: true });
+
+		expect(normalized.total).toBe(125);
+		expect(normalized.gameBoost).toBe(25);
+		expect(normalized.baseTotal).toBe(100);
+	});
+
+	test('stacks favoriteBonus and gameBoost correctly with overflow', () => {
+		const normalized = normalizePowerScoreResult({
+			gameId: 'stacked-boost',
+			closeness: 30,
+			lateGame: 30,
+			momentum: 20,
+			leadChanges: 12,
+			comeback: 8,
+			baseTotal: 100,
+			favoriteBonus: 10,
+			favoriteTeamCount: 1,
+			gameBoost: 15,
+			total: 125,
+			reason: 'favorite bonus (+10), game boost (+15)',
+		}, { allowTotalOverflow: true });
+
+		expect(normalized.total).toBe(125);
+		expect(normalized.favoriteBonus).toBe(10);
+		expect(normalized.gameBoost).toBe(15);
+	});
+
 	test('returns zeroed score for intermission games', () => {
 		const game = makeGame({ intermission: true });
 		expect(computePowerScore(game, makeHistory([[80, 78], [82, 78], [84, 78]]))).toEqual({

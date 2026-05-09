@@ -38,6 +38,7 @@ const app = () => {
 	const leagueLogos = data?.leagueLogos ?? {};
 	const scoreHistory = data?.scoreHistory ?? {};
 	const powerScoreHistory = data?.powerScoreHistory ?? {};
+	const gameBoosts = data?.gameBoosts ?? {};
 	const favoriteTeamIds = useMemo(() => new Set(prefs.favoriteTeamIds), [prefs.favoriteTeamIds]);
 	const confettiCanvasRef = useFavoriteScoreConfetti({ games, favoriteTeamIds });
 
@@ -133,6 +134,10 @@ const app = () => {
 		persistPrefs({ ...prefs, enabledLeagues });
 	};
 
+	const onSetGameBoost = (gameId: string, boost: number) => {
+		void browser.runtime.sendMessage({ type: 'SET_GAME_BOOST', gameId, boost });
+	};
+
 	const onRegistryChange = (updated: TabRegistration[]) => {
 		setRegistry(updated);
 		void browser.storage.session.set({ tabRegistry: updated });
@@ -206,6 +211,7 @@ const app = () => {
 						leagueLogos={leagueLogos}
 						registry={registry}
 						favoriteTeamIds={favoriteTeamIds}
+						gameBoosts={gameBoosts}
 						openTabs={openTabs}
 						onOpenGameDetail={openGameDetail}
 						onOpenSetup={() => setView('setup')}
@@ -227,6 +233,8 @@ const app = () => {
 						excitementResult={selectedScore}
 						scoreHistory={selectedScoreHistory}
 						powerScoreHistory={selectedPowerScoreHistory}
+						gameBoosts={gameBoosts}
+						onSetGameBoost={onSetGameBoost}
 						onBack={() => setView('main')}
 					/>
 				)}
