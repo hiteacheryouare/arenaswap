@@ -26,6 +26,8 @@ const app = () => {
 	const [openTabs, setOpenTabs] = useState<Browser.tabs.Tab[]>([]);
 	const [demoMode, setDemoMode] = useState(false);
 	const [onboardingDone, setOnboardingDone] = useState<boolean | null>(null);
+	const [settled, setSettled] = useState(false);
+	const settledRef = useRef(false);
 	const prefsSyncRef = useRef<Promise<void>>(Promise.resolve());
 
 	const { data, error, isLoading, mutate } = useSWR('bg-state', () => fetchState(true), {
@@ -77,12 +79,20 @@ const app = () => {
 			setOpenTabs(tabs.filter(tab => tab.url && !tab.url.startsWith('chrome://') && !tab.url.startsWith('about:')));
 		});
 
+		const settleTimer = setTimeout(() => {
+			if (!settledRef.current) { settledRef.current = true; setSettled(true); }
+		}, 9000);
+
 		const handleMessage = (msg: unknown) => {
 			if (!isScoreUpdateMessage(msg)) return;
 			mutate(normalizeBackgroundState(msg), { revalidate: false });
+			if (!settledRef.current) { settledRef.current = true; setSettled(true); }
 		};
 		browser.runtime.onMessage.addListener(handleMessage);
-		return () => browser.runtime.onMessage.removeListener(handleMessage);
+		return () => {
+			clearTimeout(settleTimer);
+			browser.runtime.onMessage.removeListener(handleMessage);
+		};
 	}, [mutate]);
 
 	useEffect(() => {
@@ -204,8 +214,9 @@ const app = () => {
 					<MainView
 						prefs={prefs}
 						prefsLoaded={prefsLoaded}
-						isLoading={isLoading}
+						isLoading={isLoading || !settled}
 						hasError={Boolean(error && !data)}
+						onRefresh={() => mutate()}
 						games={games}
 						scores={scores}
 						leagueLogos={leagueLogos}

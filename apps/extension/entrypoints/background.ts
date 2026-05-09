@@ -45,6 +45,7 @@ export default defineBackground(() => {
 	// Interval used only in demo mode
 	let demoTimer: ReturnType<typeof setInterval> | null = null;
 	let inFlightRefresh: Promise<void> | null = null;
+	let upcomingGamesReady: Promise<void> | undefined;
 	let pendingSwitchTimer: ReturnType<typeof setTimeout> | null = null;
 	let pendingSwitch: { gameId: string; tabId: number; reason?: string } | null = null;
 	const historyStorageDefaults = { scoreHistory: {}, powerScoreHistory: {}, gameBoosts: {} };
@@ -524,7 +525,8 @@ export default defineBackground(() => {
 	});
 
 	stateReady.then(async () => {
-		await refreshUpcomingGames();
+		upcomingGamesReady = refreshUpcomingGames();
+		await upcomingGamesReady;
 		refreshScores(false).finally(() => {
 			if (demoMode) {
 				if (!demoTimer) {
@@ -541,9 +543,13 @@ export default defineBackground(() => {
 		if (msg.type === 'GET_STATE') {
 			if (msg.forceRefresh === true || games.length === 0) {
 				// Popup opened or worker just woke up; fetch fresh state before responding.
+				// Also await upcomingGamesReady so upcoming games are merged into the first tick.
 				return stateReady
-					.then(() => refreshScores(false))
-					.then(() => buildBackgroundState());
+					.then(async () => {
+						if (upcomingGamesReady) await upcomingGamesReady;
+						await refreshScores(false);
+						return buildBackgroundState();
+					});
 			}
 			return Promise.resolve(buildBackgroundState());
 		}

@@ -62,6 +62,7 @@ interface mainViewProps {
 	openTabs: Browser.tabs.Tab[];
 	onOpenGameDetail: (gameId: string) => void;
 	onOpenSetup: () => void;
+	onRefresh: () => void;
 	onToggleEnabled: () => void;
 	onToggleFavoriteTeam: (leagueId: LeagueId, teamId: string) => void;
 	onRegistryChange: (updated: TabRegistration[]) => void;
@@ -121,6 +122,7 @@ const mainView = ({
 	openTabs,
 	onOpenGameDetail,
 	onOpenSetup,
+	onRefresh,
 	onToggleEnabled,
 	onToggleFavoriteTeam,
 	onRegistryChange,
@@ -178,19 +180,32 @@ const mainView = ({
 						<span className='visually-hidden'>Loading...</span>
 					</div>
 					<div className='mt-2 text-center popup-loading-text'>{loadingMessage}</div>
+					<div className='mt-1 text-center popup-loading-subtext'>Checking your leagues&hellip;</div>
 				</div>
 			)}
 
-			{hasError && <div className='alert alert-danger d-flex align-items-center gap-2 mt-3 py-2 px-3 popup-error-banner' role='alert'><i className='bi bi-exclamation-triangle-fill' />Failed to load games. Retrying&hellip;</div>}
+			{hasError && (
+				<div className='alert alert-danger d-flex align-items-center justify-content-between gap-2 mt-3 py-2 px-3 popup-error-banner' role='alert'>
+					<div className='d-flex align-items-center gap-2'>
+						<i className='bi bi-exclamation-triangle-fill' />
+						Failed to load games.
+					</div>
+					<button className='btn btn-sm btn-outline-danger py-0 px-2 popup-error-retry' onClick={onRefresh}>Retry</button>
+				</div>
+			)}
 
 			{!isLoading && !noLeaguesSelected && <ProTip context='main' />}
 			{!isLoading && !noLeaguesSelected && assignedLiveGames.length > 0 && gameSection({ title: 'Active Tabs', games: assignedLiveGames, scores, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail })}
 			{!isLoading && !noLeaguesSelected && unassignedLiveGames.length > 0 && gameSection({ title: 'Other Games', games: unassignedLiveGames, scores, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail })}
 
 			{!isLoading && !noLeaguesSelected && liveGames.length === 0 && registry.length === 0 && (!prefs.showUpcomingGames || upcomingGames.length === 0) && (
-				<div className='mt-3 text-center'>
+				<div className='mt-3 text-center popup-no-games-wrap'>
 					<div className='fw-bold text-body mb-1 popup-no-games-title'>No games right now 💔</div>
-					<button className='btn btn-link btn-sm p-0 popup-settings-link' onClick={onOpenSetup}>Settings →</button>
+					<div className='popup-no-games-sub mb-2'>Nothing live across your selected leagues.</div>
+					<div className='d-flex justify-content-center gap-3'>
+						<button className='btn btn-link btn-sm p-0 popup-settings-link' onClick={onRefresh}>Refresh</button>
+						<button className='btn btn-link btn-sm p-0 popup-settings-link' onClick={onOpenSetup}>Settings →</button>
+					</div>
 				</div>
 			)}
 

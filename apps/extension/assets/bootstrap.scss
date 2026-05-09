@@ -311,6 +311,26 @@ $bootstrap-icons-font-dir: '/fonts';
 }
 
 // ─── Setup view ──────────────────────────────────────────────────────────────
+.setup-tabs {
+	.nav-link {
+		font-size:   0.72rem;
+		font-weight: 600;
+		padding:     0.3rem 0.5rem;
+		color:       #8b949e;
+		border-radius: 0.35rem;
+
+		&.active {
+			background-color: #F75C03;
+			color:            #fff;
+		}
+
+		&:not(.active):hover {
+			color:            #e6edf3;
+			background-color: rgba(#e6edf3, 0.07);
+		}
+	}
+}
+
 .setup-header {
 	display:       flex;
 	align-items:   center;
@@ -435,7 +455,7 @@ $bootstrap-icons-font-dir: '/fonts';
 }
 
 .popup-loading-wrap {
-	min-height: 64px;
+	min-height: 100px;
 }
 
 .popup-loading-spinner {
@@ -450,12 +470,41 @@ $bootstrap-icons-font-dir: '/fonts';
 	color: #e6edf3;
 }
 
+.popup-loading-subtext {
+	font-size: 0.65rem;
+	color: #6e7681;
+}
+
 .popup-error-banner {
 	font-size: 0.7rem;
 }
 
+.popup-error-retry {
+	font-size: 0.65rem;
+	white-space: nowrap;
+	flex-shrink: 0;
+}
+
+.popup-no-games-wrap {
+	padding: 1rem 0.5rem;
+}
+
 .popup-no-games-title {
 	font-size: 1rem;
+}
+
+.popup-no-games-sub {
+	font-size: 0.72rem;
+	color: #6e7681;
+}
+
+.setup-no-leagues-warn {
+	font-size: 0.65rem;
+	color: var(--bs-warning);
+	padding: 0.35rem 0.5rem;
+	border: 1px solid rgba(var(--bs-warning-rgb), 0.3);
+	border-radius: 0.35rem;
+	background: rgba(var(--bs-warning-rgb), 0.07);
 }
 
 .popup-settings-link {
