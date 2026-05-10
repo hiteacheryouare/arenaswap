@@ -11,6 +11,7 @@
 		"dev": "turbo dev",
 		"build": "turbo run build",
 		"build:all": "turbo run build build:firefox build:edge",
+		"zip": "turbo run zip",
 		"test": "turbo run test",
 		"typecheck": "turbo typecheck"
 	},
