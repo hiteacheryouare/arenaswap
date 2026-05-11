@@ -3,9 +3,10 @@
 
 This document defines the mandatory standards for contributing to the ArenaSwap monorepo, including:
 - `packages/core` the core engine for ArenaSwap
+- `packages/powerscore` the PowerScore live sport scoring algorithm
 - `apps/extension` The WXT extension built for multiple browsers
 
-This project operates under a centralized governance model, strict architectural standards, a controlled branching system (feature/* → dev → Stable), and explicit formatting and dependency rules.
+This project operates under a centralized governance model, strict architectural standards, a controlled branching system (feature/* → dev → mega), and explicit formatting and dependency rules.
 
 Non-compliant contributions will be rejected.
 
@@ -43,7 +44,7 @@ Contribution does not grant governance rights.
 ### Branch Hierarchy
 
 The repository uses a controlled branching structure:
-- Stable → Production-ready branch
+- mega → Production-ready branch
 - dev → Integration branch
 - `feature/*` , `fix/*` , `refactor/*` → Individual development branches
 
@@ -52,9 +53,9 @@ The repository uses a controlled branching structure:
 
 All work must follow:
 
-`feature/* → dev → Stable`
+`feature/* → dev → mega`
 
-Direct merges into Stable are prohibited.
+Direct merges into mega are prohibited.
 
 Pull Requests must target dev.
 
@@ -74,9 +75,9 @@ Naming examples:
 - `refactor/ui-refactor`
 
 
-### Promotion to Stable
+### Promotion to mega
 
-dev may only be merged into Stable when:
+dev may only be merged into mega when:
 - Lint passes
 - Type checking passes
 - Full Turbo build succeeds
@@ -93,7 +94,7 @@ This is not a voting process.
 
 ### Emergency Policy
 
-If Stable is compromised:
+If mega is compromised:
 - Immediate revert
 - Root cause identification
 - Patch in dev
@@ -265,13 +266,13 @@ The following will be rejected:
 - Hardcoded architecture
 - ESLint violations
 - Breaking dark mode
-- Direct Stable merges
+- Direct mega merges
 
 Repeated violations may result in access removal.
 
 
 ## Stability Philosophy
-- Stable protects production users and npm consumers.
+- mega protects production users and npm consumers.
 - dev absorbs risk.
 - Feature branches isolate change.
 - Architecture is preserved deliberately.
