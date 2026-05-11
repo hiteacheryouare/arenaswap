@@ -10,6 +10,7 @@
 
 ArenaSwap exists to build and maintain:
 - The ArenaSwap core engine
+- The PowerScore Algorithm
 - The browser extension(s)
 
 This project is merit-driven and output-oriented. The objective is high-quality code and maintainable systems — not social experimentation.
