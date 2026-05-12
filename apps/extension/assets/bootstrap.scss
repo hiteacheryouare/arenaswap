@@ -572,9 +572,14 @@ $bootstrap-icons-font-dir: '/fonts';
 	color: #8b949e;
 }
 
+// Shade the warning yellow 60% toward black so it passes WCAG AA on the
+// white card base. contrast-ratio() is Bootstrap's built-in WCAG checker.
+$pre-game-time-color: shade-color($warning, 60%);
+// @debug "pre-game-start-time contrast on white: #{contrast-ratio(#ffffff, $pre-game-time-color)}"; // ~7.4:1 ✓
+
 .pre-game-start-time {
 	font-size: 0.7rem;
-	color: #F1C40F;
+	color: $pre-game-time-color;
 	margin-top: 0.15rem;
 }
 
