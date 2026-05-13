@@ -10,6 +10,8 @@
 		"build:firefox": "wxt build --browser firefox --mv3",
 		"build:edge": "wxt build --browser edge --mv3",
 		"zip": "node ../../scripts/zip-builds.js",
+		"test": "npm run test:unit",
+		"test:unit": "jest --passWithNoTests --selectProjects unit",
 		"typecheck": "wxt prepare && tsc --noEmit"
 	},
 	"dependencies": {

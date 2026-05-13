@@ -1,0 +1,18 @@
+{
+	"extends": "../../tsconfig.base.json",
+	"compilerOptions": {
+		"module": "CommonJS",
+		"moduleResolution": "Node",
+		"ignoreDeprecations": "6.0",
+		"types": ["jest", "node"],
+		"jsx": "react-jsx",
+		"noEmit": true,
+		"paths": {
+			"@arenaswap/core": ["../../packages/core/src/index.ts"],
+			"@arenaswap/core/*": ["../../packages/core/src/*"],
+			"powerscore": ["../../packages/powerscore/src/index.ts"],
+			"wxt/browser": ["./tests/stubs/wxtBrowser.ts"]
+		}
+	},
+	"include": ["entrypoints/**/*", "tests/**/*", "tests/stubs/globals.d.ts"]
+}
