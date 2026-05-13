@@ -70,7 +70,7 @@ const onboardingTeamPicker = ({
 				<button className='btn btn-link btn-sm p-0 text-body-secondary small' onClick={onBack}>
 					<i className='bi bi-arrow-left me-1' />Back
 				</button>
-				<span className='small text-body-secondary text-uppercase ms-auto'>Step 2 of 2</span>
+				<span className='small text-body-secondary text-uppercase ms-auto'>Step 3 of 3</span>
 			</div>
 
 			<div className='fw-bold lh-sm mb-1 fs-5'>Pick your teams</div>

@@ -3,6 +3,7 @@ import { fetchTeamsForLeagues } from '@arenaswap/core';
 import type { EspnTeamEntry } from '@arenaswap/core';
 import type { LeagueId, LeagueLogoMap, SportType } from '@arenaswap/core/types';
 import { leaguesBySportType } from '../popupHelpers';
+import OnboardingTabControl from './onboardingTabControl';
 import OnboardingLeaguePicker from './onboardingLeaguePicker';
 import OnboardingTeamPicker from './onboardingTeamPicker';
 
@@ -14,7 +15,7 @@ interface onboardingViewProps {
 const defaultLeagues: LeagueId[] = ['nba', 'nfl', 'nhl', 'mlb'];
 
 const onboardingView = ({ leagueLogos, onComplete }: onboardingViewProps) => {
-	const [step, setStep] = useState<1 | 2>(1);
+	const [step, setStep] = useState<1 | 2 | 3>(1);
 	const [selectedLeagues, setSelectedLeagues] = useState<Set<LeagueId>>(() => new Set(defaultLeagues));
 	const [selectedFavorites, setSelectedFavorites] = useState<Set<string>>(new Set());
 	const [teams, setTeams] = useState<EspnTeamEntry[]>([]);
@@ -53,7 +54,7 @@ const onboardingView = ({ leagueLogos, onComplete }: onboardingViewProps) => {
 		} finally {
 			setTeamsLoading(false);
 		}
-		setStep(2);
+		setStep(3);
 	};
 
 	const onToggleFavorite = (key: string) => {
@@ -73,22 +74,26 @@ const onboardingView = ({ leagueLogos, onComplete }: onboardingViewProps) => {
 		<div className='popup-root'>
 			<div className='popup-view-shell'>
 				{step === 1 && (
+					<OnboardingTabControl onNext={() => setStep(2)} />
+				)}
+				{step === 2 && (
 					<OnboardingLeaguePicker
 						selectedLeagues={selectedLeagues}
 						leagueLogos={leagueLogos}
 						onToggleLeague={onToggleLeague}
 						onToggleSport={onToggleSport}
+						onBack={() => setStep(1)}
 						onNext={() => { void onNext(); }}
 					/>
 				)}
-				{step === 2 && (
+				{step === 3 && (
 					<OnboardingTeamPicker
 						teams={teams}
 						isLoading={teamsLoading}
 						hasError={teamsError}
 						selectedFavorites={selectedFavorites}
 						onToggleFavorite={onToggleFavorite}
-						onBack={() => setStep(1)}
+						onBack={() => setStep(2)}
 						onSkip={() => finish(false)}
 						onDone={() => finish(true)}
 					/>

@@ -8,6 +8,7 @@ interface onboardingLeaguePickerProps {
 	leagueLogos: LeagueLogoMap;
 	onToggleLeague: (id: LeagueId) => void;
 	onToggleSport: (sport: SportType, selectAll: boolean) => void;
+	onBack: () => void;
 	onNext: () => void;
 }
 
@@ -48,10 +49,16 @@ const onboardingLeaguePicker = ({
 	leagueLogos,
 	onToggleLeague,
 	onToggleSport,
+	onBack,
 	onNext,
 }: onboardingLeaguePickerProps) => (
 	<div className='popup-container'>
-		<div className='small text-body-secondary text-uppercase mb-1'>Step 1 of 2</div>
+		<div className='d-flex align-items-center mb-1'>
+			<button className='btn btn-link btn-sm p-0 text-body-secondary small' onClick={onBack}>
+				<i className='bi bi-arrow-left me-1' />Back
+			</button>
+			<span className='small text-body-secondary text-uppercase ms-auto'>Step 2 of 3</span>
+		</div>
 		<div className='fw-bold lh-sm mb-3 fs-5'>Which sports do you watch?</div>
 
 		<div>
