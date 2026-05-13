@@ -131,9 +131,11 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 						<FlipScore value={game.homeTeam.score} className='fw-bold lh-1 game-detail-score-value' />
 					</div>
 					<div className='game-detail-period'>{statusDetail}</div>
-					<div className='powerscore game-detail-powerscore-label' style={{ backgroundColor: powerScoreColor(total, scoreMaxTotal) }}>
-						PowerScore: {totalLabel}
-					</div>
+					{game.status !== 'pre' && (
+						<div className='powerscore game-detail-powerscore-label' style={{ backgroundColor: powerScoreColor(total, scoreMaxTotal) }}>
+							PowerScore: {totalLabel}
+						</div>
+					)}
 				</div>
 				<DetailTeamPill team={game.homeTeam} />
 			</div>
