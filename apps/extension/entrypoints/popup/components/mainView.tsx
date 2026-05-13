@@ -145,10 +145,6 @@ const mainView = ({
 	const registeredGameIds = new Set(registry.map(r => r.gameId));
 	const assignedLiveGames = liveGames.filter(g => registeredGameIds.has(g.id)).sort(sortGames);
 	const unassignedLiveGames = liveGames.filter(g => !registeredGameIds.has(g.id)).sort(sortGames);
-	const hasEspnBranding = (
-		Object.values(leagueLogos).some(url => typeof url === 'string' && url.toLowerCase().includes('espn'))
-		|| games.some(game => (game.odds?.provider?.logoUrl ?? '').toLowerCase().includes('espn'))
-	);
 
 	return (
 		<div className='popup-container d-flex flex-column'>
@@ -210,7 +206,7 @@ const mainView = ({
 
 			{!isLoading && !noLeaguesSelected && prefs.showUpcomingGames && upcomingGames.length > 0 && gameSection({ title: 'Up Next', games: upcomingGames, scores: [], leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail })}
 
-			<PopupFooter hasEspnBranding={hasEspnBranding} />
+			<PopupFooter />
 		</div>
 	);
 };
