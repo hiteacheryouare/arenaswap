@@ -180,7 +180,6 @@ const mainView = ({
 						<span className='visually-hidden'>Loading...</span>
 					</div>
 					<div className='mt-2 text-center popup-loading-text'>{loadingMessage}</div>
-					<div className='mt-1 text-center popup-loading-subtext'>Checking your leagues&hellip;</div>
 				</div>
 			)}
 
