@@ -122,7 +122,18 @@ const app = () => {
 	const onOnboardingComplete = (leagues: LeagueId[], favorites: string[]) => {
 		persistPrefs({ ...prefs, enabledLeagues: leagues, favoriteTeamIds: favorites });
 		void browser.storage.local.set({ onboardingCompleted: true });
+		// Reset settled so MainView shows a loader while we re-fetch with the new prefs.
+		// Without this, `settled` is already true from the initial fetch (which ran during onboarding
+		// with empty leagues), so MainView would immediately show "no games" on first transition.
+		settledRef.current = false;
+		setSettled(false);
 		setOnboardingDone(true);
+		void (async () => {
+			await prefsSyncRef.current.catch(() => {});
+			const refreshed = await fetchState(true);
+			mutate(refreshed, { revalidate: false });
+			if (!settledRef.current) { settledRef.current = true; setSettled(true); }
+		})();
 	};
 
 	const onToggleLeague = (leagueId: LeagueId) => {
