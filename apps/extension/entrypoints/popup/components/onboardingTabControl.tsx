@@ -13,7 +13,7 @@ const onboardingTabControl = ({ onNext }: onboardingTabControlProps) => (
 			/>
 		</div>
 
-		<div className='onb-content-wrap d-flex flex-column flex-grow-1'>
+		<div className='onb-content-wrap d-flex flex-column grow'>
 			<div className='small text-body-secondary text-uppercase text-center mb-3'>Step 1 of 3</div>
 
 			<div className='fw-bold lh-sm mb-2 fs-4 text-center'>Welcome to ArenaSwap</div>
@@ -23,17 +23,17 @@ const onboardingTabControl = ({ onNext }: onboardingTabControlProps) => (
 
 			<div className='d-flex flex-column gap-3 mb-4'>
 				<div className='d-flex gap-3 align-items-start'>
-					<i className='bi bi-tv fs-5 text-primary flex-shrink-0 mt-1' />
+					<i className='bi bi-tv fs-5 text-primary shrink-0 mt-1' />
 					<div>
-						<div className='fw-semibold text-body lh-sm small'>Switches your tabs automatically</div>
+						<div className='fw-semibold text-body lh-sm small'>Automatic tab switching</div>
 						<div className='setting-explainer mt-1'>
-							When a game heats up, ArenaSwap activates that tab even if you're watching something else.
+							ArenaSwap takes over the browser window when active. When a game heats up, ArenaSwap activates that tab even if you're watching something else.
 						</div>
 					</div>
 				</div>
 
 				<div className='d-flex gap-3 align-items-start'>
-					<i className='bi bi-collection-play fs-5 text-primary flex-shrink-0 mt-1' />
+					<i className='bi bi-collection-play fs-5 text-primary shrink-0 mt-1' />
 					<div>
 						<div className='fw-semibold text-body lh-sm small'>You register tabs to games</div>
 						<div className='setting-explainer mt-1'>
@@ -43,7 +43,7 @@ const onboardingTabControl = ({ onNext }: onboardingTabControlProps) => (
 				</div>
 
 				<div className='d-flex gap-3 align-items-start'>
-					<i className='bi bi-sliders fs-5 text-primary flex-shrink-0 mt-1' />
+					<i className='bi bi-sliders fs-5 text-primary shrink-0 mt-1' />
 					<div>
 						<div className='fw-semibold text-body lh-sm small'>You stay in control</div>
 						<div className='setting-explainer mt-1'>
