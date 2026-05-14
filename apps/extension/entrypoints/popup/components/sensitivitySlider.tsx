@@ -7,7 +7,7 @@ interface sensitivitySliderProps {
 
 const labels: Record<number, string> = {
 	1: 'Barely Active',
-	2: 'Critical Only',
+	2: 'Passive',
 	3: 'Conservative',
 	4: 'Balanced',
 	5: 'Eager',
