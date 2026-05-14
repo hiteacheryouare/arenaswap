@@ -42,6 +42,11 @@ describe('formatPeriod', () => {
 		expect(formatPeriod(makeGame({ league: 'mlb', sportType: 'baseball', period: 7 }))).toBe('Inn 7');
 	});
 
+	test('formats MLB extra innings as "Inn N" (not OT)', () => {
+		expect(formatPeriod(makeGame({ league: 'mlb', sportType: 'baseball', period: 10 }))).toBe('Inn 10');
+		expect(formatPeriod(makeGame({ league: 'mlb', sportType: 'baseball', period: 11 }))).toBe('Inn 11');
+	});
+
 	test('formats NFL overtime as OT1', () => {
 		expect(formatPeriod(makeGame({ league: 'nfl', sportType: 'football', period: 5 }))).toBe('OT1');
 	});
