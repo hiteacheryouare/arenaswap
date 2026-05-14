@@ -12,6 +12,7 @@ export const formatPeriod = (game: Game): string => {
 	const period = game.period;
 	if (period > regular) {
 		if (config.periodFormat === 'periods') return 'OT';
+		if (config.periodFormat === 'innings') return `Inn ${period}`;
 		return `OT${period - regular}`;
 	}
 	if (config.periodFormat === 'halves') return period === 1 ? '1H' : '2H';
