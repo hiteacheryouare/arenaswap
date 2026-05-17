@@ -32,6 +32,13 @@ $form-switch-checked-bg:    #F75C03;
 $form-check-input-checked-bg-color: #F75C03;
 $form-check-input-checked-border-color: #F75C03;
 
+* {
+	&::selection {
+		background: $primary;
+		color: $body-color;
+	}
+}
+
 // ─── Bootstrap source ────────────────────────────────────────────────────────
 @import 'bootstrap/scss/bootstrap';
 
