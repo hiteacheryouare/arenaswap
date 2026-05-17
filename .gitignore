@@ -28,3 +28,4 @@ dist/
 apps/docs/.astro/settings.json
 apps/docs/.astro/types.d.ts
 docs/settings.json
+docs/settings.json
