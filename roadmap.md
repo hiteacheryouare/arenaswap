@@ -26,11 +26,15 @@ This is a **living draft** based on [issue #13](https://github.com/hiteacheryoua
 
 - User controls for switching sensitivity (chill/normal/chaos style presets).
 - Performance/reliability pass for background polling and state sync.
+- Overtime prediction — pre-boost tie games in final seconds
+File: packages/powerscore/src/scorer.ts — computeLateGame()
 
-## 1.5 (sports depth)
+Currently, a tied game with 10 seconds left scores the same as a tied game at halftime (both use closeness + late-game, neither pre-boosts OT)
+Add a narrow "OT imminent" window: if clockSeconds ≤ 60 AND scoreDiff === 0 in the final regulation period, apply a bonus (e.g. +8) that bridges the gap before period > regularPeriods kicks in
+Scope it tightly so it only fires once (within last 60s of regulation, tied)
+Add tests for this boundary
 
-- Better handling of stale or missing scoreboard data.
-- League-by-league tuning docs for contributors.
+- RedZone Mode
 
 ## 2.0 (major release)
 
