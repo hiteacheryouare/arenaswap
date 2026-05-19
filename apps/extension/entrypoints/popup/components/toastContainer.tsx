@@ -16,7 +16,7 @@ const toastContainer = ({ toasts, onDismiss }: toastContainerProps) => {
 	return (
 		<div className='toast-container position-fixed bottom-0 start-50 translate-middle-x pb-3'>
 			{toasts.map(toast => {
-				const { icon, label } = variantConfig[toast.variant];
+				const { icon, label } = variantConfig[toast.variant] ?? variantConfig['info']!;
 				return (
 					<div key={toast.id} className='toast show toast-slide-up' role='alert' aria-live='assertive' aria-atomic='true'>
 						<div className='toast-header'>

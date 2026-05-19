@@ -15,7 +15,7 @@ const formatTimeLabel = (timestamp: number): string => (
 const hexToRgb = (value: string): { red: number; green: number; blue: number } | null => {
 	const matched = /^#([\da-fA-F]{6})$/.exec(value);
 	if (!matched) return null;
-	const hex = matched[1];
+	const hex = matched[1]!;
 	return {
 		red: Number.parseInt(hex.slice(0, 2), 16),
 		green: Number.parseInt(hex.slice(2, 4), 16),

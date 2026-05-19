@@ -244,7 +244,7 @@ export default defineBackground(() => {
 			const scoreTitle = game
 				? `${game.awayTeam.abbreviation} ${game.awayTeam.score}-${game.homeTeam.score} ${game.homeTeam.abbreviation}`
 				: getGameLabel(gameId);
-			const capitalizeFirst = (s: string) => s ? s[0].toUpperCase() + s.slice(1) : s;
+			const capitalizeFirst = (s: string) => s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
 			const venue = getVenueName(gameId);
 			const message = reason
 				? `${capitalizeFirst(reason)}. Taking you to ${venue} now!`
@@ -373,7 +373,7 @@ export default defineBackground(() => {
 
 		const best = registeredScores.reduce((a, b) => a.total > b.total ? a : b);
 		const bestReg = tabRegistry.find(r => r.gameId === best.gameId)!;
-		const threshold = sensitivityThresholds[prefs.sensitivity];
+		const threshold = sensitivityThresholds[prefs.sensitivity] ?? 0;
 		const cooldownOk = Date.now() - lastSwitchTime > prefs.cooldownSeconds * 1000;
 
 		if (
