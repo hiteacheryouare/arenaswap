@@ -908,6 +908,47 @@ $pre-game-time-color: shade-color($warning, 60%);
 	}
 }
 
+// ─── Toast ────────────────────────────────────────────────────────────────────
+
+.toast {
+	--as-toast-bg: #21262d;
+	--as-toast-border-color: #30363d;
+	--as-toast-color: #e6edf3;
+	--as-toast-header-bg: #161b22;
+	--as-toast-header-color: #e6edf3;
+	min-width: 240px;
+	max-width: 288px;
+}
+
+.toast-header {
+	padding: 0.45rem 0.65rem;
+	font-size: 0.78rem;
+	border-bottom-color: #30363d;
+}
+
+.toast-body {
+	padding: 0.5rem 0.65rem;
+	font-size: 0.78rem;
+	color: #e6edf3;
+}
+
+.toast-container {
+	z-index: 9999;
+}
+
+@keyframes toastSlideUp {
+	from { opacity: 0; transform: translateY(6px); }
+	to   { opacity: 1; transform: translateY(0); }
+}
+
+.toast-slide-up {
+	animation: toastSlideUp 0.18s ease-out forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.toast-slide-up { animation: none; }
+}
+
 // ─── Error boundary ──────────────────────────────────────────────────────────
 
 .error-boundary-icon {

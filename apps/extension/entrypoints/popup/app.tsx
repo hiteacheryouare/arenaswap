@@ -7,8 +7,10 @@ import GameDetailView from './components/gameDetailView';
 import MainView from './components/mainView';
 import OnboardingView from './components/onboardingView';
 import SetupView from './components/setupView';
+import ToastContainer from './components/toastContainer';
 import { fetchState, formatTabLabel, leagueOrder, leaguesBySportType, normalizeBackgroundState, popupView } from './popupHelpers';
 import useFavoriteScoreConfetti from './useFavoriteScoreConfetti';
+import useToast from './useToast';
 
 const isScoreUpdateMessage = (value: unknown): value is { type: 'SCORES_UPDATED' } => (
 	typeof value === 'object'
@@ -29,6 +31,7 @@ const app = () => {
 	const [settled, setSettled] = useState(false);
 	const settledRef = useRef(false);
 	const prefsSyncRef = useRef<Promise<void>>(Promise.resolve());
+	const { toasts, showToast, dismissToast } = useToast();
 
 	const { data, error, isLoading, mutate } = useSWR('bg-state', () => fetchState(true), {
 		revalidateOnFocus: false,
@@ -122,6 +125,7 @@ const app = () => {
 	const onOnboardingComplete = (leagues: LeagueId[], favorites: string[]) => {
 		persistPrefs({ ...prefs, enabledLeagues: leagues, favoriteTeamIds: favorites });
 		void browser.storage.local.set({ onboardingCompleted: true });
+		showToast('Welcome to ArenaSwap!', 'success');
 		// Reset settled so MainView shows a loader while we re-fetch with the new prefs.
 		// Without this, `settled` is already true from the initial fetch (which ran during onboarding
 		// with empty leagues), so MainView would immediately show "no games" on first transition.
@@ -167,6 +171,7 @@ const app = () => {
 
 	const closeSetup = () => {
 		setView('main');
+		showToast('Settings saved', 'success');
 		void (async () => {
 			await prefsSyncRef.current.catch(() => {});
 			const refreshed = await fetchState(true);
@@ -198,6 +203,7 @@ const app = () => {
 	return (
 		<div className='popup-root'>
 			<canvas ref={confettiCanvasRef} className='popup-confetti-canvas' aria-hidden='true' />
+			<ToastContainer toasts={toasts} onDismiss={dismissToast} />
 			<div key={view} className='popup-view-shell'>
 				{view === 'setup' && (
 					<SetupView
