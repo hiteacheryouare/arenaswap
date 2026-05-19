@@ -94,6 +94,7 @@ const onboardingView = ({ leagueLogos, onComplete }: onboardingViewProps) => {
 						selectedFavorites={selectedFavorites}
 						onToggleFavorite={onToggleFavorite}
 						onBack={() => setStep(2)}
+						onRetry={() => { void onNext(); }}
 						onSkip={() => finish(false)}
 						onDone={() => finish(true)}
 					/>

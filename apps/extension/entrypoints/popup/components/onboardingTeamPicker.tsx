@@ -10,6 +10,7 @@ interface onboardingTeamPickerProps {
 	selectedFavorites: Set<string>;
 	onToggleFavorite: (key: string) => void;
 	onBack: () => void;
+	onRetry: () => void;
 	onSkip: () => void;
 	onDone: () => void;
 }
@@ -42,6 +43,7 @@ const onboardingTeamPicker = ({
 	selectedFavorites,
 	onToggleFavorite,
 	onBack,
+	onRetry,
 	onSkip,
 	onDone,
 }: onboardingTeamPickerProps) => {
@@ -97,8 +99,12 @@ const onboardingTeamPicker = ({
 			)}
 
 			{hasError && !isLoading && (
-				<div className='small text-body-secondary text-center mt-3'>
-					Couldn't load teams. You can skip and add favorites later via game cards.
+				<div className='text-center mt-3'>
+					<div className='small text-danger mb-2'>Couldn't load teams.</div>
+					<div className='d-flex justify-content-center gap-2'>
+						<button type='button' className='btn btn-sm btn-outline-secondary' onClick={onRetry}>Retry</button>
+						<button type='button' className='btn btn-sm btn-link p-0 text-body-secondary' onClick={onSkip}>Skip for now</button>
+					</div>
 				</div>
 			)}
 
