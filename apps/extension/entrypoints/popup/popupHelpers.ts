@@ -1,4 +1,4 @@
-import { normalizePowerScoreResult } from '@arenaswap/core';
+import { normalizePowerScoreResult, isObjectRecord, isFiniteNumber, isScoreSnapshotLike, isPowerScoreSnapshotLike } from '@arenaswap/core';
 import { createFavoriteTeamKey, leagueConfigs } from '@arenaswap/core/constants';
 import type {
 	BackgroundState,
@@ -6,10 +6,8 @@ import type {
 	LeagueId,
 	LeagueLogoMap,
 	PowerScoreHistoryMap,
-	PowerScoreSnapshot,
 	PowerScoreResult,
 	ScoreHistoryMap,
-	ScoreSnapshot,
 	SportType,
 } from '@arenaswap/core/types';
 import type { Browser } from 'wxt/browser';
@@ -97,7 +95,7 @@ export const loadingMessages: string[] = [
 ];
 
 export const getRandomLoadingMessage = (): string => (
-	loadingMessages[Math.floor(Math.random() * loadingMessages.length)]
+	loadingMessages[Math.floor(Math.random() * loadingMessages.length)] ?? ''
 );
 export const leaguesBySportType = leagueConfigs.reduce<Record<SportType, typeof leagueConfigs>>((groups, config) => {
 	groups[config.sportType].push(config);
@@ -140,10 +138,6 @@ export const groupByLeague = (games: Game[]): leagueGroup[] => (
 	}, [])
 );
 
-const isObjectRecord = (value: unknown): value is Record<string, unknown> => (
-	typeof value === 'object' && value !== null
-);
-
 const isGameArray = (value: unknown): value is Game[] => (
 	Array.isArray(value)
 );
@@ -162,35 +156,6 @@ const normalizeScores = (value: unknown): PowerScoreResult[] => {
 	return value
 		.filter(isPowerScoreLike)
 		.map(score => normalizePowerScoreResult(score, { allowTotalOverflow: true }));
-};
-
-const isNumberField = (value: unknown): value is number => (
-	typeof value === 'number' && Number.isFinite(value)
-);
-
-const isScoreSnapshotLike = (value: unknown): value is ScoreSnapshot => {
-	if (!isObjectRecord(value)) return false;
-	return typeof value.gameId === 'string'
-		&& isNumberField(value.timestamp)
-		&& isNumberField(value.homeScore)
-		&& isNumberField(value.awayScore);
-};
-
-const isPowerScoreSnapshotLike = (value: unknown): value is PowerScoreSnapshot => {
-	if (!isObjectRecord(value)) return false;
-	return typeof value.gameId === 'string'
-		&& isNumberField(value.timestamp)
-		&& isNumberField(value.total)
-		&& isNumberField(value.closeness)
-		&& isNumberField(value.lateGame)
-		&& isNumberField(value.momentum)
-		&& isNumberField(value.leadChanges)
-		&& isNumberField(value.comeback)
-		&& isNumberField(value.baseTotal)
-		&& isNumberField(value.favoriteBonus)
-		&& isNumberField(value.favoriteTeamCount)
-		&& typeof value.stalled === 'boolean'
-		&& typeof value.reason === 'string';
 };
 
 const normalizeScoreHistory = (value: unknown): ScoreHistoryMap => {

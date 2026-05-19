@@ -140,4 +140,20 @@ export type SetGameBoostMessage = {
 	boost: number;
 };
 
-export type ExtensionMessage = ScoresUpdatedMessage | UpdatePrefsMessage | UpdateRegistryMessage | SetGameBoostMessage;
+export type GetStateMessage = {
+	type: 'GET_STATE';
+	forceRefresh?: boolean;
+};
+
+export type SetDemoModeMessage = {
+	type: 'SET_DEMO_MODE';
+	enabled: boolean;
+};
+
+export type ExtensionMessage =
+	| ScoresUpdatedMessage
+	| UpdatePrefsMessage
+	| UpdateRegistryMessage
+	| SetGameBoostMessage
+	| GetStateMessage
+	| SetDemoModeMessage;

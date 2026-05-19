@@ -1,5 +1,5 @@
 import { randomInRange } from '@porkyproductions/hat';
-import { fetchGamesWithLeagueLogos, computePowerScore, normalizePowerScoreResult, MockGameSimulator, createPollModeTracker } from '@arenaswap/core';
+import { fetchGamesWithLeagueLogos, computePowerScore, normalizePowerScoreResult, MockGameSimulator, createPollModeTracker, isObjectRecord, isFiniteNumber, isScoreSnapshotLike, isPowerScoreSnapshotLike } from '@arenaswap/core';
 import {
 	createDefaultUserPreferences,
 	createFavoriteTeamKey,
@@ -13,6 +13,7 @@ import {
 	sportTypeConfigMap,
 } from '@arenaswap/core/constants';
 import type {
+	ExtensionMessage,
 	Game,
 	LeagueId,
 	PowerScoreResult,
@@ -49,39 +50,6 @@ export default defineBackground(() => {
 	let pendingSwitchTimer: ReturnType<typeof setTimeout> | null = null;
 	let pendingSwitch: { gameId: string; tabId: number; reason?: string } | null = null;
 	const historyStorageDefaults = { scoreHistory: {}, powerScoreHistory: {}, gameBoosts: {} };
-
-	const isObjectRecord = (value: unknown): value is Record<string, unknown> => (
-		typeof value === 'object' && value !== null
-	);
-
-	const isFiniteNumber = (value: unknown): value is number => (
-		typeof value === 'number' && Number.isFinite(value)
-	);
-
-	const isScoreSnapshotLike = (value: unknown): value is ScoreSnapshot => (
-		isObjectRecord(value)
-		&& typeof value.gameId === 'string'
-		&& isFiniteNumber(value.timestamp)
-		&& isFiniteNumber(value.homeScore)
-		&& isFiniteNumber(value.awayScore)
-	);
-
-	const isPowerScoreSnapshotLike = (value: unknown): value is PowerScoreSnapshot => (
-		isObjectRecord(value)
-		&& typeof value.gameId === 'string'
-		&& isFiniteNumber(value.timestamp)
-		&& isFiniteNumber(value.total)
-		&& isFiniteNumber(value.closeness)
-		&& isFiniteNumber(value.lateGame)
-		&& isFiniteNumber(value.momentum)
-		&& isFiniteNumber(value.leadChanges)
-		&& isFiniteNumber(value.comeback)
-		&& isFiniteNumber(value.baseTotal)
-		&& isFiniteNumber(value.favoriteBonus)
-		&& isFiniteNumber(value.favoriteTeamCount)
-		&& typeof value.stalled === 'boolean'
-		&& typeof value.reason === 'string'
-	);
 
 	const normalizeGameBoosts = (value: unknown): Record<string, number> => {
 		if (!isObjectRecord(value)) return {};
@@ -539,7 +507,7 @@ export default defineBackground(() => {
 	});
 
 	// Handle messages from popup
-	browser.runtime.onMessage.addListener((msg: any) => {
+	browser.runtime.onMessage.addListener((msg: ExtensionMessage) => {
 		if (msg.type === 'GET_STATE') {
 			if (msg.forceRefresh === true || games.length === 0) {
 				// Popup opened or worker just woke up; fetch fresh state before responding.
