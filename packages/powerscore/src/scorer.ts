@@ -227,18 +227,23 @@ const getLateGame = (game: Game, config: SportTypeConfig): Signal => {
 	if (config.lateGameCurve.model !== 'clock')
 		return { score: scores.lateGame.none, reason: '' };
 
-	const previousWindowSecs = Math.max(0, config.lateGameCurve.previousPeriodWindowSecs);
-	const finalWindowSecs = Math.max(0, config.lateGameCurve.finalPeriodWindowSecs);
+	const windowOverride = leagueConfig.lateGameWindowOverrideSecs;
+	const previousWindowSecs = Math.max(0, windowOverride?.previousPeriod ?? config.lateGameCurve.previousPeriodWindowSecs);
+	const finalWindowSecs = Math.max(0, windowOverride?.finalPeriod ?? config.lateGameCurve.finalPeriodWindowSecs);
 	const totalWindowSecs = previousWindowSecs + finalWindowSecs;
 	if (totalWindowSecs <= 0)
 		return { score: scores.lateGame.none, reason: '' };
+
+	const curveWithOverride = windowOverride
+		? { ...config.lateGameCurve, previousPeriodWindowSecs: previousWindowSecs, finalPeriodWindowSecs: finalWindowSecs }
+		: config.lateGameCurve;
 
 	const regulationProgress = getClockRegulationProgress(
 		game,
 		regularPeriods,
 		leagueConfig.periodDurationSecs,
 		config,
-		config.lateGameCurve,
+		curveWithOverride,
 	);
 	if (regulationProgress.phase === 'none')
 		return { score: scores.lateGame.none, reason: '' };

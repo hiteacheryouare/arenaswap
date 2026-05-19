@@ -267,6 +267,9 @@ export const leagueConfigs: LeagueConfig[] = [
 		regularPeriods: 2,
 		periodDurationSecs: 1200,
 		periodFormat: 'halves',
+		// 20-min halves are much longer than NBA 12-min quarters; widen the late-game window
+		// so the tension ramp starts proportionally earlier (last ~10 min instead of last 5).
+		lateGameWindowOverrideSecs: { finalPeriod: 600, previousPeriod: 600 },
 	},
 	{
 		id: 'nhl',
