@@ -2,8 +2,7 @@ import {
 	leagueConfigMap,
 	sportTypeConfigMap,
 	scorerTunables,
-	stallThresholdPolls,
-	stallPenaltyMultiplier,
+	stallPenaltySteps,
 	scoreMaxCloseness,
 	scoreMaxLateGame,
 	scoreMaxMomentum,
@@ -269,8 +268,8 @@ const getMomentum = (game: Game, history: ScoreSnapshot[], config: SportTypeConf
 	const { scores, reasons } = scorerTunables;
 	if (history.length < 3) return { score: 0, reason: '' };
 
-	const oldest = history[0];
-	const newest = history[history.length - 1];
+	const oldest = history[0]!;
+	const newest = history[history.length - 1]!;
 	const homeDelta = newest.homeScore - oldest.homeScore;
 	const awayDelta = newest.awayScore - oldest.awayScore;
 	const run = Math.abs(homeDelta - awayDelta);
@@ -289,8 +288,8 @@ const getLeadChanges = (history: ScoreSnapshot[]): Signal => {
 
 	let changes = 0;
 	for (let i = 1; i < history.length; i++) {
-		const prevDiff = history[i - 1].homeScore - history[i - 1].awayScore;
-		const currDiff = history[i].homeScore - history[i].awayScore;
+		const prevDiff = history[i - 1]!.homeScore - history[i - 1]!.awayScore;
+		const currDiff = history[i]!.homeScore - history[i]!.awayScore;
 		if (Math.sign(prevDiff) !== Math.sign(currDiff) && !(prevDiff === 0 && currDiff === 0))
 			changes++;
 	}
@@ -304,11 +303,11 @@ const getComeback = (game: Game, history: ScoreSnapshot[], config: SportTypeConf
 	const { scores, reasons } = scorerTunables;
 	if (history.length < 3) return { score: 0, reason: '' };
 
-	const oldDiff = Math.abs(history[0].homeScore - history[0].awayScore);
+	const oldDiff = Math.abs(history[0]!.homeScore - history[0]!.awayScore);
 	const newDiff = Math.abs(game.homeTeam.score - game.awayTeam.score);
 	const shrinkage = oldDiff - newDiff;
 
-	const trailingTeam = history[0].homeScore < history[0].awayScore
+	const trailingTeam = history[0]!.homeScore < history[0]!.awayScore
 		? game.homeTeam.abbreviation
 		: game.awayTeam.abbreviation;
 
@@ -343,9 +342,10 @@ export const computePowerScore = (
 	const leadChanges = getLeadChanges(history);
 	const comeback = getComeback(game, history, config);
 
-	const stalled = stallCount >= stallThresholdPolls;
 	const rawTotal = closeness.score + lateGame.score + momentum.score + leadChanges.score + comeback.score;
-	const total = stalled ? Math.round(rawTotal * stallPenaltyMultiplier) : rawTotal;
+	const stallStep = stallPenaltySteps.find(s => stallCount >= s.minPolls);
+	const stalled = stallStep !== undefined;
+	const total = stalled ? Math.round(rawTotal * stallStep.multiplier) : rawTotal;
 
 	const reason = [momentum.reason, comeback.reason, leadChanges.reason, lateGame.reason, closeness.reason]
 		.filter(Boolean)
@@ -362,5 +362,6 @@ export const computePowerScore = (
 		comeback: comeback.score,
 		reason,
 		stalled,
+		...(stalled ? { baseTotal: rawTotal } : {}),
 	});
 };

@@ -1,8 +1,12 @@
 import type { LeagueId, SportType, SportTypeConfig, ScorerTunables, LeagueConfig } from './types';
 
-// Clock stall detection — penalty applied when clock is frozen (commercial breaks, stoppages)
-export const stallThresholdPolls = 5; // ~75 seconds at 15s poll interval
-export const stallPenaltyMultiplier = 0.7; // 30% PowerScore reduction
+// Clock stall detection — graduated penalty based on how long the clock has been frozen.
+// Sorted descending so the first matching step wins.
+// At 15s poll interval: 8 polls ≈ 120s (commercial starts), 15 polls ≈ 225s (extended break / halftime).
+export const stallPenaltySteps: { minPolls: number; multiplier: number }[] = [
+	{ minPolls: 15, multiplier: 0.70 },
+	{ minPolls: 8,  multiplier: 0.85 },
+];
 
 // PowerScore signal maxes (total possible: 100, sport-agnostic)
 export const scoreMaxCloseness = 30;

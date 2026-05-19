@@ -9,8 +9,7 @@ import {
 	scoreMaxComeback,
 	scoreMaxTotal,
 	sportTypeConfigMap,
-	stallPenaltyMultiplier,
-	stallThresholdPolls,
+	stallPenaltySteps,
 } from '../src/constants';
 import { computePowerScore, normalizePowerScoreResult } from '../src/scorer';
 import type { Game, PowerScoreResult, ScoreSnapshot } from '../src/types';
@@ -465,7 +464,7 @@ describe('computePowerScore', () => {
 		expect(result.reason).toBe(scorerTunables.reasons.fallback);
 	});
 
-	test('applies stall penalty when threshold is met', () => {
+	test('applies no stall penalty below the first threshold', () => {
 		const game = makeGame({
 			homeTeam: { ...makeGame().homeTeam, score: 100 },
 			awayTeam: { ...makeGame().awayTeam, score: 92 },
@@ -473,13 +472,45 @@ describe('computePowerScore', () => {
 			clockSeconds: 600,
 		});
 
-		const raw = computePowerScore(game, [], stallThresholdPolls - 1);
-		const stalled = computePowerScore(game, [], stallThresholdPolls);
+		// stallPenaltySteps is sorted descending — first entry has the highest minPolls
+		const lightStep = stallPenaltySteps[stallPenaltySteps.length - 1];
+		const result = computePowerScore(game, [], (lightStep?.minPolls ?? 8) - 1);
+		expect(result.stalled).toBe(false);
+		expect(result.total).toBe(result.closeness + result.lateGame + result.momentum + result.leadChanges + result.comeback);
+	});
 
-		expect(raw.stalled).toBe(false);
-		expect(raw.total).toBe(raw.closeness + raw.lateGame + raw.momentum + raw.leadChanges + raw.comeback);
+	test('applies light stall penalty at the first step threshold', () => {
+		const game = makeGame({
+			homeTeam: { ...makeGame().homeTeam, score: 100 },
+			awayTeam: { ...makeGame().awayTeam, score: 92 },
+			period: 2,
+			clockSeconds: 600,
+		});
+
+		const lightStep = stallPenaltySteps[stallPenaltySteps.length - 1];
+		if (!lightStep) return;
+		const raw = computePowerScore(game, [], lightStep.minPolls - 1);
+		const stalled = computePowerScore(game, [], lightStep.minPolls);
 		expect(stalled.stalled).toBe(true);
-		expect(stalled.total).toBe(Math.round(raw.total * stallPenaltyMultiplier));
+		expect(stalled.total).toBe(Math.round(raw.total * lightStep.multiplier));
+		expect(stalled.baseTotal).toBe(raw.total);
+	});
+
+	test('applies heavy stall penalty at the highest step threshold', () => {
+		const game = makeGame({
+			homeTeam: { ...makeGame().homeTeam, score: 100 },
+			awayTeam: { ...makeGame().awayTeam, score: 92 },
+			period: 2,
+			clockSeconds: 600,
+		});
+
+		const heavyStep = stallPenaltySteps[0];
+		if (!heavyStep) return;
+		const raw = computePowerScore(game, [], 0);
+		const stalled = computePowerScore(game, [], heavyStep.minPolls);
+		expect(stalled.stalled).toBe(true);
+		expect(stalled.total).toBe(Math.round(raw.total * heavyStep.multiplier));
+		expect(stalled.baseTotal).toBe(raw.total);
 	});
 
 	test('falls back to default reason when no signal reasons are present', () => {

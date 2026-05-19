@@ -10,14 +10,13 @@ import {
 	scoreMaxLeadChanges,
 	scoreMaxMomentum,
 	scoreMaxTotal,
-	stallPenaltyMultiplier,
 	sportTypeConfigMap,
 } from '@arenaswap/core/constants';
 import BaseDiamond from './baseDiamond';
 import FlipScore from './flipScore';
 import TabAssignSelect from './tabAssignSelect';
 import type { gameCardProps } from './gameCardTypes';
-import { formatClock, formatPeriod, gameMeta as GameMeta, isInteractiveCardTarget, powerScoreColor, stallPenaltyPercent, teamColumn as TeamColumn } from './gameCardShared';
+import { computeStallPenaltyPercent, formatClock, formatPeriod, gameMeta as GameMeta, isInteractiveCardTarget, powerScoreColor, teamColumn as TeamColumn } from './gameCardShared';
 
 const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail }: gameCardProps) => {
 	const [showPowerScoreDetails, setShowPowerScoreDetails] = useState(false);
@@ -37,7 +36,7 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 		? scorerTunables.scores.closeness.tied - scorerTunables.scores.closeness.zeroZero
 		: 0;
 	const rawPowerScore = closenessScore + lateGameScore + momentumScore + leadChangesScore + comebackScore;
-	const baseTotal = excitementResult?.baseTotal ?? (excitementResult?.stalled ? Math.round(rawPowerScore * stallPenaltyMultiplier) : rawPowerScore);
+	const baseTotal = excitementResult?.baseTotal ?? rawPowerScore;
 	const stallPenaltyPoints = excitementResult?.stalled ? Math.max(0, rawPowerScore - baseTotal) : 0;
 	const favoriteBonus = excitementResult?.favoriteBonus ?? 0;
 	const favoriteTeamCount = excitementResult?.favoriteTeamCount ?? 0;
@@ -101,7 +100,7 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 						: <div className='powerscore-breakdown-row powerscore-breakdown-row-penalty'><span>Clock stall penalty</span><span>0</span></div>}
 					{excitementResult.stalled && (
 						<div className='powerscore-breakdown-note'>
-							-{stallPenaltyPercent}% applied ({rawPowerScore} x {stallPenaltyMultiplier} ~= {baseTotal})
+							-{computeStallPenaltyPercent(rawPowerScore, baseTotal)}% applied ({rawPowerScore} → {baseTotal})
 						</div>
 					)}
 					<div className='powerscore-breakdown-row'><span>Favorite team bonus</span><span>{favoriteBonus > 0 ? `+${favoriteBonus}` : '0'}</span></div>

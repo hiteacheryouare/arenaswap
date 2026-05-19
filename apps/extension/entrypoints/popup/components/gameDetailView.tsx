@@ -7,7 +7,6 @@ import {
 	scoreMaxLeadChanges,
 	scoreMaxMomentum,
 	scoreMaxTotal,
-	stallPenaltyMultiplier,
 	sportTypeConfigMap,
 } from '@arenaswap/core/constants';
 import type { Game, PowerScoreResult, PowerScoreSnapshot, ScoreSnapshot } from '@arenaswap/core/types';
@@ -65,7 +64,7 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 	const comeback = activePowerScore?.comeback ?? 0;
 	const total = activePowerScore?.total ?? 0;
 	const rawSubtotal = closeness + lateGame + momentum + leadChanges + comeback;
-	const baseTotal = activePowerScore?.baseTotal ?? (activePowerScore?.stalled ? Math.round(rawSubtotal * stallPenaltyMultiplier) : rawSubtotal);
+	const baseTotal = activePowerScore?.baseTotal ?? rawSubtotal;
 	const favoriteBonus = activePowerScore?.favoriteBonus ?? 0;
 	const favoriteTeamCount = activePowerScore?.favoriteTeamCount ?? 0;
 	const currentBoost = gameBoosts[game.id] ?? 0;

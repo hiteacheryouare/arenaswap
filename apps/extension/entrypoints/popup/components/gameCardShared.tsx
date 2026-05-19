@@ -1,9 +1,12 @@
 import { useState } from 'react';
-import { leagueConfigMap, stallPenaltyMultiplier } from '@arenaswap/core/constants';
+import { leagueConfigMap } from '@arenaswap/core/constants';
 import type { Game, LeagueId, Team } from '@arenaswap/core/types';
 
 const logoSize = 56;
-export const stallPenaltyPercent = Math.round((1 - stallPenaltyMultiplier) * 100);
+
+export const computeStallPenaltyPercent = (rawTotal: number, baseTotal: number): number => (
+	rawTotal > 0 ? Math.round((rawTotal - baseTotal) / rawTotal * 100) : 0
+);
 
 export const formatPeriod = (game: Game): string => {
 	const config = leagueConfigMap[game.league];

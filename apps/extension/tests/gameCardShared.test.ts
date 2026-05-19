@@ -1,10 +1,10 @@
 import {
+	computeStallPenaltyPercent,
 	formatClock,
 	formatPeriod,
 	formatStartDateTime,
 	isInteractiveCardTarget,
 	powerScoreColor,
-	stallPenaltyPercent,
 } from '../entrypoints/popup/components/gameCardShared';
 import type { Game } from '@arenaswap/core/types';
 
@@ -74,7 +74,9 @@ describe('formatStartDateTime', () => {
 	test('returns a "Day • Time" string for a valid ISO timestamp', () => {
 		const formatted = formatStartDateTime('2026-10-05T19:00:00.000Z');
 		expect(formatted).toContain('•');
-		const [day, time] = formatted.split('•').map(s => s.trim());
+		const parts = formatted.split('•').map(s => s.trim());
+		const day = parts[0]!;
+		const time = parts[1]!;
 		expect(day.length).toBeGreaterThan(0);
 		expect(time.length).toBeGreaterThan(0);
 	});
@@ -122,10 +124,19 @@ describe('isInteractiveCardTarget', () => {
 	});
 });
 
-describe('stallPenaltyPercent', () => {
-	test('is a positive integer percentage', () => {
-		expect(Number.isInteger(stallPenaltyPercent)).toBe(true);
-		expect(stallPenaltyPercent).toBeGreaterThan(0);
-		expect(stallPenaltyPercent).toBeLessThanOrEqual(100);
+describe('computeStallPenaltyPercent', () => {
+	test('returns a positive integer percentage when rawTotal exceeds baseTotal', () => {
+		const result = computeStallPenaltyPercent(100, 70);
+		expect(Number.isInteger(result)).toBe(true);
+		expect(result).toBeGreaterThan(0);
+		expect(result).toBeLessThanOrEqual(100);
+	});
+
+	test('returns 0 when rawTotal is 0', () => {
+		expect(computeStallPenaltyPercent(0, 0)).toBe(0);
+	});
+
+	test('returns 0 when rawTotal equals baseTotal (no penalty)', () => {
+		expect(computeStallPenaltyPercent(50, 50)).toBe(0);
 	});
 });
