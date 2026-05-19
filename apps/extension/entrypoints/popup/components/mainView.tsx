@@ -12,6 +12,8 @@ import { resolveLeagueLogoUrl } from '@arenaswap/core/constants';
 import GameCard from './gameCard';
 import PopupFooter from './popupFooter';
 import ProTip from './proTip';
+import EmptyGameState from './emptyGameState';
+import GameListHeader from './gameListHeader';
 import { buildFavoritePinnedComparator, getRandomLoadingMessage, groupByLeague, leagueLabels } from '../popupHelpers';
 
 interface gameSectionProps {
@@ -146,6 +148,9 @@ const mainView = ({
 	const assignedLiveGames = liveGames.filter(g => registeredGameIds.has(g.id)).sort(sortGames);
 	const unassignedLiveGames = liveGames.filter(g => !registeredGameIds.has(g.id)).sort(sortGames);
 
+	const showNoGames = !isLoading && !noLeaguesSelected && liveGames.length === 0
+		&& registry.length === 0 && (!prefs.showUpcomingGames || upcomingGames.length === 0);
+
 	return (
 		<div className='popup-container d-flex flex-column'>
 			<div className='d-flex justify-content-between align-items-center mb-2 pb-2'>
@@ -160,50 +165,18 @@ const mainView = ({
 				</div>
 			</div>
 
-			{!isLoading && noLeaguesSelected && (
-				<div className='text-center rounded mt-2 mb-3 p-3 popup-empty-leagues'>
-					<h2 className='fw-bold text-white lh-sm mb-2 popup-empty-leagues-title'>Choose leagues to get started</h2>
-					<p className='mb-2 lh-sm popup-empty-leagues-copy'>
-						ArenaSwap needs at least one league selected before it can find games to swap between.
-					</p>
-					<button className='btn btn-primary btn-lg w-100' onClick={onOpenSetup}>Select Leagues in Settings</button>
-				</div>
-			)}
+			<GameListHeader isLoading={isLoading} hasError={hasError} loadingMessage={loadingMessage} onRefresh={onRefresh} />
 
-			{isLoading && (
-				<div className='d-flex flex-column justify-content-center align-items-center mt-4 popup-loading-wrap'>
-					<div className='spinner-border popup-loading-spinner' role='status'>
-						<span className='visually-hidden'>Loading...</span>
-					</div>
-					<div className='mt-2 text-center popup-loading-text'>{loadingMessage}</div>
-				</div>
-			)}
-
-			{hasError && (
-				<div className='alert alert-danger d-flex align-items-center justify-content-between gap-2 mt-3 py-2 px-3 popup-error-banner' role='alert'>
-					<div className='d-flex align-items-center gap-2'>
-						<i className='bi bi-exclamation-triangle-fill' />
-						Failed to load games.
-					</div>
-					<button className='btn btn-sm btn-outline-danger py-0 px-2 popup-error-retry' onClick={onRefresh}>Retry</button>
-				</div>
-			)}
+			<EmptyGameState
+				noLeaguesSelected={!isLoading && noLeaguesSelected}
+				noGames={showNoGames}
+				onOpenSetup={onOpenSetup}
+				onRefresh={onRefresh}
+			/>
 
 			{!isLoading && !noLeaguesSelected && <ProTip context='main' />}
 			{!isLoading && !noLeaguesSelected && assignedLiveGames.length > 0 && gameSection({ title: 'Active Live Tabs', games: assignedLiveGames, scores, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail })}
 			{!isLoading && !noLeaguesSelected && unassignedLiveGames.length > 0 && gameSection({ title: 'Other Live Games', games: unassignedLiveGames, scores, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail })}
-
-			{!isLoading && !noLeaguesSelected && liveGames.length === 0 && registry.length === 0 && (!prefs.showUpcomingGames || upcomingGames.length === 0) && (
-				<div className='mt-3 text-center popup-no-games-wrap'>
-					<div className='fw-bold text-body mb-1 popup-no-games-title'>No games right now 💔</div>
-					<div className='popup-no-games-sub mb-2'>Nothing live across your selected leagues.</div>
-					<div className='d-flex justify-content-center gap-3'>
-						<button className='btn btn-link btn-sm p-0 popup-settings-link' onClick={onRefresh}>Refresh</button>
-						<button className='btn btn-link btn-sm p-0 popup-settings-link' onClick={onOpenSetup}>Settings →</button>
-					</div>
-				</div>
-			)}
-
 			{!isLoading && !noLeaguesSelected && prefs.showUpcomingGames && upcomingGames.length > 0 && gameSection({ title: 'Up Next', games: upcomingGames, scores: [], leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail })}
 
 			<PopupFooter />
