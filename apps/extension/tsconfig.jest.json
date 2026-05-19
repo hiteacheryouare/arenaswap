@@ -4,9 +4,10 @@
 		"module": "CommonJS",
 		"moduleResolution": "Node",
 		"ignoreDeprecations": "6.0",
-		"types": ["jest", "node"],
+		"types": ["jest", "node", "@testing-library/jest-dom"],
 		"jsx": "react-jsx",
 		"noEmit": true,
+		"allowJs": true,
 		"paths": {
 			"@arenaswap/core": ["../../packages/core/src/index.ts"],
 			"@arenaswap/core/*": ["../../packages/core/src/*"],

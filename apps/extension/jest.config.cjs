@@ -7,7 +7,7 @@ const commonProjectConfig = {
 		'^wxt/browser$': '<rootDir>/tests/stubs/wxtBrowser.ts',
 	},
 	transform: {
-		'^.+\\.tsx?$': [
+		'^.+\\.[jt]sx?$': [
 			'ts-jest',
 			{
 				tsconfig: '<rootDir>/tsconfig.jest.json',
@@ -15,7 +15,7 @@ const commonProjectConfig = {
 		],
 	},
 	setupFilesAfterEnv: ['<rootDir>/jestSetup.ts'],
-	moduleFileExtensions: ['ts', 'tsx', 'js', 'json'],
+	moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
 };
 
 module.exports = {
@@ -24,6 +24,16 @@ module.exports = {
 			...commonProjectConfig,
 			displayName: 'unit',
 			testMatch: ['<rootDir>/tests/**/*.test.ts'],
+		},
+		{
+			...commonProjectConfig,
+			displayName: 'component',
+			testEnvironment: 'jest-environment-jsdom',
+			testMatch: ['<rootDir>/tests/**/*.test.tsx'],
+			setupFilesAfterEnv: [
+				'<rootDir>/jestSetup.ts',
+				'@testing-library/jest-dom',
+			],
 		},
 	],
 };
