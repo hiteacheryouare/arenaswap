@@ -98,7 +98,7 @@ export interface PowerScoreSnapshot {
 	baseTotal: number;
 	favoriteBonus: number;
 	favoriteTeamCount: number;
-	gameBoost: number;
+	gameBoost?: number;
 	stalled: boolean;
 	reason: string;
 }

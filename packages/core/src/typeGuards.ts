@@ -31,4 +31,15 @@ export const isPowerScoreSnapshotLike = (value: unknown): value is PowerScoreSna
 	&& isFiniteNumber(value.favoriteTeamCount)
 	&& typeof value.stalled === 'boolean'
 	&& typeof value.reason === 'string'
+	// gameBoost is optional — older snapshots won't have it; hydration fills it with 0
+	&& (value.gameBoost === undefined || isFiniteNumber(value.gameBoost))
 );
+
+export const normalizeGameBoosts = (value: unknown): Record<string, number> => {
+	if (!isObjectRecord(value)) return {};
+	const result: Record<string, number> = {};
+	for (const [k, v] of Object.entries(value)) {
+		if (isFiniteNumber(v) && v > 0) result[k] = v;
+	}
+	return result;
+};

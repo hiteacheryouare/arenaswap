@@ -1,4 +1,4 @@
-import { normalizePowerScoreResult, isObjectRecord, isFiniteNumber, isScoreSnapshotLike, isPowerScoreSnapshotLike } from '@arenaswap/core';
+import { normalizePowerScoreResult, isObjectRecord, isFiniteNumber, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts } from '@arenaswap/core';
 import { createFavoriteTeamKey, leagueConfigs } from '@arenaswap/core/constants';
 import type {
 	BackgroundState,
@@ -174,15 +174,6 @@ const normalizePowerScoreHistory = (value: unknown): PowerScoreHistoryMap => {
 		acc[gameId] = snapshots.filter(isPowerScoreSnapshotLike);
 		return acc;
 	}, {});
-};
-
-const normalizeGameBoosts = (value: unknown): Record<string, number> => {
-	if (!isObjectRecord(value)) return {};
-	const result: Record<string, number> = {};
-	for (const [k, v] of Object.entries(value)) {
-		if (typeof v === 'number' && Number.isFinite(v) && v > 0) result[k] = v;
-	}
-	return result;
 };
 
 export const normalizeBackgroundState = (value: unknown): BackgroundState => {

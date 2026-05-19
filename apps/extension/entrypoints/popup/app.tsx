@@ -82,6 +82,8 @@ const app = () => {
 			setOpenTabs(tabs.filter(tab => tab.url && !tab.url.startsWith('chrome://') && !tab.url.startsWith('about:')));
 		});
 
+		// Fallback: mark settled after 9 s if no SCORES_UPDATED arrives.
+		// onOnboardingComplete resets settledRef.current to false and re-arms this path via its own fetch.
 		const settleTimer = setTimeout(() => {
 			if (!settledRef.current) { settledRef.current = true; setSettled(true); }
 		}, 9000);

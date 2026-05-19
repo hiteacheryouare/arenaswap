@@ -1,5 +1,5 @@
 import { randomInRange } from '@porkyproductions/hat';
-import { fetchGamesWithLeagueLogos, computePowerScore, normalizePowerScoreResult, MockGameSimulator, createPollModeTracker, isObjectRecord, isFiniteNumber, isScoreSnapshotLike, isPowerScoreSnapshotLike } from '@arenaswap/core';
+import { fetchGamesWithLeagueLogos, computePowerScore, normalizePowerScoreResult, MockGameSimulator, createPollModeTracker, isObjectRecord, isFiniteNumber, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts } from '@arenaswap/core';
 import {
 	createDefaultUserPreferences,
 	createFavoriteTeamKey,
@@ -50,15 +50,6 @@ export default defineBackground(() => {
 	let pendingSwitchTimer: ReturnType<typeof setTimeout> | null = null;
 	let pendingSwitch: { gameId: string; tabId: number; reason?: string } | null = null;
 	const historyStorageDefaults = { scoreHistory: {}, powerScoreHistory: {}, gameBoosts: {} };
-
-	const normalizeGameBoosts = (value: unknown): Record<string, number> => {
-		if (!isObjectRecord(value)) return {};
-		const result: Record<string, number> = {};
-		for (const [k, v] of Object.entries(value)) {
-			if (typeof k === 'string' && isFiniteNumber(v) && v > 0) result[k] = v;
-		}
-		return result;
-	};
 
 	const hydrateHistoryMaps = (storedScoreHistory: unknown, storedPowerScoreHistory: unknown) => {
 		history.clear();
@@ -493,7 +484,7 @@ export default defineBackground(() => {
 	});
 
 	stateReady.then(async () => {
-		upcomingGamesReady = refreshUpcomingGames();
+		upcomingGamesReady = refreshUpcomingGames().catch(() => {});
 		await upcomingGamesReady;
 		refreshScores(false).finally(() => {
 			if (demoMode) {
