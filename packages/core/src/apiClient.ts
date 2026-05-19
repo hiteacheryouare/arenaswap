@@ -8,7 +8,7 @@ const parseClockToSeconds = (clock: string): number => {
 	const parts = clock.split(':');
 	if (parts.length !== 2) return 0;
 	const [min, sec] = parts.map(Number);
-	return (min * 60) + sec;
+	return ((min ?? 0) * 60) + (sec ?? 0);
 };
 
 const parseStatus = (state: string): Game['status'] => {

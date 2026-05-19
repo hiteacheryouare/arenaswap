@@ -74,7 +74,7 @@ describe('createTeamColorShadePalette', () => {
 	test('produces shades darker-to-lighter across the offsets', () => {
 		const palette = createTeamColorShadePalette('#808080');
 		const numeric = (hex: string): number => parseInt(hex.slice(1), 16);
-		const ascending = palette.every((c, i) => i === 0 || numeric(c) >= numeric(palette[i - 1]));
+		const ascending = palette.every((c, i) => i === 0 || numeric(c) >= numeric(palette[i - 1]!));
 		expect(ascending).toBe(true);
 	});
 
@@ -164,7 +164,7 @@ describe('findFavoriteTeamScoreConfettiBursts', () => {
 			spread: 72,
 			origin: { x: 0.75, y: 0.34 },
 		});
-		expect(bursts[0].colors.length).toBeGreaterThan(0);
+		expect(bursts[0]!.colors.length).toBeGreaterThan(0);
 	});
 
 	test('boosts particle count and spread when a favorited team overtakes the opponent', () => {
@@ -183,7 +183,7 @@ describe('findFavoriteTeamScoreConfettiBursts', () => {
 			}),
 		]);
 
-		const [burst] = findFavoriteTeamScoreConfettiBursts(previous, next, new Set([favoriteHomeKey]));
+		const burst = findFavoriteTeamScoreConfettiBursts(previous, next, new Set([favoriteHomeKey]))[0]!;
 
 		expect(burst.particleCount).toBe(170);
 		expect(burst.spread).toBe(95);
@@ -199,7 +199,7 @@ describe('findFavoriteTeamScoreConfettiBursts', () => {
 			}),
 		]);
 
-		const [burst] = findFavoriteTeamScoreConfettiBursts(previous, next, new Set([favoriteHomeKey]));
+		const burst = findFavoriteTeamScoreConfettiBursts(previous, next, new Set([favoriteHomeKey]))[0]!;
 		expect(burst.particleCount).toBe(180);
 	});
 
@@ -214,7 +214,7 @@ describe('findFavoriteTeamScoreConfettiBursts', () => {
 
 		const bursts = findFavoriteTeamScoreConfettiBursts(previous, next, new Set([favoriteAwayKey]));
 		expect(bursts).toHaveLength(1);
-		expect(bursts[0].origin).toEqual({ x: 0.25, y: 0.34 });
+		expect(bursts[0]!.origin).toEqual({ x: 0.25, y: 0.34 });
 	});
 
 	test('emits no burst when no favorited team is in the matchup', () => {
@@ -298,7 +298,7 @@ describe('findFavoriteTeamScoreConfettiBursts', () => {
 				awayTeam: { id: 'away-1', name: 'Away', abbreviation: 'AWY', score: 10, color: '#aabbcc' },
 			}),
 		]);
-		const [burst] = findFavoriteTeamScoreConfettiBursts(previous, next, new Set([favoriteHomeKey]));
+		const burst = findFavoriteTeamScoreConfettiBursts(previous, next, new Set([favoriteHomeKey]))[0]!;
 		expect(burst.particleCount).toBe(90);
 		expect(burst.spread).toBe(72);
 	});
@@ -342,7 +342,7 @@ describe('findFavoriteTeamScoreConfettiBursts', () => {
 		});
 		const previous = buildLiveGameSnapshots([nhlGame(2)]);
 		const next = buildLiveGameSnapshots([nhlGame(3)]);
-		const [burst] = findFavoriteTeamScoreConfettiBursts(previous, next, new Set([createFavoriteTeamKey('nhl', 'home-1')]));
+		const burst = findFavoriteTeamScoreConfettiBursts(previous, next, new Set([createFavoriteTeamKey('nhl', 'home-1')]))[0]!;
 		// Period 4 > 3 regular periods → counted as overtime → doubled particles.
 		expect(burst.particleCount).toBe(180);
 	});
@@ -355,7 +355,7 @@ describe('findFavoriteTeamScoreConfettiBursts', () => {
 				awayTeam: { id: 'away-1', name: 'Away', abbreviation: 'AWY', score: 14, color: '#FF0000' },
 			}),
 		]);
-		const [burst] = findFavoriteTeamScoreConfettiBursts(previous, next, new Set([favoriteAwayKey]));
+		const burst = findFavoriteTeamScoreConfettiBursts(previous, next, new Set([favoriteAwayKey]))[0]!;
 		expect(burst.colors).toEqual(createTeamColorShadePalette('#FF0000'));
 	});
 });

@@ -85,7 +85,7 @@ const makeEvent = (params: {
 });
 
 const getCompetition = (event: Record<string, unknown>): Record<string, unknown> => (
-	(event.competitions as Record<string, unknown>[])[0]
+	(event.competitions as Record<string, unknown>[])[0]!
 );
 
 const toUrl = (input: RequestInfo | URL): string => {
@@ -555,9 +555,9 @@ describe('apiClient', () => {
 		const result = await fetchGamesWithLeagueLogos(['epl']);
 		expect(result.leagueLogos.epl).toBe('https://cdn.example/epl-logo.png');
 		expect(result.games).toHaveLength(1);
-		expect(result.games[0].id).toBe('epl-live');
-		expect(result.games[0].league).toBe('epl');
-		expect(result.games[0].sportType).toBe('soccer');
+		expect(result.games[0]!.id).toBe('epl-live');
+		expect(result.games[0]!.league).toBe('epl');
+		expect(result.games[0]!.sportType).toBe('soccer');
 
 		const calledUrls = fetchMock.mock.calls.map(([url]) => String(url));
 		expect(calledUrls[0]).toContain('/soccer/eng.1/scoreboard');
@@ -586,9 +586,9 @@ describe('apiClient', () => {
 		const result = await fetchGamesWithLeagueLogos(['fifawc']);
 		expect(result.leagueLogos.fifawc).toBe('https://cdn.example/fifawc-logo.png');
 		expect(result.games).toHaveLength(1);
-		expect(result.games[0].id).toBe('fifawc-live');
-		expect(result.games[0].league).toBe('fifawc');
-		expect(result.games[0].sportType).toBe('soccer');
+		expect(result.games[0]!.id).toBe('fifawc-live');
+		expect(result.games[0]!.league).toBe('fifawc');
+		expect(result.games[0]!.sportType).toBe('soccer');
 
 		const calledUrls = fetchMock.mock.calls.map(([url]) => String(url));
 		expect(calledUrls[0]).toContain('/soccer/fifa.world/scoreboard');
@@ -797,7 +797,7 @@ describe('apiClient', () => {
 
 		const games = await fetchLiveGames(['nba']);
 		expect(games).toHaveLength(1);
-		expect(games[0].id).toBe('live-only');
-		expect(games[0].status).toBe('in');
+		expect(games[0]!.id).toBe('live-only');
+		expect(games[0]!.status).toBe('in');
 	});
 });

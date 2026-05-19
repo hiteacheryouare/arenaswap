@@ -46,7 +46,7 @@ describe('byLeague', () => {
 			makeGame({ id: 'nba-1', league: 'nba' }),
 		];
 		const sorted = [...games].sort(byLeague);
-		expect(sorted[0].league).toBe('nba');
+		expect(sorted[0]!.league).toBe('nba');
 	});
 });
 
@@ -113,8 +113,8 @@ describe('groupByLeague', () => {
 		];
 		const groups = groupByLeague(games);
 		expect(groups.map(g => g.league)).toEqual(['nba', 'nfl', 'nba']);
-		expect(groups[0].games.map(g => g.id)).toEqual(['nba-1', 'nba-2']);
-		expect(groups[2].games.map(g => g.id)).toEqual(['nba-3']);
+		expect(groups[0]!.games.map(g => g.id)).toEqual(['nba-1', 'nba-2']);
+		expect(groups[2]!.games.map(g => g.id)).toEqual(['nba-3']);
 	});
 
 	test('returns an empty array for an empty input', () => {
