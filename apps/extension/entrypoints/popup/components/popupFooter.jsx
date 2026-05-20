@@ -42,7 +42,7 @@ const popupFooter = () => {
 	return (
 		<div className='mt-auto'>
 			{showDebug && debugInfo && (
-				<div className='popup-debug-panel py-[0.4rem] px-[0.6rem] overflow-y-auto max-h-[7rem]'>
+				<div className='popup-debug-panel py-[0.4rem] px-[0.6rem] overflow-y-auto max-h-28'>
 					<div className='popup-debug-label mb-[0.2rem]'>— debug —</div>
 					{Object.entries(debugInfo).map(([key, val]) => (
 						<div key={key} className='flex gap-2'>
