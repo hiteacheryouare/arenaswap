@@ -59,7 +59,7 @@ interface EspnLeague {
 
 interface EspnTeam {
 	displayName: string;
-	abbreviation: string;
+	abbreviation?: string;
 	logo?: string;
 	/** Primary team color as a hex string without '#' (e.g. "002B5C") */
 	color?: string;
@@ -243,7 +243,7 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 		homeTeam: {
 			id: home.id,
 			name: home.team.displayName,
-			abbreviation: home.team.abbreviation ?? home.team.displayName?.slice(0, 3).toUpperCase() ?? '?',
+			abbreviation: home.team.abbreviation || home.team.displayName?.slice(0, 3).toUpperCase() || '?',
 			score: parseInt(home.score ?? '0', 10) || 0,
 			logo: home.team.logo ?? undefined,
 			color: normalizeTeamColor(home.team.color, home.team.alternateColor),
@@ -251,7 +251,7 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 		awayTeam: {
 			id: away.id,
 			name: away.team.displayName,
-			abbreviation: away.team.abbreviation ?? away.team.displayName?.slice(0, 3).toUpperCase() ?? '?',
+			abbreviation: away.team.abbreviation || away.team.displayName?.slice(0, 3).toUpperCase() || '?',
 			score: parseInt(away.score ?? '0', 10) || 0,
 			logo: away.team.logo ?? undefined,
 			color: normalizeTeamColor(away.team.color, away.team.alternateColor),
@@ -397,7 +397,7 @@ interface EspnTeamsResponse {
 				team: {
 					id: string;
 					displayName: string;
-					abbreviation: string;
+					abbreviation?: string;
 					logos?: Array<{ href: string }>;
 				};
 			}>;
@@ -427,7 +427,7 @@ export const fetchTeamsForLeagues = async (leagueIds: LeagueId[]): Promise<EspnT
 					leagueId: config.id,
 					id: team.id,
 					name: team.displayName,
-					abbreviation: team.abbreviation ?? team.displayName.slice(0, 3).toUpperCase(),
+					abbreviation: team.abbreviation || team.displayName.slice(0, 3).toUpperCase(),
 					logo: team.logos?.[0]?.href,
 				}));
 		})

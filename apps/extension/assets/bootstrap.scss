@@ -961,6 +961,21 @@ $pre-game-time-color: shade-color($warning, 60%);
 	}
 }
 
+.popup-debug-panel {
+	background-color: #0d0d0d;
+	border-top: 1px solid #1a3a1a;
+	font-family: monospace;
+	font-size: 0.6rem;
+	line-height: 1.6;
+	color: #4ade80;
+	word-break: break-all;
+	overflow-wrap: anywhere;
+
+	.popup-debug-label {
+		color: #166534;
+	}
+}
+
 .popup-signature-bar {
 	display: flex;
 	justify-content: center;

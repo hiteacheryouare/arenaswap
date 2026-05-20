@@ -42,24 +42,12 @@ const popupFooter = () => {
 	return (
 		<div className='mt-auto'>
 			{showDebug && debugInfo && (
-				<div style={{
-					backgroundColor: '#0d0d0d',
-					borderTop: '1px solid #1a3a1a',
-					fontFamily: 'monospace',
-					fontSize: '0.6rem',
-					lineHeight: '1.6',
-					color: '#4ade80',
-					padding: '0.4rem 0.6rem',
-					overflowY: 'auto',
-					maxHeight: '7rem',
-					wordBreak: 'break-all',
-					overflowWrap: 'anywhere',
-				}}>
-					<div style={{ color: '#166534', marginBottom: '0.2rem' }}>— debug —</div>
+				<div className='popup-debug-panel py-[0.4rem] px-[0.6rem] overflow-y-auto max-h-[7rem]'>
+					<div className='popup-debug-label mb-[0.2rem]'>— debug —</div>
 					{Object.entries(debugInfo).map(([key, val]) => (
-						<div key={key} style={{ display: 'flex', gap: '0.5rem' }}>
-							<span style={{ color: '#166534', flexShrink: 0, width: '4rem' }}>{key}</span>
-							<span style={{ minWidth: 0, wordBreak: 'break-all' }}>{val}</span>
+						<div key={key} className='flex gap-2'>
+							<span className='popup-debug-label shrink-0 w-16'>{key}</span>
+							<span className='min-w-0'>{val}</span>
 						</div>
 					))}
 				</div>
@@ -70,7 +58,7 @@ const popupFooter = () => {
 					type='button'
 					onClick={handleHeartClick}
 					aria-label='Toggle debug info'
-					style={{ background: 'none', border: 'none', padding: 0, margin: '0 1px', cursor: 'default', fontSize: 'inherit', lineHeight: 1 }}
+					className='bg-transparent border-0 p-0 mx-px cursor-default text-inherit leading-none'
 				>
 					❤️
 				</button>
