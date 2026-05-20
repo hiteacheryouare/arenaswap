@@ -80,6 +80,8 @@ describe('types runtime smoke', () => {
 			scoreHistory: state.scoreHistory,
 			powerScoreHistory: state.powerScoreHistory,
 			gameBoosts: state.gameBoosts,
+			onStandbyStream: state.onStandbyStream,
+			standbyStreamTabId: state.standbyStreamTabId,
 		};
 
 		expect(message.type).toBe('SCORES_UPDATED');

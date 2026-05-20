@@ -176,7 +176,8 @@ const setupView = ({
 									value={standbyStreamTabId ?? ''}
 									onChange={e => {
 										const val = e.target.value;
-										onSetStandbyTab(val ? Number(val) : null);
+										const num = Number(val);
+										onSetStandbyTab(val && Number.isFinite(num) ? num : null);
 									}}
 									disabled={!prefsLoaded}
 								>

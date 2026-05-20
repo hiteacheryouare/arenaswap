@@ -31,7 +31,8 @@ zipSource() {
 	tmpDir="$(mktemp -d)"
 
 	echo "  cloning $remoteUrl ($currentBranch)..."
-	git clone --branch "$currentBranch" --single-branch "$remoteUrl" "$tmpDir/arenaswap" 2>/dev/null
+	git clone --depth=1 --branch "$currentBranch" --single-branch "$remoteUrl" "$tmpDir/arenaswap"
+	rm -rf "$tmpDir/arenaswap/.git"
 
 	rm -f "$zip"
 	(cd "$tmpDir" && zip -r "$zip" arenaswap)

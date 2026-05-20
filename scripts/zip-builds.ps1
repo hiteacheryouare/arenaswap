@@ -37,7 +37,9 @@ $tmpDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.IO.Path]::GetRand
 New-Item -ItemType Directory -Force -Path $tmpDir | Out-Null
 
 Write-Host "  cloning $remoteUrl ($currentBranch)..."
-git clone --branch $currentBranch --single-branch $remoteUrl (Join-Path $tmpDir 'arenaswap') 2>$null
+git clone --depth 1 --branch $currentBranch --single-branch $remoteUrl (Join-Path $tmpDir 'arenaswap')
+if ($LASTEXITCODE -ne 0) { throw "git clone failed with exit code $LASTEXITCODE" }
+Remove-Item -Recurse -Force (Join-Path $tmpDir 'arenaswap' '.git')
 
 if (Test-Path $sourceZip) { Remove-Item $sourceZip }
 Compress-Archive -Path (Join-Path $tmpDir 'arenaswap') -DestinationPath $sourceZip

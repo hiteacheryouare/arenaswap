@@ -127,6 +127,8 @@ export type ScoresUpdatedMessage = {
 	scoreHistory: ScoreHistoryMap;
 	powerScoreHistory: PowerScoreHistoryMap;
 	gameBoosts: Record<string, number>;
+	onStandbyStream: boolean;
+	standbyStreamTabId: number | null;
 };
 
 export type UpdatePrefsMessage = {
