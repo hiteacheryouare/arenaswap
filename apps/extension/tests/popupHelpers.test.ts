@@ -1,6 +1,7 @@
 import {
 	buildFavoritePinnedComparator,
 	byLeague,
+	fetchState,
 	formatTabLabel,
 	getRandomLoadingMessage,
 	groupByLeague,
@@ -208,5 +209,48 @@ describe('normalizeBackgroundState', () => {
 			gameBoosts: { a: 5, b: 0, c: -1, d: Number.NaN, e: '10' },
 		});
 		expect(result.gameBoosts).toEqual({ a: 5 });
+	});
+});
+
+describe('fetchState', () => {
+	// Regression: the SWR fetcher in app.tsx was calling fetchState(true), which sent
+	// forceRefresh:true to the background and triggered a full tick(). tick() does a
+	// complete overwrite of the games array (games = fetchResult.games), which could
+	// erase live game data that tickLeague() had already placed there.
+	// Additionally, SWR's default revalidateIfStale:true caused a second fetch on React
+	// StrictMode remount (React 19 changed store re-snapshot timing), which could
+	// overwrite a SCORES_UPDATED mutation that had already set live game data.
+	// Fixes: (1) app.tsx uses fetchState(false) on initial load; (2) revalidateIfStale:false
+	// prevents unnecessary re-fetches — updates come via SCORES_UPDATED push messages.
+
+	const mockSendMessage = (returnValue: unknown) => {
+		const fn = jest.fn().mockResolvedValueOnce(returnValue);
+		(globalThis as unknown as { browser: { runtime: { sendMessage: typeof fn } } }).browser = {
+			runtime: { sendMessage: fn },
+		};
+		return fn;
+	};
+
+	const liveGameState = {
+		games: [makeGame({ id: 'live-1', status: 'in' })],
+		scores: [],
+		leagueLogos: {},
+		scoreHistory: {},
+		powerScoreHistory: {},
+		gameBoosts: {},
+	};
+
+	test('sends GET_STATE with forceRefresh:false to preserve per-league cached game data', async () => {
+		const send = mockSendMessage(liveGameState);
+		const result = await fetchState(false);
+		expect(send).toHaveBeenCalledWith({ type: 'GET_STATE', forceRefresh: false });
+		expect(result.games).toHaveLength(1);
+		expect(result.games[0]!.id).toBe('live-1');
+	});
+
+	test('sends GET_STATE with forceRefresh:true for explicit user-triggered refreshes', async () => {
+		const send = mockSendMessage(liveGameState);
+		await fetchState(true);
+		expect(send).toHaveBeenCalledWith({ type: 'GET_STATE', forceRefresh: true });
 	});
 });
