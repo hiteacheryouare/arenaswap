@@ -28,6 +28,8 @@ const app = () => {
 	const [openTabs, setOpenTabs] = useState<Browser.tabs.Tab[]>([]);
 	const [demoMode, setDemoMode] = useState(false);
 	const [onboardingDone, setOnboardingDone] = useState<boolean | null>(null);
+	const [standbyOnboardingDone, setStandbyOnboardingDone] = useState(false);
+	const [standbyStreamTabId, setStandbyStreamTabId] = useState<number | null>(null);
 	const [settled, setSettled] = useState(false);
 	const settledRef = useRef(false);
 	const prefsSyncRef = useRef<Promise<void>>(Promise.resolve());
@@ -49,6 +51,7 @@ const app = () => {
 	const scoreHistory = data?.scoreHistory ?? {};
 	const powerScoreHistory = data?.powerScoreHistory ?? {};
 	const gameBoosts = data?.gameBoosts ?? {};
+	const onStandbyStream = data?.onStandbyStream ?? false;
 	const favoriteTeamIds = useMemo(() => new Set(prefs.favoriteTeamIds), [prefs.favoriteTeamIds]);
 	const confettiCanvasRef = useFavoriteScoreConfetti({ games, favoriteTeamIds });
 
@@ -66,8 +69,9 @@ const app = () => {
 			setPrefs(normalizeUserPreferences(rawPrefs));
 			setPrefsLoaded(true);
 
-			const localResult = await browser.storage.local.get({ demoMode: false, onboardingCompleted: null });
+			const localResult = await browser.storage.local.get({ demoMode: false, onboardingCompleted: null, standbyOnboardingDone: false });
 			setDemoMode(localResult.demoMode as boolean);
+			setStandbyOnboardingDone(localResult.standbyOnboardingDone as boolean);
 
 			const onboardingFlag = localResult.onboardingCompleted === true;
 			const hasStoredPrefs = rawPrefs !== null;
@@ -81,7 +85,10 @@ const app = () => {
 
 		void init();
 
-		browser.storage.session.get({ tabRegistry: [] }).then(result => setRegistry(result.tabRegistry as TabRegistration[]));
+		browser.storage.session.get({ tabRegistry: [], standbyStreamTabId: null }).then(result => {
+			setRegistry(result.tabRegistry as TabRegistration[]);
+			setStandbyStreamTabId((result.standbyStreamTabId as number | null) ?? null);
+		});
 
 		void browser.tabs.query({ currentWindow: true }).then(tabs => {
 			setOpenTabs(tabs.filter(tab => tab.url && !tab.url.startsWith('chrome://') && !tab.url.startsWith('about:')));
@@ -180,6 +187,16 @@ const app = () => {
 		void browser.runtime.sendMessage({ type: 'UPDATE_REGISTRY', tabRegistry: updated });
 	};
 
+	const onSetStandbyTab = (tabId: number | null) => {
+		setStandbyStreamTabId(tabId);
+		void browser.runtime.sendMessage({ type: 'SET_STANDBY_STREAM_TAB', tabId });
+	};
+
+	const onStandbyOnboardingDone = () => {
+		setStandbyOnboardingDone(true);
+		void browser.storage.local.set({ standbyOnboardingDone: true });
+	};
+
 	const closeSetup = () => {
 		setView('main');
 		showToast('Settings saved', 'success');
@@ -222,6 +239,10 @@ const app = () => {
 						prefsLoaded={prefsLoaded}
 						demoMode={demoMode}
 						leagueLogos={leagueLogos}
+						standbyStreamTabId={standbyStreamTabId}
+						standbyOnboardingDone={standbyOnboardingDone}
+						openTabs={openTabs}
+						formatTabLabel={tab => formatTabLabel(tab, openTabs)}
 						onClose={closeSetup}
 						onSensitivityChange={val => persistPrefs({ ...prefs, sensitivity: val as UserPreferences['sensitivity'] })}
 						onCooldownChange={val => persistPrefs({ ...prefs, cooldownSeconds: val })}
@@ -236,6 +257,10 @@ const app = () => {
 							setDemoMode(next);
 							void browser.runtime.sendMessage({ type: 'SET_DEMO_MODE', enabled: next });
 						}}
+						onToggleStandbyStream={() => persistPrefs({ ...prefs, standbyStreamEnabled: !prefs.standbyStreamEnabled })}
+						onStandbyThresholdChange={val => persistPrefs({ ...prefs, standbyStreamThreshold: val })}
+						onSetStandbyTab={onSetStandbyTab}
+						onStandbyOnboardingDone={onStandbyOnboardingDone}
 					/>
 				)}
 				{view === 'main' && (
@@ -252,6 +277,7 @@ const app = () => {
 						favoriteTeamIds={favoriteTeamIds}
 						gameBoosts={gameBoosts}
 						openTabs={openTabs}
+						onStandbyStream={onStandbyStream}
 						onOpenGameDetail={openGameDetail}
 						onOpenSetup={() => setView('setup')}
 						onToggleEnabled={() => persistPrefs({ ...prefs, enabled: !prefs.enabled })}

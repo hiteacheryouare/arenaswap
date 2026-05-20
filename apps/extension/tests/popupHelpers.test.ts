@@ -173,22 +173,18 @@ describe('formatTabLabel', () => {
 
 describe('normalizeBackgroundState', () => {
 	test('returns an empty default state for non-object input', () => {
-		expect(normalizeBackgroundState(null)).toEqual({
+		const emptyState = {
 			games: [],
 			scores: [],
 			leagueLogos: {},
 			scoreHistory: {},
 			powerScoreHistory: {},
 			gameBoosts: {},
-		});
-		expect(normalizeBackgroundState(undefined)).toEqual({
-			games: [],
-			scores: [],
-			leagueLogos: {},
-			scoreHistory: {},
-			powerScoreHistory: {},
-			gameBoosts: {},
-		});
+			onStandbyStream: false,
+			standbyStreamTabId: null,
+		};
+		expect(normalizeBackgroundState(null)).toEqual(emptyState);
+		expect(normalizeBackgroundState(undefined)).toEqual(emptyState);
 	});
 
 	test('drops malformed score snapshots while keeping valid ones', () => {

@@ -1,5 +1,6 @@
 import { randomInRange } from '@porkyproductions/hat';
 import { fetchGamesWithLeagueLogos, computePowerScore, normalizePowerScoreResult, MockGameSimulator, createPollModeTracker, isObjectRecord, isFiniteNumber, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts } from '@arenaswap/core';
+import { computeStandbyStreamDecision } from '../utils/standbyStreamLogic';
 import {
 	createDefaultUserPreferences,
 	createFavoriteTeamKey,
@@ -49,6 +50,8 @@ export default defineBackground(() => {
 	let upcomingGamesReady: Promise<void> | undefined;
 	let pendingSwitchTimer: ReturnType<typeof setTimeout> | null = null;
 	let pendingSwitch: { gameId: string; tabId: number; reason?: string } | null = null;
+	let standbyStreamTabId: number | null = null;
+	let onStandbyStream = false;
 	const historyStorageDefaults = { scoreHistory: {}, powerScoreHistory: {}, gameBoosts: {} };
 
 	const hydrateHistoryMaps = (storedScoreHistory: unknown, storedPowerScoreHistory: unknown) => {
@@ -161,6 +164,8 @@ export default defineBackground(() => {
 		scoreHistory: serializeScoreHistory(),
 		powerScoreHistory: serializePowerScoreHistory(),
 		gameBoosts,
+		onStandbyStream,
+		standbyStreamTabId,
 	});
 
 	const broadcastScoresUpdated = () => {
@@ -218,7 +223,7 @@ export default defineBackground(() => {
 		pendingSwitch = null;
 	};
 
-	const executeSwitch = async (tabId: number, gameId: string, reason?: string) => {
+	const executeSwitch = async (tabId: number, gameId?: string, reason?: string) => {
 		const [activeTab] = await browser.tabs.query({ active: true, lastFocusedWindow: true });
 		if (activeTab?.id === tabId) return;
 
@@ -231,22 +236,31 @@ export default defineBackground(() => {
 		await syncManagedTabMuteState(true);
 
 		if (prefs.notificationsEnabled) {
-			const game = games.find(g => g.id === gameId);
-			const scoreTitle = game
-				? `${game.awayTeam.abbreviation} ${game.awayTeam.score}-${game.homeTeam.score} ${game.homeTeam.abbreviation}`
-				: getGameLabel(gameId);
-			const capitalizeFirst = (s: string) => s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
-			const venue = getVenueName(gameId);
-			const message = reason
-				? `${capitalizeFirst(reason)}. Taking you to ${venue} now!`
-				: `Taking you to ${venue} now!`;
+			if (!gameId) {
+				await browser.notifications.create({
+					type: 'basic',
+					iconUrl: 'icon/128.png',
+					title: 'On standby stream | ArenaSwap',
+					message: 'All games went quiet. Parked on your standby stream.',
+				});
+			} else {
+				const game = games.find(g => g.id === gameId);
+				const scoreTitle = game
+					? `${game.awayTeam.abbreviation} ${game.awayTeam.score}-${game.homeTeam.score} ${game.homeTeam.abbreviation}`
+					: getGameLabel(gameId);
+				const capitalizeFirst = (s: string) => s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+				const venue = getVenueName(gameId);
+				const message = reason
+					? `${capitalizeFirst(reason)}. Taking you to ${venue} now!`
+					: `Taking you to ${venue} now!`;
 
-			await browser.notifications.create({
-				type: 'basic',
-				iconUrl: 'icon/128.png',
-				title: `Switched → ${scoreTitle} | ArenaSwap`,
-				message,
-			});
+				await browser.notifications.create({
+					type: 'basic',
+					iconUrl: 'icon/128.png',
+					title: `Switched → ${scoreTitle} | ArenaSwap`,
+					message,
+				});
+			}
 		}
 	};
 
@@ -362,6 +376,23 @@ export default defineBackground(() => {
 		if (registeredScores.length === 0) return;
 		if (pendingSwitch) return;
 
+		const standbyDecision = computeStandbyStreamDecision({
+			standbyStreamEnabled: prefs.standbyStreamEnabled,
+			standbyStreamTabId,
+			standbyStreamThreshold: prefs.standbyStreamThreshold,
+			registeredScores,
+			onStandbyStream,
+			activeTabIsStandby: activeTab.id === standbyStreamTabId,
+		});
+
+		if (standbyDecision === 'switchToStandby') {
+			onStandbyStream = true;
+			await executeSwitch(standbyStreamTabId!);
+			return;
+		}
+		if (standbyDecision === 'stayOnStandby') return;
+		if (standbyDecision === 'resume') onStandbyStream = false;
+
 		const best = registeredScores.reduce((a, b) => a.total > b.total ? a : b);
 		const bestReg = tabRegistry.find(r => r.gameId === best.gameId)!;
 		const threshold = sensitivityThresholds[prefs.sensitivity] ?? 0;
@@ -470,11 +501,12 @@ export default defineBackground(() => {
 	// Load persisted state before any refresh to avoid race conditions on popup reopen.
 	const stateReady = Promise.all([
 		browser.storage.sync.get({ prefs: null }),
-		browser.storage.session.get({ tabRegistry: [], ...historyStorageDefaults }),
+		browser.storage.session.get({ tabRegistry: [], standbyStreamTabId: null, ...historyStorageDefaults }),
 		browser.storage.local.get({ demoMode: false }),
 	]).then(([prefsResult, sessionResult, demoResult]) => {
 		prefs = normalizeUserPreferences(prefsResult.prefs);
 		tabRegistry = sessionResult.tabRegistry as TabRegistration[];
+		standbyStreamTabId = (sessionResult.standbyStreamTabId as number | null) ?? null;
 		gameBoosts = normalizeGameBoosts(sessionResult.gameBoosts);
 		hydrateHistoryMaps(sessionResult.scoreHistory, sessionResult.powerScoreHistory);
 		demoMode = demoResult.demoMode as boolean;
@@ -571,6 +603,13 @@ export default defineBackground(() => {
 				}
 				await browser.storage.local.set({ demoMode });
 				await refreshScores(false); // immediately refresh
+			});
+		}
+		if (msg.type === 'SET_STANDBY_STREAM_TAB') {
+			return stateReady.then(async () => {
+				standbyStreamTabId = msg.tabId;
+				onStandbyStream = false;
+				await browser.storage.session.set({ standbyStreamTabId });
 			});
 		}
 	});

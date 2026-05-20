@@ -25,6 +25,8 @@ const defaultPrefs: UserPreferences = {
 	notificationsEnabled: false,
 	favoriteTeamBonusPoints: 0,
 	favoriteTeamIds: [],
+	standbyStreamEnabled: false,
+	standbyStreamThreshold: 20,
 };
 
 const makeGame = (id: string, status: 'in' | 'pre' | 'post' = 'in') => ({
@@ -50,6 +52,7 @@ const defaultProps = {
 	favoriteTeamIds: new Set<string>(),
 	gameBoosts: {},
 	openTabs: [],
+	onStandbyStream: false,
 	onOpenGameDetail: jest.fn(),
 	onOpenSetup: jest.fn(),
 	onRefresh: jest.fn(),

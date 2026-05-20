@@ -62,6 +62,7 @@ interface mainViewProps {
 	favoriteTeamIds: Set<string>;
 	gameBoosts: Record<string, number>;
 	openTabs: Browser.tabs.Tab[];
+	onStandbyStream: boolean;
 	onOpenGameDetail: (gameId: string) => void;
 	onOpenSetup: () => void;
 	onRefresh: () => void;
@@ -122,6 +123,7 @@ const mainView = ({
 	favoriteTeamIds,
 	gameBoosts,
 	openTabs,
+	onStandbyStream,
 	onOpenGameDetail,
 	onOpenSetup,
 	onRefresh,
@@ -166,6 +168,13 @@ const mainView = ({
 			</div>
 
 			<GameListHeader isLoading={isLoading} hasError={hasError} loadingMessage={loadingMessage} onRefresh={onRefresh} />
+
+			{onStandbyStream && (
+				<div className='d-flex align-items-center gap-2 px-2 py-1 mb-1 rounded text-body-secondary small bg-body-secondary'>
+					<i className='bi bi-broadcast text-primary' />
+					<span>On standby stream — waiting for action</span>
+				</div>
+			)}
 
 			<EmptyGameState
 				noLeaguesSelected={!isLoading && noLeaguesSelected}

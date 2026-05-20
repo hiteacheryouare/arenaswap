@@ -191,7 +191,7 @@ const normalizePowerScoreHistory = (value: unknown): PowerScoreHistoryMap => {
 };
 
 export const normalizeBackgroundState = (value: unknown): BackgroundState => {
-	if (!isObjectRecord(value)) return { games: [], scores: [], leagueLogos: {}, scoreHistory: {}, powerScoreHistory: {}, gameBoosts: {} };
+	if (!isObjectRecord(value)) return { games: [], scores: [], leagueLogos: {}, scoreHistory: {}, powerScoreHistory: {}, gameBoosts: {}, onStandbyStream: false, standbyStreamTabId: null };
 	return {
 		games: isGameArray(value.games) ? value.games : [],
 		scores: normalizeScores(value.scores),
@@ -199,6 +199,8 @@ export const normalizeBackgroundState = (value: unknown): BackgroundState => {
 		scoreHistory: normalizeScoreHistory(value.scoreHistory),
 		powerScoreHistory: normalizePowerScoreHistory(value.powerScoreHistory),
 		gameBoosts: normalizeGameBoosts(value.gameBoosts),
+		onStandbyStream: value.onStandbyStream === true,
+		standbyStreamTabId: typeof value.standbyStreamTabId === 'number' ? value.standbyStreamTabId : null,
 	};
 };
 

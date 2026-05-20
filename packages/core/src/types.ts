@@ -76,6 +76,9 @@ export interface UserPreferences {
 	favoriteTeamBonusPoints: number;
 	showUpcomingGames: boolean;
 	notificationsEnabled: boolean;
+	standbyStreamEnabled: boolean;
+	/** PowerScore threshold (0–100): switch to standby when ALL registered games fall below this */
+	standbyStreamThreshold: number;
 }
 
 export interface TabRegistration {
@@ -112,6 +115,8 @@ export interface BackgroundState {
 	scoreHistory: ScoreHistoryMap;
 	powerScoreHistory: PowerScoreHistoryMap;
 	gameBoosts: Record<string, number>;
+	onStandbyStream: boolean;
+	standbyStreamTabId: number | null;
 }
 
 export type ScoresUpdatedMessage = {
@@ -150,10 +155,16 @@ export type SetDemoModeMessage = {
 	enabled: boolean;
 };
 
+export type SetStandbyStreamTabMessage = {
+	type: 'SET_STANDBY_STREAM_TAB';
+	tabId: number | null;
+};
+
 export type ExtensionMessage =
 	| ScoresUpdatedMessage
 	| UpdatePrefsMessage
 	| UpdateRegistryMessage
 	| SetGameBoostMessage
 	| GetStateMessage
-	| SetDemoModeMessage;
+	| SetDemoModeMessage
+	| SetStandbyStreamTabMessage;

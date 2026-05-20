@@ -38,6 +38,8 @@ describe('constants', () => {
 			favoriteTeamBonusPoints: 10,
 			showUpcomingGames: true,
 			notificationsEnabled: true,
+			standbyStreamEnabled: false,
+			standbyStreamThreshold: 20,
 		});
 	});
 
@@ -63,6 +65,8 @@ describe('constants', () => {
 			favoriteTeamBonusPoints: 11,
 			showUpcomingGames: false,
 			notificationsEnabled: true,
+			standbyStreamEnabled: false,
+			standbyStreamThreshold: 20,
 		});
 	});
 

@@ -30,6 +30,8 @@ describe('types runtime smoke', () => {
 			favoriteTeamBonusPoints: 10,
 			showUpcomingGames: true,
 			notificationsEnabled: true,
+			standbyStreamEnabled: false,
+			standbyStreamThreshold: 20,
 		};
 		const message: ExtensionMessage = { type: 'UPDATE_PREFS', prefs };
 
@@ -67,6 +69,8 @@ describe('types runtime smoke', () => {
 			scoreHistory: { 'game-1': scoreSnapshots },
 			powerScoreHistory: { 'game-1': powerSnapshots },
 			gameBoosts: {},
+			onStandbyStream: false,
+			standbyStreamTabId: null,
 		};
 		const message: ExtensionMessage = {
 			type: 'SCORES_UPDATED',
@@ -101,6 +105,8 @@ describe('types runtime smoke', () => {
 			scoreHistory: {},
 			powerScoreHistory: {},
 			gameBoosts: { 'game-1': 20, 'game-2': 5 },
+			onStandbyStream: false,
+			standbyStreamTabId: null,
 		};
 		expect(state.gameBoosts['game-1']).toBe(20);
 		expect(state.gameBoosts['game-2']).toBe(5);
