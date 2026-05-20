@@ -25,18 +25,18 @@
 		"@testing-library/jest-dom": "^6.9.1",
 		"@testing-library/react": "^16.3.2",
 		"@testing-library/user-event": "^14.6.1",
-		"@types/react": "^18.3.28",
-		"@types/react-dom": "^18.3.7",
+		"@types/react": "^19.0.0",
+		"@types/react-dom": "^19.0.0",
 		"@wxt-dev/module-react": "^1.2.2",
 		"autoprefixer": "^10.4.27",
 		"bootstrap": "^5.3.8",
 		"bootstrap-icons": "^1.13.1",
 		"jest-environment-jsdom": "^30.4.1",
-		"react": "^18.3.1",
-		"react-dom": "^18.3.1",
+		"react": "^19.2.6",
+		"react-dom": "^19.2.6",
 		"sass": "^1.99.0",
 		"tailwindcss": "^4.2.2",
-		"typescript": "^5.9.3",
+		"typescript": "^6.0.3",
 		"wxt": "^0.20.20"
 	}
 }
