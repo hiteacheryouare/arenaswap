@@ -502,10 +502,9 @@ export default defineBackground(() => {
 		if (msg.type === 'GET_STATE') {
 			if (msg.forceRefresh === true || games.length === 0) {
 				// Popup opened or worker just woke up; fetch fresh state before responding.
-				// Also await upcomingGamesReady so upcoming games are merged into the first tick.
+				// Upcoming games load in the background and arrive via SCORES_UPDATED push.
 				return stateReady
 					.then(async () => {
-						if (upcomingGamesReady) await upcomingGamesReady;
 						await refreshScores(false);
 						return buildBackgroundState();
 					});

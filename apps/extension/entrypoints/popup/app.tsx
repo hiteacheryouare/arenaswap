@@ -87,11 +87,11 @@ const app = () => {
 			setOpenTabs(tabs.filter(tab => tab.url && !tab.url.startsWith('chrome://') && !tab.url.startsWith('about:')));
 		});
 
-		// Fallback: mark settled after 9 s if no SCORES_UPDATED arrives.
+		// Fallback: mark settled after 5 s if no SCORES_UPDATED arrives.
 		// onOnboardingComplete resets settledRef.current to false and re-arms this path via its own fetch.
 		const settleTimer = setTimeout(() => {
 			if (!settledRef.current) { settledRef.current = true; setSettled(true); }
-		}, 9000);
+		}, 5000);
 
 		const handleMessage = (msg: unknown) => {
 			if (!isScoreUpdateMessage(msg)) return;
@@ -104,6 +104,10 @@ const app = () => {
 			browser.runtime.onMessage.removeListener(handleMessage);
 		};
 	}, [mutate]);
+
+	useEffect(() => {
+		if (data && !settledRef.current) { settledRef.current = true; setSettled(true); }
+	}, [data]);
 
 	useEffect(() => {
 		if (view !== 'detail' || !selectedGameId) return;
