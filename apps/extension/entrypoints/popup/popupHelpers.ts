@@ -14,6 +14,7 @@ import type { Browser } from 'wxt/browser';
 
 export type popupView = 'main' | 'setup' | 'detail';
 export type leagueGroup = { league: LeagueId; games: Game[] };
+export type dateGroup = { dateLabel: string; games: Game[] };
 
 export const leagueOrder = Object.fromEntries(leagueConfigs.map((config, index) => [config.id, index])) as Record<LeagueId, number>;
 export const sportTypeOrder: Record<SportType, number> = {
@@ -139,6 +140,36 @@ export const buildFavoritePinnedComparator = (
 	const bFav = isFavoriteTeamGame(b, favoriteTeamIds);
 	if (aFav !== bFav) return aFav ? -1 : 1;
 	return (scoreByGameId.get(b.id) ?? 0) - (scoreByGameId.get(a.id) ?? 0);
+};
+
+const formatDateLabel = (dateStr: string): string => {
+	const today = new Date();
+	const tomorrow = new Date(today);
+	tomorrow.setDate(today.getDate() + 1);
+	const toKey = (d: Date) => `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+	const gameDate = new Date(dateStr);
+	if (toKey(gameDate) === toKey(today)) return 'Today';
+	if (toKey(gameDate) === toKey(tomorrow)) return 'Tomorrow';
+	return gameDate.toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' });
+};
+
+export const groupByDate = (games: Game[]): dateGroup[] => {
+	const groups = new Map<string, Game[]>();
+	for (const game of games) {
+		const key = game.startTime
+			? new Date(game.startTime).toDateString()
+			: 'Unknown';
+		const group = groups.get(key) ?? [];
+		group.push(game);
+		groups.set(key, group);
+	}
+	return Array.from(groups.entries()).map(([key, grpGames]) => {
+		const first = grpGames[0];
+		return {
+			dateLabel: first?.startTime ? formatDateLabel(first.startTime) : 'Upcoming',
+			games: grpGames,
+		};
+	});
 };
 
 export const groupByLeague = (games: Game[]): leagueGroup[] => (
