@@ -552,11 +552,11 @@ $bootstrap-icons-font-dir: '/fonts';
 
 .setup-no-leagues-warn {
 	font-size: 0.65rem;
-	color: var(--bs-warning);
+	color: var(--as-warning);
 	padding: 0.35rem 0.5rem;
-	border: 1px solid rgba(var(--bs-warning-rgb), 0.3);
+	border: 1px solid rgba(var(--as-warning-rgb), 0.3);
 	border-radius: 0.35rem;
-	background: rgba(var(--bs-warning-rgb), 0.07);
+	background: rgba(var(--as-warning-rgb), 0.07);
 }
 
 .sensitivity-ticks {
