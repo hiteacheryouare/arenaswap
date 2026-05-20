@@ -42,7 +42,7 @@ const tipsByContext: Record<proTipContext, string[]> = {
 const pickTip = (context: proTipContext): string | null => {
 	const pool = [...tipsByContext.general, ...tipsByContext[context]];
 	if (pool.length === 0) return null;
-	return pool[Math.floor(Math.random() * pool.length)];
+	return pool[Math.floor(Math.random() * pool.length)] ?? null;
 };
 
 const proTip = ({ context = 'general', chance = 0.05 }: proTipProps) => {

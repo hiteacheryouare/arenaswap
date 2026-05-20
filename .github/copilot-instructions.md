@@ -68,12 +68,29 @@ export default function MyComponent() { } // NEVER DO THIS
 
 ## Styling Rules
 
-### MANDATORY Styling Approach
-1. **Bootstrap COMPONENTS only** - Use for structural components (modals, cards, navbars, etc.)
-2. **Tailwind for utility classes** - Use for spacing, colors, responsive design
-3. **NEVER write raw CSS** - Exception: Global styles or overriding Bootstrap/Tailwind
-4. **Use .scss files** (not .sass) - Only for global styles when absolutely necessary
-5. **Dark mode**: Include Tailwind dark mode classes for everything
+### ⚠️ STYLING PRIORITY (CRITICAL — NO EXCEPTIONS)
+
+All UI MUST be styled in this strict priority order. Each step is a hard gate — you may only fall through after honestly exhausting the previous step.
+
+1. **Customized Bootstrap prebuilt components** (FIRST CHOICE)
+   - Use Bootstrap's prebuilt components (modal, card, navbar, nav, form-select, btn, alert, spinner, etc.) for structure.
+   - Customize via the existing Bootstrap variable overrides in `bootstrap.scss` — do not write new SCSS to re-skin a component.
+2. **Tailwind utility classes** (SECOND CHOICE — used to modify the Bootstrap base)
+   - Layer Tailwind utilities on Bootstrap markup for spacing, color, typography, sizing, breakpoints, and dark mode.
+   - If a class doesn't exist as a single utility, **chain multiple Tailwind utilities together** before considering anything else. Long Tailwind chains are explicitly preferred over even a single line of raw SCSS.
+   - Use Tailwind arbitrary-value syntax (e.g. `text-[0.6rem]`, `w-[3.5rem]`) before custom SCSS classes.
+3. **Raw SCSS** (LAST RESORT — only when 1 and 2 are genuinely impossible)
+   - Only allowed for highly complex situations where Bootstrap + Tailwind cannot possibly express the result: keyframe animations, complex `@media (prefers-reduced-motion)` rules, deeply nested pseudo-element trees, font-face declarations, attribute selectors (`[data-foo='bar']`), sibling-combinator spacing, and **any rule that needs to override a property Bootstrap also sets on the same element** (see Tailwind v4 caveat below).
+   - Before writing SCSS, you MUST first attempt Tailwind chains. If you cannot articulate why Tailwind chains fail, do not write SCSS.
+
+**⚠️ Tailwind v4 + Bootstrap cascade caveat (READ THIS):** Tailwind v4 emits utilities inside `@layer utilities`, while Bootstrap's rules are unlayered. **Unlayered rules always beat layered rules in CSS regardless of source order**, so a Tailwind utility CANNOT override a property Bootstrap sets on the same element (color on `.btn`/`.btn-link`/spinners, font-size on `.btn-sm`, etc.). Tailwind utilities still work for properties Bootstrap doesn't touch (spacing, layout, custom colors on non-Bootstrap elements). When overriding a Bootstrap-set property, fall through to **SCSS as a step-2 fallback**, not step-3 — this is the documented exception.
+
+**Any deviation from this priority is an antipattern that must always be avoided.** Reject PRs that introduce SCSS classes which could have been Tailwind utilities, or custom SCSS skins of Bootstrap components.
+
+### Other Styling Rules
+1. **Never write raw .css** for application styles - Exception: Bootstrap/Tailwind overrides in `.scss`
+2. **Use .scss files** (not .sass) - Only for global styles, font-face, keyframes, or the Bootstrap import/override layer
+3. **Dark mode**: Include Tailwind dark mode classes for everything
 
 
 ## What You Should NEVER Suggest

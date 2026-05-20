@@ -4,6 +4,7 @@ import type {
 	Game,
 	PowerScoreSnapshot,
 	ScoreSnapshot,
+	SetGameBoostMessage,
 	UserPreferences,
 } from '../src/types';
 
@@ -54,6 +55,7 @@ describe('types runtime smoke', () => {
 				baseTotal: 21,
 				favoriteBonus: 0,
 				favoriteTeamCount: 0,
+				gameBoost: 0,
 				stalled: false,
 				reason: 'Tied game',
 			},
@@ -64,6 +66,7 @@ describe('types runtime smoke', () => {
 			leagueLogos: {},
 			scoreHistory: { 'game-1': scoreSnapshots },
 			powerScoreHistory: { 'game-1': powerSnapshots },
+			gameBoosts: {},
 		};
 		const message: ExtensionMessage = {
 			type: 'SCORES_UPDATED',
@@ -72,11 +75,57 @@ describe('types runtime smoke', () => {
 			leagueLogos: state.leagueLogos,
 			scoreHistory: state.scoreHistory,
 			powerScoreHistory: state.powerScoreHistory,
+			gameBoosts: state.gameBoosts,
 		};
 
 		expect(message.type).toBe('SCORES_UPDATED');
-		expect(message.scoreHistory['game-1']?.length).toBe(2);
-		expect(message.powerScoreHistory['game-1']?.[0]?.total).toBe(21);
+		expect((message as Extract<ExtensionMessage, { type: 'SCORES_UPDATED' }>).scoreHistory['game-1']?.length).toBe(2);
+		expect((message as Extract<ExtensionMessage, { type: 'SCORES_UPDATED' }>).powerScoreHistory['game-1']?.[0]?.total).toBe(21);
+	});
+
+	test('supports SetGameBoostMessage type with valid shape', () => {
+		const msg: SetGameBoostMessage = { type: 'SET_GAME_BOOST', gameId: 'game-1', boost: 25 };
+		expect(msg.type).toBe('SET_GAME_BOOST');
+		expect(msg.gameId).toBe('game-1');
+		expect(msg.boost).toBe(25);
+
+		const zeroMsg: SetGameBoostMessage = { type: 'SET_GAME_BOOST', gameId: 'game-1', boost: 0 };
+		expect(zeroMsg.boost).toBe(0);
+	});
+
+	test('BackgroundState carries gameBoosts map', () => {
+		const state: BackgroundState = {
+			games: [],
+			scores: [],
+			leagueLogos: {},
+			scoreHistory: {},
+			powerScoreHistory: {},
+			gameBoosts: { 'game-1': 20, 'game-2': 5 },
+		};
+		expect(state.gameBoosts['game-1']).toBe(20);
+		expect(state.gameBoosts['game-2']).toBe(5);
+		expect(state.gameBoosts['game-3']).toBeUndefined();
+	});
+
+	test('PowerScoreSnapshot carries gameBoost field', () => {
+		const snap: PowerScoreSnapshot = {
+			gameId: 'game-1',
+			timestamp: 1_700_000_000_000,
+			total: 46,
+			closeness: 10,
+			lateGame: 4,
+			momentum: 2,
+			leadChanges: 3,
+			comeback: 2,
+			baseTotal: 21,
+			favoriteBonus: 0,
+			favoriteTeamCount: 0,
+			gameBoost: 25,
+			stalled: false,
+			reason: 'Tied game, game boost (+25)',
+		};
+		expect(snap.gameBoost).toBe(25);
+		expect(snap.total).toBe(46);
 	});
 
 	test('supports optional baseball-specific fields on Game', () => {

@@ -19,8 +19,8 @@ const cooldownSlider = ({ value, onChange }: cooldownSliderProps) => {
 	return (
 		<div>
 			<div className='d-flex justify-content-between align-items-center mb-1'>
-				<label className='text-body-secondary setting-toggle-label'>Switch cooldown</label>
-				<span className='fw-semibold setting-value-label'>{formatSeconds(steps[currentIdx])}</span>
+				<label className='text-body-secondary setting-toggle-label'><i className='bi bi-clock me-1 text-primary' />Switch cooldown</label>
+				<span className='fw-semibold setting-value-label'>{formatSeconds(steps[currentIdx]!)}</span>
 			</div>
 			<input
 				type='range'
@@ -28,12 +28,12 @@ const cooldownSlider = ({ value, onChange }: cooldownSliderProps) => {
 				max={steps.length - 1}
 				step={1}
 				value={currentIdx}
-				onChange={e => onChange(steps[Number(e.target.value)])}
+				onChange={e => onChange(steps[Number(e.target.value)]!)}
 				className='form-range w-100'
 			/>
 			<div className='d-flex justify-content-between'>
-				<span className='text-body-secondary setting-toggle-label'>{formatSeconds(steps[0])}</span>
-				<span className='text-body-secondary setting-toggle-label'>{formatSeconds(steps[steps.length - 1])}</span>
+				<span className='text-body-secondary setting-toggle-label'>{formatSeconds(steps[0]!)}</span>
+				<span className='text-body-secondary setting-toggle-label'>{formatSeconds(steps[steps.length - 1]!)}</span>
 			</div>
 			<div className='mt-1 setting-explainer'>
 				Sets the minimum time between automatic switches to reduce rapid tab flipping.

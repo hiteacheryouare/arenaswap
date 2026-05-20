@@ -35,6 +35,7 @@ export interface PowerScoreResult {
 	baseTotal?: number;
 	favoriteBonus?: number;
 	favoriteTeamCount?: number;
+	gameBoost?: number;
 }
 
 export interface BaseballInningScoreTier {
@@ -176,4 +177,10 @@ export interface LeagueConfig {
 	periodDurationSecs: number;
 	/** Human-readable period label style in UI */
 	periodFormat: 'quarters' | 'halves' | 'periods' | 'innings';
+	/** Per-league override for the late-game exponential curve window sizes.
+	 *  When absent the scorer falls back to the sport-level SportTypeConfig values. */
+	lateGameWindowOverrideSecs?: {
+		finalPeriod: number;
+		previousPeriod: number;
+	};
 }

@@ -1,9 +1,12 @@
 import { useState } from 'react';
-import { leagueConfigMap, stallPenaltyMultiplier } from '@arenaswap/core/constants';
+import { leagueConfigMap } from '@arenaswap/core/constants';
 import type { Game, LeagueId, Team } from '@arenaswap/core/types';
 
 const logoSize = 56;
-export const stallPenaltyPercent = Math.round((1 - stallPenaltyMultiplier) * 100);
+
+export const computeStallPenaltyPercent = (rawTotal: number, baseTotal: number): number => (
+	rawTotal > 0 ? Math.round((rawTotal - baseTotal) / rawTotal * 100) : 0
+);
 
 export const formatPeriod = (game: Game): string => {
 	const config = leagueConfigMap[game.league];
@@ -12,6 +15,7 @@ export const formatPeriod = (game: Game): string => {
 	const period = game.period;
 	if (period > regular) {
 		if (config.periodFormat === 'periods') return 'OT';
+		if (config.periodFormat === 'innings') return `Inn ${period}`;
 		return `OT${period - regular}`;
 	}
 	if (config.periodFormat === 'halves') return period === 1 ? '1H' : '2H';
@@ -68,14 +72,14 @@ const TeamLogo = ({ team }: { team: Team }) => {
 				width={logoSize}
 				height={logoSize}
 				onError={() => setFailed(true)}
-				className='object-fit-contain flex-shrink-0'
+				className='object-fit-contain shrink-0'
 			/>
 		);
 	}
 
 	return (
 		<div
-			className='d-flex align-items-center justify-content-center bg-light rounded-circle flex-shrink-0 fw-bold text-body-secondary team-logo-fallback'
+			className='d-flex align-items-center justify-content-center bg-light rounded-circle shrink-0 fw-bold text-body-secondary team-logo-fallback'
 		>
 			{(team.abbreviation ?? '?').slice(0, 3)}
 		</div>
@@ -112,16 +116,18 @@ export const teamColumn = ({
 	</div>
 );
 
-const OddsProvider = ({ game }: { game: Game }) => {
+const OddsProvider = ({ game, dark }: { game: Game; dark?: boolean }) => {
 	const [failed, setFailed] = useState(false);
 	const provider = game.odds?.provider;
 	if (!provider?.name) return null;
 
-	if (provider.logoUrl && !failed) {
+	const logoUrl = dark && provider.darkLogoUrl ? provider.darkLogoUrl : provider.logoUrl;
+
+	if (logoUrl && !failed) {
 		return (
 			<span className='d-inline-flex align-items-center odds-provider-wrap'>
 				<img
-					src={provider.logoUrl}
+					src={logoUrl}
 					alt={provider.name}
 					onError={() => setFailed(true)}
 					height={12}
@@ -134,7 +140,7 @@ const OddsProvider = ({ game }: { game: Game }) => {
 	return <span className='d-inline-flex align-items-center'>{provider.name}</span>;
 };
 
-export const gameMeta = ({ game }: { game: Game }) => {
+export const gameMeta = ({ game, dark }: { game: Game; dark?: boolean }) => {
 	const networks = game.broadcasts?.join(' • ');
 	const odds = oddsSummary(game);
 	const hasOddsProvider = Boolean(game.odds?.provider?.name);
@@ -153,7 +159,7 @@ export const gameMeta = ({ game }: { game: Game }) => {
 			{hasOddsProvider && (
 				<div className='d-flex align-items-center justify-content-center game-meta-provider'>
 					<span>Odds provided by:</span>
-					<OddsProvider game={game} />
+					<OddsProvider game={game} dark={dark} />
 				</div>
 			)}
 		</div>

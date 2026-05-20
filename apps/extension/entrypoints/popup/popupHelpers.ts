@@ -1,4 +1,4 @@
-import { normalizePowerScoreResult } from '@arenaswap/core';
+import { normalizePowerScoreResult, isObjectRecord, isFiniteNumber, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts } from '@arenaswap/core';
 import { createFavoriteTeamKey, leagueConfigs } from '@arenaswap/core/constants';
 import type {
 	BackgroundState,
@@ -6,10 +6,8 @@ import type {
 	LeagueId,
 	LeagueLogoMap,
 	PowerScoreHistoryMap,
-	PowerScoreSnapshot,
 	PowerScoreResult,
 	ScoreHistoryMap,
-	ScoreSnapshot,
 	SportType,
 } from '@arenaswap/core/types';
 import type { Browser } from 'wxt/browser';
@@ -45,7 +43,6 @@ export const loadingMessages: string[] = [
 	'Synchronizing the game clock...',
 	'Booting up the jumbotron...',
 	'Counting the timeouts...',
-	'Reviewing the replay booth...',
 	'Cracking open the rulebook...',
 	'Tuning the stadium speakers...',
 	'Filling the water bottles...',
@@ -78,7 +75,6 @@ export const loadingMessages: string[] = [
 	'Planning the post-game celebration...',
 	'Wearing the lucky jersey...',
 	'Visualizing the victory dance...',
-	'Imagining the championship parade...',
 	'Polishing the trophy case...',
 	'Brushing up on sports trivia...',
 	'Organizing the tailgate party...',
@@ -88,16 +84,32 @@ export const loadingMessages: string[] = [
 	'Analyzing the stats...',
 	'Launching the fireworks...',
 	'Getting the light show ready...',
-	'Reviewing the pre-game rituals...',
 	'Checking the weather for game day...',
 	'Updating the fantasy football lineup...',
 	'Yelling at the TV...',
 	'Yelling at the refs...',
-	'go birds'
+	'go birds',
+	'Reviewing the coach\'s clipboard...',
+	'Checking if the hot dog guy is ready...',
+	'Deflating... er, inflating the footballs...',
+	'Consulting the Vegas odds...',
+	'Tightening the batting gloves...',
+	'Stretching out the kicker\'s hamstring...',
+	'Reviewing the contract negotiations...',
+	'Ordering the victory pizza...',
+	'Checking the backup QB\'s confidence level...',
+	'Reconsidering that trade...',
+	'Polishing up the player stats cards...',
+	'Setting up the slow-motion replay...',
+	'Confirming the coin flip is real...',
+	'Briefing the ball boy...',
+	'Turning up the crowd noise...',
+	'Dusting off the championship merchandise...',
+	'Hydrating the water boy...',
 ];
 
 export const getRandomLoadingMessage = (): string => (
-	loadingMessages[Math.floor(Math.random() * loadingMessages.length)]
+	loadingMessages[Math.floor(Math.random() * loadingMessages.length)] ?? ''
 );
 export const leaguesBySportType = leagueConfigs.reduce<Record<SportType, typeof leagueConfigs>>((groups, config) => {
 	groups[config.sportType].push(config);
@@ -140,10 +152,6 @@ export const groupByLeague = (games: Game[]): leagueGroup[] => (
 	}, [])
 );
 
-const isObjectRecord = (value: unknown): value is Record<string, unknown> => (
-	typeof value === 'object' && value !== null
-);
-
 const isGameArray = (value: unknown): value is Game[] => (
 	Array.isArray(value)
 );
@@ -162,35 +170,6 @@ const normalizeScores = (value: unknown): PowerScoreResult[] => {
 	return value
 		.filter(isPowerScoreLike)
 		.map(score => normalizePowerScoreResult(score, { allowTotalOverflow: true }));
-};
-
-const isNumberField = (value: unknown): value is number => (
-	typeof value === 'number' && Number.isFinite(value)
-);
-
-const isScoreSnapshotLike = (value: unknown): value is ScoreSnapshot => {
-	if (!isObjectRecord(value)) return false;
-	return typeof value.gameId === 'string'
-		&& isNumberField(value.timestamp)
-		&& isNumberField(value.homeScore)
-		&& isNumberField(value.awayScore);
-};
-
-const isPowerScoreSnapshotLike = (value: unknown): value is PowerScoreSnapshot => {
-	if (!isObjectRecord(value)) return false;
-	return typeof value.gameId === 'string'
-		&& isNumberField(value.timestamp)
-		&& isNumberField(value.total)
-		&& isNumberField(value.closeness)
-		&& isNumberField(value.lateGame)
-		&& isNumberField(value.momentum)
-		&& isNumberField(value.leadChanges)
-		&& isNumberField(value.comeback)
-		&& isNumberField(value.baseTotal)
-		&& isNumberField(value.favoriteBonus)
-		&& isNumberField(value.favoriteTeamCount)
-		&& typeof value.stalled === 'boolean'
-		&& typeof value.reason === 'string';
 };
 
 const normalizeScoreHistory = (value: unknown): ScoreHistoryMap => {
@@ -212,13 +191,14 @@ const normalizePowerScoreHistory = (value: unknown): PowerScoreHistoryMap => {
 };
 
 export const normalizeBackgroundState = (value: unknown): BackgroundState => {
-	if (!isObjectRecord(value)) return { games: [], scores: [], leagueLogos: {}, scoreHistory: {}, powerScoreHistory: {} };
+	if (!isObjectRecord(value)) return { games: [], scores: [], leagueLogos: {}, scoreHistory: {}, powerScoreHistory: {}, gameBoosts: {} };
 	return {
 		games: isGameArray(value.games) ? value.games : [],
 		scores: normalizeScores(value.scores),
 		leagueLogos: isLeagueLogoMap(value.leagueLogos) ? value.leagueLogos : {},
 		scoreHistory: normalizeScoreHistory(value.scoreHistory),
 		powerScoreHistory: normalizePowerScoreHistory(value.powerScoreHistory),
+		gameBoosts: normalizeGameBoosts(value.gameBoosts),
 	};
 };
 

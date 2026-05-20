@@ -9,8 +9,7 @@ import {
 	scoreMaxComeback,
 	scoreMaxTotal,
 	sportTypeConfigMap,
-	stallPenaltyMultiplier,
-	stallThresholdPolls,
+	stallPenaltySteps,
 } from '../src/constants';
 import { computePowerScore, normalizePowerScoreResult } from '../src/scorer';
 import type { Game, PowerScoreResult, ScoreSnapshot } from '../src/types';
@@ -90,6 +89,48 @@ describe('computePowerScore', () => {
 		expect(normalized.baseTotal).toBe(100);
 		expect(normalized.favoriteBonus).toBe(20);
 		expect(normalized.favoriteTeamCount).toBe(2);
+	});
+
+	test('passes through gameBoost field when overflow is allowed', () => {
+		const normalized = normalizePowerScoreResult({
+			gameId: 'boost-test',
+			closeness: 30,
+			lateGame: 30,
+			momentum: 20,
+			leadChanges: 12,
+			comeback: 8,
+			baseTotal: 100,
+			favoriteBonus: 0,
+			favoriteTeamCount: 0,
+			gameBoost: 25,
+			total: 125,
+			reason: 'late game, game boost (+25)',
+		}, { allowTotalOverflow: true });
+
+		expect(normalized.total).toBe(125);
+		expect(normalized.gameBoost).toBe(25);
+		expect(normalized.baseTotal).toBe(100);
+	});
+
+	test('stacks favoriteBonus and gameBoost correctly with overflow', () => {
+		const normalized = normalizePowerScoreResult({
+			gameId: 'stacked-boost',
+			closeness: 30,
+			lateGame: 30,
+			momentum: 20,
+			leadChanges: 12,
+			comeback: 8,
+			baseTotal: 100,
+			favoriteBonus: 10,
+			favoriteTeamCount: 1,
+			gameBoost: 15,
+			total: 125,
+			reason: 'favorite bonus (+10), game boost (+15)',
+		}, { allowTotalOverflow: true });
+
+		expect(normalized.total).toBe(125);
+		expect(normalized.favoriteBonus).toBe(10);
+		expect(normalized.gameBoost).toBe(15);
 	});
 
 	test('returns zeroed score for intermission games', () => {
@@ -423,7 +464,7 @@ describe('computePowerScore', () => {
 		expect(result.reason).toBe(scorerTunables.reasons.fallback);
 	});
 
-	test('applies stall penalty when threshold is met', () => {
+	test('applies no stall penalty below the first threshold', () => {
 		const game = makeGame({
 			homeTeam: { ...makeGame().homeTeam, score: 100 },
 			awayTeam: { ...makeGame().awayTeam, score: 92 },
@@ -431,13 +472,45 @@ describe('computePowerScore', () => {
 			clockSeconds: 600,
 		});
 
-		const raw = computePowerScore(game, [], stallThresholdPolls - 1);
-		const stalled = computePowerScore(game, [], stallThresholdPolls);
+		// stallPenaltySteps is sorted descending — first entry has the highest minPolls
+		const lightStep = stallPenaltySteps[stallPenaltySteps.length - 1];
+		const result = computePowerScore(game, [], (lightStep?.minPolls ?? 8) - 1);
+		expect(result.stalled).toBe(false);
+		expect(result.total).toBe(result.closeness + result.lateGame + result.momentum + result.leadChanges + result.comeback);
+	});
 
-		expect(raw.stalled).toBe(false);
-		expect(raw.total).toBe(raw.closeness + raw.lateGame + raw.momentum + raw.leadChanges + raw.comeback);
+	test('applies light stall penalty at the first step threshold', () => {
+		const game = makeGame({
+			homeTeam: { ...makeGame().homeTeam, score: 100 },
+			awayTeam: { ...makeGame().awayTeam, score: 92 },
+			period: 2,
+			clockSeconds: 600,
+		});
+
+		const lightStep = stallPenaltySteps[stallPenaltySteps.length - 1];
+		if (!lightStep) return;
+		const raw = computePowerScore(game, [], lightStep.minPolls - 1);
+		const stalled = computePowerScore(game, [], lightStep.minPolls);
 		expect(stalled.stalled).toBe(true);
-		expect(stalled.total).toBe(Math.round(raw.total * stallPenaltyMultiplier));
+		expect(stalled.total).toBe(Math.round(raw.total * lightStep.multiplier));
+		expect(stalled.baseTotal).toBe(raw.total);
+	});
+
+	test('applies heavy stall penalty at the highest step threshold', () => {
+		const game = makeGame({
+			homeTeam: { ...makeGame().homeTeam, score: 100 },
+			awayTeam: { ...makeGame().awayTeam, score: 92 },
+			period: 2,
+			clockSeconds: 600,
+		});
+
+		const heavyStep = stallPenaltySteps[0];
+		if (!heavyStep) return;
+		const raw = computePowerScore(game, [], 0);
+		const stalled = computePowerScore(game, [], heavyStep.minPolls);
+		expect(stalled.stalled).toBe(true);
+		expect(stalled.total).toBe(Math.round(raw.total * heavyStep.multiplier));
+		expect(stalled.baseTotal).toBe(raw.total);
 	});
 
 	test('falls back to default reason when no signal reasons are present', () => {

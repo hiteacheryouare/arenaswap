@@ -20,24 +20,21 @@ class ErrorBoundary extends Component<errorBoundaryProps, errorBoundaryState> {
 		if (this.state.error) {
 			return (
 				<div className='popup-container d-flex flex-column align-items-center justify-content-center gap-3 text-center'>
-					<i className='bi bi-exclamation-triangle-fill text-danger error-boundary-icon text-[3rem]' />
+					<img src='/images/full_logo_white_on_transparent.png' alt='ArenaSwap' className='arenaswap-logo mb-1' />
 					<div>
-						<div className='fw-bold text-danger text-[1.05rem] tracking-[-0.01em]'>
-							🚨 ARENASWAP HAS CRASHED 🚨
-						</div>
-						<div className='text-body-secondary mt-1 text-[0.7rem]'>
-							Something clearly went wrong during rendering.
-						</div>
+						<i className='bi bi-exclamation-triangle-fill text-danger fs-3' />
+						<div className='fw-bold mt-2'>Something went wrong.</div>
+						<div className='text-body-secondary small mt-1'>ArenaSwap hit an unexpected error.</div>
 					</div>
-					<div className='alert alert-danger w-100 py-2 px-3 text-start text-[0.65rem] break-words' role='alert'>
-						<strong>error data:</strong> {this.state.error.message}
+					<div className='alert alert-danger w-100 py-2 px-3 text-start small text-break mb-0' role='alert'>
+						<strong>Error:</strong> {this.state.error.message}
 					</div>
 					<button
 						className='btn btn-danger btn-sm'
 						onClick={() => this.setState({ error: null })}
 					>
 						<i className='bi bi-arrow-clockwise me-1' />
-						Retry
+						Try again
 					</button>
 				</div>
 			);

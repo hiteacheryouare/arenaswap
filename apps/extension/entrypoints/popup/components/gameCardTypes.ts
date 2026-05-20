@@ -6,6 +6,7 @@ export interface gameCardProps {
 	excitementResult: PowerScoreResult | undefined;
 	favoriteTeamIds: Set<string>;
 	onToggleFavoriteTeam: (leagueId: LeagueId, teamId: string) => void;
+	gameBoosts: Record<string, number>;
 	openTabs: Browser.tabs.Tab[];
 	registry: TabRegistration[];
 	onRegistryChange: (updated: TabRegistration[]) => void;

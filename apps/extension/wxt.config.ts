@@ -4,7 +4,7 @@ export default defineConfig({
 	modules: ['@wxt-dev/module-react'],
 	manifest: {
 		name: 'ArenaSwap',
-		description: 'Automatically flip to the most exciting game',
+		description: 'Watches every live game across 12 leagues and auto-switches your browser tab to the most exciting one every 15 seconds.',
 		browser_specific_settings: {
 			gecko: {
 				id: 'arenaswap@hiteacheryouare.github.io',

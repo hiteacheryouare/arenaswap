@@ -1,5 +1,5 @@
 import { randomInRange } from '@porkyproductions/hat';
-import { fetchGamesWithLeagueLogos, computePowerScore, normalizePowerScoreResult, MockGameSimulator, createPollModeTracker } from '@arenaswap/core';
+import { fetchGamesWithLeagueLogos, computePowerScore, normalizePowerScoreResult, MockGameSimulator, createPollModeTracker, isObjectRecord, isFiniteNumber, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts } from '@arenaswap/core';
 import {
 	createDefaultUserPreferences,
 	createFavoriteTeamKey,
@@ -13,6 +13,7 @@ import {
 	sportTypeConfigMap,
 } from '@arenaswap/core/constants';
 import type {
+	ExtensionMessage,
 	Game,
 	LeagueId,
 	PowerScoreResult,
@@ -34,6 +35,7 @@ export default defineBackground(() => {
 	const powerScoreHistory = new Map<string, PowerScoreSnapshot[]>();
 	const clockStallMap = new Map<string, { lastClock: number; stallCount: number }>();
 	let tabRegistry: TabRegistration[] = [];
+	let gameBoosts: Record<string, number> = {};
 	let demoMode = false;
 	let simulator: MockGameSimulator | null = null;
 	let prefs: UserPreferences = createDefaultUserPreferences();
@@ -44,42 +46,10 @@ export default defineBackground(() => {
 	// Interval used only in demo mode
 	let demoTimer: ReturnType<typeof setInterval> | null = null;
 	let inFlightRefresh: Promise<void> | null = null;
+	let upcomingGamesReady: Promise<void> | undefined;
 	let pendingSwitchTimer: ReturnType<typeof setTimeout> | null = null;
 	let pendingSwitch: { gameId: string; tabId: number; reason?: string } | null = null;
-	const historyStorageDefaults = { scoreHistory: {}, powerScoreHistory: {} };
-
-	const isObjectRecord = (value: unknown): value is Record<string, unknown> => (
-		typeof value === 'object' && value !== null
-	);
-
-	const isFiniteNumber = (value: unknown): value is number => (
-		typeof value === 'number' && Number.isFinite(value)
-	);
-
-	const isScoreSnapshotLike = (value: unknown): value is ScoreSnapshot => (
-		isObjectRecord(value)
-		&& typeof value.gameId === 'string'
-		&& isFiniteNumber(value.timestamp)
-		&& isFiniteNumber(value.homeScore)
-		&& isFiniteNumber(value.awayScore)
-	);
-
-	const isPowerScoreSnapshotLike = (value: unknown): value is PowerScoreSnapshot => (
-		isObjectRecord(value)
-		&& typeof value.gameId === 'string'
-		&& isFiniteNumber(value.timestamp)
-		&& isFiniteNumber(value.total)
-		&& isFiniteNumber(value.closeness)
-		&& isFiniteNumber(value.lateGame)
-		&& isFiniteNumber(value.momentum)
-		&& isFiniteNumber(value.leadChanges)
-		&& isFiniteNumber(value.comeback)
-		&& isFiniteNumber(value.baseTotal)
-		&& isFiniteNumber(value.favoriteBonus)
-		&& isFiniteNumber(value.favoriteTeamCount)
-		&& typeof value.stalled === 'boolean'
-		&& typeof value.reason === 'string'
-	);
+	const historyStorageDefaults = { scoreHistory: {}, powerScoreHistory: {}, gameBoosts: {} };
 
 	const hydrateHistoryMaps = (storedScoreHistory: unknown, storedPowerScoreHistory: unknown) => {
 		history.clear();
@@ -153,6 +123,7 @@ export default defineBackground(() => {
 				baseTotal: score.baseTotal ?? score.total,
 				favoriteBonus: score.favoriteBonus ?? 0,
 				favoriteTeamCount: score.favoriteTeamCount ?? 0,
+				gameBoost: score.gameBoost ?? 0,
 				stalled: score.stalled ?? false,
 				reason: score.reason,
 			});
@@ -189,6 +160,7 @@ export default defineBackground(() => {
 		leagueLogos,
 		scoreHistory: serializeScoreHistory(),
 		powerScoreHistory: serializePowerScoreHistory(),
+		gameBoosts,
 	});
 
 	const broadcastScoresUpdated = () => {
@@ -263,7 +235,7 @@ export default defineBackground(() => {
 			const scoreTitle = game
 				? `${game.awayTeam.abbreviation} ${game.awayTeam.score}-${game.homeTeam.score} ${game.homeTeam.abbreviation}`
 				: getGameLabel(gameId);
-			const capitalizeFirst = (s: string) => s ? s[0].toUpperCase() + s.slice(1) : s;
+			const capitalizeFirst = (s: string) => s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
 			const venue = getVenueName(gameId);
 			const message = reason
 				? `${capitalizeFirst(reason)}. Taking you to ${venue} now!`
@@ -343,9 +315,12 @@ export default defineBackground(() => {
 			const baseScore = normalizePowerScoreResult(computePowerScore(g, history.get(g.id) ?? [], stallCount));
 			const favoriteTeamCount = getFavoriteTeamCount(g, favoriteTeamIds);
 			const favoriteBonus = favoriteTeamCount * favoriteBonusPoints;
-			const boostedReason = favoriteBonus > 0
-				? `${baseScore.reason}, favorite bonus (+${favoriteBonus})`
-				: baseScore.reason;
+			const gameBoost = gameBoosts[g.id] ?? 0;
+			const reasonParts = [
+				baseScore.reason,
+				favoriteBonus > 0 && `favorite bonus (+${favoriteBonus})`,
+				gameBoost > 0 && `game boost (+${gameBoost})`,
+			].filter(Boolean);
 
 			return normalizePowerScoreResult(
 				{
@@ -353,8 +328,9 @@ export default defineBackground(() => {
 					baseTotal: baseScore.total,
 					favoriteBonus,
 					favoriteTeamCount,
-					total: baseScore.total + favoriteBonus,
-					reason: boostedReason,
+					gameBoost,
+					total: baseScore.total + favoriteBonus + gameBoost,
+					reason: reasonParts.join(', '),
 				},
 				{ allowTotalOverflow: true },
 			);
@@ -388,7 +364,7 @@ export default defineBackground(() => {
 
 		const best = registeredScores.reduce((a, b) => a.total > b.total ? a : b);
 		const bestReg = tabRegistry.find(r => r.gameId === best.gameId)!;
-		const threshold = sensitivityThresholds[prefs.sensitivity];
+		const threshold = sensitivityThresholds[prefs.sensitivity] ?? 0;
 		const cooldownOk = Date.now() - lastSwitchTime > prefs.cooldownSeconds * 1000;
 
 		if (
@@ -499,6 +475,7 @@ export default defineBackground(() => {
 	]).then(([prefsResult, sessionResult, demoResult]) => {
 		prefs = normalizeUserPreferences(prefsResult.prefs);
 		tabRegistry = sessionResult.tabRegistry as TabRegistration[];
+		gameBoosts = normalizeGameBoosts(sessionResult.gameBoosts);
 		hydrateHistoryMaps(sessionResult.scoreHistory, sessionResult.powerScoreHistory);
 		demoMode = demoResult.demoMode as boolean;
 		if (demoMode) simulator = new MockGameSimulator();
@@ -507,7 +484,8 @@ export default defineBackground(() => {
 	});
 
 	stateReady.then(async () => {
-		await refreshUpcomingGames();
+		upcomingGamesReady = refreshUpcomingGames().catch(() => {});
+		await upcomingGamesReady;
 		refreshScores(false).finally(() => {
 			if (demoMode) {
 				if (!demoTimer) {
@@ -520,13 +498,16 @@ export default defineBackground(() => {
 	});
 
 	// Handle messages from popup
-	browser.runtime.onMessage.addListener((msg: any) => {
+	browser.runtime.onMessage.addListener((msg: ExtensionMessage) => {
 		if (msg.type === 'GET_STATE') {
 			if (msg.forceRefresh === true || games.length === 0) {
 				// Popup opened or worker just woke up; fetch fresh state before responding.
+				// Upcoming games load in the background and arrive via SCORES_UPDATED push.
 				return stateReady
-					.then(() => refreshScores(false))
-					.then(() => buildBackgroundState());
+					.then(async () => {
+						await refreshScores(false);
+						return buildBackgroundState();
+					});
 			}
 			return Promise.resolve(buildBackgroundState());
 		}
@@ -559,6 +540,18 @@ export default defineBackground(() => {
 				clearPendingSwitch();
 				await browser.storage.session.set({ tabRegistry });
 				await syncManagedTabMuteState(prefs.enabled);
+			});
+		}
+		if (msg.type === 'SET_GAME_BOOST') {
+			return stateReady.then(async () => {
+				const boost = Math.max(0, Math.round(Number(msg.boost) || 0));
+				if (boost === 0) {
+					delete gameBoosts[msg.gameId];
+				} else {
+					gameBoosts[msg.gameId] = boost;
+				}
+				await browser.storage.session.set({ gameBoosts });
+				await afterFetch(null, false);
 			});
 		}
 		if (msg.type === 'SET_DEMO_MODE') {

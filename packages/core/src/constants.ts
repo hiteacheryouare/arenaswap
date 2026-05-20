@@ -2,8 +2,7 @@ import pkg from '../package.json';
 import type { LeagueId, UserPreferences } from './types';
 import {
 	allLeagueIds,
-	stallThresholdPolls,
-	stallPenaltyMultiplier,
+	stallPenaltySteps,
 	scoreMaxCloseness,
 	scoreMaxLateGame,
 	scoreMaxMomentum,
@@ -20,8 +19,7 @@ import {
 // Re-export powerscore constants so existing import paths work unchanged
 export {
 	allLeagueIds,
-	stallThresholdPolls,
-	stallPenaltyMultiplier,
+	stallPenaltySteps,
 	scoreMaxCloseness,
 	scoreMaxLateGame,
 	scoreMaxMomentum,

@@ -35,6 +35,7 @@ export interface Team {
 export interface GameOddsProvider {
 	name: string;
 	logoUrl?: string;
+	darkLogoUrl?: string;
 }
 
 export interface GameOdds {
@@ -97,6 +98,7 @@ export interface PowerScoreSnapshot {
 	baseTotal: number;
 	favoriteBonus: number;
 	favoriteTeamCount: number;
+	gameBoost?: number;
 	stalled: boolean;
 	reason: string;
 }
@@ -109,6 +111,7 @@ export interface BackgroundState {
 	leagueLogos: LeagueLogoMap;
 	scoreHistory: ScoreHistoryMap;
 	powerScoreHistory: PowerScoreHistoryMap;
+	gameBoosts: Record<string, number>;
 }
 
 export type ScoresUpdatedMessage = {
@@ -118,6 +121,7 @@ export type ScoresUpdatedMessage = {
 	leagueLogos: LeagueLogoMap;
 	scoreHistory: ScoreHistoryMap;
 	powerScoreHistory: PowerScoreHistoryMap;
+	gameBoosts: Record<string, number>;
 };
 
 export type UpdatePrefsMessage = {
@@ -130,4 +134,26 @@ export type UpdateRegistryMessage = {
 	tabRegistry: TabRegistration[];
 };
 
-export type ExtensionMessage = ScoresUpdatedMessage | UpdatePrefsMessage | UpdateRegistryMessage;
+export type SetGameBoostMessage = {
+	type: 'SET_GAME_BOOST';
+	gameId: string;
+	boost: number;
+};
+
+export type GetStateMessage = {
+	type: 'GET_STATE';
+	forceRefresh?: boolean;
+};
+
+export type SetDemoModeMessage = {
+	type: 'SET_DEMO_MODE';
+	enabled: boolean;
+};
+
+export type ExtensionMessage =
+	| ScoresUpdatedMessage
+	| UpdatePrefsMessage
+	| UpdateRegistryMessage
+	| SetGameBoostMessage
+	| GetStateMessage
+	| SetDemoModeMessage;

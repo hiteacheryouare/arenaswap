@@ -7,7 +7,7 @@ interface sensitivitySliderProps {
 
 const labels: Record<number, string> = {
 	1: 'Barely Active',
-	2: 'Critical Only',
+	2: 'Passive',
 	3: 'Conservative',
 	4: 'Balanced',
 	5: 'Eager',
@@ -18,7 +18,7 @@ const labels: Record<number, string> = {
 const sensitivitySlider = ({ value, onChange }: sensitivitySliderProps) => (
 	<div>
 		<div className='d-flex justify-content-between align-items-center mb-1'>
-			<label className='text-body-secondary setting-toggle-label'>Switch sensitivity</label>
+			<label className='text-body-secondary setting-toggle-label'><i className='bi bi-sliders me-1 text-primary' />Switch sensitivity</label>
 			<span className='fw-semibold setting-value-label'>{labels[value]} (PowerScore gap ≥ {sensitivityThresholds[value]})</span>
 		</div>
 		<input

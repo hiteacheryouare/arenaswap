@@ -12,6 +12,8 @@ import { resolveLeagueLogoUrl } from '@arenaswap/core/constants';
 import GameCard from './gameCard';
 import PopupFooter from './popupFooter';
 import ProTip from './proTip';
+import EmptyGameState from './emptyGameState';
+import GameListHeader from './gameListHeader';
 import { buildFavoritePinnedComparator, getRandomLoadingMessage, groupByLeague, leagueLabels } from '../popupHelpers';
 
 interface gameSectionProps {
@@ -21,6 +23,7 @@ interface gameSectionProps {
 	leagueLogos: LeagueLogoMap;
 	favoriteTeamIds: Set<string>;
 	onToggleFavoriteTeam: (leagueId: LeagueId, teamId: string) => void;
+	gameBoosts: Record<string, number>;
 	openTabs: Browser.tabs.Tab[];
 	registry: TabRegistration[];
 	onRegistryChange: (updated: TabRegistration[]) => void;
@@ -57,9 +60,11 @@ interface mainViewProps {
 	leagueLogos: LeagueLogoMap;
 	registry: TabRegistration[];
 	favoriteTeamIds: Set<string>;
+	gameBoosts: Record<string, number>;
 	openTabs: Browser.tabs.Tab[];
 	onOpenGameDetail: (gameId: string) => void;
 	onOpenSetup: () => void;
+	onRefresh: () => void;
 	onToggleEnabled: () => void;
 	onToggleFavoriteTeam: (leagueId: LeagueId, teamId: string) => void;
 	onRegistryChange: (updated: TabRegistration[]) => void;
@@ -73,6 +78,7 @@ const gameSection = ({
 	leagueLogos,
 	favoriteTeamIds,
 	onToggleFavoriteTeam,
+	gameBoosts,
 	openTabs,
 	registry,
 	onRegistryChange,
@@ -91,6 +97,7 @@ const gameSection = ({
 						excitementResult={scores.find(s => s.gameId === game.id)}
 						favoriteTeamIds={favoriteTeamIds}
 						onToggleFavoriteTeam={onToggleFavoriteTeam}
+						gameBoosts={gameBoosts}
 						openTabs={openTabs}
 						registry={registry}
 						onRegistryChange={onRegistryChange}
@@ -113,9 +120,11 @@ const mainView = ({
 	leagueLogos,
 	registry,
 	favoriteTeamIds,
+	gameBoosts,
 	openTabs,
 	onOpenGameDetail,
 	onOpenSetup,
+	onRefresh,
 	onToggleEnabled,
 	onToggleFavoriteTeam,
 	onRegistryChange,
@@ -138,10 +147,9 @@ const mainView = ({
 	const registeredGameIds = new Set(registry.map(r => r.gameId));
 	const assignedLiveGames = liveGames.filter(g => registeredGameIds.has(g.id)).sort(sortGames);
 	const unassignedLiveGames = liveGames.filter(g => !registeredGameIds.has(g.id)).sort(sortGames);
-	const hasEspnBranding = (
-		Object.values(leagueLogos).some(url => typeof url === 'string' && url.toLowerCase().includes('espn'))
-		|| games.some(game => (game.odds?.provider?.logoUrl ?? '').toLowerCase().includes('espn'))
-	);
+
+	const showNoGames = !isLoading && !noLeaguesSelected && liveGames.length === 0
+		&& registry.length === 0 && (!prefs.showUpcomingGames || upcomingGames.length === 0);
 
 	return (
 		<div className='popup-container d-flex flex-column'>
@@ -157,41 +165,21 @@ const mainView = ({
 				</div>
 			</div>
 
-			{!isLoading && noLeaguesSelected && (
-				<div className='text-center rounded mt-2 mb-3 p-3 popup-empty-leagues'>
-					<h2 className='fw-bold text-white lh-sm mb-2 popup-empty-leagues-title'>Choose leagues to get started</h2>
-					<p className='mb-2 lh-sm popup-empty-leagues-copy'>
-						ArenaSwap needs at least one league selected before it can find games to swap between.
-					</p>
-					<button className='btn btn-primary btn-lg w-100' onClick={onOpenSetup}>Select Leagues in Settings</button>
-				</div>
-			)}
+			<GameListHeader isLoading={isLoading} hasError={hasError} loadingMessage={loadingMessage} onRefresh={onRefresh} />
 
-			{isLoading && (
-				<div className='d-flex flex-column justify-content-center align-items-center mt-4 popup-loading-wrap'>
-					<div className='spinner-border popup-loading-spinner' role='status'>
-						<span className='visually-hidden'>Loading...</span>
-					</div>
-					<div className='mt-2 text-center popup-loading-text'>{loadingMessage}</div>
-				</div>
-			)}
-
-			{hasError && <div className='alert alert-danger d-flex align-items-center gap-2 mt-3 py-2 px-3 popup-error-banner' role='alert'><i className='bi bi-exclamation-triangle-fill' />Failed to load games. Retrying&hellip;</div>}
+			<EmptyGameState
+				noLeaguesSelected={!isLoading && noLeaguesSelected}
+				noGames={showNoGames}
+				onOpenSetup={onOpenSetup}
+				onRefresh={onRefresh}
+			/>
 
 			{!isLoading && !noLeaguesSelected && <ProTip context='main' />}
-			{!isLoading && !noLeaguesSelected && assignedLiveGames.length > 0 && gameSection({ title: 'Active Tabs', games: assignedLiveGames, scores, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail })}
-			{!isLoading && !noLeaguesSelected && unassignedLiveGames.length > 0 && gameSection({ title: 'Other Games', games: unassignedLiveGames, scores, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail })}
+			{!isLoading && !noLeaguesSelected && assignedLiveGames.length > 0 && gameSection({ title: 'Active Live Tabs', games: assignedLiveGames, scores, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail })}
+			{!isLoading && !noLeaguesSelected && unassignedLiveGames.length > 0 && gameSection({ title: 'Other Live Games', games: unassignedLiveGames, scores, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail })}
+			{!isLoading && !noLeaguesSelected && prefs.showUpcomingGames && upcomingGames.length > 0 && gameSection({ title: 'Up Next', games: upcomingGames, scores: [], leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail })}
 
-			{!isLoading && !noLeaguesSelected && liveGames.length === 0 && registry.length === 0 && (!prefs.showUpcomingGames || upcomingGames.length === 0) && (
-				<div className='mt-3 text-center'>
-					<div className='fw-bold text-body mb-1 popup-no-games-title'>No games right now 💔</div>
-					<button className='btn btn-link btn-sm p-0 popup-settings-link' onClick={onOpenSetup}>Settings →</button>
-				</div>
-			)}
-
-			{!isLoading && !noLeaguesSelected && prefs.showUpcomingGames && upcomingGames.length > 0 && gameSection({ title: 'Up Next', games: upcomingGames, scores: [], leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail })}
-
-			<PopupFooter hasEspnBranding={hasEspnBranding} />
+			<PopupFooter />
 		</div>
 	);
 };

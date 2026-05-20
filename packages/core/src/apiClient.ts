@@ -8,7 +8,7 @@ const parseClockToSeconds = (clock: string): number => {
 	const parts = clock.split(':');
 	if (parts.length !== 2) return 0;
 	const [min, sec] = parts.map(Number);
-	return (min * 60) + sec;
+	return ((min ?? 0) * 60) + (sec ?? 0);
 };
 
 const parseStatus = (state: string): Game['status'] => {
@@ -59,7 +59,7 @@ interface EspnLeague {
 
 interface EspnTeam {
 	displayName: string;
-	abbreviation: string;
+	abbreviation?: string;
 	logo?: string;
 	/** Primary team color as a hex string without '#' (e.g. "002B5C") */
 	color?: string;
@@ -177,8 +177,12 @@ const parseBroadcasts = (competition: EspnCompetition): string[] | undefined => 
 	return parsed.length > 0 ? parsed : undefined;
 };
 
-const pickProviderLogo = (provider?: EspnOddsProvider): string | undefined => {
+const pickProviderLogo = (provider?: EspnOddsProvider, rel?: string): string | undefined => {
 	if (!provider?.logos?.length) return undefined;
+	if (rel) {
+		const match = provider.logos.find(logo => logo.rel?.includes(rel) && logo.href);
+		if (match?.href) return match.href;
+	}
 	const light = provider.logos.find(logo => logo.rel?.includes('light') && logo.href);
 	if (light?.href) return light.href;
 	return provider.logos.find(logo => Boolean(logo.href))?.href;
@@ -188,7 +192,8 @@ const parseOdds = (competition: EspnCompetition): GameOdds | undefined => {
 	const raw = competition.odds?.[0];
 	if (!raw) return undefined;
 	const providerName = raw.provider?.displayName ?? raw.provider?.name;
-	const providerLogoUrl = pickProviderLogo(raw.provider);
+	const providerLogoUrl = pickProviderLogo(raw.provider, 'light');
+	const providerDarkLogoUrl = pickProviderLogo(raw.provider, 'dark');
 	const overUnderValue = typeof raw.overUnder === 'number'
 		? raw.overUnder
 		: typeof raw.overUnder === 'string'
@@ -203,6 +208,7 @@ const parseOdds = (competition: EspnCompetition): GameOdds | undefined => {
 			? {
 				name: providerName,
 				logoUrl: providerLogoUrl,
+				darkLogoUrl: providerDarkLogoUrl,
 			}
 			: undefined,
 	};
@@ -237,7 +243,7 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 		homeTeam: {
 			id: home.id,
 			name: home.team.displayName,
-			abbreviation: home.team.abbreviation ?? home.team.displayName?.slice(0, 3).toUpperCase() ?? '?',
+			abbreviation: home.team.abbreviation || home.team.displayName?.slice(0, 3).toUpperCase() || '?',
 			score: parseInt(home.score ?? '0', 10) || 0,
 			logo: home.team.logo ?? undefined,
 			color: normalizeTeamColor(home.team.color, home.team.alternateColor),
@@ -245,7 +251,7 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 		awayTeam: {
 			id: away.id,
 			name: away.team.displayName,
-			abbreviation: away.team.abbreviation ?? away.team.displayName?.slice(0, 3).toUpperCase() ?? '?',
+			abbreviation: away.team.abbreviation || away.team.displayName?.slice(0, 3).toUpperCase() || '?',
 			score: parseInt(away.score ?? '0', 10) || 0,
 			logo: away.team.logo ?? undefined,
 			color: normalizeTeamColor(away.team.color, away.team.alternateColor),
@@ -374,4 +380,66 @@ export const fetchLiveGames = async (enabledLeagues: LeagueId[]): Promise<Game[]
 export const fetchLeagueLogos = async (enabledLeagues: LeagueId[]): Promise<LeagueLogoMap> => {
 	const { leagueLogos } = await fetchGamesWithLeagueLogos(enabledLeagues);
 	return leagueLogos;
+};
+
+export interface EspnTeamEntry {
+	leagueId: LeagueId;
+	id: string;
+	name: string;
+	abbreviation: string;
+	logo?: string;
+}
+
+interface EspnTeamsResponse {
+	sports?: Array<{
+		leagues?: Array<{
+			teams?: Array<{
+				team: {
+					id: string;
+					displayName: string;
+					abbreviation?: string;
+					logos?: Array<{ href: string }>;
+				};
+			}>;
+		}>;
+	}>;
+}
+
+export const fetchTeamsForLeagues = async (leagueIds: LeagueId[]): Promise<EspnTeamEntry[]> => {
+	if (leagueIds.length === 0) return [];
+
+	const leagueConfigs = getEnabledLeagueConfigs(leagueIds);
+	if (leagueConfigs.length === 0) return [];
+
+	const results = await Promise.allSettled(
+		leagueConfigs.map(async (config): Promise<EspnTeamEntry[]> => {
+			const params = new URLSearchParams({ limit: '200' });
+			if (config.id === 'ncaab') params.set('groups', '50');
+			if (config.id === 'ncaaw') params.set('groups', '49');
+			const url = `${espnBase}/${config.espnPath}/teams?${params.toString()}`;
+			const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+			if (!res.ok) throw new Error(`Failed to fetch teams for ${config.id}: HTTP ${res.status}`);
+			const json = await res.json() as EspnTeamsResponse;
+			const rawTeams = json?.sports?.[0]?.leagues?.[0]?.teams ?? [];
+			return rawTeams
+				.filter(({ team }) => team.id && team.displayName)
+				.map(({ team }) => ({
+					leagueId: config.id,
+					id: team.id,
+					name: team.displayName,
+					abbreviation: team.abbreviation || team.displayName.slice(0, 3).toUpperCase(),
+					logo: team.logos?.[0]?.href,
+				}));
+		})
+	);
+
+	const fulfilled = results
+		.filter((result): result is PromiseFulfilledResult<EspnTeamEntry[]> => result.status === 'fulfilled')
+		.flatMap(result => result.value);
+	if (fulfilled.length > 0) return fulfilled;
+
+	const firstError = results.find((result): result is PromiseRejectedResult => result.status === 'rejected');
+	throw (firstError?.reason instanceof Error
+		? firstError.reason
+		: new Error('Failed to fetch teams for selected leagues'));
 };

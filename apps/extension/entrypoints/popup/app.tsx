@@ -1,13 +1,16 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import useSWR from 'swr';
 import { createDefaultUserPreferences, createFavoriteTeamKey, normalizeUserPreferences } from '@arenaswap/core/constants';
-import type { LeagueId, TabRegistration, UserPreferences } from '@arenaswap/core/types';
+import type { LeagueId, SportType, TabRegistration, UserPreferences } from '@arenaswap/core/types';
 import type { Browser } from 'wxt/browser';
 import GameDetailView from './components/gameDetailView';
 import MainView from './components/mainView';
+import OnboardingView from './components/onboardingView';
 import SetupView from './components/setupView';
-import { fetchState, formatTabLabel, leagueOrder, normalizeBackgroundState, popupView } from './popupHelpers';
+import ToastContainer from './components/toastContainer';
+import { fetchState, formatTabLabel, leagueOrder, leaguesBySportType, normalizeBackgroundState, popupView } from './popupHelpers';
 import useFavoriteScoreConfetti from './useFavoriteScoreConfetti';
+import useToast from './useToast';
 
 const isScoreUpdateMessage = (value: unknown): value is { type: 'SCORES_UPDATED' } => (
 	typeof value === 'object'
@@ -24,11 +27,20 @@ const app = () => {
 	const [registry, setRegistry] = useState<TabRegistration[]>([]);
 	const [openTabs, setOpenTabs] = useState<Browser.tabs.Tab[]>([]);
 	const [demoMode, setDemoMode] = useState(false);
+	const [onboardingDone, setOnboardingDone] = useState<boolean | null>(null);
+	const [settled, setSettled] = useState(false);
+	const settledRef = useRef(false);
 	const prefsSyncRef = useRef<Promise<void>>(Promise.resolve());
+	const { toasts, showToast, dismissToast } = useToast();
 
-	const { data, error, isLoading, mutate } = useSWR('bg-state', () => fetchState(true), {
+	// forceRefresh:false avoids a full tick() overwrite; revalidateIfStale:false prevents
+	// a second SWR fetch (React StrictMode remount / React 19 store re-snapshot) from
+	// overwriting game data that arrived via a SCORES_UPDATED mutation. Updates come
+	// via push (SCORES_UPDATED); re-fetching after initial load is not needed.
+	const { data, error, isLoading, mutate } = useSWR('bg-state', () => fetchState(false), {
 		revalidateOnFocus: false,
 		revalidateOnReconnect: false,
+		revalidateIfStale: false,
 	});
 
 	const games = data?.games ?? [];
@@ -36,33 +48,66 @@ const app = () => {
 	const leagueLogos = data?.leagueLogos ?? {};
 	const scoreHistory = data?.scoreHistory ?? {};
 	const powerScoreHistory = data?.powerScoreHistory ?? {};
+	const gameBoosts = data?.gameBoosts ?? {};
 	const favoriteTeamIds = useMemo(() => new Set(prefs.favoriteTeamIds), [prefs.favoriteTeamIds]);
 	const confettiCanvasRef = useFavoriteScoreConfetti({ games, favoriteTeamIds });
 
 	useEffect(() => {
-		browser.storage.sync.get({ prefs: null })
-			.then(result => setPrefs(normalizeUserPreferences(result.prefs)))
-			.catch(async err => {
+		const init = async () => {
+			let rawPrefs: unknown = null;
+			try {
+				const syncResult = await browser.storage.sync.get({ prefs: null });
+				rawPrefs = syncResult.prefs;
+			} catch (err) {
 				console.warn('ArenaSwap: storage.sync unavailable, falling back to storage.local for prefs.', err);
 				const fallback = await browser.storage.local.get({ prefs: null });
-				setPrefs(normalizeUserPreferences(fallback.prefs));
-			})
-			.finally(() => setPrefsLoaded(true));
+				rawPrefs = fallback.prefs;
+			}
+			setPrefs(normalizeUserPreferences(rawPrefs));
+			setPrefsLoaded(true);
+
+			const localResult = await browser.storage.local.get({ demoMode: false, onboardingCompleted: null });
+			setDemoMode(localResult.demoMode as boolean);
+
+			const onboardingFlag = localResult.onboardingCompleted === true;
+			const hasStoredPrefs = rawPrefs !== null;
+			if (!onboardingFlag && hasStoredPrefs) {
+				void browser.storage.local.set({ onboardingCompleted: true });
+				setOnboardingDone(true);
+			} else {
+				setOnboardingDone(onboardingFlag);
+			}
+		};
+
+		void init();
 
 		browser.storage.session.get({ tabRegistry: [] }).then(result => setRegistry(result.tabRegistry as TabRegistration[]));
-		browser.storage.local.get({ demoMode: false }).then(result => setDemoMode(result.demoMode as boolean));
 
 		void browser.tabs.query({ currentWindow: true }).then(tabs => {
 			setOpenTabs(tabs.filter(tab => tab.url && !tab.url.startsWith('chrome://') && !tab.url.startsWith('about:')));
 		});
 
+		// Fallback: mark settled after 5 s if no SCORES_UPDATED arrives.
+		// onOnboardingComplete resets settledRef.current to false and re-arms this path via its own fetch.
+		const settleTimer = setTimeout(() => {
+			if (!settledRef.current) { settledRef.current = true; setSettled(true); }
+		}, 5000);
+
 		const handleMessage = (msg: unknown) => {
 			if (!isScoreUpdateMessage(msg)) return;
 			mutate(normalizeBackgroundState(msg), { revalidate: false });
+			if (!settledRef.current) { settledRef.current = true; setSettled(true); }
 		};
 		browser.runtime.onMessage.addListener(handleMessage);
-		return () => browser.runtime.onMessage.removeListener(handleMessage);
+		return () => {
+			clearTimeout(settleTimer);
+			browser.runtime.onMessage.removeListener(handleMessage);
+		};
 	}, [mutate]);
+
+	useEffect(() => {
+		if (data && !settledRef.current) { settledRef.current = true; setSettled(true); }
+	}, [data]);
 
 	useEffect(() => {
 		if (view !== 'detail' || !selectedGameId) return;
@@ -88,12 +133,45 @@ const app = () => {
 		void syncPromise.catch(err => console.error('ArenaSwap: Failed to persist preferences:', err));
 	};
 
+	const onOnboardingComplete = (leagues: LeagueId[], favorites: string[]) => {
+		persistPrefs({ ...prefs, enabledLeagues: leagues, favoriteTeamIds: favorites });
+		void browser.storage.local.set({ onboardingCompleted: true });
+		showToast('Welcome to ArenaSwap!', 'success');
+		// Reset settled so MainView shows a loader while we re-fetch with the new prefs.
+		// Without this, `settled` is already true from the initial fetch (which ran during onboarding
+		// with empty leagues), so MainView would immediately show "no games" on first transition.
+		settledRef.current = false;
+		setSettled(false);
+		setOnboardingDone(true);
+		void (async () => {
+			await prefsSyncRef.current.catch(() => {});
+			const refreshed = await fetchState(true);
+			mutate(refreshed, { revalidate: false });
+			if (!settledRef.current) { settledRef.current = true; setSettled(true); }
+		})();
+	};
+
 	const onToggleLeague = (leagueId: LeagueId) => {
 		const current = new Set<LeagueId>(prefs.enabledLeagues);
 		if (current.has(leagueId)) current.delete(leagueId);
 		else current.add(leagueId);
 		const enabledLeagues = [...current].sort((a, b) => leagueOrder[a] - leagueOrder[b]);
 		persistPrefs({ ...prefs, enabledLeagues });
+	};
+
+	const onToggleSport = (sport: SportType, selectAll: boolean) => {
+		const sportLeagueIds = leaguesBySportType[sport].map(l => l.id);
+		const current = new Set<LeagueId>(prefs.enabledLeagues);
+		for (const id of sportLeagueIds) {
+			if (selectAll) current.add(id);
+			else current.delete(id);
+		}
+		const enabledLeagues = [...current].sort((a, b) => leagueOrder[a] - leagueOrder[b]);
+		persistPrefs({ ...prefs, enabledLeagues });
+	};
+
+	const onSetGameBoost = (gameId: string, boost: number) => {
+		void browser.runtime.sendMessage({ type: 'SET_GAME_BOOST', gameId, boost });
 	};
 
 	const onRegistryChange = (updated: TabRegistration[]) => {
@@ -104,6 +182,7 @@ const app = () => {
 
 	const closeSetup = () => {
 		setView('main');
+		showToast('Settings saved', 'success');
 		void (async () => {
 			await prefsSyncRef.current.catch(() => {});
 			const refreshed = await fetchState(true);
@@ -121,9 +200,21 @@ const app = () => {
 	const selectedScoreHistory = selectedGameId ? scoreHistory[selectedGameId] ?? [] : [];
 	const selectedPowerScoreHistory = selectedGameId ? powerScoreHistory[selectedGameId] ?? [] : [];
 
+	if (onboardingDone === null) return <div className='popup-root' />;
+
+	if (onboardingDone === false) {
+		return (
+			<OnboardingView
+				leagueLogos={leagueLogos}
+				onComplete={onOnboardingComplete}
+			/>
+		);
+	}
+
 	return (
 		<div className='popup-root'>
 			<canvas ref={confettiCanvasRef} className='popup-confetti-canvas' aria-hidden='true' />
+			<ToastContainer toasts={toasts} onDismiss={dismissToast} />
 			<div key={view} className='popup-view-shell'>
 				{view === 'setup' && (
 					<SetupView
@@ -137,6 +228,7 @@ const app = () => {
 						onSwitchDelayChange={val => persistPrefs({ ...prefs, switchDelaySeconds: val })}
 						onFavoriteTeamBonusChange={val => persistPrefs({ ...prefs, favoriteTeamBonusPoints: val })}
 						onToggleLeague={onToggleLeague}
+						onToggleSport={onToggleSport}
 						onToggleShowUpcoming={() => persistPrefs({ ...prefs, showUpcomingGames: !prefs.showUpcomingGames })}
 						onToggleNotifications={() => persistPrefs({ ...prefs, notificationsEnabled: !prefs.notificationsEnabled })}
 						onToggleDemo={() => {
@@ -150,13 +242,15 @@ const app = () => {
 					<MainView
 						prefs={prefs}
 						prefsLoaded={prefsLoaded}
-						isLoading={isLoading}
+						isLoading={isLoading || !settled}
 						hasError={Boolean(error && !data)}
+						onRefresh={() => void mutate(() => fetchState(true), { revalidate: false })}
 						games={games}
 						scores={scores}
 						leagueLogos={leagueLogos}
 						registry={registry}
 						favoriteTeamIds={favoriteTeamIds}
+						gameBoosts={gameBoosts}
 						openTabs={openTabs}
 						onOpenGameDetail={openGameDetail}
 						onOpenSetup={() => setView('setup')}
@@ -178,6 +272,8 @@ const app = () => {
 						excitementResult={selectedScore}
 						scoreHistory={selectedScoreHistory}
 						powerScoreHistory={selectedPowerScoreHistory}
+						gameBoosts={gameBoosts}
+						onSetGameBoost={onSetGameBoost}
 						onBack={() => setView('main')}
 					/>
 				)}
