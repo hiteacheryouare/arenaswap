@@ -33,9 +33,14 @@ const app = () => {
 	const prefsSyncRef = useRef<Promise<void>>(Promise.resolve());
 	const { toasts, showToast, dismissToast } = useToast();
 
-	const { data, error, isLoading, mutate } = useSWR('bg-state', () => fetchState(true), {
+	// forceRefresh:false avoids a full tick() overwrite; revalidateIfStale:false prevents
+	// a second SWR fetch (React StrictMode remount / React 19 store re-snapshot) from
+	// overwriting game data that arrived via a SCORES_UPDATED mutation. Updates come
+	// via push (SCORES_UPDATED); re-fetching after initial load is not needed.
+	const { data, error, isLoading, mutate } = useSWR('bg-state', () => fetchState(false), {
 		revalidateOnFocus: false,
 		revalidateOnReconnect: false,
+		revalidateIfStale: false,
 	});
 
 	const games = data?.games ?? [];
@@ -235,7 +240,7 @@ const app = () => {
 						prefsLoaded={prefsLoaded}
 						isLoading={isLoading || !settled}
 						hasError={Boolean(error && !data)}
-						onRefresh={() => mutate()}
+						onRefresh={() => void mutate(() => fetchState(true), { revalidate: false })}
 						games={games}
 						scores={scores}
 						leagueLogos={leagueLogos}
