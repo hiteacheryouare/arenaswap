@@ -69,9 +69,8 @@ const popupFooter = () => {
 				<button
 					type='button'
 					onClick={handleHeartClick}
+					aria-label='Toggle debug info'
 					style={{ background: 'none', border: 'none', padding: 0, margin: '0 1px', cursor: 'default', fontSize: 'inherit', lineHeight: 1 }}
-					tabIndex={-1}
-					aria-hidden='true'
 				>
 					❤️
 				</button>
