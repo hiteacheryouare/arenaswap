@@ -13,6 +13,13 @@
 
 ---
 
+## Website
+
+- PowerScore package page: https://hiteacheryouare.github.io/arenaswap/powerscore/
+- npm package: https://www.npmjs.com/package/powerscore
+
+---
+
 ## Installation
 
 ```bash
