@@ -331,6 +331,23 @@ describe('apiClient', () => {
 		expect(result.leagueLogos.mlb).toBe(leagueLogoFallbacks.mlb);
 	});
 
+	test('parses sub-minute clock values sent without a leading "0:" prefix', async () => {
+		const fetchMock = jest.fn().mockResolvedValue(createResponse({
+			events: [
+				makeEvent({ id: 'sub-min-int', state: 'in', period: 4, clock: '45', homeScore: '98', awayScore: '96' }),
+				makeEvent({ id: 'sub-min-float', state: 'in', period: 4, clock: '45.3', homeScore: '98', awayScore: '96' }),
+			],
+		}));
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+		const { fetchGamesWithLeagueLogos } = loadApiClient();
+
+		const result = await fetchGamesWithLeagueLogos(['nba'], { includeUpcoming: false });
+		const intGame = result.games.find(g => g.id === 'sub-min-int');
+		const floatGame = result.games.find(g => g.id === 'sub-min-float');
+		expect(intGame?.clockSeconds).toBe(45);
+		expect(floatGame?.clockSeconds).toBe(45);
+	});
+
 	test('defensively handles malformed events, clocks, colors, and odds variants', async () => {
 		const missingCompetitors = makeEvent({
 			id: 'missing-competitors',
