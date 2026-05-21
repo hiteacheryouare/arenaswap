@@ -10,7 +10,7 @@ import '../../styles/global.scss';
 <head>
 	<meta charset='UTF-8' />
 	<meta name='viewport' content='width=device-width, initial-scale=1.0' />
-	<meta name='description' content='PowerScore is ArenaSwap’s live sports excitement scoring package. Learn how it works, install it from npm, and see live PowerScores in action.' />
+	<meta name='description' content='PowerScore is ArenaSwap's live sports excitement scoring package. Learn how it works, install it from npm, and see live PowerScores in action.' />
 	<meta property='og:title' content='PowerScore package — ArenaSwap' />
 	<meta property='og:description' content='A 0–100 live excitement scoring algorithm for sports games, with install commands and live examples.' />
 	<meta property='og:type' content='website' />
@@ -20,20 +20,35 @@ import '../../styles/global.scss';
 <body>
 	<Nav />
 	<main style='padding-top:88px;'>
-		<section class='section-pad'>
-			<div class='container'>
-				<div class='row g-5 align-items-center'>
-					<div class='col-lg-7 reveal'>
-						<div class='d-inline-flex align-items-center gap-2 px-3 py-2 rounded-pill mb-4 text-[0.78rem] tracking-[0.06em] text-[var(--color-muted)]' style='border:1px solid var(--color-border);'>
-							<span class='live-dot'></span>
-							POWERED BY ARENASWAP
-						</div>
-						<h1 class='section-title mb-4'>PowerScore.<br />The score behind the score.</h1>
-						<p class='section-sub mb-4'>
+
+		<!-- ── Hero ─────────────────────────────────────────── -->
+		<section class='ps-hero section-pad'>
+			<!-- Atmospheric corner glows -->
+			<div class='ps-glow ps-glow-tl'></div>
+			<div class='ps-glow ps-glow-tr'></div>
+			<div class='ps-glow ps-glow-bl'></div>
+			<div class='ps-glow ps-glow-br'></div>
+
+			<div class='container' style='position:relative; z-index:1;'>
+				<div class='row justify-content-center'>
+					<div class='col-xl-9 col-lg-10 text-center'>
+
+						<div class='ps-hero-bar'></div>
+
+						<h1 class='ps-hero-heading'>
+							<span class='ps-heading-wrap'>
+								<span class='ps-gradient-text' id='ps-gradient-text'>PowerScore.</span><span
+								class='ps-solid-text' id='ps-solid-text' aria-hidden='true'>PowerScore.</span>
+							</span><br/>
+							The score behind the score.
+						</h1>
+
+						<p class='ps-hero-sub'>
 							PowerScore is the standalone package that turns any live game into a real-time excitement score from 0 to 100.
-							It is the exact engine ArenaSwap uses to decide what game you should be watching next.
+							The exact engine ArenaSwap uses to decide what game you should be watching next.
 						</p>
-						<div class='d-flex flex-wrap gap-3'>
+
+						<div class='ps-hero-ctas d-flex flex-wrap gap-3 justify-content-center'>
 							<a href='https://www.npmjs.com/package/powerscore' target='_blank' rel='noreferrer' class='btn btn-cta'>
 								<i class='bi bi-box-arrow-up-right me-2'></i>View on npm
 							</a>
@@ -41,23 +56,13 @@ import '../../styles/global.scss';
 								<i class='bi bi-github me-2'></i>Source on GitHub
 							</a>
 						</div>
-					</div>
-					<div class='col-lg-5 reveal reveal-delay-2'>
-						<div class='feature-card'>
-							<div class='feature-icon mb-3'><i class='bi bi-lightning-charge'></i></div>
-							<h3 class='mb-2'>How it works</h3>
-							<p class='mb-0'>
-								PowerScore combines five live signals: closeness, late-game pressure, momentum, lead changes, and comeback factor.
-								Frozen clocks get penalized so stoppages do not outrank live chaos.
-							</p>
-						</div>
+
 					</div>
 				</div>
 			</div>
 		</section>
 
-		<div class='section-divider'></div>
-
+		<!-- ── Install commands ──────────────────────────────── -->
 		<section class='section-pad' style='background:rgba(22,27,34,0.5);'>
 			<div class='container'>
 				<div class='row g-4'>
@@ -74,8 +79,7 @@ import '../../styles/global.scss';
 			</div>
 		</section>
 
-		<div class='section-divider'></div>
-
+		<!-- ── Signal breakdown ──────────────────────────────── -->
 		<section class='section-pad'>
 			<div class='container'>
 				<div class='row g-4'>
@@ -87,35 +91,47 @@ import '../../styles/global.scss';
 						</p>
 					</div>
 					<div class='col-md-6 col-xl-4 reveal'>
-						<div class='feature-card'><h3>Closeness · 30 max</h3><p>How tight is the game right now? Tied games score highest.</p></div>
+						<div class='feature-card ps-signal-card-green'>
+							<h3>Closeness · 30 max</h3>
+							<p>How tight is the game right now? Tied games score highest.</p>
+						</div>
 					</div>
 					<div class='col-md-6 col-xl-4 reveal reveal-delay-1'>
-						<div class='feature-card'><h3>Late-Game Pressure · 30 max</h3><p>Final minutes and overtime ramp the score aggressively.</p></div>
+						<div class='feature-card ps-signal-card-orange'>
+							<h3>Late-Game Pressure · 30 max</h3>
+							<p>Final minutes and overtime ramp the score aggressively.</p>
+						</div>
 					</div>
 					<div class='col-md-6 col-xl-4 reveal reveal-delay-2'>
-						<div class='feature-card'><h3>Momentum · 20 max</h3><p>Unanswered runs and surges increase urgency.</p></div>
+						<div class='feature-card ps-signal-card-blue'>
+							<h3>Momentum · 20 max</h3>
+							<p>Unanswered runs and surges increase urgency.</p>
+						</div>
 					</div>
 					<div class='col-md-6 col-xl-4 reveal reveal-delay-3'>
-						<div class='feature-card'><h3>Lead Changes · 12 max</h3><p>Back-and-forth games beat one-sided games.</p></div>
+						<div class='feature-card ps-signal-card-yellow'>
+							<h3>Lead Changes · 12 max</h3>
+							<p>Back-and-forth games beat one-sided games.</p>
+						</div>
 					</div>
 					<div class='col-md-6 col-xl-4 reveal reveal-delay-4'>
-						<div class='feature-card'><h3>Comeback Factor · 8 max</h3><p>If a trailing team is clawing back, the score rises.</p></div>
+						<div class='feature-card ps-signal-card-pink'>
+							<h3>Comeback Factor · 8 max</h3>
+							<p>If a trailing team is clawing back, the score rises.</p>
+						</div>
 					</div>
 				</div>
 			</div>
 		</section>
 
-		<div class='section-divider'></div>
+		<div class='ps-gradient-bar'></div>
 
+		<!-- ── Live PowerScores ──────────────────────────────── -->
 		<section class='section-pad' style='background:rgba(22,27,34,0.5);'>
 			<div class='container'>
 				<div class='row g-4'>
 					<div class='col-12 reveal'>
 						<h2 class='section-title mb-3'>Live PowerScores right now</h2>
-						<p class='section-sub mb-4'>
-							This section pulls current live games and computes PowerScore in the browser every 15 seconds.
-							If nothing is live, you’ll see a placeholder instead.
-						</p>
 					</div>
 					<div class='col-12 reveal reveal-delay-1'>
 						<LivePowerScores client:load />
@@ -143,6 +159,24 @@ import '../../styles/global.scss';
 			{ threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
 		);
 		revealElements.forEach(el => observer.observe(el));
+	</script>
+
+	<script>
+		// Gradient text plays one full cycle (0.85s delay + 6s = 6850ms),
+		// then crossfades to a randomly chosen PowerScore brand color.
+		const psColors = ['#22c55e', '#F75C03', '#2274A5', '#F1C40F', '#D90368'];
+		const chosen = psColors[Math.floor(Math.random() * psColors.length)];
+
+		const gradientEl = document.getElementById('ps-gradient-text');
+		const solidEl = document.getElementById('ps-solid-text');
+
+		if (gradientEl && solidEl) {
+			solidEl.style.color = chosen;
+			setTimeout(() => {
+				gradientEl.classList.add('ps-exiting');
+				solidEl.style.opacity = '1';
+			}, 6850);
+		}
 	</script>
 </body>
 </html>

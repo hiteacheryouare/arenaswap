@@ -128,7 +128,6 @@ const LivePowerScores = () => {
 	const [cards, setCards] = useState<LiveScoreCard[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
-	const [lastUpdatedLabel, setLastUpdatedLabel] = useState('');
 
 	const historyRef = useRef<Record<string, ScoreSnapshot[]>>({});
 	const previousClockRef = useRef<Record<string, number>>({});
@@ -172,7 +171,6 @@ const LivePowerScores = () => {
 			}
 
 			setCards(nextCards.sort((a, b) => b.score - a.score));
-			setLastUpdatedLabel(new Date().toLocaleTimeString());
 			setError(null);
 		} catch {
 			setError('Unable to load live game data right now.');
@@ -211,10 +209,7 @@ const LivePowerScores = () => {
 	if (cards.length === 0) {
 		return (
 			<div className='feature-card'>
-				<div className='d-flex align-items-center gap-2 mb-3'>
-					<span className='live-dot'></span>
-					<span className='fw-semibold'>No live games right now</span>
-				</div>
+				<span className='fw-semibold mb-3 d-block'>No live games right now</span>
 				<p className='mb-0 section-sub'>
 					When games go live, this section will auto-refresh every 15 seconds and show real-time PowerScores across all supported leagues.
 				</p>
@@ -224,14 +219,12 @@ const LivePowerScores = () => {
 
 	return (
 		<div className='d-flex flex-column gap-3'>
-			<div className='text-[0.82rem] text-[var(--color-muted)]'>Live refresh every 15s • last updated {lastUpdatedLabel}</div>
 			{cards.slice(0, 8).map(card => (
 				<div key={card.game.id} className='feature-card py-3 px-3'>
 					<div className='d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2'>
-						<div className='d-flex align-items-center gap-2'>
-							<span className='live-dot'></span>
-							<span className='text-[0.75rem] tracking-[0.08em] text-[var(--color-muted)]'>{leagueConfigMap[card.game.league].label.toUpperCase()}</span>
-						</div>
+						<span className='text-[0.75rem] tracking-[0.08em] text-[var(--color-muted)]'>
+							{leagueConfigMap[card.game.league].label.toUpperCase()}
+						</span>
 						<span className='badge rounded-pill text-bg-dark px-3 py-2 text-[0.78rem]'>
 							PowerScore {card.score} / 100
 						</span>
@@ -250,7 +243,10 @@ const LivePowerScores = () => {
 							<span className='fw-semibold'>{card.game.homeTeam.abbreviation}</span>
 						</div>
 					</div>
-					<div className='mt-2 text-[0.78rem] text-[var(--color-muted)]'>{card.reason}</div>
+					<div className='mt-1 text-[0.78rem] text-[var(--color-muted)]'>{card.reason}</div>
+					<div className='ps-score-bar-track'>
+						<div className='ps-score-bar-fill' style={{ width: `${card.score}%` }} />
+					</div>
 				</div>
 			))}
 		</div>
