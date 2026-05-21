@@ -4,6 +4,8 @@ import Footer from '../../components/Footer.astro';
 import PowerScoreInstallCommands from '../../components/PowerScoreInstallCommands.tsx';
 import LivePowerScores from '../../components/LivePowerScores.tsx';
 import '../../styles/global.scss';
+
+const supportedLeagues = ['NFL', 'MLB', 'NHL', 'NBA', 'NCAAF', 'NCAAB', 'NCAAW', 'MLS', 'EPL', 'FIFAWC', 'NCAAMH', 'WNBA'];
 ---
 <!doctype html>
 <html lang='en'>
@@ -40,7 +42,7 @@ import '../../styles/global.scss';
 								<span class='ps-gradient-text' id='ps-gradient-text'>PowerScore.</span><span
 								class='ps-solid-text' id='ps-solid-text' aria-hidden='true'>PowerScore.</span>
 							</span><br/>
-							The score behind the score.
+							The score behind <span class='ps-rotating-phrase'>every <span id='ps-rotating-token' class='ps-rotating-token' aria-live='polite'>{supportedLeagues[0]}</span><span id='ps-rotating-suffix'> score.</span></span>
 						</h1>
 
 						<p class='ps-hero-sub'>
@@ -176,6 +178,51 @@ import '../../styles/global.scss';
 				gradientEl.classList.add('ps-exiting');
 				solidEl.style.opacity = '1';
 			}, 6850);
+		}
+	</script>
+
+	<script define:vars={{ supportedLeagues }}>
+		const psSupportedLeagues = supportedLeagues;
+		const rotatingTokenEl = document.getElementById('ps-rotating-token');
+		const rotatingSuffixEl = document.getElementById('ps-rotating-suffix');
+		const fadeDurationMs = 240;
+		const displayDurationMs = 1200;
+
+		if (rotatingTokenEl && rotatingSuffixEl && psSupportedLeagues.length > 0) {
+			let index = 0;
+			rotatingTokenEl.textContent = psSupportedLeagues[index];
+
+			const rotate = () => {
+				index += 1;
+
+				if (index >= psSupportedLeagues.length) {
+					rotatingTokenEl.classList.add('is-exiting');
+					window.setTimeout(() => {
+						rotatingTokenEl.textContent = 'score';
+						rotatingTokenEl.classList.remove('is-exiting');
+						rotatingTokenEl.classList.add('is-entering');
+						rotatingSuffixEl.textContent = '.';
+						window.setTimeout(() => {
+							rotatingTokenEl.classList.remove('is-entering');
+						}, fadeDurationMs);
+					}, fadeDurationMs);
+					return;
+				}
+
+				rotatingTokenEl.classList.add('is-exiting');
+				window.setTimeout(() => {
+					rotatingTokenEl.textContent = psSupportedLeagues[index];
+					rotatingTokenEl.classList.remove('is-exiting');
+					rotatingTokenEl.classList.add('is-entering');
+					window.setTimeout(() => {
+						rotatingTokenEl.classList.remove('is-entering');
+					}, fadeDurationMs);
+				}, fadeDurationMs);
+
+				window.setTimeout(rotate, displayDurationMs + fadeDurationMs);
+			};
+
+			window.setTimeout(rotate, displayDurationMs + fadeDurationMs);
 		}
 	</script>
 </body>

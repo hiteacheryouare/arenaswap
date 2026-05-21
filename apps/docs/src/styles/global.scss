@@ -1006,11 +1006,30 @@ body {
 	filter: blur(12px);
 	transform: translateY(30px);
 	animation: ps-text-in 1.2s cubic-bezier(0.16,1,0.3,1) 0.85s both;
-	font-size: clamp(4rem, 9vw, 7rem);
+	font-size: clamp(1.75rem, 8vw, 7rem);
 	font-weight: 700;
 	letter-spacing: -0.04em;
 	line-height: 1.03;
 	margin-bottom: 2rem;
+}
+
+.ps-rotating-phrase {
+	white-space: nowrap;
+}
+
+.ps-rotating-token {
+	display: inline-block;
+	transition: opacity 0.24s ease, transform 0.24s ease;
+}
+
+.ps-rotating-token.is-exiting {
+	opacity: 0;
+	transform: translateY(-0.18em);
+}
+
+.ps-rotating-token.is-entering {
+	opacity: 0;
+	transform: translateY(0.18em);
 }
 
 .ps-hero-sub {
