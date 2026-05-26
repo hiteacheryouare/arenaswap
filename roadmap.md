@@ -26,16 +26,15 @@ This is a **living draft** based on [issue #13](https://github.com/hiteacheryoua
 
 - Performance/reliability pass for background polling and state sync.
 
-
 - RedZone Mode
 
 ## 2.0 (major release)
 
 ###  PowerScore v2 with richer excitement signals and clearer weighting model.
-- Stronger sport-specific signals and late-game weighting.
+- Stronger sport-specific signals and late-game weighting, more customized to the pulse of each sport.
 - Expand/revisit signal quality for edge game states.
 - Overtime prediction — pre-boost tie games in final seconds
-- Reseat bases so that 0s become more common and base isnt like 20 or 30
+- Reseat base scores so that 0s become more common and base isnt like 20 or 30
   - Change switch sensitivities to reflect these changes after rigorous testing
   - Test rigorously in both Jest and real world APIs
 - Move points away from certain signals and towards others for more balanced feeling system
@@ -50,6 +49,8 @@ This is a **living draft** based on [issue #13](https://github.com/hiteacheryoua
 - UX refresh across popup/settings with tighter information hierarchy.
   - Update website and markeitng screenshot routes to reflect the new UI
 
+- make all powerscore signals optional since powerscore is API agnostic
+
 ## 2.1+ (ecosystem)
 
 - Public docs site for scoring concepts and extension behavior.
@@ -57,7 +58,8 @@ This is a **living draft** based on [issue #13](https://github.com/hiteacheryoua
 
 ## 3.0 (data machine)
 - Consuming and interpreting every single piece of data the API has to offer
-- Using all of the data available to it to make a switch decision
+- Using all of the data available to it to make a switch decision on PowerScore
+  - should all be optional since powerscore is API agnostic
 
 ## Open questions to workshop
 
