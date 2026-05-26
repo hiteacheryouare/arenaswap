@@ -54,13 +54,13 @@ export const defaultFavoriteTeamBonusPoints = 10;
 
 // Sensitivity level → score delta required to trigger a tab switch
 export const sensitivityThresholds: Record<number, number> = {
-	1: 100,
-	2: 60,
-	3: 45,
-	4: 28,
-	5: 16,
-	6: 8,
-	7: 3
+	1: 65,
+	2: 42,
+	3: 26,
+	4: 14,
+	5: 8,
+	6: 4,
+	7: 1
 };
 
 export const leagueLogoFallbacks: Record<LeagueId, string> = {
