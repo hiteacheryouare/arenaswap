@@ -336,6 +336,8 @@ describe('apiClient', () => {
 			events: [
 				makeEvent({ id: 'sub-min-int', state: 'in', period: 4, clock: '45', homeScore: '98', awayScore: '96' }),
 				makeEvent({ id: 'sub-min-float', state: 'in', period: 4, clock: '45.3', homeScore: '98', awayScore: '96' }),
+				makeEvent({ id: 'sub-min-dec-75', state: 'in', period: 4, clock: '0.75', homeScore: '98', awayScore: '96' }),
+				makeEvent({ id: 'sub-min-dec-5', state: 'in', period: 4, clock: '0.5', homeScore: '98', awayScore: '96' }),
 			],
 		}));
 		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
@@ -344,8 +346,12 @@ describe('apiClient', () => {
 		const result = await fetchGamesWithLeagueLogos(['nba'], { includeUpcoming: false });
 		const intGame = result.games.find(g => g.id === 'sub-min-int');
 		const floatGame = result.games.find(g => g.id === 'sub-min-float');
+		const dec75Game = result.games.find(g => g.id === 'sub-min-dec-75');
+		const dec5Game = result.games.find(g => g.id === 'sub-min-dec-5');
 		expect(intGame?.clockSeconds).toBe(45);
 		expect(floatGame?.clockSeconds).toBe(45);
+		expect(dec75Game?.clockSeconds).toBe(45); // 0.75 minutes = 45 seconds
+		expect(dec5Game?.clockSeconds).toBe(30);  // 0.5 minutes = 30 seconds
 	});
 
 	test('defensively handles malformed events, clocks, colors, and odds variants', async () => {

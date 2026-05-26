@@ -6,7 +6,13 @@ const upcomingDateWindowDays = 4;
 
 const parseClockToSeconds = (clock: string): number => {
 	const parts = clock.split(':');
-	if (parts.length === 1) return Math.floor(Number(parts[0]) || 0);
+	if (parts.length === 1) {
+		const n = Number(parts[0]);
+		if (!n || isNaN(n)) return 0;
+		// Values in (0,1) are decimal minutes (e.g. ESPN pre-game "0.0", live "0.75" = 45s)
+		if (n < 1) return Math.round(n * 60);
+		return Math.floor(n);
+	}
 	if (parts.length !== 2) return 0;
 	const [min, sec] = parts.map(Number);
 	return ((min ?? 0) * 60) + Math.floor(sec ?? 0);
