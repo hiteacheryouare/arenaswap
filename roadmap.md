@@ -44,9 +44,11 @@ This is a **living draft** based on [issue #13](https://github.com/hiteacheryoua
   - Basketball is how PowerScore graphs should look -- always chaging and capturing the pulse of the game. Other sports that dont score as much usually havew straight lines as their graph and dont capture the "pulse" of the game
   - Change demo mode games to reflect the scoring cadence of their respective sports
   - Test rigorously in both Jest and real world APIs
+- Update all marketing collateral, website, and search through the whole project for outdated stuff to update with the new system
 
 - “Why this game?” explainer in UI (human-readable reason chain).
 - UX refresh across popup/settings with tighter information hierarchy.
+  - Update website and markeitng screenshot routes to reflect the new UI
 
 ## 2.1+ (ecosystem)
 
