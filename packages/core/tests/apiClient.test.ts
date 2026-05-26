@@ -792,6 +792,59 @@ describe('apiClient', () => {
 		expect(game?.baseRunners).toBeUndefined();
 	});
 
+	test('dates range query starts from today so morning pre-game events are not missed', async () => {
+		const fetchMock = jest.fn().mockResolvedValue(createResponse({ events: [] }));
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+		const { fetchGamesWithLeagueLogos } = loadApiClient();
+
+		await fetchGamesWithLeagueLogos(['nba']);
+
+		const calledUrls = fetchMock.mock.calls.map(([url]) => String(url));
+		const datesUrl = calledUrls.find(u => u.includes('dates='));
+		expect(datesUrl).toBeDefined();
+
+		const datesParam = new URL(datesUrl!).searchParams.get('dates')!;
+		const [rangeStart] = datesParam.split('-');
+
+		const todayUtc = new Date();
+		const expectedToday = `${todayUtc.getUTCFullYear()}${String(todayUtc.getUTCMonth() + 1).padStart(2, '0')}${String(todayUtc.getUTCDate()).padStart(2, '0')}`;
+		expect(rangeStart).toBe(expectedToday);
+	});
+
+	test('deduplicates events that appear in both default and dates responses', async () => {
+		const sharedEvent = makeEvent({
+			id: 'shared-live',
+			state: 'in',
+			period: 2,
+			clock: '5:00',
+			homeScore: '55',
+			awayScore: '52',
+		});
+
+		const fetchMock = jest.fn()
+			.mockResolvedValueOnce(createResponse({ events: [sharedEvent] }))
+			.mockResolvedValueOnce(createResponse({
+				events: [
+					sharedEvent,
+					makeEvent({
+						id: 'dates-only-pre',
+						state: 'pre',
+						period: 1,
+						clock: '0:00',
+						homeScore: '0',
+						awayScore: '0',
+					}),
+				],
+			}));
+
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+		const { fetchGamesWithLeagueLogos } = loadApiClient();
+
+		const result = await fetchGamesWithLeagueLogos(['nba']);
+		expect(result.games.map(g => g.id).sort()).toEqual(['dates-only-pre', 'shared-live']);
+		expect(result.games.filter(g => g.id === 'shared-live')).toHaveLength(1);
+	});
+
 	test('fetchLiveGames filters out pre-game entries', async () => {
 		const fetchMock = jest.fn()
 			.mockResolvedValueOnce(createResponse({

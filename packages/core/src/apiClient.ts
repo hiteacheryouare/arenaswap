@@ -30,10 +30,12 @@ const toQueryDate = (date: Date): string => (
 );
 
 const buildUpcomingDatesRangeQuery = (): string => {
+	// Start from today so morning pre-game events aren't missed.
+	// ESPN's default (no-dates) scoreboard only reliably surfaces active/recent games;
+	// the explicit dates query returns all scheduled events for the requested range.
 	const start = new Date();
-	start.setUTCDate(start.getUTCDate() + 1);
 	const end = new Date(start);
-	end.setUTCDate(end.getUTCDate() + (upcomingDateWindowDays - 1));
+	end.setUTCDate(end.getUTCDate() + upcomingDateWindowDays);
 	return `${toQueryDate(start)}-${toQueryDate(end)}`;
 };
 
@@ -340,7 +342,13 @@ const fetchLeagueGames = async (config: LeagueConfig, options: { includeUpcoming
 		?? upcomingData?.leagues?.[0]?.logos?.[0]?.href;
 	const logoUrl = resolveLeagueLogoUrl(config.id, espnLogo);
 
+	const seenIds = new Set<string>();
 	const parsedGames = [...(todayData?.events ?? []), ...(upcomingData?.events ?? [])]
+		.filter(event => {
+			if (seenIds.has(event.id)) return false;
+			seenIds.add(event.id);
+			return true;
+		})
 		.map(event => parseEvent(event, config.id))
 		.filter((game): game is Game => game !== null && game.status !== 'post');
 
