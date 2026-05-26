@@ -53,6 +53,10 @@ This is a **living draft** based on [issue #13](https://github.com/hiteacheryoua
 - Public docs site for scoring concepts and extension behavior.
 - Contributor playbooks for adding/tuning sports signals.
 
+## 3.0 (data machine)
+- Consuming and interpreting every single piece of data the API has to offer
+- Using all of the data available to it to make a switch decision
+
 ## Open questions to workshop
 
 1. Where should the line be between **automatic switching** and **manual control** by default?
