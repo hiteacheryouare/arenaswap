@@ -10,7 +10,7 @@ This is a **living draft** based on [issue #13](https://github.com/hiteacheryoua
 
 ## Proposed roadmap
 
-## 1.2 (in progress)
+## 1.2
 
 - Baseball UI improvements.
 - Notification wording improvements.
@@ -24,26 +24,29 @@ This is a **living draft** based on [issue #13](https://github.com/hiteacheryoua
 
 ## 1.4 (control + confidence)
 
-- User controls for switching sensitivity (chill/normal/chaos style presets).
 - Performance/reliability pass for background polling and state sync.
-- Overtime prediction — pre-boost tie games in final seconds
-File: packages/powerscore/src/scorer.ts — computeLateGame()
 
-Currently, a tied game with 10 seconds left scores the same as a tied game at halftime (both use closeness + late-game, neither pre-boosts OT)
-Add a narrow "OT imminent" window: if clockSeconds ≤ 60 AND scoreDiff === 0 in the final regulation period, apply a bonus (e.g. +8) that bridges the gap before period > regularPeriods kicks in
-Scope it tightly so it only fires once (within last 60s of regulation, tied)
-Add tests for this boundary
 
 - RedZone Mode
 
 ## 2.0 (major release)
 
-- PowerScore v2 with richer excitement signals and clearer weighting model.
-- “Why this game?” explainer in UI (human-readable reason chain).
-- UX refresh across popup/settings with tighter information hierarchy.
-- Personalized bias blending (favorites, close-game preference, upset preference).
+###  PowerScore v2 with richer excitement signals and clearer weighting model.
 - Stronger sport-specific signals and late-game weighting.
 - Expand/revisit signal quality for edge game states.
+- Overtime prediction — pre-boost tie games in final seconds
+- Reseat bases so that 0s become more common and base isnt like 20 or 30
+  - Change switch sensitivities to reflect these changes after rigorous testing
+  - Test rigorously in both Jest and real world APIs
+- Move points away from certain signals and towards others for more balanced feeling system
+  - Test rigorously in both Jest and real world APIs
+- Make changing more constant in less scoring intensive sports
+  - Basketball is how PowerScore graphs should look -- always chaging and capturing the pulse of the game. Other sports that dont score as much usually havew straight lines as their graph and dont capture the "pulse" of the game
+  - Change demo mode games to reflect the scoring cadence of their respective sports
+  - Test rigorously in both Jest and real world APIs
+
+- “Why this game?” explainer in UI (human-readable reason chain).
+- UX refresh across popup/settings with tighter information hierarchy.
 
 ## 2.1+ (ecosystem)
 
