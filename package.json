@@ -8,12 +8,12 @@
 		"packages/*"
 	],
 	"scripts": {
-		"dev": "turbo dev",
+		"dev": "turbo run dev",
 		"build": "turbo run build",
 		"build:all": "turbo run build build:firefox build:edge",
 		"zip": "turbo run zip",
 		"test": "turbo run test",
-		"typecheck": "turbo typecheck"
+		"typecheck": "turbo run typecheck"
 	},
 	"devDependencies": {
 		"turbo": "^2.9.14",
@@ -24,8 +24,6 @@
 	},
 	"packageManager": "npm@10.9.0",
 	"dependencies": {
-		"@porkyproductions/hat": "^1.5.0",
-		"canvas-confetti": "^1.9.4",
 		"skills": "^1.5.7"
 	}
 }

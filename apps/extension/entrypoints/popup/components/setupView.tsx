@@ -109,7 +109,7 @@ const setupView = ({
 					<div className='mt-3'><SwitchDelaySlider value={prefs.switchDelaySeconds} onChange={onSwitchDelayChange} /></div>
 					<div className='mt-3'><FavoriteTeamBonusInput value={prefs.favoriteTeamBonusPoints} onChange={onFavoriteTeamBonusChange} /></div>
 
-					<div className='popup-section-label mt-3'><i className='bi bi-toggles' />Options</div>
+						<div className='fw-bold text-uppercase popup-section-label mt-3'><i className='bi bi-toggles' />Options</div>
 
 					<div className='d-flex justify-content-between align-items-center mt-2'>
 						<label className='text-body-secondary setting-toggle-label' htmlFor='upcomingToggle'><i className='bi bi-calendar-event me-1 text-primary' />Show upcoming games</label>
@@ -132,7 +132,7 @@ const setupView = ({
 						</div>
 					</div>
 
-					<div className='popup-section-label mt-3'><i className='bi bi-broadcast' />Standby Stream</div>
+						<div className='fw-bold text-uppercase popup-section-label mt-3'><i className='bi bi-broadcast' />Standby Stream</div>
 
 					<div className='d-flex justify-content-between align-items-center mt-2'>
 						<label className='text-body-secondary setting-toggle-label' htmlFor='standbyStreamToggle'><i className='bi bi-broadcast me-1 text-primary' />Enable Standby Stream</label>
