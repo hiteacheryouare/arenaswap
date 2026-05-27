@@ -152,7 +152,7 @@ export const gameMeta = ({ game, dark }: { game: Game; dark?: boolean }) => {
 			{game.venueName && <div className='text-center game-meta-venue'>{game.venueName}</div>}
 			{networks && (
 				<div className='text-center game-meta-networks'>
-					Watch: {networks}
+					<span className='font-bold'>Watch:</span> {networks}
 				</div>
 			)}
 			{odds && <div className='d-flex align-items-center justify-content-center game-meta-odds'><span>{odds}</span></div>}
