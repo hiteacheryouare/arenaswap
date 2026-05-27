@@ -88,7 +88,13 @@ const normalizeTeamColor = (primary?: string, alternate?: string): string | unde
 
 interface EspnLeagueLogo {
 	href?: string;
+	rel?: string[];
 }
+
+// ESPN returns multiple logo variants; prefer the "dark" one (light-colored, for dark UIs).
+const pickLeagueLogo = (logos?: EspnLeagueLogo[]): string | undefined => (
+	logos?.find(l => l.rel?.includes('dark') && l.href)?.href ?? logos?.[0]?.href
+);
 
 interface EspnLeague {
 	id?: string;
@@ -342,7 +348,7 @@ const fetchLeagueGames = async (config: LeagueConfig, options: { includeUpcoming
 
 	if (!includeUpcoming) {
 		const todayResult = await fetchScoreboard(baseUrl, config.id);
-		const espnLogo = todayResult?.leagues?.[0]?.logos?.[0]?.href;
+		const espnLogo = pickLeagueLogo(todayResult?.leagues?.[0]?.logos);
 		const logoUrl = resolveLeagueLogoUrl(config.id, espnLogo);
 		const parsedGames = (todayResult?.events ?? [])
 			.map(event => parseEvent(event, config.id))
@@ -367,8 +373,8 @@ const fetchLeagueGames = async (config: LeagueConfig, options: { includeUpcoming
 
 	const todayData = todayResult.status === 'fulfilled' ? todayResult.value : undefined;
 	const upcomingData = upcomingResult.status === 'fulfilled' ? upcomingResult.value : undefined;
-	const espnLogo = todayData?.leagues?.[0]?.logos?.[0]?.href
-		?? upcomingData?.leagues?.[0]?.logos?.[0]?.href;
+	const espnLogo = pickLeagueLogo(todayData?.leagues?.[0]?.logos)
+		?? pickLeagueLogo(upcomingData?.leagues?.[0]?.logos);
 	const logoUrl = resolveLeagueLogoUrl(config.id, espnLogo);
 
 	const seenIds = new Set<string>();
@@ -421,8 +427,8 @@ export const fetchLiveGames = async (enabledLeagues: LeagueId[]): Promise<Game[]
 	return games.filter(g => g.status === 'in');
 };
 
-export const fetchLeagueLogos = async (enabledLeagues: LeagueId[]): Promise<LeagueLogoMap> => {
-	const { leagueLogos } = await fetchGamesWithLeagueLogos(enabledLeagues);
+export const fetchLeagueLogos = async (enabledLeagues: LeagueId[], options: { includeUpcoming?: boolean } = {}): Promise<LeagueLogoMap> => {
+	const { leagueLogos } = await fetchGamesWithLeagueLogos(enabledLeagues, options);
 	return leagueLogos;
 };
 

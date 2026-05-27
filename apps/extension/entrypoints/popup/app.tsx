@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import useSWR from 'swr';
-import { createDefaultUserPreferences, createFavoriteTeamKey, normalizeUserPreferences } from '@arenaswap/core/constants';
-import type { LeagueId, SportType, TabRegistration, UserPreferences } from '@arenaswap/core/types';
+import { fetchLeagueLogos } from '@arenaswap/core';
+import { allLeagueIds, createDefaultUserPreferences, createFavoriteTeamKey, normalizeUserPreferences } from '@arenaswap/core/constants';
+import type { LeagueId, LeagueLogoMap, SportType, TabRegistration, UserPreferences } from '@arenaswap/core/types';
 import type { Browser } from 'wxt/browser';
 import GameDetailView from './components/gameDetailView';
 import MainView from './components/mainView';
@@ -31,6 +32,7 @@ const app = () => {
 	const [standbyOnboardingDone, setStandbyOnboardingDone] = useState(false);
 	const [standbyStreamTabId, setStandbyStreamTabId] = useState<number | null>(null);
 	const [settled, setSettled] = useState(false);
+	const [allLeagueLogoCache, setAllLeagueLogoCache] = useState<LeagueLogoMap>({});
 	const settledRef = useRef(false);
 	const prefsSyncRef = useRef<Promise<void>>(Promise.resolve());
 	const { toasts, showToast, dismissToast } = useToast();
@@ -45,9 +47,22 @@ const app = () => {
 		revalidateIfStale: false,
 	});
 
+	// Pre-fetch logos for every league once on popup open so the onboarding and
+	// settings pickers always show logos, not just for currently-enabled leagues.
+	// includeUpcoming:false keeps this to one ESPN call per league.
+	useEffect(() => {
+		void fetchLeagueLogos(allLeagueIds, { includeUpcoming: false })
+			.then(logos => setAllLeagueLogoCache(logos))
+			.catch(() => {});
+	}, []);
+
 	const games = data?.games ?? [];
 	const scores = data?.scores ?? [];
-	const leagueLogos = data?.leagueLogos ?? {};
+	// Enabled-league logos (from background state) take priority; cache fills the gaps.
+	const leagueLogos = useMemo<LeagueLogoMap>(
+		() => ({ ...allLeagueLogoCache, ...(data?.leagueLogos ?? {}) }),
+		[allLeagueLogoCache, data?.leagueLogos]
+	);
 	const scoreHistory = data?.scoreHistory ?? {};
 	const powerScoreHistory = data?.powerScoreHistory ?? {};
 	const gameBoosts = data?.gameBoosts ?? {};

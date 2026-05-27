@@ -69,13 +69,13 @@ export const leagueLogoFallbacks: Record<LeagueId, string> = {
 	ncaab: 'https://a.espncdn.com/redesign/assets/img/icons/ESPN-icon-basketball.png',
 	ncaaw: 'https://a.espncdn.com/redesign/assets/img/icons/ESPN-icon-basketball.png',
 	nhl: 'https://a.espncdn.com/i/teamlogos/leagues/500/nhl.png',
-	ncaamh: 'https://a.espncdn.com/i/teamlogos/leagues/500/nhl.png',
+	ncaamh: 'https://a.espncdn.com/redesign/assets/img/icons/ESPN-icon-hockey.png',
 	mlb: 'https://a.espncdn.com/i/teamlogos/leagues/500/mlb.png',
 	nfl: 'https://a.espncdn.com/i/teamlogos/leagues/500/nfl.png',
 	ncaaf: 'https://a.espncdn.com/redesign/assets/img/icons/ESPN-icon-football-college.png',
 	mls: 'https://a.espncdn.com/i/teamlogos/leagues/500/mls.png',
-	epl: 'https://a.espncdn.com/i/teamlogos/soccer/500/eng.1.png',
-	fifawc: 'https://a.espncdn.com/i/teamlogos/soccer/500/fifa.world.png',
+	epl: 'https://a.espncdn.com/i/leaguelogos/soccer/500-dark/23.png',
+	fifawc: 'https://a.espncdn.com/i/leaguelogos/soccer/500-dark/4.png',
 };
 
 export const resolveLeagueLogoUrl = (leagueId: LeagueId, espnLogoUrl?: string): string => (
