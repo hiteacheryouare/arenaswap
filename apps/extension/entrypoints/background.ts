@@ -461,10 +461,13 @@ export default defineBackground(() => {
 
 		// Reschedule before awaiting post-processing so the next tick is always queued.
 		// On error fall back to eager interval so we retry promptly.
-		const nextInterval = fetchSucceeded && pollModeTracker.getMode(leagueId) === 'dormant'
-			? pollDormantMinMs + randomInRange(0, pollDormantMaxMs - pollDormantMinMs)
-			: pollIntervalMs + randomInRange(-2_000, 2_000);
-		scheduleLeagueTick(leagueId, nextInterval);
+		// Guard against rescheduling a league that was disabled while this fetch was in flight.
+		if (!demoMode && prefs.enabledLeagues.includes(leagueId)) {
+			const nextInterval = fetchSucceeded && pollModeTracker.getMode(leagueId) === 'dormant'
+				? pollDormantMinMs + randomInRange(0, pollDormantMaxMs - pollDormantMinMs)
+				: pollIntervalMs + randomInRange(-2_000, 2_000);
+			scheduleLeagueTick(leagueId, nextInterval);
+		}
 
 		await afterFetch(leagueId, allowTabSwitch);
 	};
@@ -537,6 +540,12 @@ export default defineBackground(() => {
 				// Upcoming games load in the background and arrive via SCORES_UPDATED push.
 				return stateReady
 					.then(async () => {
+						// Re-sync prefs from storage in case popup wrote prefs but closed before
+						// the UPDATE_PREFS message was delivered.
+						try {
+							const stored = await browser.storage.sync.get({ prefs: null });
+							prefs = normalizeUserPreferences(stored.prefs);
+						} catch { /* keep current in-memory prefs */ }
 						await refreshScores(false);
 						return buildBackgroundState();
 					});
@@ -545,9 +554,11 @@ export default defineBackground(() => {
 		}
 		if (msg.type === 'UPDATE_PREFS') {
 			return stateReady.then(async () => {
+				const wasEnabled = prefs.enabled;
 				const prevShowUpcoming = prefs.showUpcomingGames;
 				const prevLeagues = new Set(prefs.enabledLeagues);
 				prefs = normalizeUserPreferences(msg.prefs);
+				if (wasEnabled && !prefs.enabled) lastSwitchTime = 0;
 				clearPendingSwitch();
 				await browser.storage.sync.set({ prefs });
 				await syncManagedTabMuteState(prefs.enabled);

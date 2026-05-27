@@ -113,7 +113,7 @@ export const getRandomLoadingMessage = (): string => (
 	loadingMessages[Math.floor(Math.random() * loadingMessages.length)] ?? ''
 );
 export const leaguesBySportType = leagueConfigs.reduce<Record<SportType, typeof leagueConfigs>>((groups, config) => {
-	groups[config.sportType].push(config);
+	if (config.sportType in groups) groups[config.sportType].push(config);
 	return groups;
 }, {
 	basketball: [],

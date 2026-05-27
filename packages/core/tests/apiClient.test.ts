@@ -393,7 +393,7 @@ describe('apiClient', () => {
 		(fallbackHome.team as Record<string, unknown>).color = 'not-a-color';
 		(fallbackHome.team as Record<string, unknown>).alternateColor = 'still-not-a-color';
 		(fallbackAway.team as Record<string, unknown>).color = '112233';
-		(fallbackAway.team as Record<string, unknown>).alternateColor = 'bad';
+		(fallbackAway.team as Record<string, unknown>).alternateColor = 'still-not-a-color';
 		fallbackCompetition.odds = [{ details: '   ', overUnder: 'NaN' }];
 
 		const oddsVariants = makeEvent({
