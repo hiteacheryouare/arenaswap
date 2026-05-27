@@ -142,6 +142,24 @@ export const buildFavoritePinnedComparator = (
 	return (scoreByGameId.get(b.id) ?? 0) - (scoreByGameId.get(a.id) ?? 0);
 };
 
+export const buildUpcomingComparator = (
+	favoriteTeamIds: Set<string>,
+	scoreByGameId: Map<string, number>,
+) => {
+	const fallbackSort = buildFavoritePinnedComparator(favoriteTeamIds, scoreByGameId);
+	const dayStart = (game: Game): number => {
+		if (!game.startTime) return Number.POSITIVE_INFINITY;
+		const date = new Date(game.startTime);
+		return new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+	};
+	return (a: Game, b: Game): number => {
+		const aDay = dayStart(a);
+		const bDay = dayStart(b);
+		if (aDay !== bDay) return aDay - bDay;
+		return fallbackSort(a, b);
+	};
+};
+
 const formatDateLabel = (dateStr: string): string => {
 	const today = new Date();
 	const tomorrow = new Date(today);

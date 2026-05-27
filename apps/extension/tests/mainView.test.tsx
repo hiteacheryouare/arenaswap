@@ -29,11 +29,16 @@ const defaultPrefs: UserPreferences = {
 	standbyStreamThreshold: 20,
 };
 
-const makeGame = (id: string, status: 'in' | 'pre' | 'post' = 'in') => ({
+const makeGame = (
+	id: string,
+	status: 'in' | 'pre' | 'post' = 'in',
+	overrides: Partial<{ league: 'nba' | 'wnba'; startTime: string }> = {},
+) => ({
 	id,
 	status,
-	league: 'nba' as const,
+	league: overrides.league ?? ('nba' as const),
 	sportType: 'basketball' as const,
+	startTime: overrides.startTime,
 	period: 2,
 	clockSeconds: 300,
 	homeTeam: { id: 'h', name: 'Home', abbreviation: 'HOM', score: 50 },
@@ -113,5 +118,14 @@ describe('mainView game sections', () => {
 		const upcomingGame = makeGame('upcoming-1', 'pre');
 		render(<MainView {...defaultProps} prefs={prefs} games={[upcomingGame]} />);
 		expect(screen.queryByTestId('game-card-upcoming-1')).not.toBeInTheDocument();
+	});
+
+	test('sorts upcoming games by day before league priority', () => {
+		const todayGame = makeGame('today-wnba', 'pre', { league: 'wnba', startTime: '2026-05-27T23:00:00.000Z' });
+		const tomorrowGame = makeGame('tomorrow-nba', 'pre', { league: 'nba', startTime: '2026-05-28T20:30:00.000Z' });
+		render(<MainView {...defaultProps} games={[tomorrowGame, todayGame]} />);
+		const cards = screen.getAllByTestId(/game-card-/);
+		expect(cards[0]).toHaveAttribute('data-testid', 'game-card-today-wnba');
+		expect(cards[1]).toHaveAttribute('data-testid', 'game-card-tomorrow-nba');
 	});
 });

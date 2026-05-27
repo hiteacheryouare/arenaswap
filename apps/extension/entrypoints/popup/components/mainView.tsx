@@ -14,7 +14,7 @@ import PopupFooter from './popupFooter';
 import ProTip from './proTip';
 import EmptyGameState from './emptyGameState';
 import GameListHeader from './gameListHeader';
-import { buildFavoritePinnedComparator, getRandomLoadingMessage, groupByDate, groupByLeague, leagueLabels } from '../popupHelpers';
+import { buildFavoritePinnedComparator, buildUpcomingComparator, getRandomLoadingMessage, groupByDate, groupByLeague, leagueLabels } from '../popupHelpers';
 
 interface gameSectionProps {
 	title: string;
@@ -172,11 +172,15 @@ const mainView = ({
 		() => buildFavoritePinnedComparator(favoriteTeamIds, scoreByGameId),
 		[favoriteTeamIds, scoreByGameId],
 	);
+	const sortUpcomingGames = useMemo(
+		() => buildUpcomingComparator(favoriteTeamIds, scoreByGameId),
+		[favoriteTeamIds, scoreByGameId],
+	);
 	const liveGames = games.filter(g => g.status === 'in');
 	const upcomingGames = games
 		.filter(g => g.status === 'pre')
 		.filter(g => !g.startTime || new Date(g.startTime).getTime() <= oneWeekFromNow)
-		.sort(sortGames);
+		.sort(sortUpcomingGames);
 
 	const registeredGameIds = new Set(registry.map(r => r.gameId));
 	const assignedLiveGames = liveGames.filter(g => registeredGameIds.has(g.id)).sort(sortGames);
