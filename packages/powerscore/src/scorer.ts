@@ -67,13 +67,17 @@ const getClosenessUnit = (game: Game): string => (
 	scorerTunables.reasons.closenessUnitBySportType[game.sportType] ?? scorerTunables.reasons.defaultClosenessUnit
 );
 
+const shouldScoreZeroZeroAsFullTie = (game: Game, config: SportTypeConfig): boolean => (
+	config.zeroZeroAsFullTie && config.zeroZeroPenaltyPeriods?.includes(game.period) !== true
+);
+
 const getCloseness = (game: Game, config: SportTypeConfig): Signal => {
 	const { scores, reasons } = scorerTunables;
 	const [t1, t2, t3] = config.closenessMargins;
 	const margin = Math.abs(game.homeTeam.score - game.awayTeam.score);
 	if (game.homeTeam.score === 0 && game.awayTeam.score === 0)
 		// reason string intentionally reuses 'tied' — UI label is the same
-		return { score: config.zeroZeroAsFullTie ? scores.closeness.tied : scores.closeness.zeroZero, reason: reasons.tied };
+		return { score: shouldScoreZeroZeroAsFullTie(game, config) ? scores.closeness.tied : scores.closeness.zeroZero, reason: reasons.tied };
 	if (margin === 0) return { score: scores.closeness.tied, reason: reasons.tied };
 	if (margin <= t1) return { score: scores.closeness.tight, reason: `${margin}-${getClosenessUnit(game)} ${reasons.closenessGameSuffix}` };
 	if (margin <= t2) return { score: scores.closeness.close, reason: `${margin}-${getClosenessUnit(game)} ${reasons.closenessGameSuffix}` };

@@ -155,8 +155,10 @@ export interface SportTypeConfig {
 	momentumSmallRun: number;
 	/** true when ESPN reports elapsed time (counts up), e.g. soccer; false = countdown */
 	clockCountsUp: boolean;
-	/** if true, 0-0 scores the same as any other tied game (appropriate for soccer/hockey) */
+	/** if true, 0-0 scores the same as any other tied game outside configured penalty periods */
 	zeroZeroAsFullTie: boolean;
+	/** regulation periods where 0-0 should use reduced tie credit */
+	zeroZeroPenaltyPeriods?: number[];
 	/** Score-margin shrinkage (in the history window) that triggers a big comeback score */
 	comebackThresholdBig: number;
 	/** Score-margin shrinkage (in the history window) that triggers a moderate comeback score */

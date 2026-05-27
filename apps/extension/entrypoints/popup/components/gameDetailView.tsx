@@ -73,7 +73,8 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 
 	const sportConfig = sportTypeConfigMap[game.sportType];
 	const isZeroZeroGame = game.homeTeam.score === 0 && game.awayTeam.score === 0;
-	const zeroZeroPenalty = isZeroZeroGame && !sportConfig.zeroZeroAsFullTie
+	const hasZeroZeroPenalty = !sportConfig.zeroZeroAsFullTie || sportConfig.zeroZeroPenaltyPeriods?.includes(game.period) === true;
+	const zeroZeroPenalty = isZeroZeroGame && hasZeroZeroPenalty
 		? scorerTunables.scores.closeness.tied - scorerTunables.scores.closeness.zeroZero
 		: 0;
 
