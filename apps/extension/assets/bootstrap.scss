@@ -699,6 +699,9 @@ $pre-game-time-color: shade-color($warning, 60%);
 	overflow-wrap: anywhere;
 	word-break: break-word;
 	line-height: 1.2;
+	span {
+		font-weight: 700;
+	}
 }
 
 .game-meta-odds {
