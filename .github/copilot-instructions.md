@@ -1,202 +1,284 @@
-# Coding Agent Instructions
+# ArenaSwap Agent Instructions
 
-## Project Context
-This is ArenaSwap (stylized in logos as "arenaswap."), a web browser extension that automatically switches your tabs so you are always watching the most exciting sporting events.
+BEFORE YOU READ, PLEASE ALSO READ @.agents/GLOBAL_AGENTS.md FOR MORE GENERAL, ALWAYS ACTIVE DEVELOPMENT PHILOSOPHIES AND PREFERENCES.
 
-It is contained in a monorepo managed by TurboRepo.
+## 🧠 Project Overview
+ArenaSwap is a browser extension that automatically switches tabs to the most exciting live sports game.
 
-## Quick Overview
+Think NFL RedZone, but across all sports.
 
-- **Language/frameworks**: WXT Extension + React + TypeScript
-- **Bundler**: WXT
-- **UI**: Tailwind + Bootstrap (some customized theme files)
-- **Insults/data**: provided by the ESPN scoreboard API
+Core idea:
+- Monitor multiple live games
+- Score them using the PowerScore algorithm
+- Automatically surface the most exciting one
 
+Target users:
+- Sports fans watching multiple games simultaneously
 
-## Language and Framework Rules
+---
 
-### Svelte Components
-- Use React Typescript as primary framework
-- TypeScript for all helper functions and complex components
-- Use JavaScript (not TypeScript) for simple components that:
-  - Don't use props
-  - Are highly reusable
-  - Don't need type safety
+## 🏗️ Architecture
 
-## Code Style Requirements
+### Monorepo (Turborepo)
+
+Root structure:
+- /apps
+	- /extension → actual browser extension (UI + runtime logic)
+- /packages
+	- /powerScore → scoring algorithm
+	- /core → core business logic
+
+### Tech Stack
+- React (primary UI framework)
+- JavaScript + TypeScript (hybrid rules below)
+- WXT (extension framework)
+- Tailwind (utility styling)
+- Bootstrap (structural components)
+- Jest (testing)
+- npm ONLY (no pnpm, yarn, bun)
+
+---
+
+## ⚙️ Language Rules
+
+### React + TS Usage
+- Use TypeScript for:
+	- Helper functions
+	- Complex components
+	- Business logic
+
+- Use JavaScript ONLY when:
+	- No props
+	- Highly reusable
+	- No need for type safety
+
+---
+
+## 🧩 Code Style (STRICT)
 
 ### Formatting
-- **Indentation**: TABS (not spaces)
-- **Line endings**: Windows (CRLF)
-- **Quotes**: Single quotes only `'like this'`
-- **Semicolons**: ALWAYS use semicolons;
-- **Line length**: No explicit limit, use common sense
+- Indentation: TABS
+- Line endings: CRLF (Windows)
+- Quotes: SINGLE quotes only
+- Semicolons: ALWAYS required
 
-### Naming Conventions
-- **Everything**: camelCase
-  - Variables: `myVariable`
-  - Functions: `myFunction`
-  - Constants: `myConstant` (NOT UPPER_SNAKE_CASE)
-  - Files: `myComponent.svelte` or `myComponent.ts`
+### Naming (GLOBAL)
+Use camelCase for code you author:
+- Variables → myVariable
+- Functions → myFunction
+- Constants → myConstant (NOT UPPERCASE)
+- Files → myComponent.ts / myComponent.jsx (default)
 
-### Function Declarations
-```javascript
-// ✅ CORRECT - Named anonymous arrow functions
-const myFunction = () => {
-	// function body
-};
+Practical exceptions (required):
+- Keep framework/tool-required filenames exactly as required (for example: package.json, package-lock.json, turbo.json, tsconfig*.json, wxt.config.ts).
+- Keep standards/integration-required filenames exactly as required (for example: AGENTS.md, CLAUDE.md, .github/copilot-instructions.md).
+- Never rename required entrypoint/config filenames just to force camelCase.
 
-// ✅ CORRECT - Anonymous default export
-export default () => {
-	// component body
-};
+---
 
-// ❌ WRONG - Never use explicit function declaration
-function myFunction() { } // NEVER DO THIS
+## 🔧 Function Rules (CRITICAL)
 
-// ❌ WRONG - Never name default exports
-export default function MyComponent() { } // NEVER DO THIS
+### ✅ Allowed
+```js
+const myFunction = () => {};
+export default () => {};
+
+❌ Forbidden
+
+function myFunction() {}                // NEVER
+export default function MyComp() {}    // NEVER
 ```
 
-### React Component Rules
-- File name = Component name
-- Maximum 200 lines per component
-- If longer, break into smaller components with props/slots
-- Move non-Svelte operations to `/src/utils` folder
-- Exception: Reactive statements and component-critical logic stay in component
-- Data for `.map()` blocks go in separate files
+⸻
 
-## Styling Rules
+## ⚛️ React Rules
+	•	File name MUST match component name
+	•	Max 200 lines per component
+	•	If >200 lines → split into smaller components
+	•	Move non-React logic OUT of components
+
+Exception:
+	•	Reactive/component-critical logic can stay
+
+⸻
+
+## 🎨 Styling Rules (MANDATORY)
 
 ### ⚠️ STYLING PRIORITY (CRITICAL — NO EXCEPTIONS)
 
-All UI MUST be styled in this strict priority order. Each step is a hard gate — you may only fall through after honestly exhausting the previous step.
+All UI MUST be styled in this exact order of preference. Treat each step as a hard gate: you may only fall through to the next step after honestly exhausting the previous one.
 
-1. **Customized Bootstrap prebuilt components** (FIRST CHOICE)
-   - Use Bootstrap's prebuilt components (modal, card, navbar, nav, form-select, btn, alert, spinner, etc.) for structure.
-   - Customize via the existing Bootstrap variable overrides in `bootstrap.scss` — do not write new SCSS to re-skin a component.
-2. **Tailwind utility classes** (SECOND CHOICE — used to modify the Bootstrap base)
-   - Layer Tailwind utilities on Bootstrap markup for spacing, color, typography, sizing, breakpoints, and dark mode.
-   - If a class doesn't exist as a single utility, **chain multiple Tailwind utilities together** before considering anything else. Long Tailwind chains are explicitly preferred over even a single line of raw SCSS.
-   - Use Tailwind arbitrary-value syntax (e.g. `text-[0.6rem]`, `w-[3.5rem]`) before custom SCSS classes.
-3. **Raw SCSS** (LAST RESORT — only when 1 and 2 are genuinely impossible)
-   - Only allowed for highly complex situations where Bootstrap + Tailwind cannot possibly express the result: keyframe animations, complex `@media (prefers-reduced-motion)` rules, deeply nested pseudo-element trees, font-face declarations, attribute selectors (`[data-foo='bar']`), sibling-combinator spacing, and **any rule that needs to override a property Bootstrap also sets on the same element** (see Tailwind v4 caveat below).
-   - Before writing SCSS, you MUST first attempt Tailwind chains. If you cannot articulate why Tailwind chains fail, do not write SCSS.
+	1.	**Customized Bootstrap prebuilt components** (FIRST CHOICE)
+		•	Use Bootstrap's prebuilt components (modal, card, navbar, nav, form-select, btn, alert, spinner, etc.) for structure.
+		•	Customize via the existing Bootstrap variable overrides in `bootstrap.scss` — DO NOT write new SCSS to re-skin a component.
+	2.	**Tailwind utility classes** (SECOND CHOICE — used to modify the Bootstrap base)
+		•	Layer Tailwind utilities on top of Bootstrap markup to handle spacing, color, typography, sizing, responsive breakpoints, and dark mode.
+		•	If a class doesn't exist as a single utility, CHAIN multiple Tailwind utilities together before considering anything else. Long Tailwind chains are explicitly preferred over even one line of raw SCSS.
+		•	Use `text-[0.6rem]`, `w-[3.5rem]`, etc. for arbitrary values — Tailwind v4 supports arbitrary values inline; reach for these before custom SCSS classes.
+	3.	**Raw SCSS** (LAST RESORT — only when 1 and 2 are genuinely impossible)
+		•	Only allowed for highly complex situations a combination of Bootstrap + Tailwind cannot possibly express: keyframe animations, complex `@media (prefers-reduced-motion)` rules, deeply nested pseudo-element trees, font-face declarations, attribute selectors (`[data-foo='bar']`), sibling-combinator spacing, and **any rule that needs to override a property Bootstrap also sets on the same element** (see Tailwind v4 caveat below).
+		•	Before writing SCSS, you MUST first attempt Tailwind chains. If you cannot articulate why Tailwind chains fail, do not write SCSS.
 
-**⚠️ Tailwind v4 + Bootstrap cascade caveat (READ THIS):** Tailwind v4 emits utilities inside `@layer utilities`, while Bootstrap's rules are unlayered. **Unlayered rules always beat layered rules in CSS regardless of source order**, so a Tailwind utility CANNOT override a property Bootstrap sets on the same element (color on `.btn`/`.btn-link`/spinners, font-size on `.btn-sm`, etc.). Tailwind utilities still work for properties Bootstrap doesn't touch (spacing, layout, custom colors on non-Bootstrap elements). When overriding a Bootstrap-set property, fall through to **SCSS as a step-2 fallback**, not step-3 — this is the documented exception.
+**⚠️ Tailwind v4 + Bootstrap cascade caveat (READ THIS):** Tailwind v4 emits its utilities inside `@layer utilities`, while Bootstrap's rules are unlayered. **Unlayered rules always beat layered rules in CSS regardless of source order**, so a Tailwind utility CANNOT override a property Bootstrap sets on the same element (color on `.btn`/`.btn-link`/spinners, font-size on `.btn-sm`, etc.). Tailwind utilities still work for properties Bootstrap doesn't touch (spacing, layout, custom colors on non-Bootstrap elements). When you need to override a Bootstrap-set property, fall through to **SCSS as a step-2 fallback**, not step-3 — this is the documented exception.
 
-**Any deviation from this priority is an antipattern that must always be avoided.** Reject PRs that introduce SCSS classes which could have been Tailwind utilities, or custom SCSS skins of Bootstrap components.
+**Any deviation from this priority is an antipattern that must always be avoided.** Reviewers should reject PRs that introduce SCSS classes that could have been Tailwind utilities, or custom SCSS skins of Bootstrap components.
 
 ### Other Styling Rules
-1. **Never write raw .css** for application styles - Exception: Bootstrap/Tailwind overrides in `.scss`
-2. **Use .scss files** (not .sass) - Only for global styles, font-face, keyframes, or the Bootstrap import/override layer
-3. **Dark mode**: Include Tailwind dark mode classes for everything
 
+Forbidden
+	•	No raw CSS files (.css) for application styles
+	•	No external UI libraries:
+	•	No shadcn
+	•	No MUI
+	•	No Chakra
+	•	No HeadlessUI
 
-## What You Should NEVER Suggest
+SCSS
+	•	Only .scss allowed (never .sass)
+	•	Only for global styles, font-face, keyframe animations, or the Bootstrap import/override layer
 
-### Absolute Prohibitions
-1. **NO testing libraries** - We test manually only
-2. **NO external UI libraries** - Only Bootstrap and Tailwind
-   - No shadcn/ui
-   - No headlessui
-   - No Material-UI
-   - No Chakra UI
-   - No other component libraries
-3. **NO explicit function declarations** - Always use arrow functions
-4. **NO `var` keyword** - **Exception**: Single-use variables without hoisting issues
-5. **NO .sass files** - Use .scss instead
-6. **NO mainstream conventions just because they're popular**
-7. **NO magic** - codemods and random naming conventions that do crazy things just because they are named a certain way should be avoided at all costs. All things should be explicit and easy to understand.
+Dark Mode
+	•	ALWAYS include Tailwind dark: variants
 
-### Error Handling
-When errors occur:
-1. Git revert to last working version
-2. Try a different approach
-3. Don't overcomplicate error handling
+⸻
 
-### Comments
-- Only comment complex/unreadable code with esoteric operators
-- No unnecessary comments for simple code
-- No JSDoc unless absolutely needed
+## 📦 Dependency Management (STRICT)
 
-## 📦 Dependency & Environment Management
+Philosophy: Local-first
 
-**Local-First, Project-Scoped Everything**
-- Every project should have its own isolated dependency environment
-- No global installations unless absolutely unavoidable
-- Dependencies should live in the project directory where you can see and delete them
-- Reproducibility > convenience
+MUST:
+	•	All dependencies installed locally via npm
+	•	No global installs
+	•	Everything removable via deleting project folder
 
-**Preferred Patterns:**
-- ✅ npm with local node_modules
-- ✅ uv for Python (project-scoped virtual environments)
-- ✅ Local package installation that you can `rm -rf` when things break
+FORBIDDEN:
+	•	CDN imports
+	•	URL imports
+	•	Remote-coupled dependencies
 
-**Rejected Patterns:**
-- ❌ CDN imports (looking at you, `<script src="https://cdn..."`)
-- ❌ URL-based package imports (Deno's import maps)
-- ❌ Globally-scoped package managers (pip's default behavior)
-- ❌ Forced remote coupling (Go's GitHub requirement)
+Lazy Loading (IMPORTANT)
+	•	Use:
 
-**Why:**
-- If your internet dies, your project should still work
-- If a CDN goes down, your site shouldn't break
-- If you delete a project folder, all traces should vanish with it
-- Dependencies should be *tangible things you can inspect*, not abstract remote references
+const module = await import('module');
 
-**Golden Rule:**
-If I can't `cd` into it, `ls` it, and `rm -rf` it, I don't trust it.
+	•	Apply to:
+	•	Non-critical dependencies
+	•	Heavy modules
+	•	DO NOT lazy load:
+	•	Entry points
+	•	Critical runtime logic
 
-## Git Commit Style
+⸻
 
-### Commit Title
-- Keep it terse and not overly descriptive
-- General idea of changes
-- Add emoji if it's funny and enhances comedic value 🦒
+## 🔌 Data Fetching
+	•	Prefer native fetch
+	•	SWR allowed (ONLY advanced case)
+	•	No heavy data libraries
 
-### Commit Message Body
-- Be VERY detailed and longwinded
-- Overexplain everything
-- Reference:
-  - Other contributors
-  - Bots
-  - PRs (#123)
-  - Issues
-  - Files changed
-  - Related commits
+⸻
 
-Example:
-```
-🦔 Fixed navbar thing
+## 🧠 AI Behavior Rules (CRITICAL)
 
-So I was working on the navbar and noticed that when you clicked the hamburger menu on mobile, it wasn't closing properly when you navigated to a new page. This was happening because the state wasn't being reset properly in Svelte's reactive statements. I talked to @dependabot about updating our Svelte version but decided against it. This relates to PR #42 and fixes issue #38.
+### General Philosophy
+	•	Be pragmatic
+	•	Avoid overengineering
+	•	Prefer clarity over cleverness
+	•	Avoid “magic” abstractions
 
-Changed files:
-- /src/components/Navbar.svelte - Added proper cleanup with onDestroy
-- /src/utils/navbarHelpers.ts - Refactored the toggle logic to be more reusable
+⸻
 
-Also while I was in there I noticed the dark mode wasn't applying to the dropdown items so I added the appropriate Tailwind classes. Bootstrap was handling most of it but needed the extra dark: modifiers for the text color.
+### MUST DO
+	•	Use arrow functions ALWAYS
+	•	Keep logic explicit
+	•	Follow existing patterns in repo
+	•	Minimize dependencies
+	•	Keep components small and modular
 
-This should work with the deployment pipeline we set up in the GitHub Actions workflow.
-```
+⸻
 
-## Data Fetching
-- Use SWR
+### MUST NOT DO
+	•	Introduce new UI libraries
+	•	Use function declarations
+	•	Add unnecessary abstractions
+	•	Follow conventions blindly
+	•	Generate “magic” code based on naming tricks
 
-## Philosophy
-- Pragmatic solutions over dogmatic adherence to "best practices"
-- Avoid bikeshedding at all costs
-- Conventions are guidelines, not laws
-- Keep things simple and working
-- If mainstream conventions conflict with these rules, ignore the conventions
+⸻
 
-## Remember
-When in doubt:
-1. Use arrow functions
-2. Use Bootstrap components + Tailwind utilities
-3. Keep components under 200 lines
-4. Don't overthink it
-5. Giraffes and hedgehogs are cool 🦒🦔
+## 🚫 Anti-Patterns
+
+Avoid:
+	•	Overly abstract architectures
+	•	Premature optimization
+	•	Deep nesting
+	•	Over-commenting simple code
+	•	“Smart” code that reduces readability
+
+⸻
+
+## 💬 Comments
+	•	ONLY explain complex or non-obvious logic
+	•	NO comments for obvious code
+	•	NO JSDoc unless absolutely necessary
+
+⸻
+
+## ❗ Error Handling Strategy
+
+When something breaks:
+	1.	Revert to last working state
+	2.	Try a different approach
+	3.	Keep solutions simple
+
+Do NOT:
+	•	Add complex defensive layers
+	•	Overengineer fixes
+
+⸻
+
+## 🧪 Testing
+	•	Use Jest
+	•	Keep tests simple and focused
+
+⸻
+
+## 🧾 Git Commit Rules
+
+Commit Title
+	•	Short
+	•	Slightly descriptive
+	•	Emoji allowed if funny
+
+Commit Body (VERY IMPORTANT)
+	•	Extremely detailed
+	•	Overexplain everything
+	•	Include:
+	•	Files changed
+	•	Why change was made
+	•	Related issues/PRs
+	•	Side effects
+
+⸻
+
+## ⚡ Decision Framework (When Unsure)
+
+Default to:
+	1.	Arrow functions
+	2.	Simpler implementation
+	3.	Fewer dependencies
+	4.	Explicit logic
+	5.	Smaller components
+
+⸻
+
+## 🧠 Core Principle
+
+If it feels overengineered, it probably is.
+
+⸻
+
+## 🦒 Misc
+
+Giraffes and hedgehogs are cool.
 
 ---
