@@ -2,6 +2,11 @@ import { randomInRange } from '@porkyproductions/hat';
 import { fetchGamesWithLeagueLogos, computePowerScore, normalizePowerScoreResult, MockGameSimulator, createPollModeTracker, isObjectRecord, isFiniteNumber, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts } from '@arenaswap/core';
 import { computeStandbyStreamDecision } from '../utils/standbyStreamLogic';
 import {
+	normalizeReviewPromptState,
+	recordSuccessfulReviewPromptSwitch,
+	reviewPromptStorageKey,
+} from '../utils/reviewPrompt';
+import {
 	createDefaultUserPreferences,
 	createFavoriteTeamKey,
 	leagueLogoFallbacks,
@@ -53,6 +58,18 @@ export default defineBackground(() => {
 	let standbyStreamTabId: number | null = null;
 	let onStandbyStream = false;
 	const historyStorageDefaults = { scoreHistory: {}, powerScoreHistory: {}, gameBoosts: {} };
+
+	const recordSuccessfulSwitchForReviewPrompt = async (switchedAt: number) => {
+		try {
+			const stored = await browser.storage.local.get({ [reviewPromptStorageKey]: null });
+			const current = normalizeReviewPromptState(stored[reviewPromptStorageKey]);
+			await browser.storage.local.set({
+				[reviewPromptStorageKey]: recordSuccessfulReviewPromptSwitch(current, switchedAt),
+			});
+		} catch (err) {
+			console.error('ArenaSwap: Failed to update review prompt state:', err);
+		}
+	};
 
 	const hydrateHistoryMaps = (storedScoreHistory: unknown, storedPowerScoreHistory: unknown) => {
 		history.clear();
@@ -234,6 +251,7 @@ export default defineBackground(() => {
 		await browser.tabs.update(tabId, { active: true });
 		lastSwitchTime = Date.now();
 		await syncManagedTabMuteState(true);
+		if (gameId) await recordSuccessfulSwitchForReviewPrompt(lastSwitchTime);
 
 		if (prefs.notificationsEnabled) {
 			if (!gameId) {

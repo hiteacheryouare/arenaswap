@@ -14,6 +14,7 @@ import PopupFooter from './popupFooter';
 import ProTip from './proTip';
 import EmptyGameState from './emptyGameState';
 import GameListHeader from './gameListHeader';
+import ReviewPromptBanner from './reviewPromptBanner';
 import { buildFavoritePinnedComparator, buildUpcomingComparator, getRandomLoadingMessage, groupByDate, groupByLeague, leagueLabels } from '../popupHelpers';
 
 interface gameSectionProps {
@@ -67,7 +68,10 @@ interface mainViewProps {
 	onOpenGameDetail: (gameId: string) => void;
 	onOpenSetup: () => void;
 	onRefresh: () => void;
+	showReviewPrompt: boolean;
 	onToggleEnabled: () => void;
+	onDismissReviewPrompt: () => void;
+	onLeaveReview: () => void;
 	onToggleFavoriteTeam: (leagueId: LeagueId, teamId: string) => void;
 	onRegistryChange: (updated: TabRegistration[]) => void;
 	formatTabLabel: (tab: Browser.tabs.Tab) => string;
@@ -159,7 +163,10 @@ const mainView = ({
 	onOpenGameDetail,
 	onOpenSetup,
 	onRefresh,
+	showReviewPrompt,
 	onToggleEnabled,
+	onDismissReviewPrompt,
+	onLeaveReview,
 	onToggleFavoriteTeam,
 	onRegistryChange,
 	formatTabLabel,
@@ -204,6 +211,10 @@ const mainView = ({
 			</div>
 
 			<GameListHeader isLoading={isLoading} hasError={hasError} loadingMessage={loadingMessage} onRefresh={onRefresh} />
+
+			{showReviewPrompt && (
+				<ReviewPromptBanner onDismiss={onDismissReviewPrompt} onLeaveReview={onLeaveReview} />
+			)}
 
 			{onStandbyStream && (
 				<div className='d-flex align-items-center gap-2 px-2 py-1 mb-1 rounded text-body-secondary small bg-body-secondary'>

@@ -4,6 +4,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 declare const browser: {
 	runtime: {
+		id: string;
 		sendMessage: (...args: unknown[]) => Promise<any>;
 		onMessage: {
 			addListener: (listener: (msg: any) => any) => void;
@@ -25,6 +26,7 @@ declare const browser: {
 		};
 	};
 	tabs: {
+		create: (createProperties: unknown) => Promise<any>;
 		query: (queryInfo: unknown) => Promise<{ id?: number; title?: string; url?: string }[]>;
 		update: (tabId: number, updateProperties: unknown) => Promise<any>;
 		onActivated: {

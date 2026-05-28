@@ -23,6 +23,8 @@ const drain = async (rounds = 8) => {
 let fetchMock: jest.Mock;
 let storageSyncGet: jest.Mock;
 let storageSyncSet: jest.Mock;
+let storageLocalGet: jest.Mock;
+let storageLocalSet: jest.Mock;
 let tabsQuery: jest.Mock;
 let tabsUpdate: jest.Mock;
 let onMessageHandler!: (msg: unknown) => unknown;
@@ -54,6 +56,8 @@ const loadBackground = async (options: LoadOptions = {}) => {
 
 	storageSyncGet = jest.fn().mockResolvedValue({ prefs });
 	storageSyncSet = jest.fn().mockResolvedValue(undefined);
+	storageLocalGet = jest.fn().mockResolvedValue({ demoMode: false, reviewPromptState: null });
+	storageLocalSet = jest.fn().mockResolvedValue(undefined);
 	tabsQuery = jest.fn().mockResolvedValue([]);
 	tabsUpdate = jest.fn().mockResolvedValue(undefined);
 
@@ -72,8 +76,8 @@ const loadBackground = async (options: LoadOptions = {}) => {
 				set: jest.fn().mockResolvedValue(undefined),
 			},
 			local: {
-				get: jest.fn().mockResolvedValue({ demoMode: false }),
-				set: jest.fn().mockResolvedValue(undefined),
+				get: storageLocalGet,
+				set: storageLocalSet,
 			},
 		},
 		runtime: {
@@ -220,6 +224,14 @@ describe('lastSwitchTime reset on disable', () => {
 		await drain(12);
 		// Switch should have fired; lastSwitchTime is now T0 = 1_000_000
 		expect(tabsUpdate).toHaveBeenCalledWith(2, { active: true });
+		expect(storageLocalSet).toHaveBeenCalledWith({
+			reviewPromptState: {
+				successfulSwitchCount: 1,
+				firstSuccessfulSwitchAt: expect.any(Number),
+				dismissedAt: null,
+				reviewedAt: null,
+			},
+		});
 
 		tabsUpdate.mockClear();
 

@@ -14,6 +14,15 @@ jest.mock('../entrypoints/popup/components/proTip', () => ({
 	__esModule: true,
 	default: () => null,
 }));
+jest.mock('../entrypoints/popup/components/reviewPromptBanner', () => ({
+	__esModule: true,
+	default: ({ onDismiss, onLeaveReview }: { onDismiss: () => void; onLeaveReview: () => void }) => (
+		<div data-testid='review-prompt'>
+			<button type='button' onClick={onLeaveReview}>Leave review</button>
+			<button type='button' onClick={onDismiss}>Dismiss</button>
+		</div>
+	),
+}));
 
 const defaultPrefs: UserPreferences = {
 	enabled: true,
@@ -61,11 +70,21 @@ const defaultProps = {
 	onOpenGameDetail: jest.fn(),
 	onOpenSetup: jest.fn(),
 	onRefresh: jest.fn(),
+	showReviewPrompt: false,
 	onToggleEnabled: jest.fn(),
+	onDismissReviewPrompt: jest.fn(),
+	onLeaveReview: jest.fn(),
 	onToggleFavoriteTeam: jest.fn(),
 	onRegistryChange: jest.fn(),
 	formatTabLabel: () => 'Tab',
 };
+
+describe('mainView review prompt', () => {
+	test('shows review banner when review prompt is enabled', () => {
+		render(<MainView {...defaultProps} showReviewPrompt={true} />);
+		expect(screen.getByTestId('review-prompt')).toBeInTheDocument();
+	});
+});
 
 describe('mainView loading and error states', () => {
 	test('shows loading spinner when isLoading is true', () => {
