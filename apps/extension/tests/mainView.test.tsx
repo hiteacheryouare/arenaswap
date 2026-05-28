@@ -12,7 +12,7 @@ jest.mock('../entrypoints/popup/components/popupFooter', () => ({
 }));
 jest.mock('../entrypoints/popup/components/proTip', () => ({
 	__esModule: true,
-	default: () => null,
+	default: () => <div data-testid='pro-tip' />,
 }));
 jest.mock('../entrypoints/popup/components/reviewPromptBanner', () => ({
 	__esModule: true,
@@ -31,6 +31,7 @@ const defaultPrefs: UserPreferences = {
 	cooldownSeconds: 45,
 	switchDelaySeconds: 0,
 	showUpcomingGames: true,
+	proTipsEnabled: true,
 	notificationsEnabled: false,
 	favoriteTeamBonusPoints: 0,
 	favoriteTeamIds: [],
@@ -83,6 +84,19 @@ describe('mainView review prompt', () => {
 	test('shows review banner when review prompt is enabled', () => {
 		render(<MainView {...defaultProps} showReviewPrompt={true} />);
 		expect(screen.getByTestId('review-prompt')).toBeInTheDocument();
+	});
+});
+
+describe('mainView pro tips', () => {
+	test('shows pro tips when enabled', () => {
+		render(<MainView {...defaultProps} games={[makeGame('g1')]} />);
+		expect(screen.getByTestId('pro-tip')).toBeInTheDocument();
+	});
+
+	test('hides pro tips when disabled', () => {
+		const prefs = { ...defaultPrefs, proTipsEnabled: false };
+		render(<MainView {...defaultProps} prefs={prefs} games={[makeGame('g1')]} />);
+		expect(screen.queryByTestId('pro-tip')).not.toBeInTheDocument();
 	});
 });
 

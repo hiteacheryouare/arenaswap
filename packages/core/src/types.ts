@@ -75,6 +75,7 @@ export interface UserPreferences {
 	favoriteTeamIds: string[];
 	favoriteTeamBonusPoints: number;
 	showUpcomingGames: boolean;
+	proTipsEnabled: boolean;
 	notificationsEnabled: boolean;
 	standbyStreamEnabled: boolean;
 	/** PowerScore threshold (0–100): switch to standby when ALL registered games fall below this */

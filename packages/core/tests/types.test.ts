@@ -29,6 +29,7 @@ describe('types runtime smoke', () => {
 			favoriteTeamIds: ['nba:2'],
 			favoriteTeamBonusPoints: 10,
 			showUpcomingGames: true,
+			proTipsEnabled: true,
 			notificationsEnabled: true,
 			standbyStreamEnabled: false,
 			standbyStreamThreshold: 20,

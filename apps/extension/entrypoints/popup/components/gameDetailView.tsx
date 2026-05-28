@@ -28,6 +28,7 @@ interface gameDetailViewProps {
 	excitementResult: PowerScoreResult | undefined;
 	scoreHistory: ScoreSnapshot[];
 	powerScoreHistory: PowerScoreSnapshot[];
+	proTipsEnabled: boolean;
 	gameBoosts: Record<string, number>;
 	onSetGameBoost: (gameId: string, boost: number) => void;
 	onBack: () => void;
@@ -45,7 +46,7 @@ const withMatchupAlpha = (color: string, fallback: string): string => (
 	/^#[\da-fA-F]{6}$/.test(color) ? `${color}28` : fallback
 );
 
-const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistory, gameBoosts, onSetGameBoost, onBack }: gameDetailViewProps) => {
+const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistory, proTipsEnabled, gameBoosts, onSetGameBoost, onBack }: gameDetailViewProps) => {
 	const orderedScoreHistory = useMemo(
 		() => [...scoreHistory].sort((a, b) => a.timestamp - b.timestamp),
 		[scoreHistory],
@@ -174,7 +175,7 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 				</div>
 			</div>
 
-			<ProTip context='detail' />
+			{proTipsEnabled && <ProTip context='detail' />}
 
 			{orderedPowerScoreHistory.length > 0
 				? <GameDetailChart title='PowerScore over time' option={powerScoreOption} />

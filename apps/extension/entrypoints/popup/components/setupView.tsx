@@ -26,6 +26,7 @@ interface setupViewProps {
 	onToggleLeague: (leagueId: LeagueId) => void;
 	onToggleSport: (sport: SportType, selectAll: boolean) => void;
 	onToggleShowUpcoming: () => void;
+	onToggleProTips: () => void;
 	onToggleNotifications: () => void;
 	onToggleDemo: () => void;
 	onToggleStandbyStream: () => void;
@@ -59,7 +60,7 @@ const setupView = ({
 	prefs, prefsLoaded, demoMode, leagueLogos, standbyStreamTabId, standbyOnboardingDone,
 	openTabs, formatTabLabel, onClose, onSensitivityChange, onCooldownChange, onSwitchDelayChange,
 	onFavoriteTeamBonusChange, onToggleLeague, onToggleSport, onToggleShowUpcoming,
-	onToggleNotifications, onToggleDemo, onToggleStandbyStream, onStandbyThresholdChange,
+	onToggleProTips, onToggleNotifications, onToggleDemo, onToggleStandbyStream, onStandbyThresholdChange,
 	onSetStandbyTab, onStandbyOnboardingDone,
 }: setupViewProps) => {
 	const [tab, setTab] = useState<'switching' | 'leagues'>('switching');
@@ -115,6 +116,13 @@ const setupView = ({
 						<label className='text-body-secondary setting-toggle-label' htmlFor='upcomingToggle'><i className='bi bi-calendar-event me-1 text-primary' />Show upcoming games</label>
 						<div className='form-check form-switch mb-0'>
 							<input className='form-check-input' type='checkbox' id='upcomingToggle' checked={prefs.showUpcomingGames} onChange={onToggleShowUpcoming} disabled={!prefsLoaded} />
+						</div>
+					</div>
+
+					<div className='d-flex justify-content-between align-items-center mt-2'>
+						<label className='text-body-secondary setting-toggle-label' htmlFor='proTipsToggle'><i className='bi bi-lightbulb me-1 text-primary' />Pro tips</label>
+						<div className='form-check form-switch mb-0'>
+							<input className='form-check-input' type='checkbox' id='proTipsToggle' checked={prefs.proTipsEnabled} onChange={onToggleProTips} disabled={!prefsLoaded} />
 						</div>
 					</div>
 
