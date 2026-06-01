@@ -10,7 +10,7 @@ import {
 	loadingMessages,
 	normalizeBackgroundState,
 } from '../entrypoints/popup/popupHelpers';
-import { createFavoriteTeamKey } from '@arenaswap/core/constants';
+import { createFavoriteTeamKey, leagueConfigs } from '@arenaswap/core/constants';
 import type { Game } from '@arenaswap/core/types';
 
 const makeGame = (overrides: Partial<Game> & { id: string }): Game => ({
@@ -30,6 +30,32 @@ describe('leaguesBySportType', () => {
 		expect(leaguesBySportType.football.length).toBeGreaterThan(0);
 		expect(leaguesBySportType.basketball.every(l => l.sportType === 'basketball')).toBe(true);
 		expect(leaguesBySportType.football.every(l => l.sportType === 'football')).toBe(true);
+	});
+
+	// Regression: before the `in` guard was added, groups[config.sportType].push(config) would
+	// crash with "Cannot read properties of undefined (reading 'push')" for any unknown sport type.
+	test('includes every configured league in exactly one sport bucket with no duplicates', () => {
+		const allIds = leagueConfigs.map(c => c.id).sort();
+		const bucketedIds = (Object.values(leaguesBySportType) as (typeof leagueConfigs)[])
+			.flatMap(configs => configs.map(c => c.id))
+			.sort();
+		expect(bucketedIds).toEqual(allIds);
+	});
+
+	test('silently drops a league with an unrecognised sport type instead of crashing', () => {
+		jest.isolateModules(() => {
+			jest.mock('@arenaswap/core/constants', () => {
+				const real = jest.requireActual('@arenaswap/core/constants') as Record<string, unknown>;
+				return {
+					...real,
+					leagueConfigs: [
+						...(real.leagueConfigs as unknown[]),
+						{ id: 'lacrosse-1', sportType: 'lacrosse', label: 'Lacrosse' },
+					],
+				};
+			});
+			expect(() => require('../entrypoints/popup/popupHelpers')).not.toThrow();
+		});
 	});
 });
 
@@ -173,22 +199,18 @@ describe('formatTabLabel', () => {
 
 describe('normalizeBackgroundState', () => {
 	test('returns an empty default state for non-object input', () => {
-		expect(normalizeBackgroundState(null)).toEqual({
+		const emptyState = {
 			games: [],
 			scores: [],
 			leagueLogos: {},
 			scoreHistory: {},
 			powerScoreHistory: {},
 			gameBoosts: {},
-		});
-		expect(normalizeBackgroundState(undefined)).toEqual({
-			games: [],
-			scores: [],
-			leagueLogos: {},
-			scoreHistory: {},
-			powerScoreHistory: {},
-			gameBoosts: {},
-		});
+			onStandbyStream: false,
+			standbyStreamTabId: null,
+		};
+		expect(normalizeBackgroundState(null)).toEqual(emptyState);
+		expect(normalizeBackgroundState(undefined)).toEqual(emptyState);
 	});
 
 	test('drops malformed score snapshots while keeping valid ones', () => {

@@ -37,7 +37,10 @@ describe('constants', () => {
 			favoriteTeamIds: [],
 			favoriteTeamBonusPoints: 10,
 			showUpcomingGames: true,
+			proTipsEnabled: true,
 			notificationsEnabled: true,
+			standbyStreamEnabled: false,
+			standbyStreamThreshold: 20,
 		});
 	});
 
@@ -53,6 +56,7 @@ describe('constants', () => {
 			favoriteTeamIds: ['team-a', ' nba:20 ', 123, 'nba:20', 'nfl:20', '', 'invalid:team'],
 			favoriteTeamBonusPoints: 10.8,
 			showUpcomingGames: false,
+			proTipsEnabled: false,
 		})).toEqual({
 			sensitivity: 4,
 			cooldownSeconds: 0,
@@ -62,7 +66,10 @@ describe('constants', () => {
 			favoriteTeamIds: ['nba:20', 'nfl:20'],
 			favoriteTeamBonusPoints: 11,
 			showUpcomingGames: false,
+			proTipsEnabled: false,
 			notificationsEnabled: true,
+			standbyStreamEnabled: false,
+			standbyStreamThreshold: 20,
 		});
 	});
 

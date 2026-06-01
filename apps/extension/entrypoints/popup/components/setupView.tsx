@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { leagueConfigs, resolveLeagueLogoUrl } from '@arenaswap/core/constants';
 import type { LeagueId, LeagueLogoMap, SportType, UserPreferences } from '@arenaswap/core/types';
+import type { Browser } from 'wxt/browser';
 import CooldownSlider from './cooldownSlider';
 import FavoriteTeamBonusInput from './favoriteTeamBonusInput';
 import SensitivitySlider from './sensitivitySlider';
 import SwitchDelaySlider from './switchDelaySlider';
+import StandbyStreamGuide from './standbyStreamGuide';
 import { leaguesBySportType, sportTypeLabels, sportTypeOrder } from '../popupHelpers';
 
 interface setupViewProps {
@@ -12,6 +14,10 @@ interface setupViewProps {
 	prefsLoaded: boolean;
 	demoMode: boolean;
 	leagueLogos: LeagueLogoMap;
+	standbyStreamTabId: number | null;
+	standbyOnboardingDone: boolean;
+	openTabs: Browser.tabs.Tab[];
+	formatTabLabel: (tab: Browser.tabs.Tab) => string;
 	onClose: () => void;
 	onSensitivityChange: (val: number) => void;
 	onCooldownChange: (val: number) => void;
@@ -20,8 +26,13 @@ interface setupViewProps {
 	onToggleLeague: (leagueId: LeagueId) => void;
 	onToggleSport: (sport: SportType, selectAll: boolean) => void;
 	onToggleShowUpcoming: () => void;
+	onToggleProTips: () => void;
 	onToggleNotifications: () => void;
 	onToggleDemo: () => void;
+	onToggleStandbyStream: () => void;
+	onStandbyThresholdChange: (val: number) => void;
+	onSetStandbyTab: (tabId: number | null) => void;
+	onStandbyOnboardingDone: () => void;
 }
 
 type leagueConfig = (typeof leagueConfigs)[number];
@@ -46,11 +57,30 @@ const LeagueLogo = ({ league, logos }: { league: leagueConfig; logos: LeagueLogo
 };
 
 const setupView = ({
-	prefs, prefsLoaded, demoMode, leagueLogos, onClose,
-	onSensitivityChange, onCooldownChange, onSwitchDelayChange, onFavoriteTeamBonusChange,
-	onToggleLeague, onToggleSport, onToggleShowUpcoming, onToggleNotifications, onToggleDemo,
+	prefs, prefsLoaded, demoMode, leagueLogos, standbyStreamTabId, standbyOnboardingDone,
+	openTabs, formatTabLabel, onClose, onSensitivityChange, onCooldownChange, onSwitchDelayChange,
+	onFavoriteTeamBonusChange, onToggleLeague, onToggleSport, onToggleShowUpcoming,
+	onToggleProTips, onToggleNotifications, onToggleDemo, onToggleStandbyStream, onStandbyThresholdChange,
+	onSetStandbyTab, onStandbyOnboardingDone,
 }: setupViewProps) => {
 	const [tab, setTab] = useState<'switching' | 'leagues'>('switching');
+	const [showStandbyGuide, setShowStandbyGuide] = useState(false);
+
+	const handleToggleStandbyStream = () => {
+		if (!prefs.standbyStreamEnabled && !standbyOnboardingDone) {
+			setShowStandbyGuide(true);
+		}
+		onToggleStandbyStream();
+	};
+
+	const handleStandbyGuideDone = () => {
+		setShowStandbyGuide(false);
+		onStandbyOnboardingDone();
+	};
+
+	if (showStandbyGuide) {
+		return <StandbyStreamGuide onDone={handleStandbyGuideDone} />;
+	}
 
 	return (
 		<div className='popup-container'>
@@ -80,12 +110,19 @@ const setupView = ({
 					<div className='mt-3'><SwitchDelaySlider value={prefs.switchDelaySeconds} onChange={onSwitchDelayChange} /></div>
 					<div className='mt-3'><FavoriteTeamBonusInput value={prefs.favoriteTeamBonusPoints} onChange={onFavoriteTeamBonusChange} /></div>
 
-					<div className='popup-section-label mt-3'><i className='bi bi-toggles' />Options</div>
+						<div className='fw-bold text-uppercase popup-section-label mt-3'><i className='bi bi-toggles' />Options</div>
 
 					<div className='d-flex justify-content-between align-items-center mt-2'>
 						<label className='text-body-secondary setting-toggle-label' htmlFor='upcomingToggle'><i className='bi bi-calendar-event me-1 text-primary' />Show upcoming games</label>
 						<div className='form-check form-switch mb-0'>
 							<input className='form-check-input' type='checkbox' id='upcomingToggle' checked={prefs.showUpcomingGames} onChange={onToggleShowUpcoming} disabled={!prefsLoaded} />
+						</div>
+					</div>
+
+					<div className='d-flex justify-content-between align-items-center mt-2'>
+						<label className='text-body-secondary setting-toggle-label' htmlFor='proTipsToggle'><i className='bi bi-lightbulb me-1 text-primary' />Pro tips</label>
+						<div className='form-check form-switch mb-0'>
+							<input className='form-check-input' type='checkbox' id='proTipsToggle' checked={prefs.proTipsEnabled} onChange={onToggleProTips} disabled={!prefsLoaded} />
 						</div>
 					</div>
 
@@ -102,6 +139,66 @@ const setupView = ({
 							<input className='form-check-input' type='checkbox' id='demoToggle' checked={demoMode} onChange={onToggleDemo} />
 						</div>
 					</div>
+
+						<div className='fw-bold text-uppercase popup-section-label mt-3'><i className='bi bi-broadcast' />Standby Stream</div>
+
+					<div className='d-flex justify-content-between align-items-center mt-2'>
+						<label className='text-body-secondary setting-toggle-label' htmlFor='standbyStreamToggle'><i className='bi bi-broadcast me-1 text-primary' />Enable Standby Stream</label>
+						<div className='form-check form-switch mb-0'>
+							<input className='form-check-input' type='checkbox' id='standbyStreamToggle' checked={prefs.standbyStreamEnabled} onChange={handleToggleStandbyStream} disabled={!prefsLoaded} />
+						</div>
+					</div>
+
+					{prefs.standbyStreamEnabled && (
+						<div className='mt-3 d-flex flex-column gap-3'>
+							<div>
+								<div className='d-flex justify-content-between align-items-baseline mb-1'>
+									<label className='text-body-secondary setting-toggle-label' htmlFor='standbyThresholdSlider'>
+										<i className='bi bi-thermometer-half me-1 text-primary' />Standby below
+									</label>
+									<span className='fw-semibold text-body small'>{prefs.standbyStreamThreshold}</span>
+								</div>
+								<input
+									type='range'
+									className='form-range'
+									id='standbyThresholdSlider'
+									min={0}
+									max={100}
+									step={1}
+									value={prefs.standbyStreamThreshold}
+									onChange={e => onStandbyThresholdChange(Number(e.target.value))}
+									disabled={!prefsLoaded}
+								/>
+								<div className='d-flex justify-content-between'>
+									<span className='setting-explainer'>More patient</span>
+									<span className='setting-explainer'>Switches sooner</span>
+								</div>
+							</div>
+
+							<div>
+								<div className='text-body-secondary setting-toggle-label mb-1'>
+									<i className='bi bi-window-stack me-1 text-primary' />Standby tab
+								</div>
+								<select
+									className='form-select form-select-sm'
+									value={standbyStreamTabId ?? ''}
+									onChange={e => {
+										const val = e.target.value;
+										const num = Number(val);
+										onSetStandbyTab(val && Number.isFinite(num) ? num : null);
+									}}
+									disabled={!prefsLoaded}
+								>
+									<option value=''>— Select a tab —</option>
+									{openTabs.map(tab => (
+										<option key={tab.id} value={tab.id}>
+											{formatTabLabel(tab)}
+										</option>
+									))}
+								</select>
+							</div>
+						</div>
+					)}
 				</div>
 			)}
 

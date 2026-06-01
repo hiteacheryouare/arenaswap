@@ -14,6 +14,7 @@ import type { Browser } from 'wxt/browser';
 
 export type popupView = 'main' | 'setup' | 'detail';
 export type leagueGroup = { league: LeagueId; games: Game[] };
+export type dateGroup = { dateLabel: string; games: Game[] };
 
 export const leagueOrder = Object.fromEntries(leagueConfigs.map((config, index) => [config.id, index])) as Record<LeagueId, number>;
 export const sportTypeOrder: Record<SportType, number> = {
@@ -112,7 +113,7 @@ export const getRandomLoadingMessage = (): string => (
 	loadingMessages[Math.floor(Math.random() * loadingMessages.length)] ?? ''
 );
 export const leaguesBySportType = leagueConfigs.reduce<Record<SportType, typeof leagueConfigs>>((groups, config) => {
-	groups[config.sportType].push(config);
+	if (config.sportType in groups) groups[config.sportType].push(config);
 	return groups;
 }, {
 	basketball: [],
@@ -139,6 +140,54 @@ export const buildFavoritePinnedComparator = (
 	const bFav = isFavoriteTeamGame(b, favoriteTeamIds);
 	if (aFav !== bFav) return aFav ? -1 : 1;
 	return (scoreByGameId.get(b.id) ?? 0) - (scoreByGameId.get(a.id) ?? 0);
+};
+
+export const buildUpcomingComparator = (
+	favoriteTeamIds: Set<string>,
+	scoreByGameId: Map<string, number>,
+) => {
+	const fallbackSort = buildFavoritePinnedComparator(favoriteTeamIds, scoreByGameId);
+	const dayStart = (game: Game): number => {
+		if (!game.startTime) return Number.POSITIVE_INFINITY;
+		const date = new Date(game.startTime);
+		return new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+	};
+	return (a: Game, b: Game): number => {
+		const aDay = dayStart(a);
+		const bDay = dayStart(b);
+		if (aDay !== bDay) return aDay - bDay;
+		return fallbackSort(a, b);
+	};
+};
+
+const formatDateLabel = (dateStr: string): string => {
+	const today = new Date();
+	const tomorrow = new Date(today);
+	tomorrow.setDate(today.getDate() + 1);
+	const toKey = (d: Date) => `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+	const gameDate = new Date(dateStr);
+	if (toKey(gameDate) === toKey(today)) return 'Today';
+	if (toKey(gameDate) === toKey(tomorrow)) return 'Tomorrow';
+	return gameDate.toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' });
+};
+
+export const groupByDate = (games: Game[]): dateGroup[] => {
+	const groups = new Map<string, Game[]>();
+	for (const game of games) {
+		const key = game.startTime
+			? new Date(game.startTime).toDateString()
+			: 'Unknown';
+		const group = groups.get(key) ?? [];
+		group.push(game);
+		groups.set(key, group);
+	}
+	return Array.from(groups.entries()).map(([key, grpGames]) => {
+		const first = grpGames[0];
+		return {
+			dateLabel: first?.startTime ? formatDateLabel(first.startTime) : 'Upcoming',
+			games: grpGames,
+		};
+	});
 };
 
 export const groupByLeague = (games: Game[]): leagueGroup[] => (
@@ -191,7 +240,7 @@ const normalizePowerScoreHistory = (value: unknown): PowerScoreHistoryMap => {
 };
 
 export const normalizeBackgroundState = (value: unknown): BackgroundState => {
-	if (!isObjectRecord(value)) return { games: [], scores: [], leagueLogos: {}, scoreHistory: {}, powerScoreHistory: {}, gameBoosts: {} };
+	if (!isObjectRecord(value)) return { games: [], scores: [], leagueLogos: {}, scoreHistory: {}, powerScoreHistory: {}, gameBoosts: {}, onStandbyStream: false, standbyStreamTabId: null };
 	return {
 		games: isGameArray(value.games) ? value.games : [],
 		scores: normalizeScores(value.scores),
@@ -199,6 +248,8 @@ export const normalizeBackgroundState = (value: unknown): BackgroundState => {
 		scoreHistory: normalizeScoreHistory(value.scoreHistory),
 		powerScoreHistory: normalizePowerScoreHistory(value.powerScoreHistory),
 		gameBoosts: normalizeGameBoosts(value.gameBoosts),
+		onStandbyStream: value.onStandbyStream === true,
+		standbyStreamTabId: typeof value.standbyStreamTabId === 'number' ? value.standbyStreamTabId : null,
 	};
 };
 

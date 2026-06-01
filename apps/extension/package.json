@@ -17,6 +17,8 @@
 	},
 	"dependencies": {
 		"@arenaswap/core": "*",
+		"@porkyproductions/hat": "^1.5.0",
+		"canvas-confetti": "^1.9.4",
 		"echarts": "^6.0.0",
 		"powerscore": "*",
 		"swr": "^2.4.1"

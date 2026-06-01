@@ -54,13 +54,13 @@ export const defaultFavoriteTeamBonusPoints = 10;
 
 // Sensitivity level → score delta required to trigger a tab switch
 export const sensitivityThresholds: Record<number, number> = {
-	1: 100,
-	2: 60,
-	3: 45,
-	4: 28,
-	5: 16,
-	6: 8,
-	7: 3
+	1: 65,
+	2: 42,
+	3: 26,
+	4: 14,
+	5: 8,
+	6: 4,
+	7: 1
 };
 
 export const leagueLogoFallbacks: Record<LeagueId, string> = {
@@ -69,13 +69,13 @@ export const leagueLogoFallbacks: Record<LeagueId, string> = {
 	ncaab: 'https://a.espncdn.com/redesign/assets/img/icons/ESPN-icon-basketball.png',
 	ncaaw: 'https://a.espncdn.com/redesign/assets/img/icons/ESPN-icon-basketball.png',
 	nhl: 'https://a.espncdn.com/i/teamlogos/leagues/500/nhl.png',
-	ncaamh: 'https://a.espncdn.com/i/teamlogos/leagues/500/nhl.png',
+	ncaamh: 'https://a.espncdn.com/redesign/assets/img/icons/ESPN-icon-hockey.png',
 	mlb: 'https://a.espncdn.com/i/teamlogos/leagues/500/mlb.png',
 	nfl: 'https://a.espncdn.com/i/teamlogos/leagues/500/nfl.png',
 	ncaaf: 'https://a.espncdn.com/redesign/assets/img/icons/ESPN-icon-football-college.png',
 	mls: 'https://a.espncdn.com/i/teamlogos/leagues/500/mls.png',
-	epl: 'https://a.espncdn.com/i/teamlogos/soccer/500/eng.1.png',
-	fifawc: 'https://a.espncdn.com/i/teamlogos/soccer/500/fifa.world.png',
+	epl: 'https://a.espncdn.com/i/leaguelogos/soccer/500-dark/23.png',
+	fifawc: 'https://a.espncdn.com/i/leaguelogos/soccer/500-dark/4.png',
 };
 
 export const resolveLeagueLogoUrl = (leagueId: LeagueId, espnLogoUrl?: string): string => (
@@ -147,7 +147,10 @@ export const createDefaultUserPreferences = (): UserPreferences => ({
 	favoriteTeamIds: [],
 	favoriteTeamBonusPoints: defaultFavoriteTeamBonusPoints,
 	showUpcomingGames: true,
+	proTipsEnabled: true,
 	notificationsEnabled: true,
+	standbyStreamEnabled: false,
+	standbyStreamThreshold: 20,
 });
 
 export const normalizeUserPreferences = (storedPrefs: unknown): UserPreferences => {
@@ -169,6 +172,11 @@ export const normalizeUserPreferences = (storedPrefs: unknown): UserPreferences 
 		favoriteTeamIds: normalizeFavoriteTeamIds(candidate.favoriteTeamIds),
 		favoriteTeamBonusPoints: normalizeSecondsPreference(candidate.favoriteTeamBonusPoints, defaults.favoriteTeamBonusPoints),
 		showUpcomingGames: typeof candidate.showUpcomingGames === 'boolean' ? candidate.showUpcomingGames : defaults.showUpcomingGames,
+		proTipsEnabled: typeof candidate.proTipsEnabled === 'boolean' ? candidate.proTipsEnabled : defaults.proTipsEnabled,
 		notificationsEnabled: typeof candidate.notificationsEnabled === 'boolean' ? candidate.notificationsEnabled : defaults.notificationsEnabled,
+		standbyStreamEnabled: typeof candidate.standbyStreamEnabled === 'boolean' ? candidate.standbyStreamEnabled : defaults.standbyStreamEnabled,
+		standbyStreamThreshold: typeof candidate.standbyStreamThreshold === 'number' && isFinite(candidate.standbyStreamThreshold)
+			? Math.max(0, Math.min(100, Math.round(candidate.standbyStreamThreshold)))
+			: defaults.standbyStreamThreshold,
 	};
 };

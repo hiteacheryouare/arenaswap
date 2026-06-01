@@ -14,7 +14,8 @@ import PopupFooter from './popupFooter';
 import ProTip from './proTip';
 import EmptyGameState from './emptyGameState';
 import GameListHeader from './gameListHeader';
-import { buildFavoritePinnedComparator, getRandomLoadingMessage, groupByLeague, leagueLabels } from '../popupHelpers';
+import ReviewPromptBanner from './reviewPromptBanner';
+import { buildFavoritePinnedComparator, buildUpcomingComparator, getRandomLoadingMessage, groupByDate, groupByLeague, leagueLabels } from '../popupHelpers';
 
 interface gameSectionProps {
 	title: string;
@@ -29,6 +30,7 @@ interface gameSectionProps {
 	onRegistryChange: (updated: TabRegistration[]) => void;
 	formatTabLabel: (tab: Browser.tabs.Tab) => string;
 	onOpenGameDetail: (gameId: string) => void;
+	groupDates?: boolean;
 }
 
 const LeagueSectionHeader = ({ league, logos }: { league: LeagueId; logos: LeagueLogoMap }) => {
@@ -62,14 +64,59 @@ interface mainViewProps {
 	favoriteTeamIds: Set<string>;
 	gameBoosts: Record<string, number>;
 	openTabs: Browser.tabs.Tab[];
+	onStandbyStream: boolean;
 	onOpenGameDetail: (gameId: string) => void;
 	onOpenSetup: () => void;
 	onRefresh: () => void;
+	showReviewPrompt: boolean;
 	onToggleEnabled: () => void;
+	onDismissReviewPrompt: () => void;
+	onLeaveReview: () => void;
 	onToggleFavoriteTeam: (leagueId: LeagueId, teamId: string) => void;
 	onRegistryChange: (updated: TabRegistration[]) => void;
 	formatTabLabel: (tab: Browser.tabs.Tab) => string;
 }
+
+const dateDivider = (label: string) => (
+	<div className='d-flex align-items-center gap-2 my-2'>
+		<hr className='flex-grow-1 m-0 border-secondary-subtle opacity-50' />
+		<span className='text-body-tertiary' style={{ fontSize: '0.65rem', letterSpacing: '0.04em', textTransform: 'uppercase', fontWeight: 600, whiteSpace: 'nowrap' }}>{label}</span>
+		<hr className='flex-grow-1 m-0 border-secondary-subtle opacity-50' />
+	</div>
+);
+
+const leagueRows = (
+	games: Game[],
+	scores: PowerScoreResult[],
+	leagueLogos: LeagueLogoMap,
+	favoriteTeamIds: Set<string>,
+	onToggleFavoriteTeam: (leagueId: LeagueId, teamId: string) => void,
+	gameBoosts: Record<string, number>,
+	openTabs: Browser.tabs.Tab[],
+	registry: TabRegistration[],
+	onRegistryChange: (updated: TabRegistration[]) => void,
+	formatTabLabel: (tab: Browser.tabs.Tab) => string,
+	onOpenGameDetail: (gameId: string) => void,
+) => groupByLeague(games).map(({ league, games: groupedGames }) => (
+	<div key={league}>
+		<LeagueSectionHeader league={league} logos={leagueLogos} />
+		{groupedGames.map(game => (
+			<GameCard
+				key={game.id}
+				game={game}
+				excitementResult={scores.find(s => s.gameId === game.id)}
+				favoriteTeamIds={favoriteTeamIds}
+				onToggleFavoriteTeam={onToggleFavoriteTeam}
+				gameBoosts={gameBoosts}
+				openTabs={openTabs}
+				registry={registry}
+				onRegistryChange={onRegistryChange}
+				formatTabLabel={formatTabLabel}
+				onOpenGameDetail={onOpenGameDetail}
+			/>
+		))}
+	</div>
+));
 
 const gameSection = ({
 	title,
@@ -84,29 +131,19 @@ const gameSection = ({
 	onRegistryChange,
 	formatTabLabel,
 	onOpenGameDetail,
+	groupDates,
 }: gameSectionProps) => (
 	<div className='mt-2'>
 		<div className='fw-bold text-body text-center popup-section-title'>{title}</div>
-		{groupByLeague(games).map(({ league, games: groupedGames }) => (
-			<div key={league}>
-				<LeagueSectionHeader league={league} logos={leagueLogos} />
-				{groupedGames.map(game => (
-					<GameCard
-						key={game.id}
-						game={game}
-						excitementResult={scores.find(s => s.gameId === game.id)}
-						favoriteTeamIds={favoriteTeamIds}
-						onToggleFavoriteTeam={onToggleFavoriteTeam}
-						gameBoosts={gameBoosts}
-						openTabs={openTabs}
-						registry={registry}
-						onRegistryChange={onRegistryChange}
-						formatTabLabel={formatTabLabel}
-						onOpenGameDetail={onOpenGameDetail}
-					/>
-				))}
-			</div>
-		))}
+		{groupDates
+			? groupByDate(games).map(({ dateLabel, games: dayGames }) => (
+				<div key={dateLabel}>
+					{dateDivider(dateLabel)}
+					{leagueRows(dayGames, scores, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail)}
+				</div>
+			))
+			: leagueRows(games, scores, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail)
+		}
 	</div>
 );
 
@@ -122,10 +159,14 @@ const mainView = ({
 	favoriteTeamIds,
 	gameBoosts,
 	openTabs,
+	onStandbyStream,
 	onOpenGameDetail,
 	onOpenSetup,
 	onRefresh,
+	showReviewPrompt,
 	onToggleEnabled,
+	onDismissReviewPrompt,
+	onLeaveReview,
 	onToggleFavoriteTeam,
 	onRegistryChange,
 	formatTabLabel,
@@ -138,11 +179,15 @@ const mainView = ({
 		() => buildFavoritePinnedComparator(favoriteTeamIds, scoreByGameId),
 		[favoriteTeamIds, scoreByGameId],
 	);
+	const sortUpcomingGames = useMemo(
+		() => buildUpcomingComparator(favoriteTeamIds, scoreByGameId),
+		[favoriteTeamIds, scoreByGameId],
+	);
 	const liveGames = games.filter(g => g.status === 'in');
 	const upcomingGames = games
 		.filter(g => g.status === 'pre')
 		.filter(g => !g.startTime || new Date(g.startTime).getTime() <= oneWeekFromNow)
-		.sort(sortGames);
+		.sort(sortUpcomingGames);
 
 	const registeredGameIds = new Set(registry.map(r => r.gameId));
 	const assignedLiveGames = liveGames.filter(g => registeredGameIds.has(g.id)).sort(sortGames);
@@ -167,6 +212,17 @@ const mainView = ({
 
 			<GameListHeader isLoading={isLoading} hasError={hasError} loadingMessage={loadingMessage} onRefresh={onRefresh} />
 
+			{showReviewPrompt && (
+				<ReviewPromptBanner onDismiss={onDismissReviewPrompt} onLeaveReview={onLeaveReview} />
+			)}
+
+			{onStandbyStream && (
+				<div className='d-flex align-items-center gap-2 px-2 py-1 mb-1 rounded text-body-secondary small bg-body-secondary'>
+					<i className='bi bi-broadcast text-primary' />
+					<span>On standby stream — waiting for action</span>
+				</div>
+			)}
+
 			<EmptyGameState
 				noLeaguesSelected={!isLoading && noLeaguesSelected}
 				noGames={showNoGames}
@@ -174,10 +230,10 @@ const mainView = ({
 				onRefresh={onRefresh}
 			/>
 
-			{!isLoading && !noLeaguesSelected && <ProTip context='main' />}
+			{!isLoading && !noLeaguesSelected && prefs.proTipsEnabled && <ProTip context='main' />}
 			{!isLoading && !noLeaguesSelected && assignedLiveGames.length > 0 && gameSection({ title: 'Active Live Tabs', games: assignedLiveGames, scores, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail })}
 			{!isLoading && !noLeaguesSelected && unassignedLiveGames.length > 0 && gameSection({ title: 'Other Live Games', games: unassignedLiveGames, scores, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail })}
-			{!isLoading && !noLeaguesSelected && prefs.showUpcomingGames && upcomingGames.length > 0 && gameSection({ title: 'Up Next', games: upcomingGames, scores: [], leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail })}
+			{!isLoading && !noLeaguesSelected && prefs.showUpcomingGames && upcomingGames.length > 0 && gameSection({ title: 'Up Next', games: upcomingGames, scores: [], leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, groupDates: true })}
 
 			<PopupFooter />
 		</div>

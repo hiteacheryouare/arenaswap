@@ -13,6 +13,8 @@ $border-color:              #30363d;
 $card-bg:                   #161b22;
 $card-border-color:         #30363d;
 $card-cap-bg:               transparent;
+$font-sans-serif: 			'DM Sans', system-ui, -apple-system, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+$font-monospace: 			'Lekton', monospace;
 $font-family-base:          'DM Sans', system-ui, -apple-system, sans-serif;
 $font-size-base:            0.9375rem;
 $font-size-sm:              0.8125rem;
@@ -413,7 +415,7 @@ $bootstrap-icons-font-dir: '/fonts';
 	align-items: center;
 	gap: 0.45rem;
 	font-size: 0.75rem;
-	letter-spacing: 0.1em;
+	letter-spacing: 0.03em;
 	color: #8b949e;
 	margin-top: 0.75rem;
 	margin-bottom: 0.5rem;
@@ -697,6 +699,9 @@ $pre-game-time-color: shade-color($warning, 60%);
 	overflow-wrap: anywhere;
 	word-break: break-word;
 	line-height: 1.2;
+	span {
+		font-weight: 700;
+	}
 }
 
 .game-meta-odds {
@@ -824,12 +829,17 @@ $pre-game-time-color: shade-color($warning, 60%);
 	color: #111827;
 	letter-spacing: -0.02em;
 	font-variant-numeric: tabular-nums;
+	display: inline-flex;
+	justify-content: center;
+	min-width: 2.4ch;
 }
 
 .game-detail-period {
 	font-size: 0.68rem;
 	font-family: 'Lekton', monospace;
 	color: #6c757d;
+	width: 100%;
+	text-align: center;
 }
 
 .game-detail-powerscore-label {

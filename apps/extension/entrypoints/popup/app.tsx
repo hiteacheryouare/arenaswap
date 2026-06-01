@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import useSWR from 'swr';
-import { createDefaultUserPreferences, createFavoriteTeamKey, normalizeUserPreferences } from '@arenaswap/core/constants';
-import type { LeagueId, SportType, TabRegistration, UserPreferences } from '@arenaswap/core/types';
+import { fetchLeagueLogos } from '@arenaswap/core';
+import { allLeagueIds, createDefaultUserPreferences, createFavoriteTeamKey, normalizeUserPreferences } from '@arenaswap/core/constants';
+import type { LeagueId, LeagueLogoMap, SportType, TabRegistration, UserPreferences } from '@arenaswap/core/types';
 import type { Browser } from 'wxt/browser';
 import GameDetailView from './components/gameDetailView';
 import MainView from './components/mainView';
@@ -11,6 +12,15 @@ import ToastContainer from './components/toastContainer';
 import { fetchState, formatTabLabel, leagueOrder, leaguesBySportType, normalizeBackgroundState, popupView } from './popupHelpers';
 import useFavoriteScoreConfetti from './useFavoriteScoreConfetti';
 import useToast from './useToast';
+import type { ReviewPromptState } from '../../utils/reviewPrompt';
+import {
+	getReviewPromptUrl,
+	markReviewPromptDismissed,
+	markReviewPromptReviewed,
+	normalizeReviewPromptState,
+	reviewPromptStorageKey,
+	shouldShowReviewPrompt,
+} from '../../utils/reviewPrompt';
 
 const isScoreUpdateMessage = (value: unknown): value is { type: 'SCORES_UPDATED' } => (
 	typeof value === 'object'
@@ -23,12 +33,17 @@ const app = () => {
 	const [view, setView] = useState<popupView>('main');
 	const [selectedGameId, setSelectedGameId] = useState<string | null>(null);
 	const [prefs, setPrefs] = useState<UserPreferences>(createDefaultUserPreferences());
+	const prefsRef = useRef<UserPreferences>(createDefaultUserPreferences());
 	const [prefsLoaded, setPrefsLoaded] = useState(false);
 	const [registry, setRegistry] = useState<TabRegistration[]>([]);
 	const [openTabs, setOpenTabs] = useState<Browser.tabs.Tab[]>([]);
 	const [demoMode, setDemoMode] = useState(false);
 	const [onboardingDone, setOnboardingDone] = useState<boolean | null>(null);
+	const [standbyOnboardingDone, setStandbyOnboardingDone] = useState(false);
+	const [standbyStreamTabId, setStandbyStreamTabId] = useState<number | null>(null);
+	const [reviewPromptState, setReviewPromptState] = useState<ReviewPromptState>(normalizeReviewPromptState(null));
 	const [settled, setSettled] = useState(false);
+	const [allLeagueLogoCache, setAllLeagueLogoCache] = useState<LeagueLogoMap>({});
 	const settledRef = useRef(false);
 	const prefsSyncRef = useRef<Promise<void>>(Promise.resolve());
 	const { toasts, showToast, dismissToast } = useToast();
@@ -43,12 +58,26 @@ const app = () => {
 		revalidateIfStale: false,
 	});
 
+	// Pre-fetch logos for every league once on popup open so the onboarding and
+	// settings pickers always show logos, not just for currently-enabled leagues.
+	// includeUpcoming:false keeps this to one ESPN call per league.
+	useEffect(() => {
+		void fetchLeagueLogos(allLeagueIds, { includeUpcoming: false })
+			.then(logos => setAllLeagueLogoCache(logos))
+			.catch(() => {});
+	}, []);
+
 	const games = data?.games ?? [];
 	const scores = data?.scores ?? [];
-	const leagueLogos = data?.leagueLogos ?? {};
+	// Enabled-league logos (from background state) take priority; cache fills the gaps.
+	const leagueLogos = useMemo<LeagueLogoMap>(
+		() => ({ ...allLeagueLogoCache, ...(data?.leagueLogos ?? {}) }),
+		[allLeagueLogoCache, data?.leagueLogos]
+	);
 	const scoreHistory = data?.scoreHistory ?? {};
 	const powerScoreHistory = data?.powerScoreHistory ?? {};
 	const gameBoosts = data?.gameBoosts ?? {};
+	const onStandbyStream = data?.onStandbyStream ?? false;
 	const favoriteTeamIds = useMemo(() => new Set(prefs.favoriteTeamIds), [prefs.favoriteTeamIds]);
 	const confettiCanvasRef = useFavoriteScoreConfetti({ games, favoriteTeamIds });
 
@@ -63,11 +92,20 @@ const app = () => {
 				const fallback = await browser.storage.local.get({ prefs: null });
 				rawPrefs = fallback.prefs;
 			}
-			setPrefs(normalizeUserPreferences(rawPrefs));
+			const normalizedPrefs = normalizeUserPreferences(rawPrefs);
+			prefsRef.current = normalizedPrefs;
+			setPrefs(normalizedPrefs);
 			setPrefsLoaded(true);
 
-			const localResult = await browser.storage.local.get({ demoMode: false, onboardingCompleted: null });
+			const localResult = await browser.storage.local.get({
+				demoMode: false,
+				onboardingCompleted: null,
+				standbyOnboardingDone: false,
+				[reviewPromptStorageKey]: null,
+			});
 			setDemoMode(localResult.demoMode as boolean);
+			setStandbyOnboardingDone(localResult.standbyOnboardingDone as boolean);
+			setReviewPromptState(normalizeReviewPromptState(localResult[reviewPromptStorageKey]));
 
 			const onboardingFlag = localResult.onboardingCompleted === true;
 			const hasStoredPrefs = rawPrefs !== null;
@@ -81,7 +119,10 @@ const app = () => {
 
 		void init();
 
-		browser.storage.session.get({ tabRegistry: [] }).then(result => setRegistry(result.tabRegistry as TabRegistration[]));
+		browser.storage.session.get({ tabRegistry: [], standbyStreamTabId: null }).then(result => {
+			setRegistry(result.tabRegistry as TabRegistration[]);
+			setStandbyStreamTabId((result.standbyStreamTabId as number | null) ?? null);
+		});
 
 		void browser.tabs.query({ currentWindow: true }).then(tabs => {
 			setOpenTabs(tabs.filter(tab => tab.url && !tab.url.startsWith('chrome://') && !tab.url.startsWith('about:')));
@@ -117,8 +158,10 @@ const app = () => {
 		setView('main');
 	}, [games, selectedGameId, view]);
 
-	const persistPrefs = (nextPrefs: UserPreferences) => {
-		const normalized = normalizeUserPreferences(nextPrefs);
+	const persistPrefs = (nextPrefs: UserPreferences | ((currentPrefs: UserPreferences) => UserPreferences)) => {
+		const rawNextPrefs = typeof nextPrefs === 'function' ? nextPrefs(prefsRef.current) : nextPrefs;
+		const normalized = normalizeUserPreferences(rawNextPrefs);
+		prefsRef.current = normalized;
 		setPrefs(normalized);
 		const syncPromise = (async () => {
 			try {
@@ -134,7 +177,7 @@ const app = () => {
 	};
 
 	const onOnboardingComplete = (leagues: LeagueId[], favorites: string[]) => {
-		persistPrefs({ ...prefs, enabledLeagues: leagues, favoriteTeamIds: favorites });
+		persistPrefs(currentPrefs => ({ ...currentPrefs, enabledLeagues: leagues, favoriteTeamIds: favorites }));
 		void browser.storage.local.set({ onboardingCompleted: true });
 		showToast('Welcome to ArenaSwap!', 'success');
 		// Reset settled so MainView shows a loader while we re-fetch with the new prefs.
@@ -152,22 +195,26 @@ const app = () => {
 	};
 
 	const onToggleLeague = (leagueId: LeagueId) => {
-		const current = new Set<LeagueId>(prefs.enabledLeagues);
-		if (current.has(leagueId)) current.delete(leagueId);
-		else current.add(leagueId);
-		const enabledLeagues = [...current].sort((a, b) => leagueOrder[a] - leagueOrder[b]);
-		persistPrefs({ ...prefs, enabledLeagues });
+		persistPrefs(currentPrefs => {
+			const current = new Set<LeagueId>(currentPrefs.enabledLeagues);
+			if (current.has(leagueId)) current.delete(leagueId);
+			else current.add(leagueId);
+			const enabledLeagues = [...current].sort((a, b) => leagueOrder[a] - leagueOrder[b]);
+			return { ...currentPrefs, enabledLeagues };
+		});
 	};
 
 	const onToggleSport = (sport: SportType, selectAll: boolean) => {
-		const sportLeagueIds = leaguesBySportType[sport].map(l => l.id);
-		const current = new Set<LeagueId>(prefs.enabledLeagues);
-		for (const id of sportLeagueIds) {
-			if (selectAll) current.add(id);
-			else current.delete(id);
-		}
-		const enabledLeagues = [...current].sort((a, b) => leagueOrder[a] - leagueOrder[b]);
-		persistPrefs({ ...prefs, enabledLeagues });
+		persistPrefs(currentPrefs => {
+			const sportLeagueIds = leaguesBySportType[sport].map(l => l.id);
+			const current = new Set<LeagueId>(currentPrefs.enabledLeagues);
+			for (const id of sportLeagueIds) {
+				if (selectAll) current.add(id);
+				else current.delete(id);
+			}
+			const enabledLeagues = [...current].sort((a, b) => leagueOrder[a] - leagueOrder[b]);
+			return { ...currentPrefs, enabledLeagues };
+		});
 	};
 
 	const onSetGameBoost = (gameId: string, boost: number) => {
@@ -178,6 +225,16 @@ const app = () => {
 		setRegistry(updated);
 		void browser.storage.session.set({ tabRegistry: updated });
 		void browser.runtime.sendMessage({ type: 'UPDATE_REGISTRY', tabRegistry: updated });
+	};
+
+	const onSetStandbyTab = (tabId: number | null) => {
+		setStandbyStreamTabId(tabId);
+		void browser.runtime.sendMessage({ type: 'SET_STANDBY_STREAM_TAB', tabId });
+	};
+
+	const onStandbyOnboardingDone = () => {
+		setStandbyOnboardingDone(true);
+		void browser.storage.local.set({ standbyOnboardingDone: true });
 	};
 
 	const closeSetup = () => {
@@ -193,6 +250,22 @@ const app = () => {
 	const openGameDetail = (gameId: string) => {
 		setSelectedGameId(gameId);
 		setView('detail');
+	};
+
+	const persistReviewPromptState = (nextState: ReviewPromptState) => {
+		setReviewPromptState(nextState);
+		void browser.storage.local.set({ [reviewPromptStorageKey]: nextState });
+	};
+
+	const dismissReviewPrompt = () => {
+		persistReviewPromptState(markReviewPromptDismissed(reviewPromptState));
+	};
+
+	const leaveReview = () => {
+		persistReviewPromptState(markReviewPromptReviewed(reviewPromptState));
+		void browser.tabs.create({
+			url: getReviewPromptUrl(browser.runtime.id, navigator.userAgent),
+		});
 	};
 
 	const selectedGame = selectedGameId ? games.find(game => game.id === selectedGameId) : undefined;
@@ -222,20 +295,29 @@ const app = () => {
 						prefsLoaded={prefsLoaded}
 						demoMode={demoMode}
 						leagueLogos={leagueLogos}
+						standbyStreamTabId={standbyStreamTabId}
+						standbyOnboardingDone={standbyOnboardingDone}
+						openTabs={openTabs}
+						formatTabLabel={tab => formatTabLabel(tab, openTabs)}
 						onClose={closeSetup}
-						onSensitivityChange={val => persistPrefs({ ...prefs, sensitivity: val as UserPreferences['sensitivity'] })}
-						onCooldownChange={val => persistPrefs({ ...prefs, cooldownSeconds: val })}
-						onSwitchDelayChange={val => persistPrefs({ ...prefs, switchDelaySeconds: val })}
-						onFavoriteTeamBonusChange={val => persistPrefs({ ...prefs, favoriteTeamBonusPoints: val })}
+						onSensitivityChange={val => persistPrefs(currentPrefs => ({ ...currentPrefs, sensitivity: val as UserPreferences['sensitivity'] }))}
+						onCooldownChange={val => persistPrefs(currentPrefs => ({ ...currentPrefs, cooldownSeconds: val }))}
+						onSwitchDelayChange={val => persistPrefs(currentPrefs => ({ ...currentPrefs, switchDelaySeconds: val }))}
+						onFavoriteTeamBonusChange={val => persistPrefs(currentPrefs => ({ ...currentPrefs, favoriteTeamBonusPoints: val }))}
 						onToggleLeague={onToggleLeague}
 						onToggleSport={onToggleSport}
-						onToggleShowUpcoming={() => persistPrefs({ ...prefs, showUpcomingGames: !prefs.showUpcomingGames })}
-						onToggleNotifications={() => persistPrefs({ ...prefs, notificationsEnabled: !prefs.notificationsEnabled })}
+						onToggleShowUpcoming={() => persistPrefs(currentPrefs => ({ ...currentPrefs, showUpcomingGames: !currentPrefs.showUpcomingGames }))}
+						onToggleProTips={() => persistPrefs(currentPrefs => ({ ...currentPrefs, proTipsEnabled: !currentPrefs.proTipsEnabled }))}
+						onToggleNotifications={() => persistPrefs(currentPrefs => ({ ...currentPrefs, notificationsEnabled: !currentPrefs.notificationsEnabled }))}
 						onToggleDemo={() => {
 							const next = !demoMode;
 							setDemoMode(next);
 							void browser.runtime.sendMessage({ type: 'SET_DEMO_MODE', enabled: next });
 						}}
+						onToggleStandbyStream={() => persistPrefs(currentPrefs => ({ ...currentPrefs, standbyStreamEnabled: !currentPrefs.standbyStreamEnabled }))}
+						onStandbyThresholdChange={val => persistPrefs(currentPrefs => ({ ...currentPrefs, standbyStreamThreshold: val }))}
+						onSetStandbyTab={onSetStandbyTab}
+						onStandbyOnboardingDone={onStandbyOnboardingDone}
 					/>
 				)}
 				{view === 'main' && (
@@ -252,15 +334,21 @@ const app = () => {
 						favoriteTeamIds={favoriteTeamIds}
 						gameBoosts={gameBoosts}
 						openTabs={openTabs}
+						onStandbyStream={onStandbyStream}
 						onOpenGameDetail={openGameDetail}
 						onOpenSetup={() => setView('setup')}
-						onToggleEnabled={() => persistPrefs({ ...prefs, enabled: !prefs.enabled })}
+						showReviewPrompt={shouldShowReviewPrompt(reviewPromptState)}
+						onToggleEnabled={() => persistPrefs(currentPrefs => ({ ...currentPrefs, enabled: !currentPrefs.enabled }))}
+						onDismissReviewPrompt={dismissReviewPrompt}
+						onLeaveReview={leaveReview}
 						onToggleFavoriteTeam={(leagueId, teamId) => {
 							const favoriteTeamKey = createFavoriteTeamKey(leagueId, teamId);
-							const current = new Set(prefs.favoriteTeamIds);
-							if (current.has(favoriteTeamKey)) current.delete(favoriteTeamKey);
-							else current.add(favoriteTeamKey);
-							persistPrefs({ ...prefs, favoriteTeamIds: [...current] });
+							persistPrefs(currentPrefs => {
+								const current = new Set(currentPrefs.favoriteTeamIds);
+								if (current.has(favoriteTeamKey)) current.delete(favoriteTeamKey);
+								else current.add(favoriteTeamKey);
+								return { ...currentPrefs, favoriteTeamIds: [...current] };
+							});
 						}}
 						onRegistryChange={onRegistryChange}
 						formatTabLabel={tab => formatTabLabel(tab, openTabs)}
@@ -272,6 +360,7 @@ const app = () => {
 						excitementResult={selectedScore}
 						scoreHistory={selectedScoreHistory}
 						powerScoreHistory={selectedPowerScoreHistory}
+						proTipsEnabled={prefs.proTipsEnabled}
 						gameBoosts={gameBoosts}
 						onSetGameBoost={onSetGameBoost}
 						onBack={() => setView('main')}

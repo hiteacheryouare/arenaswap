@@ -53,7 +53,7 @@ const popupFooter = () => {
 				</div>
 			)}
 			<div className='popup-signature-bar'>
-				Built with{' '}
+				Built with {' '}
 				<button
 					type='button'
 					onClick={handleHeartClick}
@@ -62,7 +62,7 @@ const popupFooter = () => {
 				>
 					❤️
 				</button>
-				{' '}by Ryan Mullin
+				{' '} by Ryan Mullin
 			</div>
 		</div>
 	);

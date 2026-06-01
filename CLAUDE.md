@@ -1,5 +1,7 @@
 # ArenaSwap Agent Instructions
 
+BEFORE YOU READ, PLEASE ALSO READ @.agents/GLOBAL_AGENTS.md FOR MORE GENERAL, ALWAYS ACTIVE DEVELOPMENT PHILOSOPHIES AND PREFERENCES.
+
 ## 🧠 Project Overview
 ArenaSwap is a browser extension that automatically switches tabs to the most exciting live sports game.
 

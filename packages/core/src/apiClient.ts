@@ -6,9 +6,16 @@ const upcomingDateWindowDays = 4;
 
 const parseClockToSeconds = (clock: string): number => {
 	const parts = clock.split(':');
+	if (parts.length === 1) {
+		const n = Number(parts[0]);
+		if (!n || isNaN(n)) return 0;
+		// Values in (0,1) are decimal minutes (e.g. ESPN pre-game "0.0", live "0.75" = 45s)
+		if (n < 1) return Math.round(n * 60);
+		return Math.floor(n);
+	}
 	if (parts.length !== 2) return 0;
 	const [min, sec] = parts.map(Number);
-	return ((min ?? 0) * 60) + (sec ?? 0);
+	return ((min ?? 0) * 60) + Math.floor(sec ?? 0);
 };
 
 const parseStatus = (state: string): Game['status'] => {
@@ -23,12 +30,31 @@ const toQueryDate = (date: Date): string => (
 );
 
 const buildUpcomingDatesRangeQuery = (): string => {
+	// Start from today so morning pre-game events aren't missed.
+	// ESPN's default (no-dates) scoreboard only reliably surfaces active/recent games;
+	// the explicit dates query returns all scheduled events for the requested range.
 	const start = new Date();
-	start.setUTCDate(start.getUTCDate() + 1);
 	const end = new Date(start);
-	end.setUTCDate(end.getUTCDate() + (upcomingDateWindowDays - 1));
+	end.setUTCDate(end.getUTCDate() + upcomingDateWindowDays);
 	return `${toQueryDate(start)}-${toQueryDate(end)}`;
 };
+
+// WCAG relative luminance — used to detect colors that would vanish on the app's black background
+const hexLuminance = (hex: string): number => {
+	const matched = /^#([\da-fA-F]{6})$/.exec(hex);
+	if (!matched) return 0;
+	const h = matched[1]!;
+	const ch = (n: number) => {
+		const c = n / 255;
+		return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+	};
+	return (0.2126 * ch(parseInt(h.slice(0, 2), 16)))
+		+ (0.7152 * ch(parseInt(h.slice(2, 4), 16)))
+		+ (0.0722 * ch(parseInt(h.slice(4, 6), 16)));
+};
+
+// Colors with luminance below this threshold risk blending into the black app background
+const darkOnBlackThreshold = 0.04;
 
 const normalizeTeamColor = (primary?: string, alternate?: string): string | undefined => {
 	const normalizeOne = (value?: string): string | undefined => {
@@ -45,12 +71,30 @@ const normalizeTeamColor = (primary?: string, alternate?: string): string | unde
 		return undefined;
 	};
 
-	return normalizeOne(primary) ?? normalizeOne(alternate);
+	const normalizedPrimary = normalizeOne(primary);
+	const normalizedAlternate = normalizeOne(alternate);
+
+	if (!normalizedPrimary) return normalizedAlternate;
+
+	// If the primary color is too dark for the black background, prefer alternate when it's brighter
+	if (hexLuminance(normalizedPrimary) < darkOnBlackThreshold) {
+		if (normalizedAlternate && hexLuminance(normalizedAlternate) > hexLuminance(normalizedPrimary)) {
+			return normalizedAlternate;
+		}
+	}
+
+	return normalizedPrimary;
 };
 
 interface EspnLeagueLogo {
 	href?: string;
+	rel?: string[];
 }
+
+// ESPN returns multiple logo variants; prefer the "dark" one (light-colored, for dark UIs).
+const pickLeagueLogo = (logos?: EspnLeagueLogo[]): string | undefined => (
+	logos?.find(l => l.rel?.includes('dark') && l.href)?.href ?? logos?.[0]?.href
+);
 
 interface EspnLeague {
 	id?: string;
@@ -304,7 +348,7 @@ const fetchLeagueGames = async (config: LeagueConfig, options: { includeUpcoming
 
 	if (!includeUpcoming) {
 		const todayResult = await fetchScoreboard(baseUrl, config.id);
-		const espnLogo = todayResult?.leagues?.[0]?.logos?.[0]?.href;
+		const espnLogo = pickLeagueLogo(todayResult?.leagues?.[0]?.logos);
 		const logoUrl = resolveLeagueLogoUrl(config.id, espnLogo);
 		const parsedGames = (todayResult?.events ?? [])
 			.map(event => parseEvent(event, config.id))
@@ -329,11 +373,17 @@ const fetchLeagueGames = async (config: LeagueConfig, options: { includeUpcoming
 
 	const todayData = todayResult.status === 'fulfilled' ? todayResult.value : undefined;
 	const upcomingData = upcomingResult.status === 'fulfilled' ? upcomingResult.value : undefined;
-	const espnLogo = todayData?.leagues?.[0]?.logos?.[0]?.href
-		?? upcomingData?.leagues?.[0]?.logos?.[0]?.href;
+	const espnLogo = pickLeagueLogo(todayData?.leagues?.[0]?.logos)
+		?? pickLeagueLogo(upcomingData?.leagues?.[0]?.logos);
 	const logoUrl = resolveLeagueLogoUrl(config.id, espnLogo);
 
+	const seenIds = new Set<string>();
 	const parsedGames = [...(todayData?.events ?? []), ...(upcomingData?.events ?? [])]
+		.filter(event => {
+			if (seenIds.has(event.id)) return false;
+			seenIds.add(event.id);
+			return true;
+		})
 		.map(event => parseEvent(event, config.id))
 		.filter((game): game is Game => game !== null && game.status !== 'post');
 
@@ -377,8 +427,8 @@ export const fetchLiveGames = async (enabledLeagues: LeagueId[]): Promise<Game[]
 	return games.filter(g => g.status === 'in');
 };
 
-export const fetchLeagueLogos = async (enabledLeagues: LeagueId[]): Promise<LeagueLogoMap> => {
-	const { leagueLogos } = await fetchGamesWithLeagueLogos(enabledLeagues);
+export const fetchLeagueLogos = async (enabledLeagues: LeagueId[], options: { includeUpcoming?: boolean } = {}): Promise<LeagueLogoMap> => {
+	const { leagueLogos } = await fetchGamesWithLeagueLogos(enabledLeagues, options);
 	return leagueLogos;
 };
 

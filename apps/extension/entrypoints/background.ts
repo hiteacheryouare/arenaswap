@@ -1,5 +1,11 @@
 import { randomInRange } from '@porkyproductions/hat';
 import { fetchGamesWithLeagueLogos, computePowerScore, normalizePowerScoreResult, MockGameSimulator, createPollModeTracker, isObjectRecord, isFiniteNumber, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts } from '@arenaswap/core';
+import { computeStandbyStreamDecision } from '../utils/standbyStreamLogic';
+import {
+	normalizeReviewPromptState,
+	recordSuccessfulReviewPromptSwitch,
+	reviewPromptStorageKey,
+} from '../utils/reviewPrompt';
 import {
 	createDefaultUserPreferences,
 	createFavoriteTeamKey,
@@ -49,7 +55,21 @@ export default defineBackground(() => {
 	let upcomingGamesReady: Promise<void> | undefined;
 	let pendingSwitchTimer: ReturnType<typeof setTimeout> | null = null;
 	let pendingSwitch: { gameId: string; tabId: number; reason?: string } | null = null;
+	let standbyStreamTabId: number | null = null;
+	let onStandbyStream = false;
 	const historyStorageDefaults = { scoreHistory: {}, powerScoreHistory: {}, gameBoosts: {} };
+
+	const recordSuccessfulSwitchForReviewPrompt = async (switchedAt: number) => {
+		try {
+			const stored = await browser.storage.local.get({ [reviewPromptStorageKey]: null });
+			const current = normalizeReviewPromptState(stored[reviewPromptStorageKey]);
+			await browser.storage.local.set({
+				[reviewPromptStorageKey]: recordSuccessfulReviewPromptSwitch(current, switchedAt),
+			});
+		} catch (err) {
+			console.error('ArenaSwap: Failed to update review prompt state:', err);
+		}
+	};
 
 	const hydrateHistoryMaps = (storedScoreHistory: unknown, storedPowerScoreHistory: unknown) => {
 		history.clear();
@@ -161,6 +181,8 @@ export default defineBackground(() => {
 		scoreHistory: serializeScoreHistory(),
 		powerScoreHistory: serializePowerScoreHistory(),
 		gameBoosts,
+		onStandbyStream,
+		standbyStreamTabId,
 	});
 
 	const broadcastScoresUpdated = () => {
@@ -218,7 +240,7 @@ export default defineBackground(() => {
 		pendingSwitch = null;
 	};
 
-	const executeSwitch = async (tabId: number, gameId: string, reason?: string) => {
+	const executeSwitch = async (tabId: number, gameId?: string, reason?: string) => {
 		const [activeTab] = await browser.tabs.query({ active: true, lastFocusedWindow: true });
 		if (activeTab?.id === tabId) return;
 
@@ -229,24 +251,34 @@ export default defineBackground(() => {
 		await browser.tabs.update(tabId, { active: true });
 		lastSwitchTime = Date.now();
 		await syncManagedTabMuteState(true);
+		if (gameId) await recordSuccessfulSwitchForReviewPrompt(lastSwitchTime);
 
 		if (prefs.notificationsEnabled) {
-			const game = games.find(g => g.id === gameId);
-			const scoreTitle = game
-				? `${game.awayTeam.abbreviation} ${game.awayTeam.score}-${game.homeTeam.score} ${game.homeTeam.abbreviation}`
-				: getGameLabel(gameId);
-			const capitalizeFirst = (s: string) => s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
-			const venue = getVenueName(gameId);
-			const message = reason
-				? `${capitalizeFirst(reason)}. Taking you to ${venue} now!`
-				: `Taking you to ${venue} now!`;
+			if (!gameId) {
+				await browser.notifications.create({
+					type: 'basic',
+					iconUrl: 'icon/128.png',
+					title: 'On standby stream | ArenaSwap',
+					message: 'All games went quiet. Parked on your standby stream.',
+				});
+			} else {
+				const game = games.find(g => g.id === gameId);
+				const scoreTitle = game
+					? `${game.awayTeam.abbreviation} ${game.awayTeam.score}-${game.homeTeam.score} ${game.homeTeam.abbreviation}`
+					: getGameLabel(gameId);
+				const capitalizeFirst = (s: string) => s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+				const venue = getVenueName(gameId);
+				const message = reason
+					? `${capitalizeFirst(reason)}. Taking you to ${venue} now!`
+					: `Taking you to ${venue} now!`;
 
-			await browser.notifications.create({
-				type: 'basic',
-				iconUrl: 'icon/128.png',
-				title: `Switched → ${scoreTitle} | ArenaSwap`,
-				message,
-			});
+				await browser.notifications.create({
+					type: 'basic',
+					iconUrl: 'icon/128.png',
+					title: `Switched → ${scoreTitle} | ArenaSwap`,
+					message,
+				});
+			}
 		}
 	};
 
@@ -362,6 +394,23 @@ export default defineBackground(() => {
 		if (registeredScores.length === 0) return;
 		if (pendingSwitch) return;
 
+		const standbyDecision = computeStandbyStreamDecision({
+			standbyStreamEnabled: prefs.standbyStreamEnabled,
+			standbyStreamTabId,
+			standbyStreamThreshold: prefs.standbyStreamThreshold,
+			registeredScores,
+			onStandbyStream,
+			activeTabIsStandby: activeTab.id === standbyStreamTabId,
+		});
+
+		if (standbyDecision === 'switchToStandby') {
+			onStandbyStream = true;
+			await executeSwitch(standbyStreamTabId!);
+			return;
+		}
+		if (standbyDecision === 'stayOnStandby') return;
+		if (standbyDecision === 'resume') onStandbyStream = false;
+
 		const best = registeredScores.reduce((a, b) => a.total > b.total ? a : b);
 		const bestReg = tabRegistry.find(r => r.gameId === best.gameId)!;
 		const threshold = sensitivityThresholds[prefs.sensitivity] ?? 0;
@@ -430,10 +479,13 @@ export default defineBackground(() => {
 
 		// Reschedule before awaiting post-processing so the next tick is always queued.
 		// On error fall back to eager interval so we retry promptly.
-		const nextInterval = fetchSucceeded && pollModeTracker.getMode(leagueId) === 'dormant'
-			? pollDormantMinMs + randomInRange(0, pollDormantMaxMs - pollDormantMinMs)
-			: pollIntervalMs + randomInRange(-2_000, 2_000);
-		scheduleLeagueTick(leagueId, nextInterval);
+		// Guard against rescheduling a league that was disabled while this fetch was in flight.
+		if (!demoMode && prefs.enabledLeagues.includes(leagueId)) {
+			const nextInterval = fetchSucceeded && pollModeTracker.getMode(leagueId) === 'dormant'
+				? pollDormantMinMs + randomInRange(0, pollDormantMaxMs - pollDormantMinMs)
+				: pollIntervalMs + randomInRange(-2_000, 2_000);
+			scheduleLeagueTick(leagueId, nextInterval);
+		}
 
 		await afterFetch(leagueId, allowTabSwitch);
 	};
@@ -470,11 +522,12 @@ export default defineBackground(() => {
 	// Load persisted state before any refresh to avoid race conditions on popup reopen.
 	const stateReady = Promise.all([
 		browser.storage.sync.get({ prefs: null }),
-		browser.storage.session.get({ tabRegistry: [], ...historyStorageDefaults }),
+		browser.storage.session.get({ tabRegistry: [], standbyStreamTabId: null, ...historyStorageDefaults }),
 		browser.storage.local.get({ demoMode: false }),
 	]).then(([prefsResult, sessionResult, demoResult]) => {
 		prefs = normalizeUserPreferences(prefsResult.prefs);
 		tabRegistry = sessionResult.tabRegistry as TabRegistration[];
+		standbyStreamTabId = (sessionResult.standbyStreamTabId as number | null) ?? null;
 		gameBoosts = normalizeGameBoosts(sessionResult.gameBoosts);
 		hydrateHistoryMaps(sessionResult.scoreHistory, sessionResult.powerScoreHistory);
 		demoMode = demoResult.demoMode as boolean;
@@ -505,6 +558,12 @@ export default defineBackground(() => {
 				// Upcoming games load in the background and arrive via SCORES_UPDATED push.
 				return stateReady
 					.then(async () => {
+						// Re-sync prefs from storage in case popup wrote prefs but closed before
+						// the UPDATE_PREFS message was delivered.
+						try {
+							const stored = await browser.storage.sync.get({ prefs: null });
+							prefs = normalizeUserPreferences(stored.prefs);
+						} catch { /* keep current in-memory prefs */ }
 						await refreshScores(false);
 						return buildBackgroundState();
 					});
@@ -513,9 +572,11 @@ export default defineBackground(() => {
 		}
 		if (msg.type === 'UPDATE_PREFS') {
 			return stateReady.then(async () => {
+				const wasEnabled = prefs.enabled;
 				const prevShowUpcoming = prefs.showUpcomingGames;
 				const prevLeagues = new Set(prefs.enabledLeagues);
 				prefs = normalizeUserPreferences(msg.prefs);
+				if (wasEnabled && !prefs.enabled) lastSwitchTime = 0;
 				clearPendingSwitch();
 				await browser.storage.sync.set({ prefs });
 				await syncManagedTabMuteState(prefs.enabled);
@@ -571,6 +632,13 @@ export default defineBackground(() => {
 				}
 				await browser.storage.local.set({ demoMode });
 				await refreshScores(false); // immediately refresh
+			});
+		}
+		if (msg.type === 'SET_STANDBY_STREAM_TAB') {
+			return stateReady.then(async () => {
+				standbyStreamTabId = msg.tabId;
+				onStandbyStream = false;
+				await browser.storage.session.set({ standbyStreamTabId });
 			});
 		}
 	});

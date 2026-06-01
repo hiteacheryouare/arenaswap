@@ -32,7 +32,8 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 	const reason = excitementResult?.reason ?? 'Best Available';
 	const sportTypeConfig = sportTypeConfigMap[game.sportType];
 	const isZeroZeroGame = game.homeTeam.score === 0 && game.awayTeam.score === 0;
-	const zeroZeroPenalty = isZeroZeroGame && !sportTypeConfig.zeroZeroAsFullTie
+	const hasZeroZeroPenalty = !sportTypeConfig.zeroZeroAsFullTie || sportTypeConfig.zeroZeroPenaltyPeriods?.includes(game.period) === true;
+	const zeroZeroPenalty = isZeroZeroGame && hasZeroZeroPenalty
 		? scorerTunables.scores.closeness.tied - scorerTunables.scores.closeness.zeroZero
 		: 0;
 	const rawPowerScore = closenessScore + lateGameScore + momentumScore + leadChangesScore + comebackScore;

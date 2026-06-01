@@ -148,14 +148,30 @@ describe('computePowerScore', () => {
 		});
 	});
 
-	test('scores 0-0 differently by sport type', () => {
+	test('scores 0-0 with sport-specific period caveats', () => {
 		const basketball = makeGame({
 			league: 'nba',
 			sportType: 'basketball',
 			homeTeam: { ...makeGame().homeTeam, score: 0 },
 			awayTeam: { ...makeGame().awayTeam, score: 0 },
 		});
-		const soccer = makeGame({
+		const earlyHockey = makeGame({
+			league: 'nhl',
+			sportType: 'hockey',
+			period: 2,
+			clockSeconds: 600,
+			homeTeam: { ...makeGame().homeTeam, score: 0 },
+			awayTeam: { ...makeGame().awayTeam, score: 0 },
+		});
+		const lateHockey = makeGame({
+			league: 'nhl',
+			sportType: 'hockey',
+			period: 3,
+			clockSeconds: 600,
+			homeTeam: { ...makeGame().homeTeam, score: 0 },
+			awayTeam: { ...makeGame().awayTeam, score: 0 },
+		});
+		const earlySoccer = makeGame({
 			league: 'mls',
 			sportType: 'soccer',
 			period: 1,
@@ -163,12 +179,26 @@ describe('computePowerScore', () => {
 			homeTeam: { ...makeGame().homeTeam, score: 0 },
 			awayTeam: { ...makeGame().awayTeam, score: 0 },
 		});
+		const lateSoccer = makeGame({
+			league: 'mls',
+			sportType: 'soccer',
+			period: 2,
+			clockSeconds: 2_500,
+			homeTeam: { ...makeGame().homeTeam, score: 0 },
+			awayTeam: { ...makeGame().awayTeam, score: 0 },
+		});
 
 		const basketballResult = computePowerScore(basketball, []);
-		const soccerResult = computePowerScore(soccer, []);
+		const earlyHockeyResult = computePowerScore(earlyHockey, []);
+		const lateHockeyResult = computePowerScore(lateHockey, []);
+		const earlySoccerResult = computePowerScore(earlySoccer, []);
+		const lateSoccerResult = computePowerScore(lateSoccer, []);
 
 		expect(basketballResult.closeness).toBe(scorerTunables.scores.closeness.zeroZero);
-		expect(soccerResult.closeness).toBe(scorerTunables.scores.closeness.tied);
+		expect(earlyHockeyResult.closeness).toBe(scorerTunables.scores.closeness.zeroZero);
+		expect(lateHockeyResult.closeness).toBe(scorerTunables.scores.closeness.tied);
+		expect(earlySoccerResult.closeness).toBe(scorerTunables.scores.closeness.zeroZero);
+		expect(lateSoccerResult.closeness).toBe(scorerTunables.scores.closeness.tied);
 	});
 
 	test('applies basketball closeness thresholds at boundary margins', () => {

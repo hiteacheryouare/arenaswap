@@ -331,6 +331,29 @@ describe('apiClient', () => {
 		expect(result.leagueLogos.mlb).toBe(leagueLogoFallbacks.mlb);
 	});
 
+	test('parses sub-minute clock values sent without a leading "0:" prefix', async () => {
+		const fetchMock = jest.fn().mockResolvedValue(createResponse({
+			events: [
+				makeEvent({ id: 'sub-min-int', state: 'in', period: 4, clock: '45', homeScore: '98', awayScore: '96' }),
+				makeEvent({ id: 'sub-min-float', state: 'in', period: 4, clock: '45.3', homeScore: '98', awayScore: '96' }),
+				makeEvent({ id: 'sub-min-dec-75', state: 'in', period: 4, clock: '0.75', homeScore: '98', awayScore: '96' }),
+				makeEvent({ id: 'sub-min-dec-5', state: 'in', period: 4, clock: '0.5', homeScore: '98', awayScore: '96' }),
+			],
+		}));
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+		const { fetchGamesWithLeagueLogos } = loadApiClient();
+
+		const result = await fetchGamesWithLeagueLogos(['nba'], { includeUpcoming: false });
+		const intGame = result.games.find(g => g.id === 'sub-min-int');
+		const floatGame = result.games.find(g => g.id === 'sub-min-float');
+		const dec75Game = result.games.find(g => g.id === 'sub-min-dec-75');
+		const dec5Game = result.games.find(g => g.id === 'sub-min-dec-5');
+		expect(intGame?.clockSeconds).toBe(45);
+		expect(floatGame?.clockSeconds).toBe(45);
+		expect(dec75Game?.clockSeconds).toBe(45); // 0.75 minutes = 45 seconds
+		expect(dec5Game?.clockSeconds).toBe(30);  // 0.5 minutes = 30 seconds
+	});
+
 	test('defensively handles malformed events, clocks, colors, and odds variants', async () => {
 		const missingCompetitors = makeEvent({
 			id: 'missing-competitors',
@@ -370,7 +393,7 @@ describe('apiClient', () => {
 		(fallbackHome.team as Record<string, unknown>).color = 'not-a-color';
 		(fallbackHome.team as Record<string, unknown>).alternateColor = 'still-not-a-color';
 		(fallbackAway.team as Record<string, unknown>).color = '112233';
-		(fallbackAway.team as Record<string, unknown>).alternateColor = 'bad';
+		(fallbackAway.team as Record<string, unknown>).alternateColor = 'still-not-a-color';
 		fallbackCompetition.odds = [{ details: '   ', overUnder: 'NaN' }];
 
 		const oddsVariants = makeEvent({
@@ -767,6 +790,59 @@ describe('apiClient', () => {
 
 		expect(game?.topOfInning).toBeUndefined();
 		expect(game?.baseRunners).toBeUndefined();
+	});
+
+	test('dates range query starts from today so morning pre-game events are not missed', async () => {
+		const fetchMock = jest.fn().mockResolvedValue(createResponse({ events: [] }));
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+		const { fetchGamesWithLeagueLogos } = loadApiClient();
+
+		await fetchGamesWithLeagueLogos(['nba']);
+
+		const calledUrls = fetchMock.mock.calls.map(([url]) => String(url));
+		const datesUrl = calledUrls.find(u => u.includes('dates='));
+		expect(datesUrl).toBeDefined();
+
+		const datesParam = new URL(datesUrl!).searchParams.get('dates')!;
+		const [rangeStart] = datesParam.split('-');
+
+		const todayUtc = new Date();
+		const expectedToday = `${todayUtc.getUTCFullYear()}${String(todayUtc.getUTCMonth() + 1).padStart(2, '0')}${String(todayUtc.getUTCDate()).padStart(2, '0')}`;
+		expect(rangeStart).toBe(expectedToday);
+	});
+
+	test('deduplicates events that appear in both default and dates responses', async () => {
+		const sharedEvent = makeEvent({
+			id: 'shared-live',
+			state: 'in',
+			period: 2,
+			clock: '5:00',
+			homeScore: '55',
+			awayScore: '52',
+		});
+
+		const fetchMock = jest.fn()
+			.mockResolvedValueOnce(createResponse({ events: [sharedEvent] }))
+			.mockResolvedValueOnce(createResponse({
+				events: [
+					sharedEvent,
+					makeEvent({
+						id: 'dates-only-pre',
+						state: 'pre',
+						period: 1,
+						clock: '0:00',
+						homeScore: '0',
+						awayScore: '0',
+					}),
+				],
+			}));
+
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+		const { fetchGamesWithLeagueLogos } = loadApiClient();
+
+		const result = await fetchGamesWithLeagueLogos(['nba']);
+		expect(result.games.map(g => g.id).sort()).toEqual(['dates-only-pre', 'shared-live']);
+		expect(result.games.filter(g => g.id === 'shared-live')).toHaveLength(1);
 	});
 
 	test('fetchLiveGames filters out pre-game entries', async () => {

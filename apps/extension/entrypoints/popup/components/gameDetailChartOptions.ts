@@ -54,7 +54,7 @@ const baseOption = (
 	labels: string[],
 	gridTop = 24,
 ): EChartsOption => ({
-	animationDuration: 220,
+	animationDuration: 500,
 	tooltip: {
 		trigger: 'axis',
 		backgroundColor: tooltipBackgroundColor,
