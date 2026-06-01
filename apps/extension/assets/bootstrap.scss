@@ -624,31 +624,35 @@ $pre-game-time-color: shade-color($warning, 60%);
 }
 
 .game-score-row {
-	gap: 1.25rem;
+	gap: 0.5rem;
+	align-items: center;
 }
 
 .game-score-value {
-	font-size: 1.75rem;
+	font-size: 2.1rem;
 	color: #111827;
-	letter-spacing: -0.02em;
+	letter-spacing: -0.04em;
 	font-variant-numeric: tabular-nums;
 }
 
 .game-clock {
 	font-size: 0.85rem;
-	color: #374151;
-	margin-top: 0.15rem;
+	font-weight: 700;
+	color: #111827;
+	margin-top: 0.18rem;
 }
 
 .game-period {
-	font-size: 0.7rem;
+	font-size: 0.62rem;
 	color: #6c757d;
-	margin-top: 0.1rem;
+	margin-top: 0.06rem;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
 }
 
 .team-logo-fallback {
-	width: 56px;
-	height: 56px;
+	width: 64px;
+	height: 64px;
 	font-size: 0.7rem;
 }
 
@@ -718,6 +722,239 @@ $pre-game-time-color: shade-color($warning, 60%);
 	color: #495057;
 	white-space: nowrap;
 	line-height: 1.2;
+}
+
+// ─── Score separator (thin vertical bar between scores) ──────────────────────
+
+.game-score-sep {
+	width: 1px;
+	height: 1.1em;
+	background: #e2e8f0;
+	flex-shrink: 0;
+	align-self: center;
+}
+
+.gc2-matchup {
+	display: flex;
+	align-items: center;
+	gap: 0.35rem;
+	padding: 0.25rem 0 0.1rem;
+}
+
+.gc2-team {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 0.16rem;
+	flex: 0 0 auto;
+}
+
+.gc2-team-home {
+	align-items: flex-end;
+}
+
+.gc2-team-logo-score {
+	display: flex;
+	align-items: center;
+	gap: 0.3rem;
+}
+
+.gc2-logo {
+	width: 34px;
+	height: 34px;
+	object-fit: contain;
+	flex-shrink: 0;
+}
+
+.gc2-logo-fallback {
+	width: 34px;
+	height: 34px;
+	border-radius: 50%;
+	background: #f3f4f6;
+	font-size: 0.48rem;
+	font-weight: 700;
+	color: #374151;
+	flex-shrink: 0;
+	text-transform: uppercase;
+	letter-spacing: 0.03em;
+}
+
+.gc2-score {
+	font-size: 1.85rem;
+	font-weight: 700;
+	line-height: 1;
+	color: #111827;
+	font-variant-numeric: tabular-nums;
+	letter-spacing: -0.04em;
+	min-width: 1ch;
+}
+
+.gc2-team-footer {
+	display: flex;
+	align-items: center;
+	gap: 0.22rem;
+	padding-left: 0.1rem;
+}
+
+.gc2-team-footer-home {
+	flex-direction: row-reverse;
+	padding-left: 0;
+	padding-right: 0.1rem;
+}
+
+.gc2-abbrev {
+	font-size: 0.6rem;
+	font-weight: 700;
+	color: #374151;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+}
+
+.gc2-center {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 0.16rem;
+	min-width: 0;
+	padding: 0 0.1rem;
+}
+
+.gc2-inning {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.16rem;
+	font-size: 0.78rem;
+	font-weight: 700;
+	color: #111827;
+	letter-spacing: 0.01em;
+}
+
+.gc2-inning-arrow {
+	color: $primary;
+	font-size: 0.65rem;
+}
+
+.gc2-clock {
+	font-size: 0.95rem;
+	font-weight: 700;
+	color: #111827;
+	letter-spacing: 0.02em;
+	font-variant-numeric: tabular-nums;
+	line-height: 1.1;
+}
+
+.gc2-period {
+	font-size: 0.6rem;
+	color: #6c757d;
+	letter-spacing: 0.05em;
+	text-transform: uppercase;
+	line-height: 1.1;
+}
+
+.gc2-status-chip {
+	font-size: 0.5rem;
+	font-weight: 700;
+	padding: 0.07rem 0.28rem;
+	border-radius: 999px;
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+	line-height: 1.35;
+
+	&.gc2-chip-ot {
+		background: rgba(#D90368, 0.08);
+		color: #D90368;
+		border: 1px solid rgba(#D90368, 0.25);
+	}
+
+	&.gc2-chip-int {
+		background: rgba(#2274A5, 0.08);
+		color: #2274A5;
+		border: 1px solid rgba(#2274A5, 0.25);
+	}
+
+	&.gc2-chip-ht {
+		background: rgba(#6c757d, 0.1);
+		color: #495057;
+		border: 1px solid rgba(#6c757d, 0.2);
+	}
+
+	&.gc2-chip-crunch {
+		background: rgba(#F75C03, 0.1);
+		color: #F75C03;
+		border: 1px solid rgba(#F75C03, 0.3);
+		animation: livePulse 2s ease-in-out infinite;
+	}
+}
+
+.gc2-score-diff {
+	font-size: 0.56rem;
+	font-weight: 600;
+	color: #9ca3af;
+	font-variant-numeric: tabular-nums;
+	letter-spacing: 0.02em;
+	line-height: 1;
+
+	&.gc2-diff-tied {
+		color: $primary;
+		font-weight: 700;
+	}
+}
+
+// Pre-game variant — larger logos, centered teams
+.gc2-pregame {
+	padding: 0.3rem 0;
+
+	.gc2-team,
+	.gc2-team-home {
+		align-items: center;
+	}
+
+	.gc2-team-footer,
+	.gc2-team-footer-home {
+		justify-content: center;
+		flex-direction: row;
+		padding-left: 0;
+		padding-right: 0;
+	}
+
+	.gc2-logo,
+	.gc2-logo-fallback {
+		width: 44px;
+		height: 44px;
+	}
+
+	.gc2-logo-fallback {
+		font-size: 0.6rem;
+	}
+}
+
+.gc2-pre-vs {
+	font-size: 0.78rem;
+	font-weight: 600;
+	color: #9ca3af;
+	letter-spacing: 0.04em;
+}
+
+.gc2-pre-time {
+	font-size: 0.64rem;
+	color: $pre-game-time-color;
+	text-align: center;
+	line-height: 1.3;
+	max-width: 90px;
+}
+
+// Baseball base diamond sizing in gc2
+.gc2-center svg {
+	width: 32px;
+	height: 32px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.gc2-chip-crunch {
+		animation: none;
+	}
 }
 
 .game-detail-shell {

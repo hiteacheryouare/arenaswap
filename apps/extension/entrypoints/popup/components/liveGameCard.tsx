@@ -50,6 +50,9 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 		? `${totalPowerScore} (base max ${scoreMaxTotal})`
 		: `${totalPowerScore} / ${scoreMaxTotal}`;
 
+	const isBaseball = game.sportType === 'baseball';
+	const hasClock = sportTypeConfig.clockBased;
+
 	const onCardClick = (event: MouseEvent<HTMLDivElement>) => {
 		if (isInteractiveCardTarget(event.target)) return;
 		onOpenGameDetail(game.id);
@@ -115,14 +118,23 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 			<div className='d-flex align-items-center justify-content-center game-card-matchup'>
 				<TeamColumn leagueId={game.league} team={game.awayTeam} isFavorited={awayFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} />
 				<div className='d-flex flex-column align-items-center game-card-center'>
-					{game.sportType === 'baseball' && game.baseRunners && <BaseDiamond {...game.baseRunners} />}
-					<div className='d-flex align-items-baseline game-score-row'>
+					<div className='d-flex align-items-center game-score-row'>
 						<FlipScore value={game.awayTeam.score} className='fw-bold lh-1 game-score-value' />
+						{isBaseball
+							? <BaseDiamond
+									first={game.baseRunners?.first ?? false}
+									second={game.baseRunners?.second ?? false}
+									third={game.baseRunners?.third ?? false}
+								/>
+							: <span className='game-score-sep' aria-hidden='true' />
+						}
 						<FlipScore value={game.homeTeam.score} className='fw-bold lh-1 game-score-value' />
 					</div>
-					{game.sportType !== 'baseball' && <span className='font-lekton game-clock'>{formatClock(game.clockSeconds)}</span>}
+					{!isBaseball && hasClock && (
+						<span className='font-lekton game-clock'>{formatClock(game.clockSeconds)}</span>
+					)}
 					<span className='font-lekton game-period'>
-						{game.sportType === 'baseball' && game.topOfInning !== undefined ? (game.topOfInning ? '▲ ' : '▼ ') : ''}{formatPeriod(game)}
+						{isBaseball && game.topOfInning !== undefined ? (game.topOfInning ? '▲ ' : '▼ ') : ''}{formatPeriod(game)}
 					</span>
 				</div>
 				<TeamColumn leagueId={game.league} team={game.homeTeam} isFavorited={homeFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} />

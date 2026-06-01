@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { leagueConfigMap } from '@arenaswap/core/constants';
 import type { Game, LeagueId, Team } from '@arenaswap/core/types';
 
-const logoSize = 56;
+const logoSize = 64;
 
 export const computeStallPenaltyPercent = (rawTotal: number, baseTotal: number): number => (
 	rawTotal > 0 ? Math.round((rawTotal - baseTotal) / rawTotal * 100) : 0
@@ -81,6 +81,25 @@ const TeamLogo = ({ team }: { team: Team }) => {
 		<div
 			className='d-flex align-items-center justify-content-center bg-light rounded-circle shrink-0 fw-bold text-body-secondary team-logo-fallback'
 		>
+			{(team.abbreviation ?? '?').slice(0, 3)}
+		</div>
+	);
+};
+
+export const gc2TeamLogo = ({ team }: { team: Team }) => {
+	const [failed, setFailed] = useState(false);
+	if (team.logo && !failed) {
+		return (
+			<img
+				src={team.logo}
+				alt={team.abbreviation}
+				className='gc2-logo object-fit-contain shrink-0'
+				onError={() => setFailed(true)}
+			/>
+		);
+	}
+	return (
+		<div className='gc2-logo-fallback d-flex align-items-center justify-content-center shrink-0 fw-bold'>
 			{(team.abbreviation ?? '?').slice(0, 3)}
 		</div>
 	);
