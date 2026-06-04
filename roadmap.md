@@ -52,6 +52,8 @@ This is a **living draft** based on [issue #13](https://github.com/hiteacheryoua
 
 - make all powerscore signals optional since powerscore is API agnostic
 
+-zod for API calls
+
 ## 2.1+ (ecosystem)
 
 - Public docs site for scoring concepts and extension behavior.
