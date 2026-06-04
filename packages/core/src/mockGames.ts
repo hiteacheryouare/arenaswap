@@ -25,20 +25,32 @@ const rareScoreChance = 0.3;
 const lateGameThresholdSeconds = 300;
 const lateGameComebackChance = 0.4;
 
-/** Sport-family simulation params (local to mock simulator only) */
+/** Sport-family simulation params (local to mock simulator only).
+ *
+ * Per-tick scoring probabilities are tuned to realistic per-game TOTALS at the 15s tick rate, so each
+ * sport's demo cadence matches reality: basketball scores almost every possession (graph always moving),
+ * while hockey/soccer go long stretches without a goal. The continuous "pulse" for low-scoring sports
+ * comes from the PowerScore v2 progress ramp + decay tails — NOT from unrealistically frequent scoring.
+ *
+ * Rough sanity check (regulation ticks × normalScoreProb × avg points ≈ points/team/game):
+ *   basketball ~192 ticks → ~110 pts   football ~240 → ~26   hockey ~240 → ~3.5
+ *   soccer ~360 → ~2      baseball ~60 half-inning ticks → ~4.5 runs
+ */
 const sportParams: Record<Game['sportType'], {
-	/** Points/goals scored per tick for each team on normal play */
+	/** Probability a team scores on a given tick during normal play */
 	normalScoreProb: number;
+	/** Probability while the team is on a hot streak (flurry / power play / scoring drive) */
 	streakScoreProb: number;
+	/** Probability for the cold team while the other side is streaking */
 	offScoreProb: number;
 	/** Score values: [frequent, rare] */
 	scoreValues: [number, number];
 }> = {
 	basketball: { normalScoreProb: 0.25, streakScoreProb: 0.55, offScoreProb: 0.1, scoreValues: [2, 3] },
-	hockey: { normalScoreProb: 0.06, streakScoreProb: 0.18, offScoreProb: 0.02, scoreValues: [1, 1] },
-	baseball: { normalScoreProb: 0.12, streakScoreProb: 0.35, offScoreProb: 0.04, scoreValues: [1, 2] },
-	football: { normalScoreProb: 0.15, streakScoreProb: 0.4, offScoreProb: 0.05, scoreValues: [7, 3] },
-	soccer: { normalScoreProb: 0.05, streakScoreProb: 0.14, offScoreProb: 0.02, scoreValues: [1, 1] },
+	football: { normalScoreProb: 0.02, streakScoreProb: 0.1, offScoreProb: 0.01, scoreValues: [7, 3] },
+	baseball: { normalScoreProb: 0.06, streakScoreProb: 0.22, offScoreProb: 0.03, scoreValues: [1, 2] },
+	hockey: { normalScoreProb: 0.014, streakScoreProb: 0.05, offScoreProb: 0.006, scoreValues: [1, 1] },
+	soccer: { normalScoreProb: 0.006, streakScoreProb: 0.022, offScoreProb: 0.003, scoreValues: [1, 1] },
 };
 
 const getStreakAdjustedProb = (
