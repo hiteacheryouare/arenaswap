@@ -13,7 +13,9 @@
 		"build:all": "turbo run build build:firefox build:edge",
 		"zip": "turbo run zip",
 		"test": "turbo run test",
-		"typecheck": "turbo run typecheck"
+		"typecheck": "turbo run typecheck",
+		"powerscore:simulate": "vite-node scripts/powerscore/simulateDistribution.ts",
+		"powerscore:validate-live": "vite-node scripts/powerscore/validateLive.ts"
 	},
 	"devDependencies": {
 		"turbo": "^2.9.16",

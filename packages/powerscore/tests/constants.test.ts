@@ -12,10 +12,13 @@ import {
 } from '../src/constants';
 
 describe('scoreMaxTotal', () => {
-	it('equals the sum of all signal maxes', () => {
-		expect(scoreMaxTotal).toBe(
-			scoreMaxCloseness + scoreMaxLateGame + scoreMaxMomentum + scoreMaxLeadChanges + scoreMaxComeback
-		);
+	it('is the 100-point headline cap', () => {
+		expect(scoreMaxTotal).toBe(100);
+	});
+
+	it('is below the sum of per-signal ceilings (overcomplete, so exciting games can saturate)', () => {
+		const sumOfCeilings = scoreMaxCloseness + scoreMaxLateGame + scoreMaxMomentum + scoreMaxLeadChanges + scoreMaxComeback;
+		expect(sumOfCeilings).toBeGreaterThan(scoreMaxTotal);
 	});
 });
 
@@ -70,23 +73,31 @@ describe('leagueConfigMap coverage', () => {
 	});
 });
 
-describe('sportTypeConfigs late-game curve config', () => {
-	it('defines curve tunables for every sport with a matching model', () => {
+describe('sportTypeConfigs late-game config', () => {
+	it('clock sports derive the ramp from period/clock and carry no inning curve', () => {
 		for (const config of sportTypeConfigs) {
-			if (config.clockBased) {
-				expect(config.lateGameCurve.model).toBe('clock');
-				if (config.lateGameCurve.model === 'clock') {
-					expect(config.lateGameCurve.finalPeriodCurve.maxScore).toBeLessThanOrEqual(scoreMaxLateGame);
-					expect(config.lateGameCurve.previousPeriodCurve.maxScore).toBeLessThanOrEqual(scoreMaxLateGame);
-				}
-				continue;
-			}
+			if (!config.clockBased) continue;
+			expect(config.lateGameCurve).toBeUndefined();
+			expect(config.otPreBoostWindowSecs).toBeGreaterThan(0);
+		}
+	});
 
-			expect(config.lateGameCurve.model).toBe('baseball');
-			if (config.lateGameCurve.model === 'baseball') {
-				expect(config.lateGameCurve.regulationCurve.maxScore).toBeLessThanOrEqual(scoreMaxLateGame);
-				expect(config.lateGameCurve.extraInningsCurve.maxScore).toBeLessThanOrEqual(scoreMaxLateGame);
-			}
+	it('baseball defines inning anchors and disables the OT pre-boost', () => {
+		const baseball = sportTypeConfigs.find(c => c.id === 'baseball');
+		expect(baseball).toBeDefined();
+		expect(baseball!.lateGameCurve?.model).toBe('baseball');
+		if (baseball!.lateGameCurve?.model === 'baseball') {
+			expect(baseball!.lateGameCurve.regulationStartInning).toBeLessThan(baseball!.lateGameCurve.regulationInnings);
+			expect(baseball!.lateGameCurve.extraInningsStartInning).toBeGreaterThan(baseball!.lateGameCurve.regulationInnings);
+		}
+		expect(baseball!.otPreBoostWindowSecs).toBe(0);
+	});
+
+	it('every sport defines sport-scaled decay half-lives', () => {
+		for (const config of sportTypeConfigs) {
+			expect(config.decayHalfLifeMs.momentum).toBeGreaterThan(0);
+			expect(config.decayHalfLifeMs.leadChange).toBeGreaterThan(0);
+			expect(config.decayHalfLifeMs.comeback).toBeGreaterThan(0);
 		}
 	});
 });

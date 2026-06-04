@@ -8,51 +8,70 @@ export const stallPenaltySteps: { minPolls: number; multiplier: number }[] = [
 	{ minPolls: 8,  multiplier: 0.85 },
 ];
 
-// PowerScore signal maxes (total possible: 100, sport-agnostic)
+// PowerScore signal maxes (per-signal ceilings, sport-agnostic).
+// The per-signal ceilings deliberately sum to MORE than 100 ("overcomplete"): the headline total is
+// capped at scoreMaxTotal, so a genuinely exciting game — close + a run + lead changes, even mid-game
+// before late-game pressure exists — can stack into the 80s/90s and a true classic saturates at 100,
+// while a dull game still scores low. This is what lets PowerScore use its full 0–100 range instead of
+// compressing every game into the bottom two-thirds.
 export const scoreMaxCloseness = 30;
-export const scoreMaxLateGame = 30;
-export const scoreMaxMomentum = 20;
-export const scoreMaxLeadChanges = 12;
-export const scoreMaxComeback = 8;
-export const scoreMaxTotal = scoreMaxCloseness + scoreMaxLateGame + scoreMaxMomentum + scoreMaxLeadChanges + scoreMaxComeback;
+export const scoreMaxLateGame = 28;
+export const scoreMaxMomentum = 28;
+export const scoreMaxLeadChanges = 18;
+export const scoreMaxComeback = 14;
+// Headline cap. Intentionally lower than the sum of the per-signal ceilings above.
+export const scoreMaxTotal = 100;
 
 export const scorerTunables: ScorerTunables = {
 	scores: {
+		// Closeness tiers are now the CEILINGS reached at the end of regulation (progress = 1).
+		// Realized closeness = closenessFlatFloor + (tier - floor) * gameProgress, so early games sit low.
 		closeness: {
 			tied: scoreMaxCloseness,
-			tight: 26,
-			zeroZero: 20,
-			close: 14,
-			fringe: 5,
+			tight: 25,
+			zeroZero: 16,
+			close: 15,
+			fringe: 6,
 			none: 0,
 		},
+		// Always-paid closeness minimum for any active (non-blowout) tier, before progress scaling.
+		closenessFlatFloor: 6,
 		lateGame: {
 			overtime: scoreMaxLateGame,
+			otEdgeMax: 26,
+			// Final period ramps 3 → 26 near-linearly; the prior period ramps 0 → 3 so the boundary is
+			// smooth and there is no final-seconds cliff (matches the chosen "near-linear" curve).
+			finalPeriodStart: 3,
+			previousPeriodTouch: 3,
+			otPreBoostMax: scoreMaxLateGame - 26,
 			clockBased: {
 				critical: 26,
-				tense: 18,
-				previousPeriod: 10,
+				tense: 16,
+				previousPeriod: 6,
 			},
 			baseballInningTiers: [
 				{ minInning: 9, score: 26, includeReason: true },
-				{ minInning: 7, score: 18, includeReason: true },
-				{ minInning: 6, score: 10, includeReason: false },
+				{ minInning: 7, score: 16, includeReason: true },
+				{ minInning: 6, score: 6, includeReason: false },
 			],
 			none: 0,
 		},
+		// Momentum / lead-change tier values are the spike CEILINGS; sport-scaled decay is applied after.
 		momentum: {
 			bigRun: scoreMaxMomentum,
-			smallRun: 10,
+			smallRun: 15,
 			none: 0,
 		},
 		leadChanges: {
 			multiple: scoreMaxLeadChanges,
-			single: 10,
+			single: 12,
 			none: 0,
 		},
+		// Comeback ceilings (progress-scaled like closeness, then decayed like the rest of the cluster).
 		comeback: {
 			big: scoreMaxComeback,
-			moderate: 6,
+			moderate: 8,
+			flatFloor: 2,
 			none: 0,
 		},
 	},
@@ -71,6 +90,7 @@ export const scorerTunables: ScorerTunables = {
 		clockLeftSuffix: 'left',
 		underPrefix: 'under',
 		minutesLeftSuffix: 'min left',
+		overtimeAnticipation: 'tied — OT in sight',
 		momentumRunPrefix: 'on a',
 		momentumRunSuffix: 'run',
 		momentumRolling: 'heating up',
@@ -87,54 +107,21 @@ export const sportTypeConfigs: SportTypeConfig[] = [
 		id: 'basketball',
 		clockBased: true,
 		closenessMargins: [5, 10, 18],
-		lateGameCurve: {
-			model: 'clock',
-			finalPeriodWindowSecs: 300,
-			previousPeriodWindowSecs: 300,
-			finalPeriodCurve: {
-				minScore: 5,
-				maxScore: 28,
-				growthRate: 1.5,
-			},
-			previousPeriodCurve: {
-				minScore: 3,
-				maxScore: 10,
-				growthRate: 1.1,
-			},
-		},
-		lateGameCriticalSecs: 120,
-		lateGameTenseSecs: 300,
-		lateGamePrevPeriodSecs: 300,
 		momentumBigRun: 8,
 		momentumSmallRun: 4,
 		clockCountsUp: false,
 		zeroZeroAsFullTie: false,
 		comebackThresholdBig: 6,
 		comebackThresholdSmall: 3,
+		// Basketball scores constantly — short half-lives keep the graph jumpy and reactive.
+		decayHalfLifeMs: { momentum: 45_000, leadChange: 60_000, comeback: 60_000 },
+		otPreBoostWindowSecs: 60,
 		maxHistorySnapshots: 32,
 	},
 	{
 		id: 'hockey',
 		clockBased: true,
 		closenessMargins: [1, 2, 3],
-		lateGameCurve: {
-			model: 'clock',
-			finalPeriodWindowSecs: 300,
-			previousPeriodWindowSecs: 300,
-			finalPeriodCurve: {
-				minScore: 8,
-				maxScore: 28,
-				growthRate: 1.6,
-			},
-			previousPeriodCurve: {
-				minScore: 3,
-				maxScore: 10,
-				growthRate: 1.1,
-			},
-		},
-		lateGameCriticalSecs: 120,
-		lateGameTenseSecs: 300,
-		lateGamePrevPeriodSecs: 300,
 		momentumBigRun: 2,
 		momentumSmallRun: 1,
 		clockCountsUp: false,
@@ -142,91 +129,53 @@ export const sportTypeConfigs: SportTypeConfig[] = [
 		zeroZeroPenaltyPeriods: [1, 2],
 		comebackThresholdBig: 2,
 		comebackThresholdSmall: 1,
+		// Goals are rare — long half-lives let a single goal's spike linger across many quiet polls.
+		decayHalfLifeMs: { momentum: 180_000, leadChange: 240_000, comeback: 240_000 },
+		otPreBoostWindowSecs: 60,
 		maxHistorySnapshots: 30,
 	},
 	{
 		id: 'baseball',
 		clockBased: false,
 		closenessMargins: [1, 3, 5],
+		// Baseball has no clock — the near-linear late-game ramp keys off these inning anchors.
 		lateGameCurve: {
 			model: 'baseball',
 			regulationInnings: 9,
 			regulationStartInning: 6,
 			extraInningsStartInning: 10,
-			regulationCurve: {
-				minScore: 5,
-				maxScore: 24,
-				growthRate: 1,
-			},
-			extraInningsCurve: {
-				minScore: 24,
-				maxScore: scoreMaxLateGame,
-				growthRate: 0.9,
-			},
 		},
-		lateGameCriticalSecs: 0,
-		lateGameTenseSecs: 0,
-		lateGamePrevPeriodSecs: 0,
 		momentumBigRun: 3,
 		momentumSmallRun: 1,
 		clockCountsUp: false,
 		zeroZeroAsFullTie: false,
 		comebackThresholdBig: 2,
 		comebackThresholdSmall: 1,
+		// Runs cluster by inning — mid-length half-lives. No game clock, so no OT pre-boost window.
+		decayHalfLifeMs: { momentum: 150_000, leadChange: 180_000, comeback: 180_000 },
+		otPreBoostWindowSecs: 0,
 		maxHistorySnapshots: 36,
 	},
 	{
 		id: 'football',
 		clockBased: true,
 		closenessMargins: [3, 8, 14],
-		lateGameCurve: {
-			model: 'clock',
-			finalPeriodWindowSecs: 300,
-			previousPeriodWindowSecs: 180,
-			finalPeriodCurve: {
-				minScore: 5,
-				maxScore: 28,
-				growthRate: 1.5,
-			},
-			previousPeriodCurve: {
-				minScore: 3,
-				maxScore: 10,
-				growthRate: 1,
-			},
-		},
-		lateGameCriticalSecs: 120,
-		lateGameTenseSecs: 300,
-		lateGamePrevPeriodSecs: 180,
 		momentumBigRun: 10,
 		momentumSmallRun: 4,
 		clockCountsUp: false,
 		zeroZeroAsFullTie: false,
 		comebackThresholdBig: 7,
 		comebackThresholdSmall: 3,
+		// Scoring drives in bursts with long gaps between possessions — longer half-lives keep the
+		// graph alive through those gaps (workshopped ×1.5 vs the other mid-scoring sports).
+		decayHalfLifeMs: { momentum: 135_000, leadChange: 180_000, comeback: 180_000 },
+		otPreBoostWindowSecs: 60,
 		maxHistorySnapshots: 32,
 	},
 	{
 		id: 'soccer',
 		clockBased: true,
 		closenessMargins: [1, 2, 3],
-		lateGameCurve: {
-			model: 'clock',
-			finalPeriodWindowSecs: 600,
-			previousPeriodWindowSecs: 600,
-			finalPeriodCurve: {
-				minScore: 5,
-				maxScore: 28,
-				growthRate: 1.3,
-			},
-			previousPeriodCurve: {
-				minScore: 3,
-				maxScore: 10,
-				growthRate: 0.9,
-			},
-		},
-		lateGameCriticalSecs: 180,
-		lateGameTenseSecs: 600,
-		lateGamePrevPeriodSecs: 600,
 		momentumBigRun: 2,
 		momentumSmallRun: 1,
 		clockCountsUp: true,
@@ -234,6 +183,9 @@ export const sportTypeConfigs: SportTypeConfig[] = [
 		zeroZeroPenaltyPeriods: [1],
 		comebackThresholdBig: 2,
 		comebackThresholdSmall: 1,
+		// Goals are the rarest of all — the longest half-lives so a goal carries the graph for minutes.
+		decayHalfLifeMs: { momentum: 240_000, leadChange: 300_000, comeback: 300_000 },
+		otPreBoostWindowSecs: 60,
 		maxHistorySnapshots: 40,
 	},
 ];
@@ -269,9 +221,8 @@ export const leagueConfigs: LeagueConfig[] = [
 		regularPeriods: 2,
 		periodDurationSecs: 1200,
 		periodFormat: 'halves',
-		// 20-min halves are much longer than NBA 12-min quarters; widen the late-game window
-		// so the tension ramp starts proportionally earlier (last ~10 min instead of last 5).
-		lateGameWindowOverrideSecs: { finalPeriod: 600, previousPeriod: 600 },
+		// 20-min halves: the near-linear late-game ramp spans the whole final half automatically,
+		// so the tension build starts proportionally earlier with no special-casing needed.
 	},
 	{
 		id: 'nhl',

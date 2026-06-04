@@ -83,15 +83,15 @@ When no games are live, the extension enters a low-power dormant mode and checks
 
 PowerScore is a 100-point live algorithm that measures how exciting a game is *right now*. Five signals feed into it:
 
-| Signal | Max Points | What It Measures |
+| Signal | Ceiling | What It Measures |
 |---|---|---|
-| Closeness | 30 | How tight the margin is — a tied game scores maximum. |
-| Late-Game Pressure | 30 | Exponential boost as the clock winds down. Overtime maxes the scale. |
-| Momentum | 20 | Unanswered scoring runs. |
-| Lead Changes | 12 | Back-and-forth games beat one-sided affairs. |
-| Comeback Factor | 8 | Is the trailing team clawing back? |
+| Closeness | 30 | How tight the margin is — a tied game scores highest, and counts for more as the game goes on. |
+| Late-Game Pressure | 28 | Tension that rises across the whole final period (only when the game is close), with a pre-boost for tied games heading to overtime. |
+| Momentum | 28 | Unanswered scoring runs that spike and then fade. |
+| Lead Changes | 18 | Back-and-forth games beat one-sided affairs. |
+| Comeback Factor | 14 | Is the trailing team clawing back? |
 
-Games with frozen clocks (halftime, timeouts) take a penalty so ArenaSwap doesn't switch during stoppages. You can also set a **Favorite Team Bonus** to keep games involving your teams ranked higher.
+The signal ceilings deliberately sum to more than 100 and the headline is capped at 100, so a genuinely exciting game stacks into the 80s/90s (even mid-game) and a true classic hits 100, while dull games stay low — the score uses its full range. It also builds with the game rather than sitting at a flat baseline: an early or lopsided game scores low and tension ramps toward the buzzer. Live signals spike on a score and then decay, so even low-scoring sports keep a moving graph instead of flat lines. Games with frozen clocks (halftime, timeouts) take a penalty so ArenaSwap doesn't switch during stoppages. You can also set a **Favorite Team Bonus** to keep games involving your teams ranked higher.
 
 ---
 

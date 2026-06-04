@@ -25,20 +25,32 @@ const rareScoreChance = 0.3;
 const lateGameThresholdSeconds = 300;
 const lateGameComebackChance = 0.4;
 
-/** Sport-family simulation params (local to mock simulator only) */
+/** Sport-family simulation params (local to mock simulator only).
+ *
+ * Per-tick scoring probabilities are tuned to realistic per-game TOTALS at the 15s tick rate, so each
+ * sport's demo cadence matches reality: basketball scores almost every possession (graph always moving),
+ * while hockey/soccer go long stretches without a goal. The continuous "pulse" for low-scoring sports
+ * comes from the PowerScore v2 progress ramp + decay tails — NOT from unrealistically frequent scoring.
+ *
+ * Rough sanity check (regulation ticks × normalScoreProb × avg points ≈ points/team/game):
+ *   basketball ~192 ticks → ~110 pts   football ~240 → ~26   hockey ~240 → ~3.5
+ *   soccer ~360 → ~2      baseball ~60 half-inning ticks → ~4.5 runs
+ */
 const sportParams: Record<Game['sportType'], {
-	/** Points/goals scored per tick for each team on normal play */
+	/** Probability a team scores on a given tick during normal play */
 	normalScoreProb: number;
+	/** Probability while the team is on a hot streak (flurry / power play / scoring drive) */
 	streakScoreProb: number;
+	/** Probability for the cold team while the other side is streaking */
 	offScoreProb: number;
 	/** Score values: [frequent, rare] */
 	scoreValues: [number, number];
 }> = {
 	basketball: { normalScoreProb: 0.25, streakScoreProb: 0.55, offScoreProb: 0.1, scoreValues: [2, 3] },
-	hockey: { normalScoreProb: 0.06, streakScoreProb: 0.18, offScoreProb: 0.02, scoreValues: [1, 1] },
-	baseball: { normalScoreProb: 0.12, streakScoreProb: 0.35, offScoreProb: 0.04, scoreValues: [1, 2] },
-	football: { normalScoreProb: 0.15, streakScoreProb: 0.4, offScoreProb: 0.05, scoreValues: [7, 3] },
-	soccer: { normalScoreProb: 0.05, streakScoreProb: 0.14, offScoreProb: 0.02, scoreValues: [1, 1] },
+	football: { normalScoreProb: 0.02, streakScoreProb: 0.1, offScoreProb: 0.01, scoreValues: [7, 3] },
+	baseball: { normalScoreProb: 0.06, streakScoreProb: 0.22, offScoreProb: 0.03, scoreValues: [1, 2] },
+	hockey: { normalScoreProb: 0.014, streakScoreProb: 0.05, offScoreProb: 0.006, scoreValues: [1, 1] },
+	soccer: { normalScoreProb: 0.006, streakScoreProb: 0.022, offScoreProb: 0.003, scoreValues: [1, 1] },
 };
 
 const getStreakAdjustedProb = (
@@ -86,8 +98,8 @@ export class MockGameSimulator {
 				id: 'mock-2',
 				league: 'nba',
 				sportType: 'basketball',
-				homeTeam: { id: '20', name: 'Philadelphia 76ers', abbreviation: 'PHI', score: 68, logo: `${espnCdn}/nba/500/20.png`, color: '#006BB6' },
-				awayTeam: { id: '4', name: 'Chicago Bulls', abbreviation: 'CHI', score: 65, logo: `${espnCdn}/nba/500/4.png`, color: '#CE1141' },
+				homeTeam: { id: '20', name: 'Philadelphia 76ers', abbreviation: 'PHI', score: 68, logo: `${espnCdn}/nba/500/phi.png`, color: '#006BB6' },
+				awayTeam: { id: '4', name: 'Chicago Bulls', abbreviation: 'CHI', score: 65, logo: `${espnCdn}/nba/500/chi.png`, color: '#CE1141' },
 				venueName: 'Xfinity Mobile Arena',
 				period: 3, clockSeconds: 284, status: 'in',
 				broadcasts: ['ESPN', 'NBCSN'],
@@ -101,8 +113,8 @@ export class MockGameSimulator {
 				id: 'mock-3',
 				league: 'nhl',
 				sportType: 'hockey',
-				homeTeam: { id: '15', name: 'Philadelphia Flyers', abbreviation: 'PHI', score: 2, logo: `${espnCdn}/nhl/500/15.png`, color: '#F74902' },
-				awayTeam: { id: '16', name: 'Pittsburgh Penguins', abbreviation: 'PIT', score: 1, logo: `${espnCdn}/nhl/500/16.png`, color: '#CFC493' },
+				homeTeam: { id: '15', name: 'Philadelphia Flyers', abbreviation: 'PHI', score: 2, logo: `${espnCdn}/nhl/500/phi.png`, color: '#F74902' },
+				awayTeam: { id: '16', name: 'Pittsburgh Penguins', abbreviation: 'PIT', score: 1, logo: `${espnCdn}/nhl/500/pit.png`, color: '#CFC493' },
 				venueName: 'Xfinity Mobile Arena',
 				period: 3, clockSeconds: 412, status: 'in',
 				broadcasts: ['NHL Net'],
@@ -116,8 +128,8 @@ export class MockGameSimulator {
 				id: 'mock-4',
 				league: 'mlb',
 				sportType: 'baseball',
-				homeTeam: { id: '22', name: 'Philadelphia Phillies', abbreviation: 'PHI', score: 3, logo: `${espnCdn}/mlb/500/22.png`, color: '#E81828' },
-				awayTeam: { id: '21', name: 'New York Mets', abbreviation: 'NYM', score: 2, logo: `${espnCdn}/mlb/500/21.png`, color: '#002D72' },
+				homeTeam: { id: '22', name: 'Philadelphia Phillies', abbreviation: 'PHI', score: 3, logo: `${espnCdn}/mlb/500/phi.png`, color: '#E81828' },
+				awayTeam: { id: '21', name: 'New York Mets', abbreviation: 'NYM', score: 2, logo: `${espnCdn}/mlb/500/nym.png`, color: '#002D72' },
 				venueName: 'Citizens Bank Park',
 				period: 8, clockSeconds: 0, status: 'in',
 				topOfInning: false,
@@ -128,8 +140,8 @@ export class MockGameSimulator {
 				id: 'mock-5',
 				league: 'nfl',
 				sportType: 'football',
-				homeTeam: { id: '21', name: 'Philadelphia Eagles', abbreviation: 'PHI', score: 17, logo: `${espnCdn}/nfl/500/21.png`, color: '#004C54' },
-				awayTeam: { id: '6', name: 'Dallas Cowboys', abbreviation: 'DAL', score: 14, logo: `${espnCdn}/nfl/500/6.png`, color: '#003594' },
+				homeTeam: { id: '21', name: 'Philadelphia Eagles', abbreviation: 'PHI', score: 17, logo: `${espnCdn}/nfl/500/phi.png`, color: '#004C54' },
+				awayTeam: { id: '6', name: 'Dallas Cowboys', abbreviation: 'DAL', score: 14, logo: `${espnCdn}/nfl/500/dal.png`, color: '#003594' },
 				venueName: 'Lincoln Financial Field',
 				period: 4, clockSeconds: 480, status: 'in',
 				broadcasts: ['NBC', 'Peacock'],
@@ -205,8 +217,8 @@ export class MockGameSimulator {
 				id: 'mock-13',
 				league: 'fifawc',
 				sportType: 'soccer',
-				homeTeam: { id: '564', name: 'United States', abbreviation: 'USA', score: 1, logo: `${espnCdn}/soccer/500/564.png`, color: '#002868' },
-				awayTeam: { id: '239', name: 'Mexico', abbreviation: 'MEX', score: 1, logo: `${espnCdn}/soccer/500/239.png`, color: '#006847' },
+				homeTeam: { id: '564', name: 'United States', abbreviation: 'USA', score: 1, logo: `${espnCdn}/countries/500/usa.png`, color: '#002868' },
+				awayTeam: { id: '239', name: 'Mexico', abbreviation: 'MEX', score: 1, logo: `${espnCdn}/countries/500/mex.png`, color: '#006847' },
 				venueName: 'Lincoln Financial Field',
 				period: 2, clockSeconds: 2400, status: 'in',
 				broadcasts: ['Fox'],
@@ -215,8 +227,8 @@ export class MockGameSimulator {
 				id: 'mock-14',
 				league: 'nhl',
 				sportType: 'hockey',
-				homeTeam: { id: '3', name: 'New York Rangers', abbreviation: 'NYR', score: 2, logo: `${espnCdn}/nhl/500/3.png`, color: '#0038A8' },
-				awayTeam: { id: '1', name: 'Boston Bruins', abbreviation: 'BOS', score: 2, logo: `${espnCdn}/nhl/500/1.png`, color: '#FFB81C' },
+				homeTeam: { id: '3', name: 'New York Rangers', abbreviation: 'NYR', score: 2, logo: `${espnCdn}/nhl/500/nyr.png`, color: '#0038A8' },
+				awayTeam: { id: '1', name: 'Boston Bruins', abbreviation: 'BOS', score: 2, logo: `${espnCdn}/nhl/500/bos.png`, color: '#FFB81C' },
 				venueName: 'Madison Square Garden',
 				period: 4, clockSeconds: 214, status: 'in',
 				broadcasts: ['TNT'],
@@ -226,8 +238,8 @@ export class MockGameSimulator {
 				id: 'mock-15',
 				league: 'nba',
 				sportType: 'basketball',
-				homeTeam: { id: '5', name: 'Cleveland Cavaliers', abbreviation: 'CLE', score: 108, logo: `${espnCdn}/nba/500/5.png`, color: '#860038' },
-				awayTeam: { id: '13', name: 'Milwaukee Bucks', abbreviation: 'MIL', score: 107, logo: `${espnCdn}/nba/500/15.png`, color: '#00471B' },
+				homeTeam: { id: '5', name: 'Cleveland Cavaliers', abbreviation: 'CLE', score: 108, logo: `${espnCdn}/nba/500/cle.png`, color: '#860038' },
+				awayTeam: { id: '13', name: 'Milwaukee Bucks', abbreviation: 'MIL', score: 107, logo: `${espnCdn}/nba/500/mil.png`, color: '#00471B' },
 				venueName: 'Rocket Mortgage FieldHouse',
 				period: 4, clockSeconds: 38, status: 'in',
 				broadcasts: ['ESPN'],
@@ -237,8 +249,8 @@ export class MockGameSimulator {
 				id: 'mock-16',
 				league: 'mlb',
 				sportType: 'baseball',
-				homeTeam: { id: '28', name: 'Houston Astros', abbreviation: 'HOU', score: 4, logo: `${espnCdn}/mlb/500/28.png`, color: '#EB6E1F' },
-				awayTeam: { id: '10', name: 'Los Angeles Dodgers', abbreviation: 'LAD', score: 4, logo: `${espnCdn}/mlb/500/19.png`, color: '#005A9C' },
+				homeTeam: { id: '28', name: 'Houston Astros', abbreviation: 'HOU', score: 4, logo: `${espnCdn}/mlb/500/hou.png`, color: '#EB6E1F' },
+				awayTeam: { id: '10', name: 'Los Angeles Dodgers', abbreviation: 'LAD', score: 4, logo: `${espnCdn}/mlb/500/lad.png`, color: '#005A9C' },
 				venueName: 'Minute Maid Park',
 				period: 10, clockSeconds: 0, status: 'in',
 				topOfInning: true,

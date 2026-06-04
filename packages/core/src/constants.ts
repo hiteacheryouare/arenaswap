@@ -52,14 +52,17 @@ export const defaultCooldownSecs = 45;
 export const defaultSwitchDelaySecs = 0;
 export const defaultFavoriteTeamBonusPoints = 10;
 
-// Sensitivity level → score delta required to trigger a tab switch
+// Sensitivity level → score delta required to trigger a tab switch.
+// Recalibrated for the PowerScore v2 distribution (lower bases, more spread) via the simulation
+// harness (npm run powerscore:simulate), then nudged ~25% stickier so the Balanced default is less
+// jumpy. Level 4 (~11) sits just above the median best-vs-runner-up switch gap.
 export const sensitivityThresholds: Record<number, number> = {
-	1: 65,
-	2: 42,
-	3: 26,
-	4: 14,
-	5: 8,
-	6: 4,
+	1: 44,
+	2: 29,
+	3: 19,
+	4: 11,
+	5: 6,
+	6: 3,
 	7: 1
 };
 

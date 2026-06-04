@@ -3,37 +3,38 @@ import { useEffect, useRef, useState } from 'react';
 const signals = [
 	{
 		name: 'Closeness',
-		desc: 'How tight is the margin? A tied game scores maximum points. The wider the gap, the lower the score.',
+		desc: 'How tight is the margin? A tied game scores highest — and closeness counts for more as the game goes on, so an early nail-biter builds toward the final buzzer.',
 		max: 30,
 		color: '#22c55e',
 	},
 	{
 		name: 'Late-Game Pressure',
-		desc: 'Excitement compounds as the clock winds down. Exponential boost in the final minutes — overtime maxes the scale.',
-		max: 30,
+		desc: 'Tension rises steadily across the whole final period — but only when the game is close (a blowout in the final minute has none) — with an extra boost for tied games heading to overtime.',
+		max: 28,
 		color: '#F75C03',
 	},
 	{
 		name: 'Momentum',
-		desc: 'Unanswered scoring runs shift the energy of a game. An 8-2 run in basketball or a 3-goal stretch in hockey drives this score up.',
-		max: 20,
+		desc: 'Unanswered scoring runs shift the energy of a game. A run spikes this score, then it fades over the next few minutes.',
+		max: 28,
 		color: '#2274A5',
 	},
 	{
 		name: 'Lead Changes',
 		desc: 'Back-and-forth games are more exciting than one-sided affairs. Multiple lead changes in recent history push this score to its ceiling.',
-		max: 12,
+		max: 18,
 		color: '#F1C40F',
 	},
 	{
 		name: 'Comeback',
 		desc: 'Is the trailing team clawing back? A big comeback always adds excitement to any game.',
-		max: 8,
+		max: 14,
 		color: '#D90368',
 	},
 ];
 
-const exampleValues = [28, 26, 14, 10, 6];
+// The signal ceilings sum to >100; the headline is capped at 100, so a tense game like this lands high.
+const exampleValues = [26, 22, 24, 12, 8];
 
 const PowerScore = () => {
 	const ref = useRef<HTMLDivElement>(null);

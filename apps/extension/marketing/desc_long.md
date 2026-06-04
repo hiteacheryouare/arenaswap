@@ -16,12 +16,13 @@ THE POWERSCORE ALGORITHM
 
 Every live game gets a 0–100 PowerScore built from five signals:
 
-- Closeness (30 pts) — how tight the score is
-- Late-Game Pressure (30 pts) — how much time is left and how it raises the stakes
-- Momentum (20 pts) — recent scoring runs and shifts
-- Lead Changes (12 pts) — back-and-forth chaos
-- Comeback Factor (8 pts) — teams climbing out of a hole
+- Closeness — how tight the score is, building as the game goes on
+- Late-Game Pressure — tension that rises through the whole final period when the game is close, with a boost for tied games headed to overtime
+- Momentum — recent scoring runs that spike and then fade
+- Lead Changes — back-and-forth chaos
+- Comeback Factor — teams climbing out of a hole
 
+The signals stack and the score is capped at 100, so a genuinely exciting game climbs into the 80s and 90s, while a blowout stays low. The score builds with the game instead of sitting at a flat baseline: an early or lopsided game scores low and tension ramps toward the final buzzer. Recent scoring spikes the live signals and then fades, so even low-scoring sports keep a moving graph instead of a flat line.
 
 Games with frozen clocks (halftimes, timeouts, stoppages) get a penalty so you're never switched into a commercial break.
 
