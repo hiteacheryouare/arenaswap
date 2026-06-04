@@ -19,3 +19,4 @@
 - Added a simulation + live-ESPN validation harness: `npm run powerscore:simulate` and `npm run powerscore:validate-live`.
 - Expanded the test suite (progress scaling, decay, near-linear late-game, overtime boost, edge cases).
 - Updated the README, package page, website, and store listing to match the new model.
+- Updated zip scripts to use native WXT bindings instead of custom shell scripts
