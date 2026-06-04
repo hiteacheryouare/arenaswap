@@ -53,16 +53,16 @@ const popupFooter = () => {
 				</div>
 			)}
 			<div className='popup-signature-bar'>
-				Built with {' '}
+				Built with
 				<button
 					type='button'
 					onClick={handleHeartClick}
 					aria-label='Toggle debug info'
 					className='bg-transparent border-0 p-0 mx-px cursor-default text-inherit leading-none'
 				>
-					❤️
+					&nbsp;❤️&nbsp;
 				</button>
-				{' '} by Ryan Mullin
+				in Philadelphia & Boston by Ryan Mullin
 			</div>
 		</div>
 	);
