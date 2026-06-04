@@ -12,10 +12,13 @@ import {
 } from '../src/constants';
 
 describe('scoreMaxTotal', () => {
-	it('equals the sum of all signal maxes', () => {
-		expect(scoreMaxTotal).toBe(
-			scoreMaxCloseness + scoreMaxLateGame + scoreMaxMomentum + scoreMaxLeadChanges + scoreMaxComeback
-		);
+	it('is the 100-point headline cap', () => {
+		expect(scoreMaxTotal).toBe(100);
+	});
+
+	it('is below the sum of per-signal ceilings (overcomplete, so exciting games can saturate)', () => {
+		const sumOfCeilings = scoreMaxCloseness + scoreMaxLateGame + scoreMaxMomentum + scoreMaxLeadChanges + scoreMaxComeback;
+		expect(sumOfCeilings).toBeGreaterThan(scoreMaxTotal);
 	});
 });
 

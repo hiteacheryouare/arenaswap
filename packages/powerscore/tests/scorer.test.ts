@@ -255,12 +255,12 @@ describe('computePowerScore', () => {
 	});
 
 	test('builds a monotonic whole-period late-game ramp for countdown sports', () => {
-		// Non-tied (no OT pre-boost). NBA: regularPeriods 4, 12-min quarters; previous period = Q3.
+		// Close + non-tied (factor 1, no OT pre-boost). NBA: regularPeriods 4, 12-min Q; previous = Q3.
 		const withClock = (period: number, clockSeconds: number) => makeGame({
 			period,
 			clockSeconds,
 			homeTeam: { ...makeGame().homeTeam, score: 110 },
-			awayTeam: { ...makeGame().awayTeam, score: 90 },
+			awayTeam: { ...makeGame().awayTeam, score: 103 },
 		});
 
 		const firstHalf = computePowerScore(withClock(1, 300), []);     // before previous period → none
@@ -286,8 +286,8 @@ describe('computePowerScore', () => {
 		const sample = (fraction: number) => computePowerScore(makeGame({
 			period: 4,
 			clockSeconds: Math.round(720 * (1 - fraction)),
-			homeTeam: { ...makeGame().homeTeam, score: 110 }, // non-tied → no OT pre-boost
-			awayTeam: { ...makeGame().awayTeam, score: 80 },
+			homeTeam: { ...makeGame().homeTeam, score: 110 }, // close + non-tied → factor 1, no OT pre-boost
+			awayTeam: { ...makeGame().awayTeam, score: 103 },
 		}), []).lateGame;
 
 		const points = [0, 0.25, 0.5, 0.75, 1].map(sample);
@@ -309,8 +309,8 @@ describe('computePowerScore', () => {
 			sportType: 'soccer',
 			period,
 			clockSeconds,
-			homeTeam: { ...makeGame().homeTeam, score: 4 }, // non-tied → no OT pre-boost
-			awayTeam: { ...makeGame().awayTeam, score: 0 },
+			homeTeam: { ...makeGame().homeTeam, score: 2 }, // close + non-tied → factor 1, no OT pre-boost
+			awayTeam: { ...makeGame().awayTeam, score: 1 },
 		});
 
 		const prevStart = computePowerScore(withElapsed(1, 0), []);       // kickoff, 1st half
@@ -373,8 +373,8 @@ describe('computePowerScore', () => {
 				sportType: league.sportType,
 				period: league.regularPeriods,
 				clockSeconds: toClockSeconds(secsRemaining),
-				homeTeam: { ...makeGame().homeTeam, score: 40 }, // non-tied → no OT pre-boost
-				awayTeam: { ...makeGame().awayTeam, score: 10 },
+				homeTeam: { ...makeGame().homeTeam, score: 3 }, // close (≤ every sport's tier-2) + non-tied
+				awayTeam: { ...makeGame().awayTeam, score: 2 },
 			});
 
 			const startFinal = computePowerScore(inFinalPeriod(league.periodDurationSecs), []);

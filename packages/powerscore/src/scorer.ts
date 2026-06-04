@@ -24,13 +24,19 @@ const clamp = (value: number, min: number, max: number): number => (
 	Math.min(max, Math.max(min, value))
 );
 
+// Concave weighting (<1) applied to game progress so state signals reach most of their ceiling by
+// mid-game rather than only at the final buzzer. Keeps early games low (a Q1 blowout is still ~0)
+// while letting a mid-game nail-biter score in a meaningful range. Tunable via the harness.
+const progressCurveExponent = 0.55;
+
 // Hybrid flat-floor + progress scaling for state-based signals (closeness, comeback).
-// A small floor always pays out; the rest of the tier ceiling is gated by how far the game has
-// progressed, so early games sit low and tension builds smoothly toward the final buzzer.
+// A small floor always pays out; the rest of the tier ceiling is gated by (curved) game progress,
+// so early games sit low and tension builds toward the final buzzer.
 const applyProgressFloor = (tierCeiling: number, flatFloor: number, progress: number): number => {
 	if (tierCeiling <= 0) return 0;
 	const floor = clamp(flatFloor, 0, tierCeiling);
-	return Math.round(floor + (tierCeiling - floor) * clamp(progress, 0, 1));
+	const curvedProgress = Math.pow(clamp(progress, 0, 1), progressCurveExponent);
+	return Math.round(floor + (tierCeiling - floor) * curvedProgress);
 };
 
 export const normalizePowerScoreResult = (
@@ -193,15 +199,28 @@ const getBaseballRegulationProgress = (
 	return clamp((inning - curve.regulationStartInning) / spanInnings, 0, 1);
 };
 
+// Late-game pressure only matters if the game is close — a blowout in the final minute has no
+// tension. Scale the ramp by how close the game is: full credit for a one-score game, half for a
+// fringe game, a sliver for a blowout. (The OT pre-boost is separate and already requires a tie.)
+const getLatenessClosenessFactor = (game: Game, config: SportTypeConfig): number => {
+	const [, t2, t3] = config.closenessMargins;
+	const margin = Math.abs(game.homeTeam.score - game.awayTeam.score);
+	if (margin <= t2) return 1;
+	if (margin <= t3) return 0.5;
+	return 0.12;
+};
+
 const getLateGame = (game: Game, config: SportTypeConfig): Signal => {
 	const { scores, reasons } = scorerTunables;
 	const leagueConfig = leagueConfigMap[game.league];
 	const regularPeriods = leagueConfig.regularPeriods;
 	const { clockBased } = config;
 
-	// Overtime / extra innings → reserved top-of-range pressure.
+	// Overtime / extra innings → reserved top-of-range pressure (OT only happens from a tie).
 	if (game.period > regularPeriods)
 		return { score: scores.lateGame.overtime, reason: clockBased ? reasons.overtime : reasons.extraInnings };
+
+	const closenessFactor = getLatenessClosenessFactor(game, config);
 
 	// Baseball (no clock): near-linear ramp across regulation innings (6th → 9th), reusing the
 	// inning-progress helper. Extra innings already returned above.
@@ -214,7 +233,7 @@ const getLateGame = (game: Game, config: SportTypeConfig): Signal => {
 		if (regulationProgress === null)
 			return { score: scores.lateGame.none, reason: '' };
 
-		const score = mapLinearLateGame('final', regulationProgress);
+		const score = Math.round(mapLinearLateGame('final', regulationProgress) * closenessFactor);
 		const inning = Math.min(game.period, curve.regulationInnings);
 		return { score, reason: `${ordinal(inning)} ${reasons.inningSuffix}` };
 	}
@@ -229,10 +248,10 @@ const getLateGame = (game: Game, config: SportTypeConfig): Signal => {
 		return { score: scores.lateGame.none, reason: '' };
 
 	if (game.period < regularPeriods)
-		return { score: mapLinearLateGame('previous', elapsedFraction), reason: '' };
+		return { score: Math.round(mapLinearLateGame('previous', elapsedFraction) * closenessFactor), reason: '' };
 
-	// Final regulation period — whole-period linear ramp plus the tied-game OT pre-boost.
-	const rampScore = mapLinearLateGame('final', elapsedFraction);
+	// Final regulation period — whole-period linear ramp (closeness-gated) plus the tied OT pre-boost.
+	const rampScore = Math.round(mapLinearLateGame('final', elapsedFraction) * closenessFactor);
 	const otBoost = getOtPreBoost(game, config, secsRemaining);
 	const score = clamp(rampScore + otBoost, 0, scoreMaxLateGame);
 	const reason = otBoost > 0

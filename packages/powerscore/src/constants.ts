@@ -8,15 +8,19 @@ export const stallPenaltySteps: { minPolls: number; multiplier: number }[] = [
 	{ minPolls: 8,  multiplier: 0.85 },
 ];
 
-// PowerScore signal maxes (total possible: 100, sport-agnostic).
-// v2 gentle rebalance: points pulled out of the static Closeness/Late-Game signals and into the
-// event-driven Momentum/Lead-Change/Comeback signals that create the live "pulse".
-export const scoreMaxCloseness = 28;
-export const scoreMaxLateGame = 26;
-export const scoreMaxMomentum = 22;
-export const scoreMaxLeadChanges = 14;
-export const scoreMaxComeback = 10;
-export const scoreMaxTotal = scoreMaxCloseness + scoreMaxLateGame + scoreMaxMomentum + scoreMaxLeadChanges + scoreMaxComeback;
+// PowerScore signal maxes (per-signal ceilings, sport-agnostic).
+// The per-signal ceilings deliberately sum to MORE than 100 ("overcomplete"): the headline total is
+// capped at scoreMaxTotal, so a genuinely exciting game — close + a run + lead changes, even mid-game
+// before late-game pressure exists — can stack into the 80s/90s and a true classic saturates at 100,
+// while a dull game still scores low. This is what lets PowerScore use its full 0–100 range instead of
+// compressing every game into the bottom two-thirds.
+export const scoreMaxCloseness = 30;
+export const scoreMaxLateGame = 28;
+export const scoreMaxMomentum = 28;
+export const scoreMaxLeadChanges = 18;
+export const scoreMaxComeback = 14;
+// Headline cap. Intentionally lower than the sum of the per-signal ceilings above.
+export const scoreMaxTotal = 100;
 
 export const scorerTunables: ScorerTunables = {
 	scores: {
@@ -24,29 +28,29 @@ export const scorerTunables: ScorerTunables = {
 		// Realized closeness = closenessFlatFloor + (tier - floor) * gameProgress, so early games sit low.
 		closeness: {
 			tied: scoreMaxCloseness,
-			tight: 24,
+			tight: 25,
 			zeroZero: 16,
-			close: 13,
-			fringe: 5,
+			close: 15,
+			fringe: 6,
 			none: 0,
 		},
 		// Always-paid closeness minimum for any active (non-blowout) tier, before progress scaling.
 		closenessFlatFloor: 6,
 		lateGame: {
 			overtime: scoreMaxLateGame,
-			otEdgeMax: 24,
-			// Final period ramps 2 → 24 near-linearly; the prior period ramps 0 → 2 so the boundary is
+			otEdgeMax: 26,
+			// Final period ramps 3 → 26 near-linearly; the prior period ramps 0 → 3 so the boundary is
 			// smooth and there is no final-seconds cliff (matches the chosen "near-linear" curve).
-			finalPeriodStart: 2,
-			previousPeriodTouch: 2,
-			otPreBoostMax: scoreMaxLateGame - 24,
+			finalPeriodStart: 3,
+			previousPeriodTouch: 3,
+			otPreBoostMax: scoreMaxLateGame - 26,
 			clockBased: {
-				critical: 24,
+				critical: 26,
 				tense: 16,
 				previousPeriod: 6,
 			},
 			baseballInningTiers: [
-				{ minInning: 9, score: 24, includeReason: true },
+				{ minInning: 9, score: 26, includeReason: true },
 				{ minInning: 7, score: 16, includeReason: true },
 				{ minInning: 6, score: 6, includeReason: false },
 			],
@@ -55,18 +59,18 @@ export const scorerTunables: ScorerTunables = {
 		// Momentum / lead-change tier values are the spike CEILINGS; sport-scaled decay is applied after.
 		momentum: {
 			bigRun: scoreMaxMomentum,
-			smallRun: 11,
+			smallRun: 15,
 			none: 0,
 		},
 		leadChanges: {
 			multiple: scoreMaxLeadChanges,
-			single: 10,
+			single: 12,
 			none: 0,
 		},
 		// Comeback ceilings (progress-scaled like closeness, then decayed like the rest of the cluster).
 		comeback: {
 			big: scoreMaxComeback,
-			moderate: 6,
+			moderate: 8,
 			flatFloor: 2,
 			none: 0,
 		},
