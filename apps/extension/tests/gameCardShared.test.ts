@@ -1,5 +1,4 @@
 import {
-	computeStallPenaltyPercent,
 	formatClock,
 	formatPeriod,
 	formatStartDateTime,
@@ -124,19 +123,3 @@ describe('isInteractiveCardTarget', () => {
 	});
 });
 
-describe('computeStallPenaltyPercent', () => {
-	test('returns a positive integer percentage when rawTotal exceeds baseTotal', () => {
-		const result = computeStallPenaltyPercent(100, 70);
-		expect(Number.isInteger(result)).toBe(true);
-		expect(result).toBeGreaterThan(0);
-		expect(result).toBeLessThanOrEqual(100);
-	});
-
-	test('returns 0 when rawTotal is 0', () => {
-		expect(computeStallPenaltyPercent(0, 0)).toBe(0);
-	});
-
-	test('returns 0 when rawTotal equals baseTotal (no penalty)', () => {
-		expect(computeStallPenaltyPercent(50, 50)).toBe(0);
-	});
-});

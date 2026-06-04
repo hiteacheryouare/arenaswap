@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
 import {
-	scorerTunables,
 	scoreMaxCloseness,
 	scoreMaxComeback,
 	scoreMaxLateGame,
@@ -65,19 +64,15 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 	const comeback = activePowerScore?.comeback ?? 0;
 	const total = activePowerScore?.total ?? 0;
 	const rawSubtotal = closeness + lateGame + momentum + leadChanges + comeback;
+	// When stalled, baseTotal is the pre-stall signals sum stored by the scorer (could exceed 100).
+	// When not stalled, it equals rawSubtotal.
 	const baseTotal = activePowerScore?.baseTotal ?? rawSubtotal;
+	const isStalled = activePowerScore?.stalled === true;
 	const favoriteBonus = activePowerScore?.favoriteBonus ?? 0;
 	const favoriteTeamCount = activePowerScore?.favoriteTeamCount ?? 0;
 	const currentBoost = gameBoosts[game.id] ?? 0;
 	const reason = activePowerScore?.reason ?? 'Best Available';
-	const stallPenaltyPoints = activePowerScore?.stalled ? Math.max(0, rawSubtotal - baseTotal) : 0;
-
-	const sportConfig = sportTypeConfigMap[game.sportType];
-	const isZeroZeroGame = game.homeTeam.score === 0 && game.awayTeam.score === 0;
-	const hasZeroZeroPenalty = !sportConfig.zeroZeroAsFullTie || sportConfig.zeroZeroPenaltyPeriods?.includes(game.period) === true;
-	const zeroZeroPenalty = isZeroZeroGame && hasZeroZeroPenalty
-		? scorerTunables.scores.closeness.tied - scorerTunables.scores.closeness.zeroZero
-		: 0;
+	const totalBeforeBonuses = total - favoriteBonus - currentBoost;
 
 	const powerScoreOption = useMemo(() => (
 		buildPowerScoreOption(orderedPowerScoreHistory)
@@ -149,9 +144,19 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 				<div className='powerscore-breakdown-row'><span>Momentum</span><span>{momentum} / {scoreMaxMomentum}</span></div>
 				<div className='powerscore-breakdown-row'><span>Lead changes</span><span>{leadChanges} / {scoreMaxLeadChanges}</span></div>
 				<div className='powerscore-breakdown-row'><span>Comeback</span><span>{comeback} / {scoreMaxComeback}</span></div>
-				<div className='powerscore-breakdown-row powerscore-breakdown-row-subtotal'><span>Raw subtotal</span><span>{rawSubtotal} / {scoreMaxTotal}</span></div>
-				<div className='powerscore-breakdown-row powerscore-breakdown-row-penalty'><span>0-0 penalty</span><span>{zeroZeroPenalty > 0 ? `-${zeroZeroPenalty}` : '0'}</span></div>
-				<div className='powerscore-breakdown-row powerscore-breakdown-row-penalty'><span>Clock stall penalty</span><span>{stallPenaltyPoints > 0 ? `-${stallPenaltyPoints}` : '0'}</span></div>
+				<div className='powerscore-breakdown-row powerscore-breakdown-row-subtotal'>
+					<span>Signals total</span>
+					<span>{baseTotal}{baseTotal > scoreMaxTotal ? ` (capped at ${scoreMaxTotal})` : ''}</span>
+				</div>
+				<div className='powerscore-breakdown-row powerscore-breakdown-row-penalty'>
+					<span>Clock stall penalty</span>
+					<span>{isStalled ? 'applied' : 'none'}</span>
+				</div>
+				{isStalled && (
+					<div className='powerscore-breakdown-note'>
+						game clock frozen — {baseTotal} → {totalBeforeBonuses} pts before bonuses
+					</div>
+				)}
 				<div className='powerscore-breakdown-row'><span>Favorite bonus</span><span>{favoriteBonus > 0 ? `+${favoriteBonus}` : '0'}</span></div>
 				{favoriteBonus > 0 && <div className='powerscore-breakdown-note'>{favoriteTeamCount} favorite team{favoriteTeamCount === 1 ? '' : 's'} in matchup</div>}
 				<div className='powerscore-breakdown-row'><span>Game boost</span><span>{currentBoost > 0 ? `+${currentBoost}` : '0'}</span></div>

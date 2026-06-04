@@ -3,7 +3,6 @@ import type { KeyboardEvent, MouseEvent } from 'react';
 import {
 	createFavoriteTeamKey,
 	leagueConfigMap,
-	scorerTunables,
 	scoreMaxCloseness,
 	scoreMaxComeback,
 	scoreMaxLateGame,
@@ -16,7 +15,7 @@ import BaseDiamond from './baseDiamond';
 import FlipScore from './flipScore';
 import TabAssignSelect from './tabAssignSelect';
 import type { gameCardProps } from './gameCardTypes';
-import { computeStallPenaltyPercent, formatClock, formatPeriod, gameMeta as GameMeta, isInteractiveCardTarget, powerScoreColor, teamColumn as TeamColumn } from './gameCardShared';
+import { formatClock, formatPeriod, gameMeta as GameMeta, isInteractiveCardTarget, powerScoreColor, teamColumn as TeamColumn } from './gameCardShared';
 
 const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail }: gameCardProps) => {
 	const [showPowerScoreDetails, setShowPowerScoreDetails] = useState(false);
@@ -31,14 +30,12 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 	const totalPowerScore = excitementResult?.total ?? 0;
 	const reason = excitementResult?.reason ?? 'Best Available';
 	const sportTypeConfig = sportTypeConfigMap[game.sportType];
-	const isZeroZeroGame = game.homeTeam.score === 0 && game.awayTeam.score === 0;
-	const hasZeroZeroPenalty = !sportTypeConfig.zeroZeroAsFullTie || sportTypeConfig.zeroZeroPenaltyPeriods?.includes(game.period) === true;
-	const zeroZeroPenalty = isZeroZeroGame && hasZeroZeroPenalty
-		? scorerTunables.scores.closeness.tied - scorerTunables.scores.closeness.zeroZero
-		: 0;
 	const rawPowerScore = closenessScore + lateGameScore + momentumScore + leadChangesScore + comebackScore;
+	// When stalled, baseTotal is the pre-stall signals sum (could exceed 100).
+	// When not stalled, it equals rawPowerScore.
 	const baseTotal = excitementResult?.baseTotal ?? rawPowerScore;
-	const stallPenaltyPoints = excitementResult?.stalled ? Math.max(0, rawPowerScore - baseTotal) : 0;
+	const isStalled = excitementResult?.stalled === true;
+	// Base score before bonuses: total minus anything added by background.ts on top.
 	const favoriteBonus = excitementResult?.favoriteBonus ?? 0;
 	const favoriteTeamCount = excitementResult?.favoriteTeamCount ?? 0;
 	const currentBoost = gameBoosts[game.id] ?? 0;
@@ -96,15 +93,17 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 					<div className='powerscore-breakdown-row'><span>Momentum</span><span>{momentumScore} / {scoreMaxMomentum}</span></div>
 					<div className='powerscore-breakdown-row'><span>Lead changes</span><span>{leadChangesScore} / {scoreMaxLeadChanges}</span></div>
 					<div className='powerscore-breakdown-row'><span>Comeback</span><span>{comebackScore} / {scoreMaxComeback}</span></div>
-					<div className='powerscore-breakdown-row powerscore-breakdown-row-subtotal'><span>Raw subtotal</span><span>{rawPowerScore} / {scoreMaxTotal}</span></div>
-					<div className='powerscore-breakdown-row powerscore-breakdown-row-penalty'><span>0-0 penalty</span><span>{zeroZeroPenalty > 0 ? `-${zeroZeroPenalty}` : '0'}</span></div>
-					{zeroZeroPenalty > 0 && <div className='powerscore-breakdown-note'>Included in closeness for scoreless ties.</div>}
-					{excitementResult.stalled
-						? <div className='powerscore-breakdown-row powerscore-breakdown-row-penalty'><span>Clock stall penalty</span><span>-{stallPenaltyPoints}</span></div>
-						: <div className='powerscore-breakdown-row powerscore-breakdown-row-penalty'><span>Clock stall penalty</span><span>0</span></div>}
-					{excitementResult.stalled && (
+					<div className='powerscore-breakdown-row powerscore-breakdown-row-subtotal'>
+						<span>Signals total</span>
+						<span>{baseTotal}{baseTotal > scoreMaxTotal ? ` (capped at ${scoreMaxTotal})` : ''}</span>
+					</div>
+					<div className='powerscore-breakdown-row powerscore-breakdown-row-penalty'>
+						<span>Clock stall penalty</span>
+						<span>{isStalled ? 'applied' : 'none'}</span>
+					</div>
+					{isStalled && (
 						<div className='powerscore-breakdown-note'>
-							-{computeStallPenaltyPercent(rawPowerScore, baseTotal)}% applied ({rawPowerScore} → {baseTotal})
+							game clock frozen — {baseTotal} → {totalPowerScore - favoriteBonus - currentBoost} pts before bonuses
 						</div>
 					)}
 					<div className='powerscore-breakdown-row'><span>Favorite team bonus</span><span>{favoriteBonus > 0 ? `+${favoriteBonus}` : '0'}</span></div>

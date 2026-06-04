@@ -4,9 +4,6 @@ import type { Game, LeagueId, Team } from '@arenaswap/core/types';
 
 const logoSize = 64;
 
-export const computeStallPenaltyPercent = (rawTotal: number, baseTotal: number): number => (
-	rawTotal > 0 ? Math.round((rawTotal - baseTotal) / rawTotal * 100) : 0
-);
 
 export const formatPeriod = (game: Game): string => {
 	const config = leagueConfigMap[game.league];
