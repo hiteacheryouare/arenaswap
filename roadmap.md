@@ -34,6 +34,7 @@ This is a **living draft** based on [issue #13](https://github.com/hiteacheryoua
 - Stronger sport-specific signals and late-game weighting, more customized to the pulse of each sport.
 - Expand/revisit signal quality for edge game states.
 - Overtime prediction — pre-boost tie games in final seconds
+- spread out late game applicwtion more. too heavy handed in the final seconds snd can be spread out more
 - Reseat base scores so that 0s become more common and base isnt like 20 or 30
   - Change switch sensitivities to reflect these changes after rigorous testing
   - Test rigorously in both Jest and real world APIs
