@@ -32,17 +32,18 @@ npm install powerscore
 
 Given a live game and a short history of score snapshots, PowerScore outputs a number from 0 to 100. The higher the score, the more ArenaSwap wants to show you that game. Five signals feed into the total:
 
-| Signal | Max Points | What It Measures |
+| Signal | Ceiling | What It Measures |
 |---|---|---|
-| Closeness | 28 | How tight the margin is — a tied game scores highest, scaled up as the game progresses. |
-| Late-Game Pressure | 26 | Tension that rises near-linearly across the whole final period, plus a pre-boost for tied games heading to overtime. |
-| Momentum | 22 | Unanswered scoring runs — spikes on a run, then fades. |
-| Lead Changes | 14 | Back-and-forth games beat one-sided affairs. |
-| Comeback Factor | 10 | Is the trailing team clawing back? |
+| Closeness | 30 | How tight the margin is — a tied game scores highest, scaled up as the game progresses. |
+| Late-Game Pressure | 28 | Tension that rises near-linearly across the whole final period (only when the game is close), plus a pre-boost for tied games heading to overtime. |
+| Momentum | 28 | Unanswered scoring runs — spikes on a run, then fades. |
+| Lead Changes | 18 | Back-and-forth games beat one-sided affairs. |
+| Comeback Factor | 14 | Is the trailing team clawing back? |
 
-Two ideas shape v2 of the scoring model:
+Three ideas shape v2 of the scoring model:
 
-- **Games build.** State signals (closeness, comeback) pay out a small flat floor early and ramp toward their ceiling as the game progresses, so an early close game scores low and tension builds toward the final buzzer — no more flat 20–30 "base" the moment a game tips off.
+- **The full range is used.** The per-signal ceilings deliberately sum to more than 100 ("overcomplete"), and the headline total is capped at 100. So a genuinely exciting game — close, back-and-forth, with a run — stacks into the 80s/90s even mid-game, and a true classic saturates at 100, while a dull game still scores low. The scale spans 0–100 instead of compressing every game into the bottom two-thirds.
+- **Games build.** State signals (closeness, comeback) pay out a small flat floor early and ramp toward their ceiling as the game progresses (on a concave curve, so they reach most of their value by mid-game), and late-game pressure only counts when the game is close. An early or lopsided game scores low; tension builds toward the final buzzer.
 - **The pulse fades.** The live-action signals (momentum, lead changes, comeback) spike on a scoring event and then decay on sport-scaled half-lives, so even low-scoring sports keep a moving graph between scores instead of drawing flat lines.
 
 Games with frozen clocks (commercial breaks, stoppages) take a graduated **stall penalty** so ArenaSwap doesn't switch during dead time.
@@ -122,12 +123,12 @@ The full output of `computePowerScore`.
 ```ts
 interface PowerScoreResult {
   gameId: string;
-  total: number;          // 0–100, the headline score
-  closeness: number;      // 0–28
-  lateGame: number;       // 0–26
-  momentum: number;       // 0–22
-  leadChanges: number;    // 0–14
-  comeback: number;       // 0–10
+  total: number;          // 0–100, the headline score (capped; signal ceilings sum to >100)
+  closeness: number;      // 0–30
+  lateGame: number;       // 0–28
+  momentum: number;       // 0–28
+  leadChanges: number;    // 0–18
+  comeback: number;       // 0–14
   reason: string;         // human-readable explanation (e.g. "LAL heating up, under 2 min left")
   stalled?: boolean;      // true when stall penalty was applied
   baseTotal?: number;     // pre-bonus total (set externally by ArenaSwap core)
@@ -157,47 +158,47 @@ Each league is mapped to one of five sport-type configurations (basketball, foot
 
 ### Closeness
 
-Compares the current score margin against sport-specific thresholds to pick a tier, then scales the tier by **game progress** with a small always-on flat floor: `floor + (tierCeiling − floor) × progress`. So an early close game sits near the floor and the same game late approaches the ceiling. The points below are the tier **ceilings** (reached at the final buzzer):
+Compares the current score margin against sport-specific thresholds to pick a tier, then scales the tier by **game progress** (on a concave curve) with a small always-on flat floor: `floor + (tierCeiling − floor) × progress^0.55`. So an early close game sits near the floor, reaches most of its value by mid-game, and tops out at the buzzer. The points below are the tier **ceilings**:
 
 | State | Basketball | Football | Hockey / Soccer | Baseball | Ceiling |
 |---|---|---|---|---|---|
-| Tied | — | — | — | — | 28 |
-| Tight | ≤5 pts | ≤3 pts | ≤1 goal | ≤1 run | 24 |
-| Close | ≤10 pts | ≤8 pts | ≤2 goals | ≤3 runs | 13 |
-| Fringe | ≤18 pts | ≤14 pts | ≤3 goals | ≤5 runs | 5 |
+| Tied | — | — | — | — | 30 |
+| Tight | ≤5 pts | ≤3 pts | ≤1 goal | ≤1 run | 25 |
+| Close | ≤10 pts | ≤8 pts | ≤2 goals | ≤3 runs | 15 |
+| Fringe | ≤18 pts | ≤14 pts | ≤3 goals | ≤5 runs | 6 |
 | Out of reach | — | — | — | — | 0 |
 
 0–0 scores: full tie credit for hockey and soccer (outside penalty periods); reduced credit otherwise.
 
 ### Late-Game Pressure
 
-Clock-based sports (basketball, football, hockey, soccer) ramp **near-linearly across the entire final period** — from a low value at the start of the period up to the overtime edge (24) at the buzzer, with a gentle "touch" of pressure carried through the prior period. There is no final-seconds spike; the tension is spread out. Tied games earn an additional **overtime pre-boost** (24 → 26) ramping up through the final minute, so OT-bound games separate from ordinary late games. Overtime / extra innings return the reserved maximum (26).
+Clock-based sports (basketball, football, hockey, soccer) ramp **near-linearly across the entire final period** — from a low value at the start of the period up to the overtime edge (26) at the buzzer, with a gentle "touch" of pressure carried through the prior period. There is no final-seconds spike; the tension is spread out. Crucially, the ramp is **scaled by closeness** (full for a one-score game, half for a fringe game, a sliver for a blowout) — a 30-point game in the final minute has no tension. Tied games earn an additional **overtime pre-boost** (26 → 28) ramping up through the final minute, so OT-bound games separate from ordinary late games. Overtime / extra innings return the reserved maximum (28).
 
-Baseball uses the same near-linear ramp keyed to innings: it activates from the 6th inning and climbs to the overtime edge by the 9th.
+Baseball uses the same closeness-gated near-linear ramp keyed to innings: it activates from the 6th inning and climbs to the overtime edge by the 9th.
 
 ### Momentum
 
 Measures unanswered scoring runs (oldest vs. newest snapshot in the window), then **decays on a sport-scaled half-life** so a run spikes and then fades. What counts as a "big run" is sport-aware:
 
-- Basketball: 8+ unanswered → 22 pts (half-life ~45s)
-- Football: 10+ unanswered → 22 pts (half-life ~135s)
-- Hockey/Soccer: 2+ unanswered → 22 pts (half-life ~180–240s)
-- Baseball: 3+ unanswered → 22 pts (half-life ~150s)
+- Basketball: 8+ unanswered → 28 pts (half-life ~45s)
+- Football: 10+ unanswered → 28 pts (half-life ~135s)
+- Hockey/Soccer: 2+ unanswered → 28 pts (half-life ~180–240s)
+- Baseball: 3+ unanswered → 28 pts (half-life ~150s)
 
 ### Lead Changes
 
 Counts sign changes in the score-differential across the history window, then decays from the most recent lead change on the sport's half-life.
 
-- 2+ lead changes → 14 pts
-- 1 lead change → 10 pts
+- 2+ lead changes → 18 pts
+- 1 lead change → 12 pts
 
 ### Comeback Factor
 
 Compares how much the margin has shrunk since the oldest snapshot. Progress-scaled (like closeness) and then decayed (like momentum).
 
-- Basketball: shrinkage ≥6 → 10 pts; ≥3 → 6 pts
-- Football: shrinkage ≥7 → 10 pts; ≥3 → 6 pts
-- Hockey/Soccer: shrinkage ≥2 → 10 pts; ≥1 → 6 pts
+- Basketball: shrinkage ≥6 → 14 pts; ≥3 → 8 pts
+- Football: shrinkage ≥7 → 14 pts; ≥3 → 8 pts
+- Hockey/Soccer: shrinkage ≥2 → 14 pts; ≥1 → 8 pts
 
 ---
 
