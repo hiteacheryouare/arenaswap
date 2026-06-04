@@ -10,7 +10,7 @@ import {
 	scoreMaxComeback,
 	scoreMaxTotal,
 } from './constants';
-import type { SportTypeConfig, ExponentialLateGameCurve, ClockLateGameCurveConfig, BaseballLateGameCurveConfig } from './types';
+import type { SportTypeConfig, BaseballLateGameCurveConfig } from './types';
 import type { Game, ScoreSnapshot, PowerScoreResult } from './types';
 
 interface Signal { score: number; reason: string; }
@@ -125,28 +125,32 @@ const ordinal = (n: number): string => {
 	return `${n}th`;
 };
 
-interface ClockRegulationProgress {
-	progress: number;
-	phase: 'none' | 'previous' | 'final';
-	secsRemaining: number;
-}
+type LateGamePhase = 'none' | 'previous' | 'final';
 
-const mapExponentialLateGameScore = (
-	progress: number,
-	curve: ExponentialLateGameCurve,
-): number => {
-	const normalizedProgress = clamp(progress, 0, 1);
-	const minScore = clamp(curve.minScore, 0, scoreMaxLateGame);
-	const maxScore = clamp(curve.maxScore, minScore, scoreMaxLateGame);
-	const scoreRange = maxScore - minScore;
-	if (scoreRange === 0) return maxScore;
+// Near-linear late-game ramp. Tension begins at the start of the final period and rises smoothly to
+// the OT-edge max (no final-seconds spike); the prior period carries a gentle "touch" of pressure.
+const mapLinearLateGame = (phase: LateGamePhase, fraction: number): number => {
+	const { lateGame } = scorerTunables.scores;
+	const f = clamp(fraction, 0, 1);
+	if (phase === 'none') return 0;
+	if (phase === 'previous')
+		return clamp(Math.round(lateGame.previousPeriodTouch * f), 0, scoreMaxLateGame);
+	return clamp(
+		Math.round(lateGame.finalPeriodStart + (lateGame.otEdgeMax - lateGame.finalPeriodStart) * f),
+		0,
+		scoreMaxLateGame,
+	);
+};
 
-	const growthRate = Math.max(0, curve.growthRate);
-	const curveProgress = growthRate === 0
-		? normalizedProgress
-		: (Math.exp(growthRate * normalizedProgress) - 1) / (Math.exp(growthRate) - 1);
-
-	return clamp(Math.round(minScore + (scoreRange * curveProgress)), 0, scoreMaxLateGame);
+// Tied games telegraph overtime: a ramping boost (otEdgeMax → overtime) in the final-period window.
+// Clock sports only; disabled when otPreBoostWindowSecs is 0 (e.g. clockless baseball).
+const getOtPreBoost = (game: Game, config: SportTypeConfig, secsRemaining: number): number => {
+	const window = Math.max(0, config.otPreBoostWindowSecs);
+	if (window <= 0) return 0;
+	if (game.homeTeam.score !== game.awayTeam.score) return 0;
+	if (secsRemaining > window) return 0;
+	const ramp = clamp((window - secsRemaining) / window, 0, 1);
+	return Math.round(scorerTunables.scores.lateGame.otPreBoostMax * ramp);
 };
 
 const getClockSecondsRemaining = (
@@ -180,67 +184,6 @@ const getGameProgress = (game: Game, config: SportTypeConfig): number => {
 	return clamp((periodsDone + elapsedInPeriod / periodDuration) / regularPeriods, 0, 1);
 };
 
-const getClockRegulationProgress = (
-	game: Game,
-	regularPeriods: number,
-	periodDurationSecs: number,
-	config: SportTypeConfig,
-	curve: ClockLateGameCurveConfig,
-): ClockRegulationProgress => {
-	const secsRemaining = getClockSecondsRemaining(game, config, periodDurationSecs);
-	const previousWindowSecs = Math.max(0, curve.previousPeriodWindowSecs);
-	const finalWindowSecs = Math.max(0, curve.finalPeriodWindowSecs);
-	const totalWindowSecs = previousWindowSecs + finalWindowSecs;
-
-	if (totalWindowSecs <= 0)
-		return { progress: 0, phase: 'none', secsRemaining };
-
-	const previousPeriod = regularPeriods - 1;
-	if (game.period < previousPeriod)
-		return { progress: 0, phase: 'none', secsRemaining };
-
-	if (game.period === previousPeriod) {
-		if (previousWindowSecs <= 0 || secsRemaining > previousWindowSecs)
-			return { progress: 0, phase: 'none', secsRemaining };
-
-		const elapsedPrevWindow = clamp(previousWindowSecs - secsRemaining, 0, previousWindowSecs);
-		return {
-			progress: clamp(elapsedPrevWindow / totalWindowSecs, 0, 1),
-			phase: 'previous',
-			secsRemaining,
-		};
-	}
-
-	if (game.period === regularPeriods) {
-		if (finalWindowSecs <= 0) {
-			if (previousWindowSecs <= 0)
-				return { progress: 0, phase: 'none', secsRemaining };
-
-			return { progress: 1, phase: 'previous', secsRemaining };
-		}
-
-		if (secsRemaining > finalWindowSecs) {
-			if (previousWindowSecs <= 0)
-				return { progress: 0, phase: 'none', secsRemaining };
-
-			return {
-				progress: clamp(previousWindowSecs / totalWindowSecs, 0, 1),
-				phase: 'previous',
-				secsRemaining,
-			};
-		}
-
-		const elapsedFinalWindow = clamp(finalWindowSecs - secsRemaining, 0, finalWindowSecs);
-		return {
-			progress: clamp((previousWindowSecs + elapsedFinalWindow) / totalWindowSecs, 0, 1),
-			phase: 'final',
-			secsRemaining,
-		};
-	}
-
-	return { progress: 0, phase: 'none', secsRemaining };
-};
-
 const getBaseballRegulationProgress = (
 	inning: number,
 	curve: BaseballLateGameCurveConfig,
@@ -256,10 +199,12 @@ const getLateGame = (game: Game, config: SportTypeConfig): Signal => {
 	const regularPeriods = leagueConfig.regularPeriods;
 	const { clockBased } = config;
 
-	// Overtime / extra innings
+	// Overtime / extra innings → reserved top-of-range pressure.
 	if (game.period > regularPeriods)
 		return { score: scores.lateGame.overtime, reason: clockBased ? reasons.overtime : reasons.extraInnings };
 
+	// Baseball (no clock): near-linear ramp across regulation innings (6th → 9th), reusing the
+	// inning-progress helper. Extra innings already returned above.
 	if (!clockBased) {
 		if (config.lateGameCurve.model !== 'baseball')
 			return { score: scores.lateGame.none, reason: '' };
@@ -268,53 +213,32 @@ const getLateGame = (game: Game, config: SportTypeConfig): Signal => {
 		if (regulationProgress === null)
 			return { score: scores.lateGame.none, reason: '' };
 
-		const score = mapExponentialLateGameScore(regulationProgress, config.lateGameCurve.regulationCurve);
+		const score = mapLinearLateGame('final', regulationProgress);
 		const inning = Math.min(game.period, config.lateGameCurve.regulationInnings);
-		const reason = `${ordinal(inning)} ${reasons.inningSuffix}`;
-		return { score, reason };
+		return { score, reason: `${ordinal(inning)} ${reasons.inningSuffix}` };
 	}
 
-	if (config.lateGameCurve.model !== 'clock')
+	// Clock sports: derive the phase from the period and a near-linear fraction from the clock.
+	const periodDuration = Math.max(1, leagueConfig.periodDurationSecs);
+	const secsRemaining = getClockSecondsRemaining(game, config, periodDuration);
+	const elapsedFraction = clamp((periodDuration - secsRemaining) / periodDuration, 0, 1);
+	const previousPeriod = regularPeriods - 1;
+
+	if (game.period < previousPeriod)
 		return { score: scores.lateGame.none, reason: '' };
 
-	const windowOverride = leagueConfig.lateGameWindowOverrideSecs;
-	const previousWindowSecs = Math.max(0, windowOverride?.previousPeriod ?? config.lateGameCurve.previousPeriodWindowSecs);
-	const finalWindowSecs = Math.max(0, windowOverride?.finalPeriod ?? config.lateGameCurve.finalPeriodWindowSecs);
-	const totalWindowSecs = previousWindowSecs + finalWindowSecs;
-	if (totalWindowSecs <= 0)
-		return { score: scores.lateGame.none, reason: '' };
+	if (game.period < regularPeriods)
+		return { score: mapLinearLateGame('previous', elapsedFraction), reason: '' };
 
-	const curveWithOverride = windowOverride
-		? { ...config.lateGameCurve, previousPeriodWindowSecs: previousWindowSecs, finalPeriodWindowSecs: finalWindowSecs }
-		: config.lateGameCurve;
-
-	const regulationProgress = getClockRegulationProgress(
-		game,
-		regularPeriods,
-		leagueConfig.periodDurationSecs,
-		config,
-		curveWithOverride,
-	);
-	if (regulationProgress.phase === 'none')
-		return { score: scores.lateGame.none, reason: '' };
-
-	const previousShare = previousWindowSecs / totalWindowSecs;
-	if (regulationProgress.phase === 'previous') {
-		const previousProgress = previousShare === 0
-			? 1
-			: clamp(regulationProgress.progress / previousShare, 0, 1);
-		const score = mapExponentialLateGameScore(previousProgress, config.lateGameCurve.previousPeriodCurve);
-		return { score, reason: '' };
-	}
-
-	const finalShare = 1 - previousShare;
-	const finalProgress = finalShare <= 0
-		? 1
-		: clamp((regulationProgress.progress - previousShare) / finalShare, 0, 1);
-	const score = mapExponentialLateGameScore(finalProgress, config.lateGameCurve.finalPeriodCurve);
-	const reason = finalWindowSecs >= 60
-		? `${reasons.underPrefix} ${Math.ceil(finalWindowSecs / 60)} ${reasons.minutesLeftSuffix}`
-		: `${formatClock(finalWindowSecs)} ${reasons.clockLeftSuffix}`;
+	// Final regulation period — whole-period linear ramp plus the tied-game OT pre-boost.
+	const rampScore = mapLinearLateGame('final', elapsedFraction);
+	const otBoost = getOtPreBoost(game, config, secsRemaining);
+	const score = clamp(rampScore + otBoost, 0, scoreMaxLateGame);
+	const reason = otBoost > 0
+		? reasons.overtimeAnticipation
+		: secsRemaining < 60
+			? `${formatClock(secsRemaining)} ${reasons.clockLeftSuffix}`
+			: `${reasons.underPrefix} ${Math.ceil(secsRemaining / 60)} ${reasons.minutesLeftSuffix}`;
 
 	return { score, reason };
 };

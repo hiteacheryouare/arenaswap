@@ -138,6 +138,7 @@ export interface ScorerTunables {
 		clockLeftSuffix: string;
 		underPrefix: string;
 		minutesLeftSuffix: string;
+		overtimeAnticipation: string;
 		momentumRunPrefix: string;
 		momentumRunSuffix: string;
 		momentumRolling: string;

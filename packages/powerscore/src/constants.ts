@@ -35,8 +35,10 @@ export const scorerTunables: ScorerTunables = {
 		lateGame: {
 			overtime: scoreMaxLateGame,
 			otEdgeMax: 24,
-			finalPeriodStart: 6,
-			previousPeriodTouch: 4,
+			// Final period ramps 2 → 24 near-linearly; the prior period ramps 0 → 2 so the boundary is
+			// smooth and there is no final-seconds cliff (matches the chosen "near-linear" curve).
+			finalPeriodStart: 2,
+			previousPeriodTouch: 2,
 			otPreBoostMax: scoreMaxLateGame - 24,
 			clockBased: {
 				critical: 24,
@@ -84,6 +86,7 @@ export const scorerTunables: ScorerTunables = {
 		clockLeftSuffix: 'left',
 		underPrefix: 'under',
 		minutesLeftSuffix: 'min left',
+		overtimeAnticipation: 'tied — OT in sight',
 		momentumRunPrefix: 'on a',
 		momentumRunSuffix: 'run',
 		momentumRolling: 'heating up',
