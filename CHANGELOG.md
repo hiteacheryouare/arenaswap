@@ -1,5 +1,21 @@
 # Changelog
 
+## Dev tooling — 2026-06-04
+
+### Zod validation
+- Added Zod v4 to `@arenaswap/core` for runtime schema validation at external API boundaries.
+- Created `espnSchemas.ts`: Zod schemas for all ESPN API response types (`EspnScoreboardSchema`, `EspnTeamsResponseSchema`). The hand-written TypeScript interfaces they replaced are removed; types are now inferred via `zod.infer<>`.
+- `fetchScoreboard` and `fetchTeamsForLeagues` now use `safeParse` — a malformed ESPN response degrades gracefully to an empty-events result instead of silently passing a mistyped object.
+- Created `backgroundSchema.ts`: `BackgroundStateSchema` wraps the existing background-state normalization helpers as Zod transforms, giving a schema-driven parse at the background-worker→popup boundary.
+- `normalizeBackgroundState` in `popupHelpers.ts` is now a one-liner that delegates to `BackgroundStateSchema.parse()`.
+- All `z` import aliases renamed to `zod` for readability (`import { z as zod } from 'zod'`).
+
+### PowerScore dev scripts
+- Replaced `vite-node` (transitive, not directly installed) with `esbuild --bundle | node` in `powerscore:simulate` and `powerscore:validate-live`. No new dependencies added — esbuild is already present transitively.
+- Compiled `.cjs` artifacts added to `.gitignore`.
+
+---
+
 ## PowerScore v2 — 2026-06-04
 
 ### Scoring algorithm

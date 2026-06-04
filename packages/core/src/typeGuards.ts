@@ -1,4 +1,5 @@
-import type { PowerScoreSnapshot, ScoreSnapshot } from './types';
+import { normalizePowerScoreResult } from 'powerscore';
+import type { Game, LeagueLogoMap, PowerScoreHistoryMap, PowerScoreResult, PowerScoreSnapshot, ScoreHistoryMap, ScoreSnapshot } from './types';
 
 export const isObjectRecord = (value: unknown): value is Record<string, unknown> => (
 	typeof value === 'object' && value !== null
@@ -42,4 +43,37 @@ export const normalizeGameBoosts = (value: unknown): Record<string, number> => {
 		if (isFiniteNumber(v) && v > 0) result[k] = v;
 	}
 	return result;
+};
+
+export const isGameArray = (value: unknown): value is Game[] => Array.isArray(value);
+
+export const isLeagueLogoMap = (value: unknown): value is LeagueLogoMap => isObjectRecord(value);
+
+const isPowerScoreLike = (value: unknown): value is Partial<PowerScoreResult> & Pick<PowerScoreResult, 'gameId'> => (
+	isObjectRecord(value) && typeof value.gameId === 'string'
+);
+
+export const normalizeScores = (value: unknown): PowerScoreResult[] => {
+	if (!Array.isArray(value)) return [];
+	return value
+		.filter(isPowerScoreLike)
+		.map(score => normalizePowerScoreResult(score, { allowTotalOverflow: true }));
+};
+
+export const normalizeScoreHistory = (value: unknown): ScoreHistoryMap => {
+	if (!isObjectRecord(value)) return {};
+	return Object.entries(value).reduce<ScoreHistoryMap>((acc, [gameId, snapshots]) => {
+		if (!Array.isArray(snapshots)) return acc;
+		acc[gameId] = snapshots.filter(isScoreSnapshotLike);
+		return acc;
+	}, {});
+};
+
+export const normalizePowerScoreHistory = (value: unknown): PowerScoreHistoryMap => {
+	if (!isObjectRecord(value)) return {};
+	return Object.entries(value).reduce<PowerScoreHistoryMap>((acc, [gameId, snapshots]) => {
+		if (!Array.isArray(snapshots)) return acc;
+		acc[gameId] = snapshots.filter(isPowerScoreSnapshotLike);
+		return acc;
+	}, {});
 };

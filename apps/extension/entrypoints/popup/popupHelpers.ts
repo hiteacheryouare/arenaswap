@@ -1,13 +1,9 @@
-import { normalizePowerScoreResult, isObjectRecord, isFiniteNumber, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts } from '@arenaswap/core';
+import { BackgroundStateSchema } from '@arenaswap/core';
 import { createFavoriteTeamKey, leagueConfigs } from '@arenaswap/core/constants';
 import type {
 	BackgroundState,
 	Game,
 	LeagueId,
-	LeagueLogoMap,
-	PowerScoreHistoryMap,
-	PowerScoreResult,
-	ScoreHistoryMap,
 	SportType,
 } from '@arenaswap/core/types';
 import type { Browser } from 'wxt/browser';
@@ -201,57 +197,8 @@ export const groupByLeague = (games: Game[]): leagueGroup[] => (
 	}, [])
 );
 
-const isGameArray = (value: unknown): value is Game[] => (
-	Array.isArray(value)
-);
-
-const isLeagueLogoMap = (value: unknown): value is LeagueLogoMap => (
-	isObjectRecord(value)
-);
-
-const isPowerScoreLike = (value: unknown): value is Partial<PowerScoreResult> & Pick<PowerScoreResult, 'gameId'> => {
-	if (!isObjectRecord(value)) return false;
-	return typeof value.gameId === 'string';
-};
-
-const normalizeScores = (value: unknown): PowerScoreResult[] => {
-	if (!Array.isArray(value)) return [];
-	return value
-		.filter(isPowerScoreLike)
-		.map(score => normalizePowerScoreResult(score, { allowTotalOverflow: true }));
-};
-
-const normalizeScoreHistory = (value: unknown): ScoreHistoryMap => {
-	if (!isObjectRecord(value)) return {};
-	return Object.entries(value).reduce<ScoreHistoryMap>((acc, [gameId, snapshots]) => {
-		if (!Array.isArray(snapshots)) return acc;
-		acc[gameId] = snapshots.filter(isScoreSnapshotLike);
-		return acc;
-	}, {});
-};
-
-const normalizePowerScoreHistory = (value: unknown): PowerScoreHistoryMap => {
-	if (!isObjectRecord(value)) return {};
-	return Object.entries(value).reduce<PowerScoreHistoryMap>((acc, [gameId, snapshots]) => {
-		if (!Array.isArray(snapshots)) return acc;
-		acc[gameId] = snapshots.filter(isPowerScoreSnapshotLike);
-		return acc;
-	}, {});
-};
-
-export const normalizeBackgroundState = (value: unknown): BackgroundState => {
-	if (!isObjectRecord(value)) return { games: [], scores: [], leagueLogos: {}, scoreHistory: {}, powerScoreHistory: {}, gameBoosts: {}, onStandbyStream: false, standbyStreamTabId: null };
-	return {
-		games: isGameArray(value.games) ? value.games : [],
-		scores: normalizeScores(value.scores),
-		leagueLogos: isLeagueLogoMap(value.leagueLogos) ? value.leagueLogos : {},
-		scoreHistory: normalizeScoreHistory(value.scoreHistory),
-		powerScoreHistory: normalizePowerScoreHistory(value.powerScoreHistory),
-		gameBoosts: normalizeGameBoosts(value.gameBoosts),
-		onStandbyStream: value.onStandbyStream === true,
-		standbyStreamTabId: typeof value.standbyStreamTabId === 'number' ? value.standbyStreamTabId : null,
-	};
-};
+export const normalizeBackgroundState = (value: unknown): BackgroundState =>
+	BackgroundStateSchema.parse(value);
 
 export const fetchState = async (forceRefresh = false): Promise<BackgroundState> => {
 	const state = await browser.runtime.sendMessage({ type: 'GET_STATE', forceRefresh });

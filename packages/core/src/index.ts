@@ -7,3 +7,4 @@ export type { PollMode, PollModeTracker } from './pollModeTracker';
 export * from './types';
 export * from './constants';
 export * from './typeGuards';
+export { BackgroundStateSchema } from './backgroundSchema';

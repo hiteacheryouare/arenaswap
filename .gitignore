@@ -4,6 +4,7 @@ node_modules/
 # Build output
 .output/
 dist/
+scripts/**/*.cjs
 
 # WXT generated files
 .wxt/

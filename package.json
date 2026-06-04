@@ -17,8 +17,8 @@
 		"zip:all": "turbo run zip zip:firefox zip:edge",
 		"test": "turbo run test",
 		"typecheck": "turbo run typecheck",
-		"powerscore:simulate": "vite-node scripts/powerscore/simulateDistribution.ts",
-		"powerscore:validate-live": "vite-node scripts/powerscore/validateLive.ts"
+		"powerscore:simulate": "esbuild scripts/powerscore/simulateDistribution.ts --bundle --platform=node --outfile=scripts/powerscore/simulateDistribution.cjs --log-level=silent && node scripts/powerscore/simulateDistribution.cjs",
+		"powerscore:validate-live": "esbuild scripts/powerscore/validateLive.ts --bundle --platform=node --outfile=scripts/powerscore/validateLive.cjs --log-level=silent && node scripts/powerscore/validateLive.cjs"
 	},
 	"devDependencies": {
 		"turbo": "^2.9.16",
@@ -29,6 +29,7 @@
 	},
 	"packageManager": "npm@10.9.0",
 	"dependencies": {
+		"esbuild": "^0.28.0",
 		"skills": "^1.5.7"
 	}
 }

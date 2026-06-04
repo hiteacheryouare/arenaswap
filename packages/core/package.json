@@ -26,7 +26,8 @@
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
-		"powerscore": "*"
+		"powerscore": "*",
+		"zod": "^4.4.3"
 	},
 	"devDependencies": {
 		"@types/jest": "^30.0.0",

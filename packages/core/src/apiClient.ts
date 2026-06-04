@@ -1,4 +1,14 @@
 import { leagueConfigMap, resolveLeagueLogoUrl } from './constants';
+import {
+	EspnScoreboardSchema,
+	EspnTeamsResponseSchema,
+} from './espnSchemas';
+import type {
+	EspnCompetition,
+	EspnEvent,
+	EspnOddsProvider,
+	EspnScoreboardResponse,
+} from './espnSchemas';
 import type { Game, GameOdds, LeagueConfig, LeagueId, LeagueLogoMap } from './types';
 
 const espnBase = 'https://site.api.espn.com/apis/site/v2/sports';
@@ -86,111 +96,10 @@ const normalizeTeamColor = (primary?: string, alternate?: string): string | unde
 	return normalizedPrimary;
 };
 
-interface EspnLeagueLogo {
-	href?: string;
-	rel?: string[];
-}
-
 // ESPN returns multiple logo variants; prefer the "dark" one (light-colored, for dark UIs).
-const pickLeagueLogo = (logos?: EspnLeagueLogo[]): string | undefined => (
+const pickLeagueLogo = (logos?: { href?: string; rel?: string[] }[]): string | undefined => (
 	logos?.find(l => l.rel?.includes('dark') && l.href)?.href ?? logos?.[0]?.href
 );
-
-interface EspnLeague {
-	id?: string;
-	logos?: EspnLeagueLogo[];
-}
-
-interface EspnTeam {
-	displayName: string;
-	abbreviation?: string;
-	logo?: string;
-	/** Primary team color as a hex string without '#' (e.g. "002B5C") */
-	color?: string;
-	/** Secondary team color as a hex string without '#' */
-	alternateColor?: string;
-}
-
-interface EspnCompetitor {
-	id: string;
-	homeAway: 'home' | 'away' | string;
-	score?: string;
-	team: EspnTeam;
-}
-
-interface EspnCompetitionStatus {
-	period?: number;
-	displayClock?: string;
-	type?: {
-		state?: string;
-		name?: string;
-		shortDetail?: string;
-	};
-}
-
-interface EspnSituation {
-	onFirst?: boolean;
-	onSecond?: boolean;
-	onThird?: boolean;
-}
-
-interface EspnCompetitionVenue {
-	fullName?: string;
-	name?: string;
-}
-
-interface EspnCompetitionBroadcast {
-	names?: string[];
-}
-
-interface EspnCompetitionGeoBroadcast {
-	media?: {
-		shortName?: string;
-	};
-}
-
-interface EspnOddsProviderLogo {
-	href?: string;
-	rel?: string[];
-}
-
-interface EspnOddsProvider {
-	name?: string;
-	displayName?: string;
-	logos?: EspnOddsProviderLogo[];
-}
-
-interface EspnCompetitionOdds {
-	details?: string;
-	overUnder?: number | string;
-	provider?: EspnOddsProvider;
-}
-
-interface EspnCompetition {
-	competitors: EspnCompetitor[];
-	status: EspnCompetitionStatus;
-	situation?: EspnSituation;
-	venue?: EspnCompetitionVenue;
-	broadcasts?: EspnCompetitionBroadcast[];
-	geoBroadcasts?: EspnCompetitionGeoBroadcast[];
-	odds?: EspnCompetitionOdds[];
-}
-
-interface EspnEvent {
-	id: string;
-	date?: string;
-	status?: {
-		type?: {
-			state?: string;
-		};
-	};
-	competitions: EspnCompetition[];
-}
-
-interface EspnScoreboardResponse {
-	events?: EspnEvent[];
-	leagues?: EspnLeague[];
-}
 
 class LeagueFetchError extends Error {
 	leagueId: LeagueId;
@@ -330,7 +239,9 @@ const fetchScoreboard = async (url: string, leagueId: LeagueId): Promise<EspnSco
 		},
 	});
 	if (!res.ok) throw new LeagueFetchError(leagueId, res.status);
-	return res.json() as Promise<EspnScoreboardResponse>;
+	const parsed = EspnScoreboardSchema.safeParse(await res.json());
+	if (!parsed.success) return { events: [], leagues: [] };
+	return parsed.data;
 };
 
 const fetchLeagueGames = async (config: LeagueConfig, options: { includeUpcoming?: boolean } = {}): Promise<LeagueGamesResult> => {
@@ -440,20 +351,6 @@ export interface EspnTeamEntry {
 	logo?: string;
 }
 
-interface EspnTeamsResponse {
-	sports?: Array<{
-		leagues?: Array<{
-			teams?: Array<{
-				team: {
-					id: string;
-					displayName: string;
-					abbreviation?: string;
-					logos?: Array<{ href: string }>;
-				};
-			}>;
-		}>;
-	}>;
-}
 
 export const fetchTeamsForLeagues = async (leagueIds: LeagueId[]): Promise<EspnTeamEntry[]> => {
 	if (leagueIds.length === 0) return [];
@@ -469,8 +366,8 @@ export const fetchTeamsForLeagues = async (leagueIds: LeagueId[]): Promise<EspnT
 			const url = `${espnBase}/${config.espnPath}/teams?${params.toString()}`;
 			const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
 			if (!res.ok) throw new Error(`Failed to fetch teams for ${config.id}: HTTP ${res.status}`);
-			const json = await res.json() as EspnTeamsResponse;
-			const rawTeams = json?.sports?.[0]?.leagues?.[0]?.teams ?? [];
+			const parsed = EspnTeamsResponseSchema.safeParse(await res.json());
+			const rawTeams = parsed.success ? (parsed.data?.sports?.[0]?.leagues?.[0]?.teams ?? []) : [];
 			return rawTeams
 				.filter(({ team }) => team.id && team.displayName)
 				.map(({ team }) => ({
