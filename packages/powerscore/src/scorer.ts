@@ -206,15 +206,16 @@ const getLateGame = (game: Game, config: SportTypeConfig): Signal => {
 	// Baseball (no clock): near-linear ramp across regulation innings (6th → 9th), reusing the
 	// inning-progress helper. Extra innings already returned above.
 	if (!clockBased) {
-		if (config.lateGameCurve.model !== 'baseball')
+		const curve = config.lateGameCurve;
+		if (!curve || curve.model !== 'baseball')
 			return { score: scores.lateGame.none, reason: '' };
 
-		const regulationProgress = getBaseballRegulationProgress(game.period, config.lateGameCurve);
+		const regulationProgress = getBaseballRegulationProgress(game.period, curve);
 		if (regulationProgress === null)
 			return { score: scores.lateGame.none, reason: '' };
 
 		const score = mapLinearLateGame('final', regulationProgress);
-		const inning = Math.min(game.period, config.lateGameCurve.regulationInnings);
+		const inning = Math.min(game.period, curve.regulationInnings);
 		return { score, reason: `${ordinal(inning)} ${reasons.inningSuffix}` };
 	}
 

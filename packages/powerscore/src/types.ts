@@ -71,8 +71,6 @@ export interface BaseballLateGameCurveConfig {
 	regulationStartInning: number;
 	/** Extra-innings baseline inning (typically regulationInnings + 1) */
 	extraInningsStartInning: number;
-	regulationCurve: ExponentialLateGameCurve;
-	extraInningsCurve: ExponentialLateGameCurve;
 }
 
 export type LateGameCurveConfig = ClockLateGameCurveConfig | BaseballLateGameCurveConfig;
@@ -156,14 +154,9 @@ export interface SportTypeConfig {
 	clockBased: boolean;
 	/** [tier1, tier2, tier3] score-margin thresholds for closeness signal */
 	closenessMargins: [number, number, number];
-	/** Sport-aware exponential late-game model (future scorer path) */
-	lateGameCurve: LateGameCurveConfig;
-	/** @deprecated Legacy threshold tier (critical). Prefer lateGameCurve for new scorer logic. */
-	lateGameCriticalSecs: number;
-	/** @deprecated Legacy threshold tier (tense). Prefer lateGameCurve for new scorer logic. */
-	lateGameTenseSecs: number;
-	/** @deprecated Legacy threshold tier (previous period). Prefer lateGameCurve for new scorer logic. */
-	lateGamePrevPeriodSecs: number;
+	/** Inning-based late-game model — baseball only. Clock sports derive their near-linear ramp
+	 *  directly from period + clock, so they omit this. */
+	lateGameCurve?: LateGameCurveConfig;
 	/** Unanswered-scoring-run size that triggers max momentum score */
 	momentumBigRun: number;
 	/** Unanswered-scoring-run size that triggers half momentum score */
@@ -204,10 +197,4 @@ export interface LeagueConfig {
 	periodDurationSecs: number;
 	/** Human-readable period label style in UI */
 	periodFormat: 'quarters' | 'halves' | 'periods' | 'innings';
-	/** Per-league override for the late-game exponential curve window sizes.
-	 *  When absent the scorer falls back to the sport-level SportTypeConfig values. */
-	lateGameWindowOverrideSecs?: {
-		finalPeriod: number;
-		previousPeriod: number;
-	};
 }
