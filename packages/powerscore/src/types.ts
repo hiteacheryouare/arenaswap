@@ -89,11 +89,21 @@ export interface ScorerTunables {
 		};
 		lateGame: {
 			overtime: number;
+			/** ceiling the near-linear regulation ramp reaches at the end of the final period (pre-OT) */
+			otEdgeMax: number;
+			/** late-game score at the very start of the final period */
+			finalPeriodStart: number;
+			/** small constant pressure carried through the previous period's ramp */
+			previousPeriodTouch: number;
+			/** extra points (otEdgeMax → overtime) a tied game earns ramping through the OT pre-boost window */
+			otPreBoostMax: number;
+			/** @deprecated legacy threshold tiers, unused by the near-linear ramp */
 			clockBased: {
 				critical: number;
 				tense: number;
 				previousPeriod: number;
 			};
+			/** @deprecated legacy inning tiers, unused by the near-linear ramp */
 			baseballInningTiers: BaseballInningScoreTier[];
 			none: number;
 		};
@@ -110,8 +120,12 @@ export interface ScorerTunables {
 		comeback: {
 			big: number;
 			moderate: number;
+			/** always-paid minimum for any active comeback tier (before progress scaling and decay) */
+			flatFloor: number;
 			none: number;
 		};
+		/** always-paid minimum for any active closeness tier (before progress scaling) */
+		closenessFlatFloor: number;
 	};
 	reasons: {
 		tied: string;
@@ -163,6 +177,16 @@ export interface SportTypeConfig {
 	comebackThresholdBig: number;
 	/** Score-margin shrinkage (in the history window) that triggers a moderate comeback score */
 	comebackThresholdSmall: number;
+	/** Half-lives (ms) for the live-action decay cluster. Longer for low-scoring sports so a single
+	 *  scoring event keeps the PowerScore graph alive between rare scores. */
+	decayHalfLifeMs: {
+		momentum: number;
+		leadChange: number;
+		comeback: number;
+	};
+	/** Seconds-remaining window in the final regulation period during which a tied game earns the
+	 *  ramping overtime pre-boost. 0 disables the pre-boost (e.g. clockless baseball). */
+	otPreBoostWindowSecs: number;
 	/** overrides maxHistorySnapshots for momentum window; omit to use the global default */
 	maxHistorySnapshots?: number;
 }

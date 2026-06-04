@@ -8,41 +8,52 @@ export const stallPenaltySteps: { minPolls: number; multiplier: number }[] = [
 	{ minPolls: 8,  multiplier: 0.85 },
 ];
 
-// PowerScore signal maxes (total possible: 100, sport-agnostic)
-export const scoreMaxCloseness = 30;
-export const scoreMaxLateGame = 30;
-export const scoreMaxMomentum = 20;
-export const scoreMaxLeadChanges = 12;
-export const scoreMaxComeback = 8;
+// PowerScore signal maxes (total possible: 100, sport-agnostic).
+// v2 gentle rebalance: points pulled out of the static Closeness/Late-Game signals and into the
+// event-driven Momentum/Lead-Change/Comeback signals that create the live "pulse".
+export const scoreMaxCloseness = 28;
+export const scoreMaxLateGame = 26;
+export const scoreMaxMomentum = 22;
+export const scoreMaxLeadChanges = 14;
+export const scoreMaxComeback = 10;
 export const scoreMaxTotal = scoreMaxCloseness + scoreMaxLateGame + scoreMaxMomentum + scoreMaxLeadChanges + scoreMaxComeback;
 
 export const scorerTunables: ScorerTunables = {
 	scores: {
+		// Closeness tiers are now the CEILINGS reached at the end of regulation (progress = 1).
+		// Realized closeness = closenessFlatFloor + (tier - floor) * gameProgress, so early games sit low.
 		closeness: {
 			tied: scoreMaxCloseness,
-			tight: 26,
-			zeroZero: 20,
-			close: 14,
+			tight: 24,
+			zeroZero: 16,
+			close: 13,
 			fringe: 5,
 			none: 0,
 		},
+		// Always-paid closeness minimum for any active (non-blowout) tier, before progress scaling.
+		closenessFlatFloor: 6,
 		lateGame: {
 			overtime: scoreMaxLateGame,
+			otEdgeMax: 24,
+			finalPeriodStart: 6,
+			previousPeriodTouch: 4,
+			otPreBoostMax: scoreMaxLateGame - 24,
 			clockBased: {
-				critical: 26,
-				tense: 18,
-				previousPeriod: 10,
+				critical: 24,
+				tense: 16,
+				previousPeriod: 6,
 			},
 			baseballInningTiers: [
-				{ minInning: 9, score: 26, includeReason: true },
-				{ minInning: 7, score: 18, includeReason: true },
-				{ minInning: 6, score: 10, includeReason: false },
+				{ minInning: 9, score: 24, includeReason: true },
+				{ minInning: 7, score: 16, includeReason: true },
+				{ minInning: 6, score: 6, includeReason: false },
 			],
 			none: 0,
 		},
+		// Momentum / lead-change tier values are the spike CEILINGS; sport-scaled decay is applied after.
 		momentum: {
 			bigRun: scoreMaxMomentum,
-			smallRun: 10,
+			smallRun: 11,
 			none: 0,
 		},
 		leadChanges: {
@@ -50,9 +61,11 @@ export const scorerTunables: ScorerTunables = {
 			single: 10,
 			none: 0,
 		},
+		// Comeback ceilings (progress-scaled like closeness, then decayed like the rest of the cluster).
 		comeback: {
 			big: scoreMaxComeback,
 			moderate: 6,
+			flatFloor: 2,
 			none: 0,
 		},
 	},
@@ -111,6 +124,9 @@ export const sportTypeConfigs: SportTypeConfig[] = [
 		zeroZeroAsFullTie: false,
 		comebackThresholdBig: 6,
 		comebackThresholdSmall: 3,
+		// Basketball scores constantly — short half-lives keep the graph jumpy and reactive.
+		decayHalfLifeMs: { momentum: 45_000, leadChange: 60_000, comeback: 60_000 },
+		otPreBoostWindowSecs: 60,
 		maxHistorySnapshots: 32,
 	},
 	{
@@ -142,6 +158,9 @@ export const sportTypeConfigs: SportTypeConfig[] = [
 		zeroZeroPenaltyPeriods: [1, 2],
 		comebackThresholdBig: 2,
 		comebackThresholdSmall: 1,
+		// Goals are rare — long half-lives let a single goal's spike linger across many quiet polls.
+		decayHalfLifeMs: { momentum: 180_000, leadChange: 240_000, comeback: 240_000 },
+		otPreBoostWindowSecs: 60,
 		maxHistorySnapshots: 30,
 	},
 	{
@@ -173,6 +192,9 @@ export const sportTypeConfigs: SportTypeConfig[] = [
 		zeroZeroAsFullTie: false,
 		comebackThresholdBig: 2,
 		comebackThresholdSmall: 1,
+		// Runs cluster by inning — mid-length half-lives. No game clock, so no OT pre-boost window.
+		decayHalfLifeMs: { momentum: 150_000, leadChange: 180_000, comeback: 180_000 },
+		otPreBoostWindowSecs: 0,
 		maxHistorySnapshots: 36,
 	},
 	{
@@ -203,6 +225,9 @@ export const sportTypeConfigs: SportTypeConfig[] = [
 		zeroZeroAsFullTie: false,
 		comebackThresholdBig: 7,
 		comebackThresholdSmall: 3,
+		// Scoring drives in bursts — mid-length half-lives bridge the gaps between possessions.
+		decayHalfLifeMs: { momentum: 90_000, leadChange: 120_000, comeback: 120_000 },
+		otPreBoostWindowSecs: 60,
 		maxHistorySnapshots: 32,
 	},
 	{
@@ -234,6 +259,9 @@ export const sportTypeConfigs: SportTypeConfig[] = [
 		zeroZeroPenaltyPeriods: [1],
 		comebackThresholdBig: 2,
 		comebackThresholdSmall: 1,
+		// Goals are the rarest of all — the longest half-lives so a goal carries the graph for minutes.
+		decayHalfLifeMs: { momentum: 240_000, leadChange: 300_000, comeback: 300_000 },
+		otPreBoostWindowSecs: 60,
 		maxHistorySnapshots: 40,
 	},
 ];
