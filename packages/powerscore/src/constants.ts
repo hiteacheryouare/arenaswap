@@ -162,8 +162,9 @@ export const sportTypeConfigs: SportTypeConfig[] = [
 		zeroZeroAsFullTie: false,
 		comebackThresholdBig: 7,
 		comebackThresholdSmall: 3,
-		// Scoring drives in bursts — mid-length half-lives bridge the gaps between possessions.
-		decayHalfLifeMs: { momentum: 90_000, leadChange: 120_000, comeback: 120_000 },
+		// Scoring drives in bursts with long gaps between possessions — longer half-lives keep the
+		// graph alive through those gaps (workshopped ×1.5 vs the other mid-scoring sports).
+		decayHalfLifeMs: { momentum: 135_000, leadChange: 180_000, comeback: 180_000 },
 		otPreBoostWindowSecs: 60,
 		maxHistorySnapshots: 32,
 	},
