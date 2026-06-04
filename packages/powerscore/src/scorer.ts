@@ -243,7 +243,56 @@ const getLateGame = (game: Game, config: SportTypeConfig): Signal => {
 	return { score, reason };
 };
 
-const getMomentum = (game: Game, history: ScoreSnapshot[], config: SportTypeConfig): Signal => {
+// "Now" for decay is the newest snapshot's timestamp; all event ages are measured against it.
+const deriveNow = (history: ScoreSnapshot[]): number => (
+	history.length > 0 ? history[history.length - 1]!.timestamp : 0
+);
+
+// Exponential decay: 1 at the moment of the event, 0.5 after one half-life, fading toward 0.
+// A null event timestamp (never happened) ages to Infinity → factor 0.
+const decayFactor = (ageMs: number, halfLifeMs: number): number => {
+	if (ageMs <= 0) return 1;
+	if (halfLifeMs <= 0) return 0;
+	return Math.pow(0.5, ageMs / halfLifeMs);
+};
+
+const ageSince = (timestamp: number | null, now: number): number => (
+	timestamp === null ? Infinity : Math.max(0, now - timestamp)
+);
+
+// Newest snapshot whose score moved — the freshness anchor for momentum and comeback decay.
+const lastScoreChangeTimestamp = (history: ScoreSnapshot[]): number | null => {
+	for (let i = history.length - 1; i >= 1; i--) {
+		const cur = history[i]!;
+		const prev = history[i - 1]!;
+		if (cur.homeScore !== prev.homeScore || cur.awayScore !== prev.awayScore)
+			return cur.timestamp;
+	}
+	return null;
+};
+
+// Count lead changes in the window and capture the newest one's timestamp for recency decay.
+const findLeadChanges = (history: ScoreSnapshot[]): { count: number; lastTimestamp: number | null } => {
+	let count = 0;
+	let lastTimestamp: number | null = null;
+	for (let i = 1; i < history.length; i++) {
+		const prevDiff = history[i - 1]!.homeScore - history[i - 1]!.awayScore;
+		const currDiff = history[i]!.homeScore - history[i]!.awayScore;
+		if (Math.sign(prevDiff) !== Math.sign(currDiff) && !(prevDiff === 0 && currDiff === 0)) {
+			count++;
+			lastTimestamp = history[i]!.timestamp;
+		}
+	}
+	return { count, lastTimestamp };
+};
+
+// Apply sport-scaled decay to a freshly-spiked tier value; clears the reason once it fades to nothing.
+const decaySignal = (tier: number, reason: string, ageMs: number, halfLifeMs: number): Signal => {
+	const score = Math.round(tier * decayFactor(ageMs, halfLifeMs));
+	return score <= 0 ? { score: 0, reason: '' } : { score, reason };
+};
+
+const getMomentum = (game: Game, history: ScoreSnapshot[], config: SportTypeConfig, now: number): Signal => {
 	const { scores, reasons } = scorerTunables;
 	if (history.length < 3) return { score: 0, reason: '' };
 
@@ -254,31 +303,44 @@ const getMomentum = (game: Game, history: ScoreSnapshot[], config: SportTypeConf
 	const run = Math.abs(homeDelta - awayDelta);
 	const runTeam = homeDelta > awayDelta ? game.homeTeam.abbreviation : game.awayTeam.abbreviation;
 
-	if (run >= config.momentumBigRun)
-		return { score: scores.momentum.bigRun, reason: `${runTeam} ${reasons.momentumRunPrefix} ${run}-0 ${reasons.momentumRunSuffix}` };
-	if (run >= config.momentumSmallRun)
-		return { score: scores.momentum.smallRun, reason: `${runTeam} ${reasons.momentumRolling}` };
-	return { score: scores.momentum.none, reason: '' };
+	let tier: number;
+	let reason: string;
+	if (run >= config.momentumBigRun) {
+		tier = scores.momentum.bigRun;
+		reason = `${runTeam} ${reasons.momentumRunPrefix} ${run}-0 ${reasons.momentumRunSuffix}`;
+	} else if (run >= config.momentumSmallRun) {
+		tier = scores.momentum.smallRun;
+		reason = `${runTeam} ${reasons.momentumRolling}`;
+	} else {
+		return { score: scores.momentum.none, reason: '' };
+	}
+
+	const ageMs = ageSince(lastScoreChangeTimestamp(history), now);
+	return decaySignal(tier, reason, ageMs, config.decayHalfLifeMs.momentum);
 };
 
-const getLeadChanges = (history: ScoreSnapshot[]): Signal => {
+const getLeadChanges = (history: ScoreSnapshot[], config: SportTypeConfig, now: number): Signal => {
 	const { scores, reasons } = scorerTunables;
 	if (history.length < 3) return { score: 0, reason: '' };
 
-	let changes = 0;
-	for (let i = 1; i < history.length; i++) {
-		const prevDiff = history[i - 1]!.homeScore - history[i - 1]!.awayScore;
-		const currDiff = history[i]!.homeScore - history[i]!.awayScore;
-		if (Math.sign(prevDiff) !== Math.sign(currDiff) && !(prevDiff === 0 && currDiff === 0))
-			changes++;
+	const { count, lastTimestamp } = findLeadChanges(history);
+	let tier: number;
+	let reason: string;
+	if (count >= 2) {
+		tier = scores.leadChanges.multiple;
+		reason = reasons.leadChangeMultiple;
+	} else if (count === 1) {
+		tier = scores.leadChanges.single;
+		reason = reasons.leadChangeSingle;
+	} else {
+		return { score: scores.leadChanges.none, reason: '' };
 	}
 
-	if (changes >= 2) return { score: scores.leadChanges.multiple, reason: reasons.leadChangeMultiple };
-	if (changes === 1) return { score: scores.leadChanges.single, reason: reasons.leadChangeSingle };
-	return { score: scores.leadChanges.none, reason: '' };
+	const ageMs = ageSince(lastTimestamp, now);
+	return decaySignal(tier, reason, ageMs, config.decayHalfLifeMs.leadChange);
 };
 
-const getComeback = (game: Game, history: ScoreSnapshot[], config: SportTypeConfig, progress: number): Signal => {
+const getComeback = (game: Game, history: ScoreSnapshot[], config: SportTypeConfig, progress: number, now: number): Signal => {
 	const { scores } = scorerTunables;
 	if (history.length < 3) return { score: 0, reason: '' };
 
@@ -302,7 +364,10 @@ const getComeback = (game: Game, history: ScoreSnapshot[], config: SportTypeConf
 		return { score: scores.comeback.none, reason: '' };
 	}
 
-	return { score: applyProgressFloor(tier, scores.comeback.flatFloor, progress), reason };
+	// Progress-scale first (a late rally matters more), then fade with the live-action cluster.
+	const floored = applyProgressFloor(tier, scores.comeback.flatFloor, progress);
+	const ageMs = ageSince(lastScoreChangeTimestamp(history), now);
+	return decaySignal(floored, reason, ageMs, config.decayHalfLifeMs.comeback);
 };
 
 export const computePowerScore = (
@@ -325,12 +390,13 @@ export const computePowerScore = (
 
 	const config = sportTypeConfigMap[game.sportType] ?? sportTypeConfigMap.basketball;
 	const progress = getGameProgress(game, config);
+	const now = deriveNow(history);
 
 	const closeness = getCloseness(game, config, progress);
 	const lateGame = getLateGame(game, config);
-	const momentum = getMomentum(game, history, config);
-	const leadChanges = getLeadChanges(history);
-	const comeback = getComeback(game, history, config, progress);
+	const momentum = getMomentum(game, history, config, now);
+	const leadChanges = getLeadChanges(history, config, now);
+	const comeback = getComeback(game, history, config, progress, now);
 
 	const rawTotal = closeness.score + lateGame.score + momentum.score + leadChanges.score + comeback.score;
 	const stallStep = stallPenaltySteps.find(s => stallCount >= s.minPolls);
