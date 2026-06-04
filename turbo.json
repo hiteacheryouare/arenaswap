@@ -14,8 +14,16 @@
 			"outputs": [".output/**"]
 		},
 		"zip": {
-			"dependsOn": ["build", "build:firefox", "build:edge"],
-			"outputs": ["dist/**"]
+			"dependsOn": ["^build"],
+			"outputs": [".output/*.zip"]
+		},
+		"zip:firefox": {
+			"dependsOn": ["^build"],
+			"outputs": [".output/*.zip"]
+		},
+		"zip:edge": {
+			"dependsOn": ["^build"],
+			"outputs": [".output/*.zip"]
 		},
 		"dev": {
 			"persistent": true,
