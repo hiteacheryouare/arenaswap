@@ -24,6 +24,15 @@ const clamp = (value: number, min: number, max: number): number => (
 	Math.min(max, Math.max(min, value))
 );
 
+// Hybrid flat-floor + progress scaling for state-based signals (closeness, comeback).
+// A small floor always pays out; the rest of the tier ceiling is gated by how far the game has
+// progressed, so early games sit low and tension builds smoothly toward the final buzzer.
+const applyProgressFloor = (tierCeiling: number, flatFloor: number, progress: number): number => {
+	if (tierCeiling <= 0) return 0;
+	const floor = clamp(flatFloor, 0, tierCeiling);
+	return Math.round(floor + (tierCeiling - floor) * clamp(progress, 0, 1));
+};
+
 export const normalizePowerScoreResult = (
 	score: Partial<PowerScoreResult> & Pick<PowerScoreResult, 'gameId'>,
 	options: NormalizePowerScoreOptions = {},
@@ -71,18 +80,36 @@ const shouldScoreZeroZeroAsFullTie = (game: Game, config: SportTypeConfig): bool
 	config.zeroZeroAsFullTie && config.zeroZeroPenaltyPeriods?.includes(game.period) !== true
 );
 
-const getCloseness = (game: Game, config: SportTypeConfig): Signal => {
+const getCloseness = (game: Game, config: SportTypeConfig, progress: number): Signal => {
 	const { scores, reasons } = scorerTunables;
 	const [t1, t2, t3] = config.closenessMargins;
 	const margin = Math.abs(game.homeTeam.score - game.awayTeam.score);
-	if (game.homeTeam.score === 0 && game.awayTeam.score === 0)
+	const marginReason = `${margin}-${getClosenessUnit(game)} ${reasons.closenessGameSuffix}`;
+
+	let tier: number;
+	let reason: string;
+	if (game.homeTeam.score === 0 && game.awayTeam.score === 0) {
 		// reason string intentionally reuses 'tied' — UI label is the same
-		return { score: shouldScoreZeroZeroAsFullTie(game, config) ? scores.closeness.tied : scores.closeness.zeroZero, reason: reasons.tied };
-	if (margin === 0) return { score: scores.closeness.tied, reason: reasons.tied };
-	if (margin <= t1) return { score: scores.closeness.tight, reason: `${margin}-${getClosenessUnit(game)} ${reasons.closenessGameSuffix}` };
-	if (margin <= t2) return { score: scores.closeness.close, reason: `${margin}-${getClosenessUnit(game)} ${reasons.closenessGameSuffix}` };
-	if (margin <= t3) return { score: scores.closeness.fringe, reason: '' };
-	return { score: scores.closeness.none, reason: '' };
+		tier = shouldScoreZeroZeroAsFullTie(game, config) ? scores.closeness.tied : scores.closeness.zeroZero;
+		reason = reasons.tied;
+	} else if (margin === 0) {
+		tier = scores.closeness.tied;
+		reason = reasons.tied;
+	} else if (margin <= t1) {
+		tier = scores.closeness.tight;
+		reason = marginReason;
+	} else if (margin <= t2) {
+		tier = scores.closeness.close;
+		reason = marginReason;
+	} else if (margin <= t3) {
+		tier = scores.closeness.fringe;
+		reason = '';
+	} else {
+		tier = scores.closeness.none;
+		reason = '';
+	}
+
+	return { score: applyProgressFloor(tier, scores.closenessFlatFloor, progress), reason };
 };
 
 const formatClock = (seconds: number): string => {
@@ -132,6 +159,25 @@ const getClockSecondsRemaining = (
 	return config.clockCountsUp
 		? clamp(boundedDuration - boundedClock, 0, boundedDuration)
 		: boundedClock;
+};
+
+// 0 at the opening tip, 1 at the end of the final regulation period (and during overtime).
+// Drives the progress-scaled flat-floor model so a tied game in Q1 scores far lower than in Q4.
+const getGameProgress = (game: Game, config: SportTypeConfig): number => {
+	const league = leagueConfigMap[game.league];
+	const regularPeriods = Math.max(1, league.regularPeriods);
+	if (game.period > regularPeriods) return 1;
+
+	if (!config.clockBased) {
+		// No game clock (baseball): approximate progress from the inning, mid-inning resolution.
+		return clamp((game.period - 1 + 0.5) / regularPeriods, 0, 1);
+	}
+
+	const periodDuration = Math.max(1, league.periodDurationSecs);
+	const secsRemaining = getClockSecondsRemaining(game, config, periodDuration);
+	const elapsedInPeriod = clamp(periodDuration - secsRemaining, 0, periodDuration);
+	const periodsDone = Math.max(0, game.period - 1);
+	return clamp((periodsDone + elapsedInPeriod / periodDuration) / regularPeriods, 0, 1);
 };
 
 const getClockRegulationProgress = (
@@ -308,8 +354,8 @@ const getLeadChanges = (history: ScoreSnapshot[]): Signal => {
 	return { score: scores.leadChanges.none, reason: '' };
 };
 
-const getComeback = (game: Game, history: ScoreSnapshot[], config: SportTypeConfig): Signal => {
-	const { scores, reasons } = scorerTunables;
+const getComeback = (game: Game, history: ScoreSnapshot[], config: SportTypeConfig, progress: number): Signal => {
+	const { scores } = scorerTunables;
 	if (history.length < 3) return { score: 0, reason: '' };
 
 	const oldDiff = Math.abs(history[0]!.homeScore - history[0]!.awayScore);
@@ -320,9 +366,19 @@ const getComeback = (game: Game, history: ScoreSnapshot[], config: SportTypeConf
 		? game.homeTeam.abbreviation
 		: game.awayTeam.abbreviation;
 
-	if (shrinkage >= config.comebackThresholdBig) return { score: scores.comeback.big, reason: `${trailingTeam} cutting into it` };
-	if (shrinkage >= config.comebackThresholdSmall) return { score: scores.comeback.moderate, reason: `${trailingTeam} closing the gap` };
-	return { score: scores.comeback.none, reason: '' };
+	let tier: number;
+	let reason: string;
+	if (shrinkage >= config.comebackThresholdBig) {
+		tier = scores.comeback.big;
+		reason = `${trailingTeam} cutting into it`;
+	} else if (shrinkage >= config.comebackThresholdSmall) {
+		tier = scores.comeback.moderate;
+		reason = `${trailingTeam} closing the gap`;
+	} else {
+		return { score: scores.comeback.none, reason: '' };
+	}
+
+	return { score: applyProgressFloor(tier, scores.comeback.flatFloor, progress), reason };
 };
 
 export const computePowerScore = (
@@ -344,12 +400,13 @@ export const computePowerScore = (
 		});
 
 	const config = sportTypeConfigMap[game.sportType] ?? sportTypeConfigMap.basketball;
+	const progress = getGameProgress(game, config);
 
-	const closeness = getCloseness(game, config);
+	const closeness = getCloseness(game, config, progress);
 	const lateGame = getLateGame(game, config);
 	const momentum = getMomentum(game, history, config);
 	const leadChanges = getLeadChanges(history);
-	const comeback = getComeback(game, history, config);
+	const comeback = getComeback(game, history, config, progress);
 
 	const rawTotal = closeness.score + lateGame.score + momentum.score + leadChanges.score + comeback.score;
 	const stallStep = stallPenaltySteps.find(s => stallCount >= s.minPolls);
