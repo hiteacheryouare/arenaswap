@@ -19,7 +19,7 @@ const items = [
 	},
 	{
 		q: 'How does the PowerScore algorithm work?',
-		a: 'PowerScore is a 100-point scale combining five signals: Closeness (30 pts), Late-Game Pressure (30 pts), Momentum (20 pts), Lead Changes (12 pts), and Comeback Factor (8 pts). Games with frozen clocks (halftime, timeouts) receive a penalty to avoid switching during stoppages.',
+		a: 'PowerScore is a 100-point scale combining five signals: Closeness (28 pts), Late-Game Pressure (26 pts), Momentum (22 pts), Lead Changes (14 pts), and Comeback Factor (10 pts). The score builds with the game — an early close game scores low and tension ramps toward the final buzzer, with tied games getting an overtime boost in the final minute. Recent scoring spikes the live signals and then fades, so even low-scoring sports keep a moving graph. Games with frozen clocks (halftime, timeouts) receive a penalty to avoid switching during stoppages.',
 	},
 	{
 		q: 'Can I stop ArenaSwap from switching during a specific game?',

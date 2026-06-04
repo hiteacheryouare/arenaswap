@@ -44,25 +44,8 @@ export interface BaseballInningScoreTier {
 	includeReason: boolean;
 }
 
-export interface ExponentialLateGameCurve {
-	/** Minimum late-game score returned when the curve activates */
-	minScore: number;
-	/** Maximum late-game score for this curve segment (pre-overtime) */
-	maxScore: number;
-	/** Exponential steepness; larger values ramp score faster near game end */
-	growthRate: number;
-}
-
-export interface ClockLateGameCurveConfig {
-	model: 'clock';
-	/** Time-remaining window in the final period where the curve is active */
-	finalPeriodWindowSecs: number;
-	/** Time-remaining window in the previous period where mild pressure applies */
-	previousPeriodWindowSecs: number;
-	finalPeriodCurve: ExponentialLateGameCurve;
-	previousPeriodCurve: ExponentialLateGameCurve;
-}
-
+/** Inning anchors for baseball's near-linear late-game ramp (clock sports derive theirs from the
+ *  period + clock, so they need no curve config). */
 export interface BaseballLateGameCurveConfig {
 	model: 'baseball';
 	/** Regulation innings for this sport (MLB = 9) */
@@ -73,7 +56,7 @@ export interface BaseballLateGameCurveConfig {
 	extraInningsStartInning: number;
 }
 
-export type LateGameCurveConfig = ClockLateGameCurveConfig | BaseballLateGameCurveConfig;
+export type LateGameCurveConfig = BaseballLateGameCurveConfig;
 
 export interface ScorerTunables {
 	scores: {

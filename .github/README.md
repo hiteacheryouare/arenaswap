@@ -85,13 +85,13 @@ PowerScore is a 100-point live algorithm that measures how exciting a game is *r
 
 | Signal | Max Points | What It Measures |
 |---|---|---|
-| Closeness | 30 | How tight the margin is — a tied game scores maximum. |
-| Late-Game Pressure | 30 | Exponential boost as the clock winds down. Overtime maxes the scale. |
-| Momentum | 20 | Unanswered scoring runs. |
-| Lead Changes | 12 | Back-and-forth games beat one-sided affairs. |
-| Comeback Factor | 8 | Is the trailing team clawing back? |
+| Closeness | 28 | How tight the margin is — a tied game scores highest, and counts for more as the game goes on. |
+| Late-Game Pressure | 26 | Tension that rises across the whole final period, with a pre-boost for tied games heading to overtime. |
+| Momentum | 22 | Unanswered scoring runs that spike and then fade. |
+| Lead Changes | 14 | Back-and-forth games beat one-sided affairs. |
+| Comeback Factor | 10 | Is the trailing team clawing back? |
 
-Games with frozen clocks (halftime, timeouts) take a penalty so ArenaSwap doesn't switch during stoppages. You can also set a **Favorite Team Bonus** to keep games involving your teams ranked higher.
+The score builds with the game rather than sitting at a flat baseline — an early close game scores low and the tension ramps toward the final buzzer. Live signals spike on a score and then decay, so even low-scoring sports keep a moving graph instead of flat lines. Games with frozen clocks (halftime, timeouts) take a penalty so ArenaSwap doesn't switch during stoppages. You can also set a **Favorite Team Bonus** to keep games involving your teams ranked higher.
 
 ---
 

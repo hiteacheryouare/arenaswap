@@ -36,6 +36,8 @@ const tipsByContext: Record<proTipContext, string[]> = {
 		'0-0 games take a small PowerScore hit in sports where 0-0 isn\'t exciting.',
 		'Hover the charts to inspect specific moments in the game.',
 		'A favorite team in the matchup adds bonus points to the PowerScore.',
+		'PowerScore builds as a game goes on — an early close game ramps up toward the final buzzer.',
+		'Tied in the final minute? PowerScore pre-boosts likely overtime so you never miss the buzzer.',
 	],
 };
 
