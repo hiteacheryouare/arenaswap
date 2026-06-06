@@ -37,7 +37,7 @@ const LeagueLogo = ({ league, logos }: { league: leagueConfig; logos: LeagueLogo
 		<img
 			src={logoUrl}
 			alt={`${league.label} logo`}
-			className='league-toggle-logo'
+			className='onb-league-logo'
 			loading='eager'
 			onError={() => setImageFailed(true)}
 		/>
@@ -87,7 +87,7 @@ const onboardingLeaguePicker = ({
 								</div>
 							</div>
 							{leagues.map(league => (
-								<div key={league.id} className='d-flex align-items-center gap-2 mt-1 ps-3 league-toggle-row'>
+								<div key={league.id} className='d-flex align-items-center gap-2 mt-1 ps-3 py-1'>
 									<div className='form-check mb-0'>
 										<input
 											className='form-check-input'

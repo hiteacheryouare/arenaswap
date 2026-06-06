@@ -657,6 +657,14 @@ $bootstrap-icons-font-dir: '/fonts';
 	letter-spacing: 0.04em;
 }
 
+.onb-league-logo {
+	width:         28px;
+	height:        28px;
+	border-radius: 50%;
+	object-fit:    contain;
+	flex-shrink:   0;
+}
+
 .league-toggle-grid {
 	display:               grid;
 	grid-template-columns: 1fr 1fr;
