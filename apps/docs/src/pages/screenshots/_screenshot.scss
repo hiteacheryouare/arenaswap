@@ -318,8 +318,16 @@ html, body {
 
 .popup-scores {
 	display: flex;
-	gap: 1.1rem;
-	align-items: baseline;
+	gap: 0.5rem;
+	align-items: center;
+}
+
+.popup-score-sep {
+	width: 1px;
+	height: 1.1em;
+	background: #e2e8f0;
+	flex-shrink: 0;
+	align-self: center;
 }
 
 .popup-score {
@@ -371,4 +379,41 @@ html, body {
 	border-radius: 0.25rem;
 	font-size: 0.6rem;
 	padding: 2px 6px;
+}
+
+.popup-ps-bar-row {
+	display: flex;
+	align-items: center;
+	gap: 5px;
+	margin-top: 6px;
+}
+
+.popup-ps-label {
+	font-size: 0.52rem;
+	font-weight: 600;
+	color: #6c757d;
+	white-space: nowrap;
+	flex-shrink: 0;
+	letter-spacing: 0.03em;
+}
+
+.popup-ps-track {
+	flex: 1;
+	height: 5px;
+	background: #e9ecef;
+	border-radius: 999px;
+	overflow: hidden;
+}
+
+.popup-ps-fill {
+	height: 100%;
+	border-radius: 999px;
+}
+
+.popup-ps-score {
+	font-size: 0.58rem;
+	font-weight: 700;
+	white-space: nowrap;
+	flex-shrink: 0;
+	font-variant-numeric: tabular-nums;
 }

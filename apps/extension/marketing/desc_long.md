@@ -26,7 +26,7 @@ The signals stack and the score is capped at 100, so a genuinely exciting game c
 
 Games with frozen clocks (halftimes, timeouts, stoppages) get a penalty so you're never switched into a commercial break.
 
-You can see the live score breakdown for any game with one click — no black-box magic.
+Every card in the popup shows a color-coded PowerScore bar so you can see the excitement level at a glance. Open any game for the full breakdown: live signal values, PowerScore over time, team scores over time, score margin, and component contribution charts.
 
 ━━━━━━━━━━━━━━━━━━━━━━
 SUPPORTED LEAGUES
@@ -42,9 +42,19 @@ TUNED IN TO YOU
 
 - Sensitivity (1–7) — how big the score gap has to be before ArenaSwap switches.
 - Switch Cooldown — minimum time between switches, so you're never tab-flipped mid-possession.
-- Switch Delay — buffer for when your stream lags behind live data.\
+- Switch Delay — buffer for when your stream lags behind live data.
 - Favorite Team Bonus — extra weight for games involving teams you care about. Per-league favorites supported.
+- Game Boost — manually raise any game's PowerScore to keep it on screen longer.
 - League filters — only monitor the sports you actually watch.
+- Pro tips — optional in-app hints to help you get the most out of the extension.
+- Switch notifications — browser notifications every time ArenaSwap makes a switch.
+
+
+━━━━━━━━━━━━━━━━━━━━━━
+STANDBY STREAM
+━━━━━━━━━━━━━━━━━━━━━━
+
+When all live games drop below a PowerScore threshold — halftime everywhere, blowouts across the board — ArenaSwap can switch to a designated Standby tab: a pregame show, a highlights feed, or whatever you keep in the background. Set the threshold and assign the tab in settings.
 
 
 ━━━━━━━━━━━━━━━━━━━━━━

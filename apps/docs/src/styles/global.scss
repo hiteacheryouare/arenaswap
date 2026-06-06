@@ -750,8 +750,16 @@ body {
 
 .demo-scores {
 	display: flex;
-	gap: 1.25rem;
-	align-items: baseline;
+	gap: 0.5rem;
+	align-items: center;
+}
+
+.demo-sep {
+	width: 1px;
+	height: 1.1em;
+	background: #e2e8f0;
+	flex-shrink: 0;
+	align-self: center;
 }
 
 .demo-score {
@@ -804,6 +812,44 @@ body {
 	border-radius: 0.25rem;
 	font-size: 0.6rem;
 	padding: 0.15rem 0.4rem;
+}
+
+.demo-ps-bar-row {
+	display: flex;
+	align-items: center;
+	gap: 5px;
+	margin-top: 0.4rem;
+	padding-top: 0.35rem;
+	border-top: 1px solid #dee2e6;
+}
+
+.demo-ps-label {
+	font-size: 0.48rem;
+	font-weight: 700;
+	color: #6c757d;
+	white-space: nowrap;
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+}
+
+.demo-ps-progress {
+	flex: 1;
+	height: 4px;
+	background: #e9ecef;
+	border-radius: 999px;
+	overflow: hidden;
+}
+
+.demo-ps-fill {
+	height: 100%;
+	border-radius: 999px;
+}
+
+.demo-ps-score {
+	font-size: 0.5rem;
+	font-weight: 700;
+	white-space: nowrap;
+	font-family: 'Lekton', monospace;
 }
 
 .hero-scroll-indicator {
