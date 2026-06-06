@@ -110,62 +110,53 @@ const setupView = ({
 					<div className='mt-3'><SwitchDelaySlider value={prefs.switchDelaySeconds} onChange={onSwitchDelayChange} /></div>
 					<div className='mt-3'><FavoriteTeamBonusInput value={prefs.favoriteTeamBonusPoints} onChange={onFavoriteTeamBonusChange} /></div>
 
-					<div className='settings-section-heading'>
-						<div className='settings-section-heading-rule' />
-						<span className='settings-section-label-text'>Options</span>
-						<div className='settings-section-heading-rule' />
-					</div>
+					<div className='fw-bold text-uppercase popup-section-label mt-3'><i className='bi bi-toggles' />Options</div>
 
-					<div className='settings-toggle-group'>
-						<div className='settings-toggle-row'>
-							<label className='setting-toggle-label' htmlFor='upcomingToggle'><i className='bi bi-calendar-event me-1 text-primary' />Show upcoming games</label>
-							<div className='form-check form-switch mb-0'>
-								<input className='form-check-input' type='checkbox' id='upcomingToggle' checked={prefs.showUpcomingGames} onChange={onToggleShowUpcoming} disabled={!prefsLoaded} />
-							</div>
-						</div>
-						<div className='settings-toggle-row'>
-							<label className='setting-toggle-label' htmlFor='proTipsToggle'><i className='bi bi-lightbulb me-1 text-primary' />Pro tips</label>
-							<div className='form-check form-switch mb-0'>
-								<input className='form-check-input' type='checkbox' id='proTipsToggle' checked={prefs.proTipsEnabled} onChange={onToggleProTips} disabled={!prefsLoaded} />
-							</div>
-						</div>
-						<div className='settings-toggle-row'>
-							<label className='setting-toggle-label' htmlFor='notificationsToggle'><i className='bi bi-bell me-1 text-primary' />Switch notifications</label>
-							<div className='form-check form-switch mb-0'>
-								<input className='form-check-input' type='checkbox' id='notificationsToggle' checked={prefs.notificationsEnabled} onChange={onToggleNotifications} disabled={!prefsLoaded} />
-							</div>
-						</div>
-						<div className='settings-toggle-row'>
-							<label className='setting-toggle-label' htmlFor='demoToggle'><i className='bi bi-joystick me-1 text-primary' />Demo mode</label>
-							<div className='form-check form-switch mb-0'>
-								<input className='form-check-input' type='checkbox' id='demoToggle' checked={demoMode} onChange={onToggleDemo} />
-							</div>
+					<div className='d-flex justify-content-between align-items-center mt-2'>
+						<label className='text-body-secondary setting-toggle-label' htmlFor='upcomingToggle'><i className='bi bi-calendar-event me-1 text-primary' />Show upcoming games</label>
+						<div className='form-check form-switch mb-0'>
+							<input className='form-check-input' type='checkbox' id='upcomingToggle' checked={prefs.showUpcomingGames} onChange={onToggleShowUpcoming} disabled={!prefsLoaded} />
 						</div>
 					</div>
 
-					<div className='settings-section-heading'>
-						<div className='settings-section-heading-rule' />
-						<span className='settings-section-label-text'>Standby Stream</span>
-						<div className='settings-section-heading-rule' />
+					<div className='d-flex justify-content-between align-items-center mt-2'>
+						<label className='text-body-secondary setting-toggle-label' htmlFor='proTipsToggle'><i className='bi bi-lightbulb me-1 text-primary' />Pro tips</label>
+						<div className='form-check form-switch mb-0'>
+							<input className='form-check-input' type='checkbox' id='proTipsToggle' checked={prefs.proTipsEnabled} onChange={onToggleProTips} disabled={!prefsLoaded} />
+						</div>
 					</div>
 
-					<div className='settings-toggle-group'>
-						<div className='settings-toggle-row'>
-							<label className='setting-toggle-label' htmlFor='standbyStreamToggle'><i className='bi bi-broadcast me-1 text-primary' />Enable Standby Stream</label>
-							<div className='form-check form-switch mb-0'>
-								<input className='form-check-input' type='checkbox' id='standbyStreamToggle' checked={prefs.standbyStreamEnabled} onChange={handleToggleStandbyStream} disabled={!prefsLoaded} />
-							</div>
+					<div className='d-flex justify-content-between align-items-center mt-2'>
+						<label className='text-body-secondary setting-toggle-label' htmlFor='notificationsToggle'><i className='bi bi-bell me-1 text-primary' />Switch notifications</label>
+						<div className='form-check form-switch mb-0'>
+							<input className='form-check-input' type='checkbox' id='notificationsToggle' checked={prefs.notificationsEnabled} onChange={onToggleNotifications} disabled={!prefsLoaded} />
+						</div>
+					</div>
+
+					<div className='d-flex justify-content-between align-items-center mt-2'>
+						<label className='text-body-secondary setting-toggle-label' htmlFor='demoToggle'><i className='bi bi-joystick me-1 text-primary' />Demo mode</label>
+						<div className='form-check form-switch mb-0'>
+							<input className='form-check-input' type='checkbox' id='demoToggle' checked={demoMode} onChange={onToggleDemo} />
+						</div>
+					</div>
+
+					<div className='fw-bold text-uppercase popup-section-label mt-3'><i className='bi bi-broadcast' />Standby Stream</div>
+
+					<div className='d-flex justify-content-between align-items-center mt-2'>
+						<label className='text-body-secondary setting-toggle-label' htmlFor='standbyStreamToggle'><i className='bi bi-broadcast me-1 text-primary' />Enable Standby Stream</label>
+						<div className='form-check form-switch mb-0'>
+							<input className='form-check-input' type='checkbox' id='standbyStreamToggle' checked={prefs.standbyStreamEnabled} onChange={handleToggleStandbyStream} disabled={!prefsLoaded} />
 						</div>
 					</div>
 
 					{prefs.standbyStreamEnabled && (
 						<div className='mt-3 d-flex flex-column gap-3'>
 							<div>
-								<div className='d-flex justify-content-between align-items-center mb-1'>
-									<label className='setting-toggle-label' htmlFor='standbyThresholdSlider'>
+								<div className='d-flex justify-content-between align-items-baseline mb-1'>
+									<label className='text-body-secondary setting-toggle-label' htmlFor='standbyThresholdSlider'>
 										<i className='bi bi-thermometer-half me-1 text-primary' />Standby below
 									</label>
-									<span className='fw-semibold setting-value-label'>{prefs.standbyStreamThreshold}</span>
+									<span className='fw-semibold text-body small'>{prefs.standbyStreamThreshold}</span>
 								</div>
 								<input
 									type='range'
@@ -223,10 +214,8 @@ const setupView = ({
 							const allSelected = leagues.every(l => prefs.enabledLeagues.includes(l.id));
 							return (
 								<div key={sportType} className='league-toggle-group'>
-									<div className='settings-section-heading'>
-										<div className='settings-section-heading-rule' />
-										<span className='settings-section-label-text'>{sportTypeLabels[sportType]}</span>
-										<div className='settings-section-heading-rule' />
+									<div className='d-flex align-items-center justify-content-between'>
+										<div className='fw-semibold text-body-secondary setting-toggle-label'>{sportTypeLabels[sportType]}</div>
 										<button
 											type='button'
 											className='btn btn-outline-secondary btn-sm px-2 py-0 small'

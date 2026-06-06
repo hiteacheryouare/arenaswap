@@ -18,15 +18,13 @@
 - Fixed grammar: momentum run strings now correctly use "an" before 8, 11, 18 (`"LAL on an 8-0 run"`).
 
 ### Settings page — Switching tab
-- Section dividers replace the old icon + bold label. Each group (`Algorithm`, `Options`, `Standby Stream`) uses a centred rule-with-text heading.
-- Slider value labels (`Balanced`, `45s`, `Off`) moved back above the slider, right-aligned as plain semibold text.
-- Toggle rows wrapped in `.settings-toggle-group` with per-row bottom separators and more vertical padding.
-- Favourite team bonus chip removed; the explainer below the input is self-sufficient.
+- Switching tab restored to its original layout: `popup-section-label` headings with icon + bold text, plain `mt-2` toggle rows with no separators, and all slider/input components back to the original inline label+value format.
 
 ### Settings page — Leagues tab
 - League toggles reorganised into a 2-column CSS grid.
-- Each cell is a small dark card with a stacked layout: logo + toggle on the top row, full-width league name on the bottom. Eliminates truncation for long names (NCAAB, NCAAF, etc.).
+- Each cell is a small dark card with a stacked layout: logo + toggle on the top row, full-width league name on the bottom row. Eliminates truncation for long names (NCAAB, NCAAF, etc.).
 - League logo shape changed from circle to rounded square (36 × 36 px) for better brand mark legibility.
+- Sport group headings use the original `fw-semibold text-body-secondary` label + all/none button row — no horizontal rules.
 
 ---
 

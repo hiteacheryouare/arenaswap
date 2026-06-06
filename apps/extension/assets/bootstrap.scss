@@ -489,42 +489,7 @@ $bootstrap-icons-font-dir: '/fonts';
 	border-bottom: 1px solid #30363d;
 }
 
-// ─── Settings: divider-rule section headings ──────────────────────────────────
-.settings-section-heading {
-	display:     flex;
-	align-items: center;
-	gap:         0.5rem;
-	margin:      0.85rem 0 0.55rem;
-}
 
-.settings-section-heading-rule {
-	flex:       1;
-	height:     1px;
-	background: #30363d;
-}
-
-.settings-section-label-text {
-	font-size:      0.58rem;
-	font-weight:    700;
-	color:          #6e7681;
-	letter-spacing: 0.09em;
-	text-transform: uppercase;
-	white-space:    nowrap;
-}
-
-
-// ─── Settings: toggle rows with separators ────────────────────────────────────
-.settings-toggle-group {
-	.settings-toggle-row {
-		display:         flex;
-		justify-content: space-between;
-		align-items:     center;
-		padding:         0.45rem 0;
-		border-bottom:   1px solid rgba(#30363d, 0.7);
-
-		&:last-child { border-bottom: none; }
-	}
-}
 
 .popup-league-logo {
 	width: 20px;
