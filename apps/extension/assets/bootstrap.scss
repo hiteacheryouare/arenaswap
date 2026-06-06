@@ -230,6 +230,49 @@ $bootstrap-icons-font-dir: '/fonts';
 	}
 }
 
+.powerscore-signal-row {
+	display:     flex;
+	align-items: center;
+	gap:         0.28rem;
+	font-size:   0.6rem;
+	padding:     0.12rem 0;
+}
+
+.powerscore-signal-row + .powerscore-signal-row {
+	border-top: 1px solid #d1d5db;
+}
+
+.powerscore-signal-dot {
+	width:        6px;
+	height:       6px;
+	border-radius: 999px;
+	flex-shrink:  0;
+}
+
+.powerscore-signal-name {
+	flex-shrink: 0;
+	width:       4.7rem;
+	color:       #374151;
+}
+
+.powerscore-signal-progress {
+	height: 5px;
+}
+
+.powerscore-signal-value {
+	font-weight:          700;
+	font-variant-numeric: tabular-nums;
+	text-align:           right;
+	flex-shrink:          0;
+	width:                2.5rem;
+	color:                #111827;
+}
+
+.powerscore-signal-max {
+	font-weight: 400;
+	color:       #6b7280;
+}
+
 .powerscore-breakdown-row-subtotal {
 	margin-top:  0.16rem;
 	padding-top: 0.14rem;
@@ -338,6 +381,29 @@ $bootstrap-icons-font-dir: '/fonts';
 	}
 }
 
+// ─── PowerScore bar (bottom of live card + detail view) ──────────────────────
+.game-card-ps-bar-row {
+	margin-top: 0.45rem;
+}
+
+// Bootstrap sets height: 1rem on .progress — SCSS needed to override it.
+.game-card-ps-progress {
+	height: 5px;
+
+	.progress-bar {
+		transition: width 0.4s ease;
+	}
+}
+
+.game-card-ps-score {
+	font-size:            0.6rem;
+	font-weight:          700;
+	letter-spacing:       0.01em;
+	white-space:          nowrap;
+	flex-shrink:          0;
+	font-variant-numeric: tabular-nums;
+}
+
 // ─── Setup view ──────────────────────────────────────────────────────────────
 .setup-tabs {
 	.nav-link {
@@ -390,9 +456,9 @@ $bootstrap-icons-font-dir: '/fonts';
 }
 
 .league-toggle-logo {
-	width:         28px;
-	height:        28px;
-	border-radius: 50%;
+	width:         36px;
+	height:        36px;
+	border-radius: 0.3rem;
 	object-fit:    contain;
 	flex-shrink:   0;
 }
@@ -421,6 +487,43 @@ $bootstrap-icons-font-dir: '/fonts';
 	margin-bottom: 0.5rem;
 	padding-bottom: 0.35rem;
 	border-bottom: 1px solid #30363d;
+}
+
+// ─── Settings: divider-rule section headings ──────────────────────────────────
+.settings-section-heading {
+	display:     flex;
+	align-items: center;
+	gap:         0.5rem;
+	margin:      0.85rem 0 0.55rem;
+}
+
+.settings-section-heading-rule {
+	flex:       1;
+	height:     1px;
+	background: #30363d;
+}
+
+.settings-section-label-text {
+	font-size:      0.58rem;
+	font-weight:    700;
+	color:          #6e7681;
+	letter-spacing: 0.09em;
+	text-transform: uppercase;
+	white-space:    nowrap;
+}
+
+
+// ─── Settings: toggle rows with separators ────────────────────────────────────
+.settings-toggle-group {
+	.settings-toggle-row {
+		display:         flex;
+		justify-content: space-between;
+		align-items:     center;
+		padding:         0.45rem 0;
+		border-bottom:   1px solid rgba(#30363d, 0.7);
+
+		&:last-child { border-bottom: none; }
+	}
 }
 
 .popup-league-logo {
@@ -580,18 +683,41 @@ $bootstrap-icons-font-dir: '/fonts';
 .sensitivity-tick-6 { left: 100%; }
 
 .league-toggle-logo-fallback {
-	background: #30363d;
-	color: #e6edf3;
-	font-size: 0.5rem;
+	width:          36px;
+	height:         36px;
+	border-radius:  0.3rem;
+	background:     #30363d;
+	color:          #e6edf3;
+	font-size:      0.5rem;
 	letter-spacing: 0.04em;
 }
 
+.league-toggle-grid {
+	display:               grid;
+	grid-template-columns: 1fr 1fr;
+	gap:                   0.35rem;
+	margin-top:            0.4rem;
+}
+
 .league-toggle-row {
-	padding: 0.2rem 0;
+	display:        flex;
+	flex-direction: column;
+	gap:            0.3rem;
+	padding:        0.4rem 0.5rem;
+	border-radius:  0.35rem;
+	background:     #161b22;
+	border:         1px solid #21262d;
+}
+
+.league-toggle-row-top {
+	display:         flex;
+	align-items:     center;
+	justify-content: space-between;
 }
 
 .league-toggle-label {
-	font-size: 0.82rem;
+	font-size:   0.72rem;
+	line-height: 1.25;
 }
 
 .game-card-matchup {
@@ -999,12 +1125,19 @@ $pre-game-time-color: shade-color($warning, 60%);
 }
 
 .game-detail-matchup {
-	display: flex;
-	align-items: center;
+	display:        flex;
+	flex-direction: column;
+	align-items:    stretch;
+	gap:            0;
+	padding:        0.45rem 0.3rem 0.5rem;
+	margin-bottom:  0.45rem;
+}
+
+.game-detail-teams-row {
+	display:         flex;
+	align-items:     center;
 	justify-content: space-between;
-	gap: 0.35rem;
-	padding: 0.45rem 0.3rem;
-	margin-bottom: 0.45rem;
+	gap:             0.35rem;
 }
 
 .game-detail-team-wrap {
@@ -1078,10 +1211,23 @@ $pre-game-time-color: shade-color($warning, 60%);
 	text-align: center;
 }
 
-.game-detail-powerscore-label {
-	font-size: 0.56rem;
-	font-weight: 700;
-	padding: 0.12rem 0.42rem;
+// ─── PowerScore bar label (shared across live card + detail card) ─────────────
+.game-card-ps-label {
+	font-size:      0.55rem;
+	font-weight:    600;
+	color:          #6c757d;
+	white-space:    nowrap;
+	flex-shrink:    0;
+	letter-spacing: 0.03em;
+}
+
+// ─── Reason text inside the white matchup card on detail view ─────────────────
+.game-detail-card-reason {
+	font-size:  0.6rem;
+	color:      #6c757d;
+	text-align: center;
+	margin-top: 0.2rem;
+	line-height: 1.3;
 }
 
 .game-detail-formula-card {

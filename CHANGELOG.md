@@ -1,5 +1,21 @@
 # Changelog
 
+## Game detail view improvements — 2026-06-06
+
+### Header
+- The "Game Detail" title now shows the actual matchup — e.g. `BOS @ NYK` — instead of the generic label.
+
+### PowerScore breakdown
+- The five signal rows (Closeness, Late-game, Momentum, Lead changes, Comeback) now render as Bootstrap progress bars with a colored dot matching the chart legend, making the relative contribution of each signal scannable at a glance.
+- Each bar uses the same color as the corresponding series in the PowerScore components chart.
+
+### Score margin chart (new)
+- Added a fourth chart below "Game score over time" showing the point differential over time (`awayScore − homeScore`).
+- Uses two clamped series — away team color fills above zero, home team color fills below zero — with a tooltip that reads e.g. "BOS +7" or "Tied".
+- No `visualMap` used; the split-series approach avoids the ECharts crossing-zero hang.
+
+---
+
 ## Dev tooling — 2026-06-04
 
 ### Zod validation

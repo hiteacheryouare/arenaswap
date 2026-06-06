@@ -140,6 +140,64 @@ export const buildTeamScoreOption = (scoreHistory: ScoreSnapshot[], game: Game):
 	};
 };
 
+export const buildScoreMarginOption = (scoreHistory: ScoreSnapshot[], game: Game): EChartsOption => {
+	const labels = scoreHistory.map(point => formatTimeLabel(point.timestamp));
+	const margins = scoreHistory.map(point => point.awayScore - point.homeScore);
+	const awayMargins = margins.map(m => Math.max(0, m));
+	const homeMargins = margins.map(m => Math.min(0, m));
+	const showSinglePointSymbols = scoreHistory.length === 1;
+	const awayColor = resolveReadableSeriesColor(game.awayTeam.color, '#60a5fa');
+	const homeColor = resolveReadableSeriesColor(game.homeTeam.color, '#f87171');
+	const maxAbsMargin = Math.max(1, ...margins.map(m => Math.abs(m)));
+	const option = baseOption(labels, 24);
+	return {
+		...option,
+		yAxis: {
+			...(option.yAxis as EChartsOption['yAxis']),
+			min: -(maxAbsMargin + 2),
+			max: maxAbsMargin + 2,
+		},
+		tooltip: {
+			trigger: 'axis',
+			backgroundColor: tooltipBackgroundColor,
+			borderColor: axisLineColor,
+			textStyle: { color: textColor, fontSize: 11 },
+			formatter: (params: unknown) => {
+				const arr = params as Array<{ axisValue: string; value: number }>;
+				const time = arr[0]?.axisValue ?? '';
+				const val = (arr[0]?.value ?? 0) + (arr[1]?.value ?? 0);
+				if (val === 0) return `${time}<br/>Tied`;
+				const leader = val > 0 ? game.awayTeam.abbreviation : game.homeTeam.abbreviation;
+				return `${time}<br/>${leader} +${Math.abs(val)}`;
+			},
+		},
+		series: [
+			{
+				type: 'line',
+				name: game.awayTeam.abbreviation,
+				data: awayMargins,
+				smooth: false,
+				showSymbol: showSinglePointSymbols,
+				symbolSize: showSinglePointSymbols ? 7 : 0,
+				lineStyle: { width: 2.5, color: awayColor },
+				areaStyle: { color: awayColor, opacity: 0.2 },
+				itemStyle: { color: awayColor },
+			},
+			{
+				type: 'line',
+				name: game.homeTeam.abbreviation,
+				data: homeMargins,
+				smooth: false,
+				showSymbol: showSinglePointSymbols,
+				symbolSize: showSinglePointSymbols ? 7 : 0,
+				lineStyle: { width: 2.5, color: homeColor },
+				areaStyle: { color: homeColor, opacity: 0.2 },
+				itemStyle: { color: homeColor },
+			},
+		],
+	};
+};
+
 export const buildComponentContributionOption = (powerHistory: PowerScoreSnapshot[]): EChartsOption => {
 	const labels = powerHistory.map(point => formatTimeLabel(point.timestamp));
 	const closeness = powerHistory.map(point => point.closeness);

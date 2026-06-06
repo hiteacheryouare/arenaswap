@@ -17,6 +17,7 @@ import ProTip from './proTip';
 import {
 	buildComponentContributionOption,
 	buildPowerScoreOption,
+	buildScoreMarginOption,
 	buildTeamScoreOption,
 	resolveReadableSeriesColor,
 } from './gameDetailChartOptions';
@@ -39,6 +40,14 @@ const componentLegendItems = [
 	{ label: 'Momentum', color: '#2274a5' },
 	{ label: 'Lead changes', color: '#f1c40f' },
 	{ label: 'Comeback', color: '#d90368' },
+];
+
+const signalMeta = [
+	{ label: 'Closeness', max: scoreMaxCloseness, color: '#22c55e' },
+	{ label: 'Late-game', max: scoreMaxLateGame, color: '#f75c03' },
+	{ label: 'Momentum', max: scoreMaxMomentum, color: '#2274a5' },
+	{ label: 'Lead changes', max: scoreMaxLeadChanges, color: '#f1c40f' },
+	{ label: 'Comeback', max: scoreMaxComeback, color: '#d90368' },
 ];
 
 const withMatchupAlpha = (color: string, fallback: string): string => (
@@ -83,10 +92,17 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 	const componentOption = useMemo(() => (
 		buildComponentContributionOption(orderedPowerScoreHistory)
 	), [orderedPowerScoreHistory]);
+	const scoreMarginOption = useMemo(() => (
+		buildScoreMarginOption(orderedScoreHistory, game)
+	), [orderedScoreHistory, game]);
 
 	const awayLineColor = resolveReadableSeriesColor(game.awayTeam.color, '#60a5fa');
 	const homeLineColor = resolveReadableSeriesColor(game.homeTeam.color, '#f87171');
 	const teamLegendItems = useMemo(() => ([
+		{ label: game.awayTeam.abbreviation, color: awayLineColor },
+		{ label: game.homeTeam.abbreviation, color: homeLineColor },
+	]), [awayLineColor, game.awayTeam.abbreviation, game.homeTeam.abbreviation, homeLineColor]);
+	const marginLegendItems = useMemo(() => ([
 		{ label: game.awayTeam.abbreviation, color: awayLineColor },
 		{ label: game.homeTeam.abbreviation, color: homeLineColor },
 	]), [awayLineColor, game.awayTeam.abbreviation, game.homeTeam.abbreviation, homeLineColor]);
@@ -107,6 +123,8 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 	const totalLabel = total > scoreMaxTotal
 		? `${total} (base max ${scoreMaxTotal})`
 		: `${total} / ${scoreMaxTotal}`;
+	const psBarPercent = Math.min((total / scoreMaxTotal) * 100, 100);
+	const psColor = powerScoreColor(total, scoreMaxTotal);
 
 	return (
 		<div className='popup-container game-detail-shell'>
@@ -115,35 +133,73 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 					<i className='bi bi-arrow-left' />
 					<span>Back</span>
 				</button>
-				<div className='game-detail-title'>Game Detail</div>
+				<div className='game-detail-title'>{game.awayTeam.abbreviation} @ {game.homeTeam.abbreviation}</div>
 			</div>
 
 			<div className='game-card game-detail-matchup' style={matchupCardStyle}>
-				<DetailTeamPill team={game.awayTeam} />
-				<div className='game-detail-center'>
-					{game.sportType === 'baseball' && game.baseRunners && <BaseDiamond {...game.baseRunners} />}
-					<div className='d-flex align-items-baseline game-detail-score-row'>
-						<FlipScore value={game.awayTeam.score} className='fw-bold lh-1 game-detail-score-value' />
-						<FlipScore value={game.homeTeam.score} className='fw-bold lh-1 game-detail-score-value' />
-					</div>
-					<div className='game-detail-period'>{statusDetail}</div>
-					{game.status !== 'pre' && (
-						<div className='powerscore game-detail-powerscore-label' style={{ backgroundColor: powerScoreColor(total, scoreMaxTotal) }}>
-							PowerScore: {totalLabel}
+				<div className='game-detail-teams-row'>
+					<DetailTeamPill team={game.awayTeam} />
+					<div className='game-detail-center'>
+						{game.sportType === 'baseball' && game.baseRunners && <BaseDiamond {...game.baseRunners} />}
+						<div className='d-flex align-items-baseline game-detail-score-row'>
+							<FlipScore value={game.awayTeam.score} className='fw-bold lh-1 game-detail-score-value' />
+							<FlipScore value={game.homeTeam.score} className='fw-bold lh-1 game-detail-score-value' />
 						</div>
-					)}
+						<div className='game-detail-period'>{statusDetail}</div>
+					</div>
+					<DetailTeamPill team={game.homeTeam} />
 				</div>
-				<DetailTeamPill team={game.homeTeam} />
+				{game.status !== 'pre' && activePowerScore && (
+					<div className='game-card-ps-bar-row'>
+						<div className='d-flex align-items-center gap-2'>
+							<span className='game-card-ps-label'>PowerScore</span>
+							<div className='progress flex-grow-1 game-card-ps-progress'>
+								<div
+									className='progress-bar'
+									role='progressbar'
+									style={{ width: `${psBarPercent}%`, backgroundColor: psColor }}
+									aria-valuenow={total}
+									aria-valuemin={0}
+									aria-valuemax={scoreMaxTotal}
+								/>
+							</div>
+							<span className='game-card-ps-score' style={{ color: psColor }}>
+								{total} / {scoreMaxTotal}
+							</span>
+						</div>
+						{reason && (
+							<div className='game-detail-card-reason'>
+								{reason.charAt(0).toUpperCase() + reason.slice(1)}
+							</div>
+						)}
+					</div>
+				)}
 			</div>
 			<GameMeta game={game} dark />
 
 			<section className='powerscore-breakdown game-detail-formula-card'>
 				<div className='powerscore-breakdown-heading'>How PowerScore is calculated</div>
-				<div className='powerscore-breakdown-row'><span>Closeness</span><span>{closeness} / {scoreMaxCloseness}</span></div>
-				<div className='powerscore-breakdown-row'><span>Late-game pressure</span><span>{lateGame} / {scoreMaxLateGame}</span></div>
-				<div className='powerscore-breakdown-row'><span>Momentum</span><span>{momentum} / {scoreMaxMomentum}</span></div>
-				<div className='powerscore-breakdown-row'><span>Lead changes</span><span>{leadChanges} / {scoreMaxLeadChanges}</span></div>
-				<div className='powerscore-breakdown-row'><span>Comeback</span><span>{comeback} / {scoreMaxComeback}</span></div>
+				{signalMeta.map((sig, i) => {
+					const val = [closeness, lateGame, momentum, leadChanges, comeback][i] ?? 0;
+					const pct = sig.max > 0 ? Math.min((val / sig.max) * 100, 100) : 0;
+					return (
+						<div key={sig.label} className='powerscore-signal-row'>
+							<span className='powerscore-signal-dot' style={{ backgroundColor: sig.color }} />
+							<span className='powerscore-signal-name'>{sig.label}</span>
+							<div className='progress powerscore-signal-progress flex-grow-1'>
+								<div
+									className='progress-bar'
+									role='progressbar'
+									style={{ width: `${pct}%`, backgroundColor: sig.color }}
+									aria-valuenow={val}
+									aria-valuemin={0}
+									aria-valuemax={sig.max}
+								/>
+							</div>
+							<span className='powerscore-signal-value'>{val}<span className='powerscore-signal-max'>/{sig.max}</span></span>
+						</div>
+					);
+				})}
 				<div className='powerscore-breakdown-row powerscore-breakdown-row-subtotal'>
 					<span>Signals total</span>
 					<span>{baseTotal}{baseTotal > scoreMaxTotal ? ` (capped at ${scoreMaxTotal})` : ''}</span>
@@ -161,7 +217,6 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 				{favoriteBonus > 0 && <div className='powerscore-breakdown-note'>{favoriteTeamCount} favorite team{favoriteTeamCount === 1 ? '' : 's'} in matchup</div>}
 				<div className='powerscore-breakdown-row'><span>Game boost</span><span>{currentBoost > 0 ? `+${currentBoost}` : '0'}</span></div>
 				<div className='powerscore-breakdown-row powerscore-breakdown-row-total'><span>Final PowerScore</span><span>{totalLabel}</span></div>
-				<div className='powerscore-breakdown-reason'>Headline reason: {reason}</div>
 			</section>
 
 			<div className='game-detail-boost-section'>
@@ -189,6 +244,10 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 			{orderedScoreHistory.length > 0
 				? <GameDetailChart title='Game score over time' option={scoreTrendOption} legendItems={teamLegendItems} />
 				: <div className='game-detail-empty-state'>Score trend appears after a few refreshes.</div>}
+
+			{orderedScoreHistory.length > 0
+				? <GameDetailChart title='Score margin' option={scoreMarginOption} legendItems={marginLegendItems} />
+				: <div className='game-detail-empty-state'>Score margin appears after a few refreshes.</div>}
 
 			{orderedPowerScoreHistory.length > 0
 				? <GameDetailChart title='PowerScore components over time' option={componentOption} legendItems={componentLegendItems} />
