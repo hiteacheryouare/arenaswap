@@ -20,7 +20,7 @@ const TeamLogo = ({ team }: { team: EspnTeamEntry }) => {
 	const abbr = (team.abbreviation ?? team.name ?? '?').slice(0, 3);
 	if (!team.logo || failed) {
 		return (
-			<span className='league-toggle-logo league-toggle-logo-fallback d-inline-flex align-items-center justify-content-center fw-bold small'>
+			<span className='onb-league-logo league-toggle-logo-fallback d-inline-flex align-items-center justify-content-center fw-bold small'>
 				{abbr}
 			</span>
 		);
@@ -29,7 +29,7 @@ const TeamLogo = ({ team }: { team: EspnTeamEntry }) => {
 		<img
 			src={team.logo}
 			alt={team.name}
-			className='league-toggle-logo'
+			className='onb-league-logo'
 			loading='lazy'
 			onError={() => setFailed(true)}
 		/>
@@ -119,7 +119,7 @@ const onboardingTeamPicker = ({
 								const key = `${leagueId}:${team.id}`;
 								const isFav = selectedFavorites.has(key);
 								return (
-									<div key={team.id} className='d-flex align-items-center justify-content-between gap-2 mt-1 league-toggle-row'>
+									<div key={team.id} className='d-flex align-items-center justify-content-between gap-2 mt-1 py-1'>
 										<div className='d-flex align-items-center gap-2 min-w-0'>
 											<TeamLogo team={team} />
 											<span className='fw-semibold text-body lh-sm small'>{team.name}</span>
