@@ -505,7 +505,7 @@ describe('computePowerScore', () => {
 
 		const smallRun = computePowerScore(game, makeHistory([[90, 60], [93, 60], [95, 60]]));
 		expect(smallRun.momentum).toBe(scorerTunables.scores.momentum.smallRun);
-		expect(smallRun.reason).toBe('HOM heating up');
+		expect(smallRun.reason).toBe('HOM on a roll');
 
 		const bigRun = computePowerScore(game, makeHistory([[90, 60], [95, 60], [100, 60]]));
 		expect(bigRun.momentum).toBe(scorerTunables.scores.momentum.bigRun);

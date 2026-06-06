@@ -1,5 +1,4 @@
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import LiveGameCard from '../entrypoints/popup/components/liveGameCard';
 import type { Game, PowerScoreResult } from '@arenaswap/core/types';
 
@@ -54,56 +53,25 @@ const defaultProps = {
 	onOpenGameDetail: jest.fn(),
 };
 
-describe('liveGameCard PowerScore breakdown', () => {
-	test('renders PowerScore button when excitementResult is provided', () => {
+describe('liveGameCard PowerScore bar', () => {
+	test('renders PowerScore progress bar when excitementResult is provided', () => {
 		render(<LiveGameCard {...defaultProps} />);
-		expect(screen.getByRole('button', { name: /toggle powerscore/i })).toBeInTheDocument();
+		expect(screen.getByRole('progressbar')).toBeInTheDocument();
+		expect(screen.getByText(/PowerScore/i)).toBeInTheDocument();
 	});
 
-	test('breakdown panel is hidden by default', () => {
-		render(<LiveGameCard {...defaultProps} />);
-		expect(screen.queryByText(/score breakdown/i)).not.toBeInTheDocument();
-	});
-
-	test('clicking PowerScore button shows breakdown panel', async () => {
-		render(<LiveGameCard {...defaultProps} />);
-		await userEvent.click(screen.getByRole('button', { name: /toggle powerscore/i }));
-		expect(screen.getByText(/score breakdown/i)).toBeInTheDocument();
-	});
-
-	test('clicking PowerScore button again hides breakdown panel', async () => {
-		render(<LiveGameCard {...defaultProps} />);
-		const btn = screen.getByRole('button', { name: /toggle powerscore/i });
-		await userEvent.click(btn);
-		await userEvent.click(btn);
-		expect(screen.queryByText(/score breakdown/i)).not.toBeInTheDocument();
-	});
-
-	test('does not render PowerScore button when excitementResult is undefined', () => {
+	test('does not render PowerScore bar when excitementResult is undefined', () => {
 		render(<LiveGameCard {...defaultProps} excitementResult={undefined} />);
-		expect(screen.queryByRole('button', { name: /toggle powerscore/i })).not.toBeInTheDocument();
-	});
-});
-
-describe('liveGameCard stall penalty', () => {
-	test('shows stall penalty note when stalled is true', async () => {
-		const stalledResult: PowerScoreResult = { ...baseResult, stalled: true, total: 29, baseTotal: 42 };
-		render(<LiveGameCard {...defaultProps} excitementResult={stalledResult} />);
-		await userEvent.click(screen.getByRole('button', { name: /toggle powerscore/i }));
-		expect(screen.getByText(/clock stall penalty/i)).toBeInTheDocument();
+		expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
 	});
 
-	test('does not show stall note when not stalled', async () => {
+	test('progress bar has correct aria value', () => {
 		render(<LiveGameCard {...defaultProps} />);
-		await userEvent.click(screen.getByRole('button', { name: /toggle powerscore/i }));
-		expect(screen.queryByText(/% applied/i)).not.toBeInTheDocument();
+		expect(screen.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '42');
 	});
-});
 
-describe('liveGameCard boost indicator', () => {
-	test('shows non-zero boost in breakdown when game has a boost', async () => {
-		render(<LiveGameCard {...defaultProps} gameBoosts={{ g1: 15 }} />);
-		await userEvent.click(screen.getByRole('button', { name: /toggle powerscore/i }));
-		expect(screen.getByText('+15')).toBeInTheDocument();
+	test('displays total and max score', () => {
+		render(<LiveGameCard {...defaultProps} />);
+		expect(screen.getByText('42 / 100')).toBeInTheDocument();
 	});
 });

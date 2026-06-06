@@ -14,6 +14,10 @@ jest.mock('../entrypoints/popup/components/proTip', () => ({
 	__esModule: true,
 	default: () => <div data-testid='pro-tip' />,
 }));
+jest.mock('../entrypoints/popup/popupHelpers', () => ({
+	...jest.requireActual('../entrypoints/popup/popupHelpers'),
+	getRandomNoGamesMessage: () => ({ title: 'No games right now', sub: 'Check back later.' }),
+}));
 jest.mock('../entrypoints/popup/components/reviewPromptBanner', () => ({
 	__esModule: true,
 	default: ({ onDismiss, onLeaveReview }: { onDismiss: () => void; onLeaveReview: () => void }) => (
