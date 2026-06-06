@@ -1,5 +1,14 @@
 # Changelog
 
+## Playful empty state — 2026-06-06
+
+### No-games empty state
+- Replaced the static "No games right now 💔" copy with a pool of 7 rotating messages, each with a distinct title + subtitle, picked randomly on each render.
+- Messages match the loading-screen brand voice: sports-native, lightly self-aware, with the occasional PowerScore reference and a mandatory "go birds."
+- `noGamesMessages` array and `getRandomNoGamesMessage` helper added to `popupHelpers.ts` alongside the existing `loadingMessages` pattern.
+
+---
+
 ## UI refresh — 2026-06-06
 
 ### Live game cards

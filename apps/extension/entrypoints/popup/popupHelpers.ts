@@ -108,6 +108,20 @@ export const loadingMessages: string[] = [
 export const getRandomLoadingMessage = (): string => (
 	loadingMessages[Math.floor(Math.random() * loadingMessages.length)] ?? ''
 );
+
+export const noGamesMessages: { title: string; sub: string }[] = [
+	{ title: 'Still waiting for tip-off. 🕐', sub: 'No live games in your selected leagues.' },
+	{ title: 'The arena\'s dark.', sub: 'No live action in your leagues. Check back when the games kick off.' },
+	{ title: 'It\'s a slow sports day.', sub: 'Nothing live right now.' },
+	{ title: 'Even the refs are taking a break.', sub: 'No live games detected across your selected leagues.' },
+	{ title: 'The scoreboard is still.', sub: 'Your leagues are quiet. Check back when the games tip off.' },
+	{ title: 'The hot dog guy left. 🌭', sub: 'No live action in your leagues. Nothing to track right now.' },
+	{ title: 'Checking under the bleachers...', sub: 'Still no live games in your selected leagues.' },
+];
+
+export const getRandomNoGamesMessage = (): { title: string; sub: string } => (
+	noGamesMessages[Math.floor(Math.random() * noGamesMessages.length)] ?? noGamesMessages[0]!
+);
 export const leaguesBySportType = leagueConfigs.reduce<Record<SportType, typeof leagueConfigs>>((groups, config) => {
 	if (config.sportType in groups) groups[config.sportType].push(config);
 	return groups;

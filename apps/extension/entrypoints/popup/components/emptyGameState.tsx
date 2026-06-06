@@ -1,3 +1,5 @@
+import { getRandomNoGamesMessage } from '../popupHelpers';
+
 interface emptyGameStateProps {
 	noLeaguesSelected: boolean;
 	noGames: boolean;
@@ -19,10 +21,11 @@ const emptyGameState = ({ noLeaguesSelected, noGames, onOpenSetup, onRefresh }: 
 	}
 
 	if (noGames) {
+		const msg = getRandomNoGamesMessage();
 		return (
 			<div className='mt-3 text-center popup-no-games-wrap'>
-				<div className='fw-bold text-body mb-1 popup-no-games-title'>No games right now 💔</div>
-				<div className='popup-no-games-sub mb-2'>Nothing live across your selected leagues.</div>
+				<div className='fw-bold text-body mb-1 popup-no-games-title'>{msg.title}</div>
+				<div className='popup-no-games-sub mb-2'>{msg.sub}</div>
 				<div className='d-flex justify-content-center gap-3'>
 					<button className='btn btn-link btn-sm p-0 popup-settings-link' onClick={onRefresh}>Refresh</button>
 					<button className='btn btn-link btn-sm p-0 popup-settings-link' onClick={onOpenSetup}>Settings →</button>
