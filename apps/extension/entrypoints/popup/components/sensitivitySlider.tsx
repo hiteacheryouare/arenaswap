@@ -18,8 +18,10 @@ const labels: Record<number, string> = {
 const sensitivitySlider = ({ value, onChange }: sensitivitySliderProps) => (
 	<div>
 		<div className='d-flex justify-content-between align-items-center mb-1'>
-			<label className='text-body-secondary setting-toggle-label'><i className='bi bi-sliders me-1 text-primary' />Switch sensitivity</label>
-			<span className='fw-semibold setting-value-label'>{labels[value]} (PowerScore gap ≥ {sensitivityThresholds[value]})</span>
+			<label className='setting-toggle-label'>
+				<i className='bi bi-sliders me-1 text-primary' />Switch sensitivity
+			</label>
+			<span className='fw-semibold setting-value-label'>{labels[value]}</span>
 		</div>
 		<input
 			type='range'
@@ -40,9 +42,7 @@ const sensitivitySlider = ({ value, onChange }: sensitivitySliderProps) => (
 				</span>
 			))}
 		</div>
-		<div className='mt-1 setting-explainer'>
-			Controls how big the PowerScore gap must be before ArenaSwap switches tabs.
-		</div>
+		<div className='mt-2 setting-explainer'>gap ≥ {sensitivityThresholds[value]} pts before switching</div>
 	</div>
 );
 

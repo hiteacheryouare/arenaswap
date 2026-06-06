@@ -327,7 +327,8 @@ const getMomentum = (game: Game, history: ScoreSnapshot[], config: SportTypeConf
 	let reason: string;
 	if (run >= config.momentumBigRun) {
 		tier = scores.momentum.bigRun;
-		reason = `${runTeam} ${reasons.momentumRunPrefix} ${run}-0 ${reasons.momentumRunSuffix}`;
+		const article = (run === 8 || run === 11 || run === 18) ? 'an' : 'a';
+		reason = `${runTeam} on ${article} ${run}-0 ${reasons.momentumRunSuffix}`;
 	} else if (run >= config.momentumSmallRun) {
 		tier = scores.momentum.smallRun;
 		reason = `${runTeam} ${reasons.momentumRolling}`;

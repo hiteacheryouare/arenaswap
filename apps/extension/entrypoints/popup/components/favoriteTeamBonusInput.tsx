@@ -5,14 +5,9 @@ interface favoriteTeamBonusInputProps {
 
 const favoriteTeamBonusInput = ({ value, onChange }: favoriteTeamBonusInputProps) => (
 	<div>
-		<div className='d-flex justify-content-between align-items-center mb-1'>
-			<label className='text-body-secondary setting-toggle-label' htmlFor='favoriteTeamBonusInput'>
-				<i className='bi bi-star me-1 text-primary' />Favorite team bonus
-			</label>
-			<span className='fw-semibold setting-value-label'>
-				+{value} per team
-			</span>
-		</div>
+		<label className='setting-toggle-label d-block mb-1' htmlFor='favoriteTeamBonusInput'>
+			<i className='bi bi-star me-1 text-primary' />Favorite team bonus
+		</label>
 		<input
 			id='favoriteTeamBonusInput'
 			type='number'
@@ -20,11 +15,11 @@ const favoriteTeamBonusInput = ({ value, onChange }: favoriteTeamBonusInputProps
 			step={1}
 			value={value}
 			onChange={e => onChange(Math.max(0, Math.round(Number(e.target.value) || 0)))}
-			className='form-control form-control-sm'
+			className='form-control form-control-sm powerscore-boost-input'
 			inputMode='numeric'
 		/>
 		<div className='mt-1 setting-explainer'>
-			Applied once for each favorited team in a game. If both teams are favorited, the bonus is doubled.
+			Applied once per favorited team in a matchup. Both teams favorited doubles it.
 		</div>
 	</div>
 );

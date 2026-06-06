@@ -1,5 +1,35 @@
 # Changelog
 
+## UI refresh — 2026-06-06
+
+### Live game cards
+- Replaced the expandable inline PowerScore breakdown with a Bootstrap `.progress` bar at the card bottom. Bar fills proportionally to `total / scoreMaxTotal` using the existing dynamic colour gradient; `PowerScore X / 100` label sits to the right.
+- Removed the collapsible breakdown button and `showPowerScoreDetails` state entirely.
+- Tab-assignment dropdown moved to a consistent footer on both live and pre-game cards.
+- `● LIVE` status row restored as a clean top-of-card indicator; reason string removed from card surface (detail view only).
+
+### Game detail view
+- Matchup card restructured to `flex-direction: column`: teams row on top, PowerScore bar + reason caption at the card bottom.
+- Removed the coloured `PowerScore: X/100` badge that lived inside the matchup card; replaced by the same bar treatment.
+- Reason text shows as a quiet muted caption below the bar, capitalised at display time. Buried `"Headline reason:"` row removed from the breakdown section.
+
+### PowerScore reason strings
+- `"tied"` → `"it's tied"`, `"tied — OT in sight"` → `"tied — overtime looming"`, `"heating up"` → `"on a roll"`, `"back and forth scoring"` → `"trading leads"`, `"comeback"` → `"big comeback"`, `"rallying"` → `"making a run at it"`, `"Top game right now"` → `"best game available"`.
+- Fixed grammar: momentum run strings now correctly use "an" before 8, 11, 18 (`"LAL on an 8-0 run"`).
+
+### Settings page — Switching tab
+- Section dividers replace the old icon + bold label. Each group (`Algorithm`, `Options`, `Standby Stream`) uses a centred rule-with-text heading.
+- Slider value labels (`Balanced`, `45s`, `Off`) moved back above the slider, right-aligned as plain semibold text.
+- Toggle rows wrapped in `.settings-toggle-group` with per-row bottom separators and more vertical padding.
+- Favourite team bonus chip removed; the explainer below the input is self-sufficient.
+
+### Settings page — Leagues tab
+- League toggles reorganised into a 2-column CSS grid.
+- Each cell is a small dark card with a stacked layout: logo + toggle on the top row, full-width league name on the bottom. Eliminates truncation for long names (NCAAB, NCAAF, etc.).
+- League logo shape changed from circle to rounded square (36 × 36 px) for better brand mark legibility.
+
+---
+
 ## Game detail view improvements — 2026-06-06
 
 ### Header

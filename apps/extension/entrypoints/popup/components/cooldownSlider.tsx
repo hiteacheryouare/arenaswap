@@ -14,12 +14,14 @@ const formatSeconds = (secs: number): string => {
 
 const cooldownSlider = ({ value, onChange }: cooldownSliderProps) => {
 	const idx = steps.indexOf(value);
-	const currentIdx = idx >= 0 ? idx : 2; // default to 45s
+	const currentIdx = idx >= 0 ? idx : 2;
 
 	return (
 		<div>
 			<div className='d-flex justify-content-between align-items-center mb-1'>
-				<label className='text-body-secondary setting-toggle-label'><i className='bi bi-clock me-1 text-primary' />Switch cooldown</label>
+				<label className='setting-toggle-label'>
+					<i className='bi bi-clock me-1 text-primary' />Switch cooldown
+				</label>
 				<span className='fw-semibold setting-value-label'>{formatSeconds(steps[currentIdx]!)}</span>
 			</div>
 			<input
@@ -32,12 +34,10 @@ const cooldownSlider = ({ value, onChange }: cooldownSliderProps) => {
 				className='form-range w-100'
 			/>
 			<div className='d-flex justify-content-between'>
-				<span className='text-body-secondary setting-toggle-label'>{formatSeconds(steps[0]!)}</span>
-				<span className='text-body-secondary setting-toggle-label'>{formatSeconds(steps[steps.length - 1]!)}</span>
+				<span className='setting-explainer'>{formatSeconds(steps[0]!)}</span>
+				<span className='setting-explainer'>{formatSeconds(steps[steps.length - 1]!)}</span>
 			</div>
-			<div className='mt-1 setting-explainer'>
-				Sets the minimum time between automatic switches to reduce rapid tab flipping.
-			</div>
+			<div className='mt-1 setting-explainer'>minimum time between switches</div>
 		</div>
 	);
 };

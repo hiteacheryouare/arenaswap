@@ -1,13 +1,7 @@
-import { useState } from 'react';
 import type { KeyboardEvent, MouseEvent } from 'react';
 import {
 	createFavoriteTeamKey,
 	leagueConfigMap,
-	scoreMaxCloseness,
-	scoreMaxComeback,
-	scoreMaxLateGame,
-	scoreMaxLeadChanges,
-	scoreMaxMomentum,
 	scoreMaxTotal,
 	sportTypeConfigMap,
 } from '@arenaswap/core/constants';
@@ -17,38 +11,19 @@ import TabAssignSelect from './tabAssignSelect';
 import type { gameCardProps } from './gameCardTypes';
 import { formatClock, formatPeriod, gameMeta as GameMeta, isInteractiveCardTarget, powerScoreColor, teamColumn as TeamColumn } from './gameCardShared';
 
-const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail }: gameCardProps) => {
-	const [showPowerScoreDetails, setShowPowerScoreDetails] = useState(false);
+const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts: _gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail }: gameCardProps) => {
 	if (!game) return null;
 
 	const isOt = game.period > (leagueConfigMap[game.league]?.regularPeriods ?? 4);
-	const closenessScore = excitementResult?.closeness ?? 0;
-	const lateGameScore = excitementResult?.lateGame ?? 0;
-	const momentumScore = excitementResult?.momentum ?? 0;
-	const leadChangesScore = excitementResult?.leadChanges ?? 0;
-	const comebackScore = excitementResult?.comeback ?? 0;
 	const totalPowerScore = excitementResult?.total ?? 0;
-	const reason = excitementResult?.reason ?? 'Best Available';
 	const sportTypeConfig = sportTypeConfigMap[game.sportType];
-	const rawPowerScore = closenessScore + lateGameScore + momentumScore + leadChangesScore + comebackScore;
-	// When stalled, baseTotal is the pre-stall signals sum (could exceed 100).
-	// When not stalled, it equals rawPowerScore.
-	const baseTotal = excitementResult?.baseTotal ?? rawPowerScore;
-	const isStalled = excitementResult?.stalled === true;
-	// Base score before bonuses: total minus anything added by background.ts on top.
-	const favoriteBonus = excitementResult?.favoriteBonus ?? 0;
-	const favoriteTeamCount = excitementResult?.favoriteTeamCount ?? 0;
-	const currentBoost = gameBoosts[game.id] ?? 0;
+	const isBaseball = game.sportType === 'baseball';
+	const hasClock = sportTypeConfig.clockBased;
 	const awayFavoriteTeamKey = createFavoriteTeamKey(game.league, game.awayTeam.id);
 	const homeFavoriteTeamKey = createFavoriteTeamKey(game.league, game.homeTeam.id);
 	const awayFavorited = favoriteTeamIds.has(awayFavoriteTeamKey);
 	const homeFavorited = favoriteTeamIds.has(homeFavoriteTeamKey);
-	const totalLabel = totalPowerScore > scoreMaxTotal
-		? `${totalPowerScore} (base max ${scoreMaxTotal})`
-		: `${totalPowerScore} / ${scoreMaxTotal}`;
-
-	const isBaseball = game.sportType === 'baseball';
-	const hasClock = sportTypeConfig.clockBased;
+	const psBarPercent = Math.min((totalPowerScore / scoreMaxTotal) * 100, 100);
 
 	const onCardClick = (event: MouseEvent<HTMLDivElement>) => {
 		if (isInteractiveCardTarget(event.target)) return;
@@ -72,47 +47,10 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 			onKeyDown={onCardKeyDown}
 			aria-label={`Open details for ${game.awayTeam.abbreviation} vs ${game.homeTeam.abbreviation}`}
 		>
-			<div className='d-flex justify-content-between align-items-center mb-1'>
-				<div className='d-flex align-items-center gap-1 fw-bold text-uppercase text-primary live-status-label'>
-					<span className='live-dot' />
-					LIVE
-				</div>
-				{excitementResult && (
-					<button type='button' className='powerscore powerscore-button' style={{ backgroundColor: powerScoreColor(totalPowerScore, scoreMaxTotal) }} onClick={() => setShowPowerScoreDetails(current => !current)} aria-expanded={showPowerScoreDetails} aria-label='Toggle PowerScore details'>
-						PowerScore: {totalLabel}
-						<i className={`bi ${showPowerScoreDetails ? 'bi-chevron-up' : 'bi-chevron-down'}`} />
-					</button>
-				)}
+			<div className='d-flex align-items-center gap-1 fw-bold text-uppercase text-primary live-status-label mb-1'>
+				<span className='live-dot' />
+				LIVE
 			</div>
-
-			{excitementResult && showPowerScoreDetails && (
-				<div className='powerscore-breakdown'>
-					<div className='powerscore-breakdown-heading'>Score breakdown</div>
-					<div className='powerscore-breakdown-row'><span>Closeness</span><span>{closenessScore} / {scoreMaxCloseness}</span></div>
-					<div className='powerscore-breakdown-row'><span>Late-game pressure</span><span>{lateGameScore} / {scoreMaxLateGame}</span></div>
-					<div className='powerscore-breakdown-row'><span>Momentum</span><span>{momentumScore} / {scoreMaxMomentum}</span></div>
-					<div className='powerscore-breakdown-row'><span>Lead changes</span><span>{leadChangesScore} / {scoreMaxLeadChanges}</span></div>
-					<div className='powerscore-breakdown-row'><span>Comeback</span><span>{comebackScore} / {scoreMaxComeback}</span></div>
-					<div className='powerscore-breakdown-row powerscore-breakdown-row-subtotal'>
-						<span>Signals total</span>
-						<span>{baseTotal}{baseTotal > scoreMaxTotal ? ` (capped at ${scoreMaxTotal})` : ''}</span>
-					</div>
-					<div className='powerscore-breakdown-row powerscore-breakdown-row-penalty'>
-						<span>Clock stall penalty</span>
-						<span>{isStalled ? 'applied' : 'none'}</span>
-					</div>
-					{isStalled && (
-						<div className='powerscore-breakdown-note'>
-							game clock frozen — {baseTotal} → {totalPowerScore - favoriteBonus - currentBoost} pts before bonuses
-						</div>
-					)}
-					<div className='powerscore-breakdown-row'><span>Favorite team bonus</span><span>{favoriteBonus > 0 ? `+${favoriteBonus}` : '0'}</span></div>
-					{favoriteBonus > 0 && <div className='powerscore-breakdown-note'>{favoriteTeamCount} favorite team{favoriteTeamCount === 1 ? '' : 's'} in matchup</div>}
-					<div className='powerscore-breakdown-row'><span>Game boost</span><span>{currentBoost > 0 ? `+${currentBoost}` : '0'}</span></div>
-					<div className='powerscore-breakdown-row powerscore-breakdown-row-total'><span>Final PowerScore</span><span>{totalLabel}</span></div>
-					<div className='powerscore-breakdown-reason'>Headline reason: {reason}</div>
-				</div>
-			)}
 
 			<div className='d-flex align-items-center justify-content-center game-card-matchup'>
 				<TeamColumn leagueId={game.league} team={game.awayTeam} isFavorited={awayFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} />
@@ -140,6 +78,26 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 			</div>
 
 			<GameMeta game={game} />
+
+			{excitementResult && (
+				<div className='d-flex align-items-center gap-2 game-card-ps-bar-row'>
+					<span className='game-card-ps-label'>PowerScore</span>
+					<div className='progress flex-grow-1 game-card-ps-progress'>
+						<div
+							className='progress-bar'
+							role='progressbar'
+							style={{ width: `${psBarPercent}%`, backgroundColor: powerScoreColor(totalPowerScore, scoreMaxTotal) }}
+							aria-valuenow={totalPowerScore}
+							aria-valuemin={0}
+							aria-valuemax={scoreMaxTotal}
+						/>
+					</div>
+					<span className='game-card-ps-score' style={{ color: powerScoreColor(totalPowerScore, scoreMaxTotal) }}>
+						{totalPowerScore} / {scoreMaxTotal}
+					</span>
+				</div>
+			)}
+
 			<TabAssignSelect gameId={game.id} openTabs={openTabs} registry={registry} onChange={onRegistryChange} formatTabLabel={formatTabLabel} />
 		</div>
 	);

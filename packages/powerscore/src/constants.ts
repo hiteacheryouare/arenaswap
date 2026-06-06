@@ -76,7 +76,7 @@ export const scorerTunables: ScorerTunables = {
 		},
 	},
 	reasons: {
-		tied: 'tied',
+		tied: "it's tied",
 		closenessUnitBySportType: {
 			hockey: 'goal',
 			soccer: 'goal',
@@ -90,15 +90,15 @@ export const scorerTunables: ScorerTunables = {
 		clockLeftSuffix: 'left',
 		underPrefix: 'under',
 		minutesLeftSuffix: 'min left',
-		overtimeAnticipation: 'tied — OT in sight',
+		overtimeAnticipation: 'tied — overtime looming',
 		momentumRunPrefix: 'on a',
 		momentumRunSuffix: 'run',
-		momentumRolling: 'heating up',
-		leadChangeMultiple: 'back and forth scoring',
+		momentumRolling: 'on a roll',
+		leadChangeMultiple: 'trading leads',
 		leadChangeSingle: 'just took the lead',
-		comebackBig: 'comeback',
-		comebackModerate: 'rallying',
-		fallback: 'Top game right now',
+		comebackBig: 'big comeback',
+		comebackModerate: 'making a run at it',
+		fallback: 'best game available',
 	},
 };
 
