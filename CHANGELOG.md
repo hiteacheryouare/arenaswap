@@ -1,5 +1,17 @@
 # Changelog
 
+## Session Recap — 2026-06-07
+
+### New feature
+- Added a **Session Recap** view accessible via a "Session Recap" link at the bottom of the main game list.
+- Shows a summary of the current viewing session: total duration, number of tab switches, and sports count at the top.
+- Per-game cards display team logos, abbreviations, and full names styled with each team's color (bordered + gradient background, matching the live game card visual language). Cards are sorted by time watched descending.
+- Switch log lists each auto-switch chronologically with its timestamp and the reason string (e.g. "tied game, 1:34 left in 4th"). Collapses to 8 entries with a "Show all" toggle for long sessions.
+- Session lifetime is tied to the master power toggle: turning ArenaSwap **off** automatically clears the session; turning it back **on** starts a fresh one.
+- Can be disabled entirely in **Settings → Switching → Session Recap** toggle, which also hides the entry point from the main view.
+
+---
+
 ## Playful empty state — 2026-06-06
 
 ### No-games empty state
