@@ -35,6 +35,9 @@
 - League logo shape changed from circle to rounded square (36 × 36 px) for better brand mark legibility.
 - Sport group headings use the original `fw-semibold text-body-secondary` label + all/none button row — no horizontal rules.
 
+## Onboarding Page
+- Made the logo smaller, matching the width of the logo on the error page
+
 ---
 
 ## Game detail view improvements — 2026-06-06
