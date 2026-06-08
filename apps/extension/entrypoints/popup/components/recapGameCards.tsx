@@ -54,7 +54,7 @@ const recapGameCard = (record: GameViewRecord) => {
 			style={{
 				borderLeft: `4px solid ${awayColor}`,
 				borderRight: `4px solid ${homeColor}`,
-				background: `linear-gradient(to right, ${awayColor}18, ${homeColor}18), var(--bs-body-bg)`,
+				background: `linear-gradient(to right, ${awayColor}18, ${homeColor}18), #ffffff`,
 			}}
 		>
 			<div className='d-flex align-items-center gap-2'>
