@@ -9,7 +9,7 @@ const onboardingTabControl = ({ onNext }: onboardingTabControlProps) => (
 			<img
 				src='/images/full_logo_white_on_transparent.png'
 				alt='ArenaSwap'
-				className='w-36'
+				className='arenaswap-logo'
 			/>
 		</div>
 
