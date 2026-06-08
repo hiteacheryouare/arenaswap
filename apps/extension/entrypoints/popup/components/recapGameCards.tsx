@@ -38,8 +38,8 @@ const teamSide = ({ logo, abbreviation, name }: { logo?: string; abbreviation: s
 					</div>
 				)
 			}
-			<div className='fw-bold text-body text-truncate w-100' style={{ fontSize: '0.72rem' }}>{abbreviation}</div>
-			<div className='text-body-secondary text-truncate w-100' style={{ fontSize: '0.55rem', lineHeight: 1.2 }}>{name}</div>
+			<div className='fw-bold text-truncate w-100' style={{ fontSize: '0.72rem', color: '#212529' }}>{abbreviation}</div>
+			<div className='text-truncate w-100' style={{ fontSize: '0.55rem', lineHeight: 1.2, color: '#6c757d' }}>{name}</div>
 		</div>
 	);
 };
@@ -62,7 +62,7 @@ const recapGameCard = (record: GameViewRecord) => {
 				<div className='text-body-tertiary flex-shrink-0' style={{ fontSize: '0.6rem' }}>vs</div>
 				{teamSide({ logo: record.homeTeamLogo, abbreviation: record.homeTeamAbbreviation, name: record.homeTeamName })}
 			</div>
-			<div className='text-center text-body-secondary mt-2' style={{ fontSize: '0.6rem' }}>
+			<div className='text-center mt-2' style={{ fontSize: '0.6rem', color: '#6c757d' }}>
 				<i className='bi bi-clock me-1' />
 				{formatWatchTime(record.watchedMs)}
 				<span className='mx-1 opacity-50'>·</span>
