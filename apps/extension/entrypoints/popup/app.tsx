@@ -7,6 +7,7 @@ import type { Browser } from 'wxt/browser';
 import GameDetailView from './components/gameDetailView';
 import MainView from './components/mainView';
 import OnboardingView from './components/onboardingView';
+import SessionRecapView from './components/sessionRecapView';
 import SetupView from './components/setupView';
 import ToastContainer from './components/toastContainer';
 import { fetchState, formatTabLabel, leagueOrder, leaguesBySportType, normalizeBackgroundState, popupView } from './popupHelpers';
@@ -318,6 +319,7 @@ const app = () => {
 						onStandbyThresholdChange={val => persistPrefs(currentPrefs => ({ ...currentPrefs, standbyStreamThreshold: val }))}
 						onSetStandbyTab={onSetStandbyTab}
 						onStandbyOnboardingDone={onStandbyOnboardingDone}
+						onToggleRecap={() => persistPrefs(currentPrefs => ({ ...currentPrefs, recapEnabled: !currentPrefs.recapEnabled }))}
 					/>
 				)}
 				{view === 'main' && (
@@ -337,6 +339,7 @@ const app = () => {
 						onStandbyStream={onStandbyStream}
 						onOpenGameDetail={openGameDetail}
 						onOpenSetup={() => setView('setup')}
+						onOpenRecap={() => setView('recap')}
 						showReviewPrompt={shouldShowReviewPrompt(reviewPromptState)}
 						onToggleEnabled={() => persistPrefs(currentPrefs => ({ ...currentPrefs, enabled: !currentPrefs.enabled }))}
 						onDismissReviewPrompt={dismissReviewPrompt}
@@ -365,6 +368,9 @@ const app = () => {
 						onSetGameBoost={onSetGameBoost}
 						onBack={() => setView('main')}
 					/>
+				)}
+				{view === 'recap' && (
+					<SessionRecapView onBack={() => setView('main')} />
 				)}
 				{view === 'detail' && !selectedGame && (
 					<div className='popup-container d-flex flex-column justify-content-center align-items-center gap-2'>

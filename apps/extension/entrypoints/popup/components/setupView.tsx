@@ -33,6 +33,7 @@ interface setupViewProps {
 	onStandbyThresholdChange: (val: number) => void;
 	onSetStandbyTab: (tabId: number | null) => void;
 	onStandbyOnboardingDone: () => void;
+	onToggleRecap: () => void;
 }
 
 type leagueConfig = (typeof leagueConfigs)[number];
@@ -61,7 +62,7 @@ const setupView = ({
 	openTabs, formatTabLabel, onClose, onSensitivityChange, onCooldownChange, onSwitchDelayChange,
 	onFavoriteTeamBonusChange, onToggleLeague, onToggleSport, onToggleShowUpcoming,
 	onToggleProTips, onToggleNotifications, onToggleDemo, onToggleStandbyStream, onStandbyThresholdChange,
-	onSetStandbyTab, onStandbyOnboardingDone,
+	onSetStandbyTab, onStandbyOnboardingDone, onToggleRecap,
 }: setupViewProps) => {
 	const [tab, setTab] = useState<'switching' | 'leagues'>('switching');
 	const [showStandbyGuide, setShowStandbyGuide] = useState(false);
@@ -199,6 +200,15 @@ const setupView = ({
 							</div>
 						</div>
 					)}
+
+					<div className='fw-bold popup-section-label mt-3'><i className='bi bi-clock-history' />Session Recap</div>
+
+					<div className='d-flex justify-content-between align-items-center mt-2'>
+						<label className='text-body-secondary setting-toggle-label' htmlFor='recapToggle'><i className='bi bi-clock-history me-1 text-primary' />Track session recap</label>
+						<div className='form-check form-switch mb-0'>
+							<input className='form-check-input' type='checkbox' id='recapToggle' checked={prefs.recapEnabled} onChange={onToggleRecap} disabled={!prefsLoaded} />
+						</div>
+					</div>
 				</div>
 			)}
 

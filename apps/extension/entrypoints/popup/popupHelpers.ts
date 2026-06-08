@@ -8,7 +8,7 @@ import type {
 } from '@arenaswap/core/types';
 import type { Browser } from 'wxt/browser';
 
-export type popupView = 'main' | 'setup' | 'detail';
+export type popupView = 'main' | 'setup' | 'detail' | 'recap';
 export type leagueGroup = { league: LeagueId; games: Game[] };
 export type dateGroup = { dateLabel: string; games: Game[] };
 

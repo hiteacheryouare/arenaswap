@@ -80,6 +80,7 @@ export interface UserPreferences {
 	standbyStreamEnabled: boolean;
 	/** PowerScore threshold (0–100): switch to standby when ALL registered games fall below this */
 	standbyStreamThreshold: number;
+	recapEnabled: boolean;
 }
 
 export interface TabRegistration {
@@ -171,3 +172,32 @@ export type ExtensionMessage =
 	| GetStateMessage
 	| SetDemoModeMessage
 	| SetStandbyStreamTabMessage;
+
+export interface SwitchEvent {
+	timestamp: number;
+	fromGameId: string | null;
+	toGameId: string;
+	reason: string;
+}
+
+export interface GameViewRecord {
+	gameId: string;
+	league: LeagueId;
+	sportType: SportType;
+	awayTeamAbbreviation: string;
+	homeTeamAbbreviation: string;
+	awayTeamName: string;
+	homeTeamName: string;
+	watchedMs: number;
+	peakPowerScore: number;
+	finalAwayScore: number;
+	finalHomeScore: number;
+	scoreFinal: boolean;
+}
+
+export interface RecapSession {
+	sessionStartTime: number;
+	lastEventTime: number;
+	switchEvents: SwitchEvent[];
+	gameViews: Record<string, GameViewRecord>;
+}
