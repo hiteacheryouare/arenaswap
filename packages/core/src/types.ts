@@ -188,6 +188,10 @@ export interface GameViewRecord {
 	homeTeamAbbreviation: string;
 	awayTeamName: string;
 	homeTeamName: string;
+	awayTeamLogo?: string;
+	homeTeamLogo?: string;
+	awayTeamColor?: string;
+	homeTeamColor?: string;
 	watchedMs: number;
 	peakPowerScore: number;
 	finalAwayScore: number;
