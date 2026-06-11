@@ -240,7 +240,7 @@ export class MockGameSimulator {
 				sportType: 'basketball',
 				homeTeam: { id: '5', name: 'Cleveland Cavaliers', abbreviation: 'CLE', score: 108, logo: `${espnCdn}/nba/500/cle.png`, color: '#860038' },
 				awayTeam: { id: '13', name: 'Milwaukee Bucks', abbreviation: 'MIL', score: 107, logo: `${espnCdn}/nba/500/mil.png`, color: '#00471B' },
-				venueName: 'Rocket Mortgage FieldHouse',
+				venueName: 'Rocket Arena',
 				period: 4, clockSeconds: 38, status: 'in',
 				broadcasts: ['ESPN'],
 				odds: { details: 'CLE -1.5', overUnder: 224.5 },
