@@ -1,5 +1,22 @@
 # Changelog
 
+## Ludicrous Speed animation — 2026-06-10
+
+### Sensitivity slider level 7
+- Renamed "Overkill" to "Ludicrous Speed" (Spaceballs reference).
+- When the slider hits level 7, the label animates with a rapid fire/electric color cycle — orange → gold → white → cyan → magenta — with a matching glow and a hair-thin shake, looping every 0.5s.
+
+---
+
+## Switch threshold fixes — 2026-06-10
+
+### Score-0 games are now reachable at max sensitivity
+- When the active tab is not a registered game (nothing is "on"), ArenaSwap will now switch to the best available game even if its PowerScore is 0. Previously, the min threshold of 1 blocked any switch when all games scored 0.
+- Level 7 (Ludicrous Speed) threshold corrected to 1 with a `>=` comparison — label now accurately reads "gap ≥ 1" instead of the misleading "gap ≥ 0".
+- Tie-switching is still blocked for active registered games; the score-0 bypass only applies when no registered game is currently being watched.
+
+---
+
 ## Playful empty state — 2026-06-06
 
 ### No-games empty state

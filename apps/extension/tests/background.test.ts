@@ -194,7 +194,7 @@ describe('lastSwitchTime reset on disable', () => {
 		clockSeconds: 60,
 	};
 
-	// Sensitivity 7 → threshold = 1: any non-trivial PowerScore triggers a switch
+	// Sensitivity 7 → threshold = 1 with >=: gap >= 1 required, notWatchingAGame bypasses for score-0 edge case
 	const switchPrefs: Partial<UserPreferences> = {
 		enabled: true,
 		enabledLeagues: ['nba' as LeagueId],

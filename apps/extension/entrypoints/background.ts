@@ -416,9 +416,10 @@ export default defineBackground(() => {
 		const threshold = sensitivityThresholds[prefs.sensitivity] ?? 0;
 		const cooldownOk = Date.now() - lastSwitchTime > prefs.cooldownSeconds * 1000;
 
+		const notWatchingAGame = !activeReg;
 		if (
 			bestReg.tabId !== activeTab.id &&
-			best.total > activeScore + threshold &&
+			(notWatchingAGame || best.total >= activeScore + threshold) &&
 			cooldownOk
 		) {
 			if (prefs.switchDelaySeconds > 0) {

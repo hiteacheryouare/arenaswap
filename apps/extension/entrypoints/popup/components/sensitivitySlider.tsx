@@ -12,14 +12,14 @@ const labels: Record<number, string> = {
 	4: 'Balanced',
 	5: 'Eager',
 	6: 'Trigger Happy',
-	7: 'Overkill'
+	7: 'Ludicrous Speed'
 };
 
 const sensitivitySlider = ({ value, onChange }: sensitivitySliderProps) => (
 	<div>
 		<div className='d-flex justify-content-between align-items-center mb-1'>
 			<label className='text-body-secondary setting-toggle-label'><i className='bi bi-sliders me-1 text-primary' />Switch sensitivity</label>
-			<span className='fw-semibold setting-value-label'>{labels[value]} (gap ≥ {sensitivityThresholds[value]})</span>
+			<span className={`fw-semibold setting-value-label${value === 7 ? ' ludicrous-speed' : ''}`}>{labels[value]} (gap ≥ {sensitivityThresholds[value]})</span>
 		</div>
 		<input
 			type='range'

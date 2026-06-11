@@ -74,3 +74,21 @@
 	font-family: 'DM Sans', system-ui, sans-serif;
 	box-sizing: border-box;
 }
+
+/* ─── Ludicrous Speed ─────────────────────────────────────────────────────── */
+@keyframes ludicrousSpeed {
+	0%   { color: #ff4500; text-shadow: 0 0 6px #ff4500; transform: translateX(0); }
+	12%  { color: #ff8c00; text-shadow: 0 0 10px #ff8c00; transform: translateX(-0.5px); }
+	25%  { color: #ffd700; text-shadow: 0 0 14px #ffd700; transform: translateX(0.5px); }
+	37%  { color: #ffffff; text-shadow: 0 0 18px #fff, 0 0 28px #ff8c00; transform: translateX(-0.5px); }
+	50%  { color: #00e5ff; text-shadow: 0 0 14px #00e5ff; transform: translateX(0.5px); }
+	62%  { color: #ff00ff; text-shadow: 0 0 10px #ff00ff; transform: translateX(-0.5px); }
+	75%  { color: #ffd700; text-shadow: 0 0 14px #ffd700; transform: translateX(0.5px); }
+	87%  { color: #ff8c00; text-shadow: 0 0 10px #ff8c00; transform: translateX(-0.5px); }
+	100% { color: #ff4500; text-shadow: 0 0 6px #ff4500; transform: translateX(0); }
+}
+
+.ludicrous-speed {
+	animation: ludicrousSpeed 0.5s linear infinite;
+	display: inline-block;
+}
