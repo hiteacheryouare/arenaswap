@@ -1,5 +1,15 @@
 # Changelog
 
+## Popup section heading polish — 2026-06-10
+
+### Visual hierarchy for section labels
+- Section titles ("Active Live Tabs", "Other Live Games", "Up Next") reworked: DM Sans, larger bold text, with a 3px `$primary` orange left accent bar. No longer plain centered text.
+- League headers (`popup-section-label`) bumped to 0.875rem DM Sans — no longer fine print.
+- Removed redundant `fw-bold text-uppercase` Bootstrap classes from `LeagueSectionHeader` JSX; SCSS handles weight and case.
+- First section at the top of the popup now uses a reduced `marginTop` (0.25rem) to avoid the awkward gap that appeared when nothing preceded it. Subsequent sections keep the full 1rem breathing room above them.
+
+---
+
 ## Ludicrous Speed animation — 2026-06-10
 
 ### Sensitivity slider level 7
