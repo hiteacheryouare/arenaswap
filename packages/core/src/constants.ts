@@ -154,7 +154,6 @@ export const createDefaultUserPreferences = (): UserPreferences => ({
 	notificationsEnabled: true,
 	standbyStreamEnabled: false,
 	standbyStreamThreshold: 20,
-	recapEnabled: true,
 });
 
 export const normalizeUserPreferences = (storedPrefs: unknown): UserPreferences => {
@@ -182,6 +181,5 @@ export const normalizeUserPreferences = (storedPrefs: unknown): UserPreferences 
 		standbyStreamThreshold: typeof candidate.standbyStreamThreshold === 'number' && isFinite(candidate.standbyStreamThreshold)
 			? Math.max(0, Math.min(100, Math.round(candidate.standbyStreamThreshold)))
 			: defaults.standbyStreamThreshold,
-		recapEnabled: typeof candidate.recapEnabled === 'boolean' ? candidate.recapEnabled : defaults.recapEnabled,
 	};
 };

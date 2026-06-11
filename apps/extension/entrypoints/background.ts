@@ -7,10 +7,6 @@ import {
 	reviewPromptStorageKey,
 } from '../utils/reviewPrompt';
 import {
-	normalizeRecapSession,
-	recapSessionStorageKey,
-} from '../utils/recapSession';
-import {
 	createDefaultUserPreferences,
 	createFavoriteTeamKey,
 	leagueLogoFallbacks,
@@ -25,13 +21,11 @@ import {
 import type {
 	ExtensionMessage,
 	Game,
-	GameViewRecord,
 	LeagueId,
 	PowerScoreResult,
 	PowerScoreSnapshot,
 	LeagueLogoMap,
 	PowerScoreHistoryMap,
-	RecapSession,
 	ScoreSnapshot,
 	ScoreHistoryMap,
 	TabRegistration,
@@ -52,9 +46,6 @@ export default defineBackground(() => {
 	let simulator: MockGameSimulator | null = null;
 	let prefs: UserPreferences = createDefaultUserPreferences();
 	let lastSwitchTime = 0;
-	let recapSession: RecapSession | null = null;
-	let recapActiveGameId: string | null = null;
-	let recapWatchStart = 0;
 	// Per-league timeouts for staggered live polling
 	const leagueTimers = new Map<string, ReturnType<typeof setTimeout>>();
 	const pollModeTracker = createPollModeTracker();
@@ -101,13 +92,6 @@ export default defineBackground(() => {
 				powerScoreHistory.set(gameId, normalizedSnapshots);
 			});
 		}
-	};
-
-	const persistRecapSession = () => {
-		if (!recapSession) return;
-		void browser.storage.local.set({ [recapSessionStorageKey]: recapSession }).catch(err => {
-			console.error('ArenaSwap: Failed to persist recap session:', err);
-		});
 	};
 
 	const getFavoriteTeamCount = (game: Game, favoriteTeamIds: Set<string>): number => {
@@ -266,64 +250,6 @@ export default defineBackground(() => {
 
 		await browser.tabs.update(tabId, { active: true });
 		lastSwitchTime = Date.now();
-
-		if (prefs.recapEnabled && gameId) {
-			const now = lastSwitchTime;
-			if (!recapSession) {
-				recapSession = { sessionStartTime: now, lastEventTime: now, switchEvents: [], gameViews: {} };
-			}
-
-			if (recapActiveGameId && recapWatchStart > 0) {
-				const prev = recapSession.gameViews[recapActiveGameId];
-				if (prev) {
-					prev.watchedMs += now - recapWatchStart;
-					const leaving = games.find(g => g.id === recapActiveGameId);
-					if (leaving) {
-						prev.finalAwayScore = leaving.awayTeam.score;
-						prev.finalHomeScore = leaving.homeTeam.score;
-					}
-				}
-			}
-
-			recapSession.switchEvents.push({ timestamp: now, fromGameId: recapActiveGameId, toGameId: gameId, reason: reason ?? '' });
-
-			if (!recapSession.gameViews[gameId]) {
-				const dest = games.find(g => g.id === gameId);
-				if (dest) {
-					const record: GameViewRecord = {
-						gameId,
-						league: dest.league,
-						sportType: dest.sportType,
-						awayTeamAbbreviation: dest.awayTeam.abbreviation,
-						homeTeamAbbreviation: dest.homeTeam.abbreviation,
-						awayTeamName: dest.awayTeam.name,
-						homeTeamName: dest.homeTeam.name,
-						awayTeamLogo: dest.awayTeam.logo,
-						homeTeamLogo: dest.homeTeam.logo,
-						awayTeamColor: dest.awayTeam.color,
-						homeTeamColor: dest.homeTeam.color,
-						watchedMs: 0,
-						peakPowerScore: 0,
-						finalAwayScore: dest.awayTeam.score,
-						finalHomeScore: dest.homeTeam.score,
-						scoreFinal: false,
-					};
-					recapSession.gameViews[gameId] = record;
-				}
-			}
-
-			const destScore = currentScores.find(s => s.gameId === gameId);
-			const destView = recapSession.gameViews[gameId];
-			if (destScore && destView && destScore.total > destView.peakPowerScore) {
-				destView.peakPowerScore = destScore.total;
-			}
-
-			recapActiveGameId = gameId;
-			recapWatchStart = now;
-			recapSession.lastEventTime = now;
-			persistRecapSession();
-		}
-
 		await syncManagedTabMuteState(true);
 		if (gameId) await recordSuccessfulSwitchForReviewPrompt(lastSwitchTime);
 
@@ -445,25 +371,6 @@ export default defineBackground(() => {
 		updateHistory(freshGames);
 		updatePowerScoreHistory(liveGames, scores, changedLeagueId);
 		persistHistoryToSession();
-
-		if (prefs.recapEnabled && recapSession) {
-			for (const game of games) {
-				if (game.status !== 'post') continue;
-				const record = recapSession.gameViews[game.id];
-				if (record && !record.scoreFinal) {
-					record.finalAwayScore = game.awayTeam.score;
-					record.finalHomeScore = game.homeTeam.score;
-					record.scoreFinal = true;
-				}
-			}
-			for (const score of scores) {
-				const record = recapSession.gameViews[score.gameId];
-				if (record && score.total > record.peakPowerScore) {
-					record.peakPowerScore = score.total;
-				}
-			}
-			persistRecapSession();
-		}
 
 		broadcastScoresUpdated();
 
@@ -616,7 +523,7 @@ export default defineBackground(() => {
 	const stateReady = Promise.all([
 		browser.storage.sync.get({ prefs: null }),
 		browser.storage.session.get({ tabRegistry: [], standbyStreamTabId: null, ...historyStorageDefaults }),
-		browser.storage.local.get({ demoMode: false, [recapSessionStorageKey]: null }),
+		browser.storage.local.get({ demoMode: false }),
 	]).then(([prefsResult, sessionResult, demoResult]) => {
 		prefs = normalizeUserPreferences(prefsResult.prefs);
 		tabRegistry = sessionResult.tabRegistry as TabRegistration[];
@@ -625,7 +532,6 @@ export default defineBackground(() => {
 		hydrateHistoryMaps(sessionResult.scoreHistory, sessionResult.powerScoreHistory);
 		demoMode = demoResult.demoMode as boolean;
 		if (demoMode) simulator = new MockGameSimulator();
-		recapSession = normalizeRecapSession(demoResult[recapSessionStorageKey]);
 	}).catch(err => {
 		console.error('ArenaSwap: Failed to load persisted state, using defaults:', err);
 	});
@@ -670,13 +576,7 @@ export default defineBackground(() => {
 				const prevShowUpcoming = prefs.showUpcomingGames;
 				const prevLeagues = new Set(prefs.enabledLeagues);
 				prefs = normalizeUserPreferences(msg.prefs);
-				if (wasEnabled && !prefs.enabled) {
-					lastSwitchTime = 0;
-					recapSession = null;
-					recapActiveGameId = null;
-					recapWatchStart = 0;
-					void browser.storage.local.set({ [recapSessionStorageKey]: null });
-				}
+				if (wasEnabled && !prefs.enabled) lastSwitchTime = 0;
 				clearPendingSwitch();
 				await browser.storage.sync.set({ prefs });
 				await syncManagedTabMuteState(prefs.enabled);

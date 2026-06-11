@@ -1,5 +1,5 @@
 import { normalizePowerScoreResult } from 'powerscore';
-import type { Game, GameViewRecord, LeagueLogoMap, PowerScoreHistoryMap, PowerScoreResult, PowerScoreSnapshot, ScoreHistoryMap, ScoreSnapshot, SwitchEvent } from './types';
+import type { Game, LeagueLogoMap, PowerScoreHistoryMap, PowerScoreResult, PowerScoreSnapshot, ScoreHistoryMap, ScoreSnapshot } from './types';
 
 export const isObjectRecord = (value: unknown): value is Record<string, unknown> => (
 	typeof value === 'object' && value !== null
@@ -44,30 +44,6 @@ export const normalizeGameBoosts = (value: unknown): Record<string, number> => {
 	}
 	return result;
 };
-
-export const isSwitchEventLike = (value: unknown): value is SwitchEvent => (
-	isObjectRecord(value)
-	&& isFiniteNumber(value.timestamp)
-	&& (value.fromGameId === null || typeof value.fromGameId === 'string')
-	&& typeof value.toGameId === 'string'
-	&& typeof value.reason === 'string'
-);
-
-export const isGameViewRecordLike = (value: unknown): value is GameViewRecord => (
-	isObjectRecord(value)
-	&& typeof value.gameId === 'string'
-	&& typeof value.league === 'string'
-	&& typeof value.sportType === 'string'
-	&& typeof value.awayTeamAbbreviation === 'string'
-	&& typeof value.homeTeamAbbreviation === 'string'
-	&& typeof value.awayTeamName === 'string'
-	&& typeof value.homeTeamName === 'string'
-	&& isFiniteNumber(value.watchedMs)
-	&& isFiniteNumber(value.peakPowerScore)
-	&& isFiniteNumber(value.finalAwayScore)
-	&& isFiniteNumber(value.finalHomeScore)
-	&& typeof value.scoreFinal === 'boolean'
-);
 
 export const isGameArray = (value: unknown): value is Game[] => Array.isArray(value);
 

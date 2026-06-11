@@ -33,7 +33,6 @@ describe('types runtime smoke', () => {
 			notificationsEnabled: true,
 			standbyStreamEnabled: false,
 			standbyStreamThreshold: 20,
-			recapEnabled: true,
 		};
 		const message: ExtensionMessage = { type: 'UPDATE_PREFS', prefs };
 

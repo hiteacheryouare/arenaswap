@@ -41,7 +41,6 @@ describe('constants', () => {
 			notificationsEnabled: true,
 			standbyStreamEnabled: false,
 			standbyStreamThreshold: 20,
-			recapEnabled: true,
 		});
 	});
 
@@ -71,7 +70,6 @@ describe('constants', () => {
 			notificationsEnabled: true,
 			standbyStreamEnabled: false,
 			standbyStreamThreshold: 20,
-			recapEnabled: true,
 		});
 	});
 

@@ -67,7 +67,6 @@ interface mainViewProps {
 	onStandbyStream: boolean;
 	onOpenGameDetail: (gameId: string) => void;
 	onOpenSetup: () => void;
-	onOpenRecap: () => void;
 	onRefresh: () => void;
 	showReviewPrompt: boolean;
 	onToggleEnabled: () => void;
@@ -163,7 +162,6 @@ const mainView = ({
 	onStandbyStream,
 	onOpenGameDetail,
 	onOpenSetup,
-	onOpenRecap,
 	onRefresh,
 	showReviewPrompt,
 	onToggleEnabled,
@@ -237,12 +235,6 @@ const mainView = ({
 			{!isLoading && !noLeaguesSelected && unassignedLiveGames.length > 0 && gameSection({ title: 'Other Live Games', games: unassignedLiveGames, scores, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail })}
 			{!isLoading && !noLeaguesSelected && prefs.showUpcomingGames && upcomingGames.length > 0 && gameSection({ title: 'Up Next', games: upcomingGames, scores: [], leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, groupDates: true })}
 
-			{prefs.recapEnabled && (
-				<button type='button' className='btn btn-link btn-sm text-body-secondary mt-auto py-1' style={{ fontSize: '0.65rem' }} onClick={onOpenRecap}>
-					<i className='bi bi-clock-history me-1' />
-					Session Recap
-				</button>
-			)}
 			<PopupFooter />
 		</div>
 	);
