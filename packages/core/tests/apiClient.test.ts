@@ -899,4 +899,127 @@ describe('apiClient', () => {
 		expect(games[0]!.id).toBe('live-only');
 		expect(games[0]!.status).toBe('in');
 	});
+
+	test('soccer finished game with odds: [null] does not discard valid events in same response', async () => {
+		// ESPN returns null as an array element (not null for the array itself) for finished soccer games.
+		// Without EspnCompetitionOddsSchema.nullable() on array elements, Zod rejects the whole
+		// response and drops every event — including valid pre-game events. Regression test for that fix.
+		const postGame = makeEvent({
+			id: 'post-null-odds',
+			state: 'post',
+			period: 2,
+			clock: "90'",
+			homeScore: '1',
+			awayScore: '0',
+		});
+		getCompetition(postGame).odds = [null];
+
+		const preGame = makeEvent({
+			id: 'pre-valid',
+			state: 'scheduled',
+			period: 1,
+			clock: "0'",
+			homeScore: '0',
+			awayScore: '0',
+		});
+
+		const fetchMock = jest.fn().mockResolvedValue(createResponse({
+			events: [postGame, preGame],
+		}));
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+		const { fetchGamesWithLeagueLogos } = loadApiClient();
+
+		const result = await fetchGamesWithLeagueLogos(['mls'], { includeUpcoming: false });
+		// post game filtered out, pre game must survive despite the null odds on its companion
+		expect(result.games.map(g => g.id)).toEqual(['pre-valid']);
+		expect(result.games[0]!.status).toBe('pre');
+	});
+
+	test('FIFAWC opening-day scenario: multiple finished games with odds: [null] do not hide upcoming matches', async () => {
+		// Reproduces the June 11 2026 bug: ESPN today endpoint returned RSA vs MEX and CZE vs KOR,
+		// both finished with odds: [null]. Zod failed the whole response, dropping CZE vs KOR entirely
+		// even though that game was scheduled for 22:00 ET and should have appeared as upcoming.
+		const rsa_mex = makeEvent({ id: 'rsa-mex', state: 'post', period: 2, clock: "90'", homeScore: '0', awayScore: '2' });
+		getCompetition(rsa_mex).odds = [null];
+
+		const cze_kor = makeEvent({ id: 'cze-kor', state: 'pre', period: 1, clock: "0'", homeScore: '0', awayScore: '0',
+			date: '2026-06-12T02:00:00.000Z' });
+		getCompetition(cze_kor).odds = [null];
+
+		const fetchMock = jest.fn().mockResolvedValue(createResponse({
+			events: [rsa_mex, cze_kor],
+		}));
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+		const { fetchGamesWithLeagueLogos } = loadApiClient();
+
+		const result = await fetchGamesWithLeagueLogos(['fifawc'], { includeUpcoming: false });
+		expect(result.games.map(g => g.id)).toEqual(['cze-kor']);
+		expect(result.games[0]!.status).toBe('pre');
+		expect(result.games[0]!.startTime).toBe('2026-06-12T02:00:00.000Z');
+	});
+
+	test('null odds element pattern applies consistently across all three soccer leagues', async () => {
+		// MLS, EPL, and FIFAWC all return odds: [null] for finished games. Verify each league
+		// correctly surfaces a valid pre-game event even when paired with a null-odds post game.
+		const soccerLeagues = ['mls', 'epl', 'fifawc'] as const;
+		for (const league of soccerLeagues) {
+			const post = makeEvent({ id: 'post', state: 'post', period: 2, clock: "90'", homeScore: '1', awayScore: '0' });
+			getCompetition(post).odds = [null];
+			const pre = makeEvent({ id: 'pre', state: 'pre', period: 1, clock: "0'", homeScore: '0', awayScore: '0' });
+
+			const fetchMock = jest.fn().mockResolvedValue(createResponse({ events: [post, pre] }));
+			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+			const { fetchGamesWithLeagueLogos } = loadApiClient();
+
+			const result = await fetchGamesWithLeagueLogos([league], { includeUpcoming: false });
+			expect(result.games.map(g => g.id)).toEqual(['pre']);
+		}
+	});
+
+	test('NFL preseason rich odds object with extra fields parses cleanly', async () => {
+		// During preseason / before NFL season starts, ESPN returns a much richer odds object than
+		// in-season. It includes spread, awayTeamOdds, homeTeamOdds, moneyline, pointSpread, total,
+		// link, header, footer. These extra fields are not in EspnCompetitionOddsSchema. Zod's default
+		// behavior (non-strict) should silently ignore them — this test locks in that behavior.
+		const event = makeEvent({
+			id: 'nfl-pre-rich-odds',
+			state: 'pre',
+			period: 1,
+			clock: '0:00',
+			homeScore: '0',
+			awayScore: '0',
+			withOdds: false,
+		});
+		getCompetition(event).odds = [{
+			details: 'SEA -3.5',
+			overUnder: 44.5,
+			provider: {
+				name: 'DraftKings',
+				displayName: 'DraftKings',
+				logos: [{ href: 'https://cdn.dk.com/dark.png', rel: ['dark'] }],
+			},
+			// Extra fields that appear in ESPN's NFL preseason data
+			spread: -3.5,
+			awayTeamOdds: { favorite: false, underdog: true },
+			homeTeamOdds: { favorite: true, underdog: false },
+			moneyline: { displayName: 'Moneyline', shortDisplayName: 'ML' },
+			pointSpread: { displayName: 'Spread' },
+			total: { displayName: 'Total' },
+			link: 'https://sportsbook.draftkings.com/event/34118042',
+			header: 'DraftKings',
+			footer: 'footer text',
+		}];
+
+		const fetchMock = jest.fn().mockResolvedValue(createResponse({ events: [event] }));
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+		const { fetchGamesWithLeagueLogos } = loadApiClient();
+
+		const result = await fetchGamesWithLeagueLogos(['nfl'], { includeUpcoming: false });
+		expect(result.games).toHaveLength(1);
+		expect(result.games[0]!.id).toBe('nfl-pre-rich-odds');
+		expect(result.games[0]!.odds).toMatchObject({
+			details: 'SEA -3.5',
+			overUnder: 44.5,
+		});
+	});
 });
