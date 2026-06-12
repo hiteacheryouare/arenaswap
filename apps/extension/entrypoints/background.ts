@@ -592,6 +592,11 @@ export default defineBackground(() => {
 				const leaguesChanged = prevLeagues.size !== newLeagues.size ||
 					[...prevLeagues].some(l => !newLeagues.has(l as LeagueId));
 				if (leaguesChanged && !demoMode) {
+					// Refresh upcoming games so newly-enabled leagues get their schedule
+					await refreshUpcomingGames();
+					// Rebuild games: keep live/in-progress games, replace upcoming slice with updated cache
+					games = [...games.filter(g => g.status !== 'pre'), ...upcomingGames];
+					broadcastScoresUpdated();
 					startLeaguePolling();
 				}
 			});

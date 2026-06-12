@@ -80,7 +80,7 @@ const EspnCompetitionSchema = zod.object({
 	venue: EspnCompetitionVenueSchema.optional(),
 	broadcasts: zod.array(EspnCompetitionBroadcastSchema).optional(),
 	geoBroadcasts: zod.array(EspnCompetitionGeoBroadcastSchema).optional(),
-	odds: zod.array(EspnCompetitionOddsSchema).optional(),
+	odds: zod.array(EspnCompetitionOddsSchema.nullable()).optional(),
 });
 
 const EspnEventSchema = zod.object({
