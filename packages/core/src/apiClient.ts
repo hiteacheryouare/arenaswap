@@ -15,6 +15,16 @@ const espnBase = 'https://site.api.espn.com/apis/site/v2/sports';
 const upcomingDateWindowDays = 4;
 
 const parseClockToSeconds = (clock: string): number => {
+	// Soccer prime notation: "85'" or "90'+8'" (base minutes + optional stoppage)
+	if (clock.includes("'")) {
+		const primeMatch = /^(\d+)'\+(\d+)'$/.exec(clock) ?? /^(\d+)'$/.exec(clock);
+		if (primeMatch) {
+			const base = parseInt(primeMatch[1]!, 10);
+			const stoppage = primeMatch[2] ? parseInt(primeMatch[2], 10) : 0;
+			return (base + stoppage) * 60;
+		}
+		return 0;
+	}
 	const parts = clock.split(':');
 	if (parts.length === 1) {
 		const n = Number(parts[0]);

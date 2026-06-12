@@ -354,6 +354,29 @@ describe('apiClient', () => {
 		expect(dec5Game?.clockSeconds).toBe(30);  // 0.5 minutes = 30 seconds
 	});
 
+	test('parses soccer prime-notation clock values (e.g. "85\'", "90\'+8\'")', async () => {
+		const fetchMock = jest.fn().mockResolvedValue(createResponse({
+			events: [
+				makeEvent({ id: 'soccer-normal', state: 'in', period: 2, clock: "85'", homeScore: '1', awayScore: '0' }),
+				makeEvent({ id: 'soccer-stoppage', state: 'in', period: 2, clock: "90'+8'", homeScore: '1', awayScore: '1' }),
+				makeEvent({ id: 'soccer-45', state: 'in', period: 1, clock: "45'", homeScore: '0', awayScore: '0' }),
+				makeEvent({ id: 'soccer-zero', state: 'in', period: 1, clock: "0'", homeScore: '0', awayScore: '0' }),
+			],
+		}));
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+		const { fetchGamesWithLeagueLogos } = loadApiClient();
+
+		const result = await fetchGamesWithLeagueLogos(['mls'], { includeUpcoming: false });
+		const normalGame = result.games.find(g => g.id === 'soccer-normal');
+		const stoppageGame = result.games.find(g => g.id === 'soccer-stoppage');
+		const halfGame = result.games.find(g => g.id === 'soccer-45');
+		const zeroGame = result.games.find(g => g.id === 'soccer-zero');
+		expect(normalGame?.clockSeconds).toBe(5100);  // 85 * 60
+		expect(stoppageGame?.clockSeconds).toBe(5880); // (90 + 8) * 60
+		expect(halfGame?.clockSeconds).toBe(2700);    // 45 * 60
+		expect(zeroGame?.clockSeconds).toBe(0);       // 0 * 60
+	});
+
 	test('defensively handles malformed events, clocks, colors, and odds variants', async () => {
 		const missingCompetitors = makeEvent({
 			id: 'missing-competitors',
