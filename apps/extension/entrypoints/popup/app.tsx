@@ -8,6 +8,7 @@ import GameDetailView from './components/gameDetailView';
 import MainView from './components/mainView';
 import OnboardingView from './components/onboardingView';
 import SetupView from './components/setupView';
+import WalkthroughView from './components/walkthroughView';
 import ToastContainer from './components/toastContainer';
 import { fetchState, formatTabLabel, leagueOrder, leaguesBySportType, normalizeBackgroundState, popupView } from './popupHelpers';
 import useFavoriteScoreConfetti from './useFavoriteScoreConfetti';
@@ -39,6 +40,7 @@ const app = () => {
 	const [openTabs, setOpenTabs] = useState<Browser.tabs.Tab[]>([]);
 	const [demoMode, setDemoMode] = useState(false);
 	const [onboardingDone, setOnboardingDone] = useState<boolean | null>(null);
+	const [walkthroughActive, setWalkthroughActive] = useState(false);
 	const [standbyOnboardingDone, setStandbyOnboardingDone] = useState(false);
 	const [standbyStreamTabId, setStandbyStreamTabId] = useState<number | null>(null);
 	const [reviewPromptState, setReviewPromptState] = useState<ReviewPromptState>(normalizeReviewPromptState(null));
@@ -280,8 +282,16 @@ const app = () => {
 			<OnboardingView
 				leagueLogos={leagueLogos}
 				onComplete={onOnboardingComplete}
+				onStartWalkthrough={(leagues, favorites) => {
+					onOnboardingComplete(leagues, favorites);
+					setWalkthroughActive(true);
+				}}
 			/>
 		);
+	}
+
+	if (walkthroughActive) {
+		return <WalkthroughView onComplete={() => setWalkthroughActive(false)} />;
 	}
 
 	return (
