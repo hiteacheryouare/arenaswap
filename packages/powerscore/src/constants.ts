@@ -44,16 +44,6 @@ export const scorerTunables: ScorerTunables = {
 			finalPeriodStart: 3,
 			previousPeriodTouch: 3,
 			otPreBoostMax: scoreMaxLateGame - 26,
-			clockBased: {
-				critical: 26,
-				tense: 16,
-				previousPeriod: 6,
-			},
-			baseballInningTiers: [
-				{ minInning: 9, score: 26, includeReason: true },
-				{ minInning: 7, score: 16, includeReason: true },
-				{ minInning: 6, score: 6, includeReason: false },
-			],
 			none: 0,
 		},
 		// Momentum / lead-change tier values are the spike CEILINGS; sport-scaled decay is applied after.

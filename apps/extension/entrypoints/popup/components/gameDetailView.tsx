@@ -1,18 +1,12 @@
 import { useMemo } from 'react';
-import {
-	scoreMaxCloseness,
-	scoreMaxComeback,
-	scoreMaxLateGame,
-	scoreMaxLeadChanges,
-	scoreMaxMomentum,
-	scoreMaxTotal,
-	sportTypeConfigMap,
-} from '@arenaswap/core/constants';
+import { scoreMaxTotal } from '@arenaswap/core/constants';
 import type { Game, PowerScoreResult, PowerScoreSnapshot, ScoreSnapshot } from '@arenaswap/core/types';
 import BaseDiamond from './baseDiamond';
 import DetailTeamPill from './detailTeamPill';
 import FlipScore from './flipScore';
 import GameDetailChart from './gameDetailChart';
+import GameBoostInput from './gameBoostInput';
+import PowerScoreBreakdown from './powerScoreBreakdown';
 import ProTip from './proTip';
 import {
 	buildComponentContributionOption,
@@ -21,7 +15,7 @@ import {
 	buildTeamScoreOption,
 	resolveReadableSeriesColor,
 } from './gameDetailChartOptions';
-import { formatClock, formatPeriod, gameMeta as GameMeta, powerScoreColor } from './gameCardShared';
+import { formatGameClock, formatPeriod, GameMeta, powerScoreColor } from './gameCardShared';
 
 interface gameDetailViewProps {
 	game: Game;
@@ -40,14 +34,6 @@ const componentLegendItems = [
 	{ label: 'Momentum', color: '#2274a5' },
 	{ label: 'Lead changes', color: '#f1c40f' },
 	{ label: 'Comeback', color: '#d90368' },
-];
-
-const signalMeta = [
-	{ label: 'Closeness', max: scoreMaxCloseness, color: '#22c55e' },
-	{ label: 'Late-game', max: scoreMaxLateGame, color: '#f75c03' },
-	{ label: 'Momentum', max: scoreMaxMomentum, color: '#2274a5' },
-	{ label: 'Lead changes', max: scoreMaxLeadChanges, color: '#f1c40f' },
-	{ label: 'Comeback', max: scoreMaxComeback, color: '#d90368' },
 ];
 
 const withMatchupAlpha = (color: string, fallback: string): string => (
@@ -102,10 +88,6 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 		{ label: game.awayTeam.abbreviation, color: awayLineColor },
 		{ label: game.homeTeam.abbreviation, color: homeLineColor },
 	]), [awayLineColor, game.awayTeam.abbreviation, game.homeTeam.abbreviation, homeLineColor]);
-	const marginLegendItems = useMemo(() => ([
-		{ label: game.awayTeam.abbreviation, color: awayLineColor },
-		{ label: game.homeTeam.abbreviation, color: homeLineColor },
-	]), [awayLineColor, game.awayTeam.abbreviation, game.homeTeam.abbreviation, homeLineColor]);
 
 	const awayAccent = game.awayTeam.color ?? '#2274A5';
 	const homeAccent = game.homeTeam.color ?? '#F75C03';
@@ -118,7 +100,7 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 	const statusDetail = game.status === 'in'
 		? game.sportType === 'baseball'
 			? `${inningHalf}${formatPeriod(game)}`
-			: `${formatPeriod(game)} • ${formatClock(game.clockSeconds)}`
+			: `${formatPeriod(game)} • ${formatGameClock(game)}`
 		: game.status === 'pre' ? 'Starts soon' : 'Final';
 	const totalLabel = total > scoreMaxTotal
 		? `${total} (base max ${scoreMaxTotal})`
@@ -177,63 +159,23 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 			</div>
 			<GameMeta game={game} dark />
 
-			<section className='powerscore-breakdown game-detail-formula-card'>
-				<div className='powerscore-breakdown-heading'>How PowerScore is calculated</div>
-				{signalMeta.map((sig, i) => {
-					const val = [closeness, lateGame, momentum, leadChanges, comeback][i] ?? 0;
-					const pct = sig.max > 0 ? Math.min((val / sig.max) * 100, 100) : 0;
-					return (
-						<div key={sig.label} className='powerscore-signal-row'>
-							<span className='powerscore-signal-dot' style={{ backgroundColor: sig.color }} />
-							<span className='powerscore-signal-name'>{sig.label}</span>
-							<div className='progress powerscore-signal-progress flex-grow-1'>
-								<div
-									className='progress-bar'
-									role='progressbar'
-									style={{ width: `${pct}%`, backgroundColor: sig.color }}
-									aria-valuenow={val}
-									aria-valuemin={0}
-									aria-valuemax={sig.max}
-								/>
-							</div>
-							<span className='powerscore-signal-value'>{val}<span className='powerscore-signal-max'>/{sig.max}</span></span>
-						</div>
-					);
-				})}
-				<div className='powerscore-breakdown-row powerscore-breakdown-row-subtotal'>
-					<span>Signals total</span>
-					<span>{baseTotal}{baseTotal > scoreMaxTotal ? ` (capped at ${scoreMaxTotal})` : ''}</span>
-				</div>
-				<div className='powerscore-breakdown-row powerscore-breakdown-row-penalty'>
-					<span>Clock stall penalty</span>
-					<span>{isStalled ? 'applied' : 'none'}</span>
-				</div>
-				{isStalled && (
-					<div className='powerscore-breakdown-note'>
-						game clock frozen — {baseTotal} → {totalBeforeBonuses} pts before bonuses
-					</div>
-				)}
-				<div className='powerscore-breakdown-row'><span>Favorite bonus</span><span>{favoriteBonus > 0 ? `+${favoriteBonus}` : '0'}</span></div>
-				{favoriteBonus > 0 && <div className='powerscore-breakdown-note'>{favoriteTeamCount} favorite team{favoriteTeamCount === 1 ? '' : 's'} in matchup</div>}
-				<div className='powerscore-breakdown-row'><span>Game boost</span><span>{currentBoost > 0 ? `+${currentBoost}` : '0'}</span></div>
-				<div className='powerscore-breakdown-row powerscore-breakdown-row-total'><span>Final PowerScore</span><span>{totalLabel}</span></div>
-			</section>
+			<PowerScoreBreakdown
+				closeness={closeness}
+				lateGame={lateGame}
+				momentum={momentum}
+				leadChanges={leadChanges}
+				comeback={comeback}
+				baseTotal={baseTotal}
+				isStalled={isStalled}
+				totalBeforeBonuses={totalBeforeBonuses}
+				favoriteBonus={favoriteBonus}
+				favoriteTeamCount={favoriteTeamCount}
+				currentBoost={currentBoost}
+				total={total}
+				totalLabel={totalLabel}
+			/>
 
-			<div className='game-detail-boost-section'>
-				<div className='game-detail-boost-heading'>Game boost</div>
-				<div className='game-detail-boost-row'>
-					<span className='game-detail-boost-explainer'>Add points to this game's PowerScore to raise its priority.</span>
-					<input
-						id={`boost-detail-${game.id}`}
-						type='number'
-						min={0}
-						step={1}
-						value={currentBoost}
-						onChange={e => onSetGameBoost(game.id, Math.max(0, Math.round(Number(e.target.value) || 0)))}
-						className='powerscore-boost-input'
-					/>
-				</div>
-			</div>
+			<GameBoostInput gameId={game.id} currentBoost={currentBoost} onSetGameBoost={onSetGameBoost} />
 
 			{proTipsEnabled && <ProTip context='detail' />}
 
@@ -246,7 +188,7 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 				: <div className='game-detail-empty-state'>Score trend appears after a few refreshes.</div>}
 
 			{orderedScoreHistory.length > 0
-				? <GameDetailChart title='Score margin' option={scoreMarginOption} legendItems={marginLegendItems} />
+				? <GameDetailChart title='Score margin' option={scoreMarginOption} legendItems={teamLegendItems} />
 				: <div className='game-detail-empty-state'>Score margin appears after a few refreshes.</div>}
 
 			{orderedPowerScoreHistory.length > 0

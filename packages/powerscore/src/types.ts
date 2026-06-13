@@ -8,10 +8,10 @@ export interface Game {
 	id: string;
 	league: LeagueId;
 	sportType: SportType;
-	homeTeam: { score: number; abbreviation: string };
-	awayTeam: { score: number; abbreviation: string };
-	period: number;
-	clockSeconds: number;
+	homeTeam: { score: number; abbreviation?: string };
+	awayTeam: { score: number; abbreviation?: string };
+	period?: number;
+	clockSeconds?: number;
 	intermission?: boolean;
 }
 
@@ -36,12 +36,6 @@ export interface PowerScoreResult {
 	favoriteBonus?: number;
 	favoriteTeamCount?: number;
 	gameBoost?: number;
-}
-
-export interface BaseballInningScoreTier {
-	minInning: number;
-	score: number;
-	includeReason: boolean;
 }
 
 /** Inning anchors for baseball's near-linear late-game ramp (clock sports derive theirs from the
@@ -78,14 +72,6 @@ export interface ScorerTunables {
 			previousPeriodTouch: number;
 			/** extra points (otEdgeMax → overtime) a tied game earns ramping through the OT pre-boost window */
 			otPreBoostMax: number;
-			/** @deprecated legacy threshold tiers, unused by the near-linear ramp */
-			clockBased: {
-				critical: number;
-				tense: number;
-				previousPeriod: number;
-			};
-			/** @deprecated legacy inning tiers, unused by the near-linear ramp */
-			baseballInningTiers: BaseballInningScoreTier[];
 			none: number;
 		};
 		momentum: {

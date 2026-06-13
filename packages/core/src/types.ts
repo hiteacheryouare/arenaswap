@@ -7,7 +7,6 @@ import type {
 	PowerScoreResult,
 	SportTypeConfig,
 	ScorerTunables,
-	BaseballInningScoreTier,
 	LeagueConfig,
 } from 'powerscore';
 export type {
@@ -18,7 +17,6 @@ export type {
 	PowerScoreResult,
 	SportTypeConfig,
 	ScorerTunables,
-	BaseballInningScoreTier,
 	LeagueConfig,
 };
 

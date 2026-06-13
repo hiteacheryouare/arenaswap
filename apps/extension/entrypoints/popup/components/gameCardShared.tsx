@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import type { KeyboardEvent, MouseEvent } from 'react';
 import { leagueConfigMap } from '@arenaswap/core/constants';
 import type { Game, LeagueId, Team } from '@arenaswap/core/types';
 
@@ -27,6 +28,11 @@ export const formatClock = (seconds: number): string => {
 	return `${minutes}:${remainder}`;
 };
 
+export const formatGameClock = (game: Game): string => {
+	if (game.sportType === 'soccer') return `${Math.floor(game.clockSeconds / 60)}'`;
+	return formatClock(game.clockSeconds);
+};
+
 export const formatStartDateTime = (iso: string): string => {
 	const date = new Date(iso);
 	const day = date.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' });
@@ -34,6 +40,7 @@ export const formatStartDateTime = (iso: string): string => {
 	return `${day} • ${time}`;
 };
 
+// Gradient from muted slate rgb(139,148,158) at 0 to orange rgb(247,92,3) at max.
 export const powerScoreColor = (score: number, max: number): string => {
 	const ratio = Math.min(score / max, 1);
 	const red = Math.round(139 + (247 - 139) * ratio);
@@ -83,26 +90,26 @@ const TeamLogo = ({ team }: { team: Team }) => {
 	);
 };
 
-export const gc2TeamLogo = ({ team }: { team: Team }) => {
-	const [failed, setFailed] = useState(false);
-	if (team.logo && !failed) {
-		return (
-			<img
-				src={team.logo}
-				alt={team.abbreviation}
-				className='gc2-logo object-fit-contain shrink-0'
-				onError={() => setFailed(true)}
-			/>
-		);
-	}
-	return (
-		<div className='gc2-logo-fallback d-flex align-items-center justify-content-center shrink-0 fw-bold'>
-			{(team.abbreviation ?? '?').slice(0, 3)}
-		</div>
-	);
-};
+export const buildGameCardStyle = (game: Game) => ({
+	borderLeft: `5px solid ${game.awayTeam.color ?? '#dee2e6'}`,
+	borderRight: `5px solid ${game.homeTeam.color ?? '#dee2e6'}`,
+	background: `linear-gradient(to right, ${game.awayTeam.color ?? '#dee2e6'}28, ${game.homeTeam.color ?? '#dee2e6'}28), #ffffff`,
+});
 
-export const teamColumn = ({
+export const buildCardHandlers = (onOpenGameDetail: (gameId: string) => void, gameId: string) => ({
+	onClick: (event: MouseEvent<HTMLDivElement>) => {
+		if (isInteractiveCardTarget(event.target)) return;
+		onOpenGameDetail(gameId);
+	},
+	onKeyDown: (event: KeyboardEvent<HTMLDivElement>) => {
+		if (event.key !== 'Enter' && event.key !== ' ') return;
+		if (isInteractiveCardTarget(event.target)) return;
+		event.preventDefault();
+		onOpenGameDetail(gameId);
+	},
+});
+
+export const TeamColumn = ({
 	team,
 	leagueId,
 	isFavorited,
@@ -156,7 +163,7 @@ const OddsProvider = ({ game, dark }: { game: Game; dark?: boolean }) => {
 	return <span className='d-inline-flex align-items-center'>{provider.name}</span>;
 };
 
-export const gameMeta = ({ game, dark }: { game: Game; dark?: boolean }) => {
+export const GameMeta = ({ game, dark }: { game: Game; dark?: boolean }) => {
 	const networks = game.broadcasts?.join(' • ');
 	const odds = oddsSummary(game);
 	const hasOddsProvider = Boolean(game.odds?.provider?.name);

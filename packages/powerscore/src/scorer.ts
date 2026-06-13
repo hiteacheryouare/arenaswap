@@ -83,7 +83,7 @@ const getClosenessUnit = (game: Game): string => (
 );
 
 const shouldScoreZeroZeroAsFullTie = (game: Game, config: SportTypeConfig): boolean => (
-	config.zeroZeroAsFullTie && config.zeroZeroPenaltyPeriods?.includes(game.period) !== true
+	config.zeroZeroAsFullTie && (game.period == null || config.zeroZeroPenaltyPeriods?.includes(game.period) !== true)
 );
 
 const getCloseness = (game: Game, config: SportTypeConfig, progress: number): Signal => {
@@ -165,7 +165,7 @@ const getClockSecondsRemaining = (
 	periodDurationSecs: number,
 ): number => {
 	const boundedDuration = Math.max(0, periodDurationSecs);
-	const boundedClock = clamp(game.clockSeconds, 0, boundedDuration);
+	const boundedClock = clamp(game.clockSeconds ?? 0, 0, boundedDuration);
 	return config.clockCountsUp
 		? clamp(boundedDuration - boundedClock, 0, boundedDuration)
 		: boundedClock;
@@ -174,6 +174,7 @@ const getClockSecondsRemaining = (
 // 0 at the opening tip, 1 at the end of the final regulation period (and during overtime).
 // Drives the progress-scaled flat-floor model so a tied game in Q1 scores far lower than in Q4.
 const getGameProgress = (game: Game, config: SportTypeConfig): number => {
+	if (game.period == null) return 0;
 	const league = leagueConfigMap[game.league];
 	const regularPeriods = Math.max(1, league.regularPeriods);
 	if (game.period > regularPeriods) return 1;
@@ -212,6 +213,7 @@ const getLatenessClosenessFactor = (game: Game, config: SportTypeConfig): number
 
 const getLateGame = (game: Game, config: SportTypeConfig): Signal => {
 	const { scores, reasons } = scorerTunables;
+	if (game.period == null) return { score: scores.lateGame.none, reason: '' };
 	const leagueConfig = leagueConfigMap[game.league];
 	const regularPeriods = leagueConfig.regularPeriods;
 	const { clockBased } = config;
@@ -321,7 +323,9 @@ const getMomentum = (game: Game, history: ScoreSnapshot[], config: SportTypeConf
 	const homeDelta = newest.homeScore - oldest.homeScore;
 	const awayDelta = newest.awayScore - oldest.awayScore;
 	const run = Math.abs(homeDelta - awayDelta);
-	const runTeam = homeDelta > awayDelta ? game.homeTeam.abbreviation : game.awayTeam.abbreviation;
+	const runTeam = homeDelta > awayDelta
+		? (game.homeTeam.abbreviation ?? '?')
+		: (game.awayTeam.abbreviation ?? '?');
 
 	let tier: number;
 	let reason: string;
@@ -370,8 +374,8 @@ const getComeback = (game: Game, history: ScoreSnapshot[], config: SportTypeConf
 	const shrinkage = oldDiff - newDiff;
 
 	const trailingTeam = history[0]!.homeScore < history[0]!.awayScore
-		? game.homeTeam.abbreviation
-		: game.awayTeam.abbreviation;
+		? (game.homeTeam.abbreviation ?? '?')
+		: (game.awayTeam.abbreviation ?? '?');
 
 	let tier: number;
 	let reason: string;
@@ -393,7 +397,7 @@ const getComeback = (game: Game, history: ScoreSnapshot[], config: SportTypeConf
 
 export const computePowerScore = (
 	game: Game,
-	history: ScoreSnapshot[],
+	history: ScoreSnapshot[] = [],
 	stallCount: number = 0,
 ): PowerScoreResult => {
 	if (game.intermission)

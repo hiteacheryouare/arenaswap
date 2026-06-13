@@ -1,4 +1,3 @@
-import type { KeyboardEvent, MouseEvent } from 'react';
 import {
 	createFavoriteTeamKey,
 	leagueConfigMap,
@@ -9,9 +8,9 @@ import BaseDiamond from './baseDiamond';
 import FlipScore from './flipScore';
 import TabAssignSelect from './tabAssignSelect';
 import type { gameCardProps } from './gameCardTypes';
-import { formatClock, formatPeriod, gameMeta as GameMeta, isInteractiveCardTarget, powerScoreColor, teamColumn as TeamColumn } from './gameCardShared';
+import { buildCardHandlers, buildGameCardStyle, formatGameClock, formatPeriod, GameMeta, powerScoreColor, TeamColumn } from './gameCardShared';
 
-const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts: _gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail }: gameCardProps) => {
+const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavoriteTeam, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail }: gameCardProps) => {
 	if (!game) return null;
 
 	const isOt = game.period > (leagueConfigMap[game.league]?.regularPeriods ?? 4);
@@ -24,23 +23,12 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 	const awayFavorited = favoriteTeamIds.has(awayFavoriteTeamKey);
 	const homeFavorited = favoriteTeamIds.has(homeFavoriteTeamKey);
 	const psBarPercent = Math.min((totalPowerScore / scoreMaxTotal) * 100, 100);
-
-	const onCardClick = (event: MouseEvent<HTMLDivElement>) => {
-		if (isInteractiveCardTarget(event.target)) return;
-		onOpenGameDetail(game.id);
-	};
-
-	const onCardKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-		if (event.key !== 'Enter' && event.key !== ' ') return;
-		if (isInteractiveCardTarget(event.target)) return;
-		event.preventDefault();
-		onOpenGameDetail(game.id);
-	};
+	const { onClick: onCardClick, onKeyDown: onCardKeyDown } = buildCardHandlers(onOpenGameDetail, game.id);
 
 	return (
 		<div
 			className={`game-card game-card-clickable${isOt ? ' is-ot' : ''}`}
-			style={{ borderLeft: `5px solid ${game.awayTeam.color ?? '#dee2e6'}`, borderRight: `5px solid ${game.homeTeam.color ?? '#dee2e6'}`, background: `linear-gradient(to right, ${game.awayTeam.color ?? '#dee2e6'}28, ${game.homeTeam.color ?? '#dee2e6'}28), #ffffff` }}
+			style={buildGameCardStyle(game)}
 			role='button'
 			tabIndex={0}
 			onClick={onCardClick}
@@ -68,7 +56,7 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 						<FlipScore value={game.homeTeam.score} className='fw-bold lh-1 game-score-value' />
 					</div>
 					{!isBaseball && hasClock && (
-						<span className='font-lekton game-clock'>{formatClock(game.clockSeconds)}</span>
+						<span className='font-lekton game-clock'>{formatGameClock(game)}</span>
 					)}
 					<span className='font-lekton game-period'>
 						{isBaseball && game.topOfInning !== undefined ? (game.topOfInning ? '▲ ' : '▼ ') : ''}{formatPeriod(game)}
