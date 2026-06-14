@@ -1,5 +1,16 @@
 # Changelog
 
+## Soccer clock fix — 2026-06-13
+
+### Correct late-game scoring and notification clock for soccer
+- **Root cause:** ESPN reports soccer's `displayClock` as a continuous total-game elapsed time (e.g. `56'` = 3360 s), not a per-half clock. The scorer's `periodDurationSecs` for soccer is 2700 (45 min), so 3360 clamped to 2700 → `secsRemaining = 0` for the entire 2nd half — making late-game pressure read 26/28 from the opening of the half and notifications say "0:00 left" on every FWC game.
+- **Fix:** Added `clockIsFullGameElapsed?: boolean` to `SportTypeConfig`. When set, `getClockSecondsRemaining` subtracts `(period − 1) × periodDurationSecs` from the raw clock before clamping, giving the correct within-period elapsed time.
+- `clockIsFullGameElapsed: true` applied to the soccer sport config; affects all three soccer leagues: MLS, EPL, FIFA World Cup.
+- Notification messages now correctly reflect actual time remaining (e.g. "34 min left" at 56').
+- Test suite updated: period-2 soccer clock values now use full-game elapsed times matching ESPN's wire format; `toClockSeconds` helper updated accordingly.
+
+---
+
 ## Guided walkthrough — 2026-06-13
 
 ### Opt-in interactive tutorial at the end of onboarding
