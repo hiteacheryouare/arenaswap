@@ -165,7 +165,13 @@ const getClockSecondsRemaining = (
 	periodDurationSecs: number,
 ): number => {
 	const boundedDuration = Math.max(0, periodDurationSecs);
-	const boundedClock = clamp(game.clockSeconds ?? 0, 0, boundedDuration);
+	let rawClock = game.clockSeconds ?? 0;
+	// Soccer's clock is total game elapsed time (ESPN reports 0'→90'+ continuously without
+	// resetting between halves). Strip completed periods so we get the within-period position.
+	if (config.clockIsFullGameElapsed && (game.period ?? 1) > 1) {
+		rawClock = Math.max(0, rawClock - (game.period! - 1) * boundedDuration);
+	}
+	const boundedClock = clamp(rawClock, 0, boundedDuration);
 	return config.clockCountsUp
 		? clamp(boundedDuration - boundedClock, 0, boundedDuration)
 		: boundedClock;

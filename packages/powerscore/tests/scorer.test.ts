@@ -313,11 +313,11 @@ describe('computePowerScore', () => {
 			awayTeam: { ...makeGame().awayTeam, score: 1 },
 		});
 
-		const prevStart = computePowerScore(withElapsed(1, 0), []);       // kickoff, 1st half
-		const prevEnd = computePowerScore(withElapsed(1, 2_700), []);     // end of 1st half
-		const finalStart = computePowerScore(withElapsed(2, 0), []);      // start of 2nd half
-		const finalMid = computePowerScore(withElapsed(2, 1_350), []);    // mid 2nd half
-		const finalEnd = computePowerScore(withElapsed(2, 2_699), []);    // stoppage
+		const prevStart = computePowerScore(withElapsed(1, 0), []);         // kickoff, 1st half (0')
+		const prevEnd = computePowerScore(withElapsed(1, 2_700), []);       // end of 1st half (45')
+		const finalStart = computePowerScore(withElapsed(2, 2_700), []);    // start of 2nd half (45')
+		const finalMid = computePowerScore(withElapsed(2, 4_050), []);      // mid 2nd half (67.5')
+		const finalEnd = computePowerScore(withElapsed(2, 5_399), []);      // stoppage (89.98')
 
 		expect(prevStart.lateGame).toBe(0);
 		expect(prevEnd.lateGame).toBeGreaterThan(prevStart.lateGame);
@@ -362,12 +362,17 @@ describe('computePowerScore', () => {
 		for (const leagueId of representativeLeagueIds) {
 			const league = leagueConfigMap[leagueId];
 			const sportConfig = sportTypeConfigMap[league.sportType];
-			// secsRemaining → clockSeconds (soccer counts up, others count down)
-			const toClockSeconds = (secsRemaining: number): number => (
-				sportConfig.clockCountsUp
-					? Math.max(0, league.periodDurationSecs - secsRemaining)
-					: secsRemaining
-			);
+			// secsRemaining → clockSeconds (soccer counts up with full-game elapsed, others count down)
+			const toClockSeconds = (secsRemaining: number): number => {
+				if (sportConfig.clockCountsUp) {
+					const inPeriodElapsed = Math.max(0, league.periodDurationSecs - secsRemaining);
+					const priorPeriodsOffset = sportConfig.clockIsFullGameElapsed
+						? (league.regularPeriods - 1) * league.periodDurationSecs
+						: 0;
+					return priorPeriodsOffset + inPeriodElapsed;
+				}
+				return secsRemaining;
+			};
 			const inFinalPeriod = (secsRemaining: number) => makeGame({
 				league: league.id,
 				sportType: league.sportType,
