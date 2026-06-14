@@ -68,6 +68,7 @@ interface mainViewProps {
 	onStandbyStream: boolean;
 	onOpenGameDetail: (gameId: string) => void;
 	onOpenSetup: () => void;
+	onStartWalkthrough: () => void;
 	onRefresh: () => void;
 	showReviewPrompt: boolean;
 	onToggleEnabled: () => void;
@@ -164,6 +165,7 @@ const mainView = ({
 	onStandbyStream,
 	onOpenGameDetail,
 	onOpenSetup,
+	onStartWalkthrough,
 	onRefresh,
 	showReviewPrompt,
 	onToggleEnabled,
@@ -203,6 +205,9 @@ const mainView = ({
 			<div className='d-flex justify-content-between align-items-center mb-2 pb-2'>
 				<img src='/images/full_logo_white_on_transparent.png' alt='ArenaSwap' className='arenaswap-logo' />
 				<div className='d-flex align-items-center gap-2'>
+					<button className='btn btn-sm p-0 popup-settings-button' onClick={onStartWalkthrough} title='Tour'>
+						<i className='bi bi-question-circle popup-settings-icon' />
+					</button>
 					<button className='btn btn-sm p-0 popup-settings-button' onClick={onOpenSetup} title='Settings'>
 						<i className='bi bi-gear-fill popup-settings-icon' />
 					</button>
