@@ -1,6 +1,6 @@
 {
 	"name": "@arenaswap/extension",
-	"version": "1.4.1",
+	"version": "1.4.2",
 	"description": "ArenaSwap browser extension — automatically flip to the most exciting game",
 	"private": true,
 	"scripts": {
