@@ -155,6 +155,9 @@ export interface SportTypeConfig {
 	momentumSmallRun: number;
 	/** true when ESPN reports elapsed time (counts up), e.g. soccer; false = countdown */
 	clockCountsUp: boolean;
+	/** true when the clock reports total game elapsed time (not per-period). Soccer only: ESPN's
+	 *  displayClock runs 0'→90'+ continuously; strip completed periods before computing secsRemaining. */
+	clockIsFullGameElapsed?: boolean;
 	/** if true, 0-0 scores the same as any other tied game outside configured penalty periods */
 	zeroZeroAsFullTie: boolean;
 	/** regulation periods where 0-0 should use reduced tie credit */

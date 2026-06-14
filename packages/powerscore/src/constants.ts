@@ -230,6 +230,7 @@ export const sportTypeConfigs: SportTypeConfig[] = [
 		momentumBigRun: 2,
 		momentumSmallRun: 1,
 		clockCountsUp: true,
+		clockIsFullGameElapsed: true,
 		zeroZeroAsFullTie: true,
 		zeroZeroPenaltyPeriods: [1],
 		comebackThresholdBig: 2,

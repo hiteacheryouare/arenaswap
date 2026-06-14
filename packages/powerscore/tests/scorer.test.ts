@@ -250,6 +250,9 @@ describe('computePowerScore', () => {
 	});
 
 	test('builds a monotonic late-game gradient for count-up sports', () => {
+		// Soccer clock is continuous total-game elapsed (0'→90'+), not per-half. Period-2 clockSeconds
+		// must include the completed first half (+ 2700s). The scoring window for the 2nd half is the
+		// last 10 min (80'→90' = clocks 4800→5400); period 1's previous-period window is 35'→45'.
 		const withElapsed = (period: number, clockSeconds: number) => makeGame({
 			league: 'mls',
 			sportType: 'soccer',
@@ -259,11 +262,11 @@ describe('computePowerScore', () => {
 			awayTeam: { ...makeGame().awayTeam, score: 0 },
 		});
 
-		const beforeWindow = computePowerScore(withElapsed(1, 2_099), []);
-		const early = computePowerScore(withElapsed(1, 2_101), []);
-		const mid = computePowerScore(withElapsed(2, 2_100), []);
-		const late = computePowerScore(withElapsed(2, 2_520), []);
-		const endOfRegulation = computePowerScore(withElapsed(2, 2_699), []);
+		const beforeWindow = computePowerScore(withElapsed(1, 2_099), []);   // 34:59 — outside prev window
+		const early = computePowerScore(withElapsed(1, 2_101), []);          // 35:01 — just inside prev window
+		const mid = computePowerScore(withElapsed(2, 4_800), []);            // 80:00 — start of final window
+		const late = computePowerScore(withElapsed(2, 5_220), []);           // 87:00 — inside final window
+		const endOfRegulation = computePowerScore(withElapsed(2, 5_399), []); // 89:59 — nearly done
 
 		expect(beforeWindow.lateGame).toBe(0);
 		expect(early.lateGame).toBeGreaterThan(beforeWindow.lateGame);
@@ -311,11 +314,16 @@ describe('computePowerScore', () => {
 				throw new Error(`Expected clock late-game model for ${leagueId}`);
 
 			const finalWindowSecs = sportConfig.lateGameCurve.finalPeriodWindowSecs;
-			const toClockSeconds = (secsRemaining: number): number => (
-				sportConfig.clockCountsUp
-					? Math.max(0, league.periodDurationSecs - secsRemaining)
-					: secsRemaining
-			);
+			const toClockSeconds = (secsRemaining: number): number => {
+				if (sportConfig.clockCountsUp) {
+					const inPeriodElapsed = Math.max(0, league.periodDurationSecs - secsRemaining);
+					const priorPeriodsOffset = sportConfig.clockIsFullGameElapsed
+						? (league.regularPeriods - 1) * league.periodDurationSecs
+						: 0;
+					return priorPeriodsOffset + inPeriodElapsed;
+				}
+				return secsRemaining;
+			};
 			const withFinalWindowClock = (secsRemaining: number) => makeGame({
 				league: league.id,
 				sportType: league.sportType,
