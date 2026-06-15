@@ -1,7 +1,29 @@
 import { defineConfig } from 'wxt';
+import pkg from '../../package.json';
+
+const year = new Date().getFullYear();
+const version = pkg.version;
+const banner = `/*! ArenaSwap v${version} Copyright (c) ${year} ArenaSwap Systems, Ryan Mullin, and Contributors. All rights reserved. */`;
 
 export default defineConfig({
 	modules: ['@wxt-dev/module-react'],
+	vite: () => ({
+		plugins: [
+			{
+				name: 'arenaswap-banner',
+				generateBundle(_, bundle) {
+					for (const chunk of Object.values(bundle)) {
+						if (chunk.type === 'chunk' && chunk.isEntry) {
+							chunk.code = `${banner}\n${chunk.code}`;
+						}
+					}
+				},
+			},
+		],
+		build: {
+			target: 'es2023',
+		},
+	}),
 	manifest: {
 		name: 'ArenaSwap',
 		description: 'Watches every live game across 12 leagues and auto-switches your browser tab to the most exciting one every 15 seconds.',
