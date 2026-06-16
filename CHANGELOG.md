@@ -21,6 +21,18 @@
 
 ---
 
+## OXLint (agent-only linting) — 2026-06-15
+
+### Strict linting wired for AI agents, invisible to human devs
+- `oxlint@^1.70.0` added as a root devDependency (backed by Voidzero Inc / Evan You).
+- `.oxlintrc.json` at repo root — auto-discovered by all workspaces.
+- `lint` script added to all 4 workspace packages and root `package.json` (`turbo lint`).
+- `lint` task in `turbo.json` with `cache: true` and **no `dependsOn`** — never fires during `build`, `test`, or `dev`. Agents call `npm run lint` explicitly; human devs never encounter it.
+- Rules enabled: `correctness` + `suspicious` → error; `no-var`, `prefer-const`, `no-debugger` → error; `no-console` → warn. Plugins: `react`, `typescript`, `jsx-a11y`, `unicorn`.
+- Disabled: `typescript/no-explicit-any` (pragmatic `any` is fine), `react/display-name` (arrow components), `react/react-in-jsx-scope` (React 19 auto JSX runtime), `jsx-a11y/prefer-tag-over-role` (Bootstrap spinner pattern), `no-new` (Notifications API side-effect usage).
+
+---
+
 ## Soccer clock fix — 2026-06-13
 
 ### Correct late-game scoring and notification clock for soccer
