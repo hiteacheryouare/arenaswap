@@ -118,7 +118,7 @@ export interface BackgroundState {
 	standbyStreamTabId: number | null;
 }
 
-export type ScoresUpdatedMessage = {
+export interface ScoresUpdatedMessage {
 	type: 'SCORES_UPDATED';
 	scores: PowerScoreResult[];
 	games: Game[];
@@ -128,38 +128,38 @@ export type ScoresUpdatedMessage = {
 	gameBoosts: Record<string, number>;
 	onStandbyStream: boolean;
 	standbyStreamTabId: number | null;
-};
+}
 
-export type UpdatePrefsMessage = {
+export interface UpdatePrefsMessage {
 	type: 'UPDATE_PREFS';
 	prefs: UserPreferences;
-};
+}
 
-export type UpdateRegistryMessage = {
+export interface UpdateRegistryMessage {
 	type: 'UPDATE_REGISTRY';
 	tabRegistry: TabRegistration[];
-};
+}
 
-export type SetGameBoostMessage = {
+export interface SetGameBoostMessage {
 	type: 'SET_GAME_BOOST';
 	gameId: string;
 	boost: number;
-};
+}
 
-export type GetStateMessage = {
+export interface GetStateMessage {
 	type: 'GET_STATE';
 	forceRefresh?: boolean;
-};
+}
 
-export type SetDemoModeMessage = {
+export interface SetDemoModeMessage {
 	type: 'SET_DEMO_MODE';
 	enabled: boolean;
-};
+}
 
-export type SetStandbyStreamTabMessage = {
+export interface SetStandbyStreamTabMessage {
 	type: 'SET_STANDBY_STREAM_TAB';
 	tabId: number | null;
-};
+}
 
 export type ExtensionMessage =
 	| ScoresUpdatedMessage

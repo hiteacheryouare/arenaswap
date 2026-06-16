@@ -52,7 +52,7 @@ const runPoll = async (pollIndex: number): Promise<void> => {
 		console.log(`  ${pad('matchup', 14)}${pad('per', 4)}${pad('clock', 7)}${pad('TOTAL', 6)}${pad('cl', 4)}${pad('lg', 4)}${pad('mo', 4)}${pad('lc', 4)}${pad('cb', 4)}reason`);
 		const scored = games
 			.map(game => ({ game, score: computePowerScore(game, history.get(game.id) ?? []) }))
-			.sort((a, b) => b.score.total - a.score.total);
+			.toSorted((a, b) => b.score.total - a.score.total);
 		for (const { game, score } of scored) {
 			const matchup = `${game.awayTeam.abbreviation}@${game.homeTeam.abbreviation} ${game.awayTeam.score}-${game.homeTeam.score}`;
 			console.log(`  ${pad(matchup, 14)}${pad(game.period, 4)}${pad(game.clockSeconds, 7)}${pad(score.total, 6)}${pad(score.closeness, 4)}${pad(score.lateGame, 4)}${pad(score.momentum, 4)}${pad(score.leadChanges, 4)}${pad(score.comeback, 4)}${score.reason}`);

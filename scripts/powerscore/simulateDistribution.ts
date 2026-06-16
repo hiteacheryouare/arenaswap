@@ -33,7 +33,7 @@ const percentile = (sortedValues: number[], p: number): number => {
 
 const summarize = (values: number[]): string => {
 	if (values.length === 0) return 'no samples';
-	const sorted = [...values].sort((a, b) => a - b);
+	const sorted = values.toSorted((a, b) => a - b);
 	const mean = values.reduce((sum, v) => sum + v, 0) / values.length;
 	const stat = (p: number) => String(percentile(sorted, p)).padStart(3);
 	return `min ${stat(0)}  p10 ${stat(10)}  p25 ${stat(25)}  p50 ${stat(50)}  p75 ${stat(75)}  p90 ${stat(90)}  p95 ${stat(95)}  p99 ${stat(99)}  max ${stat(100)}  mean ${mean.toFixed(1)}`;
@@ -73,8 +73,8 @@ for (let tick = 0; tick < ticks; tick++) {
 
 	// Switch gap = how far the best live game leads the runner-up this poll (the delta a switch clears).
 	if (tickTotals.length >= 2) {
-		tickTotals.sort((a, b) => b - a);
-		switchGaps.push(tickTotals[0]! - tickTotals[1]!);
+		const sortedTickTotals = tickTotals.toSorted((a, b) => b - a);
+		switchGaps.push(sortedTickTotals[0]! - sortedTickTotals[1]!);
 	}
 
 	// Append this poll's snapshot and trim, mirroring background.updateHistory.
@@ -86,7 +86,7 @@ for (let tick = 0; tick < ticks; tick++) {
 	}
 }
 
-const sortedGaps = [...switchGaps].sort((a, b) => a - b);
+const sortedGaps = switchGaps.toSorted((a, b) => a - b);
 // Sensitivity levels map to gap percentiles: 7 = most eager (tiny gap), 1 = least eager (large gap).
 const levelToPercentile: Record<number, number> = { 1: 97, 2: 88, 3: 72, 4: 52, 5: 34, 6: 18, 7: 2 };
 const suggestedThresholds: Record<number, number> = {};
@@ -101,7 +101,7 @@ console.log(`  ${summarize(allTotals)}`);
 console.log(`  total === 0: ${((zeroTotalCount / Math.max(1, liveSampleCount)) * 100).toFixed(1)}% of live samples\n`);
 
 console.log('TOTAL by sport');
-for (const sport of Object.keys(totalsBySport).sort()) {
+for (const sport of Object.keys(totalsBySport).toSorted()) {
 	console.log(`  ${sport.padEnd(11)} ${summarize(totalsBySport[sport]!)}`);
 }
 

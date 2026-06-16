@@ -2,17 +2,17 @@ import { leagueConfigMap } from '../src/constants';
 import { MockGameSimulator } from '../src/mockGames';
 import type { Game } from '../src/types';
 
-type SimState = {
+interface SimState {
 	streak: 'home' | 'away' | null;
 	streakTicks: number;
 	postTicks: number;
 	preTicks: number;
-};
+}
 
-type SimulatorInternals = {
+interface SimulatorInternals {
 	games: Game[];
 	state: Map<string, SimState>;
-};
+}
 
 const getGameById = (games: Game[], id: string): Game => {
 	const game = games.find(candidate => candidate.id === id);

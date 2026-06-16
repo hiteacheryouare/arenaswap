@@ -9,8 +9,8 @@ import type {
 import type { Browser } from 'wxt/browser';
 
 export type popupView = 'main' | 'setup' | 'detail';
-export type leagueGroup = { league: LeagueId; games: Game[] };
-export type dateGroup = { dateLabel: string; games: Game[] };
+export interface leagueGroup { league: LeagueId; games: Game[] }
+export interface dateGroup { dateLabel: string; games: Game[] }
 
 export const leagueOrder = Object.fromEntries(leagueConfigs.map((config, index) => [config.id, index])) as Record<LeagueId, number>;
 export const sportTypeOrder: Record<SportType, number> = {
