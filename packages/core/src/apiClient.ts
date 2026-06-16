@@ -59,15 +59,16 @@ const buildUpcomingDatesRangeQuery = (): string => {
 	return `${toQueryDate(start)}-${toQueryDate(end)}`;
 };
 
+const ch = (n: number): number => {
+	const c = n / 255;
+	return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+};
+
 // WCAG relative luminance — used to detect colors that would vanish on the app's black background
 const hexLuminance = (hex: string): number => {
 	const matched = /^#([\da-fA-F]{6})$/.exec(hex);
 	if (!matched) return 0;
 	const h = matched[1]!;
-	const ch = (n: number) => {
-		const c = n / 255;
-		return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
-	};
 	return (0.2126 * ch(parseInt(h.slice(0, 2), 16)))
 		+ (0.7152 * ch(parseInt(h.slice(2, 4), 16)))
 		+ (0.0722 * ch(parseInt(h.slice(4, 6), 16)));
@@ -76,21 +77,21 @@ const hexLuminance = (hex: string): number => {
 // Colors with luminance below this threshold risk blending into the black app background
 const darkOnBlackThreshold = 0.04;
 
-const normalizeTeamColor = (primary?: string, alternate?: string): string | undefined => {
-	const normalizeOne = (value?: string): string | undefined => {
-		if (!value) return undefined;
-		const clean = value.trim().replace('#', '');
-		if (/^[0-9a-fA-F]{3}$/.test(clean)) {
-			const expanded = clean
-				.split('')
-				.map(char => `${char}${char}`)
-				.join('');
-			return `#${expanded.toUpperCase()}`;
-		}
-		if (/^[0-9a-fA-F]{6}$/.test(clean)) return `#${clean.toUpperCase()}`;
-		return undefined;
-	};
+const normalizeOne = (value?: string): string | undefined => {
+	if (!value) return undefined;
+	const clean = value.trim().replace('#', '');
+	if (/^[0-9a-fA-F]{3}$/.test(clean)) {
+		const expanded = clean
+			.split('')
+			.map(char => `${char}${char}`)
+			.join('');
+		return `#${expanded.toUpperCase()}`;
+	}
+	if (/^[0-9a-fA-F]{6}$/.test(clean)) return `#${clean.toUpperCase()}`;
+	return undefined;
+};
 
+const normalizeTeamColor = (primary?: string, alternate?: string): string | undefined => {
 	const normalizedPrimary = normalizeOne(primary);
 	const normalizedAlternate = normalizeOne(alternate);
 

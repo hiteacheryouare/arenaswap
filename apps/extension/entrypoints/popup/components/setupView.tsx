@@ -190,9 +190,9 @@ const setupView = ({
 									disabled={!prefsLoaded}
 								>
 									<option value=''>— Select a tab —</option>
-									{openTabs.map(tab => (
-										<option key={tab.id} value={tab.id}>
-											{formatTabLabel(tab)}
+									{openTabs.map(openTab => (
+										<option key={openTab.id} value={openTab.id}>
+											{formatTabLabel(openTab)}
 										</option>
 									))}
 								</select>
@@ -209,7 +209,7 @@ const setupView = ({
 						Only selected leagues are tracked and considered for automatic switching.
 					</div>
 					{(Object.keys(sportTypeOrder) as SportType[])
-						.sort((a, b) => sportTypeOrder[a] - sportTypeOrder[b])
+						.toSorted((a, b) => sportTypeOrder[a] - sportTypeOrder[b])
 						.map(sportType => {
 							const leagues = leaguesBySportType[sportType];
 							const allSelected = leagues.every(l => prefs.enabledLeagues.includes(l.id));

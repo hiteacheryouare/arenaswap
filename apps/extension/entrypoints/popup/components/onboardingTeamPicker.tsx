@@ -62,7 +62,7 @@ const onboardingTeamPicker = ({
 		return acc;
 	}, {});
 
-	const sortedLeagues = (Object.keys(grouped) as LeagueId[]).sort(
+	const sortedLeagues = (Object.keys(grouped) as LeagueId[]).toSorted(
 		(a, b) => (leagueOrder[a] ?? 99) - (leagueOrder[b] ?? 99)
 	);
 
@@ -86,7 +86,7 @@ const onboardingTeamPicker = ({
 				placeholder='Search teams…'
 				value={query}
 				onChange={e => setQuery(e.target.value)}
-				autoFocus
+	
 			/>
 
 			{isLoading && (

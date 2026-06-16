@@ -152,16 +152,17 @@ export const buildFavoritePinnedComparator = (
 	return (scoreByGameId.get(b.id) ?? 0) - (scoreByGameId.get(a.id) ?? 0);
 };
 
+const dayStart = (game: Game): number => {
+	if (!game.startTime) return Number.POSITIVE_INFINITY;
+	const date = new Date(game.startTime);
+	return new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+};
+
 export const buildUpcomingComparator = (
 	favoriteTeamIds: Set<string>,
 	scoreByGameId: Map<string, number>,
 ) => {
 	const fallbackSort = buildFavoritePinnedComparator(favoriteTeamIds, scoreByGameId);
-	const dayStart = (game: Game): number => {
-		if (!game.startTime) return Number.POSITIVE_INFINITY;
-		const date = new Date(game.startTime);
-		return new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
-	};
 	return (a: Game, b: Game): number => {
 		const aDay = dayStart(a);
 		const bDay = dayStart(b);
@@ -170,11 +171,12 @@ export const buildUpcomingComparator = (
 	};
 };
 
+const toKey = (d: Date) => `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+
 const formatDateLabel = (dateStr: string): string => {
 	const today = new Date();
 	const tomorrow = new Date(today);
 	tomorrow.setDate(today.getDate() + 1);
-	const toKey = (d: Date) => `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
 	const gameDate = new Date(dateStr);
 	if (toKey(gameDate) === toKey(today)) return 'Today';
 	if (toKey(gameDate) === toKey(tomorrow)) return 'Tomorrow';
@@ -191,7 +193,7 @@ export const groupByDate = (games: Game[]): dateGroup[] => {
 		group.push(game);
 		groups.set(key, group);
 	}
-	return Array.from(groups.entries()).map(([key, grpGames]) => {
+	return Array.from(groups.entries()).map(([_key, grpGames]) => {
 		const first = grpGames[0];
 		return {
 			dateLabel: first?.startTime ? formatDateLabel(first.startTime) : 'Upcoming',

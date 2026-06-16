@@ -42,11 +42,11 @@ const withMatchupAlpha = (color: string, fallback: string): string => (
 
 const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistory, proTipsEnabled, gameBoosts, onSetGameBoost, onBack }: gameDetailViewProps) => {
 	const orderedScoreHistory = useMemo(
-		() => [...scoreHistory].sort((a, b) => a.timestamp - b.timestamp),
+		() => scoreHistory.toSorted((a, b) => a.timestamp - b.timestamp),
 		[scoreHistory],
 	);
 	const orderedPowerScoreHistory = useMemo(
-		() => [...powerScoreHistory].sort((a, b) => a.timestamp - b.timestamp),
+		() => powerScoreHistory.toSorted((a, b) => a.timestamp - b.timestamp),
 		[powerScoreHistory],
 	);
 	const fallbackPowerScore = orderedPowerScoreHistory[orderedPowerScoreHistory.length - 1];

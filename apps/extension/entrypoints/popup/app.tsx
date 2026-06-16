@@ -23,6 +23,10 @@ import {
 	shouldShowReviewPrompt,
 } from '../../utils/reviewPrompt';
 
+const onSetGameBoost = (gameId: string, boost: number) => {
+	void browser.runtime.sendMessage({ type: 'SET_GAME_BOOST', gameId, boost });
+};
+
 const isScoreUpdateMessage = (value: unknown): value is { type: 'SCORES_UPDATED' } => (
 	typeof value === 'object'
 	&& value !== null
@@ -69,11 +73,11 @@ const app = () => {
 			.catch(() => {});
 	}, []);
 
-	const games = data?.games ?? [];
+	const games = useMemo(() => data?.games ?? [], [data?.games]);
 	const scores = data?.scores ?? [];
 	// Enabled-league logos (from background state) take priority; cache fills the gaps.
 	const leagueLogos = useMemo<LeagueLogoMap>(
-		() => ({ ...allLeagueLogoCache, ...(data?.leagueLogos ?? {}) }),
+		() => ({ ...allLeagueLogoCache, ...data?.leagueLogos }),
 		[allLeagueLogoCache, data?.leagueLogos]
 	);
 	const scoreHistory = data?.scoreHistory ?? {};
@@ -201,7 +205,7 @@ const app = () => {
 			const current = new Set<LeagueId>(currentPrefs.enabledLeagues);
 			if (current.has(leagueId)) current.delete(leagueId);
 			else current.add(leagueId);
-			const enabledLeagues = [...current].sort((a, b) => leagueOrder[a] - leagueOrder[b]);
+			const enabledLeagues = [...current].toSorted((a, b) => leagueOrder[a] - leagueOrder[b]);
 			return { ...currentPrefs, enabledLeagues };
 		});
 	};
@@ -214,14 +218,11 @@ const app = () => {
 				if (selectAll) current.add(id);
 				else current.delete(id);
 			}
-			const enabledLeagues = [...current].sort((a, b) => leagueOrder[a] - leagueOrder[b]);
+			const enabledLeagues = [...current].toSorted((a, b) => leagueOrder[a] - leagueOrder[b]);
 			return { ...currentPrefs, enabledLeagues };
 		});
 	};
 
-	const onSetGameBoost = (gameId: string, boost: number) => {
-		void browser.runtime.sendMessage({ type: 'SET_GAME_BOOST', gameId, boost });
-	};
 
 	const onRegistryChange = (updated: TabRegistration[]) => {
 		setRegistry(updated);

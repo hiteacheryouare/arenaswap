@@ -1,5 +1,5 @@
 import { randomInRange } from '@porkyproductions/hat';
-import { fetchGamesWithLeagueLogos, computePowerScore, normalizePowerScoreResult, MockGameSimulator, createPollModeTracker, isObjectRecord, isFiniteNumber, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts } from '@arenaswap/core';
+import { fetchGamesWithLeagueLogos, computePowerScore, normalizePowerScoreResult, MockGameSimulator, createPollModeTracker, isObjectRecord, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts } from '@arenaswap/core';
 import { computeStandbyStreamDecision } from '../utils/standbyStreamLogic';
 import {
 	normalizeReviewPromptState,
@@ -32,6 +32,34 @@ import type {
 	UserPreferences,
 } from '@arenaswap/core/types';
 
+const recordSuccessfulSwitchForReviewPrompt = async (switchedAt: number) => {
+	try {
+		const stored = await browser.storage.local.get({ [reviewPromptStorageKey]: null });
+		const current = normalizeReviewPromptState(stored[reviewPromptStorageKey]);
+		await browser.storage.local.set({
+			[reviewPromptStorageKey]: recordSuccessfulReviewPromptSwitch(current, switchedAt),
+		});
+	} catch (err) {
+		console.error('ArenaSwap: Failed to update review prompt state:', err);
+	}
+};
+
+const getFavoriteTeamCount = (game: Game, favoriteTeamIds: Set<string>): number => {
+	let count = 0;
+	const homeFavoriteTeamKey = createFavoriteTeamKey(game.league, game.homeTeam.id);
+	const awayFavoriteTeamKey = createFavoriteTeamKey(game.league, game.awayTeam.id);
+	if (favoriteTeamIds.has(homeFavoriteTeamKey)) count++;
+	if (favoriteTeamIds.has(awayFavoriteTeamKey)) count++;
+	return count;
+};
+
+const getMaxSnapshotsForGame = (game: Game): number => {
+	const sportConfig = sportTypeConfigMap[game.sportType] ?? sportTypeConfigMap.basketball;
+	return sportConfig.maxHistorySnapshots ?? maxHistorySnapshots;
+};
+
+const capitalizeFirst = (s: string) => s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+
 export default defineBackground(() => {
 	let games: Game[] = [];
 	let upcomingGames: Game[] = [];
@@ -59,17 +87,6 @@ export default defineBackground(() => {
 	let onStandbyStream = false;
 	const historyStorageDefaults = { scoreHistory: {}, powerScoreHistory: {}, gameBoosts: {} };
 
-	const recordSuccessfulSwitchForReviewPrompt = async (switchedAt: number) => {
-		try {
-			const stored = await browser.storage.local.get({ [reviewPromptStorageKey]: null });
-			const current = normalizeReviewPromptState(stored[reviewPromptStorageKey]);
-			await browser.storage.local.set({
-				[reviewPromptStorageKey]: recordSuccessfulReviewPromptSwitch(current, switchedAt),
-			});
-		} catch (err) {
-			console.error('ArenaSwap: Failed to update review prompt state:', err);
-		}
-	};
 
 	const hydrateHistoryMaps = (storedScoreHistory: unknown, storedPowerScoreHistory: unknown) => {
 		history.clear();
@@ -94,19 +111,6 @@ export default defineBackground(() => {
 		}
 	};
 
-	const getFavoriteTeamCount = (game: Game, favoriteTeamIds: Set<string>): number => {
-		let count = 0;
-		const homeFavoriteTeamKey = createFavoriteTeamKey(game.league, game.homeTeam.id);
-		const awayFavoriteTeamKey = createFavoriteTeamKey(game.league, game.awayTeam.id);
-		if (favoriteTeamIds.has(homeFavoriteTeamKey)) count++;
-		if (favoriteTeamIds.has(awayFavoriteTeamKey)) count++;
-		return count;
-	};
-
-	const getMaxSnapshotsForGame = (game: Game): number => {
-		const sportConfig = sportTypeConfigMap[game.sportType] ?? sportTypeConfigMap.basketball;
-		return sportConfig.maxHistorySnapshots ?? maxHistorySnapshots;
-	};
 
 	const updateHistory = (currentGames: Game[]) => {
 		currentGames.forEach(game => {
@@ -266,7 +270,6 @@ export default defineBackground(() => {
 				const scoreTitle = game
 					? `${game.awayTeam.abbreviation} ${game.awayTeam.score}-${game.homeTeam.score} ${game.homeTeam.abbreviation}`
 					: getGameLabel(gameId);
-				const capitalizeFirst = (s: string) => s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
 				const venue = getVenueName(gameId);
 				const message = reason
 					? `${capitalizeFirst(reason)}. Taking you to ${venue} now!`

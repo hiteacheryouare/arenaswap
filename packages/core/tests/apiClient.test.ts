@@ -274,7 +274,7 @@ describe('apiClient', () => {
 		const { fetchGamesWithLeagueLogos } = loadApiClient();
 
 		const result = await fetchGamesWithLeagueLogos(['nba']);
-		expect(result.games.map(game => game.id).sort()).toEqual(['live-1', 'pre-1']);
+		expect(result.games.map(game => game.id).toSorted()).toEqual(['live-1', 'pre-1']);
 		expect(result.leagueLogos.nba).toBe('https://cdn.example/nba-logo.png');
 
 		const live = result.games.find(game => game.id === 'live-1');
@@ -443,7 +443,7 @@ describe('apiClient', () => {
 		const { fetchGamesWithLeagueLogos } = loadApiClient();
 
 		const result = await fetchGamesWithLeagueLogos(['nba'], { includeUpcoming: false });
-		expect(result.games.map(game => game.id).sort()).toEqual(['fallback-live', 'odds-variants']);
+		expect(result.games.map(game => game.id).toSorted()).toEqual(['fallback-live', 'odds-variants']);
 
 		const fallbackGame = result.games.find(game => game.id === 'fallback-live');
 		expect(fallbackGame).toMatchObject({
@@ -524,7 +524,7 @@ describe('apiClient', () => {
 
 		const result = await fetchGamesWithLeagueLogos(['nba']);
 		expect(fetchMock).toHaveBeenCalledTimes(2);
-		expect(result.games.map(game => game.id).sort()).toEqual(['today-live', 'today-pre', 'upcoming-pre']);
+		expect(result.games.map(game => game.id).toSorted()).toEqual(['today-live', 'today-pre', 'upcoming-pre']);
 		expect(result.games.some(game => game.status === 'post')).toBe(false);
 	});
 
@@ -707,7 +707,7 @@ describe('apiClient', () => {
 		const { fetchGamesWithLeagueLogos } = loadApiClient();
 
 		const result = await fetchGamesWithLeagueLogos(['nba', 'nfl']);
-		expect(result.games.map(game => game.id).sort()).toEqual(['nba-live', 'nba-pre']);
+		expect(result.games.map(game => game.id).toSorted()).toEqual(['nba-live', 'nba-pre']);
 		expect(result.games.every(game => game.league === 'nba')).toBe(true);
 		expect(result.leagueLogos).toEqual({ nba: 'https://cdn.example/nba-logo.png' });
 	});
@@ -864,7 +864,7 @@ describe('apiClient', () => {
 		const { fetchGamesWithLeagueLogos } = loadApiClient();
 
 		const result = await fetchGamesWithLeagueLogos(['nba']);
-		expect(result.games.map(g => g.id).sort()).toEqual(['dates-only-pre', 'shared-live']);
+		expect(result.games.map(g => g.id).toSorted()).toEqual(['dates-only-pre', 'shared-live']);
 		expect(result.games.filter(g => g.id === 'shared-live')).toHaveLength(1);
 	});
 
@@ -1372,7 +1372,7 @@ describe('apiClient', () => {
 		const { fetchGamesWithLeagueLogos } = loadApiClient();
 
 		const result = await fetchGamesWithLeagueLogos(['fifawc']);
-		expect(result.games.map(g => g.id).sort()).toEqual(['group-1', 'ko-1', 'ko-2']);
+		expect(result.games.map(g => g.id).toSorted()).toEqual(['group-1', 'ko-1', 'ko-2']);
 		expect(result.games.find(g => g.id === 'ko-1')!.odds).toBeUndefined();
 		expect(result.games.find(g => g.id === 'ko-2')!.odds).toBeUndefined();
 		expect(result.games.every(g => g.status === 'pre')).toBe(true);

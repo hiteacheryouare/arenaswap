@@ -63,7 +63,7 @@ const onboardingLeaguePicker = ({
 
 		<div>
 			{(Object.keys(sportTypeOrder) as SportType[])
-				.sort((a, b) => sportTypeOrder[a] - sportTypeOrder[b])
+				.toSorted((a, b) => sportTypeOrder[a] - sportTypeOrder[b])
 				.map(sportType => {
 					const leagues = leaguesBySportType[sportType];
 					const allSelected = leagues.every(l => selectedLeagues.has(l.id));

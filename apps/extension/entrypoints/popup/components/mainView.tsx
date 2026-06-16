@@ -191,11 +191,11 @@ const mainView = ({
 	const upcomingGames = games
 		.filter(g => g.status === 'pre')
 		.filter(g => !g.startTime || new Date(g.startTime).getTime() <= oneWeekFromNow)
-		.sort(sortUpcomingGames);
+		.toSorted(sortUpcomingGames);
 
 	const registeredGameIds = new Set(registry.map(r => r.gameId));
-	const assignedLiveGames = liveGames.filter(g => registeredGameIds.has(g.id)).sort(sortGames);
-	const unassignedLiveGames = liveGames.filter(g => !registeredGameIds.has(g.id)).sort(sortGames);
+	const assignedLiveGames = liveGames.filter(g => registeredGameIds.has(g.id)).toSorted(sortGames);
+	const unassignedLiveGames = liveGames.filter(g => !registeredGameIds.has(g.id)).toSorted(sortGames);
 
 	const showNoGames = !isLoading && !noLeaguesSelected && liveGames.length === 0
 		&& registry.length === 0 && (!prefs.showUpcomingGames || upcomingGames.length === 0);
@@ -205,10 +205,10 @@ const mainView = ({
 			<div className='d-flex justify-content-between align-items-center mb-2 pb-2'>
 				<img src='/images/full_logo_white_on_transparent.png' alt='ArenaSwap' className='arenaswap-logo' />
 				<div className='d-flex align-items-center gap-2'>
-					<button className='btn btn-sm p-0 popup-settings-button' onClick={onStartWalkthrough} title='Tour'>
+					<button className='btn btn-sm p-0 popup-settings-button' onClick={onStartWalkthrough} title='Tour' aria-label='Tour'>
 						<i className='bi bi-question-circle popup-settings-icon' />
 					</button>
-					<button className='btn btn-sm p-0 popup-settings-button' onClick={onOpenSetup} title='Settings'>
+					<button className='btn btn-sm p-0 popup-settings-button' onClick={onOpenSetup} title='Settings' aria-label='Settings'>
 						<i className='bi bi-gear-fill popup-settings-icon' />
 					</button>
 					<div className='form-check form-switch mb-0'>

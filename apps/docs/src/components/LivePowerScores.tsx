@@ -170,7 +170,7 @@ const LivePowerScores = () => {
 				if (!activeGameIds.has(gameId)) delete stallRef.current[gameId];
 			}
 
-			setCards(nextCards.sort((a, b) => b.score - a.score));
+			setCards(nextCards.toSorted((a, b) => b.score - a.score));
 			setError(null);
 		} catch {
 			setError('Unable to load live game data right now.');

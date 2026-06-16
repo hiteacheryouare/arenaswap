@@ -9,7 +9,7 @@ process.env.TZ = 'UTC';
 // guards only check identity, not behavior. DOM-specific tests should run
 // under jsdom; these unit tests cover the non-DOM branches.
 if (typeof (globalThis as { HTMLElement?: unknown }).HTMLElement === 'undefined') {
-	(globalThis as { HTMLElement: unknown }).HTMLElement = class {};
+	(globalThis as { HTMLElement: unknown }).HTMLElement = class HTMLElementStub { readonly nodeType = 1; };
 }
 
 afterEach(() => {
