@@ -17,10 +17,12 @@
 		"zip:all": "turbo run zip zip:firefox zip:edge",
 		"test": "turbo run test",
 		"typecheck": "turbo run typecheck",
+		"lint": "turbo lint",
 		"powerscore:simulate": "rolldown scripts/powerscore/simulateDistribution.ts --platform=node --file=scripts/powerscore/simulateDistribution.cjs --format=cjs --target=es2023 --log-level=silent && node scripts/powerscore/simulateDistribution.cjs",
 		"powerscore:validate-live": "rolldown scripts/powerscore/validateLive.ts --platform=node --file=scripts/powerscore/validateLive.cjs --format=cjs --log-level=silent --target=es2023 && node scripts/powerscore/validateLive.cjs"
 	},
 	"devDependencies": {
+		"oxlint": "^1.70.0",
 		"rolldown": "^1.1.1",
 		"turbo": "^2.9.16",
 		"typescript": "^6.0.3"

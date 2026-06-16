@@ -15,7 +15,8 @@
 		"test": "npm run test:unit && npm run test:component",
 		"test:unit": "jest --passWithNoTests --selectProjects unit",
 		"test:component": "jest --passWithNoTests --selectProjects component",
-		"typecheck": "wxt prepare && tsc --noEmit"
+		"typecheck": "wxt prepare && tsc --noEmit",
+		"lint": "oxlint ."
 	},
 	"dependencies": {
 		"@arenaswap/core": "*",

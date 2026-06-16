@@ -33,6 +33,10 @@
 		"test": {},
 		"typecheck": {
 			"dependsOn": ["^build"]
+		},
+		"lint": {
+			"cache": true,
+			"outputs": []
 		}
 	}
 }
