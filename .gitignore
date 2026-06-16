@@ -26,6 +26,10 @@ scripts/**/*.cjs
 
 *.log
 .turbo/
+
+# Cypress
+apps/extension/cypress/screenshots/
+apps/extension/cypress/videos/
 apps/docs/.astro/settings.json
 apps/docs/.astro/types.d.ts
 docs/settings.json

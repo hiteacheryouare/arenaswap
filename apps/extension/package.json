@@ -14,7 +14,8 @@
 		"zip:edge": "wxt zip -b edge",
 		"test": "npm run test:unit && npm run test:component",
 		"test:unit": "jest --passWithNoTests --selectProjects unit",
-		"test:component": "jest --passWithNoTests --selectProjects component",
+		"test:component": "cypress run --component",
+		"cypress:open": "cypress open --component",
 		"typecheck": "wxt prepare && tsc --noEmit",
 		"lint": "oxlint ."
 	},
@@ -27,9 +28,6 @@
 		"swr": "^2.4.1"
 	},
 	"devDependencies": {
-		"@testing-library/jest-dom": "^6.9.1",
-		"@testing-library/react": "^16.3.2",
-		"@testing-library/user-event": "^14.6.1",
 		"@types/canvas-confetti": "^1.9.0",
 		"@types/react": "^19.0.0",
 		"@types/react-dom": "^19.0.0",
@@ -37,7 +35,7 @@
 		"autoprefixer": "^10.4.27",
 		"bootstrap": "^5.3.8",
 		"bootstrap-icons": "^1.13.1",
-		"jest-environment-jsdom": "^30.4.1",
+		"cypress": "^15.17.0",
 		"react": "^19.2.6",
 		"react-dom": "^19.2.6",
 		"sass": "^1.99.0",

@@ -4,7 +4,7 @@
 		"module": "CommonJS",
 		"moduleResolution": "Node",
 		"ignoreDeprecations": "6.0",
-		"types": ["jest", "node", "@testing-library/jest-dom"],
+		"types": ["jest", "node"],
 		"jsx": "react-jsx",
 		"noEmit": true,
 		"allowJs": true,

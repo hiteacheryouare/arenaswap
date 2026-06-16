@@ -25,15 +25,5 @@ module.exports = {
 			displayName: 'unit',
 			testMatch: ['<rootDir>/tests/**/*.test.ts'],
 		},
-		{
-			...commonProjectConfig,
-			displayName: 'component',
-			testEnvironment: 'jest-environment-jsdom',
-			testMatch: ['<rootDir>/tests/**/*.test.tsx'],
-			setupFilesAfterEnv: [
-				'<rootDir>/jestSetup.ts',
-				'@testing-library/jest-dom',
-			],
-		},
 	],
 };

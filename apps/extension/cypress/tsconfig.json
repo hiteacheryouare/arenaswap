@@ -1,0 +1,15 @@
+{
+	"extends": "../../../tsconfig.base.json",
+	"compilerOptions": {
+		"jsx": "react-jsx",
+		"allowJs": true,
+		"types": ["cypress", "node"],
+		"paths": {
+			"@arenaswap/core": ["../../../packages/core/src/index.ts"],
+			"@arenaswap/core/*": ["../../../packages/core/src/*"],
+			"powerscore": ["../../../packages/powerscore/src/index.ts"],
+			"wxt/browser": ["../tests/stubs/wxtBrowser.ts"]
+		}
+	},
+	"include": ["./**/*.ts", "./**/*.tsx", "../tests/stubs/**/*.ts"]
+}

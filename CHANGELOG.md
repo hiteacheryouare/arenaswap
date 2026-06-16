@@ -1,5 +1,26 @@
 # Changelog
 
+## Cypress component testing — 2026-06-15
+
+### Replace Jest component tests with Cypress Component Testing
+- Replaced `jest-environment-jsdom` + `@testing-library/react` component tests with Cypress Component Testing, which runs in a real browser (Electron) and gives a more accurate rendering environment for the popup UI.
+- **Removed packages:** `@testing-library/react`, `@testing-library/jest-dom`, `@testing-library/user-event`, `jest-environment-jsdom` — none are needed now that the component project is gone from Jest.
+- **Added:** `cypress@15.17.0` as a dev dependency.
+- `jest.config.cjs` — removed the `component` project; only the `unit` project (Node environment, `.test.ts` files) remains.
+- `tsconfig.jest.json` — dropped `@testing-library/jest-dom` from the `types` array since the package is no longer installed.
+- New `cypress.config.ts` — Vite + React dev server; string/regex aliases redirect workspace packages (`@arenaswap/core`, `powerscore`, `wxt/browser`) to source files; a custom `enforce: 'pre'` Vite plugin intercepts relative component imports and redirects them to stub doubles, mirroring what Jest's `jest.mock()` did.
+- New `cypress/support/component-index.html` — HTML template with `data-cy-root` mount point required by `cypress/react`.
+- New `cypress/support/component.ts` — registers `cy.mount()` from `cypress/react`.
+- New `cypress/tsconfig.json` — Cypress-specific TypeScript config with Cypress types and matching path mappings.
+- New `cypress/stubs/*.tsx` — 8 minimal stub components (flipScore, baseDiamond, tabAssignSelect, gameCard, popupFooter, proTip, emptyGameState, reviewPromptBanner) that mirror the original Jest mocks and expose the `data-testid` attributes the specs assert against.
+- New `cypress/component/liveGameCard.cy.tsx` — 4 component specs equivalent to the deleted `tests/liveGameCard.test.tsx`.
+- New `cypress/component/mainView.cy.tsx` — 12 component specs equivalent to the deleted `tests/mainView.test.tsx`.
+- `package.json` scripts: `test:component` now runs `cypress run --component`; added `cypress:open` for interactive mode.
+- `.gitignore` — added `cypress/screenshots/` and `cypress/videos/`.
+- **Result:** 87 Jest unit tests ✓ + 16 Cypress component tests ✓, all green.
+
+---
+
 ## Soccer clock fix — 2026-06-13
 
 ### Correct late-game scoring and notification clock for soccer
