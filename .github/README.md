@@ -14,8 +14,8 @@
 
 <br />
 
-![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)
-![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)
+![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)
+![TypeScript](https://img.shields.io/badge/TypeScript-6-3178C6?logo=typescript&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-ES2023-F7DF1E?logo=javascript&logoColor=black)
 ![WXT](https://img.shields.io/badge/WXT-0.20-FF6B35?logo=googlechrome&logoColor=white)
 ![TailwindCSS](https://img.shields.io/badge/TailwindCSS-4-06B6D4?logo=tailwindcss&logoColor=white)
@@ -24,7 +24,7 @@
 ![Turborepo](https://img.shields.io/badge/Turborepo-2-EF4444?logo=turborepo&logoColor=white)
 ![npm](https://img.shields.io/badge/npm-10-CB3837?logo=npm&logoColor=white)
 
-![Version](https://img.shields.io/badge/version-1.2.0-brightgreen)
+![Version](https://img.shields.io/badge/version-2.0.0-brightgreen)
 ![License](https://img.shields.io/github/license/hiteacheryouare/arenaswap)
 ![Stars](https://img.shields.io/github/stars/hiteacheryouare/arenaswap?logo=github)
 ![Forks](https://img.shields.io/github/forks/hiteacheryouare/arenaswap?logo=github)
