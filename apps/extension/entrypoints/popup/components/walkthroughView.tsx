@@ -33,7 +33,7 @@ const DoneScreen = ({ onComplete }: { onComplete: () => void }) => {
 				alt='ArenaSwap'
 				className='arenaswap-logo mb-2'
 			/>
-			<div className='fw-bold fs-3 lh-sm'>You're ready!</div>
+			<div className='fw-bold fs-3 lh-sm'>All set!</div>
 			<div className='text-body-secondary lh-base'>
 				Ready to always watch the best game?
 			</div>
