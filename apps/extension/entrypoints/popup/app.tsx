@@ -34,7 +34,7 @@ const isScoreUpdateMessage = (value: unknown): value is { type: 'SCORES_UPDATED'
 	&& (value as { type?: unknown }).type === 'SCORES_UPDATED'
 );
 
-const app = () => {
+export default () => {
 	const [view, setView] = useState<popupView>('main');
 	const [selectedGameId, setSelectedGameId] = useState<string | null>(null);
 	const [prefs, setPrefs] = useState<UserPreferences>(createDefaultUserPreferences());
@@ -388,5 +388,3 @@ const app = () => {
 		</div>
 	);
 };
-
-export default app;
