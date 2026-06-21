@@ -104,6 +104,25 @@ describe('baseball & softball league configs', () => {
 	});
 });
 
+describe('Olympic basketball league configs', () => {
+	it('olybkm is FIBA-spec basketball (10-min quarters)', () => {
+		expect(leagueConfigMap.olybkm).toBeDefined();
+		expect(leagueConfigMap.olybkm.sportType).toBe('basketball');
+		expect(leagueConfigMap.olybkm.espnPath).toBe('basketball/mens-olympics-basketball');
+		expect(leagueConfigMap.olybkm.regularPeriods).toBe(4);
+		expect(leagueConfigMap.olybkm.periodDurationSecs).toBe(600);
+		expect(leagueConfigMap.olybkm.periodFormat).toBe('quarters');
+	});
+
+	it('olybkw is FIBA-spec womens basketball (10-min quarters)', () => {
+		expect(leagueConfigMap.olybkw).toBeDefined();
+		expect(leagueConfigMap.olybkw.sportType).toBe('basketball');
+		expect(leagueConfigMap.olybkw.espnPath).toBe('basketball/womens-olympics-basketball');
+		expect(leagueConfigMap.olybkw.regularPeriods).toBe(4);
+		expect(leagueConfigMap.olybkw.periodDurationSecs).toBe(600);
+	});
+});
+
 describe('hockey league configs — new', () => {
 	it('olymih is Olympic mens ice hockey with correct ESPN path', () => {
 		expect(leagueConfigMap.olymih).toBeDefined();

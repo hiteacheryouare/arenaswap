@@ -381,6 +381,25 @@ export const leagueConfigs: LeagueConfig[] = [
 		periodDurationSecs: 1200,
 		periodFormat: 'periods',
 	},
+	{
+		// FIBA uses 10-minute quarters (600s), not the NBA's 12-minute quarters.
+		id: 'olybkm',
+		label: "Olympic Men's Basketball",
+		sportType: 'basketball',
+		espnPath: 'basketball/mens-olympics-basketball',
+		regularPeriods: 4,
+		periodDurationSecs: 600,
+		periodFormat: 'quarters',
+	},
+	{
+		id: 'olybkw',
+		label: "Olympic Women's Basketball",
+		sportType: 'basketball',
+		espnPath: 'basketball/womens-olympics-basketball',
+		regularPeriods: 4,
+		periodDurationSecs: 600,
+		periodFormat: 'quarters',
+	},
 ];
 
 export const allLeagueIds = leagueConfigs.map(c => c.id) as LeagueId[];
