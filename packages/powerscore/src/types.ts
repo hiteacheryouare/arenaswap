@@ -3,7 +3,8 @@ export type LeagueId = 'nba' | 'wnba' | 'nhl' | 'ncaamh' | 'mlb' | 'nfl' | 'ncaa
 	| 'cbase' | 'csoft' | 'olybb' | 'wbbc'
 	| 'ufl'
 	| 'olymih' | 'olywih'
-	| 'olybkm' | 'olybkw';
+	| 'olybkm' | 'olybkw'
+	| 'olysocm' | 'olysocw' | 'laliga' | 'bundesliga' | 'seriea' | 'ligamx' | 'ucl' | 'uel' | 'nwsl' | 'fifawwc';
 /** @deprecated Use LeagueId */
 export type SportId = LeagueId;
 

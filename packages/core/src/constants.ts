@@ -88,6 +88,16 @@ export const leagueLogoFallbacks: Partial<Record<LeagueId, string>> = {
 	olywih: 'https://a.espncdn.com/redesign/assets/img/icons/ESPN-icon-hockey.png',
 	olybkm: 'https://a.espncdn.com/redesign/assets/img/icons/ESPN-icon-basketball.png',
 	olybkw: 'https://a.espncdn.com/redesign/assets/img/icons/ESPN-icon-basketball.png',
+	olysocm: 'https://a.espncdn.com/redesign/assets/img/icons/ESPN-icon-soccer.png',
+	olysocw: 'https://a.espncdn.com/redesign/assets/img/icons/ESPN-icon-soccer.png',
+	laliga: 'https://a.espncdn.com/redesign/assets/img/icons/ESPN-icon-soccer.png',
+	bundesliga: 'https://a.espncdn.com/redesign/assets/img/icons/ESPN-icon-soccer.png',
+	seriea: 'https://a.espncdn.com/redesign/assets/img/icons/ESPN-icon-soccer.png',
+	ligamx: 'https://a.espncdn.com/redesign/assets/img/icons/ESPN-icon-soccer.png',
+	ucl: 'https://a.espncdn.com/redesign/assets/img/icons/ESPN-icon-soccer.png',
+	uel: 'https://a.espncdn.com/redesign/assets/img/icons/ESPN-icon-soccer.png',
+	nwsl: 'https://a.espncdn.com/redesign/assets/img/icons/ESPN-icon-soccer.png',
+	fifawwc: 'https://a.espncdn.com/redesign/assets/img/icons/ESPN-icon-soccer.png',
 };
 
 export const resolveLeagueLogoUrl = (leagueId: LeagueId, espnLogoUrl?: string): string => (

@@ -104,6 +104,30 @@ describe('baseball & softball league configs', () => {
 	});
 });
 
+describe('soccer league configs — new', () => {
+	const soccerLeagues: Array<{ id: string; espnPath: string; label: string }> = [
+		{ id: 'olysocm', espnPath: 'soccer/fifa.olympics', label: "Olympic Men's Soccer" },
+		{ id: 'olysocw', espnPath: 'soccer/fifa.w.olympics', label: "Olympic Women's Soccer" },
+		{ id: 'laliga', espnPath: 'soccer/esp.1', label: 'La Liga' },
+		{ id: 'bundesliga', espnPath: 'soccer/ger.1', label: 'Bundesliga' },
+		{ id: 'seriea', espnPath: 'soccer/ita.1', label: 'Serie A' },
+{ id: 'ligamx', espnPath: 'soccer/mex.1', label: 'Liga MX' },
+		{ id: 'ucl', espnPath: 'soccer/uefa.champions', label: 'UEFA Champions League' },
+		{ id: 'uel', espnPath: 'soccer/uefa.europa', label: 'UEFA Europa League' },
+		{ id: 'nwsl', espnPath: 'soccer/usa.nwsl', label: 'NWSL' },
+		{ id: 'fifawwc', espnPath: 'soccer/fifa.wwc', label: "FIFA Women's World Cup" },
+	];
+
+	it.each(soccerLeagues)('$id has sportType soccer, correct espnPath, 2 halves', ({ id, espnPath }) => {
+		const config = leagueConfigMap[id as keyof typeof leagueConfigMap];
+		expect(config).toBeDefined();
+		expect(config.sportType).toBe('soccer');
+		expect(config.espnPath).toBe(espnPath);
+		expect(config.regularPeriods).toBe(2);
+		expect(config.periodFormat).toBe('halves');
+	});
+});
+
 describe('Olympic basketball league configs', () => {
 	it('olybkm is FIBA-spec basketball (10-min quarters)', () => {
 		expect(leagueConfigMap.olybkm).toBeDefined();
