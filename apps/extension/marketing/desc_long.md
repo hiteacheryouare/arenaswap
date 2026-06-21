@@ -1,6 +1,6 @@
 Never miss the moment.
 
-ArenaSwap is a free, open-source browser extension that watches every live game across 12 sports leagues and automatically switches your browser tab to the most exciting one — every 15 seconds. Think NFL RedZone, but for every sport, every night, on whatever streaming service you already pay for.
+ArenaSwap is a free, open-source browser extension that watches every live game across 33 sports leagues and automatically switches your browser tab to the most exciting one — every 15 seconds. Think NFL RedZone, but for every sport, every night, on whatever streaming service you already pay for.
 
 ━━━━━━━━━━━━━━━━━━━━━━
 HOW IT WORKS
@@ -29,12 +29,25 @@ Games with frozen clocks (halftimes, timeouts, stoppages) get a penalty so you'r
 Every card in the popup shows a color-coded PowerScore bar so you can see the excitement level at a glance. Open any game for the full breakdown: live signal values, PowerScore over time, team scores over time, score margin, and component contribution charts.
 
 ━━━━━━━━━━━━━━━━━━━━━━
-SUPPORTED LEAGUES
+SUPPORTED LEAGUES (33)
 ━━━━━━━━━━━━━━━━━━━━━━
 
-NFL · NBA · MLB · NHL · MLS · FIFAWC · EPL · WNBA · NCAAF · NCAAB · NCAAW · NCAAMH
+🏀 Basketball (6)
+NBA · WNBA · NCAA Men's · NCAA Women's · Olympic Men's · Olympic Women's
 
-Five sports. Twelve leagues. Toggle any of them on or off.
+🏈 Football (3)
+NFL · NCAA Football · UFL
+
+🏒 Hockey (5)
+NHL · NCAA Men's · NCAA Women's · Olympic Men's · Olympic Women's
+
+⚾ Baseball & Softball (5)
+MLB · NCAA Baseball · NCAA Softball · Olympic Baseball · World Baseball Classic
+
+⚽ Soccer (14)
+MLS · NWSL · English Premier League · La Liga · Bundesliga · Serie A · Ligue 1 · Liga MX · UEFA Champions League · UEFA Europa League · Olympic Men's · Olympic Women's · FIFA World Cup · FIFA Women's World Cup
+
+Six sports. 33 leagues. Toggle any of them on or off.
 
 ━━━━━━━━━━━━━━━━━━━━━━
 TUNED IN TO YOU

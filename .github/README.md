@@ -4,7 +4,7 @@
 
 <br />
 
-**ArenaSwap** is a browser extension that monitors every live sports game across 12 leagues and automatically switches your browser tab to the most exciting one — powered by a live scoring algorithm called **PowerScore**.
+**ArenaSwap** is a browser extension that monitors every live sports game across 33 leagues and automatically switches your browser tab to the most exciting one — powered by a live scoring algorithm called **PowerScore**.
 
 *Think [NFL RedZone](https://www.nfl.com/redzone), but for every sport. All day. All season.*
 
@@ -34,7 +34,7 @@
 ![Chrome](https://img.shields.io/badge/Chrome-Extension-4285F4?logo=googlechrome&logoColor=white)
 ![Firefox](https://img.shields.io/badge/Firefox-Add--On-FF7139?logo=firefoxbrowser&logoColor=white)
 ![Edge](https://img.shields.io/badge/Edge-Extension-0078D4?logo=microsoftedge&logoColor=white)
-![Leagues](https://img.shields.io/badge/Leagues-12-1DB954?logo=sportify&logoColor=white)
+![Leagues](https://img.shields.io/badge/Leagues-33-1DB954?logo=sportify&logoColor=white)
 ![PowerScore](https://img.shields.io/badge/Powered%20by-PowerScore-orange)
 ![ESPN API](https://img.shields.io/badge/Data-ESPN%20API-D00000)
 
@@ -67,15 +67,15 @@ When no games are live, the extension enters a low-power dormant mode and checks
 
 ---
 
-## Twelve Leagues. If It's Live, It's Covered.
+## 33 Leagues. If It's Live, It's Covered.
 
 | Sport | Leagues |
 |---|---|
-| 🏀 Basketball | NBA, WNBA, NCAAB, NCAAW |
-| 🏈 Football | NFL, NCAAF |
-| 🏒 Hockey | NHL, NCAAMH |
-| ⚾ Baseball | MLB |
-| ⚽ Soccer | MLS, EPL, FIFA World Cup |
+| 🏀 Basketball | NBA, WNBA, NCAAB, NCAAW, Olympic Men's, Olympic Women's |
+| 🏈 Football | NFL, NCAAF, UFL |
+| 🏒 Hockey | NHL, NCAA Men's, NCAA Women's, Olympic Men's, Olympic Women's |
+| ⚾ Baseball & Softball | MLB, NCAA Baseball, NCAA Softball, Olympic Baseball, World Baseball Classic |
+| ⚽ Soccer | MLS, NWSL, EPL, La Liga, Bundesliga, Serie A, Ligue 1, Liga MX, UEFA Champions League, UEFA Europa League, Olympic Men's, Olympic Women's, FIFA World Cup, FIFA Women's World Cup |
 
 ---
 
@@ -167,6 +167,6 @@ ISC License. See the [LICENSE](../LICENSE) file for details.
 
 Primary Author: [Ryan Mullin](https://github.com/hiteacheryouare)
 
-*Not affiliated with or endorsed by ESPN, the NFL, NBA, NHL, MLB, MLS, or any other league tracked by this extension.*
+*Not affiliated with or endorsed by ESPN, the NFL, NBA, NHL, MLB, MLS, UFL, or any other league, tournament, or federation tracked by this extension.*
 
 </div>
