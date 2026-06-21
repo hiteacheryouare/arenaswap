@@ -79,6 +79,10 @@ export const leagueLogoFallbacks: Record<LeagueId, string> = {
 	mls: 'https://a.espncdn.com/i/teamlogos/leagues/500/mls.png',
 	epl: 'https://a.espncdn.com/i/leaguelogos/soccer/500-dark/23.png',
 	fifawc: 'https://a.espncdn.com/i/leaguelogos/soccer/500-dark/4.png',
+	cbase: 'https://a.espncdn.com/redesign/assets/img/icons/ESPN-icon-baseball.png',
+	csoft: 'https://a.espncdn.com/redesign/assets/img/icons/ESPN-icon-baseball.png',
+	olybb: 'https://a.espncdn.com/redesign/assets/img/icons/ESPN-icon-baseball.png',
+	wbbc: 'https://a.espncdn.com/redesign/assets/img/icons/ESPN-icon-baseball.png',
 };
 
 export const resolveLeagueLogoUrl = (leagueId: LeagueId, espnLogoUrl?: string): string => (

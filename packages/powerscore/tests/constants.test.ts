@@ -73,6 +73,60 @@ describe('leagueConfigMap coverage', () => {
 	});
 });
 
+describe('baseball & softball league configs', () => {
+	it('cbase is a 9-inning baseball league', () => {
+		expect(leagueConfigMap.cbase).toBeDefined();
+		expect(leagueConfigMap.cbase.sportType).toBe('baseball');
+		expect(leagueConfigMap.cbase.espnPath).toBe('baseball/college-baseball');
+		expect(leagueConfigMap.cbase.regularPeriods).toBe(9);
+		expect(leagueConfigMap.cbase.periodFormat).toBe('innings');
+	});
+
+	it('csoft is a 7-inning softball league', () => {
+		expect(leagueConfigMap.csoft).toBeDefined();
+		expect(leagueConfigMap.csoft.sportType).toBe('softball');
+		expect(leagueConfigMap.csoft.espnPath).toBe('baseball/college-softball');
+		expect(leagueConfigMap.csoft.regularPeriods).toBe(7);
+		expect(leagueConfigMap.csoft.periodFormat).toBe('innings');
+	});
+
+	it('olybb is a 9-inning baseball league with the correct Olympics ESPN path', () => {
+		expect(leagueConfigMap.olybb).toBeDefined();
+		expect(leagueConfigMap.olybb.sportType).toBe('baseball');
+		expect(leagueConfigMap.olybb.espnPath).toBe('baseball/olympics-baseball');
+		expect(leagueConfigMap.olybb.regularPeriods).toBe(9);
+	});
+
+	it('wbbc is a 9-inning baseball league', () => {
+		expect(leagueConfigMap.wbbc).toBeDefined();
+		expect(leagueConfigMap.wbbc.sportType).toBe('baseball');
+		expect(leagueConfigMap.wbbc.espnPath).toBe('baseball/world-baseball-classic');
+	});
+});
+
+describe('softball sport type config', () => {
+	it('exists in sportTypeConfigs', () => {
+		const softball = sportTypeConfigs.find(c => c.id === 'softball');
+		expect(softball).toBeDefined();
+	});
+
+	it('is not clock-based and uses 7-inning lateGameCurve', () => {
+		const softball = sportTypeConfigs.find(c => c.id === 'softball');
+		expect(softball!.clockBased).toBe(false);
+		expect(softball!.lateGameCurve?.model).toBe('baseball');
+		if (softball!.lateGameCurve?.model === 'baseball') {
+			expect(softball!.lateGameCurve.regulationInnings).toBe(7);
+			expect(softball!.lateGameCurve.regulationStartInning).toBeLessThan(softball!.lateGameCurve.regulationInnings);
+			expect(softball!.lateGameCurve.extraInningsStartInning).toBeGreaterThan(softball!.lateGameCurve.regulationInnings);
+		}
+	});
+
+	it('disables the OT pre-boost (no clock)', () => {
+		const softball = sportTypeConfigs.find(c => c.id === 'softball');
+		expect(softball!.otPreBoostWindowSecs).toBe(0);
+	});
+});
+
 describe('sportTypeConfigs late-game config', () => {
 	it('clock sports derive the ramp from period/clock and carry no inning curve', () => {
 		for (const config of sportTypeConfigs) {

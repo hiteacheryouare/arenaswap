@@ -1,5 +1,6 @@
-export type SportType = 'basketball' | 'football' | 'hockey' | 'baseball' | 'soccer';
-export type LeagueId = 'nba' | 'wnba' | 'nhl' | 'ncaamh' | 'mlb' | 'nfl' | 'ncaab' | 'ncaaf' | 'mls' | 'ncaaw' | 'epl' | 'fifawc';
+export type SportType = 'basketball' | 'football' | 'hockey' | 'baseball' | 'softball' | 'soccer';
+export type LeagueId = 'nba' | 'wnba' | 'nhl' | 'ncaamh' | 'mlb' | 'nfl' | 'ncaab' | 'ncaaf' | 'mls' | 'ncaaw' | 'epl' | 'fifawc'
+	| 'cbase' | 'csoft' | 'olybb' | 'wbbc';
 /** @deprecated Use LeagueId */
 export type SportId = LeagueId;
 
