@@ -105,14 +105,6 @@ describe('baseball & softball league configs', () => {
 });
 
 describe('hockey league configs — new', () => {
-	it('cwhoc is an NCAA womens hockey league with correct ESPN path', () => {
-		expect(leagueConfigMap.cwhoc).toBeDefined();
-		expect(leagueConfigMap.cwhoc.sportType).toBe('hockey');
-		expect(leagueConfigMap.cwhoc.espnPath).toBe('hockey/womens-college-hockey');
-		expect(leagueConfigMap.cwhoc.regularPeriods).toBe(3);
-		expect(leagueConfigMap.cwhoc.periodFormat).toBe('periods');
-	});
-
 	it('olymih is Olympic mens ice hockey with correct ESPN path', () => {
 		expect(leagueConfigMap.olymih).toBeDefined();
 		expect(leagueConfigMap.olymih.sportType).toBe('hockey');

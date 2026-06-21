@@ -364,15 +364,6 @@ export const leagueConfigs: LeagueConfig[] = [
 		periodFormat: 'quarters',
 	},
 	{
-		id: 'cwhoc',
-		label: "NCAA Women's Hockey",
-		sportType: 'hockey',
-		espnPath: 'hockey/womens-college-hockey',
-		regularPeriods: 3,
-		periodDurationSecs: 1200,
-		periodFormat: 'periods',
-	},
-	{
 		id: 'olymih',
 		label: "Olympic Men's Ice Hockey",
 		sportType: 'hockey',

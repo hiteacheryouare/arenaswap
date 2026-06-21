@@ -2,7 +2,7 @@ export type SportType = 'basketball' | 'football' | 'hockey' | 'baseball' | 'sof
 export type LeagueId = 'nba' | 'wnba' | 'nhl' | 'ncaamh' | 'mlb' | 'nfl' | 'ncaab' | 'ncaaf' | 'mls' | 'ncaaw' | 'epl' | 'fifawc'
 	| 'cbase' | 'csoft' | 'olybb' | 'wbbc'
 	| 'ufl'
-	| 'cwhoc' | 'olymih' | 'olywih';
+	| 'olymih' | 'olywih';
 /** @deprecated Use LeagueId */
 export type SportId = LeagueId;
 
