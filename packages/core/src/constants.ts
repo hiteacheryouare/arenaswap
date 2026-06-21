@@ -66,7 +66,7 @@ export const sensitivityThresholds: Record<number, number> = {
 	7: 1
 };
 
-export const leagueLogoFallbacks: Record<LeagueId, string> = {
+export const leagueLogoFallbacks: Partial<Record<LeagueId, string>> = {
 	nba: 'https://a.espncdn.com/i/teamlogos/leagues/500/nba.png',
 	wnba: 'https://a.espncdn.com/i/teamlogos/leagues/500/wnba.png',
 	ncaab: 'https://a.espncdn.com/redesign/assets/img/icons/ESPN-icon-basketball.png',
@@ -88,7 +88,7 @@ export const leagueLogoFallbacks: Record<LeagueId, string> = {
 export const resolveLeagueLogoUrl = (leagueId: LeagueId, espnLogoUrl?: string): string => (
 	typeof espnLogoUrl === 'string' && espnLogoUrl.length > 0
 		? espnLogoUrl
-		: leagueLogoFallbacks[leagueId]
+		: (leagueLogoFallbacks[leagueId] ?? '')
 );
 
 const isLeagueId = (value: unknown): value is LeagueId => (
