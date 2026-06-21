@@ -84,6 +84,9 @@ export const leagueLogoFallbacks: Partial<Record<LeagueId, string>> = {
 	olybb: 'https://a.espncdn.com/redesign/assets/img/icons/ESPN-icon-baseball.png',
 	wbbc: 'https://a.espncdn.com/redesign/assets/img/icons/ESPN-icon-baseball.png',
 	ufl: 'https://a.espncdn.com/redesign/assets/img/icons/ESPN-icon-football.png',
+	cwhoc: 'https://a.espncdn.com/redesign/assets/img/icons/ESPN-icon-hockey.png',
+	olymih: 'https://a.espncdn.com/redesign/assets/img/icons/ESPN-icon-hockey.png',
+	olywih: 'https://a.espncdn.com/redesign/assets/img/icons/ESPN-icon-hockey.png',
 };
 
 export const resolveLeagueLogoUrl = (leagueId: LeagueId, espnLogoUrl?: string): string => (

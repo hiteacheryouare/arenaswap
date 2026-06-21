@@ -363,6 +363,33 @@ export const leagueConfigs: LeagueConfig[] = [
 		periodDurationSecs: 900,
 		periodFormat: 'quarters',
 	},
+	{
+		id: 'cwhoc',
+		label: "NCAA Women's Hockey",
+		sportType: 'hockey',
+		espnPath: 'hockey/womens-college-hockey',
+		regularPeriods: 3,
+		periodDurationSecs: 1200,
+		periodFormat: 'periods',
+	},
+	{
+		id: 'olymih',
+		label: "Olympic Men's Ice Hockey",
+		sportType: 'hockey',
+		espnPath: 'hockey/olympics-mens-ice-hockey',
+		regularPeriods: 3,
+		periodDurationSecs: 1200,
+		periodFormat: 'periods',
+	},
+	{
+		id: 'olywih',
+		label: "Olympic Women's Ice Hockey",
+		sportType: 'hockey',
+		espnPath: 'hockey/olympics-womens-ice-hockey',
+		regularPeriods: 3,
+		periodDurationSecs: 1200,
+		periodFormat: 'periods',
+	},
 ];
 
 export const allLeagueIds = leagueConfigs.map(c => c.id) as LeagueId[];

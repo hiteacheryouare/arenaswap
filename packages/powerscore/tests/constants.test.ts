@@ -104,6 +104,30 @@ describe('baseball & softball league configs', () => {
 	});
 });
 
+describe('hockey league configs — new', () => {
+	it('cwhoc is an NCAA womens hockey league with correct ESPN path', () => {
+		expect(leagueConfigMap.cwhoc).toBeDefined();
+		expect(leagueConfigMap.cwhoc.sportType).toBe('hockey');
+		expect(leagueConfigMap.cwhoc.espnPath).toBe('hockey/womens-college-hockey');
+		expect(leagueConfigMap.cwhoc.regularPeriods).toBe(3);
+		expect(leagueConfigMap.cwhoc.periodFormat).toBe('periods');
+	});
+
+	it('olymih is Olympic mens ice hockey with correct ESPN path', () => {
+		expect(leagueConfigMap.olymih).toBeDefined();
+		expect(leagueConfigMap.olymih.sportType).toBe('hockey');
+		expect(leagueConfigMap.olymih.espnPath).toBe('hockey/olympics-mens-ice-hockey');
+		expect(leagueConfigMap.olymih.regularPeriods).toBe(3);
+	});
+
+	it('olywih is Olympic womens ice hockey with correct ESPN path', () => {
+		expect(leagueConfigMap.olywih).toBeDefined();
+		expect(leagueConfigMap.olywih.sportType).toBe('hockey');
+		expect(leagueConfigMap.olywih.espnPath).toBe('hockey/olympics-womens-ice-hockey');
+		expect(leagueConfigMap.olywih.regularPeriods).toBe(3);
+	});
+});
+
 describe('UFL league config', () => {
 	it('ufl is a football league with correct ESPN path', () => {
 		expect(leagueConfigMap.ufl).toBeDefined();
