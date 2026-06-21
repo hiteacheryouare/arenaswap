@@ -104,6 +104,17 @@ describe('baseball & softball league configs', () => {
 	});
 });
 
+describe('UFL league config', () => {
+	it('ufl is a football league with correct ESPN path', () => {
+		expect(leagueConfigMap.ufl).toBeDefined();
+		expect(leagueConfigMap.ufl.sportType).toBe('football');
+		expect(leagueConfigMap.ufl.espnPath).toBe('football/ufl');
+		expect(leagueConfigMap.ufl.regularPeriods).toBe(4);
+		expect(leagueConfigMap.ufl.periodDurationSecs).toBe(900);
+		expect(leagueConfigMap.ufl.periodFormat).toBe('quarters');
+	});
+});
+
 describe('softball sport type config', () => {
 	it('exists in sportTypeConfigs', () => {
 		const softball = sportTypeConfigs.find(c => c.id === 'softball');

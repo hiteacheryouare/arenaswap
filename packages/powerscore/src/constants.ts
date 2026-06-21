@@ -354,6 +354,15 @@ export const leagueConfigs: LeagueConfig[] = [
 		periodDurationSecs: 0,
 		periodFormat: 'innings',
 	},
+	{
+		id: 'ufl',
+		label: 'UFL',
+		sportType: 'football',
+		espnPath: 'football/ufl',
+		regularPeriods: 4,
+		periodDurationSecs: 900,
+		periodFormat: 'quarters',
+	},
 ];
 
 export const allLeagueIds = leagueConfigs.map(c => c.id) as LeagueId[];
