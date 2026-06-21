@@ -1,1 +1,1 @@
-Watches every live game across 33 leagues and auto-switches your browser tab to the most exciting one every 15 seconds.
+Watches every live game across 31 leagues and auto-switches your browser tab to the most exciting one every 15 seconds.

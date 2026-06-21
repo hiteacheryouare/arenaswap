@@ -1,5 +1,59 @@
 # Changelog
 
+## 19 new leagues + US audience audit — 2026-06-20
+
+### New leagues added (21 originally, 2 removed after US audience audit = 19 net)
+
+**Baseball & Softball**
+- `cbase` — NCAA Baseball (`baseball/college-baseball`)
+- `csoft` — NCAA Softball (`baseball/college-softball`) — introduced a new `softball` sport type with 7-inning late-game calibration (vs baseball's 9) so regulation pressure fires at the correct innings
+- `olybb` — Olympic Men's Baseball (`baseball/olympics-baseball`)
+- `wbbc` — World Baseball Classic (`baseball/world-baseball-classic`)
+
+**Football**
+- `ufl` — United Football League (`football/ufl`) — 4×15-min quarters, same calibration as NFL/NCAAF
+
+**Hockey**
+- `olymih` — Olympic Men's Ice Hockey (`hockey/olympics-mens-ice-hockey`)
+- `olywih` — Olympic Women's Ice Hockey (`hockey/olympics-womens-ice-hockey`)
+- ~~`cwhoc`~~ — NCAA Women's Hockey — **removed**: fails US audience audit (not widely available on US cable/streaming, too niche)
+
+**Basketball**
+- `olybkm` — Olympic Men's Basketball (`basketball/mens-olympics-basketball`) — FIBA uses 10-min quarters (600s); using NBA's 720s would fire late-game pressure too early
+- `olybkw` — Olympic Women's Basketball (`basketball/womens-olympics-basketball`) — same FIBA spec
+
+**Soccer**
+- `olysocm` — Olympic Men's Soccer (`soccer/fifa.olympics`)
+- `olysocw` — Olympic Women's Soccer (`soccer/fifa.w.olympics`)
+- `laliga` — La Liga (`soccer/esp.1`)
+- `bundesliga` — Bundesliga (`soccer/ger.1`)
+- `seriea` — Serie A (`soccer/ita.1`)
+- `ligamx` — Liga MX (`soccer/mex.1`)
+- `ucl` — UEFA Champions League (`soccer/uefa.champions`)
+- `uel` — UEFA Europa League (`soccer/uefa.europa`)
+- `nwsl` — NWSL (`soccer/usa.nwsl`)
+- `fifawwc` — FIFA Women's World Cup (`soccer/fifa.wwc`)
+- ~~`ligue1`~~ — Ligue 1 — **removed**: fails US audience audit (only on beIN Sports, smallest US following of the major European leagues added)
+
+### New sport type: `softball`
+Added `softball` as a distinct `SportType` (previously would have fallen back to `baseball`). The key difference is `regulationInnings: 7` in `lateGameCurve`, with `regulationStartInning: 5` and `extraInningsStartInning: 8` — using baseball's 9-inning config would misfires late-game pressure in the 5th/6th innings of a softball game. Added `softball: { normalScoreProb: 0.07, streakScoreProb: 0.25, offScoreProb: 0.03, scoreValues: [1, 2] }` to `mockGames.ts` sportParams.
+
+### TypeScript fix: `leagueLogoFallbacks`
+Changed `leagueLogoFallbacks` in `packages/core/src/constants.ts` from `Record<LeagueId, string>` (exhaustive — requires every ID) to `Partial<Record<LeagueId, string>>`, and updated `resolveLeagueLogoUrl` to use `?? ''` null-coalescing. This prevents stale dist caches on stacked branches from breaking the TypeScript build when the core package has fewer league IDs than powerscore.
+
+### US audience audit
+Each new league was evaluated against two criteria: (1) can it be watched in the USA via cable or a mainstream streaming service, and (2) is it popular enough in America to warrant tracking? Two leagues were cut:
+- **CWHOC** (NCAA Women's Hockey): not available on mainstream US streaming and niche audience
+- **Ligue 1** (French football): only on beIN Sports, smallest US following of the added European leagues
+
+All other 19 leagues survived — Olympic sports on NBC/Peacock, European leagues on ESPN+/Paramount+, Liga MX on Univision/TUDN, NWSL on Paramount+/CBS Sports.
+
+### Tests
+Added 12 new test cases covering: baseball & softball league configs, softball sport type config (7-inning curve, no OT boost), UFL league config, new hockey league configs, Olympic basketball FIBA spec (600s quarters), and a parameterized `it.each` across all 10 new soccer leagues. Total: **72 passing** unit tests in `packages/powerscore`.
+
+### Marketing
+All marketing surfaces updated to reflect 31 leagues: docs site carousel, README badge and league table, Chrome/Edge/Firefox store descriptions, short summaries. Removed CWHOC and Ligue 1 entries from all surfaces.
+
 ## Cypress component testing — 2026-06-15
 
 ### Replace Jest component tests with Cypress Component Testing
