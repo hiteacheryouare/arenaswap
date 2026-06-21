@@ -111,7 +111,7 @@ describe('soccer league configs — new', () => {
 		{ id: 'laliga', espnPath: 'soccer/esp.1', label: 'La Liga' },
 		{ id: 'bundesliga', espnPath: 'soccer/ger.1', label: 'Bundesliga' },
 		{ id: 'seriea', espnPath: 'soccer/ita.1', label: 'Serie A' },
-{ id: 'ligamx', espnPath: 'soccer/mex.1', label: 'Liga MX' },
+		{ id: 'ligamx', espnPath: 'soccer/mex.1', label: 'Liga MX' },
 		{ id: 'ucl', espnPath: 'soccer/uefa.champions', label: 'UEFA Champions League' },
 		{ id: 'uel', espnPath: 'soccer/uefa.europa', label: 'UEFA Europa League' },
 		{ id: 'nwsl', espnPath: 'soccer/usa.nwsl', label: 'NWSL' },
