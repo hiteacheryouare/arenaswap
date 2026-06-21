@@ -49,6 +49,7 @@ const sportParams: Record<Game['sportType'], {
 	basketball: { normalScoreProb: 0.25, streakScoreProb: 0.55, offScoreProb: 0.1, scoreValues: [2, 3] },
 	football: { normalScoreProb: 0.02, streakScoreProb: 0.1, offScoreProb: 0.01, scoreValues: [7, 3] },
 	baseball: { normalScoreProb: 0.06, streakScoreProb: 0.22, offScoreProb: 0.03, scoreValues: [1, 2] },
+	softball: { normalScoreProb: 0.07, streakScoreProb: 0.25, offScoreProb: 0.03, scoreValues: [1, 2] },
 	hockey: { normalScoreProb: 0.014, streakScoreProb: 0.05, offScoreProb: 0.006, scoreValues: [1, 1] },
 	soccer: { normalScoreProb: 0.006, streakScoreProb: 0.022, offScoreProb: 0.003, scoreValues: [1, 1] },
 };
