@@ -183,7 +183,6 @@ export const createDefaultUserPreferences = (): UserPreferences => ({
 	standbyStreamEnabled: false,
 	standbyStreamThreshold: 20,
 	bettingEnabled: false,
-	showGameOdds: true,
 });
 
 export const normalizeUserPreferences = (storedPrefs: unknown): UserPreferences => {
@@ -212,6 +211,5 @@ export const normalizeUserPreferences = (storedPrefs: unknown): UserPreferences 
 			? Math.max(0, Math.min(100, Math.round(candidate.standbyStreamThreshold)))
 			: defaults.standbyStreamThreshold,
 		bettingEnabled: typeof candidate.bettingEnabled === 'boolean' ? candidate.bettingEnabled : defaults.bettingEnabled,
-		showGameOdds: typeof candidate.showGameOdds === 'boolean' ? candidate.showGameOdds : defaults.showGameOdds,
 	};
 };

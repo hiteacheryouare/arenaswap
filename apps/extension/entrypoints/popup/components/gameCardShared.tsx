@@ -172,9 +172,8 @@ export const GameMeta = ({
 }) => {
 	const networks = game.broadcasts?.join(' • ');
 	const bettingOn = bettingPrefs?.bettingEnabled ?? false;
-	const showOdds = bettingOn && (bettingPrefs?.showGameOdds ?? true);
-	const odds = showOdds ? oddsSummary(game) : null;
-	const hasOddsProvider = showOdds && Boolean(game.odds?.provider?.name);
+	const odds = bettingOn ? oddsSummary(game) : null;
+	const hasOddsProvider = bettingOn && Boolean(game.odds?.provider?.name);
 	const hasMeta = Boolean(game.venueName || networks || odds || hasOddsProvider);
 	if (!hasMeta) return null;
 

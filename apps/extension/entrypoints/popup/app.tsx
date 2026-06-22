@@ -330,7 +330,6 @@ export default () => {
 						onSetStandbyTab={onSetStandbyTab}
 						onStandbyOnboardingDone={onStandbyOnboardingDone}
 						onToggleBetting={() => persistPrefs(currentPrefs => ({ ...currentPrefs, bettingEnabled: !currentPrefs.bettingEnabled }))}
-						onToggleShowGameOdds={() => persistPrefs(currentPrefs => ({ ...currentPrefs, showGameOdds: !currentPrefs.showGameOdds }))}
 					/>
 				)}
 				{view === 'main' && (
@@ -378,7 +377,6 @@ export default () => {
 						gameBoosts={gameBoosts}
 						bettingPrefs={{
 							bettingEnabled: prefs.bettingEnabled,
-							showGameOdds: prefs.showGameOdds,
 						}}
 						onSetGameBoost={onSetGameBoost}
 						onBack={() => setView('main')}

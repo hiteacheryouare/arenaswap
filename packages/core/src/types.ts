@@ -79,10 +79,8 @@ export interface UserPreferences {
 	standbyStreamEnabled: boolean;
 	/** PowerScore threshold (0–100): switch to standby when ALL registered games fall below this */
 	standbyStreamThreshold: number;
-	/** Master toggle for the betting & odds section */
+	/** Show betting odds (spread / O/U) on game cards */
 	bettingEnabled: boolean;
-	/** Show spread/line and over-under odds on game cards */
-	showGameOdds: boolean;
 }
 
 export interface TabRegistration {

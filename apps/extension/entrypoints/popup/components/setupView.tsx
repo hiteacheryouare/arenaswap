@@ -34,7 +34,6 @@ interface setupViewProps {
 	onSetStandbyTab: (tabId: number | null) => void;
 	onStandbyOnboardingDone: () => void;
 	onToggleBetting: () => void;
-	onToggleShowGameOdds: () => void;
 }
 
 type leagueConfig = (typeof leagueConfigs)[number];
@@ -63,7 +62,7 @@ const setupView = ({
 	openTabs, formatTabLabel, onClose, onSensitivityChange, onCooldownChange, onSwitchDelayChange,
 	onFavoriteTeamBonusChange, onToggleLeague, onToggleSport, onToggleShowUpcoming,
 	onToggleProTips, onToggleNotifications, onToggleDemo, onToggleStandbyStream, onStandbyThresholdChange,
-	onSetStandbyTab, onStandbyOnboardingDone, onToggleBetting, onToggleShowGameOdds,
+	onSetStandbyTab, onStandbyOnboardingDone, onToggleBetting,
 }: setupViewProps) => {
 	const [tab, setTab] = useState<'switching' | 'leagues'>('switching');
 	const [showStandbyGuide, setShowStandbyGuide] = useState(false);
@@ -211,16 +210,6 @@ const setupView = ({
 						</div>
 					</div>
 
-					{prefs.bettingEnabled && (
-						<div className='mt-2 d-flex flex-column gap-2'>
-							<div className='d-flex justify-content-between align-items-center'>
-								<label className='text-body-secondary setting-toggle-label' htmlFor='showOddsToggle'><i className='bi bi-graph-up me-1 text-primary' />Game odds (spread / O/U)</label>
-								<div className='form-check form-switch mb-0'>
-									<input className='form-check-input' type='checkbox' id='showOddsToggle' checked={prefs.showGameOdds} onChange={onToggleShowGameOdds} disabled={!prefsLoaded} />
-								</div>
-							</div>
-						</div>
-					)}
 
 			</div>
 			)}

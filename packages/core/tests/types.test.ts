@@ -34,7 +34,6 @@ describe('types runtime smoke', () => {
 			standbyStreamEnabled: false,
 			standbyStreamThreshold: 20,
 			bettingEnabled: false,
-			showGameOdds: true,
 		};
 		const message: ExtensionMessage = { type: 'UPDATE_PREFS', prefs };
 

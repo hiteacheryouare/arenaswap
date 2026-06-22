@@ -3,7 +3,6 @@ import type { Game, LeagueId, PowerScoreResult, TabRegistration } from '@arenasw
 
 export interface BettingDisplayPrefs {
 	bettingEnabled: boolean;
-	showGameOdds: boolean;
 }
 
 export interface gameCardProps {

@@ -42,7 +42,6 @@ describe('constants', () => {
 			standbyStreamEnabled: false,
 			standbyStreamThreshold: 20,
 			bettingEnabled: false,
-			showGameOdds: true,
 		});
 	});
 
@@ -73,7 +72,6 @@ describe('constants', () => {
 			standbyStreamEnabled: false,
 			standbyStreamThreshold: 20,
 			bettingEnabled: false,
-			showGameOdds: true,
 		});
 	});
 

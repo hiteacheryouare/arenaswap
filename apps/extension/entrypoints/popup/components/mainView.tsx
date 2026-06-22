@@ -207,7 +207,6 @@ const mainView = ({
 
 	const bettingPrefs: BettingDisplayPrefs = {
 		bettingEnabled: prefs.bettingEnabled,
-		showGameOdds: prefs.showGameOdds,
 	};
 
 	return (
