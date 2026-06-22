@@ -1,5 +1,5 @@
-export { fetchGames, fetchLiveGames, fetchLeagueLogos, fetchGamesWithLeagueLogos, fetchTeamsForLeagues, fetchGameBettingData } from './apiClient';
-export type { EspnTeamEntry, BettingFetchOptions } from './apiClient';
+export { fetchGames, fetchLiveGames, fetchLeagueLogos, fetchGamesWithLeagueLogos, fetchTeamsForLeagues } from './apiClient';
+export type { EspnTeamEntry } from './apiClient';
 export { computePowerScore, normalizePowerScoreResult } from 'powerscore';
 export { MockGameSimulator } from './mockGames';
 export { createPollModeTracker } from './pollModeTracker';

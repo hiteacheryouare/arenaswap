@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { KeyboardEvent, MouseEvent } from 'react';
 import { leagueConfigMap } from '@arenaswap/core/constants';
-import type { Game, GameBettingData, LeagueId, Team } from '@arenaswap/core/types';
+import type { Game, LeagueId, Team } from '@arenaswap/core/types';
 import type { BettingDisplayPrefs } from './gameCardTypes';
 
 const logoSize = 64;
@@ -140,7 +140,7 @@ export const TeamColumn = ({
 	</div>
 );
 
-const ScoreboardOddsProvider = ({ game, dark }: { game: Game; dark?: boolean }) => {
+const OddsProvider = ({ game, dark }: { game: Game; dark?: boolean }) => {
 	const [failed, setFailed] = useState(false);
 	const provider = game.odds?.provider;
 	if (!provider?.name) return null;
@@ -161,71 +161,21 @@ const ScoreboardOddsProvider = ({ game, dark }: { game: Game; dark?: boolean }) 
 	return <span className='d-inline-flex align-items-center'>{provider.name}</span>;
 };
 
-const WinProbBar = ({ awayAbbr, homeAbbr, homePct }: { awayAbbr: string; homeAbbr: string; homePct: number }) => {
-	const homeRounded = Math.round(homePct);
-	const awayRounded = 100 - homeRounded;
-	return (
-		<div className='w-100 game-meta-win-prob'>
-			<div className='d-flex justify-content-between game-meta-win-prob-labels'>
-				<span>{awayAbbr} {awayRounded}%</span>
-				<span>{homeAbbr} {homeRounded}%</span>
-			</div>
-			<div className='progress game-meta-win-prob-bar'>
-				<div
-					className='progress-bar bg-primary'
-					role='progressbar'
-					style={{ width: `${awayRounded}%` }}
-					aria-valuenow={awayRounded}
-					aria-valuemin={0}
-					aria-valuemax={100}
-				/>
-			</div>
-		</div>
-	);
-};
-
 export const GameMeta = ({
 	game,
 	dark,
 	bettingPrefs,
-	gameBettingData,
 }: {
 	game: Game;
 	dark?: boolean;
 	bettingPrefs?: BettingDisplayPrefs;
-	gameBettingData?: GameBettingData;
 }) => {
 	const networks = game.broadcasts?.join(' • ');
-
 	const bettingOn = bettingPrefs?.bettingEnabled ?? false;
 	const showOdds = bettingOn && (bettingPrefs?.showGameOdds ?? true);
-	const showWinProb = bettingOn && (bettingPrefs?.showWinProbability ?? true);
-	const showPredictor = bettingOn && (bettingPrefs?.showEspnPredictor ?? true);
-	const hasPreferredProvider = Boolean(bettingPrefs?.preferredOddsProvider);
-
-	// Game odds: preferred-provider data from v2 API, or scoreboard odds when no preference set
-	let oddsLine: string | null = null;
-	let showScoreboardProvider = false;
-	let providerOddsLabel: string | null = null;
-
-	if (showOdds) {
-		if (hasPreferredProvider && gameBettingData?.providerOdds) {
-			const { details, overUnder, providerName } = gameBettingData.providerOdds;
-			const parts: string[] = [];
-			if (details) parts.push(details);
-			if (overUnder !== undefined) parts.push(`O/U ${formatOverUnder(overUnder)}`);
-			if (parts.length > 0) oddsLine = parts.join(' • ');
-			providerOddsLabel = providerName;
-		} else if (!hasPreferredProvider) {
-			oddsLine = oddsSummary(game);
-			showScoreboardProvider = Boolean(game.odds?.provider?.name);
-		}
-	}
-
-	const hasWinProb = showWinProb && gameBettingData?.homeWinPct !== undefined && game.status === 'in';
-	const hasPredictor = showPredictor && Boolean(gameBettingData?.espnPredictor);
-
-	const hasMeta = Boolean(game.venueName || networks || oddsLine || showScoreboardProvider || providerOddsLabel || hasWinProb || hasPredictor);
+	const odds = showOdds ? oddsSummary(game) : null;
+	const hasOddsProvider = showOdds && Boolean(game.odds?.provider?.name);
+	const hasMeta = Boolean(game.venueName || networks || odds || hasOddsProvider);
 	if (!hasMeta) return null;
 
 	return (
@@ -236,42 +186,11 @@ export const GameMeta = ({
 					<span className='font-bold'>Watch:</span> {networks}
 				</div>
 			)}
-			{oddsLine && <div className='d-flex align-items-center justify-content-center game-meta-odds'><span>{oddsLine}</span></div>}
-			{showScoreboardProvider && (
+			{odds && <div className='d-flex align-items-center justify-content-center game-meta-odds'><span>{odds}</span></div>}
+			{hasOddsProvider && (
 				<div className='d-flex align-items-center justify-content-center game-meta-provider'>
 					<span>Odds provided by:</span>
-					<ScoreboardOddsProvider game={game} dark={dark} />
-				</div>
-			)}
-			{providerOddsLabel && !showScoreboardProvider && (
-				<div className='d-flex align-items-center justify-content-center game-meta-provider'>
-					<span>Odds via {providerOddsLabel}</span>
-				</div>
-			)}
-			{hasWinProb && (
-				<WinProbBar
-					awayAbbr={game.awayTeam.abbreviation}
-					homeAbbr={game.homeTeam.abbreviation}
-					homePct={gameBettingData!.homeWinPct!}
-				/>
-			)}
-			{hasPredictor && gameBettingData?.espnPredictor && (
-				<div className='w-100 game-meta-win-prob'>
-					<div className='d-flex justify-content-between game-meta-win-prob-labels'>
-						<span>{game.awayTeam.abbreviation} {Math.round(gameBettingData.espnPredictor.awayPercentage)}%</span>
-						<span className='text-body-tertiary'>ESPN</span>
-						<span>{game.homeTeam.abbreviation} {Math.round(gameBettingData.espnPredictor.homePercentage)}%</span>
-					</div>
-					<div className='progress game-meta-win-prob-bar'>
-						<div
-							className='progress-bar bg-secondary'
-							role='progressbar'
-							style={{ width: `${Math.round(gameBettingData.espnPredictor.awayPercentage)}%` }}
-							aria-valuenow={Math.round(gameBettingData.espnPredictor.awayPercentage)}
-							aria-valuemin={0}
-							aria-valuemax={100}
-						/>
-					</div>
+					<OddsProvider game={game} dark={dark} />
 				</div>
 			)}
 		</div>

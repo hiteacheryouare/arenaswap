@@ -52,15 +52,6 @@ export const defaultCooldownSecs = 45;
 export const defaultSwitchDelaySecs = 0;
 export const defaultFavoriteTeamBonusPoints = 10;
 
-// Supported sportsbook odds providers — IDs match ESPN's v2 odds API provider.id values
-export const oddsProviders = [
-	{ id: '41', label: 'DraftKings' },
-	{ id: '37', label: 'FanDuel' },
-	{ id: '58', label: 'BetMGM' },
-	{ id: '38', label: 'Caesars' },
-	{ id: '68', label: 'ESPN Bet' },
-	{ id: '2000', label: 'Bet365' },
-];
 
 // Sensitivity level → score delta required to trigger a tab switch.
 // Recalibrated for the PowerScore v2 distribution (lower bases, more spread) via the simulation
@@ -193,9 +184,6 @@ export const createDefaultUserPreferences = (): UserPreferences => ({
 	standbyStreamThreshold: 20,
 	bettingEnabled: false,
 	showGameOdds: true,
-	showWinProbability: true,
-	showEspnPredictor: true,
-	preferredOddsProvider: '',
 });
 
 export const normalizeUserPreferences = (storedPrefs: unknown): UserPreferences => {
@@ -225,8 +213,5 @@ export const normalizeUserPreferences = (storedPrefs: unknown): UserPreferences 
 			: defaults.standbyStreamThreshold,
 		bettingEnabled: typeof candidate.bettingEnabled === 'boolean' ? candidate.bettingEnabled : defaults.bettingEnabled,
 		showGameOdds: typeof candidate.showGameOdds === 'boolean' ? candidate.showGameOdds : defaults.showGameOdds,
-		showWinProbability: typeof candidate.showWinProbability === 'boolean' ? candidate.showWinProbability : defaults.showWinProbability,
-		showEspnPredictor: typeof candidate.showEspnPredictor === 'boolean' ? candidate.showEspnPredictor : defaults.showEspnPredictor,
-		preferredOddsProvider: typeof candidate.preferredOddsProvider === 'string' ? candidate.preferredOddsProvider : defaults.preferredOddsProvider,
 	};
 };

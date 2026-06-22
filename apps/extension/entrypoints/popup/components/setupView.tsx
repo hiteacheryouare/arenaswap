@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { leagueConfigs, oddsProviders, resolveLeagueLogoUrl } from '@arenaswap/core/constants';
+import { leagueConfigs, resolveLeagueLogoUrl } from '@arenaswap/core/constants';
 import type { LeagueId, LeagueLogoMap, SportType, UserPreferences } from '@arenaswap/core/types';
 import type { Browser } from 'wxt/browser';
 import CooldownSlider from './cooldownSlider';
@@ -35,9 +35,6 @@ interface setupViewProps {
 	onStandbyOnboardingDone: () => void;
 	onToggleBetting: () => void;
 	onToggleShowGameOdds: () => void;
-	onToggleShowWinProbability: () => void;
-	onToggleShowEspnPredictor: () => void;
-	onOddsProviderChange: (val: string) => void;
 }
 
 type leagueConfig = (typeof leagueConfigs)[number];
@@ -67,7 +64,6 @@ const setupView = ({
 	onFavoriteTeamBonusChange, onToggleLeague, onToggleSport, onToggleShowUpcoming,
 	onToggleProTips, onToggleNotifications, onToggleDemo, onToggleStandbyStream, onStandbyThresholdChange,
 	onSetStandbyTab, onStandbyOnboardingDone, onToggleBetting, onToggleShowGameOdds,
-	onToggleShowWinProbability, onToggleShowEspnPredictor, onOddsProviderChange,
 }: setupViewProps) => {
 	const [tab, setTab] = useState<'switching' | 'leagues'>('switching');
 	const [showStandbyGuide, setShowStandbyGuide] = useState(false);
@@ -222,38 +218,6 @@ const setupView = ({
 								<div className='form-check form-switch mb-0'>
 									<input className='form-check-input' type='checkbox' id='showOddsToggle' checked={prefs.showGameOdds} onChange={onToggleShowGameOdds} disabled={!prefsLoaded} />
 								</div>
-							</div>
-
-							<div className='d-flex justify-content-between align-items-center'>
-								<label className='text-body-secondary setting-toggle-label' htmlFor='showWinProbToggle'><i className='bi bi-percent me-1 text-primary' />Win probabilities</label>
-								<div className='form-check form-switch mb-0'>
-									<input className='form-check-input' type='checkbox' id='showWinProbToggle' checked={prefs.showWinProbability} onChange={onToggleShowWinProbability} disabled={!prefsLoaded} />
-								</div>
-							</div>
-
-							<div className='d-flex justify-content-between align-items-center'>
-								<label className='text-body-secondary setting-toggle-label' htmlFor='showEspnPredictorToggle'><i className='bi bi-magic me-1 text-primary' />ESPN Predictor</label>
-								<div className='form-check form-switch mb-0'>
-									<input className='form-check-input' type='checkbox' id='showEspnPredictorToggle' checked={prefs.showEspnPredictor} onChange={onToggleShowEspnPredictor} disabled={!prefsLoaded} />
-								</div>
-							</div>
-
-							<div>
-								<div className='text-body-secondary setting-toggle-label mb-1'>
-									<i className='bi bi-bookmark me-1 text-primary' />Preferred sportsbook
-								</div>
-								<select
-									className='form-select form-select-sm'
-									value={prefs.preferredOddsProvider}
-									onChange={e => onOddsProviderChange(e.target.value)}
-									disabled={!prefsLoaded}
-								>
-									<option value=''>— Any provider —</option>
-									{oddsProviders.map(p => (
-										<option key={p.id} value={p.id}>{p.label}</option>
-									))}
-								</select>
-								<div className='setting-explainer mt-1'>Only show odds from your preferred sportsbook</div>
 							</div>
 						</div>
 					)}

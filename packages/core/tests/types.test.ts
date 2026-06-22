@@ -35,9 +35,6 @@ describe('types runtime smoke', () => {
 			standbyStreamThreshold: 20,
 			bettingEnabled: false,
 			showGameOdds: true,
-			showWinProbability: true,
-			showEspnPredictor: true,
-			preferredOddsProvider: '',
 		};
 		const message: ExtensionMessage = { type: 'UPDATE_PREFS', prefs };
 
@@ -75,7 +72,6 @@ describe('types runtime smoke', () => {
 			scoreHistory: { 'game-1': scoreSnapshots },
 			powerScoreHistory: { 'game-1': powerSnapshots },
 			gameBoosts: {},
-			bettingData: {},
 			onStandbyStream: false,
 			standbyStreamTabId: null,
 		};
@@ -87,7 +83,6 @@ describe('types runtime smoke', () => {
 			scoreHistory: state.scoreHistory,
 			powerScoreHistory: state.powerScoreHistory,
 			gameBoosts: state.gameBoosts,
-			bettingData: state.bettingData,
 			onStandbyStream: state.onStandbyStream,
 			standbyStreamTabId: state.standbyStreamTabId,
 		};
@@ -115,7 +110,6 @@ describe('types runtime smoke', () => {
 			scoreHistory: {},
 			powerScoreHistory: {},
 			gameBoosts: { 'game-1': 20, 'game-2': 5 },
-			bettingData: {},
 			onStandbyStream: false,
 			standbyStreamTabId: null,
 		};

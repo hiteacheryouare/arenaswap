@@ -3,7 +3,7 @@ import TabAssignSelect from './tabAssignSelect';
 import type { gameCardProps } from './gameCardTypes';
 import { buildCardHandlers, buildGameCardStyle, formatStartDateTime, GameMeta, TeamColumn } from './gameCardShared';
 
-const preGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs, bettingData }: gameCardProps) => {
+const preGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs }: gameCardProps) => {
 	if (!game) return null;
 
 	const awayFavoriteTeamKey = createFavoriteTeamKey(game.league, game.awayTeam.id);
@@ -34,7 +34,7 @@ const preGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, openTabs, re
 				</div>
 				<TeamColumn leagueId={game.league} team={game.homeTeam} isFavorited={homeFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} />
 			</div>
-			<GameMeta game={game} bettingPrefs={bettingPrefs} gameBettingData={game ? bettingData[game.id] : undefined} />
+			<GameMeta game={game} bettingPrefs={bettingPrefs} />
 			<TabAssignSelect gameId={game.id} openTabs={openTabs} registry={registry} onChange={onRegistryChange} formatTabLabel={formatTabLabel} />
 		</div>
 	);

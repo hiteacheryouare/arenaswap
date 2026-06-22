@@ -1,5 +1,5 @@
 import { randomInRange } from '@porkyproductions/hat';
-import { fetchGamesWithLeagueLogos, fetchGameBettingData, computePowerScore, normalizePowerScoreResult, MockGameSimulator, createPollModeTracker, isObjectRecord, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts } from '@arenaswap/core';
+import { fetchGamesWithLeagueLogos, computePowerScore, normalizePowerScoreResult, MockGameSimulator, createPollModeTracker, isObjectRecord, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts } from '@arenaswap/core';
 import { computeStandbyStreamDecision } from '../utils/standbyStreamLogic';
 import {
 	normalizeReviewPromptState,
@@ -21,7 +21,6 @@ import {
 import type {
 	ExtensionMessage,
 	Game,
-	GameBettingData,
 	LeagueId,
 	PowerScoreResult,
 	PowerScoreSnapshot,
@@ -71,7 +70,6 @@ export default defineBackground(() => {
 	const clockStallMap = new Map<string, { lastClock: number; stallCount: number }>();
 	let tabRegistry: TabRegistration[] = [];
 	let gameBoosts: Record<string, number> = {};
-	let bettingData: Record<string, GameBettingData> = {};
 	let demoMode = false;
 	let simulator: MockGameSimulator | null = null;
 	let prefs: UserPreferences = createDefaultUserPreferences();
@@ -187,7 +185,6 @@ export default defineBackground(() => {
 		scoreHistory: serializeScoreHistory(),
 		powerScoreHistory: serializePowerScoreHistory(),
 		gameBoosts,
-		bettingData,
 		onStandbyStream,
 		standbyStreamTabId,
 	});
@@ -196,19 +193,6 @@ export default defineBackground(() => {
 		browser.runtime.sendMessage({ type: 'SCORES_UPDATED', ...buildBackgroundState() }).catch(() => {});
 	};
 
-	const refreshBettingData = async (liveGames: Game[]) => {
-		try {
-			bettingData = await fetchGameBettingData(liveGames, {
-				showWinProbability: prefs.showWinProbability,
-				showEspnPredictor: prefs.showEspnPredictor,
-				showGameOdds: prefs.showGameOdds,
-				preferredOddsProvider: prefs.preferredOddsProvider,
-			});
-			broadcastScoresUpdated();
-		} catch (err) {
-			console.error('ArenaSwap: Failed to fetch betting data:', err);
-		}
-	};
 
 	const getGameLabel = (gameId: string): string => {
 		const game = games.find(g => g.id === gameId);
@@ -393,7 +377,6 @@ export default defineBackground(() => {
 		persistHistoryToSession();
 
 		broadcastScoresUpdated();
-		if (prefs.bettingEnabled) void refreshBettingData(liveGames);
 
 		await syncManagedTabMuteState(prefs.enabled);
 
@@ -595,15 +578,10 @@ export default defineBackground(() => {
 		if (msg.type === 'UPDATE_PREFS') {
 			return stateReady.then(async () => {
 				const wasEnabled = prefs.enabled;
-				const wasBettingEnabled = prefs.bettingEnabled;
 				const prevShowUpcoming = prefs.showUpcomingGames;
 				const prevLeagues = new Set(prefs.enabledLeagues);
 				prefs = normalizeUserPreferences(msg.prefs);
 				if (wasEnabled && !prefs.enabled) lastSwitchTime = 0;
-				if (wasBettingEnabled && !prefs.bettingEnabled) {
-					bettingData = {};
-					broadcastScoresUpdated();
-				}
 				clearPendingSwitch();
 				await browser.storage.sync.set({ prefs });
 				await syncManagedTabMuteState(prefs.enabled);

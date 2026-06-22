@@ -83,7 +83,6 @@ export default () => {
 	const scoreHistory = data?.scoreHistory ?? {};
 	const powerScoreHistory = data?.powerScoreHistory ?? {};
 	const gameBoosts = data?.gameBoosts ?? {};
-	const bettingData = data?.bettingData ?? {};
 	const onStandbyStream = data?.onStandbyStream ?? false;
 	const favoriteTeamIds = useMemo(() => new Set(prefs.favoriteTeamIds), [prefs.favoriteTeamIds]);
 	const confettiCanvasRef = useFavoriteScoreConfetti({ games, favoriteTeamIds });
@@ -332,9 +331,6 @@ export default () => {
 						onStandbyOnboardingDone={onStandbyOnboardingDone}
 						onToggleBetting={() => persistPrefs(currentPrefs => ({ ...currentPrefs, bettingEnabled: !currentPrefs.bettingEnabled }))}
 						onToggleShowGameOdds={() => persistPrefs(currentPrefs => ({ ...currentPrefs, showGameOdds: !currentPrefs.showGameOdds }))}
-						onToggleShowWinProbability={() => persistPrefs(currentPrefs => ({ ...currentPrefs, showWinProbability: !currentPrefs.showWinProbability }))}
-						onToggleShowEspnPredictor={() => persistPrefs(currentPrefs => ({ ...currentPrefs, showEspnPredictor: !currentPrefs.showEspnPredictor }))}
-						onOddsProviderChange={val => persistPrefs(currentPrefs => ({ ...currentPrefs, preferredOddsProvider: val }))}
 					/>
 				)}
 				{view === 'main' && (
@@ -350,7 +346,6 @@ export default () => {
 						registry={registry}
 						favoriteTeamIds={favoriteTeamIds}
 						gameBoosts={gameBoosts}
-						bettingData={bettingData}
 						openTabs={openTabs}
 						onStandbyStream={onStandbyStream}
 						onOpenGameDetail={openGameDetail}
@@ -384,11 +379,7 @@ export default () => {
 						bettingPrefs={{
 							bettingEnabled: prefs.bettingEnabled,
 							showGameOdds: prefs.showGameOdds,
-							showWinProbability: prefs.showWinProbability,
-							showEspnPredictor: prefs.showEspnPredictor,
-							preferredOddsProvider: prefs.preferredOddsProvider,
 						}}
-						gameBettingData={selectedGameId ? bettingData[selectedGameId] : undefined}
 						onSetGameBoost={onSetGameBoost}
 						onBack={() => setView('main')}
 					/>

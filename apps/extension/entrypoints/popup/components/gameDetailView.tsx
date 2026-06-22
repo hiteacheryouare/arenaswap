@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { scoreMaxTotal } from '@arenaswap/core/constants';
-import type { Game, GameBettingData, PowerScoreResult, PowerScoreSnapshot, ScoreSnapshot } from '@arenaswap/core/types';
+import type { Game, PowerScoreResult, PowerScoreSnapshot, ScoreSnapshot } from '@arenaswap/core/types';
 import BaseDiamond from './baseDiamond';
 import DetailTeamPill from './detailTeamPill';
 import FlipScore from './flipScore';
@@ -26,7 +26,6 @@ interface gameDetailViewProps {
 	proTipsEnabled: boolean;
 	gameBoosts: Record<string, number>;
 	bettingPrefs: BettingDisplayPrefs;
-	gameBettingData?: GameBettingData;
 	onSetGameBoost: (gameId: string, boost: number) => void;
 	onBack: () => void;
 }
@@ -43,7 +42,7 @@ const withMatchupAlpha = (color: string, fallback: string): string => (
 	/^#[\da-fA-F]{6}$/.test(color) ? `${color}28` : fallback
 );
 
-const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistory, proTipsEnabled, gameBoosts, bettingPrefs, gameBettingData, onSetGameBoost, onBack }: gameDetailViewProps) => {
+const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistory, proTipsEnabled, gameBoosts, bettingPrefs, onSetGameBoost, onBack }: gameDetailViewProps) => {
 	const orderedScoreHistory = useMemo(
 		() => scoreHistory.toSorted((a, b) => a.timestamp - b.timestamp),
 		[scoreHistory],
@@ -160,7 +159,7 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 					</div>
 				)}
 			</div>
-			<GameMeta game={game} dark bettingPrefs={bettingPrefs} gameBettingData={gameBettingData} />
+			<GameMeta game={game} dark bettingPrefs={bettingPrefs} />
 
 			<PowerScoreBreakdown
 				closeness={closeness}

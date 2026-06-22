@@ -2,9 +2,6 @@ import { leagueConfigMap, resolveLeagueLogoUrl } from './constants';
 import {
 	EspnScoreboardSchema,
 	EspnTeamsResponseSchema,
-	EspnV2ProbabilitiesResponseSchema,
-	EspnV2PredictorResponseSchema,
-	EspnV2OddsResponseSchema,
 } from './espnSchemas';
 import type {
 	EspnCompetition,
@@ -12,7 +9,7 @@ import type {
 	EspnOddsProvider,
 	EspnScoreboardResponse,
 } from './espnSchemas';
-import type { Game, GameBettingData, GameOdds, LeagueConfig, LeagueId, LeagueLogoMap } from './types';
+import type { Game, GameOdds, LeagueConfig, LeagueId, LeagueLogoMap } from './types';
 
 const espnBase = 'https://site.api.espn.com/apis/site/v2/sports';
 const upcomingDateWindowDays = 4;
@@ -351,102 +348,6 @@ export const fetchLeagueLogos = async (enabledLeagues: LeagueId[], options: { in
 	return leagueLogos;
 };
 
-const espnV2Base = 'https://sports.core.api.espn.com/v2/sports';
-
-const fetchV2Json = async <T>(
-	url: string,
-	schema: { safeParse(data: unknown): { success: true; data: T } | { success: false; error: unknown } },
-): Promise<T | undefined> => {
-	try {
-		const res = await fetch(url, { headers: { Accept: 'application/json' } });
-		if (!res.ok) return undefined;
-		const parsed = schema.safeParse(await res.json());
-		return parsed.success ? parsed.data : undefined;
-	} catch {
-		return undefined;
-	}
-};
-
-export interface BettingFetchOptions {
-	showWinProbability: boolean;
-	showEspnPredictor: boolean;
-	showGameOdds: boolean;
-	preferredOddsProvider: string;
-}
-
-export const fetchGameBettingData = async (
-	liveGames: Game[],
-	options: BettingFetchOptions,
-): Promise<Record<string, GameBettingData>> => {
-	if (liveGames.length === 0) return {};
-	const { showWinProbability, showEspnPredictor, showGameOdds, preferredOddsProvider } = options;
-	if (!showWinProbability && !showEspnPredictor && !(showGameOdds && preferredOddsProvider)) return {};
-
-	const results: Record<string, GameBettingData> = {};
-
-	await Promise.allSettled(liveGames.map(async (game) => {
-		const config = leagueConfigMap[game.league];
-		if (!config) return;
-		const pathParts = config.espnPath.split('/');
-		const sport = pathParts[0];
-		const league = pathParts.slice(1).join('/');
-		if (!sport || !league) return;
-
-		const compBase = `${espnV2Base}/${sport}/leagues/${league}/events/${game.id}/competitions/${game.id}`;
-		const data: GameBettingData = {};
-
-		await Promise.allSettled([
-			showWinProbability
-				? fetchV2Json(`${compBase}/probabilities`, EspnV2ProbabilitiesResponseSchema).then(resp => {
-					const items = resp?.items;
-					if (!items?.length) return;
-					const last = items[items.length - 1];
-					if (last && typeof last.homePercentage === 'number' && typeof last.awayPercentage === 'number') {
-						// API returns 0–1 decimal; store as 0–100 percentage
-						data.homeWinPct = last.homePercentage * 100;
-						data.awayWinPct = last.awayPercentage * 100;
-					}
-				})
-				: Promise.resolve(),
-
-			showEspnPredictor
-				? fetchV2Json(`${compBase}/predictor`, EspnV2PredictorResponseSchema).then(resp => {
-					const homePct = resp?.homeTeam?.gameProjection ?? resp?.homeTeam?.teamChancePct;
-					const awayPct = resp?.awayTeam?.gameProjection ?? resp?.awayTeam?.teamChancePct;
-					if (typeof homePct === 'number' && Number.isFinite(homePct)
-						&& typeof awayPct === 'number' && Number.isFinite(awayPct)) {
-						data.espnPredictor = { homePercentage: homePct, awayPercentage: awayPct };
-					}
-				})
-				: Promise.resolve(),
-
-			showGameOdds && preferredOddsProvider
-				? fetchV2Json(`${compBase}/odds`, EspnV2OddsResponseSchema).then(resp => {
-					const items = resp?.items ?? [];
-					const match = items.find(item => item.provider?.id === preferredOddsProvider);
-					if (!match) return;
-					const providerName = match.provider?.displayName ?? match.provider?.name ?? '';
-					const rawOu = typeof match.overUnder === 'number'
-						? match.overUnder
-						: typeof match.overUnder === 'string'
-							? Number.parseFloat(match.overUnder)
-							: undefined;
-					data.providerOdds = {
-						details: match.details?.trim() || undefined,
-						overUnder: Number.isFinite(rawOu) ? rawOu : undefined,
-						providerName,
-					};
-				})
-				: Promise.resolve(),
-		]);
-
-		if (data.homeWinPct !== undefined || data.espnPredictor || data.providerOdds) {
-			results[game.id] = data;
-		}
-	}));
-
-	return results;
-};
 
 export interface EspnTeamEntry {
 	leagueId: LeagueId;

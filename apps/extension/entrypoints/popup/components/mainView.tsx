@@ -2,7 +2,6 @@ import { useMemo, useState } from 'react';
 import type { Browser } from 'wxt/browser';
 import type {
 	Game,
-	GameBettingData,
 	LeagueId,
 	LeagueLogoMap,
 	PowerScoreResult,
@@ -27,7 +26,6 @@ interface gameSectionProps {
 	favoriteTeamIds: Set<string>;
 	onToggleFavoriteTeam: (leagueId: LeagueId, teamId: string) => void;
 	gameBoosts: Record<string, number>;
-	bettingData: Record<string, GameBettingData>;
 	openTabs: Browser.tabs.Tab[];
 	registry: TabRegistration[];
 	onRegistryChange: (updated: TabRegistration[]) => void;
@@ -68,7 +66,6 @@ interface mainViewProps {
 	registry: TabRegistration[];
 	favoriteTeamIds: Set<string>;
 	gameBoosts: Record<string, number>;
-	bettingData: Record<string, GameBettingData>;
 	openTabs: Browser.tabs.Tab[];
 	onStandbyStream: boolean;
 	onOpenGameDetail: (gameId: string) => void;
@@ -99,7 +96,6 @@ const leagueRows = (
 	favoriteTeamIds: Set<string>,
 	onToggleFavoriteTeam: (leagueId: LeagueId, teamId: string) => void,
 	gameBoosts: Record<string, number>,
-	bettingData: Record<string, GameBettingData>,
 	openTabs: Browser.tabs.Tab[],
 	registry: TabRegistration[],
 	onRegistryChange: (updated: TabRegistration[]) => void,
@@ -117,7 +113,6 @@ const leagueRows = (
 				favoriteTeamIds={favoriteTeamIds}
 				onToggleFavoriteTeam={onToggleFavoriteTeam}
 				gameBoosts={gameBoosts}
-				bettingData={bettingData}
 				openTabs={openTabs}
 				registry={registry}
 				onRegistryChange={onRegistryChange}
@@ -137,7 +132,6 @@ const gameSection = ({
 	favoriteTeamIds,
 	onToggleFavoriteTeam,
 	gameBoosts,
-	bettingData,
 	openTabs,
 	registry,
 	onRegistryChange,
@@ -153,10 +147,10 @@ const gameSection = ({
 			? groupByDate(games).map(({ dateLabel, games: dayGames }) => (
 				<div key={dateLabel}>
 					{dateDivider(dateLabel)}
-					{leagueRows(dayGames, scores, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, bettingData, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs)}
+					{leagueRows(dayGames, scores, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs)}
 				</div>
 			))
-			: leagueRows(games, scores, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, bettingData, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs)
+			: leagueRows(games, scores, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs)
 		}
 	</div>
 );
@@ -172,7 +166,6 @@ const mainView = ({
 	registry,
 	favoriteTeamIds,
 	gameBoosts,
-	bettingData,
 	openTabs,
 	onStandbyStream,
 	onOpenGameDetail,
@@ -215,9 +208,6 @@ const mainView = ({
 	const bettingPrefs: BettingDisplayPrefs = {
 		bettingEnabled: prefs.bettingEnabled,
 		showGameOdds: prefs.showGameOdds,
-		showWinProbability: prefs.showWinProbability,
-		showEspnPredictor: prefs.showEspnPredictor,
-		preferredOddsProvider: prefs.preferredOddsProvider,
 	};
 
 	return (
@@ -258,9 +248,9 @@ const mainView = ({
 			/>
 
 			{!isLoading && !noLeaguesSelected && prefs.proTipsEnabled && <ProTip context='main' />}
-			{!isLoading && !noLeaguesSelected && assignedLiveGames.length > 0 && gameSection({ title: 'Active Live Tabs', games: assignedLiveGames, scores, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, bettingData, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs, first: true })}
-			{!isLoading && !noLeaguesSelected && unassignedLiveGames.length > 0 && gameSection({ title: 'Other Live Games', games: unassignedLiveGames, scores, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, bettingData, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs, first: assignedLiveGames.length === 0 })}
-			{!isLoading && !noLeaguesSelected && prefs.showUpcomingGames && upcomingGames.length > 0 && gameSection({ title: 'Up Next', games: upcomingGames, scores: [], leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, bettingData, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs, groupDates: true, first: assignedLiveGames.length === 0 && unassignedLiveGames.length === 0 })}
+			{!isLoading && !noLeaguesSelected && assignedLiveGames.length > 0 && gameSection({ title: 'Active Live Tabs', games: assignedLiveGames, scores, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs, first: true })}
+			{!isLoading && !noLeaguesSelected && unassignedLiveGames.length > 0 && gameSection({ title: 'Other Live Games', games: unassignedLiveGames, scores, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs, first: assignedLiveGames.length === 0 })}
+			{!isLoading && !noLeaguesSelected && prefs.showUpcomingGames && upcomingGames.length > 0 && gameSection({ title: 'Up Next', games: upcomingGames, scores: [], leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs, groupDates: true, first: assignedLiveGames.length === 0 && unassignedLiveGames.length === 0 })}
 
 			<PopupFooter />
 		</div>
