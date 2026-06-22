@@ -18,13 +18,15 @@ export const sportTypeOrder: Record<SportType, number> = {
 	football: 1,
 	hockey: 2,
 	baseball: 3,
-	soccer: 4,
+	softball: 4,
+	soccer: 5,
 };
 export const sportTypeLabels: Record<SportType, string> = {
 	basketball: 'Basketball',
 	football: 'Football',
 	hockey: 'Hockey',
 	baseball: 'Baseball',
+	softball: 'Softball',
 	soccer: 'Soccer',
 };
 export const leagueLabels = Object.fromEntries(leagueConfigs.map(config => [config.id, config.label])) as Record<LeagueId, string>;
@@ -130,6 +132,7 @@ export const leaguesBySportType = leagueConfigs.reduce<Record<SportType, typeof 
 	football: [],
 	hockey: [],
 	baseball: [],
+	softball: [],
 	soccer: [],
 });
 

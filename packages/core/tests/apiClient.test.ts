@@ -528,7 +528,7 @@ describe('apiClient', () => {
 		expect(result.games.some(game => game.status === 'post')).toBe(false);
 	});
 
-	test('adds NCAA basketball groups=50 query and uses fallback league logo when needed', async () => {
+	test('adds NCAA basketball groups=50 query and uses override league logo', async () => {
 		const fetchMock = jest.fn()
 			.mockResolvedValueOnce(createResponse({ events: [makeEvent({
 				id: 'ncaab-live',
@@ -545,7 +545,7 @@ describe('apiClient', () => {
 		const { fetchLeagueLogos } = loadApiClient();
 
 		const logos = await fetchLeagueLogos(['ncaab']);
-		expect(logos.ncaab).toBe(leagueLogoFallbacks.ncaab);
+		expect(logos.ncaab).toBe('https://a.espncdn.com/i/espn/misc_logos/500-dark/ncaa.png');
 
 		const calledUrls = fetchMock.mock.calls.map(([url]) => String(url));
 		expect(calledUrls).toHaveLength(2);
@@ -553,7 +553,7 @@ describe('apiClient', () => {
 		expect(calledUrls[1]).toContain('groups=50');
 	});
 
-	test('adds NCAA womens basketball groups=49 query and uses fallback league logo when needed', async () => {
+	test('adds NCAA womens basketball groups=49 query and uses override league logo', async () => {
 		const fetchMock = jest.fn()
 			.mockResolvedValueOnce(createResponse({ events: [makeEvent({
 				id: 'ncaaw-live',
@@ -570,7 +570,7 @@ describe('apiClient', () => {
 		const { fetchLeagueLogos } = loadApiClient();
 
 		const logos = await fetchLeagueLogos(['ncaaw']);
-		expect(logos.ncaaw).toBe(leagueLogoFallbacks.ncaaw);
+		expect(logos.ncaaw).toBe('https://a.espncdn.com/i/espn/misc_logos/500-dark/ncaa.png');
 
 		const calledUrls = fetchMock.mock.calls.map(([url]) => String(url));
 		expect(calledUrls).toHaveLength(2);

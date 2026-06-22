@@ -16,7 +16,7 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 	const isOt = game.period > (leagueConfigMap[game.league]?.regularPeriods ?? 4);
 	const totalPowerScore = excitementResult?.total ?? 0;
 	const sportTypeConfig = sportTypeConfigMap[game.sportType];
-	const isBaseball = game.sportType === 'baseball';
+	const isInningSport = leagueConfigMap[game.league]?.periodFormat === 'innings';
 	const hasClock = sportTypeConfig.clockBased;
 	const awayFavoriteTeamKey = createFavoriteTeamKey(game.league, game.awayTeam.id);
 	const homeFavoriteTeamKey = createFavoriteTeamKey(game.league, game.homeTeam.id);
@@ -45,7 +45,7 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 				<div className='d-flex flex-column align-items-center game-card-center'>
 					<div className='d-flex align-items-center game-score-row'>
 						<FlipScore value={game.awayTeam.score} className='fw-bold lh-1 game-score-value' />
-						{isBaseball
+						{isInningSport
 							? <BaseDiamond
 									first={game.baseRunners?.first ?? false}
 									second={game.baseRunners?.second ?? false}
@@ -55,11 +55,11 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 						}
 						<FlipScore value={game.homeTeam.score} className='fw-bold lh-1 game-score-value' />
 					</div>
-					{!isBaseball && hasClock && (
+					{!isInningSport && hasClock && (
 						<span className='font-lekton game-clock'>{formatGameClock(game)}</span>
 					)}
 					<span className='font-lekton game-period'>
-						{isBaseball && game.topOfInning !== undefined ? (game.topOfInning ? '▲ ' : '▼ ') : ''}{formatPeriod(game)}
+						{isInningSport && game.topOfInning !== undefined ? (game.topOfInning ? '▲ ' : '▼ ') : ''}{formatPeriod(game)}
 					</span>
 				</div>
 				<TeamColumn leagueId={game.league} team={game.homeTeam} isFavorited={homeFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} />

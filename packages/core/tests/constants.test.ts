@@ -114,15 +114,17 @@ describe('constants', () => {
 		}
 	});
 
-	test('has logo fallbacks defined for ncaaw, epl, and fifawc', () => {
-		expect(leagueLogoFallbacks.ncaaw).toMatch(/^https?:\/\//);
+	test('has logo fallbacks defined for epl and fifawc', () => {
 		expect(leagueLogoFallbacks.epl).toMatch(/^https?:\/\//);
 		expect(leagueLogoFallbacks.fifawc).toMatch(/^https?:\/\//);
 	});
 
-	test('resolves ncaaw, epl, and fifawc league logo URLs with ESPN value first, then fallback', () => {
-		expect(resolveLeagueLogoUrl('ncaaw', 'https://cdn.example/ncaaw.png')).toBe('https://cdn.example/ncaaw.png');
-		expect(resolveLeagueLogoUrl('ncaaw')).toBe(leagueLogoFallbacks.ncaaw);
+	test('resolves NCAA womens basketball to its override logo', () => {
+		expect(resolveLeagueLogoUrl('ncaaw', 'https://cdn.example/ncaaw.png')).toBe('https://a.espncdn.com/i/espn/misc_logos/500-dark/ncaa.png');
+		expect(resolveLeagueLogoUrl('ncaaw')).toBe('https://a.espncdn.com/i/espn/misc_logos/500-dark/ncaa.png');
+	});
+
+	test('resolves epl and fifawc league logo URLs with ESPN value first, then fallback', () => {
 		expect(resolveLeagueLogoUrl('epl', 'https://cdn.example/epl.png')).toBe('https://cdn.example/epl.png');
 		expect(resolveLeagueLogoUrl('epl')).toBe(leagueLogoFallbacks.epl);
 		expect(resolveLeagueLogoUrl('fifawc', 'https://cdn.example/fifawc.png')).toBe('https://cdn.example/fifawc.png');

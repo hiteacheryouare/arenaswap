@@ -6,7 +6,6 @@ Added a **Betting & Odds** section to Settings (Switching tab). When enabled, ga
 
 ### Settings added
 - **Show betting & odds** — master toggle (off by default)
-- **Game odds (spread / O/U)** — sub-toggle, visible when the master is on
 
 ## 19 new leagues + US audience audit — 2026-06-20
 
@@ -24,7 +23,6 @@ Added a **Betting & Odds** section to Settings (Switching tab). When enabled, ga
 **Hockey**
 - `olymih` — Olympic Men's Ice Hockey (`hockey/olympics-mens-ice-hockey`)
 - `olywih` — Olympic Women's Ice Hockey (`hockey/olympics-womens-ice-hockey`)
-- ~~`cwhoc`~~ — NCAA Women's Hockey — **removed**: fails US audience audit (not widely available on US cable/streaming, too niche)
 
 **Basketball**
 - `olybkm` — Olympic Men's Basketball (`basketball/mens-olympics-basketball`) — FIBA uses 10-min quarters (600s); using NBA's 720s would fire late-game pressure too early
@@ -41,7 +39,6 @@ Added a **Betting & Odds** section to Settings (Switching tab). When enabled, ga
 - `uel` — UEFA Europa League (`soccer/uefa.europa`)
 - `nwsl` — NWSL (`soccer/usa.nwsl`)
 - `fifawwc` — FIFA Women's World Cup (`soccer/fifa.wwc`)
-- ~~`ligue1`~~ — Ligue 1 — **removed**: fails US audience audit (only on beIN Sports, smallest US following of the major European leagues added)
 
 ### New sport type: `softball`
 Added `softball` as a distinct `SportType` (previously would have fallen back to `baseball`). The key difference is `regulationInnings: 7` in `lateGameCurve`, with `regulationStartInning: 5` and `extraInningsStartInning: 8` — using baseball's 9-inning config would misfires late-game pressure in the 5th/6th innings of a softball game. Added `softball: { normalScoreProb: 0.07, streakScoreProb: 0.25, offScoreProb: 0.03, scoreValues: [1, 2] }` to `mockGames.ts` sportParams.

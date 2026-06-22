@@ -191,7 +191,7 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 	const status = comp.status;
 	const state = parseStatus(status.type?.state ?? 'post');
 	const leagueConfig = leagueConfigMap[league];
-	const isBaseball = leagueConfig.sportType === 'baseball';
+	const isInningSport = leagueConfig.periodFormat === 'innings';
 	const situation = comp.situation;
 
 	return {
@@ -222,8 +222,8 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 		broadcasts: parseBroadcasts(comp),
 		odds: parseOdds(comp),
 		intermission: /HALFTIME|END_PERIOD|INTERMISSION/i.test(status.type?.name ?? ''),
-		topOfInning: isBaseball ? parseTopOfInning(status.type?.shortDetail) : undefined,
-		baseRunners: isBaseball && situation ? {
+		topOfInning: isInningSport ? parseTopOfInning(status.type?.shortDetail) : undefined,
+		baseRunners: isInningSport && situation ? {
 			first: situation.onFirst ?? false,
 			second: situation.onSecond ?? false,
 			third: situation.onThird ?? false,

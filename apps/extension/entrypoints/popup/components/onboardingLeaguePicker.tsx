@@ -19,6 +19,7 @@ const sportEmojis: Record<SportType, string> = {
 	football: '🏈',
 	hockey: '🏒',
 	baseball: '⚾',
+	softball: '🥎',
 	soccer: '⚽',
 };
 
