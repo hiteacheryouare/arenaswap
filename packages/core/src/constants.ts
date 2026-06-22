@@ -66,30 +66,36 @@ export const sensitivityThresholds: Record<number, number> = {
 	7: 1
 };
 
+// Logos that always win over whatever ESPN's API returns. Use when ESPN only
+// returns a generic sport icon and we have a better official league logo.
+const leagueLogoOverrides: Partial<Record<LeagueId, string>> = {
+	ncaab: 'https://a.espncdn.com/i/espn/misc_logos/500-dark/ncaa.png',
+	ncaaw: 'https://a.espncdn.com/i/espn/misc_logos/500-dark/ncaa.png',
+	ncaaf: 'https://a.espncdn.com/i/espn/misc_logos/500-dark/ncaa.png',
+	ncaamh: 'https://a.espncdn.com/i/espn/misc_logos/500-dark/ncaa.png',
+	cbase: 'https://a.espncdn.com/i/espn/misc_logos/500/ncaa_baseball.png',
+	csoft: 'https://a.espncdn.com/i/espn/misc_logos/500/ncaa_womens_softball.png',
+};
+
+// Logos used when ESPN's API returns nothing for a league.
 export const leagueLogoFallbacks: Partial<Record<LeagueId, string>> = {
 	nba: 'https://a.espncdn.com/i/teamlogos/leagues/500/nba.png',
 	wnba: 'https://a.espncdn.com/i/teamlogos/leagues/500/wnba.png',
-	ncaab: 'https://a.espncdn.com/redesign/assets/img/icons/ESPN-icon-basketball.png',
-	ncaaw: 'https://a.espncdn.com/redesign/assets/img/icons/ESPN-icon-basketball.png',
 	nhl: 'https://a.espncdn.com/i/teamlogos/leagues/500/nhl.png',
-	ncaamh: 'https://a.espncdn.com/redesign/assets/img/icons/ESPN-icon-hockey.png',
 	mlb: 'https://a.espncdn.com/i/teamlogos/leagues/500/mlb.png',
 	nfl: 'https://a.espncdn.com/i/teamlogos/leagues/500/nfl.png',
-	ncaaf: 'https://a.espncdn.com/redesign/assets/img/icons/ESPN-icon-football-college.png',
 	mls: 'https://a.espncdn.com/i/teamlogos/leagues/500/mls.png',
 	epl: 'https://a.espncdn.com/i/leaguelogos/soccer/500-dark/23.png',
 	fifawc: 'https://a.espncdn.com/i/leaguelogos/soccer/500-dark/4.png',
-	cbase: 'https://a.espncdn.com/i/espn/misc_logos/500/ncaa_baseball.png',
-	csoft: 'https://a.espncdn.com/i/espn/misc_logos/500/ncaa_womens_softball.png',
-	olybb: 'https://a.espncdn.com/redesign/assets/img/icons/ESPN-icon-baseball.png',
+	olybb: 'https://a.espncdn.com/i/espn/misc_logos/500-dark/olympics.png',
 	wbbc: 'https://a.espncdn.com/redesign/assets/img/icons/ESPN-icon-baseball.png',
 	ufl: 'https://a.espncdn.com/i/teamlogos/leagues/500/ufl.png',
-	olymih: 'https://a.espncdn.com/redesign/assets/img/icons/ESPN-icon-hockey.png',
-	olywih: 'https://a.espncdn.com/redesign/assets/img/icons/ESPN-icon-hockey.png',
-	olybkm: 'https://a.espncdn.com/i/teamlogos/leagues/500/fiba.png',
-	olybkw: 'https://a.espncdn.com/i/teamlogos/leagues/500/fiba.png',
-	olysocm: 'https://a.espncdn.com/i/leaguelogos/soccer/500-dark/71.png',
-	olysocw: 'https://a.espncdn.com/i/leaguelogos/soccer/500-dark/84.png',
+	olymih: 'https://a.espncdn.com/i/espn/misc_logos/500-dark/olympics.png',
+	olywih: 'https://a.espncdn.com/i/espn/misc_logos/500-dark/olympics.png',
+	olybkm: 'https://a.espncdn.com/i/espn/misc_logos/500-dark/olympics.png',
+	olybkw: 'https://a.espncdn.com/i/espn/misc_logos/500-dark/olympics.png',
+	olysocm: 'https://a.espncdn.com/i/espn/misc_logos/500-dark/olympics.png',
+	olysocw: 'https://a.espncdn.com/i/espn/misc_logos/500-dark/olympics.png',
 	laliga: 'https://a.espncdn.com/i/leaguelogos/soccer/500-dark/15.png',
 	bundesliga: 'https://a.espncdn.com/i/leaguelogos/soccer/500-dark/10.png',
 	seriea: 'https://a.espncdn.com/i/leaguelogos/soccer/500-dark/12.png',
@@ -100,11 +106,13 @@ export const leagueLogoFallbacks: Partial<Record<LeagueId, string>> = {
 	fifawwc: 'https://a.espncdn.com/i/leaguelogos/soccer/500-dark/60.png',
 };
 
-export const resolveLeagueLogoUrl = (leagueId: LeagueId, espnLogoUrl?: string): string => (
-	typeof espnLogoUrl === 'string' && espnLogoUrl.length > 0
+export const resolveLeagueLogoUrl = (leagueId: LeagueId, espnLogoUrl?: string): string => {
+	const override = leagueLogoOverrides[leagueId];
+	if (override) return override;
+	return typeof espnLogoUrl === 'string' && espnLogoUrl.length > 0
 		? espnLogoUrl
-		: (leagueLogoFallbacks[leagueId] ?? '')
-);
+		: (leagueLogoFallbacks[leagueId] ?? '');
+};
 
 const isLeagueId = (value: unknown): value is LeagueId => (
 	typeof value === 'string' && allLeagueIds.includes(value as LeagueId)
