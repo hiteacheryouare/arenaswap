@@ -99,6 +99,42 @@ export const EspnScoreboardSchema = zod.object({
 	leagues: zod.array(EspnLeagueSchema).optional(),
 });
 
+// ESPN v2 Core API schemas (sports.core.api.espn.com/v2) — separate per-game endpoints
+const EspnV2ProbabilityItemSchema = zod.object({
+	homePercentage: zod.number().optional(),
+	awayPercentage: zod.number().optional(),
+});
+
+export const EspnV2ProbabilitiesResponseSchema = zod.object({
+	items: zod.array(EspnV2ProbabilityItemSchema).optional(),
+});
+
+const EspnV2PredictorTeamSchema = zod.object({
+	gameProjection: zod.number().optional(),
+	teamChancePct: zod.number().optional(),
+});
+
+export const EspnV2PredictorResponseSchema = zod.object({
+	homeTeam: EspnV2PredictorTeamSchema.optional(),
+	awayTeam: EspnV2PredictorTeamSchema.optional(),
+});
+
+const EspnV2OddsProviderSchema = zod.object({
+	id: zod.string().optional(),
+	displayName: zod.string().optional(),
+	name: zod.string().optional(),
+});
+
+const EspnV2OddsItemSchema = zod.object({
+	provider: EspnV2OddsProviderSchema.optional(),
+	details: zod.string().optional(),
+	overUnder: zod.union([zod.number(), zod.string()]).optional(),
+});
+
+export const EspnV2OddsResponseSchema = zod.object({
+	items: zod.array(EspnV2OddsItemSchema).optional(),
+});
+
 export const EspnTeamsResponseSchema = zod.object({
 	sports: zod.array(zod.object({
 		leagues: zod.array(zod.object({

@@ -10,7 +10,7 @@ import TabAssignSelect from './tabAssignSelect';
 import type { gameCardProps } from './gameCardTypes';
 import { buildCardHandlers, buildGameCardStyle, formatGameClock, formatPeriod, GameMeta, powerScoreColor, TeamColumn } from './gameCardShared';
 
-const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavoriteTeam, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail }: gameCardProps) => {
+const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavoriteTeam, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs, bettingData }: gameCardProps) => {
 	if (!game) return null;
 
 	const isOt = game.period > (leagueConfigMap[game.league]?.regularPeriods ?? 4);
@@ -65,7 +65,7 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 				<TeamColumn leagueId={game.league} team={game.homeTeam} isFavorited={homeFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} />
 			</div>
 
-			<GameMeta game={game} />
+			<GameMeta game={game} bettingPrefs={bettingPrefs} gameBettingData={game ? bettingData[game.id] : undefined} />
 
 			{excitementResult && (
 				<div className='d-flex align-items-center gap-2 game-card-ps-bar-row'>

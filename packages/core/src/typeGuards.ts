@@ -1,5 +1,5 @@
 import { normalizePowerScoreResult } from 'powerscore';
-import type { Game, LeagueLogoMap, PowerScoreHistoryMap, PowerScoreResult, PowerScoreSnapshot, ScoreHistoryMap, ScoreSnapshot } from './types';
+import type { Game, GameBettingData, LeagueLogoMap, PowerScoreHistoryMap, PowerScoreResult, PowerScoreSnapshot, ScoreHistoryMap, ScoreSnapshot } from './types';
 
 export const isObjectRecord = (value: unknown): value is Record<string, unknown> => (
 	typeof value === 'object' && value !== null
@@ -35,6 +35,34 @@ export const isPowerScoreSnapshotLike = (value: unknown): value is PowerScoreSna
 	// gameBoost is optional — older snapshots won't have it; hydration fills it with 0
 	&& (value.gameBoost === undefined || isFiniteNumber(value.gameBoost))
 );
+
+export const normalizeGameBettingData = (value: unknown): Record<string, GameBettingData> => {
+	if (!isObjectRecord(value)) return {};
+	const result: Record<string, GameBettingData> = {};
+	for (const [gameId, entry] of Object.entries(value)) {
+		if (!isObjectRecord(entry)) continue;
+		const item: GameBettingData = {};
+		if (isFiniteNumber(entry.homeWinPct)) item.homeWinPct = entry.homeWinPct;
+		if (isFiniteNumber(entry.awayWinPct)) item.awayWinPct = entry.awayWinPct;
+		if (isObjectRecord(entry.espnPredictor)
+			&& isFiniteNumber(entry.espnPredictor.homePercentage)
+			&& isFiniteNumber(entry.espnPredictor.awayPercentage)) {
+			item.espnPredictor = {
+				homePercentage: entry.espnPredictor.homePercentage,
+				awayPercentage: entry.espnPredictor.awayPercentage,
+			};
+		}
+		if (isObjectRecord(entry.providerOdds) && typeof entry.providerOdds.providerName === 'string') {
+			item.providerOdds = {
+				providerName: entry.providerOdds.providerName,
+				details: typeof entry.providerOdds.details === 'string' ? entry.providerOdds.details : undefined,
+				overUnder: isFiniteNumber(entry.providerOdds.overUnder) ? entry.providerOdds.overUnder : undefined,
+			};
+		}
+		if (Object.keys(item).length > 0) result[gameId] = item;
+	}
+	return result;
+};
 
 export const normalizeGameBoosts = (value: unknown): Record<string, number> => {
 	if (!isObjectRecord(value)) return {};

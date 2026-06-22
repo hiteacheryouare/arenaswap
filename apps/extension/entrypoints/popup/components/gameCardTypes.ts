@@ -1,5 +1,13 @@
 import type { Browser } from 'wxt/browser';
-import type { Game, LeagueId, PowerScoreResult, TabRegistration } from '@arenaswap/core/types';
+import type { Game, GameBettingData, LeagueId, PowerScoreResult, TabRegistration } from '@arenaswap/core/types';
+
+export interface BettingDisplayPrefs {
+	bettingEnabled: boolean;
+	showGameOdds: boolean;
+	showWinProbability: boolean;
+	showEspnPredictor: boolean;
+	preferredOddsProvider: string;
+}
 
 export interface gameCardProps {
 	game: Game | undefined;
@@ -12,4 +20,6 @@ export interface gameCardProps {
 	onRegistryChange: (updated: TabRegistration[]) => void;
 	formatTabLabel: (tab: Browser.tabs.Tab) => string;
 	onOpenGameDetail: (gameId: string) => void;
+	bettingPrefs: BettingDisplayPrefs;
+	bettingData: Record<string, GameBettingData>;
 }

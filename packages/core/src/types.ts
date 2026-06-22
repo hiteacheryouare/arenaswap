@@ -42,6 +42,18 @@ export interface GameOdds {
 	provider?: GameOddsProvider;
 }
 
+/** Per-game betting data fetched from ESPN's v2 API (separate from the scoreboard) */
+export interface GameBettingData {
+	/** Win probability as percentage (0–100) for home team, from /probabilities */
+	homeWinPct?: number;
+	/** Win probability as percentage (0–100) for away team, from /probabilities */
+	awayWinPct?: number;
+	/** ESPN's own statistical predictor (FPI/BPI), from /predictor */
+	espnPredictor?: { homePercentage: number; awayPercentage: number };
+	/** Odds from the user's preferred sportsbook, from the v2 /odds endpoint */
+	providerOdds?: { details?: string; overUnder?: number; providerName: string };
+}
+
 export interface Game {
 	id: string;
 	league: LeagueId;
@@ -78,6 +90,16 @@ export interface UserPreferences {
 	standbyStreamEnabled: boolean;
 	/** PowerScore threshold (0–100): switch to standby when ALL registered games fall below this */
 	standbyStreamThreshold: number;
+	/** Master toggle for the betting & odds section */
+	bettingEnabled: boolean;
+	/** Show spread/line and over-under odds on game cards */
+	showGameOdds: boolean;
+	/** Show market-implied win probabilities on game cards */
+	showWinProbability: boolean;
+	/** Show ESPN's statistical predictor (FPI/BPI) on game cards */
+	showEspnPredictor: boolean;
+	/** Preferred sportsbook ID (empty string = any provider) */
+	preferredOddsProvider: string;
 }
 
 export interface TabRegistration {
@@ -114,6 +136,7 @@ export interface BackgroundState {
 	scoreHistory: ScoreHistoryMap;
 	powerScoreHistory: PowerScoreHistoryMap;
 	gameBoosts: Record<string, number>;
+	bettingData: Record<string, GameBettingData>;
 	onStandbyStream: boolean;
 	standbyStreamTabId: number | null;
 }
@@ -126,6 +149,7 @@ export interface ScoresUpdatedMessage {
 	scoreHistory: ScoreHistoryMap;
 	powerScoreHistory: PowerScoreHistoryMap;
 	gameBoosts: Record<string, number>;
+	bettingData: Record<string, GameBettingData>;
 	onStandbyStream: boolean;
 	standbyStreamTabId: number | null;
 }

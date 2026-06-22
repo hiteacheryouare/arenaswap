@@ -41,6 +41,11 @@ describe('constants', () => {
 			notificationsEnabled: true,
 			standbyStreamEnabled: false,
 			standbyStreamThreshold: 20,
+			bettingEnabled: false,
+			showGameOdds: true,
+			showWinProbability: true,
+			showEspnPredictor: true,
+			preferredOddsProvider: '',
 		});
 	});
 
@@ -70,6 +75,11 @@ describe('constants', () => {
 			notificationsEnabled: true,
 			standbyStreamEnabled: false,
 			standbyStreamThreshold: 20,
+			bettingEnabled: false,
+			showGameOdds: true,
+			showWinProbability: true,
+			showEspnPredictor: true,
+			preferredOddsProvider: '',
 		});
 	});
 

@@ -52,6 +52,16 @@ export const defaultCooldownSecs = 45;
 export const defaultSwitchDelaySecs = 0;
 export const defaultFavoriteTeamBonusPoints = 10;
 
+// Supported sportsbook odds providers — IDs match ESPN's v2 odds API provider.id values
+export const oddsProviders = [
+	{ id: '41', label: 'DraftKings' },
+	{ id: '37', label: 'FanDuel' },
+	{ id: '58', label: 'BetMGM' },
+	{ id: '38', label: 'Caesars' },
+	{ id: '68', label: 'ESPN Bet' },
+	{ id: '2000', label: 'Bet365' },
+];
+
 // Sensitivity level → score delta required to trigger a tab switch.
 // Recalibrated for the PowerScore v2 distribution (lower bases, more spread) via the simulation
 // harness (npm run powerscore:simulate), then nudged ~25% stickier so the Balanced default is less
@@ -75,6 +85,13 @@ const leagueLogoOverrides: Partial<Record<LeagueId, string>> = {
 	ncaamh: 'https://a.espncdn.com/i/espn/misc_logos/500-dark/ncaa.png',
 	cbase: 'https://a.espncdn.com/i/espn/misc_logos/500/ncaa_baseball.png',
 	csoft: 'https://a.espncdn.com/i/espn/misc_logos/500/ncaa_womens_softball.png',
+	olybb: 'https://a.espncdn.com/i/espn/misc_logos/500-dark/olympics.png',
+	olymih: 'https://a.espncdn.com/i/espn/misc_logos/500-dark/olympics.png',
+	olywih: 'https://a.espncdn.com/i/espn/misc_logos/500-dark/olympics.png',
+	olybkm: 'https://a.espncdn.com/i/espn/misc_logos/500-dark/olympics.png',
+	olybkw: 'https://a.espncdn.com/i/espn/misc_logos/500-dark/olympics.png',
+	olysocm: 'https://a.espncdn.com/i/espn/misc_logos/500-dark/olympics.png',
+	olysocw: 'https://a.espncdn.com/i/espn/misc_logos/500-dark/olympics.png',
 };
 
 // Logos used when ESPN's API returns nothing for a league.
@@ -87,15 +104,8 @@ export const leagueLogoFallbacks: Partial<Record<LeagueId, string>> = {
 	mls: 'https://a.espncdn.com/i/teamlogos/leagues/500/mls.png',
 	epl: 'https://a.espncdn.com/i/leaguelogos/soccer/500-dark/23.png',
 	fifawc: 'https://a.espncdn.com/i/leaguelogos/soccer/500-dark/4.png',
-	olybb: 'https://a.espncdn.com/i/espn/misc_logos/500-dark/olympics.png',
 	wbbc: 'https://a.espncdn.com/redesign/assets/img/icons/ESPN-icon-baseball.png',
 	ufl: 'https://a.espncdn.com/i/teamlogos/leagues/500/ufl.png',
-	olymih: 'https://a.espncdn.com/i/espn/misc_logos/500-dark/olympics.png',
-	olywih: 'https://a.espncdn.com/i/espn/misc_logos/500-dark/olympics.png',
-	olybkm: 'https://a.espncdn.com/i/espn/misc_logos/500-dark/olympics.png',
-	olybkw: 'https://a.espncdn.com/i/espn/misc_logos/500-dark/olympics.png',
-	olysocm: 'https://a.espncdn.com/i/espn/misc_logos/500-dark/olympics.png',
-	olysocw: 'https://a.espncdn.com/i/espn/misc_logos/500-dark/olympics.png',
 	laliga: 'https://a.espncdn.com/i/leaguelogos/soccer/500-dark/15.png',
 	bundesliga: 'https://a.espncdn.com/i/leaguelogos/soccer/500-dark/10.png',
 	seriea: 'https://a.espncdn.com/i/leaguelogos/soccer/500-dark/12.png',
@@ -181,6 +191,11 @@ export const createDefaultUserPreferences = (): UserPreferences => ({
 	notificationsEnabled: true,
 	standbyStreamEnabled: false,
 	standbyStreamThreshold: 20,
+	bettingEnabled: false,
+	showGameOdds: true,
+	showWinProbability: true,
+	showEspnPredictor: true,
+	preferredOddsProvider: '',
 });
 
 export const normalizeUserPreferences = (storedPrefs: unknown): UserPreferences => {
@@ -208,5 +223,10 @@ export const normalizeUserPreferences = (storedPrefs: unknown): UserPreferences 
 		standbyStreamThreshold: typeof candidate.standbyStreamThreshold === 'number' && isFinite(candidate.standbyStreamThreshold)
 			? Math.max(0, Math.min(100, Math.round(candidate.standbyStreamThreshold)))
 			: defaults.standbyStreamThreshold,
+		bettingEnabled: typeof candidate.bettingEnabled === 'boolean' ? candidate.bettingEnabled : defaults.bettingEnabled,
+		showGameOdds: typeof candidate.showGameOdds === 'boolean' ? candidate.showGameOdds : defaults.showGameOdds,
+		showWinProbability: typeof candidate.showWinProbability === 'boolean' ? candidate.showWinProbability : defaults.showWinProbability,
+		showEspnPredictor: typeof candidate.showEspnPredictor === 'boolean' ? candidate.showEspnPredictor : defaults.showEspnPredictor,
+		preferredOddsProvider: typeof candidate.preferredOddsProvider === 'string' ? candidate.preferredOddsProvider : defaults.preferredOddsProvider,
 	};
 };
