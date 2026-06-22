@@ -1,5 +1,13 @@
 # Changelog
 
+## Betting & Odds — 2026-06-22
+
+Added a **Betting & Odds** section to Settings (Switching tab). When enabled, game cards and the detail view show the spread, over/under, and odds provider logo sourced directly from the ESPN scoreboard — no extra API calls required.
+
+### Settings added
+- **Show betting & odds** — master toggle (off by default)
+- **Game odds (spread / O/U)** — sub-toggle, visible when the master is on
+
 ## 19 new leagues + US audience audit — 2026-06-20
 
 ### New leagues added (21 originally, 2 removed after US audience audit = 19 net)
