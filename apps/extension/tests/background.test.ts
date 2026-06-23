@@ -1,5 +1,6 @@
 import { createDefaultUserPreferences, normalizeUserPreferences, pollIntervalMs } from '@arenaswap/core/constants';
 import type { Game, LeagueId, TabRegistration, UserPreferences } from '@arenaswap/core/types';
+import { prefsStorageUpdatedAtKey } from '../utils/prefsStorage';
 
 jest.mock('@porkyproductions/hat', () => ({
 	// Return the maximum of the range so timer delays are deterministic:
@@ -167,11 +168,12 @@ describe('GET_STATE with forceRefresh', () => {
 		storageSyncGet.mockClear();
 		storageSyncGet.mockResolvedValue({
 			prefs: normalizeUserPreferences({ ...createDefaultUserPreferences(), cooldownSeconds: 999 }),
+			[prefsStorageUpdatedAtKey]: 1,
 		});
 
 		await sendMessage({ type: 'GET_STATE', forceRefresh: true });
 
-		expect(storageSyncGet).toHaveBeenCalledWith({ prefs: null });
+		expect(storageSyncGet).toHaveBeenCalledWith({ prefs: null, [prefsStorageUpdatedAtKey]: 0 });
 	});
 
 });

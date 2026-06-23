@@ -1,6 +1,7 @@
 import { randomInRange } from '@porkyproductions/hat';
 import { fetchGamesWithLeagueLogos, computePowerScore, normalizePowerScoreResult, MockGameSimulator, createPollModeTracker, isObjectRecord, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts } from '@arenaswap/core';
 import { computeStandbyStreamDecision } from '../utils/standbyStreamLogic';
+import { loadStoredUserPreferences, persistStoredUserPreferences } from '../utils/prefsStorage';
 import {
 	normalizeReviewPromptState,
 	recordSuccessfulReviewPromptSwitch,
@@ -526,11 +527,11 @@ export default defineBackground(() => {
 
 	// Load persisted state before any refresh to avoid race conditions on popup reopen.
 	const stateReady = Promise.all([
-		browser.storage.sync.get({ prefs: null }),
+		loadStoredUserPreferences(),
 		browser.storage.session.get({ tabRegistry: [], standbyStreamTabId: null, ...historyStorageDefaults }),
 		browser.storage.local.get({ demoMode: false }),
-	]).then(([prefsResult, sessionResult, demoResult]) => {
-		prefs = normalizeUserPreferences(prefsResult.prefs);
+	]).then(([storedPrefs, sessionResult, demoResult]) => {
+		prefs = storedPrefs;
 		tabRegistry = sessionResult.tabRegistry as TabRegistration[];
 		standbyStreamTabId = (sessionResult.standbyStreamTabId as number | null) ?? null;
 		gameBoosts = normalizeGameBoosts(sessionResult.gameBoosts);
@@ -566,8 +567,7 @@ export default defineBackground(() => {
 						// Re-sync prefs from storage in case popup wrote prefs but closed before
 						// the UPDATE_PREFS message was delivered.
 						try {
-							const stored = await browser.storage.sync.get({ prefs: null });
-							prefs = normalizeUserPreferences(stored.prefs);
+							prefs = await loadStoredUserPreferences();
 						} catch { /* keep current in-memory prefs */ }
 						await refreshScores(false);
 						return buildBackgroundState();
@@ -583,7 +583,7 @@ export default defineBackground(() => {
 				prefs = normalizeUserPreferences(msg.prefs);
 				if (wasEnabled && !prefs.enabled) lastSwitchTime = 0;
 				clearPendingSwitch();
-				await browser.storage.sync.set({ prefs });
+				await persistStoredUserPreferences(prefs);
 				await syncManagedTabMuteState(prefs.enabled);
 				if (prefs.showUpcomingGames !== prevShowUpcoming) {
 					await refreshUpcomingGames();

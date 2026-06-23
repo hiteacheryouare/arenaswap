@@ -13,6 +13,7 @@ import ToastContainer from './components/toastContainer';
 import { fetchState, formatTabLabel, leagueOrder, leaguesBySportType, normalizeBackgroundState, popupView } from './popupHelpers';
 import useFavoriteScoreConfetti from './useFavoriteScoreConfetti';
 import useToast from './useToast';
+import { hasStoredUserPreferences, loadStoredUserPreferences, persistStoredUserPreferences } from '../../utils/prefsStorage';
 import type { ReviewPromptState } from '../../utils/reviewPrompt';
 import {
 	getReviewPromptUrl,
@@ -89,16 +90,7 @@ export default () => {
 
 	useEffect(() => {
 		const init = async () => {
-			let rawPrefs: unknown = null;
-			try {
-				const syncResult = await browser.storage.sync.get({ prefs: null });
-				rawPrefs = syncResult.prefs;
-			} catch (err) {
-				console.warn('ArenaSwap: storage.sync unavailable, falling back to storage.local for prefs.', err);
-				const fallback = await browser.storage.local.get({ prefs: null });
-				rawPrefs = fallback.prefs;
-			}
-			const normalizedPrefs = normalizeUserPreferences(rawPrefs);
+			const normalizedPrefs = await loadStoredUserPreferences();
 			prefsRef.current = normalizedPrefs;
 			setPrefs(normalizedPrefs);
 			setPrefsLoaded(true);
@@ -114,7 +106,7 @@ export default () => {
 			setReviewPromptState(normalizeReviewPromptState(localResult[reviewPromptStorageKey]));
 
 			const onboardingFlag = localResult.onboardingCompleted === true;
-			const hasStoredPrefs = rawPrefs !== null;
+			const hasStoredPrefs = await hasStoredUserPreferences();
 			if (!onboardingFlag && hasStoredPrefs) {
 				void browser.storage.local.set({ onboardingCompleted: true });
 				setOnboardingDone(true);
@@ -169,15 +161,10 @@ export default () => {
 		const normalized = normalizeUserPreferences(rawNextPrefs);
 		prefsRef.current = normalized;
 		setPrefs(normalized);
-		const syncPromise = (async () => {
-			try {
-				await browser.storage.sync.set({ prefs: normalized });
-			} catch (err) {
-				console.warn('ArenaSwap: storage.sync unavailable, persisting prefs to storage.local.', err);
-				await browser.storage.local.set({ prefs: normalized });
-			}
+		const syncPromise = prefsSyncRef.current.catch(() => {}).then(async () => {
+			await persistStoredUserPreferences(normalized);
 			await browser.runtime.sendMessage({ type: 'UPDATE_PREFS', prefs: normalized });
-		})();
+		});
 		prefsSyncRef.current = syncPromise;
 		void syncPromise.catch(err => console.error('ArenaSwap: Failed to persist preferences:', err));
 	};
