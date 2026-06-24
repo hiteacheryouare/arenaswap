@@ -49,7 +49,7 @@ const PowerScoreBreakdown = ({
 
 	return (
 		<section className='powerscore-breakdown game-detail-formula-card'>
-			<div className='powerscore-breakdown-heading'>How PowerScore is calculated</div>
+			<div className='powerscore-breakdown-heading'>PowerScore Breakdown</div>
 			{signalMeta.map((sig, i) => {
 				const val = signalValues[i] ?? 0;
 				const pct = sig.max > 0 ? Math.min((val / sig.max) * 100, 100) : 0;
