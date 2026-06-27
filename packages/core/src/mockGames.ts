@@ -135,6 +135,7 @@ export class MockGameSimulator {
 				period: 8, clockSeconds: 0, status: 'in',
 				topOfInning: false,
 				baseRunners: { first: true, second: false, third: true },
+				bso: { balls: 1, strikes: 0, outs: 1 },
 				broadcasts: ['MLB.TV'],
 			},
 			{
@@ -145,6 +146,7 @@ export class MockGameSimulator {
 				awayTeam: { id: '6', name: 'Dallas Cowboys', abbreviation: 'DAL', score: 14, logo: `${espnCdn}/nfl/500/dal.png`, color: '#003594' },
 				venueName: 'Lincoln Financial Field',
 				period: 4, clockSeconds: 480, status: 'in',
+				downDistance: '3rd & 7',
 				broadcasts: ['NBC', 'Peacock'],
 			},
 			{
@@ -256,6 +258,7 @@ export class MockGameSimulator {
 				period: 10, clockSeconds: 0, status: 'in',
 				topOfInning: true,
 				baseRunners: { first: false, second: true, third: false },
+				bso: { balls: 0, strikes: 1, outs: 0 },
 				broadcasts: ['Fox'],
 			},
 		];
@@ -293,13 +296,39 @@ export class MockGameSimulator {
 			...g,
 			homeTeam: { ...g.homeTeam },
 			awayTeam: { ...g.awayTeam },
+			bso: g.bso ? { ...g.bso } : undefined,
 		}));
 	};
 
 	private advanceLive = (game: Game, simState: SimState): void => {
 		const regularPeriods = leagueConfigMap[game.league].regularPeriods;
 
-		if (game.sportType === 'baseball') {
+		if (game.sportType === 'baseball' || game.sportType === 'softball') {
+			// Advance the BSO count each tick
+			if (game.bso) {
+				const roll = Math.random();
+				if (roll < 0.3) {
+					// Ball — reset if walk (3 balls)
+					const newBalls = game.bso.balls + 1;
+					game.bso = newBalls >= 3
+						? { balls: 0, strikes: game.bso.strikes, outs: game.bso.outs }
+						: { ...game.bso, balls: newBalls };
+				} else if (roll < 0.6) {
+					// Strike — reset if strikeout (2 strikes)
+					const newStrikes = game.bso.strikes + 1;
+					game.bso = newStrikes >= 2
+						? { balls: 0, strikes: 0, outs: game.bso.outs }
+						: { ...game.bso, strikes: newStrikes };
+				} else if (roll < 0.75) {
+					// Out — reset count; reset outs if side retired (2 outs)
+					const newOuts = game.bso.outs + 1;
+					game.bso = newOuts >= 2
+						? { balls: 0, strikes: 0, outs: 0 }
+						: { balls: 0, strikes: 0, outs: newOuts };
+				}
+				// else: ball in play, count unchanged this tick
+			}
+
 			// MLB: simulate half-innings; advance inning every few ticks
 			this.scorePoints(game, simState);
 			if (Math.random() < baseballInningAdvanceChance) {
@@ -312,6 +341,15 @@ export class MockGameSimulator {
 				}
 			}
 			return;
+		}
+
+		// Football: cycle down & distance on each tick
+		if (game.sportType === 'football' && game.downDistance !== undefined) {
+			if (Math.random() < 0.35) {
+				const patterns = ['1st & 10', '2nd & 8', '3rd & 5', '4th & 2', '1st & 10', '2nd & 4', '3rd & Goal', '1st & 10'];
+				const idx = patterns.indexOf(game.downDistance);
+				game.downDistance = patterns[(idx + 1) % patterns.length];
+			}
 		}
 
 		game.clockSeconds = Math.max(0, game.clockSeconds - clockTick);
@@ -381,6 +419,8 @@ export class MockGameSimulator {
 			game.clockSeconds = leagueConfig.periodDurationSecs;
 			game.homeTeam.score = 0;
 			game.awayTeam.score = 0;
+			if (game.bso) game.bso = { balls: 0, strikes: 0, outs: 0 };
+			if (game.downDistance !== undefined) game.downDistance = '1st & 10';
 			simState.streak = null;
 			simState.streakTicks = 0;
 		}

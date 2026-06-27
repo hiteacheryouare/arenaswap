@@ -39,6 +39,16 @@ const EspnSituationSchema = zod.object({
 	onFirst: zod.boolean().optional(),
 	onSecond: zod.boolean().optional(),
 	onThird: zod.boolean().optional(),
+	// Baseball live count
+	balls: zod.number().optional(),
+	strikes: zod.number().optional(),
+	outs: zod.number().optional(),
+	// Gridiron football
+	down: zod.number().optional(),
+	distance: zod.number().optional(),
+	yardLine: zod.number().optional(),
+	isRedZone: zod.boolean().optional(),
+	shortDownDistanceText: zod.string().optional(),
 });
 
 const EspnCompetitionVenueSchema = zod.object({

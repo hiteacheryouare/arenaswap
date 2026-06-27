@@ -5,6 +5,7 @@ import {
 	sportTypeConfigMap,
 } from '@arenaswap/core/constants';
 import BaseDiamond from './baseDiamond';
+import BsoIndicator from './bsoIndicator';
 import FlipScore from './flipScore';
 import TabAssignSelect from './tabAssignSelect';
 import type { gameCardProps } from './gameCardTypes';
@@ -61,11 +62,15 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 					<span className='font-lekton game-period'>
 						{isInningSport && game.topOfInning !== undefined ? (game.topOfInning ? '▲ ' : '▼ ') : ''}{formatPeriod(game)}
 					</span>
+					{isInningSport && game.bso && <BsoIndicator {...game.bso} />}
+					{game.sportType === 'football' && game.downDistance && (
+						<span className='font-lekton game-period'>{game.downDistance}</span>
+					)}
 				</div>
 				<TeamColumn leagueId={game.league} team={game.homeTeam} isFavorited={homeFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} />
 			</div>
 
-			<GameMeta game={game} bettingPrefs={bettingPrefs} />
+			<GameMeta game={game} bettingPrefs={bettingPrefs} hideBroadcasts />
 
 			{excitementResult && (
 				<div className='d-flex align-items-center gap-2 game-card-ps-bar-row'>

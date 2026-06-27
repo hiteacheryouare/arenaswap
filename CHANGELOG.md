@@ -1,5 +1,53 @@
 # Changelog
 
+## Live game context — 2026-06-27
+
+Four new data points surfaced from the ESPN scoreboard API, a reorganized game detail card, and full demo-mode support for all of it.
+
+### Win probability chart
+- Game detail view now shows **Win Probability** as a simple double-line chart — one line per team in their team color — replacing the score margin chart.
+- Both lines are independent (no stacking); their values always sum to 100%, so a crossing of the lines clearly marks a momentum shift.
+- Tooltip shows a colored `●` bullet with team abbreviation and percentage for each team.
+- Empty state shown when the game is not yet live ("Win probability loads when the game is live.").
+
+### BSO indicator (baseball / softball)
+- Live game cards and the game detail center column now show a **Balls / Strikes / Outs** indicator for in-progress baseball and softball games.
+- Each category renders as Bootstrap icon circles (`bi-circle-fill` / `bi-circle`): green for balls (max 3), orange for strikes (max 2), red for outs (max 2).
+- Each B / S / O label is grouped with its dots so sections are clearly separated.
+- Sourced from `situation.balls`, `situation.strikes`, `situation.outs` in the ESPN scoreboard response; only populated for live games.
+
+### Down & distance (gridiron football)
+- Live game cards and the game detail center column now show a **down & distance** string (e.g. "3rd & 7") for in-progress NFL, NCAAF, and UFL games.
+- Uses `shortDownDistanceText` from the ESPN situation when available; otherwise builds from `down` / `distance` fields, with "Nth & Goal" when distance is 0.
+- `down = 0` (between-play state) correctly returns `undefined` — no label shown.
+- Confirmed via ESPN core API (`/v2/sports/football/leagues/nfl/events/{id}/competitions/{id}/situation`) which returns `down`, `yardLine`, `distance`, `isRedZone`.
+
+### Series dots (baseball, basketball playoffs, hockey playoffs, softball)
+- Game detail card shows a row of **series progress dots** for sports that play multi-game series.
+- Filled dot = game played; team color indicates the winner. Empty dot = game not yet played.
+- Basketball and hockey only show series when ESPN returns a `seasonseries` entry with `type: 'current'` — this naturally excludes regular-season games.
+- Uses a single `summary` endpoint request per game detail open (no per-card polling).
+- Rendered using Bootstrap icon circles (`bi-circle-fill` / `bi-circle`).
+
+### Game detail card reorganization
+- Series dots now appear **between the teams row and the PowerScore bar** — game context before the excitement metric.
+- Removed the dividing line (`border-top`) that previously separated series dots from the card body.
+- Watch/broadcast line hidden from live game cards via a new `hideBroadcasts` prop on `GameMeta`; preserved on the game detail view.
+
+### Demo mode
+- All four new features work in demo mode:
+  - mock-4 (PHI vs NYM, MLB) and mock-16 (HOU vs LAD, MLB) start with realistic BSO counts that cycle on every tick.
+  - mock-5 (PHI vs DAL, NFL) starts with `downDistance: '3rd & 7'` that rotates through a pattern of downs on each tick.
+  - `useSummaryData` detects `mock-` game IDs and returns deterministic LCG-generated win probability curves instead of calling ESPN.
+  - Hardcoded playoff series data shown for mock-4 ("PHI leads 2-1"), mock-14 ("BOS leads 3-2"), and mock-16 ("Series tied 2-2").
+  - Post-game reset zeroes out BSO and resets downDistance to "1st & 10".
+
+### Tests
+Added **23 new unit tests** across three files:
+- `packages/core/tests/apiClient.test.ts` — 5 BSO parsing tests (live MLB gets `bso`; defaults strikes/outs to 0; undefined for no-balls situation, pre-game, non-baseball) and 8 downDistance tests (all four ordinals; `shortDownDistanceText` precedence; `& Goal` when distance=0; undefined for down=0, down>4, pre-game, non-football).
+- `packages/core/tests/mockGames.test.ts` — 4 BSO simulation tests (initial field, range bounds, deep-copy, post-game reset) and 4 downDistance tests (initial field, non-football undefined, cycles on low random, stable on high random, post-game reset).
+- `apps/extension/tests/gameDetailChartOptions.test.ts` *(new)* — 10 tests for `buildWinProbabilityOption`: empty input, two series, no `stack`, y-axis 0–100, home+away values sum to 100, rounding, team name labels, `showSymbol: false`, tooltip format (colored bullet + `%`), downsampling for large inputs.
+
 ## Betting & Odds — 2026-06-22
 
 Added a **Betting & Odds** section to Settings (Switching tab). When enabled, game cards and the detail view show the spread, over/under, and odds provider logo sourced directly from the ESPN scoreboard — no extra API calls required.

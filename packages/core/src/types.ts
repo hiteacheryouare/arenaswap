@@ -62,6 +62,10 @@ export interface Game {
 	topOfInning?: boolean;
 	/** Which bases have runners; undefined when unavailable (non-baseball or no active at-bat) */
 	baseRunners?: { first: boolean; second: boolean; third: boolean };
+	/** Live balls/strikes/outs count; only present for in-progress baseball/softball */
+	bso?: { balls: number; strikes: number; outs: number };
+	/** Down & distance string for gridiron football (e.g. "3rd & 5"); undefined for non-football */
+	downDistance?: string;
 }
 
 export interface UserPreferences {

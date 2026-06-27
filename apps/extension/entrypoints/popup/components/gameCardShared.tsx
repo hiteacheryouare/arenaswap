@@ -165,12 +165,14 @@ export const GameMeta = ({
 	game,
 	dark,
 	bettingPrefs,
+	hideBroadcasts,
 }: {
 	game: Game;
 	dark?: boolean;
 	bettingPrefs?: BettingDisplayPrefs;
+	hideBroadcasts?: boolean;
 }) => {
-	const networks = game.broadcasts?.join(' • ');
+	const networks = hideBroadcasts ? undefined : game.broadcasts?.join(' • ');
 	const bettingOn = bettingPrefs?.bettingEnabled ?? false;
 	const odds = bettingOn ? oddsSummary(game) : null;
 	const hasOddsProvider = bettingOn && Boolean(game.odds?.provider?.name);

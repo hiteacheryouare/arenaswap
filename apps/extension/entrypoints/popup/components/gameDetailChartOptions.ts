@@ -198,6 +198,59 @@ export const buildScoreMarginOption = (scoreHistory: ScoreSnapshot[], game: Game
 	};
 };
 
+export const buildWinProbabilityOption = (homeWinPcts: number[], game: Game): EChartsOption => {
+	if (homeWinPcts.length === 0) return {};
+	const step = Math.max(1, Math.floor(homeWinPcts.length / 80));
+	const sampled = homeWinPcts.filter((_, i) => i % step === 0 || i === homeWinPcts.length - 1);
+	const homeVals = sampled.map(p => Math.round(p * 100));
+	const awayVals = sampled.map(p => 100 - Math.round(p * 100));
+	const labels = sampled.map(() => '');
+	const homeColor = resolveReadableSeriesColor(game.homeTeam.color, '#f87171');
+	const awayColor = resolveReadableSeriesColor(game.awayTeam.color, '#60a5fa');
+	return {
+		...baseOption(labels, 24),
+		yAxis: {
+			type: 'value',
+			min: 0,
+			max: 100,
+			interval: 25,
+			axisLabel: { color: axisLabelColor, fontSize: 10, formatter: (v: number) => `${v}%` },
+			axisLine: { lineStyle: { color: axisLineColor } },
+			splitLine: { lineStyle: { color: splitLineColor } },
+		},
+		tooltip: {
+			trigger: 'axis',
+			backgroundColor: tooltipBackgroundColor,
+			borderColor: axisLineColor,
+			textStyle: { color: textColor, fontSize: 11 },
+			formatter: (params: unknown) => {
+				const arr = params as Array<{ value: number; seriesName: string; color: string }>;
+				return arr.map(p => `<span style="color:${p.color}">●</span> ${p.seriesName}: ${p.value}%`).join('<br/>');
+			},
+		},
+		series: [
+			{
+				type: 'line',
+				name: game.homeTeam.abbreviation,
+				data: homeVals,
+				smooth: true,
+				showSymbol: false,
+				lineStyle: { width: 2, color: homeColor },
+				itemStyle: { color: homeColor },
+			},
+			{
+				type: 'line',
+				name: game.awayTeam.abbreviation,
+				data: awayVals,
+				smooth: true,
+				showSymbol: false,
+				lineStyle: { width: 2, color: awayColor },
+				itemStyle: { color: awayColor },
+			},
+		],
+	};
+};
+
 export const buildComponentContributionOption = (powerHistory: PowerScoreSnapshot[]): EChartsOption => {
 	const labels = powerHistory.map(point => formatTimeLabel(point.timestamp));
 	const closeness = powerHistory.map(point => point.closeness);

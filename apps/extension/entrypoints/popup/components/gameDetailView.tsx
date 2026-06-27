@@ -2,6 +2,8 @@ import { useMemo } from 'react';
 import { leagueConfigMap, scoreMaxTotal } from '@arenaswap/core/constants';
 import type { Game, PowerScoreResult, PowerScoreSnapshot, ScoreSnapshot } from '@arenaswap/core/types';
 import BaseDiamond from './baseDiamond';
+import BsoIndicator from './bsoIndicator';
+import SeriesDots from './seriesDots';
 import DetailTeamPill from './detailTeamPill';
 import FlipScore from './flipScore';
 import GameDetailChart from './gameDetailChart';
@@ -11,10 +13,11 @@ import ProTip from './proTip';
 import {
 	buildComponentContributionOption,
 	buildPowerScoreOption,
-	buildScoreMarginOption,
 	buildTeamScoreOption,
+	buildWinProbabilityOption,
 	resolveReadableSeriesColor,
 } from './gameDetailChartOptions';
+import useSummaryData from './useSummaryData';
 import { formatGameClock, formatPeriod, GameMeta, powerScoreColor } from './gameCardShared';
 import type { BettingDisplayPrefs } from './gameCardTypes';
 
@@ -80,9 +83,10 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 	const componentOption = useMemo(() => (
 		buildComponentContributionOption(orderedPowerScoreHistory)
 	), [orderedPowerScoreHistory]);
-	const scoreMarginOption = useMemo(() => (
-		buildScoreMarginOption(orderedScoreHistory, game)
-	), [orderedScoreHistory, game]);
+	const { winProbability, seriesInfo } = useSummaryData(game);
+	const winProbabilityOption = useMemo(() => (
+		buildWinProbabilityOption(winProbability, game)
+	), [winProbability, game]);
 
 	const awayLineColor = resolveReadableSeriesColor(game.awayTeam.color, '#60a5fa');
 	const homeLineColor = resolveReadableSeriesColor(game.homeTeam.color, '#f87171');
@@ -131,9 +135,11 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 							<FlipScore value={game.homeTeam.score} className='fw-bold lh-1 game-detail-score-value' />
 						</div>
 						<div className='game-detail-period'>{statusDetail}</div>
+						{isInningSport && game.bso && <BsoIndicator {...game.bso} />}
 					</div>
 					<DetailTeamPill team={game.homeTeam} />
 				</div>
+				{seriesInfo && <SeriesDots info={seriesInfo} game={game} />}
 				{game.status !== 'pre' && activePowerScore && (
 					<div className='game-card-ps-bar-row'>
 						<div className='d-flex align-items-center gap-2'>
@@ -190,9 +196,9 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 				? <GameDetailChart title='Game score over time' option={scoreTrendOption} legendItems={teamLegendItems} />
 				: <div className='game-detail-empty-state'>Score trend appears after a few refreshes.</div>}
 
-			{orderedScoreHistory.length > 0
-				? <GameDetailChart title='Score margin' option={scoreMarginOption} legendItems={teamLegendItems} />
-				: <div className='game-detail-empty-state'>Score margin appears after a few refreshes.</div>}
+			{winProbability.length > 0
+				? <GameDetailChart title='Win probability' option={winProbabilityOption} legendItems={teamLegendItems} />
+				: <div className='game-detail-empty-state'>Win probability loads when the game is live.</div>}
 
 			{orderedPowerScoreHistory.length > 0
 				? <GameDetailChart title='PowerScore components over time' option={componentOption} legendItems={componentLegendItems} />

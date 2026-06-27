@@ -8,7 +8,7 @@
 
 Software should provide **powerful defaults without coercion**.
 
-Conventions, frameworks, tooling, and ecosystems should give developers batteries, scaffolding, and sensible recommendations — **but they should not force obedience**.
+Conventions, frameworks, tooling, and ecosystems should provide batteries, scaffolding, and sensible recommendations—but they should not force obedience.
 
 Core principles:
 
@@ -18,7 +18,7 @@ Core principles:
 - **Architecture should support growth**
 - **MVP > premature optimization**
 - **Readable > clever**
-- **Your code should not contain hidden behavior**
+- **No hidden behavior**
 - **Scale readiness matters more than micro-optimizations**
 - **If something feels overengineered, it probably is**
 
@@ -30,21 +30,21 @@ Core principles:
 
 Good tooling:
 
-- provides sensible defaults
-- provides escape hatches
-- allows manual configuration
-- allows convention overrides
-- keeps behavior understandable
+- Provides sensible defaults
+- Provides escape hatches
+- Allows manual configuration
+- Allows convention overrides
+- Keeps behavior understandable
 
 Bad tooling:
 
-- hides critical behavior
-- changes behavior based on naming alone
-- forces a single workflow
-- removes developer agency
-- enforces conventions as law
+- Hides critical behavior
+- Changes behavior based on naming alone
+- Forces a single workflow
+- Removes developer agency
+- Enforces conventions as law
 
-Conventions should be **recommendations**, not mechanisms that fundamentally change code behavior.
+Conventions should be recommendations—not mechanisms that fundamentally change program behavior.
 
 ---
 
@@ -52,68 +52,54 @@ Conventions should be **recommendations**, not mechanisms that fundamentally cha
 
 Prefer:
 
-- explicit configuration
-- explicit naming
-- explicit imports
-- explicit architecture
-- understandable control flow
+- Explicit configuration
+- Explicit architecture
+- Explicit control flow
 
 Avoid:
 
-- magic abstractions
-- hidden behavior
-- convention-only behavior
+- Magic abstractions
+- Hidden behavior
+- Convention-driven behavior
 - DSL-heavy systems
-- metaprogramming unless clearly justified
+- Metaprogramming unless clearly justified
 
-Framework auto-discovery is acceptable **if manual alternatives exist**.
+Framework auto-discovery is acceptable when manual alternatives exist.
 
-Agent-authored code must **never rely on invisible behavior inside project code**.
+Agent-authored code should never rely on invisible project behavior.
 
 ---
 
 ## Architecture Philosophy
 
-Default philosophy:
-
-**Design for moderate future growth upfront.**
+Design for **moderate future growth**.
 
 Avoid:
 
-- one-off implementations that block scaling
-- hardcoded solutions when extensibility is clearly foreseeable
-- premature enterprise architecture
-
-However:
+- One-off implementations that block scaling
+- Hardcoded solutions when extensibility is foreseeable
+- Premature enterprise architecture
 
 Do **not** overbuild.
 
-MVPs matter.
-
-A working product beats a theoretically perfect architecture.
+A working MVP beats a theoretically perfect architecture.
 
 ---
 
 ## Performance Philosophy
 
-Micro-optimizations are usually low priority.
+Priorities:
 
-Most users will not notice tiny improvements.
-
-Priority order:
-
-1. Working product
+1. Working software
 2. Good architecture
-3. Scalability readiness
+3. Scalability
 4. Performance optimization when justified
 
-Performance work becomes important when:
+Optimize only when:
 
-- scale requires it
-- profiling indicates it
-- clear future growth paths justify groundwork
-
-Dynamic imports remain strongly preferred when appropriate.
+- Profiling indicates a bottleneck
+- Scale requires it
+- Reasonable future growth justifies the groundwork
 
 ---
 
@@ -121,28 +107,25 @@ Dynamic imports remain strongly preferred when appropriate.
 
 ## Preferred Languages
 
-### Primary
+Primary:
 
 - TypeScript
 - JavaScript
 - Rust
 - HTML
 
-### Secondary
+Secondary:
 
 - Python
-
-### Specialized Usage
 
 Rust is preferred for:
 
 - CLIs
-- systems software
-- native tools
-- CPU-adjacent work
-- compiled tooling
+- Systems software
+- Native tooling
+- CPU-intensive work
 
-If another language is objectively better suited, the agent must justify that recommendation.
+If another language is objectively better suited, justify the recommendation.
 
 ---
 
@@ -150,54 +133,41 @@ If another language is objectively better suited, the agent must justify that re
 
 ### TypeScript
 
-TypeScript should be **transpiled**.
+Prefer transpiled TypeScript over runtime execution.
 
-Do not depend on runtime TypeScript execution behavior.
-
-Strictness philosophy:
-
-Do not fight the compiler over obvious common-sense cases.
-
-Pragmatism matters.
+Favor pragmatism over absolute type purity.
 
 ---
 
 ### Go
 
-Strongly discouraged.
+Generally discouraged.
 
-Primary concerns:
+Concerns include:
 
-- URL-based dependency philosophy
-- package management model
-- error handling style
-- convention-driven exported behavior
+- URL-based dependency management
+- Package ecosystem philosophy
+- Error handling style
+- Convention-driven behavior
 
 ---
 
 ### Java / C#
 
-Discouraged for most projects.
-
-Concerns:
-
-- runtime redistributable requirements
-- JVM-heavy ecosystem assumptions
-- deployment friction for end users
+Generally discouraged due to deployment complexity and runtime requirements.
 
 ---
 
 ### Node & npm
 
-Treat Node + npm as the gold standard ecosystem.
+Treat Node + npm as the default ecosystem.
 
-Strengths:
+Strengths include:
 
-- portability
-- stability
-- industry adoption
-- local dependency ownership
-- mature ecosystem
+- Portability
+- Stability
+- Mature ecosystem
+- Local dependency ownership
 
 ---
 
@@ -207,357 +177,110 @@ Strengths:
 
 Dependencies should be:
 
-- local
-- tangible
-- removable
-- inspectable
+- Local
+- Tangible
+- Inspectable
+- Easily removable
 
-Preferred:
-
-```txt
-project/
-	node_modules/
-```
-
-Rejected patterns:
+Avoid:
 
 - CDN imports
 - URL imports
-- remote-only dependency coupling
-- globally-scoped dependency ownership
+- Remote-only runtime dependencies
+- Global dependency ownership
 
-Golden rule:
-
-> If I cannot `cd` into it, inspect it, and delete it, I do not trust it.
+> If you cannot inspect and delete it locally, you should be cautious about depending on it.
 
 ---
 
-## Dependency Trust Rules
+## Dependency Trust
 
-A dependency should only be introduced when at least one of these is true:
+Prefer dependencies that are:
 
-- backed by a major corporation
-- backed by a major OSS organization
-- sufficiently mature and stable
-- extremely unlikely to disappear, radically change, or become abandoned
+- Corporate-backed
+- Foundation-backed
+- Mature
+- Stable
+- Unlikely to disappear
 
-Examples:
-
-- Microsoft
-- Meta
-- OpenJS Foundation
-- Apache
-- Vercel
-- similar-scale organizations
-
-Solo-maintainer packages require significantly higher scrutiny.
+Exercise additional scrutiny with solo-maintainer projects.
 
 ---
 
 ## Package Managers
 
-### Preferred
+Preferred:
 
-**npm**
+- npm
+- uv (for Python)
 
-Strong default.
-
-### Python
-
-Prefer:
-
-**uv > pip**
-
-### General Philosophy
-
-Choice matters.
-
-Ecosystems should allow alternatives.
-
-Avoid ecosystems that hard-lock developers into one path.
+Avoid ecosystems that unnecessarily lock developers into one workflow.
 
 ---
 
 # Monorepo Philosophy
 
-**Always use monorepos.**
+Prefer monorepos.
 
-Default architecture:
+Default tooling:
 
-- monorepo
-- multi-package mindset
-- shared code extraction when appropriate
+- Turborepo
 
-Preferred tooling:
-
-**Turborepo**
-
-Strong default for:
-
-- caching
-- parallelization
-- orchestration
-- scalable project organization
-
----
-
-# JavaScript / TypeScript Rules
-
-## Function Style
-
-### REQUIRED
-
-Use arrow functions.
-
-```ts
-const myFunction = () => {
-};
-```
-
-Allowed:
-
-```ts
-export default () => {
-};
-```
-
-### FORBIDDEN
-
-```ts
-function myFunction() {
-}
-```
-
-```ts
-export default function MyComponent() {
-}
-```
-
-Exceptions only when runtime/framework requirements make this unavoidable.
-
----
-
-## Exports
-
-Default exports:
-
-Use for the **primary thing in a file**.
-
-Named exports:
-
-Use for supporting items.
-
----
-
-## Interfaces vs Types
-
-Prefer **interfaces** for object shapes.
-
-Using object types where interfaces fit is strongly discouraged.
-
----
-
-## `any`
-
-Use pragmatically.
-
-Do not weaponize type purity.
-
----
-
-## Imports
-
-Preferences:
-
-- relative imports preferred
-- import aliases acceptable
-- barrel exports acceptable
-- dynamic imports strongly preferred when practical
-
-Use lazy loading strategically.
-
-Do not lazy-load:
-
-- entry points
-- critical runtime logic
-
----
-
-# Naming Philosophy
-
-## Explicit Naming
-
-Prefer:
-
-```ts
-sportsLeaderboardManager
-```
-
-Avoid:
-
-```ts
-manager
-```
-
-Rules:
-
-- explicit > implicit
-- abbreviations discouraged
-- one-letter variables discouraged
-- framework idioms acceptable when necessary
-- acronyms should remain capitalized
+Extract shared functionality into packages when appropriate.
 
 ---
 
 # File Organization
 
-## General Philosophy
+Organize projects for readability.
 
-Files should not become books.
+Balance:
 
-Projects should not become scavenger hunts.
+- Cohesion
+- Discoverability
+- File size
+- Import complexity
 
-Agents must weigh:
+Avoid both:
 
-- readability
-- navigability
-- import tracing complexity
-- file size
-- cohesion
+- Giant files
+- Excessively fragmented structures
 
-There is no universal numeric file-size rule.
+Prefer descriptive folder names.
 
-Split when beneficial.
-
-Keep together when beneficial.
-
-Use judgment.
+Widely accepted conventions (such as `src`) are acceptable.
 
 ---
 
-## Folder Structure
+# Documentation
 
-Preferred default:
+Prioritize:
 
-**Type-based organization**
+- High-quality READMEs
+- Architecture documentation
 
-Examples:
-
-```txt
-/components
-/utils
-/services
-/hooks
-```
-
-Prefer real names over unnecessary abbreviations.
-
-Example:
-
-Prefer:
-
-```txt
-/source
-```
-
-over:
-
-```txt
-src
-```
-
-when practical.
-
-Exception:
-
-Widely standardized names are acceptable.
+Avoid relying on generated documentation or excessive inline documentation.
 
 ---
 
-## Utilities
+# Shell Automation
 
-Custom utilities:
-
-Prefer dedicated utility folders/modules.
-
-Third-party utility packages are acceptable if they satisfy dependency rules.
-
----
-
-# Comments & Documentation
-
-## Comments
-
-Prefer:
-
-- section headers
-- banner comments
-
-Neutral:
-
-- TODO
-- FIXME
-
-Avoid:
-
-- excessive WHY comments
-- unnecessary JSDoc
-- comments explaining obvious code
-
-Comment complex logic.
-
-Do not narrate simple code.
-
----
-
-## Documentation
-
-Strongly value:
-
-- high-quality READMEs
-- architecture documentation
-
-Avoid:
-
-- excessive inline documentation
-- generated documentation dependence
-
----
-
-# Error Handling
-
-Philosophy:
-
-**Minimal ceremony.**
-
-Prefer simple, pragmatic handling.
-
-Avoid excessive defensive architecture.
-
----
-
-# Shell & Automation
-
-Whenever shell automation is produced:
-
-**Always provide BOTH:**
+Whenever shell automation is generated, provide both:
 
 - `.sh`
 - `.ps1`
 
-Do not assume a single shell environment.
+Never assume a single shell environment.
 
 ---
 
 # Git Workflow
 
-## Commit Frequency
+## Commit Frequently
 
-Commit frequently.
+Ask:
 
-Operational question:
-
-> "Would reverting to this commit create unnecessary pain?"
+> Would reverting to this commit create unnecessary pain?
 
 If yes, commit sooner.
 
@@ -565,9 +288,7 @@ If yes, commit sooner.
 
 ## Branch Strategy
 
-Repository hierarchy:
-
-```txt
+```
 mega
 ↑
 dev
@@ -579,44 +300,25 @@ refactor/*
 
 Required flow:
 
-```txt
+```
 feature/* → dev → mega
 ```
 
-Direct merges into `mega` prohibited.
+Never merge directly into `mega`.
 
 ---
 
-# Testing, Linting, Accessibility
+# Testing, Linting & Accessibility
 
-## Human vs Agent Philosophy
+Humans should not be burdened with tooling friction.
 
-Humans should not be burdened by tooling friction.
+Agents should aggressively leverage:
 
-Agents should aggressively leverage automation.
+- Automated testing
+- Linting
+- Accessibility tooling
 
-For agents:
-
-- heavy testing encouraged
-- strong linting encouraged
-- accessibility enforcement encouraged
-
-These tools help AI maintain consistency.
-
----
-
-## Testing
-
-Strongly encouraged for agent-authored code.
-
-Particularly:
-
-- unit tests
-- integration tests
-- lint enforcement
-- automated validation
-
-Mocking is acceptable when reliable.
+Automation exists to improve consistency and confidence.
 
 ---
 
@@ -624,25 +326,21 @@ Mocking is acceptable when reliable.
 
 ## Scope Discipline
 
-If scope expansion becomes likely:
+Ask before expanding scope.
 
-**ASK FIRST.**
-
-Do not opportunistically redesign unrelated architecture.
+Do not redesign unrelated systems opportunistically.
 
 ---
 
-## Outside Project Folder Rule
+## Outside Project Rule
 
-Agents must **always ask permission** before:
+Always ask permission before:
 
-- touching files outside the project folder
-- installing global dependencies
-- modifying system state
+- Modifying files outside the project
+- Installing global dependencies
+- Changing system state
 
-Inside the project folder:
-
-agent autonomy is allowed.
+Within the project folder, agents may operate autonomously.
 
 ---
 
@@ -650,174 +348,94 @@ agent autonomy is allowed.
 
 Agents may:
 
-- modify project files
-- reorganize code
-- add tests
-- improve structure
-- update configs
-- introduce compliant dependencies
+- Modify project files
+- Improve structure
+- Reorganize code
+- Add tests
+- Update configuration
+- Introduce compliant dependencies
 
-Provided:
+Provided changes remain:
 
-- changes remain inside project boundaries
-- commits remain frequent
-- revertability remains easy
+- Revertible
+- Contained within the project
+- Consistent with project philosophy
 
 ---
 
-## Change Explanations
+## Explain Changes
 
-After completing work:
-
-Explain changes in **plain language**.
+After completing work, explain changes in plain language.
 
 Prefer understandable explanations over implementation jargon.
 
 ---
 
----
-
 # Web Development Preferences
 
----
+## Framework Preferences
 
-# Framework Preferences
+Strong preferences:
 
-Opinionated defaults:
-
-- Svelte → strong preference
-- React → strong preference
-- Next.js → strong preference
-- Astro → strong preference
+- Svelte
+- React
+- Next.js
+- Astro
 
 Neutral:
 
 - Vue
 - Solid
 
-Avoid:
-
-- HTMX as default architecture
+Avoid defaulting to HTMX.
 
 ---
 
-# Rendering Philosophy
+## Rendering
 
-Preferred progression:
+Traditional websites:
 
-## Content / traditional sites
+- Static-first
 
-**Static-first**
+Applications:
 
-## Applications
-
-Once the site becomes an app:
-
-use the framework's default architecture unless there is a compelling reason otherwise.
-
----
-
-# Styling Doctrine
-
-## Design System Philosophy
-
-Bootstrap **is the design system**.
-
-Professionally maintained, accessible, evolving systems are desirable.
-
-Installing your design system is acceptable.
-
----
-
-## Styling Priority
-
-### 1. Bootstrap components
-
-Use for structure.
-
-### 2. Tailwind utilities
-
-Use for:
-
-- spacing
-- responsiveness
-- color
-- layout
-- modifiers
-
-### 3. SCSS
-
-Only when genuinely required.
-
-Never default to raw CSS.
-
----
-
-## Dark Mode
-
-Agents should prioritize dark mode support.
+- Prefer the framework's default architecture unless there is a compelling reason otherwise.
 
 ---
 
 # State Management
 
-Default rule:
-
-Use the framework's native/default approach.
+Prefer the framework's native solution.
 
 Secondary preferences:
 
-- signals
+- Signals
 - URL-based state
 
 ---
 
 # Data Fetching
 
-If consuming APIs:
+When consuming APIs:
 
-take what the API provides.
+Use what the API naturally provides.
 
-If building APIs:
+When designing APIs:
 
-**GraphQL-first.**
+Prefer GraphQL where appropriate.
 
-REST is acceptable when unavoidable, but not preferred.
-
----
-
-## React Rule
-
-In React projects:
-
-**SWR should be the default fetching layer.**
+REST remains acceptable when it is the better practical choice.
 
 ---
 
 # Backend Philosophy
 
-## Backend Necessity
+Do not introduce a backend unless necessary.
 
-A backend is often unnecessary.
+Preferred progression:
 
-Do not introduce one casually.
-
----
-
-## Default Backend Stack
-
-Preferred:
-
-**Firebase**
-
----
-
-## Scaling Ladder
-
-```txt
+```
 Firebase
-↓
-(wall of scale)
 ↓
 MongoDB + Prisma
 ↓
@@ -826,85 +444,38 @@ MySQL + Prisma
 
 Cloud preferences:
 
-- Google Cloud preferred
-- Azure acceptable
-- AWS less preferred
-
-Terraform is interesting if operational burden stays reasonable.
+- Google Cloud
+- Azure
+- AWS
 
 ---
 
 # Authentication
 
-Default:
+Default preference:
 
-**Firebase authentication**
+- Firebase Authentication
 
 ---
 
 # Build Tooling
 
-## Preferred Defaults
+Preferred defaults:
 
-### Monorepo orchestration
-
-**Turborepo**
-
-### Large application bundling
-
-**Vite**
-
-### Single-file compilation / minification / transpilation
-
-**esbuild**
+- Turborepo
+- Vite
+- esbuild
 
 ---
 
 # Accessibility
 
-If agents are authoring code:
+Prioritize:
 
-prioritize:
-
-- semantic HTML
-- accessibility
-- inclusive defaults
-- reasonable compliance practices
-
----
-
-# Anti-Patterns
-
-Avoid:
-
-- abstraction tourism
-- hidden behavior
-- convention-enforced architecture
-- dependency sprawl
-- unnecessary framework magic
-- premature optimization
-- over-commenting simple code
-- giant unreadable files
-- tiny fragmented projects
-- cleverness for its own sake
-- blindly following trends
-- tooling dogma
-- architecture by social media consensus
-
----
-
-# Decision Framework
-
-When uncertain, default to:
-
-1. Explicitness
-2. Simpler implementation
-3. Strong defaults with escape hatches
-4. Readability
-5. Frequent commits
-6. Local-first dependencies
-7. Architecture that can grow
-8. Asking before exceeding scope
+- Semantic HTML
+- Inclusive defaults
+- Accessible UI
+- Reasonable compliance practices
 
 ---
 

@@ -8,6 +8,7 @@ import type {
 	EspnEvent,
 	EspnOddsProvider,
 	EspnScoreboardResponse,
+	EspnSituation,
 } from './espnSchemas';
 import type { Game, GameOdds, LeagueConfig, LeagueId, LeagueLogoMap } from './types';
 
@@ -175,6 +176,17 @@ const parseOdds = (competition: EspnCompetition): GameOdds | undefined => {
 	return parsed;
 };
 
+const downOrdinals = ['', '1st', '2nd', '3rd', '4th'] as const;
+
+const buildDownDistance = (situation: EspnSituation): string | undefined => {
+	if (situation.shortDownDistanceText) return situation.shortDownDistanceText;
+	const { down, distance } = situation;
+	if (typeof down !== 'number' || down < 1 || down > 4) return undefined;
+	const ordinal = downOrdinals[down] ?? `${down}th`;
+	if (typeof distance !== 'number' || distance <= 0) return `${ordinal} & Goal`;
+	return `${ordinal} & ${distance}`;
+};
+
 const parseTopOfInning = (shortDetail?: string): boolean | undefined => {
 	if (!shortDetail) return undefined;
 	if (shortDetail.startsWith('Top')) return true;
@@ -228,6 +240,12 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 			second: situation.onSecond ?? false,
 			third: situation.onThird ?? false,
 		} : undefined,
+		bso: isInningSport && state === 'in' && situation && typeof situation.balls === 'number'
+			? { balls: situation.balls, strikes: situation.strikes ?? 0, outs: situation.outs ?? 0 }
+			: undefined,
+		downDistance: leagueConfig.sportType === 'football' && state === 'in' && situation
+			? buildDownDistance(situation)
+			: undefined,
 	};
 };
 

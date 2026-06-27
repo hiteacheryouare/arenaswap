@@ -753,6 +753,41 @@ $pre-game-time-color: shade-color($warning, 60%);
 	letter-spacing: 0.02em;
 }
 
+.bso-indicator {
+	margin-top: 0.22rem;
+}
+
+.bso-label {
+	font-size: 0.5rem;
+	font-weight: 700;
+	color: #8b949e;
+	letter-spacing: 0.04em;
+}
+
+.bso-dot {
+	font-size: 0.45rem;
+}
+
+.series-dots-wrap {
+	padding: 0.35rem 0;
+	margin-top: 0.3rem;
+}
+
+.series-dots-summary {
+	font-size: 0.58rem;
+	color: #8b949e;
+	font-family: 'Lekton', monospace;
+	letter-spacing: 0.02em;
+}
+
+.series-dot {
+	font-size: 0.72rem;
+}
+
+.series-dot-empty {
+	color: #374151;
+}
+
 .team-logo-fallback {
 	width: 64px;
 	height: 64px;

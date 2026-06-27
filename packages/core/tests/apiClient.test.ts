@@ -22,7 +22,7 @@ const makeEvent = (params: {
 	awayScore: string;
 	date?: string;
 	withOdds?: boolean;
-	situation?: { onFirst?: boolean; onSecond?: boolean; onThird?: boolean };
+	situation?: Record<string, unknown>;
 }): Record<string, unknown> => ({
 	id: params.id,
 	date: params.date ?? '2026-10-05T00:00:00.000Z',
@@ -1408,5 +1408,147 @@ describe('apiClient', () => {
 		const live = result.games.find(g => g.id === 'live')!;
 		expect(pre.startTime).toBe('2026-09-01T00:00:00.000Z');
 		expect(live.startTime).toBeUndefined();
+	});
+
+	describe('BSO (balls/strikes/outs) parsing', () => {
+		test('populates bso for a live MLB game with full situation', async () => {
+			const fetchMock = jest.fn().mockResolvedValue(createResponse({
+				events: [makeEvent({ id: 'mlb-bso', state: 'in', period: 7, clock: '0:00', homeScore: '3', awayScore: '2', situation: { balls: 2, strikes: 1, outs: 1 } })],
+			}));
+			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+			const { fetchGamesWithLeagueLogos } = loadApiClient();
+			const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'mlb-bso')?.bso).toEqual({ balls: 2, strikes: 1, outs: 1 });
+		});
+
+		test('defaults strikes and outs to 0 when only balls is in situation', async () => {
+			const fetchMock = jest.fn().mockResolvedValue(createResponse({
+				events: [makeEvent({ id: 'mlb-partial', state: 'in', period: 3, clock: '0:00', homeScore: '0', awayScore: '0', situation: { balls: 3 } })],
+			}));
+			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+			const { fetchGamesWithLeagueLogos } = loadApiClient();
+			const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'mlb-partial')?.bso).toEqual({ balls: 3, strikes: 0, outs: 0 });
+		});
+
+		test('leaves bso undefined when situation has no balls field', async () => {
+			const fetchMock = jest.fn().mockResolvedValue(createResponse({
+				events: [makeEvent({ id: 'mlb-no-bso', state: 'in', period: 5, clock: '0:00', homeScore: '1', awayScore: '0', situation: { onFirst: true } })],
+			}));
+			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+			const { fetchGamesWithLeagueLogos } = loadApiClient();
+			const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'mlb-no-bso')?.bso).toBeUndefined();
+		});
+
+		test('leaves bso undefined for a pre-game MLB event', async () => {
+			const fetchMock = jest.fn().mockResolvedValue(createResponse({
+				events: [makeEvent({ id: 'mlb-pre', state: 'scheduled', period: 1, clock: '0:00', homeScore: '0', awayScore: '0', situation: { balls: 1, strikes: 0, outs: 0 } })],
+			}));
+			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+			const { fetchGamesWithLeagueLogos } = loadApiClient();
+			const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
+			const game = result.games.find(g => g.id === 'mlb-pre');
+			expect(game?.status).toBe('pre');
+			expect(game?.bso).toBeUndefined();
+		});
+
+		test('leaves bso undefined for a live non-baseball game even with BSO situation', async () => {
+			const fetchMock = jest.fn().mockResolvedValue(createResponse({
+				events: [makeEvent({ id: 'nba-bso', state: 'in', period: 3, clock: '5:00', homeScore: '80', awayScore: '78', situation: { balls: 2, strikes: 1, outs: 0 } })],
+			}));
+			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+			const { fetchGamesWithLeagueLogos } = loadApiClient();
+			const result = await fetchGamesWithLeagueLogos(['nba'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'nba-bso')?.bso).toBeUndefined();
+		});
+	});
+
+	describe('downDistance parsing', () => {
+		test('builds down/distance string for a live NFL game', async () => {
+			const fetchMock = jest.fn().mockResolvedValue(createResponse({
+				events: [makeEvent({ id: 'nfl-dd', state: 'in', period: 3, clock: '7:32', homeScore: '17', awayScore: '14', situation: { down: 2, distance: 8 } })],
+			}));
+			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+			const { fetchGamesWithLeagueLogos } = loadApiClient();
+			const result = await fetchGamesWithLeagueLogos(['nfl'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'nfl-dd')?.downDistance).toBe('2nd & 8');
+		});
+
+		test('prefers shortDownDistanceText over computed down/distance', async () => {
+			const fetchMock = jest.fn().mockResolvedValue(createResponse({
+				events: [makeEvent({ id: 'nfl-short', state: 'in', period: 4, clock: '0:28', homeScore: '24', awayScore: '21', situation: { down: 3, distance: 2, shortDownDistanceText: '3rd & 2' } })],
+			}));
+			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+			const { fetchGamesWithLeagueLogos } = loadApiClient();
+			const result = await fetchGamesWithLeagueLogos(['nfl'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'nfl-short')?.downDistance).toBe('3rd & 2');
+		});
+
+		test('returns "Nth & Goal" when distance is 0 or negative', async () => {
+			const fetchMock = jest.fn().mockResolvedValue(createResponse({
+				events: [makeEvent({ id: 'nfl-goal', state: 'in', period: 1, clock: '12:00', homeScore: '0', awayScore: '0', situation: { down: 3, distance: 0 } })],
+			}));
+			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+			const { fetchGamesWithLeagueLogos } = loadApiClient();
+			const result = await fetchGamesWithLeagueLogos(['nfl'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'nfl-goal')?.downDistance).toBe('3rd & Goal');
+		});
+
+		test('returns undefined when down is 0 (between-play state)', async () => {
+			const fetchMock = jest.fn().mockResolvedValue(createResponse({
+				events: [makeEvent({ id: 'nfl-d0', state: 'in', period: 2, clock: '6:00', homeScore: '7', awayScore: '3', situation: { down: 0, distance: 10 } })],
+			}));
+			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+			const { fetchGamesWithLeagueLogos } = loadApiClient();
+			const result = await fetchGamesWithLeagueLogos(['nfl'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'nfl-d0')?.downDistance).toBeUndefined();
+		});
+
+		test('returns undefined when down is out of range (> 4)', async () => {
+			const fetchMock = jest.fn().mockResolvedValue(createResponse({
+				events: [makeEvent({ id: 'nfl-d5', state: 'in', period: 2, clock: '6:00', homeScore: '7', awayScore: '3', situation: { down: 5, distance: 10 } })],
+			}));
+			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+			const { fetchGamesWithLeagueLogos } = loadApiClient();
+			const result = await fetchGamesWithLeagueLogos(['nfl'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'nfl-d5')?.downDistance).toBeUndefined();
+		});
+
+		test('returns undefined for a pre-game NFL event', async () => {
+			const fetchMock = jest.fn().mockResolvedValue(createResponse({
+				events: [makeEvent({ id: 'nfl-pre', state: 'scheduled', period: 1, clock: '0:00', homeScore: '0', awayScore: '0', situation: { down: 1, distance: 10 } })],
+			}));
+			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+			const { fetchGamesWithLeagueLogos } = loadApiClient();
+			const result = await fetchGamesWithLeagueLogos(['nfl'], { includeUpcoming: false });
+			const game = result.games.find(g => g.id === 'nfl-pre');
+			expect(game?.status).toBe('pre');
+			expect(game?.downDistance).toBeUndefined();
+		});
+
+		test('returns undefined for a live non-football game', async () => {
+			const fetchMock = jest.fn().mockResolvedValue(createResponse({
+				events: [makeEvent({ id: 'mls-dd', state: 'in', period: 2, clock: '5:00', homeScore: '1', awayScore: '0', situation: { down: 2, distance: 5 } })],
+			}));
+			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+			const { fetchGamesWithLeagueLogos } = loadApiClient();
+			const result = await fetchGamesWithLeagueLogos(['mls'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'mls-dd')?.downDistance).toBeUndefined();
+		});
+
+		test('builds all four ordinal downs correctly', async () => {
+			const makeNfl = (id: string, down: number, distance: number) => makeEvent({ id, state: 'in', period: 2, clock: '8:00', homeScore: '7', awayScore: '7', situation: { down, distance } });
+			const fetchMock = jest.fn().mockResolvedValue(createResponse({
+				events: [makeNfl('d1', 1, 10), makeNfl('d2', 2, 7), makeNfl('d3', 3, 4), makeNfl('d4', 4, 1)],
+			}));
+			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+			const { fetchGamesWithLeagueLogos } = loadApiClient();
+			const result = await fetchGamesWithLeagueLogos(['nfl'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'd1')?.downDistance).toBe('1st & 10');
+			expect(result.games.find(g => g.id === 'd2')?.downDistance).toBe('2nd & 7');
+			expect(result.games.find(g => g.id === 'd3')?.downDistance).toBe('3rd & 4');
+			expect(result.games.find(g => g.id === 'd4')?.downDistance).toBe('4th & 1');
+		});
 	});
 });

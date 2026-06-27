@@ -308,4 +308,128 @@ describe('MockGameSimulator', () => {
 
 		randomSpy.mockRestore();
 	});
+
+	describe('BSO simulation (baseball)', () => {
+		test('baseball mock games start with a defined bso field', () => {
+			const simulator = new MockGameSimulator();
+			const games = simulator.tick();
+			expect(getGameById(games, 'mock-4').bso).toBeDefined();
+			expect(getGameById(games, 'mock-16').bso).toBeDefined();
+		});
+
+		test('non-baseball mock games do not have a bso field', () => {
+			const simulator = new MockGameSimulator();
+			const games = simulator.tick();
+			expect(getGameById(games, 'mock-1').bso).toBeUndefined();
+			expect(getGameById(games, 'mock-5').bso).toBeUndefined();
+			expect(getGameById(games, 'mock-3').bso).toBeUndefined();
+		});
+
+		test('bso values stay within valid ranges across 30 ticks', () => {
+			const simulator = new MockGameSimulator();
+			for (let i = 0; i < 30; i++) {
+				const games = simulator.tick();
+				for (const game of games) {
+					if (!game.bso) continue;
+					expect(game.bso.balls).toBeGreaterThanOrEqual(0);
+					expect(game.bso.balls).toBeLessThanOrEqual(3);
+					expect(game.bso.strikes).toBeGreaterThanOrEqual(0);
+					expect(game.bso.strikes).toBeLessThanOrEqual(2);
+					expect(game.bso.outs).toBeGreaterThanOrEqual(0);
+					expect(game.bso.outs).toBeLessThanOrEqual(2);
+				}
+			}
+		});
+
+		test('bso is deep-copied so mutating returned games does not affect the simulator', () => {
+			const simulator = new MockGameSimulator();
+			const firstTick = simulator.tick();
+			const mlbGame = getGameById(firstTick, 'mock-4');
+			expect(mlbGame.bso).toBeDefined();
+
+			mlbGame.bso!.balls = 999;
+			mlbGame.bso!.strikes = 999;
+
+			const secondTick = simulator.tick();
+			const updated = getGameById(secondTick, 'mock-4');
+			expect(updated.bso?.balls).toBeLessThanOrEqual(3);
+			expect(updated.bso?.strikes).toBeLessThanOrEqual(2);
+		});
+
+		test('post-game reset sets bso back to all zeros', () => {
+			const randomSpy = jest.spyOn(Math, 'random').mockReturnValue(0.99);
+			const simulator = new MockGameSimulator();
+			const internals = getInternals(simulator);
+			const game = internals.games.find(g => g.id === 'mock-4')!;
+
+			game.status = 'post';
+			game.bso = { balls: 2, strikes: 1, outs: 2 };
+			internals.state.set(game.id, { streak: null, streakTicks: 0, postTicks: 3, preTicks: 0 });
+
+			const reset = getGameById(simulator.tick(), game.id);
+			expect(reset.bso).toEqual({ balls: 0, strikes: 0, outs: 0 });
+
+			randomSpy.mockRestore();
+		});
+	});
+
+	describe('downDistance simulation (football)', () => {
+		test('football mock game (mock-5) starts with a defined downDistance string', () => {
+			const simulator = new MockGameSimulator();
+			const games = simulator.tick();
+			const nflGame = getGameById(games, 'mock-5');
+			expect(nflGame.downDistance).toBeDefined();
+			expect(typeof nflGame.downDistance).toBe('string');
+		});
+
+		test('non-football mock games do not have a downDistance field', () => {
+			const simulator = new MockGameSimulator();
+			const games = simulator.tick();
+			expect(getGameById(games, 'mock-4').downDistance).toBeUndefined();
+			expect(getGameById(games, 'mock-1').downDistance).toBeUndefined();
+			expect(getGameById(games, 'mock-3').downDistance).toBeUndefined();
+		});
+
+		test('downDistance changes when random is below the play threshold', () => {
+			const simulator = new MockGameSimulator();
+			const internals = getInternals(simulator);
+			const game = internals.games.find(g => g.id === 'mock-5')!;
+			game.downDistance = '1st & 10';
+
+			const randomSpy = jest.spyOn(Math, 'random').mockReturnValue(0.1);
+			const updated = getGameById(simulator.tick(), 'mock-5');
+			expect(updated.downDistance).not.toBe('1st & 10');
+
+			randomSpy.mockRestore();
+		});
+
+		test('downDistance stays the same when random is above the play threshold', () => {
+			const simulator = new MockGameSimulator();
+			const internals = getInternals(simulator);
+			const game = internals.games.find(g => g.id === 'mock-5')!;
+			game.downDistance = '2nd & 8';
+
+			const randomSpy = jest.spyOn(Math, 'random').mockReturnValue(0.9);
+			const updated = getGameById(simulator.tick(), 'mock-5');
+			expect(updated.downDistance).toBe('2nd & 8');
+
+			randomSpy.mockRestore();
+		});
+
+		test('post-game reset sets downDistance back to "1st & 10"', () => {
+			const randomSpy = jest.spyOn(Math, 'random').mockReturnValue(0.99);
+			const simulator = new MockGameSimulator();
+			const internals = getInternals(simulator);
+			const game = internals.games.find(g => g.id === 'mock-5')!;
+
+			game.status = 'post';
+			game.downDistance = '4th & 2';
+			internals.state.set(game.id, { streak: null, streakTicks: 0, postTicks: 3, preTicks: 0 });
+
+			const reset = getGameById(simulator.tick(), game.id);
+			expect(reset.downDistance).toBe('1st & 10');
+
+			randomSpy.mockRestore();
+		});
+	});
 });
