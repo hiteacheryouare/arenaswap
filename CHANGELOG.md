@@ -1,5 +1,29 @@
 # Changelog
 
+## Fix: game detail matchup card centering — 2026-06-27
+
+The teams row in the game detail card (logo / score / logo) was visually shifted slightly to the right due to sub-pixel rounding when `justify-content: space-between` distributed leftover space across fixed-width team wraps and a fixed `min-width` center div. Replaced `min-width: 116px` on `.game-detail-center` with `flex: 1` so the center absorbs all remaining space exactly, guaranteeing symmetric gaps and perfect score centering.
+
+## Scoring opportunity boost — 2026-06-27
+
+Automatic PowerScore boost that activates when live game state signals an imminent scoring threat.
+
+### How it works
+- **Baseball / softball** — scales with runners on base: 1 runner +3, 2 runners +6, bases loaded +10.
+- **NFL / NCAAF / UFL** — red zone possession (ESPN `isRedZone` flag) adds +10.
+- Boost is additive, applying on top of the existing favorite team bonus and manual game boost.
+- Only fires for in-progress games (`status === 'in'`); has no effect pre- or post-game.
+
+### PowerScore breakdown UI
+- New **Scoring opportunity** row in the PowerScore breakdown card on the game detail view, showing the active boost value or `0` when the situation has cleared.
+
+### ESPN data
+- `isRedZone` was already present in the ESPN situation schema but not exposed on the `Game` type; it is now parsed and forwarded for all football sports.
+- Investigated NHL power play data — ESPN's scoreboard `situation` object is always empty for hockey (power play state exists only in the play-by-play endpoint, which would require a separate per-game poll). NHL support deferred.
+
+### Tests
+Added **10 new unit tests** in `packages/powerscore/tests/scorer.test.ts` covering `computeScoringOpportunityBoost`: non-live guard, baseball with 0/1/2/3 runners, softball runner scaling, football with and without red zone, and non-applicable sport types.
+
 ## Live game context — 2026-06-27
 
 Four new data points surfaced from the ESPN scoreboard API, a reorganized game detail card, and full demo-mode support for all of it.

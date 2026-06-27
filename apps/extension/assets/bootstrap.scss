@@ -383,7 +383,7 @@ $bootstrap-icons-font-dir: '/fonts';
 
 // ─── PowerScore bar (bottom of live card + detail view) ──────────────────────
 .game-card-ps-bar-row {
-	margin-top: 0.45rem;
+	margin-top: 0.3rem;
 }
 
 // Bootstrap sets height: 1rem on .progress — SCSS needed to override it.
@@ -827,6 +827,7 @@ $pre-game-time-color: shade-color($warning, 60%);
 
 .game-meta {
 	gap: 0.15rem;
+	margin-top: 0.1rem;
 }
 
 .game-meta-venue {
@@ -1198,7 +1199,8 @@ $pre-game-time-color: shade-color($warning, 60%);
 	flex-direction: column;
 	align-items: center;
 	gap: 0.18rem;
-	min-width: 116px;
+	flex: 1;
+	min-width: 0;
 }
 
 .game-detail-score-row {

@@ -166,22 +166,25 @@ export const GameMeta = ({
 	dark,
 	bettingPrefs,
 	hideBroadcasts,
+	hideVenue,
 }: {
 	game: Game;
 	dark?: boolean;
 	bettingPrefs?: BettingDisplayPrefs;
 	hideBroadcasts?: boolean;
+	hideVenue?: boolean;
 }) => {
 	const networks = hideBroadcasts ? undefined : game.broadcasts?.join(' • ');
+	const venueName = hideVenue ? undefined : game.venueName;
 	const bettingOn = bettingPrefs?.bettingEnabled ?? false;
 	const odds = bettingOn ? oddsSummary(game) : null;
 	const hasOddsProvider = bettingOn && Boolean(game.odds?.provider?.name);
-	const hasMeta = Boolean(game.venueName || networks || odds || hasOddsProvider);
+	const hasMeta = Boolean(venueName || networks || odds || hasOddsProvider);
 	if (!hasMeta) return null;
 
 	return (
-		<div className='d-flex flex-column align-items-center mt-1 game-meta'>
-			{game.venueName && <div className='text-center game-meta-venue'>{game.venueName}</div>}
+		<div className='d-flex flex-column align-items-center game-meta'>
+			{venueName && <div className='text-center game-meta-venue'>{venueName}</div>}
 			{networks && (
 				<div className='text-center game-meta-networks'>
 					<span className='font-bold'>Watch:</span> {networks}

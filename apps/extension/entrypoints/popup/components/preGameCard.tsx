@@ -34,7 +34,7 @@ const preGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, openTabs, re
 				</div>
 				<TeamColumn leagueId={game.league} team={game.homeTeam} isFavorited={homeFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} />
 			</div>
-			<GameMeta game={game} bettingPrefs={bettingPrefs} />
+			<GameMeta game={game} bettingPrefs={bettingPrefs} hideBroadcasts />
 			<TabAssignSelect gameId={game.id} openTabs={openTabs} registry={registry} onChange={onRegistryChange} formatTabLabel={formatTabLabel} />
 		</div>
 	);
