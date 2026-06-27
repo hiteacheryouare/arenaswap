@@ -23,6 +23,7 @@ Target users:
 Root structure:
 - /apps
 	- /extension → actual browser extension (UI + runtime logic)
+	- /docs -> the landing page and documentation website for both the extension and npm package
 - /packages
 	- /powerScore → scoring algorithm
 	- /core → core extension engine
