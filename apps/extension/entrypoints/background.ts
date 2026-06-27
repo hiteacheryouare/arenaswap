@@ -1,5 +1,5 @@
 import { randomInRange } from '@porkyproductions/hat';
-import { fetchGamesWithLeagueLogos, computePowerScore, normalizePowerScoreResult, MockGameSimulator, createPollModeTracker, isObjectRecord, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts } from '@arenaswap/core';
+import { fetchGamesWithLeagueLogos, computePowerScore, computeScoringOpportunityBoost, normalizePowerScoreResult, MockGameSimulator, createPollModeTracker, isObjectRecord, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts } from '@arenaswap/core';
 import { computeStandbyStreamDecision } from '../utils/standbyStreamLogic';
 import { loadStoredUserPreferences, persistStoredUserPreferences } from '../utils/prefsStorage';
 import {
@@ -353,10 +353,12 @@ export default defineBackground(() => {
 			const favoriteTeamCount = getFavoriteTeamCount(g, favoriteTeamIds);
 			const favoriteBonus = favoriteTeamCount * favoriteBonusPoints;
 			const gameBoost = gameBoosts[g.id] ?? 0;
+			const scoringOpportunityBoost = computeScoringOpportunityBoost(g);
 			const reasonParts = [
 				baseScore.reason,
 				favoriteBonus > 0 && `favorite bonus (+${favoriteBonus})`,
 				gameBoost > 0 && `game boost (+${gameBoost})`,
+				scoringOpportunityBoost > 0 && `scoring opportunity (+${scoringOpportunityBoost})`,
 			].filter(Boolean);
 
 			return normalizePowerScoreResult(
@@ -366,7 +368,8 @@ export default defineBackground(() => {
 					favoriteBonus,
 					favoriteTeamCount,
 					gameBoost,
-					total: baseScore.total + favoriteBonus + gameBoost,
+					scoringOpportunityBoost,
+					total: baseScore.total + favoriteBonus + gameBoost + scoringOpportunityBoost,
 					reason: reasonParts.join(', '),
 				},
 				{ allowTotalOverflow: true },

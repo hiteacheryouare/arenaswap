@@ -71,8 +71,9 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 	const favoriteBonus = activePowerScore?.favoriteBonus ?? 0;
 	const favoriteTeamCount = activePowerScore?.favoriteTeamCount ?? 0;
 	const currentBoost = gameBoosts[game.id] ?? 0;
+	const scoringOpportunityBoost = activePowerScore?.scoringOpportunityBoost ?? 0;
 	const reason = activePowerScore?.reason ?? 'Best Available';
-	const totalBeforeBonuses = total - favoriteBonus - currentBoost;
+	const totalBeforeBonuses = total - favoriteBonus - currentBoost - scoringOpportunityBoost;
 
 	const powerScoreOption = useMemo(() => (
 		buildPowerScoreOption(orderedPowerScoreHistory)
@@ -180,6 +181,7 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 				favoriteBonus={favoriteBonus}
 				favoriteTeamCount={favoriteTeamCount}
 				currentBoost={currentBoost}
+				scoringOpportunityBoost={scoringOpportunityBoost}
 				total={total}
 				totalLabel={totalLabel}
 			/>

@@ -32,8 +32,9 @@ export const isPowerScoreSnapshotLike = (value: unknown): value is PowerScoreSna
 	&& isFiniteNumber(value.favoriteTeamCount)
 	&& typeof value.stalled === 'boolean'
 	&& typeof value.reason === 'string'
-	// gameBoost is optional — older snapshots won't have it; hydration fills it with 0
+	// gameBoost and scoringOpportunityBoost are optional — older snapshots won't have them
 	&& (value.gameBoost === undefined || isFiniteNumber(value.gameBoost))
+	&& (value.scoringOpportunityBoost === undefined || isFiniteNumber(value.scoringOpportunityBoost))
 );
 
 

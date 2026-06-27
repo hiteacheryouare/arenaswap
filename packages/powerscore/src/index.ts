@@ -1,3 +1,3 @@
-export { computePowerScore, normalizePowerScoreResult } from './scorer';
+export { computePowerScore, computeScoringOpportunityBoost, normalizePowerScoreResult } from './scorer';
 export * from './types';
 export * from './constants';

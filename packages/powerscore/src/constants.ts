@@ -8,6 +8,11 @@ export const stallPenaltySteps: { minPolls: number; multiplier: number }[] = [
 	{ minPolls: 8,  multiplier: 0.85 },
 ];
 
+// Scoring opportunity boost — automatic additive bonus when a live situation signals an imminent scoring threat.
+// baseRunnerBoosts is indexed by runner count (0–3); football and hockey use a flat value.
+export const scoringOpportunityBaseRunnerBoosts: [number, number, number, number] = [0, 3, 6, 10];
+export const scoringOpportunityRedZoneBoost = 10;
+
 // PowerScore signal maxes (per-signal ceilings, sport-agnostic).
 // The per-signal ceilings deliberately sum to MORE than 100 ("overcomplete"): the headline total is
 // capped at scoreMaxTotal, so a genuinely exciting game — close + a run + lead changes, even mid-game

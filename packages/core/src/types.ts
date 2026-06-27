@@ -66,6 +66,8 @@ export interface Game {
 	bso?: { balls: number; strikes: number; outs: number };
 	/** Down & distance string for gridiron football (e.g. "3rd & 5"); undefined for non-football */
 	downDistance?: string;
+	/** True when the offense is in the red zone (inside the 20); football only */
+	isRedZone?: boolean;
 }
 
 export interface UserPreferences {
@@ -108,6 +110,7 @@ export interface PowerScoreSnapshot {
 	favoriteBonus: number;
 	favoriteTeamCount: number;
 	gameBoost?: number;
+	scoringOpportunityBoost?: number;
 	stalled: boolean;
 	reason: string;
 }

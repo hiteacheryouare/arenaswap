@@ -11,7 +11,7 @@ import {
 	sportTypeConfigMap,
 	stallPenaltySteps,
 } from '../src/constants';
-import { computePowerScore, normalizePowerScoreResult } from '../src/scorer';
+import { computePowerScore, computeScoringOpportunityBoost, normalizePowerScoreResult } from '../src/scorer';
 import type { Game, PowerScoreResult, ScoreSnapshot } from '../src/types';
 
 const makeGame = (overrides: Partial<Game> = {}): Game => ({
@@ -811,5 +811,67 @@ describe('PowerScore v2 — live-action decay & overtime anticipation', () => {
 			expect(result.leadChanges).toBe(0);
 			expect(result.comeback).toBe(0);
 		}
+	});
+});
+
+const makeBaseballGame = (overrides: Partial<Game> = {}): Game => ({
+	id: 'g1', league: 'mlb', sportType: 'baseball',
+	homeTeam: { score: 2 }, awayTeam: { score: 1 },
+	status: 'in', ...overrides,
+});
+const makeFootballGame = (overrides: Partial<Game> = {}): Game => ({
+	id: 'g1', league: 'nfl', sportType: 'football',
+	homeTeam: { score: 7 }, awayTeam: { score: 10 },
+	status: 'in', ...overrides,
+});
+
+describe('computeScoringOpportunityBoost', () => {
+
+	test('returns 0 for non-live games', () => {
+		expect(computeScoringOpportunityBoost(makeBaseballGame({ status: 'pre' }))).toBe(0);
+		expect(computeScoringOpportunityBoost(makeBaseballGame({ status: 'post' }))).toBe(0);
+	});
+
+	test('returns 0 for baseball with no runners on base', () => {
+		expect(computeScoringOpportunityBoost(makeBaseballGame({
+			baseRunners: { first: false, second: false, third: false },
+		}))).toBe(0);
+	});
+
+	test('returns 0 for baseball when baseRunners is undefined', () => {
+		expect(computeScoringOpportunityBoost(makeBaseballGame({ baseRunners: undefined }))).toBe(0);
+	});
+
+	test('boosts baseball by runner count', () => {
+		expect(computeScoringOpportunityBoost(makeBaseballGame({
+			baseRunners: { first: true, second: false, third: false },
+		}))).toBe(3); // 1 runner
+		expect(computeScoringOpportunityBoost(makeBaseballGame({
+			baseRunners: { first: true, second: true, third: false },
+		}))).toBe(6); // 2 runners
+		expect(computeScoringOpportunityBoost(makeBaseballGame({
+			baseRunners: { first: true, second: true, third: true },
+		}))).toBe(10); // bases loaded
+	});
+
+	test('softball also scales with runners', () => {
+		const game: Game = { ...makeBaseballGame(), league: 'csoft', sportType: 'softball',
+			baseRunners: { first: false, second: true, third: true } };
+		expect(computeScoringOpportunityBoost(game)).toBe(6);
+	});
+
+	test('returns 0 for football when not in red zone', () => {
+		expect(computeScoringOpportunityBoost(makeFootballGame({ isRedZone: false }))).toBe(0);
+		expect(computeScoringOpportunityBoost(makeFootballGame({ isRedZone: undefined }))).toBe(0);
+	});
+
+	test('returns 10 for football in red zone', () => {
+		expect(computeScoringOpportunityBoost(makeFootballGame({ isRedZone: true }))).toBe(10);
+	});
+
+	test('returns 0 for other sport types', () => {
+		const basketball: Game = { id: 'g1', league: 'nba', sportType: 'basketball',
+			homeTeam: { score: 80 }, awayTeam: { score: 78 }, status: 'in' };
+		expect(computeScoringOpportunityBoost(basketball)).toBe(0);
 	});
 });

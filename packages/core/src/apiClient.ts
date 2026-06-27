@@ -246,6 +246,9 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 		downDistance: leagueConfig.sportType === 'football' && state === 'in' && situation
 			? buildDownDistance(situation)
 			: undefined,
+		isRedZone: leagueConfig.sportType === 'football' && state === 'in' && situation
+			? (situation.isRedZone ?? false)
+			: undefined,
 	};
 };
 

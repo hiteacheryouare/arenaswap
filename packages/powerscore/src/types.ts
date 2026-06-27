@@ -18,6 +18,11 @@ export interface Game {
 	period?: number;
 	clockSeconds?: number;
 	intermission?: boolean;
+	status?: 'pre' | 'in' | 'post';
+	/** Which bases have runners; used by the scoring opportunity boost */
+	baseRunners?: { first: boolean; second: boolean; third: boolean };
+	/** True when the offense is in the red zone; football only */
+	isRedZone?: boolean;
 }
 
 export interface ScoreSnapshot {
@@ -41,6 +46,7 @@ export interface PowerScoreResult {
 	favoriteBonus?: number;
 	favoriteTeamCount?: number;
 	gameBoost?: number;
+	scoringOpportunityBoost?: number;
 }
 
 /** Inning anchors for baseball's near-linear late-game ramp (clock sports derive theirs from the

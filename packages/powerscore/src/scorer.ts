@@ -9,6 +9,8 @@ import {
 	scoreMaxLeadChanges,
 	scoreMaxComeback,
 	scoreMaxTotal,
+	scoringOpportunityBaseRunnerBoosts,
+	scoringOpportunityRedZoneBoost,
 } from './constants';
 import type { SportTypeConfig, BaseballLateGameCurveConfig } from './types';
 import type { Game, ScoreSnapshot, PowerScoreResult } from './types';
@@ -56,10 +58,12 @@ export const normalizePowerScoreResult = (
 	const hasFavoriteBonus = typeof score.favoriteBonus === 'number' && Number.isFinite(score.favoriteBonus);
 	const hasFavoriteTeamCount = typeof score.favoriteTeamCount === 'number' && Number.isFinite(score.favoriteTeamCount);
 	const hasGameBoost = typeof score.gameBoost === 'number' && Number.isFinite(score.gameBoost);
+	const hasScoringOpportunityBoost = typeof score.scoringOpportunityBoost === 'number' && Number.isFinite(score.scoringOpportunityBoost);
 	const baseTotal = hasBaseTotal ? clamp(toFiniteNumber(score.baseTotal), 0, scoreMaxTotal) : undefined;
 	const favoriteBonus = hasFavoriteBonus ? Math.max(0, Math.round(toFiniteNumber(score.favoriteBonus))) : undefined;
 	const favoriteTeamCount = hasFavoriteTeamCount ? Math.max(0, Math.round(toFiniteNumber(score.favoriteTeamCount))) : undefined;
 	const gameBoost = hasGameBoost ? Math.max(0, Math.round(toFiniteNumber(score.gameBoost))) : undefined;
+	const scoringOpportunityBoost = hasScoringOpportunityBoost ? Math.max(0, Math.round(toFiniteNumber(score.scoringOpportunityBoost))) : undefined;
 
 	return {
 		gameId: score.gameId,
@@ -75,6 +79,7 @@ export const normalizePowerScoreResult = (
 		...(hasFavoriteBonus ? { favoriteBonus } : {}),
 		...(hasFavoriteTeamCount ? { favoriteTeamCount } : {}),
 		...(hasGameBoost ? { gameBoost } : {}),
+		...(hasScoringOpportunityBoost ? { scoringOpportunityBoost } : {}),
 	};
 };
 
@@ -399,6 +404,23 @@ const getComeback = (game: Game, history: ScoreSnapshot[], config: SportTypeConf
 	const floored = applyProgressFloor(tier, scores.comeback.flatFloor, progress);
 	const ageMs = ageSince(lastScoreChangeTimestamp(history), now);
 	return decaySignal(floored, reason, ageMs, config.decayHalfLifeMs.comeback);
+};
+
+export const computeScoringOpportunityBoost = (game: Game): number => {
+	if (game.status !== 'in') return 0;
+
+	if (game.sportType === 'baseball' || game.sportType === 'softball') {
+		const r = game.baseRunners;
+		if (!r) return 0;
+		const count = [r.first, r.second, r.third].filter(Boolean).length;
+		return scoringOpportunityBaseRunnerBoosts[count] ?? 0;
+	}
+
+	if (game.sportType === 'football' && game.isRedZone) {
+		return scoringOpportunityRedZoneBoost;
+	}
+
+	return 0;
 };
 
 export const computePowerScore = (
