@@ -1531,12 +1531,10 @@ body.nav-open {
 // ─── Blog article ─────────────────────────────────────────────────────────────
 .blog-article-title {
 	letter-spacing: -0.03em;
-	color: var(--color-text);
 	line-height: 1.1;
 }
 
 .blog-article-lead {
-	color: var(--color-muted);
 	font-size: 1.15rem;
 	line-height: 1.65;
 }
@@ -1562,64 +1560,17 @@ body.nav-open {
 	}
 }
 
+// Prose: only override what Bootstrap doesn't cover for the dark theme
 .blog-prose {
-	color: var(--color-text);
+	// Tighten heading tracking — Bootstrap doesn't set letter-spacing
+	h1, h2, h3, h4 { letter-spacing: -0.03em; }
 
-	h1 {
-		font-size: 2.1rem;
-		font-weight: 700;
-		letter-spacing: -0.04em;
-		margin-top: 3rem;
-		margin-bottom: 1rem;
-		color: var(--color-text);
-		line-height: 1.1;
+	// Restore list markers (Bootstrap reboot strips them inside certain wrappers)
+	ul { list-style: disc; }
+	ol { list-style: decimal; }
+	ul, ol { padding-left: 1.75rem; }
 
-		&:first-child {
-			margin-top: 0;
-		}
-	}
-
-	h2 {
-		font-size: 1.65rem;
-		font-weight: 700;
-		letter-spacing: -0.03em;
-		margin-top: 3rem;
-		margin-bottom: 1rem;
-		color: var(--color-text);
-		line-height: 1.15;
-	}
-
-	h3 {
-		font-size: 1.25rem;
-		font-weight: 600;
-		letter-spacing: -0.02em;
-		margin-top: 2.25rem;
-		margin-bottom: 0.75rem;
-		color: var(--color-text);
-	}
-
-	p {
-		font-size: 1.05rem;
-		line-height: 1.8;
-		margin-bottom: 1.5rem;
-		color: var(--color-text);
-	}
-
-	a {
-		color: var(--color-primary);
-		text-decoration: underline;
-		text-underline-offset: 3px;
-
-		&:hover {
-			color: #ff6a1a;
-		}
-	}
-
-	strong {
-		font-weight: 600;
-		color: var(--color-text);
-	}
-
+	// Dark-themed code blocks
 	code {
 		font-family: var(--font-mono);
 		font-size: 0.875em;
@@ -1647,91 +1598,30 @@ body.nav-open {
 		}
 	}
 
-	blockquote {
+	// Orange left-border accent on blockquotes
+	blockquote, .blog-blockquote {
 		border-left: 3px solid var(--color-primary);
 		padding: 0.25rem 0 0.25rem 1.5rem;
 		margin: 2rem 0;
 		color: var(--color-muted);
 		font-style: italic;
+		font-size: 1.05rem;
 	}
 
-	hr {
-		border: none;
-		border-top: 1px solid var(--color-border);
-		margin: 3rem 0;
-	}
-
-	ul, ol {
-		padding-left: 1.5rem;
-		margin-bottom: 1.5rem;
-
-		li {
-			margin-bottom: 0.5rem;
-			line-height: 1.7;
-			color: var(--color-text);
-			font-size: 1.05rem;
-		}
-	}
-
-	img {
-		max-width: 100%;
-		border-radius: 0.75rem;
-		margin: 1.5rem 0;
-	}
-
-	table {
-		width: 100%;
-		border-collapse: collapse;
-		margin-bottom: 0; // margin lives on the .table-responsive wrapper
-		font-size: 0.95rem;
-
-		// Bootstrap .table CSS custom property overrides for dark theme
-		--bs-table-color: var(--color-text);
-		--bs-table-bg: transparent;
-		--bs-table-border-color: var(--color-border);
-		--bs-table-striped-bg: rgba(255, 255, 255, 0.025);
-		--bs-table-hover-bg: rgba(255, 255, 255, 0.04);
-		--bs-table-active-bg: rgba(255, 255, 255, 0.06);
-
-		th {
-			text-align: left;
-			font-size: 0.78rem;
-			font-weight: 700;
-			color: var(--color-muted);
-			text-transform: uppercase;
-			letter-spacing: 0.08em;
-			padding: 0.75rem 1rem;
-			border-bottom: 1px solid var(--color-border);
-		}
-
-		td {
-			padding: 0.75rem 1rem;
-			border-bottom: 1px solid rgba(48, 54, 61, 0.6);
-			color: var(--color-text);
-			vertical-align: top;
-		}
-
-		tr:last-child td {
-			border-bottom: none;
-		}
-	}
-
-	// Wrapper added by the prose-enhancement script
+	// Rounded wrapper injected around tables by the prose-enhancement script
 	.blog-table-wrap {
 		border: 1px solid var(--color-border);
 		border-radius: 0.75rem;
 		margin-bottom: 2rem;
 		overflow: hidden;
-	}
 
-	// .blockquote class added by the prose-enhancement script
-	.blog-blockquote {
-		border-left: 3px solid var(--color-primary);
-		padding: 0.25rem 0 0.25rem 1.5rem;
-		margin: 2rem 0;
-		color: var(--color-muted);
-		font-style: italic;
-		font-size: 1.05rem; // Bootstrap .blockquote defaults to 1.25rem — too large for inline quotes
+		table {
+			margin-bottom: 0;
+			border-color: var(--color-border);
+		}
+
+		td { color: var(--color-text); }
+		th { color: var(--color-muted); }
 	}
 }
 
