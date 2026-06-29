@@ -1,5 +1,6 @@
 import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
+import mdx from '@astrojs/mdx';
 import tailwindcss from '@tailwindcss/vite';
 import pkg from '../../package.json'
 
@@ -7,7 +8,7 @@ const year = new Date().getFullYear();
 const version = pkg.version;
 
 export default defineConfig({
-	integrations: [react()],
+	integrations: [react(), mdx()],
 	vite: {
 		plugins: [tailwindcss()],
 		rollupOptions: {

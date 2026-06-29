@@ -4,47 +4,53 @@
 	<div class="hero-glow"></div>
 
 	<div class="container">
+
 		<div class="row align-items-center g-5">
 
-			<!-- Left: copy -->
+			<!-- Left: Headline + CTAs -->
 			<div class="col-lg-6">
+
 				<h1 class="hero-headline">
-					<span class="hero-word hero-word-1">Never</span>
-					<span class="hero-word hero-word-2">miss</span>
+					<span class="hero-word hero-word-1">Never</span>&nbsp;<span class="hero-word hero-word-2">miss</span>
 					<br>
-					<span class="hero-word hero-word-3">the</span>
-					<span class="hero-word hero-word-4">moment.</span>
+					<span class="hero-word hero-word-3">the</span>&nbsp;<span class="hero-word hero-word-4">moment.</span>
 				</h1>
 
 				<p class="hero-sub">
-					ArenaSwap watches every live game across 12 leagues
+					ArenaSwap watches every live game across 31 leagues
 					and switches your browser tab to the most exciting one —
 					automatically, every 15 seconds.
 				</p>
 
-				<div class="hero-cta d-flex flex-wrap gap-3">
-					<a href="https://chromewebstore.google.com/detail/arenaswap/gibojibgihombdmmfnhnimajppamfeee" class="btn btn-cta btn-cta-pulse">
+				<div class="hero-cta d-flex flex-column align-items-start gap-3">
+					<a href="https://chromewebstore.google.com/detail/arenaswap/gibojibgihombdmmfnhjpamfeee" class="btn btn-cta btn-cta-pulse hero-cta-primary">
 						<i class="bi bi-browser-chrome me-2"></i>Add to Chrome
 					</a>
-					<a href="https://addons.mozilla.org/addon/arenaswap/" class="btn btn-outline-secondary-custom">
-						<i class="bi bi-browser-firefox me-2"></i>Add to Firefox
-					</a>
-					<a href="https://microsoftedge.microsoft.com/addons/detail/arenaswap/oeballpnidkinkcbjokogdgjckdjeeba" class="btn btn-outline-secondary-custom">
-						<i class="bi bi-browser-edge me-2"></i>Add to Edge
-					</a>
+					<div class="hero-cta-alts">
+						Also available for
+						<a href="https://addons.mozilla.org/addon/arenaswap/" class="hero-cta-alt-link">
+							<i class="bi bi-browser-firefox me-1"></i>Firefox
+						</a>
+						and
+						<a href="https://microsoftedge.microsoft.com/addons/detail/arenaswap/oeballpnidkinkcbjokogdgjckdjeeba" class="hero-cta-alt-link">
+							<i class="bi bi-browser-edge me-1"></i>Edge
+						</a>
+					</div>
 				</div>
+
 			</div>
 
-			<!-- Right: pixel-accurate popup replica -->
+			<!-- Right: Extension preview -->
 			<div class="col-lg-6 d-flex justify-content-center justify-content-lg-end">
 				<div class="demo-popup-wrapper">
 					<div class="demo-popup">
 						<div class="demo-popup-inner">
 
-							<!-- Header -->
+							<!-- Header: logo + tour + settings + toggle -->
 							<div class="demo-header">
 								<img src="/arenaswap/images/full_logo_white_on_transparent.png" alt="ArenaSwap" class="demo-logo-img" />
 								<div class="demo-header-right">
+									<i class="bi bi-question-circle" style="color:#8b949e;font-size:0.9rem;"></i>
 									<i class="bi bi-gear-fill" style="color:#8b949e;font-size:0.9rem;"></i>
 									<div class="demo-switch">
 										<div class="demo-switch-thumb"></div>
@@ -52,15 +58,17 @@
 								</div>
 							</div>
 
-							<!-- Section: Active Tabs -->
+							<!-- Active Tabs heading -->
 							<div class="demo-section-title">Active Tabs</div>
 
-							<!-- NCAAB: BU vs Northeastern — hottest -->
-							<div class="demo-league-label">NCAAB</div>
-							<div class="demo-card" style="border-left:5px solid #CC0000;border-right:5px solid #CC0000;background:linear-gradient(to right,#CC000028,#CC000028),#ffffff;">
-								<div class="demo-live" style="margin-bottom:0.25rem;">
-									<span class="demo-live-dot"></span>
-									LIVE
+							<!-- NCAAB: BU vs NU — hottest game -->
+							<div class="demo-league-row">
+								<img src="/arenaswap/images/leagues/ncaab.png" alt="NCAAB" class="demo-league-icon" onerror="this.style.display='none'" />
+								<span class="demo-league-label-text">NCAAB</span>
+							</div>
+							<div class="demo-card" style="border-left:4px solid #CC0000;border-right:4px solid #CC0000;background:linear-gradient(to right,#CC000020,#CC000020),#fff;">
+								<div class="demo-live">
+									<span class="demo-live-dot"></span>LIVE
 								</div>
 								<div class="demo-matchup">
 									<div class="demo-team-col">
@@ -68,7 +76,6 @@
 											<img src="https://a.espncdn.com/i/teamlogos/ncaa/500/104.png" alt="BU" class="demo-team-logo-img" />
 										</div>
 										<span class="demo-team-abbr">BU</span>
-										<i class="bi bi-star demo-star-icon"></i>
 									</div>
 									<div class="demo-center-col">
 										<div class="demo-scores">
@@ -84,74 +91,62 @@
 											<img src="https://a.espncdn.com/i/teamlogos/ncaa/500/111.png" alt="NU" class="demo-team-logo-img" />
 										</div>
 										<span class="demo-team-abbr">NU</span>
-										<i class="bi bi-star-fill demo-star-icon" style="color:#f1c40f;"></i>
 									</div>
-								</div>
-								<div class="demo-meta">
-									<span class="demo-meta-venue">Matthews Arena · Boston, MA</span>
-									<span class="demo-meta-network">TNT, truTV</span>
 								</div>
 								<div class="demo-ps-bar-row">
 									<span class="demo-ps-label">PowerScore</span>
 									<div class="demo-ps-progress">
-										<div class="demo-ps-fill" style="width:89%;background:#F75C03;"></div>
+										<div class="demo-ps-fill" style="width:89%;background:linear-gradient(to right,#8b949e,#F75C03);"></div>
 									</div>
-									<span class="demo-ps-score" style="color:#F75C03;">89 / 100</span>
+									<span class="demo-ps-score" style="color:#F75C03;">89</span>
 								</div>
 								<div class="demo-tab-row">
-									<select class="demo-select">
-										<option>Tab 2: truTV</option>
-									</select>
+									<select class="demo-select"><option>Tab 2: truTV</option></select>
 								</div>
 							</div>
 
-							<!-- NBA: Bulls vs 76ers -->
-							<div class="demo-league-label">NBA</div>
-							<div class="demo-card" style="border-left:5px solid #CE1141;border-right:5px solid #006BB6;background:linear-gradient(to right,#CE114128,#006BB628),#ffffff;">
-								<div class="demo-live" style="margin-bottom:0.25rem;">
-									<span class="demo-live-dot"></span>
-									LIVE
+							<!-- NFL: Chiefs vs Ravens — showing down & distance -->
+							<div class="demo-league-row" style="margin-top:0.35rem;">
+								<img src="/arenaswap/images/leagues/nfl.png" alt="NFL" class="demo-league-icon" onerror="this.style.display='none'" />
+								<span class="demo-league-label-text">NFL</span>
+							</div>
+							<div class="demo-card" style="border-left:4px solid #E31837;border-right:4px solid #241773;background:linear-gradient(to right,#E3183720,#24177320),#fff;">
+								<div class="demo-live">
+									<span class="demo-live-dot"></span>LIVE
 								</div>
 								<div class="demo-matchup">
 									<div class="demo-team-col">
 										<div class="demo-team-logo-wrap">
-											<img src="https://a.espncdn.com/i/teamlogos/nba/500/4.png" alt="CHI" class="demo-team-logo-img" />
+											<img src="https://a.espncdn.com/i/teamlogos/nfl/500/kc.png" alt="KC" class="demo-team-logo-img" />
 										</div>
-										<span class="demo-team-abbr">CHI</span>
-										<i class="bi bi-star demo-star-icon"></i>
+										<span class="demo-team-abbr">KC</span>
 									</div>
 									<div class="demo-center-col">
 										<div class="demo-scores">
-											<span class="demo-score">65</span>
+											<span class="demo-score">17</span>
 											<span class="demo-sep"></span>
-											<span class="demo-score">68</span>
+											<span class="demo-score">20</span>
 										</div>
-										<span class="demo-clock">4:44</span>
-										<span class="demo-period">3rd</span>
+										<span class="demo-clock">1:18</span>
+										<span class="demo-period">Q4</span>
+										<span class="demo-down-dist">3rd &amp; 6</span>
 									</div>
 									<div class="demo-team-col">
 										<div class="demo-team-logo-wrap">
-											<img src="https://a.espncdn.com/i/teamlogos/nba/500/20.png" alt="PHI" class="demo-team-logo-img" />
+											<img src="https://a.espncdn.com/i/teamlogos/nfl/500/bal.png" alt="BAL" class="demo-team-logo-img" />
 										</div>
-										<span class="demo-team-abbr">PHI</span>
-										<i class="bi bi-star-fill demo-star-icon" style="color:#f1c40f;"></i>
+										<span class="demo-team-abbr">BAL</span>
 									</div>
-								</div>
-								<div class="demo-meta">
-									<span class="demo-meta-venue">Xfinity Mobile Arena · Philadelphia, PA</span>
-									<span class="demo-meta-network">ESPN, NBCSN</span>
 								</div>
 								<div class="demo-ps-bar-row">
 									<span class="demo-ps-label">PowerScore</span>
 									<div class="demo-ps-progress">
-										<div class="demo-ps-fill" style="width:74%;background:rgb(219,107,43);"></div>
+										<div class="demo-ps-fill" style="width:76%;background:linear-gradient(to right,#8b949e,#F75C03);"></div>
 									</div>
-									<span class="demo-ps-score" style="color:rgb(219,107,43);">74 / 100</span>
+									<span class="demo-ps-score" style="color:#db6b2b;">76</span>
 								</div>
 								<div class="demo-tab-row">
-									<select class="demo-select">
-										<option>Tab 1: ESPN</option>
-									</select>
+									<select class="demo-select"><option>Tab 1: ESPN</option></select>
 								</div>
 							</div>
 
@@ -159,8 +154,8 @@
 					</div>
 				</div>
 			</div>
-
 		</div>
+
 	</div>
 
 	<div class="hero-scroll-indicator">

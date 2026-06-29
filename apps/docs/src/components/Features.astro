@@ -1,47 +1,58 @@
 ---
+const features = [
+	{
+		icon: 'bi-collection-play',
+		title: '31 leagues.',
+		subtitle: 'One extension.',
+		body: 'NBA, NFL, NHL, MLB, EPL, Champions League, MLS, all major international soccer, NCAA, Olympics, and more — monitored simultaneously. Open your tabs and walk away.',
+	},
+	{
+		icon: 'bi-arrow-repeat',
+		title: 'Set it once.',
+		subtitle: 'Watch everything.',
+		body: 'Open your streams, assign them to games, walk away. ArenaSwap handles every switch from that point on — no clicking, no checking, no missing.',
+	},
+	{
+		icon: 'bi-graph-up',
+		title: 'See why.',
+		subtitle: 'Every time.',
+		body: 'Five signals power every score. Open any game to see the live breakdown, PowerScore trend, score history, and margin chart. No black-box guessing.',
+	},
+	{
+		icon: 'bi-sliders',
+		title: 'Your rules.',
+		subtitle: 'Your game.',
+		body: 'Dial sensitivity up or down, set a cooldown, boost games with your favorite teams, and filter to the leagues you care about.',
+	},
+];
 ---
 <section id="features" class="section-pad">
 	<div class="container">
 
-		<div class="text-center mb-5 reveal">
-			<h2 class="section-title mx-auto max-w-[560px]">
+		<div class="mb-5 reveal">
+			<h2 class="section-title">
 				Built for how<br>fans actually watch.
 			</h2>
 		</div>
 
-		<div class="row g-4">
-			<div class="col-md-6 col-lg-3 reveal reveal-delay-1">
-				<div class="feature-card">
-					<i class="bi bi-collection-play feature-icon"></i>
-					<h3>Twelve leagues. One extension.</h3>
-					<p>NBA, NFL, MLB, NHL, MLS, EPL, FIFA World Cup, WNBA, NCAAB, NCAAW, NCAAF, NCAAMH — monitored simultaneously, all the time.</p>
-				</div>
-			</div>
+		{features.map((f, i) => (
+			<div class={`row align-items-center g-5 feature-row reveal reveal-delay-${(i % 4) + 1}`}>
 
-			<div class="col-md-6 col-lg-3 reveal reveal-delay-2">
-				<div class="feature-card">
-					<i class="bi bi-arrow-repeat feature-icon"></i>
-					<h3>Set it once. Watch everything.</h3>
-					<p>Open your streams, assign them to games, walk away. ArenaSwap handles every switch from that point on.</p>
+				<div class={`col-lg-5 d-flex justify-content-center ${i % 2 === 1 ? 'order-lg-2' : ''}`}>
+					<div class="feature-icon-display">
+						<i class={`bi ${f.icon}`}></i>
+					</div>
 				</div>
-			</div>
 
-			<div class="col-md-6 col-lg-3 reveal reveal-delay-3">
-				<div class="feature-card">
-					<i class="bi bi-graph-up feature-icon"></i>
-					<h3>See why. Every time.</h3>
-					<p>Five signals power every score. Open any game to see the live breakdown, PowerScore trend, score history, and margin chart. No black-box guessing.</p>
+				<div class={`col-lg-7 ${i % 2 === 1 ? 'order-lg-1' : ''}`}>
+					<h3 class="feature-row-title">
+						{f.title}<br />{f.subtitle}
+					</h3>
+					<p class="feature-row-body">{f.body}</p>
 				</div>
-			</div>
 
-			<div class="col-md-6 col-lg-3 reveal reveal-delay-4">
-				<div class="feature-card">
-					<i class="bi bi-sliders feature-icon"></i>
-					<h3>Your rules. Your game.</h3>
-					<p>Dial sensitivity up or down, set a cooldown, boost games with your favorite teams, and filter to the leagues you care about.</p>
-				</div>
 			</div>
-		</div>
+		))}
 
 	</div>
 </section>

@@ -1,46 +1,78 @@
 ---
 ---
-<nav id="main-nav" class="navbar navbar-expand-lg navbar-dark fixed-top py-3">
-	<div class="container">
-		<a class="navbar-brand" href="/arenaswap/#hero">
-			<img src="/arenaswap/images/full_logo_white_on_transparent.png" alt="ArenaSwap" style="height:32px;width:auto;display:block;" />
-		</a>
-		<button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
-			<span class="navbar-toggler-icon"></span>
-		</button>
-		<div class="collapse navbar-collapse" id="navMenu">
-			<ul class="navbar-nav mx-auto gap-1">
-				<li class="nav-item">
-					<a class="nav-link" href="/arenaswap/#features">Features</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link" href="/arenaswap/#how-it-works">How It Works</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link" href="/arenaswap/#powerscore">PowerScore</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link" href="/arenaswap/powerscore/">Package</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link" href="/arenaswap/#faq">FAQ</a>
-				</li>
-			</ul>
-			<a href="https://chromewebstore.google.com/detail/arenaswap/gibojibgihombdmmfnhnimajppamfeee" class="btn btn-cta btn-cta-pulse ms-lg-3 mt-3 mt-lg-0">
-				<i class="bi bi-download me-2"></i>Add to Chrome
+<header id="site-header" class="site-header">
+	<nav class="site-nav">
+		<div class="container">
+			<div class="nav-row">
+
+				<a class="nav-logo" href="/arenaswap/">
+					<img src="/arenaswap/images/full_logo_white_on_transparent.png" alt="ArenaSwap" />
+				</a>
+
+				<ul class="nav-desktop-links">
+					<li><a href="/arenaswap/#features">Features</a></li>
+					<li><a href="/arenaswap/#how-it-works">How It Works</a></li>
+					<li><a href="/arenaswap/#leagues">Leagues</a></li>
+					<li><a href="/arenaswap/blog/">Blog</a></li>
+					<li><a href="/arenaswap/#faq">FAQ</a></li>
+				</ul>
+
+				<div class="nav-end">
+					<a href="https://chromewebstore.google.com/detail/arenaswap/gibojibgihombdmmfnhjpamfeee" class="btn btn-cta nav-cta-desktop">
+						<i class="bi bi-browser-chrome me-2"></i>Add to Chrome
+					</a>
+					<button class="nav-hamburger" id="nav-toggle" aria-label="Open menu" aria-expanded="false">
+						<span class="ham-bar"></span>
+						<span class="ham-bar"></span>
+						<span class="ham-bar"></span>
+					</button>
+				</div>
+
+			</div>
+		</div>
+	</nav>
+
+	<div class="nav-drawer" id="nav-drawer" aria-hidden="true">
+		<ul>
+			<li><a href="/arenaswap/#features">Features</a></li>
+			<li><a href="/arenaswap/#how-it-works">How It Works</a></li>
+			<li><a href="/arenaswap/#leagues">Leagues</a></li>
+			<li><a href="/arenaswap/blog/">Blog</a></li>
+			<li><a href="/arenaswap/#faq">FAQ</a></li>
+		</ul>
+		<div class="nav-drawer-cta">
+			<a href="https://chromewebstore.google.com/detail/arenaswap/gibojibgihombdmmfnhjpamfeee" class="btn btn-cta d-block text-center">
+				<i class="bi bi-browser-chrome me-2"></i>Add to Chrome
 			</a>
 		</div>
 	</div>
-</nav>
+</header>
 
 <script>
-const nav = document.getElementById('main-nav');
-const onScroll = () => {
-	if (window.scrollY > 40) {
-		nav?.classList.add('scrolled');
-	} else {
-		nav?.classList.remove('scrolled');
-	}
-};
-window.addEventListener('scroll', onScroll, { passive: true });
+const toggle = document.getElementById('nav-toggle');
+const drawer = document.getElementById('nav-drawer');
+const header = document.getElementById('site-header');
+
+toggle?.addEventListener('click', () => {
+	const open = toggle.getAttribute('aria-expanded') === 'true';
+	toggle.setAttribute('aria-expanded', String(!open));
+	toggle.classList.toggle('open', !open);
+	drawer?.classList.toggle('open', !open);
+	drawer?.setAttribute('aria-hidden', String(open));
+	document.body.classList.toggle('nav-open', !open);
+});
+
+drawer?.querySelectorAll('a').forEach(a => {
+	a.addEventListener('click', () => {
+		toggle?.setAttribute('aria-expanded', 'false');
+		toggle?.classList.remove('open');
+		drawer?.classList.remove('open');
+		drawer?.setAttribute('aria-hidden', 'true');
+		document.body.classList.remove('nav-open');
+	});
+});
+
+window.addEventListener('scroll', () => {
+	header?.classList.toggle('scrolled', window.scrollY > 40);
+}, { passive: true });
 </script>
