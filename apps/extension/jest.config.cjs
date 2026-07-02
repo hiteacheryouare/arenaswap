@@ -5,6 +5,7 @@ const commonProjectConfig = {
 		'^@arenaswap/core/(.*)$': '<rootDir>/../../packages/core/src/$1.ts',
 		'^powerscore$': '<rootDir>/../../packages/powerscore/src/index.ts',
 		'^wxt/browser$': '<rootDir>/tests/stubs/wxtBrowser.ts',
+		'^#i18n$': '<rootDir>/tests/stubs/i18n.ts',
 	},
 	transform: {
 		'^.+\\.[jt]sx?$': [

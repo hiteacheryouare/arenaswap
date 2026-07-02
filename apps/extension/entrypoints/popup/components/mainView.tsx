@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { i18n } from '#i18n';
 import type { Browser } from 'wxt/browser';
 import type {
 	Game,
@@ -214,10 +215,10 @@ const mainView = ({
 			<div className='d-flex justify-content-between align-items-center mb-2 pb-2'>
 				<img src='/images/full_logo_white_on_transparent.png' alt='ArenaSwap' className='arenaswap-logo' />
 				<div className='d-flex align-items-center gap-2'>
-					<button className='btn btn-sm p-0 popup-settings-button' onClick={onStartWalkthrough} title='Tour' aria-label='Tour'>
+					<button className='btn btn-sm p-0 popup-settings-button' onClick={onStartWalkthrough} title={i18n.t('main.tourButton')} aria-label={i18n.t('main.tourButton')}>
 						<i className='bi bi-question-circle popup-settings-icon' />
 					</button>
-					<button className='btn btn-sm p-0 popup-settings-button' onClick={onOpenSetup} title='Settings' aria-label='Settings'>
+					<button className='btn btn-sm p-0 popup-settings-button' onClick={onOpenSetup} title={i18n.t('main.settingsButton')} aria-label={i18n.t('main.settingsButton')}>
 						<i className='bi bi-gear-fill popup-settings-icon' />
 					</button>
 					<div className='form-check form-switch mb-0'>
@@ -235,7 +236,7 @@ const mainView = ({
 			{onStandbyStream && (
 				<div className='d-flex align-items-center gap-2 px-2 py-1 mb-1 rounded text-body-secondary small bg-body-secondary'>
 					<i className='bi bi-broadcast text-primary' />
-					<span>On standby stream — waiting for action</span>
+					<span>{i18n.t('main.onStandbyStream')}</span>
 				</div>
 			)}
 
@@ -247,9 +248,9 @@ const mainView = ({
 			/>
 
 			{!isLoading && !noLeaguesSelected && prefs.proTipsEnabled && <ProTip context='main' />}
-			{!isLoading && !noLeaguesSelected && assignedLiveGames.length > 0 && gameSection({ title: 'Active Live Tabs', games: assignedLiveGames, scores, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs, first: true })}
-			{!isLoading && !noLeaguesSelected && unassignedLiveGames.length > 0 && gameSection({ title: 'Other Live Games', games: unassignedLiveGames, scores, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs, first: assignedLiveGames.length === 0 })}
-			{!isLoading && !noLeaguesSelected && prefs.showUpcomingGames && upcomingGames.length > 0 && gameSection({ title: 'Up Next', games: upcomingGames, scores: [], leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs, groupDates: true, first: assignedLiveGames.length === 0 && unassignedLiveGames.length === 0 })}
+			{!isLoading && !noLeaguesSelected && assignedLiveGames.length > 0 && gameSection({ title: i18n.t('main.sectionActiveLiveTabs'), games: assignedLiveGames, scores, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs, first: true })}
+			{!isLoading && !noLeaguesSelected && unassignedLiveGames.length > 0 && gameSection({ title: i18n.t('main.sectionOtherLiveGames'), games: unassignedLiveGames, scores, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs, first: assignedLiveGames.length === 0 })}
+			{!isLoading && !noLeaguesSelected && prefs.showUpcomingGames && upcomingGames.length > 0 && gameSection({ title: i18n.t('main.sectionUpNext'), games: upcomingGames, scores: [], leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs, groupDates: true, first: assignedLiveGames.length === 0 && unassignedLiveGames.length === 0 })}
 
 			<PopupFooter />
 		</div>

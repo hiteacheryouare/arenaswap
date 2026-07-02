@@ -11,6 +11,7 @@ import SetupView from './components/setupView';
 import WalkthroughView from './components/walkthroughView';
 import ToastContainer from './components/toastContainer';
 import { fetchState, formatTabLabel, leagueOrder, leaguesBySportType, normalizeBackgroundState, popupView } from './popupHelpers';
+import { i18n } from '#i18n';
 import useFavoriteScoreConfetti from './useFavoriteScoreConfetti';
 import useToast from './useToast';
 import { hasStoredUserPreferences, loadStoredUserPreferences, persistStoredUserPreferences } from '../../utils/prefsStorage';
@@ -172,7 +173,7 @@ export default () => {
 	const onOnboardingComplete = (leagues: LeagueId[], favorites: string[]) => {
 		persistPrefs(currentPrefs => ({ ...currentPrefs, enabledLeagues: leagues, favoriteTeamIds: favorites }));
 		void browser.storage.local.set({ onboardingCompleted: true });
-		showToast('Welcome to ArenaSwap!', 'success');
+		showToast(i18n.t('app.welcomeToast'), 'success');
 		// Reset settled so MainView shows a loader while we re-fetch with the new prefs.
 		// Without this, `settled` is already true from the initial fetch (which ran during onboarding
 		// with empty leagues), so MainView would immediately show "no games" on first transition.
@@ -229,7 +230,7 @@ export default () => {
 
 	const closeSetup = () => {
 		setView('main');
-		showToast('Settings saved', 'success');
+		showToast(i18n.t('app.settingsSavedToast'), 'success');
 		void (async () => {
 			await prefsSyncRef.current.catch(() => {});
 			const refreshed = await fetchState(true);
@@ -371,8 +372,8 @@ export default () => {
 				)}
 				{view === 'detail' && !selectedGame && (
 					<div className='popup-container d-flex flex-column justify-content-center align-items-center gap-2'>
-						<div className='fw-bold text-body'>Game details unavailable</div>
-						<button type='button' className='btn btn-sm btn-primary' onClick={() => setView('main')}>Back to games</button>
+						<div className='fw-bold text-body'>{i18n.t('app.gameDetailsUnavailable')}</div>
+						<button type='button' className='btn btn-sm btn-primary' onClick={() => setView('main')}>{i18n.t('app.backToGames')}</button>
 					</div>
 				)}
 			</div>

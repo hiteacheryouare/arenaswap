@@ -7,6 +7,7 @@ import type {
 	SportType,
 } from '@arenaswap/core/types';
 import type { Browser } from 'wxt/browser';
+import { i18n } from '#i18n';
 
 export type popupView = 'main' | 'setup' | 'detail';
 export interface leagueGroup { league: LeagueId; games: Game[] }
@@ -22,108 +23,35 @@ export const sportTypeOrder: Record<SportType, number> = {
 	soccer: 5,
 };
 export const sportTypeLabels: Record<SportType, string> = {
-	basketball: 'Basketball',
-	football: 'Football',
-	hockey: 'Hockey',
-	baseball: 'Baseball',
-	softball: 'Softball',
-	soccer: 'Soccer',
+	basketball: i18n.t('sport.basketball'),
+	football: i18n.t('sport.football'),
+	hockey: i18n.t('sport.hockey'),
+	baseball: i18n.t('sport.baseball'),
+	softball: i18n.t('sport.softball'),
+	soccer: i18n.t('sport.soccer'),
 };
 export const leagueLabels = Object.fromEntries(leagueConfigs.map(config => [config.id, config.label])) as Record<LeagueId, string>;
 
-export const loadingMessages: string[] = [
-	'Reviewing the playbook...',
-	'Studying the game film...',
-	'Calling an audible...',
-	'Warming up the bench...',
-	'Hyping up the crowd...',
-	'Cueing the walk-out music...',
-	'Polishing the trophy...',
-	'Synchronizing the game clock...',
-	'Booting up the jumbotron...',
-	'Counting the timeouts...',
-	'Cracking open the rulebook...',
-	'Tuning the stadium speakers...',
-	'Filling the water bottles...',
-	'Adjusting the spotlights...',
-	'Bribing the refs...',
-	'Consulting the sports almanac...',
-	'Considering whether to go for it on fourth down...',
-	'Updating the GOAT debate...',
-	'Filling the press box...',
-	'Unfurling the banners...',
-	'Syncing the broadcast feed...',
-	'Counting the crowd...',
-	'Polishing the championship rings...',
-	'Hyping up the mascots...',
-	'Powering up the stadium lights...',
-	'Hitting the gym...',
-	'Filling the coolors...',
-	'Reviewing the highlight reels...',
-	'Booing the commissioner...',
-	'Finding the arenas...',
-	'Getting a cheesesteak...',
-	'Arguing with the sports bar patrons...',
-	'Rearranging the fantasy league standings...',
-	'Consulting the sports oracle...',
-	'Challenging that play...',
-	'Checking for a flag on the play...',
-	'Reviewing the instant replay...',
-	'Playing the hype video...',
-	'Considering a mid-game snack...',
-	'Planning the post-game celebration...',
-	'Wearing the lucky jersey...',
-	'Visualizing the victory dance...',
-	'Polishing the trophy case...',
-	'Brushing up on sports trivia...',
-	'Organizing the tailgate party...',
-	'Getting the face paint ready...',
-	'Coordinating team uniforms...',
-	'Running the numbers...',
-	'Analyzing the stats...',
-	'Launching the fireworks...',
-	'Getting the light show ready...',
-	'Checking the weather for game day...',
-	'Updating the fantasy football lineup...',
-	'Yelling at the TV...',
-	'Yelling at the refs...',
-	'go birds',
-	'Reviewing the coach\'s clipboard...',
-	'Checking if the hot dog guy is ready...',
-	'Deflating... er, inflating the footballs...',
-	'Consulting the Vegas odds...',
-	'Tightening the batting gloves...',
-	'Stretching out the kicker\'s hamstring...',
-	'Reviewing the contract negotiations...',
-	'Ordering the victory pizza...',
-	'Checking the backup QB\'s confidence level...',
-	'Reconsidering that trade...',
-	'Polishing up the player stats cards...',
-	'Setting up the slow-motion replay...',
-	'Confirming the coin flip is real...',
-	'Briefing the ball boy...',
-	'Turning up the crowd noise...',
-	'Dusting off the championship merchandise...',
-	'Hydrating the water boy...',
-];
+// Loading messages live in the locale files under `loading.m1`..`loading.mN`.
+// LOADING_MESSAGE_COUNT must match the number of `loading.mN` keys defined there.
+const LOADING_MESSAGE_COUNT = 73;
 
-export const getRandomLoadingMessage = (): string => (
-	loadingMessages[Math.floor(Math.random() * loadingMessages.length)] ?? ''
-);
+export const getRandomLoadingMessage = (): string => {
+	const index = Math.floor(Math.random() * LOADING_MESSAGE_COUNT) + 1;
+	return i18n.t(`loading.m${index}` as Parameters<typeof i18n.t>[0]);
+};
 
-export const noGamesMessages: { title: string; sub: string }[] = [
-	{ title: 'Still waiting for tip-off. 🕐', sub: 'No live games in your selected leagues.' },
-	{ title: 'The arena\'s dark.', sub: 'No live action in your leagues. Check back when the games kick off.' },
-	{ title: 'It\'s a slow sports day.', sub: 'Nothing live right now.' },
-	{ title: 'Even the refs are taking a break.', sub: 'No live games detected across your selected leagues.' },
-	{ title: 'The scoreboard is still.', sub: 'Your leagues are quiet. Check back when the games tip off.' },
-	{ title: 'The hot dog guy left. 🌭', sub: 'No live action in your leagues. Nothing to track right now.' },
-	{ title: 'Checking under the bleachers...', sub: 'Still no live games in your selected leagues.' },
-];
+// No-games messages live in the locale files under `noGames.m1`..`noGames.mN`,
+// each with a `.title` and `.sub`. NO_GAMES_MESSAGE_COUNT must match that count.
+const NO_GAMES_MESSAGE_COUNT = 7;
 
-export const getRandomNoGamesMessage = (): { title: string; sub: string } => (
-	noGamesMessages[Math.floor(Math.random() * noGamesMessages.length)] ?? noGamesMessages[0]!
-);
+export const getRandomNoGamesMessage = (): { title: string; sub: string } => {
+	const index = Math.floor(Math.random() * NO_GAMES_MESSAGE_COUNT) + 1;
+	return {
+		title: i18n.t(`noGames.m${index}.title` as Parameters<typeof i18n.t>[0]),
+		sub: i18n.t(`noGames.m${index}.sub` as Parameters<typeof i18n.t>[0]),
+	};
+};
 export const leaguesBySportType = leagueConfigs.reduce<Record<SportType, typeof leagueConfigs>>((groups, config) => {
 	if (config.sportType in groups) groups[config.sportType].push(config);
 	return groups;
@@ -181,8 +109,8 @@ const formatDateLabel = (dateStr: string): string => {
 	const tomorrow = new Date(today);
 	tomorrow.setDate(today.getDate() + 1);
 	const gameDate = new Date(dateStr);
-	if (toKey(gameDate) === toKey(today)) return 'Today';
-	if (toKey(gameDate) === toKey(tomorrow)) return 'Tomorrow';
+	if (toKey(gameDate) === toKey(today)) return i18n.t('date.today');
+	if (toKey(gameDate) === toKey(tomorrow)) return i18n.t('date.tomorrow');
 	return gameDate.toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' });
 };
 
@@ -199,7 +127,7 @@ export const groupByDate = (games: Game[]): dateGroup[] => {
 	return Array.from(groups.entries()).map(([_key, grpGames]) => {
 		const first = grpGames[0];
 		return {
-			dateLabel: first?.startTime ? formatDateLabel(first.startTime) : 'Upcoming',
+			dateLabel: first?.startTime ? formatDateLabel(first.startTime) : i18n.t('date.upcoming'),
 			games: grpGames,
 		};
 	});
@@ -226,7 +154,7 @@ export const fetchState = async (forceRefresh = false): Promise<BackgroundState>
 
 export const formatTabLabel = (tab: Browser.tabs.Tab, allTabs: Browser.tabs.Tab[]): string => {
 	const title = tab.title ?? '';
-	if (!title) return `Tab #${tab.id}`;
+	if (!title) return i18n.t('tab.fallback', [String(tab.id)]);
 	const duplicates = allTabs.filter(t => t.title === title);
 	if (duplicates.length <= 1) return title.slice(0, 35);
 	try {

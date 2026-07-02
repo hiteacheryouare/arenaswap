@@ -28,6 +28,7 @@ export default defineConfig({
 						{ find: /^@arenaswap\/core$/, replacement: root('../../packages/core/src/index.ts') },
 						{ find: /^powerscore$/, replacement: root('../../packages/powerscore/src/index.ts') },
 						{ find: /^wxt\/browser$/, replacement: root('./tests/stubs/wxtBrowser.ts') },
+						{ find: /^#i18n$/, replacement: root('./cypress/stubs/i18n.ts') },
 					],
 				},
 				plugins: [

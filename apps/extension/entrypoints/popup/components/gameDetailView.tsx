@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { i18n } from '#i18n';
 import { leagueConfigMap, scoreMaxTotal } from '@arenaswap/core/constants';
 import type { Game, PowerScoreResult, PowerScoreSnapshot, ScoreSnapshot } from '@arenaswap/core/types';
 import BaseDiamond from './baseDiamond';
@@ -34,11 +35,11 @@ interface gameDetailViewProps {
 }
 
 const componentLegendItems = [
-	{ label: 'Closeness', color: '#22c55e' },
-	{ label: 'Late-game', color: '#f75c03' },
-	{ label: 'Momentum', color: '#2274a5' },
-	{ label: 'Lead changes', color: '#f1c40f' },
-	{ label: 'Comeback', color: '#d90368' },
+	{ label: i18n.t('detail.legendCloseness'), color: '#22c55e' },
+	{ label: i18n.t('detail.legendLateGame'), color: '#f75c03' },
+	{ label: i18n.t('detail.legendMomentum'), color: '#2274a5' },
+	{ label: i18n.t('detail.legendLeadChanges'), color: '#f1c40f' },
+	{ label: i18n.t('detail.legendComeback'), color: '#d90368' },
 ];
 
 const withMatchupAlpha = (color: string, fallback: string): string => (
@@ -109,10 +110,10 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 		? isInningSport
 			? `${inningHalf}${formatPeriod(game)}`
 			: `${formatPeriod(game)} • ${formatGameClock(game)}`
-		: game.status === 'pre' ? 'Starts soon' : 'Final';
+		: game.status === 'pre' ? i18n.t('detail.startsSoon') : i18n.t('detail.final');
 	const totalLabel = total > scoreMaxTotal
-		? `${total} (base max ${scoreMaxTotal})`
-		: `${total} / ${scoreMaxTotal}`;
+		? i18n.t('detail.totalLabelBaseMax', { total, max: scoreMaxTotal })
+		: i18n.t('detail.totalLabel', { total, max: scoreMaxTotal });
 	const psBarPercent = Math.min((total / scoreMaxTotal) * 100, 100);
 	const psColor = powerScoreColor(total, scoreMaxTotal);
 
@@ -121,7 +122,7 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 			<div className='game-detail-header'>
 				<button type='button' className='btn btn-sm game-detail-back-button' onClick={onBack}>
 					<i className='bi bi-arrow-left' />
-					<span>Back</span>
+					<span>{i18n.t('detail.back')}</span>
 				</button>
 				<div className='game-detail-title'>{game.awayTeam.abbreviation} @ {game.homeTeam.abbreviation}</div>
 			</div>
@@ -144,7 +145,7 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 				{game.status !== 'pre' && activePowerScore && (
 					<div className='game-card-ps-bar-row'>
 						<div className='d-flex align-items-center gap-2'>
-							<span className='game-card-ps-label'>PowerScore</span>
+							<span className='game-card-ps-label'>{i18n.t('detail.powerScoreLabel')}</span>
 							<div className='progress flex-grow-1 game-card-ps-progress'>
 								<div
 									className='progress-bar'
@@ -191,20 +192,20 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 			{proTipsEnabled && <ProTip context='detail' />}
 
 			{orderedPowerScoreHistory.length > 0
-				? <GameDetailChart title='PowerScore over time' option={powerScoreOption} />
-				: <div className='game-detail-empty-state'>PowerScore trend appears after a few refreshes.</div>}
+				? <GameDetailChart title={i18n.t('detail.chartPowerScoreTitle')} option={powerScoreOption} />
+				: <div className='game-detail-empty-state'>{i18n.t('detail.chartPowerScoreEmpty')}</div>}
 
 			{orderedScoreHistory.length > 0
-				? <GameDetailChart title='Game score over time' option={scoreTrendOption} legendItems={teamLegendItems} />
-				: <div className='game-detail-empty-state'>Score trend appears after a few refreshes.</div>}
+				? <GameDetailChart title={i18n.t('detail.chartScoreTitle')} option={scoreTrendOption} legendItems={teamLegendItems} />
+				: <div className='game-detail-empty-state'>{i18n.t('detail.chartScoreEmpty')}</div>}
 
 			{winProbability.length > 0
-				? <GameDetailChart title='Win probability' option={winProbabilityOption} legendItems={teamLegendItems} />
-				: <div className='game-detail-empty-state'>Win probability loads when the game is live.</div>}
+				? <GameDetailChart title={i18n.t('detail.chartWinProbTitle')} option={winProbabilityOption} legendItems={teamLegendItems} />
+				: <div className='game-detail-empty-state'>{i18n.t('detail.chartWinProbEmpty')}</div>}
 
 			{orderedPowerScoreHistory.length > 0
-				? <GameDetailChart title='PowerScore components over time' option={componentOption} legendItems={componentLegendItems} />
-				: <div className='game-detail-empty-state'>Component trend appears after a few refreshes.</div>}
+				? <GameDetailChart title={i18n.t('detail.chartComponentsTitle')} option={componentOption} legendItems={componentLegendItems} />
+				: <div className='game-detail-empty-state'>{i18n.t('detail.chartComponentsEmpty')}</div>}
 		</div>
 	);
 };

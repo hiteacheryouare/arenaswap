@@ -6,6 +6,7 @@ import {
 	scoreMaxMomentum,
 	scoreMaxTotal,
 } from '@arenaswap/core/constants';
+import { i18n } from '#i18n';
 
 interface powerScoreBreakdownProps {
 	closeness: number;
@@ -25,12 +26,12 @@ interface powerScoreBreakdownProps {
 }
 
 const signalMeta = [
-	{ label: 'Closeness', max: scoreMaxCloseness, color: '#22c55e' },
-	{ label: 'Late-game', max: scoreMaxLateGame, color: '#f75c03' },
-	{ label: 'Momentum', max: scoreMaxMomentum, color: '#2274a5' },
-	{ label: 'Lead changes', max: scoreMaxLeadChanges, color: '#f1c40f' },
-	{ label: 'Comeback', max: scoreMaxComeback, color: '#d90368' },
-];
+	{ labelKey: 'powerScore.signalCloseness', max: scoreMaxCloseness, color: '#22c55e' },
+	{ labelKey: 'powerScore.signalLateGame', max: scoreMaxLateGame, color: '#f75c03' },
+	{ labelKey: 'powerScore.signalMomentum', max: scoreMaxMomentum, color: '#2274a5' },
+	{ labelKey: 'powerScore.signalLeadChanges', max: scoreMaxLeadChanges, color: '#f1c40f' },
+	{ labelKey: 'powerScore.signalComeback', max: scoreMaxComeback, color: '#d90368' },
+] as const;
 
 const PowerScoreBreakdown = ({
 	closeness,
@@ -51,14 +52,14 @@ const PowerScoreBreakdown = ({
 
 	return (
 		<section className='powerscore-breakdown game-detail-formula-card'>
-			<div className='powerscore-breakdown-heading'>PowerScore Breakdown</div>
+			<div className='powerscore-breakdown-heading'>{i18n.t('powerScore.heading')}</div>
 			{signalMeta.map((sig, i) => {
 				const val = signalValues[i] ?? 0;
 				const pct = sig.max > 0 ? Math.min((val / sig.max) * 100, 100) : 0;
 				return (
-					<div key={sig.label} className='powerscore-signal-row'>
+					<div key={sig.labelKey} className='powerscore-signal-row'>
 						<span className='powerscore-signal-dot' style={{ backgroundColor: sig.color }} />
-						<span className='powerscore-signal-name'>{sig.label}</span>
+						<span className='powerscore-signal-name'>{i18n.t(sig.labelKey)}</span>
 						<div className='progress powerscore-signal-progress flex-grow-1'>
 							<div
 								className='progress-bar'
@@ -74,23 +75,23 @@ const PowerScoreBreakdown = ({
 				);
 			})}
 			<div className='powerscore-breakdown-row powerscore-breakdown-row-subtotal'>
-				<span>Signals total</span>
-				<span>{baseTotal}{baseTotal > scoreMaxTotal ? ` (capped at ${scoreMaxTotal})` : ''}</span>
+				<span>{i18n.t('powerScore.signalsTotal')}</span>
+				<span>{baseTotal}{baseTotal > scoreMaxTotal ? ` ${i18n.t('powerScore.cappedAt', { max: scoreMaxTotal })}` : ''}</span>
 			</div>
 			<div className='powerscore-breakdown-row powerscore-breakdown-row-penalty'>
-				<span>Clock stall penalty</span>
-				<span>{isStalled ? 'applied' : 'none'}</span>
+				<span>{i18n.t('powerScore.clockStallPenalty')}</span>
+				<span>{isStalled ? i18n.t('powerScore.applied') : i18n.t('powerScore.none')}</span>
 			</div>
 			{isStalled && (
 				<div className='powerscore-breakdown-note'>
-					game clock frozen — {baseTotal} → {totalBeforeBonuses} pts before bonuses
+					{i18n.t('powerScore.clockFrozenNote', { before: baseTotal, after: totalBeforeBonuses })}
 				</div>
 			)}
-			<div className='powerscore-breakdown-row'><span>Favorite bonus</span><span>{favoriteBonus > 0 ? `+${favoriteBonus}` : '0'}</span></div>
-			{favoriteBonus > 0 && <div className='powerscore-breakdown-note'>{favoriteTeamCount} favorite team{favoriteTeamCount === 1 ? '' : 's'} in matchup</div>}
-			<div className='powerscore-breakdown-row'><span>Game boost</span><span>{currentBoost > 0 ? `+${currentBoost}` : '0'}</span></div>
-			<div className='powerscore-breakdown-row'><span>Scoring opportunity</span><span>{scoringOpportunityBoost > 0 ? `+${scoringOpportunityBoost}` : '0'}</span></div>
-			<div className='powerscore-breakdown-row powerscore-breakdown-row-total'><span>Final PowerScore</span><span>{totalLabel}</span></div>
+			<div className='powerscore-breakdown-row'><span>{i18n.t('powerScore.favoriteBonus')}</span><span>{favoriteBonus > 0 ? `+${favoriteBonus}` : '0'}</span></div>
+			{favoriteBonus > 0 && <div className='powerscore-breakdown-note'>{i18n.t('powerScore.favoriteTeamsInMatchup', favoriteTeamCount)}</div>}
+			<div className='powerscore-breakdown-row'><span>{i18n.t('powerScore.gameBoost')}</span><span>{currentBoost > 0 ? `+${currentBoost}` : '0'}</span></div>
+			<div className='powerscore-breakdown-row'><span>{i18n.t('powerScore.scoringOpportunity')}</span><span>{scoringOpportunityBoost > 0 ? `+${scoringOpportunityBoost}` : '0'}</span></div>
+			<div className='powerscore-breakdown-row powerscore-breakdown-row-total'><span>{i18n.t('powerScore.finalPowerScore')}</span><span>{totalLabel}</span></div>
 		</section>
 	);
 };

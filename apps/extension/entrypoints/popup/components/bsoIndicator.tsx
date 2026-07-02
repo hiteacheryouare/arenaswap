@@ -1,3 +1,5 @@
+import { i18n } from '#i18n';
+
 interface bsoIndicatorProps {
 	balls: number;
 	strikes: number;
@@ -19,9 +21,9 @@ const bsoGroup = (label: string, count: number, max: number, fillColor: string) 
 
 const bsoIndicator = ({ balls, strikes, outs }: bsoIndicatorProps) => (
 	<div className='d-flex align-items-center gap-2 bso-indicator'>
-		{bsoGroup('B', balls, 3, '#4ade80')}
-		{bsoGroup('S', strikes, 2, '#f75c03')}
-		{bsoGroup('O', outs, 2, '#ef4444')}
+		{bsoGroup(i18n.t('bso.balls'), balls, 3, '#4ade80')}
+		{bsoGroup(i18n.t('bso.strikes'), strikes, 2, '#f75c03')}
+		{bsoGroup(i18n.t('bso.outs'), outs, 2, '#ef4444')}
 	</div>
 );
 

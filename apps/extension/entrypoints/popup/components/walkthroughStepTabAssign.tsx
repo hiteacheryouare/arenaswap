@@ -1,4 +1,5 @@
 import { powerScoreColor } from './gameCardShared';
+import { i18n } from '#i18n';
 
 interface walkthroughStepTabAssignProps {
 	onNext: () => void;
@@ -24,11 +25,11 @@ const TeamCircle = ({ abbr, color }: { abbr: string; color: string }) => (
 
 const walkthroughStepTabAssign = ({ onNext, onBack }: walkthroughStepTabAssignProps) => (
 	<div className='popup-container d-flex flex-column'>
-		<div className='small text-body-secondary text-uppercase text-center pt-3 pb-2'>Step 2 of 4</div>
+		<div className='small text-body-secondary text-uppercase text-center pt-3 pb-2'>{i18n.t('stepTabAssign.step', [2, 4])}</div>
 
-		<div className='fw-bold fs-5 text-center mb-1'>Assign tabs to games</div>
+		<div className='fw-bold fs-5 text-center mb-1'>{i18n.t('stepTabAssign.title')}</div>
 		<div className='text-body-secondary small text-center mb-3 lh-base'>
-			ArenaSwap only touches tabs you register.
+			{i18n.t('stepTabAssign.subtitle')}
 		</div>
 
 		<div
@@ -83,25 +84,24 @@ const walkthroughStepTabAssign = ({ onNext, onBack }: walkthroughStepTabAssignPr
 
 			<div className='d-flex flex-column gap-0 mt-2'>
 				<select className='form-select form-select-sm' onChange={() => {}}>
-					<option value=''>— Assign a tab —</option>
+					<option value=''>{i18n.t('stepTabAssign.assignPlaceholder')}</option>
 					<option value='1'>youtube.com/watch?v=Philly_stream</option>
 					<option value='2'>nfl.com/watch/live</option>
 				</select>
-				<span className='text-primary fw-semibold ms-1 mt-1' style={{ fontSize: '0.65rem' }}>↑ link a browser tab here</span>
+				<span className='text-primary fw-semibold ms-1 mt-1' style={{ fontSize: '0.65rem' }}>{i18n.t('stepTabAssign.linkHint')}</span>
 			</div>
 		</div>
 
 		<p className='text-body-secondary small lh-base mt-1'>
-			Open each stream in its own browser tab, then use the dropdown on a game card to link them.
-			ArenaSwap will only switch to tabs you've assigned.
+			{i18n.t('stepTabAssign.body')}
 		</p>
 
 		<div className='d-flex gap-2 mt-auto'>
 			<button type='button' className='btn btn-secondary flex-grow-1' onClick={onBack}>
-				<i className='bi bi-arrow-left' /> Back
+				<i className='bi bi-arrow-left' /> {i18n.t('stepTabAssign.back')}
 			</button>
 			<button type='button' className='btn btn-primary flex-grow-1' onClick={onNext}>
-				Next <i className='bi bi-arrow-right' />
+				{i18n.t('stepTabAssign.next')} <i className='bi bi-arrow-right' />
 			</button>
 		</div>
 	</div>

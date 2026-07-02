@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { i18n } from '#i18n';
 import { fetchTeamsForLeagues } from '@arenaswap/core';
 import type { EspnTeamEntry } from '@arenaswap/core';
 import type { LeagueId, LeagueLogoMap, SportType } from '@arenaswap/core/types';
@@ -114,9 +115,9 @@ const onboardingView = ({ leagueLogos, onComplete, onStartWalkthrough }: onboard
 							/>
 						</div>
 						<div className='onb-content-wrap d-flex flex-column grow'>
-							<div className='fw-bold lh-sm mb-2 fs-4 text-center'>You're all set!</div>
+							<div className='fw-bold lh-sm mb-2 fs-4 text-center'>{i18n.t('onboarding.allSetTitle')}</div>
 							<div className='text-body-secondary fs-6 text-center mb-4 lh-base'>
-								Want a quick tour before you dive in?
+								{i18n.t('onboarding.allSetSubtitle')}
 							</div>
 							<div className='d-flex flex-column gap-3 mt-auto'>
 								<button
@@ -125,14 +126,14 @@ const onboardingView = ({ leagueLogos, onComplete, onStartWalkthrough }: onboard
 									onClick={() => onStartWalkthrough?.(pendingLeagues, pendingFavorites)}
 								>
 									<i className='bi bi-play-fill me-1' />
-									Take the tour
+									{i18n.t('onboarding.takeTour')}
 								</button>
 								<button
 									type='button'
 									className='btn btn-outline-secondary w-100'
 									onClick={() => onComplete(pendingLeagues, pendingFavorites)}
 								>
-									Jump right in
+									{i18n.t('onboarding.jumpIn')}
 								</button>
 							</div>
 						</div>

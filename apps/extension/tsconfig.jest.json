@@ -12,7 +12,8 @@
 			"@arenaswap/core": ["../../packages/core/src/index.ts"],
 			"@arenaswap/core/*": ["../../packages/core/src/*"],
 			"powerscore": ["../../packages/powerscore/src/index.ts"],
-			"wxt/browser": ["./tests/stubs/wxtBrowser.ts"]
+			"wxt/browser": ["./tests/stubs/wxtBrowser.ts"],
+			"#i18n": ["./tests/stubs/i18n.ts"]
 		}
 	},
 	"include": ["entrypoints/**/*", "tests/**/*", "tests/stubs/globals.d.ts"]

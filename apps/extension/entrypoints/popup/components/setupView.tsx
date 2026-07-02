@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { i18n } from '#i18n';
 import { leagueConfigs, resolveLeagueLogoUrl } from '@arenaswap/core/constants';
 import type { LeagueId, LeagueLogoMap, SportType, UserPreferences } from '@arenaswap/core/types';
 import type { Browser } from 'wxt/browser';
@@ -53,7 +54,7 @@ const LeagueLogo = ({ league, logos }: { league: leagueConfig; logos: LeagueLogo
 		);
 	}
 	return (
-		<img src={logoUrl} alt={`${league.label} logo`} className='league-toggle-logo' loading='lazy' onError={() => setImageFailed(true)} />
+		<img src={logoUrl} alt={i18n.t('setup.leagueLogoAlt', { label: league.label })} className='league-toggle-logo' loading='lazy' onError={() => setImageFailed(true)} />
 	);
 };
 
@@ -87,16 +88,16 @@ const setupView = ({
 		<div className='popup-container'>
 			<button className='setup-header' onClick={onClose}>
 				<i className='bi bi-arrow-left' />
-				Settings
+				{i18n.t('setup.header')}
 			</button>
 
 			<ul className='nav nav-pills nav-fill setup-tabs mb-3'>
 				<li className='nav-item'>
-					<button type='button' className={`nav-link ${tab === 'switching' ? 'active' : ''}`} onClick={() => setTab('switching')}>Switching</button>
+					<button type='button' className={`nav-link ${tab === 'switching' ? 'active' : ''}`} onClick={() => setTab('switching')}>{i18n.t('setup.tabSwitching')}</button>
 				</li>
 				<li className='nav-item'>
 					<button type='button' className={`nav-link ${tab === 'leagues' ? 'active' : ''}`} onClick={() => setTab('leagues')}>
-						Leagues
+						{i18n.t('setup.tabLeagues')}
 						{prefsLoaded && prefs.enabledLeagues.length === 0 && (
 							<i className='bi bi-exclamation-circle ms-1 text-warning' />
 						)}
@@ -111,40 +112,40 @@ const setupView = ({
 					<div className='mt-3'><SwitchDelaySlider value={prefs.switchDelaySeconds} onChange={onSwitchDelayChange} /></div>
 					<div className='mt-3'><FavoriteTeamBonusInput value={prefs.favoriteTeamBonusPoints} onChange={onFavoriteTeamBonusChange} /></div>
 
-					<div className='fw-bold popup-section-label mt-3'><i className='bi bi-toggles' />Options</div>
+					<div className='fw-bold popup-section-label mt-3'><i className='bi bi-toggles' />{i18n.t('setup.optionsSection')}</div>
 
 					<div className='d-flex justify-content-between align-items-center mt-2'>
-						<label className='text-body-secondary setting-toggle-label' htmlFor='upcomingToggle'><i className='bi bi-calendar-event me-1 text-primary' />Show upcoming games</label>
+						<label className='text-body-secondary setting-toggle-label' htmlFor='upcomingToggle'><i className='bi bi-calendar-event me-1 text-primary' />{i18n.t('setup.showUpcoming')}</label>
 						<div className='form-check form-switch mb-0'>
 							<input className='form-check-input' type='checkbox' id='upcomingToggle' checked={prefs.showUpcomingGames} onChange={onToggleShowUpcoming} disabled={!prefsLoaded} />
 						</div>
 					</div>
 
 					<div className='d-flex justify-content-between align-items-center mt-2'>
-						<label className='text-body-secondary setting-toggle-label' htmlFor='proTipsToggle'><i className='bi bi-lightbulb me-1 text-primary' />Pro tips</label>
+						<label className='text-body-secondary setting-toggle-label' htmlFor='proTipsToggle'><i className='bi bi-lightbulb me-1 text-primary' />{i18n.t('setup.proTips')}</label>
 						<div className='form-check form-switch mb-0'>
 							<input className='form-check-input' type='checkbox' id='proTipsToggle' checked={prefs.proTipsEnabled} onChange={onToggleProTips} disabled={!prefsLoaded} />
 						</div>
 					</div>
 
 					<div className='d-flex justify-content-between align-items-center mt-2'>
-						<label className='text-body-secondary setting-toggle-label' htmlFor='notificationsToggle'><i className='bi bi-bell me-1 text-primary' />Switch notifications</label>
+						<label className='text-body-secondary setting-toggle-label' htmlFor='notificationsToggle'><i className='bi bi-bell me-1 text-primary' />{i18n.t('setup.switchNotifications')}</label>
 						<div className='form-check form-switch mb-0'>
 							<input className='form-check-input' type='checkbox' id='notificationsToggle' checked={prefs.notificationsEnabled} onChange={onToggleNotifications} disabled={!prefsLoaded} />
 						</div>
 					</div>
 
 					<div className='d-flex justify-content-between align-items-center mt-2'>
-						<label className='text-body-secondary setting-toggle-label' htmlFor='demoToggle'><i className='bi bi-joystick me-1 text-primary' />Demo mode</label>
+						<label className='text-body-secondary setting-toggle-label' htmlFor='demoToggle'><i className='bi bi-joystick me-1 text-primary' />{i18n.t('setup.demoMode')}</label>
 						<div className='form-check form-switch mb-0'>
 							<input className='form-check-input' type='checkbox' id='demoToggle' checked={demoMode} onChange={onToggleDemo} />
 						</div>
 					</div>
 
-					<div className='fw-bold popup-section-label mt-3'><i className='bi bi-broadcast' />Standby Stream</div>
+					<div className='fw-bold popup-section-label mt-3'><i className='bi bi-broadcast' />{i18n.t('setup.standbySection')}</div>
 
 					<div className='d-flex justify-content-between align-items-center mt-2'>
-						<label className='text-body-secondary setting-toggle-label' htmlFor='standbyStreamToggle'><i className='bi bi-broadcast me-1 text-primary' />Enable Standby Stream</label>
+						<label className='text-body-secondary setting-toggle-label' htmlFor='standbyStreamToggle'><i className='bi bi-broadcast me-1 text-primary' />{i18n.t('setup.enableStandby')}</label>
 						<div className='form-check form-switch mb-0'>
 							<input className='form-check-input' type='checkbox' id='standbyStreamToggle' checked={prefs.standbyStreamEnabled} onChange={handleToggleStandbyStream} disabled={!prefsLoaded} />
 						</div>
@@ -155,7 +156,7 @@ const setupView = ({
 							<div>
 								<div className='d-flex justify-content-between align-items-baseline mb-1'>
 									<label className='text-body-secondary setting-toggle-label' htmlFor='standbyThresholdSlider'>
-										<i className='bi bi-thermometer-half me-1 text-primary' />Standby below
+										<i className='bi bi-thermometer-half me-1 text-primary' />{i18n.t('setup.standbyBelow')}
 									</label>
 									<span className='fw-semibold text-body small'>{prefs.standbyStreamThreshold}</span>
 								</div>
@@ -171,14 +172,14 @@ const setupView = ({
 									disabled={!prefsLoaded}
 								/>
 								<div className='d-flex justify-content-between'>
-									<span className='setting-explainer'>More patient</span>
-									<span className='setting-explainer'>Switches sooner</span>
+									<span className='setting-explainer'>{i18n.t('setup.morePatient')}</span>
+									<span className='setting-explainer'>{i18n.t('setup.switchesSooner')}</span>
 								</div>
 							</div>
 
 							<div>
 								<div className='text-body-secondary setting-toggle-label mb-1'>
-									<i className='bi bi-window-stack me-1 text-primary' />Standby tab
+									<i className='bi bi-window-stack me-1 text-primary' />{i18n.t('setup.standbyTab')}
 								</div>
 								<select
 									className='form-select form-select-sm'
@@ -190,7 +191,7 @@ const setupView = ({
 									}}
 									disabled={!prefsLoaded}
 								>
-									<option value=''>— Select a tab —</option>
+									<option value=''>{i18n.t('setup.selectTab')}</option>
 									{openTabs.map(openTab => (
 										<option key={openTab.id} value={openTab.id}>
 											{formatTabLabel(openTab)}
@@ -201,10 +202,10 @@ const setupView = ({
 						</div>
 					)}
 
-					<div className='fw-bold popup-section-label mt-3'><i className='bi bi-currency-dollar' />Betting & Odds</div>
+					<div className='fw-bold popup-section-label mt-3'><i className='bi bi-currency-dollar' />{i18n.t('setup.bettingSection')}</div>
 
 					<div className='d-flex justify-content-between align-items-center mt-2'>
-						<label className='text-body-secondary setting-toggle-label' htmlFor='bettingToggle'><i className='bi bi-bar-chart-line me-1 text-primary' />Show betting & odds</label>
+						<label className='text-body-secondary setting-toggle-label' htmlFor='bettingToggle'><i className='bi bi-bar-chart-line me-1 text-primary' />{i18n.t('setup.showBetting')}</label>
 						<div className='form-check form-switch mb-0'>
 							<input className='form-check-input' type='checkbox' id='bettingToggle' checked={prefs.bettingEnabled} onChange={onToggleBetting} disabled={!prefsLoaded} />
 						</div>
@@ -217,7 +218,7 @@ const setupView = ({
 			{tab === 'leagues' && (
 				<div>
 					<div className='mb-2 setting-explainer'>
-						Only selected leagues are tracked and considered for automatic switching.
+						{i18n.t('setup.leaguesExplainer')}
 					</div>
 					{(Object.keys(sportTypeOrder) as SportType[])
 						.toSorted((a, b) => sportTypeOrder[a] - sportTypeOrder[b])
@@ -234,7 +235,7 @@ const setupView = ({
 											onClick={() => onToggleSport(sportType, !allSelected)}
 											disabled={!prefsLoaded}
 										>
-											{allSelected ? 'none' : 'all'}
+											{allSelected ? i18n.t('setup.selectNone') : i18n.t('setup.selectAll')}
 										</button>
 									</div>
 									<div className='league-toggle-grid'>
@@ -263,7 +264,7 @@ const setupView = ({
 					{prefsLoaded && prefs.enabledLeagues.length === 0 && (
 						<div className='setup-no-leagues-warn mt-2 mb-1'>
 							<i className='bi bi-exclamation-circle me-1' />
-							No leagues selected — ArenaSwap won&apos;t track any games.
+							{i18n.t('setup.noLeaguesWarning')}
 						</div>
 					)}
 				</div>

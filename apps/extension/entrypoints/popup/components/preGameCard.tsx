@@ -2,6 +2,7 @@ import { createFavoriteTeamKey } from '@arenaswap/core/constants';
 import TabAssignSelect from './tabAssignSelect';
 import type { gameCardProps } from './gameCardTypes';
 import { buildCardHandlers, buildGameCardStyle, formatStartDateTime, GameMeta, TeamColumn } from './gameCardShared';
+import { i18n } from '#i18n';
 
 const preGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs }: gameCardProps) => {
 	if (!game) return null;
@@ -20,12 +21,12 @@ const preGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, openTabs, re
 			tabIndex={0}
 			onClick={onCardClick}
 			onKeyDown={onCardKeyDown}
-			aria-label={`Open details for ${game.awayTeam.abbreviation} vs ${game.homeTeam.abbreviation}`}
+			aria-label={i18n.t('gameCard.openDetails', { away: game.awayTeam.abbreviation, home: game.homeTeam.abbreviation })}
 		>
 			<div className='d-flex align-items-center justify-content-center game-card-matchup'>
 				<TeamColumn leagueId={game.league} team={game.awayTeam} isFavorited={awayFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} />
 				<div className='d-flex flex-column align-items-center game-card-center'>
-					<span className='pre-game-vs'>vs</span>
+					<span className='pre-game-vs'>{i18n.t('gameCard.vs')}</span>
 					{game.startTime && (
 						<span className='font-lekton text-center text-nowrap pre-game-start-time'>
 							{formatStartDateTime(game.startTime)}

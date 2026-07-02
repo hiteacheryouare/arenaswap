@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { i18n } from '#i18n';
 import { leagueConfigs, resolveLeagueLogoUrl } from '@arenaswap/core/constants';
 import type { LeagueId, LeagueLogoMap, SportType } from '@arenaswap/core/types';
 import { leaguesBySportType, sportTypeLabels, sportTypeOrder } from '../popupHelpers';
@@ -56,11 +57,11 @@ const onboardingLeaguePicker = ({
 	<div className='popup-container'>
 		<div className='d-flex align-items-center mb-1'>
 			<button className='btn btn-link btn-sm p-0 text-body-secondary small' onClick={onBack}>
-				<i className='bi bi-arrow-left me-1' />Back
+				<i className='bi bi-arrow-left me-1' />{i18n.t('leaguePicker.back')}
 			</button>
-			<span className='small text-body-secondary text-uppercase ms-auto'>Step 2 of 3</span>
+			<span className='small text-body-secondary text-uppercase ms-auto'>{i18n.t('leaguePicker.step', [2, 3])}</span>
 		</div>
-		<div className='fw-bold lh-sm mb-3 fs-5'>Which sports do you watch?</div>
+		<div className='fw-bold lh-sm mb-3 fs-5'>{i18n.t('leaguePicker.title')}</div>
 
 		<div>
 			{(Object.keys(sportTypeOrder) as SportType[])
@@ -83,7 +84,7 @@ const onboardingLeaguePicker = ({
 										onChange={() => onToggleSport(sportType, !allSelected)}
 									/>
 									<label className='form-check-label small text-body-secondary' htmlFor={`sport-all-${sportType}`}>
-										All
+										{i18n.t('leaguePicker.all')}
 									</label>
 								</div>
 							</div>
@@ -114,7 +115,7 @@ const onboardingLeaguePicker = ({
 			onClick={onNext}
 			disabled={selectedLeagues.size === 0}
 		>
-			Next <i className='bi bi-arrow-right' />
+			{i18n.t('leaguePicker.next')} <i className='bi bi-arrow-right' />
 		</button>
 	</div>
 );

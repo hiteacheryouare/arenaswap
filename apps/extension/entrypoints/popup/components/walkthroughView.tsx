@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { i18n } from '#i18n';
 import WalkthroughStepToggle from './walkthroughStepToggle';
 import WalkthroughStepTabAssign from './walkthroughStepTabAssign';
 import WalkthroughStepAutoSwitch from './walkthroughStepAutoSwitch';
@@ -33,12 +34,12 @@ const DoneScreen = ({ onComplete }: { onComplete: () => void }) => {
 				alt='ArenaSwap'
 				className='arenaswap-logo mb-2'
 			/>
-			<div className='fw-bold fs-3 lh-sm'>All set!</div>
+			<div className='fw-bold fs-3 lh-sm'>{i18n.t('walkthrough.allSet')}</div>
 			<div className='text-body-secondary lh-base'>
-				Ready to always watch the best game?
+				{i18n.t('walkthrough.allSetSubtitle')}
 			</div>
 			<button type='button' className='btn btn-primary w-100 mt-2' onClick={onComplete}>
-				Let's go <i className='bi bi-arrow-right' />
+				{i18n.t('walkthrough.letsGo')} <i className='bi bi-arrow-right' />
 			</button>
 		</div>
 	);

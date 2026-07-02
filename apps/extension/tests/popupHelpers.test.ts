@@ -7,7 +7,6 @@ import {
 	groupByLeague,
 	isFavoriteTeamGame,
 	leaguesBySportType,
-	loadingMessages,
 	normalizeBackgroundState,
 } from '../entrypoints/popup/popupHelpers';
 import { createFavoriteTeamKey, leagueConfigs } from '@arenaswap/core/constants';
@@ -68,9 +67,10 @@ describe('leaguesBySportType', () => {
 });
 
 describe('getRandomLoadingMessage', () => {
-	test('returns one of the configured loading messages', () => {
+	test('returns a non-empty localized loading message', () => {
 		const message = getRandomLoadingMessage();
-		expect(loadingMessages).toContain(message);
+		expect(typeof message).toBe('string');
+		expect(message.length).toBeGreaterThan(0);
 	});
 });
 

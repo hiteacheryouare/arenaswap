@@ -1,0 +1,419 @@
+app:
+  welcomeToast: ¡Bienvenido a ArenaSwap!
+  settingsSavedToast: Ajustes guardados
+  gameDetailsUnavailable: Detalles del partido no disponibles
+  backToGames: Volver a los partidos
+
+sport:
+  basketball: Baloncesto
+  football: Fútbol americano
+  hockey: Hockey
+  baseball: Béisbol
+  softball: Softbol
+  soccer: Fútbol
+
+date:
+  today: Hoy
+  tomorrow: Mañana
+  upcoming: Próximos
+
+tab:
+  fallback: 'Pestaña #$1'
+
+noGames:
+  m1:
+    title: Aún esperando el saque inicial. 🕐
+    sub: No hay partidos en vivo en tus ligas seleccionadas.
+  m2:
+    title: El estadio está a oscuras.
+    sub: No hay acción en vivo en tus ligas. Vuelve cuando empiecen los partidos.
+  m3:
+    title: Es un día tranquilo en el deporte.
+    sub: Nada en vivo en este momento.
+  m4:
+    title: Hasta los árbitros están descansando.
+    sub: No se detectan partidos en vivo en tus ligas seleccionadas.
+  m5:
+    title: El marcador está inmóvil.
+    sub: Tus ligas están tranquilas. Vuelve cuando empiecen los partidos.
+  m6:
+    title: El de los perritos calientes se fue. 🌭
+    sub: No hay acción en vivo en tus ligas. Nada que seguir por ahora.
+  m7:
+    title: Buscando bajo las gradas...
+    sub: Aún no hay partidos en vivo en tus ligas seleccionadas.
+
+loading:
+  m1: Repasando la estrategia...
+  m2: Estudiando el video del partido...
+  m3: Cambiando la jugada...
+  m4: Calentando en la banca...
+  m5: Animando al público...
+  m6: Poniendo la música de salida...
+  m7: Puliendo el trofeo...
+  m8: Sincronizando el reloj del partido...
+  m9: Encendiendo la pantalla gigante...
+  m10: Contando los tiempos fuera...
+  m11: Abriendo el reglamento...
+  m12: Ajustando los altavoces del estadio...
+  m13: Llenando las botellas de agua...
+  m14: Ajustando los reflectores...
+  m15: Sobornando a los árbitros...
+  m16: Consultando el almanaque deportivo...
+  m17: Pensando si arriesgarse en el cuarto down...
+  m18: Actualizando el debate del mejor de la historia...
+  m19: Llenando la cabina de prensa...
+  m20: Desplegando las pancartas...
+  m21: Sincronizando la señal de transmisión...
+  m22: Contando al público...
+  m23: Puliendo los anillos de campeonato...
+  m24: Animando a las mascotas...
+  m25: Encendiendo las luces del estadio...
+  m26: Yendo al gimnasio...
+  m27: Llenando las neveras...
+  m28: Repasando las mejores jugadas...
+  m29: Abucheando al comisionado...
+  m30: Encontrando los estadios...
+  m31: Comiendo un cheesesteak...
+  m32: Discutiendo con los clientes del bar deportivo...
+  m33: Reorganizando la tabla de la liga de fantasía...
+  m34: Consultando al oráculo deportivo...
+  m35: Impugnando esa jugada...
+  m36: Buscando un pañuelo en la jugada...
+  m37: Revisando la repetición instantánea...
+  m38: Reproduciendo el video de motivación...
+  m39: Pensando en un snack a mitad del partido...
+  m40: Planeando la celebración post-partido...
+  m41: Poniéndose la camiseta de la suerte...
+  m42: Visualizando el baile de la victoria...
+  m43: Puliendo la vitrina de trofeos...
+  m44: Repasando curiosidades deportivas...
+  m45: Organizando la fiesta previa...
+  m46: Preparando la pintura facial...
+  m47: Coordinando los uniformes del equipo...
+  m48: Sacando las cuentas...
+  m49: Analizando las estadísticas...
+  m50: Lanzando los fuegos artificiales...
+  m51: Preparando el espectáculo de luces...
+  m52: Consultando el clima para el día del partido...
+  m53: Actualizando la alineación de fútbol de fantasía...
+  m54: Gritándole a la tele...
+  m55: Gritándole a los árbitros...
+  m56: go birds
+  m57: Repasando la pizarra del entrenador...
+  m58: Comprobando si el de los perritos calientes está listo...
+  m59: Desinflando... digo, inflando los balones...
+  m60: Consultando las cuotas de Las Vegas...
+  m61: Ajustando los guantes de bateo...
+  m62: Estirando el isquiotibial del pateador...
+  m63: Repasando las negociaciones de contrato...
+  m64: Pidiendo la pizza de la victoria...
+  m65: Comprobando la confianza del QB suplente...
+  m66: Reconsiderando ese traspaso...
+  m67: Puliendo las tarjetas de estadísticas de jugadores...
+  m68: Preparando la repetición en cámara lenta...
+  m69: Confirmando que el volado es real...
+  m70: Instruyendo al recogepelotas...
+  m71: Subiendo el volumen del público...
+  m72: Sacando el brillo a la mercancía del campeonato...
+  m73: Hidratando al aguador...
+
+setup:
+  header: Ajustes
+  tabSwitching: Cambios
+  tabLeagues: Ligas
+  optionsSection: Opciones
+  showUpcoming: Mostrar próximos partidos
+  proTips: Consejos
+  switchNotifications: Notificaciones de cambio
+  demoMode: Modo demostración
+  standbySection: Transmisión en espera
+  enableStandby: Activar transmisión en espera
+  standbyBelow: En espera por debajo de
+  morePatient: Más paciente
+  switchesSooner: Cambia antes
+  standbyTab: Pestaña de espera
+  selectTab: — Selecciona una pestaña —
+  bettingSection: Apuestas y cuotas
+  showBetting: Mostrar apuestas y cuotas
+  leaguesExplainer: Solo se siguen y se consideran para el cambio automático las ligas seleccionadas.
+  selectNone: ninguna
+  selectAll: todas
+  noLeaguesWarning: No hay ligas seleccionadas — ArenaSwap no seguirá ningún partido.
+  leagueLogoAlt: 'Logo de {label}'
+
+main:
+  tourButton: Recorrido
+  settingsButton: Ajustes
+  onStandbyStream: En transmisión en espera — esperando acción
+  sectionActiveLiveTabs: Pestañas en vivo activas
+  sectionOtherLiveGames: Otros partidos en vivo
+  sectionUpNext: A continuación
+
+detail:
+  legendCloseness: Igualdad
+  legendLateGame: Recta final
+  legendMomentum: Impulso
+  legendLeadChanges: Cambios de ventaja
+  legendComeback: Remontada
+  startsSoon: Comienza pronto
+  final: Final
+  totalLabel: '{total} / {max}'
+  totalLabelBaseMax: '{total} (máx. base {max})'
+  back: Atrás
+  powerScoreLabel: PowerScore
+  chartPowerScoreTitle: PowerScore a lo largo del tiempo
+  chartPowerScoreEmpty: La tendencia del PowerScore aparece tras unas cuantas actualizaciones.
+  chartScoreTitle: Marcador a lo largo del tiempo
+  chartScoreEmpty: La tendencia del marcador aparece tras unas cuantas actualizaciones.
+  chartWinProbTitle: Probabilidad de victoria
+  chartWinProbEmpty: La probabilidad de victoria se carga cuando el partido está en vivo.
+  chartComponentsTitle: Componentes del PowerScore a lo largo del tiempo
+  chartComponentsEmpty: La tendencia de los componentes aparece tras unas cuantas actualizaciones.
+
+gameCard:
+  removeFromFavorites: Quitar {team} de favoritos
+  addToFavorites: Añadir {team} a favoritos
+  favorited: En favoritos
+  addToFavoritesShort: Añadir a favoritos
+  watchLabel: 'Ver en:'
+  oddsProvidedBy: 'Cuotas proporcionadas por:'
+  openDetails: Abrir detalles de {away} vs {home}
+  live: EN VIVO
+  powerScore: PowerScore
+  vs: vs
+
+gameBoost:
+  heading: Impulso del partido
+  explainer: Añade puntos al PowerScore de este partido para subir su prioridad.
+
+powerScore:
+  heading: Desglose del PowerScore
+  signalCloseness: Igualdad
+  signalLateGame: Recta final
+  signalMomentum: Impulso
+  signalLeadChanges: Cambios de ventaja
+  signalComeback: Remontada
+  signalsTotal: Total de señales
+  cappedAt: (limitado a {max})
+  clockStallPenalty: Penalización por reloj detenido
+  applied: aplicada
+  none: ninguna
+  clockFrozenNote: reloj del partido detenido — {before} → {after} pts antes de bonificaciones
+  favoriteBonus: Bonificación de favorito
+  favoriteTeamsInMatchup:
+    1: 1 equipo favorito en el enfrentamiento
+    n: $1 equipos favoritos en el enfrentamiento
+  gameBoost: Impulso del partido
+  scoringOpportunity: Oportunidad de anotar
+  finalPowerScore: PowerScore final
+
+bso:
+  balls: B
+  strikes: S
+  outs: O
+
+onboarding:
+  allSetTitle: ¡Todo listo!
+  allSetSubtitle: ¿Quieres un recorrido rápido antes de empezar?
+  takeTour: Hacer el recorrido
+  jumpIn: Empezar ya
+
+leaguePicker:
+  back: Atrás
+  step: Paso $1 de $2
+  title: ¿Qué deportes ves?
+  all: Todas
+  next: Siguiente
+
+teamPicker:
+  back: Atrás
+  step: Paso $1 de $2
+  title: Elige tus equipos
+  explainer: Los favoritos reciben una bonificación para que ArenaSwap priorice esos partidos.
+  searchPlaceholder: Buscar equipos…
+  loading: Cargando equipos…
+  loadError: No se pudieron cargar los equipos.
+  retry: Reintentar
+  skipForNow: Omitir por ahora
+  removeFavorite: Quitar {team} de favoritos
+  addFavorite: Añadir {team} a favoritos
+  noMatch: Ningún equipo coincide con “{query}”
+  skip: Omitir
+  done: Listo
+
+tabControl:
+  step: Paso $1 de $2
+  title: Bienvenido a ArenaSwap
+  subtitle: Antes de configurarlo todo, esto es lo que puedes esperar.
+  feature1Title: Cambio automático de pestañas
+  feature1Body: ArenaSwap toma el control de la ventana del navegador cuando está activo. Cuando un partido se pone emocionante, ArenaSwap activa esa pestaña aunque estés viendo otra cosa.
+  feature2Title: Tú asignas pestañas a los partidos
+  feature2Body: Abre cada transmisión en su propia pestaña y luego asígnala a un partido desde la extensión. ArenaSwap solo toca las pestañas que has registrado.
+  feature3Title: Tú tienes el control
+  feature3Body: Pausa el cambio automático cuando quieras. Ajusta la sensibilidad y el tiempo de espera desde Ajustes.
+  gotIt: Entendido
+
+walkthrough:
+  allSet: ¡Todo listo!
+  allSetSubtitle: ¿Listo para ver siempre el mejor partido?
+  letsGo: Vamos
+
+stepToggle:
+  step: Paso $1 de $2
+  title: Encenderlo y apagarlo
+  subtitle: Un solo interruptor lo controla todo.
+  tryIt: ↑ pruébalo
+  statusActive: ● ArenaSwap está activo
+  statusPaused: ○ Cambio automático en pausa
+  bodyBeforeOn: 'Cuando está '
+  bodyOn: 'activado'
+  bodyAfterOn: ', ArenaSwap cambia automáticamente tus pestañas al partido en vivo más emocionante. Apágalo cuando quieras para retomar el control.'
+  next: Siguiente
+
+stepTabAssign:
+  step: Paso $1 de $2
+  title: Asigna pestañas a los partidos
+  subtitle: ArenaSwap solo toca las pestañas que registras.
+  assignPlaceholder: — Asigna una pestaña —
+  linkHint: ↑ vincula una pestaña del navegador aquí
+  body: Abre cada transmisión en su propia pestaña del navegador y luego usa el menú desplegable en la tarjeta del partido para vincularlas. ArenaSwap solo cambiará a las pestañas que hayas asignado.
+  back: Atrás
+  next: Siguiente
+
+stepAutoSwitch:
+  step: Paso $1 de $2
+  title: Míralo en acción
+  watchingCaption: viendo el partido de los Eagles...
+  reveal: ¿Viste eso? 👀
+  revealBody: El partido de los 76ers se puso emocionante (PowerScore 89). ArenaSwap lo detectó y cambió automáticamente — sin necesidad de clics.
+  back: Atrás
+  next: Siguiente
+
+stepSettings:
+  step: Paso $1 de $2
+  title: Ajústalo a tu manera
+  subtitle: Abre Ajustes cuando quieras para modificarlo.
+  sensitivity1: Apenas activo
+  sensitivity2: Pasivo
+  sensitivity3: Conservador
+  sensitivity4: Equilibrado
+  sensitivity5: Ansioso
+  sensitivity6: Gatillo fácil
+  sensitivity7: Velocidad ridícula
+  sensitivityLabel: Sensibilidad de cambio
+  sensitivityHelp: Controla qué tan grande debe ser la diferencia de PowerScore antes de que ArenaSwap cambie de pestaña.
+  cooldownLabel: Tiempo de espera entre cambios
+  cooldownHelp: Establece el tiempo mínimo entre cambios automáticos para reducir el cambio rápido de pestañas.
+  moreLeagues: + más en la pestaña Ligas
+  back: Atrás
+  next: Siguiente
+
+standbyGuide:
+  step: Paso $1 de $2
+  title: Transmisión en espera
+  subtitle: Una alternativa para los momentos lentos.
+  quietTitle: Cuando los partidos se calman
+  quietBody: Cuando todos los partidos que ves caen por debajo de tu umbral, ArenaSwap se queda en tu transmisión en espera automáticamente.
+  returnTitle: Vuelve por sí solo
+  returnBody: En cuanto cualquier partido vuelve a superar tu umbral, ArenaSwap te lleva de regreso.
+  chooseTitle: Tú eliges la pestaña de espera
+  chooseBody: Abre en una pestaña la transmisión que quieras y luego elígela en el menú desplegable de Ajustes.
+  next: Siguiente
+  setupTitle: Cómo configurarlo
+  setupSubtitle: Dos cosas que configurar a continuación.
+  thresholdTitle: Fija tu umbral
+  thresholdBody: Elige qué tan bajo deben caer las puntuaciones antes de que se active la espera. Más bajo es más paciente; más alto se activa antes.
+  designateTitle: Designa una pestaña de espera
+  designateBody: Abre tu transmisión en espera en una pestaña, vuelve aquí y elígela en el menú desplegable.
+  gotIt: Entendido
+
+empty:
+  leaguesTitle: Elige ligas para empezar
+  leaguesCopy: ArenaSwap necesita al menos una liga seleccionada para poder encontrar partidos entre los que cambiar.
+  selectLeagues: Seleccionar ligas en Ajustes
+  refresh: Actualizar
+  settings: Ajustes →
+
+gameListHeader:
+  loading: Cargando...
+  loadFailed: No se pudieron cargar los partidos.
+  retry: Reintentar
+
+toast:
+  success: Correcto
+  error: Error
+  info: Información
+  close: Cerrar
+
+tabAssign:
+  placeholder: — Asigna una pestaña —
+  inUse: ' (en uso)'
+
+favoriteTeamBonus:
+  label: Bonificación de equipo favorito
+  perTeam: +$1 por equipo
+  explainer: Se aplica una vez por cada equipo favorito en un partido. Si ambos equipos son favoritos, la bonificación se duplica.
+
+proTip:
+  label: 'Consejo:'
+  general:
+    t0: Usa el interruptor de la esquina superior derecha para pausar ArenaSwap sin perder tus ajustes.
+    t1: ArenaSwap funciona mejor con dos o más pestañas de partidos abiertas a la vez.
+    t2: Haz clic en cualquier tarjeta de partido para ver el desglose de su PowerScore.
+    t3: ¿Mezclas deportes? Activa más ligas en Ajustes para cambiar entre todas a la vez.
+    t4: Las jirafas y los erizos son geniales. Ver todos los partidos a la vez también.
+    t5: ¡ArenaSwap funciona mejor cuanto más tiempo lo dejas correr!
+  main:
+    t0: Marca tus equipos favoritos para fijar sus partidos al principio de la lista.
+    t1: Asigna una pestaña desde el menú desplegable junto a cada partido para que ArenaSwap sepa a dónde cambiar.
+    t2: Un PowerScore más alto gana el cambio; fíjate en las insignias de colores.
+    t3: Activa “Mostrar próximos partidos” en Ajustes para asignar pestañas antes de que empiece el partido.
+    t4: ¿Todavía no hay partidos en vivo? El Modo demostración en Ajustes te deja ver cómo funciona ArenaSwap con partidos ficticios.
+  setup:
+    t0: Baja el tiempo de espera para cambiar de forma más agresiva en los finales caóticos.
+    t1: Sube la bonificación de equipo favorito para asegurarte de que tu equipo casi siempre gane el cambio.
+    t2: Aumenta el retardo de cambio para darte un instante antes de que la pestaña cambie de verdad.
+    t3: El Modo demostración ejecuta partidos simulados, perfecto para ajustar los controles sin esperar acción en vivo.
+    t4: La sensibilidad controla qué tan grande debe ser la ventaja de PowerScore antes de que ArenaSwap cambie.
+  detail:
+    t0: El PowerScore combina igualdad, presión de la recta final, impulso, cambios de ventaja y remontadas.
+    t1: Se aplica una penalización cuando el reloj del partido apenas avanza entre actualizaciones.
+    t2: Los partidos 0-0 reciben una pequeña penalización de PowerScore en los deportes donde el 0-0 no es emocionante.
+    t3: Pasa el cursor sobre las gráficas para inspeccionar momentos concretos del partido.
+    t4: Un equipo favorito en el enfrentamiento suma puntos extra al PowerScore.
+    t5: El PowerScore crece a medida que avanza el partido — un partido reñido temprano se dispara hacia el pitido final.
+    t6: ¿Empate en el último minuto? El PowerScore anticipa una probable prórroga para que nunca te pierdas el pitido final.
+
+reviewPrompt:
+  title: ¿Disfrutas ArenaSwap?
+  copy: Una breve reseña ayuda a más aficionados a encontrar el mejor partido ❤️
+  leaveReview: Dejar reseña
+  dismiss: Descartar solicitud de reseña
+
+cooldown:
+  label: Tiempo de espera entre cambios
+  explainer: Establece el tiempo mínimo entre cambios automáticos para reducir el cambio rápido de pestañas.
+
+switchDelay:
+  off: 'Desactivado'
+  label: Retardo de cambio
+  explainer: Espera este tiempo antes de ejecutar un cambio, lo que ayuda cuando las transmisiones van por detrás de los datos en vivo.
+
+sensitivity:
+  label: Sensibilidad de cambio
+  valueLabel: '{label} (diferencia ≥ {gap})'
+  explainer: Controla qué tan grande debe ser la diferencia de PowerScore antes de que ArenaSwap cambie de pestaña.
+  level:
+    l1: Apenas activo
+    l2: Pasivo
+    l3: Conservador
+    l4: Equilibrado
+    l5: Ansioso
+    l6: Gatillo fácil
+    l7: Velocidad ridícula
+
+footer:
+  builtWith: Hecho con
+  credit: en Filadelfia y Boston por Ryan Mullin
+  toggleDebug: Mostrar información de depuración

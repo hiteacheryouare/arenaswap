@@ -1,4 +1,5 @@
 import { sensitivityThresholds } from '@arenaswap/core/constants';
+import { i18n } from '#i18n';
 
 interface sensitivitySliderProps {
 	value: number;
@@ -6,20 +7,20 @@ interface sensitivitySliderProps {
 }
 
 const labels: Record<number, string> = {
-	1: 'Barely Active',
-	2: 'Passive',
-	3: 'Conservative',
-	4: 'Balanced',
-	5: 'Eager',
-	6: 'Trigger Happy',
-	7: 'Ludicrous Speed'
+	1: i18n.t('sensitivity.level.l1'),
+	2: i18n.t('sensitivity.level.l2'),
+	3: i18n.t('sensitivity.level.l3'),
+	4: i18n.t('sensitivity.level.l4'),
+	5: i18n.t('sensitivity.level.l5'),
+	6: i18n.t('sensitivity.level.l6'),
+	7: i18n.t('sensitivity.level.l7'),
 };
 
 const sensitivitySlider = ({ value, onChange }: sensitivitySliderProps) => (
 	<div>
 		<div className='d-flex justify-content-between align-items-center mb-1'>
-			<label htmlFor='sensitivity-range' className='text-body-secondary setting-toggle-label'><i className='bi bi-sliders me-1 text-primary' />Switch sensitivity</label>
-			<span className={`fw-semibold setting-value-label${value === 7 ? ' ludicrous-speed' : ''}`}>{labels[value]} (gap ≥ {sensitivityThresholds[value]})</span>
+			<label htmlFor='sensitivity-range' className='text-body-secondary setting-toggle-label'><i className='bi bi-sliders me-1 text-primary' />{i18n.t('sensitivity.label')}</label>
+			<span className={`fw-semibold setting-value-label${value === 7 ? ' ludicrous-speed' : ''}`}>{i18n.t('sensitivity.valueLabel', { label: labels[value]!, gap: sensitivityThresholds[value]! })}</span>
 		</div>
 		<input
 			id='sensitivity-range'
@@ -42,7 +43,7 @@ const sensitivitySlider = ({ value, onChange }: sensitivitySliderProps) => (
 			))}
 		</div>
 		<div className='mt-1 setting-explainer'>
-			Controls how big the PowerScore gap must be before ArenaSwap switches tabs.
+			{i18n.t('sensitivity.explainer')}
 		</div>
 	</div>
 );

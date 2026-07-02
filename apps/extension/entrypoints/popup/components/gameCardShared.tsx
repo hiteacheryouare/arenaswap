@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { KeyboardEvent, MouseEvent } from 'react';
+import { i18n } from '#i18n';
 import { leagueConfigMap } from '@arenaswap/core/constants';
 import type { Game, LeagueId, Team } from '@arenaswap/core/types';
 import type { BettingDisplayPrefs } from './gameCardTypes';
@@ -131,8 +132,8 @@ export const TeamColumn = ({
 			className='btn btn-link p-0 border-0 lh-1'
 			data-favorited={isFavorited}
 			data-team-star='true'
-			aria-label={isFavorited ? `Remove ${team.abbreviation} from favorites` : `Add ${team.abbreviation} to favorites`}
-			title={isFavorited ? 'Favorited' : 'Add to favorites'}
+			aria-label={isFavorited ? i18n.t('gameCard.removeFromFavorites', { team: team.abbreviation }) : i18n.t('gameCard.addToFavorites', { team: team.abbreviation })}
+			title={isFavorited ? i18n.t('gameCard.favorited') : i18n.t('gameCard.addToFavoritesShort')}
 			onClick={() => onToggleFavoriteTeam(leagueId, team.id)}
 		>
 			<i className={`bi ${isFavorited ? 'bi-star-fill' : 'bi-star'}`} />
@@ -187,13 +188,13 @@ export const GameMeta = ({
 			{venueName && <div className='text-center game-meta-venue'>{venueName}</div>}
 			{networks && (
 				<div className='text-center game-meta-networks'>
-					<span className='font-bold'>Watch:</span> {networks}
+					<span className='font-bold'>{i18n.t('gameCard.watchLabel')}</span> {networks}
 				</div>
 			)}
 			{odds && <div className='d-flex align-items-center justify-content-center game-meta-odds'><span>{odds}</span></div>}
 			{hasOddsProvider && (
 				<div className='d-flex align-items-center justify-content-center game-meta-provider'>
-					<span>Odds provided by:</span>
+					<span>{i18n.t('gameCard.oddsProvidedBy')}</span>
 					<OddsProvider game={game} dark={dark} />
 				</div>
 			)}

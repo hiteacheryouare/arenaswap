@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { powerScoreColor } from './gameCardShared';
+import { i18n } from '#i18n';
 
 interface walkthroughStepAutoSwitchProps {
 	onNext: () => void;
@@ -110,9 +111,9 @@ const walkthroughStepAutoSwitch = ({ onNext, onBack }: walkthroughStepAutoSwitch
 
 	return (
 		<div className='popup-container d-flex flex-column'>
-			<div className='small text-body-secondary text-uppercase text-center pt-3 pb-2'>Step 3 of 4</div>
+			<div className='small text-body-secondary text-uppercase text-center pt-3 pb-2'>{i18n.t('stepAutoSwitch.step', [3, 4])}</div>
 
-			<div className='fw-bold fs-5 text-center mb-3'>Watch it work</div>
+			<div className='fw-bold fs-5 text-center mb-3'>{i18n.t('stepAutoSwitch.title')}</div>
 
 			<div className='position-relative'>
 				<MockCard
@@ -139,25 +140,25 @@ const walkthroughStepAutoSwitch = ({ onNext, onBack }: walkthroughStepAutoSwitch
 
 			{phase === 0 && (
 				<p className='text-body-secondary small lh-base mt-2 text-center fst-italic'>
-					watching the Eagles game...
+					{i18n.t('stepAutoSwitch.watchingCaption')}
 				</p>
 			)}
 
 			{phase === 1 && (
 				<>
-					<p className='fw-semibold text-body mt-2 mb-1'>Did you see that? 👀</p>
+					<p className='fw-semibold text-body mt-2 mb-1'>{i18n.t('stepAutoSwitch.reveal')}</p>
 					<p className='text-body-secondary small lh-base'>
-						The 76ers game heated up (PowerScore 89). ArenaSwap detected it and switched automatically — no clicks needed.
+						{i18n.t('stepAutoSwitch.revealBody')}
 					</p>
 				</>
 			)}
 
 			<div className='d-flex gap-2 mt-auto'>
 				<button type='button' className='btn btn-secondary flex-grow-1' onClick={onBack}>
-					<i className='bi bi-arrow-left' /> Back
+					<i className='bi bi-arrow-left' /> {i18n.t('stepAutoSwitch.back')}
 				</button>
 				<button type='button' className='btn btn-primary flex-grow-1' onClick={onNext} disabled={phase === 0}>
-					Next <i className='bi bi-arrow-right' />
+					{i18n.t('stepAutoSwitch.next')} <i className='bi bi-arrow-right' />
 				</button>
 			</div>
 		</div>

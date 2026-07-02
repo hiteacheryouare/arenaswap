@@ -1,5 +1,35 @@
 # Changelog
 
+## Fix: Spanish dev server named substitution bug + i18n adapter refactor — 2026-07-02
+
+Fixes two broken Spanish translations in dev mode and cleans up the Spanish dev server implementation.
+
+### Bug fix
+The dev-mode i18n adapter (`ARENASWAP_LOCALE=es wxt`) wasn't applying named substitutions — calls like `i18n.t('sensitivity.valueLabel', { label, gap })` and `i18n.t('detail.totalLabel', { total, max })` returned the raw template string with `{label}`, `{gap}`, `{total}`, `{max}` unexpanded. Root cause: the adapter's `t()` loop only handled `number` and `Array` args, silently dropping plain objects. Added a `namedSub` branch (matching the production `@wxt-dev/i18n` behavior) and passed it to `_sub()` ahead of the positional `sub`.
+
+### Refactor
+Replaced the old "write temp file → alias to it" mechanism with a Vite virtual module plugin (`enforce: 'pre'`, `resolveId` / `load` hooks). The adapter code is now generated inside a proper `buildDevI18nModule()` function rather than as an escaped inline string. No temp file is written; the Chrome profile setup (needed for macOS locale forcing) is unchanged.
+
+## Internationalization: Spanish support for the popup — 2026-07-02
+
+First step toward serving sports fans outside the US market: the extension popup is now fully localized and ships with a Spanish translation, auto-selected from the browser UI locale.
+
+### Framework
+- Added the [`@wxt-dev/i18n`](https://wxt.dev/i18n) module (registered in `wxt.config.ts`) and set `manifest.default_locale: 'en'`. WXT compiles `locales/*.yml` into the standard extension `_locales/**/messages.json` at build time.
+- Message files live in `apps/extension/locales/en.yml` (source of truth) and `apps/extension/locales/es.yml` — 339 keys each, structurally aligned.
+- Strings are accessed via `i18n.t('key')` from the generated `#i18n` module, with `$1` positional / `{named}` substitutions and `0`/`1`/`n` plural forms where needed.
+
+### Scope
+- Every user-facing string in the popup — onboarding, walkthrough, game cards, PowerScore breakdown, settings, standby-stream guide, empty/loading/error states, toasts, pro tips, and the 73 flavor loading messages — now resolves through the locale files. Sport/team data from the ESPN API is left untranslated.
+- Language is auto-detected from the browser; no in-app switcher in this pass. Store metadata and the docs site are intentionally out of scope for now.
+
+### Dev scripts
+- `npm run dev:es` and `npm run dev:firefox:es` launch the dev browser with its UI language forced to Spanish (via the `ARENASWAP_LOCALE` env var). When set, `wxt.config.ts` generates a self-contained JS adapter at startup and aliases `@wxt-dev/i18n` → that adapter via Vite's `resolve.alias`. The adapter inlines the parsed YAML data and implements the same `createI18n()` API — completely bypassing `chrome.i18n.getMessage()`, which is unreliable for locale selection on macOS in dev. Aliasing the npm package (rather than the virtual `#i18n` module) guarantees the adapter wins over any WXT-generated alias. Unset → the real `@wxt-dev/i18n` module and Chrome's UI locale.
+
+### Tooling / tests
+- Added `#i18n` path mappings to `tsconfig.json` and `tsconfig.jest.json`; disabled declaration emit in the extension's leaf tsconfig (it's bundled by WXT, not `tsc`).
+- New `tests/stubs/i18n.ts` (Jest) and `cypress/stubs/i18n.ts` (Cypress) stubs load `en.yml` and reimplement `i18n.t` (substitutions + plurals) so tests exercise real message resolution against the `#i18n` module. All 101 unit + 16 component tests pass.
+
 ## Fix: game detail matchup card centering — 2026-06-27
 
 The teams row in the game detail card (logo / score / logo) was visually shifted slightly to the right due to sub-pixel rounding when `justify-content: space-between` distributed leftover space across fixed-width team wraps and a fixed `min-width` center div. Replaced `min-width: 116px` on `.game-detail-center` with `flex: 1` so the center absorbs all remaining space exactly, guaranteeing symmetric gaps and perfect score centering.

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { i18n } from '#i18n';
 
 interface walkthroughStepToggleProps {
 	onNext: () => void;
@@ -9,11 +10,11 @@ const walkthroughStepToggle = ({ onNext }: walkthroughStepToggleProps) => {
 
 	return (
 		<div className='popup-container d-flex flex-column'>
-			<div className='small text-body-secondary text-uppercase text-center pt-3 pb-2'>Step 1 of 4</div>
+			<div className='small text-body-secondary text-uppercase text-center pt-3 pb-2'>{i18n.t('stepToggle.step', [1, 4])}</div>
 
-			<div className='fw-bold fs-5 text-center mb-1'>Turning it on &amp; off</div>
+			<div className='fw-bold fs-5 text-center mb-1'>{i18n.t('stepToggle.title')}</div>
 			<div className='text-body-secondary small text-center mb-3 lh-base'>
-				One switch controls everything.
+				{i18n.t('stepToggle.subtitle')}
 			</div>
 
 			<div className='border border-secondary-subtle rounded p-2 mb-3'>
@@ -35,7 +36,7 @@ const walkthroughStepToggle = ({ onNext }: walkthroughStepToggleProps) => {
 									onChange={() => setEnabled(e => !e)}
 								/>
 							</div>
-							<span className='text-primary fw-semibold' style={{ fontSize: '0.6rem', lineHeight: 1 }}>↑ try it</span>
+							<span className='text-primary fw-semibold' style={{ fontSize: '0.6rem', lineHeight: 1 }}>{i18n.t('stepToggle.tryIt')}</span>
 						</div>
 					</div>
 				</div>
@@ -49,17 +50,16 @@ const walkthroughStepToggle = ({ onNext }: walkthroughStepToggleProps) => {
 						transition: 'all 0.2s',
 					}}
 				>
-					{enabled ? '● ArenaSwap is active' : '○ Auto-switching paused'}
+					{enabled ? i18n.t('stepToggle.statusActive') : i18n.t('stepToggle.statusPaused')}
 				</div>
 			</div>
 
 			<p className='text-body-secondary small lh-base'>
-				When <strong className='text-body'>on</strong>, ArenaSwap automatically switches your tabs to the most exciting live game.
-				Toggle it off any time to take back control.
+				{i18n.t('stepToggle.bodyBeforeOn')}<strong className='text-body'>{i18n.t('stepToggle.bodyOn')}</strong>{i18n.t('stepToggle.bodyAfterOn')}
 			</p>
 
 			<button type='button' className='btn btn-primary w-100 mt-auto' onClick={onNext}>
-				Next <i className='bi bi-arrow-right' />
+				{i18n.t('stepToggle.next')} <i className='bi bi-arrow-right' />
 			</button>
 		</div>
 	);

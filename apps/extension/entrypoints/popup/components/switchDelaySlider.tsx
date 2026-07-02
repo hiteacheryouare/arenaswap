@@ -1,3 +1,5 @@
+import { i18n } from '#i18n';
+
 interface switchDelaySliderProps {
 	value: number;
 	onChange: (val: number) => void;
@@ -6,7 +8,7 @@ interface switchDelaySliderProps {
 const steps = [0, 15, 30, 45, 60, 90, 120, 180];
 
 const formatSeconds = (secs: number): string => {
-	if (secs === 0) return 'Off';
+	if (secs === 0) return i18n.t('switchDelay.off');
 	if (secs < 60) return `${secs}s`;
 	const m = Math.floor(secs / 60);
 	const s = secs % 60;
@@ -20,7 +22,7 @@ const switchDelaySlider = ({ value, onChange }: switchDelaySliderProps) => {
 	return (
 		<div>
 			<div className='d-flex justify-content-between align-items-center mb-1'>
-				<label htmlFor='switch-delay-range' className='text-body-secondary setting-toggle-label'><i className='bi bi-hourglass-split me-1 text-primary' />Switch delay</label>
+				<label htmlFor='switch-delay-range' className='text-body-secondary setting-toggle-label'><i className='bi bi-hourglass-split me-1 text-primary' />{i18n.t('switchDelay.label')}</label>
 				<span className='fw-semibold setting-value-label'>{formatSeconds(steps[currentIdx]!)}</span>
 			</div>
 			<input
@@ -38,7 +40,7 @@ const switchDelaySlider = ({ value, onChange }: switchDelaySliderProps) => {
 				<span className='text-body-secondary setting-toggle-label'>{formatSeconds(steps[steps.length - 1]!)}</span>
 			</div>
 			<div className='mt-1 setting-explainer'>
-				Waits this long before executing a switch, which helps when streams lag behind live data.
+				{i18n.t('switchDelay.explainer')}
 			</div>
 		</div>
 	);

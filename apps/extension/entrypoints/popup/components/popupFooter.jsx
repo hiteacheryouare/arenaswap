@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { i18n } from '#i18n';
 
 const popupFooter = () => {
 	const [showDebug, setShowDebug] = useState(false);
@@ -53,16 +54,16 @@ const popupFooter = () => {
 				</div>
 			)}
 			<div className='popup-signature-bar'>
-				Built with
+				{i18n.t('footer.builtWith')}
 				<button
 					type='button'
 					onClick={handleHeartClick}
-					aria-label='Toggle debug info'
+					aria-label={i18n.t('footer.toggleDebug')}
 					className='bg-transparent border-0 p-0 mx-px cursor-default text-inherit leading-none'
 				>
 					&nbsp;❤️&nbsp;
 				</button>
-				in Philadelphia & Boston by Ryan Mullin
+				{i18n.t('footer.credit')}
 			</div>
 		</div>
 	);

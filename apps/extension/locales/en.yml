@@ -1,0 +1,419 @@
+app:
+  welcomeToast: Welcome to ArenaSwap!
+  settingsSavedToast: Settings saved
+  gameDetailsUnavailable: Game details unavailable
+  backToGames: Back to games
+
+sport:
+  basketball: Basketball
+  football: Football
+  hockey: Hockey
+  baseball: Baseball
+  softball: Softball
+  soccer: Soccer
+
+date:
+  today: Today
+  tomorrow: Tomorrow
+  upcoming: Upcoming
+
+tab:
+  fallback: 'Tab #$1'
+
+noGames:
+  m1:
+    title: Still waiting for tip-off. 🕐
+    sub: No live games in your selected leagues.
+  m2:
+    title: The arena's dark.
+    sub: No live action in your leagues. Check back when the games kick off.
+  m3:
+    title: It's a slow sports day.
+    sub: Nothing live right now.
+  m4:
+    title: Even the refs are taking a break.
+    sub: No live games detected across your selected leagues.
+  m5:
+    title: The scoreboard is still.
+    sub: Your leagues are quiet. Check back when the games tip off.
+  m6:
+    title: The hot dog guy left. 🌭
+    sub: No live action in your leagues. Nothing to track right now.
+  m7:
+    title: Checking under the bleachers...
+    sub: Still no live games in your selected leagues.
+
+loading:
+  m1: Reviewing the playbook...
+  m2: Studying the game film...
+  m3: Calling an audible...
+  m4: Warming up the bench...
+  m5: Hyping up the crowd...
+  m6: Cueing the walk-out music...
+  m7: Polishing the trophy...
+  m8: Synchronizing the game clock...
+  m9: Booting up the jumbotron...
+  m10: Counting the timeouts...
+  m11: Cracking open the rulebook...
+  m12: Tuning the stadium speakers...
+  m13: Filling the water bottles...
+  m14: Adjusting the spotlights...
+  m15: Bribing the refs...
+  m16: Consulting the sports almanac...
+  m17: Considering whether to go for it on fourth down...
+  m18: Updating the GOAT debate...
+  m19: Filling the press box...
+  m20: Unfurling the banners...
+  m21: Syncing the broadcast feed...
+  m22: Counting the crowd...
+  m23: Polishing the championship rings...
+  m24: Hyping up the mascots...
+  m25: Powering up the stadium lights...
+  m26: Hitting the gym...
+  m27: Filling the coolors...
+  m28: Reviewing the highlight reels...
+  m29: Booing the commissioner...
+  m30: Finding the arenas...
+  m31: Getting a cheesesteak...
+  m32: Arguing with the sports bar patrons...
+  m33: Rearranging the fantasy league standings...
+  m34: Consulting the sports oracle...
+  m35: Challenging that play...
+  m36: Checking for a flag on the play...
+  m37: Reviewing the instant replay...
+  m38: Playing the hype video...
+  m39: Considering a mid-game snack...
+  m40: Planning the post-game celebration...
+  m41: Wearing the lucky jersey...
+  m42: Visualizing the victory dance...
+  m43: Polishing the trophy case...
+  m44: Brushing up on sports trivia...
+  m45: Organizing the tailgate party...
+  m46: Getting the face paint ready...
+  m47: Coordinating team uniforms...
+  m48: Running the numbers...
+  m49: Analyzing the stats...
+  m50: Launching the fireworks...
+  m51: Getting the light show ready...
+  m52: Checking the weather for game day...
+  m53: Updating the fantasy football lineup...
+  m54: Yelling at the TV...
+  m55: Yelling at the refs...
+  m56: go birds
+  m57: Reviewing the coach's clipboard...
+  m58: Checking if the hot dog guy is ready...
+  m59: Deflating... er, inflating the footballs...
+  m60: Consulting the Vegas odds...
+  m61: Tightening the batting gloves...
+  m62: Stretching out the kicker's hamstring...
+  m63: Reviewing the contract negotiations...
+  m64: Ordering the victory pizza...
+  m65: Checking the backup QB's confidence level...
+  m66: Reconsidering that trade...
+  m67: Polishing up the player stats cards...
+  m68: Setting up the slow-motion replay...
+  m69: Confirming the coin flip is real...
+  m70: Briefing the ball boy...
+  m71: Turning up the crowd noise...
+  m72: Dusting off the championship merchandise...
+  m73: Hydrating the water boy...
+
+setup:
+  header: Settings
+  tabSwitching: Switching
+  tabLeagues: Leagues
+  optionsSection: Options
+  showUpcoming: Show upcoming games
+  proTips: Pro tips
+  switchNotifications: Switch notifications
+  demoMode: Demo mode
+  standbySection: Standby Stream
+  enableStandby: Enable Standby Stream
+  standbyBelow: Standby below
+  morePatient: More patient
+  switchesSooner: Switches sooner
+  standbyTab: Standby tab
+  selectTab: — Select a tab —
+  bettingSection: Betting & Odds
+  showBetting: Show betting & odds
+  leaguesExplainer: Only selected leagues are tracked and considered for automatic switching.
+  selectNone: none
+  selectAll: all
+  noLeaguesWarning: No leagues selected — ArenaSwap won't track any games.
+  leagueLogoAlt: '{label} logo'
+
+main:
+  tourButton: Tour
+  settingsButton: Settings
+  onStandbyStream: On standby stream — waiting for action
+  sectionActiveLiveTabs: Active Live Tabs
+  sectionOtherLiveGames: Other Live Games
+  sectionUpNext: Up Next
+
+detail:
+  legendCloseness: Closeness
+  legendLateGame: Late-game
+  legendMomentum: Momentum
+  legendLeadChanges: Lead changes
+  legendComeback: Comeback
+  startsSoon: Starts soon
+  final: Final
+  totalLabel: '{total} / {max}'
+  totalLabelBaseMax: '{total} (base max {max})'
+  back: Back
+  powerScoreLabel: PowerScore
+  chartPowerScoreTitle: PowerScore over time
+  chartPowerScoreEmpty: PowerScore trend appears after a few refreshes.
+  chartScoreTitle: Game score over time
+  chartScoreEmpty: Score trend appears after a few refreshes.
+  chartWinProbTitle: Win probability
+  chartWinProbEmpty: Win probability loads when the game is live.
+  chartComponentsTitle: PowerScore components over time
+  chartComponentsEmpty: Component trend appears after a few refreshes.
+
+gameCard:
+  removeFromFavorites: Remove {team} from favorites
+  addToFavorites: Add {team} to favorites
+  favorited: Favorited
+  addToFavoritesShort: Add to favorites
+  watchLabel: 'Watch:'
+  oddsProvidedBy: 'Odds provided by:'
+  openDetails: Open details for {away} vs {home}
+  live: LIVE
+  powerScore: PowerScore
+  vs: vs
+
+gameBoost:
+  heading: Game boost
+  explainer: Add points to this game's PowerScore to raise its priority.
+
+powerScore:
+  heading: PowerScore Breakdown
+  signalCloseness: Closeness
+  signalLateGame: Late-game
+  signalMomentum: Momentum
+  signalLeadChanges: Lead changes
+  signalComeback: Comeback
+  signalsTotal: Signals total
+  cappedAt: (capped at {max})
+  clockStallPenalty: Clock stall penalty
+  applied: applied
+  none: none
+  clockFrozenNote: game clock frozen — {before} → {after} pts before bonuses
+  favoriteBonus: Favorite bonus
+  favoriteTeamsInMatchup:
+    1: 1 favorite team in matchup
+    n: $1 favorite teams in matchup
+  gameBoost: Game boost
+  scoringOpportunity: Scoring opportunity
+  finalPowerScore: Final PowerScore
+
+bso:
+  balls: B
+  strikes: S
+  outs: O
+
+onboarding:
+  allSetTitle: You're all set!
+  allSetSubtitle: Want a quick tour before you dive in?
+  takeTour: Take the tour
+  jumpIn: Jump right in
+
+leaguePicker:
+  back: Back
+  step: Step $1 of $2
+  title: Which sports do you watch?
+  all: All
+  next: Next
+
+teamPicker:
+  back: Back
+  step: Step $1 of $2
+  title: Pick your teams
+  explainer: Favorites get a scoring bonus so ArenaSwap favors those games.
+  searchPlaceholder: Search teams…
+  loading: Loading teams…
+  loadError: Couldn't load teams.
+  retry: Retry
+  skipForNow: Skip for now
+  removeFavorite: Remove {team} from favorites
+  addFavorite: Add {team} to favorites
+  noMatch: No teams match “{query}”
+  skip: Skip
+  done: Done
+
+tabControl:
+  step: Step $1 of $2
+  title: Welcome to ArenaSwap
+  subtitle: Before we set things up, here's what to expect.
+  feature1Title: Automatic tab switching
+  feature1Body: ArenaSwap takes over the browser window when active. When a game heats up, ArenaSwap activates that tab even if you're watching something else.
+  feature2Title: You register tabs to games
+  feature2Body: Open each stream in its own tab, then assign it to a game from the extension. ArenaSwap only touches tabs you've registered.
+  feature3Title: You stay in control
+  feature3Body: Pause auto-switching anytime. Tune sensitivity and cooldown from Settings.
+  gotIt: Got it
+
+walkthrough:
+  allSet: All set!
+  allSetSubtitle: Ready to always watch the best game?
+  letsGo: Let's go
+
+stepToggle:
+  step: Step $1 of $2
+  title: Turning it on & off
+  subtitle: One switch controls everything.
+  tryIt: ↑ try it
+  statusActive: ● ArenaSwap is active
+  statusPaused: ○ Auto-switching paused
+  bodyBeforeOn: 'When '
+  bodyOn: 'on'
+  bodyAfterOn: ', ArenaSwap automatically switches your tabs to the most exciting live game. Toggle it off any time to take back control.'
+  next: Next
+
+stepTabAssign:
+  step: Step $1 of $2
+  title: Assign tabs to games
+  subtitle: ArenaSwap only touches tabs you register.
+  assignPlaceholder: — Assign a tab —
+  linkHint: ↑ link a browser tab here
+  body: Open each stream in its own browser tab, then use the dropdown on a game card to link them. ArenaSwap will only switch to tabs you've assigned.
+  back: Back
+  next: Next
+
+stepAutoSwitch:
+  step: Step $1 of $2
+  title: Watch it work
+  watchingCaption: watching the Eagles game...
+  reveal: Did you see that? 👀
+  revealBody: The 76ers game heated up (PowerScore 89). ArenaSwap detected it and switched automatically — no clicks needed.
+  back: Back
+  next: Next
+
+stepSettings:
+  step: Step $1 of $2
+  title: Tune it your way
+  subtitle: Open Settings any time to adjust.
+  sensitivity1: Barely Active
+  sensitivity2: Passive
+  sensitivity3: Conservative
+  sensitivity4: Balanced
+  sensitivity5: Eager
+  sensitivity6: Trigger Happy
+  sensitivity7: Ludicrous Speed
+  sensitivityLabel: Switch sensitivity
+  sensitivityHelp: Controls how big the PowerScore gap must be before ArenaSwap switches tabs.
+  cooldownLabel: Switch cooldown
+  cooldownHelp: Sets the minimum time between automatic switches to reduce rapid tab flipping.
+  moreLeagues: + more in Leagues tab
+  back: Back
+  next: Next
+
+standbyGuide:
+  step: Step $1 of $2
+  title: Standby Stream
+  subtitle: A fallback for the slow moments.
+  quietTitle: When games go quiet
+  quietBody: When every game you're watching drops below your threshold, ArenaSwap parks on your standby stream automatically.
+  returnTitle: It comes back on its own
+  returnBody: The moment any game heats back up above your threshold, ArenaSwap switches you right back.
+  chooseTitle: You choose the standby tab
+  chooseBody: Open any stream you want in a tab, then pick it from the dropdown in Settings.
+  next: Next
+  setupTitle: How to set it up
+  setupSubtitle: Two things to configure below.
+  thresholdTitle: Set your threshold
+  thresholdBody: Choose how low scores need to drop before standby kicks in. Lower is more patient; higher triggers sooner.
+  designateTitle: Designate a standby tab
+  designateBody: Open your standby stream in a tab, come back here, and pick it from the dropdown.
+  gotIt: Got it
+
+empty:
+  leaguesTitle: Choose leagues to get started
+  leaguesCopy: ArenaSwap needs at least one league selected before it can find games to swap between.
+  selectLeagues: Select Leagues in Settings
+  refresh: Refresh
+  settings: Settings →
+
+gameListHeader:
+  loading: Loading...
+  loadFailed: Failed to load games.
+  retry: Retry
+
+toast:
+  success: Success
+  error: Error
+  info: Info
+  close: Close
+
+tabAssign:
+  placeholder: — Assign a tab —
+  inUse: ' (in use)'
+
+favoriteTeamBonus:
+  label: Favorite team bonus
+  perTeam: +$1 per team
+  explainer: Applied once for each favorited team in a game. If both teams are favorited, the bonus is doubled.
+
+proTip:
+  label: 'Pro tip:'
+  general:
+    t0: Toggle the switch in the top right to pause ArenaSwap without losing your settings.
+    t1: ArenaSwap works best with two or more game tabs open at once.
+    t2: Click any game card to dive into its PowerScore breakdown.
+    t3: Mixing sports? Enable extra leagues in Settings to swap across all of them at once.
+    t4: Giraffes and hedgehogs are cool. So is watching every game at once.
+    t5: ArensSwap works better the longer you let it run!
+  main:
+    t0: Star your favorite teams to pin their games to the top of the list.
+    t1: Assign a tab from the dropdown beside each game so ArenaSwap knows where to swap.
+    t2: A higher PowerScore wins the swap; keep an eye on the colored badges.
+    t3: Turn on “Show upcoming games” in Settings to pre-assign tabs before the game starts.
+    t4: No live games yet? Demo Mode in Settings lets you watch ArenaSwap work with fake games.
+  setup:
+    t0: Lower the Cooldown to swap more aggressively during chaotic finishes.
+    t1: Bump the Favorite Team Bonus to make sure your team almost always wins the swap.
+    t2: Increase Switch Delay to give yourself a beat before the tab actually changes.
+    t3: Demo Mode runs simulated games, perfect for tuning sliders without waiting for live action.
+    t4: Sensitivity controls how big a PowerScore lead is needed before ArenaSwap swaps.
+  detail:
+    t0: PowerScore mixes closeness, late-game pressure, momentum, lead changes, and comebacks.
+    t1: A clock-stall penalty kicks in when the game clock barely moves between updates.
+    t2: 0-0 games take a small PowerScore hit in sports where 0-0 isn't exciting.
+    t3: Hover the charts to inspect specific moments in the game.
+    t4: A favorite team in the matchup adds bonus points to the PowerScore.
+    t5: PowerScore builds as a game goes on — an early close game ramps up toward the final buzzer.
+    t6: Tied in the final minute? PowerScore pre-boosts likely overtime so you never miss the buzzer.
+
+reviewPrompt:
+  title: Enjoying ArenaSwap?
+  copy: A quick review helps more fans find the best game ❤️
+  leaveReview: Leave review
+  dismiss: Dismiss review request
+
+cooldown:
+  label: Switch cooldown
+  explainer: Sets the minimum time between automatic switches to reduce rapid tab flipping.
+
+switchDelay:
+  off: 'Off'
+  label: Switch delay
+  explainer: Waits this long before executing a switch, which helps when streams lag behind live data.
+
+sensitivity:
+  label: Switch sensitivity
+  valueLabel: '{label} (gap ≥ {gap})'
+  explainer: Controls how big the PowerScore gap must be before ArenaSwap switches tabs.
+  level:
+    l1: Barely Active
+    l2: Passive
+    l3: Conservative
+    l4: Balanced
+    l5: Eager
+    l6: Trigger Happy
+    l7: Ludicrous Speed
+
+footer:
+  builtWith: Built with
+  credit: in Philadelphia & Boston by Ryan Mullin
+  toggleDebug: Toggle debug info
