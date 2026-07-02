@@ -39,9 +39,25 @@ Root structure:
 
 ---
 
+## Core Values
+
+### Beautiful Design
+Everything we create should look beautiful, feel fast, and be intuitive to use. Stay within our design system.
+
+### Power to the User
+The products should be data rich, up to date, and accurate to what is happening in the world of sports. The user should feel like they are in control of their experience, and that they can customize it to their liking.
+
+### Fun
+Sports are meant to be fun. Product design and copy should be lighthearted, a little tounge-in-cheek, and not take itself too seriously.
+
+### Modern
+The tech stack should never fall more than 2 years behind the latest and greatest. We should always be using the best tools available to us, and not be afraid to try new things.
+
+---
+
 ## Stuff for AI Agents:
 
-- Skills for have have been provided. Check @.agents/skills
+- Skills for you have been provided. Check @.agents/skills
   - When stuck: think "could there be a skill for this", check the skills directory, if yes, use it!
 - Validate your changes by testing and linting
 - Leverage the power of turborepo and caching
