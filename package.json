@@ -22,9 +22,9 @@
 		"powerscore:validate-live": "rolldown scripts/powerscore/validateLive.ts --platform=node --file=scripts/powerscore/validateLive.cjs --format=cjs --log-level=silent --target=es2023 && node scripts/powerscore/validateLive.cjs"
 	},
 	"devDependencies": {
-		"oxlint": "^1.70.0",
-		"rolldown": "^1.1.1",
-		"turbo": "^2.9.16",
+		"oxlint": "^1.72.0",
+		"rolldown": "^1.1.4",
+		"turbo": "^2.10.2",
 		"typescript": "^6.0.3"
 	},
 	"overrides": {
@@ -33,6 +33,6 @@
 	},
 	"packageManager": "npm@10.9.0",
 	"dependencies": {
-		"skills": "^1.5.7"
+		"skills": "^1.5.14"
 	}
 }
