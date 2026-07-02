@@ -71,7 +71,7 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 				<TeamColumn leagueId={game.league} team={game.homeTeam} isFavorited={homeFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} />
 			</div>
 
-			<GameMeta game={game} bettingPrefs={bettingPrefs} hideBroadcasts />
+			<GameMeta game={game} bettingPrefs={bettingPrefs} />
 
 			{excitementResult && (
 				<div className='d-flex align-items-center gap-2 game-card-ps-bar-row'>

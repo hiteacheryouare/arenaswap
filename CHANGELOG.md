@@ -1,5 +1,9 @@
 # Changelog
 
+## Show "Watch:" broadcast networks on live game cards — 2026-07-02
+
+Live game cards now display the "Watch: ESPN • NBC" line beneath the score, matching the behavior already shown in the game detail view. Upcoming (pre-game) cards continue to hide broadcasts as before. Single-line fix: removed the `hideBroadcasts` prop from `GameMeta` in `liveGameCard.tsx`.
+
 ## Easter egg: Ludicrous Speed warp tunnel — 2026-07-02
 
 When the sensitivity slider is cranked to max (level 7), the rainbow "Ludicrous Speed" label becomes clickable. Clicking it hijacks the popup with a full-screen warp tunnel: the speed ramps through LIGHT SPEED → RIDICULOUS SPEED → LUDICROUS SPEED, then fires the entire Spaceballs Colonel Sandurz dialogue while the tunnel accelerates past all reason. At "THEY'VE GONE TO PLAID!" the star colors cycle through PowerScore colors at ludicrous rate. "STOP!" decelerates everything and closes the overlay. Click anywhere to skip.
