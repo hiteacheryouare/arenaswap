@@ -417,3 +417,47 @@ footer:
   builtWith: Built with
   credit: in Philadelphia & Boston by Ryan Mullin
   toggleDebug: Toggle debug info
+
+ludicrousSpeed:
+  skip: click to skip
+  announce: LUDICROUS SPEED...
+  go: GO!
+  plaid: THEY'VE GONE TO PLAID!
+  stop: STOP!
+  intro:
+    l1: Prepare ship for light speed.
+    l2: No, no, light speed is too slow.
+    l3: Light speed too slow?
+    l4: "Yes. We're gonna have to go right to"
+    l5: ludicrous speed.
+    l6: Ludicrous speed?
+    l7: We've never gone that fast.
+    l8: Maybe the ship can't take it.
+  prelaunch:
+    l1: What's the matter, Colonel Sandurz?
+    l2: Chicken?
+    l3: Prepare ship for ludicrous speed.
+    l4: Fasten all seat belts.
+    l5: Seal all entrances and exits.
+    l6: Close all shops in the mall.
+    l7: Cancel the three-ring circus.
+    l8: Secure all animals in the zoo...
+    l9: Shut up, you petty excuse for an officer!
+    l10: Now hear this. Ludicrous speed!
+    l11: Sir, hadn't you better buckle up?
+    l12: Oh, buckle this!
+  gforce:
+    l1: What have I done?
+    l2: My brains... are going into my feet.
+  signs:
+    light: LIGHT SPEED
+    ridiculous: RIDICULOUS SPEED
+    ludicrous: LUDICROUS SPEED
+  cockpit:
+    l1: What was that?
+    l2: Spaceball One.
+  panic:
+    l1: We passed them! Stop this thing!
+    l2: We can't stop. It's too dangerous.
+    l3: We've got to slow down first.
+    l4: Just stop this thing! I order you!

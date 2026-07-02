@@ -417,3 +417,47 @@ footer:
   builtWith: Hecho con
   credit: en Filadelfia y Boston por Ryan Mullin
   toggleDebug: Mostrar información de depuración
+
+ludicrousSpeed:
+  skip: haz clic para omitir
+  announce: "VELOCIDAD RIDÍCULA..."
+  go: "¡VAMOS!"
+  plaid: "¡HAN IDO AL CUADROS!"
+  stop: "¡ALTO!"
+  intro:
+    l1: Prepare la nave para velocidad de luz.
+    l2: No, no, la velocidad de luz es demasiado lenta.
+    l3: "¿Velocidad de luz demasiado lenta?"
+    l4: "Sí. Vamos a tener que ir directamente a"
+    l5: velocidad ridícula.
+    l6: "¿Velocidad ridícula?"
+    l7: Nunca hemos ido tan rápido.
+    l8: Quizás la nave no pueda aguantarlo.
+  prelaunch:
+    l1: "¿Qué pasa, coronel Sandurz?"
+    l2: "¿Gallina?"
+    l3: Prepare la nave para velocidad ridícula.
+    l4: Abróchense todos los cinturones.
+    l5: Sellen todas las entradas y salidas.
+    l6: Cierren todas las tiendas del centro comercial.
+    l7: Cancelen el circo de tres pistas.
+    l8: Aseguren todos los animales en el zoológico...
+    l9: "¡Cállese, miserable excusa de oficial!"
+    l10: "¡Atención! ¡Velocidad ridícula!"
+    l11: "Señor, ¿no debería abrocharse el cinturón?"
+    l12: "¡Al diablo el cinturón!"
+  gforce:
+    l1: "¿Qué he hecho?"
+    l2: Mi cerebro... se me va a los pies.
+  signs:
+    light: VELOCIDAD DE LUZ
+    ridiculous: VELOCIDAD RIDÍCULA
+    ludicrous: LUDICROUS SPEED
+  cockpit:
+    l1: "¿Qué fue eso?"
+    l2: Spaceball Uno.
+  panic:
+    l1: "¡Los pasamos! ¡Para esto!"
+    l2: No podemos parar. Es muy peligroso.
+    l3: Primero tenemos que reducir la velocidad.
+    l4: "¡Para esto ahora! ¡Te lo ordeno!"

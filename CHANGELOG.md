@@ -1,5 +1,9 @@
 # Changelog
 
+## Easter egg: Ludicrous Speed warp tunnel — 2026-07-02
+
+When the sensitivity slider is cranked to max (level 7), the rainbow "Ludicrous Speed" label becomes clickable. Clicking it hijacks the popup with a full-screen warp tunnel: the speed ramps through LIGHT SPEED → RIDICULOUS SPEED → LUDICROUS SPEED, then fires the entire Spaceballs Colonel Sandurz dialogue while the tunnel accelerates past all reason. At "THEY'VE GONE TO PLAID!" the star colors cycle through PowerScore colors at ludicrous rate. "STOP!" decelerates everything and closes the overlay. Click anywhere to skip.
+
 ## Fix: Spanish dev server named substitution bug + i18n adapter refactor — 2026-07-02
 
 Fixes two broken Spanish translations in dev mode and cleans up the Spanish dev server implementation.

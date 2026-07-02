@@ -1,5 +1,7 @@
+import { useState } from 'react';
 import { sensitivityThresholds } from '@arenaswap/core/constants';
 import { i18n } from '#i18n';
+import LudicrousSpeedOverlay from './ludicrousSpeedOverlay';
 
 interface sensitivitySliderProps {
 	value: number;
@@ -16,11 +18,19 @@ const labels: Record<number, string> = {
 	7: i18n.t('sensitivity.level.l7'),
 };
 
-const sensitivitySlider = ({ value, onChange }: sensitivitySliderProps) => (
+const sensitivitySlider = ({ value, onChange }: sensitivitySliderProps) => {
+	const [showLudicrous, setShowLudicrous] = useState(false);
+
+	return (
 	<div>
+		{showLudicrous && <LudicrousSpeedOverlay onClose={() => setShowLudicrous(false)} />}
 		<div className='d-flex justify-content-between align-items-center mb-1'>
 			<label htmlFor='sensitivity-range' className='text-body-secondary setting-toggle-label'><i className='bi bi-sliders me-1 text-primary' />{i18n.t('sensitivity.label')}</label>
-			<span className={`fw-semibold setting-value-label${value === 7 ? ' ludicrous-speed' : ''}`}>{i18n.t('sensitivity.valueLabel', { label: labels[value]!, gap: sensitivityThresholds[value]! })}</span>
+			<span
+				className={`fw-semibold setting-value-label${value === 7 ? ' ludicrous-speed ludicrous-speed-clickable' : ''}`}
+				onClick={value === 7 ? () => setShowLudicrous(true) : undefined}
+				title={value === 7 ? 'Engage the hyperdrive...' : undefined}
+			>{i18n.t('sensitivity.valueLabel', { label: labels[value]!, gap: sensitivityThresholds[value]! })}</span>
 		</div>
 		<input
 			id='sensitivity-range'
@@ -46,6 +56,7 @@ const sensitivitySlider = ({ value, onChange }: sensitivitySliderProps) => (
 			{i18n.t('sensitivity.explainer')}
 		</div>
 	</div>
-);
+	);
+};
 
 export default sensitivitySlider;

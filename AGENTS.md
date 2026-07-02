@@ -46,6 +46,7 @@ Root structure:
 - Validate your changes by testing and linting
 - Leverage the power of turborepo and caching
 - After every time you change something, update @CHANGELOG.md
+- All code changes should be internationalized to every language we support at the moment.
 
 
 ## Notes from the maintainer:
