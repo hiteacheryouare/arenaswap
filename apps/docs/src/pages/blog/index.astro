@@ -6,7 +6,7 @@ import '../../styles/tailwind.css';
 import '../../styles/global.scss';
 
 const allPosts = await getCollection('blog', ({ data }) => !data.draft);
-const posts = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const posts = allPosts.toSorted((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 ---
 <!doctype html>
 <html lang="en">
