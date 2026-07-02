@@ -279,6 +279,58 @@
 	animation: lsStopFlash 0.11s ease-in-out infinite;
 }
 
+.ls-emergency-brake {
+	position: absolute;
+	top: 12%;
+	left: 50%;
+	transform: translateX(-50%);
+	z-index: 11;
+
+	font-family: 'Lekton', monospace;
+	font-size: 0.72rem;
+	font-weight: 700;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	white-space: nowrap;
+	color: #fff;
+
+	background: #6b0000;
+	border: 2px solid #cc1010;
+	border-radius: 3px;
+	padding: 0.45em 0.9em;
+	cursor: pointer;
+	outline: none;
+
+	box-shadow:
+		0 0 10px rgba(200, 0, 0, 0.35),
+		0 3px 0 #3a0000,
+		inset 0 1px 0 rgba(255, 255, 255, 0.08);
+
+	animation: lsTextIn 0.2s ease-out;
+
+	&:hover:not(.pressed) {
+		background: #8a0000;
+		border-color: #ff2020;
+		box-shadow:
+			0 0 18px rgba(255, 0, 0, 0.5),
+			0 3px 0 #3a0000,
+			inset 0 1px 0 rgba(255, 255, 255, 0.08);
+	}
+
+	&.pressed {
+		background: #ff1a1a;
+		border-color: #fff;
+		color: #fff;
+		transform: translateX(-50%) translateY(3px);
+		box-shadow:
+			0 0 28px rgba(255, 0, 0, 0.9),
+			0 0 55px rgba(255, 0, 0, 0.5),
+			0 0 0 #3a0000,
+			inset 0 2px 4px rgba(0, 0, 0, 0.4);
+		animation: lsStopFlash 0.14s ease-in-out infinite;
+	}
+}
+
 .ls-skip {
 	position: absolute;
 	bottom: 10px;

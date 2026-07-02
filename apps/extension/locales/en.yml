@@ -424,6 +424,7 @@ ludicrousSpeed:
   go: GO!
   plaid: THEY'VE GONE TO PLAID!
   stop: STOP!
+  emergencyBrake: '⚠ EMERGENCY BRAKE — NEVER USE'
   intro:
     l1: Prepare ship for light speed.
     l2: No, no, light speed is too slow.

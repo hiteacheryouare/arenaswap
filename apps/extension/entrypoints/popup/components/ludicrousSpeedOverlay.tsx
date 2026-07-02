@@ -103,6 +103,7 @@ export default function LudicrousSpeedOverlay({ onClose }: { onClose: () => void
 		cls: 'dialogue prelaunch',
 	});
 	const [closing, setClosing] = useState(false);
+	const [brakeState, setBrakeState] = useState<'hidden' | 'visible' | 'pressed'>('hidden');
 
 	// Canvas warp tunnel
 	useEffect(() => {
@@ -258,21 +259,21 @@ export default function LudicrousSpeedOverlay({ onClose }: { onClose: () => void
 			targetSpeedRef.current = 7.5;
 			setDisplay({ text: i18n.t('ludicrousSpeed.signs.light'), cls: 'speedsign lightspeed' });
 		});
-		delay += 1200;
+		delay += 2000;
 
 		at(delay, () => {
 			phaseRef.current = 'ridiculous';
 			targetSpeedRef.current = 9.5;
 			setDisplay({ text: i18n.t('ludicrousSpeed.signs.ridiculous'), cls: 'speedsign ridiculous' });
 		});
-		delay += 1200;
+		delay += 2000;
 
 		at(delay, () => {
 			phaseRef.current = 'ludicrous';
 			targetSpeedRef.current = 12.5;
 			setDisplay({ text: i18n.t('ludicrousSpeed.signs.ludicrous'), cls: 'speedsign ludicrous' });
 		});
-		delay += 1400;
+		delay += 2200;
 
 		// ── Cockpit POV: speed drops back to normal — Lone Starr & Barf observe ──
 		at(delay, () => {
@@ -296,6 +297,7 @@ export default function LudicrousSpeedOverlay({ onClose }: { onClose: () => void
 		at(delay, () => {
 			phaseRef.current = 'panic';
 			targetSpeedRef.current = 10;
+			setBrakeState('visible');
 		});
 
 		const panicLines: { key: string; ms: number }[] = [
@@ -311,6 +313,9 @@ export default function LudicrousSpeedOverlay({ onClose }: { onClose: () => void
 		}
 
 		// ── EMERGENCY STOP — NEVER USE ────────────────────────────────────────────
+		at(delay, () => setBrakeState('pressed'));
+		delay += 700;
+
 		at(delay, () => {
 			phaseRef.current = 'stopping';
 			targetSpeedRef.current = 0;
@@ -330,10 +335,31 @@ export default function LudicrousSpeedOverlay({ onClose }: { onClose: () => void
 		setTimeout(() => setClosing(true), 750);
 	}, []);
 
+	const handleEmergencyBrake = useCallback((e: React.MouseEvent) => {
+		e.stopPropagation();
+		if (brakeState === 'pressed' || phaseRef.current === 'stopping') return;
+		setBrakeState('pressed');
+		setTimeout(() => {
+			if (phaseRef.current === 'stopping') return;
+			phaseRef.current = 'stopping';
+			targetSpeedRef.current = 0;
+			setDisplay({ text: i18n.t('ludicrousSpeed.stop'), cls: 'stop' });
+			setTimeout(() => setClosing(true), 750);
+		}, 500);
+	}, [brakeState]);
+
 	return createPortal(
 		<div className={`ls-overlay${closing ? ' closing' : ''}`} onClick={handleSkip}>
 			<canvas ref={canvasRef} className="ls-canvas" />
 			<div className={`ls-text ${display.cls}`}>{display.text}</div>
+			{brakeState !== 'hidden' && (
+				<button
+					className={`ls-emergency-brake${brakeState === 'pressed' ? ' pressed' : ''}`}
+					onClick={handleEmergencyBrake}
+				>
+					{i18n.t('ludicrousSpeed.emergencyBrake')}
+				</button>
+			)}
 			<div className="ls-skip">{i18n.t('ludicrousSpeed.skip')}</div>
 		</div>,
 		document.body,

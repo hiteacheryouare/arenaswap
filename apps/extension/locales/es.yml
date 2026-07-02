@@ -424,6 +424,7 @@ ludicrousSpeed:
   go: "¡VAMOS!"
   plaid: "¡HAN IDO AL CUADROS!"
   stop: "¡ALTO!"
+  emergencyBrake: '⚠ FRENO DE EMERGENCIA — NUNCA USAR'
   intro:
     l1: Prepare la nave para velocidad de luz.
     l2: No, no, la velocidad de luz es demasiado lenta.
