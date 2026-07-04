@@ -295,7 +295,7 @@ export default ({ onClose }: { onClose: () => void }) => {
 		at(delay, () => {
 			phaseRef.current = 'plaid';
 			targetSpeedRef.current = 14;
-			setDisplay({ text: i18n.t('ludicrousSpeed.plaid'), cls: 'plaid' });
+			setDisplay({ text: 'PLAID', cls: 'plaid-rect' });
 		});
 		delay += 2200;
 
