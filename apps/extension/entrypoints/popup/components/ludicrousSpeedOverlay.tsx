@@ -20,15 +20,6 @@ interface DisplayState {
 	cls: string;
 }
 
-// ArenaSwap brand colors — 5 distinct lanes for the plaid effect
-const BRAND_COLORS: [number, number, number][] = [
-	[247, 92, 3],   // #F75C03 orange
-	[34, 116, 165], // #2274A5 blue
-	[217, 3, 104],  // #D90368 magenta
-	[0, 204, 102],  // #00CC66 green
-	[241, 196, 15], // #F1C40F gold
-];
-
 // PowerScore palette — used for the special PLAID scene as requested
 const POWERSCORE_COLORS: [number, number, number][] = [
 	[0, 204, 102],  // green  #00CC66
@@ -356,7 +347,18 @@ export default ({ onClose }: { onClose: () => void }) => {
 	}, [brakeState]);
 
 	return createPortal(
-		<div className={`ls-overlay${closing ? ' closing' : ''}`} onClick={handleSkip}>
+		<div
+			role="button"
+			className={`ls-overlay${closing ? ' closing' : ''}`}
+			onClick={handleSkip}
+			onKeyDown={(e) => {
+				if (e.key === 'Enter' || e.key === ' ') {
+					e.preventDefault();
+					handleSkip();
+				}
+			}}
+			tabIndex={0}
+		>
 			<canvas ref={canvasRef} className="ls-canvas" />
 			<div className={`ls-text ${display.cls}`}>{display.text}</div>
 			{brakeState !== 'hidden' && (

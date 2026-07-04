@@ -26,11 +26,20 @@ const sensitivitySlider = ({ value, onChange }: sensitivitySliderProps) => {
 		{showLudicrous && <LudicrousSpeedOverlay onClose={() => setShowLudicrous(false)} />}
 		<div className='d-flex justify-content-between align-items-center mb-1'>
 			<label htmlFor='sensitivity-range' className='text-body-secondary setting-toggle-label'><i className='bi bi-sliders me-1 text-primary' />{i18n.t('sensitivity.label')}</label>
-			<span
-				className={`fw-semibold setting-value-label${value === 7 ? ' ludicrous-speed ludicrous-speed-clickable' : ''}`}
-				onClick={value === 7 ? () => setShowLudicrous(true) : undefined}
-				title={value === 7 ? 'Engage the hyperdrive...' : undefined}
-			>{i18n.t('sensitivity.valueLabel', { label: labels[value]!, gap: sensitivityThresholds[value]! })}</span>
+			{value === 7 ? (
+				<button
+					className='fw-semibold setting-value-label ludicrous-speed ludicrous-speed-clickable'
+					onClick={() => setShowLudicrous(true)}
+					title='Engage the hyperdrive...'
+					style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', font: 'inherit', color: 'inherit' }}
+				>
+					{i18n.t('sensitivity.valueLabel', { label: labels[value]!, gap: sensitivityThresholds[value]! })}
+				</button>
+			) : (
+				<span className='fw-semibold setting-value-label'>
+					{i18n.t('sensitivity.valueLabel', { label: labels[value]!, gap: sensitivityThresholds[value]! })}
+				</span>
+			)}
 		</div>
 		<input
 			id='sensitivity-range'
