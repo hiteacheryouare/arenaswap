@@ -454,9 +454,6 @@ ludicrousSpeed:
     light: VELOCIDAD DE LUZ
     ridiculous: VELOCIDAD RIDÍCULA
     ludicrous: LUDICROUS SPEED
-  cockpit:
-    l1: "¿Qué fue eso?"
-    l2: Spaceball Uno.
   panic:
     l1: "¡Los pasamos! ¡Para esto!"
     l2: No podemos parar. Es muy peligroso.
