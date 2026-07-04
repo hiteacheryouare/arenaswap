@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { i18n } from '#i18n';
 
-const NUM_STARS = 155;
+const NUM_STARS = 230;
 
 interface Star {
 	x: number;
@@ -29,6 +29,15 @@ const BRAND_COLORS: [number, number, number][] = [
 	[241, 196, 15], // #F1C40F gold
 ];
 
+// PowerScore palette — used for the special PLAID scene as requested
+const POWERSCORE_COLORS: [number, number, number][] = [
+	[0, 204, 102],  // green  #00CC66
+	[241, 196, 15], // gold   #F1C40F
+	[247, 92, 3],   // orange #F75C03
+	[217, 3, 104],  // red    #D90368
+	[34, 116, 165], // blue   #2274A5
+];
+
 function makeStar(): Star {
 	return {
 		x: (Math.random() - 0.5) * 1.5,
@@ -48,8 +57,8 @@ function resetStar(s: Star): void {
 }
 
 function getStarColor(z: number, phase: Phase, frame: number, starIdx: number): string {
-	// Closer stars (lower z) are brighter
-	const bri = Math.round(195 + (1 - z) * 60);
+	// Closer stars (lower z) are brighter — bumped for better visibility
+	const bri = Math.round(220 + (1 - z) * 80);
 	const f = 0.38 + (1 - z) * 0.62;
 
 	switch (phase) {
@@ -70,10 +79,9 @@ function getStarColor(z: number, phase: Phase, frame: number, starIdx: number): 
 			// Saturated red to match the blinking red sign
 			return `rgb(${Math.round(bri * f)},${Math.round(bri * 0.15 * f)},${Math.round(bri * 0.04 * f)})`;
 		case 'plaid': {
-			// Each star has a fixed color lane (stable by index) → distinct colored streaks
-			// Slowly rotates every ~40 frames so it stays dynamic
-			const laneIdx = (starIdx + Math.floor(frame / 40)) % BRAND_COLORS.length;
-			const c = BRAND_COLORS[laneIdx]!;
+			// Use PowerScore palette for the special PLAID scene (requested change)
+			const laneIdx = (starIdx + Math.floor(frame / 40)) % POWERSCORE_COLORS.length;
+			const c = POWERSCORE_COLORS[laneIdx]!;
 			return `rgb(${Math.round(c[0] * f)},${Math.round(c[1] * f)},${Math.round(c[2] * f)})`;
 		}
 		case 'panic':
@@ -87,7 +95,7 @@ function getStarColor(z: number, phase: Phase, frame: number, starIdx: number): 
 	}
 }
 
-export default function LudicrousSpeedOverlay({ onClose }: { onClose: () => void }) {
+export default ({ onClose }: { onClose: () => void }) => {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const starsRef = useRef<Star[]>(Array.from({ length: NUM_STARS }, makeStar));
 	const rafRef = useRef<number>(0);
@@ -157,7 +165,8 @@ export default function LudicrousSpeedOverlay({ onClose }: { onClose: () => void
 					ctx.lineTo(sx, sy);
 					ctx.strokeStyle = getStarColor(star.z, phase, frame, starIdx);
 					// Thick lines: closeness + speed bonus so high-speed streaks are fat and vivid
-					ctx.lineWidth = Math.max(1.5, (1 - star.z) * 7 + speed * 0.18);
+					// Thicker, bolder streaks so stars read at a glance
+					ctx.lineWidth = Math.max(2.5, (1 - star.z) * 9 + speed * 0.22);
 					ctx.stroke();
 				}
 
@@ -244,6 +253,13 @@ export default function LudicrousSpeedOverlay({ onClose }: { onClose: () => void
 		});
 		delay += 1300;
 
+		// ── Brief star-only pause (no dialogue) before the g-force line
+		at(delay, () => {
+			// keep the tunnel active but hide dialogue so the stars are the focus
+			setDisplay({ text: '', cls: 'stars-only' });
+		});
+		delay += 1400;
+
 		// ── G-force chaos ─────────────────────────────────────────────────────────
 		at(delay, () => setDisplay({ text: i18n.t('ludicrousSpeed.gforce.l1'), cls: 'dialogue postlaunch' }));
 		delay += 1200;
@@ -275,23 +291,14 @@ export default function LudicrousSpeedOverlay({ onClose }: { onClose: () => void
 		});
 		delay += 2200;
 
-		// ── Cockpit POV: speed drops back to normal — Lone Starr & Barf observe ──
-		at(delay, () => {
-			phaseRef.current = 'cockpit';
-			targetSpeedRef.current = 0.08;
-			setDisplay({ text: i18n.t('ludicrousSpeed.cockpit.l1'), cls: 'dialogue external' });
-		});
-		delay += 1200;
-		at(delay, () => setDisplay({ text: i18n.t('ludicrousSpeed.cockpit.l2'), cls: 'dialogue external' }));
-		delay += 1100;
-
-		// ── THEY'VE GONE TO PLAID — warp explodes back with brand colors ─────────
+		// ── Fourth scene: THEY'VE GONE TO PLAID — PowerScore-colored stars only ───
 		at(delay, () => {
 			phaseRef.current = 'plaid';
 			targetSpeedRef.current = 14;
 			setDisplay({ text: i18n.t('ludicrousSpeed.plaid'), cls: 'plaid' });
 		});
 		delay += 2200;
+
 
 		// ── Panic on the bridge ───────────────────────────────────────────────────
 		at(delay, () => {

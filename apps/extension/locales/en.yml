@@ -454,9 +454,6 @@ ludicrousSpeed:
     light: LIGHT SPEED
     ridiculous: RIDICULOUS SPEED
     ludicrous: LUDICROUS SPEED
-  cockpit:
-    l1: What was that?
-    l2: Spaceball One.
   panic:
     l1: We passed them! Stop this thing!
     l2: We can't stop. It's too dangerous.
