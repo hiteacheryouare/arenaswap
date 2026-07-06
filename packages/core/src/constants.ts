@@ -71,10 +71,6 @@ export const sensitivityThresholds: Record<number, number> = {
 // Logos that always win over whatever ESPN's API returns. Use when ESPN only
 // returns a generic sport icon and we have a better official league logo.
 const leagueLogoOverrides: Partial<Record<LeagueId, string>> = {
-	ncaab: 'https://a.espncdn.com/i/espn/misc_logos/500-dark/ncaa.png',
-	ncaaw: 'https://a.espncdn.com/i/espn/misc_logos/500-dark/ncaa.png',
-	ncaaf: 'https://a.espncdn.com/i/espn/misc_logos/500-dark/ncaa.png',
-	ncaamh: 'https://a.espncdn.com/i/espn/misc_logos/500-dark/ncaa.png',
 	cbase: 'https://a.espncdn.com/i/espn/misc_logos/500/ncaa_baseball.png',
 	csoft: 'https://a.espncdn.com/i/espn/misc_logos/500/ncaa_womens_softball.png',
 	olybb: 'https://a.espncdn.com/i/espn/misc_logos/500-dark/olympics.png',
