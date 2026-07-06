@@ -617,7 +617,7 @@ function loop(ts: number) {
 }
 
 // ─── Boot ────────────────────────────────────────────────────────────────────
-_seed = Date.now() & 0xffffffff;
+seed = Date.now() & 0xffffffff;
 resize();
 window.addEventListener('resize', resize);
 
