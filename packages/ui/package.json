@@ -1,0 +1,9 @@
+{
+	"name": "@arenaswap/ui",
+	"version": "2.0.0",
+	"description": "ArenaSwap shared design system — Bootstrap tokens, font declarations, and Tailwind theme",
+	"private": true,
+	"scripts": {
+		"lint": "oxlint ."
+	}
+}

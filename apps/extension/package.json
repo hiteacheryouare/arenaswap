@@ -23,6 +23,7 @@
 	},
 	"dependencies": {
 		"@arenaswap/core": "*",
+		"@arenaswap/ui": "*",
 		"@porkyproductions/hat": "^1.5.0",
 		"@wxt-dev/i18n": "^0.2.6",
 		"canvas-confetti": "^1.9.4",

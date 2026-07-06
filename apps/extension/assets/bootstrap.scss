@@ -1,45 +1,18 @@
-// ─── Bootstrap variable overrides ───────────────────────────────────────────
-$prefix: 				  	'as-';
-$primary:                   #F75C03;
-$secondary:                 #2274A5;
-$success:                   #00CC66;
-$warning:                   #F1C40F;
-$danger:                    #D90368;
-$dark:                      #0d1117;
-$body-bg:                   #0d1117;
-$body-color:                #e6edf3;
-$body-secondary-color:      #8b949e;
-$border-color:              #30363d;
-$card-bg:                   #161b22;
-$card-border-color:         #30363d;
-$card-cap-bg:               transparent;
-$font-sans-serif: 			'DM Sans', system-ui, -apple-system, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-$font-monospace: 			'Lekton', monospace;
-$font-family-base:          'DM Sans', system-ui, -apple-system, sans-serif;
-$font-size-base:            0.9375rem;
-$font-size-sm:              0.8125rem;
-$headings-font-weight:      700;
-$form-select-bg:            #161b22;
-$form-select-color:         #e6edf3;
-$form-select-border-color:  #30363d;
-$input-bg:                  #161b22;
-$input-color:               #e6edf3;
-$input-border-color:        #30363d;
-$form-range-thumb-bg:       #F75C03;
-$form-range-track-bg:       #30363d;
-$btn-border-radius:         0.25rem;
-$enable-dark-mode:          false;
+// ─── Shared Bootstrap variable overrides (colors, dark theme, fonts) ─────────
+@import '@arenaswap/ui/src/bootstrap';
 
-$form-switch-checked-bg:    #F75C03;
-$form-check-input-checked-bg-color: #F75C03;
+// ─── Extension-specific Bootstrap overrides ──────────────────────────────────
+$font-size-base:   0.9375rem;
+$font-size-sm:     0.8125rem;
+$headings-font-weight: 700;
+$form-range-thumb-bg:  #F75C03;
+$form-range-track-bg:  #30363d;
+$btn-border-radius:    0.25rem;
+$enable-dark-mode:     false;
+
+$form-switch-checked-bg:               #F75C03;
+$form-check-input-checked-bg-color:    #F75C03;
 $form-check-input-checked-border-color: #F75C03;
-
-* {
-	&::selection {
-		background: $primary;
-		color: $body-color;
-	}
-}
 
 // ─── Bootstrap source ────────────────────────────────────────────────────────
 @import 'bootstrap/scss/bootstrap';

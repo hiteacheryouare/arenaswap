@@ -21,22 +21,7 @@
 }
 
 /* ─── Fonts ───────────────────────────────────────────────────────────────── */
-@mixin woff2-face($family, $file, $weight) {
-	@font-face {
-		font-family: $family;
-		src: url('/fonts/#{$file}.woff2') format('woff2');
-		font-weight: $weight;
-		font-style: normal;
-		font-display: swap;
-	}
-}
-
-@include woff2-face('DM Sans', 'DMSans-Regular', 400);
-@include woff2-face('DM Sans', 'DMSans-Medium', 500);
-@include woff2-face('DM Sans', 'DMSans-SemiBold', 600);
-@include woff2-face('DM Sans', 'DMSans-Bold', 700);
-@include woff2-face('Lekton', 'Lekton-Regular', 400);
-@include woff2-face('Lekton', 'Lekton-Bold', 700);
+@import '@arenaswap/ui/src/fonts';
 
 *, *::before, *::after {
 	font-family: 'DM Sans', system-ui, sans-serif;

@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { allLeagueIds, leagueConfigMap } from '../../../../packages/powerscore/src/constants';
-import { computePowerScore } from '../../../../packages/powerscore/src/scorer';
-import type { Game, LeagueId, ScoreSnapshot } from '../../../../packages/powerscore/src/types';
+import { allLeagueIds, computePowerScore, leagueConfigMap } from 'powerscore';
+import type { Game, LeagueId, ScoreSnapshot } from 'powerscore';
 
 interface EspnCompetitor {
 	id: string;

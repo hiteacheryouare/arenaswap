@@ -1,63 +1,31 @@
-// ─── Bootstrap variable overrides ───────────────────────────────────────────
-$prefix: 		    'as-';
-$primary:           #F75C03;
-$secondary:         #2274A5;
-$success:           #00CC66;
-$danger:            #D90368;
-$warning:           #F1C40F;
-$body-bg:           #0d1117;
-$body-color:        #e6edf3;
-$border-color:      #30363d;
-$card-bg:           #161b22;
-$card-border-color: #30363d;
-$link-color:        #F75C03;
-$link-hover-color:  #d44e00;
-$font-family-base:  'DM Sans', system-ui, sans-serif;
-$border-radius:     0.5rem;
-$border-radius-lg:  0.75rem;
-$navbar-dark-color:           rgba(230, 237, 243, 0.7);
-$navbar-dark-hover-color:     #e6edf3;
-$navbar-dark-brand-color:     #e6edf3;
-$navbar-dark-active-color:    #F75C03;
-$input-bg:          #161b22;
-$input-border-color: #30363d;
-$input-color:       #e6edf3;
-$accordion-bg:              #161b22;
-$accordion-border-color:    #30363d;
-$accordion-button-bg:       #161b22;
-$accordion-button-active-bg: #0d1117;
-$accordion-button-color:    #e6edf3;
+// ─── Shared Bootstrap variable overrides (colors, dark theme, fonts) ─────────
+@import '@arenaswap/ui/src/bootstrap';
+
+// ─── Docs-specific Bootstrap overrides ───────────────────────────────────────
+$link-color:                    #F75C03;
+$link-hover-color:              #d44e00;
+$border-radius:                 0.5rem;
+$border-radius-lg:              0.75rem;
+$navbar-dark-color:             rgba(230, 237, 243, 0.7);
+$navbar-dark-hover-color:       #e6edf3;
+$navbar-dark-brand-color:       #e6edf3;
+$navbar-dark-active-color:      #F75C03;
+$accordion-bg:                  #161b22;
+$accordion-border-color:        #30363d;
+$accordion-button-bg:           #161b22;
+$accordion-button-active-bg:    #0d1117;
+$accordion-button-color:        #e6edf3;
 $accordion-button-active-color: #F75C03;
-$accordion-body-padding-x:  1.25rem;
-$accordion-body-padding-y:  1rem;
-* {
-	&::selection {
-		background: $primary;
-		color: #fff;
-	}
-}
+$accordion-body-padding-x:      1.25rem;
+$accordion-body-padding-y:      1rem;
 
 @import 'bootstrap/scss/bootstrap';
 @import 'bootstrap/scss/reboot';
 @import 'bootstrap-icons/font/bootstrap-icons.scss';
 
-// ─── Font faces ─────────────────────────────────────────────────────────────
-@mixin woff2-face($family, $file, $weight) {
-	@font-face {
-		font-family: $family;
-		src: url('/arenaswap/fonts/#{$file}.woff2') format('woff2');
-		font-weight: $weight;
-		font-style: normal;
-		font-display: swap;
-	}
-}
-
-@include woff2-face('DM Sans', 'DMSans-Regular', 400);
-@include woff2-face('DM Sans', 'DMSans-Medium', 500);
-@include woff2-face('DM Sans', 'DMSans-SemiBold', 600);
-@include woff2-face('DM Sans', 'DMSans-Bold', 700);
-@include woff2-face('Lekton', 'Lekton-Regular', 400);
-@include woff2-face('Lekton', 'Lekton-Bold', 700);
+// ─── Font faces ───────────────────────────────────────────────────────────────
+$font-base-url: '/arenaswap/fonts';
+@import '@arenaswap/ui/src/fonts';
 
 @font-face {
 	font-family: 'bootstrap-icons';

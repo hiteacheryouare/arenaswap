@@ -1,5 +1,28 @@
 # Changelog
 
+## Add @arenaswap/ui shared design-system package — 2026-07-06
+
+Created `packages/ui` as the single source of truth for the ArenaSwap brand tokens, eliminating duplication of colors, Bootstrap overrides, and font declarations across the docs site and browser extension.
+
+**`packages/ui` (new)**
+- `src/_bootstrap.scss` — shared Bootstrap 5 variable overrides (colors, dark theme, font stack, form controls); import before `@import 'bootstrap/scss/bootstrap'` in each app
+- `src/_fonts.scss` — parameterizable `@font-face` declarations for DM Sans and Lekton; configure `$font-base-url` before importing to set the right font path per app
+- `src/tailwind.css` — Tailwind v4 `@theme` tokens mapping all brand colors and typography to Tailwind utilities
+
+**`apps/docs`**
+- `global.scss`: replaced duplicated Bootstrap overrides + font-face block with imports from `@arenaswap/ui`; docs-specific accordion/navbar/link overrides remain
+- `tailwind.css`: now imports from `@arenaswap/ui/src/tailwind.css` instead of re-declaring the `@theme` block
+- `components/LivePowerScores.tsx`: fixed anti-pattern import from `../../../../packages/powerscore/src/...` — now imports from the `powerscore` package API
+- `package.json`: added `@arenaswap/ui: "*"` and `powerscore: "*"` as explicit workspace dependencies (Turborepo requires declared deps to build the graph correctly)
+
+**`apps/extension`**
+- `assets/bootstrap.scss`: replaced duplicated Bootstrap variable block with import from `@arenaswap/ui`; extension-specific sizing/form-control overrides remain
+- `assets/global.scss`: replaced duplicated `@font-face` declarations with import from `@arenaswap/ui/src/fonts`
+- `package.json`: added `@arenaswap/ui: "*"` workspace dependency
+
+**Root**
+- `package.json`: fixed `"lint": "turbo lint"` anti-pattern → `"turbo run lint"` (shorthand is for interactive terminal use only, not scripts)
+
 ## Move betting and weather settings under Options — 2026-07-05
 
 Consolidated the Betting and Weather section headings into the Options section in setup view, removing two separate headings and placing the toggles alongside the other option toggles.
