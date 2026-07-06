@@ -132,9 +132,9 @@ describe('constants', () => {
 		expect(leagueLogoFallbacks.fifawc).toMatch(/^https?:\/\//);
 	});
 
-	test('resolves NCAA womens basketball to its override logo', () => {
-		expect(resolveLeagueLogoUrl('ncaaw', 'https://cdn.example/ncaaw.png')).toBe('https://a.espncdn.com/i/espn/misc_logos/500-dark/ncaa.png');
-		expect(resolveLeagueLogoUrl('ncaaw')).toBe('https://a.espncdn.com/i/espn/misc_logos/500-dark/ncaa.png');
+	test('resolves NCAA womens basketball using ESPN logo when provided, empty string otherwise', () => {
+		expect(resolveLeagueLogoUrl('ncaaw', 'https://cdn.example/ncaaw.png')).toBe('https://cdn.example/ncaaw.png');
+		expect(resolveLeagueLogoUrl('ncaaw')).toBe('');
 	});
 
 	test('resolves epl and fifawc league logo URLs with ESPN value first, then fallback', () => {

@@ -76,15 +76,15 @@ export default () => {
 	}, []);
 
 	const games = useMemo(() => data?.games ?? [], [data?.games]);
-	const scores = data?.scores ?? [];
+	const scores = useMemo(() => data?.scores ?? [], [data?.scores]);
 	// Enabled-league logos (from background state) take priority; cache fills the gaps.
 	const leagueLogos = useMemo<LeagueLogoMap>(
 		() => ({ ...allLeagueLogoCache, ...data?.leagueLogos }),
 		[allLeagueLogoCache, data?.leagueLogos]
 	);
-	const scoreHistory = data?.scoreHistory ?? {};
-	const powerScoreHistory = data?.powerScoreHistory ?? {};
-	const gameBoosts = data?.gameBoosts ?? {};
+	const scoreHistory = useMemo(() => data?.scoreHistory ?? {}, [data?.scoreHistory]);
+	const powerScoreHistory = useMemo(() => data?.powerScoreHistory ?? {}, [data?.powerScoreHistory]);
+	const gameBoosts = useMemo(() => data?.gameBoosts ?? {}, [data?.gameBoosts]);
 	const onStandbyStream = data?.onStandbyStream ?? false;
 	const favoriteTeamIds = useMemo(() => new Set(prefs.favoriteTeamIds), [prefs.favoriteTeamIds]);
 	const confettiCanvasRef = useFavoriteScoreConfetti({ games, favoriteTeamIds });

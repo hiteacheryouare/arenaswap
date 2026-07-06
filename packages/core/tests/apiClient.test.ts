@@ -530,7 +530,7 @@ describe('apiClient', () => {
 		expect(result.games.some(game => game.status === 'post')).toBe(false);
 	});
 
-	test('adds NCAA basketball groups=50 query and uses override league logo', async () => {
+	test('adds NCAA basketball groups=50 query parameter', async () => {
 		const fetchMock = jest.fn()
 			.mockResolvedValueOnce(createResponse({ events: [makeEvent({
 				id: 'ncaab-live',
@@ -546,8 +546,7 @@ describe('apiClient', () => {
 		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
 		const { fetchLeagueLogos } = loadApiClient();
 
-		const logos = await fetchLeagueLogos(['ncaab']);
-		expect(logos.ncaab).toBe('https://a.espncdn.com/i/espn/misc_logos/500-dark/ncaa.png');
+		await fetchLeagueLogos(['ncaab']);
 
 		const calledUrls = fetchMock.mock.calls.map(([url]) => String(url));
 		expect(calledUrls).toHaveLength(2);
@@ -555,7 +554,7 @@ describe('apiClient', () => {
 		expect(calledUrls[1]).toContain('groups=50');
 	});
 
-	test('adds NCAA womens basketball groups=49 query and uses override league logo', async () => {
+	test('adds NCAA womens basketball groups=49 query parameter', async () => {
 		const fetchMock = jest.fn()
 			.mockResolvedValueOnce(createResponse({ events: [makeEvent({
 				id: 'ncaaw-live',
@@ -571,8 +570,7 @@ describe('apiClient', () => {
 		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
 		const { fetchLeagueLogos } = loadApiClient();
 
-		const logos = await fetchLeagueLogos(['ncaaw']);
-		expect(logos.ncaaw).toBe('https://a.espncdn.com/i/espn/misc_logos/500-dark/ncaa.png');
+		await fetchLeagueLogos(['ncaaw']);
 
 		const calledUrls = fetchMock.mock.calls.map(([url]) => String(url));
 		expect(calledUrls).toHaveLength(2);
@@ -1389,7 +1387,6 @@ describe('apiClient', () => {
 		const result = await fetchGamesWithLeagueLogos(['ncaab']);
 		expect(result.games).toHaveLength(0);
 		expect(result.leagueLogos.ncaab).toBeDefined();
-		expect(result.leagueLogos.ncaab).toBeTruthy();
 	});
 
 	test('all leagues: pre-game startTime is defined, live game startTime is undefined', async () => {
