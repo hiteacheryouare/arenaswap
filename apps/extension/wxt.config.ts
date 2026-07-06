@@ -94,6 +94,13 @@ export default defineConfig({
 		build: {
 			target: 'es2023',
 		},
+		// Firefox MV3: disable eval-based sourcemaps (blocked by CSP) and
+		// compression (causes NS_ERROR_CORRUPTED_CONTENT in extension pages)
+		server: {
+			headers: {
+				'Content-Encoding': 'identity',
+			},
+		},
 	}),
 	manifest: {
 		name: 'ArenaSwap',
