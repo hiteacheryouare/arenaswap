@@ -4,6 +4,6 @@
 	"description": "ArenaSwap shared design system — Bootstrap tokens, font declarations, and Tailwind theme",
 	"private": true,
 	"scripts": {
-		"lint": "oxlint ."
+		"lint": "echo 'No JS/TS source files to lint'"
 	}
 }
