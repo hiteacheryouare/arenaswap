@@ -3,7 +3,7 @@ import { useState } from 'react';
 const items = [
 	{
 		q: 'What leagues does ArenaSwap support?',
-		a: '31 leagues across six sports — NBA, NFL, NHL, MLB, MLS, EPL, Champions League, La Liga, Bundesliga, Serie A, Liga MX, NCAAB, NCAAW, NCAAF, NCAA Hockey, WNBA, NWSL, NCAA Baseball, NCAA Softball, World Baseball Classic, FIFA World Cup, FIFA Women\'s World Cup, UFL, Europa League, and all relevant Olympic competitions.',
+		a: '30+ leagues across six sports — NBA, NFL, NHL, MLB, MLS, EPL, Champions League, La Liga, Bundesliga, Serie A, Liga MX, NCAAB, NCAAW, NCAAF, NCAA Hockey, WNBA, NWSL, NCAA Baseball, NCAA Softball, World Baseball Classic, FIFA World Cup, FIFA Women\'s World Cup, UFL, Europa League, and all relevant Olympic competitions.',
 	},
 	{
 		q: 'How does tab switching work?',

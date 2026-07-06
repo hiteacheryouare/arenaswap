@@ -1,11 +1,11 @@
 ---
 title: "v2: What we rebuilt and why"
-description: "31 leagues, a rewritten PowerScore engine, and a month of calibration. The full technical story of how ArenaSwap got here."
+description: "30+ leagues, a rewritten PowerScore engine, and a month of calibration. The full technical story of how ArenaSwap got here."
 pubDate: 2026-06-28
 author: Ryan Mullin
 tags: ["engineering", "v2", "powerscore"]
 image: /arenaswap/images/demo.png
-imageAlt: ArenaSwap v2 — live game switching across 31 leagues
+imageAlt: ArenaSwap v2 — live game switching across 30+ leagues
 ---
 
 Last March I sat down with four NBA playoff games open and missed three game-winners in a row. Not because I wasn't paying attention — because I was watching the wrong tab. That was the moment ArenaSwap v1 became a real project.
@@ -18,7 +18,7 @@ v2 took about four months. Here's what changed and why.
 
 ## The scope problem first
 
-Going from 12 leagues to 31 wasn't just adding more ESPN API calls. The original data model had basketball-specific assumptions baked into the scorer — things like "quarter" being the unit of time, or closeness being measured in points on a fixed scale regardless of sport.
+Going from 12 leagues to 30+ wasn't just adding more ESPN API calls. The original data model had basketball-specific assumptions baked into the scorer — things like "quarter" being the unit of time, or closeness being measured in points on a fixed scale regardless of sport.
 
 The fix was pulling all sport-specific config into a typed map. Each sport now declares:
 
