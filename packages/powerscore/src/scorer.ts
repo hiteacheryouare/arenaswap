@@ -59,11 +59,13 @@ export const normalizePowerScoreResult = (
 	const hasFavoriteTeamCount = typeof score.favoriteTeamCount === 'number' && Number.isFinite(score.favoriteTeamCount);
 	const hasGameBoost = typeof score.gameBoost === 'number' && Number.isFinite(score.gameBoost);
 	const hasScoringOpportunityBoost = typeof score.scoringOpportunityBoost === 'number' && Number.isFinite(score.scoringOpportunityBoost);
+	const hasPostseasonBoost = typeof score.postseasonBoost === 'number' && Number.isFinite(score.postseasonBoost);
 	const baseTotal = hasBaseTotal ? clamp(toFiniteNumber(score.baseTotal), 0, scoreMaxTotal) : undefined;
 	const favoriteBonus = hasFavoriteBonus ? Math.max(0, Math.round(toFiniteNumber(score.favoriteBonus))) : undefined;
 	const favoriteTeamCount = hasFavoriteTeamCount ? Math.max(0, Math.round(toFiniteNumber(score.favoriteTeamCount))) : undefined;
 	const gameBoost = hasGameBoost ? Math.max(0, Math.round(toFiniteNumber(score.gameBoost))) : undefined;
 	const scoringOpportunityBoost = hasScoringOpportunityBoost ? Math.max(0, Math.round(toFiniteNumber(score.scoringOpportunityBoost))) : undefined;
+	const postseasonBoost = hasPostseasonBoost ? Math.max(0, Math.round(toFiniteNumber(score.postseasonBoost))) : undefined;
 
 	return {
 		gameId: score.gameId,
@@ -80,6 +82,7 @@ export const normalizePowerScoreResult = (
 		...(hasFavoriteTeamCount ? { favoriteTeamCount } : {}),
 		...(hasGameBoost ? { gameBoost } : {}),
 		...(hasScoringOpportunityBoost ? { scoringOpportunityBoost } : {}),
+		...(hasPostseasonBoost ? { postseasonBoost } : {}),
 	};
 };
 

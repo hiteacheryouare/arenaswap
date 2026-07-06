@@ -23,9 +23,11 @@ const makeEvent = (params: {
 	date?: string;
 	withOdds?: boolean;
 	situation?: Record<string, unknown>;
+	season?: Record<string, unknown>;
 }): Record<string, unknown> => ({
 	id: params.id,
 	date: params.date ?? '2026-10-05T00:00:00.000Z',
+	...(params.season !== undefined && { season: params.season }),
 	competitions: [
 		{
 			competitors: [
@@ -1549,6 +1551,46 @@ describe('apiClient', () => {
 			expect(result.games.find(g => g.id === 'd2')?.downDistance).toBe('2nd & 7');
 			expect(result.games.find(g => g.id === 'd3')?.downDistance).toBe('3rd & 4');
 			expect(result.games.find(g => g.id === 'd4')?.downDistance).toBe('4th & 1');
+		});
+	});
+
+	describe('isPostseason', () => {
+		const fetchWith = (events: Record<string, unknown>[]) => {
+			const fetchMock = jest.fn().mockResolvedValue(createResponse({ events }));
+			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+			return loadApiClient();
+		};
+
+		test('sets isPostseason true when season.type is 3', async () => {
+			const { fetchGamesWithLeagueLogos } = fetchWith([
+				makeEvent({ id: 'playoff-game', state: 'in', period: 2, clock: '5:00', homeScore: '3', awayScore: '2', season: { year: 2026, type: 3, slug: 'post-season' } }),
+			]);
+			const result = await fetchGamesWithLeagueLogos(['nba'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'playoff-game')?.isPostseason).toBe(true);
+		});
+
+		test('sets isPostseason false when season.type is 2 (regular season)', async () => {
+			const { fetchGamesWithLeagueLogos } = fetchWith([
+				makeEvent({ id: 'reg-game', state: 'in', period: 2, clock: '5:00', homeScore: '3', awayScore: '2', season: { year: 2026, type: 2, slug: 'regular-season' } }),
+			]);
+			const result = await fetchGamesWithLeagueLogos(['nba'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'reg-game')?.isPostseason).toBe(false);
+		});
+
+		test('sets isPostseason false when season field is absent', async () => {
+			const { fetchGamesWithLeagueLogos } = fetchWith([
+				makeEvent({ id: 'no-season', state: 'in', period: 1, clock: '10:00', homeScore: '0', awayScore: '0' }),
+			]);
+			const result = await fetchGamesWithLeagueLogos(['nba'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'no-season')?.isPostseason).toBe(false);
+		});
+
+		test('sets isPostseason false when season.type is 1 (preseason)', async () => {
+			const { fetchGamesWithLeagueLogos } = fetchWith([
+				makeEvent({ id: 'pre-season', state: 'in', period: 1, clock: '10:00', homeScore: '0', awayScore: '0', season: { year: 2025, type: 1, slug: 'pre-season' } }),
+			]);
+			const result = await fetchGamesWithLeagueLogos(['nba'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'pre-season')?.isPostseason).toBe(false);
 		});
 	});
 });

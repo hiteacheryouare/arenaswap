@@ -51,6 +51,7 @@ export const defaultSensitivity = 4 as const;
 export const defaultCooldownSecs = 45;
 export const defaultSwitchDelaySecs = 0;
 export const defaultFavoriteTeamBonusPoints = 10;
+export const defaultPostseasonBoostPoints = 5;
 
 
 // Sensitivity level → score delta required to trigger a tab switch.
@@ -183,6 +184,8 @@ export const createDefaultUserPreferences = (): UserPreferences => ({
 	standbyStreamEnabled: false,
 	standbyStreamThreshold: 20,
 	bettingEnabled: false,
+	temperatureUnit: 'F' as const,
+	postseasonBoostPoints: defaultPostseasonBoostPoints,
 });
 
 export const normalizeUserPreferences = (storedPrefs: unknown): UserPreferences => {
@@ -211,5 +214,7 @@ export const normalizeUserPreferences = (storedPrefs: unknown): UserPreferences 
 			? Math.max(0, Math.min(100, Math.round(candidate.standbyStreamThreshold)))
 			: defaults.standbyStreamThreshold,
 		bettingEnabled: typeof candidate.bettingEnabled === 'boolean' ? candidate.bettingEnabled : defaults.bettingEnabled,
+		temperatureUnit: candidate.temperatureUnit === 'C' ? 'C' : 'F',
+		postseasonBoostPoints: normalizeSecondsPreference(candidate.postseasonBoostPoints, defaults.postseasonBoostPoints),
 	};
 };

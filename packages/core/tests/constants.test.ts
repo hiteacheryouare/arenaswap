@@ -42,6 +42,8 @@ describe('constants', () => {
 			standbyStreamEnabled: false,
 			standbyStreamThreshold: 20,
 			bettingEnabled: false,
+			temperatureUnit: 'F',
+			postseasonBoostPoints: 5,
 		});
 	});
 
@@ -72,6 +74,8 @@ describe('constants', () => {
 			standbyStreamEnabled: false,
 			standbyStreamThreshold: 20,
 			bettingEnabled: false,
+			temperatureUnit: 'F',
+			postseasonBoostPoints: 5,
 		});
 	});
 
@@ -106,6 +110,15 @@ describe('constants', () => {
 		expect(normalized.enabled).toBe(false);
 		expect(normalized.favoriteTeamIds).toEqual([]);
 		expect(normalized.favoriteTeamBonusPoints).toBe(10);
+	});
+
+	test('postseasonBoostPoints defaults to 5 and normalizes fractional/negative values', () => {
+		expect(createDefaultUserPreferences().postseasonBoostPoints).toBe(5);
+		expect(normalizeUserPreferences({}).postseasonBoostPoints).toBe(5);
+		expect(normalizeUserPreferences({ postseasonBoostPoints: 12 }).postseasonBoostPoints).toBe(12);
+		expect(normalizeUserPreferences({ postseasonBoostPoints: 7.9 }).postseasonBoostPoints).toBe(8);
+		expect(normalizeUserPreferences({ postseasonBoostPoints: -2 }).postseasonBoostPoints).toBe(0);
+		expect(normalizeUserPreferences({ postseasonBoostPoints: 'bad' }).postseasonBoostPoints).toBe(5);
 	});
 
 	test('contains league and sport configuration maps for each league id', () => {

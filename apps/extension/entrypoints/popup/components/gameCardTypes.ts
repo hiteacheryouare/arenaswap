@@ -5,6 +5,10 @@ export interface BettingDisplayPrefs {
 	bettingEnabled: boolean;
 }
 
+export interface WeatherDisplayPrefs {
+	temperatureUnit: 'F' | 'C';
+}
+
 export interface gameCardProps {
 	game: Game | undefined;
 	excitementResult: PowerScoreResult | undefined;
@@ -17,4 +21,5 @@ export interface gameCardProps {
 	formatTabLabel: (tab: Browser.tabs.Tab) => string;
 	onOpenGameDetail: (gameId: string) => void;
 	bettingPrefs: BettingDisplayPrefs;
+	weatherPrefs: WeatherDisplayPrefs;
 }

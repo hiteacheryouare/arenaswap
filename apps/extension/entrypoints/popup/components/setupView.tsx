@@ -5,6 +5,7 @@ import type { LeagueId, LeagueLogoMap, SportType, UserPreferences } from '@arena
 import type { Browser } from 'wxt/browser';
 import CooldownSlider from './cooldownSlider';
 import FavoriteTeamBonusInput from './favoriteTeamBonusInput';
+import PostseasonBoostInput from './postseasonBoostInput';
 import SensitivitySlider from './sensitivitySlider';
 import SwitchDelaySlider from './switchDelaySlider';
 import StandbyStreamGuide from './standbyStreamGuide';
@@ -35,6 +36,8 @@ interface setupViewProps {
 	onSetStandbyTab: (tabId: number | null) => void;
 	onStandbyOnboardingDone: () => void;
 	onToggleBetting: () => void;
+	onToggleTemperatureUnit: () => void;
+	onPostseasonBoostChange: (val: number) => void;
 }
 
 type leagueConfig = (typeof leagueConfigs)[number];
@@ -63,7 +66,7 @@ const setupView = ({
 	openTabs, formatTabLabel, onClose, onSensitivityChange, onCooldownChange, onSwitchDelayChange,
 	onFavoriteTeamBonusChange, onToggleLeague, onToggleSport, onToggleShowUpcoming,
 	onToggleProTips, onToggleNotifications, onToggleDemo, onToggleStandbyStream, onStandbyThresholdChange,
-	onSetStandbyTab, onStandbyOnboardingDone, onToggleBetting,
+	onSetStandbyTab, onStandbyOnboardingDone, onToggleBetting, onToggleTemperatureUnit, onPostseasonBoostChange,
 }: setupViewProps) => {
 	const [tab, setTab] = useState<'switching' | 'leagues'>('switching');
 	const [showStandbyGuide, setShowStandbyGuide] = useState(false);
@@ -111,6 +114,7 @@ const setupView = ({
 					<div className='mt-3'><CooldownSlider value={prefs.cooldownSeconds} onChange={onCooldownChange} /></div>
 					<div className='mt-3'><SwitchDelaySlider value={prefs.switchDelaySeconds} onChange={onSwitchDelayChange} /></div>
 					<div className='mt-3'><FavoriteTeamBonusInput value={prefs.favoriteTeamBonusPoints} onChange={onFavoriteTeamBonusChange} /></div>
+					<div className='mt-3'><PostseasonBoostInput value={prefs.postseasonBoostPoints} onChange={onPostseasonBoostChange} /></div>
 
 					<div className='fw-bold popup-section-label mt-3'><i className='bi bi-toggles' />{i18n.t('setup.optionsSection')}</div>
 
@@ -140,6 +144,26 @@ const setupView = ({
 						<div className='form-check form-switch mb-0'>
 							<input className='form-check-input' type='checkbox' id='demoToggle' checked={demoMode} onChange={onToggleDemo} />
 						</div>
+					</div>
+
+					<div className='d-flex justify-content-between align-items-center mt-2'>
+						<label className='text-body-secondary setting-toggle-label' htmlFor='bettingToggle'><i className='bi bi-bar-chart-line me-1 text-primary' />{i18n.t('setup.showBetting')}</label>
+						<div className='form-check form-switch mb-0'>
+							<input className='form-check-input' type='checkbox' id='bettingToggle' checked={prefs.bettingEnabled} onChange={onToggleBetting} disabled={!prefsLoaded} />
+						</div>
+					</div>
+
+					<div className='d-flex justify-content-between align-items-center mt-2'>
+						<label className='text-body-secondary setting-toggle-label' htmlFor='temperatureUnitToggle'><i className='bi bi-thermometer-half me-1 text-primary' />{i18n.t('setup.temperatureUnit')}</label>
+						<button
+							type='button'
+							id='temperatureUnitToggle'
+							className='btn btn-sm btn-outline-secondary temperature-unit-toggle'
+							onClick={onToggleTemperatureUnit}
+							disabled={!prefsLoaded}
+						>
+							{prefs.temperatureUnit === 'F' ? i18n.t('setup.temperatureUnitF') : i18n.t('setup.temperatureUnitC')}
+						</button>
 					</div>
 
 					<div className='fw-bold popup-section-label mt-3'><i className='bi bi-broadcast' />{i18n.t('setup.standbySection')}</div>
@@ -201,15 +225,6 @@ const setupView = ({
 							</div>
 						</div>
 					)}
-
-					<div className='fw-bold popup-section-label mt-3'><i className='bi bi-currency-dollar' />{i18n.t('setup.bettingSection')}</div>
-
-					<div className='d-flex justify-content-between align-items-center mt-2'>
-						<label className='text-body-secondary setting-toggle-label' htmlFor='bettingToggle'><i className='bi bi-bar-chart-line me-1 text-primary' />{i18n.t('setup.showBetting')}</label>
-						<div className='form-check form-switch mb-0'>
-							<input className='form-check-input' type='checkbox' id='bettingToggle' checked={prefs.bettingEnabled} onChange={onToggleBetting} disabled={!prefsLoaded} />
-						</div>
-					</div>
 
 
 			</div>

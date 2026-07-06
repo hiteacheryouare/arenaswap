@@ -136,6 +136,10 @@ setup:
   selectTab: — Select a tab —
   bettingSection: Betting & Odds
   showBetting: Show betting & odds
+  weatherSection: Weather
+  temperatureUnit: Temperature unit
+  temperatureUnitF: '°F'
+  temperatureUnitC: '°C'
   leaguesExplainer: Only selected leagues are tracked and considered for automatic switching.
   selectNone: none
   selectAll: all
@@ -206,6 +210,7 @@ powerScore:
     n: $1 favorite teams in matchup
   gameBoost: Game boost
   scoringOpportunity: Scoring opportunity
+  postseasonBoost: Postseason boost
   finalPowerScore: Final PowerScore
 
 bso:
@@ -354,6 +359,11 @@ favoriteTeamBonus:
   label: Favorite team bonus
   perTeam: +$1 per team
   explainer: Applied once for each favorited team in a game. If both teams are favorited, the bonus is doubled.
+
+postseasonBoost:
+  label: Postseason boost
+  points: +$1 pts
+  explainer: Added to every game classified as postseason (playoffs, tournaments, knockout rounds).
 
 proTip:
   label: 'Pro tip:'

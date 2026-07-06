@@ -21,6 +21,7 @@ interface powerScoreBreakdownProps {
 	favoriteTeamCount: number;
 	currentBoost: number;
 	scoringOpportunityBoost: number;
+	postseasonBoost: number;
 	total: number;
 	totalLabel: string;
 }
@@ -46,6 +47,7 @@ const PowerScoreBreakdown = ({
 	favoriteTeamCount,
 	currentBoost,
 	scoringOpportunityBoost,
+	postseasonBoost,
 	totalLabel,
 }: powerScoreBreakdownProps) => {
 	const signalValues = [closeness, lateGame, momentum, leadChanges, comeback];
@@ -91,6 +93,7 @@ const PowerScoreBreakdown = ({
 			{favoriteBonus > 0 && <div className='powerscore-breakdown-note'>{i18n.t('powerScore.favoriteTeamsInMatchup', favoriteTeamCount)}</div>}
 			<div className='powerscore-breakdown-row'><span>{i18n.t('powerScore.gameBoost')}</span><span>{currentBoost > 0 ? `+${currentBoost}` : '0'}</span></div>
 			<div className='powerscore-breakdown-row'><span>{i18n.t('powerScore.scoringOpportunity')}</span><span>{scoringOpportunityBoost > 0 ? `+${scoringOpportunityBoost}` : '0'}</span></div>
+			<div className='powerscore-breakdown-row'><span>{i18n.t('powerScore.postseasonBoost')}</span><span>{postseasonBoost > 0 ? `+${postseasonBoost}` : '0'}</span></div>
 			<div className='powerscore-breakdown-row powerscore-breakdown-row-total'><span>{i18n.t('powerScore.finalPowerScore')}</span><span>{totalLabel}</span></div>
 		</section>
 	);

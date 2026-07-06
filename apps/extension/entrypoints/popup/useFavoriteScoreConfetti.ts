@@ -32,8 +32,8 @@ const useFavoriteScoreConfetti = ({ games, favoriteTeamIds }: useFavoriteScoreCo
 	const launchBurst = (nextOptions: confettiOptions) => {
 		void ensureConfettiInstance()
 			.then(confetti => confetti(nextOptions))
-			.catch(err => {
-				console.error('ArenaSwap: Failed to render confetti burst:', err);
+			.catch(() => {
+				// Failed to render confetti burst
 			});
 	};
 

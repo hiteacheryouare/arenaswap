@@ -30,6 +30,13 @@ export interface Team {
 	color?: string;
 }
 
+export interface GameCondition {
+	/** Temperature in °F as reported by ESPN */
+	temperatureF: number;
+	/** ESPN condition label, e.g. "Sunny", "Rain", "Partly Cloudy" */
+	conditionLabel: string;
+}
+
 export interface GameOddsProvider {
 	name: string;
 	logoUrl?: string;
@@ -68,6 +75,10 @@ export interface Game {
 	downDistance?: string;
 	/** True when the offense is in the red zone (inside the 20); football only */
 	isRedZone?: boolean;
+	/** Game Condition (weather) from ESPN; only present for outdoor venues */
+	weather?: GameCondition;
+	/** True when ESPN classifies this as a postseason game (season.type === 3) */
+	isPostseason?: boolean;
 }
 
 export interface UserPreferences {
@@ -87,6 +98,10 @@ export interface UserPreferences {
 	standbyStreamThreshold: number;
 	/** Show betting odds (spread / O/U) on game cards */
 	bettingEnabled: boolean;
+	/** Display unit for Game Condition temperatures sourced in °F from ESPN */
+	temperatureUnit: 'F' | 'C';
+	/** Flat PowerScore bonus added to any game ESPN classifies as postseason */
+	postseasonBoostPoints: number;
 }
 
 export interface TabRegistration {
@@ -111,6 +126,7 @@ export interface PowerScoreSnapshot {
 	favoriteTeamCount: number;
 	gameBoost?: number;
 	scoringOpportunityBoost?: number;
+	postseasonBoost?: number;
 	stalled: boolean;
 	reason: string;
 }

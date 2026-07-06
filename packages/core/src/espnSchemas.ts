@@ -54,6 +54,14 @@ const EspnSituationSchema = zod.object({
 const EspnCompetitionVenueSchema = zod.object({
 	fullName: zod.string().optional(),
 	name: zod.string().optional(),
+	indoor: zod.boolean().optional(),
+});
+
+const EspnWeatherSchema = zod.object({
+	displayValue: zod.string().optional(),
+	temperature: zod.number().optional(),
+	highTemperature: zod.number().optional(),
+	conditionId: zod.string().optional(),
 });
 
 const EspnCompetitionBroadcastSchema = zod.object({
@@ -93,6 +101,12 @@ const EspnCompetitionSchema = zod.object({
 	odds: zod.array(EspnCompetitionOddsSchema.nullable()).optional(),
 });
 
+const EspnSeasonSchema = zod.object({
+	year: zod.number().optional(),
+	type: zod.number().optional(),
+	slug: zod.string().optional(),
+});
+
 const EspnEventSchema = zod.object({
 	id: zod.string(),
 	date: zod.string().optional(),
@@ -101,7 +115,9 @@ const EspnEventSchema = zod.object({
 			state: zod.string().optional(),
 		}).optional(),
 	}).optional(),
+	season: EspnSeasonSchema.optional(),
 	competitions: zod.array(EspnCompetitionSchema),
+	weather: EspnWeatherSchema.optional(),
 });
 
 export const EspnScoreboardSchema = zod.object({
@@ -137,6 +153,8 @@ export type EspnCompetitionGeoBroadcast = zod.infer<typeof EspnCompetitionGeoBro
 export type EspnOddsProviderLogo = zod.infer<typeof EspnOddsProviderLogoSchema>;
 export type EspnOddsProvider = zod.infer<typeof EspnOddsProviderSchema>;
 export type EspnCompetitionOdds = zod.infer<typeof EspnCompetitionOddsSchema>;
+export type EspnWeather = zod.infer<typeof EspnWeatherSchema>;
+export type EspnSeason = zod.infer<typeof EspnSeasonSchema>;
 export type EspnCompetition = zod.infer<typeof EspnCompetitionSchema>;
 export type EspnEvent = zod.infer<typeof EspnEventSchema>;
 export type EspnScoreboardResponse = zod.infer<typeof EspnScoreboardSchema>;

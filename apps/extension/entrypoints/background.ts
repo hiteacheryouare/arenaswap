@@ -40,8 +40,8 @@ const recordSuccessfulSwitchForReviewPrompt = async (switchedAt: number) => {
 		await browser.storage.local.set({
 			[reviewPromptStorageKey]: recordSuccessfulReviewPromptSwitch(current, switchedAt),
 		});
-	} catch (err) {
-		console.error('ArenaSwap: Failed to update review prompt state:', err);
+	} catch {
+		// Failed to update review prompt state
 	}
 };
 
@@ -149,6 +149,8 @@ export default defineBackground(() => {
 				favoriteBonus: score.favoriteBonus ?? 0,
 				favoriteTeamCount: score.favoriteTeamCount ?? 0,
 				gameBoost: score.gameBoost ?? 0,
+				scoringOpportunityBoost: score.scoringOpportunityBoost ?? 0,
+				postseasonBoost: score.postseasonBoost ?? 0,
 				stalled: score.stalled ?? false,
 				reason: score.reason,
 			});
@@ -174,8 +176,8 @@ export default defineBackground(() => {
 		void browser.storage.session.set({
 			scoreHistory: serializeScoreHistory(),
 			powerScoreHistory: serializePowerScoreHistory(),
-		}).catch(err => {
-			console.error('ArenaSwap: Failed to persist score history:', err);
+		}).catch(() => {
+			// Failed to persist score history
 		});
 	};
 
@@ -318,8 +320,8 @@ export default defineBackground(() => {
 		try {
 			const result = await fetchGamesWithLeagueLogos(prefs.enabledLeagues, { includeUpcoming: true });
 			upcomingGames = result.games.filter(g => g.status === 'pre');
-		} catch (err) {
-			console.error('ArenaSwap: Failed to fetch upcoming games:', err);
+		} catch {
+			// Failed to fetch upcoming games
 		}
 	};
 
@@ -347,6 +349,7 @@ export default defineBackground(() => {
 
 		const favoriteTeamIds = new Set(prefs.favoriteTeamIds);
 		const favoriteBonusPoints = prefs.favoriteTeamBonusPoints;
+		const postseasonBoostPoints = prefs.postseasonBoostPoints;
 		const scores = liveGames.map(g => {
 			const stallCount = clockStallMap.get(g.id)?.stallCount ?? 0;
 			const baseScore = normalizePowerScoreResult(computePowerScore(g, history.get(g.id) ?? [], stallCount));
@@ -354,11 +357,13 @@ export default defineBackground(() => {
 			const favoriteBonus = favoriteTeamCount * favoriteBonusPoints;
 			const gameBoost = gameBoosts[g.id] ?? 0;
 			const scoringOpportunityBoost = computeScoringOpportunityBoost(g);
+			const postseasonBoost = g.isPostseason ? postseasonBoostPoints : 0;
 			const reasonParts = [
 				baseScore.reason,
 				favoriteBonus > 0 && `favorite bonus (+${favoriteBonus})`,
 				gameBoost > 0 && `game boost (+${gameBoost})`,
 				scoringOpportunityBoost > 0 && `scoring opportunity (+${scoringOpportunityBoost})`,
+				postseasonBoost > 0 && `postseason (+${postseasonBoost})`,
 			].filter(Boolean);
 
 			return normalizePowerScoreResult(
@@ -369,7 +374,8 @@ export default defineBackground(() => {
 					favoriteTeamCount,
 					gameBoost,
 					scoringOpportunityBoost,
-					total: baseScore.total + favoriteBonus + gameBoost + scoringOpportunityBoost,
+					postseasonBoost,
+					total: baseScore.total + favoriteBonus + gameBoost + scoringOpportunityBoost + postseasonBoost,
 					reason: reasonParts.join(', '),
 				},
 				{ allowTotalOverflow: true },
@@ -452,8 +458,8 @@ export default defineBackground(() => {
 				const fetchResult = await fetchGamesWithLeagueLogos(enabledLeagues, { includeUpcoming: false });
 				games = fetchResult.games;
 				leagueLogos = fetchResult.leagueLogos;
-			} catch (err) {
-				console.error('Arenaswap: Failed to fetch games:', err);
+			} catch {
+				// Failed to fetch games
 				return;
 			}
 			// Merge cached upcoming games, excluding any that have since gone live
@@ -482,8 +488,8 @@ export default defineBackground(() => {
 			const hasLiveGames = fetchResult.games.some(g => g.status === 'in');
 			pollModeTracker.recordPollResult(leagueId, hasLiveGames);
 			fetchSucceeded = true;
-		} catch (err) {
-			console.error(`ArenaSwap: Failed to fetch ${leagueId}:`, err);
+		} catch {
+			// Failed to fetch league games
 		}
 
 		// Reschedule before awaiting post-processing so the next tick is always queued.
@@ -541,8 +547,8 @@ export default defineBackground(() => {
 		hydrateHistoryMaps(sessionResult.scoreHistory, sessionResult.powerScoreHistory);
 		demoMode = demoResult.demoMode as boolean;
 		if (demoMode) simulator = new MockGameSimulator();
-	}).catch(err => {
-		console.error('ArenaSwap: Failed to load persisted state, using defaults:', err);
+	}).catch(() => {
+		// Failed to load persisted state, using defaults
 	});
 
 	stateReady.then(async () => {

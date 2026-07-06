@@ -136,6 +136,10 @@ setup:
   selectTab: — Selecciona una pestaña —
   bettingSection: Apuestas y cuotas
   showBetting: Mostrar apuestas y cuotas
+  weatherSection: Clima
+  temperatureUnit: Unidad de temperatura
+  temperatureUnitF: '°F'
+  temperatureUnitC: '°C'
   leaguesExplainer: Solo se siguen y se consideran para el cambio automático las ligas seleccionadas.
   selectNone: ninguna
   selectAll: todas
@@ -206,6 +210,7 @@ powerScore:
     n: $1 equipos favoritos en el enfrentamiento
   gameBoost: Impulso del partido
   scoringOpportunity: Oportunidad de anotar
+  postseasonBoost: Impulso de postemporada
   finalPowerScore: PowerScore final
 
 bso:
@@ -354,6 +359,11 @@ favoriteTeamBonus:
   label: Bonificación de equipo favorito
   perTeam: +$1 por equipo
   explainer: Se aplica una vez por cada equipo favorito en un partido. Si ambos equipos son favoritos, la bonificación se duplica.
+
+postseasonBoost:
+  label: Impulso de postemporada
+  points: +$1 pts
+  explainer: Se añade a cada juego clasificado como postemporada (playoffs, torneos, eliminatorias).
 
 proTip:
   label: 'Consejo:'

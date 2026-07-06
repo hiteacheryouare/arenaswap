@@ -2,9 +2,10 @@ import { createFavoriteTeamKey } from '@arenaswap/core/constants';
 import TabAssignSelect from './tabAssignSelect';
 import type { gameCardProps } from './gameCardTypes';
 import { buildCardHandlers, buildGameCardStyle, formatStartDateTime, GameMeta, TeamColumn } from './gameCardShared';
+import { conditionIcon, formatTemperature } from './weatherUtils';
 import { i18n } from '#i18n';
 
-const preGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs }: gameCardProps) => {
+const preGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs, weatherPrefs }: gameCardProps) => {
 	if (!game) return null;
 
 	const awayFavoriteTeamKey = createFavoriteTeamKey(game.league, game.awayTeam.id);
@@ -31,6 +32,12 @@ const preGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, openTabs, re
 						<span className='font-lekton text-center text-nowrap pre-game-start-time'>
 							{formatStartDateTime(game.startTime)}
 						</span>
+					)}
+					{game.weather && (
+						<div className='pre-game-weather' aria-hidden='true'>
+							<i className={`bi ${conditionIcon(game.weather.conditionLabel)}`} />
+							<span>{formatTemperature(game.weather.temperatureF, weatherPrefs.temperatureUnit)}</span>
+						</div>
 					)}
 				</div>
 				<TeamColumn leagueId={game.league} team={game.homeTeam} isFavorited={homeFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} />

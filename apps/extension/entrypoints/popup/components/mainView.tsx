@@ -17,7 +17,7 @@ import EmptyGameState from './emptyGameState';
 import GameListHeader from './gameListHeader';
 import ReviewPromptBanner from './reviewPromptBanner';
 import { buildFavoritePinnedComparator, buildUpcomingComparator, getRandomLoadingMessage, groupByDate, groupByLeague, leagueLabels } from '../popupHelpers';
-import type { BettingDisplayPrefs } from './gameCardTypes';
+import type { BettingDisplayPrefs, WeatherDisplayPrefs } from './gameCardTypes';
 
 interface gameSectionProps {
 	title: string;
@@ -33,6 +33,7 @@ interface gameSectionProps {
 	formatTabLabel: (tab: Browser.tabs.Tab) => string;
 	onOpenGameDetail: (gameId: string) => void;
 	bettingPrefs: BettingDisplayPrefs;
+	weatherPrefs: WeatherDisplayPrefs;
 	groupDates?: boolean;
 	first?: boolean;
 }
@@ -103,6 +104,7 @@ const leagueRows = (
 	formatTabLabel: (tab: Browser.tabs.Tab) => string,
 	onOpenGameDetail: (gameId: string) => void,
 	bettingPrefs: BettingDisplayPrefs,
+	weatherPrefs: WeatherDisplayPrefs,
 ) => groupByLeague(games).map(({ league, games: groupedGames }) => (
 	<div key={league}>
 		<LeagueSectionHeader league={league} logos={leagueLogos} />
@@ -120,6 +122,7 @@ const leagueRows = (
 				formatTabLabel={formatTabLabel}
 				onOpenGameDetail={onOpenGameDetail}
 				bettingPrefs={bettingPrefs}
+				weatherPrefs={weatherPrefs}
 			/>
 		))}
 	</div>
@@ -139,6 +142,7 @@ const gameSection = ({
 	formatTabLabel,
 	onOpenGameDetail,
 	bettingPrefs,
+	weatherPrefs,
 	groupDates,
 	first,
 }: gameSectionProps) => (
@@ -148,10 +152,10 @@ const gameSection = ({
 			? groupByDate(games).map(({ dateLabel, games: dayGames }) => (
 				<div key={dateLabel}>
 					{dateDivider(dateLabel)}
-					{leagueRows(dayGames, scores, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs)}
+					{leagueRows(dayGames, scores, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs, weatherPrefs)}
 				</div>
 			))
-			: leagueRows(games, scores, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs)
+			: leagueRows(games, scores, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs, weatherPrefs)
 		}
 	</div>
 );
@@ -209,6 +213,9 @@ const mainView = ({
 	const bettingPrefs: BettingDisplayPrefs = {
 		bettingEnabled: prefs.bettingEnabled,
 	};
+	const weatherPrefs: WeatherDisplayPrefs = {
+		temperatureUnit: prefs.temperatureUnit,
+	};
 
 	return (
 		<div className='popup-container d-flex flex-column'>
@@ -248,9 +255,9 @@ const mainView = ({
 			/>
 
 			{!isLoading && !noLeaguesSelected && prefs.proTipsEnabled && <ProTip context='main' />}
-			{!isLoading && !noLeaguesSelected && assignedLiveGames.length > 0 && gameSection({ title: i18n.t('main.sectionActiveLiveTabs'), games: assignedLiveGames, scores, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs, first: true })}
-			{!isLoading && !noLeaguesSelected && unassignedLiveGames.length > 0 && gameSection({ title: i18n.t('main.sectionOtherLiveGames'), games: unassignedLiveGames, scores, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs, first: assignedLiveGames.length === 0 })}
-			{!isLoading && !noLeaguesSelected && prefs.showUpcomingGames && upcomingGames.length > 0 && gameSection({ title: i18n.t('main.sectionUpNext'), games: upcomingGames, scores: [], leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs, groupDates: true, first: assignedLiveGames.length === 0 && unassignedLiveGames.length === 0 })}
+			{!isLoading && !noLeaguesSelected && assignedLiveGames.length > 0 && gameSection({ title: i18n.t('main.sectionActiveLiveTabs'), games: assignedLiveGames, scores, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs, weatherPrefs, first: true })}
+			{!isLoading && !noLeaguesSelected && unassignedLiveGames.length > 0 && gameSection({ title: i18n.t('main.sectionOtherLiveGames'), games: unassignedLiveGames, scores, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs, weatherPrefs, first: assignedLiveGames.length === 0 })}
+			{!isLoading && !noLeaguesSelected && prefs.showUpcomingGames && upcomingGames.length > 0 && gameSection({ title: i18n.t('main.sectionUpNext'), games: upcomingGames, scores: [], leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs, weatherPrefs, groupDates: true, first: assignedLiveGames.length === 0 && unassignedLiveGames.length === 0 })}
 
 			<PopupFooter />
 		</div>

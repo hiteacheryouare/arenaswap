@@ -179,10 +179,10 @@ const canvas  = document.getElementById('hero-canvas') as HTMLCanvasElement;
 const ctx     = canvas.getContext('2d')!;
 
 // ─── Deterministic PRNG seeded per page load ─────────────────────────────────
-let _seed = Date.now() & 0xffffffff;
+let seed = Date.now() & 0xffffffff;
 function rand(): number {
-	_seed = (_seed * 1664525 + 1013904223) & 0xffffffff;
-	return ((_seed >>> 0) / 0xffffffff);
+	seed = (seed * 1664525 + 1013904223) & 0xffffffff;
+	return ((seed >>> 0) / 0xffffffff);
 }
 
 // ─── Brand palette ───────────────────────────────────────────────────────────

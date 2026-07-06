@@ -1,5 +1,92 @@
 # Changelog
 
+## Move betting and weather settings under Options — 2026-07-05
+
+Consolidated the Betting and Weather section headings into the Options section in setup view, removing two separate headings and placing the toggles alongside the other option toggles.
+
+## Add postseason boost to PowerScore — 2026-07-05
+
+Adds a flat, user-tunable PowerScore bonus for any game ESPN classifies as postseason (`season.type === 3`), covering playoffs, tournaments, and knockout rounds across all leagues. Defaults to +5 points.
+
+**`packages/core/src/espnSchemas.ts`**
+- Added `EspnSeasonSchema` (`year`, `type`, `slug`)
+- Added `season?: EspnSeason` field to `EspnEventSchema`
+
+**`packages/core/src/types.ts`**
+- Added `isPostseason?: boolean` to `Game`
+- Added `postseasonBoostPoints: number` to `UserPreferences`
+- Added `postseasonBoost?: number` to `PowerScoreSnapshot`
+
+**`packages/powerScore/src/types.ts`**
+- Added `postseasonBoost?: number` to `PowerScoreResult`
+
+**`packages/powerScore/src/scorer.ts`**
+- Normalizes `postseasonBoost` through `normalizePowerScoreResult`
+
+**`packages/core/src/apiClient.ts`**
+- Parses `isPostseason: event.season?.type === 3` in `parseEvent`
+
+**`packages/core/src/constants.ts`**
+- Added `defaultPostseasonBoostPoints = 5`; wired into `createDefaultUserPreferences` and `normalizeUserPreferences`
+
+**`apps/extension/entrypoints/background.ts`**
+- Computes `postseasonBoost` from `prefs.postseasonBoostPoints` when `game.isPostseason` is true
+- Applies it additively alongside `favoriteBonus`, `gameBoost`, and `scoringOpportunityBoost`
+- Persists `postseasonBoost` in PowerScore history snapshots
+
+**`apps/extension/entrypoints/popup/components/postseasonBoostInput.tsx`** *(new)*
+- Numeric input component for configuring postseason boost points
+
+**`apps/extension/entrypoints/popup/components/setupView.tsx`**
+- Renders `PostseasonBoostInput` below `FavoriteTeamBonusInput`
+
+**`apps/extension/entrypoints/popup/app.tsx`**
+- Wires `onPostseasonBoostChange` to persist `postseasonBoostPoints` preference
+
+**`apps/extension/entrypoints/popup/components/powerScoreBreakdown.tsx`**
+- Adds "Postseason boost" row to the breakdown display
+
+**`apps/extension/entrypoints/popup/components/gameDetailView.tsx`**
+- Reads `postseasonBoost` from active PowerScore result; passes to breakdown; included in `totalBeforeBonuses` calculation
+
+**`apps/extension/locales/en.yml` / `es.yml`**
+- Added `postseasonBoost.*` and `powerScore.postseasonBoost` keys
+
+## Add Game Condition (weather) display — 2026-07-05
+
+Shows outdoor game weather on pre-game cards and the detail view, sourced from ESPN's scoreboard endpoint at zero extra API cost.
+
+**`packages/core/src/espnSchemas.ts`**
+- Added `EspnWeatherSchema` (`temperature`, `highTemperature`, `conditionId`)
+- Added `weather` field to `EspnEventSchema` (event level, not competition level)
+- Added `indoor` field to `EspnCompetitionVenueSchema`
+
+**`packages/core/src/types.ts`**
+- New `GameCondition` interface: `{ temperatureF, conditionLabel }`
+- Added `weather?: GameCondition` to `Game`
+- Added `temperatureUnit: 'F' | 'C'` to `UserPreferences`
+
+**`packages/core/src/constants.ts`**
+- Default `temperatureUnit: 'F'`; normalize handles `'C'` from stored prefs
+
+**`packages/core/src/apiClient.ts`**
+- `parseWeather()` maps `event.weather` to `GameCondition`
+
+**`apps/extension/entrypoints/popup/components/`**
+- New `weatherUtils.ts`: Bootstrap icon map for condition labels + `formatTemperature()`
+- Pre-game card: weather chip at top-right (Bootstrap icon + temp)
+- Detail view: dedicated weather row (icon + condition label + temp)
+- Setup view: Weather section with °F / °C toggle button
+
+**`apps/extension/assets/bootstrap.scss`**
+- `position: relative` on `.game-card`
+- New: `.pre-game-weather`, `.game-detail-weather`, `.game-detail-weather-sep`, `.temperature-unit-toggle`
+
+**`apps/extension/locales/en.yml`, `es.yml`**
+- New `setup.weatherSection`, `setup.temperatureUnit`, `setup.temperatureUnitF`, `setup.temperatureUnitC`
+
+---
+
 ## SCSS refactor: mixins, loops, and nesting — 2026-07-05
 
 Improved all three SCSS source files by leveraging SCSS features where they reduce repetition without sacrificing readability.

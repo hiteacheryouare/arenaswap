@@ -20,7 +20,8 @@ import {
 } from './gameDetailChartOptions';
 import useSummaryData from './useSummaryData';
 import { formatGameClock, formatPeriod, GameMeta, powerScoreColor } from './gameCardShared';
-import type { BettingDisplayPrefs } from './gameCardTypes';
+import { conditionIcon, formatTemperature } from './weatherUtils';
+import type { BettingDisplayPrefs, WeatherDisplayPrefs } from './gameCardTypes';
 
 interface gameDetailViewProps {
 	game: Game;
@@ -30,6 +31,7 @@ interface gameDetailViewProps {
 	proTipsEnabled: boolean;
 	gameBoosts: Record<string, number>;
 	bettingPrefs: BettingDisplayPrefs;
+	weatherPrefs: WeatherDisplayPrefs;
 	onSetGameBoost: (gameId: string, boost: number) => void;
 	onBack: () => void;
 }
@@ -46,7 +48,7 @@ const withMatchupAlpha = (color: string, fallback: string): string => (
 	/^#[\da-fA-F]{6}$/.test(color) ? `${color}28` : fallback
 );
 
-const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistory, proTipsEnabled, gameBoosts, bettingPrefs, onSetGameBoost, onBack }: gameDetailViewProps) => {
+const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistory, proTipsEnabled, gameBoosts, bettingPrefs, weatherPrefs, onSetGameBoost, onBack }: gameDetailViewProps) => {
 	const orderedScoreHistory = useMemo(
 		() => scoreHistory.toSorted((a, b) => a.timestamp - b.timestamp),
 		[scoreHistory],
@@ -73,8 +75,9 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 	const favoriteTeamCount = activePowerScore?.favoriteTeamCount ?? 0;
 	const currentBoost = gameBoosts[game.id] ?? 0;
 	const scoringOpportunityBoost = activePowerScore?.scoringOpportunityBoost ?? 0;
+	const postseasonBoost = activePowerScore?.postseasonBoost ?? 0;
 	const reason = activePowerScore?.reason ?? 'Best Available';
-	const totalBeforeBonuses = total - favoriteBonus - currentBoost - scoringOpportunityBoost;
+	const totalBeforeBonuses = total - favoriteBonus - currentBoost - scoringOpportunityBoost - postseasonBoost;
 
 	const powerScoreOption = useMemo(() => (
 		buildPowerScoreOption(orderedPowerScoreHistory)
@@ -169,6 +172,14 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 				)}
 			</div>
 			<GameMeta game={game} dark bettingPrefs={bettingPrefs} />
+			{game.weather && (
+				<div className='d-flex align-items-center justify-content-center gap-1 game-detail-weather'>
+					<i className={`bi ${conditionIcon(game.weather.conditionLabel)}`} aria-hidden='true' />
+					<span>{game.weather.conditionLabel}</span>
+					<span className='game-detail-weather-sep'>·</span>
+					<span>{formatTemperature(game.weather.temperatureF, weatherPrefs.temperatureUnit)}</span>
+				</div>
+			)}
 
 			<PowerScoreBreakdown
 				closeness={closeness}
@@ -183,6 +194,7 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 				favoriteTeamCount={favoriteTeamCount}
 				currentBoost={currentBoost}
 				scoringOpportunityBoost={scoringOpportunityBoost}
+				postseasonBoost={postseasonBoost}
 				total={total}
 				totalLabel={totalLabel}
 			/>

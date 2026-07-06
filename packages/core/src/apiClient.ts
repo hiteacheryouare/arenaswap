@@ -10,7 +10,7 @@ import type {
 	EspnScoreboardResponse,
 	EspnSituation,
 } from './espnSchemas';
-import type { Game, GameOdds, LeagueConfig, LeagueId, LeagueLogoMap } from './types';
+import type { Game, GameCondition, GameOdds, LeagueConfig, LeagueId, LeagueLogoMap } from './types';
 
 const espnBase = 'https://site.api.espn.com/apis/site/v2/sports';
 const upcomingDateWindowDays = 4;
@@ -176,6 +176,12 @@ const parseOdds = (competition: EspnCompetition): GameOdds | undefined => {
 	return parsed;
 };
 
+const parseWeather = (event: EspnEvent): GameCondition | undefined => {
+	const w = event.weather;
+	if (!w || typeof w.temperature !== 'number' || !w.conditionId?.trim()) return undefined;
+	return { temperatureF: Math.round(w.temperature), conditionLabel: w.conditionId.trim() };
+};
+
 const downOrdinals = ['', '1st', '2nd', '3rd', '4th'] as const;
 
 const buildDownDistance = (situation: EspnSituation): string | undefined => {
@@ -249,6 +255,8 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 		isRedZone: leagueConfig.sportType === 'football' && state === 'in' && situation
 			? (situation.isRedZone ?? false)
 			: undefined,
+		weather: parseWeather(event),
+		isPostseason: event.season?.type === 3,
 	};
 };
 

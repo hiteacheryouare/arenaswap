@@ -167,7 +167,9 @@ export default () => {
 			await browser.runtime.sendMessage({ type: 'UPDATE_PREFS', prefs: normalized });
 		});
 		prefsSyncRef.current = syncPromise;
-		void syncPromise.catch(err => console.error('ArenaSwap: Failed to persist preferences:', err));
+		void syncPromise.catch(() => {
+			// Failed to persist preferences
+		});
 	};
 
 	const onOnboardingComplete = (leagues: LeagueId[], favorites: string[]) => {
@@ -318,6 +320,8 @@ export default () => {
 						onSetStandbyTab={onSetStandbyTab}
 						onStandbyOnboardingDone={onStandbyOnboardingDone}
 						onToggleBetting={() => persistPrefs(currentPrefs => ({ ...currentPrefs, bettingEnabled: !currentPrefs.bettingEnabled }))}
+						onToggleTemperatureUnit={() => persistPrefs(currentPrefs => ({ ...currentPrefs, temperatureUnit: currentPrefs.temperatureUnit === 'F' ? 'C' : 'F' }))}
+						onPostseasonBoostChange={val => persistPrefs(currentPrefs => ({ ...currentPrefs, postseasonBoostPoints: val }))}
 					/>
 				)}
 				{view === 'main' && (
@@ -365,6 +369,9 @@ export default () => {
 						gameBoosts={gameBoosts}
 						bettingPrefs={{
 							bettingEnabled: prefs.bettingEnabled,
+						}}
+						weatherPrefs={{
+							temperatureUnit: prefs.temperatureUnit,
 						}}
 						onSetGameBoost={onSetGameBoost}
 						onBack={() => setView('main')}

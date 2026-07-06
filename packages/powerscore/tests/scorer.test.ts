@@ -133,6 +133,98 @@ describe('computePowerScore', () => {
 		expect(normalized.gameBoost).toBe(15);
 	});
 
+	test('passes through postseasonBoost when provided with overflow', () => {
+		const normalized = normalizePowerScoreResult({
+			gameId: 'postseason-test',
+			closeness: 25,
+			lateGame: 20,
+			momentum: 15,
+			leadChanges: 10,
+			comeback: 6,
+			baseTotal: 76,
+			favoriteBonus: 0,
+			favoriteTeamCount: 0,
+			gameBoost: 0,
+			postseasonBoost: 5,
+			total: 81,
+			reason: 'postseason (+5)',
+		}, { allowTotalOverflow: true });
+
+		expect(normalized.total).toBe(81);
+		expect(normalized.postseasonBoost).toBe(5);
+		expect(normalized.baseTotal).toBe(76);
+	});
+
+	test('postseasonBoost is absent when not provided', () => {
+		const normalized = normalizePowerScoreResult({
+			gameId: 'no-postseason',
+			closeness: 20,
+			lateGame: 10,
+			momentum: 5,
+			leadChanges: 0,
+			comeback: 0,
+			total: 35,
+			reason: 'best game available',
+		});
+
+		expect(normalized.postseasonBoost).toBeUndefined();
+	});
+
+	test('clamps negative postseasonBoost to zero', () => {
+		const normalized = normalizePowerScoreResult({
+			gameId: 'negative-postseason',
+			closeness: 20,
+			lateGame: 10,
+			momentum: 5,
+			leadChanges: 0,
+			comeback: 0,
+			postseasonBoost: -3,
+			total: 35,
+			reason: 'postseason',
+		}, { allowTotalOverflow: true });
+
+		expect(normalized.postseasonBoost).toBe(0);
+	});
+
+	test('rounds fractional postseasonBoost to nearest integer', () => {
+		const normalized = normalizePowerScoreResult({
+			gameId: 'fractional-postseason',
+			closeness: 20,
+			lateGame: 10,
+			momentum: 5,
+			leadChanges: 0,
+			comeback: 0,
+			postseasonBoost: 4.7,
+			total: 40,
+			reason: 'postseason',
+		}, { allowTotalOverflow: true });
+
+		expect(normalized.postseasonBoost).toBe(5);
+	});
+
+	test('stacks postseasonBoost alongside favoriteBonus and gameBoost with overflow', () => {
+		const normalized = normalizePowerScoreResult({
+			gameId: 'all-bonuses',
+			closeness: 30,
+			lateGame: 25,
+			momentum: 20,
+			leadChanges: 15,
+			comeback: 10,
+			baseTotal: 100,
+			favoriteBonus: 10,
+			favoriteTeamCount: 1,
+			gameBoost: 8,
+			postseasonBoost: 5,
+			total: 123,
+			reason: 'favorite bonus (+10), game boost (+8), postseason (+5)',
+		}, { allowTotalOverflow: true });
+
+		expect(normalized.total).toBe(123);
+		expect(normalized.favoriteBonus).toBe(10);
+		expect(normalized.gameBoost).toBe(8);
+		expect(normalized.postseasonBoost).toBe(5);
+	});
+
 	test('returns zeroed score for intermission games', () => {
 		const game = makeGame({ intermission: true });
 		expect(computePowerScore(game, makeHistory([[80, 78], [82, 78], [84, 78]]))).toEqual({

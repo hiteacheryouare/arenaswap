@@ -47,6 +47,7 @@ export interface PowerScoreResult {
 	favoriteTeamCount?: number;
 	gameBoost?: number;
 	scoringOpportunityBoost?: number;
+	postseasonBoost?: number;
 }
 
 /** Inning anchors for baseball's near-linear late-game ramp (clock sports derive theirs from the
