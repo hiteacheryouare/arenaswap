@@ -14,15 +14,15 @@
 			"outputs": [".output/**"]
 		},
 		"zip": {
-			"dependsOn": ["^build"],
+			"dependsOn": ["build"],
 			"outputs": [".output/*.zip"]
 		},
 		"zip:firefox": {
-			"dependsOn": ["^build"],
+			"dependsOn": ["build"],
 			"outputs": [".output/*.zip"]
 		},
 		"zip:edge": {
-			"dependsOn": ["^build"],
+			"dependsOn": ["build"],
 			"outputs": [".output/*.zip"]
 		},
 		"dev": {
@@ -30,13 +30,12 @@
 			"cache": false,
 			"dependsOn": ["^build"]
 		},
-		"test": {},
+		"test": {
+			"dependsOn": ["^build"]
+		},
 		"typecheck": {
 			"dependsOn": ["^build"]
 		},
-		"lint": {
-			"cache": true,
-			"outputs": []
-		}
+		"lint": {}
 	}
 }
