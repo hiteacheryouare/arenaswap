@@ -31,7 +31,7 @@ const sensitivitySlider = ({ value, onChange }: sensitivitySliderProps) => {
 					className='fw-semibold setting-value-label ludicrous-speed ludicrous-speed-clickable'
 					onClick={() => setShowLudicrous(true)}
 					title='Engage the hyperdrive...'
-					style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', font: 'inherit', color: 'inherit' }}
+					style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: 'inherit' }}
 				>
 					{i18n.t('sensitivity.valueLabel', { label: labels[value]!, gap: sensitivityThresholds[value]! })}
 				</button>

@@ -20,55 +20,23 @@
   }
 }
 
-/* ─── DM Sans ─────────────────────────────────────────────────────────────── */
-@font-face {
-	font-family: 'DM Sans';
-	src: url('/fonts/DMSans-Regular.woff2') format('woff2');
-	font-weight: 400;
-	font-style: normal;
-	font-display: swap;
+/* ─── Fonts ───────────────────────────────────────────────────────────────── */
+@mixin woff2-face($family, $file, $weight) {
+	@font-face {
+		font-family: $family;
+		src: url('/fonts/#{$file}.woff2') format('woff2');
+		font-weight: $weight;
+		font-style: normal;
+		font-display: swap;
+	}
 }
 
-@font-face {
-	font-family: 'DM Sans';
-	src: url('/fonts/DMSans-Medium.woff2') format('woff2');
-	font-weight: 500;
-	font-style: normal;
-	font-display: swap;
-}
-
-@font-face {
-	font-family: 'DM Sans';
-	src: url('/fonts/DMSans-SemiBold.woff2') format('woff2');
-	font-weight: 600;
-	font-style: normal;
-	font-display: swap;
-}
-
-@font-face {
-	font-family: 'DM Sans';
-	src: url('/fonts/DMSans-Bold.woff2') format('woff2');
-	font-weight: 700;
-	font-style: normal;
-	font-display: swap;
-}
-
-/* ─── Lekton (clock / monospace) ──────────────────────────────────────────── */
-@font-face {
-	font-family: 'Lekton';
-	src: url('/fonts/Lekton-Regular.woff2') format('woff2');
-	font-weight: 400;
-	font-style: normal;
-	font-display: swap;
-}
-
-@font-face {
-	font-family: 'Lekton';
-	src: url('/fonts/Lekton-Bold.woff2') format('woff2');
-	font-weight: 700;
-	font-style: normal;
-	font-display: swap;
-}
+@include woff2-face('DM Sans', 'DMSans-Regular', 400);
+@include woff2-face('DM Sans', 'DMSans-Medium', 500);
+@include woff2-face('DM Sans', 'DMSans-SemiBold', 600);
+@include woff2-face('DM Sans', 'DMSans-Bold', 700);
+@include woff2-face('Lekton', 'Lekton-Regular', 400);
+@include woff2-face('Lekton', 'Lekton-Bold', 700);
 
 *, *::before, *::after {
 	font-family: 'DM Sans', system-ui, sans-serif;
@@ -77,15 +45,15 @@
 
 /* ─── Ludicrous Speed ─────────────────────────────────────────────────────── */
 @keyframes ludicrousSpeed {
-	0%   { color: #ff4500; text-shadow: 0 0 6px #ff4500; transform: translateX(0); }
-	12%  { color: #ff8c00; text-shadow: 0 0 10px #ff8c00; transform: translateX(-0.5px); }
-	25%  { color: #ffd700; text-shadow: 0 0 14px #ffd700; transform: translateX(0.5px); }
-	37%  { color: #ffffff; text-shadow: 0 0 18px #fff, 0 0 28px #ff8c00; transform: translateX(-0.5px); }
-	50%  { color: #00e5ff; text-shadow: 0 0 14px #00e5ff; transform: translateX(0.5px); }
-	62%  { color: #ff00ff; text-shadow: 0 0 10px #ff00ff; transform: translateX(-0.5px); }
-	75%  { color: #ffd700; text-shadow: 0 0 14px #ffd700; transform: translateX(0.5px); }
-	87%  { color: #ff8c00; text-shadow: 0 0 10px #ff8c00; transform: translateX(-0.5px); }
-	100% { color: #ff4500; text-shadow: 0 0 6px #ff4500; transform: translateX(0); }
+	0%   { color: #ff4500; text-shadow: 0 0 6px #ff4500; }
+	12%  { color: #ff8c00; text-shadow: 0 0 10px #ff8c00 }
+	25%  { color: #ffd700; text-shadow: 0 0 14px #ffd700 }
+	37%  { color: #ffffff; text-shadow: 0 0 18px #fff, 0 0 28px #ff8c00; }
+	50%  { color: #00e5ff; text-shadow: 0 0 14px #00e5ff; }
+	62%  { color: #ff00ff; text-shadow: 0 0 10px #ff00ff; }
+	75%  { color: #ffd700; text-shadow: 0 0 14px #ffd700; }
+	87%  { color: #ff8c00; text-shadow: 0 0 10px #ff8c00; }
+	100% { color: #ff4500; text-shadow: 0 0 6px #ff4500; }
 }
 
 .ludicrous-speed {

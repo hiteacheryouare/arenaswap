@@ -20,7 +20,7 @@ class ErrorBoundary extends Component<errorBoundaryProps, errorBoundaryState> {
 		if (this.state.error) {
 			return (
 				<div className='popup-container d-flex flex-column align-items-center justify-content-center gap-3 text-center'>
-					<img src='/images/full_logo_white_on_transparent.png' alt='ArenaSwap' className='arenaswap-logo mb-1' />
+					<img src='/images/full_logo_white_on_transparent.svg' alt='ArenaSwap' className='arenaswap-logo mb-1' />
 					<div>
 						<i className='bi bi-exclamation-triangle-fill text-danger fs-3' />
 						<div className='fw-bold mt-2'>Something went wrong.</div>

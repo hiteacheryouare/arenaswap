@@ -109,7 +109,7 @@ const onboardingView = ({ leagueLogos, onComplete, onStartWalkthrough }: onboard
 					<div className='popup-container d-flex flex-column'>
 						<div className='onb-logo-wrap d-flex justify-content-center pt-4 pb-3'>
 							<img
-								src='/images/full_logo_white_on_transparent.png'
+								src='/images/full_logo_white_on_transparent.svg'
 								alt='ArenaSwap'
 								className='arenaswap-logo'
 							/>

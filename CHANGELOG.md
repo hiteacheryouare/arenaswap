@@ -1,5 +1,50 @@
 # Changelog
 
+## SCSS refactor: mixins, loops, and nesting — 2026-07-05
+
+Improved all three SCSS source files by leveraging SCSS features where they reduce repetition without sacrificing readability.
+
+**`apps/docs/src/styles/global.scss`**
+- `@mixin woff2-face` replaces 6 identical `@font-face` blocks (42 lines → 16)
+- `@for` loop generates `.reveal-delay-1` through `-5` (uniform `0.1s * $i` pattern)
+- `@for` loop generates `.hero-word-1` through `-4` (base `0.1s + ($i-1)*0.12s` stagger)
+- `$ps-signal-colors` map + `@each` generates `.ps-signal-card-green/orange/blue/yellow/pink`
+- `@for` loop generates `.lv-logo-delay-1` through `-5` (`($i-1)*0.8s`)
+- Combined `@for` generates both `.lv-track-*` and `.lv-track-out-*` in one pass
+- `.accordion-button::after` and `:not(.collapsed)::after` deduplicated into one nested rule
+
+**`apps/extension/assets/global.scss`**
+- `@mixin woff2-face` replaces 6 `@font-face` blocks (48 lines → 16)
+
+**`apps/extension/assets/bootstrap.scss`**
+- `@for` loop generates `.sensitivity-tick-0` through `-6` using `percentage($i / 6)`
+- `.game-detail-back-button:hover` nested into `.game-detail-back-button`
+- `.game-detail-shell .game-meta-*` descendants nested inside `.game-detail-shell`
+
+## Hero canvas: data labels + spread fix — 2026-07-05
+
+Overhauled the hero particle animation's drift phase with two major improvements.
+
+**Anti-clustering spread:**
+- Replaced toroidal wrap with wall bounce — particles now visibly collide with the screen edges and scatter back, breaking up corner clusters
+- Reduced explosion velocity (max ~22 px/frame → ~13 px/frame) so fewer particles slam simultaneously into the same edge
+- Added inter-anchor-node repulsion during drift (O(N_ANCHOR²) ≈ 3,160 checks/frame) to actively push the large visible nodes apart
+- Removed mouse repulsion from drift phase
+
+**Data label overlay:**
+- 16 real matchup labels (NFL, NBA, NCAAB, MLB, EPL, UCL, NHL, MLS) appear and fade during drift, each with a gray "context" line (raw data) and an orange "signal" line (POWERSCORE, CLOSENESS, COMEBACK, etc.) — visually reinforcing the raw data → insight transformation narrative
+- Labels connect to the nearest anchor particle with a dashed orange line
+- Up to 4 labels on screen at a time; each fades in (480ms), holds (2.2–4s), fades out; new ones spawn every 2s
+
+## Replace logo PNGs with SVGs — 2026-07-05
+
+Replaced raster logo images with vector SVGs across the extension popup and docs site for crisper rendering at any resolution.
+
+- Created `full_logo_white_on_transparent.svg` and `icon_white_on_transparent.svg` from the new vectorized source SVGs (white fill, transparent background)
+- Updated 6 extension popup components (`errorBoundary`, `mainView`, `onboardingView`, `onboardingTabControl`, `walkthroughView`, `walkthroughStepToggle`) from `.png` to `.svg`
+- Updated 5 docs components/pages (`Nav`, `Footer`, `Hero`, `Leagues`, and screenshot pages 1–3) from `.png` to `.svg`
+- Source SVGs (`full_logo_black.svg`, `icon_black_on_white.svg`, `full_logo_white_on_black.svg`, etc.) are preserved unmodified
+
 ## Show "Watch:" broadcast networks on live game cards — 2026-07-02
 
 Live game cards now display the "Watch: ESPN • NBC" line beneath the score, matching the behavior already shown in the game detail view. Upcoming (pre-game) cards continue to hide broadcasts as before. Single-line fix: removed the `hideBroadcasts` prop from `GameMeta` in `liveGameCard.tsx`.

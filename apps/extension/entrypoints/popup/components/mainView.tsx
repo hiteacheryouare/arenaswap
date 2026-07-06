@@ -213,7 +213,7 @@ const mainView = ({
 	return (
 		<div className='popup-container d-flex flex-column'>
 			<div className='d-flex justify-content-between align-items-center mb-2 pb-2'>
-				<img src='/images/full_logo_white_on_transparent.png' alt='ArenaSwap' className='arenaswap-logo' />
+				<img src='/images/full_logo_white_on_transparent.svg' alt='ArenaSwap' className='arenaswap-logo' />
 				<div className='d-flex align-items-center gap-2'>
 					<button className='btn btn-sm p-0 popup-settings-button' onClick={onStartWalkthrough} title={i18n.t('main.tourButton')} aria-label={i18n.t('main.tourButton')}>
 						<i className='bi bi-question-circle popup-settings-icon' />

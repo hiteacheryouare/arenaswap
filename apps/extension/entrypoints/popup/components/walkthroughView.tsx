@@ -30,7 +30,7 @@ const DoneScreen = ({ onComplete }: { onComplete: () => void }) => {
 	return (
 		<div className='popup-container d-flex flex-column align-items-center justify-content-center text-center gap-3'>
 			<img
-				src='/images/full_logo_white_on_transparent.png'
+				src='/images/full_logo_white_on_transparent.svg'
 				alt='ArenaSwap'
 				className='arenaswap-logo mb-2'
 			/>

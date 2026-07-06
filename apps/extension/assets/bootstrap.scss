@@ -644,13 +644,9 @@ $bootstrap-icons-font-dir: '/fonts';
 	white-space: nowrap;
 }
 
-.sensitivity-tick-0 { left: 0%; }
-.sensitivity-tick-1 { left: 16.666666%; }
-.sensitivity-tick-2 { left: 33.333333%; }
-.sensitivity-tick-3 { left: 50%; }
-.sensitivity-tick-4 { left: 66.666666%; }
-.sensitivity-tick-5 { left: 83.333333%; }
-.sensitivity-tick-6 { left: 100%; }
+@for $i from 0 through 6 {
+	.sensitivity-tick-#{$i} { left: percentage($i / 6); }
+}
 
 .league-toggle-logo-fallback {
 	width:          36px;
@@ -1099,13 +1095,13 @@ $pre-game-time-color: shade-color($warning, 60%);
 
 .game-detail-shell {
 	background: #0d1117;
-}
 
-.game-detail-shell .game-meta-venue,
-.game-detail-shell .game-meta-networks,
-.game-detail-shell .game-meta-odds,
-.game-detail-shell .game-meta-provider {
-	color: #c6ced8;
+	.game-meta-venue,
+	.game-meta-networks,
+	.game-meta-odds,
+	.game-meta-provider {
+		color: #c6ced8;
+	}
 }
 
 .game-detail-header {
@@ -1125,11 +1121,11 @@ $pre-game-time-color: shade-color($warning, 60%);
 	color: #e6edf3;
 	background: #111827;
 	font-size: 0.68rem;
-}
 
-.game-detail-back-button:hover {
-	background: #1f2937;
-	color: #fff;
+	&:hover {
+		background: #1f2937;
+		color: #fff;
+	}
 }
 
 .game-detail-title {

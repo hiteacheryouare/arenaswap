@@ -20,7 +20,7 @@ const walkthroughStepToggle = ({ onNext }: walkthroughStepToggleProps) => {
 			<div className='border border-secondary-subtle rounded p-2 mb-3'>
 				<div className='d-flex justify-content-between align-items-center mb-1'>
 					<img
-						src='/images/full_logo_white_on_transparent.png'
+						src='/images/full_logo_white_on_transparent.svg'
 						alt='ArenaSwap'
 						className='arenaswap-logo'
 					/>
