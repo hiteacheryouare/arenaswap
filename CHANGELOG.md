@@ -1,5 +1,45 @@
 # Changelog
 
+## PowerScore-driven adaptive polling — 2026-07-06
+
+Replaces the flat 15-second eager poll interval with a continuous PowerScore-based schedule. The more exciting the live game, the sooner the league polls again — concentrating API budget on moments that matter without increasing total request volume.
+
+### Polling mode hierarchy
+
+| State | Condition | Interval |
+|---|---|---|
+| Eager | Live game, PowerScore 100 | ~6s |
+| Eager | Live game, PowerScore 50 | ~15.5s |
+| Eager | Live game, PowerScore 0 | ~25s |
+| Intermission | All live games in halftime/break | ~40s |
+| Dormant | 2 consecutive empty polls | 120–180s (unchanged) |
+| Error | Fetch failure | ~15s (unchanged) |
+
+Jitter now scales proportionally — fast (critical) polls stay tight (±500ms), slow polls spread more (±2s).
+
+**`packages/core/src/pollIntervalComputer.ts`** *(new)*
+- `computeEagerIntervalMs(score)` — linear interpolation from PowerScore (0–100) to interval (25s→6s)
+- `computeLeagueIntervalMs(liveGames, currentScores)` — picks the highest-scoring active game in the league to set the pace; returns `pollIntermissionMs` when all live games have `intermission === true`
+
+**`packages/core/src/constants.ts`**
+- Added `pollMinEagerMs = 6_000`, `pollMaxEagerMs = 25_000`, `pollIntermissionMs = 40_000`
+- `pollIntervalMs = 15_000` retained for initial stagger, demo mode, and error fallback
+
+**`packages/core/src/index.ts`**
+- Exports `computeEagerIntervalMs`, `computeLeagueIntervalMs`, and the three new interval constants
+
+**`apps/extension/entrypoints/background.ts`**
+- `tickLeague` replaces the hardcoded `pollIntervalMs + jitter` with a call to `computeLeagueIntervalMs` using the previous poll's `currentScores` (available in closure scope at reschedule time)
+- Dormant and error-fallback branches are unchanged
+
+**`packages/core/tests/pollIntervalComputer.test.ts`** *(new)*
+- 13 unit tests: boundary clamping, midpoint accuracy, intermission detection, multi-game max-score selection, empty-scores fallback, scores-exceeding-100 clamping
+
+**Marketing & docs**
+- `apps/extension/marketing/desc_long.md`, `short_summary_chrome.txt`, `short_summary_edge_ff.txt` — replaced "every 15 seconds" with adaptive-polling copy; frames "as often as every 6 seconds during tense moments" as a feature
+- `apps/docs/src/content/blog/introducing-v2.mdx` — updated polling section and table to reflect the three-tier hierarchy
+- `apps/docs/src/components/LivePowerScores.tsx` — removed hardcoded "every 15 seconds" from the no-games copy
+
 ## Add @arenaswap/ui shared design-system package — 2026-07-06
 
 Created `packages/ui` as the single source of truth for the ArenaSwap brand tokens, eliminating duplication of colors, Bootstrap overrides, and font declarations across the docs site and browser extension.

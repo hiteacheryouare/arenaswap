@@ -1,13 +1,13 @@
 Never miss the moment.
 
-ArenaSwap is a free, open-source browser extension that watches every live game across 30+ sports leagues and automatically switches your browser tab to the most exciting one — every 15 seconds. Think NFL RedZone, but for every sport, every night, on whatever streaming service you already pay for.
+ArenaSwap is a free, open-source browser extension that watches every live game across 30+ sports leagues and automatically switches your browser tab to the most exciting one. Think NFL RedZone, but for every sport, every night, on whatever streaming service you already pay for.
 
 ━━━━━━━━━━━━━━━━━━━━━━
 HOW IT WORKS
 ━━━━━━━━━━━━━━━━━━━━━━
 1. Open your streams. Pull up your games in separate browser tabs — ESPN+, Peacock, Paramount+, YouTube TV, Hulu, or any other browser-based stream.
 2. Assign each tab once. Open the ArenaSwap popup, find each live game in the list, and connect it to its tab with a single dropdown.
-3. Walk away. Every 15 seconds, ArenaSwap scores every live game and switches you to the best one. The right tab is unmuted, the others are silenced — so you always hear the right broadcast.
+3. Walk away. ArenaSwap continuously scores every live game and switches you to the best one — checking as often as every 6 seconds when things get tense, slower during quieter moments. The right tab is unmuted, the others are silenced — so you always hear the right broadcast.
 
 
 ━━━━━━━━━━━━━━━━━━━━━━

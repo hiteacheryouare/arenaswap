@@ -178,8 +178,11 @@ const parseOdds = (competition: EspnCompetition): GameOdds | undefined => {
 
 const parseWeather = (event: EspnEvent): GameCondition | undefined => {
 	const w = event.weather;
-	if (!w || typeof w.temperature !== 'number' || !w.displayValue?.trim()) return undefined;
-	return { temperatureF: Math.round(w.temperature), conditionLabel: w.displayValue.trim() };
+	if (!w || typeof w.temperature !== 'number') return undefined;
+	// ESPN inconsistently puts the text label in either displayValue or conditionId
+	const label = [w.displayValue, w.conditionId].find(v => v?.trim() && !/^\d+$/.test(v.trim()));
+	if (!label) return undefined;
+	return { temperatureF: Math.round(w.temperature), conditionLabel: label.trim() };
 };
 
 const downOrdinals = ['', '1st', '2nd', '3rd', '4th'] as const;

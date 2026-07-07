@@ -210,7 +210,7 @@ const LivePowerScores = () => {
 			<div className='feature-card'>
 				<span className='fw-semibold mb-3 d-block'>No live games right now</span>
 				<p className='mb-0 section-sub'>
-					When games go live, this section will auto-refresh every 15 seconds and show real-time PowerScores across all supported leagues.
+					When games go live, this section will auto-refresh and show real-time PowerScores across all supported leagues.
 				</p>
 			</div>
 		);

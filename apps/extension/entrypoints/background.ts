@@ -1,5 +1,5 @@
 import { randomInRange } from '@porkyproductions/hat';
-import { fetchGamesWithLeagueLogos, computePowerScore, computeScoringOpportunityBoost, normalizePowerScoreResult, MockGameSimulator, createPollModeTracker, isObjectRecord, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts } from '@arenaswap/core';
+import { fetchGamesWithLeagueLogos, computePowerScore, computeScoringOpportunityBoost, normalizePowerScoreResult, MockGameSimulator, createPollModeTracker, isObjectRecord, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts, computeLeagueIntervalMs } from '@arenaswap/core';
 import { computeStandbyStreamDecision } from '../utils/standbyStreamLogic';
 import { loadStoredUserPreferences, persistStoredUserPreferences } from '../utils/prefsStorage';
 import {
@@ -15,6 +15,7 @@ import {
 	pollIntervalMs,
 	pollDormantMinMs,
 	pollDormantMaxMs,
+	pollMaxEagerMs,
 	maxHistorySnapshots,
 	sensitivityThresholds,
 	sportTypeConfigMap,
@@ -472,10 +473,10 @@ export default defineBackground(() => {
 	};
 
 	// Fetch a single league and merge results into shared state, then reschedule.
-	// Each league runs on its own pollIntervalMs rhythm with ±2s jitter to
-	// continuously spread requests across the window and prevent thundering herds.
-	// When a league has returned no live games for pollDormantThresholdPolls consecutive
-	// fetches it switches to dormant mode and polls every 2-3 min instead.
+	// Each league runs on an adaptive interval driven by the highest live PowerScore
+	// in the league: exciting games (high score) poll every ~6s; quiet live games
+	// poll every ~25s. Intermission (halftime/between-periods) uses 40s. Leagues
+	// with no live games use dormant mode (2-3 min). ±jitter prevents thundering herds.
 	const tickLeague = async (leagueId: LeagueId, allowTabSwitch: boolean) => {
 		let fetchSucceeded = false;
 		try {
@@ -496,9 +497,18 @@ export default defineBackground(() => {
 		// On error fall back to eager interval so we retry promptly.
 		// Guard against rescheduling a league that was disabled while this fetch was in flight.
 		if (!demoMode && prefs.enabledLeagues.includes(leagueId)) {
-			const nextInterval = fetchSucceeded && pollModeTracker.getMode(leagueId) === 'dormant'
-				? pollDormantMinMs + randomInRange(0, pollDormantMaxMs - pollDormantMinMs)
-				: pollIntervalMs + randomInRange(-2_000, 2_000);
+			let nextInterval: number;
+			if (fetchSucceeded && pollModeTracker.getMode(leagueId) === 'dormant') {
+				nextInterval = pollDormantMinMs + randomInRange(0, pollDormantMaxMs - pollDormantMinMs);
+			} else if (fetchSucceeded) {
+				const liveLeagueGames = games.filter(g => g.league === leagueId && g.status === 'in');
+				const base = computeLeagueIntervalMs(liveLeagueGames, currentScores);
+				// Scale jitter proportionally so fast (critical) polls stay dense and slow polls have more spread.
+				const jitterMax = Math.round((base / pollMaxEagerMs) * 2_000);
+				nextInterval = base + randomInRange(-jitterMax, jitterMax);
+			} else {
+				nextInterval = pollIntervalMs + randomInRange(-2_000, 2_000);
+			}
 			scheduleLeagueTick(leagueId, nextInterval);
 		}
 

@@ -46,6 +46,16 @@ export const pollDormantThresholdPolls = 2;
 export const pollDormantMinMs = 120_000;
 export const pollDormantMaxMs = 180_000;
 
+// Adaptive eager polling bounds — interval scales continuously with PowerScore.
+// pollIntervalMs (15s) is kept for initial stagger, demo mode, and fallback.
+// High PowerScore → pollMinEagerMs; low PowerScore → pollMaxEagerMs.
+// All live games are polled at least every pollMaxEagerMs so a boring game can
+// still catch a momentum shift. When all games in a league are in
+// halftime/intermission, pollIntermissionMs is used instead.
+export const pollMinEagerMs = 6_000;
+export const pollMaxEagerMs = 25_000;
+export const pollIntermissionMs = 40_000;
+
 // Switch behavior defaults
 export const defaultSensitivity = 4 as const;
 export const defaultCooldownSecs = 45;

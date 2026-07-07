@@ -1,4 +1,5 @@
 export { fetchGames, fetchLiveGames, fetchLeagueLogos, fetchGamesWithLeagueLogos, fetchTeamsForLeagues } from './apiClient';
+export { computeEagerIntervalMs, computeLeagueIntervalMs, pollMinEagerMs, pollMaxEagerMs, pollIntermissionMs } from './pollIntervalComputer';
 export type { EspnTeamEntry } from './apiClient';
 export { computePowerScore, computeScoringOpportunityBoost, normalizePowerScoreResult } from 'powerscore';
 export { MockGameSimulator } from './mockGames';

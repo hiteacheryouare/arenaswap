@@ -39,7 +39,7 @@ The original scorer had three signals. v2 has five.
 
 **Late-Game Pressure** scales toward the end of a game and amplifies the closeness signal. In overtime it gets an additional boost. This one is gated on closeness — a late blowout doesn't get the bonus.
 
-**Momentum** is new in v2. It looks at the score history over the last ~5 minutes (20 snapshots at a 15-second poll interval) and weights recent scoring events. The decay function is intentional — a run from 3 minutes ago matters, but it shouldn't still be dominating the score now.
+**Momentum** is new in v2. It looks at the score history over the last ~5 minutes (20 snapshots taken as polls come in) and weights recent scoring events. The decay function is intentional — a run from 3 minutes ago matters, but it shouldn't still be dominating the score now.
 
 **Lead Changes** tracks how often possession of the lead has flipped. A game that's been trading leads all fourth quarter reads differently than a game that's been close but static. This signal resets per period so it's always measuring the current half/quarter/period, not the whole game.
 
@@ -97,15 +97,18 @@ The stall counter resets on any confirmed clock change, regardless of direction.
 
 ## Polling and dormancy
 
-Every enabled league runs on its own 15-second poll cycle with ±2 seconds of jitter. The jitter matters — without it, you get a thundering herd problem where every league fires at the same time and you're hammering the ESPN API with 31 simultaneous requests every quarter minute.
+Every enabled league runs on its own adaptive poll cycle. The interval scales continuously with PowerScore — exciting games poll every ~6 seconds; quiet live games poll every ~25 seconds. The jitter matters — without it, you get a thundering herd problem where every league fires at the same time and you're hammering the ESPN API with 31 simultaneous requests every quarter minute.
 
-When a league returns no live games for two consecutive polls, it switches into dormant mode and backs off to a 2–3 minute interval. This is what makes it reasonable to have 31 leagues enabled by default. If no NBA games are live on a Tuesday night in July, the NBA poller wakes up every few minutes to check, not every 15 seconds.
+When all live games in a league are in halftime or between periods, the league backs off to a 40-second intermission interval. When a league returns no live games for two consecutive polls, it switches into full dormant mode and backs off to a 2–3 minute interval. This is what makes it reasonable to have 31 leagues enabled by default. If no NBA games are live on a Tuesday night in July, the NBA poller wakes up every few minutes to check.
 
-The thresholds:
+The tiers:
 
 | State | Condition | Poll interval |
 |---|---|---|
-| Active | Live games exist | 15s ± 2s jitter |
+| Eager | Live game, PowerScore ≥ 100 | ~6s |
+| Eager | Live game, PowerScore 50 | ~15s |
+| Eager | Live game, PowerScore 0 | ~25s |
+| Intermission | All live games in halftime/break | ~40s |
 | Dormant | 2 consecutive empty polls | 120–180s |
 | Error | Fetch failure | ~15s (eager retry) |
 
