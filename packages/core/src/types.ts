@@ -187,6 +187,31 @@ export interface SetStandbyStreamTabMessage {
 	tabId: number | null;
 }
 
+export interface GetDebugStateMessage {
+	type: 'GET_DEBUG_STATE';
+}
+
+export interface DebugState {
+	pollModes: Record<string, 'eager' | 'dormant'>;
+	leagueIntervals: Record<string, number>;
+	demoMode: boolean;
+	lastSwitchTime: number;
+	pendingSwitch: { gameId: string; tabId: number; reason?: string } | null;
+	liveGameCount: number;
+	upcomingGameCount: number;
+	totalGameCount: number;
+	tabRegistry: TabRegistration[];
+	onStandbyStream: boolean;
+	standbyStreamTabId: number | null;
+	clockStalls: Record<string, { lastClock: number; stallCount: number }>;
+	scores: PowerScoreResult[];
+	gameLabels: Record<string, string>;
+	enabledLeagues: string[];
+	sensitivity: number;
+	cooldownSeconds: number;
+	switchDelaySeconds: number;
+}
+
 export type ExtensionMessage =
 	| ScoresUpdatedMessage
 	| UpdatePrefsMessage
@@ -194,4 +219,5 @@ export type ExtensionMessage =
 	| SetGameBoostMessage
 	| GetStateMessage
 	| SetDemoModeMessage
-	| SetStandbyStreamTabMessage;
+	| SetStandbyStreamTabMessage
+	| GetDebugStateMessage;

@@ -15,14 +15,14 @@
 import { MockGameSimulator } from '../../packages/core/src/mockGames';
 import { computePowerScore } from '../../packages/powerscore/src/scorer';
 import { sportTypeConfigMap } from '../../packages/powerscore/src/constants';
-import { maxHistorySnapshots as defaultMaxSnapshots } from '../../packages/core/src/constants';
+import { historyWindowMs as defaultHistoryWindowMs } from '../../packages/core/src/constants';
 import type { Game, ScoreSnapshot } from '../../packages/powerscore/src/types';
 
 const pollIntervalMs = 15_000;
 const ticks = Math.max(1_000, Number(process.argv[2]) || 40_000);
 
-const maxSnapshotsFor = (game: Game): number => (
-	sportTypeConfigMap[game.sportType]?.maxHistorySnapshots ?? defaultMaxSnapshots
+const historyWindowMsFor = (game: Game): number => (
+	sportTypeConfigMap[game.sportType]?.historyWindowMs ?? defaultHistoryWindowMs
 );
 
 const percentile = (sortedValues: number[], p: number): number => {
@@ -81,7 +81,8 @@ for (let tick = 0; tick < ticks; tick++) {
 	for (const game of games) {
 		const snapshots = history.get(game.id) ?? [];
 		snapshots.push({ gameId: game.id, timestamp: now, homeScore: game.homeTeam.score, awayScore: game.awayTeam.score });
-		if (snapshots.length > maxSnapshotsFor(game)) snapshots.shift();
+		const cutoff = now - historyWindowMsFor(game);
+		while (snapshots.length > 1 && snapshots[0]!.timestamp < cutoff) snapshots.shift();
 		history.set(game.id, snapshots);
 	}
 }

@@ -16,11 +16,12 @@ import {
 	pollDormantMinMs,
 	pollDormantMaxMs,
 	pollMaxEagerMs,
-	maxHistorySnapshots,
+	historyWindowMs,
 	sensitivityThresholds,
 	sportTypeConfigMap,
 } from '@arenaswap/core/constants';
 import type {
+	DebugState,
 	ExtensionMessage,
 	Game,
 	LeagueId,
@@ -55,9 +56,9 @@ const getFavoriteTeamCount = (game: Game, favoriteTeamIds: Set<string>): number 
 	return count;
 };
 
-const getMaxSnapshotsForGame = (game: Game): number => {
+const getHistoryWindowMsForGame = (game: Game): number => {
 	const sportConfig = sportTypeConfigMap[game.sportType] ?? sportTypeConfigMap.basketball;
-	return sportConfig.maxHistorySnapshots ?? maxHistorySnapshots;
+	return sportConfig.historyWindowMs ?? historyWindowMs;
 };
 
 const capitalizeFirst = (s: string) => s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
@@ -78,6 +79,8 @@ export default defineBackground(() => {
 	let lastSwitchTime = 0;
 	// Per-league timeouts for staggered live polling
 	const leagueTimers = new Map<string, ReturnType<typeof setTimeout>>();
+	// Last scheduled interval per league (ms), for debug visibility
+	const leagueNextIntervalMs = new Map<string, number>();
 	const pollModeTracker = createPollModeTracker();
 	// Interval used only in demo mode
 	let demoTimer: ReturnType<typeof setInterval> | null = null;
@@ -97,39 +100,53 @@ export default defineBackground(() => {
 		if (isObjectRecord(storedScoreHistory)) {
 			Object.entries(storedScoreHistory).forEach(([gameId, snapshots]) => {
 				if (!Array.isArray(snapshots)) return;
-				const normalizedSnapshots = snapshots.filter(isScoreSnapshotLike).slice(-maxHistorySnapshots);
-				if (normalizedSnapshots.length === 0) return;
-				history.set(gameId, normalizedSnapshots);
+				const valid = snapshots.filter(isScoreSnapshotLike);
+				if (valid.length === 0) return;
+				const newestTs = valid[valid.length - 1]!.timestamp;
+				const game = games.find(g => g.id === gameId);
+				const windowMs = game ? getHistoryWindowMsForGame(game) : historyWindowMs;
+				const cutoff = newestTs - windowMs;
+				const trimmed = valid.filter(s => s.timestamp >= cutoff);
+				if (trimmed.length === 0) return;
+				history.set(gameId, trimmed);
 			});
 		}
 
 		if (isObjectRecord(storedPowerScoreHistory)) {
 			Object.entries(storedPowerScoreHistory).forEach(([gameId, snapshots]) => {
 				if (!Array.isArray(snapshots)) return;
-				const normalizedSnapshots = snapshots.filter(isPowerScoreSnapshotLike).slice(-maxHistorySnapshots);
-				if (normalizedSnapshots.length === 0) return;
-				powerScoreHistory.set(gameId, normalizedSnapshots);
+				const valid = snapshots.filter(isPowerScoreSnapshotLike);
+				if (valid.length === 0) return;
+				const newestTs = valid[valid.length - 1]!.timestamp;
+				const game = games.find(g => g.id === gameId);
+				const windowMs = game ? getHistoryWindowMsForGame(game) : historyWindowMs;
+				const cutoff = newestTs - windowMs;
+				const trimmed = valid.filter(s => s.timestamp >= cutoff);
+				if (trimmed.length === 0) return;
+				powerScoreHistory.set(gameId, trimmed);
 			});
 		}
 	};
 
 
 	const updateHistory = (currentGames: Game[]) => {
+		const now = Date.now();
 		currentGames.forEach(game => {
 			const snapshots = history.get(game.id) ?? [];
 			snapshots.push({
 				gameId: game.id,
-				timestamp: Date.now(),
+				timestamp: now,
 				homeScore: game.homeTeam.score,
 				awayScore: game.awayTeam.score,
 			});
-			const maxSnapshots = getMaxSnapshotsForGame(game);
-			if (snapshots.length > maxSnapshots) snapshots.shift();
+			const cutoff = now - getHistoryWindowMsForGame(game);
+			while (snapshots.length > 1 && snapshots[0]!.timestamp < cutoff) snapshots.shift();
 			history.set(game.id, snapshots);
 		});
 	};
 
 	const updatePowerScoreHistory = (liveGames: Game[], scores: PowerScoreResult[], changedLeagueId: LeagueId | null) => {
+		const now = Date.now();
 		const liveGameById = new Map(liveGames.map(game => [game.id, game]));
 		scores.forEach(score => {
 			const game = liveGameById.get(score.gameId);
@@ -139,7 +156,7 @@ export default defineBackground(() => {
 			const snapshots = powerScoreHistory.get(score.gameId) ?? [];
 			snapshots.push({
 				gameId: score.gameId,
-				timestamp: Date.now(),
+				timestamp: now,
 				total: score.total,
 				closeness: score.closeness,
 				lateGame: score.lateGame,
@@ -155,8 +172,8 @@ export default defineBackground(() => {
 				stalled: score.stalled ?? false,
 				reason: score.reason,
 			});
-			const maxSnapshots = getMaxSnapshotsForGame(game);
-			if (snapshots.length > maxSnapshots) snapshots.shift();
+			const cutoff = now - getHistoryWindowMsForGame(game);
+			while (snapshots.length > 1 && snapshots[0]!.timestamp < cutoff) snapshots.shift();
 			powerScoreHistory.set(score.gameId, snapshots);
 		});
 	};
@@ -509,6 +526,7 @@ export default defineBackground(() => {
 			} else {
 				nextInterval = pollIntervalMs + randomInRange(-2_000, 2_000);
 			}
+			leagueNextIntervalMs.set(leagueId, nextInterval);
 			scheduleLeagueTick(leagueId, nextInterval);
 		}
 
@@ -668,6 +686,36 @@ export default defineBackground(() => {
 				standbyStreamTabId = msg.tabId;
 				onStandbyStream = false;
 				await browser.storage.session.set({ standbyStreamTabId });
+			});
+		}
+		if (msg.type === 'GET_DEBUG_STATE') {
+			return stateReady.then((): DebugState => {
+				const gameLabels: Record<string, string> = {};
+				for (const g of games) {
+					gameLabels[g.id] = `${g.awayTeam.abbreviation}·${g.homeTeam.abbreviation}`;
+				}
+				return {
+					pollModes: Object.fromEntries(
+						prefs.enabledLeagues.map(leagueId => [leagueId, pollModeTracker.getMode(leagueId)])
+					),
+					leagueIntervals: Object.fromEntries(leagueNextIntervalMs.entries()),
+					demoMode,
+					lastSwitchTime,
+					pendingSwitch,
+					liveGameCount: games.filter(g => g.status === 'in').length,
+					upcomingGameCount: games.filter(g => g.status === 'pre').length,
+					totalGameCount: games.length,
+					tabRegistry,
+					onStandbyStream,
+					standbyStreamTabId,
+					clockStalls: Object.fromEntries(clockStallMap.entries()),
+					scores: currentScores,
+					gameLabels,
+					enabledLeagues: prefs.enabledLeagues,
+					sensitivity: prefs.sensitivity,
+					cooldownSeconds: prefs.cooldownSeconds,
+					switchDelaySeconds: prefs.switchDelaySeconds,
+				};
 			});
 		}
 	});

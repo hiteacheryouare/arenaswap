@@ -11,7 +11,7 @@
 import { fetchGamesWithLeagueLogos } from '../../packages/core/src/apiClient';
 import { computePowerScore } from '../../packages/powerscore/src/scorer';
 import { sportTypeConfigMap } from '../../packages/powerscore/src/constants';
-import { maxHistorySnapshots as defaultMaxSnapshots } from '../../packages/core/src/constants';
+import { historyWindowMs as defaultHistoryWindowMs } from '../../packages/core/src/constants';
 import { allLeagueIds } from '../../packages/powerscore/src/constants';
 import type { Game, ScoreSnapshot, LeagueId } from '../../packages/powerscore/src/types';
 
@@ -27,8 +27,8 @@ const league: LeagueId = leagueArg;
 
 const sleep = (ms: number) => new Promise<void>(resolve => setTimeout(resolve, ms));
 
-const maxSnapshotsFor = (game: Game): number => (
-	sportTypeConfigMap[game.sportType]?.maxHistorySnapshots ?? defaultMaxSnapshots
+const historyWindowMsFor = (game: Game): number => (
+	sportTypeConfigMap[game.sportType]?.historyWindowMs ?? defaultHistoryWindowMs
 );
 
 const history = new Map<string, ScoreSnapshot[]>();
@@ -62,7 +62,8 @@ const runPoll = async (pollIndex: number): Promise<void> => {
 	for (const game of games) {
 		const snapshots = history.get(game.id) ?? [];
 		snapshots.push({ gameId: game.id, timestamp: now, homeScore: game.homeTeam.score, awayScore: game.awayTeam.score });
-		if (snapshots.length > maxSnapshotsFor(game)) snapshots.shift();
+		const cutoff = now - historyWindowMsFor(game);
+		while (snapshots.length > 1 && snapshots[0]!.timestamp < cutoff) snapshots.shift();
 		history.set(game.id, snapshots);
 	}
 };

@@ -112,7 +112,8 @@ export const sportTypeConfigs: SportTypeConfig[] = [
 		// Basketball scores constantly — short half-lives keep the graph jumpy and reactive.
 		decayHalfLifeMs: { momentum: 45_000, leadChange: 60_000, comeback: 60_000 },
 		otPreBoostWindowSecs: 60,
-		maxHistorySnapshots: 32,
+		// 4 × 60s (max half-life) = 240s; rounded up to 5 min for headroom.
+		historyWindowMs: 300_000,
 	},
 	{
 		id: 'hockey',
@@ -128,7 +129,8 @@ export const sportTypeConfigs: SportTypeConfig[] = [
 		// Goals are rare — long half-lives let a single goal's spike linger across many quiet polls.
 		decayHalfLifeMs: { momentum: 180_000, leadChange: 240_000, comeback: 240_000 },
 		otPreBoostWindowSecs: 60,
-		maxHistorySnapshots: 30,
+		// 4 × 240s (max half-life) = 960s = 16 min.
+		historyWindowMs: 960_000,
 	},
 	{
 		id: 'baseball',
@@ -150,7 +152,8 @@ export const sportTypeConfigs: SportTypeConfig[] = [
 		// Runs cluster by inning — mid-length half-lives. No game clock, so no OT pre-boost window.
 		decayHalfLifeMs: { momentum: 150_000, leadChange: 180_000, comeback: 180_000 },
 		otPreBoostWindowSecs: 0,
-		maxHistorySnapshots: 36,
+		// 4 × 180s (max half-life) = 720s = 12 min.
+		historyWindowMs: 720_000,
 	},
 	{
 		id: 'football',
@@ -166,7 +169,8 @@ export const sportTypeConfigs: SportTypeConfig[] = [
 		// graph alive through those gaps (workshopped ×1.5 vs the other mid-scoring sports).
 		decayHalfLifeMs: { momentum: 135_000, leadChange: 180_000, comeback: 180_000 },
 		otPreBoostWindowSecs: 60,
-		maxHistorySnapshots: 32,
+		// 4 × 180s (max half-life) = 720s = 12 min.
+		historyWindowMs: 720_000,
 	},
 	{
 		// Softball mirrors baseball but has 7 regulation innings — different lateGameCurve thresholds.
@@ -187,7 +191,8 @@ export const sportTypeConfigs: SportTypeConfig[] = [
 		comebackThresholdSmall: 1,
 		decayHalfLifeMs: { momentum: 150_000, leadChange: 180_000, comeback: 180_000 },
 		otPreBoostWindowSecs: 0,
-		maxHistorySnapshots: 36,
+		// 4 × 180s (max half-life) = 720s = 12 min.
+		historyWindowMs: 720_000,
 	},
 	{
 		id: 'soccer',
@@ -204,7 +209,8 @@ export const sportTypeConfigs: SportTypeConfig[] = [
 		// Goals are the rarest of all — the longest half-lives so a goal carries the graph for minutes.
 		decayHalfLifeMs: { momentum: 240_000, leadChange: 300_000, comeback: 300_000 },
 		otPreBoostWindowSecs: 60,
-		maxHistorySnapshots: 40,
+		// 4 × 300s (max half-life) = 1200s = 20 min.
+		historyWindowMs: 1_200_000,
 	},
 ];
 

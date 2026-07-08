@@ -39,7 +39,9 @@ export const appVersion = pkg.version;
 export const appDescription = pkg.description;
 
 export const pollIntervalMs = 15_000;
-export const maxHistorySnapshots = 20; // ~5 minutes of history at 15s poll interval
+// Fallback window for sports not yet in sportTypeConfigMap (5 min).
+// In practice every sport config defines historyWindowMs; this is a safety net.
+export const historyWindowMs = 300_000;
 
 // After this many consecutive empty polls a league switches to dormant mode
 export const pollDormantThresholdPolls = 2;

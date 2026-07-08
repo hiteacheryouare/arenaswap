@@ -1,5 +1,64 @@
 # Changelog
 
+## Fix poll-frequency / history-window coupling — 2026-07-07
+
+Previously, history was capped at a fixed snapshot count (`maxHistorySnapshots`). At fast poll rates (6s on exciting games), the window covered only ~3 minutes of real time — meaning a momentum run or comeback rally that started just outside that window became completely invisible to the scorer, even if its decay should still be contributing points. This created a negative feedback loop: high excitement → faster polls → narrower history → signals drop out → score deflates.
+
+### What changed
+
+Replaced count-based history trimming with **time-based windows** (`historyWindowMs`) set per sport at `4 × max(decayHalfLifeMs)`:
+
+| Sport | Before (count) | After (time window) |
+|---|---|---|
+| Basketball | 32 snapshots | 5 min |
+| Hockey | 30 snapshots | 16 min |
+| Baseball / Softball | 36 snapshots | 12 min |
+| Football | 32 snapshots | 12 min |
+| Soccer | 40 snapshots | 20 min |
+
+The `historyWindowMs` replaces `maxHistorySnapshots` on `SportTypeConfig`. The background service worker, both powerscore scripts, and all history trim sites now use `while (snapshots[0].timestamp < cutoff) snapshots.shift()` instead of a count cap.
+
+### Result
+
+Hockey goals scored 7 minutes ago produce the same momentum score (7 pts) at 6s polling as at 25s polling. Before the fix: 0 pts at 6s, 7 pts at 25s — an 11-point total gap.
+
+## Redesigned debug panel — 2026-07-06
+
+Replaced the minimal green-on-black key-value debug panel with a fully redesigned, sectioned debug panel that exposes deep runtime internals previously inaccessible from the UI.
+
+### New `GET_DEBUG_STATE` background message
+
+The background service worker now responds to `GET_DEBUG_STATE` with a `DebugState` payload covering:
+- **Per-league poll modes** (`eager` / `dormant`) from the `pollModeTracker`
+- **Clock stall map** — per-game stall counts and last-seen clock values
+- **Tab registry** — which tabs are assigned to which games
+- **Pending switch** — queued tab switch with reason
+- **Last switch timestamp**
+- **Demo mode flag**
+- **Game counts** (live / upcoming / total)
+- **Standby stream state**
+- **Current PowerScore results**
+- **Active sensitivity, cooldown, and switch delay preferences**
+- **Game labels** (away·home abbreviation pairs for display)
+
+### Debug panel UI (popupFooter)
+
+- **RUNTIME** — version, build mode, browser, MV, extension ID
+- **POLLING** — live/demo mode badge, per-league eager/dormant grid, last switch time, pending switch, sensitivity threshold, cooldown, delay
+- **GAMES** — live/upcoming/total counts, tab registrations, standby stream status
+- **CLOCK STALLS** — per-game stall counts with last clock value (hidden when none active)
+- **POWERSCORE** — top 5 live games ranked by score with block-character bar and stall indicator
+- **STORAGE** — key counts and key names for sync/local/session storage
+- Auto-refreshes every 5 seconds while open; shows last-refreshed timestamp
+
+### Styling
+
+Replaced flat monospace panel with Lekton-font sectioned layout using brand gradient accent colors per section, status badges, and block-character score bars. Panel scrolls internally at `max-height: 17rem`.
+
+**Files changed:** `packages/core/src/types.ts`, `apps/extension/entrypoints/background.ts`, `apps/extension/entrypoints/popup/components/popupFooter.jsx`, `apps/extension/assets/bootstrap.scss`
+
+---
+
 ## PowerScore-driven adaptive polling — 2026-07-06
 
 Replaces the flat 15-second eager poll interval with a continuous PowerScore-based schedule. The more exciting the live game, the sooner the league polls again — concentrating API budget on moments that matter without increasing total request volume.

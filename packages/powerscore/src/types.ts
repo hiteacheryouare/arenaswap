@@ -165,8 +165,10 @@ export interface SportTypeConfig {
 	/** Seconds-remaining window in the final regulation period during which a tied game earns the
 	 *  ramping overtime pre-boost. 0 disables the pre-boost (e.g. clockless baseball). */
 	otPreBoostWindowSecs: number;
-	/** overrides maxHistorySnapshots for momentum window; omit to use the global default */
-	maxHistorySnapshots?: number;
+	/** How far back (ms) to keep score snapshots for momentum/comeback/leadChange detection.
+	 *  Should be at least 4× the longest decayHalfLifeMs so signals fully fade before falling out
+	 *  of the window. Must be the same regardless of poll frequency. */
+	historyWindowMs: number;
 }
 
 export interface LeagueConfig {
