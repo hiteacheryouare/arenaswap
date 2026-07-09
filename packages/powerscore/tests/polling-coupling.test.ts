@@ -57,6 +57,9 @@ const buildHistory = (
 const FAST_POLL_MS = 6_000;
 const SLOW_POLL_MS = 25_000;
 
+// Run at t=0: 80-80 → 90-80 instantaneously
+const bballScoreAtT = (t: number): [number, number] => (t === 0 ? [80, 80] : [90, 80]);
+
 // ─── Basketball: run visible to both poll rates within 5-min window ──────────
 
 describe('Basketball: time-based window decouples momentum from poll rate', () => {
@@ -64,7 +67,7 @@ describe('Basketball: time-based window decouples momentum from poll rate', () =
 	// historyWindowMs = 300_000 (5 min). Run at t=0 instantaneously.
 	// Observe at t=3min — well within the 5-min window for both poll rates.
 	const nowMs = 180_000;
-	const scoreAtT = (t: number): [number, number] => (t === 0 ? [80, 80] : [90, 80]);
+	const scoreAtT = bballScoreAtT;
 	const game = makeGame({
 		homeTeam: { abbreviation: 'HOM', score: 90 },
 		awayTeam: { abbreviation: 'AWY', score: 80 },
@@ -86,7 +89,6 @@ describe('Basketball: time-based window decouples momentum from poll rate', () =
 		// after t=0 captured the change differs by poll rate), but both are nonzero.
 		expect(fastResult.momentum).toBeGreaterThan(0);
 		expect(slowResult.momentum).toBeGreaterThan(0);
-		console.log(`[bball window] fast momentum: ${fastResult.momentum}, slow momentum: ${slowResult.momentum}`);
 	});
 
 	test('run older than the 5-min window fades for both poll rates equally', () => {
@@ -99,7 +101,6 @@ describe('Basketball: time-based window decouples momentum from poll rate', () =
 		// t=0 falls outside the 5-min window — both see no run
 		expect(fastResult.momentum).toBe(0);
 		expect(slowResult.momentum).toBe(0);
-		console.log(`[bball expired] fast: ${fastResult.total}, slow: ${slowResult.total}`);
 	});
 });
 
@@ -128,7 +129,6 @@ describe('Hockey: 16-min window keeps goals visible at both poll rates', () => {
 		expect(history[0]!.timestamp).toBe(0);
 		const result = computePowerScore(game, history);
 		expect(result.momentum).toBeGreaterThan(0);
-		console.log(`[hockey fast 7min] momentum: ${result.momentum}, total: ${result.total}`);
 	});
 
 	test('slow polling (25s): same — both rates see the goals', () => {
@@ -138,7 +138,6 @@ describe('Hockey: 16-min window keeps goals visible at both poll rates', () => {
 		const slowResult = computePowerScore(game, slowHistory);
 		expect(fastResult.momentum).toBeGreaterThan(0);
 		expect(slowResult.momentum).toBeGreaterThan(0);
-		console.log(`[hockey both] fast: ${fastResult.total}, slow: ${slowResult.total}`);
 	});
 
 	test('sweep: momentum is consistent across all poll intervals once window is time-based', () => {
@@ -154,7 +153,6 @@ describe('Hockey: 16-min window keeps goals visible at both poll rates', () => {
 				total: result.total,
 			});
 		}
-		console.table(rows);
 		// All intervals produce nonzero momentum (no cliff, no coupling)
 		const allNonzero = rows.every(r => r.momentum > 0);
 		expect(allNonzero).toBe(true);
@@ -175,7 +173,5 @@ describe('Decay is wall-clock based (given identical histories, result is identi
 		const result1 = computePowerScore(game, fixedHistory);
 		const result2 = computePowerScore(game, fixedHistory);
 		expect(result1.momentum).toBe(result2.momentum);
-		// age = 90s - 30s = 60s, halfLife = 45s → decay ≈ 0.40 → round(28*0.40) = 11
-		console.log(`[decay isolation] momentum: ${result1.momentum} (age: 60s, halfLife: 45s)`);
 	});
 });

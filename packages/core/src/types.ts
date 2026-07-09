@@ -28,6 +28,8 @@ export interface Team {
 	logo?: string;
 	/** Primary team color as a CSS hex string (e.g. "#002B5C"), sourced from the API */
 	color?: string;
+	/** Alternate team color as a CSS hex string, used when primary clashes with the opponent */
+	alternateColor?: string;
 }
 
 export interface GameCondition {

@@ -1,5 +1,6 @@
 import type { Game } from '@arenaswap/core/types';
 import type { SeriesInfo } from './useSummaryData';
+import { resolveTeamColorPair } from './gameDetailChartOptions';
 
 const seriesSports = new Set(['baseball', 'basketball', 'hockey', 'softball']);
 
@@ -13,6 +14,7 @@ const seriesDots = ({ info, game }: seriesDotsProps) => {
 	const total = info.totalCompetitions ?? 0;
 	if (total < 2) return null;
 
+	const [awayColor, homeColor] = resolveTeamColorPair(game.awayTeam, game.homeTeam, '#e6edf3', '#e6edf3');
 	const events = info.events ?? [];
 	const dots = Array.from({ length: total }, (_, i) => {
 		const ev = events[i];
@@ -22,8 +24,8 @@ const seriesDots = ({ info, game }: seriesDotsProps) => {
 		const winner = ev.competitors?.find(c => c.winner);
 		let color = '#8b949e';
 		if (winner) {
-			if (winner.team.id === game.homeTeam.id) color = game.homeTeam.color ?? '#e6edf3';
-			else if (winner.team.id === game.awayTeam.id) color = game.awayTeam.color ?? '#e6edf3';
+			if (winner.team.id === game.homeTeam.id) color = homeColor;
+			else if (winner.team.id === game.awayTeam.id) color = awayColor;
 		}
 		return <i key={i} className='bi bi-circle-fill series-dot' style={{ color }} />;
 	});

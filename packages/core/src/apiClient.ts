@@ -92,20 +92,16 @@ const normalizeOne = (value?: string): string | undefined => {
 	return undefined;
 };
 
-const normalizeTeamColor = (primary?: string, alternate?: string): string | undefined => {
-	const normalizedPrimary = normalizeOne(primary);
-	const normalizedAlternate = normalizeOne(alternate);
-
-	if (!normalizedPrimary) return normalizedAlternate;
-
-	// If the primary color is too dark for the black background, prefer alternate when it's brighter
-	if (hexLuminance(normalizedPrimary) < darkOnBlackThreshold) {
-		if (normalizedAlternate && hexLuminance(normalizedAlternate) > hexLuminance(normalizedPrimary)) {
-			return normalizedAlternate;
-		}
+const resolveTeamColors = (primary?: string, alternate?: string): { color?: string; alternateColor?: string } => {
+	const p = normalizeOne(primary);
+	const a = normalizeOne(alternate);
+	if (!p) return { color: a };
+	// Primary is too dark for the UI — use alternate as main color and keep primary as the
+	// alternate so the pair-resolver can still try it (it will lighten it for charts).
+	if (hexLuminance(p) < darkOnBlackThreshold && a && hexLuminance(a) > hexLuminance(p)) {
+		return { color: a, alternateColor: p };
 	}
-
-	return normalizedPrimary;
+	return { color: p, alternateColor: a };
 };
 
 // ESPN returns multiple logo variants; prefer the "dark" one (light-colored, for dark UIs).
@@ -225,7 +221,7 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 			abbreviation: home.team.abbreviation || home.team.displayName?.slice(0, 3).toUpperCase() || '?',
 			score: parseInt(home.score ?? '0', 10) || 0,
 			logo: home.team.logo ?? undefined,
-			color: normalizeTeamColor(home.team.color, home.team.alternateColor),
+			...resolveTeamColors(home.team.color, home.team.alternateColor),
 		},
 		awayTeam: {
 			id: away.id,
@@ -233,7 +229,7 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 			abbreviation: away.team.abbreviation || away.team.displayName?.slice(0, 3).toUpperCase() || '?',
 			score: parseInt(away.score ?? '0', 10) || 0,
 			logo: away.team.logo ?? undefined,
-			color: normalizeTeamColor(away.team.color, away.team.alternateColor),
+			...resolveTeamColors(away.team.color, away.team.alternateColor),
 		},
 		venueName: comp.venue?.fullName ?? comp.venue?.name ?? undefined,
 		period: status.period ?? 1,

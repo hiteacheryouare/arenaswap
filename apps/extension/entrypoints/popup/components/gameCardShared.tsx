@@ -4,6 +4,7 @@ import { i18n } from '#i18n';
 import { leagueConfigMap } from '@arenaswap/core/constants';
 import type { Game, LeagueId, Team } from '@arenaswap/core/types';
 import type { BettingDisplayPrefs } from './gameCardTypes';
+import { resolveTeamColorPair } from './gameDetailChartOptions';
 
 const logoSize = 64;
 
@@ -92,11 +93,14 @@ const TeamLogo = ({ team }: { team: Team }) => {
 	);
 };
 
-export const buildGameCardStyle = (game: Game) => ({
-	borderLeft: `5px solid ${game.awayTeam.color ?? '#dee2e6'}`,
-	borderRight: `5px solid ${game.homeTeam.color ?? '#dee2e6'}`,
-	background: `linear-gradient(to right, ${game.awayTeam.color ?? '#dee2e6'}28, ${game.homeTeam.color ?? '#dee2e6'}28), #ffffff`,
-});
+export const buildGameCardStyle = (game: Game) => {
+	const [awayColor, homeColor] = resolveTeamColorPair(game.awayTeam, game.homeTeam, '#dee2e6', '#dee2e6');
+	return {
+		borderLeft: `5px solid ${awayColor}`,
+		borderRight: `5px solid ${homeColor}`,
+		background: `linear-gradient(to right, ${awayColor}28, ${homeColor}28), #ffffff`,
+	};
+};
 
 export const buildCardHandlers = (onOpenGameDetail: (gameId: string) => void, gameId: string) => ({
 	onClick: (event: MouseEvent<HTMLDivElement>) => {

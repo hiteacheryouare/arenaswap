@@ -16,7 +16,7 @@ import {
 	buildPowerScoreOption,
 	buildTeamScoreOption,
 	buildWinProbabilityOption,
-	resolveReadableSeriesColor,
+	resolveTeamColorPair,
 } from './gameDetailChartOptions';
 import useSummaryData from './useSummaryData';
 import { formatGameClock, formatPeriod, GameMeta, powerScoreColor } from './gameCardShared';
@@ -93,15 +93,13 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 		buildWinProbabilityOption(winProbability, game)
 	), [winProbability, game]);
 
-	const awayLineColor = resolveReadableSeriesColor(game.awayTeam.color, '#60a5fa');
-	const homeLineColor = resolveReadableSeriesColor(game.homeTeam.color, '#f87171');
+	const [awayLineColor, homeLineColor] = resolveTeamColorPair(game.awayTeam, game.homeTeam, '#60a5fa', '#f87171', true);
 	const teamLegendItems = useMemo(() => ([
 		{ label: game.awayTeam.abbreviation, color: awayLineColor },
 		{ label: game.homeTeam.abbreviation, color: homeLineColor },
 	]), [awayLineColor, game.awayTeam.abbreviation, game.homeTeam.abbreviation, homeLineColor]);
 
-	const awayAccent = game.awayTeam.color ?? '#2274A5';
-	const homeAccent = game.homeTeam.color ?? '#F75C03';
+	const [awayAccent, homeAccent] = resolveTeamColorPair(game.awayTeam, game.homeTeam, '#2274A5', '#F75C03');
 	const matchupCardStyle = {
 		borderLeft: `5px solid ${awayAccent}`,
 		borderRight: `5px solid ${homeAccent}`,

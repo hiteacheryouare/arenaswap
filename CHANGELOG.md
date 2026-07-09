@@ -1,5 +1,30 @@
 # Changelog
 
+## Team color pair normalization — 2026-07-09
+
+Previously, each team's display color was resolved independently: pick the primary color, fall back to the alternate if the primary was too dark. This worked for solid borders but failed for matchup gradients and chart lines when two teams happened to share similar primary colors — both sides of the card blended into the same hue and chart lines were hard to distinguish.
+
+### What changed
+
+**`packages/core/src/types.ts`**
+- Added `alternateColor?: string` to the `Team` interface so both the primary and alternate colors survive the API parse and are available to rendering code.
+
+**`packages/core/src/apiClient.ts`**
+- Replaced `normalizeTeamColor` (returned one color, discarded the other) with `resolveTeamColors`, which returns `{ color, alternateColor }` spread directly onto the team object. When the primary is too dark for the UI the alternate is promoted to `color` and the original primary is kept as `alternateColor` so the pair-resolver can still try it (it will lighten it for charts).
+
+**`apps/extension/entrypoints/popup/components/gameDetailChartOptions.ts`**
+- Added `colorDistance` (Euclidean RGB distance), `isUsable` (luminance 3–95%), and `pickPair`.
+- `pickPair` tries all four primary/alternate combinations for the two teams and picks whichever pair exceeds the clash threshold (65) or, failing that, maximizes color distance. Falls back to the primary pair if no alternate combination improves things.
+- New exported `resolveTeamColorPair(away, home, awayFallback, homeFallback, lighten?)` wraps `pickPair` and optionally runs `resolveReadableSeriesColor` (now private) on the result for dark-background chart use.
+- Lowered the luminance brightening threshold from `0.34` to `0.10` — only genuinely near-black colors get mixed toward white; mid-dark colors like navy now pass through unchanged.
+- All three chart builders (`buildTeamScoreOption`, `buildScoreMarginOption`, `buildWinProbabilityOption`) updated to call `resolveTeamColorPair`.
+
+**`apps/extension/entrypoints/popup/components/gameDetailView.tsx`**, **`gameCardShared.tsx`**, **`seriesDots.tsx`**
+- All team color reads replaced with `resolveTeamColorPair` calls, so card gradients, border accents, chart legend dots, and series dots all use the same clash-aware pair.
+
+**`packages/powerscore/tests/polling-coupling.test.ts`**
+- Extracted `bballScoreAtT` helper; removed leftover `console.log` / `console.table` debug calls.
+
 ## Fix poll-frequency / history-window coupling — 2026-07-07
 
 Previously, history was capped at a fixed snapshot count (`maxHistorySnapshots`). At fast poll rates (6s on exciting games), the window covered only ~3 minutes of real time — meaning a momentum run or comeback rally that started just outside that window became completely invisible to the scorer, even if its decay should still be contributing points. This created a negative feedback loop: high excitement → faster polls → narrower history → signals drop out → score deflates.

@@ -45,9 +45,49 @@ const mixTowardWhite = (value: string, amount: number): string => {
 	return `#${[red, green, blue].map(channel => channel.toString(16).padStart(2, '0')).join('')}`;
 };
 
-export const resolveReadableSeriesColor = (value: string | undefined, fallback: string): string => {
+const resolveReadableSeriesColor = (value: string | undefined, fallback: string): string => {
 	if (!value || !hexToRgb(value)) return fallback;
-	return luminance(value) < 0.34 ? mixTowardWhite(value, 0.48) : value;
+	return luminance(value) < 0.10 ? mixTowardWhite(value, 0.48) : value;
+};
+
+const colorDistance = (a: string, b: string): number => {
+	const ra = hexToRgb(a);
+	const rb = hexToRgb(b);
+	if (!ra || !rb) return 0;
+	return Math.sqrt((ra.red - rb.red) ** 2 + (ra.green - rb.green) ** 2 + (ra.blue - rb.blue) ** 2);
+};
+
+const clashThreshold = 65;
+
+const isUsable = (hex: string): boolean => { const l = luminance(hex); return l >= 0.03 && l <= 0.95; };
+
+const pickPair = (ap: string, aa: string, hp: string, ha: string): [string, string] => {
+	if (colorDistance(ap, hp) >= clashThreshold) return [ap, hp];
+	const candidates: [string, string][] = [[ap, ha], [aa, hp], [aa, ha]];
+	const usable = candidates.filter(([a, h]) => isUsable(a) && isUsable(h));
+	const pool = usable.length > 0 ? usable : candidates;
+	const best = pool.reduce((b, c) => colorDistance(c[0], c[1]) > colorDistance(b[0], b[1]) ? c : b);
+	return colorDistance(best[0], best[1]) > colorDistance(ap, hp) ? best : [ap, hp];
+};
+
+// Returns a visually distinct color pair for two teams. Pass lighten=true for dark chart
+// backgrounds so that dark team colors are brightened enough to read against the chart.
+export const resolveTeamColorPair = (
+	away: { color?: string; alternateColor?: string },
+	home: { color?: string; alternateColor?: string },
+	awayFallback = '#60a5fa',
+	homeFallback = '#f87171',
+	lighten = false,
+): [string, string] => {
+	const [a, h] = pickPair(
+		away.color ?? awayFallback,
+		away.alternateColor ?? awayFallback,
+		home.color ?? homeFallback,
+		home.alternateColor ?? homeFallback,
+	);
+	return lighten
+		? [resolveReadableSeriesColor(a, awayFallback), resolveReadableSeriesColor(h, homeFallback)]
+		: [a, h];
 };
 
 const baseOption = (
@@ -113,8 +153,7 @@ export const buildTeamScoreOption = (scoreHistory: ScoreSnapshot[], game: Game):
 	const awayScores = scoreHistory.map(point => point.awayScore);
 	const homeScores = scoreHistory.map(point => point.homeScore);
 	const showSinglePointSymbols = scoreHistory.length === 1;
-	const awayColor = resolveReadableSeriesColor(game.awayTeam.color, '#60a5fa');
-	const homeColor = resolveReadableSeriesColor(game.homeTeam.color, '#f87171');
+	const [awayColor, homeColor] = resolveTeamColorPair(game.awayTeam, game.homeTeam, '#60a5fa', '#f87171', true);
 	return {
 		...baseOption(labels, 24),
 		series: [
@@ -146,8 +185,7 @@ export const buildScoreMarginOption = (scoreHistory: ScoreSnapshot[], game: Game
 	const awayMargins = margins.map(m => Math.max(0, m));
 	const homeMargins = margins.map(m => Math.min(0, m));
 	const showSinglePointSymbols = scoreHistory.length === 1;
-	const awayColor = resolveReadableSeriesColor(game.awayTeam.color, '#60a5fa');
-	const homeColor = resolveReadableSeriesColor(game.homeTeam.color, '#f87171');
+	const [awayColor, homeColor] = resolveTeamColorPair(game.awayTeam, game.homeTeam, '#60a5fa', '#f87171', true);
 	const maxAbsMargin = Math.max(1, ...margins.map(m => Math.abs(m)));
 	const option = baseOption(labels, 24);
 	return {
@@ -205,8 +243,7 @@ export const buildWinProbabilityOption = (homeWinPcts: number[], game: Game): EC
 	const homeVals = sampled.map(p => Math.round(p * 100));
 	const awayVals = sampled.map(p => 100 - Math.round(p * 100));
 	const labels = sampled.map(() => '');
-	const homeColor = resolveReadableSeriesColor(game.homeTeam.color, '#f87171');
-	const awayColor = resolveReadableSeriesColor(game.awayTeam.color, '#60a5fa');
+	const [awayColor, homeColor] = resolveTeamColorPair(game.awayTeam, game.homeTeam, '#60a5fa', '#f87171', true);
 	return {
 		...baseOption(labels, 24),
 		yAxis: {
