@@ -63,6 +63,7 @@ The tech stack should never fall more than 2 years behind the latest and greates
 - Leverage the power of turborepo and caching
 - After every time you change something, update @CHANGELOG.md
 - All code changes should be internationalized to every language we support at the moment.
+- When opening PRs, Issues, etc via the GitHub API or any access you have to github, ALWAYS add the "robotic" label so we know it was assisted by agents.
 
 
 ## Notes from the maintainer:
