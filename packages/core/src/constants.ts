@@ -9,6 +9,7 @@ import {
 	scoreMaxLeadChanges,
 	scoreMaxComeback,
 	scoreMaxTotal,
+	scoreWinProbVarianceMax,
 	scorerTunables,
 	sportTypeConfigs,
 	sportTypeConfigMap,
@@ -26,6 +27,7 @@ export {
 	scoreMaxLeadChanges,
 	scoreMaxComeback,
 	scoreMaxTotal,
+	scoreWinProbVarianceMax,
 	scorerTunables,
 	sportTypeConfigs,
 	sportTypeConfigMap,
@@ -71,10 +73,10 @@ export const defaultPostseasonBoostPoints = 5;
 // harness (npm run powerscore:simulate), then nudged ~25% stickier so the Balanced default is less
 // jumpy. Level 4 (~11) sits just above the median best-vs-runner-up switch gap.
 export const sensitivityThresholds: Record<number, number> = {
-	1: 44,
-	2: 29,
-	3: 19,
-	4: 11,
+	1: 38,
+	2: 26,
+	3: 17,
+	4: 10,
 	5: 6,
 	6: 3,
 	7: 1

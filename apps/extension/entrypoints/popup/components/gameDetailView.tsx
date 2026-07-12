@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { i18n } from '#i18n';
 import { leagueConfigMap, scoreMaxTotal } from '@arenaswap/core/constants';
+import { computeWinProbVarianceScore } from '@arenaswap/core';
 import type { Game, PowerScoreResult, PowerScoreSnapshot, ScoreSnapshot } from '@arenaswap/core/types';
 import BaseDiamond from './baseDiamond';
 import BsoIndicator from './bsoIndicator';
@@ -65,19 +66,17 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 	const momentum = activePowerScore?.momentum ?? 0;
 	const leadChanges = activePowerScore?.leadChanges ?? 0;
 	const comeback = activePowerScore?.comeback ?? 0;
-	const total = activePowerScore?.total ?? 0;
 	const rawSubtotal = closeness + lateGame + momentum + leadChanges + comeback;
 	// When stalled, baseTotal is the pre-stall signals sum stored by the scorer (could exceed 100).
 	// When not stalled, it equals rawSubtotal.
 	const baseTotal = activePowerScore?.baseTotal ?? rawSubtotal;
-	const isStalled = activePowerScore?.stalled === true;
+	const stallPenalty = activePowerScore?.stallPenalty ?? 0;
 	const favoriteBonus = activePowerScore?.favoriteBonus ?? 0;
 	const favoriteTeamCount = activePowerScore?.favoriteTeamCount ?? 0;
 	const currentBoost = gameBoosts[game.id] ?? 0;
 	const scoringOpportunityBoost = activePowerScore?.scoringOpportunityBoost ?? 0;
 	const postseasonBoost = activePowerScore?.postseasonBoost ?? 0;
 	const reason = activePowerScore?.reason ?? 'Best Available';
-	const totalBeforeBonuses = total - favoriteBonus - currentBoost - scoringOpportunityBoost - postseasonBoost;
 
 	const powerScoreOption = useMemo(() => (
 		buildPowerScoreOption(orderedPowerScoreHistory)
@@ -92,6 +91,12 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 	const winProbabilityOption = useMemo(() => (
 		buildWinProbabilityOption(winProbability, game)
 	), [winProbability, game]);
+	// Variance computed from chart data — applied here as a boost/penalty since background.ts
+	// doesn't fetch win probability history.
+	const winProbabilityVariance = useMemo(() => computeWinProbVarianceScore(winProbability), [winProbability]);
+	const variance = winProbabilityVariance ?? 0;
+	// Apply variance on top of the scorer's total (after stall penalty, before display)
+	const total = Math.max(0, (activePowerScore?.total ?? 0) + variance);
 
 	const [awayLineColor, homeLineColor] = resolveTeamColorPair(game.awayTeam, game.homeTeam, '#60a5fa', '#f87171', true);
 	const teamLegendItems = useMemo(() => ([
@@ -185,9 +190,9 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 				momentum={momentum}
 				leadChanges={leadChanges}
 				comeback={comeback}
+				winProbabilityVariance={winProbabilityVariance}
 				baseTotal={baseTotal}
-				isStalled={isStalled}
-				totalBeforeBonuses={totalBeforeBonuses}
+				stallPenalty={stallPenalty}
 				favoriteBonus={favoriteBonus}
 				favoriteTeamCount={favoriteTeamCount}
 				currentBoost={currentBoost}

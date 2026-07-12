@@ -9,6 +9,7 @@ import {
 	scoreMaxLeadChanges,
 	scoreMaxComeback,
 	scoreMaxTotal,
+	scoreWinProbVarianceMax,
 	scoringOpportunityBaseRunnerBoosts,
 	scoringOpportunityRedZoneBoost,
 } from './constants';
@@ -50,16 +51,22 @@ export const normalizePowerScoreResult = (
 	const momentum = clamp(toFiniteNumber(score.momentum), 0, scoreMaxMomentum);
 	const leadChanges = clamp(toFiniteNumber(score.leadChanges), 0, scoreMaxLeadChanges);
 	const comeback = clamp(toFiniteNumber(score.comeback), 0, scoreMaxComeback);
+	const hasWinProbVariance = typeof score.winProbabilityVariance === 'number' && Number.isFinite(score.winProbabilityVariance);
+	const winProbabilityVariance = hasWinProbVariance
+		? clamp(Math.round(toFiniteNumber(score.winProbabilityVariance)), -scoreWinProbVarianceMax, scoreWinProbVarianceMax)
+		: undefined;
 	const rawTotal = closeness + lateGame + momentum + leadChanges + comeback;
 	const total = options.allowTotalOverflow
 		? Math.max(0, toFiniteNumber(score.total, rawTotal))
 		: clamp(toFiniteNumber(score.total, rawTotal), 0, scoreMaxTotal);
+	const hasStallPenalty = typeof score.stallPenalty === 'number' && Number.isFinite(score.stallPenalty);
 	const hasBaseTotal = typeof score.baseTotal === 'number' && Number.isFinite(score.baseTotal);
 	const hasFavoriteBonus = typeof score.favoriteBonus === 'number' && Number.isFinite(score.favoriteBonus);
 	const hasFavoriteTeamCount = typeof score.favoriteTeamCount === 'number' && Number.isFinite(score.favoriteTeamCount);
 	const hasGameBoost = typeof score.gameBoost === 'number' && Number.isFinite(score.gameBoost);
 	const hasScoringOpportunityBoost = typeof score.scoringOpportunityBoost === 'number' && Number.isFinite(score.scoringOpportunityBoost);
 	const hasPostseasonBoost = typeof score.postseasonBoost === 'number' && Number.isFinite(score.postseasonBoost);
+	const stallPenalty = hasStallPenalty ? Math.max(0, Math.round(toFiniteNumber(score.stallPenalty))) : undefined;
 	const baseTotal = hasBaseTotal ? clamp(toFiniteNumber(score.baseTotal), 0, scoreMaxTotal) : undefined;
 	const favoriteBonus = hasFavoriteBonus ? Math.max(0, Math.round(toFiniteNumber(score.favoriteBonus))) : undefined;
 	const favoriteTeamCount = hasFavoriteTeamCount ? Math.max(0, Math.round(toFiniteNumber(score.favoriteTeamCount))) : undefined;
@@ -75,8 +82,10 @@ export const normalizePowerScoreResult = (
 		momentum,
 		leadChanges,
 		comeback,
+		...(hasWinProbVariance ? { winProbabilityVariance } : {}),
 		reason: typeof score.reason === 'string' ? score.reason : scorerTunables.reasons.fallback,
 		stalled: score.stalled === true,
+		...(hasStallPenalty ? { stallPenalty } : {}),
 		...(hasBaseTotal ? { baseTotal } : {}),
 		...(hasFavoriteBonus ? { favoriteBonus } : {}),
 		...(hasFavoriteTeamCount ? { favoriteTeamCount } : {}),
@@ -409,6 +418,20 @@ const getComeback = (game: Game, history: ScoreSnapshot[], config: SportTypeConf
 	return decaySignal(floored, reason, ageMs, config.decayHalfLifeMs.comeback);
 };
 
+// Win probability boost/penalty: maps average distance of homeWinProb from 50% to [−max, +max].
+// Lines hugging 50% (close game, constantly contested) earn a boost.
+// Lines far apart (one team dominating, or swinging wildly between extremes) earn a penalty.
+// Returns undefined (no effect) when fewer than minDataPoints values are available.
+export const computeWinProbVarianceScore = (winProbHistory: number[]): number | undefined => {
+	const { maxAvgDist, minDataPoints } = scorerTunables.scores.winProbabilityVariance;
+	if (winProbHistory.length < minDataPoints) return undefined;
+	const n = winProbHistory.length;
+	const avgDistFromMid = winProbHistory.reduce((sum, p) => sum + Math.abs(p - 0.5), 0) / n;
+	// Linear map: avgDistFromMid=0 (both lines at 50%) → +max, avgDistFromMid=maxAvgDist → −max, clamped.
+	const raw = scoreWinProbVarianceMax - (avgDistFromMid / maxAvgDist) * 2 * scoreWinProbVarianceMax;
+	return Math.round(clamp(raw, -scoreWinProbVarianceMax, scoreWinProbVarianceMax));
+};
+
 export const computeScoringOpportunityBoost = (game: Game): number => {
 	if (game.status !== 'in') return 0;
 
@@ -430,6 +453,7 @@ export const computePowerScore = (
 	game: Game,
 	history: ScoreSnapshot[] = [],
 	stallCount: number = 0,
+	winProbabilityHistory: number[] = [],
 ): PowerScoreResult => {
 	if (game.intermission)
 		return normalizePowerScoreResult({
@@ -453,11 +477,15 @@ export const computePowerScore = (
 	const momentum = getMomentum(game, history, config, now);
 	const leadChanges = getLeadChanges(history, config, now);
 	const comeback = getComeback(game, history, config, progress, now);
+	const winProbVariance = computeWinProbVarianceScore(winProbabilityHistory);
 
-	const rawTotal = closeness.score + lateGame.score + momentum.score + leadChanges.score + comeback.score;
+	const signalsSubtotal = closeness.score + lateGame.score + momentum.score + leadChanges.score + comeback.score;
 	const stallStep = stallPenaltySteps.find(s => stallCount >= s.minPolls);
 	const stalled = stallStep !== undefined;
-	const total = stalled ? Math.round(rawTotal * stallStep.multiplier) : rawTotal;
+	// Stall penalty applies only to the base signals — winProbVariance is a separate boost/penalty
+	const stalledSignalsTotal = stalled ? Math.round(signalsSubtotal * stallStep.multiplier) : signalsSubtotal;
+	const stallPenalty = signalsSubtotal - stalledSignalsTotal;
+	const rawTotal = stalledSignalsTotal + (winProbVariance ?? 0);
 
 	const reason = [momentum.reason, comeback.reason, leadChanges.reason, lateGame.reason, closeness.reason]
 		.filter(Boolean)
@@ -466,14 +494,17 @@ export const computePowerScore = (
 
 	return normalizePowerScoreResult({
 		gameId: game.id,
-		total,
+		total: rawTotal,
 		closeness: closeness.score,
 		lateGame: lateGame.score,
 		momentum: momentum.score,
 		leadChanges: leadChanges.score,
 		comeback: comeback.score,
+		...(winProbVariance !== undefined ? { winProbabilityVariance: winProbVariance } : {}),
 		reason,
 		stalled,
-		...(stalled ? { baseTotal: rawTotal } : {}),
+		stallPenalty,
+		// Pre-stall pure signals sum — lets the breakdown UI show what the clock stall penalty changed.
+		baseTotal: signalsSubtotal,
 	});
 };

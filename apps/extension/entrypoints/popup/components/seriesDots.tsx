@@ -15,7 +15,12 @@ const seriesDots = ({ info, game }: seriesDotsProps) => {
 	if (total < 2) return null;
 
 	const [awayColor, homeColor] = resolveTeamColorPair(game.awayTeam, game.homeTeam, '#e6edf3', '#e6edf3');
-	const events = info.events ?? [];
+	// ESPN returns future games first and completed games last; sort completed to the front
+	const events = [...(info.events ?? [])].sort((a, b) => {
+		const aComp = a.statusType?.completed ? 1 : 0;
+		const bComp = b.statusType?.completed ? 1 : 0;
+		return bComp - aComp;
+	});
 	const dots = Array.from({ length: total }, (_, i) => {
 		const ev = events[i];
 		if (!ev?.statusType?.completed) {

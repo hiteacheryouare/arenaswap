@@ -24,6 +24,8 @@ export const scoreMaxLateGame = 28;
 export const scoreMaxMomentum = 28;
 export const scoreMaxLeadChanges = 18;
 export const scoreMaxComeback = 14;
+/** Win probability variance: max boost (+5) and max penalty (−5) applied on top of signals. */
+export const scoreWinProbVarianceMax = 5;
 // Headline cap. Intentionally lower than the sum of the per-signal ceilings above.
 export const scoreMaxTotal = 100;
 
@@ -68,6 +70,14 @@ export const scorerTunables: ScorerTunables = {
 			moderate: 8,
 			flatFloor: 2,
 			none: 0,
+		},
+		// Win probability: average absolute distance from 50% maps to [−max, +max].
+		// Games where both lines hug 50% (close, constantly contested) earn a boost.
+		// Games where one team dominates (lines far apart) earn a penalty.
+		// maxAvgDist is the avg|p−0.5| that saturates the −max penalty (a game held steadily at ~85% hits this).
+		winProbabilityVariance: {
+			maxAvgDist: 0.35,
+			minDataPoints: 5,
 		},
 	},
 	reasons: {

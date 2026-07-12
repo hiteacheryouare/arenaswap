@@ -29,7 +29,7 @@
       "source": "mattpocock/skills",
       "sourceType": "github",
       "skillPath": "skills/productivity/grilling/SKILL.md",
-      "computedHash": "ef685a6fa0bbe73b05bbd8dc1ec97258191587f07c6aa7dbc9006675ceb8f90f"
+      "computedHash": "1de9e777a60b184b29412fadacb7bbde8c14bb7037e5c4d9d086c941281d1742"
     },
     "read-the-damn-docs": {
       "source": "builderio/skills",
@@ -41,7 +41,7 @@
       "source": "vercel/turborepo",
       "sourceType": "github",
       "skillPath": "skills/turborepo/SKILL.md",
-      "computedHash": "b7c3165ae67a2892d6195a5b2cba15c8d96341f5c64ddd0d3ce4225c94a2ae83"
+      "computedHash": "7bed931f62129bc3a7dea2da5ac46928f7c02054188b3d418971093a4b50904b"
     },
     "vercel-react-best-practices": {
       "source": "vercel-labs/agent-skills",
@@ -53,7 +53,7 @@
       "source": "builderio/skills",
       "sourceType": "github",
       "skillPath": "skills/visual-plan/SKILL.md",
-      "computedHash": "ba2106978fa8ae64cd0c84deb1a3b4441e92c937ea46cac7889fd9051cdbb7fa"
+      "computedHash": "cede289c752a472a882a4445950057e342a8f07aa2666e972de4099beb639bab"
     },
     "wxt-browser-extensions": {
       "source": "pproenca/dot-skills",

@@ -14,9 +14,10 @@ interface powerScoreBreakdownProps {
 	momentum: number;
 	leadChanges: number;
 	comeback: number;
+	/** Win probability volatility boost/penalty (−10 to +10). Omit when data is unavailable. */
+	winProbabilityVariance?: number;
 	baseTotal: number;
-	isStalled: boolean;
-	totalBeforeBonuses: number;
+	stallPenalty: number;
 	favoriteBonus: number;
 	favoriteTeamCount: number;
 	currentBoost: number;
@@ -40,9 +41,9 @@ const PowerScoreBreakdown = ({
 	momentum,
 	leadChanges,
 	comeback,
+	winProbabilityVariance,
 	baseTotal,
-	isStalled,
-	totalBeforeBonuses,
+	stallPenalty,
 	favoriteBonus,
 	favoriteTeamCount,
 	currentBoost,
@@ -51,6 +52,9 @@ const PowerScoreBreakdown = ({
 	totalLabel,
 }: powerScoreBreakdownProps) => {
 	const signalValues = [closeness, lateGame, momentum, leadChanges, comeback];
+	const signalsSubtotal = closeness + lateGame + momentum + leadChanges + comeback;
+	const hasWinProbVariance = winProbabilityVariance !== undefined;
+	const variance = winProbabilityVariance ?? 0;
 
 	return (
 		<section className='powerscore-breakdown game-detail-formula-card'>
@@ -78,18 +82,34 @@ const PowerScoreBreakdown = ({
 			})}
 			<div className='powerscore-breakdown-row powerscore-breakdown-row-subtotal'>
 				<span>{i18n.t('powerScore.signalsTotal')}</span>
-				<span>{baseTotal}{baseTotal > scoreMaxTotal ? ` ${i18n.t('powerScore.cappedAt', { max: scoreMaxTotal })}` : ''}</span>
+				<span>{signalsSubtotal}{signalsSubtotal > scoreMaxTotal ? ` ${i18n.t('powerScore.cappedAt', { max: scoreMaxTotal })}` : ''}</span>
 			</div>
 			<div className='powerscore-breakdown-row powerscore-breakdown-row-penalty'>
 				<span>{i18n.t('powerScore.clockStallPenalty')}</span>
-				<span>{isStalled ? i18n.t('powerScore.applied') : i18n.t('powerScore.none')}</span>
+				<span style={{ color: stallPenalty > 0 ? '#ef4444' : undefined }}>
+					{stallPenalty > 0 ? `-${stallPenalty}` : '0'}
+				</span>
 			</div>
-			{isStalled && (
+			{stallPenalty > 0 && (
 				<div className='powerscore-breakdown-note'>
-					{i18n.t('powerScore.clockFrozenNote', { before: baseTotal, after: totalBeforeBonuses })}
+					{i18n.t('powerScore.clockFrozenNote', { before: baseTotal, after: baseTotal - stallPenalty })}
 				</div>
 			)}
-			<div className='powerscore-breakdown-row'><span>{i18n.t('powerScore.favoriteBonus')}</span><span>{favoriteBonus > 0 ? `+${favoriteBonus}` : '0'}</span></div>
+			{hasWinProbVariance && (
+				<div className='powerscore-breakdown-row'>
+					<span>
+						{variance > 0
+							? i18n.t('powerScore.volatilityBoost')
+							: variance < 0
+								? i18n.t('powerScore.volatilityPenalty')
+								: i18n.t('powerScore.volatility')}
+					</span>
+					<span style={{ color: variance > 0 ? '#a855f7' : variance < 0 ? '#ef4444' : undefined }}>
+						{variance > 0 ? `+${variance}` : variance < 0 ? `${variance}` : '0'}
+					</span>
+				</div>
+			)}
+			<div className='powerscore-breakdown-row'><span>{i18n.t('powerScore.favoriteBoost')}</span><span>{favoriteBonus > 0 ? `+${favoriteBonus}` : '0'}</span></div>
 			{favoriteBonus > 0 && <div className='powerscore-breakdown-note'>{i18n.t('powerScore.favoriteTeamsInMatchup', favoriteTeamCount)}</div>}
 			<div className='powerscore-breakdown-row'><span>{i18n.t('powerScore.gameBoost')}</span><span>{currentBoost > 0 ? `+${currentBoost}` : '0'}</span></div>
 			<div className='powerscore-breakdown-row'><span>{i18n.t('powerScore.scoringOpportunity')}</span><span>{scoringOpportunityBoost > 0 ? `+${scoringOpportunityBoost}` : '0'}</span></div>

@@ -40,8 +40,12 @@ export interface PowerScoreResult {
 	momentum: number;
 	leadChanges: number;
 	comeback: number;
+	/** Win probability volatility boost/penalty, −10 to +10. Present when win probability history was supplied. */
+	winProbabilityVariance?: number;
 	reason: string;
 	stalled?: boolean;
+	/** Points removed by the clock-stall penalty (always ≥ 0). Present when stall detection has run. */
+	stallPenalty?: number;
 	baseTotal?: number;
 	favoriteBonus?: number;
 	favoriteTeamCount?: number;
@@ -105,6 +109,12 @@ export interface ScorerTunables {
 		};
 		/** always-paid minimum for any active closeness tier (before progress scaling) */
 		closenessFlatFloor: number;
+		winProbabilityVariance: {
+			/** Average |p − 0.5| (p ∈ [0,1]) that saturates the −max penalty; values above are clamped. */
+			maxAvgDist: number;
+			/** Minimum number of data points required before the boost/penalty applies. */
+			minDataPoints: number;
+		};
 	};
 	reasons: {
 		tied: string;

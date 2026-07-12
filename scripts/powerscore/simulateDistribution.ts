@@ -10,11 +10,14 @@
  * Mirrors the extension background loop: score is computed against the history that does NOT yet
  * include the current poll (so decay ages match runtime), then the current snapshot is appended.
  *
+ * Win probability history is synthesized from game state (score margin × game progress) using a
+ * logistic function — a stand-in for the real ESPN win-prob chart data the scorer uses at runtime.
+ *
  * Run: npm run powerscore:simulate -- [ticks]
  */
 import { MockGameSimulator } from '../../packages/core/src/mockGames';
 import { computePowerScore } from '../../packages/powerscore/src/scorer';
-import { sportTypeConfigMap } from '../../packages/powerscore/src/constants';
+import { sportTypeConfigMap, leagueConfigMap } from '../../packages/powerscore/src/constants';
 import { historyWindowMs as defaultHistoryWindowMs } from '../../packages/core/src/constants';
 import type { Game, ScoreSnapshot } from '../../packages/powerscore/src/types';
 
@@ -24,6 +27,34 @@ const ticks = Math.max(1_000, Number(process.argv[2]) || 40_000);
 const historyWindowMsFor = (game: Game): number => (
 	sportTypeConfigMap[game.sportType]?.historyWindowMs ?? defaultHistoryWindowMs
 );
+
+// Per-sport divisor that maps a typical winning score margin to a logit of ~1-2.
+// Tuned so the synthetic win prob looks realistic: a 10-pt NBA lead is ~70-75% win prob late.
+const winProbScaleBySport: Record<string, number> = {
+	basketball: 11,
+	football: 7,
+	baseball: 2,
+	softball: 2,
+	hockey: 1.5,
+	soccer: 1.2,
+};
+
+// Logistic: 0.5 at margin=0, approaches 0/1 as margin grows.
+// Certainty amplifies with progress so a mid-game margin is less decisive than the same margin late.
+const deriveWinProb = (game: Game): number => {
+	const diff = game.homeTeam.score - game.awayTeam.score;
+	const scale = winProbScaleBySport[game.sportType] ?? 8;
+	const league = leagueConfigMap[game.league];
+	const config = sportTypeConfigMap[game.sportType];
+	if (!league || !config) return 0.5;
+	const regularPeriods = Math.max(1, league.regularPeriods);
+	const period = game.period ?? 1;
+	const progress = period > regularPeriods ? 1 : Math.min((period - 0.5) / regularPeriods, 1);
+	// Certainty grows from 0.5× early to 2.5× in OT.
+	const certainty = 0.5 + progress * 2.0;
+	const x = (diff / scale) * certainty;
+	return 1 / (1 + Math.exp(-x));
+};
 
 const percentile = (sortedValues: number[], p: number): number => {
 	if (sortedValues.length === 0) return 0;
@@ -41,11 +72,12 @@ const summarize = (values: number[]): string => {
 
 const simulator = new MockGameSimulator();
 const history = new Map<string, ScoreSnapshot[]>();
+const winProbHistory = new Map<string, number[]>();
 
 const totalsBySport: Record<string, number[]> = {};
 const allTotals: number[] = [];
-const signalSamples: Record<'closeness' | 'lateGame' | 'momentum' | 'leadChanges' | 'comeback', number[]> = {
-	closeness: [], lateGame: [], momentum: [], leadChanges: [], comeback: [],
+const signalSamples: Record<'closeness' | 'lateGame' | 'momentum' | 'leadChanges' | 'comeback' | 'winProbVariance', number[]> = {
+	closeness: [], lateGame: [], momentum: [], leadChanges: [], comeback: [], winProbVariance: [],
 };
 const switchGaps: number[] = [];
 let zeroTotalCount = 0;
@@ -58,7 +90,7 @@ for (let tick = 0; tick < ticks; tick++) {
 	// Score with history BEFORE this poll's snapshot is appended (matches runtime decay timing).
 	const tickTotals: number[] = [];
 	for (const game of games) {
-		const result = computePowerScore(game, history.get(game.id) ?? []);
+		const result = computePowerScore(game, history.get(game.id) ?? [], 0, winProbHistory.get(game.id) ?? []);
 		allTotals.push(result.total);
 		(totalsBySport[game.sportType] ??= []).push(result.total);
 		signalSamples.closeness.push(result.closeness);
@@ -66,6 +98,7 @@ for (let tick = 0; tick < ticks; tick++) {
 		signalSamples.momentum.push(result.momentum);
 		signalSamples.leadChanges.push(result.leadChanges);
 		signalSamples.comeback.push(result.comeback);
+		if (result.winProbabilityVariance !== undefined) signalSamples.winProbVariance.push(result.winProbabilityVariance);
 		if (result.total === 0) zeroTotalCount++;
 		liveSampleCount++;
 		tickTotals.push(result.total);
@@ -84,6 +117,13 @@ for (let tick = 0; tick < ticks; tick++) {
 		const cutoff = now - historyWindowMsFor(game);
 		while (snapshots.length > 1 && snapshots[0]!.timestamp < cutoff) snapshots.shift();
 		history.set(game.id, snapshots);
+
+		// Append synthetic win probability and trim to the same window.
+		const probs = winProbHistory.get(game.id) ?? [];
+		probs.push(deriveWinProb(game));
+		// Win prob window: keep the same number of data points as score snapshots to stay consistent.
+		while (probs.length > snapshots.length) probs.shift();
+		winProbHistory.set(game.id, probs);
 	}
 }
 
@@ -108,7 +148,11 @@ for (const sport of Object.keys(totalsBySport).toSorted()) {
 
 console.log('\nSIGNALS');
 for (const signal of Object.keys(signalSamples) as (keyof typeof signalSamples)[]) {
-	console.log(`  ${signal.padEnd(11)} ${summarize(signalSamples[signal])}`);
+	const samples = signalSamples[signal];
+	const label = signal === 'winProbVariance'
+		? `${signal.padEnd(11)} (${samples.length.toLocaleString()} samples with ≥5 data pts)`
+		: signal.padEnd(11);
+	console.log(`  ${label} ${summarize(samples)}`);
 }
 
 console.log('\nSWITCH GAP (best − runner-up per poll)');

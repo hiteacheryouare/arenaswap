@@ -198,13 +198,14 @@ powerScore:
   signalMomentum: Momentum
   signalLeadChanges: Lead changes
   signalComeback: Comeback
+  volatilityBoost: Volatility Boost
+  volatilityPenalty: Volatility Penalty
+  volatility: Volatility
   signalsTotal: Signals total
   cappedAt: (capped at {max})
   clockStallPenalty: Clock stall penalty
-  applied: applied
-  none: none
   clockFrozenNote: game clock frozen — {before} → {after} pts before bonuses
-  favoriteBonus: Favorite bonus
+  favoriteBoost: Favorite Boost
   favoriteTeamsInMatchup:
     1: 1 favorite team in matchup
     n: $1 favorite teams in matchup
@@ -387,7 +388,7 @@ proTip:
     t3: Demo Mode runs simulated games, perfect for tuning sliders without waiting for live action.
     t4: Sensitivity controls how big a PowerScore lead is needed before ArenaSwap swaps.
   detail:
-    t0: PowerScore mixes closeness, late-game pressure, momentum, lead changes, and comebacks.
+    t0: PowerScore mixes closeness, late-game pressure, momentum, lead changes, and comebacks — then applies a volatility boost or penalty based on how much the win probability swings.
     t1: A clock-stall penalty kicks in when the game clock barely moves between updates.
     t2: 0-0 games take a small PowerScore hit in sports where 0-0 isn't exciting.
     t3: Hover the charts to inspect specific moments in the game.

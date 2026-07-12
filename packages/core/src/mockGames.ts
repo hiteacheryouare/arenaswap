@@ -261,6 +261,19 @@ export class MockGameSimulator {
 				bso: { balls: 0, strikes: 1, outs: 0 },
 				broadcasts: ['Fox'],
 			},
+			{
+				id: 'mock-17',
+				league: 'csoft',
+				sportType: 'softball',
+				homeTeam: { id: '111', name: 'Northeastern Huskies', abbreviation: 'NU', score: 3, logo: `${espnCdn}/ncaa/500/111.png`, color: '#CC0000' },
+				awayTeam: { id: '103', name: 'Boston College Eagles', abbreviation: 'BC', score: 2, logo: `${espnCdn}/ncaa/500/103.png`, color: '#98002E' },
+				venueName: 'Friedman Diamond',
+				period: 5, clockSeconds: 0, status: 'in',
+				topOfInning: true,
+				baseRunners: { first: false, second: true, third: false },
+				bso: { balls: 1, strikes: 0, outs: 0 },
+				broadcasts: ['ESPNU'],
+			},
 		];
 
 		this.state = new Map();

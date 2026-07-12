@@ -123,6 +123,7 @@ export interface PowerScoreSnapshot {
 	momentum: number;
 	leadChanges: number;
 	comeback: number;
+	winProbabilityVariance?: number;
 	baseTotal: number;
 	favoriteBonus: number;
 	favoriteTeamCount: number;
@@ -130,6 +131,7 @@ export interface PowerScoreSnapshot {
 	scoringOpportunityBoost?: number;
 	postseasonBoost?: number;
 	stalled: boolean;
+	stallPenalty?: number;
 	reason: string;
 }
 
