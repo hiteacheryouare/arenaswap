@@ -254,7 +254,7 @@ export class MockGameSimulator {
 				sportType: 'baseball',
 				homeTeam: { id: '28', name: 'Houston Astros', abbreviation: 'HOU', score: 4, logo: `${espnCdn}/mlb/500/hou.png`, color: '#EB6E1F' },
 				awayTeam: { id: '10', name: 'Los Angeles Dodgers', abbreviation: 'LAD', score: 4, logo: `${espnCdn}/mlb/500/lad.png`, color: '#005A9C' },
-				venueName: 'Minute Maid Park',
+				venueName: 'Daikin Park',
 				period: 10, clockSeconds: 0, status: 'in',
 				topOfInning: true,
 				baseRunners: { first: false, second: true, third: false },
