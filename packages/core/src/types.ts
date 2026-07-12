@@ -131,6 +131,7 @@ export interface PowerScoreSnapshot {
 	scoringOpportunityBoost?: number;
 	postseasonBoost?: number;
 	stalled: boolean;
+	stallPenalty?: number;
 	reason: string;
 }
 

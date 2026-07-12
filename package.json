@@ -18,8 +18,8 @@
 		"test": "turbo run test",
 		"typecheck": "turbo run typecheck",
 		"lint": "turbo run lint",
-		"powerscore:simulate": "rolldown scripts/powerscore/simulateDistribution.ts --platform=node --file=scripts/powerscore/simulateDistribution.cjs --format=cjs --target=es2023 --log-level=silent && node scripts/powerscore/simulateDistribution.cjs 100000",
-		"powerscore:validate-live": "rolldown scripts/powerscore/validateLive.ts --platform=node --file=scripts/powerscore/validateLive.cjs --format=cjs --log-level=silent --target=es2023 && node scripts/powerscore/validateLive.cjs"
+		"powerscore:simulate": "rolldown scripts/powerscore/simulateDistribution.ts --platform=node --file=scripts/powerscore/simulateDistribution.cjs --format=cjs --log-level=silent && node scripts/powerscore/simulateDistribution.cjs 100000",
+		"powerscore:validate-live": "rolldown scripts/powerscore/validateLive.ts --platform=node --file=scripts/powerscore/validateLive.cjs --format=cjs --log-level=silent && node scripts/powerscore/validateLive.cjs"
 	},
 	"devDependencies": {
 		"oxlint": "^1.72.0",

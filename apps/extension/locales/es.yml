@@ -198,14 +198,14 @@ powerScore:
   signalMomentum: Impulso
   signalLeadChanges: Cambios de ventaja
   signalComeback: Remontada
-  signalWinProbVariance: Varianza de prob. victoria
+  volatilityBoost: Impulso de volatilidad
+  volatilityPenalty: Penalización de volatilidad
+  volatility: Volatilidad
   signalsTotal: Total de señales
   cappedAt: (limitado a {max})
   clockStallPenalty: Penalización por reloj detenido
-  applied: aplicada
-  none: ninguna
   clockFrozenNote: reloj del partido detenido — {before} → {after} pts antes de bonificaciones
-  favoriteBonus: Bonificación de favorito
+  favoriteBoost: Impulso de favorito
   favoriteTeamsInMatchup:
     1: 1 equipo favorito en el enfrentamiento
     n: $1 equipos favoritos en el enfrentamiento
@@ -388,7 +388,7 @@ proTip:
     t3: El Modo demostración ejecuta partidos simulados, perfecto para ajustar los controles sin esperar acción en vivo.
     t4: La sensibilidad controla qué tan grande debe ser la ventaja de PowerScore antes de que ArenaSwap cambie.
   detail:
-    t0: El PowerScore combina igualdad, presión de la recta final, impulso, cambios de ventaja, remontadas y varianza de probabilidad de victoria.
+    t0: El PowerScore combina igualdad, presión de la recta final, impulso, cambios de ventaja y remontadas — luego aplica un impulso o penalización de volatilidad según cuánto oscile la probabilidad de victoria.
     t1: Se aplica una penalización cuando el reloj del partido apenas avanza entre actualizaciones.
     t2: Los partidos 0-0 reciben una pequeña penalización de PowerScore en los deportes donde el 0-0 no es emocionante.
     t3: Pasa el cursor sobre las gráficas para inspeccionar momentos concretos del partido.

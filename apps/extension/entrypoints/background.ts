@@ -387,7 +387,7 @@ export default defineBackground(() => {
 			return normalizePowerScoreResult(
 				{
 					...baseScore,
-					baseTotal: baseScore.total,
+					baseTotal: baseScore.baseTotal ?? baseScore.total,
 					favoriteBonus,
 					favoriteTeamCount,
 					gameBoost,

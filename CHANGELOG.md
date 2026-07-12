@@ -1,6 +1,21 @@
 # Changelog
 
-## Win Probability Variance signal — 2026-07-12
+## Fix series dots ordering — 2026-07-12
+
+Fixed a bug where series win dots were rendered in the wrong positions. The ESPN API returns series events with future (unplayed) games listed first and completed games at the end of the array. The dots component now sorts completed events to the front before rendering, so filled dots correctly appear on the left for each win earned so far.
+
+## PowerScore breakdown display fixes — 2026-07-12
+
+- **Clock stall penalty** now shows a signed number (`0` or `-X`) instead of "none"/"applied" text
+- **Volatility label** is now dynamic: "Volatility Boost" when positive, "Volatility Penalty" when negative, "Volatility" when neutral
+- **Favorite bonus** renamed to "Favorite Boost" for consistent boost/penalty language
+- Added `stallPenalty` field to `PowerScoreResult` and `PowerScoreSnapshot` types — the scorer now exposes the exact points removed by the stall penalty
+
+## Volatility boost/penalty reclassification — 2026-07-12
+
+Reclassifies the win probability variance modifier from a "signal" to a proper boost/penalty. The score calculation is unchanged; this is a UI, language, and visual style update. The breakdown now shows Volatility alongside other boosts (Favorite, Game boost, Scoring opportunity, Postseason) with a signed +/− value instead of a progress bar. Positive volatility is colored purple; negative (blowout penalty) is red.
+
+## Win Probability Variance boost/penalty — 2026-07-12
 
 Adds a new ±10-point PowerScore modifier that rewards games with volatile win probability swings and penalises one-sided blowouts. Closes [#32](https://github.com/hiteacheryouare/arenaswap/issues/32).
 

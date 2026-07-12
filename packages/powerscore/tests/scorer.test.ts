@@ -656,6 +656,7 @@ describe('computePowerScore', () => {
 		const lightStep = stallPenaltySteps[stallPenaltySteps.length - 1];
 		const result = computePowerScore(game, [], (lightStep?.minPolls ?? 8) - 1);
 		expect(result.stalled).toBe(false);
+		expect(result.stallPenalty).toBe(0);
 		expect(result.total).toBe(result.closeness + result.lateGame + result.momentum + result.leadChanges + result.comeback);
 	});
 
@@ -674,6 +675,7 @@ describe('computePowerScore', () => {
 		expect(stalled.stalled).toBe(true);
 		expect(stalled.total).toBe(Math.round(raw.total * lightStep.multiplier));
 		expect(stalled.baseTotal).toBe(raw.total);
+		expect(stalled.stallPenalty).toBe(raw.total - stalled.total);
 	});
 
 	test('applies heavy stall penalty at the highest step threshold', () => {
@@ -691,6 +693,7 @@ describe('computePowerScore', () => {
 		expect(stalled.stalled).toBe(true);
 		expect(stalled.total).toBe(Math.round(raw.total * heavyStep.multiplier));
 		expect(stalled.baseTotal).toBe(raw.total);
+		expect(stalled.stallPenalty).toBe(raw.total - stalled.total);
 	});
 
 	test('falls back to default reason when no signal reasons are present', () => {
@@ -975,31 +978,30 @@ describe('computeWinProbVarianceScore', () => {
 		expect(computeWinProbVarianceScore([0.5, 0.6, 0.4, 0.5])).toBeUndefined();
 	});
 
-	test('returns -10 for a perfectly stable game (zero variance)', () => {
-		// All values identical → variance = 0 → score = −10
-		const stable = Array.from({ length: 20 }, () => 0.75);
-		expect(computeWinProbVarianceScore(stable)).toBe(-10);
+	test('returns the minimum penalty for a one-sided game (avg distance from 50% ≥ maxAvgDist)', () => {
+		// avg|p-0.5| = 0.35 = maxAvgDist → saturates to -scoreWinProbVarianceMax
+		const dominated = Array.from({ length: 20 }, () => 0.85);
+		expect(computeWinProbVarianceScore(dominated)).toBe(-scoreWinProbVarianceMax);
 	});
 
-	test('returns positive score for a high-variance game', () => {
-		// Alternating 0 and 1 → maximum possible variance
-		const wild = Array.from({ length: 20 }, (_, i) => (i % 2 === 0 ? 0.05 : 0.95));
-		const score = computeWinProbVarianceScore(wild);
+	test('returns positive score for a contested game close to 50/50', () => {
+		// Lines oscillating near 50% → avg|p-0.5| ≈ 0.03, well below maxAvgDist → strongly positive
+		const contested = Array.from({ length: 20 }, (_, i) => (i % 2 === 0 ? 0.47 : 0.53));
+		const score = computeWinProbVarianceScore(contested);
 		expect(score).toBeGreaterThan(0);
 		expect(score).toBeLessThanOrEqual(scoreWinProbVarianceMax);
 	});
 
-	test('returns exactly +10 when variance meets or exceeds maxVariance', () => {
-		// Alternating extremes produce variance well above the tunable maxVariance (0.10)
-		const extreme = Array.from({ length: 30 }, (_, i) => (i % 2 === 0 ? 0 : 1));
-		expect(computeWinProbVarianceScore(extreme)).toBe(scoreWinProbVarianceMax);
+	test('returns the maximum boost for a perfectly contested game (avg distance from 50% = 0)', () => {
+		// All values at 0.5 → avg|p-0.5| = 0 → score = +scoreWinProbVarianceMax
+		const perfectlyContested = Array.from({ length: 30 }, () => 0.5);
+		expect(computeWinProbVarianceScore(perfectlyContested)).toBe(scoreWinProbVarianceMax);
 	});
 
-	test('returns 0 at the neutral midpoint (variance = maxVariance / 2)', () => {
-		// Construct a dataset whose variance is exactly maxVariance/2.
-		// For values in {a, b} alternating, variance ≈ ((a-mean)^2 + (b-mean)^2)/2 = (a-b)^2/4.
-		// (a-b)^2/4 = 0.05 → a-b ≈ 0.447. Use [0.5-0.224, 0.5+0.224] ≈ [0.276, 0.724].
-		const neutral = Array.from({ length: 30 }, (_, i) => (i % 2 === 0 ? 0.276 : 0.724));
+	test('returns 0 at the neutral midpoint (avg distance from 50% = maxAvgDist / 2)', () => {
+		// avg|p-0.5| = 0.175 = maxAvgDist/2 → maps exactly to 0
+		// p = 0.5 ± 0.175 → [0.325, 0.675]
+		const neutral = Array.from({ length: 30 }, (_, i) => (i % 2 === 0 ? 0.325 : 0.675));
 		const score = computeWinProbVarianceScore(neutral);
 		// Allow ±1 rounding tolerance around 0
 		expect(score).toBeGreaterThanOrEqual(-1);
@@ -1012,15 +1014,15 @@ describe('computeWinProbVarianceScore', () => {
 		expect(score).toBeLessThanOrEqual(scoreWinProbVarianceMax);
 	});
 
-	test('low-variance close game earns a penalty', () => {
-		// A game where win probability barely moves (close but stable)
-		const stable = [0.51, 0.52, 0.50, 0.51, 0.49, 0.50, 0.52, 0.51, 0.50, 0.49];
-		const score = computeWinProbVarianceScore(stable);
-		expect(score).toBeLessThan(0);
+	test('close game near 50/50 earns a boost', () => {
+		// Win probability hugging 50% means both lines are always near each other → positive
+		const close = [0.51, 0.52, 0.50, 0.51, 0.49, 0.50, 0.52, 0.51, 0.50, 0.49];
+		const score = computeWinProbVarianceScore(close);
+		expect(score).toBeGreaterThan(0);
 	});
 });
 
-describe('computePowerScore — win probability variance integration', () => {
+describe('computePowerScore — win probability volatility boost/penalty integration', () => {
 	const baseGame = makeGame({
 		period: 3,
 		clockSeconds: 300,
@@ -1040,31 +1042,32 @@ describe('computePowerScore — win probability variance integration', () => {
 	});
 
 	test('includes winProbabilityVariance when sufficient win prob history is supplied', () => {
-		// Alternating 0.15/0.85 → variance ≈ 0.12 > maxVariance(0.10) → clamps to +10
+		// Alternating 0.15/0.85 → avg|p-0.5| = 0.35 = maxAvgDist → clamps to -scoreWinProbVarianceMax (lines always far apart)
 		const winProb = Array.from({ length: 20 }, (_, i) => (i % 2 === 0 ? 0.15 : 0.85));
 		const result = computePowerScore(baseGame, shortHistory, 0, winProb);
 		expect(result.winProbabilityVariance).toBeDefined();
-		expect(result.winProbabilityVariance).toBeGreaterThan(0);
+		expect(result.winProbabilityVariance).toBeLessThan(0);
 	});
 
-	test('high-variance game has a higher total than low-variance game (other signals equal)', () => {
-		const highVarianceProb = Array.from({ length: 30 }, (_, i) => (i % 2 === 0 ? 0.1 : 0.9));
-		const lowVarianceProb = Array.from({ length: 30 }, () => 0.5);
-		const highResult = computePowerScore(baseGame, shortHistory, 0, highVarianceProb);
-		const lowResult = computePowerScore(baseGame, shortHistory, 0, lowVarianceProb);
-		expect(highResult.total).toBeGreaterThan(lowResult.total);
+	test('close-to-50% game has a higher total than a one-sided game (other signals equal)', () => {
+		const contestedProb = Array.from({ length: 30 }, () => 0.5);     // avg dist = 0 → +max
+		const dominatedProb = Array.from({ length: 30 }, () => 0.8);     // avg dist = 0.3 → negative
+		const contestedResult = computePowerScore(baseGame, shortHistory, 0, contestedProb);
+		const dominatedResult = computePowerScore(baseGame, shortHistory, 0, dominatedProb);
+		expect(contestedResult.total).toBeGreaterThan(dominatedResult.total);
 	});
 
-	test('always sets baseTotal including winProbabilityVariance contribution', () => {
+	test('baseTotal holds pure signals subtotal, unaffected by variance', () => {
 		const winProb = Array.from({ length: 20 }, () => 0.8); // stable → variance penalty
 		const result = computePowerScore(baseGame, shortHistory, 0, winProb);
-		expect(result.baseTotal).toBeDefined();
-		// baseTotal should reflect that the variance penalty reduced the raw sum
 		const signalsSubtotal = result.closeness + result.lateGame + result.momentum + result.leadChanges + result.comeback;
-		expect(result.baseTotal).toBeLessThanOrEqual(signalsSubtotal);
+		// baseTotal is the pre-stall pure signals sum — variance is a separate boost/penalty on top
+		expect(result.baseTotal).toBe(signalsSubtotal);
+		expect(result.winProbabilityVariance).toBeDefined();
+		expect(result.total).toBe(signalsSubtotal + (result.winProbabilityVariance ?? 0));
 	});
 
-	test('win prob variance does not appear in reason string', () => {
+	test('win prob volatility does not appear in reason string', () => {
 		const winProb = Array.from({ length: 20 }, (_, i) => (i % 2 === 0 ? 0.2 : 0.8));
 		const result = computePowerScore(baseGame, shortHistory, 0, winProb);
 		// The variance signal is shown separately in the UI breakdown, not in the reason string
@@ -1073,7 +1076,7 @@ describe('computePowerScore — win probability variance integration', () => {
 });
 
 describe('normalizePowerScoreResult — winProbabilityVariance', () => {
-	test('includes winProbabilityVariance in rawTotal derivation', () => {
+	test('stores winProbabilityVariance as a standalone field separate from signals', () => {
 		const result = normalizePowerScoreResult({
 			gameId: 'test',
 			closeness: 20,
@@ -1081,15 +1084,15 @@ describe('normalizePowerScoreResult — winProbabilityVariance', () => {
 			momentum: 5,
 			leadChanges: 0,
 			comeback: 0,
-			winProbabilityVariance: 8,
-			total: 43,
+			winProbabilityVariance: 4,
+			total: 39,
 			reason: 'test',
 		});
-		expect(result.winProbabilityVariance).toBe(8);
-		expect(result.total).toBe(43);
+		expect(result.winProbabilityVariance).toBe(4);
+		expect(result.total).toBe(39);
 	});
 
-	test('clamps winProbabilityVariance to [-10, +10]', () => {
+	test('clamps winProbabilityVariance to the configured max', () => {
 		const high = normalizePowerScoreResult({ gameId: 'g', winProbabilityVariance: 15, total: 50, reason: '' });
 		const low = normalizePowerScoreResult({ gameId: 'g', winProbabilityVariance: -15, total: 50, reason: '' });
 		expect(high.winProbabilityVariance).toBe(scoreWinProbVarianceMax);
