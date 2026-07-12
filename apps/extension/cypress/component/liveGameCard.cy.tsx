@@ -1,4 +1,4 @@
-import LiveGameCard from '../../entrypoints/popup/components/liveGameCard';
+import LiveGameCard from '@arenaswap/ui/src/components/liveGameCard';
 import type { Game, PowerScoreResult } from '@arenaswap/core/types';
 
 const baseGame: Game = {
@@ -31,12 +31,8 @@ const defaultProps = {
 	excitementResult: baseResult,
 	favoriteTeamIds: new Set<string>(),
 	onToggleFavoriteTeam: () => {},
-	gameBoosts: {},
-	openTabs: [],
-	registry: [],
-	onRegistryChange: () => {},
-	formatTabLabel: () => 'Tab',
 	onOpenGameDetail: () => {},
+	bettingPrefs: { bettingEnabled: false },
 };
 
 describe('liveGameCard PowerScore bar', () => {

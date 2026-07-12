@@ -16,8 +16,8 @@ import {
 	buildPowerScoreOption,
 	buildTeamScoreOption,
 	buildWinProbabilityOption,
-	resolveTeamColorPair,
 } from './gameDetailChartOptions';
+import { resolveTeamColorPair } from '@arenaswap/ui/src/components/colorUtils';
 import useSummaryData from './useSummaryData';
 import { formatGameClock, formatPeriod, GameMeta, powerScoreColor } from './gameCardShared';
 import { conditionIcon, formatTemperature } from './weatherUtils';

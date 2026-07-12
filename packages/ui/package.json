@@ -1,9 +1,16 @@
 {
 	"name": "@arenaswap/ui",
 	"version": "2.0.0",
-	"description": "ArenaSwap shared design system — Bootstrap tokens, font declarations, and Tailwind theme",
+	"description": "ArenaSwap shared design system — Bootstrap tokens, font declarations, Tailwind theme, and shared React UI components",
 	"private": true,
 	"scripts": {
 		"lint": "echo 'No JS/TS source files to lint'"
+	},
+	"peerDependencies": {
+		"react": ">=18",
+		"react-dom": ">=18"
+	},
+	"dependencies": {
+		"@arenaswap/core": "*"
 	}
 }
