@@ -1,25 +1,12 @@
 import type { Browser } from 'wxt/browser';
-import type { Game, LeagueId, PowerScoreResult, TabRegistration } from '@arenaswap/core/types';
+import type { TabRegistration } from '@arenaswap/core/types';
+export type { BettingDisplayPrefs, WeatherDisplayPrefs, GameCardDisplayProps } from '@arenaswap/ui/src/components/gameCardTypes';
+import type { GameCardDisplayProps } from '@arenaswap/ui/src/components/gameCardTypes';
 
-export interface BettingDisplayPrefs {
-	bettingEnabled: boolean;
-}
-
-export interface WeatherDisplayPrefs {
-	temperatureUnit: 'F' | 'C';
-}
-
-export interface gameCardProps {
-	game: Game | undefined;
-	excitementResult: PowerScoreResult | undefined;
-	favoriteTeamIds: Set<string>;
-	onToggleFavoriteTeam: (leagueId: LeagueId, teamId: string) => void;
-	gameBoosts: Record<string, number>;
+export interface gameCardProps extends GameCardDisplayProps {
 	openTabs: Browser.tabs.Tab[];
 	registry: TabRegistration[];
 	onRegistryChange: (updated: TabRegistration[]) => void;
 	formatTabLabel: (tab: Browser.tabs.Tab) => string;
-	onOpenGameDetail: (gameId: string) => void;
-	bettingPrefs: BettingDisplayPrefs;
-	weatherPrefs: WeatherDisplayPrefs;
+	gameBoosts: Record<string, number>;
 }

@@ -12,6 +12,7 @@ import WalkthroughView from './components/walkthroughView';
 import ToastContainer from './components/toastContainer';
 import { fetchState, formatTabLabel, leagueOrder, leaguesBySportType, normalizeBackgroundState, popupView } from './popupHelpers';
 import { i18n } from '#i18n';
+import { TranslationContext } from '@arenaswap/ui/src/components/i18nContext';
 import useFavoriteScoreConfetti from './useFavoriteScoreConfetti';
 import useToast from './useToast';
 import { hasStoredUserPreferences, loadStoredUserPreferences, persistStoredUserPreferences } from '../../utils/prefsStorage';
@@ -270,22 +271,29 @@ export default () => {
 
 	if (onboardingDone === false) {
 		return (
-			<OnboardingView
-				leagueLogos={leagueLogos}
-				onComplete={onOnboardingComplete}
-				onStartWalkthrough={(leagues, favorites) => {
-					onOnboardingComplete(leagues, favorites);
-					setWalkthroughActive(true);
-				}}
-			/>
+			<TranslationContext.Provider value={i18n.t}>
+				<OnboardingView
+					leagueLogos={leagueLogos}
+					onComplete={onOnboardingComplete}
+					onStartWalkthrough={(leagues, favorites) => {
+						onOnboardingComplete(leagues, favorites);
+						setWalkthroughActive(true);
+					}}
+				/>
+			</TranslationContext.Provider>
 		);
 	}
 
 	if (walkthroughActive) {
-		return <WalkthroughView onComplete={() => setWalkthroughActive(false)} />;
+		return (
+			<TranslationContext.Provider value={i18n.t}>
+				<WalkthroughView onComplete={() => setWalkthroughActive(false)} />
+			</TranslationContext.Provider>
+		);
 	}
 
 	return (
+		<TranslationContext.Provider value={i18n.t}>
 		<div className='popup-root'>
 			<canvas ref={confettiCanvasRef} className='popup-confetti-canvas' aria-hidden='true' />
 			<ToastContainer toasts={toasts} onDismiss={dismissToast} />
@@ -385,5 +393,6 @@ export default () => {
 				)}
 			</div>
 		</div>
+		</TranslationContext.Provider>
 	);
 };

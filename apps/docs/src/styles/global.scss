@@ -22,6 +22,7 @@ $accordion-body-padding-y:      1rem;
 @import 'bootstrap/scss/bootstrap';
 @import 'bootstrap/scss/reboot';
 @import 'bootstrap-icons/font/bootstrap-icons.scss';
+@import '@arenaswap/ui/src/game-card';
 
 // ─── Font faces ───────────────────────────────────────────────────────────────
 $font-base-url: '/arenaswap/fonts';
@@ -682,7 +683,6 @@ body.nav-open {
 
 .demo-popup {
 	width: 320px;
-	height: 560px;
 	background: #0d1117;
 	border-radius: 14px;
 	overflow: hidden;
@@ -760,217 +760,6 @@ body.nav-open {
 	color: #8b949e;
 	margin-bottom: 0.4rem;
 	margin-top: 0.25rem;
-}
-
-.demo-card {
-	border-radius: 0.5rem;
-	padding: 0.75rem;
-	margin-bottom: 0.5rem;
-	border: 1px solid #dee2e6;
-}
-
-.demo-card-top {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	margin-bottom: 0.25rem;
-}
-
-.demo-live {
-	display: flex;
-	align-items: center;
-	gap: 4px;
-	font-size: 0.65rem;
-	font-weight: 700;
-	text-transform: uppercase;
-	letter-spacing: 0.08em;
-	color: #F75C03;
-}
-
-.demo-live-dot {
-	width: 6px;
-	height: 6px;
-	border-radius: 50%;
-	background: #e53935;
-	animation: demo-live-pulse 1.5s ease-in-out infinite;
-	flex-shrink: 0;
-}
-
-.demo-ps {
-	font-size: 0.55rem;
-	font-weight: 700;
-	color: #fff;
-	padding: 0.1rem 0.4rem;
-	border-radius: 0.25rem;
-	display: flex;
-	align-items: center;
-	gap: 3px;
-	letter-spacing: 0.03em;
-}
-
-.demo-matchup {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	gap: 0.75rem;
-	margin: 0.5rem 0 0.4rem;
-}
-
-.demo-team-col {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	min-width: 60px;
-	gap: 2px;
-}
-
-.demo-team-logo {
-	width: 44px;
-	height: 44px;
-	border-radius: 50%;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	font-size: 0.55rem;
-	font-weight: 700;
-	letter-spacing: 0.02em;
-}
-
-.demo-team-logo-wrap {
-	width: 52px;
-	height: 52px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-}
-
-.demo-team-logo-img {
-	width: 52px;
-	height: 52px;
-	object-fit: contain;
-}
-
-.demo-star-icon {
-	font-size: 0.78rem;
-	color: #6c757d;
-}
-
-.demo-team-abbr {
-	font-size: 0.7rem;
-	color: #111827;
-	font-weight: 700;
-}
-
-.demo-center-col {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	min-width: 80px;
-	gap: 2px;
-}
-
-.demo-scores {
-	display: flex;
-	gap: 0.5rem;
-	align-items: center;
-}
-
-.demo-sep {
-	width: 1px;
-	height: 1.1em;
-	background: #e2e8f0;
-	flex-shrink: 0;
-	align-self: center;
-}
-
-.demo-score {
-	font-size: 1.75rem;
-	font-weight: 700;
-	color: #111827;
-	letter-spacing: -0.02em;
-	font-variant-numeric: tabular-nums;
-}
-
-.demo-clock {
-	font-family: 'Lekton', monospace;
-	font-size: 0.85rem;
-	color: #374151;
-	font-variant-numeric: tabular-nums;
-}
-
-.demo-period {
-	font-family: 'Lekton', monospace;
-	font-size: 0.7rem;
-	color: #6c757d;
-}
-
-.demo-meta {
-	display: flex;
-	flex-direction: column;
-	gap: 1px;
-	margin-top: 0.25rem;
-}
-
-.demo-meta-venue {
-	font-size: 0.6rem;
-	color: #6c757d;
-}
-
-.demo-meta-network {
-	font-size: 0.58rem;
-	color: #495057;
-}
-
-.demo-tab-row {
-	margin-top: 0.4rem;
-}
-
-.demo-select {
-	width: 100%;
-	background: #f8f9fa;
-	color: #374151;
-	border: 1px solid #dee2e6;
-	border-radius: 0.25rem;
-	font-size: 0.6rem;
-	padding: 0.15rem 0.4rem;
-}
-
-.demo-ps-bar-row {
-	display: flex;
-	align-items: center;
-	gap: 5px;
-	margin-top: 0.4rem;
-	padding-top: 0.35rem;
-	border-top: 1px solid #dee2e6;
-}
-
-.demo-ps-label {
-	font-size: 0.48rem;
-	font-weight: 700;
-	color: #6c757d;
-	white-space: nowrap;
-	text-transform: uppercase;
-	letter-spacing: 0.06em;
-}
-
-.demo-ps-progress {
-	flex: 1;
-	height: 4px;
-	background: #e9ecef;
-	border-radius: 999px;
-	overflow: hidden;
-}
-
-.demo-ps-fill {
-	height: 100%;
-	border-radius: 999px;
-}
-
-.demo-ps-score {
-	font-size: 0.5rem;
-	font-weight: 700;
-	white-space: nowrap;
-	font-family: 'Lekton', monospace;
 }
 
 .hero-scroll-indicator {
@@ -1596,13 +1385,6 @@ $ps-signal-colors: (
 	text-transform: uppercase;
 	letter-spacing: 0.08em;
 	color: #8b949e;
-}
-
-.demo-down-dist {
-	font-family: 'Lekton', monospace;
-	font-size: 0.62rem;
-	color: #6c757d;
-	letter-spacing: 0.02em;
 }
 
 // ─── League visualization ─────────────────────────────────────────────────────

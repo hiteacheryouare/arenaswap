@@ -1,5 +1,63 @@
 # Changelog
 
+## Screenshot popup sizing + hero real-card swap — 2026-07-11
+
+Real game cards (from the ui package) are taller than the old hand-coded mockups. Scaled screenshot popups to 82% so they fit within the 1280×800 canvas, and replaced the hero section's hand-coded demo cards with real `LiveGameCard` components.
+
+### What changed
+
+**`apps/docs/src/pages/screenshots/_screenshot.scss`**
+- Added `transform: scale(0.82)` to `.popup-overlay .popup` and `.popup-float .popup` so card content fits within the canvas without overflow
+
+**`apps/docs/src/pages/screenshots/3.astro`**
+- Updated `.popup-large { transform: translateX(-50%) scale(0.82); transform-origin: top center; }`
+- Adjusted `.dropdown-menu-fake { top: 495px; }` (was 380px) to align with scaled card position
+
+**`apps/docs/src/styles/global.scss`**
+- Added `@import '@arenaswap/ui/src/game-card';` so game card CSS is available site-wide
+- Removed `height: 560px` from `.demo-popup` (popup auto-sizes to real card content)
+- Removed all hand-coded `.demo-card` / `.demo-matchup` / `.demo-ps-*` CSS (replaced by real component styles)
+
+**`apps/docs/src/components/HeroCard.tsx`** (new)
+- Thin wrapper around `LiveGameCard` for the hero section (same pattern as `ScreenshotCard.tsx`)
+
+**`apps/docs/src/components/Hero.astro`**
+- Added game data for BU vs NU (NCAAB) and KC vs BAL (NFL)
+- Replaced two `.demo-card` HTML blocks with `<HeroCard>` components
+
+## UI package refactor — 2026-07-11
+
+Extracted all game card components from `apps/extension` into `packages/ui` so they can be shared across all surfaces (extension and docs). Screenshot pages in `apps/docs` now render real extension components instead of hand-coded HTML mockups.
+
+### What changed
+
+**`packages/ui/src/components/`** (all new)
+- `colorUtils.ts` — `resolveTeamColorPair` and its private helpers extracted from `gameDetailChartOptions.ts`; now shared between game cards and charts
+- `i18nContext.tsx` — `TranslationContext` + `useT()` hook with default English strings; lets game card components work without WXT's `#i18n` virtual module
+- `gameCardTypes.ts` — `GameCardDisplayProps` interface (no WXT/browser deps); uses `tabSlot?: ReactNode` instead of tab-specific props
+- `gameCardShared.tsx`, `gameCard.tsx`, `liveGameCard.tsx`, `preGameCard.tsx`, `bsoIndicator.tsx` — moved from extension; use `useT()` and `tabSlot` pattern
+- `_game-card.scss` — all game card CSS extracted from extension's `bootstrap.scss`
+- `components/index.ts` — barrel exports for all moved components
+
+**`packages/ui/package.json`**
+- Added `peerDependencies: { react: ">=18", react-dom: ">=18" }` and `dependencies: { "@arenaswap/core": "*" }`
+
+**`apps/extension/`**
+- `app.tsx` — wraps popup in `<TranslationContext.Provider value={i18n.t}>`
+- `liveGameCard.tsx`, `preGameCard.tsx` — replaced with thin wrappers that inject `<TabAssignSelect>` as `tabSlot`
+- `gameCard.tsx` — real dispatcher using extension wrappers (not a re-export)
+- `gameCardTypes.ts` — re-exports shared types from ui; keeps extension-specific superset
+- `baseDiamond.tsx`, `flipScore.tsx`, `bsoIndicator.tsx`, `weatherUtils.ts`, `gameCardShared.tsx` — thin re-exports
+- `gameDetailChartOptions.ts` — removed duplicate color utilities; imports from `@arenaswap/ui/src/components/colorUtils`
+- `gameDetailView.tsx`, `seriesDots.tsx` — updated imports to use `@arenaswap/ui/src/components/colorUtils` directly
+- `bootstrap.scss` — removed game card CSS (now in ui package); imports `@arenaswap/ui/src/game-card`
+- `cypress/component/liveGameCard.cy.tsx` — updated import path; removed tab props; added `bettingPrefs`
+
+**`apps/docs/src/`**
+- `components/ScreenshotCard.tsx` (new) — React wrapper around `LiveGameCard` that accepts `tabLabel?: string`; works around Astro JSX-as-prop limitation
+- `pages/screenshots/_screenshot.scss` — replaced hand-rolled fonts/card styles with imports from ui package
+- `pages/screenshots/1.astro`, `2.astro`, `3.astro` — replaced mock HTML game cards with real `<ScreenshotCard>` components using typed mock data
+
 ## Team color pair normalization — 2026-07-09
 
 Previously, each team's display color was resolved independently: pick the primary color, fall back to the alternate if the primary was too dark. This worked for solid borders but failed for matchup gradients and chart lines when two teams happened to share similar primary colors — both sides of the card blended into the same hue and chart lines were hard to distinguish.

@@ -1,4 +1,29 @@
 ---
+import HeroCard from './HeroCard';
+
+const phiMiaGame = {
+	id: 'hero-mlb',
+	league: 'mlb' as const,
+	sportType: 'baseball' as const,
+	awayTeam: { id: 'mia', name: 'Miami Marlins', abbreviation: 'MIA', score: 2, logo: 'https://a.espncdn.com/i/teamlogos/mlb/500/mia.png', color: '#00A3E0', alternateColor: '#EF3340' },
+	homeTeam: { id: 'phi', name: 'Philadelphia Phillies', abbreviation: 'PHI', score: 4, logo: 'https://a.espncdn.com/i/teamlogos/mlb/500/phi.png', color: '#E81828', alternateColor: '#002D72' },
+	period: 7, clockSeconds: 0, status: 'in' as const,
+	topOfInning: false,
+	broadcasts: ['ESPN+'],
+};
+const phiMiaScore = { gameId: 'hero-mlb', total: 78, closeness: 22, lateGame: 20, momentum: 18, leadChanges: 10, comeback: 8, reason: '' };
+
+const phiDalGame = {
+	id: 'hero-nfl',
+	league: 'nfl' as const,
+	sportType: 'football' as const,
+	awayTeam: { id: 'dal', name: 'Dallas Cowboys', abbreviation: 'DAL', score: 17, logo: 'https://a.espncdn.com/i/teamlogos/nfl/500/dal.png', color: '#003594', alternateColor: '#869397' },
+	homeTeam: { id: 'phi', name: 'Philadelphia Eagles', abbreviation: 'PHI', score: 21, logo: 'https://a.espncdn.com/i/teamlogos/nfl/500/phi.png', color: '#004C54', alternateColor: '#A5ACAF' },
+	period: 4, clockSeconds: 185, status: 'in' as const,
+	downDistance: '2nd & 8',
+	broadcasts: ['FOX'],
+};
+const phiDalScore = { gameId: 'hero-nfl', total: 72, closeness: 20, lateGame: 18, momentum: 16, leadChanges: 10, comeback: 8, reason: '' };
 ---
 <section id="hero" class="position-relative d-flex align-items-center" style="min-height:100vh;padding-top:80px;">
 
@@ -62,94 +87,19 @@
 							<!-- Active Tabs heading -->
 							<div class="demo-section-title">Active Tabs</div>
 
-							<!-- NCAAB: BU vs NU — hottest game -->
+							<!-- MLB: Phillies vs Marlins -->
 							<div class="demo-league-row">
-								<img src="/arenaswap/images/leagues/ncaab.png" alt="NCAAB" class="demo-league-icon" onerror="this.style.display='none'" />
-								<span class="demo-league-label-text">NCAAB</span>
+								<img src="/arenaswap/images/leagues/mlb.png" alt="MLB" class="demo-league-icon" onerror="this.style.display='none'" />
+								<span class="demo-league-label-text">MLB</span>
 							</div>
-							<div class="demo-card" style="border-left:4px solid #CC0000;border-right:4px solid #CC0000;background:linear-gradient(to right,#CC000020,#CC000020),#fff;">
-								<div class="demo-live">
-									<span class="demo-live-dot"></span>LIVE
-								</div>
-								<div class="demo-matchup">
-									<div class="demo-team-col">
-										<div class="demo-team-logo-wrap">
-											<img src="https://a.espncdn.com/i/teamlogos/ncaa/500/104.png" alt="BU" class="demo-team-logo-img" />
-										</div>
-										<span class="demo-team-abbr">BU</span>
-									</div>
-									<div class="demo-center-col">
-										<div class="demo-scores">
-											<span class="demo-score">42</span>
-											<span class="demo-sep"></span>
-											<span class="demo-score">45</span>
-										</div>
-										<span class="demo-clock">2:42</span>
-										<span class="demo-period">4th</span>
-									</div>
-									<div class="demo-team-col">
-										<div class="demo-team-logo-wrap">
-											<img src="https://a.espncdn.com/i/teamlogos/ncaa/500/111.png" alt="NU" class="demo-team-logo-img" />
-										</div>
-										<span class="demo-team-abbr">NU</span>
-									</div>
-								</div>
-								<div class="demo-ps-bar-row">
-									<span class="demo-ps-label">PowerScore</span>
-									<div class="demo-ps-progress">
-										<div class="demo-ps-fill" style="width:89%;background:linear-gradient(to right,#8b949e,#F75C03);"></div>
-									</div>
-									<span class="demo-ps-score" style="color:#F75C03;">89</span>
-								</div>
-								<div class="demo-tab-row">
-									<select class="demo-select"><option>Tab 2: truTV</option></select>
-								</div>
-							</div>
+							<HeroCard game={phiMiaGame} excitementResult={phiMiaScore} tabLabel="Tab 1: ESPN+" />
 
-							<!-- NFL: Chiefs vs Ravens -->
+							<!-- NFL: Eagles vs Cowboys -->
 							<div class="demo-league-row" style="margin-top:0.35rem;">
 								<img src="/arenaswap/images/leagues/nfl.png" alt="NFL" class="demo-league-icon" onerror="this.style.display='none'" />
 								<span class="demo-league-label-text">NFL</span>
 							</div>
-							<div class="demo-card" style="border-left:4px solid #E31837;border-right:4px solid #241773;background:linear-gradient(to right,#E3183720,#24177320),#fff;">
-								<div class="demo-live">
-									<span class="demo-live-dot"></span>LIVE
-								</div>
-								<div class="demo-matchup">
-									<div class="demo-team-col">
-										<div class="demo-team-logo-wrap">
-											<img src="https://a.espncdn.com/i/teamlogos/nfl/500/kc.png" alt="KC" class="demo-team-logo-img" />
-										</div>
-										<span class="demo-team-abbr">KC</span>
-									</div>
-									<div class="demo-center-col">
-										<div class="demo-scores">
-											<span class="demo-score">17</span>
-											<span class="demo-sep"></span>
-											<span class="demo-score">20</span>
-										</div>
-										<span class="demo-clock">1:18</span>
-										<span class="demo-period">Q4</span>
-										<span class="demo-down-dist">3rd &amp; 6</span>
-									</div>
-									<div class="demo-team-col">
-										<div class="demo-team-logo-wrap">
-											<img src="https://a.espncdn.com/i/teamlogos/nfl/500/bal.png" alt="BAL" class="demo-team-logo-img" />
-										</div>
-										<span class="demo-team-abbr">BAL</span>
-									</div>
-								</div>
-								<div class="demo-ps-bar-row">
-									<span class="demo-ps-label">PowerScore</span>
-									<div class="demo-ps-progress">
-										<div class="demo-ps-fill" style="width:76%;background:linear-gradient(to right,#8b949e,#F75C03);"></div>
-									</div>
-									<span class="demo-ps-score" style="color:#db6b2b;">76</span>
-								</div>
-								<div class="demo-tab-row">
-									<select class="demo-select"><option>Tab 1: ESPN</option></select>
-								</div>
-							</div>
+							<HeroCard game={phiDalGame} excitementResult={phiDalScore} tabLabel="Tab 2: FOX" />
 
 						</div>
 					</div>
