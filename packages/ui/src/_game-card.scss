@@ -284,3 +284,22 @@ $pre-game-time-color: shade-color($warning, 60%);
 	flex-shrink: 0;
 	align-self: center;
 }
+
+// ─── Tab assignment select (compact version matching the extension popup) ──────
+
+.game-card-tab-assign {
+	margin-top: 0.4rem;
+	.form-select {
+		background-color: #f8f9fa;
+		color:            #374151;
+		border-color:     #dee2e6;
+		font-size:        0.6rem;
+		padding:          0.15rem 1.5rem 0.15rem 0.4rem;
+		height:           auto;
+		line-height:      1.4;
+		&:focus {
+			border-color: #F75C03;
+			box-shadow:   0 0 0 0.15rem rgba(#F75C03, 0.2);
+		}
+	}
+}

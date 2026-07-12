@@ -93,7 +93,7 @@ const bosNyyScore3 = { gameId: 'sc-mlb-3', total: 71, closeness: 20, lateGame: 1
 
 						<!-- Card 2: unassigned (dropdown shown open via .dropdown-menu-fake below) -->
 						<div class='popup-league-label'>MLB</div>
-						<ScreenshotCard game={bosNyyGame3} excitementResult={bosNyyScore3} />
+						<ScreenshotCard game={bosNyyGame3} excitementResult={bosNyyScore3} tabLabel='— Assign a tab —' />
 					</div>
 				</div>
 
@@ -207,8 +207,8 @@ const bosNyyScore3 = { gameId: 'sc-mlb-3', total: 71, closeness: 20, lateGame: 1
 
 		.dropdown-menu-fake {
 			position: absolute;
-			left: calc(50% + 70px);
-			top: 495px;
+			left: calc(50% - 120px);
+			top: 515px;
 			width: 240px;
 			background: #ffffff;
 			border: 1px solid #d1d5db;
@@ -225,7 +225,7 @@ const bosNyyScore3 = { gameId: 'sc-mlb-3', total: 71, closeness: 20, lateGame: 1
 			content: '';
 			position: absolute;
 			top: -7px;
-			left: 24px;
+			left: 114px;
 			width: 12px;
 			height: 12px;
 			background: #ffffff;
