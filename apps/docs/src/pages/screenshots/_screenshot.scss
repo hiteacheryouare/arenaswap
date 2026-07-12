@@ -204,3 +204,15 @@ html, body {
 	animation: popup-live-pulse 1.5s ease-in-out infinite;
 	flex-shrink: 0;
 }
+
+// Real game cards are taller than the old hand-coded mockups.
+// Scale the popup down so it fits within the 1280×800 canvas.
+.popup-overlay .popup {
+	transform: scale(0.82);
+	transform-origin: top right;
+}
+
+.popup-float .popup {
+	transform: scale(0.82);
+	transform-origin: bottom right;
+}

@@ -1,4 +1,28 @@
 ---
+import HeroCard from './HeroCard';
+
+const buNuGame = {
+	id: 'hero-ncaab',
+	league: 'ncaab' as const,
+	sportType: 'basketball' as const,
+	awayTeam: { id: '104', name: 'Boston University', abbreviation: 'BU', score: 42, logo: 'https://a.espncdn.com/i/teamlogos/ncaa/500/104.png', color: '#CC0000', alternateColor: '#FFFFFF' },
+	homeTeam: { id: '111', name: 'Northeastern', abbreviation: 'NU', score: 45, logo: 'https://a.espncdn.com/i/teamlogos/ncaa/500/111.png', color: '#CC0000', alternateColor: '#000000' },
+	period: 4, clockSeconds: 162, status: 'in' as const,
+	broadcasts: ['truTV'],
+};
+const buNuScore = { gameId: 'hero-ncaab', total: 89, closeness: 24, lateGame: 25, momentum: 20, leadChanges: 12, comeback: 8, reason: '' };
+
+const kcBalGame = {
+	id: 'hero-nfl',
+	league: 'nfl' as const,
+	sportType: 'football' as const,
+	awayTeam: { id: 'kc', name: 'Kansas City Chiefs', abbreviation: 'KC', score: 17, logo: 'https://a.espncdn.com/i/teamlogos/nfl/500/kc.png', color: '#E31837', alternateColor: '#FFB81C' },
+	homeTeam: { id: 'bal', name: 'Baltimore Ravens', abbreviation: 'BAL', score: 20, logo: 'https://a.espncdn.com/i/teamlogos/nfl/500/bal.png', color: '#241773', alternateColor: '#9E7C0C' },
+	period: 4, clockSeconds: 78, status: 'in' as const,
+	downDistance: '3rd & 6',
+	broadcasts: ['ESPN'],
+};
+const kcBalScore = { gameId: 'hero-nfl', total: 76, closeness: 22, lateGame: 20, momentum: 18, leadChanges: 10, comeback: 6, reason: '' };
 ---
 <section id="hero" class="position-relative d-flex align-items-center" style="min-height:100vh;padding-top:80px;">
 
@@ -67,89 +91,14 @@
 								<img src="/arenaswap/images/leagues/ncaab.png" alt="NCAAB" class="demo-league-icon" onerror="this.style.display='none'" />
 								<span class="demo-league-label-text">NCAAB</span>
 							</div>
-							<div class="demo-card" style="border-left:4px solid #CC0000;border-right:4px solid #CC0000;background:linear-gradient(to right,#CC000020,#CC000020),#fff;">
-								<div class="demo-live">
-									<span class="demo-live-dot"></span>LIVE
-								</div>
-								<div class="demo-matchup">
-									<div class="demo-team-col">
-										<div class="demo-team-logo-wrap">
-											<img src="https://a.espncdn.com/i/teamlogos/ncaa/500/104.png" alt="BU" class="demo-team-logo-img" />
-										</div>
-										<span class="demo-team-abbr">BU</span>
-									</div>
-									<div class="demo-center-col">
-										<div class="demo-scores">
-											<span class="demo-score">42</span>
-											<span class="demo-sep"></span>
-											<span class="demo-score">45</span>
-										</div>
-										<span class="demo-clock">2:42</span>
-										<span class="demo-period">4th</span>
-									</div>
-									<div class="demo-team-col">
-										<div class="demo-team-logo-wrap">
-											<img src="https://a.espncdn.com/i/teamlogos/ncaa/500/111.png" alt="NU" class="demo-team-logo-img" />
-										</div>
-										<span class="demo-team-abbr">NU</span>
-									</div>
-								</div>
-								<div class="demo-ps-bar-row">
-									<span class="demo-ps-label">PowerScore</span>
-									<div class="demo-ps-progress">
-										<div class="demo-ps-fill" style="width:89%;background:linear-gradient(to right,#8b949e,#F75C03);"></div>
-									</div>
-									<span class="demo-ps-score" style="color:#F75C03;">89</span>
-								</div>
-								<div class="demo-tab-row">
-									<select class="demo-select"><option>Tab 2: truTV</option></select>
-								</div>
-							</div>
+							<HeroCard game={buNuGame} excitementResult={buNuScore} tabLabel="Tab 2: truTV" />
 
 							<!-- NFL: Chiefs vs Ravens -->
 							<div class="demo-league-row" style="margin-top:0.35rem;">
 								<img src="/arenaswap/images/leagues/nfl.png" alt="NFL" class="demo-league-icon" onerror="this.style.display='none'" />
 								<span class="demo-league-label-text">NFL</span>
 							</div>
-							<div class="demo-card" style="border-left:4px solid #E31837;border-right:4px solid #241773;background:linear-gradient(to right,#E3183720,#24177320),#fff;">
-								<div class="demo-live">
-									<span class="demo-live-dot"></span>LIVE
-								</div>
-								<div class="demo-matchup">
-									<div class="demo-team-col">
-										<div class="demo-team-logo-wrap">
-											<img src="https://a.espncdn.com/i/teamlogos/nfl/500/kc.png" alt="KC" class="demo-team-logo-img" />
-										</div>
-										<span class="demo-team-abbr">KC</span>
-									</div>
-									<div class="demo-center-col">
-										<div class="demo-scores">
-											<span class="demo-score">17</span>
-											<span class="demo-sep"></span>
-											<span class="demo-score">20</span>
-										</div>
-										<span class="demo-clock">1:18</span>
-										<span class="demo-period">Q4</span>
-										<span class="demo-down-dist">3rd &amp; 6</span>
-									</div>
-									<div class="demo-team-col">
-										<div class="demo-team-logo-wrap">
-											<img src="https://a.espncdn.com/i/teamlogos/nfl/500/bal.png" alt="BAL" class="demo-team-logo-img" />
-										</div>
-										<span class="demo-team-abbr">BAL</span>
-									</div>
-								</div>
-								<div class="demo-ps-bar-row">
-									<span class="demo-ps-label">PowerScore</span>
-									<div class="demo-ps-progress">
-										<div class="demo-ps-fill" style="width:76%;background:linear-gradient(to right,#8b949e,#F75C03);"></div>
-									</div>
-									<span class="demo-ps-score" style="color:#db6b2b;">76</span>
-								</div>
-								<div class="demo-tab-row">
-									<select class="demo-select"><option>Tab 1: ESPN</option></select>
-								</div>
-							</div>
+							<HeroCard game={kcBalGame} excitementResult={kcBalScore} tabLabel="Tab 1: ESPN" />
 
 						</div>
 					</div>

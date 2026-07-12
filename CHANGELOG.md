@@ -1,5 +1,30 @@
 # Changelog
 
+## Screenshot popup sizing + hero real-card swap — 2026-07-11
+
+Real game cards (from the ui package) are taller than the old hand-coded mockups. Scaled screenshot popups to 82% so they fit within the 1280×800 canvas, and replaced the hero section's hand-coded demo cards with real `LiveGameCard` components.
+
+### What changed
+
+**`apps/docs/src/pages/screenshots/_screenshot.scss`**
+- Added `transform: scale(0.82)` to `.popup-overlay .popup` and `.popup-float .popup` so card content fits within the canvas without overflow
+
+**`apps/docs/src/pages/screenshots/3.astro`**
+- Updated `.popup-large { transform: translateX(-50%) scale(0.82); transform-origin: top center; }`
+- Adjusted `.dropdown-menu-fake { top: 495px; }` (was 380px) to align with scaled card position
+
+**`apps/docs/src/styles/global.scss`**
+- Added `@import '@arenaswap/ui/src/game-card';` so game card CSS is available site-wide
+- Removed `height: 560px` from `.demo-popup` (popup auto-sizes to real card content)
+- Removed all hand-coded `.demo-card` / `.demo-matchup` / `.demo-ps-*` CSS (replaced by real component styles)
+
+**`apps/docs/src/components/HeroCard.tsx`** (new)
+- Thin wrapper around `LiveGameCard` for the hero section (same pattern as `ScreenshotCard.tsx`)
+
+**`apps/docs/src/components/Hero.astro`**
+- Added game data for BU vs NU (NCAAB) and KC vs BAL (NFL)
+- Replaced two `.demo-card` HTML blocks with `<HeroCard>` components
+
 ## UI package refactor — 2026-07-11
 
 Extracted all game card components from `apps/extension` into `packages/ui` so they can be shared across all surfaces (extension and docs). Screenshot pages in `apps/docs` now render real extension components instead of hand-coded HTML mockups.
