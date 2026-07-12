@@ -24,6 +24,8 @@ export const scoreMaxLateGame = 28;
 export const scoreMaxMomentum = 28;
 export const scoreMaxLeadChanges = 18;
 export const scoreMaxComeback = 14;
+/** Win probability variance: max boost (+10) and max penalty (−10) applied to the raw signal sum. */
+export const scoreWinProbVarianceMax = 10;
 // Headline cap. Intentionally lower than the sum of the per-signal ceilings above.
 export const scoreMaxTotal = 100;
 
@@ -68,6 +70,13 @@ export const scorerTunables: ScorerTunables = {
 			moderate: 8,
 			flatFloor: 2,
 			none: 0,
+		},
+		// Win probability variance: statistical variance of homeWinPercentage history maps to [−10, +10].
+		// A perfectly stable game (all values identical) scores −10; a wild back-and-forth scores +10.
+		// maxVariance is the variance that saturates the +10 ceiling (empirically tuned for ESPN data).
+		winProbabilityVariance: {
+			maxVariance: 0.10,
+			minDataPoints: 5,
 		},
 	},
 	reasons: {

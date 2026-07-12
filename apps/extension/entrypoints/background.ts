@@ -1,5 +1,5 @@
 import { randomInRange } from '@porkyproductions/hat';
-import { fetchGamesWithLeagueLogos, computePowerScore, computeScoringOpportunityBoost, normalizePowerScoreResult, MockGameSimulator, createPollModeTracker, isObjectRecord, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts, computeLeagueIntervalMs } from '@arenaswap/core';
+import { fetchGamesWithLeagueLogos, fetchWinProbabilityHistory, computePowerScore, computeScoringOpportunityBoost, normalizePowerScoreResult, MockGameSimulator, createPollModeTracker, isObjectRecord, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts, computeLeagueIntervalMs } from '@arenaswap/core';
 import { computeStandbyStreamDecision } from '../utils/standbyStreamLogic';
 import { loadStoredUserPreferences, persistStoredUserPreferences } from '../utils/prefsStorage';
 import {
@@ -71,6 +71,11 @@ export default defineBackground(() => {
 	const history = new Map<string, ScoreSnapshot[]>();
 	const powerScoreHistory = new Map<string, PowerScoreSnapshot[]>();
 	const clockStallMap = new Map<string, { lastClock: number; stallCount: number }>();
+	/** Win probability arrays fetched from ESPN's summary endpoint, keyed by game ID. */
+	const winProbabilityCache = new Map<string, { data: number[]; fetchedAt: number }>();
+	/** How often (ms) to refresh win probability for each live game. Full history is returned in one
+	 *  shot by ESPN, so a 60s refresh is plenty — much less frequent than the scoreboard poll. */
+	const winProbRefreshMs = 60_000;
 	let tabRegistry: TabRegistration[] = [];
 	let gameBoosts: Record<string, number> = {};
 	let demoMode = false;
@@ -343,6 +348,27 @@ export default defineBackground(() => {
 		}
 	};
 
+	// Refresh win probability data for live games whose cache is stale (or missing).
+	// Fire-and-forget: failures are silently ignored — the scorer just omits the variance signal.
+	const refreshWinProbability = async (liveGames: Game[]) => {
+		const now = Date.now();
+		const stale = liveGames.filter(g => {
+			const cached = winProbabilityCache.get(g.id);
+			return !cached || (now - cached.fetchedAt) >= winProbRefreshMs;
+		});
+		await Promise.allSettled(stale.map(async g => {
+			const leagueConfig = (await import('@arenaswap/core/constants')).leagueConfigMap[g.league];
+			if (!leagueConfig) return;
+			const data = await fetchWinProbabilityHistory(leagueConfig.espnPath, g.id);
+			if (data.length > 0) winProbabilityCache.set(g.id, { data, fetchedAt: now });
+		}));
+		// Evict entries for games that are no longer live.
+		const liveIds = new Set(liveGames.map(g => g.id));
+		for (const [id] of winProbabilityCache) {
+			if (!liveIds.has(id)) winProbabilityCache.delete(id);
+		}
+	};
+
 	// Shared post-fetch processing: stall tracking, score computation, broadcast, tab switching.
 	// Pass changedLeagueId to scope stall tracking and history to just the updated league;
 	// pass null (full refresh) to process all live games.
@@ -365,12 +391,16 @@ export default defineBackground(() => {
 			}
 		}
 
+		// Refresh win probability cache in the background — failures are ignored.
+		refreshWinProbability(liveGames);
+
 		const favoriteTeamIds = new Set(prefs.favoriteTeamIds);
 		const favoriteBonusPoints = prefs.favoriteTeamBonusPoints;
 		const postseasonBoostPoints = prefs.postseasonBoostPoints;
 		const scores = liveGames.map(g => {
 			const stallCount = clockStallMap.get(g.id)?.stallCount ?? 0;
-			const baseScore = normalizePowerScoreResult(computePowerScore(g, history.get(g.id) ?? [], stallCount));
+			const winProbHistory = winProbabilityCache.get(g.id)?.data ?? [];
+			const baseScore = normalizePowerScoreResult(computePowerScore(g, history.get(g.id) ?? [], stallCount, winProbHistory));
 			const favoriteTeamCount = getFavoriteTeamCount(g, favoriteTeamIds);
 			const favoriteBonus = favoriteTeamCount * favoriteBonusPoints;
 			const gameBoost = gameBoosts[g.id] ?? 0;

@@ -123,6 +123,7 @@ export interface PowerScoreSnapshot {
 	momentum: number;
 	leadChanges: number;
 	comeback: number;
+	winProbabilityVariance?: number;
 	baseTotal: number;
 	favoriteBonus: number;
 	favoriteTeamCount: number;

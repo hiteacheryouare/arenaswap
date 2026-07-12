@@ -76,6 +76,7 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 	const currentBoost = gameBoosts[game.id] ?? 0;
 	const scoringOpportunityBoost = activePowerScore?.scoringOpportunityBoost ?? 0;
 	const postseasonBoost = activePowerScore?.postseasonBoost ?? 0;
+	const winProbabilityVariance = activePowerScore?.winProbabilityVariance;
 	const reason = activePowerScore?.reason ?? 'Best Available';
 	const totalBeforeBonuses = total - favoriteBonus - currentBoost - scoringOpportunityBoost - postseasonBoost;
 
@@ -185,6 +186,7 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 				momentum={momentum}
 				leadChanges={leadChanges}
 				comeback={comeback}
+				winProbabilityVariance={winProbabilityVariance}
 				baseTotal={baseTotal}
 				isStalled={isStalled}
 				totalBeforeBonuses={totalBeforeBonuses}

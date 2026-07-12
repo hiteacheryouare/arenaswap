@@ -9,6 +9,7 @@ import {
 	scoreMaxLeadChanges,
 	scoreMaxComeback,
 	scoreMaxTotal,
+	scoreWinProbVarianceMax,
 	scoringOpportunityBaseRunnerBoosts,
 	scoringOpportunityRedZoneBoost,
 } from './constants';
@@ -50,7 +51,11 @@ export const normalizePowerScoreResult = (
 	const momentum = clamp(toFiniteNumber(score.momentum), 0, scoreMaxMomentum);
 	const leadChanges = clamp(toFiniteNumber(score.leadChanges), 0, scoreMaxLeadChanges);
 	const comeback = clamp(toFiniteNumber(score.comeback), 0, scoreMaxComeback);
-	const rawTotal = closeness + lateGame + momentum + leadChanges + comeback;
+	const hasWinProbVariance = typeof score.winProbabilityVariance === 'number' && Number.isFinite(score.winProbabilityVariance);
+	const winProbabilityVariance = hasWinProbVariance
+		? clamp(Math.round(toFiniteNumber(score.winProbabilityVariance)), -scoreWinProbVarianceMax, scoreWinProbVarianceMax)
+		: undefined;
+	const rawTotal = closeness + lateGame + momentum + leadChanges + comeback + (winProbabilityVariance ?? 0);
 	const total = options.allowTotalOverflow
 		? Math.max(0, toFiniteNumber(score.total, rawTotal))
 		: clamp(toFiniteNumber(score.total, rawTotal), 0, scoreMaxTotal);
@@ -75,6 +80,7 @@ export const normalizePowerScoreResult = (
 		momentum,
 		leadChanges,
 		comeback,
+		...(hasWinProbVariance ? { winProbabilityVariance } : {}),
 		reason: typeof score.reason === 'string' ? score.reason : scorerTunables.reasons.fallback,
 		stalled: score.stalled === true,
 		...(hasBaseTotal ? { baseTotal } : {}),
@@ -409,6 +415,21 @@ const getComeback = (game: Game, history: ScoreSnapshot[], config: SportTypeConf
 	return decaySignal(floored, reason, ageMs, config.decayHalfLifeMs.comeback);
 };
 
+// Win probability variance signal: maps [0, maxVariance] → [−10, +10].
+// A stable game (one team dominates from start to finish) has near-zero variance and earns a penalty.
+// A back-and-forth game where win probability swings repeatedly earns a boost.
+// Returns undefined (no effect) when fewer than minDataPoints values are available.
+export const computeWinProbVarianceScore = (winProbHistory: number[]): number | undefined => {
+	const { maxVariance, minDataPoints } = scorerTunables.scores.winProbabilityVariance;
+	if (winProbHistory.length < minDataPoints) return undefined;
+	const n = winProbHistory.length;
+	const mean = winProbHistory.reduce((a, b) => a + b, 0) / n;
+	const variance = winProbHistory.reduce((sum, p) => sum + Math.pow(p - mean, 2), 0) / n;
+	// Linear map: variance=0 → −10, variance=maxVariance → +10, clamped at both ends.
+	const raw = (variance / maxVariance) * 20 - 10;
+	return Math.round(clamp(raw, -scoreWinProbVarianceMax, scoreWinProbVarianceMax));
+};
+
 export const computeScoringOpportunityBoost = (game: Game): number => {
 	if (game.status !== 'in') return 0;
 
@@ -430,6 +451,7 @@ export const computePowerScore = (
 	game: Game,
 	history: ScoreSnapshot[] = [],
 	stallCount: number = 0,
+	winProbabilityHistory: number[] = [],
 ): PowerScoreResult => {
 	if (game.intermission)
 		return normalizePowerScoreResult({
@@ -453,8 +475,10 @@ export const computePowerScore = (
 	const momentum = getMomentum(game, history, config, now);
 	const leadChanges = getLeadChanges(history, config, now);
 	const comeback = getComeback(game, history, config, progress, now);
+	const winProbVariance = computeWinProbVarianceScore(winProbabilityHistory);
 
-	const rawTotal = closeness.score + lateGame.score + momentum.score + leadChanges.score + comeback.score;
+	const signalsSubtotal = closeness.score + lateGame.score + momentum.score + leadChanges.score + comeback.score;
+	const rawTotal = signalsSubtotal + (winProbVariance ?? 0);
 	const stallStep = stallPenaltySteps.find(s => stallCount >= s.minPolls);
 	const stalled = stallStep !== undefined;
 	const total = stalled ? Math.round(rawTotal * stallStep.multiplier) : rawTotal;
@@ -472,8 +496,10 @@ export const computePowerScore = (
 		momentum: momentum.score,
 		leadChanges: leadChanges.score,
 		comeback: comeback.score,
+		...(winProbVariance !== undefined ? { winProbabilityVariance: winProbVariance } : {}),
 		reason,
 		stalled,
-		...(stalled ? { baseTotal: rawTotal } : {}),
+		// Always store baseTotal so the breakdown UI can show the pre-penalty signals sum correctly.
+		baseTotal: rawTotal,
 	});
 };

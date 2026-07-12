@@ -1,5 +1,62 @@
 # Changelog
 
+## Win Probability Variance signal — 2026-07-12
+
+Adds a new ±10-point PowerScore modifier that rewards games with volatile win probability swings and penalises one-sided blowouts. Closes [#32](https://github.com/hiteacheryouare/arenaswap/issues/32).
+
+### How it works
+
+ESPN's summary API returns the full win-probability history for a live game in a single call. The scorer computes the statistical variance of the `homeWinPercentage` array and maps it linearly from [0, `maxVariance`] → [−10, +10]:
+
+- **+10** — win probability is swinging wildly all game; neither team has a comfortable lead for long
+- **0** — neutral variance (the midpoint between a stable and a chaotic game)
+- **−10** — perfectly stable; one team has been dominant from the opening whistle
+
+The background service refreshes win-probability data every 60 seconds per live game (much less often than the scoreboard poll) and evicts stale entries when games go final.
+
+### What changed
+
+**`packages/powerscore/src/types.ts`**
+- `PowerScoreResult` — added optional `winProbabilityVariance?: number`
+- `ScorerTunables` — added `winProbabilityVariance: { maxVariance, minDataPoints }` config block
+
+**`packages/powerscore/src/constants.ts`**
+- `scoreWinProbVarianceMax = 10` — the ±10 cap exported for UI consumers
+- `scorerTunables.scores.winProbabilityVariance` — tunable `maxVariance: 0.10`, `minDataPoints: 5`
+
+**`packages/powerscore/src/scorer.ts`**
+- `computeWinProbVarianceScore(winProbHistory)` — new exported helper; returns a rounded integer in [−10, +10] or `undefined` when data is insufficient
+- `computePowerScore` — accepts optional 4th argument `winProbabilityHistory: number[]`; integrates the variance modifier into `rawTotal` and always emits `baseTotal`
+- `normalizePowerScoreResult` — normalises and passes through `winProbabilityVariance`
+
+**`packages/powerscore/tests/scorer.test.ts`**
+- 12 new tests covering `computeWinProbVarianceScore` (stable → −10, extreme → +10, neutral ≈ 0) and the integration with `computePowerScore` / `normalizePowerScoreResult`
+
+**`packages/core/src/apiClient.ts`**
+- `fetchWinProbabilityHistory(espnPath, gameId)` — hits ESPN's summary endpoint, extracts `winprobability[].homeWinPercentage`, returns `number[]`
+
+**`packages/core/src/constants.ts`** / **`packages/core/src/index.ts`**
+- Re-exports `scoreWinProbVarianceMax` and `computeWinProbVarianceScore` so consuming apps don't need a direct `powerscore` import
+
+**`packages/core/src/types.ts`**
+- `PowerScoreSnapshot` — added `winProbabilityVariance?: number` to match `PowerScoreResult`
+
+**`apps/extension/entrypoints/background.ts`**
+- `winProbabilityCache` map (keyed by game ID) — stores `{ data, fetchedAt }` and evicts finished games
+- `refreshWinProbability(liveGames)` — fire-and-forget refresh every 60 s; failures silently ignored
+- `computePowerScore` call now passes `winProbabilityCache.get(g.id)?.data ?? []` as the 4th argument
+
+**`apps/extension/entrypoints/popup/components/powerScoreBreakdown.tsx`**
+- New `winProbabilityVariance?: number` prop
+- Renders a purple `●` row between the five core signals and "Signals total" when data is present; shows the signed value (`+8`, `−4`) against a `/10` max and a proportional progress bar
+
+**`apps/extension/entrypoints/popup/components/gameDetailView.tsx`**
+- Extracts `winProbabilityVariance` from the active PowerScore result and passes it to `PowerScoreBreakdown`
+
+**`apps/extension/locales/en.yml`** / **`es.yml`**
+- `powerScore.signalWinProbVariance` added in English ("Win prob variance") and Spanish ("Varianza de prob. victoria")
+- `proTip.detail.t0` updated to mention win probability variance alongside the other five signals
+
 ## Screenshot popup sizing + hero real-card swap — 2026-07-11
 
 Real game cards (from the ui package) are taller than the old hand-coded mockups. Scaled screenshot popups to 82% so they fit within the 1280×800 canvas, and replaced the hero section's hand-coded demo cards with real `LiveGameCard` components.

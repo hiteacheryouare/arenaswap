@@ -5,6 +5,7 @@ import {
 	scoreMaxLeadChanges,
 	scoreMaxMomentum,
 	scoreMaxTotal,
+	scoreWinProbVarianceMax,
 } from '@arenaswap/core/constants';
 import { i18n } from '#i18n';
 
@@ -14,6 +15,8 @@ interface powerScoreBreakdownProps {
 	momentum: number;
 	leadChanges: number;
 	comeback: number;
+	/** Win probability variance modifier (−10 to +10). Omit when data is unavailable. */
+	winProbabilityVariance?: number;
 	baseTotal: number;
 	isStalled: boolean;
 	totalBeforeBonuses: number;
@@ -40,6 +43,7 @@ const PowerScoreBreakdown = ({
 	momentum,
 	leadChanges,
 	comeback,
+	winProbabilityVariance,
 	baseTotal,
 	isStalled,
 	totalBeforeBonuses,
@@ -51,6 +55,7 @@ const PowerScoreBreakdown = ({
 	totalLabel,
 }: powerScoreBreakdownProps) => {
 	const signalValues = [closeness, lateGame, momentum, leadChanges, comeback];
+	const hasWinProbVariance = winProbabilityVariance !== undefined;
 
 	return (
 		<section className='powerscore-breakdown game-detail-formula-card'>
@@ -76,6 +81,29 @@ const PowerScoreBreakdown = ({
 					</div>
 				);
 			})}
+			{hasWinProbVariance && (
+				<div className='powerscore-signal-row powerscore-signal-row-variance'>
+					<span className='powerscore-signal-dot' style={{ backgroundColor: '#a855f7' }} />
+					<span className='powerscore-signal-name'>{i18n.t('powerScore.signalWinProbVariance')}</span>
+					<div className='progress powerscore-signal-progress flex-grow-1'>
+						<div
+							className='progress-bar'
+							role='progressbar'
+							style={{
+								width: `${Math.abs((winProbabilityVariance ?? 0) / scoreWinProbVarianceMax) * 100}%`,
+								backgroundColor: (winProbabilityVariance ?? 0) >= 0 ? '#a855f7' : '#6b7280',
+							}}
+							aria-valuenow={winProbabilityVariance ?? 0}
+							aria-valuemin={-scoreWinProbVarianceMax}
+							aria-valuemax={scoreWinProbVarianceMax}
+						/>
+					</div>
+					<span className='powerscore-signal-value'>
+						{(winProbabilityVariance ?? 0) > 0 ? '+' : ''}{winProbabilityVariance ?? 0}
+						<span className='powerscore-signal-max'>/{scoreWinProbVarianceMax}</span>
+					</span>
+				</div>
+			)}
 			<div className='powerscore-breakdown-row powerscore-breakdown-row-subtotal'>
 				<span>{i18n.t('powerScore.signalsTotal')}</span>
 				<span>{baseTotal}{baseTotal > scoreMaxTotal ? ` ${i18n.t('powerScore.cappedAt', { max: scoreMaxTotal })}` : ''}</span>

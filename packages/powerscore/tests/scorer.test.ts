@@ -8,10 +8,11 @@ import {
 	scoreMaxLeadChanges,
 	scoreMaxComeback,
 	scoreMaxTotal,
+	scoreWinProbVarianceMax,
 	sportTypeConfigMap,
 	stallPenaltySteps,
 } from '../src/constants';
-import { computePowerScore, computeScoringOpportunityBoost, normalizePowerScoreResult } from '../src/scorer';
+import { computePowerScore, computeScoringOpportunityBoost, computeWinProbVarianceScore, normalizePowerScoreResult } from '../src/scorer';
 import type { Game, PowerScoreResult, ScoreSnapshot } from '../src/types';
 
 const makeGame = (overrides: Partial<Game> = {}): Game => ({
@@ -965,5 +966,138 @@ describe('computeScoringOpportunityBoost', () => {
 		const basketball: Game = { id: 'g1', league: 'nba', sportType: 'basketball',
 			homeTeam: { score: 80 }, awayTeam: { score: 78 }, status: 'in' };
 		expect(computeScoringOpportunityBoost(basketball)).toBe(0);
+	});
+});
+
+describe('computeWinProbVarianceScore', () => {
+	test('returns undefined when fewer than minDataPoints values provided', () => {
+		expect(computeWinProbVarianceScore([])).toBeUndefined();
+		expect(computeWinProbVarianceScore([0.5, 0.6, 0.4, 0.5])).toBeUndefined();
+	});
+
+	test('returns -10 for a perfectly stable game (zero variance)', () => {
+		// All values identical → variance = 0 → score = −10
+		const stable = Array.from({ length: 20 }, () => 0.75);
+		expect(computeWinProbVarianceScore(stable)).toBe(-10);
+	});
+
+	test('returns positive score for a high-variance game', () => {
+		// Alternating 0 and 1 → maximum possible variance
+		const wild = Array.from({ length: 20 }, (_, i) => (i % 2 === 0 ? 0.05 : 0.95));
+		const score = computeWinProbVarianceScore(wild);
+		expect(score).toBeGreaterThan(0);
+		expect(score).toBeLessThanOrEqual(scoreWinProbVarianceMax);
+	});
+
+	test('returns exactly +10 when variance meets or exceeds maxVariance', () => {
+		// Alternating extremes produce variance well above the tunable maxVariance (0.10)
+		const extreme = Array.from({ length: 30 }, (_, i) => (i % 2 === 0 ? 0 : 1));
+		expect(computeWinProbVarianceScore(extreme)).toBe(scoreWinProbVarianceMax);
+	});
+
+	test('returns 0 at the neutral midpoint (variance = maxVariance / 2)', () => {
+		// Construct a dataset whose variance is exactly maxVariance/2.
+		// For values in {a, b} alternating, variance ≈ ((a-mean)^2 + (b-mean)^2)/2 = (a-b)^2/4.
+		// (a-b)^2/4 = 0.05 → a-b ≈ 0.447. Use [0.5-0.224, 0.5+0.224] ≈ [0.276, 0.724].
+		const neutral = Array.from({ length: 30 }, (_, i) => (i % 2 === 0 ? 0.276 : 0.724));
+		const score = computeWinProbVarianceScore(neutral);
+		// Allow ±1 rounding tolerance around 0
+		expect(score).toBeGreaterThanOrEqual(-1);
+		expect(score).toBeLessThanOrEqual(1);
+	});
+
+	test('clamps result to [-10, +10]', () => {
+		const score = computeWinProbVarianceScore([0, 0, 0, 1, 1, 1, 0, 1, 0, 1]);
+		expect(score).toBeGreaterThanOrEqual(-scoreWinProbVarianceMax);
+		expect(score).toBeLessThanOrEqual(scoreWinProbVarianceMax);
+	});
+
+	test('low-variance close game earns a penalty', () => {
+		// A game where win probability barely moves (close but stable)
+		const stable = [0.51, 0.52, 0.50, 0.51, 0.49, 0.50, 0.52, 0.51, 0.50, 0.49];
+		const score = computeWinProbVarianceScore(stable);
+		expect(score).toBeLessThan(0);
+	});
+});
+
+describe('computePowerScore — win probability variance integration', () => {
+	const baseGame = makeGame({
+		period: 3,
+		clockSeconds: 300,
+		homeTeam: { abbreviation: 'HOM', score: 80 },
+		awayTeam: { abbreviation: 'AWY', score: 78 },
+	});
+	const shortHistory = makeHistory([[78, 76], [79, 77], [80, 78]]);
+
+	test('omits winProbabilityVariance from result when no win prob history is supplied', () => {
+		const result = computePowerScore(baseGame, shortHistory, 0, []);
+		expect(result.winProbabilityVariance).toBeUndefined();
+	});
+
+	test('omits winProbabilityVariance when history is shorter than minDataPoints', () => {
+		const result = computePowerScore(baseGame, shortHistory, 0, [0.5, 0.6]);
+		expect(result.winProbabilityVariance).toBeUndefined();
+	});
+
+	test('includes winProbabilityVariance when sufficient win prob history is supplied', () => {
+		// Alternating 0.15/0.85 → variance ≈ 0.12 > maxVariance(0.10) → clamps to +10
+		const winProb = Array.from({ length: 20 }, (_, i) => (i % 2 === 0 ? 0.15 : 0.85));
+		const result = computePowerScore(baseGame, shortHistory, 0, winProb);
+		expect(result.winProbabilityVariance).toBeDefined();
+		expect(result.winProbabilityVariance).toBeGreaterThan(0);
+	});
+
+	test('high-variance game has a higher total than low-variance game (other signals equal)', () => {
+		const highVarianceProb = Array.from({ length: 30 }, (_, i) => (i % 2 === 0 ? 0.1 : 0.9));
+		const lowVarianceProb = Array.from({ length: 30 }, () => 0.5);
+		const highResult = computePowerScore(baseGame, shortHistory, 0, highVarianceProb);
+		const lowResult = computePowerScore(baseGame, shortHistory, 0, lowVarianceProb);
+		expect(highResult.total).toBeGreaterThan(lowResult.total);
+	});
+
+	test('always sets baseTotal including winProbabilityVariance contribution', () => {
+		const winProb = Array.from({ length: 20 }, () => 0.8); // stable → variance penalty
+		const result = computePowerScore(baseGame, shortHistory, 0, winProb);
+		expect(result.baseTotal).toBeDefined();
+		// baseTotal should reflect that the variance penalty reduced the raw sum
+		const signalsSubtotal = result.closeness + result.lateGame + result.momentum + result.leadChanges + result.comeback;
+		expect(result.baseTotal).toBeLessThanOrEqual(signalsSubtotal);
+	});
+
+	test('win prob variance does not appear in reason string', () => {
+		const winProb = Array.from({ length: 20 }, (_, i) => (i % 2 === 0 ? 0.2 : 0.8));
+		const result = computePowerScore(baseGame, shortHistory, 0, winProb);
+		// The variance signal is shown separately in the UI breakdown, not in the reason string
+		expect(result.reason).not.toContain('variance');
+	});
+});
+
+describe('normalizePowerScoreResult — winProbabilityVariance', () => {
+	test('includes winProbabilityVariance in rawTotal derivation', () => {
+		const result = normalizePowerScoreResult({
+			gameId: 'test',
+			closeness: 20,
+			lateGame: 10,
+			momentum: 5,
+			leadChanges: 0,
+			comeback: 0,
+			winProbabilityVariance: 8,
+			total: 43,
+			reason: 'test',
+		});
+		expect(result.winProbabilityVariance).toBe(8);
+		expect(result.total).toBe(43);
+	});
+
+	test('clamps winProbabilityVariance to [-10, +10]', () => {
+		const high = normalizePowerScoreResult({ gameId: 'g', winProbabilityVariance: 15, total: 50, reason: '' });
+		const low = normalizePowerScoreResult({ gameId: 'g', winProbabilityVariance: -15, total: 50, reason: '' });
+		expect(high.winProbabilityVariance).toBe(scoreWinProbVarianceMax);
+		expect(low.winProbabilityVariance).toBe(-scoreWinProbVarianceMax);
+	});
+
+	test('omits winProbabilityVariance from result when not provided', () => {
+		const result = normalizePowerScoreResult({ gameId: 'g', total: 30, reason: '' });
+		expect(result.winProbabilityVariance).toBeUndefined();
 	});
 });
