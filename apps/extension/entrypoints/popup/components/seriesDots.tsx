@@ -16,7 +16,7 @@ const seriesDots = ({ info, game }: seriesDotsProps) => {
 
 	const [awayColor, homeColor] = resolveTeamColorPair(game.awayTeam, game.homeTeam, '#e6edf3', '#e6edf3');
 	// ESPN returns future games first and completed games last; sort completed to the front
-	const events = [...(info.events ?? [])].sort((a, b) => {
+	const events = [...(info.events ?? [])].toSorted((a, b) => {
 		const aComp = a.statusType?.completed ? 1 : 0;
 		const bComp = b.statusType?.completed ? 1 : 0;
 		return bComp - aComp;
