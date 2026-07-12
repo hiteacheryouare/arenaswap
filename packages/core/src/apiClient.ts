@@ -376,34 +376,7 @@ export const fetchLeagueLogos = async (enabledLeagues: LeagueId[], options: { in
 	return leagueLogos;
 };
 
-/**
- * Fetches the full win probability history for a single live game from ESPN's summary endpoint.
- * ESPN returns the entire game's history in one shot, so even a single call after tip-off gives the
- * complete picture needed for variance scoring. Returns an empty array when data is unavailable.
- */
-export const fetchWinProbabilityHistory = async (espnPath: string, gameId: string): Promise<number[]> => {
-	try {
-		const url = `${espnBase}/${espnPath}/summary?event=${gameId}`;
-		const response = await fetch(url, { headers: { 'Accept': 'application/json' } });
-		if (!response.ok) return [];
-		const data: unknown = await response.json();
-		if (
-			typeof data !== 'object' || data === null ||
-			!('winprobability' in data) ||
-			!Array.isArray((data as Record<string, unknown>).winprobability)
-		) return [];
-		const wp = (data as Record<string, unknown>).winprobability as unknown[];
-		return wp.map(p => {
-			if (typeof p === 'object' && p !== null && 'homeWinPercentage' in p) {
-				const val = (p as Record<string, unknown>).homeWinPercentage;
-				return typeof val === 'number' && Number.isFinite(val) ? val : 0.5;
-			}
-			return 0.5;
-		});
-	} catch {
-		return [];
-	}
-};
+
 
 
 export interface EspnTeamEntry {

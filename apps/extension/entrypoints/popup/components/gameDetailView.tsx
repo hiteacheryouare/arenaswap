@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { i18n } from '#i18n';
 import { leagueConfigMap, scoreMaxTotal } from '@arenaswap/core/constants';
+import { computeWinProbVarianceScore } from '@arenaswap/core';
 import type { Game, PowerScoreResult, PowerScoreSnapshot, ScoreSnapshot } from '@arenaswap/core/types';
 import BaseDiamond from './baseDiamond';
 import BsoIndicator from './bsoIndicator';
@@ -76,7 +77,6 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 	const currentBoost = gameBoosts[game.id] ?? 0;
 	const scoringOpportunityBoost = activePowerScore?.scoringOpportunityBoost ?? 0;
 	const postseasonBoost = activePowerScore?.postseasonBoost ?? 0;
-	const winProbabilityVariance = activePowerScore?.winProbabilityVariance;
 	const reason = activePowerScore?.reason ?? 'Best Available';
 	const totalBeforeBonuses = total - favoriteBonus - currentBoost - scoringOpportunityBoost - postseasonBoost;
 
@@ -93,6 +93,8 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 	const winProbabilityOption = useMemo(() => (
 		buildWinProbabilityOption(winProbability, game)
 	), [winProbability, game]);
+	// Variance computed here from the same data already fetched for the chart — no extra API call.
+	const winProbabilityVariance = useMemo(() => computeWinProbVarianceScore(winProbability), [winProbability]);
 
 	const [awayLineColor, homeLineColor] = resolveTeamColorPair(game.awayTeam, game.homeTeam, '#60a5fa', '#f87171', true);
 	const teamLegendItems = useMemo(() => ([
