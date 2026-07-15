@@ -67,7 +67,7 @@ When no games are live, the extension enters a low-power dormant mode and checks
 
 ---
 
-## 31 Leagues. If It's Live, It's Covered.
+## 30+ Leagues. If It's Live, It's Covered.
 
 | Sport | Leagues |
 |---|---|
