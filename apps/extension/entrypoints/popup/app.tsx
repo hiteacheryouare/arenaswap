@@ -316,6 +316,7 @@ export default () => {
 						onToggleLeague={onToggleLeague}
 						onToggleSport={onToggleSport}
 						onToggleShowUpcoming={() => persistPrefs(currentPrefs => ({ ...currentPrefs, showUpcomingGames: !currentPrefs.showUpcomingGames }))}
+						onUpcomingGamesDaysChange={val => persistPrefs(currentPrefs => ({ ...currentPrefs, upcomingGamesDays: val }))}
 						onToggleProTips={() => persistPrefs(currentPrefs => ({ ...currentPrefs, proTipsEnabled: !currentPrefs.proTipsEnabled }))}
 						onToggleNotifications={() => persistPrefs(currentPrefs => ({ ...currentPrefs, notificationsEnabled: !currentPrefs.notificationsEnabled }))}
 						onToggleDemo={() => {

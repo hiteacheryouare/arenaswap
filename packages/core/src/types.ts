@@ -104,6 +104,8 @@ export interface UserPreferences {
 	temperatureUnit: 'F' | 'C';
 	/** Flat PowerScore bonus added to any game ESPN classifies as postseason */
 	postseasonBoostPoints: number;
+	/** How many days ahead to fetch and display upcoming games (1–14) */
+	upcomingGamesDays: number;
 }
 
 export interface TabRegistration {

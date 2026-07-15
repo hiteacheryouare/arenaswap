@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { i18n } from '#i18n';
 import type { Browser } from 'wxt/browser';
 import type {
@@ -199,15 +199,22 @@ const mainView = ({
 		() => buildUpcomingComparator(favoriteTeamIds, scoreByGameId),
 		[favoriteTeamIds, scoreByGameId],
 	);
-	const oneWeekLimit = useRef(Date.now() + 7 * 24 * 60 * 60 * 1000);
+	const upcomingCutoffMs = useMemo(
+		() => Date.now() + prefs.upcomingGamesDays * 24 * 60 * 60 * 1000,
+		[prefs.upcomingGamesDays],
+	);
 	const liveGames = useMemo(() => games.filter(g => g.status === 'in'), [games]);
 	const upcomingGames = useMemo(
 		() => games
 			.filter(g => g.status === 'pre')
-			.filter(g => !g.startTime || new Date(g.startTime).getTime() <= oneWeekLimit.current)
+			.filter(g => !g.startTime || new Date(g.startTime).getTime() <= upcomingCutoffMs)
 			.toSorted(sortUpcomingGames),
-		[games, sortUpcomingGames],
+		[games, sortUpcomingGames, upcomingCutoffMs],
 	);
+	const [showAllUpcoming, setShowAllUpcoming] = useState(false);
+	const upcomingInitialLimit = 10;
+	const visibleUpcomingGames = showAllUpcoming ? upcomingGames : upcomingGames.slice(0, upcomingInitialLimit);
+	const hiddenUpcomingCount = upcomingGames.length - upcomingInitialLimit;
 	const registeredGameIds = useMemo(() => new Set(registry.map(r => r.gameId)), [registry]);
 	const assignedLiveGames = useMemo(
 		() => liveGames.filter(g => registeredGameIds.has(g.id)).toSorted(sortGames),
@@ -268,7 +275,20 @@ const mainView = ({
 			{!isLoading && !noLeaguesSelected && prefs.proTipsEnabled && <ProTip context='main' />}
 			{!isLoading && !noLeaguesSelected && assignedLiveGames.length > 0 && gameSection({ title: i18n.t('main.sectionActiveLiveTabs'), games: assignedLiveGames, scoreMap, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs, weatherPrefs, first: true })}
 			{!isLoading && !noLeaguesSelected && unassignedLiveGames.length > 0 && gameSection({ title: i18n.t('main.sectionOtherLiveGames'), games: unassignedLiveGames, scoreMap, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs, weatherPrefs, first: assignedLiveGames.length === 0 })}
-			{!isLoading && !noLeaguesSelected && prefs.showUpcomingGames && upcomingGames.length > 0 && gameSection({ title: i18n.t('main.sectionUpNext'), games: upcomingGames, scoreMap: emptyScoreMap, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs, weatherPrefs, groupDates: true, first: assignedLiveGames.length === 0 && unassignedLiveGames.length === 0 })}
+			{!isLoading && !noLeaguesSelected && prefs.showUpcomingGames && upcomingGames.length > 0 && (
+				<>
+					{gameSection({ title: i18n.t('main.sectionUpNext'), games: visibleUpcomingGames, scoreMap: emptyScoreMap, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs, weatherPrefs, groupDates: true, first: assignedLiveGames.length === 0 && unassignedLiveGames.length === 0 })}
+					{!showAllUpcoming && hiddenUpcomingCount > 0 && (
+						<button
+							type='button'
+							className='btn btn-sm btn-outline-secondary w-100 mt-1 mb-2'
+							onClick={() => setShowAllUpcoming(true)}
+						>
+							{i18n.t('main.showMoreUpcoming', { count: String(hiddenUpcomingCount) })}
+						</button>
+					)}
+				</>
+			)}
 
 			<PopupFooter />
 		</div>

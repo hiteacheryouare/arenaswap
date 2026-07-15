@@ -1,5 +1,15 @@
 # Changelog
 
+## Date-range setting for upcoming games — 2026-07-14
+
+Implements #33. Users can now control how many days ahead the "Up Next" section looks for upcoming games (1–14 days, default 7). The setting appears in Settings → Switching below the "Show upcoming games" toggle — only when that toggle is on.
+
+- Added `upcomingGamesDays` preference (default 7, clamped to 1–14 on load)
+- Settings UI: range slider labeled "Days ahead" — gated behind the `showUpcomingGames` toggle
+- ESPN fetch window now respects the preference (previously hardcoded to 4 days); background re-fetches upcoming games when the value changes
+- "Show more" button in the Up Next section: initially shows up to 10 games, reveals the rest on demand to prevent excessive popup scrolling
+- Fully translated (English + Spanish)
+
 ## Fix TypeScript 7 type errors — 2026-07-14
 
 Fixed three type errors in `ludicrousSpeedOverlay.tsx` introduced by the TypeScript 7 upgrade. The `introLines`, `prelaunchLines`, and `panicLines` arrays were annotated as `{ key: string; ms: number }[]`, but `i18n.t()` only accepts specific literal key types (not the broad `string`). TypeScript 7 correctly enforces this. Fixed by adding `as const` to each array so keys are inferred as their literal types.

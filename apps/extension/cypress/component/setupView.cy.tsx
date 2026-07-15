@@ -17,6 +17,7 @@ const defaultPrefs: UserPreferences = {
 	bettingEnabled: false,
 	temperatureUnit: 'F',
 	postseasonBoostPoints: 0,
+	upcomingGamesDays: 7,
 };
 
 const defaultProps = {
@@ -36,6 +37,7 @@ const defaultProps = {
 	onToggleLeague: () => {},
 	onToggleSport: () => {},
 	onToggleShowUpcoming: () => {},
+	onUpcomingGamesDaysChange: () => {},
 	onToggleProTips: () => {},
 	onToggleNotifications: () => {},
 	onToggleDemo: () => {},
@@ -93,6 +95,28 @@ describe('setupView switching tab', () => {
 	it('shows show-upcoming toggle unchecked when pref is false', () => {
 		cy.mount(<SetupView {...defaultProps} prefs={{ ...defaultPrefs, showUpcomingGames: false }} />);
 		cy.get('#upcomingToggle').should('not.be.checked');
+	});
+
+	it('shows days-ahead slider when showUpcomingGames is true', () => {
+		cy.mount(<SetupView {...defaultProps} />);
+		cy.get('#upcomingDaysSlider').should('exist');
+	});
+
+	it('hides days-ahead slider when showUpcomingGames is false', () => {
+		cy.mount(<SetupView {...defaultProps} prefs={{ ...defaultPrefs, showUpcomingGames: false }} />);
+		cy.get('#upcomingDaysSlider').should('not.exist');
+	});
+
+	it('reflects the current upcomingGamesDays value on the slider', () => {
+		cy.mount(<SetupView {...defaultProps} prefs={{ ...defaultPrefs, upcomingGamesDays: 10 }} />);
+		cy.get('#upcomingDaysSlider').should('have.value', '10');
+	});
+
+	it('calls onUpcomingGamesDaysChange when slider is moved', () => {
+		const spy = cy.spy().as('onUpcomingGamesDaysChange');
+		cy.mount(<SetupView {...defaultProps} onUpcomingGamesDaysChange={spy} />);
+		cy.get('#upcomingDaysSlider').invoke('val', 3).trigger('change');
+		cy.get('@onUpcomingGamesDaysChange').should('have.been.called');
 	});
 
 	it('shows demo mode toggle', () => {

@@ -336,7 +336,7 @@ export default defineBackground(() => {
 			return;
 		}
 		try {
-			const result = await fetchGamesWithLeagueLogos(prefs.enabledLeagues, { includeUpcoming: true });
+			const result = await fetchGamesWithLeagueLogos(prefs.enabledLeagues, { includeUpcoming: true, upcomingDays: prefs.upcomingGamesDays });
 			upcomingGames = result.games.filter(g => g.status === 'pre');
 		} catch {
 			// Failed to fetch upcoming games
@@ -616,13 +616,16 @@ export default defineBackground(() => {
 			return stateReady.then(async () => {
 				const wasEnabled = prefs.enabled;
 				const prevShowUpcoming = prefs.showUpcomingGames;
+				const prevUpcomingGamesDays = prefs.upcomingGamesDays;
 				const prevLeagues = new Set(prefs.enabledLeagues);
 				prefs = normalizeUserPreferences(msg.prefs);
 				if (wasEnabled && !prefs.enabled) lastSwitchTime = 0;
 				clearPendingSwitch();
 				await persistStoredUserPreferences(prefs);
 				await syncManagedTabMuteState(prefs.enabled);
-				if (prefs.showUpcomingGames !== prevShowUpcoming) {
+				const upcomingSettingChanged = prefs.showUpcomingGames !== prevShowUpcoming ||
+					(prefs.showUpcomingGames && prefs.upcomingGamesDays !== prevUpcomingGamesDays);
+				if (upcomingSettingChanged) {
 					await refreshUpcomingGames();
 					// Rebuild games: keep live/in-progress games, replace upcoming slice with updated cache
 					games = [...games.filter(g => g.status !== 'pre'), ...upcomingGames];

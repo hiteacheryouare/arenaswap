@@ -124,6 +124,8 @@ setup:
   tabLeagues: Leagues
   optionsSection: Options
   showUpcoming: Show upcoming games
+  upcomingDaysLabel: Days ahead
+  upcomingDaysValue: '{days} days'
   proTips: Pro tips
   switchNotifications: Switch notifications
   demoMode: Demo mode
@@ -153,6 +155,7 @@ main:
   sectionActiveLiveTabs: Active Live Tabs
   sectionOtherLiveGames: Other Live Games
   sectionUpNext: Up Next
+  showMoreUpcoming: Show {count} more
 
 detail:
   legendCloseness: Closeness

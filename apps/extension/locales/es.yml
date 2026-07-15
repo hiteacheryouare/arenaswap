@@ -124,6 +124,8 @@ setup:
   tabLeagues: Ligas
   optionsSection: Opciones
   showUpcoming: Mostrar próximos partidos
+  upcomingDaysLabel: Días de anticipación
+  upcomingDaysValue: '{days} días'
   proTips: Consejos
   switchNotifications: Notificaciones de cambio
   demoMode: Modo demostración
@@ -153,6 +155,7 @@ main:
   sectionActiveLiveTabs: Pestañas en vivo activas
   sectionOtherLiveGames: Otros partidos en vivo
   sectionUpNext: A continuación
+  showMoreUpcoming: Ver {count} más
 
 detail:
   legendCloseness: Igualdad

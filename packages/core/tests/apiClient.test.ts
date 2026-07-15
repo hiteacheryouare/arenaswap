@@ -101,6 +101,8 @@ const loadApiClient = (): typeof import('../src/apiClient') => {
 	return require('../src/apiClient') as typeof import('../src/apiClient');
 };
 
+const parseEspnDate = (s: string) => new Date(`${s.slice(0, 4)}-${s.slice(4, 6)}-${s.slice(6, 8)}`);
+
 describe('apiClient', () => {
 	test('returns empty results and avoids fetch when enabled leagues list is empty', async () => {
 		const fetchMock = jest.fn();
@@ -307,6 +309,25 @@ describe('apiClient', () => {
 		const calledUrls = fetchMock.mock.calls.map(([url]) => String(url));
 		expect(calledUrls[0]).toContain('/basketball/nba/scoreboard');
 		expect(calledUrls[1]).toContain('dates=');
+	});
+
+	test('uses upcomingDays to build the dates query parameter', async () => {
+		const fetchMock = jest.fn().mockResolvedValue(createResponse({ events: [] }));
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+		const { fetchGamesWithLeagueLogos } = loadApiClient();
+
+		await fetchGamesWithLeagueLogos(['nba'], { includeUpcoming: true, upcomingDays: 3 });
+
+		const calledUrls = fetchMock.mock.calls.map(([url]) => String(url));
+		const datesUrl = calledUrls.find(u => u.includes('dates='));
+		expect(datesUrl).toBeDefined();
+
+		// The dates range should span exactly upcomingDays days.
+		// ESPN format is YYYYMMDD-YYYYMMDD; extract and compare.
+		const datesParam = new URL(datesUrl!).searchParams.get('dates')!;
+		const [startStr, endStr] = datesParam.split('-');
+		const diffDays = (parseEspnDate(endStr!).getTime() - parseEspnDate(startStr!).getTime()) / (1000 * 60 * 60 * 24);
+		expect(diffDays).toBe(3);
 	});
 
 	test('supports includeUpcoming=false with only one scoreboard request', async () => {

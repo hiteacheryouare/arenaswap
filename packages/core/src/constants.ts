@@ -66,6 +66,10 @@ export const defaultCooldownSecs = 45;
 export const defaultSwitchDelaySecs = 0;
 export const defaultFavoriteTeamBonusPoints = 10;
 export const defaultPostseasonBoostPoints = 5;
+export const defaultUpcomingGamesDays = 7;
+/** Minimum and maximum allowed values for upcomingGamesDays (inclusive) */
+export const upcomingGamesDaysMin = 1;
+export const upcomingGamesDaysMax = 14;
 
 
 // Sensitivity level → score delta required to trigger a tab switch.
@@ -196,6 +200,7 @@ export const createDefaultUserPreferences = (): UserPreferences => ({
 	bettingEnabled: false,
 	temperatureUnit: 'F' as const,
 	postseasonBoostPoints: defaultPostseasonBoostPoints,
+	upcomingGamesDays: defaultUpcomingGamesDays,
 });
 
 export const normalizeUserPreferences = (storedPrefs: unknown): UserPreferences => {
@@ -226,5 +231,8 @@ export const normalizeUserPreferences = (storedPrefs: unknown): UserPreferences 
 		bettingEnabled: typeof candidate.bettingEnabled === 'boolean' ? candidate.bettingEnabled : defaults.bettingEnabled,
 		temperatureUnit: candidate.temperatureUnit === 'C' ? 'C' : 'F',
 		postseasonBoostPoints: normalizeSecondsPreference(candidate.postseasonBoostPoints, defaults.postseasonBoostPoints),
+		upcomingGamesDays: typeof candidate.upcomingGamesDays === 'number' && Number.isFinite(candidate.upcomingGamesDays)
+			? Math.max(upcomingGamesDaysMin, Math.min(upcomingGamesDaysMax, Math.round(candidate.upcomingGamesDays)))
+			: defaults.upcomingGamesDays,
 	};
 };

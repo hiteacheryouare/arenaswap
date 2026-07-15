@@ -44,6 +44,7 @@ describe('constants', () => {
 			bettingEnabled: false,
 			temperatureUnit: 'F',
 			postseasonBoostPoints: 5,
+			upcomingGamesDays: 7,
 		});
 	});
 
@@ -76,6 +77,7 @@ describe('constants', () => {
 			bettingEnabled: false,
 			temperatureUnit: 'F',
 			postseasonBoostPoints: 5,
+			upcomingGamesDays: 7,
 		});
 	});
 
@@ -110,6 +112,18 @@ describe('constants', () => {
 		expect(normalized.enabled).toBe(false);
 		expect(normalized.favoriteTeamIds).toEqual([]);
 		expect(normalized.favoriteTeamBonusPoints).toBe(10);
+	});
+
+	test('upcomingGamesDays defaults to 7 and clamps to the 1–14 range', () => {
+		expect(createDefaultUserPreferences().upcomingGamesDays).toBe(7);
+		expect(normalizeUserPreferences({}).upcomingGamesDays).toBe(7);
+		expect(normalizeUserPreferences({ upcomingGamesDays: 3 }).upcomingGamesDays).toBe(3);
+		expect(normalizeUserPreferences({ upcomingGamesDays: 14 }).upcomingGamesDays).toBe(14);
+		expect(normalizeUserPreferences({ upcomingGamesDays: 0 }).upcomingGamesDays).toBe(1);
+		expect(normalizeUserPreferences({ upcomingGamesDays: -5 }).upcomingGamesDays).toBe(1);
+		expect(normalizeUserPreferences({ upcomingGamesDays: 20 }).upcomingGamesDays).toBe(14);
+		expect(normalizeUserPreferences({ upcomingGamesDays: 3.7 }).upcomingGamesDays).toBe(4);
+		expect(normalizeUserPreferences({ upcomingGamesDays: 'bad' }).upcomingGamesDays).toBe(7);
 	});
 
 	test('postseasonBoostPoints defaults to 5 and normalizes fractional/negative values', () => {

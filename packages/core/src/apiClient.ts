@@ -13,7 +13,6 @@ import type {
 import type { Game, GameCondition, GameOdds, LeagueConfig, LeagueId, LeagueLogoMap } from './types';
 
 const espnBase = 'https://site.api.espn.com/apis/site/v2/sports';
-const upcomingDateWindowDays = 4;
 
 const parseClockToSeconds = (clock: string): number => {
 	// Soccer prime notation: "85'" or "90'+8'" (base minutes + optional stoppage)
@@ -50,13 +49,13 @@ const toQueryDate = (date: Date): string => (
 	`${date.getUTCFullYear()}${String(date.getUTCMonth() + 1).padStart(2, '0')}${String(date.getUTCDate()).padStart(2, '0')}`
 );
 
-const buildUpcomingDatesRangeQuery = (): string => {
+const buildUpcomingDatesRangeQuery = (days: number): string => {
 	// Start from today so morning pre-game events aren't missed.
 	// ESPN's default (no-dates) scoreboard only reliably surfaces active/recent games;
 	// the explicit dates query returns all scheduled events for the requested range.
 	const start = new Date();
 	const end = new Date(start);
-	end.setUTCDate(end.getUTCDate() + upcomingDateWindowDays);
+	end.setUTCDate(end.getUTCDate() + days);
 	return `${toQueryDate(start)}-${toQueryDate(end)}`;
 };
 
@@ -277,8 +276,8 @@ const fetchScoreboard = async (url: string, leagueId: LeagueId): Promise<EspnSco
 	return parsed.data;
 };
 
-const fetchLeagueGames = async (config: LeagueConfig, options: { includeUpcoming?: boolean } = {}): Promise<LeagueGamesResult> => {
-	const { includeUpcoming = true } = options;
+const fetchLeagueGames = async (config: LeagueConfig, options: { includeUpcoming?: boolean; upcomingDays?: number } = {}): Promise<LeagueGamesResult> => {
+	const { includeUpcoming = true, upcomingDays = 7 } = options;
 	const baseParams = new URLSearchParams();
 	// ESPN requires `groups=50` for reliable NCAA men's basketball scoreboard coverage
 	// and to avoid 404 responses on date-range queries.
@@ -300,7 +299,7 @@ const fetchLeagueGames = async (config: LeagueConfig, options: { includeUpcoming
 		return { leagueId: config.id, games: parsedGames, logoUrl };
 	}
 
-	const upcomingDates = buildUpcomingDatesRangeQuery();
+	const upcomingDates = buildUpcomingDatesRangeQuery(upcomingDays);
 	const upcomingParams = new URLSearchParams(baseParams);
 	upcomingParams.set('dates', upcomingDates);
 	const upcomingUrl = `${scoreboardUrl}?${upcomingParams.toString()}`;
@@ -340,7 +339,7 @@ const getEnabledLeagueConfigs = (enabledLeagues: LeagueId[]): LeagueConfig[] => 
 		.filter((config): config is LeagueConfig => Boolean(config))
 );
 
-export const fetchGamesWithLeagueLogos = async (enabledLeagues: LeagueId[], options: { includeUpcoming?: boolean } = {}): Promise<{ games: Game[]; leagueLogos: LeagueLogoMap }> => {
+export const fetchGamesWithLeagueLogos = async (enabledLeagues: LeagueId[], options: { includeUpcoming?: boolean; upcomingDays?: number } = {}): Promise<{ games: Game[]; leagueLogos: LeagueLogoMap }> => {
 	if (enabledLeagues.length === 0) return { games: [], leagueLogos: {} };
 	const leagueConfigs = getEnabledLeagueConfigs(enabledLeagues);
 	if (leagueConfigs.length === 0) return { games: [], leagueLogos: {} };
@@ -371,7 +370,7 @@ export const fetchLiveGames = async (enabledLeagues: LeagueId[]): Promise<Game[]
 	return games.filter(g => g.status === 'in');
 };
 
-export const fetchLeagueLogos = async (enabledLeagues: LeagueId[], options: { includeUpcoming?: boolean } = {}): Promise<LeagueLogoMap> => {
+export const fetchLeagueLogos = async (enabledLeagues: LeagueId[], options: { includeUpcoming?: boolean; upcomingDays?: number } = {}): Promise<LeagueLogoMap> => {
 	const { leagueLogos } = await fetchGamesWithLeagueLogos(enabledLeagues, options);
 	return leagueLogos;
 };
