@@ -12,6 +12,7 @@ const componentStubs: Record<string, string> = {
 	'./proTip': root('./cypress/stubs/proTip.tsx'),
 	'./emptyGameState': root('./cypress/stubs/emptyGameState.tsx'),
 	'./reviewPromptBanner': root('./cypress/stubs/reviewPromptBanner.tsx'),
+	'./ludicrousSpeedOverlay': root('./cypress/stubs/ludicrousSpeedOverlay.tsx'),
 };
 
 export default defineConfig({

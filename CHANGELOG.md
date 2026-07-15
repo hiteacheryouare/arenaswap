@@ -1,5 +1,17 @@
 # Changelog
 
+## Improve Cypress component test coverage — 2026-07-14
+
+Adds 5 new Cypress component test files covering UI surfaces that had no test coverage:
+
+- **`powerScoreBreakdown.cy.tsx`** (15 tests) — signal progress bars, stall penalty display, win probability variance labels (Volatility Boost / Penalty / neutral), favorite and game boost rows
+- **`gameBoostInput.cy.tsx`** (5 tests) — renders, displays current value, fires `onSetGameBoost`, clamps negatives to 0, uses game ID in the input `id`
+- **`postseasonBoostInput.cy.tsx`** (4 tests) — renders label and explainer, displays current value, fires `onChange`, clamps negatives to 0
+- **`walkthroughView.cy.tsx`** (13 tests) — full step navigation (1→2→3→4→done), back navigation, step 3 Next-button disabled until animation timer fires, done-screen completion callback, step 1 interactive toggle demo
+- **`setupView.cy.tsx`** (21 tests) — Switching/Leagues tab switching, standby stream threshold visibility, no-leagues warning badge, temperature unit toggle label, demo mode toggle
+
+Also adds a `ludicrousSpeedOverlay` Cypress stub and registers it in `cypress.config.ts` so `sensitivitySlider` (imported by `setupView`) resolves cleanly in the component test environment.
+
 ## Fix series dots ordering — 2026-07-12
 
 Fixed a bug where series win dots were rendered in the wrong positions. The ESPN API returns series events with future (unplayed) games listed first and completed games at the end of the array. The dots component now sorts completed events to the front before rendering, so filled dots correctly appear on the left for each win earned so far.
