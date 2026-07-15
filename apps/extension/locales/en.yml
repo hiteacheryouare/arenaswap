@@ -224,7 +224,7 @@ powerScore:
   tooltipClockStallPenalty: Applied when the game clock has barely moved across multiple consecutive data pulls. Reduces the signals subtotal by a multiplier, which deepens the longer the clock stays frozen.
   tooltipVolatility: Based on how close the live win probability has stayed to 50% over recent history. Games where it hovered near 50% — neither team with a clear advantage — earn a boost. Games where it consistently sat far from 50% in either direction are docked.
   tooltipFavoriteBoost: Added when one of your saved favorite teams is in this game. Having two favorites in the matchup adds more than one.
-  tooltipGameBoost: Points you've manually applied to this game using the boost control above.
+  tooltipGameBoost: Points you've manually applied to this game using the boost control below.
   tooltipScoringOpportunity: Added based on active scoring position. In football this is the red zone; in baseball and softball it scales with the number of runners on base.
   tooltipPostseasonBoost: A flat bonus applied to postseason games — playoffs, conference finals, and championships.
 

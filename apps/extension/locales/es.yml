@@ -224,7 +224,7 @@ powerScore:
   tooltipClockStallPenalty: Se aplica cuando el reloj del juego apenas ha avanzado en varias lecturas consecutivas. Reduce el subtotal de señales mediante un multiplicador que se intensifica cuanto más tiempo permanezca el reloj congelado.
   tooltipVolatility: Se basa en qué tan cerca ha permanecido la probabilidad de victoria en vivo del 50% a lo largo del historial reciente. Los partidos donde se mantuvo cerca del 50% — sin que ningún equipo tuviera ventaja clara — reciben un impulso. Los que estuvieron consistentemente alejados del 50% en cualquier dirección son penalizados.
   tooltipFavoriteBoost: Se añade cuando uno de tus equipos favoritos guardados está en este partido. Tener dos favoritos en el encuentro suma más que uno.
-  tooltipGameBoost: Puntos que has aplicado manualmente a este partido mediante el control de impulso de arriba.
+  tooltipGameBoost: Puntos que has aplicado manualmente a este partido mediante el control de impulso de abajo.
   tooltipScoringOpportunity: Se añade según la posición activa de anotación. En fútbol americano es la zona roja; en béisbol y sóftbol escala con el número de corredores en base.
   tooltipPostseasonBoost: Un bono fijo aplicado a los partidos de postemporada — playoffs, finales de conferencia y campeonatos.
 
