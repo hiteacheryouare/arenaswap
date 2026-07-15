@@ -167,6 +167,26 @@ $bootstrap-icons-font-dir: '/fonts';
 	color:       #6b7280;
 }
 
+.signal-tooltip-btn {
+	display:     inline-flex;
+	align-items: center;
+	padding:     0;
+	border:      none;
+	background:  transparent;
+	color:       #9ca3af;
+	font-size:   0.55rem;
+	line-height: 1;
+	cursor:      pointer;
+	flex-shrink: 0;
+
+	&:hover  { color: #6b7280; }
+	&:focus-visible {
+		outline:        1px solid #6366f1;
+		outline-offset: 1px;
+		border-radius:  2px;
+	}
+}
+
 .powerscore-breakdown-row-subtotal {
 	margin-top:  0.16rem;
 	padding-top: 0.14rem;

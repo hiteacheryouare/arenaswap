@@ -216,6 +216,17 @@ powerScore:
   scoringOpportunity: Scoring opportunity
   postseasonBoost: Postseason boost
   finalPowerScore: Final PowerScore
+  tooltipCloseness: Score margin — tight games score higher than blowouts
+  tooltipLateGame: Time remaining — a close finish in the 4th quarter beats an identical game in the 1st
+  tooltipMomentum: Recent scoring runs — a team on a hot streak earns more points here
+  tooltipLeadChanges: Lead swaps — more back-and-forth action means a higher score
+  tooltipComeback: Deficit erased — the bigger the hole a team climbs out of, the higher the score
+  tooltipClockStallPenalty: Deducted when the game clock barely moves — stops a stalled game from hogging the top spot
+  tooltipVolatility: Win probability swings — wild unpredictable games get a boost; flat predictable ones get docked
+  tooltipFavoriteBoost: One of your saved favorites is playing — ArenaSwap gives their game extra priority
+  tooltipGameBoost: Your manually applied priority boost — adjust it with the boost control above
+  tooltipScoringOpportunity: Points added when the game is in a high-scoring position, like a red zone drive or a power play
+  tooltipPostseasonBoost: Playoff and championship games always matter more — extra points across the board
 
 bso:
   balls: B

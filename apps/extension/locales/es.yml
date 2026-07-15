@@ -216,6 +216,17 @@ powerScore:
   scoringOpportunity: Oportunidad de anotar
   postseasonBoost: Impulso de postemporada
   finalPowerScore: PowerScore final
+  tooltipCloseness: Margen de puntos — los partidos reñidos puntúan más que los aplastantes
+  tooltipLateGame: Tiempo restante — un final cerrado en el 4.º cuarto vale más que uno igual en el 1.º
+  tooltipMomentum: Rachas recientes — un equipo en racha suma más puntos aquí
+  tooltipLeadChanges: Cambios de liderato — más vaivenes significan mayor puntuación
+  tooltipComeback: Remontada — cuanto mayor es el déficit superado, más alta la puntuación
+  tooltipClockStallPenalty: Se descuenta cuando el reloj apenas avanza — evita que un partido estancado acapare el primer puesto
+  tooltipVolatility: Variaciones en la probabilidad de victoria — partidos impredecibles suben puntos; los predecibles los bajan
+  tooltipFavoriteBoost: Uno de tus equipos favoritos está jugando — ArenaSwap da prioridad extra a su partido
+  tooltipGameBoost: Tu impulso de prioridad manual — ajústalo con el control de impulso de arriba
+  tooltipScoringOpportunity: Puntos añadidos cuando el partido está en posición de anotar, como en zona roja o power play
+  tooltipPostseasonBoost: Los partidos de playoffs y campeonatos siempre importan más — puntos extra en todos los casos
 
 bso:
   balls: B
