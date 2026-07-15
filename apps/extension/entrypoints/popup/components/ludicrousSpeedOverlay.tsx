@@ -193,7 +193,7 @@ export default ({ onClose }: { onClose: () => void }) => {
 		};
 
 		// ── Intro: the light-speed negotiation before Helmet takes over ─────────────
-		const introLines: { key: string; ms: number }[] = [
+		const introLines = [
 			{ key: 'ludicrousSpeed.intro.l1', ms: 1500 },
 			{ key: 'ludicrousSpeed.intro.l2', ms: 1500 },
 			{ key: 'ludicrousSpeed.intro.l3', ms: 1200 },
@@ -202,7 +202,7 @@ export default ({ onClose }: { onClose: () => void }) => {
 			{ key: 'ludicrousSpeed.intro.l6', ms: 1200 },
 			{ key: 'ludicrousSpeed.intro.l7', ms: 1500 },
 			{ key: 'ludicrousSpeed.intro.l8', ms: 1500 },
-		];
+		] as const;
 
 		for (const line of introLines) {
 			const d = delay;
@@ -211,7 +211,7 @@ export default ({ onClose }: { onClose: () => void }) => {
 		}
 
 		// ── Pre-launch: slow ambient starfield while all setup dialogue plays ──────
-		const prelaunchLines: { key: string; ms: number }[] = [
+		const prelaunchLines = [
 			{ key: 'ludicrousSpeed.prelaunch.l1', ms: 1500 },
 			{ key: 'ludicrousSpeed.prelaunch.l2', ms: 1100 },
 			{ key: 'ludicrousSpeed.prelaunch.l3', ms: 1600 },
@@ -224,7 +224,7 @@ export default ({ onClose }: { onClose: () => void }) => {
 			{ key: 'ludicrousSpeed.prelaunch.l10', ms: 1500 },
 			{ key: 'ludicrousSpeed.prelaunch.l11', ms: 1100 },
 			{ key: 'ludicrousSpeed.prelaunch.l12', ms: 900 },
-		];
+		] as const;
 
 		for (const line of prelaunchLines) {
 			const d = delay;
@@ -298,12 +298,12 @@ export default ({ onClose }: { onClose: () => void }) => {
 			setBrakeState('visible');
 		});
 
-		const panicLines: { key: string; ms: number }[] = [
+		const panicLines = [
 			{ key: 'ludicrousSpeed.panic.l1', ms: 1400 },
 			{ key: 'ludicrousSpeed.panic.l2', ms: 1400 },
 			{ key: 'ludicrousSpeed.panic.l3', ms: 1400 },
 			{ key: 'ludicrousSpeed.panic.l4', ms: 1400 },
-		];
+		] as const;
 		for (const line of panicLines) {
 			const d = delay;
 			at(d, () => setDisplay({ text: i18n.t(line.key), cls: 'dialogue panic' }));

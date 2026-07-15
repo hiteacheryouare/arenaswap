@@ -1,5 +1,9 @@
 # Changelog
 
+## Fix TypeScript 7 type errors — 2026-07-14
+
+Fixed three type errors in `ludicrousSpeedOverlay.tsx` introduced by the TypeScript 7 upgrade. The `introLines`, `prelaunchLines`, and `panicLines` arrays were annotated as `{ key: string; ms: number }[]`, but `i18n.t()` only accepts specific literal key types (not the broad `string`). TypeScript 7 correctly enforces this. Fixed by adding `as const` to each array so keys are inferred as their literal types.
+
 ## Improve Cypress component test coverage — 2026-07-14
 
 Adds 5 new Cypress component test files covering UI surfaces that had no test coverage:
