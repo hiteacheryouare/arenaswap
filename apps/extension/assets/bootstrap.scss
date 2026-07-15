@@ -14,6 +14,12 @@ $form-switch-checked-bg:               #F75C03;
 $form-check-input-checked-bg-color:    #F75C03;
 $form-check-input-checked-border-color: #F75C03;
 
+// Tooltip: body-bg is dark (#0d1117), so Bootstrap's default tooltip-color
+// (var(--as-body-bg)) would produce dark text on a dark background. Override
+// to an explicit light-on-dark palette that works against any surface.
+$tooltip-color: #f8fafc;
+$tooltip-bg:    #1f2937;
+
 // ─── Bootstrap source ────────────────────────────────────────────────────────
 @import 'bootstrap/scss/bootstrap';
 
