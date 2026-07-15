@@ -115,7 +115,7 @@ const useSummaryData = (game: SummaryGameArg): summaryDataResult => {
 			.catch(() => {});
 
 		return () => { cancelled = true; };
-	}, [gameId, league, status]); // eslint-disable-line react-hooks/exhaustive-deps
+	}, [gameId, league, status, game.homeTeam.score, game.awayTeam.score]);
 
 	return { winProbability, seriesInfo };
 };
