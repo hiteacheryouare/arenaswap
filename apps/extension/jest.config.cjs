@@ -7,11 +7,18 @@ const commonProjectConfig = {
 		'^wxt/browser$': '<rootDir>/tests/stubs/wxtBrowser.ts',
 		'^#i18n$': '<rootDir>/tests/stubs/i18n.ts',
 	},
+	// TODO: revert to ts-jest once it supports TypeScript 7
+	// Replace this block with: { '^.+\\.[jt]sx?$': ['ts-jest', { tsconfig: '<rootDir>/tsconfig.jest.json' }] }
 	transform: {
 		'^.+\\.[jt]sx?$': [
-			'ts-jest',
+			'@swc/jest',
 			{
-				tsconfig: '<rootDir>/tsconfig.jest.json',
+				jsc: {
+					parser: { syntax: 'typescript', tsx: true },
+					transform: { react: { runtime: 'automatic' } },
+					target: 'es2020',
+				},
+				module: { type: 'commonjs' },
 			},
 		],
 	},

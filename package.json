@@ -22,6 +22,8 @@
 		"powerscore:validate-live": "rolldown scripts/powerscore/validateLive.ts --platform=node --file=scripts/powerscore/validateLive.cjs --format=cjs --log-level=silent && node scripts/powerscore/validateLive.cjs"
 	},
 	"devDependencies": {
+		"@swc/core": "^1.15.43",
+		"@swc/jest": "^0.2.39",
 		"oxlint": "^1.72.0",
 		"rolldown": "^1.1.4",
 		"turbo": "^2.10.4",
@@ -34,5 +36,12 @@
 	"packageManager": "npm@10.9.0",
 	"dependencies": {
 		"skills": "^1.5.14"
+	},
+	"allowScripts": {
+		"@swc/core@1.15.43": true,
+		"esbuild@0.28.1": true,
+		"esbuild@0.27.7": true,
+		"spawn-sync@1.0.15": true,
+		"unrs-resolver@1.12.2": true
 	}
 }

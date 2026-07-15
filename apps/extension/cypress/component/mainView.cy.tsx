@@ -14,6 +14,10 @@ const defaultPrefs: UserPreferences = {
 	favoriteTeamIds: [],
 	standbyStreamEnabled: false,
 	standbyStreamThreshold: 20,
+	bettingEnabled: false,
+	temperatureUnit: 'F',
+	postseasonBoostPoints: 0,
+	upcomingGamesDays: 14,
 };
 
 const makeGame = (

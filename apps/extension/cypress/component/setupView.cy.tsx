@@ -115,7 +115,11 @@ describe('setupView switching tab', () => {
 	it('calls onUpcomingGamesDaysChange when slider is moved', () => {
 		const spy = cy.spy().as('onUpcomingGamesDaysChange');
 		cy.mount(<SetupView {...defaultProps} onUpcomingGamesDaysChange={spy} />);
-		cy.get('#upcomingDaysSlider').invoke('val', 3).trigger('change');
+		cy.get('#upcomingDaysSlider').then($el => {
+			const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')!.set!;
+			setter.call($el[0], 3);
+			$el[0].dispatchEvent(new Event('input', { bubbles: true }));
+		});
 		cy.get('@onUpcomingGamesDaysChange').should('have.been.called');
 	});
 
