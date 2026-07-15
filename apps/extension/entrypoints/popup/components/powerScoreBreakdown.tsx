@@ -7,6 +7,7 @@ import {
 	scoreMaxTotal,
 } from '@arenaswap/core/constants';
 import { i18n } from '#i18n';
+import SignalTooltipIcon from './signalTooltipIcon';
 
 interface powerScoreBreakdownProps {
 	closeness: number;
@@ -28,11 +29,11 @@ interface powerScoreBreakdownProps {
 }
 
 const signalMeta = [
-	{ labelKey: 'powerScore.signalCloseness', max: scoreMaxCloseness, color: '#22c55e' },
-	{ labelKey: 'powerScore.signalLateGame', max: scoreMaxLateGame, color: '#f75c03' },
-	{ labelKey: 'powerScore.signalMomentum', max: scoreMaxMomentum, color: '#2274a5' },
-	{ labelKey: 'powerScore.signalLeadChanges', max: scoreMaxLeadChanges, color: '#f1c40f' },
-	{ labelKey: 'powerScore.signalComeback', max: scoreMaxComeback, color: '#d90368' },
+	{ labelKey: 'powerScore.signalCloseness', tooltipKey: 'powerScore.tooltipCloseness', max: scoreMaxCloseness, color: '#22c55e' },
+	{ labelKey: 'powerScore.signalLateGame', tooltipKey: 'powerScore.tooltipLateGame', max: scoreMaxLateGame, color: '#f75c03' },
+	{ labelKey: 'powerScore.signalMomentum', tooltipKey: 'powerScore.tooltipMomentum', max: scoreMaxMomentum, color: '#2274a5' },
+	{ labelKey: 'powerScore.signalLeadChanges', tooltipKey: 'powerScore.tooltipLeadChanges', max: scoreMaxLeadChanges, color: '#f1c40f' },
+	{ labelKey: 'powerScore.signalComeback', tooltipKey: 'powerScore.tooltipComeback', max: scoreMaxComeback, color: '#d90368' },
 ] as const;
 
 const PowerScoreBreakdown = ({
@@ -66,6 +67,7 @@ const PowerScoreBreakdown = ({
 					<div key={sig.labelKey} className='powerscore-signal-row'>
 						<span className='powerscore-signal-dot' style={{ backgroundColor: sig.color }} />
 						<span className='powerscore-signal-name'>{i18n.t(sig.labelKey)}</span>
+						<SignalTooltipIcon text={i18n.t(sig.tooltipKey)} />
 						<div className='progress powerscore-signal-progress flex-grow-1'>
 							<div
 								className='progress-bar'
@@ -85,7 +87,10 @@ const PowerScoreBreakdown = ({
 				<span>{signalsSubtotal}{signalsSubtotal > scoreMaxTotal ? ` ${i18n.t('powerScore.cappedAt', { max: scoreMaxTotal })}` : ''}</span>
 			</div>
 			<div className='powerscore-breakdown-row powerscore-breakdown-row-penalty'>
-				<span>{i18n.t('powerScore.clockStallPenalty')}</span>
+				<span className='d-flex align-items-center gap-1'>
+					{i18n.t('powerScore.clockStallPenalty')}
+					<SignalTooltipIcon text={i18n.t('powerScore.tooltipClockStallPenalty')} />
+				</span>
 				<span style={{ color: stallPenalty > 0 ? '#ef4444' : undefined }}>
 					{stallPenalty > 0 ? `-${stallPenalty}` : '0'}
 				</span>
@@ -97,23 +102,48 @@ const PowerScoreBreakdown = ({
 			)}
 			{hasWinProbVariance && (
 				<div className='powerscore-breakdown-row'>
-					<span>
+					<span className='d-flex align-items-center gap-1'>
 						{variance > 0
 							? i18n.t('powerScore.volatilityBoost')
 							: variance < 0
 								? i18n.t('powerScore.volatilityPenalty')
 								: i18n.t('powerScore.volatility')}
+						<SignalTooltipIcon text={i18n.t('powerScore.tooltipVolatility')} />
 					</span>
 					<span style={{ color: variance > 0 ? '#a855f7' : variance < 0 ? '#ef4444' : undefined }}>
 						{variance > 0 ? `+${variance}` : variance < 0 ? `${variance}` : '0'}
 					</span>
 				</div>
 			)}
-			<div className='powerscore-breakdown-row'><span>{i18n.t('powerScore.favoriteBoost')}</span><span>{favoriteBonus > 0 ? `+${favoriteBonus}` : '0'}</span></div>
+			<div className='powerscore-breakdown-row'>
+				<span className='d-flex align-items-center gap-1'>
+					{i18n.t('powerScore.favoriteBoost')}
+					<SignalTooltipIcon text={i18n.t('powerScore.tooltipFavoriteBoost')} />
+				</span>
+				<span>{favoriteBonus > 0 ? `+${favoriteBonus}` : '0'}</span>
+			</div>
 			{favoriteBonus > 0 && <div className='powerscore-breakdown-note'>{i18n.t('powerScore.favoriteTeamsInMatchup', favoriteTeamCount)}</div>}
-			<div className='powerscore-breakdown-row'><span>{i18n.t('powerScore.gameBoost')}</span><span>{currentBoost > 0 ? `+${currentBoost}` : '0'}</span></div>
-			<div className='powerscore-breakdown-row'><span>{i18n.t('powerScore.scoringOpportunity')}</span><span>{scoringOpportunityBoost > 0 ? `+${scoringOpportunityBoost}` : '0'}</span></div>
-			<div className='powerscore-breakdown-row'><span>{i18n.t('powerScore.postseasonBoost')}</span><span>{postseasonBoost > 0 ? `+${postseasonBoost}` : '0'}</span></div>
+			<div className='powerscore-breakdown-row'>
+				<span className='d-flex align-items-center gap-1'>
+					{i18n.t('powerScore.gameBoost')}
+					<SignalTooltipIcon text={i18n.t('powerScore.tooltipGameBoost')} />
+				</span>
+				<span>{currentBoost > 0 ? `+${currentBoost}` : '0'}</span>
+			</div>
+			<div className='powerscore-breakdown-row'>
+				<span className='d-flex align-items-center gap-1'>
+					{i18n.t('powerScore.scoringOpportunity')}
+					<SignalTooltipIcon text={i18n.t('powerScore.tooltipScoringOpportunity')} />
+				</span>
+				<span>{scoringOpportunityBoost > 0 ? `+${scoringOpportunityBoost}` : '0'}</span>
+			</div>
+			<div className='powerscore-breakdown-row'>
+				<span className='d-flex align-items-center gap-1'>
+					{i18n.t('powerScore.postseasonBoost')}
+					<SignalTooltipIcon text={i18n.t('powerScore.tooltipPostseasonBoost')} />
+				</span>
+				<span>{postseasonBoost > 0 ? `+${postseasonBoost}` : '0'}</span>
+			</div>
 			<div className='powerscore-breakdown-row powerscore-breakdown-row-total'><span>{i18n.t('powerScore.finalPowerScore')}</span><span>{totalLabel}</span></div>
 		</section>
 	);

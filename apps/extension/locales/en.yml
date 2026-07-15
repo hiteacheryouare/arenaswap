@@ -216,6 +216,17 @@ powerScore:
   scoringOpportunity: Scoring opportunity
   postseasonBoost: Postseason boost
   finalPowerScore: Final PowerScore
+  tooltipCloseness: Scored from the current point margin. A tie earns the most; wider margins score progressively lower. The ceiling scales with how far into the game you are, so the same margin is worth more late than early.
+  tooltipLateGame: Combines how far into the game we are with how close the score is. Builds linearly across the final period. Blowouts score almost nothing here regardless of time. Adds extra points when the game is tied in the closing seconds, anticipating overtime.
+  tooltipMomentum: Measures net scoring for one team across the recent score history window. If a team has outscored the other by a set amount during that stretch, this scores up. Decays toward zero as time passes without further scoring.
+  tooltipLeadChanges: Counts how many times the lead has switched in the tracked history window. No changes scores nothing; one or more flips score progressively higher. Decays if time passes without another change.
+  tooltipComeback: Compares the score margin at the oldest point in the window to the current margin. If the trailing team has closed the gap, this scores based on how much ground they've made up. Worth more later in the game; decays if scoring stops.
+  tooltipClockStallPenalty: Applied when the game clock has barely moved across multiple consecutive data pulls. Reduces the signals subtotal by a multiplier, which deepens the longer the clock stays frozen.
+  tooltipVolatility: Based on how close the live win probability has stayed to 50% over recent history. Games where it hovered near 50% — neither team with a clear advantage — earn a boost. Games where it consistently sat far from 50% in either direction are docked.
+  tooltipFavoriteBoost: Added when one of your saved favorite teams is in this game. Having two favorites in the matchup adds more than one.
+  tooltipGameBoost: Points you've manually applied to this game using the boost control below.
+  tooltipScoringOpportunity: Added based on active scoring position. In football this is the red zone; in baseball and softball it scales with the number of runners on base.
+  tooltipPostseasonBoost: A flat bonus applied to postseason games — playoffs, conference finals, and championships.
 
 bso:
   balls: B

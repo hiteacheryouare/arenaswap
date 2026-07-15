@@ -216,6 +216,17 @@ powerScore:
   scoringOpportunity: Oportunidad de anotar
   postseasonBoost: Impulso de postemporada
   finalPowerScore: PowerScore final
+  tooltipCloseness: Se calcula a partir de la diferencia de puntos actual. Un empate otorga el máximo; márgenes mayores puntúan progresivamente menos. El techo escala con el avance del partido, por lo que el mismo margen vale más al final que al principio.
+  tooltipLateGame: Combina qué tan avanzado está el partido con qué tan ajustado está el marcador. Sube de forma lineal a lo largo del último período. Los partidos no reñidos puntúan casi nada aquí. Añade puntos extra cuando el marcador está empatado en los últimos segundos, anticipando la prórroga.
+  tooltipMomentum: Mide la diferencia neta de anotaciones de un equipo en la ventana de historial más reciente. Si un equipo ha superado al otro por encima de un umbral, puntúa aquí. Decae hacia cero con el paso del tiempo sin más anotaciones.
+  tooltipLeadChanges: Cuenta cuántas veces ha cambiado el liderato en la ventana de historial. Sin cambios no puntúa; uno o más cambios puntúan progresivamente más alto. Decae si pasa tiempo sin otro cambio.
+  tooltipComeback: Compara el margen en el punto más antiguo de la ventana con el margen actual. Si el equipo que iba perdiendo ha recortado distancias, puntúa según cuánto terreno ha recuperado. Vale más al final del partido; decae si el marcador se detiene.
+  tooltipClockStallPenalty: Se aplica cuando el reloj del juego apenas ha avanzado en varias lecturas consecutivas. Reduce el subtotal de señales mediante un multiplicador que se intensifica cuanto más tiempo permanezca el reloj congelado.
+  tooltipVolatility: Se basa en qué tan cerca ha permanecido la probabilidad de victoria en vivo del 50% a lo largo del historial reciente. Los partidos donde se mantuvo cerca del 50% — sin que ningún equipo tuviera ventaja clara — reciben un impulso. Los que estuvieron consistentemente alejados del 50% en cualquier dirección son penalizados.
+  tooltipFavoriteBoost: Se añade cuando uno de tus equipos favoritos guardados está en este partido. Tener dos favoritos en el encuentro suma más que uno.
+  tooltipGameBoost: Puntos que has aplicado manualmente a este partido mediante el control de impulso de abajo.
+  tooltipScoringOpportunity: Se añade según la posición activa de anotación. En fútbol americano es la zona roja; en béisbol y sóftbol escala con el número de corredores en base.
+  tooltipPostseasonBoost: Un bono fijo aplicado a los partidos de postemporada — playoffs, finales de conferencia y campeonatos.
 
 bso:
   balls: B

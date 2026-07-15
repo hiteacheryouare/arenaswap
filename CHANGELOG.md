@@ -1,5 +1,14 @@
 # Changelog
 
+## Signal tooltips — 2026-07-15
+
+Implements #35. Users can now hover (or focus) any signal or boost/penalty row in the PowerScore Breakdown to see a plain-English explanation of what it measures.
+
+- Added `SignalTooltipIcon` component — a tiny Bootstrap 5 `Tooltip`-powered `(?)` button, initialized via `useEffect`, disposed on unmount
+- Tooltips wired up for all 5 signals (Closeness, Late-game, Momentum, Lead changes, Comeback) and all 6 boosts/penalties (Clock stall, Volatility, Favorite, Game boost, Scoring opportunity, Postseason)
+- New `.signal-tooltip-btn` CSS class for compact, unobtrusive icon styling
+- Fully translated (English + Spanish)
+
 ## Date-range setting for upcoming games — 2026-07-14
 
 Implements #33. Users can now control how many days ahead the "Up Next" section looks for upcoming games (1–14 days, default 7). The setting appears in Settings → Switching below the "Show upcoming games" toggle — only when that toggle is on.
