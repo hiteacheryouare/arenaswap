@@ -209,6 +209,8 @@ powerScore:
   volatility: Volatilidad
   signalsTotal: Total de señales
   cappedAt: (limitado a {max})
+  signalsNormalizedNote: Reescalado para mantener el rango 0–100 con señales desactivadas
+  tooltipSignalsNormalized: "Cuando se desactivan señales, las señales restantes se escalan proporcionalmente para que la puntuación mantenga su rango completo de 0–100."
   clockStallPenalty: Penalización por reloj detenido
   clockFrozenNote: reloj del partido detenido — {before} → {after} pts antes de bonificaciones
   favoriteBoost: Impulso de favorito

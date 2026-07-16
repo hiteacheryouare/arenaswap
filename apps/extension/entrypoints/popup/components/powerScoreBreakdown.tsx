@@ -60,6 +60,9 @@ const PowerScoreBreakdown = ({
 	const signalsSubtotal = closeness + lateGame + momentum + leadChanges + comeback;
 	const hasWinProbVariance = winProbabilityVariance !== undefined;
 	const variance = winProbabilityVariance ?? 0;
+	// When signals are disabled, applyDisabledSignals rescales the enabled signals sum to maintain
+	// the 0-100 range. baseTotal reflects the scaled result; signalsSubtotal is the raw enabled sum.
+	const isSignalNormalized = disabledSet.size > 0 && baseTotal !== signalsSubtotal;
 
 	return (
 		<section className='powerscore-breakdown game-detail-formula-card'>
@@ -94,9 +97,25 @@ const PowerScoreBreakdown = ({
 				);
 			})}
 			<div className='powerscore-breakdown-row powerscore-breakdown-row-subtotal'>
-				<span>{i18n.t('powerScore.signalsTotal')}</span>
-				<span>{signalsSubtotal}{signalsSubtotal > scoreMaxTotal ? ` ${i18n.t('powerScore.cappedAt', { max: scoreMaxTotal })}` : ''}</span>
+				<span className='d-flex align-items-center gap-1'>
+					{i18n.t('powerScore.signalsTotal')}
+					{isSignalNormalized && <SignalTooltipIcon text={i18n.t('powerScore.tooltipSignalsNormalized')} />}
+				</span>
+				{isSignalNormalized ? (
+					<span className='d-flex align-items-center gap-1'>
+						<span className='powerscore-subtotal-raw'>{signalsSubtotal}</span>
+						<span>→</span>
+						<span>{baseTotal}</span>
+					</span>
+				) : (
+					<span>{signalsSubtotal}{signalsSubtotal > scoreMaxTotal ? ` ${i18n.t('powerScore.cappedAt', { max: scoreMaxTotal })}` : ''}</span>
+				)}
 			</div>
+			{isSignalNormalized && (
+				<div className='powerscore-breakdown-note'>
+					{i18n.t('powerScore.signalsNormalizedNote')}
+				</div>
+			)}
 			<div className='powerscore-breakdown-row powerscore-breakdown-row-penalty'>
 				<span className='d-flex align-items-center gap-1'>
 					{i18n.t('powerScore.clockStallPenalty')}

@@ -209,6 +209,8 @@ powerScore:
   volatility: Volatility
   signalsTotal: Signals total
   cappedAt: (capped at {max})
+  signalsNormalizedNote: Re-scaled to maintain 0–100 range with signals disabled
+  tooltipSignalsNormalized: "When signals are turned off, the remaining signals are scaled up proportionally so the score keeps its full 0–100 range."
   clockStallPenalty: Clock stall penalty
   clockFrozenNote: game clock frozen — {before} → {after} pts before bonuses
   favoriteBoost: Favorite Boost

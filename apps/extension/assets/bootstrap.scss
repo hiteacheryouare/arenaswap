@@ -211,6 +211,13 @@ $bootstrap-icons-font-dir: '/fonts';
 	color:       #111827;
 }
 
+.powerscore-subtotal-raw {
+	font-weight:     400;
+	letter-spacing:  0;
+	color:           #9ca3af;
+	text-decoration: line-through;
+}
+
 .powerscore-breakdown-row-penalty span:last-child {
 	color: #991b1b;
 }

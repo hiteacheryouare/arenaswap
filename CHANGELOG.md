@@ -1,5 +1,9 @@
 # Changelog
 
+## Normalization indicator in PowerScore Breakdown — 2026-07-16
+
+When one or more signals are disabled, the Signals Total row in the PowerScore Breakdown now shows the normalization effect visually: the raw enabled-signal sum (strikethrough, gray) followed by an arrow and the re-scaled value (e.g. ~~78~~ → 89). A brief note below explains the re-scaling, and a tooltip on the "Signals total" label describes the mechanism. Fully translated (English + Spanish).
+
 ## PowerScore signal toggles — 2026-07-16
 
 Implements #34. Users can now turn individual PowerScore signals (Closeness, Late-game, Momentum, Lead changes, Comeback) on or off from Settings → Switching.
