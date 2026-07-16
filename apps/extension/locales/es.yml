@@ -142,6 +142,9 @@ setup:
   temperatureUnit: Unidad de temperatura
   temperatureUnitF: '°F'
   temperatureUnitC: '°C'
+  signalsSection: Señales del PowerScore
+  signalsExplainer: 'Las señales desactivadas se excluyen de la puntuación. Las puntuaciones se renormalizan para mantenerse en rango.'
+  signalLastActive: Al menos una señal debe permanecer activa
   leaguesExplainer: Solo se siguen y se consideran para el cambio automático las ligas seleccionadas.
   selectNone: ninguna
   selectAll: todas
@@ -215,6 +218,7 @@ powerScore:
   gameBoost: Impulso del partido
   scoringOpportunity: Oportunidad de anotar
   postseasonBoost: Impulso de postemporada
+  signalOff: 'Desactivado'
   finalPowerScore: PowerScore final
   tooltipCloseness: Se calcula a partir de la diferencia de puntos actual. Un empate otorga el máximo; márgenes mayores puntúan progresivamente menos. El techo escala con el avance del partido, por lo que el mismo margen vale más al final que al principio.
   tooltipLateGame: Combina qué tan avanzado está el partido con qué tan ajustado está el marcador. Sube de forma lineal a lo largo del último período. Los partidos no reñidos puntúan casi nada aquí. Añade puntos extra cuando el marcador está empatado en los últimos segundos, anticipando la prórroga.

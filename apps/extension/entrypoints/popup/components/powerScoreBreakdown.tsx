@@ -6,6 +6,7 @@ import {
 	scoreMaxMomentum,
 	scoreMaxTotal,
 } from '@arenaswap/core/constants';
+import type { SignalName } from '@arenaswap/core/types';
 import { i18n } from '#i18n';
 import SignalTooltipIcon from './signalTooltipIcon';
 
@@ -26,14 +27,15 @@ interface powerScoreBreakdownProps {
 	postseasonBoost: number;
 	total: number;
 	totalLabel: string;
+	disabledSignals?: readonly SignalName[];
 }
 
 const signalMeta = [
-	{ labelKey: 'powerScore.signalCloseness', tooltipKey: 'powerScore.tooltipCloseness', max: scoreMaxCloseness, color: '#22c55e' },
-	{ labelKey: 'powerScore.signalLateGame', tooltipKey: 'powerScore.tooltipLateGame', max: scoreMaxLateGame, color: '#f75c03' },
-	{ labelKey: 'powerScore.signalMomentum', tooltipKey: 'powerScore.tooltipMomentum', max: scoreMaxMomentum, color: '#2274a5' },
-	{ labelKey: 'powerScore.signalLeadChanges', tooltipKey: 'powerScore.tooltipLeadChanges', max: scoreMaxLeadChanges, color: '#f1c40f' },
-	{ labelKey: 'powerScore.signalComeback', tooltipKey: 'powerScore.tooltipComeback', max: scoreMaxComeback, color: '#d90368' },
+	{ name: 'closeness' as SignalName, labelKey: 'powerScore.signalCloseness', tooltipKey: 'powerScore.tooltipCloseness', max: scoreMaxCloseness, color: '#22c55e' },
+	{ name: 'lateGame' as SignalName, labelKey: 'powerScore.signalLateGame', tooltipKey: 'powerScore.tooltipLateGame', max: scoreMaxLateGame, color: '#f75c03' },
+	{ name: 'momentum' as SignalName, labelKey: 'powerScore.signalMomentum', tooltipKey: 'powerScore.tooltipMomentum', max: scoreMaxMomentum, color: '#2274a5' },
+	{ name: 'leadChanges' as SignalName, labelKey: 'powerScore.signalLeadChanges', tooltipKey: 'powerScore.tooltipLeadChanges', max: scoreMaxLeadChanges, color: '#f1c40f' },
+	{ name: 'comeback' as SignalName, labelKey: 'powerScore.signalComeback', tooltipKey: 'powerScore.tooltipComeback', max: scoreMaxComeback, color: '#d90368' },
 ] as const;
 
 const PowerScoreBreakdown = ({
@@ -51,7 +53,9 @@ const PowerScoreBreakdown = ({
 	scoringOpportunityBoost,
 	postseasonBoost,
 	totalLabel,
+	disabledSignals = [],
 }: powerScoreBreakdownProps) => {
+	const disabledSet = new Set<SignalName>(disabledSignals);
 	const signalValues = [closeness, lateGame, momentum, leadChanges, comeback];
 	const signalsSubtotal = closeness + lateGame + momentum + leadChanges + comeback;
 	const hasWinProbVariance = winProbabilityVariance !== undefined;
@@ -61,13 +65,17 @@ const PowerScoreBreakdown = ({
 		<section className='powerscore-breakdown game-detail-formula-card'>
 			<div className='powerscore-breakdown-heading'>{i18n.t('powerScore.heading')}</div>
 			{signalMeta.map((sig, i) => {
-				const val = signalValues[i] ?? 0;
-				const pct = sig.max > 0 ? Math.min((val / sig.max) * 100, 100) : 0;
+				const isDisabled = disabledSet.has(sig.name);
+				const val = isDisabled ? 0 : (signalValues[i] ?? 0);
+				const pct = !isDisabled && sig.max > 0 ? Math.min((val / sig.max) * 100, 100) : 0;
 				return (
-					<div key={sig.labelKey} className='powerscore-signal-row'>
-						<span className='powerscore-signal-dot' style={{ backgroundColor: sig.color }} />
+					<div key={sig.labelKey} className={`powerscore-signal-row${isDisabled ? ' opacity-50' : ''}`}>
+						<span className='powerscore-signal-dot' style={{ backgroundColor: isDisabled ? '#6c757d' : sig.color }} />
 						<span className='powerscore-signal-name'>{i18n.t(sig.labelKey)}</span>
-						<SignalTooltipIcon text={i18n.t(sig.tooltipKey)} />
+						{isDisabled
+							? <span className='powerscore-signal-off-badge'>{i18n.t('powerScore.signalOff')}</span>
+							: <SignalTooltipIcon text={i18n.t(sig.tooltipKey)} />
+						}
 						<div className='progress powerscore-signal-progress flex-grow-1'>
 							<div
 								className='progress-bar'
@@ -78,7 +86,10 @@ const PowerScoreBreakdown = ({
 								aria-valuemax={sig.max}
 							/>
 						</div>
-						<span className='powerscore-signal-value'>{val}<span className='powerscore-signal-max'>/{sig.max}</span></span>
+						{isDisabled
+							? <span className='powerscore-signal-value text-muted'>—</span>
+							: <span className='powerscore-signal-value'>{val}<span className='powerscore-signal-max'>/{sig.max}</span></span>
+						}
 					</div>
 				);
 			})}

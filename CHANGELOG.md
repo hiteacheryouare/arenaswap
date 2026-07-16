@@ -1,5 +1,16 @@
 # Changelog
 
+## PowerScore signal toggles — 2026-07-16
+
+Implements #34. Users can now turn individual PowerScore signals (Closeness, Late-game, Momentum, Lead changes, Comeback) on or off from Settings → Switching.
+
+- Added `disabledSignals: SignalName[]` to `UserPreferences`; persisted and synced across devices
+- New `applyDisabledSignals` helper in `@arenaswap/core/constants` zeros out disabled signals and re-normalizes the remaining ones to keep PowerScores in the 0–100 range
+- Background scorer applies signal filtering immediately after computing each game's base score, so tab-switching decisions reflect disabled signals
+- Settings UI: a new "PowerScore Signals" section with a toggle per signal; the last active signal's toggle is disabled to prevent turning off all signals
+- PowerScore Breakdown: disabled signals display greyed-out with an "Off" badge instead of a progress bar
+- Fully translated (English + Spanish)
+
 ## Signal tooltips — 2026-07-15
 
 Implements #35. Users can now hover (or focus) any signal or boost/penalty row in the PowerScore Breakdown to see a plain-English explanation of what it measures.

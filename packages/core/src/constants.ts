@@ -1,5 +1,5 @@
 import pkg from '../package.json';
-import type { LeagueId, UserPreferences } from './types';
+import type { LeagueId, SignalName, UserPreferences } from './types';
 import {
 	allLeagueIds,
 	stallPenaltySteps,
@@ -154,6 +154,56 @@ export const isFavoriteTeamKey = (value: unknown): value is string => (
 	typeof value === 'string' && parseFavoriteTeamKey(value) !== null
 );
 
+export const allSignalNames: readonly SignalName[] = ['closeness', 'lateGame', 'momentum', 'leadChanges', 'comeback'] as const;
+
+const signalMaxMap: Record<SignalName, number> = {
+	closeness: scoreMaxCloseness,
+	lateGame: scoreMaxLateGame,
+	momentum: scoreMaxMomentum,
+	leadChanges: scoreMaxLeadChanges,
+	comeback: scoreMaxComeback,
+};
+
+export const applyDisabledSignals = (
+	result: import('powerscore').PowerScoreResult,
+	disabledSignals: readonly SignalName[],
+): import('powerscore').PowerScoreResult => {
+	if (disabledSignals.length === 0) return result;
+
+	const disabled = new Set<SignalName>(disabledSignals);
+	const enabledMax = allSignalNames
+		.filter(s => !disabled.has(s))
+		.reduce((sum, s) => sum + signalMaxMap[s], 0);
+
+	if (enabledMax === 0) return result;
+
+	const closeness = disabled.has('closeness') ? 0 : result.closeness;
+	const lateGame = disabled.has('lateGame') ? 0 : result.lateGame;
+	const momentum = disabled.has('momentum') ? 0 : result.momentum;
+	const leadChanges = disabled.has('leadChanges') ? 0 : result.leadChanges;
+	const comeback = disabled.has('comeback') ? 0 : result.comeback;
+
+	const enabledSum = closeness + lateGame + momentum + leadChanges + comeback;
+	const scalingFactor = scoreMaxTotal / enabledMax;
+	const newBaseTotal = Math.min(Math.round(enabledSum * scalingFactor), scoreMaxTotal);
+
+	const originalBaseTotal = result.baseTotal ?? result.total;
+	const stallRatio = originalBaseTotal > 0 ? result.total / originalBaseTotal : 1;
+	const newTotal = Math.min(Math.round(newBaseTotal * stallRatio), scoreMaxTotal);
+
+	return {
+		...result,
+		closeness,
+		lateGame,
+		momentum,
+		leadChanges,
+		comeback,
+		baseTotal: newBaseTotal,
+		total: newTotal,
+		...(result.stallPenalty !== undefined ? { stallPenalty: Math.max(0, newBaseTotal - newTotal) } : {}),
+	};
+};
+
 const isSensitivityValue = (value: unknown): value is UserPreferences['sensitivity'] => (
 	typeof value === 'number' && value >= 1 && value <= 7
 );
@@ -201,6 +251,7 @@ export const createDefaultUserPreferences = (): UserPreferences => ({
 	temperatureUnit: 'F' as const,
 	postseasonBoostPoints: defaultPostseasonBoostPoints,
 	upcomingGamesDays: defaultUpcomingGamesDays,
+	disabledSignals: [],
 });
 
 export const normalizeUserPreferences = (storedPrefs: unknown): UserPreferences => {
@@ -234,5 +285,8 @@ export const normalizeUserPreferences = (storedPrefs: unknown): UserPreferences 
 		upcomingGamesDays: typeof candidate.upcomingGamesDays === 'number' && Number.isFinite(candidate.upcomingGamesDays)
 			? Math.max(upcomingGamesDaysMin, Math.min(upcomingGamesDaysMax, Math.round(candidate.upcomingGamesDays)))
 			: defaults.upcomingGamesDays,
+		disabledSignals: Array.isArray(candidate.disabledSignals)
+			? (candidate.disabledSignals as unknown[]).filter((s): s is SignalName => allSignalNames.includes(s as SignalName))
+			: defaults.disabledSignals,
 	};
 };

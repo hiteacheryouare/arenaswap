@@ -8,6 +8,7 @@ import {
 	reviewPromptStorageKey,
 } from '../utils/reviewPrompt';
 import {
+	applyDisabledSignals,
 	createDefaultUserPreferences,
 	createFavoriteTeamKey,
 	leagueLogoFallbacks,
@@ -370,7 +371,10 @@ export default defineBackground(() => {
 		const postseasonBoostPoints = prefs.postseasonBoostPoints;
 		const scores = liveGames.map(g => {
 			const stallCount = clockStallMap.get(g.id)?.stallCount ?? 0;
-			const baseScore = normalizePowerScoreResult(computePowerScore(g, history.get(g.id) ?? [], stallCount));
+			const baseScore = applyDisabledSignals(
+				normalizePowerScoreResult(computePowerScore(g, history.get(g.id) ?? [], stallCount)),
+				prefs.disabledSignals,
+			);
 			const favoriteTeamCount = getFavoriteTeamCount(g, favoriteTeamIds);
 			const favoriteBonus = favoriteTeamCount * favoriteBonusPoints;
 			const gameBoost = gameBoosts[g.id] ?? 0;

@@ -142,6 +142,9 @@ setup:
   temperatureUnit: Temperature unit
   temperatureUnitF: '°F'
   temperatureUnitC: '°C'
+  signalsSection: PowerScore Signals
+  signalsExplainer: 'Disabled signals are excluded from scoring. Scores are re-normalized to stay in range.'
+  signalLastActive: At least one signal must stay active
   leaguesExplainer: Only selected leagues are tracked and considered for automatic switching.
   selectNone: none
   selectAll: all
@@ -215,6 +218,7 @@ powerScore:
   gameBoost: Game boost
   scoringOpportunity: Scoring opportunity
   postseasonBoost: Postseason boost
+  signalOff: 'Off'
   finalPowerScore: Final PowerScore
   tooltipCloseness: Scored from the current point margin. A tie earns the most; wider margins score progressively lower. The ceiling scales with how far into the game you are, so the same margin is worth more late than early.
   tooltipLateGame: Combines how far into the game we are with how close the score is. Builds linearly across the final period. Blowouts score almost nothing here regardless of time. Adds extra points when the game is tied in the closing seconds, anticipating overtime.

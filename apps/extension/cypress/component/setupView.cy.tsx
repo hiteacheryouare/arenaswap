@@ -18,6 +18,7 @@ const defaultPrefs: UserPreferences = {
 	temperatureUnit: 'F',
 	postseasonBoostPoints: 0,
 	upcomingGamesDays: 7,
+	disabledSignals: [],
 };
 
 const defaultProps = {
@@ -48,6 +49,7 @@ const defaultProps = {
 	onToggleBetting: () => {},
 	onToggleTemperatureUnit: () => {},
 	onPostseasonBoostChange: () => {},
+	onToggleSignal: () => {},
 };
 
 describe('setupView tabs', () => {

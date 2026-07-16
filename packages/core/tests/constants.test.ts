@@ -1,6 +1,8 @@
 import pkg from '../package.json';
 import {
 	allLeagueIds,
+	allSignalNames,
+	applyDisabledSignals,
 	appDescription,
 	appName,
 	appVersion,
@@ -45,6 +47,7 @@ describe('constants', () => {
 			temperatureUnit: 'F',
 			postseasonBoostPoints: 5,
 			upcomingGamesDays: 7,
+			disabledSignals: [],
 		});
 	});
 
@@ -78,6 +81,7 @@ describe('constants', () => {
 			temperatureUnit: 'F',
 			postseasonBoostPoints: 5,
 			upcomingGamesDays: 7,
+			disabledSignals: [],
 		});
 	});
 
@@ -124,6 +128,36 @@ describe('constants', () => {
 		expect(normalizeUserPreferences({ upcomingGamesDays: 20 }).upcomingGamesDays).toBe(14);
 		expect(normalizeUserPreferences({ upcomingGamesDays: 3.7 }).upcomingGamesDays).toBe(4);
 		expect(normalizeUserPreferences({ upcomingGamesDays: 'bad' }).upcomingGamesDays).toBe(7);
+	});
+
+	test('disabledSignals defaults to [] and filters out invalid values on normalize', () => {
+		expect(createDefaultUserPreferences().disabledSignals).toEqual([]);
+		expect(normalizeUserPreferences({}).disabledSignals).toEqual([]);
+		expect(normalizeUserPreferences({ disabledSignals: ['closeness', 'momentum'] }).disabledSignals).toEqual(['closeness', 'momentum']);
+		expect(normalizeUserPreferences({ disabledSignals: ['closeness', 'notASignal', 123] }).disabledSignals).toEqual(['closeness']);
+		expect(normalizeUserPreferences({ disabledSignals: 'bad' }).disabledSignals).toEqual([]);
+	});
+
+	test('applyDisabledSignals returns unchanged result when nothing is disabled', () => {
+		const base = { gameId: 'g1', total: 60, closeness: 30, lateGame: 15, momentum: 10, leadChanges: 5, comeback: 0, reason: 'tied', stalled: false };
+		expect(applyDisabledSignals(base, [])).toBe(base);
+	});
+
+	test('applyDisabledSignals zeros disabled signals and scales total to maintain 0-100 range', () => {
+		const allMax = allSignalNames.reduce((sum, s) => sum + { closeness: 40, lateGame: 25, momentum: 15, leadChanges: 10, comeback: 10 }[s], 0);
+		expect(allMax).toBe(100);
+		const base = { gameId: 'g1', total: 40, closeness: 40, lateGame: 0, momentum: 0, leadChanges: 0, comeback: 0, reason: 'tied', stalled: false };
+		const result = applyDisabledSignals(base, ['lateGame', 'momentum', 'leadChanges', 'comeback']);
+		expect(result.closeness).toBe(40);
+		expect(result.lateGame).toBe(0);
+		expect(result.momentum).toBe(0);
+		expect(result.total).toBe(100);
+	});
+
+	test('applyDisabledSignals returns unchanged result when all signals are disabled', () => {
+		const base = { gameId: 'g1', total: 40, closeness: 40, lateGame: 0, momentum: 0, leadChanges: 0, comeback: 0, reason: 'tied', stalled: false };
+		const result = applyDisabledSignals(base, ['closeness', 'lateGame', 'momentum', 'leadChanges', 'comeback']);
+		expect(result).toBe(base);
 	});
 
 	test('postseasonBoostPoints defaults to 5 and normalizes fractional/negative values', () => {

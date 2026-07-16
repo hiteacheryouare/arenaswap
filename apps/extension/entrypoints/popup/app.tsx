@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import useSWR from 'swr';
 import { fetchLeagueLogos } from '@arenaswap/core';
-import { allLeagueIds, createDefaultUserPreferences, createFavoriteTeamKey, normalizeUserPreferences } from '@arenaswap/core/constants';
-import type { LeagueId, LeagueLogoMap, SportType, TabRegistration, UserPreferences } from '@arenaswap/core/types';
+import { allLeagueIds, allSignalNames, createDefaultUserPreferences, createFavoriteTeamKey, normalizeUserPreferences } from '@arenaswap/core/constants';
+import type { LeagueId, LeagueLogoMap, SignalName, SportType, TabRegistration, UserPreferences } from '@arenaswap/core/types';
 import type { Browser } from 'wxt/browser';
 import GameDetailView from './components/gameDetailView';
 import MainView from './components/mainView';
@@ -215,6 +215,20 @@ export default () => {
 	};
 
 
+	const onToggleSignal = (signal: SignalName) => {
+		persistPrefs(currentPrefs => {
+			const current = new Set(currentPrefs.disabledSignals);
+			if (current.has(signal)) {
+				current.delete(signal);
+			} else {
+				const wouldRemainEnabled = allSignalNames.filter(s => !current.has(s) && s !== signal).length;
+				if (wouldRemainEnabled === 0) return currentPrefs;
+				current.add(signal);
+			}
+			return { ...currentPrefs, disabledSignals: [...current] };
+		});
+	};
+
 	const onRegistryChange = (updated: TabRegistration[]) => {
 		setRegistry(updated);
 		void browser.storage.session.set({ tabRegistry: updated });
@@ -331,6 +345,7 @@ export default () => {
 						onToggleBetting={() => persistPrefs(currentPrefs => ({ ...currentPrefs, bettingEnabled: !currentPrefs.bettingEnabled }))}
 						onToggleTemperatureUnit={() => persistPrefs(currentPrefs => ({ ...currentPrefs, temperatureUnit: currentPrefs.temperatureUnit === 'F' ? 'C' : 'F' }))}
 						onPostseasonBoostChange={val => persistPrefs(currentPrefs => ({ ...currentPrefs, postseasonBoostPoints: val }))}
+						onToggleSignal={onToggleSignal}
 					/>
 				)}
 				{view === 'main' && (
@@ -382,6 +397,7 @@ export default () => {
 						weatherPrefs={{
 							temperatureUnit: prefs.temperatureUnit,
 						}}
+						disabledSignals={prefs.disabledSignals}
 						onSetGameBoost={onSetGameBoost}
 						onBack={() => setView('main')}
 					/>

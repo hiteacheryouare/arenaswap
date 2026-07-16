@@ -173,6 +173,15 @@ $bootstrap-icons-font-dir: '/fonts';
 	color:       #6b7280;
 }
 
+.powerscore-signal-off-badge {
+	font-size:        0.55rem;
+	font-weight:      600;
+	color:            #6b7280;
+	letter-spacing:   0.03em;
+	text-transform:   uppercase;
+	flex-shrink:      0;
+}
+
 .signal-tooltip-btn {
 	display:     inline-flex;
 	align-items: center;

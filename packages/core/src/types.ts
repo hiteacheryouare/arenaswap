@@ -9,6 +9,8 @@ import type {
 	ScorerTunables,
 	LeagueConfig,
 } from 'powerscore';
+
+export type SignalName = 'closeness' | 'lateGame' | 'momentum' | 'leadChanges' | 'comeback';
 export type {
 	SportType,
 	LeagueId,
@@ -106,6 +108,8 @@ export interface UserPreferences {
 	postseasonBoostPoints: number;
 	/** How many days ahead to fetch and display upcoming games (1–14) */
 	upcomingGamesDays: number;
+	/** Signal names to exclude from PowerScore calculation; remaining signals are normalized to 0–100 */
+	disabledSignals: SignalName[];
 }
 
 export interface TabRegistration {

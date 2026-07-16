@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { i18n } from '#i18n';
 import { leagueConfigs, resolveLeagueLogoUrl } from '@arenaswap/core/constants';
-import type { LeagueId, LeagueLogoMap, SportType, UserPreferences } from '@arenaswap/core/types';
+import type { LeagueId, LeagueLogoMap, SignalName, SportType, UserPreferences } from '@arenaswap/core/types';
 import type { Browser } from 'wxt/browser';
 import CooldownSlider from './cooldownSlider';
 import FavoriteTeamBonusInput from './favoriteTeamBonusInput';
@@ -39,6 +39,7 @@ interface setupViewProps {
 	onToggleBetting: () => void;
 	onToggleTemperatureUnit: () => void;
 	onPostseasonBoostChange: (val: number) => void;
+	onToggleSignal: (signal: SignalName) => void;
 }
 
 type leagueConfig = (typeof leagueConfigs)[number];
@@ -62,12 +63,21 @@ const LeagueLogo = ({ league, logos }: { league: leagueConfig; logos: LeagueLogo
 	);
 };
 
+const setupSignalMeta = [
+	{ name: 'closeness' as SignalName, labelKey: 'powerScore.signalCloseness' as const, color: '#22c55e' },
+	{ name: 'lateGame' as SignalName, labelKey: 'powerScore.signalLateGame' as const, color: '#f75c03' },
+	{ name: 'momentum' as SignalName, labelKey: 'powerScore.signalMomentum' as const, color: '#2274a5' },
+	{ name: 'leadChanges' as SignalName, labelKey: 'powerScore.signalLeadChanges' as const, color: '#f1c40f' },
+	{ name: 'comeback' as SignalName, labelKey: 'powerScore.signalComeback' as const, color: '#d90368' },
+] as const;
+
 const setupView = ({
 	prefs, prefsLoaded, demoMode, leagueLogos, standbyStreamTabId, standbyOnboardingDone,
 	openTabs, formatTabLabel, onClose, onSensitivityChange, onCooldownChange, onSwitchDelayChange,
 	onFavoriteTeamBonusChange, onToggleLeague, onToggleSport, onToggleShowUpcoming, onUpcomingGamesDaysChange,
 	onToggleProTips, onToggleNotifications, onToggleDemo, onToggleStandbyStream, onStandbyThresholdChange,
 	onSetStandbyTab, onStandbyOnboardingDone, onToggleBetting, onToggleTemperatureUnit, onPostseasonBoostChange,
+	onToggleSignal,
 }: setupViewProps) => {
 	const [tab, setTab] = useState<'switching' | 'leagues'>('switching');
 	const [showStandbyGuide, setShowStandbyGuide] = useState(false);
@@ -116,6 +126,35 @@ const setupView = ({
 					<div className='mt-3'><SwitchDelaySlider value={prefs.switchDelaySeconds} onChange={onSwitchDelayChange} /></div>
 					<div className='mt-3'><FavoriteTeamBonusInput value={prefs.favoriteTeamBonusPoints} onChange={onFavoriteTeamBonusChange} /></div>
 					<div className='mt-3'><PostseasonBoostInput value={prefs.postseasonBoostPoints} onChange={onPostseasonBoostChange} /></div>
+
+					<div className='fw-bold popup-section-label mt-3'><i className='bi bi-sliders' />{i18n.t('setup.signalsSection')}</div>
+					<div className='setting-explainer mt-1 mb-1'>{i18n.t('setup.signalsExplainer')}</div>
+					{setupSignalMeta.map(sig => {
+						const isDisabled = prefs.disabledSignals.includes(sig.name);
+						const isLastEnabled = !isDisabled && prefs.disabledSignals.length === setupSignalMeta.length - 1;
+						return (
+							<div key={sig.name} className='d-flex justify-content-between align-items-center mt-2'>
+								<label className='text-body-secondary setting-toggle-label' htmlFor={`signal-${sig.name}`}>
+									<span
+										className='d-inline-block rounded-circle me-1'
+										style={{ width: '8px', height: '8px', backgroundColor: isDisabled ? '#6c757d' : sig.color, verticalAlign: 'middle' }}
+									/>
+									{i18n.t(sig.labelKey)}
+								</label>
+								<div className='form-check form-switch mb-0'>
+									<input
+										className='form-check-input'
+										type='checkbox'
+										id={`signal-${sig.name}`}
+										checked={!isDisabled}
+										onChange={() => onToggleSignal(sig.name)}
+										disabled={!prefsLoaded || isLastEnabled}
+										title={isLastEnabled ? i18n.t('setup.signalLastActive') : undefined}
+									/>
+								</div>
+							</div>
+						);
+					})}
 
 					<div className='fw-bold popup-section-label mt-3'><i className='bi bi-toggles' />{i18n.t('setup.optionsSection')}</div>
 

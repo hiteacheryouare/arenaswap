@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { i18n } from '#i18n';
 import { leagueConfigMap, scoreMaxTotal } from '@arenaswap/core/constants';
 import { computeWinProbVarianceScore } from '@arenaswap/core';
-import type { Game, PowerScoreResult, PowerScoreSnapshot, ScoreSnapshot } from '@arenaswap/core/types';
+import type { Game, PowerScoreResult, PowerScoreSnapshot, ScoreSnapshot, SignalName } from '@arenaswap/core/types';
 import BaseDiamond from './baseDiamond';
 import BsoIndicator from './bsoIndicator';
 import SeriesDots from './seriesDots';
@@ -33,6 +33,7 @@ interface gameDetailViewProps {
 	gameBoosts: Record<string, number>;
 	bettingPrefs: BettingDisplayPrefs;
 	weatherPrefs: WeatherDisplayPrefs;
+	disabledSignals?: readonly SignalName[];
 	onSetGameBoost: (gameId: string, boost: number) => void;
 	onBack: () => void;
 }
@@ -49,7 +50,7 @@ const withMatchupAlpha = (color: string, fallback: string): string => (
 	/^#[\da-fA-F]{6}$/.test(color) ? `${color}28` : fallback
 );
 
-const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistory, proTipsEnabled, gameBoosts, bettingPrefs, weatherPrefs, onSetGameBoost, onBack }: gameDetailViewProps) => {
+const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistory, proTipsEnabled, gameBoosts, bettingPrefs, weatherPrefs, disabledSignals = [], onSetGameBoost, onBack }: gameDetailViewProps) => {
 	const orderedScoreHistory = useMemo(
 		() => scoreHistory.toSorted((a, b) => a.timestamp - b.timestamp),
 		[scoreHistory],
@@ -200,6 +201,7 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 				postseasonBoost={postseasonBoost}
 				total={total}
 				totalLabel={totalLabel}
+				disabledSignals={disabledSignals}
 			/>
 
 			<GameBoostInput gameId={game.id} currentBoost={currentBoost} onSetGameBoost={onSetGameBoost} />
