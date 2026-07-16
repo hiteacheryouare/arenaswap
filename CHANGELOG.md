@@ -1,5 +1,15 @@
 # Changelog
 
+## Use native Astro Image component on docs website — 2026-07-16
+
+Implements #40. Replaces bare `<img>` tags with Astro's `<Image>` component across the docs site for all locally-served assets, unlocking build-time WebP conversion, automatic `width`/`height` inference, and `decoding="async"` + `loading="lazy"` defaults.
+
+- Moved `full_logo_white_on_transparent.svg`, `icon_white_on_transparent.svg`, `leagues/mlb.png`, `leagues/nfl.png`, and `128.png` to `src/assets/` so Astro can optimize them at build time
+- Updated `Nav.astro`, `Footer.astro`, `Hero.astro`, `Leagues.astro`, and all four screenshot pages to import assets and use `<Image>`
+- Above-the-fold images (nav logo, hero logo) set `loading="eager"` to avoid lazy-loading critical content
+- External URLs (ESPN CDN league logos, Wikipedia photos) and dynamic blog post images remain as `<img>` tags — these cannot be optimized without configuring a remote image service
+- Original assets retained in `public/images/` for URL-based references (favicons, OG meta tags, Notification API)
+
 ## Normalization indicator in PowerScore Breakdown — 2026-07-16
 
 When one or more signals are disabled, the Signals Total row in the PowerScore Breakdown now shows the normalization effect visually: the raw enabled-signal sum (strikethrough, gray) followed by an arrow and the re-scaled value (e.g. ~~78~~ → 89). A brief note below explains the re-scaling, and a tooltip on the "Signals total" label describes the mechanism. Fully translated (English + Spanish).

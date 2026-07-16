@@ -1,5 +1,9 @@
 ---
+import { Image } from 'astro:assets';
 import HeroCard from './HeroCard';
+import logoImg from '../assets/full_logo_white_on_transparent.svg';
+import mlbImg from '../assets/leagues/mlb.png';
+import nflImg from '../assets/leagues/nfl.png';
 
 const phiMiaGame = {
 	id: 'hero-mlb',
@@ -74,7 +78,7 @@ const phiDalScore = { gameId: 'hero-nfl', total: 72, closeness: 20, lateGame: 18
 
 							<!-- Header: logo + tour + settings + toggle -->
 							<div class="demo-header">
-								<img src="/arenaswap/images/full_logo_white_on_transparent.svg" alt="ArenaSwap" class="demo-logo-img" />
+								<Image src={logoImg} alt="ArenaSwap" class="demo-logo-img" loading="eager" />
 								<div class="demo-header-right">
 									<i class="bi bi-question-circle" style="color:#8b949e;font-size:0.9rem;"></i>
 									<i class="bi bi-gear-fill" style="color:#8b949e;font-size:0.9rem;"></i>
@@ -89,14 +93,14 @@ const phiDalScore = { gameId: 'hero-nfl', total: 72, closeness: 20, lateGame: 18
 
 							<!-- MLB: Phillies vs Marlins -->
 							<div class="demo-league-row">
-								<img src="/arenaswap/images/leagues/mlb.png" alt="MLB" class="demo-league-icon" onerror="this.style.display='none'" />
+								<Image src={mlbImg} alt="MLB" class="demo-league-icon" />
 								<span class="demo-league-label-text">MLB</span>
 							</div>
 							<HeroCard game={phiMiaGame} excitementResult={phiMiaScore} tabLabel="Tab 1: ESPN+" />
 
 							<!-- NFL: Eagles vs Cowboys -->
 							<div class="demo-league-row" style="margin-top:0.35rem;">
-								<img src="/arenaswap/images/leagues/nfl.png" alt="NFL" class="demo-league-icon" onerror="this.style.display='none'" />
+								<Image src={nflImg} alt="NFL" class="demo-league-icon" />
 								<span class="demo-league-label-text">NFL</span>
 							</div>
 							<HeroCard game={phiDalGame} excitementResult={phiDalScore} tabLabel="Tab 2: FOX" />

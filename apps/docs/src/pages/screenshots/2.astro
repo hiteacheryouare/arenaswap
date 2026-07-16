@@ -1,6 +1,9 @@
 ---
+import { Image } from 'astro:assets';
 import './_screenshot.scss';
 import ScreenshotCard from '../../components/ScreenshotCard';
+import logoImg from '../../assets/full_logo_white_on_transparent.svg';
+import iconImg from '../../assets/icon_white_on_transparent.svg';
 
 const tabs = [
 	{ name: 'ESPN+',           color: '#CC0000', initial: 'E' },
@@ -86,7 +89,7 @@ const bosNyyScore = { gameId: 'sc2-mlb', total: 71, closeness: 20, lateGame: 15,
 					<div class='ext-row'>
 						<div class='puzzle-icon'><i class='bi bi-puzzle-fill'></i></div>
 						<div class='ext-icon-active'>
-							<img src='/arenaswap/images/icon_white_on_transparent.svg' alt='ArenaSwap' />
+							<Image src={iconImg} alt='ArenaSwap' />
 							<div class='ext-badge'></div>
 						</div>
 					</div>
@@ -118,7 +121,7 @@ const bosNyyScore = { gameId: 'sc2-mlb', total: 71, closeness: 20, lateGame: 15,
 				<div class='popup'>
 					<div class='popup-inner'>
 						<div class='popup-header'>
-							<img src='/arenaswap/images/full_logo_white_on_transparent.svg' alt='ArenaSwap' class='popup-logo' />
+							<Image src={logoImg} alt='ArenaSwap' class='popup-logo' />
 							<div class='popup-header-right'>
 								<i class='bi bi-gear-fill' style='color:#8b949e;font-size:0.9rem;'></i>
 								<div class='popup-switch'>

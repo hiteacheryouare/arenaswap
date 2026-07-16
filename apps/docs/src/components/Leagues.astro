@@ -1,4 +1,6 @@
 ---
+import { Image } from 'astro:assets';
+import iconImg from '../assets/icon_white_on_transparent.svg';
 const ESPN = 'https://a.espncdn.com';
 const OLY  = `${ESPN}/i/espn/misc_logos/500-dark/olympics.png`;
 const NCAA = `${ESPN}/i/espn/misc_logos/500-dark/ncaa.png`;
@@ -90,7 +92,7 @@ const allLeagues = [
 				<div class="lv-center-ring lv-ring-outer"></div>
 				<div class="lv-center-ring lv-ring-inner"></div>
 				<div class="lv-center-box">
-					<img src="/arenaswap/images/icon_white_on_transparent.svg" alt="ArenaSwap" class="lv-center-icon" onerror="this.style.opacity='0'" />
+					<Image src={iconImg} alt="ArenaSwap" class="lv-center-icon" />
 				</div>
 			</div>
 
