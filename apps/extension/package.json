@@ -5,9 +5,7 @@
 	"private": true,
 	"scripts": {
 		"dev": "wxt",
-		"dev:es": "ARENASWAP_LOCALE=es wxt",
 		"dev:firefox": "wxt --browser firefox --mv3",
-		"dev:firefox:es": "ARENASWAP_LOCALE=es wxt --browser firefox --mv3",
 		"build": "wxt build",
 		"build:firefox": "wxt build --browser firefox --mv3",
 		"build:edge": "wxt build --browser edge --mv3",
