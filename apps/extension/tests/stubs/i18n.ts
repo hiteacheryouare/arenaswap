@@ -6,9 +6,8 @@
 // substitutions, and `0`/`1`/`n` plural forms.
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { parse } from 'yaml';
 
-const messages = parse(readFileSync(join(__dirname, '../../locales/en.yml'), 'utf8')) as Record<string, unknown>;
+const messages = JSON.parse(readFileSync(join(__dirname, '../../locales/en.json'), 'utf8')) as Record<string, unknown>;
 
 const lookup = (key: string): unknown =>
 	key.split('.').reduce<unknown>((node, part) => (

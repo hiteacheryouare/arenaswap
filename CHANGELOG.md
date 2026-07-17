@@ -1,5 +1,16 @@
 # Changelog
 
+## i18n API cleanup — 2026-07-17
+
+Implements #54. Brings the i18n setup fully in line with the `@wxt-dev/i18n` spec.
+
+- Converted `locales/en.yml` and `locales/es.yml` to `locales/en.json` and `locales/es.json` — the module supports `.json` natively and no conversion step is needed
+- Removed the custom dev-mode Vite plugin from `wxt.config.ts` that bypassed `chrome.i18n.getMessage()` by reading YAML directly at dev-server startup
+- Removed the `yaml` import and all related helpers (`DEV_I18N_ID`, `buildDevI18nModule`, `devLocale`) from `wxt.config.ts`
+- Removed `dev:es` and `dev:firefox:es` scripts that relied on `ARENASWAP_LOCALE`
+- Updated the Jest and Cypress i18n stubs to load `en.json` directly via `JSON.parse` / Vite's native JSON import instead of YAML parsing
+- Fixed a YAML-to-JSON conversion artifact: the `switchDelay.off` key was incorrectly serialized as `false` (YAML 1.1 boolean coercion) — corrected to `"off"` in both locale files
+
 ## Use native Astro Image component on docs website — 2026-07-16
 
 Implements #40. Replaces bare `<img>` tags with Astro's `<Image>` component across the docs site for all locally-served assets, unlocking build-time WebP conversion, automatic `width`/`height` inference, and `decoding="async"` + `loading="lazy"` defaults.
