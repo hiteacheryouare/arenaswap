@@ -166,7 +166,7 @@
 		"sectionActiveLiveTabs": "Active Tabs",
 		"sectionOtherLiveGames": "Live Games",
 		"sectionUpNext": "Up Next",
-		"showMoreUpcoming": "Show {count}ß more"
+		"showMoreUpcoming": "Show {count} more"
 	},
 	"detail": {
 		"legendCloseness": "Closeness",
