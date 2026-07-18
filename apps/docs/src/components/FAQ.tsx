@@ -3,11 +3,11 @@ import { useState } from 'react';
 const items = [
 	{
 		q: 'What leagues does ArenaSwap support?',
-		a: '30+ leagues across six sports — NBA, NFL, NHL, MLB, MLS, EPL, Champions League, La Liga, Bundesliga, Serie A, Liga MX, NCAAB, NCAAW, NCAAF, NCAA Hockey, WNBA, NWSL, NCAA Baseball, NCAA Softball, World Baseball Classic, FIFA World Cup, FIFA Women\'s World Cup, UFL, Europa League, and all relevant Olympic competitions.',
+		a: '30+ leagues across six sports: NBA, NFL, NHL, MLB, MLS, EPL, Champions League, La Liga, Bundesliga, Serie A, Liga MX, NCAAB, NCAAW, NCAAF, NCAA Hockey, WNBA, NWSL, NCAA Baseball, NCAA Softball, World Baseball Classic, FIFA World Cup, FIFA Women\'s World Cup, UFL, Europa League, and all relevant Olympic competitions.',
 	},
 	{
 		q: 'How does tab switching work?',
-		a: 'ArenaSwap continuously scores every live game using PowerScore — a composite rating based on closeness, late-game pressure, momentum, lead changes, and comeback factor. When a game\'s PowerScore pulls meaningfully ahead of what you\'re watching, ArenaSwap switches your tab to it. The gap required is adjustable via sensitivity settings.',
+		a: 'ArenaSwap continuously scores every live game using PowerScore: a composite rating based on closeness, late-game pressure, momentum, lead changes, and comeback factor. When a game\'s PowerScore pulls meaningfully ahead of what you\'re watching, ArenaSwap switches your tab to it. The gap required is adjustable via sensitivity settings.',
 	},
 	{
 		q: 'Do I need an account or subscription?',
@@ -15,15 +15,15 @@ const items = [
 	},
 	{
 		q: 'Will it work with my streaming service?',
-		a: 'Yes — any stream that runs in a browser tab works. This includes ESPN+, Peacock, Paramount+, YouTube TV, Hulu Live, fuboTV, and anything else browser-based.',
+		a: 'Yes. Any stream that runs in a browser tab works. This includes ESPN+, Peacock, Paramount+, YouTube TV, Hulu Live, fuboTV, and anything else browser-based.',
 	},
 	{
 		q: 'How does the PowerScore algorithm work?',
-		a: 'PowerScore is a 0–100 scale combining five signals: Closeness, Late-Game Pressure, Momentum, Lead Changes, and Comeback Factor. Tension ramps toward the final buzzer, tied games get an overtime boost, and recent scoring spikes the score then fades — so even low-scoring sports keep a moving graph. Games during stoppages (halftime, timeouts) receive a small penalty to avoid switching at the wrong moment.',
+		a: 'PowerScore is a 0–100 scale combining five signals: Closeness, Late-Game Pressure, Momentum, Lead Changes, and Comeback Factor. Tension ramps toward the final buzzer, tied games get an overtime boost, and recent scoring spikes the score then fades. This means even low-scoring sports keep a moving graph. Games during stoppages (halftime, timeouts) receive a small penalty to avoid switching at the wrong moment.',
 	},
 	{
 		q: 'Can I keep a specific game from being switched away?',
-		a: 'Yes. You can unassign any tab from a game at any time — the extension immediately stops switching away from it. You can also lower the sensitivity setting to make switches less frequent overall.',
+		a: 'Yes. You can unassign any tab from a game at any time. The extension immediately stops switching away from it. You can also lower the sensitivity setting to make switches less frequent overall.',
 	},
 	{
 		q: 'Does it mute other tabs?',
@@ -31,7 +31,7 @@ const items = [
 	},
 	{
 		q: 'Is the source code available?',
-		a: 'Yes — ArenaSwap is open source. The full codebase, including the PowerScore algorithm package, is on GitHub.',
+		a: 'Yes. ArenaSwap is open source. The full codebase, including the PowerScore algorithm package, is on GitHub.',
 	},
 ];
 

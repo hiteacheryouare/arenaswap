@@ -3,13 +3,13 @@ import { useEffect, useRef, useState } from 'react';
 const signals = [
 	{
 		name: 'Closeness',
-		desc: 'How tight is the margin? A tied game scores highest — and closeness counts for more as the game goes on, so an early nail-biter builds toward the final buzzer.',
+		desc: 'How tight is the margin? A tied game scores highest. Closeness counts for more as the game goes on, so an early nail-biter builds toward the final buzzer.',
 		max: 30,
 		color: '#22c55e',
 	},
 	{
 		name: 'Late-Game Pressure',
-		desc: 'Tension rises steadily across the whole final period — but only when the game is close (a blowout in the final minute has none) — with an extra boost for tied games heading to overtime.',
+		desc: 'Tension rises steadily across the whole final period, but only when the game is close (a blowout in the final minute has none). There\'s an extra boost for tied games heading to overtime.',
 		max: 28,
 		color: '#F75C03',
 	},

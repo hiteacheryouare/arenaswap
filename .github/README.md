@@ -4,7 +4,7 @@
 
 <br />
 
-**ArenaSwap** is a browser extension that monitors every live sports game across 31 leagues and automatically switches your browser tab to the most exciting one — powered by a live scoring algorithm called **PowerScore**.
+**ArenaSwap** is a browser extension that monitors every live sports game across 31 leagues and automatically switches your browser tab to the most exciting one. It's powered by a live scoring algorithm called **PowerScore**.
 
 *Think [NFL RedZone](https://www.nfl.com/redzone), but for every sport. All day. All season.*
 
@@ -54,13 +54,13 @@ ArenaSwap fixes that. It watches every game for you and puts the best one on scr
 
 ArenaSwap uses the **bring-your-own-tabs** model:
 
-**01 — Open your streams.**
+**01. Open your streams.**
 Pull up your games in separate browser tabs. Any service that works in a browser works with ArenaSwap — ESPN+, Peacock, Paramount+, YouTube TV, Hulu, whatever you've got.
 
-**02 — Assign each tab once.**
+**02. Assign each tab once.**
 Open the extension, find each game in the list, and connect it to the right tab with a single dropdown.
 
-**03 — The best game finds you.**
+**03. The best game finds you.**
 Every 15 seconds, ArenaSwap scores every live game via ESPN's public API and switches to the most exciting one. It unmutes the active tab and mutes all others so you always hear the right broadcast.
 
 When no games are live, the extension enters a low-power dormant mode and checks less frequently to save resources.
