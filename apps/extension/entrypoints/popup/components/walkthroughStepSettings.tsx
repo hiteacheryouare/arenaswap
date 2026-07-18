@@ -20,7 +20,7 @@ const walkthroughStepSettings = ({ onNext, onBack }: walkthroughStepSettingsProp
 
 	return (
 		<div className='popup-container d-flex flex-column'>
-			<div className='small text-body-secondary text-uppercase text-center pt-3 pb-2'>{i18n.t('stepSettings.step', [5, 5])}</div>
+			<div className='small text-body-secondary text-uppercase text-center pt-3 pb-2'>{i18n.t('stepSettings.step', [5, 8])}</div>
 
 			<div className='fw-bold fs-5 text-center mb-1'>{i18n.t('stepSettings.title')}</div>
 			<div className='text-body-secondary small text-center mb-3 lh-base'>

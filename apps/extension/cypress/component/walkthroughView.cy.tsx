@@ -3,14 +3,14 @@ import WalkthroughView from '../../entrypoints/popup/components/walkthroughView'
 describe('walkthroughView step navigation', () => {
 	it('opens on step 1 — toggle', () => {
 		cy.mount(<WalkthroughView onComplete={() => {}} />);
-		cy.contains('Step 1 of 5').should('exist');
+		cy.contains('Step 1 of 8').should('exist');
 		cy.contains('Turning it on & off').should('exist');
 	});
 
 	it('advances to step 2 when Next is clicked', () => {
 		cy.mount(<WalkthroughView onComplete={() => {}} />);
 		cy.contains('button', 'Next').click();
-		cy.contains('Step 2 of 5').should('exist');
+		cy.contains('Step 2 of 8').should('exist');
 		cy.contains('Meet PowerScore').should('exist');
 	});
 
@@ -18,7 +18,7 @@ describe('walkthroughView step navigation', () => {
 		cy.mount(<WalkthroughView onComplete={() => {}} />);
 		cy.contains('button', 'Next').click(); // 1 -> 2
 		cy.contains('button', 'Back').click(); // 2 -> 1
-		cy.contains('Step 1 of 5').should('exist');
+		cy.contains('Step 1 of 8').should('exist');
 	});
 
 	it('navigates through step 2 PowerScore sub-steps and progress dots', () => {
@@ -46,7 +46,7 @@ describe('walkthroughView step navigation', () => {
 		for (let i = 0; i < 12; i++) {
 			cy.get('button.btn-primary').last().click();
 		}
-		cy.contains('Step 3 of 5').should('exist');
+		cy.contains('Step 3 of 8').should('exist');
 		cy.contains('Assign tabs to games').should('exist');
 	});
 
@@ -57,7 +57,7 @@ describe('walkthroughView step navigation', () => {
 			cy.get('button.btn-primary').last().click(); // 2 -> 3
 		}
 		cy.contains('button', 'Back').click(); // 3 -> 2 (should land on last sub-step of step 2)
-		cy.contains('Step 2 of 5').should('exist');
+		cy.contains('Step 2 of 8').should('exist');
 		cy.contains('Postseason Boost').should('exist');
 	});
 
@@ -69,7 +69,7 @@ describe('walkthroughView step navigation', () => {
 			cy.get('button.btn-primary').last().click(); // 2 -> 3
 		}
 		cy.contains('button', 'Next').click(); // 3 -> 4
-		cy.contains('Step 4 of 5').should('exist');
+		cy.contains('Step 4 of 8').should('exist');
 		cy.contains('Watch it work').should('exist');
 	});
 
@@ -82,7 +82,7 @@ describe('walkthroughView step navigation', () => {
 		}
 		cy.contains('button', 'Next').click(); // 3 -> 4
 		cy.contains('button', 'Back').click(); // 4 -> 3
-		cy.contains('Step 3 of 5').should('exist');
+		cy.contains('Step 3 of 8').should('exist');
 	});
 
 	it('step 4 Next button is disabled until animation completes', () => {
@@ -108,7 +108,7 @@ describe('walkthroughView step navigation', () => {
 		cy.contains('button', 'Next').click(); // 3 -> 4
 		cy.tick(2500);
 		cy.get('button.btn-primary').last().click(); // 4 -> 5
-		cy.contains('Step 5 of 5').should('exist');
+		cy.contains('Step 5 of 8').should('exist');
 		cy.contains('Tune it your way').should('exist');
 	});
 
@@ -123,10 +123,10 @@ describe('walkthroughView step navigation', () => {
 		cy.tick(2500);
 		cy.get('button.btn-primary').last().click(); // 4 -> 5
 		cy.contains('button', 'Back').click(); // 5 -> 4
-		cy.contains('Step 4 of 5').should('exist');
+		cy.contains('Step 4 of 8').should('exist');
 	});
 
-	it('shows done screen after completing all 5 steps', () => {
+	it('advances to step 6 (game detail)', () => {
 		cy.clock();
 		cy.mount(<WalkthroughView onComplete={() => {}} />);
 		cy.contains('button', 'Next').click(); // 1 -> 2
@@ -136,7 +136,107 @@ describe('walkthroughView step navigation', () => {
 		cy.contains('button', 'Next').click(); // 3 -> 4
 		cy.tick(2500);
 		cy.get('button.btn-primary').last().click(); // 4 -> 5
-		cy.contains('button', 'Next').click(); // 5 -> done
+		cy.contains('button', 'Next').click(); // 5 -> 6
+		cy.contains('Step 6 of 8').should('exist');
+		cy.contains('Dive into any game').should('exist');
+	});
+
+	it('goes back to step 5 from step 6', () => {
+		cy.clock();
+		cy.mount(<WalkthroughView onComplete={() => {}} />);
+		cy.contains('button', 'Next').click(); // 1 -> 2
+		for (let i = 0; i < 12; i++) {
+			cy.get('button.btn-primary').last().click(); // 2 -> 3
+		}
+		cy.contains('button', 'Next').click(); // 3 -> 4
+		cy.tick(2500);
+		cy.get('button.btn-primary').last().click(); // 4 -> 5
+		cy.contains('button', 'Next').click(); // 5 -> 6
+		cy.contains('button', 'Back').click(); // 6 -> 5
+		cy.contains('Step 5 of 8').should('exist');
+	});
+
+	it('step 6 tap reveals PowerScore breakdown preview', () => {
+		cy.clock();
+		cy.mount(<WalkthroughView onComplete={() => {}} />);
+		cy.contains('button', 'Next').click(); // 1 -> 2
+		for (let i = 0; i < 12; i++) {
+			cy.get('button.btn-primary').last().click(); // 2 -> 3
+		}
+		cy.contains('button', 'Next').click(); // 3 -> 4
+		cy.tick(2500);
+		cy.get('button.btn-primary').last().click(); // 4 -> 5
+		cy.contains('button', 'Next').click(); // 5 -> 6
+		cy.contains('PowerScore Breakdown').should('not.exist');
+		cy.get('[role="button"]').first().click(); // tap mock game card
+		cy.contains('PowerScore Breakdown').should('exist');
+	});
+
+	it('advances to step 7 (leagues & favorites)', () => {
+		cy.clock();
+		cy.mount(<WalkthroughView onComplete={() => {}} />);
+		cy.contains('button', 'Next').click(); // 1 -> 2
+		for (let i = 0; i < 12; i++) {
+			cy.get('button.btn-primary').last().click(); // 2 -> 3
+		}
+		cy.contains('button', 'Next').click(); // 3 -> 4
+		cy.tick(2500);
+		cy.get('button.btn-primary').last().click(); // 4 -> 5
+		cy.contains('button', 'Next').click(); // 5 -> 6
+		cy.contains('button', 'Next').click(); // 6 -> 7
+		cy.contains('Step 7 of 8').should('exist');
+		cy.contains('Leagues & favorites').should('exist');
+	});
+
+	it('step 7 tab switcher shows leagues and favorites content', () => {
+		cy.clock();
+		cy.mount(<WalkthroughView onComplete={() => {}} />);
+		cy.contains('button', 'Next').click(); // 1 -> 2
+		for (let i = 0; i < 12; i++) {
+			cy.get('button.btn-primary').last().click(); // 2 -> 3
+		}
+		cy.contains('button', 'Next').click(); // 3 -> 4
+		cy.tick(2500);
+		cy.get('button.btn-primary').last().click(); // 4 -> 5
+		cy.contains('button', 'Next').click(); // 5 -> 6
+		cy.contains('button', 'Next').click(); // 6 -> 7
+		cy.contains('Leagues').should('exist');
+		cy.contains('Favorites').should('exist');
+		cy.contains('button', 'Favorites').click();
+		cy.contains('Philadelphia Eagles').should('exist');
+	});
+
+	it('advances to step 8 (re-access tour)', () => {
+		cy.clock();
+		cy.mount(<WalkthroughView onComplete={() => {}} />);
+		cy.contains('button', 'Next').click(); // 1 -> 2
+		for (let i = 0; i < 12; i++) {
+			cy.get('button.btn-primary').last().click(); // 2 -> 3
+		}
+		cy.contains('button', 'Next').click(); // 3 -> 4
+		cy.tick(2500);
+		cy.get('button.btn-primary').last().click(); // 4 -> 5
+		cy.contains('button', 'Next').click(); // 5 -> 6
+		cy.contains('button', 'Next').click(); // 6 -> 7
+		cy.contains('button', 'Next').click(); // 7 -> 8
+		cy.contains('Step 8 of 8').should('exist');
+		cy.contains('Coming back here').should('exist');
+	});
+
+	it('shows done screen after completing all 8 steps', () => {
+		cy.clock();
+		cy.mount(<WalkthroughView onComplete={() => {}} />);
+		cy.contains('button', 'Next').click(); // 1 -> 2
+		for (let i = 0; i < 12; i++) {
+			cy.get('button.btn-primary').last().click(); // 2 -> 3
+		}
+		cy.contains('button', 'Next').click(); // 3 -> 4
+		cy.tick(2500);
+		cy.get('button.btn-primary').last().click(); // 4 -> 5
+		cy.contains('button', 'Next').click(); // 5 -> 6
+		cy.contains('button', 'Next').click(); // 6 -> 7
+		cy.contains('button', 'Next').click(); // 7 -> 8
+		cy.contains('button', 'Done').click(); // 8 -> done
 		cy.contains('All set!').should('exist');
 	});
 
@@ -151,7 +251,10 @@ describe('walkthroughView step navigation', () => {
 		cy.contains('button', 'Next').click(); // 3 -> 4
 		cy.tick(2500);
 		cy.get('button.btn-primary').last().click(); // 4 -> 5
-		cy.contains('button', 'Next').click(); // 5 -> done
+		cy.contains('button', 'Next').click(); // 5 -> 6
+		cy.contains('button', 'Next').click(); // 6 -> 7
+		cy.contains('button', 'Next').click(); // 7 -> 8
+		cy.contains('button', 'Done').click(); // 8 -> done
 		cy.contains("Let's go").click();
 		cy.get('@onComplete').should('have.been.called');
 	});

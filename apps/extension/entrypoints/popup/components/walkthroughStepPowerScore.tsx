@@ -410,7 +410,7 @@ const walkthroughStepPowerScore = ({ onNext, onBack, initialSubStep = 0 }: walkt
 	return (
 		<div className='popup-container d-flex flex-column' style={{ position: 'relative', overflow: 'hidden' }}>
 			<div className='small text-body-secondary text-uppercase text-center pt-3 pb-2 walkthrough-step-label'>
-				{i18n.t('stepPowerScore.step', [2, 5])}
+				{i18n.t('stepPowerScore.step', [2, 8])}
 			</div>
 
 			{renderContent()}

@@ -1,5 +1,17 @@
 # Changelog
 
+## Expand walkthrough to 8 steps — 2026-07-18
+
+Implements #25. Adds three new walkthrough steps (game detail, leagues & favorites, and re-accessing the tour), expanding the total from 5 to 8 steps. Updates all step counters across existing steps and refreshes Cypress tests to cover the full 8-step flow.
+
+- **Step 6 — Dive into any game** (`walkthroughStepGameDetail.tsx`): Interactive mock game card the user taps to reveal a live PowerScore breakdown preview (Closeness, Late Game, Momentum, Lead Changes, Comeback bars), explaining that any game card opens a full detail view with signal history and a manual Game Boost slider
+- **Step 7 — Leagues & favorites** (`walkthroughStepLeaguesFavorites.tsx`): Two-tab panel (Leagues / Favorites) with interactive toggles and star controls. Leagues tab explains that enabling a league tells ArenaSwap to monitor that competition; Favorites tab shows that starring a team adds a PowerScore bonus to their games — not a filter, just a boost. A yellow hint banner appears once a team is starred
+- **Step 8 — Coming back here** (`walkthroughStepReAccess.tsx`): Shows a decorative mock of the main-view header with the `?` button highlighted and a callout arrow, explaining the tour can be replayed any time
+- Updated step counters in `walkthroughStepToggle`, `walkthroughStepPowerScore`, `walkthroughStepTabAssign`, `walkthroughStepAutoSwitch`, and `walkthroughStepSettings` from `X of 5` → `X of 8`
+- Updated `walkthroughView.tsx`: extended `walkthroughStep` type, added `next`/`back` cases for steps 6–8, and mounted all three new step components
+- Added `stepGameDetail`, `stepLeaguesFavorites`, and `stepReAccess` translation keys to `en.json` and `es.json`
+- Updated `walkthroughView.cy.tsx`: updated all step-counter assertions (`of 5` → `of 8`), added tests for steps 6–8 including the tap-to-reveal interaction on step 6, the tab-switcher on step 7, and the done-screen flow through all 8 steps
+
 ## Tutorial UX polish — 2026-07-17
 
 PowerScore walkthrough visual improvements and demo game logos.
