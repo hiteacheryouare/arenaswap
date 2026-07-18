@@ -1,5 +1,17 @@
 # Changelog
 
+## Spanish i18n cleanup (#53) — 2026-07-18
+
+Polishes the existing Spanish (`es.json`) translation for quality, consistency, and natural phrasing across all Spanish-speaking regions.
+
+- **Signal name consistency**: Standardized PowerScore signal names across all three sections that reference them (`detail`, `powerScore`, `stepGameDetail`). "Closeness" → "Igualdad" everywhere; "Late-game" → "Recta final" everywhere; "Lead changes" → "Cambios de ventaja" everywhere
+- **Sport-agnostic `noGames.m1`**: "saque inicial" (soccer-specific) → "pitazo inicial" (referee whistle — works across all sports)
+- **Livelier copy**: `stepAutoSwitch.revealBody` now uses "se puso al rojo vivo" instead of the flat "se puso emocionante"
+- **Tailgate localization**: `loading.m45` changed to "asado antes del partido" — culturally resonant equivalent of "tailgate party" across Latin America and Spain
+- **Gender-neutral copy**: `stepReAccess.body` changed "un amigo" → "alguien" for inclusive phrasing
+- **Lexical consistency**: `tooltipGameBoost` and `postseasonBoost.explainer` changed from "juego" → "partido" to match the rest of the file
+- **Energy fixes**: `walkthrough.letsGo` now correctly uses "¡Vamos!" (both exclamation marks); `proTip.general.t5` tightened to "mejora cuanto más tiempo lo dejas correr"
+
 ## Expand walkthrough to 8 steps — 2026-07-18
 
 Implements #25. Adds three new walkthrough steps (game detail, leagues & favorites, and re-accessing the tour), expanding the total from 5 to 8 steps. Updates all step counters across existing steps and refreshes Cypress tests to cover the full 8-step flow.
