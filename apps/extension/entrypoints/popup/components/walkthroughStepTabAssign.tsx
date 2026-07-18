@@ -1,3 +1,4 @@
+import React from 'react';
 import { powerScoreColor } from './gameCardShared';
 import { i18n } from '#i18n';
 
@@ -14,18 +15,43 @@ const mockPsColor = powerScoreColor(mockPsScore, mockPsMax);
 const eaglesColor = '#004C54';
 const giantsColor = '#0B2265';
 
-const TeamCircle = ({ abbr, color }: { abbr: string; color: string }) => (
-	<div
-		className='d-flex align-items-center justify-content-center rounded-circle shrink-0 fw-bold team-logo-fallback'
-		style={{ backgroundColor: color, color: '#fff' }}
-	>
-		{abbr}
-	</div>
-);
+// ESPN CDN team logo URLs for the demo matchup
+const LOGO_EAGLES = 'https://a.espncdn.com/i/teamlogos/nfl/500/phi.png';
+const LOGO_GIANTS = 'https://a.espncdn.com/i/teamlogos/nfl/500/nyg.png';
+
+interface TeamLogoProps {
+	abbr: string;
+	color: string;
+	logoUrl: string;
+}
+
+const TeamLogo = ({ abbr, color, logoUrl }: TeamLogoProps) => {
+	const [failed, setFailed] = React.useState(false);
+	if (!failed) {
+		return (
+			<img
+				src={logoUrl}
+				alt={abbr}
+				width={32}
+				height={32}
+				className='object-fit-contain shrink-0'
+				onError={() => setFailed(true)}
+			/>
+		);
+	}
+	return (
+		<div
+			className='d-flex align-items-center justify-content-center rounded-circle shrink-0 fw-bold team-logo-fallback'
+			style={{ backgroundColor: color, color: '#fff' }}
+		>
+			{abbr}
+		</div>
+	);
+};
 
 const walkthroughStepTabAssign = ({ onNext, onBack }: walkthroughStepTabAssignProps) => (
 	<div className='popup-container d-flex flex-column'>
-		<div className='small text-body-secondary text-uppercase text-center pt-3 pb-2'>{i18n.t('stepTabAssign.step', [2, 4])}</div>
+		<div className='small text-body-secondary text-uppercase text-center pt-3 pb-2'>{i18n.t('stepTabAssign.step', [3, 5])}</div>
 
 		<div className='fw-bold fs-5 text-center mb-1'>{i18n.t('stepTabAssign.title')}</div>
 		<div className='text-body-secondary small text-center mb-3 lh-base'>
@@ -47,7 +73,7 @@ const walkthroughStepTabAssign = ({ onNext, onBack }: walkthroughStepTabAssignPr
 
 			<div className='d-flex align-items-center justify-content-center game-card-matchup'>
 				<div className='d-flex flex-column align-items-center gap-1 team-column'>
-					<TeamCircle abbr='PHI' color={eaglesColor} />
+					<TeamLogo abbr='PHI' color={eaglesColor} logoUrl={LOGO_EAGLES} />
 					<span className='fw-bold text-center text-nowrap team-abbreviation'>PHI</span>
 				</div>
 
@@ -62,7 +88,7 @@ const walkthroughStepTabAssign = ({ onNext, onBack }: walkthroughStepTabAssignPr
 				</div>
 
 				<div className='d-flex flex-column align-items-center gap-1 team-column'>
-					<TeamCircle abbr='NYG' color={giantsColor} />
+					<TeamLogo abbr='NYG' color={giantsColor} logoUrl={LOGO_GIANTS} />
 					<span className='fw-bold text-center text-nowrap team-abbreviation'>NYG</span>
 				</div>
 			</div>

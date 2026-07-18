@@ -1,5 +1,36 @@
 # Changelog
 
+## Tutorial UX polish — 2026-07-17
+
+PowerScore walkthrough visual improvements and demo game logos.
+
+- **Solid orbit dots**: Each PowerScore signal dot is now rendered as a solid filled circle (previously was a hollow ring outline with glow only) with a double box-shadow glow for extra pop
+- **Bloom-to-fullscreen animation**: Tapping the active glowing dot in the signal sub-steps triggers a circle-clip reveal that expands from the dot position, flooding the full popup in the signal's color; the overlay shows the signal name, max points badge, measurement explanation, and description with auto-contrasting text (black on light colors, white on dark); a "Got it" button collapses it back with a matching shrink animation
+- **Boost/penalty contrast fix**: The info cards for boosts and penalties now use an on-brand semi-transparent colored background (`color + 18` opacity) with proper light `#e6edf3` body text and muted `#8b949e` section headers instead of the previous illegible white text on a gray `bg-dark-subtle` card
+- **Demo game logos**: `walkthroughStepAutoSwitch` and `walkthroughStepTabAssign` now render real ESPN CDN team logos (Eagles, Giants, 76ers, Celtics) via `<img>` tags with a colored-circle fallback if the network request fails
+- **CSS additions in [global.scss](file:///Users/rpmul/source/arenaswap/apps/extension/assets/global.scss)**: New `@keyframes psBloomIn` / `psBloomOut` using `clip-path: circle()` anchored to a CSS custom property `--bloom-origin-x/y`, plus supporting classes `.ps-bloom-overlay`, `.ps-bloom-content`, `.ps-bloom-dot-badge`, `.ps-bloom-label`, `.ps-bloom-max-badge`, `.ps-bloom-section-head`, `.ps-bloom-body`, `.ps-bloom-got-it`
+
+## PowerScore Tutorial Bloom and Description Boxes Update — 2026-07-17
+
+Streamlined the PowerScore tutorial visual overlays and automated the bloom animation cycles.
+
+- **Removed Description Boxes**: Stripped the long description heading, body text, and max points badge from the `BloomOverlay` inside [walkthroughStepPowerScore.tsx](file:///Users/rpmul/source/arenaswap/apps/extension/entrypoints/popup/components/walkthroughStepPowerScore.tsx) to focus only on clean visual indicators. Also removed the textual info card section below the visual in the boosts/penalties phases.
+- **Automated Looping Bloom**: Programmed the signal dots to bloom automatically when active. The overlay blooms in, holds for 1.5 seconds, shrinks back down to a dot, pauses for 0.5 seconds, and loops repeatedly on its own.
+- **Navigation Safety**: Configured the loop to safely clear, reset, and stop when the user advances, backs up, or steps away from the slide.
+
+
+## PowerScore walkthrough introduction — 2026-07-17
+
+Implements #36. Introduces a comprehensive walkthrough step for PowerScore right after the initial toggle step. It walks the user through all five excitement signals (Closeness, Late-game, Momentum, Lead changes, Comeback) and six boosts/penalties (Clock stall, Volatility, Favorite teams, Manual boost, Scoring opportunity, Postseason) with a custom orbital animation, interactive progress indicators, and rich visual highlights.
+
+- Created new walkthrough step component [walkthroughStepPowerScore.tsx](file:///Users/rpmul/source/arenaswap/apps/extension/entrypoints/popup/components/walkthroughStepPowerScore.tsx) with a step-by-step presentation, active highlighting of active signals, centered icons for adjustments, and interactive progress-dot navigation
+- Updated [walkthroughView.tsx](file:///Users/rpmul/source/arenaswap/apps/extension/entrypoints/popup/components/walkthroughView.tsx) to handle 5 total steps, support transitions, and manage passing `initialSubStep` when going back from the tab assignment step
+- Shifted step numbering for subsequent steps ([walkthroughStepToggle.tsx](file:///Users/rpmul/source/arenaswap/apps/extension/entrypoints/popup/components/walkthroughStepToggle.tsx), [walkthroughStepTabAssign.tsx](file:///Users/rpmul/source/arenaswap/apps/extension/entrypoints/popup/components/walkthroughStepTabAssign.tsx), [walkthroughStepAutoSwitch.tsx](file:///Users/rpmul/source/arenaswap/apps/extension/entrypoints/popup/components/walkthroughStepAutoSwitch.tsx), [walkthroughStepSettings.tsx](file:///Users/rpmul/source/arenaswap/apps/extension/entrypoints/popup/components/walkthroughStepSettings.tsx)) and updated their step translation parameters to match Step 3, 4, and 5 of 5
+- Appended custom CSS animation styles for the rotating orbital ring, pulsing highlighted signal dots, custom boost icons, and progress indicators to [global.scss](file:///Users/rpmul/source/arenaswap/apps/extension/assets/global.scss)
+- Added fully translated strings in English ([en.json](file:///Users/rpmul/source/arenaswap/apps/extension/locales/en.json)) and Spanish ([es.json](file:///Users/rpmul/source/arenaswap/apps/extension/locales/es.json)) for the new walkthrough screens
+- Installed `@types/bootstrap` as a devDependency in [package.json](file:///Users/rpmul/source/arenaswap/apps/extension/package.json) to fix type-checking errors
+- Updated Cypress component tests in [walkthroughView.cy.tsx](file:///Users/rpmul/source/arenaswap/apps/extension/cypress/component/walkthroughView.cy.tsx) to cover the new 5-step flow, sub-step click navigations, and back-button behavior
+
 ## i18n API cleanup — 2026-07-17
 
 Implements #54. Brings the i18n setup fully in line with the `@wxt-dev/i18n` spec.

@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import { i18n } from '#i18n';
 import WalkthroughStepToggle from './walkthroughStepToggle';
+import WalkthroughStepPowerScore from './walkthroughStepPowerScore';
 import WalkthroughStepTabAssign from './walkthroughStepTabAssign';
 import WalkthroughStepAutoSwitch from './walkthroughStepAutoSwitch';
 import WalkthroughStepSettings from './walkthroughStepSettings';
 
-type walkthroughStep = 1 | 2 | 3 | 4 | 'done';
+type walkthroughStep = 1 | 2 | 3 | 4 | 5 | 'done';
 
 interface walkthroughViewProps {
 	onComplete: () => void;
@@ -47,27 +48,37 @@ const DoneScreen = ({ onComplete }: { onComplete: () => void }) => {
 
 const walkthroughView = ({ onComplete }: walkthroughViewProps) => {
 	const [step, setStep] = useState<walkthroughStep>(1);
+	const [initialSubStep, setInitialSubStep] = useState<number>(0);
 
 	const next = () => setStep(prev => {
-		if (prev === 1) return 2;
+		if (prev === 1) {
+			setInitialSubStep(0);
+			return 2;
+		}
 		if (prev === 2) return 3;
 		if (prev === 3) return 4;
+		if (prev === 4) return 5;
 		return 'done';
 	});
 
 	const back = (from: walkthroughStep) => {
 		if (from === 2) setStep(1);
-		else if (from === 3) setStep(2);
+		else if (from === 3) {
+			setInitialSubStep(11);
+			setStep(2);
+		}
 		else if (from === 4) setStep(3);
+		else if (from === 5) setStep(4);
 	};
 
 	return (
 		<div className='popup-root'>
 			<div className='popup-view-shell'>
 				{step === 1 && <WalkthroughStepToggle onNext={next} />}
-				{step === 2 && <WalkthroughStepTabAssign onNext={next} onBack={() => back(2)} />}
-				{step === 3 && <WalkthroughStepAutoSwitch onNext={next} onBack={() => back(3)} />}
-				{step === 4 && <WalkthroughStepSettings onNext={next} onBack={() => back(4)} />}
+				{step === 2 && <WalkthroughStepPowerScore key={`step2-${initialSubStep}`} onNext={next} onBack={() => back(2)} initialSubStep={initialSubStep} />}
+				{step === 3 && <WalkthroughStepTabAssign onNext={next} onBack={() => back(3)} />}
+				{step === 4 && <WalkthroughStepAutoSwitch onNext={next} onBack={() => back(4)} />}
+				{step === 5 && <WalkthroughStepSettings onNext={next} onBack={() => back(5)} />}
 				{step === 'done' && <DoneScreen onComplete={onComplete} />}
 			</div>
 		</div>

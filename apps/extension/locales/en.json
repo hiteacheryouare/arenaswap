@@ -163,10 +163,10 @@
 		"tourButton": "Tour",
 		"settingsButton": "Settings",
 		"onStandbyStream": "On standby stream — waiting for action",
-		"sectionActiveLiveTabs": "Active Live Tabs",
-		"sectionOtherLiveGames": "Other Live Games",
+		"sectionActiveLiveTabs": "Active Tabs",
+		"sectionOtherLiveGames": "Live Games",
 		"sectionUpNext": "Up Next",
-		"showMoreUpcoming": "Show {count} more"
+		"showMoreUpcoming": "Show {count}ß more"
 	},
 	"detail": {
 		"legendCloseness": "Closeness",
@@ -239,7 +239,7 @@
 		"tooltipClockStallPenalty": "Applied when the game clock has barely moved across multiple consecutive data pulls. Reduces the signals subtotal by a multiplier, which deepens the longer the clock stays frozen.",
 		"tooltipVolatility": "Based on how close the live win probability has stayed to 50% over recent history. Games where it hovered near 50% — neither team with a clear advantage — earn a boost. Games where it consistently sat far from 50% in either direction are docked.",
 		"tooltipFavoriteBoost": "Added when one of your saved favorite teams is in this game. Having two favorites in the matchup adds more than one.",
-		"tooltipGameBoost": "Points you've manually applied to this game using the boost control below.",
+		"tooltipGameBoost": "Points you've manually applied to this game using the game boost control.",
 		"tooltipScoringOpportunity": "Added based on active scoring position. In football this is the red zone; in baseball and softball it scales with the number of runners on base.",
 		"tooltipPostseasonBoost": "A flat bonus applied to postseason games — playoffs, conference finals, and championships."
 	},
@@ -304,6 +304,34 @@
 		"bodyBeforeOn": "When ",
 		"bodyOn": "on",
 		"bodyAfterOn": ", ArenaSwap automatically switches your tabs to the most exciting live game. Toggle it off any time to take back control.",
+		"next": "Next"
+	},
+	"stepPowerScore": {
+		"step": "Step $1 of $2",
+		"title": "Meet PowerScore",
+		"subtitle": "The heartbeat of ArenaSwap",
+		"introTitle": "Meet PowerScore",
+		"introBody": "PowerScore evaluates every live game dynamically to find the most exciting action. Let's see what goes into the formula!",
+		"introButton": "Explore Formula",
+		"closenessMeasured": "Measured by point difference, weighted by game progress.",
+		"lateGameMeasured": "Measured by period, time remaining, and score margin.",
+		"momentumMeasured": "Measured by rolling net scoring spikes, decaying over time.",
+		"leadChangesMeasured": "Measured by count of lead flips in the history window.",
+		"comebackMeasured": "Measured by margin reduction in the history window.",
+		"boostsHeading": "Boosts & Penalties",
+		"boostsSubtitle": "Adjustments that fine-tune the score",
+		"clockStallPenaltyName": "Clock Stall Penalty",
+		"clockStallPenaltyMeasured": "Applied when the game clock freezes for multiple updates, reducing the signal subtotal.",
+		"volatilityName": "Volatility Boost / Penalty",
+		"volatilityMeasured": "Boosts games with win probability hovering near 50%, penalizes steady blowouts.",
+		"favoriteBoostName": "Favorite Boost",
+		"favoriteBoostMeasured": "Added when one of your saved favorite teams is in the matchup.",
+		"gameBoostName": "Game Boost",
+		"gameBoostMeasured": "Points manually applied by you to temporarily prioritize a specific game.",
+		"scoringOpportunityMeasured": "Added automatically for red zone drives (football) or runners on base (baseball/softball).",
+		"postseasonBoostName": "Postseason Boost",
+		"postseasonBoostMeasured": "A flat bonus applied to playoff, conference final, and championship games.",
+		"back": "Back",
 		"next": "Next"
 	},
 	"stepTabAssign": {

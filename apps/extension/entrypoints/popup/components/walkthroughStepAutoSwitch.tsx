@@ -14,24 +14,51 @@ const giantsColor = '#0B2265';
 const sixersColor = '#006BB6';
 const celticsColor = '#007A33';
 
-const TeamCircle = ({ abbr, color }: { abbr: string; color: string }) => (
-	<div
-		className='d-flex align-items-center justify-content-center rounded-circle shrink-0 fw-bold team-logo-fallback'
-		style={{ backgroundColor: color, color: '#fff' }}
-	>
-		{abbr}
-	</div>
-);
+// ESPN CDN team logo URLs
+const LOGO_EAGLES  = 'https://a.espncdn.com/i/teamlogos/nfl/500/phi.png';
+const LOGO_GIANTS  = 'https://a.espncdn.com/i/teamlogos/nfl/500/nyg.png';
+const LOGO_SIXERS  = 'https://a.espncdn.com/i/teamlogos/nba/500/phi.png';
+const LOGO_CELTICS = 'https://a.espncdn.com/i/teamlogos/nba/500/bos.png';
+
+interface TeamLogoProps {
+	abbr: string;
+	color: string;
+	logoUrl: string;
+}
+
+const TeamLogo = ({ abbr, color, logoUrl }: TeamLogoProps) => {
+	const [failed, setFailed] = useState(false);
+	if (!failed) {
+		return (
+			<img
+				src={logoUrl}
+				alt={abbr}
+				width={32}
+				height={32}
+				className='object-fit-contain shrink-0'
+				onError={() => setFailed(true)}
+			/>
+		);
+	}
+	return (
+		<div
+			className='d-flex align-items-center justify-content-center rounded-circle shrink-0 fw-bold team-logo-fallback'
+			style={{ backgroundColor: color, color: '#fff' }}
+		>
+			{abbr}
+		</div>
+	);
+};
 
 interface mockCardProps {
-	abbr1: string; color1: string;
-	abbr2: string; color2: string;
+	abbr1: string; color1: string; logo1: string;
+	abbr2: string; color2: string; logo2: string;
 	score1: number; score2: number;
 	clock: string; period: string;
 	ps: number; watching: boolean;
 }
 
-const MockCard = ({ abbr1, color1, abbr2, color2, score1, score2, clock, period, ps, watching }: mockCardProps) => {
+const MockCard = ({ abbr1, color1, logo1, abbr2, color2, logo2, score1, score2, clock, period, ps, watching }: mockCardProps) => {
 	const psColor = powerScoreColor(ps, psMax);
 	const psPercent = (ps / psMax) * 100;
 	return (
@@ -58,7 +85,7 @@ const MockCard = ({ abbr1, color1, abbr2, color2, score1, score2, clock, period,
 
 			<div className='d-flex align-items-center justify-content-center game-card-matchup'>
 				<div className='d-flex flex-column align-items-center gap-1 team-column'>
-					<TeamCircle abbr={abbr1} color={color1} />
+					<TeamLogo abbr={abbr1} color={color1} logoUrl={logo1} />
 					<span className='fw-bold text-center text-nowrap team-abbreviation'>{abbr1}</span>
 				</div>
 				<div className='d-flex flex-column align-items-center game-card-center'>
@@ -71,7 +98,7 @@ const MockCard = ({ abbr1, color1, abbr2, color2, score1, score2, clock, period,
 					<span className='font-lekton game-period'>{period}</span>
 				</div>
 				<div className='d-flex flex-column align-items-center gap-1 team-column'>
-					<TeamCircle abbr={abbr2} color={color2} />
+					<TeamLogo abbr={abbr2} color={color2} logoUrl={logo2} />
 					<span className='fw-bold text-center text-nowrap team-abbreviation'>{abbr2}</span>
 				</div>
 			</div>
@@ -111,21 +138,21 @@ const walkthroughStepAutoSwitch = ({ onNext, onBack }: walkthroughStepAutoSwitch
 
 	return (
 		<div className='popup-container d-flex flex-column'>
-			<div className='small text-body-secondary text-uppercase text-center pt-3 pb-2'>{i18n.t('stepAutoSwitch.step', [3, 4])}</div>
+			<div className='small text-body-secondary text-uppercase text-center pt-3 pb-2'>{i18n.t('stepAutoSwitch.step', [4, 5])}</div>
 
 			<div className='fw-bold fs-5 text-center mb-3'>{i18n.t('stepAutoSwitch.title')}</div>
 
 			<div className='position-relative'>
 				<MockCard
-					abbr1='PHI' color1={eaglesColor}
-					abbr2='NYG' color2={giantsColor}
+					abbr1='PHI' color1={eaglesColor} logo1={LOGO_EAGLES}
+					abbr2='NYG' color2={giantsColor} logo2={LOGO_GIANTS}
 					score1={14} score2={10}
 					clock='7:43' period='Q2'
 					ps={52} watching={!watching76ers}
 				/>
 				<MockCard
-					abbr1='PHI' color1={sixersColor}
-					abbr2='BOS' color2={celticsColor}
+					abbr1='PHI' color1={sixersColor} logo1={LOGO_SIXERS}
+					abbr2='BOS' color2={celticsColor} logo2={LOGO_CELTICS}
 					score1={98} score2={95}
 					clock='1:22' period='Q4'
 					ps={ps76ers} watching={watching76ers}
