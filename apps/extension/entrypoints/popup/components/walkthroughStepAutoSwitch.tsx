@@ -138,7 +138,7 @@ const walkthroughStepAutoSwitch = ({ onNext, onBack }: walkthroughStepAutoSwitch
 
 	return (
 		<div className='popup-container d-flex flex-column'>
-			<div className='small text-body-secondary text-uppercase text-center pt-3 pb-2'>{i18n.t('stepAutoSwitch.step', [4, 5])}</div>
+			<div className='small text-body-secondary text-uppercase text-center pt-3 pb-2'>{i18n.t('stepAutoSwitch.step', [4, 8])}</div>
 
 			<div className='fw-bold fs-5 text-center mb-3'>{i18n.t('stepAutoSwitch.title')}</div>
 

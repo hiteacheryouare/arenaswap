@@ -156,13 +156,13 @@
 		"leaguesExplainer": "Only selected leagues are tracked and considered for automatic switching.",
 		"selectNone": "none",
 		"selectAll": "all",
-		"noLeaguesWarning": "No leagues selected — ArenaSwap won't track any games.",
+		"noLeaguesWarning": "No leagues selected. ArenaSwap won't track any games.",
 		"leagueLogoAlt": "{label} logo"
 	},
 	"main": {
 		"tourButton": "Tour",
 		"settingsButton": "Settings",
-		"onStandbyStream": "On standby stream — waiting for action",
+		"onStandbyStream": "On standby stream, waiting for action",
 		"sectionActiveLiveTabs": "Active Tabs",
 		"sectionOtherLiveGames": "Live Games",
 		"sectionUpNext": "Up Next",
@@ -237,11 +237,11 @@
 		"tooltipLeadChanges": "Counts how many times the lead has switched in the tracked history window. No changes scores nothing; one or more flips score progressively higher. Decays if time passes without another change.",
 		"tooltipComeback": "Compares the score margin at the oldest point in the window to the current margin. If the trailing team has closed the gap, this scores based on how much ground they've made up. Worth more later in the game; decays if scoring stops.",
 		"tooltipClockStallPenalty": "Applied when the game clock has barely moved across multiple consecutive data pulls. Reduces the signals subtotal by a multiplier, which deepens the longer the clock stays frozen.",
-		"tooltipVolatility": "Based on how close the live win probability has stayed to 50% over recent history. Games where it hovered near 50% — neither team with a clear advantage — earn a boost. Games where it consistently sat far from 50% in either direction are docked.",
+		"tooltipVolatility": "Based on how close the live win probability has stayed to 50% over recent history. Games where it hovered near 50% (neither team with a clear advantage) earn a boost. Games where it consistently sat far from 50% in either direction are docked.",
 		"tooltipFavoriteBoost": "Added when one of your saved favorite teams is in this game. Having two favorites in the matchup adds more than one.",
 		"tooltipGameBoost": "Points you've manually applied to this game using the game boost control.",
 		"tooltipScoringOpportunity": "Added based on active scoring position. In football this is the red zone; in baseball and softball it scales with the number of runners on base.",
-		"tooltipPostseasonBoost": "A flat bonus applied to postseason games — playoffs, conference finals, and championships."
+		"tooltipPostseasonBoost": "A flat bonus applied to postseason games: playoffs, conference finals, and championships."
 	},
 	"bso": {
 		"balls": "B",
@@ -349,7 +349,7 @@
 		"title": "Watch it work",
 		"watchingCaption": "watching the Eagles game...",
 		"reveal": "Did you see that? 👀",
-		"revealBody": "The 76ers game heated up (PowerScore 89). ArenaSwap detected it and switched automatically — no clicks needed.",
+		"revealBody": "The 76ers game heated up (PowerScore 89). ArenaSwap detected it and switched automatically. No clicks needed.",
 		"back": "Back",
 		"next": "Next"
 	},
@@ -371,6 +371,46 @@
 		"moreLeagues": "+ more in Leagues tab",
 		"back": "Back",
 		"next": "Next"
+	},
+	"stepGameDetail": {
+		"step": "Step $1 of $2",
+		"title": "Dive into any game",
+		"subtitle": "Tap a game card to see what's driving its score.",
+		"tapHint": "tap to open",
+		"detailPreviewTitle": "PowerScore Breakdown",
+		"signalCloseness": "Closeness",
+		"signalLateGame": "Late Game",
+		"signalMomentum": "Momentum",
+		"signalLeadChanges": "Lead Changes",
+		"signalComeback": "Comeback",
+		"detailPreviewCaption": "Score charts and full signal history are also available.",
+		"body": "Tap any live game card to open the detail view. You'll see a full breakdown of every signal contributing to its PowerScore, plus a chart of how the score has evolved over time.",
+		"bodyAfterTap": "You'll also find a manual Game Boost slider to temporarily prioritize any game you want.",
+		"back": "Back",
+		"next": "Next"
+	},
+	"stepLeaguesFavorites": {
+		"step": "Step $1 of $2",
+		"title": "Leagues & favorites",
+		"subtitle": "Two different ways to shape what ArenaSwap watches.",
+		"tabLeagues": "Leagues",
+		"tabFavorites": "Favorites",
+		"leaguesExplain": "Enabling a league tells ArenaSwap to look for live games in that competition. Only enabled leagues count toward auto-switching.",
+		"leaguesBody": "Turn on every league you want to track in Settings → Leagues. The more you enable, the wider the net ArenaSwap casts for exciting action.",
+		"favoritesExplain": "Starring a team gives its games a PowerScore bonus whenever that team is playing, making them more likely to win the automatic switch.",
+		"favoritesBody": "Star your favorite teams on any game card or in Settings. It's not a filter. All games still show up; your teams just get a small boost.",
+		"favoritesBonusHint": "Favorite teams active. Their games get a PowerScore boost!",
+		"back": "Back",
+		"next": "Next"
+	},
+	"stepReAccess": {
+		"step": "Step $1 of $2",
+		"title": "Coming back here",
+		"subtitle": "The tour is always one tap away.",
+		"callout": "that's the one",
+		"body": "Hit the ? button in the top bar any time to replay this tour. It works even after setup. Handy if you want a refresher or want to show a friend how it works.",
+		"back": "Back",
+		"next": "Done"
 	},
 	"standbyGuide": {
 		"step": "Step $1 of $2",
@@ -448,12 +488,12 @@
 			"t4": "Sensitivity controls how big a PowerScore lead is needed before ArenaSwap swaps."
 		},
 		"detail": {
-			"t0": "PowerScore mixes closeness, late-game pressure, momentum, lead changes, and comebacks — then applies a volatility boost or penalty based on how much the win probability swings.",
+			"t0": "PowerScore mixes closeness, late-game pressure, momentum, lead changes, and comebacks. Then it applies a volatility boost or penalty based on how much the win probability swings.",
 			"t1": "A clock-stall penalty kicks in when the game clock barely moves between updates.",
 			"t2": "0-0 games take a small PowerScore hit in sports where 0-0 isn't exciting.",
 			"t3": "Hover the charts to inspect specific moments in the game.",
 			"t4": "A favorite team in the matchup adds bonus points to the PowerScore.",
-			"t5": "PowerScore builds as a game goes on — an early close game ramps up toward the final buzzer.",
+			"t5": "PowerScore builds as a game goes on. An early close game ramps up toward the final buzzer.",
 			"t6": "Tied in the final minute? PowerScore pre-boosts likely overtime so you never miss the buzzer."
 		}
 	},
