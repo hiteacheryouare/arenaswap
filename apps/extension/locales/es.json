@@ -383,7 +383,7 @@
 		"signalMomentum": "Impulso",
 		"signalLeadChanges": "Cambios de líder",
 		"signalComeback": "Remontada",
-		"detailPreviewCaption": "También hay gráficas, historial de señales y un deslizador de impulso manual.",
+		"detailPreviewCaption": "También hay gráficas del marcador e historial completo de señales.",
 		"body": "Toca cualquier tarjeta de partido en vivo para abrir la vista de detalle — un desglose completo de cada señal que contribuye a su PowerScore, más una gráfica de cómo ha evolucionado a lo largo del tiempo.",
 		"bodyAfterTap": "También encontrarás un deslizador de Impulso de partido para priorizar temporalmente cualquier partido que quieras.",
 		"back": "Atrás",
@@ -407,7 +407,7 @@
 		"step": "Paso $1 de $2",
 		"title": "Volver aquí",
 		"subtitle": "El recorrido siempre está a un toque de distancia.",
-		"callout": "← ese es",
+		"callout": "ese es",
 		"body": "Toca el botón ? en la barra superior cuando quieras para repetir este recorrido. Funciona incluso después de la configuración inicial — muy útil para repasar o mostrarle a un amigo cómo funciona.",
 		"back": "Atrás",
 		"next": "Listo"

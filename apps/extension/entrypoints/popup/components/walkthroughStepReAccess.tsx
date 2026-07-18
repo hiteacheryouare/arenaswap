@@ -33,11 +33,12 @@ const walkthroughStepReAccess = ({ onNext, onBack }: walkthroughStepReAccessProp
 						>
 							<i className='bi bi-question-circle popup-settings-icon' style={{ color: 'var(--bs-primary)' }} />
 						</div>
-						{/* callout arrow */}
+						{/* callout: top: calc(100% + 4px) anchors the callout directly below the ? button */}
 						<div
 							className='position-absolute d-flex flex-column align-items-center'
-							style={{ bottom: '-2.2rem', left: '50%', transform: 'translateX(-50%)', whiteSpace: 'nowrap', pointerEvents: 'none' }}
+							style={{ top: 'calc(100% + 4px)', left: '50%', transform: 'translateX(-50%)', whiteSpace: 'nowrap', pointerEvents: 'none', zIndex: 1 }}
 						>
+							{/* upward-pointing triangle (borderBottom = base at bottom → apex at top) */}
 							<div style={{ width: 0, height: 0, borderLeft: '5px solid transparent', borderRight: '5px solid transparent', borderBottom: '6px solid var(--bs-primary)' }} />
 							<span
 								className='badge rounded-pill mt-1 px-2 py-1'

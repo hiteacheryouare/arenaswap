@@ -383,9 +383,9 @@
 		"signalMomentum": "Momentum",
 		"signalLeadChanges": "Lead Changes",
 		"signalComeback": "Comeback",
-		"detailPreviewCaption": "Charts, signal history, and a manual boost slider are also available.",
+		"detailPreviewCaption": "Score charts and full signal history are also available.",
 		"body": "Tap any live game card to open the detail view — a full breakdown of every signal contributing to its PowerScore, plus a chart of how the score has evolved over time.",
-		"bodyAfterTap": "You'll also find a manual Game Boost slider here to temporarily prioritize any game you want.",
+		"bodyAfterTap": "You'll also find a manual Game Boost slider to temporarily prioritize any game you want.",
 		"back": "Back",
 		"next": "Next"
 	},
@@ -407,7 +407,7 @@
 		"step": "Step $1 of $2",
 		"title": "Coming back here",
 		"subtitle": "The tour is always one tap away.",
-		"callout": "← that's the one",
+		"callout": "that's the one",
 		"body": "Hit the ? button in the top bar any time to replay this tour. It works even after setup — handy if you want a refresher or want to show a friend how it works.",
 		"back": "Back",
 		"next": "Done"
