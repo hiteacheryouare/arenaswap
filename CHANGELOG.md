@@ -1,5 +1,13 @@
 # Changelog
 
+## Rewrite README (#28) — 2026-07-19
+
+Creates a clean, professional README from scratch.
+
+- Added dark/light mode logo using `<picture>` with transparent-background variants
+- Concise feature list, install link, dev setup table, and monorepo architecture map
+- Replaced verbose prose with scannable structure
+
 ## Spanish i18n cleanup (#53) — 2026-07-18
 
 Polishes the existing Spanish (`es.json`) translation for quality, consistency, and natural phrasing across all Spanish-speaking regions.
