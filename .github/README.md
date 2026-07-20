@@ -55,7 +55,7 @@ ArenaSwap watches every live game across 30+ leagues and automatically switches 
 
 ## Features
 
-- **Auto-Switch** — Jumps to the hottest game every 15 seconds, hands-free
+- **Auto-Switch** — Jumps to the hottest game as fast as every 6 seconds, hands-free
 - **PowerScore** — Real-time excitement score built from 5 signals and 6 adjustments
 - **Game Boost** — Manually pin any game to keep it on top
 - **Standby Stream** — Falls back to a calm tab when all games go quiet
