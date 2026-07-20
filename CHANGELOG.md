@@ -2,11 +2,12 @@
 
 ## Rewrite README (#28) — 2026-07-19
 
-Creates a clean, professional README from scratch.
+Creates a clean, professional README from scratch in `.github/README.md`.
 
-- Added dark/light mode logo using `<picture>` with transparent-background variants
-- Concise feature list, install link, dev setup table, and monorepo architecture map
-- Replaced verbose prose with scannable structure
+- Dark/light mode logo via `<picture>` using SVG (dark) and transparent-background PNG (light)
+- 11 badges: version, license, Chrome/Firefox/Edge support, TypeScript, React, WXT, Turborepo, Node.js, npm
+- Three new demo screenshots from marketing assets shown side by side
+- Correct homepage URL, no trademarked taglines, concise feature list, dev setup table, and monorepo map
 
 ## Spanish i18n cleanup (#53) — 2026-07-18
 
