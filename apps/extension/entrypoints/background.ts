@@ -20,6 +20,7 @@ import {
 	historyWindowMs,
 	sensitivityThresholds,
 	sportTypeConfigMap,
+	leagueConfigMap,
 } from '@arenaswap/core/constants';
 import type {
 	DebugState,
@@ -62,6 +63,30 @@ const getHistoryWindowMsForGame = (game: Game): number => {
 	return sportConfig.historyWindowMs ?? historyWindowMs;
 };
 
+// Scale factors mapping typical winning-margin to a logit of ~1-2 per sport.
+// Tuned so a 10-pt NBA lead in the 4th quarter is ~70-75% win probability.
+const winProbScaleBySport: Record<string, number> = {
+	basketball: 11, football: 7, baseball: 2, softball: 2, hockey: 1.5, soccer: 1.2,
+};
+
+// Derives a synthetic win probability for the home team from the current score margin and game
+// progress. Mirrors the simulator harness — used in the background loop until real ESPN win-prob
+// data is wired from the API.
+const deriveWinProb = (game: Game): number => {
+	const diff = game.homeTeam.score - game.awayTeam.score;
+	const scale = winProbScaleBySport[game.sportType] ?? 8;
+	const league = leagueConfigMap[game.league];
+	const config = sportTypeConfigMap[game.sportType];
+	if (!league || !config) return 0.5;
+	const regularPeriods = Math.max(1, league.regularPeriods);
+	const period = game.period ?? 1;
+	const progress = period > regularPeriods ? 1 : Math.min((period - 0.5) / regularPeriods, 1);
+	// Certainty grows from 0.5× early to 2.5× in OT so late-game margins are more decisive.
+	const certainty = 0.5 + progress * 2.0;
+	const x = (diff / scale) * certainty;
+	return 1 / (1 + Math.exp(-x));
+};
+
 const capitalizeFirst = (s: string) => s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
 
 export default defineBackground(() => {
@@ -70,6 +95,7 @@ export default defineBackground(() => {
 	let currentScores: PowerScoreResult[] = [];
 	let leagueLogos: LeagueLogoMap = {};
 	const history = new Map<string, ScoreSnapshot[]>();
+	const winProbHistory = new Map<string, number[]>();
 	const powerScoreHistory = new Map<string, PowerScoreSnapshot[]>();
 	const clockStallMap = new Map<string, { lastClock: number; stallCount: number }>();
 	let tabRegistry: TabRegistration[] = [];
@@ -96,6 +122,7 @@ export default defineBackground(() => {
 
 	const hydrateHistoryMaps = (storedScoreHistory: unknown, storedPowerScoreHistory: unknown) => {
 		history.clear();
+		winProbHistory.clear();
 		powerScoreHistory.clear();
 
 		if (isObjectRecord(storedScoreHistory)) {
@@ -143,6 +170,12 @@ export default defineBackground(() => {
 			const cutoff = now - getHistoryWindowMsForGame(game);
 			while (snapshots.length > 1 && snapshots[0]!.timestamp < cutoff) snapshots.shift();
 			history.set(game.id, snapshots);
+
+			// Win probability history kept in lock-step with score snapshots (same depth limit).
+			const probs = winProbHistory.get(game.id) ?? [];
+			probs.push(deriveWinProb(game));
+			while (probs.length > snapshots.length) probs.shift();
+			winProbHistory.set(game.id, probs);
 		});
 	};
 
@@ -372,7 +405,7 @@ export default defineBackground(() => {
 		const scores = liveGames.map(g => {
 			const stallCount = clockStallMap.get(g.id)?.stallCount ?? 0;
 			const baseScore = applyDisabledSignals(
-				normalizePowerScoreResult(computePowerScore(g, history.get(g.id) ?? [], stallCount)),
+				normalizePowerScoreResult(computePowerScore(g, history.get(g.id) ?? [], stallCount, winProbHistory.get(g.id) ?? [])),
 				prefs.disabledSignals,
 			);
 			const favoriteTeamCount = getFavoriteTeamCount(g, favoriteTeamIds);
