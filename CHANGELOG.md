@@ -1,5 +1,20 @@
 # Changelog
 
+## German i18n (#51) — 2026-07-21
+
+Adds German (`de.json`) locale — closes #51.
+
+- Standard High German (Hochdeutsch), suitable for Germany, Austria, and Switzerland
+- Compound nouns used naturally throughout (e.g., "Wechselempfindlichkeit", "Spielstandverlauf", "Uhr-Stagnationsstrafe")
+- `loading.m31`: "Cheesesteak holen" → "Bratwurst holen" — culturally equivalent stadium-food swap
+- `loading.m45`: "tailgate party" → "Fangrillparty vor dem Stadion" — functionally equivalent German fan culture expression
+- `stepSettings.sensitivity6` / `sensitivity.level.l6`: "Trigger Happy" → "Abzugsfinger" — idiomatic German equivalent
+- `sensitivity.level.l7` / `stepSettings.sensitivity7`: kept as "Ludicrous Speed" (Spaceballs is known by the same title in German-speaking markets)
+- `ludicrousSpeed.*`: Spaceballs dialogue translated in a punchy, theatrical style matching the film's German dub spirit; `prelaunch.l12` rendered as "Den Gurt kannst du dir sonst wohin stecken!" for maximum comedic punch
+- `ludicrousSpeed.plaid`: "THEY'VE GONE TO PLAID" → "SIE SIND IM KAROMUSTER!" — accurate and funny
+- `bso.balls/strikes/outs`: preserved as B/S/O (universal baseball scorecard abbreviations)
+- `loading.m56`: "go birds" preserved exactly as-is (untranslatable Easter egg)
+- All `$1`, `{placeholder}` interpolation markers preserved in correct grammatical positions
 ## French i18n (#52) — 2026-07-21
 
 Adds French (`fr.json`) locale — closes #52.
