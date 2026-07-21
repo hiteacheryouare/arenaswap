@@ -162,7 +162,7 @@
 	"main": {
 		"tourButton": "ツアー",
 		"settingsButton": "設定",
-		"onStandbyStream": "スタンバイストリーム中 — アクションを待っています",
+		"onStandbyStream": "Standby Stream 中 — アクションを待っています",
 		"sectionActiveLiveTabs": "アクティブタブ",
 		"sectionOtherLiveGames": "ライブ試合",
 		"sectionUpNext": "次の試合",
