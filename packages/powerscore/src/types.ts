@@ -80,13 +80,17 @@ export interface ScorerTunables {
 		};
 		lateGame: {
 			overtime: number;
-			/** ceiling the near-linear regulation ramp reaches at the end of the final period (pre-OT) */
-			otEdgeMax: number;
+			/** ceiling for tight/close games (margin ≤ t2) in the final-period regulation ramp */
+			closeCeiling: number;
+			/** ceiling for fringe games (t2 < margin ≤ t3) in the final-period regulation ramp */
+			fringeCeiling: number;
+			/** ceiling for blowout games (margin > t3) in the final-period regulation ramp */
+			blowoutCeiling: number;
 			/** late-game score at the very start of the final period */
 			finalPeriodStart: number;
 			/** small constant pressure carried through the previous period's ramp */
 			previousPeriodTouch: number;
-			/** extra points (otEdgeMax → overtime) a tied game earns ramping through the OT pre-boost window */
+			/** extra points (closeCeiling → overtime) a tied game earns ramping through the OT pre-boost window */
 			otPreBoostMax: number;
 			none: number;
 		};

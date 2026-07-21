@@ -1,5 +1,40 @@
 # Changelog
 
+## PowerScore Rewrite (#62) — 2026-07-21
+
+Rewrites the PowerScore algorithm for sharper calibration across all sports — closes #62.
+
+### Signal ceilings (per-signal max raised, overcomplete design)
+- `scoreMaxCloseness` 40 → 42, `scoreMaxLateGame` 26 → 38, `scoreMaxMomentum` 30 → 38, `scoreMaxLeadChanges` 12 → 18, `scoreMaxComeback` 10 → 20
+- Overcomplete ceilings sum to well above 100; headline total is capped at 100 so exciting multi-signal games saturate while dull games stay low
+
+### Dynamic lateGame ceiling (replaces fixed `otEdgeMax`)
+- Per-closeness-tier ceilings: `closeCeiling=36` (tight/close games), `fringeCeiling=22` (fringe), `blowoutCeiling=15` (blowout)
+- Blowout games no longer earn near-max lateGame pressure regardless of margin
+- `otPreBoostMax = 2`: tied games earn 2 extra points ramping through the final minute toward the reserved OT max
+
+### Additive stall penalty (replaces multiplicative)
+- `stallPenaltySteps: [{ minPolls: 15, deduction: 25 }, { minPolls: 8, deduction: 15 }]`
+- Penalty is a flat deduction, not a fraction — same cut regardless of base score
+
+### Win probability history wired into background loop
+- `background.ts` now synthesizes per-game win probability histories (logistic function of score margin × game progress) and passes them to `computePowerScore` as the 4th argument
+- Enables `computeWinProbVarianceScore` to apply a ±5 boost/penalty based on win-prob contestedness
+
+### Calibration
+- Tied buzzer with no history → 80 (closeness=42 + lateGame=38)
+- 1-pt game final minute → ≥ 68 across basketball/hockey/football
+- Blowout final seconds → ≤ 8 (blowoutCeiling=15, zero closeness)
+
+### Simulator improvements
+- `--early-game` flag: skips main simulation, runs 8 representative scenarios × 3 history depths (0, 1, 3 snapshots) in a table
+- History-depth breakdown: samples bucketed into `0 / 1-2 / 3-9 / 10+` depths to surface early-game regressions
+
+### Test suite
+- Updated all `otEdgeMax` references → `closeCeiling`
+- Updated stall penalty assertions to flat-deduction form (`deduction` not `multiplier`)
+- Added calibration-target tests: tied buzzer ≥ 78, 1-pt final minute ≥ 63, stall = flat deduction, blowout lateGame < close lateGame, sport-agnostic hockey/football
+
 ## German i18n (#51) — 2026-07-21
 
 Adds German (`de.json`) locale — closes #51.

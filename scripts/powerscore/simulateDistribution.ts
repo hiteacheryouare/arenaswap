@@ -1,11 +1,12 @@
 /**
- * PowerScore v2 distribution harness.
+ * PowerScore distribution harness.
  *
- * Drives MockGameSimulator through many simulated polls, scores every live game with the v2 scorer,
- * and prints the resulting distributions so we can verify v2 goals empirically:
+ * Drives MockGameSimulator through many simulated polls, scores every live game with the scorer,
+ * and prints the resulting distributions so we can verify goals empirically:
  *   - 0s / low totals are common (no more 20–30 floor)
  *   - totals spread sensibly across the 0–100 range
  *   - the best-vs-active "switch gap" distribution → recalibrated sensitivityThresholds
+ *   - breakdown by history depth exposes regressions in early-game / no-history scenarios
  *
  * Mirrors the extension background loop: score is computed against the history that does NOT yet
  * include the current poll (so decay ages match runtime), then the current snapshot is appended.
@@ -14,6 +15,7 @@
  * logistic function — a stand-in for the real ESPN win-prob chart data the scorer uses at runtime.
  *
  * Run: npm run powerscore:simulate -- [ticks]
+ *      npm run powerscore:simulate -- --early-game    (stress test only, skips main simulation)
  */
 import { MockGameSimulator } from '../../packages/core/src/mockGames';
 import { computePowerScore } from '../../packages/powerscore/src/scorer';
@@ -21,8 +23,9 @@ import { sportTypeConfigMap, leagueConfigMap } from '../../packages/powerscore/s
 import { historyWindowMs as defaultHistoryWindowMs } from '../../packages/core/src/constants';
 import type { Game, ScoreSnapshot } from '../../packages/powerscore/src/types';
 
+const earlyGameMode = process.argv.includes('--early-game');
 const pollIntervalMs = 15_000;
-const ticks = Math.max(1_000, Number(process.argv[2]) || 40_000);
+const ticks = earlyGameMode ? 0 : Math.max(1_000, Number(process.argv[2]) || 40_000);
 
 const historyWindowMsFor = (game: Game): number => (
 	sportTypeConfigMap[game.sportType]?.historyWindowMs ?? defaultHistoryWindowMs
@@ -75,6 +78,7 @@ const history = new Map<string, ScoreSnapshot[]>();
 const winProbHistory = new Map<string, number[]>();
 
 const totalsBySport: Record<string, number[]> = {};
+const totalsByHistoryDepth: Record<string, number[]> = { '0': [], '1-2': [], '3-9': [], '10+': [] };
 const allTotals: number[] = [];
 const signalSamples: Record<'closeness' | 'lateGame' | 'momentum' | 'leadChanges' | 'comeback' | 'winProbVariance', number[]> = {
 	closeness: [], lateGame: [], momentum: [], leadChanges: [], comeback: [], winProbVariance: [],
@@ -83,6 +87,13 @@ const switchGaps: number[] = [];
 let zeroTotalCount = 0;
 let liveSampleCount = 0;
 
+const historyDepthBucket = (depth: number): string => {
+	if (depth === 0) return '0';
+	if (depth <= 2) return '1-2';
+	if (depth <= 9) return '3-9';
+	return '10+';
+};
+
 for (let tick = 0; tick < ticks; tick++) {
 	const now = tick * pollIntervalMs;
 	const games = simulator.tick().filter(game => game.status === 'in');
@@ -90,9 +101,11 @@ for (let tick = 0; tick < ticks; tick++) {
 	// Score with history BEFORE this poll's snapshot is appended (matches runtime decay timing).
 	const tickTotals: number[] = [];
 	for (const game of games) {
-		const result = computePowerScore(game, history.get(game.id) ?? [], 0, winProbHistory.get(game.id) ?? []);
+		const gameHistory = history.get(game.id) ?? [];
+		const result = computePowerScore(game, gameHistory, 0, winProbHistory.get(game.id) ?? []);
 		allTotals.push(result.total);
 		(totalsBySport[game.sportType] ??= []).push(result.total);
+		(totalsByHistoryDepth[historyDepthBucket(gameHistory.length)] ??= []).push(result.total);
 		signalSamples.closeness.push(result.closeness);
 		signalSamples.lateGame.push(result.lateGame);
 		signalSamples.momentum.push(result.momentum);
@@ -136,32 +149,115 @@ for (let level = 1; level <= 7; level++) {
 	suggestedThresholds[level] = level === 7 ? Math.max(1, value) : Math.max(1, value);
 }
 
-console.log(`\nPowerScore v2 distribution — ${ticks.toLocaleString()} polls, ${liveSampleCount.toLocaleString()} live-game samples\n`);
-console.log('TOTAL');
-console.log(`  ${summarize(allTotals)}`);
-console.log(`  total === 0: ${((zeroTotalCount / Math.max(1, liveSampleCount)) * 100).toFixed(1)}% of live samples\n`);
+if (ticks > 0) {
+	console.log(`\nPowerScore distribution — ${ticks.toLocaleString()} polls, ${liveSampleCount.toLocaleString()} live-game samples\n`);
+	console.log('TOTAL');
+	console.log(`  ${summarize(allTotals)}`);
+	console.log(`  total === 0: ${((zeroTotalCount / Math.max(1, liveSampleCount)) * 100).toFixed(1)}% of live samples\n`);
 
-console.log('TOTAL by sport');
-for (const sport of Object.keys(totalsBySport).toSorted()) {
-	console.log(`  ${sport.padEnd(11)} ${summarize(totalsBySport[sport]!)}`);
+	console.log('TOTAL by sport');
+	for (const sport of Object.keys(totalsBySport).toSorted()) {
+		console.log(`  ${sport.padEnd(11)} ${summarize(totalsBySport[sport]!)}`);
+	}
+
+	console.log('\nTOTAL by history depth (snapshots available when scored)');
+	for (const bucket of ['0', '1-2', '3-9', '10+']) {
+		const samples = totalsByHistoryDepth[bucket] ?? [];
+		console.log(`  depth ${bucket.padEnd(4)} (n=${samples.length.toLocaleString().padStart(7)})  ${summarize(samples)}`);
+	}
+
+	console.log('\nSIGNALS');
+	for (const signal of Object.keys(signalSamples) as (keyof typeof signalSamples)[]) {
+		const samples = signalSamples[signal];
+		const label = signal === 'winProbVariance'
+			? `${signal.padEnd(11)} (${samples.length.toLocaleString()} samples with ≥5 data pts)`
+			: signal.padEnd(11);
+		console.log(`  ${label} ${summarize(samples)}`);
+	}
+
+	console.log('\nSWITCH GAP (best − runner-up per poll)');
+	console.log(`  ${summarize(switchGaps)}`);
+
+	console.log('\nSUGGESTED sensitivityThresholds (paste into packages/core/src/constants.ts):');
+	console.log('export const sensitivityThresholds: Record<number, number> = {');
+	for (let level = 1; level <= 7; level++) {
+		const label = { 1: 'Barely Active', 2: 'Passive', 3: 'Conservative', 4: 'Balanced (default)', 5: 'Eager', 6: 'Trigger Happy', 7: 'Overkill' }[level];
+		console.log(`\t${level}: ${suggestedThresholds[level]},`.padEnd(10) + `// ${label} — ~p${levelToPercentile[level]} of switch gaps`);
+	}
+	console.log('};\n');
 }
 
-console.log('\nSIGNALS');
-for (const signal of Object.keys(signalSamples) as (keyof typeof signalSamples)[]) {
-	const samples = signalSamples[signal];
-	const label = signal === 'winProbVariance'
-		? `${signal.padEnd(11)} (${samples.length.toLocaleString()} samples with ≥5 data pts)`
-		: signal.padEnd(11);
-	console.log(`  ${label} ${summarize(samples)}`);
-}
+// Early-game / no-history stress test.
+// Validates scores at 0, 1, and 3 snapshot depths across representative sports and game states.
+// This catches ceiling regressions that the main simulation masks (every game has rich history by
+// the time distributions are measured in the full run).
+const makeSnapshotHistory = (count: number, homeScore: number, awayScore: number): ScoreSnapshot[] => (
+	Array.from({ length: count }, (_, i) => ({
+		gameId: 'stress', timestamp: i * pollIntervalMs, homeScore, awayScore,
+	}))
+);
 
-console.log('\nSWITCH GAP (best − runner-up per poll)');
-console.log(`  ${summarize(switchGaps)}`);
+const earlyGameScenarios: Array<{ label: string; game: Game; depths: number[] }> = [
+	{
+		label: 'basketball tied buzzer (NBA Q4 1s)',
+		game: { id: 'stress', league: 'nba', sportType: 'basketball', homeTeam: { score: 78, abbreviation: 'HOM' }, awayTeam: { score: 78, abbreviation: 'AWY' }, period: 4, clockSeconds: 1 },
+		depths: [0, 1, 3],
+	},
+	{
+		label: 'basketball 1-pt final min (NBA Q4 30s)',
+		game: { id: 'stress', league: 'nba', sportType: 'basketball', homeTeam: { score: 80, abbreviation: 'HOM' }, awayTeam: { score: 79, abbreviation: 'AWY' }, period: 4, clockSeconds: 30 },
+		depths: [0, 1, 3],
+	},
+	{
+		label: 'hockey 1-goal final min (NHL P3 1m)',
+		game: { id: 'stress', league: 'nhl', sportType: 'hockey', homeTeam: { score: 2, abbreviation: 'HOM' }, awayTeam: { score: 1, abbreviation: 'AWY' }, period: 3, clockSeconds: 60 },
+		depths: [0, 1, 3],
+	},
+	{
+		label: 'hockey tied final min (NHL P3 1s)',
+		game: { id: 'stress', league: 'nhl', sportType: 'hockey', homeTeam: { score: 1, abbreviation: 'HOM' }, awayTeam: { score: 1, abbreviation: 'AWY' }, period: 3, clockSeconds: 1 },
+		depths: [0, 1, 3],
+	},
+	{
+		label: 'football 3-pt final min (NFL Q4 1m)',
+		game: { id: 'stress', league: 'nfl', sportType: 'football', homeTeam: { score: 21, abbreviation: 'HOM' }, awayTeam: { score: 18, abbreviation: 'AWY' }, period: 4, clockSeconds: 60 },
+		depths: [0, 1, 3],
+	},
+	{
+		label: 'baseball 1-run 9th (MLB)',
+		game: { id: 'stress', league: 'mlb', sportType: 'baseball', homeTeam: { score: 3, abbreviation: 'HOM' }, awayTeam: { score: 2, abbreviation: 'AWY' }, period: 9, clockSeconds: 0 },
+		depths: [0, 1, 3],
+	},
+	{
+		label: 'soccer tied 2nd half 85m (MLS)',
+		game: { id: 'stress', league: 'mls', sportType: 'soccer', homeTeam: { score: 1, abbreviation: 'HOM' }, awayTeam: { score: 1, abbreviation: 'AWY' }, period: 2, clockSeconds: 5100 },
+		depths: [0, 1, 3],
+	},
+	{
+		label: 'basketball blowout Q4 (NBA Q4 mid)',
+		game: { id: 'stress', league: 'nba', sportType: 'basketball', homeTeam: { score: 110, abbreviation: 'HOM' }, awayTeam: { score: 82, abbreviation: 'AWY' }, period: 4, clockSeconds: 400 },
+		depths: [0, 1, 3],
+	},
+];
 
-console.log('\nSUGGESTED sensitivityThresholds (paste into packages/core/src/constants.ts):');
-console.log('export const sensitivityThresholds: Record<number, number> = {');
-for (let level = 1; level <= 7; level++) {
-	const label = { 1: 'Barely Active', 2: 'Passive', 3: 'Conservative', 4: 'Balanced (default)', 5: 'Eager', 6: 'Trigger Happy', 7: 'Overkill' }[level];
-	console.log(`\t${level}: ${suggestedThresholds[level]},`.padEnd(10) + `// ${label} — ~p${levelToPercentile[level]} of switch gaps`);
+console.log('\nEARLY-GAME / NO-HISTORY STRESS TEST\n');
+console.log('  Validates scores at 0, 1, and 3 snapshot depths — catching ceiling regressions\n');
+console.log('  scenario'.padEnd(44) + '  depth  score  closeness  lateGame  signals');
+console.log('  ' + '-'.repeat(88));
+for (const { label, game, depths } of earlyGameScenarios) {
+	for (const depth of depths) {
+		const h = makeSnapshotHistory(depth, game.homeTeam.score, game.awayTeam.score);
+		const r = computePowerScore(game, h, 0, []);
+		const signals = r.closeness + r.lateGame + r.momentum + r.leadChanges + r.comeback;
+		const row = [
+			`  ${label}`.padEnd(44),
+			String(depth).padStart(7),
+			String(r.total).padStart(7),
+			String(r.closeness).padStart(11),
+			String(r.lateGame).padStart(10),
+			String(signals).padStart(10),
+		].join('');
+		console.log(row);
+	}
+	console.log();
 }
-console.log('};\n');

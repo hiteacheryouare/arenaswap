@@ -1,11 +1,11 @@
 import type { LeagueId, SportType, SportTypeConfig, ScorerTunables, LeagueConfig } from './types';
 
-// Clock stall detection — graduated penalty based on how long the clock has been frozen.
+// Clock stall detection — graduated flat deduction based on how long the clock has been frozen.
 // Sorted descending so the first matching step wins.
 // At 15s poll interval: 8 polls ≈ 120s (commercial starts), 15 polls ≈ 225s (extended break / halftime).
-export const stallPenaltySteps: { minPolls: number; multiplier: number }[] = [
-	{ minPolls: 15, multiplier: 0.70 },
-	{ minPolls: 8,  multiplier: 0.85 },
+export const stallPenaltySteps: { minPolls: number; deduction: number }[] = [
+	{ minPolls: 15, deduction: 25 },
+	{ minPolls: 8,  deduction: 15 },
 ];
 
 // Scoring opportunity boost — automatic additive bonus when a live situation signals an imminent scoring threat.
@@ -19,11 +19,11 @@ export const scoringOpportunityRedZoneBoost = 10;
 // before late-game pressure exists — can stack into the 80s/90s and a true classic saturates at 100,
 // while a dull game still scores low. This is what lets PowerScore use its full 0–100 range instead of
 // compressing every game into the bottom two-thirds.
-export const scoreMaxCloseness = 30;
-export const scoreMaxLateGame = 28;
-export const scoreMaxMomentum = 28;
+export const scoreMaxCloseness = 42;
+export const scoreMaxLateGame = 38;
+export const scoreMaxMomentum = 38;
 export const scoreMaxLeadChanges = 18;
-export const scoreMaxComeback = 14;
+export const scoreMaxComeback = 20;
 /** Win probability variance: max boost (+5) and max penalty (−5) applied on top of signals. */
 export const scoreWinProbVarianceMax = 5;
 // Headline cap. Intentionally lower than the sum of the per-signal ceilings above.
@@ -31,32 +31,38 @@ export const scoreMaxTotal = 100;
 
 export const scorerTunables: ScorerTunables = {
 	scores: {
-		// Closeness tiers are now the CEILINGS reached at the end of regulation (progress = 1).
-		// Realized closeness = closenessFlatFloor + (tier - floor) * gameProgress, so early games sit low.
+		// Closeness tiers are the CEILINGS reached at the end of regulation (progress = 1).
+		// Realized closeness = closenessFlatFloor + (tier - floor) * gameProgress^0.55,
+		// so early games sit near the flat floor and tension builds toward the final buzzer.
 		closeness: {
 			tied: scoreMaxCloseness,
-			tight: 25,
-			zeroZero: 16,
-			close: 15,
-			fringe: 6,
+			tight: 34,
+			zeroZero: 22,
+			close: 20,
+			fringe: 8,
 			none: 0,
 		},
 		// Always-paid closeness minimum for any active (non-blowout) tier, before progress scaling.
-		closenessFlatFloor: 6,
+		// Clamped to the tier ceiling inside applyProgressFloor, so fringe (8) still stays at 8.
+		closenessFlatFloor: 12,
 		lateGame: {
 			overtime: scoreMaxLateGame,
-			otEdgeMax: 26,
-			// Final period ramps 3 → 26 near-linearly; the prior period ramps 0 → 3 so the boundary is
-			// smooth and there is no final-seconds cliff (matches the chosen "near-linear" curve).
+			// Per-closeness-tier ceilings for the final-period regulation ramp (replaces fixed otEdgeMax).
+			// Tight/close games earn a much higher ceiling than fringe or blowout games.
+			closeCeiling: 36,
+			fringeCeiling: 22,
+			blowoutCeiling: 15,
+			// Final period ramps finalPeriodStart → closeCeiling near-linearly; the prior period
+			// carries a gentle touch so the period boundary is smooth.
 			finalPeriodStart: 3,
 			previousPeriodTouch: 3,
-			otPreBoostMax: scoreMaxLateGame - 26,
+			otPreBoostMax: scoreMaxLateGame - 36,
 			none: 0,
 		},
 		// Momentum / lead-change tier values are the spike CEILINGS; sport-scaled decay is applied after.
 		momentum: {
 			bigRun: scoreMaxMomentum,
-			smallRun: 15,
+			smallRun: 20,
 			none: 0,
 		},
 		leadChanges: {
@@ -67,7 +73,7 @@ export const scorerTunables: ScorerTunables = {
 		// Comeback ceilings (progress-scaled like closeness, then decayed like the rest of the cluster).
 		comeback: {
 			big: scoreMaxComeback,
-			moderate: 8,
+			moderate: 11,
 			flatFloor: 2,
 			none: 0,
 		},
