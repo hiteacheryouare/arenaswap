@@ -16,6 +16,7 @@ const tipsByContext: Record<proTipContext, string[]> = {
 		i18n.t('proTip.general.t3'),
 		i18n.t('proTip.general.t4'),
 		i18n.t('proTip.general.t5'),
+		i18n.t('proTip.general.t6'),
 	],
 	main: [
 		i18n.t('proTip.main.t0'),
@@ -23,6 +24,7 @@ const tipsByContext: Record<proTipContext, string[]> = {
 		i18n.t('proTip.main.t2'),
 		i18n.t('proTip.main.t3'),
 		i18n.t('proTip.main.t4'),
+		i18n.t('proTip.main.t5'),
 	],
 	setup: [
 		i18n.t('proTip.setup.t0'),
@@ -30,6 +32,8 @@ const tipsByContext: Record<proTipContext, string[]> = {
 		i18n.t('proTip.setup.t2'),
 		i18n.t('proTip.setup.t3'),
 		i18n.t('proTip.setup.t4'),
+		i18n.t('proTip.setup.t5'),
+		i18n.t('proTip.setup.t6'),
 	],
 	detail: [
 		i18n.t('proTip.detail.t0'),
@@ -39,6 +43,7 @@ const tipsByContext: Record<proTipContext, string[]> = {
 		i18n.t('proTip.detail.t4'),
 		i18n.t('proTip.detail.t5'),
 		i18n.t('proTip.detail.t6'),
+		i18n.t('proTip.detail.t7'),
 	],
 };
 

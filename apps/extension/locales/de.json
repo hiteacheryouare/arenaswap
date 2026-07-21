@@ -473,21 +473,25 @@
 			"t2": "Auf eine Spielkarte klicken, um in die PowerScore-Aufschlüsselung einzutauchen.",
 			"t3": "Mehrere Sportarten? Extra Ligen in den Einstellungen aktivieren, um alle auf einmal zu wechseln.",
 			"t4": "Giraffen und Igel sind toll. Alle Spiele gleichzeitig zu sehen auch.",
-			"t5": "ArenaSwap wird besser, je länger du es laufen lässt!"
+			"t5": "ArenaSwap wird besser, je länger du es laufen lässt!",
+			"t6": "Wechselbenachrichtigungen in den Einstellungen aktivieren, um bei jedem Tab-Wechsel durch ArenaSwap eine Meldung zu erhalten."
 		},
 		"main": {
 			"t0": "Lieblingsteams markieren, um ihre Spiele oben in der Liste zu fixieren.",
 			"t1": "Einen Tab über das Dropdown neben jedem Spiel zuweisen, damit ArenaSwap weiß, wohin es wechseln soll.",
 			"t2": "Ein höherer PowerScore gewinnt den Wechsel — auf die farbigen Badges achten.",
 			"t3": "\"Bevorstehende Spiele anzeigen\" in den Einstellungen aktivieren, um Tabs vor Spielbeginn zuzuweisen.",
-			"t4": "Noch keine Live-Spiele? Der Demo-Modus in den Einstellungen lässt dich ArenaSwap mit simulierten Spielen ausprobieren."
+			"t4": "Noch keine Live-Spiele? Der Demo-Modus in den Einstellungen lässt dich ArenaSwap mit simulierten Spielen ausprobieren.",
+			"t5": "Standby Stream hält einen Reserve-Tab am Laufen, wenn alle Spiele ruhig werden — in den Einstellungen aktivieren."
 		},
 		"setup": {
 			"t0": "Den Cooldown senken, um während chaotischer Schlussphasen aggressiver zu wechseln.",
 			"t1": "Den Lieblingsteam-Bonus erhöhen, damit dein Team fast immer den Wechsel gewinnt.",
 			"t2": "Die Wechselverzögerung erhöhen, um einen kurzen Moment zu haben, bevor der Tab tatsächlich wechselt.",
 			"t3": "Der Demo-Modus läuft mit simulierten Spielen — perfekt zum Justieren der Regler ohne Live-Action.",
-			"t4": "Die Empfindlichkeit legt fest, wie groß der PowerScore-Vorsprung sein muss, bevor ArenaSwap wechselt."
+			"t4": "Die Empfindlichkeit legt fest, wie groß der PowerScore-Vorsprung sein muss, bevor ArenaSwap wechselt.",
+			"t5": "Postseason-Boost gewichtet Playoff- und Meisterschaftsspiele stärker, damit die größten Momente mehr Wechsel gewinnen.",
+			"t6": "Im Abschnitt PowerScore-Signale lassen sich einzelne Signale deaktivieren — ArenaSwap skaliert alles automatisch neu."
 		},
 		"detail": {
 			"t0": "PowerScore kombiniert Ausgeglichenheit, Schlussdruck, Schwung, Führungswechsel und Comebacks — dann wendet es einen Volatilitätsboost oder eine Strafe basierend darauf an, wie stark die Siegwahrscheinlichkeit schwankt.",
@@ -496,7 +500,8 @@
 			"t3": "Über die Diagramme hovern, um spezifische Spielmomente zu inspizieren.",
 			"t4": "Ein Lieblingsteam im Spiel fügt dem PowerScore Bonuspunkte hinzu.",
 			"t5": "Der PowerScore wächst mit dem Spielverlauf. Ein enges frühes Spiel steigert sich zum Schlusspfiff hin.",
-			"t6": "Gleichstand in der Schlussminute? PowerScore boostet wahrscheinliche Verlängerungen vorab — damit du die Schlusssirene nie verpasst."
+			"t6": "Gleichstand in der Schlussminute? PowerScore boostet wahrscheinliche Verlängerungen vorab — damit du die Schlusssirene nie verpasst.",
+			"t7": "Wettquoten in den Einstellungen aktivieren, um Live-Quoten neben dem PowerScore jedes Spiels zu sehen."
 		}
 	},
 	"reviewPrompt": {

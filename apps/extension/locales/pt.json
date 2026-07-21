@@ -473,21 +473,25 @@
 			"t2": "Clica em qualquer cartão de jogo para ver a análise do PowerScore.",
 			"t3": "Misturas desportos? Activa ligas extra nas Definições para mudar entre todas de uma vez.",
 			"t4": "Girafas e ouriços são fixes. Ver todos os jogos ao mesmo tempo também.",
-			"t5": "ArenaSwap melhora quanto mais tempo o deixares a correr!"
+			"t5": "ArenaSwap melhora quanto mais tempo o deixares a correr!",
+			"t6": "Activa as notificações de mudança nas Definições para receberes um alerta sempre que o ArenaSwap mudar de separador."
 		},
 		"main": {
 			"t0": "Marca as tuas equipas favoritas para fixar os seus jogos no topo da lista.",
 			"t1": "Associa um separador no menu pendente junto a cada jogo para que ArenaSwap saiba para onde mudar.",
 			"t2": "Um PowerScore mais alto ganha a mudança — fica de olho nos emblemas coloridos.",
 			"t3": "Activa \"Mostrar jogos futuros\" nas Definições para pré-associar separadores antes de o jogo começar.",
-			"t4": "Ainda sem jogos em directo? O Modo de demonstração nas Definições permite-te ver o ArenaSwap a funcionar com jogos simulados."
+			"t4": "Ainda sem jogos em directo? O Modo de demonstração nas Definições permite-te ver o ArenaSwap a funcionar com jogos simulados.",
+			"t5": "O Standby Stream mantém um separador de reserva a reproduzir quando todos os jogos abrandam — activa-o nas Definições."
 		},
 		"setup": {
 			"t0": "Reduz o tempo de espera para mudar de forma mais agressiva em finais caóticos.",
 			"t1": "Aumenta o Bónus de Equipa Favorita para garantir que a tua equipa quase sempre ganha a mudança.",
 			"t2": "Aumenta o Atraso de Mudança para teres um momento antes de o separador realmente mudar.",
 			"t3": "O Modo de demonstração corre jogos simulados, perfeito para ajustar os controlos sem esperar por acção em directo.",
-			"t4": "A sensibilidade controla quão grande deve ser a vantagem de PowerScore antes de ArenaSwap mudar."
+			"t4": "A sensibilidade controla quão grande deve ser a vantagem de PowerScore antes de ArenaSwap mudar.",
+			"t5": "O Bónus Pós-época dá mais peso aos playoffs e campeonatos para que os grandes momentos ganhem mais mudanças.",
+			"t6": "Usa a secção Sinais PowerScore para desactivar os que não te interessam — o ArenaSwap reescala tudo automaticamente."
 		},
 		"detail": {
 			"t0": "O PowerScore combina equilíbrio, pressão da fase final, dinâmica, mudanças de liderança e remontadas. Depois aplica um impulso ou penalização de volatilidade com base em quanto a probabilidade de vitória oscila.",
@@ -496,7 +500,8 @@
 			"t3": "Passa o cursor sobre os gráficos para inspeccionar momentos específicos do jogo.",
 			"t4": "Uma equipa favorita no confronto adiciona pontos bónus ao PowerScore.",
 			"t5": "O PowerScore cresce à medida que o jogo avança. Um jogo equilibrado no início dispara em direcção ao apito final.",
-			"t6": "Empate no último minuto? O PowerScore antecipa um provável prolongamento para nunca perderes o apito final."
+			"t6": "Empate no último minuto? O PowerScore antecipa um provável prolongamento para nunca perderes o apito final.",
+			"t7": "Activa as odds de apostas nas Definições para ver as linhas em directo ao lado do PowerScore de cada jogo."
 		}
 	},
 	"reviewPrompt": {

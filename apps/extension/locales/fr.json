@@ -473,21 +473,25 @@
 			"t2": "Clique sur n'importe quelle fiche de match pour plonger dans sa décomposition PowerScore.",
 			"t3": "Tu mixes les sports ? Active plus de ligues dans Paramètres pour alterner entre toutes à la fois.",
 			"t4": "Les girafes et les hérissons, c'est cool. Regarder tous les matchs à la fois aussi.",
-			"t5": "ArenaSwap s'améliore plus tu le laisses tourner longtemps !"
+			"t5": "ArenaSwap s'améliore plus tu le laisses tourner longtemps !",
+			"t6": "Active les notifications de changement dans Paramètres pour recevoir une alerte à chaque fois qu'ArenaSwap change d'onglet."
 		},
 		"main": {
 			"t0": "Mets une étoile sur tes équipes favorites pour épingler leurs matchs en haut de la liste.",
 			"t1": "Associe un onglet depuis le menu déroulant à côté de chaque match pour qu'ArenaSwap sache où aller.",
 			"t2": "Un PowerScore plus élevé remporte le changement — garde un œil sur les badges colorés.",
 			"t3": "Active « Afficher les matchs à venir » dans Paramètres pour associer des onglets avant le début du match.",
-			"t4": "Pas encore de matchs en direct ? Le Mode démo dans Paramètres te laisse voir ArenaSwap en action avec de faux matchs."
+			"t4": "Pas encore de matchs en direct ? Le Mode démo dans Paramètres te laisse voir ArenaSwap en action avec de faux matchs.",
+			"t5": "Le Flux Veille maintient un onglet de secours en lecture quand tous les matchs se calment — active-le dans Paramètres."
 		},
 		"setup": {
 			"t0": "Baisse le délai pour changer plus agressivement pendant les fins de match chaotiques.",
 			"t1": "Monte le bonus d'équipe favorite pour t'assurer que ton équipe remporte presque toujours le changement.",
 			"t2": "Augmente le délai de changement pour te laisser un instant avant que l'onglet bascule vraiment.",
 			"t3": "Le Mode démo lance des matchs simulés, parfait pour régler les curseurs sans attendre l'action en direct.",
-			"t4": "La sensibilité contrôle l'avance de PowerScore nécessaire avant qu'ArenaSwap change."
+			"t4": "La sensibilité contrôle l'avance de PowerScore nécessaire avant qu'ArenaSwap change.",
+			"t5": "Le bonus de saison éliminatoire donne plus de poids aux playoffs et championnats pour que les grands moments remportent plus de changements.",
+			"t6": "Utilise la section Signaux PowerScore pour désactiver ceux qui ne t'intéressent pas — ArenaSwap recalibrera tout automatiquement."
 		},
 		"detail": {
 			"t0": "PowerScore combine le serré, la pression de fin de match, l'élan, les changements de tête et les remontées — puis applique un bonus ou une pénalité de volatilité selon les oscillations de la probabilité de victoire.",
@@ -496,7 +500,8 @@
 			"t3": "Passe la souris sur les graphiques pour inspecter des moments précis du match.",
 			"t4": "Une équipe favorite dans la rencontre ajoute des points bonus au PowerScore.",
 			"t5": "Le PowerScore grandit au fil du match. Un match serré en début de rencontre monte en flèche vers la sirène finale.",
-			"t6": "Égalité dans la dernière minute ? PowerScore anticipe une probable prolongation pour que tu ne rates jamais le buzzer."
+			"t6": "Égalité dans la dernière minute ? PowerScore anticipe une probable prolongation pour que tu ne rates jamais le buzzer.",
+			"t7": "Active les cotes dans Paramètres pour voir les lignes en direct à côté du PowerScore de chaque match."
 		}
 	},
 	"reviewPrompt": {

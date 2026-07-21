@@ -473,21 +473,25 @@
 			"t2": "Clique em qualquer card de jogo pra ver a análise do PowerScore.",
 			"t3": "Misturando esportes? Ative ligas extras nas Configurações pra trocar entre todas de uma vez.",
 			"t4": "Girafas e ouriços são demais. Ver todos os jogos ao mesmo tempo também.",
-			"t5": "ArenaSwap melhora quanto mais tempo você deixar rodando!"
+			"t5": "ArenaSwap melhora quanto mais tempo você deixar rodando!",
+			"t6": "Ative as notificações de troca nas Configurações pra receber um alerta toda vez que o ArenaSwap mudar de aba."
 		},
 		"main": {
 			"t0": "Marque seus times favoritos pra fixar seus jogos no topo da lista.",
 			"t1": "Atribua uma aba no menu suspenso ao lado de cada jogo para que ArenaSwap saiba pra onde trocar.",
 			"t2": "Um PowerScore mais alto ganha a troca — fique de olho nas badges coloridas.",
 			"t3": "Ative \"Mostrar jogos futuros\" nas Configurações pra pré-atribuir abas antes do jogo começar.",
-			"t4": "Ainda sem jogos ao vivo? O Modo demonstração nas Configurações te deixa ver o ArenaSwap em ação com jogos simulados."
+			"t4": "Ainda sem jogos ao vivo? O Modo demonstração nas Configurações te deixa ver o ArenaSwap em ação com jogos simulados.",
+			"t5": "O Standby Stream mantém uma aba reserva rodando quando todos os jogos esfriarem — ative nas Configurações."
 		},
 		"setup": {
 			"t0": "Reduza o cooldown pra trocar de forma mais agressiva em finais caóticos.",
 			"t1": "Aumente o Bônus de Time Favorito pra garantir que seu time quase sempre ganhe a troca.",
 			"t2": "Aumente o Atraso de Troca pra ter um instante antes da aba realmente mudar.",
 			"t3": "O Modo demonstração roda jogos simulados, perfeito pra ajustar os controles sem esperar ação ao vivo.",
-			"t4": "A sensibilidade controla o tamanho da vantagem de PowerScore necessária antes de ArenaSwap trocar."
+			"t4": "A sensibilidade controla o tamanho da vantagem de PowerScore necessária antes de ArenaSwap trocar.",
+			"t5": "O Bônus Pós-temporada dá mais peso aos playoffs e campeonatos pra que os grandes momentos ganhem mais trocas.",
+			"t6": "Use a seção Sinais de PowerScore pra desativar os que não te interessam — o ArenaSwap recalibra tudo automaticamente."
 		},
 		"detail": {
 			"t0": "O PowerScore combina equilíbrio, pressão da fase final, dinâmica, mudanças de liderança e viradas. Depois aplica um impulso ou penalidade de volatilidade com base em quanto a probabilidade de vitória oscila.",
@@ -496,7 +500,8 @@
 			"t3": "Passe o cursor sobre os gráficos pra inspecionar momentos específicos do jogo.",
 			"t4": "Um time favorito no confronto adiciona pontos bônus ao PowerScore.",
 			"t5": "O PowerScore cresce à medida que o jogo avança. Um jogo equilibrado no início dispara em direção ao apito final.",
-			"t6": "Empate no último minuto? O PowerScore antecipa uma provável prorrogação pra você nunca perder o apito final."
+			"t6": "Empate no último minuto? O PowerScore antecipa uma provável prorrogação pra você nunca perder o apito final.",
+			"t7": "Ative as odds nas Configurações pra ver as linhas ao vivo ao lado do PowerScore de cada jogo."
 		}
 	},
 	"reviewPrompt": {

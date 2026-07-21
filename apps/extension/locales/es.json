@@ -473,21 +473,25 @@
 			"t2": "Haz clic en cualquier tarjeta de partido para ver el desglose de su PowerScore.",
 			"t3": "¿Mezclas deportes? Activa más ligas en Ajustes para cambiar entre todas a la vez.",
 			"t4": "Las jirafas y los erizos son geniales. Ver todos los partidos a la vez también.",
-			"t5": "¡ArenaSwap mejora cuanto más tiempo lo dejas correr!"
+			"t5": "¡ArenaSwap mejora cuanto más tiempo lo dejas correr!",
+			"t6": "Activa las notificaciones de cambio en Ajustes para recibir una alerta cada vez que ArenaSwap cambie de pestaña."
 		},
 		"main": {
 			"t0": "Marca tus equipos favoritos para fijar sus partidos al principio de la lista.",
 			"t1": "Asigna una pestaña desde el menú desplegable junto a cada partido para que ArenaSwap sepa a dónde cambiar.",
 			"t2": "Un PowerScore más alto gana el cambio — fíjate en las insignias de colores.",
 			"t3": "Activa \"Mostrar próximos partidos\" en Ajustes para asignar pestañas antes de que empiece el partido.",
-			"t4": "¿Todavía no hay partidos en vivo? El Modo demostración en Ajustes te deja ver cómo funciona ArenaSwap con partidos simulados."
+			"t4": "¿Todavía no hay partidos en vivo? El Modo demostración en Ajustes te deja ver cómo funciona ArenaSwap con partidos simulados.",
+			"t5": "Standby Stream mantiene una pestaña de respaldo reproduciendo cuando todos los partidos se calman — actívalo en Ajustes."
 		},
 		"setup": {
 			"t0": "Baja el tiempo de espera para cambiar de forma más agresiva en los finales caóticos.",
 			"t1": "Sube la bonificación de equipo favorito para asegurarte de que tu equipo casi siempre gane el cambio.",
 			"t2": "Aumenta el retardo de cambio para darte un instante antes de que la pestaña cambie de verdad.",
 			"t3": "El Modo demostración ejecuta partidos simulados, perfecto para ajustar los controles sin esperar acción en vivo.",
-			"t4": "La sensibilidad controla qué tan grande debe ser la ventaja de PowerScore antes de que ArenaSwap cambie."
+			"t4": "La sensibilidad controla qué tan grande debe ser la ventaja de PowerScore antes de que ArenaSwap cambie.",
+			"t5": "La bonificación de postemporada da más peso a los playoffs y campeonatos para que los grandes momentos ganen más cambios.",
+			"t6": "Usa la sección Señales de PowerScore para desactivar las que no te interesen — ArenaSwap reescala todo automáticamente."
 		},
 		"detail": {
 			"t0": "El PowerScore combina igualdad, presión de la recta final, impulso, cambios de ventaja y remontadas — luego aplica un impulso o penalización de volatilidad según cuánto oscile la probabilidad de victoria.",
@@ -496,7 +500,8 @@
 			"t3": "Pasa el cursor sobre las gráficas para inspeccionar momentos concretos del partido.",
 			"t4": "Un equipo favorito en el enfrentamiento suma puntos extra al PowerScore.",
 			"t5": "El PowerScore crece a medida que avanza el partido — un duelo reñido temprano se dispara hacia el pitido final.",
-			"t6": "¿Empate en el último minuto? El PowerScore anticipa una probable prórroga para que nunca te pierdas el pitido final."
+			"t6": "¿Empate en el último minuto? El PowerScore anticipa una probable prórroga para que nunca te pierdas el pitido final.",
+			"t7": "Activa las cuotas en Ajustes para ver las líneas en vivo junto al PowerScore de cada partido."
 		}
 	},
 	"reviewPrompt": {
