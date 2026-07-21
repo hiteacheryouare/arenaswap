@@ -1,5 +1,19 @@
 # Changelog
 
+## Japanese i18n (#49) — 2026-07-21
+
+Adds Japanese (`ja.json`) locale — closes #49.
+
+- **Register**: Standard Japanese (標準語), polite-but-approachable です/ます form for UI text; casual register for humor strings (loading messages, noGames messages)
+- **Spaceballs quotes** (`ludicrousSpeed.*`): Translated as faithful adaptations of the Japanese theatrical dub register — punchy, dramatic, and fun. "Ludicrous Speed" rendered as「バカ速モード」(lit. "ridiculous fast mode") for maximum comedic energy; the speed signs escalate as 光速 → ありえない速さ → バカ速モード
+- **BSO abbreviations**: B/S/O preserved as-is — universally understood in Japanese baseball (野球)
+- **`sensitivity.level.l7`**: "Ludicrous Speed" → 「バカ速モード」— intentionally over-the-top translation matching the English's tongue-in-cheek humor
+- **`footer.credit`**: Rendered as「Ryan MullinがPhiladelphiaとBostonで作りました」— city names kept in Roman letters as is customary in Japanese for Western proper nouns
+- **`loading.m56`**: "go birds" preserved exactly as instructed (proprietary/untranslatable Easter egg)
+- **Sport terminology**: Standard Japanese used throughout — 野球, バスケットボール, アメリカンフットボール, サッカー, ホッケー, ソフトボール
+- **`standbySection` / `standbyGuide.title`**: "Standby Stream" preserved as proprietary feature name
+- **PowerScore signals**: Consistent naming across all three sections that reference them (detail, powerScore, stepGameDetail) — 接戦度 / 終盤 / 勢い / リード交代 / 逆転
+
 ## Rewrite README (#28) — 2026-07-19
 
 Creates a clean, professional README from scratch in `.github/README.md`.
