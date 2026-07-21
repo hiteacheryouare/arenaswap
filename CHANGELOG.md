@@ -13,6 +13,29 @@ Adds Japanese (`ja.json`) locale — closes #49.
 - **Sport terminology**: Standard Japanese used throughout — 野球, バスケットボール, アメリカンフットボール, サッカー, ホッケー, ソフトボール
 - **`standbySection` / `standbyGuide.title`**: "Standby Stream" preserved as proprietary feature name
 - **PowerScore signals**: Consistent naming across all three sections that reference them (detail, powerScore, stepGameDetail) — 接戦度 / 終盤 / 勢い / リード交代 / 逆転
+## Chinese Simplified i18n (#50) — 2026-07-21
+
+Adds Simplified Chinese (`zh_CN.json`) locale — closes #50.
+
+- Standard Mainland China sports vocabulary throughout: 篮球 (basketball), 美式橄榄球 (American football), 冰球 (hockey), 棒球/垒球/足球 (baseball/softball/soccer)
+- B/S/O scoreboard abbreviations preserved exactly — universally used in Chinese baseball broadcasts
+- Proprietary terms ArenaSwap, PowerScore, and Standby Stream left untranslated; `go birds` (loading.m56) preserved verbatim per spec
+- Spaceballs `ludicrousSpeed` dialogue adapted for natural humor without relying on film recognition — "荒唐速度" (ludicrous/absurd speed) lands the comedic energy in context
+- `sensitivity.level.l7` rendered as "荒唐速度" matching the film section's tone
+- `footer.credit` rendered as "Philadelphia 与 Boston，由 Ryan Mullin 打造" — city names kept in English per spec, surrounded by natural Chinese phrasing
+- Informal register (您-form for respectful but approachable tone consistent with the platform's style) used throughout
+- All `$1`, `{placeholder}` interpolation markers preserved exactly in their correct grammatical positions
+## Portuguese i18n (#48) — 2026-07-21
+
+Adds European Portuguese (`pt.json`) and Brazilian Portuguese (`pt_BR.json`) locales — closes #48.
+
+- **Regional vocabulary split**: European Portuguese uses "separador" (browser tab), "definições" (settings), "desporto" (sport), "basebol", "basquetebol", "telemóvel"-register vocabulary, and pre-2009 spelling reform orthography (e.g. "directo", "activo", "óptimo"). Brazilian Portuguese uses "aba" (browser tab), "configurações" (settings), "esporte" (sport), "beisebol", "basquete", and post-reform spelling (e.g. "ativo", "direto").
+- **Cultural loading message localization**: `loading.m31` — European PT localizes the cheesesteak to "bifana" (iconic Portuguese pork sandwich); Brazilian PT localizes it to "coxinha" (beloved deep-fried street snack). The hot-dog vendor (`loading.m6`, `loading.m58`) becomes "o tipo das bifanas" in PT and "o cara do coxinha" in pt-BR.
+- **Sport idiom for `noGames.m4`**: European PT keeps a neutral tone ("Até os árbitros foram descansar"); Brazilian PT goes colloquial ("Até os árbitros foram bater um bolão" — they went to play a quick pick-up game).
+- **`walkthrough.letsGo`**: European PT uses "Vamos lá" (measured enthusiasm); Brazilian PT uses "Bora!" (high-energy Brazilian slang).
+- **Ludicrous Speed (Spaceballs)**: Both locales render "ludicrous speed" as "velocidade absurda", which is unambiguously over-the-top in both variants. "THEY'VE GONE TO PLAID" becomes "FORAM PARA O XADREZ!" in PT and "FORAM PRO XADREZ!" in pt-BR (casual contraction typical of Brazilian speech). The prelaunch "Que se lixe o cinto!" (PT) vs. "Que se dane o cinto!" (pt-BR) captures the same expletive dismissal with regionally appropriate vocabulary.
+- **"Comeback"**: European PT uses "remontada" (also the standard Spanish term, widely understood in Portugal via football coverage); Brazilian PT uses "virada" (the dominant Brazilian Portuguese term for a comeback).
+- **Proprietary terms preserved untranslated**: ArenaSwap, PowerScore, Standby Stream, `go birds`, all `$1`/`{placeholder}` markers, BSO abbreviations (B/S/O).
 
 ## Rewrite README (#28) — 2026-07-19
 
