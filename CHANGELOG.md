@@ -1,5 +1,20 @@
 # Changelog
 
+## French i18n (#52) — 2026-07-21
+
+Adds French (`fr.json`) locale — closes #52.
+
+- All 463 keys translated; zero keys missing, zero extras
+- Register: informal *tu* throughout, modern casual tone matching ArenaSwap's sport-fan energy
+- **Proprietary terms preserved untranslated**: ArenaSwap, PowerScore, Standby Stream, `go birds`
+- **BSO abbreviations**: B/S/O kept as single capitals (universal baseball scorecard convention)
+- **`sensitivity.level.l7`**: kept as "Ludicrous Speed" — the untranslated brand name carries the same punch in French
+- **`ludicrousSpeed.*`**: Spaceballs is released in France as *La Folle Histoire de l'espace*; dialogue translated in a natural, idiomatic French register that matches the film's irreverent humor (e.g. "Poule mouillée ?" for "Chicken?"; "Au diable la ceinture !" for "Oh, buckle this!")
+- **`ludicrousSpeed.signs`**: light/ridiculous translated ("VITESSE DE LA LUMIÈRE" / "VITESSE RIDICULE"); ludicrous rendered as "VITESSE LUDICROUS" to keep the proprietary speed-tier branding legible
+- **`loading.m45`** "tailgate party" → "barbecue d'avant-match" — culturally equivalent pre-game gathering term
+- **`footer.credit`**: "à Philadelphia & Boston par Ryan Mullin" — city names in English, framing words in French
+- **`noGames` humor**: "Même les arbitres font la sieste." for the refs joke; "Le vendeur de hot-dogs est parti." preserves the absurdist energy
+
 ## Rewrite README (#28) — 2026-07-19
 
 Creates a clean, professional README from scratch in `.github/README.md`.
