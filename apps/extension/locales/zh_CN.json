@@ -273,7 +273,7 @@
 		"skipForNow": "暂时跳过",
 		"removeFavorite": "从收藏中移除 {team}",
 		"addFavorite": "将 {team} 加入收藏",
-		"noMatch": "没有与"{query}"匹配的球队",
+		"noMatch": "没有与「{query}」匹配的球队",
 		"skip": "跳过",
 		"done": "完成"
 	},
@@ -368,7 +368,7 @@
 		"sensitivityHelp": "控制 PowerScore 差距需要多大，ArenaSwap 才会切换标签页。",
 		"cooldownLabel": "切换冷却",
 		"cooldownHelp": "设置自动切换之间的最短间隔，防止标签页来回乱跳。",
-		"moreLeagues": "+ 更多联赛在"联赛"标签页",
+		"moreLeagues": "+ 更多联赛在「联赛」标签页",
 		"back": "返回",
 		"next": "下一步"
 	},
