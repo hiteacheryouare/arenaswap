@@ -162,7 +162,7 @@
 	"main": {
 		"tourButton": "引导教程",
 		"settingsButton": "设置",
-		"onStandbyStream": "处于待机流，等待精彩时刻",
+		"onStandbyStream": "处于 Standby Stream，等待精彩时刻",
 		"sectionActiveLiveTabs": "活跃标签页",
 		"sectionOtherLiveGames": "直播比赛",
 		"sectionUpNext": "即将开赛",
