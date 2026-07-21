@@ -16,7 +16,7 @@ const makeLiveGame = (overrides: Partial<Game> = {}): Game => ({
 		abbreviation: 'HOM',
 		score: 10,
 		color: '#112233',
-		...(overrides.homeTeam ?? {}),
+		...overrides.homeTeam,
 	},
 	awayTeam: {
 		id: 'away-1',
@@ -24,13 +24,15 @@ const makeLiveGame = (overrides: Partial<Game> = {}): Game => ({
 		abbreviation: 'AWY',
 		score: 8,
 		color: '#aabbcc',
-		...(overrides.awayTeam ?? {}),
+		...overrides.awayTeam,
 	},
 	period: 1,
 	clockSeconds: 600,
 	status: 'in',
 	...overrides,
 });
+
+const numeric = (hex: string): number => parseInt(hex.slice(1), 16);
 
 describe('createTeamColorShadePalette', () => {
 	test('returns five unique normalized shades for a six-digit hex color', () => {
@@ -73,7 +75,6 @@ describe('createTeamColorShadePalette', () => {
 
 	test('produces shades darker-to-lighter across the offsets', () => {
 		const palette = createTeamColorShadePalette('#808080');
-		const numeric = (hex: string): number => parseInt(hex.slice(1), 16);
 		const ascending = palette.every((c, i) => i === 0 || numeric(c) >= numeric(palette[i - 1]!));
 		expect(ascending).toBe(true);
 	});
@@ -139,7 +140,7 @@ describe('buildLiveGameSnapshots', () => {
 			makeLiveGame({ id: 'live-2', league: 'nfl', sportType: 'football' }),
 			makeLiveGame({ id: 'pre-1', status: 'pre' }),
 		]);
-		expect([...snapshots.keys()].sort()).toEqual(['live-1', 'live-2']);
+		expect([...snapshots.keys()].toSorted()).toEqual(['live-1', 'live-2']);
 	});
 });
 

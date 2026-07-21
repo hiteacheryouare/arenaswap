@@ -1,1 +1,1 @@
-ArenaSwap monitors live games in 12 leagues, scores them with PowerScore, and auto-switches your browser tab to the most exciting one every 15 seconds.
+ArenaSwap monitors live games in 30+ leagues, scores them with PowerScore, and auto-switches your browser tab to the most exciting one — checking as often as every 6 seconds during tense moments.

@@ -1,3 +1,5 @@
+import { i18n } from '#i18n';
+
 interface favoriteTeamBonusInputProps {
 	value: number;
 	onChange: (val: number) => void;
@@ -7,11 +9,9 @@ const favoriteTeamBonusInput = ({ value, onChange }: favoriteTeamBonusInputProps
 	<div>
 		<div className='d-flex justify-content-between align-items-center mb-1'>
 			<label className='text-body-secondary setting-toggle-label' htmlFor='favoriteTeamBonusInput'>
-				<i className='bi bi-star me-1 text-primary' />Favorite team bonus
+				<i className='bi bi-star me-1 text-primary' />{i18n.t('favoriteTeamBonus.label')}
 			</label>
-			<span className='fw-semibold setting-value-label'>
-				+{value} per team
-			</span>
+			<span className='fw-semibold setting-value-label'>{i18n.t('favoriteTeamBonus.perTeam', [value])}</span>
 		</div>
 		<input
 			id='favoriteTeamBonusInput'
@@ -24,7 +24,7 @@ const favoriteTeamBonusInput = ({ value, onChange }: favoriteTeamBonusInputProps
 			inputMode='numeric'
 		/>
 		<div className='mt-1 setting-explainer'>
-			Applied once for each favorited team in a game. If both teams are favorited, the bonus is doubled.
+			{i18n.t('favoriteTeamBonus.explainer')}
 		</div>
 	</div>
 );

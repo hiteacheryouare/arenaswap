@@ -1,0 +1,581 @@
+{
+	"app": {
+		"welcomeToast": "¡Bienvenido a ArenaSwap!",
+		"settingsSavedToast": "Ajustes guardados",
+		"gameDetailsUnavailable": "Detalles del partido no disponibles",
+		"backToGames": "Volver a los partidos"
+	},
+	"sport": {
+		"basketball": "Baloncesto",
+		"football": "Fútbol americano",
+		"hockey": "Hockey",
+		"baseball": "Béisbol",
+		"softball": "Softbol",
+		"soccer": "Fútbol"
+	},
+	"date": {
+		"today": "Hoy",
+		"tomorrow": "Mañana",
+		"upcoming": "Próximos"
+	},
+	"tab": {
+		"fallback": "Pestaña #$1"
+	},
+	"noGames": {
+		"m1": {
+			"title": "Esperando el pitazo inicial. 🕐",
+			"sub": "No hay partidos en vivo en tus ligas seleccionadas."
+		},
+		"m2": {
+			"title": "El estadio está a oscuras.",
+			"sub": "No hay acción en vivo en tus ligas. Vuelve cuando empiecen los partidos."
+		},
+		"m3": {
+			"title": "Es un día tranquilo en el deporte.",
+			"sub": "Nada en vivo en este momento."
+		},
+		"m4": {
+			"title": "Hasta los árbitros están descansando.",
+			"sub": "No se detectan partidos en vivo en tus ligas seleccionadas."
+		},
+		"m5": {
+			"title": "El marcador está inmóvil.",
+			"sub": "Tus ligas están tranquilas. Vuelve cuando empiecen los partidos."
+		},
+		"m6": {
+			"title": "El de los perritos calientes se fue. 🌭",
+			"sub": "No hay acción en vivo en tus ligas. Nada que seguir por ahora."
+		},
+		"m7": {
+			"title": "Buscando bajo las gradas...",
+			"sub": "Aún no hay partidos en vivo en tus ligas seleccionadas."
+		}
+	},
+	"loading": {
+		"m1": "Repasando la estrategia...",
+		"m2": "Estudiando el video del partido...",
+		"m3": "Cambiando la jugada...",
+		"m4": "Calentando en la banca...",
+		"m5": "Animando al público...",
+		"m6": "Poniendo la música de salida...",
+		"m7": "Puliendo el trofeo...",
+		"m8": "Sincronizando el reloj del partido...",
+		"m9": "Encendiendo la pantalla gigante...",
+		"m10": "Contando los tiempos fuera...",
+		"m11": "Abriendo el reglamento...",
+		"m12": "Ajustando los altavoces del estadio...",
+		"m13": "Llenando las botellas de agua...",
+		"m14": "Ajustando los reflectores...",
+		"m15": "Sobornando a los árbitros...",
+		"m16": "Consultando el almanaque deportivo...",
+		"m17": "Pensando si arriesgarse en el cuarto down...",
+		"m18": "Actualizando el debate del mejor de la historia...",
+		"m19": "Llenando la cabina de prensa...",
+		"m20": "Desplegando las pancartas...",
+		"m21": "Sincronizando la señal de transmisión...",
+		"m22": "Contando al público...",
+		"m23": "Puliendo los anillos de campeonato...",
+		"m24": "Animando a las mascotas...",
+		"m25": "Encendiendo las luces del estadio...",
+		"m26": "Yendo al gimnasio...",
+		"m27": "Llenando las neveras...",
+		"m28": "Repasando las mejores jugadas...",
+		"m29": "Abucheando al comisionado...",
+		"m30": "Buscando los estadios...",
+		"m31": "Comiendo un cheesesteak...",
+		"m32": "Discutiendo con los de la barra deportiva...",
+		"m33": "Reorganizando la tabla de la liga de fantasía...",
+		"m34": "Consultando al oráculo deportivo...",
+		"m35": "Impugnando esa jugada...",
+		"m36": "Buscando una bandera en la jugada...",
+		"m37": "Revisando la repetición instantánea...",
+		"m38": "Reproduciendo el video de motivación...",
+		"m39": "Pensando en un snack a mitad del partido...",
+		"m40": "Planeando la celebración de después...",
+		"m41": "Poniéndose la camiseta de la suerte...",
+		"m42": "Visualizando el baile de la victoria...",
+		"m43": "Puliendo la vitrina de trofeos...",
+		"m44": "Repasando curiosidades deportivas...",
+		"m45": "Organizando el asado antes del partido...",
+		"m46": "Preparando la pintura facial...",
+		"m47": "Coordinando los uniformes del equipo...",
+		"m48": "Sacando las cuentas...",
+		"m49": "Analizando las estadísticas...",
+		"m50": "Lanzando los fuegos artificiales...",
+		"m51": "Preparando el espectáculo de luces...",
+		"m52": "Consultando el clima para el día del partido...",
+		"m53": "Actualizando la alineación de la liga de fantasía...",
+		"m54": "Gritándole a la tele...",
+		"m55": "Gritándole a los árbitros...",
+		"m56": "go birds",
+		"m57": "Repasando la pizarra del entrenador...",
+		"m58": "Comprobando si el de los perritos calientes está listo...",
+		"m59": "Desinflando... digo, inflando los balones...",
+		"m60": "Consultando las cuotas de Las Vegas...",
+		"m61": "Ajustando los guantes de bateo...",
+		"m62": "Estirando el isquiotibial del pateador...",
+		"m63": "Repasando las negociaciones de contrato...",
+		"m64": "Pidiendo la pizza de la victoria...",
+		"m65": "Comprobando la confianza del QB suplente...",
+		"m66": "Reconsiderando ese traspaso...",
+		"m67": "Puliendo las tarjetas de estadísticas de jugadores...",
+		"m68": "Preparando la repetición en cámara lenta...",
+		"m69": "Confirmando que el volado es real...",
+		"m70": "Instruyendo al recogepelotas...",
+		"m71": "Subiendo el volumen del público...",
+		"m72": "Sacando el brillo a la mercancía del campeonato...",
+		"m73": "Hidratando al aguador..."
+	},
+	"setup": {
+		"header": "Ajustes",
+		"tabSwitching": "Cambios",
+		"tabLeagues": "Ligas",
+		"optionsSection": "Opciones",
+		"showUpcoming": "Mostrar próximos partidos",
+		"upcomingDaysLabel": "Días de anticipación",
+		"upcomingDaysValue": "{days} días",
+		"proTips": "Consejos",
+		"switchNotifications": "Notificaciones de cambio",
+		"demoMode": "Modo demostración",
+		"standbySection": "Transmisión en espera",
+		"enableStandby": "Activar transmisión en espera",
+		"standbyBelow": "En espera por debajo de",
+		"morePatient": "Más paciente",
+		"switchesSooner": "Cambia antes",
+		"standbyTab": "Pestaña de espera",
+		"selectTab": "— Selecciona una pestaña —",
+		"bettingSection": "Apuestas y cuotas",
+		"showBetting": "Mostrar apuestas y cuotas",
+		"weatherSection": "Clima",
+		"temperatureUnit": "Unidad de temperatura",
+		"temperatureUnitF": "°F",
+		"temperatureUnitC": "°C",
+		"signalsSection": "Señales del PowerScore",
+		"signalsExplainer": "Las señales desactivadas se excluyen de la puntuación. Las puntuaciones se renormalizan para mantenerse en rango.",
+		"signalLastActive": "Al menos una señal debe permanecer activa",
+		"leaguesExplainer": "Solo se siguen y se consideran para el cambio automático las ligas seleccionadas.",
+		"selectNone": "ninguna",
+		"selectAll": "todas",
+		"noLeaguesWarning": "No hay ligas seleccionadas — ArenaSwap no seguirá ningún partido.",
+		"leagueLogoAlt": "Logo de {label}"
+	},
+	"main": {
+		"tourButton": "Recorrido",
+		"settingsButton": "Ajustes",
+		"onStandbyStream": "En transmisión en espera — esperando acción",
+		"sectionActiveLiveTabs": "Pestañas activas",
+		"sectionOtherLiveGames": "Partidos en vivo",
+		"sectionUpNext": "A continuación",
+		"showMoreUpcoming": "Ver {count} más"
+	},
+	"detail": {
+		"legendCloseness": "Igualdad",
+		"legendLateGame": "Recta final",
+		"legendMomentum": "Impulso",
+		"legendLeadChanges": "Cambios de ventaja",
+		"legendComeback": "Remontada",
+		"startsSoon": "Comienza pronto",
+		"final": "Final",
+		"totalLabel": "{total} / {max}",
+		"totalLabelBaseMax": "{total} (máx. base {max})",
+		"back": "Atrás",
+		"powerScoreLabel": "PowerScore",
+		"chartPowerScoreTitle": "PowerScore a lo largo del tiempo",
+		"chartPowerScoreEmpty": "La tendencia del PowerScore aparece tras unas cuantas actualizaciones.",
+		"chartScoreTitle": "Marcador a lo largo del tiempo",
+		"chartScoreEmpty": "La tendencia del marcador aparece tras unas cuantas actualizaciones.",
+		"chartWinProbTitle": "Probabilidad de victoria",
+		"chartWinProbEmpty": "La probabilidad de victoria se carga cuando el partido está en vivo.",
+		"chartComponentsTitle": "Componentes del PowerScore a lo largo del tiempo",
+		"chartComponentsEmpty": "La tendencia de los componentes aparece tras unas cuantas actualizaciones."
+	},
+	"gameCard": {
+		"removeFromFavorites": "Quitar {team} de favoritos",
+		"addToFavorites": "Añadir {team} a favoritos",
+		"favorited": "En favoritos",
+		"addToFavoritesShort": "Añadir a favoritos",
+		"watchLabel": "Ver en:",
+		"oddsProvidedBy": "Cuotas proporcionadas por:",
+		"openDetails": "Abrir detalles de {away} vs {home}",
+		"live": "EN VIVO",
+		"powerScore": "PowerScore",
+		"vs": "vs"
+	},
+	"gameBoost": {
+		"heading": "Impulso del partido",
+		"explainer": "Añade puntos al PowerScore de este partido para subir su prioridad."
+	},
+	"powerScore": {
+		"heading": "Desglose del PowerScore",
+		"signalCloseness": "Igualdad",
+		"signalLateGame": "Recta final",
+		"signalMomentum": "Impulso",
+		"signalLeadChanges": "Cambios de ventaja",
+		"signalComeback": "Remontada",
+		"volatilityBoost": "Impulso de volatilidad",
+		"volatilityPenalty": "Penalización de volatilidad",
+		"volatility": "Volatilidad",
+		"signalsTotal": "Total de señales",
+		"cappedAt": "(limitado a {max})",
+		"signalsNormalizedNote": "Reescalado para mantener el rango 0–100 con señales desactivadas",
+		"tooltipSignalsNormalized": "Cuando se desactivan señales, las señales restantes se escalan proporcionalmente para que la puntuación mantenga su rango completo de 0–100.",
+		"clockStallPenalty": "Penalización por reloj detenido",
+		"clockFrozenNote": "reloj del partido detenido — {before} → {after} pts antes de bonificaciones",
+		"favoriteBoost": "Impulso de favorito",
+		"favoriteTeamsInMatchup": {
+			"1": "1 equipo favorito en el enfrentamiento",
+			"n": "$1 equipos favoritos en el enfrentamiento"
+		},
+		"gameBoost": "Impulso del partido",
+		"scoringOpportunity": "Oportunidad de anotar",
+		"postseasonBoost": "Impulso de postemporada",
+		"signalOff": "Desactivado",
+		"finalPowerScore": "PowerScore final",
+		"tooltipCloseness": "Se calcula a partir de la diferencia de puntos actual. Un empate otorga el máximo; márgenes mayores puntúan progresivamente menos. El techo escala con el avance del partido, por lo que el mismo margen vale más al final que al principio.",
+		"tooltipLateGame": "Combina qué tan avanzado está el partido con qué tan ajustado está el marcador. Sube de forma lineal a lo largo del último período. Los partidos no reñidos puntúan casi nada aquí. Añade puntos extra cuando el marcador está empatado en los últimos segundos, anticipando la prórroga.",
+		"tooltipMomentum": "Mide la diferencia neta de anotaciones de un equipo en la ventana de historial más reciente. Si un equipo ha superado al otro por encima de un umbral, puntúa aquí. Decae hacia cero con el paso del tiempo sin más anotaciones.",
+		"tooltipLeadChanges": "Cuenta cuántas veces ha cambiado el liderato en la ventana de historial. Sin cambios no puntúa; uno o más cambios puntúan progresivamente más alto. Decae si pasa tiempo sin otro cambio.",
+		"tooltipComeback": "Compara el margen en el punto más antiguo de la ventana con el margen actual. Si el equipo que iba perdiendo ha recortado distancias, puntúa según cuánto terreno ha recuperado. Vale más al final del partido; decae si el marcador se detiene.",
+		"tooltipClockStallPenalty": "Se aplica cuando el reloj del juego apenas ha avanzado en varias lecturas consecutivas. Reduce el subtotal de señales mediante un multiplicador que se intensifica cuanto más tiempo permanezca el reloj congelado.",
+		"tooltipVolatility": "Se basa en qué tan cerca ha permanecido la probabilidad de victoria en vivo del 50% a lo largo del historial reciente. Los partidos donde se mantuvo cerca del 50% — sin que ningún equipo tuviera ventaja clara — reciben un impulso. Los que estuvieron consistentemente alejados del 50% en cualquier dirección son penalizados.",
+		"tooltipFavoriteBoost": "Se añade cuando uno de tus equipos favoritos guardados está en este partido. Tener dos favoritos en el encuentro suma más que uno.",
+		"tooltipGameBoost": "Puntos que has aplicado manualmente a este partido usando el control de impulso del partido.",
+		"tooltipScoringOpportunity": "Se añade según la posición activa de anotación. En fútbol americano es la zona roja; en béisbol y sóftbol escala con el número de corredores en base.",
+		"tooltipPostseasonBoost": "Un bono fijo aplicado a los partidos de postemporada — playoffs, finales de conferencia y campeonatos."
+	},
+	"bso": {
+		"balls": "B",
+		"strikes": "S",
+		"outs": "O"
+	},
+	"onboarding": {
+		"allSetTitle": "¡Todo listo!",
+		"allSetSubtitle": "¿Quieres un recorrido rápido antes de empezar?",
+		"takeTour": "Hacer el recorrido",
+		"jumpIn": "Empezar ya"
+	},
+	"leaguePicker": {
+		"back": "Atrás",
+		"step": "Paso $1 de $2",
+		"title": "¿Qué deportes ves?",
+		"all": "Todas",
+		"next": "Siguiente"
+	},
+	"teamPicker": {
+		"back": "Atrás",
+		"step": "Paso $1 de $2",
+		"title": "Elige tus equipos",
+		"explainer": "Los favoritos reciben una bonificación para que ArenaSwap priorice esos partidos.",
+		"searchPlaceholder": "Buscar equipos…",
+		"loading": "Cargando equipos…",
+		"loadError": "No se pudieron cargar los equipos.",
+		"retry": "Reintentar",
+		"skipForNow": "Omitir por ahora",
+		"removeFavorite": "Quitar {team} de favoritos",
+		"addFavorite": "Añadir {team} a favoritos",
+		"noMatch": "Ningún equipo coincide con \"{query}\"",
+		"skip": "Omitir",
+		"done": "Listo"
+	},
+	"tabControl": {
+		"step": "Paso $1 de $2",
+		"title": "Bienvenido a ArenaSwap",
+		"subtitle": "Antes de configurarlo todo, esto es lo que puedes esperar.",
+		"feature1Title": "Cambio automático de pestañas",
+		"feature1Body": "ArenaSwap toma el control de la ventana del navegador cuando está activo. Cuando un partido se pone emocionante, ArenaSwap activa esa pestaña aunque estés viendo otra cosa.",
+		"feature2Title": "Tú asignas pestañas a los partidos",
+		"feature2Body": "Abre cada transmisión en su propia pestaña y luego asígnala a un partido desde la extensión. ArenaSwap solo toca las pestañas que has registrado.",
+		"feature3Title": "Tú tienes el control",
+		"feature3Body": "Pausa el cambio automático cuando quieras. Ajusta la sensibilidad y el tiempo de espera desde Ajustes.",
+		"gotIt": "Entendido"
+	},
+	"walkthrough": {
+		"allSet": "¡Todo listo!",
+		"allSetSubtitle": "¿Listo para ver siempre el mejor partido?",
+		"letsGo": "¡Vamos!"
+	},
+	"stepToggle": {
+		"step": "Paso $1 de $2",
+		"title": "Encenderlo y apagarlo",
+		"subtitle": "Un solo interruptor lo controla todo.",
+		"tryIt": "↑ pruébalo",
+		"statusActive": "● ArenaSwap está activo",
+		"statusPaused": "○ Cambio automático en pausa",
+		"bodyBeforeOn": "Cuando está ",
+		"bodyOn": "activado",
+		"bodyAfterOn": ", ArenaSwap cambia automáticamente tus pestañas al partido en vivo más emocionante. Apágalo cuando quieras para retomar el control.",
+		"next": "Siguiente"
+	},
+	"stepPowerScore": {
+		"step": "Paso $1 de $2",
+		"title": "Conoce el PowerScore",
+		"subtitle": "El corazón de ArenaSwap",
+		"introTitle": "Conoce el PowerScore",
+		"introBody": "PowerScore evalúa dinámicamente cada partido en vivo para encontrar la acción más emocionante. ¡Veamos qué incluye la fórmula!",
+		"introButton": "Explorar fórmula",
+		"closenessMeasured": "Se mide por la diferencia de puntos, ponderada por el progreso del partido.",
+		"lateGameMeasured": "Se mide por el período, el tiempo restante y el margen del marcador.",
+		"momentumMeasured": "Se mide por los picos de puntuación netos recientes, decayendo con el tiempo.",
+		"leadChangesMeasured": "Se mide por el número de cambios de ventaja en la ventana de historial.",
+		"comebackMeasured": "Se mide por la reducción del margen en la ventana de historial.",
+		"boostsHeading": "Impulsos y penalizaciones",
+		"boostsSubtitle": "Ajustes que refinan la puntuación",
+		"clockStallPenaltyName": "Penalización por reloj detenido",
+		"clockStallPenaltyMeasured": "Se aplica cuando el reloj se congela durante varias actualizaciones, reduciendo el subtotal de las señales.",
+		"volatilityName": "Impulso / penalización de volatilidad",
+		"volatilityMeasured": "Impulsa partidos con probabilidad de victoria cercana al 50%, penaliza ventajas constantes.",
+		"favoriteBoostName": "Impulso de favorito",
+		"favoriteBoostMeasured": "Se añade cuando uno de tus equipos favoritos guardados participa en el enfrentamiento.",
+		"gameBoostName": "Impulso del partido",
+		"gameBoostMeasured": "Puntos que aplicas manualmente para priorizar temporalmente un partido específico.",
+		"scoringOpportunityMeasured": "Se añade automáticamente en zonas rojas (fútbol americano) o con corredores en base (béisbol/sóftbol).",
+		"postseasonBoostName": "Impulso de postemporada",
+		"postseasonBoostMeasured": "Un bono fijo aplicado a partidos de playoffs, finales de conferencia y campeonatos.",
+		"back": "Atrás",
+		"next": "Siguiente"
+	},
+	"stepTabAssign": {
+		"step": "Paso $1 de $2",
+		"title": "Asigna pestañas a los partidos",
+		"subtitle": "ArenaSwap solo toca las pestañas que registras.",
+		"assignPlaceholder": "— Asigna una pestaña —",
+		"linkHint": "↑ vincula una pestaña del navegador aquí",
+		"body": "Abre cada transmisión en su propia pestaña del navegador y luego usa el menú desplegable en la tarjeta del partido para vincularlas. ArenaSwap solo cambiará a las pestañas que hayas asignado.",
+		"back": "Atrás",
+		"next": "Siguiente"
+	},
+	"stepAutoSwitch": {
+		"step": "Paso $1 de $2",
+		"title": "Míralo en acción",
+		"watchingCaption": "viendo el partido de los Eagles...",
+		"reveal": "¿Viste eso? 👀",
+		"revealBody": "El partido de los 76ers se puso al rojo vivo (PowerScore 89). ArenaSwap lo detectó y cambió solo — sin necesidad de hacer nada.",
+		"back": "Atrás",
+		"next": "Siguiente"
+	},
+	"stepSettings": {
+		"step": "Paso $1 de $2",
+		"title": "Ajústalo a tu manera",
+		"subtitle": "Abre Ajustes cuando quieras para modificarlo.",
+		"sensitivity1": "Apenas activo",
+		"sensitivity2": "Pasivo",
+		"sensitivity3": "Conservador",
+		"sensitivity4": "Equilibrado",
+		"sensitivity5": "Ansioso",
+		"sensitivity6": "Gatillo fácil",
+		"sensitivity7": "Velocidad ridícula",
+		"sensitivityLabel": "Sensibilidad de cambio",
+		"sensitivityHelp": "Controla qué tan grande debe ser la diferencia de PowerScore antes de que ArenaSwap cambie de pestaña.",
+		"cooldownLabel": "Tiempo de espera entre cambios",
+		"cooldownHelp": "Establece el tiempo mínimo entre cambios automáticos para reducir el cambio rápido de pestañas.",
+		"moreLeagues": "+ más en la pestaña Ligas",
+		"back": "Atrás",
+		"next": "Siguiente"
+	},
+	"stepGameDetail": {
+		"step": "Paso $1 de $2",
+		"title": "Profundiza en cualquier partido",
+		"subtitle": "Toca una tarjeta para ver qué impulsa su puntuación.",
+		"tapHint": "toca para abrir",
+		"detailPreviewTitle": "Desglose del PowerScore",
+		"signalCloseness": "Igualdad",
+		"signalLateGame": "Recta final",
+		"signalMomentum": "Impulso",
+		"signalLeadChanges": "Cambios de ventaja",
+		"signalComeback": "Remontada",
+		"detailPreviewCaption": "También hay gráficas del marcador e historial completo de señales.",
+		"body": "Toca cualquier tarjeta de partido en vivo para abrir la vista de detalle — un desglose completo de cada señal que contribuye a su PowerScore, más una gráfica de cómo ha evolucionado a lo largo del tiempo.",
+		"bodyAfterTap": "También encontrarás un deslizador de Impulso del partido para priorizar temporalmente cualquier partido que quieras.",
+		"back": "Atrás",
+		"next": "Siguiente"
+	},
+	"stepLeaguesFavorites": {
+		"step": "Paso $1 de $2",
+		"title": "Ligas y favoritos",
+		"subtitle": "Dos formas distintas de personalizar lo que ArenaSwap monitorea.",
+		"tabLeagues": "Ligas",
+		"tabFavorites": "Favoritos",
+		"leaguesExplain": "Activar una liga indica a ArenaSwap que busque partidos en vivo en esa competición. Solo las ligas activas se consideran para el cambio automático.",
+		"leaguesBody": "Activa todas las ligas que quieras seguir en Ajustes → Ligas. Cuantas más actives, más amplia será la red que ArenaSwap lanza en busca de acción emocionante.",
+		"favoritesExplain": "Marcar un equipo con estrella le da a sus partidos un bonus de PowerScore cuando ese equipo está jugando, haciéndolos más propensos a ganar el cambio automático.",
+		"favoritesBody": "Marca tus equipos favoritos en cualquier tarjeta de partido o en Ajustes. No es un filtro — todos los partidos siguen apareciendo; tus equipos solo reciben un pequeño impulso.",
+		"favoritesBonusHint": "¡Equipos favoritos activos — sus partidos reciben un impulso de PowerScore!",
+		"back": "Atrás",
+		"next": "Siguiente"
+	},
+	"stepReAccess": {
+		"step": "Paso $1 de $2",
+		"title": "Volver aquí",
+		"subtitle": "El recorrido siempre está a un toque de distancia.",
+		"callout": "ese es",
+		"body": "Toca el botón ? en la barra superior cuando quieras para repetir este recorrido. Funciona incluso después de la configuración inicial — muy útil para repasar o mostrarle a alguien cómo funciona.",
+		"back": "Atrás",
+		"next": "Listo"
+	},
+	"standbyGuide": {
+		"step": "Paso $1 de $2",
+		"title": "Transmisión en espera",
+		"subtitle": "Una alternativa para los momentos lentos.",
+		"quietTitle": "Cuando los partidos se calman",
+		"quietBody": "Cuando todos los partidos que ves caen por debajo de tu umbral, ArenaSwap se queda en tu transmisión en espera automáticamente.",
+		"returnTitle": "Vuelve por sí solo",
+		"returnBody": "En cuanto cualquier partido vuelve a superar tu umbral, ArenaSwap te lleva de regreso.",
+		"chooseTitle": "Tú eliges la pestaña de espera",
+		"chooseBody": "Abre en una pestaña la transmisión que quieras y luego elígela en el menú desplegable de Ajustes.",
+		"next": "Siguiente",
+		"setupTitle": "Cómo configurarlo",
+		"setupSubtitle": "Dos cosas que configurar a continuación.",
+		"thresholdTitle": "Fija tu umbral",
+		"thresholdBody": "Elige qué tan bajo deben caer las puntuaciones antes de que se active la espera. Más bajo es más paciente; más alto se activa antes.",
+		"designateTitle": "Designa una pestaña de espera",
+		"designateBody": "Abre tu transmisión en espera en una pestaña, vuelve aquí y elígela en el menú desplegable.",
+		"gotIt": "Entendido"
+	},
+	"empty": {
+		"leaguesTitle": "Elige ligas para empezar",
+		"leaguesCopy": "ArenaSwap necesita al menos una liga seleccionada para poder encontrar partidos entre los que cambiar.",
+		"selectLeagues": "Seleccionar ligas en Ajustes",
+		"refresh": "Actualizar",
+		"settings": "Ajustes →"
+	},
+	"gameListHeader": {
+		"loading": "Cargando...",
+		"loadFailed": "No se pudieron cargar los partidos.",
+		"retry": "Reintentar"
+	},
+	"toast": {
+		"success": "Correcto",
+		"error": "Error",
+		"info": "Información",
+		"close": "Cerrar"
+	},
+	"tabAssign": {
+		"placeholder": "— Asigna una pestaña —",
+		"inUse": " (en uso)"
+	},
+	"favoriteTeamBonus": {
+		"label": "Bonificación de equipo favorito",
+		"perTeam": "+$1 por equipo",
+		"explainer": "Se aplica una vez por cada equipo favorito en un partido. Si ambos equipos son favoritos, la bonificación se duplica."
+	},
+	"postseasonBoost": {
+		"label": "Impulso de postemporada",
+		"points": "+$1 pts",
+		"explainer": "Se añade a cada partido clasificado como postemporada (playoffs, torneos, eliminatorias)."
+	},
+	"proTip": {
+		"label": "Consejo:",
+		"general": {
+			"t0": "Usa el interruptor de la esquina superior derecha para pausar ArenaSwap sin perder tus ajustes.",
+			"t1": "ArenaSwap funciona mejor con dos o más pestañas de partidos abiertas a la vez.",
+			"t2": "Haz clic en cualquier tarjeta de partido para ver el desglose de su PowerScore.",
+			"t3": "¿Mezclas deportes? Activa más ligas en Ajustes para cambiar entre todas a la vez.",
+			"t4": "Las jirafas y los erizos son geniales. Ver todos los partidos a la vez también.",
+			"t5": "¡ArenaSwap mejora cuanto más tiempo lo dejas correr!"
+		},
+		"main": {
+			"t0": "Marca tus equipos favoritos para fijar sus partidos al principio de la lista.",
+			"t1": "Asigna una pestaña desde el menú desplegable junto a cada partido para que ArenaSwap sepa a dónde cambiar.",
+			"t2": "Un PowerScore más alto gana el cambio — fíjate en las insignias de colores.",
+			"t3": "Activa \"Mostrar próximos partidos\" en Ajustes para asignar pestañas antes de que empiece el partido.",
+			"t4": "¿Todavía no hay partidos en vivo? El Modo demostración en Ajustes te deja ver cómo funciona ArenaSwap con partidos simulados."
+		},
+		"setup": {
+			"t0": "Baja el tiempo de espera para cambiar de forma más agresiva en los finales caóticos.",
+			"t1": "Sube la bonificación de equipo favorito para asegurarte de que tu equipo casi siempre gane el cambio.",
+			"t2": "Aumenta el retardo de cambio para darte un instante antes de que la pestaña cambie de verdad.",
+			"t3": "El Modo demostración ejecuta partidos simulados, perfecto para ajustar los controles sin esperar acción en vivo.",
+			"t4": "La sensibilidad controla qué tan grande debe ser la ventaja de PowerScore antes de que ArenaSwap cambie."
+		},
+		"detail": {
+			"t0": "El PowerScore combina igualdad, presión de la recta final, impulso, cambios de ventaja y remontadas — luego aplica un impulso o penalización de volatilidad según cuánto oscile la probabilidad de victoria.",
+			"t1": "Se aplica una penalización cuando el reloj del partido apenas avanza entre actualizaciones.",
+			"t2": "Los partidos 0-0 reciben una pequeña penalización de PowerScore en los deportes donde el 0-0 no es emocionante.",
+			"t3": "Pasa el cursor sobre las gráficas para inspeccionar momentos concretos del partido.",
+			"t4": "Un equipo favorito en el enfrentamiento suma puntos extra al PowerScore.",
+			"t5": "El PowerScore crece a medida que avanza el partido — un duelo reñido temprano se dispara hacia el pitido final.",
+			"t6": "¿Empate en el último minuto? El PowerScore anticipa una probable prórroga para que nunca te pierdas el pitido final."
+		}
+	},
+	"reviewPrompt": {
+		"title": "¿Disfrutas ArenaSwap?",
+		"copy": "Una breve reseña ayuda a más aficionados a encontrar el mejor partido ❤️",
+		"leaveReview": "Dejar reseña",
+		"dismiss": "Descartar solicitud de reseña"
+	},
+	"cooldown": {
+		"label": "Tiempo de espera entre cambios",
+		"explainer": "Establece el tiempo mínimo entre cambios automáticos para reducir el cambio rápido de pestañas."
+	},
+	"switchDelay": {
+		"label": "Retardo de cambio",
+		"explainer": "Espera este tiempo antes de ejecutar un cambio, lo que ayuda cuando las transmisiones van por detrás de los datos en vivo.",
+		"off": "Desactivado"
+	},
+	"sensitivity": {
+		"label": "Sensibilidad de cambio",
+		"valueLabel": "{label} (diferencia ≥ {gap})",
+		"explainer": "Controla qué tan grande debe ser la diferencia de PowerScore antes de que ArenaSwap cambie de pestaña.",
+		"level": {
+			"l1": "Apenas activo",
+			"l2": "Pasivo",
+			"l3": "Conservador",
+			"l4": "Equilibrado",
+			"l5": "Ansioso",
+			"l6": "Gatillo fácil",
+			"l7": "Velocidad ridícula"
+		}
+	},
+	"footer": {
+		"builtWith": "Hecho con",
+		"credit": "en Filadelfia y Boston por Ryan Mullin",
+		"toggleDebug": "Mostrar información de depuración"
+	},
+	"ludicrousSpeed": {
+		"skip": "haz clic para omitir",
+		"announce": "VELOCIDAD RIDÍCULA...",
+		"go": "¡VAMOS!",
+		"plaid": "¡HAN IDO AL CUADROS!",
+		"stop": "¡ALTO!",
+		"emergencyBrake": "⚠ FRENO DE EMERGENCIA — NUNCA USAR",
+		"intro": {
+			"l1": "Prepare la nave para velocidad de luz.",
+			"l2": "No, no, la velocidad de luz es demasiado lenta.",
+			"l3": "¿Velocidad de luz demasiado lenta?",
+			"l4": "Sí. Vamos a tener que ir directamente a",
+			"l5": "velocidad ridícula.",
+			"l6": "¿Velocidad ridícula?",
+			"l7": "Nunca hemos ido tan rápido.",
+			"l8": "Quizás la nave no pueda aguantarlo."
+		},
+		"prelaunch": {
+			"l1": "¿Qué pasa, coronel Sandurz?",
+			"l2": "¿Gallina?",
+			"l3": "Prepare la nave para velocidad ridícula.",
+			"l4": "Abróchense todos los cinturones.",
+			"l5": "Sellen todas las entradas y salidas.",
+			"l6": "Cierren todas las tiendas del centro comercial.",
+			"l7": "Cancelen el circo de tres pistas.",
+			"l8": "Aseguren todos los animales en el zoológico...",
+			"l9": "¡Cállese, miserable excusa de oficial!",
+			"l10": "¡Atención! ¡Velocidad ridícula!",
+			"l11": "Señor, ¿no debería abrocharse el cinturón?",
+			"l12": "¡Al diablo el cinturón!"
+		},
+		"gforce": {
+			"l1": "¿Qué he hecho?",
+			"l2": "Mi cerebro... se me va a los pies."
+		},
+		"signs": {
+			"light": "VELOCIDAD DE LUZ",
+			"ridiculous": "VELOCIDAD RIDÍCULA",
+			"ludicrous": "LUDICROUS SPEED"
+		},
+		"panic": {
+			"l1": "¡Los pasamos! ¡Para esto!",
+			"l2": "No podemos parar. Es muy peligroso.",
+			"l3": "Primero tenemos que reducir la velocidad.",
+			"l4": "¡Para esto ahora! ¡Te lo ordeno!"
+		}
+	}
+}

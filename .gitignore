@@ -4,6 +4,7 @@ node_modules/
 # Build output
 .output/
 dist/
+scripts/**/*.cjs
 
 # WXT generated files
 .wxt/
@@ -25,6 +26,10 @@ dist/
 
 *.log
 .turbo/
+
+# Cypress
+apps/extension/cypress/screenshots/
+apps/extension/cypress/videos/
 apps/docs/.astro/settings.json
 apps/docs/.astro/types.d.ts
 docs/settings.json

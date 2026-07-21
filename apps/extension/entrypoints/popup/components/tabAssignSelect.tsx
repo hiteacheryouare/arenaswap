@@ -1,3 +1,4 @@
+import { i18n } from '#i18n';
 import type { Browser } from 'wxt/browser';
 import type { TabRegistration } from '@arenaswap/core/types';
 
@@ -33,12 +34,12 @@ const tabAssignSelect = ({ gameId, openTabs, registry, onChange, formatTabLabel 
 				value={currentTabId ?? ''}
 				onChange={e => onSelect(e.target.value)}
 			>
-				<option value=''>— Assign a tab —</option>
+				<option value=''>{i18n.t('tabAssign.placeholder')}</option>
 				{openTabs.map(tab => {
 					const inUse = tab.id !== undefined && assignedTabIds.has(tab.id);
 					return (
 						<option key={tab.id} value={tab.id} disabled={inUse}>
-							{formatTabLabel(tab)}{inUse ? ' (in use)' : ''}
+							{formatTabLabel(tab)}{inUse ? i18n.t('tabAssign.inUse') : ''}
 						</option>
 					);
 				})}

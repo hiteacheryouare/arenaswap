@@ -33,6 +33,9 @@ describe('types runtime smoke', () => {
 			notificationsEnabled: true,
 			standbyStreamEnabled: false,
 			standbyStreamThreshold: 20,
+			bettingEnabled: false,
+			temperatureUnit: 'F',
+			postseasonBoostPoints: 5,
 		};
 		const message: ExtensionMessage = { type: 'UPDATE_PREFS', prefs };
 

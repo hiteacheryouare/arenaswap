@@ -1,5 +1,34 @@
 ---
+import { Image } from 'astro:assets';
 import './_screenshot.scss';
+import ScreenshotCard from '../../components/ScreenshotCard';
+import logoImg from '../../assets/full_logo_white_on_transparent.svg';
+
+const wvuPittGame = {
+	id: 'sc-ncaa-baseball',
+	league: 'cbase',
+	sportType: 'baseball',
+	awayTeam: { id: '277', name: 'West Virginia', abbreviation: 'WVU', score: 5, logo: 'https://a.espncdn.com/i/teamlogos/ncaa/500/277.png', color: '#FFC600', alternateColor: '#003594' },
+	homeTeam: { id: '221', name: 'Pittsburgh', abbreviation: 'PITT', score: 4, logo: 'https://a.espncdn.com/i/teamlogos/ncaa/500/221.png', color: '#003594', alternateColor: '#FFB81C' },
+	period: 7, clockSeconds: 0, status: 'in',
+	topOfInning: false,
+	venueName: 'Kendrick Family Ballpark · Morgantown, WV',
+	broadcasts: ['ESPN+', 'ACCN'],
+};
+const wvuPittScore = { gameId: 'sc-ncaa-baseball', total: 92, closeness: 26, lateGame: 22, momentum: 24, leadChanges: 12, comeback: 8, reason: '' };
+
+const bosNyyGame = {
+	id: 'sc-mlb',
+	league: 'mlb',
+	sportType: 'baseball',
+	awayTeam: { id: 'bos', name: 'Boston Red Sox', abbreviation: 'BOS', score: 3, logo: 'https://a.espncdn.com/i/teamlogos/mlb/500/bos.png', color: '#BD3039', alternateColor: '#0C2340' },
+	homeTeam: { id: 'nyy', name: 'New York Yankees', abbreviation: 'NYY', score: 2, logo: 'https://a.espncdn.com/i/teamlogos/mlb/500/nyy.png', color: '#003087', alternateColor: '#E4002C' },
+	period: 5, clockSeconds: 0, status: 'in',
+	topOfInning: true,
+	venueName: 'Fenway Park · Boston, MA',
+	broadcasts: ['FOX'],
+};
+const bosNyyScore = { gameId: 'sc-mlb', total: 71, closeness: 20, lateGame: 15, momentum: 18, leadChanges: 10, comeback: 8, reason: '' };
 ---
 <!doctype html>
 <html lang='en'>
@@ -41,7 +70,7 @@ import './_screenshot.scss';
 					<div class='popup'>
 						<div class='popup-inner'>
 							<div class='popup-header'>
-								<img src='/arenaswap/images/full_logo_white_on_transparent.png' alt='ArenaSwap' class='popup-logo' />
+								<Image src={logoImg} alt='ArenaSwap' class='popup-logo' />
 								<div class='popup-header-right'>
 									<i class='bi bi-gear-fill' style='color:#8b949e;font-size:0.9rem;'></i>
 									<div class='popup-switch'>
@@ -53,88 +82,10 @@ import './_screenshot.scss';
 							<div class='popup-section-title'>Active Tabs</div>
 
 							<div class='popup-league-label'>NCAA BASEBALL</div>
-							<div class='popup-card' style='border-left:5px solid #FFC600;border-right:5px solid #003594;background:linear-gradient(to right,#FFC60028,#00359428),#ffffff;'>
-								<div class='popup-card-top'>
-									<div class='popup-live'>
-										<span class='popup-live-dot'></span>
-										LIVE
-									</div>
-									<div class='popup-ps' style='background:#F75C03;'>
-										PowerScore: 92 / 100
-									</div>
-								</div>
-								<div class='popup-matchup'>
-									<div class='popup-team-col'>
-										<div style='width:40px;height:40px;border-radius:50%;background:#FFC600;display:flex;align-items:center;justify-content:center;color:#003594;font-weight:800;font-size:0.7rem;'>WVU</div>
-										<i class='bi bi-star' style='font-size:0.7rem;color:#6c757d;'></i>
-										<span class='popup-team-abbr'>WVU</span>
-									</div>
-									<div class='popup-center-col'>
-										<div class='popup-scores'>
-											<span class='popup-score'>5</span>
-											<span class='popup-score'>4</span>
-										</div>
-										<span class='popup-clock'>B 7</span>
-										<span class='popup-period'>2 OUT</span>
-									</div>
-									<div class='popup-team-col'>
-										<div style='width:40px;height:40px;border-radius:50%;background:#003594;display:flex;align-items:center;justify-content:center;color:#FFB81C;font-weight:800;font-size:0.7rem;'>PITT</div>
-										<i class='bi bi-star-fill' style='font-size:0.7rem;color:#f1c40f;'></i>
-										<span class='popup-team-abbr'>PITT</span>
-									</div>
-								</div>
-								<div class='popup-meta'>
-									<span class='popup-meta-venue'>Kendrick Family Ballpark · Morgantown, WV</span>
-									<span class='popup-meta-network'>ESPN+, ACCN</span>
-								</div>
-								<div class='popup-tab-row'>
-									<select class='popup-select'>
-										<option>Tab 2: ESPN+</option>
-									</select>
-								</div>
-							</div>
+							<ScreenshotCard game={wvuPittGame} excitementResult={wvuPittScore} tabLabel='Tab 2: ESPN+' />
 
 							<div class='popup-league-label'>MLB</div>
-							<div class='popup-card' style='border-left:5px solid #BD3039;border-right:5px solid #003087;background:linear-gradient(to right,#BD303928,#00308728),#ffffff;'>
-								<div class='popup-card-top'>
-									<div class='popup-live'>
-										<span class='popup-live-dot'></span>
-										LIVE
-									</div>
-									<div class='popup-ps' style='background:#d06800;'>
-										PowerScore: 71 / 100
-									</div>
-								</div>
-								<div class='popup-matchup'>
-									<div class='popup-team-col'>
-										<div style='width:40px;height:40px;border-radius:50%;background:#BD3039;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:0.7rem;'>BOS</div>
-										<i class='bi bi-star' style='font-size:0.7rem;color:#6c757d;'></i>
-										<span class='popup-team-abbr'>BOS</span>
-									</div>
-									<div class='popup-center-col'>
-										<div class='popup-scores'>
-											<span class='popup-score'>3</span>
-											<span class='popup-score'>2</span>
-										</div>
-										<span class='popup-clock'>T 5</span>
-										<span class='popup-period'>1 OUT</span>
-									</div>
-									<div class='popup-team-col'>
-										<div style='width:40px;height:40px;border-radius:50%;background:#003087;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:0.7rem;'>NYY</div>
-										<i class='bi bi-star-fill' style='font-size:0.7rem;color:#f1c40f;'></i>
-										<span class='popup-team-abbr'>NYY</span>
-									</div>
-								</div>
-								<div class='popup-meta'>
-									<span class='popup-meta-venue'>Fenway Park · Boston, MA</span>
-									<span class='popup-meta-network'>FOX</span>
-								</div>
-								<div class='popup-tab-row'>
-									<select class='popup-select'>
-										<option>Tab 1: FOX</option>
-									</select>
-								</div>
-							</div>
+							<ScreenshotCard game={bosNyyGame} excitementResult={bosNyyScore} tabLabel='Tab 1: FOX' />
 						</div>
 					</div>
 				</div>

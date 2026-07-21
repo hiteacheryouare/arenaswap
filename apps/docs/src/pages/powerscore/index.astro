@@ -3,6 +3,7 @@ import Nav from '../../components/Nav.astro';
 import Footer from '../../components/Footer.astro';
 import PowerScoreInstallCommands from '../../components/PowerScoreInstallCommands.tsx';
 import LivePowerScores from '../../components/LivePowerScores.tsx';
+import '../../styles/tailwind.css';
 import '../../styles/global.scss';
 
 const supportedLeagues = ['NFL', 'MLB', 'NHL', 'NBA', 'NCAAF', 'NCAAB', 'NCAAW', 'MLS', 'EPL', 'FIFAWC', 'NCAAMH', 'WNBA'];
@@ -12,7 +13,7 @@ const supportedLeagues = ['NFL', 'MLB', 'NHL', 'NBA', 'NCAAF', 'NCAAB', 'NCAAW',
 <head>
 	<meta charset='UTF-8' />
 	<meta name='viewport' content='width=device-width, initial-scale=1.0' />
-	<meta name='description' content='PowerScore is ArenaSwap's live sports excitement scoring package. Learn how it works, install it from npm, and see live PowerScores in action.' />
+	<meta name='description' content='PowerScore is ArenaSwaps live sports excitement scoring package. Learn how it works, install it from npm, and see live PowerScores in action.' />
 	<meta property='og:title' content='PowerScore package — ArenaSwap' />
 	<meta property='og:description' content='A 0–100 live excitement scoring algorithm for sports games, with install commands and live examples.' />
 	<meta property='og:type' content='website' />
@@ -88,37 +89,38 @@ const supportedLeagues = ['NFL', 'MLB', 'NHL', 'NBA', 'NCAAF', 'NCAAB', 'NCAAW',
 					<div class='col-12 reveal'>
 						<h2 class='section-title mb-3'>What goes into the number</h2>
 						<p class='section-sub mb-4'>
-							Every signal contributes a weighted chunk of the final 100-point score.
-							Higher score means higher drama right now.
+							Five signals stack into a 0–100 score. Their ceilings deliberately sum past 100
+							and the total is capped, so a genuinely exciting game climbs high while a blowout
+							stays low. Higher score means higher drama right now.
 						</p>
 					</div>
 					<div class='col-md-6 col-xl-4 reveal'>
 						<div class='feature-card ps-signal-card-green'>
 							<h3>Closeness · 30 max</h3>
-							<p>How tight is the game right now? Tied games score highest.</p>
+							<p>How tight is the game? Tied games score highest, and closeness counts for more as the game goes on.</p>
 						</div>
 					</div>
 					<div class='col-md-6 col-xl-4 reveal reveal-delay-1'>
 						<div class='feature-card ps-signal-card-orange'>
-							<h3>Late-Game Pressure · 30 max</h3>
-							<p>Final minutes and overtime ramp the score aggressively.</p>
+							<h3>Late-Game Pressure · 28 max</h3>
+							<p>Tension builds across the whole final period when the game is close, with a boost for tied games heading to overtime.</p>
 						</div>
 					</div>
 					<div class='col-md-6 col-xl-4 reveal reveal-delay-2'>
 						<div class='feature-card ps-signal-card-blue'>
-							<h3>Momentum · 20 max</h3>
-							<p>Unanswered runs and surges increase urgency.</p>
+							<h3>Momentum · 28 max</h3>
+							<p>Unanswered runs spike the score, then fade over the next few minutes.</p>
 						</div>
 					</div>
 					<div class='col-md-6 col-xl-4 reveal reveal-delay-3'>
 						<div class='feature-card ps-signal-card-yellow'>
-							<h3>Lead Changes · 12 max</h3>
+							<h3>Lead Changes · 18 max</h3>
 							<p>Back-and-forth games beat one-sided games.</p>
 						</div>
 					</div>
 					<div class='col-md-6 col-xl-4 reveal reveal-delay-4'>
 						<div class='feature-card ps-signal-card-pink'>
-							<h3>Comeback Factor · 8 max</h3>
+							<h3>Comeback Factor · 14 max</h3>
 							<p>If a trailing team is clawing back, the score rises.</p>
 						</div>
 					</div>

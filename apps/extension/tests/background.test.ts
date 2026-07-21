@@ -1,5 +1,6 @@
 import { createDefaultUserPreferences, normalizeUserPreferences, pollIntervalMs } from '@arenaswap/core/constants';
 import type { Game, LeagueId, TabRegistration, UserPreferences } from '@arenaswap/core/types';
+import { prefsStorageUpdatedAtKey } from '../utils/prefsStorage';
 
 jest.mock('@porkyproductions/hat', () => ({
 	// Return the maximum of the range so timer delays are deterministic:
@@ -110,6 +111,72 @@ afterEach(() => {
 	jest.useRealTimers();
 });
 
+// ─── Postseason boost ─────────────────────────────────────────────────────────
+
+describe('postseason boost', () => {
+	const postseasonGame: Game = {
+		id: 'ps-game',
+		league: 'nba' as LeagueId,
+		sportType: 'basketball',
+		status: 'in',
+		homeTeam: { id: 'h', name: 'Home', abbreviation: 'HOM', score: 50 },
+		awayTeam: { id: 'a', name: 'Away', abbreviation: 'AWY', score: 48 },
+		period: 4,
+		clockSeconds: 120,
+		isPostseason: true,
+	};
+
+	const regularGame: Game = {
+		...postseasonGame,
+		id: 'reg-game',
+		isPostseason: false,
+	};
+
+	test('adds postseasonBoostPoints to score total for a postseason game', async () => {
+		const postseasonBoostPoints = 8;
+		await loadBackground({
+			prefs: { enabledLeagues: ['nba' as LeagueId], postseasonBoostPoints },
+			fetchReturnValue: { games: [postseasonGame], leagueLogos: {} },
+		});
+
+		jest.advanceTimersByTime(pollIntervalMs + 2000);
+		await drain(12);
+
+		const state = await sendMessage({ type: 'GET_STATE' }) as { scores: { gameId: string; total: number; postseasonBoost: number }[] };
+		const score = state.scores.find(s => s.gameId === 'ps-game');
+		expect(score).toBeDefined();
+		expect(score?.postseasonBoost).toBe(postseasonBoostPoints);
+	});
+
+	test('does not apply postseason boost to a regular season game', async () => {
+		await loadBackground({
+			prefs: { enabledLeagues: ['nba' as LeagueId], postseasonBoostPoints: 10 },
+			fetchReturnValue: { games: [regularGame], leagueLogos: {} },
+		});
+
+		jest.advanceTimersByTime(pollIntervalMs + 2000);
+		await drain(12);
+
+		const state = await sendMessage({ type: 'GET_STATE' }) as { scores: { gameId: string; postseasonBoost: number }[] };
+		const score = state.scores.find(s => s.gameId === 'reg-game');
+		expect(score?.postseasonBoost).toBe(0);
+	});
+
+	test('postseason boost of 0 adds nothing to the total', async () => {
+		await loadBackground({
+			prefs: { enabledLeagues: ['nba' as LeagueId], postseasonBoostPoints: 0 },
+			fetchReturnValue: { games: [postseasonGame], leagueLogos: {} },
+		});
+
+		jest.advanceTimersByTime(pollIntervalMs + 2000);
+		await drain(12);
+
+		const state = await sendMessage({ type: 'GET_STATE' }) as { scores: { gameId: string; postseasonBoost: number }[] };
+		const score = state.scores.find(s => s.gameId === 'ps-game');
+		expect(score?.postseasonBoost).toBe(0);
+	});
+});
+
 // ─── Bug #3 ───────────────────────────────────────────────────────────────────
 // tickLeague rescheduled itself unconditionally. If stopLeaguePolling() ran
 // while a fetch was in flight, the disabled league's timer was re-added after
@@ -167,11 +234,12 @@ describe('GET_STATE with forceRefresh', () => {
 		storageSyncGet.mockClear();
 		storageSyncGet.mockResolvedValue({
 			prefs: normalizeUserPreferences({ ...createDefaultUserPreferences(), cooldownSeconds: 999 }),
+			[prefsStorageUpdatedAtKey]: 1,
 		});
 
 		await sendMessage({ type: 'GET_STATE', forceRefresh: true });
 
-		expect(storageSyncGet).toHaveBeenCalledWith({ prefs: null });
+		expect(storageSyncGet).toHaveBeenCalledWith({ prefs: null, [prefsStorageUpdatedAtKey]: 0 });
 	});
 
 });
@@ -194,7 +262,7 @@ describe('lastSwitchTime reset on disable', () => {
 		clockSeconds: 60,
 	};
 
-	// Sensitivity 7 → threshold = 1: any non-trivial PowerScore triggers a switch
+	// Sensitivity 7 → threshold = 1 with >=: gap >= 1 required, notWatchingAGame bypasses for score-0 edge case
 	const switchPrefs: Partial<UserPreferences> = {
 		enabled: true,
 		enabledLeagues: ['nba' as LeagueId],

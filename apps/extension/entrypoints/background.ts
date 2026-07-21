@@ -1,12 +1,14 @@
 import { randomInRange } from '@porkyproductions/hat';
-import { fetchGamesWithLeagueLogos, computePowerScore, normalizePowerScoreResult, MockGameSimulator, createPollModeTracker, isObjectRecord, isFiniteNumber, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts } from '@arenaswap/core';
+import { fetchGamesWithLeagueLogos, computePowerScore, computeScoringOpportunityBoost, normalizePowerScoreResult, MockGameSimulator, createPollModeTracker, isObjectRecord, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts, computeLeagueIntervalMs } from '@arenaswap/core';
 import { computeStandbyStreamDecision } from '../utils/standbyStreamLogic';
+import { loadStoredUserPreferences, persistStoredUserPreferences } from '../utils/prefsStorage';
 import {
 	normalizeReviewPromptState,
 	recordSuccessfulReviewPromptSwitch,
 	reviewPromptStorageKey,
 } from '../utils/reviewPrompt';
 import {
+	applyDisabledSignals,
 	createDefaultUserPreferences,
 	createFavoriteTeamKey,
 	leagueLogoFallbacks,
@@ -14,11 +16,13 @@ import {
 	pollIntervalMs,
 	pollDormantMinMs,
 	pollDormantMaxMs,
-	maxHistorySnapshots,
+	pollMaxEagerMs,
+	historyWindowMs,
 	sensitivityThresholds,
 	sportTypeConfigMap,
 } from '@arenaswap/core/constants';
 import type {
+	DebugState,
 	ExtensionMessage,
 	Game,
 	LeagueId,
@@ -31,6 +35,34 @@ import type {
 	TabRegistration,
 	UserPreferences,
 } from '@arenaswap/core/types';
+
+const recordSuccessfulSwitchForReviewPrompt = async (switchedAt: number) => {
+	try {
+		const stored = await browser.storage.local.get({ [reviewPromptStorageKey]: null });
+		const current = normalizeReviewPromptState(stored[reviewPromptStorageKey]);
+		await browser.storage.local.set({
+			[reviewPromptStorageKey]: recordSuccessfulReviewPromptSwitch(current, switchedAt),
+		});
+	} catch {
+		// Failed to update review prompt state
+	}
+};
+
+const getFavoriteTeamCount = (game: Game, favoriteTeamIds: Set<string>): number => {
+	let count = 0;
+	const homeFavoriteTeamKey = createFavoriteTeamKey(game.league, game.homeTeam.id);
+	const awayFavoriteTeamKey = createFavoriteTeamKey(game.league, game.awayTeam.id);
+	if (favoriteTeamIds.has(homeFavoriteTeamKey)) count++;
+	if (favoriteTeamIds.has(awayFavoriteTeamKey)) count++;
+	return count;
+};
+
+const getHistoryWindowMsForGame = (game: Game): number => {
+	const sportConfig = sportTypeConfigMap[game.sportType] ?? sportTypeConfigMap.basketball;
+	return sportConfig.historyWindowMs ?? historyWindowMs;
+};
+
+const capitalizeFirst = (s: string) => s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
 
 export default defineBackground(() => {
 	let games: Game[] = [];
@@ -48,6 +80,8 @@ export default defineBackground(() => {
 	let lastSwitchTime = 0;
 	// Per-league timeouts for staggered live polling
 	const leagueTimers = new Map<string, ReturnType<typeof setTimeout>>();
+	// Last scheduled interval per league (ms), for debug visibility
+	const leagueNextIntervalMs = new Map<string, number>();
 	const pollModeTracker = createPollModeTracker();
 	// Interval used only in demo mode
 	let demoTimer: ReturnType<typeof setInterval> | null = null;
@@ -59,17 +93,6 @@ export default defineBackground(() => {
 	let onStandbyStream = false;
 	const historyStorageDefaults = { scoreHistory: {}, powerScoreHistory: {}, gameBoosts: {} };
 
-	const recordSuccessfulSwitchForReviewPrompt = async (switchedAt: number) => {
-		try {
-			const stored = await browser.storage.local.get({ [reviewPromptStorageKey]: null });
-			const current = normalizeReviewPromptState(stored[reviewPromptStorageKey]);
-			await browser.storage.local.set({
-				[reviewPromptStorageKey]: recordSuccessfulReviewPromptSwitch(current, switchedAt),
-			});
-		} catch (err) {
-			console.error('ArenaSwap: Failed to update review prompt state:', err);
-		}
-	};
 
 	const hydrateHistoryMaps = (storedScoreHistory: unknown, storedPowerScoreHistory: unknown) => {
 		history.clear();
@@ -78,52 +101,53 @@ export default defineBackground(() => {
 		if (isObjectRecord(storedScoreHistory)) {
 			Object.entries(storedScoreHistory).forEach(([gameId, snapshots]) => {
 				if (!Array.isArray(snapshots)) return;
-				const normalizedSnapshots = snapshots.filter(isScoreSnapshotLike).slice(-maxHistorySnapshots);
-				if (normalizedSnapshots.length === 0) return;
-				history.set(gameId, normalizedSnapshots);
+				const valid = snapshots.filter(isScoreSnapshotLike);
+				if (valid.length === 0) return;
+				const newestTs = valid[valid.length - 1]!.timestamp;
+				const game = games.find(g => g.id === gameId);
+				const windowMs = game ? getHistoryWindowMsForGame(game) : historyWindowMs;
+				const cutoff = newestTs - windowMs;
+				const trimmed = valid.filter(s => s.timestamp >= cutoff);
+				if (trimmed.length === 0) return;
+				history.set(gameId, trimmed);
 			});
 		}
 
 		if (isObjectRecord(storedPowerScoreHistory)) {
 			Object.entries(storedPowerScoreHistory).forEach(([gameId, snapshots]) => {
 				if (!Array.isArray(snapshots)) return;
-				const normalizedSnapshots = snapshots.filter(isPowerScoreSnapshotLike).slice(-maxHistorySnapshots);
-				if (normalizedSnapshots.length === 0) return;
-				powerScoreHistory.set(gameId, normalizedSnapshots);
+				const valid = snapshots.filter(isPowerScoreSnapshotLike);
+				if (valid.length === 0) return;
+				const newestTs = valid[valid.length - 1]!.timestamp;
+				const game = games.find(g => g.id === gameId);
+				const windowMs = game ? getHistoryWindowMsForGame(game) : historyWindowMs;
+				const cutoff = newestTs - windowMs;
+				const trimmed = valid.filter(s => s.timestamp >= cutoff);
+				if (trimmed.length === 0) return;
+				powerScoreHistory.set(gameId, trimmed);
 			});
 		}
 	};
 
-	const getFavoriteTeamCount = (game: Game, favoriteTeamIds: Set<string>): number => {
-		let count = 0;
-		const homeFavoriteTeamKey = createFavoriteTeamKey(game.league, game.homeTeam.id);
-		const awayFavoriteTeamKey = createFavoriteTeamKey(game.league, game.awayTeam.id);
-		if (favoriteTeamIds.has(homeFavoriteTeamKey)) count++;
-		if (favoriteTeamIds.has(awayFavoriteTeamKey)) count++;
-		return count;
-	};
-
-	const getMaxSnapshotsForGame = (game: Game): number => {
-		const sportConfig = sportTypeConfigMap[game.sportType] ?? sportTypeConfigMap.basketball;
-		return sportConfig.maxHistorySnapshots ?? maxHistorySnapshots;
-	};
 
 	const updateHistory = (currentGames: Game[]) => {
+		const now = Date.now();
 		currentGames.forEach(game => {
 			const snapshots = history.get(game.id) ?? [];
 			snapshots.push({
 				gameId: game.id,
-				timestamp: Date.now(),
+				timestamp: now,
 				homeScore: game.homeTeam.score,
 				awayScore: game.awayTeam.score,
 			});
-			const maxSnapshots = getMaxSnapshotsForGame(game);
-			if (snapshots.length > maxSnapshots) snapshots.shift();
+			const cutoff = now - getHistoryWindowMsForGame(game);
+			while (snapshots.length > 1 && snapshots[0]!.timestamp < cutoff) snapshots.shift();
 			history.set(game.id, snapshots);
 		});
 	};
 
 	const updatePowerScoreHistory = (liveGames: Game[], scores: PowerScoreResult[], changedLeagueId: LeagueId | null) => {
+		const now = Date.now();
 		const liveGameById = new Map(liveGames.map(game => [game.id, game]));
 		scores.forEach(score => {
 			const game = liveGameById.get(score.gameId);
@@ -133,7 +157,7 @@ export default defineBackground(() => {
 			const snapshots = powerScoreHistory.get(score.gameId) ?? [];
 			snapshots.push({
 				gameId: score.gameId,
-				timestamp: Date.now(),
+				timestamp: now,
 				total: score.total,
 				closeness: score.closeness,
 				lateGame: score.lateGame,
@@ -144,11 +168,13 @@ export default defineBackground(() => {
 				favoriteBonus: score.favoriteBonus ?? 0,
 				favoriteTeamCount: score.favoriteTeamCount ?? 0,
 				gameBoost: score.gameBoost ?? 0,
+				scoringOpportunityBoost: score.scoringOpportunityBoost ?? 0,
+				postseasonBoost: score.postseasonBoost ?? 0,
 				stalled: score.stalled ?? false,
 				reason: score.reason,
 			});
-			const maxSnapshots = getMaxSnapshotsForGame(game);
-			if (snapshots.length > maxSnapshots) snapshots.shift();
+			const cutoff = now - getHistoryWindowMsForGame(game);
+			while (snapshots.length > 1 && snapshots[0]!.timestamp < cutoff) snapshots.shift();
 			powerScoreHistory.set(score.gameId, snapshots);
 		});
 	};
@@ -169,8 +195,8 @@ export default defineBackground(() => {
 		void browser.storage.session.set({
 			scoreHistory: serializeScoreHistory(),
 			powerScoreHistory: serializePowerScoreHistory(),
-		}).catch(err => {
-			console.error('ArenaSwap: Failed to persist score history:', err);
+		}).catch(() => {
+			// Failed to persist score history
 		});
 	};
 
@@ -188,6 +214,7 @@ export default defineBackground(() => {
 	const broadcastScoresUpdated = () => {
 		browser.runtime.sendMessage({ type: 'SCORES_UPDATED', ...buildBackgroundState() }).catch(() => {});
 	};
+
 
 	const getGameLabel = (gameId: string): string => {
 		const game = games.find(g => g.id === gameId);
@@ -266,7 +293,6 @@ export default defineBackground(() => {
 				const scoreTitle = game
 					? `${game.awayTeam.abbreviation} ${game.awayTeam.score}-${game.homeTeam.score} ${game.homeTeam.abbreviation}`
 					: getGameLabel(gameId);
-				const capitalizeFirst = (s: string) => s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
 				const venue = getVenueName(gameId);
 				const message = reason
 					? `${capitalizeFirst(reason)}. Taking you to ${venue} now!`
@@ -311,10 +337,10 @@ export default defineBackground(() => {
 			return;
 		}
 		try {
-			const result = await fetchGamesWithLeagueLogos(prefs.enabledLeagues, { includeUpcoming: true });
+			const result = await fetchGamesWithLeagueLogos(prefs.enabledLeagues, { includeUpcoming: true, upcomingDays: prefs.upcomingGamesDays });
 			upcomingGames = result.games.filter(g => g.status === 'pre');
-		} catch (err) {
-			console.error('ArenaSwap: Failed to fetch upcoming games:', err);
+		} catch {
+			// Failed to fetch upcoming games
 		}
 	};
 
@@ -342,26 +368,36 @@ export default defineBackground(() => {
 
 		const favoriteTeamIds = new Set(prefs.favoriteTeamIds);
 		const favoriteBonusPoints = prefs.favoriteTeamBonusPoints;
+		const postseasonBoostPoints = prefs.postseasonBoostPoints;
 		const scores = liveGames.map(g => {
 			const stallCount = clockStallMap.get(g.id)?.stallCount ?? 0;
-			const baseScore = normalizePowerScoreResult(computePowerScore(g, history.get(g.id) ?? [], stallCount));
+			const baseScore = applyDisabledSignals(
+				normalizePowerScoreResult(computePowerScore(g, history.get(g.id) ?? [], stallCount)),
+				prefs.disabledSignals,
+			);
 			const favoriteTeamCount = getFavoriteTeamCount(g, favoriteTeamIds);
 			const favoriteBonus = favoriteTeamCount * favoriteBonusPoints;
 			const gameBoost = gameBoosts[g.id] ?? 0;
+			const scoringOpportunityBoost = computeScoringOpportunityBoost(g);
+			const postseasonBoost = g.isPostseason ? postseasonBoostPoints : 0;
 			const reasonParts = [
 				baseScore.reason,
 				favoriteBonus > 0 && `favorite bonus (+${favoriteBonus})`,
 				gameBoost > 0 && `game boost (+${gameBoost})`,
+				scoringOpportunityBoost > 0 && `scoring opportunity (+${scoringOpportunityBoost})`,
+				postseasonBoost > 0 && `postseason (+${postseasonBoost})`,
 			].filter(Boolean);
 
 			return normalizePowerScoreResult(
 				{
 					...baseScore,
-					baseTotal: baseScore.total,
+					baseTotal: baseScore.baseTotal ?? baseScore.total,
 					favoriteBonus,
 					favoriteTeamCount,
 					gameBoost,
-					total: baseScore.total + favoriteBonus + gameBoost,
+					scoringOpportunityBoost,
+					postseasonBoost,
+					total: baseScore.total + favoriteBonus + gameBoost + scoringOpportunityBoost + postseasonBoost,
 					reason: reasonParts.join(', '),
 				},
 				{ allowTotalOverflow: true },
@@ -416,9 +452,10 @@ export default defineBackground(() => {
 		const threshold = sensitivityThresholds[prefs.sensitivity] ?? 0;
 		const cooldownOk = Date.now() - lastSwitchTime > prefs.cooldownSeconds * 1000;
 
+		const notWatchingAGame = !activeReg;
 		if (
 			bestReg.tabId !== activeTab.id &&
-			best.total > activeScore + threshold &&
+			(notWatchingAGame || best.total >= activeScore + threshold) &&
 			cooldownOk
 		) {
 			if (prefs.switchDelaySeconds > 0) {
@@ -443,8 +480,8 @@ export default defineBackground(() => {
 				const fetchResult = await fetchGamesWithLeagueLogos(enabledLeagues, { includeUpcoming: false });
 				games = fetchResult.games;
 				leagueLogos = fetchResult.leagueLogos;
-			} catch (err) {
-				console.error('Arenaswap: Failed to fetch games:', err);
+			} catch {
+				// Failed to fetch games
 				return;
 			}
 			// Merge cached upcoming games, excluding any that have since gone live
@@ -457,10 +494,10 @@ export default defineBackground(() => {
 	};
 
 	// Fetch a single league and merge results into shared state, then reschedule.
-	// Each league runs on its own pollIntervalMs rhythm with ±2s jitter to
-	// continuously spread requests across the window and prevent thundering herds.
-	// When a league has returned no live games for pollDormantThresholdPolls consecutive
-	// fetches it switches to dormant mode and polls every 2-3 min instead.
+	// Each league runs on an adaptive interval driven by the highest live PowerScore
+	// in the league: exciting games (high score) poll every ~6s; quiet live games
+	// poll every ~25s. Intermission (halftime/between-periods) uses 40s. Leagues
+	// with no live games use dormant mode (2-3 min). ±jitter prevents thundering herds.
 	const tickLeague = async (leagueId: LeagueId, allowTabSwitch: boolean) => {
 		let fetchSucceeded = false;
 		try {
@@ -473,17 +510,27 @@ export default defineBackground(() => {
 			const hasLiveGames = fetchResult.games.some(g => g.status === 'in');
 			pollModeTracker.recordPollResult(leagueId, hasLiveGames);
 			fetchSucceeded = true;
-		} catch (err) {
-			console.error(`ArenaSwap: Failed to fetch ${leagueId}:`, err);
+		} catch {
+			// Failed to fetch league games
 		}
 
 		// Reschedule before awaiting post-processing so the next tick is always queued.
 		// On error fall back to eager interval so we retry promptly.
 		// Guard against rescheduling a league that was disabled while this fetch was in flight.
 		if (!demoMode && prefs.enabledLeagues.includes(leagueId)) {
-			const nextInterval = fetchSucceeded && pollModeTracker.getMode(leagueId) === 'dormant'
-				? pollDormantMinMs + randomInRange(0, pollDormantMaxMs - pollDormantMinMs)
-				: pollIntervalMs + randomInRange(-2_000, 2_000);
+			let nextInterval: number;
+			if (fetchSucceeded && pollModeTracker.getMode(leagueId) === 'dormant') {
+				nextInterval = pollDormantMinMs + randomInRange(0, pollDormantMaxMs - pollDormantMinMs);
+			} else if (fetchSucceeded) {
+				const liveLeagueGames = games.filter(g => g.league === leagueId && g.status === 'in');
+				const base = computeLeagueIntervalMs(liveLeagueGames, currentScores);
+				// Scale jitter proportionally so fast (critical) polls stay dense and slow polls have more spread.
+				const jitterMax = Math.round((base / pollMaxEagerMs) * 2_000);
+				nextInterval = base + randomInRange(-jitterMax, jitterMax);
+			} else {
+				nextInterval = pollIntervalMs + randomInRange(-2_000, 2_000);
+			}
+			leagueNextIntervalMs.set(leagueId, nextInterval);
 			scheduleLeagueTick(leagueId, nextInterval);
 		}
 
@@ -521,19 +568,19 @@ export default defineBackground(() => {
 
 	// Load persisted state before any refresh to avoid race conditions on popup reopen.
 	const stateReady = Promise.all([
-		browser.storage.sync.get({ prefs: null }),
+		loadStoredUserPreferences(),
 		browser.storage.session.get({ tabRegistry: [], standbyStreamTabId: null, ...historyStorageDefaults }),
 		browser.storage.local.get({ demoMode: false }),
-	]).then(([prefsResult, sessionResult, demoResult]) => {
-		prefs = normalizeUserPreferences(prefsResult.prefs);
+	]).then(([storedPrefs, sessionResult, demoResult]) => {
+		prefs = storedPrefs;
 		tabRegistry = sessionResult.tabRegistry as TabRegistration[];
 		standbyStreamTabId = (sessionResult.standbyStreamTabId as number | null) ?? null;
 		gameBoosts = normalizeGameBoosts(sessionResult.gameBoosts);
 		hydrateHistoryMaps(sessionResult.scoreHistory, sessionResult.powerScoreHistory);
 		demoMode = demoResult.demoMode as boolean;
 		if (demoMode) simulator = new MockGameSimulator();
-	}).catch(err => {
-		console.error('ArenaSwap: Failed to load persisted state, using defaults:', err);
+	}).catch(() => {
+		// Failed to load persisted state, using defaults
 	});
 
 	stateReady.then(async () => {
@@ -561,8 +608,7 @@ export default defineBackground(() => {
 						// Re-sync prefs from storage in case popup wrote prefs but closed before
 						// the UPDATE_PREFS message was delivered.
 						try {
-							const stored = await browser.storage.sync.get({ prefs: null });
-							prefs = normalizeUserPreferences(stored.prefs);
+							prefs = await loadStoredUserPreferences();
 						} catch { /* keep current in-memory prefs */ }
 						await refreshScores(false);
 						return buildBackgroundState();
@@ -574,13 +620,16 @@ export default defineBackground(() => {
 			return stateReady.then(async () => {
 				const wasEnabled = prefs.enabled;
 				const prevShowUpcoming = prefs.showUpcomingGames;
+				const prevUpcomingGamesDays = prefs.upcomingGamesDays;
 				const prevLeagues = new Set(prefs.enabledLeagues);
 				prefs = normalizeUserPreferences(msg.prefs);
 				if (wasEnabled && !prefs.enabled) lastSwitchTime = 0;
 				clearPendingSwitch();
-				await browser.storage.sync.set({ prefs });
+				await persistStoredUserPreferences(prefs);
 				await syncManagedTabMuteState(prefs.enabled);
-				if (prefs.showUpcomingGames !== prevShowUpcoming) {
+				const upcomingSettingChanged = prefs.showUpcomingGames !== prevShowUpcoming ||
+					(prefs.showUpcomingGames && prefs.upcomingGamesDays !== prevUpcomingGamesDays);
+				if (upcomingSettingChanged) {
 					await refreshUpcomingGames();
 					// Rebuild games: keep live/in-progress games, replace upcoming slice with updated cache
 					games = [...games.filter(g => g.status !== 'pre'), ...upcomingGames];
@@ -644,6 +693,36 @@ export default defineBackground(() => {
 				standbyStreamTabId = msg.tabId;
 				onStandbyStream = false;
 				await browser.storage.session.set({ standbyStreamTabId });
+			});
+		}
+		if (msg.type === 'GET_DEBUG_STATE') {
+			return stateReady.then((): DebugState => {
+				const gameLabels: Record<string, string> = {};
+				for (const g of games) {
+					gameLabels[g.id] = `${g.awayTeam.abbreviation}·${g.homeTeam.abbreviation}`;
+				}
+				return {
+					pollModes: Object.fromEntries(
+						prefs.enabledLeagues.map(leagueId => [leagueId, pollModeTracker.getMode(leagueId)])
+					),
+					leagueIntervals: Object.fromEntries(leagueNextIntervalMs.entries()),
+					demoMode,
+					lastSwitchTime,
+					pendingSwitch,
+					liveGameCount: games.filter(g => g.status === 'in').length,
+					upcomingGameCount: games.filter(g => g.status === 'pre').length,
+					totalGameCount: games.length,
+					tabRegistry,
+					onStandbyStream,
+					standbyStreamTabId,
+					clockStalls: Object.fromEntries(clockStallMap.entries()),
+					scores: currentScores,
+					gameLabels,
+					enabledLeagues: prefs.enabledLeagues,
+					sensitivity: prefs.sensitivity,
+					cooldownSeconds: prefs.cooldownSeconds,
+					switchDelaySeconds: prefs.switchDelaySeconds,
+				};
 			});
 		}
 	});

@@ -1,5 +1,10 @@
-export type SportType = 'basketball' | 'football' | 'hockey' | 'baseball' | 'soccer';
-export type LeagueId = 'nba' | 'wnba' | 'nhl' | 'ncaamh' | 'mlb' | 'nfl' | 'ncaab' | 'ncaaf' | 'mls' | 'ncaaw' | 'epl' | 'fifawc';
+export type SportType = 'basketball' | 'football' | 'hockey' | 'baseball' | 'softball' | 'soccer';
+export type LeagueId = 'nba' | 'wnba' | 'nhl' | 'ncaamh' | 'mlb' | 'nfl' | 'ncaab' | 'ncaaf' | 'mls' | 'ncaaw' | 'epl' | 'fifawc'
+	| 'cbase' | 'csoft' | 'olybb' | 'wbbc'
+	| 'ufl'
+	| 'olymih' | 'olywih'
+	| 'olybkm' | 'olybkw'
+	| 'olysocm' | 'olysocw' | 'laliga' | 'bundesliga' | 'seriea' | 'ligamx' | 'ucl' | 'uel' | 'nwsl' | 'fifawwc';
 /** @deprecated Use LeagueId */
 export type SportId = LeagueId;
 
@@ -8,11 +13,16 @@ export interface Game {
 	id: string;
 	league: LeagueId;
 	sportType: SportType;
-	homeTeam: { score: number; abbreviation: string };
-	awayTeam: { score: number; abbreviation: string };
-	period: number;
-	clockSeconds: number;
+	homeTeam: { score: number; abbreviation?: string };
+	awayTeam: { score: number; abbreviation?: string };
+	period?: number;
+	clockSeconds?: number;
 	intermission?: boolean;
+	status?: 'pre' | 'in' | 'post';
+	/** Which bases have runners; used by the scoring opportunity boost */
+	baseRunners?: { first: boolean; second: boolean; third: boolean };
+	/** True when the offense is in the red zone; football only */
+	isRedZone?: boolean;
 }
 
 export interface ScoreSnapshot {
@@ -30,39 +40,22 @@ export interface PowerScoreResult {
 	momentum: number;
 	leadChanges: number;
 	comeback: number;
+	/** Win probability volatility boost/penalty, −10 to +10. Present when win probability history was supplied. */
+	winProbabilityVariance?: number;
 	reason: string;
 	stalled?: boolean;
+	/** Points removed by the clock-stall penalty (always ≥ 0). Present when stall detection has run. */
+	stallPenalty?: number;
 	baseTotal?: number;
 	favoriteBonus?: number;
 	favoriteTeamCount?: number;
 	gameBoost?: number;
+	scoringOpportunityBoost?: number;
+	postseasonBoost?: number;
 }
 
-export interface BaseballInningScoreTier {
-	minInning: number;
-	score: number;
-	includeReason: boolean;
-}
-
-export interface ExponentialLateGameCurve {
-	/** Minimum late-game score returned when the curve activates */
-	minScore: number;
-	/** Maximum late-game score for this curve segment (pre-overtime) */
-	maxScore: number;
-	/** Exponential steepness; larger values ramp score faster near game end */
-	growthRate: number;
-}
-
-export interface ClockLateGameCurveConfig {
-	model: 'clock';
-	/** Time-remaining window in the final period where the curve is active */
-	finalPeriodWindowSecs: number;
-	/** Time-remaining window in the previous period where mild pressure applies */
-	previousPeriodWindowSecs: number;
-	finalPeriodCurve: ExponentialLateGameCurve;
-	previousPeriodCurve: ExponentialLateGameCurve;
-}
-
+/** Inning anchors for baseball's near-linear late-game ramp (clock sports derive theirs from the
+ *  period + clock, so they need no curve config). */
 export interface BaseballLateGameCurveConfig {
 	model: 'baseball';
 	/** Regulation innings for this sport (MLB = 9) */
@@ -71,11 +64,9 @@ export interface BaseballLateGameCurveConfig {
 	regulationStartInning: number;
 	/** Extra-innings baseline inning (typically regulationInnings + 1) */
 	extraInningsStartInning: number;
-	regulationCurve: ExponentialLateGameCurve;
-	extraInningsCurve: ExponentialLateGameCurve;
 }
 
-export type LateGameCurveConfig = ClockLateGameCurveConfig | BaseballLateGameCurveConfig;
+export type LateGameCurveConfig = BaseballLateGameCurveConfig;
 
 export interface ScorerTunables {
 	scores: {
@@ -89,12 +80,14 @@ export interface ScorerTunables {
 		};
 		lateGame: {
 			overtime: number;
-			clockBased: {
-				critical: number;
-				tense: number;
-				previousPeriod: number;
-			};
-			baseballInningTiers: BaseballInningScoreTier[];
+			/** ceiling the near-linear regulation ramp reaches at the end of the final period (pre-OT) */
+			otEdgeMax: number;
+			/** late-game score at the very start of the final period */
+			finalPeriodStart: number;
+			/** small constant pressure carried through the previous period's ramp */
+			previousPeriodTouch: number;
+			/** extra points (otEdgeMax → overtime) a tied game earns ramping through the OT pre-boost window */
+			otPreBoostMax: number;
 			none: number;
 		};
 		momentum: {
@@ -110,7 +103,17 @@ export interface ScorerTunables {
 		comeback: {
 			big: number;
 			moderate: number;
+			/** always-paid minimum for any active comeback tier (before progress scaling and decay) */
+			flatFloor: number;
 			none: number;
+		};
+		/** always-paid minimum for any active closeness tier (before progress scaling) */
+		closenessFlatFloor: number;
+		winProbabilityVariance: {
+			/** Average |p − 0.5| (p ∈ [0,1]) that saturates the −max penalty; values above are clamped. */
+			maxAvgDist: number;
+			/** Minimum number of data points required before the boost/penalty applies. */
+			minDataPoints: number;
 		};
 	};
 	reasons: {
@@ -124,6 +127,7 @@ export interface ScorerTunables {
 		clockLeftSuffix: string;
 		underPrefix: string;
 		minutesLeftSuffix: string;
+		overtimeAnticipation: string;
 		momentumRunPrefix: string;
 		momentumRunSuffix: string;
 		momentumRolling: string;
@@ -141,14 +145,9 @@ export interface SportTypeConfig {
 	clockBased: boolean;
 	/** [tier1, tier2, tier3] score-margin thresholds for closeness signal */
 	closenessMargins: [number, number, number];
-	/** Sport-aware exponential late-game model (future scorer path) */
-	lateGameCurve: LateGameCurveConfig;
-	/** @deprecated Legacy threshold tier (critical). Prefer lateGameCurve for new scorer logic. */
-	lateGameCriticalSecs: number;
-	/** @deprecated Legacy threshold tier (tense). Prefer lateGameCurve for new scorer logic. */
-	lateGameTenseSecs: number;
-	/** @deprecated Legacy threshold tier (previous period). Prefer lateGameCurve for new scorer logic. */
-	lateGamePrevPeriodSecs: number;
+	/** Inning-based late-game model — baseball only. Clock sports derive their near-linear ramp
+	 *  directly from period + clock, so they omit this. */
+	lateGameCurve?: LateGameCurveConfig;
 	/** Unanswered-scoring-run size that triggers max momentum score */
 	momentumBigRun: number;
 	/** Unanswered-scoring-run size that triggers half momentum score */
@@ -166,8 +165,20 @@ export interface SportTypeConfig {
 	comebackThresholdBig: number;
 	/** Score-margin shrinkage (in the history window) that triggers a moderate comeback score */
 	comebackThresholdSmall: number;
-	/** overrides maxHistorySnapshots for momentum window; omit to use the global default */
-	maxHistorySnapshots?: number;
+	/** Half-lives (ms) for the live-action decay cluster. Longer for low-scoring sports so a single
+	 *  scoring event keeps the PowerScore graph alive between rare scores. */
+	decayHalfLifeMs: {
+		momentum: number;
+		leadChange: number;
+		comeback: number;
+	};
+	/** Seconds-remaining window in the final regulation period during which a tied game earns the
+	 *  ramping overtime pre-boost. 0 disables the pre-boost (e.g. clockless baseball). */
+	otPreBoostWindowSecs: number;
+	/** How far back (ms) to keep score snapshots for momentum/comeback/leadChange detection.
+	 *  Should be at least 4× the longest decayHalfLifeMs so signals fully fade before falling out
+	 *  of the window. Must be the same regardless of poll frequency. */
+	historyWindowMs: number;
 }
 
 export interface LeagueConfig {
@@ -182,10 +193,4 @@ export interface LeagueConfig {
 	periodDurationSecs: number;
 	/** Human-readable period label style in UI */
 	periodFormat: 'quarters' | 'halves' | 'periods' | 'innings';
-	/** Per-league override for the late-game exponential curve window sizes.
-	 *  When absent the scorer falls back to the sport-level SportTypeConfig values. */
-	lateGameWindowOverrideSecs?: {
-		finalPeriod: number;
-		previousPeriod: number;
-	};
 }

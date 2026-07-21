@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { allLeagueIds, leagueConfigMap } from '../../../../packages/powerscore/src/constants';
-import { computePowerScore } from '../../../../packages/powerscore/src/scorer';
-import type { Game, LeagueId, ScoreSnapshot } from '../../../../packages/powerscore/src/types';
+import { allLeagueIds, computePowerScore, leagueConfigMap } from 'powerscore';
+import type { Game, LeagueId, ScoreSnapshot } from 'powerscore';
 
 interface EspnCompetitor {
 	id: string;
@@ -170,7 +169,7 @@ const LivePowerScores = () => {
 				if (!activeGameIds.has(gameId)) delete stallRef.current[gameId];
 			}
 
-			setCards(nextCards.sort((a, b) => b.score - a.score));
+			setCards(nextCards.toSorted((a, b) => b.score - a.score));
 			setError(null);
 		} catch {
 			setError('Unable to load live game data right now.');
@@ -211,7 +210,7 @@ const LivePowerScores = () => {
 			<div className='feature-card'>
 				<span className='fw-semibold mb-3 d-block'>No live games right now</span>
 				<p className='mb-0 section-sub'>
-					When games go live, this section will auto-refresh every 15 seconds and show real-time PowerScores across all supported leagues.
+					When games go live, this section will auto-refresh and show real-time PowerScores across all supported leagues.
 				</p>
 			</div>
 		);

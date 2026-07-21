@@ -1,0 +1,117 @@
+---
+import Nav from '../../components/Nav.astro';
+import Footer from '../../components/Footer.astro';
+import { getCollection } from 'astro:content';
+import '../../styles/tailwind.css';
+import '../../styles/global.scss';
+
+const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+const posts = allPosts.toSorted((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+---
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="description" content="News, deep dives, and release notes from the ArenaSwap team." />
+	<title>Blog — ArenaSwap</title>
+	<link rel="shortcut icon" href="/arenaswap/images/128.png" type="image/x-icon">
+</head>
+<body>
+	<Nav />
+
+	<main style="padding-top:80px;">
+
+		<!-- Page header -->
+		<section class="section-pad pb-5">
+			<div class="container">
+				<div class="row align-items-end justify-content-between g-4">
+					<div class="col-lg-6">
+						<p class="blog-eyebrow">From the team</p>
+						<h1 class="display-4 fw-bold mb-0" style="letter-spacing:-0.03em;line-height:1.1;">
+							News &amp; Updates
+						</h1>
+					</div>
+					<div class="col-lg-5">
+						<p class="lead mb-0" style="color:var(--color-muted);font-size:1.05rem;">
+							Deep dives, release notes, and engineering stories.
+						</p>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<div class="section-divider"></div>
+
+		<!-- Posts -->
+		<section class="py-5">
+			<div class="container py-4">
+
+				{posts.length === 0 ? (
+					<div class="py-5 text-center">
+						<p class="text-muted">No posts yet — check back soon.</p>
+					</div>
+				) : (
+					<div class="row g-4">
+						{posts.map((post, i) => {
+							const date = post.data.pubDate.toLocaleDateString('en-US', {
+								month: 'long', day: 'numeric', year: 'numeric',
+							});
+							const words = post.body ? post.body.split(/\s+/).length : 600;
+							const readTime = Math.max(1, Math.ceil(words / 200));
+							const isFeatured = i === 0;
+							return (
+								<div class={isFeatured ? 'col-12' : 'col-md-6 col-lg-4'}>
+									<a href={`/arenaswap/blog/${post.id}/`} class="d-block h-100 text-decoration-none">
+										<article class={`card h-100 blog-card ${isFeatured ? 'blog-card-featured' : ''}`}>
+
+											{post.data.image && (
+												<div class={`blog-card-image${isFeatured ? ' blog-card-image--featured' : ''}`}>
+													<img src={post.data.image} alt={post.data.imageAlt ?? post.data.title} loading="lazy" />
+												</div>
+											)}
+
+											<div class={`card-body d-flex flex-column ${isFeatured ? 'p-4 p-lg-5' : 'p-4'}`}>
+
+												{post.data.tags.length > 0 && (
+													<div class="d-flex flex-wrap gap-2 mb-3">
+														{post.data.tags.map(tag => (
+															<span class="badge blog-tag">{tag}</span>
+														))}
+													</div>
+												)}
+
+												<h2 class={`card-title fw-bold mb-3 blog-card-title${isFeatured ? ' blog-card-title--featured' : ''}`}>
+													{post.data.title}
+												</h2>
+
+												<p class="card-text flex-grow-1 text-muted" style="line-height:1.65;font-size:0.95rem;">
+													{post.data.description}
+												</p>
+
+												<footer class="d-flex align-items-center justify-content-between mt-4 pt-3 blog-card-footer">
+													<small class="text-muted">{post.data.author} · {date}</small>
+													<small class="text-muted">{readTime} min read</small>
+												</footer>
+
+											</div>
+										</article>
+									</a>
+								</div>
+							);
+						})}
+					</div>
+				)}
+
+			</div>
+		</section>
+
+	</main>
+
+	<Footer />
+
+	<script>
+		import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+	</script>
+</body>
+</html>

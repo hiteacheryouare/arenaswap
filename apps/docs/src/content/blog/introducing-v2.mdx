@@ -1,0 +1,139 @@
+---
+title: "v2: What we rebuilt and why"
+description: "30+ leagues, a rewritten PowerScore engine, and a month of calibration. The full technical story of how ArenaSwap got here."
+pubDate: 2026-06-28
+author: Ryan Mullin
+tags: ["engineering", "v2", "powerscore"]
+image: /arenaswap/images/demo.png
+imageAlt: ArenaSwap v2 — live game switching across 30+ leagues
+---
+
+Last March I sat down with four NBA playoff games open and missed three game-winners in a row. Not because I wasn't paying attention — because I was watching the wrong tab. That was the moment ArenaSwap v1 became a real project.
+
+v1 shipped covering twelve leagues with a scoring model that was, honestly, pretty dumb. Close game? Higher score. Late in the game? Boost it. That was roughly it. It worked well enough that people started using it, which meant I had to actually think harder about what "exciting" means.
+
+v2 took about four months. Here's what changed and why.
+
+---
+
+## The scope problem first
+
+Going from 12 leagues to 30+ wasn't just adding more ESPN API calls. The original data model had basketball-specific assumptions baked into the scorer — things like "quarter" being the unit of time, or closeness being measured in points on a fixed scale regardless of sport.
+
+The fix was pulling all sport-specific config into a typed map. Each sport now declares:
+
+- Clock behavior (counting up vs. down, frozen states)
+- What a "close" margin looks like at various score ranges
+- How late-game pressure should scale
+- Whether possessions or drive-state matter for the scoring opportunity signal
+
+Baseball was the most work. There's no clock. "Late game" means inning 7+, not a specific time. A 1-run game in the 9th is a completely different situation than a 1-run game in the 3rd. The sport config handles this by mapping inning ranges to a pressure multiplier that's essentially zero until the 7th.
+
+---
+
+## PowerScore v2: what actually changed
+
+The original scorer had three signals. v2 has five.
+
+**Closeness** is still the foundation. A blowout isn't exciting regardless of what else is happening. But the thresholds changed — what counts as "close" is now sport-relative. A 7-point NFL game is a one-score game and scores very differently than a 7-point NBA game with 4 minutes left.
+
+**Late-Game Pressure** scales toward the end of a game and amplifies the closeness signal. In overtime it gets an additional boost. This one is gated on closeness — a late blowout doesn't get the bonus.
+
+**Momentum** is new in v2. It looks at the score history over the last ~5 minutes (20 snapshots taken as polls come in) and weights recent scoring events. The decay function is intentional — a run from 3 minutes ago matters, but it shouldn't still be dominating the score now.
+
+**Lead Changes** tracks how often possession of the lead has flipped. A game that's been trading leads all fourth quarter reads differently than a game that's been close but static. This signal resets per period so it's always measuring the current half/quarter/period, not the whole game.
+
+**Comeback Factor** fires when a team that was previously down by a significant margin has closed the gap. This was the hardest to get right. Too sensitive and it fires on normal variance; too conservative and you miss the ones people actually care about.
+
+---
+
+## Calibrating sensitivity
+
+After rebuilding the scorer I had a problem: the new distribution of PowerScores was totally different from v1. Games that v1 would score 70 now scored 45. The sensitivity settings — which control how large a gap between the best and current game is required to trigger a switch — were meaningless.
+
+I wrote a simulation harness that replays realistic game trajectories and measures the distribution of best-vs-second-best score gaps at various points in games. After running it, the natural distribution of switch-worthy gaps in a typical multi-game session looked like this:
+
+<div style="margin: 2rem 0; padding: 1.5rem; background: var(--color-card); border: 1px solid var(--color-border); border-radius: 0.75rem;">
+  <p style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-muted); margin-bottom: 1.25rem;">Sensitivity thresholds — score delta needed to trigger a switch</p>
+  {[
+    { level: 'Max sticky', threshold: 44, pct: 44 },
+    { level: 'Very sticky', threshold: 29, pct: 29 },
+    { level: 'Sticky', threshold: 19, pct: 19 },
+    { level: 'Balanced (default)', threshold: 11, pct: 11, highlight: true },
+    { level: 'Responsive', threshold: 6, pct: 6 },
+    { level: 'Aggressive', threshold: 3, pct: 3 },
+    { level: 'Hair trigger', threshold: 1, pct: 1 },
+  ].map(row => (
+    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.625rem;">
+      <span style={`font-size: 0.82rem; color: ${row.highlight ? 'var(--color-text)' : 'var(--color-muted)'}; width: 160px; flex-shrink: 0; font-weight: ${row.highlight ? '600' : '400'};`}>{row.level}</span>
+      <div style="flex: 1; height: 6px; background: var(--color-border); border-radius: 999px; overflow: hidden;">
+        <div style={`height: 100%; border-radius: 999px; background: ${row.highlight ? 'var(--color-primary)' : 'var(--color-muted)'}; width: ${(row.pct / 44) * 100}%;`}></div>
+      </div>
+      <span style={`font-size: 0.82rem; font-family: 'Lekton', monospace; color: ${row.highlight ? 'var(--color-primary)' : 'var(--color-muted)'}; width: 40px; text-align: right;`}>{row.threshold} pts</span>
+    </div>
+  ))}
+  <p style="font-size: 0.72rem; color: var(--color-muted); margin-top: 1rem; margin-bottom: 0;">Level 4 (11 points) sits just above the median gap in a typical multi-game session, which is why it's the default.</p>
+</div>
+
+After calibration I nudged every threshold about 25% stickier than the raw simulation suggested. The reason: the simulation uses clean game trajectories. Real users have the extension running across games with wildly different contexts — if you're watching a rivalry game you care about, you probably don't want ArenaSwap yanking you to a random NCAAB matchup every time the PowerScore ticks up 8 points.
+
+The 25% sticky nudge was a judgment call, not a formula. It still is.
+
+---
+
+## The frozen clock problem
+
+Here's something that bit v1 constantly: halftime.
+
+Say you're watching an NBA game at halftime. The score is 54–51. That's a close game. The PowerScore is legitimately high. ArenaSwap v1 would stay on it — or worse, keep switching back to it — while you were staring at a studio desk for twelve minutes.
+
+v2 has a stall penalty. When the game clock hasn't moved for two consecutive polls (30 seconds), the score takes a hit. The penalty scales: two polls frozen → small penalty. Four polls frozen → significant penalty. Six+ → the game is effectively deprioritized until the clock starts moving again.
+
+The tricky part is distinguishing "halftime" from "a basketball game where the clock just hit zero and the buzzer is about to sound." The fix was tracking *when* the clock entered a frozen state relative to period transitions. A clock that's been at 0:00 for 45 seconds at the end of Q2 is halftime. A clock that just hit 0:00 at the end of Q4 might be the most exciting moment of the game.
+
+The stall counter resets on any confirmed clock change, regardless of direction.
+
+---
+
+## Polling and dormancy
+
+Every enabled league runs on its own adaptive poll cycle. The interval scales continuously with PowerScore — exciting games poll every ~6 seconds; quiet live games poll every ~25 seconds. The jitter matters — without it, you get a thundering herd problem where every league fires at the same time and you're hammering the ESPN API with 31 simultaneous requests every quarter minute.
+
+When all live games in a league are in halftime or between periods, the league backs off to a 40-second intermission interval. When a league returns no live games for two consecutive polls, it switches into full dormant mode and backs off to a 2–3 minute interval. This is what makes it reasonable to have 31 leagues enabled by default. If no NBA games are live on a Tuesday night in July, the NBA poller wakes up every few minutes to check.
+
+The tiers:
+
+| State | Condition | Poll interval |
+|---|---|---|
+| Eager | Live game, PowerScore ≥ 100 | ~6s |
+| Eager | Live game, PowerScore 50 | ~15s |
+| Eager | Live game, PowerScore 0 | ~25s |
+| Intermission | All live games in halftime/break | ~40s |
+| Dormant | 2 consecutive empty polls | 120–180s |
+| Error | Fetch failure | ~15s (eager retry) |
+
+On error the poller falls back to the eager interval rather than dormant, because you want to recover quickly from a transient network hiccup, not quietly wait three minutes before trying again.
+
+---
+
+## What's actually different for users
+
+The honest answer: not much you'd notice day-to-day. The extension looks similar. The popup works the same way. The changes are all in what gets switched to and when.
+
+What is different:
+- It covers more games, so there's almost always *something* live in a sports season
+- The switching is meaningfully less jumpy at default sensitivity than v1
+- It handles halftime, timeouts, and rain delays without getting confused
+- The Standby Stream feature kicks in when everything goes quiet
+
+If you've been using v1 and find v2 switches more or less than you want, the sensitivity slider is the right lever. Level 4 is the middle. Level 2 will barely switch at all. Level 6 will switch if it smells something interesting.
+
+---
+
+## What's next
+
+The simulation harness I wrote for sensitivity calibration is now part of the repo. The long-term plan is to use it to continuously validate the scorer as we add new sports and tune individual signals. The current scorer was built mostly for North American sports with clocks — international soccer with 45-minute running halves is a different problem and I'm not happy with how it performs there yet.
+
+The betting odds integration is on the roadmap. If a game is close *and* the implied probability of the outcome is shifting rapidly, that's a genuine signal that something is happening. Whether that belongs in the main scorer or as an optional overlay is a design question I haven't answered yet.
+
+— Ryan

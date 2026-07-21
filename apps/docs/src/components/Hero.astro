@@ -1,50 +1,86 @@
 ---
+import { Image } from 'astro:assets';
+import HeroCard from './HeroCard';
+import logoImg from '../assets/full_logo_white_on_transparent.svg';
+import mlbImg from '../assets/leagues/mlb.png';
+import nflImg from '../assets/leagues/nfl.png';
+
+const phiMiaGame = {
+	id: 'hero-mlb',
+	league: 'mlb' as const,
+	sportType: 'baseball' as const,
+	awayTeam: { id: 'mia', name: 'Miami Marlins', abbreviation: 'MIA', score: 2, logo: 'https://a.espncdn.com/i/teamlogos/mlb/500/mia.png', color: '#00A3E0', alternateColor: '#EF3340' },
+	homeTeam: { id: 'phi', name: 'Philadelphia Phillies', abbreviation: 'PHI', score: 4, logo: 'https://a.espncdn.com/i/teamlogos/mlb/500/phi.png', color: '#E81828', alternateColor: '#002D72' },
+	period: 7, clockSeconds: 0, status: 'in' as const,
+	topOfInning: false,
+	broadcasts: ['ESPN+'],
+};
+const phiMiaScore = { gameId: 'hero-mlb', total: 78, closeness: 22, lateGame: 20, momentum: 18, leadChanges: 10, comeback: 8, reason: '' };
+
+const phiDalGame = {
+	id: 'hero-nfl',
+	league: 'nfl' as const,
+	sportType: 'football' as const,
+	awayTeam: { id: 'dal', name: 'Dallas Cowboys', abbreviation: 'DAL', score: 17, logo: 'https://a.espncdn.com/i/teamlogos/nfl/500/dal.png', color: '#003594', alternateColor: '#869397' },
+	homeTeam: { id: 'phi', name: 'Philadelphia Eagles', abbreviation: 'PHI', score: 21, logo: 'https://a.espncdn.com/i/teamlogos/nfl/500/phi.png', color: '#004C54', alternateColor: '#A5ACAF' },
+	period: 4, clockSeconds: 185, status: 'in' as const,
+	downDistance: '2nd & 8',
+	broadcasts: ['FOX'],
+};
+const phiDalScore = { gameId: 'hero-nfl', total: 72, closeness: 20, lateGame: 18, momentum: 16, leadChanges: 10, comeback: 8, reason: '' };
 ---
 <section id="hero" class="position-relative d-flex align-items-center" style="min-height:100vh;padding-top:80px;">
-	<div class="hero-glow"></div>
+
+	<canvas id="hero-canvas" aria-hidden="true"></canvas>
 
 	<div class="container">
+
 		<div class="row align-items-center g-5">
 
-			<!-- Left: copy -->
+			<!-- Left: Headline + CTAs -->
 			<div class="col-lg-6">
+
 				<h1 class="hero-headline">
-					<span class="hero-word hero-word-1">Never</span>
-					<span class="hero-word hero-word-2">miss</span>
+					<span class="hero-word hero-word-1">Never</span>&nbsp;<span class="hero-word hero-word-2">miss</span>
 					<br>
-					<span class="hero-word hero-word-3">the</span>
-					<span class="hero-word hero-word-4">moment.</span>
+					<span class="hero-word hero-word-3">the</span>&nbsp;<span class="hero-word hero-word-4"><span class="hero-accent">moment.</span></span>
 				</h1>
 
 				<p class="hero-sub">
-					ArenaSwap watches every live game across 12 leagues
-					and switches your browser tab to the most exciting one —
-					automatically, every 15 seconds.
+					ArenaSwap watches every live game across 30+ leagues
+					and automatically switches your browser tab to the most
+					exciting one every 15 seconds.
 				</p>
 
-				<div class="hero-cta d-flex flex-wrap gap-3">
-					<a href="https://chromewebstore.google.com/detail/arenaswap/gibojibgihombdmmfnhnimajppamfeee" class="btn btn-cta btn-cta-pulse">
+				<div class="hero-cta d-flex flex-column align-items-start gap-3">
+					<a href="https://chromewebstore.google.com/detail/arenaswap/gibojibgihombdmmfnhjpamfeee" class="btn btn-cta btn-cta-pulse hero-cta-primary">
 						<i class="bi bi-browser-chrome me-2"></i>Add to Chrome
 					</a>
-					<a href="https://addons.mozilla.org/addon/arenaswap/" class="btn btn-outline-secondary-custom">
-						<i class="bi bi-browser-firefox me-2"></i>Add to Firefox
-					</a>
-					<a href="https://microsoftedge.microsoft.com/addons/detail/arenaswap/oeballpnidkinkcbjokogdgjckdjeeba" class="btn btn-outline-secondary-custom">
-						<i class="bi bi-browser-edge me-2"></i>Add to Edge
-					</a>
+					<div class="hero-cta-alts">
+						Also available for
+						<a href="https://addons.mozilla.org/addon/arenaswap/" class="hero-cta-alt-link">
+							<i class="bi bi-browser-firefox me-1"></i>Firefox
+						</a>
+						and
+						<a href="https://microsoftedge.microsoft.com/addons/detail/arenaswap/oeballpnidkinkcbjokogdgjckdjeeba" class="hero-cta-alt-link">
+							<i class="bi bi-browser-edge me-1"></i>Edge
+						</a>
+					</div>
 				</div>
+
 			</div>
 
-			<!-- Right: pixel-accurate popup replica -->
+			<!-- Right: Extension preview -->
 			<div class="col-lg-6 d-flex justify-content-center justify-content-lg-end">
 				<div class="demo-popup-wrapper">
 					<div class="demo-popup">
 						<div class="demo-popup-inner">
 
-							<!-- Header -->
+							<!-- Header: logo + tour + settings + toggle -->
 							<div class="demo-header">
-								<img src="/arenaswap/images/full_logo_white_on_transparent.png" alt="ArenaSwap" class="demo-logo-img" />
+								<Image src={logoImg} alt="ArenaSwap" class="demo-logo-img" loading="eager" />
 								<div class="demo-header-right">
+									<i class="bi bi-question-circle" style="color:#8b949e;font-size:0.9rem;"></i>
 									<i class="bi bi-gear-fill" style="color:#8b949e;font-size:0.9rem;"></i>
 									<div class="demo-switch">
 										<div class="demo-switch-thumb"></div>
@@ -52,112 +88,496 @@
 								</div>
 							</div>
 
-							<!-- Section: Active Tabs -->
+							<!-- Active Tabs heading -->
 							<div class="demo-section-title">Active Tabs</div>
 
-							<!-- NCAAB: BU vs Northeastern — hottest -->
-							<div class="demo-league-label">NCAAB</div>
-							<div class="demo-card" style="border-left:5px solid #CC0000;border-right:5px solid #CC0000;background:linear-gradient(to right,#CC000028,#CC000028),#ffffff;">
-								<div class="demo-card-top">
-									<div class="demo-live">
-										<span class="demo-live-dot"></span>
-										LIVE
-									</div>
-									<div class="demo-ps" style="background:#F75C03;">
-										PowerScore: 89 / 100 <i class="bi bi-chevron-down"></i>
-									</div>
-								</div>
-								<div class="demo-matchup">
-									<div class="demo-team-col">
-										<div class="demo-team-logo-wrap">
-											<img src="https://a.espncdn.com/i/teamlogos/ncaa/500/104.png" alt="BU" class="demo-team-logo-img" />
-										</div>
-										<i class="bi bi-star demo-star-icon"></i>
-										<span class="demo-team-abbr">BU</span>
-									</div>
-									<div class="demo-center-col">
-										<div class="demo-scores">
-											<span class="demo-score">42</span>
-											<span class="demo-score">45</span>
-										</div>
-										<span class="demo-clock">2:42</span>
-										<span class="demo-period">4th</span>
-									</div>
-									<div class="demo-team-col">
-										<div class="demo-team-logo-wrap">
-											<img src="https://a.espncdn.com/i/teamlogos/ncaa/500/111.png" alt="NU" class="demo-team-logo-img" />
-										</div>
-										<i class="bi bi-star-fill demo-star-icon" style="color:#f1c40f;"></i>
-										<span class="demo-team-abbr">NU</span>
-									</div>
-								</div>
-								<div class="demo-meta">
-									<span class="demo-meta-venue">Matthews Arena · Boston, MA</span>
-									<span class="demo-meta-network">TNT, truTV</span>
-								</div>
-								<div class="demo-tab-row">
-									<select class="demo-select">
-										<option>Tab 2: truTV</option>
-									</select>
-								</div>
+							<!-- MLB: Phillies vs Marlins -->
+							<div class="demo-league-row">
+								<Image src={mlbImg} alt="MLB" class="demo-league-icon" />
+								<span class="demo-league-label-text">MLB</span>
 							</div>
+							<HeroCard game={phiMiaGame} excitementResult={phiMiaScore} tabLabel="Tab 1: ESPN+" />
 
-							<!-- NBA: Bulls vs 76ers -->
-							<div class="demo-league-label">NBA</div>
-							<div class="demo-card" style="border-left:5px solid #CE1141;border-right:5px solid #006BB6;background:linear-gradient(to right,#CE114128,#006BB628),#ffffff;">
-								<div class="demo-card-top">
-									<div class="demo-live">
-										<span class="demo-live-dot"></span>
-										LIVE
-									</div>
-									<div class="demo-ps" style="background:#d06800;">
-										PowerScore: 74 / 100 <i class="bi bi-chevron-down"></i>
-									</div>
-								</div>
-								<div class="demo-matchup">
-									<div class="demo-team-col">
-										<div class="demo-team-logo-wrap">
-											<img src="https://a.espncdn.com/i/teamlogos/nba/500/4.png" alt="CHI" class="demo-team-logo-img" />
-										</div>
-										<i class="bi bi-star demo-star-icon"></i>
-										<span class="demo-team-abbr">CHI</span>
-									</div>
-									<div class="demo-center-col">
-										<div class="demo-scores">
-											<span class="demo-score">65</span>
-											<span class="demo-score">68</span>
-										</div>
-										<span class="demo-clock">4:44</span>
-										<span class="demo-period">3rd</span>
-									</div>
-									<div class="demo-team-col">
-										<div class="demo-team-logo-wrap">
-											<img src="https://a.espncdn.com/i/teamlogos/nba/500/20.png" alt="PHI" class="demo-team-logo-img" />
-										</div>
-										<i class="bi bi-star-fill demo-star-icon" style="color:#f1c40f;"></i>
-										<span class="demo-team-abbr">PHI</span>
-									</div>
-								</div>
-								<div class="demo-meta">
-									<span class="demo-meta-venue">Xfinity Mobile Arena · Philadelphia, PA</span>
-									<span class="demo-meta-network">ESPN, NBCSN</span>
-								</div>
-								<div class="demo-tab-row">
-									<select class="demo-select">
-										<option>Tab 1: ESPN</option>
-									</select>
-								</div>
+							<!-- NFL: Eagles vs Cowboys -->
+							<div class="demo-league-row" style="margin-top:0.35rem;">
+								<Image src={nflImg} alt="NFL" class="demo-league-icon" />
+								<span class="demo-league-label-text">NFL</span>
 							</div>
+							<HeroCard game={phiDalGame} excitementResult={phiDalScore} tabLabel="Tab 2: FOX" />
 
 						</div>
 					</div>
 				</div>
 			</div>
-
 		</div>
+
 	</div>
 
 	<div class="hero-scroll-indicator">
 		<i class="bi bi-chevron-down"></i>
 	</div>
 </section>
+
+<script>
+// ─── ArenaSwap Hero Canvas — Data Stream Narrative ──────────────────────────
+//
+// One-shot cycle mirroring the extension's 15s scan interval:
+//   SCATTER  (3.0s)  — raw sports data: gray particles drift loosely
+//   COLLECT  (4.5s)  — ArenaSwap analyses: particles spiral into the popup
+//   EXPLODE  (0.7s)  — PowerScore calculated: colored burst outward
+//   DRIFT    (∞)     — results live: colored particles glow, data labels surface
+//
+
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const canvas  = document.getElementById('hero-canvas') as HTMLCanvasElement;
+const ctx     = canvas.getContext('2d')!;
+
+// ─── Deterministic PRNG seeded per page load ─────────────────────────────────
+let seed = Date.now() & 0xffffffff;
+function rand(): number {
+	seed = (seed * 1664525 + 1013904223) & 0xffffffff;
+	return ((seed >>> 0) / 0xffffffff);
+}
+
+// ─── Brand palette ───────────────────────────────────────────────────────────
+const GRAY: [number,number,number] = [148, 156, 166];
+const BRAND: [number,number,number][] = [
+	[247,  92,   3],
+	[247,  92,   3],
+	[247,  92,   3],
+	[ 34, 116, 165],
+	[ 34, 116, 165],
+	[  0, 204, 102],
+	[217,   3, 104],
+	[241, 196,  15],
+];
+
+// ─── Phase state machine ─────────────────────────────────────────────────────
+type Phase = 'scatter' | 'collect' | 'explode' | 'drift';
+const PHASE_ORDER: Phase[] = ['scatter', 'collect', 'explode', 'drift'];
+const PHASE_DUR: Record<Phase, number> = {
+	scatter: 3000,
+	collect: 4500,
+	explode:  700,
+	drift:   6800, // used only for driftProgress calc; drift phase is terminal
+};
+
+let phaseIdx       = 0;
+let currentPhase: Phase = 'scatter';
+let phaseTimer     = 0;
+let explodeFired   = false;
+
+let bloomT = -1; // -1 = off, 0–1 = animating
+
+let sonarTimer  = 0;
+let sonarT      = -1;
+const SONAR_INT = 4200;
+const SONAR_DUR = 1400;
+
+// ─── Particle ────────────────────────────────────────────────────────────────
+interface Pt {
+	x: number; y: number;
+	vx: number; vy: number;
+	sz: number; baseSz: number;
+	r: number; g: number; b: number;
+	tr: number; tg: number; tb: number; // target brand color
+	ct: number;  // colorT 0=gray, 1=brand
+	op: number;  // opacity
+	opd: number; // opacity direction
+	anchor: boolean; // large node — participates in connection lines
+}
+
+const N = 700;
+const N_ANCHOR = 80; // large nodes; only these draw connection lines
+let W = 0, H = 0, wellX = 0, wellY = 0;
+const pts: Pt[] = [];
+const anchorPts: Pt[] = [];
+
+function lerp(a: number, b: number, t: number): number {
+	return a + (b - a) * Math.min(1, Math.max(0, t));
+}
+
+function spawnEdge(): [number, number] {
+	const e = Math.floor(rand() * 4);
+	if (e === 0) return [0,        rand() * H];
+	if (e === 1) return [W,        rand() * H];
+	if (e === 2) return [rand()*W, 0         ];
+	return            [rand()*W, H         ];
+}
+
+function makePt(scatter = true, anchor = false): Pt {
+	const c = BRAND[Math.floor(rand() * BRAND.length)];
+	const [x, y] = scatter ? [rand()*W, rand()*H] : spawnEdge();
+	const sz = anchor ? rand() * 3 + 3.5 : rand() * 1.0 + 0.4;
+	return {
+		x, y,
+		vx: (rand() - 0.5) * 1.4,
+		vy: (rand() - 0.5) * 1.4,
+		sz, baseSz: sz,
+		r: GRAY[0], g: GRAY[1], b: GRAY[2],
+		tr: c[0], tg: c[1], tb: c[2],
+		ct: 0,
+		op: rand() * 0.4 + 0.15,
+		opd: rand() < 0.5 ? 1 : -1,
+		anchor,
+	};
+}
+
+function computeWell() {
+	const popup = document.querySelector<HTMLElement>('#hero .demo-popup-wrapper');
+	if (popup) {
+		const pr = popup.getBoundingClientRect();
+		const cr = canvas.getBoundingClientRect();
+		wellX = pr.left - cr.left + pr.width  / 2;
+		wellY = pr.top  - cr.top  + pr.height / 2;
+	} else {
+		wellX = W * 0.66;
+		wellY = H * 0.46;
+	}
+}
+
+function resize() {
+	const rect = (canvas.parentElement as HTMLElement).getBoundingClientRect();
+	W = canvas.width  = rect.width;
+	H = canvas.height = rect.height;
+	computeWell();
+	pts.length = 0;
+	anchorPts.length = 0;
+	for (let i = 0; i < N; i++) {
+		const isAnchor = i < N_ANCHOR;
+		const p = makePt(true, isAnchor);
+		pts.push(p);
+		if (isAnchor) anchorPts.push(p);
+	}
+}
+
+// ─── Phase transitions ───────────────────────────────────────────────────────
+function fireExplosion() {
+	for (const p of pts) {
+		const dx = p.x - wellX;
+		const dy = p.y - wellY;
+		const d  = Math.sqrt(dx*dx + dy*dy) || 1;
+		const spd = rand() * 24 + 12;
+		const effD = Math.max(d, 40);
+		p.vx = (dx/effD) * spd + (rand()-0.5) * 5;
+		p.vy = (dy/effD) * spd + (rand()-0.5) * 5;
+		p.ct = 1;
+		p.r  = p.tr; p.g = p.tg; p.b = p.tb;
+		p.sz = p.baseSz * 2.5;
+	}
+	bloomT = 0;
+}
+
+function resetGray() {
+	for (const p of pts) {
+		p.ct = 0;
+		p.r  = GRAY[0]; p.g = GRAY[1]; p.b = GRAY[2];
+		p.sz = p.baseSz;
+	}
+	sonarTimer = 0; sonarT = -1;
+}
+
+function advancePhase(dt: number) {
+	phaseTimer += dt;
+	// Drift is terminal — colored state holds indefinitely
+	if (currentPhase !== 'drift' && phaseTimer >= PHASE_DUR[currentPhase]) {
+		phaseTimer   = 0;
+		explodeFired = false;
+		phaseIdx     = (phaseIdx + 1) % 4;
+		currentPhase = PHASE_ORDER[phaseIdx];
+		if (currentPhase === 'scatter') resetGray();
+	}
+	if (currentPhase === 'explode' && !explodeFired) {
+		fireExplosion();
+		explodeFired = true;
+	}
+}
+
+// ─── Inter-anchor repulsion (drift only) ─────────────────────────────────────
+// Keeps anchor nodes from clumping after explosion; O(N_ANCHOR²) ≈ 3160 checks/frame
+function applyAnchorRepulsion(s: number) {
+	const repR = 85;
+	for (let i = 0; i < anchorPts.length - 1; i++) {
+		const a = anchorPts[i];
+		for (let j = i + 1; j < anchorPts.length; j++) {
+			const b = anchorPts[j];
+			const dx = b.x - a.x;
+			if (dx < -repR || dx > repR) continue;
+			const dy = b.y - a.y;
+			if (dy < -repR || dy > repR) continue;
+			const d = Math.sqrt(dx*dx + dy*dy);
+			if (d < repR && d > 0) {
+				const f = ((repR - d) / repR) * 0.01 * s;
+				a.vx -= (dx/d)*f; a.vy -= (dy/d)*f;
+				b.vx += (dx/d)*f; b.vy += (dy/d)*f;
+			}
+		}
+	}
+}
+
+// ─── Per-particle update ─────────────────────────────────────────────────────
+function updatePt(p: Pt, dt: number) {
+	const s = dt / 16; // 60fps normalizer
+
+	switch (currentPhase) {
+
+		case 'scatter': {
+			// Gentle brownian drift
+			p.vx += (rand()-0.5) * 0.09 * s;
+			p.vy += (rand()-0.5) * 0.09 * s;
+			// Soft edge repulsion (keeps particles on screen)
+			const em = 70;
+			if (p.x < em)     p.vx += 0.05 * (1 - p.x / em) * s;
+			if (p.x > W - em) p.vx -= 0.05 * (1 - (W - p.x) / em) * s;
+			if (p.y < em)     p.vy += 0.05 * (1 - p.y / em) * s;
+			if (p.y > H - em) p.vy -= 0.05 * (1 - (H - p.y) / em) * s;
+			// Speed cap
+			const sp = Math.sqrt(p.vx*p.vx + p.vy*p.vy);
+			if (sp > 0.85) { p.vx = p.vx/sp * 0.85; p.vy = p.vy/sp * 0.85; }
+			// Fade to gray
+			p.r = lerp(p.r, GRAY[0], 0.06*s);
+			p.g = lerp(p.g, GRAY[1], 0.06*s);
+			p.b = lerp(p.b, GRAY[2], 0.06*s);
+			p.ct = Math.max(0, p.ct - 0.02*s);
+			// Size normalize
+			p.sz = lerp(p.sz, p.baseSz, 0.08*s);
+			break;
+		}
+
+		case 'collect': {
+			const dx = wellX - p.x;
+			const dy = wellY - p.y;
+			const d  = Math.sqrt(dx*dx + dy*dy);
+
+			// Absorbed at center → respawn from edge
+			if (d < 22) {
+				const c = BRAND[Math.floor(rand() * BRAND.length)];
+				const [nx, ny] = spawnEdge();
+				p.x = nx; p.y = ny;
+				p.vx = (rand()-0.5)*2; p.vy = (rand()-0.5)*2;
+				p.tr = c[0]; p.tg = c[1]; p.tb = c[2];
+				p.ct = 0; p.r = GRAY[0]; p.g = GRAY[1]; p.b = GRAY[2];
+				break;
+			}
+
+			// Pull strength ramps up over phase
+			const progress = phaseTimer / PHASE_DUR['collect'];
+			const radStr   = (0.05 + progress * 0.18) * s;
+			p.vx += (dx/d) * radStr;
+			p.vy += (dy/d) * radStr;
+
+			// Clockwise swirl (tangential component)
+			const swirlStr = 0.03 * s;
+			p.vx += (-dy/d) * swirlStr;
+			p.vy += ( dx/d) * swirlStr;
+
+			// Speed cap (grows with phase)
+			const spCap = 2.5 + progress * 5;
+			const spd = Math.sqrt(p.vx*p.vx + p.vy*p.vy);
+			if (spd > spCap) { p.vx = p.vx/spd * spCap; p.vy = p.vy/spd * spCap; }
+
+			// Color transitions: gray → brand based on closeness + phase progress
+			const closeness = Math.max(0, 1 - d / (Math.min(W,H) * 0.55));
+			const targetCt  = closeness * (0.4 + progress * 0.6);
+			p.ct = lerp(p.ct, targetCt, 0.04*s);
+			p.r  = lerp(GRAY[0], p.tr, p.ct);
+			p.g  = lerp(GRAY[1], p.tg, p.ct);
+			p.b  = lerp(GRAY[2], p.tb, p.ct);
+			break;
+		}
+
+		case 'explode': {
+			// Maintain momentum, very light damping so particles travel far
+			p.vx *= Math.pow(0.992, s);
+			p.vy *= Math.pow(0.992, s);
+			// Brand color stays
+			p.ct = 1; p.r = p.tr; p.g = p.tg; p.b = p.tb;
+			// Size swell then normalize
+			const ep = phaseTimer / PHASE_DUR['explode'];
+			p.sz = lerp(p.sz, p.baseSz * lerp(2.2, 1, ep), 0.12*s);
+			break;
+		}
+
+		case 'drift': {
+			// Gentle well attraction (unchanged)
+			const dx  = wellX - p.x;
+			const dy  = wellY - p.y;
+			const d   = Math.sqrt(dx*dx + dy*dy);
+			if (d > 55) {
+				const str = Math.min(0.009, 22 / (d*d)) * s;
+				p.vx += dx * str;
+				p.vy += dy * str;
+			}
+
+			// Damping
+			p.vx *= Math.pow(0.977, s);
+			p.vy *= Math.pow(0.977, s);
+
+			// Speed cap: high at start of drift (carry explosion momentum), settles after 35%
+			const driftProg = Math.min(1, phaseTimer / (PHASE_DUR['drift'] * 0.35));
+			const driftCap  = lerp(6.5, 1.4, driftProg);
+			const spd = Math.sqrt(p.vx*p.vx + p.vy*p.vy);
+			if (spd > driftCap) { p.vx = p.vx/spd * driftCap; p.vy = p.vy/spd * driftCap; }
+
+			// Wall bounce (replaces toroidal wrap — prevents corner clustering)
+			const mg = 8;
+			if (p.x < mg)     { p.x = mg;     p.vx =  Math.abs(p.vx) * 0.55 + rand() * 0.4; }
+			if (p.x > W - mg) { p.x = W - mg; p.vx = -(Math.abs(p.vx) * 0.55 + rand() * 0.4); }
+			if (p.y < mg)     { p.y = mg;     p.vy =  Math.abs(p.vy) * 0.55 + rand() * 0.4; }
+			if (p.y > H - mg) { p.y = H - mg; p.vy = -(Math.abs(p.vy) * 0.55 + rand() * 0.4); }
+
+			// Brand color stays
+			p.ct = 1; p.r = p.tr; p.g = p.tg; p.b = p.tb;
+			// Size normalize from post-explode swell
+			p.sz = lerp(p.sz, p.baseSz, 0.04*s);
+			break;
+		}
+	}
+
+	// Opacity breathe (all phases)
+	p.op += p.opd * 0.0018 * s;
+	if (p.op > 0.75) { p.op = 0.75; p.opd = -1; }
+	if (p.op < 0.06) { p.op = 0.06; p.opd =  1; }
+
+	p.x += p.vx * s;
+	p.y += p.vy * s;
+}
+
+// ─── Rendering ───────────────────────────────────────────────────────────────
+function drawConnections() {
+	// Only connect anchor particles — O(N_ANCHOR²) ≈ 3,160 checks vs 244,650
+	const maxD = 130;
+	for (let i = 0; i < anchorPts.length - 1; i++) {
+		const a = anchorPts[i];
+		for (let j = i + 1; j < anchorPts.length; j++) {
+			const b = anchorPts[j];
+			const dx = a.x - b.x;
+			if (dx < -maxD || dx > maxD) continue;
+			const dy = a.y - b.y;
+			if (dy < -maxD || dy > maxD) continue;
+			const d = Math.sqrt(dx*dx + dy*dy);
+			if (d < maxD) {
+				const alpha = (1 - d/maxD) * 0.1;
+				ctx.strokeStyle = `rgba(200,210,220,${alpha})`;
+				ctx.lineWidth   = 0.5;
+				ctx.beginPath();
+				ctx.moveTo(a.x, a.y);
+				ctx.lineTo(b.x, b.y);
+				ctx.stroke();
+			}
+		}
+	}
+}
+
+function drawBloom(t: number) {
+	// White flash at center
+	const flashA = Math.max(0, 1 - t * 4.5);
+	if (flashA > 0) {
+		const fg = ctx.createRadialGradient(wellX, wellY, 0, wellX, wellY, 90);
+		fg.addColorStop(0,    `rgba(255,255,255,${flashA * 0.95})`);
+		fg.addColorStop(0.45, `rgba(247,92,3,${flashA * 0.7})`);
+		fg.addColorStop(1,    `rgba(247,92,3,0)`);
+		ctx.fillStyle = fg;
+		ctx.beginPath();
+		ctx.arc(wellX, wellY, 90, 0, Math.PI*2);
+		ctx.fill();
+	}
+	// Expanding orange ring
+	const ringR = t * 700;
+	const ringA = (1 - t) * 0.5;
+	if (ringR > 0 && ringA > 0) {
+		const rg = ctx.createRadialGradient(wellX, wellY, ringR*0.65, wellX, wellY, ringR);
+		rg.addColorStop(0,   `rgba(247,92,3,0)`);
+		rg.addColorStop(0.5, `rgba(247,92,3,${ringA})`);
+		rg.addColorStop(1,   `rgba(247,92,3,0)`);
+		ctx.fillStyle = rg;
+		ctx.beginPath();
+		ctx.arc(wellX, wellY, ringR, 0, Math.PI*2);
+		ctx.fill();
+	}
+}
+
+function drawSonar(t: number) {
+	const progress = t / SONAR_DUR;
+	const radius   = progress * 180;
+	const alpha    = (1 - progress) * 0.2;
+	const inner    = Math.max(0, radius - 26);
+	const grd = ctx.createRadialGradient(wellX, wellY, inner, wellX, wellY, radius);
+	grd.addColorStop(0,   `rgba(247,92,3,0)`);
+	grd.addColorStop(0.5, `rgba(247,92,3,${alpha})`);
+	grd.addColorStop(1,   `rgba(247,92,3,0)`);
+	ctx.fillStyle = grd;
+	ctx.beginPath();
+	ctx.arc(wellX, wellY, radius, 0, Math.PI*2);
+	ctx.fill();
+}
+
+function drawFrame(dt: number) {
+	ctx.clearRect(0, 0, W, H);
+
+	// Ambient glow at well
+	const ag = ctx.createRadialGradient(wellX, wellY, 0, wellX, wellY, 380);
+	ag.addColorStop(0,    'rgba(247,92,3,0.055)');
+	ag.addColorStop(0.55, 'rgba(34,116,165,0.025)');
+	ag.addColorStop(1,    'rgba(0,0,0,0)');
+	ctx.fillStyle = ag;
+	ctx.fillRect(0, 0, W, H);
+
+	// Connections during collect + drift only
+	if (currentPhase === 'collect' || currentPhase === 'drift') {
+		drawConnections();
+	}
+
+	// Particles
+	for (const p of pts) {
+		ctx.beginPath();
+		ctx.arc(p.x, p.y, Math.max(0.1, p.sz), 0, Math.PI*2);
+		ctx.fillStyle = `rgba(${p.r|0},${p.g|0},${p.b|0},${p.op})`;
+		ctx.fill();
+	}
+
+	// Bloom
+	if (bloomT >= 0) {
+		drawBloom(bloomT);
+		bloomT += dt / PHASE_DUR['explode'];
+		if (bloomT >= 1) bloomT = -1;
+	}
+
+	// Sonar (drift phase only)
+	if (currentPhase === 'drift') {
+		sonarTimer += dt;
+		if (sonarTimer >= SONAR_INT) { sonarTimer = 0; sonarT = 0; }
+		if (sonarT >= 0) {
+			drawSonar(sonarT);
+			sonarT += dt;
+			if (sonarT >= SONAR_DUR) sonarT = -1;
+		}
+	}
+}
+
+// ─── Main loop ───────────────────────────────────────────────────────────────
+let lastTs = 0;
+function loop(ts: number) {
+	const dt = lastTs ? Math.min(ts - lastTs, 50) : 16;
+	lastTs = ts;
+
+	advancePhase(dt);
+	const s = dt / 16;
+	if (currentPhase === 'drift') applyAnchorRepulsion(s);
+	for (const p of pts) updatePt(p, dt);
+	drawFrame(dt);
+
+	requestAnimationFrame(loop);
+}
+
+// ─── Boot ────────────────────────────────────────────────────────────────────
+seed = Date.now() & 0xffffffff;
+resize();
+window.addEventListener('resize', resize);
+
+if (prefersReducedMotion) {
+	drawFrame(0);
+} else {
+	requestAnimationFrame(loop);
+}
+</script>

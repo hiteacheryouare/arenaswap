@@ -7,11 +7,18 @@ import {
 	groupByLeague,
 	isFavoriteTeamGame,
 	leaguesBySportType,
-	loadingMessages,
 	normalizeBackgroundState,
 } from '../entrypoints/popup/popupHelpers';
 import { createFavoriteTeamKey, leagueConfigs } from '@arenaswap/core/constants';
 import type { Game } from '@arenaswap/core/types';
+
+const mockSendMessage = (returnValue: unknown) => {
+	const fn = jest.fn().mockResolvedValueOnce(returnValue);
+	(globalThis as unknown as { browser: { runtime: { sendMessage: typeof fn } } }).browser = {
+		runtime: { sendMessage: fn },
+	};
+	return fn;
+};
 
 const makeGame = (overrides: Partial<Game> & { id: string }): Game => ({
 	league: 'nba',
@@ -35,10 +42,10 @@ describe('leaguesBySportType', () => {
 	// Regression: before the `in` guard was added, groups[config.sportType].push(config) would
 	// crash with "Cannot read properties of undefined (reading 'push')" for any unknown sport type.
 	test('includes every configured league in exactly one sport bucket with no duplicates', () => {
-		const allIds = leagueConfigs.map(c => c.id).sort();
+		const allIds = leagueConfigs.map(c => c.id).toSorted();
 		const bucketedIds = (Object.values(leaguesBySportType) as (typeof leagueConfigs)[])
 			.flatMap(configs => configs.map(c => c.id))
-			.sort();
+			.toSorted();
 		expect(bucketedIds).toEqual(allIds);
 	});
 
@@ -60,9 +67,10 @@ describe('leaguesBySportType', () => {
 });
 
 describe('getRandomLoadingMessage', () => {
-	test('returns one of the configured loading messages', () => {
+	test('returns a non-empty localized loading message', () => {
 		const message = getRandomLoadingMessage();
-		expect(loadingMessages).toContain(message);
+		expect(typeof message).toBe('string');
+		expect(message.length).toBeGreaterThan(0);
 	});
 });
 
@@ -72,7 +80,7 @@ describe('byLeague', () => {
 			makeGame({ id: 'nfl-1', league: 'nfl', sportType: 'football' }),
 			makeGame({ id: 'nba-1', league: 'nba' }),
 		];
-		const sorted = [...games].sort(byLeague);
+		const sorted = games.toSorted(byLeague);
 		expect(sorted[0]!.league).toBe('nba');
 	});
 });
@@ -113,7 +121,7 @@ describe('buildFavoritePinnedComparator', () => {
 		]);
 
 		const comparator = buildFavoritePinnedComparator(favorites, scores);
-		const sorted = [plain, fav].sort(comparator);
+		const sorted = [plain, fav].toSorted(comparator);
 		expect(sorted.map(g => g.id)).toEqual(['fav', 'plain']);
 	});
 
@@ -125,7 +133,7 @@ describe('buildFavoritePinnedComparator', () => {
 			['low', 20],
 		]);
 		const comparator = buildFavoritePinnedComparator(new Set(), scores);
-		const sorted = [low, high].sort(comparator);
+		const sorted = [low, high].toSorted(comparator);
 		expect(sorted.map(g => g.id)).toEqual(['high', 'low']);
 	});
 });
@@ -245,13 +253,6 @@ describe('fetchState', () => {
 	// Fixes: (1) app.tsx uses fetchState(false) on initial load; (2) revalidateIfStale:false
 	// prevents unnecessary re-fetches — updates come via SCORES_UPDATED push messages.
 
-	const mockSendMessage = (returnValue: unknown) => {
-		const fn = jest.fn().mockResolvedValueOnce(returnValue);
-		(globalThis as unknown as { browser: { runtime: { sendMessage: typeof fn } } }).browser = {
-			runtime: { sendMessage: fn },
-		};
-		return fn;
-	};
 
 	const liveGameState = {
 		games: [makeGame({ id: 'live-1', status: 'in' })],

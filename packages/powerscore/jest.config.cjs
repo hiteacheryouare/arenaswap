@@ -1,10 +1,16 @@
 const commonProjectConfig = {
   testEnvironment: 'node',
+  // TODO: revert to ts-jest once it supports TypeScript 7
+  // Replace this block with: { '^.+\\.tsx?$': ['ts-jest', { tsconfig: '<rootDir>/tsconfig.jest.json' }] }
   transform: {
     '^.+\\.tsx?$': [
-      'ts-jest',
+      '@swc/jest',
       {
-        tsconfig: '<rootDir>/tsconfig.jest.json',
+        jsc: {
+          parser: { syntax: 'typescript', tsx: false },
+          target: 'es2020',
+        },
+        module: { type: 'commonjs' },
       },
     ],
   },

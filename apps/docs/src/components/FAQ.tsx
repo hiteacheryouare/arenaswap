@@ -3,41 +3,40 @@ import { useState } from 'react';
 const items = [
 	{
 		q: 'What leagues does ArenaSwap support?',
-		a: 'Currently: NBA, WNBA, NCAAB, NCAAW, NFL, NCAAF, NHL, NCAAMH, MLB, MLS, EPL, and FIFA World Cup — twelve leagues across basketball, football, hockey, baseball, and soccer. You can toggle each league on or off in settings.',
+		a: '30+ leagues across six sports: NBA, NFL, NHL, MLB, MLS, EPL, Champions League, La Liga, Bundesliga, Serie A, Liga MX, NCAAB, NCAAW, NCAAF, NCAA Hockey, WNBA, NWSL, NCAA Baseball, NCAA Softball, World Baseball Classic, FIFA World Cup, FIFA Women\'s World Cup, UFL, Europa League, and all relevant Olympic competitions.',
+	},
+	{
+		q: 'How does tab switching work?',
+		a: 'ArenaSwap continuously scores every live game using PowerScore: a composite rating based on closeness, late-game pressure, momentum, lead changes, and comeback factor. When a game\'s PowerScore pulls meaningfully ahead of what you\'re watching, ArenaSwap switches your tab to it. The gap required is adjustable via sensitivity settings.',
 	},
 	{
 		q: 'Do I need an account or subscription?',
-		a: 'No. ArenaSwap is completely free, requires no account, and collects no personal data. Everything runs locally in your browser. Scores come directly from ESPN\'s public API.',
+		a: 'No. ArenaSwap is completely free, requires no account, and collects no personal data. Everything runs locally in your browser. Live scores come directly from ESPN\'s public API.',
 	},
 	{
 		q: 'Will it work with my streaming service?',
-		a: 'Yes — as long as your stream runs in a browser tab, ArenaSwap can switch to it. This includes ESPN+, Peacock, Paramount+, YouTube TV, Hulu, and any other browser-based stream.',
-	},
-	{
-		q: 'How often does ArenaSwap update?',
-		a: 'Live game data is polled every 15 seconds. When no games are live, the extension shifts into a low-power dormant mode and checks less frequently to save resources.',
+		a: 'Yes. Any stream that runs in a browser tab works. This includes ESPN+, Peacock, Paramount+, YouTube TV, Hulu Live, fuboTV, and anything else browser-based.',
 	},
 	{
 		q: 'How does the PowerScore algorithm work?',
-		a: 'PowerScore is a 100-point scale combining five signals: Closeness (30 pts), Late-Game Pressure (30 pts), Momentum (20 pts), Lead Changes (12 pts), and Comeback Factor (8 pts). Games with frozen clocks (halftime, timeouts) receive a penalty to avoid switching during stoppages.',
+		a: 'PowerScore is a 0–100 scale combining five signals: Closeness, Late-Game Pressure, Momentum, Lead Changes, and Comeback Factor. Tension ramps toward the final buzzer, tied games get an overtime boost, and recent scoring spikes the score then fades. This means even low-scoring sports keep a moving graph. Games during stoppages (halftime, timeouts) receive a small penalty to avoid switching at the wrong moment.',
 	},
 	{
-		q: 'Can I stop ArenaSwap from switching during a specific game?',
-		a: 'Yes. You can unassign a tab from a game at any time using the dropdown in the popup, which removes it from automatic switching. You can also adjust the sensitivity to reduce how often switches happen.',
+		q: 'Can I keep a specific game from being switched away?',
+		a: 'Yes. You can unassign any tab from a game at any time. The extension immediately stops switching away from it. You can also lower the sensitivity setting to make switches less frequent overall.',
 	},
 	{
 		q: 'Does it mute other tabs?',
-		a: 'Yes. When ArenaSwap switches to a game, it unmutes that tab and mutes all other assigned tabs — so you always hear the right broadcast.',
+		a: 'Yes. When ArenaSwap switches to a game, it unmutes that tab and mutes all other assigned tabs so you always hear the right broadcast.',
 	},
 	{
 		q: 'Is the source code available?',
-		a: 'Yes, ArenaSwap is open source. You can find the full codebase on GitHub, including the PowerScore algorithm package.',
+		a: 'Yes. ArenaSwap is open source. The full codebase, including the PowerScore algorithm package, is on GitHub.',
 	},
 ];
 
 const FAQ = () => {
 	const [open, setOpen] = useState<number | null>(null);
-
 	const toggle = (i: number) => setOpen(prev => prev === i ? null : i);
 
 	return (

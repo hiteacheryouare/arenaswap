@@ -2,53 +2,12 @@
 // These pages are intentionally throwaway routes used only to capture
 // promotional product screenshots for the Chrome Web Store.
 
-@font-face {
-	font-family: 'DM Sans';
-	src: url('/arenaswap/fonts/DMSans-Regular.woff2') format('woff2');
-	font-weight: 400;
-	font-style: normal;
-	font-display: swap;
-}
-
-@font-face {
-	font-family: 'DM Sans';
-	src: url('/arenaswap/fonts/DMSans-Medium.woff2') format('woff2');
-	font-weight: 500;
-	font-style: normal;
-	font-display: swap;
-}
-
-@font-face {
-	font-family: 'DM Sans';
-	src: url('/arenaswap/fonts/DMSans-SemiBold.woff2') format('woff2');
-	font-weight: 600;
-	font-style: normal;
-	font-display: swap;
-}
-
-@font-face {
-	font-family: 'DM Sans';
-	src: url('/arenaswap/fonts/DMSans-Bold.woff2') format('woff2');
-	font-weight: 700;
-	font-style: normal;
-	font-display: swap;
-}
-
-@font-face {
-	font-family: 'Lekton';
-	src: url('/arenaswap/fonts/Lekton-Regular.woff2') format('woff2');
-	font-weight: 400;
-	font-style: normal;
-	font-display: swap;
-}
-
-@font-face {
-	font-family: 'Lekton';
-	src: url('/arenaswap/fonts/Lekton-Bold.woff2') format('woff2');
-	font-weight: 700;
-	font-style: normal;
-	font-display: swap;
-}
+@import '@arenaswap/ui/src/bootstrap';
+$font-size-base:   0.9375rem;
+@import 'bootstrap/scss/bootstrap';
+@import '@arenaswap/ui/src/game-card';
+$font-base-url: '/arenaswap/fonts';
+@import '@arenaswap/ui/src/fonts';
 
 @font-face {
 	font-family: 'bootstrap-icons';
@@ -232,31 +191,6 @@ html, body {
 	margin: 6px 0 4px;
 }
 
-.popup-card {
-	border-radius: 0.5rem;
-	padding: 10px;
-	margin-bottom: 8px;
-	border: 1px solid #dee2e6;
-}
-
-.popup-card-top {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	margin-bottom: 4px;
-}
-
-.popup-live {
-	display: flex;
-	align-items: center;
-	gap: 4px;
-	font-size: 0.62rem;
-	font-weight: 700;
-	text-transform: uppercase;
-	letter-spacing: 0.08em;
-	color: #F75C03;
-}
-
 @keyframes popup-live-pulse {
 	0%, 100% { opacity: 1; }
 	50% { opacity: 0.3; }
@@ -271,104 +205,14 @@ html, body {
 	flex-shrink: 0;
 }
 
-.popup-ps {
-	font-size: 0.55rem;
-	font-weight: 700;
-	color: #fff;
-	padding: 2px 6px;
-	border-radius: 0.25rem;
-	letter-spacing: 0.03em;
+// Real game cards are taller than the old hand-coded mockups.
+// Scale the popup down so it fits within the 1280×800 canvas.
+.popup-overlay .popup {
+	transform: scale(0.82);
+	transform-origin: top right;
 }
 
-.popup-matchup {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	gap: 0.65rem;
-	margin: 6px 0 4px;
-}
-
-.popup-team-col {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	min-width: 56px;
-	gap: 2px;
-}
-
-.popup-team-logo-img {
-	width: 40px;
-	height: 40px;
-	object-fit: contain;
-}
-
-.popup-team-abbr {
-	font-size: 0.68rem;
-	color: #111827;
-	font-weight: 700;
-}
-
-.popup-center-col {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	min-width: 80px;
-	gap: 2px;
-}
-
-.popup-scores {
-	display: flex;
-	gap: 1.1rem;
-	align-items: baseline;
-}
-
-.popup-score {
-	font-size: 1.6rem;
-	font-weight: 700;
-	color: #111827;
-	letter-spacing: -0.02em;
-	font-variant-numeric: tabular-nums;
-}
-
-.popup-clock {
-	font-family: 'Lekton', monospace;
-	font-size: 0.8rem;
-	color: #374151;
-}
-
-.popup-period {
-	font-family: 'Lekton', monospace;
-	font-size: 0.65rem;
-	color: #6c757d;
-}
-
-.popup-meta {
-	display: flex;
-	flex-direction: column;
-	gap: 1px;
-	margin-top: 4px;
-}
-
-.popup-meta-venue {
-	font-size: 0.58rem;
-	color: #6c757d;
-}
-
-.popup-meta-network {
-	font-size: 0.55rem;
-	color: #495057;
-}
-
-.popup-tab-row {
-	margin-top: 6px;
-}
-
-.popup-select {
-	width: 100%;
-	background: #f8f9fa;
-	color: #374151;
-	border: 1px solid #dee2e6;
-	border-radius: 0.25rem;
-	font-size: 0.6rem;
-	padding: 2px 6px;
+.popup-float .popup {
+	transform: scale(0.82);
+	transform-origin: bottom right;
 }

@@ -16,6 +16,8 @@ const gameDetailChart = ({ title, option, legendItems = [] }: gameDetailChartPro
 	const chartElementRef = useRef<HTMLDivElement | null>(null);
 	const chartInstanceRef = useRef<EChartsType | null>(null);
 	const resizeHandlerRef = useRef<(() => void) | null>(null);
+	const optionRef = useRef(option);
+	optionRef.current = option;
 
 	useEffect(() => {
 		let isMounted = true;
@@ -23,7 +25,7 @@ const gameDetailChart = ({ title, option, legendItems = [] }: gameDetailChartPro
 			if (!isMounted || !chartElementRef.current) return;
 			const instance = echarts.init(chartElementRef.current, undefined, { renderer: 'canvas' });
 			chartInstanceRef.current = instance;
-			instance.setOption(option, true);
+			instance.setOption(optionRef.current, true);
 			const onResize = () => instance.resize();
 			resizeHandlerRef.current = onResize;
 			window.addEventListener('resize', onResize);

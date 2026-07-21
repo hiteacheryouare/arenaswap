@@ -1,0 +1,34 @@
+// ─── ArenaSwap shared Bootstrap variable overrides ───────────────────────────
+// Import this BEFORE @import 'bootstrap/scss/bootstrap' in each app.
+// App-specific overrides (border-radius, font-size-base, form controls, etc.)
+// should be declared AFTER this import and BEFORE the Bootstrap import.
+
+$prefix:               'as-';
+$primary:              #F75C03;
+$secondary:            #2274A5;
+$success:              #00CC66;
+$warning:              #F1C40F;
+$danger:               #D90368;
+$dark:                 #0d1117;
+$body-bg:              #0d1117;
+$body-color:           #e6edf3;
+$body-secondary-color: #8b949e;
+$border-color:         #30363d;
+$card-bg:              #161b22;
+$card-border-color:    #30363d;
+$card-cap-bg:          transparent;
+$input-bg:             #161b22;
+$input-border-color:   #30363d;
+$input-color:          #e6edf3;
+$form-select-bg:       #161b22;
+$form-select-color:    #e6edf3;
+$form-select-border-color: #30363d;
+$font-family-base:     'DM Sans', system-ui, -apple-system, sans-serif;
+$font-monospace:       'Lekton', monospace;
+
+* {
+	&::selection {
+		background: $primary;
+		color: $body-color;
+	}
+}

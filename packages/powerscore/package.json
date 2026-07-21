@@ -1,6 +1,6 @@
 {
 	"name": "powerscore",
-	"version": "1.4.2",
+	"version": "2.0.0",
 	"description": "The PowerScore excitement scoring engine for live sports games",
 	"type": "module",
 	"main": "./dist/index.js",
@@ -24,7 +24,8 @@
 		"prepack": "npm run build",
 		"test": "npm run test:unit",
 		"test:unit": "jest --passWithNoTests --selectProjects unit",
-		"typecheck": "tsc --noEmit"
+		"typecheck": "tsc --noEmit",
+		"lint": "oxlint ."
 	},
 	"keywords": [
 		"sports",
@@ -50,8 +51,8 @@
 	},
 	"devDependencies": {
 		"@types/jest": "^30.0.0",
-		"jest": "^30.3.0",
-		"ts-jest": "^29.4.9",
+		"jest": "^30.4.2",
+		"ts-jest": "^29.4.11",
 		"typescript": "^6.0.3"
 	}
 }

@@ -1,0 +1,19 @@
+/* ─── ArenaSwap shared Tailwind v4 theme tokens ──────────────────────────────
+   @import this after @import 'tailwindcss' in each app's Tailwind entry file.
+   These tokens map directly to the Bootstrap $primary/$secondary values above
+   so both styling systems stay in sync from a single source. */
+
+@theme {
+	--color-bg:        #0d1117;
+	--color-card:      #161b22;
+	--color-border:    #30363d;
+	--color-primary:   #F75C03;
+	--color-secondary: #2274A5;
+	--color-text:      #e6edf3;
+	--color-muted:     #8b949e;
+	--color-success:   #00CC66;
+	--color-danger:    #D90368;
+	--color-warning:   #F1C40F;
+	--font-sans:       'DM Sans', system-ui, sans-serif;
+	--font-mono:       'Lekton', 'Courier New', monospace;
+}

@@ -1,69 +1,160 @@
 ---
-const leagues = [
-	{ abbr: 'NFL', full: 'National Football League', sport: 'Football' },
-	{ abbr: 'MLB', full: 'Major League Baseball', sport: 'Baseball' },
-	{ abbr: 'NHL', full: 'National Hockey League', sport: 'Hockey' },
-	{ abbr: 'NBA', full: 'National Basketball Association', sport: 'Basketball' },
-	{ abbr: 'NCAAF', full: 'NCAA Football', sport: 'Football' },
-	{ abbr: 'NCAAB', full: "NCAA Men's Basketball", sport: 'Basketball' },
-	{ abbr: 'NCAAW', full: "NCAA Women's Basketball", sport: 'Basketball' },
-	{ abbr: 'MLS', full: 'Major League Soccer', sport: 'Soccer' },
-	{ abbr: 'EPL', full: 'English Premier League', sport: 'Soccer' },
-	{ abbr: 'FIFAWC', full: 'FIFA World Cup', sport: 'Soccer' },
-	{ abbr: 'NCAAMH', full: "NCAA Men's Hockey", sport: 'Hockey' },
-	{ abbr: 'WNBA', full: "Women's National Basketball Association", sport: 'Basketball' },
+import { Image } from 'astro:assets';
+import iconImg from '../assets/icon_white_on_transparent.svg';
+const ESPN = 'https://a.espncdn.com';
+const OLY  = `${ESPN}/i/espn/misc_logos/500-dark/olympics.png`;
+const NCAA = `${ESPN}/i/espn/misc_logos/500-dark/ncaa.png`;
+
+const featured = [
+	{ abbr: 'NBA', full: 'NBA',           logo: `${ESPN}/i/teamlogos/leagues/500/nba.png`             },
+	{ abbr: 'NFL', full: 'NFL',           logo: `${ESPN}/i/teamlogos/leagues/500/nfl.png`             },
+	{ abbr: 'EPL', full: 'Premier League',logo: `${ESPN}/i/leaguelogos/soccer/500-dark/23.png`        },
+];
+
+const allLeagues = [
+	{ abbr: 'NBA',        full: 'NBA',                    logo: `${ESPN}/i/teamlogos/leagues/500/nba.png`                        },
+	{ abbr: 'WNBA',       full: 'WNBA',                   logo: `${ESPN}/i/teamlogos/leagues/500/wnba.png`                       },
+	{ abbr: 'NCAAB',      full: 'NCAA Basketball',        logo: NCAA                                                             },
+	{ abbr: 'NCAAW',      full: "NCAA Women's Hoops",     logo: NCAA                                                             },
+	{ abbr: 'NFL',        full: 'NFL',                    logo: `${ESPN}/i/teamlogos/leagues/500/nfl.png`                        },
+	{ abbr: 'NCAAF',      full: 'NCAA Football',          logo: NCAA                                                             },
+	{ abbr: 'UFL',        full: 'UFL',                    logo: `${ESPN}/i/teamlogos/leagues/500/ufl.png`                        },
+	{ abbr: 'NHL',        full: 'NHL',                    logo: `${ESPN}/i/teamlogos/leagues/500/nhl.png`                        },
+	{ abbr: 'NCAAMH',     full: "NCAA Men's Hockey",      logo: NCAA                                                             },
+	{ abbr: 'MLB',        full: 'MLB',                    logo: `${ESPN}/i/teamlogos/leagues/500/mlb.png`                        },
+	{ abbr: 'CBASE',      full: 'NCAA Baseball',          logo: `${ESPN}/i/espn/misc_logos/500/ncaa_baseball.png`               },
+	{ abbr: 'CSOFT',      full: 'NCAA Softball',          logo: `${ESPN}/i/espn/misc_logos/500/ncaa_womens_softball.png`        },
+	{ abbr: 'WBBC',       full: 'World Baseball Classic', logo: `${ESPN}/redesign/assets/img/icons/ESPN-icon-baseball.png`      },
+	{ abbr: 'MLS',        full: 'MLS',                    logo: `${ESPN}/i/teamlogos/leagues/500/mls.png`                       },
+	{ abbr: 'NWSL',       full: 'NWSL',                   logo: `${ESPN}/i/leaguelogos/soccer/500-dark/2323.png`                },
+	{ abbr: 'EPL',        full: 'Premier League',         logo: `${ESPN}/i/leaguelogos/soccer/500-dark/23.png`                  },
+	{ abbr: 'LALIGA',     full: 'La Liga',                logo: `${ESPN}/i/leaguelogos/soccer/500-dark/15.png`                  },
+	{ abbr: 'BUNDESLIGA', full: 'Bundesliga',             logo: `${ESPN}/i/leaguelogos/soccer/500-dark/10.png`                  },
+	{ abbr: 'SERIEA',     full: 'Serie A',                logo: `${ESPN}/i/leaguelogos/soccer/500-dark/12.png`                  },
+	{ abbr: 'LIGAMX',     full: 'Liga MX',                logo: `${ESPN}/i/leaguelogos/soccer/500-dark/22.png`                  },
+	{ abbr: 'UCL',        full: 'Champions League',       logo: `${ESPN}/i/leaguelogos/soccer/500-dark/2.png`                   },
+	{ abbr: 'UEL',        full: 'Europa League',          logo: `${ESPN}/i/leaguelogos/soccer/500-dark/2310.png`                },
+	{ abbr: 'FIFAWC',     full: 'FIFA World Cup',         logo: `${ESPN}/i/leaguelogos/soccer/500-dark/4.png`                   },
+	{ abbr: 'FIFAWWC',    full: "FIFA Women's World Cup", logo: `${ESPN}/i/leaguelogos/soccer/500-dark/60.png`                  },
+	{ abbr: 'OLYBKM',     full: "Olympic Basketball (M)", logo: OLY                                                             },
+	{ abbr: 'OLYBKW',     full: "Olympic Basketball (W)", logo: OLY                                                             },
+	{ abbr: 'OLYMIH',     full: "Olympic Hockey (M)",     logo: OLY                                                             },
+	{ abbr: 'OLYWIH',     full: "Olympic Hockey (W)",     logo: OLY                                                             },
+	{ abbr: 'OLYSOCM',    full: "Olympic Soccer (M)",     logo: OLY                                                             },
+	{ abbr: 'OLYSOCW',    full: "Olympic Soccer (W)",     logo: OLY                                                             },
+	{ abbr: 'OLYBB',      full: "Olympic Baseball",       logo: OLY                                                             },
 ];
 ---
-<section class="section-pad bg-[rgba(22,27,34,0.5)]">
+
+<section id="leagues" class="section-pad" style="background:rgba(22,27,34,0.5);overflow:hidden;">
 	<div class="container">
 
-		<div class="row align-items-center g-5">
-			<div class="col-lg-5 reveal">
-				<h2 class="section-title mb-4">
-					Twelve leagues.<br>If it's live,<br>it's covered.
+		<!-- Section header -->
+		<div class="row mb-5 reveal">
+			<div class="col-lg-6">
+				<h2 class="section-title">
+					30+ leagues.<br>If it's live,<br>it's covered.
 				</h2>
-				<p class="section-sub">
-					Five sports. One place. ArenaSwap monitors every league at once
-					so you don't have to choose which game to watch — just watch the best one.
+				<p class="section-sub mt-3">
+					Six sports. Every level of play. ArenaSwap monitors them all at once.
 				</p>
 			</div>
+		</div>
 
-			<div class="col-lg-7 reveal reveal-delay-2">
-				<div
-					id="leagues-carousel"
-					class="carousel slide"
-					data-bs-ride="carousel"
-					data-bs-interval="2200"
-				>
-					<div class="carousel-inner">
-						{leagues.map((l, i) => (
-							<div class={`carousel-item${i === 0 ? ' active' : ''}`}>
-								<div class="league-carousel-card">
-									<img
-										src={`/arenaswap/images/leagues/${l.abbr.toLowerCase()}.png`}
-										alt={l.abbr}
-										class="league-carousel-logo"
-										onerror="this.style.display='none'"
-									/>
-									<span class="league-carousel-full">{l.full}</span>
-								</div>
-							</div>
-						))}
+		<!-- ─── Three-act visualization ─────────────────────────────────────── -->
+		<div class="leagues-viz reveal">
+
+			<!-- Act 1: Input — league logos -->
+			<div class="leagues-viz-input">
+				{featured.map((l, i) => (
+					<div class={`lv-logo-card lv-logo-delay-${i + 1}`}>
+						<img
+							src={l.logo}
+							alt={l.abbr}
+							class="lv-logo-img"
+							onerror="this.style.display='none'"
+						/>
+						<span class="lv-logo-name">{l.full}</span>
 					</div>
+				))}
+				<p class="lv-more-label">+ 28 more leagues</p>
+			</div>
 
-					<div class="carousel-indicators league-carousel-indicators">
-						{leagues.map((_, i) => (
-							<button
-								type="button"
-								data-bs-target="#leagues-carousel"
-								data-bs-slide-to={String(i)}
-								class={i === 0 ? 'active' : ''}
-								aria-current={i === 0 ? 'true' : undefined}
-								aria-label={`League ${i + 1}`}
-							/>
-						))}
+			<!-- Flow tracks left → center -->
+			<div class="leagues-viz-tracks-in">
+				<div class="lv-flow-track lv-track-1"></div>
+				<div class="lv-flow-track lv-track-2"></div>
+				<div class="lv-flow-track lv-track-3"></div>
+			</div>
+
+			<!-- Act 2: ArenaSwap processing orb -->
+			<div class="leagues-viz-center">
+				<div class="lv-center-ring lv-ring-outer"></div>
+				<div class="lv-center-ring lv-ring-inner"></div>
+				<div class="lv-center-box">
+					<Image src={iconImg} alt="ArenaSwap" class="lv-center-icon" />
+				</div>
+			</div>
+
+			<!-- Flow tracks center → output -->
+			<div class="leagues-viz-tracks-out">
+				<div class="lv-flow-track lv-track-out-1"></div>
+				<div class="lv-flow-track lv-track-out-2"></div>
+				<div class="lv-flow-track lv-track-out-3"></div>
+			</div>
+
+			<!-- Act 3: Output — Watch, Score, Switch -->
+			<div class="leagues-viz-output">
+
+				<div class="lv-action-card lv-action-watch">
+					<div class="lv-action-icon-wrap">
+						<i class="bi bi-eye-fill"></i>
+					</div>
+					<div class="lv-action-content">
+						<div class="lv-action-title">Watch</div>
+						<div class="lv-action-body">Your tab follows the action</div>
 					</div>
 				</div>
+
+				<div class="lv-action-card lv-action-score">
+					<div class="lv-action-icon-wrap">
+						<i class="bi bi-lightning-fill"></i>
+					</div>
+					<div class="lv-action-content">
+						<div class="lv-action-title">Score</div>
+						<div class="lv-action-body">Every game ranked by PowerScore</div>
+					</div>
+				</div>
+
+				<div class="lv-action-card lv-action-switch">
+					<div class="lv-action-icon-wrap">
+						<i class="bi bi-arrow-left-right"></i>
+					</div>
+					<div class="lv-action-content">
+						<div class="lv-action-title">Switch</div>
+						<div class="lv-action-body">Moves you when a better game pulls ahead</div>
+					</div>
+				</div>
+
+			</div>
+
+		</div>
+		<!-- ─── End visualization ───────────────────────────────────────────── -->
+
+		<!-- Scrolling marquee of all leagues -->
+		<div class="leagues-marquee mt-5 reveal">
+			<div class="leagues-marquee-track">
+				{[...allLeagues, ...allLeagues].map(l => (
+					<div class="leagues-marquee-item">
+						<img
+							src={l.logo}
+							alt={l.abbr}
+							class="leagues-marquee-logo"
+							onerror="this.style.display='none'"
+						/>
+						<span class="leagues-marquee-name">{l.abbr}</span>
+					</div>
+				))}
 			</div>
 		</div>
 

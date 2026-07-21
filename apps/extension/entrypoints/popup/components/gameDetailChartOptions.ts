@@ -1,6 +1,7 @@
 import type { EChartsOption } from 'echarts';
 import { scoreMaxTotal } from '@arenaswap/core/constants';
 import type { Game, PowerScoreSnapshot, ScoreSnapshot } from '@arenaswap/core/types';
+import { resolveTeamColorPair } from '@arenaswap/ui/src/components/colorUtils';
 
 const axisLabelColor = '#8b949e';
 const axisLineColor = 'rgba(71, 85, 105, 0.95)';
@@ -11,44 +12,6 @@ const tooltipBackgroundColor = '#111827';
 const formatTimeLabel = (timestamp: number): string => (
 	new Date(timestamp).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
 );
-
-const hexToRgb = (value: string): { red: number; green: number; blue: number } | null => {
-	const matched = /^#([\da-fA-F]{6})$/.exec(value);
-	if (!matched) return null;
-	const hex = matched[1]!;
-	return {
-		red: Number.parseInt(hex.slice(0, 2), 16),
-		green: Number.parseInt(hex.slice(2, 4), 16),
-		blue: Number.parseInt(hex.slice(4, 6), 16),
-	};
-};
-
-const normalizeChannel = (value: number): number => {
-	const channel = value / 255;
-	return channel <= 0.03928 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4;
-};
-
-const luminance = (value: string): number => {
-	const rgb = hexToRgb(value);
-	if (!rgb) return 0;
-	return (0.2126 * normalizeChannel(rgb.red))
-		+ (0.7152 * normalizeChannel(rgb.green))
-		+ (0.0722 * normalizeChannel(rgb.blue));
-};
-
-const mixTowardWhite = (value: string, amount: number): string => {
-	const rgb = hexToRgb(value);
-	if (!rgb) return value;
-	const red = Math.round(rgb.red + (255 - rgb.red) * amount);
-	const green = Math.round(rgb.green + (255 - rgb.green) * amount);
-	const blue = Math.round(rgb.blue + (255 - rgb.blue) * amount);
-	return `#${[red, green, blue].map(channel => channel.toString(16).padStart(2, '0')).join('')}`;
-};
-
-export const resolveReadableSeriesColor = (value: string | undefined, fallback: string): string => {
-	if (!value || !hexToRgb(value)) return fallback;
-	return luminance(value) < 0.34 ? mixTowardWhite(value, 0.48) : value;
-};
 
 const baseOption = (
 	labels: string[],
@@ -113,8 +76,7 @@ export const buildTeamScoreOption = (scoreHistory: ScoreSnapshot[], game: Game):
 	const awayScores = scoreHistory.map(point => point.awayScore);
 	const homeScores = scoreHistory.map(point => point.homeScore);
 	const showSinglePointSymbols = scoreHistory.length === 1;
-	const awayColor = resolveReadableSeriesColor(game.awayTeam.color, '#60a5fa');
-	const homeColor = resolveReadableSeriesColor(game.homeTeam.color, '#f87171');
+	const [awayColor, homeColor] = resolveTeamColorPair(game.awayTeam, game.homeTeam, '#60a5fa', '#f87171', true);
 	return {
 		...baseOption(labels, 24),
 		series: [
@@ -135,6 +97,115 @@ export const buildTeamScoreOption = (scoreHistory: ScoreSnapshot[], game: Game):
 				symbolSize: showSinglePointSymbols ? 7 : 0,
 				lineStyle: { width: 2.4, color: homeColor },
 				itemStyle: { color: homeColor },
+			},
+		],
+	};
+};
+
+export const buildScoreMarginOption = (scoreHistory: ScoreSnapshot[], game: Game): EChartsOption => {
+	const labels = scoreHistory.map(point => formatTimeLabel(point.timestamp));
+	const margins = scoreHistory.map(point => point.awayScore - point.homeScore);
+	const awayMargins = margins.map(m => Math.max(0, m));
+	const homeMargins = margins.map(m => Math.min(0, m));
+	const showSinglePointSymbols = scoreHistory.length === 1;
+	const [awayColor, homeColor] = resolveTeamColorPair(game.awayTeam, game.homeTeam, '#60a5fa', '#f87171', true);
+	const maxAbsMargin = Math.max(1, ...margins.map(m => Math.abs(m)));
+	const option = baseOption(labels, 24);
+	return {
+		...option,
+		yAxis: {
+			...(option.yAxis as EChartsOption['yAxis']),
+			min: -(maxAbsMargin + 2),
+			max: maxAbsMargin + 2,
+		},
+		tooltip: {
+			trigger: 'axis',
+			backgroundColor: tooltipBackgroundColor,
+			borderColor: axisLineColor,
+			textStyle: { color: textColor, fontSize: 11 },
+			formatter: (params: unknown) => {
+				const arr = params as Array<{ axisValue: string; value: number }>;
+				const time = arr[0]?.axisValue ?? '';
+				const val = (arr[0]?.value ?? 0) + (arr[1]?.value ?? 0);
+				if (val === 0) return `${time}<br/>Tied`;
+				const leader = val > 0 ? game.awayTeam.abbreviation : game.homeTeam.abbreviation;
+				return `${time}<br/>${leader} +${Math.abs(val)}`;
+			},
+		},
+		series: [
+			{
+				type: 'line',
+				name: game.awayTeam.abbreviation,
+				data: awayMargins,
+				smooth: false,
+				showSymbol: showSinglePointSymbols,
+				symbolSize: showSinglePointSymbols ? 7 : 0,
+				lineStyle: { width: 2.5, color: awayColor },
+				areaStyle: { color: awayColor, opacity: 0.2 },
+				itemStyle: { color: awayColor },
+			},
+			{
+				type: 'line',
+				name: game.homeTeam.abbreviation,
+				data: homeMargins,
+				smooth: false,
+				showSymbol: showSinglePointSymbols,
+				symbolSize: showSinglePointSymbols ? 7 : 0,
+				lineStyle: { width: 2.5, color: homeColor },
+				areaStyle: { color: homeColor, opacity: 0.2 },
+				itemStyle: { color: homeColor },
+			},
+		],
+	};
+};
+
+export const buildWinProbabilityOption = (homeWinPcts: number[], game: Game): EChartsOption => {
+	if (homeWinPcts.length === 0) return {};
+	const step = Math.max(1, Math.floor(homeWinPcts.length / 80));
+	const sampled = homeWinPcts.filter((_, i) => i % step === 0 || i === homeWinPcts.length - 1);
+	const homeVals = sampled.map(p => Math.round(p * 100));
+	const awayVals = sampled.map(p => 100 - Math.round(p * 100));
+	const labels = sampled.map(() => '');
+	const [awayColor, homeColor] = resolveTeamColorPair(game.awayTeam, game.homeTeam, '#60a5fa', '#f87171', true);
+	return {
+		...baseOption(labels, 24),
+		yAxis: {
+			type: 'value',
+			min: 0,
+			max: 100,
+			interval: 25,
+			axisLabel: { color: axisLabelColor, fontSize: 10, formatter: (v: number) => `${v}%` },
+			axisLine: { lineStyle: { color: axisLineColor } },
+			splitLine: { lineStyle: { color: splitLineColor } },
+		},
+		tooltip: {
+			trigger: 'axis',
+			backgroundColor: tooltipBackgroundColor,
+			borderColor: axisLineColor,
+			textStyle: { color: textColor, fontSize: 11 },
+			formatter: (params: unknown) => {
+				const arr = params as Array<{ value: number; seriesName: string; color: string }>;
+				return arr.map(p => `<span style="color:${p.color}">●</span> ${p.seriesName}: ${p.value}%`).join('<br/>');
+			},
+		},
+		series: [
+			{
+				type: 'line',
+				name: game.homeTeam.abbreviation,
+				data: homeVals,
+				smooth: true,
+				showSymbol: false,
+				lineStyle: { width: 2, color: homeColor },
+				itemStyle: { color: homeColor },
+			},
+			{
+				type: 'line',
+				name: game.awayTeam.abbreviation,
+				data: awayVals,
+				smooth: true,
+				showSymbol: false,
+				lineStyle: { width: 2, color: awayColor },
+				itemStyle: { color: awayColor },
 			},
 		],
 	};

@@ -1,10 +1,40 @@
 import { defineConfig } from 'wxt';
+import pkg from '../../package.json';
+
+const year = new Date().getFullYear();
+const version = pkg.version;
+const banner = `/*! ArenaSwap v${version} Copyright (c) ${year} ArenaSwap Systems, Ryan Mullin, and Contributors. All rights reserved. */`;
 
 export default defineConfig({
-	modules: ['@wxt-dev/module-react'],
+	modules: ['@wxt-dev/module-react', '@wxt-dev/i18n/module'],
+	vite: () => ({
+		plugins: [
+			{
+				name: 'arenaswap-banner',
+				generateBundle(_, bundle) {
+					for (const chunk of Object.values(bundle)) {
+						if (chunk.type === 'chunk' && chunk.isEntry) {
+							chunk.code = `${banner}\n${chunk.code}`;
+						}
+					}
+				},
+			},
+		],
+		build: {
+			target: 'es2023',
+		},
+		// Firefox MV3: disable eval-based sourcemaps (blocked by CSP) and
+		// compression (causes NS_ERROR_CORRUPTED_CONTENT in extension pages)
+		server: {
+			headers: {
+				'Content-Encoding': 'identity',
+			},
+		},
+	}),
 	manifest: {
 		name: 'ArenaSwap',
-		description: 'Watches every live game across 12 leagues and auto-switches your browser tab to the most exciting one every 15 seconds.',
+		default_locale: 'en',
+		description: 'Watches every live game across 30+ leagues and auto-switches your browser tab to the most exciting one every 15 seconds.',
 		browser_specific_settings: {
 			gecko: {
 				id: 'arenaswap@hiteacheryouare.github.io',

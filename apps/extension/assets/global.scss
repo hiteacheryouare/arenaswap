@@ -20,57 +20,585 @@
   }
 }
 
-/* ─── DM Sans ─────────────────────────────────────────────────────────────── */
-@font-face {
-	font-family: 'DM Sans';
-	src: url('/fonts/DMSans-Regular.woff2') format('woff2');
-	font-weight: 400;
-	font-style: normal;
-	font-display: swap;
-}
-
-@font-face {
-	font-family: 'DM Sans';
-	src: url('/fonts/DMSans-Medium.woff2') format('woff2');
-	font-weight: 500;
-	font-style: normal;
-	font-display: swap;
-}
-
-@font-face {
-	font-family: 'DM Sans';
-	src: url('/fonts/DMSans-SemiBold.woff2') format('woff2');
-	font-weight: 600;
-	font-style: normal;
-	font-display: swap;
-}
-
-@font-face {
-	font-family: 'DM Sans';
-	src: url('/fonts/DMSans-Bold.woff2') format('woff2');
-	font-weight: 700;
-	font-style: normal;
-	font-display: swap;
-}
-
-/* ─── Lekton (clock / monospace) ──────────────────────────────────────────── */
-@font-face {
-	font-family: 'Lekton';
-	src: url('/fonts/Lekton-Regular.woff2') format('woff2');
-	font-weight: 400;
-	font-style: normal;
-	font-display: swap;
-}
-
-@font-face {
-	font-family: 'Lekton';
-	src: url('/fonts/Lekton-Bold.woff2') format('woff2');
-	font-weight: 700;
-	font-style: normal;
-	font-display: swap;
-}
+/* ─── Fonts ───────────────────────────────────────────────────────────────── */
+@import '@arenaswap/ui/src/fonts';
 
 *, *::before, *::after {
 	font-family: 'DM Sans', system-ui, sans-serif;
 	box-sizing: border-box;
 }
+
+/* ─── Ludicrous Speed ─────────────────────────────────────────────────────── */
+@keyframes ludicrousSpeed {
+	0%   { color: #ff4500; text-shadow: 0 0 6px #ff4500; }
+	12%  { color: #ff8c00; text-shadow: 0 0 10px #ff8c00 }
+	25%  { color: #ffd700; text-shadow: 0 0 14px #ffd700 }
+	37%  { color: #ffffff; text-shadow: 0 0 18px #fff, 0 0 28px #ff8c00; }
+	50%  { color: #00e5ff; text-shadow: 0 0 14px #00e5ff; }
+	62%  { color: #ff00ff; text-shadow: 0 0 10px #ff00ff; }
+	75%  { color: #ffd700; text-shadow: 0 0 14px #ffd700; }
+	87%  { color: #ff8c00; text-shadow: 0 0 10px #ff8c00; }
+	100% { color: #ff4500; text-shadow: 0 0 6px #ff4500; }
+}
+
+.ludicrous-speed {
+	animation: ludicrousSpeed 0.5s linear infinite;
+	display: inline-block;
+}
+
+.ludicrous-speed-clickable {
+	cursor: pointer;
+	user-select: none;
+}
+
+/* ─── Ludicrous Speed Overlay ─────────────────────────────────────────────── */
+.ls-overlay {
+	position: fixed;
+	inset: 0;
+	z-index: 9999;
+	background: #000;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	overflow: hidden;
+
+	&.closing {
+		animation: lsOverlayFadeOut 0.45s ease-out forwards;
+	}
+}
+
+.ls-canvas {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+}
+
+/* ── Text layer base ── */
+.ls-text {
+	position: relative;
+	z-index: 10;
+	font-family: 'DM Sans', sans-serif;
+	font-weight: 900;
+	text-align: center;
+	max-width: calc(100% - 1.5rem);
+	animation: lsTextIn 0.16s ease-out;
+}
+
+/* Pre-launch dialogue: anchored at bottom so the starfield shows above */
+.ls-text.dialogue.prelaunch {
+	position: absolute;
+	bottom: 16%;
+	left: 50%;
+	transform: translateX(-50%);
+	width: calc(100% - 2rem);
+	font-size: 1.05rem;
+	font-weight: 600;
+	letter-spacing: 0.01em;
+	text-transform: none;
+	color: #fff;
+	line-height: 1.4;
+	// Heavy outline for readability against any star background
+	text-shadow:
+		0 0 8px #000, 0 0 16px #000,
+		2px 0 6px #000, -2px 0 6px #000,
+		0 2px 6px #000, 0 -2px 6px #000;
+}
+
+/* Post-launch g-force dialogue */
+.ls-text.dialogue.postlaunch {
+	font-size: 1.1rem;
+	font-weight: 600;
+	letter-spacing: 0.01em;
+	text-transform: none;
+	color: #fff;
+	line-height: 1.4;
+	text-shadow: 0 0 12px #000, 0 2px 8px rgba(0, 0, 0, 0.9);
+}
+
+/* External POV: Lone Starr & Barf watching from their slow cockpit */
+.ls-text.dialogue.external {
+	font-size: 1.05rem;
+	font-weight: 500;
+	font-style: italic;
+	letter-spacing: 0.01em;
+	text-transform: none;
+	color: rgba(255, 255, 255, 0.85);
+	line-height: 1.4;
+	text-shadow: 0 0 12px #000, 0 2px 8px rgba(0, 0, 0, 0.9);
+}
+
+/* Panic dialogue */
+.ls-text.dialogue.panic {
+	font-size: 1.1rem;
+	font-weight: 600;
+	letter-spacing: 0.01em;
+	text-transform: none;
+	color: #fff;
+	line-height: 1.4;
+	text-shadow: 0 0 12px #000, 0 2px 8px rgba(0, 0, 0, 0.9);
+}
+
+/* LUDICROUS SPEED... — dramatic announcement, stars still slow */
+.ls-text.announce {
+	font-size: 1.45rem;
+	font-weight: 900;
+	letter-spacing: 0.05em;
+	text-transform: uppercase;
+	white-space: nowrap;
+	color: #fff;
+	text-shadow: 0 0 18px #ff4500, 0 0 36px #ff8c00, 0 0 60px #ff0000;
+	animation: lsSpeedPulse 0.35s ease-in-out infinite alternate;
+}
+
+/* GO! — the command; stars explode the instant this appears */
+.ls-text.go {
+	font-size: 3.2rem;
+	font-weight: 900;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	white-space: nowrap;
+	color: #ff4500;
+	text-shadow: 0 0 24px #ff4500, 0 0 50px #ff8c00, 0 0 90px #ff2200;
+	animation: lsShake 0.06s ease-in-out infinite;
+}
+
+/* ── Dashboard speed signs: lit panel indicators ── */
+.ls-text.speedsign {
+	font-family: 'Lekton', monospace;
+	font-size: 1.35rem;
+	font-weight: 700;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	white-space: nowrap;
+	padding: 0.35em 0.8em;
+	border-width: 2px;
+	border-style: solid;
+	border-radius: 3px;
+	background: rgba(0, 0, 0, 0.6);
+	animation: lsSignIn 0.1s ease-out;
+
+	&.lightspeed {
+		color: #00ff99;
+		border-color: #00ff99;
+		text-shadow: 0 0 12px #00ff99, 0 0 24px #00cc66, 0 0 44px #008844;
+		box-shadow: 0 0 16px rgba(0, 255, 153, 0.3), inset 0 0 12px rgba(0, 255, 153, 0.12);
+	}
+
+	&.ridiculous {
+		color: #ff9500;
+		border-color: #ff9500;
+		text-shadow: 0 0 12px #ff9500, 0 0 24px #ff6000, 0 0 44px #cc4400;
+		box-shadow: 0 0 16px rgba(255, 149, 0, 0.3), inset 0 0 12px rgba(255, 149, 0, 0.12);
+	}
+
+	&.ludicrous {
+		color: #ff2020;
+		border-color: #ff2020;
+		text-shadow: 0 0 12px #ff2020, 0 0 24px #cc0000, 0 0 44px #880000;
+		box-shadow: 0 0 20px rgba(255, 0, 0, 0.4), inset 0 0 12px rgba(255, 0, 0, 0.15);
+		animation: lsSignBlink 0.18s step-end infinite;
+	}
+}
+
+/* THEY'VE GONE TO PLAID — brand-color gradient text, can wrap */
+.ls-text.plaid {
+	font-size: 1.65rem;
+	font-weight: 900;
+	letter-spacing: 0.05em;
+	text-transform: uppercase;
+	line-height: 1.3;
+	color: transparent;
+	// Brand colors: orange, blue, magenta, green, gold
+	background: linear-gradient(90deg,
+		#F75C03, #2274A5, #D90368, #00CC66, #F1C40F,
+		#F75C03, #2274A5, #D90368, #00CC66, #F1C40F, #F75C03);
+	background-size: 400%;
+	-webkit-background-clip: text;
+	background-clip: text;
+	animation: lsPlaidScroll 0.7s linear infinite;
+}
+
+/* PLAID sign variant — big rectangular panel with clear "PLAID" label */
+.ls-text.plaid-rect {
+	font-family: 'Lekton', monospace;
+	font-size: 1.65rem;
+	font-weight: 900;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	white-space: nowrap;
+	padding: 0.5em 1.1em;
+	border-width: 3px;
+	border-style: solid;
+	border-radius: 6px;
+	background: rgba(0, 0, 0, 0.72);
+	color: #fff;
+	border-color: rgba(255,255,255,0.16);
+	box-shadow: 0 8px 20px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
+	animation: lsSignIn 0.12s ease-out;
+}
+
+/* STOP — huge, white, flashing */
+.ls-text.stop {
+	font-size: 3.5rem;
+	font-weight: 900;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	white-space: nowrap;
+	color: #fff;
+	text-shadow: 0 0 28px #fff, 0 0 60px rgba(255, 255, 255, 0.5);
+	animation: lsStopFlash 0.11s ease-in-out infinite;
+}
+
+.ls-emergency-brake {
+	position: absolute;
+	top: 12%;
+	left: 50%;
+	transform: translateX(-50%);
+	z-index: 11;
+
+	font-family: 'Lekton', monospace;
+	font-size: 0.72rem;
+	font-weight: 700;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	white-space: nowrap;
+	color: #fff;
+
+	background: #6b0000;
+	border: 2px solid #cc1010;
+	border-radius: 3px;
+	padding: 0.45em 0.9em;
+	cursor: pointer;
+	outline: none;
+
+	box-shadow:
+		0 0 10px rgba(200, 0, 0, 0.35),
+		0 3px 0 #3a0000,
+		inset 0 1px 0 rgba(255, 255, 255, 0.08);
+
+	animation: lsTextIn 0.2s ease-out;
+
+	&:hover:not(.pressed) {
+		background: #8a0000;
+		border-color: #ff2020;
+		box-shadow:
+			0 0 18px rgba(255, 0, 0, 0.5),
+			0 3px 0 #3a0000,
+			inset 0 1px 0 rgba(255, 255, 255, 0.08);
+	}
+
+	&.pressed {
+		background: #ff1a1a;
+		border-color: #fff;
+		color: #fff;
+		transform: translateX(-50%) translateY(3px);
+		box-shadow:
+			0 0 28px rgba(255, 0, 0, 0.9),
+			0 0 55px rgba(255, 0, 0, 0.5),
+			0 0 0 #3a0000,
+			inset 0 2px 4px rgba(0, 0, 0, 0.4);
+		animation: lsStopFlash 0.14s ease-in-out infinite;
+	}
+}
+
+.ls-skip {
+	position: absolute;
+	bottom: 10px;
+	right: 12px;
+	z-index: 10;
+	font-size: 0.65rem;
+	font-family: 'DM Sans', sans-serif;
+	color: rgba(255, 255, 255, 0.25);
+	pointer-events: none;
+	letter-spacing: 0.04em;
+}
+
+/* ── Keyframes ── */
+@keyframes lsOverlayFadeOut {
+	from { opacity: 1; }
+	to   { opacity: 0; }
+}
+
+@keyframes lsTextIn {
+	from { opacity: 0; transform: translateY(5px); }
+	to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes lsSignIn {
+	from { opacity: 0; transform: scale(0.9); }
+	to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes lsSpeedPulse {
+	from { transform: scale(1); opacity: 0.88; }
+	to   { transform: scale(1.04); opacity: 1; }
+}
+
+@keyframes lsShake {
+	0%, 100% { transform: translate(0, 0) rotate(0deg); }
+	20%      { transform: translate(-1.5px, 1px) rotate(-0.5deg); }
+	50%      { transform: translate(1.5px, -1px) rotate(0.5deg); }
+	80%      { transform: translate(-1px, -1px) rotate(0.3deg); }
+}
+
+@keyframes lsSignBlink {
+	0%, 49%   { opacity: 1; }
+	50%, 100% { opacity: 0.22; }
+}
+
+@keyframes lsPlaidScroll {
+	from { background-position: 0% center; }
+	to   { background-position: 400% center; }
+}
+
+@keyframes lsStopFlash {
+	0%, 100% { opacity: 1; }
+	50%      { opacity: 0.45; }
+}
+
+/* ─── PowerScore Walkthrough Orbit Animation ─── */
+@keyframes powerscoreOrbit {
+	from { transform: rotate(0deg); }
+	to   { transform: rotate(360deg); }
+}
+
+@keyframes powerscorePulseHighlight {
+	0%   { box-shadow: 0 0 4px currentColor, 0 0 0px currentColor; }
+	50%  { box-shadow: 0 0 12px currentColor, 0 0 8px currentColor; }
+	100% { box-shadow: 0 0 4px currentColor, 0 0 0px currentColor; }
+}
+
+.powerscore-orbit-container {
+	position: relative;
+	width: 130px;
+	height: 130px;
+	margin: 0.5rem auto 1rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.powerscore-orbit-ring {
+	position: absolute;
+	width: 100px;
+	height: 100px;
+	border: 1px dashed rgba(255, 255, 255, 0.15);
+	border-radius: 50%;
+	transition: transform 0.5s ease-out;
+
+	&.animating {
+		animation: powerscoreOrbit 10s linear infinite;
+	}
+}
+
+.powerscore-orbit-center {
+	position: absolute;
+	z-index: 10;
+	width: 48px;
+	height: 48px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: #161b22;
+	border: 2px solid #30363d;
+	border-radius: 50%;
+	box-shadow: 0 0 12px rgba(0, 0, 0, 0.5);
+}
+
+.powerscore-orbit-dot {
+	position: absolute;
+	width: 16px;
+	height: 16px;
+	border-radius: 50%;
+	background-color: currentColor;
+	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	box-shadow: 0 0 8px currentColor, 0 0 3px currentColor;
+	cursor: pointer;
+
+	&.active {
+		transform: scale(1.5);
+		z-index: 15;
+		animation: powerscorePulseHighlight 1.8s ease-in-out infinite;
+	}
+
+	&.dimmed {
+		opacity: 0.18;
+		filter: grayscale(40%);
+	}
+}
+
+.powerscore-boost-icon-container {
+	width: 80px;
+	height: 80px;
+	border-radius: 50%;
+	background: rgba(255, 255, 255, 0.03);
+	border: 2px solid rgba(255, 255, 255, 0.1);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin: 1.5rem auto 2rem;
+	box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+	transition: all 0.3s ease;
+}
+
+/* Progress dots bar */
+.powerscore-progress-dots {
+	display: flex;
+	justify-content: center;
+	gap: 6px;
+	margin: 0.5rem 0 1rem;
+	padding: 0;
+	list-style: none;
+}
+
+.powerscore-progress-dot {
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	background: #30363d;
+	border: none;
+	cursor: pointer;
+	padding: 0;
+	transition: all 0.2s ease;
+
+	&:hover {
+		background: #8b949e;
+		transform: scale(1.1);
+	}
+
+	&.active {
+		transform: scale(1.3);
+		background-color: currentColor;
+		box-shadow: 0 0 8px currentColor;
+	}
+}
+
+/* ─── PowerScore Bloom Overlay ─── */
+@keyframes psBloomIn {
+	from {
+		clip-path: circle(0% at var(--bloom-origin-x) var(--bloom-origin-y));
+		opacity: 0;
+	}
+	to {
+		clip-path: circle(150% at var(--bloom-origin-x) var(--bloom-origin-y));
+		opacity: 1;
+	}
+}
+
+@keyframes psBloomOut {
+	from {
+		clip-path: circle(150% at var(--bloom-origin-x) var(--bloom-origin-y));
+		opacity: 1;
+	}
+	to {
+		clip-path: circle(0% at var(--bloom-origin-x) var(--bloom-origin-y));
+		opacity: 0;
+	}
+}
+
+.ps-bloom-overlay {
+	position: absolute;
+	inset: 0;
+	z-index: 100;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	clip-path: circle(0% at var(--bloom-origin-x, 50%) var(--bloom-origin-y, 50%));
+	opacity: 0;
+
+	&.ps-bloom-blooming {
+		animation: psBloomIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+	}
+
+	&.ps-bloom-visible {
+		clip-path: circle(150% at var(--bloom-origin-x, 50%) var(--bloom-origin-y, 50%));
+		opacity: 1;
+	}
+
+	&.ps-bloom-shrinking {
+		animation: psBloomOut 0.4s cubic-bezier(0.55, 0, 1, 0.45) forwards;
+	}
+}
+
+.ps-bloom-content {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	text-align: center;
+	padding: 1.25rem 1.5rem;
+	max-width: 100%;
+	width: 100%;
+	height: 100%;
+	justify-content: center;
+	gap: 0.35rem;
+}
+
+.ps-bloom-dot-badge {
+	width: 18px;
+	height: 18px;
+	border-radius: 50%;
+	margin-bottom: 0.5rem;
+	box-shadow: 0 0 16px currentColor;
+}
+
+.ps-bloom-label {
+	font-size: 1.25rem;
+	font-weight: 700;
+	letter-spacing: -0.01em;
+	margin-bottom: 0.2rem;
+}
+
+.ps-bloom-tap-hint {
+	display: flex;
+	align-items: center;
+	gap: 0.4rem;
+	font-size: 0.75rem;
+	font-weight: 500;
+	opacity: 0.7;
+	margin-top: 1.5rem;
+	letter-spacing: 0.02em;
+}
+
+.ps-bloom-max-badge {
+	font-size: 0.7rem;
+	border: 1px solid;
+	border-radius: 999px;
+	padding: 0.1rem 0.6rem;
+	font-weight: 600;
+	margin-bottom: 0.6rem;
+	opacity: 0.85;
+}
+
+.ps-bloom-section-head {
+	text-transform: uppercase;
+	font-size: 0.58rem;
+	letter-spacing: 0.07em;
+	font-weight: 600;
+	align-self: flex-start;
+}
+
+.ps-bloom-body {
+	font-size: 0.78rem;
+	line-height: 1.45;
+	text-align: left;
+	align-self: flex-start;
+}
+
+.ps-bloom-got-it {
+	margin-top: 1rem;
+	padding: 0.5rem 1.5rem;
+	border-radius: 999px;
+	border: none;
+	font-weight: 700;
+	font-size: 0.85rem;
+	cursor: pointer;
+	transition: opacity 0.15s;
+
+	&:hover {
+		opacity: 0.88;
+	}
+}
+

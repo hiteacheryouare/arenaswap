@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { i18n } from '#i18n';
 import { fetchTeamsForLeagues } from '@arenaswap/core';
 import type { EspnTeamEntry } from '@arenaswap/core';
 import type { LeagueId, LeagueLogoMap, SportType } from '@arenaswap/core/types';
@@ -10,17 +11,20 @@ import OnboardingTeamPicker from './onboardingTeamPicker';
 interface onboardingViewProps {
 	leagueLogos: LeagueLogoMap;
 	onComplete: (leagues: LeagueId[], favorites: string[]) => void;
+	onStartWalkthrough?: (leagues: LeagueId[], favorites: string[]) => void;
 }
 
 const defaultLeagues: LeagueId[] = ['nba', 'nfl', 'nhl', 'mlb'];
 
-const onboardingView = ({ leagueLogos, onComplete }: onboardingViewProps) => {
-	const [step, setStep] = useState<1 | 2 | 3>(1);
+const onboardingView = ({ leagueLogos, onComplete, onStartWalkthrough }: onboardingViewProps) => {
+	const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
 	const [selectedLeagues, setSelectedLeagues] = useState<Set<LeagueId>>(() => new Set(defaultLeagues));
 	const [selectedFavorites, setSelectedFavorites] = useState<Set<string>>(new Set());
 	const [teams, setTeams] = useState<EspnTeamEntry[]>([]);
 	const [teamsLoading, setTeamsLoading] = useState(false);
 	const [teamsError, setTeamsError] = useState(false);
+	const [pendingLeagues, setPendingLeagues] = useState<LeagueId[]>([]);
+	const [pendingFavorites, setPendingFavorites] = useState<string[]>([]);
 
 	const onToggleLeague = (id: LeagueId) => {
 		setSelectedLeagues(prev => {
@@ -67,7 +71,9 @@ const onboardingView = ({ leagueLogos, onComplete }: onboardingViewProps) => {
 	};
 
 	const finish = (withFavorites: boolean) => {
-		onComplete([...selectedLeagues], withFavorites ? [...selectedFavorites] : []);
+		setPendingLeagues([...selectedLeagues]);
+		setPendingFavorites(withFavorites ? [...selectedFavorites] : []);
+		setStep(4);
 	};
 
 	return (
@@ -98,6 +104,40 @@ const onboardingView = ({ leagueLogos, onComplete }: onboardingViewProps) => {
 						onSkip={() => finish(false)}
 						onDone={() => finish(true)}
 					/>
+				)}
+				{step === 4 && (
+					<div className='popup-container d-flex flex-column'>
+						<div className='onb-logo-wrap d-flex justify-content-center pt-4 pb-3'>
+							<img
+								src='/images/full_logo_white_on_transparent.svg'
+								alt='ArenaSwap'
+								className='arenaswap-logo'
+							/>
+						</div>
+						<div className='onb-content-wrap d-flex flex-column grow'>
+							<div className='fw-bold lh-sm mb-2 fs-4 text-center'>{i18n.t('onboarding.allSetTitle')}</div>
+							<div className='text-body-secondary fs-6 text-center mb-4 lh-base'>
+								{i18n.t('onboarding.allSetSubtitle')}
+							</div>
+							<div className='d-flex flex-column gap-3 mt-auto'>
+								<button
+									type='button'
+									className='btn btn-primary w-100'
+									onClick={() => onStartWalkthrough?.(pendingLeagues, pendingFavorites)}
+								>
+									<i className='bi bi-play-fill me-1' />
+									{i18n.t('onboarding.takeTour')}
+								</button>
+								<button
+									type='button'
+									className='btn btn-outline-secondary w-100'
+									onClick={() => onComplete(pendingLeagues, pendingFavorites)}
+								>
+									{i18n.t('onboarding.jumpIn')}
+								</button>
+							</div>
+						</div>
+					</div>
 				)}
 			</div>
 		</div>

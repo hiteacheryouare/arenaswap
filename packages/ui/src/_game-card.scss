@@ -1,0 +1,305 @@
+// ─── ArenaSwap shared game card styles ──────────────────────────────────────
+// Import AFTER Bootstrap variables and source.
+
+// ─── Flip-score (scoreboard slide) animation ─────────────────────────────────
+@keyframes scoreSlideOut {
+	from { transform: translateY(0%); }
+	to   { transform: translateY(110%); }
+}
+
+@keyframes scoreSlideIn {
+	from { transform: translateY(-110%); }
+	to   { transform: translateY(0%); }
+}
+
+.flip-score {
+	display:        inline-block;
+	position:       relative;
+	overflow:       hidden;
+	height:         1em;
+	vertical-align: baseline;
+}
+
+.flip-score-digit {
+	display:     block;
+	line-height: 1;
+}
+
+.flip-score-digit-out {
+	position:  absolute;
+	top:       0;
+	left:      0;
+	right:     0;
+	text-align: center;
+	animation: scoreSlideOut 0.3s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+.flip-score-digit-in {
+	animation: scoreSlideIn 0.3s cubic-bezier(0, 0, 0.6, 1) forwards;
+}
+
+// ─── Lekton monospace helper ──────────────────────────────────────────────────
+.font-lekton {
+	font-family: 'Lekton', monospace;
+	font-variant-numeric: tabular-nums;
+}
+
+// ─── Game card ────────────────────────────────────────────────────────────────
+.game-card {
+	background:    #ffffff;
+	border:        1px solid #dee2e6;
+	border-radius: 0.5rem;
+	padding:       0.75rem;
+	margin-bottom: 0.5rem;
+	position:      relative;
+
+	&.is-ot {
+		border-color: #D90368;
+		box-shadow:   0 0 0 1px rgba(#D90368, 0.25);
+	}
+}
+
+.game-card-clickable {
+	cursor: pointer;
+	transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+
+	&:hover {
+		transform: translateY(-1px);
+		box-shadow: 0 8px 18px rgba(15, 23, 42, 0.18);
+	}
+
+	&:focus-visible {
+		outline: 2px solid rgba(#f97316, 0.9);
+		outline-offset: 2px;
+	}
+}
+
+// ─── Live pulse animation ─────────────────────────────────────────────────────
+@keyframes livePulse {
+	0%, 100% { opacity: 1; }
+	50%       { opacity: 0.3; }
+}
+
+.live-dot {
+	width:         6px;
+	height:        6px;
+	border-radius: 50%;
+	background:    #e53935;
+	flex-shrink:   0;
+	animation:     livePulse 1.5s ease-in-out infinite;
+}
+
+.live-status-label {
+	font-size: 0.65rem;
+	letter-spacing: 0.08em;
+}
+
+// ─── PowerScore bar (bottom of live card + detail view) ──────────────────────
+.game-card-ps-bar-row {
+	margin-top: 0.3rem;
+}
+
+// Bootstrap sets height: 1rem on .progress — SCSS needed to override it.
+.game-card-ps-progress {
+	height: 5px;
+
+	.progress-bar {
+		transition: width 0.4s ease;
+	}
+}
+
+.game-card-ps-score {
+	font-size:            0.6rem;
+	font-weight:          700;
+	letter-spacing:       0.01em;
+	white-space:          nowrap;
+	flex-shrink:          0;
+	font-variant-numeric: tabular-nums;
+}
+
+// ─── PowerScore bar label (shared across live card + detail card) ─────────────
+.game-card-ps-label {
+	font-size:      0.55rem;
+	font-weight:    600;
+	color:          #6c757d;
+	white-space:    nowrap;
+	flex-shrink:    0;
+	letter-spacing: 0.03em;
+}
+
+.game-card-matchup {
+	gap: 0.75rem;
+}
+
+.game-card-center {
+	min-width: 80px;
+}
+
+.pre-game-vs {
+	font-size: 0.8rem;
+	color: #8b949e;
+}
+
+// Shade the warning yellow 60% toward black so it passes WCAG AA on the
+// white card base. contrast-ratio() is Bootstrap's built-in WCAG checker.
+$pre-game-time-color: shade-color($warning, 60%);
+
+.pre-game-start-time {
+	font-size: 0.7rem;
+	color: $pre-game-time-color;
+	margin-top: 0.15rem;
+}
+
+.pre-game-weather {
+	font-size:   0.7rem;
+	color:       #8b949e;
+	display:     flex;
+	align-items: center;
+	gap:         0.2rem;
+	margin-top:  0.15rem;
+}
+
+.game-score-row {
+	gap: 0.5rem;
+	align-items: center;
+}
+
+.game-score-value {
+	font-size: 2.1rem;
+	color: #111827;
+	letter-spacing: -0.04em;
+	font-variant-numeric: tabular-nums;
+}
+
+.game-clock {
+	font-size: 0.85rem;
+	font-weight: 700;
+	color: #111827;
+	margin-top: 0.18rem;
+}
+
+.game-period {
+	font-size: 0.62rem;
+	color: #6c757d;
+	margin-top: 0.06rem;
+	letter-spacing: 0.02em;
+}
+
+.bso-indicator {
+	margin-top: 0.22rem;
+}
+
+.bso-label {
+	font-size: 0.5rem;
+	font-weight: 700;
+	color: #8b949e;
+	letter-spacing: 0.04em;
+}
+
+.bso-dot {
+	font-size: 0.45rem;
+}
+
+.team-logo-fallback {
+	width: 64px;
+	height: 64px;
+	font-size: 0.7rem;
+}
+
+.team-column {
+	min-width: 60px;
+}
+
+.team-abbreviation {
+	font-size: 0.7rem;
+	color: #111827;
+}
+
+[data-team-star='true'] {
+	font-size: 0.78rem;
+	text-decoration: none;
+	color: #6c757d;
+}
+
+[data-team-star='true'][data-favorited='true'] {
+	color: #f1c40f;
+}
+
+.odds-provider-wrap {
+	line-height: 1;
+}
+
+.odds-provider-logo {
+	width: auto;
+	max-width: 64px;
+	object-fit: contain;
+	display: inline-block;
+	flex-shrink: 0;
+}
+
+.game-meta {
+	gap: 0.15rem;
+	margin-top: 0.1rem;
+}
+
+.game-meta-venue {
+	font-size: 0.6rem;
+	color: #6c757d;
+}
+
+.game-meta-networks {
+	font-size: 0.58rem;
+	color: #495057;
+	max-width: 100%;
+	overflow-wrap: anywhere;
+	word-break: break-word;
+	line-height: 1.2;
+	span {
+		font-weight: 700;
+	}
+}
+
+.game-meta-odds {
+	gap: 0.3rem;
+	font-size: 0.58rem;
+	color: #495057;
+	white-space: nowrap;
+	line-height: 1.2;
+}
+
+.game-meta-provider {
+	gap: 0.25rem;
+	font-size: 0.58rem;
+	color: #495057;
+	white-space: nowrap;
+	line-height: 1.2;
+}
+
+// ─── Score separator (thin vertical bar between scores) ──────────────────────
+
+.game-score-sep {
+	width: 1px;
+	height: 1.1em;
+	background: #e2e8f0;
+	flex-shrink: 0;
+	align-self: center;
+}
+
+// ─── Tab assignment select (compact version matching the extension popup) ──────
+
+.game-card-tab-assign {
+	margin-top: 0.4rem;
+	.form-select {
+		background-color: #f8f9fa;
+		color:            #374151;
+		border-color:     #dee2e6;
+		font-size:        0.6rem;
+		padding:          0.15rem 1.5rem 0.15rem 0.4rem;
+		height:           auto;
+		line-height:      1.4;
+		&:focus {
+			border-color: #F75C03;
+			box-shadow:   0 0 0 0.15rem rgba(#F75C03, 0.2);
+		}
+	}
+}

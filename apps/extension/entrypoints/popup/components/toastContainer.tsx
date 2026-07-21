@@ -1,3 +1,4 @@
+import { i18n } from '#i18n';
 import type { toastItem } from '../useToast';
 
 interface toastContainerProps {
@@ -6,9 +7,9 @@ interface toastContainerProps {
 }
 
 const variantConfig: Record<string, { icon: string; label: string }> = {
-	success: { icon: 'bi-check-circle-fill text-success', label: 'Success' },
-	error:   { icon: 'bi-x-circle-fill text-danger',      label: 'Error' },
-	info:    { icon: 'bi-info-circle-fill text-primary',   label: 'Info' },
+	success: { icon: 'bi-check-circle-fill text-success', label: i18n.t('toast.success') },
+	error:   { icon: 'bi-x-circle-fill text-danger',      label: i18n.t('toast.error') },
+	info:    { icon: 'bi-info-circle-fill text-primary',   label: i18n.t('toast.info') },
 };
 
 const toastContainer = ({ toasts, onDismiss }: toastContainerProps) => {
@@ -22,7 +23,7 @@ const toastContainer = ({ toasts, onDismiss }: toastContainerProps) => {
 						<div className='toast-header'>
 							<i className={`bi ${icon} me-2`} />
 							<strong className='me-auto'>{label}</strong>
-							<button type='button' className='btn-close btn-close-white' onClick={() => onDismiss(toast.id)} aria-label='Close' />
+							<button type='button' className='btn-close btn-close-white' onClick={() => onDismiss(toast.id)} aria-label={i18n.t('toast.close')} />
 						</div>
 						<div className='toast-body'>{toast.message}</div>
 					</div>
