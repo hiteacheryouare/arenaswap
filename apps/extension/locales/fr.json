@@ -93,7 +93,7 @@
 		"m39": "On pense à grignoter à la mi-temps...",
 		"m40": "On prépare la fête d'après-match...",
 		"m41": "On enfile le maillot porte-bonheur...",
-		"m42": "On visualise le dance de la victoire...",
+		"m42": "On visualise la danse de la victoire...",
 		"m43": "On astique la vitrine des trophées...",
 		"m44": "On révise les anecdotes sportives...",
 		"m45": "On prépare le barbecue d'avant-match...",
@@ -123,7 +123,7 @@
 		"m69": "On confirme que le pile ou face est honnête...",
 		"m70": "On brief le ramasseur de balles...",
 		"m71": "On monte le volume de la foule...",
-		"m72": "On dépoussiére les produits dérivés du championnat...",
+		"m72": "On dépoussiÈre les produits dérivés du championnat...",
 		"m73": "On hydrate le porteur d'eau..."
 	},
 	"setup": {
@@ -535,7 +535,7 @@
 		"skip": "cliquer pour passer",
 		"announce": "VITESSE RIDICULE...",
 		"go": "GO !",
-		"plaid": "ILS SONT PASSÉS AU CARREAUX !",
+		"plaid": "ILS SONT PASSÉS AUX CARREAUX !",
 		"stop": "STOP !",
 		"emergencyBrake": "⚠ FREIN D'URGENCE — NE JAMAIS UTILISER",
 		"intro": {
@@ -569,7 +569,7 @@
 		"signs": {
 			"light": "VITESSE DE LA LUMIÈRE",
 			"ridiculous": "VITESSE RIDICULE",
-			"ludicrous": "VITESSE LUDICROUS"
+			"ludicrous": "LUDICROUS SPEED"
 		},
 		"panic": {
 			"l1": "On les a dépassés ! Arrêtez ce truc !",
