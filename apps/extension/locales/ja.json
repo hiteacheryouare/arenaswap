@@ -1,0 +1,581 @@
+{
+	"app": {
+		"welcomeToast": "ArenaSwapへようこそ！",
+		"settingsSavedToast": "設定を保存しました",
+		"gameDetailsUnavailable": "試合の詳細を取得できません",
+		"backToGames": "試合一覧に戻る"
+	},
+	"sport": {
+		"basketball": "バスケットボール",
+		"football": "アメリカンフットボール",
+		"hockey": "ホッケー",
+		"baseball": "野球",
+		"softball": "ソフトボール",
+		"soccer": "サッカー"
+	},
+	"date": {
+		"today": "今日",
+		"tomorrow": "明日",
+		"upcoming": "近日"
+	},
+	"tab": {
+		"fallback": "タブ #$1"
+	},
+	"noGames": {
+		"m1": {
+			"title": "チップオフを待ち中。🕐",
+			"sub": "選択したリーグにライブ試合はありません。"
+		},
+		"m2": {
+			"title": "アリーナは静まり返っています。",
+			"sub": "ライブ試合なし。試合開始後にまたご確認ください。"
+		},
+		"m3": {
+			"title": "スポーツ的に静かな一日です。",
+			"sub": "現在ライブ中の試合はありません。"
+		},
+		"m4": {
+			"title": "審判まで休憩中です。",
+			"sub": "選択したリーグでライブ試合は検出されませんでした。"
+		},
+		"m5": {
+			"title": "スコアボードも動いていません。",
+			"sub": "リーグは静かです。試合が始まったらまた見にきてください。"
+		},
+		"m6": {
+			"title": "ホットドッグ屋さんも帰ってしまいました。🌭",
+			"sub": "ライブ試合なし。今は追跡できるものが何もありません。"
+		},
+		"m7": {
+			"title": "スタンドの下を探してみますね…",
+			"sub": "選択したリーグにまだライブ試合はありません。"
+		}
+	},
+	"loading": {
+		"m1": "作戦ボードを確認中…",
+		"m2": "試合映像を研究中…",
+		"m3": "サインを変更中…",
+		"m4": "ベンチウォームアップ中…",
+		"m5": "観客を盛り上げ中…",
+		"m6": "入場曲をキュー中…",
+		"m7": "トロフィーを磨いています…",
+		"m8": "ゲームクロックを同期中…",
+		"m9": "ジャンボトロンを起動中…",
+		"m10": "タイムアウト数を確認中…",
+		"m11": "ルールブックを開いています…",
+		"m12": "スタジアムのスピーカーを調整中…",
+		"m13": "ウォーターボトルを補充中…",
+		"m14": "スポットライトを調整中…",
+		"m15": "審判に根回し中…",
+		"m16": "スポーツ年鑑を参照中…",
+		"m17": "4thダウンで攻めるか悩んでいます…",
+		"m18": "GOAT論争を更新中…",
+		"m19": "プレスボックスに席を確保中…",
+		"m20": "バナーを広げています…",
+		"m21": "放送フィードを同期中…",
+		"m22": "観客数を数えています…",
+		"m23": "チャンピオンリングを磨いています…",
+		"m24": "マスコットを盛り上げ中…",
+		"m25": "スタジアムのライトを点灯中…",
+		"m26": "ジムに行ってきます…",
+		"m27": "クーラーを満たしています…",
+		"m28": "ハイライトリールを確認中…",
+		"m29": "コミッショナーにブーイング中…",
+		"m30": "アリーナを探しています…",
+		"m31": "チーズステーキを食べています…",
+		"m32": "スポーツバーの常連と議論中…",
+		"m33": "ファンタジーリーグの順位を入れ替え中…",
+		"m34": "スポーツの神様に相談中…",
+		"m35": "あのプレーに異議申し立て中…",
+		"m36": "ファウルフラッグを探しています…",
+		"m37": "インスタントリプレーを確認中…",
+		"m38": "ハイプビデオを再生中…",
+		"m39": "ハーフタイムのおやつを検討中…",
+		"m40": "試合後の打ち上げを計画中…",
+		"m41": "ラッキージャージを着ています…",
+		"m42": "勝利のダンスをイメトレ中…",
+		"m43": "トロフィーケースを磨いています…",
+		"m44": "スポーツトリビアを復習中…",
+		"m45": "スタジアム前の焼肉パーティーを準備中…",
+		"m46": "フェイスペインティングの準備中…",
+		"m47": "チームユニフォームを整えています…",
+		"m48": "数字を計算中…",
+		"m49": "スタッツを分析中…",
+		"m50": "花火を打ち上げ中…",
+		"m51": "ライトショーの準備中…",
+		"m52": "試合日の天気を確認中…",
+		"m53": "ファンタジーフットボールの先発を更新中…",
+		"m54": "テレビに向かって叫んでいます…",
+		"m55": "審判に向かって叫んでいます…",
+		"m56": "go birds",
+		"m57": "コーチのクリップボードを確認中…",
+		"m58": "ホットドッグ屋さんの準備を確認中…",
+		"m59": "ボールを空気抜き…いや、膨らませ中…",
+		"m60": "ラスベガスのオッズを確認中…",
+		"m61": "バッティンググローブを締め直しています…",
+		"m62": "キッカーのハムストリングをストレッチ中…",
+		"m63": "契約交渉を見直しています…",
+		"m64": "勝利のピザを注文中…",
+		"m65": "控えQBの自信レベルを確認中…",
+		"m66": "あのトレードについて再考中…",
+		"m67": "選手スタッツカードを磨いています…",
+		"m68": "スローモーションリプレーをセットアップ中…",
+		"m69": "コイントスが本物か確認中…",
+		"m70": "ボールボーイに指示中…",
+		"m71": "観客の歓声を上げています…",
+		"m72": "チャンピオンシップグッズのほこりを払っています…",
+		"m73": "ウォーターボーイに水分補給させています…"
+	},
+	"setup": {
+		"header": "設定",
+		"tabSwitching": "切り替え",
+		"tabLeagues": "リーグ",
+		"optionsSection": "オプション",
+		"showUpcoming": "近日開催の試合を表示",
+		"upcomingDaysLabel": "先読み日数",
+		"upcomingDaysValue": "{days}日",
+		"proTips": "プロのヒント",
+		"switchNotifications": "切り替え通知",
+		"demoMode": "デモモード",
+		"standbySection": "Standby Stream",
+		"enableStandby": "Standby Streamを有効にする",
+		"standbyBelow": "スタンバイ閾値",
+		"morePatient": "より辛抱強く",
+		"switchesSooner": "早めに切り替え",
+		"standbyTab": "スタンバイタブ",
+		"selectTab": "— タブを選択 —",
+		"bettingSection": "ベッティング & オッズ",
+		"showBetting": "ベッティング & オッズを表示",
+		"weatherSection": "天気",
+		"temperatureUnit": "温度単位",
+		"temperatureUnitF": "°F",
+		"temperatureUnitC": "°C",
+		"signalsSection": "PowerScoreシグナル",
+		"signalsExplainer": "無効なシグナルはスコアリングから除外されます。スコアは範囲内に収まるよう再正規化されます。",
+		"signalLastActive": "少なくとも1つのシグナルは有効にしてください",
+		"leaguesExplainer": "選択したリーグのみが追跡対象となり、自動切り替えの対象になります。",
+		"selectNone": "なし",
+		"selectAll": "すべて",
+		"noLeaguesWarning": "リーグが選択されていません。ArenaSwapは試合を追跡しません。",
+		"leagueLogoAlt": "{label}ロゴ"
+	},
+	"main": {
+		"tourButton": "ツアー",
+		"settingsButton": "設定",
+		"onStandbyStream": "Standby Stream 中 — アクションを待っています",
+		"sectionActiveLiveTabs": "アクティブタブ",
+		"sectionOtherLiveGames": "ライブ試合",
+		"sectionUpNext": "次の試合",
+		"showMoreUpcoming": "さらに{count}件表示"
+	},
+	"detail": {
+		"legendCloseness": "接戦度",
+		"legendLateGame": "終盤",
+		"legendMomentum": "勢い",
+		"legendLeadChanges": "リード交代",
+		"legendComeback": "逆転",
+		"startsSoon": "まもなく開始",
+		"final": "終了",
+		"totalLabel": "{total} / {max}",
+		"totalLabelBaseMax": "{total}（ベース上限 {max}）",
+		"back": "戻る",
+		"powerScoreLabel": "PowerScore",
+		"chartPowerScoreTitle": "PowerScoreの推移",
+		"chartPowerScoreEmpty": "PowerScoreのトレンドは数回更新後に表示されます。",
+		"chartScoreTitle": "スコアの推移",
+		"chartScoreEmpty": "スコアのトレンドは数回更新後に表示されます。",
+		"chartWinProbTitle": "勝利確率",
+		"chartWinProbEmpty": "勝利確率は試合ライブ中に読み込まれます。",
+		"chartComponentsTitle": "PowerScoreコンポーネントの推移",
+		"chartComponentsEmpty": "コンポーネントのトレンドは数回更新後に表示されます。"
+	},
+	"gameCard": {
+		"removeFromFavorites": "{team}をお気に入りから削除",
+		"addToFavorites": "{team}をお気に入りに追加",
+		"favorited": "お気に入り済み",
+		"addToFavoritesShort": "お気に入りに追加",
+		"watchLabel": "視聴先：",
+		"oddsProvidedBy": "オッズ提供元：",
+		"openDetails": "{away} vs {home}の詳細を開く",
+		"live": "ライブ",
+		"powerScore": "PowerScore",
+		"vs": "vs"
+	},
+	"gameBoost": {
+		"heading": "ゲームブースト",
+		"explainer": "この試合のPowerScoreにポイントを追加して優先度を上げます。"
+	},
+	"powerScore": {
+		"heading": "PowerScore内訳",
+		"signalCloseness": "接戦度",
+		"signalLateGame": "終盤",
+		"signalMomentum": "勢い",
+		"signalLeadChanges": "リード交代",
+		"signalComeback": "逆転",
+		"volatilityBoost": "ボラティリティブースト",
+		"volatilityPenalty": "ボラティリティペナルティ",
+		"volatility": "ボラティリティ",
+		"signalsTotal": "シグナル合計",
+		"cappedAt": "（上限 {max}）",
+		"signalsNormalizedNote": "シグナル無効時に0〜100範囲を維持するよう再スケール",
+		"tooltipSignalsNormalized": "シグナルをオフにすると、残りのシグナルが比例してスケールアップされ、スコアは0〜100の全範囲を維持します。",
+		"clockStallPenalty": "クロック停止ペナルティ",
+		"clockFrozenNote": "ゲームクロック停止中 — ボーナス前 {before} → {after} pts",
+		"favoriteBoost": "お気に入りブースト",
+		"favoriteTeamsInMatchup": {
+			"1": "マッチアップに1チームのお気に入り",
+			"n": "マッチアップに$1チームのお気に入り"
+		},
+		"gameBoost": "ゲームブースト",
+		"scoringOpportunity": "得点チャンス",
+		"postseasonBoost": "ポストシーズンブースト",
+		"signalOff": "オフ",
+		"finalPowerScore": "最終PowerScore",
+		"tooltipCloseness": "現在の点差から算出されます。同点が最高得点で、差が広がるにつれ下がります。上限は試合の進行度に応じてスケールするため、同じ差でも序盤より終盤のほうが高得点です。",
+		"tooltipLateGame": "試合の進行度とスコアの接近度を組み合わせます。最終ピリオド全体で線形に増加します。大差の試合はここではほぼ加点されません。終盤に同点の場合は延長戦を見越してボーナスポイントが加算されます。",
+		"tooltipMomentum": "直近のスコア履歴ウィンドウでの一方のチームの正味得点を計測します。そのチームが設定量だけ相手を上回った場合に加点されます。その後は時間の経過とともにゼロに向かって減衰します。",
+		"tooltipLeadChanges": "追跡履歴ウィンドウ内でリードが入れ替わった回数を数えます。変化なしはゼロ点で、1回以上の入れ替わりは段階的に高得点になります。次の変化なしに時間が経過すると減衰します。",
+		"tooltipComeback": "ウィンドウ内の最も古い時点の点差と現在の点差を比較します。追いかけているチームが差を縮めた場合、縮めた量に応じて加点されます。試合終盤ほど価値が高く、得点が止まると減衰します。",
+		"tooltipClockStallPenalty": "連続する複数のデータ取得でゲームクロックがほとんど動いていない場合に適用されます。シグナル小計に乗数を掛けて減少させ、クロックが止まったままの時間が長くなるほど深く減点されます。",
+		"tooltipVolatility": "直近の履歴における勝利確率のライブ値が50%からどれだけ離れているかに基づきます。50%付近を推移した試合（どちらのチームにも明確な優位なし）はブーストを受けます。どちらかの方向に一貫して50%から離れていた試合はペナルティを受けます。",
+		"tooltipFavoriteBoost": "お気に入りに登録したチームがこの試合に出場している場合に追加されます。両チームがお気に入りの場合は1チームより多く加算されます。",
+		"tooltipGameBoost": "ゲームブーストコントロールを使って手動でこの試合に適用したポイントです。",
+		"tooltipScoringOpportunity": "アクティブな得点チャンスに基づいて加算されます。アメリカンフットボールではレッドゾーン、野球とソフトボールでは塁上の走者数に応じてスケールします。",
+		"tooltipPostseasonBoost": "プレーオフ、カンファレンス決勝、チャンピオンシップなどのポストシーズン試合に適用されるフラットボーナスです。"
+	},
+	"bso": {
+		"balls": "B",
+		"strikes": "S",
+		"outs": "O"
+	},
+	"onboarding": {
+		"allSetTitle": "準備完了！",
+		"allSetSubtitle": "始める前に簡単なツアーはいかがですか？",
+		"takeTour": "ツアーを開始",
+		"jumpIn": "すぐに始める"
+	},
+	"leaguePicker": {
+		"back": "戻る",
+		"step": "ステップ $1 / $2",
+		"title": "どのスポーツを観ますか？",
+		"all": "すべて",
+		"next": "次へ"
+	},
+	"teamPicker": {
+		"back": "戻る",
+		"step": "ステップ $1 / $2",
+		"title": "チームを選ぶ",
+		"explainer": "お気に入りにはボーナスが付くため、ArenaSwapはその試合を優先します。",
+		"searchPlaceholder": "チームを検索…",
+		"loading": "チームを読み込み中…",
+		"loadError": "チームを読み込めませんでした。",
+		"retry": "再試行",
+		"skipForNow": "今はスキップ",
+		"removeFavorite": "{team}をお気に入りから削除",
+		"addFavorite": "{team}をお気に入りに追加",
+		"noMatch": "「{query}」に一致するチームはありません",
+		"skip": "スキップ",
+		"done": "完了"
+	},
+	"tabControl": {
+		"step": "ステップ $1 / $2",
+		"title": "ArenaSwapへようこそ",
+		"subtitle": "設定を始める前に、何ができるかをご確認ください。",
+		"feature1Title": "タブの自動切り替え",
+		"feature1Body": "ArenaSwapはアクティブ中にブラウザウィンドウを管理します。試合が盛り上がると、他の何かを観ていてもArenaSwapがそのタブに切り替えます。",
+		"feature2Title": "タブを試合に登録するのはあなた",
+		"feature2Body": "各ストリームをそれぞれのタブで開き、拡張機能から試合に割り当てます。ArenaSwapが触るのは登録したタブだけです。",
+		"feature3Title": "コントロールはあなたの手に",
+		"feature3Body": "自動切り替えはいつでも一時停止できます。感度とクールダウンは設定から調整できます。",
+		"gotIt": "了解"
+	},
+	"walkthrough": {
+		"allSet": "準備完了！",
+		"allSetSubtitle": "常に最高の試合を観る準備はできましたか？",
+		"letsGo": "さあ行こう"
+	},
+	"stepToggle": {
+		"step": "ステップ $1 / $2",
+		"title": "オン・オフの切り替え",
+		"subtitle": "スイッチひとつですべてをコントロール。",
+		"tryIt": "↑ 試してみて",
+		"statusActive": "● ArenaSwap 稼働中",
+		"statusPaused": "○ 自動切り替え一時停止中",
+		"bodyBeforeOn": "",
+		"bodyOn": "オン",
+		"bodyAfterOn": "のとき、ArenaSwapは最も盛り上がっているライブ試合へタブを自動的に切り替えます。コントロールを取り戻したいときはいつでもオフにできます。",
+		"next": "次へ"
+	},
+	"stepPowerScore": {
+		"step": "ステップ $1 / $2",
+		"title": "PowerScoreとは",
+		"subtitle": "ArenaSwapの心臓部",
+		"introTitle": "PowerScoreとは",
+		"introBody": "PowerScoreはすべてのライブ試合を動的に評価し、最もエキサイティングな試合を見つけます。その計算式を見てみましょう！",
+		"introButton": "計算式を見る",
+		"closenessMeasured": "現在の点差で計測、試合の進行度で重み付け。",
+		"lateGameMeasured": "ピリオド、残り時間、点差で計測。",
+		"momentumMeasured": "直近の正味得点の急増で計測、時間とともに減衰。",
+		"leadChangesMeasured": "履歴ウィンドウ内のリード入れ替わり回数で計測。",
+		"comebackMeasured": "履歴ウィンドウ内の点差縮小量で計測。",
+		"boostsHeading": "ブーストとペナルティ",
+		"boostsSubtitle": "スコアを微調整する加減算",
+		"clockStallPenaltyName": "クロック停止ペナルティ",
+		"clockStallPenaltyMeasured": "複数回の更新でゲームクロックが停止した場合に適用され、シグナル小計を減少させます。",
+		"volatilityName": "ボラティリティブースト / ペナルティ",
+		"volatilityMeasured": "勝利確率が50%付近で推移する試合をブースト、一方的な試合をペナルティ。",
+		"favoriteBoostName": "お気に入りブースト",
+		"favoriteBoostMeasured": "お気に入りに登録したチームがマッチアップに含まれる場合に加算されます。",
+		"gameBoostName": "ゲームブースト",
+		"gameBoostMeasured": "特定の試合を一時的に優先するために手動で適用するポイントです。",
+		"scoringOpportunityMeasured": "レッドゾーン（アメリカンフットボール）または塁上の走者（野球・ソフトボール）に対して自動的に加算されます。",
+		"postseasonBoostName": "ポストシーズンブースト",
+		"postseasonBoostMeasured": "プレーオフ、カンファレンス決勝、チャンピオンシップ試合に適用されるフラットボーナスです。",
+		"back": "戻る",
+		"next": "次へ"
+	},
+	"stepTabAssign": {
+		"step": "ステップ $1 / $2",
+		"title": "タブを試合に割り当てる",
+		"subtitle": "ArenaSwapが触るのは登録したタブだけです。",
+		"assignPlaceholder": "— タブを割り当て —",
+		"linkHint": "↑ ここにブラウザタブをリンク",
+		"body": "各ストリームをブラウザの別々のタブで開き、試合カードのドロップダウンでリンクしてください。ArenaSwapが切り替えるのは割り当てたタブだけです。",
+		"back": "戻る",
+		"next": "次へ"
+	},
+	"stepAutoSwitch": {
+		"step": "ステップ $1 / $2",
+		"title": "動作を確認しよう",
+		"watchingCaption": "イーグルスの試合を観ています…",
+		"reveal": "見ましたか？ 👀",
+		"revealBody": "76ersの試合が盛り上がりました（PowerScore 89）。ArenaSwapがそれを検知して自動的に切り替えました。クリック不要です。",
+		"back": "戻る",
+		"next": "次へ"
+	},
+	"stepSettings": {
+		"step": "ステップ $1 / $2",
+		"title": "自分好みに調整",
+		"subtitle": "いつでも設定を開いて調整できます。",
+		"sensitivity1": "ほぼ反応なし",
+		"sensitivity2": "おとなしめ",
+		"sensitivity3": "慎重",
+		"sensitivity4": "バランス",
+		"sensitivity5": "積極的",
+		"sensitivity6": "トリガーハッピー",
+		"sensitivity7": "バカ速モード",
+		"sensitivityLabel": "切り替え感度",
+		"sensitivityHelp": "ArenaSwapがタブを切り替えるのに必要なPowerScoreの差を設定します。",
+		"cooldownLabel": "切り替えクールダウン",
+		"cooldownHelp": "タブの高速連続切り替えを抑制するための自動切り替え間の最短時間を設定します。",
+		"moreLeagues": "+ リーグタブでさらに表示",
+		"back": "戻る",
+		"next": "次へ"
+	},
+	"stepGameDetail": {
+		"step": "ステップ $1 / $2",
+		"title": "試合の詳細を見る",
+		"subtitle": "試合カードをタップしてスコアの要因を確認しましょう。",
+		"tapHint": "タップして開く",
+		"detailPreviewTitle": "PowerScore内訳",
+		"signalCloseness": "接戦度",
+		"signalLateGame": "終盤",
+		"signalMomentum": "勢い",
+		"signalLeadChanges": "リード交代",
+		"signalComeback": "逆転",
+		"detailPreviewCaption": "スコアチャートとシグナルの全履歴も確認できます。",
+		"body": "ライブ試合カードをタップすると詳細ビューが開きます。PowerScoreに貢献する各シグナルの完全な内訳と、スコアの時系列チャートが表示されます。",
+		"bodyAfterTap": "また、任意の試合を一時的に優先するための手動ゲームブーストスライダーもあります。",
+		"back": "戻る",
+		"next": "次へ"
+	},
+	"stepLeaguesFavorites": {
+		"step": "ステップ $1 / $2",
+		"title": "リーグとお気に入り",
+		"subtitle": "ArenaSwapが観る試合を形作る2つの方法。",
+		"tabLeagues": "リーグ",
+		"tabFavorites": "お気に入り",
+		"leaguesExplain": "リーグを有効にすると、ArenaSwapがそのリーグのライブ試合を探します。有効なリーグのみが自動切り替えの対象になります。",
+		"leaguesBody": "設定 → リーグで、追跡したいすべてのリーグをオンにしましょう。多く有効にするほど、ArenaSwapが熱い試合を探す範囲が広がります。",
+		"favoritesExplain": "チームにスターを付けると、そのチームの試合にPowerScoreボーナスが付き、自動切り替えで選ばれやすくなります。",
+		"favoritesBody": "お気に入りチームは試合カードや設定でいつでも登録できます。フィルターではありません。すべての試合が表示されますが、あなたのチームは少しだけ有利になります。",
+		"favoritesBonusHint": "お気に入りチームが有効です。その試合にPowerScoreブーストが付きます！",
+		"back": "戻る",
+		"next": "次へ"
+	},
+	"stepReAccess": {
+		"step": "ステップ $1 / $2",
+		"title": "ここに戻る方法",
+		"subtitle": "ツアーはいつでも1タップで。",
+		"callout": "これです",
+		"body": "上部バーの？ボタンをいつでもタップすると、このツアーを再生できます。設定後も使えます。復習したいときや友人に使い方を見せたいときに便利です。",
+		"back": "戻る",
+		"next": "完了"
+	},
+	"standbyGuide": {
+		"step": "ステップ $1 / $2",
+		"title": "Standby Stream",
+		"subtitle": "静かな時間のためのフォールバック。",
+		"quietTitle": "試合が静かになったら",
+		"quietBody": "観ているすべての試合がしきい値を下回ると、ArenaSwapは自動的にスタンバイストリームに切り替えます。",
+		"returnTitle": "自動で戻ってきます",
+		"returnBody": "どれかの試合がしきい値を超えて盛り上がった瞬間に、ArenaSwapがすぐに切り替え直します。",
+		"chooseTitle": "スタンバイタブはあなたが選ぶ",
+		"chooseBody": "好きなストリームをタブで開いて、設定のドロップダウンから選んでください。",
+		"next": "次へ",
+		"setupTitle": "設定方法",
+		"setupSubtitle": "以下の2つを設定してください。",
+		"thresholdTitle": "しきい値を設定",
+		"thresholdBody": "スタンバイが有効になるスコアの低さを選びます。低いほど辛抱強く、高いほど早く切り替わります。",
+		"designateTitle": "スタンバイタブを指定",
+		"designateBody": "スタンバイストリームをタブで開いて、ここに戻りドロップダウンから選択してください。",
+		"gotIt": "了解"
+	},
+	"empty": {
+		"leaguesTitle": "まずリーグを選んでください",
+		"leaguesCopy": "ArenaSwapが試合を切り替えるには、少なくとも1つのリーグを選択する必要があります。",
+		"selectLeagues": "設定でリーグを選択",
+		"refresh": "更新",
+		"settings": "設定 →"
+	},
+	"gameListHeader": {
+		"loading": "読み込み中…",
+		"loadFailed": "試合の読み込みに失敗しました。",
+		"retry": "再試行"
+	},
+	"toast": {
+		"success": "成功",
+		"error": "エラー",
+		"info": "情報",
+		"close": "閉じる"
+	},
+	"tabAssign": {
+		"placeholder": "— タブを割り当て —",
+		"inUse": "（使用中）"
+	},
+	"favoriteTeamBonus": {
+		"label": "お気に入りチームボーナス",
+		"perTeam": "チームごとに+$1",
+		"explainer": "試合にお気に入りチームが1チーム出場するごとに1回適用されます。両チームがお気に入りの場合、ボーナスは2倍になります。"
+	},
+	"postseasonBoost": {
+		"label": "ポストシーズンブースト",
+		"points": "+$1 pts",
+		"explainer": "プレーオフ、トーナメント、ノックアウトラウンドなどポストシーズンに分類されるすべての試合に追加されます。"
+	},
+	"proTip": {
+		"label": "ヒント：",
+		"general": {
+			"t0": "右上のスイッチを切り替えると、設定を失わずにArenaSwapを一時停止できます。",
+			"t1": "ArenaSwapは2つ以上の試合タブを同時に開いているときに最も効果を発揮します。",
+			"t2": "試合カードをクリックするとPowerScoreの内訳を確認できます。",
+			"t3": "複数スポーツをミックスしたい？設定で追加リーグを有効にすると、すべてを同時に切り替えられます。",
+			"t4": "キリンとハリネズミはクールです。すべての試合を同時に観るのも同様です。",
+			"t5": "ArenaSwapは使い続けるほど精度が上がります！"
+		},
+		"main": {
+			"t0": "お気に入りチームにスターを付けると、その試合がリストの上部に固定されます。",
+			"t1": "各試合のドロップダウンからタブを割り当てると、ArenaSwapがどこに切り替えるかがわかります。",
+			"t2": "PowerScoreが高い方がスワップに勝ちます。カラーバッジに注目してください。",
+			"t3": "設定で「近日開催の試合を表示」をオンにすると、試合開始前にタブを事前割り当てできます。",
+			"t4": "まだライブ試合がない？設定のデモモードで、ArenaSwapが架空の試合でどう動くかを試せます。"
+		},
+		"setup": {
+			"t0": "クールダウンを下げると、混戦の終盤でより積極的に切り替えます。",
+			"t1": "お気に入りチームボーナスを上げると、自分のチームがほぼ確実にスワップに勝てます。",
+			"t2": "スイッチ遅延を増やすと、タブが実際に切り替わる前にひと呼吸置けます。",
+			"t3": "デモモードではシミュレートされた試合が動くため、ライブアクションを待たずにスライダーを調整するのに最適です。",
+			"t4": "感度はArenaSwapが切り替える前に必要なPowerScoreのリード差を設定します。"
+		},
+		"detail": {
+			"t0": "PowerScoreは接戦度、終盤のプレッシャー、勢い、リード交代、逆転を組み合わせ、勝利確率の変動に基づくボラティリティブーストまたはペナルティを適用します。",
+			"t1": "更新の間にゲームクロックがほぼ動かないとき、クロック停止ペナルティが発動します。",
+			"t2": "0-0が盛り上がらないスポーツでは、0-0の試合はPowerScoreが少し下がります。",
+			"t3": "チャートにカーソルを合わせると、試合の特定の瞬間を確認できます。",
+			"t4": "マッチアップにお気に入りチームがいると、PowerScoreにボーナスポイントが追加されます。",
+			"t5": "PowerScoreは試合が進むにつれて上がります。序盤の接戦は最終ブザーに向けて盛り上がります。",
+			"t6": "最後の1分で同点？延長戦の可能性を見越してPowerScoreが事前ブーストされるため、ブザービーターを見逃しません。"
+		}
+	},
+	"reviewPrompt": {
+		"title": "ArenaSwapを楽しんでいますか？",
+		"copy": "レビューを書いてくれると、より多くのファンが最高の試合を見つけられます ❤️",
+		"leaveReview": "レビューを書く",
+		"dismiss": "レビューリクエストを閉じる"
+	},
+	"cooldown": {
+		"label": "切り替えクールダウン",
+		"explainer": "タブの高速連続切り替えを抑制するための自動切り替え間の最短時間を設定します。"
+	},
+	"switchDelay": {
+		"label": "切り替え遅延",
+		"explainer": "切り替えを実行する前にこの時間だけ待ちます。ストリームがライブデータより遅れている場合に役立ちます。",
+		"off": "オフ"
+	},
+	"sensitivity": {
+		"label": "切り替え感度",
+		"valueLabel": "{label}（差 ≥ {gap}）",
+		"explainer": "ArenaSwapがタブを切り替えるのに必要なPowerScoreの差を設定します。",
+		"level": {
+			"l1": "ほぼ反応なし",
+			"l2": "おとなしめ",
+			"l3": "慎重",
+			"l4": "バランス",
+			"l5": "積極的",
+			"l6": "トリガーハッピー",
+			"l7": "バカ速モード"
+		}
+	},
+	"footer": {
+		"builtWith": "制作：",
+		"credit": "Ryan MullinがPhiladelphiaとBostonで作りました",
+		"toggleDebug": "デバッグ情報を切り替え"
+	},
+	"ludicrousSpeed": {
+		"skip": "クリックでスキップ",
+		"announce": "バカ速モード…",
+		"go": "ゴー！",
+		"plaid": "チェック柄に突入！",
+		"stop": "ストップ！",
+		"emergencyBrake": "⚠ 緊急ブレーキ — 絶対に使うな",
+		"intro": {
+			"l1": "宇宙船を光速に備えよ。",
+			"l2": "いや、光速では遅すぎる。",
+			"l3": "光速が遅すぎる？",
+			"l4": "そうだ。直接あれに行かないといけない。",
+			"l5": "バカ速モードだ。",
+			"l6": "バカ速モード？",
+			"l7": "そんな速さで飛んだことは一度もない。",
+			"l8": "船が持つかどうか。"
+		},
+		"prelaunch": {
+			"l1": "どうしたサンダーズ大佐？",
+			"l2": "腰抜けか？",
+			"l3": "宇宙船をバカ速モードに備えよ。",
+			"l4": "全員シートベルトを締めろ。",
+			"l5": "すべての出入り口を密閉せよ。",
+			"l6": "モール内の全店を閉鎖せよ。",
+			"l7": "三段サーカスをキャンセルせよ。",
+			"l8": "動物園の動物を全頭固定せよ…",
+			"l9": "黙れ、このへっぽこ将校め！",
+			"l10": "聞けい。バカ速モード発動！",
+			"l11": "長官、シートベルトはよろしいですか？",
+			"l12": "そんなものくそくらえ！"
+		},
+		"gforce": {
+			"l1": "俺は何をしてしまったんだ？",
+			"l2": "脳みそが…足の方に流れていく。"
+		},
+		"signs": {
+			"light": "光速",
+			"ridiculous": "ありえない速さ",
+			"ludicrous": "バカ速モード"
+		},
+		"panic": {
+			"l1": "追い越した！止めろ！",
+			"l2": "止められない。危険すぎる。",
+			"l3": "まず減速しないといけない。",
+			"l4": "止めろ！命令だ！"
+		}
+	}
+}
