@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import * as echarts from 'echarts';
 import type { EChartsOption, EChartsType } from 'echarts';
 
 interface gameDetailChartLegendItem {
@@ -20,24 +21,20 @@ const gameDetailChart = ({ title, option, legendItems = [] }: gameDetailChartPro
 	optionRef.current = option;
 
 	useEffect(() => {
-		let isMounted = true;
-		void import('echarts').then(echarts => {
-			if (!isMounted || !chartElementRef.current) return;
-			const instance = echarts.init(chartElementRef.current, undefined, { renderer: 'canvas' });
-			chartInstanceRef.current = instance;
-			instance.setOption(optionRef.current, true);
-			const onResize = () => instance.resize();
-			resizeHandlerRef.current = onResize;
-			window.addEventListener('resize', onResize);
-		});
+		if (!chartElementRef.current) return;
+		const instance = echarts.init(chartElementRef.current, undefined, { renderer: 'canvas' });
+		chartInstanceRef.current = instance;
+		instance.setOption(optionRef.current, true);
+		const onResize = () => instance.resize();
+		resizeHandlerRef.current = onResize;
+		window.addEventListener('resize', onResize);
 
 		return () => {
-			isMounted = false;
 			if (resizeHandlerRef.current) {
 				window.removeEventListener('resize', resizeHandlerRef.current);
 				resizeHandlerRef.current = null;
 			}
-			chartInstanceRef.current?.dispose();
+			instance.dispose();
 			chartInstanceRef.current = null;
 		};
 	}, []);
