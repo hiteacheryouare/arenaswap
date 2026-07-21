@@ -105,8 +105,13 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 		{ label: game.homeTeam.abbreviation, color: homeLineColor },
 	]), [awayLineColor, game.awayTeam.abbreviation, game.homeTeam.abbreviation, homeLineColor]);
 
+	const isDelayed = game.delayed === true;
 	const [awayAccent, homeAccent] = resolveTeamColorPair(game.awayTeam, game.homeTeam, '#2274A5', '#F75C03');
-	const matchupCardStyle = {
+	const matchupCardStyle = isDelayed ? {
+		borderLeft: '5px solid #F1C40F',
+		borderRight: '5px solid #F1C40F',
+		background: 'linear-gradient(to right, rgba(241,196,15,0.12), rgba(241,196,15,0.12)), #ffffff',
+	} : {
 		borderLeft: `5px solid ${awayAccent}`,
 		borderRight: `5px solid ${homeAccent}`,
 		background: `linear-gradient(to right, ${withMatchupAlpha(awayAccent, '#dee2e628')}, ${withMatchupAlpha(homeAccent, '#dee2e628')}), #ffffff`,
@@ -134,7 +139,7 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 				<div className='game-detail-title'>{game.awayTeam.abbreviation} @ {game.homeTeam.abbreviation}</div>
 			</div>
 
-			<div className='game-card game-detail-matchup' style={matchupCardStyle}>
+			<div className={`game-card game-detail-matchup${isDelayed ? ' is-delayed' : ''}`} style={matchupCardStyle}>
 				<div className='game-detail-teams-row'>
 					<DetailTeamPill team={game.awayTeam} />
 					<div className='game-detail-center'>
@@ -144,6 +149,11 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 							<FlipScore value={game.homeTeam.score} className='fw-bold lh-1 game-detail-score-value' />
 						</div>
 						<div className='game-detail-period'>{statusDetail}</div>
+						{isDelayed && (
+							<span className='badge bg-warning text-dark delay-type-badge mt-1'>
+								{game.delayDescription ?? i18n.t('gameCard.delayFallback')}
+							</span>
+						)}
 						{isInningSport && game.bso && <BsoIndicator {...game.bso} />}
 					</div>
 					<DetailTeamPill team={game.homeTeam} />

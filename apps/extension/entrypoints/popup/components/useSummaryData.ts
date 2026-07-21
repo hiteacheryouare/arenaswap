@@ -104,7 +104,10 @@ const useSummaryData = (game: SummaryGameArg): summaryDataResult => {
 			.then((data: Record<string, unknown>) => {
 				if (cancelled) return;
 				const wp = data?.winprobability;
-				if (Array.isArray(wp)) {
+				// Only replace win probability data with non-empty results. ESPN returns [] during
+				// rain delays and brief interruptions even when earlier at-bats produced data, which
+				// would clear the chart and variance line mid-game and desync them from the score.
+				if (Array.isArray(wp) && wp.length > 0) {
 					setWinProbability(wp.map((p: { homeWinPercentage: number }) => p.homeWinPercentage ?? 0.5));
 				}
 				const series = (data?.seasonseries as SeriesInfo[] | undefined)?.[0];

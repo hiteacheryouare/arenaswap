@@ -31,6 +31,7 @@ const EspnCompetitionStatusSchema = zod.object({
 	type: zod.object({
 		state: zod.string().optional(),
 		name: zod.string().optional(),
+		description: zod.string().optional(),
 		shortDetail: zod.string().optional(),
 	}).optional(),
 });

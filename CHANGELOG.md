@@ -1,5 +1,18 @@
 # Changelog
 
+## Delay State (#59) — 2026-07-21
+
+Visual indicator for suspended games (rain delay, lightning delay, etc.) — closes #59.
+
+- Added `delayed` and `delayDescription` fields to the `Game` type in `packages/core`
+- ESPN status names matching `/delay/i` (e.g. `STATUS_RAIN_DELAY`) now populate these fields; description is taken from `status.type.description` (e.g. "Rain Delay")
+- `EspnCompetitionStatusSchema` extended to parse the `description` field from ESPN's status type object
+- Live game card shows a `⏸ DELAY` header row (amber, using `shade-color($warning, 40%)`) replacing the `● LIVE` row when a game is delayed
+- Scores and clock dim to 40% opacity to signal the game is frozen
+- A compact pill badge below the period shows the specific delay reason (e.g. "Rain Delay"); falls back to generic "Delay" if no description is available
+- Badge follows the existing `.gc2-status-chip` design pattern using the brand `$warning` (#F1C40F) color with `rgba` tints
+- New i18n keys `gameCard.delay` and `gameCard.delayFallback` added to all supported locales
+
 ## German i18n (#51) — 2026-07-21
 
 Adds German (`de.json`) locale — closes #51.

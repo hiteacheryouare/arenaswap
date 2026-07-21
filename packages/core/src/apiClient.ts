@@ -206,6 +206,8 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 	if (!home || !away) return null;
 	const status = comp.status;
 	const state = parseStatus(status.type?.state ?? 'post');
+	const isDelayed = /delay|suspend/i.test(status.type?.name ?? '');
+	const delayDescription = isDelayed ? (status.type?.description?.trim() || undefined) : undefined;
 	const leagueConfig = leagueConfigMap[league];
 	const isInningSport = leagueConfig.periodFormat === 'innings';
 	const situation = comp.situation;
@@ -255,6 +257,8 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 			: undefined,
 		weather: parseWeather(event),
 		isPostseason: event.season?.type === 3,
+		delayed: isDelayed || undefined,
+		delayDescription,
 	};
 };
 

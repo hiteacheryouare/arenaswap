@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Concept C — Full-Width Toast Bar</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&family=Lekton:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: #f3f4f6;
+      display: flex; flex-direction: column; align-items: center;
+      padding: 2rem; gap: 1.5rem;
+    }
+    h2 { font-size: 1rem; color: #374151; text-align: center; margin-bottom: 0.25rem; }
+    p.desc { font-size: 0.8rem; color: #6b7280; text-align: center; max-width: 360px; margin-bottom: 1rem; }
+    .card-wrap { width: 340px; }
+
+    .game-card {
+      background: #ffffff;
+      border: 1px solid #dee2e6;
+      border-radius: 0.5rem;
+      padding: 0.75rem;
+      margin-bottom: 0.5rem;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+      border-left: 5px solid #0077c8;
+      border-right: 5px solid #002d62;
+      background: linear-gradient(to right, #0077c828, #002d6228), #ffffff;
+    }
+    .game-card:hover { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(15,23,42,0.18); }
+
+    @keyframes livePulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+    .live-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: #e53935; flex-shrink: 0;
+      animation: livePulse 1.5s ease-in-out infinite;
+    }
+    .live-status-label {
+      display: flex; align-items: center; gap: 4px;
+      font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; color: #ef4444; margin-bottom: 4px;
+    }
+
+    /* Concept C: full-width toast bar across the bottom edge of the card */
+    .game-card.is-delayed {
+      padding-bottom: 0; /* remove default bottom, bar handles it */
+    }
+
+    .delay-toast-bar {
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      background: #fef3c7;
+      border-top: 1.5px solid #f59e0b;
+      margin: 0.5rem -0.75rem -0; /* bleed to card edges */
+      padding: 5px 12px;
+      border-radius: 0 0 0.4rem 0.4rem;
+    }
+    .delay-toast-bar-icon { font-size: 0.85rem; }
+    .delay-toast-bar-text {
+      font-size: 0.62rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.07em; color: #78350f;
+    }
+    @keyframes shimmer {
+      0%   { background-position: -200% center; }
+      100% { background-position: 200% center; }
+    }
+    .delay-toast-bar.shimmer {
+      background: linear-gradient(90deg, #fef3c7 30%, #fde68a 50%, #fef3c7 70%);
+      background-size: 200% auto;
+      animation: shimmer 2.5s linear infinite;
+    }
+
+    /* also keep live indicator, just change it */
+    .delay-inline-status {
+      display: flex; align-items: center; gap: 4px;
+      font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; color: #b45309; margin-bottom: 4px;
+    }
+    .delay-dot {
+      width: 6px; height: 6px; border-radius: 2px; /* square = paused */
+      background: #f59e0b; flex-shrink: 0;
+    }
+
+    .game-card-matchup {
+      display: flex; align-items: center; justify-content: center; gap: 0.75rem;
+    }
+    .team-column {
+      display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 60px;
+    }
+    .team-logo {
+      width: 48px; height: 48px; border-radius: 50%;
+      background: #f3f4f6; display: flex; align-items: center; justify-content: center;
+      font-size: 0.6rem; font-weight: 700; color: #6b7280;
+    }
+    .team-abbr { font-size: 0.7rem; font-weight: 700; color: #111827; text-align: center; }
+
+    .game-card-center { display: flex; flex-direction: column; align-items: center; min-width: 80px; }
+    .game-score-row { display: flex; align-items: center; gap: 8px; }
+    .game-score-value {
+      font-size: 2.1rem; font-weight: 700; color: #111827;
+      letter-spacing: -0.04em; font-variant-numeric: tabular-nums;
+    }
+    .game-score-sep { width: 1px; height: 1.1em; background: #e2e8f0; flex-shrink: 0; align-self: center; }
+    .game-clock {
+      font-family: 'Lekton', monospace; font-size: 0.85rem; font-weight: 700;
+      color: #111827; margin-top: 0.18rem;
+    }
+    .game-period {
+      font-family: 'Lekton', monospace; font-size: 0.62rem; color: #6c757d;
+      margin-top: 0.06rem; letter-spacing: 0.02em;
+    }
+
+    .game-card-ps-bar-row {
+      display: flex; align-items: center; gap: 8px; margin-top: 0.3rem; margin-bottom: 0.5rem;
+    }
+    .game-card-ps-label {
+      font-size: 0.55rem; font-weight: 600; color: #6c757d;
+      white-space: nowrap; flex-shrink: 0; letter-spacing: 0.03em;
+    }
+    .ps-progress { flex: 1; height: 5px; background: #e5e7eb; border-radius: 999px; overflow: hidden; }
+    .ps-bar { height: 100%; border-radius: 999px; transition: width 0.4s ease; }
+    .game-card-ps-score {
+      font-size: 0.6rem; font-weight: 700; letter-spacing: 0.01em;
+      white-space: nowrap; flex-shrink: 0; font-variant-numeric: tabular-nums;
+    }
+  </style>
+</head>
+<body>
+  <h2>Concept C — Full-Width Toast Bar</h2>
+  <p class="desc">
+    A shimmer amber bar bleeds across the entire card bottom, screaming "hold on!"
+    The circle live dot becomes a square (paused), and the label says "Delay" in amber.
+    Scores stay clear. The bar has a slow shimmer effect to draw attention without being obnoxious.
+  </p>
+
+  <div class="card-wrap">
+    <p style="font-size:0.7rem;color:#6b7280;margin-bottom:4px;">Normal LIVE card</p>
+    <div class="game-card">
+      <div class="live-status-label">
+        <span class="live-dot"></span> Live
+      </div>
+      <div class="game-card-matchup">
+        <div class="team-column">
+          <div class="team-logo">PHI</div>
+          <span class="team-abbr">PHI</span>
+        </div>
+        <div class="game-card-center">
+          <div class="game-score-row">
+            <span class="game-score-value">3</span>
+            <span class="game-score-sep"></span>
+            <span class="game-score-value">1</span>
+          </div>
+          <span class="game-clock">2:14</span>
+          <span class="game-period">7th Inn</span>
+        </div>
+        <div class="team-column">
+          <div class="team-logo">NYM</div>
+          <span class="team-abbr">NYM</span>
+        </div>
+      </div>
+      <div class="game-card-ps-bar-row">
+        <span class="game-card-ps-label">POWERSCORE</span>
+        <div class="ps-progress"><div class="ps-bar" style="width:62%;background:rgb(203,120,80)"></div></div>
+        <span class="game-card-ps-score" style="color:rgb(203,120,80)">62 / 100</span>
+      </div>
+    </div>
+
+    <p style="font-size:0.7rem;color:#6b7280;margin-bottom:4px;margin-top:1rem;">Delayed card</p>
+    <div class="game-card is-delayed">
+      <div class="delay-inline-status">
+        <span class="delay-dot"></span> Delay
+      </div>
+      <div class="game-card-matchup">
+        <div class="team-column">
+          <div class="team-logo">PHI</div>
+          <span class="team-abbr">PHI</span>
+        </div>
+        <div class="game-card-center">
+          <div class="game-score-row">
+            <span class="game-score-value">3</span>
+            <span class="game-score-sep"></span>
+            <span class="game-score-value">1</span>
+          </div>
+          <span class="game-clock">—</span>
+          <span class="game-period">7th Inn</span>
+        </div>
+        <div class="team-column">
+          <div class="team-logo">NYM</div>
+          <span class="team-abbr">NYM</span>
+        </div>
+      </div>
+      <div class="game-card-ps-bar-row">
+        <span class="game-card-ps-label">POWERSCORE</span>
+        <div class="ps-progress"><div class="ps-bar" style="width:0%"></div></div>
+        <span class="game-card-ps-score" style="color:#8b949e">0 / 100</span>
+      </div>
+      <!-- toast bar -->
+      <div class="delay-toast-bar shimmer">
+        <span class="delay-toast-bar-icon">🌧</span>
+        <span class="delay-toast-bar-text">Rain Delay — Game Paused</span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

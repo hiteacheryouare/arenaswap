@@ -198,6 +198,8 @@
 		"oddsProvidedBy": "Odds fornecidas por:",
 		"openDetails": "Abrir detalhes de {away} vs {home}",
 		"live": "EM DIRECTO",
+		"delay": "SUSPENSO",
+		"delayFallback": "Suspenso",
 		"powerScore": "PowerScore",
 		"vs": "vs"
 	},

@@ -83,6 +83,10 @@ export interface Game {
 	weather?: GameCondition;
 	/** True when ESPN classifies this as a postseason game (season.type === 3) */
 	isPostseason?: boolean;
+	/** True when the game is suspended due to a delay (rain, lightning, etc.) */
+	delayed?: boolean;
+	/** Human-readable delay description from ESPN, e.g. "Rain Delay" */
+	delayDescription?: string;
 }
 
 export interface UserPreferences {

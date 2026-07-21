@@ -57,6 +57,17 @@
 		border-color: #D90368;
 		box-shadow:   0 0 0 1px rgba(#D90368, 0.25);
 	}
+
+	&.is-delayed {
+		box-shadow: 0 0 0 1px rgba($warning, 0.4);
+
+		.game-score-value,
+		.game-detail-score-value,
+		.game-clock,
+		.game-detail-period {
+			opacity: 0.4;
+		}
+	}
 }
 
 .game-card-clickable {
@@ -92,6 +103,18 @@
 .live-status-label {
 	font-size: 0.65rem;
 	letter-spacing: 0.08em;
+}
+
+.delay-status-label {
+	font-size:      0.65rem;
+	letter-spacing: 0.08em;
+	color:          shade-color($warning, 40%);
+}
+
+.delay-type-badge {
+	font-size:      0.5rem;
+	letter-spacing: 0.05em;
+	text-transform: uppercase;
 }
 
 // ─── PowerScore bar (bottom of live card + detail view) ──────────────────────

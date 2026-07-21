@@ -198,6 +198,8 @@
 		"oddsProvidedBy": "赔率来源：",
 		"openDetails": "查看 {away} 与 {home} 的比赛详情",
 		"live": "直播",
+		"delay": "中断",
+		"delayFallback": "中断",
 		"powerScore": "PowerScore",
 		"vs": "vs"
 	},

@@ -198,6 +198,8 @@
 		"oddsProvidedBy": "Cotes fournies par :",
 		"openDetails": "Ouvrir les détails de {away} vs {home}",
 		"live": "EN DIRECT",
+		"delay": "EN ATTENTE",
+		"delayFallback": "En attente",
 		"powerScore": "PowerScore",
 		"vs": "vs"
 	},

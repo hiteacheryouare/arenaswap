@@ -22,6 +22,7 @@ const conditionIconMap: Record<string, string> = {
 	'scattered showers': 'bi-cloud-drizzle',
 	'chance rain': 'bi-cloud-drizzle',
 	'chance of rain': 'bi-cloud-drizzle',
+	'a shower': 'bi-cloud-drizzle',
 	'rain': 'bi-cloud-rain',
 	'heavy rain': 'bi-cloud-rain-heavy',
 	'thunderstorms': 'bi-cloud-lightning-rain',

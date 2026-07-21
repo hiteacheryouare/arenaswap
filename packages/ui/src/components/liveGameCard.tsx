@@ -16,6 +16,7 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 	if (!game) return null;
 
 	const isOt = game.period > (leagueConfigMap[game.league]?.regularPeriods ?? 4);
+	const isDelayed = game.delayed === true;
 	const totalPowerScore = excitementResult?.total ?? 0;
 	const sportTypeConfig = sportTypeConfigMap[game.sportType];
 	const isInningSport = leagueConfigMap[game.league]?.periodFormat === 'innings';
@@ -27,20 +28,33 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 	const psBarPercent = Math.min((totalPowerScore / scoreMaxTotal) * 100, 100);
 	const { onClick: onCardClick, onKeyDown: onCardKeyDown } = buildCardHandlers(onOpenGameDetail, game.id);
 
+	const delayCardStyle = isDelayed ? {
+		borderLeft: '5px solid #F1C40F',
+		borderRight: '5px solid #F1C40F',
+		background: 'linear-gradient(to right, rgba(241,196,15,0.12), rgba(241,196,15,0.12)), #ffffff',
+	} : buildGameCardStyle(game);
+
 	return (
 		<div
-			className={`game-card game-card-clickable${isOt ? ' is-ot' : ''}`}
-			style={buildGameCardStyle(game)}
+			className={`game-card game-card-clickable${isOt ? ' is-ot' : ''}${isDelayed ? ' is-delayed' : ''}`}
+			style={delayCardStyle}
 			role='button'
 			tabIndex={0}
 			onClick={onCardClick}
 			onKeyDown={onCardKeyDown}
 			aria-label={t('gameCard.openDetails', { away: game.awayTeam.abbreviation, home: game.homeTeam.abbreviation })}
 		>
-			<div className='d-flex align-items-center gap-1 fw-bold text-uppercase text-primary live-status-label mb-1'>
-				<span className='live-dot' />
-				{t('gameCard.live')}
-			</div>
+			{isDelayed ? (
+				<div className='d-flex align-items-center gap-1 fw-bold text-uppercase delay-status-label mb-1'>
+					<i className='bi bi-pause-fill' />
+					{t('gameCard.delay')}
+				</div>
+			) : (
+				<div className='d-flex align-items-center gap-1 fw-bold text-uppercase text-primary live-status-label mb-1'>
+					<span className='live-dot' />
+					{t('gameCard.live')}
+				</div>
+			)}
 
 			<div className='d-flex align-items-center justify-content-center game-card-matchup'>
 				<TeamColumn leagueId={game.league} team={game.awayTeam} isFavorited={awayFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} />
@@ -63,6 +77,11 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 					<span className='font-lekton game-period'>
 						{isInningSport && game.topOfInning !== undefined ? (game.topOfInning ? '▲ ' : '▼ ') : ''}{formatPeriod(game)}
 					</span>
+					{isDelayed && (
+						<span className='badge bg-warning text-dark delay-type-badge mt-1'>
+							{game.delayDescription ?? t('gameCard.delayFallback')}
+						</span>
+					)}
 					{isInningSport && game.bso && <BsoIndicator {...game.bso} />}
 					{game.sportType === 'football' && game.downDistance && (
 						<span className='font-lekton game-period'>{game.downDistance}</span>

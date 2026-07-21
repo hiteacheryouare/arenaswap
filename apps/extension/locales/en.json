@@ -198,6 +198,8 @@
 		"oddsProvidedBy": "Odds provided by:",
 		"openDetails": "Open details for {away} vs {home}",
 		"live": "LIVE",
+		"delay": "DELAY",
+		"delayFallback": "Delay",
 		"powerScore": "PowerScore",
 		"vs": "vs"
 	},
