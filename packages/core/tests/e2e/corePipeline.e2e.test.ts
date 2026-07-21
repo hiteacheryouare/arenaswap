@@ -343,7 +343,7 @@ describe('core API + excitement e2e flow', () => {
 			.toSorted((a, b) => b.score.total - a.score.total);
 
 		expect(ranked.map(item => item.id)).toEqual(['nba-live-momentum', 'nba-live-critical', 'nba-live-fringe']);
-		expect(ranked.map(item => item.score.total)).toEqual([100, 56, 6]);
+		expect(ranked.map(item => item.score.total)).toEqual([100, 77, 8]);
 		expect(ranked[0]?.score.reason).toContain('HOM on a 10-0 run');
 		// Critical game is tied in the final 45s → OT anticipation headlines.
 		expect(ranked[1]?.score.reason).toContain('overtime looming');

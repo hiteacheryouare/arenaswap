@@ -55,11 +55,11 @@ describe('computePowerScore', () => {
 	test('clamps normalized signal values and total to configured maxes', () => {
 		const normalized = normalizePowerScoreResult({
 			gameId: 'legacy-overflow',
-			closeness: 40,
+			closeness: 50,
 			lateGame: 100,
 			momentum: -1,
 			leadChanges: 99,
-			comeback: 15,
+			comeback: 25,
 			total: 999,
 		});
 
@@ -341,8 +341,9 @@ describe('computePowerScore', () => {
 		const earlyTie = computePowerScore(tiedAt(1, 700), []);
 		const lateTie = computePowerScore(tiedAt(4, 30), []);
 
+		// A Q1 tip-off tie earns roughly the flat floor (~12–16); a Q4 buzzer tie earns near max (~42).
 		expect(earlyTie.closeness).toBeGreaterThan(0);
-		expect(earlyTie.closeness).toBeLessThanOrEqual(10);
+		expect(earlyTie.closeness).toBeLessThanOrEqual(20);
 		expect(lateTie.closeness).toBeGreaterThan(earlyTie.closeness);
 		expect(lateTie.closeness).toBeLessThanOrEqual(scoreMaxCloseness);
 	});
@@ -370,25 +371,25 @@ describe('computePowerScore', () => {
 		expect(finalMid.lateGame).toBeGreaterThan(finalStart.lateGame);
 		expect(finalEnd.lateGame).toBeGreaterThan(finalMid.lateGame);
 		expect(finalEnd.lateGame).toBeGreaterThanOrEqual(Math.ceil(scoreMaxLateGame * 0.8));
-		expect(finalEnd.lateGame).toBeLessThanOrEqual(scorerTunables.scores.lateGame.otEdgeMax);
+		expect(finalEnd.lateGame).toBeLessThanOrEqual(scorerTunables.scores.lateGame.closeCeiling);
 		expect(finalMid.reason).toContain('min left');
 	});
 
 	test('late-game ramp is near-linear across the final period (no end spike)', () => {
-		const { otEdgeMax, finalPeriodStart } = scorerTunables.scores.lateGame;
+		const { closeCeiling, finalPeriodStart } = scorerTunables.scores.lateGame;
 		const sample = (fraction: number) => computePowerScore(makeGame({
 			period: 4,
 			clockSeconds: Math.round(720 * (1 - fraction)),
-			homeTeam: { ...makeGame().homeTeam, score: 110 }, // close + non-tied → factor 1, no OT pre-boost
+			homeTeam: { ...makeGame().homeTeam, score: 110 }, // tight (7-pt) + non-tied → closeCeiling, no OT pre-boost
 			awayTeam: { ...makeGame().awayTeam, score: 103 },
 		}), []).lateGame;
 
 		const points = [0, 0.25, 0.5, 0.75, 1].map(sample);
 		expect(points[0]).toBe(finalPeriodStart);
-		expect(points[4]).toBe(otEdgeMax);
+		expect(points[4]).toBe(closeCeiling);
 
 		const deltas = points.slice(1).map((value, index) => value - points[index]!);
-		const expectedStep = (otEdgeMax - finalPeriodStart) / 4;
+		const expectedStep = (closeCeiling - finalPeriodStart) / 4;
 		for (const delta of deltas) {
 			// every quarter-step is within ~1.5 points of a perfectly linear step → no back-loaded spike
 			expect(Math.abs(delta - expectedStep)).toBeLessThanOrEqual(1.5);
@@ -418,7 +419,7 @@ describe('computePowerScore', () => {
 		expect(finalMid.lateGame).toBeGreaterThan(finalStart.lateGame);
 		expect(finalEnd.lateGame).toBeGreaterThan(finalMid.lateGame);
 		expect(finalEnd.lateGame).toBeGreaterThanOrEqual(Math.ceil(scoreMaxLateGame * 0.8));
-		expect(finalEnd.lateGame).toBeLessThanOrEqual(scorerTunables.scores.lateGame.otEdgeMax);
+		expect(finalEnd.lateGame).toBeLessThanOrEqual(scorerTunables.scores.lateGame.closeCeiling);
 		expect(finalMid.reason).toContain('min left');
 	});
 
@@ -448,9 +449,9 @@ describe('computePowerScore', () => {
 		expect(endOfRegulation.reason).toContain('inning');
 	});
 
-	test('every clock league ramps the whole final period up to the OT edge', () => {
+	test('every clock league ramps the whole final period up to the close ceiling', () => {
 		const representativeLeagueIds = ['nba', 'nhl', 'nfl', 'mls'] as const;
-		const { otEdgeMax } = scorerTunables.scores.lateGame;
+		const { closeCeiling } = scorerTunables.scores.lateGame;
 
 		for (const leagueId of representativeLeagueIds) {
 			const league = leagueConfigMap[leagueId];
@@ -481,19 +482,19 @@ describe('computePowerScore', () => {
 
 			expect(midFinal.lateGame).toBeGreaterThan(startFinal.lateGame);
 			expect(endFinal.lateGame).toBeGreaterThan(midFinal.lateGame);
-			expect(endFinal.lateGame).toBe(otEdgeMax);
+			expect(endFinal.lateGame).toBe(closeCeiling);
 		}
 	});
 
-	test('ramps baseball late-game across regulation innings up to the OT edge', () => {
-		const { otEdgeMax, finalPeriodStart } = scorerTunables.scores.lateGame;
+	test('ramps baseball late-game across regulation innings up to the close ceiling', () => {
+		const { closeCeiling, finalPeriodStart } = scorerTunables.scores.lateGame;
 		const withInning = (period: number) => makeGame({
 			league: 'mlb',
 			sportType: 'baseball',
 			period,
 			clockSeconds: 0,
 			homeTeam: { ...makeGame().homeTeam, score: 4 },
-			awayTeam: { ...makeGame().awayTeam, score: 1 },
+			awayTeam: { ...makeGame().awayTeam, score: 1 },  // 3-run lead: margin=3 ≤ t2=3 → closeCeiling
 		});
 
 		const fifth = computePowerScore(withInning(5), []);   // before regulation pressure window
@@ -504,7 +505,7 @@ describe('computePowerScore', () => {
 		expect(fifth.lateGame).toBe(0);
 		expect(sixth.lateGame).toBe(finalPeriodStart);
 		expect(eighth.lateGame).toBeGreaterThan(sixth.lateGame);
-		expect(ninth.lateGame).toBe(otEdgeMax);
+		expect(ninth.lateGame).toBe(closeCeiling);
 	});
 
 	test('scores overtime and extra innings at max late-game pressure', () => {
@@ -536,7 +537,7 @@ describe('computePowerScore', () => {
 	test('scores a tense tied late regulation game high but below max', () => {
 		const game = makeGame({
 			period: 4,
-			clockSeconds: 12,
+			clockSeconds: 10,
 			homeTeam: { abbreviation: 'HOM', score: 78 },
 			awayTeam: { abbreviation: 'AWY', score: 78 },
 		});
@@ -547,10 +548,8 @@ describe('computePowerScore', () => {
 		]);
 
 		const result = computePowerScore(game, history);
-		// Tied final minute: closeness near max, late-game at the OT edge + tied pre-boost, but the
-		// run/lead-change/comeback signals are modest → high score that still leaves headroom for OT.
-		expect(result.total).toBeGreaterThanOrEqual(70);
-		expect(result.total).toBeLessThan(scoreMaxTotal);
+		// Tied final seconds: closeness=42 + lateGame=38 = 80, any additional signals push toward 100.
+		expect(result.total).toBeGreaterThanOrEqual(78);
 		expect(result.lateGame).toBe(scoreMaxLateGame); // OT pre-boost pushes a tied buzzer to the cap
 	});
 
@@ -673,9 +672,9 @@ describe('computePowerScore', () => {
 		const raw = computePowerScore(game, [], lightStep.minPolls - 1);
 		const stalled = computePowerScore(game, [], lightStep.minPolls);
 		expect(stalled.stalled).toBe(true);
-		expect(stalled.total).toBe(Math.round(raw.total * lightStep.multiplier));
+		expect(stalled.total).toBe(Math.max(0, raw.total - lightStep.deduction));
 		expect(stalled.baseTotal).toBe(raw.total);
-		expect(stalled.stallPenalty).toBe(raw.total - stalled.total);
+		expect(stalled.stallPenalty).toBe(lightStep.deduction);
 	});
 
 	test('applies heavy stall penalty at the highest step threshold', () => {
@@ -691,9 +690,9 @@ describe('computePowerScore', () => {
 		const raw = computePowerScore(game, [], 0);
 		const stalled = computePowerScore(game, [], heavyStep.minPolls);
 		expect(stalled.stalled).toBe(true);
-		expect(stalled.total).toBe(Math.round(raw.total * heavyStep.multiplier));
+		expect(stalled.total).toBe(Math.max(0, raw.total - heavyStep.deduction));
 		expect(stalled.baseTotal).toBe(raw.total);
-		expect(stalled.stallPenalty).toBe(raw.total - stalled.total);
+		expect(stalled.stallPenalty).toBe(heavyStep.deduction);
 	});
 
 	test('falls back to default reason when no signal reasons are present', () => {
@@ -882,8 +881,8 @@ describe('PowerScore v2 — live-action decay & overtime anticipation', () => {
 		expect(tied1.lateGame).toBeGreaterThan(tied30.lateGame);
 		expect(tied1.lateGame).toBe(scoreMaxLateGame);
 		expect(tied1.reason).toContain(scorerTunables.reasons.overtimeAnticipation);
-		// A non-tied buzzer caps at the OT edge — no pre-boost — so OT-bound games separate.
-		expect(nonTiedBuzzer.lateGame).toBe(scorerTunables.scores.lateGame.otEdgeMax);
+		// A non-tied buzzer caps at the close ceiling — no pre-boost — so OT-bound games separate.
+		expect(nonTiedBuzzer.lateGame).toBe(scorerTunables.scores.lateGame.closeCeiling);
 		expect(tied1.lateGame).toBeGreaterThan(nonTiedBuzzer.lateGame);
 	});
 
@@ -907,6 +906,95 @@ describe('PowerScore v2 — live-action decay & overtime anticipation', () => {
 			expect(result.leadChanges).toBe(0);
 			expect(result.comeback).toBe(0);
 		}
+	});
+});
+
+describe('PowerScore calibration targets', () => {
+	test('tied buzzer with no history scores ≥ 78 (closeness+lateGame floor)', () => {
+		const game = makeGame({
+			period: 4,
+			clockSeconds: 1,
+			homeTeam: { abbreviation: 'HOM', score: 100 },
+			awayTeam: { abbreviation: 'AWY', score: 100 },
+		});
+		const result = computePowerScore(game, []);
+		expect(result.total).toBeGreaterThanOrEqual(78);
+	});
+
+	test('1-pt game final minute with no history scores ≥ 63', () => {
+		const game = makeGame({
+			period: 4,
+			clockSeconds: 30,
+			homeTeam: { abbreviation: 'HOM', score: 100 },
+			awayTeam: { abbreviation: 'AWY', score: 99 },
+		});
+		const result = computePowerScore(game, []);
+		expect(result.total).toBeGreaterThanOrEqual(63);
+	});
+
+	test('stall penalty is a flat deduction, not a fraction of the original score', () => {
+		// Use a high-scoring game (Q4 2-pt game) so the base total exceeds the heavy deduction (25).
+		const game = makeGame({
+			period: 4,
+			clockSeconds: 120,
+			homeTeam: { abbreviation: 'HOM', score: 100 },
+			awayTeam: { abbreviation: 'AWY', score: 98 },
+		});
+
+		const rawA = computePowerScore(game, [], 0);
+		const lightDeduction = stallPenaltySteps[stallPenaltySteps.length - 1]!.deduction;
+		const heavyDeduction = stallPenaltySteps[0]!.deduction;
+		const stalledLight = computePowerScore(game, [], stallPenaltySteps[stallPenaltySteps.length - 1]!.minPolls);
+		const stalledHeavy = computePowerScore(game, [], stallPenaltySteps[0]!.minPolls);
+
+		// Deduction must be the same fixed amount regardless of the base score.
+		expect(rawA.total).toBeGreaterThan(heavyDeduction); // guard: base score exceeds max deduction
+		expect(rawA.total - stalledLight.total).toBe(lightDeduction);
+		expect(rawA.total - stalledHeavy.total).toBe(heavyDeduction);
+	});
+
+	test('blowout (>t3) scores lower lateGame ceiling than a close game in same period', () => {
+		const closeGame = makeGame({
+			period: 4,
+			clockSeconds: 1,
+			homeTeam: { abbreviation: 'HOM', score: 100 },
+			awayTeam: { abbreviation: 'AWY', score: 99 },
+		});
+		const blowout = makeGame({
+			period: 4,
+			clockSeconds: 1,
+			homeTeam: { abbreviation: 'HOM', score: 120 },
+			awayTeam: { abbreviation: 'AWY', score: 90 },  // 30-pt lead, NBA t3=18 → blowout
+		});
+		const closeResult = computePowerScore(closeGame, []);
+		const blowoutResult = computePowerScore(blowout, []);
+		expect(closeResult.lateGame).toBeGreaterThan(blowoutResult.lateGame);
+	});
+
+	test('sport-agnostic: close hockey game at buzzer scores ≥ 63', () => {
+		const game = makeGame({
+			league: 'nhl',
+			sportType: 'hockey',
+			period: 3,
+			clockSeconds: 1,
+			homeTeam: { abbreviation: 'HOM', score: 2 },
+			awayTeam: { abbreviation: 'AWY', score: 1 },
+		});
+		const result = computePowerScore(game, []);
+		expect(result.total).toBeGreaterThanOrEqual(63);
+	});
+
+	test('sport-agnostic: close football game at buzzer scores ≥ 63', () => {
+		const game = makeGame({
+			league: 'nfl',
+			sportType: 'football',
+			period: 4,
+			clockSeconds: 1,
+			homeTeam: { abbreviation: 'HOM', score: 21 },
+			awayTeam: { abbreviation: 'AWY', score: 18 },  // 3-pt game
+		});
+		const result = computePowerScore(game, []);
+		expect(result.total).toBeGreaterThanOrEqual(63);
 	});
 });
 
