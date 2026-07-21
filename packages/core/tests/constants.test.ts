@@ -1,7 +1,6 @@
 import pkg from '../package.json';
 import {
 	allLeagueIds,
-	allSignalNames,
 	applyDisabledSignals,
 	appDescription,
 	appName,
@@ -13,6 +12,7 @@ import {
 	createDefaultUserPreferences,
 	normalizeUserPreferences,
 	resolveLeagueLogoUrl,
+	scoreMaxCloseness,
 } from '../src/constants';
 
 describe('constants', () => {
@@ -144,11 +144,11 @@ describe('constants', () => {
 	});
 
 	test('applyDisabledSignals zeros disabled signals and scales total to maintain 0-100 range', () => {
-		const allMax = allSignalNames.reduce((sum, s) => sum + { closeness: 40, lateGame: 25, momentum: 15, leadChanges: 10, comeback: 10 }[s], 0);
-		expect(allMax).toBe(100);
-		const base = { gameId: 'g1', total: 40, closeness: 40, lateGame: 0, momentum: 0, leadChanges: 0, comeback: 0, reason: 'tied', stalled: false };
+		// Use the real closeness max so the scaling factor (100 / scoreMaxCloseness) produces 100
+		// when the enabled signal is at its ceiling. Hardcoding 40 broke when PR #62 raised the max to 42.
+		const base = { gameId: 'g1', total: scoreMaxCloseness, closeness: scoreMaxCloseness, lateGame: 0, momentum: 0, leadChanges: 0, comeback: 0, reason: 'tied', stalled: false };
 		const result = applyDisabledSignals(base, ['lateGame', 'momentum', 'leadChanges', 'comeback']);
-		expect(result.closeness).toBe(40);
+		expect(result.closeness).toBe(scoreMaxCloseness);
 		expect(result.lateGame).toBe(0);
 		expect(result.momentum).toBe(0);
 		expect(result.total).toBe(100);

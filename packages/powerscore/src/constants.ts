@@ -174,7 +174,7 @@ export const sportTypeConfigs: SportTypeConfig[] = [
 	{
 		id: 'football',
 		clockBased: true,
-		closenessMargins: [3, 8, 14],
+		closenessMargins: [3, 9, 14],
 		momentumBigRun: 10,
 		momentumSmallRun: 4,
 		clockCountsUp: false,
