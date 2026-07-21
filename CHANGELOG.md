@@ -1,5 +1,17 @@
 # Changelog
 
+## Chinese Simplified i18n (#50) — 2026-07-21
+
+Adds Simplified Chinese (`zh_CN.json`) locale — closes #50.
+
+- Standard Mainland China sports vocabulary throughout: 篮球 (basketball), 美式橄榄球 (American football), 冰球 (hockey), 棒球/垒球/足球 (baseball/softball/soccer)
+- B/S/O scoreboard abbreviations preserved exactly — universally used in Chinese baseball broadcasts
+- Proprietary terms ArenaSwap, PowerScore, and Standby Stream left untranslated; `go birds` (loading.m56) preserved verbatim per spec
+- Spaceballs `ludicrousSpeed` dialogue adapted for natural humor without relying on film recognition — "荒唐速度" (ludicrous/absurd speed) lands the comedic energy in context
+- `sensitivity.level.l7` rendered as "荒唐速度" matching the film section's tone
+- `footer.credit` rendered as "Philadelphia 与 Boston，由 Ryan Mullin 打造" — city names kept in English per spec, surrounded by natural Chinese phrasing
+- Informal register (您-form for respectful but approachable tone consistent with the platform's style) used throughout
+- All `$1`, `{placeholder}` interpolation markers preserved exactly in their correct grammatical positions
 ## Portuguese i18n (#48) — 2026-07-21
 
 Adds European Portuguese (`pt.json`) and Brazilian Portuguese (`pt_BR.json`) locales — closes #48.
