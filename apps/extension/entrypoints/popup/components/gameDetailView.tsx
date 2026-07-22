@@ -92,12 +92,10 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 	const winProbabilityOption = useMemo(() => (
 		buildWinProbabilityOption(winProbability, game)
 	), [winProbability, game]);
-	// Variance computed from chart data — applied here as a boost/penalty since background.ts
-	// doesn't fetch win probability history.
+	// Variance comes exclusively from real ESPN win probability data — if the chart has no data,
+	// there is no volatility row and no variance applied to the score.
 	const winProbabilityVariance = useMemo(() => computeWinProbVarianceScore(winProbability), [winProbability]);
-	const variance = winProbabilityVariance ?? 0;
-	// Apply variance on top of the scorer's total (after stall penalty, before display)
-	const total = Math.max(0, (activePowerScore?.total ?? 0) + variance);
+	const total = Math.max(0, (activePowerScore?.total ?? 0) + (winProbabilityVariance ?? 0));
 
 	const [awayLineColor, homeLineColor] = resolveTeamColorPair(game.awayTeam, game.homeTeam, '#60a5fa', '#f87171', true);
 	const teamLegendItems = useMemo(() => ([

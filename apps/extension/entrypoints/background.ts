@@ -405,7 +405,7 @@ export default defineBackground(() => {
 		const scores = liveGames.map(g => {
 			const stallCount = clockStallMap.get(g.id)?.stallCount ?? 0;
 			const baseScore = applyDisabledSignals(
-				normalizePowerScoreResult(computePowerScore(g, history.get(g.id) ?? [], stallCount, winProbHistory.get(g.id) ?? [])),
+				normalizePowerScoreResult(computePowerScore(g, history.get(g.id) ?? [], stallCount)),
 				prefs.disabledSignals,
 			);
 			const favoriteTeamCount = getFavoriteTeamCount(g, favoriteTeamIds);
