@@ -275,7 +275,7 @@
 		"skipForNow": "Skip for now",
 		"removeFavorite": "Remove {team} from favorites",
 		"addFavorite": "Add {team} to favorites",
-		"noMatch": "No teams match “{query}”",
+		"noMatch": "No teams match \"{query}\"",
 		"skip": "Skip",
 		"done": "Done"
 	},
@@ -473,35 +473,35 @@
 			"t2": "Click any game card to dive into its PowerScore breakdown.",
 			"t3": "Mixing sports? Enable extra leagues in Settings to swap across all of them at once.",
 			"t4": "Giraffes and hedgehogs are cool. So is watching every game at once.",
-			“t5”: “ArenaSwap works better the longer you let it run!”,
-			“t6”: “Turn on switch notifications in Settings to get an alert every time ArenaSwap changes your tab.”
+			"t5": "ArenaSwap works better the longer you let it run!",
+			"t6": "Turn on switch notifications in Settings to get an alert every time ArenaSwap changes your tab."
 		},
-		“main”: {
-			“t0”: “Star your favorite teams to pin their games to the top of the list.”,
-			“t1”: “Assign a tab from the dropdown beside each game so ArenaSwap knows where to swap.”,
-			“t2”: “A higher PowerScore wins the swap; keep an eye on the colored badges.”,
-			“t3”: “Turn on “Show upcoming games” in Settings to pre-assign tabs before the game starts.”,
-			“t4”: “No live games yet? Demo Mode in Settings lets you watch ArenaSwap work with fake games.”,
-			“t5”: “Standby Stream keeps a backup tab playing whenever every game goes quiet — enable it in Settings.”
+		"main": {
+			"t0": "Star your favorite teams to pin their games to the top of the list.",
+			"t1": "Assign a tab from the dropdown beside each game so ArenaSwap knows where to swap.",
+			"t2": "A higher PowerScore wins the swap; keep an eye on the colored badges.",
+			"t3": "Turn on \"Show upcoming games\" in Settings to pre-assign tabs before the game starts.",
+			"t4": "No live games yet? Demo Mode in Settings lets you watch ArenaSwap work with fake games.",
+			"t5": "Standby Stream keeps a backup tab playing whenever every game goes quiet — enable it in Settings."
 		},
-		“setup”: {
-			“t0”: “Lower the Cooldown to swap more aggressively during chaotic finishes.”,
-			“t1”: “Bump the Favorite Team Bonus to make sure your team almost always wins the swap.”,
-			“t2”: “Increase Switch Delay to give yourself a beat before the tab actually changes.”,
-			“t3”: “Demo Mode runs simulated games, perfect for tuning sliders without waiting for live action.”,
-			“t4”: “Sensitivity controls how big a PowerScore lead is needed before ArenaSwap swaps.”,
-			“t5”: “Postseason Boost gives playoff and championship games extra weight so the biggest moments win more switches.”,
-			“t6”: “Use the PowerScore Signals section to disable any signal you don't care about — ArenaSwap rescales everything automatically.”
+		"setup": {
+			"t0": "Lower the Cooldown to swap more aggressively during chaotic finishes.",
+			"t1": "Bump the Favorite Team Bonus to make sure your team almost always wins the swap.",
+			"t2": "Increase Switch Delay to give yourself a beat before the tab actually changes.",
+			"t3": "Demo Mode runs simulated games, perfect for tuning sliders without waiting for live action.",
+			"t4": "Sensitivity controls how big a PowerScore lead is needed before ArenaSwap swaps.",
+			"t5": "Postseason Boost gives playoff and championship games extra weight so the biggest moments win more switches.",
+			"t6": "Use the PowerScore Signals section to disable any signal you don't care about — ArenaSwap rescales everything automatically."
 		},
-		“detail”: {
-			“t0”: “PowerScore mixes closeness, late-game pressure, momentum, lead changes, and comebacks. Then it applies a volatility boost or penalty based on how much the win probability swings.”,
-			“t1”: “A clock-stall penalty kicks in when the game clock barely moves between updates.”,
-			“t2”: “0-0 games take a small PowerScore hit in sports where 0-0 isn't exciting.”,
-			“t3”: “Hover the charts to inspect specific moments in the game.”,
-			“t4”: “A favorite team in the matchup adds bonus points to the PowerScore.”,
-			“t5”: “PowerScore builds as a game goes on. An early close game ramps up toward the final buzzer.”,
-			“t6”: “Tied in the final minute? PowerScore pre-boosts likely overtime so you never miss the buzzer.”,
-			“t7”: “Enable betting odds in Settings to see live lines alongside each game's PowerScore.”
+		"detail": {
+			"t0": "PowerScore mixes closeness, late-game pressure, momentum, lead changes, and comebacks. Then it applies a volatility boost or penalty based on how much the win probability swings.",
+			"t1": "A clock-stall penalty kicks in when the game clock barely moves between updates.",
+			"t2": "0-0 games take a small PowerScore hit in sports where 0-0 isn't exciting.",
+			"t3": "Hover the charts to inspect specific moments in the game.",
+			"t4": "A favorite team in the matchup adds bonus points to the PowerScore.",
+			"t5": "PowerScore builds as a game goes on. An early close game ramps up toward the final buzzer.",
+			"t6": "Tied in the final minute? PowerScore pre-boosts likely overtime so you never miss the buzzer.",
+			"t7": "Enable betting odds in Settings to see live lines alongside each game's PowerScore."
 		}
 	},
 	"reviewPrompt": {
