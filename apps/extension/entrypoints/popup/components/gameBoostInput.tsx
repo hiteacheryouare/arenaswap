@@ -19,6 +19,7 @@ const GameBoostInput = ({ gameId, currentBoost, onSetGameBoost }: gameBoostInput
 				value={currentBoost}
 				onChange={e => onSetGameBoost(gameId, Math.max(0, Math.round(Number(e.target.value) || 0)))}
 				className='powerscore-boost-input'
+				aria-label={i18n.t('gameBoost.heading')}
 			/>
 		</div>
 	</div>

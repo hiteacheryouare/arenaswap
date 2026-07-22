@@ -5,6 +5,12 @@
 		"gameDetailsUnavailable": "Game details unavailable",
 		"backToGames": "Back to games"
 	},
+	"errorBoundary": {
+		"title": "Something went wrong.",
+		"body": "ArenaSwap hit an unexpected error.",
+		"errorLabel": "Error:",
+		"tryAgain": "Try again"
+	},
 	"sport": {
 		"basketball": "Basketball",
 		"football": "Football",
@@ -166,7 +172,8 @@
 		"sectionActiveLiveTabs": "Active Tabs",
 		"sectionOtherLiveGames": "Live Games",
 		"sectionUpNext": "Up Next",
-		"showMoreUpcoming": "Show {count} more"
+		"showMoreUpcoming": "Show {count} more",
+		"enableToggleLabel": "Enable auto-switching"
 	},
 	"detail": {
 		"legendCloseness": "Closeness",

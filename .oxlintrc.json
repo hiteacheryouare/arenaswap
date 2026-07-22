@@ -23,7 +23,6 @@
 		".output",
 		".wxt",
 		"docs/_astro",
-		"**/*.d.ts",
-		"packages/ui/*"
+		"**/*.d.ts"
 	]
 }

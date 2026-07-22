@@ -40,7 +40,7 @@ export interface PowerScoreResult {
 	momentum: number;
 	leadChanges: number;
 	comeback: number;
-	/** Win probability volatility boost/penalty, −10 to +10. Present when win probability history was supplied. */
+	/** Win probability volatility boost/penalty, −5 to +5. Present when win probability history was supplied. */
 	winProbabilityVariance?: number;
 	reason: string;
 	stalled?: boolean;
@@ -132,13 +132,10 @@ export interface ScorerTunables {
 		underPrefix: string;
 		minutesLeftSuffix: string;
 		overtimeAnticipation: string;
-		momentumRunPrefix: string;
 		momentumRunSuffix: string;
 		momentumRolling: string;
 		leadChangeMultiple: string;
 		leadChangeSingle: string;
-		comebackBig: string;
-		comebackModerate: string;
 		fallback: string;
 	};
 }

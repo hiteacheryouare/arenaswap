@@ -70,15 +70,17 @@ const oddsSummary = (game: Game): string | null => {
 };
 
 const TeamLogo = ({ team }: { team: Team }) => {
-	const [failed, setFailed] = useState(false);
-	if (team.logo && !failed) {
+	// Track the URL that failed rather than a boolean, so a changed logo URL retries automatically
+	// (cards are reused across polls; a transient bad URL would otherwise stay hidden forever).
+	const [failedSrc, setFailedSrc] = useState<string | null>(null);
+	if (team.logo && failedSrc !== team.logo) {
 		return (
 			<img
 				src={team.logo}
 				alt={team.abbreviation}
 				width={logoSize}
 				height={logoSize}
-				onError={() => setFailed(true)}
+				onError={() => setFailedSrc(team.logo ?? null)}
 				className='object-fit-contain shrink-0'
 			/>
 		);
@@ -88,7 +90,7 @@ const TeamLogo = ({ team }: { team: Team }) => {
 		<div
 			className='d-flex align-items-center justify-content-center bg-light rounded-circle shrink-0 fw-bold text-body-secondary team-logo-fallback'
 		>
-			{(team.abbreviation ?? '?').slice(0, 3)}
+			{(team.abbreviation || '?').slice(0, 3)}
 		</div>
 	);
 };
@@ -149,17 +151,18 @@ export const TeamColumn = ({
 };
 
 const OddsProvider = ({ game, dark }: { game: Game; dark?: boolean }) => {
-	const [failed, setFailed] = useState(false);
+	// Track the failed URL (not a boolean) so a changed provider logo URL retries automatically.
+	const [failedSrc, setFailedSrc] = useState<string | null>(null);
 	const provider = game.odds?.provider;
 	if (!provider?.name) return null;
 	const logoUrl = dark && provider.darkLogoUrl ? provider.darkLogoUrl : provider.logoUrl;
-	if (logoUrl && !failed) {
+	if (logoUrl && failedSrc !== logoUrl) {
 		return (
 			<span className='d-inline-flex align-items-center odds-provider-wrap'>
 				<img
 					src={logoUrl}
 					alt={provider.name}
-					onError={() => setFailed(true)}
+					onError={() => setFailedSrc(logoUrl)}
 					height={12}
 					className='odds-provider-logo'
 				/>

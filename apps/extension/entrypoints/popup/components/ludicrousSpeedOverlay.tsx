@@ -96,6 +96,9 @@ export default ({ onClose }: { onClose: () => void }) => {
 	const targetSpeedRef = useRef(0.08);
 	const currentSpeedRef = useRef(0.08);
 	const frameRef = useRef(0);
+	// Ad-hoc timers spawned by the skip / emergency-brake handlers, cleared on unmount so they
+	// never fire setState after the overlay is gone.
+	const manualTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
 	const [display, setDisplay] = useState<DisplayState>({
 		text: i18n.t('ludicrousSpeed.intro.l1'),
@@ -182,6 +185,9 @@ export default ({ onClose }: { onClose: () => void }) => {
 		const t = setTimeout(onClose, 450);
 		return () => clearTimeout(t);
 	}, [closing, onClose]);
+
+	// Clear any pending skip / emergency-brake timers if the overlay unmounts first.
+	useEffect(() => () => manualTimersRef.current.forEach(clearTimeout), []);
 
 	// Sequence — movie order
 	useEffect(() => {
@@ -330,20 +336,20 @@ export default ({ onClose }: { onClose: () => void }) => {
 		phaseRef.current = 'stopping';
 		targetSpeedRef.current = 0;
 		setDisplay({ text: i18n.t('ludicrousSpeed.stop'), cls: 'stop' });
-		setTimeout(() => setClosing(true), 750);
+		manualTimersRef.current.push(setTimeout(() => setClosing(true), 750));
 	}, []);
 
 	const handleEmergencyBrake = useCallback((e: React.MouseEvent) => {
 		e.stopPropagation();
 		if (brakeState === 'pressed' || phaseRef.current === 'stopping') return;
 		setBrakeState('pressed');
-		setTimeout(() => {
+		manualTimersRef.current.push(setTimeout(() => {
 			if (phaseRef.current === 'stopping') return;
 			phaseRef.current = 'stopping';
 			targetSpeedRef.current = 0;
 			setDisplay({ text: i18n.t('ludicrousSpeed.stop'), cls: 'stop' });
-			setTimeout(() => setClosing(true), 750);
-		}, 500);
+			manualTimersRef.current.push(setTimeout(() => setClosing(true), 750));
+		}, 500));
 	}, [brakeState]);
 
 	return createPortal(

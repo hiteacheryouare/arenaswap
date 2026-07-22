@@ -5,6 +5,12 @@
 		"gameDetailsUnavailable": "試合の詳細を取得できません",
 		"backToGames": "試合一覧に戻る"
 	},
+	"errorBoundary": {
+		"title": "エラーが発生しました。",
+		"body": "ArenaSwap で予期しないエラーが発生しました。",
+		"errorLabel": "エラー：",
+		"tryAgain": "再試行"
+	},
 	"sport": {
 		"basketball": "バスケットボール",
 		"football": "アメリカンフットボール",
@@ -166,7 +172,8 @@
 		"sectionActiveLiveTabs": "アクティブタブ",
 		"sectionOtherLiveGames": "ライブ試合",
 		"sectionUpNext": "次の試合",
-		"showMoreUpcoming": "さらに{count}件表示"
+		"showMoreUpcoming": "さらに{count}件表示",
+		"enableToggleLabel": "自動切り替えを有効にする"
 	},
 	"detail": {
 		"legendCloseness": "接戦度",

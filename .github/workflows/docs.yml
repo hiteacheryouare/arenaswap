@@ -5,6 +5,10 @@ on:
     branches: [mega]
     paths:
       - 'apps/docs/**'
+      - 'packages/ui/**'
+      - 'packages/core/**'
+      - 'packages/powerscore/**'
+      - 'package-lock.json'
   workflow_dispatch:
 
 permissions:

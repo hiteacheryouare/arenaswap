@@ -5,6 +5,12 @@
 		"gameDetailsUnavailable": "比赛详情暂时无法获取",
 		"backToGames": "返回比赛列表"
 	},
+	"errorBoundary": {
+		"title": "出了点问题。",
+		"body": "ArenaSwap 遇到了意外错误。",
+		"errorLabel": "错误：",
+		"tryAgain": "重试"
+	},
 	"sport": {
 		"basketball": "篮球",
 		"football": "美式橄榄球",
@@ -166,7 +172,8 @@
 		"sectionActiveLiveTabs": "活跃标签页",
 		"sectionOtherLiveGames": "直播比赛",
 		"sectionUpNext": "即将开赛",
-		"showMoreUpcoming": "再显示 {count} 场"
+		"showMoreUpcoming": "再显示 {count} 场",
+		"enableToggleLabel": "启用自动切换"
 	},
 	"detail": {
 		"legendCloseness": "接近度",

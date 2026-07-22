@@ -247,7 +247,7 @@ const mainView = ({
 						<i className='bi bi-gear-fill popup-settings-icon' />
 					</button>
 					<div className='form-check form-switch mb-0'>
-						<input className='form-check-input' type='checkbox' id='enableToggle' checked={prefs.enabled} onChange={onToggleEnabled} disabled={!prefsLoaded} />
+						<input className='form-check-input' type='checkbox' id='enableToggle' checked={prefs.enabled} onChange={onToggleEnabled} disabled={!prefsLoaded} aria-label={i18n.t('main.enableToggleLabel')} />
 					</div>
 				</div>
 			</div>

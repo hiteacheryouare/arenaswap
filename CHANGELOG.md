@@ -1,5 +1,44 @@
 # Changelog
 
+## Performance, accuracy & tooling pass — 2026-07-22
+
+A broad sweep for performance, correctness, dead code, accessibility, and tooling gaps across the monorepo. PowerScore scoring output and the extension visual design are unchanged (verified by the existing calibration tests and component tests).
+
+### PowerScore & core (scoring output unchanged)
+- Removed dead scorer tunables never read by the algorithm: `reasons.momentumRunPrefix`, `reasons.comebackBig`, `reasons.comebackModerate` (from both `constants.ts` and the `ScorerTunables` type)
+- `otPreBoostMax` now derives from a shared `lateGameCloseCeiling` constant instead of a duplicated magic `36`, so the tied-overtime pre-boost stays in sync with `closeCeiling` (value unchanged: 2)
+- Fixed the `PowerScoreResult.winProbabilityVariance` doc comment (said −10 to +10; the actual clamp is −5 to +5)
+- Corrected the scoring-opportunity comment (only football uses the flat red-zone value; there is no hockey path)
+- `isPowerScoreSnapshotLike` now validates `postseasonBoost`, consistent with the other optional boost fields
+- Demo simulator now advances a realistic baseball/softball count — walk on the 4th ball, strikeout on the 3rd strike, side retired on the 3rd out (was 3/2/2, so demo mode could never show a 3-2 full count or 2 outs)
+
+### Shared UI (`packages/ui`) — no visual change
+- Team and odds-provider logos retry when their URL changes: the components track the failed `src` instead of a boolean, so a transiently-broken logo no longer stays hidden for the life of a reused card
+- Empty team abbreviations now fall back to `?` (previously `??` let an empty string through)
+- Deduplicated the PowerScore color computation in the live card
+- The fallback translator now substitutes every occurrence of a placeholder and no longer misinterprets ` in substituted values
+
+### Extension popup — no visual change
+- Internationalized the error boundary (previously hardcoded English); added `errorBoundary.*` keys to all 8 locales
+- Added accessible names to the master auto-switch toggle, the game-boost input, and the standby-tab selector; added `main.enableToggleLabel` to all 8 locales
+- The ludicrous-speed overlay and footer now track and clear their ad-hoc timers on unmount (no setState after unmount)
+- Preferences persistence: a failed `storage.local` write no longer aborts the whole save and skips the `storage.sync` write — each store is caught independently
+- Removed the dead `buildScoreMarginOption` chart builder (never imported)
+
+### Docs website
+- Fixed the broken Chrome Web Store install links — 4 call-to-action buttons pointed at a malformed 27-character extension ID; they now use the canonical 32-character ID
+- League logos (featured grid + marquee) now declare explicit dimensions and use `loading="lazy"` / `decoding="async"`, cutting layout shift and deferring ~60 off-screen image loads
+- Below-the-fold PowerScore widgets hydrate with `client:visible` instead of `client:load`
+- Content is visible without JavaScript (a `<noscript>` fallback for `.reveal`) and now respects `prefers-reduced-motion`
+
+### Build & tooling
+- `packages/ui` is now typechecked and linted (added `tsconfig.json` + `typecheck`/`lint` scripts, removed the oxlint ignore) — the shared UI library previously had no static analysis
+- Unified TypeScript on `^7.0.2` across all packages; the extension, core, and powerscore declared `^6.0.3`, which had pulled three redundant nested TypeScript 6 installs
+- `powerscore/tsconfig.json` now extends the shared base config (adds `noUncheckedIndexedAccess`)
+- turbo: added `globalDependencies` for `tsconfig.base.json` and `.oxlintrc.json` so shared-config edits invalidate task caches
+- The docs deploy workflow now also triggers on `packages/ui`, `packages/core`, `packages/powerscore`, and lockfile changes (it renders components and the PowerScore algorithm from those packages)
+- Fixed a typo in the root package description ("30+w" → "30+")
+
 ## Game Boost pregame guard (#60) — 2026-07-22
 
 Hides the manual Game Boost control for games that haven't started yet — closes #60.

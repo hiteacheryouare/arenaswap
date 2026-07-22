@@ -4,7 +4,8 @@
 	"description": "ArenaSwap shared design system — Bootstrap tokens, font declarations, Tailwind theme, and shared React UI components",
 	"private": true,
 	"scripts": {
-		"lint": "echo 'No JS/TS source files to lint'"
+		"typecheck": "tsc --noEmit",
+		"lint": "oxlint ."
 	},
 	"peerDependencies": {
 		"react": ">=18",

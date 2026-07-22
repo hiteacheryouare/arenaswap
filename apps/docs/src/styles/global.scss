@@ -88,6 +88,15 @@ body {
 	.reveal-delay-#{$i} { transition-delay: #{$i * 0.1}s; }
 }
 
+// Fail-safe: users who prefer reduced motion get the content immediately, with no reveal animation.
+@media (prefers-reduced-motion: reduce) {
+	.reveal {
+		opacity: 1;
+		transform: none;
+		transition: none;
+	}
+}
+
 // ─── Live pulse dot ──────────────────────────────────────────────────────────
 @keyframes pulse-live {
 	0%, 100% { opacity: 1; transform: scale(1); }
