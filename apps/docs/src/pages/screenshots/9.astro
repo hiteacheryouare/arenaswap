@@ -1,0 +1,273 @@
+---
+import './_screenshot.scss';
+import { Image } from 'astro:assets';
+import ScreenshotCard from '../../components/ScreenshotCard';
+import logoImg from '../../assets/full_logo_white_on_transparent.svg';
+
+const bossTorGame = {
+	id: 's9-nhl',
+	league: 'nhl',
+	sportType: 'hockey',
+	awayTeam: { id: 'bos', name: 'Boston Bruins', abbreviation: 'BOS', score: 3, logo: 'https://a.espncdn.com/i/teamlogos/nhl/500/bos.png', color: '#FFB81C', alternateColor: '#000000' },
+	homeTeam: { id: 'tor', name: 'Toronto Maple Leafs', abbreviation: 'TOR', score: 3, logo: 'https://a.espncdn.com/i/teamlogos/nhl/500/tor.png', color: '#00205B', alternateColor: '#FFFFFF' },
+	period: 4, clockSeconds: 180, status: 'in',
+	venueName: 'Scotiabank Arena · Toronto, ON',
+	broadcasts: ['ESPN+'],
+};
+const bossTorScore = { gameId: 's9-nhl', total: 86, closeness: 30, lateGame: 24, momentum: 18, leadChanges: 12, comeback: 2, reason: '' };
+
+const sfDalGame = {
+	id: 's9-nfl',
+	league: 'nfl',
+	sportType: 'football',
+	awayTeam: { id: '25', name: 'San Francisco 49ers', abbreviation: 'SF', score: 24, logo: 'https://a.espncdn.com/i/teamlogos/nfl/500/sf.png', color: '#AA0000', alternateColor: '#B3995D' },
+	homeTeam: { id: '6', name: 'Dallas Cowboys', abbreviation: 'DAL', score: 21, logo: 'https://a.espncdn.com/i/teamlogos/nfl/500/dal.png', color: '#003594', alternateColor: '#869397' },
+	period: 4, clockSeconds: 180, status: 'in',
+	venueName: 'AT&T Stadium · Arlington, TX',
+	broadcasts: ['FOX'],
+};
+const sfDalScore = { gameId: 's9-nfl', total: 83, closeness: 26, lateGame: 26, momentum: 18, leadChanges: 10, comeback: 3, reason: '' };
+---
+<!doctype html>
+<html lang='en'>
+<head>
+	<meta charset='UTF-8' />
+	<title>Flyer 4 — Never Watch a Blowout Again</title>
+</head>
+<body>
+	<div class='canvas fl-canvas'>
+		<div class='bottom-glow'></div>
+		<div class='over-glow'></div>
+
+		<div class='fl-inner'>
+
+			<Image src={logoImg} alt='ArenaSwap' class='fl-logo' />
+
+			<h1 class='fl-headline'>Never Watch<br>a Blowout Again<span class='fl-dot'>.</span></h1>
+
+			<div class='fl-demo'>
+				<div class='fl-browser'>
+					<div class='fl-browser-chrome'>
+						<div class='fl-traffic'>
+							<span class='dot-r'></span><span class='dot-y'></span><span class='dot-g'></span>
+						</div>
+						<div class='fl-tabs'>
+							<div class='fl-tab fl-tab-active'>
+								<div class='fl-fav' style='background:#CC0000'>E</div>
+								<span>ESPN+</span>
+							</div>
+							<div class='fl-tab'>
+								<div class='fl-fav' style='background:#013369'>F</div>
+								<span>FOX Sports</span>
+							</div>
+						</div>
+					</div>
+					<div class='fl-stream'>
+						<img
+							src='https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Baseball_Backyard_Brawl.jpg/960px-Baseball_Backyard_Brawl.jpg'
+							alt='Live game'
+							class='fl-stream-img'
+						/>
+						<div class='fl-stream-tint'></div>
+						<div class='fl-live-pill'>
+							<span class='fl-live-dot'></span>LIVE · OT
+						</div>
+					</div>
+				</div>
+
+				<div class='fl-popup-anchor'>
+					<div class='popup'>
+						<div class='popup-inner'>
+							<div class='popup-header'>
+								<Image src={logoImg} alt='ArenaSwap' class='popup-logo' />
+								<div class='popup-header-right'>
+									<div class='popup-switch'><div class='popup-switch-thumb'></div></div>
+								</div>
+							</div>
+							<div class='popup-section-title'>Active Tabs</div>
+							<div class='popup-league-label'>NHL</div>
+							<ScreenshotCard game={bossTorGame} excitementResult={bossTorScore} tabLabel='Tab 1: ESPN+' />
+							<div class='popup-league-label'>NFL</div>
+							<ScreenshotCard game={sfDalGame} excitementResult={sfDalScore} tabLabel='Tab 2: FOX Sports' />
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class='fl-store-badges'>
+				<img
+					src='https://developer.chrome.com/static/docs/webstore/branding/image/UV4C4ybeBTsZt43U4xis.png'
+					alt='Available in the Chrome Web Store'
+					class='fl-store-img'
+				/>
+				<img
+					src='https://extensionworkshop.com/assets/img/documentation/publish/get-the-addon-178x60px.dad84b42.png'
+					alt='Get the Add-on for Firefox'
+					class='fl-store-img'
+				/>
+			</div>
+
+		</div>
+	</div>
+
+	<style>
+		html, body { width: 816px !important; height: 1056px !important; }
+		.fl-canvas { width: 816px !important; height: 1056px !important; }
+
+		.fl-inner {
+			position: relative;
+			z-index: 2;
+			width: 816px;
+			height: 1056px;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			padding: 72px 60px 56px;
+		}
+
+		.fl-logo {
+			height: 36px;
+			width: auto;
+			margin-bottom: 32px;
+		}
+
+		.fl-headline {
+			font-size: 72px;
+			font-weight: 700;
+			letter-spacing: -0.045em;
+			line-height: 1.02;
+			text-align: center;
+			color: #fff;
+			margin-bottom: 40px;
+		}
+
+		.fl-dot { color: #F75C03; }
+
+		.fl-demo {
+			width: 100%;
+			flex: 1;
+			position: relative;
+			overflow: hidden;
+			border-radius: 10px;
+			margin-bottom: 40px;
+		}
+
+		.fl-browser {
+			position: absolute;
+			inset: 0;
+			background: #0d1117;
+			border-radius: 10px;
+			overflow: hidden;
+			border: 1px solid #30363d;
+		}
+
+		.fl-browser-chrome {
+			background: #161b22;
+			border-bottom: 1px solid #30363d;
+			padding: 8px 12px 0;
+			display: flex;
+			align-items: flex-end;
+			gap: 10px;
+			height: 36px;
+		}
+
+		.fl-traffic { display: flex; gap: 5px; padding-bottom: 10px; align-items: center; }
+		.fl-traffic span { width: 10px; height: 10px; border-radius: 50%; display: block; flex-shrink: 0; }
+		.dot-r { background: #ff5f57; }
+		.dot-y { background: #febc2e; }
+		.dot-g { background: #28c840; }
+
+		.fl-tabs { display: flex; gap: 2px; align-items: flex-end; flex: 1; min-width: 0; overflow: hidden; }
+
+		.fl-tab {
+			display: flex; align-items: center; gap: 6px;
+			padding: 7px 10px;
+			border-radius: 7px 7px 0 0;
+			flex: 1; max-width: 180px; min-width: 0;
+			color: #8b949e;
+			font-size: 0.68rem;
+			font-weight: 500;
+			white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+		}
+
+		.fl-tab-active {
+			background: #0d1117;
+			color: #e6edf3;
+			border: 1px solid #30363d;
+			border-bottom: none;
+		}
+
+		.fl-fav {
+			width: 13px; height: 13px; border-radius: 3px;
+			display: flex; align-items: center; justify-content: center;
+			color: #fff; font-size: 0.5rem; font-weight: 800;
+			flex-shrink: 0;
+		}
+
+		.fl-stream {
+			position: relative;
+			height: calc(100% - 36px);
+			overflow: hidden;
+		}
+
+		.fl-stream-img {
+			width: 100%; height: 100%;
+			object-fit: cover;
+			filter: blur(10px) saturate(1.1);
+			transform: scale(1.06);
+		}
+
+		.fl-stream-tint {
+			position: absolute;
+			inset: 0;
+			background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.5)),
+			            radial-gradient(circle at 65% 55%, rgba(247,92,3,0.1), transparent 55%);
+		}
+
+		.fl-live-pill {
+			position: absolute;
+			top: 12px; left: 14px;
+			display: flex; align-items: center; gap: 5px;
+			background: #e53935;
+			color: #fff;
+			padding: 3px 8px;
+			border-radius: 4px;
+			font-size: 0.65rem;
+			font-weight: 800;
+			letter-spacing: 0.08em;
+		}
+
+		.fl-live-dot {
+			width: 5px; height: 5px;
+			border-radius: 50%; background: #fff;
+			animation: popup-live-pulse 1.5s ease-in-out infinite;
+		}
+
+		.fl-popup-anchor {
+			position: absolute;
+			right: 12px;
+			top: 8px;
+			z-index: 5;
+		}
+
+		.fl-popup-anchor .popup {
+			width: 270px;
+			transform: scale(0.54) !important;
+			transform-origin: top right;
+		}
+
+		.fl-store-badges {
+			display: flex;
+			gap: 12px;
+			align-items: center;
+			margin-top: auto;
+		}
+
+		.fl-store-img {
+			height: 48px;
+			width: auto;
+			display: block;
+		}
+	</style>
+</body>
+</html>
