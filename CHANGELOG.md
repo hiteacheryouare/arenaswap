@@ -1,5 +1,12 @@
 # Changelog
 
+## Game Boost pregame guard (#60) — 2026-07-22
+
+Hides the manual Game Boost control for games that haven't started yet — closes #60.
+
+- `gameDetailView` no longer renders `GameBoostInput` when `game.status === 'pre'`
+- Boosting a pregame game previously triggered a state update that bounced the popup back to the main view; the control is now unavailable until a game is live, matching the expected behavior in the issue
+
 ## Delay State (#59) — 2026-07-21
 
 Visual indicator for suspended games (rain delay, lightning delay, etc.) — closes #59.

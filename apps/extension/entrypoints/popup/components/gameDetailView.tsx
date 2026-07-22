@@ -212,7 +212,9 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 				disabledSignals={disabledSignals}
 			/>
 
-			<GameBoostInput gameId={game.id} currentBoost={currentBoost} onSetGameBoost={onSetGameBoost} />
+			{game.status !== 'pre' && (
+				<GameBoostInput gameId={game.id} currentBoost={currentBoost} onSetGameBoost={onSetGameBoost} />
+			)}
 
 			{proTipsEnabled && <ProTip context='detail' />}
 
