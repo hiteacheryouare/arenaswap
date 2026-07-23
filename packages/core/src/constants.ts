@@ -77,10 +77,10 @@ export const upcomingGamesDaysMax = 14;
 // harness (npm run powerscore:simulate), then nudged ~25% stickier so the Balanced default is less
 // jumpy. Level 4 (~11) sits just above the median best-vs-runner-up switch gap.
 export const sensitivityThresholds: Record<number, number> = {
-	1: 38,
-	2: 26,
-	3: 17,
-	4: 10,
+	1: 37,
+	2: 27,
+	3: 18,
+	4: 11,
 	5: 6,
 	6: 3,
 	7: 1
