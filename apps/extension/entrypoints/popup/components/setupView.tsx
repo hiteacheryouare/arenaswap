@@ -280,6 +280,7 @@ const setupView = ({
 										onSetStandbyTab(val && Number.isFinite(num) ? num : null);
 									}}
 									disabled={!prefsLoaded}
+									aria-label={i18n.t('setup.standbyTab')}
 								>
 									<option value=''>{i18n.t('setup.selectTab')}</option>
 									{openTabs.map(openTab => (

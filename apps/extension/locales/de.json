@@ -5,6 +5,12 @@
 		"gameDetailsUnavailable": "Spieldetails nicht verfügbar",
 		"backToGames": "Zurück zu den Spielen"
 	},
+	"errorBoundary": {
+		"title": "Etwas ist schiefgelaufen.",
+		"body": "ArenaSwap ist auf einen unerwarteten Fehler gestoßen.",
+		"errorLabel": "Fehler:",
+		"tryAgain": "Erneut versuchen"
+	},
 	"sport": {
 		"basketball": "Basketball",
 		"football": "American Football",
@@ -166,7 +172,8 @@
 		"sectionActiveLiveTabs": "Aktive Tabs",
 		"sectionOtherLiveGames": "Live-Spiele",
 		"sectionUpNext": "Als Nächstes",
-		"showMoreUpcoming": "{count} weitere anzeigen"
+		"showMoreUpcoming": "{count} weitere anzeigen",
+		"enableToggleLabel": "Automatisches Wechseln aktivieren"
 	},
 	"detail": {
 		"legendCloseness": "Ausgeglichenheit",

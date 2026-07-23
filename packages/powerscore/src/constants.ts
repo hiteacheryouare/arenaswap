@@ -9,7 +9,7 @@ export const stallPenaltySteps: { minPolls: number; deduction: number }[] = [
 ];
 
 // Scoring opportunity boost — automatic additive bonus when a live situation signals an imminent scoring threat.
-// baseRunnerBoosts is indexed by runner count (0–3); football and hockey use a flat value.
+// baseRunnerBoosts is indexed by runner count (0–3); football uses a flat red-zone value.
 export const scoringOpportunityBaseRunnerBoosts: [number, number, number, number] = [0, 3, 6, 10];
 export const scoringOpportunityRedZoneBoost = 10;
 
@@ -28,6 +28,10 @@ export const scoreMaxComeback = 20;
 export const scoreWinProbVarianceMax = 5;
 // Headline cap. Intentionally lower than the sum of the per-signal ceilings above.
 export const scoreMaxTotal = 100;
+
+// Final-period regulation ramp ceiling for tight/close games. Also anchors the tied OT pre-boost
+// (otPreBoostMax = scoreMaxLateGame − this), so referencing it symbolically keeps the two in sync.
+const lateGameCloseCeiling = 36;
 
 export const scorerTunables: ScorerTunables = {
 	scores: {
@@ -49,14 +53,14 @@ export const scorerTunables: ScorerTunables = {
 			overtime: scoreMaxLateGame,
 			// Per-closeness-tier ceilings for the final-period regulation ramp (replaces fixed otEdgeMax).
 			// Tight/close games earn a much higher ceiling than fringe or blowout games.
-			closeCeiling: 36,
+			closeCeiling: lateGameCloseCeiling,
 			fringeCeiling: 22,
 			blowoutCeiling: 15,
 			// Final period ramps finalPeriodStart → closeCeiling near-linearly; the prior period
 			// carries a gentle touch so the period boundary is smooth.
 			finalPeriodStart: 3,
 			previousPeriodTouch: 3,
-			otPreBoostMax: scoreMaxLateGame - 36,
+			otPreBoostMax: scoreMaxLateGame - lateGameCloseCeiling,
 			none: 0,
 		},
 		// Momentum / lead-change tier values are the spike CEILINGS; sport-scaled decay is applied after.
@@ -103,13 +107,10 @@ export const scorerTunables: ScorerTunables = {
 		underPrefix: 'under',
 		minutesLeftSuffix: 'min left',
 		overtimeAnticipation: 'tied — overtime looming',
-		momentumRunPrefix: 'on a',
 		momentumRunSuffix: 'run',
 		momentumRolling: 'on a roll',
 		leadChangeMultiple: 'trading leads',
 		leadChangeSingle: 'just took the lead',
-		comebackBig: 'big comeback',
-		comebackModerate: 'making a run at it',
 		fallback: 'best game available',
 	},
 };

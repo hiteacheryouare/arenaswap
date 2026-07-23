@@ -20,6 +20,8 @@ const pickNewestPrefs = (
 
 	const syncTimestamp = normalizeTimestamp(syncUpdatedAt);
 	const localTimestamp = normalizeTimestamp(localUpdatedAt);
+	// On a tie (notably 0/0 when neither copy is timestamped) prefer sync: legacy pre-timestamp
+	// prefs were sync-only, so sync is the authoritative legacy source.
 	return localTimestamp > syncTimestamp ? localPrefs : syncPrefs;
 };
 
@@ -59,7 +61,12 @@ export const persistStoredUserPreferences = async (prefs: UserPreferences): Prom
 	const prefsUpdatedAt = Date.now();
 	const payload = { prefs: normalized, [prefsStorageUpdatedAtKey]: prefsUpdatedAt };
 
-	await browser.storage.local.set(payload);
+	// Catch each store independently so a failure in one (e.g. quota, unavailable) still lets the
+	// other write succeed, rather than rejecting the whole persist and leaving both potentially stale.
+	await browser.storage.local.set(payload).catch(err => {
+		// eslint-disable-next-line no-console
+		console.warn('ArenaSwap: storage.local unavailable while saving prefs.', err);
+	});
 	await browser.storage.sync.set(payload).catch(err => {
 		// eslint-disable-next-line no-console
 		console.warn('ArenaSwap: storage.sync unavailable, prefs saved to storage.local only.', err);

@@ -19,7 +19,7 @@ const defaultT: Translator = (key, subs) => {
 	let str = defaultStrings[key] ?? key;
 	if (subs) {
 		for (const [k, v] of Object.entries(subs)) {
-			str = str.replace(`{${k}}`, String(v));
+			str = str.split(`{${k}}`).join(String(v));
 		}
 	}
 	return str;

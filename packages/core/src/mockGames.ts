@@ -321,21 +321,21 @@ export class MockGameSimulator {
 			if (game.bso) {
 				const roll = Math.random();
 				if (roll < 0.3) {
-					// Ball — reset if walk (3 balls)
+					// Ball — 4th ball is a walk, which resets the count (ESPN reports 0-3 balls)
 					const newBalls = game.bso.balls + 1;
-					game.bso = newBalls >= 3
+					game.bso = newBalls >= 4
 						? { balls: 0, strikes: game.bso.strikes, outs: game.bso.outs }
 						: { ...game.bso, balls: newBalls };
 				} else if (roll < 0.6) {
-					// Strike — reset if strikeout (2 strikes)
+					// Strike — 3rd strike is a strikeout, which resets the count (ESPN reports 0-2 strikes)
 					const newStrikes = game.bso.strikes + 1;
-					game.bso = newStrikes >= 2
+					game.bso = newStrikes >= 3
 						? { balls: 0, strikes: 0, outs: game.bso.outs }
 						: { ...game.bso, strikes: newStrikes };
 				} else if (roll < 0.75) {
-					// Out — reset count; reset outs if side retired (2 outs)
+					// Out — 3rd out retires the side and resets outs (ESPN reports 0-2 outs)
 					const newOuts = game.bso.outs + 1;
-					game.bso = newOuts >= 2
+					game.bso = newOuts >= 3
 						? { balls: 0, strikes: 0, outs: 0 }
 						: { balls: 0, strikes: 0, outs: newOuts };
 				}

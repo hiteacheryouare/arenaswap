@@ -26,6 +26,7 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 	const awayFavorited = favoriteTeamIds.has(awayFavoriteTeamKey);
 	const homeFavorited = favoriteTeamIds.has(homeFavoriteTeamKey);
 	const psBarPercent = Math.min((totalPowerScore / scoreMaxTotal) * 100, 100);
+	const psColor = powerScoreColor(totalPowerScore, scoreMaxTotal);
 	const { onClick: onCardClick, onKeyDown: onCardKeyDown } = buildCardHandlers(onOpenGameDetail, game.id);
 
 	const delayCardStyle = isDelayed ? {
@@ -99,13 +100,13 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 						<div
 							className='progress-bar'
 							role='progressbar'
-							style={{ width: `${psBarPercent}%`, backgroundColor: powerScoreColor(totalPowerScore, scoreMaxTotal) }}
+							style={{ width: `${psBarPercent}%`, backgroundColor: psColor }}
 							aria-valuenow={totalPowerScore}
 							aria-valuemin={0}
 							aria-valuemax={scoreMaxTotal}
 						/>
 					</div>
-					<span className='game-card-ps-score' style={{ color: powerScoreColor(totalPowerScore, scoreMaxTotal) }}>
+					<span className='game-card-ps-score' style={{ color: psColor }}>
 						{totalPowerScore} / {scoreMaxTotal}
 					</span>
 				</div>

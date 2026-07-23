@@ -5,6 +5,12 @@
 		"gameDetailsUnavailable": "Detalhes do jogo indisponíveis",
 		"backToGames": "Voltar aos jogos"
 	},
+	"errorBoundary": {
+		"title": "Algo deu errado.",
+		"body": "ArenaSwap encontrou um erro inesperado.",
+		"errorLabel": "Erro:",
+		"tryAgain": "Tentar novamente"
+	},
 	"sport": {
 		"basketball": "Basquete",
 		"football": "Futebol americano",
@@ -166,7 +172,8 @@
 		"sectionActiveLiveTabs": "Abas ativas",
 		"sectionOtherLiveGames": "Jogos ao vivo",
 		"sectionUpNext": "A seguir",
-		"showMoreUpcoming": "Ver mais {count}"
+		"showMoreUpcoming": "Ver mais {count}",
+		"enableToggleLabel": "Ativar troca automática"
 	},
 	"detail": {
 		"legendCloseness": "Equilíbrio",

@@ -1,0 +1,14 @@
+{
+	"extends": "../../tsconfig.base.json",
+	"compilerOptions": {
+		"jsx": "react-jsx",
+		"noEmit": true,
+		"declaration": false,
+		"declarationMap": false,
+		"paths": {
+			"@arenaswap/core": ["../core/src/index.ts"],
+			"@arenaswap/core/*": ["../core/src/*"]
+		}
+	},
+	"include": ["src/**/*.ts", "src/**/*.tsx"]
+}
