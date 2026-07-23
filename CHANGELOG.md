@@ -1,5 +1,14 @@
 # Changelog
 
+## Animated explainer on the docs site — 2026-07-22
+
+### Docs website
+- Added an auto-playing, looping explainer section to the landing page (just before the 30+ leagues section) that walks through the ArenaSwap engine in four beats: it watches every live game across your leagues, scores each one live, opens a game to reveal the full PowerScore breakdown (team logos, score, a live PowerScore trend graph, and the five signal bars), and switches your browser tab to the best game (issue #41)
+- The illustrative scenes (a radial network of every league we support and the tab switch) are built with SVG and CSS so logos keep their aspect ratio and the data wires fan out cleanly without crossing; the PowerScore trend is a real ECharts line graph
+- ECharts is imported modularly (only the line, grid, and canvas-renderer modules) and loaded lazily via `client:visible`, so it stays off the initial page load; the loop pauses while the tab is hidden
+- `prefers-reduced-motion` and no-JS visitors get a static "Watch · Score · Switch" three-card summary instead of the animation — no motion at all
+- Removed the older static "watch → score → switch" diagram from the Leagues section (the new animated explainer now tells that story); the scrolling league-logo marquee stays
+
 ## Performance, accuracy & tooling pass — 2026-07-22
 
 A broad sweep for performance, correctness, dead code, accessibility, and tooling gaps across the monorepo. PowerScore scoring output and the extension visual design are unchanged (verified by the existing calibration tests and component tests).

@@ -1,15 +1,7 @@
 ---
-import { Image } from 'astro:assets';
-import iconImg from '../assets/icon_white_on_transparent.svg';
 const ESPN = 'https://a.espncdn.com';
 const OLY  = `${ESPN}/i/espn/misc_logos/500-dark/olympics.png`;
 const NCAA = `${ESPN}/i/espn/misc_logos/500-dark/ncaa.png`;
-
-const featured = [
-	{ abbr: 'NBA', full: 'NBA',           logo: `${ESPN}/i/teamlogos/leagues/500/nba.png`             },
-	{ abbr: 'NFL', full: 'NFL',           logo: `${ESPN}/i/teamlogos/leagues/500/nfl.png`             },
-	{ abbr: 'EPL', full: 'Premier League',logo: `${ESPN}/i/leaguelogos/soccer/500-dark/23.png`        },
-];
 
 const allLeagues = [
 	{ abbr: 'NBA',        full: 'NBA',                    logo: `${ESPN}/i/teamlogos/leagues/500/nba.png`                        },
@@ -60,90 +52,6 @@ const allLeagues = [
 				</p>
 			</div>
 		</div>
-
-		<!-- ─── Three-act visualization ─────────────────────────────────────── -->
-		<div class="leagues-viz reveal">
-
-			<!-- Act 1: Input — league logos -->
-			<div class="leagues-viz-input">
-				{featured.map((l, i) => (
-					<div class={`lv-logo-card lv-logo-delay-${i + 1}`}>
-						<img
-							src={l.logo}
-							alt={l.abbr}
-							class="lv-logo-img"
-							width="44"
-							height="44"
-							loading="lazy"
-							decoding="async"
-							onerror="this.style.display='none'"
-						/>
-						<span class="lv-logo-name">{l.full}</span>
-					</div>
-				))}
-				<p class="lv-more-label">+ 28 more leagues</p>
-			</div>
-
-			<!-- Flow tracks left → center -->
-			<div class="leagues-viz-tracks-in">
-				<div class="lv-flow-track lv-track-1"></div>
-				<div class="lv-flow-track lv-track-2"></div>
-				<div class="lv-flow-track lv-track-3"></div>
-			</div>
-
-			<!-- Act 2: ArenaSwap processing orb -->
-			<div class="leagues-viz-center">
-				<div class="lv-center-ring lv-ring-outer"></div>
-				<div class="lv-center-ring lv-ring-inner"></div>
-				<div class="lv-center-box">
-					<Image src={iconImg} alt="ArenaSwap" class="lv-center-icon" />
-				</div>
-			</div>
-
-			<!-- Flow tracks center → output -->
-			<div class="leagues-viz-tracks-out">
-				<div class="lv-flow-track lv-track-out-1"></div>
-				<div class="lv-flow-track lv-track-out-2"></div>
-				<div class="lv-flow-track lv-track-out-3"></div>
-			</div>
-
-			<!-- Act 3: Output — Watch, Score, Switch -->
-			<div class="leagues-viz-output">
-
-				<div class="lv-action-card lv-action-watch">
-					<div class="lv-action-icon-wrap">
-						<i class="bi bi-eye-fill"></i>
-					</div>
-					<div class="lv-action-content">
-						<div class="lv-action-title">Watch</div>
-						<div class="lv-action-body">Your tab follows the action</div>
-					</div>
-				</div>
-
-				<div class="lv-action-card lv-action-score">
-					<div class="lv-action-icon-wrap">
-						<i class="bi bi-lightning-fill"></i>
-					</div>
-					<div class="lv-action-content">
-						<div class="lv-action-title">Score</div>
-						<div class="lv-action-body">Every game ranked by PowerScore</div>
-					</div>
-				</div>
-
-				<div class="lv-action-card lv-action-switch">
-					<div class="lv-action-icon-wrap">
-						<i class="bi bi-arrow-left-right"></i>
-					</div>
-					<div class="lv-action-content">
-						<div class="lv-action-title">Switch</div>
-						<div class="lv-action-body">Moves you when a better game pulls ahead</div>
-					</div>
-				</div>
-
-			</div>
-
-		</div>
-		<!-- ─── End visualization ───────────────────────────────────────────── -->
 
 		<!-- Scrolling marquee of all leagues -->
 		<div class="leagues-marquee mt-5 reveal">

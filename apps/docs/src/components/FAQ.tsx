@@ -1,5 +1,14 @@
 import { useState } from 'react';
 
+// Paints every period orange, matching the site-wide OrangeDots treatment.
+// Done in JSX (not via DOM mutation) so React keeps ownership of these nodes.
+const withDots = (text: string) =>
+	text.split('.').flatMap((part, i, parts) =>
+		i < parts.length - 1
+			? [part, <span key={i} className='as-dot'>.</span>]
+			: [part],
+	);
+
 const items = [
 	{
 		q: 'What leagues does ArenaSwap support?',
@@ -52,12 +61,12 @@ const FAQ = () => {
 							type='button'
 							onClick={() => toggle(i)}
 						>
-							{item.q}
+							{withDots(item.q)}
 						</button>
 					</h3>
 					<div className={open === i ? 'd-block' : 'd-none'}>
 						<div className='accordion-body text-[0.9rem] leading-[1.65] text-[var(--color-muted)]'>
-							{item.a}
+							{withDots(item.a)}
 						</div>
 					</div>
 				</div>

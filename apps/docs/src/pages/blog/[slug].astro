@@ -1,6 +1,7 @@
 ---
 import Nav from '../../components/Nav.astro';
 import Footer from '../../components/Footer.astro';
+import OrangeDots from '../../components/OrangeDots.astro';
 import { getCollection, render } from 'astro:content';
 import '../../styles/tailwind.css';
 import '../../styles/global.scss';
@@ -145,6 +146,7 @@ const imageAlt = post.data.imageAlt ?? post.data.title;
 	</main>
 
 	<Footer />
+	<OrangeDots />
 
 	<script>
 		import 'bootstrap/dist/js/bootstrap.bundle.min.js';
