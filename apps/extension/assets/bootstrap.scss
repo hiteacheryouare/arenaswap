@@ -1356,7 +1356,20 @@ $bootstrap-icons-font-dir: '/fonts';
 	font-family: 'DM Serif Text', Georgia, serif;
 	font-size: 0.8rem;
 	line-height: 1;
-	color: #8b949e;
+	color: #e6edf3;
+
+	// global.scss sets font-family on `*`, which lands on the word's span
+	// directly and so beats the serif this block only passes down by
+	// inheritance. Re-inheriting from the line restores DM Serif Text.
+	span {
+		font-family: inherit;
+	}
+
+	// The ampersand steps back into ArenaSwap's own muted gray rather than a
+	// Lattice gray, matching the docs footer lockup.
+	.popup-lattice-amp {
+		color: #8b949e;
+	}
 
 	// 20px is the floor for the small-variant mark; below it the woven gaps close up.
 	img {

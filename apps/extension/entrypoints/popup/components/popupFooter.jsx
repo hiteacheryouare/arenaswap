@@ -235,7 +235,7 @@ const popupFooter = () => {
 			)}
 			<div className='popup-lattice-line'>
 				<img src='/images/lattice-rosette-white.svg' alt='' aria-hidden='true' />
-				<span>Lattice &amp; Company</span>
+				<span>Lattice <span className='popup-lattice-amp'>&amp;</span> Company</span>
 			</div>
 			<div className='popup-signature-bar'>
 				{i18n.t('footer.builtWith')}
