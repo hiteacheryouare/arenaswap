@@ -2,6 +2,7 @@ export { fetchGames, fetchLiveGames, fetchLeagueLogos, fetchGamesWithLeagueLogos
 export { computeEagerIntervalMs, computeLeagueIntervalMs, pollMinEagerMs, pollMaxEagerMs, pollIntermissionMs } from './pollIntervalComputer';
 export type { EspnTeamEntry } from './apiClient';
 export { computePowerScore, computeScoringOpportunityBoost, computeWinProbVarianceScore, normalizePowerScoreResult } from 'powerscore';
+export { scoreMaxTotal } from 'powerscore';
 export { MockGameSimulator } from './mockGames';
 export { createPollModeTracker } from './pollModeTracker';
 export type { PollMode, PollModeTracker } from './pollModeTracker';

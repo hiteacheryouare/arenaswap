@@ -1,5 +1,12 @@
 # Changelog
 
+## PowerScore caps at 100 unless manually boosted — 2026-07-27
+
+### Extension & core
+- The headline PowerScore now saturates at 100 for everything the engine computes on its own: the base signals plus the favorite-team bonus, scoring-opportunity boost, and postseason boost are summed and clamped to 100 before the total is shown
+- Only a manually-added per-game boost can push a score above 100 — a game boost is applied on top of the capped automatic total, so a maxed-out game with a `+15` boost reads `115` (previously any stacked automatic boost could drift a game past 100 on its own)
+- Exposed `scoreMaxTotal` from `@arenaswap/core` so the background scorer clamps against the single shared ceiling constant
+
 ## Animated explainer on the docs site — 2026-07-22
 
 ### Docs website

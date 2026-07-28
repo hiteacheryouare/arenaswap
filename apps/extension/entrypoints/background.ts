@@ -1,5 +1,5 @@
 import { randomInRange } from '@porkyproductions/hat';
-import { fetchGamesWithLeagueLogos, computePowerScore, computeScoringOpportunityBoost, normalizePowerScoreResult, MockGameSimulator, createPollModeTracker, isObjectRecord, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts, computeLeagueIntervalMs } from '@arenaswap/core';
+import { fetchGamesWithLeagueLogos, computePowerScore, computeScoringOpportunityBoost, normalizePowerScoreResult, scoreMaxTotal, MockGameSimulator, createPollModeTracker, isObjectRecord, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts, computeLeagueIntervalMs } from '@arenaswap/core';
 import { computeStandbyStreamDecision } from '../utils/standbyStreamLogic';
 import { loadStoredUserPreferences, persistStoredUserPreferences } from '../utils/prefsStorage';
 import {
@@ -413,6 +413,12 @@ export default defineBackground(() => {
 			const gameBoost = gameBoosts[g.id] ?? 0;
 			const scoringOpportunityBoost = computeScoringOpportunityBoost(g);
 			const postseasonBoost = g.isPostseason ? postseasonBoostPoints : 0;
+			// Automatic scoring (base signals + every non-manual boost) saturates at 100.
+			// Only a manually-added game boost is allowed to push the headline total past the ceiling.
+			const automaticTotal = Math.min(
+				scoreMaxTotal,
+				baseScore.total + favoriteBonus + scoringOpportunityBoost + postseasonBoost,
+			);
 			const reasonParts = [
 				baseScore.reason,
 				favoriteBonus > 0 && `favorite bonus (+${favoriteBonus})`,
@@ -430,7 +436,7 @@ export default defineBackground(() => {
 					gameBoost,
 					scoringOpportunityBoost,
 					postseasonBoost,
-					total: baseScore.total + favoriteBonus + gameBoost + scoringOpportunityBoost + postseasonBoost,
+					total: automaticTotal + gameBoost,
 					reason: reasonParts.join(', '),
 				},
 				{ allowTotalOverflow: true },
