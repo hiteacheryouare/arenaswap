@@ -7,24 +7,26 @@ import latticeMark from '../assets/lattice-rosette-white.svg';
 	<div class="section-divider"></div>
 	<div class="container py-5">
 
+		<!-- Brand band: ArenaSwap and the parent company, equal weight -->
+		<div class="footer-brand-band">
+			<a href="/arenaswap/" title="ArenaSwap" class="footer-brand-item">
+				<Image src={logoImg} alt="ArenaSwap" class="footer-arenaswap-mark" />
+			</a>
+			<span class="footer-brand-rule" aria-hidden="true"></span>
+			<a href="https://latticeandcompany.github.io" title="Lattice &amp; Company" class="footer-brand-item latticeco-lockup">
+				<Image src={latticeMark} alt="" aria-hidden="true" class="latticeco-mark" />
+				<span class="latticeco-word">Lattice <span class="latticeco-amp">&amp;</span> Company</span>
+			</a>
+		</div>
+
+		<p class="footer-tagline">Built by sports fans, for sports fans.</p>
+
+		<div class="section-divider my-5"></div>
+
 		<div class="row g-5">
 
-			<!-- Brand -->
-			<div class="col-lg-4">
-				<Image src={logoImg} alt="ArenaSwap" style="height:24px;width:auto;" class="mb-3" />
-				<p style="font-size:0.85rem;color:var(--color-muted);margin:0 0 1.5rem;max-width:280px;line-height:1.6;">
-					Built by sports fans, for sports fans.
-				</p>
-				<div class="d-flex gap-3">
-					<a href="https://github.com/hiteacheryouare/arenaswap" title="GitHub" class="footer-icon-link"><i class="bi bi-github"></i></a>
-					<a href="https://chromewebstore.google.com/detail/arenaswap/gibojibgihombdmmfnhnimajppamfeee" title="Chrome Web Store" class="footer-icon-link"><i class="bi bi-browser-chrome"></i></a>
-					<a href="https://addons.mozilla.org/addon/arenaswap/" title="Firefox Add-ons" class="footer-icon-link"><i class="bi bi-browser-firefox"></i></a>
-					<a href="https://microsoftedge.microsoft.com/addons/detail/arenaswap/oeballpnidkinkcbjokogdgjckdjeeba" title="Edge Add-ons" class="footer-icon-link"><i class="bi bi-browser-edge"></i></a>
-				</div>
-			</div>
-
 			<!-- Product -->
-			<div class="col-6 col-lg-2">
+			<div class="col-12 col-md-4">
 				<p class="footer-col-label">Product</p>
 				<ul class="list-unstyled footer-links">
 					<li><a href="/arenaswap/#features">Features</a></li>
@@ -35,7 +37,7 @@ import latticeMark from '../assets/lattice-rosette-white.svg';
 			</div>
 
 			<!-- Resources -->
-			<div class="col-6 col-lg-2">
+			<div class="col-12 col-md-4">
 				<p class="footer-col-label">Resources</p>
 				<ul class="list-unstyled footer-links">
 					<li><a href="/arenaswap/blog/">Blog</a></li>
@@ -45,7 +47,7 @@ import latticeMark from '../assets/lattice-rosette-white.svg';
 			</div>
 
 			<!-- Install -->
-			<div class="col-lg-3">
+			<div class="col-12 col-md-4">
 				<p class="footer-col-label">Install</p>
 				<ul class="list-unstyled footer-links">
 					<li>
@@ -72,10 +74,12 @@ import latticeMark from '../assets/lattice-rosette-white.svg';
 
 		<div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
 			<span style="font-size:0.78rem;color:var(--color-muted);">ISC License</span>
-			<a href="https://github.com/latticeandcompany" class="latticeco-lockup" title="Lattice &amp; Company">
-				<Image src={latticeMark} alt="" aria-hidden="true" class="latticeco-mark" />
-				<span class="latticeco-word">Lattice <span class="latticeco-amp">&amp;</span> Company</span>
-			</a>
+			<div class="d-flex gap-3">
+				<a href="https://github.com/hiteacheryouare/arenaswap" title="GitHub" class="footer-icon-link"><i class="bi bi-github"></i></a>
+				<a href="https://chromewebstore.google.com/detail/arenaswap/gibojibgihombdmmfnhnimajppamfeee" title="Chrome Web Store" class="footer-icon-link"><i class="bi bi-browser-chrome"></i></a>
+				<a href="https://addons.mozilla.org/addon/arenaswap/" title="Firefox Add-ons" class="footer-icon-link"><i class="bi bi-browser-firefox"></i></a>
+				<a href="https://microsoftedge.microsoft.com/addons/detail/arenaswap/oeballpnidkinkcbjokogdgjckdjeeba" title="Edge Add-ons" class="footer-icon-link"><i class="bi bi-browser-edge"></i></a>
+			</div>
 		</div>
 
 		<p class="footer-disclaimer">

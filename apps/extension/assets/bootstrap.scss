@@ -1348,12 +1348,21 @@ $bootstrap-icons-font-dir: '/fonts';
 // Lattice & Company endorsement. DM Serif Text per the parent brand, and left
 // untranslated in every locale — it is a company name, not a string.
 .popup-lattice-line {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 0.35rem;
 	margin-top: 0.5rem;
-	text-align: center;
 	font-family: 'DM Serif Text', Georgia, serif;
-	font-size: 0.62rem;
+	font-size: 0.8rem;
 	line-height: 1;
 	color: #8b949e;
+
+	// 20px is the floor for the small-variant mark; below it the woven gaps close up.
+	img {
+		width: 20px;
+		height: 20px;
+	}
 }
 
 .popup-signature-bar {

@@ -521,37 +521,94 @@ body.nav-open {
 	}
 }
 
+// ─── Footer brand band ───────────────────────────────────────────────────────
+// ArenaSwap beside its parent company at the top of the footer, sized so the
+// two read as peers rather than product-and-badge.
+.footer-brand-band {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-wrap: wrap;
+	gap: 2rem;
+}
+
+.footer-brand-item {
+	display: inline-flex;
+	align-items: center;
+	text-decoration: none;
+	transition: opacity 0.18s ease;
+
+	&:hover {
+		opacity: 0.75;
+	}
+}
+
+.footer-arenaswap-mark {
+	height: 44px;
+	width: auto;
+}
+
+.footer-brand-rule {
+	width: 1px;
+	height: 44px;
+	background: var(--color-border);
+}
+
+.footer-tagline {
+	margin: 1.25rem 0 0;
+	text-align: center;
+	font-size: 0.9rem;
+	line-height: 1.6;
+	color: var(--color-muted);
+}
+
 // ─── Lattice & Company endorsement ───────────────────────────────────────────
 // Parent-company lockup: DM Serif Text, never DM Sans. The mark is never
 // recolored; the ampersand steps back into ArenaSwap's own muted gray rather
 // than a Lattice gray.
 .latticeco-lockup {
-	display: inline-flex;
-	align-items: center;
-	gap: 0.5rem;
-	text-decoration: none;
-	opacity: 0.75;
-	transition: opacity 0.18s ease;
-
-	&:hover {
-		opacity: 1;
-	}
+	gap: 0.75rem;
 }
 
 .latticeco-mark {
-	height: 26px;
-	width: 26px;
+	height: 44px;
+	width: 44px;
 }
 
 .latticeco-word {
 	font-family: 'DM Serif Text', Georgia, serif;
-	font-size: 1rem;
+	font-size: 1.65rem;
 	line-height: 1;
 	color: var(--color-text);
 }
 
 .latticeco-amp {
 	color: var(--color-muted);
+}
+
+// Stacked on phones, where a vertical rule between wrapped rows reads as noise.
+@media (max-width: 575.98px) {
+	.footer-brand-band {
+		gap: 1.25rem;
+	}
+
+	.footer-arenaswap-mark {
+		height: 34px;
+	}
+
+	.footer-brand-rule {
+		width: 64px;
+		height: 1px;
+	}
+
+	.latticeco-mark {
+		height: 34px;
+		width: 34px;
+	}
+
+	.latticeco-word {
+		font-size: 1.3rem;
+	}
 }
 
 .footer-icon-link {
