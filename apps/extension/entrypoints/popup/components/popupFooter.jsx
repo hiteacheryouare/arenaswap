@@ -233,6 +233,7 @@ const popupFooter = () => {
 					</div>
 				</div>
 			)}
+			<div className='popup-lattice-line'>Lattice &amp; Company</div>
 			<div className='popup-signature-bar'>
 				{i18n.t('footer.builtWith')}
 				<button

@@ -521,6 +521,39 @@ body.nav-open {
 	}
 }
 
+// ─── Lattice & Company endorsement ───────────────────────────────────────────
+// Parent-company lockup: DM Serif Text, never DM Sans. The mark is never
+// recolored; the ampersand steps back into ArenaSwap's own muted gray rather
+// than a Lattice gray.
+.latticeco-lockup {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	text-decoration: none;
+	opacity: 0.75;
+	transition: opacity 0.18s ease;
+
+	&:hover {
+		opacity: 1;
+	}
+}
+
+.latticeco-mark {
+	height: 26px;
+	width: 26px;
+}
+
+.latticeco-word {
+	font-family: 'DM Serif Text', Georgia, serif;
+	font-size: 1rem;
+	line-height: 1;
+	color: var(--color-text);
+}
+
+.latticeco-amp {
+	color: var(--color-muted);
+}
+
 .footer-icon-link {
 	color: var(--color-muted);
 	font-size: 1.25rem;

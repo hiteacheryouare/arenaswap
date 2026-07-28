@@ -3,7 +3,7 @@ import pkg from '../../package.json';
 
 const year = new Date().getFullYear();
 const version = pkg.version;
-const banner = `/*! ArenaSwap v${version} Copyright (c) ${year} ArenaSwap Systems, Ryan Mullin, and Contributors. All rights reserved. */`;
+const banner = `/*! ArenaSwap v${version} Copyright (c) ${year} Ryan Mullin, Lattice & Company, and Contributors. All rights reserved. */`;
 
 export default defineConfig({
 	modules: ['@wxt-dev/module-react', '@wxt-dev/i18n/module'],

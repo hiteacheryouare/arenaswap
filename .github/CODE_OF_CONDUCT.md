@@ -2,6 +2,8 @@
 
 **Project**: ArenaSwap
 
+**Owner**: Lattice & Company
+
 **Maintainers**: Ryan Mullin (Primary Maintainer)
 
 **Scope**: All project spaces, primarily GitHub repositories under ArenaSwap, including issues, pull requests, discussions, commits, documentation, and related communications.

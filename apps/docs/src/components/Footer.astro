@@ -1,6 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import logoImg from '../assets/full_logo_white_on_transparent.svg';
+import latticeMark from '../assets/lattice-rosette-white.svg';
 ---
 <footer style="background:var(--color-bg);">
 	<div class="section-divider"></div>
@@ -71,6 +72,10 @@ import logoImg from '../assets/full_logo_white_on_transparent.svg';
 
 		<div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
 			<span style="font-size:0.78rem;color:var(--color-muted);">ISC License</span>
+			<a href="https://github.com/latticeandcompany" class="latticeco-lockup" title="Lattice &amp; Company">
+				<Image src={latticeMark} alt="" aria-hidden="true" class="latticeco-mark" />
+				<span class="latticeco-word">Lattice <span class="latticeco-amp">&amp;</span> Company</span>
+			</a>
 		</div>
 
 		<p class="footer-disclaimer">

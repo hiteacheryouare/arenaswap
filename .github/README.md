@@ -98,3 +98,19 @@ packages/
 ## License
 
 ISC © [Ryan Mullin](https://github.com/hiteacheryouare) and contributors
+
+---
+
+<div align="center">
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/latticeco-white.png">
+  <img alt="Lattice &amp; Company" src="assets/latticeco-black.png" width="240">
+</picture>
+
+<br />
+<br />
+
+<sub>ArenaSwap is a <a href="https://github.com/latticeandcompany">Lattice &amp; Company</a> project, built and maintained by <a href="https://github.com/hiteacheryouare">Ryan Mullin</a>.</sub>
+
+</div>

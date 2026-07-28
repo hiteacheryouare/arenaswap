@@ -20,5 +20,7 @@ $font-base-url: '/fonts' !default;
 @include as-woff2-face('DM Sans', 'DMSans-Medium',   500);
 @include as-woff2-face('DM Sans', 'DMSans-SemiBold', 600);
 @include as-woff2-face('DM Sans', 'DMSans-Bold',     700);
+// Only for the Lattice & Company parent lockup, never for ArenaSwap's own type.
+@include as-woff2-face('DM Serif Text', 'DMSerifText-Regular', 400);
 @include as-woff2-face('Lekton', 'Lekton-Regular',   400);
 @include as-woff2-face('Lekton', 'Lekton-Bold',      700);

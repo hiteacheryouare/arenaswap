@@ -235,3 +235,19 @@ npm run build --workspace powerscore
 ## License
 
 ISC. See the [LICENSE](./LICENSE) file for details.
+
+---
+
+<div align="center">
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/hiteacheryouare/arenaswap/mega/.github/assets/latticeco-white.png">
+  <img alt="Lattice &amp; Company" src="https://raw.githubusercontent.com/hiteacheryouare/arenaswap/mega/.github/assets/latticeco-black.png" width="200">
+</picture>
+
+<br />
+<br />
+
+<sub>Part of <a href="https://github.com/hiteacheryouare/arenaswap">ArenaSwap</a>, a <a href="https://github.com/latticeandcompany">Lattice &amp; Company</a> project, built and maintained by <a href="https://github.com/hiteacheryouare">Ryan Mullin</a>.</sub>
+
+</div>
