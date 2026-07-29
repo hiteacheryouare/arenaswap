@@ -38,6 +38,7 @@ const sendMessage = async (msg: unknown): Promise<unknown> => {
 interface LoadOptions {
 	prefs?: Partial<UserPreferences>;
 	tabRegistry?: TabRegistration[];
+	standbyStreamTabId?: number | null;
 	fetchReturnValue?: { games: unknown[]; leagueLogos: Record<string, unknown> };
 	initialSystemTime?: number;
 }
@@ -68,7 +69,7 @@ const loadBackground = async (options: LoadOptions = {}) => {
 			session: {
 				get: jest.fn().mockResolvedValue({
 					tabRegistry: options.tabRegistry ?? [],
-					standbyStreamTabId: null,
+					standbyStreamTabId: options.standbyStreamTabId ?? null,
 					scoreHistory: {},
 					powerScoreHistory: {},
 					gameBoosts: {},
@@ -257,5 +258,150 @@ describe('lastSwitchTime reset on disable', () => {
 		// With the fix: lastSwitchTime = 0, so cooldown = 1_010_000 - 0 >> 60_000 → switch fires
 		// Without the fix: lastSwitchTime = 1_000_000, cooldown = 10_000 < 60_000 → blocked
 		expect(tabsUpdate).toHaveBeenCalledWith(2, { active: true });
+	});
+});
+
+// ─── Issue #72 ────────────────────────────────────────────────────────────────
+// The standby stream tab is tracked outside the game registry, so mute syncing
+// skipped it entirely: it kept playing audio over whichever game tab the user was
+// actually watching, and was never unmuted when standby took over.
+
+describe('standby stream tab mute state', () => {
+	const standbyTabId = 5;
+	const gameTabs: TabRegistration[] = [{ gameId: 'g1', tabId: 2 }, { gameId: 'g2', tabId: 3 }];
+
+	const standbyPrefs: Partial<UserPreferences> = {
+		enabled: true,
+		enabledLeagues: ['nba' as LeagueId],
+		standbyStreamEnabled: true,
+		notificationsEnabled: false,
+	};
+
+	// Tab 1 is an unmanaged tab, tabs 2/3 are game tabs, tab 5 is the standby stream.
+	const mockOpenTabs = (activeTabId: number) => {
+		tabsQuery.mockImplementation((q: unknown) => {
+			if ((q as { active?: boolean }).active) return Promise.resolve([{ id: activeTabId }]);
+			return Promise.resolve([{ id: 1 }, { id: 2 }, { id: 3 }, { id: standbyTabId }]);
+		});
+	};
+
+	// UPDATE_REGISTRY re-syncs mute state without going through the switching logic
+	const triggerSync = () => sendMessage({ type: 'UPDATE_REGISTRY', tabRegistry: gameTabs });
+
+	test('mutes the standby stream tab while a game tab is being watched', async () => {
+		await loadBackground({
+			prefs: standbyPrefs,
+			tabRegistry: gameTabs,
+			standbyStreamTabId: standbyTabId,
+		});
+		mockOpenTabs(2);
+
+		await triggerSync();
+
+		expect(tabsUpdate).toHaveBeenCalledWith(2, { muted: false });
+		expect(tabsUpdate).toHaveBeenCalledWith(3, { muted: true });
+		expect(tabsUpdate).toHaveBeenCalledWith(standbyTabId, { muted: true });
+	});
+
+	test('unmutes the standby stream tab and mutes every game tab while parked on standby', async () => {
+		await loadBackground({
+			prefs: standbyPrefs,
+			tabRegistry: gameTabs,
+			standbyStreamTabId: standbyTabId,
+		});
+		mockOpenTabs(standbyTabId);
+
+		await triggerSync();
+
+		expect(tabsUpdate).toHaveBeenCalledWith(standbyTabId, { muted: false });
+		expect(tabsUpdate).toHaveBeenCalledWith(2, { muted: true });
+		expect(tabsUpdate).toHaveBeenCalledWith(3, { muted: true });
+	});
+
+	test('leaves the standby tab alone when Standby Stream is switched off', async () => {
+		await loadBackground({
+			prefs: { ...standbyPrefs, standbyStreamEnabled: false },
+			tabRegistry: gameTabs,
+			standbyStreamTabId: standbyTabId,
+		});
+		mockOpenTabs(2);
+
+		await triggerSync();
+
+		expect(tabsUpdate).not.toHaveBeenCalledWith(standbyTabId, expect.anything());
+	});
+
+	test('never mutes a tab it does not manage', async () => {
+		await loadBackground({
+			prefs: standbyPrefs,
+			tabRegistry: gameTabs,
+			standbyStreamTabId: standbyTabId,
+		});
+		mockOpenTabs(2);
+
+		await triggerSync();
+
+		expect(tabsUpdate).not.toHaveBeenCalledWith(1, expect.anything());
+	});
+
+	test('mutes a newly designated standby tab immediately instead of waiting for the next poll', async () => {
+		await loadBackground({ prefs: standbyPrefs, tabRegistry: gameTabs });
+		mockOpenTabs(2);
+
+		await sendMessage({ type: 'SET_STANDBY_STREAM_TAB', tabId: standbyTabId });
+
+		expect(tabsUpdate).toHaveBeenCalledWith(standbyTabId, { muted: true });
+	});
+
+	test('hands the standby tab back unmuted when Standby Stream is turned off', async () => {
+		await loadBackground({
+			prefs: standbyPrefs,
+			tabRegistry: gameTabs,
+			standbyStreamTabId: standbyTabId,
+		});
+		mockOpenTabs(2);
+
+		await triggerSync();
+		expect(tabsUpdate).toHaveBeenCalledWith(standbyTabId, { muted: true });
+
+		tabsUpdate.mockClear();
+
+		// Turning the feature off drops the standby tab out of the managed set — it must not
+		// be left silently muted with nothing in the UI explaining why.
+		await sendMessage({
+			type: 'UPDATE_PREFS',
+			prefs: normalizeUserPreferences({
+				...createDefaultUserPreferences(),
+				...standbyPrefs,
+				standbyStreamEnabled: false,
+			}),
+		});
+
+		expect(tabsUpdate).toHaveBeenCalledWith(standbyTabId, { muted: false });
+	});
+
+	test('unmutes every managed tab, standby included, when the extension is disabled', async () => {
+		await loadBackground({
+			prefs: standbyPrefs,
+			tabRegistry: gameTabs,
+			standbyStreamTabId: standbyTabId,
+		});
+		mockOpenTabs(2);
+
+		await triggerSync();
+		tabsUpdate.mockClear();
+
+		await sendMessage({
+			type: 'UPDATE_PREFS',
+			prefs: normalizeUserPreferences({
+				...createDefaultUserPreferences(),
+				...standbyPrefs,
+				enabled: false,
+			}),
+		});
+
+		expect(tabsUpdate).toHaveBeenCalledWith(standbyTabId, { muted: false });
+		expect(tabsUpdate).toHaveBeenCalledWith(2, { muted: false });
+		expect(tabsUpdate).toHaveBeenCalledWith(3, { muted: false });
 	});
 });
