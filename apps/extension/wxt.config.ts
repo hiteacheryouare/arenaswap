@@ -29,6 +29,5 @@ export default defineConfig({
 		content_security_policy: {
 			extension_pages: "script-src 'self'; object-src 'self'; img-src 'self' https://a.espncdn.com data:;",
 		},
-		default_locale: 'en'
 	},
 });
