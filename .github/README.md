@@ -24,7 +24,7 @@
 ![Turborepo](https://img.shields.io/badge/Turborepo-2-EF4444?logo=turborepo&logoColor=white)
 ![npm](https://img.shields.io/badge/npm-10-CB3837?logo=npm&logoColor=white)
 
-![Version](https://img.shields.io/badge/version-1.4.2-brightgreen)
+![Version](https://img.shields.io/badge/version-1.4.3-brightgreen)
 ![License](https://img.shields.io/github/license/hiteacheryouare/arenaswap)
 ![Stars](https://img.shields.io/github/stars/hiteacheryouare/arenaswap?logo=github)
 ![Forks](https://img.shields.io/github/forks/hiteacheryouare/arenaswap?logo=github)
