@@ -1,5 +1,13 @@
 # Changelog
 
+## Standby Stream tabs now mute like every other tab (#72) — 2026-07-28
+
+### Extension background
+- The standby stream tab is now muted whenever you're watching one of your game tabs. It was tracked separately from the game registry, so mute syncing skipped it entirely and it kept playing audio over the game you were actually watching
+- Parking on the standby stream now unmutes the standby tab and mutes every game tab, so exactly one tab is ever audible
+- Designating a standby tab mutes it immediately instead of leaving it blaring until the next poll
+- ArenaSwap now remembers which tabs it muted and unmutes them when they leave its control — turning Standby Stream off, picking a different standby tab, or disabling the extension no longer leaves a tab silently muted with nothing in the UI explaining why
+
 ## Delayed games score 0 (#71) — 2026-07-28
 
 A suspended game used to keep the PowerScore it earned while it was live, so a rain-delayed thriller could out-score every game that was actually being played and pull your tab to a frozen stream — closes #71.

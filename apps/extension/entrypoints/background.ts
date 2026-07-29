@@ -117,6 +117,9 @@ export default defineBackground(() => {
 	let pendingSwitch: { gameId: string; tabId: number; reason?: string } | null = null;
 	let standbyStreamTabId: number | null = null;
 	let onStandbyStream = false;
+	// Tabs ArenaSwap has muted, tracked so a tab that leaves our control gets unmuted again
+	// instead of being left silent with nothing in the UI explaining why.
+	const mutedTabIds = new Set<number>();
 	const historyStorageDefaults = { scoreHistory: {}, powerScoreHistory: {}, gameBoosts: {} };
 
 
@@ -259,13 +262,20 @@ export default defineBackground(() => {
 		return game?.venueName ?? 'the arena';
 	};
 
-	const getRegisteredTabIds = (): number[] => {
-		return [...new Set(tabRegistry.map(reg => reg.tabId))];
+	// Every tab whose audio ArenaSwap owns. The standby stream tab lives outside the game
+	// registry but is still ours to mute — otherwise it keeps playing over whichever game
+	// the user is actually watching.
+	const getManagedTabIds = (): number[] => {
+		const managedTabIds = tabRegistry.map(reg => reg.tabId);
+		if (prefs.standbyStreamEnabled && standbyStreamTabId !== null) {
+			managedTabIds.push(standbyStreamTabId);
+		}
+		return [...new Set(managedTabIds)];
 	};
 
 	const syncManagedTabMuteState = async (enabled: boolean) => {
-		const registeredTabIds = getRegisteredTabIds();
-		if (registeredTabIds.length === 0) return;
+		const managedTabIds = getManagedTabIds();
+		if (managedTabIds.length === 0 && mutedTabIds.size === 0) return;
 
 		const allTabs = await browser.tabs.query({});
 		const openTabIds = new Set(
@@ -274,21 +284,35 @@ export default defineBackground(() => {
 				.filter((tabId): tabId is number => tabId !== undefined)
 		);
 
-		const managedOpenTabIds = registeredTabIds.filter(tabId => openTabIds.has(tabId));
-		if (managedOpenTabIds.length === 0) return;
+		const managedOpenTabIds = managedTabIds.filter(tabId => openTabIds.has(tabId));
+
+		// Tabs we muted earlier that are no longer ours (unregistered, standby switched off,
+		// or a different standby tab picked) must be handed back to the user unmuted.
+		const releasedTabIds = [...mutedTabIds].filter(
+			tabId => openTabIds.has(tabId) && !managedOpenTabIds.includes(tabId)
+		);
 
 		let watchedTabId: number | undefined;
-		if (enabled) {
+		if (enabled && managedOpenTabIds.length > 0) {
 			const [activeTab] = await browser.tabs.query({ active: true, lastFocusedWindow: true });
 			if (activeTab?.id !== undefined && managedOpenTabIds.includes(activeTab.id)) {
 				watchedTabId = activeTab.id;
 			}
 		}
 
+		const nextMuteStates = new Map<number, boolean>();
+		for (const tabId of releasedTabIds) nextMuteStates.set(tabId, false);
+		for (const tabId of managedOpenTabIds) {
+			nextMuteStates.set(tabId, enabled ? tabId !== watchedTabId : false);
+		}
+
+		mutedTabIds.clear();
+		for (const [tabId, muted] of nextMuteStates) {
+			if (muted) mutedTabIds.add(tabId);
+		}
+
 		await Promise.all(
-			managedOpenTabIds.map(tabId =>
-				browser.tabs.update(tabId, { muted: enabled ? tabId !== watchedTabId : false })
-			)
+			[...nextMuteStates].map(([tabId, muted]) => browser.tabs.update(tabId, { muted }))
 		);
 	};
 
@@ -732,6 +756,8 @@ export default defineBackground(() => {
 				standbyStreamTabId = msg.tabId;
 				onStandbyStream = false;
 				await browser.storage.session.set({ standbyStreamTabId });
+				// Mute the freshly designated tab right away rather than waiting for the next poll
+				await syncManagedTabMuteState(prefs.enabled);
 			});
 		}
 		if (msg.type === 'GET_DEBUG_STATE') {
