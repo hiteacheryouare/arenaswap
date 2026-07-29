@@ -241,6 +241,30 @@ describe('computePowerScore', () => {
 		});
 	});
 
+	test('returns zeroed score for delayed games', () => {
+		const game = makeGame({ delayed: true });
+		expect(computePowerScore(game, makeHistory([[80, 78], [82, 78], [84, 78]]))).toEqual({
+			gameId: 'game-1',
+			total: 0,
+			closeness: 0,
+			lateGame: 0,
+			momentum: 0,
+			leadChanges: 0,
+			comeback: 0,
+			reason: '',
+			stalled: false,
+		});
+	});
+
+	test('a delayed game never out-scores the same game while live', () => {
+		const history = makeHistory([[80, 78], [82, 78], [84, 78]]);
+		const live = computePowerScore(makeGame(), history);
+		const delayed = computePowerScore(makeGame({ delayed: true }), history);
+
+		expect(live.total).toBeGreaterThan(0);
+		expect(delayed.total).toBe(0);
+	});
+
 	test('scores 0-0 with sport-specific period caveats', () => {
 		const basketball = makeGame({
 			league: 'nba',
@@ -1042,6 +1066,14 @@ describe('computeScoringOpportunityBoost', () => {
 		const game: Game = { ...makeBaseballGame(), league: 'csoft', sportType: 'softball',
 			baseRunners: { first: false, second: true, third: true } };
 		expect(computeScoringOpportunityBoost(game)).toBe(6);
+	});
+
+	test('returns 0 for delayed games with a frozen scoring opportunity', () => {
+		expect(computeScoringOpportunityBoost(makeBaseballGame({
+			delayed: true,
+			baseRunners: { first: true, second: true, third: true },
+		}))).toBe(0);
+		expect(computeScoringOpportunityBoost(makeFootballGame({ delayed: true, isRedZone: true }))).toBe(0);
 	});
 
 	test('returns 0 for football when not in red zone', () => {

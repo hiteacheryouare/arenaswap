@@ -18,11 +18,12 @@ export const computeEagerIntervalMs = (score: number): number => {
  * Computes the next poll interval (ms) for a league given its current live games
  * and the previous poll's PowerScore results.
  *
- * - Returns pollIntermissionMs when all live games are in halftime/intermission.
+ * - Returns pollIntermissionMs when every live game is frozen (halftime/intermission
+ *   or suspended by a delay).
  * - Returns pollMaxEagerMs when no live games are present (dormant mode handles
  *   the true no-game case separately; this is a fallback).
  * - Otherwise returns computeEagerIntervalMs(bestScore), where bestScore is the
- *   highest total score across all active (non-intermission) games in the league.
+ *   highest total score across all active (non-frozen) games in the league.
  *   The most exciting game in the league sets the pace for the whole league.
  */
 export const computeLeagueIntervalMs = (
@@ -31,7 +32,7 @@ export const computeLeagueIntervalMs = (
 ): number => {
 	if (liveGames.length === 0) return pollMaxEagerMs;
 
-	const activeGames = liveGames.filter(g => !g.intermission);
+	const activeGames = liveGames.filter(g => !g.intermission && !g.delayed);
 	if (activeGames.length === 0) return pollIntermissionMs;
 
 	const bestScore = activeGames.reduce((best, g) => {

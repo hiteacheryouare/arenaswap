@@ -1,5 +1,17 @@
 # Changelog
 
+## Delayed games score 0 (#71) — 2026-07-28
+
+A suspended game used to keep the PowerScore it earned while it was live, so a rain-delayed thriller could out-score every game that was actually being played and pull your tab to a frozen stream — closes #71.
+
+### PowerScore
+- `computePowerScore` now returns a zeroed result for `delayed` games, exactly like it already did for halftime/intermission
+- `computeScoringOpportunityBoost` returns 0 for delayed games — a delay freezes the situation (runners stranded on base, offense parked in the red zone), so the boost would otherwise keep paying out while nothing can happen
+- Added `delayed` to the PowerScore `Game` type
+
+### Core
+- `computeLeagueIntervalMs` treats delayed games as frozen alongside intermission games: a league whose live games are all suspended backs off to the 40s intermission poll interval instead of polling eagerly for a score that cannot change
+
 ## PowerScore caps at 100 unless manually boosted — 2026-07-27
 
 ### Extension & core
