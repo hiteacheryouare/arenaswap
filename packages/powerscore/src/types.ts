@@ -18,6 +18,8 @@ export interface Game {
 	period?: number;
 	clockSeconds?: number;
 	intermission?: boolean;
+	/** True while the game is suspended by a delay (rain, lightning, etc.); scores 0 like an intermission */
+	delayed?: boolean;
 	status?: 'pre' | 'in' | 'post';
 	/** Which bases have runners; used by the scoring opportunity boost */
 	baseRunners?: { first: boolean; second: boolean; third: boolean };

@@ -436,6 +436,9 @@ export const computeWinProbVarianceScore = (winProbHistory: number[]): number | 
 
 export const computeScoringOpportunityBoost = (game: Game): number => {
 	if (game.status !== 'in') return 0;
+	// A delay freezes the situation (runners stay on base, offense stays in the red zone),
+	// so the boost would otherwise keep paying out while nothing can happen.
+	if (game.delayed) return 0;
 
 	if (game.sportType === 'baseball' || game.sportType === 'softball') {
 		const r = game.baseRunners;
@@ -457,7 +460,9 @@ export const computePowerScore = (
 	stallCount: number = 0,
 	winProbabilityHistory: number[] = [],
 ): PowerScoreResult => {
-	if (game.intermission)
+	// Nothing is happening during an intermission or a delay — a frozen game must never
+	// out-score a live one, so both zero out instead of keeping their last live score.
+	if (game.intermission || game.delayed)
 		return normalizePowerScoreResult({
 			gameId: game.id,
 			total: 0,

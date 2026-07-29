@@ -70,6 +70,19 @@ describe('computeLeagueIntervalMs', () => {
 		expect(result).toBe(computeEagerIntervalMs(80));
 	});
 
+	it('returns pollIntermissionMs when all live games are delayed', () => {
+		const games = [makeGame({ delayed: true }), makeGame({ id: 'g2', delayed: true })];
+		expect(computeLeagueIntervalMs(games, [])).toBe(pollIntermissionMs);
+	});
+
+	it('ignores a delayed game holding a stale high score', () => {
+		const delayedGame = makeGame({ id: 'g1', delayed: true });
+		const activeGame = makeGame({ id: 'g2' });
+		const scores = [makeScore('g1', 90), makeScore('g2', 40)];
+		const result = computeLeagueIntervalMs([delayedGame, activeGame], scores);
+		expect(result).toBe(computeEagerIntervalMs(40));
+	});
+
 	it('defaults to score 0 (pollMaxEagerMs) when no currentScores entry exists', () => {
 		const game = makeGame({ id: 'g1' });
 		expect(computeLeagueIntervalMs([game], [])).toBe(pollMaxEagerMs);
