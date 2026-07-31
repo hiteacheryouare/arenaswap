@@ -34,7 +34,7 @@ export default defineConfig({
 	manifest: {
 		name: 'ArenaSwap',
 		default_locale: 'en',
-		description: 'Watches every live game across 30+ leagues and auto-switches your browser tab to the most exciting one every 15 seconds.',
+		description: 'Watches every live game across 30+ leagues and auto-switches your browser tab to the most exciting one, as fast as every 6 seconds.',
 		browser_specific_settings: {
 			gecko: {
 				id: 'arenaswap@hiteacheryouare.github.io',

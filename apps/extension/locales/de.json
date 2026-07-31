@@ -163,7 +163,13 @@
 		"selectNone": "keine",
 		"selectAll": "alle",
 		"noLeaguesWarning": "Keine Ligen ausgewählt — ArenaSwap verfolgt keine Spiele.",
-		"leagueLogoAlt": "{label}-Logo"
+		"leagueLogoAlt": "{label}-Logo",
+		"leagueOrderSection": "Anzeigereihenfolge",
+		"leagueOrderExplainer": "Die Liga-Abschnitte erscheinen im Hauptfenster in dieser Reihenfolge. Ligen lassen sich ziehen oder mit den Pfeilen verschieben.",
+		"leagueOrderReset": "Standardreihenfolge wiederherstellen",
+		"leagueMoveUp": "{label} nach oben verschieben",
+		"leagueMoveDown": "{label} nach unten verschieben",
+		"leagueDragHandle": "Zum Umsortieren ziehen"
 	},
 	"main": {
 		"tourButton": "Tour",

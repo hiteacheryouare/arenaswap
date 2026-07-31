@@ -1,5 +1,20 @@
 # Changelog
 
+## Reorderable league display order — 2026-07-31
+
+League sections on the main screen were locked to a built-in order, so a hockey-first fan still had every NBA section pinned above their NHL games with no way to change it.
+
+### Extension popup
+- Settings → Leagues now opens with a **Display Order** list of your enabled leagues. Drag a row by its grip handle, or nudge it with the ↑/↓ buttons, and the main screen's league sections follow that order
+- A "Reset to default order" link appears once you've deviated from the built-in order, and the whole section stays hidden until you have at least two leagues enabled
+- Your custom order is the primary sort key for both live and upcoming games, ahead of favorite-team pinning and PowerScore — day bucketing still wins for upcoming games, so tonight's games never get pushed below tomorrow's
+- Turning a league off and back on drops it beside its nearest default neighbour instead of dumping it at the bottom of your list, so re-enabling NBA doesn't cost you the arrangement you built
+- Extracted the shared `LeagueLogo` (with its initials fallback) out of `setupView` so the order list and the toggle grid render league art the same way
+
+### Core
+- `enabledLeagues` is now order-significant. `normalizeUserPreferences` preserves the stored order verbatim rather than re-sorting it, and dedupes repeated league ids
+- No new preference field and no migration — existing saved settings keep working and simply start out in the default order
+
 ## Standby Stream tabs now mute like every other tab (#72) — 2026-07-28
 
 ### Extension background

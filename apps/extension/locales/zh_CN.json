@@ -163,7 +163,13 @@
 		"selectNone": "全不选",
 		"selectAll": "全选",
 		"noLeaguesWarning": "未选择任何联赛。ArenaSwap 不会追踪任何比赛。",
-		"leagueLogoAlt": "{label} 标志"
+		"leagueLogoAlt": "{label} 标志",
+		"leagueOrderSection": "显示顺序",
+		"leagueOrderExplainer": "主界面的联赛分区将按此顺序显示。可拖动联赛，或用箭头调整。",
+		"leagueOrderReset": "恢复默认顺序",
+		"leagueMoveUp": "将 {label} 上移",
+		"leagueMoveDown": "将 {label} 下移",
+		"leagueDragHandle": "拖动以重新排序"
 	},
 	"main": {
 		"tourButton": "引导教程",

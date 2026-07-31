@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { i18n } from '#i18n';
-import { leagueConfigs, resolveLeagueLogoUrl } from '@arenaswap/core/constants';
 import type { LeagueId, LeagueLogoMap, SignalName, SportType, UserPreferences } from '@arenaswap/core/types';
 import type { Browser } from 'wxt/browser';
 import CooldownSlider from './cooldownSlider';
 import FavoriteTeamBonusInput from './favoriteTeamBonusInput';
+import LeagueLogo from './leagueLogo';
+import LeagueOrderList from './leagueOrderList';
 import PostseasonBoostInput from './postseasonBoostInput';
 import SensitivitySlider from './sensitivitySlider';
 import SwitchDelaySlider from './switchDelaySlider';
@@ -27,6 +28,8 @@ interface setupViewProps {
 	onFavoriteTeamBonusChange: (val: number) => void;
 	onToggleLeague: (leagueId: LeagueId) => void;
 	onToggleSport: (sport: SportType, selectAll: boolean) => void;
+	onReorderLeague: (fromIndex: number, toIndex: number) => void;
+	onResetLeagueOrder: () => void;
 	onToggleShowUpcoming: () => void;
 	onUpcomingGamesDaysChange: (val: number) => void;
 	onToggleProTips: () => void;
@@ -42,27 +45,6 @@ interface setupViewProps {
 	onToggleSignal: (signal: SignalName) => void;
 }
 
-type leagueConfig = (typeof leagueConfigs)[number];
-
-const toLeagueInitials = (league: leagueConfig): string => (
-	league.label.split(/\s+/).map(part => part[0] ?? '').join('').slice(0, 3).toUpperCase()
-);
-
-const LeagueLogo = ({ league, logos }: { league: leagueConfig; logos: LeagueLogoMap }) => {
-	const [imageFailed, setImageFailed] = useState(false);
-	const logoUrl = resolveLeagueLogoUrl(league.id, logos[league.id]);
-	if (imageFailed) {
-		return (
-			<span className='league-toggle-logo league-toggle-logo-fallback d-inline-flex align-items-center justify-content-center fw-bold'>
-				{toLeagueInitials(league)}
-			</span>
-		);
-	}
-	return (
-		<img src={logoUrl} alt={i18n.t('setup.leagueLogoAlt', { label: league.label })} className='league-toggle-logo' loading='lazy' onError={() => setImageFailed(true)} />
-	);
-};
-
 const setupSignalMeta = [
 	{ name: 'closeness' as SignalName, labelKey: 'powerScore.signalCloseness' as const, color: '#22c55e' },
 	{ name: 'lateGame' as SignalName, labelKey: 'powerScore.signalLateGame' as const, color: '#f75c03' },
@@ -74,7 +56,8 @@ const setupSignalMeta = [
 const setupView = ({
 	prefs, prefsLoaded, demoMode, leagueLogos, standbyStreamTabId, standbyOnboardingDone,
 	openTabs, formatTabLabel, onClose, onSensitivityChange, onCooldownChange, onSwitchDelayChange,
-	onFavoriteTeamBonusChange, onToggleLeague, onToggleSport, onToggleShowUpcoming, onUpcomingGamesDaysChange,
+	onFavoriteTeamBonusChange, onToggleLeague, onToggleSport, onReorderLeague, onResetLeagueOrder,
+	onToggleShowUpcoming, onUpcomingGamesDaysChange,
 	onToggleProTips, onToggleNotifications, onToggleDemo, onToggleStandbyStream, onStandbyThresholdChange,
 	onSetStandbyTab, onStandbyOnboardingDone, onToggleBetting, onToggleTemperatureUnit, onPostseasonBoostChange,
 	onToggleSignal,
@@ -299,7 +282,21 @@ const setupView = ({
 
 			{tab === 'leagues' && (
 				<div>
-					<div className='mb-2 setting-explainer'>
+					{prefs.enabledLeagues.length > 1 && (
+						<>
+							<div className='fw-bold popup-section-label'><i className='bi bi-arrow-down-up' />{i18n.t('setup.leagueOrderSection')}</div>
+							<div className='setting-explainer mt-1 mb-2'>{i18n.t('setup.leagueOrderExplainer')}</div>
+							<LeagueOrderList
+								order={prefs.enabledLeagues}
+								leagueLogos={leagueLogos}
+								disabled={!prefsLoaded}
+								onReorder={onReorderLeague}
+								onReset={onResetLeagueOrder}
+							/>
+							<div className='fw-bold popup-section-label'><i className='bi bi-trophy' />{i18n.t('setup.tabLeagues')}</div>
+						</>
+					)}
+					<div className='mb-2 mt-1 setting-explainer'>
 						{i18n.t('setup.leaguesExplainer')}
 					</div>
 					{(Object.keys(sportTypeOrder) as SportType[])

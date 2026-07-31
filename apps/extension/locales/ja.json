@@ -163,7 +163,13 @@
 		"selectNone": "なし",
 		"selectAll": "すべて",
 		"noLeaguesWarning": "リーグが選択されていません。ArenaSwapは試合を追跡しません。",
-		"leagueLogoAlt": "{label}ロゴ"
+		"leagueLogoAlt": "{label}ロゴ",
+		"leagueOrderSection": "表示順",
+		"leagueOrderExplainer": "メイン画面のリーグセクションはこの順で表示されます。ドラッグまたは矢印で並べ替えできます。",
+		"leagueOrderReset": "デフォルトの順序に戻す",
+		"leagueMoveUp": "{label}を上へ移動",
+		"leagueMoveDown": "{label}を下へ移動",
+		"leagueDragHandle": "ドラッグして並べ替え"
 	},
 	"main": {
 		"tourButton": "ツアー",

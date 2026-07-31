@@ -612,6 +612,77 @@ $bootstrap-icons-font-dir: '/fonts';
 	line-height: 1.25;
 }
 
+.league-order-list {
+	display:        flex;
+	flex-direction: column;
+	gap:            0.25rem;
+}
+
+.league-order-row {
+	display:       flex;
+	align-items:   center;
+	gap:           0.4rem;
+	padding:       0.25rem 0.4rem;
+	border-radius: 0.35rem;
+	background:    #161b22;
+	border:        1px solid #21262d;
+	border-top:    2px solid transparent;
+
+	// The shared LeagueLogo is sized for the toggle grid; shrink it for these compact rows.
+	.league-toggle-logo,
+	.league-toggle-logo-fallback {
+		width:     22px;
+		height:    22px;
+		font-size: 0.4rem;
+	}
+
+	&.is-dragging {
+		opacity: 0.45;
+	}
+
+	&.is-drag-over {
+		border-top-color: #f75c03;
+	}
+}
+
+.league-order-handle {
+	color:       #8b949e;
+	cursor:      grab;
+	flex-shrink: 0;
+
+	&:active { cursor: grabbing; }
+}
+
+.league-order-label {
+	flex:        1 1 auto;
+	font-size:   0.72rem;
+	line-height: 1.25;
+	min-width:   0;
+	overflow:    hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.league-order-move-btn {
+	padding:     0 0.2rem;
+	color:       #8b949e;
+	line-height: 1;
+	flex-shrink: 0;
+
+	&:hover:not(:disabled) { color: #e6edf3; }
+	&:disabled             { opacity: 0.3; }
+}
+
+.league-order-reset {
+	align-self:      flex-start;
+	padding:         0.1rem 0;
+	font-size:       0.7rem;
+	color:           #8b949e;
+	text-decoration: none;
+
+	&:hover:not(:disabled) { color: #e6edf3; }
+}
+
 .game-detail-weather {
 	font-size:    0.75rem;
 	color:        #8b949e;

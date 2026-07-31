@@ -1,16 +1,21 @@
 import {
 	buildFavoritePinnedComparator,
+	buildLeagueRank,
+	buildUpcomingComparator,
 	byLeague,
 	fetchState,
 	formatTabLabel,
 	getRandomLoadingMessage,
 	groupByLeague,
+	insertLeagueAtDefaultPosition,
 	isFavoriteTeamGame,
+	leagueOrder,
 	leaguesBySportType,
+	moveLeague,
 	normalizeBackgroundState,
 } from '../entrypoints/popup/popupHelpers';
 import { createFavoriteTeamKey, leagueConfigs } from '@arenaswap/core/constants';
-import type { Game } from '@arenaswap/core/types';
+import type { Game, LeagueId } from '@arenaswap/core/types';
 
 const mockSendMessage = (returnValue: unknown) => {
 	const fn = jest.fn().mockResolvedValueOnce(returnValue);
@@ -120,7 +125,7 @@ describe('buildFavoritePinnedComparator', () => {
 			['plain', 50],
 		]);
 
-		const comparator = buildFavoritePinnedComparator(favorites, scores);
+		const comparator = buildFavoritePinnedComparator(leagueOrder, favorites, scores);
 		const sorted = [plain, fav].toSorted(comparator);
 		expect(sorted.map(g => g.id)).toEqual(['fav', 'plain']);
 	});
@@ -132,9 +137,123 @@ describe('buildFavoritePinnedComparator', () => {
 			['high', 80],
 			['low', 20],
 		]);
-		const comparator = buildFavoritePinnedComparator(new Set(), scores);
+		const comparator = buildFavoritePinnedComparator(leagueOrder, new Set(), scores);
 		const sorted = [low, high].toSorted(comparator);
 		expect(sorted.map(g => g.id)).toEqual(['high', 'low']);
+	});
+
+	test('honours the user league order ahead of favorites and PowerScore', () => {
+		const nbaFav = makeGame({
+			id: 'nba-fav',
+			homeTeam: { id: 'home-1', name: 'Home', abbreviation: 'HOM', score: 0 },
+			awayTeam: { id: 'away-1', name: 'Away', abbreviation: 'AWY', score: 0 },
+		});
+		const nfl = makeGame({ id: 'nfl-1', league: 'nfl', sportType: 'football' });
+		const favorites = new Set([createFavoriteTeamKey('nba', 'home-1')]);
+		const scores = new Map<string, number>([['nba-fav', 99], ['nfl-1', 1]]);
+
+		// Default order puts NBA first even though NFL is second in the custom list...
+		const defaultSorted = [nfl, nbaFav].toSorted(buildFavoritePinnedComparator(leagueOrder, favorites, scores));
+		expect(defaultSorted.map(g => g.id)).toEqual(['nba-fav', 'nfl-1']);
+
+		// ...but a custom order that puts NFL first wins over both the favorite and the score.
+		const customRank = buildLeagueRank(['nfl', 'nba']);
+		const customSorted = [nbaFav, nfl].toSorted(buildFavoritePinnedComparator(customRank, favorites, scores));
+		expect(customSorted.map(g => g.id)).toEqual(['nfl-1', 'nba-fav']);
+	});
+});
+
+describe('buildLeagueRank', () => {
+	test('ranks enabled leagues by their position in the custom order', () => {
+		const rank = buildLeagueRank(['nhl', 'mlb', 'nba']);
+		expect(rank.nhl).toBe(0);
+		expect(rank.mlb).toBe(1);
+		expect(rank.nba).toBe(2);
+	});
+
+	test('sorts leagues outside the custom order after every enabled one', () => {
+		const enabled: LeagueId[] = ['nhl', 'mlb'];
+		const rank = buildLeagueRank(enabled);
+		expect(rank.nfl).toBeGreaterThanOrEqual(enabled.length);
+		expect(rank.nhl).toBeLessThan(rank.nfl);
+		expect(rank.mlb).toBeLessThan(rank.nfl);
+	});
+
+	test('keeps canonical order among the leagues outside the custom order', () => {
+		const rank = buildLeagueRank(['mls']);
+		// nba precedes nfl in leagueConfigs, so it must keep that relative order.
+		expect(rank.nba).toBeLessThan(rank.nfl);
+	});
+
+	test('assigns a rank to every configured league', () => {
+		const rank = buildLeagueRank([]);
+		for (const config of leagueConfigs) {
+			expect(typeof rank[config.id]).toBe('number');
+		}
+	});
+});
+
+describe('insertLeagueAtDefaultPosition', () => {
+	test('inserts a re-enabled league at its canonical slot rather than the end', () => {
+		// nba precedes nhl, which precedes mls, in leagueConfigs.
+		expect(insertLeagueAtDefaultPosition(['nba', 'mls'], 'nhl')).toEqual(['nba', 'nhl', 'mls']);
+	});
+
+	test('appends when the league sorts after everything already enabled', () => {
+		const result = insertLeagueAtDefaultPosition(['nba', 'nhl'], 'mls');
+		expect(result[result.length - 1]).toBe('mls');
+	});
+
+	test('prepends when the league sorts before everything already enabled', () => {
+		expect(insertLeagueAtDefaultPosition(['nhl', 'mls'], 'nba')).toEqual(['nba', 'nhl', 'mls']);
+	});
+
+	test('returns the original array untouched when the league is already present', () => {
+		const order: LeagueId[] = ['nba', 'nhl'];
+		expect(insertLeagueAtDefaultPosition(order, 'nba')).toBe(order);
+	});
+
+	test('respects a custom order when picking the insertion point', () => {
+		// User dragged mls above nba; re-enabling nhl slots it after nba, its canonical neighbour.
+		expect(insertLeagueAtDefaultPosition(['mls', 'nba'], 'nhl')).toEqual(['mls', 'nba', 'nhl']);
+	});
+});
+
+describe('moveLeague', () => {
+	test('moves a league up', () => {
+		expect(moveLeague(['nba', 'nhl', 'mlb'], 1, 0)).toEqual(['nhl', 'nba', 'mlb']);
+	});
+
+	test('moves a league down', () => {
+		expect(moveLeague(['nba', 'nhl', 'mlb'], 0, 2)).toEqual(['nhl', 'mlb', 'nba']);
+	});
+
+	test('clamps a target index past the end of the list', () => {
+		expect(moveLeague(['nba', 'nhl'], 0, 9)).toEqual(['nhl', 'nba']);
+	});
+
+	test('clamps a negative target index', () => {
+		expect(moveLeague(['nba', 'nhl'], 1, -3)).toEqual(['nhl', 'nba']);
+	});
+
+	test('returns the original array for a no-op or out-of-range source', () => {
+		const order: LeagueId[] = ['nba', 'nhl'];
+		expect(moveLeague(order, 1, 1)).toBe(order);
+		expect(moveLeague(order, 5, 0)).toBe(order);
+		expect(moveLeague(order, -1, 0)).toBe(order);
+	});
+});
+
+describe('buildUpcomingComparator', () => {
+	test('still buckets by day before applying the custom league order', () => {
+		const today = new Date();
+		const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000);
+		const nbaTomorrow = makeGame({ id: 'nba-tmr', status: 'pre', startTime: tomorrow.toISOString() });
+		const nflToday = makeGame({ id: 'nfl-today', league: 'nfl', sportType: 'football', status: 'pre', startTime: today.toISOString() });
+
+		// nba outranks nfl in the custom order, but the earlier day still wins.
+		const comparator = buildUpcomingComparator(buildLeagueRank(['nba', 'nfl']), new Set(), new Map());
+		expect([nbaTomorrow, nflToday].toSorted(comparator).map(g => g.id)).toEqual(['nfl-today', 'nba-tmr']);
 	});
 });
 

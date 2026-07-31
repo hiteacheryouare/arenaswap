@@ -66,16 +66,55 @@ export const leaguesBySportType = leagueConfigs.reduce<Record<SportType, typeof 
 
 export const byLeague = (a: Game, b: Game) => (leagueOrder[a.league] ?? 99) - (leagueOrder[b.league] ?? 99);
 
+/**
+ * Ranks leagues by the user's custom display order. Leagues absent from `enabledLeagues`
+ * sort after every enabled one, keeping their canonical order relative to each other.
+ */
+export const buildLeagueRank = (enabledLeagues: LeagueId[]): Record<LeagueId, number> => {
+	const ranks = {} as Record<LeagueId, number>;
+	for (const [index, leagueId] of enabledLeagues.entries()) {
+		if (ranks[leagueId] === undefined) ranks[leagueId] = index;
+	}
+	for (const leagueId of Object.keys(leagueOrder) as LeagueId[]) {
+		if (ranks[leagueId] === undefined) ranks[leagueId] = enabledLeagues.length + leagueOrder[leagueId];
+	}
+	return ranks;
+};
+
+/**
+ * Re-enables a league at its canonical slot rather than tacking it onto the end. Drops it just
+ * after the last already-enabled league that canonically precedes it, so it lands beside its
+ * nearest familiar neighbour even when the surrounding list has been hand-sorted.
+ */
+export const insertLeagueAtDefaultPosition = (order: LeagueId[], leagueId: LeagueId): LeagueId[] => {
+	if (order.includes(leagueId)) return order;
+	const rank = leagueOrder[leagueId] ?? 99;
+	const lastPredecessor = order.findLastIndex(id => (leagueOrder[id] ?? 99) < rank);
+	const insertAt = lastPredecessor + 1;
+	return [...order.slice(0, insertAt), leagueId, ...order.slice(insertAt)];
+};
+
+export const moveLeague = (order: LeagueId[], fromIndex: number, toIndex: number): LeagueId[] => {
+	const moved = order[fromIndex];
+	if (moved === undefined) return order;
+	const target = Math.max(0, Math.min(order.length - 1, toIndex));
+	if (target === fromIndex) return order;
+	const next = order.filter((_, index) => index !== fromIndex);
+	next.splice(target, 0, moved);
+	return next;
+};
+
 export const isFavoriteTeamGame = (game: Game, favoriteTeamIds: Set<string>): boolean => (
 	favoriteTeamIds.has(createFavoriteTeamKey(game.league, game.homeTeam.id))
 	|| favoriteTeamIds.has(createFavoriteTeamKey(game.league, game.awayTeam.id))
 );
 
 export const buildFavoritePinnedComparator = (
+	leagueRank: Record<LeagueId, number>,
 	favoriteTeamIds: Set<string>,
 	scoreByGameId: Map<string, number>,
 ) => (a: Game, b: Game): number => {
-	const leagueDiff = (leagueOrder[a.league] ?? 99) - (leagueOrder[b.league] ?? 99);
+	const leagueDiff = (leagueRank[a.league] ?? 99) - (leagueRank[b.league] ?? 99);
 	if (leagueDiff !== 0) return leagueDiff;
 	const aFav = isFavoriteTeamGame(a, favoriteTeamIds);
 	const bFav = isFavoriteTeamGame(b, favoriteTeamIds);
@@ -90,10 +129,11 @@ const dayStart = (game: Game): number => {
 };
 
 export const buildUpcomingComparator = (
+	leagueRank: Record<LeagueId, number>,
 	favoriteTeamIds: Set<string>,
 	scoreByGameId: Map<string, number>,
 ) => {
-	const fallbackSort = buildFavoritePinnedComparator(favoriteTeamIds, scoreByGameId);
+	const fallbackSort = buildFavoritePinnedComparator(leagueRank, favoriteTeamIds, scoreByGameId);
 	return (a: Game, b: Game): number => {
 		const aDay = dayStart(a);
 		const bDay = dayStart(b);

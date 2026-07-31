@@ -16,7 +16,7 @@ import ProTip from './proTip';
 import EmptyGameState from './emptyGameState';
 import GameListHeader from './gameListHeader';
 import ReviewPromptBanner from './reviewPromptBanner';
-import { buildFavoritePinnedComparator, buildUpcomingComparator, getRandomLoadingMessage, groupByDate, groupByLeague, leagueLabels } from '../popupHelpers';
+import { buildFavoritePinnedComparator, buildLeagueRank, buildUpcomingComparator, getRandomLoadingMessage, groupByDate, groupByLeague, leagueLabels } from '../popupHelpers';
 import type { BettingDisplayPrefs, WeatherDisplayPrefs } from './gameCardTypes';
 
 const emptyScoreMap = new Map<string, PowerScoreResult>();
@@ -191,13 +191,14 @@ const mainView = ({
 	const loadingMessage = useMemo(() => getRandomLoadingMessage(), []);
 	const scoreByGameId = useMemo(() => new Map(scores.map(s => [s.gameId, s.total])), [scores]);
 	const scoreMap = useMemo(() => new Map(scores.map(s => [s.gameId, s])), [scores]);
+	const leagueRank = useMemo(() => buildLeagueRank(prefs.enabledLeagues), [prefs.enabledLeagues]);
 	const sortGames = useMemo(
-		() => buildFavoritePinnedComparator(favoriteTeamIds, scoreByGameId),
-		[favoriteTeamIds, scoreByGameId],
+		() => buildFavoritePinnedComparator(leagueRank, favoriteTeamIds, scoreByGameId),
+		[leagueRank, favoriteTeamIds, scoreByGameId],
 	);
 	const sortUpcomingGames = useMemo(
-		() => buildUpcomingComparator(favoriteTeamIds, scoreByGameId),
-		[favoriteTeamIds, scoreByGameId],
+		() => buildUpcomingComparator(leagueRank, favoriteTeamIds, scoreByGameId),
+		[leagueRank, favoriteTeamIds, scoreByGameId],
 	);
 	const upcomingCutoffMs = useMemo(
 		() => Date.now() + prefs.upcomingGamesDays * 24 * 60 * 60 * 1000,

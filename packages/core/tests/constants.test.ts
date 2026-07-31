@@ -118,6 +118,18 @@ describe('constants', () => {
 		expect(normalized.favoriteTeamBonusPoints).toBe(10);
 	});
 
+	// enabledLeagues order is user-controlled (league display order on the main screen),
+	// so normalization must not re-sort it.
+	test('preserves the stored enabledLeagues order verbatim', () => {
+		const custom = ['nhl', 'mlb', 'nba'];
+		expect(normalizeUserPreferences({ enabledLeagues: custom }).enabledLeagues).toEqual(custom);
+	});
+
+	test('drops duplicate enabledLeagues while keeping the first occurrence', () => {
+		const normalized = normalizeUserPreferences({ enabledLeagues: ['nhl', 'nba', 'nhl', 'mlb', 'nba'] });
+		expect(normalized.enabledLeagues).toEqual(['nhl', 'nba', 'mlb']);
+	});
+
 	test('upcomingGamesDays defaults to 7 and clamps to the 1–14 range', () => {
 		expect(createDefaultUserPreferences().upcomingGamesDays).toBe(7);
 		expect(normalizeUserPreferences({}).upcomingGamesDays).toBe(7);

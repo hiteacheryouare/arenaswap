@@ -10,7 +10,7 @@ import OnboardingView from './components/onboardingView';
 import SetupView from './components/setupView';
 import WalkthroughView from './components/walkthroughView';
 import ToastContainer from './components/toastContainer';
-import { fetchState, formatTabLabel, leagueOrder, leaguesBySportType, normalizeBackgroundState, popupView } from './popupHelpers';
+import { fetchState, formatTabLabel, insertLeagueAtDefaultPosition, leagueOrder, leaguesBySportType, moveLeague, normalizeBackgroundState, popupView } from './popupHelpers';
 import { i18n } from '#i18n';
 import { TranslationContext } from '@arenaswap/ui/src/components/i18nContext';
 import useFavoriteScoreConfetti from './useFavoriteScoreConfetti';
@@ -191,12 +191,12 @@ export default () => {
 		})();
 	};
 
+	// Enabling reinserts a league at its canonical slot so the user's custom order around it survives.
 	const onToggleLeague = (leagueId: LeagueId) => {
 		persistPrefs(currentPrefs => {
-			const current = new Set<LeagueId>(currentPrefs.enabledLeagues);
-			if (current.has(leagueId)) current.delete(leagueId);
-			else current.add(leagueId);
-			const enabledLeagues = [...current].toSorted((a, b) => leagueOrder[a] - leagueOrder[b]);
+			const enabledLeagues = currentPrefs.enabledLeagues.includes(leagueId)
+				? currentPrefs.enabledLeagues.filter(id => id !== leagueId)
+				: insertLeagueAtDefaultPosition(currentPrefs.enabledLeagues, leagueId);
 			return { ...currentPrefs, enabledLeagues };
 		});
 	};
@@ -204,14 +204,25 @@ export default () => {
 	const onToggleSport = (sport: SportType, selectAll: boolean) => {
 		persistPrefs(currentPrefs => {
 			const sportLeagueIds = leaguesBySportType[sport].map(l => l.id);
-			const current = new Set<LeagueId>(currentPrefs.enabledLeagues);
-			for (const id of sportLeagueIds) {
-				if (selectAll) current.add(id);
-				else current.delete(id);
-			}
-			const enabledLeagues = [...current].toSorted((a, b) => leagueOrder[a] - leagueOrder[b]);
+			const enabledLeagues = selectAll
+				? sportLeagueIds.reduce(insertLeagueAtDefaultPosition, currentPrefs.enabledLeagues)
+				: currentPrefs.enabledLeagues.filter(id => !sportLeagueIds.includes(id));
 			return { ...currentPrefs, enabledLeagues };
 		});
+	};
+
+	const onReorderLeague = (fromIndex: number, toIndex: number) => {
+		persistPrefs(currentPrefs => ({
+			...currentPrefs,
+			enabledLeagues: moveLeague(currentPrefs.enabledLeagues, fromIndex, toIndex),
+		}));
+	};
+
+	const onResetLeagueOrder = () => {
+		persistPrefs(currentPrefs => ({
+			...currentPrefs,
+			enabledLeagues: currentPrefs.enabledLeagues.toSorted((a, b) => leagueOrder[a] - leagueOrder[b]),
+		}));
 	};
 
 
@@ -329,6 +340,8 @@ export default () => {
 						onFavoriteTeamBonusChange={val => persistPrefs(currentPrefs => ({ ...currentPrefs, favoriteTeamBonusPoints: val }))}
 						onToggleLeague={onToggleLeague}
 						onToggleSport={onToggleSport}
+						onReorderLeague={onReorderLeague}
+						onResetLeagueOrder={onResetLeagueOrder}
 						onToggleShowUpcoming={() => persistPrefs(currentPrefs => ({ ...currentPrefs, showUpcomingGames: !currentPrefs.showUpcomingGames }))}
 						onUpcomingGamesDaysChange={val => persistPrefs(currentPrefs => ({ ...currentPrefs, upcomingGamesDays: val }))}
 						onToggleProTips={() => persistPrefs(currentPrefs => ({ ...currentPrefs, proTipsEnabled: !currentPrefs.proTipsEnabled }))}

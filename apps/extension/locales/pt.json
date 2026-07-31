@@ -163,7 +163,13 @@
 		"selectNone": "nenhuma",
 		"selectAll": "todas",
 		"noLeaguesWarning": "Nenhuma liga seleccionada — ArenaSwap não irá monitorizar jogos.",
-		"leagueLogoAlt": "Logótipo de {label}"
+		"leagueLogoAlt": "Logótipo de {label}",
+		"leagueOrderSection": "Ordem de apresentação",
+		"leagueOrderExplainer": "As secções das ligas aparecem por esta ordem no ecrã principal. Arraste uma liga ou desloque-a com as setas.",
+		"leagueOrderReset": "Repor a ordem predefinida",
+		"leagueMoveUp": "Mover {label} para cima",
+		"leagueMoveDown": "Mover {label} para baixo",
+		"leagueDragHandle": "Arrastar para reordenar"
 	},
 	"main": {
 		"tourButton": "Visita guiada",

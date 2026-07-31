@@ -260,8 +260,10 @@ export const normalizeUserPreferences = (storedPrefs: unknown): UserPreferences 
 
 	const candidate = storedPrefs as Partial<UserPreferences> & { enabledLeagues?: unknown; favoriteTeamIds?: unknown };
 	const hasEnabledLeaguesField = Object.prototype.hasOwnProperty.call(candidate, 'enabledLeagues');
+	// Order is user-controlled (league display order), so preserve it — but dedupe, since a
+	// repeated id would break the reorder UI's index math and duplicate React keys.
 	const parsedEnabledLeagues = Array.isArray(candidate.enabledLeagues)
-		? candidate.enabledLeagues.filter(isLeagueId)
+		? [...new Set(candidate.enabledLeagues.filter(isLeagueId))]
 		: [];
 
 	return {

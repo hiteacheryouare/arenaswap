@@ -37,6 +37,8 @@ const defaultProps = {
 	onFavoriteTeamBonusChange: () => {},
 	onToggleLeague: () => {},
 	onToggleSport: () => {},
+	onReorderLeague: () => {},
+	onResetLeagueOrder: () => {},
 	onToggleShowUpcoming: () => {},
 	onUpcomingGamesDaysChange: () => {},
 	onToggleProTips: () => {},
@@ -199,5 +201,27 @@ describe('setupView leagues tab', () => {
 	it('does not show warning badge on Leagues tab when leagues are selected', () => {
 		cy.mount(<SetupView {...defaultProps} />);
 		cy.contains('button', 'Leagues').find('.bi-exclamation-circle').should('not.exist');
+	});
+
+	it('shows the display order list with a row per enabled league', () => {
+		cy.mount(<SetupView {...defaultProps} />);
+		cy.contains('button', 'Leagues').click();
+		cy.contains(/display order/i).should('exist');
+		cy.get('.league-order-row').should('have.length', 2);
+	});
+
+	it('reorders an enabled league from the display order list', () => {
+		const onReorderLeague = cy.spy().as('onReorderLeague');
+		cy.mount(<SetupView {...defaultProps} onReorderLeague={onReorderLeague} />);
+		cy.contains('button', 'Leagues').click();
+		cy.get('#league-order-down-nba').click();
+		cy.get('@onReorderLeague').should('have.been.calledWith', 0, 1);
+	});
+
+	it('hides the display order list when only one league is enabled', () => {
+		cy.mount(<SetupView {...defaultProps} prefs={{ ...defaultPrefs, enabledLeagues: ['nba'] }} />);
+		cy.contains('button', 'Leagues').click();
+		cy.contains(/display order/i).should('not.exist');
+		cy.get('.league-order-row').should('not.exist');
 	});
 });

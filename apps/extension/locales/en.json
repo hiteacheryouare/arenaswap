@@ -163,7 +163,13 @@
 		"selectNone": "none",
 		"selectAll": "all",
 		"noLeaguesWarning": "No leagues selected. ArenaSwap won't track any games.",
-		"leagueLogoAlt": "{label} logo"
+		"leagueLogoAlt": "{label} logo",
+		"leagueOrderSection": "Display Order",
+		"leagueOrderExplainer": "League sections appear in this order on the main screen. Drag a league, or nudge it with the arrows.",
+		"leagueOrderReset": "Reset to default order",
+		"leagueMoveUp": "Move {label} up",
+		"leagueMoveDown": "Move {label} down",
+		"leagueDragHandle": "Drag to reorder"
 	},
 	"main": {
 		"tourButton": "Tour",

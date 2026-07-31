@@ -137,4 +137,24 @@ describe('mainView game sections', () => {
 			expect($cards[1]).to.have.attr('data-testid', 'game-card-tomorrow-nba');
 		});
 	});
+
+	it('orders live league sections by the default league order', () => {
+		const nba = makeGame('live-nba');
+		const wnba = makeGame('live-wnba', 'in', { league: 'wnba' });
+		cy.mount(<MainView {...defaultProps} prefs={{ ...defaultPrefs, enabledLeagues: ['nba', 'wnba'] }} games={[wnba, nba]} />);
+		cy.get('[data-testid^="game-card-"]').then($cards => {
+			expect($cards[0]).to.have.attr('data-testid', 'game-card-live-nba');
+			expect($cards[1]).to.have.attr('data-testid', 'game-card-live-wnba');
+		});
+	});
+
+	it('orders live league sections by the user custom league order', () => {
+		const nba = makeGame('live-nba');
+		const wnba = makeGame('live-wnba', 'in', { league: 'wnba' });
+		cy.mount(<MainView {...defaultProps} prefs={{ ...defaultPrefs, enabledLeagues: ['wnba', 'nba'] }} games={[nba, wnba]} />);
+		cy.get('[data-testid^="game-card-"]').then($cards => {
+			expect($cards[0]).to.have.attr('data-testid', 'game-card-live-wnba');
+			expect($cards[1]).to.have.attr('data-testid', 'game-card-live-nba');
+		});
+	});
 });
