@@ -5,6 +5,7 @@ interface inningHalfIconProps {
 	topOfInning?: boolean;
 }
 
+const inningHalfIcon = ({ topOfInning }: inningHalfIconProps) => {
 	const t = useT();
 	if (topOfInning === undefined) return null;
 	const label = t(topOfInning ? 'gameCard.topOfInning' : 'gameCard.bottomOfInning');
