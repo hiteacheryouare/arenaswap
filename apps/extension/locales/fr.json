@@ -208,7 +208,9 @@
 		"delay": "EN ATTENTE",
 		"delayFallback": "En attente",
 		"powerScore": "PowerScore",
-		"vs": "vs"
+		"vs": "vs",
+		"topOfInning": "Début de la manche",
+		"bottomOfInning": "Fin de la manche"
 	},
 	"gameBoost": {
 		"heading": "Coup de boost",

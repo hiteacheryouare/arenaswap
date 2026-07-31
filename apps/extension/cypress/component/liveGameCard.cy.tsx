@@ -57,3 +57,32 @@ describe('liveGameCard PowerScore bar', () => {
 		cy.contains('42 / 100').should('exist');
 	});
 });
+
+describe('liveGameCard inning half indicator', () => {
+	const mlbGame: Game = { ...baseGame, league: 'mlb', sportType: 'baseball', period: 7 };
+
+	it('renders an up caret icon for the top of the inning', () => {
+		cy.mount(<LiveGameCard {...defaultProps} game={{ ...mlbGame, topOfInning: true }} />);
+		cy.get('.inning-half-icon')
+			.should('have.class', 'bi-caret-up-fill')
+			.and('have.attr', 'aria-label', 'Top of inning');
+	});
+
+	it('renders a down caret icon for the bottom of the inning', () => {
+		cy.mount(<LiveGameCard {...defaultProps} game={{ ...mlbGame, topOfInning: false }} />);
+		cy.get('.inning-half-icon')
+			.should('have.class', 'bi-caret-down-fill')
+			.and('have.attr', 'aria-label', 'Bottom of inning');
+	});
+
+	it('renders no indicator when the inning half is unknown', () => {
+		cy.mount(<LiveGameCard {...defaultProps} game={mlbGame} />);
+		cy.contains('Inn 7').should('exist');
+		cy.get('.inning-half-icon').should('not.exist');
+	});
+
+	it('renders no indicator for clock sports', () => {
+		cy.mount(<LiveGameCard {...defaultProps} game={{ ...baseGame, topOfInning: true }} />);
+		cy.get('.inning-half-icon').should('not.exist');
+	});
+});

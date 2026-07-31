@@ -208,7 +208,9 @@
 		"delay": "DELAY",
 		"delayFallback": "Delay",
 		"powerScore": "PowerScore",
-		"vs": "vs"
+		"vs": "vs",
+		"topOfInning": "Top of inning",
+		"bottomOfInning": "Bottom of inning"
 	},
 	"gameBoost": {
 		"heading": "Game boost",

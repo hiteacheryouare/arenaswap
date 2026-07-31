@@ -208,7 +208,9 @@
 		"delay": "中断",
 		"delayFallback": "中断",
 		"powerScore": "PowerScore",
-		"vs": "vs"
+		"vs": "vs",
+		"topOfInning": "上半局",
+		"bottomOfInning": "下半局"
 	},
 	"gameBoost": {
 		"heading": "比赛加速",

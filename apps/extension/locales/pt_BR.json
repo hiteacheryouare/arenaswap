@@ -208,7 +208,9 @@
 		"delay": "SUSPENSO",
 		"delayFallback": "Suspenso",
 		"powerScore": "PowerScore",
-		"vs": "vs"
+		"vs": "vs",
+		"topOfInning": "Início da entrada",
+		"bottomOfInning": "Fim da entrada"
 	},
 	"gameBoost": {
 		"heading": "Impulso do jogo",

@@ -10,6 +10,8 @@ const defaultStrings: Record<string, string> = {
 	'gameCard.favorited': 'Favorited',
 	'gameCard.addToFavoritesShort': 'Add to favorites',
 	'gameCard.vs': 'vs',
+	'gameCard.topOfInning': 'Top of inning',
+	'gameCard.bottomOfInning': 'Bottom of inning',
 	'bso.balls': 'B',
 	'bso.strikes': 'S',
 	'bso.outs': 'O',

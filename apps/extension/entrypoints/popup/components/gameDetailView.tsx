@@ -9,6 +9,7 @@ import SeriesDots from './seriesDots';
 import DetailTeamPill from './detailTeamPill';
 import FlipScore from './flipScore';
 import GameDetailChart from './gameDetailChart';
+import InningHalfIcon from './inningHalfIcon';
 import GameBoostInput from './gameBoostInput';
 import PowerScoreBreakdown from './powerScoreBreakdown';
 import ProTip from './proTip';
@@ -115,10 +116,9 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 		background: `linear-gradient(to right, ${withMatchupAlpha(awayAccent, '#dee2e628')}, ${withMatchupAlpha(homeAccent, '#dee2e628')}), #ffffff`,
 	};
 	const isInningSport = leagueConfigMap[game.league]?.periodFormat === 'innings';
-	const inningHalf = game.topOfInning !== undefined ? (game.topOfInning ? '▲ ' : '▼ ') : '';
 	const statusDetail = game.status === 'in'
 		? isInningSport
-			? `${inningHalf}${formatPeriod(game)}`
+			? <><InningHalfIcon topOfInning={game.topOfInning} />{formatPeriod(game)}</>
 			: `${formatPeriod(game)} • ${formatGameClock(game)}`
 		: game.status === 'pre' ? i18n.t('detail.startsSoon') : i18n.t('detail.final');
 	const totalLabel = total > scoreMaxTotal

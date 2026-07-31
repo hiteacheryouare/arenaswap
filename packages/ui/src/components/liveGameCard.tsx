@@ -7,6 +7,7 @@ import {
 import BaseDiamond from './baseDiamond';
 import BsoIndicator from './bsoIndicator';
 import FlipScore from './flipScore';
+import InningHalfIcon from './inningHalfIcon';
 import type { GameCardDisplayProps } from './gameCardTypes';
 import { buildCardHandlers, buildGameCardStyle, formatGameClock, formatPeriod, GameMeta, powerScoreColor, TeamColumn } from './gameCardShared';
 import { useT } from './i18nContext';
@@ -76,7 +77,7 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 						<span className='font-lekton game-clock'>{formatGameClock(game)}</span>
 					)}
 					<span className='font-lekton game-period'>
-						{isInningSport && game.topOfInning !== undefined ? (game.topOfInning ? '▲ ' : '▼ ') : ''}{formatPeriod(game)}
+						{isInningSport && <InningHalfIcon topOfInning={game.topOfInning} />}{formatPeriod(game)}
 					</span>
 					{isDelayed && (
 						<span className='badge bg-warning text-dark delay-type-badge mt-1'>

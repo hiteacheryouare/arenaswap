@@ -208,7 +208,9 @@
 		"delay": "中断",
 		"delayFallback": "中断",
 		"powerScore": "PowerScore",
-		"vs": "vs"
+		"vs": "vs",
+		"topOfInning": "イニングの表",
+		"bottomOfInning": "イニングの裏"
 	},
 	"gameBoost": {
 		"heading": "ゲームブースト",
