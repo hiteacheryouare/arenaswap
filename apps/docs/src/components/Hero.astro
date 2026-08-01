@@ -119,465 +119,583 @@ const phiDalScore = { gameId: 'hero-nfl', total: 72, closeness: 20, lateGame: 18
 </section>
 
 <script>
-// ─── ArenaSwap Hero Canvas — Data Stream Narrative ──────────────────────────
+// ─── ArenaSwap Hero Canvas — "Raw data in, PowerScore out" ────────────────────
 //
-// One-shot cycle mirroring the extension's 15s scan interval:
-//   SCATTER  (3.0s)  — raw sports data: gray particles drift loosely
-//   COLLECT  (4.5s)  — ArenaSwap analyses: particles spiral into the popup
-//   EXPLODE  (0.7s)  — PowerScore calculated: colored burst outward
-//   DRIFT    (∞)     — results live: colored particles glow, data labels surface
+// A single one-shot story, then a permanent resting state:
+//   RAW     (1.1s)  — colourless sports data drifts across the page
+//   INTAKE  (3.6s)  — every particle spirals into the extension popup
+//   CHARGE  (1.2s)  — the swarm holds inside the card and fills with PowerScore colour
+//   BURST   (0.9s)  — the scored data sprays back out across the whole screen
+//   SETTLE  (∞)     — it is slowly dragged home and orbits the card forever
 //
+// Everything after RAW is parametric in polar space around the card (r, angle),
+// which keeps the motion smooth and lets the terminal state be genuinely stable
+// instead of slowly degenerating. Rendering is sprite-based: no per-particle
+// gradient or rgba() string is built at frame time, and the loop parks itself
+// whenever the hero is off-screen or the tab is hidden.
 
-const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-const canvas  = document.getElementById('hero-canvas') as HTMLCanvasElement;
-const ctx     = canvas.getContext('2d')!;
+const canvas = document.getElementById('hero-canvas') as HTMLCanvasElement | null;
+const ctx    = canvas?.getContext('2d', { alpha: true }) ?? null;
 
-// ─── Deterministic PRNG seeded per page load ─────────────────────────────────
-let seed = Date.now() & 0xffffffff;
-function rand(): number {
-	seed = (seed * 1664525 + 1013904223) & 0xffffffff;
-	return ((seed >>> 0) / 0xffffffff);
-}
+const prefersReducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-// ─── Brand palette ───────────────────────────────────────────────────────────
-const GRAY: [number,number,number] = [148, 156, 166];
-const BRAND: [number,number,number][] = [
+// ─── PowerScore palette ──────────────────────────────────────────────────────
+// The five signal colours the PowerScore breakdown uses, orange-weighted.
+const RAW_RGB: RGB = [150, 158, 168];
+const COLORS: RGB[] = [
+	[247,  92,   3], // closeness  — ArenaSwap orange
 	[247,  92,   3],
 	[247,  92,   3],
-	[247,  92,   3],
+	[ 34, 116, 165], // late game
 	[ 34, 116, 165],
-	[ 34, 116, 165],
-	[  0, 204, 102],
-	[217,   3, 104],
-	[241, 196,  15],
+	[ 34, 197,  94], // momentum
+	[241, 196,  15], // lead changes
+	[217,   3, 104], // comeback
 ];
+type RGB = [number, number, number];
 
-// ─── Phase state machine ─────────────────────────────────────────────────────
-type Phase = 'scatter' | 'collect' | 'explode' | 'drift';
-const PHASE_ORDER: Phase[] = ['scatter', 'collect', 'explode', 'drift'];
-const PHASE_DUR: Record<Phase, number> = {
-	scatter: 3000,
-	collect: 4500,
-	explode:  700,
-	drift:   6800, // used only for driftProgress calc; drift phase is terminal
+// ─── Timeline ────────────────────────────────────────────────────────────────
+type Phase = 'raw' | 'intake' | 'charge' | 'burst' | 'settle';
+const ORDER: Phase[] = ['raw', 'intake', 'charge', 'burst', 'settle'];
+const DUR: Record<Phase, number> = {
+	raw:    1100,
+	intake: 3600,
+	charge: 1200,
+	burst:   850,
+	settle: Infinity,
 };
 
-let phaseIdx       = 0;
-let currentPhase: Phase = 'scatter';
-let phaseTimer     = 0;
-let explodeFired   = false;
+let phase: Phase = 'raw';
+let phaseIdx = 0;
+let phaseT   = 0;
+let clock    = 0; // ms since boot, for twinkle/wobble
 
-let bloomT = -1; // -1 = off, 0–1 = animating
+// ─── PRNG (seeded per load so no two visits look identical) ──────────────────
+let seed = (Date.now() ^ 0x9e3779b9) >>> 0;
+function rand(): number {
+	seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
+	return seed / 4294967296;
+}
 
-let sonarTimer  = 0;
-let sonarT      = -1;
-const SONAR_INT = 4200;
-const SONAR_DUR = 1400;
+const TAU = Math.PI * 2;
+const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+const clamp01 = (t: number) => (t < 0 ? 0 : t > 1 ? 1 : t);
+// Slow start, confident middle, soft landing — the "pulled in" feel.
+const easeInOutCubic = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+const easeOutCubic   = (t: number) => 1 - Math.pow(1 - t, 3);
 
 // ─── Particle ────────────────────────────────────────────────────────────────
 interface Pt {
-	x: number; y: number;
-	vx: number; vy: number;
-	sz: number; baseSz: number;
-	r: number; g: number; b: number;
-	tr: number; tg: number; tb: number; // target brand color
-	ct: number;  // colorT 0=gray, 1=brand
-	op: number;  // opacity
-	opd: number; // opacity direction
-	anchor: boolean; // large node — participates in connection lines
+	x: number; y: number;   // css px
+	vx: number; vy: number; // cartesian velocity — raw + burst only
+	r: number; a: number;   // polar around the card
+	rv: number; av: number; // polar velocity — settle only
+	sr: number; sa: number; // polar snapshot taken when intake begins
+	turns: number;          // radians of spiral swept on the way in
+	orbR: number;           // radius held while charging inside the card
+	ring: boolean;          // rises into the visible accretion ring while charging
+	ringK: number;          // ring radius, as a multiple of the card radius
+	haloK: number;          // permanent resting radius, as a multiple of the card radius
+	spin: number;           // orbital rate, rad/frame
+	sz: number;             // core radius, css px
+	op: number;             // base opacity
+	tw: number;             // twinkle phase offset
+	ci: number;             // palette index
+	ct: number;             // 0 = raw gray, 1 = fully scored
+	anchor: boolean;        // draws constellation lines
 }
 
-const N = 700;
-const N_ANCHOR = 80; // large nodes; only these draw connection lines
-let W = 0, H = 0, wellX = 0, wellY = 0;
-const pts: Pt[] = [];
-const anchorPts: Pt[] = [];
+let W = 0, H = 0, dpr = 1;
+let wellX = 0, wellY = 0, cardR = 300;
+let pts: Pt[] = [];
+let anchors: Pt[] = [];
 
-function lerp(a: number, b: number, t: number): number {
-	return a + (b - a) * Math.min(1, Math.max(0, t));
+// ─── Sprites (built once — the whole reason this loop is cheap) ──────────────
+const SPRITE = 64;
+let rawSprite: HTMLCanvasElement;
+let colorSprites: HTMLCanvasElement[] = [];
+let bloomSprite: HTMLCanvasElement;
+let ringSprite: HTMLCanvasElement;
+let ambient: HTMLCanvasElement | null = null;
+
+function paint(size: number, stops: [number, string][]): HTMLCanvasElement {
+	const c = document.createElement('canvas');
+	c.width = c.height = size;
+	const g = c.getContext('2d')!;
+	const grd = g.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
+	for (const [at, color] of stops) grd.addColorStop(at, color);
+	g.fillStyle = grd;
+	g.fillRect(0, 0, size, size);
+	return c;
 }
 
-function spawnEdge(): [number, number] {
-	const e = Math.floor(rand() * 4);
-	if (e === 0) return [0,        rand() * H];
-	if (e === 1) return [W,        rand() * H];
-	if (e === 2) return [rand()*W, 0         ];
-	return            [rand()*W, H         ];
+function buildSprites() {
+	const [rr, rg, rb] = RAW_RGB;
+	rawSprite = paint(SPRITE, [
+		[0,    `rgba(${rr},${rg},${rb},0.85)`],
+		[0.22, `rgba(${rr},${rg},${rb},0.45)`],
+		[0.55, `rgba(${rr},${rg},${rb},0.11)`],
+		[1,    `rgba(${rr},${rg},${rb},0)`],
+	]);
+	colorSprites = COLORS.map(([r, g, b]) => paint(SPRITE, [
+		[0,    'rgba(255,255,255,0.92)'],
+		[0.14, `rgba(${r},${g},${b},0.95)`],
+		[0.42, `rgba(${r},${g},${b},0.30)`],
+		[1,    `rgba(${r},${g},${b},0)`],
+	]));
+	bloomSprite = paint(512, [
+		[0,    'rgba(255,255,255,0.9)'],
+		[0.12, 'rgba(255,205,150,0.55)'],
+		[0.35, 'rgba(247,92,3,0.28)'],
+		[1,    'rgba(247,92,3,0)'],
+	]);
+	ringSprite = paint(512, [
+		[0,    'rgba(247,92,3,0)'],
+		[0.74, 'rgba(247,92,3,0)'],
+		[0.88, 'rgba(255,150,60,0.55)'],
+		[0.96, 'rgba(247,92,3,0.18)'],
+		[1,    'rgba(247,92,3,0)'],
+	]);
 }
 
-function makePt(scatter = true, anchor = false): Pt {
-	const c = BRAND[Math.floor(rand() * BRAND.length)];
-	const [x, y] = scatter ? [rand()*W, rand()*H] : spawnEdge();
-	const sz = anchor ? rand() * 3 + 3.5 : rand() * 1.0 + 0.4;
+// Static wash behind the card, blitted once per frame instead of rebuilt.
+function buildAmbient() {
+	const c = document.createElement('canvas');
+	c.width = Math.max(1, Math.ceil(W / 4));
+	c.height = Math.max(1, Math.ceil(H / 4));
+	const g = c.getContext('2d')!;
+	const x = wellX / 4, y = wellY / 4, rad = Math.max(W, H) / 4 * 0.62;
+	const grd = g.createRadialGradient(x, y, 0, x, y, rad);
+	grd.addColorStop(0,    'rgba(247,92,3,0.075)');
+	grd.addColorStop(0.45, 'rgba(34,116,165,0.035)');
+	grd.addColorStop(1,    'rgba(0,0,0,0)');
+	g.fillStyle = grd;
+	g.fillRect(0, 0, c.width, c.height);
+	ambient = c;
+}
+
+// ─── Layout ──────────────────────────────────────────────────────────────────
+function measure() {
+	const popup = document.querySelector<HTMLElement>('#hero .demo-popup');
+	const cr = canvas!.getBoundingClientRect();
+	if (popup) {
+		const pr = popup.getBoundingClientRect();
+		wellX = pr.left - cr.left + pr.width / 2;
+		wellY = pr.top - cr.top + pr.height / 2;
+		cardR = Math.max(120, pr.height / 2);
+	} else {
+		wellX = W * 0.68;
+		wellY = H * 0.48;
+		cardR = Math.min(W, H) * 0.3;
+	}
+}
+
+function particleCount(): number {
+	// Density-matched to the viewport so phones don't push the same 700 dots.
+	return Math.round(Math.min(620, Math.max(160, (W * H) / 2600)));
+}
+
+function makePt(): Pt {
+	const anchor = rand() < 0.11;
+	// Most of the swarm ends up hugging the card; the rest keeps the page alive.
+	const haloK = rand() < 0.72 ? 0.92 + rand() * 0.5 : 1.45 + rand() * 1.6;
 	return {
-		x, y,
-		vx: (rand() - 0.5) * 1.4,
-		vy: (rand() - 0.5) * 1.4,
-		sz, baseSz: sz,
-		r: GRAY[0], g: GRAY[1], b: GRAY[2],
-		tr: c[0], tg: c[1], tb: c[2],
+		x: rand() * W, y: rand() * H,
+		vx: (rand() - 0.5) * 0.5, vy: (rand() - 0.5) * 0.5,
+		r: 0, a: 0, rv: 0, av: 0, sr: 0, sa: 0,
+		turns: 1.3 + rand() * 1.9,
+		orbR: 12 + rand() * 62,
+		ring: rand() < 0.36,
+		ringK: 1.0 + rand() * 0.42,
+		haloK,
+		spin: 0.0055 + rand() * 0.004,
+		sz: anchor ? 2.0 + rand() * 1.4 : 0.7 + rand() * 0.9,
+		op: anchor ? 0.5 + rand() * 0.3 : 0.28 + rand() * 0.42,
+		tw: rand() * TAU,
+		ci: Math.floor(rand() * COLORS.length),
 		ct: 0,
-		op: rand() * 0.4 + 0.15,
-		opd: rand() < 0.5 ? 1 : -1,
 		anchor,
 	};
 }
 
-function computeWell() {
-	const popup = document.querySelector<HTMLElement>('#hero .demo-popup-wrapper');
-	if (popup) {
-		const pr = popup.getBoundingClientRect();
-		const cr = canvas.getBoundingClientRect();
-		wellX = pr.left - cr.left + pr.width  / 2;
-		wellY = pr.top  - cr.top  + pr.height / 2;
-	} else {
-		wellX = W * 0.66;
-		wellY = H * 0.46;
+function populate() {
+	const n = particleCount();
+	pts = [];
+	anchors = [];
+	for (let i = 0; i < n; i++) {
+		const p = makePt();
+		pts.push(p);
+		if (p.anchor) anchors.push(p);
 	}
 }
 
 function resize() {
-	const rect = (canvas.parentElement as HTMLElement).getBoundingClientRect();
-	W = canvas.width  = rect.width;
-	H = canvas.height = rect.height;
-	computeWell();
-	pts.length = 0;
-	anchorPts.length = 0;
-	for (let i = 0; i < N; i++) {
-		const isAnchor = i < N_ANCHOR;
-		const p = makePt(true, isAnchor);
-		pts.push(p);
-		if (isAnchor) anchorPts.push(p);
+	const rect = (canvas!.parentElement as HTMLElement).getBoundingClientRect();
+	const prevW = W, prevH = H;
+	const nextW = Math.max(1, Math.round(rect.width));
+	const nextH = Math.max(1, Math.round(rect.height));
+	const nextDpr = Math.min(2, window.devicePixelRatio || 1);
+	// Mobile URL bars fire resize on every scroll — ignore the no-op ones.
+	if (nextW === prevW && nextH === prevH && nextDpr === dpr && pts.length) {
+		measure();
+		return;
+	}
+	W = nextW;
+	H = nextH;
+	dpr = nextDpr;
+	canvas!.width  = Math.round(W * dpr);
+	canvas!.height = Math.round(H * dpr);
+	ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+	measure();
+	buildAmbient();
+
+	if (!pts.length) {
+		populate();
+	} else if (prevW && prevH) {
+		// Keep the story running across a resize — rescale rather than respawn.
+		// Ring and halo radii are card-relative, so they follow the new layout for free.
+		const kx = W / prevW, ky = H / prevH;
+		for (const p of pts) {
+			p.x *= kx; p.y *= ky;
+			p.r = Math.hypot(p.x - wellX, p.y - wellY);
+			p.a = Math.atan2(p.y - wellY, p.x - wellX);
+		}
 	}
 }
 
 // ─── Phase transitions ───────────────────────────────────────────────────────
-function fireExplosion() {
+function enterIntake() {
 	for (const p of pts) {
-		const dx = p.x - wellX;
-		const dy = p.y - wellY;
-		const d  = Math.sqrt(dx*dx + dy*dy) || 1;
-		const spd = rand() * 24 + 12;
-		const effD = Math.max(d, 40);
-		p.vx = (dx/effD) * spd + (rand()-0.5) * 5;
-		p.vy = (dy/effD) * spd + (rand()-0.5) * 5;
+		p.sr = Math.max(1, Math.hypot(p.x - wellX, p.y - wellY));
+		p.sa = Math.atan2(p.y - wellY, p.x - wellX);
+		p.r = p.sr;
+		p.a = p.sa;
+	}
+}
+
+function enterBurst() {
+	// Spread wider than tall so the spray actually reaches the whole viewport.
+	const ax = Math.min(1.85, Math.max(1.1, W / Math.max(1, H)));
+	for (const p of pts) {
+		const speed = 13 + rand() * 27;
+		const cos = Math.cos(p.a), sin = Math.sin(p.a);
+		p.vx = (cos * speed) * ax + (-sin * speed * 0.22);
+		p.vy = (sin * speed)      + ( cos * speed * 0.22);
 		p.ct = 1;
-		p.r  = p.tr; p.g = p.tg; p.b = p.tb;
-		p.sz = p.baseSz * 2.5;
 	}
-	bloomT = 0;
 }
 
-function resetGray() {
+function enterSettle() {
 	for (const p of pts) {
-		p.ct = 0;
-		p.r  = GRAY[0]; p.g = GRAY[1]; p.b = GRAY[2];
-		p.sz = p.baseSz;
-	}
-	sonarTimer = 0; sonarT = -1;
-}
-
-function advancePhase(dt: number) {
-	phaseTimer += dt;
-	// Drift is terminal — colored state holds indefinitely
-	if (currentPhase !== 'drift' && phaseTimer >= PHASE_DUR[currentPhase]) {
-		phaseTimer   = 0;
-		explodeFired = false;
-		phaseIdx     = (phaseIdx + 1) % 4;
-		currentPhase = PHASE_ORDER[phaseIdx];
-		if (currentPhase === 'scatter') resetGray();
-	}
-	if (currentPhase === 'explode' && !explodeFired) {
-		fireExplosion();
-		explodeFired = true;
+		const cos = Math.cos(p.a), sin = Math.sin(p.a);
+		p.rv =  p.vx * cos + p.vy * sin;
+		p.av = (-p.vx * sin + p.vy * cos) / Math.max(40, p.r);
 	}
 }
 
-// ─── Inter-anchor repulsion (drift only) ─────────────────────────────────────
-// Keeps anchor nodes from clumping after explosion; O(N_ANCHOR²) ≈ 3160 checks/frame
-function applyAnchorRepulsion(s: number) {
-	const repR = 85;
-	for (let i = 0; i < anchorPts.length - 1; i++) {
-		const a = anchorPts[i];
-		for (let j = i + 1; j < anchorPts.length; j++) {
-			const b = anchorPts[j];
-			const dx = b.x - a.x;
-			if (dx < -repR || dx > repR) continue;
-			const dy = b.y - a.y;
-			if (dy < -repR || dy > repR) continue;
-			const d = Math.sqrt(dx*dx + dy*dy);
-			if (d < repR && d > 0) {
-				const f = ((repR - d) / repR) * 0.01 * s;
-				a.vx -= (dx/d)*f; a.vy -= (dy/d)*f;
-				b.vx += (dx/d)*f; b.vy += (dy/d)*f;
-			}
-		}
-	}
+function advance(dt: number) {
+	if (phase === 'settle') { phaseT += dt; return; }
+	phaseT += dt;
+	if (phaseT < DUR[phase]) return;
+	phaseT -= DUR[phase];
+	phase = ORDER[++phaseIdx];
+	if (phase === 'intake') enterIntake();
+	if (phase === 'burst')  enterBurst();
+	if (phase === 'settle') enterSettle();
 }
 
-// ─── Per-particle update ─────────────────────────────────────────────────────
-function updatePt(p: Pt, dt: number) {
-	const s = dt / 16; // 60fps normalizer
+// ─── Simulation ──────────────────────────────────────────────────────────────
+function step(s: number) {
+	switch (phase) {
 
-	switch (currentPhase) {
-
-		case 'scatter': {
-			// Gentle brownian drift
-			p.vx += (rand()-0.5) * 0.09 * s;
-			p.vy += (rand()-0.5) * 0.09 * s;
-			// Soft edge repulsion (keeps particles on screen)
-			const em = 70;
-			if (p.x < em)     p.vx += 0.05 * (1 - p.x / em) * s;
-			if (p.x > W - em) p.vx -= 0.05 * (1 - (W - p.x) / em) * s;
-			if (p.y < em)     p.vy += 0.05 * (1 - p.y / em) * s;
-			if (p.y > H - em) p.vy -= 0.05 * (1 - (H - p.y) / em) * s;
-			// Speed cap
-			const sp = Math.sqrt(p.vx*p.vx + p.vy*p.vy);
-			if (sp > 0.85) { p.vx = p.vx/sp * 0.85; p.vy = p.vy/sp * 0.85; }
-			// Fade to gray
-			p.r = lerp(p.r, GRAY[0], 0.06*s);
-			p.g = lerp(p.g, GRAY[1], 0.06*s);
-			p.b = lerp(p.b, GRAY[2], 0.06*s);
-			p.ct = Math.max(0, p.ct - 0.02*s);
-			// Size normalize
-			p.sz = lerp(p.sz, p.baseSz, 0.08*s);
-			break;
-		}
-
-		case 'collect': {
-			const dx = wellX - p.x;
-			const dy = wellY - p.y;
-			const d  = Math.sqrt(dx*dx + dy*dy);
-
-			// Absorbed at center → respawn from edge
-			if (d < 22) {
-				const c = BRAND[Math.floor(rand() * BRAND.length)];
-				const [nx, ny] = spawnEdge();
-				p.x = nx; p.y = ny;
-				p.vx = (rand()-0.5)*2; p.vy = (rand()-0.5)*2;
-				p.tr = c[0]; p.tg = c[1]; p.tb = c[2];
-				p.ct = 0; p.r = GRAY[0]; p.g = GRAY[1]; p.b = GRAY[2];
-				break;
+		// Raw, uncorrelated data: slow cartesian drift, no colour, no order.
+		case 'raw': {
+			for (const p of pts) {
+				p.vx += Math.sin(clock * 0.0009 + p.tw) * 0.006 * s;
+				p.vy += Math.cos(clock * 0.0011 + p.tw * 1.7) * 0.006 * s;
+				p.x += p.vx * s;
+				p.y += p.vy * s;
+				if (p.x < 0 || p.x > W) p.vx *= -1;
+				if (p.y < 0 || p.y > H) p.vy *= -1;
 			}
-
-			// Pull strength ramps up over phase
-			const progress = phaseTimer / PHASE_DUR['collect'];
-			const radStr   = (0.05 + progress * 0.18) * s;
-			p.vx += (dx/d) * radStr;
-			p.vy += (dy/d) * radStr;
-
-			// Clockwise swirl (tangential component)
-			const swirlStr = 0.03 * s;
-			p.vx += (-dy/d) * swirlStr;
-			p.vy += ( dx/d) * swirlStr;
-
-			// Speed cap (grows with phase)
-			const spCap = 2.5 + progress * 5;
-			const spd = Math.sqrt(p.vx*p.vx + p.vy*p.vy);
-			if (spd > spCap) { p.vx = p.vx/spd * spCap; p.vy = p.vy/spd * spCap; }
-
-			// Color transitions: gray → brand based on closeness + phase progress
-			const closeness = Math.max(0, 1 - d / (Math.min(W,H) * 0.55));
-			const targetCt  = closeness * (0.4 + progress * 0.6);
-			p.ct = lerp(p.ct, targetCt, 0.04*s);
-			p.r  = lerp(GRAY[0], p.tr, p.ct);
-			p.g  = lerp(GRAY[1], p.tg, p.ct);
-			p.b  = lerp(GRAY[2], p.tb, p.ct);
 			break;
 		}
 
-		case 'explode': {
-			// Maintain momentum, very light damping so particles travel far
-			p.vx *= Math.pow(0.992, s);
-			p.vy *= Math.pow(0.992, s);
-			// Brand color stays
-			p.ct = 1; p.r = p.tr; p.g = p.tg; p.b = p.tb;
-			// Size swell then normalize
-			const ep = phaseTimer / PHASE_DUR['explode'];
-			p.sz = lerp(p.sz, p.baseSz * lerp(2.2, 1, ep), 0.12*s);
-			break;
-		}
-
-		case 'drift': {
-			// Gentle well attraction (unchanged)
-			const dx  = wellX - p.x;
-			const dy  = wellY - p.y;
-			const d   = Math.sqrt(dx*dx + dy*dy);
-			if (d > 55) {
-				const str = Math.min(0.009, 22 / (d*d)) * s;
-				p.vx += dx * str;
-				p.vy += dy * str;
+		// Every point spirals into the popup, still colourless.
+		case 'intake': {
+			const e = easeInOutCubic(clamp01(phaseT / DUR.intake));
+			for (const p of pts) {
+				p.r = lerp(p.sr, p.orbR, e);
+				p.a = p.sa + p.turns * e;
+				const wob = Math.sin(clock * 0.002 + p.tw) * 2.5 * (1 - e);
+				p.x = wellX + Math.cos(p.a) * (p.r + wob);
+				p.y = wellY + Math.sin(p.a) * (p.r + wob);
 			}
+			break;
+		}
 
-			// Damping
-			p.vx *= Math.pow(0.977, s);
-			p.vy *= Math.pow(0.977, s);
+		// Held inside the card, tightening — and filling with PowerScore colour.
+		// A third of the swarm spins back out into a tight accretion ring so the
+		// card visibly charges instead of just swallowing everything.
+		case 'charge': {
+			const e = clamp01(phaseT / DUR.charge);
+			const squeeze = 1 - 0.25 * e * e;
+			const tint = clamp01((e - 0.22) / 0.45);
+			const rise = easeOutCubic(clamp01((e - 0.32) / 0.68));
+			for (const p of pts) {
+				const spin = p.ring ? p.spin * (1 + rise * 3.2) : p.spin;
+				p.a += spin * s;
+				const base = p.ring
+					? lerp(p.orbR, cardR * p.ringK, rise)
+					: p.orbR * squeeze;
+				p.r = base * (1 + Math.sin(clock * 0.006 + p.tw) * 0.05);
+				p.ct = tint;
+				p.x = wellX + Math.cos(p.a) * p.r;
+				p.y = wellY + Math.sin(p.a) * p.r;
+			}
+			break;
+		}
 
-			// Speed cap: high at start of drift (carry explosion momentum), settles after 35%
-			const driftProg = Math.min(1, phaseTimer / (PHASE_DUR['drift'] * 0.35));
-			const driftCap  = lerp(6.5, 1.4, driftProg);
-			const spd = Math.sqrt(p.vx*p.vx + p.vy*p.vy);
-			if (spd > driftCap) { p.vx = p.vx/spd * driftCap; p.vy = p.vy/spd * driftCap; }
+		// Sprayed back out, scored and coloured.
+		case 'burst': {
+			const damp = Math.pow(0.968, s);
+			for (const p of pts) {
+				p.vx *= damp; p.vy *= damp;
+				p.x += p.vx * s;
+				p.y += p.vy * s;
+				p.r = Math.hypot(p.x - wellX, p.y - wellY);
+				p.a = Math.atan2(p.y - wellY, p.x - wellX);
+			}
+			break;
+		}
 
-			// Wall bounce (replaces toroidal wrap — prevents corner clustering)
-			const mg = 8;
-			if (p.x < mg)     { p.x = mg;     p.vx =  Math.abs(p.vx) * 0.55 + rand() * 0.4; }
-			if (p.x > W - mg) { p.x = W - mg; p.vx = -(Math.abs(p.vx) * 0.55 + rand() * 0.4); }
-			if (p.y < mg)     { p.y = mg;     p.vy =  Math.abs(p.vy) * 0.55 + rand() * 0.4; }
-			if (p.y > H - mg) { p.y = H - mg; p.vy = -(Math.abs(p.vy) * 0.55 + rand() * 0.4); }
-
-			// Brand color stays
-			p.ct = 1; p.r = p.tr; p.g = p.tg; p.b = p.tb;
-			// Size normalize from post-explode swell
-			p.sz = lerp(p.sz, p.baseSz, 0.04*s);
+		// Dragged home, then orbiting the card permanently.
+		case 'settle': {
+			// Under-damped at first (one gentle swing back), stiffening as it beds in.
+			const age  = clamp01(phaseT / 9000);
+			const damp = Math.pow(lerp(0.9915, 0.976, age), s);
+			for (const p of pts) {
+				p.rv += (cardR * p.haloK - p.r) * 0.00085 * s;
+				p.rv *= damp;
+				p.r  += p.rv * s;
+				p.av += (p.spin - p.av) * 0.012 * s;
+				p.a  += p.av * s;
+				const breathe = Math.sin(clock * 0.0007 + p.tw) * 5;
+				p.x = wellX + Math.cos(p.a) * (p.r + breathe);
+				p.y = wellY + Math.sin(p.a) * (p.r + breathe);
+			}
 			break;
 		}
 	}
-
-	// Opacity breathe (all phases)
-	p.op += p.opd * 0.0018 * s;
-	if (p.op > 0.75) { p.op = 0.75; p.opd = -1; }
-	if (p.op < 0.06) { p.op = 0.06; p.opd =  1; }
-
-	p.x += p.vx * s;
-	p.y += p.vy * s;
 }
 
 // ─── Rendering ───────────────────────────────────────────────────────────────
-function drawConnections() {
-	// Only connect anchor particles — O(N_ANCHOR²) ≈ 3,160 checks vs 244,650
-	const maxD = 130;
-	for (let i = 0; i < anchorPts.length - 1; i++) {
-		const a = anchorPts[i];
-		for (let j = i + 1; j < anchorPts.length; j++) {
-			const b = anchorPts[j];
+function drawConnections(colored: boolean) {
+	const maxD = 150;
+	// Three alpha buckets → three batched strokes instead of one per line.
+	const buckets: [number, number][][] = [[], [], []];
+	for (let i = 0; i < anchors.length - 1; i++) {
+		const a = anchors[i];
+		for (let j = i + 1; j < anchors.length; j++) {
+			const b = anchors[j];
 			const dx = a.x - b.x;
 			if (dx < -maxD || dx > maxD) continue;
 			const dy = a.y - b.y;
 			if (dy < -maxD || dy > maxD) continue;
-			const d = Math.sqrt(dx*dx + dy*dy);
-			if (d < maxD) {
-				const alpha = (1 - d/maxD) * 0.1;
-				ctx.strokeStyle = `rgba(200,210,220,${alpha})`;
-				ctx.lineWidth   = 0.5;
-				ctx.beginPath();
-				ctx.moveTo(a.x, a.y);
-				ctx.lineTo(b.x, b.y);
-				ctx.stroke();
-			}
+			const d2 = dx * dx + dy * dy;
+			if (d2 > maxD * maxD) continue;
+			const k = Math.min(2, Math.floor((1 - Math.sqrt(d2) / maxD) * 3));
+			buckets[k].push([i, j]);
+		}
+	}
+	ctx!.lineWidth = 0.6;
+	for (let k = 0; k < 3; k++) {
+		if (!buckets[k].length) continue;
+		const alpha = (0.03 + k * 0.035) * (colored ? 1 : 0.7);
+		ctx!.strokeStyle = colored
+			? `rgba(247,140,60,${alpha})`
+			: `rgba(190,200,212,${alpha})`;
+		ctx!.beginPath();
+		for (const [i, j] of buckets[k]) {
+			ctx!.moveTo(anchors[i].x, anchors[i].y);
+			ctx!.lineTo(anchors[j].x, anchors[j].y);
+		}
+		ctx!.stroke();
+	}
+}
+
+function drawStreaks() {
+	// One batched path per palette colour keeps state changes at 8/frame.
+	ctx!.lineCap = 'round';
+	for (let c = 0; c < COLORS.length; c++) {
+		const [r, g, b] = COLORS[c];
+		let opened = false;
+		for (const p of pts) {
+			if (p.ci !== c) continue;
+			const sp = Math.abs(p.vx) + Math.abs(p.vy);
+			if (sp < 3) continue;
+			if (!opened) { ctx!.beginPath(); opened = true; }
+			ctx!.moveTo(p.x - p.vx * 2.4, p.y - p.vy * 2.4);
+			ctx!.lineTo(p.x, p.y);
+		}
+		if (opened) {
+			ctx!.strokeStyle = `rgba(${r},${g},${b},0.16)`;
+			ctx!.lineWidth = 1.1;
+			ctx!.stroke();
 		}
 	}
 }
 
-function drawBloom(t: number) {
-	// White flash at center
-	const flashA = Math.max(0, 1 - t * 4.5);
-	if (flashA > 0) {
-		const fg = ctx.createRadialGradient(wellX, wellY, 0, wellX, wellY, 90);
-		fg.addColorStop(0,    `rgba(255,255,255,${flashA * 0.95})`);
-		fg.addColorStop(0.45, `rgba(247,92,3,${flashA * 0.7})`);
-		fg.addColorStop(1,    `rgba(247,92,3,0)`);
-		ctx.fillStyle = fg;
-		ctx.beginPath();
-		ctx.arc(wellX, wellY, 90, 0, Math.PI*2);
-		ctx.fill();
-	}
-	// Expanding orange ring
-	const ringR = t * 700;
-	const ringA = (1 - t) * 0.5;
-	if (ringR > 0 && ringA > 0) {
-		const rg = ctx.createRadialGradient(wellX, wellY, ringR*0.65, wellX, wellY, ringR);
-		rg.addColorStop(0,   `rgba(247,92,3,0)`);
-		rg.addColorStop(0.5, `rgba(247,92,3,${ringA})`);
-		rg.addColorStop(1,   `rgba(247,92,3,0)`);
-		ctx.fillStyle = rg;
-		ctx.beginPath();
-		ctx.arc(wellX, wellY, ringR, 0, Math.PI*2);
-		ctx.fill();
-	}
-}
-
-function drawSonar(t: number) {
-	const progress = t / SONAR_DUR;
-	const radius   = progress * 180;
-	const alpha    = (1 - progress) * 0.2;
-	const inner    = Math.max(0, radius - 26);
-	const grd = ctx.createRadialGradient(wellX, wellY, inner, wellX, wellY, radius);
-	grd.addColorStop(0,   `rgba(247,92,3,0)`);
-	grd.addColorStop(0.5, `rgba(247,92,3,${alpha})`);
-	grd.addColorStop(1,   `rgba(247,92,3,0)`);
-	ctx.fillStyle = grd;
-	ctx.beginPath();
-	ctx.arc(wellX, wellY, radius, 0, Math.PI*2);
-	ctx.fill();
-}
-
-function drawFrame(dt: number) {
-	ctx.clearRect(0, 0, W, H);
-
-	// Ambient glow at well
-	const ag = ctx.createRadialGradient(wellX, wellY, 0, wellX, wellY, 380);
-	ag.addColorStop(0,    'rgba(247,92,3,0.055)');
-	ag.addColorStop(0.55, 'rgba(34,116,165,0.025)');
-	ag.addColorStop(1,    'rgba(0,0,0,0)');
-	ctx.fillStyle = ag;
-	ctx.fillRect(0, 0, W, H);
-
-	// Connections during collect + drift only
-	if (currentPhase === 'collect' || currentPhase === 'drift') {
-		drawConnections();
-	}
-
-	// Particles
+function drawParticles(intro: number) {
+	const charging = phase === 'charge';
+	const glow = charging || phase === 'burst' ? 1.35 : 1;
 	for (const p of pts) {
-		ctx.beginPath();
-		ctx.arc(p.x, p.y, Math.max(0.1, p.sz), 0, Math.PI*2);
-		ctx.fillStyle = `rgba(${p.r|0},${p.g|0},${p.b|0},${p.op})`;
-		ctx.fill();
-	}
-
-	// Bloom
-	if (bloomT >= 0) {
-		drawBloom(bloomT);
-		bloomT += dt / PHASE_DUR['explode'];
-		if (bloomT >= 1) bloomT = -1;
-	}
-
-	// Sonar (drift phase only)
-	if (currentPhase === 'drift') {
-		sonarTimer += dt;
-		if (sonarTimer >= SONAR_INT) { sonarTimer = 0; sonarT = 0; }
-		if (sonarT >= 0) {
-			drawSonar(sonarT);
-			sonarT += dt;
-			if (sonarT >= SONAR_DUR) sonarT = -1;
+		const twinkle = 0.82 + 0.18 * Math.sin(clock * 0.0016 + p.tw);
+		const hot = charging && p.ring ? 1.5 : 1;
+		const op = Math.min(1, p.op * twinkle * intro * hot);
+		if (op <= 0.01) continue;
+		const rad = p.sz * 3.1 * glow * hot;
+		const d = rad * 2;
+		const x = p.x - rad, y = p.y - rad;
+		if (p.ct < 0.99) {
+			ctx!.globalAlpha = op * (1 - p.ct);
+			ctx!.drawImage(rawSprite, x, y, d, d);
+		}
+		if (p.ct > 0.01) {
+			ctx!.globalAlpha = op * p.ct;
+			ctx!.drawImage(colorSprites[p.ci], x, y, d, d);
 		}
 	}
+	ctx!.globalAlpha = 1;
 }
 
-// ─── Main loop ───────────────────────────────────────────────────────────────
+function drawBloom() {
+	// Builds through CHARGE, flashes on BURST, gone shortly after.
+	let intensity = 0, radius = cardR * 1.6;
+	if (phase === 'intake') {
+		const e = clamp01(phaseT / DUR.intake);
+		intensity = e * e * 0.22;
+		radius = cardR * (0.9 + e * 0.35);
+	} else if (phase === 'charge') {
+		const e = clamp01(phaseT / DUR.charge);
+		intensity = 0.24 + e * e * 0.66;
+		radius = cardR * (1.25 + e * 0.5);
+	} else if (phase === 'burst') {
+		const e = clamp01(phaseT / DUR.burst);
+		intensity = (1 - e) * 0.9;
+		radius = cardR * (1.75 + e * 0.7);
+	} else if (phase === 'settle' && phaseT < 1400) {
+		const e = phaseT / 1400;
+		intensity = (1 - e) * 0.2;
+		radius = cardR * (2.45 - e * 0.7);
+	} else {
+		return;
+	}
+	ctx!.globalAlpha = intensity;
+	ctx!.drawImage(bloomSprite, wellX - radius, wellY - radius, radius * 2, radius * 2);
+	ctx!.globalAlpha = 1;
+}
+
+function drawShockwave() {
+	const t = phase === 'burst'
+		? phaseT / DUR.burst
+		: phase === 'settle' && phaseT < 700 ? 1 + phaseT / 700 : -1;
+	if (t < 0) return;
+	const e = easeOutCubic(Math.min(1, t / 1.6));
+	const radius = e * Math.max(W, H) * 0.95;
+	ctx!.globalAlpha = Math.max(0, 1 - t / 1.6) * 0.5;
+	ctx!.drawImage(ringSprite, wellX - radius, wellY - radius, radius * 2, radius * 2);
+	ctx!.globalAlpha = 1;
+}
+
+function draw(intro: number) {
+	ctx!.clearRect(0, 0, W, H);
+	if (ambient) ctx!.drawImage(ambient, 0, 0, W, H);
+
+	ctx!.globalCompositeOperation = 'lighter';
+	if (phase === 'raw' || phase === 'intake') drawConnections(false);
+	else if (phase === 'charge' || phase === 'settle') drawConnections(true);
+	drawBloom();
+	drawShockwave();
+	if (phase === 'burst') drawStreaks();
+	drawParticles(intro);
+	ctx!.globalCompositeOperation = 'source-over';
+}
+
+// ─── Loop ────────────────────────────────────────────────────────────────────
+let rafId = 0;
 let lastTs = 0;
-function loop(ts: number) {
-	const dt = lastTs ? Math.min(ts - lastTs, 50) : 16;
+let running = false;
+
+function frame(ts: number) {
+	rafId = requestAnimationFrame(frame);
+	const dt = lastTs ? Math.min(ts - lastTs, 50) : 16.7;
 	lastTs = ts;
+	clock += dt;
 
-	advancePhase(dt);
-	const s = dt / 16;
-	if (currentPhase === 'drift') applyAnchorRepulsion(s);
-	for (const p of pts) updatePt(p, dt);
-	drawFrame(dt);
+	advance(dt);
+	step(dt / 16.7);
+	draw(clamp01(clock / 700));
+}
 
-	requestAnimationFrame(loop);
+function start() {
+	if (running) return;
+	running = true;
+	lastTs = 0;
+	rafId = requestAnimationFrame(frame);
+}
+
+function stop() {
+	if (!running) return;
+	running = false;
+	cancelAnimationFrame(rafId);
+}
+
+// ─── Reduced motion: skip straight to the resting state ─────────────────────
+function renderResting() {
+	phase = 'settle';
+	phaseIdx = ORDER.length - 1;
+	phaseT = 60000;
+	for (const p of pts) {
+		p.r = cardR * p.haloK;
+		p.a = rand() * TAU;
+		p.ct = 1;
+		p.x = wellX + Math.cos(p.a) * p.r;
+		p.y = wellY + Math.sin(p.a) * p.r;
+	}
+	draw(1);
 }
 
 // ─── Boot ────────────────────────────────────────────────────────────────────
-seed = Date.now() & 0xffffffff;
-resize();
-window.addEventListener('resize', resize);
+if (canvas && ctx) {
+	buildSprites();
+	resize();
 
-if (prefersReducedMotion) {
-	drawFrame(0);
-} else {
-	requestAnimationFrame(loop);
+	let resizeRaf = 0;
+	window.addEventListener('resize', () => {
+		cancelAnimationFrame(resizeRaf);
+		resizeRaf = requestAnimationFrame(() => {
+			resize();
+			if (prefersReducedMotion) renderResting();
+		});
+	}, { passive: true });
+
+	if (prefersReducedMotion) {
+		renderResting();
+		// The card's own entrance transform is still settling on first paint, so
+		// re-measure once it lands or the halo sits a couple of dozen px high.
+		setTimeout(() => { measure(); renderResting(); }, 1700);
+	} else {
+		// Only burn frames while the hero is actually on screen and the tab is live.
+		let onScreen = true;
+		const sync = () => (onScreen && document.visibilityState === 'visible' ? start() : stop());
+		document.addEventListener('visibilitychange', sync);
+		new IntersectionObserver((entries) => {
+			onScreen = entries[0].isIntersecting;
+			sync();
+		}, { threshold: 0 }).observe(canvas);
+		start();
+	}
 }
 </script>

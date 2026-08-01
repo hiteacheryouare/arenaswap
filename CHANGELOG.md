@@ -1,5 +1,20 @@
 # Changelog
 
+## Hero animation: raw data in, PowerScore out — 2026-08-01
+
+The hero background was a loop of gray dust that never really told you anything. Now it tells the whole ArenaSwap story in about seven seconds, once, and then leaves a permanent glow around the extension card.
+
+### Docs site
+- **RAW** — the page opens as a field of colourless gray dots: every live game out there, unread and unranked
+- **INTAKE** — the entire field spirals into the extension popup on a slow, eased curve. Nothing is discarded and nothing respawns; what gets pulled in is what comes back out
+- **CHARGE** — the swarm holds inside the card for a beat and fills with the five PowerScore signal colours, while a third of it spins back out into a bright accretion ring hugging the card so you can see the thing working
+- **BURST** — the scored data sprays across the entire viewport with a shockwave and per-particle motion streaks, spread wider than tall so it actually reaches the edges of a landscape screen
+- **SETTLE** — everything is dragged slowly home and ends up orbiting the card permanently, most of it hugging the card's edge with a light dusting left across the page
+- Rendering moved to pre-baked sprites and batched paths: no radial gradient or `rgba()` string is built at frame time, connection lines are stroked in three alpha buckets instead of one draw per line, and the ambient wash is a cached quarter-resolution blit
+- The canvas is now DPI-correct (capped at 2x), so dots are crisp on retina instead of upscaled blur, and particle count is density-matched to the viewport rather than a fixed 700
+- The loop parks itself when the hero scrolls out of view or the tab is hidden, and resizes rescale the scene in place rather than restarting the story
+- `prefers-reduced-motion` renders a single static frame of the resting state — the finished picture, no motion
+
 ## Docs 404 page — 2026-07-31
 
 Any mistyped or dead URL on the docs site used to hand you GitHub Pages' default "There isn't a GitHub Pages site here" screen, which is neither ours nor useful.
