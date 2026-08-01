@@ -1,5 +1,16 @@
 # Changelog
 
+## A real countdown to tip-off — 2026-08-01
+
+"Starts soon" on the game detail card meant anything from four minutes to four days. Now it tells you exactly how long you've got, and keeps telling you.
+
+### Extension
+- Upcoming games on the detail card now read **"Starts in 2 days 5 hours 13 minutes"**, counting down live while the popup is open
+- Segments drop off as they empty out: inside a day it's hours and minutes, inside an hour it's just minutes, and the last minute before tip-off falls back to "Starts soon" rather than parking on "0 minutes"
+- The countdown gets its own full-width row under the matchup instead of the narrow column between the team pills — the longest string fits on one line in all eight languages, verified by a measuring test rather than by eye
+- Ticks on the minute boundary, not once a second, so a card sitting open costs one render a minute
+- Translated for all eight supported locales
+
 ## Hero animation: raw data in, PowerScore out — 2026-08-01
 
 The hero background was a loop of gray dust that never really told you anything. Now it tells the whole ArenaSwap story in about seven seconds, once, and then leaves a permanent glow around the extension card.
