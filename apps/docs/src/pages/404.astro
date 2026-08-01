@@ -1,0 +1,77 @@
+---
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import OrangeDots from '../components/OrangeDots.astro';
+import NotFoundCard from '../components/NotFoundCard';
+import '../styles/tailwind.css';
+import '../styles/global.scss';
+---
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="robots" content="noindex" />
+	<meta name="description" content="That page isn't on the schedule. Head back to ArenaSwap." />
+	<title>404 — ArenaSwap</title>
+	<link rel="shortcut icon" href="/arenaswap/images/128.png" type="image/x-icon">
+</head>
+<body>
+	<Nav />
+
+	<main class="notfound-main">
+		<section class="notfound">
+			<div class="notfound-glow" aria-hidden="true"></div>
+			<div class="container">
+				<div class="notfound-inner">
+
+					<!-- The missing page, scored by the real extension card -->
+					<div class="notfound-card">
+						<NotFoundCard />
+					</div>
+
+					<h1 class="notfound-title">This one isn't on the schedule.</h1>
+
+					<p class="notfound-sub">
+						The page you're after was traded, retired, or never suited up
+						in the first place.
+					</p>
+
+					<p class="notfound-path" data-no-dots>
+						<span class="notfound-path-key">Requested</span>
+						<code id="notfound-path">/arenaswap/</code>
+					</p>
+
+					<div class="notfound-cta">
+						<a href="/arenaswap/" class="btn btn-cta">
+							<i class="bi bi-house-door me-2"></i>Back to Home
+						</a>
+						<a href="/arenaswap/blog/" class="btn btn-outline-secondary-custom">
+							Read the Blog
+						</a>
+					</div>
+
+					<div class="notfound-links">
+						<a href="/arenaswap/#features">Features</a>
+						<a href="/arenaswap/#how-it-works">How It Works</a>
+						<a href="/arenaswap/#leagues">Leagues</a>
+						<a href="/arenaswap/powerscore/">Package Docs</a>
+						<a href="/arenaswap/#faq">FAQ</a>
+					</div>
+
+				</div>
+			</div>
+		</section>
+	</main>
+
+	<Footer />
+	<OrangeDots />
+
+	<script>
+		// Show the path that missed. GitHub Pages serves this file for any unknown
+		// URL under /arenaswap/, so the address bar is the only record of it.
+		const target = document.getElementById('notfound-path');
+		if (target) target.textContent = location.pathname + location.search;
+	</script>
+</body>
+</html>

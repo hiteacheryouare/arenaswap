@@ -2069,3 +2069,132 @@ $ps-signal-colors: (
 		font-size: 1.4rem;
 	}
 }
+
+// ─── 404 page ─────────────────────────────────────────────────────────────────
+// The missing page, presented as a scoreboard: three digits, a final horn, and a
+// PowerScore of zero.
+.notfound-main {
+	padding-top: 64px;
+}
+
+.notfound {
+	position: relative;
+	display: flex;
+	align-items: center;
+	min-height: calc(100vh - 64px);
+	padding: 4rem 0 5rem;
+	overflow: hidden;
+}
+
+.notfound-glow {
+	position: absolute;
+	top: -12%;
+	left: 50%;
+	transform: translateX(-50%);
+	width: min(900px, 130vw);
+	height: 620px;
+	background: radial-gradient(ellipse at center, rgba(247, 92, 3, 0.16), transparent 70%);
+	pointer-events: none;
+}
+
+.notfound-inner {
+	position: relative;
+	max-width: 640px;
+	margin: 0 auto;
+	text-align: center;
+}
+
+// ─── Game card ───────────────────────────────────────────────────────────────
+// The real extension card, given the same lift it has in the hero popup.
+.notfound-card {
+	max-width: 340px;
+	margin: 0 auto 2.5rem;
+	filter: drop-shadow(0 24px 64px rgba(0, 0, 0, 0.55));
+	animation: notfound-card-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes notfound-card-in {
+	from { opacity: 0; transform: translateY(14px); }
+	to   { opacity: 1; transform: translateY(0); }
+}
+
+// ─── Copy & links ────────────────────────────────────────────────────────────
+.notfound-title {
+	font-size: clamp(1.9rem, 5vw, 3rem);
+	font-weight: 700;
+	letter-spacing: -0.04em;
+	line-height: 1.1;
+	margin-bottom: 1rem;
+}
+
+.notfound-sub {
+	max-width: 30rem;
+	margin: 0 auto 1.5rem;
+	font-size: 1.05rem;
+	line-height: 1.65;
+	color: var(--color-muted);
+}
+
+.notfound-path {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.6rem;
+	max-width: 100%;
+	margin-bottom: 2.25rem;
+	padding: 0.35rem 0.9rem;
+	background: var(--color-card);
+	border: 1px solid var(--color-border);
+	border-radius: 999px;
+
+	code {
+		min-width: 0;
+		overflow: hidden;
+		font-family: var(--font-mono);
+		font-size: 0.8rem;
+		color: var(--color-text);
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+}
+
+.notfound-path-key {
+	flex-shrink: 0;
+	font-size: 0.62rem;
+	text-transform: uppercase;
+	letter-spacing: 0.1em;
+	color: var(--color-muted);
+}
+
+.notfound-cta {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 0.75rem;
+	margin-bottom: 2.5rem;
+}
+
+.notfound-links {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 0.5rem 1.5rem;
+	padding-top: 1.5rem;
+	border-top: 1px solid var(--color-border);
+
+	a {
+		font-size: 0.85rem;
+		color: var(--color-muted);
+		text-decoration: none;
+		transition: color 0.15s ease;
+
+		&:hover {
+			color: var(--color-text);
+		}
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.notfound-card {
+		animation: none;
+	}
+}

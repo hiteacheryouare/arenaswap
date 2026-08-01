@@ -1,5 +1,15 @@
 # Changelog
 
+## Docs 404 page — 2026-07-31
+
+Any mistyped or dead URL on the docs site used to hand you GitHub Pages' default "There isn't a GitHub Pages site here" screen, which is neither ours nor useful.
+
+### Docs site
+- New `404.astro`, built to `docs/404.html` so GitHub Pages serves it for every unknown path under `/arenaswap/`. Full site nav and footer, so you're never stranded
+- The missing page is presented as a real `LiveGameCard` from `@arenaswap/ui` — the same component the extension ships — for a game between **404** and **YOU**, clock at 0:00, venue "The Void", broadcast on "Nowhere", PowerScore 0 / 100. Exactly the game ArenaSwap would never switch you to
+- Shows the path you actually requested, plus a Back to Home CTA and quick links to Features, How It Works, Leagues, Package Docs, and the FAQ
+- `noindex` on the page so search engines don't file the error screen as content
+
 ## Reorderable league display order — 2026-07-31
 
 League sections on the main screen were locked to a built-in order, so a hockey-first fan still had every NBA section pinned above their NHL games with no way to change it.
