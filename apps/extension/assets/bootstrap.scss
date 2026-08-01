@@ -1049,10 +1049,10 @@ $bootstrap-icons-font-dir: '/fonts';
 }
 
 .game-detail-score-value {
+	@include scoreboard-figures;
 	font-size: 1.68rem;
 	color: #111827;
 	letter-spacing: -0.02em;
-	font-variant-numeric: tabular-nums;
 	display: inline-flex;
 	justify-content: center;
 	min-width: 2.4ch;
