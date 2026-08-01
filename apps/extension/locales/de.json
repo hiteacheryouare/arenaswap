@@ -188,6 +188,19 @@
 		"legendLeadChanges": "Führungswechsel",
 		"legendComeback": "Comeback",
 		"startsSoon": "Beginnt bald",
+		"startsIn": "Beginnt in {duration}",
+		"countdownDays": {
+			"1": "1 Tag",
+			"n": "$1 Tagen"
+		},
+		"countdownHours": {
+			"1": "1 Stunde",
+			"n": "$1 Stunden"
+		},
+		"countdownMinutes": {
+			"1": "1 Minute",
+			"n": "$1 Minuten"
+		},
 		"final": "Endstand",
 		"totalLabel": "{total} / {max}",
 		"totalLabelBaseMax": "{total} (Basis-Maximum {max})",

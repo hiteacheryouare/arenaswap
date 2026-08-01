@@ -188,6 +188,19 @@
 		"legendLeadChanges": "Lead changes",
 		"legendComeback": "Comeback",
 		"startsSoon": "Starts soon",
+		"startsIn": "Starts in {duration}",
+		"countdownDays": {
+			"1": "1 day",
+			"n": "$1 days"
+		},
+		"countdownHours": {
+			"1": "1 hour",
+			"n": "$1 hours"
+		},
+		"countdownMinutes": {
+			"1": "1 minute",
+			"n": "$1 minutes"
+		},
 		"final": "Final",
 		"totalLabel": "{total} / {max}",
 		"totalLabelBaseMax": "{total} (base max {max})",

@@ -8,6 +8,7 @@ const componentStubs: Record<string, string> = {
 	'./baseDiamond': root('./cypress/stubs/baseDiamond.tsx'),
 	'./tabAssignSelect': root('./cypress/stubs/tabAssignSelect.tsx'),
 	'./gameCard': root('./cypress/stubs/gameCard.tsx'),
+	'./gameDetailChart': root('./cypress/stubs/gameDetailChart.tsx'),
 	'./popupFooter': root('./cypress/stubs/popupFooter.tsx'),
 	'./proTip': root('./cypress/stubs/proTip.tsx'),
 	'./emptyGameState': root('./cypress/stubs/emptyGameState.tsx'),

@@ -1066,6 +1066,18 @@ $bootstrap-icons-font-dir: '/fonts';
 	text-align: center;
 }
 
+// Live countdown to tip-off. Spans the full card rather than the narrow center
+// column so the longest "X days Y hours Z minutes" string stays on one line.
+.game-detail-countdown {
+	font-size: 0.72rem;
+	font-family: 'Lekton', monospace;
+	font-variant-numeric: tabular-nums;
+	color: #495057;
+	width: 100%;
+	text-align: center;
+	margin-top: 0.3rem;
+}
+
 // ─── Reason text inside the white matchup card on detail view ─────────────────
 .game-detail-card-reason {
 	font-size:  0.6rem;

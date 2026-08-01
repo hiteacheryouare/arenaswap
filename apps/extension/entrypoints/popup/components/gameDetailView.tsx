@@ -21,6 +21,7 @@ import {
 } from './gameDetailChartOptions';
 import { resolveTeamColorPair } from '@arenaswap/ui/src/components/colorUtils';
 import useSummaryData from './useSummaryData';
+import { formatStartsIn, useStartCountdown } from './startCountdown';
 import { formatGameClock, formatPeriod, GameMeta, powerScoreColor } from './gameCardShared';
 import { conditionIcon, formatTemperature } from './weatherUtils';
 import type { BettingDisplayPrefs, WeatherDisplayPrefs } from './gameCardTypes';
@@ -116,11 +117,14 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 		background: `linear-gradient(to right, ${withMatchupAlpha(awayAccent, '#dee2e628')}, ${withMatchupAlpha(homeAccent, '#dee2e628')}), #ffffff`,
 	};
 	const isInningSport = leagueConfigMap[game.league]?.periodFormat === 'innings';
+	const startCountdown = useStartCountdown(game.status === 'pre' ? game.startTime : undefined);
+	// Pre-game gets no period line — its countdown is a full-width row below the teams,
+	// where the longest "X days Y hours Z minutes" string still fits on one line.
 	const statusDetail = game.status === 'in'
 		? isInningSport
 			? <><InningHalfIcon topOfInning={game.topOfInning} />{formatPeriod(game)}</>
 			: `${formatPeriod(game)} • ${formatGameClock(game)}`
-		: game.status === 'pre' ? i18n.t('detail.startsSoon') : i18n.t('detail.final');
+		: game.status === 'post' ? i18n.t('detail.final') : null;
 	const totalLabel = total > scoreMaxTotal
 		? i18n.t('detail.totalLabelBaseMax', { total, max: scoreMaxTotal })
 		: i18n.t('detail.totalLabel', { total, max: scoreMaxTotal });
@@ -146,7 +150,7 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 							<FlipScore value={game.awayTeam.score} className='fw-bold lh-1 game-detail-score-value' />
 							<FlipScore value={game.homeTeam.score} className='fw-bold lh-1 game-detail-score-value' />
 						</div>
-						<div className='game-detail-period'>{statusDetail}</div>
+						{statusDetail && <div className='game-detail-period'>{statusDetail}</div>}
 						{isDelayed && (
 							<span className='badge bg-warning text-dark delay-type-badge mt-1'>
 								{game.delayDescription ?? i18n.t('gameCard.delayFallback')}
@@ -156,6 +160,9 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 					</div>
 					<DetailTeamPill team={game.homeTeam} />
 				</div>
+				{game.status === 'pre' && (
+					<div className='game-detail-countdown'>{formatStartsIn(startCountdown)}</div>
+				)}
 				{seriesInfo && <SeriesDots info={seriesInfo} game={game} />}
 				{game.status !== 'pre' && activePowerScore && (
 					<div className='game-card-ps-bar-row'>
