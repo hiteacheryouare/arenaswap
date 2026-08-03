@@ -32,5 +32,7 @@ apps/extension/cypress/screenshots/
 apps/extension/cypress/videos/
 apps/docs/.astro/settings.json
 apps/docs/.astro/types.d.ts
+# Written by the Astro dev server on every run — pid, port and start timestamp
+apps/docs/.astro/dev.json
 docs/settings.json
 docs/settings.json
