@@ -9,6 +9,7 @@ import {
 	scoreMaxLeadChanges,
 	scoreMaxComeback,
 	scoreMaxTotal,
+	scoreMaxSignalsSubtotal,
 	scoreWinProbVarianceMax,
 	scoringOpportunityBaseRunnerBoosts,
 	scoringOpportunityRedZoneBoost,
@@ -67,7 +68,10 @@ export const normalizePowerScoreResult = (
 	const hasScoringOpportunityBoost = typeof score.scoringOpportunityBoost === 'number' && Number.isFinite(score.scoringOpportunityBoost);
 	const hasPostseasonBoost = typeof score.postseasonBoost === 'number' && Number.isFinite(score.postseasonBoost);
 	const stallPenalty = hasStallPenalty ? Math.max(0, Math.round(toFiniteNumber(score.stallPenalty))) : undefined;
-	const baseTotal = hasBaseTotal ? clamp(toFiniteNumber(score.baseTotal), 0, scoreMaxTotal) : undefined;
+	// Clamped to the overcomplete signals ceiling, not scoreMaxTotal: baseTotal is the raw
+	// pre-cap subtotal the breakdown subtracts the stall penalty from, so capping it at 100
+	// would make that subtraction disagree with the total it explains.
+	const baseTotal = hasBaseTotal ? clamp(toFiniteNumber(score.baseTotal), 0, scoreMaxSignalsSubtotal) : undefined;
 	const favoriteBonus = hasFavoriteBonus ? Math.max(0, Math.round(toFiniteNumber(score.favoriteBonus))) : undefined;
 	const favoriteTeamCount = hasFavoriteTeamCount ? Math.max(0, Math.round(toFiniteNumber(score.favoriteTeamCount))) : undefined;
 	const gameBoost = hasGameBoost ? Math.max(0, Math.round(toFiniteNumber(score.gameBoost))) : undefined;
@@ -166,8 +170,9 @@ const mapLinearLateGame = (phase: LateGamePhase, fraction: number, ceiling: numb
 	);
 };
 
-// Tied games telegraph overtime: a ramping boost (otEdgeMax → overtime) in the final-period window.
-// Clock sports only; disabled when otPreBoostWindowSecs is 0 (e.g. clockless baseball).
+// Tied games telegraph overtime: a ramping boost toward the reserved overtime value, applied in
+// the final-period window. Clock sports only; disabled when otPreBoostWindowSecs is 0 (e.g.
+// clockless baseball).
 const getOtPreBoost = (game: Game, config: SportTypeConfig, secsRemaining: number): number => {
 	const window = Math.max(0, config.otPreBoostWindowSecs);
 	if (window <= 0) return 0;
@@ -420,10 +425,21 @@ const getComeback = (game: Game, history: ScoreSnapshot[], config: SportTypeConf
 	return decaySignal(floored, reason, ageMs, config.decayHalfLifeMs.comeback);
 };
 
-// Win probability boost/penalty: maps average distance of homeWinProb from 50% to [−max, +max].
-// Lines hugging 50% (close game, constantly contested) earn a boost.
-// Lines far apart (one team dominating, or swinging wildly between extremes) earn a penalty.
-// Returns undefined (no effect) when fewer than minDataPoints values are available.
+/**
+ * Contestedness of the win-probability line, as a boost/penalty in [−max, +max].
+ *
+ * Measures the line's **mean absolute distance from 50%**, not its variance: a line that hugs
+ * 50% (neither team can shake the other) earns the boost, and a line parked at 90% earns the
+ * penalty.
+ *
+ * Known limitation of that choice: a line oscillating between 10% and 90% — a genuinely wild
+ * game — scores the same penalty as a steady 90% blowout, because both sit far from the middle
+ * on average. Capturing swing rather than position would mean summing |pᵢ − pᵢ₋₁| instead, which
+ * is a different signal and a recalibration; the name is kept for API compatibility.
+ *
+ * Returns undefined (no effect, and no row in the breakdown) when fewer than minDataPoints
+ * values are available, so a game ESPN gives us nothing for is not scored as a neutral zero.
+ */
 export const computeWinProbVarianceScore = (winProbHistory: number[]): number | undefined => {
 	const { maxAvgDist, minDataPoints } = scorerTunables.scores.winProbabilityVariance;
 	if (winProbHistory.length < minDataPoints) return undefined;

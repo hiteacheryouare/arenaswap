@@ -16,7 +16,11 @@ interface powerScoreBreakdownProps {
 	momentum: number;
 	leadChanges: number;
 	comeback: number;
-	/** Win probability volatility boost/penalty (−10 to +10). Omit when data is unavailable. */
+	/**
+	 * Win-probability volatility adjustment, clamped to ±`scoreWinProbVarianceMax` (5).
+	 * Computed by the background scorer and already folded into the total; omitted entirely
+	 * when ESPN gave us no line to measure.
+	 */
 	winProbabilityVariance?: number;
 	baseTotal: number;
 	stallPenalty: number;
@@ -25,7 +29,7 @@ interface powerScoreBreakdownProps {
 	currentBoost: number;
 	scoringOpportunityBoost: number;
 	postseasonBoost: number;
-	total: number;
+	/** Pre-formatted final score line — the numeric total is already rendered into it. */
 	totalLabel: string;
 	/** Human-readable summary of the top signals, shown under the final total. */
 	reason?: string;

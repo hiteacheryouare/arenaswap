@@ -13,7 +13,6 @@ const defaultProps = {
 	currentBoost: 0,
 	scoringOpportunityBoost: 0,
 	postseasonBoost: 0,
-	total: 28,
 	totalLabel: '28 / 100',
 };
 

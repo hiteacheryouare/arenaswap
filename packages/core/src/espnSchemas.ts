@@ -1,5 +1,10 @@
 import { z as zod } from 'zod';
 
+// ESPN is inconsistent about whether a numeric-looking field arrives as a JSON number or a
+// quoted string, and it varies by sport and by endpoint. Anything we ultimately read as text
+// accepts both shapes and normalizes to a string so one sport's encoding can't reject an event.
+const espnNumericText = zod.union([zod.string(), zod.number()]).transform(String);
+
 const EspnLeagueLogoSchema = zod.object({
 	href: zod.string().optional(),
 	rel: zod.array(zod.string()).optional(),
@@ -19,9 +24,9 @@ const EspnTeamSchema = zod.object({
 });
 
 const EspnCompetitorSchema = zod.object({
-	id: zod.string(),
+	id: espnNumericText,
 	homeAway: zod.string(),
-	score: zod.string().optional(),
+	score: espnNumericText.optional(),
 	team: EspnTeamSchema,
 });
 
@@ -108,8 +113,8 @@ const EspnSeasonSchema = zod.object({
 	slug: zod.string().optional(),
 });
 
-const EspnEventSchema = zod.object({
-	id: zod.string(),
+export const EspnEventSchema = zod.object({
+	id: espnNumericText,
 	date: zod.string().optional(),
 	status: zod.object({
 		type: zod.object({
@@ -121,11 +126,53 @@ const EspnEventSchema = zod.object({
 	weather: EspnWeatherSchema.optional(),
 });
 
-export const EspnScoreboardSchema = zod.object({
-	events: zod.array(EspnEventSchema).optional(),
-	leagues: zod.array(EspnLeagueSchema).optional(),
+// The scoreboard envelope only. `events` is deliberately left unvalidated here so a single bad
+// row can't take the whole payload down — see parseScoreboard.
+const EspnScoreboardShellSchema = zod.object({
+	events: zod.array(zod.unknown()).optional(),
+	leagues: zod.array(EspnLeagueSchema).catch([]).optional(),
 });
 
+export interface EspnScoreboardResponse {
+	events: EspnEvent[];
+	leagues: EspnLeague[];
+	/** Events ESPN returned that failed validation and were skipped. */
+	droppedEvents: number;
+}
+
+/**
+ * Parses a scoreboard payload one event at a time.
+ *
+ * ESPN routinely ships a single malformed row inside an otherwise healthy scoreboard — a TBD
+ * bracket slot with no team name, a score encoded as a number instead of a string. Validating
+ * `events` as one array would throw all of a league's games away for that one row, and because
+ * an empty result is indistinguishable from "no games today" the league would then be demoted
+ * to dormant polling with nothing to show for it. Each event is parsed on its own instead, and
+ * only the bad ones are dropped.
+ */
+export const parseScoreboard = (raw: unknown): EspnScoreboardResponse => {
+	const shell = EspnScoreboardShellSchema.safeParse(raw);
+	if (!shell.success) return { events: [], leagues: [], droppedEvents: 0 };
+
+	const events: EspnEvent[] = [];
+	let droppedEvents = 0;
+	for (const candidate of shell.data.events ?? []) {
+		const parsed = EspnEventSchema.safeParse(candidate);
+		if (parsed.success) events.push(parsed.data);
+		else droppedEvents++;
+	}
+
+	return { events, leagues: shell.data.leagues ?? [], droppedEvents };
+};
+
+
+// The only part of the (very large) summary payload the scorer needs. A row that doesn't match
+// degrades to an empty object rather than rejecting the whole win-probability line.
+export const EspnSummarySchema = zod.object({
+	winprobability: zod.array(
+		zod.object({ homeWinPercentage: zod.number().optional() }).catch({}),
+	).optional(),
+});
 
 export const EspnTeamsResponseSchema = zod.object({
 	sports: zod.array(zod.object({
@@ -158,5 +205,4 @@ export type EspnWeather = zod.infer<typeof EspnWeatherSchema>;
 export type EspnSeason = zod.infer<typeof EspnSeasonSchema>;
 export type EspnCompetition = zod.infer<typeof EspnCompetitionSchema>;
 export type EspnEvent = zod.infer<typeof EspnEventSchema>;
-export type EspnScoreboardResponse = zod.infer<typeof EspnScoreboardSchema>;
 export type EspnTeamsResponse = zod.infer<typeof EspnTeamsResponseSchema>;

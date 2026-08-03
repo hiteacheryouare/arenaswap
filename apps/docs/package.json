@@ -5,6 +5,7 @@
 	"scripts": {
 		"dev": "ASTRO_DEV_BACKGROUND=1 astro dev",
 		"build": "astro build",
+		"typecheck": "tsc --noEmit -p tsconfig.typecheck.json",
 		"preview": "astro preview",
 		"lint": "oxlint ."
 	},

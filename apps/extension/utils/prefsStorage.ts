@@ -1,4 +1,5 @@
 import { normalizeUserPreferences } from '@arenaswap/core/constants';
+import { logWarn } from '@arenaswap/core';
 import type { UserPreferences } from '@arenaswap/core/types';
 
 export const prefsStorageUpdatedAtKey = 'prefsUpdatedAt';
@@ -28,13 +29,11 @@ const pickNewestPrefs = (
 export const loadStoredUserPreferences = async (): Promise<UserPreferences> => {
 	const [syncResult, localResult] = await Promise.all([
 		browser.storage.sync.get({ prefs: null, [prefsStorageUpdatedAtKey]: 0 }).catch(err => {
-			// eslint-disable-next-line no-console
-			console.warn('ArenaSwap: storage.sync unavailable while loading prefs.', err);
+			logWarn('storage.sync unavailable while loading prefs.', err);
 			return { prefs: null, [prefsStorageUpdatedAtKey]: 0 };
 		}),
 		browser.storage.local.get({ prefs: null, [prefsStorageUpdatedAtKey]: 0 }).catch(err => {
-			// eslint-disable-next-line no-console
-			console.warn('ArenaSwap: storage.local unavailable while loading prefs.', err);
+			logWarn('storage.local unavailable while loading prefs.', err);
 			return { prefs: null, [prefsStorageUpdatedAtKey]: 0 };
 		}),
 	]);
@@ -63,12 +62,12 @@ export const persistStoredUserPreferences = async (prefs: UserPreferences): Prom
 
 	// Catch each store independently so a failure in one (e.g. quota, unavailable) still lets the
 	// other write succeed, rather than rejecting the whole persist and leaving both potentially stale.
-	await browser.storage.local.set(payload).catch(err => {
-		// eslint-disable-next-line no-console
-		console.warn('ArenaSwap: storage.local unavailable while saving prefs.', err);
-	});
-	await browser.storage.sync.set(payload).catch(err => {
-		// eslint-disable-next-line no-console
-		console.warn('ArenaSwap: storage.sync unavailable, prefs saved to storage.local only.', err);
-	});
+	await Promise.all([
+		browser.storage.local.set(payload).catch(err => {
+			logWarn('storage.local unavailable while saving prefs.', err);
+		}),
+		browser.storage.sync.set(payload).catch(err => {
+			logWarn('storage.sync unavailable; prefs saved to storage.local only.', err);
+		}),
+	]);
 };

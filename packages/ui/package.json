@@ -4,6 +4,8 @@
 	"description": "ArenaSwap shared design system — Bootstrap tokens, font declarations, Tailwind theme, and shared React UI components",
 	"private": true,
 	"scripts": {
+		"test": "npm run test:unit",
+		"test:unit": "jest --passWithNoTests --selectProjects unit",
 		"typecheck": "tsc --noEmit",
 		"lint": "oxlint ."
 	},
@@ -13,5 +15,9 @@
 	},
 	"dependencies": {
 		"@arenaswap/core": "*"
+	},
+	"devDependencies": {
+		"@types/jest": "^30.0.0",
+		"jest": "^30.4.2"
 	}
 }

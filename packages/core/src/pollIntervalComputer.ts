@@ -5,6 +5,16 @@ export const pollMaxEagerMs = 25_000;
 export const pollIntermissionMs = 40_000;
 
 /**
+ * How often the ESPN win-probability line is refreshed.
+ *
+ * Costs one request per live game (it lives on the summary endpoint, not the scoreboard), and
+ * the scorer only reads the line's average distance from 50% — a figure that moves on the scale
+ * of possessions. Polling it at the scoreboard's rate would multiply request volume for a signal
+ * worth at most ±5 points.
+ */
+export const pollWinProbabilityMs = 60_000;
+
+/**
  * Maps a PowerScore (0–100) to a poll interval via linear interpolation.
  * Higher score = shorter interval (more frequent polling).
  */

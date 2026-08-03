@@ -18,6 +18,7 @@ const defaultPrefs: UserPreferences = {
 	temperatureUnit: 'F',
 	postseasonBoostPoints: 0,
 	upcomingGamesDays: 14,
+	disabledSignals: [],
 };
 
 const makeGame = (

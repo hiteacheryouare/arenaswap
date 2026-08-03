@@ -9,6 +9,7 @@ import {
 	scoreMaxLeadChanges,
 	scoreMaxComeback,
 	scoreMaxTotal,
+	scoreMaxSignalsSubtotal,
 	scoreWinProbVarianceMax,
 	scorerTunables,
 	sportTypeConfigs,
@@ -27,6 +28,7 @@ export {
 	scoreMaxLeadChanges,
 	scoreMaxComeback,
 	scoreMaxTotal,
+	scoreMaxSignalsSubtotal,
 	scoreWinProbVarianceMax,
 	scorerTunables,
 	sportTypeConfigs,
@@ -183,13 +185,18 @@ export const applyDisabledSignals = (
 	const leadChanges = disabled.has('leadChanges') ? 0 : result.leadChanges;
 	const comeback = disabled.has('comeback') ? 0 : result.comeback;
 
+	// Turning signals off shrinks the reachable ceiling, so the surviving signals are rescaled to
+	// keep the 0-100 range meaningful — otherwise a closeness-only setup could never exceed 42.
 	const enabledSum = closeness + lateGame + momentum + leadChanges + comeback;
 	const scalingFactor = scoreMaxTotal / enabledMax;
 	const newBaseTotal = Math.min(Math.round(enabledSum * scalingFactor), scoreMaxTotal);
 
-	const originalBaseTotal = result.baseTotal ?? result.total;
-	const stallRatio = originalBaseTotal > 0 ? result.total / originalBaseTotal : 1;
-	const newTotal = Math.min(Math.round(newBaseTotal * stallRatio), scoreMaxTotal);
+	// The stall penalty is a deduction from the signals subtotal, so it rescales with them.
+	// Volatility is a flat adjustment applied on top of that subtotal rather than one of the
+	// signals, so it carries over at full value.
+	const scaledStallPenalty = Math.round((result.stallPenalty ?? 0) * scalingFactor);
+	const variance = result.winProbabilityVariance ?? 0;
+	const newTotal = Math.min(Math.max(newBaseTotal - scaledStallPenalty + variance, 0), scoreMaxTotal);
 
 	return {
 		...result,
@@ -200,7 +207,7 @@ export const applyDisabledSignals = (
 		comeback,
 		baseTotal: newBaseTotal,
 		total: newTotal,
-		...(result.stallPenalty !== undefined ? { stallPenalty: Math.max(0, newBaseTotal - newTotal) } : {}),
+		...(result.stallPenalty !== undefined ? { stallPenalty: scaledStallPenalty } : {}),
 	};
 };
 

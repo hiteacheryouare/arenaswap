@@ -23,8 +23,8 @@ export default defineConfig({
 		build: {
 			target: 'es2023',
 		},
-		// Firefox MV3: disable eval-based sourcemaps (blocked by CSP) and
-		// compression (causes NS_ERROR_CORRUPTED_CONTENT in extension pages)
+		// Firefox MV3 dev server: serve responses uncompressed. Compressed responses trip
+		// NS_ERROR_CORRUPTED_CONTENT when loaded from an extension page.
 		server: {
 			headers: {
 				'Content-Encoding': 'identity',

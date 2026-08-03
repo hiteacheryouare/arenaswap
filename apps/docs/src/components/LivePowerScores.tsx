@@ -108,7 +108,10 @@ const fetchLiveGames = async (): Promise<Game[]> => {
 	return settled.flatMap(result => result.status === 'fulfilled' ? result.value : []);
 };
 
-const formatClock = (clockSeconds: number): string => {
+// `clockSeconds` and `period` are optional on Game (pre-game and clockless sports omit them),
+// so both fall back the same way the extension's own card formatters do.
+const formatClock = (clockSeconds: number | undefined): string => {
+	if (clockSeconds === undefined) return '';
 	const mins = Math.floor(clockSeconds / 60);
 	const secs = clockSeconds % 60;
 	return `${mins}:${String(secs).padStart(2, '0')}`;
@@ -116,11 +119,12 @@ const formatClock = (clockSeconds: number): string => {
 
 const formatPeriod = (game: Game): string => {
 	const config = leagueConfigMap[game.league];
-	if (config.periodFormat === 'innings') return `Inning ${game.period}`;
-	if (game.period > config.regularPeriods) return 'OT';
-	if (config.periodFormat === 'quarters') return `Q${game.period}`;
-	if (config.periodFormat === 'halves') return `H${game.period}`;
-	return `P${game.period}`;
+	const period = game.period ?? 1;
+	if (config.periodFormat === 'innings') return `Inning ${period}`;
+	if (period > config.regularPeriods) return 'OT';
+	if (config.periodFormat === 'quarters') return `Q${period}`;
+	if (config.periodFormat === 'halves') return `H${period}`;
+	return `P${period}`;
 };
 
 const LivePowerScores = () => {
@@ -142,7 +146,7 @@ const LivePowerScores = () => {
 					? (stallRef.current[game.id] ?? 0) + 1
 					: 0;
 				stallRef.current[game.id] = nextStall;
-				previousClockRef.current[game.id] = game.clockSeconds;
+				previousClockRef.current[game.id] = game.clockSeconds ?? 0;
 
 				const nextSnapshot: ScoreSnapshot = {
 					gameId: game.id,

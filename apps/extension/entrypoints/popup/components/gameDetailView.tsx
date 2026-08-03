@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { i18n } from '#i18n';
 import { leagueConfigMap, scoreMaxTotal } from '@arenaswap/core/constants';
-import { computeWinProbVarianceScore } from '@arenaswap/core';
 import type { Game, PowerScoreResult, PowerScoreSnapshot, ScoreSnapshot, SignalName } from '@arenaswap/core/types';
 import DetailHero from './detailHero';
 import DetailStickyBar from './detailStickyBar';
@@ -90,14 +89,13 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 	const winProbabilityOption = useMemo(() => (
 		buildWinProbabilityOption(winProbability, game)
 	), [winProbability, game]);
-	// Volatility comes exclusively from real ESPN win-probability data. f346eff removed the
-	// *synthetic* source from the background loop — a logistic curve derived from the score
-	// margin, which only ever restated closeness — but the signal itself is real whenever the
-	// summary endpoint gives us a line to measure. computeWinProbVarianceScore returns
-	// undefined below its minimum sample size, so games without that data get no row and no
-	// adjustment rather than a fabricated zero.
-	const winProbabilityVariance = useMemo(() => computeWinProbVarianceScore(winProbability), [winProbability]);
-	const total = Math.max(0, (activePowerScore?.total ?? 0) + (winProbabilityVariance ?? 0));
+	// Volatility is computed by the background scorer, which owns the win-probability line and
+	// folds it into the total before anything renders. Recomputing it here from the popup's own
+	// copy of the line would put a different number on the detail screen than the one on the card
+	// you tapped and the one the auto-switcher acted on. The line fetched here drives the chart
+	// only. Undefined means ESPN gave us too little data — no row, rather than a fabricated zero.
+	const winProbabilityVariance = activePowerScore?.winProbabilityVariance;
+	const total = activePowerScore?.total ?? 0;
 
 	const [awayLineColor, homeLineColor] = resolveTeamColorPair(game.awayTeam, game.homeTeam, '#60a5fa', '#f87171', true);
 	const teamLegendItems = useMemo(() => ([
@@ -171,7 +169,6 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 				currentBoost={currentBoost}
 				scoringOpportunityBoost={scoringOpportunityBoost}
 				postseasonBoost={postseasonBoost}
-				total={total}
 				totalLabel={totalLabel}
 				reason={reason ? reason.charAt(0).toUpperCase() + reason.slice(1) : undefined}
 				disabledSignals={disabledSignals}

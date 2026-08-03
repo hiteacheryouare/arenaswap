@@ -4,12 +4,18 @@
 		"jsx": "react-jsx",
 		"allowJs": true,
 		"types": ["cypress", "node"],
+		// Reading `subject[0]` off a query result is the whole idiom in these specs, and a spec
+		// that queried nothing should fail the assertion rather than be guarded at every site.
+		"noUncheckedIndexedAccess": false,
 		"paths": {
 			"@arenaswap/core": ["../../../packages/core/src/index.ts"],
 			"@arenaswap/core/*": ["../../../packages/core/src/*"],
 			"powerscore": ["../../../packages/powerscore/src/index.ts"],
-			"wxt/browser": ["../tests/stubs/wxtBrowser.ts"]
+			"wxt/browser": ["../tests/stubs/wxtBrowser.ts"],
+			// Mirrors the Vite alias in cypress.config.ts so specs typecheck against the same
+			// translator the component tests actually run with.
+			"#i18n": ["./stubs/i18n.ts"]
 		}
 	},
-	"include": ["./**/*.ts", "./**/*.tsx", "../tests/stubs/**/*.ts"]
+	"include": ["./**/*.ts", "./**/*.tsx", "../tests/stubs/**/*.ts", "./scss.d.ts"]
 }

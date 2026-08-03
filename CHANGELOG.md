@@ -1,5 +1,40 @@
 # Changelog
 
+## One PowerScore, and a league that can't vanish quietly — 2026-08-02
+
+Review pass over the 2.0 branch. Two things were wrong in ways you could have watched happen: the number on the detail screen wasn't the number the switcher used, and a single malformed row in an ESPN response could take a whole league off the board without saying so.
+
+### PowerScore
+- **The detail screen and the card now always agree.** Volatility was being computed a second time inside the popup and added on top of the engine's total, so a card reading 84 opened a screen reading 89 — and the auto-switcher had acted on 84. The win-probability line is now fetched by the background scorer, folded into the total once, and rendered verbatim everywhere. The detail view reads `winProbabilityVariance` off the result instead of deriving its own
+- As a consequence volatility finally **influences which game you get switched to**, rather than being a number the popup showed you after the fact
+- The 100-point ceiling now actually holds for automatic scoring. The popup's second addition could push an unboosted game to 105 and label it as manually boosted
+- `baseTotal` is no longer clamped to 100. It records the raw pre-cap signals sum (which the overcomplete ceilings let reach 156), so the breakdown's "before → after" clock-stall line agrees with the total it's explaining instead of reading `100 → 75` next to a final score of 100
+- Turning signals off no longer silently discards the clock-stall penalty or the volatility adjustment: the penalty rescales with the signals it was deducted from, and volatility carries over at full value
+- `computeWinProbVarianceScore` documents what it actually measures — mean absolute distance from 50%, not variance — including the known limitation that a line swinging 10%↔90% scores like a steady blowout
+
+### Core
+- **A malformed event no longer costs you the league.** `EspnScoreboardSchema` validated `events` as one array, so a single bad row — a TBD bracket slot, a score ESPN encoded as a number instead of a string — rejected the entire response. `fetchScoreboard` returned zero games, which is indistinguishable from "no games today", so the league was then demoted to dormant 2–3 minute polling with nothing anywhere to explain it. Parsing is per-event now: bad rows are dropped and counted, the rest come through
+- Scores and ids accept either encoding ESPN uses and normalize to strings, rather than one sport's convention rejecting the row
+- New `fetchWinProbability`, and `pollWinProbabilityMs` (60s) to pace it — one request per live game, deliberately far slower than the scoreboard poll
+
+### Extension background
+- **Failures are visible again.** Six `catch {}` blocks were swallowing fetch, storage and state-load errors outright, which left nothing to look at when the extension stopped switching. All of them route through a new shared logger, as does `prefsStorage`, which had been the only place still reporting anything
+- With no game tab in focus, the switcher required the best game to be worth watching before grabbing the tab. Every frozen game scores 0, so a league sitting at halftime could pull you off whatever you were actually doing
+- **Muted tabs are released after a service-worker restart.** The set of tabs ArenaSwap had muted lived only in memory, and MV3 tears the worker down whenever it idles — so the unmute-on-release behaviour stopped working within a minute of going quiet. It's mirrored into session storage alongside the tab registry now
+- Snapshot history keeps a hard 400-per-game count cap behind the time window, so a faster-than-expected poll can't grow the arrays without bound
+- Dropped a dead per-sport window lookup in history hydration: it ran before the first fetch, so the game it searched for never existed and the global window was always used
+
+### Extension popup
+- The game detail screen fetched ESPN's summary endpoint **on every score change** — a request per made basket. It fetches once per game now, with an `AbortController`, a response-status check, and state that resets when you open a different game instead of briefly showing the previous game's line
+
+### Build & tooling
+- Cypress specs are **typechecked** for the first time (`tsc --noEmit -p cypress` in the extension's `typecheck`). Wiring it up surfaced 76 errors: a missing `#i18n` path mapping, no stylesheet module declaration, `HTMLElement[]` where Cypress yields `JQuery`, a `UserPreferences` fixture missing `disabledSignals`, and a dead `@ts-expect-error`. All fixed
+- The docs app has a `typecheck` task covering its React components, which caught three real nullability bugs in `LivePowerScores` (`period` and `clockSeconds` are optional on `Game`). Full `.astro` checking still waits on `@astrojs/check`, which peers on TypeScript ≤6 while this repo is on 7 — noted in `tsconfig.typecheck.json` rather than forced
+- Removed `baseUrl` from the docs `tsconfig.json`; TypeScript 7 removed the option
+- **Turbo cache correctness**: `zip`, `zip:firefox` and `zip:edge` all declared `.output/*.zip` as their output, and the three `build*` tasks all declared `.output/**`, so six tasks claimed each other's artifacts and a cache restore could hand back the wrong browser's build. Each target now owns its own directory and zip filename, in a new `apps/extension/turbo.json`. The zip tasks also no longer depend on the sibling `build` — `wxt zip` builds its own target, so zipping Firefox was building Chrome for nothing
+- `packages/ui` has **tests** (25, covering the team-colour resolver, weather formatting, and the shared card formatters) — the shared library both apps render from previously had none. Deleted its unused `components/index.ts` barrel; every consumer deep-imports, which is also the only thing that works for the package's SCSS
+- Deduplicated `docs/settings.json` in `.gitignore`; corrected stale comments referencing the removed `otEdgeMax`, a "−10 to +10" volatility range that is ±5, and eval-based sourcemaps the Vite config never touched
+
 ## The game detail screen stops repeating itself — 2026-08-02
 
 Tapping a game used to get you the same card again, bigger. The logos, the score, the clock, the venue, the broadcast, the odds, the weather and the PowerScore bar were all already on the card you just clicked, and the abbreviations were on screen three times. The top of the screen now says the things the card doesn't, and stays quiet about the things it does.

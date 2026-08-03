@@ -1,5 +1,5 @@
 import { randomInRange } from '@porkyproductions/hat';
-import { fetchGamesWithLeagueLogos, computePowerScore, computeScoringOpportunityBoost, normalizePowerScoreResult, scoreMaxTotal, MockGameSimulator, createPollModeTracker, isObjectRecord, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts, computeLeagueIntervalMs } from '@arenaswap/core';
+import { fetchGamesWithLeagueLogos, fetchWinProbability, computePowerScore, computeScoringOpportunityBoost, normalizePowerScoreResult, scoreMaxTotal, MockGameSimulator, createPollModeTracker, isObjectRecord, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts, computeLeagueIntervalMs, pollWinProbabilityMs as winProbPollIntervalMs, logWarn, logError } from '@arenaswap/core';
 import { computeStandbyStreamDecision } from '../utils/standbyStreamLogic';
 import { loadStoredUserPreferences, persistStoredUserPreferences } from '../utils/prefsStorage';
 import {
@@ -43,8 +43,8 @@ const recordSuccessfulSwitchForReviewPrompt = async (switchedAt: number) => {
 		await browser.storage.local.set({
 			[reviewPromptStorageKey]: recordSuccessfulReviewPromptSwitch(current, switchedAt),
 		});
-	} catch {
-		// Failed to update review prompt state
+	} catch (err) {
+		logWarn('Failed to update review prompt state.', err);
 	}
 };
 
@@ -60,6 +60,21 @@ const getFavoriteTeamCount = (game: Game, favoriteTeamIds: Set<string>): number 
 const getHistoryWindowMsForGame = (game: Game): number => {
 	const sportConfig = sportTypeConfigMap[game.sportType] ?? sportTypeConfigMap.basketball;
 	return sportConfig.historyWindowMs ?? historyWindowMs;
+};
+
+/**
+ * Hard ceiling on retained snapshots per game, independent of the time window.
+ *
+ * The window is the real policy; this only stops the arrays growing without bound if polling
+ * ever runs faster than expected. Soccer's 20-minute window at the 6s eager floor is 200
+ * snapshots, so this leaves headroom without letting a runaway loop fill session storage.
+ */
+const maxSnapshotsPerGame = 400;
+
+/** Trims a snapshot list in place to the sport's time window, with a count cap as a backstop. */
+const trimSnapshots = <T extends { timestamp: number }>(snapshots: T[], cutoff: number): void => {
+	while (snapshots.length > 1 && snapshots[0]!.timestamp < cutoff) snapshots.shift();
+	if (snapshots.length > maxSnapshotsPerGame) snapshots.splice(0, snapshots.length - maxSnapshotsPerGame);
 };
 
 const capitalizeFirst = (s: string) => s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
@@ -82,6 +97,12 @@ export default defineBackground(() => {
 	const leagueTimers = new Map<string, ReturnType<typeof setTimeout>>();
 	// Last scheduled interval per league (ms), for debug visibility
 	const leagueNextIntervalMs = new Map<string, number>();
+	// ESPN win-probability lines, keyed by game id. Lives on the summary endpoint (one request
+	// per game) rather than the scoreboard, so it refreshes on its own slow cadence — see
+	// refreshWinProbabilities. Everything that reads a PowerScore reads it from here, so the
+	// card, the detail screen and the switcher all agree on the same number.
+	const winProbHistory = new Map<string, number[]>();
+	let winProbTimer: ReturnType<typeof setTimeout> | null = null;
 	const pollModeTracker = createPollModeTracker();
 	// Interval used only in demo mode
 	let demoTimer: ReturnType<typeof setInterval> | null = null;
@@ -92,9 +113,19 @@ export default defineBackground(() => {
 	let standbyStreamTabId: number | null = null;
 	let onStandbyStream = false;
 	// Tabs ArenaSwap has muted, tracked so a tab that leaves our control gets unmuted again
-	// instead of being left silent with nothing in the UI explaining why.
+	// instead of being left silent with nothing in the UI explaining why. Mirrored into session
+	// storage because MV3 tears the service worker down whenever it goes idle — an in-memory set
+	// would come back empty and strand every muted tab with no record that we were the cause.
 	const mutedTabIds = new Set<number>();
-	const historyStorageDefaults = { scoreHistory: {}, powerScoreHistory: {}, gameBoosts: {} };
+	const historyStorageDefaults = { scoreHistory: {}, powerScoreHistory: {}, gameBoosts: {}, mutedTabIds: [] };
+
+	const persistMutedTabIds = async () => {
+		try {
+			await browser.storage.session.set({ mutedTabIds: [...mutedTabIds] });
+		} catch (err) {
+			logWarn('Failed to persist muted tab ids.', err);
+		}
+	};
 
 
 	const hydrateHistoryMaps = (storedScoreHistory: unknown, storedPowerScoreHistory: unknown) => {
@@ -106,11 +137,11 @@ export default defineBackground(() => {
 				if (!Array.isArray(snapshots)) return;
 				const valid = snapshots.filter(isScoreSnapshotLike);
 				if (valid.length === 0) return;
-				const newestTs = valid[valid.length - 1]!.timestamp;
-				const game = games.find(g => g.id === gameId);
-				const windowMs = game ? getHistoryWindowMsForGame(game) : historyWindowMs;
-				const cutoff = newestTs - windowMs;
-				const trimmed = valid.filter(s => s.timestamp >= cutoff);
+				// Runs before the first fetch, so there is no Game to read a per-sport window from
+				// yet; the global window is the only thing available. The next updateHistory pass
+				// re-trims each game to its sport's real window.
+				const cutoff = valid[valid.length - 1]!.timestamp - historyWindowMs;
+				const trimmed = valid.filter(s => s.timestamp >= cutoff).slice(-maxSnapshotsPerGame);
 				if (trimmed.length === 0) return;
 				history.set(gameId, trimmed);
 			});
@@ -121,11 +152,8 @@ export default defineBackground(() => {
 				if (!Array.isArray(snapshots)) return;
 				const valid = snapshots.filter(isPowerScoreSnapshotLike);
 				if (valid.length === 0) return;
-				const newestTs = valid[valid.length - 1]!.timestamp;
-				const game = games.find(g => g.id === gameId);
-				const windowMs = game ? getHistoryWindowMsForGame(game) : historyWindowMs;
-				const cutoff = newestTs - windowMs;
-				const trimmed = valid.filter(s => s.timestamp >= cutoff);
+				const cutoff = valid[valid.length - 1]!.timestamp - historyWindowMs;
+				const trimmed = valid.filter(s => s.timestamp >= cutoff).slice(-maxSnapshotsPerGame);
 				if (trimmed.length === 0) return;
 				powerScoreHistory.set(gameId, trimmed);
 			});
@@ -143,8 +171,7 @@ export default defineBackground(() => {
 				homeScore: game.homeTeam.score,
 				awayScore: game.awayTeam.score,
 			});
-			const cutoff = now - getHistoryWindowMsForGame(game);
-			while (snapshots.length > 1 && snapshots[0]!.timestamp < cutoff) snapshots.shift();
+			trimSnapshots(snapshots, now - getHistoryWindowMsForGame(game));
 			history.set(game.id, snapshots);
 		});
 	};
@@ -167,6 +194,7 @@ export default defineBackground(() => {
 				momentum: score.momentum,
 				leadChanges: score.leadChanges,
 				comeback: score.comeback,
+				...(score.winProbabilityVariance !== undefined ? { winProbabilityVariance: score.winProbabilityVariance } : {}),
 				baseTotal: score.baseTotal ?? score.total,
 				favoriteBonus: score.favoriteBonus ?? 0,
 				favoriteTeamCount: score.favoriteTeamCount ?? 0,
@@ -176,8 +204,7 @@ export default defineBackground(() => {
 				stalled: score.stalled ?? false,
 				reason: score.reason,
 			});
-			const cutoff = now - getHistoryWindowMsForGame(game);
-			while (snapshots.length > 1 && snapshots[0]!.timestamp < cutoff) snapshots.shift();
+			trimSnapshots(snapshots, now - getHistoryWindowMsForGame(game));
 			powerScoreHistory.set(score.gameId, snapshots);
 		});
 	};
@@ -198,8 +225,8 @@ export default defineBackground(() => {
 		void browser.storage.session.set({
 			scoreHistory: serializeScoreHistory(),
 			powerScoreHistory: serializePowerScoreHistory(),
-		}).catch(() => {
-			// Failed to persist score history
+		}).catch(err => {
+			logWarn('Failed to persist score history to session storage.', err);
 		});
 	};
 
@@ -277,6 +304,7 @@ export default defineBackground(() => {
 		for (const [tabId, muted] of nextMuteStates) {
 			if (muted) mutedTabIds.add(tabId);
 		}
+		await persistMutedTabIds();
 
 		await Promise.all(
 			[...nextMuteStates].map(([tabId, muted]) => browser.tabs.update(tabId, { muted }))
@@ -363,8 +391,8 @@ export default defineBackground(() => {
 		try {
 			const result = await fetchGamesWithLeagueLogos(prefs.enabledLeagues, { includeUpcoming: true, upcomingDays: prefs.upcomingGamesDays });
 			upcomingGames = result.games.filter(g => g.status === 'pre');
-		} catch {
-			// Failed to fetch upcoming games
+		} catch (err) {
+			logWarn('Failed to fetch upcoming games.', err);
 		}
 	};
 
@@ -396,7 +424,9 @@ export default defineBackground(() => {
 		const scores = liveGames.map(g => {
 			const stallCount = clockStallMap.get(g.id)?.stallCount ?? 0;
 			const baseScore = applyDisabledSignals(
-				normalizePowerScoreResult(computePowerScore(g, history.get(g.id) ?? [], stallCount)),
+				normalizePowerScoreResult(
+					computePowerScore(g, history.get(g.id) ?? [], stallCount, winProbHistory.get(g.id) ?? []),
+				),
 				prefs.disabledSignals,
 			);
 			const favoriteTeamCount = getFavoriteTeamCount(g, favoriteTeamIds);
@@ -482,7 +512,11 @@ export default defineBackground(() => {
 		const threshold = sensitivityThresholds[prefs.sensitivity] ?? 0;
 		const cooldownOk = Date.now() - lastSwitchTime > prefs.cooldownSeconds * 1000;
 
-		const notWatchingAGame = !activeReg;
+		// With no game tab in focus there is no score to clear, so the threshold has nothing to
+		// measure against and the best game wins by default. It still has to be a game worth
+		// watching: every frozen game scores 0, so without the `> 0` guard a league sitting at
+		// halftime would pull the user off whatever they were actually doing.
+		const notWatchingAGame = !activeReg && best.total > 0;
 		if (
 			bestReg.tabId !== activeTab.id &&
 			(notWatchingAGame || best.total >= activeScore + threshold) &&
@@ -510,8 +544,8 @@ export default defineBackground(() => {
 				const fetchResult = await fetchGamesWithLeagueLogos(enabledLeagues, { includeUpcoming: false });
 				games = fetchResult.games;
 				leagueLogos = fetchResult.leagueLogos;
-			} catch {
-				// Failed to fetch games
+			} catch (err) {
+				logError('Failed to fetch games.', err);
 				return;
 			}
 			// Merge cached upcoming games, excluding any that have since gone live
@@ -540,8 +574,8 @@ export default defineBackground(() => {
 			const hasLiveGames = fetchResult.games.some(g => g.status === 'in');
 			pollModeTracker.recordPollResult(leagueId, hasLiveGames);
 			fetchSucceeded = true;
-		} catch {
-			// Failed to fetch league games
+		} catch (err) {
+			logWarn(`Failed to fetch ${leagueId} games.`, err);
 		}
 
 		// Reschedule before awaiting post-processing so the next tick is always queued.
@@ -596,6 +630,51 @@ export default defineBackground(() => {
 		return inFlightRefresh;
 	};
 
+	/**
+	 * Refreshes the ESPN win-probability line for every live game.
+	 *
+	 * One request per game, so this deliberately runs far slower than the scoreboard poll —
+	 * a win-probability line moves on the scale of possessions, not seconds, and the scorer
+	 * only reads its average distance from 50%. Requests are issued together and failures are
+	 * per-game: one 404 leaves the other games' cached lines intact.
+	 */
+	const refreshWinProbabilities = async (): Promise<void> => {
+		const liveGames = games.filter(g => g.status === 'in');
+
+		// Drop lines for games that have finished or dropped out of the enabled leagues.
+		const liveIds = new Set(liveGames.map(g => g.id));
+		for (const gameId of winProbHistory.keys()) {
+			if (!liveIds.has(gameId)) winProbHistory.delete(gameId);
+		}
+
+		if (liveGames.length === 0) return;
+
+		await Promise.all(liveGames.map(async game => {
+			try {
+				const line = await fetchWinProbability(game);
+				// ESPN returns [] during delays and brief interruptions even when earlier play
+				// produced a line; keep the last good one rather than dropping the signal.
+				if (line.length > 0) winProbHistory.set(game.id, line);
+			} catch (err) {
+				logWarn(`Failed to fetch win probability for ${game.id}.`, err);
+			}
+		}));
+	};
+
+	const stopWinProbabilityPolling = () => {
+		if (winProbTimer !== null) clearTimeout(winProbTimer);
+		winProbTimer = null;
+	};
+
+	const scheduleWinProbabilityPolling = () => {
+		stopWinProbabilityPolling();
+		const run = async () => {
+			await refreshWinProbabilities();
+			winProbTimer = setTimeout(() => void run(), winProbPollIntervalMs);
+		};
+		winProbTimer = setTimeout(() => void run(), winProbPollIntervalMs);
+	};
+
 	// Load persisted state before any refresh to avoid race conditions on popup reopen.
 	const stateReady = Promise.all([
 		loadStoredUserPreferences(),
@@ -606,25 +685,39 @@ export default defineBackground(() => {
 		tabRegistry = sessionResult.tabRegistry as TabRegistration[];
 		standbyStreamTabId = (sessionResult.standbyStreamTabId as number | null) ?? null;
 		gameBoosts = normalizeGameBoosts(sessionResult.gameBoosts);
+		if (Array.isArray(sessionResult.mutedTabIds)) {
+			for (const tabId of sessionResult.mutedTabIds) {
+				if (typeof tabId === 'number' && Number.isFinite(tabId)) mutedTabIds.add(tabId);
+			}
+		}
 		hydrateHistoryMaps(sessionResult.scoreHistory, sessionResult.powerScoreHistory);
 		demoMode = demoResult.demoMode as boolean;
 		if (demoMode) simulator = new MockGameSimulator();
-	}).catch(() => {
-		// Failed to load persisted state, using defaults
+	}).catch(err => {
+		logError('Failed to load persisted state; falling back to defaults.', err);
 	});
 
 	stateReady.then(async () => {
 		upcomingGamesReady = refreshUpcomingGames().catch(() => {});
 		await upcomingGamesReady;
-		refreshScores(false).finally(() => {
-			if (demoMode) {
-				if (!demoTimer) {
-					demoTimer = setInterval(() => void tick(true), pollIntervalMs);
-				}
-			} else {
-				startLeaguePolling();
-			}
+		await refreshScores(false).catch(err => {
+			logError('Initial score refresh failed; starting polling anyway.', err);
 		});
+
+		if (demoMode) {
+			if (!demoTimer) {
+				demoTimer = setInterval(() => void tick(true), pollIntervalMs);
+			}
+			return;
+		}
+
+		startLeaguePolling();
+		scheduleWinProbabilityPolling();
+		// Seed the win-probability lines now that the games are known, then re-score so the very
+		// first thing the popup renders already carries volatility. Demo games have no ESPN
+		// summary behind them, so this is skipped above.
+		await refreshWinProbabilities();
+		await refreshScores(false);
 	});
 
 	// Handle messages from popup
@@ -676,6 +769,9 @@ export default defineBackground(() => {
 					games = [...games.filter(g => g.status !== 'pre'), ...upcomingGames];
 					broadcastScoresUpdated();
 					startLeaguePolling();
+					// Games from a league that was just switched off keep their cached line
+					// until the next sweep, so evict eagerly here.
+					void refreshWinProbabilities();
 				}
 			});
 		}
@@ -706,6 +802,9 @@ export default defineBackground(() => {
 				if (demoMode) {
 					simulator = new MockGameSimulator();
 					stopLeaguePolling();
+					// Demo games have no ESPN summary behind them; drop any real lines we cached.
+					stopWinProbabilityPolling();
+					winProbHistory.clear();
 					if (!demoTimer) {
 						demoTimer = setInterval(() => void tick(true), pollIntervalMs);
 					}
@@ -713,6 +812,7 @@ export default defineBackground(() => {
 					simulator = null;
 					if (demoTimer) { clearInterval(demoTimer); demoTimer = null; }
 					startLeaguePolling();
+					scheduleWinProbabilityPolling();
 				}
 				await browser.storage.local.set({ demoMode });
 				await refreshScores(false); // immediately refresh

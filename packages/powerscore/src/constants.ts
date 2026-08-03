@@ -29,6 +29,18 @@ export const scoreWinProbVarianceMax = 5;
 // Headline cap. Intentionally lower than the sum of the per-signal ceilings above.
 export const scoreMaxTotal = 100;
 
+/**
+ * Ceiling for the pre-cap signals subtotal.
+ *
+ * The per-signal maxima are deliberately overcomplete — they sum well past 100 so a game firing
+ * on several signals at once saturates while a dull game stays low. `baseTotal` records that raw
+ * sum before the headline total is capped, so it has to be allowed past `scoreMaxTotal`; clamping
+ * it to 100 would make the breakdown's "before → after" stall arithmetic disagree with the total
+ * it is explaining.
+ */
+export const scoreMaxSignalsSubtotal =
+	scoreMaxCloseness + scoreMaxLateGame + scoreMaxMomentum + scoreMaxLeadChanges + scoreMaxComeback;
+
 // Final-period regulation ramp ceiling for tight/close games. Also anchors the tied OT pre-boost
 // (otPreBoostMax = scoreMaxLateGame − this), so referencing it symbolically keeps the two in sync.
 const lateGameCloseCeiling = 36;

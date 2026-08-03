@@ -16,7 +16,7 @@
 		"test:unit": "jest --passWithNoTests --selectProjects unit",
 		"test:component": "cypress run --component",
 		"cypress:open": "cypress open --component",
-		"typecheck": "wxt prepare && tsc --noEmit",
+		"typecheck": "wxt prepare && tsc --noEmit && tsc --noEmit -p cypress",
 		"lint": "oxlint ."
 	},
 	"dependencies": {

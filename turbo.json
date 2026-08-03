@@ -4,27 +4,22 @@
 	"tasks": {
 		"build": {
 			"dependsOn": ["^build"],
-			"outputs": [".output/**", "dist/**"]
+			"outputs": ["dist/**"]
 		},
 		"build:firefox": {
-			"dependsOn": ["^build"],
-			"outputs": [".output/**"]
+			"dependsOn": ["^build"]
 		},
 		"build:edge": {
-			"dependsOn": ["^build"],
-			"outputs": [".output/**"]
+			"dependsOn": ["^build"]
 		},
 		"zip": {
-			"dependsOn": ["build"],
-			"outputs": [".output/*.zip"]
+			"dependsOn": ["^build"]
 		},
 		"zip:firefox": {
-			"dependsOn": ["build"],
-			"outputs": [".output/*.zip"]
+			"dependsOn": ["^build"]
 		},
 		"zip:edge": {
-			"dependsOn": ["build"],
-			"outputs": [".output/*.zip"]
+			"dependsOn": ["^build"]
 		},
 		"dev": {
 			"persistent": true,

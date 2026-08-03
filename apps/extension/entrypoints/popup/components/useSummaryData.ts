@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { leagueConfigMap } from '@arenaswap/core/constants';
+import { logWarn } from '@arenaswap/core';
 import type { Game, LeagueId } from '@arenaswap/core/types';
 
 export interface SeriesCompetitor {
@@ -83,13 +84,21 @@ const useSummaryData = (game: SummaryGameArg): summaryDataResult => {
 	const { id: gameId, league, status } = game;
 	const [winProbability, setWinProbability] = useState<number[]>([]);
 	const [seriesInfo, setSeriesInfo] = useState<SeriesInfo | null>(null);
+	// Snapshotted rather than tracked: the mock generator seeds off the score once, and making
+	// the effect depend on a live score would refetch ESPN on every made basket.
+	const scoreRef = useRef({ home: game.homeTeam.score, away: game.awayTeam.score });
+	scoreRef.current = { home: game.homeTeam.score, away: game.awayTeam.score };
 
 	useEffect(() => {
+		// A detail view reused for a different game must not keep showing the previous game's line.
+		setWinProbability([]);
+		setSeriesInfo(null);
+
 		if (status === 'pre') return;
 
 		// Demo mode: mock- prefixed IDs don't have ESPN summary data
 		if (gameId.startsWith('mock-')) {
-			setWinProbability(generateMockWinProbs(gameId, game.homeTeam.score, game.awayTeam.score));
+			setWinProbability(generateMockWinProbs(gameId, scoreRef.current.home, scoreRef.current.away));
 			setSeriesInfo(mockSeriesMap[gameId] ?? null);
 			return;
 		}
@@ -97,28 +106,36 @@ const useSummaryData = (game: SummaryGameArg): summaryDataResult => {
 		const config = leagueConfigMap[league as LeagueId];
 		if (!config) return;
 
-		let cancelled = false;
-		const url = `https://site.api.espn.com/apis/site/v2/sports/${config.espnPath}/summary?event=${gameId}`;
-		fetch(url, { headers: { Accept: 'application/json' } })
-			.then(r => r.json())
+		// Fetched once per game rather than per score change: this drives the chart, and the line
+		// only moves on the scale of possessions. The volatility figure in the breakdown comes from
+		// the background scorer, so nothing here feeds the number the switcher acts on.
+		const controller = new AbortController();
+		const url = `https://site.api.espn.com/apis/site/v2/sports/${config.espnPath}/summary?event=${encodeURIComponent(gameId)}`;
+		fetch(url, { headers: { Accept: 'application/json' }, signal: controller.signal })
+			.then(r => {
+				if (!r.ok) throw new Error(`HTTP ${r.status}`);
+				return r.json();
+			})
 			.then((data: Record<string, unknown>) => {
-				if (cancelled) return;
 				const wp = data?.winprobability;
 				// Only replace win probability data with non-empty results. ESPN returns [] during
 				// rain delays and brief interruptions even when earlier at-bats produced data, which
-				// would clear the chart and variance line mid-game and desync them from the score.
+				// would clear the chart mid-game and desync it from the score.
 				if (Array.isArray(wp) && wp.length > 0) {
-					setWinProbability(wp.map((p: { homeWinPercentage: number }) => p.homeWinPercentage ?? 0.5));
+					setWinProbability(wp.map((p: { homeWinPercentage?: number }) => p.homeWinPercentage ?? 0.5));
 				}
 				const series = (data?.seasonseries as SeriesInfo[] | undefined)?.[0];
 				if ((series as { type?: string } | undefined)?.type === 'current') {
 					setSeriesInfo(series ?? null);
 				}
 			})
-			.catch(() => {});
+			.catch(err => {
+				if (err instanceof DOMException && err.name === 'AbortError') return;
+				logWarn(`Failed to load summary data for ${gameId}.`, err);
+			});
 
-		return () => { cancelled = true; };
-	}, [gameId, league, status, game.homeTeam.score, game.awayTeam.score]);
+		return () => controller.abort();
+	}, [gameId, league, status]);
 
 	return { winProbability, seriesInfo };
 };

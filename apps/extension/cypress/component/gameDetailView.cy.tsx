@@ -160,7 +160,7 @@ describe('gameDetailView countdown', () => {
 	it('keeps the countdown on one line in every locale', () => {
 		mountDetail(makePreGame(13 * dayMs + 23 * hourMs + 59 * minuteMs));
 		Object.entries(locales).forEach(([name, locale]) => {
-			cy.get('.gd-countdown-clock').should(([el]: HTMLElement[]) => {
+			cy.get('.gd-countdown-clock').should(([el]: JQuery<HTMLElement>) => {
 				el.querySelectorAll('.gd-countdown-unit').forEach((unit, index) => {
 					unit.textContent = [locale.detail.unitDays, locale.detail.unitHours, locale.detail.unitMinutes][index] ?? '';
 				});
@@ -193,8 +193,8 @@ describe('gameDetailView hero', () => {
 
 	it('keeps the hero inside its pixel budget', () => {
 		mountDetail(makeLiveGame(), { excitementResult: excitement });
-		cy.get('.game-detail-header').then(([header]: HTMLElement[]) => {
-			cy.get('.gd-hero').then(([hero]: HTMLElement[]) => {
+		cy.get('.game-detail-header').then(([header]: JQuery<HTMLElement>) => {
+			cy.get('.gd-hero').then(([hero]: JQuery<HTMLElement>) => {
 				const height = hero.getBoundingClientRect().bottom - header.getBoundingClientRect().top;
 				expect(height, 'hero height').to.be.at.most(190);
 			});
@@ -203,7 +203,7 @@ describe('gameDetailView hero', () => {
 
 	it('starts the PowerScore breakdown above the fold', () => {
 		mountDetail(makeLiveGame(), { excitementResult: excitement });
-		cy.get('.powerscore-breakdown').then(([el]: HTMLElement[]) => {
+		cy.get('.powerscore-breakdown').then(([el]: JQuery<HTMLElement>) => {
 			expect(el.getBoundingClientRect().top, 'breakdown starts high').to.be.at.most(200);
 		});
 	});
@@ -213,17 +213,17 @@ describe('gameDetailView hero', () => {
 	it('fits the score row and base diamond inside the centre column', () => {
 		mountDetail(makeInningGame(), { excitementResult: excitement });
 		cy.get('.base-diamond').should('exist');
-		cy.get('.game-detail-score-row').should(([row]: HTMLElement[]) => {
+		cy.get('.game-detail-score-row').should(([row]: JQuery<HTMLElement>) => {
 			expect(row.scrollWidth, 'score row does not overflow its column').to.be.at.most(row.clientWidth);
 		});
-		cy.get('.gd-hero').should(([hero]: HTMLElement[]) => {
+		cy.get('.gd-hero').should(([hero]: JQuery<HTMLElement>) => {
 			expect(hero.scrollWidth, 'hero does not overflow the popup').to.be.at.most(hero.clientWidth);
 		});
 	});
 
 	it('centres the balls/strikes/outs count under the matchup', () => {
 		mountDetail(makeInningGame(), { excitementResult: excitement });
-		cy.get('.gd-bso-row').then(([row]: HTMLElement[]) => {
+		cy.get('.gd-bso-row').then(([row]: JQuery<HTMLElement>) => {
 			const indicator = row.querySelector('.bso-indicator') as HTMLElement;
 			const rowBox = row.getBoundingClientRect();
 			const box = indicator.getBoundingClientRect();
@@ -235,7 +235,7 @@ describe('gameDetailView hero', () => {
 
 	it('renders venue, broadcasts and weather after the breakdown', () => {
 		mountDetail(makeLiveGame(), { excitementResult: excitement });
-		cy.get('.popup-container').then(([container]: HTMLElement[]) => {
+		cy.get('.popup-container').then(([container]: JQuery<HTMLElement>) => {
 			const breakdown = container.querySelector('.powerscore-breakdown');
 			const meta = container.querySelector('.game-meta');
 			assert.isNotNull(breakdown, 'breakdown exists');
@@ -300,8 +300,8 @@ describe('gameDetailView sticky bar', () => {
 	it('centres the compact matchup on the card axis', () => {
 		mountDetail(makeLiveGame(), { excitementResult: excitement });
 		cy.get('.popup-container').scrollTo('bottom');
-		cy.get('.game-detail-header').then(([header]: HTMLElement[]) => {
-			cy.get('.gd-bar-compact').should(([bar]: HTMLElement[]) => {
+		cy.get('.game-detail-header').then(([header]: JQuery<HTMLElement>) => {
+			cy.get('.gd-bar-compact').should(([bar]: JQuery<HTMLElement>) => {
 				const headerBox = header.getBoundingClientRect();
 				const barBox = bar.getBoundingClientRect();
 				const headerCentre = headerBox.left + headerBox.width / 2;
@@ -313,10 +313,10 @@ describe('gameDetailView sticky bar', () => {
 
 	it('keeps the same bar height in both states so nothing jumps', () => {
 		mountDetail(makeLiveGame(), { excitementResult: excitement });
-		cy.get('.game-detail-header').then(([el]: HTMLElement[]) => {
+		cy.get('.game-detail-header').then(([el]: JQuery<HTMLElement>) => {
 			const atRest = el.getBoundingClientRect().height;
 			cy.get('.popup-container').scrollTo('bottom');
-			cy.get('.game-detail-header').should(([scrolled]: HTMLElement[]) => {
+			cy.get('.game-detail-header').should(([scrolled]: JQuery<HTMLElement>) => {
 				expect(scrolled.getBoundingClientRect().height, 'bar height is stable').to.equal(atRest);
 			});
 		});
@@ -325,8 +325,8 @@ describe('gameDetailView sticky bar', () => {
 	it('pins to the top of the scroll container', () => {
 		mountDetail(makeLiveGame(), { excitementResult: excitement });
 		cy.get('.popup-container').scrollTo(0, 300);
-		cy.get('.popup-container').then(([container]: HTMLElement[]) => {
-			cy.get('.game-detail-header').should(([header]: HTMLElement[]) => {
+		cy.get('.popup-container').then(([container]: JQuery<HTMLElement>) => {
+			cy.get('.game-detail-header').should(([header]: JQuery<HTMLElement>) => {
 				const drift = header.getBoundingClientRect().top - container.getBoundingClientRect().top;
 				expect(drift, 'header stays pinned').to.be.closeTo(0, 1);
 			});
@@ -337,58 +337,70 @@ describe('gameDetailView sticky bar', () => {
 		mountDetail(makeLiveGame({ intermission: true, period: 2 }), { excitementResult: excitement });
 		cy.get('.popup-container').scrollTo('bottom');
 		Object.entries(locales).forEach(([name, locale]) => {
-			cy.get('.gd-bar-status').should(([el]: HTMLElement[]) => {
+			cy.get('.gd-bar-status').should(([el]: JQuery<HTMLElement>) => {
 				el.textContent = locale.detail.intermission;
 				expectSingleLine(el, `status in ${name}`);
 			});
-			cy.get('.gd-bar-compact').should(([el]: HTMLElement[]) => {
+			cy.get('.gd-bar-compact').should(([el]: JQuery<HTMLElement>) => {
 				expect(el.getBoundingClientRect().width, `compact fits in ${name}`).to.be.at.most(296);
 			});
 		});
 	});
 });
 
-// Volatility is a real signal wherever ESPN gives us a win-probability line to measure.
-// It is the popup that has that data, so the detail total legitimately differs from the
-// card's engine total by the volatility term — but only ever by exactly that term.
+// Volatility is computed by the background scorer, which owns the win-probability line and has
+// already folded it into `total`. The detail screen renders that number verbatim: the card you
+// tapped, this screen, and the score the auto-switcher acted on must never disagree.
 describe('win probability volatility', () => {
+	const withVolatility: PowerScoreResult = { ...excitement, total: 77, winProbabilityVariance: 5 };
+
 	beforeEach(() => {
 		cy.viewport(320, 560);
 	});
 
-	it('shows a volatility row when the game has real win probability data', () => {
-		mountDetail(makeLiveGame(), { excitementResult: excitement });
+	it('shows a volatility row when the engine measured a win probability line', () => {
+		mountDetail(makeLiveGame(), { excitementResult: withVolatility });
 		cy.contains('.powerscore-breakdown-row', /Volatility/).should('exist');
 	});
 
-	it('folds volatility into the final total, and nothing else', () => {
-		mountDetail(makeLiveGame(), { excitementResult: excitement });
+	it('renders the engine total verbatim rather than re-applying volatility', () => {
+		mountDetail(makeLiveGame(), { excitementResult: withVolatility });
 		cy.contains('.powerscore-breakdown-row', /Volatility/)
 			.find('span')
 			.last()
-			.invoke('text')
-			.then((varianceText) => {
-				const variance = Number(varianceText.trim().replace('+', ''));
-				assert.isNotNaN(variance, 'volatility parses to a number');
-				cy.get('.powerscore-breakdown-row-total')
-					.should('contain.text', `${Math.max(0, excitement.total + variance)} / 100`);
-			});
+			.should('have.text', '+5');
+		// 77, not 77 + 5 — the variance is already inside the engine total.
+		cy.get('.powerscore-breakdown-row-total').should('contain.text', '77 / 100');
 	});
 
 	// No win-probability line means no measurement, so no row and no adjustment — rather
 	// than a fabricated zero that would read as "we checked and it was neutral".
-	it('omits the row entirely when ESPN returns no win probability', () => {
-		cy.intercept('GET', '**/summary?event=*', { body: {} }).as('summary');
-		mountDetail(makeLiveGame({ id: '401547' }), { excitementResult: excitement });
-		cy.wait('@summary');
+	it('omits the row entirely when the engine had no win probability to measure', () => {
+		mountDetail(makeLiveGame(), { excitementResult: excitement });
 		cy.contains('.powerscore-breakdown-row', /Volatility/).should('not.exist');
 		cy.get('.powerscore-breakdown-row-total').should('contain.text', '72 / 100');
 	});
 
+	// The regression this pair guards: the detail screen used to recompute volatility from its
+	// own copy of the line and add it on top, so a card reading 77 opened a screen reading 82.
+	it('matches the list card exactly, with volatility applied', () => {
+		mountDetail(makeLiveGame(), { excitementResult: withVolatility });
+		cy.get('.powerscore-breakdown-row-total').should('contain.text', '77 / 100');
+		cy.mount(
+			<LiveGameCard
+				game={makeLiveGame()}
+				excitementResult={withVolatility}
+				favoriteTeamIds={new Set<string>()}
+				onToggleFavoriteTeam={() => {}}
+				onOpenGameDetail={() => {}}
+				bettingPrefs={{ bettingEnabled: false }}
+			/>,
+		);
+		cy.get('.game-card-ps-score').should('have.text', '77 / 100');
+	});
+
 	it('matches the list card when there is no volatility to apply', () => {
-		cy.intercept('GET', '**/summary?event=*', { body: {} }).as('summary');
-		mountDetail(makeLiveGame({ id: '401547' }), { excitementResult: excitement });
-		cy.wait('@summary');
+		mountDetail(makeLiveGame(), { excitementResult: excitement });
 		cy.get('.powerscore-breakdown-row-total').should('contain.text', '72 / 100');
 		cy.mount(
 			<LiveGameCard

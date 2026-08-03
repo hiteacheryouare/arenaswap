@@ -1,0 +1,21 @@
+// Typechecks the docs app's React components.
+//
+// Full `.astro` checking needs `@astrojs/check`, which still peers on TypeScript ^5 || ^6 while
+// this monorepo is standardized on ^7 — installing it would mean forcing a peer-dependency
+// violation. The components carry the logic worth checking (they render the same PowerScore
+// engine and shared UI the extension ships), so those are covered here and the `.astro` pages
+// stay on `astro build` for validation until upstream supports TS 7.
+{
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"noEmit": true,
+		"types": ["react", "react-dom"],
+		"paths": {
+			"@arenaswap/ui/*": ["../../packages/ui/*"],
+			"@arenaswap/core": ["../../packages/core/src/index.ts"],
+			"@arenaswap/core/*": ["../../packages/core/src/*"],
+			"powerscore": ["../../packages/powerscore/src/index.ts"]
+		}
+	},
+	"include": ["src/**/*.ts", "src/**/*.tsx"]
+}

@@ -1,7 +1,8 @@
 import { leagueConfigMap, resolveLeagueLogoUrl } from './constants';
 import {
-	EspnScoreboardSchema,
+	EspnSummarySchema,
 	EspnTeamsResponseSchema,
+	parseScoreboard,
 } from './espnSchemas';
 import type {
 	EspnCompetition,
@@ -10,6 +11,7 @@ import type {
 	EspnScoreboardResponse,
 	EspnSituation,
 } from './espnSchemas';
+import { logWarn } from './logger';
 import type { Game, GameCondition, GameOdds, LeagueConfig, LeagueId, LeagueLogoMap } from './types';
 
 const espnBase = 'https://site.api.espn.com/apis/site/v2/sports';
@@ -275,9 +277,11 @@ const fetchScoreboard = async (url: string, leagueId: LeagueId): Promise<EspnSco
 		},
 	});
 	if (!res.ok) throw new LeagueFetchError(leagueId, res.status);
-	const parsed = EspnScoreboardSchema.safeParse(await res.json());
-	if (!parsed.success) return { events: [], leagues: [] };
-	return parsed.data;
+	const parsed = parseScoreboard(await res.json());
+	if (parsed.droppedEvents > 0) {
+		logWarn(`Skipped ${parsed.droppedEvents} unparseable ${leagueId} event(s); kept ${parsed.events.length}.`);
+	}
+	return parsed;
 };
 
 const fetchLeagueGames = async (config: LeagueConfig, options: { includeUpcoming?: boolean; upcomingDays?: number } = {}): Promise<LeagueGamesResult> => {
@@ -379,8 +383,30 @@ export const fetchLeagueLogos = async (enabledLeagues: LeagueId[], options: { in
 	return leagueLogos;
 };
 
+/**
+ * ESPN's win-probability line for one game, oldest entry first, as home-win fractions in [0, 1].
+ *
+ * This lives on the summary endpoint rather than the scoreboard, so it costs one request per
+ * game — call it on a slower cadence than the scoreboard poll. Returns an empty array whenever
+ * ESPN has nothing to give (pre-game, unsupported sport, delay), which the scorer reads as
+ * "no volatility signal" rather than as a neutral zero.
+ */
+export const fetchWinProbability = async (game: Pick<Game, 'id' | 'league'>, init?: { signal?: AbortSignal }): Promise<number[]> => {
+	const config = leagueConfigMap[game.league];
+	if (!config) return [];
 
+	const url = `${espnBase}/${config.espnPath}/summary?event=${encodeURIComponent(game.id)}`;
+	const res = await fetch(url, { headers: { 'Accept': 'application/json' }, signal: init?.signal });
+	if (!res.ok) throw new Error(`Failed to fetch win probability for ${game.id}: HTTP ${res.status}`);
 
+	const parsed = EspnSummarySchema.safeParse(await res.json());
+	if (!parsed.success) return [];
+
+	return (parsed.data.winprobability ?? [])
+		.map(entry => entry.homeWinPercentage)
+		.filter((p): p is number => typeof p === 'number' && Number.isFinite(p))
+		.map(p => Math.min(Math.max(p, 0), 1));
+};
 
 export interface EspnTeamEntry {
 	leagueId: LeagueId;

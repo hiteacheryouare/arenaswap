@@ -4,7 +4,6 @@
 // stub loads the English locale file and reimplements the subset of `i18n.t`
 // behavior components rely on: nested-key lookup, `$1`..`$9` positional and
 // `{named}` substitutions, and `0`/`1`/`n` plurals.
-// @ts-expect-error raw import resolved by Vite at build time
 import enJson from '../../locales/en.json';
 
 const messages = enJson as Record<string, unknown>;

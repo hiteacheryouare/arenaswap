@@ -11,6 +11,9 @@ jest.mock('@porkyproductions/hat', () => ({
 jest.mock('@arenaswap/core', () => ({
 	...jest.requireActual('@arenaswap/core'),
 	fetchGamesWithLeagueLogos: jest.fn(),
+	// Volatility rides on a separate summary endpoint; these tests cover the scoreboard path,
+	// so it resolves empty rather than reaching for the network.
+	fetchWinProbability: jest.fn().mockResolvedValue([]),
 }));
 
 const flushPromises = () => new Promise<void>(r => setImmediate(r));
