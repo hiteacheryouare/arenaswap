@@ -31,7 +31,28 @@ let storageLocalGet: jest.Mock;
 let storageLocalSet: jest.Mock;
 let tabsQuery: jest.Mock;
 let tabsUpdate: jest.Mock;
+let storageSessionSet: jest.Mock;
 let onMessageHandler!: (msg: unknown) => unknown;
+let onActivatedHandler: ((info: { tabId: number }) => unknown) | undefined;
+let onRemovedHandler: ((tabId: number) => unknown) | undefined;
+
+/** Resolves `tabs.query`: `{ active: true }` → the active tab, `{}` → every open tab. */
+const mockOpenTabIds = (openTabIds: number[], activeTabId: number) => {
+	tabsQuery.mockImplementation((q: unknown) => {
+		if ((q as { active?: boolean }).active) return Promise.resolve([{ id: activeTabId }]);
+		return Promise.resolve(openTabIds.map(id => ({ id })));
+	});
+};
+
+const closeTab = async (tabId: number) => {
+	onRemovedHandler?.(tabId);
+	await drain();
+};
+
+const activateTab = async (tabId: number) => {
+	onActivatedHandler?.({ tabId });
+	await drain();
+};
 
 const sendMessage = async (msg: unknown): Promise<unknown> => {
 	const result = onMessageHandler(msg);
@@ -45,6 +66,9 @@ interface LoadOptions {
 	standbyStreamTabId?: number | null;
 	fetchReturnValue?: { games: unknown[]; leagueLogos: Record<string, unknown> };
 	initialSystemTime?: number;
+	/** Open tab ids visible to `tabs.query` from the moment the worker starts. */
+	openTabIds?: number[];
+	activeTabId?: number;
 }
 
 const loadBackground = async (options: LoadOptions = {}) => {
@@ -65,6 +89,10 @@ const loadBackground = async (options: LoadOptions = {}) => {
 	storageLocalSet = jest.fn().mockResolvedValue(undefined);
 	tabsQuery = jest.fn().mockResolvedValue([]);
 	tabsUpdate = jest.fn().mockResolvedValue(undefined);
+	storageSessionSet = jest.fn().mockResolvedValue(undefined);
+	onActivatedHandler = undefined;
+	onRemovedHandler = undefined;
+	if (options.openTabIds) mockOpenTabIds(options.openTabIds, options.activeTabId ?? options.openTabIds[0]!);
 
 	(globalThis as { defineBackground?: unknown }).defineBackground = (fn: () => void) => fn();
 	(globalThis as { browser?: unknown }).browser = {
@@ -78,7 +106,7 @@ const loadBackground = async (options: LoadOptions = {}) => {
 					powerScoreHistory: {},
 					gameBoosts: {},
 				}),
-				set: jest.fn().mockResolvedValue(undefined),
+				set: storageSessionSet,
 			},
 			local: {
 				get: storageLocalGet,
@@ -94,7 +122,12 @@ const loadBackground = async (options: LoadOptions = {}) => {
 		tabs: {
 			query: tabsQuery,
 			update: tabsUpdate,
-			onActivated: { addListener: jest.fn() },
+			onActivated: {
+				addListener: (h: (info: { tabId: number }) => unknown) => { onActivatedHandler = h; },
+			},
+			onRemoved: {
+				addListener: (h: (tabId: number) => unknown) => { onRemovedHandler = h; },
+			},
 		},
 		notifications: { create: jest.fn().mockResolvedValue(undefined) },
 	};
@@ -474,5 +507,303 @@ describe('standby stream tab mute state', () => {
 		expect(tabsUpdate).toHaveBeenCalledWith(standbyTabId, { muted: false });
 		expect(tabsUpdate).toHaveBeenCalledWith(2, { muted: false });
 		expect(tabsUpdate).toHaveBeenCalledWith(3, { muted: false });
+	});
+});
+
+// ─── Closed tabs ──────────────────────────────────────────────────────────────
+// Nothing pruned the registry when a tab closed, so a closed tab kept winning the
+// switch selection whenever its game held the top PowerScore — and every switch then
+// no-opped against a tab that wasn't there, killing auto-switching outright.
+
+const mkGame = (id: string, home: number, away: number, period: number, clockSeconds: number): Game => ({
+	id,
+	league: 'nba' as LeagueId,
+	sportType: 'basketball',
+	status: 'in',
+	homeTeam: { id: `${id}-h`, name: 'Home', abbreviation: 'HOM', score: home },
+	awayTeam: { id: `${id}-a`, name: 'Away', abbreviation: 'AWY', score: away },
+	period,
+	clockSeconds,
+});
+
+// Measured PowerScores with no history: thriller 78, closeGame 69, blowout 10.
+const thriller = mkGame('thriller', 100, 100, 4, 20);
+const closeGame = mkGame('close', 100, 97, 4, 20);
+const blowout = mkGame('thriller', 120, 90, 4, 300);
+
+const switchingPrefs: Partial<UserPreferences> = {
+	enabled: true,
+	enabledLeagues: ['nba' as LeagueId],
+	notificationsEnabled: false,
+};
+
+/** Advances past the initial staggered league tick so one poll lands. */
+const runFirstPoll = async () => {
+	jest.advanceTimersByTime(pollIntervalMs + 2000);
+	await drain(16);
+};
+
+const getDebugState = async () => await sendMessage({ type: 'GET_DEBUG_STATE' }) as {
+	lastSwitchTime: number;
+	tabRegistry: TabRegistration[];
+	standbyStreamTabId: number | null;
+	pendingSwitch: { gameId: string; tabId: number } | null;
+};
+
+describe('closed tab handling', () => {
+	// thriller is the higher-scoring game, so it wins the selection; when its tab is gone the
+	// runner-up has to get the switch instead of the whole thing stalling.
+	const registry: TabRegistration[] = [{ gameId: 'thriller', tabId: 2 }, { gameId: 'close', tabId: 3 }];
+
+	test('switches to the runner-up when the top game tab closed while the worker was asleep', async () => {
+		// Tab 2 is absent from the very first query: MV3 tore the worker down, the tab closed with
+		// no onRemoved listener alive, and session storage handed the stale registration back.
+		await loadBackground({
+			prefs: switchingPrefs,
+			tabRegistry: registry,
+			fetchReturnValue: { games: [thriller, closeGame], leagueLogos: {} },
+			openTabIds: [1, 3],
+			activeTabId: 1,
+			initialSystemTime: 1_000_000,
+		});
+
+		expect((await getDebugState()).tabRegistry).toEqual([{ gameId: 'close', tabId: 3 }]);
+
+		await runFirstPoll();
+
+		expect(tabsUpdate).toHaveBeenCalledWith(3, { active: true });
+		expect(tabsUpdate).not.toHaveBeenCalledWith(2, { active: true });
+	});
+
+	test('drops a registration as soon as its tab closes', async () => {
+		await loadBackground({
+			prefs: switchingPrefs,
+			tabRegistry: registry,
+			fetchReturnValue: { games: [thriller, closeGame], leagueLogos: {} },
+			openTabIds: [1, 2, 3],
+			activeTabId: 1,
+			initialSystemTime: 1_000_000,
+		});
+
+		mockOpenTabIds([1, 3], 1);
+		await closeTab(2);
+
+		expect((await getDebugState()).tabRegistry).toEqual([{ gameId: 'close', tabId: 3 }]);
+		expect(storageSessionSet).toHaveBeenCalledWith(
+			expect.objectContaining({ tabRegistry: [{ gameId: 'close', tabId: 3 }] }),
+		);
+
+		await runFirstPoll();
+
+		expect(tabsUpdate).toHaveBeenCalledWith(3, { active: true });
+		expect(tabsUpdate).not.toHaveBeenCalledWith(2, { active: true });
+	});
+
+	test('ignores a registration whose tab vanished without an onRemoved event', async () => {
+		await loadBackground({
+			prefs: switchingPrefs,
+			tabRegistry: registry,
+			fetchReturnValue: { games: [thriller, closeGame], leagueLogos: {} },
+			openTabIds: [1, 2, 3],
+			activeTabId: 1,
+			initialSystemTime: 1_000_000,
+		});
+
+		// The tab is gone but no event fired, so only the per-poll existence filter can catch it.
+		mockOpenTabIds([1, 3], 1);
+		await runFirstPoll();
+
+		expect(tabsUpdate).toHaveBeenCalledWith(3, { active: true });
+		expect(tabsUpdate).not.toHaveBeenCalledWith(2, { active: true });
+	});
+
+	test('forgets the standby stream tab when it closes', async () => {
+		await loadBackground({
+			prefs: { ...switchingPrefs, standbyStreamEnabled: true },
+			tabRegistry: [{ gameId: 'thriller', tabId: 2 }],
+			standbyStreamTabId: 5,
+			fetchReturnValue: { games: [blowout], leagueLogos: {} },
+			openTabIds: [1, 2, 5],
+			activeTabId: 1,
+			initialSystemTime: 1_000_000,
+		});
+
+		mockOpenTabIds([1, 2], 1);
+		await closeTab(5);
+
+		expect((await getDebugState()).standbyStreamTabId).toBeNull();
+
+		// blowout scores 10, under the default standby threshold of 20 — with a stale standby tab
+		// id this poll would try to park on the closed tab and return before considering any game.
+		await runFirstPoll();
+
+		expect(tabsUpdate).not.toHaveBeenCalledWith(5, { active: true });
+		expect(tabsUpdate).toHaveBeenCalledWith(2, { active: true });
+	});
+
+	test('does not wipe the registry when tabs.query cannot see any tabs', async () => {
+		// An empty query result means we cannot read the tab strip, not that every tab closed.
+		await loadBackground({
+			prefs: switchingPrefs,
+			tabRegistry: registry,
+			fetchReturnValue: { games: [thriller, closeGame], leagueLogos: {} },
+			initialSystemTime: 1_000_000,
+		});
+
+		expect((await getDebugState()).tabRegistry).toEqual(registry);
+	});
+});
+
+// ─── Delayed switches ─────────────────────────────────────────────────────────
+// A queued switch replayed the target it was created with, so after the delay it
+// switched to a game that had since gone quiet — or ended.
+
+describe('pending switch re-validation', () => {
+	test('re-targets when the queued game ends during the delay', async () => {
+		await loadBackground({
+			prefs: { ...switchingPrefs, switchDelaySeconds: 60 },
+			tabRegistry: [{ gameId: 'thriller', tabId: 2 }, { gameId: 'close', tabId: 3 }],
+			fetchReturnValue: { games: [thriller, closeGame], leagueLogos: {} },
+			openTabIds: [1, 2, 3],
+			activeTabId: 1,
+			initialSystemTime: 1_000_000,
+		});
+
+		await runFirstPoll();
+
+		// thriller (78) beats close (69), so it is the queued target.
+		expect((await getDebugState()).pendingSwitch).toEqual(
+			expect.objectContaining({ gameId: 'thriller', tabId: 2 }),
+		);
+		expect(tabsUpdate).not.toHaveBeenCalledWith(2, { active: true });
+
+		// Buzzer sounds on the queued game while the delay is still running.
+		fetchMock.mockResolvedValue({
+			games: [{ ...thriller, status: 'post' }, closeGame],
+			leagueLogos: {},
+		});
+		jest.advanceTimersByTime(30_000);
+		await drain(16);
+
+		// Delay elapses: the switch must land on the game that is still being played.
+		jest.advanceTimersByTime(40_000);
+		await drain(16);
+
+		expect(tabsUpdate).toHaveBeenCalledWith(3, { active: true });
+		expect(tabsUpdate).not.toHaveBeenCalledWith(2, { active: true });
+	});
+
+	test('drops a queued switch when standby takes over', async () => {
+		await loadBackground({
+			prefs: { ...switchingPrefs, switchDelaySeconds: 60, standbyStreamEnabled: true },
+			tabRegistry: [{ gameId: 'thriller', tabId: 2 }],
+			standbyStreamTabId: 5,
+			fetchReturnValue: { games: [thriller], leagueLogos: {} },
+			openTabIds: [1, 2, 5],
+			activeTabId: 1,
+			initialSystemTime: 1_000_000,
+		});
+
+		await runFirstPoll();
+		expect((await getDebugState()).pendingSwitch).not.toBeNull();
+
+		// The game falls apart: 78 → 10, under the default standby threshold of 20. Standby is
+		// evaluated ahead of the pending-switch guard, so a queued switch cannot freeze it out.
+		fetchMock.mockResolvedValue({ games: [blowout], leagueLogos: {} });
+		jest.advanceTimersByTime(30_000);
+		await drain(16);
+
+		expect(tabsUpdate).toHaveBeenCalledWith(5, { active: true });
+		expect((await getDebugState()).pendingSwitch).toBeNull();
+
+		jest.advanceTimersByTime(60_000);
+		await drain(16);
+
+		expect(tabsUpdate).not.toHaveBeenCalledWith(2, { active: true });
+	});
+});
+
+// ─── Manual switches ──────────────────────────────────────────────────────────
+// Picking a game tab by hand left the cooldown untouched, so the next poll could
+// override a deliberate choice within seconds.
+
+describe('manual tab activation', () => {
+	test('starts the cooldown when the user lands on a registered game tab', async () => {
+		await loadBackground({
+			prefs: switchingPrefs,
+			tabRegistry: [{ gameId: 'thriller', tabId: 2 }],
+			fetchReturnValue: { games: [thriller], leagueLogos: {} },
+			openTabIds: [1, 2],
+			activeTabId: 1,
+			initialSystemTime: 1_000_000,
+		});
+
+		expect((await getDebugState()).lastSwitchTime).toBe(0);
+
+		await activateTab(2);
+		expect((await getDebugState()).lastSwitchTime).toBe(Date.now());
+	});
+
+	test('leaves the cooldown alone for a tab that is not a game tab', async () => {
+		await loadBackground({
+			prefs: switchingPrefs,
+			tabRegistry: [{ gameId: 'thriller', tabId: 2 }],
+			fetchReturnValue: { games: [thriller], leagueLogos: {} },
+			openTabIds: [1, 2],
+			activeTabId: 1,
+			initialSystemTime: 1_000_000,
+		});
+
+		await activateTab(1);
+		expect((await getDebugState()).lastSwitchTime).toBe(0);
+	});
+
+	test('holds off auto-switching for the length of the cooldown, then resumes', async () => {
+		await loadBackground({
+			prefs: { ...switchingPrefs, cooldownSeconds: 45 },
+			tabRegistry: [{ gameId: 'thriller', tabId: 2 }],
+			fetchReturnValue: { games: [thriller], leagueLogos: {} },
+			openTabIds: [1, 2],
+			activeTabId: 1,
+			initialSystemTime: 1_000_000,
+		});
+
+		await activateTab(2);
+
+		await runFirstPoll();
+		expect(tabsUpdate).not.toHaveBeenCalledWith(2, { active: true });
+
+		jest.advanceTimersByTime(45_000);
+		await drain(16);
+		expect(tabsUpdate).toHaveBeenCalledWith(2, { active: true });
+	});
+});
+
+// ─── Mute sync resilience ─────────────────────────────────────────────────────
+// Mute updates went out as one Promise.all, so a tab closing inside the query→update
+// race window rejected the batch and aborted the switch evaluation that follows it.
+
+describe('mute sync resilience', () => {
+	test('still evaluates the switch when one tab rejects its mute update', async () => {
+		await loadBackground({
+			prefs: switchingPrefs,
+			tabRegistry: [{ gameId: 'thriller', tabId: 2 }, { gameId: 'close', tabId: 3 }],
+			fetchReturnValue: { games: [thriller, closeGame], leagueLogos: {} },
+			openTabIds: [1, 2, 3],
+			activeTabId: 1,
+			initialSystemTime: 1_000_000,
+		});
+
+		tabsUpdate.mockImplementation((tabId: number, props: Record<string, unknown>) => (
+			tabId === 3 && 'muted' in props
+				? Promise.reject(new Error('No tab with id: 3.'))
+				: Promise.resolve(undefined)
+		));
+
+		await runFirstPoll();
+
+		expect(tabsUpdate).toHaveBeenCalledWith(2, { active: true });
+		// Tab 3 never actually muted, so it must not be recorded as ours to unmute later.
+		expect(storageSessionSet).toHaveBeenCalledWith({ mutedTabIds: [2] });
 	});
 });

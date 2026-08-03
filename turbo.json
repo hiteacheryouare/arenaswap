@@ -13,13 +13,16 @@
 			"dependsOn": ["^build"]
 		},
 		"zip": {
-			"dependsOn": ["^build"]
+			"dependsOn": ["^build", "build"],
+			"cache": false
 		},
 		"zip:firefox": {
-			"dependsOn": ["^build"]
+			"dependsOn": ["^build", "build:firefox"],
+			"cache": false
 		},
 		"zip:edge": {
-			"dependsOn": ["^build"]
+			"dependsOn": ["^build", "build:edge"],
+			"cache": false
 		},
 		"dev": {
 			"persistent": true,

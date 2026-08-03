@@ -59,6 +59,9 @@ const mountDetail = (game: Game, overrides: MountOverrides = {}) => {
 // pieces render with no network. Only mock-4/14/16 also carry a canned playoff series.
 const liveGameId = 'mock-7';
 const seriesGameId = 'mock-14';
+// mock-2 is the records case: it carries canned demo records and no playoff series, so the
+// record row renders with no network and nothing else in the hero changes height.
+const recordsGameId = 'mock-2';
 
 const excitement: PowerScoreResult = {
 	gameId: liveGameId,
@@ -189,6 +192,81 @@ describe('gameDetailView hero', () => {
 		const game = makeLiveGame();
 		mountDetail({ ...game, awayTeam: { ...game.awayTeam, name: '' } }, { excitementResult: excitement });
 		cy.get('.game-detail-team-name').first().should('have.text', 'OKC');
+	});
+
+	it('puts each team\'s record directly under its name', () => {
+		mountDetail(makeLiveGame({ id: recordsGameId }), { excitementResult: excitement });
+		cy.get('.game-detail-team-record').should('have.length', 2);
+		cy.get('.game-detail-team-record').first().should('have.text', '33-38');
+		cy.get('.game-detail-team-record').last().should('have.text', '41-30');
+		cy.get('.gd-hero').should(([hero]: JQuery<HTMLElement>) => {
+			const name = hero.querySelector('.gd-area-away-label')!.getBoundingClientRect();
+			const record = hero.querySelector('.gd-area-away-record')!.getBoundingClientRect();
+			expect(record.top, 'record sits below its name').to.be.at.least(name.bottom - 1);
+			expect(record.top - name.bottom, 'record hugs the name').to.be.at.most(4);
+		});
+	});
+
+	// The record has a grid row of its own precisely so this holds: nested under the name it
+	// would ride down with a wrap and sit lower than the opponent's.
+	it('keeps both records on one line when only one team name wraps', () => {
+		const game = makeLiveGame({ id: recordsGameId });
+		mountDetail({ ...game, homeTeam: { ...game.homeTeam, name: 'Heat' } }, { excitementResult: excitement });
+		cy.get('.game-detail-team-name').first().should(([away]: JQuery<HTMLElement>) => {
+			expect(away.getBoundingClientRect().height, 'away name wraps').to.be.greaterThan(14);
+		});
+		cy.get('.game-detail-team-record').should(([away, home]: JQuery<HTMLElement>) => {
+			expect(away.getBoundingClientRect().top, 'records share a row')
+				.to.be.closeTo(home.getBoundingClientRect().top, 1);
+		});
+	});
+
+	it('omits the record row when the summary has no record for the game', () => {
+		mountDetail(makeLiveGame(), { excitementResult: excitement });
+		cy.get('.game-detail-team-record').should('not.exist');
+	});
+
+	// mock-3 carries an eight-character NHL record, the widest any league produces. The column is
+	// 80px and the record is nowrap, so this is where clipping would show up first.
+	it('fits the widest record a league produces inside its 80px column', () => {
+		mountDetail(makeLiveGame({ id: 'mock-3' }), { excitementResult: excitement });
+		cy.get('.game-detail-team-record').first().should('have.text', '30-28-9');
+		cy.get('.game-detail-team-record').last().should('have.text', '28-28-10');
+		cy.get('.game-detail-team-record').each(($el: JQuery<HTMLElement>) => {
+			const el = $el[0];
+			expectSingleLine(el, 'widest record');
+			expect(el.getBoundingClientRect().width, 'record fits its column').to.be.at.most(80);
+		});
+		cy.get('.gd-hero').should(([hero]: JQuery<HTMLElement>) => {
+			expect(hero.scrollWidth, 'hero does not overflow the popup').to.be.at.most(hero.clientWidth);
+		});
+	});
+
+	it('keeps records on one line and inside the crest column', () => {
+		mountDetail(makeLiveGame({ id: recordsGameId }), { excitementResult: excitement });
+		cy.get('.game-detail-team-record').each(($el: JQuery<HTMLElement>) => {
+			expectSingleLine($el[0], 'team record');
+		});
+		cy.get('.gd-hero').should(([hero]: JQuery<HTMLElement>) => {
+			expect(hero.scrollWidth, 'hero does not overflow the popup').to.be.at.most(hero.clientWidth);
+		});
+	});
+
+	// Records add a third row to the matchup grid, so the two budgets the hero is held to get
+	// re-asserted against the layout every real game gets: measured at 144px tall with the
+	// breakdown starting at 151px, against the same 190/200 ceilings as the bare hero.
+	it('keeps the hero and the breakdown inside their pixel budgets with records shown', () => {
+		mountDetail(makeLiveGame({ id: recordsGameId }), { excitementResult: excitement });
+		cy.get('.game-detail-team-record').should('have.length', 2);
+		cy.get('.game-detail-header').then(([header]: JQuery<HTMLElement>) => {
+			cy.get('.gd-hero').then(([hero]: JQuery<HTMLElement>) => {
+				const height = hero.getBoundingClientRect().bottom - header.getBoundingClientRect().top;
+				expect(height, 'hero height').to.be.at.most(190);
+			});
+		});
+		cy.get('.powerscore-breakdown').then(([el]: JQuery<HTMLElement>) => {
+			expect(el.getBoundingClientRect().top, 'breakdown starts high').to.be.at.most(200);
+		});
 	});
 
 	it('keeps the hero inside its pixel budget', () => {

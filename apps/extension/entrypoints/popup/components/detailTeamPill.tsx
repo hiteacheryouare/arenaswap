@@ -1,18 +1,22 @@
 import { useState } from 'react';
+import { i18n } from '#i18n';
 import type { Team } from '@arenaswap/core/types';
 
 interface detailTeamPillProps {
 	team: Team;
 	side: 'away' | 'home';
+	/** Overall record, already formatted by the source league (e.g. "59-53"). Omitted when unknown. */
+	record?: string | null;
 }
 
 /**
  * One team's crest and its labels, emitted as two separate grid children via
  * `display: contents`. Keeping the crest and the label in different grid rows is what
  * holds the two sides level: a name that wraps to two lines pushes its own label row
- * taller without ever shifting the logo it belongs to.
+ * taller without ever shifting the logo it belongs to. The record gets a row of its own for
+ * the same reason — nested under a name that wraps, it would sit lower than the opponent's.
  */
-const detailTeamPill = ({ team, side }: detailTeamPillProps) => {
+const detailTeamPill = ({ team, side, record }: detailTeamPillProps) => {
 	const [logoFailed, setLogoFailed] = useState(false);
 
 	return (
@@ -36,6 +40,14 @@ const detailTeamPill = ({ team, side }: detailTeamPillProps) => {
 			<div className={`game-detail-team-name gd-area-${side}-label`}>
 				{team.name || team.abbreviation}
 			</div>
+			{record && (
+				<div
+					className={`game-detail-team-record gd-area-${side}-record`}
+					title={i18n.t('detail.teamRecord', { record })}
+				>
+					{record}
+				</div>
+			)}
 		</div>
 	);
 };

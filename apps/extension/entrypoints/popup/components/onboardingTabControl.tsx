@@ -25,7 +25,7 @@ const onboardingTabControl = ({ onNext }: onboardingTabControlProps) => (
 
 			<div className='d-flex flex-column gap-3 mb-4'>
 				<div className='d-flex gap-3 align-items-start'>
-					<i className='bi bi-tv fs-5 text-primary shrink-0 mt-1' />
+					<i className='bi bi-tv fs-5 text-primary flex-shrink-0 mt-1' />
 					<div>
 						<div className='fw-semibold text-body lh-sm small'>{i18n.t('tabControl.feature1Title')}</div>
 						<div className='setting-explainer mt-1'>
@@ -35,7 +35,7 @@ const onboardingTabControl = ({ onNext }: onboardingTabControlProps) => (
 				</div>
 
 				<div className='d-flex gap-3 align-items-start'>
-					<i className='bi bi-collection-play fs-5 text-primary shrink-0 mt-1' />
+					<i className='bi bi-collection-play fs-5 text-primary flex-shrink-0 mt-1' />
 					<div>
 						<div className='fw-semibold text-body lh-sm small'>{i18n.t('tabControl.feature2Title')}</div>
 						<div className='setting-explainer mt-1'>
@@ -45,7 +45,7 @@ const onboardingTabControl = ({ onNext }: onboardingTabControlProps) => (
 				</div>
 
 				<div className='d-flex gap-3 align-items-start'>
-					<i className='bi bi-sliders fs-5 text-primary shrink-0 mt-1' />
+					<i className='bi bi-sliders fs-5 text-primary flex-shrink-0 mt-1' />
 					<div>
 						<div className='fw-semibold text-body lh-sm small'>{i18n.t('tabControl.feature3Title')}</div>
 						<div className='setting-explainer mt-1'>

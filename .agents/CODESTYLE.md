@@ -156,6 +156,22 @@ Split components when they become difficult to understand or maintain.
 
 # Styling
 
+## Which systems are available where
+
+**Tailwind is only compiled in `apps/docs`.** It is wired there through
+`@tailwindcss/vite` in `astro.config.mjs`, reading a `.css` entry.
+
+**`apps/extension` is Bootstrap + SCSS only.** It has no Tailwind build step, so a
+Tailwind class written into the popup does not fail loudly — it silently does
+nothing. The app previously carried an `@import 'tailwindcss'` inside a `.scss`
+file, which Sass inlined as raw uncompiled source: it produced lightningcss
+warnings and ~18KB of dead CSS while generating zero utilities. Do not
+reintroduce it. Tailwind cannot be driven from Sass at all; v4 expects a plain
+`.css` entry processed by its own plugin.
+
+Anything shared out of `packages/ui` renders in both apps, so style it with
+Bootstrap utilities or SCSS — those are the systems both apps actually have.
+
 ## Priority Order
 
 Always style in this order:
@@ -177,34 +193,23 @@ Customize through Bootstrap variable overrides whenever possible.
 
 ---
 
-### 2. Tailwind Utilities
+### 2. Utilities
 
-Use Tailwind for:
+For spacing, typography, layout, responsive behavior, colour and sizing, prefer
+chaining utility classes over introducing custom styles.
 
-- Spacing
-- Typography
-- Layout
-- Responsive behavior
-- Color
-- Sizing
-- Dark mode
+In `apps/extension` and `packages/ui`, that means **Bootstrap's** utilities
+(`d-flex`, `gap-2`, `flex-shrink-0`, `text-truncate`, `fs-5`, …). Bootstrap has no
+`min-width: 0` utility; `.min-w-0` is defined in the extension's `global.scss`.
 
-Prefer chaining utility classes over introducing custom styles.
-
-Arbitrary values such as:
-
-```html
-text-[0.6rem]
-w-[3.5rem]
-```
-
-are preferred over creating custom classes.
+In `apps/docs`, Tailwind utilities are available and compiled, including
+arbitrary values such as `text-[0.6rem]` or `w-[3.5rem]`.
 
 ---
 
 ### 3. SCSS
 
-Use SCSS only when Bootstrap and Tailwind cannot reasonably express the desired styling.
+Use SCSS only when the utilities above cannot reasonably express the desired styling.
 
 Typical acceptable cases include:
 
@@ -213,17 +218,27 @@ Typical acceptable cases include:
 - Complex pseudo-elements
 - Attribute selectors
 - Advanced media queries
-- Bootstrap property overrides affected by the Tailwind v4 cascade
+- Re-skinning a property Bootstrap already sets on the same element
+- In `apps/docs`, Bootstrap property overrides affected by the Tailwind v4
+  cascade — Tailwind emits utilities into `@layer utilities`, and unlayered
+  Bootstrap rules beat layered ones regardless of source order
 
 Only `.scss` files are permitted.
 
-Do not create application `.css` files.
+Do not create application `.css` files, except a Tailwind entry file in
+`apps/docs`, which Tailwind v4 requires.
 
 ---
 
 ## Dark Mode
 
-Always include appropriate `dark:` Tailwind variants when styling UI.
+There is no light mode to design for. The dark palette is baked in through the
+Sass variable overrides in `packages/ui/src/_bootstrap.scss` (`$body-bg`,
+`$body-color`, `$card-bg`, `$input-bg`, …), and the extension sets
+`$enable-dark-mode: false` — Bootstrap's runtime colour-mode switching is off.
+
+Style against those variables. Do not write `dark:` variants: Tailwind variants
+are only compiled in `apps/docs`, and there is no `.dark` class to match on.
 
 ---
 

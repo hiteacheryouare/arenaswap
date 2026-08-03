@@ -32,8 +32,9 @@ Root structure:
 - React (primary UI framework)
 - JavaScript + TypeScript
 - WXT (extension framework)
-- Tailwind (utility styling)
-- Bootstrap (structural components)
+- Bootstrap (structural components + utility styling)
+- SCSS (Sass) for everything Bootstrap can't express
+- Tailwind (utility styling) — `apps/docs` only; the extension has no Tailwind build
 - Jest (testing), Cypress (UI testing & validation)
 - npm ONLY (no pnpm, yarn, bun)
 

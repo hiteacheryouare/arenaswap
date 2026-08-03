@@ -62,7 +62,7 @@ const proTip = ({ context = 'general', chance = 0.05 }: proTipProps) => {
 				className='alert alert-info d-flex align-items-start gap-2 py-2 px-3 mt-2 mb-0 lh-sm dark:bg-blue-950 dark:text-blue-100 dark:border-blue-800'
 				role='alert'
 			>
-				<i className='bi bi-lightbulb-fill shrink-0 mt-1' />
+				<i className='bi bi-lightbulb-fill flex-shrink-0 mt-1' />
 				<div>
 					<span className='fw-bold'>{i18n.t('proTip.label')}</span> {tip}
 				</div>

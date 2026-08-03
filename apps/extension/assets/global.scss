@@ -1,23 +1,30 @@
-@import 'tailwindcss';
+/* ─── Reset carry-overs ───────────────────────────────────────────────────────
+   The popup used to pull in `@import 'tailwindcss'` here, which never actually
+   compiled (no @tailwindcss/vite plugin in this app) — Sass just inlined
+   Tailwind's raw source, so lightningcss choked on the `@theme`/`@tailwind`/
+   `@custom-variant` at-rules and shipped ~18KB of dead CSS.
 
-@custom-variant dark (&:is(.dark *));
+   Tailwind's Preflight *was* plain CSS, though, so a few of its rules were
+   quietly doing real work on top of Bootstrap Reboot. These are the only three
+   that a computed-style audit of every component spec found taking effect —
+   kept here so removing Tailwind is visually a no-op. Bootstrap Reboot covers
+   the rest, and class-level rules still win over these element selectors. */
+html {
+	tab-size: 4;
+}
 
-/*
-  The default border color has changed to `currentcolor` in Tailwind CSS v4,
-  so we've added these compatibility styles to make sure everything still
-  looks the same as it did with Tailwind CSS v3.
+/* Reboot only sets `vertical-align` here, so images relied on Preflight to stay
+   inside their container. */
+img, video {
+	max-width: 100%;
+	height: auto;
+}
 
-  If we ever want to remove these styles, we need to add an explicit border
-  color utility to any element that depends on these defaults.
-*/
-@layer base {
-  *,
-  ::after,
-  ::before,
-  ::backdrop,
-  ::file-selector-button {
-		border-color: var(--color-gray-200, currentcolor);
-  }
+/* Reboot inherits font metrics on form controls but not colour, so these fell
+   back to the UA's black. `currentColor` consumers (e.g. the walkthrough's
+   .powerscore-progress-dot) depend on this. */
+button, input, select, optgroup, textarea {
+	color: inherit;
 }
 
 /* ─── Fonts ───────────────────────────────────────────────────────────────── */
@@ -26,6 +33,12 @@
 *, *::before, *::after {
 	font-family: 'DM Sans', system-ui, sans-serif;
 	box-sizing: border-box;
+}
+
+/* Bootstrap has no `min-width: 0` utility; needed so flex children can shrink
+   below their content width and let `text-truncate` engage. */
+.min-w-0 {
+	min-width: 0;
 }
 
 /* ─── Ludicrous Speed ─────────────────────────────────────────────────────── */

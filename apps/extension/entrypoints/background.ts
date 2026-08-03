@@ -79,6 +79,16 @@ const trimSnapshots = <T extends { timestamp: number }>(snapshots: T[], cutoff: 
 
 const capitalizeFirst = (s: string) => s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
 
+/** Every tab that currently exists, for checking a stored tab id against reality. */
+const getOpenTabIds = async (): Promise<Set<number>> => {
+	const allTabs = await browser.tabs.query({});
+	return new Set(
+		allTabs
+			.map(tab => tab.id)
+			.filter((tabId): tabId is number => tabId !== undefined)
+	);
+};
+
 export default defineBackground(() => {
 	let games: Game[] = [];
 	let upcomingGames: Game[] = [];
@@ -271,12 +281,7 @@ export default defineBackground(() => {
 		const managedTabIds = getManagedTabIds();
 		if (managedTabIds.length === 0 && mutedTabIds.size === 0) return;
 
-		const allTabs = await browser.tabs.query({});
-		const openTabIds = new Set(
-			allTabs
-				.map(tab => tab.id)
-				.filter((tabId): tabId is number => tabId !== undefined)
-		);
+		const openTabIds = await getOpenTabIds();
 
 		const managedOpenTabIds = managedTabIds.filter(tabId => openTabIds.has(tabId));
 
@@ -300,15 +305,26 @@ export default defineBackground(() => {
 			nextMuteStates.set(tabId, enabled ? tabId !== watchedTabId : false);
 		}
 
+		// A tab can close between the query above and the update below. Failing the whole batch
+		// there would abort the caller mid-poll — including the switch evaluation that runs right
+		// after this in afterFetch — so each tab is settled on its own and the record of what we
+		// muted is written from what actually landed.
+		const failedTabIds = new Set<number>();
+		await Promise.all(
+			[...nextMuteStates].map(async ([tabId, muted]) => {
+				try {
+					await browser.tabs.update(tabId, { muted });
+				} catch {
+					failedTabIds.add(tabId);
+				}
+			})
+		);
+
 		mutedTabIds.clear();
 		for (const [tabId, muted] of nextMuteStates) {
-			if (muted) mutedTabIds.add(tabId);
+			if (muted && !failedTabIds.has(tabId)) mutedTabIds.add(tabId);
 		}
 		await persistMutedTabIds();
-
-		await Promise.all(
-			[...nextMuteStates].map(([tabId, muted]) => browser.tabs.update(tabId, { muted }))
-		);
 	};
 
 	const clearPendingSwitch = () => {
@@ -317,6 +333,60 @@ export default defineBackground(() => {
 			pendingSwitchTimer = null;
 		}
 		pendingSwitch = null;
+	};
+
+	/**
+	 * Drops every trace of a tab that no longer exists.
+	 *
+	 * Browsers never reuse a tab id, so a closed tab's registration can only ever be dead weight —
+	 * and leaving it in place poisons switching outright: a closed tab still wins the reduce in
+	 * resolveSwitchTarget whenever its game holds the top PowerScore, and every switch attempt then
+	 * no-ops against a tab that isn't there. Same for the standby tab, which otherwise keeps
+	 * answering `switchToStandby` forever.
+	 */
+	const forgetClosedTab = async (tabId: number) => {
+		const hadRegistration = tabRegistry.some(reg => reg.tabId === tabId);
+		const wasStandby = standbyStreamTabId === tabId;
+		const wasMuted = mutedTabIds.delete(tabId);
+		if (!hadRegistration && !wasStandby && !wasMuted) return;
+
+		if (hadRegistration) tabRegistry = tabRegistry.filter(reg => reg.tabId !== tabId);
+		if (wasStandby) {
+			standbyStreamTabId = null;
+			onStandbyStream = false;
+		}
+		if (pendingSwitch?.tabId === tabId) clearPendingSwitch();
+
+		try {
+			await browser.storage.session.set({ tabRegistry, standbyStreamTabId, mutedTabIds: [...mutedTabIds] });
+		} catch (err) {
+			logWarn('Failed to persist state after a tab closed.', err);
+		}
+		if (hadRegistration || wasStandby) broadcastScoresUpdated();
+	};
+
+	/**
+	 * Reconciles rehydrated session state against the tabs that actually exist.
+	 *
+	 * MV3 tears the service worker down whenever it goes idle, so tabs close with no onRemoved
+	 * listener alive to hear it and the registry comes back from session storage still pointing at
+	 * them. Runs on every worker start, before the first switch evaluation.
+	 */
+	const reconcileClosedTabs = async () => {
+		const openTabIds = await getOpenTabIds();
+		// Nothing legitimately reports zero tabs while the worker is running, so an empty result
+		// means we cannot see the tab strip — treat that as unknown rather than as proof that every
+		// tracked tab closed, which would wipe a perfectly good registry.
+		if (openTabIds.size === 0) return;
+
+		const trackedTabIds = new Set([
+			...tabRegistry.map(reg => reg.tabId),
+			...mutedTabIds,
+			...(standbyStreamTabId !== null ? [standbyStreamTabId] : []),
+		]);
+		for (const tabId of trackedTabIds) {
+			if (!openTabIds.has(tabId)) await forgetClosedTab(tabId);
+		}
 	};
 
 	const executeSwitch = async (tabId: number, gameId?: string, reason?: string) => {
@@ -360,18 +430,75 @@ export default defineBackground(() => {
 		}
 	};
 
+	/**
+	 * Picks the registered game worth switching to right now, or null to stay put.
+	 *
+	 * Reads `currentScores`, so it always answers from the latest poll — that is the point. Both
+	 * the poll path and a queued delayed switch resolve through here, so a switch that waited out
+	 * `switchDelaySeconds` re-targets against what the games are doing when it fires instead of
+	 * replaying a decision made a minute ago.
+	 *
+	 * Registrations pointing at closed tabs are filtered out first, so the runner-up gets the
+	 * switch rather than the whole thing stalling on a tab that no longer exists.
+	 */
+	const resolveSwitchTarget = (
+		openTabIds: Set<number>,
+		activeTabId: number,
+	): { tabId: number; gameId: string; reason?: string } | null => {
+		const liveRegistry = tabRegistry.filter(reg => openTabIds.has(reg.tabId));
+		const activeReg = liveRegistry.find(reg => reg.tabId === activeTabId);
+		const activeScore = currentScores.find(s => s.gameId === activeReg?.gameId)?.total ?? 0;
+
+		const registeredGameIds = new Set(liveRegistry.map(reg => reg.gameId));
+		const candidates = currentScores.filter(s => registeredGameIds.has(s.gameId));
+		if (candidates.length === 0) return null;
+
+		const best = candidates.reduce((a, b) => a.total > b.total ? a : b);
+		// When several tabs are registered to the same game, the one already in focus is the one
+		// the user is watching — picking any other would switch them between two tabs of the game
+		// they are on.
+		const bestReg = activeReg?.gameId === best.gameId
+			? activeReg
+			: liveRegistry.find(reg => reg.gameId === best.gameId)!;
+		if (bestReg.tabId === activeTabId) return null;
+
+		const threshold = sensitivityThresholds[prefs.sensitivity] ?? 0;
+		// With no game tab in focus there is no score to clear, so the threshold has nothing to
+		// measure against and the best game wins by default. It still has to be a game worth
+		// watching: every frozen game scores 0, so without the `> 0` guard a league sitting at
+		// halftime would pull the user off whatever they were actually doing.
+		const notWatchingAGame = !activeReg && best.total > 0;
+		if (!notWatchingAGame && best.total < activeScore + threshold) return null;
+		if (Date.now() - lastSwitchTime <= prefs.cooldownSeconds * 1000) return null;
+
+		return { tabId: bestReg.tabId, gameId: best.gameId, reason: best.reason };
+	};
+
 	const executePendingSwitch = async () => {
 		const queuedSwitch = pendingSwitch;
 		pendingSwitchTimer = null;
 		pendingSwitch = null;
 		if (!queuedSwitch || !prefs.enabled) return;
 
-		const matchingRegistration = tabRegistry.find(
-			reg => reg.gameId === queuedSwitch.gameId && reg.tabId === queuedSwitch.tabId
-		);
-		if (!matchingRegistration) return;
+		const [activeTab] = await browser.tabs.query({ active: true, lastFocusedWindow: true });
+		if (activeTab?.id === undefined) return;
 
-		await executeSwitch(queuedSwitch.tabId, queuedSwitch.gameId, queuedSwitch.reason);
+		const openTabIds = await getOpenTabIds();
+
+		// Everything went quiet during the delay: park on the standby stream on the next poll
+		// instead of dropping the user into the least-boring game.
+		if (prefs.standbyStreamEnabled && standbyStreamTabId !== null) {
+			const registeredGameIds = new Set(
+				tabRegistry.filter(reg => openTabIds.has(reg.tabId)).map(reg => reg.gameId)
+			);
+			const registeredScores = currentScores.filter(s => registeredGameIds.has(s.gameId));
+			if (registeredScores.length > 0 && registeredScores.every(s => s.total < prefs.standbyStreamThreshold)) return;
+		}
+
+		const target = resolveSwitchTarget(openTabIds, activeTab.id);
+		if (!target) return;
+
+		await executeSwitch(target.tabId, target.gameId, target.reason);
 	};
 
 	const queuePendingSwitch = (gameId: string, tabId: number, reason?: string) => {
@@ -482,51 +609,45 @@ export default defineBackground(() => {
 		const [activeTab] = await browser.tabs.query({ active: true, lastFocusedWindow: true });
 		if (activeTab?.id === undefined) return;
 
-		const activeReg = tabRegistry.find(r => r.tabId === activeTab.id);
-		const activeScore = scores.find(s => s.gameId === activeReg?.gameId)?.total ?? 0;
-
-		const registeredGameIds = new Set(tabRegistry.map(r => r.gameId));
+		const openTabIds = await getOpenTabIds();
+		const liveRegistry = tabRegistry.filter(reg => openTabIds.has(reg.tabId));
+		const registeredGameIds = new Set(liveRegistry.map(reg => reg.gameId));
 		const registeredScores = scores.filter(s => registeredGameIds.has(s.gameId));
 		if (registeredScores.length === 0) return;
-		if (pendingSwitch) return;
 
 		const standbyDecision = computeStandbyStreamDecision({
 			standbyStreamEnabled: prefs.standbyStreamEnabled,
-			standbyStreamTabId,
+			standbyStreamTabId: standbyStreamTabId !== null && openTabIds.has(standbyStreamTabId) ? standbyStreamTabId : null,
 			standbyStreamThreshold: prefs.standbyStreamThreshold,
 			registeredScores,
 			onStandbyStream,
 			activeTabIsStandby: activeTab.id === standbyStreamTabId,
 		});
 
+		// Standby is evaluated ahead of the pending-switch guard: a queued switch must not be able
+		// to freeze the standby state machine. When standby takes over, the queued game is by
+		// definition below the threshold, so the queue is stale and goes with it.
 		if (standbyDecision === 'switchToStandby') {
+			clearPendingSwitch();
 			onStandbyStream = true;
 			await executeSwitch(standbyStreamTabId!);
 			return;
 		}
-		if (standbyDecision === 'stayOnStandby') return;
+		if (standbyDecision === 'stayOnStandby') {
+			clearPendingSwitch();
+			return;
+		}
 		if (standbyDecision === 'resume') onStandbyStream = false;
 
-		const best = registeredScores.reduce((a, b) => a.total > b.total ? a : b);
-		const bestReg = tabRegistry.find(r => r.gameId === best.gameId)!;
-		const threshold = sensitivityThresholds[prefs.sensitivity] ?? 0;
-		const cooldownOk = Date.now() - lastSwitchTime > prefs.cooldownSeconds * 1000;
+		if (pendingSwitch) return;
 
-		// With no game tab in focus there is no score to clear, so the threshold has nothing to
-		// measure against and the best game wins by default. It still has to be a game worth
-		// watching: every frozen game scores 0, so without the `> 0` guard a league sitting at
-		// halftime would pull the user off whatever they were actually doing.
-		const notWatchingAGame = !activeReg && best.total > 0;
-		if (
-			bestReg.tabId !== activeTab.id &&
-			(notWatchingAGame || best.total >= activeScore + threshold) &&
-			cooldownOk
-		) {
-			if (prefs.switchDelaySeconds > 0) {
-				queuePendingSwitch(best.gameId, bestReg.tabId, best.reason);
-			} else {
-				await executeSwitch(bestReg.tabId, best.gameId, best.reason);
-			}
+		const target = resolveSwitchTarget(openTabIds, activeTab.id);
+		if (!target) return;
+
+		if (prefs.switchDelaySeconds > 0) {
+			queuePendingSwitch(target.gameId, target.tabId, target.reason);
+		} else {
+			await executeSwitch(target.tabId, target.gameId, target.reason);
 		}
 	};
 
@@ -698,6 +819,9 @@ export default defineBackground(() => {
 	});
 
 	stateReady.then(async () => {
+		await reconcileClosedTabs().catch(err => {
+			logWarn('Failed to reconcile the tab registry against open tabs.', err);
+		});
 		upcomingGamesReady = refreshUpcomingGames().catch(() => {});
 		await upcomingGamesReady;
 		await refreshScores(false).catch(err => {
@@ -806,7 +930,8 @@ export default defineBackground(() => {
 					stopWinProbabilityPolling();
 					winProbHistory.clear();
 					if (!demoTimer) {
-						demoTimer = setInterval(() => void tick(true), pollIntervalMs);
+						// Routed through refreshScores so a slow tick cannot overlap the next interval.
+					demoTimer = setInterval(() => void refreshScores(true), pollIntervalMs);
 					}
 				} else {
 					simulator = null;
@@ -859,7 +984,17 @@ export default defineBackground(() => {
 		}
 	});
 
-	browser.tabs.onActivated.addListener(() => {
-		void stateReady.then(() => syncManagedTabMuteState(prefs.enabled));
+	browser.tabs.onActivated.addListener(({ tabId }) => {
+		void stateReady.then(() => {
+			// A tab the user picked deserves the same protection as one we picked for them, so a
+			// manual switch starts the cooldown. Without this, landing on a quieter game by hand
+			// could be overridden by the very next poll.
+			if (tabRegistry.some(reg => reg.tabId === tabId)) lastSwitchTime = Date.now();
+			return syncManagedTabMuteState(prefs.enabled);
+		});
+	});
+
+	browser.tabs.onRemoved.addListener(tabId => {
+		void stateReady.then(() => forgetClosedTab(tabId));
 	});
 }) as unknown;

@@ -85,7 +85,7 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 	const componentOption = useMemo(() => (
 		buildComponentContributionOption(orderedPowerScoreHistory)
 	), [orderedPowerScoreHistory]);
-	const { winProbability, seriesInfo } = useSummaryData(game);
+	const { winProbability, seriesInfo, records } = useSummaryData(game);
 	const winProbabilityOption = useMemo(() => (
 		buildWinProbabilityOption(winProbability, game)
 	), [winProbability, game]);
@@ -148,6 +148,7 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 				<DetailHero
 					game={game}
 					seriesInfo={seriesInfo}
+					records={records}
 					isDelayed={isDelayed}
 					isInningSport={isInningSport}
 					statusText={statusText}

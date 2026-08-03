@@ -81,14 +81,14 @@ const TeamLogo = ({ team }: { team: Team }) => {
 				width={logoSize}
 				height={logoSize}
 				onError={() => setFailedSrc(team.logo ?? null)}
-				className='object-fit-contain shrink-0'
+				className='object-fit-contain flex-shrink-0'
 			/>
 		);
 	}
 
 	return (
 		<div
-			className='d-flex align-items-center justify-content-center bg-light rounded-circle shrink-0 fw-bold text-body-secondary team-logo-fallback'
+			className='d-flex align-items-center justify-content-center bg-light rounded-circle flex-shrink-0 fw-bold text-body-secondary team-logo-fallback'
 		>
 			{(team.abbreviation || '?').slice(0, 3)}
 		</div>

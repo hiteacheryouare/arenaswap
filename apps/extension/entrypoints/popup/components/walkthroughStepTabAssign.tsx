@@ -34,14 +34,14 @@ const TeamLogo = ({ abbr, color, logoUrl }: TeamLogoProps) => {
 				alt={abbr}
 				width={32}
 				height={32}
-				className='object-fit-contain shrink-0'
+				className='object-fit-contain flex-shrink-0'
 				onError={() => setFailed(true)}
 			/>
 		);
 	}
 	return (
 		<div
-			className='d-flex align-items-center justify-content-center rounded-circle shrink-0 fw-bold team-logo-fallback'
+			className='d-flex align-items-center justify-content-center rounded-circle flex-shrink-0 fw-bold team-logo-fallback'
 			style={{ backgroundColor: color, color: '#fff' }}
 		>
 			{abbr}

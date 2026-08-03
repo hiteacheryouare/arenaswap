@@ -193,6 +193,7 @@
 		"totalLabelBaseMax": "{total} (Basis-Maximum {max})",
 		"back": "Zurück",
 		"powerScoreLabel": "PowerScore",
+		"teamRecord": "Bilanz: {record}",
 		"unitDays": "T",
 		"unitHours": "Std",
 		"unitMinutes": "Min",

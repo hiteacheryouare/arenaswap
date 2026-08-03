@@ -193,6 +193,7 @@
 		"totalLabelBaseMax": "{total}（基础上限 {max}）",
 		"back": "返回",
 		"powerScoreLabel": "PowerScore",
+		"teamRecord": "战绩：{record}",
 		"unitDays": "天",
 		"unitHours": "时",
 		"unitMinutes": "分",

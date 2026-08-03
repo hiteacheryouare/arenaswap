@@ -7,24 +7,25 @@ import FlipScore from './flipScore';
 import InningHalfIcon from './inningHalfIcon';
 import SeriesDots from './seriesDots';
 import StartCountdownDisplay from './startCountdownDisplay';
-import type { SeriesInfo } from './useSummaryData';
+import { emptyTeamRecords, type SeriesInfo, type TeamRecords } from './useSummaryData';
 
 interface detailHeroProps {
 	game: Game;
 	seriesInfo: SeriesInfo | null;
+	records?: TeamRecords;
 	isDelayed: boolean;
 	isInningSport: boolean;
 	statusText: string;
 	heroStyle: React.CSSProperties;
 }
 
-const detailHero = ({ game, seriesInfo, isDelayed, isInningSport, statusText, heroStyle }: detailHeroProps) => {
+const detailHero = ({ game, seriesInfo, records = emptyTeamRecords, isDelayed, isInningSport, statusText, heroStyle }: detailHeroProps) => {
 	const isPre = game.status === 'pre';
 
 	return (
 		<div className={`game-card game-detail-matchup gd-hero${isDelayed ? ' is-delayed' : ''}`} style={heroStyle}>
 			<div className='game-detail-teams-row'>
-				<DetailTeamPill team={game.awayTeam} side='away' />
+				<DetailTeamPill team={game.awayTeam} side='away' record={records.away} />
 				<div className='game-detail-center'>
 					{isPre ? (
 						<div className='gd-vs'>{i18n.t('gameCard.vs')}</div>
@@ -41,7 +42,7 @@ const detailHero = ({ game, seriesInfo, isDelayed, isInningSport, statusText, he
 						</div>
 					)}
 				</div>
-				<DetailTeamPill team={game.homeTeam} side='home' />
+				<DetailTeamPill team={game.homeTeam} side='home' record={records.home} />
 				{statusText && (
 					<div className='game-detail-period'>
 						{isInningSport && <InningHalfIcon topOfInning={game.topOfInning} />}{statusText}

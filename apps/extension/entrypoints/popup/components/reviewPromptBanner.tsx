@@ -17,7 +17,7 @@ const reviewPromptBanner = ({ onDismiss, onLeaveReview }: reviewPromptBannerProp
 				{i18n.t('reviewPrompt.leaveReview')}
 			</button>
 		</div>
-		<button type='button' className='btn-close btn-sm shrink-0' aria-label={i18n.t('reviewPrompt.dismiss')} onClick={onDismiss} />
+		<button type='button' className='btn-close btn-sm flex-shrink-0' aria-label={i18n.t('reviewPrompt.dismiss')} onClick={onDismiss} />
 	</div>
 );
 

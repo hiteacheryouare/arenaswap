@@ -775,8 +775,9 @@ $bootstrap-icons-font-dir: '/fonts';
 	display: grid;
 	grid-template-columns: 80px minmax(0, 1fr) 80px;
 	grid-template-areas:
-		"awayCrest score homeCrest"
-		"awayLabel status homeLabel";
+		"awayCrest  score  homeCrest"
+		"awayLabel  status homeLabel"
+		"awayRecord .      homeRecord";
 	align-items: center;
 	justify-items: center;
 	column-gap: 0.25rem;
@@ -787,9 +788,27 @@ $bootstrap-icons-font-dir: '/fonts';
 .gd-area-home-crest { grid-area: homeCrest; }
 .gd-area-away-label { grid-area: awayLabel; }
 .gd-area-home-label { grid-area: homeLabel; }
+.gd-area-away-record { grid-area: awayRecord; }
+.gd-area-home-record { grid-area: homeRecord; }
 
 .game-detail-team-wrap {
 	display: contents;
+}
+
+// Records sit in their own grid row so the two sides always line up with each other, even when
+// one team's name wraps to two lines and the other's does not. Lekton matches the other numerals
+// on the screen (clock, series summary) and keeps the digit widths even.
+.game-detail-team-record {
+	align-self: start;
+	min-width: 0;
+	font-size: 0.58rem;
+	font-weight: 600;
+	line-height: 1.2;
+	font-family: 'Lekton', monospace;
+	letter-spacing: 0.02em;
+	color: #6b7280;
+	text-align: center;
+	white-space: nowrap;
 }
 
 .game-detail-team-name {
