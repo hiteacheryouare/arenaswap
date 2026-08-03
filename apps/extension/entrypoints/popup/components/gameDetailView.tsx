@@ -1,18 +1,15 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { i18n } from '#i18n';
 import { leagueConfigMap, scoreMaxTotal } from '@arenaswap/core/constants';
 import { computeWinProbVarianceScore } from '@arenaswap/core';
 import type { Game, PowerScoreResult, PowerScoreSnapshot, ScoreSnapshot, SignalName } from '@arenaswap/core/types';
-import BaseDiamond from './baseDiamond';
-import BsoIndicator from './bsoIndicator';
-import SeriesDots from './seriesDots';
-import DetailTeamPill from './detailTeamPill';
-import FlipScore from './flipScore';
+import DetailHero from './detailHero';
+import DetailStickyBar from './detailStickyBar';
 import GameDetailChart from './gameDetailChart';
-import InningHalfIcon from './inningHalfIcon';
 import GameBoostInput from './gameBoostInput';
 import PowerScoreBreakdown from './powerScoreBreakdown';
 import ProTip from './proTip';
+import { resolveStatusText } from './gameSituation';
 import {
 	buildComponentContributionOption,
 	buildPowerScoreOption,
@@ -21,8 +18,7 @@ import {
 } from './gameDetailChartOptions';
 import { resolveTeamColorPair } from '@arenaswap/ui/src/components/colorUtils';
 import useSummaryData from './useSummaryData';
-import { formatStartsIn, useStartCountdown } from './startCountdown';
-import { formatGameClock, formatPeriod, GameMeta, powerScoreColor } from './gameCardShared';
+import { GameMeta } from './gameCardShared';
 import { conditionIcon, formatTemperature } from './weatherUtils';
 import type { BettingDisplayPrefs, WeatherDisplayPrefs } from './gameCardTypes';
 
@@ -94,8 +90,12 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 	const winProbabilityOption = useMemo(() => (
 		buildWinProbabilityOption(winProbability, game)
 	), [winProbability, game]);
-	// Variance comes exclusively from real ESPN win probability data — if the chart has no data,
-	// there is no volatility row and no variance applied to the score.
+	// Volatility comes exclusively from real ESPN win-probability data. f346eff removed the
+	// *synthetic* source from the background loop — a logistic curve derived from the score
+	// margin, which only ever restated closeness — but the signal itself is real whenever the
+	// summary endpoint gives us a line to measure. computeWinProbVarianceScore returns
+	// undefined below its minimum sample size, so games without that data get no row and no
+	// adjustment rather than a fabricated zero.
 	const winProbabilityVariance = useMemo(() => computeWinProbVarianceScore(winProbability), [winProbability]);
 	const total = Math.max(0, (activePowerScore?.total ?? 0) + (winProbabilityVariance ?? 0));
 
@@ -117,88 +117,45 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 		background: `linear-gradient(to right, ${withMatchupAlpha(awayAccent, '#dee2e628')}, ${withMatchupAlpha(homeAccent, '#dee2e628')}), #ffffff`,
 	};
 	const isInningSport = leagueConfigMap[game.league]?.periodFormat === 'innings';
-	const startCountdown = useStartCountdown(game.status === 'pre' ? game.startTime : undefined);
-	// Pre-game gets no period line — its countdown is a full-width row below the teams,
-	// where the longest "X days Y hours Z minutes" string still fits on one line.
-	const statusDetail = game.status === 'in'
-		? isInningSport
-			? <><InningHalfIcon topOfInning={game.topOfInning} />{formatPeriod(game)}</>
-			: `${formatPeriod(game)} • ${formatGameClock(game)}`
-		: game.status === 'post' ? i18n.t('detail.final') : null;
+	const statusText = resolveStatusText(game, isInningSport, i18n.t);
 	const totalLabel = total > scoreMaxTotal
 		? i18n.t('detail.totalLabelBaseMax', { total, max: scoreMaxTotal })
 		: i18n.t('detail.totalLabel', { total, max: scoreMaxTotal });
-	const psBarPercent = Math.min((total / scoreMaxTotal) * 100, 100);
-	const psColor = powerScoreColor(total, scoreMaxTotal);
+
+	// The compact matchup in the sticky bar only earns its space once the real card is gone.
+	// Observing the card itself (rather than a scroll offset) keeps the handoff exact at any
+	// hero height — pre-game, inning sports and postseason all differ.
+	const shellRef = useRef<HTMLDivElement>(null);
+	const heroRef = useRef<HTMLDivElement>(null);
+	const [heroScrolledAway, setHeroScrolledAway] = useState(false);
+
+	useEffect(() => {
+		const root = shellRef.current;
+		const target = heroRef.current;
+		if (!root || !target || typeof IntersectionObserver === 'undefined') return;
+
+		const observer = new IntersectionObserver(
+			entries => { for (const entry of entries) setHeroScrolledAway(!entry.isIntersecting); },
+			{ root, threshold: 0 },
+		);
+		observer.observe(target);
+		return () => observer.disconnect();
+	}, []);
 
 	return (
-		<div className='popup-container game-detail-shell'>
-			<div className='game-detail-header'>
-				<button type='button' className='btn btn-sm game-detail-back-button' onClick={onBack}>
-					<i className='bi bi-arrow-left' />
-					<span>{i18n.t('detail.back')}</span>
-				</button>
-				<div className='game-detail-title'>{game.awayTeam.abbreviation} @ {game.homeTeam.abbreviation}</div>
-			</div>
+		<div className='popup-container game-detail-shell' ref={shellRef}>
+			<DetailStickyBar game={game} statusText={statusText} compact={heroScrolledAway} onBack={onBack} />
 
-			<div className={`game-card game-detail-matchup${isDelayed ? ' is-delayed' : ''}`} style={matchupCardStyle}>
-				<div className='game-detail-teams-row'>
-					<DetailTeamPill team={game.awayTeam} />
-					<div className='game-detail-center'>
-						{isInningSport && game.baseRunners && <BaseDiamond {...game.baseRunners} />}
-						<div className='d-flex align-items-baseline game-detail-score-row'>
-							<FlipScore value={game.awayTeam.score} className='fw-bold lh-1 game-detail-score-value' />
-							<FlipScore value={game.homeTeam.score} className='fw-bold lh-1 game-detail-score-value' />
-						</div>
-						{statusDetail && <div className='game-detail-period'>{statusDetail}</div>}
-						{isDelayed && (
-							<span className='badge bg-warning text-dark delay-type-badge mt-1'>
-								{game.delayDescription ?? i18n.t('gameCard.delayFallback')}
-							</span>
-						)}
-						{isInningSport && game.bso && <BsoIndicator {...game.bso} />}
-					</div>
-					<DetailTeamPill team={game.homeTeam} />
-				</div>
-				{game.status === 'pre' && (
-					<div className='game-detail-countdown'>{formatStartsIn(startCountdown)}</div>
-				)}
-				{seriesInfo && <SeriesDots info={seriesInfo} game={game} />}
-				{game.status !== 'pre' && activePowerScore && (
-					<div className='game-card-ps-bar-row'>
-						<div className='d-flex align-items-center gap-2'>
-							<span className='game-card-ps-label'>{i18n.t('detail.powerScoreLabel')}</span>
-							<div className='progress flex-grow-1 game-card-ps-progress'>
-								<div
-									className='progress-bar'
-									role='progressbar'
-									style={{ width: `${psBarPercent}%`, backgroundColor: psColor }}
-									aria-valuenow={total}
-									aria-valuemin={0}
-									aria-valuemax={scoreMaxTotal}
-								/>
-							</div>
-							<span className='game-card-ps-score' style={{ color: psColor }}>
-								{total} / {scoreMaxTotal}
-							</span>
-						</div>
-						{reason && (
-							<div className='game-detail-card-reason'>
-								{reason.charAt(0).toUpperCase() + reason.slice(1)}
-							</div>
-						)}
-					</div>
-				)}
+			<div ref={heroRef}>
+				<DetailHero
+					game={game}
+					seriesInfo={seriesInfo}
+					isDelayed={isDelayed}
+					isInningSport={isInningSport}
+					statusText={statusText}
+					heroStyle={matchupCardStyle}
+				/>
 			</div>
-			<GameMeta game={game} dark bettingPrefs={bettingPrefs} />
-			{game.weather && (
-				<div className='d-flex align-items-center justify-content-center gap-1 game-detail-weather'>
-					<i className={`bi ${conditionIcon(game.weather.conditionLabel)}`} aria-hidden='true' />
-					<span>{game.weather.conditionLabel}</span>
-					<span className='game-detail-weather-sep'>·</span>
-					<span>{formatTemperature(game.weather.temperatureF, weatherPrefs.temperatureUnit)}</span>
-				</div>
-			)}
 
 			<PowerScoreBreakdown
 				closeness={closeness}
@@ -216,11 +173,25 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 				postseasonBoost={postseasonBoost}
 				total={total}
 				totalLabel={totalLabel}
+				reason={reason ? reason.charAt(0).toUpperCase() + reason.slice(1) : undefined}
 				disabledSignals={disabledSignals}
 			/>
 
 			{game.status !== 'pre' && (
 				<GameBoostInput gameId={game.id} currentBoost={currentBoost} onSetGameBoost={onSetGameBoost} />
+			)}
+
+			{/* Venue, broadcasts, odds and weather are reference material, not the headline —
+			    the card already showed them, so they sit below the arithmetic that is unique
+			    to this screen rather than above it. */}
+			<GameMeta game={game} dark bettingPrefs={bettingPrefs} />
+			{game.weather && (
+				<div className='d-flex align-items-center justify-content-center gap-1 game-detail-weather'>
+					<i className={`bi ${conditionIcon(game.weather.conditionLabel)}`} aria-hidden='true' />
+					<span>{game.weather.conditionLabel}</span>
+					<span className='game-detail-weather-sep'>·</span>
+					<span>{formatTemperature(game.weather.temperatureF, weatherPrefs.temperatureUnit)}</span>
+				</div>
 			)}
 
 			{proTipsEnabled && <ProTip context='detail' />}

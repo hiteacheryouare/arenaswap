@@ -188,24 +188,17 @@
 		"legendLeadChanges": "リード交代",
 		"legendComeback": "逆転",
 		"startsSoon": "まもなく開始",
-		"startsIn": "{duration}後に開始",
-		"countdownDays": {
-			"1": "1日",
-			"n": "$1日"
-		},
-		"countdownHours": {
-			"1": "1時間",
-			"n": "$1時間"
-		},
-		"countdownMinutes": {
-			"1": "1分",
-			"n": "$1分"
-		},
 		"final": "終了",
 		"totalLabel": "{total} / {max}",
 		"totalLabelBaseMax": "{total}（ベース上限 {max}）",
 		"back": "戻る",
 		"powerScoreLabel": "PowerScore",
+		"unitDays": "日",
+		"unitHours": "時間",
+		"unitMinutes": "分",
+		"unitSeconds": "秒",
+		"halftime": "ハーフタイム",
+		"intermission": "インターバル",
 		"chartPowerScoreTitle": "PowerScoreの推移",
 		"chartPowerScoreEmpty": "PowerScoreのトレンドは数回更新後に表示されます。",
 		"chartScoreTitle": "スコアの推移",

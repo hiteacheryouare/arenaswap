@@ -27,6 +27,8 @@ interface powerScoreBreakdownProps {
 	postseasonBoost: number;
 	total: number;
 	totalLabel: string;
+	/** Human-readable summary of the top signals, shown under the final total. */
+	reason?: string;
 	disabledSignals?: readonly SignalName[];
 }
 
@@ -63,6 +65,7 @@ const PowerScoreBreakdown = ({
 	scoringOpportunityBoost,
 	postseasonBoost,
 	totalLabel,
+	reason,
 	disabledSignals = [],
 }: powerScoreBreakdownProps) => {
 	const disabledSet = new Set<SignalName>(disabledSignals);
@@ -185,6 +188,7 @@ const PowerScoreBreakdown = ({
 				<span style={{ color: postseasonBoost > 0 ? boostPenaltyColor.postseason : undefined }}>{postseasonBoost > 0 ? `+${postseasonBoost}` : '0'}</span>
 			</div>
 			<div className='powerscore-breakdown-row powerscore-breakdown-row-total'><span>{i18n.t('powerScore.finalPowerScore')}</span><span>{totalLabel}</span></div>
+			{reason && <div className='powerscore-breakdown-reason'>{reason}</div>}
 		</section>
 	);
 };

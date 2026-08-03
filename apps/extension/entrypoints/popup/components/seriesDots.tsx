@@ -14,7 +14,9 @@ const seriesDots = ({ info, game }: seriesDotsProps) => {
 	const total = info.totalCompetitions ?? 0;
 	if (total < 2) return null;
 
-	const [awayColor, homeColor] = resolveTeamColorPair(game.awayTeam, game.homeTeam, '#e6edf3', '#e6edf3');
+	// Fallbacks are mid-greys, not near-white: these dots sit on the light matchup card, where
+	// an #e6edf3 fill was invisible for any team the API gives us no colour for.
+	const [awayColor, homeColor] = resolveTeamColorPair(game.awayTeam, game.homeTeam, '#6b7280', '#9ca3af');
 	// ESPN returns future games first and completed games last; sort completed to the front
 	const events = [...(info.events ?? [])].toSorted((a, b) => {
 		const aComp = a.statusType?.completed ? 1 : 0;
@@ -36,9 +38,10 @@ const seriesDots = ({ info, game }: seriesDotsProps) => {
 	});
 
 	return (
-		<div className='d-flex flex-column align-items-center gap-1 series-dots-wrap'>
+		// Summary and dots share one line — stacked, they cost two rows to say one thing.
+		<div className='d-flex align-items-center justify-content-center gap-2 series-dots-wrap'>
 			{info.summary && <div className='series-dots-summary'>{info.summary}</div>}
-			<div className='d-flex gap-2'>{dots}</div>
+			<div className='d-flex gap-1'>{dots}</div>
 		</div>
 	);
 };

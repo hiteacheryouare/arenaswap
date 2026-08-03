@@ -188,24 +188,17 @@
 		"legendLeadChanges": "Cambios de ventaja",
 		"legendComeback": "Remontada",
 		"startsSoon": "Comienza pronto",
-		"startsIn": "Comienza en {duration}",
-		"countdownDays": {
-			"1": "1 día",
-			"n": "$1 días"
-		},
-		"countdownHours": {
-			"1": "1 hora",
-			"n": "$1 horas"
-		},
-		"countdownMinutes": {
-			"1": "1 minuto",
-			"n": "$1 minutos"
-		},
 		"final": "Final",
 		"totalLabel": "{total} / {max}",
 		"totalLabelBaseMax": "{total} (máx. base {max})",
 		"back": "Atrás",
 		"powerScoreLabel": "PowerScore",
+		"unitDays": "d",
+		"unitHours": "h",
+		"unitMinutes": "min",
+		"unitSeconds": "s",
+		"halftime": "Descanso",
+		"intermission": "Intermedio",
 		"chartPowerScoreTitle": "PowerScore a lo largo del tiempo",
 		"chartPowerScoreEmpty": "La tendencia del PowerScore aparece tras unas cuantas actualizaciones.",
 		"chartScoreTitle": "Marcador a lo largo del tiempo",

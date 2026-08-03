@@ -5,7 +5,6 @@ const root = (rel: string) => path.resolve(__dirname, rel);
 
 const componentStubs: Record<string, string> = {
 	'./flipScore': root('./cypress/stubs/flipScore.tsx'),
-	'./baseDiamond': root('./cypress/stubs/baseDiamond.tsx'),
 	'./tabAssignSelect': root('./cypress/stubs/tabAssignSelect.tsx'),
 	'./gameCard': root('./cypress/stubs/gameCard.tsx'),
 	'./gameDetailChart': root('./cypress/stubs/gameDetailChart.tsx'),

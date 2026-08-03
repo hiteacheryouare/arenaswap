@@ -26,4 +26,6 @@ $font-base-url: '/fonts' !default;
 @include as-woff2-face('Lekton', 'Lekton-Bold',      700);
 // Scoreboard figures only — see the scoreboard-figures mixin in _game-card.scss.
 // DM Sans ships no tabular figures, Geist does.
+// SemiBold carries the detail view's sticky bar, where Bold at 1rem shouts.
+@include as-woff2-face('Geist', 'Geist-SemiBold', 600);
 @include as-woff2-face('Geist', 'Geist-Bold', 700);

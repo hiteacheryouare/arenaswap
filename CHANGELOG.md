@@ -1,5 +1,31 @@
 # Changelog
 
+## The game detail screen stops repeating itself — 2026-08-02
+
+Tapping a game used to get you the same card again, bigger. The logos, the score, the clock, the venue, the broadcast, the odds, the weather and the PowerScore bar were all already on the card you just clicked, and the abbreviations were on screen three times. The top of the screen now says the things the card doesn't, and stays quiet about the things it does.
+
+### Extension
+- **Full team names** finally appear somewhere in the app. They've been parsed from ESPN since day one and rendered nowhere. Each name sits under the crest it belongs to, on a two-row grid so a name that wraps to two lines can't knock the two logos out of level with each other
+- The header carries **nothing but the Back button** while you're at the top — the card is right there. Scroll past it and a compact matchup fades in and pins to the top: both crests, both scores, centred on the card's axis, with the period pinned separately to the right so a longer status string can't drag the score off centre
+- The matchup card itself is about **a third shorter**. The base diamond moved between the scores instead of sitting on its own row, the series summary and its dots share one line rather than two, and the padding between everything came in
+- Upcoming games get a **live flip clock** under the scheduled date and time — `5h 13m 40s`, rolling on the second. Seconds only tick inside the final day; further out it steps once a minute, and the whole clock lives in its own leaf component so a tick re-renders three spans instead of the detail view and its four charts
+- Venue, broadcasts, odds and weather moved below the math. They were pushing the PowerScore breakdown off the bottom of a 560px popup; it now starts around 164px and fits on screen in every sport
+- The balls/strikes/outs count is centred under the matchup instead of hanging off the left edge
+- Intermissions say **"Halftime"** rather than showing a clock that has stopped meaning anything
+- **Volatility** applies whenever ESPN actually gives us a win-probability line to measure, and shows as its own row in the breakdown. Games without that data get no row and no adjustment, rather than a fabricated zero. The PowerScore reason line moved down to sit with the breakdown it explains
+- **Fixed**: playoff series dots were drawn in near-white on the light matchup card, so any team the API gives us no colour for was invisible
+- Retired ~220 lines of a compact-card stylesheet that shipped in every build and was never referenced by a single component, plus the synthetic win-probability code in the background that had been computing a value nobody read on every game on every poll
+- Translated for all eight supported locales, with the countdown and the pinned bar measured in each one
+
+## European Portuguese ships as `pt_PT` — 2026-08-01
+
+Every dev and build run has been printing `WARN Unsupported locales: [pt]` since the Portuguese locales landed. Chrome's extension i18n only recognizes `pt_BR` and `pt_PT` — bare `pt` isn't on the list, so the file was being emitted into `_locales/pt/` where no browser would ever look for it.
+
+### Extension
+- `locales/pt.json` renamed to `locales/pt_PT.json`, so European Portuguese now builds to `_locales/pt_PT/` and actually reaches users running Portugal locales
+- Build and dev output is clean of the unsupported-locale warning
+- No translation content changed — the file was already European Portuguese ("ecrã", "separador", pre-reform orthography)
+
 ## A real countdown to tip-off — 2026-08-01
 
 "Starts soon" on the game detail card meant anything from four minutes to four days. Now it tells you exactly how long you've got, and keeps telling you.

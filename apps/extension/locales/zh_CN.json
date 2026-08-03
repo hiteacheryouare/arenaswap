@@ -188,24 +188,17 @@
 		"legendLeadChanges": "领先权易手",
 		"legendComeback": "逆转",
 		"startsSoon": "即将开始",
-		"startsIn": "{duration}后开始",
-		"countdownDays": {
-			"1": "1 天",
-			"n": "$1 天"
-		},
-		"countdownHours": {
-			"1": "1 小时",
-			"n": "$1 小时"
-		},
-		"countdownMinutes": {
-			"1": "1 分钟",
-			"n": "$1 分钟"
-		},
 		"final": "终场",
 		"totalLabel": "{total} / {max}",
 		"totalLabelBaseMax": "{total}（基础上限 {max}）",
 		"back": "返回",
 		"powerScoreLabel": "PowerScore",
+		"unitDays": "天",
+		"unitHours": "时",
+		"unitMinutes": "分",
+		"unitSeconds": "秒",
+		"halftime": "中场休息",
+		"intermission": "休息",
 		"chartPowerScoreTitle": "PowerScore 走势",
 		"chartPowerScoreEmpty": "刷新几次后将显示 PowerScore 趋势。",
 		"chartScoreTitle": "比分走势",
