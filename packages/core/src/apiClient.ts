@@ -184,6 +184,20 @@ const parseWeather = (event: EspnEvent): GameCondition | undefined => {
 
 const downOrdinals = ['', '1st', '2nd', '3rd', '4th'] as const;
 
+/**
+ * Goal-to-go: the line to gain is the goal line, so a stop ends the drive rather than setting up
+ * another set of downs.
+ *
+ * ESPN's own label is the primary signal — `shortDownDistanceText` reads "4th & Goal". The
+ * `distance <= 0` fallback mirrors buildDownDistance, which already treats a missing or zero
+ * distance as goal-to-go. Returns false rather than undefined when neither applies: an unknown
+ * situation should cost the boost its bonus, not misreport goal-to-go.
+ */
+const parseGoalToGo = (situation: EspnSituation): boolean => {
+	if (/goal/i.test(situation.shortDownDistanceText ?? '')) return true;
+	return typeof situation.down === 'number' && (typeof situation.distance !== 'number' || situation.distance <= 0);
+};
+
 const buildDownDistance = (situation: EspnSituation): string | undefined => {
 	if (situation.shortDownDistanceText) return situation.shortDownDistanceText;
 	const { down, distance } = situation;
@@ -267,6 +281,7 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 	const leagueConfig = leagueConfigMap[league];
 	const isInningSport = leagueConfig.periodFormat === 'innings';
 	const situation = comp.situation;
+	const isGridironSituation = leagueConfig.sportType === 'football' && state === 'in' && situation !== undefined;
 
 	return {
 		id: event.id,
@@ -313,6 +328,9 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 		isRedZone: leagueConfig.sportType === 'football' && state === 'in' && situation
 			? (situation.isRedZone ?? false)
 			: undefined,
+		down: isGridironSituation ? situation.down : undefined,
+		distance: isGridironSituation ? situation.distance : undefined,
+		isGoalToGo: isGridironSituation ? parseGoalToGo(situation) : undefined,
 		weather: parseWeather(event),
 		isPostseason: resolvePostseason(event, comp, league),
 		delayed: isDelayed || undefined,

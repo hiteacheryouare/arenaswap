@@ -1,5 +1,18 @@
 # Changelog
 
+## A red-zone drive while up 31 was worth as much as one in a tie game — 2026-08-03
+
+`computeScoringOpportunityBoost` paid a flat +10 for any red-zone possession, with no reference to the score and no reference to the down. Backups grinding out a drive at the end of a 45-3 game collected the same bonus as 4th-and-goal from the 1 in a one-score game. The existing tests only ever exercised `isRedZone` true, false and undefined — never in combination with a score, which is why it survived this long.
+
+The gating isn't a third penalty on a blowout. Closeness and lateGame have already scored one correctly low; an unconditional +10 on top was undoing their work.
+
+### PowerScore
+- **The red-zone boost scales with the margin**, using football's existing `closenessMargins` (`[3, 9, 14]`) rather than a second definition of "blowout" invented for this one signal. Full value inside two scores, half in the fringe band, nothing past it
+- **And with the down.** A 4th-down snap decides possession; a 1st-down snap doesn't. `situation.down`/`distance` were already being parsed and thrown away — now `4th & Goal` is worth ×1.5, 4th down ×1.35, 3rd-and-short ×1.15, everything else ×1.0
+- **Down and goal-to-go are one combined lookup, not two multipliers that stack.** They describe the same situation, so multiplying them double-counts. Goal-to-go mostly raises the *odds* of a score — red-zone TD rate is ~61% overall against 70–95% on goal-to-go — where what makes a snap worth switching to is 4th down's binary stakes. A 1st-and-goal from the 3 is no more tense than 1st-and-10 from the 19
+- **The ceiling moves 10 → 15** for the highest-leverage snap in football. Left uncapped at the signal level, consistent with the overcomplete-ceilings design the rest of the file already uses — clamping back to 10 would have made 4th-and-goal indistinguishable from an ordinary red-zone snap, which was the point of building it
+- A missing down costs the boost its bonus, not the whole thing: between plays ESPN's situation block can arrive without one, and that falls through to ×1.0 rather than to zero
+
 ## The World Cup final was never a postseason game — 2026-08-03
 
 Edge-case audit of how the scorer and the cards handle the strange corners of sport. Two of them turned out to be wrong in a way you could watch happen.

@@ -1578,6 +1578,55 @@ describe('apiClient', () => {
 		});
 	});
 
+	// down/distance/isGoalToGo feed the red-zone boost's down weighting, so they have to survive
+	// the shapes ESPN actually sends rather than only the tidy one.
+	describe('gridiron down, distance and goal-to-go', () => {
+		const parseNfl = async (situation: Record<string, unknown> | undefined, state = 'in') => {
+			const fetchMock = jest.fn().mockResolvedValue(createResponse({
+				events: [makeEvent({ id: 'n1', state, period: 2, clock: '8:00', homeScore: '7', awayScore: '7', situation })],
+			}));
+			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+			const { fetchGamesWithLeagueLogos } = loadApiClient();
+			const result = await fetchGamesWithLeagueLogos(['nfl'], { includeUpcoming: false });
+			return result.games.find(g => g.id === 'n1');
+		};
+
+		test('carries down and distance through', async () => {
+			const game = await parseNfl({ down: 3, distance: 7 });
+			expect(game?.down).toBe(3);
+			expect(game?.distance).toBe(7);
+			expect(game?.isGoalToGo).toBe(false);
+		});
+
+		test("reads goal-to-go off ESPN's own label", async () => {
+			const game = await parseNfl({ down: 4, distance: 1, shortDownDistanceText: '4th & Goal' });
+			expect(game?.isGoalToGo).toBe(true);
+		});
+
+		test('treats a missing or zero distance on a live down as goal-to-go', async () => {
+			expect((await parseNfl({ down: 1 }))?.isGoalToGo).toBe(true);
+			expect((await parseNfl({ down: 2, distance: 0 }))?.isGoalToGo).toBe(true);
+		});
+
+		test('reports nothing when there is no situation or the game is not live', async () => {
+			const noSituation = await parseNfl(undefined);
+			expect(noSituation?.down).toBeUndefined();
+			expect(noSituation?.isGoalToGo).toBeUndefined();
+			const notLive = await parseNfl({ down: 4, distance: 1 }, 'pre');
+			expect(notLive?.down).toBeUndefined();
+		});
+
+		test('does not attach gridiron fields to non-football leagues', async () => {
+			const fetchMock = jest.fn().mockResolvedValue(createResponse({
+				events: [makeEvent({ id: 'b1', state: 'in', period: 5, clock: '0:00', homeScore: '2', awayScore: '1', situation: { onFirst: true } })],
+			}));
+			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+			const { fetchGamesWithLeagueLogos } = loadApiClient();
+			const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'b1')?.isGoalToGo).toBeUndefined();
+		});
+	});
+
 	describe('isPostseason', () => {
 		const fetchWith = (events: Record<string, unknown>[]) => {
 			const fetchMock = jest.fn().mockResolvedValue(createResponse({ events }));

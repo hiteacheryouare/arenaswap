@@ -13,6 +13,9 @@ import {
 	scoreWinProbVarianceMax,
 	scoringOpportunityBaseRunnerBoosts,
 	scoringOpportunityRedZoneBoost,
+	scoringOpportunityRedZoneFringeBoost,
+	redZoneDownMultipliers,
+	thirdAndShortDistance,
 } from './constants';
 import type { SportTypeConfig, BaseballLateGameCurveConfig } from './types';
 import type { Game, ScoreSnapshot, PowerScoreResult } from './types';
@@ -450,6 +453,36 @@ export const computeWinProbVarianceScore = (winProbHistory: number[]): number | 
 	return Math.round(clamp(raw, -scoreWinProbVarianceMax, scoreWinProbVarianceMax));
 };
 
+// Which snap this is, as a multiplier on the margin-scaled red-zone base. Unknown down (ESPN
+// between plays, or a sport/feed that doesn't report one) falls through to `other`, so a missing
+// field costs the boost its bonus rather than the whole thing.
+const getRedZoneDownMultiplier = (game: Game): number => {
+	if (game.down === 4) {
+		return game.isGoalToGo ? redZoneDownMultipliers.fourthDownGoalToGo : redZoneDownMultipliers.fourthDown;
+	}
+	if (game.down === 3 && typeof game.distance === 'number' && game.distance <= thirdAndShortDistance) {
+		return redZoneDownMultipliers.thirdAndShort;
+	}
+	return redZoneDownMultipliers.other;
+};
+
+// Red-zone pressure is worth paying for only while the game is still in reach. Gating here rather
+// than leaving the boost flat is not a third penalty on a blowout — closeness and lateGame have
+// already scored it correctly low, and an unconditional +10 on top would undo that.
+const getRedZoneBoost = (game: Game): number => {
+	const config = sportTypeConfigMap[game.sportType];
+	if (!config) return 0;
+	const [, t2, t3] = config.closenessMargins;
+	const margin = Math.abs(game.homeTeam.score - game.awayTeam.score);
+	const base = margin <= t2
+		? scoringOpportunityRedZoneBoost
+		: margin <= t3
+			? scoringOpportunityRedZoneFringeBoost
+			: 0;
+	if (base === 0) return 0;
+	return Math.round(base * getRedZoneDownMultiplier(game));
+};
+
 export const computeScoringOpportunityBoost = (game: Game): number => {
 	if (game.status !== 'in') return 0;
 	// A delay freezes the situation (runners stay on base, offense stays in the red zone),
@@ -464,7 +497,7 @@ export const computeScoringOpportunityBoost = (game: Game): number => {
 	}
 
 	if (game.sportType === 'football' && game.isRedZone) {
-		return scoringOpportunityRedZoneBoost;
+		return getRedZoneBoost(game);
 	}
 
 	return 0;

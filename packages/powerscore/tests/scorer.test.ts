@@ -1085,6 +1085,59 @@ describe('computeScoringOpportunityBoost', () => {
 		expect(computeScoringOpportunityBoost(makeFootballGame({ isRedZone: true }))).toBe(10);
 	});
 
+	// Football's closenessMargins are [3, 9, 14]. A red-zone trip only means something while the
+	// game is still in reach, and a 4th-down snap means more than a 1st-down one.
+	describe('red zone scaling', () => {
+		// margin is set via the away score; home is fixed at 7 in the fixture.
+		const redZone = (margin: number, extra: Partial<Game> = {}) => computeScoringOpportunityBoost(
+			makeFootballGame({ isRedZone: true, awayTeam: { score: 7 + margin }, ...extra }),
+		);
+
+		test('pays full value while the game is within two scores', () => {
+			expect(redZone(0)).toBe(10);
+			expect(redZone(3)).toBe(10); // t1
+			expect(redZone(9)).toBe(10); // t2, still a two-score game
+		});
+
+		test('pays a reduced value in the fringe band', () => {
+			expect(redZone(10)).toBe(5);
+			expect(redZone(14)).toBe(5); // t3, the outer edge of live
+		});
+
+		test('pays nothing once the game is a blowout', () => {
+			expect(redZone(15)).toBe(0);
+			expect(redZone(31)).toBe(0);
+			// Down and distance cannot resurrect a blowout — the base is zero before they apply.
+			expect(redZone(31, { down: 4, isGoalToGo: true })).toBe(0);
+		});
+
+		test('weights the snap by down, with 4th-and-goal the highest-leverage case', () => {
+			expect(redZone(3, { down: 1, distance: 10 })).toBe(10); // ×1.0
+			expect(redZone(3, { down: 2, distance: 4 })).toBe(10); // ×1.0
+			expect(redZone(3, { down: 3, distance: 8 })).toBe(10); // 3rd-and-long, ×1.0
+			expect(redZone(3, { down: 3, distance: 2 })).toBe(12); // 3rd-and-short, ×1.15 → 11.5
+			expect(redZone(3, { down: 4, distance: 5 })).toBe(14); // ×1.35 → 13.5
+			expect(redZone(3, { down: 4, distance: 1, isGoalToGo: true })).toBe(15); // ×1.5
+		});
+
+		test('scales the down weighting off the reduced fringe base, not the full one', () => {
+			expect(redZone(12, { down: 4, isGoalToGo: true })).toBe(8); // 5 × 1.5 = 7.5
+			expect(redZone(12, { down: 4, distance: 2 })).toBe(7); // 5 × 1.35 = 6.75
+		});
+
+		test('falls back to the unweighted base when ESPN reports no down', () => {
+			// Between plays the situation block can be missing a down; that should cost the bonus,
+			// not the whole boost.
+			expect(redZone(3, { down: undefined })).toBe(10);
+			expect(redZone(3, { down: 3, distance: undefined })).toBe(10);
+		});
+
+		test('goal-to-go only lifts 4th down, since on early downs it is a scoring odds signal', () => {
+			expect(redZone(3, { down: 1, isGoalToGo: true })).toBe(10);
+			expect(redZone(3, { down: 2, isGoalToGo: true })).toBe(10);
+		});
+	});
+
 	test('returns 0 for other sport types', () => {
 		const basketball: Game = { id: 'g1', league: 'nba', sportType: 'basketball',
 			homeTeam: { score: 80 }, awayTeam: { score: 78 }, status: 'in' };

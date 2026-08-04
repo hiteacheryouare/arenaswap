@@ -9,9 +9,37 @@ export const stallPenaltySteps: { minPolls: number; deduction: number }[] = [
 ];
 
 // Scoring opportunity boost — automatic additive bonus when a live situation signals an imminent scoring threat.
-// baseRunnerBoosts is indexed by runner count (0–3); football uses a flat red-zone value.
+// baseRunnerBoosts is indexed by runner count (0–3).
 export const scoringOpportunityBaseRunnerBoosts: [number, number, number, number] = [0, 3, 6, 10];
-export const scoringOpportunityRedZoneBoost = 10;
+
+// Red zone, scaled by how close the game is. A drive inside the 20 while up 30 carries no stakes;
+// the same drive in a one-score game is the most-watch moment in football. Tiers key off the
+// sport's own closenessMargins ([3, 9, 14] for football) so there is exactly one definition of
+// "blowout" per sport rather than a second one invented here.
+export const scoringOpportunityRedZoneBoost = 10; // margin ≤ t2 — still a one- or two-score game
+export const scoringOpportunityRedZoneFringeBoost = 5; // t2 < margin ≤ t3 — live, but only just
+// (margin > t3 pays nothing.)
+
+/**
+ * Down-and-distance weighting for the red-zone boost.
+ *
+ * Deliberately a single combined lookup rather than separate down and goal-to-go factors that
+ * multiply together: the two describe the same situation, so stacking them double-counts. Goal-to-go
+ * mostly raises the *likelihood* of a score (red-zone TD rate is ~61% overall against 70–95% on
+ * goal-to-go) rather than the tension — what makes a snap worth switching to is 4th down, where
+ * the play itself decides possession. A 1st-and-goal from the 3 is no more tense than 1st-and-10
+ * from the 19; both are "they'll probably score eventually."
+ */
+export const redZoneDownMultipliers = {
+	fourthDownGoalToGo: 1.5,
+	fourthDown: 1.35,
+	thirdAndShort: 1.15,
+	/** 1st/2nd down at any distance, and 3rd-and-long — the boost stands on the red zone alone. */
+	other: 1,
+} as const;
+
+/** Yards to go at or below which 3rd down counts as short-yardage. */
+export const thirdAndShortDistance = 3;
 
 // PowerScore signal maxes (per-signal ceilings, sport-agnostic).
 // The per-signal ceilings deliberately sum to MORE than 100 ("overcomplete"): the headline total is

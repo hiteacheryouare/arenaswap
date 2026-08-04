@@ -82,6 +82,12 @@ export interface Game {
 	downDistance?: string;
 	/** True when the offense is in the red zone (inside the 20); football only */
 	isRedZone?: boolean;
+	/** Current down (1–4); football only. Weights the red-zone scoring-opportunity boost. */
+	down?: number;
+	/** Yards to go for a first down; football only. */
+	distance?: number;
+	/** True when the line to gain is the goal line; football only. */
+	isGoalToGo?: boolean;
 	/** Game Condition (weather) from ESPN; only present for outdoor venues */
 	weather?: GameCondition;
 	/** True for a playoff/knockout game. ESPN signals this three different ways depending on the

@@ -25,6 +25,13 @@ export interface Game {
 	baseRunners?: { first: boolean; second: boolean; third: boolean };
 	/** True when the offense is in the red zone; football only */
 	isRedZone?: boolean;
+	/** Current down (1–4); football only. Scales the red-zone boost — a 4th-down snap decides
+	 *  something, a 1st-down snap does not. */
+	down?: number;
+	/** Yards to go for a first down; football only. */
+	distance?: number;
+	/** True when the offense has goal-to-go (the line to gain is the goal line); football only. */
+	isGoalToGo?: boolean;
 }
 
 export interface ScoreSnapshot {
