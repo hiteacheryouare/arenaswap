@@ -26,6 +26,14 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 	const homeFavoriteTeamKey = createFavoriteTeamKey(game.league, game.homeTeam.id);
 	const awayFavorited = favoriteTeamIds.has(awayFavoriteTeamKey);
 	const homeFavorited = favoriteTeamIds.has(homeFavoriteTeamKey);
+	// A shootout freezes the main score at the 120-minute scoreline, so without this the card would
+	// sit on "1 – 1" while the tie is actually being decided. Shown as a secondary line rather than
+	// replacing the score, which everywhere else in the product means "goals scored in the match".
+	// Rendered only once ESPN populates both tallies — whether it does so kick-by-kick or only at
+	// the end is unconfirmed, and this degrades to showing nothing either way.
+	const shootout = game.awayTeam.shootoutScore !== undefined && game.homeTeam.shootoutScore !== undefined
+		? t('gameCard.shootout', { away: game.awayTeam.shootoutScore, home: game.homeTeam.shootoutScore })
+		: null;
 	const psBarPercent = Math.min((totalPowerScore / scoreMaxTotal) * 100, 100);
 	const psColor = powerScoreColor(totalPowerScore, scoreMaxTotal);
 	const { onClick: onCardClick, onKeyDown: onCardKeyDown } = buildCardHandlers(onOpenGameDetail, game.id);
@@ -76,9 +84,16 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 					{!isInningSport && hasClock && (
 						<span className='font-lekton game-clock'>{formatGameClock(game)}</span>
 					)}
-					<span className='font-lekton game-period'>
-						{isInningSport && <InningHalfIcon topOfInning={game.topOfInning} />}{formatPeriod(game)}
-					</span>
+					{/* The shootout line already carries the period ("PENS 3–5"), so rendering the
+					    period label above it would just say PENS twice. */}
+					{!shootout && (
+						<span className='font-lekton game-period'>
+							{isInningSport && <InningHalfIcon topOfInning={game.topOfInning} />}{formatPeriod(game)}
+						</span>
+					)}
+					{shootout && (
+						<span className='font-lekton game-shootout-score'>{shootout}</span>
+					)}
 					{isDelayed && (
 						<span className='badge bg-warning text-dark delay-type-badge mt-1'>
 							{game.delayDescription ?? t('gameCard.delayFallback')}

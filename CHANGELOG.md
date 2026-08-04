@@ -8,10 +8,19 @@ Edge-case audit of how the scorer and the cards handle the strange corners of sp
 
 The Olympics are worse. A 2024 Paris Gold Medal Game reports `type: 2, slug: 'regular-season'` — identical to a group game. The only place the round survives is `competition.notes[0].headline`, a free-text field reading `"2024 Olympic Men's Basketball - Gold Medal Game"`.
 
+Separately, soccer has no overtime, and `formatPeriod` had been calling it that anyway. Extra time read `OT1`/`OT2`, and because ESPN encodes a penalty shootout as period 5, a shootout read **`OT3`** — a period of play that does not exist in the sport.
+
 ### PowerScore
 - **Postseason detection now handles all three of ESPN's encodings.** `season.type === 3` still covers the US leagues; an explicit slug allowlist covers international soccer and the WBC; the Olympic leagues fall back to the headline field. Every slug in the allowlist was verified against a real payload rather than inferred, which is how the awkward ones surfaced — the Women's World Cup says `3rd-place` where the men's says `3rd-place-match`, the WBC says `semi-finals` and `finals` where every soccer competition says `semifinals` and `final`, and UCL/UEL added `knockout-round-playoffs` in the 2024-25 format change
 - **Liga MX, MLS and the NWSL generate a slug per tournament** — `apertura-2023---finals`, `playoffs--quarterfinals` — so those match on pattern rather than exact string. Checked against their regular-season slugs (`torneo-apertura`) and against the four domestic leagues, whose season-long slugs (`2023-24-english-premier-league`) contain nothing that could trip it
 - **The Olympic headline check is scoped to the five Olympic leagues**, not applied globally. It is editorial copy, and matching it everywhere would have swept in regular-season bracket events like college basketball's November invitationals
+
+### Game cards
+- **Soccer extra time reads `ET1` and `ET2`.** Keyed on sport rather than period format, so NCAA basketball's two halves keep their `OT1`/`OT2` numbering
+- **A penalty shootout reads `PENS`**, and anything past the second extra-time half resolves there too — nothing but penalties follows extra time, so there is no fourth label to guess at
+- **The shootout tally renders under the score.** ESPN freezes `score` at the 120-minute scoreline and puts the decider in `shootoutScore` on the same scoreboard payload we already poll, so the card would otherwise have sat on `1 – 1` while the tie was being settled. Shown as a secondary line rather than replacing the score, which everywhere else in the product means goals scored in the match
+- **The period label steps aside for the tally**, because `PENS` above `PENS 3–5` said it twice. Only visible by rendering the card — every assertion on the two strings individually passed. The tally line adds **1.6px** to the card at 320px wide, with 72px of horizontal headroom left even at a sudden-death `PENS 13–14`
+- Whether ESPN populates `shootoutScore` kick-by-kick or only once the shootout ends is **unconfirmed** — no shootout was live anywhere across 14 competitions during the audit. The line renders only when both tallies are present, so either way it degrades to showing nothing rather than to showing something wrong
 
 ## Closing one tab could switch off auto-switching entirely — 2026-08-03
 

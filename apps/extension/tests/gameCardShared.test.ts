@@ -37,6 +37,12 @@ describe('formatPeriod', () => {
 		expect(formatPeriod(makeGame({ league: 'mls', sportType: 'soccer', period: 2 }))).toBe('2H');
 	});
 
+	test('formats soccer extra time as ET1/ET2 and a shootout as PENS', () => {
+		expect(formatPeriod(makeGame({ league: 'mls', sportType: 'soccer', period: 3 }))).toBe('ET1');
+		expect(formatPeriod(makeGame({ league: 'mls', sportType: 'soccer', period: 4 }))).toBe('ET2');
+		expect(formatPeriod(makeGame({ league: 'mls', sportType: 'soccer', period: 5 }))).toBe('PENS');
+	});
+
 	test('formats MLB innings as "Inn N"', () => {
 		expect(formatPeriod(makeGame({ league: 'mlb', sportType: 'baseball', period: 7 }))).toBe('Inn 7');
 	});

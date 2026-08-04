@@ -220,6 +220,7 @@
 		"live": "EN VIVO",
 		"delay": "SUSPENDIDO",
 		"delayFallback": "Suspendido",
+		"shootout": "PEN {away}–{home}",
 		"powerScore": "PowerScore",
 		"vs": "vs",
 		"topOfInning": "Parte alta de la entrada",

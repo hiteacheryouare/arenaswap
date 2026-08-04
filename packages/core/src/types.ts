@@ -27,6 +27,9 @@ export interface Team {
 	name: string;
 	abbreviation: string;
 	score: number;
+	/** Penalty-shootout tally; soccer only, and only once a match has reached a shootout. The
+	 *  main `score` stays frozen at the 120-minute scoreline while this decides the tie. */
+	shootoutScore?: number;
 	logo?: string;
 	/** Primary team color as a CSS hex string (e.g. "#002B5C"), sourced from the API */
 	color?: string;

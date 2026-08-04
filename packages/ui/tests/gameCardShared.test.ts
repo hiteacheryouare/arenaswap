@@ -31,6 +31,30 @@ describe('formatPeriod', () => {
 		expect(formatPeriod(makeGame('nhl', { period: 4 }))).toBe('OT');
 	});
 
+	// Soccer doesn't play "overtime" — it plays two extra-time halves and then penalties, and
+	// ESPN encodes the shootout as period 5 (verified: 2016 UCL final, 2022 WC Croatia–Japan).
+	describe('soccer extra time and penalties', () => {
+		const soccer = (period: number) => formatPeriod(makeGame('ucl', { sportType: 'soccer', period }));
+
+		test('labels the two extra-time halves ET1 and ET2, not OT1/OT2', () => {
+			expect(soccer(3)).toBe('ET1');
+			expect(soccer(4)).toBe('ET2');
+		});
+
+		test('labels a penalty shootout PENS rather than a third extra-time period', () => {
+			expect(soccer(5)).toBe('PENS');
+		});
+
+		test('still reads PENS past period 5, since nothing but penalties follows extra time', () => {
+			expect(soccer(6)).toBe('PENS');
+		});
+
+		test('leaves NCAA basketball halves on OT numbering — the rule is per sport, not per format', () => {
+			expect(formatPeriod(makeGame('ncaab', { period: 3 }))).toBe('OT1');
+			expect(formatPeriod(makeGame('ncaab', { period: 4 }))).toBe('OT2');
+		});
+	});
+
 	test('keeps counting innings into extras', () => {
 		expect(formatPeriod(makeGame('mlb', { period: 11 }))).toBe('Inn 11');
 	});

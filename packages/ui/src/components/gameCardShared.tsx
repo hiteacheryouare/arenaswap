@@ -17,6 +17,15 @@ export const formatPeriod = (game: Game): string => {
 	if (period > regular) {
 		if (config.periodFormat === 'periods') return 'OT';
 		if (config.periodFormat === 'innings') return `Inn ${period}`;
+		// Soccer plays two 15-minute extra-time halves (periods 3 and 4) and then, if still level,
+		// a penalty shootout (period 5) — labelling those "OT1/OT2/OT3" is the wrong vocabulary for
+		// the sport and flatly wrong for a shootout, which isn't extra time at all. Anything past
+		// the second ET half is a shootout; ESPN's own label for it is "FT-Pens".
+		// Keyed on sportType, not periodFormat, so NCAA basketball's halves keep their OT numbering.
+		if (game.sportType === 'soccer') {
+			const extraTimeHalf = period - regular;
+			return extraTimeHalf <= 2 ? `ET${extraTimeHalf}` : 'PENS';
+		}
 		return `OT${period - regular}`;
 	}
 	if (config.periodFormat === 'halves') return period === 1 ? '1H' : '2H';

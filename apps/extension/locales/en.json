@@ -220,6 +220,7 @@
 		"live": "LIVE",
 		"delay": "DELAY",
 		"delayFallback": "Delay",
+		"shootout": "PENS {away}–{home}",
 		"powerScore": "PowerScore",
 		"vs": "vs",
 		"topOfInning": "Top of inning",

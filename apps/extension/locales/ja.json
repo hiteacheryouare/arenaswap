@@ -220,6 +220,7 @@
 		"live": "ライブ",
 		"delay": "中断",
 		"delayFallback": "中断",
+		"shootout": "PK {away}–{home}",
 		"powerScore": "PowerScore",
 		"vs": "vs",
 		"topOfInning": "イニングの表",

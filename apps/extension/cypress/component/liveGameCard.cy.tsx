@@ -86,3 +86,73 @@ describe('liveGameCard inning half indicator', () => {
 		cy.get('.inning-half-icon').should('not.exist');
 	});
 });
+
+// ESPN freezes a shootout match's score at the 120-minute scoreline and reports period 5, so
+// without the secondary readout the card would sit on "1 – 1" while the tie is being decided.
+describe('liveGameCard penalty shootout', () => {
+	const shootoutGame: Game = {
+		...baseGame,
+		league: 'ucl',
+		sportType: 'soccer',
+		period: 5,
+		clockSeconds: 7200,
+		homeTeam: { id: 'h', name: 'Home', abbreviation: 'HOM', score: 1, shootoutScore: 5 },
+		awayTeam: { id: 'a', name: 'Away', abbreviation: 'AWY', score: 1, shootoutScore: 3 },
+	};
+
+	it('labels the period PENS rather than a third extra-time period', () => {
+		cy.mount(<LiveGameCard {...defaultProps} game={shootoutGame} />);
+		cy.contains('PENS').should('exist');
+	});
+
+	it('shows the shootout tally alongside the frozen scoreline, away team first', () => {
+		cy.mount(<LiveGameCard {...defaultProps} game={shootoutGame} />);
+		cy.get('.game-shootout-score').should('contain.text', '3').and('contain.text', '5');
+		// The 120-minute score is still the headline number.
+		cy.get('.game-score-value').first().should('contain.text', '1');
+	});
+
+	it('renders no shootout line when ESPN has not supplied a tally', () => {
+		const noTally: Game = {
+			...shootoutGame,
+			homeTeam: { ...shootoutGame.homeTeam, shootoutScore: undefined },
+			awayTeam: { ...shootoutGame.awayTeam, shootoutScore: undefined },
+		};
+		cy.mount(<LiveGameCard {...defaultProps} game={noTally} />);
+		cy.get('.game-shootout-score').should('not.exist');
+	});
+
+	// The tally line already reads "PENS 3–5", so keeping the period label above it would print
+	// PENS twice — caught by rendering the card, not by any assertion on the strings themselves.
+	it('drops the period label while the tally is showing, so PENS appears once', () => {
+		cy.mount(<LiveGameCard {...defaultProps} game={shootoutGame} />);
+		cy.get('.game-period').should('not.exist');
+		cy.get('.game-card').invoke('text').then(text => {
+			expect(text.match(/PENS/g)).to.have.length(1);
+		});
+	});
+
+	it('keeps the period label when there is no tally to replace it', () => {
+		const noTally: Game = {
+			...shootoutGame,
+			homeTeam: { ...shootoutGame.homeTeam, shootoutScore: undefined },
+			awayTeam: { ...shootoutGame.awayTeam, shootoutScore: undefined },
+		};
+		cy.mount(<LiveGameCard {...defaultProps} game={noTally} />);
+		cy.get('.game-period').should('contain.text', 'PENS');
+	});
+
+	it('labels the extra-time halves ET1 and ET2', () => {
+		// Extra time predates any shootout, so there is no tally on the card yet.
+		const extraTime: Game = {
+			...shootoutGame,
+			period: 3,
+			homeTeam: { ...shootoutGame.homeTeam, shootoutScore: undefined },
+			awayTeam: { ...shootoutGame.awayTeam, shootoutScore: undefined },
+		};
+		cy.mount(<LiveGameCard {...defaultProps} game={extraTime} />);
+		cy.contains('ET1').should('exist');
+		cy.mount(<LiveGameCard {...defaultProps} game={{ ...extraTime, period: 4 }} />);
+		cy.contains('ET2').should('exist');
+	});
+});

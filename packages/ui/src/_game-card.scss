@@ -248,6 +248,17 @@ $pre-game-time-color: shade-color($warning, 60%);
 	letter-spacing: 0.02em;
 }
 
+// Sits under the period label during a penalty shootout. Weighted heavier than .game-period
+// because it carries the number actually deciding the match, but kept smaller than the main
+// score so it never competes with the 120-minute scoreline above it.
+.game-shootout-score {
+	font-size: 0.68rem;
+	font-weight: 700;
+	color: #111827;
+	margin-top: 0.06rem;
+	letter-spacing: 0.02em;
+}
+
 .inning-half-icon {
 	font-size: 0.85em;
 	margin-right: 0.25em;

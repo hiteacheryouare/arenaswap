@@ -220,6 +220,7 @@
 		"live": "LIVE",
 		"delay": "VERZÖGERUNG",
 		"delayFallback": "Verzögerung",
+		"shootout": "I.E. {away}–{home}",
 		"powerScore": "PowerScore",
 		"vs": "vs",
 		"topOfInning": "Anfang des Innings",

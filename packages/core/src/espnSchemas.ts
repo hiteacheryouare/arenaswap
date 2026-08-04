@@ -27,6 +27,9 @@ const EspnCompetitorSchema = zod.object({
 	id: espnNumericText,
 	homeAway: zod.string(),
 	score: espnNumericText.optional(),
+	// Penalty-shootout tally. Present only on soccer matches that reached a shootout, where
+	// `score` stays frozen at the 120-minute scoreline and this carries the actual decider.
+	shootoutScore: zod.number().optional(),
 	team: EspnTeamSchema,
 });
 

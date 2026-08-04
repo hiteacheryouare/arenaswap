@@ -220,6 +220,7 @@
 		"live": "直播",
 		"delay": "中断",
 		"delayFallback": "中断",
+		"shootout": "点球 {away}–{home}",
 		"powerScore": "PowerScore",
 		"vs": "vs",
 		"topOfInning": "上半局",

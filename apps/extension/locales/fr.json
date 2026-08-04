@@ -220,6 +220,7 @@
 		"live": "EN DIRECT",
 		"delay": "EN ATTENTE",
 		"delayFallback": "En attente",
+		"shootout": "TAB {away}–{home}",
 		"powerScore": "PowerScore",
 		"vs": "vs",
 		"topOfInning": "Début de la manche",

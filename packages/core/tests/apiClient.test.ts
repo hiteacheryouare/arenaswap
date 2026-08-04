@@ -25,6 +25,8 @@ const makeEvent = (params: {
 	situation?: Record<string, unknown>;
 	season?: Record<string, unknown>;
 	notes?: Record<string, unknown>[];
+	homeShootoutScore?: number;
+	awayShootoutScore?: number;
 }): Record<string, unknown> => ({
 	id: params.id,
 	date: params.date ?? '2026-10-05T00:00:00.000Z',
@@ -36,6 +38,7 @@ const makeEvent = (params: {
 					id: `home-${params.id}`,
 					homeAway: 'home',
 					score: params.homeScore,
+					...(params.homeShootoutScore !== undefined && { shootoutScore: params.homeShootoutScore }),
 					team: {
 						displayName: 'Home Team',
 						abbreviation: 'HOM',
@@ -48,6 +51,7 @@ const makeEvent = (params: {
 					id: `away-${params.id}`,
 					homeAway: 'away',
 					score: params.awayScore,
+					...(params.awayShootoutScore !== undefined && { shootoutScore: params.awayShootoutScore }),
 					team: {
 						displayName: 'Away Team',
 						abbreviation: 'AWY',
@@ -1707,6 +1711,42 @@ describe('apiClient', () => {
 			test('does not apply the headline heuristic to non-Olympic leagues', async () => {
 				expect(await isPostseason(olympicGame('nba1', 'Some Invitational - Semifinal'), 'nba')).toBe(false);
 			});
+		});
+	});
+
+	describe('penalty shootout score', () => {
+		test('parses shootoutScore onto both teams when ESPN supplies it', async () => {
+			const fetchMock = jest.fn().mockResolvedValue(createResponse({
+				events: [makeEvent({
+					id: 'pens',
+					state: 'in',
+					period: 5,
+					clock: "120'",
+					homeScore: '1',
+					awayScore: '1',
+					homeShootoutScore: 5,
+					awayShootoutScore: 3,
+				})],
+			}));
+			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+			const { fetchGamesWithLeagueLogos } = loadApiClient();
+			const result = await fetchGamesWithLeagueLogos(['ucl'], { includeUpcoming: false });
+			const game = result.games.find(g => g.id === 'pens');
+			// The 120-minute scoreline stays put; the shootout rides alongside it.
+			expect(game?.homeTeam.score).toBe(1);
+			expect(game?.awayTeam.score).toBe(1);
+			expect(game?.homeTeam.shootoutScore).toBe(5);
+			expect(game?.awayTeam.shootoutScore).toBe(3);
+		});
+
+		test('leaves shootoutScore undefined for every match that never reached one', async () => {
+			const fetchMock = jest.fn().mockResolvedValue(createResponse({
+				events: [makeEvent({ id: 'normal', state: 'in', period: 2, clock: "60'", homeScore: '2', awayScore: '0' })],
+			}));
+			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+			const { fetchGamesWithLeagueLogos } = loadApiClient();
+			const result = await fetchGamesWithLeagueLogos(['ucl'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'normal')?.homeTeam.shootoutScore).toBeUndefined();
 		});
 	});
 });
