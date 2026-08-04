@@ -97,6 +97,12 @@ const EspnCompetitionOddsSchema = zod.object({
 	provider: EspnOddsProviderSchema.optional(),
 });
 
+// Editorial display copy, e.g. "2024 Olympic Men's Basketball - Gold Medal Game". The only place
+// the Olympics record which round a game belongs to — see resolvePostseason in apiClient.
+const EspnCompetitionNoteSchema = zod.object({
+	headline: zod.string().optional(),
+});
+
 const EspnCompetitionSchema = zod.object({
 	competitors: zod.array(EspnCompetitorSchema),
 	status: EspnCompetitionStatusSchema,
@@ -105,6 +111,7 @@ const EspnCompetitionSchema = zod.object({
 	broadcasts: zod.array(EspnCompetitionBroadcastSchema).optional(),
 	geoBroadcasts: zod.array(EspnCompetitionGeoBroadcastSchema).optional(),
 	odds: zod.array(EspnCompetitionOddsSchema.nullable()).optional(),
+	notes: zod.array(EspnCompetitionNoteSchema).optional(),
 });
 
 const EspnSeasonSchema = zod.object({
@@ -201,6 +208,7 @@ export type EspnCompetitionGeoBroadcast = zod.infer<typeof EspnCompetitionGeoBro
 export type EspnOddsProviderLogo = zod.infer<typeof EspnOddsProviderLogoSchema>;
 export type EspnOddsProvider = zod.infer<typeof EspnOddsProviderSchema>;
 export type EspnCompetitionOdds = zod.infer<typeof EspnCompetitionOddsSchema>;
+export type EspnCompetitionNote = zod.infer<typeof EspnCompetitionNoteSchema>;
 export type EspnWeather = zod.infer<typeof EspnWeatherSchema>;
 export type EspnSeason = zod.infer<typeof EspnSeasonSchema>;
 export type EspnCompetition = zod.infer<typeof EspnCompetitionSchema>;

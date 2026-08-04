@@ -81,7 +81,8 @@ export interface Game {
 	isRedZone?: boolean;
 	/** Game Condition (weather) from ESPN; only present for outdoor venues */
 	weather?: GameCondition;
-	/** True when ESPN classifies this as a postseason game (season.type === 3) */
+	/** True for a playoff/knockout game. ESPN signals this three different ways depending on the
+	 *  competition — see resolvePostseason in apiClient.ts. */
 	isPostseason?: boolean;
 	/** True when the game is suspended due to a delay (rain, lightning, etc.) */
 	delayed?: boolean;

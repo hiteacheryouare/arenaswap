@@ -193,6 +193,60 @@ const buildDownDistance = (situation: EspnSituation): string | undefined => {
 	return `${ordinal} & ${distance}`;
 };
 
+/**
+ * ESPN encodes "this is a knockout game" three mutually incompatible ways, and only the first
+ * one is the convention every tutorial assumes. All three are needed:
+ *
+ *  1. `season.type === 3` — the US pro/college leagues (NFL, NBA, MLB, NHL, NCAA), plus the
+ *     WBC's second round, which lands on 3 by coincidence.
+ *  2. `season.slug` — international soccer, Liga MX, MLS, NWSL and the rest of the WBC. Their
+ *     `season.type` is a per-tournament id that is never 3: the 2022 World Cup final reports
+ *     `type: 10948`, the 2024 UCL final `type: 12082`. Slug is the stable signal across seasons.
+ *  3. `competition.notes[0].headline` — the Olympics, where even the Gold Medal Game reports
+ *     `type: 2, slug: 'regular-season'` and the round survives only in editorial display copy.
+ */
+const postseasonSlugs = new Set([
+	'knockout-round-playoffs', // UCL/UEL 2024-25 format onward
+	'round-of-16',
+	'quarterfinals',
+	'semifinals',
+	'semi-finals', // WBC hyphenates
+	'final',
+	'finals', // WBC pluralizes
+	'3rd-place', // FIFA Women's World Cup
+	'3rd-place-match', // FIFA (men's) World Cup
+	'gold-medal-match',
+	'bronze-medal-match',
+	'mls-cup',
+]);
+
+// Liga MX, MLS and NWSL generate a slug per tournament instance — `apertura-2023---finals`,
+// `playoffs--quarterfinals`, `clausura-2024---finals` — so the round can only be matched as a
+// suffix/substring. Verified safe against their regular-season slugs (`torneo-apertura`) and
+// against the domestic leagues, whose season-long slugs (`2023-24-english-premier-league`,
+// `2023-24-laliga`) contain none of these.
+const postseasonSlugPatterns = [/quarterfinals?$/, /semi-?finals?$/, /finals?$/, /playoffs/, /liguilla/];
+
+// Scoped to the Olympic leagues rather than applied globally: headline is free-text editorial
+// copy, and matching it everywhere would sweep in regular-season bracket events like college
+// basketball's November invitationals. Group games read "Group C" / "Pool B" and don't match.
+const olympicHeadlineLeagues = new Set<LeagueId>(['olybkm', 'olybkw', 'olymih', 'olywih', 'olybb']);
+const postseasonHeadlinePattern = /quarterfinal|semifinal|medal game/i;
+
+const resolvePostseason = (event: EspnEvent, comp: EspnCompetition, league: LeagueId): boolean => {
+	if (event.season?.type === 3) return true;
+
+	const slug = event.season?.slug?.trim().toLowerCase();
+	if (slug && (postseasonSlugs.has(slug) || postseasonSlugPatterns.some(p => p.test(slug)))) return true;
+
+	if (olympicHeadlineLeagues.has(league)) {
+		const headline = comp.notes?.[0]?.headline;
+		if (headline && postseasonHeadlinePattern.test(headline)) return true;
+	}
+
+	return false;
+};
+
 const parseTopOfInning = (shortDetail?: string): boolean | undefined => {
 	if (!shortDetail) return undefined;
 	if (shortDetail.startsWith('Top')) return true;
@@ -258,7 +312,7 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 			? (situation.isRedZone ?? false)
 			: undefined,
 		weather: parseWeather(event),
-		isPostseason: event.season?.type === 3,
+		isPostseason: resolvePostseason(event, comp, league),
 		delayed: isDelayed || undefined,
 		delayDescription,
 	};

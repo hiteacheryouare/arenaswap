@@ -1,5 +1,18 @@
 # Changelog
 
+## The World Cup final was never a postseason game — 2026-08-03
+
+Edge-case audit of how the scorer and the cards handle the strange corners of sport. Two of them turned out to be wrong in a way you could watch happen.
+
+`isPostseason` read `event.season?.type === 3`. That is ESPN's convention for the US pro and college leagues, and it is not the convention anywhere else. The 2022 World Cup final reports `type: 10948`. The 2024 Champions League final reports `type: 12082`. Liga MX, MLS, the NWSL and the World Baseball Classic each use their own per-tournament id, and none of them is ever 3 — so a Tuesday-night bowl game collected the postseason boost and the World Cup final did not, every tournament, every season, for as long as the check has existed.
+
+The Olympics are worse. A 2024 Paris Gold Medal Game reports `type: 2, slug: 'regular-season'` — identical to a group game. The only place the round survives is `competition.notes[0].headline`, a free-text field reading `"2024 Olympic Men's Basketball - Gold Medal Game"`.
+
+### PowerScore
+- **Postseason detection now handles all three of ESPN's encodings.** `season.type === 3` still covers the US leagues; an explicit slug allowlist covers international soccer and the WBC; the Olympic leagues fall back to the headline field. Every slug in the allowlist was verified against a real payload rather than inferred, which is how the awkward ones surfaced — the Women's World Cup says `3rd-place` where the men's says `3rd-place-match`, the WBC says `semi-finals` and `finals` where every soccer competition says `semifinals` and `final`, and UCL/UEL added `knockout-round-playoffs` in the 2024-25 format change
+- **Liga MX, MLS and the NWSL generate a slug per tournament** — `apertura-2023---finals`, `playoffs--quarterfinals` — so those match on pattern rather than exact string. Checked against their regular-season slugs (`torneo-apertura`) and against the four domestic leagues, whose season-long slugs (`2023-24-english-premier-league`) contain nothing that could trip it
+- **The Olympic headline check is scoped to the five Olympic leagues**, not applied globally. It is editorial copy, and matching it everywhere would have swept in regular-season bracket events like college basketball's November invitationals
+
 ## Closing one tab could switch off auto-switching entirely — 2026-08-03
 
 Audit of the tab switching path. Nothing in the extension ever noticed a tab closing: `tabRegistry`, `standbyStreamTabId` and the muted-tab set were only ever pruned by hand, from the popup, and all three are mirrored into session storage so a dead tab id came back after every service-worker restart. Browsers never reuse a tab id, so those entries could only ever be wrong — and one of them was enough to stop the whole feature. A closed tab still won the switch selection whenever its game held the top PowerScore, `executeSwitch` found no such tab and returned, and nothing fell through to the runner-up. No notification, no log, no recovery until you reopened the popup and re-assigned tabs. Close the tab showing the best game and ArenaSwap went quiet for the rest of the night.

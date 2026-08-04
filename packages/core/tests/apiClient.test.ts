@@ -24,6 +24,7 @@ const makeEvent = (params: {
 	withOdds?: boolean;
 	situation?: Record<string, unknown>;
 	season?: Record<string, unknown>;
+	notes?: Record<string, unknown>[];
 }): Record<string, unknown> => ({
 	id: params.id,
 	date: params.date ?? '2026-10-05T00:00:00.000Z',
@@ -66,6 +67,7 @@ const makeEvent = (params: {
 				},
 			},
 			situation: params.situation,
+			...(params.notes !== undefined && { notes: params.notes }),
 			venue: { fullName: 'Arena Name' },
 			broadcasts: [{ names: [' ESPN ', 'ESPN'] }],
 			geoBroadcasts: [{ media: { shortName: 'ESPN2' } }],
@@ -1609,6 +1611,102 @@ describe('apiClient', () => {
 			]);
 			const result = await fetchGamesWithLeagueLogos(['nba'], { includeUpcoming: false });
 			expect(result.games.find(g => g.id === 'pre-season')?.isPostseason).toBe(false);
+		});
+
+		// season.type === 3 is an NFL/NBA/MLB/NHL/NCAA convention only. Every season/slug pair
+		// below is a real payload verified against ESPN's API, not an invented shape — these
+		// competitions use a per-tournament type id that is never 3, so slug is the only signal.
+		describe('competitions where season.type is never 3', () => {
+			const expectPostseason = async (
+				league: Parameters<Awaited<ReturnType<typeof loadApiClient>>['fetchGamesWithLeagueLogos']>[0][number],
+				season: Record<string, unknown>,
+				expected: boolean,
+			) => {
+				const { fetchGamesWithLeagueLogos } = fetchWith([
+					makeEvent({ id: 'e1', state: 'in', period: 2, clock: '60:00', homeScore: '1', awayScore: '1', season }),
+				]);
+				const result = await fetchGamesWithLeagueLogos([league], { includeUpcoming: false });
+				expect(result.games.find(g => g.id === 'e1')?.isPostseason).toBe(expected);
+			};
+
+			test('World Cup: knockout rounds are postseason, group stage is not', async () => {
+				await expectPostseason('fifawc', { year: 2022, type: 10948, slug: 'final' }, true);
+				await expectPostseason('fifawc', { year: 2022, type: 10952, slug: 'round-of-16' }, true);
+				await expectPostseason('fifawc', { year: 2022, type: 10949, slug: '3rd-place-match' }, true);
+				await expectPostseason('fifawc', { year: 2022, type: 10953, slug: 'group-stage' }, false);
+			});
+
+			test("Women's World Cup uses 3rd-place, not the men's 3rd-place-match", async () => {
+				await expectPostseason('fifawwc', { year: 2023, type: 10633, slug: '3rd-place' }, true);
+				await expectPostseason('fifawwc', { year: 2023, type: 10632, slug: 'final' }, true);
+			});
+
+			test('UCL/UEL: the 2024-25 knockout-round-playoffs counts, the league phase does not', async () => {
+				await expectPostseason('ucl', { year: 2024, type: 12886, slug: 'knockout-round-playoffs' }, true);
+				await expectPostseason('ucl', { year: 2024, type: 12884, slug: 'round-of-16' }, true);
+				await expectPostseason('ucl', { year: 2023, type: 12082, slug: 'final' }, true);
+				await expectPostseason('uel', { year: 2024, type: 12886, slug: 'league-phase' }, false);
+			});
+
+			test('Liga MX Liguilla and MLS/NWSL playoffs match on their per-tournament slugs', async () => {
+				await expectPostseason('ligamx', { year: 2023, type: 11826, slug: 'apertura-2023---finals' }, true);
+				await expectPostseason('ligamx', { year: 2023, type: 11800, slug: 'torneo-apertura' }, false);
+				await expectPostseason('mls', { year: 2023, type: 12188, slug: 'mls-cup' }, true);
+				await expectPostseason('nwsl', { year: 2023, type: 11666, slug: 'playoffs--quarterfinals' }, true);
+			});
+
+			test('WBC hyphenates semi-finals and pluralizes finals', async () => {
+				await expectPostseason('wbbc', { year: 2023, type: 5, slug: 'semi-finals' }, true);
+				await expectPostseason('wbbc', { year: 2023, type: 6, slug: 'finals' }, true);
+				await expectPostseason('wbbc', { year: 2023, type: 2, slug: '1st-round' }, false);
+			});
+
+			test('domestic leagues have no postseason and their season-long slugs must not match', async () => {
+				await expectPostseason('epl', { year: 2023, type: 11864, slug: '2023-24-english-premier-league' }, false);
+				await expectPostseason('laliga', { year: 2023, type: 11865, slug: '2023-24-laliga' }, false);
+			});
+		});
+
+		// The Olympics report `type: 2, slug: 'regular-season'` for every game including the Gold
+		// Medal Game — verified against the 2024 Paris basketball and 2026 Milano-Cortina hockey
+		// payloads. The round exists only in competition.notes[0].headline.
+		describe('Olympic medal rounds, where slug is useless', () => {
+			const olympicGame = (id: string, headline?: string) => makeEvent({
+				id,
+				state: 'in',
+				period: 3,
+				clock: '5:00',
+				homeScore: '70',
+				awayScore: '68',
+				season: { year: 2024, type: 2, slug: 'regular-season' },
+				...(headline !== undefined && { notes: [{ headline }] }),
+			});
+
+			const isPostseason = async (event: Record<string, unknown>, league: 'olybkm' | 'olymih' | 'nba') => {
+				const { fetchGamesWithLeagueLogos } = fetchWith([event]);
+				const result = await fetchGamesWithLeagueLogos([league], { includeUpcoming: false });
+				return result.games[0]?.isPostseason;
+			};
+
+			test('detects the gold and bronze medal games and the semifinal', async () => {
+				expect(await isPostseason(olympicGame('g', "2024 Olympic Men's Basketball - Gold Medal Game"), 'olybkm')).toBe(true);
+				expect(await isPostseason(olympicGame('b', "2024 Olympic Men's Basketball - Bronze Medal Game"), 'olybkm')).toBe(true);
+				expect(await isPostseason(olympicGame('s', "2024 Olympic Men's Basketball - Semifinal"), 'olybkm')).toBe(true);
+				expect(await isPostseason(olympicGame('q', "2024 Olympic Men's Basketball - Quarterfinal"), 'olybkm')).toBe(true);
+				expect(await isPostseason(olympicGame('h', 'Milano Cortina 2026 Men\'s Hockey - Gold Medal Game'), 'olymih')).toBe(true);
+			});
+
+			test('leaves group-stage games alone', async () => {
+				expect(await isPostseason(olympicGame('grp', "2024 Olympic Men's Basketball - Group C"), 'olybkm')).toBe(false);
+				expect(await isPostseason(olympicGame('none'), 'olybkm')).toBe(false);
+			});
+
+			// The headline check is deliberately scoped to the Olympic leagues: it is free-text
+			// editorial copy, and matching it everywhere would sweep in regular-season bracket
+			// events like college basketball's November invitationals.
+			test('does not apply the headline heuristic to non-Olympic leagues', async () => {
+				expect(await isPostseason(olympicGame('nba1', 'Some Invitational - Semifinal'), 'nba')).toBe(false);
+			});
 		});
 	});
 });
