@@ -1,5 +1,15 @@
 # Changelog
 
+## The walkthrough gave every boost an icon; the breakdown gave them none — 2026-08-03
+
+The walkthrough teaches the six boosts and penalties one at a time, each with its own icon and color — an hourglass for the clock stall, a trophy for the postseason. The breakdown on the game detail screen kept the colors and dropped the icons, so the factors you had just been taught to recognize by shape arrived as six lines of plain text under five signal rows that each had a colored dot.
+
+### Game detail
+- **Every boost/penalty row now leads with its walkthrough icon**, in the walkthrough's color: hourglass (clock stall), pulse (volatility), star (favorite), lightning (game boost), bullseye (scoring opportunity), trophy (postseason)
+- Color and icon live in one table, so the two screens can't drift apart — the color was already duplicated between them, and the icon existed only in the walkthrough
+- The icons occupy the **same 17px marker column as the signal rows' dots**, and are centred on their labels to the pixel. Their labels start 4.4px right of the signal names, which is a 9.9px glyph against a 6px dot: closing that gap would mean either glyphs too small to read or glyphs touching the text, so the marker edges are what line up
+- `aria-hidden`, since every row's label already names its factor in words
+
 ## A red-zone drive while up 31 was worth as much as one in a tie game — 2026-08-03
 
 `computeScoringOpportunityBoost` paid a flat +10 for any red-zone possession, with no reference to the score and no reference to the down. Backups grinding out a drive at the end of a 45-3 game collected the same bonus as 4th-and-goal from the 1 in a one-score game. The existing tests only ever exercised `isRedZone` true, false and undefined — never in combination with a score, which is why it survived this long.

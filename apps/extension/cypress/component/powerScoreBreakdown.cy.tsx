@@ -82,6 +82,37 @@ describe('PowerScoreBreakdown win probability variance', () => {
 	});
 });
 
+describe('PowerScoreBreakdown factor icons', () => {
+	it('renders one icon per boost/penalty row, matching the walkthrough legend', () => {
+		cy.mount(<PowerScoreBreakdown {...defaultProps} winProbabilityVariance={3} />);
+		const expected = [
+			'bi-hourglass-split',
+			'bi-activity',
+			'bi-star-fill',
+			'bi-lightning-fill',
+			'bi-bullseye',
+			'bi-trophy-fill',
+		];
+		cy.get('.powerscore-factor-icon').should('have.length', expected.length);
+		cy.get('.powerscore-factor-icon').each(($icon, i) => {
+			cy.wrap($icon).should('have.class', expected[i]!);
+		});
+	});
+
+	it('omits the volatility icon when there is no win-probability line', () => {
+		cy.mount(<PowerScoreBreakdown {...defaultProps} />);
+		cy.get('.powerscore-factor-icon').should('have.length', 5);
+		cy.get('.bi-activity').should('not.exist');
+	});
+
+	it('hides the icons from assistive tech, leaving the label text to carry the meaning', () => {
+		cy.mount(<PowerScoreBreakdown {...defaultProps} />);
+		cy.get('.powerscore-factor-icon').each($icon => {
+			cy.wrap($icon).should('have.attr', 'aria-hidden', 'true');
+		});
+	});
+});
+
 describe('PowerScoreBreakdown boosts', () => {
 	it('shows "+N" for favorite bonus when > 0', () => {
 		cy.mount(<PowerScoreBreakdown {...defaultProps} favoriteBonus={10} favoriteTeamCount={1} />);

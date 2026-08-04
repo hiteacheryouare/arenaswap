@@ -149,6 +149,15 @@ $bootstrap-icons-font-dir: '/fonts';
 	flex-shrink:  0;
 }
 
+// Boost/penalty rows' leading icon — the counterpart to .powerscore-signal-dot on signal rows.
+.powerscore-factor-icon {
+	display:     inline-flex;
+	width:       0.68rem;
+	font-size:   0.62rem;
+	line-height: 1;
+	flex-shrink: 0;
+}
+
 .powerscore-signal-name {
 	flex-shrink: 0;
 	width:       4.7rem;

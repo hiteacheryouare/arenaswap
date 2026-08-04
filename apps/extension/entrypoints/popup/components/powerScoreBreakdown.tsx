@@ -44,15 +44,24 @@ const signalMeta = [
 	{ name: 'comeback' as SignalName, labelKey: 'powerScore.signalComeback', tooltipKey: 'powerScore.tooltipComeback', max: scoreMaxComeback, color: '#d90368' },
 ] as const;
 
-// Per-factor colors mirror the walkthrough's boost/penalty legend (walkthroughStepPowerScore.tsx).
-const boostPenaltyColor = {
-	clockStall: '#ef4444',
-	volatility: '#a855f7',
-	favorite: '#f1c40f',
-	gameBoost: '#22c55e',
-	scoringOpp: '#f75c03',
-	postseason: '#2274a5',
+// Per-factor colors and icons mirror the walkthrough's boost/penalty legend (walkthroughStepPowerScore.tsx).
+const boostPenaltyMeta = {
+	clockStall: { color: '#ef4444', icon: 'hourglass-split' },
+	volatility: { color: '#a855f7', icon: 'activity' },
+	favorite: { color: '#f1c40f', icon: 'star-fill' },
+	gameBoost: { color: '#22c55e', icon: 'lightning-fill' },
+	scoringOpp: { color: '#f75c03', icon: 'bullseye' },
+	postseason: { color: '#2274a5', icon: 'trophy-fill' },
 } as const;
+
+/** Leading icon for a boost/penalty row — the counterpart to the signal rows' colored dot. */
+const FactorIcon = ({ factor }: { factor: keyof typeof boostPenaltyMeta }) => (
+	<i
+		className={`bi bi-${boostPenaltyMeta[factor].icon} powerscore-factor-icon`}
+		style={{ color: boostPenaltyMeta[factor].color }}
+		aria-hidden='true'
+	/>
+);
 
 const PowerScoreBreakdown = ({
 	closeness,
@@ -135,10 +144,11 @@ const PowerScoreBreakdown = ({
 			)}
 			<div className='powerscore-breakdown-row powerscore-breakdown-row-penalty'>
 				<span className='d-flex align-items-center gap-1'>
+					<FactorIcon factor='clockStall' />
 					{i18n.t('powerScore.clockStallPenalty')}
 					<SignalTooltipIcon text={i18n.t('powerScore.tooltipClockStallPenalty')} />
 				</span>
-				<span style={{ color: stallPenalty > 0 ? boostPenaltyColor.clockStall : undefined }}>
+				<span style={{ color: stallPenalty > 0 ? boostPenaltyMeta.clockStall.color : undefined }}>
 					{stallPenalty > 0 ? `-${stallPenalty}` : '0'}
 				</span>
 			</div>
@@ -150,6 +160,7 @@ const PowerScoreBreakdown = ({
 			{hasWinProbVariance && (
 				<div className='powerscore-breakdown-row'>
 					<span className='d-flex align-items-center gap-1'>
+						<FactorIcon factor='volatility' />
 						{variance > 0
 							? i18n.t('powerScore.volatilityBoost')
 							: variance < 0
@@ -157,39 +168,43 @@ const PowerScoreBreakdown = ({
 								: i18n.t('powerScore.volatility')}
 						<SignalTooltipIcon text={i18n.t('powerScore.tooltipVolatility')} />
 					</span>
-					<span style={{ color: variance > 0 ? boostPenaltyColor.volatility : variance < 0 ? boostPenaltyColor.clockStall : undefined }}>
+					<span style={{ color: variance > 0 ? boostPenaltyMeta.volatility.color : variance < 0 ? boostPenaltyMeta.clockStall.color : undefined }}>
 						{variance > 0 ? `+${variance}` : variance < 0 ? `${variance}` : '0'}
 					</span>
 				</div>
 			)}
 			<div className='powerscore-breakdown-row'>
 				<span className='d-flex align-items-center gap-1'>
+					<FactorIcon factor='favorite' />
 					{i18n.t('powerScore.favoriteBoost')}
 					<SignalTooltipIcon text={i18n.t('powerScore.tooltipFavoriteBoost')} />
 				</span>
-				<span style={{ color: favoriteBonus > 0 ? boostPenaltyColor.favorite : undefined }}>{favoriteBonus > 0 ? `+${favoriteBonus}` : '0'}</span>
+				<span style={{ color: favoriteBonus > 0 ? boostPenaltyMeta.favorite.color : undefined }}>{favoriteBonus > 0 ? `+${favoriteBonus}` : '0'}</span>
 			</div>
 			{favoriteBonus > 0 && <div className='powerscore-breakdown-note'>{i18n.t('powerScore.favoriteTeamsInMatchup', favoriteTeamCount)}</div>}
 			<div className='powerscore-breakdown-row'>
 				<span className='d-flex align-items-center gap-1'>
+					<FactorIcon factor='gameBoost' />
 					{i18n.t('powerScore.gameBoost')}
 					<SignalTooltipIcon text={i18n.t('powerScore.tooltipGameBoost')} />
 				</span>
-				<span style={{ color: currentBoost > 0 ? boostPenaltyColor.gameBoost : undefined }}>{currentBoost > 0 ? `+${currentBoost}` : '0'}</span>
+				<span style={{ color: currentBoost > 0 ? boostPenaltyMeta.gameBoost.color : undefined }}>{currentBoost > 0 ? `+${currentBoost}` : '0'}</span>
 			</div>
 			<div className='powerscore-breakdown-row'>
 				<span className='d-flex align-items-center gap-1'>
+					<FactorIcon factor='scoringOpp' />
 					{i18n.t('powerScore.scoringOpportunity')}
 					<SignalTooltipIcon text={i18n.t('powerScore.tooltipScoringOpportunity')} />
 				</span>
-				<span style={{ color: scoringOpportunityBoost > 0 ? boostPenaltyColor.scoringOpp : undefined }}>{scoringOpportunityBoost > 0 ? `+${scoringOpportunityBoost}` : '0'}</span>
+				<span style={{ color: scoringOpportunityBoost > 0 ? boostPenaltyMeta.scoringOpp.color : undefined }}>{scoringOpportunityBoost > 0 ? `+${scoringOpportunityBoost}` : '0'}</span>
 			</div>
 			<div className='powerscore-breakdown-row'>
 				<span className='d-flex align-items-center gap-1'>
+					<FactorIcon factor='postseason' />
 					{i18n.t('powerScore.postseasonBoost')}
 					<SignalTooltipIcon text={i18n.t('powerScore.tooltipPostseasonBoost')} />
 				</span>
-				<span style={{ color: postseasonBoost > 0 ? boostPenaltyColor.postseason : undefined }}>{postseasonBoost > 0 ? `+${postseasonBoost}` : '0'}</span>
+				<span style={{ color: postseasonBoost > 0 ? boostPenaltyMeta.postseason.color : undefined }}>{postseasonBoost > 0 ? `+${postseasonBoost}` : '0'}</span>
 			</div>
 			<div className='powerscore-breakdown-row powerscore-breakdown-row-total'><span>{i18n.t('powerScore.finalPowerScore')}</span><span>{totalLabel}</span></div>
 			{reason && <div className='powerscore-breakdown-reason'>{reason}</div>}
