@@ -111,6 +111,6 @@ ISC © [Ryan Mullin](https://github.com/hiteacheryouare) and contributors
 <br />
 <br />
 
-<sub>ArenaSwap is a <a href="https://github.com/latticeandcompany">Lattice &amp; Company</a> project, built and maintained by <a href="https://github.com/hiteacheryouare">Ryan Mullin</a>.</sub>
+<sub>ArenaSwap is a <a href="https://latticeandcompany.github.io">Lattice &amp; Company</a> project, built and maintained by <a href="https://hiteacheryouare.github.io">Ryan Mullin</a>.</sub>
 
 </div>
