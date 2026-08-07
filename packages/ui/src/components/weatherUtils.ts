@@ -43,7 +43,7 @@ const conditionIconMap: Record<string, string> = {
 };
 
 export const conditionIcon = (label: string): string => {
-	// Compound labels like "Partly Cloudy/Windy" — use the primary condition
+	// Compound labels like "Partly Cloudy/Windy" reduce to the primary condition.
 	const primary = (label.split('/')[0] ?? label).trim().toLowerCase();
 	return conditionIconMap[primary] ?? 'bi-cloud';
 };

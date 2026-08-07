@@ -32,8 +32,8 @@ export const isPowerScoreSnapshotLike = (value: unknown): value is PowerScoreSna
 	&& isFiniteNumber(value.favoriteTeamCount)
 	&& typeof value.stalled === 'boolean'
 	&& typeof value.reason === 'string'
-	// gameBoost, scoringOpportunityBoost, postseasonBoost and winProbabilityVariance are optional —
-	// older snapshots won't have them, and volatility is absent whenever ESPN gave us no line
+	// The boosts and volatility are optional: older snapshots predate them, and volatility is
+	// absent whenever ESPN gave us no line.
 	&& (value.gameBoost === undefined || isFiniteNumber(value.gameBoost))
 	&& (value.scoringOpportunityBoost === undefined || isFiniteNumber(value.scoringOpportunityBoost))
 	&& (value.postseasonBoost === undefined || isFiniteNumber(value.postseasonBoost))

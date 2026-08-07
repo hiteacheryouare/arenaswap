@@ -18,7 +18,6 @@ import {
 	leagueConfigMap,
 } from 'powerscore';
 
-// Re-export powerscore constants so existing import paths work unchanged
 export {
 	allLeagueIds,
 	stallPenaltySteps,
@@ -37,14 +36,12 @@ export {
 	leagueConfigMap,
 };
 
-// App identity (sourced from package.json)
 export const appName = pkg.name;
 export const appVersion = pkg.version;
 export const appDescription = pkg.description;
 
 export const pollIntervalMs = 15_000;
-// Fallback window for sports not yet in sportTypeConfigMap (5 min).
-// In practice every sport config defines historyWindowMs; this is a safety net.
+// Safety net for sports not yet in sportTypeConfigMap; in practice every config defines its own.
 export const historyWindowMs = 300_000;
 
 // After this many consecutive empty polls a league switches to dormant mode
@@ -52,32 +49,25 @@ export const pollDormantThresholdPolls = 2;
 export const pollDormantMinMs = 120_000;
 export const pollDormantMaxMs = 180_000;
 
-// Adaptive eager polling bounds — interval scales continuously with PowerScore.
-// pollIntervalMs (15s) is kept for initial stagger, demo mode, and fallback.
-// High PowerScore → pollMinEagerMs; low PowerScore → pollMaxEagerMs.
-// All live games are polled at least every pollMaxEagerMs so a boring game can
-// still catch a momentum shift. When all games in a league are in
-// halftime/intermission, pollIntermissionMs is used instead.
+// The interval scales continuously with PowerScore: high scores approach pollMinEagerMs, low
+// scores pollMaxEagerMs. Every live game is polled at least every pollMaxEagerMs so a boring one
+// can still catch a momentum shift. pollIntervalMs remains the stagger, demo and fallback value.
 export const pollMinEagerMs = 6_000;
 export const pollMaxEagerMs = 25_000;
 export const pollIntermissionMs = 40_000;
 
-// Switch behavior defaults
 export const defaultSensitivity = 4 as const;
 export const defaultCooldownSecs = 45;
 export const defaultSwitchDelaySecs = 0;
 export const defaultFavoriteTeamBonusPoints = 10;
 export const defaultPostseasonBoostPoints = 5;
 export const defaultUpcomingGamesDays = 7;
-/** Minimum and maximum allowed values for upcomingGamesDays (inclusive) */
 export const upcomingGamesDaysMin = 1;
 export const upcomingGamesDaysMax = 14;
 
 
-// Sensitivity level → score delta required to trigger a tab switch.
-// Recalibrated for the PowerScore v2 distribution (lower bases, more spread) via the simulation
-// harness (npm run powerscore:simulate), then nudged ~25% stickier so the Balanced default is less
-// jumpy. Level 4 (~11) sits just above the median best-vs-runner-up switch gap.
+// Score delta required to trigger a switch. Calibrated via `npm run powerscore:simulate`, then
+// nudged ~25% stickier; level 4 sits just above the median best-vs-runner-up gap.
 export const sensitivityThresholds: Record<number, number> = {
 	1: 37,
 	2: 27,
@@ -88,8 +78,7 @@ export const sensitivityThresholds: Record<number, number> = {
 	7: 1
 };
 
-// Logos that always win over whatever ESPN's API returns. Use when ESPN only
-// returns a generic sport icon and we have a better official league logo.
+// Win over ESPN's API, which for these leagues returns only a generic sport icon.
 const leagueLogoOverrides: Partial<Record<LeagueId, string>> = {
 	cbase: 'https://a.espncdn.com/i/espn/misc_logos/500/ncaa_baseball.png',
 	csoft: 'https://a.espncdn.com/i/espn/misc_logos/500/ncaa_womens_softball.png',
@@ -102,7 +91,6 @@ const leagueLogoOverrides: Partial<Record<LeagueId, string>> = {
 	olysocw: 'https://a.espncdn.com/i/espn/misc_logos/500-dark/olympics.png',
 };
 
-// Logos used when ESPN's API returns nothing for a league.
 export const leagueLogoFallbacks: Partial<Record<LeagueId, string>> = {
 	nba: 'https://a.espncdn.com/i/teamlogos/leagues/500/nba.png',
 	wnba: 'https://a.espncdn.com/i/teamlogos/leagues/500/wnba.png',
@@ -185,15 +173,14 @@ export const applyDisabledSignals = (
 	const leadChanges = disabled.has('leadChanges') ? 0 : result.leadChanges;
 	const comeback = disabled.has('comeback') ? 0 : result.comeback;
 
-	// Turning signals off shrinks the reachable ceiling, so the surviving signals are rescaled to
-	// keep the 0-100 range meaningful — otherwise a closeness-only setup could never exceed 42.
+	// Turning signals off shrinks the reachable ceiling, so the survivors are rescaled to keep the
+	// 0-100 range meaningful — otherwise a closeness-only setup could never exceed 42.
 	const enabledSum = closeness + lateGame + momentum + leadChanges + comeback;
 	const scalingFactor = scoreMaxTotal / enabledMax;
 	const newBaseTotal = Math.min(Math.round(enabledSum * scalingFactor), scoreMaxTotal);
 
-	// The stall penalty is a deduction from the signals subtotal, so it rescales with them.
-	// Volatility is a flat adjustment applied on top of that subtotal rather than one of the
-	// signals, so it carries over at full value.
+	// The stall penalty comes off the signals subtotal, so it rescales with them; volatility sits
+	// on top of that subtotal and carries over at full value.
 	const scaledStallPenalty = Math.round((result.stallPenalty ?? 0) * scalingFactor);
 	const variance = result.winProbabilityVariance ?? 0;
 	const newTotal = Math.min(Math.max(newBaseTotal - scaledStallPenalty + variance, 0), scoreMaxTotal);
@@ -267,8 +254,8 @@ export const normalizeUserPreferences = (storedPrefs: unknown): UserPreferences 
 
 	const candidate = storedPrefs as Partial<UserPreferences> & { enabledLeagues?: unknown; favoriteTeamIds?: unknown };
 	const hasEnabledLeaguesField = Object.prototype.hasOwnProperty.call(candidate, 'enabledLeagues');
-	// Order is user-controlled (league display order), so preserve it — but dedupe, since a
-	// repeated id would break the reorder UI's index math and duplicate React keys.
+	// Order is the user's league display order, so it is preserved — but a repeated id would break
+	// the reorder UI's index math and duplicate React keys.
 	const parsedEnabledLeagues = Array.isArray(candidate.enabledLeagues)
 		? [...new Set(candidate.enabledLeagues.filter(isLeagueId))]
 		: [];

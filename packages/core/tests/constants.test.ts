@@ -118,8 +118,7 @@ describe('constants', () => {
 		expect(normalized.favoriteTeamBonusPoints).toBe(10);
 	});
 
-	// enabledLeagues order is user-controlled (league display order on the main screen),
-	// so normalization must not re-sort it.
+	// The order is the user's league display order, so normalization must not re-sort it.
 	test('preserves the stored enabledLeagues order verbatim', () => {
 		const custom = ['nhl', 'mlb', 'nba'];
 		expect(normalizeUserPreferences({ enabledLeagues: custom }).enabledLeagues).toEqual(custom);
@@ -156,8 +155,7 @@ describe('constants', () => {
 	});
 
 	test('applyDisabledSignals zeros disabled signals and scales total to maintain 0-100 range', () => {
-		// Use the real closeness max so the scaling factor (100 / scoreMaxCloseness) produces 100
-		// when the enabled signal is at its ceiling. Hardcoding 40 broke when PR #62 raised the max to 42.
+		// Read from the constant, not hardcoded: a change to scoreMaxCloseness has broken this before.
 		const base = { gameId: 'g1', total: scoreMaxCloseness, closeness: scoreMaxCloseness, lateGame: 0, momentum: 0, leadChanges: 0, comeback: 0, reason: 'tied', stalled: false };
 		const result = applyDisabledSignals(base, ['lateGame', 'momentum', 'leadChanges', 'comeback']);
 		expect(result.closeness).toBe(scoreMaxCloseness);

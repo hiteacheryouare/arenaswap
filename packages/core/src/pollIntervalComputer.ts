@@ -4,38 +4,17 @@ export const pollMinEagerMs = 6_000;
 export const pollMaxEagerMs = 25_000;
 export const pollIntermissionMs = 40_000;
 
-/**
- * How often the ESPN win-probability line is refreshed.
- *
- * Costs one request per live game (it lives on the summary endpoint, not the scoreboard), and
- * the scorer only reads the line's average distance from 50% — a figure that moves on the scale
- * of possessions. Polling it at the scoreboard's rate would multiply request volume for a signal
- * worth at most ±5 points.
- */
+// One request per live game, for a figure that moves on the scale of possessions and is worth at
+// most ±5 points — polling it at the scoreboard's rate would multiply request volume for nothing.
 export const pollWinProbabilityMs = 60_000;
 
-/**
- * Maps a PowerScore (0–100) to a poll interval via linear interpolation.
- * Higher score = shorter interval (more frequent polling).
- */
 export const computeEagerIntervalMs = (score: number): number => {
 	const clamped = Math.min(Math.max(score, 0), 100);
 	const t = clamped / 100;
 	return Math.round(pollMaxEagerMs - t * (pollMaxEagerMs - pollMinEagerMs));
 };
 
-/**
- * Computes the next poll interval (ms) for a league given its current live games
- * and the previous poll's PowerScore results.
- *
- * - Returns pollIntermissionMs when every live game is frozen (halftime/intermission
- *   or suspended by a delay).
- * - Returns pollMaxEagerMs when no live games are present (dormant mode handles
- *   the true no-game case separately; this is a fallback).
- * - Otherwise returns computeEagerIntervalMs(bestScore), where bestScore is the
- *   highest total score across all active (non-frozen) games in the league.
- *   The most exciting game in the league sets the pace for the whole league.
- */
+// The most exciting game in a league sets the pace for the whole league.
 export const computeLeagueIntervalMs = (
 	liveGames: Game[],
 	currentScores: PowerScoreResult[],

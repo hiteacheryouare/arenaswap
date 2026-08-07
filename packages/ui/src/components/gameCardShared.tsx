@@ -17,11 +17,9 @@ export const formatPeriod = (game: Game): string => {
 	if (period > regular) {
 		if (config.periodFormat === 'periods') return 'OT';
 		if (config.periodFormat === 'innings') return `Inn ${period}`;
-		// Soccer plays two 15-minute extra-time halves (periods 3 and 4) and then, if still level,
-		// a penalty shootout (period 5) — labelling those "OT1/OT2/OT3" is the wrong vocabulary for
-		// the sport and flatly wrong for a shootout, which isn't extra time at all. Anything past
-		// the second ET half is a shootout; ESPN's own label for it is "FT-Pens".
-		// Keyed on sportType, not periodFormat, so NCAA basketball's halves keep their OT numbering.
+		// Soccer plays two extra-time halves (periods 3 and 4) and then a shootout (period 5), so
+		// "OT1/OT2/OT3" is the wrong vocabulary and flatly wrong for the shootout. Keyed on
+		// sportType, not periodFormat, so NCAA basketball's halves keep their OT numbering.
 		if (game.sportType === 'soccer') {
 			const extraTimeHalf = period - regular;
 			return extraTimeHalf <= 2 ? `ET${extraTimeHalf}` : 'PENS';
@@ -79,8 +77,8 @@ const oddsSummary = (game: Game): string | null => {
 };
 
 const TeamLogo = ({ team }: { team: Team }) => {
-	// Track the URL that failed rather than a boolean, so a changed logo URL retries automatically
-	// (cards are reused across polls; a transient bad URL would otherwise stay hidden forever).
+	// The failed URL rather than a boolean, so a changed logo retries: cards are reused across
+	// polls, and a transient bad URL would otherwise stay hidden forever.
 	const [failedSrc, setFailedSrc] = useState<string | null>(null);
 	if (team.logo && failedSrc !== team.logo) {
 		return (
@@ -160,7 +158,7 @@ export const TeamColumn = ({
 };
 
 const OddsProvider = ({ game, dark }: { game: Game; dark?: boolean }) => {
-	// Track the failed URL (not a boolean) so a changed provider logo URL retries automatically.
+	// As above — the failed URL, so a changed provider logo retries.
 	const [failedSrc, setFailedSrc] = useState<string | null>(null);
 	const provider = game.odds?.provider;
 	if (!provider?.name) return null;

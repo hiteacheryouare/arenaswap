@@ -26,19 +26,17 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 	const homeFavoriteTeamKey = createFavoriteTeamKey(game.league, game.homeTeam.id);
 	const awayFavorited = favoriteTeamIds.has(awayFavoriteTeamKey);
 	const homeFavorited = favoriteTeamIds.has(homeFavoriteTeamKey);
-	// A shootout freezes the main score at the 120-minute scoreline, so without this the card would
-	// sit on "1 – 1" while the tie is actually being decided. Shown as a secondary line rather than
-	// replacing the score, which everywhere else in the product means "goals scored in the match".
-	// Rendered only once ESPN populates both tallies — whether it does so kick-by-kick or only at
-	// the end is unconfirmed, and this degrades to showing nothing either way.
+	// A shootout freezes the main score at the 120-minute scoreline, so without this the card sits
+	// on "1 – 1" while the tie is being decided. Secondary rather than replacing the score, which
+	// everywhere else means goals scored in the match. Shows nothing until both tallies arrive.
 	const shootout = game.awayTeam.shootoutScore !== undefined && game.homeTeam.shootoutScore !== undefined
+		? t('gameCard.shootout', { away: game.awayTeam.shootoutScore, home: game.homeTeam.shootoutScore })
+		: null;
 	// The yard line is what tells you whether the down matters. Falls back to the down and distance
 	// alone when ESPN omits the field position, as it does at halftime and between drives.
 	const downDistanceLine = game.downDistance && game.fieldPosition
 		? t('gameCard.downDistanceAt', { downDistance: game.downDistance, fieldPosition: game.fieldPosition })
 		: game.downDistance;
-		? t('gameCard.shootout', { away: game.awayTeam.shootoutScore, home: game.homeTeam.shootoutScore })
-		: null;
 	const psBarPercent = Math.min((totalPowerScore / scoreMaxTotal) * 100, 100);
 	const psColor = powerScoreColor(totalPowerScore, scoreMaxTotal);
 	const { onClick: onCardClick, onKeyDown: onCardKeyDown } = buildCardHandlers(onOpenGameDetail, game.id);
@@ -89,7 +87,7 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 					{!isInningSport && hasClock && (
 						<span className='font-lekton game-clock'>{formatGameClock(game)}</span>
 					)}
-					{/* The shootout line already carries the period ("PENS 3–5"), so rendering the
+					{/* The shootout line already carries the period, so rendering the
 					    period label above it would just say PENS twice. */}
 					{!shootout && (
 						<span className='font-lekton game-period'>

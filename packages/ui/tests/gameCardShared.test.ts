@@ -14,8 +14,6 @@ const makeGame = (league: LeagueId, overrides: Partial<Game> = {}): Game => ({
 	...overrides,
 });
 
-// Period labelling is sport-specific and shared by both apps, so a regression here is visible
-// on every card in the product.
 describe('formatPeriod', () => {
 	test('labels quarters, halves, periods and innings by league format', () => {
 		expect(formatPeriod(makeGame('nba', { period: 3 }))).toBe('Q3');
@@ -31,8 +29,7 @@ describe('formatPeriod', () => {
 		expect(formatPeriod(makeGame('nhl', { period: 4 }))).toBe('OT');
 	});
 
-	// Soccer doesn't play "overtime" — it plays two extra-time halves and then penalties, and
-	// ESPN encodes the shootout as period 5 (verified: 2016 UCL final, 2022 WC Croatia–Japan).
+	// ESPN encodes the shootout as period 5 — verified against the 2016 UCL and 2022 WC finals.
 	describe('soccer extra time and penalties', () => {
 		const soccer = (period: number) => formatPeriod(makeGame('ucl', { sportType: 'soccer', period }));
 
@@ -69,7 +66,6 @@ describe('formatClock', () => {
 });
 
 describe('formatGameClock', () => {
-	// Soccer clocks read as elapsed minutes, not a counting-down mm:ss.
 	test('renders soccer as elapsed minutes', () => {
 		expect(formatGameClock(makeGame('epl', { sportType: 'soccer', clockSeconds: 2_700 }))).toBe("45'");
 	});
@@ -85,8 +81,7 @@ describe('powerScoreColor', () => {
 		expect(powerScoreColor(scoreMaxTotal, scoreMaxTotal)).toBe('rgb(247,92,3)');
 	});
 
-	// A manual game boost can push a total past 100; the gradient has to hold at the top rather
-	// than overshooting into an out-of-range colour.
+	// A manual game boost can push a total past 100, and the gradient has to hold at the top.
 	test('clamps above the ceiling', () => {
 		expect(powerScoreColor(140, scoreMaxTotal)).toBe('rgb(247,92,3)');
 	});

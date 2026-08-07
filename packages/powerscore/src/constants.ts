@@ -1,83 +1,56 @@
 import type { LeagueId, SportType, SportTypeConfig, ScorerTunables, LeagueConfig } from './types';
 
-// Clock stall detection — graduated flat deduction based on how long the clock has been frozen.
-// Sorted descending so the first matching step wins.
-// At 15s poll interval: 8 polls ≈ 120s (commercial starts), 15 polls ≈ 225s (extended break / halftime).
+// Sorted descending so the first matching step wins. At a 15s poll interval, 8 polls is roughly
+// when a commercial starts and 15 polls an extended break.
 export const stallPenaltySteps: { minPolls: number; deduction: number }[] = [
 	{ minPolls: 15, deduction: 25 },
 	{ minPolls: 8,  deduction: 15 },
 ];
 
-// Scoring opportunity boost — automatic additive bonus when a live situation signals an imminent scoring threat.
-// baseRunnerBoosts is indexed by runner count (0–3).
+// Indexed by runner count (0–3).
 export const scoringOpportunityBaseRunnerBoosts: [number, number, number, number] = [0, 3, 6, 10];
 
-// Red zone, scaled by how close the game is. A drive inside the 20 while up 30 carries no stakes;
-// the same drive in a one-score game is the most-watch moment in football. Tiers key off the
-// sport's own closenessMargins ([3, 9, 14] for football) so there is exactly one definition of
-// "blowout" per sport rather than a second one invented here.
-export const scoringOpportunityRedZoneBoost = 10; // margin ≤ t2 — still a one- or two-score game
-export const scoringOpportunityRedZoneFringeBoost = 5; // t2 < margin ≤ t3 — live, but only just
-// (margin > t3 pays nothing.)
+// Scaled by how close the game is: a drive inside the 20 while up 30 carries no stakes. Tiers key
+// off the sport's own closenessMargins so there is one definition of "blowout" per sport.
+export const scoringOpportunityRedZoneBoost = 10; // margin ≤ t2
+export const scoringOpportunityRedZoneFringeBoost = 5; // t2 < margin ≤ t3; above t3 pays nothing
 
-/**
- * Down-and-distance weighting for the red-zone boost.
- *
- * Deliberately a single combined lookup rather than separate down and goal-to-go factors that
- * multiply together: the two describe the same situation, so stacking them double-counts. Goal-to-go
- * mostly raises the *likelihood* of a score (red-zone TD rate is ~61% overall against 70–95% on
- * goal-to-go) rather than the tension — what makes a snap worth switching to is 4th down, where
- * the play itself decides possession. A 1st-and-goal from the 3 is no more tense than 1st-and-10
- * from the 19; both are "they'll probably score eventually."
- */
+// One combined lookup rather than separate down and goal-to-go factors multiplied together: the
+// two describe the same situation, so stacking them double-counts. Goal-to-go raises the
+// likelihood of a score, not the tension — 4th down is what decides possession.
 export const redZoneDownMultipliers = {
 	fourthDownGoalToGo: 1.5,
 	fourthDown: 1.35,
 	thirdAndShort: 1.15,
-	/** 1st/2nd down at any distance, and 3rd-and-long — the boost stands on the red zone alone. */
 	other: 1,
 } as const;
 
-/** Yards to go at or below which 3rd down counts as short-yardage. */
 export const thirdAndShortDistance = 3;
 
-// PowerScore signal maxes (per-signal ceilings, sport-agnostic).
-// The per-signal ceilings deliberately sum to MORE than 100 ("overcomplete"): the headline total is
-// capped at scoreMaxTotal, so a genuinely exciting game — close + a run + lead changes, even mid-game
-// before late-game pressure exists — can stack into the 80s/90s and a true classic saturates at 100,
-// while a dull game still scores low. This is what lets PowerScore use its full 0–100 range instead of
-// compressing every game into the bottom two-thirds.
+// These deliberately sum to more than 100. The headline total is capped at scoreMaxTotal, so a
+// genuinely exciting game stacks into the 80s/90s and a classic saturates, which is what lets
+// PowerScore use its full range instead of compressing every game into the bottom two-thirds.
 export const scoreMaxCloseness = 42;
 export const scoreMaxLateGame = 38;
 export const scoreMaxMomentum = 38;
 export const scoreMaxLeadChanges = 18;
 export const scoreMaxComeback = 20;
-/** Win probability variance: max boost (+5) and max penalty (−5) applied on top of signals. */
+// Applied on top of the signals, as both a boost and a penalty.
 export const scoreWinProbVarianceMax = 5;
-// Headline cap. Intentionally lower than the sum of the per-signal ceilings above.
 export const scoreMaxTotal = 100;
 
-/**
- * Ceiling for the pre-cap signals subtotal.
- *
- * The per-signal maxima are deliberately overcomplete — they sum well past 100 so a game firing
- * on several signals at once saturates while a dull game stays low. `baseTotal` records that raw
- * sum before the headline total is capped, so it has to be allowed past `scoreMaxTotal`; clamping
- * it to 100 would make the breakdown's "before → after" stall arithmetic disagree with the total
- * it is explaining.
- */
+// `baseTotal` is the raw pre-cap sum, so it has to be allowed past scoreMaxTotal — clamping it to
+// 100 would make the breakdown's stall arithmetic disagree with the total it explains.
 export const scoreMaxSignalsSubtotal =
 	scoreMaxCloseness + scoreMaxLateGame + scoreMaxMomentum + scoreMaxLeadChanges + scoreMaxComeback;
 
-// Final-period regulation ramp ceiling for tight/close games. Also anchors the tied OT pre-boost
-// (otPreBoostMax = scoreMaxLateGame − this), so referencing it symbolically keeps the two in sync.
+// Also anchors otPreBoostMax (scoreMaxLateGame − this), so the symbolic reference keeps them in sync.
 const lateGameCloseCeiling = 36;
 
 export const scorerTunables: ScorerTunables = {
 	scores: {
-		// Closeness tiers are the CEILINGS reached at the end of regulation (progress = 1).
-		// Realized closeness = closenessFlatFloor + (tier - floor) * gameProgress^0.55,
-		// so early games sit near the flat floor and tension builds toward the final buzzer.
+		// Ceilings reached at the end of regulation, not the realized score: that is
+		// closenessFlatFloor + (tier − floor) * gameProgress^0.55.
 		closeness: {
 			tied: scoreMaxCloseness,
 			tight: 34,
@@ -86,24 +59,21 @@ export const scorerTunables: ScorerTunables = {
 			fringe: 8,
 			none: 0,
 		},
-		// Always-paid closeness minimum for any active (non-blowout) tier, before progress scaling.
 		// Clamped to the tier ceiling inside applyProgressFloor, so fringe (8) still stays at 8.
 		closenessFlatFloor: 12,
 		lateGame: {
 			overtime: scoreMaxLateGame,
-			// Per-closeness-tier ceilings for the final-period regulation ramp (replaces fixed otEdgeMax).
-			// Tight/close games earn a much higher ceiling than fringe or blowout games.
+			// Per-closeness-tier ceilings for the final-period regulation ramp.
 			closeCeiling: lateGameCloseCeiling,
 			fringeCeiling: 22,
 			blowoutCeiling: 15,
-			// Final period ramps finalPeriodStart → closeCeiling near-linearly; the prior period
-			// carries a gentle touch so the period boundary is smooth.
+			// The prior period carries a gentle touch so the period boundary is smooth.
 			finalPeriodStart: 3,
 			previousPeriodTouch: 3,
 			otPreBoostMax: scoreMaxLateGame - lateGameCloseCeiling,
 			none: 0,
 		},
-		// Momentum / lead-change tier values are the spike CEILINGS; sport-scaled decay is applied after.
+		// Spike ceilings; sport-scaled decay is applied after.
 		momentum: {
 			bigRun: scoreMaxMomentum,
 			smallRun: 20,
@@ -114,17 +84,15 @@ export const scorerTunables: ScorerTunables = {
 			single: 12,
 			none: 0,
 		},
-		// Comeback ceilings (progress-scaled like closeness, then decayed like the rest of the cluster).
+		// Progress-scaled like closeness, then decayed like the rest of the cluster.
 		comeback: {
 			big: scoreMaxComeback,
 			moderate: 11,
 			flatFloor: 2,
 			none: 0,
 		},
-		// Win probability: average absolute distance from 50% maps to [−max, +max].
-		// Games where both lines hug 50% (close, constantly contested) earn a boost.
-		// Games where one team dominates (lines far apart) earn a penalty.
-		// maxAvgDist is the avg|p−0.5| that saturates the −max penalty (a game held steadily at ~85% hits this).
+		// Average absolute distance from 50% maps to [−max, +max]: lines that hug 50% earn the
+		// boost, a dominated game the penalty. A line held steadily at ~85% saturates maxAvgDist.
 		winProbabilityVariance: {
 			maxAvgDist: 0.35,
 			minDataPoints: 5,

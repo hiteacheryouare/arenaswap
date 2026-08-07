@@ -1,7 +1,5 @@
-// ─── ArenaSwap shared game card styles ──────────────────────────────────────
 // Import AFTER Bootstrap variables and source.
 
-// ─── Flip-score (scoreboard slide) animation ─────────────────────────────────
 @keyframes scoreSlideOut {
 	from { transform: translateY(0%); }
 	to   { transform: translateY(110%); }
@@ -38,26 +36,19 @@
 	animation: scoreSlideIn 0.3s cubic-bezier(0, 0, 0.6, 1) forwards;
 }
 
-// ─── Lekton monospace helper ──────────────────────────────────────────────────
 .font-lekton {
 	font-family: 'Lekton', monospace;
 	font-variant-numeric: tabular-nums;
 }
 
-// ─── Scoreboard figures ───────────────────────────────────────────────────────
-// DM Sans ships no tabular figures at all — its digit advances run from 312
-// ("1") to 684 ("0") units, so font-variant-numeric is a no-op there and a "1"
-// is under half the width of a "0". Worse, the "1" ink sits right of its own
-// box, which drags the optical midpoint of a score pair off the card axis and
-// makes the (correctly centred) base diamond read as drifted left. Geist has
-// real tabular figures — uniform 636-unit cells with the glyphs optically
-// centred in them — which pins the midpoint back on the axis for every score.
+// DM Sans ships no tabular figures at all, so font-variant-numeric is a no-op there and a "1"
+// is under half the width of a "0" — enough to drag a score pair's optical midpoint off the
+// card axis. Geist has real tabular figures, which pins the midpoint back for every score.
 @mixin scoreboard-figures {
 	font-family: 'Geist', 'DM Sans', system-ui, sans-serif;
 	font-variant-numeric: tabular-nums;
 }
 
-// ─── Game card ────────────────────────────────────────────────────────────────
 .game-card {
 	background:    #ffffff;
 	border:        1px solid #dee2e6;
@@ -99,7 +90,6 @@
 	}
 }
 
-// ─── Live pulse animation ─────────────────────────────────────────────────────
 @keyframes livePulse {
 	0%, 100% { opacity: 1; }
 	50%       { opacity: 0.3; }
@@ -131,7 +121,6 @@
 	text-transform: uppercase;
 }
 
-// ─── PowerScore bar (bottom of live card + detail view) ──────────────────────
 .game-card-ps-bar-row {
 	margin-top: 0.3rem;
 }
@@ -154,7 +143,6 @@
 	font-variant-numeric: tabular-nums;
 }
 
-// ─── PowerScore bar label (shared across live card + detail card) ─────────────
 .game-card-ps-label {
 	font-size:      0.55rem;
 	font-weight:    600;
@@ -208,21 +196,16 @@ $pre-game-time-color: shade-color($warning, 60%);
 	letter-spacing: -0.02em;
 }
 
-// Tabular figures equalise single digits, but a two-digit score is still twice
-// the width of a one-digit one. A floor of 2.4ch (wide enough for any two-digit
-// score, matching .game-detail-score-value) makes both halves equal, so the
-// centre indicator sits on the card's axis whatever the score reads. Never
-// shrink below it: .flip-score clips its overflow for the roll animation, so a
-// squeezed box would cut the digit off.
+// Tabular figures equalise single digits, but a two-digit score is still twice the width of a
+// one-digit one; the 2.4ch floor makes both halves equal so the centre indicator stays on the
+// card's axis. Never shrink below it — .flip-score clips overflow and would cut the digit off.
 .game-score-row > .game-score-value {
 	display: inline-flex;
 	flex: 0 0 auto;
 	min-width: 2.4ch;
 
-	// Align inward so the scores stay tight against the centre indicator
-	// instead of drifting out with the padding.
-	// justify-content places the live digit; text-align covers the outgoing one,
-	// which is absolutely positioned across the box during the roll animation.
+	// justify-content places the live digit; text-align covers the outgoing one, which is
+	// absolutely positioned across the box during the roll animation.
 	&:first-child {
 		justify-content: flex-end;
 		text-align: right;
@@ -248,9 +231,8 @@ $pre-game-time-color: shade-color($warning, 60%);
 	letter-spacing: 0.02em;
 }
 
-// Sits under the period label during a penalty shootout. Weighted heavier than .game-period
-// because it carries the number actually deciding the match, but kept smaller than the main
-// score so it never competes with the 120-minute scoreline above it.
+// Heavier than .game-period because it carries the number deciding the match, but smaller than
+// the main score so it never competes with the 120-minute scoreline above it.
 .game-shootout-score {
 	font-size: 0.68rem;
 	font-weight: 700;
@@ -388,8 +370,6 @@ $pre-game-time-color: shade-color($warning, 60%);
 	line-height: 1.2;
 }
 
-// ─── Score separator (thin vertical bar between scores) ──────────────────────
-
 .game-score-sep {
 	width: 1px;
 	height: 1.1em;
@@ -397,8 +377,6 @@ $pre-game-time-color: shade-color($warning, 60%);
 	flex-shrink: 0;
 	align-self: center;
 }
-
-// ─── Tab assignment select (compact version matching the extension popup) ──────
 
 .game-card-tab-assign {
 	margin-top: 0.4rem;

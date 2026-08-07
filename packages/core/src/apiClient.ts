@@ -52,9 +52,8 @@ const toQueryDate = (date: Date): string => (
 );
 
 const buildUpcomingDatesRangeQuery = (days: number): string => {
-	// Start from today so morning pre-game events aren't missed.
-	// ESPN's default (no-dates) scoreboard only reliably surfaces active/recent games;
-	// the explicit dates query returns all scheduled events for the requested range.
+	// ESPN's default no-dates scoreboard only reliably surfaces active and recent games; the
+	// explicit range returns every scheduled event, including this morning's pre-game ones.
 	const start = new Date();
 	const end = new Date(start);
 	end.setUTCDate(end.getUTCDate() + days);
@@ -66,7 +65,7 @@ const ch = (n: number): number => {
 	return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
 };
 
-// WCAG relative luminance — used to detect colors that would vanish on the app's black background
+// WCAG relative luminance.
 const hexLuminance = (hex: string): number => {
 	const matched = /^#([\da-fA-F]{6})$/.exec(hex);
 	if (!matched) return 0;
@@ -97,15 +96,15 @@ const resolveTeamColors = (primary?: string, alternate?: string): { color?: stri
 	const p = normalizeOne(primary);
 	const a = normalizeOne(alternate);
 	if (!p) return { color: a };
-	// Primary is too dark for the UI — use alternate as main color and keep primary as the
-	// alternate so the pair-resolver can still try it (it will lighten it for charts).
+	// Primary is too dark for the UI. Keep it as the alternate so the pair-resolver can still
+	// lighten it for charts.
 	if (hexLuminance(p) < darkOnBlackThreshold && a && hexLuminance(a) > hexLuminance(p)) {
 		return { color: a, alternateColor: p };
 	}
 	return { color: p, alternateColor: a };
 };
 
-// ESPN returns multiple logo variants; prefer the "dark" one (light-colored, for dark UIs).
+// The "dark" variant is the light-coloured one, meant for dark UIs.
 const pickLeagueLogo = (logos?: { href?: string; rel?: string[] }[]): string | undefined => (
 	logos?.find(l => l.rel?.includes('dark') && l.href)?.href ?? logos?.[0]?.href
 );
@@ -184,15 +183,9 @@ const parseWeather = (event: EspnEvent): GameCondition | undefined => {
 
 const downOrdinals = ['', '1st', '2nd', '3rd', '4th'] as const;
 
-/**
- * Goal-to-go: the line to gain is the goal line, so a stop ends the drive rather than setting up
- * another set of downs.
- *
- * ESPN's own label is the primary signal — `shortDownDistanceText` reads "4th & Goal". The
- * `distance <= 0` fallback mirrors buildDownDistance, which already treats a missing or zero
- * distance as goal-to-go. Returns false rather than undefined when neither applies: an unknown
- * situation should cost the boost its bonus, not misreport goal-to-go.
- */
+// ESPN's own label is the primary signal; the `distance <= 0` fallback mirrors buildDownDistance.
+// Returns false rather than undefined when neither applies, so an unknown situation costs the
+// boost its bonus rather than misreporting goal-to-go.
 const parseGoalToGo = (situation: EspnSituation): boolean => {
 	if (/goal/i.test(situation.shortDownDistanceText ?? '')) return true;
 	return typeof situation.down === 'number' && (typeof situation.distance !== 'number' || situation.distance <= 0);
@@ -207,18 +200,13 @@ const buildDownDistance = (situation: EspnSituation): string | undefined => {
 	return `${ordinal} & ${distance}`;
 };
 
-/**
- * ESPN encodes "this is a knockout game" three mutually incompatible ways, and only the first
- * one is the convention every tutorial assumes. All three are needed:
- *
- *  1. `season.type === 3` — the US pro/college leagues (NFL, NBA, MLB, NHL, NCAA), plus the
- *     WBC's second round, which lands on 3 by coincidence.
- *  2. `season.slug` — international soccer, Liga MX, MLS, NWSL and the rest of the WBC. Their
- *     `season.type` is a per-tournament id that is never 3: the 2022 World Cup final reports
- *     `type: 10948`, the 2024 UCL final `type: 12082`. Slug is the stable signal across seasons.
- *  3. `competition.notes[0].headline` — the Olympics, where even the Gold Medal Game reports
- *     `type: 2, slug: 'regular-season'` and the round survives only in editorial display copy.
- */
+// ESPN encodes "this is a knockout game" three mutually incompatible ways, and all three are
+// needed:
+//  1. `season.type === 3` — the US pro/college leagues, plus the WBC's second round by coincidence.
+//  2. `season.slug` — international soccer, Liga MX, MLS, NWSL and the rest of the WBC, whose
+//     `season.type` is a per-tournament id that is never 3 (2022 World Cup final: 10948).
+//  3. `competition.notes[0].headline` — the Olympics, where even the Gold Medal Game reports
+//     `type: 2, slug: 'regular-season'` and the round survives only in display copy.
 const postseasonSlugs = new Set([
 	'knockout-round-playoffs', // UCL/UEL 2024-25 format onward
 	'round-of-16',
@@ -234,16 +222,13 @@ const postseasonSlugs = new Set([
 	'mls-cup',
 ]);
 
-// Liga MX, MLS and NWSL generate a slug per tournament instance — `apertura-2023---finals`,
-// `playoffs--quarterfinals`, `clausura-2024---finals` — so the round can only be matched as a
-// suffix/substring. Verified safe against their regular-season slugs (`torneo-apertura`) and
-// against the domestic leagues, whose season-long slugs (`2023-24-english-premier-league`,
-// `2023-24-laliga`) contain none of these.
+// Liga MX, MLS and NWSL generate a slug per tournament instance (`apertura-2023---finals`), so
+// the round can only be matched as a substring. Verified safe against their regular-season slugs
+// and against the domestic leagues' season-long ones.
 const postseasonSlugPatterns = [/quarterfinals?$/, /semi-?finals?$/, /finals?$/, /playoffs/, /liguilla/];
 
-// Scoped to the Olympic leagues rather than applied globally: headline is free-text editorial
-// copy, and matching it everywhere would sweep in regular-season bracket events like college
-// basketball's November invitationals. Group games read "Group C" / "Pool B" and don't match.
+// Scoped to the Olympic leagues because headline is free-text editorial copy: matching it
+// everywhere would sweep in regular-season bracket events like November invitationals.
 const olympicHeadlineLeagues = new Set<LeagueId>(['olybkm', 'olybkw', 'olymih', 'olywih', 'olybb']);
 const postseasonHeadlinePattern = /quarterfinal|semifinal|medal game/i;
 
@@ -310,7 +295,6 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 		clockSeconds: parseClockToSeconds(status.displayClock ?? '0:00'),
 		status: state,
 		startTime: state === 'pre' ? event.date : undefined,
-		fieldPosition: isGridironSituation ? situation.possessionText?.trim() || undefined : undefined,
 		broadcasts: parseBroadcasts(comp),
 		odds: parseOdds(comp),
 		intermission: /HALFTIME|END_PERIOD|INTERMISSION/i.test(status.type?.name ?? ''),
@@ -326,6 +310,7 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 		downDistance: leagueConfig.sportType === 'football' && state === 'in' && situation
 			? buildDownDistance(situation)
 			: undefined,
+		fieldPosition: isGridironSituation ? situation.possessionText?.trim() || undefined : undefined,
 		isRedZone: leagueConfig.sportType === 'football' && state === 'in' && situation
 			? (situation.isRedZone ?? false)
 			: undefined,
@@ -362,10 +347,8 @@ const fetchScoreboard = async (url: string, leagueId: LeagueId): Promise<EspnSco
 const fetchLeagueGames = async (config: LeagueConfig, options: { includeUpcoming?: boolean; upcomingDays?: number } = {}): Promise<LeagueGamesResult> => {
 	const { includeUpcoming = true, upcomingDays = 7 } = options;
 	const baseParams = new URLSearchParams();
-	// ESPN requires `groups=50` for reliable NCAA men's basketball scoreboard coverage
-	// and to avoid 404 responses on date-range queries.
+	// Required for reliable coverage and to avoid 404s on date-range queries.
 	if (config.id === 'ncaab') baseParams.set('groups', '50');
-	// ESPN requires `groups=49` for reliable NCAA women's basketball scoreboard coverage.
 	if (config.id === 'ncaaw') baseParams.set('groups', '49');
 
 	const scoreboardUrl = `${espnBase}/${config.espnPath}/scoreboard`;
@@ -440,14 +423,12 @@ export const fetchGamesWithLeagueLogos = async (enabledLeagues: LeagueId[], opti
 	return { games, leagueLogos };
 };
 
-// Returns all live + upcoming games for enabled leagues (excludes finished games)
 export const fetchGames = async (enabledLeagues: LeagueId[]): Promise<Game[]> => {
 	if (enabledLeagues.length === 0) return [];
 	const { games } = await fetchGamesWithLeagueLogos(enabledLeagues);
 	return games;
 };
 
-// Convenience: only live games (for switching logic)
 export const fetchLiveGames = async (enabledLeagues: LeagueId[]): Promise<Game[]> => {
 	const games = await fetchGames(enabledLeagues);
 	return games.filter(g => g.status === 'in');
@@ -458,14 +439,9 @@ export const fetchLeagueLogos = async (enabledLeagues: LeagueId[], options: { in
 	return leagueLogos;
 };
 
-/**
- * ESPN's win-probability line for one game, oldest entry first, as home-win fractions in [0, 1].
- *
- * This lives on the summary endpoint rather than the scoreboard, so it costs one request per
- * game — call it on a slower cadence than the scoreboard poll. Returns an empty array whenever
- * ESPN has nothing to give (pre-game, unsupported sport, delay), which the scorer reads as
- * "no volatility signal" rather than as a neutral zero.
- */
+// Home-win fractions in [0, 1], oldest first. Lives on the summary endpoint, so it costs one
+// request per game — call it on a slower cadence than the scoreboard poll. Empty whenever ESPN
+// has nothing, which the scorer reads as "no signal" rather than a neutral zero.
 export const fetchWinProbability = async (game: Pick<Game, 'id' | 'league'>, init?: { signal?: AbortSignal }): Promise<number[]> => {
 	const config = leagueConfigMap[game.league];
 	if (!config) return [];

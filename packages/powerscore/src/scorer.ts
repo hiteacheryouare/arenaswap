@@ -31,14 +31,11 @@ const clamp = (value: number, min: number, max: number): number => (
 	Math.min(max, Math.max(min, value))
 );
 
-// Concave weighting (<1) applied to game progress so state signals reach most of their ceiling by
-// mid-game rather than only at the final buzzer. Keeps early games low (a Q1 blowout is still ~0)
-// while letting a mid-game nail-biter score in a meaningful range. Tunable via the harness.
+// Concave (<1) so state signals reach most of their ceiling by mid-game rather than only at the
+// final buzzer: a Q1 blowout still scores ~0, a mid-game nail-biter lands in a meaningful range.
 const progressCurveExponent = 0.55;
 
-// Hybrid flat-floor + progress scaling for state-based signals (closeness, comeback).
-// A small floor always pays out; the rest of the tier ceiling is gated by (curved) game progress,
-// so early games sit low and tension builds toward the final buzzer.
+// The floor always pays out; the rest of the tier ceiling is gated by curved game progress.
 const applyProgressFloor = (tierCeiling: number, flatFloor: number, progress: number): number => {
 	if (tierCeiling <= 0) return 0;
 	const floor = clamp(flatFloor, 0, tierCeiling);
@@ -71,9 +68,8 @@ export const normalizePowerScoreResult = (
 	const hasScoringOpportunityBoost = typeof score.scoringOpportunityBoost === 'number' && Number.isFinite(score.scoringOpportunityBoost);
 	const hasPostseasonBoost = typeof score.postseasonBoost === 'number' && Number.isFinite(score.postseasonBoost);
 	const stallPenalty = hasStallPenalty ? Math.max(0, Math.round(toFiniteNumber(score.stallPenalty))) : undefined;
-	// Clamped to the overcomplete signals ceiling, not scoreMaxTotal: baseTotal is the raw
-	// pre-cap subtotal the breakdown subtracts the stall penalty from, so capping it at 100
-	// would make that subtraction disagree with the total it explains.
+	// Clamped to the signals ceiling, not scoreMaxTotal: this is the raw pre-cap subtotal the
+	// breakdown subtracts the stall penalty from.
 	const baseTotal = hasBaseTotal ? clamp(toFiniteNumber(score.baseTotal), 0, scoreMaxSignalsSubtotal) : undefined;
 	const favoriteBonus = hasFavoriteBonus ? Math.max(0, Math.round(toFiniteNumber(score.favoriteBonus))) : undefined;
 	const favoriteTeamCount = hasFavoriteTeamCount ? Math.max(0, Math.round(toFiniteNumber(score.favoriteTeamCount))) : undefined;
@@ -119,7 +115,6 @@ const getCloseness = (game: Game, config: SportTypeConfig, progress: number): Si
 	let tier: number;
 	let reason: string;
 	if (game.homeTeam.score === 0 && game.awayTeam.score === 0) {
-		// reason string intentionally reuses 'tied' — UI label is the same
 		tier = shouldScoreZeroZeroAsFullTie(game, config) ? scores.closeness.tied : scores.closeness.zeroZero;
 		reason = reasons.tied;
 	} else if (margin === 0) {
@@ -157,9 +152,8 @@ const ordinal = (n: number): string => {
 
 type LateGamePhase = 'none' | 'previous' | 'final';
 
-// Near-linear late-game ramp. Tension begins at the start of the final period and rises smoothly to
-// the per-closeness-tier ceiling (no final-seconds spike); the prior period carries a gentle "touch".
-// ceiling is the tier-specific max from getLateGameCeiling — tight games earn a much higher ceiling.
+// Rises smoothly from the start of the final period to the tier ceiling, with no final-seconds
+// spike; the prior period carries a gentle touch.
 const mapLinearLateGame = (phase: LateGamePhase, fraction: number, ceiling: number): number => {
 	const { lateGame } = scorerTunables.scores;
 	const f = clamp(fraction, 0, 1);
@@ -173,9 +167,7 @@ const mapLinearLateGame = (phase: LateGamePhase, fraction: number, ceiling: numb
 	);
 };
 
-// Tied games telegraph overtime: a ramping boost toward the reserved overtime value, applied in
-// the final-period window. Clock sports only; disabled when otPreBoostWindowSecs is 0 (e.g.
-// clockless baseball).
+// Tied games telegraph overtime. Clock sports only; disabled when otPreBoostWindowSecs is 0.
 const getOtPreBoost = (game: Game, config: SportTypeConfig, secsRemaining: number): number => {
 	const window = Math.max(0, config.otPreBoostWindowSecs);
 	if (window <= 0) return 0;
@@ -192,8 +184,8 @@ const getClockSecondsRemaining = (
 ): number => {
 	const boundedDuration = Math.max(0, periodDurationSecs);
 	let rawClock = game.clockSeconds ?? 0;
-	// Soccer's clock is total game elapsed time (ESPN reports 0'→90'+ continuously without
-	// resetting between halves). Strip completed periods so we get the within-period position.
+	// Soccer's clock is total elapsed time — ESPN reports 0'→90'+ without resetting between
+	// halves — so completed periods have to come off to get the within-period position.
 	if (config.clockIsFullGameElapsed && (game.period ?? 1) > 1) {
 		rawClock = Math.max(0, rawClock - (game.period! - 1) * boundedDuration);
 	}
@@ -203,8 +195,7 @@ const getClockSecondsRemaining = (
 		: boundedClock;
 };
 
-// 0 at the opening tip, 1 at the end of the final regulation period (and during overtime).
-// Drives the progress-scaled flat-floor model so a tied game in Q1 scores far lower than in Q4.
+// 0 at the opening tip, 1 at the end of the final regulation period and during overtime.
 const getGameProgress = (game: Game, config: SportTypeConfig): number => {
 	if (game.period == null) return 0;
 	const league = leagueConfigMap[game.league];
@@ -212,7 +203,7 @@ const getGameProgress = (game: Game, config: SportTypeConfig): number => {
 	if (game.period > regularPeriods) return 1;
 
 	if (!config.clockBased) {
-		// No game clock (baseball): approximate progress from the inning, mid-inning resolution.
+		// No game clock, so progress is approximated from the inning.
 		return clamp((game.period - 1 + 0.5) / regularPeriods, 0, 1);
 	}
 
@@ -232,9 +223,8 @@ const getBaseballRegulationProgress = (
 	return clamp((inning - curve.regulationStartInning) / spanInnings, 0, 1);
 };
 
-// Late-game pressure scales with how close the game is: tight/tied games earn the full closeCeiling,
-// fringe games a moderate ceiling, blowouts a small one. This replaces the old fractional factor so
-// each tier earns a genuinely different ceiling rather than a fraction of the same number.
+// Late-game pressure scales with how close the game is: tied games earn the full closeCeiling,
+// fringe games a moderate one, blowouts a small one.
 const getLateGameCeiling = (game: Game, config: SportTypeConfig): number => {
 	const [, t2, t3] = config.closenessMargins;
 	const margin = Math.abs(game.homeTeam.score - game.awayTeam.score);
@@ -251,14 +241,13 @@ const getLateGame = (game: Game, config: SportTypeConfig): Signal => {
 	const regularPeriods = leagueConfig.regularPeriods;
 	const { clockBased } = config;
 
-	// Overtime / extra innings → reserved top-of-range pressure (OT only happens from a tie).
+	// Overtime and extra innings only happen from a tie, so they take the top of the range.
 	if (game.period > regularPeriods)
 		return { score: scores.lateGame.overtime, reason: clockBased ? reasons.overtime : reasons.extraInnings };
 
 	const tierCeiling = getLateGameCeiling(game, config);
 
-	// Baseball (no clock): near-linear ramp across regulation innings (6th → 9th), reusing the
-	// inning-progress helper. Extra innings already returned above.
+	// No clock, so the ramp runs across regulation innings instead.
 	if (!clockBased) {
 		const curve = config.lateGameCurve;
 		if (!curve || curve.model !== 'baseball')
@@ -273,7 +262,6 @@ const getLateGame = (game: Game, config: SportTypeConfig): Signal => {
 		return { score, reason: `${ordinal(inning)} ${reasons.inningSuffix}` };
 	}
 
-	// Clock sports: derive the phase from the period and a near-linear fraction from the clock.
 	const periodDuration = Math.max(1, leagueConfig.periodDurationSecs);
 	const secsRemaining = getClockSecondsRemaining(game, config, periodDuration);
 	const elapsedFraction = clamp((periodDuration - secsRemaining) / periodDuration, 0, 1);
@@ -285,7 +273,6 @@ const getLateGame = (game: Game, config: SportTypeConfig): Signal => {
 	if (game.period < regularPeriods)
 		return { score: mapLinearLateGame('previous', elapsedFraction, tierCeiling), reason: '' };
 
-	// Final regulation period — whole-period linear ramp (closeness-gated) plus the tied OT pre-boost.
 	const rampScore = mapLinearLateGame('final', elapsedFraction, tierCeiling);
 	const otBoost = getOtPreBoost(game, config, secsRemaining);
 	const score = clamp(rampScore + otBoost, 0, scoreMaxLateGame);
@@ -298,13 +285,12 @@ const getLateGame = (game: Game, config: SportTypeConfig): Signal => {
 	return { score, reason };
 };
 
-// "Now" for decay is the newest snapshot's timestamp; all event ages are measured against it.
+// Event ages are measured against the newest snapshot, not wall-clock now.
 const deriveNow = (history: ScoreSnapshot[]): number => (
 	history.length > 0 ? history[history.length - 1]!.timestamp : 0
 );
 
-// Exponential decay: 1 at the moment of the event, 0.5 after one half-life, fading toward 0.
-// A null event timestamp (never happened) ages to Infinity → factor 0.
+// A null event timestamp (never happened) ages to Infinity, giving a factor of 0.
 const decayFactor = (ageMs: number, halfLifeMs: number): number => {
 	if (ageMs <= 0) return 1;
 	if (halfLifeMs <= 0) return 0;
@@ -315,7 +301,6 @@ const ageSince = (timestamp: number | null, now: number): number => (
 	timestamp === null ? Infinity : Math.max(0, now - timestamp)
 );
 
-// Newest snapshot whose score moved — the freshness anchor for momentum and comeback decay.
 const lastScoreChangeTimestamp = (history: ScoreSnapshot[]): number | null => {
 	for (let i = history.length - 1; i >= 1; i--) {
 		const cur = history[i]!;
@@ -326,7 +311,6 @@ const lastScoreChangeTimestamp = (history: ScoreSnapshot[]): number | null => {
 	return null;
 };
 
-// Count lead changes in the window and capture the newest one's timestamp for recency decay.
 const findLeadChanges = (history: ScoreSnapshot[]): { count: number; lastTimestamp: number | null } => {
 	let count = 0;
 	let lastTimestamp: number | null = null;
@@ -341,7 +325,7 @@ const findLeadChanges = (history: ScoreSnapshot[]): { count: number; lastTimesta
 	return { count, lastTimestamp };
 };
 
-// Apply sport-scaled decay to a freshly-spiked tier value; clears the reason once it fades to nothing.
+// Clears the reason once the value fades to nothing.
 const decaySignal = (tier: number, reason: string, ageMs: number, halfLifeMs: number): Signal => {
 	const score = Math.round(tier * decayFactor(ageMs, halfLifeMs));
 	return score <= 0 ? { score: 0, reason: '' } : { score, reason };
@@ -422,40 +406,26 @@ const getComeback = (game: Game, history: ScoreSnapshot[], config: SportTypeConf
 		return { score: scores.comeback.none, reason: '' };
 	}
 
-	// Progress-scale first (a late rally matters more), then fade with the live-action cluster.
+	// Progress-scaled first, since a late rally matters more, then faded with the cluster.
 	const floored = applyProgressFloor(tier, scores.comeback.flatFloor, progress);
 	const ageMs = ageSince(lastScoreChangeTimestamp(history), now);
 	return decaySignal(floored, reason, ageMs, config.decayHalfLifeMs.comeback);
 };
 
-/**
- * Contestedness of the win-probability line, as a boost/penalty in [−max, +max].
- *
- * Measures the line's **mean absolute distance from 50%**, not its variance: a line that hugs
- * 50% (neither team can shake the other) earns the boost, and a line parked at 90% earns the
- * penalty.
- *
- * Known limitation of that choice: a line oscillating between 10% and 90% — a genuinely wild
- * game — scores the same penalty as a steady 90% blowout, because both sit far from the middle
- * on average. Capturing swing rather than position would mean summing |pᵢ − pᵢ₋₁| instead, which
- * is a different signal and a recalibration; the name is kept for API compatibility.
- *
- * Returns undefined (no effect, and no row in the breakdown) when fewer than minDataPoints
- * values are available, so a game ESPN gives us nothing for is not scored as a neutral zero.
- */
+// Despite the name, this measures mean absolute distance from 50%, not variance. Known limitation:
+// a line oscillating between 10% and 90% scores the same penalty as a steady 90% blowout. Capturing
+// swing instead would mean summing |pᵢ − pᵢ₋₁|, a different signal and a recalibration.
 export const computeWinProbVarianceScore = (winProbHistory: number[]): number | undefined => {
 	const { maxAvgDist, minDataPoints } = scorerTunables.scores.winProbabilityVariance;
 	if (winProbHistory.length < minDataPoints) return undefined;
 	const n = winProbHistory.length;
 	const avgDistFromMid = winProbHistory.reduce((sum, p) => sum + Math.abs(p - 0.5), 0) / n;
-	// Linear map: avgDistFromMid=0 (both lines at 50%) → +max, avgDistFromMid=maxAvgDist → −max, clamped.
 	const raw = scoreWinProbVarianceMax - (avgDistFromMid / maxAvgDist) * 2 * scoreWinProbVarianceMax;
 	return Math.round(clamp(raw, -scoreWinProbVarianceMax, scoreWinProbVarianceMax));
 };
 
-// Which snap this is, as a multiplier on the margin-scaled red-zone base. Unknown down (ESPN
-// between plays, or a sport/feed that doesn't report one) falls through to `other`, so a missing
-// field costs the boost its bonus rather than the whole thing.
+// An unknown down — ESPN between plays, or a feed that doesn't report one — falls through to
+// `other`, so a missing field costs the boost its bonus rather than the whole thing.
 const getRedZoneDownMultiplier = (game: Game): number => {
 	if (game.down === 4) {
 		return game.isGoalToGo ? redZoneDownMultipliers.fourthDownGoalToGo : redZoneDownMultipliers.fourthDown;
@@ -466,9 +436,8 @@ const getRedZoneDownMultiplier = (game: Game): number => {
 	return redZoneDownMultipliers.other;
 };
 
-// Red-zone pressure is worth paying for only while the game is still in reach. Gating here rather
-// than leaving the boost flat is not a third penalty on a blowout — closeness and lateGame have
-// already scored it correctly low, and an unconditional +10 on top would undo that.
+// Gated on the margin because closeness and lateGame have already scored a blowout correctly low,
+// and an unconditional +10 on top would undo that.
 const getRedZoneBoost = (game: Game): number => {
 	const config = sportTypeConfigMap[game.sportType];
 	if (!config) return 0;
@@ -485,7 +454,7 @@ const getRedZoneBoost = (game: Game): number => {
 
 export const computeScoringOpportunityBoost = (game: Game): number => {
 	if (game.status !== 'in') return 0;
-	// A delay freezes the situation (runners stay on base, offense stays in the red zone),
+	// A delay freezes the situation — runners stay on base, the offense stays in the red zone —
 	// so the boost would otherwise keep paying out while nothing can happen.
 	if (game.delayed) return 0;
 
@@ -509,8 +478,8 @@ export const computePowerScore = (
 	stallCount: number = 0,
 	winProbabilityHistory: number[] = [],
 ): PowerScoreResult => {
-	// Nothing is happening during an intermission or a delay — a frozen game must never
-	// out-score a live one, so both zero out instead of keeping their last live score.
+	// A frozen game must never out-score a live one, so both zero out rather than keeping their
+	// last live score.
 	if (game.intermission || game.delayed)
 		return normalizePowerScoreResult({
 			gameId: game.id,
@@ -538,8 +507,7 @@ export const computePowerScore = (
 	const signalsSubtotal = closeness.score + lateGame.score + momentum.score + leadChanges.score + comeback.score;
 	const stallStep = stallPenaltySteps.find(s => stallCount >= s.minPolls);
 	const stalled = stallStep !== undefined;
-	// Stall penalty is a flat additive deduction applied to the signals subtotal.
-	// winProbVariance is a separate boost/penalty on top and is unaffected.
+	// A flat deduction on the signals subtotal; winProbVariance sits on top and is unaffected.
 	const stallPenalty = stalled ? stallStep.deduction : 0;
 	const stalledSignalsTotal = Math.max(0, signalsSubtotal - stallPenalty);
 	const rawTotal = stalledSignalsTotal + (winProbVariance ?? 0);
@@ -561,7 +529,7 @@ export const computePowerScore = (
 		reason,
 		stalled,
 		stallPenalty,
-		// Pre-stall pure signals sum — lets the breakdown UI show what the clock stall penalty changed.
+		// Lets the breakdown show what the stall penalty changed.
 		baseTotal: signalsSubtotal,
 	});
 };

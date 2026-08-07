@@ -25,8 +25,7 @@ describe('parseScoreboard', () => {
 		expect(result.droppedEvents).toBe(0);
 	});
 
-	// The whole reason parsing is per-event: ESPN ships one bad row in an otherwise healthy
-	// scoreboard, and rejecting the array as a unit would blank out the entire league.
+	// The whole reason parsing is per-event: rejecting the array as a unit blanks out the league.
 	test('drops only the malformed event, not the whole league', () => {
 		const good = Array.from({ length: 199 }, (_, i) => makeEvent(`g${i}`));
 		const bad = withCompetitor('bad', { id: 'x', homeAway: 'home', team: {} });
@@ -38,7 +37,6 @@ describe('parseScoreboard', () => {
 		expect(result.events.some(e => e.id === 'bad')).toBe(false);
 	});
 
-	// ESPN encodes scores and ids as numbers in some sports and strings in others.
 	test('accepts numeric scores and ids, normalizing them to strings', () => {
 		const numeric = withCompetitor('n1', { id: 42, homeAway: 'home', score: 7, team: { displayName: 'Home' } });
 

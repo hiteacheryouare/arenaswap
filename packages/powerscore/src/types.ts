@@ -8,7 +8,6 @@ export type LeagueId = 'nba' | 'wnba' | 'nhl' | 'ncaamh' | 'mlb' | 'nfl' | 'ncaa
 /** @deprecated Use LeagueId */
 export type SportId = LeagueId;
 
-/** Minimal game shape required by the PowerScore algorithm */
 export interface Game {
 	id: string;
 	league: LeagueId;
@@ -18,19 +17,14 @@ export interface Game {
 	period?: number;
 	clockSeconds?: number;
 	intermission?: boolean;
-	/** True while the game is suspended by a delay (rain, lightning, etc.); scores 0 like an intermission */
+	// Scores 0, like an intermission.
 	delayed?: boolean;
 	status?: 'pre' | 'in' | 'post';
-	/** Which bases have runners; used by the scoring opportunity boost */
 	baseRunners?: { first: boolean; second: boolean; third: boolean };
-	/** True when the offense is in the red zone; football only */
+	// Football only. `down` scales the red-zone boost: a 4th-down snap decides something.
 	isRedZone?: boolean;
-	/** Current down (1–4); football only. Scales the red-zone boost — a 4th-down snap decides
-	 *  something, a 1st-down snap does not. */
 	down?: number;
-	/** Yards to go for a first down; football only. */
 	distance?: number;
-	/** True when the offense has goal-to-go (the line to gain is the goal line); football only. */
 	isGoalToGo?: boolean;
 }
 
@@ -49,11 +43,11 @@ export interface PowerScoreResult {
 	momentum: number;
 	leadChanges: number;
 	comeback: number;
-	/** Win probability volatility boost/penalty, −5 to +5. Present when win probability history was supplied. */
+	// −5 to +5. Absent when no win-probability history was supplied.
 	winProbabilityVariance?: number;
 	reason: string;
 	stalled?: boolean;
-	/** Points removed by the clock-stall penalty (always ≥ 0). Present when stall detection has run. */
+	// Points removed, always ≥ 0.
 	stallPenalty?: number;
 	baseTotal?: number;
 	favoriteBonus?: number;
@@ -63,15 +57,11 @@ export interface PowerScoreResult {
 	postseasonBoost?: number;
 }
 
-/** Inning anchors for baseball's near-linear late-game ramp (clock sports derive theirs from the
- *  period + clock, so they need no curve config). */
+// Clock sports derive their ramp from period + clock, so they need no curve config.
 export interface BaseballLateGameCurveConfig {
 	model: 'baseball';
-	/** Regulation innings for this sport (MLB = 9) */
 	regulationInnings: number;
-	/** First inning where regulation late-game pressure should begin */
 	regulationStartInning: number;
-	/** Extra-innings baseline inning (typically regulationInnings + 1) */
 	extraInningsStartInning: number;
 }
 
@@ -89,17 +79,13 @@ export interface ScorerTunables {
 		};
 		lateGame: {
 			overtime: number;
-			/** ceiling for tight/close games (margin ≤ t2) in the final-period regulation ramp */
+			// Final-period ramp ceilings, keyed off the closeness tier: margin ≤ t2, ≤ t3, above t3.
 			closeCeiling: number;
-			/** ceiling for fringe games (t2 < margin ≤ t3) in the final-period regulation ramp */
 			fringeCeiling: number;
-			/** ceiling for blowout games (margin > t3) in the final-period regulation ramp */
 			blowoutCeiling: number;
-			/** late-game score at the very start of the final period */
 			finalPeriodStart: number;
-			/** small constant pressure carried through the previous period's ramp */
 			previousPeriodTouch: number;
-			/** extra points (closeCeiling → overtime) a tied game earns ramping through the OT pre-boost window */
+			// Extra points (closeCeiling → overtime) a tied game earns through the pre-boost window.
 			otPreBoostMax: number;
 			none: number;
 		};
@@ -116,16 +102,15 @@ export interface ScorerTunables {
 		comeback: {
 			big: number;
 			moderate: number;
-			/** always-paid minimum for any active comeback tier (before progress scaling and decay) */
+			// Always paid for any active tier, before progress scaling and decay.
 			flatFloor: number;
 			none: number;
 		};
-		/** always-paid minimum for any active closeness tier (before progress scaling) */
+		// Always paid for any active tier, before progress scaling.
 		closenessFlatFloor: number;
 		winProbabilityVariance: {
-			/** Average |p − 0.5| (p ∈ [0,1]) that saturates the −max penalty; values above are clamped. */
+			// Average |p − 0.5| that saturates the −max penalty; above this it clamps.
 			maxAvgDist: number;
-			/** Minimum number of data points required before the boost/penalty applies. */
 			minDataPoints: number;
 		};
 	};
@@ -151,43 +136,35 @@ export interface ScorerTunables {
 
 export interface SportTypeConfig {
 	id: SportType;
-	/** false for sports without a game clock (MLB) */
 	clockBased: boolean;
-	/** [tier1, tier2, tier3] score-margin thresholds for closeness signal */
+	// [tier1, tier2, tier3] score-margin thresholds.
 	closenessMargins: [number, number, number];
-	/** Inning-based late-game model — baseball only. Clock sports derive their near-linear ramp
-	 *  directly from period + clock, so they omit this. */
+	// Baseball only; clock sports derive their ramp from period + clock.
 	lateGameCurve?: LateGameCurveConfig;
-	/** Unanswered-scoring-run size that triggers max momentum score */
+	// Unanswered-scoring-run sizes that trigger the max and half momentum scores.
 	momentumBigRun: number;
-	/** Unanswered-scoring-run size that triggers half momentum score */
 	momentumSmallRun: number;
-	/** true when ESPN reports elapsed time (counts up), e.g. soccer; false = countdown */
 	clockCountsUp: boolean;
-	/** true when the clock reports total game elapsed time (not per-period). Soccer only: ESPN's
-	 *  displayClock runs 0'→90'+ continuously; strip completed periods before computing secsRemaining. */
+	// Soccer only: ESPN's displayClock runs 0'→90'+ continuously, so completed periods have to be
+	// stripped before computing secsRemaining.
 	clockIsFullGameElapsed?: boolean;
-	/** if true, 0-0 scores the same as any other tied game outside configured penalty periods */
 	zeroZeroAsFullTie: boolean;
-	/** regulation periods where 0-0 should use reduced tie credit */
+	// Regulation periods where 0-0 uses reduced tie credit.
 	zeroZeroPenaltyPeriods?: number[];
-	/** Score-margin shrinkage (in the history window) that triggers a big comeback score */
+	// Score-margin shrinkage within the history window.
 	comebackThresholdBig: number;
-	/** Score-margin shrinkage (in the history window) that triggers a moderate comeback score */
 	comebackThresholdSmall: number;
-	/** Half-lives (ms) for the live-action decay cluster. Longer for low-scoring sports so a single
-	 *  scoring event keeps the PowerScore graph alive between rare scores. */
+	// Longer for low-scoring sports so a single scoring event keeps the graph alive between scores.
 	decayHalfLifeMs: {
 		momentum: number;
 		leadChange: number;
 		comeback: number;
 	};
-	/** Seconds-remaining window in the final regulation period during which a tied game earns the
-	 *  ramping overtime pre-boost. 0 disables the pre-boost (e.g. clockless baseball). */
+	// Window in the final regulation period where a tied game earns the ramping OT pre-boost.
+	// 0 disables it, as for clockless baseball.
 	otPreBoostWindowSecs: number;
-	/** How far back (ms) to keep score snapshots for momentum/comeback/leadChange detection.
-	 *  Should be at least 4× the longest decayHalfLifeMs so signals fully fade before falling out
-	 *  of the window. Must be the same regardless of poll frequency. */
+	// Must be at least 4× the longest decayHalfLifeMs so signals fully fade before falling out of
+	// the window, and the same regardless of poll frequency.
 	historyWindowMs: number;
 }
 
@@ -195,12 +172,10 @@ export interface LeagueConfig {
 	id: LeagueId;
 	label: string;
 	sportType: SportType;
-	/** ESPN API path segment, e.g. 'basketball/nba' */
+	// e.g. 'basketball/nba'
 	espnPath: string;
-	/** Number of regulation periods before overtime begins */
 	regularPeriods: number;
-	/** Seconds per period; 0 for sports without a game clock */
+	// 0 for sports without a game clock.
 	periodDurationSecs: number;
-	/** Human-readable period label style in UI */
 	periodFormat: 'quarters' | 'halves' | 'periods' | 'innings';
 }

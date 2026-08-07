@@ -27,8 +27,7 @@ const EspnCompetitorSchema = zod.object({
 	id: espnNumericText,
 	homeAway: zod.string(),
 	score: espnNumericText.optional(),
-	// Penalty-shootout tally. Present only on soccer matches that reached a shootout, where
-	// `score` stays frozen at the 120-minute scoreline and this carries the actual decider.
+	// Soccer shootouts only, where `score` stays frozen at the 120-minute scoreline.
 	shootoutScore: zod.number().optional(),
 	team: EspnTeamSchema,
 });
@@ -48,19 +47,17 @@ const EspnSituationSchema = zod.object({
 	onFirst: zod.boolean().optional(),
 	onSecond: zod.boolean().optional(),
 	onThird: zod.boolean().optional(),
-	// Baseball live count
 	balls: zod.number().optional(),
 	strikes: zod.number().optional(),
 	outs: zod.number().optional(),
-	// Gridiron football
 	down: zod.number().optional(),
 	distance: zod.number().optional(),
-	// ESPN also ships these pre-joined into `downDistanceText`, but that string is English-only,
-	// so the halves are read separately and joined through the locale files.
-	possessionText: zod.string().optional(),
 	yardLine: zod.number().optional(),
 	isRedZone: zod.boolean().optional(),
 	shortDownDistanceText: zod.string().optional(),
+	// ESPN also ships these pre-joined into `downDistanceText`, but that string is English-only,
+	// so the halves are read separately and joined through the locale files.
+	possessionText: zod.string().optional(),
 });
 
 const EspnCompetitionVenueSchema = zod.object({
@@ -103,8 +100,7 @@ const EspnCompetitionOddsSchema = zod.object({
 	provider: EspnOddsProviderSchema.optional(),
 });
 
-// Editorial display copy, e.g. "2024 Olympic Men's Basketball - Gold Medal Game". The only place
-// the Olympics record which round a game belongs to — see resolvePostseason in apiClient.
+// The only place the Olympics record which round a game belongs to — see resolvePostseason.
 const EspnCompetitionNoteSchema = zod.object({
 	headline: zod.string().optional(),
 });
@@ -149,20 +145,13 @@ const EspnScoreboardShellSchema = zod.object({
 export interface EspnScoreboardResponse {
 	events: EspnEvent[];
 	leagues: EspnLeague[];
-	/** Events ESPN returned that failed validation and were skipped. */
 	droppedEvents: number;
 }
 
-/**
- * Parses a scoreboard payload one event at a time.
- *
- * ESPN routinely ships a single malformed row inside an otherwise healthy scoreboard — a TBD
- * bracket slot with no team name, a score encoded as a number instead of a string. Validating
- * `events` as one array would throw all of a league's games away for that one row, and because
- * an empty result is indistinguishable from "no games today" the league would then be demoted
- * to dormant polling with nothing to show for it. Each event is parsed on its own instead, and
- * only the bad ones are dropped.
- */
+// ESPN routinely ships one malformed row inside an otherwise healthy scoreboard. Validating
+// `events` as a single array would throw a whole league's games away for that one row, and since
+// an empty result is indistinguishable from "no games today" the league would then be demoted to
+// dormant polling with nothing to show for it.
 export const parseScoreboard = (raw: unknown): EspnScoreboardResponse => {
 	const shell = EspnScoreboardShellSchema.safeParse(raw);
 	if (!shell.success) return { events: [], leagues: [], droppedEvents: 0 };

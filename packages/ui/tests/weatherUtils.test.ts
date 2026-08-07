@@ -10,8 +10,6 @@ describe('conditionIcon', () => {
 		expect(conditionIcon('  CLOUDY  ')).toBe('bi-clouds');
 	});
 
-	// ESPN returns compound labels like "Partly Cloudy/Windy"; the leading condition is the
-	// one worth showing.
 	test('uses the primary condition from a compound label', () => {
 		expect(conditionIcon('Partly Cloudy/Windy')).toBe('bi-cloud-sun');
 		expect(conditionIcon('Thunderstorms/Wind')).toBe('bi-cloud-lightning-rain');

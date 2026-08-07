@@ -328,8 +328,6 @@ describe('apiClient', () => {
 		const datesUrl = calledUrls.find(u => u.includes('dates='));
 		expect(datesUrl).toBeDefined();
 
-		// The dates range should span exactly upcomingDays days.
-		// ESPN format is YYYYMMDD-YYYYMMDD; extract and compare.
 		const datesParam = new URL(datesUrl!).searchParams.get('dates')!;
 		const [startStr, endStr] = datesParam.split('-');
 		const diffDays = (parseEspnDate(endStr!).getTime() - parseEspnDate(startStr!).getTime()) / (1000 * 60 * 60 * 24);
@@ -928,9 +926,8 @@ describe('apiClient', () => {
 	});
 
 	test('soccer finished game with odds: [null] does not discard valid events in same response', async () => {
-		// ESPN returns null as an array element (not null for the array itself) for finished soccer games.
-		// Without EspnCompetitionOddsSchema.nullable() on array elements, Zod rejects the whole
-		// response and drops every event — including valid pre-game events. Regression test for that fix.
+		// Regression: ESPN returns null as an *array element* for finished soccer games, and without
+		// .nullable() on the element Zod rejected the whole response, dropping valid pre-games too.
 		const postGame = makeEvent({
 			id: 'post-null-odds',
 			state: 'post',
@@ -957,15 +954,13 @@ describe('apiClient', () => {
 		const { fetchGamesWithLeagueLogos } = loadApiClient();
 
 		const result = await fetchGamesWithLeagueLogos(['mls'], { includeUpcoming: false });
-		// post game filtered out, pre game must survive despite the null odds on its companion
 		expect(result.games.map(g => g.id)).toEqual(['pre-valid']);
 		expect(result.games[0]!.status).toBe('pre');
 	});
 
 	test('FIFAWC opening-day scenario: multiple finished games with odds: [null] do not hide upcoming matches', async () => {
-		// Reproduces the June 11 2026 bug: ESPN today endpoint returned RSA vs MEX and CZE vs KOR,
-		// both finished with odds: [null]. Zod failed the whole response, dropping CZE vs KOR entirely
-		// even though that game was scheduled for 22:00 ET and should have appeared as upcoming.
+		// Reproduces the June 11 2026 bug: two finished games with odds: [null] failed the whole
+		// response, dropping a third game that was still scheduled for that evening.
 		const rsa_mex = makeEvent({ id: 'rsa-mex', state: 'post', period: 2, clock: "90'", homeScore: '0', awayScore: '2' });
 		getCompetition(rsa_mex).odds = [null];
 
@@ -986,8 +981,7 @@ describe('apiClient', () => {
 	});
 
 	test('null odds element pattern applies consistently across all three soccer leagues', async () => {
-		// MLS, EPL, and FIFAWC all return odds: [null] for finished games. Verify each league
-		// correctly surfaces a valid pre-game event even when paired with a null-odds post game.
+		// MLS, EPL and FIFAWC all return odds: [null] for finished games.
 		const soccerLeagues = ['mls', 'epl', 'fifawc'] as const;
 		for (const league of soccerLeagues) {
 			const post = makeEvent({ id: 'post', state: 'post', period: 2, clock: "90'", homeScore: '1', awayScore: '0' });
@@ -1004,10 +998,8 @@ describe('apiClient', () => {
 	});
 
 	test('NFL preseason rich odds object with extra fields parses cleanly', async () => {
-		// During preseason / before NFL season starts, ESPN returns a much richer odds object than
-		// in-season. It includes spread, awayTeamOdds, homeTeamOdds, moneyline, pointSpread, total,
-		// link, header, footer. These extra fields are not in EspnCompetitionOddsSchema. Zod's default
-		// behavior (non-strict) should silently ignore them — this test locks in that behavior.
+		// NFL preseason returns a far richer odds object than in-season, with fields the schema does
+		// not declare; Zod's non-strict default has to keep ignoring them.
 		const event = makeEvent({
 			id: 'nfl-pre-rich-odds',
 			state: 'pre',
@@ -1025,7 +1017,6 @@ describe('apiClient', () => {
 				displayName: 'DraftKings',
 				logos: [{ href: 'https://cdn.dk.com/dark.png', rel: ['dark'] }],
 			},
-			// Extra fields that appear in ESPN's NFL preseason data
 			spread: -3.5,
 			awayTeamOdds: { favorite: false, underdog: true },
 			homeTeamOdds: { favorite: true, underdog: false },
@@ -1050,11 +1041,7 @@ describe('apiClient', () => {
 		});
 	});
 
-	// ────────────────────────────────────────────────────────────────────────────
-	// Per-league full pipeline tests — one test per league proving the Game object
-	// is correct end-to-end for each sport type and range/today endpoint pattern.
 	// Fixture shapes are derived from live ESPN API responses for each league.
-	// ────────────────────────────────────────────────────────────────────────────
 
 	test('NHL: live game with END_PERIOD intermission flag is correctly set', async () => {
 		const fetchMock = jest.fn().mockResolvedValue(createResponse({
@@ -1116,8 +1103,6 @@ describe('apiClient', () => {
 	});
 
 	test('MLB: pre-game from range has no topOfInning or baseRunners', async () => {
-		// topOfInning and baseRunners are only meaningful for live baseball games.
-		// Pre-game events must not have these fields set.
 		const fetchMock = jest.fn()
 			.mockResolvedValueOnce(createResponse({ events: [] }))
 			.mockResolvedValueOnce(createResponse({
@@ -1146,8 +1131,6 @@ describe('apiClient', () => {
 	});
 
 	test('NFL: preseason game from range with rich spread odds produces valid Game', async () => {
-		// NFL preseason range endpoint returns games with a rich odds object:
-		// spread, awayTeamOdds, homeTeamOdds, moneyline, etc. Validates the full pipeline.
 		const event = makeEvent({
 			id: 'nfl-pre-range',
 			state: 'pre',
@@ -1214,8 +1197,7 @@ describe('apiClient', () => {
 	});
 
 	test('WNBA: large batch from range all produce valid Game objects with correct fields', async () => {
-		// WNBA has 81 pre-games in a 30-day range during its active summer season.
-		// Verifies the pipeline handles large batches and all Games pass required field checks.
+		// A real 30-day WNBA range in season, to exercise the pipeline on a large batch.
 		const events = Array.from({ length: 10 }, (_, i) => makeEvent({
 			id: `wnba-pre-${i}`,
 			state: 'pre',
@@ -1247,8 +1229,8 @@ describe('apiClient', () => {
 	});
 
 	test('MLS: in-season live game from today returned when range endpoint is empty', async () => {
-		// MLS does not publish far-ahead schedule on ESPN's range endpoint.
-		// The extension must still surface live MLS games from the no-date today endpoint.
+		// MLS publishes no far-ahead schedule on the range endpoint, so live games have to come
+		// from the no-date today endpoint instead.
 		const liveGame = makeEvent({
 			id: 'mls-live',
 			state: 'in',
@@ -1301,8 +1283,6 @@ describe('apiClient', () => {
 	});
 
 	test('soccer: HALFTIME status name sets intermission=true', async () => {
-		// The popup uses game.intermission to show "HALFTIME" badges.
-		// Verifies that the regex /HALFTIME|END_PERIOD|INTERMISSION/i fires on all three patterns.
 		for (const statusName of ['HALFTIME', 'STATUS_HALFTIME', 'END_PERIOD', 'INTERMISSION']) {
 			const game = makeEvent({ id: 'soccer-break', state: 'in', statusName, period: 1, clock: "45'", homeScore: '1', awayScore: '0' });
 			const fetchMock = jest.fn().mockResolvedValue(createResponse({ events: [game] }));
@@ -1315,9 +1295,8 @@ describe('apiClient', () => {
 	});
 
 	test('FIFAWC: knockout-round placeholder with null odds from range appears as upcoming', async () => {
-		// Knockout round games ("2A @ 2B") have odds: [null] on ESPN's range endpoint before
-		// opponents are determined. These must survive as valid pre-games so the full bracket
-		// shows in the popup's "Up Next" section.
+		// Knockout games have odds: [null] before opponents are determined, and must still survive
+		// as pre-games so the full bracket shows.
 		const knockout = makeEvent({
 			id: 'ko-r16',
 			state: 'pre',
@@ -1350,8 +1329,7 @@ describe('apiClient', () => {
 	});
 
 	test('FIFAWC: group stage pre-game with rich soccer odds parses details and overUnder correctly', async () => {
-		// Group stage games have extra soccer-specific odds fields: drawOdds, total, pointSpread,
-		// moneyline. These are unknown to EspnCompetitionOddsSchema but must not cause failures.
+		// Group stage games carry soccer-specific odds fields the schema does not declare.
 		const groupGame = makeEvent({
 			id: 'group-bih-can',
 			state: 'pre',
@@ -1417,9 +1395,7 @@ describe('apiClient', () => {
 	});
 
 	test('all leagues: pre-game startTime is defined, live game startTime is undefined', async () => {
-		// parseEvent only sets startTime when status === 'pre'. This test locks that contract
-		// so a refactor can't accidentally set startTime on live games (which breaks the popup's
-		// "Up Next" vs "Live Now" distinction).
+		// startTime on a live game would break the popup's "Up Next" vs "Live Now" split.
 		const preGame = makeEvent({ id: 'pre', state: 'pre', period: 1, clock: '0:00', homeScore: '0', awayScore: '0', date: '2026-09-01T00:00:00.000Z' });
 		const liveGame = makeEvent({ id: 'live', state: 'in', period: 3, clock: '5:00', homeScore: '88', awayScore: '85' });
 
@@ -1578,8 +1554,43 @@ describe('apiClient', () => {
 		});
 	});
 
-	// down/distance/isGoalToGo feed the red-zone boost's down weighting, so they have to survive
-	// the shapes ESPN actually sends rather than only the tidy one.
+	// possessionText is the yard-marker half of what ESPN pre-joins into downDistanceText; the
+	// halves are joined in the locale files instead.
+	describe('fieldPosition parsing', () => {
+		const parseFor = async (league: 'nfl' | 'mls', situation: Record<string, unknown> | undefined, state = 'in') => {
+			const fetchMock = jest.fn().mockResolvedValue(createResponse({
+				events: [makeEvent({ id: 'fp', state, period: 2, clock: '8:00', homeScore: '7', awayScore: '7', situation })],
+			}));
+			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+			const { fetchGamesWithLeagueLogos } = loadApiClient();
+			const result = await fetchGamesWithLeagueLogos([league], { includeUpcoming: false });
+			return result.games.find(g => g.id === 'fp');
+		};
+
+		test('carries possessionText through as fieldPosition', async () => {
+			const game = await parseFor('nfl', { down: 2, distance: 11, possessionText: 'ARI 34' });
+			expect(game?.fieldPosition).toBe('ARI 34');
+			expect(game?.downDistance).toBe('2nd & 11');
+		});
+
+		test('trims whitespace and treats a blank label as absent', async () => {
+			expect((await parseFor('nfl', { down: 1, distance: 10, possessionText: '  MIN 25 ' }))?.fieldPosition).toBe('MIN 25');
+			expect((await parseFor('nfl', { down: 1, distance: 10, possessionText: '   ' }))?.fieldPosition).toBeUndefined();
+		});
+
+		test('is undefined when ESPN omits it, as it does between drives', async () => {
+			expect((await parseFor('nfl', { down: 2, distance: 11 }))?.fieldPosition).toBeUndefined();
+			expect((await parseFor('nfl', undefined))?.fieldPosition).toBeUndefined();
+		});
+
+		test('is undefined for a pre-game event and for non-football leagues', async () => {
+			expect((await parseFor('nfl', { down: 1, distance: 10, possessionText: 'ARI 34' }, 'pre'))?.fieldPosition).toBeUndefined();
+			expect((await parseFor('mls', { down: 1, distance: 10, possessionText: 'ARI 34' }))?.fieldPosition).toBeUndefined();
+		});
+	});
+
+	// These feed the red-zone boost's down weighting, so they have to survive the messy shapes
+	// ESPN actually sends, not only the tidy one.
 	describe('gridiron down, distance and goal-to-go', () => {
 		const parseNfl = async (situation: Record<string, unknown> | undefined, state = 'in') => {
 			const fetchMock = jest.fn().mockResolvedValue(createResponse({
@@ -1666,9 +1677,8 @@ describe('apiClient', () => {
 			expect(result.games.find(g => g.id === 'pre-season')?.isPostseason).toBe(false);
 		});
 
-		// season.type === 3 is an NFL/NBA/MLB/NHL/NCAA convention only. Every season/slug pair
-		// below is a real payload verified against ESPN's API, not an invented shape — these
-		// competitions use a per-tournament type id that is never 3, so slug is the only signal.
+		// These competitions use a per-tournament type id that is never 3, so slug is the only
+		// signal. Every pair below is a real payload, not an invented shape.
 		describe('competitions where season.type is never 3', () => {
 			const expectPostseason = async (
 				league: Parameters<Awaited<ReturnType<typeof loadApiClient>>['fetchGamesWithLeagueLogos']>[0][number],
@@ -1721,8 +1731,7 @@ describe('apiClient', () => {
 		});
 
 		// The Olympics report `type: 2, slug: 'regular-season'` for every game including the Gold
-		// Medal Game — verified against the 2024 Paris basketball and 2026 Milano-Cortina hockey
-		// payloads. The round exists only in competition.notes[0].headline.
+		// Medal Game; the round exists only in competition.notes[0].headline.
 		describe('Olympic medal rounds, where slug is useless', () => {
 			const olympicGame = (id: string, headline?: string) => makeEvent({
 				id,
@@ -1754,9 +1763,7 @@ describe('apiClient', () => {
 				expect(await isPostseason(olympicGame('none'), 'olybkm')).toBe(false);
 			});
 
-			// The headline check is deliberately scoped to the Olympic leagues: it is free-text
-			// editorial copy, and matching it everywhere would sweep in regular-season bracket
-			// events like college basketball's November invitationals.
+			// Scoped to the Olympic leagues because headline is free-text editorial copy.
 			test('does not apply the headline heuristic to non-Olympic leagues', async () => {
 				expect(await isPostseason(olympicGame('nba1', 'Some Invitational - Semifinal'), 'nba')).toBe(false);
 			});

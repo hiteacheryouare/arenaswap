@@ -1,4 +1,3 @@
-// Types that live in powerscore — re-exported here so existing import paths work
 import type {
 	SportType,
 	LeagueId,
@@ -27,20 +26,18 @@ export interface Team {
 	name: string;
 	abbreviation: string;
 	score: number;
-	/** Penalty-shootout tally; soccer only, and only once a match has reached a shootout. The
-	 *  main `score` stays frozen at the 120-minute scoreline while this decides the tie. */
+	// Soccer only, once a match reaches a shootout: `score` stays frozen at the 120-minute
+	// scoreline while this decides the tie.
 	shootoutScore?: number;
 	logo?: string;
-	/** Primary team color as a CSS hex string (e.g. "#002B5C"), sourced from the API */
+	// CSS hex, from the API. `alternateColor` is used when the primary clashes with the opponent.
 	color?: string;
-	/** Alternate team color as a CSS hex string, used when primary clashes with the opponent */
 	alternateColor?: string;
 }
 
 export interface GameCondition {
-	/** Temperature in °F as reported by ESPN */
+	// °F, as reported by ESPN.
 	temperatureF: number;
-	/** ESPN condition label, e.g. "Sunny", "Rain", "Partly Cloudy" */
 	conditionLabel: string;
 }
 
@@ -70,33 +67,24 @@ export interface Game {
 	startTime?: string;
 	broadcasts?: string[];
 	odds?: GameOdds;
-	/** True while the game is in halftime or between-period intermission */
 	intermission?: boolean;
-	/** Top of inning = true, bottom = false; undefined when unavailable (non-baseball or pre-game) */
+	// Top of inning = true, bottom = false.
 	topOfInning?: boolean;
-	/** Which bases have runners; undefined when unavailable (non-baseball or no active at-bat) */
 	baseRunners?: { first: boolean; second: boolean; third: boolean };
-	/** Live balls/strikes/outs count; only present for in-progress baseball/softball */
 	bso?: { balls: number; strikes: number; outs: number };
-	/** Down & distance string for gridiron football (e.g. "3rd & 5"); undefined for non-football */
+	// Football only, from here down. e.g. "3rd & 5".
 	downDistance?: string;
 	// ESPN's "ABBR yardLine" label; joined onto downDistance via gameCard.downDistanceAt.
 	fieldPosition?: string;
 	isRedZone?: boolean;
-	/** Current down (1–4); football only. Weights the red-zone scoring-opportunity boost. */
+	// Weights the red-zone scoring-opportunity boost.
 	down?: number;
-	/** Yards to go for a first down; football only. */
 	distance?: number;
-	/** True when the line to gain is the goal line; football only. */
 	isGoalToGo?: boolean;
-	/** Game Condition (weather) from ESPN; only present for outdoor venues */
 	weather?: GameCondition;
-	/** True for a playoff/knockout game. ESPN signals this three different ways depending on the
-	 *  competition — see resolvePostseason in apiClient.ts. */
+	// ESPN signals this three different ways — see resolvePostseason in apiClient.ts.
 	isPostseason?: boolean;
-	/** True when the game is suspended due to a delay (rain, lightning, etc.) */
 	delayed?: boolean;
-	/** Human-readable delay description from ESPN, e.g. "Rain Delay" */
 	delayDescription?: string;
 }
 
@@ -106,24 +94,21 @@ export interface UserPreferences {
 	switchDelaySeconds: number;
 	enabled: boolean;
 	enabledLeagues: LeagueId[];
-	/** Stored as `${league}:${teamId}` keys (for example: `nba:20`) */
+	// Stored as `${league}:${teamId}`, e.g. `nba:20`.
 	favoriteTeamIds: string[];
 	favoriteTeamBonusPoints: number;
 	showUpcomingGames: boolean;
 	proTipsEnabled: boolean;
 	notificationsEnabled: boolean;
 	standbyStreamEnabled: boolean;
-	/** PowerScore threshold (0–100): switch to standby when ALL registered games fall below this */
+	// Switch to standby once every registered game falls below this.
 	standbyStreamThreshold: number;
-	/** Show betting odds (spread / O/U) on game cards */
 	bettingEnabled: boolean;
-	/** Display unit for Game Condition temperatures sourced in °F from ESPN */
 	temperatureUnit: 'F' | 'C';
-	/** Flat PowerScore bonus added to any game ESPN classifies as postseason */
 	postseasonBoostPoints: number;
-	/** How many days ahead to fetch and display upcoming games (1–14) */
+	// 1–14.
 	upcomingGamesDays: number;
-	/** Signal names to exclude from PowerScore calculation; remaining signals are normalized to 0–100 */
+	// The remaining signals are renormalized to 0–100.
 	disabledSignals: SignalName[];
 }
 
