@@ -26,9 +26,7 @@ const supportedLeagues = ['NFL', 'MLB', 'NHL', 'NBA', 'NCAAF', 'NCAAB', 'NCAAW',
 	<Nav />
 	<main style='padding-top:88px;'>
 
-		<!-- ── Hero ─────────────────────────────────────────── -->
 		<section class='ps-hero section-pad'>
-			<!-- Atmospheric corner glows -->
 			<div class='ps-glow ps-glow-tl'></div>
 			<div class='ps-glow ps-glow-tr'></div>
 			<div class='ps-glow ps-glow-bl'></div>
@@ -67,7 +65,6 @@ const supportedLeagues = ['NFL', 'MLB', 'NHL', 'NBA', 'NCAAF', 'NCAAB', 'NCAAW',
 			</div>
 		</section>
 
-		<!-- ── Install commands ──────────────────────────────── -->
 		<section class='section-pad' style='background:rgba(22,27,34,0.5);'>
 			<div class='container'>
 				<div class='row g-4'>
@@ -84,7 +81,6 @@ const supportedLeagues = ['NFL', 'MLB', 'NHL', 'NBA', 'NCAAF', 'NCAAB', 'NCAAW',
 			</div>
 		</section>
 
-		<!-- ── Signal breakdown ──────────────────────────────── -->
 		<section class='section-pad'>
 			<div class='container'>
 				<div class='row g-4'>
@@ -132,7 +128,6 @@ const supportedLeagues = ['NFL', 'MLB', 'NHL', 'NBA', 'NCAAF', 'NCAAB', 'NCAAW',
 
 		<div class='ps-gradient-bar'></div>
 
-		<!-- ── Live PowerScores ──────────────────────────────── -->
 		<section class='section-pad' style='background:rgba(22,27,34,0.5);'>
 			<div class='container'>
 				<div class='row g-4'>
@@ -169,8 +164,7 @@ const supportedLeagues = ['NFL', 'MLB', 'NHL', 'NBA', 'NCAAF', 'NCAAB', 'NCAAW',
 	</script>
 
 	<script>
-		// Gradient text plays one full cycle (0.85s delay + 6s = 6850ms),
-		// then crossfades to a randomly chosen PowerScore brand color.
+		// One full gradient cycle (0.85s delay + 6s), then a crossfade to a random brand colour.
 		const psColors = ['#22c55e', '#F75C03', '#2274A5', '#F1C40F', '#D90368'];
 		const chosen = psColors[Math.floor(Math.random() * psColors.length)];
 

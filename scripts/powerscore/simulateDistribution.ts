@@ -1,22 +1,12 @@
-/**
- * PowerScore distribution harness.
- *
- * Drives MockGameSimulator through many simulated polls, scores every live game with the scorer,
- * and prints the resulting distributions so we can verify goals empirically:
- *   - 0s / low totals are common (no more 20–30 floor)
- *   - totals spread sensibly across the 0–100 range
- *   - the best-vs-active "switch gap" distribution → recalibrated sensitivityThresholds
- *   - breakdown by history depth exposes regressions in early-game / no-history scenarios
- *
- * Mirrors the extension background loop: score is computed against the history that does NOT yet
- * include the current poll (so decay ages match runtime), then the current snapshot is appended.
- *
- * Win probability history is synthesized from game state (score margin × game progress) using a
- * logistic function — a stand-in for the real ESPN win-prob chart data the scorer uses at runtime.
- *
- * Run: npm run powerscore:simulate -- [ticks]
- *      npm run powerscore:simulate -- --early-game    (stress test only, skips main simulation)
- */
+// Drives MockGameSimulator through many simulated polls and prints the resulting distributions,
+// including the best-vs-active switch gap that sensitivityThresholds is calibrated from.
+//
+// Mirrors the background loop: the score is computed against history that does NOT yet include the
+// current poll, so decay ages match runtime, and only then is the snapshot appended. Win
+// probability is synthesized logistically from margin × progress in place of ESPN's real line.
+//
+// Run: npm run powerscore:simulate -- [ticks]
+//      npm run powerscore:simulate -- --early-game    (stress test only)
 import { MockGameSimulator } from '../../packages/core/src/mockGames';
 import { computePowerScore } from '../../packages/powerscore/src/scorer';
 import { sportTypeConfigMap, leagueConfigMap } from '../../packages/powerscore/src/constants';
@@ -31,8 +21,7 @@ const historyWindowMsFor = (game: Game): number => (
 	sportTypeConfigMap[game.sportType]?.historyWindowMs ?? defaultHistoryWindowMs
 );
 
-// Per-sport divisor that maps a typical winning score margin to a logit of ~1-2.
-// Tuned so the synthetic win prob looks realistic: a 10-pt NBA lead is ~70-75% win prob late.
+// Maps a typical winning margin to a logit of ~1-2, so a 10-point NBA lead reads ~70-75% late.
 const winProbScaleBySport: Record<string, number> = {
 	basketball: 11,
 	football: 7,
@@ -42,8 +31,8 @@ const winProbScaleBySport: Record<string, number> = {
 	soccer: 1.2,
 };
 
-// Logistic: 0.5 at margin=0, approaches 0/1 as margin grows.
-// Certainty amplifies with progress so a mid-game margin is less decisive than the same margin late.
+// Certainty amplifies with progress, so a mid-game margin is less decisive than the same margin
+// late on.
 const deriveWinProb = (game: Game): number => {
 	const diff = game.homeTeam.score - game.awayTeam.score;
 	const scale = winProbScaleBySport[game.sportType] ?? 8;
@@ -53,7 +42,6 @@ const deriveWinProb = (game: Game): number => {
 	const regularPeriods = Math.max(1, league.regularPeriods);
 	const period = game.period ?? 1;
 	const progress = period > regularPeriods ? 1 : Math.min((period - 0.5) / regularPeriods, 1);
-	// Certainty grows from 0.5× early to 2.5× in OT.
 	const certainty = 0.5 + progress * 2.0;
 	const x = (diff / scale) * certainty;
 	return 1 / (1 + Math.exp(-x));
@@ -98,7 +86,7 @@ for (let tick = 0; tick < ticks; tick++) {
 	const now = tick * pollIntervalMs;
 	const games = simulator.tick().filter(game => game.status === 'in');
 
-	// Score with history BEFORE this poll's snapshot is appended (matches runtime decay timing).
+	// Scored before this poll's snapshot is appended, matching runtime decay timing.
 	const tickTotals: number[] = [];
 	for (const game of games) {
 		const gameHistory = history.get(game.id) ?? [];
@@ -117,13 +105,12 @@ for (let tick = 0; tick < ticks; tick++) {
 		tickTotals.push(result.total);
 	}
 
-	// Switch gap = how far the best live game leads the runner-up this poll (the delta a switch clears).
+	// How far the best live game leads the runner-up — the delta a switch has to clear.
 	if (tickTotals.length >= 2) {
 		const sortedTickTotals = tickTotals.toSorted((a, b) => b - a);
 		switchGaps.push(sortedTickTotals[0]! - sortedTickTotals[1]!);
 	}
 
-	// Append this poll's snapshot and trim, mirroring background.updateHistory.
 	for (const game of games) {
 		const snapshots = history.get(game.id) ?? [];
 		snapshots.push({ gameId: game.id, timestamp: now, homeScore: game.homeTeam.score, awayScore: game.awayTeam.score });
@@ -131,17 +118,16 @@ for (let tick = 0; tick < ticks; tick++) {
 		while (snapshots.length > 1 && snapshots[0]!.timestamp < cutoff) snapshots.shift();
 		history.set(game.id, snapshots);
 
-		// Append synthetic win probability and trim to the same window.
 		const probs = winProbHistory.get(game.id) ?? [];
 		probs.push(deriveWinProb(game));
-		// Win prob window: keep the same number of data points as score snapshots to stay consistent.
+		// Same number of data points as score snapshots, to stay consistent.
 		while (probs.length > snapshots.length) probs.shift();
 		winProbHistory.set(game.id, probs);
 	}
 }
 
 const sortedGaps = switchGaps.toSorted((a, b) => a - b);
-// Sensitivity levels map to gap percentiles: 7 = most eager (tiny gap), 1 = least eager (large gap).
+// Sensitivity levels map to gap percentiles: 7 is the most eager, 1 the least.
 const levelToPercentile: Record<number, number> = { 1: 97, 2: 88, 3: 72, 4: 52, 5: 34, 6: 18, 7: 2 };
 const suggestedThresholds: Record<number, number> = {};
 for (let level = 1; level <= 7; level++) {
@@ -187,10 +173,8 @@ if (ticks > 0) {
 	console.log('};\n');
 }
 
-// Early-game / no-history stress test.
-// Validates scores at 0, 1, and 3 snapshot depths across representative sports and game states.
-// This catches ceiling regressions that the main simulation masks (every game has rich history by
-// the time distributions are measured in the full run).
+// Catches ceiling regressions the main simulation masks: by the time it measures distributions
+// every game already has rich history.
 const makeSnapshotHistory = (count: number, homeScore: number, awayScore: number): ScoreSnapshot[] => (
 	Array.from({ length: count }, (_, i) => ({
 		gameId: 'stress', timestamp: i * pollIntervalMs, homeScore, awayScore,

@@ -7,17 +7,13 @@ import type { EChartsOption } from 'echarts';
 
 echarts.use([LineChart, GridComponent, CanvasRenderer]);
 
-// ─── Auto-playing ArenaSwap explainer (issue #41) ───────────────────────────
-// Four looping scenes: watch every live game → score each one → open one game to
-// see the full PowerScore breakdown → land your tab on the best game. The
-// illustrative scenes are SVG/CSS (crisp logos, clean radial wires); the
-// PowerScore trend is a real ECharts graph.
+// Four looping scenes: watch every live game, score each one, open one for the full breakdown,
+// land the tab on the best. The scenes are SVG/CSS; the PowerScore trend is a real ECharts graph.
 
 const SCENES = 4;
 const DURATIONS = [4200, 4200, 6000, 8200];
 
-// Trailing periods are rendered as `.as-dot` spans to match the site-wide
-// orange-dot flourish (OrangeDots.astro skips React islands, so we do it here).
+// OrangeDots.astro skips React islands, so the orange-dot flourish is applied here instead.
 const CAPTIONS = [
 	'It watches every live game across your leagues',
 	'And scores each one on how exciting it is, live',
@@ -28,10 +24,8 @@ const CAPTIONS = [
 const BASE = '/arenaswap/images';
 const ORANGE = '#F75C03';
 
-// ─── Scene 1 & 2: the network ────────────────────────────────────────────────
-// One node per league, curated to logos that read clearly on the dark background
-// (dark navy/black crests like the NHL and Champions League marks are dropped).
-// Fake scores drive the score badges.
+// Curated to logos that read clearly on the dark background; dark navy and black crests like
+// the NHL and Champions League marks are dropped.
 const NET = [
 	{ id: 'nba', s: 88 }, { id: 'nfl', s: 72 }, { id: 'mlb', s: 59 }, { id: 'wnba', s: 80 },
 	{ id: 'nhl', s: 64 }, { id: 'mls', s: 62 }, { id: 'laliga', s: 68 },
@@ -77,7 +71,6 @@ const NetworkScene = ({ showScores }: { showScores: boolean }) => (
 	</svg>
 );
 
-// ─── Scene 3: one game + its PowerScore breakdown ────────────────────────────
 const GAME = {
 	league: 'NBA',
 	status: 'Q4 · 0:48',
@@ -160,7 +153,6 @@ const GameCard = ({ active, chartElRef }: { active: boolean; chartElRef: React.R
 	</div>
 );
 
-// ─── Scene 4: switch to the best tab ─────────────────────────────────────────
 const TABS = [
 	{ service: 'ESPN', game: 'Lakers @ Celtics', color: '#d50a0a' },
 	{ service: 'Peacock', game: 'Eagles @ Cowboys', color: '#7c3aed' },
@@ -203,7 +195,6 @@ const MachineScene = () => {
 	const chartElRef = useRef<HTMLDivElement>(null);
 	const chartRef = useRef<echarts.EChartsType | null>(null);
 
-	// Detect reduced motion and toggle the section between live / static fallback.
 	useEffect(() => {
 		const isReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 		setReduced(isReduced);
@@ -212,21 +203,18 @@ const MachineScene = () => {
 		else section?.classList.add('is-live');
 	}, []);
 
-	// Pause the loop while the tab is hidden.
 	useEffect(() => {
 		const onVis = () => setPaused(document.hidden);
 		document.addEventListener('visibilitychange', onVis);
 		return () => document.removeEventListener('visibilitychange', onVis);
 	}, []);
 
-	// Advance scenes on a loop.
 	useEffect(() => {
 		if (reduced || paused) return;
 		const id = window.setTimeout(() => setStage(s => (s + 1) % SCENES), DURATIONS[stage]);
 		return () => window.clearTimeout(id);
 	}, [stage, reduced, paused]);
 
-	// While on the switch scene, hop the active tab around and settle on the best.
 	useEffect(() => {
 		if (reduced || stage !== 3) return;
 		let i = 0;
@@ -239,7 +227,6 @@ const MachineScene = () => {
 		return () => window.clearInterval(id);
 	}, [stage, reduced]);
 
-	// PowerScore trend chart — (re)draw when the breakdown scene opens.
 	useEffect(() => {
 		if (reduced || !chartElRef.current) return;
 		const chart = chartRef.current ?? echarts.init(chartElRef.current, undefined, { renderer: 'canvas' });

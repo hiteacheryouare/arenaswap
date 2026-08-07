@@ -25,7 +25,6 @@ import '../styles/global.scss';
 			<div class="container">
 				<div class="notfound-inner">
 
-					<!-- The missing page, scored by the real extension card -->
 					<div class="notfound-card">
 						<NotFoundCard />
 					</div>
@@ -68,8 +67,8 @@ import '../styles/global.scss';
 	<OrangeDots />
 
 	<script>
-		// Show the path that missed. GitHub Pages serves this file for any unknown
-		// URL under /arenaswap/, so the address bar is the only record of it.
+		// GitHub Pages serves this file for any unknown URL under /arenaswap/, so the address bar
+		// is the only record of what was actually requested.
 		const target = document.getElementById('notfound-path');
 		if (target) target.textContent = location.pathname + location.search;
 	</script>

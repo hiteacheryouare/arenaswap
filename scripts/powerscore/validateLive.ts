@@ -1,13 +1,7 @@
-/**
- * Live PowerScore v2 validation against the real ESPN API.
- *
- * Polls a league's public scoreboard every 15s (no auth), scores every live game with the v2 scorer,
- * and prints a per-poll table so we can eyeball that low-scoring sports stay "alive" via decay and
- * that tense / OT-bound games separate. This is a manual inspection tool, not an automated test.
- *
- * Run: npm run powerscore:validate-live -- <leagueId> [polls]
- *   e.g. npm run powerscore:validate-live -- nhl 20
- */
+// Manual inspection tool, not an automated test: polls a league's public scoreboard every 15s and
+// prints a per-poll table so low-scoring sports can be eyeballed for staying alive via decay.
+//
+// Run: npm run powerscore:validate-live -- <leagueId> [polls]
 import { fetchGamesWithLeagueLogos } from '../../packages/core/src/apiClient';
 import { computePowerScore } from '../../packages/powerscore/src/scorer';
 import { sportTypeConfigMap } from '../../packages/powerscore/src/constants';

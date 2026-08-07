@@ -1,8 +1,7 @@
 import LiveGameCard from '@arenaswap/ui/src/components/liveGameCard';
 import type { Game, PowerScoreResult } from '@arenaswap/core/types';
 
-// The missing page as a game the extension would never switch you to: clock
-// expired, nobody broadcasting it, PowerScore of zero.
+// The missing page as a game the extension would never switch you to.
 const game: Game = {
 	id: 'not-found',
 	league: 'nba',

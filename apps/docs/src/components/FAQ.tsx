@@ -1,7 +1,6 @@
 import { useState } from 'react';
 
-// Paints every period orange, matching the site-wide OrangeDots treatment.
-// Done in JSX (not via DOM mutation) so React keeps ownership of these nodes.
+// Done in JSX rather than by DOM mutation so React keeps ownership of these nodes.
 const withDots = (text: string) =>
 	text.split('.').flatMap((part, i, parts) =>
 		i < parts.length - 1

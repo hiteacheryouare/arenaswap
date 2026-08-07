@@ -108,8 +108,8 @@ const fetchLiveGames = async (): Promise<Game[]> => {
 	return settled.flatMap(result => result.status === 'fulfilled' ? result.value : []);
 };
 
-// `clockSeconds` and `period` are optional on Game (pre-game and clockless sports omit them),
-// so both fall back the same way the extension's own card formatters do.
+// `clockSeconds` and `period` are optional on Game, so both fall back the same way the
+// extension's own card formatters do.
 const formatClock = (clockSeconds: number | undefined): string => {
 	if (clockSeconds === undefined) return '';
 	const mins = Math.floor(clockSeconds / 60);
