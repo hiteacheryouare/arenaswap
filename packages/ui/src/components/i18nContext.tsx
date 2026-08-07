@@ -13,6 +13,7 @@ const defaultStrings: Record<string, string> = {
 	'gameCard.topOfInning': 'Top of inning',
 	'gameCard.bottomOfInning': 'Bottom of inning',
 	'gameCard.shootout': 'PENS {away}–{home}',
+	'gameCard.downDistanceAt': '{downDistance} at {fieldPosition}',
 	'bso.balls': 'B',
 	'bso.strikes': 'S',
 	'bso.outs': 'O',

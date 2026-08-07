@@ -221,6 +221,7 @@
 		"delay": "EN ATTENTE",
 		"delayFallback": "En attente",
 		"shootout": "TAB {away}–{home}",
+		"downDistanceAt": "{downDistance} à {fieldPosition}",
 		"powerScore": "PowerScore",
 		"vs": "vs",
 		"topOfInning": "Début de la manche",

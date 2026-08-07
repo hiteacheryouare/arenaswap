@@ -32,6 +32,11 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 	// Rendered only once ESPN populates both tallies — whether it does so kick-by-kick or only at
 	// the end is unconfirmed, and this degrades to showing nothing either way.
 	const shootout = game.awayTeam.shootoutScore !== undefined && game.homeTeam.shootoutScore !== undefined
+	// The yard line is what tells you whether the down matters. Falls back to the down and distance
+	// alone when ESPN omits the field position, as it does at halftime and between drives.
+	const downDistanceLine = game.downDistance && game.fieldPosition
+		? t('gameCard.downDistanceAt', { downDistance: game.downDistance, fieldPosition: game.fieldPosition })
+		: game.downDistance;
 		? t('gameCard.shootout', { away: game.awayTeam.shootoutScore, home: game.homeTeam.shootoutScore })
 		: null;
 	const psBarPercent = Math.min((totalPowerScore / scoreMaxTotal) * 100, 100);
@@ -101,7 +106,7 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 					)}
 					{isInningSport && game.bso && <BsoIndicator {...game.bso} />}
 					{game.sportType === 'football' && game.downDistance && (
-						<span className='font-lekton game-period'>{game.downDistance}</span>
+						<span className='font-lekton game-period'>{downDistanceLine}</span>
 					)}
 				</div>
 				<TeamColumn leagueId={game.league} team={game.homeTeam} isFavorited={homeFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} />

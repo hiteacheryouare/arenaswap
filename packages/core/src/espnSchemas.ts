@@ -55,6 +55,9 @@ const EspnSituationSchema = zod.object({
 	// Gridiron football
 	down: zod.number().optional(),
 	distance: zod.number().optional(),
+	// ESPN also ships these pre-joined into `downDistanceText`, but that string is English-only,
+	// so the halves are read separately and joined through the locale files.
+	possessionText: zod.string().optional(),
 	yardLine: zod.number().optional(),
 	isRedZone: zod.boolean().optional(),
 	shortDownDistanceText: zod.string().optional(),

@@ -221,6 +221,7 @@
 		"delay": "VERZÖGERUNG",
 		"delayFallback": "Verzögerung",
 		"shootout": "I.E. {away}–{home}",
+		"downDistanceAt": "{downDistance} an {fieldPosition}",
 		"powerScore": "PowerScore",
 		"vs": "vs",
 		"topOfInning": "Anfang des Innings",

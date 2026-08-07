@@ -1,5 +1,23 @@
 # Changelog
 
+## "2nd & 11" never said where the ball was — 2026-08-06
+
+The football card printed `shortDownDistanceText` and stopped there. A 2nd & 11 backed up on your own 9 and a 2nd & 11 on the opponent's 34 are not the same football situation, and the card showed them identically. ESPN has been shipping the yard line on the same scoreboard payload we already poll, in two forms: `possessionText` (`"ARI 34"`) and a pre-joined `downDistanceText` (`"2nd & 11 at ARI 34"`).
+
+Verified against a live payload rather than inferred — `possessionText` is present at halftime and between drives, while `possession` (the team id holding the ball) is not, so anything built on that field has to survive its absence.
+
+### Game cards
+- **The down & distance line now carries the field position** — `2nd & 11 at ARI 34`
+- **Joined through the locale files, not taken pre-joined from ESPN.** `downDistanceText` is English-only; reading the two halves and joining them keeps the line translatable, and Japanese needs the yard line *first* (`ARI 34で2nd & 11`) rather than an "at" spliced into the middle
+- Degrades to the bare down & distance when ESPN omits the field position, which it does between drives
+- **The line is ~2.5× wider than what it replaced** (8 characters to as many as 20), so it was measured rather than assumed. The score row above it is the widest thing in the centre column at **128.75px** — set by the 2.4ch-per-digit floor on `.game-score-value` — and the longest line football can produce, `3rd & Goal at WSH 50`, measures **99px** in 0.62rem Lekton. It sits inside the score row with ~30px to spare, so the card does not widen and no team column is squeezed. Locked in by a layout spec that mounts the card at the real 320px popup width with the real stylesheets
+
+### Demo mode
+- The football mock's field position **advances across midfield with the drive** instead of pairing a fixed yard line with a cycling down, so a goal-line down lands on a goal-line marker
+
+### Fixed
+- **`packages/ui`'s no-provider fallback string map was missing the new key**, which would have rendered a raw `gameCard.downDistanceAt` anywhere the components mount without a `TranslationContext` — the docs site included. Caught by the component tests, which mount unwrapped
+
 ## The walkthrough gave every boost an icon; the breakdown gave them none — 2026-08-03
 
 The walkthrough teaches the six boosts and penalties one at a time, each with its own icon and color — an hourglass for the clock stall, a trophy for the postseason. The breakdown on the game detail screen kept the colors and dropped the icons, so the factors you had just been taught to recognize by shape arrived as six lines of plain text under five signal rows that each had a colored dot.

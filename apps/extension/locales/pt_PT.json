@@ -221,6 +221,7 @@
 		"delay": "SUSPENSO",
 		"delayFallback": "Suspenso",
 		"shootout": "GP {away}–{home}",
+		"downDistanceAt": "{downDistance} na {fieldPosition}",
 		"powerScore": "PowerScore",
 		"vs": "vs",
 		"topOfInning": "Início da entrada",

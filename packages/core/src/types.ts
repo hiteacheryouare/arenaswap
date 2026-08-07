@@ -80,7 +80,8 @@ export interface Game {
 	bso?: { balls: number; strikes: number; outs: number };
 	/** Down & distance string for gridiron football (e.g. "3rd & 5"); undefined for non-football */
 	downDistance?: string;
-	/** True when the offense is in the red zone (inside the 20); football only */
+	// ESPN's "ABBR yardLine" label; joined onto downDistance via gameCard.downDistanceAt.
+	fieldPosition?: string;
 	isRedZone?: boolean;
 	/** Current down (1–4); football only. Weights the red-zone scoring-opportunity boost. */
 	down?: number;

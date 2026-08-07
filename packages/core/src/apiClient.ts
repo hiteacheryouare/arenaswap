@@ -310,6 +310,7 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 		clockSeconds: parseClockToSeconds(status.displayClock ?? '0:00'),
 		status: state,
 		startTime: state === 'pre' ? event.date : undefined,
+		fieldPosition: isGridironSituation ? situation.possessionText?.trim() || undefined : undefined,
 		broadcasts: parseBroadcasts(comp),
 		odds: parseOdds(comp),
 		intermission: /HALFTIME|END_PERIOD|INTERMISSION/i.test(status.type?.name ?? ''),

@@ -221,6 +221,7 @@
 		"delay": "DELAY",
 		"delayFallback": "Delay",
 		"shootout": "PENS {away}–{home}",
+		"downDistanceAt": "{downDistance} at {fieldPosition}",
 		"powerScore": "PowerScore",
 		"vs": "vs",
 		"topOfInning": "Top of inning",
