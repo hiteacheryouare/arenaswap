@@ -108,7 +108,6 @@ describe('liveGameCard penalty shootout', () => {
 	it('shows the shootout tally alongside the frozen scoreline, away team first', () => {
 		cy.mount(<LiveGameCard {...defaultProps} game={shootoutGame} />);
 		cy.get('.game-shootout-score').should('contain.text', '3').and('contain.text', '5');
-		// The 120-minute score is still the headline number.
 		cy.get('.game-score-value').first().should('contain.text', '1');
 	});
 
@@ -122,8 +121,7 @@ describe('liveGameCard penalty shootout', () => {
 		cy.get('.game-shootout-score').should('not.exist');
 	});
 
-	// The tally line already reads "PENS 3–5", so keeping the period label above it would print
-	// PENS twice — caught by rendering the card, not by any assertion on the strings themselves.
+	// The tally line already reads "PENS 3–5", so a period label above it would print PENS twice.
 	it('drops the period label while the tally is showing, so PENS appears once', () => {
 		cy.mount(<LiveGameCard {...defaultProps} game={shootoutGame} />);
 		cy.get('.game-period').should('not.exist');
@@ -143,7 +141,6 @@ describe('liveGameCard penalty shootout', () => {
 	});
 
 	it('labels the extra-time halves ET1 and ET2', () => {
-		// Extra time predates any shootout, so there is no tally on the card yet.
 		const extraTime: Game = {
 			...shootoutGame,
 			period: 3,
@@ -154,5 +151,34 @@ describe('liveGameCard penalty shootout', () => {
 		cy.contains('ET1').should('exist');
 		cy.mount(<LiveGameCard {...defaultProps} game={{ ...extraTime, period: 4 }} />);
 		cy.contains('ET2').should('exist');
+	});
+});
+
+describe('liveGameCard down & distance', () => {
+	const nflGame: Game = {
+		...baseGame,
+		league: 'nfl',
+		sportType: 'football',
+		period: 3,
+		clockSeconds: 421,
+		homeTeam: { id: 'h', name: 'Arizona Cardinals', abbreviation: 'ARI', score: 24 },
+		awayTeam: { id: 'a', name: 'Carolina Panthers', abbreviation: 'CAR', score: 21 },
+		downDistance: '2nd & 11',
+		fieldPosition: 'ARI 34',
+	};
+
+	it('joins the field position onto the down & distance', () => {
+		cy.mount(<LiveGameCard {...defaultProps} game={nflGame} />);
+		cy.get('.game-card-center').should('contain.text', '2nd & 11 at ARI 34');
+	});
+
+	it('falls back to the bare down & distance when ESPN omits the field position', () => {
+		cy.mount(<LiveGameCard {...defaultProps} game={{ ...nflGame, fieldPosition: undefined }} />);
+		cy.get('.game-card-center').should('contain.text', '2nd & 11').and('not.contain.text', ' at ');
+	});
+
+	it('renders nothing when there is no down & distance, even with a field position', () => {
+		cy.mount(<LiveGameCard {...defaultProps} game={{ ...nflGame, downDistance: undefined }} />);
+		cy.get('.game-card-center').should('not.contain.text', 'ARI 34');
 	});
 });

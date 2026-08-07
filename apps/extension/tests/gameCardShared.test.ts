@@ -113,9 +113,7 @@ describe('powerScoreColor', () => {
 });
 
 describe('isInteractiveCardTarget', () => {
-	// Most positive cases require a real DOM and live in component-level tests.
-	// These cover the contract the function exposes to non-DOM targets, which is
-	// what callers pass when an event originates from a non-element source.
+	// Positive cases need a real DOM and live in the component tests.
 	test('returns false for null', () => {
 		expect(isInteractiveCardTarget(null)).toBe(false);
 	});

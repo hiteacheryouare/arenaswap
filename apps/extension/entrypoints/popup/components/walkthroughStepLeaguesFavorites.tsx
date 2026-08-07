@@ -87,7 +87,6 @@ const walkthroughStepLeaguesFavorites = ({ onNext, onBack }: walkthroughStepLeag
 				{i18n.t('stepLeaguesFavorites.subtitle')}
 			</div>
 
-			{/* tab switcher */}
 			<div className='d-flex gap-1 mb-2'>
 				<button
 					type='button'

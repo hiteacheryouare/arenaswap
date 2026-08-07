@@ -106,7 +106,6 @@ const popupFooter = () => {
 		return () => clearInterval(refreshTimer.current);
 	}, [showDebug]);
 
-	// Clear the pending heart-click reset timer if the footer unmounts mid-sequence.
 	useEffect(() => () => clearTimeout(heartTimer.current), []);
 
 	const bg = debug?.bg;

@@ -26,16 +26,13 @@ describe('walkthroughView step navigation', () => {
 		cy.contains('button', 'Next').click(); // 1 -> 2
 		cy.contains('Explore Formula').should('exist');
 
-		// Click the second progress dot (index 1: Closeness)
 		cy.get('.powerscore-progress-dot').eq(1).click();
 		cy.contains('Closeness').should('exist');
 		cy.contains('Scored from the current point margin').should('exist');
 
-		// Click the last progress dot (index 11: Postseason Boost)
 		cy.get('.powerscore-progress-dot').eq(11).click();
 		cy.contains('Postseason Boost').should('exist');
 
-		// Click Back to go to Scoring Opportunity
 		cy.contains('button', 'Back').click();
 		cy.contains('Scoring opportunity').should('exist');
 	});

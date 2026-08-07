@@ -62,16 +62,11 @@ const getHistoryWindowMsForGame = (game: Game): number => {
 	return sportConfig.historyWindowMs ?? historyWindowMs;
 };
 
-/**
- * Hard ceiling on retained snapshots per game, independent of the time window.
- *
- * The window is the real policy; this only stops the arrays growing without bound if polling
- * ever runs faster than expected. Soccer's 20-minute window at the 6s eager floor is 200
- * snapshots, so this leaves headroom without letting a runaway loop fill session storage.
- */
+// Backstop only — the time window is the real policy. Stops the arrays growing without bound if
+// polling ever runs faster than expected. Soccer's 20-minute window at the 6s eager floor is 200
+// snapshots, so this leaves headroom without letting a runaway loop fill session storage.
 const maxSnapshotsPerGame = 400;
 
-/** Trims a snapshot list in place to the sport's time window, with a count cap as a backstop. */
 const trimSnapshots = <T extends { timestamp: number }>(snapshots: T[], cutoff: number): void => {
 	while (snapshots.length > 1 && snapshots[0]!.timestamp < cutoff) snapshots.shift();
 	if (snapshots.length > maxSnapshotsPerGame) snapshots.splice(0, snapshots.length - maxSnapshotsPerGame);
@@ -79,7 +74,6 @@ const trimSnapshots = <T extends { timestamp: number }>(snapshots: T[], cutoff: 
 
 const capitalizeFirst = (s: string) => s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
 
-/** Every tab that currently exists, for checking a stored tab id against reality. */
 const getOpenTabIds = async (): Promise<Set<number>> => {
 	const allTabs = await browser.tabs.query({});
 	return new Set(
@@ -103,18 +97,14 @@ export default defineBackground(() => {
 	let simulator: MockGameSimulator | null = null;
 	let prefs: UserPreferences = createDefaultUserPreferences();
 	let lastSwitchTime = 0;
-	// Per-league timeouts for staggered live polling
 	const leagueTimers = new Map<string, ReturnType<typeof setTimeout>>();
-	// Last scheduled interval per league (ms), for debug visibility
 	const leagueNextIntervalMs = new Map<string, number>();
-	// ESPN win-probability lines, keyed by game id. Lives on the summary endpoint (one request
-	// per game) rather than the scoreboard, so it refreshes on its own slow cadence — see
-	// refreshWinProbabilities. Everything that reads a PowerScore reads it from here, so the
-	// card, the detail screen and the switcher all agree on the same number.
+	// Lives on the summary endpoint (one request per game) rather than the scoreboard, so it
+	// refreshes on its own slow cadence. Every PowerScore reader pulls from here, so the card,
+	// the detail screen and the switcher all agree on the same number.
 	const winProbHistory = new Map<string, number[]>();
 	let winProbTimer: ReturnType<typeof setTimeout> | null = null;
 	const pollModeTracker = createPollModeTracker();
-	// Interval used only in demo mode
 	let demoTimer: ReturnType<typeof setInterval> | null = null;
 	let inFlightRefresh: Promise<void> | null = null;
 	let upcomingGamesReady: Promise<void> | undefined;
@@ -122,10 +112,9 @@ export default defineBackground(() => {
 	let pendingSwitch: { gameId: string; tabId: number; reason?: string } | null = null;
 	let standbyStreamTabId: number | null = null;
 	let onStandbyStream = false;
-	// Tabs ArenaSwap has muted, tracked so a tab that leaves our control gets unmuted again
-	// instead of being left silent with nothing in the UI explaining why. Mirrored into session
-	// storage because MV3 tears the service worker down whenever it goes idle — an in-memory set
-	// would come back empty and strand every muted tab with no record that we were the cause.
+	// Mirrored into session storage because MV3 tears the service worker down whenever it goes
+	// idle — an in-memory set would come back empty and strand every muted tab silent with no
+	// record that we were the cause.
 	const mutedTabIds = new Set<number>();
 	const historyStorageDefaults = { scoreHistory: {}, powerScoreHistory: {}, gameBoosts: {}, mutedTabIds: [] };
 
@@ -148,8 +137,7 @@ export default defineBackground(() => {
 				const valid = snapshots.filter(isScoreSnapshotLike);
 				if (valid.length === 0) return;
 				// Runs before the first fetch, so there is no Game to read a per-sport window from
-				// yet; the global window is the only thing available. The next updateHistory pass
-				// re-trims each game to its sport's real window.
+				// yet. The next updateHistory pass re-trims to the sport's real window.
 				const cutoff = valid[valid.length - 1]!.timestamp - historyWindowMs;
 				const trimmed = valid.filter(s => s.timestamp >= cutoff).slice(-maxSnapshotsPerGame);
 				if (trimmed.length === 0) return;
@@ -266,9 +254,8 @@ export default defineBackground(() => {
 		return game?.venueName ?? 'the arena';
 	};
 
-	// Every tab whose audio ArenaSwap owns. The standby stream tab lives outside the game
-	// registry but is still ours to mute — otherwise it keeps playing over whichever game
-	// the user is actually watching.
+	// The standby tab lives outside the game registry but is still ours to mute — otherwise it
+	// keeps playing over whichever game the user is actually watching.
 	const getManagedTabIds = (): number[] => {
 		const managedTabIds = tabRegistry.map(reg => reg.tabId);
 		if (prefs.standbyStreamEnabled && standbyStreamTabId !== null) {
@@ -285,8 +272,7 @@ export default defineBackground(() => {
 
 		const managedOpenTabIds = managedTabIds.filter(tabId => openTabIds.has(tabId));
 
-		// Tabs we muted earlier that are no longer ours (unregistered, standby switched off,
-		// or a different standby tab picked) must be handed back to the user unmuted.
+		// Tabs we muted earlier that are no longer ours must be handed back to the user unmuted.
 		const releasedTabIds = [...mutedTabIds].filter(
 			tabId => openTabIds.has(tabId) && !managedOpenTabIds.includes(tabId)
 		);
@@ -306,9 +292,8 @@ export default defineBackground(() => {
 		}
 
 		// A tab can close between the query above and the update below. Failing the whole batch
-		// there would abort the caller mid-poll — including the switch evaluation that runs right
-		// after this in afterFetch — so each tab is settled on its own and the record of what we
-		// muted is written from what actually landed.
+		// would abort the caller mid-poll, including the switch evaluation in afterFetch, so each
+		// tab is settled on its own and the muted record is written from what actually landed.
 		const failedTabIds = new Set<number>();
 		await Promise.all(
 			[...nextMuteStates].map(async ([tabId, muted]) => {
@@ -335,15 +320,9 @@ export default defineBackground(() => {
 		pendingSwitch = null;
 	};
 
-	/**
-	 * Drops every trace of a tab that no longer exists.
-	 *
-	 * Browsers never reuse a tab id, so a closed tab's registration can only ever be dead weight —
-	 * and leaving it in place poisons switching outright: a closed tab still wins the reduce in
-	 * resolveSwitchTarget whenever its game holds the top PowerScore, and every switch attempt then
-	 * no-ops against a tab that isn't there. Same for the standby tab, which otherwise keeps
-	 * answering `switchToStandby` forever.
-	 */
+	// Leaving a closed tab's registration in place poisons switching: it still wins the reduce in
+	// resolveSwitchTarget whenever its game holds the top PowerScore, and every switch attempt
+	// then no-ops. Same for the standby tab, which otherwise answers `switchToStandby` forever.
 	const forgetClosedTab = async (tabId: number) => {
 		const hadRegistration = tabRegistry.some(reg => reg.tabId === tabId);
 		const wasStandby = standbyStreamTabId === tabId;
@@ -365,17 +344,13 @@ export default defineBackground(() => {
 		if (hadRegistration || wasStandby) broadcastScoresUpdated();
 	};
 
-	/**
-	 * Reconciles rehydrated session state against the tabs that actually exist.
-	 *
-	 * MV3 tears the service worker down whenever it goes idle, so tabs close with no onRemoved
-	 * listener alive to hear it and the registry comes back from session storage still pointing at
-	 * them. Runs on every worker start, before the first switch evaluation.
-	 */
+	// MV3 tears the service worker down whenever it goes idle, so tabs close with no onRemoved
+	// listener alive to hear it and the registry comes back from session storage still pointing
+	// at them. Runs on every worker start, before the first switch evaluation.
 	const reconcileClosedTabs = async () => {
 		const openTabIds = await getOpenTabIds();
 		// Nothing legitimately reports zero tabs while the worker is running, so an empty result
-		// means we cannot see the tab strip — treat that as unknown rather than as proof that every
+		// means we cannot see the tab strip. Treat that as unknown rather than as proof that every
 		// tracked tab closed, which would wipe a perfectly good registry.
 		if (openTabIds.size === 0) return;
 
@@ -430,17 +405,8 @@ export default defineBackground(() => {
 		}
 	};
 
-	/**
-	 * Picks the registered game worth switching to right now, or null to stay put.
-	 *
-	 * Reads `currentScores`, so it always answers from the latest poll — that is the point. Both
-	 * the poll path and a queued delayed switch resolve through here, so a switch that waited out
-	 * `switchDelaySeconds` re-targets against what the games are doing when it fires instead of
-	 * replaying a decision made a minute ago.
-	 *
-	 * Registrations pointing at closed tabs are filtered out first, so the runner-up gets the
-	 * switch rather than the whole thing stalling on a tab that no longer exists.
-	 */
+	// Reads `currentScores` so a switch that waited out `switchDelaySeconds` re-targets against
+	// what the games are doing when it fires, not the decision made a minute ago.
 	const resolveSwitchTarget = (
 		openTabIds: Set<number>,
 		activeTabId: number,
@@ -454,19 +420,17 @@ export default defineBackground(() => {
 		if (candidates.length === 0) return null;
 
 		const best = candidates.reduce((a, b) => a.total > b.total ? a : b);
-		// When several tabs are registered to the same game, the one already in focus is the one
-		// the user is watching — picking any other would switch them between two tabs of the game
-		// they are on.
+		// With several tabs on the same game, picking any but the focused one would switch the
+		// user between two tabs of the game they are already watching.
 		const bestReg = activeReg?.gameId === best.gameId
 			? activeReg
 			: liveRegistry.find(reg => reg.gameId === best.gameId)!;
 		if (bestReg.tabId === activeTabId) return null;
 
 		const threshold = sensitivityThresholds[prefs.sensitivity] ?? 0;
-		// With no game tab in focus there is no score to clear, so the threshold has nothing to
-		// measure against and the best game wins by default. It still has to be a game worth
-		// watching: every frozen game scores 0, so without the `> 0` guard a league sitting at
-		// halftime would pull the user off whatever they were actually doing.
+		// With no game tab in focus the threshold has nothing to measure against, so the best game
+		// wins by default. Every frozen game scores 0, so without the `> 0` guard a league sitting
+		// at halftime would pull the user off whatever they were actually doing.
 		const notWatchingAGame = !activeReg && best.total > 0;
 		if (!notWatchingAGame && best.total < activeScore + threshold) return null;
 		if (Date.now() - lastSwitchTime <= prefs.cooldownSeconds * 1000) return null;
@@ -523,9 +487,8 @@ export default defineBackground(() => {
 		}
 	};
 
-	// Shared post-fetch processing: stall tracking, score computation, broadcast, tab switching.
-	// Pass changedLeagueId to scope stall tracking and history to just the updated league;
-	// pass null (full refresh) to process all live games.
+	// A changedLeagueId scopes stall tracking and history to just that league; null processes
+	// every live game.
 	const afterFetch = async (changedLeagueId: LeagueId | null, allowTabSwitch: boolean) => {
 		const liveGames = games.filter(g => g.status === 'in');
 		const freshGames = changedLeagueId ? liveGames.filter(g => g.league === changedLeagueId) : liveGames;
@@ -561,8 +524,8 @@ export default defineBackground(() => {
 			const gameBoost = gameBoosts[g.id] ?? 0;
 			const scoringOpportunityBoost = computeScoringOpportunityBoost(g);
 			const postseasonBoost = g.isPostseason ? postseasonBoostPoints : 0;
-			// Automatic scoring (base signals + every non-manual boost) saturates at 100.
-			// Only a manually-added game boost is allowed to push the headline total past the ceiling.
+			// Automatic scoring saturates at 100; only a manual game boost may push the headline
+			// total past the ceiling.
 			const automaticTotal = Math.min(
 				scoreMaxTotal,
 				baseScore.total + favoriteBonus + scoringOpportunityBoost + postseasonBoost,
@@ -624,9 +587,8 @@ export default defineBackground(() => {
 			activeTabIsStandby: activeTab.id === standbyStreamTabId,
 		});
 
-		// Standby is evaluated ahead of the pending-switch guard: a queued switch must not be able
-		// to freeze the standby state machine. When standby takes over, the queued game is by
-		// definition below the threshold, so the queue is stale and goes with it.
+		// Evaluated ahead of the pending-switch guard so a queued switch cannot freeze the standby
+		// state machine. When standby takes over, the queued game is below the threshold anyway.
 		if (standbyDecision === 'switchToStandby') {
 			clearPendingSwitch();
 			onStandbyStream = true;
@@ -669,7 +631,6 @@ export default defineBackground(() => {
 				logError('Failed to fetch games.', err);
 				return;
 			}
-			// Merge cached upcoming games, excluding any that have since gone live
 			const freshGameIds = new Set(games.map(g => g.id));
 			const stillUpcoming = upcomingGames.filter(g => !freshGameIds.has(g.id));
 			games = [...games, ...stillUpcoming];
@@ -678,11 +639,6 @@ export default defineBackground(() => {
 		await afterFetch(null, allowTabSwitch);
 	};
 
-	// Fetch a single league and merge results into shared state, then reschedule.
-	// Each league runs on an adaptive interval driven by the highest live PowerScore
-	// in the league: exciting games (high score) poll every ~6s; quiet live games
-	// poll every ~25s. Intermission (halftime/between-periods) uses 40s. Leagues
-	// with no live games use dormant mode (2-3 min). ±jitter prevents thundering herds.
 	const tickLeague = async (leagueId: LeagueId, allowTabSwitch: boolean) => {
 		let fetchSucceeded = false;
 		try {
@@ -699,9 +655,8 @@ export default defineBackground(() => {
 			logWarn(`Failed to fetch ${leagueId} games.`, err);
 		}
 
-		// Reschedule before awaiting post-processing so the next tick is always queued.
-		// On error fall back to eager interval so we retry promptly.
-		// Guard against rescheduling a league that was disabled while this fetch was in flight.
+		// Reschedule before awaiting post-processing so the next tick is always queued, and skip
+		// leagues that were disabled while this fetch was in flight.
 		if (!demoMode && prefs.enabledLeagues.includes(leagueId)) {
 			let nextInterval: number;
 			if (fetchSucceeded && pollModeTracker.getMode(leagueId) === 'dormant') {
@@ -709,7 +664,7 @@ export default defineBackground(() => {
 			} else if (fetchSucceeded) {
 				const liveLeagueGames = games.filter(g => g.league === leagueId && g.status === 'in');
 				const base = computeLeagueIntervalMs(liveLeagueGames, currentScores);
-				// Scale jitter proportionally so fast (critical) polls stay dense and slow polls have more spread.
+				// Proportional so fast polls stay dense and slow polls spread out.
 				const jitterMax = Math.round((base / pollMaxEagerMs) * 2_000);
 				nextInterval = base + randomInRange(-jitterMax, jitterMax);
 			} else {
@@ -733,8 +688,7 @@ export default defineBackground(() => {
 		leagueTimers.clear();
 	};
 
-	// Spread each enabled league's first tick randomly across pollIntervalMs so
-	// they never all fire at the same moment after the initial full fetch.
+	// Spreads each league's first tick across pollIntervalMs so they never all fire at once.
 	const startLeaguePolling = () => {
 		stopLeaguePolling();
 		pollModeTracker.reset();
@@ -751,18 +705,11 @@ export default defineBackground(() => {
 		return inFlightRefresh;
 	};
 
-	/**
-	 * Refreshes the ESPN win-probability line for every live game.
-	 *
-	 * One request per game, so this deliberately runs far slower than the scoreboard poll —
-	 * a win-probability line moves on the scale of possessions, not seconds, and the scorer
-	 * only reads its average distance from 50%. Requests are issued together and failures are
-	 * per-game: one 404 leaves the other games' cached lines intact.
-	 */
+	// One request per game, so this deliberately runs far slower than the scoreboard poll — a
+	// win-probability line moves on the scale of possessions, not seconds.
 	const refreshWinProbabilities = async (): Promise<void> => {
 		const liveGames = games.filter(g => g.status === 'in');
 
-		// Drop lines for games that have finished or dropped out of the enabled leagues.
 		const liveIds = new Set(liveGames.map(g => g.id));
 		for (const gameId of winProbHistory.keys()) {
 			if (!liveIds.has(gameId)) winProbHistory.delete(gameId);
@@ -796,7 +743,6 @@ export default defineBackground(() => {
 		winProbTimer = setTimeout(() => void run(), winProbPollIntervalMs);
 	};
 
-	// Load persisted state before any refresh to avoid race conditions on popup reopen.
 	const stateReady = Promise.all([
 		loadStoredUserPreferences(),
 		browser.storage.session.get({ tabRegistry: [], standbyStreamTabId: null, ...historyStorageDefaults }),
@@ -837,23 +783,19 @@ export default defineBackground(() => {
 
 		startLeaguePolling();
 		scheduleWinProbabilityPolling();
-		// Seed the win-probability lines now that the games are known, then re-score so the very
-		// first thing the popup renders already carries volatility. Demo games have no ESPN
-		// summary behind them, so this is skipped above.
+		// Seed the lines now that the games are known, then re-score so the first thing the popup
+		// renders already carries volatility.
 		await refreshWinProbabilities();
 		await refreshScores(false);
 	});
 
-	// Handle messages from popup
 	browser.runtime.onMessage.addListener((msg: ExtensionMessage) => {
 		if (msg.type === 'GET_STATE') {
 			if (msg.forceRefresh === true || games.length === 0) {
-				// Popup opened or worker just woke up; fetch fresh state before responding.
-				// Upcoming games load in the background and arrive via SCORES_UPDATED push.
 				return stateReady
 					.then(async () => {
-						// Re-sync prefs from storage in case popup wrote prefs but closed before
-						// the UPDATE_PREFS message was delivered.
+						// The popup may have written prefs then closed before its UPDATE_PREFS
+						// message was delivered.
 						try {
 							prefs = await loadStoredUserPreferences();
 						} catch { /* keep current in-memory prefs */ }
@@ -878,23 +820,18 @@ export default defineBackground(() => {
 					(prefs.showUpcomingGames && prefs.upcomingGamesDays !== prevUpcomingGamesDays);
 				if (upcomingSettingChanged) {
 					await refreshUpcomingGames();
-					// Rebuild games: keep live/in-progress games, replace upcoming slice with updated cache
 					games = [...games.filter(g => g.status !== 'pre'), ...upcomingGames];
 					broadcastScoresUpdated();
 				}
-				// Restart staggered polling when the league set changes
 				const newLeagues = new Set(prefs.enabledLeagues);
 				const leaguesChanged = prevLeagues.size !== newLeagues.size ||
 					[...prevLeagues].some(l => !newLeagues.has(l as LeagueId));
 				if (leaguesChanged && !demoMode) {
-					// Refresh upcoming games so newly-enabled leagues get their schedule
 					await refreshUpcomingGames();
-					// Rebuild games: keep live/in-progress games, replace upcoming slice with updated cache
 					games = [...games.filter(g => g.status !== 'pre'), ...upcomingGames];
 					broadcastScoresUpdated();
 					startLeaguePolling();
-					// Games from a league that was just switched off keep their cached line
-					// until the next sweep, so evict eagerly here.
+					// A league switched off keeps its cached lines until the next sweep otherwise.
 					void refreshWinProbabilities();
 				}
 			});
@@ -930,8 +867,8 @@ export default defineBackground(() => {
 					stopWinProbabilityPolling();
 					winProbHistory.clear();
 					if (!demoTimer) {
-						// Routed through refreshScores so a slow tick cannot overlap the next interval.
-					demoTimer = setInterval(() => void refreshScores(true), pollIntervalMs);
+						// Routed through refreshScores so a slow tick cannot overlap the next one.
+						demoTimer = setInterval(() => void refreshScores(true), pollIntervalMs);
 					}
 				} else {
 					simulator = null;
@@ -940,7 +877,7 @@ export default defineBackground(() => {
 					scheduleWinProbabilityPolling();
 				}
 				await browser.storage.local.set({ demoMode });
-				await refreshScores(false); // immediately refresh
+				await refreshScores(false);
 			});
 		}
 		if (msg.type === 'SET_STANDBY_STREAM_TAB') {
@@ -948,7 +885,6 @@ export default defineBackground(() => {
 				standbyStreamTabId = msg.tabId;
 				onStandbyStream = false;
 				await browser.storage.session.set({ standbyStreamTabId });
-				// Mute the freshly designated tab right away rather than waiting for the next poll
 				await syncManagedTabMuteState(prefs.enabled);
 			});
 		}
@@ -986,9 +922,8 @@ export default defineBackground(() => {
 
 	browser.tabs.onActivated.addListener(({ tabId }) => {
 		void stateReady.then(() => {
-			// A tab the user picked deserves the same protection as one we picked for them, so a
-			// manual switch starts the cooldown. Without this, landing on a quieter game by hand
-			// could be overridden by the very next poll.
+			// A manual switch starts the cooldown too, otherwise landing on a quieter game by hand
+			// gets overridden by the very next poll.
 			if (tabRegistry.some(reg => reg.tabId === tabId)) lastSwitchTime = Date.now();
 			return syncManagedTabMuteState(prefs.enabled);
 		});

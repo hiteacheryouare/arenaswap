@@ -44,8 +44,7 @@ describe('leaguesBySportType', () => {
 		expect(leaguesBySportType.football.every(l => l.sportType === 'football')).toBe(true);
 	});
 
-	// Regression: before the `in` guard was added, groups[config.sportType].push(config) would
-	// crash with "Cannot read properties of undefined (reading 'push')" for any unknown sport type.
+	// Regression: without the `in` guard this crashed on any unknown sport type.
 	test('includes every configured league in exactly one sport bucket with no duplicates', () => {
 		const allIds = leagueConfigs.map(c => c.id).toSorted();
 		const bucketedIds = (Object.values(leaguesBySportType) as (typeof leagueConfigs)[])
@@ -152,11 +151,9 @@ describe('buildFavoritePinnedComparator', () => {
 		const favorites = new Set([createFavoriteTeamKey('nba', 'home-1')]);
 		const scores = new Map<string, number>([['nba-fav', 99], ['nfl-1', 1]]);
 
-		// Default order puts NBA first even though NFL is second in the custom list...
 		const defaultSorted = [nfl, nbaFav].toSorted(buildFavoritePinnedComparator(leagueOrder, favorites, scores));
 		expect(defaultSorted.map(g => g.id)).toEqual(['nba-fav', 'nfl-1']);
 
-		// ...but a custom order that puts NFL first wins over both the favorite and the score.
 		const customRank = buildLeagueRank(['nfl', 'nba']);
 		const customSorted = [nbaFav, nfl].toSorted(buildFavoritePinnedComparator(customRank, favorites, scores));
 		expect(customSorted.map(g => g.id)).toEqual(['nfl-1', 'nba-fav']);
@@ -181,7 +178,6 @@ describe('buildLeagueRank', () => {
 
 	test('keeps canonical order among the leagues outside the custom order', () => {
 		const rank = buildLeagueRank(['mls']);
-		// nba precedes nfl in leagueConfigs, so it must keep that relative order.
 		expect(rank.nba).toBeLessThan(rank.nfl);
 	});
 
@@ -195,7 +191,6 @@ describe('buildLeagueRank', () => {
 
 describe('insertLeagueAtDefaultPosition', () => {
 	test('inserts a re-enabled league at its canonical slot rather than the end', () => {
-		// nba precedes nhl, which precedes mls, in leagueConfigs.
 		expect(insertLeagueAtDefaultPosition(['nba', 'mls'], 'nhl')).toEqual(['nba', 'nhl', 'mls']);
 	});
 
@@ -214,7 +209,7 @@ describe('insertLeagueAtDefaultPosition', () => {
 	});
 
 	test('respects a custom order when picking the insertion point', () => {
-		// User dragged mls above nba; re-enabling nhl slots it after nba, its canonical neighbour.
+		// mls was dragged above nba; re-enabling nhl still slots it after nba.
 		expect(insertLeagueAtDefaultPosition(['mls', 'nba'], 'nhl')).toEqual(['mls', 'nba', 'nhl']);
 	});
 });
@@ -251,7 +246,6 @@ describe('buildUpcomingComparator', () => {
 		const nbaTomorrow = makeGame({ id: 'nba-tmr', status: 'pre', startTime: tomorrow.toISOString() });
 		const nflToday = makeGame({ id: 'nfl-today', league: 'nfl', sportType: 'football', status: 'pre', startTime: today.toISOString() });
 
-		// nba outranks nfl in the custom order, but the earlier day still wins.
 		const comparator = buildUpcomingComparator(buildLeagueRank(['nba', 'nfl']), new Set(), new Map());
 		expect([nbaTomorrow, nflToday].toSorted(comparator).map(g => g.id)).toEqual(['nfl-today', 'nba-tmr']);
 	});
@@ -362,15 +356,8 @@ describe('normalizeBackgroundState', () => {
 });
 
 describe('fetchState', () => {
-	// Regression: the SWR fetcher in app.tsx was calling fetchState(true), which sent
-	// forceRefresh:true to the background and triggered a full tick(). tick() does a
-	// complete overwrite of the games array (games = fetchResult.games), which could
-	// erase live game data that tickLeague() had already placed there.
-	// Additionally, SWR's default revalidateIfStale:true caused a second fetch on React
-	// StrictMode remount (React 19 changed store re-snapshot timing), which could
-	// overwrite a SCORES_UPDATED mutation that had already set live game data.
-	// Fixes: (1) app.tsx uses fetchState(false) on initial load; (2) revalidateIfStale:false
-	// prevents unnecessary re-fetches — updates come via SCORES_UPDATED push messages.
+	// Regression: fetchState(true) triggered a full tick() that overwrote the games array, and
+	// SWR's default revalidateIfStale then clobbered data a SCORES_UPDATED mutation had set.
 
 
 	const liveGameState = {

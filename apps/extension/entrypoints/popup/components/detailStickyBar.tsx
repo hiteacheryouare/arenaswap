@@ -6,8 +6,7 @@ interface barCrestProps {
 	team: Team;
 }
 
-// Falls back to nothing rather than to the abbreviation, which is already the next element
-// along — an empty slot keeps the bar's spacing without saying the same thing twice.
+// Falls back to nothing rather than the abbreviation, which is already the next element along.
 const BarCrest = ({ team }: barCrestProps) => {
 	const [logoFailed, setLogoFailed] = useState(false);
 	if (!team.logo || logoFailed) return null;
@@ -26,19 +25,13 @@ const BarCrest = ({ team }: barCrestProps) => {
 interface detailStickyBarProps {
 	game: Game;
 	statusText: string;
-	/** True once the hero card has scrolled out from under the bar. */
 	compact: boolean;
 	onBack: () => void;
 }
 
-/**
- * Back button, plus a compact matchup that fades in only once the real card has scrolled
- * away. At rest the bar carries nothing but the button — the card is right there.
- *
- * The matchup is absolutely centred and the status pinned separately to the right, rather
- * than both sitting in one centred group: otherwise a longer status string drags the score
- * off the card's axis, and it drifts again every time the period changes.
- */
+// The matchup is absolutely centred and the status pinned separately to the right. In one
+// centred group a longer status string drags the score off the card's axis, and it drifts
+// again every time the period changes.
 const detailStickyBar = ({ game, statusText, compact, onBack }: detailStickyBarProps) => (
 	<div className='game-detail-header'>
 		<button type='button' className='btn btn-sm game-detail-back-button' onClick={onBack}>

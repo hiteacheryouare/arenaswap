@@ -16,11 +16,7 @@ interface powerScoreBreakdownProps {
 	momentum: number;
 	leadChanges: number;
 	comeback: number;
-	/**
-	 * Win-probability volatility adjustment, clamped to ±`scoreWinProbVarianceMax` (5).
-	 * Computed by the background scorer and already folded into the total; omitted entirely
-	 * when ESPN gave us no line to measure.
-	 */
+	// Already folded into the total by the background scorer; absent when ESPN gave no line.
 	winProbabilityVariance?: number;
 	baseTotal: number;
 	stallPenalty: number;
@@ -29,9 +25,7 @@ interface powerScoreBreakdownProps {
 	currentBoost: number;
 	scoringOpportunityBoost: number;
 	postseasonBoost: number;
-	/** Pre-formatted final score line — the numeric total is already rendered into it. */
 	totalLabel: string;
-	/** Human-readable summary of the top signals, shown under the final total. */
 	reason?: string;
 	disabledSignals?: readonly SignalName[];
 }
@@ -54,7 +48,6 @@ const boostPenaltyMeta = {
 	postseason: { color: '#2274a5', icon: 'trophy-fill' },
 } as const;
 
-/** Leading icon for a boost/penalty row — the counterpart to the signal rows' colored dot. */
 const FactorIcon = ({ factor }: { factor: keyof typeof boostPenaltyMeta }) => (
 	<i
 		className={`bi bi-${boostPenaltyMeta[factor].icon} powerscore-factor-icon`}
@@ -86,8 +79,8 @@ const PowerScoreBreakdown = ({
 	const signalsSubtotal = closeness + lateGame + momentum + leadChanges + comeback;
 	const hasWinProbVariance = winProbabilityVariance !== undefined;
 	const variance = winProbabilityVariance ?? 0;
-	// When signals are disabled, applyDisabledSignals rescales the enabled signals sum to maintain
-	// the 0-100 range. baseTotal reflects the scaled result; signalsSubtotal is the raw enabled sum.
+	// applyDisabledSignals rescales the enabled sum back into 0-100, so baseTotal is the scaled
+	// result while signalsSubtotal stays raw.
 	const isSignalNormalized = disabledSet.size > 0 && baseTotal !== signalsSubtotal;
 
 	return (

@@ -32,8 +32,7 @@ export const sportTypeLabels: Record<SportType, string> = {
 };
 export const leagueLabels = Object.fromEntries(leagueConfigs.map(config => [config.id, config.label])) as Record<LeagueId, string>;
 
-// Loading messages live in the locale files under `loading.m1`..`loading.mN`.
-// LOADING_MESSAGE_COUNT must match the number of `loading.mN` keys defined there.
+// Must match the number of `loading.mN` keys in the locale files.
 const LOADING_MESSAGE_COUNT = 73;
 
 export const getRandomLoadingMessage = (): string => {
@@ -41,8 +40,7 @@ export const getRandomLoadingMessage = (): string => {
 	return i18n.t(`loading.m${index}` as Parameters<typeof i18n.t>[0]);
 };
 
-// No-games messages live in the locale files under `noGames.m1`..`noGames.mN`,
-// each with a `.title` and `.sub`. NO_GAMES_MESSAGE_COUNT must match that count.
+// Must match the number of `noGames.mN` keys in the locale files.
 const NO_GAMES_MESSAGE_COUNT = 7;
 
 export const getRandomNoGamesMessage = (): { title: string; sub: string } => {
@@ -66,10 +64,8 @@ export const leaguesBySportType = leagueConfigs.reduce<Record<SportType, typeof 
 
 export const byLeague = (a: Game, b: Game) => (leagueOrder[a.league] ?? 99) - (leagueOrder[b.league] ?? 99);
 
-/**
- * Ranks leagues by the user's custom display order. Leagues absent from `enabledLeagues`
- * sort after every enabled one, keeping their canonical order relative to each other.
- */
+// Leagues absent from `enabledLeagues` sort after every enabled one, keeping their canonical
+// order relative to each other.
 export const buildLeagueRank = (enabledLeagues: LeagueId[]): Record<LeagueId, number> => {
 	const ranks = {} as Record<LeagueId, number>;
 	for (const [index, leagueId] of enabledLeagues.entries()) {
@@ -81,11 +77,8 @@ export const buildLeagueRank = (enabledLeagues: LeagueId[]): Record<LeagueId, nu
 	return ranks;
 };
 
-/**
- * Re-enables a league at its canonical slot rather than tacking it onto the end. Drops it just
- * after the last already-enabled league that canonically precedes it, so it lands beside its
- * nearest familiar neighbour even when the surrounding list has been hand-sorted.
- */
+// Drops the league just after the last enabled one that canonically precedes it, so it lands
+// beside its nearest familiar neighbour even when the list has been hand-sorted.
 export const insertLeagueAtDefaultPosition = (order: LeagueId[], leagueId: LeagueId): LeagueId[] => {
 	if (order.includes(leagueId)) return order;
 	const rank = leagueOrder[leagueId] ?? 99;

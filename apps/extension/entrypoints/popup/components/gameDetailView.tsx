@@ -65,8 +65,7 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 	const leadChanges = activePowerScore?.leadChanges ?? 0;
 	const comeback = activePowerScore?.comeback ?? 0;
 	const rawSubtotal = closeness + lateGame + momentum + leadChanges + comeback;
-	// When stalled, baseTotal is the pre-stall signals sum stored by the scorer (could exceed 100).
-	// When not stalled, it equals rawSubtotal.
+	// When stalled this is the pre-stall signals sum stored by the scorer, which may exceed 100.
 	const baseTotal = activePowerScore?.baseTotal ?? rawSubtotal;
 	const stallPenalty = activePowerScore?.stallPenalty ?? 0;
 	const favoriteBonus = activePowerScore?.favoriteBonus ?? 0;
@@ -89,11 +88,8 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 	const winProbabilityOption = useMemo(() => (
 		buildWinProbabilityOption(winProbability, game)
 	), [winProbability, game]);
-	// Volatility is computed by the background scorer, which owns the win-probability line and
-	// folds it into the total before anything renders. Recomputing it here from the popup's own
-	// copy of the line would put a different number on the detail screen than the one on the card
-	// you tapped and the one the auto-switcher acted on. The line fetched here drives the chart
-	// only. Undefined means ESPN gave us too little data — no row, rather than a fabricated zero.
+	// Read from the scorer, not recomputed from the line fetched above: that would put a different
+	// number here than on the card you tapped. Undefined means ESPN gave too little data.
 	const winProbabilityVariance = activePowerScore?.winProbabilityVariance;
 	const total = activePowerScore?.total ?? 0;
 
@@ -120,9 +116,8 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 		? i18n.t('detail.totalLabelBaseMax', { total, max: scoreMaxTotal })
 		: i18n.t('detail.totalLabel', { total, max: scoreMaxTotal });
 
-	// The compact matchup in the sticky bar only earns its space once the real card is gone.
-	// Observing the card itself (rather than a scroll offset) keeps the handoff exact at any
-	// hero height — pre-game, inning sports and postseason all differ.
+	// Observing the card itself rather than a scroll offset keeps the sticky-bar handoff exact at
+	// any hero height — pre-game, inning sports and postseason all differ.
 	const shellRef = useRef<HTMLDivElement>(null);
 	const heroRef = useRef<HTMLDivElement>(null);
 	const [heroScrolledAway, setHeroScrolledAway] = useState(false);
@@ -179,9 +174,6 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 				<GameBoostInput gameId={game.id} currentBoost={currentBoost} onSetGameBoost={onSetGameBoost} />
 			)}
 
-			{/* Venue, broadcasts, odds and weather are reference material, not the headline —
-			    the card already showed them, so they sit below the arithmetic that is unique
-			    to this screen rather than above it. */}
 			<GameMeta game={game} dark bettingPrefs={bettingPrefs} />
 			{game.weather && (
 				<div className='d-flex align-items-center justify-content-center gap-1 game-detail-weather'>

@@ -24,19 +24,12 @@ export const countdownParts = (targetMs: number, nowMs: number): CountdownParts 
 	};
 };
 
-/**
- * Seconds only tick inside the final day. Further out the digit would roll 86,400 times
- * before anyone could act on it, so the clock steps once a minute instead.
- */
+// Further out than a day the seconds digit would roll 86,400 times before anyone could act on
+// it, so the clock steps once a minute instead.
 export const countdownShowsSeconds = (parts: CountdownParts | null): boolean => (
 	parts !== null && parts.remainingMs > 0 && parts.days === 0
 );
 
-/**
- * Ticks on the boundary of the smallest unit actually on screen — every second inside the
- * final day, every minute before that. Only the countdown component calls this, so a tick
- * re-renders a handful of spans rather than the whole detail view.
- */
 export const useStartCountdown = (iso: string | undefined): CountdownParts | null => {
 	const targetMs = useMemo(() => (iso ? new Date(iso).getTime() : Number.NaN), [iso]);
 	const [nowMs, setNowMs] = useState(() => Date.now());

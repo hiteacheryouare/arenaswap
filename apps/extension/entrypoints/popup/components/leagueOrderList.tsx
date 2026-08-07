@@ -23,7 +23,6 @@ const LeagueOrderList = ({ order, leagueLogos, disabled, onReorder, onReset }: l
 	const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
 	const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
 
-	// Nothing to rearrange with fewer than two leagues.
 	if (order.length < 2) return null;
 
 	const clearDragState = () => {

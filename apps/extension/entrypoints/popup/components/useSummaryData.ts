@@ -20,7 +20,6 @@ export interface SeriesInfo {
 	events?: SeriesEvent[];
 }
 
-/** Each side's overall win-loss record, already formatted for display. `null` when unavailable. */
 export interface TeamRecords {
 	home: string | null;
 	away: string | null;
@@ -46,29 +45,19 @@ interface HeaderCompetitor {
 
 export const emptyTeamRecords: TeamRecords = { home: null, away: null };
 
-/**
- * The `total` entry is the overall record; the rest are splits (home, road, vsconf) we don't show.
- *
- * `summary` is read in preference to `displayValue`. Across every league that had a record to
- * check, the two are identical except in the NHL, where `displayValue` appends the standings
- * points — "28-28-10, 66 PTS" — which is a second statistic wearing the record's clothes and
- * twice the width of the column it has to sit in. `summary` is the bare record everywhere.
- */
+// `summary` beats `displayValue` because the NHL appends standings points there —
+// "28-28-10, 66 PTS" — twice the width of the column it has to sit in.
 const totalRecord = (competitor: HeaderCompetitor | undefined): string | null => {
 	const total = competitor?.record?.find(entry => entry.type === 'total');
 	const value = (total?.summary ?? total?.displayValue ?? '').trim();
-	// ESPN sends `record: []` in the offseason and an empty summary for teams that haven't played,
-	// both of which should read as "no record" rather than a blank line under the name.
+	// ESPN sends `record: []` in the offseason and an empty summary for teams that haven't
+	// played; both should read as "no record".
 	return value.length > 0 ? value : null;
 };
 
-/**
- * Reads both sides' records out of an ESPN summary payload.
- *
- * Team id is the primary key rather than array position: ESPN orders `competitors` by its own
- * `order` field, which is not the same as away-then-home across every sport. `homeAway` is the
- * fallback for leagues where we synthesize team ids (college hockey) and so can never match.
- */
+// Team id is the primary key rather than array position: ESPN orders `competitors` by its own
+// `order` field, which is not away-then-home across every sport. `homeAway` is the fallback for
+// leagues where we synthesize team ids (college hockey) and so can never match.
 export const parseTeamRecords = (data: unknown, homeTeamId: string, awayTeamId: string): TeamRecords => {
 	const competitors = (data as {
 		header?: { competitions?: { competitors?: HeaderCompetitor[] }[] };
@@ -89,7 +78,7 @@ type SummaryGameArg = Pick<Game, 'id' | 'league' | 'status'> & {
 	awayTeam: Pick<Game['awayTeam'], 'id' | 'score'>;
 };
 
-// Deterministic LCG for mock data — avoids non-determinism in render
+// Deterministic so mock charts do not change between renders.
 const lcgNext = (s: number): number => (s * 1664525 + 1013904223) & 0x7fffffff;
 
 const seedFromStr = (str: string): number => (
@@ -139,13 +128,10 @@ const mockSeriesMap: Record<string, MockSeriesEntry> = {
 	},
 };
 
-// Demo mode has no ESPN payload to read records out of, so the simulated games carry canned ones.
-// Formats follow each league: W-L, W-L-OTL for hockey, W-D-L for soccer.
 const mockRecordsMap: Record<string, TeamRecords> = {
 	'mock-1': { home: '18-9', away: '15-12' },
 	'mock-2': { home: '41-30', away: '33-38' },
-	// Eight characters is the widest a real record gets (NHL W-L-OTL, soccer W-D-L past ten in
-	// each column), so this is the entry the column-width test measures against.
+	// Widest a real record gets (8 chars); the column-width test measures against this entry.
 	'mock-3': { home: '28-28-10', away: '30-28-9' },
 	'mock-4': { home: '59-53', away: '55-58' },
 	'mock-5': { home: '11-4', away: '8-7' },
@@ -166,22 +152,20 @@ const useSummaryData = (game: SummaryGameArg): summaryDataResult => {
 	const [winProbability, setWinProbability] = useState<number[]>([]);
 	const [seriesInfo, setSeriesInfo] = useState<SeriesInfo | null>(null);
 	const [records, setRecords] = useState<TeamRecords>(emptyTeamRecords);
-	// Same reasoning as the score snapshot below: the ids only matter at fetch time, and depending
-	// on them directly would refetch whenever the caller hands us a fresh team object.
+	// Snapshotted, not tracked: depending on these directly would refetch whenever the caller
+	// hands us a fresh team object.
 	const teamIdsRef = useRef({ home: game.homeTeam.id, away: game.awayTeam.id });
 	teamIdsRef.current = { home: game.homeTeam.id, away: game.awayTeam.id };
-	// Snapshotted rather than tracked: the mock generator seeds off the score once, and making
-	// the effect depend on a live score would refetch ESPN on every made basket.
+	// Likewise — depending on a live score would refetch ESPN on every made basket.
 	const scoreRef = useRef({ home: game.homeTeam.score, away: game.awayTeam.score });
 	scoreRef.current = { home: game.homeTeam.score, away: game.awayTeam.score };
 
 	useEffect(() => {
-		// A detail view reused for a different game must not keep showing the previous game's line.
+		// A detail view reused for a different game must not keep the previous game's line.
 		setWinProbability([]);
 		setSeriesInfo(null);
 		setRecords(emptyTeamRecords);
 
-		// Demo mode: mock- prefixed IDs don't have ESPN summary data
 		if (gameId.startsWith('mock-')) {
 			setRecords(mockRecordsMap[gameId] ?? emptyTeamRecords);
 			if (status === 'pre') return;
@@ -193,11 +177,8 @@ const useSummaryData = (game: SummaryGameArg): summaryDataResult => {
 		const config = leagueConfigMap[league as LeagueId];
 		if (!config) return;
 
-		// Fetched once per game rather than per score change: this drives the chart, and the line
-		// only moves on the scale of possessions. The volatility figure in the breakdown comes from
-		// the background scorer, so nothing here feeds the number the switcher acts on. Pre-game
-		// games fetch too — there is no win-probability line yet, but the records are exactly what
-		// you want before a game starts, and it is still one request per detail screen opened.
+		// Fetched once per game rather than per score change: the line only moves on the scale of
+		// possessions, and the switcher reads volatility from the background scorer, not from here.
 		const controller = new AbortController();
 		const url = `https://site.api.espn.com/apis/site/v2/sports/${config.espnPath}/summary?event=${encodeURIComponent(gameId)}`;
 		fetch(url, { headers: { Accept: 'application/json' }, signal: controller.signal })
@@ -207,9 +188,8 @@ const useSummaryData = (game: SummaryGameArg): summaryDataResult => {
 			})
 			.then((data: Record<string, unknown>) => {
 				const wp = data?.winprobability;
-				// Only replace win probability data with non-empty results. ESPN returns [] during
-				// rain delays and brief interruptions even when earlier at-bats produced data, which
-				// would clear the chart mid-game and desync it from the score.
+				// ESPN returns [] during rain delays and brief interruptions even when earlier play
+				// produced data, which would clear the chart mid-game and desync it from the score.
 				if (Array.isArray(wp) && wp.length > 0) {
 					setWinProbability(wp.map((p: { homeWinPercentage?: number }) => p.homeWinPercentage ?? 0.5));
 				}

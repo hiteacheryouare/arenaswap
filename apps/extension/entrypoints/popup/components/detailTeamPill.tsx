@@ -5,17 +5,12 @@ import type { Team } from '@arenaswap/core/types';
 interface detailTeamPillProps {
 	team: Team;
 	side: 'away' | 'home';
-	/** Overall record, already formatted by the source league (e.g. "59-53"). Omitted when unknown. */
 	record?: string | null;
 }
 
-/**
- * One team's crest and its labels, emitted as two separate grid children via
- * `display: contents`. Keeping the crest and the label in different grid rows is what
- * holds the two sides level: a name that wraps to two lines pushes its own label row
- * taller without ever shifting the logo it belongs to. The record gets a row of its own for
- * the same reason — nested under a name that wraps, it would sit lower than the opponent's.
- */
+// Crest, name and record are emitted as separate grid children via `display: contents`, which
+// is what holds the two sides level: a name that wraps to two lines pushes its own row taller
+// without shifting the logo or the record beside it.
 const detailTeamPill = ({ team, side, record }: detailTeamPillProps) => {
 	const [logoFailed, setLogoFailed] = useState(false);
 
@@ -31,12 +26,9 @@ const detailTeamPill = ({ team, side, record }: detailTeamPillProps) => {
 							onError={() => setLogoFailed(true)}
 						/>
 					)
-					// No text in the fallback — the abbreviation is directly below it, and
-					// rendering it twice was the "same thing in two places" all over again.
+					// No text in the fallback — the abbreviation is directly below it.
 					: <span className='game-detail-team-logo-fallback' aria-hidden='true' />}
 			</div>
-			{/* The full name is the only label: the abbreviation is on the card you came from
-			    and in the pinned bar above, so repeating it here says nothing new. */}
 			<div className={`game-detail-team-name gd-area-${side}-label`}>
 				{team.name || team.abbreviation}
 			</div>

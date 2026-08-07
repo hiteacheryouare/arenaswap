@@ -30,7 +30,6 @@ describe('resolveStatusText', () => {
 		expect(resolveStatusText(makeGame({ period: 5 }), false, t)).toBe('OT1 • 6:40');
 	});
 
-	// The clock is frozen during a break, so the period and time stop meaning anything.
 	test('says halftime rather than showing a frozen clock', () => {
 		expect(resolveStatusText(makeGame({ intermission: true, period: 2 }), false, t)).toBe('Halftime');
 	});
@@ -52,7 +51,6 @@ describe('resolveStatusText', () => {
 		expect(resolveStatusText(makeGame({ status: 'post' }), false, t)).toBe('Final');
 	});
 
-	// Pre-game says nothing here — the countdown below the matchup carries it.
 	test('is empty before tip-off', () => {
 		expect(resolveStatusText(makeGame({ status: 'pre' }), false, t)).toBe('');
 	});

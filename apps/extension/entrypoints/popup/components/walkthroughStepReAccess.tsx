@@ -16,7 +16,6 @@ const walkthroughStepReAccess = ({ onNext, onBack }: walkthroughStepReAccessProp
 			{i18n.t('stepReAccess.subtitle')}
 		</div>
 
-		{/* mock main view header */}
 		<div className='border border-secondary-subtle rounded p-2 mb-3'>
 			<div className='d-flex justify-content-between align-items-center'>
 				<img
@@ -25,7 +24,6 @@ const walkthroughStepReAccess = ({ onNext, onBack }: walkthroughStepReAccessProp
 					className='arenaswap-logo'
 				/>
 				<div className='d-flex align-items-center gap-2'>
-					{/* highlighted ? button — decorative mock, rendered as div */}
 					<div className='position-relative'>
 						<div
 							className='btn btn-sm p-0 popup-settings-button'
@@ -33,12 +31,10 @@ const walkthroughStepReAccess = ({ onNext, onBack }: walkthroughStepReAccessProp
 						>
 							<i className='bi bi-question-circle popup-settings-icon' style={{ color: 'var(--bs-primary)' }} />
 						</div>
-						{/* callout: top: calc(100% + 4px) anchors the callout directly below the ? button */}
 						<div
 							className='position-absolute d-flex flex-column align-items-center'
 							style={{ top: 'calc(100% + 4px)', left: '50%', transform: 'translateX(-50%)', whiteSpace: 'nowrap', pointerEvents: 'none', zIndex: 1 }}
 						>
-							{/* upward-pointing triangle (borderBottom = base at bottom → apex at top) */}
 							<div style={{ width: 0, height: 0, borderLeft: '5px solid transparent', borderRight: '5px solid transparent', borderBottom: '6px solid var(--bs-primary)' }} />
 							<span
 								className='badge rounded-pill mt-1 px-2 py-1'
@@ -49,7 +45,6 @@ const walkthroughStepReAccess = ({ onNext, onBack }: walkthroughStepReAccessProp
 						</div>
 					</div>
 
-					{/* greyed-out gear — decorative mock */}
 					<div
 						className='btn btn-sm p-0 popup-settings-button opacity-25'
 						style={{ pointerEvents: 'none' }}
@@ -57,14 +52,12 @@ const walkthroughStepReAccess = ({ onNext, onBack }: walkthroughStepReAccessProp
 						<i className='bi bi-gear-fill popup-settings-icon' />
 					</div>
 
-					{/* greyed-out toggle — decorative mock */}
 					<div className='form-check form-switch mb-0 opacity-25'>
 						<input className='form-check-input' type='checkbox' defaultChecked readOnly style={{ pointerEvents: 'none' }} tabIndex={-1} />
 					</div>
 				</div>
 			</div>
 
-			{/* spacer so the callout tooltip has breathing room */}
 			<div style={{ height: '2.5rem' }} />
 		</div>
 

@@ -108,7 +108,6 @@ const boostPenaltyMeta = [
 	},
 ] as const;
 
-/** Compute dot positions around the orbit circle */
 const buildDots = () =>
 	signalMeta.map((sig, idx) => {
 		const angle = -Math.PI / 2 + (idx * 72 * Math.PI) / 180;
@@ -138,7 +137,6 @@ const contrastText = (hex: string): string => {
 	return lum > 0.55 ? '#111111' : '#ffffff';
 };
 
-// ─── Bloom Overlay ───────────────────────────────────────────────────────────
 
 interface BloomOverlayProps {
 	signal: (typeof signalMeta)[number];
@@ -204,7 +202,6 @@ const BloomOverlay = ({ signal, dotPxX, dotPxY, phase, onClick }: BloomOverlayPr
 	);
 };
 
-// ─── Main Component ───────────────────────────────────────────────────────────
 
 const BLOOM_IN_DURATION = 450;
 const BLOOM_OUT_DURATION = 400;
@@ -223,14 +220,12 @@ const walkthroughStepPowerScore = ({ onNext, onBack, initialSubStep = 0 }: walkt
 		}
 	};
 
-	// Auto-bloom when landing on a signal substep
 	useEffect(() => {
 		clearTimer();
 		setBloomPhase(null);
 
 		if (!isSignalSubStep(subStep)) return;
 
-		// Small delay so the dot renders before the bloom starts
 		timerRef.current = setTimeout(() => {
 			setBloomPhase('blooming');
 			timerRef.current = setTimeout(() => {
@@ -249,7 +244,6 @@ const walkthroughStepPowerScore = ({ onNext, onBack, initialSubStep = 0 }: walkt
 		clearTimer();
 
 		if (isSignalSubStep(subStep) && bloomPhase && bloomPhase !== 'shrinking') {
-			// Shrink the bloom first, then navigate
 			setBloomPhase('shrinking');
 			timerRef.current = setTimeout(() => {
 				setBloomPhase(null);

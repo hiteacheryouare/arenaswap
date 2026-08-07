@@ -10,8 +10,7 @@ const summary = (competitors: CompetitorFixture[]) => ({
 	header: { competitions: [{ competitors }] },
 });
 
-// Shapes taken from live site.api.espn.com summary responses: ESPN lists the home side first and
-// carries the overall record as `total` alongside home/road/vsconf splits.
+// Shapes taken from live site.api.espn.com summary responses.
 const mlbSummary = summary([
 	{
 		homeAway: 'home',
@@ -37,12 +36,11 @@ describe('parseTeamRecords', () => {
 	});
 
 	test('matches on team id rather than array position', () => {
-		// Same payload, but our home team is the one ESPN listed second.
 		expect(parseTeamRecords(mlbSummary, '20', '22')).toEqual({ home: '55-58', away: '59-53' });
 	});
 
 	test('falls back to homeAway when the team ids do not match', () => {
-		// College hockey ids are synthesized locally ("ncaamh-57") and never match ESPN's.
+		// College hockey ids are synthesized locally and never match ESPN's.
 		expect(parseTeamRecords(mlbSummary, 'ncaamh-57', 'ncaamh-58'))
 			.toEqual({ home: '59-53', away: '55-58' });
 	});
@@ -55,8 +53,7 @@ describe('parseTeamRecords', () => {
 		expect(parseTeamRecords(soccer, '9720', '189')).toEqual({ home: '4-4-10', away: '9-3-5' });
 	});
 
-	// Real strings from an in-season NHL summary. ESPN appends standings points to `displayValue`
-	// here and nowhere else, so preferring it would put "66 PTS" under the team name.
+	// ESPN appends standings points to `displayValue` in the NHL and nowhere else.
 	test('drops the standings points the NHL appends to displayValue', () => {
 		const nhl = summary([
 			{

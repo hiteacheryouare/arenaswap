@@ -10,17 +10,12 @@ interface startCountdownDisplayProps {
 interface segment {
 	value: number;
 	unit: string;
-	/** Trailing segments hold two digits so the row does not reflow as values cross 9. */
+	// Trailing segments hold two digits so the row does not reflow as values cross 9.
 	padded: boolean;
 }
 
-/**
- * The scheduled time, with a live flip clock beneath it.
- *
- * This owns `useStartCountdown` rather than taking parts as a prop so a tick re-renders
- * these few spans and nothing else — the hero, the breakdown and the four ECharts canvases
- * around it all stay untouched.
- */
+// Owns `useStartCountdown` rather than taking parts as a prop so a tick re-renders these few
+// spans and leaves the hero, the breakdown and the four ECharts canvases untouched.
 const startCountdownDisplay = ({ startTime }: startCountdownDisplayProps) => {
 	const parts = useStartCountdown(startTime);
 
@@ -46,9 +41,7 @@ const startCountdownDisplay = ({ startTime }: startCountdownDisplayProps) => {
 			<div className='gd-countdown-clock'>
 				{segments.map(({ value, unit, padded }) => (
 					<span key={unit} className='gd-countdown-seg'>
-						{/* The tens digit is static below 10 — only the rolling ones digit goes through
-						    FlipScore, so a leading zero never animates in and out. */}
-						{padded && value < 10 && <span className='gd-countdown-zero'>0</span>}
+							{padded && value < 10 && <span className='gd-countdown-zero'>0</span>}
 						<FlipScore value={value} className='gd-countdown-value' />
 						<span className='gd-countdown-unit'>{unit}</span>
 					</span>

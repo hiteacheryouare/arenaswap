@@ -15,7 +15,6 @@ const mockPsColor = powerScoreColor(mockPsScore, mockPsMax);
 const eaglesColor = '#004C54';
 const giantsColor = '#0B2265';
 
-// ESPN CDN team logo URLs for the demo matchup
 const LOGO_EAGLES = 'https://a.espncdn.com/i/teamlogos/nfl/500/phi.png';
 const LOGO_GIANTS = 'https://a.espncdn.com/i/teamlogos/nfl/500/nyg.png';
 

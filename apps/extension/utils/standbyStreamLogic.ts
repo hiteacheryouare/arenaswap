@@ -25,7 +25,7 @@ export const computeStandbyStreamDecision = ({
 		return 'none';
 	}
 
-	// User manually navigated away from the standby tab — treat as resume
+	// The user navigated away from the standby tab by hand.
 	if (onStandbyStream && !activeTabIsStandby) return 'resume';
 
 	const allBelowThreshold = registeredScores.every(s => s.total < standbyStreamThreshold);

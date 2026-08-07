@@ -80,7 +80,7 @@ describe('createTeamColorShadePalette', () => {
 	});
 
 	test('returns at most five entries even when the palette would have produced clipped duplicates', () => {
-		// White at the lightest end clips to '#FFFFFF' more than once; dedup ensures the set stays small.
+		// White clips to '#FFFFFF' more than once at the lightest end, so the set must dedup.
 		const palette = createTeamColorShadePalette('#fafafa');
 		expect(palette.length).toBeLessThanOrEqual(5);
 		expect(new Set(palette).size).toBe(palette.length);
@@ -344,7 +344,6 @@ describe('findFavoriteTeamScoreConfettiBursts', () => {
 		const previous = buildLiveGameSnapshots([nhlGame(2)]);
 		const next = buildLiveGameSnapshots([nhlGame(3)]);
 		const burst = findFavoriteTeamScoreConfettiBursts(previous, next, new Set([createFavoriteTeamKey('nhl', 'home-1')]))[0]!;
-		// Period 4 > 3 regular periods → counted as overtime → doubled particles.
 		expect(burst.particleCount).toBe(180);
 	});
 

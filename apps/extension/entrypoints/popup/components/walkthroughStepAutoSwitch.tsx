@@ -14,7 +14,6 @@ const giantsColor = '#0B2265';
 const sixersColor = '#006BB6';
 const celticsColor = '#007A33';
 
-// ESPN CDN team logo URLs
 const LOGO_EAGLES  = 'https://a.espncdn.com/i/teamlogos/nfl/500/phi.png';
 const LOGO_GIANTS  = 'https://a.espncdn.com/i/teamlogos/nfl/500/nyg.png';
 const LOGO_SIXERS  = 'https://a.espncdn.com/i/teamlogos/nba/500/phi.png';

@@ -32,9 +32,7 @@ const useFavoriteScoreConfetti = ({ games, favoriteTeamIds }: useFavoriteScoreCo
 	const launchBurst = (nextOptions: confettiOptions) => {
 		void ensureConfettiInstance()
 			.then(confetti => confetti(nextOptions))
-			.catch(() => {
-				// Failed to render confetti burst
-			});
+			.catch(() => {});
 	};
 
 	useEffect(() => {

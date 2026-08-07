@@ -30,8 +30,6 @@ const detailHero = ({ game, seriesInfo, records = emptyTeamRecords, isDelayed, i
 					{isPre ? (
 						<div className='gd-vs'>{i18n.t('gameCard.vs')}</div>
 					) : (
-						// The diamond sits between the scores rather than above them, matching the list
-						// card and saving the hero a whole row.
 						<div className='d-flex align-items-center game-detail-score-row'>
 							<FlipScore value={game.awayTeam.score} className='fw-bold lh-1 game-detail-score-value' />
 							{isInningSport && game.baseRunners

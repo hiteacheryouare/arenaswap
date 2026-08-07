@@ -55,7 +55,6 @@ const walkthroughStepGameDetail = ({ onNext, onBack }: walkthroughStepGameDetail
 			</div>
 
 			<div className='position-relative mb-3'>
-				{/* mock game card — tappable */}
 				<div
 					role='button'
 					tabIndex={0}
@@ -114,7 +113,6 @@ const walkthroughStepGameDetail = ({ onNext, onBack }: walkthroughStepGameDetail
 					</div>
 				</div>
 
-				{/* tap hint label */}
 				{!tapped && (
 					<div
 						className='position-absolute top-50 start-50 translate-middle text-center pointer-events-none'
@@ -137,7 +135,6 @@ const walkthroughStepGameDetail = ({ onNext, onBack }: walkthroughStepGameDetail
 				)}
 			</div>
 
-			{/* detail preview panel */}
 			{tapped ? (
 				<div
 					className='border border-secondary-subtle rounded p-2 mb-3'

@@ -55,12 +55,11 @@ const mountDetail = (game: Game, overrides: MountOverrides = {}) => {
 	);
 };
 
-// `mock-` ids short-circuit useSummaryData to a deterministic LCG, so the summary-driven
-// pieces render with no network. Only mock-4/14/16 also carry a canned playoff series.
+// `mock-` ids short-circuit useSummaryData to a deterministic LCG, so nothing hits the network.
+// Only mock-4/14/16 also carry a canned playoff series.
 const liveGameId = 'mock-7';
 const seriesGameId = 'mock-14';
-// mock-2 is the records case: it carries canned demo records and no playoff series, so the
-// record row renders with no network and nothing else in the hero changes height.
+// mock-2 carries canned records and no playoff series, so only the record row changes height.
 const recordsGameId = 'mock-2';
 
 const excitement: PowerScoreResult = {
@@ -101,7 +100,6 @@ const makeInningGame = (): Game => makeLiveGame({
 	bso: { balls: 2, strikes: 1, outs: 2 },
 });
 
-/** Asserts an element renders on one line box, allowing for its own padding and border. */
 const expectSingleLine = (el: HTMLElement, label: string) => {
 	const style = getComputedStyle(el);
 	const decoration = ['paddingTop', 'paddingBottom', 'borderTopWidth', 'borderBottomWidth']
@@ -129,8 +127,6 @@ describe('gameDetailView countdown', () => {
 		cy.get('.gd-countdown-clock').should('not.contain.text', 's');
 	});
 
-	// Seconds are the whole point of the flip inside the final day, and the whole cost
-	// outside it — 86,400 rolls nobody watches.
 	it('switches to hours, minutes and seconds inside the final day', () => {
 		mountDetail(makePreGame(5 * hourMs + 13 * minuteMs + 42_000));
 		cy.get('.gd-countdown-seg').should('have.length', 3);
@@ -178,8 +174,6 @@ describe('gameDetailView hero', () => {
 		cy.viewport(320, 560);
 	});
 
-	// The full name is the card's only team label — the abbreviation lives on the list card
-	// you came from and in the pinned bar, so repeating it here said nothing new.
 	it('labels each crest with the full team name and nothing else', () => {
 		mountDetail(makeLiveGame(), { excitementResult: excitement });
 		cy.get('.game-detail-team-name').should('have.length', 2);
@@ -207,8 +201,7 @@ describe('gameDetailView hero', () => {
 		});
 	});
 
-	// The record has a grid row of its own precisely so this holds: nested under the name it
-	// would ride down with a wrap and sit lower than the opponent's.
+	// The record has a grid row of its own precisely so this holds.
 	it('keeps both records on one line when only one team name wraps', () => {
 		const game = makeLiveGame({ id: recordsGameId });
 		mountDetail({ ...game, homeTeam: { ...game.homeTeam, name: 'Heat' } }, { excitementResult: excitement });
@@ -226,8 +219,8 @@ describe('gameDetailView hero', () => {
 		cy.get('.game-detail-team-record').should('not.exist');
 	});
 
-	// mock-3 carries an eight-character NHL record, the widest any league produces. The column is
-	// 80px and the record is nowrap, so this is where clipping would show up first.
+	// mock-3 carries an eight-character NHL record, the widest any league produces, against an
+	// 80px nowrap column — this is where clipping shows up first.
 	it('fits the widest record a league produces inside its 80px column', () => {
 		mountDetail(makeLiveGame({ id: 'mock-3' }), { excitementResult: excitement });
 		cy.get('.game-detail-team-record').first().should('have.text', '30-28-9');
@@ -252,9 +245,8 @@ describe('gameDetailView hero', () => {
 		});
 	});
 
-	// Records add a third row to the matchup grid, so the two budgets the hero is held to get
-	// re-asserted against the layout every real game gets: measured at 144px tall with the
-	// breakdown starting at 151px, against the same 190/200 ceilings as the bare hero.
+	// Records add a third row to the matchup grid, so the hero's height budget is re-asserted
+	// against the layout every real game gets.
 	it('keeps the hero and the breakdown inside their pixel budgets with records shown', () => {
 		mountDetail(makeLiveGame({ id: recordsGameId }), { excitementResult: excitement });
 		cy.get('.game-detail-team-record').should('have.length', 2);
@@ -286,8 +278,7 @@ describe('gameDetailView hero', () => {
 		});
 	});
 
-	// Inning sports are the tight case: the base diamond sits between the scores, so the
-	// centre column has to hold two 2.4ch numerals plus a ~30px glyph and its gaps.
+	// The tight case: the base diamond puts a ~30px glyph between two 2.4ch numerals.
 	it('fits the score row and base diamond inside the centre column', () => {
 		mountDetail(makeInningGame(), { excitementResult: excitement });
 		cy.get('.base-diamond').should('exist');
@@ -318,7 +309,6 @@ describe('gameDetailView hero', () => {
 			const meta = container.querySelector('.game-meta');
 			assert.isNotNull(breakdown, 'breakdown exists');
 			assert.isNotNull(meta, 'meta exists');
-			// DOCUMENT_POSITION_FOLLOWING === 4
 			expect(breakdown!.compareDocumentPosition(meta!) & 4, 'meta follows breakdown').to.equal(4);
 		});
 	});
@@ -358,8 +348,6 @@ describe('gameDetailView sticky bar', () => {
 		cy.viewport(320, 560);
 	});
 
-	// The card is right there when you are at the top — repeating it is the duplication
-	// this screen is shedding. It only earns the space once the card has gone.
 	it('carries nothing but the back button at rest', () => {
 		mountDetail(makeLiveGame(), { excitementResult: excitement });
 		cy.get('.game-detail-back-button').should('contain.text', 'Back');
@@ -426,9 +414,8 @@ describe('gameDetailView sticky bar', () => {
 	});
 });
 
-// Volatility is computed by the background scorer, which owns the win-probability line and has
-// already folded it into `total`. The detail screen renders that number verbatim: the card you
-// tapped, this screen, and the score the auto-switcher acted on must never disagree.
+// The detail screen renders the scorer's number verbatim: the card you tapped, this screen and
+// the score the auto-switcher acted on must never disagree.
 describe('win probability volatility', () => {
 	const withVolatility: PowerScoreResult = { ...excitement, total: 77, winProbabilityVariance: 5 };
 
@@ -451,16 +438,15 @@ describe('win probability volatility', () => {
 		cy.get('.powerscore-breakdown-row-total').should('contain.text', '77 / 100');
 	});
 
-	// No win-probability line means no measurement, so no row and no adjustment — rather
-	// than a fabricated zero that would read as "we checked and it was neutral".
+	// No line means no measurement, so no row — not a fabricated zero.
 	it('omits the row entirely when the engine had no win probability to measure', () => {
 		mountDetail(makeLiveGame(), { excitementResult: excitement });
 		cy.contains('.powerscore-breakdown-row', /Volatility/).should('not.exist');
 		cy.get('.powerscore-breakdown-row-total').should('contain.text', '72 / 100');
 	});
 
-	// The regression this pair guards: the detail screen used to recompute volatility from its
-	// own copy of the line and add it on top, so a card reading 77 opened a screen reading 82.
+	// Regression: the screen used to recompute volatility and add it on top, so a card reading
+	// 77 opened a screen reading 82.
 	it('matches the list card exactly, with volatility applied', () => {
 		mountDetail(makeLiveGame(), { excitementResult: withVolatility });
 		cy.get('.powerscore-breakdown-row-total').should('contain.text', '77 / 100');

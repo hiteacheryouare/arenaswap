@@ -1,7 +1,5 @@
-// ─── Shared Bootstrap variable overrides (colors, dark theme, fonts) ─────────
 @import '@arenaswap/ui/src/bootstrap';
 
-// ─── Extension-specific Bootstrap overrides ──────────────────────────────────
 $font-size-base:   0.9375rem;
 $font-size-sm:     0.8125rem;
 $headings-font-weight: 700;
@@ -14,20 +12,16 @@ $form-switch-checked-bg:               #F75C03;
 $form-check-input-checked-bg-color:    #F75C03;
 $form-check-input-checked-border-color: #F75C03;
 
-// Tooltip: body-bg is dark (#0d1117), so Bootstrap's default tooltip-color
-// (var(--as-body-bg)) would produce dark text on a dark background. Override
-// to an explicit light-on-dark palette that works against any surface.
+// Bootstrap's default tooltip-color is var(--as-body-bg), which on this dark theme would be
+// dark text on a dark background.
 $tooltip-color: #f8fafc;
 $tooltip-bg:    #1f2937;
 
-// ─── Bootstrap source ────────────────────────────────────────────────────────
 @import 'bootstrap/scss/bootstrap';
 
-// ─── Bootstrap Icons ─────────────────────────────────────────────────────────
 $bootstrap-icons-font-dir: '/fonts';
 @import 'bootstrap-icons/font/bootstrap-icons';
 
-// ─── Live pulse animation ─────────────────────────────────────────────────────
 @keyframes livePulse {
 	0%, 100% { opacity: 1; }
 	50%       { opacity: 0.3; }
@@ -46,7 +40,6 @@ $bootstrap-icons-font-dir: '/fonts';
 	}
 }
 
-// ─── Onboarding welcome animation ────────────────────────────────────────────
 @keyframes onbLogoRise {
 	from { transform: translateY(200px); }
 	to   { transform: translateY(0);     }
@@ -274,7 +267,6 @@ $bootstrap-icons-font-dir: '/fonts';
 	}
 }
 
-// ─── Game boost section on detail view ───────────────────────────────────────
 .game-detail-boost-section {
 	background:    #f8fafc;
 	border:        1px solid #d1d5db;
@@ -306,7 +298,6 @@ $bootstrap-icons-font-dir: '/fonts';
 	flex:        1;
 }
 
-// ─── Tab assignment dropdown (on game card) ─────────────────────────────────
 .game-card-tab-assign {
 	margin-top: 0.4rem;
 
@@ -326,7 +317,6 @@ $bootstrap-icons-font-dir: '/fonts';
 	}
 }
 
-// ─── Setup view ──────────────────────────────────────────────────────────────
 .setup-tabs {
 	.nav-link {
 		font-size:   0.72rem;
@@ -416,8 +406,6 @@ $bootstrap-icons-font-dir: '/fonts';
 	border-bottom: 1px solid #30363d;
 }
 
-
-
 .popup-league-logo {
 	width: 20px;
 	height: 20px;
@@ -425,7 +413,6 @@ $bootstrap-icons-font-dir: '/fonts';
 	flex-shrink: 0;
 }
 
-// ─── App header ──────────────────────────────────────────────────────────────
 .arenaswap-logo {
 	height: 36px;
 	width: auto;
@@ -777,9 +764,8 @@ $bootstrap-icons-font-dir: '/fonts';
 	margin-bottom:  0.45rem;
 }
 
-// A two-row grid rather than a flex row: the crests share row 1 and the labels share
-// row 2, so a name that wraps to two lines grows its own row without ever knocking the
-// two logos out of level with each other or with the score.
+// A two-row grid rather than a flex row: crests share row 1 and labels row 2, so a name that
+// wraps to two lines grows its own row without knocking the logos out of level.
 .game-detail-teams-row {
 	display: grid;
 	grid-template-columns: 80px minmax(0, 1fr) 80px;
@@ -804,9 +790,8 @@ $bootstrap-icons-font-dir: '/fonts';
 	display: contents;
 }
 
-// Records sit in their own grid row so the two sides always line up with each other, even when
-// one team's name wraps to two lines and the other's does not. Lekton matches the other numerals
-// on the screen (clock, series summary) and keeps the digit widths even.
+// Records get their own grid row so the two sides line up even when one name wraps and the
+// other does not.
 .game-detail-team-record {
 	align-self: start;
 	min-width: 0;
@@ -890,8 +875,8 @@ $bootstrap-icons-font-dir: '/fonts';
 	white-space: nowrap;
 }
 
-// Live countdown to tip-off. Spans the full card rather than the narrow center
-// column so the longest "X days Y hours Z minutes" string stays on one line.
+// Spans the full card rather than the narrow centre column so the longest
+// "X days Y hours Z minutes" string stays on one line.
 .game-detail-countdown {
 	font-size: 0.72rem;
 	font-family: 'Lekton', monospace;
@@ -902,16 +887,12 @@ $bootstrap-icons-font-dir: '/fonts';
 	margin-top: 0.3rem;
 }
 
-// ─── Reason text inside the white matchup card on detail view ─────────────────
 .game-detail-formula-card {
 	margin-top: 0.45rem;
 	margin-bottom: 0.6rem;
 	padding: 0.4rem 0.5rem;
 }
 
-// ─── Detail hero: sticky bar ─────────────────────────────────────────────────
-// At rest this is just the back button; the card it would summarise is right below.
-// The compact matchup fades in only once that card has scrolled away.
 .gd-bar-compact {
 	position: absolute;
 	left: 50%;
@@ -989,7 +970,6 @@ $bootstrap-icons-font-dir: '/fonts';
 	}
 }
 
-// ─── Detail hero: matchup card ───────────────────────────────────────────────
 .gd-hero {
 	padding: 0.4rem 0.4rem 0.35rem;
 }
@@ -1011,7 +991,6 @@ $bootstrap-icons-font-dir: '/fonts';
 	}
 }
 
-// ─── Detail hero: countdown to tip-off ───────────────────────────────────────
 .gd-countdown {
 	display: flex;
 	flex-direction: column;
@@ -1126,8 +1105,6 @@ $bootstrap-icons-font-dir: '/fonts';
 	}
 }
 
-// ─── Toast ────────────────────────────────────────────────────────────────────
-
 .toast {
 	--as-toast-bg: #21262d;
 	--as-toast-border-color: #30363d;
@@ -1166,8 +1143,6 @@ $bootstrap-icons-font-dir: '/fonts';
 @media (prefers-reduced-motion: reduce) {
 	.toast-slide-up { animation: none; }
 }
-
-// ─── Error boundary ──────────────────────────────────────────────────────────
 
 .error-boundary-icon {
 	filter: drop-shadow(0 0 14px rgba(217, 3, 104, 0.45));
@@ -1410,8 +1385,7 @@ $bootstrap-icons-font-dir: '/fonts';
 	line-height: 1;
 	color: #e6edf3;
 
-	// global.scss sets font-family on `*`, which lands on the word's span
-	// directly and so beats the serif this block only passes down by
+	// global.scss sets font-family on `*`, which beats the serif this block only passes down by
 	// inheritance. Re-inheriting from the line restores DM Serif Text.
 	span {
 		font-family: inherit;

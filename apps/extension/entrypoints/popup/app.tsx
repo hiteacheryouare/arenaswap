@@ -57,19 +57,15 @@ export default () => {
 	const prefsSyncRef = useRef<Promise<void>>(Promise.resolve());
 	const { toasts, showToast, dismissToast } = useToast();
 
-	// forceRefresh:false avoids a full tick() overwrite; revalidateIfStale:false prevents
-	// a second SWR fetch (React StrictMode remount / React 19 store re-snapshot) from
-	// overwriting game data that arrived via a SCORES_UPDATED mutation. Updates come
-	// via push (SCORES_UPDATED); re-fetching after initial load is not needed.
+	// Updates arrive by push, so revalidation is off: a second SWR fetch (StrictMode remount or
+	// a React 19 store re-snapshot) would overwrite data that came in via SCORES_UPDATED.
 	const { data, error, isLoading, mutate } = useSWR('bg-state', () => fetchState(false), {
 		revalidateOnFocus: false,
 		revalidateOnReconnect: false,
 		revalidateIfStale: false,
 	});
 
-	// Pre-fetch logos for every league once on popup open so the onboarding and
-	// settings pickers always show logos, not just for currently-enabled leagues.
-	// includeUpcoming:false keeps this to one ESPN call per league.
+	// The onboarding and settings pickers show every league, not just the enabled ones.
 	useEffect(() => {
 		void fetchLeagueLogos(allLeagueIds, { includeUpcoming: false })
 			.then(logos => setAllLeagueLogoCache(logos))
@@ -78,7 +74,6 @@ export default () => {
 
 	const games = useMemo(() => data?.games ?? [], [data?.games]);
 	const scores = useMemo(() => data?.scores ?? [], [data?.scores]);
-	// Enabled-league logos (from background state) take priority; cache fills the gaps.
 	const leagueLogos = useMemo<LeagueLogoMap>(
 		() => ({ ...allLeagueLogoCache, ...data?.leagueLogos }),
 		[allLeagueLogoCache, data?.leagueLogos]
@@ -128,8 +123,7 @@ export default () => {
 			setOpenTabs(tabs.filter(tab => tab.url && !tab.url.startsWith('chrome://') && !tab.url.startsWith('about:')));
 		});
 
-		// Fallback: mark settled after 5 s if no SCORES_UPDATED arrives.
-		// onOnboardingComplete resets settledRef.current to false and re-arms this path via its own fetch.
+		// Fallback for when no SCORES_UPDATED ever arrives.
 		const settleTimer = setTimeout(() => {
 			if (!settledRef.current) { settledRef.current = true; setSettled(true); }
 		}, 5000);
@@ -168,18 +162,15 @@ export default () => {
 			await browser.runtime.sendMessage({ type: 'UPDATE_PREFS', prefs: normalized });
 		});
 		prefsSyncRef.current = syncPromise;
-		void syncPromise.catch(() => {
-			// Failed to persist preferences
-		});
+		void syncPromise.catch(() => {});
 	};
 
 	const onOnboardingComplete = (leagues: LeagueId[], favorites: string[]) => {
 		persistPrefs(currentPrefs => ({ ...currentPrefs, enabledLeagues: leagues, favoriteTeamIds: favorites }));
 		void browser.storage.local.set({ onboardingCompleted: true });
 		showToast(i18n.t('app.welcomeToast'), 'success');
-		// Reset settled so MainView shows a loader while we re-fetch with the new prefs.
-		// Without this, `settled` is already true from the initial fetch (which ran during onboarding
-		// with empty leagues), so MainView would immediately show "no games" on first transition.
+		// `settled` is already true from the initial fetch, which ran during onboarding with no
+		// leagues, so without this reset MainView flashes "no games" on the first transition.
 		settledRef.current = false;
 		setSettled(false);
 		setOnboardingDone(true);
@@ -191,7 +182,6 @@ export default () => {
 		})();
 	};
 
-	// Enabling reinserts a league at its canonical slot so the user's custom order around it survives.
 	const onToggleLeague = (leagueId: LeagueId) => {
 		persistPrefs(currentPrefs => {
 			const enabledLeagues = currentPrefs.enabledLeagues.includes(leagueId)

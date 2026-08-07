@@ -21,8 +21,7 @@ const pickNewestPrefs = (
 
 	const syncTimestamp = normalizeTimestamp(syncUpdatedAt);
 	const localTimestamp = normalizeTimestamp(localUpdatedAt);
-	// On a tie (notably 0/0 when neither copy is timestamped) prefer sync: legacy pre-timestamp
-	// prefs were sync-only, so sync is the authoritative legacy source.
+	// A tie (notably 0/0, neither copy timestamped) prefers sync: legacy prefs were sync-only.
 	return localTimestamp > syncTimestamp ? localPrefs : syncPrefs;
 };
 
@@ -60,8 +59,7 @@ export const persistStoredUserPreferences = async (prefs: UserPreferences): Prom
 	const prefsUpdatedAt = Date.now();
 	const payload = { prefs: normalized, [prefsStorageUpdatedAtKey]: prefsUpdatedAt };
 
-	// Catch each store independently so a failure in one (e.g. quota, unavailable) still lets the
-	// other write succeed, rather than rejecting the whole persist and leaving both potentially stale.
+	// Caught per store so a quota or availability failure in one still lets the other write.
 	await Promise.all([
 		browser.storage.local.set(payload).catch(err => {
 			logWarn('storage.local unavailable while saving prefs.', err);

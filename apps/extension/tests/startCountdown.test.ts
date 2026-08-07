@@ -32,7 +32,6 @@ describe('countdownShowsSeconds', () => {
 		expect(countdownShowsSeconds(partsIn(30_000))).toBe(true);
 	});
 
-	// A seconds digit a week out would roll 86,400 times before anyone could act on it.
 	test('hides seconds once a day or more remains', () => {
 		expect(countdownShowsSeconds(partsIn(dayMs))).toBe(false);
 		expect(countdownShowsSeconds(partsIn(6 * dayMs))).toBe(false);

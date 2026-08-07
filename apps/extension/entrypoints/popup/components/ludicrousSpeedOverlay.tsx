@@ -12,7 +12,6 @@ interface Star {
 	py: number | null;
 }
 
-// Canvas visual phase — drives star color, speed target, and fade rate
 type Phase = 'prelaunch' | 'cockpit' | 'cruising' | 'lightspeed' | 'ridiculous' | 'ludicrous' | 'plaid' | 'panic' | 'stopping';
 
 interface DisplayState {
@@ -20,7 +19,6 @@ interface DisplayState {
 	cls: string;
 }
 
-// PowerScore palette — used for the special PLAID scene as requested
 const POWERSCORE_COLORS: [number, number, number][] = [
 	[0, 204, 102],  // green  #00CC66
 	[241, 196, 15], // gold   #F1C40F
@@ -48,38 +46,29 @@ function resetStar(s: Star): void {
 }
 
 function getStarColor(z: number, phase: Phase, frame: number, starIdx: number): string {
-	// Closer stars (lower z) are brighter — bumped for better visibility
 	const bri = Math.round(220 + (1 - z) * 80);
 	const f = 0.38 + (1 - z) * 0.62;
 
 	switch (phase) {
 		case 'prelaunch':
 		case 'cockpit':
-			// Faint cool-blue ambient starfield — looks like normal space
 			return `rgb(${Math.round(bri * 0.35 * f)},${Math.round(bri * 0.5 * f)},${Math.round(bri * f)})`;
 		case 'cruising':
-			// Warm white-amber post-launch
 			return `rgb(${Math.round(bri * f)},${Math.round(bri * 0.8 * f)},${Math.round(bri * 0.45 * f)})`;
 		case 'lightspeed':
-			// Green-cyan to match the green dashboard sign
 			return `rgb(${Math.round(bri * 0.15 * f)},${Math.round(bri * f)},${Math.round(bri * 0.82 * f)})`;
 		case 'ridiculous':
-			// Deep amber-orange to match the orange sign
 			return `rgb(${Math.round(bri * f)},${Math.round(bri * 0.55 * f)},${Math.round(bri * 0.07 * f)})`;
 		case 'ludicrous':
-			// Saturated red to match the blinking red sign
 			return `rgb(${Math.round(bri * f)},${Math.round(bri * 0.15 * f)},${Math.round(bri * 0.04 * f)})`;
 		case 'plaid': {
-			// Use PowerScore palette for the special PLAID scene (requested change)
 			const laneIdx = (starIdx + Math.floor(frame / 40)) % POWERSCORE_COLORS.length;
 			const c = POWERSCORE_COLORS[laneIdx]!;
 			return `rgb(${Math.round(c[0] * f)},${Math.round(c[1] * f)},${Math.round(c[2] * f)})`;
 		}
 		case 'panic':
-			// Cooling red-orange
 			return `rgb(${Math.round(bri * 0.9 * f)},${Math.round(bri * 0.25 * f)},${Math.round(bri * 0.06 * f)})`;
 		case 'stopping':
-			// Desaturating to white as momentum bleeds off
 			return `rgb(${Math.round(bri * f)},${Math.round(bri * 0.84 * f)},${Math.round(bri * 0.7 * f)})`;
 		default:
 			return `rgb(${Math.round(bri * f)},${Math.round(bri * f)},${Math.round(bri * f)})`;
@@ -91,13 +80,10 @@ export default ({ onClose }: { onClose: () => void }) => {
 	const starsRef = useRef<Star[]>(Array.from({ length: NUM_STARS }, makeStar));
 	const rafRef = useRef<number>(0);
 
-	// Lerp-driven speed: set targetSpeed from the sequence; canvas smoothly follows
 	const phaseRef = useRef<Phase>('prelaunch');
 	const targetSpeedRef = useRef(0.08);
 	const currentSpeedRef = useRef(0.08);
 	const frameRef = useRef(0);
-	// Ad-hoc timers spawned by the skip / emergency-brake handlers, cleared on unmount so they
-	// never fire setState after the overlay is gone.
 	const manualTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
 	const [display, setDisplay] = useState<DisplayState>({
@@ -107,7 +93,6 @@ export default ({ onClose }: { onClose: () => void }) => {
 	const [closing, setClosing] = useState(false);
 	const [brakeState, setBrakeState] = useState<'hidden' | 'visible' | 'pressed'>('hidden');
 
-	// Canvas warp tunnel
 	useEffect(() => {
 		const canvas = canvasRef.current;
 		if (!canvas) return;
@@ -124,7 +109,6 @@ export default ({ onClose }: { onClose: () => void }) => {
 			const phase = phaseRef.current;
 			const frame = frameRef.current++;
 
-			// Smooth speed lerp — stopping snaps harder for the emergency-brake drama
 			const lerpFactor = phase === 'stopping' ? 0.16 : 0.04;
 			currentSpeedRef.current += (targetSpeedRef.current - currentSpeedRef.current) * lerpFactor;
 			const speed = currentSpeedRef.current;
@@ -133,7 +117,6 @@ export default ({ onClose }: { onClose: () => void }) => {
 			const cx = width / 2;
 			const cy = height / 2;
 
-			// Slower fade → longer, more visible star trails
 			const fadeAlpha = (phase === 'prelaunch' || phase === 'cockpit') ? 0.16 : phase === 'plaid' ? 0.09 : 0.11;
 			ctx.fillStyle = `rgba(0,0,0,${fadeAlpha})`;
 			ctx.fillRect(0, 0, width, height);
@@ -152,14 +135,11 @@ export default ({ onClose }: { onClose: () => void }) => {
 					resetStar(star); return;
 				}
 
-				// During plaid, skip every 3rd star's line to thin out density without slowing anything down
 				if (ppx !== null && ppy !== null && !(phase === 'plaid' && starIdx % 3 === 0)) {
 					ctx.beginPath();
 					ctx.moveTo(ppx, ppy);
 					ctx.lineTo(sx, sy);
 					ctx.strokeStyle = getStarColor(star.z, phase, frame, starIdx);
-					// Thick lines: closeness + speed bonus so high-speed streaks are fat and vivid
-					// Thicker, bolder streaks so stars read at a glance
 					ctx.lineWidth = Math.max(2.5, (1 - star.z) * 9 + speed * 0.22);
 					ctx.stroke();
 				}
@@ -186,10 +166,9 @@ export default ({ onClose }: { onClose: () => void }) => {
 		return () => clearTimeout(t);
 	}, [closing, onClose]);
 
-	// Clear any pending skip / emergency-brake timers if the overlay unmounts first.
+	// Stops a queued skip / emergency-brake timer setting state after unmount.
 	useEffect(() => () => manualTimersRef.current.forEach(clearTimeout), []);
 
-	// Sequence — movie order
 	useEffect(() => {
 		const timers: ReturnType<typeof setTimeout>[] = [];
 		let delay = 0;
@@ -198,7 +177,6 @@ export default ({ onClose }: { onClose: () => void }) => {
 			timers.push(setTimeout(fn, ms));
 		};
 
-		// ── Intro: the light-speed negotiation before Helmet takes over ─────────────
 		const introLines = [
 			{ key: 'ludicrousSpeed.intro.l1', ms: 1500 },
 			{ key: 'ludicrousSpeed.intro.l2', ms: 1500 },
@@ -216,7 +194,6 @@ export default ({ onClose }: { onClose: () => void }) => {
 			delay += line.ms;
 		}
 
-		// ── Pre-launch: slow ambient starfield while all setup dialogue plays ──────
 		const prelaunchLines = [
 			{ key: 'ludicrousSpeed.prelaunch.l1', ms: 1500 },
 			{ key: 'ludicrousSpeed.prelaunch.l2', ms: 1100 },
@@ -238,11 +215,9 @@ export default ({ onClose }: { onClose: () => void }) => {
 			delay += line.ms;
 		}
 
-		// ── "LUDICROUS SPEED..." — big text, stars still slow ─────────────────────
 		at(delay, () => setDisplay({ text: i18n.t('ludicrousSpeed.announce'), cls: 'announce' }));
 		delay += 1600;
 
-		// ── "GO!" — stars explode at exactly this moment ──────────────────────────
 		at(delay, () => {
 			phaseRef.current = 'cruising';
 			targetSpeedRef.current = 5.5;
@@ -250,14 +225,11 @@ export default ({ onClose }: { onClose: () => void }) => {
 		});
 		delay += 1300;
 
-		// ── Brief star-only pause (no dialogue) before the g-force line
 		at(delay, () => {
-			// keep the tunnel active but hide dialogue so the stars are the focus
 			setDisplay({ text: '', cls: 'stars-only' });
 		});
 		delay += 1400;
 
-		// ── G-force chaos ─────────────────────────────────────────────────────────
 		at(delay, () => setDisplay({ text: i18n.t('ludicrousSpeed.gforce.l1'), cls: 'dialogue postlaunch' }));
 		delay += 1200;
 		at(delay, () => {
@@ -266,7 +238,6 @@ export default ({ onClose }: { onClose: () => void }) => {
 		});
 		delay += 1600;
 
-		// ── Dashboard speed signs: green → orange → red flashing ─────────────────
 		at(delay, () => {
 			phaseRef.current = 'lightspeed';
 			targetSpeedRef.current = 7.5;
@@ -288,7 +259,6 @@ export default ({ onClose }: { onClose: () => void }) => {
 		});
 		delay += 2200;
 
-		// ── Fourth scene: THEY'VE GONE TO PLAID — PowerScore-colored stars only ───
 		at(delay, () => {
 			phaseRef.current = 'plaid';
 			targetSpeedRef.current = 14;
@@ -296,8 +266,6 @@ export default ({ onClose }: { onClose: () => void }) => {
 		});
 		delay += 2200;
 
-
-		// ── Panic on the bridge ───────────────────────────────────────────────────
 		at(delay, () => {
 			phaseRef.current = 'panic';
 			targetSpeedRef.current = 10;
@@ -316,7 +284,6 @@ export default ({ onClose }: { onClose: () => void }) => {
 			delay += line.ms;
 		}
 
-		// ── EMERGENCY STOP — NEVER USE ────────────────────────────────────────────
 		at(delay, () => setBrakeState('pressed'));
 		delay += 700;
 
