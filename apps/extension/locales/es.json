@@ -211,10 +211,10 @@
 		"infoLine": "Línea",
 		"getReadyTipOff": "Listo para el salto inicial",
 		"getReadyKickoff": "Listo para el saque inicial",
-		"getReadyPuckDrop": "Listo para el disco inicial",
+		"getReadyPuckDrop": "Listo para el faceoff",
 		"getReadyFirstPitch": "Listo para el primer lanzamiento",
 		"getReadyGametime": "Listo para el partido",
-		"pregameTabExplainer": "Abre este partido en una pestaña cuando empiece."
+		"pregameTabExplainer": "Abrir este partido en una pestaña cuando empiece."
 	},
 	"gameCard": {
 		"removeFromFavorites": "Quitar {team} de favoritos",

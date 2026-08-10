@@ -209,11 +209,11 @@
 		"infoVenue": "Local",
 		"infoWeather": "Tempo",
 		"infoLine": "Linha",
-		"getReadyTipOff": "Prepare-se para o salto inicial",
-		"getReadyKickoff": "Prepare-se para o pontapé de saída",
-		"getReadyPuckDrop": "Prepare-se para a queda do disco",
-		"getReadyFirstPitch": "Prepare-se para o primeiro lançamento",
-		"getReadyGametime": "Prepare-se para o jogo",
+		"getReadyTipOff": "Prepara-te para o salto inicial",
+		"getReadyKickoff": "Prepara-te para o pontapé de saída",
+		"getReadyPuckDrop": "Prepara-te para o face-off",
+		"getReadyFirstPitch": "Prepara-te para o primeiro lançamento",
+		"getReadyGametime": "Prepara-te para o jogo",
 		"pregameTabExplainer": "Abrir este jogo num separador quando começar."
 	},
 	"gameCard": {
