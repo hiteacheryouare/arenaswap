@@ -68,7 +68,7 @@ const formatOverUnder = (overUnder: number): string => (
 	Number.isInteger(overUnder) ? String(overUnder) : overUnder.toFixed(1)
 );
 
-const oddsSummary = (game: Game): string | null => {
+export const oddsSummary = (game: Game): string | null => {
 	const parts: string[] = [];
 	if (game.odds?.details) parts.push(game.odds.details);
 	if (game.odds?.overUnder !== undefined) parts.push(`O/U ${formatOverUnder(game.odds.overUnder)}`);
@@ -157,7 +157,7 @@ export const TeamColumn = ({
 	);
 };
 
-const OddsProvider = ({ game, dark }: { game: Game; dark?: boolean }) => {
+export const OddsProvider = ({ game, dark }: { game: Game; dark?: boolean }) => {
 	// As above — the failed URL, so a changed provider logo retries.
 	const [failedSrc, setFailedSrc] = useState<string | null>(null);
 	const provider = game.odds?.provider;

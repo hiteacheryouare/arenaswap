@@ -1,5 +1,72 @@
 # Changelog
 
+## The pre-game screen stopped reporting a game that hadn't happened — 2026-08-09
+
+Open a game before it starts and the screen led with a PowerScore breakdown reading `0/42`, `0/38`, `0/38`, `0/18`, `0/20` and a final score of `0 / 100`. Eleven rows of arithmetic about a game with no possessions in it. Underneath, four charts with no data. The screen was built for a live game and shown for a scheduled one.
+
+So the pre-game screen is now its own screen. It answers the two questions you actually have before a start time — *what is this matchup, and when* — and then offers the two things you can usefully decide in advance.
+
+**The live screen is untouched.** Breakdown, boost card, Game info, charts, in that order, exactly as before.
+
+### Pre-game
+- **A matchup poster** replaces the light matchup card, on the same card geometry as everything else on the screen — same left edge, same width, same 0.5rem corner — so it sits in the column rather than cutting across it. The two teams' resolved colours run left to right, meeting in the middle where the two teams do
+- **The countdown is the largest thing on the screen** at 2.3rem, white on the poster — the one number that changes while you wait
+- **Crests sit on a white disc tinted with their own team colour.** A navy crest on a navy half of the poster is invisible, and every league has at least one; the disc uses the same `28`-alpha wash the matchup card already uses for its team-colour gradients, so it reads as the same material rather than a new one
+- **White type is guaranteed readable by a dark scrim over the colours**, not by hoping the colours are dark. A pale team colour — and there are several — would otherwise take the team name with it
+- **Favourite stars moved onto the poster**, beside the record of the team they apply to, sharing the toggle with the game list so the two can't drift
+- **A "Get ready for…" card** carrying the tab picker and the game boost
+- **The boost is now available before the game starts**, which is where it always belonged: deciding a game matters to you is a thing you do in advance, not once it's already running
+- A postponement still surfaces on the poster. It's the one thing with something to say before the start time, so it isn't dropped with the rest of the status row
+
+### Internationalisation
+- **The card names what the countdown is counting down to, in the sport's own words** — tip-off, kickoff, puck drop, first pitch. Softball shares baseball's first pitch and soccer shares football's kickoff; anything else falls back to `Get ready for gametime` rather than borrowing another sport's word
+- Six new strings across all eight locales, including the sport terms each language actually uses: German's `Bully` for a puck drop, French's `mise au jeu`, Japanese's `プレイボール` for first pitch
+- The map is `as const satisfies Record<SportType, string>`, so adding a sport to `SportType` fails the typecheck until it has a phrase
+- Every locale's heading was measured against the card at 320px to confirm none wrap to a second line
+
+### Tests
+- New `pregameDetail.cy.tsx` — the breakdown's absence pre-game *and* its presence once live, the poster's alignment against the card below it, the horizontal gradient, the tinted crest discs, star state and toggling, the setup card's contents, all six sport phrases plus the fallback, and the delay line
+- **`tabAssignSelect` is no longer stubbed to `null` in component tests.** It touches no browser API, so the real control mounts — the stub had the card and pre-game specs measuring a layout with no tab picker in it, which is not a layout the extension ever renders
+- `gameBoostInput` gained a `bare` mode so the pre-game card hosts the real boost row instead of a second copy of it
+
+## Four dashed boxes explaining that the charts weren't there yet — 2026-08-09
+
+Open a game that hasn't started and the bottom of the detail screen was four dashed placeholders in a row, each one a sentence about a chart you couldn't see: PowerScore trend, score trend, win probability, component trend. Nothing to read, nothing to do, and 77px of screen telling you to come back later. A chart that isn't there is self-explanatory — the absence is the message.
+
+### Game detail
+- **The four chart empty states are gone.** Each chart now renders when it has data and renders nothing when it doesn't, so a pre-game screen ends at the last real thing on it
+- The `detail.chart*Empty` strings are removed from all eight locales, and `.game-detail-empty-state` from the stylesheet
+
+### Tests
+- **The Cypress chart stub now keeps the real card's structure and height** instead of collapsing to a bare title. The sticky-bar scroll specs were passing on page length the placeholders happened to provide — with the placeholders gone and a 176px canvas stubbed to a text node, the hero never scrolled out of view and the compact matchup never faded in. The stub was measuring a page the extension never renders
+- The sticky-bar specs supply a `powerScoreHistory` so the charts they scroll past actually exist
+
+## Venue, broadcast and odds were five centred lines nobody could scan — 2026-08-09
+
+With the chart placeholders gone, what the bottom of the detail screen actually ends on is the game's own information — and it was five centred lines floating on the dark background with no container: venue, `Watch:`, the odds, `Odds provided by:`, then the weather. 77px, four of the five lines in the *same* colour at 9.28–9.6px, and the largest text on the block (12px) spent on the weather, the least actionable thing there. The one line that answers "which tab do I open" was the smallest.
+
+Centred stacking also wasted the width it had: the longest line measured 198px inside a 296px column, so the block ran tall in a third of the room.
+
+### Game detail
+- **One titled `Game info` section**, taking the chart cards' treatment — hairline top rule, transparent background — rather than a third white card. Everything below the PowerScore maths now reads as one dark column of sections
+- **Rows are icon + label + value, left-aligned on a shared 46.4px label column**, using the same marker column width as the breakdown's factor icons so the two sections share a left edge
+- **Watch leads and is the only bright value on the block.** It's the row that causes an action; venue and odds sit a step back at `#b6c2cf`
+- **Weather rides inside the venue row** instead of claiming a line. Conditions are a property of the venue — a dome game has none. A neutral site that arrives with weather but no venue name still gets its own row, with the condition glyph as its marker
+- **`Odds provided by:` no longer spends a full row.** The provider sits dim at the end of the line it describes, with the wording moved to the element's `title`
+- **Before tip-off the panel moves above the PowerScore breakdown.** The breakdown is eleven rows of zeros until the game starts, while this panel is fully populated — the screen now leads with whichever of the two has something to say
+- Five lines became three rows; the block went 77px → 94.2px, all of it spent on the heading and row separation that made it a section instead of leftovers
+
+### Internationalisation
+- Five new `detail.info*` strings across all eight locales
+- **Every locale's labels were measured against the fixed label column**, not eyeballed: the widest is French `Regarder` at 38.5px against 46.4px. German went with `Ort` over `Austragungsort` for exactly this reason. Locked in by a spec that measures all four labels in all eight locales, so a future translation that would wrap the column fails the build instead of breaking the grid
+
+### Tests
+- New `gameInfoPanel.cy.tsx` — row composition, the weather-in-venue-row rule and its no-venue fallback, indoor games, attribution placement, betting-off, the render-nothing case, and the pre-game/live ordering flip
+- `gameDetailView.cy.tsx` drops its `.game-meta` ordering test, which the new spec covers for both arrangements rather than only the live one
+
+### Packages
+- `oddsSummary` and `OddsProvider` are exported from `packages/ui`'s `gameCardShared`. `GameMeta` itself is untouched — the list cards keep the compact centred layout, which is right for a 3-line card and wrong for a full screen
+
 ## "2nd & 11" never said where the ball was — 2026-08-06
 
 The football card printed `shortDownDistanceText` and stopped there. A 2nd & 11 backed up on your own 9 and a 2nd & 11 on the opponent's 34 are not the same football situation, and the card showed them identically. ESPN has been shipping the yard line on the same scoreboard payload we already poll, in two forms: `possessionText` (`"ARI 34"`) and a pre-joined `downDistanceText` (`"2nd & 11 at ARI 34"`).

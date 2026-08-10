@@ -2,7 +2,7 @@ import '../../assets/bootstrap.scss';
 import '../../assets/global.scss';
 import GameDetailView from '../../entrypoints/popup/components/gameDetailView';
 import LiveGameCard from '@arenaswap/ui/src/components/liveGameCard';
-import type { Game, PowerScoreResult, ScoreSnapshot } from '@arenaswap/core/types';
+import type { Game, PowerScoreResult, PowerScoreSnapshot, ScoreSnapshot } from '@arenaswap/core/types';
 import de from '../../locales/de.json';
 import en from '../../locales/en.json';
 import es from '../../locales/es.json';
@@ -36,6 +36,7 @@ const makePreGame = (msUntilStart: number): Game => ({
 interface MountOverrides {
 	excitementResult?: PowerScoreResult;
 	scoreHistory?: ScoreSnapshot[];
+	powerScoreHistory?: PowerScoreSnapshot[];
 }
 
 const mountDetail = (game: Game, overrides: MountOverrides = {}) => {
@@ -44,7 +45,7 @@ const mountDetail = (game: Game, overrides: MountOverrides = {}) => {
 			game={game}
 			excitementResult={overrides.excitementResult}
 			scoreHistory={overrides.scoreHistory ?? []}
-			powerScoreHistory={[]}
+			powerScoreHistory={overrides.powerScoreHistory ?? []}
 			proTipsEnabled={false}
 			gameBoosts={{}}
 			bettingPrefs={{ bettingEnabled: false }}
@@ -75,6 +76,23 @@ const excitement: PowerScoreResult = {
 	stalled: false,
 	reason: 'close game, lead changes',
 };
+
+// The charts only render once history exists, so tests that need a scrollable page supply this.
+const powerScoreHistory: PowerScoreSnapshot[] = Array.from({ length: 6 }, (_, i) => ({
+	gameId: liveGameId,
+	timestamp: now.getTime() - (6 - i) * minuteMs,
+	total: 60 + i * 2,
+	closeness: 20 + i,
+	lateGame: 16 + i,
+	momentum: 14 + i,
+	leadChanges: 8,
+	comeback: 6,
+	baseTotal: 60 + i * 2,
+	favoriteBonus: 0,
+	favoriteTeamCount: 0,
+	stalled: false,
+	reason: 'close game, lead changes',
+}));
 
 const makeLiveGame = (overrides: Partial<Game> = {}): Game => ({
 	id: liveGameId,
@@ -302,16 +320,8 @@ describe('gameDetailView hero', () => {
 		});
 	});
 
-	it('renders venue, broadcasts and weather after the breakdown', () => {
-		mountDetail(makeLiveGame(), { excitementResult: excitement });
-		cy.get('.popup-container').then(([container]: JQuery<HTMLElement>) => {
-			const breakdown = container.querySelector('.powerscore-breakdown');
-			const meta = container.querySelector('.game-meta');
-			assert.isNotNull(breakdown, 'breakdown exists');
-			assert.isNotNull(meta, 'meta exists');
-			expect(breakdown!.compareDocumentPosition(meta!) & 4, 'meta follows breakdown').to.equal(4);
-		});
-	});
+	// Venue/broadcast/weather ordering moved to gameInfoPanel.cy.tsx, which asserts it for both
+	// the pre-game and live arrangements rather than only the live one.
 
 	it('shows the PowerScore only in the breakdown, never twice in one screen', () => {
 		mountDetail(makeLiveGame(), { excitementResult: excitement });
@@ -349,14 +359,14 @@ describe('gameDetailView sticky bar', () => {
 	});
 
 	it('carries nothing but the back button at rest', () => {
-		mountDetail(makeLiveGame(), { excitementResult: excitement });
+		mountDetail(makeLiveGame(), { excitementResult: excitement, powerScoreHistory });
 		cy.get('.game-detail-back-button').should('contain.text', 'Back');
 		cy.get('.gd-bar-compact').should('not.have.class', 'is-visible');
 		cy.get('.gd-bar-compact').should('have.css', 'opacity', '0');
 	});
 
 	it('fades the compact matchup in once the card scrolls away', () => {
-		mountDetail(makeLiveGame(), { excitementResult: excitement });
+		mountDetail(makeLiveGame(), { excitementResult: excitement, powerScoreHistory });
 		cy.get('.popup-container').scrollTo('bottom');
 		cy.get('.gd-bar-compact').should('have.class', 'is-visible');
 		cy.get('.gd-bar-compact').should('have.css', 'opacity', '1');
@@ -364,7 +374,7 @@ describe('gameDetailView sticky bar', () => {
 	});
 
 	it('centres the compact matchup on the card axis', () => {
-		mountDetail(makeLiveGame(), { excitementResult: excitement });
+		mountDetail(makeLiveGame(), { excitementResult: excitement, powerScoreHistory });
 		cy.get('.popup-container').scrollTo('bottom');
 		cy.get('.game-detail-header').then(([header]: JQuery<HTMLElement>) => {
 			cy.get('.gd-bar-compact').should(([bar]: JQuery<HTMLElement>) => {
@@ -378,7 +388,7 @@ describe('gameDetailView sticky bar', () => {
 	});
 
 	it('keeps the same bar height in both states so nothing jumps', () => {
-		mountDetail(makeLiveGame(), { excitementResult: excitement });
+		mountDetail(makeLiveGame(), { excitementResult: excitement, powerScoreHistory });
 		cy.get('.game-detail-header').then(([el]: JQuery<HTMLElement>) => {
 			const atRest = el.getBoundingClientRect().height;
 			cy.get('.popup-container').scrollTo('bottom');
@@ -389,7 +399,7 @@ describe('gameDetailView sticky bar', () => {
 	});
 
 	it('pins to the top of the scroll container', () => {
-		mountDetail(makeLiveGame(), { excitementResult: excitement });
+		mountDetail(makeLiveGame(), { excitementResult: excitement, powerScoreHistory });
 		cy.get('.popup-container').scrollTo(0, 300);
 		cy.get('.popup-container').then(([container]: JQuery<HTMLElement>) => {
 			cy.get('.game-detail-header').should(([header]: JQuery<HTMLElement>) => {
@@ -400,7 +410,7 @@ describe('gameDetailView sticky bar', () => {
 	});
 
 	it('keeps the compact matchup on one line in every locale', () => {
-		mountDetail(makeLiveGame({ intermission: true, period: 2 }), { excitementResult: excitement });
+		mountDetail(makeLiveGame({ intermission: true, period: 2 }), { excitementResult: excitement, powerScoreHistory });
 		cy.get('.popup-container').scrollTo('bottom');
 		Object.entries(locales).forEach(([name, locale]) => {
 			cy.get('.gd-bar-status').should(([el]: JQuery<HTMLElement>) => {

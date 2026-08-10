@@ -1,12 +1,16 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { i18n } from '#i18n';
+import type { Browser } from 'wxt/browser';
 import { leagueConfigMap, scoreMaxTotal } from '@arenaswap/core/constants';
-import type { Game, PowerScoreResult, PowerScoreSnapshot, ScoreSnapshot, SignalName } from '@arenaswap/core/types';
+import type { Game, LeagueId, PowerScoreResult, PowerScoreSnapshot, ScoreSnapshot, SignalName, TabRegistration } from '@arenaswap/core/types';
 import DetailHero from './detailHero';
+import DetailPosterHero from './detailPosterHero';
 import DetailStickyBar from './detailStickyBar';
 import GameDetailChart from './gameDetailChart';
 import GameBoostInput from './gameBoostInput';
+import GameInfoPanel from './gameInfoPanel';
 import PowerScoreBreakdown from './powerScoreBreakdown';
+import PregameSetup from './pregameSetup';
 import ProTip from './proTip';
 import { resolveStatusText } from './gameSituation';
 import {
@@ -17,8 +21,6 @@ import {
 } from './gameDetailChartOptions';
 import { resolveTeamColorPair } from '@arenaswap/ui/src/components/colorUtils';
 import useSummaryData from './useSummaryData';
-import { GameMeta } from './gameCardShared';
-import { conditionIcon, formatTemperature } from './weatherUtils';
 import type { BettingDisplayPrefs, WeatherDisplayPrefs } from './gameCardTypes';
 
 interface gameDetailViewProps {
@@ -31,9 +33,19 @@ interface gameDetailViewProps {
 	bettingPrefs: BettingDisplayPrefs;
 	weatherPrefs: WeatherDisplayPrefs;
 	disabledSignals?: readonly SignalName[];
+	// Pre-game only: the setup card and the poster's favourite stars need these. They are
+	// optional so the live screen, and anything mounting it, is unaffected.
+	favoriteTeamIds?: ReadonlySet<string>;
+	openTabs?: Browser.tabs.Tab[];
+	registry?: TabRegistration[];
+	onToggleFavoriteTeam?: (leagueId: LeagueId, teamId: string) => void;
+	onRegistryChange?: (updated: TabRegistration[]) => void;
+	formatTabLabel?: (tab: Browser.tabs.Tab) => string;
 	onSetGameBoost: (gameId: string, boost: number) => void;
 	onBack: () => void;
 }
+
+const noFavorites: ReadonlySet<string> = new Set();
 
 const componentLegendItems = [
 	{ label: i18n.t('detail.legendCloseness'), color: '#22c55e' },
@@ -47,7 +59,25 @@ const withMatchupAlpha = (color: string, fallback: string): string => (
 	/^#[\da-fA-F]{6}$/.test(color) ? `${color}28` : fallback
 );
 
-const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistory, proTipsEnabled, gameBoosts, bettingPrefs, weatherPrefs, disabledSignals = [], onSetGameBoost, onBack }: gameDetailViewProps) => {
+const gameDetailView = ({
+	game,
+	excitementResult,
+	scoreHistory,
+	powerScoreHistory,
+	proTipsEnabled,
+	gameBoosts,
+	bettingPrefs,
+	weatherPrefs,
+	disabledSignals = [],
+	favoriteTeamIds = noFavorites,
+	openTabs = [],
+	registry = [],
+	onToggleFavoriteTeam = () => {},
+	onRegistryChange = () => {},
+	formatTabLabel = tab => tab.title ?? '',
+	onSetGameBoost,
+	onBack,
+}: gameDetailViewProps) => {
 	const orderedScoreHistory = useMemo(
 		() => scoreHistory.toSorted((a, b) => a.timestamp - b.timestamp),
 		[scoreHistory],
@@ -100,6 +130,7 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 	]), [awayLineColor, game.awayTeam.abbreviation, game.homeTeam.abbreviation, homeLineColor]);
 
 	const isDelayed = game.delayed === true;
+	const isPreGame = game.status === 'pre';
 	const [awayAccent, homeAccent] = resolveTeamColorPair(game.awayTeam, game.homeTeam, '#2274A5', '#F75C03');
 	const matchupCardStyle = isDelayed ? {
 		borderLeft: '5px solid #F1C40F',
@@ -140,67 +171,87 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 			<DetailStickyBar game={game} statusText={statusText} compact={heroScrolledAway} onBack={onBack} />
 
 			<div ref={heroRef}>
-				<DetailHero
-					game={game}
-					seriesInfo={seriesInfo}
-					records={records}
-					isDelayed={isDelayed}
-					isInningSport={isInningSport}
-					statusText={statusText}
-					heroStyle={matchupCardStyle}
-				/>
+				{isPreGame ? (
+					<DetailPosterHero
+						game={game}
+						seriesInfo={seriesInfo}
+						records={records}
+						statusText={statusText}
+						favoriteTeamIds={favoriteTeamIds}
+						onToggleFavoriteTeam={onToggleFavoriteTeam}
+					/>
+				) : (
+					<DetailHero
+						game={game}
+						seriesInfo={seriesInfo}
+						records={records}
+						isDelayed={isDelayed}
+						isInningSport={isInningSport}
+						statusText={statusText}
+						heroStyle={matchupCardStyle}
+					/>
+				)}
 			</div>
 
-			<PowerScoreBreakdown
-				closeness={closeness}
-				lateGame={lateGame}
-				momentum={momentum}
-				leadChanges={leadChanges}
-				comeback={comeback}
-				winProbabilityVariance={winProbabilityVariance}
-				baseTotal={baseTotal}
-				stallPenalty={stallPenalty}
-				favoriteBonus={favoriteBonus}
-				favoriteTeamCount={favoriteTeamCount}
-				currentBoost={currentBoost}
-				scoringOpportunityBoost={scoringOpportunityBoost}
-				postseasonBoost={postseasonBoost}
-				totalLabel={totalLabel}
-				reason={reason ? reason.charAt(0).toUpperCase() + reason.slice(1) : undefined}
-				disabledSignals={disabledSignals}
-			/>
+			{/* Nothing has happened yet, so there is no PowerScore to break down — every signal
+			    would read zero. The screen offers what you can actually decide in advance instead. */}
+			{isPreGame ? (
+				<>
+					<PregameSetup
+						game={game}
+						currentBoost={currentBoost}
+						openTabs={openTabs}
+						registry={registry}
+						onSetGameBoost={onSetGameBoost}
+						onRegistryChange={onRegistryChange}
+						formatTabLabel={formatTabLabel}
+					/>
+					<GameInfoPanel game={game} bettingPrefs={bettingPrefs} weatherPrefs={weatherPrefs} />
+				</>
+			) : (
+				<>
+					<PowerScoreBreakdown
+						closeness={closeness}
+						lateGame={lateGame}
+						momentum={momentum}
+						leadChanges={leadChanges}
+						comeback={comeback}
+						winProbabilityVariance={winProbabilityVariance}
+						baseTotal={baseTotal}
+						stallPenalty={stallPenalty}
+						favoriteBonus={favoriteBonus}
+						favoriteTeamCount={favoriteTeamCount}
+						currentBoost={currentBoost}
+						scoringOpportunityBoost={scoringOpportunityBoost}
+						postseasonBoost={postseasonBoost}
+						totalLabel={totalLabel}
+						reason={reason ? reason.charAt(0).toUpperCase() + reason.slice(1) : undefined}
+						disabledSignals={disabledSignals}
+					/>
 
-			{game.status !== 'pre' && (
-				<GameBoostInput gameId={game.id} currentBoost={currentBoost} onSetGameBoost={onSetGameBoost} />
-			)}
+					<GameBoostInput gameId={game.id} currentBoost={currentBoost} onSetGameBoost={onSetGameBoost} />
 
-			<GameMeta game={game} dark bettingPrefs={bettingPrefs} />
-			{game.weather && (
-				<div className='d-flex align-items-center justify-content-center gap-1 game-detail-weather'>
-					<i className={`bi ${conditionIcon(game.weather.conditionLabel)}`} aria-hidden='true' />
-					<span>{game.weather.conditionLabel}</span>
-					<span className='game-detail-weather-sep'>·</span>
-					<span>{formatTemperature(game.weather.temperatureF, weatherPrefs.temperatureUnit)}</span>
-				</div>
+					<GameInfoPanel game={game} bettingPrefs={bettingPrefs} weatherPrefs={weatherPrefs} />
+				</>
 			)}
 
 			{proTipsEnabled && <ProTip context='detail' />}
 
-			{orderedPowerScoreHistory.length > 0
-				? <GameDetailChart title={i18n.t('detail.chartPowerScoreTitle')} option={powerScoreOption} />
-				: <div className='game-detail-empty-state'>{i18n.t('detail.chartPowerScoreEmpty')}</div>}
+			{orderedPowerScoreHistory.length > 0 && (
+				<GameDetailChart title={i18n.t('detail.chartPowerScoreTitle')} option={powerScoreOption} />
+			)}
 
-			{orderedScoreHistory.length > 0
-				? <GameDetailChart title={i18n.t('detail.chartScoreTitle')} option={scoreTrendOption} legendItems={teamLegendItems} />
-				: <div className='game-detail-empty-state'>{i18n.t('detail.chartScoreEmpty')}</div>}
+			{orderedScoreHistory.length > 0 && (
+				<GameDetailChart title={i18n.t('detail.chartScoreTitle')} option={scoreTrendOption} legendItems={teamLegendItems} />
+			)}
 
-			{winProbability.length > 0
-				? <GameDetailChart title={i18n.t('detail.chartWinProbTitle')} option={winProbabilityOption} legendItems={teamLegendItems} />
-				: <div className='game-detail-empty-state'>{i18n.t('detail.chartWinProbEmpty')}</div>}
+			{winProbability.length > 0 && (
+				<GameDetailChart title={i18n.t('detail.chartWinProbTitle')} option={winProbabilityOption} legendItems={teamLegendItems} />
+			)}
 
-			{orderedPowerScoreHistory.length > 0
-				? <GameDetailChart title={i18n.t('detail.chartComponentsTitle')} option={componentOption} legendItems={componentLegendItems} />
-				: <div className='game-detail-empty-state'>{i18n.t('detail.chartComponentsEmpty')}</div>}
+			{orderedPowerScoreHistory.length > 0 && (
+				<GameDetailChart title={i18n.t('detail.chartComponentsTitle')} option={componentOption} legendItems={componentLegendItems} />
+			)}
 		</div>
 	);
 };

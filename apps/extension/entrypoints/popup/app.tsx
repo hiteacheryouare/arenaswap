@@ -236,6 +236,17 @@ export default () => {
 		void browser.runtime.sendMessage({ type: 'UPDATE_REGISTRY', tabRegistry: updated });
 	};
 
+	// Shared by the game list and the pre-game poster's stars, so the two can't drift.
+	const toggleFavoriteTeam = (leagueId: LeagueId, teamId: string) => {
+		const favoriteTeamKey = createFavoriteTeamKey(leagueId, teamId);
+		persistPrefs(currentPrefs => {
+			const current = new Set(currentPrefs.favoriteTeamIds);
+			if (current.has(favoriteTeamKey)) current.delete(favoriteTeamKey);
+			else current.add(favoriteTeamKey);
+			return { ...currentPrefs, favoriteTeamIds: [...current] };
+		});
+	};
+
 	const onSetStandbyTab = (tabId: number | null) => {
 		setStandbyStreamTabId(tabId);
 		void browser.runtime.sendMessage({ type: 'SET_STANDBY_STREAM_TAB', tabId });
@@ -373,15 +384,7 @@ export default () => {
 						onToggleEnabled={() => persistPrefs(currentPrefs => ({ ...currentPrefs, enabled: !currentPrefs.enabled }))}
 						onDismissReviewPrompt={dismissReviewPrompt}
 						onLeaveReview={leaveReview}
-						onToggleFavoriteTeam={(leagueId, teamId) => {
-							const favoriteTeamKey = createFavoriteTeamKey(leagueId, teamId);
-							persistPrefs(currentPrefs => {
-								const current = new Set(currentPrefs.favoriteTeamIds);
-								if (current.has(favoriteTeamKey)) current.delete(favoriteTeamKey);
-								else current.add(favoriteTeamKey);
-								return { ...currentPrefs, favoriteTeamIds: [...current] };
-							});
-						}}
+						onToggleFavoriteTeam={toggleFavoriteTeam}
 						onRegistryChange={onRegistryChange}
 						formatTabLabel={tab => formatTabLabel(tab, openTabs)}
 					/>
@@ -401,6 +404,12 @@ export default () => {
 							temperatureUnit: prefs.temperatureUnit,
 						}}
 						disabledSignals={prefs.disabledSignals}
+						favoriteTeamIds={favoriteTeamIds}
+						openTabs={openTabs}
+						registry={registry}
+						onToggleFavoriteTeam={toggleFavoriteTeam}
+						onRegistryChange={onRegistryChange}
+						formatTabLabel={tab => formatTabLabel(tab, openTabs)}
 						onSetGameBoost={onSetGameBoost}
 						onBack={() => setView('main')}
 					/>
