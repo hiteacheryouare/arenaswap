@@ -67,6 +67,19 @@ The tech stack should never fall more than 2 years behind the latest and greates
 - When opening PRs, Issues, etc via the GitHub API or any access you have to github, ALWAYS add the "robotic" label so we know it was assisted by agents.
 
 
+## UI Mistakes to Avoid:
+The following are common UI designs spit out by AI agents and are usually discouraged unless approved of by the promptor:
+- Pills
+- Status Indicators
+- Marquees
+- Eyebrows
+- Tags
+- Chips
+- Counting sections, specifically 01, 02, 03...
+
+Instead, you must respect the existing design system. Look through the project and trace through how UI is implemented, and do your best to follow the exising brand and design system.
+
+
 ## Notes from the maintainer:
 
 I started ArenaSwap during MarchMadness realizing there was no way to watch multiple games at once beyond manually switching between them and muting tabs. This project has blossomed so much since then, and has taken the goal of being the best and most powerful way to watch sports online. I rigorously hand-test it every time I watch sports, and if something isnt good enough for me, its never good enough for anybody else. When doing anything, remember that above all, it is my project, and the community that works on it's project, and you have the responsibility to continue to honor the love that we all put into this project. Make us proud!
