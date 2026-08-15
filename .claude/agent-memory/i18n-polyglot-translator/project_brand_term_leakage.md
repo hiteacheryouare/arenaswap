@@ -9,7 +9,7 @@ metadata:
 
 Leakage found (keys whose en value mentions the feature):
 - **es**: translated to *"Transmisión en espera"* in `setup.standbySection`, `setup.enableStandby`, `standbyGuide.title`, `main.onStandbyStream`, `standbyGuide.quietBody`, `standbyGuide.designateBody`.
-- **fr**: *"Le Flux Veille"* in `proTip.main.t5`; lowercase "standby stream" elsewhere.
+- **fr → fixed 2026-08-15**: *"Le Flux Veille"* in `proTip.main.t5` was fixed to the untranslated "Standby Stream" in both `fr_FR.json` and `fr_CA.json` during the [[project-fr-fr-ca-split]] work (fr.json no longer exists as a single file). The lowercase "standby stream" instances elsewhere in fr were left alone, same reasoning as below.
 - **zh_CN**: *"待机流"* / *"待机直播流"*.
 - **ja**: *"スタンバイストリーム"* (katakana) in some keys, Latin "Standby Stream" in others.
 - **de**: *"Standby-Stream"* (hyphenated compound).

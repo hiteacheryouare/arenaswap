@@ -74,7 +74,7 @@
 		"m14": "On ajuste les projecteurs...",
 		"m15": "On soudoie les arbitres...",
 		"m16": "On consulte l'almanach sportif...",
-		"m17": "On réfléchit si on tente le quatrième essai...",
+		"m17": "On hésite à jouer la quatrième tentative...",
 		"m18": "On actualise le débat du plus grand de tous les temps...",
 		"m19": "On remplit la tribune de presse...",
 		"m20": "On déroule les bannières...",
@@ -90,7 +90,7 @@
 		"m30": "On localise les arènes...",
 		"m31": "On se prend un cheesesteak...",
 		"m32": "On débat avec les habitués du bar à sport...",
-		"m33": "On réorganise le classement du championnat fantasy...",
+		"m33": "On réorganise le classement de la ligue fantasy...",
 		"m34": "On consulte l'oracle sportif...",
 		"m35": "On conteste cette action...",
 		"m36": "On vérifie s'il y a un drapeau dans le jeu...",
@@ -129,7 +129,7 @@
 		"m69": "On confirme que le pile ou face est honnête...",
 		"m70": "On brief le ramasseur de balles...",
 		"m71": "On monte le volume de la foule...",
-		"m72": "On dépoussiÈre les produits dérivés du championnat...",
+		"m72": "On dépoussière les produits dérivés du championnat...",
 		"m73": "On hydrate le porteur d'eau..."
 	},
 	"setup": {
@@ -243,7 +243,7 @@
 		"infoLine": "Ligne",
 		"getReadyTipOff": "Prêt pour l'entre-deux",
 		"getReadyKickoff": "Prêt pour le coup d'envoi",
-		"getReadyPuckDrop": "Prêt pour la mise au jeu",
+		"getReadyPuckDrop": "Prêt pour l'engagement",
 		"getReadyFirstPitch": "Prêt pour le premier lancer",
 		"getReadyGametime": "Prêt pour le match",
 		"pregameTabExplainer": "Ouvrir ce match dans un onglet à son coup d'envoi."
@@ -545,7 +545,7 @@
 			"t2": "Un PowerScore plus élevé remporte le changement — garde un œil sur les badges colorés.",
 			"t3": "Active « Afficher les matchs à venir » dans Paramètres pour associer des onglets avant le début du match.",
 			"t4": "Pas encore de matchs en direct ? Le Mode démo dans Paramètres te laisse voir ArenaSwap en action avec de faux matchs.",
-			"t5": "Le Flux Veille maintient un onglet de secours en lecture quand tous les matchs se calment — active-le dans Paramètres."
+			"t5": "Standby Stream maintient un onglet de secours en lecture quand tous les matchs se calment — active-le dans Paramètres."
 		},
 		"setup": {
 			"t0": "Baisse le délai pour changer plus agressivement pendant les fins de match chaotiques.",
@@ -553,7 +553,7 @@
 			"t2": "Augmente le délai de changement pour te laisser un instant avant que l'onglet bascule vraiment.",
 			"t3": "Le Mode démo lance des matchs simulés, parfait pour régler les curseurs sans attendre l'action en direct.",
 			"t4": "La sensibilité contrôle l'avance de PowerScore nécessaire avant qu'ArenaSwap change.",
-			"t5": "Le bonus de saison éliminatoire donne plus de poids aux playoffs et championnats pour que les grands moments remportent plus de changements.",
+			"t5": "Le Bonus de playoffs donne plus de poids aux playoffs et championnats pour que les grands moments remportent plus de changements.",
 			"t6": "Utilise la section Signaux PowerScore pour désactiver ceux qui ne t'intéressent pas — ArenaSwap recalibrera tout automatiquement."
 		},
 		"detail": {
@@ -598,7 +598,7 @@
 	},
 	"footer": {
 		"builtWith": "Fait avec",
-		"credit": "à Philadelphia & Boston par Ryan Mullin",
+		"credit": "à Philadelphie et Boston par Ryan Mullin",
 		"toggleDebug": "Afficher les infos de débogage"
 	},
 	"ludicrousSpeed": {

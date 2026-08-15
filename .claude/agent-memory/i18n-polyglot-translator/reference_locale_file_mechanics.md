@@ -5,11 +5,15 @@ metadata:
   type: reference
 ---
 
-The 8 locale files live at `apps/extension/locales/{en,de,es,fr,ja,pt_BR,pt_PT,zh_CN}.json` (499 keys each, identical key order).
+The locale files live at `apps/extension/locales/{en,de,es,fil,fr,it,ja,ko,pt_BR,pt_PT,zh_CN,zh_TW}.json` — 12 locales, 590 keys each as of 2026-08-15, identical key order (key count grows over time, don't treat 590 as gospel, diff against `en.json` to check).
+
+**Locale codes are constrained by an allowlist**, not free-form: see `SUPPORTED_LOCALES` in `node_modules/@wxt-dev/i18n/dist/build-*.mjs`. `fr_FR`/`fr_CA` are NOT valid and were tried and reverted — see [[project-fr-fr-ca-split]] before proposing any regional variant. WXT only warns and still builds, so an invalid code fails silently at runtime.
+
+Adding a locale requires registering it in three Cypress specs that hardcode a locale map — `gameInfoPanel.cy.tsx`, `gameDetailView.cy.tsx`, `pregameDetail.cy.tsx` — or it gets no width coverage. Import Italian as `itLocale`, never `it`: a bare `it` import shadows Mocha's global `it()` and every test in the file dies with "it is not a function".
 
 ## Mechanics that must be preserved
 - **Tab** indentation, **CRLF** line endings, existing key order, valid JSON.
-- Quirk: `en.json` and `fr.json` have **no trailing newline at EOF**; the other six **do**. Pre-existing — do not "fix" it, it creates diff noise.
+- Quirk: `en.json` has **no trailing newline at EOF**; all 11 others **do**, including `fr.json` (which lacked one until 2026-08-15). Pre-existing on `en.json` — do not "fix" it, it creates diff noise.
 - `json.dump` will destroy all of this. Edit by targeted regex replacement of the `"key": "value"` span instead.
 - The Edit tool's exact-string matching has repeatedly failed against these files even when the visible text looked identical — the mismatch is invisible tab-count/CRLF handling, not the content. **Reliable method:** read the raw bytes in Python, do a plain `bytes.replace(old.encode('utf-8'), new.encode('utf-8'))` on the whole file, assert the expected occurrence count before writing, then re-verify after with the same byte-level check (CRLF count, bare-LF count, trailing-newline state, `json.loads` validity). This is now the default approach for editing these 8 files, not a fallback.
 

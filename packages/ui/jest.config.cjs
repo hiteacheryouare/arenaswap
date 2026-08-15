@@ -5,7 +5,6 @@ const commonProjectConfig = {
 		'^@arenaswap/core/(.*)$': '<rootDir>/../core/src/$1.ts',
 		'^powerscore$': '<rootDir>/../powerscore/src/index.ts',
 	},
-	// TODO: revert to ts-jest once it supports TypeScript 7
 	transform: {
 		'^.+\\.tsx?$': [
 			'@swc/jest',

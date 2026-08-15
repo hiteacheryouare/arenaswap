@@ -4,5 +4,10 @@
 - [project_shootout_translations.md](project_shootout_translations.md) — Approved gameCard.shootout (PENS badge) translations for all 8 locales incl. pt_PT/pt_BR split (2026-08-03)
 - [project_pregame_gameinfo_translations.md](project_pregame_gameinfo_translations.md) — detail.getReady*/detail.info* rulings: hockey/baseball loanwords, pt_PT tu-register, shared kickoff key issue (2026-08-10)
 - [reference_locale_file_mechanics.md](reference_locale_file_mechanics.md) — Tabs/CRLF/EOF quirks and the two Cypress width tests + measured px budgets that gate translations
-- [project_brand_term_leakage.md](project_brand_term_leakage.md) — Open: "Standby Stream" is translated in es/fr/zh/ja; root cause is en.json's own inconsistent casing
+- [project_brand_term_leakage.md](project_brand_term_leakage.md) — Open: "Standby Stream" is translated in es/zh/ja; fr instance fixed 2026-08-15; root cause is en.json's own inconsistent casing
 - [project_settings_drilldown_review.md](project_settings_drilldown_review.md) — fr/pt_PT/zh_CN register bugs, German ß-normalize gotcha, label/keyword semantic collisions (2026-08-15)
+- [project_fr_fr_ca_split.md](project_fr_fr_ca_split.md) — REVERTED: fr_FR/fr_CA aren't valid extension locale codes; read before proposing any regional variant
+- [terminology_it.md](terminology_it.md) — it.json (2026-08-15): verified Italian sport terms, native-vs-loanword rulings, Spaceballs dub quotes
+- [project_ko_terminology.md](project_ko_terminology.md) — ko.json (2026-08-15): KBO baseball convention, Konglish-vs-native rulings, shootout=PK fix, unsettled hockey terms
+- [locale_fil_terminology.md](locale_fil_terminology.md) — fil.json (2026-08-15): deliberate Taglish calibration, which sports terms stay English and why
+- [project_zh_tw_terminology.md](project_zh_tw_terminology.md) — zh_TW.json (2026-08-15): CPBL baseball terms, 你 register, TW-vs-CN software vocabulary, Game Boost consistency fix
