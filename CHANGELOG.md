@@ -7,7 +7,7 @@ The Switching tab was a single vertical run of twenty controls — three sliders
 Settings is now an index. Six categories, each naming what it's for, each opening a focused page.
 
 ### The settings index
-- **Six rows replace the two tabs** — Switching, Scoring, Leagues, Display, Standby Stream, Demo mode — each with its own icon and a one-line description of what lives inside it
+- **Six rows replace the two tabs** — Switching, Scoring, Leagues, Display, Standby Stream, Demo mode — each with its own icon and a description of what lives inside it, wrapped in full rather than truncated, since a description cut off mid-sentence is worse than no description
 - **Every page fits in one window.** Measured at 320×560: the index and all five non-league pages come out at exactly 560px of content, no scrolling. Leagues is 1,926px, which is 31 league switches and a reorder list, and is the only page that scrolls
 - **The back arrow is now two-level** — from a category it returns to the index, from the index it closes settings
 - **The icons are orange and the labels are not.** Six accents on six rows, instead of fifteen scattered down a column

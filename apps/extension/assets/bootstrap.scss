@@ -409,14 +409,12 @@ $bootstrap-icons-font-dir: '/fonts';
 }
 
 .settings-index-desc {
-	display:       block;
-	margin-top:    0.05rem;
-	font-size:     0.6rem;
-	line-height:   1.35;
-	color:         #6e7681;
-	overflow:      hidden;
-	white-space:   nowrap;
-	text-overflow: ellipsis;
+	display:     block;
+	margin-top:  0.05rem;
+	font-size:   0.6rem;
+	line-height: 1.35;
+	color:       #6e7681;
+	text-wrap:   pretty;
 }
 
 .settings-index-caret {
