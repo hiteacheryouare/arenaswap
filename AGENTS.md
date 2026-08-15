@@ -1,6 +1,4 @@
 # ArenaSwap Agent Instructions
-
-BEFORE YOU READ, PLEASE ALSO READ @.agents/GLOBAL_AGENTS.md FOR MORE GENERAL, ALWAYS ACTIVE DEVELOPMENT PHILOSOPHIES AND PREFERENCES.
 For code style guidelines, read @.agents/CODESTYLE.md
 
 ## Overview
@@ -78,6 +76,22 @@ The following are common UI designs spit out by AI agents and are usually discou
 - Counting sections, specifically 01, 02, 03...
 
 Instead, you must respect the existing design system. Look through the project and trace through how UI is implemented, and do your best to follow the exising brand and design system.
+
+For more info, use the `avoiding-ai-slop` skill.
+
+## Glossary
+When working in this project, its important to know how we use certain terms:
+
+- You: the AI agent working on this file
+- Us/Me/We: The developer(s) working on the project at Lattice & Company and directing you
+- ArenaSwap: the web extension that tracks, ranks, presents, and switches to the best available live sporting game
+- PowerScore: the algorithm we designed to take in numerous data points and rank the excitement to watch of a live sports game on a scale of 1-100. Project agnostic and on npm.
+- (PowerScore) Signal: one of the CORE data points we use to compose a raw powerscore
+- (PowerScore) Boost: a more minor piece of data we use to raise a PowerScore
+- (PowerScore) Penalty: a more minor piece of data we use to lower a PowerScore
+- Game: a trackable sporting event between two teams that has a score and a progression toward the end of such a game.
+- Tab Registry: the system we use to take over and manage the user's tabs.
+- Data/API: We source our data from ESPN. For documentation, read [here](https://github.com/pseudo-r/Public-ESPN-API)
 
 
 ## Notes from the maintainer:
