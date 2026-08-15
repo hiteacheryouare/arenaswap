@@ -50,7 +50,7 @@ const noFavorites: ReadonlySet<string> = new Set();
 const componentLegendItems = [
 	{ label: i18n.t('detail.legendCloseness'), color: '#22c55e' },
 	{ label: i18n.t('detail.legendLateGame'), color: '#f75c03' },
-	{ label: i18n.t('detail.legendMomentum'), color: '#2274a5' },
+	{ label: i18n.t('detail.legendMomentum'), color: '#3e9bd1' },
 	{ label: i18n.t('detail.legendLeadChanges'), color: '#f1c40f' },
 	{ label: i18n.t('detail.legendComeback'), color: '#d90368' },
 ];

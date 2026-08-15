@@ -184,24 +184,33 @@ $bootstrap-icons-font-dir: '/fonts';
 	flex-shrink:      0;
 }
 
-.signal-tooltip-btn {
+.setting-tooltip-btn {
 	display:     inline-flex;
 	align-items: center;
 	padding:     0;
 	border:      none;
 	background:  transparent;
-	color:       #9ca3af;
-	font-size:   0.55rem;
+	color:       #6e7681;
+	font-size:   0.62rem;
 	line-height: 1;
 	cursor:      pointer;
 	flex-shrink: 0;
 
-	&:hover  { color: #6b7280; }
+	&:hover  { color: #e6edf3; }
 	&:focus-visible {
-		outline:        1px solid #6366f1;
+		outline:        1px solid $primary;
 		outline-offset: 1px;
 		border-radius:  2px;
 	}
+}
+
+// The breakdown is the popup's one light card, so the icon re-tones for it.
+.powerscore-breakdown .setting-tooltip-btn {
+	color:     #9ca3af;
+	font-size: 0.55rem;
+
+	&:hover { color: #6b7280; }
+	&:focus-visible { outline-color: #6366f1; }
 }
 
 .powerscore-breakdown-row-subtotal {
@@ -317,24 +326,123 @@ $bootstrap-icons-font-dir: '/fonts';
 	}
 }
 
-.setup-tabs {
-	.nav-link {
-		font-size:   0.72rem;
-		font-weight: 600;
-		padding:     0.3rem 0.5rem;
-		color:       #8b949e;
-		border-radius: 0.35rem;
+.settings-search {
+	position:      relative;
+	margin-bottom: 0.75rem;
+}
 
-		&.active {
-			background-color: #F75C03;
-			color:            #fff;
-		}
+.settings-search-icon {
+	position:      absolute;
+	left:          0.55rem;
+	top:           50%;
+	transform:     translateY(-50%);
+	font-size:     0.72rem;
+	color:         #6e7681;
+	pointer-events: none;
+}
 
-		&:not(.active):hover {
-			color:            #e6edf3;
-			background-color: rgba(#e6edf3, 0.07);
-		}
+.settings-search-input {
+	padding-left: 1.75rem;
+	font-size:    0.72rem;
+
+	&::placeholder { color: #6e7681; }
+
+	// Safari draws its own clear affordance that collides with the 320px layout.
+	&::-webkit-search-cancel-button { appearance: none; }
+}
+
+.settings-search-empty {
+	font-size:  0.7rem;
+	color:      #6e7681;
+	padding:    1.25rem 0.25rem;
+	text-align: center;
+}
+
+.settings-index {
+	display:        flex;
+	flex-direction: column;
+	border-top:     1px solid #21262d;
+}
+
+.settings-index-row {
+	display:       flex;
+	align-items:   center;
+	gap:           0.6rem;
+	width:         100%;
+	padding:       0.72rem 0.15rem;
+	background:    none;
+	border:        none;
+	border-bottom: 1px solid #21262d;
+	color:         inherit;
+	text-align:    left;
+	cursor:        pointer;
+
+	&:hover { background: rgba(230, 237, 243, 0.035); }
+
+	&:focus-visible {
+		outline:        1px solid $primary;
+		outline-offset: -1px;
+		border-radius:  0.25rem;
 	}
+}
+
+.settings-index-icon {
+	width:       1.15rem;
+	flex-shrink: 0;
+	font-size:   0.92rem;
+	line-height: 1;
+	text-align:  center;
+	color:       $primary;
+}
+
+.settings-index-text {
+	flex:      1 1 auto;
+	min-width: 0;
+}
+
+.settings-index-name {
+	display:     block;
+	font-size:   0.78rem;
+	font-weight: 600;
+	line-height: 1.25;
+	color:       #e6edf3;
+}
+
+.settings-index-desc {
+	display:       block;
+	margin-top:    0.05rem;
+	font-size:     0.6rem;
+	line-height:   1.35;
+	color:         #6e7681;
+	overflow:      hidden;
+	white-space:   nowrap;
+	text-overflow: ellipsis;
+}
+
+.settings-index-caret {
+	flex-shrink: 0;
+	font-size:   0.7rem;
+	color:       #4d545c;
+}
+
+.settings-index-warn {
+	flex-shrink: 0;
+	font-size:   0.72rem;
+	color:       var(--as-warning);
+}
+
+.settings-page-lede {
+	margin:      -0.35rem 0 0.9rem;
+	font-size:   0.62rem;
+	line-height: 1.4;
+	color:       #6e7681;
+}
+
+// One rhythm for stacked controls, replacing the ad-hoc mt-3 wrappers the flat column used.
+.settings-stack > * + * {
+	margin-top:  0.7rem;
+	padding-top: 0.7rem;
+	border-top:  1px solid #1a2029;
 }
 
 .setup-header {
@@ -488,7 +596,7 @@ $bootstrap-icons-font-dir: '/fonts';
 
 .popup-settings-link {
 	font-size: 0.85rem;
-	color: #2274A5;
+	color: #3E9BD1;
 }
 
 .setting-toggle-label {

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { sensitivityThresholds } from '@arenaswap/core/constants';
 import { i18n } from '#i18n';
+import SettingTooltipIcon from './settingTooltipIcon';
 import LudicrousSpeedOverlay from './ludicrousSpeedOverlay';
 
 interface sensitivitySliderProps {
@@ -25,7 +26,10 @@ const sensitivitySlider = ({ value, onChange }: sensitivitySliderProps) => {
 	<div>
 		{showLudicrous && <LudicrousSpeedOverlay onClose={() => setShowLudicrous(false)} />}
 		<div className='d-flex justify-content-between align-items-center mb-1'>
-			<label htmlFor='sensitivity-range' className='text-body-secondary setting-toggle-label'><i className='bi bi-sliders me-1 text-primary' />{i18n.t('sensitivity.label')}</label>
+			<div className='d-flex align-items-center gap-1'>
+				<label htmlFor='sensitivity-range' className='text-body-secondary setting-toggle-label'><i className='bi bi-sliders me-1 text-primary' />{i18n.t('sensitivity.label')}</label>
+				<SettingTooltipIcon text={i18n.t('sensitivity.explainer')} />
+			</div>
 			{value === 7 ? (
 				<button
 					className='fw-semibold setting-value-label ludicrous-speed ludicrous-speed-clickable'
@@ -60,9 +64,6 @@ const sensitivitySlider = ({ value, onChange }: sensitivitySliderProps) => {
 					{sensitivityThresholds[level]}
 				</span>
 			))}
-		</div>
-		<div className='mt-1 setting-explainer'>
-			{i18n.t('sensitivity.explainer')}
 		</div>
 	</div>
 	);

@@ -81,7 +81,7 @@ const GAME = {
 const SIGNALS = [
 	{ name: 'Closeness', value: 27, max: 30, color: '#22c55e' },
 	{ name: 'Late-game pressure', value: 25, max: 28, color: ORANGE },
-	{ name: 'Momentum', value: 21, max: 28, color: '#2274A5' },
+	{ name: 'Momentum', value: 21, max: 28, color: '#3E9BD1' },
 	{ name: 'Lead changes', value: 11, max: 18, color: '#F1C40F' },
 	{ name: 'Comeback', value: 8, max: 14, color: '#D90368' },
 ];

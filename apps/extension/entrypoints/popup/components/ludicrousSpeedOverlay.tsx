@@ -24,7 +24,7 @@ const POWERSCORE_COLORS: [number, number, number][] = [
 	[241, 196, 15], // gold   #F1C40F
 	[247, 92, 3],   // orange #F75C03
 	[217, 3, 104],  // red    #D90368
-	[34, 116, 165], // blue   #2274A5
+	[62, 155, 209], // blue   #3E9BD1
 ];
 
 function makeStar(): Star {

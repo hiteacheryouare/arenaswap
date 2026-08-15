@@ -1,11 +1,11 @@
 import { Tooltip } from 'bootstrap';
 import { useEffect, useRef } from 'react';
 
-interface signalTooltipIconProps {
+interface settingTooltipIconProps {
 	text: string;
 }
 
-const SignalTooltipIcon = ({ text }: signalTooltipIconProps) => {
+const SettingTooltipIcon = ({ text }: settingTooltipIconProps) => {
 	const btnRef = useRef<HTMLButtonElement>(null);
 
 	useEffect(() => {
@@ -23,7 +23,7 @@ const SignalTooltipIcon = ({ text }: signalTooltipIconProps) => {
 		<button
 			ref={btnRef}
 			type='button'
-			className='signal-tooltip-btn'
+			className='setting-tooltip-btn'
 			aria-label={text}
 		>
 			<i className='bi bi-question-circle' />
@@ -31,4 +31,4 @@ const SignalTooltipIcon = ({ text }: signalTooltipIconProps) => {
 	);
 };
 
-export default SignalTooltipIcon;
+export default SettingTooltipIcon;
