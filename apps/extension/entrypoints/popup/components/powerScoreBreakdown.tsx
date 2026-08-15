@@ -30,8 +30,9 @@ interface powerScoreBreakdownProps {
 	disabledSignals?: readonly SignalName[];
 }
 
-// This card is the one light surface in the popup, so momentum keeps the darker #2274a5 here.
-// Everywhere else it draws on #0d1117 and uses $secondary (#3e9bd1) instead.
+// This palette is the signal palette. The component chart further down the detail screen shows
+// the same five signals and reads these colours off this card, so momentum's #2274a5 is a data
+// colour and not $secondary — changing one without the other splits a signal into two blues.
 const signalMeta = [
 	{ name: 'closeness' as SignalName, labelKey: 'powerScore.signalCloseness', tooltipKey: 'powerScore.tooltipCloseness', max: scoreMaxCloseness, color: '#22c55e' },
 	{ name: 'lateGame' as SignalName, labelKey: 'powerScore.signalLateGame', tooltipKey: 'powerScore.tooltipLateGame', max: scoreMaxLateGame, color: '#f75c03' },

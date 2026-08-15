@@ -50,7 +50,7 @@ interface setupViewProps {
 const setupSignalMeta = [
 	{ name: 'closeness' as SignalName, labelKey: 'powerScore.signalCloseness' as const, color: '#22c55e' },
 	{ name: 'lateGame' as SignalName, labelKey: 'powerScore.signalLateGame' as const, color: '#f75c03' },
-	{ name: 'momentum' as SignalName, labelKey: 'powerScore.signalMomentum' as const, color: '#3e9bd1' },
+	{ name: 'momentum' as SignalName, labelKey: 'powerScore.signalMomentum' as const, color: '#2274a5' },
 	{ name: 'leadChanges' as SignalName, labelKey: 'powerScore.signalLeadChanges' as const, color: '#f1c40f' },
 	{ name: 'comeback' as SignalName, labelKey: 'powerScore.signalComeback' as const, color: '#d90368' },
 ] as const;

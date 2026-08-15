@@ -911,7 +911,7 @@ body.nav-open {
 .ps-gradient-bar {
 	width: 100%;
 	height: 3px;
-	background: linear-gradient(to right, #22c55e, #F75C03, #3E9BD1, #F1C40F, #D90368);
+	background: linear-gradient(to right, #22c55e, #F75C03, #2274A5, #F1C40F, #D90368);
 }
 
 // Signal card top-border accents
@@ -938,7 +938,7 @@ $ps-signal-colors: (
 .ps-score-bar-fill {
 	height: 100%;
 	border-radius: 999px;
-	background: linear-gradient(to right, #22c55e, #F75C03, #3E9BD1, #F1C40F, #D90368);
+	background: linear-gradient(to right, #22c55e, #F75C03, #2274A5, #F1C40F, #D90368);
 	transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -1003,7 +1003,7 @@ $ps-signal-colors: (
 .ps-hero-bar {
 	width: 64px;
 	height: 3px;
-	background: linear-gradient(to right, #22c55e, #F75C03, #3E9BD1, #F1C40F, #D90368);
+	background: linear-gradient(to right, #22c55e, #F75C03, #2274A5, #F1C40F, #D90368);
 	border-radius: 999px;
 	margin: 0 auto 2.75rem;
 	opacity: 0;
@@ -1030,7 +1030,7 @@ $ps-signal-colors: (
 		to right,
 		#22c55e 0%,
 		#F75C03 22%,
-		#3E9BD1 44%,
+		#2274A5 44%,
 		#F1C40F 66%,
 		#D90368 85%,
 		#22c55e 100%

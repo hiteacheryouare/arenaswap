@@ -4,8 +4,14 @@
 
 $prefix:               'as-';
 $primary:              #F75C03;
-// Every ArenaSwap surface is dark. #2274A5 only reached 3.70:1 on $body-bg, below the AA floor;
-// it survives as $secondary-on-light for the one light surface, the PowerScore breakdown card.
+// $secondary is a UI accent — links, buttons, focus. Every ArenaSwap surface is dark, and
+// #2274A5 only reached 3.70:1 on $body-bg, below the AA floor, so the accent lifted.
+//
+// #2274A5 is NOT retired. It is momentum's colour in the PowerScore signal palette
+// (closeness green, late-game orange, momentum blue, lead-changes yellow, comeback pink), which
+// is a data palette anchored to the light breakdown card and identical on every surface that
+// draws those five signals. Do not "fix" a signal blue to match this token — they are different
+// jobs that happened to share a hex.
 $secondary:            #3E9BD1;
 $secondary-on-light:   #2274A5;
 $success:              #00CC66;
