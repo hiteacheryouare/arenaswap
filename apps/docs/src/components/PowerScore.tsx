@@ -17,7 +17,7 @@ const signals = [
 		name: 'Momentum',
 		desc: 'Unanswered scoring runs shift the energy of a game. A run spikes this score, then it fades over the next few minutes.',
 		max: 28,
-		color: '#3E9BD1',
+		color: '#2274A5',
 	},
 	{
 		name: 'Lead Changes',

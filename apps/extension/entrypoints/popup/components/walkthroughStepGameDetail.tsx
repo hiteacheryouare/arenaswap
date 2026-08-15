@@ -148,7 +148,7 @@ const walkthroughStepGameDetail = ({ onNext, onBack }: walkthroughStepGameDetail
 						{[
 							{ label: i18n.t('stepGameDetail.signalCloseness'), val: 18, color: '#22c55e' },
 							{ label: i18n.t('stepGameDetail.signalLateGame'), val: 22, color: '#f75c03' },
-							{ label: i18n.t('stepGameDetail.signalMomentum'), val: 14, color: '#3e9bd1' },
+							{ label: i18n.t('stepGameDetail.signalMomentum'), val: 14, color: '#2274a5' },
 							{ label: i18n.t('stepGameDetail.signalLeadChanges'), val: 9, color: '#f1c40f' },
 							{ label: i18n.t('stepGameDetail.signalComeback'), val: 8, color: '#d90368' },
 						].map(({ label, val, color }) => (

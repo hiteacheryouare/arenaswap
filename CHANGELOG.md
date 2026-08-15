@@ -1,5 +1,17 @@
 # Changelog
 
+## One signal, two blues, depending on which screen you were looking at — 2026-08-15
+
+Lifting `$secondary` to `#3E9BD1` took momentum's blue with it, and it shouldn't have. Momentum isn't an accent — it's one of the five PowerScore signals, and that palette is a data palette: closeness green, late-game orange, momentum blue, lead-changes yellow, comeback pink. The breakdown card kept `#2274A5` because it's the popup's one light surface, so the component chart directly beneath it ended up drawing the same five signals in a different blue. Same number, same signal, two colours, four inches apart.
+
+The mistake was treating a hex as a token. `$secondary` and momentum happened to share a value; they were never the same job.
+
+### Colour
+- **The signal palette is back on `#2274A5` for momentum, everywhere it's drawn** — the component contribution chart and its legend, the settings signal dot, the walkthrough's signal diagram and its breakdown preview, and on the docs site the PowerScore explainer, the machine scene, the signals page and all four gradients
+- **`$secondary` stays `#3E9BD1`** and keeps doing the job it was lifted for: links, filled and outline buttons, focus rings, `.popup-settings-link`
+- **The brand rainbow is untouched** — `brandColors` and the Ludicrous Speed overlay cycle primary/secondary/danger/success/warning, which is the theme palette rather than the signal palette, so they follow the token
+- `_bootstrap.scss` now says out loud that `#2274A5` is not retired and that a signal blue must not be "fixed" to match the accent token, since that is exactly the mistake this entry is about
+
 ## Twenty controls in one flat column, and none of them looked more important than any other — 2026-08-15
 
 The Switching tab was a single vertical run of twenty controls — three sliders, two number fields, eleven switches, a select and two buttons — every one at the same visual weight, separated only by three section rules. Standby Stream, the last thing on it, sat about two and a half screens below the first thing on it. Fifteen labels each carried an orange `text-primary` icon, competing with the orange range thumbs and the orange active tab; when the accent marks everything it marks nothing. Ten explainer paragraphs sat permanently on screen at 0.55rem, useful once and noise every time after.
