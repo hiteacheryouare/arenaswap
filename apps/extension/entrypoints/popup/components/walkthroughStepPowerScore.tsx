@@ -37,7 +37,7 @@ const signalMeta = [
 		tooltipKey: 'powerScore.tooltipMomentum',
 		measuredKey: 'stepPowerScore.momentumMeasured',
 		max: scoreMaxMomentum,
-		color: '#2274a5',
+		color: '#3e9bd1',
 	},
 	{
 		name: 'leadChanges',
@@ -103,7 +103,7 @@ const boostPenaltyMeta = [
 		labelKey: 'stepPowerScore.postseasonBoostName',
 		descriptionKey: 'powerScore.tooltipPostseasonBoost',
 		measuredKey: 'stepPowerScore.postseasonBoostMeasured',
-		color: '#2274a5',
+		color: '#3e9bd1',
 		icon: 'trophy-fill',
 	},
 ] as const;

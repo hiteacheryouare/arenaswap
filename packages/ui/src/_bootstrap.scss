@@ -4,7 +4,10 @@
 
 $prefix:               'as-';
 $primary:              #F75C03;
-$secondary:            #2274A5;
+// Every ArenaSwap surface is dark. #2274A5 only reached 3.70:1 on $body-bg, below the AA floor;
+// it survives as $secondary-on-light for the one light surface, the PowerScore breakdown card.
+$secondary:            #3E9BD1;
+$secondary-on-light:   #2274A5;
 $success:              #00CC66;
 $warning:              #F1C40F;
 $danger:               #D90368;
@@ -24,6 +27,10 @@ $form-select-color:    #e6edf3;
 $form-select-border-color: #30363d;
 $font-family-base:     'DM Sans', system-ui, -apple-system, sans-serif;
 $font-monospace:       'Lekton', monospace;
+
+// Bootstrap picks a filled button's label with color-contrast(); the lighter $secondary now
+// resolves to the dark side, and this keeps that side on-theme instead of pure black.
+$color-contrast-dark:  #0d1117;
 
 * {
 	&::selection {

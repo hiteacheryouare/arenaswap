@@ -2,6 +2,9 @@
 // so is unavailable in the Cypress dev-server.
 import enJson from '../../locales/en.json';
 
+// Type-only, so it erases at bundle time; wxt prepare has already written it by the time tsc runs.
+export type { GeneratedI18nStructure } from '../../.wxt/i18n/structure';
+
 const messages = enJson as Record<string, unknown>;
 
 const lookup = (key: string): unknown =>

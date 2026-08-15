@@ -15,7 +15,7 @@ interface walkthroughViewProps {
 	onComplete: () => void;
 }
 
-const brandColors = ['#F75C03', '#2274A5', '#D90368', '#00CC66', '#F1C40F'];
+const brandColors = ['#F75C03', '#3E9BD1', '#D90368', '#00CC66', '#F1C40F'];
 
 const DoneScreen = ({ onComplete }: { onComplete: () => void }) => {
 	useEffect(() => {

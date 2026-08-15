@@ -1,5 +1,47 @@
 # Changelog
 
+## Twenty controls in one flat column, and none of them looked more important than any other — 2026-08-15
+
+The Switching tab was a single vertical run of twenty controls — three sliders, two number fields, eleven switches, a select and two buttons — every one at the same visual weight, separated only by three section rules. Standby Stream, the last thing on it, sat about two and a half screens below the first thing on it. Fifteen labels each carried an orange `text-primary` icon, competing with the orange range thumbs and the orange active tab; when the accent marks everything it marks nothing. Ten explainer paragraphs sat permanently on screen at 0.55rem, useful once and noise every time after.
+
+Settings is now an index. Six categories, each naming what it's for, each opening a focused page.
+
+### The settings index
+- **Six rows replace the two tabs** — Switching, Scoring, Leagues, Display, Standby Stream, Demo mode — each with its own icon and a description of what lives inside it, wrapped in full rather than truncated, since a description cut off mid-sentence is worse than no description
+- **Every page fits in one window.** Measured at 320×560: the index and all five non-league pages come out at exactly 560px of content, no scrolling. Leagues is 1,926px, which is 31 league switches and a reorder list, and is the only page that scrolls
+- **The back arrow is now two-level** — from a category it returns to the index, from the index it closes settings
+- **The icons are orange and the labels are not.** Six accents on six rows, instead of fifteen scattered down a column
+- The empty-leagues warning moved onto the Leagues row, where it points at the page that fixes it
+
+### Search
+- **A search field sits above the index**, matching setting names, category descriptions, and a per-setting keyword list — so "celsius" finds Temperature unit, "playoff" finds Postseason boost, "spam" finds Cooldown and Switch delay
+- **The keywords live in the locale files**, one `keywords*` string per setting, so every language gets synonyms a speaker of that language would actually type rather than translated English ones
+- Matching strips case and diacritics on both sides, so `prevision` reaches *Previsión*
+- **Category text is matched per category, never folded into each setting's haystack.** Mixing the two made "bonus" return all five PowerScore signals, because the word appears in the Scoring description. There's a spec pinning that
+- Tapping a result opens the category it lives in, and clears the query behind it
+
+### Explainers
+- **Every explainer string is kept, and none of them sit on screen any more.** They moved onto the existing tooltip control — the same `bi-question-circle` the PowerScore breakdown already uses — beside the label they explain
+- `signalTooltipIcon` is now `settingTooltipIcon`, since it no longer only explains signals, and `.setting-tooltip-btn` gained a dark-surface tone with the old light-card tone scoped under `.powerscore-breakdown`
+- `setup.tabSwitching`, `tabLeagues`, `optionsSection`, `bettingSection` and `weatherSection` are gone from all eight locales, along with `.setup-tabs`
+
+## The secondary blue was below the contrast floor on every surface we draw it on — 2026-08-15
+
+`#2274A5` on `#0d1117` is 3.70:1. Primary orange on the same background is 5.85:1. That gap was the whole problem: the blue sat under the 4.5:1 AA floor while the orange cleared it comfortably, so blue text read as disabled and blue beside orange read as a mistake. White on `#2274A5` — every `btn-secondary` back button in the walkthrough — was 4.11:1, also under.
+
+The blue had two jobs, though. As the Momentum signal it also draws on the `#f8fafc` PowerScore breakdown card, where `#2274A5` is a perfectly good 4.89:1. So the token split rather than moved.
+
+### Colour
+- **`$secondary` is now `#3E9BD1`** — 6.14:1 on the body background — across the extension, the docs site and the shared Tailwind tokens
+- **`$secondary-on-light` keeps `#2274A5`** for the one light surface in the popup, the breakdown card, where lifting the blue would have washed it out to 2.95:1
+- **Filled secondary buttons take dark labels instead of white.** Bootstrap's `color-contrast()` flips them automatically at the new lightness; `$color-contrast-dark` is set to `#0d1117` so the dark side stays on-theme rather than pure black
+- Momentum's dot, chart series, legend swatch and walkthrough diagram all move to the new blue; the light breakdown card does not
+- Team-colour fallbacks in `resolveTeamColorPair` keep `#2274A5` — they tint a poster background, not an accent, and the lighter blue would have taken white type down with it
+
+### Tests
+- `setupView.cy.tsx` rebuilt around the index: navigation in and out of every category, the search behaviours above, the leagues warning on its row, and the tooltip control replacing the inline explainers
+- The Cypress `#i18n` stub re-exports `GeneratedI18nStructure`, so the settings catalogue's message-key type checks in the component project too
+
 ## The pre-game screen stopped reporting a game that hadn't happened — 2026-08-09
 
 Open a game before it starts and the screen led with a PowerScore breakdown reading `0/42`, `0/38`, `0/38`, `0/18`, `0/20` and a final score of `0 / 100`. Eleven rows of arithmetic about a game with no possessions in it. Underneath, four charts with no data. The screen was built for a live game and shown for a scheduled one.

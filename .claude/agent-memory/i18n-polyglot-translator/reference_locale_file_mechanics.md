@@ -11,6 +11,7 @@ The 8 locale files live at `apps/extension/locales/{en,de,es,fr,ja,pt_BR,pt_PT,z
 - **Tab** indentation, **CRLF** line endings, existing key order, valid JSON.
 - Quirk: `en.json` and `fr.json` have **no trailing newline at EOF**; the other six **do**. Pre-existing — do not "fix" it, it creates diff noise.
 - `json.dump` will destroy all of this. Edit by targeted regex replacement of the `"key": "value"` span instead.
+- The Edit tool's exact-string matching has repeatedly failed against these files even when the visible text looked identical — the mismatch is invisible tab-count/CRLF handling, not the content. **Reliable method:** read the raw bytes in Python, do a plain `bytes.replace(old.encode('utf-8'), new.encode('utf-8'))` on the whole file, assert the expected occurrence count before writing, then re-verify after with the same byte-level check (CRLF count, bare-LF count, trailing-newline state, `json.loads` validity). This is now the default approach for editing these 8 files, not a fallback.
 
 ## Width tests that gate translations
 Two Cypress component specs read the locale JSON directly and measure rendered text:

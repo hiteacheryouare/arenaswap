@@ -128,8 +128,8 @@ const COLORS: RGB[] = [
 	[247,  92,   3], // closeness  — ArenaSwap orange
 	[247,  92,   3],
 	[247,  92,   3],
-	[ 34, 116, 165], // late game
-	[ 34, 116, 165],
+	[ 62, 155, 209], // late game
+	[ 62, 155, 209],
 	[ 34, 197,  94], // momentum
 	[241, 196,  15], // lead changes
 	[217,   3, 104], // comeback
@@ -243,7 +243,7 @@ function buildAmbient() {
 	const x = wellX / 4, y = wellY / 4, rad = Math.max(W, H) / 4 * 0.62;
 	const grd = g.createRadialGradient(x, y, 0, x, y, rad);
 	grd.addColorStop(0,    'rgba(247,92,3,0.075)');
-	grd.addColorStop(0.45, 'rgba(34,116,165,0.035)');
+	grd.addColorStop(0.45, 'rgba(62,155,209,0.035)');
 	grd.addColorStop(1,    'rgba(0,0,0,0)');
 	g.fillStyle = grd;
 	g.fillRect(0, 0, c.width, c.height);

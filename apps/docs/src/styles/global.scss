@@ -41,7 +41,7 @@ $font-base-url: '/arenaswap/fonts';
 	--color-card:      #161b22;
 	--color-border:    #30363d;
 	--color-primary:   #F75C03;
-	--color-secondary: #2274A5;
+	--color-secondary: #3E9BD1;
 	--color-text:      #e6edf3;
 	--color-muted:     #8b949e;
 	--color-success:   #00CC66;
@@ -911,14 +911,14 @@ body.nav-open {
 .ps-gradient-bar {
 	width: 100%;
 	height: 3px;
-	background: linear-gradient(to right, #22c55e, #F75C03, #2274A5, #F1C40F, #D90368);
+	background: linear-gradient(to right, #22c55e, #F75C03, #3E9BD1, #F1C40F, #D90368);
 }
 
 // Signal card top-border accents
 $ps-signal-colors: (
 	'green':  rgba(34, 197, 94, 0.7),
 	'orange': rgba(247, 92, 3, 0.7),
-	'blue':   rgba(34, 116, 165, 0.7),
+	'blue':   rgba(62, 155, 209, 0.7),
 	'yellow': rgba(241, 196, 15, 0.7),
 	'pink':   rgba(217, 3, 104, 0.7),
 );
@@ -938,7 +938,7 @@ $ps-signal-colors: (
 .ps-score-bar-fill {
 	height: 100%;
 	border-radius: 999px;
-	background: linear-gradient(to right, #22c55e, #F75C03, #2274A5, #F1C40F, #D90368);
+	background: linear-gradient(to right, #22c55e, #F75C03, #3E9BD1, #F1C40F, #D90368);
 	transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -972,7 +972,7 @@ $ps-signal-colors: (
 	right: -26%;
 	width: 78vw;
 	height: 78vw;
-	background: radial-gradient(circle at center, rgba(34,116,165,0.25) 0%, rgba(34,116,165,0.08) 42%, transparent 62%);
+	background: radial-gradient(circle at center, rgba(62,155,209,0.25) 0%, rgba(62,155,209,0.08) 42%, transparent 62%);
 	animation: ps-glow-in 2.0s cubic-bezier(0.16,1,0.3,1) 0.28s both;
 }
 
@@ -1003,7 +1003,7 @@ $ps-signal-colors: (
 .ps-hero-bar {
 	width: 64px;
 	height: 3px;
-	background: linear-gradient(to right, #22c55e, #F75C03, #2274A5, #F1C40F, #D90368);
+	background: linear-gradient(to right, #22c55e, #F75C03, #3E9BD1, #F1C40F, #D90368);
 	border-radius: 999px;
 	margin: 0 auto 2.75rem;
 	opacity: 0;
@@ -1030,7 +1030,7 @@ $ps-signal-colors: (
 		to right,
 		#22c55e 0%,
 		#F75C03 22%,
-		#2274A5 44%,
+		#3E9BD1 44%,
 		#F1C40F 66%,
 		#D90368 85%,
 		#22c55e 100%

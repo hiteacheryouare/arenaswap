@@ -102,7 +102,7 @@ Use TypeScript for:
 - Helper functions
 - Complex React components
 
-JavaScript is acceptable for:
+JavaScript must be used for for:
 
 - Small reusable modules
 - Components with minimal complexity

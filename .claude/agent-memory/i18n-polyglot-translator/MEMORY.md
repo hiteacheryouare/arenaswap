@@ -5,3 +5,4 @@
 - [project_pregame_gameinfo_translations.md](project_pregame_gameinfo_translations.md) — detail.getReady*/detail.info* rulings: hockey/baseball loanwords, pt_PT tu-register, shared kickoff key issue (2026-08-10)
 - [reference_locale_file_mechanics.md](reference_locale_file_mechanics.md) — Tabs/CRLF/EOF quirks and the two Cypress width tests + measured px budgets that gate translations
 - [project_brand_term_leakage.md](project_brand_term_leakage.md) — Open: "Standby Stream" is translated in es/fr/zh/ja; root cause is en.json's own inconsistent casing
+- [project_settings_drilldown_review.md](project_settings_drilldown_review.md) — fr/pt_PT/zh_CN register bugs, German ß-normalize gotcha, label/keyword semantic collisions (2026-08-15)

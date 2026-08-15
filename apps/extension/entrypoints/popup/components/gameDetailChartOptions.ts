@@ -166,7 +166,7 @@ export const buildComponentContributionOption = (powerHistory: PowerScoreSnapsho
 		series: [
 			{ type: 'bar', stack: 'signals', name: 'Closeness', data: closeness, itemStyle: { color: '#22c55e' } },
 			{ type: 'bar', stack: 'signals', name: 'Late-game', data: lateGame, itemStyle: { color: '#f75c03' } },
-			{ type: 'bar', stack: 'signals', name: 'Momentum', data: momentum, itemStyle: { color: '#2274a5' } },
+			{ type: 'bar', stack: 'signals', name: 'Momentum', data: momentum, itemStyle: { color: '#3e9bd1' } },
 			{ type: 'bar', stack: 'signals', name: 'Lead changes', data: leadChanges, itemStyle: { color: '#f1c40f' } },
 			{ type: 'bar', stack: 'signals', name: 'Comeback', data: comeback, itemStyle: { color: '#d90368' } },
 		],
