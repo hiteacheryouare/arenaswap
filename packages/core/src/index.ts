@@ -2,7 +2,7 @@ export { fetchGames, fetchLiveGames, fetchLeagueLogos, fetchGamesWithLeagueLogos
 export { logWarn, logError, setVerboseLogging, isVerboseLogging } from './logger';
 export { computeEagerIntervalMs, computeLeagueIntervalMs, pollMinEagerMs, pollMaxEagerMs, pollIntermissionMs, pollWinProbabilityMs } from './pollIntervalComputer';
 export type { EspnTeamEntry } from './apiClient';
-export { computePowerScore, computeScoringOpportunityBoost, computeWinProbVarianceScore, normalizePowerScoreResult } from 'powerscore';
+export { computePowerScore, computeScoringOpportunityBoost, computeWinProbVarianceScore, isPlayFrozen, normalizePowerScoreResult } from 'powerscore';
 export { scoreMaxTotal } from 'powerscore';
 export { MockGameSimulator } from './mockGames';
 export { createPollModeTracker } from './pollModeTracker';

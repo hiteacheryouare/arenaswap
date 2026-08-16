@@ -452,11 +452,15 @@ const getRedZoneBoost = (game: Game): number => {
 	return Math.round(base * getRedZoneDownMultiplier(game));
 };
 
+// Halftime, an intermission, and a delay all mean no play can happen, so nothing about the game
+// state is worth scoring until it resumes.
+export const isPlayFrozen = (game: Game): boolean => game.intermission === true || game.delayed === true;
+
 export const computeScoringOpportunityBoost = (game: Game): number => {
 	if (game.status !== 'in') return 0;
-	// A delay freezes the situation — runners stay on base, the offense stays in the red zone —
-	// so the boost would otherwise keep paying out while nothing can happen.
-	if (game.delayed) return 0;
+	// A freeze holds the situation in place — runners stay on base, the offense stays in the red
+	// zone — so the boost would otherwise keep paying out while nothing can happen.
+	if (isPlayFrozen(game)) return 0;
 
 	if (game.sportType === 'baseball' || game.sportType === 'softball') {
 		const r = game.baseRunners;
@@ -478,9 +482,9 @@ export const computePowerScore = (
 	stallCount: number = 0,
 	winProbabilityHistory: number[] = [],
 ): PowerScoreResult => {
-	// A frozen game must never out-score a live one, so both zero out rather than keeping their
-	// last live score.
-	if (game.intermission || game.delayed)
+	// A frozen game must never out-score a live one, so it zeroes out rather than keeping its last
+	// live score.
+	if (isPlayFrozen(game))
 		return normalizePowerScoreResult({
 			gameId: game.id,
 			total: 0,

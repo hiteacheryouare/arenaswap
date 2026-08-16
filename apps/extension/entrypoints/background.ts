@@ -1,5 +1,5 @@
 import { randomInRange } from '@porkyproductions/hat';
-import { fetchGamesWithLeagueLogos, fetchWinProbability, computePowerScore, computeScoringOpportunityBoost, normalizePowerScoreResult, scoreMaxTotal, MockGameSimulator, createPollModeTracker, isObjectRecord, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts, computeLeagueIntervalMs, pollWinProbabilityMs as winProbPollIntervalMs, logWarn, logError } from '@arenaswap/core';
+import { fetchGamesWithLeagueLogos, fetchWinProbability, computePowerScore, computeScoringOpportunityBoost, isPlayFrozen, normalizePowerScoreResult, scoreMaxTotal, MockGameSimulator, createPollModeTracker, isObjectRecord, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts, computeLeagueIntervalMs, pollWinProbabilityMs as winProbPollIntervalMs, logWarn, logError } from '@arenaswap/core';
 import { computeStandbyStreamDecision } from '../utils/standbyStreamLogic';
 import { loadStoredUserPreferences, persistStoredUserPreferences } from '../utils/prefsStorage';
 import {
@@ -520,10 +520,14 @@ export default defineBackground(() => {
 				prefs.disabledSignals,
 			);
 			const favoriteTeamCount = getFavoriteTeamCount(g, favoriteTeamIds);
-			const favoriteBonus = favoriteTeamCount * favoriteBonusPoints;
-			const gameBoost = gameBoosts[g.id] ?? 0;
+			// computePowerScore already zeroes a frozen game's signals, and the boosts have to follow
+			// it down: otherwise a game sitting at halftime with a favorite in it still out-scores the
+			// games actually being played.
+			const frozen = isPlayFrozen(g);
+			const favoriteBonus = frozen ? 0 : favoriteTeamCount * favoriteBonusPoints;
+			const gameBoost = frozen ? 0 : (gameBoosts[g.id] ?? 0);
 			const scoringOpportunityBoost = computeScoringOpportunityBoost(g);
-			const postseasonBoost = g.isPostseason ? postseasonBoostPoints : 0;
+			const postseasonBoost = !frozen && g.isPostseason ? postseasonBoostPoints : 0;
 			// Automatic scoring saturates at 100; only a manual game boost may push the headline
 			// total past the ceiling.
 			const automaticTotal = Math.min(

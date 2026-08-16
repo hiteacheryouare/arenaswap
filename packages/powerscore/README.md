@@ -71,6 +71,16 @@ const result = computePowerScore(game, history, stallCount);
 | `history` | `ScoreSnapshot[]` | Recent score snapshots for momentum/lead change/comeback calculation. Needs at least 3 entries for those signals to activate. |
 | `stallCount` | `number` | Number of consecutive polls where the clock hasn't moved. Defaults to `0`. A graduated stall penalty kicks in at ≥8 polls (~120s → 15% off) and deepens at ≥15 polls (~225s → 30% off). |
 
+### `isPlayFrozen`
+
+True when the game is at halftime, in an intermission, or delayed — the states where `computePowerScore` returns a flat 0 and `computeScoringOpportunityBoost` pays nothing. Consumers that add their own boosts on top of the scorer's total should check this and suppress them too, so a stopped game can't out-score one that's being played.
+
+```ts
+import { isPlayFrozen } from 'powerscore';
+
+const boost = isPlayFrozen(game) ? 0 : favoriteTeamBonus;
+```
+
 ### `normalizePowerScoreResult`
 
 Clamps and sanitizes a partial result into a valid `PowerScoreResult`. Useful when constructing or patching results manually.
@@ -99,7 +109,8 @@ interface Game {
   awayTeam: { score: number; abbreviation: string };
   period: number;
   clockSeconds: number;
-  intermission?: boolean; // if true, scorer returns 0 across all signals
+  intermission?: boolean; // halftime, end of period — scorer returns 0 across all signals
+  delayed?: boolean;      // weather, injury, any extended stoppage — also scores 0
 }
 ```
 

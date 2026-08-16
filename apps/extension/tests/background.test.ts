@@ -1,4 +1,4 @@
-import { createDefaultUserPreferences, normalizeUserPreferences, pollIntervalMs } from '@arenaswap/core/constants';
+import { createDefaultUserPreferences, createFavoriteTeamKey, normalizeUserPreferences, pollIntervalMs } from '@arenaswap/core/constants';
 import type { Game, LeagueId, TabRegistration, UserPreferences } from '@arenaswap/core/types';
 import { prefsStorageUpdatedAtKey } from '../utils/prefsStorage';
 
@@ -201,6 +201,78 @@ describe('postseason boost', () => {
 		const state = await sendMessage({ type: 'GET_STATE' }) as { scores: { gameId: string; postseasonBoost: number }[] };
 		const score = state.scores.find(s => s.gameId === 'ps-game');
 		expect(score?.postseasonBoost).toBe(0);
+	});
+});
+
+// Regression: a game at halftime scored 0 from the signals but still collected its favorite,
+// postseason and manual boosts, so a frozen game out-scored games that were actually being played.
+describe('frozen games', () => {
+	const halftimeGame: Game = {
+		id: 'frozen-game',
+		league: 'nba' as LeagueId,
+		sportType: 'basketball',
+		status: 'in',
+		homeTeam: { id: 'h', name: 'Home', abbreviation: 'HOM', score: 50 },
+		awayTeam: { id: 'a', name: 'Away', abbreviation: 'AWY', score: 48 },
+		period: 2,
+		clockSeconds: 0,
+		isPostseason: true,
+		intermission: true,
+	};
+
+	interface ScoreState {
+		scores: {
+			gameId: string;
+			total: number;
+			favoriteBonus: number;
+			gameBoost: number;
+			postseasonBoost: number;
+		}[];
+	}
+
+	const loadWithFrozenGame = async (game: Game) => {
+		await loadBackground({
+			prefs: {
+				enabledLeagues: ['nba' as LeagueId],
+				favoriteTeamIds: [createFavoriteTeamKey('nba' as LeagueId, 'h')],
+				favoriteTeamBonusPoints: 10,
+				postseasonBoostPoints: 8,
+			},
+			fetchReturnValue: { games: [game], leagueLogos: {} },
+		});
+
+		await sendMessage({ type: 'SET_GAME_BOOST', gameId: game.id, boost: 15 });
+
+		jest.advanceTimersByTime(pollIntervalMs + 2000);
+		await drain(12);
+
+		const state = await sendMessage({ type: 'GET_STATE' }) as ScoreState;
+		return state.scores.find(s => s.gameId === game.id);
+	};
+
+	test('scores 0 at halftime despite a favorite team, postseason and a manual boost', async () => {
+		const score = await loadWithFrozenGame(halftimeGame);
+
+		expect(score).toBeDefined();
+		expect(score?.total).toBe(0);
+		expect(score?.favoriteBonus).toBe(0);
+		expect(score?.gameBoost).toBe(0);
+		expect(score?.postseasonBoost).toBe(0);
+	});
+
+	test('scores 0 during a delay too', async () => {
+		const score = await loadWithFrozenGame({ ...halftimeGame, intermission: false, delayed: true });
+
+		expect(score?.total).toBe(0);
+	});
+
+	test('pays the boosts again once play resumes', async () => {
+		const score = await loadWithFrozenGame({ ...halftimeGame, intermission: false, period: 3 });
+
+		expect(score?.favoriteBonus).toBe(10);
+		expect(score?.gameBoost).toBe(15);
+		expect(score?.postseasonBoost).toBe(8);
+		expect(score?.total).toBeGreaterThan(0);
 	});
 });
 

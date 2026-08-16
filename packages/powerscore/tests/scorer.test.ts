@@ -12,7 +12,7 @@ import {
 	sportTypeConfigMap,
 	stallPenaltySteps,
 } from '../src/constants';
-import { computePowerScore, computeScoringOpportunityBoost, computeWinProbVarianceScore, normalizePowerScoreResult } from '../src/scorer';
+import { computePowerScore, computeScoringOpportunityBoost, computeWinProbVarianceScore, isPlayFrozen, normalizePowerScoreResult } from '../src/scorer';
 import type { Game, PowerScoreResult, ScoreSnapshot } from '../src/types';
 
 const makeGame = (overrides: Partial<Game> = {}): Game => ({
@@ -254,6 +254,13 @@ describe('computePowerScore', () => {
 			reason: '',
 			stalled: false,
 		});
+	});
+
+	test('flags halftime, intermissions and delays as frozen play', () => {
+		expect(isPlayFrozen(makeGame())).toBe(false);
+		expect(isPlayFrozen(makeGame({ intermission: true }))).toBe(true);
+		expect(isPlayFrozen(makeGame({ delayed: true }))).toBe(true);
+		expect(isPlayFrozen(makeGame({ intermission: false, delayed: false }))).toBe(false);
 	});
 
 	test('a delayed game never out-scores the same game while live', () => {
@@ -1050,6 +1057,14 @@ describe('computeScoringOpportunityBoost', () => {
 			baseRunners: { first: true, second: true, third: true },
 		}))).toBe(0);
 		expect(computeScoringOpportunityBoost(makeFootballGame({ delayed: true, isRedZone: true }))).toBe(0);
+	});
+
+	test('returns 0 during an intermission', () => {
+		expect(computeScoringOpportunityBoost(makeBaseballGame({
+			intermission: true,
+			baseRunners: { first: true, second: true, third: true },
+		}))).toBe(0);
+		expect(computeScoringOpportunityBoost(makeFootballGame({ intermission: true, isRedZone: true }))).toBe(0);
 	});
 
 	test('returns 0 for football when not in red zone', () => {

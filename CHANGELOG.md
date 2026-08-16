@@ -1,5 +1,19 @@
 # Changelog
 
+## A game at halftime was worth 10 points for doing nothing — 2026-08-15
+
+The scorer has always zeroed a frozen game: halftime, an intermission, a rain delay, and all five signals go to 0, because nothing is happening and a stopped game must never out-score a live one. The boosts never got the memo. They're added after the scorer runs, so a game sitting at halftime with a favorite team in it still collected its +10, and a postseason game at halftime collected that too — a PowerScore of 10 for a court with nobody on it, which is enough to beat a genuinely quiet live game and take the tab.
+
+The freeze is now one rule instead of two. `isPlayFrozen` is a single exported predicate covering intermission and delay, the scorer and the scoring-opportunity boost both read it, and the extension suppresses every boost while it's true — favorite, postseason, scoring opportunity, and the manual game boost as well. A frozen game is a hard 0, no exceptions.
+
+### Scoring
+- **Halftime, intermissions and delays score 0 no matter what boosts apply** — the favorite bonus, the postseason boost and a manual game boost are all held back until play resumes, then pay out again exactly as before
+- **The scoring-opportunity boost now respects intermissions**, not just delays; it already refused to pay for runners frozen on base during a rain delay, and an intermission freezes the situation the same way
+- The manual game boost is suppressed in the score but not forgotten — the stored value stays put, so the boost input still shows what you set and it takes effect again on the second-half tip
+
+### Detail view
+- The breakdown's game-boost row reads the applied boost rather than the stored one, so it shows `0` during a freeze instead of claiming a `+15` that the total below it doesn't include
+
 ## One signal, two blues, depending on which screen you were looking at — 2026-08-15
 
 Lifting `$secondary` to `#3E9BD1` took momentum's blue with it, and it shouldn't have. Momentum isn't an accent — it's one of the five PowerScore signals, and that palette is a data palette: closeness green, late-game orange, momentum blue, lead-changes yellow, comeback pink. The breakdown card kept `#2274A5` because it's the popup's one light surface, so the component chart directly beneath it ended up drawing the same five signals in a different blue. Same number, same signal, two colours, four inches apart.

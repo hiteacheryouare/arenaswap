@@ -103,6 +103,9 @@ const gameDetailView = ({
 	const favoriteBonus = activePowerScore?.favoriteBonus ?? 0;
 	const favoriteTeamCount = activePowerScore?.favoriteTeamCount ?? 0;
 	const currentBoost = gameBoosts[game.id] ?? 0;
+	// The breakdown mirrors the scorer, which drops every boost while play is frozen. The boost input
+	// keeps showing the stored value, since the setting survives halftime even though it pays nothing.
+	const appliedBoost = activePowerScore?.gameBoost ?? currentBoost;
 	const scoringOpportunityBoost = activePowerScore?.scoringOpportunityBoost ?? 0;
 	const postseasonBoost = activePowerScore?.postseasonBoost ?? 0;
 	const reason = activePowerScore?.reason ?? 'Best Available';
@@ -223,7 +226,7 @@ const gameDetailView = ({
 						stallPenalty={stallPenalty}
 						favoriteBonus={favoriteBonus}
 						favoriteTeamCount={favoriteTeamCount}
-						currentBoost={currentBoost}
+						currentBoost={appliedBoost}
 						scoringOpportunityBoost={scoringOpportunityBoost}
 						postseasonBoost={postseasonBoost}
 						totalLabel={totalLabel}
