@@ -918,7 +918,7 @@ body.nav-open {
 $ps-signal-colors: (
 	'green':  rgba(34, 197, 94, 0.7),
 	'orange': rgba(247, 92, 3, 0.7),
-	'blue':   rgba(62, 155, 209, 0.7),
+	'blue':   rgba(34, 116, 165, 0.7),
 	'yellow': rgba(241, 196, 15, 0.7),
 	'pink':   rgba(217, 3, 104, 0.7),
 );
@@ -972,7 +972,7 @@ $ps-signal-colors: (
 	right: -26%;
 	width: 78vw;
 	height: 78vw;
-	background: radial-gradient(circle at center, rgba(62,155,209,0.25) 0%, rgba(62,155,209,0.08) 42%, transparent 62%);
+	background: radial-gradient(circle at center, rgba(34,116,165,0.25) 0%, rgba(34,116,165,0.08) 42%, transparent 62%);
 	animation: ps-glow-in 2.0s cubic-bezier(0.16,1,0.3,1) 0.28s both;
 }
 
