@@ -1,0 +1,12 @@
+---
+name: feedback_verify_changelog_against_code
+description: A CHANGELOG.md entry can describe an intermediate state that was later reversed or superseded — read the actual current component before describing its mechanics in copy
+metadata:
+  type: feedback
+---
+
+`CHANGELOG.md` entries are written at the time of the change and are not guaranteed to reflect the final shipped state weeks later. While researching the [[project_v2_launch_post]] walkthrough section, the entry "PowerScore Tutorial Bloom and Description Boxes Update" (2026-07-17) claimed the description text was stripped out of the bloom overlay and the animation was automated into a self-looping cycle. Reading the actual current `walkthroughStepPowerScore.tsx` showed neither is true: the `BloomOverlay` component still renders a label, a description (`tooltipKey`) and a "Tap anywhere to continue" hint, and `bloomPhase` only transitions on an explicit `advanceTo()` call (a tap, Next, Back, or a progress-dot click) — there is no self-looping timer that returns it to `null` while staying on the same sub-step.
+
+**Why:** Ryan's instructions already flagged that "two months of changelog includes renames" and told me to verify identifiers exist; this generalizes that same caution to *behavior*, not just names. A blog post that describes a bug-fix or feature exactly the way the changelog phrased it can end up describing something the codebase no longer does, which is exactly the kind of unverified claim the content-writer brief says is the fastest way to lose a reader's trust. This is distinct from [[project_dependency_gotchas]]'s "docs/ is stale build output" note — this is about *prose descriptions of runtime behavior*, not build artifacts.
+
+**How to apply:** Before writing a sentence that describes *how* a feature behaves (not just that it exists), open the component file and read the actual state-transition logic, not just the changelog paragraph about it. This matters most for UI/animation mechanics described across multiple same-day or back-to-back changelog entries (a feature that got revised more than once in quick succession is the most likely to have a stale final description). When the changelog and the code disagree, trust the code, describe the verified current behavior, and don't editorialize in the post about the discrepancy — that's meta-commentary a reader doesn't need; just get the description right.

@@ -1,139 +1,200 @@
 ---
-title: "v2: What we rebuilt and why"
-description: "30+ leagues, a rewritten PowerScore engine, and a month of calibration. The full technical story of how ArenaSwap got here."
-pubDate: 2026-06-28
+title: "ArenaSwap 2.0 is live: every sport, one tab, 12 languages"
+description: "ArenaSwap 2.0 rebuilds PowerScore, covers 31 leagues across six sports, and ships in 12 languages. Here's what changed and why it took two months."
+pubDate: 2026-08-16
 author: Ryan Mullin
-tags: ["engineering", "v2", "powerscore"]
-image: /arenaswap/images/demo.png
-imageAlt: ArenaSwap v2 — live game switching across 30+ leagues
+tags: ["release", "powerscore", "engineering", "i18n"]
 ---
 
-Last March I sat down with four NBA playoff games open and missed three game-winners in a row. Not because I wasn't paying attention — because I was watching the wrong tab. That was the moment ArenaSwap v1 became a real project.
+import SignalBreakdown from '../../components/blog/SignalBreakdown';
+import PeriodExplorer from '../../components/blog/PeriodExplorer';
+import GameCardExplorer from '../../components/blog/GameCardExplorer';
+import ColorPairExplorer from '../../components/blog/ColorPairExplorer';
 
-v1 shipped covering twelve leagues with a scoring model that was, honestly, pretty dumb. Close game? Higher score. Late in the game? Boost it. That was roughly it. It worked well enough that people started using it, which meant I had to actually think harder about what "exciting" means.
+ArenaSwap 2.0 is out today, after about two months of work. The tab-switching engine is rebuilt, the screens around it are rebuilt to match, and the extension now covers 31 leagues across six sports in 12 languages. The first half of this post is the announcement. The second half is the engineering account of how it got there, for anyone who wants to see the work.
 
-v2 took about four months. Here's what changed and why.
+## Way more leagues
+
+31 leagues, six sports: basketball, football, hockey, baseball, softball, and soccer. That's NCAA Baseball and Softball, the World Baseball Classic, the UFL, seven Olympic competitions spanning four of those sports, and 13 soccer leagues running from La Liga to Liga MX to both UEFA club competitions. Every league that made the cut had to clear the same bar: can you actually watch it in the US, and is it popular enough here to be worth polling. Two candidates couldn't and stayed out.
+
+Turn a league off in Settings and ArenaSwap stops polling it. Turn it back on and it returns to where it sat in your list before, instead of landing at the bottom.
+
+You can also put your leagues in whatever order you actually watch them in. Settings → Leagues has a Display Order list: drag a league by its grip handle, or nudge it up and down, and your live games sort by that order instead of the one ArenaSwap shipped with. A "Reset to default order" link shows up once you've changed anything, and the list stays out of the way until you've got at least two leagues turned on. Upcoming games get a version of the same idea: a Days Ahead setting controls how far out the Up Next section looks, from 1 to 14 days, with a "Show more" button so a loaded week doesn't turn the list into an endless scroll.
+
+## PowerScore, rebuilt
+
+Every live game still gets a 0-100 PowerScore from five signals: Closeness, Late-Game Pressure, Momentum, Lead Changes, and Comeback Factor. What changed is how much room those signals have and how the score handles the moments when nothing is actually happening.
+
+The five ceilings now add up to well past 100 by design, so a game only has to hit a few of them hard to climb into the 80s and 90s, while a one-sided game with none of them stays low. A tied game at the final buzzer lands at 80. A one-point game in the final minute clears 68, in basketball, hockey, or football alike. A blowout in the final seconds stays at 8 or under.
+
+Halftimes, intermissions, and delays now zero out every signal and every bonus together, so a frozen game can never outscore one that's actually being played, and the number on the detail screen is now guaranteed to be the same number the switcher used to pick your tab. Both of those were real bugs, and the deep dive below covers what they were.
+
+The five signals aren't the whole score. Six smaller boosts and penalties sit on top of them: a stall penalty for a clock that's stopped moving without the game actually being frozen, a volatility adjustment worth up to ±5 for how much a game's win probability has swung, a favorite-team bonus and a postseason bonus you set the size of yourself, a scoring-opportunity boost for a runner on base or a red-zone snap, and a manual game boost for telling ArenaSwap a specific game matters to you no matter what the math says. Turn off any of the five core signals in Settings and the rest re-scale to still cover the full 0-100 range, instead of just leaving the top of the scale out of reach.
+
+## A walkthrough, if you want one
+
+Finish onboarding and ArenaSwap asks once: take the tour, or jump right in. The walkthrough is eight steps now, up from the four it launched with, and covers ground onboarding itself doesn't touch: what PowerScore actually measures, a live demo of a tab switching itself, how to open a game and read its breakdown, leagues and favorite teams, and where to find the tour again if you skipped it. It runs once, remembered in your preferences, and a `?` button in the header brings it back any time you want the refresher.
+
+The PowerScore step is worth calling out on its own. Land on one of the five signals and it blooms into a full-screen panel in that signal's own color, with a plain-English description of what it measures; the six boosts and penalties get their own six stops after it, each with a big icon in its own color instead of a bloom. All twelve are reachable directly from a row of progress dots underneath, each one colored to match what it explains. It's the same five-color, six-icon legend the game detail screen's breakdown uses, which isn't a coincidence: the breakdown's code comments say outright that its colors and icons have to mirror the walkthrough's, not the other way around.
+
+## A settings screen that fits the screen
+
+Settings used to be one long scrolling column. It's now an index: six categories, each named for what it does, each opening to a page that fits without scrolling. A search field sits above the list and matches on setting names, descriptions, and the words a person would actually type for that setting, in whatever language you're using.
+
+Every setting has an explanation now too, but it doesn't take up room on the page to say so: tap the same `(?)` icon the PowerScore breakdown uses and the explanation shows up next to the control it's for, then gets out of the way again.
+
+One control rewards going too far. Crank the sensitivity slider to its last notch, Ludicrous Speed, and its label starts flickering through a color cycle; click it and the popup turns into a full-screen warp tunnel playing out the entire Spaceballs "Ludicrous Speed" scene, plaid included.
+
+## What you see when you open a game
+
+Tap into a game before it starts and you get a matchup poster now, not a card blown up to fill the screen. Both teams' colors run left to right and meet in the middle, crests sit on a white disc so a navy logo doesn't disappear into a navy half of the poster, and a live countdown to tip-off, kickoff, puck drop, or first pitch runs underneath it in the sport's own words. (Softball shares baseball's first pitch, soccer shares football's kickoff; anything else falls back to a plain "Get ready for gametime.") Each team's record sits under its name, favorite-team stars live right on the poster, and the one decision you can usefully make before a game starts, a boost to keep it on screen longer once it's live, is available right there instead of waiting for kickoff.
+
+Once the game is live, the screen stops repeating the card you tapped to get here. Full team names show up for the first time anywhere in the app; they've been parsed from ESPN since the extension's first release and never had anywhere to go before now. Scroll down and a compact matchup bar fades in and pins to the top, both crests and both scores centered on the card's own axis, with the game's status pinned separately to the right so a long status string can't drag the score off center. Records ride under each team's name here too, read from the same request the screen was already making, so opening a game costs no extra fetch.
+
+Below the PowerScore math, venue, broadcasts, odds, and weather live in their own Game Info section instead of five centered lines with nowhere to belong. A dome game shows no weather line at all; a neutral site with weather but no venue name we recognize still gets one. Before the game starts, this section moves above the breakdown, since the breakdown has nothing to say yet and the game's context does.
+
+A few sport-specific details showed up too. Football's down-and-distance line now includes the yard line, "2nd & 11 at ARI 34" instead of just "2nd & 11," so a snap backed up against your own end zone doesn't read the same as one on the opponent's 34. Soccer's extra time reads ET1 and ET2 instead of borrowing basketball's OT, and a shootout gets its own tally line under the frozen 120-minute score. A rain delay, a lightning delay, any suspended game gets an amber pause indicator with the specific reason attached, and its score and clock dim to signal that nothing's actually happening. And a scheduled game not yet underway gets a live flip clock instead of a static date: it counts down every second inside the final day, once a minute before that, and reads "Starts soon" once it hits zero.
+
+## Twelve languages
+
+ArenaSwap ships in English, Spanish, German, French, Italian, Japanese, Korean, Filipino, both variants of Portuguese, and both variants of Chinese. Every one is a full translation, not a subset: onboarding, the walkthrough, every setting, every signal name, and the extension's sense of humor, adapted rather than translated word for word. Sport terminology gets the same treatment. A hockey countdown says "Bully" in German and "mise au jeu" in French, because "puck drop" translates to nothing in either.
+
+## Standby Stream, odds, and weather
+
+When every game you're tracking drops below a PowerScore threshold at once, all at halftime or all in a blowout, ArenaSwap can switch to a Standby tab you designate: a pregame show, a highlights feed, whatever beats a blank tab. It now behaves like every tab ArenaSwap manages: muted when you're not on it, remembered across a browser restart, released cleanly the moment you turn the feature off.
+
+Betting odds and weather are both opt-in. Turn them on and the spread, the total, the odds provider, and outdoor conditions show up alongside the rest of a game's context, pulled from the same ESPN response ArenaSwap was already polling.
+
+## No account, no ads
+
+None of this needs an account. No login, no subscription, no tracking, no ads. Live scores come from ESPN's public API; everything else runs locally in your browser. The extension and the PowerScore engine underneath it are both open source on GitHub, and PowerScore itself ships as a [standalone npm package](https://www.npmjs.com/package/powerscore) for anyone who wants to rank a live sporting event outside this project. The [PowerScore page](/arenaswap/powerscore/) walks through what each signal measures.
+
+ArenaSwap 2.0 is live now for [Chrome](https://chromewebstore.google.com/detail/arenaswap/gibojibgihombdmmfnhnimajppamfeee), [Firefox](https://addons.mozilla.org/addon/arenaswap/), and [Edge](https://microsoftedge.microsoft.com/addons/detail/arenaswap/oeballpnidkinkcbjokogdgjckdjeeba).
+
+> The rest of this post is for anyone who wants the engineering story: what was actually wrong, and what it took to fix it.
+
+## The engine had two ways to disagree with itself
+
+Most of the bugs 2.0 fixed weren't ArenaSwap getting the sports wrong. They were ArenaSwap getting two different numbers for the same thing and not noticing.
+
+Start with the scale. The five signal ceilings, Closeness at 42, Late-Game Pressure and Momentum at 38 each, Lead Changes at 18, Comeback Factor at 20, add up to 156. That's deliberately overcomplete: the headline total still clamps to 100, but a game only needs a handful of signals firing to reach the top of the range instead of needing all five at once. The raw pre-cap sum, `baseTotal`, isn't clamped, because a stall penalty that reads "156 → 100" has to explain itself against the number it's actually subtracting from, not one that was already capped before the penalty ran.
+
+Try the engine below. It's the real `computePowerScore` function from the `powerscore` package, not a mockup, running against whatever score, period, and clock you set.
+
+<SignalBreakdown client:visible />
+
+Volatility, a ±5 adjustment based on how much an ESPN win-probability line has swung over the course of a game, used to be where the two-number problem showed up worst. The background scorer computed it once. The popup computed it a second time and stacked its own copy on top. A card could read 84 while the detail screen you opened from it read 89, and the auto-switcher had already acted on the lower, uncorrected number. Volatility is now fetched once, folded into the total once, and read verbatim everywhere it appears. That also means it now actually has a say in which game you get switched to, instead of being a number the popup added after the decision was already made.
+
+The other version of the same disagreement showed up at halftime. The scorer has always zeroed every signal for a frozen game, since a stopped clock has nothing left to measure. Boosts didn't get that memo: they run on a separate pass, so a halftime game with a favorite team in it still collected its full bonus, and a frozen postseason game collected its postseason boost too. Ten points is a low score, but it's more than a quiet live game earns, so the game nobody was playing won the tab. The fix is one predicate instead of two: `isPlayFrozen` covers intermission and delay in a single exported function, the scorer and every boost check it before paying out, and a frozen game is a hard zero with no exceptions. The boost itself isn't discarded, only held. Toggle Halftime on in the sandbox above with the favorite-team toggle also on, and watch it happen for real.
+
+## Rules written for American sports, tested against the rest of the world
+
+ArenaSwap's scoring rules were built against US pro and college sports first. Three of them didn't survive contact with international soccer and the Olympics unchanged.
+
+Postseason detection started as one check: `season.type === 3`. That's ESPN's convention for the leagues ArenaSwap covered early on, and it's not the convention anywhere else. The 2022 World Cup final reports `type: 10948`. The 2024 Champions League final reports `type: 12082`. A 2024 Olympic Gold Medal Game reports `type: 2, slug: 'regular-season'`, identical to an ordinary group-stage game; the round survives nowhere in the structured data, only in a free-text headline field reading "...Gold Medal Game." The detector now walks three checks in order: the original type-3 rule for US leagues, a slug allowlist and pattern match for international soccer, Liga MX, MLS, the NWSL, and the World Baseball Classic (each of which invents its own per-tournament type id), and the headline check as a last resort, scoped to only the five Olympic leagues so it can't misfire on something like a November college basketball invitational.
+
+Soccer broke a different assumption on its own clock. ESPN reports soccer's `displayClock` as one continuous count running from kickoff, not a fresh clock for each half, so the 56th minute of a match arrives from ESPN as 3,360 seconds, not 810. The scorer clamps a period's time remaining to that period's own length, 2,700 seconds for a soccer half, so 3,360 clamped straight down to 2,700 read as zero seconds left the instant the second half kicked off, and stayed there. Late-game pressure spiked at halftime instead of the closing minutes, and a "time remaining" notification told you a match was over with 34 minutes still on the clock. The fix is a single flag a sport's config can set, `clockIsFullGameElapsed`: when it's on, the scorer subtracts the time already spent in earlier periods before it clamps, so 3,360 seconds in the second half correctly resolves to 660 seconds gone and 2,040 (34 minutes) still to play.
+
+Soccer's own periods had borrowed basketball and hockey's vocabulary by mistake. `formatPeriod` had been labeling extra time `OT1`/`OT2`, and since ESPN encodes a penalty shootout as period 5, a shootout read `OT3`, a period of play that doesn't exist in the sport. Extra time now reads `ET1`/`ET2`, keyed on sport rather than period number so NCAA basketball keeps its own `OT1`/`OT2`, and anything past the second extra-time half resolves to `PENS`. Try it yourself below: this is the actual `formatPeriod` function every game card calls, not a rewritten version of it.
+
+<PeriodExplorer client:visible />
+
+The shootout score itself now renders as a secondary line under the match score, since ESPN freezes the 120-minute scoreline in `score` and puts the shootout tally in a separate `shootoutScore` field on the same payload. Whether that field updates kick by kick or only once the shootout ends is genuinely unconfirmed: no shootout was live anywhere across 14 competitions during the audit. The line only renders once both teams' tallies are present, so either way it fails safe by showing nothing rather than something wrong.
+
+The red-zone boost had the same problem in miniature: a flat +10 for any red-zone possession, so backups running out the clock in a 45-3 game earned the same bonus as 4th-and-goal from the 1 in a one-score game. It now scales by margin, using football's own closeness tiers rather than a second definition of "blowout" invented just for this signal, and by down, since a 4th-down snap decides possession and a 1st-down snap doesn't. The two factors combine into one lookup instead of stacking, because goal-to-go and 4th-down describe the same situation from two angles: multiplying them separately would double-count it. The ceiling moves from 10 to 15 for the highest-leverage snap in the sport, and a missing down value (ESPN drops it between plays) falls through to no multiplier rather than to zero.
+
+## Assume the browser tears everything down mid-poll
+
+The tab-switching logic went through an audit built on one assumption: anything ArenaSwap only remembers in memory will eventually vanish out from under it. Manifest V3 tears the background service worker down whenever it goes idle, which can happen between any two polls, and closed tabs, muted state, and pending switches were all being tracked exactly that way.
+
+Before this pass, nothing in the extension ever noticed a tab closing. The tab registry, the standby assignment, and the set of muted tabs were only ever cleaned up by hand from the popup. Browsers never reuse a tab ID, so a stale entry could only ever be wrong, and one was enough to stop switching entirely: if the closed tab's game held the top PowerScore, the switch simply found no such tab and gave up, with nothing falling through to the runner-up. A new `tabs.onRemoved` handler now drops a closed tab's registration the moment it closes, and the whole registry gets reconciled against a live `tabs.query({})` on every worker restart, since MV3 can tear the worker down with no listener left alive to hear a tab close in the first place.
+
+A handful of related bugs came out of the same audit. A closed standby tab used to black-hole the entire feature, since the standby decision kept recommending a tab that no longer existed and returned before any other game was considered. A delayed switch, held for a cooldown buffer, used to fire based on the decision that queued it rather than the state of the game once it actually fired, so it could land you on a blowout or a game that had already ended; both the immediate and delayed paths now resolve through one shared function at the moment they fire. And a switch you made yourself used to get no cooldown protection at all, so the very next poll, as little as 6 seconds later, could switch you right back off the game you'd just chosen.
+
+One more fix belongs in this bucket even though it's not about tabs: a single malformed row in an ESPN response, a TBD bracket slot, a score encoded as a number instead of a string, used to reject that entire league's scoreboard. That's indistinguishable from "no games today," which meant one bad row didn't just cost you one game. It quietly demoted the whole league to slow, dormant polling with nothing anywhere to explain why. Parsing runs per event now, so a bad row is dropped and counted while the rest of the league comes through normally.
+
+Every fix in this section shipped with a test written to fail without it. The background test suite went from 12 tests to 24.
+
+## The walkthrough took five passes
+
+Most of what shipped in this range shipped once. The guided walkthrough took five passes over five weeks, mostly over how much explaining a tutorial should do.
+
+It started as a four-step tour offered once, right after onboarding: an on/off toggle you can flip and watch a status line react to, a mock Eagles-Giants card with a real tab-assignment dropdown, a demo where, after a beat, a 76ers game's PowerScore jumps from 31 to 89 while the card flashes to simulate the switch, and a pair of sliders for sensitivity and cooldown. A confetti burst on the done screen, lazy-loaded so it costs nothing until you get there.
+
+Five weeks later PowerScore got its own step, wedged in second, right after the toggle. Five dots orbit the popup at 72-degree intervals, one per signal (`buildDots` in `walkthroughStepPowerScore.tsx`), circling the ArenaSwap mark. Tap into one and the dot expands into a full-screen color field named for that signal, holding its name and a plain-English read of what it measures until you tap again to move on. The six boosts and penalties get their own six stops right after, no expanding dot, just a large icon and a short description in the boost's own color. Twelve stops in total, all reachable directly from a row of progress dots underneath, each one colored to match what it explains.
+
+The next day, three more steps landed, taking the tour from five stops to eight: a game card you tap to reveal a live breakdown preview, a two-tab panel that explains leagues and favorite teams (starring a team is a bonus, not a filter, and a hint banner says so the first time you try it), and a mock of the header showing where the tour lives if you ever want to run it again. Every one of the eight steps, translated into every shipped locale by the time this range closed.
+
+## The breakdown stops being read-only
+
+The PowerScore breakdown on the game detail screen used to be a printout: five bars, six lines of boost text, a total. Across July it turned into something you can actually poke at.
+
+A `(?)` icon on every signal and every boost row surfaced a plain-English explanation on tap or hover, the same tooltip control the settings index would later reuse for its own explainer text. Then the signals themselves became optional: a `disabledSignals` list on your preferences, a toggle per signal in Settings → Scoring, and a helper, `applyDisabledSignals`, that zeroes the disabled ones and re-scales what's left back into the 0-100 range rather than just leaving room on the table. The background scorer applies it immediately after computing each game's base score, so turning off Momentum changes which game gets switched to, not just what the breakdown shows you. Turn off enough signals and the "Signals total" row shows both numbers, the raw enabled-signal sum struck through, an arrow, then the re-scaled value, with a note explaining what just happened.
+
+A handful of smaller display bugs came out of the same stretch: the clock-stall penalty had been showing the words "none" or "applied" instead of an actual number, fixed to a signed `-X` or `0`; the volatility row's label was static regardless of whether the swing was helping or hurting a game's score, fixed to say Boost, Penalty, or nothing at all depending on its sign; and the row for favorite teams got renamed to match the others, "Favorite Boost" instead of "Favorite bonus." A boost/penalty color-and-icon table landed alongside the toggle work, mirrored line for line from the walkthrough's own legend, so the hourglass for a clock stall, the pulse for volatility, the trophy for postseason mean the same thing whether you learned them in the tour or you're seeing them for the first time on a live game. Even the series-progress dots on the matchup card got a correctness pass in the same window: ESPN lists a series' future games first and its completed ones last, so the dots were filling in from the wrong end until the component learned to sort completed games to the front before it draws them.
+
+The re-scaling runs in the background scorer, not just the popup, so a breakdown with Momentum switched off is explaining the same number the switcher acted on.
+
+## Moving the cards into a shared package
+
+Until July, the extension and the docs site each kept their own copy of ArenaSwap's Bootstrap overrides, its two fonts, and its game cards, and the two copies drifted a little further apart with everything that shipped. `packages/ui` is the fix: one design-system package, with `_bootstrap.scss` and `_fonts.scss` holding the shared variable overrides and the DM Sans/Lekton font-face declarations, and a `tailwind.css` holding the brand's Tailwind v4 tokens, imported by both apps instead of duplicated in each.
+
+A month later the game cards themselves moved in. `liveGameCard.tsx`, `preGameCard.tsx`, `gameCardShared.tsx`, the color resolver, all of it, extracted out of the extension and into `packages/ui`, with a `TranslationContext` and a `useT()` hook standing in for the extension's `#i18n` module so the same components render with or without a browser extension underneath them. The extension keeps a thin wrapper that injects its own tab-assignment dropdown as a `tabSlot`; the docs site doesn't need one. Screenshot pages that used to be hand-coded HTML mockups of a game card now render the actual component against typed mock data, scaled to 82% because a real card turned out taller than the mockups it replaced. The hero section's two demo cards are real `LiveGameCard`s now, not markup built to resemble one, and so is the card on the 404 page: a real game between "404" and "YOU," clock at 0:00, venue "The Void," broadcast on "Nowhere," PowerScore 0 out of 100, rendered by the same component that scores the real ones.
+
+Try it below. This is the actual dispatcher from `packages/ui`, the same one that decides whether your popup shows a live card or a pre-game one, running against a handful of states drawn straight from the features above: a 4th-and-goal snap with the yard line attached, a World Cup shootout with the score frozen and the tally underneath, a rain-delayed game whose PowerScore comes back zero from the same engine in the sandbox further up this post, and a game that hasn't kicked off yet.
+
+<GameCardExplorer client:visible />
+
+Team colors got their own pass in between the two package moves. Each `Team` gained an `alternateColor` alongside its primary, and a new `resolveTeamColorPair` tries all four primary/alternate combinations between two teams and keeps whichever pair sits furthest apart in RGB distance, rather than resolving each team's color in isolation and hoping the two didn't land on the same shade. Two teams sharing a similar navy or a similar blue is common enough that the old, isolated version was visibly wrong on real matchups; every card border, every matchup gradient, and every chart line now goes through the same resolver.
+
+<ColorPairExplorer client:visible />
+
+The SCSS underneath all of it shrank in the same stretch. A single `woff2-face` mixin replaced six duplicated `@font-face` blocks in each app, cutting the docs site's font declarations from 42 lines to 16. `@for` loops generate the numbered animation-delay classes that used to be typed out one by one, and a `$ps-signal-colors` map paired with `@each` generates the five signal-colored card variants instead of five near-identical copies of the same rule. Team and league logos went from PNG to SVG the same week: crisp at any size instead of soft past a certain zoom.
+
+## The docs site runs the same code it's showing you
+
+The hero background used to be a loop of gray dots that didn't mean anything. It now runs a five-beat sequence once per page load: a field of colorless dots standing in for every live game out there, pulled in a slow arc into the extension card, held for a moment while it fills with the five PowerScore signal colors, with a third of it spinning back out into a ring around the card, then sprayed across the whole viewport and dragged home to settle into a permanent halo. None of it builds at frame time: no gradient string or `rgba()` call gets constructed per particle per frame, connection lines draw in three fixed alpha buckets instead of one draw call per line, and the ambient glow behind everything is a cached blit instead of a live one. The canvas caps at 2x device pixel ratio so it's crisp on a retina screen without upscaling blur, particle count scales with the actual viewport instead of a fixed number, and the whole scene parks itself the moment the hero scrolls out of view or the tab goes to the background. `prefers-reduced-motion` gets the finished picture with no animation at all, which is also what a visitor with JavaScript disabled sees.
+
+Below it, an auto-playing explainer runs through the same four things the extension does: watch every live game, score each one, open a game to see the breakdown, switch the tab to the best one. The PowerScore trend inside it is a real ECharts line chart, not an illustration of one, loaded lazily and only once it scrolls into view, pulling in just the line, grid, and canvas-renderer modules rather than the whole library. `prefers-reduced-motion` and no-JS visitors get a static three-card summary instead: watch, score, switch, no motion required.
+
+Two smaller fixes belong in the same bucket. Four call-to-action buttons across the site had been linking to a malformed 27-character Chrome extension ID; they now point at the real 32-character one. And most images on the site route through Astro's own `<Image>` component now instead of a bare `<img>` tag, which means build-time WebP conversion and inferred width and height for anything served from the repo: league logos, the wordmark, the extension icon. ESPN's CDN logos and the odd Wikipedia photo stay as plain `<img>` tags, since optimizing someone else's server isn't something Astro can do for you.
+
+## Shipping twelve locales
+
+Spanish shipped first, back in July, the proof that the popup could be localized at all: 339 keys in `locales/en.yml`, a matching `es.yml`, threaded through onboarding, the walkthrough, every setting, every signal name, and the 73 rotating loading messages. A `dev:es` script forced the local browser's locale to Spanish for testing, working around the fact that Chrome's own locale detection isn't reliable in dev on macOS; it swapped in a hand-built adapter that read the YAML straight off disk through a Vite virtual module, bypassing `chrome.i18n.getMessage()` entirely.
+
+That adapter shipped with its own bug. Its substitution logic only handled numbers and arrays, so a call passing a named-substitution object, `i18n.t('detail.totalLabel', { total, max })`, silently dropped the object and returned the template with `{total}` and `{max}` still sitting in it, unexpanded, visible only in dev. A `namedSub` branch fixed it, matching what the real, production `@wxt-dev/i18n` module had been doing correctly the whole time.
+
+Both problems went away for good a couple of weeks later, when the whole thing moved from YAML to JSON. `@wxt-dev/i18n` reads `.json` natively, so the entire dev-mode workaround, the temp-file generation, the `ARENASWAP_LOCALE` environment variable, and the scripts built around it were deleted rather than patched again. The conversion carried one bug of its own across: YAML 1.1 reads the bare word `off` as the boolean `false`, so `switchDelay.off` had been shipping as `false`, not the string `"off"`, in both locale files until someone actually looked at the generated JSON.
+
+A Spanish cleanup pass followed, standardizing signal names across the three places they show up in the popup and swapping a soccer-specific idiom for a sport-agnostic one. Independent passes for German, French, Japanese, Simplified Chinese, and both Portugueses landed together in one batch not long after. Every one of those is a real localization decision, not a find-and-replace: German trades the loading screen's cheesesteak and tailgate references for bratwurst and a Fangrillparty; French keeps ArenaSwap, PowerScore, and Standby Stream untranslated on purpose, the same choice every locale makes, since a translated brand name just reads as a mistake; Japanese carries a polite です/ます register through the interface and drops into something looser for the loading-screen jokes; European Portuguese keeps its pre-2009 spelling reform where Brazilian Portuguese doesn't, and the same loading-screen sandwich joke becomes a bifana in one file and a coxinha in the other. Italian, Korean, Filipino, and Traditional Chinese shipped in the same window, rounding the count to twelve.
+
+One more locale bug survived all of that, caught in August: Chrome's extension i18n only recognizes `pt_BR` and `pt_PT`, not the bare `pt` the file had originally been named. European Portuguese had been building into a folder no installed browser would ever check, quietly, since the day it shipped, printing an `Unsupported locales: [pt]` warning on every dev and build run that nobody had traced back to its cause. Renaming the file was the entire fix.
+
+## Testing and tooling
+
+A fair amount of the same two months went into infrastructure that never shows up in a screenshot.
+
+Zod schemas landed early, validating every ESPN response at the boundary instead of trusting hand-written TypeScript interfaces to match reality forever. `EspnScoreboardSchema` and its neighbors replaced those interfaces outright, with the app's own types inferred from the schema instead of kept in sync with it by hand, and a malformed response degrades to an empty result instead of silently passing a mistyped object further into the app. That's the same schema underneath the later fix for a single bad event row, which is why that fix could ship as a small, contained change instead of a rewrite.
+
+Component testing moved off `jsdom` and React Testing Library and onto Cypress running in an actual browser, which catches rendering bugs a simulated DOM never will. Eighty-seven Jest unit tests and sixteen new Cypress component tests replaced what had been there before; by the time this range closed, five more Cypress spec files had added coverage to surfaces that had none at all, the settings index alone getting 21 tests of its own. OXLint runs alongside it under deliberately strict rules, and has no `dependsOn` in the build pipeline, so it never blocks a build, a test run, or a dev server. It only runs when something explicitly asks for it, which in practice means an agent rather than a person.
+
+TypeScript itself got unified partway through onto one version everywhere instead of three redundant installs of an older one, which is also what caught three real nullability bugs in `LivePowerScores`, a docs component nobody had typechecked before, and 76 real errors once the Cypress specs themselves started getting typechecked for the first time. `packages/ui`, the shared card library the design-system rewrite above depends on, got its first tests in the same pass: 25 of them, covering the team-color resolver and the card formatters this post's own demo components have been running against.
+
+## Measured, not eyeballed
+
+A few of 2.0's changes came from a ruler rather than a design opinion.
+
+The settings index was measured against the popup's real 320×560 dimensions: every non-league category page comes out to exactly 560 pixels of content with no scrolling, and the Leagues page, the one page carrying 31 league switches plus a reorder list, measures 1,926 pixels and is the only page that scrolls. Locale label widths got the same treatment: the Game Info panel's shared label column is 46.4px wide, and the widest label across all 12 shipped languages, French's "Regarder," measures 38.5px against it. German chose the shorter "Ort" over "Austragungsort" for exactly this reason, and a spec now measures all four labels in every locale so a future translation that would overflow the column fails the build instead of breaking the layout after it ships.
+
+The football down-and-distance line got the same scrutiny once it started carrying a yard line. The score row above it is the widest thing in the card's center column at 128.75px, set by a per-digit floor on the score display, and the longest string football can produce, "3rd & Goal at WSH 50," measures 99px in the card's own font: about 30px of room to spare inside a 320px popup, confirmed by a layout spec that mounts the real card at the real width with the real stylesheet rather than assumed. The detail hero got the same treatment once team records were added to it: the hero measures 144px tall against a 190px budget, and the PowerScore breakdown below it still starts at 151px against a 200px budget, both numbers asserted in a test rather than eyeballed afterward.
+
+The color token behind Momentum's blue needed the same scrutiny. `#2274A5` on the extension's dark background measured 3.70:1, under the 4.5:1 AA contrast floor, and white text on a filled button using that color measured 4.11:1, also under. But the color had a second job: it's Momentum's own color in the PowerScore signal palette, and on the one light surface in the popup, the breakdown card, it's a comfortable 4.89:1. So the token split instead of moving wholesale: the UI accent lifted to `#3E9BD1` at 6.14:1 on the dark background, while the signal palette kept `#2274A5` everywhere it actually draws data.
+
+The most consequential fix in this batch didn't change how the extension looks at all, only what was actually running. `apps/extension/assets/global.scss` opened with `@import 'tailwindcss'`, a Tailwind v4 entry point, sitting inside a Sass file in an app with no Tailwind build plugin wired up. Sass resolved the import anyway and inlined about 18KB of raw, uncompiled Tailwind source as literal CSS, which nothing downstream ever compiled. Every `shrink-0` and `min-w-0` class in the popup's markup, 21 call sites across the codebase, had been a no-op since the day it was written. Removing the dead import cut 21,463 bytes, 6.0% of the popup stylesheet's total size. Rather than guess which of Tailwind's Preflight reset rules had quietly been carrying real weight against Bootstrap's own reset, every one of the 144 component specs was run twice, dumping 54 computed style properties per element, and the two runs were diffed across 11,536 elements. Exactly three rules had any effect: a tab-size default, an image max-width rule relied on by 278 team and league logos, and a `color: inherit` on form controls relied on by 564 of them, including the walkthrough's progress dots, which paint their active state from `currentColor`. All three got carried over by hand; the rest of Preflight was doing nothing that Bootstrap's Reboot wasn't already covering.
+
+The release pipeline had its own version of this problem. `zip:edge` failed intermittently because `wxt zip -b edge` runs its own full build into the same directory `build:edge` targets, and Turborepo saw no dependency between the two tasks, so one process could glob the output file list while the other was still mid-rename. `zip:firefox` had a worse problem hiding in it: without an explicit `--mv3` flag, it had been emitting an MV2 extension the whole time, while every other Firefox build target in the repo used MV3. The artifact anyone would actually upload to Mozilla was the one build nothing else in the repo ever exercised. Both are fixed now: the zip tasks depend on their sibling build task, and all three browser zips verify as `manifest_version: 3` before they ship.
 
 ---
 
-## The scope problem first
-
-Going from 12 leagues to 30+ wasn't just adding more ESPN API calls. The original data model had basketball-specific assumptions baked into the scorer — things like "quarter" being the unit of time, or closeness being measured in points on a fixed scale regardless of sport.
-
-The fix was pulling all sport-specific config into a typed map. Each sport now declares:
-
-- Clock behavior (counting up vs. down, frozen states)
-- What a "close" margin looks like at various score ranges
-- How late-game pressure should scale
-- Whether possessions or drive-state matter for the scoring opportunity signal
-
-Baseball was the most work. There's no clock. "Late game" means inning 7+, not a specific time. A 1-run game in the 9th is a completely different situation than a 1-run game in the 3rd. The sport config handles this by mapping inning ranges to a pressure multiplier that's essentially zero until the 7th.
-
----
-
-## PowerScore v2: what actually changed
-
-The original scorer had three signals. v2 has five.
-
-**Closeness** is still the foundation. A blowout isn't exciting regardless of what else is happening. But the thresholds changed — what counts as "close" is now sport-relative. A 7-point NFL game is a one-score game and scores very differently than a 7-point NBA game with 4 minutes left.
-
-**Late-Game Pressure** scales toward the end of a game and amplifies the closeness signal. In overtime it gets an additional boost. This one is gated on closeness — a late blowout doesn't get the bonus.
-
-**Momentum** is new in v2. It looks at the score history over the last ~5 minutes (20 snapshots taken as polls come in) and weights recent scoring events. The decay function is intentional — a run from 3 minutes ago matters, but it shouldn't still be dominating the score now.
-
-**Lead Changes** tracks how often possession of the lead has flipped. A game that's been trading leads all fourth quarter reads differently than a game that's been close but static. This signal resets per period so it's always measuring the current half/quarter/period, not the whole game.
-
-**Comeback Factor** fires when a team that was previously down by a significant margin has closed the gap. This was the hardest to get right. Too sensitive and it fires on normal variance; too conservative and you miss the ones people actually care about.
-
----
-
-## Calibrating sensitivity
-
-After rebuilding the scorer I had a problem: the new distribution of PowerScores was totally different from v1. Games that v1 would score 70 now scored 45. The sensitivity settings — which control how large a gap between the best and current game is required to trigger a switch — were meaningless.
-
-I wrote a simulation harness that replays realistic game trajectories and measures the distribution of best-vs-second-best score gaps at various points in games. After running it, the natural distribution of switch-worthy gaps in a typical multi-game session looked like this:
-
-<div style="margin: 2rem 0; padding: 1.5rem; background: var(--color-card); border: 1px solid var(--color-border); border-radius: 0.75rem;">
-  <p style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-muted); margin-bottom: 1.25rem;">Sensitivity thresholds — score delta needed to trigger a switch</p>
-  {[
-    { level: 'Max sticky', threshold: 44, pct: 44 },
-    { level: 'Very sticky', threshold: 29, pct: 29 },
-    { level: 'Sticky', threshold: 19, pct: 19 },
-    { level: 'Balanced (default)', threshold: 11, pct: 11, highlight: true },
-    { level: 'Responsive', threshold: 6, pct: 6 },
-    { level: 'Aggressive', threshold: 3, pct: 3 },
-    { level: 'Hair trigger', threshold: 1, pct: 1 },
-  ].map(row => (
-    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.625rem;">
-      <span style={`font-size: 0.82rem; color: ${row.highlight ? 'var(--color-text)' : 'var(--color-muted)'}; width: 160px; flex-shrink: 0; font-weight: ${row.highlight ? '600' : '400'};`}>{row.level}</span>
-      <div style="flex: 1; height: 6px; background: var(--color-border); border-radius: 999px; overflow: hidden;">
-        <div style={`height: 100%; border-radius: 999px; background: ${row.highlight ? 'var(--color-primary)' : 'var(--color-muted)'}; width: ${(row.pct / 44) * 100}%;`}></div>
-      </div>
-      <span style={`font-size: 0.82rem; font-family: 'Lekton', monospace; color: ${row.highlight ? 'var(--color-primary)' : 'var(--color-muted)'}; width: 40px; text-align: right;`}>{row.threshold} pts</span>
-    </div>
-  ))}
-  <p style="font-size: 0.72rem; color: var(--color-muted); margin-top: 1rem; margin-bottom: 0;">Level 4 (11 points) sits just above the median gap in a typical multi-game session, which is why it's the default.</p>
-</div>
-
-After calibration I nudged every threshold about 25% stickier than the raw simulation suggested. The reason: the simulation uses clean game trajectories. Real users have the extension running across games with wildly different contexts — if you're watching a rivalry game you care about, you probably don't want ArenaSwap yanking you to a random NCAAB matchup every time the PowerScore ticks up 8 points.
-
-The 25% sticky nudge was a judgment call, not a formula. It still is.
-
----
-
-## The frozen clock problem
-
-Here's something that bit v1 constantly: halftime.
-
-Say you're watching an NBA game at halftime. The score is 54–51. That's a close game. The PowerScore is legitimately high. ArenaSwap v1 would stay on it — or worse, keep switching back to it — while you were staring at a studio desk for twelve minutes.
-
-v2 has a stall penalty. When the game clock hasn't moved for two consecutive polls (30 seconds), the score takes a hit. The penalty scales: two polls frozen → small penalty. Four polls frozen → significant penalty. Six+ → the game is effectively deprioritized until the clock starts moving again.
-
-The tricky part is distinguishing "halftime" from "a basketball game where the clock just hit zero and the buzzer is about to sound." The fix was tracking *when* the clock entered a frozen state relative to period transitions. A clock that's been at 0:00 for 45 seconds at the end of Q2 is halftime. A clock that just hit 0:00 at the end of Q4 might be the most exciting moment of the game.
-
-The stall counter resets on any confirmed clock change, regardless of direction.
-
----
-
-## Polling and dormancy
-
-Every enabled league runs on its own adaptive poll cycle. The interval scales continuously with PowerScore — exciting games poll every ~6 seconds; quiet live games poll every ~25 seconds. The jitter matters — without it, you get a thundering herd problem where every league fires at the same time and you're hammering the ESPN API with 31 simultaneous requests every quarter minute.
-
-When all live games in a league are in halftime or between periods, the league backs off to a 40-second intermission interval. When a league returns no live games for two consecutive polls, it switches into full dormant mode and backs off to a 2–3 minute interval. This is what makes it reasonable to have 31 leagues enabled by default. If no NBA games are live on a Tuesday night in July, the NBA poller wakes up every few minutes to check.
-
-The tiers:
-
-| State | Condition | Poll interval |
-|---|---|---|
-| Eager | Live game, PowerScore ≥ 100 | ~6s |
-| Eager | Live game, PowerScore 50 | ~15s |
-| Eager | Live game, PowerScore 0 | ~25s |
-| Intermission | All live games in halftime/break | ~40s |
-| Dormant | 2 consecutive empty polls | 120–180s |
-| Error | Fetch failure | ~15s (eager retry) |
-
-On error the poller falls back to the eager interval rather than dormant, because you want to recover quickly from a transient network hiccup, not quietly wait three minutes before trying again.
-
----
-
-## What's actually different for users
-
-The honest answer: not much you'd notice day-to-day. The extension looks similar. The popup works the same way. The changes are all in what gets switched to and when.
-
-What is different:
-- It covers more games, so there's almost always *something* live in a sports season
-- The switching is meaningfully less jumpy at default sensitivity than v1
-- It handles halftime, timeouts, and rain delays without getting confused
-- The Standby Stream feature kicks in when everything goes quiet
-
-If you've been using v1 and find v2 switches more or less than you want, the sensitivity slider is the right lever. Level 4 is the middle. Level 2 will barely switch at all. Level 6 will switch if it smells something interesting.
-
----
-
-## What's next
-
-The simulation harness I wrote for sensitivity calibration is now part of the repo. The long-term plan is to use it to continuously validate the scorer as we add new sports and tune individual signals. The current scorer was built mostly for North American sports with clocks — international soccer with 45-minute running halves is a different problem and I'm not happy with how it performs there yet.
-
-The betting odds integration is on the roadmap. If a game is close *and* the implied probability of the outcome is shifting rapidly, that's a genuine signal that something is happening. Whether that belongs in the main scorer or as an optional overlay is a design question I haven't answered yet.
-
-— Ryan
+That's ArenaSwap 2.0. If you're new here, [install it for Chrome](https://chromewebstore.google.com/detail/arenaswap/gibojibgihombdmmfnhnimajppamfeee), [Firefox](https://addons.mozilla.org/addon/arenaswap/), or [Edge](https://microsoftedge.microsoft.com/addons/detail/arenaswap/oeballpnidkinkcbjokogdgjckdjeeba). If you want to see the scoring engine up close, the [PowerScore page](/arenaswap/powerscore/) breaks down all five signals and links to the npm package, and the [source](https://github.com/hiteacheryouare/arenaswap) is open for anyone who wants to read further than this post went.
