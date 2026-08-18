@@ -1,6 +1,21 @@
 # Changelog
 
-## A game at halftime was worth 10 points for doing nothing — 2026-08-15
+## The landing page redesign existed only as screenshots in a chat log — 2026-08-18
+
+Several rounds of designs for a new `arenaswap.app`, and the reasoning behind them, lived nowhere anybody else could read it. Why the game card is white rather than dark, why the hero animation is scripted instead of live, why the league marquee has to go: all of it was argued once and then lost.
+
+`design/landing-redesign/` is that proposal as a page you can open. It is a document, not an implementation — nothing is wired into `apps/docs` and Turborepo does not build it.
+
+### Proposal
+- **A rebuilt landing page** in the existing palette and type: full-width bands, one benefit each, no feature grid and no marquee
+- **The blog retires into a release notes feed** generated from this file, with versions promoted to `#` headings so a parser knows what shipped together, and `### Tests` excluded from the public feed
+- **`/docs/` gets reserved now** so 2.1 writes content rather than doing a second redesign
+
+### Fidelity
+- **The game card, popup, charts and settings rows on the page are the shipped components**, reimplemented in plain CSS with their real values so the file runs standalone. `powerScoreColor()` is ported, so the PowerScore bar warms and cools exactly as it does in the popup
+- **The hero animation runs on twenty hardcoded frames** and never calls ESPN, so it works offline and in the off-season. The card on screen is whichever PowerScore is highest, which is the rule the switcher uses
+- The six settings groups use the shipped `setup.group*` strings rather than new copy, and the four chart titles use the shipped `detail.chart*` ones
+- The orange ring and `ON YOUR SCREEN` flag on the hero's active card are the only marks that are not product UI, and the page says so
 
 The scorer has always zeroed a frozen game: halftime, an intermission, a rain delay, and all five signals go to 0, because nothing is happening and a stopped game must never out-score a live one. The boosts never got the memo. They're added after the scorer runs, so a game sitting at halftime with a favorite team in it still collected its +10, and a postseason game at halftime collected that too — a PowerScore of 10 for a court with nobody on it, which is enough to beat a genuinely quiet live game and take the tab.
 
