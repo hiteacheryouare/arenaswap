@@ -29,9 +29,11 @@ const seriesDots = ({ info, game }: seriesDotsProps) => {
 		}
 		const winner = ev.competitors?.find(c => c.winner);
 		let color = '#8b949e';
-		if (winner) {
-			if (winner.team.id === game.homeTeam.id) color = homeColor;
-			else if (winner.team.id === game.awayTeam.id) color = awayColor;
+		// seriesInfo is the one summary field that never passes a schema, so team may be absent.
+		const winnerTeamId = winner?.team?.id;
+		if (winnerTeamId !== undefined) {
+			if (winnerTeamId === game.homeTeam.id) color = homeColor;
+			else if (winnerTeamId === game.awayTeam.id) color = awayColor;
 		}
 		return <i key={i} className='bi bi-circle-fill series-dot' style={{ color }} />;
 	});

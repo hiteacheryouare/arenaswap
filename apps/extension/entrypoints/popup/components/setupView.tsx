@@ -157,7 +157,7 @@ const setupView = ({
 						<label className='text-body-secondary setting-toggle-label' htmlFor='upcomingDaysSlider'>
 							{i18n.t('setup.upcomingDaysLabel')}
 						</label>
-						<span className='fw-semibold text-body small'>{i18n.t('setup.upcomingDaysValue', { days: String(prefs.upcomingGamesDays) })}</span>
+						<span className='fw-semibold text-body small'>{i18n.t('setup.upcomingDaysValue', prefs.upcomingGamesDays)}</span>
 					</div>
 					<input
 						type='range'
@@ -171,8 +171,8 @@ const setupView = ({
 						disabled={!prefsLoaded}
 					/>
 					<div className='d-flex justify-content-between'>
-						<span className='setting-explainer'>{i18n.t('setup.upcomingDaysValue', { days: '1' })}</span>
-						<span className='setting-explainer'>{i18n.t('setup.upcomingDaysValue', { days: '14' })}</span>
+						<span className='setting-explainer'>{i18n.t('setup.upcomingDaysValue', 1)}</span>
+						<span className='setting-explainer'>{i18n.t('setup.upcomingDaysValue', 14)}</span>
 					</div>
 				</div>
 			)}

@@ -136,7 +136,10 @@
 		"header": "设置",
 		"showUpcoming": "显示即将开赛的比赛",
 		"upcomingDaysLabel": "提前天数",
-		"upcomingDaysValue": "{days} 天",
+		"upcomingDaysValue": {
+			"1": "1 天",
+			"n": "$1 天"
+		},
 		"proTips": "达人技巧",
 		"switchNotifications": "切换通知",
 		"demoMode": "演示模式",
@@ -396,7 +399,8 @@
 		"postseasonBoostName": "季后赛加成",
 		"postseasonBoostMeasured": "对季后赛、分区决赛和冠军赛统一给予固定加分。",
 		"back": "返回",
-		"next": "下一步"
+		"next": "下一步",
+		"tapHint": "点击屏幕任意位置继续"
 	},
 	"stepTabAssign": {
 		"step": "第 $1 步，共 $2 步",
@@ -415,7 +419,8 @@
 		"reveal": "看到了吗？👀",
 		"revealBody": "76 人队的比赛突然升温（PowerScore 89），ArenaSwap 自动检测并切换过去了。一次点击都不用。",
 		"back": "返回",
-		"next": "下一步"
+		"next": "下一步",
+		"watchingBadge": "观看中"
 	},
 	"stepSettings": {
 		"step": "第 $1 步，共 $2 步",
@@ -512,6 +517,13 @@
 		"error": "错误",
 		"info": "提示",
 		"close": "关闭"
+	},
+	"notification": {
+		"standbyTitle": "待机流中 | ArenaSwap",
+		"standbyMessage": "所有比赛都归于平静。已停留在您的待机流。",
+		"switchedTitle": "已切换 → {score} | ArenaSwap",
+		"switchedMessage": "现在带您前往 {venue}！",
+		"switchedMessageWithReason": "{reason}。现在带您前往 {venue}！"
 	},
 	"tabAssign": {
 		"placeholder": "— 分配标签页 —",

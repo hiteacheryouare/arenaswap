@@ -82,8 +82,9 @@ const PowerScoreBreakdown = ({
 	const signalsSubtotal = closeness + lateGame + momentum + leadChanges + comeback;
 	const hasWinProbVariance = winProbabilityVariance !== undefined;
 	const variance = winProbabilityVariance ?? 0;
-	// applyDisabledSignals rescales the enabled sum back into 0-100, so baseTotal is the scaled
-	// result while signalsSubtotal stays raw.
+	// applyDisabledSignals scales the survivors up into the full signals-subtotal space, so
+	// baseTotal is the scaled result while signalsSubtotal stays raw. Both are pre-cap; the 100
+	// cap lands on `total`.
 	const isSignalNormalized = disabledSet.size > 0 && baseTotal !== signalsSubtotal;
 
 	return (
@@ -127,7 +128,7 @@ const PowerScoreBreakdown = ({
 					<span className='d-flex align-items-center gap-1'>
 						<span className='powerscore-subtotal-raw'>{signalsSubtotal}</span>
 						<span>→</span>
-						<span>{baseTotal}</span>
+						<span>{baseTotal}{(baseTotal ?? 0) > scoreMaxTotal ? ` ${i18n.t('powerScore.cappedAt', { max: scoreMaxTotal })}` : ''}</span>
 					</span>
 				) : (
 					<span>{signalsSubtotal}{signalsSubtotal > scoreMaxTotal ? ` ${i18n.t('powerScore.cappedAt', { max: scoreMaxTotal })}` : ''}</span>

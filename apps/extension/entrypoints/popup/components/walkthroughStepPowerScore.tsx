@@ -195,7 +195,7 @@ const BloomOverlay = ({ signal, dotPxX, dotPxY, phase, onClick }: BloomOverlayPr
 
 				<div className='ps-bloom-tap-hint' style={{ color: textColor }}>
 					<i className='bi bi-hand-index-thumb' />
-					Tap anywhere to continue
+					{i18n.t('stepPowerScore.tapHint')}
 				</div>
 			</div>
 		</div>

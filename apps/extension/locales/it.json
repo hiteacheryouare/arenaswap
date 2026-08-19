@@ -136,7 +136,10 @@
 		"header": "Impostazioni",
 		"showUpcoming": "Mostra le partite in arrivo",
 		"upcomingDaysLabel": "Giorni di anticipo",
-		"upcomingDaysValue": "{days} giorni",
+		"upcomingDaysValue": {
+			"1": "1 giorno",
+			"n": "$1 giorni"
+		},
 		"proTips": "Consigli",
 		"switchNotifications": "Notifiche di cambio",
 		"demoMode": "Modalità demo",
@@ -396,7 +399,8 @@
 		"postseasonBoostName": "Boost postseason",
 		"postseasonBoostMeasured": "Un bonus fisso applicato alle partite di playoff, finali di conference e campionati.",
 		"back": "Indietro",
-		"next": "Avanti"
+		"next": "Avanti",
+		"tapHint": "Tocca ovunque per continuare"
 	},
 	"stepTabAssign": {
 		"step": "Passo $1 di $2",
@@ -415,7 +419,8 @@
 		"reveal": "Hai visto? 👀",
 		"revealBody": "La partita dei 76ers si è scaldata (PowerScore 89). ArenaSwap l'ha rilevato e ha cambiato automaticamente. Nessun clic necessario.",
 		"back": "Indietro",
-		"next": "Avanti"
+		"next": "Avanti",
+		"watchingBadge": "GUARDANDO"
 	},
 	"stepSettings": {
 		"step": "Passo $1 di $2",
@@ -512,6 +517,13 @@
 		"error": "Errore",
 		"info": "Info",
 		"close": "Chiudi"
+	},
+	"notification": {
+		"standbyTitle": "Sul standby stream | ArenaSwap",
+		"standbyMessage": "Tutte le partite si sono calmate. Parcheggiato sul tuo standby stream.",
+		"switchedTitle": "Cambiato → {score} | ArenaSwap",
+		"switchedMessage": "Ti porta ora a {venue}!",
+		"switchedMessageWithReason": "{reason}. Ti porta ora a {venue}!"
 	},
 	"tabAssign": {
 		"placeholder": "— Assegna una scheda —",

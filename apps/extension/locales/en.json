@@ -136,7 +136,10 @@
 		"header": "Settings",
 		"showUpcoming": "Show upcoming games",
 		"upcomingDaysLabel": "Days ahead",
-		"upcomingDaysValue": "{days} days",
+		"upcomingDaysValue": {
+			"1": "1 day",
+			"n": "$1 days"
+		},
 		"proTips": "Pro tips",
 		"switchNotifications": "Switch notifications",
 		"demoMode": "Demo mode",
@@ -396,7 +399,8 @@
 		"postseasonBoostName": "Postseason Boost",
 		"postseasonBoostMeasured": "A flat bonus applied to playoff, conference final, and championship games.",
 		"back": "Back",
-		"next": "Next"
+		"next": "Next",
+		"tapHint": "Tap anywhere to continue"
 	},
 	"stepTabAssign": {
 		"step": "Step $1 of $2",
@@ -415,7 +419,8 @@
 		"reveal": "Did you see that? 👀",
 		"revealBody": "The 76ers game heated up (PowerScore 89). ArenaSwap detected it and switched automatically. No clicks needed.",
 		"back": "Back",
-		"next": "Next"
+		"next": "Next",
+		"watchingBadge": "WATCHING"
 	},
 	"stepSettings": {
 		"step": "Step $1 of $2",
@@ -512,6 +517,13 @@
 		"error": "Error",
 		"info": "Info",
 		"close": "Close"
+	},
+	"notification": {
+		"standbyTitle": "On standby stream | ArenaSwap",
+		"standbyMessage": "All games went quiet. Parked on your standby stream.",
+		"switchedTitle": "Switched → {score} | ArenaSwap",
+		"switchedMessage": "Taking you to {venue} now!",
+		"switchedMessageWithReason": "{reason}. Taking you to {venue} now!"
 	},
 	"tabAssign": {
 		"placeholder": "— Assign a tab —",

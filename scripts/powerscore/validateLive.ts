@@ -33,7 +33,7 @@ const runPoll = async (pollIndex: number): Promise<void> => {
 	let games: Game[] = [];
 	try {
 		const result = await fetchGamesWithLeagueLogos([league], { includeUpcoming: false });
-		games = result.games.filter(game => game.status === 'in') as unknown as Game[];
+		games = result.games.filter(game => game.status === 'in');
 	} catch (error) {
 		console.error(`poll ${pollIndex}: fetch failed —`, error instanceof Error ? error.message : error);
 		return;
@@ -49,7 +49,7 @@ const runPoll = async (pollIndex: number): Promise<void> => {
 			.toSorted((a, b) => b.score.total - a.score.total);
 		for (const { game, score } of scored) {
 			const matchup = `${game.awayTeam.abbreviation}@${game.homeTeam.abbreviation} ${game.awayTeam.score}-${game.homeTeam.score}`;
-			console.log(`  ${pad(matchup, 14)}${pad(game.period, 4)}${pad(game.clockSeconds, 7)}${pad(score.total, 6)}${pad(score.closeness, 4)}${pad(score.lateGame, 4)}${pad(score.momentum, 4)}${pad(score.leadChanges, 4)}${pad(score.comeback, 4)}${score.reason}`);
+			console.log(`  ${pad(matchup, 14)}${pad(game.period ?? '—', 4)}${pad(game.clockSeconds ?? '—', 7)}${pad(score.total, 6)}${pad(score.closeness, 4)}${pad(score.lateGame, 4)}${pad(score.momentum, 4)}${pad(score.leadChanges, 4)}${pad(score.comeback, 4)}${score.reason}`);
 		}
 	}
 

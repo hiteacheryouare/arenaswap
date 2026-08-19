@@ -11,3 +11,7 @@
 - [project_ko_terminology.md](project_ko_terminology.md) — ko.json (2026-08-15): KBO baseball convention, Konglish-vs-native rulings, shootout=PK fix, unsettled hockey terms
 - [locale_fil_terminology.md](locale_fil_terminology.md) — fil.json (2026-08-15): deliberate Taglish calibration, which sports terms stay English and why
 - [project_zh_tw_terminology.md](project_zh_tw_terminology.md) — zh_TW.json (2026-08-15): CPBL baseball terms, 你 register, TW-vs-CN software vocabulary, Game Boost consistency fix
+- [reference_cjk_prose_vs_heading_split.md](reference_cjk_prose_vs_heading_split.md) — ja/ko/zh_CN/zh_TW already localize "standby stream" in body prose but keep it literal as a heading/label
+- [reference_cjk_punctuation_and_spacing.md](reference_cjk_punctuation_and_spacing.md) — full vs half-width punctuation and placeholder-spacing rules per CJK locale
+- [reference_locale_status_badge_treatment.md](reference_locale_status_badge_treatment.md) — per-locale literal-vs-translated rule for short uppercase badges like LIVE/WATCHING
+- [reference_plural_object_convention.md](reference_plural_object_convention.md) — how each locale fills the {"1":..,"n":"$1 .."} plural-object shape (fil linker, CJK spacing)

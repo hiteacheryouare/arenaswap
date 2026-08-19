@@ -13,9 +13,9 @@
 		"build:edge": {
 			"outputs": [".output/edge-mv3/**"]
 		},
-		// `wxt zip` runs its own build for the target it is packaging, so these depend only on the
-		// upstream workspace packages (via the root config) and not on the sibling `build` task —
-		// otherwise zipping Firefox would first build Chrome for nothing.
+		// The root config pairs each zip with the build for its own target (`zip` -> `build`,
+		// `zip:firefox` -> `build:firefox`, `zip:edge` -> `build:edge`), so zipping Firefox never
+		// builds Chrome for nothing. These entries only declare which artifact each one produces.
 		"zip": {
 			"outputs": [".output/*-chrome.zip"]
 		},

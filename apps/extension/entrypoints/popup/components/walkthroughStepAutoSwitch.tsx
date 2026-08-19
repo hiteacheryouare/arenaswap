@@ -64,7 +64,7 @@ const MockCard = ({ abbr1, color1, logo1, abbr2, color2, logo2, score1, score2, 
 					LIVE
 				</div>
 				{watching && (
-					<span className='badge text-bg-primary' style={{ fontSize: '0.6rem' }}>WATCHING</span>
+					<span className='badge text-bg-primary' style={{ fontSize: '0.6rem' }}>{i18n.t('stepAutoSwitch.watchingBadge')}</span>
 				)}
 			</div>
 

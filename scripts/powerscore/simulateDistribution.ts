@@ -132,7 +132,7 @@ const levelToPercentile: Record<number, number> = { 1: 97, 2: 88, 3: 72, 4: 52, 
 const suggestedThresholds: Record<number, number> = {};
 for (let level = 1; level <= 7; level++) {
 	const value = percentile(sortedGaps, levelToPercentile[level]!);
-	suggestedThresholds[level] = level === 7 ? Math.max(1, value) : Math.max(1, value);
+	suggestedThresholds[level] = Math.max(1, value);
 }
 
 if (ticks > 0) {

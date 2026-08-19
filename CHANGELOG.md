@@ -1852,7 +1852,7 @@ All marketing surfaces updated to reflect 31 leagues: docs site carousel, README
 - All `z` import aliases renamed to `zod` for readability (`import { z as zod } from 'zod'`).
 
 ### PowerScore dev scripts
-- Replaced `vite-node` (transitive, not directly installed) with `esbuild --bundle | node` in `powerscore:simulate` and `powerscore:validate-live`. No new dependencies added — esbuild is already present transitively.
+- Replaced `vite-node` (transitive, not directly installed) with a `rolldown` pre-bundle followed by `node` in `powerscore:simulate` and `powerscore:validate-live`. `rolldown` is a declared root devDependency, so the scripts no longer rely on a package nothing asked for.
 - Compiled `.cjs` artifacts added to `.gitignore`.
 
 ---

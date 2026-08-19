@@ -136,7 +136,10 @@
 		"header": "Mga Setting",
 		"showUpcoming": "Ipakita ang mga paparating na laro",
 		"upcomingDaysLabel": "Araw pasulong",
-		"upcomingDaysValue": "{days} na araw",
+		"upcomingDaysValue": {
+			"1": "1 araw",
+			"n": "$1 na araw"
+		},
 		"proTips": "Mga Pro Tip",
 		"switchNotifications": "Mga Abiso sa Paglipat",
 		"demoMode": "Demo Mode",
@@ -396,7 +399,8 @@
 		"postseasonBoostName": "Boost sa Postseason",
 		"postseasonBoostMeasured": "Isang flat bonus na inilalapat sa playoff, conference final, at championship games.",
 		"back": "Bumalik",
-		"next": "Susunod"
+		"next": "Susunod",
+		"tapHint": "I-tap kahit saan para magpatuloy"
 	},
 	"stepTabAssign": {
 		"step": "Step $1 ng $2",
@@ -415,7 +419,8 @@
 		"reveal": "Nakita mo ba 'yon? 👀",
 		"revealBody": "Uminit ang laro ng 76ers (PowerScore 89). Na-detect ito ng ArenaSwap at awtomatikong lumipat. Walang kailangang i-click.",
 		"back": "Bumalik",
-		"next": "Susunod"
+		"next": "Susunod",
+		"watchingBadge": "WATCHING"
 	},
 	"stepSettings": {
 		"step": "Step $1 ng $2",
@@ -512,6 +517,13 @@
 		"error": "Error",
 		"info": "Info",
 		"close": "Isara"
+	},
+	"notification": {
+		"standbyTitle": "Nasa standby stream | ArenaSwap",
+		"standbyMessage": "Tumahimik ang lahat ng laro. Naka-park ka sa standby stream mo.",
+		"switchedTitle": "Lumipat → {score} | ArenaSwap",
+		"switchedMessage": "Dinadala ka na sa {venue}!",
+		"switchedMessageWithReason": "{reason}. Dinadala ka na sa {venue}!"
 	},
 	"tabAssign": {
 		"placeholder": "— Mag-assign ng tab —",

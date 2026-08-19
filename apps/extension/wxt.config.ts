@@ -7,6 +7,11 @@ const banner = `/*! ArenaSwap v${version} Copyright (c) ${year} Ryan Mullin, Lat
 
 export default defineConfig({
 	modules: ['@wxt-dev/module-react', '@wxt-dev/i18n/module'],
+	// dist/ is gitignored build output from the retired zip-builds scripts, so a stale copy on one
+	// machine would otherwise be swept into the sources archive an AMO reviewer downloads.
+	zip: {
+		excludeSources: ['dist/**'],
+	},
 	vite: () => ({
 		plugins: [
 			{
@@ -34,11 +39,15 @@ export default defineConfig({
 	manifest: {
 		name: 'ArenaSwap',
 		default_locale: 'en',
-		description: 'Watches every live game across 30+ leagues and auto-switches your browser tab to the most exciting one, as fast as every 6 seconds.',
+		description: 'Watches every live game across 31 leagues and auto-switches your browser tab to the most exciting one, as fast as every 6 seconds.',
+		// Array.prototype.toSorted is Chrome/Edge 110+ and Firefox 115+, and browser.storage.session
+		// is Firefox 115+ as well. Neither is polyfilled — build.target down-levels syntax, not
+		// built-ins — so these floors have to exclude the browsers the popup would crash on.
+		minimum_chrome_version: '110',
 		browser_specific_settings: {
 			gecko: {
 				id: 'arenaswap@hiteacheryouare.github.io',
-				strict_min_version: '109.0',
+				strict_min_version: '115.0',
 				data_collection_permissions: {
 					required: ['none'],
 				},

@@ -13,6 +13,9 @@ import {
 	normalizeUserPreferences,
 	resolveLeagueLogoUrl,
 	scoreMaxCloseness,
+	scoreMaxComeback,
+	scoreMaxSignalsSubtotal,
+	scoreMaxTotal,
 } from '../src/constants';
 
 describe('constants', () => {
@@ -162,6 +165,32 @@ describe('constants', () => {
 		expect(result.lateGame).toBe(0);
 		expect(result.momentum).toBe(0);
 		expect(result.total).toBe(100);
+	});
+
+	test('applyDisabledSignals scales survivors up, not down, when one signal is disabled', () => {
+		// The four-disabled case below happens to cancel a wrong scaling factor out, so this covers
+		// the common case: one signal off. baseTotal is the pre-cap subtotal, so the survivors scale
+		// into scoreMaxSignalsSubtotal — scaling into scoreMaxTotal deflated every score by 26%.
+		const enabledMax = scoreMaxSignalsSubtotal - scoreMaxComeback;
+		const base = { gameId: 'g1', total: 0, closeness: 40, lateGame: 30, momentum: 20, leadChanges: 10, comeback: 0, reason: 'tied', stalled: false };
+		const enabledSum = 40 + 30 + 20 + 10;
+		const result = applyDisabledSignals(base, ['comeback']);
+
+		expect(result.baseTotal).toBe(Math.round(enabledSum * (scoreMaxSignalsSubtotal / enabledMax)));
+		expect(result.baseTotal).toBeGreaterThan(enabledSum);
+		expect(result.comeback).toBe(0);
+		expect(result.closeness).toBe(40);
+	});
+
+	test('applyDisabledSignals lets a maxed-out survivor set reach the cap', () => {
+		// Everything the enabled signals can produce should still be able to saturate the meter.
+		const base = {
+			gameId: 'g1', total: 0,
+			closeness: scoreMaxCloseness, lateGame: 0, momentum: 0, leadChanges: 0, comeback: 0,
+			reason: 'tied', stalled: false,
+		};
+		const result = applyDisabledSignals(base, ['lateGame', 'momentum', 'leadChanges', 'comeback']);
+		expect(result.total).toBe(scoreMaxTotal);
 	});
 
 	test('applyDisabledSignals returns unchanged result when all signals are disabled', () => {

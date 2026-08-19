@@ -136,7 +136,10 @@
 		"header": "設定",
 		"showUpcoming": "近日開催の試合を表示",
 		"upcomingDaysLabel": "先読み日数",
-		"upcomingDaysValue": "{days}日",
+		"upcomingDaysValue": {
+			"1": "1日",
+			"n": "$1日"
+		},
 		"proTips": "プロのヒント",
 		"switchNotifications": "切り替え通知",
 		"demoMode": "デモモード",
@@ -396,7 +399,8 @@
 		"postseasonBoostName": "ポストシーズンブースト",
 		"postseasonBoostMeasured": "プレーオフ、カンファレンス決勝、チャンピオンシップ試合に適用されるフラットボーナスです。",
 		"back": "戻る",
-		"next": "次へ"
+		"next": "次へ",
+		"tapHint": "どこでもタップして続ける"
 	},
 	"stepTabAssign": {
 		"step": "ステップ $1 / $2",
@@ -415,7 +419,8 @@
 		"reveal": "見ましたか？ 👀",
 		"revealBody": "76ersの試合が盛り上がりました（PowerScore 89）。ArenaSwapがそれを検知して自動的に切り替えました。クリック不要です。",
 		"back": "戻る",
-		"next": "次へ"
+		"next": "次へ",
+		"watchingBadge": "視聴中"
 	},
 	"stepSettings": {
 		"step": "ステップ $1 / $2",
@@ -512,6 +517,13 @@
 		"error": "エラー",
 		"info": "情報",
 		"close": "閉じる"
+	},
+	"notification": {
+		"standbyTitle": "スタンバイストリーム中 | ArenaSwap",
+		"standbyMessage": "すべての試合が静かになりました。スタンバイストリームに留まっています。",
+		"switchedTitle": "切り替え → {score} | ArenaSwap",
+		"switchedMessage": "今すぐ{venue}へ切り替えます！",
+		"switchedMessageWithReason": "{reason}。今すぐ{venue}へ切り替えます！"
 	},
 	"tabAssign": {
 		"placeholder": "— タブを割り当て —",

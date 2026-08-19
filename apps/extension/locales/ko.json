@@ -136,7 +136,10 @@
 		"header": "설정",
 		"showUpcoming": "예정된 경기 표시",
 		"upcomingDaysLabel": "표시 일수",
-		"upcomingDaysValue": "{days}일",
+		"upcomingDaysValue": {
+			"1": "1일",
+			"n": "$1일"
+		},
 		"proTips": "꿀팁",
 		"switchNotifications": "전환 알림",
 		"demoMode": "데모 모드",
@@ -396,7 +399,8 @@
 		"postseasonBoostName": "포스트시즌 부스트",
 		"postseasonBoostMeasured": "플레이오프, 콘퍼런스 파이널, 챔피언십 경기에 적용되는 고정 보너스예요.",
 		"back": "뒤로",
-		"next": "다음"
+		"next": "다음",
+		"tapHint": "아무 곳이나 탭하면 계속돼요"
 	},
 	"stepTabAssign": {
 		"step": "$1/$2단계",
@@ -415,7 +419,8 @@
 		"reveal": "방금 보셨나요? 👀",
 		"revealBody": "76ers 경기가 뜨거워졌어요 (PowerScore 89). ArenaSwap이 이를 감지하고 자동으로 전환했어요. 클릭 한 번 필요 없었죠.",
 		"back": "뒤로",
-		"next": "다음"
+		"next": "다음",
+		"watchingBadge": "WATCHING"
 	},
 	"stepSettings": {
 		"step": "$1/$2단계",
@@ -512,6 +517,13 @@
 		"error": "오류",
 		"info": "정보",
 		"close": "닫기"
+	},
+	"notification": {
+		"standbyTitle": "대기 스트림 재생 중 | ArenaSwap",
+		"standbyMessage": "모든 경기가 조용해졌어요. 대기 스트림에 머물러 있어요.",
+		"switchedTitle": "전환 → {score} | ArenaSwap",
+		"switchedMessage": "지금 {venue}로 전환해요!",
+		"switchedMessageWithReason": "{reason}. 지금 {venue}로 전환해요!"
 	},
 	"tabAssign": {
 		"placeholder": "— 탭 할당 —",

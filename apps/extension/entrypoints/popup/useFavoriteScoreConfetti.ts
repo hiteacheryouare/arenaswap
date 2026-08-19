@@ -30,9 +30,15 @@ const useFavoriteScoreConfetti = ({ games, favoriteTeamIds }: useFavoriteScoreCo
 	};
 
 	const launchBurst = (nextOptions: confettiOptions) => {
+		// The canvas only exists on the main view, but this hook runs for every view. Without this
+		// guard a favorite scoring during onboarding cached a rejected promise that killed confetti
+		// for the rest of the session.
+		if (!confettiCanvasRef.current) return;
 		void ensureConfettiInstance()
 			.then(confetti => confetti(nextOptions))
-			.catch(() => {});
+			.catch(() => {
+				confettiLoadPromiseRef.current = null;
+			});
 	};
 
 	useEffect(() => {

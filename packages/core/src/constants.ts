@@ -175,9 +175,14 @@ export const applyDisabledSignals = (
 
 	// Turning signals off shrinks the reachable ceiling, so the survivors are rescaled to keep the
 	// 0-100 range meaningful — otherwise a closeness-only setup could never exceed 42.
+	//
+	// The scale targets scoreMaxSignalsSubtotal, not scoreMaxTotal: baseTotal is the raw pre-cap
+	// subtotal (see scorer.ts, which clamps it to the signals ceiling deliberately), and `total`
+	// gets capped at 100 downstream. Scaling to 100 here would double-apply that cap and deflate
+	// every score — disabling comeback alone cost 26%.
 	const enabledSum = closeness + lateGame + momentum + leadChanges + comeback;
-	const scalingFactor = scoreMaxTotal / enabledMax;
-	const newBaseTotal = Math.min(Math.round(enabledSum * scalingFactor), scoreMaxTotal);
+	const scalingFactor = scoreMaxSignalsSubtotal / enabledMax;
+	const newBaseTotal = Math.min(Math.round(enabledSum * scalingFactor), scoreMaxSignalsSubtotal);
 
 	// The stall penalty comes off the signals subtotal, so it rescales with them; volatility sits
 	// on top of that subtotal and carries over at full value.

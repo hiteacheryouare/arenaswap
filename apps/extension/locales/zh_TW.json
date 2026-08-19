@@ -136,7 +136,10 @@
 		"header": "設定",
 		"showUpcoming": "顯示即將開賽的比賽",
 		"upcomingDaysLabel": "提前天數",
-		"upcomingDaysValue": "{days} 天",
+		"upcomingDaysValue": {
+			"1": "1 天",
+			"n": "$1 天"
+		},
 		"proTips": "達人技巧",
 		"switchNotifications": "切換通知",
 		"demoMode": "示範模式",
@@ -396,7 +399,8 @@
 		"postseasonBoostName": "季後賽加成",
 		"postseasonBoostMeasured": "對季後賽、聯盟冠軍賽和總冠軍賽，統一給予固定加分。",
 		"back": "返回",
-		"next": "下一步"
+		"next": "下一步",
+		"tapHint": "點擊畫面任何位置繼續"
 	},
 	"stepTabAssign": {
 		"step": "第 $1 步，共 $2 步",
@@ -415,7 +419,8 @@
 		"reveal": "有看到嗎？👀",
 		"revealBody": "76 人隊的比賽突然升溫（PowerScore 89），ArenaSwap 偵測到後自動切了過去，一次點擊都不用。",
 		"back": "返回",
-		"next": "下一步"
+		"next": "下一步",
+		"watchingBadge": "觀看中"
 	},
 	"stepSettings": {
 		"step": "第 $1 步，共 $2 步",
@@ -512,6 +517,13 @@
 		"error": "錯誤",
 		"info": "提示",
 		"close": "關閉"
+	},
+	"notification": {
+		"standbyTitle": "待機直播中 | ArenaSwap",
+		"standbyMessage": "所有比賽都冷了下來。已停留在你的待機直播。",
+		"switchedTitle": "已切換 → {score} | ArenaSwap",
+		"switchedMessage": "現在帶你前往 {venue}！",
+		"switchedMessageWithReason": "{reason}。現在帶你前往 {venue}！"
 	},
 	"tabAssign": {
 		"placeholder": "— 指派分頁 —",

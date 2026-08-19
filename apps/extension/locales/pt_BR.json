@@ -136,7 +136,10 @@
 		"header": "Configurações",
 		"showUpcoming": "Mostrar jogos futuros",
 		"upcomingDaysLabel": "Dias de antecedência",
-		"upcomingDaysValue": "{days} dias",
+		"upcomingDaysValue": {
+			"1": "1 dia",
+			"n": "$1 dias"
+		},
 		"proTips": "Dicas",
 		"switchNotifications": "Notificações de troca",
 		"demoMode": "Modo demonstração",
@@ -396,7 +399,8 @@
 		"postseasonBoostName": "Impulso de pós-temporada",
 		"postseasonBoostMeasured": "Um bônus fixo aplicado a jogos de playoffs, finais de conferência e campeonatos.",
 		"back": "Voltar",
-		"next": "Próximo"
+		"next": "Próximo",
+		"tapHint": "Toque em qualquer lugar para continuar"
 	},
 	"stepTabAssign": {
 		"step": "Etapa $1 de $2",
@@ -415,7 +419,8 @@
 		"reveal": "Viu isso? 👀",
 		"revealBody": "O jogo dos 76ers esquentou (PowerScore 89). ArenaSwap detectou e trocou automaticamente. Zero cliques.",
 		"back": "Voltar",
-		"next": "Próximo"
+		"next": "Próximo",
+		"watchingBadge": "ASSISTINDO"
 	},
 	"stepSettings": {
 		"step": "Etapa $1 de $2",
@@ -512,6 +517,13 @@
 		"error": "Erro",
 		"info": "Info",
 		"close": "Fechar"
+	},
+	"notification": {
+		"standbyTitle": "No Standby Stream | ArenaSwap",
+		"standbyMessage": "Todos os jogos esfriaram. Estacionado no seu Standby Stream.",
+		"switchedTitle": "Trocado → {score} | ArenaSwap",
+		"switchedMessage": "Te levando para {venue} agora!",
+		"switchedMessageWithReason": "{reason}. Te levando para {venue} agora!"
 	},
 	"tabAssign": {
 		"placeholder": "— Atribuir uma aba —",

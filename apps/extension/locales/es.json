@@ -136,7 +136,10 @@
 		"header": "Ajustes",
 		"showUpcoming": "Mostrar próximos partidos",
 		"upcomingDaysLabel": "Días de anticipación",
-		"upcomingDaysValue": "{days} días",
+		"upcomingDaysValue": {
+			"1": "1 día",
+			"n": "$1 días"
+		},
 		"proTips": "Consejos",
 		"switchNotifications": "Notificaciones de cambio",
 		"demoMode": "Modo demostración",
@@ -396,7 +399,8 @@
 		"postseasonBoostName": "Impulso de postemporada",
 		"postseasonBoostMeasured": "Un bono fijo aplicado a partidos de playoffs, finales de conferencia y campeonatos.",
 		"back": "Atrás",
-		"next": "Siguiente"
+		"next": "Siguiente",
+		"tapHint": "Toca donde quieras para continuar"
 	},
 	"stepTabAssign": {
 		"step": "Paso $1 de $2",
@@ -415,7 +419,8 @@
 		"reveal": "¿Viste eso? 👀",
 		"revealBody": "El partido de los 76ers se puso al rojo vivo (PowerScore 89). ArenaSwap lo detectó y cambió solo — sin necesidad de hacer nada.",
 		"back": "Atrás",
-		"next": "Siguiente"
+		"next": "Siguiente",
+		"watchingBadge": "VIENDO"
 	},
 	"stepSettings": {
 		"step": "Paso $1 de $2",
@@ -512,6 +517,13 @@
 		"error": "Error",
 		"info": "Información",
 		"close": "Cerrar"
+	},
+	"notification": {
+		"standbyTitle": "En transmisión en espera | ArenaSwap",
+		"standbyMessage": "Todos los partidos se calmaron. Te quedaste en tu transmisión en espera.",
+		"switchedTitle": "Cambiado → {score} | ArenaSwap",
+		"switchedMessage": "¡Ya te lleva a {venue}!",
+		"switchedMessageWithReason": "{reason}. ¡Ya te lleva a {venue}!"
 	},
 	"tabAssign": {
 		"placeholder": "— Asigna una pestaña —",

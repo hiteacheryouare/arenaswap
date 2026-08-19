@@ -1,3 +1,4 @@
+import { i18n } from '#i18n';
 import { randomInRange } from '@porkyproductions/hat';
 import { fetchGamesWithLeagueLogos, fetchWinProbability, computePowerScore, computeScoringOpportunityBoost, isPlayFrozen, normalizePowerScoreResult, scoreMaxTotal, MockGameSimulator, createPollModeTracker, isObjectRecord, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts, computeLeagueIntervalMs, pollWinProbabilityMs as winProbPollIntervalMs, logWarn, logError } from '@arenaswap/core';
 import { computeStandbyStreamDecision } from '../utils/standbyStreamLogic';
@@ -382,8 +383,8 @@ export default defineBackground(() => {
 				await browser.notifications.create({
 					type: 'basic',
 					iconUrl: 'icon/128.png',
-					title: 'On standby stream | ArenaSwap',
-					message: 'All games went quiet. Parked on your standby stream.',
+					title: i18n.t('notification.standbyTitle'),
+					message: i18n.t('notification.standbyMessage'),
 				});
 			} else {
 				const game = games.find(g => g.id === gameId);
@@ -391,14 +392,16 @@ export default defineBackground(() => {
 					? `${game.awayTeam.abbreviation} ${game.awayTeam.score}-${game.homeTeam.score} ${game.homeTeam.abbreviation}`
 					: getGameLabel(gameId);
 				const venue = getVenueName(gameId);
+				// `reason` is generated English text from the powerscore engine, so it stays English
+				// in every locale — the same way it already reads on the game detail screen.
 				const message = reason
-					? `${capitalizeFirst(reason)}. Taking you to ${venue} now!`
-					: `Taking you to ${venue} now!`;
+					? i18n.t('notification.switchedMessageWithReason', { reason: capitalizeFirst(reason), venue })
+					: i18n.t('notification.switchedMessage', { venue });
 
 				await browser.notifications.create({
 					type: 'basic',
 					iconUrl: 'icon/128.png',
-					title: `Switched → ${scoreTitle} | ArenaSwap`,
+					title: i18n.t('notification.switchedTitle', { score: scoreTitle }),
 					message,
 				});
 			}
