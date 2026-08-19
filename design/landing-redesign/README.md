@@ -1,5 +1,22 @@
 # Landing page redesign proposal
 
+> **Superseded.** This shipped. `apps/docs` is the implementation, and it is the record of what
+> was decided — read that first. This directory is kept for the reasoning behind the design, which
+> is not in the code, and for the four open questions at the bottom of the page, which the
+> implementation answered:
+>
+> | Question | What shipped |
+> | --- | --- |
+> | Import the real components, or copy them? | Imported. The popup chrome, the game cards and the chart option builders all moved into `@arenaswap/ui`, and the extension renders the same ones. |
+> | ECharts on the landing page, or static SVG? | ECharts, with the extension's own option builders, mounted on scroll rather than at load. |
+> | Where does the FAQ go? | Its own page at `/faq/`, as native `<details>`, with FAQPage structured data. |
+> | Is 2.0 one release or the increments? | One entry. |
+>
+> Two things on this page are **not** what shipped, and the page still says otherwise:
+> the release notes are hand-written prose in `src/content/releases/`, not generated from
+> `CHANGELOG.md`; and the hero is a browser window playing real game footage with the popup open
+> inside it, scored live by `computePowerScore`, rather than twenty hardcoded frames.
+
 A design proposal for `arenaswap.app`, not an implementation. Open `index.html` in a
 browser to read it. Nothing in here is wired into `apps/docs` and nothing is built by
 Turborepo.
