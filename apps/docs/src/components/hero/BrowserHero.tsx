@@ -4,7 +4,7 @@ import GameCard from '@arenaswap/ui/src/components/gameCard';
 import { LeagueSectionHeader, PopupHeader, PopupSectionTitle } from '@arenaswap/ui/src/components/popupChrome';
 import { useT } from '@arenaswap/ui/src/components/i18nContext';
 import { heroGames, heroTickCount, heroTickMs } from './heroGames';
-import { bestOf, cooldownTicks, openingIndex, replayThrough, scoreBoardAt, shouldSwitch } from './heroTimeline';
+import { cooldownTicks, openingIndex, replayThrough, scoreBoardAt, shouldSwitch } from './heroTimeline';
 import type { HeroSwitch } from './heroTimeline';
 
 // A Chrome window with three streams open and the extension running inside it.
@@ -56,7 +56,6 @@ const BrowserHero = () => {
 
 	// A pure function of the tick, so a re-render for any other reason cannot change the board.
 	const scored = useMemo(() => scoreBoardAt(tick), [tick]);
-	const best = useMemo(() => bestOf(scored), [scored]);
 
 	// The switch rule, not a script: clear the sensitivity gap and be off cooldown.
 	useEffect(() => {
@@ -73,7 +72,7 @@ const BrowserHero = () => {
 		lastSwitchTickRef.current = tick;
 		onScreenRef.current = target.index;
 		setOnScreenIndex(target.index);
-	}, [best, scored, tick, reduced]);
+	}, [scored, tick, reduced]);
 
 	const restart = useCallback(() => {
 		lastSwitchTickRef.current = -cooldownTicks;

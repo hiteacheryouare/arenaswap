@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import type { Game } from '@arenaswap/core/types';
 import type { confettiInstance, confettiOptions } from 'canvas-confetti';
 import { buildLiveGameSnapshots, findFavoriteTeamScoreConfettiBursts } from './scoreConfettiHelpers';
@@ -15,7 +15,7 @@ const useFavoriteScoreConfetti = ({ games, favoriteTeamIds }: useFavoriteScoreCo
 	const snapshotSeededRef = useRef(false);
 	const previousLiveSnapshotsRef = useRef(buildLiveGameSnapshots([]));
 
-	const ensureConfettiInstance = async (): Promise<confettiInstance> => {
+	const ensureConfettiInstance = useCallback(async (): Promise<confettiInstance> => {
 		if (confettiInstanceRef.current) return confettiInstanceRef.current;
 		if (!confettiLoadPromiseRef.current) {
 			confettiLoadPromiseRef.current = import('canvas-confetti').then(module => {
@@ -27,9 +27,9 @@ const useFavoriteScoreConfetti = ({ games, favoriteTeamIds }: useFavoriteScoreCo
 			});
 		}
 		return confettiLoadPromiseRef.current;
-	};
+	}, []);
 
-	const launchBurst = (nextOptions: confettiOptions) => {
+	const launchBurst = useCallback((nextOptions: confettiOptions) => {
 		// The canvas only exists on the main view, but this hook runs for every view. Without this
 		// guard a favorite scoring during onboarding cached a rejected promise that killed confetti
 		// for the rest of the session.
@@ -39,7 +39,7 @@ const useFavoriteScoreConfetti = ({ games, favoriteTeamIds }: useFavoriteScoreCo
 			.catch(() => {
 				confettiLoadPromiseRef.current = null;
 			});
-	};
+	}, [ensureConfettiInstance]);
 
 	useEffect(() => {
 		const nextLiveSnapshots = buildLiveGameSnapshots(games);
@@ -68,7 +68,7 @@ const useFavoriteScoreConfetti = ({ games, favoriteTeamIds }: useFavoriteScoreCo
 				disableForReducedMotion: true,
 			});
 		}
-	}, [games, favoriteTeamIds]);
+	}, [games, favoriteTeamIds, launchBurst]);
 
 	useEffect(() => {
 		return () => {

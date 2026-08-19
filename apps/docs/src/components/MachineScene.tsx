@@ -198,6 +198,9 @@ const MachineScene = () => {
 
 	useEffect(() => {
 		const isReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		// Astro renders this component on the server, so `window` is out of reach during render
+		// and the query can only be read once we are mounted.
+		// oxlint-disable-next-line react/set-state-in-effect
 		setReduced(isReduced);
 		const section = rootRef.current?.closest('.machine-section');
 		if (isReduced) section?.classList.add('is-reduced');
@@ -219,6 +222,8 @@ const MachineScene = () => {
 	useEffect(() => {
 		if (reduced || stage !== 3) return;
 		let i = 0;
+		// Seeds the first tab so the interval below only has to advance from it.
+		// oxlint-disable-next-line react/set-state-in-effect
 		setActiveTab(TAB_ORDER[0]);
 		const id = window.setInterval(() => {
 			i += 1;

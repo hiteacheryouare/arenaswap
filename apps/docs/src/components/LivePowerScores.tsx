@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { allLeagueIds, computePowerScore, leagueConfigMap } from 'powerscore';
 import type { Game, LeagueId, ScoreSnapshot } from 'powerscore';
 
@@ -136,7 +136,7 @@ const LivePowerScores = () => {
 	const previousClockRef = useRef<Record<string, number>>({});
 	const stallRef = useRef<Record<string, number>>({});
 
-	const refresh = async () => {
+	const refresh = useCallback(async () => {
 		try {
 			const liveGames = await fetchLiveGames();
 			const now = Date.now();
@@ -180,7 +180,7 @@ const LivePowerScores = () => {
 		} finally {
 			setLoading(false);
 		}
-	};
+	}, []);
 
 	useEffect(() => {
 		void refresh();
@@ -188,7 +188,7 @@ const LivePowerScores = () => {
 			void refresh();
 		}, refreshIntervalMs);
 		return () => window.clearInterval(timer);
-	}, []);
+	}, [refresh]);
 
 	if (loading) {
 		return (

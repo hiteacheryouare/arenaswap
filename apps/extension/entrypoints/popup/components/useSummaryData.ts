@@ -153,15 +153,19 @@ const useSummaryData = (game: SummaryGameArg): summaryDataResult => {
 	const [seriesInfo, setSeriesInfo] = useState<SeriesInfo | null>(null);
 	const [records, setRecords] = useState<TeamRecords>(emptyTeamRecords);
 	// Snapshotted, not tracked: depending on these directly would refetch whenever the caller
-	// hands us a fresh team object.
+	// hands us a fresh team object, and depending on a live score would refetch ESPN on every
+	// made basket. This effect is declared before the fetch below so the refs are already
+	// current by the time it runs.
 	const teamIdsRef = useRef({ home: game.homeTeam.id, away: game.awayTeam.id });
-	teamIdsRef.current = { home: game.homeTeam.id, away: game.awayTeam.id };
-	// Likewise — depending on a live score would refetch ESPN on every made basket.
 	const scoreRef = useRef({ home: game.homeTeam.score, away: game.awayTeam.score });
-	scoreRef.current = { home: game.homeTeam.score, away: game.awayTeam.score };
+	useEffect(() => {
+		teamIdsRef.current = { home: game.homeTeam.id, away: game.awayTeam.id };
+		scoreRef.current = { home: game.homeTeam.score, away: game.awayTeam.score };
+	});
 
 	useEffect(() => {
 		// A detail view reused for a different game must not keep the previous game's line.
+		// oxlint-disable-next-line react/set-state-in-effect
 		setWinProbability([]);
 		setSeriesInfo(null);
 		setRecords(emptyTeamRecords);
