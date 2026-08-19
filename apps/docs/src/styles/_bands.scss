@@ -34,8 +34,11 @@
 // all of the height, which is not what an extension popup looks like in a browser.
 .hero-grid {
 	display: grid;
-	grid-template-columns: minmax(0, 0.62fr) minmax(0, 1.38fr);
-	gap: 2rem;
+	// The copy takes a comfortable measure and stops; the window takes everything left over. Sharing
+	// by ratio meant the window kept a fixed fraction of the page no matter how much room there was,
+	// so on a wide display both columns stayed cramped while the gutters got wider.
+	grid-template-columns: minmax(20rem, 26rem) minmax(0, 1fr);
+	gap: 2.5rem;
 	align-items: center;
 }
 
@@ -43,7 +46,26 @@
 	max-width: 34rem;
 }
 
-@media (max-width: 1199.98px) {
+// Bootstrap stops widening the container at 1320px, which on a large display leaves a third of the
+// screen as gutter while the hero is squeezed. The whole page widens together — nav, hero and bands —
+// so nothing ends up misaligned with anything else.
+@media (min-width: 1600px) {
+	.container {
+		max-width: 1560px;
+	}
+}
+
+@media (min-width: 1920px) {
+	.container {
+		max-width: 1720px;
+	}
+}
+
+// Side by side only where there is room for both. Below this the window was coming out at 534px with
+// a 320px popup beside it, which is neither a browser nor a popup. Stacked, the window gets the whole
+// container and the video is not cropped at all — it costs the fold at these widths, which is the
+// better trade of the two.
+@media (max-width: 1399.98px) {
 	.hero-grid {
 		grid-template-columns: minmax(0, 1fr);
 		gap: 2.5rem;

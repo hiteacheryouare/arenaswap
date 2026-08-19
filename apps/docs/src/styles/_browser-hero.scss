@@ -23,12 +23,21 @@ $tab-radius: 9px;
 // token is steadier here than reading layout back out of the DOM at runtime.
 $chrome-height: 5.15rem;
 
+// How far the popup sits outside the window's right edge. The popup is 320px at its shipped size, and
+// a window narrow enough to fit beside the hero copy is not a whole screen, so a popup pinned fully
+// inside it covered better than a third of the video. Hanging most of it off the edge puts the
+// coverage back at roughly what it is on a real screen, and it stays visibly anchored to the pinned
+// extension button, which sits inside the popup's horizontal span.
+$popup-overhang: 150px;
+
 .browser-hero {
 	position: relative;
 }
 
 .browser {
 	position: relative;
+	// Narrowed by the overhang so the popup's right edge still lands on the column's right edge.
+	width: calc(100% - #{$popup-overhang});
 	border-radius: 0.7rem 0.7rem 0.55rem 0.55rem;
 	background: $chrome-strip;
 	// A window sits on the page rather than being drawn into it: a hairline highlight along the top
@@ -308,15 +317,23 @@ $chrome-height: 5.15rem;
 }
 
 // ─── Page ────────────────────────────────────────────────────────────────────
-// Tall enough for the popup and no taller, with the video filling all of it.
+// Tall enough to contain the popup, with the video filling all of it.
 //
-// This was a 16:9 player with a strip of stream page under it, which left dead space: the popup is
-// 560px and a 16:9 player at this width is nowhere near that tall, so the difference had to go
-// somewhere. The clips are encoded to roughly this box's shape instead — see fetchHeroClips.sh —
-// which is why the video can fill the window without being cropped to a keyhole.
+// Letting the window take the clips' own shape instead is tempting — the video would never be cropped
+// — but it makes the window shorter than the popup, and the popup then hangs off the bottom and lands
+// on the caption underneath. The clips are encoded to roughly this box's shape (see
+// fetchHeroClips.sh), so filling it costs a little off the sides rather than a keyhole crop.
 .browser-viewport {
 	position: relative;
-	height: 580px;
+	// Explicit width matters: `aspect-ratio` with a `min-height` resolves in both directions, and with
+	// an auto width it once grew this box to 1200px inside a 936px window. Pinned to the parent, the
+	// ratio only ever decides the height.
+	width: 100%;
+	aspect-ratio: 840 / 580;
+	// The floor is the popup. Above it the window keeps the clips' own shape and the video is not
+	// cropped at all; below it the window stays tall enough to contain the popup and the video gives up
+	// a little off the sides.
+	min-height: 580px;
 	background: #000;
 	overflow: hidden;
 	border-radius: 0 0 0.5rem 0.5rem;
@@ -343,9 +360,10 @@ $chrome-height: 5.15rem;
 // popup for attention.
 .browser-popup {
 	position: absolute;
-	// Under the pinned extension button on the right, which is where a real popup opens.
+	// Under the pinned extension button, which is where a popup opens, and out past the window's right
+	// edge so it covers the corner of the stream rather than the middle of it.
 	top: calc(#{$chrome-height} + 0.5rem);
-	right: 0.75rem;
+	right: 0;
 	width: $popup-width;
 	border-radius: 0.75rem;
 	overflow: hidden;
@@ -355,6 +373,15 @@ $chrome-height: 5.15rem;
 	.popup-container {
 		scrollbar-width: thin;
 		scrollbar-color: #30363d transparent;
+	}
+}
+
+// Wider viewports have the room to push the popup further out, which leaves more of the stream
+// visible. Narrower ones do not: every pixel the popup moves out is a pixel off the window, and past
+// a point the window gets square enough that filling it crops a third of every frame.
+@media (min-width: 1600px) {
+	.browser {
+		width: calc(100% - 190px);
 	}
 }
 
@@ -383,11 +410,9 @@ $chrome-height: 5.15rem;
 // Under this width the popup would cover most of the stream it is supposed to be sitting on top of,
 // so it comes out of the page area and sits underneath at its real size.
 @media (max-width: 991.98px) {
-	.browser-viewport {
-		// No popup on top down here to keep the window tall for, so it takes the clips' own shape and
-		// the video fills it exactly.
-		height: auto;
-		aspect-ratio: 840 / 580;
+	.browser {
+		// Nothing hanging off the side down here, so the window gets the full column back.
+		width: 100%;
 	}
 
 	.browser-popup {

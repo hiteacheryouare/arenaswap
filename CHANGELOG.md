@@ -1,5 +1,87 @@
 # Changelog
 
+## The hero was cramped, and the popup was sitting on the video — 2026-08-19
+
+Two rounds of feedback in one entry. The popup was pinned inside the window at its real 320x560, which
+on a window narrow enough to sit beside the hero copy meant it covered better than a third of the
+stream. And the whole hero was working inside Bootstrap's 1320px container, so on a wide display a
+third of the screen was gutter while both columns were squeezed.
+
+### The hero
+- **The popup hangs off the window's right edge** rather than sitting fully inside it, so it covers the
+  corner of the stream instead of the middle. It stays anchored to the pinned extension button, which
+  is inside the popup's horizontal span. At 2000px it covers 12% of the window, which is close to what
+  a popup covers on a real screen
+- **The page widens past 1320px** — 1560px from 1600px up, 1720px from 1920px up. Nav, hero and bands
+  widen together, so nothing ends up misaligned with anything else
+- **The copy column takes a measure and stops**, and the window takes everything left over. Sharing by
+  ratio meant the window kept a fixed fraction of the page no matter how much room there was
+- **The window keeps the clips' shape wherever it can.** Its height is the popup's 560px as a floor,
+  not a fixed value, so above that floor the video is not cropped at all. At 2000px the window is
+  1050x714 and the video fills it exactly
+- **Side by side only above 1400px.** Below it the window was coming out at 534px next to a 320px
+  popup, which is neither a browser nor a popup. Stacked, it gets the whole container and the video is
+  uncropped — that costs the fold at those widths, which is the better of the two trades
+- Every section heading is one size now. Three were `display-lg` and two `display-md`, which read as
+  sections that could not agree on their own importance
+
+## Crests were a hole in the layout until ESPN answered — 2026-08-19
+
+Every logo in the product is fetched from ESPN's CDN at render time, and every place that drew one
+handled a *failed* logo but not a slow one. The abbreviation only appeared once the request errored,
+so for as long as the fetch was in flight the slot was simply empty: two holes in every game card,
+and thirty-one of them at once on the first screen of onboarding. Nothing in the codebase had an
+`onLoad` handler at all, so there was no point at which "still loading" and "loaded" were different
+states.
+
+Nine components each drew a logo their own way, with four different ideas about what to do when one
+did not arrive. They are now one component.
+
+### The placeholder
+- **A crest slot is never empty.** `Crest` draws the abbreviation on a muted disc and layers the
+  image on top of it, rather than swapping one for the other. The placeholder is there from the first
+  frame, and it is the same thing you see whether the logo is two seconds away or never coming
+- **Nothing moves when a logo lands.** The wrapper owns the box and both layers fill it absolutely, so
+  the placeholder occupies the image's footprint exactly — 64px on a game card, 44px inside the
+  poster's disc, 18px in the sticky bar. Measured in all four states, in both apps
+- **Static, no shimmer.** A sweep across thirty crests at once reads as a fault rather than as loading
+- The placeholder on the game card takes `#495057` rather than the shared `#8b949e`, which only
+  reached 2.92:1 against the card's white. Tolerable while it showed on failure alone; not once it
+  shows on every slow load
+
+### Fixed
+- **A logo that failed once stayed hidden for good.** Five components tracked failure as a boolean.
+  This is not hypothetical for leagues: `resolveLeagueLogoUrl` serves a hardcoded URL until the live
+  list arrives and then switches to ESPN's, so a 404 on the first one permanently hid a mark that
+  would have loaded. Failure is now remembered against the URL that failed, and a new URL retries
+- **Four leagues drew a crest reading "N".** `toLeagueInitials` took the first letter of each word,
+  and half the leagues are already acronyms — NBA, NHL, NFL and NWSL all collapsed to one letter. A
+  single-word label now keeps up to four of its own characters
+- **The walkthrough's tab-assign and auto-switch steps replaced a 32px logo with a 64px disc**, having
+  reached for `.team-logo-fallback` without its size
+- **The sticky bar dropped its crest entirely on failure**, collapsing an 18px flex item and dragging
+  the centred matchup off the card's axis
+- **Step 6 of the walkthrough swallowed the tap it asks for.** The hint over the card carried
+  Tailwind's `pointer-events-none`, which the extension has no build for, so the badge intercepted the
+  click on the middle of the card. It is `pe-none` now
+- `onboardingLeaguePicker` had a hardcoded English `alt` on every league mark
+
+### Under the hood
+- `packages/ui/src/components/crest.tsx` and `_crest.scss`, imported from `_game-card.scss` so both
+  apps pick it up without either one's entry point changing
+- A mount-time `complete` check, because the docs site hydrates its islands after load and the `load`
+  event has already been discarded by then — and `naturalWidth`, because `complete` is true for a
+  broken image too. Without both, a crest on the site sat at `pending` behind its own logo
+- `TeamStrip.astro` renders the same markup and drives `data-crest-state` from a ten-line inline
+  script rather than becoming a React island, since it sits directly under a hero that is already
+  hydrating one. Placeholders are hidden outright under `<noscript>`
+- `setup.leagueLogoAlt` is retired from all twelve locales: every crest sits beside a visible label,
+  so the images are decorative and carry `alt=''`
+- `OddsProvider` is deliberately left alone — provider wordmarks have no fixed width, so it stays a
+  swap rather than a layered box
+- `walkthroughView.cy.tsx` now mounts with the real stylesheets; unstyled, the mock crests fall back
+  to their intrinsic 500px and the cards no longer fit the screen they are describing
+
 ## Dead space at the bottom of the hero's player — 2026-08-19
 
 The window held a 16:9 player with a strip of stream page under it, and the popup pinned over the top
