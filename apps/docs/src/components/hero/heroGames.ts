@@ -31,7 +31,8 @@ export interface HeroBeat {
 	isRedZone?: boolean;
 	down?: number;
 	distance?: number;
-	// Written on the tab strip, so a viewer can tell what just changed without reading the card.
+	// Not rendered. It labels what this beat is for, so the next person editing the timeline can see
+	// the story in the data instead of reconstructing it from score deltas.
 	note?: string;
 }
 
@@ -83,10 +84,14 @@ export const heroGames: HeroGameScript[] = [
 			{ tick: 0, away: 4, home: 5, period: 8, clock: 0, topOfInning: true, bso: { balls: 1, strikes: 2, outs: 1 }, baseRunners: { first: false, second: true, third: false } },
 			{ tick: 2, bso: { balls: 3, strikes: 2, outs: 1 }, baseRunners: { first: true, second: true, third: false } },
 			{ tick: 4, bso: { balls: 0, strikes: 0, outs: 2 } },
-			{ tick: 6, home: 7, period: 8, topOfInning: false, bso: { balls: 1, strikes: 1, outs: 0 }, baseRunners: { first: true, second: false, third: false }, note: 'PHI 7' },
-			{ tick: 10, period: 9, topOfInning: true, bso: { balls: 2, strikes: 1, outs: 1 }, baseRunners: { first: false, second: false, third: false } },
-			{ tick: 14, home: 9, period: 9, topOfInning: false, bso: { balls: 0, strikes: 1, outs: 1 }, baseRunners: { first: false, second: false, third: false }, note: 'PHI 9' },
-			{ tick: 19, bso: { balls: 1, strikes: 2, outs: 2 } },
+			{ tick: 6, period: 8, topOfInning: false, bso: { balls: 1, strikes: 1, outs: 0 }, baseRunners: { first: true, second: false, third: false } },
+			{ tick: 8, home: 7, bso: { balls: 0, strikes: 1, outs: 1 }, baseRunners: { first: false, second: true, third: false }, note: 'PHI 7' },
+			{ tick: 11, home: 9, bso: { balls: 2, strikes: 2, outs: 2 }, baseRunners: { first: true, second: false, third: false }, note: 'PHI 9' },
+			// Miami's last at bat, with Philadelphia ahead. The home half of the ninth would not be
+			// played from here, so the inning never flips.
+			{ tick: 14, period: 9, topOfInning: true, bso: { balls: 0, strikes: 0, outs: 0 }, baseRunners: { first: false, second: false, third: false } },
+			{ tick: 18, bso: { balls: 2, strikes: 1, outs: 1 }, baseRunners: { first: true, second: false, third: false } },
+			{ tick: 21, bso: { balls: 1, strikes: 2, outs: 2 } },
 		],
 	},
 	{
@@ -115,11 +120,11 @@ export const heroGames: HeroGameScript[] = [
 			{ tick: 8, away: 88, home: 87 },
 			{ tick: 10, away: 90, home: 92 },
 			{ tick: 12, away: 93, home: 95 },
-			{ tick: 15, away: 97, home: 98, period: 4, clock: 306 },
-			{ tick: 17, away: 100, home: 100, period: 4, clock: 152, note: 'Tied 100-100' },
-			{ tick: 19, away: 102, home: 103, period: 4, clock: 96, note: 'NYK by 1' },
-			{ tick: 21, away: 104, home: 105, period: 4, clock: 52 },
-			{ tick: 23, away: 106, home: 105, period: 4, clock: 21, note: 'BOS by 1' },
+			{ tick: 15, away: 97, home: 98 },
+			{ tick: 17, away: 100, home: 100, note: 'Tied 100-100' },
+			{ tick: 19, away: 102, home: 103, note: 'NYK by 1' },
+			{ tick: 21, away: 104, home: 105 },
+			{ tick: 23, away: 106, home: 105, note: 'BOS by 1' },
 		],
 	},
 	{
@@ -254,7 +259,3 @@ export const heroGameAt = (script: HeroGameScript, tick: number): Game => {
 		distance: state.distance,
 	};
 };
-
-export const heroNoteAt = (script: HeroGameScript, tick: number): string | undefined => (
-	script.beats.find(beat => beat.tick === tick)?.note
-);

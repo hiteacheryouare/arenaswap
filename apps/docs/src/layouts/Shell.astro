@@ -11,10 +11,18 @@ interface Props {
 	// Path without the base, e.g. `releases/`. Used for the canonical and og:url.
 	path?: string;
 	ogTitle?: string;
+	// Article, for a blog post or a release note. Anything else is a page.
+	ogType?: 'website' | 'article';
+	// Absolute or base-relative. Falls back to the app icon, because `summary_large_image` with no
+	// image is a card that renders as a bare link.
+	image?: string;
+	imageAlt?: string;
 }
 
-const { title, description, path = '', ogTitle } = Astro.props;
-const canonical = new URL(`${import.meta.env.BASE_URL}${path}`, Astro.site ?? 'https://hiteacheryouare.github.io');
+const { title, description, path = '', ogTitle, ogType = 'website', image, imageAlt } = Astro.props;
+const site = Astro.site ?? new URL('https://hiteacheryouare.github.io');
+const canonical = new URL(`${import.meta.env.BASE_URL}${path}`, site);
+const socialImage = new URL(image ?? `${import.meta.env.BASE_URL}images/128.png`, site);
 ---
 <!doctype html>
 <html lang='en'>
@@ -25,9 +33,12 @@ const canonical = new URL(`${import.meta.env.BASE_URL}${path}`, Astro.site ?? 'h
 	<link rel='canonical' href={canonical.href} />
 	<meta property='og:title' content={ogTitle ?? title} />
 	<meta property='og:description' content={description} />
-	<meta property='og:type' content='website' />
+	<meta property='og:type' content={ogType} />
 	<meta property='og:url' content={canonical.href} />
+	<meta property='og:image' content={socialImage.href} />
+	<meta property='og:image:alt' content={imageAlt ?? ogTitle ?? title} />
 	<meta name='twitter:card' content='summary_large_image' />
+	<meta name='twitter:image' content={socialImage.href} />
 	<title>{title}</title>
 	<link rel='shortcut icon' href={`${import.meta.env.BASE_URL}images/128.png`} type='image/x-icon' />
 	<link rel='alternate' type='application/rss+xml' title='ArenaSwap release notes' href={`${import.meta.env.BASE_URL}releases/rss.xml`} />

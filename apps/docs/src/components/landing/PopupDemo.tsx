@@ -15,6 +15,7 @@ import { useT } from '@arenaswap/ui/src/components/i18nContext';
 const espnTeamLogo = (path: string) => `https://a.espncdn.com/i/teamlogos/${path}.png`;
 const emptyLeagueLogos = {} as Record<LeagueId, string>;
 const noFavorites = new Set<string>(['nba:18']);
+const base = import.meta.env.BASE_URL;
 const noop = () => {};
 
 const assigned: { game: Game; history: ScoreSnapshot[]; tab: string }[] = [
@@ -127,8 +128,10 @@ const PopupDemo = () => {
 		<div className='popup-frame'>
 			<div className='popup-container'>
 				<PopupHeader
-					logoSrc='/arenaswap/images/full_logo_white_on_transparent.svg'
+					logoSrc={`${base}images/full_logo_white_on_transparent.svg`}
 					enabled
+					interactive={false}
+					toggleId='popup-demo-enable-toggle'
 					onToggleEnabled={noop}
 					onOpenSettings={noop}
 					onStartTour={noop}

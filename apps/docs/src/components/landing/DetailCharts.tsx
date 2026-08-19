@@ -86,6 +86,13 @@ const powerHistory: PowerScoreSnapshot[] = scoreHistory.map((point, index) => {
 	};
 });
 
+const options = {
+	powerScore: buildPowerScoreOption(powerHistory),
+	teamScore: buildTeamScoreOption(scoreHistory, game),
+	winProbability: buildWinProbabilityOption(winProbability, game),
+	components: buildComponentContributionOption(powerHistory),
+};
+
 const Chart = ({ title, option }: { title: string; option: echarts.EChartsOption }) => {
 	const host = useRef<HTMLDivElement>(null);
 
@@ -113,10 +120,10 @@ const DetailCharts = () => {
 	const t = useT();
 	return (
 		<div className='charts-grid'>
-			<Chart title={t('detail.chartPowerScoreTitle')} option={buildPowerScoreOption(powerHistory)} />
-			<Chart title={t('detail.chartScoreTitle')} option={buildTeamScoreOption(scoreHistory, game)} />
-			<Chart title={t('detail.chartWinProbTitle')} option={buildWinProbabilityOption(winProbability, game)} />
-			<Chart title={t('detail.chartComponentsTitle')} option={buildComponentContributionOption(powerHistory)} />
+			<Chart title={t('detail.chartPowerScoreTitle')} option={options.powerScore} />
+			<Chart title={t('detail.chartScoreTitle')} option={options.teamScore} />
+			<Chart title={t('detail.chartWinProbTitle')} option={options.winProbability} />
+			<Chart title={t('detail.chartComponentsTitle')} option={options.components} />
 		</div>
 	);
 };

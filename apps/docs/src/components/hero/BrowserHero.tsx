@@ -1,12 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { computePowerScore } from 'powerscore';
-import type { ScoreSnapshot } from 'powerscore';
-import { defaultCooldownSecs, defaultSensitivity, pollIntervalMs, sensitivityThresholds } from '@arenaswap/core/constants';
-import type { Game, LeagueId, PowerScoreResult } from '@arenaswap/core/types';
+import type { LeagueId } from '@arenaswap/core/types';
 import GameCard from '@arenaswap/ui/src/components/gameCard';
 import { LeagueSectionHeader, PopupHeader, PopupSectionTitle } from '@arenaswap/ui/src/components/popupChrome';
 import { useT } from '@arenaswap/ui/src/components/i18nContext';
-import { heroGameAt, heroGames, heroTickCount, heroTickMs } from './heroGames';
+import { heroGames, heroTickCount, heroTickMs } from './heroGames';
+import { bestOf, cooldownTicks, replayThrough, scoreBoardAt, shouldSwitch } from './heroTimeline';
+import type { HeroSwitch } from './heroTimeline';
 
 // A browser with five streams open and the extension running inside it.
 //
@@ -17,27 +16,15 @@ import { heroGameAt, heroGames, heroTickCount, heroTickMs } from './heroGames';
 //
 // The footage is real game footage under a free licence. /credits names every clip.
 
-const switchThreshold = sensitivityThresholds[defaultSensitivity];
-const cooldownTicks = Math.round((defaultCooldownSecs * 1000) / pollIntervalMs);
 const holdTicksAtEnd = 3;
 // prefers-reduced-motion lands here instead of tick 0: far enough in that both switches have
 // already happened, so the still frame shows a finished story rather than an opening position.
 const restingTick = 18;
-// A fixed base instead of Date.now(), so the server render and the first client render agree.
-// The scorer only ever reads differences between snapshot timestamps, so the absolute value is
-// arbitrary; using the wall clock would make the hero a hydration mismatch.
-const heroEpoch = 1_767_225_600_000;
 
+const base = import.meta.env.BASE_URL;
 const emptyLeagueLogos = {} as Record<LeagueId, string>;
 const noFavorites = new Set<string>();
 const noop = () => {};
-
-interface Scored {
-	id: string;
-	game: Game;
-	result: PowerScoreResult;
-	index: number;
-}
 
 // The popup's tab dropdown, with the same markup TabAssignSelect renders. It is inert here:
 // there are no real tabs to assign, and a select that changes nothing should not look like it
@@ -56,62 +43,36 @@ const BrowserHero = () => {
 	const [running, setRunning] = useState(false);
 	const [reduced, setReduced] = useState(false);
 	const [onScreenIndex, setOnScreenIndex] = useState(0);
-	const [lastSwitch, setLastSwitch] = useState<{ from: string; to: string } | null>(null);
+	const [lastSwitch, setLastSwitch] = useState<HeroSwitch | null>(null);
 
 	const rootRef = useRef<HTMLDivElement>(null);
 	const popupBodyRef = useRef<HTMLDivElement>(null);
 	const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
-	const historyRef = useRef(new Map<string, ScoreSnapshot[]>());
-	const winProbRef = useRef(new Map<string, number[]>());
 	const lastSwitchTickRef = useRef(-cooldownTicks);
 	const onScreenRef = useRef(0);
 
-	// Recomputed for the whole board every tick, exactly as a poll does. Building the history in
-	// a ref rather than state keeps the scorer seeing one append per tick even when React
-	// re-renders for another reason.
-	const scored = useMemo<Scored[]>(() => {
-		const now = heroEpoch + tick * pollIntervalMs;
-		return heroGames.map((script, index) => {
-			const id = script.base.id;
-			const game = heroGameAt(script, tick);
-
-			const snapshots = historyRef.current.get(id) ?? [];
-			const last = snapshots[snapshots.length - 1];
-			if (!last || last.homeScore !== game.homeTeam.score || last.awayScore !== game.awayTeam.score || snapshots.length <= tick) {
-				snapshots.push({ gameId: id, timestamp: now, homeScore: game.homeTeam.score, awayScore: game.awayTeam.score });
-			}
-			historyRef.current.set(id, snapshots);
-
-			// ESPN's win probability is not in this demo's data, so it is derived from the margin.
-			// It only feeds the ±5 variance boost, and leaving it out would silently drop a signal
-			// the popup does show.
-			const probs = winProbRef.current.get(id) ?? [];
-			const margin = game.homeTeam.score - game.awayTeam.score;
-			probs.push(Math.min(0.97, Math.max(0.03, 0.5 + margin * 0.045)));
-			winProbRef.current.set(id, probs);
-
-			return { id, game, index, result: computePowerScore(game, snapshots, 0, probs) };
-		});
-	}, [tick]);
-
-	const best = useMemo(() => scored.reduce((a, b) => (b.result.total > a.result.total ? b : a)), [scored]);
+	// A pure function of the tick, so a re-render for any other reason cannot change the board.
+	const scored = useMemo(() => scoreBoardAt(tick), [tick]);
+	const best = useMemo(() => bestOf(scored), [scored]);
 
 	// The switch rule, not a script: clear the sensitivity gap and be off cooldown.
 	useEffect(() => {
-		const current = scored[onScreenRef.current];
-		if (best.index === onScreenRef.current) return;
-		if (best.result.total - current.result.total < switchThreshold) return;
-		if (tick - lastSwitchTickRef.current < cooldownTicks) return;
+		if (reduced) return;
+		const target = shouldSwitch(scored, onScreenRef.current, tick, lastSwitchTickRef.current);
+		if (!target) return;
 
+		setLastSwitch({
+			tick,
+			from: heroGames[onScreenRef.current].tabTitle,
+			to: heroGames[target.index].tabTitle,
+			gap: target.result.total - scored[onScreenRef.current].result.total,
+		});
 		lastSwitchTickRef.current = tick;
-		onScreenRef.current = best.index;
-		setOnScreenIndex(best.index);
-		setLastSwitch({ from: heroGames[current.index].tabTitle, to: heroGames[best.index].tabTitle });
-	}, [best, scored, tick]);
+		onScreenRef.current = target.index;
+		setOnScreenIndex(target.index);
+	}, [best, scored, tick, reduced]);
 
 	const restart = useCallback(() => {
-		historyRef.current = new Map();
-		winProbRef.current = new Map();
 		lastSwitchTickRef.current = -cooldownTicks;
 		onScreenRef.current = 0;
 		setOnScreenIndex(0);
@@ -123,11 +84,19 @@ const BrowserHero = () => {
 		const query = matchMedia('(prefers-reduced-motion: reduce)');
 		const apply = () => {
 			setReduced(query.matches);
-			if (query.matches) {
-				setTick(restingTick);
-				onScreenRef.current = 2;
-				setOnScreenIndex(2);
-			}
+			if (!query.matches) return;
+			// Stop first: the tick effect keys off `running`, and leaving it true here kept the
+			// animation going for someone who had just asked it not to.
+			setRunning(false);
+			// Which tab you are on at a given tick is a consequence of every switch decision before
+			// it, so the still frame replays them rather than hardcoding an index that would go
+			// stale the first time a beat moved.
+			const resting = replayThrough(restingTick);
+			lastSwitchTickRef.current = resting.lastSwitch?.tick ?? -cooldownTicks;
+			onScreenRef.current = resting.onScreenIndex;
+			setOnScreenIndex(resting.onScreenIndex);
+			setLastSwitch(resting.lastSwitch);
+			setTick(restingTick);
 		};
 		apply();
 		query.addEventListener('change', apply);
@@ -210,7 +179,7 @@ const BrowserHero = () => {
 								className={`browser-tab${index === onScreenIndex ? ' is-active' : ''}`}
 								aria-current={index === onScreenIndex ? 'true' : undefined}
 							>
-								<img src={`/arenaswap/images/leagues/${script.base.league}.png`} alt='' className='browser-tab-favicon' />
+								<img src={`${base}images/leagues/${script.base.league}.png`} alt='' className='browser-tab-favicon' />
 								<span className='browser-tab-title'>{script.tabTitle}</span>
 							</span>
 						))}
@@ -228,7 +197,7 @@ const BrowserHero = () => {
 						{onScreen.tabHost}
 					</span>
 					<span className='browser-extension' aria-hidden='true'>
-						<img src='/arenaswap/images/icon_white_on_transparent.svg' alt='' />
+						<img src={`${base}images/icon_white_on_transparent.svg`} alt='' />
 					</span>
 				</div>
 
@@ -238,8 +207,8 @@ const BrowserHero = () => {
 							key={script.base.id}
 							ref={element => { videoRefs.current[index] = element; }}
 							className={`browser-video${index === onScreenIndex ? ' is-active' : ''}`}
-							data-src={`/arenaswap/video/${script.video}.mp4`}
-							poster={`/arenaswap/video/${script.poster}.jpg`}
+							data-src={`${base}video/${script.video}.mp4`}
+							poster={`${base}video/${script.poster}.jpg`}
 							muted
 							loop
 							playsInline
@@ -254,8 +223,10 @@ const BrowserHero = () => {
 			<div className='browser-popup'>
 				<div className='popup-container' ref={popupBodyRef}>
 					<PopupHeader
-						logoSrc='/arenaswap/images/full_logo_white_on_transparent.svg'
+						logoSrc={`${base}images/full_logo_white_on_transparent.svg`}
 						enabled
+						interactive={false}
+						toggleId='hero-enable-toggle'
 						onToggleEnabled={noop}
 						onOpenSettings={noop}
 						onStartTour={noop}

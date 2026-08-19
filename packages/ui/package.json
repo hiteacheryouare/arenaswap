@@ -1,7 +1,7 @@
 {
 	"name": "@arenaswap/ui",
 	"version": "2.0.0",
-	"description": "ArenaSwap shared design system — Bootstrap tokens, font declarations, Tailwind theme, and shared React UI components",
+	"description": "ArenaSwap shared design system \u2014 Bootstrap tokens, font declarations, Tailwind theme, and shared React UI components",
 	"private": true,
 	"scripts": {
 		"test": "npm run test:unit",
@@ -18,6 +18,7 @@
 	},
 	"devDependencies": {
 		"@types/jest": "^30.0.0",
+		"echarts": "^6.1.0",
 		"jest": "^30.4.2"
 	}
 }

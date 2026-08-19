@@ -27,7 +27,10 @@ const groups = sportOrder
 	.filter(group => group.leagues.length > 0);
 
 const leagueCount = leagueConfigs.length;
-const sportCount = groups.length;
+// Spelled out, because a headline reading "31 Leagues. 6 sports." mixes a figure set at 104px with
+// a digit set at 40px and looks like a mistake.
+const spelled = ['no', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'];
+const sportCount = spelled[groups.length] ?? String(groups.length);
 ---
 <section class='band band-quiet' id='leagues'>
 	<div class='container'>
@@ -35,7 +38,7 @@ const sportCount = groups.length;
 		<div class='leagues-head'>
 			<span class='band-count'>{leagueCount}</span>
 			<div>
-				<h2 class='display-md'>Leagues. {sportCount === 6 ? 'Six' : sportCount} sports.</h2>
+				<h2 class='display-md'>Leagues. {sportCount.charAt(0).toUpperCase() + sportCount.slice(1)} sports.</h2>
 				<p class='band-copy' style='margin-top:0.6rem;max-width:52ch'>
 					Turn off the ones you do not watch and ArenaSwap stops polling them. Put the rest in
 					whatever order you actually watch them in.

@@ -5,6 +5,7 @@ import {
 	defaultPostseasonBoostPoints,
 	defaultSensitivity,
 	defaultSwitchDelaySecs,
+	sensitivityThresholds,
 } from '@arenaswap/core/constants';
 import { defaultStrings } from '@arenaswap/ui/src/components/defaultStrings';
 
@@ -21,7 +22,7 @@ const groups = [
 	{ name: defaultStrings['setup.groupDemo'], desc: defaultStrings['setup.groupDemoDesc'] },
 ];
 
-const sensitivityLevels = 7;
+const sensitivityLevels = Object.keys(sensitivityThresholds).length;
 ---
 <section class='band' id='settings'>
 	<div class='container'>

@@ -405,4 +405,10 @@
 	.popup-frame {
 		width: 100%;
 	}
+
+	// The frame going fluid is not enough on its own: .popup-container carries the popup's real
+	// 320px and the frame clips its overflow.
+	.popup-frame .popup-container {
+		width: 100%;
+	}
 }

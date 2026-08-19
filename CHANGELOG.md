@@ -79,6 +79,25 @@ after and diffing the rule sets: identical, 4,958 rules each, and all 199 compon
 - The popup was a child of the element that clips the video, which cut its bottom off at every width
   below 1400px and badly below 992px, where it returns to the flow
 - Dates were formatted in the build machine's zone, so a date-only entry rendered a day early
+- **`/powerscore/` shipped unstyled cards.** `.feature-card` went out with the deleted feature grid,
+  on the assumption the grid was its only consumer. It is also on the five signal cards, the engine
+  explainer and the live PowerScore examples, none of which had a rule left
+- **The reduced-motion still frame showed a board the algorithm would not produce.** It jumped
+  straight to its resting tick, so the scorer saw a two-entry score history instead of nineteen and
+  four of the five cards under-reported by 18 to 31 points. Scoring is a pure function of the tick
+  now, so the same tick scores the same whether it was played through or jumped to
+- **The switch rule ran during the still frame**, overriding the tab it was meant to hold and
+  captioning a switch nobody saw. Turning the preference on mid-session also never stopped the
+  animation, because nothing cleared the flag the tick loop reads
+- **Social preview images were lost site-wide** when the blog post page moved onto the shared shell,
+  which declared `summary_large_image` and then supplied no image
+- **The hero's MLB game played a bottom of the ninth with the home team ahead**, which is a game
+  that would already be over. `npm run docs:validate-hero` now asserts rather than prints: two
+  switches, clocks that only run one way, scores that only go up and only by an amount the sport can
+  produce in one poll, and no impossible innings. It exits non-zero, and it catches all of the above
+- The popup demo was 24px wider than the frame clipping it below 360px; the site's two popup headers
+  shared one element id and left four keyboard-reachable controls that did nothing; `packages/ui`
+  imported `echarts` without declaring it
 
 ## The landing page redesign existed only as screenshots in a chat log — 2026-08-18
 

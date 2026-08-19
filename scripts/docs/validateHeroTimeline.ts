@@ -1,69 +1,116 @@
-// Runs the hero timeline through the shipped scorer and prints what it produces.
-//
-// The hero depends on a ranking: which game is best has to change twice, and it has to change
-// because the numbers changed. That is a property of `computePowerScore`, not of the timeline,
-// so it needs checking rather than assuming. Run this after editing any beat in heroGames.ts.
+// Checks the hero timeline against the shipped scorer, and fails if it stops telling the story the
+// hero is built on.
 //
 //   npm run docs:validate-hero
 //
-// Columns are one game each, `total` with the leader marked. The trailing column is the tab the
-// switcher would have you on, applying the shipped sensitivity threshold and cooldown.
+// The hero depends on a ranking: which game is best has to change twice, and it has to change
+// because the numbers changed. That is a property of `computePowerScore` over authored beats, not
+// of either one alone, so it needs checking rather than assuming. Run this after editing any beat.
+//
+// It prints the board and then asserts. The assertions are the point — this used to print only,
+// which meant a beat edit that flattened the ranking produced a table nobody read.
 
-import { computePowerScore } from '../../packages/powerscore/src/scorer';
-import { scoreMaxTotal } from '../../packages/powerscore/src/constants';
-import type { ScoreSnapshot } from '../../packages/powerscore/src/types';
-import { defaultCooldownSecs, defaultSensitivity, pollIntervalMs, sensitivityThresholds } from '../../packages/core/src/constants';
 import { heroGameAt, heroGames, heroTickCount } from '../../apps/docs/src/components/hero/heroGames';
+import {
+	cooldownTicks,
+	replayThrough,
+	scoreBoardAt,
+	switchThreshold,
+} from '../../apps/docs/src/components/hero/heroTimeline';
+import { scoreMaxTotal, sportTypeConfigMap } from '../../packages/powerscore/src/constants';
 
-const threshold = sensitivityThresholds[defaultSensitivity];
-const cooldownTicks = Math.round((defaultCooldownSecs * 1000) / pollIntervalMs);
+const expectedSwitches = 2;
+const failures: string[] = [];
 
-const history = new Map<string, ScoreSnapshot[]>();
-const winProb = new Map<string, number[]>();
-heroGames.forEach(script => {
-	history.set(script.base.id, []);
-	winProb.set(script.base.id, []);
-});
+const pad = (value: string, width: number) => value.padEnd(width);
 
-let onScreen = heroGames[0].base.id;
-let lastSwitchTick = -cooldownTicks;
-const switches: string[] = [];
-
-const pad = (s: string, n: number) => s.padEnd(n);
-console.log(pad('tick', 5) + heroGames.map(g => pad(g.base.awayTeam.abbreviation + '@' + g.base.homeTeam.abbreviation, 12)).join('') + 'on screen');
+// ─── The board, tick by tick ─────────────────────────────────────────────────
+console.log(pad('tick', 5) + heroGames.map(g => pad(`${g.base.awayTeam.abbreviation}@${g.base.homeTeam.abbreviation}`, 12)).join('') + 'on screen');
 
 for (let tick = 0; tick < heroTickCount; tick++) {
-	const now = Date.now() + tick * pollIntervalMs;
-	const scored = heroGames.map(script => {
-		const id = script.base.id;
-		const game = heroGameAt(script, tick);
-		const snapshots = history.get(id)!;
-		snapshots.push({ gameId: id, timestamp: now, homeScore: game.homeTeam.score, awayScore: game.awayTeam.score });
-		const probs = winProb.get(id)!;
-		const margin = game.homeTeam.score - game.awayTeam.score;
-		probs.push(Math.min(0.97, Math.max(0.03, 0.5 + margin * 0.045)));
-		const result = computePowerScore(game, snapshots, 0, probs);
-		return { id, script, game, total: result.total };
+	const { board, onScreenIndex } = replayThrough(tick);
+	const best = board.reduce((a, b) => (b.result.total > a.result.total ? b : a));
+	const cells = board.map(entry => {
+		const leader = entry.index === best.index ? '*' : ' ';
+		const watching = entry.index === onScreenIndex ? '<' : ' ';
+		return pad(`${leader}${String(entry.result.total).padStart(3)}${watching} ${entry.game.awayTeam.score}-${entry.game.homeTeam.score}`, 12);
 	});
-
-	const best = scored.reduce((a, b) => (b.total > a.total ? b : a));
-	const current = scored.find(s => s.id === onScreen)!;
-	const gap = best.total - current.total;
-	const offCooldown = tick - lastSwitchTick >= cooldownTicks;
-	if (best.id !== onScreen && gap >= threshold && offCooldown) {
-		switches.push(`t${tick}: ${current.script.tabTitle} (${current.total}) -> ${best.script.tabTitle} (${best.total}), gap ${gap}`);
-		onScreen = best.id;
-		lastSwitchTick = tick;
-	}
-
-	const cells = scored.map(s => {
-		const mark = s.id === best.id ? '*' : ' ';
-		const eye = s.id === onScreen ? '<' : ' ';
-		return pad(`${mark}${String(s.total).padStart(3)}${eye} ${s.game.awayTeam.score}-${s.game.homeTeam.score}`, 12);
-	});
-	console.log(pad(String(tick), 5) + cells.join('') + heroGames.find(g => g.base.id === onScreen)!.tabTitle);
+	console.log(pad(String(tick), 5) + cells.join('') + heroGames[onScreenIndex].tabTitle);
 }
 
-console.log(`\nmax total ${scoreMaxTotal}, sensitivity ${defaultSensitivity} needs a ${threshold} point gap, cooldown ${cooldownTicks} ticks`);
-console.log(`switches (${switches.length}):`);
-switches.forEach(s => console.log('  ' + s));
+const final = replayThrough(heroTickCount - 1);
+console.log(`\nmax total ${scoreMaxTotal}, sensitivity needs a ${switchThreshold} point gap, cooldown ${cooldownTicks} ticks`);
+console.log(`switches (${final.switches.length}):`);
+final.switches.forEach(s => console.log(`  t${s.tick}: ${s.from} -> ${s.to}, gap ${s.gap}`));
+
+// ─── Assertions ──────────────────────────────────────────────────────────────
+if (final.switches.length !== expectedSwitches) {
+	failures.push(`expected ${expectedSwitches} switches, got ${final.switches.length}. The hero is built on the tab changing twice.`);
+}
+
+// A game clock that jumps forward means a beat's clock is not a whole number of ticks from its
+// period anchor, so the derived clock overshoots and the next beat corrects it upwards.
+for (const script of heroGames) {
+	if (script.clockless) continue;
+	const countsUp = script.clockCountsUp === true;
+	for (let tick = 1; tick < heroTickCount; tick++) {
+		const before = heroGameAt(script, tick - 1);
+		const after = heroGameAt(script, tick);
+		if (after.period !== before.period) continue;
+		const moved = after.clockSeconds - before.clockSeconds;
+		const wrongWay = countsUp ? moved < 0 : moved > 0;
+		if (wrongWay && after.clockSeconds !== 0) {
+			failures.push(`${script.tabTitle}: clock went ${countsUp ? 'backwards' : 'forwards'} at tick ${tick} (${before.clockSeconds}s -> ${after.clockSeconds}s in period ${after.period})`);
+		}
+	}
+}
+
+// Sport rules the cards would otherwise state incorrectly.
+for (const script of heroGames) {
+	const config = sportTypeConfigMap[script.base.sportType];
+	for (let tick = 0; tick < heroTickCount; tick++) {
+		const game = heroGameAt(script, tick);
+
+		if (config.clockBased && game.clockSeconds < 0) {
+			failures.push(`${script.tabTitle}: negative clock at tick ${tick}`);
+		}
+		if (game.awayTeam.score < 0 || game.homeTeam.score < 0) {
+			failures.push(`${script.tabTitle}: negative score at tick ${tick}`);
+		}
+		// A home team that is ahead does not bat in the bottom of the ninth, so a card showing that
+		// state is showing a game that would already be over.
+		if (script.base.sportType === 'baseball' && game.period >= 9 && game.topOfInning === false && game.homeTeam.score > game.awayTeam.score) {
+			failures.push(`${script.tabTitle}: bottom of inning ${game.period} with the home team ahead at tick ${tick} — that game is over`);
+		}
+	}
+}
+
+// Scores may only go up, and only by an amount the sport can actually produce in one poll.
+const maxJump: Record<string, number> = { basketball: 5, football: 8, hockey: 1, baseball: 4, softball: 4, soccer: 1 };
+for (const script of heroGames) {
+	const cap = maxJump[script.base.sportType] ?? 5;
+	for (let tick = 1; tick < heroTickCount; tick++) {
+		const before = heroGameAt(script, tick - 1);
+		const after = heroGameAt(script, tick);
+		for (const side of ['awayTeam', 'homeTeam'] as const) {
+			const moved = after[side].score - before[side].score;
+			if (moved < 0) failures.push(`${script.tabTitle}: ${side} score went down at tick ${tick}`);
+			if (moved > cap) failures.push(`${script.tabTitle}: ${side} scored ${moved} in one poll at tick ${tick}, over the ${cap} this sport allows`);
+		}
+	}
+}
+
+// Every game has to score above zero at some point, or it is a card with nothing to say.
+for (const script of heroGames) {
+	const best = Math.max(...Array.from({ length: heroTickCount }, (_, tick) => (
+		scoreBoardAt(tick).find(entry => entry.id === script.base.id)?.result.total ?? 0
+	)));
+	if (best === 0) failures.push(`${script.tabTitle}: never scores above 0 across the whole timeline`);
+}
+
+if (failures.length > 0) {
+	console.error(`\n${failures.length} problem(s):`);
+	failures.forEach(f => console.error(`  - ${f}`));
+	process.exit(1);
+}
+console.log('\nAll checks passed.');

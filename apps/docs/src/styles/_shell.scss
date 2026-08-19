@@ -77,11 +77,6 @@
 		}
 	}
 
-	.reading-nav-soon {
-		color: #4d545c;
-		font-size: 0.85rem;
-		padding: 0.28rem 0;
-	}
 }
 
 // ─── Release notes ───────────────────────────────────────────────────────────
@@ -116,45 +111,6 @@
 	font-family: var(--font-mono);
 	font-size: 0.75rem;
 	color: #6e7681;
-}
-
-.release-group {
-	margin-top: 1.5rem;
-}
-
-.release-group-name {
-	display: flex;
-	font-family: var(--font-mono);
-	font-size: 0.68rem;
-	letter-spacing: 0.16em;
-	text-transform: uppercase;
-	color: #6e7681;
-	padding-bottom: 0.4rem;
-	border-bottom: 1px solid #21262d;
-	margin: 0;
-}
-
-.release-entry {
-	padding: 0.8rem 0;
-	border-bottom: 1px solid #21262d;
-
-	h4 {
-		font-size: 0.95rem;
-		font-weight: 600;
-		letter-spacing: -0.02em;
-		color: var(--color-text);
-		line-height: 1.35;
-		margin: 0;
-		max-width: 62ch;
-	}
-
-	p {
-		font-size: 0.875rem;
-		color: var(--color-muted);
-		line-height: 1.65;
-		margin: 0.4rem 0 0;
-		max-width: 74ch;
-	}
 }
 
 // ─── Credits ─────────────────────────────────────────────────────────────────
@@ -204,6 +160,10 @@
 }
 
 // ─── FAQ ─────────────────────────────────────────────────────────────────────
+.faq-list {
+	margin-top: 0.5rem;
+}
+
 // Native disclosure widgets. The marker is replaced with a caret that rotates, which is the one
 // piece of motion here; everything else about a <details> already works.
 

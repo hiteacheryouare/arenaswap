@@ -19,6 +19,8 @@ export const PopupHeader = ({
 	logoSrc,
 	enabled,
 	prefsLoaded = true,
+	toggleId = 'enableToggle',
+	interactive = true,
 	onToggleEnabled,
 	onOpenSettings,
 	onStartTour,
@@ -26,6 +28,11 @@ export const PopupHeader = ({
 	logoSrc: string;
 	enabled: boolean;
 	prefsLoaded?: boolean;
+	// The id has to be unique per document, and the website renders this header twice on one page.
+	toggleId?: string;
+	// False where the header is being shown rather than used, which is every instance on the
+	// website. Controls that cannot do anything should not take focus or invite a click.
+	interactive?: boolean;
 	onToggleEnabled: () => void;
 	onOpenSettings: () => void;
 	onStartTour: () => void;
@@ -34,15 +41,15 @@ export const PopupHeader = ({
 	return (
 		<div className='d-flex justify-content-between align-items-center mb-2 pb-2'>
 			<img src={logoSrc} alt='ArenaSwap' className='arenaswap-logo' />
-			<div className='d-flex align-items-center gap-2'>
-				<button className='btn btn-sm p-0 popup-settings-button' onClick={onStartTour} title={t('main.tourButton')} aria-label={t('main.tourButton')}>
+			<div className='d-flex align-items-center gap-2' aria-hidden={interactive ? undefined : true}>
+				<button className='btn btn-sm p-0 popup-settings-button' onClick={onStartTour} title={t('main.tourButton')} aria-label={t('main.tourButton')} disabled={!interactive} tabIndex={interactive ? undefined : -1}>
 					<i className='bi bi-question-circle popup-settings-icon' />
 				</button>
-				<button className='btn btn-sm p-0 popup-settings-button' onClick={onOpenSettings} title={t('main.settingsButton')} aria-label={t('main.settingsButton')}>
+				<button className='btn btn-sm p-0 popup-settings-button' onClick={onOpenSettings} title={t('main.settingsButton')} aria-label={t('main.settingsButton')} disabled={!interactive} tabIndex={interactive ? undefined : -1}>
 					<i className='bi bi-gear-fill popup-settings-icon' />
 				</button>
 				<div className='form-check form-switch mb-0'>
-					<input className='form-check-input' type='checkbox' id='enableToggle' checked={enabled} onChange={onToggleEnabled} disabled={!prefsLoaded} aria-label={t('main.enableToggleLabel')} />
+					<input className='form-check-input' type='checkbox' id={toggleId} checked={enabled} onChange={onToggleEnabled} disabled={!prefsLoaded || !interactive} tabIndex={interactive ? undefined : -1} aria-label={t('main.enableToggleLabel')} />
 				</div>
 			</div>
 		</div>

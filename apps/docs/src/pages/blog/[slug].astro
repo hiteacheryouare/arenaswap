@@ -30,6 +30,9 @@ const readTime = Math.max(1, Math.ceil(words / 200));
 	title={`${post.data.title} — ArenaSwap`}
 	description={post.data.description}
 	path={`blog/${post.id}/`}
+	ogType='article'
+	image={post.data.image}
+	imageAlt={post.data.imageAlt}
 >
 	<div class='container'>
 		<div class='page-head'>
