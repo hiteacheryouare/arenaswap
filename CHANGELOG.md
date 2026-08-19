@@ -1,5 +1,10 @@
 # Changelog
 
+## Lint stays green on the install CTA helper — 2026-08-19
+
+- Moved the docs install-link helper out of the browser-detection closure so oxlint no longer flags
+  it for consistent function scoping.
+
 ## A copy pass over the site, and the PowerScore page was lying about its own numbers — 2026-08-19
 
 An editing pass over every page except the landing page's headings, plus two bugs the reading turned

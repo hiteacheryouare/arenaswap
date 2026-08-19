@@ -4,6 +4,7 @@ import Footer from '../components/Footer.astro';
 import OrangeDots from '../components/OrangeDots.astro';
 import '../styles/tailwind.css';
 import '../styles/global.scss';
+import { CHROME_WEB_STORE, EDGE_ADDONS, FIREFOX_ADDONS } from '../lib/installTargets';
 
 interface Props {
 	title: string;
@@ -43,6 +44,44 @@ const socialImage = new URL(image ?? `${import.meta.env.BASE_URL}images/128.png`
 	<link rel='shortcut icon' href={`${import.meta.env.BASE_URL}images/128.png`} type='image/x-icon' />
 	<link rel='alternate' type='application/rss+xml' title='ArenaSwap release notes' href={`${import.meta.env.BASE_URL}releases/rss.xml`} />
 	<noscript><style>.reveal { opacity: 1 !important; transform: none !important; }</style></noscript>
+
+	<script is:inline define:vars={{ chromeUrl: CHROME_WEB_STORE, firefoxUrl: FIREFOX_ADDONS, edgeUrl: EDGE_ADDONS }}>
+			const arenaSwapInstallFork = (name, href) => ({ name, icon: 'bi-download', href });
+
+			window.arenaSwapInstall = (() => {
+				const ua = navigator.userAgent;
+				const chrome  = { name: 'Chrome',  icon: 'bi-browser-chrome',  href: chromeUrl };
+				const firefox = { name: 'Firefox', icon: 'bi-browser-firefox', href: firefoxUrl };
+				const edge    = { name: 'Edge',    icon: 'bi-browser-edge',    href: edgeUrl };
+
+				const detected =
+					/Firefox\//.test(ua)         ? { primary: firefox,         alternates: [chrome, edge] }
+					: /Edg(?:A|iOS)?\//.test(ua) ? { primary: edge,            alternates: [chrome, firefox] }
+					// Chromium forks install from the Chrome Web Store, so they get its link under their own
+					// name and a neutral icon — Bootstrap Icons ships no mark for any of them.
+					: navigator.brave             ? { primary: arenaSwapInstallFork('Brave', chromeUrl),   alternates: [firefox, edge] }
+					: /OPR\//.test(ua)           ? { primary: arenaSwapInstallFork('Opera', chromeUrl),   alternates: [firefox, edge] }
+					: /Vivaldi/.test(ua)          ? { primary: arenaSwapInstallFork('Vivaldi', chromeUrl), alternates: [firefox, edge] }
+					: /Chrome\//.test(ua)        ? { primary: chrome,          alternates: [firefox, edge] }
+					: { primary: chrome, alternates: [firefox, edge] };
+
+			return {
+				applyCta(el) {
+					if (!el) return;
+					el.href = detected.primary.href;
+					el.querySelector('[data-install-icon]').className = `bi ${detected.primary.icon} me-2`;
+					el.querySelector('[data-install-label]').textContent = `Add to ${detected.primary.name}`;
+				},
+				applyAlternates(el) {
+					if (!el) return;
+					el.querySelectorAll('[data-install-alternate]').forEach((link, i) => {
+						link.href = detected.alternates[i].href;
+						link.textContent = detected.alternates[i].name;
+					});
+				},
+			};
+		})();
+	</script>
 </head>
 <body>
 	<Nav />

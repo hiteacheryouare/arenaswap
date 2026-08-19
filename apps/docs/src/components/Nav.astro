@@ -1,6 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import logoImg from '../assets/full_logo_white_on_transparent.svg';
+import InstallCta from './InstallCta.astro';
 ---
 <header id="site-header" class="site-header">
 	<nav class="site-nav">
@@ -20,9 +21,7 @@ import logoImg from '../assets/full_logo_white_on_transparent.svg';
 				</ul>
 
 				<div class="nav-end">
-					<a href="https://chromewebstore.google.com/detail/arenaswap/gibojibgihombdmmfnhnimajppamfeee" class="btn btn-cta nav-cta-desktop">
-						<i class="bi bi-browser-chrome me-2"></i>Add to Chrome
-					</a>
+					<InstallCta class="nav-cta-desktop" />
 					<button class="nav-hamburger" id="nav-toggle" aria-label="Open menu" aria-expanded="false">
 						<span class="ham-bar"></span>
 						<span class="ham-bar"></span>
@@ -44,9 +43,7 @@ import logoImg from '../assets/full_logo_white_on_transparent.svg';
 			<li><a href="/arenaswap/legal/">Legal notices</a></li>
 		</ul>
 		<div class="nav-drawer-cta">
-			<a href="https://chromewebstore.google.com/detail/arenaswap/gibojibgihombdmmfnhnimajppamfeee" class="btn btn-cta d-block text-center">
-				<i class="bi bi-browser-chrome me-2"></i>Add to Chrome
-			</a>
+			<InstallCta class="d-block text-center" />
 		</div>
 	</div>
 </header>

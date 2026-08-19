@@ -1,10 +1,8 @@
 ---
 import BrowserHero from '../hero/BrowserHero';
+import InstallAlternates from '../InstallAlternates.astro';
+import InstallCta from '../InstallCta.astro';
 import TeamStrip from './TeamStrip.astro';
-
-const chrome = 'https://chromewebstore.google.com/detail/arenaswap/gibojibgihombdmmfnhnimajppamfeee';
-const firefox = 'https://addons.mozilla.org/addon/arenaswap/';
-const edge = 'https://microsoftedge.microsoft.com/addons/detail/arenaswap/oeballpnidkinkcbjokogdgjckdjeeba';
 ---
 <section class='band band-hero' id='hero'>
 	<div class='container'>
@@ -19,12 +17,8 @@ const edge = 'https://microsoftedge.microsoft.com/addons/detail/arenaswap/oeball
 				</p>
 
 				<div class='hero-actions'>
-					<a href={chrome} class='btn btn-cta'>
-						<i class='bi bi-browser-chrome me-2'></i>Add to Chrome
-					</a>
-					<span class='hero-actions-alt'>
-						Also for <a href={firefox}>Firefox</a> and <a href={edge}>Edge</a>
-					</span>
+					<InstallCta />
+					<InstallAlternates class='hero-actions-alt' />
 				</div>
 
 				<TeamStrip />
