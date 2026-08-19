@@ -1,6 +1,6 @@
 ---
 title: Placeholder
-description: Keeps the docs collection non-empty until 2.1 fills it in.
+description: Keeps the docs collection non-empty until real pages exist.
 section: extension
 order: 999
 draft: true

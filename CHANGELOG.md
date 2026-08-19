@@ -30,6 +30,22 @@ up.
   explainer: "a designated fallback tab" became "a fallback tab you pick", "Manually raise" became
   "Raise by hand", and so on
 
+### No unreleased version numbers in the copy
+The site promised 2.1 in two places a visitor could read: the FAQ ended with "More detail is coming
+to the docs in 2.1", and each docs section opened with "This is not written yet. It goes in for 2.1".
+A published page that names a version it does not have yet dates itself the moment that version
+ships without it.
+
+- The docs placeholder now reads "This section is being written. It will cover:" over the same
+  outline, and closes with what does exist today rather than what does not
+- The FAQ drops its trailing line entirely rather than pointing at an empty page. Its opening
+  already invites an issue for anything missing
+- `planned` became `covers` in that page's data, and the comments in `content.config.ts`,
+  `docs/[section].astro` and `_prose.scss` stopped citing a version too
+
+Left as is: the two mentions in this changelog's own 2.0 entries, which are a dated record of what
+was decided then, and `design/landing-redesign/README.md`, which is the superseded proposal.
+
 ### Implementation detail out of consumer copy
 The licenses page explained its own build step to the reader: "The table is read from the project's
 manifests when the site is built, so it lists what is installed rather than what somebody remembered

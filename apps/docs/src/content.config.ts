@@ -20,8 +20,8 @@ const releases = defineCollection({
 	}),
 });
 
-// Reserved for 2.1. The schema and the URL tree are settled now so that writing documentation is
-// writing Markdown, rather than writing Markdown and then designing a docs site around it.
+// The schema and the URL tree are settled ahead of the content, so that writing documentation is
+// writing Markdown rather than writing Markdown and then designing a docs site around it.
 // `section` picks which of the two trees a page belongs to; `order` sorts it inside that tree.
 const docs = defineCollection({
 	loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/docs' }),

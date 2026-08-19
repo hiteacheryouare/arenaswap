@@ -4,20 +4,23 @@ import type { CollectionEntry } from 'astro:content';
 import Shell from '../../layouts/Shell.astro';
 import DocsNav from '../../components/DocsNav.astro';
 
-// The docs tree, reserved. Both sections have a URL, a place in the side nav and a layout; what
-// they do not have yet is content, which lands in src/content/docs/ in 2.1. Reserving it now means
-// the writing is writing, not another redesign.
+// The docs tree. Both sections have a URL, a place in the side nav and a layout; what they do not
+// have yet is content, which lands in src/content/docs/. Settling the shape first means writing the
+// documentation is writing, not another redesign.
+
+// `planned` describes what each section will cover. It is deliberately undated: a page that
+// promises a version is a page that starts lying the moment that version ships without it.
 
 const sections = {
 	extension: {
 		title: 'The extension',
 		description: 'Installing ArenaSwap, assigning tabs to games, tuning when it switches, and Standby Stream.',
-		planned: ['Installing and enabling', 'Assigning a tab to a game', 'Switching, sensitivity and cooldown', 'Favorite teams and boosts', 'Standby Stream', 'Demo mode'],
+		covers: ['Installing and enabling', 'Assigning a tab to a game', 'Switching, sensitivity and cooldown', 'Favorite teams and boosts', 'Standby Stream', 'Demo mode'],
 	},
 	powerscore: {
 		title: 'PowerScore',
 		description: 'How a game gets scored. The five signals, the boosts, the penalties and the types.',
-		planned: ['Getting started', 'Scoring a game', 'The five signals', 'Boosts and penalties', 'Sport and league configuration', 'Types'],
+		covers: ['Getting started', 'Scoring a game', 'The five signals', 'Boosts and penalties', 'Sport and league configuration', 'Types'],
 	},
 } as const;
 
@@ -56,16 +59,14 @@ const rendered = await Promise.all(pages.map(async page => ({
 			<div>
 				{rendered.length === 0 ? (
 					<div class='prose'>
-						<p>
-							This is not written yet. It goes in for 2.1, and these are the pages it will hold:
-						</p>
+						<p>This section is being written. It will cover:</p>
 						<ul>
-							{meta.planned.map(item => <li>{item}</li>)}
+							{meta.covers.map(item => <li>{item}</li>)}
 						</ul>
 						<p>
-							Until then, the <a href={`${base}releases/`}>release notes</a> cover what changed and
-							the <a href={`${base}faq/`}>FAQ</a> answers most of what people ask. PowerScore
-							already has a <a href={`${base}powerscore/`}>reference page</a> with working examples.
+							In the meantime, the <a href={`${base}releases/`}>release notes</a> cover what changed
+							and the <a href={`${base}faq/`}>FAQ</a> answers most of what people ask. PowerScore
+							has a <a href={`${base}powerscore/`}>reference page</a> with working examples today.
 						</p>
 					</div>
 				) : (

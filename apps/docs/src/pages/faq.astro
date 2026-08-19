@@ -9,7 +9,6 @@ import Shell from '../layouts/Shell.astro';
 // Native <details> rather than the React accordion this used to be: no JavaScript, open by
 // default when JS never arrives, and Cmd-F finds an answer that is collapsed.
 
-const base = import.meta.env.BASE_URL;
 const leagueCount = leagueConfigs.length;
 
 const items = [
@@ -80,9 +79,6 @@ const structuredData = {
 					</details>
 				))}
 
-				<p class='band-copy' style='margin-top:2rem'>
-					More detail is coming to <a href={`${base}docs/extension/`}>the docs</a> in 2.1.
-				</p>
 			</div>
 		</div>
 	</div>
