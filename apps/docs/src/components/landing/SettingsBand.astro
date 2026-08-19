@@ -9,17 +9,17 @@ import {
 } from '@arenaswap/core/constants';
 import { defaultStrings } from '@arenaswap/ui/src/components/defaultStrings';
 
-// The six group names and their descriptions are the extension's own copy, read from the shared
-// string table rather than rewritten for marketing. The panel beside them shows the shipped
-// defaults, imported so they cannot go stale the next time one is retuned.
+// Individual settings rather than the six groups they live in: a group name tells you where a
+// control is filed, and what people want to know is what the control does. The panel beside them
+// shows the shipped defaults, imported so they cannot go stale the next time one is retuned.
 
-const groups = [
-	{ name: defaultStrings['setup.groupSwitching'], desc: defaultStrings['setup.groupSwitchingDesc'] },
-	{ name: defaultStrings['setup.groupScoring'], desc: defaultStrings['setup.groupScoringDesc'] },
-	{ name: defaultStrings['setup.groupLeagues'], desc: defaultStrings['setup.groupLeaguesDesc'] },
-	{ name: defaultStrings['setup.groupDisplay'], desc: defaultStrings['setup.groupDisplayDesc'] },
-	{ name: defaultStrings['setup.groupStandby'], desc: defaultStrings['setup.groupStandbyDesc'] },
-	{ name: defaultStrings['setup.groupDemo'], desc: defaultStrings['setup.groupDemoDesc'] },
+const settings = [
+	{ name: `Sensitivity (1–${Object.keys(sensitivityThresholds).length})`, desc: 'How large a score gap needs to be before ArenaSwap switches.' },
+	{ name: 'Switch cooldown', desc: 'Minimum time between switches. Stops rapid tab-flipping.' },
+	{ name: 'Switch delay', desc: 'Wait before switching. Useful when streams lag behind live data.' },
+	{ name: 'Favorite team bonus', desc: 'Extra points for games involving teams you care about.' },
+	{ name: 'Standby Stream', desc: 'When all live games go quiet, auto-switch to a designated fallback tab.' },
+	{ name: 'Game boost', desc: "Manually raise any game's PowerScore to lock it on screen a little longer." },
 ];
 
 const sensitivityLevels = Object.keys(sensitivityThresholds).length;
@@ -28,17 +28,18 @@ const sensitivityLevels = Object.keys(sensitivityThresholds).length;
 	<div class='container'>
 		<div class='band-split'>
 			<div>
-				<h2 class='display-lg'>And you stay<br>in charge.</h2>
+				<h2 class='display-lg'>Tuned in to you.</h2>
 				<p class='band-copy' style='margin-top:1.25rem'>
-					Six groups of settings, and none of them are buried. Switching too eager? Slow it down.
-					Love your team but still want the best game? Give them a bonus. Going on a beer run? <b>Standby Stream keeps something on screen.</b>
+					Sensitivity too high? Slow it down. Love your team but want the best game? Add a bonus.
+					Going on a beer run? Standby Stream keeps something on screen. ArenaSwap works however
+					you need it to.
 				</p>
 
 				<div class='settings-groups'>
-					{groups.map(group => (
+					{settings.map(setting => (
 						<div class='settings-group'>
-							<h3>{group.name}.</h3>
-							<p>{group.desc}</p>
+							<h3>{setting.name}</h3>
+							<p>{setting.desc}</p>
 						</div>
 					))}
 				</div>

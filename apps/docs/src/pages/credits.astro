@@ -2,10 +2,14 @@
 import Shell from '../layouts/Shell.astro';
 import ReadingNav from '../components/ReadingNav.astro';
 
-// The footage in the hero is real game footage, which means somebody filmed it. Two of the five
-// clips are under CC BY licences that require attribution, and one is CC BY-SA, which additionally
-// makes the trimmed and re-encoded clip we ship a derivative under the same licence. This page is
-// where all of that is said out loud.
+// The footage in the hero is real game footage, which means somebody filmed it. Two of the three
+// clips are under CC BY licences that require attribution, and this page is where that is said out
+// loud.
+//
+// Each clip is a game in a league ArenaSwap tracks, which is why there are three rather than five: a
+// clip whose game the popup cannot describe has no business in a hero about the popup describing
+// what you are watching. A Mexican League baseball game and a UEFA Nations League match were cut for
+// exactly that reason.
 //
 // Kept as data rather than prose so scripts/docs/fetchHeroClips.sh and this list can be checked
 // against each other by eye.
@@ -13,7 +17,7 @@ import ReadingNav from '../components/ReadingNav.astro';
 const clips = [
 	{
 		sport: 'Basketball',
-		what: "Hawai'i vs Northern Arizona, Stan Sheriff Center",
+		what: "Northern Arizona at Hawai'i, Stan Sheriff Center",
 		author: "Warrior Insider, University of Hawai'i Athletics",
 		licence: 'CC BY 3.0',
 		licenceUrl: 'https://creativecommons.org/licenses/by/3.0/',
@@ -21,7 +25,7 @@ const clips = [
 	},
 	{
 		sport: 'Football',
-		what: 'Army vs Navy, from All Hands Update',
+		what: 'Army at Navy, from All Hands Update',
 		author: 'Defense Media Activity, U.S. Navy',
 		licence: 'Public domain',
 		licenceUrl: 'https://commons.wikimedia.org/wiki/Template:PD-USGov',
@@ -29,28 +33,11 @@ const clips = [
 	},
 	{
 		sport: 'Hockey',
-		what: 'Bemidji State, 2019 Mariucci Classic',
+		what: 'Minnesota State at Bemidji State, Sanford Center',
 		author: 'Lakeland PBS',
 		licence: 'CC BY 3.0',
 		licenceUrl: 'https://creativecommons.org/licenses/by/3.0/',
 		source: 'https://commons.wikimedia.org/wiki/File:BSU_Men%27s_Hockey_To_Play_In_2019_Mariucci_Classic.webm',
-	},
-	{
-		sport: 'Baseball',
-		what: 'El Águila de Veracruz vs Leones de Yucatán',
-		author: 'ProtoplasmaKid',
-		licence: 'CC BY-SA 4.0',
-		licenceUrl: 'https://creativecommons.org/licenses/by-sa/4.0/',
-		source: 'https://commons.wikimedia.org/wiki/File:El_%C3%81guila_de_Veracruz_vs_Leones_de_Yucat%C3%A1n.webm',
-		shareAlike: true,
-	},
-	{
-		sport: 'Soccer',
-		what: 'Latvia vs Gibraltar, Skonto Stadium, Riga',
-		author: 'Mārtiņš Bruņenieks',
-		licence: 'CC0',
-		licenceUrl: 'https://creativecommons.org/publicdomain/zero/1.0/',
-		source: 'https://commons.wikimedia.org/wiki/File:Latvia-Gibraltar_football_2026-03-31.webm',
 	},
 ];
 ---

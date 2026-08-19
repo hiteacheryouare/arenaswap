@@ -14,6 +14,14 @@
 # The bottom of every frame is cropped away. That is not a style choice: it is where
 # broadcast lower-thirds, news chyrons and foreground spectators sit, and all three
 # read as somebody else's video rather than as a stream in a tab.
+#
+# The start times are not arbitrary. Each source runs from one to eight minutes and most
+# of that is a title card, a press conference or a set piece, so the windows below were
+# picked by measuring frame-to-frame change across the whole clip and shortlisting the
+# busiest few seconds, then looking at those. Motion alone is not enough on its own —
+# the highest-scoring window in the Army-Navy clip is a touchdown celebration, which is
+# a crowd of people jumping rather than a game being played — so the shortlist was
+# eyeballed and the second-ranked window taken for football.
 
 set -euo pipefail
 
@@ -26,15 +34,18 @@ commons='https://upload.wikimedia.org/wikipedia/commons'
 
 # name|commons path|file name|start|seconds|kept fraction of frame height|crf
 #
-# The crf is per clip rather than global. Eight seconds of basketball costs far more bits than
-# eight seconds of a wide baseball shot, and a single quality setting either wastes bytes on the
-# still clips or smears the busy ones.
+# Three clips, one per sport, and each one a game in a league ArenaSwap tracks so the popup can name
+# it: Northern Arizona at Hawai'i, Army at Navy, Minnesota State at Bemidji State. A Mexican League
+# baseball game and a UEFA Nations League match were dropped for the opposite reason — good footage,
+# but neither league is tracked, so no card could describe what was on screen.
+#
+# The crf is per clip rather than global. Seven seconds of basketball costs far more bits than seven
+# seconds of a wide hockey shot, and a single quality setting either wastes bytes on the still clips
+# or smears the busy ones.
 clips=(
-	"basketball|a/ac|Hawaii_Basketball_-_Highlights_From_Northern_Arizona_Game.webm|15|8|0.79|36"
-	"football|2/27|All_Hands_Update-_Army_vs_Navy.webm|17|8|0.86|35"
-	"hockey|3/32|BSU_Men%27s_Hockey_To_Play_In_2019_Mariucci_Classic.webm|24|8|0.86|35"
-	"soccer|0/06|Latvia-Gibraltar_football_2026-03-31.webm|8|8|0.86|34"
-	"baseball|3/3b|El_%C3%81guila_de_Veracruz_vs_Leones_de_Yucat%C3%A1n.webm|1|10|0.86|34"
+	"basketball|a/ac|Hawaii_Basketball_-_Highlights_From_Northern_Arizona_Game.webm|24.5|7|0.79|35"
+	"football|2/27|All_Hands_Update-_Army_vs_Navy.webm|17.5|6|0.86|34"
+	"hockey|3/32|BSU_Men%27s_Hockey_To_Play_In_2019_Mariucci_Classic.webm|26.25|7|0.86|34"
 )
 
 for clip in "${clips[@]}"; do

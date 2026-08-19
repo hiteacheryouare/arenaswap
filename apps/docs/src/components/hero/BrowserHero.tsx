@@ -4,10 +4,10 @@ import GameCard from '@arenaswap/ui/src/components/gameCard';
 import { LeagueSectionHeader, PopupHeader, PopupSectionTitle } from '@arenaswap/ui/src/components/popupChrome';
 import { useT } from '@arenaswap/ui/src/components/i18nContext';
 import { heroGames, heroTickCount, heroTickMs } from './heroGames';
-import { bestOf, cooldownTicks, replayThrough, scoreBoardAt, shouldSwitch } from './heroTimeline';
+import { bestOf, cooldownTicks, openingIndex, replayThrough, scoreBoardAt, shouldSwitch } from './heroTimeline';
 import type { HeroSwitch } from './heroTimeline';
 
-// A browser with five streams open and the extension running inside it.
+// A Chrome window with three streams open and the extension running inside it.
 //
 // The tab strip, the address bar and the popup are drawn here; the game cards and the popup
 // chrome are the shipped components from @arenaswap/ui. The switching is not choreographed:
@@ -42,14 +42,17 @@ const BrowserHero = () => {
 	const [tick, setTick] = useState(0);
 	const [running, setRunning] = useState(false);
 	const [reduced, setReduced] = useState(false);
-	const [onScreenIndex, setOnScreenIndex] = useState(0);
+	// Opens on the best game rather than the first one in the list. Starting at index 0 meant the very
+	// first tick produced a switch the extension would already have made before anybody arrived, and
+	// a caption announcing a change nobody saw.
+	const [onScreenIndex, setOnScreenIndex] = useState(openingIndex);
 	const [lastSwitch, setLastSwitch] = useState<HeroSwitch | null>(null);
 
 	const rootRef = useRef<HTMLDivElement>(null);
 	const popupBodyRef = useRef<HTMLDivElement>(null);
 	const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
 	const lastSwitchTickRef = useRef(-cooldownTicks);
-	const onScreenRef = useRef(0);
+	const onScreenRef = useRef(openingIndex);
 
 	// A pure function of the tick, so a re-render for any other reason cannot change the board.
 	const scored = useMemo(() => scoreBoardAt(tick), [tick]);
@@ -74,8 +77,8 @@ const BrowserHero = () => {
 
 	const restart = useCallback(() => {
 		lastSwitchTickRef.current = -cooldownTicks;
-		onScreenRef.current = 0;
-		setOnScreenIndex(0);
+		onScreenRef.current = openingIndex;
+		setOnScreenIndex(openingIndex);
 		setLastSwitch(null);
 		setTick(0);
 	}, []);
@@ -145,16 +148,18 @@ const BrowserHero = () => {
 	// The popup scrolls in real life too, and the card that just took over is usually below the
 	// fold. Bringing it into view is this page's doing, not the extension's.
 	useEffect(() => {
+		// Not before the first switch. A popup opens at the top, and scrolling on the opening frame
+		// pushed its own header and its first card off the panel before anybody had looked at it.
+		if (!lastSwitch) return;
 		const body = popupBodyRef.current;
 		const block = body?.querySelector<HTMLElement>(`[data-hero-card="${heroGames[onScreenIndex].base.id}"]`);
 		if (!body || !block) return;
-		// Only when it is actually out of view. Scrolling unconditionally pushed the popup's own
-		// header off the top on the very first frame, which made the demo open on a headless panel.
+		// And only when the card is actually out of view.
 		const top = block.offsetTop;
 		const bottom = top + block.offsetHeight;
 		if (top >= body.scrollTop && bottom <= body.scrollTop + body.clientHeight) return;
 		body.scrollTo({ top: Math.max(0, top - 12), behavior: reduced ? 'auto' : 'smooth' });
-	}, [onScreenIndex, reduced]);
+	}, [onScreenIndex, reduced, lastSwitch]);
 
 	const onScreen = heroGames[onScreenIndex];
 	const scoreById = useMemo(() => new Map(scored.map(s => [s.id, s])), [scored]);
@@ -181,8 +186,11 @@ const BrowserHero = () => {
 							>
 								<img src={`${base}images/leagues/${script.base.league}.png`} alt='' className='browser-tab-favicon' />
 								<span className='browser-tab-title'>{script.tabTitle}</span>
+								<span className='browser-tab-close' aria-hidden='true'><i className='bi bi-x-lg' /></span>
+								<span className='browser-tab-flare' aria-hidden='true' />
 							</span>
 						))}
+						<span className='browser-newtab' aria-hidden='true'><i className='bi bi-plus-lg' /></span>
 					</div>
 				</div>
 
@@ -192,31 +200,47 @@ const BrowserHero = () => {
 						<i className='bi bi-arrow-right' />
 						<i className='bi bi-arrow-clockwise' />
 					</span>
-					<span className='browser-url'>
-						<i className='bi bi-lock-fill' />
-						{onScreen.tabHost}
+					<span className='browser-omnibox'>
+						<i className='bi bi-sliders2 browser-omnibox-info' aria-hidden='true' />
+						<span className='browser-omnibox-url'>
+							{onScreen.tabHost}<span className='browser-omnibox-path'>/watch/live</span>
+						</span>
+						<i className='bi bi-star browser-omnibox-star' aria-hidden='true' />
 					</span>
-					<span className='browser-extension' aria-hidden='true'>
-						<img src={`${base}images/icon_white_on_transparent.svg`} alt='' />
+					<span className='browser-toolbar-end' aria-hidden='true'>
+						<i className='bi bi-puzzle' />
+						<span className='browser-extension'>
+							<img src={`${base}images/icon_white_on_transparent.svg`} alt='' />
+						</span>
+						<span className='browser-avatar' />
+						<i className='bi bi-three-dots-vertical' />
 					</span>
 				</div>
 
 				<div className='browser-viewport'>
-					{heroGames.map((script, index) => (
-						<video
-							key={script.base.id}
-							ref={element => { videoRefs.current[index] = element; }}
-							className={`browser-video${index === onScreenIndex ? ' is-active' : ''}`}
-							data-src={`${base}video/${script.video}.mp4`}
-							poster={`${base}video/${script.poster}.jpg`}
-							muted
-							loop
-							playsInline
-							preload='none'
-							aria-hidden='true'
-							tabIndex={-1}
-						/>
-					))}
+					<div className='browser-player'>
+						{heroGames.map((script, index) => (
+							<video
+								key={script.base.id}
+								ref={element => { videoRefs.current[index] = element; }}
+								className={`browser-video${index === onScreenIndex ? ' is-active' : ''}`}
+								data-src={`${base}video/${script.video}.mp4`}
+								poster={`${base}video/${script.poster}.jpg`}
+								muted
+								loop
+								playsInline
+								preload='none'
+								aria-hidden='true'
+								tabIndex={-1}
+							/>
+						))}
+					</div>
+					<div className='browser-page' aria-hidden='true'>
+						<p className='browser-page-title'>{onScreen.tabTitle}</p>
+						<p className='browser-page-meta'>
+							Live · {onScreen.base.venueName} · {onScreen.base.broadcasts?.join(' ')}
+						</p>
+					</div>
 				</div>
 			</div>
 

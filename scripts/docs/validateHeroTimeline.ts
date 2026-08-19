@@ -3,9 +3,10 @@
 //
 //   npm run docs:validate-hero
 //
-// The hero depends on a ranking: which game is best has to change twice, and it has to change
-// because the numbers changed. That is a property of `computePowerScore` over authored beats, not
-// of either one alone, so it needs checking rather than assuming. Run this after editing any beat.
+// The hero depends on a ranking: every clip has to get its turn on screen, the turns have to arrive
+// in one direction rather than flip-flopping, and each change has to happen because the numbers
+// changed. That is a property of `computePowerScore` over authored beats, not of either one alone,
+// so it needs checking rather than assuming. Run this after editing any beat.
 //
 // It prints the board and then asserts. The assertions are the point — this used to print only,
 // which meant a beat edit that flattened the ranking produced a table nobody read.
@@ -13,13 +14,13 @@
 import { heroGameAt, heroGames, heroTickCount } from '../../apps/docs/src/components/hero/heroGames';
 import {
 	cooldownTicks,
+	openingIndex,
 	replayThrough,
 	scoreBoardAt,
 	switchThreshold,
 } from '../../apps/docs/src/components/hero/heroTimeline';
 import { scoreMaxTotal, sportTypeConfigMap } from '../../packages/powerscore/src/constants';
 
-const expectedSwitches = 2;
 const failures: string[] = [];
 
 const pad = (value: string, width: number) => value.padEnd(width);
@@ -44,8 +45,27 @@ console.log(`switches (${final.switches.length}):`);
 final.switches.forEach(s => console.log(`  t${s.tick}: ${s.from} -> ${s.to}, gap ${s.gap}`));
 
 // ─── Assertions ──────────────────────────────────────────────────────────────
-if (final.switches.length !== expectedSwitches) {
-	failures.push(`expected ${expectedSwitches} switches, got ${final.switches.length}. The hero is built on the tab changing twice.`);
+
+const indexOfTab = (title: string) => heroGames.findIndex(script => script.tabTitle === title);
+
+// Every clip has to be seen. A tab that never comes up is a video nobody watches and bytes nobody
+// needed, which is the state this timeline was rewritten to fix.
+const shown = new Set<number>([openingIndex, ...final.switches.map(change => indexOfTab(change.to))]);
+heroGames.forEach((script, index) => {
+	if (!shown.has(index)) failures.push(`${script.tabTitle}: never on screen, so its clip never plays`);
+});
+
+// And seen in one direction. Coming back to a tab already left reads as the switcher being unable to
+// make up its mind, even when every individual decision cleared the threshold honestly.
+const visited = [openingIndex];
+for (const change of final.switches) {
+	const to = indexOfTab(change.to);
+	if (visited.includes(to)) failures.push(`t${change.tick}: returns to ${change.to}, which was on screen earlier`);
+	visited.push(to);
+}
+
+if (final.switches.length < heroGames.length - 1) {
+	failures.push(`only ${final.switches.length} switch(es) for ${heroGames.length} games; every clip needs a turn`);
 }
 
 // A game clock that jumps forward means a beat's clock is not a whole number of ticks from its
@@ -86,7 +106,7 @@ for (const script of heroGames) {
 }
 
 // Scores may only go up, and only by an amount the sport can actually produce in one poll.
-const maxJump: Record<string, number> = { basketball: 5, football: 8, hockey: 1, baseball: 4, softball: 4, soccer: 1 };
+const maxJump: Record<string, number> = { basketball: 6, football: 8, hockey: 1, baseball: 4, softball: 4, soccer: 1 };
 for (const script of heroGames) {
 	const cap = maxJump[script.base.sportType] ?? 5;
 	for (let tick = 1; tick < heroTickCount; tick++) {

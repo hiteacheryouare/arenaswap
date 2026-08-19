@@ -1,5 +1,64 @@
 # Changelog
 
+## The hero showed three of its five clips, and named the wrong games on all of them — 2026-08-19
+
+The five games in the hero were NBA, NFL, NHL, MLB and Premier League fixtures. The footage under
+them was a Hawai'i college basketball game, an Army-Navy game, a Bemidji State hockey game, a Mexican
+League baseball game and a Latvia-Gibraltar international, because that is what exists under a licence
+that can legally go on a marketing page. The cards described one thing and the video showed another,
+which is the one mistake a demo whose entire subject is "the popup tells you what you are watching"
+cannot make. Two of the five tabs also never came up, so two of those clips were bytes nobody ever saw.
+
+### The hero
+- **Three clips, three games, and the card names the game in the clip.** Northern Arizona at Hawai'i,
+  Army at Navy, Minnesota State at Bemidji State — all leagues ArenaSwap tracks, with team ids,
+  abbreviations and crests from ESPN's own teams endpoint. The Mexican League and Nations League clips
+  were cut for the opposite reason: good footage, untracked leagues, so no card could describe them
+- **Every clip gets a turn.** The timeline now hands the screen to each of the three in turn and never
+  goes back, and `docs:validate-hero` asserts exactly that — every game on screen at least once, in one
+  direction, on gaps that clear the shipped threshold. The old lineup left NFL and soccer unwatched
+- **The clips are the exciting part now.** Windows were picked by measuring frame-to-frame change
+  across each source and shortlisting the busiest few seconds, then looking at the shortlist. Motion
+  alone is not enough — the highest-scoring window in the Army-Navy clip is a touchdown celebration,
+  which is a crowd jumping rather than a game being played — so football took the second-ranked window
+- **It opens on the best game rather than the first in the list**, which is where auto-switching would
+  already have put you. Starting at index 0 produced a switch on the first tick and a caption
+  announcing a change nobody saw
+- Trimming to three tighter clips took the video from 1.74MB to 1.12MB
+
+### The window
+- **Drawn as Chrome on macOS rather than as a dark rectangle**: the tab strip doubles as the title bar
+  with the traffic lights inset, the active tab flares outward at its base into the toolbar, inactive
+  tabs are divided by hairlines instead of boxes, and the omnibox is a pill with the site-information
+  icon, a dimmed path and a bookmark star. The pinned extension is tinted the way Chrome tints an
+  action whose popup is open, which is the only thing tying the panel to the button
+- **The video is a player, not a wallpaper.** Stretching a 2.25:1 clip over a window tall enough to
+  hold a 560px popup cropped 45% of every frame off the sides. There is a 16:9 player at the top and a
+  little of the stream's own page under it, which is how a stream page is actually laid out
+
+### Above the fold
+- **The window sits beside the copy instead of under it.** It was most of the way below the fold
+- **A row of team crests under the install button**, four Philadelphia clubs first, then the rest —
+  picked to read on a dark page as much as for being famous, which is why the Cowboys' navy star and
+  the Yankees' navy monogram are not in it. The hero games are real but obscure, and this is the answer
+  to the question they raise
+
+### Copy
+- **The landing page copy is the copy from the previous site**, which was better: "Set it once. Watch
+  everything.", "31 leagues. One extension.", "See why. Every time.", "If it's live, it's covered.",
+  "Tuned in to you.", and the three steps. The settings band lists individual settings with their real
+  descriptions rather than the six groups they are filed under, because what people want to know is
+  what a control does, not where it lives
+
+### Fixed
+- The page under the player was clipped below 1440px: the window had a fixed height, and as it narrows
+  a 16:9 player grows taller relative to it. It is a floor now, which is safe because the aspect ratio
+  lives on the player rather than on the window
+- At phone widths the stream title was squeezed into a column narrower than a word, because the
+  reserve held for the popup stayed in place after the popup had moved out of the window
+- The popup opened pre-scrolled, pushing its own header and first card out of view before anybody had
+  looked at it. It scrolls when ArenaSwap moves you, and not before
+
 ## The website was a hand-drawn picture of the extension, and the two had drifted — 2026-08-18
 
 The old landing page contained a popup. Not the popup — a replica, 108 lines of CSS under a comment

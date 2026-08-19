@@ -23,7 +23,73 @@
 }
 
 .band-hero {
-	padding: 7.5rem 0 4rem;
+	padding: 6rem 0 3.5rem;
+}
+
+// Copy left, browser right. It used to sit under the copy, which pushed the one thing on the page
+// that shows the product doing anything most of the way below the fold.
+.hero-grid {
+	display: grid;
+	grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
+	gap: 3rem;
+	align-items: center;
+}
+
+.hero-copy {
+	// The lede sets the measure for this column; the headline is allowed to run wider than it.
+	max-width: 34rem;
+}
+
+@media (max-width: 1199.98px) {
+	.hero-grid {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 2.5rem;
+	}
+
+	.hero-copy {
+		max-width: none;
+	}
+}
+
+// ─── Above the fold: who is covered ──────────────────────────────────────────
+.team-strip {
+	display: block;
+	margin-top: 2.25rem;
+	padding-top: 1.5rem;
+	border-top: 1px solid #21262d;
+	text-decoration: none;
+
+	&:hover .team-strip-label {
+		color: var(--color-text);
+	}
+}
+
+.team-strip-label {
+	display: block;
+	font-size: 0.8rem;
+	color: var(--color-muted);
+	margin-bottom: 0.85rem;
+	transition: color 0.15s ease;
+}
+
+.team-strip-logos {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.7rem;
+
+	img {
+		width: 1.95rem;
+		height: 1.95rem;
+		object-fit: contain;
+		// Held slightly back so no one crest shouts over the rest, and brought up together on hover.
+		opacity: 0.9;
+		transition: opacity 0.15s ease;
+	}
+}
+
+.team-strip:hover .team-strip-logos img {
+	opacity: 1;
 }
 
 // ─── Display type ────────────────────────────────────────────────────────────
@@ -80,19 +146,11 @@
 }
 
 // ─── Hero headline block ─────────────────────────────────────────────────────
-.hero-under {
-	display: flex;
-	align-items: flex-end;
-	gap: 3.5rem;
-	margin-top: 2.2rem;
-	flex-wrap: wrap;
-}
-
 .hero-actions {
 	display: flex;
 	align-items: center;
 	gap: 1.1rem;
-	margin-left: auto;
+	margin-top: 1.75rem;
 	flex-wrap: wrap;
 }
 
@@ -105,6 +163,42 @@
 		text-decoration: underline;
 		text-decoration-color: rgba(247, 92, 3, 0.55);
 		text-underline-offset: 3px;
+	}
+}
+
+// ─── The three steps ─────────────────────────────────────────────────────────
+// An ordered list, and left as one: the order is the whole content, so the browser's own numbering
+// is doing real work here rather than decorating three cards with 01/02/03.
+.steps {
+	list-style: decimal;
+	margin: 0;
+	padding-left: 1.4rem;
+	counter-reset: none;
+
+	li {
+		padding: 0 0 1.1rem;
+	}
+
+	li::marker {
+		font-family: var(--font-mono);
+		font-size: 0.8rem;
+		color: var(--color-primary);
+	}
+
+	h3 {
+		font-size: 1.05rem;
+		font-weight: 600;
+		letter-spacing: -0.02em;
+		color: var(--color-text);
+		margin: 0;
+	}
+
+	p {
+		font-size: 0.9rem;
+		color: var(--color-muted);
+		line-height: 1.6;
+		margin: 0.3rem 0 0;
+		max-width: 46ch;
 	}
 }
 
@@ -274,19 +368,6 @@
 
 	.band-hero {
 		padding: 5.5rem 0 3rem;
-	}
-}
-
-// The lede and the install button share a row only while there is room for both. Below this they
-// wrapped but kept `margin-left: auto`, which left the button stranded on its own line against the
-// right edge with a hundred pixels of nothing above it.
-@media (max-width: 1199.98px) {
-	.hero-under {
-		display: block;
-	}
-
-	.hero-actions {
-		margin: 1.6rem 0 0;
 	}
 }
 

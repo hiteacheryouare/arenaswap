@@ -1,0 +1,37 @@
+---
+// The games in the hero are a college basketball game, an Army-Navy game and a college hockey game,
+// because those are the games in the only footage that can legally be put on this page. They are
+// real, and they are also not the teams most people are here for. This is the answer to the question
+// those clips raise: yes, it covers your team.
+//
+// Crests are ESPN's, the same source the game cards pull from, and each links to the full league
+// list rather than pretending to be a filter.
+
+const espnTeam = (path: string) => `https://a.espncdn.com/i/teamlogos/${path}.png`;
+
+// Philadelphia first, which is where this is built, then Boston, which is the other half of the
+// footer. The rest are picked to read on a dark page as much as for being famous: the Cowboys' navy
+// star and the Yankees' navy monogram are both nearly invisible on #0d1117, so neither is here.
+const teams = [
+	{ name: 'Philadelphia Eagles', logo: espnTeam('nfl/500/phi') },
+	{ name: 'Philadelphia Phillies', logo: espnTeam('mlb/500/phi') },
+	{ name: 'Philadelphia Flyers', logo: espnTeam('nhl/500/phi') },
+	{ name: 'Philadelphia 76ers', logo: espnTeam('nba/500/phi') },
+	{ name: 'Boston Celtics', logo: espnTeam('nba/500/bos') },
+	{ name: 'Boston Red Sox', logo: espnTeam('mlb/500/bos') },
+	{ name: 'Kansas City Chiefs', logo: espnTeam('nfl/500/kc') },
+	{ name: 'Green Bay Packers', logo: espnTeam('nfl/500/gb') },
+	{ name: 'Los Angeles Lakers', logo: espnTeam('nba/500/lal') },
+	{ name: 'Edmonton Oilers', logo: espnTeam('nhl/500/edm') },
+	{ name: 'Arsenal', logo: espnTeam('soccer/500/359') },
+	{ name: 'Manchester City', logo: espnTeam('soccer/500/382') },
+];
+---
+<a class='team-strip' href={`${import.meta.env.BASE_URL}#leagues`}>
+	<span class='team-strip-label'>Every team in 31 leagues. Yours included.</span>
+	<span class='team-strip-logos'>
+		{teams.map(team => (
+			<img src={team.logo} alt={team.name} title={team.name} loading='eager' width='26' height='26' />
+		))}
+	</span>
+</a>

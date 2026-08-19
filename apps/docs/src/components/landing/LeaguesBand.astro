@@ -38,10 +38,11 @@ const sportCount = spelled[groups.length] ?? String(groups.length);
 		<div class='leagues-head'>
 			<span class='band-count'>{leagueCount}</span>
 			<div>
-				<h2 class='display-md'>Leagues. {sportCount.charAt(0).toUpperCase() + sportCount.slice(1)} sports.</h2>
+				<h2 class='display-md'>Leagues. If it's live,<br>it's covered.</h2>
 				<p class='band-copy' style='margin-top:0.6rem;max-width:52ch'>
-					Turn off the ones you do not watch and ArenaSwap stops polling them. Put the rest in
-					whatever order you actually watch them in.
+					{sportCount.charAt(0).toUpperCase() + sportCount.slice(1)} sports. Every level of play.
+					ArenaSwap monitors them all at once. Turn off the ones you do not watch and it stops
+					polling them.
 				</p>
 			</div>
 		</div>

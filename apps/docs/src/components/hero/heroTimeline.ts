@@ -90,10 +90,15 @@ export interface HeroStateAt {
 	switches: HeroSwitch[];
 }
 
+// Where the hero opens. Not the first game in the list: if auto-switching has been on, you are
+// already on the best game by the time you look, so starting anywhere else would mean opening on a
+// switch the extension would have made before you arrived.
+export const openingIndex = bestOf(scoreBoardAt(0)).index;
+
 // Runs the whole thing from the first tick, which is the only honest way to answer "which tab would
 // you be on at tick N": being on a tab is a consequence of every switch decision before it.
 export const replayThrough = (tick: number): HeroStateAt => {
-	let onScreenIndex = 0;
+	let onScreenIndex = openingIndex;
 	let lastSwitchTick = -cooldownTicks;
 	let lastSwitch: HeroSwitch | null = null;
 	const switches: HeroSwitch[] = [];
