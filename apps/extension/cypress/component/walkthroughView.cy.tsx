@@ -34,6 +34,13 @@ describe('walkthroughView step navigation', () => {
 		cy.contains('Closeness').should('exist');
 		cy.contains('Scored from the current point margin').should('exist');
 
+		// Signal sub-steps raise a full-bleed bloom over the orbit and its dots on a 150ms + 450ms
+		// timer, and the whole overlay is the "tap anywhere to continue" target, so the dots are
+		// deliberately unreachable while it is up. Step back off the signal sub-steps and wait for
+		// the overlay to go rather than racing the bloom-in timer to the next dot.
+		cy.contains('button', 'Back').click();
+		cy.get('.ps-bloom-overlay').should('not.exist');
+
 		cy.get('.powerscore-progress-dot').eq(11).click();
 		cy.contains('Postseason Boost').should('exist');
 
