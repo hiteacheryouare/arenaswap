@@ -1,27 +1,25 @@
-import { useState } from 'react';
-import { i18n } from '#i18n';
 import { leagueConfigs, resolveLeagueLogoUrl } from '@arenaswap/core/constants';
 import type { LeagueLogoMap } from '@arenaswap/core/types';
+import Crest from '@arenaswap/ui/src/components/crest';
 
 export type leagueConfig = (typeof leagueConfigs)[number];
 
-export const toLeagueInitials = (league: leagueConfig): string => (
-	league.label.split(/\s+/).map(part => part[0] ?? '').join('').slice(0, 3).toUpperCase()
-);
-
-const LeagueLogo = ({ league, logos }: { league: leagueConfig; logos: LeagueLogoMap }) => {
-	const [imageFailed, setImageFailed] = useState(false);
-	const logoUrl = resolveLeagueLogoUrl(league.id, logos[league.id]);
-	if (imageFailed) {
-		return (
-			<span className='league-toggle-logo league-toggle-logo-fallback d-inline-flex align-items-center justify-content-center fw-bold'>
-				{toLeagueInitials(league)}
-			</span>
-		);
-	}
-	return (
-		<img src={logoUrl} alt={i18n.t('setup.leagueLogoAlt', { label: league.label })} className='league-toggle-logo' loading='lazy' onError={() => setImageFailed(true)} />
-	);
+// Initials only for a label with words to take them from. Half the leagues are already acronyms, and
+// first-letters turned NBA, NHL, NFL and NWSL into four crests all reading 'N'.
+export const toLeagueInitials = (league: leagueConfig): string => {
+	const words = league.label.split(/\s+/);
+	if (words.length === 1) return words[0]!.slice(0, 4).toUpperCase();
+	return words.map(word => word[0] ?? '').join('').slice(0, 3).toUpperCase();
 };
+
+// Decorative: every league mark in the popup sits beside its own visible label.
+const LeagueLogo = ({ league, logos }: { league: leagueConfig; logos: LeagueLogoMap }) => (
+	<Crest
+		logo={resolveLeagueLogoUrl(league.id, logos[league.id])}
+		abbreviation={toLeagueInitials(league)}
+		className='league-toggle-logo'
+		loading='lazy'
+	/>
+);
 
 export default LeagueLogo;

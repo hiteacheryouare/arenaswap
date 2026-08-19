@@ -1,11 +1,16 @@
 ---
 import { getCollection } from 'astro:content';
 import Shell from '../../layouts/Shell.astro';
-import ReadingNav from '../../components/ReadingNav.astro';
+
+// The home of the release notes: the newest one gets the room, everything before it gets a line.
+// No side nav — it used to list every version beside a page that is already a list of every
+// version.
 
 const base = import.meta.env.BASE_URL;
 const releases = (await getCollection('releases', ({ data }) => !data.draft))
 	.toSorted((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const [latest, ...earlier] = releases;
 
 // UTC on purpose: a date-only frontmatter value is midnight UTC, and rendering it in the build
 // machine's zone shifts it a day west of Greenwich.
@@ -22,37 +27,51 @@ const formatDate = (date: Date) => date.toLocaleDateString('en-US', {
 		<div class='page-head'>
 			<h1 class='page-title'>Release notes.</h1>
 			<p class='page-lede'>
-				What shipped in each version, written for people using it rather than people building
-				it. <a href={`${base}releases/rss.xml`}>Subscribe by RSS</a>.
+				What shipped in each version, written for people using ArenaSwap rather than people
+				building it. <a href={`${base}releases/rss.xml`}>Subscribe by RSS</a>.
 			</p>
 		</div>
 
-		<div class='reading-shell'>
-			<ReadingNav current='releases/' />
+		<div class='release-index'>
+			{!latest && <p class='page-lede'>Nothing published yet.</p>}
 
-			<div>
-				{releases.length === 0 && (
-					<p class='band-copy'>Nothing published yet.</p>
-				)}
+			{latest && (
+				<article class='release-latest'>
+					<p class='release-meta'>
+						<time datetime={latest.data.date.toISOString()}>{formatDate(latest.data.date)}</time>
+						<span aria-hidden='true'> · </span>
+						Version {latest.data.version}
+					</p>
+					<h2 class='release-latest-title'>
+						<a href={`${base}releases/${latest.data.version}/`}>{latest.data.title}</a>
+					</h2>
+					<p class='release-latest-summary'>{latest.data.summary}</p>
+					<a class='release-read' href={`${base}releases/${latest.data.version}/`}>
+						Read the notes<span aria-hidden='true'> →</span>
+					</a>
+				</article>
+			)}
 
-				{releases.map(release => (
-					<article class='release'>
-						<div class='release-head'>
-							<h2 class='release-version'>
-								<a href={`${base}releases/${release.data.version}/`}>{release.data.version}</a>
-							</h2>
-							<time class='release-date' datetime={release.data.date.toISOString()}>
-								{formatDate(release.data.date)}
-							</time>
-						</div>
-						<div class='prose' style='margin-top:1rem'>
-							<h3 style='margin-top:0'>{release.data.title}</h3>
-							<p>{release.data.summary}</p>
-							<p><a href={`${base}releases/${release.data.version}/`}>Read the full notes</a></p>
-						</div>
-					</article>
-				))}
-			</div>
+			{earlier.length > 0 && (
+				<>
+					<h2 class='release-earlier-head'>Earlier versions</h2>
+					<ul class='release-list'>
+						{earlier.map(release => (
+							<li>
+								<p class='release-meta'>
+									<time datetime={release.data.date.toISOString()}>{formatDate(release.data.date)}</time>
+									<span aria-hidden='true'> · </span>
+									Version {release.data.version}
+								</p>
+								<h3>
+									<a href={`${base}releases/${release.data.version}/`}>{release.data.title}</a>
+								</h3>
+								<p class='release-list-summary'>{release.data.summary}</p>
+							</li>
+						))}
+					</ul>
+				</>
+			)}
 		</div>
 	</div>
 </Shell>

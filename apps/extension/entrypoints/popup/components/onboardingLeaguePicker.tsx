@@ -1,7 +1,8 @@
-import { useState } from 'react';
 import { i18n } from '#i18n';
-import { leagueConfigs, resolveLeagueLogoUrl } from '@arenaswap/core/constants';
+import { resolveLeagueLogoUrl } from '@arenaswap/core/constants';
 import type { LeagueId, LeagueLogoMap, SportType } from '@arenaswap/core/types';
+import Crest from '@arenaswap/ui/src/components/crest';
+import { toLeagueInitials, type leagueConfig } from './leagueLogo';
 import { leaguesBySportType, sportTypeLabels, sportTypeOrder } from '../popupHelpers';
 
 interface onboardingLeaguePickerProps {
@@ -13,8 +14,6 @@ interface onboardingLeaguePickerProps {
 	onNext: () => void;
 }
 
-type leagueConfig = (typeof leagueConfigs)[number];
-
 const sportEmojis: Record<SportType, string> = {
 	basketball: '🏀',
 	football: '🏈',
@@ -24,27 +23,14 @@ const sportEmojis: Record<SportType, string> = {
 	soccer: '⚽',
 };
 
-const LeagueLogo = ({ league, logos }: { league: leagueConfig; logos: LeagueLogoMap }) => {
-	const [imageFailed, setImageFailed] = useState(false);
-	const logoUrl = resolveLeagueLogoUrl(league.id, logos[league.id]);
-	const initials = league.label.split(/\s+/).map(p => p[0] ?? '').join('').slice(0, 3).toUpperCase();
-	if (imageFailed) {
-		return (
-			<span className='league-toggle-logo league-toggle-logo-fallback d-inline-flex align-items-center justify-content-center fw-bold'>
-				{initials}
-			</span>
-		);
-	}
-	return (
-		<img
-			src={logoUrl}
-			alt={`${league.label} logo`}
-			className='onb-league-logo'
-			loading='eager'
-			onError={() => setImageFailed(true)}
-		/>
-	);
-};
+const LeagueLogo = ({ league, logos }: { league: leagueConfig; logos: LeagueLogoMap }) => (
+	<Crest
+		logo={resolveLeagueLogoUrl(league.id, logos[league.id])}
+		abbreviation={toLeagueInitials(league)}
+		className='onb-league-logo'
+		loading='eager'
+	/>
+);
 
 const onboardingLeaguePicker = ({
 	selectedLeagues,

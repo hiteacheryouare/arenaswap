@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { i18n } from '#i18n';
 import type { EspnTeamEntry } from '@arenaswap/core';
 import type { LeagueId } from '@arenaswap/core/types';
+import Crest from '@arenaswap/ui/src/components/crest';
 import { leagueLabels, leagueOrder } from '../popupHelpers';
 
 interface onboardingTeamPickerProps {
@@ -15,27 +16,6 @@ interface onboardingTeamPickerProps {
 	onSkip: () => void;
 	onDone: () => void;
 }
-
-const TeamLogo = ({ team }: { team: EspnTeamEntry }) => {
-	const [failed, setFailed] = useState(false);
-	const abbr = (team.abbreviation ?? team.name ?? '?').slice(0, 3);
-	if (!team.logo || failed) {
-		return (
-			<span className='onb-league-logo league-toggle-logo-fallback d-inline-flex align-items-center justify-content-center fw-bold small'>
-				{abbr}
-			</span>
-		);
-	}
-	return (
-		<img
-			src={team.logo}
-			alt={team.name}
-			className='onb-league-logo'
-			loading='lazy'
-			onError={() => setFailed(true)}
-		/>
-	);
-};
 
 const onboardingTeamPicker = ({
 	teams,
@@ -122,7 +102,12 @@ const onboardingTeamPicker = ({
 								return (
 									<div key={team.id} className='d-flex align-items-center justify-content-between gap-2 mt-1 py-1'>
 										<div className='d-flex align-items-center gap-2 min-w-0'>
-											<TeamLogo team={team} />
+											<Crest
+												logo={team.logo}
+												abbreviation={(team.abbreviation ?? team.name ?? '?').slice(0, 3)}
+												className='onb-league-logo'
+												loading='lazy'
+											/>
 											<span className='fw-semibold text-body lh-sm small'>{team.name}</span>
 										</div>
 										<button

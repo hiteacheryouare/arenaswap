@@ -1,26 +1,12 @@
-import { useState } from 'react';
 import { i18n } from '#i18n';
 import type { Game, Team } from '@arenaswap/core/types';
+import Crest from '@arenaswap/ui/src/components/crest';
 
-interface barCrestProps {
-	team: Team;
-}
-
-// Falls back to nothing rather than the abbreviation, which is already the next element along.
-const BarCrest = ({ team }: barCrestProps) => {
-	const [logoFailed, setLogoFailed] = useState(false);
-	if (!team.logo || logoFailed) return null;
-
-	return (
-		<img
-			src={team.logo}
-			alt=''
-			aria-hidden='true'
-			className='gd-bar-logo'
-			onError={() => setLogoFailed(true)}
-		/>
-	);
-};
+// Blank rather than lettered: the abbreviation is already the next element along. It still holds
+// its box, because collapsing an 18px item drags the centred matchup off the card's axis.
+const BarCrest = ({ team }: { team: Team }) => (
+	<Crest logo={team.logo} abbreviation={team.abbreviation} className='gd-bar-logo' fallback='blank' />
+);
 
 interface detailStickyBarProps {
 	game: Game;

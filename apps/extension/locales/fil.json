@@ -158,7 +158,6 @@
 		"selectNone": "wala",
 		"selectAll": "lahat",
 		"noLeaguesWarning": "Walang napiling liga. Hindi makaka-track ang ArenaSwap ng kahit anong laro.",
-		"leagueLogoAlt": "Logo ng {label}",
 		"leagueOrderSection": "Ayos ng Display",
 		"leagueOrderExplainer": "Ganito lalabas ang mga seksyon ng liga sa main screen. I-drag ang isang liga, o gamitin ang mga arrow para iayos.",
 		"leagueOrderReset": "I-reset sa default na ayos",

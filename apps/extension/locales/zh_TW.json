@@ -158,7 +158,6 @@
 		"selectNone": "全不選",
 		"selectAll": "全選",
 		"noLeaguesWarning": "尚未選擇任何聯賽，ArenaSwap 不會追蹤任何比賽。",
-		"leagueLogoAlt": "{label} 標誌",
 		"leagueOrderSection": "顯示順序",
 		"leagueOrderExplainer": "主畫面上的聯賽區塊會依此順序顯示。可拖曳聯賽，或用箭頭微調。",
 		"leagueOrderReset": "重設為預設順序",

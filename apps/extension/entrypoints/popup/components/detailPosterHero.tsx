@@ -1,7 +1,7 @@
-import { useState } from 'react';
 import { i18n } from '#i18n';
 import { createFavoriteTeamKey } from '@arenaswap/core/constants';
 import type { Game, LeagueId, Team } from '@arenaswap/core/types';
+import Crest from '@arenaswap/ui/src/components/crest';
 import SeriesDots from './seriesDots';
 import StartCountdownDisplay from './startCountdownDisplay';
 import { resolveTeamColorPair } from '@arenaswap/ui/src/components/colorUtils';
@@ -41,42 +41,34 @@ const PosterTeam = ({
 	leagueId: LeagueId;
 	isFavorited: boolean;
 	onToggleFavoriteTeam: (leagueId: LeagueId, teamId: string) => void;
-}) => {
-	const [logoFailed, setLogoFailed] = useState(false);
-
-	return (
-		<div className='gd-poster-team'>
-			<div className='gd-poster-crest' style={{ background: crestBacking(color) }}>
-				{team.logo && !logoFailed
-					? (
-						<img
-							src={team.logo}
-							alt={team.abbreviation}
-							className='gd-poster-crest-logo'
-							onError={() => setLogoFailed(true)}
-						/>
-					)
-					: <span className='gd-poster-crest-abbr' style={{ color }}>{team.abbreviation}</span>}
-			</div>
-			<div className='gd-poster-name'>{team.name || team.abbreviation}</div>
-			<div className='gd-poster-meta'>
-				{record && <span className='gd-poster-record'>{record}</span>}
-				<button
-					type='button'
-					className='btn btn-link p-0 border-0 lh-1 gd-poster-star'
-					data-favorited={isFavorited}
-					aria-label={isFavorited
-						? i18n.t('gameCard.removeFromFavorites', { team: team.abbreviation })
-						: i18n.t('gameCard.addToFavorites', { team: team.abbreviation })}
-					title={isFavorited ? i18n.t('gameCard.favorited') : i18n.t('gameCard.addToFavoritesShort')}
-					onClick={() => onToggleFavoriteTeam(leagueId, team.id)}
-				>
-					<i className={`bi ${isFavorited ? 'bi-star-fill' : 'bi-star'}`} />
-				</button>
-			</div>
+}) => (
+	<div className='gd-poster-team'>
+		<div className='gd-poster-crest' style={{ background: crestBacking(color) }}>
+			<Crest
+				logo={team.logo}
+				abbreviation={team.abbreviation}
+				className='gd-poster-crest-logo'
+				fallbackStyle={{ color }}
+			/>
 		</div>
-	);
-};
+		<div className='gd-poster-name'>{team.name || team.abbreviation}</div>
+		<div className='gd-poster-meta'>
+			{record && <span className='gd-poster-record'>{record}</span>}
+			<button
+				type='button'
+				className='btn btn-link p-0 border-0 lh-1 gd-poster-star'
+				data-favorited={isFavorited}
+				aria-label={isFavorited
+					? i18n.t('gameCard.removeFromFavorites', { team: team.abbreviation })
+					: i18n.t('gameCard.addToFavorites', { team: team.abbreviation })}
+				title={isFavorited ? i18n.t('gameCard.favorited') : i18n.t('gameCard.addToFavoritesShort')}
+				onClick={() => onToggleFavoriteTeam(leagueId, team.id)}
+			>
+				<i className={`bi ${isFavorited ? 'bi-star-fill' : 'bi-star'}`} />
+			</button>
+		</div>
+	</div>
+);
 
 const detailPosterHero = ({ game, seriesInfo, records, statusText, favoriteTeamIds, onToggleFavoriteTeam }: detailPosterHeroProps) => {
 	const [awayColor, homeColor] = resolveTeamColorPair(game.awayTeam, game.homeTeam, '#2274A5', '#F75C03');

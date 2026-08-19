@@ -1,5 +1,134 @@
 # Changelog
 
+## A copy pass over the site, and the PowerScore page was lying about its own numbers — 2026-08-19
+
+An editing pass over every page except the landing page's headings, plus two bugs the reading turned
+up.
+
+### The bugs
+- **The PowerScore page advertised the wrong ceilings.** It listed Closeness 30, Late-Game Pressure
+  28, Momentum 28, Lead Changes 18, Comeback 14. The shipped ceilings are 42, 38, 38, 18 and 20, so
+  four of the five numbers were wrong. The five cards are now generated from `scoreMaxCloseness` and
+  friends imported from `powerscore`, the way the leagues band and the settings band already read
+  from the real constants. The grid markup is byte-identical
+- **That page's meta description was truncated at "tonight".** The description was single-quoted and
+  contained "tonight's", so the attribute closed early. Shipped HTML said `...watch it score
+  tonight`. Now double-quoted and whole
+
+### The copy
+- Em dashes out of the prose. They stay in `<title>` tags, where they separate page from site name
+- `ESPN's` on the FAQ had a curly apostrophe, the only one on the site
+- Passive constructions named their actor: "which league scoreboards were asked for" became "which
+  league scoreboards ArenaSwap asked for", "is called out in that version's release notes" became
+  "that version's release notes say so"
+- The privacy page's permission bullets stopped hanging off dashes and became bold lead-ins
+- British spellings out of visible copy: `licences` and `colours` on pages headed "Licenses."
+- The credits page claimed "DM Sans and Lekton are under the SIL Open Font License. Geist is under
+  the SIL Open Font License", which was two sentences to say one thing and left out DM Serif Text
+- The legal hub described "the one server it talks to" when there are two hosts
+- Smaller edits to the settings band, the charts band, the docs placeholders and the machine
+  explainer: "a designated fallback tab" became "a fallback tab you pick", "Manually raise" became
+  "Raise by hand", and so on
+
+### Implementation detail out of consumer copy
+The licenses page explained its own build step to the reader: "The table is read from the project's
+manifests when the site is built, so it lists what is installed rather than what somebody remembered
+to type." Nobody visiting a legal page needs to know how the page was assembled. That sentence is
+gone, and so are the rest of them:
+
+- "your browser's local and session storage, never the synced kind" became "All of it stays on that
+  computer. ArenaSwap never syncs any of it"
+- "ArenaSwap ships no content scripts, so none of its code runs inside the pages you visit" became
+  the second half of that sentence alone
+- "The Firefox build declares its data collection as `none`" became "On Firefox, ArenaSwap is listed
+  as collecting no data at all"
+- "Fonts are served from this site rather than from a font CDN" became "rather than from somebody
+  else's server", and "Static pages on GitHub Pages" moved into the sentence about GitHub logging,
+  which is the only reason a reader cares where it is hosted
+- "ESPN's public API" became "ESPN" on the FAQ, the credits page and the disclaimers, and
+  "third-party APIs change without notice" became "the services it reads from"
+- "The hero on the homepage" became "The video at the top of the homepage". `hero` is a word for
+  people who build websites
+- "every typeface it sets" became "every typeface it uses"
+- "stops being polled" became "stops being checked" in the 2.0 notes, and "works in Chrome, Firefox
+  and Edge from the same codebase" lost its last four words
+- "Full license text for any package above ships inside the package itself" became "Follow any link
+  above for that package's own full license", which tells the reader what to do instead of where
+  bytes live
+
+The two ESPN hostnames stay on the privacy page. A privacy statement that says which addresses the
+extension contacts is doing its job.
+
+Left alone on purpose: the landing page's headings, the `/screenshots/` store-asset pages, whose copy
+lengths are measured to fit a 1280x800 crop, and the smart quotes Astro's markdown pipeline renders
+in release notes, which are typography rather than a tell. The PowerScore package page keeps its
+technical detail, because the people reading it are installing an npm package.
+
+## The site's navigation points at pages now, not at scroll positions — 2026-08-19
+
+The nav and footer were half sitemap, half table of contents: "How it works", "Leagues" and
+"Settings" were anchors into the homepage, sitting in the same list as pages that actually exist. So
+half the links moved you within one document and half loaded another, and nothing told you which was
+which before you clicked. The homepage is unchanged — every band it had, it still has — but nothing
+outside it links into the middle of it any more.
+
+### Navigation
+- **Nav is four pages**: PowerScore, Docs, Releases, FAQ. The mobile drawer carries the same four plus
+  Legal notices
+- **Footer is three columns**: Product, Legal, Install. `Resources` and `Product` had drifted into
+  each other, one of them holding a link to the other's page
+- The 404's link list lost its two homepage anchors and gained Docs and Legal notices
+
+### `/blog/` is gone
+- The route, the collection, the one post it held and the four interactive explorers built for that
+  post are all deleted, along with the ~240 lines of CSS that only those explorers used
+- `/blog/` redirects to `/releases/`, and `/blog/introducing-v2/` to `/releases/2.0.0/`, because both
+  were published. Redirects in static output are meta-refresh pages, which is what GitHub Pages can
+  serve
+
+### `/legal/` is new
+Four notices, each with its own URL, because these get linked one at a time — to a store reviewer, to
+an issue — and a URL that lands on the right clause beats a URL plus "scroll down".
+
+- **`/legal/privacy/`** — written against the code, not from a template. Storage is `local` and
+  `session`, never `sync`; the only two hosts the extension may reach are `site.api.espn.com` and
+  `a.espncdn.com`; there are no content scripts; the Firefox build declares data collection as
+  `none`. It also says out loud that ESPN sees an IP address and which scoreboards were requested,
+  and that the PowerScore page fetches live games from your browser
+- **`/legal/licenses/`** — the ISC text in full, then every direct dependency of every workspace with
+  its version and licence, read from the manifests at build time by
+  `apps/docs/src/lib/dependencyLicences.ts`. Both manifest sections, deliberately: `react`,
+  `bootstrap` and `bootstrap-icons` are devDependencies of the extension and all three ship inside
+  the popup, so the `dependencies`/`devDependencies` split says nothing about what reaches a browser.
+  An unresolvable package fails the build rather than dropping quietly off a legal page. Each name
+  links to the package's own declared `homepage` — docs for `astro` and `react`, a README for the
+  smaller ones — with npm as the fallback for the one package that declares none
+- **`/legal/credits/`** — the old `/credits/`, moved. `/credits/` redirects to it. The dead
+  `shareAlike` branch came out; none of the three clips carry that licence
+- **`/legal/terms/`** — the disclaimers that had been living as one line of small type in the footer:
+  no affiliation, not a streaming service, ESPN's data is ESPN's, PowerScore is an opinion, no
+  warranty, no SLA
+
+### Release notes read like an announcement
+- **`/releases/` is a landing page**: the newest release takes the top of it, everything before it is
+  a line in a list below. It no longer carries a side nav that listed every release beside a page
+  that is a list of every release
+- **`/releases/<version>/`** got a centred masthead, a back link, an optional lead image
+  (`image`/`imageAlt` in the frontmatter), previous/next links, and the note's own `h2`s pinned beside
+  the prose as a table of contents. An `IntersectionObserver` marks the section you are reading;
+  without JavaScript the list is still a working set of anchors. Hidden below 992px, where an outline
+  stacked on top of the thing it outlines is just more to scroll past
+- No eyebrow, no "RELEASE" label, no read-time estimate
+
+### Fewer sidebars
+- `ReadingNav` is gone. It listed every release, both docs sections and three "More" links on every
+  page that used it, which by the end was most of the site's navigation duplicated beside the site's
+  navigation
+- `DocsNav` replaces it on the docs pages with the three documentation links and nothing else
+- `LegalNav` does the same for the four legal pages
+- The FAQ and the releases index run full width, both with a measure on the list so a rule is not
+  twice the width of the text under it
+
 ## The hero was cramped, and the popup was sitting on the video — 2026-08-19
 
 Two rounds of feedback in one entry. The popup was pinned inside the window at its real 320x560, which

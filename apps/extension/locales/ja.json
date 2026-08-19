@@ -158,7 +158,6 @@
 		"selectNone": "なし",
 		"selectAll": "すべて",
 		"noLeaguesWarning": "リーグが選択されていません。ArenaSwapは試合を追跡しません。",
-		"leagueLogoAlt": "{label}ロゴ",
 		"leagueOrderSection": "表示順",
 		"leagueOrderExplainer": "メイン画面のリーグセクションはこの順で表示されます。ドラッグまたは矢印で並べ替えできます。",
 		"leagueOrderReset": "デフォルトの順序に戻す",

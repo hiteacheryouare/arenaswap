@@ -122,6 +122,18 @@ describe('pre-game detail screen', () => {
 		});
 	});
 
+	// The poster's crests come from ESPN, so the slot has to hold its box before they arrive.
+	it('holds the crest box with the abbreviation until the logo lands', () => {
+		mountPre(preGame);
+		cy.get('.gd-poster-crest-logo').should('have.length', 2).each(($crest: JQuery<HTMLElement>) => {
+			const box = $crest[0]!.getBoundingClientRect();
+			expect(box.width, 'crest width').to.equal(44);
+			expect(box.height, 'crest height').to.equal(44);
+			expect(getComputedStyle($crest[0]!.querySelector('.crest-fallback')!).backgroundColor,
+				'no second disc inside the tinted one').to.equal('rgba(0, 0, 0, 0)');
+		});
+	});
+
 	it('carries a favourite star per team, reflecting current state', () => {
 		mountPre(preGame, { favorites: ['nfl:1'] });
 		cy.get('.gd-poster-star').should('have.length', 2);

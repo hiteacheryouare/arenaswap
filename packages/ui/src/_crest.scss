@@ -1,0 +1,49 @@
+// One remote logo over one placeholder, in one box. The image is layered on top of the placeholder
+// rather than swapped for it, so a crest already in the cache paints in the first frame and nothing
+// moves when a slow one lands. Size, shape, font-size and placeholder colour all come from the call
+// site's own class — this file only guarantees the two layers share a box.
+
+.crest {
+	position:    relative;
+	display:     inline-flex;
+	flex-shrink: 0;
+	overflow:    hidden;
+	line-height: 1;
+}
+
+// The `.crest` ancestor is load-bearing, not tidiness: both the extension's own reset and
+// Tailwind's preflight set `img { height: auto }`, and in the extension that reset loads after this
+// file. A bare `img` selector would lose on source order. `inset` alone is not enough either — an
+// absolutely positioned replaced element with `width: auto` uses its intrinsic size.
+.crest > img {
+	position:   absolute;
+	inset:      0;
+	width:      100%;
+	height:     100%;
+	object-fit: contain;
+}
+
+// Neutral enough to read on the dark popup, the dark site, the white poster disc and the light
+// matchup card, so one value serves every call site. Static on purpose: a shimmer across thirty
+// crests at once reads as a fault rather than as loading.
+.crest-fallback {
+	position:        absolute;
+	inset:           0;
+	display:         flex;
+	align-items:     center;
+	justify-content: center;
+	overflow:        hidden;
+	border-radius:   999px;
+	background:      rgba(139, 148, 158, 0.18);
+	color:           #8b949e;
+	font-weight:     700;
+	font-size:       0.5rem;
+	letter-spacing:  0.02em;
+}
+
+// `display: none` rather than `opacity: 0`, so a crest with a transparent background cannot bleed
+// its own placeholder through once it has loaded.
+[data-crest-state='loaded'] > .crest-fallback { display: none; }
+
+[data-crest-state='failed']  > img,
+[data-crest-state='missing'] > img { display: none; }

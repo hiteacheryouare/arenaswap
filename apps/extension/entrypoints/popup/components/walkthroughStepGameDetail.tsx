@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { i18n } from '#i18n';
+import Crest from '@arenaswap/ui/src/components/crest';
 import { powerScoreColor } from './gameCardShared';
 
 interface walkthroughStepGameDetailProps {
@@ -16,29 +17,14 @@ const giantsColor = '#0B2265';
 const LOGO_EAGLES = 'https://a.espncdn.com/i/teamlogos/nfl/500/phi.png';
 const LOGO_GIANTS = 'https://a.espncdn.com/i/teamlogos/nfl/500/nyg.png';
 
-const TeamLogo = ({ abbr, color, logoUrl }: { abbr: string; color: string; logoUrl: string }) => {
-	const [failed, setFailed] = useState(false);
-	if (!failed) {
-		return (
-			<img
-				src={logoUrl}
-				alt={abbr}
-				width={28}
-				height={28}
-				className='object-fit-contain flex-shrink-0'
-				onError={() => setFailed(true)}
-			/>
-		);
-	}
-	return (
-		<div
-			className='d-flex align-items-center justify-content-center rounded-circle flex-shrink-0 fw-bold team-logo-fallback'
-			style={{ backgroundColor: color, color: '#fff', width: 28, height: 28, fontSize: '0.6rem' }}
-		>
-			{abbr}
-		</div>
-	);
-};
+const TeamLogo = ({ abbr, color, logoUrl }: { abbr: string; color: string; logoUrl: string }) => (
+	<Crest
+		logo={logoUrl}
+		abbreviation={abbr}
+		className='team-crest-28'
+		fallbackStyle={{ backgroundColor: color, color: '#fff' }}
+	/>
+);
 
 const walkthroughStepGameDetail = ({ onNext, onBack }: walkthroughStepGameDetailProps) => {
 	const [tapped, setTapped] = useState(false);
@@ -115,7 +101,9 @@ const walkthroughStepGameDetail = ({ onNext, onBack }: walkthroughStepGameDetail
 
 				{!tapped && (
 					<div
-						className='position-absolute top-50 start-50 translate-middle text-center pointer-events-none'
+						// `pe-none`, not Tailwind's `pointer-events-none`: the extension has no Tailwind
+						// build, so the hint was swallowing the tap it is asking for.
+						className='position-absolute top-50 start-50 translate-middle text-center pe-none'
 						style={{ zIndex: 2 }}
 					>
 						<span

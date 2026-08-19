@@ -1,7 +1,6 @@
 ---
 import { leagueConfigs } from '@arenaswap/core/constants';
 import Shell from '../layouts/Shell.astro';
-import ReadingNav from '../components/ReadingNav.astro';
 
 // Off the homepage and onto its own page. The eight questions are worth keeping for search — they
 // are what people actually type — but they were the fourth thing competing for attention at the
@@ -20,11 +19,11 @@ const items = [
 	},
 	{
 		q: 'How does tab switching work?',
-		a: 'You assign each of your open streams to a game. ArenaSwap scores every live game with PowerScore, and when one pulls far enough ahead of the game you are on, it switches your tab to it, unmutes it, and mutes the rest. How far ahead is "far enough" is the sensitivity setting, and there is a cooldown so it cannot bounce you back and forth.',
+		a: 'You assign each of your open streams to a game. ArenaSwap scores every live game with PowerScore, and when one pulls far enough ahead of the game you are on, it switches your tab to it, unmutes it, and mutes the rest. Sensitivity sets how far ahead is far enough, and a cooldown stops it bouncing you between two games.',
 	},
 	{
 		q: 'Do I need an account or a subscription?',
-		a: 'No. ArenaSwap is free, has no account, and collects nothing. It runs entirely in your browser and reads scores from ESPN’s public API. Nothing about what you watch is sent anywhere.',
+		a: "No. ArenaSwap is free, has no account, and collects nothing. It runs entirely in your browser and reads public scores from ESPN. Nothing about what you watch is sent anywhere.",
 	},
 	{
 		q: 'Will it work with my streaming service?',
@@ -72,9 +71,7 @@ const structuredData = {
 			</p>
 		</div>
 
-		<div class='reading-shell'>
-			<ReadingNav current='faq/' />
-
+		<div class='reading-shell reading-shell-plain'>
 			<div class='faq-list'>
 				{items.map((item, index) => (
 					<details class='faq-item' open={index === 0}>

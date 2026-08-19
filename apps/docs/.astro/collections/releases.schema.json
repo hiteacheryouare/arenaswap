@@ -15,6 +15,12 @@
       "type": "string",
       "format": "date-time"
     },
+    "image": {
+      "type": "string"
+    },
+    "imageAlt": {
+      "type": "string"
+    },
     "draft": {
       "default": false,
       "type": "boolean"

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import Crest from '@arenaswap/ui/src/components/crest';
 import { powerScoreColor } from './gameCardShared';
 import { i18n } from '#i18n';
 
@@ -25,29 +26,14 @@ interface TeamLogoProps {
 	logoUrl: string;
 }
 
-const TeamLogo = ({ abbr, color, logoUrl }: TeamLogoProps) => {
-	const [failed, setFailed] = useState(false);
-	if (!failed) {
-		return (
-			<img
-				src={logoUrl}
-				alt={abbr}
-				width={32}
-				height={32}
-				className='object-fit-contain flex-shrink-0'
-				onError={() => setFailed(true)}
-			/>
-		);
-	}
-	return (
-		<div
-			className='d-flex align-items-center justify-content-center rounded-circle flex-shrink-0 fw-bold team-logo-fallback'
-			style={{ backgroundColor: color, color: '#fff' }}
-		>
-			{abbr}
-		</div>
-	);
-};
+const TeamLogo = ({ abbr, color, logoUrl }: TeamLogoProps) => (
+	<Crest
+		logo={logoUrl}
+		abbreviation={abbr}
+		className='team-crest-32'
+		fallbackStyle={{ backgroundColor: color, color: '#fff' }}
+	/>
+);
 
 interface mockCardProps {
 	abbr1: string; color1: string; logo1: string;

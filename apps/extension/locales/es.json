@@ -158,7 +158,6 @@
 		"selectNone": "ninguna",
 		"selectAll": "todas",
 		"noLeaguesWarning": "No hay ligas seleccionadas — ArenaSwap no seguirá ningún partido.",
-		"leagueLogoAlt": "Logo de {label}",
 		"leagueOrderSection": "Orden de visualización",
 		"leagueOrderExplainer": "Las secciones de ligas aparecen en este orden en la pantalla principal. Arrastra una liga o muévela con las flechas.",
 		"leagueOrderReset": "Restablecer el orden predeterminado",

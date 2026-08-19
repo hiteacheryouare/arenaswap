@@ -1,0 +1,62 @@
+---
+import Shell from '../../layouts/Shell.astro';
+import LegalNav from '../../components/LegalNav.astro';
+
+// A hub rather than one long page: these four get linked individually — to a store reviewer, to an
+// issue, to a licence header — and a URL that lands on the right clause beats a URL plus "scroll
+// down a bit".
+
+const base = import.meta.env.BASE_URL;
+
+const notices = [
+	{
+		path: 'legal/privacy/',
+		title: 'Privacy',
+		blurb: 'What ArenaSwap stores, where it stores it, and the only host it ever talks to. There is no account, no analytics and nothing to opt out of.',
+	},
+	{
+		path: 'legal/licenses/',
+		title: 'Licenses',
+		blurb: 'ArenaSwap is ISC. Every package it is built on and every typeface it uses is listed here with its license.',
+	},
+	{
+		path: 'legal/credits/',
+		title: 'Credits',
+		blurb: 'The homepage plays real game footage under Creative Commons. This is who filmed it, plus where the scores and the league marks come from.',
+	},
+	{
+		path: 'legal/terms/',
+		title: 'Disclaimers',
+		blurb: 'No affiliation with ESPN or any league, no warranty, and an honest account of what a free tab-switcher can and cannot promise.',
+	},
+];
+---
+<Shell
+	title='Legal notices — ArenaSwap'
+	description="ArenaSwap's privacy statement, open-source licenses, footage attribution and disclaimers."
+	path='legal/'
+>
+	<div class='container'>
+		<div class='page-head'>
+			<h1 class='page-title'>Legal notices.</h1>
+			<p class='page-lede'>
+				The short version is that ArenaSwap is free, collects nothing, and is built on a lot of
+				other people's work. This is where that work gets credited and where the fine print
+				lives.
+			</p>
+		</div>
+
+		<div class='reading-shell'>
+			<LegalNav current='legal/' />
+
+			<ul class='legal-index'>
+				{notices.map(notice => (
+					<li>
+						<h2><a href={`${base}${notice.path}`}>{notice.title}</a></h2>
+						<p>{notice.blurb}</p>
+					</li>
+				))}
+			</ul>
+		</div>
+	</div>
+</Shell>

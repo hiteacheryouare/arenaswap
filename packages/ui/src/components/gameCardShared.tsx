@@ -4,10 +4,8 @@ import { leagueConfigMap } from '@arenaswap/core/constants';
 import type { Game, LeagueId, Team } from '@arenaswap/core/types';
 import type { BettingDisplayPrefs } from './gameCardTypes';
 import { resolveTeamColorPair } from './colorUtils';
+import Crest from './crest';
 import { useT } from './i18nContext';
-
-const logoSize = 64;
-
 
 export const formatPeriod = (game: Game): string => {
 	const config = leagueConfigMap[game.league];
@@ -76,32 +74,6 @@ export const oddsSummary = (game: Game): string | null => {
 	return parts.join(' • ');
 };
 
-const TeamLogo = ({ team }: { team: Team }) => {
-	// The failed URL rather than a boolean, so a changed logo retries: cards are reused across
-	// polls, and a transient bad URL would otherwise stay hidden forever.
-	const [failedSrc, setFailedSrc] = useState<string | null>(null);
-	if (team.logo && failedSrc !== team.logo) {
-		return (
-			<img
-				src={team.logo}
-				alt={team.abbreviation}
-				width={logoSize}
-				height={logoSize}
-				onError={() => setFailedSrc(team.logo ?? null)}
-				className='object-fit-contain flex-shrink-0'
-			/>
-		);
-	}
-
-	return (
-		<div
-			className='d-flex align-items-center justify-content-center bg-light rounded-circle flex-shrink-0 fw-bold text-body-secondary team-logo-fallback'
-		>
-			{(team.abbreviation || '?').slice(0, 3)}
-		</div>
-	);
-};
-
 export const buildGameCardStyle = (game: Game) => {
 	const [awayColor, homeColor] = resolveTeamColorPair(game.awayTeam, game.homeTeam, '#dee2e6', '#dee2e6');
 	return {
@@ -138,7 +110,7 @@ export const TeamColumn = ({
 	const t = useT();
 	return (
 		<div className='d-flex flex-column align-items-center gap-1 team-column'>
-			<TeamLogo team={team} />
+			<Crest logo={team.logo} abbreviation={(team.abbreviation || '?').slice(0, 3)} className='team-crest' />
 			<span className='fw-bold text-center text-nowrap team-abbreviation'>
 				{team.abbreviation}
 			</span>

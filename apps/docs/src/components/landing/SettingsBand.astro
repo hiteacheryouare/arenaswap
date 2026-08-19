@@ -16,10 +16,10 @@ import { defaultStrings } from '@arenaswap/ui/src/components/defaultStrings';
 const settings = [
 	{ name: `Sensitivity (1–${Object.keys(sensitivityThresholds).length})`, desc: 'How large a score gap needs to be before ArenaSwap switches.' },
 	{ name: 'Switch cooldown', desc: 'Minimum time between switches. Stops rapid tab-flipping.' },
-	{ name: 'Switch delay', desc: 'Wait before switching. Useful when streams lag behind live data.' },
-	{ name: 'Favorite team bonus', desc: 'Extra points for games involving teams you care about.' },
-	{ name: 'Standby Stream', desc: 'When all live games go quiet, auto-switch to a designated fallback tab.' },
-	{ name: 'Game boost', desc: "Manually raise any game's PowerScore to lock it on screen a little longer." },
+	{ name: 'Switch delay', desc: 'Waits before switching, for when your stream runs behind the data.' },
+	{ name: 'Favorite team bonus', desc: 'Extra points for any game your teams are playing in.' },
+	{ name: 'Standby Stream', desc: 'When every live game goes quiet, ArenaSwap parks you on a fallback tab you pick.' },
+	{ name: 'Game boost', desc: "Raise any game's PowerScore by hand to keep it on screen longer." },
 ];
 
 const sensitivityLevels = Object.keys(sensitivityThresholds).length;

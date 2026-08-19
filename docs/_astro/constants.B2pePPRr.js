@@ -1,1 +1,0 @@
-import"./dist.wV9XMFBs.js";import{i as e}from"./i18nContext.DhAQbWV2.js";e.name,e.version,e.description;var t=15e3,n={1:37,2:27,3:18,4:11,5:6,6:3,7:1};export{n,t};

@@ -1,20 +1,6 @@
 import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
 
-const blog = defineCollection({
-	loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/blog' }),
-	schema: z.object({
-		title: z.string(),
-		description: z.string(),
-		pubDate: z.coerce.date(),
-		author: z.string().default('Ryan Mullin'),
-		tags: z.array(z.string()).optional().default([]),
-		image: z.string().optional(),
-		imageAlt: z.string().optional(),
-		draft: z.boolean().optional().default(false),
-	}),
-});
-
 // Release notes are written by hand as user-facing prose, one file per version. They are
 // deliberately not generated from CHANGELOG.md: the changelog is an engineering record and reads
 // like one.
@@ -27,6 +13,9 @@ const releases = defineCollection({
 		// One or two sentences, used on the index and in the feed.
 		summary: z.string(),
 		date: z.coerce.date(),
+		// Optional lead image for the release page and its social card.
+		image: z.string().optional(),
+		imageAlt: z.string().optional(),
 		draft: z.boolean().optional().default(false),
 	}),
 });
@@ -45,4 +34,4 @@ const docs = defineCollection({
 	}),
 });
 
-export const collections = { blog, releases, docs };
+export const collections = { releases, docs };

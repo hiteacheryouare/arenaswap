@@ -1,0 +1,113 @@
+---
+import Shell from '../../layouts/Shell.astro';
+import LegalNav from '../../components/LegalNav.astro';
+
+// Written against the code rather than from a template. Every claim here is checkable: the
+// permissions are in apps/extension/wxt.config.ts, the two hosts are the only ones in
+// host_permissions, and the storage calls in packages/core are storage.local and storage.session —
+// never storage.sync, which is the one that would put your settings on a server.
+
+const updated = 'August 19, 2026';
+---
+<Shell
+	title='Privacy — ArenaSwap'
+	description='ArenaSwap has no account, no analytics and no server. Your settings stay in your browser, and the only site it talks to is ESPN.'
+	path='legal/privacy/'
+>
+	<div class='container'>
+		<div class='page-head'>
+			<h1 class='page-title'>Privacy.</h1>
+			<p class='page-lede'>
+				ArenaSwap has no account, no analytics and no ads. It has no server either, so there is
+				nowhere for what you watch to go.
+			</p>
+		</div>
+
+		<div class='reading-shell'>
+			<LegalNav current='legal/privacy/' />
+
+			<div class='prose'>
+				<p class='legal-updated'>Last updated {updated}</p>
+
+				<h2>What the extension stores</h2>
+				<p>
+					Your settings and your tab assignments, on the computer you are using. That covers which
+					leagues you follow, your favorite teams, sensitivity, cooldown and switch delay, your
+					Standby Stream tab, any manual game boosts, and which tab you assigned to which game.
+				</p>
+				<p>
+					All of it stays on that computer. ArenaSwap never syncs any of it, so it does not reach
+					your browser account or the other devices you sign into. Uninstalling the extension
+					deletes it.
+				</p>
+
+				<h2>What it sends, and where</h2>
+				<p>
+					Two hosts, both ESPN's, and they are the only two the extension is permitted to reach:
+				</p>
+				<ul>
+					<li><code>site.api.espn.com</code> for live scores, schedules, clocks, odds and win probabilities.</li>
+					<li><code>a.espncdn.com</code> for team crests and league marks.</li>
+				</ul>
+				<p>
+					These are ordinary web requests, so ESPN sees your IP address and which league
+					scoreboards ArenaSwap asked for, the same as if you had opened espn.com yourself.
+					ArenaSwap attaches no identifier and no account to them. Turn a league off in Settings
+					and it stops asking for that league at all.
+				</p>
+				<p>
+					There is no ArenaSwap server. No crash reporter, no telemetry, no usage pings, no
+					A/B testing, and no third-party SDK of any kind.
+				</p>
+
+				<h2>The permissions it asks for</h2>
+				<ul>
+					<li>
+						<strong>Tabs.</strong> To list your open tabs so you can assign games to them, and to
+						switch, mute and unmute them. That grants the list of tabs and nothing more. None of
+						ArenaSwap's code runs inside the pages you visit.
+					</li>
+					<li><strong>Storage.</strong> To keep the settings above.</li>
+					<li><strong>Notifications.</strong> To tell you a switch happened. Your browser composes and shows them, and nothing leaves the machine.</li>
+				</ul>
+				<p>
+					On Firefox, ArenaSwap is listed as collecting no data at all, which is the strictest
+					option Mozilla offers.
+				</p>
+
+				<h2>This website</h2>
+				<p>
+					No cookies, no analytics, no tracking pixel, and no consent banner, because there is
+					nothing to consent to. The site is hosted on GitHub Pages, and GitHub logs requests to
+					its servers as part of hosting that. The fonts come from this site rather than from
+					somebody else's server.
+				</p>
+				<p>
+					Two things here do reach ESPN from your browser. The demo screens load team crests from
+					<code>a.espncdn.com</code>, and
+					the <a href={`${import.meta.env.BASE_URL}powerscore/`}>PowerScore page</a> scores real
+					games, so it asks for live scoreboards while you have it open.
+				</p>
+
+				<h2>Children</h2>
+				<p>
+					ArenaSwap collects no personal information from anyone, of any age, which includes
+					children under 13.
+				</p>
+
+				<h2>Changes</h2>
+				<p>
+					If this statement ever needs to change, the change ships with a version and that
+					version's <a href={`${import.meta.env.BASE_URL}releases/`}>release notes</a> say so. The
+					date at the top is the last time anyone edited it.
+				</p>
+
+				<h2>Questions</h2>
+				<p>
+					Open an issue on <a href='https://github.com/hiteacheryouare/arenaswap/issues'>GitHub</a>.
+					The source is public, so you are also welcome to check any of the above for yourself.
+				</p>
+			</div>
+		</div>
+	</div>
+</Shell>

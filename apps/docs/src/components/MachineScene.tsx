@@ -4,6 +4,7 @@ import { LineChart } from 'echarts/charts';
 import { GridComponent } from 'echarts/components';
 import { CanvasRenderer } from 'echarts/renderers';
 import type { EChartsOption } from 'echarts';
+import Crest from '@arenaswap/ui/src/components/crest';
 
 echarts.use([LineChart, GridComponent, CanvasRenderer]);
 
@@ -116,7 +117,7 @@ const GameCard = ({ active, chartElRef }: { active: boolean; chartElRef: React.R
 	<div className='mw-card'>
 		<div className='mw-card-teams'>
 			<div className='mw-team'>
-				<img src={GAME.away.logo} alt={GAME.away.name} loading='lazy' />
+				<Crest logo={GAME.away.logo} abbreviation={GAME.away.abbr} loading='lazy' />
 				<span className='mw-team-abbr'>{GAME.away.abbr}</span>
 			</div>
 			<div className='mw-team-mid'>
@@ -124,7 +125,7 @@ const GameCard = ({ active, chartElRef }: { active: boolean; chartElRef: React.R
 				<span className='mw-team-status'><span className='live-dot'></span>{GAME.league} · {GAME.status}</span>
 			</div>
 			<div className='mw-team'>
-				<img src={GAME.home.logo} alt={GAME.home.name} loading='lazy' />
+				<Crest logo={GAME.home.logo} abbreviation={GAME.home.abbr} loading='lazy' />
 				<span className='mw-team-abbr'>{GAME.home.abbr}</span>
 			</div>
 		</div>

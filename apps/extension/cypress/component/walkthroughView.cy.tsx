@@ -1,3 +1,7 @@
+// The steps are mock popups, so they are mounted with the real stylesheets: unstyled, the mock
+// crests fall back to their intrinsic 500px and the cards no longer fit the screen they describe.
+import '../../assets/bootstrap.scss';
+import '../../assets/global.scss';
 import WalkthroughView from '../../entrypoints/popup/components/walkthroughView';
 
 describe('walkthroughView step navigation', () => {

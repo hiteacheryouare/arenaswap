@@ -1,6 +1,6 @@
-import { useState } from 'react';
 import { leagueConfigs, resolveLeagueLogoUrl } from '@arenaswap/core/constants';
 import type { LeagueId, LeagueLogoMap } from '@arenaswap/core/types';
+import Crest from './crest';
 import { useT } from './i18nContext';
 
 // The chrome the popup's main view is built out of. The website used to redraw these three
@@ -60,19 +60,15 @@ export const PopupSectionTitle = ({ children, first }: { children: string; first
 	<div className='popup-section-title' style={first ? { marginTop: '0.25rem' } : undefined}>{children}</div>
 );
 
+// No placeholder at all: the label is the next element along, so there is nothing a 20px disc could
+// say that the row does not already. The crest still holds its box while the mark loads, which is
+// all this row needed. Dropped entirely when the league has no mark to load.
 export const LeagueSectionHeader = ({ league, logos }: { league: LeagueId; logos: LeagueLogoMap }) => {
-	const [imgFailed, setImgFailed] = useState(false);
 	const logoUrl = resolveLeagueLogoUrl(league, logos[league]);
 	return (
 		<div className='fw-bold text-uppercase popup-section-label'>
-			{!imgFailed && logoUrl && (
-				<img
-					src={logoUrl}
-					alt=''
-					className='popup-league-logo'
-					loading='lazy'
-					onError={() => setImgFailed(true)}
-				/>
+			{logoUrl && (
+				<Crest logo={logoUrl} abbreviation='' className='popup-league-logo' fallback='none' loading='lazy' />
 			)}
 			{leagueLabels[league] ?? league.toUpperCase()}
 		</div>

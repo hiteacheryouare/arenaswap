@@ -2,7 +2,7 @@
 import { getCollection, render } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
 import Shell from '../../layouts/Shell.astro';
-import ReadingNav from '../../components/ReadingNav.astro';
+import DocsNav from '../../components/DocsNav.astro';
 
 // The docs tree, reserved. Both sections have a URL, a place in the side nav and a layout; what
 // they do not have yet is content, which lands in src/content/docs/ in 2.1. Reserving it now means
@@ -11,12 +11,12 @@ import ReadingNav from '../../components/ReadingNav.astro';
 const sections = {
 	extension: {
 		title: 'The extension',
-		description: 'Installing ArenaSwap, assigning tabs to games, tuning switching, and Standby Stream.',
+		description: 'Installing ArenaSwap, assigning tabs to games, tuning when it switches, and Standby Stream.',
 		planned: ['Installing and enabling', 'Assigning a tab to a game', 'Switching, sensitivity and cooldown', 'Favorite teams and boosts', 'Standby Stream', 'Demo mode'],
 	},
 	powerscore: {
 		title: 'PowerScore',
-		description: 'How a game gets scored: the five signals, the boosts, the penalties, and the types.',
+		description: 'How a game gets scored. The five signals, the boosts, the penalties and the types.',
 		planned: ['Getting started', 'Scoring a game', 'The five signals', 'Boosts and penalties', 'Sport and league configuration', 'Types'],
 	},
 } as const;
@@ -51,23 +51,21 @@ const rendered = await Promise.all(pages.map(async page => ({
 		</div>
 
 		<div class='reading-shell'>
-			<ReadingNav current={`docs/${section}/`} />
+			<DocsNav current={`docs/${section}/`} />
 
 			<div>
 				{rendered.length === 0 ? (
 					<div class='prose'>
 						<p>
-							This is not written yet. It is going in for 2.1, and these are the pages it will
-							hold:
+							This is not written yet. It goes in for 2.1, and these are the pages it will hold:
 						</p>
 						<ul>
 							{meta.planned.map(item => <li>{item}</li>)}
 						</ul>
 						<p>
 							Until then, the <a href={`${base}releases/`}>release notes</a> cover what changed and
-							the <a href={`${base}faq/`}>FAQ</a> answers most of what people ask. The PowerScore
-							package has a <a href={`${base}powerscore/`}>reference page</a> with working examples
-							already.
+							the <a href={`${base}faq/`}>FAQ</a> answers most of what people ask. PowerScore
+							already has a <a href={`${base}powerscore/`}>reference page</a> with working examples.
 						</p>
 					</div>
 				) : (

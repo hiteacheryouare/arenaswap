@@ -24,4 +24,14 @@ export default defineConfig({
 	build: {
 		emptyOutDir: true,
 	},
+	// Retired URLs. `/blog/` and the one post it held were published, and `/credits/` shipped in 2.0,
+	// so they redirect rather than 404. Static output makes these meta-refresh pages, which is all
+	// GitHub Pages can serve.
+	// Keys are routes, so `base` is applied to them the same way it is to a page in src/pages.
+	// Destinations are written out literally, base included.
+	redirects: {
+		'/blog': '/arenaswap/releases/',
+		'/blog/introducing-v2': '/arenaswap/releases/2.0.0/',
+		'/credits': '/arenaswap/legal/credits/',
+	},
 });

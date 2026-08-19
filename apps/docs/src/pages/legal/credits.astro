@@ -1,6 +1,6 @@
 ---
-import Shell from '../layouts/Shell.astro';
-import ReadingNav from '../components/ReadingNav.astro';
+import Shell from '../../layouts/Shell.astro';
+import LegalNav from '../../components/LegalNav.astro';
 
 // The footage in the hero is real game footage, which means somebody filmed it. Two of the three
 // clips are under CC BY licences that require attribution, and this page is where that is said out
@@ -43,40 +43,33 @@ const clips = [
 ---
 <Shell
 	title='Credits — ArenaSwap'
-	description='Attribution for the game footage in the ArenaSwap hero, the data source, and the league and team marks.'
-	path='credits/'
+	description='Attribution for the game footage on the ArenaSwap homepage, where the scores come from, and the league and team marks.'
+	path='legal/credits/'
 >
 	<div class='container'>
 		<div class='page-head'>
 			<h1 class='page-title'>Credits.</h1>
 			<p class='page-lede'>
-				The hero on the homepage plays real game footage. None of it is ours, all of it is freely
-				licensed, and this is who filmed it.
+				The video at the top of the homepage is real game footage. None of it is ours, all of it is
+				freely licensed, and this is who filmed it.
 			</p>
 		</div>
 
 		<div class='reading-shell'>
-			<ReadingNav current='credits/' />
+			<LegalNav current='legal/credits/' />
 
 			<div>
 				<h2 class='display-md' style='font-size:1.35rem'>Footage</h2>
 				<ul class='credit-list'>
 					{clips.map(clip => (
 						<li class='credit-item'>
-							<h3>{clip.sport} — {clip.what}</h3>
+							<h3>{clip.sport}<span aria-hidden='true'> · </span>{clip.what}</h3>
 							<p>
 								<span>{clip.author}</span>
 								<span aria-hidden='true'> · </span>
 								<a href={clip.licenceUrl} class='credit-licence'>{clip.licence}</a>
 								<span aria-hidden='true'> · </span>
 								<a href={clip.source}>Source</a>
-								{clip.shareAlike && (
-									<>
-										<br />
-										Trimmed and re-encoded for the web, which makes the clip we ship a derivative
-										work. It is offered under the same CC BY-SA 4.0 licence.
-									</>
-								)}
 							</p>
 						</li>
 					))}
@@ -85,22 +78,22 @@ const clips = [
 				<div class='prose' style='margin-top:2.5rem'>
 					<h2>Scores</h2>
 					<p>
-						Live scores, schedules, team colours, crests and win probabilities come from ESPN's
-						public API. ArenaSwap is not affiliated with or endorsed by ESPN, and none of the
-						leagues on this site are affiliated with or endorse it either.
+						Live scores, schedules, team colors, crests and win probabilities all come from ESPN.
+						ArenaSwap is not affiliated with or endorsed by ESPN, and none of the leagues on this
+						site are affiliated with or endorse it either.
 					</p>
 
 					<h2>Marks</h2>
 					<p>
-						League and team marks belong to their leagues and clubs. They appear here to identify
-						games, which is the only thing they are used for.
+						League and team marks belong to their leagues and clubs. They appear here only to
+						identify games.
 					</p>
 
 					<h2>Type</h2>
 					<p>
-						DM Sans and Lekton are under the SIL Open Font License. Geist is under the SIL Open
-						Font License as well, and is on the game card for one reason: it has tabular figures
-						and DM Sans does not, so a scoreline stays optically centred as the digits change.
+						DM Sans, DM Serif Text, Lekton and Geist are all under the SIL Open Font License. The
+						<a href={`${import.meta.env.BASE_URL}legal/licenses/`}>licenses page</a> names who made
+						each one.
 					</p>
 				</div>
 			</div>

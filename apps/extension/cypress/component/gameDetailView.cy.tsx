@@ -205,6 +205,19 @@ describe('gameDetailView hero', () => {
 		cy.get('.gd-hero').should('not.contain.text', 'OKC');
 	});
 
+	// Blank rather than lettered, since the abbreviation is already directly below it — but it still
+	// holds the 32px disc inside its 36px box so the grid does not move when a logo arrives.
+	it('holds a blank crest box above each team name', () => {
+		mountDetail(makeLiveGame(), { excitementResult: excitement });
+		cy.get('.game-detail-team-logo').should('have.length', 2).each(($crest: JQuery<HTMLElement>) => {
+			expect($crest.attr('data-crest-state')).to.equal('missing');
+			expect($crest[0]!.getBoundingClientRect()).to.deep.include({ width: 36, height: 36 });
+			expect($crest.text(), 'no letters in this one').to.equal('');
+			expect($crest[0]!.querySelector('.crest-fallback')!.getBoundingClientRect())
+				.to.deep.include({ width: 32, height: 32 });
+		});
+	});
+
 	it('falls back to the abbreviation for a team with no full name', () => {
 		const game = makeLiveGame();
 		mountDetail({ ...game, awayTeam: { ...game.awayTeam, name: '' } }, { excitementResult: excitement });

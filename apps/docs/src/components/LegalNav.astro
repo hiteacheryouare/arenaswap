@@ -1,0 +1,29 @@
+---
+interface Props {
+	// Path without the base, e.g. `legal/privacy/`. Marks the matching link as current.
+	current?: string;
+}
+
+const { current = '' } = Astro.props;
+const base = import.meta.env.BASE_URL;
+
+const pages = [
+	{ path: 'legal/', label: 'Overview' },
+	{ path: 'legal/privacy/', label: 'Privacy' },
+	{ path: 'legal/licenses/', label: 'Licenses' },
+	{ path: 'legal/credits/', label: 'Credits' },
+	{ path: 'legal/terms/', label: 'Disclaimers' },
+];
+---
+<nav class='reading-nav' aria-label='Legal notices'>
+	<h2>Legal notices</h2>
+	<ul>
+		{pages.map(page => (
+			<li>
+				<a href={`${base}${page.path}`} aria-current={current === page.path ? 'page' : undefined}>
+					{page.label}
+				</a>
+			</li>
+		))}
+	</ul>
+</nav>

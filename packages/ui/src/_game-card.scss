@@ -1,5 +1,7 @@
 // Import AFTER Bootstrap variables and source.
 
+@import 'crest';
+
 @keyframes scoreSlideOut {
 	from { transform: translateY(0%); }
 	to   { transform: translateY(110%); }
@@ -295,11 +297,34 @@ $pre-game-time-color: shade-color($warning, 60%);
 	font-size: 0.45rem;
 }
 
-.team-logo-fallback {
+.team-crest {
 	width: 64px;
 	height: 64px;
+}
+
+// The card is the one white surface a crest sits on, so it takes the light-surface muted colour.
+// The shared #8b949e only reaches 2.92:1 here, which was tolerable while the placeholder appeared
+// on failure alone and is not now that it shows on every slow load.
+.team-crest .crest-fallback {
+	background: #f8f9fa;
+	color: #495057;
 	font-size: 0.7rem;
 }
+
+// The walkthrough's mock scoreboards, which draw their own crests at two smaller sizes.
+.team-crest-32 {
+	width: 32px;
+	height: 32px;
+}
+
+.team-crest-32 .crest-fallback { font-size: 0.62rem; }
+
+.team-crest-28 {
+	width: 28px;
+	height: 28px;
+}
+
+.team-crest-28 .crest-fallback { font-size: 0.6rem; }
 
 .team-column {
 	min-width: 60px;

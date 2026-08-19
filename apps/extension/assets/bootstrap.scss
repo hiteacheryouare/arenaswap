@@ -467,8 +467,15 @@ $bootstrap-icons-font-dir: '/fonts';
 	width:         36px;
 	height:        36px;
 	border-radius: 0.3rem;
-	object-fit:    contain;
-	flex-shrink:   0;
+}
+
+// League marks are rounded rects, not discs, so the placeholder cannot inherit the shared circle.
+.league-toggle-logo .crest-fallback {
+	border-radius:  0.3rem;
+	background:     #30363d;
+	color:          #e6edf3;
+	font-size:      0.5rem;
+	letter-spacing: 0.04em;
 }
 
 .popup-root {
@@ -592,22 +599,17 @@ $bootstrap-icons-font-dir: '/fonts';
 	.sensitivity-tick-#{$i} { left: percentage($i / 6); }
 }
 
-.league-toggle-logo-fallback {
-	width:          36px;
-	height:         36px;
-	border-radius:  0.3rem;
-	background:     #30363d;
-	color:          #e6edf3;
-	font-size:      0.5rem;
-	letter-spacing: 0.04em;
-}
-
 .onb-league-logo {
 	width:         28px;
 	height:        28px;
 	border-radius: 50%;
-	object-fit:    contain;
-	flex-shrink:   0;
+}
+
+.onb-league-logo .crest-fallback {
+	background:     #30363d;
+	color:          #e6edf3;
+	font-size:      0.5rem;
+	letter-spacing: 0.04em;
 }
 
 .league-toggle-grid {
@@ -655,11 +657,11 @@ $bootstrap-icons-font-dir: '/fonts';
 	border-top:    2px solid transparent;
 
 	// The shared LeagueLogo is sized for the toggle grid; shrink it for these compact rows.
-	.league-toggle-logo,
-	.league-toggle-logo-fallback {
-		width:     22px;
-		height:    22px;
-		font-size: 0.4rem;
+	.league-toggle-logo {
+		width:  22px;
+		height: 22px;
+
+		.crest-fallback { font-size: 0.4rem; }
 	}
 
 	&.is-dragging {
@@ -753,13 +755,14 @@ $bootstrap-icons-font-dir: '/fonts';
 .gd-poster-crest-logo {
 	width: 44px;
 	height: 44px;
-	object-fit: contain;
 }
 
-.gd-poster-crest-abbr {
+// The disc behind it already carries the team's colour wash, so a second grey disc inside it would
+// read as a hole. The letter colour is set per-team from the component.
+.gd-poster-crest-logo .crest-fallback {
 	@include scoreboard-figures;
+	background: transparent;
 	font-size: 0.86rem;
-	font-weight: 700;
 	letter-spacing: 0.02em;
 }
 
@@ -1118,13 +1121,11 @@ $bootstrap-icons-font-dir: '/fonts';
 .game-detail-team-logo {
 	width: 36px;
 	height: 36px;
-	object-fit: contain;
 }
 
-.game-detail-team-logo-fallback {
-	width: 32px;
-	height: 32px;
-	border-radius: 999px;
+// Inset rather than sized, so the 32px disc it has always been stays centred in the 36px box.
+.game-detail-team-logo .crest-fallback {
+	inset: 2px;
 	background: rgba(17, 24, 39, 0.08);
 }
 
@@ -1204,9 +1205,9 @@ $bootstrap-icons-font-dir: '/fonts';
 .gd-bar-logo {
 	width: 18px;
 	height: 18px;
-	object-fit: contain;
-	flex-shrink: 0;
 }
+
+.gd-bar-logo .crest-fallback { background: rgba(230, 237, 243, 0.14); }
 
 .gd-bar-abbrev {
 	font-size: 0.66rem;

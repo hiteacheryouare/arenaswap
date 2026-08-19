@@ -158,7 +158,6 @@
 		"selectNone": "nessuna",
 		"selectAll": "tutte",
 		"noLeaguesWarning": "Nessuna lega selezionata. ArenaSwap non monitorerà nessuna partita.",
-		"leagueLogoAlt": "Logo di {label}",
 		"leagueOrderSection": "Ordine di visualizzazione",
 		"leagueOrderExplainer": "Le sezioni delle leghe appaiono in questo ordine nella schermata principale. Trascina una lega, oppure spostala con le frecce.",
 		"leagueOrderReset": "Ripristina ordine predefinito",
