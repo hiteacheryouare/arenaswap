@@ -1,0 +1,251 @@
+// The hero: a browser window with five streams open and the popup running inside it.
+//
+// The popup is drawn at its real 320x560. Everything around it is sized off that, because a
+// popup scaled to fit a layout stops being evidence of anything.
+
+$popup-width: 320px;
+$popup-height: 560px;
+$chrome-bg: #161b22;
+$chrome-height: 5.2rem;
+$chrome-line: #21262d;
+
+.browser-hero {
+	position: relative;
+	margin-top: 3.5rem;
+}
+
+.browser {
+	// Flush with the container, so its left edge lines up with the headline above it.
+	border: 1px solid var(--color-border);
+	border-radius: 0.85rem;
+	overflow: hidden;
+	background: $chrome-bg;
+	box-shadow: 0 32px 90px rgba(0, 0, 0, 0.55);
+}
+
+.browser-titlebar {
+	display: flex;
+	align-items: flex-end;
+	gap: 0.9rem;
+	padding: 0.6rem 0.85rem 0;
+	background: $chrome-bg;
+}
+
+.browser-lights {
+	display: flex;
+	gap: 0.4rem;
+	padding-bottom: 0.6rem;
+	flex-shrink: 0;
+
+	i {
+		width: 0.66rem;
+		height: 0.66rem;
+		border-radius: 50%;
+		background: #30363d;
+	}
+}
+
+.browser-tabs {
+	display: flex;
+	gap: 0.2rem;
+	min-width: 0;
+	overflow: hidden;
+}
+
+.browser-tab {
+	display: flex;
+	align-items: center;
+	gap: 0.4rem;
+	min-width: 0;
+	max-width: 12.5rem;
+	padding: 0.5rem 0.75rem;
+	border-radius: 0.5rem 0.5rem 0 0;
+	font-size: 0.78rem;
+	color: var(--color-muted);
+	background: transparent;
+	// The strip is the only thing that says which game you are on, so the change has to be
+	// readable at a glance without being a light show.
+	transition: background 0.32s ease, color 0.32s ease;
+
+	&.is-active {
+		background: var(--color-bg);
+		color: var(--color-text);
+	}
+}
+
+.browser-tab-favicon {
+	width: 0.95rem;
+	height: 0.95rem;
+	object-fit: contain;
+	flex-shrink: 0;
+}
+
+.browser-tab-title {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.browser-toolbar {
+	display: flex;
+	align-items: center;
+	gap: 0.85rem;
+	padding: 0.55rem 0.95rem;
+	background: var(--color-bg);
+	border-bottom: 1px solid $chrome-line;
+}
+
+.browser-nav {
+	display: flex;
+	gap: 0.7rem;
+	color: #4d545c;
+	font-size: 0.9rem;
+	flex-shrink: 0;
+}
+
+.browser-url {
+	display: flex;
+	align-items: center;
+	gap: 0.45rem;
+	flex-grow: 1;
+	padding: 0.35rem 0.8rem;
+	border-radius: 999px;
+	background: $chrome-bg;
+	font-family: var(--font-mono);
+	font-size: 0.78rem;
+	color: var(--color-muted);
+
+	i {
+		font-size: 0.66rem;
+		color: #4d545c;
+	}
+}
+
+.browser-extension {
+	flex-shrink: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 1.7rem;
+	height: 1.7rem;
+	border-radius: 0.45rem;
+	background: rgba(247, 92, 3, 0.14);
+
+	img {
+		width: 1.05rem;
+		height: 1.05rem;
+	}
+}
+
+.browser-viewport {
+	position: relative;
+	// A height, not an aspect ratio. `aspect-ratio` with a `min-height` floor resolves in both
+	// directions: at a 1024px viewport it grew the box to 1200px wide inside a 936px window and
+	// drew a quarter of the video off the right edge. A fixed height cannot do that, and the stage
+	// only has to be tall enough to hold a 560px popup with room around it.
+	height: 600px;
+	background: #05070a;
+	overflow: hidden;
+}
+
+@media (min-width: 1400px) {
+	.browser-viewport {
+		height: 660px;
+	}
+}
+
+.browser-video {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	opacity: 0;
+	// Held back so the popup keeps its contrast over whatever is playing underneath it.
+	filter: brightness(0.62) saturate(0.9);
+	transition: opacity 0.45s ease;
+
+	&.is-active {
+		opacity: 1;
+	}
+}
+
+.browser-popup {
+	// Anchored under the toolbar on the right, which is where a real extension popup opens. The
+	// offset is the measured height of the title bar plus the toolbar; both are fixed-size rows of
+	// text, so a token is steadier here than reading layout back out of the DOM at runtime.
+	position: absolute;
+	top: calc(#{$chrome-height} + 0.85rem);
+	right: 0.85rem;
+	width: $popup-width;
+	border: 1px solid var(--color-border);
+	border-radius: 0.6rem;
+	overflow: hidden;
+	box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+
+	// The popup ships its own 320x560 frame and its own scrolling. Nothing here changes either.
+	.popup-container {
+		scrollbar-width: thin;
+		scrollbar-color: #30363d transparent;
+	}
+}
+
+.browser-caption {
+	margin: 1.4rem 0 0;
+	font-size: 0.95rem;
+	color: var(--color-muted);
+
+	b {
+		color: var(--color-text);
+		font-weight: 600;
+	}
+}
+
+.browser-replay {
+	display: block;
+	margin: 1rem 0 0;
+	padding: 0.5rem 1.1rem;
+	border: 1px solid var(--color-border);
+	border-radius: 999px;
+	background: transparent;
+	color: var(--color-text);
+	font-size: 0.85rem;
+}
+
+// Under this width the popup would cover most of the stream it is supposed to be sitting on
+// top of, so it comes out of the viewport and sits underneath at its real size.
+@media (max-width: 991.98px) {
+	.browser-viewport {
+		// No popup on top down here, so the stage can go back to a stream's shape.
+		height: auto;
+		aspect-ratio: 16 / 10;
+	}
+
+	.browser-popup {
+		position: static;
+		width: $popup-width;
+		margin: 1.25rem auto 0;
+		border-radius: 0.6rem;
+	}
+
+	.browser-tabs {
+		overflow-x: auto;
+		scrollbar-width: none;
+	}
+
+	.browser-tab {
+		max-width: 9rem;
+		flex-shrink: 0;
+	}
+}
+
+@media (max-width: 400px) {
+	.browser-popup {
+		width: 100%;
+	}
+
+	.browser-popup .popup-container {
+		width: 100%;
+		height: #{$popup-height};
+	}
+}

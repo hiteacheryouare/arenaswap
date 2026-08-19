@@ -1,0 +1,408 @@
+// The landing page reads as a stack of full-width bands, one idea each, separated by a hairline
+// rather than by whitespace alone. Type is the only decoration: there is no illustration on the
+// page, so the headline sizes have to carry it.
+
+.band {
+	padding: 3.5rem 0;
+	border-top: 1px solid #21262d;
+
+	&.band-quiet {
+		background: #0b0f14;
+	}
+
+	&:first-child {
+		border-top: 0;
+	}
+}
+
+.band-split {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	gap: 3.5rem;
+	align-items: center;
+}
+
+.band-hero {
+	padding: 7.5rem 0 4rem;
+}
+
+// ─── Display type ────────────────────────────────────────────────────────────
+// Three sizes only. The dot at the end of a headline is the brand's, painted orange by
+// OrangeDots at runtime, so nothing here has to hardcode it.
+
+.display-xl {
+	font-size: clamp(3.2rem, 8.6vw, 7rem);
+	font-weight: 700;
+	letter-spacing: -0.068em;
+	line-height: 0.88;
+}
+
+.display-lg {
+	font-size: clamp(2.4rem, 5.2vw, 3.75rem);
+	font-weight: 700;
+	letter-spacing: -0.055em;
+	line-height: 0.99;
+}
+
+.display-md {
+	font-size: clamp(1.9rem, 3.6vw, 2.5rem);
+	font-weight: 700;
+	letter-spacing: -0.045em;
+	line-height: 1.05;
+}
+
+.band-lede {
+	font-size: 1.125rem;
+	color: #a7b0ba;
+	line-height: 1.55;
+	max-width: 42ch;
+}
+
+.band-copy {
+	font-size: 1rem;
+	color: var(--color-muted);
+	line-height: 1.7;
+	max-width: 46ch;
+
+	b {
+		color: var(--color-text);
+		font-weight: 600;
+	}
+}
+
+.band-count {
+	font-family: var(--font-mono);
+	font-size: clamp(4rem, 9vw, 6.5rem);
+	font-weight: 700;
+	line-height: 0.84;
+	letter-spacing: -0.04em;
+	color: var(--color-primary);
+}
+
+// ─── Hero headline block ─────────────────────────────────────────────────────
+.hero-under {
+	display: flex;
+	align-items: flex-end;
+	gap: 3.5rem;
+	margin-top: 2.2rem;
+	flex-wrap: wrap;
+}
+
+.hero-actions {
+	display: flex;
+	align-items: center;
+	gap: 1.1rem;
+	margin-left: auto;
+	flex-wrap: wrap;
+}
+
+.hero-actions-alt {
+	font-size: 0.875rem;
+	color: var(--color-muted);
+
+	a {
+		color: var(--color-text);
+		text-decoration: underline;
+		text-decoration-color: rgba(247, 92, 3, 0.55);
+		text-underline-offset: 3px;
+	}
+}
+
+// ─── Leagues ─────────────────────────────────────────────────────────────────
+// A list grouped by sport, with each league's real mark. It replaced a marquee that slid 31
+// logos past faster than anyone could read and repeated the NCAA crest eight times.
+
+.leagues-head {
+	display: flex;
+	align-items: baseline;
+	gap: 1.75rem;
+	margin-bottom: 2rem;
+	flex-wrap: wrap;
+}
+
+.leagues-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+	gap: 0 1.5rem;
+}
+
+.leagues-group {
+	border-top: 1px solid var(--color-border);
+	padding-top: 0.85rem;
+
+	h3 {
+		font-family: var(--font-mono);
+		font-size: 0.65rem;
+		letter-spacing: 0.16em;
+		text-transform: uppercase;
+		color: var(--color-primary);
+		margin-bottom: 0.7rem;
+	}
+
+	ul {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+	}
+
+	li {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		font-size: 0.85rem;
+		color: var(--color-muted);
+		padding: 0.28rem 0;
+		line-height: 1.35;
+	}
+
+	img {
+		width: 1.15rem;
+		height: 1.15rem;
+		object-fit: contain;
+		flex-shrink: 0;
+		padding: 1px;
+		border-radius: 3px;
+		background: #e6edf3;
+	}
+}
+
+// An even split, for bands where both columns are text. `band-split` sizes its second column to
+// its content, which is right beside a 320px panel and wrong beside a paragraph: it strands the
+// copy against the right edge of the page.
+.band-split-even {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 3.5rem;
+	align-items: start;
+}
+
+@media (max-width: 991.98px) {
+	.band-split-even {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 1.5rem;
+	}
+}
+
+// ─── Settings ────────────────────────────────────────────────────────────────
+// The six group names and descriptions are the extension's own, from locales/en.json.
+
+.settings-groups {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+	gap: 0 1.6rem;
+	margin-top: 1.75rem;
+}
+
+.settings-group {
+	border-top: 1px solid var(--color-border);
+	padding: 0.95rem 1.6rem 1.25rem 0;
+
+	h3 {
+		font-size: 1.125rem;
+		font-weight: 700;
+		letter-spacing: -0.03em;
+		color: var(--color-text);
+	}
+
+	p {
+		font-size: 0.875rem;
+		color: var(--color-muted);
+		line-height: 1.55;
+		margin: 0.45rem 0 0;
+	}
+}
+
+// ─── Charts ──────────────────────────────────────────────────────────────────
+.charts-grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 1rem;
+	margin-top: 2rem;
+}
+
+@media (max-width: 767.98px) {
+	.charts-grid {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}
+
+.chart-tile {
+	background: var(--color-card);
+	border: 1px solid #21262d;
+	border-radius: 0.6rem;
+	padding: 0.9rem 1rem 0.7rem;
+}
+
+.chart-tile-title {
+	font-size: 0.8rem;
+	font-weight: 600;
+	color: var(--color-text);
+	letter-spacing: -0.01em;
+	margin: 0 0 0.6rem;
+}
+
+// ─── Closing band ────────────────────────────────────────────────────────────
+.band-tail {
+	display: flex;
+	align-items: center;
+	gap: 1.6rem;
+	padding: 3.25rem 0;
+	border-top: 1px solid #21262d;
+	flex-wrap: wrap;
+}
+
+.band-tail-line {
+	font-size: clamp(1.35rem, 3vw, 1.75rem);
+	font-weight: 700;
+	letter-spacing: -0.04em;
+	margin: 0;
+}
+
+.band-tail-actions {
+	margin-left: auto;
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+	flex-wrap: wrap;
+}
+
+@media (max-width: 991.98px) {
+	.band-split {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 2.25rem;
+	}
+
+	.band-hero {
+		padding: 5.5rem 0 3rem;
+	}
+}
+
+// The lede and the install button share a row only while there is room for both. Below this they
+// wrapped but kept `margin-left: auto`, which left the button stranded on its own line against the
+// right edge with a hundred pixels of nothing above it.
+@media (max-width: 1199.98px) {
+	.hero-under {
+		display: block;
+	}
+
+	.hero-actions {
+		margin: 1.6rem 0 0;
+	}
+}
+
+// ─── Settings panel ──────────────────────────────────────────────────────────
+// A still of one settings group as the popup draws it: label left, control right. It is a
+// picture of a panel rather than a working one, so nothing here is focusable.
+
+.settings-panel-demo {
+	width: 320px;
+	background: var(--color-card);
+	border: 1px solid var(--color-border);
+	border-radius: 0.6rem;
+	padding: 0.85rem 0.95rem;
+}
+
+.settings-panel-head {
+	font-size: 0.62rem;
+	font-weight: 700;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	color: var(--color-muted);
+	padding-bottom: 0.6rem;
+	border-bottom: 1px solid #21262d;
+	margin: 0 0 0.25rem;
+}
+
+.settings-panel-row {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	padding: 0.55rem 0;
+	border-bottom: 1px solid #21262d;
+	font-size: 0.8rem;
+	color: #c9d1d9;
+
+	&:last-child {
+		border-bottom: 0;
+	}
+
+	> :last-child {
+		margin-left: auto;
+	}
+}
+
+.settings-value {
+	font-family: var(--font-mono);
+	font-size: 0.78rem;
+	color: var(--color-text);
+}
+
+.settings-dots {
+	display: flex;
+	gap: 0.2rem;
+
+	i {
+		width: 0.5rem;
+		height: 0.5rem;
+		border-radius: 50%;
+		background: var(--color-border);
+
+		&.is-on {
+			background: var(--color-primary);
+		}
+	}
+}
+
+.settings-switch {
+	position: relative;
+	width: 1.65rem;
+	height: 0.9rem;
+	border-radius: 999px;
+	background: var(--color-border);
+
+	&::after {
+		content: '';
+		position: absolute;
+		top: 0.13rem;
+		left: 0.13rem;
+		width: 0.64rem;
+		height: 0.64rem;
+		border-radius: 50%;
+		background: #6e7681;
+	}
+
+	&.is-on {
+		background: var(--color-primary);
+
+		&::after {
+			left: auto;
+			right: 0.13rem;
+			background: #fff;
+		}
+	}
+}
+
+// The popup demo band renders the popup at its real width; this only supplies the frame around
+// it, since .popup-container brings its own size and scrolling.
+.popup-frame {
+	border: 1px solid var(--color-border);
+	border-radius: 0.6rem;
+	overflow: hidden;
+	box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+	width: 320px;
+}
+
+@media (max-width: 991.98px) {
+	.settings-panel-demo,
+	.popup-frame {
+		margin-left: auto;
+		margin-right: auto;
+	}
+}
+
+@media (max-width: 359.98px) {
+	.settings-panel-demo,
+	.popup-frame {
+		width: 100%;
+	}
+}

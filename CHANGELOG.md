@@ -1,5 +1,85 @@
 # Changelog
 
+## The website was a hand-drawn picture of the extension, and the two had drifted — 2026-08-18
+
+The old landing page contained a popup. Not the popup — a replica, 108 lines of CSS under a comment
+calling itself "pixel-accurate", built by reading the real one and copying what it looked like. It
+had a `div` for the enable switch, a hand-set section label instead of the orange rule, and no
+league logo at all. Every time the popup changed, two files needed to change, and one of them never
+did.
+
+The site now imports the popup. The chrome, the game cards and the four detail charts are the
+shipped components and the shipped stylesheet, so the homepage cannot describe a product that does
+not exist. Verified the move is a no-op for the extension by compiling `bootstrap.scss` before and
+after and diffing the rule sets: identical, 4,958 rules each, and all 199 component tests pass.
+
+### Shared with the extension
+- **The popup chrome moved into `@arenaswap/ui`** — `_popup.scss` holds `.popup-container`,
+  `.popup-section-title`, `.popup-section-label`, `.popup-league-logo`, `.arenaswap-logo`, the
+  settings buttons and the chart card, and both apps import it
+- **`popupChrome.tsx` holds the header, the section title and the league row**, and `mainView`
+  renders those rather than its own copies
+- **`gameDetailChartOptions.ts` moved to `@arenaswap/ui`** so the website's charts are built by the
+  extension's own option builders; the popup path re-exports it and nothing in the popup changed
+- **Every shared label lives in `defaultStrings.ts`** — a plain module, so Astro can read a label at
+  build time without pulling React in to do it, and the extension keeps overriding all of them
+  through `TranslationContext`
+
+### The hero
+- **A browser window with five streams open and the popup running inside it.** Real game footage
+  plays in the tab you are on; the tab strip, the address bar and the toolbar button are drawn
+  around it
+- **The switching is not choreographed.** Every tick scores all five games with `computePowerScore`
+  and applies the shipped sensitivity threshold and cooldown, so the tab moves for the reason it
+  moves on your machine. `npm run docs:validate-hero` prints the resulting table
+- **The footage is real and freely licensed** — NCAA basketball, Army–Navy, NCAA hockey, Mexican
+  League baseball and a UEFA Nations League match, 1.7MB of H.264 across five clips, lazy so a
+  visitor pulls only the tabs they see. `/credits/` names every one; `scripts/docs/fetchHeroClips.sh`
+  rebuilds them
+- Off-screen or in a background tab it stops scoring entirely, and reduced motion gets a still frame
+  with both switches already made
+
+### The page
+- **Bands replace the feature grid**, one idea each: babysitting tabs, the popup, the charts, the
+  leagues, the settings, and the install
+- **All 31 leagues are listed from `leagueConfigs`**, grouped by sport with each league's own mark,
+  in place of a marquee that slid the logos past faster than anyone could read and had drifted three
+  leagues out of date. The count is computed, so it cannot be wrong again
+- **The settings band reads the shipped defaults** — sensitivity 4 of 7, a 45s cooldown, +10 and +5 —
+  imported rather than typed out
+- Every league mark now sits on a light plate. Roughly a third of the 31 are dark navy artwork and
+  both UEFA crests were invisible on `#0b0f14`
+
+### Routes
+- **`/releases/` is a hand-written notes collection**, one file per version, with a permalink per
+  version and an RSS feed. Not generated from this file: a changelog is an engineering record and
+  reads like one
+- **`/docs/extension/` and `/docs/powerscore/` are reserved** with the schema settled and the URLs
+  linked, so 2.1 writes Markdown instead of designing a docs site
+- **The FAQ moved to `/faq/`** and became eight native `<details>` elements: no JavaScript, and
+  Cmd-F finds an answer that is collapsed. It carries FAQPage structured data
+- **`/credits/` is new**, because two of the five clips are CC BY and one is CC BY-SA
+- `/blog/` is now the long-form writing, `/powerscore/` and `/404` moved onto the shared shell, and
+  the engine explainer moved to `/powerscore/`, where an explanation of the engine belongs
+
+### Still hand-drawn
+- **`apps/docs/src/pages/screenshots/` keeps its own copy of the popup CSS.** Those nine pages are
+  store assets at fixed pixel sizes, and they are not linked from anywhere, so they were left alone
+  rather than rebuilt on components whose height they do not control
+
+### Removed
+- The replica popup, the hero particle canvas, the league marquee, the feature grid, the step cards
+  and the settings preview: 9 components and 15 sections of stylesheet, about 800 lines
+- The chart subtitles, which were eyebrow labels restating the axis the chart already draws
+
+### Fixed
+- **The hero window grew sideways at some widths.** `aspect-ratio` with a `min-height` floor resolves
+  in both directions, so at a 1024px viewport the stage came out 1200px wide inside a 936px window
+  and drew a quarter of the video off the right edge. It is a plain height now
+- The popup was a child of the element that clips the video, which cut its bottom off at every width
+  below 1400px and badly below 992px, where it returns to the flow
+- Dates were formatted in the build machine's zone, so a date-only entry rendered a day early
+
 ## The landing page redesign existed only as screenshots in a chat log — 2026-08-18
 
 Several rounds of designs for a new `arenaswap.app`, and the reasoning behind them, lived nowhere anybody else could read it. Why the game card is white rather than dark, why the hero animation is scripted instead of live, why the league marquee has to go: all of it was argued once and then lost.

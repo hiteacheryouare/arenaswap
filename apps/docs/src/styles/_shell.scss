@@ -1,0 +1,263 @@
+// One quiet reading shell for every page that is not the landing page: release notes, docs, the
+// FAQ, credits. Only the homepage carries the visual idea; these pages carry text, and the job
+// here is a comfortable measure and a side-nav that stays out of the way.
+
+.page-head {
+	// Clears the fixed header with room to breathe, on a page whose first element is a heading.
+	padding: 7rem 0 0;
+}
+
+.page-title {
+	font-size: clamp(2.1rem, 4.6vw, 3rem);
+	font-weight: 700;
+	letter-spacing: -0.045em;
+	line-height: 1.02;
+	margin: 0;
+}
+
+.page-lede {
+	font-size: 1.05rem;
+	color: var(--color-muted);
+	line-height: 1.7;
+	margin: 0.9rem 0 0;
+	max-width: 62ch;
+}
+
+.reading-shell {
+	display: grid;
+	grid-template-columns: 13rem minmax(0, 1fr);
+	gap: 3rem;
+	padding: 2.5rem 0 5rem;
+	align-items: start;
+}
+
+.reading-shell.reading-shell-plain {
+	grid-template-columns: minmax(0, 1fr);
+	gap: 0;
+}
+
+.reading-nav {
+	position: sticky;
+	top: 5.5rem;
+
+	// Kept flat rather than collapsible: with this few links, a disclosure control would be one
+	// more thing to operate for no less scrolling.
+	h2 {
+		font-family: var(--font-mono);
+		font-size: 0.62rem;
+		letter-spacing: 0.15em;
+		text-transform: uppercase;
+		color: #4d545c;
+		margin: 1.35rem 0 0.55rem;
+
+		&:first-child {
+			margin-top: 0;
+		}
+	}
+
+	ul {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	a {
+		display: block;
+		font-size: 0.85rem;
+		color: var(--color-muted);
+		padding: 0.28rem 0;
+		text-decoration: none;
+
+		&:hover {
+			color: var(--color-text);
+		}
+
+		&[aria-current='page'] {
+			color: var(--color-primary);
+		}
+	}
+
+	.reading-nav-soon {
+		color: #4d545c;
+		font-size: 0.85rem;
+		padding: 0.28rem 0;
+	}
+}
+
+// ─── Release notes ───────────────────────────────────────────────────────────
+.release {
+	& + & {
+		margin-top: 3.25rem;
+	}
+}
+
+.release-head {
+	display: flex;
+	align-items: baseline;
+	gap: 1rem;
+	padding-bottom: 0.7rem;
+	border-bottom: 1px solid var(--color-border);
+	flex-wrap: wrap;
+}
+
+.release-version {
+	font-size: 1.65rem;
+	font-weight: 700;
+	letter-spacing: -0.04em;
+	margin: 0;
+
+	a {
+		color: inherit;
+		text-decoration: none;
+	}
+}
+
+.release-date {
+	font-family: var(--font-mono);
+	font-size: 0.75rem;
+	color: #6e7681;
+}
+
+.release-group {
+	margin-top: 1.5rem;
+}
+
+.release-group-name {
+	display: flex;
+	font-family: var(--font-mono);
+	font-size: 0.68rem;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+	color: #6e7681;
+	padding-bottom: 0.4rem;
+	border-bottom: 1px solid #21262d;
+	margin: 0;
+}
+
+.release-entry {
+	padding: 0.8rem 0;
+	border-bottom: 1px solid #21262d;
+
+	h4 {
+		font-size: 0.95rem;
+		font-weight: 600;
+		letter-spacing: -0.02em;
+		color: var(--color-text);
+		line-height: 1.35;
+		margin: 0;
+		max-width: 62ch;
+	}
+
+	p {
+		font-size: 0.875rem;
+		color: var(--color-muted);
+		line-height: 1.65;
+		margin: 0.4rem 0 0;
+		max-width: 74ch;
+	}
+}
+
+// ─── Credits ─────────────────────────────────────────────────────────────────
+.credit-list {
+	list-style: none;
+	margin: 1.5rem 0 0;
+	padding: 0;
+}
+
+.credit-item {
+	padding: 1.1rem 0;
+	border-top: 1px solid #21262d;
+
+	h3 {
+		font-size: 1rem;
+		font-weight: 600;
+		letter-spacing: -0.02em;
+		margin: 0;
+	}
+
+	p {
+		font-size: 0.875rem;
+		color: var(--color-muted);
+		line-height: 1.65;
+		margin: 0.35rem 0 0;
+		max-width: 74ch;
+	}
+
+	.credit-licence {
+		font-family: var(--font-mono);
+		font-size: 0.72rem;
+		color: #6e7681;
+	}
+}
+
+@media (max-width: 991.98px) {
+	.reading-shell {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 1.75rem;
+	}
+
+	.reading-nav {
+		position: static;
+		padding-bottom: 1.25rem;
+		border-bottom: 1px solid #21262d;
+	}
+}
+
+// ─── FAQ ─────────────────────────────────────────────────────────────────────
+// Native disclosure widgets. The marker is replaced with a caret that rotates, which is the one
+// piece of motion here; everything else about a <details> already works.
+
+.faq-item {
+	border-top: 1px solid #21262d;
+
+	&:last-of-type {
+		border-bottom: 1px solid #21262d;
+	}
+
+	> summary {
+		display: flex;
+		align-items: baseline;
+		gap: 0.75rem;
+		padding: 1rem 0;
+		font-size: 1rem;
+		font-weight: 600;
+		letter-spacing: -0.015em;
+		color: var(--color-text);
+		cursor: pointer;
+		list-style: none;
+
+		&::-webkit-details-marker {
+			display: none;
+		}
+
+		&::after {
+			content: '';
+			margin-left: auto;
+			flex-shrink: 0;
+			width: 0.5rem;
+			height: 0.5rem;
+			border-right: 1.5px solid var(--color-primary);
+			border-bottom: 1.5px solid var(--color-primary);
+			transform: rotate(45deg) translateY(-0.15rem);
+			transition: transform 0.18s ease;
+		}
+	}
+
+	&[open] > summary::after {
+		transform: rotate(-135deg) translateY(-0.15rem);
+	}
+
+	> p {
+		font-size: 0.925rem;
+		color: var(--color-muted);
+		line-height: 1.7;
+		margin: 0 0 1.15rem;
+		max-width: 74ch;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.faq-item > summary::after {
+		transition: none;
+	}
+}

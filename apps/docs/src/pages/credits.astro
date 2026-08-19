@@ -1,0 +1,122 @@
+---
+import Shell from '../layouts/Shell.astro';
+import ReadingNav from '../components/ReadingNav.astro';
+
+// The footage in the hero is real game footage, which means somebody filmed it. Two of the five
+// clips are under CC BY licences that require attribution, and one is CC BY-SA, which additionally
+// makes the trimmed and re-encoded clip we ship a derivative under the same licence. This page is
+// where all of that is said out loud.
+//
+// Kept as data rather than prose so scripts/docs/fetchHeroClips.sh and this list can be checked
+// against each other by eye.
+
+const clips = [
+	{
+		sport: 'Basketball',
+		what: "Hawai'i vs Northern Arizona, Stan Sheriff Center",
+		author: "Warrior Insider, University of Hawai'i Athletics",
+		licence: 'CC BY 3.0',
+		licenceUrl: 'https://creativecommons.org/licenses/by/3.0/',
+		source: 'https://commons.wikimedia.org/wiki/File:Hawaii_Basketball_-_Highlights_From_Northern_Arizona_Game.webm',
+	},
+	{
+		sport: 'Football',
+		what: 'Army vs Navy, from All Hands Update',
+		author: 'Defense Media Activity, U.S. Navy',
+		licence: 'Public domain',
+		licenceUrl: 'https://commons.wikimedia.org/wiki/Template:PD-USGov',
+		source: 'https://commons.wikimedia.org/wiki/File:All_Hands_Update-_Army_vs_Navy.webm',
+	},
+	{
+		sport: 'Hockey',
+		what: 'Bemidji State, 2019 Mariucci Classic',
+		author: 'Lakeland PBS',
+		licence: 'CC BY 3.0',
+		licenceUrl: 'https://creativecommons.org/licenses/by/3.0/',
+		source: 'https://commons.wikimedia.org/wiki/File:BSU_Men%27s_Hockey_To_Play_In_2019_Mariucci_Classic.webm',
+	},
+	{
+		sport: 'Baseball',
+		what: 'El Águila de Veracruz vs Leones de Yucatán',
+		author: 'ProtoplasmaKid',
+		licence: 'CC BY-SA 4.0',
+		licenceUrl: 'https://creativecommons.org/licenses/by-sa/4.0/',
+		source: 'https://commons.wikimedia.org/wiki/File:El_%C3%81guila_de_Veracruz_vs_Leones_de_Yucat%C3%A1n.webm',
+		shareAlike: true,
+	},
+	{
+		sport: 'Soccer',
+		what: 'Latvia vs Gibraltar, Skonto Stadium, Riga',
+		author: 'Mārtiņš Bruņenieks',
+		licence: 'CC0',
+		licenceUrl: 'https://creativecommons.org/publicdomain/zero/1.0/',
+		source: 'https://commons.wikimedia.org/wiki/File:Latvia-Gibraltar_football_2026-03-31.webm',
+	},
+];
+---
+<Shell
+	title='Credits — ArenaSwap'
+	description='Attribution for the game footage in the ArenaSwap hero, the data source, and the league and team marks.'
+	path='credits/'
+>
+	<div class='container'>
+		<div class='page-head'>
+			<h1 class='page-title'>Credits.</h1>
+			<p class='page-lede'>
+				The hero on the homepage plays real game footage. None of it is ours, all of it is freely
+				licensed, and this is who filmed it.
+			</p>
+		</div>
+
+		<div class='reading-shell'>
+			<ReadingNav current='credits/' />
+
+			<div>
+				<h2 class='display-md' style='font-size:1.35rem'>Footage</h2>
+				<ul class='credit-list'>
+					{clips.map(clip => (
+						<li class='credit-item'>
+							<h3>{clip.sport} — {clip.what}</h3>
+							<p>
+								<span>{clip.author}</span>
+								<span aria-hidden='true'> · </span>
+								<a href={clip.licenceUrl} class='credit-licence'>{clip.licence}</a>
+								<span aria-hidden='true'> · </span>
+								<a href={clip.source}>Source</a>
+								{clip.shareAlike && (
+									<>
+										<br />
+										Trimmed and re-encoded for the web, which makes the clip we ship a derivative
+										work. It is offered under the same CC BY-SA 4.0 licence.
+									</>
+								)}
+							</p>
+						</li>
+					))}
+				</ul>
+
+				<div class='prose' style='margin-top:2.5rem'>
+					<h2>Scores</h2>
+					<p>
+						Live scores, schedules, team colours, crests and win probabilities come from ESPN's
+						public API. ArenaSwap is not affiliated with or endorsed by ESPN, and none of the
+						leagues on this site are affiliated with or endorse it either.
+					</p>
+
+					<h2>Marks</h2>
+					<p>
+						League and team marks belong to their leagues and clubs. They appear here to identify
+						games, which is the only thing they are used for.
+					</p>
+
+					<h2>Type</h2>
+					<p>
+						DM Sans and Lekton are under the SIL Open Font License. Geist is under the SIL Open
+						Font License as well, and is on the game card for one reason: it has tabular figures
+						and DM Sans does not, so a scoreline stays optically centred as the digits change.
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</Shell>

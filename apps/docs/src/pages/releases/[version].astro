@@ -1,0 +1,48 @@
+---
+import { getCollection, render } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import Shell from '../../layouts/Shell.astro';
+import ReadingNav from '../../components/ReadingNav.astro';
+
+export async function getStaticPaths() {
+	const releases = await getCollection('releases', ({ data }) => !data.draft);
+	return releases.map(release => ({
+		params: { version: release.data.version },
+		props: { release },
+	}));
+}
+
+interface Props {
+	release: CollectionEntry<'releases'>;
+}
+
+const { release } = Astro.props;
+const { Content } = await render(release);
+
+const formatted = release.data.date.toLocaleDateString('en-US', {
+	month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC',
+});
+---
+<Shell
+	title={`${release.data.version} — ArenaSwap release notes`}
+	description={release.data.summary}
+	path={`releases/${release.data.version}/`}
+>
+	<div class='container'>
+		<div class='page-head'>
+			<h1 class='page-title'>{release.data.title}</h1>
+			<p class='page-lede'>
+				Version {release.data.version}
+				<span aria-hidden='true'> · </span>
+				<time datetime={release.data.date.toISOString()}>{formatted}</time>
+			</p>
+		</div>
+
+		<div class='reading-shell'>
+			<ReadingNav current={`releases/${release.data.version}/`} />
+			<article class='prose'>
+				<Content />
+			</article>
+		</div>
+	</div>
+</Shell>

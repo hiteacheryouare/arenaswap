@@ -17,6 +17,8 @@ export default defineConfig({
 			},
 		},
 	},
+	// GitHub Pages project site. Needed for canonical URLs and the release notes feed.
+	site: 'https://hiteacheryouare.github.io',
 	outDir: '../../docs',
 	base: '/arenaswap/',
 	build: {

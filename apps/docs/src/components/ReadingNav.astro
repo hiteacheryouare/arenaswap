@@ -1,0 +1,43 @@
+---
+import { getCollection } from 'astro:content';
+
+interface Props {
+	// Path without the base, e.g. `releases/2.0.0/`. Marks the matching link as current.
+	current?: string;
+}
+
+const { current = '' } = Astro.props;
+const base = import.meta.env.BASE_URL;
+
+const releases = (await getCollection('releases', ({ data }) => !data.draft))
+	.toSorted((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const isCurrent = (path: string) => (current === path ? 'page' : undefined);
+---
+<nav class='reading-nav' aria-label='Sections'>
+	<h2>Release notes</h2>
+	<ul>
+		<li><a href={`${base}releases/`} aria-current={isCurrent('releases/')}>All releases</a></li>
+		{releases.map(release => (
+			<li>
+				<a href={`${base}releases/${release.data.version}/`} aria-current={isCurrent(`releases/${release.data.version}/`)}>
+					{release.data.version}
+				</a>
+			</li>
+		))}
+	</ul>
+
+	<h2>Documentation</h2>
+	<ul>
+		<li><a href={`${base}docs/extension/`} aria-current={isCurrent('docs/extension/')}>The extension</a></li>
+		<li><a href={`${base}docs/powerscore/`} aria-current={isCurrent('docs/powerscore/')}>PowerScore</a></li>
+		<li><a href={`${base}powerscore/`} aria-current={isCurrent('powerscore/')}>Package reference</a></li>
+	</ul>
+
+	<h2>More</h2>
+	<ul>
+		<li><a href={`${base}faq/`} aria-current={isCurrent('faq/')}>FAQ</a></li>
+		<li><a href={`${base}blog/`} aria-current={isCurrent('blog/')}>Writing</a></li>
+		<li><a href={`${base}credits/`} aria-current={isCurrent('credits/')}>Credits</a></li>
+	</ul>
+</nav>

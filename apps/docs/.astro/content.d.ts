@@ -144,6 +144,24 @@ declare module 'astro:content' {
   filePath?: string;
   digest?: string | number;
 }>;
+"docs": Record<string, {
+  id: string;
+  body?: string;
+  collection: "docs";
+  data: InferEntrySchema<"docs">;
+  rendered?: RenderedContent;
+  filePath?: string;
+  digest?: string | number;
+}>;
+"releases": Record<string, {
+  id: string;
+  body?: string;
+  collection: "releases";
+  data: InferEntrySchema<"releases">;
+  rendered?: RenderedContent;
+  filePath?: string;
+  digest?: string | number;
+}>;
 
 	};
 

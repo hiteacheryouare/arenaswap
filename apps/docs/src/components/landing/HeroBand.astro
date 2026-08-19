@@ -1,0 +1,31 @@
+---
+import BrowserHero from '../hero/BrowserHero';
+
+const chrome = 'https://chromewebstore.google.com/detail/arenaswap/gibojibgihombdmmfnhnimajppamfeee';
+const firefox = 'https://addons.mozilla.org/addon/arenaswap/';
+const edge = 'https://microsoftedge.microsoft.com/addons/detail/arenaswap/oeballpnidkinkcbjokogdgjckdjeeba';
+---
+<section class='band band-hero' id='hero'>
+	<div class='container'>
+
+		<h1 class='display-xl'>Never miss<br>the moment.</h1>
+
+		<div class='hero-under'>
+			<p class='band-lede'>
+				ArenaSwap watches every live game across 31 leagues and switches your browser tab
+				to the most exciting one, as fast as every 6 seconds.
+			</p>
+			<div class='hero-actions'>
+				<a href={chrome} class='btn btn-cta'>
+					<i class='bi bi-browser-chrome me-2'></i>Add to Chrome
+				</a>
+				<span class='hero-actions-alt'>
+					Also for <a href={firefox}>Firefox</a> and <a href={edge}>Edge</a>
+				</span>
+			</div>
+		</div>
+
+		<BrowserHero client:load />
+
+	</div>
+</section>

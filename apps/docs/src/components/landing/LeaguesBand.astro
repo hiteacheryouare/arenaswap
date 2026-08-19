@@ -1,0 +1,63 @@
+---
+import { leagueConfigs } from '@arenaswap/core/constants';
+import type { SportType } from '@arenaswap/core/types';
+
+// Generated from `leagueConfigs`, so the count and the list are whatever the extension actually
+// tracks. The previous version of this section was a marquee of hand-picked logos that slid past
+// too fast to read and had drifted three leagues out of date.
+
+// Mirrors `sport.*` in the extension's locale files.
+const sportNames: Record<SportType, string> = {
+	basketball: 'Basketball',
+	football: 'Football',
+	hockey: 'Hockey',
+	baseball: 'Baseball',
+	softball: 'Softball',
+	soccer: 'Soccer',
+};
+
+const sportOrder: SportType[] = ['basketball', 'football', 'hockey', 'baseball', 'softball', 'soccer'];
+
+const groups = sportOrder
+	.map(sport => ({
+		sport,
+		name: sportNames[sport],
+		leagues: leagueConfigs.filter(config => config.sportType === sport),
+	}))
+	.filter(group => group.leagues.length > 0);
+
+const leagueCount = leagueConfigs.length;
+const sportCount = groups.length;
+---
+<section class='band band-quiet' id='leagues'>
+	<div class='container'>
+
+		<div class='leagues-head'>
+			<span class='band-count'>{leagueCount}</span>
+			<div>
+				<h2 class='display-md'>Leagues. {sportCount === 6 ? 'Six' : sportCount} sports.</h2>
+				<p class='band-copy' style='margin-top:0.6rem;max-width:52ch'>
+					Turn off the ones you do not watch and ArenaSwap stops polling them. Put the rest in
+					whatever order you actually watch them in.
+				</p>
+			</div>
+		</div>
+
+		<div class='leagues-grid'>
+			{groups.map(group => (
+				<div class='leagues-group'>
+					<h3>{group.name}</h3>
+					<ul>
+						{group.leagues.map(league => (
+							<li>
+								<img src={`${import.meta.env.BASE_URL}images/leagues/${league.id}.png`} alt='' loading='lazy' width='17' height='17' />
+								{league.label}
+							</li>
+						))}
+					</ul>
+				</div>
+			))}
+		</div>
+
+	</div>
+</section>

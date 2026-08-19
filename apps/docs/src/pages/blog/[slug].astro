@@ -1,10 +1,8 @@
 ---
-import Nav from '../../components/Nav.astro';
-import Footer from '../../components/Footer.astro';
-import OrangeDots from '../../components/OrangeDots.astro';
 import { getCollection, render } from 'astro:content';
-import '../../styles/tailwind.css';
-import '../../styles/global.scss';
+import type { CollectionEntry } from 'astro:content';
+import Shell from '../../layouts/Shell.astro';
+import ReadingNav from '../../components/ReadingNav.astro';
 
 export async function getStaticPaths() {
 	const posts = await getCollection('blog', ({ data }) => !data.draft);
@@ -14,176 +12,48 @@ export async function getStaticPaths() {
 	}));
 }
 
+interface Props {
+	post: CollectionEntry<'blog'>;
+}
+
 const { post } = Astro.props;
 const { Content } = await render(post);
 
+const base = import.meta.env.BASE_URL;
 const date = post.data.pubDate.toLocaleDateString('en-US', {
-	month: 'long', day: 'numeric', year: 'numeric',
+	month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC',
 });
 const words = post.body ? post.body.split(/\s+/).length : 600;
 const readTime = Math.max(1, Math.ceil(words / 200));
-
-const ogImage = post.data.image
-	? (post.data.image.startsWith('http') ? post.data.image : `https://arenaswap.app${post.data.image}`)
-	: 'https://arenaswap.app/arenaswap/images/128.png';
-const imageAlt = post.data.imageAlt ?? post.data.title;
 ---
-<!doctype html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<meta name="description" content={post.data.description} />
-	<meta property="og:title" content={`${post.data.title} — ArenaSwap Blog`} />
-	<meta property="og:description" content={post.data.description} />
-	<meta property="og:type" content="article" />
-	<meta property="og:image" content={ogImage} />
-	<meta name="twitter:card" content="summary_large_image" />
-	<meta name="twitter:image" content={ogImage} />
-	<title>{post.data.title} — ArenaSwap Blog</title>
-	<link rel="shortcut icon" href="/arenaswap/images/128.png" type="image/x-icon">
-	<noscript><style>.reveal { opacity: 1 !important; transform: none !important; }</style></noscript>
-</head>
-<body>
-	<Nav />
+<Shell
+	title={`${post.data.title} — ArenaSwap`}
+	description={post.data.description}
+	path={`blog/${post.id}/`}
+>
+	<div class='container'>
+		<div class='page-head'>
+			<h1 class='page-title'>{post.data.title}</h1>
+			<p class='page-lede'>{post.data.description}</p>
+			<p class='page-lede' style='font-size:0.85rem;margin-top:0.6rem'>
+				{post.data.author} · <time datetime={post.data.pubDate.toISOString()}>{date}</time> · {readTime} min read
+			</p>
+		</div>
 
-	<main style="padding-top:80px;">
+		<div class='reading-shell'>
+			<ReadingNav current='blog/' />
 
-		<!-- Article header -->
-		<section class="section-pad pb-0">
-			<div class="container">
-				<div class="row justify-content-center">
-					<div class="col-lg-8 col-xl-7">
+			<div>
+				<article class='prose'>
+					<Content />
+				</article>
 
-						<!-- Breadcrumb -->
-						<nav aria-label="breadcrumb" class="mb-4 blog-breadcrumb">
-							<ol class="breadcrumb mb-0">
-								<li class="breadcrumb-item">
-									<a href="/arenaswap/blog/">Blog</a>
-								</li>
-								<li class="breadcrumb-item active" aria-current="page">{post.data.title}</li>
-							</ol>
-						</nav>
-
-						<!-- Tags -->
-						{post.data.tags.length > 0 && (
-							<div class="d-flex flex-wrap gap-2 mb-4">
-								{post.data.tags.map(tag => (
-									<span class="badge blog-tag">{tag}</span>
-								))}
-							</div>
-						)}
-
-						<!-- Title -->
-						<h1 class="display-4 fw-bold mb-3 blog-article-title">{post.data.title}</h1>
-
-						<!-- Description / lead -->
-						<p class="lead mb-5 blog-article-lead">{post.data.description}</p>
-
-						<!-- Byline -->
-						<div class="d-flex align-items-center gap-3 pb-4 mb-5 blog-byline">
-							<div class="blog-avatar">
-								<i class="bi bi-person-fill"></i>
-							</div>
-							<div>
-								<p class="mb-0 fw-semibold small" style="color:var(--color-text);">
-									{post.data.author}
-								</p>
-								<p class="mb-0 text-muted" style="font-size:0.8rem;">
-									<time datetime={post.data.pubDate.toISOString()}>{date}</time>
-									&nbsp;·&nbsp;{readTime} min read
-								</p>
-							</div>
-						</div>
-
-					</div>
-				</div>
+				<p class='band-copy' style='margin-top:2.5rem'>
+					<a href={`${base}blog/`}>Back to the writing</a>
+					<span aria-hidden='true'> · </span>
+					<a href={`${base}releases/`}>Release notes</a>
+				</p>
 			</div>
-		</section>
-
-		<!-- Hero image -->
-		{post.data.image && (
-			<div class="container mb-5">
-				<div class="row justify-content-center">
-					<div class="col-lg-10">
-						<figure class="blog-hero-figure">
-							<img
-								src={post.data.image}
-								alt={imageAlt}
-								class="blog-hero-image"
-							/>
-							{post.data.imageAlt && (
-								<figcaption class="blog-hero-caption">{post.data.imageAlt}</figcaption>
-							)}
-						</figure>
-					</div>
-				</div>
-			</div>
-		)}
-
-		<!-- Article body -->
-		<section style="padding-bottom:7rem;">
-			<div class="container">
-				<div class="row justify-content-center">
-					<div class="col-lg-8 col-xl-7">
-
-						<article class="blog-prose">
-							<Content />
-						</article>
-
-						<!-- Back link -->
-						<div class="mt-5 pt-4" style="border-top:1px solid var(--color-border);">
-							<a href="/arenaswap/blog/" class="btn btn-outline-secondary-custom">
-								<i class="bi bi-arrow-left me-2"></i>Back to Blog
-							</a>
-						</div>
-
-					</div>
-				</div>
-			</div>
-		</section>
-
-	</main>
-
-	<Footer />
-	<OrangeDots />
-
-	<script>
-		import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-	</script>
-
-	<!-- Apply Bootstrap classes to markdown-rendered elements -->
-	<script>
-		document.querySelectorAll('.blog-prose table:not(.table)').forEach(table => {
-			table.classList.add('table', 'table-bordered');
-			if (!table.parentElement?.classList.contains('table-responsive')) {
-				const wrap = document.createElement('div');
-				wrap.className = 'table-responsive blog-table-wrap';
-				table.parentNode!.insertBefore(wrap, table);
-				wrap.appendChild(table);
-			}
-		});
-
-		document.querySelectorAll('.blog-prose blockquote:not(.blockquote)').forEach(bq => {
-			bq.classList.add('blockquote', 'blog-blockquote');
-		});
-
-		document.querySelectorAll('.blog-prose img:not([class])').forEach(img => {
-			img.classList.add('img-fluid', 'rounded');
-		});
-	</script>
-
-	<script>
-		const revealElements = document.querySelectorAll('.reveal');
-		const observer = new IntersectionObserver(
-			(entries) => {
-				entries.forEach(entry => {
-					if (entry.isIntersecting) entry.target.classList.add('visible');
-				});
-			},
-			{ threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
-		);
-		revealElements.forEach(el => observer.observe(el));
-	</script>
-</body>
-</html>
+		</div>
+	</div>
+</Shell>

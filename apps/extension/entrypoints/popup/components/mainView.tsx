@@ -9,14 +9,14 @@ import type {
 	TabRegistration,
 	UserPreferences,
 } from '@arenaswap/core/types';
-import { resolveLeagueLogoUrl } from '@arenaswap/core/constants';
+import { LeagueSectionHeader, PopupHeader, PopupSectionTitle } from '@arenaswap/ui/src/components/popupChrome';
 import GameCard from './gameCard';
 import PopupFooter from './popupFooter';
 import ProTip from './proTip';
 import EmptyGameState from './emptyGameState';
 import GameListHeader from './gameListHeader';
 import ReviewPromptBanner from './reviewPromptBanner';
-import { buildFavoritePinnedComparator, buildLeagueRank, buildUpcomingComparator, getRandomLoadingMessage, groupByDate, groupByLeague, leagueLabels } from '../popupHelpers';
+import { buildFavoritePinnedComparator, buildLeagueRank, buildUpcomingComparator, getRandomLoadingMessage, groupByDate, groupByLeague } from '../popupHelpers';
 import type { BettingDisplayPrefs, WeatherDisplayPrefs } from './gameCardTypes';
 
 const emptyScoreMap = new Map<string, PowerScoreResult>();
@@ -39,25 +39,6 @@ interface gameSectionProps {
 	groupDates?: boolean;
 	first?: boolean;
 }
-
-const LeagueSectionHeader = ({ league, logos }: { league: LeagueId; logos: LeagueLogoMap }) => {
-	const [imgFailed, setImgFailed] = useState(false);
-	const logoUrl = resolveLeagueLogoUrl(league, logos[league]);
-	return (
-		<div className='fw-bold text-uppercase popup-section-label'>
-			{!imgFailed && logoUrl && (
-				<img
-					src={logoUrl}
-					alt=''
-					className='popup-league-logo'
-					loading='lazy'
-					onError={() => setImgFailed(true)}
-				/>
-			)}
-			{leagueLabels[league] ?? league.toUpperCase()}
-		</div>
-	);
-};
 
 interface mainViewProps {
 	prefs: UserPreferences;
@@ -149,7 +130,7 @@ const gameSection = ({
 	first,
 }: gameSectionProps) => (
 	<div className='mt-2'>
-		<div className='popup-section-title' style={first ? { marginTop: '0.25rem' } : undefined}>{title}</div>
+		<PopupSectionTitle first={first}>{title}</PopupSectionTitle>
 		{groupDates
 			? groupByDate(games).map(({ dateLabel, games: dayGames }) => (
 				<div key={dateLabel}>
@@ -238,20 +219,14 @@ const mainView = ({
 
 	return (
 		<div className='popup-container d-flex flex-column'>
-			<div className='d-flex justify-content-between align-items-center mb-2 pb-2'>
-				<img src='/images/full_logo_white_on_transparent.svg' alt='ArenaSwap' className='arenaswap-logo' />
-				<div className='d-flex align-items-center gap-2'>
-					<button className='btn btn-sm p-0 popup-settings-button' onClick={onStartWalkthrough} title={i18n.t('main.tourButton')} aria-label={i18n.t('main.tourButton')}>
-						<i className='bi bi-question-circle popup-settings-icon' />
-					</button>
-					<button className='btn btn-sm p-0 popup-settings-button' onClick={onOpenSetup} title={i18n.t('main.settingsButton')} aria-label={i18n.t('main.settingsButton')}>
-						<i className='bi bi-gear-fill popup-settings-icon' />
-					</button>
-					<div className='form-check form-switch mb-0'>
-						<input className='form-check-input' type='checkbox' id='enableToggle' checked={prefs.enabled} onChange={onToggleEnabled} disabled={!prefsLoaded} aria-label={i18n.t('main.enableToggleLabel')} />
-					</div>
-				</div>
-			</div>
+			<PopupHeader
+				logoSrc='/images/full_logo_white_on_transparent.svg'
+				enabled={prefs.enabled}
+				prefsLoaded={prefsLoaded}
+				onToggleEnabled={onToggleEnabled}
+				onOpenSettings={onOpenSetup}
+				onStartTour={onStartWalkthrough}
+			/>
 
 			<GameListHeader isLoading={isLoading} hasError={hasError} loadingMessage={loadingMessage} onRefresh={onRefresh} />
 

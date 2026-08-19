@@ -1,23 +1,7 @@
 import { createContext, useContext } from 'react';
+import { defaultStrings } from './defaultStrings';
 
 type Translator = (key: string, subs?: Record<string, string | number>) => string;
-
-const defaultStrings: Record<string, string> = {
-	'gameCard.live': 'LIVE',
-	'gameCard.powerScore': 'PowerScore',
-	'gameCard.watchLabel': 'Watch:',
-	'gameCard.oddsProvidedBy': 'Odds provided by:',
-	'gameCard.favorited': 'Favorited',
-	'gameCard.addToFavoritesShort': 'Add to favorites',
-	'gameCard.vs': 'vs',
-	'gameCard.topOfInning': 'Top of inning',
-	'gameCard.bottomOfInning': 'Bottom of inning',
-	'gameCard.shootout': 'PENS {away}–{home}',
-	'gameCard.downDistanceAt': '{downDistance} at {fieldPosition}',
-	'bso.balls': 'B',
-	'bso.strikes': 'S',
-	'bso.outs': 'O',
-};
 
 const defaultT: Translator = (key, subs) => {
 	let str = defaultStrings[key] ?? key;
