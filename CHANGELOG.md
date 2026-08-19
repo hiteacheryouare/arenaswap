@@ -1,5 +1,29 @@
 # Changelog
 
+## Dead space at the bottom of the hero's player — 2026-08-19
+
+The window held a 16:9 player with a strip of stream page under it, and the popup pinned over the top
+is 560px tall. A 16:9 player at the width the window gets in the hero is nowhere near 560px tall, so
+the difference became a band of empty page at the bottom of the window, and the popup filled the frame
+top to bottom. Two things were wrong at once: the window was too small for a real-size popup, and the
+video was the wrong shape for the window.
+
+### The hero
+- **The video fills the window.** The clips are encoded to 840x580, roughly the shape of the box they
+  play in, rather than to 16:9 and then cropped to fit by `object-fit`. One resample instead of two,
+  and the crop is chosen in ffmpeg rather than always being a centre-cut. The strip of stream page
+  underneath is gone with the dead space it was there to explain
+- **The window gets more of the hero**, 1.38fr against the copy's 0.62fr. The narrower the window, the
+  more of it a 320px popup occupies; at the old split it took a third of the width and all of the
+  height, which is not what an extension popup looks like in a browser
+- Ten crests in the row rather than twelve: at the copy column's new width twelve wrapped to a second
+  row holding three orphans, which reads as a mistake rather than as a grid
+
+### Fixed
+- `.team-strip-logos` was styling `img` directly, which left `.crest` — an inline-flex whose image is
+  absolutely positioned — with no box to fill, so the whole row collapsed to nothing. Size belongs on
+  the wrapper, which is the contract `_crest.scss` documents
+
 ## The hero showed three of its five clips, and named the wrong games on all of them — 2026-08-19
 
 The five games in the hero were NBA, NFL, NHL, MLB and Premier League fixtures. The footage under

@@ -15,6 +15,13 @@
 # broadcast lower-thirds, news chyrons and foreground spectators sit, and all three
 # read as somebody else's video rather than as a stream in a tab.
 #
+# The sides are then cropped to 840x580, which is roughly the shape of the window the
+# clips play in. That window is as tall as it is because it holds a 320x560 popup at
+# the popup's real size, so it is nearer 3:2 than 16:9. Cropping to the target here
+# rather than letting `object-fit: cover` do it means one resample instead of two, and
+# it means choosing which part of the frame survives instead of always the middle of a
+# 16:9 centre-cut.
+#
 # The start times are not arbitrary. Each source runs from one to eight minutes and most
 # of that is a title card, a press conference or a set piece, so the windows below were
 # picked by measuring frame-to-frame change across the whole clip and shortlisting the
@@ -59,7 +66,7 @@ for clip in "${clips[@]}"; do
 	# iteration looks for a file whose name is missing its first letter.
 	ffmpeg -nostdin -hide_banner -loglevel error \
 		-ss "$start" -t "$secs" -i "$src" -an \
-		-vf "crop=iw:ih*$keep:0:0,scale=960:-2,fps=24" \
+		-vf "crop=iw:ih*$keep:0:0,crop=ih*1.448:ih:(iw-ih*1.448)/2:0,scale=840:580,fps=24" \
 		-c:v libx264 -profile:v high -pix_fmt yuv420p \
 		-crf "$crf" -preset veryslow -movflags +faststart \
 		-y "$name.mp4"

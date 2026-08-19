@@ -26,17 +26,20 @@
 	padding: 6rem 0 3.5rem;
 }
 
-// Copy left, browser right. It used to sit under the copy, which pushed the one thing on the page
-// that shows the product doing anything most of the way below the fold.
+// Copy left, window right, weighted towards the window. It used to sit under the copy, which pushed
+// the one thing on the page that shows the product doing anything most of the way below the fold.
+//
+// The weighting matters because the window holds a 320px popup at the popup's real size: the narrower
+// the window, the more of it that popup occupies. At an even split it took a third of the width and
+// all of the height, which is not what an extension popup looks like in a browser.
 .hero-grid {
 	display: grid;
-	grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
-	gap: 3rem;
+	grid-template-columns: minmax(0, 0.62fr) minmax(0, 1.38fr);
+	gap: 2rem;
 	align-items: center;
 }
 
 .hero-copy {
-	// The lede sets the measure for this column; the headline is allowed to run wider than it.
 	max-width: 34rem;
 }
 
@@ -78,17 +81,23 @@
 	align-items: center;
 	gap: 0.7rem;
 
-	img {
-		width: 1.95rem;
-		height: 1.95rem;
-		object-fit: contain;
+	// `_crest.scss` guarantees the image and its placeholder share a box; the size of that box is the
+	// call site's job, and without it `.crest` is an inline-flex with an absolutely positioned child
+	// and collapses to nothing.
+	.crest {
+		width: 1.8rem;
+		height: 1.8rem;
 		// Held slightly back so no one crest shouts over the rest, and brought up together on hover.
 		opacity: 0.9;
 		transition: opacity 0.15s ease;
 	}
+
+	.crest-fallback {
+		font-size: 0.52rem;
+	}
 }
 
-.team-strip:hover .team-strip-logos img {
+.team-strip:hover .team-strip-logos .crest {
 	opacity: 1;
 }
 

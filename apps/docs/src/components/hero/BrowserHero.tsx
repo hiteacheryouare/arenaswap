@@ -218,29 +218,21 @@ const BrowserHero = () => {
 				</div>
 
 				<div className='browser-viewport'>
-					<div className='browser-player'>
-						{heroGames.map((script, index) => (
-							<video
-								key={script.base.id}
-								ref={element => { videoRefs.current[index] = element; }}
-								className={`browser-video${index === onScreenIndex ? ' is-active' : ''}`}
-								data-src={`${base}video/${script.video}.mp4`}
-								poster={`${base}video/${script.poster}.jpg`}
-								muted
-								loop
-								playsInline
-								preload='none'
-								aria-hidden='true'
-								tabIndex={-1}
-							/>
-						))}
-					</div>
-					<div className='browser-page' aria-hidden='true'>
-						<p className='browser-page-title'>{onScreen.tabTitle}</p>
-						<p className='browser-page-meta'>
-							Live · {onScreen.base.venueName} · {onScreen.base.broadcasts?.join(' ')}
-						</p>
-					</div>
+					{heroGames.map((script, index) => (
+						<video
+							key={script.base.id}
+							ref={element => { videoRefs.current[index] = element; }}
+							className={`browser-video${index === onScreenIndex ? ' is-active' : ''}`}
+							data-src={`${base}video/${script.video}.mp4`}
+							poster={`${base}video/${script.poster}.jpg`}
+							muted
+							loop
+							playsInline
+							preload='none'
+							aria-hidden='true'
+							tabIndex={-1}
+						/>
+					))}
 				</div>
 			</div>
 

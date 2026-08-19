@@ -308,31 +308,18 @@ $chrome-height: 5.15rem;
 }
 
 // ─── Page ────────────────────────────────────────────────────────────────────
+// Tall enough for the popup and no taller, with the video filling all of it.
+//
+// This was a 16:9 player with a strip of stream page under it, which left dead space: the popup is
+// 560px and a 16:9 player at this width is nowhere near that tall, so the difference had to go
+// somewhere. The clips are encoded to roughly this box's shape instead — see fetchHeroClips.sh —
+// which is why the video can fill the window without being cropped to a keyhole.
 .browser-viewport {
 	position: relative;
-	// A floor, not a fixed height. It has to be at least tall enough to hold a 560px popup, and it
-	// has to be free to grow past that: as the window narrows the 16:9 player gets taller relative
-	// to it, and a fixed height cut the page area off underneath.
-	//
-	// A floor is safe here only because the aspect ratio lives on the child. `aspect-ratio` and
-	// `min-height` on the same box resolve in both directions, which is what previously grew this to
-	// 1200px wide inside a 936px window.
-	min-height: 592px;
-	// The page behind the player, a shade off the popup's black so the two do not merge.
-	background: #0b0d11;
-	overflow: hidden;
-	border-radius: 0 0 0.5rem 0.5rem;
-}
-
-// The player, not the page. A stream site puts a 16:9 player at the top and its own furniture
-// underneath, and the window here is taller than 16:9 because it has to be tall enough to hold a
-// 560px popup. Stretching the video over all of it cropped 45% of every frame off the sides.
-.browser-player {
-	position: relative;
-	width: 100%;
-	aspect-ratio: 16 / 9;
+	height: 580px;
 	background: #000;
 	overflow: hidden;
+	border-radius: 0 0 0.5rem 0.5rem;
 }
 
 .browser-video {
@@ -354,32 +341,6 @@ $chrome-height: 5.15rem;
 // Enough of a stream page under the player to explain why the window is taller than the video: the
 // title of what is on, and nothing else. Anything more would be a fake website competing with the
 // popup for attention.
-// Held clear of the popup so the stream title is never behind it. Only while the popup is actually
-// overlaid: below that breakpoint the popup moves out of the window, and keeping the reserve made
-// this column narrower than a word at phone widths.
-.browser-page {
-	padding: 1rem 1.1rem;
-}
-
-@media (min-width: 992px) {
-	.browser-page {
-		max-width: calc(100% - #{$popup-width} - 1.5rem);
-	}
-}
-
-.browser-page-title {
-	font-size: 0.92rem;
-	font-weight: 600;
-	color: #d7dde5;
-	margin: 0;
-}
-
-.browser-page-meta {
-	font-size: 0.76rem;
-	color: #6e7681;
-	margin: 0.3rem 0 0;
-}
-
 .browser-popup {
 	position: absolute;
 	// Under the pinned extension button on the right, which is where a real popup opens.
@@ -423,9 +384,10 @@ $chrome-height: 5.15rem;
 // so it comes out of the page area and sits underneath at its real size.
 @media (max-width: 991.98px) {
 	.browser-viewport {
-		// The player brings its own aspect ratio, and there is no popup on top down here to keep the
-		// window tall for.
-		min-height: 0;
+		// No popup on top down here to keep the window tall for, so it takes the clips' own shape and
+		// the video fills it exactly.
+		height: auto;
+		aspect-ratio: 840 / 580;
 	}
 
 	.browser-popup {
