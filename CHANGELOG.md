@@ -1,5 +1,11 @@
 # Changelog
 
+## Release notes sit in the middle of the page again — 2026-08-19
+
+- Centered the release notes index text measure instead of leaving it against the container edge.
+- Rebalanced individual release pages so the prose column is centered and the section outline sits in
+  a right rail without pulling the article off center.
+
 ## Lint stays green on the install CTA helper — 2026-08-19
 
 - Moved the docs install-link helper out of the browser-detection closure so oxlint no longer flags

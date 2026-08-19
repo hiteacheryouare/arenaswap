@@ -84,6 +84,14 @@
 .release-index {
 	padding: 2.75rem 0 5rem;
 	max-width: 70ch;
+	margin: 0 auto;
+}
+
+.release-index-page {
+	.page-head {
+		max-width: 70ch;
+		margin: 0 auto;
+	}
 }
 
 .release-meta {
@@ -235,11 +243,15 @@
 
 .release-body {
 	display: grid;
-	grid-template-columns: minmax(0, 68ch) 14rem;
+	grid-template-columns: minmax(0, 14rem) minmax(0, 68ch) minmax(0, 14rem);
 	justify-content: center;
-	gap: 4.5rem;
+	gap: clamp(1.75rem, 4vw, 3.5rem);
 	align-items: start;
 	padding: 3.5rem 0 0;
+
+	.prose {
+		grid-column: 2;
+	}
 }
 
 // The note's own section headings, pinned beside it. The bar on the left of each row is the
@@ -247,6 +259,7 @@
 .release-toc {
 	position: sticky;
 	top: 6rem;
+	grid-column: 3;
 
 	ul {
 		list-style: none;
@@ -317,6 +330,11 @@
 	.release-body {
 		grid-template-columns: minmax(0, 1fr);
 		gap: 0;
+
+		.prose {
+			grid-column: 1;
+			margin: 0 auto;
+		}
 	}
 
 	// An outline stacked above the article it outlines is two lists to scroll past.
