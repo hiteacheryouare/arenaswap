@@ -7,4 +7,5 @@
 *.json text eol=crlf
 *.css text eol=crlf
 *.scss text eol=crlf
+*.astro text eol=crlf
 *.md text eol=crlf

@@ -23,7 +23,7 @@ Root structure:
 	- /extension → actual browser extension (UI + runtime logic)
 	- /docs -> the landing page and documentation website for both the extension and npm package
 - /packages
-	- /powerScore → scoring algorithm
+	- /powerscore → scoring algorithm
 	- /core → core extension engine
 
 ### Tech Stack
@@ -85,7 +85,7 @@ When working in this project, its important to know how we use certain terms:
 - You: the AI agent working on this file
 - Us/Me/We: The developer(s) working on the project at Lattice & Company and directing you
 - ArenaSwap: the web extension that tracks, ranks, presents, and switches to the best available live sporting game
-- PowerScore: the algorithm we designed to take in numerous data points and rank the excitement to watch of a live sports game on a scale of 1-100. Project agnostic and on npm.
+- PowerScore: the algorithm we designed to take in numerous data points and rank the excitement to watch of a live sports game on a scale of 0-100. Project agnostic and on npm.
 - (PowerScore) Signal: one of the CORE data points we use to compose a raw powerscore
 - (PowerScore) Boost: a more minor piece of data we use to raise a PowerScore
 - (PowerScore) Penalty: a more minor piece of data we use to lower a PowerScore

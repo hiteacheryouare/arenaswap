@@ -10,7 +10,7 @@ if ($Version -notmatch '^\d+\.\d+\.\d+$') {
 
 $root = Resolve-Path (Join-Path $PSScriptRoot '..')
 $files = Get-ChildItem -Path $root -Recurse -Filter 'package.json' |
-	Where-Object { $_.FullName -notmatch '\\node_modules\\' }
+	Where-Object { $_.FullName -notmatch '\\(node_modules|\.output|dist|\.astro|\.wxt|\.turbo)\\' }
 
 $updated = 0
 
@@ -39,10 +39,12 @@ if (-not (Test-Path $readme)) {
 if (Test-Path $readme) {
 	$rootPackagePath = Join-Path $root 'package.json'
 	$extensionPackagePath = Join-Path $root 'apps/extension/package.json'
+	$docsPackagePath = Join-Path $root 'apps/docs/package.json'
 	$tsconfigPath = Join-Path $root 'tsconfig.base.json'
 
 	$rootPackage = Get-Content $rootPackagePath -Raw | ConvertFrom-Json
 	$extensionPackage = Get-Content $extensionPackagePath -Raw | ConvertFrom-Json
+	$docsPackage = Get-Content $docsPackagePath -Raw | ConvertFrom-Json
 	$tsconfig = Get-Content $tsconfigPath -Raw | ConvertFrom-Json
 
 	$getDependencyVersion = {
@@ -95,7 +97,9 @@ if (Test-Path $readme) {
 		TypeScript = (& $majorVersion (& $getDependencyVersion $rootPackage 'typescript'))
 		JavaScript = [string]$tsconfig.compilerOptions.target
 		WXT = (& $majorMinorVersion (& $getDependencyVersion $extensionPackage 'wxt'))
-		TailwindCSS = (& $majorVersion (& $getDependencyVersion $extensionPackage 'tailwindcss'))
+		# Tailwind is a docs-site dependency, not an extension one. Reading it off the
+		# extension package silently returned '' and froze the badge instead of failing.
+		TailwindCSS = (& $majorVersion (& $getDependencyVersion $docsPackage 'tailwindcss'))
 		Bootstrap = (& $majorVersion (& $getDependencyVersion $extensionPackage 'bootstrap'))
 		Turborepo = (& $majorVersion (& $getDependencyVersion $rootPackage 'turbo'))
 		npm = $npmVersion
@@ -116,6 +120,14 @@ if (Test-Path $readme) {
 
 	$content = Get-Content $readme -Raw
 	$readmeUpdated = $false
+
+	# A dependency that moved packages resolves to '' here. Say so rather than leaving a
+	# stale badge behind, which is how the TailwindCSS badge quietly froze.
+	foreach ($entry in $badgeValues.GetEnumerator()) {
+		if ([string]::IsNullOrWhiteSpace([string]$entry.Value)) {
+			Write-Warning "  no version resolved for the $($entry.Key) badge; leaving it unchanged"
+		}
+	}
 
 	foreach ($replacement in $replacements) {
 		if ([string]::IsNullOrWhiteSpace([string]$replacement.Value)) {

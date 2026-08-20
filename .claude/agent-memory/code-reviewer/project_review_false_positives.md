@@ -32,3 +32,29 @@ The extension does not keep parallel copies. Files like `apps/extension/entrypoi
 **How to apply:** don't open this against a diff that merely re-labels or i18n's those sliders. If it is worth raising at all, raise it once as a repo-level suggestion (snap in `normalizeUserPreferences`), not as a blocker on someone's change.
 
 Related: [[project_review_failure_map]]
+
+**5. `turbo.json` build outputs: check the PACKAGE-level config before calling `.output/**` undeclared.**
+The root `turbo.json` `build.outputs` is `["dist/**"]` and does *not* list `.output/**`. That looks
+like the extension's WXT output is uncached/undeclared — it is not. `apps/extension/turbo.json`
+(`extends: ["//"]`) overrides `build.outputs` to `[".output/chrome-mv3/**"]`, with sibling entries
+per browser target (`build:firefox` → `.output/firefox-mv3/**`, the three `zip:*` tasks → their own
+zip globs). The per-target scoping is deliberate and commented: a shared `.output/**` on all six
+tasks would make them claim each other's artifacts, so restoring one target from cache could hand
+back another target's build.
+**How to apply:** `find apps packages -maxdepth 2 -name turbo.json` before reasoning about turbo
+caching. Only `apps/extension` writes to `.output/`; `apps/docs` (astro) and both `packages/*` (tsc)
+write to `dist/`, which the root config covers.
+
+**6. Do not grep for Tailwind-ish class names with `\bword\b` — the hyphen is a word boundary.**
+`grep -E '\bgrow\b'` matches inside Bootstrap's `flex-grow-1`, and `\bshrink-0\b` matches inside
+`flex-shrink-0`. A naive sweep reported standalone `grow` in 16 files and `shrink-0` in 4; the real
+counts are 6 and **zero**. Match the class as a whole token instead, e.g.
+`grep -rnoE "className='[^']*'" … | grep -E "(=' *| )grow( |')"`.
+**Standing (not introduced by PR #18):** the extension has no Tailwind build (AGENTS.md: Tailwind is
+`apps/docs` only), and PR #18 removed a never-compiling `@import 'tailwindcss'` and rescued the
+Preflight rules that mattered (`.min-w-0` now lives in `global.scss:40`). Left behind as inert
+classes: standalone `grow` (6 sites, onboarding/walkthrough/banner), and in
+`reviewPromptBanner.tsx` alone `mt-[0.08rem]`, `text-[0.72rem]`, `text-[0.62rem]`, `text-[0.65rem]`,
+`leading-tight`, `leading-snug`; plus `dark:bg-blue-950`/`dark:text-blue-100`/`dark:border-blue-800`
+on `proTip.tsx:62`. Almost all pre-date PR #18, which only re-touched those lines to add `i18n.t`.
+Worth one repo-level suggestion, never a blocker on a diff that merely moved them.

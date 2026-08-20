@@ -43,3 +43,15 @@ Shared components call `useT()`, which falls back to `defaultT` = `defaultString
 **Synthetic DnD tests give false confidence.** `cypress/component/leagueOrderList.cy.tsx:68-91` tests drag-reorder by firing `dragstart`/`dragover`/`drop` with a hand-built `dataTransfer`, which bypasses native drag initiation entirely. That is how a Firefox-only break shipped past 11 green tests: Firefox will not start a drag unless `dragstart` calls `dataTransfer.setData()`, and `leagueOrderList.tsx` sets only `effectAllowed`. Cypress runs Chrome/Electron, so it can never catch this class. Any browser-API finding needs a real Firefox check.
 
 **The walkthrough bloom overlay covers its own navigation — a product bug, NOT test flake.** On 13d6847 `walkthroughView.cy.tsx` ("step 2 PowerScore sub-steps") failed on **two consecutive isolated runs** with the identical error, so an earlier "failed once, passed once" note was wrong. Root cause: `.ps-bloom-overlay` is `position: absolute; inset: 0; z-index: 100` (`assets/global.scss:514`) and its containing block is the `.popup-container` that also holds the progress dots and the Back/Next row — with `onClick={handleNext}` as its handler. So on signal sub-steps 1-5, ~600ms after arrival (150ms delay + 450ms bloom-in), **Back moves the user forward** and the dots become "advance one" buttons. Neighbouring specs pass only because Cypress clicks faster than the 150ms pre-bloom window, which is what makes the file *look* intermittent. A second independent bug sits in the same component: `advanceTo` derives `nextSubStep` from current `subStep`, so a second tap inside the 400ms shrink re-issues the same target (two taps advance one step). The walkthrough is the shipped first-run tour (`app.tsx:316`), so both are user-facing. Never paper this over with `{ force: true }` — the overlay is something a real user must click through too.
+**Same constant declared twice, served on two import paths — check this before trusting any arithmetic
+that mixes `@arenaswap/core` and `@arenaswap/core/constants`.** `pollMinEagerMs`, `pollMaxEagerMs` and
+`pollIntermissionMs` are declared in **both** `packages/core/src/constants.ts` and
+`packages/core/src/pollIntervalComputer.ts`. `index.ts` line 3 explicitly re-exports the computer's
+copies, which shadows the `export * from './constants'` further down (an explicit named re-export wins
+over a star export), so `@arenaswap/core` serves one definition and `@arenaswap/core/constants` serves
+the other. This is already load-bearing: `background.ts` imports `pollMaxEagerMs` from
+`@arenaswap/core/constants` while `computeLeagueIntervalMs` comes from `@arenaswap/core`, and divides
+one by the other for the poll jitter. Equal today, so nothing fails; edit one copy alone and the jitter
+silently mis-scales with no test or type error.
+**How to apply:** when a `packages/core` constant looks duplicated, grep both files and check which
+path each consumer imports from before concluding the values agree.

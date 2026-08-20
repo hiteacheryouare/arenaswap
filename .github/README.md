@@ -58,13 +58,13 @@ ArenaSwap watches every live game across 30+ leagues and automatically switches 
 - **Auto-Switch** — Jumps to the hottest game as fast as every 6 seconds, hands-free
 - **PowerScore** — Real-time excitement score built from 5 signals and 6 adjustments
 - **Game Boost** — Manually pin any game to keep it on top
-- **Standby Stream** — Falls back to a calm tab when all games go quiet
+- **Standby Stream** — Falls back to a certain tab when all games aren't interesting
 - **Leagues & Favorites** — Enable any of 30+ leagues; star your teams for a built-in PowerScore bonus
 - **Private by default** — No account, no tracking, no ads. Scores come directly from ESPN's public API; everything else runs locally
 
 ## Development
 
-**Requires:** Node.js 20+, npm 10+
+**Requires:** Node.js 20.17+, npm 11+
 
 ```bash
 git clone https://github.com/hiteacheryouare/arenaswap
@@ -92,12 +92,12 @@ apps/
   docs/        → Astro landing page
 packages/
   core/        → Extension engine
-  powerScore/  → Scoring algorithm
+  powerscore/  → Scoring algorithm
 ```
 
 ## License
 
-ISC © [Ryan Mullin](https://github.com/hiteacheryouare) and contributors
+ISC © [Ryan Mullin](https://github.com/hiteacheryouare), [Lattice & Company](https://github.com/latticeandcompany), and contributors
 
 ---
 

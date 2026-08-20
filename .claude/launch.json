@@ -6,12 +6,6 @@
 			"runtimeExecutable": "npm",
 			"runtimeArgs": ["run", "dev", "--workspace", "@arenaswap/docs"],
 			"port": 4321
-		},
-		{
-			"name": "personal-site",
-			"runtimeExecutable": "npm",
-			"runtimeArgs": ["--prefix", "/Users/rpmul/Source/hiteacheryouare.github.io", "run", "dev"],
-			"port": 4321
 		}
 	]
 }

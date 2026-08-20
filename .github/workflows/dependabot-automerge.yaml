@@ -1,8 +1,9 @@
 name: Dependabot Auto-Merge and PR Management
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened]
+  # Dependabot PRs get a read-only GITHUB_TOKEN on `pull_request`, so the write
+  # operations below only work under `pull_request_target`. Listing both ran the
+  # whole job twice on every Dependabot PR.
   pull_request_target:
     types: [opened, synchronize, reopened]
 
@@ -75,7 +76,7 @@ jobs:
           PACKAGE="${{ steps.package-info.outputs.package_name }}"
           UPDATE_TYPE="${{ steps.metadata.outputs.update-type }}"
 
-          MINOR_AUTO_PACKAGES="turbo typescript react react-dom wxt @wxt-dev/module-react swr bootstrap bootstrap-icons tailwindcss sass vitest @types/react @types/react-dom"
+          MINOR_AUTO_PACKAGES="turbo typescript react react-dom wxt @wxt-dev/module-react swr bootstrap bootstrap-icons tailwindcss sass jest oxlint astro @types/react @types/react-dom"
 
           if [[ "$UPDATE_TYPE" == "version-update:semver-patch" ]]; then
             echo "should_merge=true" >> $GITHUB_OUTPUT

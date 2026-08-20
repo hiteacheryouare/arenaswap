@@ -28,7 +28,7 @@ jobs:
           cache: npm
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Build docs
         run: npm run build --workspace=@arenaswap/docs
@@ -38,5 +38,12 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add docs/
-          git diff --staged --quiet || git commit -m "chore: rebuild docs site [skip ci]"
-          git push
+          git diff --staged --quiet && exit 0
+          git commit -m "chore: rebuild docs site [skip ci]"
+          # Another push can land between the checkout and here; rebase onto it
+          # rather than failing the deploy outright.
+          for attempt in 1 2 3; do
+            git pull --rebase origin mega && git push && exit 0
+            sleep 5
+          done
+          exit 1

@@ -1,18 +1,30 @@
 ---
 name: project-platform-floor
-description: ArenaSwap's declared browser floor is lower than the APIs the popup actually uses — a recurring, still-unfixed finding. Check new ES built-ins against Firefox 115 / Chrome 110.
+description: RESOLVED 2026-08-19 — the manifest floor now matches the APIs the popup uses (Chrome 110 / Firefox 115). Keep checking new ES built-ins against that floor.
 metadata:
   type: project
 ---
 
-`apps/extension/wxt.config.ts` declares `browser_specific_settings.gecko.strict_min_version: '109.0'` and **no `minimum_chrome_version` at all**. The shipping code needs higher than that:
+**This was a recurring finding across several reviews and it is now FIXED.** As of the 2.0 branch
+(`dev`, PR #18), `apps/extension/wxt.config.ts` sets `minimum_chrome_version: '110'` (guarded with
+`browser === 'firefox' ? {} : {...}` because AMO's linter rejects the Chrome-only key) and
+`browser_specific_settings.gecko.strict_min_version: '115.0'`. The comment above the manifest names
+both drivers — `Array.prototype.toSorted` and `browser.storage.session` — and states that
+`vite.build.target` down-levels syntax rather than polyfilling built-ins.
 
-- `browser.storage.session` (Firefox 115+) — used since before the 2.0 branch, so the Gecko floor has been wrong for a while.
-- `Array.prototype.toSorted` (Chrome/Edge 110+, Firefox 115+) — 12 call sites added in the 2.0 branch, including `mainView.tsx` (the default view) and `app.tsx`. Verified present in the built `chunks/popup-*.js`.
+Do **not** open this as a finding again. Report it as closed if it comes up.
 
-**Why it is not caught:** there is no `core-js`, no `browserslist`, and no `preset-env` anywhere in the repo, and `vite.build.target: 'es2023'` down-levels **syntax only** — it never polyfills missing built-ins. So new built-ins typecheck, lint, build, and pass all Cypress specs (current Chrome) while throwing `TypeError` on the declared minimum. In the popup that means a blank ErrorBoundary on open.
+**What still needs checking on every popup diff:** there is no `core-js`, no `browserslist`, and no
+`preset-env` anywhere in the repo, so a new ES built-in still typechecks, lints, builds, and passes
+Cypress (current Chrome) while throwing on the declared minimum.
+- Safe: `findLastIndex` (Chrome 97 / FF 104), `toSorted` (Chrome 110 / FF 115 — now inside the floor;
+  12 call sites in popup code as of PR #18).
+- Verify before approving: anything newer than Chrome 110 / Firefox 115. `Object.groupBy` and
+  `Array.prototype.with` are Chrome 117+/FF 119+ and would be **outside** the floor. As of PR #18
+  there are zero `toReversed`/`toSpliced`/`Object.groupBy`/`Array.prototype.with` call sites.
+- Raising the floor is two manifest lines, not a polyfill.
 
-**How to apply:**
-- Any new `Array`/`Object` built-in in popup code needs a support check against Chrome 110 / Firefox 115 before approval. `findLastIndex` (Chrome 97 / FF 104) is fine; `toSorted`/`toReversed`/`toSpliced`/`Array.prototype.with`/`Object.groupBy` are not.
-- The cheap fix is two manifest lines (`minimum_chrome_version: '110'`, `strict_min_version: '115.0'`), not a polyfill.
-- This has been reported in more than one review and remains unfixed — expect to raise it again, and say plainly that it is a standing gap rather than a new discovery.
+**The `storage.session` quota is the live version of this problem.** Chrome's `storage.session`
+QUOTA_BYTES is 1 MB before Chrome 112 and 10 MB from 112 on — and the declared floor is 110. So any
+growth in what `background.ts` mirrors into session storage has a real ceiling on Chrome 110-111.
+See [[project-extension-runtime-footguns]].
