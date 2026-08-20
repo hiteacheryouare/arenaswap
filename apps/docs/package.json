@@ -10,6 +10,7 @@
 		"lint": "oxlint ."
 	},
 	"dependencies": {
+		"@arenaswap/core": "*",
 		"@arenaswap/ui": "*",
 		"@astrojs/mdx": "^7.0.7",
 		"@astrojs/react": "^6.0.4",
