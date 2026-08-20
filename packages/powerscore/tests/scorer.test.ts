@@ -607,7 +607,7 @@ describe('computePowerScore', () => {
 		const result = computePowerScore(game, history);
 
 		expect(result.momentum).toBe(scorerTunables.scores.momentum.bigRun);
-		expect(result.reason).toContain('HOM on a 10-0 run');
+		expect(result.reason).toContain('HOM outscoring AWY 10-0');
 	});
 
 	test('applies momentum boundaries for none, small, and big runs', () => {
@@ -628,7 +628,7 @@ describe('computePowerScore', () => {
 
 		const bigRun = computePowerScore(game, makeHistory([[90, 60], [95, 60], [100, 60]]));
 		expect(bigRun.momentum).toBe(scorerTunables.scores.momentum.bigRun);
-		expect(bigRun.reason).toBe('HOM on a 10-0 run');
+		expect(bigRun.reason).toBe('HOM outscoring AWY 10-0');
 	});
 
 	test('orders reasons by momentum then late game and truncates extra reasons', () => {
@@ -641,7 +641,7 @@ describe('computePowerScore', () => {
 		const history = makeHistory([[60, 56], [65, 56], [70, 56]]);
 
 		const result = computePowerScore(game, history);
-		expect(result.reason).toBe('HOM on a 10-0 run, under 2 min left');
+		expect(result.reason).toBe('HOM outscoring AWY 10-0, under 2 min left');
 		expect(result.reason).not.toContain('2-point game');
 	});
 
@@ -1164,7 +1164,7 @@ describe('computeWinProbVarianceScore', () => {
 		expect(score).toBeLessThanOrEqual(1);
 	});
 
-	test('clamps result to [-10, +10]', () => {
+	test('clamps the result to the configured five-point range', () => {
 		const score = computeWinProbVarianceScore([0, 0, 0, 1, 1, 1, 0, 1, 0, 1]);
 		expect(score).toBeGreaterThanOrEqual(-scoreWinProbVarianceMax);
 		expect(score).toBeLessThanOrEqual(scoreWinProbVarianceMax);
@@ -1255,5 +1255,265 @@ describe('normalizePowerScoreResult — winProbabilityVariance', () => {
 	test('omits winProbabilityVariance from result when not provided', () => {
 		const result = normalizePowerScoreResult({ gameId: 'g', total: 30, reason: '' });
 		expect(result.winProbabilityVariance).toBeUndefined();
+	});
+});
+
+describe('computePowerScore — a missing clock means unknown, not 0:00', () => {
+	const nbaFinalPeriod = (clockSeconds?: number): Game => makeGame({
+		period: 4,
+		clockSeconds,
+		homeTeam: { abbreviation: 'HOM', score: 100 },
+		awayTeam: { abbreviation: 'AWY', score: 99 },
+	});
+
+	test('countdown sport: an absent clock holds at the period start instead of paying the buzzer', () => {
+		const withClock = computePowerScore(nbaFinalPeriod(700), []);
+		const withoutClock = computePowerScore(nbaFinalPeriod(undefined), []);
+
+		expect(withoutClock.lateGame).toBe(scorerTunables.scores.lateGame.finalPeriodStart);
+		expect(withoutClock.lateGame).toBeLessThan(scoreMaxLateGame);
+		expect(withoutClock.total).toBeLessThanOrEqual(withClock.total);
+		expect(withoutClock.reason).not.toContain('left');
+		expect(withoutClock.reason).not.toContain('0:00');
+	});
+
+	test('countdown sport: the clock is still reported when it is known', () => {
+		expect(computePowerScore(nbaFinalPeriod(20), []).reason).toContain('0:20 left');
+	});
+
+	test('count-up sport: an absent clock does not claim a position in the half', () => {
+		const soccerAt = (clockSeconds?: number): Game => makeGame({
+			league: 'mls',
+			sportType: 'soccer',
+			period: 2,
+			clockSeconds,
+			homeTeam: { abbreviation: 'HOM', score: 2 },
+			awayTeam: { abbreviation: 'AWY', score: 1 },
+		});
+		const withClock = computePowerScore(soccerAt(5_340), []);
+		const withoutClock = computePowerScore(soccerAt(undefined), []);
+
+		expect(withClock.lateGame).toBeGreaterThan(withoutClock.lateGame);
+		expect(withoutClock.lateGame).toBe(scorerTunables.scores.lateGame.finalPeriodStart);
+		expect(withoutClock.reason).not.toContain('min left');
+	});
+
+	test('a non-finite clock is treated the same as an absent one', () => {
+		const nan = computePowerScore(nbaFinalPeriod(Number.NaN), []);
+		expect(nan.lateGame).toBe(scorerTunables.scores.lateGame.finalPeriodStart);
+		expect(Number.isFinite(nan.total)).toBe(true);
+	});
+});
+
+describe('computePowerScore — soccer has no overtime', () => {
+	const soccerAt = (period: number, clockSeconds: number, home: number, away: number): Game => makeGame({
+		league: 'mls',
+		sportType: 'soccer',
+		period,
+		clockSeconds,
+		homeTeam: { abbreviation: 'HOM', score: home },
+		awayTeam: { abbreviation: 'AWY', score: away },
+	});
+
+	test('calls the two extra-time halves extra time', () => {
+		for (const period of [3, 4]) {
+			const result = computePowerScore(soccerAt(period, 300, 1, 1), []);
+			expect(result.lateGame).toBe(scoreMaxLateGame);
+			expect(result.reason).toContain(scorerTunables.reasons.extraTime);
+			expect(result.reason).not.toContain(scorerTunables.reasons.overtime);
+		}
+	});
+
+	test('calls a shootout penalties, the same way the card labels it PENS', () => {
+		const result = computePowerScore(soccerAt(5, 0, 1, 1), []);
+		expect(result.lateGame).toBe(scoreMaxLateGame);
+		expect(result.reason).toContain(scorerTunables.reasons.shootout);
+		expect(result.reason).not.toContain(scorerTunables.reasons.overtime);
+	});
+
+	test('keeps the pre-boost for a late level match but does not call it overtime-bound', () => {
+		const result = computePowerScore(soccerAt(2, 5_390, 1, 1), []);
+		expect(result.lateGame).toBe(scoreMaxLateGame);
+		expect(result.lateGame).toBeGreaterThan(scorerTunables.scores.lateGame.closeCeiling);
+		expect(result.reason).toContain(scorerTunables.reasons.drawAnticipation);
+		expect(result.reason).not.toContain(scorerTunables.reasons.overtime);
+	});
+
+	test('reports elapsed minutes past 90 rather than a countdown that reached zero', () => {
+		const result = computePowerScore(soccerAt(2, 5_640, 2, 1), []);
+		expect(result.reason).toContain('94 min in');
+		expect(result.reason).not.toContain('0:00');
+	});
+
+	test('still calls overtime overtime in the sports that have it', () => {
+		const result = computePowerScore(makeGame({
+			period: 5,
+			clockSeconds: 120,
+			homeTeam: { abbreviation: 'HOM', score: 105 },
+			awayTeam: { abbreviation: 'AWY', score: 105 },
+		}), []);
+		expect(result.reason).toContain(scorerTunables.reasons.overtime);
+	});
+});
+
+describe('computePowerScore — a tie is not a lead change', () => {
+	test('counts trailing, level, then ahead as a single lead change', () => {
+		const result = computePowerScore(
+			makeGame({
+				league: 'nfl',
+				sportType: 'football',
+				period: 4,
+				clockSeconds: 600,
+				homeTeam: { abbreviation: 'HOM', score: 31 },
+				awayTeam: { abbreviation: 'AWY', score: 24 },
+			}),
+			makeHistory([[17, 24], [24, 24], [31, 24]]),
+		);
+		expect(result.leadChanges).toBe(scorerTunables.scores.leadChanges.single);
+	});
+
+	test('counts ahead, level, then behind as a single lead change', () => {
+		const result = computePowerScore(
+			makeGame({
+				league: 'nhl',
+				sportType: 'hockey',
+				period: 3,
+				clockSeconds: 600,
+				homeTeam: { abbreviation: 'HOM', score: 1 },
+				awayTeam: { abbreviation: 'AWY', score: 2 },
+			}),
+			makeHistory([[1, 0], [1, 1], [1, 2]]),
+		);
+		expect(result.leadChanges).toBe(scorerTunables.scores.leadChanges.single);
+	});
+
+	test('counts ahead, level, then ahead again as no lead change at all', () => {
+		const result = computePowerScore(
+			makeGame({
+				league: 'nhl',
+				sportType: 'hockey',
+				period: 3,
+				clockSeconds: 600,
+				homeTeam: { abbreviation: 'HOM', score: 2 },
+				awayTeam: { abbreviation: 'AWY', score: 1 },
+			}),
+			makeHistory([[1, 0], [1, 1], [2, 1]]),
+		);
+		expect(result.leadChanges).toBe(scorerTunables.scores.leadChanges.none);
+	});
+
+	test('still counts a genuine back-and-forth as multiple lead changes', () => {
+		const result = computePowerScore(
+			makeGame({
+				homeTeam: { abbreviation: 'HOM', score: 60 },
+				awayTeam: { abbreviation: 'AWY', score: 58 },
+			}),
+			makeHistory([[50, 48], [48, 52], [54, 52], [52, 56], [60, 58]]),
+		);
+		expect(result.leadChanges).toBe(scorerTunables.scores.leadChanges.multiple);
+	});
+});
+
+describe('computePowerScore — momentum reasons state what the number supports', () => {
+	test('names both scores, because the run value is a differential', () => {
+		const result = computePowerScore(
+			makeGame({
+				homeTeam: { abbreviation: 'BOS', score: 70 },
+				awayTeam: { abbreviation: 'LAL', score: 62 },
+			}),
+			makeHistory([[60, 60], [65, 61], [70, 62]]),
+		);
+		expect(result.momentum).toBe(scorerTunables.scores.momentum.bigRun);
+		expect(result.reason).toContain('BOS outscoring LAL 10-2');
+		expect(result.reason).not.toContain('8-0');
+	});
+});
+
+describe('computePowerScore — non-finite win probability input', () => {
+	const game = makeGame({
+		period: 4,
+		clockSeconds: 30,
+		homeTeam: { abbreviation: 'HOM', score: 100 },
+		awayTeam: { abbreviation: 'AWY', score: 99 },
+	});
+	const history = makeHistory([[94, 93], [97, 96], [100, 99]]);
+
+	test('a single NaN cannot hand a stalled game its penalty back', () => {
+		const clean = computePowerScore(game, history, 15, []);
+		const poisoned = computePowerScore(game, history, 15, [0.5, 0.5, Number.NaN, 0.5, 0.5]);
+
+		expect(clean.stallPenalty).toBe(25);
+		expect(poisoned.stallPenalty).toBe(25);
+		expect(poisoned.stalled).toBe(true);
+		expect(poisoned.total).toBe(clean.total);
+		expect(poisoned.total).toBeLessThan(poisoned.baseTotal!);
+	});
+
+	test('drops non-finite samples and scores the finite ones that remain', () => {
+		const finiteOnly = computeWinProbVarianceScore([0.5, 0.5, 0.5, 0.5, 0.5]);
+		expect(computeWinProbVarianceScore([0.5, 0.5, Number.NaN, 0.5, 0.5, 0.5])).toBe(finiteOnly);
+	});
+
+	test('returns undefined once too few finite samples are left', () => {
+		expect(computeWinProbVarianceScore([0.5, 0.5, Number.NaN, 0.5, 0.5])).toBeUndefined();
+		expect(computeWinProbVarianceScore([0.5, Number.POSITIVE_INFINITY, 0.5, 0.5, 0.5])).toBeUndefined();
+	});
+
+	test('a non-finite total falls back to the post-penalty subtotal, not the raw signal sum', () => {
+		const normalized = normalizePowerScoreResult({
+			gameId: 'nan-total',
+			total: Number.NaN,
+			closeness: 42,
+			lateGame: 20,
+			momentum: 10,
+			leadChanges: 5,
+			comeback: 2,
+			stalled: true,
+			stallPenalty: 25,
+			reason: '',
+		});
+		expect(normalized.total).toBe(54);
+	});
+});
+
+describe('computePowerScore — leagues the map has never heard of', () => {
+	test('scores instead of throwing, the way an unknown sport type does', () => {
+		const game: Game = {
+			...makeGame({ period: 4, clockSeconds: 60 }),
+			league: 'kabaddi' as unknown as Game['league'],
+		};
+		expect(() => computePowerScore(game, [])).not.toThrow();
+
+		const result = computePowerScore(game, []);
+		expect(Number.isFinite(result.total)).toBe(true);
+		expect(result.total).toBeGreaterThanOrEqual(0);
+		expect(result.total).toBeLessThanOrEqual(scoreMaxTotal);
+	});
+});
+
+describe('computePowerScore — baseball half-innings', () => {
+	const mlbNinth = (topOfInning?: boolean): Game => makeGame({
+		league: 'mlb',
+		sportType: 'baseball',
+		period: 9,
+		clockSeconds: 0,
+		topOfInning,
+		homeTeam: { abbreviation: 'HOM', score: 3 },
+		awayTeam: { abbreviation: 'AWY', score: 2 },
+	});
+
+	test('scores the bottom of the 9th above the top of the 9th', () => {
+		const top = computePowerScore(mlbNinth(true), []);
+		const bottom = computePowerScore(mlbNinth(false), []);
+		expect(bottom.closeness).toBeGreaterThan(top.closeness);
+		expect(bottom.total).toBeGreaterThan(top.total);
+	});
+
+	test('sits between the two halves when the feed does not report one', () => {
+		const unknown = computePowerScore(mlbNinth(undefined), []);
+		const top = computePowerScore(mlbNinth(true), []);
+		const bottom = computePowerScore(mlbNinth(false), []);
+		expect(unknown.closeness).toBeGreaterThanOrEqual(top.closeness);
+		expect(unknown.closeness).toBeLessThanOrEqual(bottom.closeness);
 	});
 });

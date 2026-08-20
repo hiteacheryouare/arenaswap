@@ -31,6 +31,11 @@ const clamp = (value: number, min: number, max: number): number => (
 	Math.min(max, Math.max(min, value))
 );
 
+// Published to npm, so an untyped consumer can hand over a league this map has never heard of.
+// Falling back to a four-period clock sport keeps the shape rather than throwing, the same way an
+// unrecognized sportType falls back to basketball.
+const fallbackLeagueConfig = leagueConfigMap.nba;
+
 // Concave (<1) so state signals reach most of their ceiling by mid-game rather than only at the
 // final buzzer: a Q1 blowout still scores ~0, a mid-game nail-biter lands in a meaningful range.
 const progressCurveExponent = 0.55;
@@ -56,18 +61,21 @@ export const normalizePowerScoreResult = (
 	const winProbabilityVariance = hasWinProbVariance
 		? clamp(Math.round(toFiniteNumber(score.winProbabilityVariance)), -scoreWinProbVarianceMax, scoreWinProbVarianceMax)
 		: undefined;
-	const rawTotal = closeness + lateGame + momentum + leadChanges + comeback;
-	const total = options.allowTotalOverflow
-		? Math.max(0, toFiniteNumber(score.total, rawTotal))
-		: clamp(toFiniteNumber(score.total, rawTotal), 0, scoreMaxTotal);
 	const hasStallPenalty = typeof score.stallPenalty === 'number' && Number.isFinite(score.stallPenalty);
+	const stallPenalty = hasStallPenalty ? Math.max(0, Math.round(toFiniteNumber(score.stallPenalty))) : undefined;
+	const signalsSubtotal = closeness + lateGame + momentum + leadChanges + comeback;
+	// The fallback subtracts the penalty. Falling back to the bare signal sum handed a stalled game
+	// back every point the penalty had removed, any time `total` arrived non-finite.
+	const totalFallback = Math.max(0, signalsSubtotal - (stallPenalty ?? 0));
+	const total = options.allowTotalOverflow
+		? Math.max(0, toFiniteNumber(score.total, totalFallback))
+		: clamp(toFiniteNumber(score.total, totalFallback), 0, scoreMaxTotal);
 	const hasBaseTotal = typeof score.baseTotal === 'number' && Number.isFinite(score.baseTotal);
 	const hasFavoriteBonus = typeof score.favoriteBonus === 'number' && Number.isFinite(score.favoriteBonus);
 	const hasFavoriteTeamCount = typeof score.favoriteTeamCount === 'number' && Number.isFinite(score.favoriteTeamCount);
 	const hasGameBoost = typeof score.gameBoost === 'number' && Number.isFinite(score.gameBoost);
 	const hasScoringOpportunityBoost = typeof score.scoringOpportunityBoost === 'number' && Number.isFinite(score.scoringOpportunityBoost);
 	const hasPostseasonBoost = typeof score.postseasonBoost === 'number' && Number.isFinite(score.postseasonBoost);
-	const stallPenalty = hasStallPenalty ? Math.max(0, Math.round(toFiniteNumber(score.stallPenalty))) : undefined;
 	// Clamped to the signals ceiling, not scoreMaxTotal: this is the raw pre-cap subtotal the
 	// breakdown subtracts the stall penalty from.
 	const baseTotal = hasBaseTotal ? clamp(toFiniteNumber(score.baseTotal), 0, scoreMaxSignalsSubtotal) : undefined;
@@ -177,13 +185,16 @@ const getOtPreBoost = (game: Game, config: SportTypeConfig, secsRemaining: numbe
 	return Math.round(scorerTunables.scores.lateGame.otPreBoostMax * ramp);
 };
 
+// Null when the feed reports no clock. Coercing a missing clock to 0 read as the final buzzer on a
+// countdown sport — paying the full late-game ceiling — and as kickoff on a count-up one.
 const getClockSecondsRemaining = (
 	game: Game,
 	config: SportTypeConfig,
 	periodDurationSecs: number,
-): number => {
+): number | null => {
+	if (typeof game.clockSeconds !== 'number' || !Number.isFinite(game.clockSeconds)) return null;
 	const boundedDuration = Math.max(0, periodDurationSecs);
-	let rawClock = game.clockSeconds ?? 0;
+	let rawClock = game.clockSeconds;
 	// Soccer's clock is total elapsed time — ESPN reports 0'→90'+ without resetting between
 	// halves — so completed periods have to come off to get the within-period position.
 	if (config.clockIsFullGameElapsed && (game.period ?? 1) > 1) {
@@ -198,18 +209,23 @@ const getClockSecondsRemaining = (
 // 0 at the opening tip, 1 at the end of the final regulation period and during overtime.
 const getGameProgress = (game: Game, config: SportTypeConfig): number => {
 	if (game.period == null) return 0;
-	const league = leagueConfigMap[game.league];
+	const league = leagueConfigMap[game.league] ?? fallbackLeagueConfig;
 	const regularPeriods = Math.max(1, league.regularPeriods);
 	if (game.period > regularPeriods) return 1;
 
 	if (!config.clockBased) {
-		// No game clock, so progress is approximated from the inning.
-		return clamp((game.period - 1 + 0.5) / regularPeriods, 0, 1);
+		// No game clock, so progress is approximated from the inning, and from the half-inning when
+		// the feed reports one: a bottom-of-the-9th walk-off is later than the top of the 9th.
+		const halfInning = game.topOfInning == null ? 0.5 : (game.topOfInning ? 0.25 : 0.75);
+		return clamp((game.period - 1 + halfInning) / regularPeriods, 0, 1);
 	}
 
 	const periodDuration = Math.max(1, league.periodDurationSecs);
 	const secsRemaining = getClockSecondsRemaining(game, config, periodDuration);
-	const elapsedInPeriod = clamp(periodDuration - secsRemaining, 0, periodDuration);
+	// An unknown clock reads as the period having just started, so it can never inflate progress.
+	const elapsedInPeriod = secsRemaining === null
+		? 0
+		: clamp(periodDuration - secsRemaining, 0, periodDuration);
 	const periodsDone = Math.max(0, game.period - 1);
 	return clamp((periodsDone + elapsedInPeriod / periodDuration) / regularPeriods, 0, 1);
 };
@@ -234,16 +250,51 @@ const getLateGameCeiling = (game: Game, config: SportTypeConfig): number => {
 	return lateGame.blowoutCeiling;
 };
 
+// Keyed on sportType the same way the card's period label is: soccer plays two extra-time halves
+// and then a shootout, none of which is overtime.
+const getOvertimeReason = (game: Game, regularPeriods: number): string => {
+	const { reasons } = scorerTunables;
+	if (game.sportType !== 'soccer') return reasons.overtime;
+	return (game.period ?? 0) - regularPeriods > 2 ? reasons.shootout : reasons.extraTime;
+};
+
+// A draw is the ordinary result of a league match, so a level game late is tense without being
+// bound for anything.
+const getOvertimeAnticipationReason = (game: Game): string => (
+	game.sportType === 'soccer'
+		? scorerTunables.reasons.drawAnticipation
+		: scorerTunables.reasons.overtimeAnticipation
+);
+
+// A count-up clock has no countdown to render — soccer's stoppage time is never published ahead of
+// time — so it reports elapsed minutes instead of a 0:00 that never arrives.
+const getFinalStretchReason = (
+	game: Game,
+	config: SportTypeConfig,
+	periodDurationSecs: number,
+	secsRemaining: number,
+): string => {
+	const { reasons } = scorerTunables;
+	if (!config.clockCountsUp) return `${formatClock(secsRemaining)} ${reasons.clockLeftSuffix}`;
+	const elapsedSecs = config.clockIsFullGameElapsed
+		? Math.max(0, game.clockSeconds ?? 0)
+		: Math.max(0, (game.period ?? 1) - 1) * periodDurationSecs + (periodDurationSecs - secsRemaining);
+	return `${Math.floor(elapsedSecs / 60)} ${reasons.minutesElapsedSuffix}`;
+};
+
 const getLateGame = (game: Game, config: SportTypeConfig): Signal => {
 	const { scores, reasons } = scorerTunables;
 	if (game.period == null) return { score: scores.lateGame.none, reason: '' };
-	const leagueConfig = leagueConfigMap[game.league];
+	const leagueConfig = leagueConfigMap[game.league] ?? fallbackLeagueConfig;
 	const regularPeriods = leagueConfig.regularPeriods;
 	const { clockBased } = config;
 
 	// Overtime and extra innings only happen from a tie, so they take the top of the range.
 	if (game.period > regularPeriods)
-		return { score: scores.lateGame.overtime, reason: clockBased ? reasons.overtime : reasons.extraInnings };
+		return {
+			score: scores.lateGame.overtime,
+			reason: clockBased ? getOvertimeReason(game, regularPeriods) : reasons.extraInnings,
+		};
 
 	const tierCeiling = getLateGameCeiling(game, config);
 
@@ -264,7 +315,9 @@ const getLateGame = (game: Game, config: SportTypeConfig): Signal => {
 
 	const periodDuration = Math.max(1, leagueConfig.periodDurationSecs);
 	const secsRemaining = getClockSecondsRemaining(game, config, periodDuration);
-	const elapsedFraction = clamp((periodDuration - secsRemaining) / periodDuration, 0, 1);
+	const elapsedFraction = secsRemaining === null
+		? 0
+		: clamp((periodDuration - secsRemaining) / periodDuration, 0, 1);
 	const previousPeriod = regularPeriods - 1;
 
 	if (game.period < previousPeriod)
@@ -274,12 +327,16 @@ const getLateGame = (game: Game, config: SportTypeConfig): Signal => {
 		return { score: mapLinearLateGame('previous', elapsedFraction, tierCeiling), reason: '' };
 
 	const rampScore = mapLinearLateGame('final', elapsedFraction, tierCeiling);
+	// An unknown clock cannot place the game inside the pre-overtime window, and there is no clock
+	// position worth reporting, so the ramp holds where the period started.
+	if (secsRemaining === null) return { score: rampScore, reason: '' };
+
 	const otBoost = getOtPreBoost(game, config, secsRemaining);
 	const score = clamp(rampScore + otBoost, 0, scoreMaxLateGame);
 	const reason = otBoost > 0
-		? reasons.overtimeAnticipation
+		? getOvertimeAnticipationReason(game)
 		: secsRemaining < 60
-			? `${formatClock(secsRemaining)} ${reasons.clockLeftSuffix}`
+			? getFinalStretchReason(game, config, periodDuration, secsRemaining)
 			: `${reasons.underPrefix} ${Math.ceil(secsRemaining / 60)} ${reasons.minutesLeftSuffix}`;
 
 	return { score, reason };
@@ -311,16 +368,20 @@ const lastScoreChangeTimestamp = (history: ScoreSnapshot[]): number | null => {
 	return null;
 };
 
+// Ties are skipped rather than treated as their own sign. Comparing adjacent signs counted an
+// ordinary "behind, level, ahead" sequence as two lead changes when it is one.
 const findLeadChanges = (history: ScoreSnapshot[]): { count: number; lastTimestamp: number | null } => {
 	let count = 0;
 	let lastTimestamp: number | null = null;
-	for (let i = 1; i < history.length; i++) {
-		const prevDiff = history[i - 1]!.homeScore - history[i - 1]!.awayScore;
-		const currDiff = history[i]!.homeScore - history[i]!.awayScore;
-		if (Math.sign(prevDiff) !== Math.sign(currDiff) && !(prevDiff === 0 && currDiff === 0)) {
+	let lastLeadSign = 0;
+	for (const snapshot of history) {
+		const sign = Math.sign(snapshot.homeScore - snapshot.awayScore);
+		if (sign === 0) continue;
+		if (lastLeadSign !== 0 && sign !== lastLeadSign) {
 			count++;
-			lastTimestamp = history[i]!.timestamp;
+			lastTimestamp = snapshot.timestamp;
 		}
+		lastLeadSign = sign;
 	}
 	return { count, lastTimestamp };
 };
@@ -340,16 +401,23 @@ const getMomentum = (game: Game, history: ScoreSnapshot[], config: SportTypeConf
 	const homeDelta = newest.homeScore - oldest.homeScore;
 	const awayDelta = newest.awayScore - oldest.awayScore;
 	const run = Math.abs(homeDelta - awayDelta);
-	const runTeam = homeDelta > awayDelta
+	const homeIsRunning = homeDelta > awayDelta;
+	const runTeam = homeIsRunning
 		? (game.homeTeam.abbreviation ?? '?')
 		: (game.awayTeam.abbreviation ?? '?');
+	const chasingTeam = homeIsRunning
+		? (game.awayTeam.abbreviation ?? '?')
+		: (game.homeTeam.abbreviation ?? '?');
 
 	let tier: number;
 	let reason: string;
 	if (run >= config.momentumBigRun) {
 		tier = scores.momentum.bigRun;
-		const article = (run === 8 || run === 11 || run === 18) ? 'an' : 'a';
-		reason = `${runTeam} on ${article} ${run}-0 ${reasons.momentumRunSuffix}`;
+		// `run` is the differential, not an unanswered streak, so both scores are named. Rendering it
+		// as "8-0" claimed a shutout that a 10-2 stretch never was.
+		const scoredFor = Math.max(homeDelta, awayDelta);
+		const scoredAgainst = Math.max(0, Math.min(homeDelta, awayDelta));
+		reason = `${runTeam} ${reasons.momentumOutscoring} ${chasingTeam} ${scoredFor}-${scoredAgainst}`;
 	} else if (run >= config.momentumSmallRun) {
 		tier = scores.momentum.smallRun;
 		reason = `${runTeam} ${reasons.momentumRolling}`;
@@ -417,9 +485,11 @@ const getComeback = (game: Game, history: ScoreSnapshot[], config: SportTypeConf
 // swing instead would mean summing |pᵢ − pᵢ₋₁|, a different signal and a recalibration.
 export const computeWinProbVarianceScore = (winProbHistory: number[]): number | undefined => {
 	const { maxAvgDist, minDataPoints } = scorerTunables.scores.winProbabilityVariance;
-	if (winProbHistory.length < minDataPoints) return undefined;
-	const n = winProbHistory.length;
-	const avgDistFromMid = winProbHistory.reduce((sum, p) => sum + Math.abs(p - 0.5), 0) / n;
+	// A single non-finite entry from a partial feed used to poison the average, and the resulting
+	// NaN total then fell back to the pre-penalty signal sum.
+	const samples = winProbHistory.filter(p => typeof p === 'number' && Number.isFinite(p));
+	if (samples.length < minDataPoints) return undefined;
+	const avgDistFromMid = samples.reduce((sum, p) => sum + Math.abs(p - 0.5), 0) / samples.length;
 	const raw = scoreWinProbVarianceMax - (avgDistFromMid / maxAvgDist) * 2 * scoreWinProbVarianceMax;
 	return Math.round(clamp(raw, -scoreWinProbVarianceMax, scoreWinProbVarianceMax));
 };

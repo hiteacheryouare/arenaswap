@@ -1,7 +1,7 @@
 import type { LeagueId, SportType, SportTypeConfig, ScorerTunables, LeagueConfig } from './types';
 
-// Sorted descending so the first matching step wins. At a 15s poll interval, 8 polls is roughly
-// when a commercial starts and 15 polls an extended break.
+// Sorted descending so the first matching step wins. Poll intervals are dynamic (6-25s live, 40s at
+// intermission), so 8 frozen polls is roughly a commercial break and 15 an extended one.
 export const stallPenaltySteps: { minPolls: number; deduction: number }[] = [
 	{ minPolls: 15, deduction: 25 },
 	{ minPolls: 8,  deduction: 15 },
@@ -109,13 +109,20 @@ export const scorerTunables: ScorerTunables = {
 		defaultClosenessUnit: 'point',
 		closenessGameSuffix: 'game',
 		overtime: 'overtime',
+		// Soccer plays two extra-time halves and then a shootout, so neither of them is "overtime".
+		extraTime: 'extra time',
+		shootout: 'penalties',
 		extraInnings: 'extra innings',
 		inningSuffix: 'inning',
 		clockLeftSuffix: 'left',
 		underPrefix: 'under',
 		minutesLeftSuffix: 'min left',
+		// A count-up clock cannot say how much is left, because stoppage time is not published.
+		minutesElapsedSuffix: 'min in',
 		overtimeAnticipation: 'tied — overtime looming',
-		momentumRunSuffix: 'run',
+		// A draw is an ordinary league result, so a level game is tense without being overtime-bound.
+		drawAnticipation: 'still level late',
+		momentumOutscoring: 'outscoring',
 		momentumRolling: 'on a roll',
 		leadChangeMultiple: 'trading leads',
 		leadChangeSingle: 'just took the lead',
@@ -166,7 +173,6 @@ export const sportTypeConfigs: SportTypeConfig[] = [
 			model: 'baseball',
 			regulationInnings: 9,
 			regulationStartInning: 6,
-			extraInningsStartInning: 10,
 		},
 		momentumBigRun: 3,
 		momentumSmallRun: 1,
@@ -206,7 +212,6 @@ export const sportTypeConfigs: SportTypeConfig[] = [
 			model: 'baseball',
 			regulationInnings: 7,
 			regulationStartInning: 5,
-			extraInningsStartInning: 8,
 		},
 		momentumBigRun: 3,
 		momentumSmallRun: 1,

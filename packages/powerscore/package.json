@@ -7,8 +7,8 @@
 	"types": "./dist/index.d.ts",
 	"exports": {
 		".": {
-			"import": "./dist/index.js",
-			"types": "./dist/index.d.ts"
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js"
 		}
 	},
 	"files": [
@@ -24,7 +24,7 @@
 		"prepack": "npm run build",
 		"test": "npm run test:unit",
 		"test:unit": "jest --passWithNoTests --selectProjects unit",
-		"typecheck": "tsc --noEmit",
+		"typecheck": "tsc --noEmit && tsc --noEmit -p tests",
 		"lint": "oxlint ."
 	},
 	"keywords": [
@@ -44,7 +44,7 @@
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/hiteacheryouare/arenaswap.git",
-		"directory": "packages/powerScore"
+		"directory": "packages/powerscore"
 	},
 	"bugs": {
 		"url": "https://github.com/hiteacheryouare/arenaswap/issues"

@@ -22,21 +22,28 @@ describe('scoreMaxTotal', () => {
 	});
 });
 
-describe('scorerTunables max-score alignment', () => {
-	it('closeness.tied equals scoreMaxCloseness', () => {
-		expect(scorerTunables.scores.closeness.tied).toBe(scoreMaxCloseness);
+// Both sides are asserted against literals. Checking that a tunable equals the constant it is
+// defined from cannot fail, and so would not notice either of them being retuned.
+describe('signal ceilings', () => {
+	it('tops closeness out at 42', () => {
+		expect(scoreMaxCloseness).toBe(42);
+		expect(scorerTunables.scores.closeness.tied).toBe(42);
 	});
-	it('lateGame.overtime equals scoreMaxLateGame', () => {
-		expect(scorerTunables.scores.lateGame.overtime).toBe(scoreMaxLateGame);
+	it('tops late-game pressure out at 38', () => {
+		expect(scoreMaxLateGame).toBe(38);
+		expect(scorerTunables.scores.lateGame.overtime).toBe(38);
 	});
-	it('momentum.bigRun equals scoreMaxMomentum', () => {
-		expect(scorerTunables.scores.momentum.bigRun).toBe(scoreMaxMomentum);
+	it('tops momentum out at 38', () => {
+		expect(scoreMaxMomentum).toBe(38);
+		expect(scorerTunables.scores.momentum.bigRun).toBe(38);
 	});
-	it('leadChanges.multiple equals scoreMaxLeadChanges', () => {
-		expect(scorerTunables.scores.leadChanges.multiple).toBe(scoreMaxLeadChanges);
+	it('tops lead changes out at 18', () => {
+		expect(scoreMaxLeadChanges).toBe(18);
+		expect(scorerTunables.scores.leadChanges.multiple).toBe(18);
 	});
-	it('comeback.big equals scoreMaxComeback', () => {
-		expect(scorerTunables.scores.comeback.big).toBe(scoreMaxComeback);
+	it('tops comeback out at 20', () => {
+		expect(scoreMaxComeback).toBe(20);
+		expect(scorerTunables.scores.comeback.big).toBe(20);
 	});
 });
 
@@ -186,8 +193,7 @@ describe('softball sport type config', () => {
 		expect(softball!.lateGameCurve?.model).toBe('baseball');
 		if (softball!.lateGameCurve?.model === 'baseball') {
 			expect(softball!.lateGameCurve.regulationInnings).toBe(7);
-			expect(softball!.lateGameCurve.regulationStartInning).toBeLessThan(softball!.lateGameCurve.regulationInnings);
-			expect(softball!.lateGameCurve.extraInningsStartInning).toBeGreaterThan(softball!.lateGameCurve.regulationInnings);
+			expect(softball!.lateGameCurve.regulationStartInning).toBe(5);
 		}
 	});
 
@@ -211,8 +217,8 @@ describe('sportTypeConfigs late-game config', () => {
 		expect(baseball).toBeDefined();
 		expect(baseball!.lateGameCurve?.model).toBe('baseball');
 		if (baseball!.lateGameCurve?.model === 'baseball') {
-			expect(baseball!.lateGameCurve.regulationStartInning).toBeLessThan(baseball!.lateGameCurve.regulationInnings);
-			expect(baseball!.lateGameCurve.extraInningsStartInning).toBeGreaterThan(baseball!.lateGameCurve.regulationInnings);
+			expect(baseball!.lateGameCurve.regulationInnings).toBe(9);
+			expect(baseball!.lateGameCurve.regulationStartInning).toBe(6);
 		}
 		expect(baseball!.otPreBoostWindowSecs).toBe(0);
 	});

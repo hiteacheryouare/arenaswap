@@ -44,6 +44,8 @@ const FAST_POLL_MS = 6_000;
 const SLOW_POLL_MS = 25_000;
 
 const bballScoreAtT = (t: number): [number, number] => (t === 0 ? [80, 80] : [90, 80]);
+// 150s is a multiple of both poll intervals, so both rates observe the run at the same instant.
+const alignedScoreAtT = (t: number): [number, number] => (t >= 150_000 ? [90, 80] : [80, 80]);
 
 
 describe('Basketball: time-based window decouples momentum from poll rate', () => {
@@ -63,14 +65,16 @@ describe('Basketball: time-based window decouples momentum from poll rate', () =
 		expect(result.momentum).toBeGreaterThan(0);
 	});
 
-	test('slow polling: same result as fast — time window is identical', () => {
-		const fastHistory = buildHistory(FAST_POLL_MS, nowMs, config.historyWindowMs, scoreAtT);
-		const slowHistory = buildHistory(SLOW_POLL_MS, nowMs, config.historyWindowMs, scoreAtT);
+	// With the change aligned to a shared poll boundary there is nothing left for the poll rate to
+	// alter, which is the whole claim being made here.
+	test('slow polling: identical result once detection lag is taken out of it', () => {
+		const fastHistory = buildHistory(FAST_POLL_MS, nowMs, config.historyWindowMs, alignedScoreAtT);
+		const slowHistory = buildHistory(SLOW_POLL_MS, nowMs, config.historyWindowMs, alignedScoreAtT);
 		const fastResult = computePowerScore(game, fastHistory);
 		const slowResult = computePowerScore(game, slowHistory);
-		// Detection lag makes the values differ slightly by poll rate, but both are nonzero.
+		expect(fastHistory.length).toBeGreaterThan(slowHistory.length);
 		expect(fastResult.momentum).toBeGreaterThan(0);
-		expect(slowResult.momentum).toBeGreaterThan(0);
+		expect(slowResult).toEqual(fastResult);
 	});
 
 	test('run older than the 5-min window fades for both poll rates equally', () => {
@@ -136,17 +140,25 @@ describe('Hockey: 16-min window keeps goals visible at both poll rates', () => {
 });
 
 
-describe('Decay is wall-clock based (given identical histories, result is identical)', () => {
-	test('same snapshot data → same score regardless of how it was collected', () => {
-		const fixedHistory: ScoreSnapshot[] = [
-			{ gameId: 'game-1', timestamp: 0,      homeScore: 80, awayScore: 80 },
-			{ gameId: 'game-1', timestamp: 30_000,  homeScore: 88, awayScore: 80 },
-			{ gameId: 'game-1', timestamp: 60_000,  homeScore: 88, awayScore: 80 },
-			{ gameId: 'game-1', timestamp: 90_000,  homeScore: 88, awayScore: 80 },
-		];
-		const game = makeGame({ homeTeam: { abbreviation: 'HOM', score: 88 }, awayTeam: { abbreviation: 'AWY', score: 80 } });
-		const result1 = computePowerScore(game, fixedHistory);
-		const result2 = computePowerScore(game, fixedHistory);
-		expect(result1.momentum).toBe(result2.momentum);
+// Ages are measured against the newest snapshot rather than Date.now(), so a score depends only on
+// the history it was given — not on when the scorer happened to run.
+describe('Decay is measured from the newest snapshot, not from wall-clock time', () => {
+	const fixedHistory: ScoreSnapshot[] = [
+		{ gameId: 'game-1', timestamp: 0,      homeScore: 80, awayScore: 80 },
+		{ gameId: 'game-1', timestamp: 30_000,  homeScore: 88, awayScore: 80 },
+		{ gameId: 'game-1', timestamp: 60_000,  homeScore: 88, awayScore: 80 },
+		{ gameId: 'game-1', timestamp: 90_000,  homeScore: 88, awayScore: 80 },
+	];
+	const game = makeGame({ homeTeam: { abbreviation: 'HOM', score: 88 }, awayTeam: { abbreviation: 'AWY', score: 80 } });
+
+	test('six hours of wall clock passing does not move the score', () => {
+		jest.useFakeTimers();
+		jest.setSystemTime(new Date('2026-01-01T00:00:00Z'));
+		const scoredNow = computePowerScore(game, fixedHistory);
+		jest.advanceTimersByTime(6 * 60 * 60 * 1_000);
+		const scoredMuchLater = computePowerScore(game, fixedHistory);
+
+		expect(scoredNow.momentum).toBeGreaterThan(0);
+		expect(scoredMuchLater).toEqual(scoredNow);
 	});
 });

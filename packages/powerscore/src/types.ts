@@ -15,11 +15,15 @@ export interface Game {
 	homeTeam: { score: number; abbreviation?: string };
 	awayTeam: { score: number; abbreviation?: string };
 	period?: number;
+	// Absent means unknown, not 0:00: the late-game ramp holds at the period start rather than
+	// paying out the buzzer ceiling.
 	clockSeconds?: number;
 	intermission?: boolean;
 	// Scores 0, like an intermission.
 	delayed?: boolean;
 	status?: 'pre' | 'in' | 'post';
+	// Baseball and softball. Top of the inning = true, bottom = false, absent = unknown.
+	topOfInning?: boolean;
 	baseRunners?: { first: boolean; second: boolean; third: boolean };
 	// Football only. `down` scales the red-zone boost: a 4th-down snap decides something.
 	isRedZone?: boolean;
@@ -49,6 +53,7 @@ export interface PowerScoreResult {
 	stalled?: boolean;
 	// Points removed, always ≥ 0.
 	stallPenalty?: number;
+	// The pre-stall signals subtotal, so a breakdown can show what the penalty removed.
 	baseTotal?: number;
 	favoriteBonus?: number;
 	favoriteTeamCount?: number;
@@ -62,7 +67,6 @@ export interface BaseballLateGameCurveConfig {
 	model: 'baseball';
 	regulationInnings: number;
 	regulationStartInning: number;
-	extraInningsStartInning: number;
 }
 
 export type LateGameCurveConfig = BaseballLateGameCurveConfig;
@@ -120,13 +124,18 @@ export interface ScorerTunables {
 		defaultClosenessUnit: string;
 		closenessGameSuffix: string;
 		overtime: string;
+		// Soccer's extra time and shootout, which are not overtime.
+		extraTime: string;
+		shootout: string;
 		extraInnings: string;
 		inningSuffix: string;
 		clockLeftSuffix: string;
 		underPrefix: string;
 		minutesLeftSuffix: string;
+		minutesElapsedSuffix: string;
 		overtimeAnticipation: string;
-		momentumRunSuffix: string;
+		drawAnticipation: string;
+		momentumOutscoring: string;
 		momentumRolling: string;
 		leadChangeMultiple: string;
 		leadChangeSingle: string;
@@ -141,7 +150,7 @@ export interface SportTypeConfig {
 	closenessMargins: [number, number, number];
 	// Baseball only; clock sports derive their ramp from period + clock.
 	lateGameCurve?: LateGameCurveConfig;
-	// Unanswered-scoring-run sizes that trigger the max and half momentum scores.
+	// Score-differential swings that trigger the max and half momentum scores.
 	momentumBigRun: number;
 	momentumSmallRun: number;
 	clockCountsUp: boolean;

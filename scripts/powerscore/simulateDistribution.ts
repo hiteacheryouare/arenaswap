@@ -6,6 +6,7 @@
 // probability is synthesized logistically from margin × progress in place of ESPN's real line.
 //
 // Run: npm run powerscore:simulate -- [ticks]
+//      npm run powerscore:simulate -- --ticks=25000
 //      npm run powerscore:simulate -- --early-game    (stress test only)
 import { MockGameSimulator } from '../../packages/core/src/mockGames';
 import { computePowerScore } from '../../packages/powerscore/src/scorer';
@@ -15,7 +16,20 @@ import type { Game, ScoreSnapshot } from '../../packages/powerscore/src/types';
 
 const earlyGameMode = process.argv.includes('--early-game');
 const pollIntervalMs = 15_000;
-const ticks = earlyGameMode ? 0 : Math.max(1_000, Number(process.argv[2]) || 40_000);
+
+// The npm script supplies a default tick count of its own, so anything the user passes arrives after
+// it. Last value wins, which is what makes `-- 5000` override the default instead of being ignored.
+const parseTicks = (args: string[]): number => {
+	const flag = args.find(arg => arg.startsWith('--ticks='));
+	if (flag) {
+		const flagged = Number(flag.slice('--ticks='.length));
+		if (Number.isFinite(flagged)) return flagged;
+	}
+	const numeric = args.filter(arg => arg.trim() !== '' && Number.isFinite(Number(arg)));
+	return numeric.length > 0 ? Number(numeric[numeric.length - 1]) : 40_000;
+};
+
+const ticks = earlyGameMode ? 0 : Math.max(1_000, parseTicks(process.argv.slice(2)) || 40_000);
 
 const historyWindowMsFor = (game: Game): number => (
 	sportTypeConfigMap[game.sportType]?.historyWindowMs ?? defaultHistoryWindowMs
