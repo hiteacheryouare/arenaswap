@@ -378,6 +378,9 @@
 		"title": "認識 PowerScore",
 		"subtitle": "ArenaSwap 的核心引擎",
 		"introTitle": "認識 PowerScore",
+		"introDotLabel": "PowerScore 簡介",
+		"signalAriaLabel": "訊號：{signal}",
+		"progressAriaLabel": "導覽進度",
 		"introBody": "PowerScore 會動態評估每場直播比賽，找出最精彩的賽事。來看看這套公式是怎麼運作的！",
 		"introButton": "探索公式",
 		"closenessMeasured": "依分差衡量，並按比賽進度加權。",
@@ -469,6 +472,9 @@
 		"favoritesExplain": "收藏一支球隊，該隊出賽時比賽會獲得 PowerScore 加成，更容易贏得自動切換。",
 		"favoritesBody": "在任何比賽卡片或設定中收藏你喜愛的球隊。這不是篩選器——所有比賽照樣顯示，你的球隊只是多了一點加成。",
 		"favoritesBonusHint": "已啟用收藏球隊，它們的比賽會獲得 PowerScore 加成！",
+		"toggleAriaLabel": "切換 {label}",
+		"starAriaLabel": "將 {team} 加入收藏",
+		"unstarAriaLabel": "將 {team} 從收藏移除",
 		"back": "返回",
 		"next": "下一步"
 	},
@@ -486,7 +492,7 @@
 		"title": "Standby Stream",
 		"subtitle": "冷場時刻的備用方案。",
 		"quietTitle": "當比賽都冷了下來",
-		"quietBody": "當你關注的所有比賽都低於門檻，ArenaSwap 會自動切到你的待機直播。",
+		"quietBody": "當你關注的所有比賽都低於門檻，ArenaSwap 會自動切到你的 Standby Stream。",
 		"returnTitle": "它會自己切回來",
 		"returnBody": "只要有比賽重新熱起來、超過門檻，ArenaSwap 就會立刻把你切回去。",
 		"chooseTitle": "由你選擇待機分頁",
@@ -497,7 +503,7 @@
 		"thresholdTitle": "設定你的門檻",
 		"thresholdBody": "選擇分數要低到什麼程度才會觸發待機。門檻越低越有耐心，越高則觸發得越快。",
 		"designateTitle": "指定一個待機分頁",
-		"designateBody": "把你的待機直播開在一個分頁，回到這裡，再從下拉選單中選擇它。",
+		"designateBody": "把你的 Standby Stream 開在一個分頁，回到這裡，再從下拉選單中選擇它。",
 		"gotIt": "了解"
 	},
 	"empty": {
@@ -519,8 +525,8 @@
 		"close": "關閉"
 	},
 	"notification": {
-		"standbyTitle": "待機直播中 | ArenaSwap",
-		"standbyMessage": "所有比賽都冷了下來。已停留在你的待機直播。",
+		"standbyTitle": "Standby Stream 中 | ArenaSwap",
+		"standbyMessage": "所有比賽都冷了下來。已停留在你的 Standby Stream。",
 		"switchedTitle": "已切換 → {score} | ArenaSwap",
 		"switchedMessage": "現在帶你前往 {venue}！",
 		"switchedMessageWithReason": "{reason}。現在帶你前往 {venue}！"
@@ -597,6 +603,7 @@
 		"label": "切換靈敏度",
 		"valueLabel": "{label}（差距 ≥ {gap}）",
 		"explainer": "控制 PowerScore 差距要多大，ArenaSwap 才會切換分頁。",
+		"hyperdriveTitle": "啟動超空間引擎…",
 		"level": {
 			"l1": "幾乎不動",
 			"l2": "被動",
@@ -650,7 +657,8 @@
 		"signs": {
 			"light": "光速",
 			"ridiculous": "荒謬速度",
-			"ludicrous": "荒唐速度"
+			"ludicrous": "荒唐速度",
+			"plaid": "格紋"
 		},
 		"panic": {
 			"l1": "超過他們了！停下這東西！",

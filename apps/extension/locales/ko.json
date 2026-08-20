@@ -378,6 +378,9 @@
 		"title": "PowerScore를 만나보세요",
 		"subtitle": "ArenaSwap의 심장",
 		"introTitle": "PowerScore를 만나보세요",
+		"introDotLabel": "PowerScore 소개",
+		"signalAriaLabel": "시그널: {signal}",
+		"progressAriaLabel": "투어 진행 상황",
 		"introBody": "PowerScore는 모든 라이브 경기를 실시간으로 평가해서 가장 흥미진진한 순간을 찾아내요. 어떤 공식이 숨어 있는지 살펴볼까요!",
 		"introButton": "공식 살펴보기",
 		"closenessMeasured": "점수 차이로 측정하고, 경기 진행도에 따라 가중치를 둬요.",
@@ -469,6 +472,9 @@
 		"favoritesExplain": "팀을 응원팀으로 등록하면 그 팀이 출전하는 경기가 PowerScore 보너스를 받아서 자동 전환에서 선택될 가능성이 높아져요.",
 		"favoritesBody": "경기 카드나 설정에서 응원팀을 등록하세요. 필터가 아니에요. 모든 경기가 그대로 표시되고, 응원팀은 약간의 보너스만 받아요.",
 		"favoritesBonusHint": "응원팀이 설정되어 있어요. 해당 경기는 PowerScore 부스트를 받아요!",
+		"toggleAriaLabel": "{label} 전환",
+		"starAriaLabel": "{team} 응원팀으로 등록",
+		"unstarAriaLabel": "{team} 응원팀에서 해제",
 		"back": "뒤로",
 		"next": "다음"
 	},
@@ -486,7 +492,7 @@
 		"title": "Standby Stream",
 		"subtitle": "느린 순간을 위한 대안이에요.",
 		"quietTitle": "경기가 조용해지면",
-		"quietBody": "보고 있는 모든 경기가 기준점 아래로 떨어지면 ArenaSwap이 자동으로 대기 스트림에 머물러요.",
+		"quietBody": "보고 있는 모든 경기가 기준점 아래로 떨어지면 ArenaSwap이 자동으로 Standby Stream에 머물러요.",
 		"returnTitle": "자동으로 다시 돌아와요",
 		"returnBody": "어떤 경기든 기준점을 넘어 다시 뜨거워지는 순간, ArenaSwap이 바로 되돌려줘요.",
 		"chooseTitle": "대기 탭은 당신이 선택해요",
@@ -497,7 +503,7 @@
 		"thresholdTitle": "기준점 설정",
 		"thresholdBody": "대기 모드가 시작되는 점수 하한선을 정하세요. 낮을수록 더 여유 있게, 높을수록 더 빨리 전환돼요.",
 		"designateTitle": "대기 탭 지정",
-		"designateBody": "대기 스트림을 탭으로 열고 여기로 돌아와 드롭다운에서 선택하세요.",
+		"designateBody": "Standby Stream을 탭으로 열고 여기로 돌아와 드롭다운에서 선택하세요.",
 		"gotIt": "확인"
 	},
 	"empty": {
@@ -519,8 +525,8 @@
 		"close": "닫기"
 	},
 	"notification": {
-		"standbyTitle": "대기 스트림 재생 중 | ArenaSwap",
-		"standbyMessage": "모든 경기가 조용해졌어요. 대기 스트림에 머물러 있어요.",
+		"standbyTitle": "Standby Stream 재생 중 | ArenaSwap",
+		"standbyMessage": "모든 경기가 조용해졌어요. Standby Stream에 머물러 있어요.",
 		"switchedTitle": "전환 → {score} | ArenaSwap",
 		"switchedMessage": "지금 {venue}로 전환해요!",
 		"switchedMessageWithReason": "{reason}. 지금 {venue}로 전환해요!"
@@ -597,6 +603,7 @@
 		"label": "전환 민감도",
 		"valueLabel": "{label} (격차 ≥ {gap})",
 		"explainer": "ArenaSwap이 탭을 전환하기 위해 필요한 PowerScore 격차를 설정해요.",
+		"hyperdriveTitle": "하이퍼드라이브 가동...",
 		"level": {
 			"l1": "거의 반응 없음",
 			"l2": "소극적",
@@ -650,7 +657,8 @@
 		"signs": {
 			"light": "광속",
 			"ridiculous": "황당한 속도",
-			"ludicrous": "미친 속도"
+			"ludicrous": "미친 속도",
+			"plaid": "체크무늬"
 		},
 		"panic": {
 			"l1": "그들을 지나쳤어! 이거 멈춰!",

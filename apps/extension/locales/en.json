@@ -378,6 +378,9 @@
 		"title": "Meet PowerScore",
 		"subtitle": "The heartbeat of ArenaSwap",
 		"introTitle": "Meet PowerScore",
+		"introDotLabel": "PowerScore Intro",
+		"signalAriaLabel": "Signal: {signal}",
+		"progressAriaLabel": "Walkthrough progress",
 		"introBody": "PowerScore evaluates every live game dynamically to find the most exciting action. Let's see what goes into the formula!",
 		"introButton": "Explore Formula",
 		"closenessMeasured": "Measured by point difference, weighted by game progress.",
@@ -469,6 +472,9 @@
 		"favoritesExplain": "Starring a team gives its games a PowerScore bonus whenever that team is playing, making them more likely to win the automatic switch.",
 		"favoritesBody": "Star your favorite teams on any game card or in Settings. It's not a filter. All games still show up; your teams just get a small boost.",
 		"favoritesBonusHint": "Favorite teams active. Their games get a PowerScore boost!",
+		"toggleAriaLabel": "Toggle {label}",
+		"starAriaLabel": "Star {team}",
+		"unstarAriaLabel": "Unstar {team}",
 		"back": "Back",
 		"next": "Next"
 	},
@@ -597,6 +603,7 @@
 		"label": "Switch sensitivity",
 		"valueLabel": "{label} (gap ≥ {gap})",
 		"explainer": "Controls how big the PowerScore gap must be before ArenaSwap switches tabs.",
+		"hyperdriveTitle": "Engage the hyperdrive...",
 		"level": {
 			"l1": "Barely Active",
 			"l2": "Passive",
@@ -650,7 +657,8 @@
 		"signs": {
 			"light": "LIGHT SPEED",
 			"ridiculous": "RIDICULOUS SPEED",
-			"ludicrous": "LUDICROUS SPEED"
+			"ludicrous": "LUDICROUS SPEED",
+			"plaid": "PLAID"
 		},
 		"panic": {
 			"l1": "We passed them! Stop this thing!",

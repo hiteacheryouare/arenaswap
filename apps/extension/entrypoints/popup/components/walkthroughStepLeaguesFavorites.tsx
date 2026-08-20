@@ -29,7 +29,7 @@ const LeagueRow = ({ label, color, enabled, onToggle }: LeagueRowProps) => (
 				type='checkbox'
 				checked={enabled}
 				onChange={onToggle}
-				aria-label={`Toggle ${label}`}
+				aria-label={i18n.t('stepLeaguesFavorites.toggleAriaLabel', { label })}
 			/>
 		</div>
 	</div>
@@ -59,7 +59,7 @@ const TeamRow = ({ name, abbr, color, starred, onStar }: TeamRowProps) => (
 			className='btn btn-sm p-0'
 			style={{ background: 'none', border: 'none', color: starred ? '#f1c40f' : '#6c757d', fontSize: '1rem', lineHeight: 1, transition: 'color 0.2s' }}
 			onClick={onStar}
-			aria-label={`${starred ? 'Unstar' : 'Star'} ${name}`}
+			aria-label={starred ? i18n.t('stepLeaguesFavorites.unstarAriaLabel', { team: name }) : i18n.t('stepLeaguesFavorites.starAriaLabel', { team: name })}
 		>
 			<i className={starred ? 'bi bi-star-fill' : 'bi bi-star'} />
 		</button>

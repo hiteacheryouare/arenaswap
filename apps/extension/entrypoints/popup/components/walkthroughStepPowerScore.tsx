@@ -176,7 +176,7 @@ const BloomOverlay = ({ signal, dotPxX, dotPxY, phase, onClick }: BloomOverlayPr
 			onKeyDown={handleKeyDown}
 			role='button'
 			tabIndex={0}
-			aria-label={`Signal: ${i18n.t(signal.labelKey)}`}
+			aria-label={i18n.t('stepPowerScore.signalAriaLabel', { signal: i18n.t(signal.labelKey) })}
 			aria-live='polite'
 		>
 			<div className='ps-bloom-content'>
@@ -409,10 +409,10 @@ const walkthroughStepPowerScore = ({ onNext, onBack, initialSubStep = 0 }: walkt
 
 			{renderContent()}
 
-			<ul className='powerscore-progress-dots' aria-label='Walkthrough progress'>
+			<ul className='powerscore-progress-dots' aria-label={i18n.t('stepPowerScore.progressAriaLabel')}>
 				{Array.from({ length: 12 }).map((_, idx) => {
 					let dotColor = '#8b949e';
-					let label = 'PowerScore Intro';
+					let label = i18n.t('stepPowerScore.introDotLabel');
 					if (idx >= 1 && idx <= 5) {
 						const sig = signalMeta[idx - 1]!;
 						dotColor = sig.color;

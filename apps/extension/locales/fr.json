@@ -208,7 +208,7 @@
 	"main": {
 		"tourButton": "Visite guidée",
 		"settingsButton": "Paramètres",
-		"onStandbyStream": "En standby stream, en attente d'action",
+		"onStandbyStream": "En Standby Stream, en attente d'action",
 		"sectionActiveLiveTabs": "Onglets actifs",
 		"sectionOtherLiveGames": "Matchs en direct",
 		"sectionUpNext": "À suivre",
@@ -378,6 +378,9 @@
 		"title": "Découvre le PowerScore",
 		"subtitle": "Le moteur d'ArenaSwap",
 		"introTitle": "Découvre le PowerScore",
+		"introDotLabel": "Présentation de PowerScore",
+		"signalAriaLabel": "Signal : {signal}",
+		"progressAriaLabel": "Progression de la visite",
 		"introBody": "PowerScore évalue chaque match en direct dynamiquement pour trouver l'action la plus palpitante. Voyons ce qui entre dans la formule !",
 		"introButton": "Explorer la formule",
 		"closenessMeasured": "Mesuré par l'écart de points, pondéré par l'avancement du match.",
@@ -432,7 +435,7 @@
 		"sensitivity4": "Équilibré",
 		"sensitivity5": "Dynamique",
 		"sensitivity6": "Gâchette facile",
-		"sensitivity7": "Ludicrous Speed",
+		"sensitivity7": "Vitesse démesurée",
 		"sensitivityLabel": "Sensibilité de changement",
 		"sensitivityHelp": "Contrôle l'écart de PowerScore nécessaire avant qu'ArenaSwap change d'onglet.",
 		"cooldownLabel": "Délai entre les changements",
@@ -469,6 +472,9 @@
 		"favoritesExplain": "Mettre une étoile sur une équipe donne à ses matchs un bonus de PowerScore quand cette équipe joue, les rendant plus susceptibles de remporter le changement automatique.",
 		"favoritesBody": "Mets une étoile sur tes équipes favorites depuis n'importe quelle fiche de match ou dans Paramètres. Ce n'est pas un filtre — tous les matchs s'affichent toujours ; tes équipes ont juste un petit coup de pouce.",
 		"favoritesBonusHint": "Équipes favorites actives. Leurs matchs reçoivent un bonus de PowerScore !",
+		"toggleAriaLabel": "Activer/désactiver {label}",
+		"starAriaLabel": "Ajouter {team} aux favoris",
+		"unstarAriaLabel": "Retirer {team} des favoris",
 		"back": "Retour",
 		"next": "Suivant"
 	},
@@ -486,7 +492,7 @@
 		"title": "Standby Stream",
 		"subtitle": "Un repli pour les moments calmes.",
 		"quietTitle": "Quand les matchs s'endorment",
-		"quietBody": "Quand tous les matchs que tu regardes passent sous ton seuil, ArenaSwap se positionne automatiquement sur ton standby stream.",
+		"quietBody": "Quand tous les matchs que tu regardes passent sous ton seuil, ArenaSwap se positionne automatiquement sur ton Standby Stream.",
 		"returnTitle": "Il revient tout seul",
 		"returnBody": "Dès qu'un match se réchauffe au-dessus de ton seuil, ArenaSwap te ramène dessus immédiatement.",
 		"chooseTitle": "Tu choisis l'onglet de standby",
@@ -497,7 +503,7 @@
 		"thresholdTitle": "Fixe ton seuil",
 		"thresholdBody": "Choisis à quelle hauteur les scores doivent descendre avant que le standby s'active. Plus bas est plus patient ; plus haut se déclenche plus vite.",
 		"designateTitle": "Désigne un onglet de standby",
-		"designateBody": "Ouvre ton standby stream dans un onglet, reviens ici et sélectionne-le dans le menu déroulant.",
+		"designateBody": "Ouvre ton Standby Stream dans un onglet, reviens ici et sélectionne-le dans le menu déroulant.",
 		"gotIt": "Compris"
 	},
 	"empty": {
@@ -519,8 +525,8 @@
 		"close": "Fermer"
 	},
 	"notification": {
-		"standbyTitle": "Sur le standby stream | ArenaSwap",
-		"standbyMessage": "Tous les matchs se sont endormis. Positionné sur ton standby stream.",
+		"standbyTitle": "Sur le Standby Stream | ArenaSwap",
+		"standbyMessage": "Tous les matchs se sont endormis. Positionné sur ton Standby Stream.",
 		"switchedTitle": "Basculé → {score} | ArenaSwap",
 		"switchedMessage": "On t'emmène à {venue} maintenant !",
 		"switchedMessageWithReason": "{reason}. On t'emmène à {venue} maintenant !"
@@ -597,6 +603,7 @@
 		"label": "Sensibilité de changement",
 		"valueLabel": "{label} (écart ≥ {gap})",
 		"explainer": "Contrôle l'écart de PowerScore nécessaire avant qu'ArenaSwap change d'onglet.",
+		"hyperdriveTitle": "Enclenche l'hyperpropulsion...",
 		"level": {
 			"l1": "À peine actif",
 			"l2": "Passif",
@@ -604,7 +611,7 @@
 			"l4": "Équilibré",
 			"l5": "Dynamique",
 			"l6": "Gâchette facile",
-			"l7": "Ludicrous Speed"
+			"l7": "Vitesse démesurée"
 		}
 	},
 	"footer": {
@@ -614,7 +621,7 @@
 	},
 	"ludicrousSpeed": {
 		"skip": "cliquer pour passer",
-		"announce": "VITESSE RIDICULE...",
+		"announce": "VITESSE DÉMESURÉE...",
 		"go": "GO !",
 		"plaid": "ILS SONT PASSÉS AUX CARREAUX !",
 		"stop": "STOP !",
@@ -624,22 +631,22 @@
 			"l2": "Non, non, la vitesse de la lumière est trop lente.",
 			"l3": "La vitesse de la lumière trop lente ?",
 			"l4": "Oui. On va devoir passer directement à la",
-			"l5": "vitesse ridicule.",
-			"l6": "Vitesse ridicule ?",
+			"l5": "vitesse démesurée.",
+			"l6": "Vitesse démesurée ?",
 			"l7": "On n'est jamais allés aussi vite.",
 			"l8": "Le vaisseau ne tiendra peut-être pas."
 		},
 		"prelaunch": {
 			"l1": "Qu'est-ce qui se passe, colonel Sandurz ?",
 			"l2": "Poule mouillée ?",
-			"l3": "Préparez le vaisseau pour la vitesse ridicule.",
+			"l3": "Préparez le vaisseau pour la vitesse démesurée.",
 			"l4": "Attachez toutes les ceintures.",
 			"l5": "Fermez toutes les entrées et sorties.",
 			"l6": "Fermez toutes les boutiques du centre commercial.",
 			"l7": "Annulez le cirque à trois pistes.",
 			"l8": "Sécurisez tous les animaux du zoo...",
 			"l9": "Silence, pauvre excuse d'officier !",
-			"l10": "Écoutez bien. Vitesse ridicule !",
+			"l10": "Écoutez bien. Vitesse démesurée !",
 			"l11": "Monsieur, vous ne devriez pas boucler votre ceinture ?",
 			"l12": "Au diable la ceinture !"
 		},
@@ -650,7 +657,8 @@
 		"signs": {
 			"light": "VITESSE DE LA LUMIÈRE",
 			"ridiculous": "VITESSE RIDICULE",
-			"ludicrous": "LUDICROUS SPEED"
+			"ludicrous": "VITESSE DÉMESURÉE",
+			"plaid": "CARREAUX"
 		},
 		"panic": {
 			"l1": "On les a dépassés ! Arrêtez ce truc !",

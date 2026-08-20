@@ -378,6 +378,9 @@
 		"title": "认识 PowerScore",
 		"subtitle": "ArenaSwap 的核心引擎",
 		"introTitle": "认识 PowerScore",
+		"introDotLabel": "PowerScore 简介",
+		"signalAriaLabel": "信号：{signal}",
+		"progressAriaLabel": "教程进度",
 		"introBody": "PowerScore 动态评估每场直播比赛，找出最精彩的赛事。来看看这套公式是怎么运作的！",
 		"introButton": "探索公式",
 		"closenessMeasured": "根据分差衡量，并按比赛进度加权。",
@@ -469,6 +472,9 @@
 		"favoritesExplain": "收藏一支球队，该队参赛时其比赛将获得 PowerScore 加成，从而更容易赢得自动切换。",
 		"favoritesBody": "在任意比赛卡片或设置中收藏您喜爱的球队。这不是过滤器——所有比赛依然显示，您的球队只是多了一点加成。",
 		"favoritesBonusHint": "已激活收藏球队，其比赛将获得 PowerScore 加成！",
+		"toggleAriaLabel": "切换 {label}",
+		"starAriaLabel": "将 {team} 加入收藏",
+		"unstarAriaLabel": "从收藏中移除 {team}",
 		"back": "返回",
 		"next": "下一步"
 	},
@@ -486,7 +492,7 @@
 		"title": "Standby Stream",
 		"subtitle": "冷清时刻的备用方案。",
 		"quietTitle": "当比赛归于平静",
-		"quietBody": "当您关注的所有比赛 PowerScore 都低于阈值时，ArenaSwap 会自动切换到您的待机流。",
+		"quietBody": "当您关注的所有比赛 PowerScore 都低于阈值时，ArenaSwap 会自动切换到您的 Standby Stream。",
 		"returnTitle": "它自己会回来",
 		"returnBody": "一旦任意比赛重新升温并超过阈值，ArenaSwap 会立刻将您切换回去。",
 		"chooseTitle": "由您选择待机标签页",
@@ -497,7 +503,7 @@
 		"thresholdTitle": "设置阈值",
 		"thresholdBody": "选择分数需要低至多少才触发待机。阈值越低越有耐心；阈值越高触发越快。",
 		"designateTitle": "指定待机标签页",
-		"designateBody": "在标签页中打开待机直播流，返回此处，在下拉菜单中选择它。",
+		"designateBody": "在标签页中打开 Standby Stream，返回此处，在下拉菜单中选择它。",
 		"gotIt": "明白了"
 	},
 	"empty": {
@@ -519,8 +525,8 @@
 		"close": "关闭"
 	},
 	"notification": {
-		"standbyTitle": "待机流中 | ArenaSwap",
-		"standbyMessage": "所有比赛都归于平静。已停留在您的待机流。",
+		"standbyTitle": "Standby Stream 中 | ArenaSwap",
+		"standbyMessage": "所有比赛都归于平静。已停留在您的 Standby Stream。",
 		"switchedTitle": "已切换 → {score} | ArenaSwap",
 		"switchedMessage": "现在带您前往 {venue}！",
 		"switchedMessageWithReason": "{reason}。现在带您前往 {venue}！"
@@ -556,7 +562,7 @@
 			"t2": "PowerScore 更高的比赛赢得切换——留意彩色徽章。",
 			"t3": "在设置中开启「显示即将开赛的比赛」，提前分配好标签页。",
 			"t4": "还没有直播比赛？设置中的演示模式可让您用模拟比赛体验 ArenaSwap 的运作方式。",
-			"t5": "当所有比赛都趋于平淡时，待机流会保持一个备用标签页继续播放——在设置中启用。"
+			"t5": "当所有比赛都趋于平淡时，Standby Stream 会保持一个备用标签页继续播放——在设置中启用。"
 		},
 		"setup": {
 			"t0": "降低冷却时间，在混乱的收尾阶段更激进地切换。",
@@ -597,6 +603,7 @@
 		"label": "切换灵敏度",
 		"valueLabel": "{label}（差距 ≥ {gap}）",
 		"explainer": "控制 PowerScore 差距需要多大，ArenaSwap 才会切换标签页。",
+		"hyperdriveTitle": "启动超空间引擎…",
 		"level": {
 			"l1": "几乎不动",
 			"l2": "被动",
@@ -650,7 +657,8 @@
 		"signs": {
 			"light": "光速",
 			"ridiculous": "荒谬速度",
-			"ludicrous": "荒唐速度"
+			"ludicrous": "荒唐速度",
+			"plaid": "格子"
 		},
 		"panic": {
 			"l1": "超过他们了！停下来！",

@@ -378,6 +378,9 @@
 		"title": "Scopri il PowerScore",
 		"subtitle": "Il cuore pulsante di ArenaSwap",
 		"introTitle": "Scopri il PowerScore",
+		"introDotLabel": "Introduzione a PowerScore",
+		"signalAriaLabel": "Segnale: {signal}",
+		"progressAriaLabel": "Progresso del tour",
 		"introBody": "PowerScore valuta dinamicamente ogni partita in diretta per trovare l'azione più emozionante. Vediamo cosa c'è nella formula!",
 		"introButton": "Esplora la formula",
 		"closenessMeasured": "Misurato dalla differenza punti, ponderata in base all'avanzamento della partita.",
@@ -469,6 +472,9 @@
 		"favoritesExplain": "Mettere una stella su una squadra dà un bonus di PowerScore alle sue partite ogni volta che gioca, rendendole più propense a vincere il cambio automatico.",
 		"favoritesBody": "Metti una stella sulle tue squadre preferite su qualsiasi scheda partita o nelle Impostazioni. Non è un filtro: tutte le partite continuano a comparire; le tue squadre ricevono solo un piccolo boost.",
 		"favoritesBonusHint": "Squadre preferite attive. Le loro partite ricevono un boost di PowerScore!",
+		"toggleAriaLabel": "Attiva/disattiva {label}",
+		"starAriaLabel": "Aggiungi {team} ai preferiti",
+		"unstarAriaLabel": "Rimuovi {team} dai preferiti",
 		"back": "Indietro",
 		"next": "Avanti"
 	},
@@ -486,7 +492,7 @@
 		"title": "Standby Stream",
 		"subtitle": "Una soluzione di riserva per i momenti morti.",
 		"quietTitle": "Quando le partite si calmano",
-		"quietBody": "Quando tutte le partite che segui scendono sotto la tua soglia, ArenaSwap si posiziona automaticamente sul tuo standby stream.",
+		"quietBody": "Quando tutte le partite che segui scendono sotto la tua soglia, ArenaSwap si posiziona automaticamente sul tuo Standby Stream.",
 		"returnTitle": "Torna da solo",
 		"returnBody": "Nel momento in cui una partita torna a scaldarsi sopra la tua soglia, ArenaSwap ti riporta subito indietro.",
 		"chooseTitle": "Scegli tu la scheda standby",
@@ -497,7 +503,7 @@
 		"thresholdTitle": "Imposta la tua soglia",
 		"thresholdBody": "Scegli quanto devono scendere i punteggi prima che si attivi lo standby. Più basso è più paziente; più alto si attiva prima.",
 		"designateTitle": "Designa una scheda standby",
-		"designateBody": "Apri il tuo standby stream in una scheda, torna qui e selezionala dal menu a tendina.",
+		"designateBody": "Apri il tuo Standby Stream in una scheda, torna qui e selezionala dal menu a tendina.",
 		"gotIt": "Capito"
 	},
 	"empty": {
@@ -519,8 +525,8 @@
 		"close": "Chiudi"
 	},
 	"notification": {
-		"standbyTitle": "Sul standby stream | ArenaSwap",
-		"standbyMessage": "Tutte le partite si sono calmate. Parcheggiato sul tuo standby stream.",
+		"standbyTitle": "Sul Standby Stream | ArenaSwap",
+		"standbyMessage": "Tutte le partite si sono calmate. Parcheggiato sul tuo Standby Stream.",
 		"switchedTitle": "Cambiato → {score} | ArenaSwap",
 		"switchedMessage": "Ti porta ora a {venue}!",
 		"switchedMessageWithReason": "{reason}. Ti porta ora a {venue}!"
@@ -597,6 +603,7 @@
 		"label": "Sensibilità di cambio",
 		"valueLabel": "{label} (scarto ≥ {gap})",
 		"explainer": "Controlla quanto deve essere ampio lo scarto di PowerScore prima che ArenaSwap cambi scheda.",
+		"hyperdriveTitle": "Attiva l'iperguida...",
 		"level": {
 			"l1": "Appena attivo",
 			"l2": "Passivo",
@@ -650,7 +657,8 @@
 		"signs": {
 			"light": "VELOCITÀ DELLA LUCE",
 			"ridiculous": "VELOCITÀ RIDICOLA",
-			"ludicrous": "VELOCITÀ SMODATA"
+			"ludicrous": "VELOCITÀ SMODATA",
+			"plaid": "PLAID"
 		},
 		"panic": {
 			"l1": "Li abbiamo superati! Fermate quest'affare!",

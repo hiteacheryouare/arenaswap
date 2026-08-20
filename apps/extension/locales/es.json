@@ -143,8 +143,8 @@
 		"proTips": "Consejos",
 		"switchNotifications": "Notificaciones de cambio",
 		"demoMode": "Modo demostración",
-		"standbySection": "Transmisión en espera",
-		"enableStandby": "Activar transmisión en espera",
+		"standbySection": "Standby Stream",
+		"enableStandby": "Activar Standby Stream",
 		"standbyBelow": "En espera por debajo de",
 		"morePatient": "Más paciente",
 		"switchesSooner": "Cambia antes",
@@ -175,7 +175,7 @@
 		"groupLeaguesDesc": "Qué ligas se siguen y en qué orden aparecen.",
 		"groupDisplay": "Visualización",
 		"groupDisplayDesc": "Lo que aparece en la pantalla principal.",
-		"groupStandby": "Transmisión en espera",
+		"groupStandby": "Standby Stream",
 		"groupStandbyDesc": "Dónde dejarte cuando todos los partidos se apagan.",
 		"groupDemo": "Modo demostración",
 		"groupDemoDesc": "Partidos inventados, para ver un cambio cuando quieras.",
@@ -208,7 +208,7 @@
 	"main": {
 		"tourButton": "Recorrido",
 		"settingsButton": "Ajustes",
-		"onStandbyStream": "En transmisión en espera — esperando acción",
+		"onStandbyStream": "En Standby Stream — esperando acción",
 		"sectionActiveLiveTabs": "Pestañas activas",
 		"sectionOtherLiveGames": "Partidos en vivo",
 		"sectionUpNext": "A continuación",
@@ -378,6 +378,9 @@
 		"title": "Conoce el PowerScore",
 		"subtitle": "El corazón de ArenaSwap",
 		"introTitle": "Conoce el PowerScore",
+		"introDotLabel": "Introducción a PowerScore",
+		"signalAriaLabel": "Señal: {signal}",
+		"progressAriaLabel": "Progreso del recorrido",
 		"introBody": "PowerScore evalúa dinámicamente cada partido en vivo para encontrar la acción más emocionante. ¡Veamos qué incluye la fórmula!",
 		"introButton": "Explorar fórmula",
 		"closenessMeasured": "Se mide por la diferencia de puntos, ponderada por el progreso del partido.",
@@ -432,7 +435,7 @@
 		"sensitivity4": "Equilibrado",
 		"sensitivity5": "Ansioso",
 		"sensitivity6": "Gatillo fácil",
-		"sensitivity7": "Velocidad ridícula",
+		"sensitivity7": "Velocidad absurda",
 		"sensitivityLabel": "Sensibilidad de cambio",
 		"sensitivityHelp": "Controla qué tan grande debe ser la diferencia de PowerScore antes de que ArenaSwap cambie de pestaña.",
 		"cooldownLabel": "Tiempo de espera entre cambios",
@@ -469,6 +472,9 @@
 		"favoritesExplain": "Marcar un equipo con estrella le da a sus partidos un bonus de PowerScore cuando ese equipo está jugando, haciéndolos más propensos a ganar el cambio automático.",
 		"favoritesBody": "Marca tus equipos favoritos en cualquier tarjeta de partido o en Ajustes. No es un filtro — todos los partidos siguen apareciendo; tus equipos solo reciben un pequeño impulso.",
 		"favoritesBonusHint": "¡Equipos favoritos activos — sus partidos reciben un impulso de PowerScore!",
+		"toggleAriaLabel": "Alternar {label}",
+		"starAriaLabel": "Añadir {team} a favoritos",
+		"unstarAriaLabel": "Quitar {team} de favoritos",
 		"back": "Atrás",
 		"next": "Siguiente"
 	},
@@ -483,10 +489,10 @@
 	},
 	"standbyGuide": {
 		"step": "Paso $1 de $2",
-		"title": "Transmisión en espera",
+		"title": "Standby Stream",
 		"subtitle": "Una alternativa para los momentos lentos.",
 		"quietTitle": "Cuando los partidos se calman",
-		"quietBody": "Cuando todos los partidos que ves caen por debajo de tu umbral, ArenaSwap se queda en tu transmisión en espera automáticamente.",
+		"quietBody": "Cuando todos los partidos que ves caen por debajo de tu umbral, ArenaSwap se queda en tu Standby Stream automáticamente.",
 		"returnTitle": "Vuelve por sí solo",
 		"returnBody": "En cuanto cualquier partido vuelve a superar tu umbral, ArenaSwap te lleva de regreso.",
 		"chooseTitle": "Tú eliges la pestaña de espera",
@@ -497,7 +503,7 @@
 		"thresholdTitle": "Fija tu umbral",
 		"thresholdBody": "Elige qué tan bajo deben caer las puntuaciones antes de que se active la espera. Más bajo es más paciente; más alto se activa antes.",
 		"designateTitle": "Designa una pestaña de espera",
-		"designateBody": "Abre tu transmisión en espera en una pestaña, vuelve aquí y elígela en el menú desplegable.",
+		"designateBody": "Abre tu Standby Stream en una pestaña, vuelve aquí y elígela en el menú desplegable.",
 		"gotIt": "Entendido"
 	},
 	"empty": {
@@ -519,8 +525,8 @@
 		"close": "Cerrar"
 	},
 	"notification": {
-		"standbyTitle": "En transmisión en espera | ArenaSwap",
-		"standbyMessage": "Todos los partidos se calmaron. Te quedaste en tu transmisión en espera.",
+		"standbyTitle": "En Standby Stream | ArenaSwap",
+		"standbyMessage": "Todos los partidos se calmaron. Te quedaste en tu Standby Stream.",
 		"switchedTitle": "Cambiado → {score} | ArenaSwap",
 		"switchedMessage": "¡Ya te lleva a {venue}!",
 		"switchedMessageWithReason": "{reason}. ¡Ya te lleva a {venue}!"
@@ -597,6 +603,7 @@
 		"label": "Sensibilidad de cambio",
 		"valueLabel": "{label} (diferencia ≥ {gap})",
 		"explainer": "Controla qué tan grande debe ser la diferencia de PowerScore antes de que ArenaSwap cambie de pestaña.",
+		"hyperdriveTitle": "Activa el hiperimpulsor...",
 		"level": {
 			"l1": "Apenas activo",
 			"l2": "Pasivo",
@@ -604,7 +611,7 @@
 			"l4": "Equilibrado",
 			"l5": "Ansioso",
 			"l6": "Gatillo fácil",
-			"l7": "Velocidad ridícula"
+			"l7": "Velocidad absurda"
 		}
 	},
 	"footer": {
@@ -614,9 +621,9 @@
 	},
 	"ludicrousSpeed": {
 		"skip": "haz clic para omitir",
-		"announce": "VELOCIDAD RIDÍCULA...",
+		"announce": "VELOCIDAD ABSURDA...",
 		"go": "¡VAMOS!",
-		"plaid": "¡HAN IDO AL CUADROS!",
+		"plaid": "¡HAN IDO A CUADROS!",
 		"stop": "¡ALTO!",
 		"emergencyBrake": "⚠ FRENO DE EMERGENCIA — NUNCA USAR",
 		"intro": {
@@ -624,22 +631,22 @@
 			"l2": "No, no, la velocidad de luz es demasiado lenta.",
 			"l3": "¿Velocidad de luz demasiado lenta?",
 			"l4": "Sí. Vamos a tener que ir directamente a",
-			"l5": "velocidad ridícula.",
-			"l6": "¿Velocidad ridícula?",
+			"l5": "velocidad absurda.",
+			"l6": "¿Velocidad absurda?",
 			"l7": "Nunca hemos ido tan rápido.",
 			"l8": "Quizás la nave no pueda aguantarlo."
 		},
 		"prelaunch": {
 			"l1": "¿Qué pasa, coronel Sandurz?",
 			"l2": "¿Gallina?",
-			"l3": "Prepare la nave para velocidad ridícula.",
+			"l3": "Prepare la nave para velocidad absurda.",
 			"l4": "Abróchense todos los cinturones.",
 			"l5": "Sellen todas las entradas y salidas.",
 			"l6": "Cierren todas las tiendas del centro comercial.",
 			"l7": "Cancelen el circo de tres pistas.",
 			"l8": "Aseguren todos los animales en el zoológico...",
 			"l9": "¡Cállese, miserable excusa de oficial!",
-			"l10": "¡Atención! ¡Velocidad ridícula!",
+			"l10": "¡Atención! ¡Velocidad absurda!",
 			"l11": "Señor, ¿no debería abrocharse el cinturón?",
 			"l12": "¡Al diablo el cinturón!"
 		},
@@ -650,7 +657,8 @@
 		"signs": {
 			"light": "VELOCIDAD DE LUZ",
 			"ridiculous": "VELOCIDAD RIDÍCULA",
-			"ludicrous": "LUDICROUS SPEED"
+			"ludicrous": "VELOCIDAD ABSURDA",
+			"plaid": "CUADROS"
 		},
 		"panic": {
 			"l1": "¡Los pasamos! ¡Para esto!",

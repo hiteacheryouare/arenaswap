@@ -208,7 +208,7 @@
 	"main": {
 		"tourButton": "Tour",
 		"settingsButton": "Mga Setting",
-		"onStandbyStream": "Naka-standby stream, naghihintay ng aksyon",
+		"onStandbyStream": "Naka-Standby Stream, naghihintay ng aksyon",
 		"sectionActiveLiveTabs": "Mga Aktibong Tab",
 		"sectionOtherLiveGames": "Mga Live na Laro",
 		"sectionUpNext": "Susunod",
@@ -378,6 +378,9 @@
 		"title": "Kilalanin ang PowerScore",
 		"subtitle": "Ang Puso ng ArenaSwap",
 		"introTitle": "Kilalanin ang PowerScore",
+		"introDotLabel": "PowerScore Intro",
+		"signalAriaLabel": "Signal: {signal}",
+		"progressAriaLabel": "Progress ng Tour",
 		"introBody": "Dynamic na sinusuri ng PowerScore ang bawat live na laro para mahanap ang pinaka-exciting na aksyon. Tingnan natin kung ano ang laman ng formula!",
 		"introButton": "Tuklasin ang Formula",
 		"closenessMeasured": "Sinusukat ayon sa point difference, na tinitimbang batay sa progress ng laro.",
@@ -432,7 +435,7 @@
 		"sensitivity4": "Balanced",
 		"sensitivity5": "Eager",
 		"sensitivity6": "Trigger Happy",
-		"sensitivity7": "Ludicrous Speed",
+		"sensitivity7": "Baliw na Bilis",
 		"sensitivityLabel": "Sensitivity ng Paglipat",
 		"sensitivityHelp": "Kinokontrol kung gaano kalaki dapat ang PowerScore gap bago lumipat ng tab ang ArenaSwap.",
 		"cooldownLabel": "Cooldown ng Paglipat",
@@ -469,6 +472,9 @@
 		"favoritesExplain": "Kapag ni-star mo ang isang team, nakakakuha ang mga laro nito ng PowerScore bonus tuwing naglalaro ang team na iyon, kaya mas malamang manalo ito sa awtomatikong paglipat.",
 		"favoritesBody": "I-star ang mga paborito mong team sa kahit anong game card o sa Mga Setting. Hindi ito filter. Lalabas pa rin ang lahat ng laro; ang mga team mo lang ang may konting boost.",
 		"favoritesBonusHint": "Aktibo ang mga paboritong team. May PowerScore boost ang kanilang mga laro!",
+		"toggleAriaLabel": "I-toggle ang {label}",
+		"starAriaLabel": "I-star ang {team}",
+		"unstarAriaLabel": "I-unstar ang {team}",
 		"back": "Bumalik",
 		"next": "Susunod"
 	},
@@ -486,7 +492,7 @@
 		"title": "Standby Stream",
 		"subtitle": "Fallback para sa mga tahimik na sandali.",
 		"quietTitle": "Kapag Tumahimik ang mga Laro",
-		"quietBody": "Kapag bumaba sa threshold mo ang lahat ng laro na pinapanood mo, awtomatikong ipa-park ka ng ArenaSwap sa standby stream mo.",
+		"quietBody": "Kapag bumaba sa threshold mo ang lahat ng laro na pinapanood mo, awtomatikong ipa-park ka ng ArenaSwap sa Standby Stream mo.",
 		"returnTitle": "Bumabalik ito Nang Mag-isa",
 		"returnBody": "Sa sandaling uminit ulit ang kahit anong laro pataas sa threshold mo, ililipat ka agad pabalik ng ArenaSwap.",
 		"chooseTitle": "Ikaw ang Pipili ng Standby Tab",
@@ -497,7 +503,7 @@
 		"thresholdTitle": "I-set ang Threshold Mo",
 		"thresholdBody": "Piliin kung gaano kababa dapat bumaba ang score bago mag-kick in ang standby. Mas mababa, mas matiyaga; mas mataas, mas mabilis mag-trigger.",
 		"designateTitle": "Magtakda ng Standby Tab",
-		"designateBody": "Buksan ang standby stream mo sa isang tab, bumalik dito, at piliin ito mula sa dropdown.",
+		"designateBody": "Buksan ang Standby Stream mo sa isang tab, bumalik dito, at piliin ito mula sa dropdown.",
 		"gotIt": "Gets Ko!"
 	},
 	"empty": {
@@ -519,8 +525,8 @@
 		"close": "Isara"
 	},
 	"notification": {
-		"standbyTitle": "Nasa standby stream | ArenaSwap",
-		"standbyMessage": "Tumahimik ang lahat ng laro. Naka-park ka sa standby stream mo.",
+		"standbyTitle": "Nasa Standby Stream | ArenaSwap",
+		"standbyMessage": "Tumahimik ang lahat ng laro. Naka-park ka sa Standby Stream mo.",
 		"switchedTitle": "Lumipat → {score} | ArenaSwap",
 		"switchedMessage": "Dinadala ka na sa {venue}!",
 		"switchedMessageWithReason": "{reason}. Dinadala ka na sa {venue}!"
@@ -597,6 +603,7 @@
 		"label": "Sensitivity ng Paglipat",
 		"valueLabel": "{label} (gap ≥ {gap})",
 		"explainer": "Kinokontrol kung gaano kalaki dapat ang PowerScore gap bago lumipat ng tab ang ArenaSwap.",
+		"hyperdriveTitle": "I-engage ang hyperdrive...",
 		"level": {
 			"l1": "Barely Active",
 			"l2": "Passive",
@@ -604,7 +611,7 @@
 			"l4": "Balanced",
 			"l5": "Eager",
 			"l6": "Trigger Happy",
-			"l7": "Ludicrous Speed"
+			"l7": "Baliw na Bilis"
 		}
 	},
 	"footer": {
@@ -650,7 +657,8 @@
 		"signs": {
 			"light": "LIGHT SPEED",
 			"ridiculous": "RIDICULOUS SPEED",
-			"ludicrous": "LUDICROUS SPEED"
+			"ludicrous": "BALIW NA BILIS",
+			"plaid": "PLAID"
 		},
 		"panic": {
 			"l1": "We passed them! Stop this thing!",

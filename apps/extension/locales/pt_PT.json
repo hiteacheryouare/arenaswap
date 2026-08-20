@@ -378,6 +378,9 @@
 		"title": "Conhece o PowerScore",
 		"subtitle": "O coração do ArenaSwap",
 		"introTitle": "Conhece o PowerScore",
+		"introDotLabel": "Introdução ao PowerScore",
+		"signalAriaLabel": "Sinal: {signal}",
+		"progressAriaLabel": "Progresso da visita",
 		"introBody": "O PowerScore avalia dinamicamente cada jogo em directo para encontrar a acção mais emocionante. Vamos ver o que entra na fórmula!",
 		"introButton": "Explorar fórmula",
 		"closenessMeasured": "Medido pela diferença de pontos, ponderada pelo progresso do jogo.",
@@ -469,6 +472,9 @@
 		"favoritesExplain": "Marcar uma equipa com estrela dá aos seus jogos um bónus de PowerScore sempre que essa equipa estiver a jogar, tornando-os mais prováveis de ganhar a mudança automática.",
 		"favoritesBody": "Marca as tuas equipas favoritas em qualquer cartão de jogo ou nas Definições. Não é um filtro — todos os jogos continuam a aparecer; as tuas equipas recebem apenas um pequeno impulso.",
 		"favoritesBonusHint": "Equipas favoritas activas — os seus jogos recebem um impulso de PowerScore!",
+		"toggleAriaLabel": "Alternar {label}",
+		"starAriaLabel": "Adicionar {team} aos favoritos",
+		"unstarAriaLabel": "Remover {team} dos favoritos",
 		"back": "Voltar",
 		"next": "Seguinte"
 	},
@@ -597,6 +603,7 @@
 		"label": "Sensibilidade de mudança",
 		"valueLabel": "{label} (diferença ≥ {gap})",
 		"explainer": "Controla quão grande deve ser a diferença de PowerScore antes de ArenaSwap mudar de separador.",
+		"hyperdriveTitle": "Aciona o hiperpropulsor...",
 		"level": {
 			"l1": "Quase inactivo",
 			"l2": "Passivo",
@@ -650,7 +657,8 @@
 		"signs": {
 			"light": "VELOCIDADE DA LUZ",
 			"ridiculous": "VELOCIDADE RIDÍCULA",
-			"ludicrous": "VELOCIDADE ABSURDA"
+			"ludicrous": "VELOCIDADE ABSURDA",
+			"plaid": "XADREZ"
 		},
 		"panic": {
 			"l1": "Passámos por eles! Para isto!",

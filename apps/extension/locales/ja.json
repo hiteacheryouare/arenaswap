@@ -378,6 +378,9 @@
 		"title": "PowerScoreとは",
 		"subtitle": "ArenaSwapの心臓部",
 		"introTitle": "PowerScoreとは",
+		"introDotLabel": "PowerScore紹介",
+		"signalAriaLabel": "シグナル：{signal}",
+		"progressAriaLabel": "ツアーの進行状況",
 		"introBody": "PowerScoreはすべてのライブ試合を動的に評価し、最もエキサイティングな試合を見つけます。その計算式を見てみましょう！",
 		"introButton": "計算式を見る",
 		"closenessMeasured": "現在の点差で計測、試合の進行度で重み付け。",
@@ -469,6 +472,9 @@
 		"favoritesExplain": "チームにスターを付けると、そのチームの試合にPowerScoreボーナスが付き、自動切り替えで選ばれやすくなります。",
 		"favoritesBody": "お気に入りチームは試合カードや設定でいつでも登録できます。フィルターではありません。すべての試合が表示されますが、あなたのチームは少しだけ有利になります。",
 		"favoritesBonusHint": "お気に入りチームが有効です。その試合にPowerScoreブーストが付きます！",
+		"toggleAriaLabel": "{label}を切り替え",
+		"starAriaLabel": "{team}をお気に入りに追加",
+		"unstarAriaLabel": "{team}をお気に入りから削除",
 		"back": "戻る",
 		"next": "次へ"
 	},
@@ -477,7 +483,7 @@
 		"title": "ここに戻る方法",
 		"subtitle": "ツアーはいつでも1タップで。",
 		"callout": "これです",
-		"body": "上部バーの？ボタンをいつでもタップすると、このツアーを再生できます。設定後も使えます。復習したいときや友人に使い方を見せたいときに便利です。",
+		"body": "上部バーの?ボタンをいつでもタップすると、このツアーを再生できます。設定後も使えます。復習したいときや友人に使い方を見せたいときに便利です。",
 		"back": "戻る",
 		"next": "完了"
 	},
@@ -486,7 +492,7 @@
 		"title": "Standby Stream",
 		"subtitle": "静かな時間のためのフォールバック。",
 		"quietTitle": "試合が静かになったら",
-		"quietBody": "観ているすべての試合がしきい値を下回ると、ArenaSwapは自動的にスタンバイストリームに切り替えます。",
+		"quietBody": "観ているすべての試合がしきい値を下回ると、ArenaSwapは自動的にStandby Streamに切り替えます。",
 		"returnTitle": "自動で戻ってきます",
 		"returnBody": "どれかの試合がしきい値を超えて盛り上がった瞬間に、ArenaSwapがすぐに切り替え直します。",
 		"chooseTitle": "スタンバイタブはあなたが選ぶ",
@@ -497,7 +503,7 @@
 		"thresholdTitle": "しきい値を設定",
 		"thresholdBody": "スタンバイが有効になるスコアの低さを選びます。低いほど辛抱強く、高いほど早く切り替わります。",
 		"designateTitle": "スタンバイタブを指定",
-		"designateBody": "スタンバイストリームをタブで開いて、ここに戻りドロップダウンから選択してください。",
+		"designateBody": "Standby Streamをタブで開いて、ここに戻りドロップダウンから選択してください。",
 		"gotIt": "了解"
 	},
 	"empty": {
@@ -519,8 +525,8 @@
 		"close": "閉じる"
 	},
 	"notification": {
-		"standbyTitle": "スタンバイストリーム中 | ArenaSwap",
-		"standbyMessage": "すべての試合が静かになりました。スタンバイストリームに留まっています。",
+		"standbyTitle": "Standby Stream 中 | ArenaSwap",
+		"standbyMessage": "すべての試合が静かになりました。Standby Streamに留まっています。",
 		"switchedTitle": "切り替え → {score} | ArenaSwap",
 		"switchedMessage": "今すぐ{venue}へ切り替えます！",
 		"switchedMessageWithReason": "{reason}。今すぐ{venue}へ切り替えます！"
@@ -556,7 +562,7 @@
 			"t2": "PowerScoreが高い方がスワップに勝ちます。カラーバッジに注目してください。",
 			"t3": "設定で「近日開催の試合を表示」をオンにすると、試合開始前にタブを事前割り当てできます。",
 			"t4": "まだライブ試合がない？設定のデモモードで、ArenaSwapが架空の試合でどう動くかを試せます。",
-			"t5": "スタンバイストリームは、すべての試合が盛り上がりを欠いたときにバックアップタブを再生し続けます — 設定から有効にできます。"
+			"t5": "Standby Streamは、すべての試合が盛り上がりを欠いたときにバックアップタブを再生し続けます — 設定から有効にできます。"
 		},
 		"setup": {
 			"t0": "クールダウンを下げると、混戦の終盤でより積極的に切り替えます。",
@@ -597,6 +603,7 @@
 		"label": "切り替え感度",
 		"valueLabel": "{label}（差 ≥ {gap}）",
 		"explainer": "ArenaSwapがタブを切り替えるのに必要なPowerScoreの差を設定します。",
+		"hyperdriveTitle": "ハイパードライブを起動…",
 		"level": {
 			"l1": "ほぼ反応なし",
 			"l2": "おとなしめ",
@@ -650,7 +657,8 @@
 		"signs": {
 			"light": "光速",
 			"ridiculous": "ありえない速さ",
-			"ludicrous": "バカ速モード"
+			"ludicrous": "バカ速モード",
+			"plaid": "チェック柄"
 		},
 		"panic": {
 			"l1": "追い越した！止めろ！",

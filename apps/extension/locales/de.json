@@ -378,6 +378,9 @@
 		"title": "Lern den PowerScore kennen",
 		"subtitle": "Das Herzstück von ArenaSwap",
 		"introTitle": "Lern den PowerScore kennen",
+		"introDotLabel": "PowerScore-Einführung",
+		"signalAriaLabel": "Signal: {signal}",
+		"progressAriaLabel": "Tour-Fortschritt",
 		"introBody": "PowerScore bewertet jedes Live-Spiel dynamisch, um die spannendste Action zu finden. Lass uns ansehen, was in die Formel einfließt!",
 		"introButton": "Formel erkunden",
 		"closenessMeasured": "Gemessen am Punkteabstand, gewichtet nach Spielfortschritt.",
@@ -432,7 +435,7 @@
 		"sensitivity4": "Ausgewogen",
 		"sensitivity5": "Scharf",
 		"sensitivity6": "Abzugsfinger",
-		"sensitivity7": "Ludicrous Speed",
+		"sensitivity7": "Wahnwitzige Geschwindigkeit",
 		"sensitivityLabel": "Wechselempfindlichkeit",
 		"sensitivityHelp": "Legt fest, wie groß der PowerScore-Abstand sein muss, bevor ArenaSwap Tabs wechselt.",
 		"cooldownLabel": "Wechsel-Cooldown",
@@ -469,6 +472,9 @@
 		"favoritesExplain": "Ein Team zu favorisieren gibt seinen Spielen einen PowerScore-Bonus, wenn dieses Team spielt — damit steigt die Chance, dass ArenaSwap darauf wechselt.",
 		"favoritesBody": "Markiere deine Lieblingsteams auf einer Spielkarte oder in den Einstellungen. Es ist kein Filter — alle Spiele werden weiterhin angezeigt; deine Teams bekommen nur einen kleinen Boost.",
 		"favoritesBonusHint": "Lieblingsteams aktiv — ihre Spiele erhalten einen PowerScore-Boost!",
+		"toggleAriaLabel": "{label} umschalten",
+		"starAriaLabel": "{team} favorisieren",
+		"unstarAriaLabel": "{team} aus Favoriten entfernen",
 		"back": "Zurück",
 		"next": "Weiter"
 	},
@@ -497,7 +503,7 @@
 		"thresholdTitle": "Schwellenwert festlegen",
 		"thresholdBody": "Wähle, wie tief die Punktzahlen fallen müssen, bevor der Standby aktiv wird. Niedriger = geduldiger; höher = früher auslösen.",
 		"designateTitle": "Standby-Tab festlegen",
-		"designateBody": "Öffne deinen Standby-Stream in einem Tab, komm hierher zurück und wähle ihn im Dropdown aus.",
+		"designateBody": "Öffne deinen Standby Stream in einem Tab, komm hierher zurück und wähle ihn im Dropdown aus.",
 		"gotIt": "Verstanden"
 	},
 	"empty": {
@@ -597,6 +603,7 @@
 		"label": "Wechselempfindlichkeit",
 		"valueLabel": "{label} (Abstand ≥ {gap})",
 		"explainer": "Legt fest, wie groß der PowerScore-Abstand sein muss, bevor ArenaSwap Tabs wechselt.",
+		"hyperdriveTitle": "Aktiviere den Hyperantrieb...",
 		"level": {
 			"l1": "Kaum aktiv",
 			"l2": "Passiv",
@@ -604,7 +611,7 @@
 			"l4": "Ausgewogen",
 			"l5": "Scharf",
 			"l6": "Abzugsfinger",
-			"l7": "Ludicrous Speed"
+			"l7": "Wahnwitzige Geschwindigkeit"
 		}
 	},
 	"footer": {
@@ -650,7 +657,8 @@
 		"signs": {
 			"light": "LICHTGESCHWINDIGKEIT",
 			"ridiculous": "LÄCHERLICHE GESCHWINDIGKEIT",
-			"ludicrous": "LUDICROUS SPEED"
+			"ludicrous": "WAHNWITZIGE GESCHWINDIGKEIT",
+			"plaid": "KAROMUSTER"
 		},
 		"panic": {
 			"l1": "Wir haben sie überholt! Stopp das Ding!",
