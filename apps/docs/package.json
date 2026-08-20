@@ -5,7 +5,7 @@
 	"scripts": {
 		"dev": "ASTRO_DEV_BACKGROUND=1 astro dev",
 		"build": "astro build",
-		"typecheck": "tsc --noEmit -p tsconfig.typecheck.json",
+		"typecheck": "astro sync && tsc --noEmit -p tsconfig.typecheck.json",
 		"preview": "astro preview",
 		"lint": "oxlint ."
 	},
@@ -23,6 +23,7 @@
 		"sass": "^1.102.0"
 	},
 	"devDependencies": {
+		"@astrojs/sitemap": "^3.7.3",
 		"@tailwindcss/vite": "^4.3.3",
 		"@types/react": "^19.2.18",
 		"@types/react-dom": "^19.2.4",

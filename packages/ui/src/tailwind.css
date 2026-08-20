@@ -1,9 +1,13 @@
 /* ─── ArenaSwap shared Tailwind v4 theme tokens ──────────────────────────────
    @import this after @import 'tailwindcss' in each app's Tailwind entry file.
-   These tokens map directly to the Bootstrap $primary/$secondary values above
-   so both styling systems stay in sync from a single source. */
+   These tokens mirror the Bootstrap variables in _bootstrap.scss, so both styling
+   systems stay in sync from a single source.
 
-@theme {
+   `static` because the docs SCSS reads several of these through var(), which Tailwind's
+   usage scan does not see. Without it the unreferenced ones are pruned and those var()
+   calls resolve to nothing. */
+
+@theme static {
 	--color-bg:        #0d1117;
 	--color-card:      #161b22;
 	--color-border:    #30363d;

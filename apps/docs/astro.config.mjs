@@ -1,19 +1,35 @@
 import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 import mdx from '@astrojs/mdx';
+import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
-import pkg from '../../package.json'
+import pkg from '../../package.json';
 
 const year = new Date().getFullYear();
 const version = pkg.version;
 
 export default defineConfig({
-	integrations: [react(), mdx()],
+	integrations: [
+		react(),
+		mdx(),
+		// The nine /screenshots/ pages are store assets, rendered to be captured rather than
+		// landed on. They stay out of the sitemap and carry noindex of their own.
+		sitemap({ filter: page => !page.includes('/screenshots/') }),
+	],
 	vite: {
 		plugins: [tailwindcss()],
-		rollupOptions: {
-			output: {
-				banner: `/*! ArenaSwap v${version} Copyright (c) ${year} ArenaSwap Systems, Ryan Mullin, and Contributors. All rights reserved. */`,
+		// Astro 7 builds with rolldown-vite, which reads build.rolldownOptions.output (see astro's
+		// vite-build-config.js). A top-level rollupOptions key here is dropped without a word, which
+		// is how the banner went missing.
+		build: {
+			rolldownOptions: {
+				output: {
+					// Rolldown adds the banner before minifying, and the minifier strips legal
+					// comments unless they are kept on purpose. Without this the banner is emitted
+					// and then deleted.
+					comments: { legal: true },
+					banner: `/*! ArenaSwap v${version} Copyright (c) ${year} Ryan Mullin, Lattice & Company, and Contributors. All rights reserved. */`,
+				},
 			},
 		},
 	},

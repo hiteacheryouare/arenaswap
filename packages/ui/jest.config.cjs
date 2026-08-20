@@ -26,7 +26,9 @@ module.exports = {
 		{
 			...commonProjectConfig,
 			displayName: 'unit',
-			testMatch: ['<rootDir>/tests/**/*.test.ts', '<rootDir>/tests/**/*.test.tsx'],
+			// Node env, so there is no document. A component test needs its own jsdom project
+			// rather than a tsx glob on this one.
+			testMatch: ['<rootDir>/tests/**/*.test.ts'],
 		},
 	],
 };

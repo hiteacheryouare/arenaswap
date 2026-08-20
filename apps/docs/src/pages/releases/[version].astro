@@ -6,7 +6,7 @@ import Shell from '../../layouts/Shell.astro';
 // A release note reads like an announcement, so it is laid out like one: centred masthead, an
 // optional lead image, one column of prose, and the note's own section headings pinned beside it.
 
-export async function getStaticPaths() {
+export const getStaticPaths = async () => {
 	const releases = (await getCollection('releases', ({ data }) => !data.draft))
 		.toSorted((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
@@ -19,7 +19,7 @@ export async function getStaticPaths() {
 			older: releases[index + 1],
 		},
 	}));
-}
+};
 
 interface Props {
 	release: CollectionEntry<'releases'>;

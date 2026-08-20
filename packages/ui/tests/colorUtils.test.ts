@@ -51,6 +51,21 @@ describe('resolveTeamColorPair', () => {
 		expect(h).toBe('#00FF00');
 	});
 
+	// The 3:1 boundary against the #0d1117 chart background sits at luminance 0.1164. Bemidji
+	// State's #00694E is 0.1065, or 2.82:1, so it has to be lightened. The threshold read 0.10
+	// for a while, and this colour falls in exactly that window.
+	test('lightens a colour that clears the old 0.10 threshold but not 3:1', () => {
+		const [a] = resolveTeamColorPair({ color: '#00694E' }, { color: '#FFC72C' }, '#60a5fa', '#f87171', true);
+		expect(a).toBe('#7ab1a3');
+	});
+
+	// #C8102E is luminance 0.1285, or 3.22:1. It already clears the bar, so lightening it would
+	// only wash it out.
+	test('leaves a colour just above the 3:1 boundary alone', () => {
+		const [a] = resolveTeamColorPair({ color: '#C8102E' }, { color: '#FFC72C' }, '#60a5fa', '#f87171', true);
+		expect(a).toBe('#C8102E');
+	});
+
 	test('is deterministic for the same input', () => {
 		expect(resolveTeamColorPair(away, home)).toEqual(resolveTeamColorPair(away, home));
 	});

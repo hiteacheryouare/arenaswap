@@ -1,27 +1,27 @@
 ---
 // Walks the static Astro-rendered DOM once on load and wraps every period in body copy.
 // React islands are skipped on purpose: mutating DOM React owns breaks reconciliation, so those
-// components colour their own periods in JSX (see FAQ.tsx). Code, form fields and graphics are
-// skipped too — a period there isn't prose.
+// components colour their own periods in JSX (see MachineScene.tsx). Code, form fields and
+// graphics are skipped too — a period there isn't prose.
 ---
 <script>
-	const EXCLUDED_TAGS = new Set([
+	const excludedTags = new Set([
 		'SCRIPT', 'STYLE', 'NOSCRIPT', 'CODE', 'PRE', 'KBD', 'SAMP',
 		'TEXTAREA', 'INPUT', 'CANVAS', 'SVG', 'ASTRO-ISLAND',
 	]);
 
-	function isExcluded(node: Node | null): boolean {
+	const isExcluded = (node: Node | null): boolean => {
 		let el: Element | null = node instanceof Element ? node : node?.parentElement ?? null;
 		while (el) {
-			if (EXCLUDED_TAGS.has(el.tagName)) return true;
+			if (excludedTags.has(el.tagName)) return true;
 			if (el.hasAttribute('data-no-dots')) return true;
 			if (el.classList.contains('as-dot')) return true;
 			el = el.parentElement;
 		}
 		return false;
-	}
+	};
 
-	function paintDots(text: Text): void {
+	const paintDots = (text: Text): void => {
 		const value = text.nodeValue;
 		if (!value || !value.includes('.') || isExcluded(text.parentElement)) return;
 
@@ -43,9 +43,9 @@
 		}
 		if (buffer) frag.appendChild(document.createTextNode(buffer));
 		text.parentNode?.replaceChild(frag, text);
-	}
+	};
 
-	function paintAll(): void {
+	const paintAll = (): void => {
 		if (isExcluded(document.body)) return;
 		const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
 			acceptNode(node) {
@@ -58,7 +58,7 @@
 		const targets: Text[] = [];
 		while (walker.nextNode()) targets.push(walker.currentNode as Text);
 		targets.forEach(paintDots);
-	}
+	};
 
 	if (document.readyState === 'loading') {
 		document.addEventListener('DOMContentLoaded', paintAll);

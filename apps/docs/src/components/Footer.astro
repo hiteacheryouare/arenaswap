@@ -2,7 +2,7 @@
 import { Image } from 'astro:assets';
 import logoImg from '../assets/full_logo_white_on_transparent.svg';
 import latticeMark from '../assets/lattice-rosette-white.svg';
-import { CHROME_WEB_STORE, EDGE_ADDONS, FIREFOX_ADDONS } from '../lib/installTargets';
+import { chromeWebStore, edgeAddons, firefoxAddons } from '../lib/installTargets';
 ---
 <footer style="background:var(--color-bg);">
 	<div class="section-divider"></div>
@@ -54,17 +54,17 @@ import { CHROME_WEB_STORE, EDGE_ADDONS, FIREFOX_ADDONS } from '../lib/installTar
 				<p class="footer-col-label">Install</p>
 				<ul class="list-unstyled footer-links">
 					<li>
-						<a href={CHROME_WEB_STORE}>
+						<a href={chromeWebStore}>
 							<i class="bi bi-browser-chrome me-2" style="font-size:0.85rem;"></i>Chrome Web Store
 						</a>
 					</li>
 					<li>
-						<a href={FIREFOX_ADDONS}>
+						<a href={firefoxAddons}>
 							<i class="bi bi-browser-firefox me-2" style="font-size:0.85rem;"></i>Firefox Add-ons
 						</a>
 					</li>
 					<li>
-						<a href={EDGE_ADDONS}>
+						<a href={edgeAddons}>
 							<i class="bi bi-browser-edge me-2" style="font-size:0.85rem;"></i>Edge Add-ons
 						</a>
 					</li>
@@ -79,9 +79,9 @@ import { CHROME_WEB_STORE, EDGE_ADDONS, FIREFOX_ADDONS } from '../lib/installTar
 			<a href="/arenaswap/legal/licenses/" style="font-size:0.78rem;color:var(--color-muted);text-decoration:none;">ISC License</a>
 			<div class="d-flex gap-3">
 				<a href="https://github.com/hiteacheryouare/arenaswap" title="GitHub" class="footer-icon-link"><i class="bi bi-github"></i></a>
-				<a href={CHROME_WEB_STORE} title="Chrome Web Store" class="footer-icon-link"><i class="bi bi-browser-chrome"></i></a>
-				<a href={FIREFOX_ADDONS} title="Firefox Add-ons" class="footer-icon-link"><i class="bi bi-browser-firefox"></i></a>
-				<a href={EDGE_ADDONS} title="Edge Add-ons" class="footer-icon-link"><i class="bi bi-browser-edge"></i></a>
+				<a href={chromeWebStore} title="Chrome Web Store" class="footer-icon-link"><i class="bi bi-browser-chrome"></i></a>
+				<a href={firefoxAddons} title="Firefox Add-ons" class="footer-icon-link"><i class="bi bi-browser-firefox"></i></a>
+				<a href={edgeAddons} title="Edge Add-ons" class="footer-icon-link"><i class="bi bi-browser-edge"></i></a>
 			</div>
 		</div>
 

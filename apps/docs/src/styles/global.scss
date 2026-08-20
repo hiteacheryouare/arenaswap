@@ -31,19 +31,10 @@ $font-base-url: '/arenaswap/fonts';
 }
 
 // ─── CSS custom properties ───────────────────────────────────────────────────
+// The colour and font tokens live in packages/ui/src/tailwind.css, imported through the Tailwind
+// entry. Only tokens with no @theme equivalent belong here.
 :root {
-	--color-bg:        #0d1117;
-	--color-card:      #161b22;
-	--color-border:    #30363d;
-	--color-primary:   #F75C03;
-	--color-secondary: #3E9BD1;
-	--color-text:      #e6edf3;
-	--color-muted:     #8b949e;
-	--color-success:   #00CC66;
-	--color-danger:    #D90368;
-	--color-warning:   #F1C40F;
 	--gradient-sig:    linear-gradient(to right, #fdb913, #f36f21, #c9234a, #645faa, #0089cf, #0db14b);
-	--font-mono:       'Lekton', 'Courier New', monospace;
 }
 
 // ─── Global resets & base ────────────────────────────────────────────────────
@@ -253,7 +244,8 @@ body.nav-open {
 	transform: translateY(-8px);
 	opacity: 0;
 	pointer-events: none;
-	transition: transform 0.26s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.26s ease;
+	visibility: hidden;
+	transition: transform 0.26s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.26s ease, visibility 0.26s ease;
 	overflow-y: auto;
 	z-index: 999;
 
@@ -261,6 +253,7 @@ body.nav-open {
 		transform: translateY(0);
 		opacity: 1;
 		pointer-events: auto;
+		visibility: visible;
 	}
 
 	ul {
@@ -324,15 +317,6 @@ body.nav-open {
 	&:active {
 		transform: translateY(0);
 	}
-}
-
-@keyframes cta-glow {
-	0%, 100% { box-shadow: 0 0 0 0 rgba(247, 92, 3, 0.2); }
-	50%       { box-shadow: 0 0 0 10px rgba(247, 92, 3, 0); }
-}
-
-.btn-cta-pulse {
-	animation: cta-glow 2.5s ease-in-out infinite;
 }
 
 .btn-outline-secondary-custom {
@@ -574,7 +558,7 @@ body.nav-open {
 .ps-gradient-bar {
 	width: 100%;
 	height: 3px;
-	background: linear-gradient(to right, #22c55e, #F75C03, #2274A5, #F1C40F, #D90368);
+	background: linear-gradient(to right, #22c55e, #F75C03, $secondary-on-light, #F1C40F, #D90368);
 }
 
 // Signal card top-border accents
@@ -601,7 +585,7 @@ $ps-signal-colors: (
 .ps-score-bar-fill {
 	height: 100%;
 	border-radius: 999px;
-	background: linear-gradient(to right, #22c55e, #F75C03, #2274A5, #F1C40F, #D90368);
+	background: linear-gradient(to right, #22c55e, #F75C03, $secondary-on-light, #F1C40F, #D90368);
 	transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -666,7 +650,7 @@ $ps-signal-colors: (
 .ps-hero-bar {
 	width: 64px;
 	height: 3px;
-	background: linear-gradient(to right, #22c55e, #F75C03, #2274A5, #F1C40F, #D90368);
+	background: linear-gradient(to right, #22c55e, #F75C03, $secondary-on-light, #F1C40F, #D90368);
 	border-radius: 999px;
 	margin: 0 auto 2.75rem;
 	opacity: 0;
@@ -693,7 +677,7 @@ $ps-signal-colors: (
 		to right,
 		#22c55e 0%,
 		#F75C03 22%,
-		#2274A5 44%,
+		$secondary-on-light 44%,
 		#F1C40F 66%,
 		#D90368 85%,
 		#22c55e 100%
@@ -1303,10 +1287,6 @@ $ps-signal-colors: (
 // ─── 404 page ─────────────────────────────────────────────────────────────────
 // The missing page, presented as a scoreboard: three digits, a final horn, and a
 // PowerScore of zero.
-.notfound-main {
-	padding-top: 64px;
-}
-
 .notfound {
 	position: relative;
 	display: flex;

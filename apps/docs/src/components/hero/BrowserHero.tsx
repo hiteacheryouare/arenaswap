@@ -11,7 +11,7 @@ import type { HeroSwitch } from './heroTimeline';
 //
 // The tab strip, the address bar and the popup are drawn here; the game cards and the popup
 // chrome are the shipped components from @arenaswap/ui. The switching is not choreographed:
-// each tick scores all five games with `computePowerScore` and applies the shipped sensitivity
+// each tick scores all three games with `computePowerScore` and applies the shipped sensitivity
 // threshold and cooldown, so the tab changes for the same reason it changes on your machine.
 //
 // The footage is real game footage under a free licence. /credits names every clip.
@@ -133,7 +133,7 @@ const BrowserHero = () => {
 	}, [running, tick, restart]);
 
 	// Play the tab you are on, pause the rest. Sources attach on first use so a visitor who
-	// never scrolls past the hero downloads one clip instead of five.
+	// never scrolls past the hero downloads one clip instead of three.
 	useEffect(() => {
 		videoRefs.current.forEach((video, index) => {
 			if (!video) return;
@@ -172,7 +172,7 @@ const BrowserHero = () => {
 
 	return (
 		<div className='browser-hero' ref={rootRef}>
-			<div className='browser' role='group' aria-label='A browser with five live games open and ArenaSwap running'>
+			<div className='browser' role='group' aria-label='A browser with three live games open and ArenaSwap running'>
 
 				<div className='browser-titlebar'>
 					<span className='browser-lights' aria-hidden='true'><i /><i /><i /></span>

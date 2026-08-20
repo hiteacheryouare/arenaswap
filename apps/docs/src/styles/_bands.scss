@@ -124,15 +124,8 @@
 }
 
 // ─── Display type ────────────────────────────────────────────────────────────
-// Three sizes only. The dot at the end of a headline is the brand's, painted orange by
+// Two sizes only. The dot at the end of a headline is the brand's, painted orange by
 // OrangeDots at runtime, so nothing here has to hardcode it.
-
-.display-xl {
-	font-size: clamp(3.2rem, 8.6vw, 7rem);
-	font-weight: 700;
-	letter-spacing: -0.068em;
-	line-height: 0.88;
-}
 
 .display-lg {
 	font-size: clamp(2.4rem, 5.2vw, 3.75rem);
@@ -165,15 +158,6 @@
 		color: var(--color-text);
 		font-weight: 600;
 	}
-}
-
-.band-count {
-	font-family: var(--font-mono);
-	font-size: clamp(4rem, 9vw, 6.5rem);
-	font-weight: 700;
-	line-height: 0.84;
-	letter-spacing: -0.04em;
-	color: var(--color-primary);
 }
 
 // ─── Hero headline block ─────────────────────────────────────────────────────
@@ -366,31 +350,6 @@
 	margin: 0 0 0.6rem;
 }
 
-// ─── Closing band ────────────────────────────────────────────────────────────
-.band-tail {
-	display: flex;
-	align-items: center;
-	gap: 1.6rem;
-	padding: 3.25rem 0;
-	border-top: 1px solid #21262d;
-	flex-wrap: wrap;
-}
-
-.band-tail-line {
-	font-size: clamp(1.35rem, 3vw, 1.75rem);
-	font-weight: 700;
-	letter-spacing: -0.04em;
-	margin: 0;
-}
-
-.band-tail-actions {
-	margin-left: auto;
-	display: flex;
-	align-items: center;
-	gap: 1rem;
-	flex-wrap: wrap;
-}
-
 @media (max-width: 991.98px) {
 	.band-split {
 		grid-template-columns: minmax(0, 1fr);
@@ -494,33 +453,15 @@
 	}
 }
 
-// The popup demo band renders the popup at its real width; this only supplies the frame around
-// it, since .popup-container brings its own size and scrolling.
-.popup-frame {
-	border: 1px solid var(--color-border);
-	border-radius: 0.6rem;
-	overflow: hidden;
-	box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
-	width: 320px;
-}
-
 @media (max-width: 991.98px) {
-	.settings-panel-demo,
-	.popup-frame {
+	.settings-panel-demo {
 		margin-left: auto;
 		margin-right: auto;
 	}
 }
 
 @media (max-width: 359.98px) {
-	.settings-panel-demo,
-	.popup-frame {
-		width: 100%;
-	}
-
-	// The frame going fluid is not enough on its own: .popup-container carries the popup's real
-	// 320px and the frame clips its overflow.
-	.popup-frame .popup-container {
+	.settings-panel-demo {
 		width: 100%;
 	}
 }

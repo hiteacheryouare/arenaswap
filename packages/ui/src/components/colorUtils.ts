@@ -33,7 +33,9 @@ const mixTowardWhite = (value: string, amount: number): string => {
 
 const resolveReadableSeriesColor = (value: string | undefined, fallback: string): string => {
 	if (!value || !hexToRgb(value)) return fallback;
-	return luminance(value) < 0.10 ? mixTowardWhite(value, 0.48) : value;
+	// Chart lines are non-text, so WCAG wants 3:1 against the chart background. That background
+	// is #0d1117 (luminance 0.0055), which puts the 3:1 boundary at luminance 0.1164.
+	return luminance(value) < 0.1164 ? mixTowardWhite(value, 0.48) : value;
 };
 
 const colorDistance = (a: string, b: string): number => {

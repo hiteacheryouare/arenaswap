@@ -1,5 +1,9 @@
 import { useEffect, useRef } from 'react';
-import * as echarts from 'echarts';
+import * as echarts from 'echarts/core';
+import { BarChart, LineChart } from 'echarts/charts';
+import { GridComponent, TooltipComponent } from 'echarts/components';
+import { CanvasRenderer } from 'echarts/renderers';
+import type { EChartsOption } from 'echarts';
 import { computePowerScore } from 'powerscore';
 import type { Game, PowerScoreSnapshot, ScoreSnapshot } from '@arenaswap/core/types';
 import {
@@ -9,6 +13,8 @@ import {
 	buildWinProbabilityOption,
 } from '@arenaswap/ui/src/components/gameDetailChartOptions';
 import { useT } from '@arenaswap/ui/src/components/i18nContext';
+
+echarts.use([LineChart, BarChart, GridComponent, TooltipComponent, CanvasRenderer]);
 
 // The four charts from the game detail view, built by the extension's own option builders. Not
 // redrawn as SVG: the axes, the grid, the five signal colours and the smoothing all come from
@@ -93,7 +99,7 @@ const options = {
 	components: buildComponentContributionOption(powerHistory),
 };
 
-const Chart = ({ title, option }: { title: string; option: echarts.EChartsOption }) => {
+const Chart = ({ title, option }: { title: string; option: EChartsOption }) => {
 	const host = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {

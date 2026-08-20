@@ -1,6 +1,5 @@
 ---
 import { getCollection, render } from 'astro:content';
-import type { CollectionEntry } from 'astro:content';
 import Shell from '../../layouts/Shell.astro';
 import DocsNav from '../../components/DocsNav.astro';
 
@@ -26,9 +25,9 @@ const sections = {
 
 // Written out rather than derived from `sections` above: Astro hoists getStaticPaths into its own
 // module, so it cannot see the component scope.
-export async function getStaticPaths() {
+export const getStaticPaths = async () => {
 	return [{ params: { section: 'extension' } }, { params: { section: 'powerscore' } }];
-}
+};
 
 const section = Astro.params.section as keyof typeof sections;
 const meta = sections[section];

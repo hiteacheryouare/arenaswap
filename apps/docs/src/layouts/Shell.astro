@@ -4,7 +4,7 @@ import Footer from '../components/Footer.astro';
 import OrangeDots from '../components/OrangeDots.astro';
 import '../styles/tailwind.css';
 import '../styles/global.scss';
-import { CHROME_WEB_STORE, EDGE_ADDONS, FIREFOX_ADDONS } from '../lib/installTargets';
+import { chromeWebStore, edgeAddons, firefoxAddons } from '../lib/installTargets';
 
 interface Props {
 	title: string;
@@ -18,9 +18,12 @@ interface Props {
 	// image is a card that renders as a bare link.
 	image?: string;
 	imageAlt?: string;
+	// Keeps a page out of search results. It also drops the canonical, because a noindex page
+	// asserting its own canonical URL is a mixed signal.
+	noindex?: boolean;
 }
 
-const { title, description, path = '', ogTitle, ogType = 'website', image, imageAlt } = Astro.props;
+const { title, description, path = '', ogTitle, ogType = 'website', image, imageAlt, noindex = false } = Astro.props;
 const site = Astro.site ?? new URL('https://hiteacheryouare.github.io');
 const canonical = new URL(`${import.meta.env.BASE_URL}${path}`, site);
 const socialImage = new URL(image ?? `${import.meta.env.BASE_URL}images/128.png`, site);
@@ -31,7 +34,9 @@ const socialImage = new URL(image ?? `${import.meta.env.BASE_URL}images/128.png`
 	<meta charset='UTF-8' />
 	<meta name='viewport' content='width=device-width, initial-scale=1.0' />
 	<meta name='description' content={description} />
-	<link rel='canonical' href={canonical.href} />
+	{noindex
+		? <meta name='robots' content='noindex' />
+		: <link rel='canonical' href={canonical.href} />}
 	<meta property='og:title' content={ogTitle ?? title} />
 	<meta property='og:description' content={description} />
 	<meta property='og:type' content={ogType} />
@@ -45,7 +50,7 @@ const socialImage = new URL(image ?? `${import.meta.env.BASE_URL}images/128.png`
 	<link rel='alternate' type='application/rss+xml' title='ArenaSwap release notes' href={`${import.meta.env.BASE_URL}releases/rss.xml`} />
 	<noscript><style>.reveal { opacity: 1 !important; transform: none !important; }</style></noscript>
 
-	<script is:inline define:vars={{ chromeUrl: CHROME_WEB_STORE, firefoxUrl: FIREFOX_ADDONS, edgeUrl: EDGE_ADDONS }}>
+	<script is:inline define:vars={{ chromeUrl: chromeWebStore, firefoxUrl: firefoxAddons, edgeUrl: edgeAddons }}>
 			const arenaSwapInstallFork = (name, href) => ({ name, icon: 'bi-download', href });
 
 			window.arenaSwapInstall = (() => {

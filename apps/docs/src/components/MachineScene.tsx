@@ -4,6 +4,13 @@ import { LineChart } from 'echarts/charts';
 import { GridComponent } from 'echarts/components';
 import { CanvasRenderer } from 'echarts/renderers';
 import type { EChartsOption } from 'echarts';
+import {
+	scoreMaxCloseness,
+	scoreMaxLateGame,
+	scoreMaxMomentum,
+	scoreMaxLeadChanges,
+	scoreMaxComeback,
+} from '@arenaswap/core/constants';
 import Crest from '@arenaswap/ui/src/components/crest';
 
 echarts.use([LineChart, GridComponent, CanvasRenderer]);
@@ -11,55 +18,55 @@ echarts.use([LineChart, GridComponent, CanvasRenderer]);
 // Four looping scenes: watch every live game, score each one, open one for the full breakdown,
 // land the tab on the best. The scenes are SVG/CSS; the PowerScore trend is a real ECharts graph.
 
-const SCENES = 4;
-const DURATIONS = [4200, 4200, 6000, 8200];
+const sceneCount = 4;
+const sceneDurations = [4200, 4200, 6000, 8200];
 
 // OrangeDots.astro skips React islands, so the orange-dot flourish is applied here instead.
-const CAPTIONS = [
+const sceneCaptions = [
 	'It watches every live game across your leagues',
 	'And scores each one on how exciting it is, live',
 	'Open a game to see exactly why',
 	'Then your tab lands on the best one',
 ];
 
-const BASE = '/arenaswap/images';
-const ORANGE = '#F75C03';
+const imageBase = `${import.meta.env.BASE_URL}images`;
+const orange = '#F75C03';
 
 // Curated to logos that read clearly on the dark background; dark navy and black crests like
 // the NHL and Champions League marks are dropped.
-const NET = [
+const networkLeagues = [
 	{ id: 'nba', s: 88 }, { id: 'nfl', s: 72 }, { id: 'mlb', s: 59 }, { id: 'wnba', s: 80 },
 	{ id: 'nhl', s: 64 }, { id: 'mls', s: 62 }, { id: 'laliga', s: 68 },
 	{ id: 'bundesliga', s: 74 }, { id: 'ncaaf', s: 66 },
 ];
-const CX = 480;
-const CY = 360;
-const R = 300;
-const NODES = NET.map((n, i) => {
-	const angle = (i / NET.length) * Math.PI * 2 - Math.PI / 2;
+const centerX = 480;
+const centerY = 360;
+const radius = 300;
+const nodes = networkLeagues.map((n, i) => {
+	const angle = (i / networkLeagues.length) * Math.PI * 2 - Math.PI / 2;
 	return {
 		id: n.id,
 		score: n.s,
-		logo: `${BASE}/leagues/${n.id}.png`,
-		x: CX + R * Math.cos(angle),
-		y: CY + R * Math.sin(angle),
+		logo: `${imageBase}/leagues/${n.id}.png`,
+		x: centerX + radius * Math.cos(angle),
+		y: centerY + radius * Math.sin(angle),
 	};
 });
 
 const NetworkScene = ({ showScores }: { showScores: boolean }) => (
 	<svg className='mw-net' viewBox='0 0 960 720' data-scores={showScores} role='img' aria-label='ArenaSwap watching and scoring every live game'>
-		{NODES.map((n, i) => (
+		{nodes.map((n, i) => (
 			<g key={`wire-${n.id}`}>
-				<line className='mw-wire-base' x1={n.x} y1={n.y} x2={CX} y2={CY} />
-				<line className='mw-wire-dot' x1={n.x} y1={n.y} x2={CX} y2={CY} style={{ animationDelay: `${(i % 6) * 0.2}s` }} />
+				<line className='mw-wire-base' x1={n.x} y1={n.y} x2={centerX} y2={centerY} />
+				<line className='mw-wire-dot' x1={n.x} y1={n.y} x2={centerX} y2={centerY} style={{ animationDelay: `${(i % 6) * 0.2}s` }} />
 			</g>
 		))}
 
-		<circle className='mw-core-glow' cx={CX} cy={CY} r={92} />
-		<circle className='mw-core-ring' cx={CX} cy={CY} r={60} />
-		<image href={`${BASE}/icon_white_on_transparent.png`} x={CX - 34} y={CY - 30} width={68} height={60} preserveAspectRatio='xMidYMid meet' />
+		<circle className='mw-core-glow' cx={centerX} cy={centerY} r={92} />
+		<circle className='mw-core-ring' cx={centerX} cy={centerY} r={60} />
+		<image href={`${imageBase}/icon_white_on_transparent.png`} x={centerX - 34} y={centerY - 30} width={68} height={60} preserveAspectRatio='xMidYMid meet' />
 
-		{NODES.map(n => (
+		{nodes.map(n => (
 			<g key={`node-${n.id}`} className='mw-node'>
 				<circle className='mw-chip' cx={n.x} cy={n.y} r={37} />
 				<image href={n.logo} x={n.x - 26} y={n.y - 26} width={52} height={52} preserveAspectRatio='xMidYMid meet' />
@@ -72,35 +79,35 @@ const NetworkScene = ({ showScores }: { showScores: boolean }) => (
 	</svg>
 );
 
-const GAME = {
+const demoGame = {
 	league: 'NBA',
 	status: 'Q4 · 0:48',
 	away: { abbr: 'LAL', name: 'Lakers', score: 112, logo: 'https://a.espncdn.com/i/teamlogos/nba/500/lal.png' },
 	home: { abbr: 'BOS', name: 'Celtics', score: 110, logo: 'https://a.espncdn.com/i/teamlogos/nba/500/bos.png' },
 	power: 92,
 };
-const SIGNALS = [
-	{ name: 'Closeness', value: 27, max: 30, color: '#22c55e' },
-	{ name: 'Late-game pressure', value: 25, max: 28, color: ORANGE },
-	{ name: 'Momentum', value: 21, max: 28, color: '#2274A5' },
-	{ name: 'Lead changes', value: 11, max: 18, color: '#F1C40F' },
-	{ name: 'Comeback', value: 8, max: 14, color: '#D90368' },
+const signals = [
+	{ name: 'Closeness', value: 30, max: scoreMaxCloseness, color: '#22c55e' },
+	{ name: 'Late-game pressure', value: 26, max: scoreMaxLateGame, color: orange },
+	{ name: 'Momentum', value: 20, max: scoreMaxMomentum, color: '#2274A5' },
+	{ name: 'Lead changes', value: 9, max: scoreMaxLeadChanges, color: '#F1C40F' },
+	{ name: 'Comeback', value: 7, max: scoreMaxComeback, color: '#D90368' },
 ];
-const TREND = [58, 62, 61, 69, 72, 79, 85, 92];
+const trend = [58, 62, 61, 69, 72, 79, 85, 92];
 
 const trendOption: EChartsOption = {
 	animation: true,
 	animationDuration: 1300,
 	animationEasing: 'cubicOut',
 	grid: { left: 2, right: 2, top: 8, bottom: 4 },
-	xAxis: { type: 'category', show: false, boundaryGap: false, data: TREND.map((_, i) => String(i)) },
+	xAxis: { type: 'category', show: false, boundaryGap: false, data: trend.map((_, i) => String(i)) },
 	yAxis: { type: 'value', show: false, min: 0, max: 100 },
 	series: [{
 		type: 'line',
-		data: TREND,
+		data: trend,
 		smooth: true,
 		showSymbol: false,
-		lineStyle: { color: ORANGE, width: 3 },
+		lineStyle: { color: orange, width: 3 },
 		areaStyle: {
 			color: {
 				type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
@@ -117,21 +124,21 @@ const GameCard = ({ active, chartElRef }: { active: boolean; chartElRef: React.R
 	<div className='mw-card'>
 		<div className='mw-card-teams'>
 			<div className='mw-team'>
-				<Crest logo={GAME.away.logo} abbreviation={GAME.away.abbr} loading='lazy' />
-				<span className='mw-team-abbr'>{GAME.away.abbr}</span>
+				<Crest logo={demoGame.away.logo} abbreviation={demoGame.away.abbr} loading='lazy' />
+				<span className='mw-team-abbr'>{demoGame.away.abbr}</span>
 			</div>
 			<div className='mw-team-mid'>
-				<span className='mw-team-scores'>{GAME.away.score}<span className='mw-team-dash'>–</span>{GAME.home.score}</span>
-				<span className='mw-team-status'><span className='live-dot'></span>{GAME.league} · {GAME.status}</span>
+				<span className='mw-team-scores'>{demoGame.away.score}<span className='mw-team-dash'>–</span>{demoGame.home.score}</span>
+				<span className='mw-team-status'><span className='live-dot'></span>{demoGame.league} · {demoGame.status}</span>
 			</div>
 			<div className='mw-team'>
-				<Crest logo={GAME.home.logo} abbreviation={GAME.home.abbr} loading='lazy' />
-				<span className='mw-team-abbr'>{GAME.home.abbr}</span>
+				<Crest logo={demoGame.home.logo} abbreviation={demoGame.home.abbr} loading='lazy' />
+				<span className='mw-team-abbr'>{demoGame.home.abbr}</span>
 			</div>
 		</div>
 
 		<div className='mw-power'>
-			<div className='mw-power-num'>{GAME.power}<span>/100</span></div>
+			<div className='mw-power-num'>{demoGame.power}<span>/100</span></div>
 			<div className='mw-power-meta'>
 				<span className='mw-power-label'>PowerScore</span>
 				<div ref={chartElRef} className='mw-chart' />
@@ -139,7 +146,7 @@ const GameCard = ({ active, chartElRef }: { active: boolean; chartElRef: React.R
 		</div>
 
 		<div className='mw-signals'>
-			{SIGNALS.map(s => (
+			{signals.map(s => (
 				<div key={s.name} className='mw-signal'>
 					<div className='mw-signal-head'>
 						<span>{s.name}</span>
@@ -179,7 +186,7 @@ const TabSwitch = ({ activeTab }: { activeTab: number }) => (
 			</div>
 		</div>
 		<div className='mw-browser-body'>
-			<img src={`${BASE}/icon_white_on_transparent.png`} alt='' className='mw-browser-mark' />
+			<img src={`${imageBase}/icon_white_on_transparent.png`} alt='' className='mw-browser-mark' />
 			<div className='mw-now-label'>Now watching</div>
 			<div className='mw-now-game'>{TABS[activeTab].game}</div>
 			<div className='mw-now-on'>on {TABS[activeTab].service}</div>
@@ -215,7 +222,7 @@ const MachineScene = () => {
 
 	useEffect(() => {
 		if (reduced || paused) return;
-		const id = window.setTimeout(() => setStage(s => (s + 1) % SCENES), DURATIONS[stage]);
+		const id = window.setTimeout(() => setStage(s => (s + 1) % sceneCount), sceneDurations[stage]);
 		return () => window.clearTimeout(id);
 	}, [stage, reduced, paused]);
 
@@ -265,13 +272,13 @@ const MachineScene = () => {
 			</div>
 
 			<p className='machine-caption'>
-				{CAPTIONS.map((c, i) => (
+				{sceneCaptions.map((c, i) => (
 					<span key={c} className='machine-caption-line' data-active={i === stage}>{c}<span className='as-dot'>.</span></span>
 				))}
 			</p>
 
 			<div className='machine-progress' aria-hidden='true'>
-				{Array.from({ length: SCENES }).map((_, i) => (
+				{Array.from({ length: sceneCount }).map((_, i) => (
 					<span key={i} className='machine-pip' data-active={i === stage} />
 				))}
 			</div>

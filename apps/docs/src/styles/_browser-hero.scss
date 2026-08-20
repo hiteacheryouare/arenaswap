@@ -312,7 +312,7 @@ $popup-overhang: 150px;
 	height: 1.4rem;
 	margin-left: 0.2rem;
 	border-radius: 50%;
-	background: linear-gradient(140deg, #3E9BD1, #2274A5);
+	background: linear-gradient(140deg, #3E9BD1, $secondary-on-light);
 	box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.15);
 }
 
