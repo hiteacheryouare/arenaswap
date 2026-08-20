@@ -19,7 +19,7 @@ const workspaces = [
 	'apps/docs/',
 	'apps/extension/',
 	'packages/core/',
-	'packages/powerScore/',
+	'packages/powerscore/',
 	'packages/ui/',
 ];
 
