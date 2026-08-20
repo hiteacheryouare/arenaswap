@@ -219,9 +219,17 @@ describe('constants', () => {
 		expect(leagueLogoFallbacks.fifawc).toMatch(/^https?:\/\//);
 	});
 
-	test('resolves NCAA womens basketball using ESPN logo when provided, empty string otherwise', () => {
+	test('resolves NCAA womens basketball using ESPN logo when provided, generic NCAA mark otherwise', () => {
 		expect(resolveLeagueLogoUrl('ncaaw', 'https://cdn.example/ncaaw.png')).toBe('https://cdn.example/ncaaw.png');
-		expect(resolveLeagueLogoUrl('ncaaw')).toBe('');
+		expect(resolveLeagueLogoUrl('ncaaw')).toBe(leagueLogoFallbacks.ncaaw);
+	});
+
+	// The demo tab and the onboarding picker resolve logos with no ESPN response behind them, so a
+	// league with neither an override nor a fallback renders no crest at all.
+	test('resolves a fallback for every NCAA league without an ESPN logo', () => {
+		for (const leagueId of ['ncaab', 'ncaaw', 'ncaaf', 'ncaamh'] as const) {
+			expect(resolveLeagueLogoUrl(leagueId)).toMatch(/^https?:\/\//);
+		}
 	});
 
 	test('resolves epl and fifawc league logo URLs with ESPN value first, then fallback', () => {

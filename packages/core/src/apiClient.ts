@@ -1,8 +1,8 @@
 import { leagueConfigMap, resolveLeagueLogoUrl } from './constants';
 import {
 	EspnSummarySchema,
-	EspnTeamsResponseSchema,
 	parseScoreboard,
+	parseTeams,
 } from './espnSchemas';
 import type {
 	EspnCompetition,
@@ -15,6 +15,16 @@ import { logWarn } from './logger';
 import type { Game, GameCondition, GameOdds, LeagueConfig, LeagueId, LeagueLogoMap } from './types';
 
 const espnBase = 'https://site.api.espn.com/apis/site/v2/sports';
+
+// ESPN ships a malformed row often enough that a dropped count is a steady state, not an event, so
+// warning on every poll would bury the console at the 6s floor. Only a change in the count is news.
+const lastWarnedDroppedCounts = new Map<string, number>();
+
+const warnOnDroppedCountChange = (key: string, dropped: number, buildMessage: () => string): void => {
+	if (lastWarnedDroppedCounts.get(key) === dropped) return;
+	lastWarnedDroppedCounts.set(key, dropped);
+	if (dropped > 0) logWarn(buildMessage());
+};
 
 const parseClockToSeconds = (clock: string): number => {
 	// Soccer prime notation: "85'" or "90'+8'" (base minutes + optional stoppage)
@@ -338,9 +348,11 @@ const fetchScoreboard = async (url: string, leagueId: LeagueId): Promise<EspnSco
 	});
 	if (!res.ok) throw new LeagueFetchError(leagueId, res.status);
 	const parsed = parseScoreboard(await res.json());
-	if (parsed.droppedEvents > 0) {
-		logWarn(`Skipped ${parsed.droppedEvents} unparseable ${leagueId} event(s); kept ${parsed.events.length}.`);
-	}
+	warnOnDroppedCountChange(
+		`scoreboard:${leagueId}`,
+		parsed.droppedEvents,
+		() => `Skipped ${parsed.droppedEvents} unparseable ${leagueId} event(s); kept ${parsed.events.length}.`,
+	);
 	return parsed;
 };
 
@@ -482,9 +494,13 @@ export const fetchTeamsForLeagues = async (leagueIds: LeagueId[]): Promise<EspnT
 			const url = `${espnBase}/${config.espnPath}/teams?${params.toString()}`;
 			const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
 			if (!res.ok) throw new Error(`Failed to fetch teams for ${config.id}: HTTP ${res.status}`);
-			const parsed = EspnTeamsResponseSchema.safeParse(await res.json());
-			const rawTeams = parsed.success ? (parsed.data?.sports?.[0]?.leagues?.[0]?.teams ?? []) : [];
-			return rawTeams
+			const parsed = parseTeams(await res.json());
+			warnOnDroppedCountChange(
+				`teams:${config.id}`,
+				parsed.droppedTeams,
+				() => `Skipped ${parsed.droppedTeams} unparseable ${config.id} team(s); kept ${parsed.teams.length}.`,
+			);
+			return parsed.teams
 				.filter(({ team }) => team.id && team.displayName)
 				.map(({ team }) => ({
 					leagueId: config.id,

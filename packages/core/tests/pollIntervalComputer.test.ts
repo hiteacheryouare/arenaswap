@@ -1,4 +1,5 @@
-import { computeEagerIntervalMs, computeLeagueIntervalMs, pollMinEagerMs, pollMaxEagerMs, pollIntermissionMs } from '../src/pollIntervalComputer';
+import { pollIntermissionMs, pollMaxEagerMs, pollMinEagerMs } from '../src/constants';
+import { computeEagerIntervalMs, computeLeagueIntervalMs } from '../src/pollIntervalComputer';
 import type { Game, PowerScoreResult } from '../src/types';
 
 const makeGame = (overrides: Partial<Game> = {}): Game => ({

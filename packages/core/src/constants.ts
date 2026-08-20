@@ -91,12 +91,19 @@ const leagueLogoOverrides: Partial<Record<LeagueId, string>> = {
 	olysocw: 'https://a.espncdn.com/i/espn/misc_logos/500-dark/olympics.png',
 };
 
+// ESPN serves a usable logo for most of these, so the fallback only shows before the first fetch:
+// the demo tab and the onboarding picker both render leagues with no scoreboard response behind
+// them, and a league missing from here draws no crest at all.
 export const leagueLogoFallbacks: Partial<Record<LeagueId, string>> = {
 	nba: 'https://a.espncdn.com/i/teamlogos/leagues/500/nba.png',
 	wnba: 'https://a.espncdn.com/i/teamlogos/leagues/500/wnba.png',
 	nhl: 'https://a.espncdn.com/i/teamlogos/leagues/500/nhl.png',
 	mlb: 'https://a.espncdn.com/i/teamlogos/leagues/500/mlb.png',
 	nfl: 'https://a.espncdn.com/i/teamlogos/leagues/500/nfl.png',
+	ncaab: 'https://a.espncdn.com/i/espn/misc_logos/500-dark/ncaa.png',
+	ncaaw: 'https://a.espncdn.com/i/espn/misc_logos/500-dark/ncaa.png',
+	ncaaf: 'https://a.espncdn.com/i/espn/misc_logos/500-dark/ncaa.png',
+	ncaamh: 'https://a.espncdn.com/i/espn/misc_logos/500-dark/ncaa.png',
 	mls: 'https://a.espncdn.com/i/teamlogos/leagues/500/mls.png',
 	epl: 'https://a.espncdn.com/i/leaguelogos/soccer/500-dark/23.png',
 	fifawc: 'https://a.espncdn.com/i/leaguelogos/soccer/500-dark/4.png',

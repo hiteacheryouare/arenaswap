@@ -7,13 +7,13 @@ interface reviewPromptBannerProps {
 
 const reviewPromptBanner = ({ onDismiss, onLeaveReview }: reviewPromptBannerProps) => (
 	<div className='alert alert-primary d-flex align-items-start gap-2 py-2 px-2 mb-2' role='note'>
-		<i className='bi bi-star mt-[0.08rem]' aria-hidden='true' />
-		<div className='grow min-w-0'>
-			<div className='fw-bold text-[0.72rem] leading-tight'>{i18n.t('reviewPrompt.title')}</div>
-			<div className='text-[0.62rem] leading-snug'>
+		<i className='bi bi-star' aria-hidden='true' />
+		<div className='min-w-0'>
+			<div className='fw-bold'>{i18n.t('reviewPrompt.title')}</div>
+			<div>
 				{i18n.t('reviewPrompt.copy')}
 			</div>
-			<button type='button' className='btn btn-sm btn-primary mt-2 py-0 px-2 text-[0.65rem]' onClick={onLeaveReview}>
+			<button type='button' className='btn btn-sm btn-primary mt-2 py-0 px-2' onClick={onLeaveReview}>
 				{i18n.t('reviewPrompt.leaveReview')}
 			</button>
 		</div>

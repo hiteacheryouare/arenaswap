@@ -176,20 +176,45 @@ export const EspnSummarySchema = zod.object({
 	).optional(),
 });
 
-export const EspnTeamsResponseSchema = zod.object({
+// The teams envelope only, salvaged row by row for the same reason the scoreboard is: one
+// non-conforming row used to empty the whole league, and fetchTeamsForLeagues cannot tell that
+// apart from a league with no teams — so the onboarding picker offered nothing to pick.
+const EspnTeamsShellSchema = zod.object({
 	sports: zod.array(zod.object({
 		leagues: zod.array(zod.object({
-			teams: zod.array(zod.object({
-				team: zod.object({
-					id: zod.string(),
-					displayName: zod.string(),
-					abbreviation: zod.string().optional(),
-					logos: zod.array(zod.object({ href: zod.string() })).optional(),
-				}),
-			})).optional(),
+			teams: zod.array(zod.unknown()).optional(),
 		})).optional(),
 	})).optional(),
 });
+
+const EspnTeamsRowSchema = zod.object({
+	team: zod.object({
+		id: zod.string(),
+		displayName: zod.string(),
+		abbreviation: zod.string().optional(),
+		logos: zod.array(zod.object({ href: zod.string() })).optional(),
+	}),
+});
+
+export interface EspnTeamsResult {
+	teams: EspnTeamsRow[];
+	droppedTeams: number;
+}
+
+export const parseTeams = (raw: unknown): EspnTeamsResult => {
+	const shell = EspnTeamsShellSchema.safeParse(raw);
+	if (!shell.success) return { teams: [], droppedTeams: 0 };
+
+	const teams: EspnTeamsRow[] = [];
+	let droppedTeams = 0;
+	for (const candidate of shell.data.sports?.[0]?.leagues?.[0]?.teams ?? []) {
+		const parsed = EspnTeamsRowSchema.safeParse(candidate);
+		if (parsed.success) teams.push(parsed.data);
+		else droppedTeams++;
+	}
+
+	return { teams, droppedTeams };
+};
 
 export type EspnLeagueLogo = zod.infer<typeof EspnLeagueLogoSchema>;
 export type EspnLeague = zod.infer<typeof EspnLeagueSchema>;
@@ -208,4 +233,4 @@ export type EspnWeather = zod.infer<typeof EspnWeatherSchema>;
 export type EspnSeason = zod.infer<typeof EspnSeasonSchema>;
 export type EspnCompetition = zod.infer<typeof EspnCompetitionSchema>;
 export type EspnEvent = zod.infer<typeof EspnEventSchema>;
-export type EspnTeamsResponse = zod.infer<typeof EspnTeamsResponseSchema>;
+export type EspnTeamsRow = zod.infer<typeof EspnTeamsRowSchema>;

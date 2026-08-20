@@ -2,7 +2,7 @@ import { i18n } from '#i18n';
 import { randomInRange } from '@porkyproductions/hat';
 import { fetchGamesWithLeagueLogos, fetchWinProbability, computePowerScore, computeScoringOpportunityBoost, isPlayFrozen, normalizePowerScoreResult, scoreMaxTotal, MockGameSimulator, createPollModeTracker, isObjectRecord, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts, computeLeagueIntervalMs, pollWinProbabilityMs as winProbPollIntervalMs, logWarn, logError } from '@arenaswap/core';
 import { computeStandbyStreamDecision } from '../utils/standbyStreamLogic';
-import { loadStoredUserPreferences, persistStoredUserPreferences } from '../utils/prefsStorage';
+import { loadStoredUserPreferences } from '../utils/prefsStorage';
 import {
 	normalizeReviewPromptState,
 	recordSuccessfulReviewPromptSwitch,
@@ -12,13 +12,13 @@ import {
 	applyDisabledSignals,
 	createDefaultUserPreferences,
 	createFavoriteTeamKey,
-	leagueLogoFallbacks,
 	normalizeUserPreferences,
 	pollIntervalMs,
 	pollDormantMinMs,
 	pollDormantMaxMs,
 	pollMaxEagerMs,
 	historyWindowMs,
+	resolveLeagueLogoUrl,
 	sensitivityThresholds,
 	sportTypeConfigMap,
 } from '@arenaswap/core/constants';
@@ -63,6 +63,11 @@ const getHistoryWindowMsForGame = (game: Game): number => {
 	return sportConfig.historyWindowMs ?? historyWindowMs;
 };
 
+const maxHistoryWindowMs = Math.max(
+	historyWindowMs,
+	...Object.values(sportTypeConfigMap).map(config => config.historyWindowMs ?? historyWindowMs),
+);
+
 // Backstop only — the time window is the real policy. Stops the arrays growing without bound if
 // polling ever runs faster than expected. Soccer's 20-minute window at the 6s eager floor is 200
 // snapshots, so this leaves headroom without letting a runaway loop fill session storage.
@@ -105,10 +110,11 @@ export default defineBackground(() => {
 	// the detail screen and the switcher all agree on the same number.
 	const winProbHistory = new Map<string, number[]>();
 	let winProbTimer: ReturnType<typeof setTimeout> | null = null;
+	// Bumped on every stop so a sweep that is already in flight cannot reschedule itself.
+	let winProbGeneration = 0;
 	const pollModeTracker = createPollModeTracker();
 	let demoTimer: ReturnType<typeof setInterval> | null = null;
 	let inFlightRefresh: Promise<void> | null = null;
-	let upcomingGamesReady: Promise<void> | undefined;
 	let pendingSwitchTimer: ReturnType<typeof setTimeout> | null = null;
 	let pendingSwitch: { gameId: string; tabId: number; reason?: string } | null = null;
 	let standbyStreamTabId: number | null = null;
@@ -138,8 +144,10 @@ export default defineBackground(() => {
 				const valid = snapshots.filter(isScoreSnapshotLike);
 				if (valid.length === 0) return;
 				// Runs before the first fetch, so there is no Game to read a per-sport window from
-				// yet. The next updateHistory pass re-trims to the sport's real window.
-				const cutoff = valid[valid.length - 1]!.timestamp - historyWindowMs;
+				// yet. Trimming to the widest window keeps the sports that use one — the global value
+				// would discard 15 of soccer's 20 minutes on every worker wake — and the next
+				// updateHistory pass re-trims to the sport's real window.
+				const cutoff = valid[valid.length - 1]!.timestamp - maxHistoryWindowMs;
 				const trimmed = valid.filter(s => s.timestamp >= cutoff).slice(-maxSnapshotsPerGame);
 				if (trimmed.length === 0) return;
 				history.set(gameId, trimmed);
@@ -151,7 +159,7 @@ export default defineBackground(() => {
 				if (!Array.isArray(snapshots)) return;
 				const valid = snapshots.filter(isPowerScoreSnapshotLike);
 				if (valid.length === 0) return;
-				const cutoff = valid[valid.length - 1]!.timestamp - historyWindowMs;
+				const cutoff = valid[valid.length - 1]!.timestamp - maxHistoryWindowMs;
 				const trimmed = valid.filter(s => s.timestamp >= cutoff).slice(-maxSnapshotsPerGame);
 				if (trimmed.length === 0) return;
 				powerScoreHistory.set(gameId, trimmed);
@@ -626,7 +634,8 @@ export default defineBackground(() => {
 			games = simulator.tick();
 			const demoLeagues = [...new Set(games.map(game => game.league))];
 			leagueLogos = demoLeagues.reduce<LeagueLogoMap>((acc, leagueId) => {
-				acc[leagueId] = leagueLogoFallbacks[leagueId];
+				// No ESPN response behind a demo game, so this resolves to the override or fallback.
+				acc[leagueId] = resolveLeagueLogoUrl(leagueId);
 				return acc;
 			}, {});
 		} else {
@@ -737,14 +746,20 @@ export default defineBackground(() => {
 	};
 
 	const stopWinProbabilityPolling = () => {
+		winProbGeneration++;
 		if (winProbTimer !== null) clearTimeout(winProbTimer);
 		winProbTimer = null;
 	};
 
 	const scheduleWinProbabilityPolling = () => {
 		stopWinProbabilityPolling();
+		const generation = winProbGeneration;
 		const run = async () => {
 			await refreshWinProbabilities();
+			// The timer that started this sweep has already fired, so neither a stop nor a restart
+			// during the sweep could have cancelled it. Without this check a resolving run brings a
+			// stopped chain back to life, or adds a second live one that nothing holds a handle to.
+			if (generation !== winProbGeneration) return;
 			winProbTimer = setTimeout(() => void run(), winProbPollIntervalMs);
 		};
 		winProbTimer = setTimeout(() => void run(), winProbPollIntervalMs);
@@ -775,15 +790,15 @@ export default defineBackground(() => {
 		await reconcileClosedTabs().catch(err => {
 			logWarn('Failed to reconcile the tab registry against open tabs.', err);
 		});
-		upcomingGamesReady = refreshUpcomingGames().catch(() => {});
-		await upcomingGamesReady;
+		await refreshUpcomingGames().catch(() => {});
 		await refreshScores(false).catch(err => {
 			logError('Initial score refresh failed; starting polling anyway.', err);
 		});
 
 		if (demoMode) {
 			if (!demoTimer) {
-				demoTimer = setInterval(() => void tick(true), pollIntervalMs);
+				// Routed through refreshScores so a slow tick cannot overlap the next one.
+				demoTimer = setInterval(() => void refreshScores(true), pollIntervalMs);
 			}
 			return;
 		}
@@ -802,10 +817,22 @@ export default defineBackground(() => {
 				return stateReady
 					.then(async () => {
 						// The popup may have written prefs then closed before its UPDATE_PREFS
-						// message was delivered.
+						// message was delivered, so this path has to re-arm what that handler would
+						// have: the league timers below still point at the old league set. Mute state
+						// needs no help — the refreshScores at the end lands in afterFetch, which
+						// syncs it against whatever prefs.enabled ends up as.
+						const previousLeagues = new Set(prefs.enabledLeagues);
 						try {
 							prefs = await loadStoredUserPreferences();
 						} catch { /* keep current in-memory prefs */ }
+						const newLeagues = new Set(prefs.enabledLeagues);
+						const leaguesChanged = previousLeagues.size !== newLeagues.size ||
+							[...previousLeagues].some(leagueId => !newLeagues.has(leagueId));
+						if (leaguesChanged && !demoMode) {
+							startLeaguePolling();
+							// A league switched off keeps its cached lines until the next sweep otherwise.
+							void refreshWinProbabilities();
+						}
 						await refreshScores(false);
 						return buildBackgroundState();
 					});
@@ -821,7 +848,9 @@ export default defineBackground(() => {
 				prefs = normalizeUserPreferences(msg.prefs);
 				if (wasEnabled && !prefs.enabled) lastSwitchTime = 0;
 				clearPendingSwitch();
-				await persistStoredUserPreferences(prefs);
+				// The popup persists before it sends, and the GET_STATE recovery path relies on that,
+				// so writing again here would only double the storage.sync traffic against Chrome's
+				// 120-writes-per-minute ceiling.
 				await syncManagedTabMuteState(prefs.enabled);
 				const upcomingSettingChanged = prefs.showUpcomingGames !== prevShowUpcoming ||
 					(prefs.showUpcomingGames && prefs.upcomingGamesDays !== prevUpcomingGamesDays);

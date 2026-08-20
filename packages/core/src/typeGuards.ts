@@ -37,6 +37,7 @@ export const isPowerScoreSnapshotLike = (value: unknown): value is PowerScoreSna
 	&& (value.gameBoost === undefined || isFiniteNumber(value.gameBoost))
 	&& (value.scoringOpportunityBoost === undefined || isFiniteNumber(value.scoringOpportunityBoost))
 	&& (value.postseasonBoost === undefined || isFiniteNumber(value.postseasonBoost))
+	&& (value.stallPenalty === undefined || isFiniteNumber(value.stallPenalty))
 	&& (value.winProbabilityVariance === undefined || isFiniteNumber(value.winProbabilityVariance))
 );
 

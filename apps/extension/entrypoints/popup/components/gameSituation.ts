@@ -11,14 +11,15 @@ const isHalftime = (game: Game): boolean => {
 };
 
 // During an intermission or a delay the period and clock stop meaning anything, so those states
-// say what is actually happening instead.
+// say what is actually happening instead — except for the inning sports, where the half-inning
+// change ESPN can report as an intermission is exactly what the inning line already says.
 export const resolveStatusText = (game: Game, isInningSport: boolean, t: Translate): string => {
 	if (game.delayed === true) return game.delayDescription ?? t('gameCard.delayFallback');
 	if (game.status === 'post') return t('detail.final');
 	if (game.status === 'pre') return '';
+	if (isInningSport) return formatPeriod(game);
 	if (game.intermission === true) return isHalftime(game) ? t('detail.halftime') : t('detail.intermission');
 
-	if (isInningSport) return formatPeriod(game);
 	const clockBased = sportTypeConfigMap[game.sportType]?.clockBased ?? false;
 	return clockBased ? `${formatPeriod(game)} • ${formatGameClock(game)}` : formatPeriod(game);
 };

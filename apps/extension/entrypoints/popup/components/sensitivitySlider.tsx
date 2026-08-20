@@ -34,7 +34,7 @@ const sensitivitySlider = ({ value, onChange }: sensitivitySliderProps) => {
 				<button
 					className='fw-semibold setting-value-label ludicrous-speed ludicrous-speed-clickable'
 					onClick={() => setShowLudicrous(true)}
-					title='Engage the hyperdrive...'
+					title={i18n.t('sensitivity.hyperdriveTitle')}
 					style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: 'inherit' }}
 				>
 					{i18n.t('sensitivity.valueLabel', { label: labels[value]!, gap: sensitivityThresholds[value]! })}
@@ -52,7 +52,10 @@ const sensitivitySlider = ({ value, onChange }: sensitivitySliderProps) => {
 			max={7}
 			step={1}
 			value={value}
-			onChange={e => onChange(Number(e.target.value))}
+			onChange={e => {
+				const next = Number(e.target.value);
+				if (next !== value) onChange(next);
+			}}
 			className='form-range w-100'
 		/>
 		<div className='position-relative sensitivity-ticks'>

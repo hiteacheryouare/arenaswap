@@ -8,6 +8,7 @@ interface SimState {
 	streakTicks: number;
 	postTicks: number;
 	preTicks: number;
+	driveIndex: number;
 }
 
 const clockTick = 15; // seconds of game time per tick (matches poll interval)
@@ -25,7 +26,9 @@ const lateGameThresholdSeconds = 300;
 const lateGameComebackChance = 0.4;
 
 // Yard lines advance across midfield so the demo card reads like a real drive rather than a
-// random pair of strings; the last entry starts the next possession over.
+// random pair of strings; the last entry starts the next possession over. '1st & 10' repeats
+// three times, so the position in this table is tracked in SimState rather than looked up by
+// down — looking it up always matched index 0 and the card jumped backwards across midfield.
 const footballDrivePatterns = [
 	{ downDistance: '1st & 10', fieldPosition: 'PHI 25' },
 	{ downDistance: '2nd & 8', fieldPosition: 'PHI 27' },
@@ -72,7 +75,7 @@ const getStreakAdjustedProb = (
 
 const getLateGameMarginThreshold = (sportType: Game['sportType']): number => {
 	if (sportType === 'hockey' || sportType === 'soccer') return 2;
-	if (sportType === 'baseball') return 3;
+	if (sportType === 'baseball' || sportType === 'softball') return 3;
 	return 10;
 };
 
@@ -148,8 +151,8 @@ export class MockGameSimulator {
 				awayTeam: { id: '6', name: 'Dallas Cowboys', abbreviation: 'DAL', score: 14, logo: `${espnCdn}/nfl/500/dal.png`, color: '#003594' },
 				venueName: 'Lincoln Financial Field',
 				period: 4, clockSeconds: 480, status: 'in',
-				downDistance: '3rd & 7',
-				fieldPosition: 'PHI 42',
+				downDistance: '1st & 10',
+				fieldPosition: 'PHI 25',
 				broadcasts: ['NBC', 'Peacock'],
 			},
 			{
@@ -286,6 +289,7 @@ export class MockGameSimulator {
 				streakTicks: 0,
 				postTicks: 0,
 				preTicks: g.status === 'pre' ? preGameTicksBeforeStart : 0,
+				driveIndex: 0,
 			});
 		}
 	}
@@ -325,7 +329,7 @@ export class MockGameSimulator {
 					// A 4th ball is a walk, which resets the count; ESPN reports 0-3.
 					const newBalls = game.bso.balls + 1;
 					game.bso = newBalls >= 4
-						? { balls: 0, strikes: game.bso.strikes, outs: game.bso.outs }
+						? { balls: 0, strikes: 0, outs: game.bso.outs }
 						: { ...game.bso, balls: newBalls };
 				} else if (roll < 0.6) {
 					// A 3rd strike is a strikeout, which resets the count; ESPN reports 0-2.
@@ -358,8 +362,8 @@ export class MockGameSimulator {
 		// internally consistent — a goal-line down has to sit on a goal-line yard marker.
 		if (game.sportType === 'football' && game.downDistance !== undefined) {
 			if (Math.random() < 0.35) {
-				const idx = footballDrivePatterns.findIndex(p => p.downDistance === game.downDistance);
-				const next = footballDrivePatterns[(idx + 1) % footballDrivePatterns.length]!;
+				simState.driveIndex = (simState.driveIndex + 1) % footballDrivePatterns.length;
+				const next = footballDrivePatterns[simState.driveIndex]!;
 				game.downDistance = next.downDistance;
 				if (game.fieldPosition !== undefined) game.fieldPosition = next.fieldPosition;
 			}
@@ -432,6 +436,7 @@ export class MockGameSimulator {
 			if (game.bso) game.bso = { balls: 0, strikes: 0, outs: 0 };
 			if (game.downDistance !== undefined) game.downDistance = '1st & 10';
 			if (game.fieldPosition !== undefined) game.fieldPosition = 'PHI 25';
+			simState.driveIndex = 0;
 			simState.streak = null;
 			simState.streakTicks = 0;
 		}

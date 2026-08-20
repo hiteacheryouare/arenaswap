@@ -30,6 +30,7 @@
 		"swr": "^2.5.1"
 	},
 	"devDependencies": {
+		"@swc/jest": "^0.2.39",
 		"@types/bootstrap": "^5.2.11",
 		"@types/canvas-confetti": "^1.9.0",
 		"@types/react": "^19.2.18",
@@ -39,6 +40,7 @@
 		"bootstrap": "^5.3.8",
 		"bootstrap-icons": "^1.13.1",
 		"cypress": "^15.21.0",
+		"jest": "^30.4.2",
 		"react": "^19.2.8",
 		"react-dom": "^19.2.8",
 		"sass": "^1.102.0",

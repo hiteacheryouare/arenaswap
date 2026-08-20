@@ -114,7 +114,7 @@ const onboardingView = ({ leagueLogos, onComplete, onStartWalkthrough }: onboard
 								className='arenaswap-logo'
 							/>
 						</div>
-						<div className='onb-content-wrap d-flex flex-column grow'>
+						<div className='onb-content-wrap d-flex flex-column'>
 							<div className='fw-bold lh-sm mb-2 fs-4 text-center'>{i18n.t('onboarding.allSetTitle')}</div>
 							<div className='text-body-secondary fs-6 text-center mb-4 lh-base'>
 								{i18n.t('onboarding.allSetSubtitle')}

@@ -90,7 +90,7 @@ const onboardingTeamPicker = ({
 			)}
 
 			{!isLoading && !hasError && (
-				<div className='overflow-auto grow'>
+				<div className='overflow-auto'>
 					{sortedLeagues.map(leagueId => (
 						<div key={leagueId}>
 							<div className='fw-bold text-uppercase popup-section-label mt-2'>

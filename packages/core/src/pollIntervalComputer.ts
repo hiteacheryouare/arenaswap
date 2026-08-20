@@ -1,8 +1,5 @@
+import { pollIntermissionMs, pollMaxEagerMs, pollMinEagerMs } from './constants';
 import type { Game, PowerScoreResult } from './types';
-
-export const pollMinEagerMs = 6_000;
-export const pollMaxEagerMs = 25_000;
-export const pollIntermissionMs = 40_000;
 
 // One request per live game, for a figure that moves on the scale of possessions and is worth at
 // most ±5 points — polling it at the scoreboard's rate would multiply request volume for nothing.

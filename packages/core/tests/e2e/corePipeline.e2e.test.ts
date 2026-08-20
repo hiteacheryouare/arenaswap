@@ -160,7 +160,7 @@ describe('core API + excitement e2e flow', () => {
 
 		expect(rankedScores[0]?.game.id).toBe('nba-live-1');
 		expect(rankedScores[0]?.score.total).toBeGreaterThan(rankedScores[1]?.score.total ?? 0);
-		expect(rankedScores[0]?.score.reason).toContain('10-0 run');
+		expect(rankedScores[0]?.score.reason).toContain('outscoring AWY 10-0');
 		expect(rankedScores[0]?.score.reason).toContain('cutting into it');
 
 		const requestedUrls = fetchSpy.mock.calls.map(([input]) => toUrl(input as RequestInfo | URL));
@@ -344,7 +344,7 @@ describe('core API + excitement e2e flow', () => {
 
 		expect(ranked.map(item => item.id)).toEqual(['nba-live-momentum', 'nba-live-critical', 'nba-live-fringe']);
 		expect(ranked.map(item => item.score.total)).toEqual([100, 77, 8]);
-		expect(ranked[0]?.score.reason).toContain('HOM on a 10-0 run');
+		expect(ranked[0]?.score.reason).toContain('HOM outscoring AWY 10-0');
 		// Critical game is tied in the final 45s → OT anticipation headlines.
 		expect(ranked[1]?.score.reason).toContain('overtime looming');
 		expect(ranked[1]?.score.reason).toContain('tied');

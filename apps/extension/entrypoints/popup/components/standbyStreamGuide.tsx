@@ -10,7 +10,7 @@ const standbyStreamGuide = ({ onDone }: standbyStreamGuideProps) => {
 
 	return (
 		<div className='popup-container d-flex flex-column'>
-			<div className='onb-content-wrap d-flex flex-column grow'>
+			<div className='onb-content-wrap d-flex flex-column'>
 				<div className='small text-body-secondary text-uppercase text-center mb-3'>
 					{step === 1 ? i18n.t('standbyGuide.step', [1, 2]) : i18n.t('standbyGuide.step', [2, 2])}
 				</div>

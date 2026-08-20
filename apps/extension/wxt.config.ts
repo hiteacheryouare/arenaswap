@@ -8,9 +8,10 @@ const banner = `/*! ArenaSwap v${version} Copyright (c) ${year} Ryan Mullin, Lat
 export default defineConfig({
 	modules: ['@wxt-dev/module-react', '@wxt-dev/i18n/module'],
 	// dist/ is gitignored build output from the retired zip-builds scripts, so a stale copy on one
-	// machine would otherwise be swept into the sources archive an AMO reviewer downloads.
+	// machine would otherwise be swept into the sources archive an AMO reviewer downloads. marketing/
+	// is store screenshots and promo tiles — ~7MB of the archive, and nothing to do with building.
 	zip: {
-		excludeSources: ['dist/**'],
+		excludeSources: ['dist/**', 'marketing/**'],
 	},
 	vite: () => ({
 		plugins: [

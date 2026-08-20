@@ -57,6 +57,9 @@ const LeagueOrderList = ({ order, leagueLogos, disabled, onReorder, onReset }: l
 							dragIndexRef.current = index;
 							setDraggingIndex(index);
 							event.dataTransfer.effectAllowed = 'move';
+							// Firefox refuses to start a drag with an empty data transfer, and Cypress
+							// cannot drive one either.
+							event.dataTransfer.setData('text/plain', leagueId);
 						}}
 						onDragOver={event => {
 							if (dragIndexRef.current === null) return;

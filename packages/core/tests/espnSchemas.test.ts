@@ -1,4 +1,4 @@
-import { parseScoreboard } from '../src/espnSchemas';
+import { parseScoreboard, parseTeams } from '../src/espnSchemas';
 
 const makeEvent = (id: string, overrides: Record<string, unknown> = {}) => ({
 	id,
@@ -57,5 +57,41 @@ describe('parseScoreboard', () => {
 	test('returns an empty result for a payload that is not an object', () => {
 		expect(parseScoreboard('nope')).toEqual({ events: [], leagues: [], droppedEvents: 0 });
 		expect(parseScoreboard(null)).toEqual({ events: [], leagues: [], droppedEvents: 0 });
+	});
+});
+
+const makeTeamRow = (id: string) => ({
+	team: { id, displayName: `Team ${id}`, abbreviation: id.toUpperCase() },
+});
+
+const wrapTeams = (teams: unknown[]) => ({ sports: [{ leagues: [{ teams }] }] });
+
+describe('parseTeams', () => {
+	test('keeps every team in a healthy payload', () => {
+		const result = parseTeams(wrapTeams([makeTeamRow('a'), makeTeamRow('b')]));
+		expect(result.teams.map(t => t.team.id)).toEqual(['a', 'b']);
+		expect(result.droppedTeams).toBe(0);
+	});
+
+	// The whole reason parsing is per-team: rejecting the array as a unit left the onboarding picker
+	// with nothing to offer for that league, and nothing in the console to explain it.
+	test('drops only the malformed team, not the whole league', () => {
+		const good = Array.from({ length: 25 }, (_, i) => makeTeamRow(`g${i}`));
+		const bad = { team: { id: 'bad' } };
+
+		const result = parseTeams(wrapTeams([...good, bad]));
+
+		expect(result.teams).toHaveLength(25);
+		expect(result.droppedTeams).toBe(1);
+		expect(result.teams.some(t => t.team.id === 'bad')).toBe(false);
+	});
+
+	test('returns an empty result when the league carries no teams array', () => {
+		expect(parseTeams({ sports: [{ leagues: [{}] }] })).toEqual({ teams: [], droppedTeams: 0 });
+	});
+
+	test('returns an empty result for a payload that is not an object', () => {
+		expect(parseTeams('nope')).toEqual({ teams: [], droppedTeams: 0 });
+		expect(parseTeams(null)).toEqual({ teams: [], droppedTeams: 0 });
 	});
 });

@@ -1,3 +1,4 @@
+import { pollWinProbabilityMs } from '@arenaswap/core';
 import { createDefaultUserPreferences, createFavoriteTeamKey, normalizeUserPreferences, pollIntervalMs } from '@arenaswap/core/constants';
 import type { Game, LeagueId, TabRegistration, UserPreferences } from '@arenaswap/core/types';
 import { prefsStorageUpdatedAtKey } from '../utils/prefsStorage';
@@ -37,6 +38,15 @@ const mockOpenTabIds = (openTabIds: number[], activeTabId: number) => {
 		if ((q as { active?: boolean }).active) return Promise.resolve([{ id: activeTabId }]);
 		return Promise.resolve(openTabIds.map(id => ({ id })));
 	});
+};
+
+// Holds a win probability sweep open so the chain can be stopped or rebuilt underneath it.
+const deferNextSweep = (winProbMock: jest.Mock): (() => void) => {
+	let release!: () => void;
+	winProbMock.mockImplementationOnce(() => new Promise<number[]>(resolve => {
+		release = () => resolve([]);
+	}));
+	return () => release();
 };
 
 const closeTab = async (tabId: number) => {
@@ -329,6 +339,125 @@ describe('GET_STATE with forceRefresh', () => {
 		expect(storageSyncGet).toHaveBeenCalledWith({ prefs: null, [prefsStorageUpdatedAtKey]: 0 });
 	});
 
+	// Reloading the prefs was only half the recovery: leagueTimers still held timers for the old
+	// league set, so a league the popup had just enabled was fetched once by the re-score and then
+	// never polled again until the next pref change or a worker restart.
+	test('re-arms league polling for the league set it just recovered', async () => {
+		await loadBackground({ prefs: { enabledLeagues: ['nba' as LeagueId] } });
+
+		storageSyncGet.mockResolvedValue({
+			prefs: normalizeUserPreferences({ ...createDefaultUserPreferences(), enabledLeagues: ['nhl' as LeagueId] }),
+			[prefsStorageUpdatedAtKey]: 1,
+		});
+
+		await sendMessage({ type: 'GET_STATE', forceRefresh: true });
+
+		fetchMock.mockClear();
+		jest.advanceTimersByTime(pollIntervalMs * 2 + 5_000);
+		await drain();
+
+		const polledLeagues = fetchMock.mock.calls
+			.flatMap((args: unknown[]) => (Array.isArray(args[0]) ? args[0] as string[] : []));
+		expect(polledLeagues).toContain('nhl');
+		expect(polledLeagues).not.toContain('nba');
+	});
+
+	// The review also flagged managed tabs keeping the old master toggle's mute state, but the
+	// re-score at the end of this path runs afterFetch, which already syncs it. Pinned so the
+	// guarantee survives whatever else moves around in here.
+	test('leaves managed tab mute state matching the master toggle it just recovered', async () => {
+		await loadBackground({
+			prefs: { enabled: true, enabledLeagues: ['nba' as LeagueId] },
+			tabRegistry: [{ gameId: 'g1', tabId: 2 }, { gameId: 'g2', tabId: 3 }],
+			openTabIds: [1, 2, 3],
+			activeTabId: 2,
+		});
+
+		tabsUpdate.mockClear();
+		storageSyncGet.mockResolvedValue({
+			prefs: normalizeUserPreferences({
+				...createDefaultUserPreferences(),
+				enabled: false,
+				enabledLeagues: ['nba' as LeagueId],
+			}),
+			[prefsStorageUpdatedAtKey]: 1,
+		});
+
+		await sendMessage({ type: 'GET_STATE', forceRefresh: true });
+
+		expect(tabsUpdate).toHaveBeenCalledWith(3, { muted: false });
+	});
+});
+
+// Regression: run() reassigned winProbTimer unconditionally after its await, so clearTimeout could
+// never reach a sweep that was already in flight. Stopping mid-sweep let the resolving run bring the
+// chain back to life, and rescheduling mid-sweep orphaned a chain nothing held a handle to — each
+// one worth an ESPN summary request per live game every 60 seconds, forever.
+describe('win probability polling', () => {
+	const liveGame: Game = {
+		id: 'g1',
+		league: 'nba' as LeagueId,
+		sportType: 'basketball',
+		status: 'in',
+		homeTeam: { id: 'h', name: 'Home', abbreviation: 'HOM', score: 5 },
+		awayTeam: { id: 'a', name: 'Away', abbreviation: 'AWY', score: 4 },
+		period: 4,
+		clockSeconds: 60,
+	};
+
+	const loadWithLiveGame = async (): Promise<jest.Mock> => {
+		await loadBackground({
+			prefs: { enabledLeagues: ['nba' as LeagueId], notificationsEnabled: false },
+			fetchReturnValue: { games: [liveGame], leagueLogos: {} },
+		});
+		// The startup seed already swept once, so the count starts from here.
+		const winProbMock = (require('@arenaswap/core') as { fetchWinProbability: jest.Mock }).fetchWinProbability;
+		winProbMock.mockClear();
+		return winProbMock;
+	};
+
+	test('a sweep that resolves after polling stopped does not restart the chain', async () => {
+		const winProbMock = await loadWithLiveGame();
+		const releaseSweep = deferNextSweep(winProbMock);
+
+		jest.advanceTimersByTime(pollWinProbabilityMs);
+		await drain();
+		expect(winProbMock).toHaveBeenCalledTimes(1);
+
+		// Demo mode stops the chain while the sweep is still waiting on ESPN.
+		await sendMessage({ type: 'SET_DEMO_MODE', enabled: true });
+		releaseSweep();
+		await drain();
+
+		winProbMock.mockClear();
+		jest.advanceTimersByTime(pollWinProbabilityMs * 3);
+		await drain();
+
+		expect(winProbMock).not.toHaveBeenCalled();
+	});
+
+	test('rescheduling during a sweep leaves exactly one live chain', async () => {
+		const winProbMock = await loadWithLiveGame();
+		const releaseSweep = deferNextSweep(winProbMock);
+
+		jest.advanceTimersByTime(pollWinProbabilityMs);
+		await drain();
+		expect(winProbMock).toHaveBeenCalledTimes(1);
+
+		// Off and straight back on while the first sweep is still waiting, so the chain is rebuilt
+		// underneath it.
+		await sendMessage({ type: 'SET_DEMO_MODE', enabled: true });
+		await sendMessage({ type: 'SET_DEMO_MODE', enabled: false });
+		releaseSweep();
+		await drain();
+
+		winProbMock.mockClear();
+		jest.advanceTimersByTime(pollWinProbabilityMs);
+		await drain();
+
+		// One live game and one chain: a second chain would double every sweep from here on.
+		expect(winProbMock).toHaveBeenCalledTimes(1);
+	});
 });
 
 // Regression: lastSwitchTime survived a disable, so disabling just after a switch and re-enabling

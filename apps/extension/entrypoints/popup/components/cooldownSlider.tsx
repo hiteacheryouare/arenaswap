@@ -35,7 +35,10 @@ const cooldownSlider = ({ value, onChange }: cooldownSliderProps) => {
 				max={steps.length - 1}
 				step={1}
 				value={currentIdx}
-				onChange={e => onChange(steps[Number(e.target.value)]!)}
+				onChange={e => {
+					const next = steps[Number(e.target.value)]!;
+					if (next !== value) onChange(next);
+				}}
 				className='form-range w-100'
 			/>
 			<div className='d-flex justify-content-between'>
