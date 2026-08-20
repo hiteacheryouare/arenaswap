@@ -1,5 +1,110 @@
 # Changelog
 
+## A pre-merge sweep, and the docs build was one character from failing — 2026-08-20
+
+A full-repository review before the 2.0 merge, and everything it turned up. The headline is that
+`astro build` would have failed the moment it ran on Linux, which no local build could ever have
+shown us.
+
+### The blocker
+- **`dependencyLicences.ts` looked for `packages/powerScore/`.** The directory is lowercase. macOS
+  resolves it either way, so every local build passed; `ubuntu-latest` would have thrown ENOENT out
+  of the licences page frontmatter and failed the deploy. The same file already had the casing right
+  one line below, in `isOwn`.
+
+### Runtime bugs
+- **The demo's football card teleported backwards.** The drive table was advanced with
+  `findIndex` on `downDistance`, and `1st & 10` appears three times, so it always matched index 0.
+  The card jumped from `DAL 48` back to `PHI 27` and three of the eight patterns were unreachable.
+  The index now lives in `SimState`.
+- **Win-probability polling could grow a second timer chain.** `run()` reassigned the timer handle
+  after its own `await`, so stopping mid-sweep let the resolving call resurrect the loop, and
+  re-scheduling mid-sweep orphaned a live chain. Each extra chain meant another ESPN summary request
+  per live game per minute. It now follows the generation discipline `scheduleLeagueTick` already used.
+- **`forceRefresh` recovery reloaded preferences but never re-armed anything.** The UI looked
+  correct while `leagueTimers` still held timers for the old league set, so a newly enabled league
+  was fetched once and then never polled again.
+- **Hydration trimmed soccer history with the wrong window.** Every service-worker wake discarded
+  15 minutes of persisted snapshots, because the global five-minute window was applied to a sport
+  that keeps twenty.
+- **A dropped ESPN row warned on every poll.** Malformed rows are the documented steady state, so at
+  the six-second floor that was roughly 600 identical warnings an hour per league. Now only on change.
+- **One malformed team dropped an entire league's teams.** The scoreboard path was hardened row by
+  row; the teams path never was, and its caller turned a parse failure into an empty array silently.
+- **Two copies of the same poll constants were both live.** An explicit re-export shadowed the
+  barrel, so `@arenaswap/core` and `@arenaswap/core/constants` served different definitions, and the
+  jitter calculation divided one by the other. Equal at the time, and silently wrong after any edit.
+- Baseball could render "Intermission" instead of the inning, a slider drag could exhaust the
+  `storage.sync` write quota and quietly kill cross-device sync, preferences were written four times
+  per change instead of twice, and league drag-and-drop never called `setData`, so it could not start
+  in Firefox.
+
+### PowerScore
+- **A missing clock read as 0:00, which paid the maximum late-game ceiling.** `clockSeconds` became
+  optional this release but absent was still coerced to zero, and for a countdown sport zero is the
+  final buzzer. A tied game with twelve minutes left doubled its score and announced "0:00 left" in
+  the breakdown. Count-up soccer failed the other way.
+- **A tie mid-window counted as two lead changes.** The sign comparison only excluded 0 to 0, so
+  every ordinary comeback tripped it twice and scored at the `multiple` tier. Fixing it moved the
+  `leadChanges` mean from 4.7 to 1.8 across 1.46M simulated samples, which is the measure of how far
+  the old count was inflated. No tunable was touched.
+- **One non-finite win-probability entry erased the stall penalty.** NaN propagated into the total
+  and the fallback substituted the unpenalised signal sum, so a game four minutes into a commercial
+  break scored as though it were live while still reporting `stalled: true`.
+- **Soccer reason strings claimed overtime, which the sport does not have.** A tied league match at
+  89:50 was told overtime was looming. The card labels had already been fixed for this; the reason
+  line rendering beside them had not.
+- **The momentum reason described a run that had not happened.** The number was a differential but
+  rendered as `N-0`, so a 10-2 stretch read "on an 8-0 run".
+- The published README documented a calibration the code had left behind — four of five ceilings, and
+  a stall penalty described as a multiplier when the shipped field is a flat `deduction`. A 1.x
+  consumer reading `step.multiplier` would have computed `NaN`. Now rewritten against `constants.ts`,
+  with a migration section for the breaking changes.
+- The test suite had quietly lost type checking in the ts-jest to `@swc/jest` swap, and two leftover
+  tsconfigs had become invalid under TypeScript 7. `typecheck` covers the tests again.
+
+### Internationalisation
+- **The plaid speed sign was hardcoded English in all twelve locales.** It now uses a real key, and
+  keeps the purpose-built rectangular sign styling rather than the gradient treatment.
+- Five accessible names were hardcoded — a progress dot label, a "Signal:" prefix concatenated in
+  front of a translated value, and three in the onboarding demo. Screen reader users heard English
+  regardless of locale. All are keyed and translated now.
+- Spanish used one phrase for two deliberately distinct sensitivity levels, so "Ludicrous" and
+  "Ridiculous" were both *ridícula* on a real settings screen. French carried the same collision in
+  its prose. German and Filipino were still shipping the English sign.
+- Fixed a Spanish agreement error, `al cuadros`, that only became visible once the sign started
+  rendering at all.
+- Settled Standby Stream as a proper noun and made all twelve locales agree; Japanese and Simplified
+  Chinese had been translating it.
+
+### Copy that did not match the code
+- The release notes called Volatility "a sixth signal". It is an adjustment; `SignalName` has five
+  members. They also miscounted the locale keys, named the wrong hockey team for footage a viewer can
+  read off the jerseys, and implied ArenaSwap has an account system.
+- The long store description promised a "score margin" chart that does not exist and never mentioned
+  win probability, which does.
+- The hero told screen readers it held five games. It holds three.
+
+### Site, hygiene and CI
+- The site's copyright banner had never shipped: `rollupOptions` sat one level above where Vite reads
+  it. It also credited an entity that appears nowhere else in the repo.
+- League artwork was 6.5 MB of source-resolution PNGs rendered at 17 square. Now 356 KB.
+- The AMO sources archive carried 7 MB of store screenshots. Now 1.9 MB.
+- Added a sitemap and `robots.txt`, `noindex` on the 404 and the nine store-asset pages, and closed a
+  focus trap where the closed mobile drawer kept seven focusable elements in the tab order at every
+  viewport.
+- Deleted two orphaned components and the dead CSS that went with them, tightened the readable-colour
+  threshold to actually clear 3:1, and pinned it with a test.
+- Dependabot had two blocks claiming the same ecosystem and directory, so the second was being
+  dropped, and both it and the auto-merge workflow still referenced Vitest. The auto-merge job also
+  ran twice on every PR.
+- The docs deploy used `npm install` rather than `npm ci`, and could lose a race on push.
+- `syncVersion.ps1` still read Tailwind from the extension package, the exact bug the shell script had
+  already been fixed for.
+- Removed committed paths pointing at one machine, stopped tracking Astro's build cache, gave
+  `.astro` files the same CRLF rule as the rest of the tree, and added the `engines` field the README
+  had been claiming for us.
+
 ## Release notes sit in the middle of the page again — 2026-08-19
 
 - Centered the release notes index text measure instead of leaving it against the container edge.
@@ -1037,13 +1142,13 @@ PowerScore walkthrough visual improvements and demo game logos.
 - **Bloom-to-fullscreen animation**: Tapping the active glowing dot in the signal sub-steps triggers a circle-clip reveal that expands from the dot position, flooding the full popup in the signal's color; the overlay shows the signal name, max points badge, measurement explanation, and description with auto-contrasting text (black on light colors, white on dark); a "Got it" button collapses it back with a matching shrink animation
 - **Boost/penalty contrast fix**: The info cards for boosts and penalties now use an on-brand semi-transparent colored background (`color + 18` opacity) with proper light `#e6edf3` body text and muted `#8b949e` section headers instead of the previous illegible white text on a gray `bg-dark-subtle` card
 - **Demo game logos**: `walkthroughStepAutoSwitch` and `walkthroughStepTabAssign` now render real ESPN CDN team logos (Eagles, Giants, 76ers, Celtics) via `<img>` tags with a colored-circle fallback if the network request fails
-- **CSS additions in [global.scss](file:///Users/rpmul/source/arenaswap/apps/extension/assets/global.scss)**: New `@keyframes psBloomIn` / `psBloomOut` using `clip-path: circle()` anchored to a CSS custom property `--bloom-origin-x/y`, plus supporting classes `.ps-bloom-overlay`, `.ps-bloom-content`, `.ps-bloom-dot-badge`, `.ps-bloom-label`, `.ps-bloom-max-badge`, `.ps-bloom-section-head`, `.ps-bloom-body`, `.ps-bloom-got-it`
+- **CSS additions in `global.scss`**: New `@keyframes psBloomIn` / `psBloomOut` using `clip-path: circle()` anchored to a CSS custom property `--bloom-origin-x/y`, plus supporting classes `.ps-bloom-overlay`, `.ps-bloom-content`, `.ps-bloom-dot-badge`, `.ps-bloom-label`, `.ps-bloom-max-badge`, `.ps-bloom-section-head`, `.ps-bloom-body`, `.ps-bloom-got-it`
 
 ## PowerScore Tutorial Bloom and Description Boxes Update — 2026-07-17
 
 Streamlined the PowerScore tutorial visual overlays and automated the bloom animation cycles.
 
-- **Removed Description Boxes**: Stripped the long description heading, body text, and max points badge from the `BloomOverlay` inside [walkthroughStepPowerScore.tsx](file:///Users/rpmul/source/arenaswap/apps/extension/entrypoints/popup/components/walkthroughStepPowerScore.tsx) to focus only on clean visual indicators. Also removed the textual info card section below the visual in the boosts/penalties phases.
+- **Removed Description Boxes**: Stripped the long description heading, body text, and max points badge from the `BloomOverlay` inside `walkthroughStepPowerScore.tsx` to focus only on clean visual indicators. Also removed the textual info card section below the visual in the boosts/penalties phases.
 - **Automated Looping Bloom**: Programmed the signal dots to bloom automatically when active. The overlay blooms in, holds for 1.5 seconds, shrinks back down to a dot, pauses for 0.5 seconds, and loops repeatedly on its own.
 - **Navigation Safety**: Configured the loop to safely clear, reset, and stop when the user advances, backs up, or steps away from the slide.
 
@@ -1052,13 +1157,13 @@ Streamlined the PowerScore tutorial visual overlays and automated the bloom anim
 
 Implements #36. Introduces a comprehensive walkthrough step for PowerScore right after the initial toggle step. It walks the user through all five excitement signals (Closeness, Late-game, Momentum, Lead changes, Comeback) and six boosts/penalties (Clock stall, Volatility, Favorite teams, Manual boost, Scoring opportunity, Postseason) with a custom orbital animation, interactive progress indicators, and rich visual highlights.
 
-- Created new walkthrough step component [walkthroughStepPowerScore.tsx](file:///Users/rpmul/source/arenaswap/apps/extension/entrypoints/popup/components/walkthroughStepPowerScore.tsx) with a step-by-step presentation, active highlighting of active signals, centered icons for adjustments, and interactive progress-dot navigation
-- Updated [walkthroughView.tsx](file:///Users/rpmul/source/arenaswap/apps/extension/entrypoints/popup/components/walkthroughView.tsx) to handle 5 total steps, support transitions, and manage passing `initialSubStep` when going back from the tab assignment step
-- Shifted step numbering for subsequent steps ([walkthroughStepToggle.tsx](file:///Users/rpmul/source/arenaswap/apps/extension/entrypoints/popup/components/walkthroughStepToggle.tsx), [walkthroughStepTabAssign.tsx](file:///Users/rpmul/source/arenaswap/apps/extension/entrypoints/popup/components/walkthroughStepTabAssign.tsx), [walkthroughStepAutoSwitch.tsx](file:///Users/rpmul/source/arenaswap/apps/extension/entrypoints/popup/components/walkthroughStepAutoSwitch.tsx), [walkthroughStepSettings.tsx](file:///Users/rpmul/source/arenaswap/apps/extension/entrypoints/popup/components/walkthroughStepSettings.tsx)) and updated their step translation parameters to match Step 3, 4, and 5 of 5
-- Appended custom CSS animation styles for the rotating orbital ring, pulsing highlighted signal dots, custom boost icons, and progress indicators to [global.scss](file:///Users/rpmul/source/arenaswap/apps/extension/assets/global.scss)
-- Added fully translated strings in English ([en.json](file:///Users/rpmul/source/arenaswap/apps/extension/locales/en.json)) and Spanish ([es.json](file:///Users/rpmul/source/arenaswap/apps/extension/locales/es.json)) for the new walkthrough screens
-- Installed `@types/bootstrap` as a devDependency in [package.json](file:///Users/rpmul/source/arenaswap/apps/extension/package.json) to fix type-checking errors
-- Updated Cypress component tests in [walkthroughView.cy.tsx](file:///Users/rpmul/source/arenaswap/apps/extension/cypress/component/walkthroughView.cy.tsx) to cover the new 5-step flow, sub-step click navigations, and back-button behavior
+- Created new walkthrough step component `walkthroughStepPowerScore.tsx` with a step-by-step presentation, active highlighting of active signals, centered icons for adjustments, and interactive progress-dot navigation
+- Updated `walkthroughView.tsx` to handle 5 total steps, support transitions, and manage passing `initialSubStep` when going back from the tab assignment step
+- Shifted step numbering for subsequent steps (`walkthroughStepToggle.tsx`, `walkthroughStepTabAssign.tsx`, `walkthroughStepAutoSwitch.tsx`, `walkthroughStepSettings.tsx`) and updated their step translation parameters to match Step 3, 4, and 5 of 5
+- Appended custom CSS animation styles for the rotating orbital ring, pulsing highlighted signal dots, custom boost icons, and progress indicators to `global.scss`
+- Added fully translated strings in English (`en.json`) and Spanish (`es.json`) for the new walkthrough screens
+- Installed `@types/bootstrap` as a devDependency in `package.json` to fix type-checking errors
+- Updated Cypress component tests in `walkthroughView.cy.tsx` to cover the new 5-step flow, sub-step click navigations, and back-button behavior
 
 ## i18n API cleanup — 2026-07-17
 
@@ -1831,7 +1936,7 @@ All marketing surfaces updated to reflect 31 leagues: docs site carousel, README
 - League logo shape changed from circle to rounded square (36 × 36 px) for better brand mark legibility.
 - Sport group headings use the original `fw-semibold text-body-secondary` label + all/none button row — no horizontal rules.
 
-## Onboarding Page
+## Onboarding page — 2026-06-06
 - Made the logo smaller, matching the width of the logo on the error page
 
 ---
