@@ -15,3 +15,4 @@
 - [reference_cjk_punctuation_and_spacing.md](reference_cjk_punctuation_and_spacing.md) — full vs half-width punctuation and placeholder-spacing rules per CJK locale
 - [reference_locale_status_badge_treatment.md](reference_locale_status_badge_treatment.md) — per-locale literal-vs-translated rule for short uppercase badges like LIVE/WATCHING
 - [reference_plural_object_convention.md](reference_plural_object_convention.md) — how each locale fills the {"1":..,"n":"$1 .."} plural-object shape (fil linker, CJK spacing)
+- [project_clockstall_penalty_wording_fix.md](project_clockstall_penalty_wording_fix.md) — 2026-08-20: fixed "multiplier"→"flat deduction" mechanic error in tooltipClockStallPenalty across 11 locales, removed dead clockFrozenNote key

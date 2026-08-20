@@ -92,7 +92,7 @@ const powerScoreHistory: PowerScoreSnapshot[] = Array.from({ length: 6 }, (_, i)
 	momentum: 14 + i,
 	leadChanges: 8,
 	comeback: 6,
-	baseTotal: 60 + i * 2,
+	signalsSubtotal: 60 + i * 2,
 	favoriteBonus: 0,
 	favoriteTeamCount: 0,
 	stalled: false,
@@ -357,6 +357,16 @@ describe('gameDetailView hero', () => {
 	it('keeps the PowerScore reason in the breakdown', () => {
 		mountDetail(makeLiveGame(), { excitementResult: excitement });
 		cy.get('.powerscore-breakdown-reason').should('contain.text', 'Close game, lead changes');
+	});
+
+	it('shows the clock stall penalty row for a clock-based sport', () => {
+		mountDetail(makeLiveGame(), { excitementResult: excitement });
+		cy.contains('Clock stall penalty').should('exist');
+	});
+
+	it('hides the clock stall penalty row for a sport with no clock', () => {
+		mountDetail(makeInningGame(), { excitementResult: excitement });
+		cy.contains('Clock stall penalty').should('not.exist');
 	});
 
 	it('says what is happening when the clock is frozen', () => {

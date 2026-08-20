@@ -1,5 +1,15 @@
 # Changelog
 
+## Clock stall penalty: hidden with no clock, shown as a plain deduction — 2026-08-20
+
+The breakdown card always rendered a "Clock stall penalty" row, even for baseball and softball, which never accumulate a stall count in the first place since `background.ts` only tracks clock-based sports. It's gone entirely for non-clock games now, and the row that remains drops the redundant "before → after" note in favor of just the subtotal and the amount subtracted. The underlying math is unchanged — same PowerScore for the same inputs.
+
+### PowerScore breakdown
+- **The clock stall row no longer shows for sports without a clock.** `PowerScoreBreakdown` takes a new `clockBased` prop, sourced from `sportTypeConfigMap[game.sportType].clockBased`, and skips the row (and its tooltip) entirely when false instead of pinning it at 0
+- **The "before → after" note is gone.** The subtotal row already shows the full pre-penalty signals total, and the penalty row already shows what's subtracted — the note under it just repeated both numbers
+- **`PowerScoreResult.baseTotal` is renamed `signalsSubtotal`** across `powerscore`, `@arenaswap/core`, the extension and the docs site. Same value, clearer name — "base" didn't distinguish it from anything once `total` and the boost fields all exist too
+- The stall tooltip no longer calls the deduction a "multiplier." It's been a flat point deduction since the 2.0 rewrite; the copy never caught up
+
 ## A pre-merge sweep, and the docs build was one character from failing — 2026-08-20
 
 A full-repository review before the 2.0 merge, and everything it turned up. The headline is that

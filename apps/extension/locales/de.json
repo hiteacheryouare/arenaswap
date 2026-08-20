@@ -287,7 +287,6 @@
 		"signalsNormalizedNote": "Neu skaliert für den Bereich 0–100 bei deaktivierten Signalen",
 		"tooltipSignalsNormalized": "Wenn Signale deaktiviert werden, werden die verbleibenden Signale proportional hochskaliert, damit die Punktzahl ihren vollen Bereich von 0–100 behält.",
 		"clockStallPenalty": "Uhr-Stagnationsstrafe",
-		"clockFrozenNote": "Spieluhr eingefroren — {before} → {after} Pkt. vor Boni",
 		"favoriteBoost": "Favoritenboost",
 		"favoriteTeamsInMatchup": {
 			"1": "1 Lieblingsteam im Spiel",
@@ -303,7 +302,7 @@
 		"tooltipMomentum": "Misst die Nettopunkte eines Teams in der jüngsten Verlaufshistorie. Wenn ein Team den anderen um einen bestimmten Betrag übertroffen hat, wird das hier gewertet. Klingt mit der Zeit ab, wenn keine weiteren Punkte fallen.",
 		"tooltipLeadChanges": "Zählt, wie oft die Führung im Verlaufshistoriefenster gewechselt hat. Kein Wechsel ergibt null Punkte; ein oder mehrere Wechsel erzielen progressiv höhere Werte. Klingt ab, wenn eine Weile kein neuer Wechsel stattfindet.",
 		"tooltipComeback": "Vergleicht den Spielabstand am ältesten Punkt im Fenster mit dem aktuellen Abstand. Wenn das zurückliegende Team aufgeholt hat, wird gewertet, wie viel Boden es gutgemacht hat. Zählt mehr am Spielende; klingt ab, wenn die Punktewertung stockt.",
-		"tooltipClockStallPenalty": "Wird angewendet, wenn die Spieluhr über mehrere aufeinanderfolgende Datenabrufe kaum weitergelaufen ist. Reduziert die Signalzwischensumme mit einem Multiplikator, der umso stärker greift, je länger die Uhr eingefroren bleibt.",
+		"tooltipClockStallPenalty": "Wird angewendet, wenn die Spieluhr über mehrere aufeinanderfolgende Datenabrufe kaum weitergelaufen ist. Zieht einen pauschalen Punktabzug von der Signalzwischensumme ab, der umso stärker ausfällt, je länger die Uhr eingefroren bleibt.",
 		"tooltipVolatility": "Basiert darauf, wie nahe die Live-Siegwahrscheinlichkeit in der jüngsten Verlaufshistorie bei 50 % lag. Spiele, bei denen sie um 50 % schwebte (kein Team mit klarem Vorteil), erhalten einen Boost. Spiele, bei denen sie dauerhaft weit von 50 % entfernt war, werden bestraft.",
 		"tooltipFavoriteBoost": "Wird hinzugefügt, wenn eines deiner gespeicherten Lieblingsteams in diesem Spiel antritt. Zwei Lieblinge im Spiel zählen mehr als einer.",
 		"tooltipGameBoost": "Punkte, die du diesem Spiel manuell über den Spielboost hinzugefügt hast.",

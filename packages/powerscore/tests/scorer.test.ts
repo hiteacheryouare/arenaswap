@@ -79,7 +79,7 @@ describe('computePowerScore', () => {
 			momentum: 20,
 			leadChanges: 12,
 			comeback: 8,
-			baseTotal: 100,
+			signalsSubtotal: 100,
 			favoriteBonus: 20,
 			favoriteTeamCount: 2,
 			total: 120,
@@ -87,7 +87,7 @@ describe('computePowerScore', () => {
 		}, { allowTotalOverflow: true });
 
 		expect(normalized.total).toBe(120);
-		expect(normalized.baseTotal).toBe(100);
+		expect(normalized.signalsSubtotal).toBe(100);
 		expect(normalized.favoriteBonus).toBe(20);
 		expect(normalized.favoriteTeamCount).toBe(2);
 	});
@@ -100,7 +100,7 @@ describe('computePowerScore', () => {
 			momentum: 20,
 			leadChanges: 12,
 			comeback: 8,
-			baseTotal: 100,
+			signalsSubtotal: 100,
 			favoriteBonus: 0,
 			favoriteTeamCount: 0,
 			gameBoost: 25,
@@ -110,7 +110,7 @@ describe('computePowerScore', () => {
 
 		expect(normalized.total).toBe(125);
 		expect(normalized.gameBoost).toBe(25);
-		expect(normalized.baseTotal).toBe(100);
+		expect(normalized.signalsSubtotal).toBe(100);
 	});
 
 	test('stacks favoriteBonus and gameBoost correctly with overflow', () => {
@@ -121,7 +121,7 @@ describe('computePowerScore', () => {
 			momentum: 20,
 			leadChanges: 12,
 			comeback: 8,
-			baseTotal: 100,
+			signalsSubtotal: 100,
 			favoriteBonus: 10,
 			favoriteTeamCount: 1,
 			gameBoost: 15,
@@ -142,7 +142,7 @@ describe('computePowerScore', () => {
 			momentum: 15,
 			leadChanges: 10,
 			comeback: 6,
-			baseTotal: 76,
+			signalsSubtotal: 76,
 			favoriteBonus: 0,
 			favoriteTeamCount: 0,
 			gameBoost: 0,
@@ -153,7 +153,7 @@ describe('computePowerScore', () => {
 
 		expect(normalized.total).toBe(81);
 		expect(normalized.postseasonBoost).toBe(5);
-		expect(normalized.baseTotal).toBe(76);
+		expect(normalized.signalsSubtotal).toBe(76);
 	});
 
 	test('postseasonBoost is absent when not provided', () => {
@@ -211,7 +211,7 @@ describe('computePowerScore', () => {
 			momentum: 20,
 			leadChanges: 15,
 			comeback: 10,
-			baseTotal: 100,
+			signalsSubtotal: 100,
 			favoriteBonus: 10,
 			favoriteTeamCount: 1,
 			gameBoost: 8,
@@ -692,7 +692,7 @@ describe('computePowerScore', () => {
 		const stalled = computePowerScore(game, [], lightStep.minPolls);
 		expect(stalled.stalled).toBe(true);
 		expect(stalled.total).toBe(Math.max(0, raw.total - lightStep.deduction));
-		expect(stalled.baseTotal).toBe(raw.total);
+		expect(stalled.signalsSubtotal).toBe(raw.total);
 		expect(stalled.stallPenalty).toBe(lightStep.deduction);
 	});
 
@@ -710,7 +710,7 @@ describe('computePowerScore', () => {
 		const stalled = computePowerScore(game, [], heavyStep.minPolls);
 		expect(stalled.stalled).toBe(true);
 		expect(stalled.total).toBe(Math.max(0, raw.total - heavyStep.deduction));
-		expect(stalled.baseTotal).toBe(raw.total);
+		expect(stalled.signalsSubtotal).toBe(raw.total);
 		expect(stalled.stallPenalty).toBe(heavyStep.deduction);
 	});
 
@@ -1212,11 +1212,11 @@ describe('computePowerScore — win probability volatility boost/penalty integra
 		expect(contestedResult.total).toBeGreaterThan(dominatedResult.total);
 	});
 
-	test('baseTotal holds pure signals subtotal, unaffected by variance', () => {
+	test('signalsSubtotal holds pure signals subtotal, unaffected by variance', () => {
 		const winProb = Array.from({ length: 20 }, () => 0.8); // stable → variance penalty
 		const result = computePowerScore(baseGame, shortHistory, 0, winProb);
 		const signalsSubtotal = result.closeness + result.lateGame + result.momentum + result.leadChanges + result.comeback;
-		expect(result.baseTotal).toBe(signalsSubtotal);
+		expect(result.signalsSubtotal).toBe(signalsSubtotal);
 		expect(result.winProbabilityVariance).toBeDefined();
 		expect(result.total).toBe(signalsSubtotal + (result.winProbabilityVariance ?? 0));
 	});
@@ -1446,7 +1446,7 @@ describe('computePowerScore — non-finite win probability input', () => {
 		expect(poisoned.stallPenalty).toBe(25);
 		expect(poisoned.stalled).toBe(true);
 		expect(poisoned.total).toBe(clean.total);
-		expect(poisoned.total).toBeLessThan(poisoned.baseTotal!);
+		expect(poisoned.total).toBeLessThan(poisoned.signalsSubtotal!);
 	});
 
 	test('drops non-finite samples and scores the finite ones that remain', () => {

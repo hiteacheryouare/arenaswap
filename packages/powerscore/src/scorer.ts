@@ -63,14 +63,14 @@ export const normalizePowerScoreResult = (
 		: undefined;
 	const hasStallPenalty = typeof score.stallPenalty === 'number' && Number.isFinite(score.stallPenalty);
 	const stallPenalty = hasStallPenalty ? Math.max(0, Math.round(toFiniteNumber(score.stallPenalty))) : undefined;
-	const signalsSubtotal = closeness + lateGame + momentum + leadChanges + comeback;
+	const clampedSignalsSum = closeness + lateGame + momentum + leadChanges + comeback;
 	// The fallback subtracts the penalty. Falling back to the bare signal sum handed a stalled game
 	// back every point the penalty had removed, any time `total` arrived non-finite.
-	const totalFallback = Math.max(0, signalsSubtotal - (stallPenalty ?? 0));
+	const totalFallback = Math.max(0, clampedSignalsSum - (stallPenalty ?? 0));
 	const total = options.allowTotalOverflow
 		? Math.max(0, toFiniteNumber(score.total, totalFallback))
 		: clamp(toFiniteNumber(score.total, totalFallback), 0, scoreMaxTotal);
-	const hasBaseTotal = typeof score.baseTotal === 'number' && Number.isFinite(score.baseTotal);
+	const hasSignalsSubtotal = typeof score.signalsSubtotal === 'number' && Number.isFinite(score.signalsSubtotal);
 	const hasFavoriteBonus = typeof score.favoriteBonus === 'number' && Number.isFinite(score.favoriteBonus);
 	const hasFavoriteTeamCount = typeof score.favoriteTeamCount === 'number' && Number.isFinite(score.favoriteTeamCount);
 	const hasGameBoost = typeof score.gameBoost === 'number' && Number.isFinite(score.gameBoost);
@@ -78,7 +78,7 @@ export const normalizePowerScoreResult = (
 	const hasPostseasonBoost = typeof score.postseasonBoost === 'number' && Number.isFinite(score.postseasonBoost);
 	// Clamped to the signals ceiling, not scoreMaxTotal: this is the raw pre-cap subtotal the
 	// breakdown subtracts the stall penalty from.
-	const baseTotal = hasBaseTotal ? clamp(toFiniteNumber(score.baseTotal), 0, scoreMaxSignalsSubtotal) : undefined;
+	const signalsSubtotal = hasSignalsSubtotal ? clamp(toFiniteNumber(score.signalsSubtotal), 0, scoreMaxSignalsSubtotal) : undefined;
 	const favoriteBonus = hasFavoriteBonus ? Math.max(0, Math.round(toFiniteNumber(score.favoriteBonus))) : undefined;
 	const favoriteTeamCount = hasFavoriteTeamCount ? Math.max(0, Math.round(toFiniteNumber(score.favoriteTeamCount))) : undefined;
 	const gameBoost = hasGameBoost ? Math.max(0, Math.round(toFiniteNumber(score.gameBoost))) : undefined;
@@ -97,7 +97,7 @@ export const normalizePowerScoreResult = (
 		reason: typeof score.reason === 'string' ? score.reason : scorerTunables.reasons.fallback,
 		stalled: score.stalled === true,
 		...(hasStallPenalty ? { stallPenalty } : {}),
-		...(hasBaseTotal ? { baseTotal } : {}),
+		...(hasSignalsSubtotal ? { signalsSubtotal } : {}),
 		...(hasFavoriteBonus ? { favoriteBonus } : {}),
 		...(hasFavoriteTeamCount ? { favoriteTeamCount } : {}),
 		...(hasGameBoost ? { gameBoost } : {}),
@@ -604,6 +604,6 @@ export const computePowerScore = (
 		stalled,
 		stallPenalty,
 		// Lets the breakdown show what the stall penalty changed.
-		baseTotal: signalsSubtotal,
+		signalsSubtotal,
 	});
 };

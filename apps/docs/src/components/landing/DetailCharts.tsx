@@ -83,7 +83,7 @@ const powerHistory: PowerScoreSnapshot[] = scoreHistory.map((point, index) => {
 		leadChanges: result.leadChanges,
 		comeback: result.comeback,
 		winProbabilityVariance: result.winProbabilityVariance,
-		baseTotal: result.baseTotal ?? result.total,
+		signalsSubtotal: result.signalsSubtotal ?? result.total,
 		favoriteBonus: result.favoriteBonus ?? 0,
 		favoriteTeamCount: result.favoriteTeamCount ?? 0,
 		stalled: result.stalled ?? false,

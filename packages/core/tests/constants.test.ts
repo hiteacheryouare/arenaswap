@@ -169,15 +169,15 @@ describe('constants', () => {
 
 	test('applyDisabledSignals scales survivors up, not down, when one signal is disabled', () => {
 		// The four-disabled case below happens to cancel a wrong scaling factor out, so this covers
-		// the common case: one signal off. baseTotal is the pre-cap subtotal, so the survivors scale
-		// into scoreMaxSignalsSubtotal — scaling into scoreMaxTotal deflated every score by 26%.
+		// the common case: one signal off. signalsSubtotal is the pre-cap subtotal, so the survivors
+		// scale into scoreMaxSignalsSubtotal — scaling into scoreMaxTotal deflated every score by 26%.
 		const enabledMax = scoreMaxSignalsSubtotal - scoreMaxComeback;
 		const base = { gameId: 'g1', total: 0, closeness: 40, lateGame: 30, momentum: 20, leadChanges: 10, comeback: 0, reason: 'tied', stalled: false };
 		const enabledSum = 40 + 30 + 20 + 10;
 		const result = applyDisabledSignals(base, ['comeback']);
 
-		expect(result.baseTotal).toBe(Math.round(enabledSum * (scoreMaxSignalsSubtotal / enabledMax)));
-		expect(result.baseTotal).toBeGreaterThan(enabledSum);
+		expect(result.signalsSubtotal).toBe(Math.round(enabledSum * (scoreMaxSignalsSubtotal / enabledMax)));
+		expect(result.signalsSubtotal).toBeGreaterThan(enabledSum);
 		expect(result.comeback).toBe(0);
 		expect(result.closeness).toBe(40);
 	});

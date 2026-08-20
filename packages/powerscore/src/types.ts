@@ -54,7 +54,7 @@ export interface PowerScoreResult {
 	// Points removed, always ≥ 0.
 	stallPenalty?: number;
 	// The pre-stall signals subtotal, so a breakdown can show what the penalty removed.
-	baseTotal?: number;
+	signalsSubtotal?: number;
 	favoriteBonus?: number;
 	favoriteTeamCount?: number;
 	gameBoost?: number;

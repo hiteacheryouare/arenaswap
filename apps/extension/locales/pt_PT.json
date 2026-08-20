@@ -287,7 +287,6 @@
 		"signalsNormalizedNote": "Reescalado para manter o intervalo 0–100 com sinais desactivados",
 		"tooltipSignalsNormalized": "Quando os sinais são desactivados, os sinais restantes são escalonados proporcionalmente para que a pontuação mantenha o seu intervalo completo de 0–100.",
 		"clockStallPenalty": "Penalização por relógio parado",
-		"clockFrozenNote": "relógio do jogo parado — {before} → {after} pts antes de bónus",
 		"favoriteBoost": "Impulso de favorito",
 		"favoriteTeamsInMatchup": {
 			"1": "1 equipa favorita no confronto",
@@ -303,7 +302,7 @@
 		"tooltipMomentum": "Mede a diferença líquida de pontuação de uma equipa na janela de histórico mais recente. Se uma equipa superou a outra acima de um limiar nesse período, pontua aqui. Decai para zero com o passar do tempo sem mais pontuação.",
 		"tooltipLeadChanges": "Conta quantas vezes a liderança mudou na janela de histórico. Sem mudanças não pontua; uma ou mais inversões pontuam progressivamente mais alto. Decai se o tempo passa sem outra mudança.",
 		"tooltipComeback": "Compara a margem no ponto mais antigo da janela com a margem actual. Se a equipa que perdia recuperou terreno, pontua com base em quanto recuperou. Vale mais no final do jogo; decai se a pontuação parar.",
-		"tooltipClockStallPenalty": "Aplicado quando o relógio do jogo mal avançou em várias leituras consecutivas. Reduz o subtotal dos sinais através de um multiplicador que se aprofunda quanto mais tempo o relógio ficar parado.",
+		"tooltipClockStallPenalty": "Aplicado quando o relógio do jogo mal avançou em várias leituras consecutivas. Desconta uma quantidade fixa de pontos do subtotal dos sinais, desconto que se aprofunda quanto mais tempo o relógio ficar parado.",
 		"tooltipVolatility": "Baseado em quão próxima ficou a probabilidade de vitória em directo dos 50% ao longo do histórico recente. Jogos em que ficou perto dos 50% — sem nenhuma equipa com vantagem clara — recebem um impulso. Os que ficaram consistentemente longe dos 50% em qualquer direcção são penalizados.",
 		"tooltipFavoriteBoost": "Adicionado quando uma das tuas equipas favoritas guardadas está neste jogo. Ter dois favoritos no confronto soma mais do que um.",
 		"tooltipGameBoost": "Pontos que aplicaste manualmente a este jogo utilizando o controlo de impulso do jogo.",

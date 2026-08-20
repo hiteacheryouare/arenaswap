@@ -287,7 +287,6 @@
 		"signalsNormalizedNote": "Re-scaled to maintain 0–100 range with signals disabled",
 		"tooltipSignalsNormalized": "When signals are turned off, the remaining signals are scaled up proportionally so the score keeps its full 0–100 range.",
 		"clockStallPenalty": "Clock stall penalty",
-		"clockFrozenNote": "game clock frozen — {before} → {after} pts before bonuses",
 		"favoriteBoost": "Favorite Boost",
 		"favoriteTeamsInMatchup": {
 			"1": "1 favorite team in matchup",
@@ -303,7 +302,7 @@
 		"tooltipMomentum": "Measures net scoring for one team across the recent score history window. If a team has outscored the other by a set amount during that stretch, this scores up. Decays toward zero as time passes without further scoring.",
 		"tooltipLeadChanges": "Counts how many times the lead has switched in the tracked history window. No changes scores nothing; one or more flips score progressively higher. Decays if time passes without another change.",
 		"tooltipComeback": "Compares the score margin at the oldest point in the window to the current margin. If the trailing team has closed the gap, this scores based on how much ground they've made up. Worth more later in the game; decays if scoring stops.",
-		"tooltipClockStallPenalty": "Applied when the game clock has barely moved across multiple consecutive data pulls. Reduces the signals subtotal by a multiplier, which deepens the longer the clock stays frozen.",
+		"tooltipClockStallPenalty": "Applied when the game clock has barely moved across multiple consecutive data pulls. Takes a flat point deduction off the signals subtotal, which deepens the longer the clock stays frozen.",
 		"tooltipVolatility": "Based on how close the live win probability has stayed to 50% over recent history. Games where it hovered near 50% (neither team with a clear advantage) earn a boost. Games where it consistently sat far from 50% in either direction are docked.",
 		"tooltipFavoriteBoost": "Added when one of your saved favorite teams is in this game. Having two favorites in the matchup adds more than one.",
 		"tooltipGameBoost": "Points you've manually applied to this game using the game boost control.",

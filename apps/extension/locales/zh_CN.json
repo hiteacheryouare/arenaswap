@@ -287,7 +287,6 @@
 		"signalsNormalizedNote": "已重新缩放以在禁用信号时保持 0–100 范围",
 		"tooltipSignalsNormalized": "当某些信号被关闭后，剩余信号会按比例放大，使总分保持完整的 0–100 范围。",
 		"clockStallPenalty": "时钟停滞惩罚",
-		"clockFrozenNote": "比赛时钟停滞——加成前 {before} → {after} 分",
 		"favoriteBoost": "收藏球队加成",
 		"favoriteTeamsInMatchup": {
 			"1": "本场有 1 支收藏球队",
@@ -303,7 +302,7 @@
 		"tooltipMomentum": "衡量一支球队在近期比分历史窗口内的净得分。若某队在此时段内大幅领先，则在此得分。随时间推移逐渐衰减直至归零。",
 		"tooltipLeadChanges": "统计历史窗口内领先权易手的次数。无易手不得分；一次或多次易手得分逐步提高。若一段时间内没有再次易手，得分将衰减。",
 		"tooltipComeback": "将窗口最早时间点的分差与当前分差进行比较。若落后方已缩小差距，则根据追回的幅度得分。比赛越晚期越值钱；得分停止后逐渐衰减。",
-		"tooltipClockStallPenalty": "当比赛时钟在连续多次数据拉取中几乎不动时触发。通过乘数降低信号小计，时钟停滞时间越长惩罚越重。",
+		"tooltipClockStallPenalty": "当比赛时钟在连续多次数据拉取中几乎不动时触发。从信号小计中固定扣除一定分数，时钟停滞时间越长扣分越重。",
 		"tooltipVolatility": "基于近期历史中实时胜率与 50% 的接近程度。长期徘徊在 50% 附近（双方均无明显优势）的比赛获得加成；持续远离 50% 的比赛则被扣分。",
 		"tooltipFavoriteBoost": "当您收藏的球队参与本场比赛时加分。若双方球队均为收藏，加成超过单队收藏。",
 		"tooltipGameBoost": "您通过比赛加速控件手动为本场比赛添加的分数。",

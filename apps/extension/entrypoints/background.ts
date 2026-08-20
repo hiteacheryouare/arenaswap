@@ -202,7 +202,7 @@ export default defineBackground(() => {
 				leadChanges: score.leadChanges,
 				comeback: score.comeback,
 				...(score.winProbabilityVariance !== undefined ? { winProbabilityVariance: score.winProbabilityVariance } : {}),
-				baseTotal: score.baseTotal ?? score.total,
+				signalsSubtotal: score.signalsSubtotal ?? score.total,
 				favoriteBonus: score.favoriteBonus ?? 0,
 				favoriteTeamCount: score.favoriteTeamCount ?? 0,
 				gameBoost: score.gameBoost ?? 0,
@@ -556,7 +556,7 @@ export default defineBackground(() => {
 			return normalizePowerScoreResult(
 				{
 					...baseScore,
-					baseTotal: baseScore.baseTotal ?? baseScore.total,
+					signalsSubtotal: baseScore.signalsSubtotal ?? baseScore.total,
 					favoriteBonus,
 					favoriteTeamCount,
 					gameBoost,

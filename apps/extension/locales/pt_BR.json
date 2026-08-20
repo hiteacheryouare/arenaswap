@@ -287,7 +287,6 @@
 		"signalsNormalizedNote": "Reescalado para manter o intervalo 0–100 com sinais desativados",
 		"tooltipSignalsNormalized": "Quando sinais são desativados, os sinais restantes são escalonados proporcionalmente para que a pontuação mantenha seu intervalo completo de 0–100.",
 		"clockStallPenalty": "Penalidade por cronômetro parado",
-		"clockFrozenNote": "cronômetro do jogo parado — {before} → {after} pts antes dos bônus",
 		"favoriteBoost": "Impulso de favorito",
 		"favoriteTeamsInMatchup": {
 			"1": "1 time favorito no confronto",
@@ -303,7 +302,7 @@
 		"tooltipMomentum": "Mede a diferença líquida de pontuação de um time na janela de histórico mais recente. Se um time superou o outro acima de um limiar nesse período, pontua aqui. Decai para zero com o passar do tempo sem mais pontuação.",
 		"tooltipLeadChanges": "Conta quantas vezes a liderança mudou na janela de histórico. Sem mudanças não pontua; uma ou mais viradas pontuam progressivamente mais. Decai se o tempo passa sem outra mudança.",
 		"tooltipComeback": "Compara a margem no ponto mais antigo da janela com a margem atual. Se o time que perdia recuperou terreno, pontua com base em quanto recuperou. Vale mais no final do jogo; decai se a pontuação parar.",
-		"tooltipClockStallPenalty": "Aplicado quando o cronômetro do jogo mal avançou em várias leituras consecutivas. Reduz o subtotal dos sinais por um multiplicador que aumenta quanto mais tempo o cronômetro ficar parado.",
+		"tooltipClockStallPenalty": "Aplicado quando o cronômetro do jogo mal avançou em várias leituras consecutivas. Desconta uma quantidade fixa de pontos do subtotal dos sinais, desconto que aumenta quanto mais tempo o cronômetro ficar parado.",
 		"tooltipVolatility": "Baseado em quão próxima ficou a probabilidade de vitória ao vivo dos 50% ao longo do histórico recente. Jogos em que ficou perto dos 50% — sem nenhum time com vantagem clara — recebem um impulso. Os que ficaram consistentemente longe dos 50% em qualquer direção são penalizados.",
 		"tooltipFavoriteBoost": "Adicionado quando um dos seus times favoritos salvos está neste jogo. Ter dois favoritos no confronto soma mais do que um.",
 		"tooltipGameBoost": "Pontos que você aplicou manualmente a este jogo usando o controle de impulso do jogo.",

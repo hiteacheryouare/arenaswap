@@ -287,7 +287,6 @@
 		"signalsNormalizedNote": "Riscalato per mantenere il range 0–100 con segnali disattivati",
 		"tooltipSignalsNormalized": "Quando i segnali vengono disattivati, i segnali restanti vengono scalati proporzionalmente in modo che il punteggio mantenga l'intero range 0–100.",
 		"clockStallPenalty": "Penalità cronometro fermo",
-		"clockFrozenNote": "cronometro di gioco fermo — {before} → {after} pts prima dei bonus",
 		"favoriteBoost": "Boost preferiti",
 		"favoriteTeamsInMatchup": {
 			"1": "1 squadra preferita in campo",
@@ -303,7 +302,7 @@
 		"tooltipMomentum": "Misura il punteggio netto di una squadra nella finestra di storico recente. Se una squadra ha segnato più dell'altra oltre una certa soglia in quel tratto, il punteggio sale. Decade verso zero se passa tempo senza ulteriori segnature.",
 		"tooltipLeadChanges": "Conta quante volte è cambiato il vantaggio nella finestra di storico monitorata. Nessun cambio non dà punti; uno o più sorpassi valgono progressivamente di più. Decade se passa tempo senza un altro cambio.",
 		"tooltipComeback": "Confronta lo scarto al punto più vecchio della finestra con quello attuale. Se la squadra in svantaggio ha recuperato terreno, il punteggio dipende da quanto ne ha guadagnato. Vale di più nel finale della partita; decade se le segnature si fermano.",
-		"tooltipClockStallPenalty": "Si applica quando il cronometro è rimasto quasi fermo per più rilevazioni consecutive. Riduce il subtotale dei segnali con un moltiplicatore che si intensifica più a lungo il cronometro resta fermo.",
+		"tooltipClockStallPenalty": "Si applica quando il cronometro è rimasto quasi fermo per più rilevazioni consecutive. Sottrae un numero fisso di punti dal subtotale dei segnali, penalità che si aggrava più a lungo il cronometro resta fermo.",
 		"tooltipVolatility": "Si basa su quanto la probabilità di vittoria in diretta è rimasta vicina al 50% nello storico recente. Le partite in cui è oscillata intorno al 50% — senza un chiaro favorito — ricevono un boost. Quelle in cui è rimasta costantemente lontana dal 50%, in un senso o nell'altro, vengono penalizzate.",
 		"tooltipFavoriteBoost": "Si aggiunge quando una delle tue squadre preferite salvate gioca in questa partita. Avere due preferite nello stesso incontro vale più di una sola.",
 		"tooltipGameBoost": "Punti che hai applicato manualmente a questa partita con il controllo boost partita.",

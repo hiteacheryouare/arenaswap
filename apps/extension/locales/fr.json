@@ -287,7 +287,6 @@
 		"signalsNormalizedNote": "Recalibré pour maintenir la plage 0–100 avec des signaux désactivés",
 		"tooltipSignalsNormalized": "Quand des signaux sont désactivés, les signaux restants sont réévalués proportionnellement pour que le score conserve sa plage complète de 0 à 100.",
 		"clockStallPenalty": "Pénalité d'horloge gelée",
-		"clockFrozenNote": "horloge du match gelée — {before} → {after} pts avant les bonus",
 		"favoriteBoost": "Bonus favori",
 		"favoriteTeamsInMatchup": {
 			"1": "1 équipe favorite dans le match",
@@ -303,7 +302,7 @@
 		"tooltipMomentum": "Mesure le score net d'une équipe sur la fenêtre d'historique récente. Si une équipe a dominé l'autre d'un certain montant pendant cet intervalle, ça rapporte des points. Décroît vers zéro si le temps passe sans nouvelle marque.",
 		"tooltipLeadChanges": "Compte combien de fois la tête a changé dans la fenêtre d'historique suivie. Aucun changement ne rapporte rien ; un ou plusieurs retournements rapportent progressivement plus. Décroît si le temps passe sans autre changement.",
 		"tooltipComeback": "Compare l'écart au point le plus ancien de la fenêtre avec l'écart actuel. Si l'équipe qui perdait a réduit l'écart, ça rapporte selon le terrain récupéré. Vaut plus en fin de match ; décroît si le score se fige.",
-		"tooltipClockStallPenalty": "Appliquée quand l'horloge de jeu a à peine avancé sur plusieurs relevés consécutifs. Réduit le sous-total des signaux par un multiplicateur qui s'intensifie plus l'horloge reste gelée.",
+		"tooltipClockStallPenalty": "Appliquée quand l'horloge de jeu a à peine avancé sur plusieurs relevés consécutifs. Retire un nombre fixe de points du sous-total des signaux, une pénalité qui s'alourdit plus l'horloge reste gelée.",
 		"tooltipVolatility": "Basé sur à quel point la probabilité de victoire en direct est restée proche de 50 % sur l'historique récent. Les matchs où elle a oscillé près de 50 % — sans avantage clair pour aucune équipe — reçoivent un bonus. Ceux qui sont restés constamment loin du 50 % dans un sens ou l'autre sont pénalisés.",
 		"tooltipFavoriteBoost": "Ajouté quand une de tes équipes favorites est dans ce match. Avoir deux favoris dans la rencontre rapporte plus qu'un seul.",
 		"tooltipGameBoost": "Points que tu as appliqués manuellement à ce match via le contrôle de coup de boost.",

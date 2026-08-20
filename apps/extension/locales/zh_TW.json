@@ -287,7 +287,6 @@
 		"signalsNormalizedNote": "已重新校準，在信號停用時仍維持 0–100 的範圍",
 		"tooltipSignalsNormalized": "當某些信號被關閉時，剩餘信號會按比例放大，讓總分仍保有完整的 0–100 範圍。",
 		"clockStallPenalty": "時鐘停滯扣分",
-		"clockFrozenNote": "比賽時鐘停滯——加成前 {before} → {after} 分",
 		"favoriteBoost": "收藏球隊加成",
 		"favoriteTeamsInMatchup": {
 			"1": "本場有 1 支收藏球隊",
@@ -303,7 +302,7 @@
 		"tooltipMomentum": "衡量一支球隊在近期比分歷史窗口內的淨得分。若某隊在此期間大幅拉開比分，這項就會得分；隨時間經過、沒有再得分則逐漸衰減。",
 		"tooltipLeadChanges": "統計歷史窗口內領先交替的次數。沒有交替則不得分；交替一次以上則得分逐步提高。若一段時間沒有再交替，得分會衰減。",
 		"tooltipComeback": "比較窗口最早時間點的分差與目前分差。若落後方已縮小差距，會依追回的幅度得分；比賽越晚期越值錢，若不再得分則逐漸衰減。",
-		"tooltipClockStallPenalty": "當比賽時鐘連續幾次更新後幾乎沒有變動時觸發，會以乘數降低信號小計，時鐘停滯越久扣分越重。",
+		"tooltipClockStallPenalty": "當比賽時鐘連續幾次更新後幾乎沒有變動時觸發，會從信號小計中固定扣除一定分數，時鐘停滯越久扣分越重。",
 		"tooltipVolatility": "依近期歷史中即時勝率與 50% 的接近程度計算。長期徘徊在 50% 附近（雙方都沒有明顯優勢）的比賽會獲得加成；持續遠離 50% 的比賽則會被扣分。",
 		"tooltipFavoriteBoost": "當你收藏的球隊參與這場比賽時加分。若雙方都是收藏球隊，加成會比只有一隊時更多。",
 		"tooltipGameBoost": "你透過比賽加成控制項，手動為這場比賽加的分數。",

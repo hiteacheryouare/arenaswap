@@ -184,7 +184,7 @@ interface PowerScoreResult {
   reason: string;                   // e.g. "BOS outscoring LAL 10-2, under 2 min left"
   stalled?: boolean;                // true when a stall deduction was applied
   stallPenalty?: number;            // points removed, always ≥ 0
-  baseTotal?: number;               // the pre-stall signals subtotal, set by computePowerScore
+  signalsSubtotal?: number;         // the pre-stall signals subtotal, set by computePowerScore
   favoriteBonus?: number;           // extra points for favorite teams (set externally)
   favoriteTeamCount?: number;
   gameBoost?: number;               // manual per-game boost (set externally)
@@ -193,7 +193,7 @@ interface PowerScoreResult {
 }
 ```
 
-`total` is `baseTotal` minus `stallPenalty`, plus `winProbabilityVariance`, capped at 100. The externally-set fields are passed through untouched by `normalizePowerScoreResult` so a breakdown can show them; the scorer itself never adds them to `total`.
+`total` is `signalsSubtotal` minus `stallPenalty`, plus `winProbabilityVariance`, capped at 100. The externally-set fields are passed through untouched by `normalizePowerScoreResult` so a breakdown can show them; the scorer itself never adds them to `total`.
 
 ---
 
@@ -302,7 +302,7 @@ stallPenaltySteps // [{ minPolls: 15, deduction: 25 }, { minPolls: 8, deduction:
 
 It is a deduction, not a multiplier: a game whose signals total 79 with a deep stall lands at 54, not at 55. ArenaSwap polls on a dynamic interval — 6–25 seconds while games are live, 40 during an intermission — so 8 frozen polls is somewhere between about 50 seconds and 3 minutes of dead air, and 15 polls between about 1.5 and 6 minutes.
 
-The deduction applies to the five signals only. `winProbabilityVariance` sits on top of the stalled subtotal and is not reduced by it. `baseTotal` holds the pre-deduction subtotal, so a breakdown can show what the stall cost.
+The deduction applies to the five signals only. `winProbabilityVariance` sits on top of the stalled subtotal and is not reduced by it. `signalsSubtotal` holds the pre-deduction subtotal, so a breakdown can show what the stall cost.
 
 ---
 
@@ -334,7 +334,7 @@ Reading `step.multiplier` on 2.0 returns `undefined`, and multiplying by it give
 
 **The clock late-game curve types are gone.** `ExponentialLateGameCurve` and `ClockLateGameCurveConfig` were removed, and `LateGameCurveConfig` is no longer a union — it is now just `BaseballLateGameCurveConfig`. Clock sports derive their ramp from period plus clock and carry no curve config at all. `BaseballInningScoreTier` went with them, and `BaseballLateGameCurveConfig.extraInningsStartInning` is gone too, since extra innings are detected from `period > league.regularPeriods` and the field was never read.
 
-**Everything else worth knowing.** Signal ceilings were raised across the board except lead changes (30→42 closeness, 28→38 late-game, 28→38 momentum, 14→20 comeback), so any threshold you calibrated against 1.x totals needs revisiting. `Game.period`, `Game.clockSeconds` and both `abbreviation` fields are now optional, and a missing clock is treated as unknown rather than 0:00. `SportType` gained `'softball'` and `LeagueId` went from 12 leagues to 31. `computePowerScore` takes a fourth `winProbabilityHistory` parameter, and `PowerScoreResult` gained `winProbabilityVariance`, `stallPenalty`, `scoringOpportunityBoost` and `postseasonBoost`. `baseTotal` is now set by `computePowerScore` itself, holding the pre-stall signals subtotal.
+**Everything else worth knowing.** Signal ceilings were raised across the board except lead changes (30→42 closeness, 28→38 late-game, 28→38 momentum, 14→20 comeback), so any threshold you calibrated against 1.x totals needs revisiting. `Game.period`, `Game.clockSeconds` and both `abbreviation` fields are now optional, and a missing clock is treated as unknown rather than 0:00. `SportType` gained `'softball'` and `LeagueId` went from 12 leagues to 31. `computePowerScore` takes a fourth `winProbabilityHistory` parameter, and `PowerScoreResult` gained `winProbabilityVariance`, `stallPenalty`, `scoringOpportunityBoost` and `postseasonBoost`. `signalsSubtotal` is now set by `computePowerScore` itself, holding the pre-stall signals subtotal.
 
 Reason strings changed wording throughout. They are display text, not an API — match on them at your own risk.
 

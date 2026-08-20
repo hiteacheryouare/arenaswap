@@ -18,8 +18,10 @@ interface powerScoreBreakdownProps {
 	comeback: number;
 	// Already folded into the total by the background scorer; absent when ESPN gave no line.
 	winProbabilityVariance?: number;
-	baseTotal: number;
+	signalsSubtotal: number;
 	stallPenalty: number;
+	// Baseball/softball never accumulate a stall count, so the row is hidden rather than pinned at 0.
+	clockBased: boolean;
 	favoriteBonus: number;
 	favoriteTeamCount: number;
 	currentBoost: number;
@@ -66,8 +68,9 @@ const PowerScoreBreakdown = ({
 	leadChanges,
 	comeback,
 	winProbabilityVariance,
-	baseTotal,
+	signalsSubtotal,
 	stallPenalty,
+	clockBased,
 	favoriteBonus,
 	favoriteTeamCount,
 	currentBoost,
@@ -79,13 +82,13 @@ const PowerScoreBreakdown = ({
 }: powerScoreBreakdownProps) => {
 	const disabledSet = new Set<SignalName>(disabledSignals);
 	const signalValues = [closeness, lateGame, momentum, leadChanges, comeback];
-	const signalsSubtotal = closeness + lateGame + momentum + leadChanges + comeback;
+	const rawSignalsSum = closeness + lateGame + momentum + leadChanges + comeback;
 	const hasWinProbVariance = winProbabilityVariance !== undefined;
 	const variance = winProbabilityVariance ?? 0;
 	// applyDisabledSignals scales the survivors up into the full signals-subtotal space, so
-	// baseTotal is the scaled result while signalsSubtotal stays raw. Both are pre-cap; the 100
+	// signalsSubtotal is the scaled result while rawSignalsSum stays raw. Both are pre-cap; the 100
 	// cap lands on `total`.
-	const isSignalNormalized = disabledSet.size > 0 && baseTotal !== signalsSubtotal;
+	const isSignalNormalized = disabledSet.size > 0 && signalsSubtotal !== rawSignalsSum;
 
 	return (
 		<section className='powerscore-breakdown game-detail-formula-card'>
@@ -126,12 +129,12 @@ const PowerScoreBreakdown = ({
 				</span>
 				{isSignalNormalized ? (
 					<span className='d-flex align-items-center gap-1'>
-						<span className='powerscore-subtotal-raw'>{signalsSubtotal}</span>
+						<span className='powerscore-subtotal-raw'>{rawSignalsSum}</span>
 						<span>→</span>
-						<span>{baseTotal}{(baseTotal ?? 0) > scoreMaxTotal ? ` ${i18n.t('powerScore.cappedAt', { max: scoreMaxTotal })}` : ''}</span>
+						<span>{signalsSubtotal}{(signalsSubtotal ?? 0) > scoreMaxTotal ? ` ${i18n.t('powerScore.cappedAt', { max: scoreMaxTotal })}` : ''}</span>
 					</span>
 				) : (
-					<span>{signalsSubtotal}{signalsSubtotal > scoreMaxTotal ? ` ${i18n.t('powerScore.cappedAt', { max: scoreMaxTotal })}` : ''}</span>
+					<span>{rawSignalsSum}{rawSignalsSum > scoreMaxTotal ? ` ${i18n.t('powerScore.cappedAt', { max: scoreMaxTotal })}` : ''}</span>
 				)}
 			</div>
 			{isSignalNormalized && (
@@ -139,19 +142,16 @@ const PowerScoreBreakdown = ({
 					{i18n.t('powerScore.signalsNormalizedNote')}
 				</div>
 			)}
-			<div className='powerscore-breakdown-row powerscore-breakdown-row-penalty'>
-				<span className='d-flex align-items-center gap-1'>
-					<FactorIcon factor='clockStall' />
-					{i18n.t('powerScore.clockStallPenalty')}
-					<SettingTooltipIcon text={i18n.t('powerScore.tooltipClockStallPenalty')} />
-				</span>
-				<span style={{ color: stallPenalty > 0 ? boostPenaltyMeta.clockStall.color : undefined }}>
-					{stallPenalty > 0 ? `-${stallPenalty}` : '0'}
-				</span>
-			</div>
-			{stallPenalty > 0 && (
-				<div className='powerscore-breakdown-note'>
-					{i18n.t('powerScore.clockFrozenNote', { before: baseTotal, after: baseTotal - stallPenalty })}
+			{clockBased && (
+				<div className='powerscore-breakdown-row powerscore-breakdown-row-penalty'>
+					<span className='d-flex align-items-center gap-1'>
+						<FactorIcon factor='clockStall' />
+						{i18n.t('powerScore.clockStallPenalty')}
+						<SettingTooltipIcon text={i18n.t('powerScore.tooltipClockStallPenalty')} />
+					</span>
+					<span style={{ color: stallPenalty > 0 ? boostPenaltyMeta.clockStall.color : undefined }}>
+						{stallPenalty > 0 ? `-${stallPenalty}` : '0'}
+					</span>
 				</div>
 			)}
 			{hasWinProbVariance && (

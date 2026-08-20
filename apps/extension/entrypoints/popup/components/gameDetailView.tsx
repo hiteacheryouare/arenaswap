@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { i18n } from '#i18n';
 import type { Browser } from 'wxt/browser';
-import { leagueConfigMap, scoreMaxTotal } from '@arenaswap/core/constants';
+import { leagueConfigMap, scoreMaxTotal, sportTypeConfigMap } from '@arenaswap/core/constants';
 import type { Game, LeagueId, PowerScoreResult, PowerScoreSnapshot, ScoreSnapshot, SignalName, TabRegistration } from '@arenaswap/core/types';
 import DetailHero from './detailHero';
 import DetailPosterHero from './detailPosterHero';
@@ -98,8 +98,12 @@ const gameDetailView = ({
 	const comeback = activePowerScore?.comeback ?? 0;
 	const rawSubtotal = closeness + lateGame + momentum + leadChanges + comeback;
 	// When stalled this is the pre-stall signals sum stored by the scorer, which may exceed 100.
-	const baseTotal = activePowerScore?.baseTotal ?? rawSubtotal;
+	const signalsSubtotal = activePowerScore?.signalsSubtotal ?? rawSubtotal;
 	const stallPenalty = activePowerScore?.stallPenalty ?? 0;
+	// Baseball/softball never accumulate a stall count (background.ts only tracks clock-based
+	// sports), so the breakdown hides the row entirely rather than pinning it at zero. Falls back to
+	// basketball for an unrecognized sportType, mirroring computePowerScore's own fallback.
+	const clockBased = (sportTypeConfigMap[game.sportType] ?? sportTypeConfigMap.basketball).clockBased;
 	const favoriteBonus = activePowerScore?.favoriteBonus ?? 0;
 	const favoriteTeamCount = activePowerScore?.favoriteTeamCount ?? 0;
 	const currentBoost = gameBoosts[game.id] ?? 0;
@@ -222,8 +226,9 @@ const gameDetailView = ({
 						leadChanges={leadChanges}
 						comeback={comeback}
 						winProbabilityVariance={winProbabilityVariance}
-						baseTotal={baseTotal}
+						signalsSubtotal={signalsSubtotal}
 						stallPenalty={stallPenalty}
+						clockBased={clockBased}
 						favoriteBonus={favoriteBonus}
 						favoriteTeamCount={favoriteTeamCount}
 						currentBoost={appliedBoost}

@@ -287,7 +287,6 @@
 		"signalsNormalizedNote": "Na-adjust ulit para manatili sa 0–100 range kahit may naka-disable na signal",
 		"tooltipSignalsNormalized": "Kapag naka-off ang mga signal, itinataas nang proporsyonal ang natitirang mga signal para manatili ang buong 0–100 range ng score.",
 		"clockStallPenalty": "Penalty sa Naka-stall na Clock",
-		"clockFrozenNote": "naka-freeze ang game clock — {before} → {after} pts bago ang mga bonus",
 		"favoriteBoost": "Boost ng Paborito",
 		"favoriteTeamsInMatchup": {
 			"1": "1 paboritong team sa matchup",
@@ -303,7 +302,7 @@
 		"tooltipMomentum": "Sinusukat ang net scoring ng isang team sa loob ng kamakailang score history window. Kung na-outscore ng isang team ang kalaban nang husto sa stretch na iyon, tumataas ang score dito. Bumababa pabalik sa zero kung walang dagdag na score sa paglipas ng oras.",
 		"tooltipLeadChanges": "Binibilang kung ilang beses nagpalit ang lead sa loob ng tinutukoy na history window. Walang score kung walang pagbabago; mas maraming flip, mas mataas ang score. Bumababa kung matagal nang walang bagong pagbabago.",
 		"tooltipComeback": "Inikukumpara ang score margin sa pinakamatandang punto sa window laban sa kasalukuyang margin. Kung nabawasan ng nahuhuling team ang agwat, dito nakabatay ang score sa kung gaano karami ang nabawi nila. Mas mahalaga ito sa huling bahagi ng laro; bumababa kung tumigil ang scoring.",
-		"tooltipClockStallPenalty": "Inilalapat kapag halos hindi gumagalaw ang game clock sa magkakasunod na data pull. Binabawasan ang subtotal ng mga signal gamit ang multiplier, na lumalalim habang tumatagal ang pagkaka-freeze ng clock.",
+		"tooltipClockStallPenalty": "Inilalapat kapag halos hindi gumagalaw ang game clock sa magkakasunod na data pull. Nagbabawas ng flat na bilang ng puntos mula sa subtotal ng mga signal, na lumalalim habang tumatagal ang pagkaka-freeze ng clock.",
 		"tooltipVolatility": "Nakabatay sa kung gaano kalapit ang live win probability sa 50% sa kamakailang history. Ang mga larong nasa paligid ng 50% (walang malinaw na bentahe ang kahit sino) ay nakakakuha ng boost. Ang mga larong konsistenteng malayo sa 50% sa alinmang direksyon ay nababawasan.",
 		"tooltipFavoriteBoost": "Naidadagdag kapag kasama sa larong ito ang isa sa mga naka-save mong paboritong team. Kapag dalawang paborito ang nasa matchup, mas malaki ang dagdag kaysa sa iisa lang.",
 		"tooltipGameBoost": "Ang mga points na manual mong inilapat sa larong ito gamit ang game boost control.",

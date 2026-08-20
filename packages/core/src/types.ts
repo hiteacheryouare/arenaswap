@@ -130,7 +130,7 @@ export interface PowerScoreSnapshot {
 	leadChanges: number;
 	comeback: number;
 	winProbabilityVariance?: number;
-	baseTotal: number;
+	signalsSubtotal: number;
 	favoriteBonus: number;
 	favoriteTeamCount: number;
 	gameBoost?: number;

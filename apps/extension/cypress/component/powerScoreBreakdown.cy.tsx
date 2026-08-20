@@ -6,8 +6,9 @@ const defaultProps = {
 	momentum: 5,
 	leadChanges: 3,
 	comeback: 0,
-	baseTotal: 28,
+	signalsSubtotal: 28,
 	stallPenalty: 0,
+	clockBased: true,
 	favoriteBonus: 0,
 	favoriteTeamCount: 0,
 	currentBoost: 0,
@@ -43,18 +44,19 @@ describe('PowerScoreBreakdown stall penalty', () => {
 	});
 
 	it('shows negative value when stall penalty > 0', () => {
-		cy.mount(<PowerScoreBreakdown {...defaultProps} stallPenalty={5} baseTotal={28} />);
+		cy.mount(<PowerScoreBreakdown {...defaultProps} stallPenalty={5} signalsSubtotal={28} />);
 		cy.contains('-5').should('exist');
 	});
 
-	it('renders the frozen-clock note when stall penalty > 0', () => {
-		cy.mount(<PowerScoreBreakdown {...defaultProps} stallPenalty={5} baseTotal={28} />);
-		cy.get('.powerscore-breakdown-note').should('exist');
+	it('shows the clock stall penalty row for clock-based sports', () => {
+		cy.mount(<PowerScoreBreakdown {...defaultProps} clockBased />);
+		cy.get('.powerscore-breakdown-row-penalty').should('exist');
 	});
 
-	it('does not render the frozen-clock note when stall penalty is 0', () => {
-		cy.mount(<PowerScoreBreakdown {...defaultProps} />);
-		cy.get('.powerscore-breakdown-note').should('not.exist');
+	it('hides the clock stall penalty row entirely for sports with no clock', () => {
+		cy.mount(<PowerScoreBreakdown {...defaultProps} clockBased={false} stallPenalty={5} signalsSubtotal={28} />);
+		cy.contains('Clock stall penalty').should('not.exist');
+		cy.get('.powerscore-breakdown-row-penalty').should('not.exist');
 	});
 });
 

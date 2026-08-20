@@ -39,8 +39,8 @@ export const scoreMaxComeback = 20;
 export const scoreWinProbVarianceMax = 5;
 export const scoreMaxTotal = 100;
 
-// `baseTotal` is the raw pre-cap sum, so it has to be allowed past scoreMaxTotal — clamping it to
-// 100 would make the breakdown's stall arithmetic disagree with the total it explains.
+// `signalsSubtotal` is the raw pre-cap sum, so it has to be allowed past scoreMaxTotal — clamping
+// it to 100 would make the breakdown's stall arithmetic disagree with the total it explains.
 export const scoreMaxSignalsSubtotal =
 	scoreMaxCloseness + scoreMaxLateGame + scoreMaxMomentum + scoreMaxLeadChanges + scoreMaxComeback;
 

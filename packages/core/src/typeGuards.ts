@@ -27,7 +27,7 @@ export const isPowerScoreSnapshotLike = (value: unknown): value is PowerScoreSna
 	&& isFiniteNumber(value.momentum)
 	&& isFiniteNumber(value.leadChanges)
 	&& isFiniteNumber(value.comeback)
-	&& isFiniteNumber(value.baseTotal)
+	&& isFiniteNumber(value.signalsSubtotal)
 	&& isFiniteNumber(value.favoriteBonus)
 	&& isFiniteNumber(value.favoriteTeamCount)
 	&& typeof value.stalled === 'boolean'
