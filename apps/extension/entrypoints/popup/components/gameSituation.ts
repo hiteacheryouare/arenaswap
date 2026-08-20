@@ -1,14 +1,9 @@
-import { leagueConfigMap, sportTypeConfigMap } from '@arenaswap/core/constants';
+import { sportTypeConfigMap } from '@arenaswap/core/constants';
 import type { Game } from '@arenaswap/core/types';
-import { formatGameClock, formatPeriod } from './gameCardShared';
+import { formatGameClock, formatPeriod, isHalftime } from './gameCardShared';
 
 // Injected rather than imported so the resolver stays pure and Jest-testable.
 type Translate = (key: string, subsOrCount?: unknown, subs?: unknown) => string;
-
-const isHalftime = (game: Game): boolean => {
-	const regular = leagueConfigMap[game.league]?.regularPeriods;
-	return regular !== undefined && regular % 2 === 0 && game.period === regular / 2;
-};
 
 // During an intermission or a delay the period and clock stop meaning anything, so those states
 // say what is actually happening instead — except for the inning sports, where the half-inning

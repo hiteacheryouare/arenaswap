@@ -9,7 +9,7 @@ import BsoIndicator from './bsoIndicator';
 import FlipScore from './flipScore';
 import InningHalfIcon from './inningHalfIcon';
 import type { GameCardDisplayProps } from './gameCardTypes';
-import { buildCardHandlers, buildGameCardStyle, formatGameClock, formatPeriod, GameMeta, powerScoreColor, TeamColumn } from './gameCardShared';
+import { buildCardHandlers, buildGameCardStyle, formatGameClock, formatPeriod, GameMeta, isHalftime, powerScoreColor, TeamColumn } from './gameCardShared';
 import { useT } from './i18nContext';
 
 const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavoriteTeam, onOpenGameDetail, bettingPrefs, tabSlot }: GameCardDisplayProps) => {
@@ -91,7 +91,8 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 					    period label above it would just say PENS twice. */}
 					{!shootout && (
 						<span className='font-lekton game-period'>
-							{isInningSport && <InningHalfIcon topOfInning={game.topOfInning} />}{formatPeriod(game)}
+							{isInningSport && <InningHalfIcon topOfInning={game.topOfInning} />}
+							{!isInningSport && game.intermission === true && isHalftime(game) ? t('detail.halftime') : formatPeriod(game)}
 						</span>
 					)}
 					{shootout && (

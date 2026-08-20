@@ -30,6 +30,11 @@ export const formatPeriod = (game: Game): string => {
 	return `Q${period}`;
 };
 
+export const isHalftime = (game: Game): boolean => {
+	const regular = leagueConfigMap[game.league]?.regularPeriods;
+	return regular !== undefined && regular % 2 === 0 && game.period === regular / 2;
+};
+
 export const formatClock = (seconds: number): string => {
 	const minutes = Math.floor(seconds / 60);
 	const remainder = String(seconds % 60).padStart(2, '0');
