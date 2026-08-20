@@ -1,5 +1,5 @@
 import pkg from '../package.json';
-import type { LeagueId, UserPreferences } from './types';
+import type { LeagueId, SignalName, UserPreferences } from './types';
 import {
 	allLeagueIds,
 	stallPenaltySteps,
@@ -9,6 +9,8 @@ import {
 	scoreMaxLeadChanges,
 	scoreMaxComeback,
 	scoreMaxTotal,
+	scoreMaxSignalsSubtotal,
+	scoreWinProbVarianceMax,
 	scorerTunables,
 	sportTypeConfigs,
 	sportTypeConfigMap,
@@ -16,7 +18,6 @@ import {
 	leagueConfigMap,
 } from 'powerscore';
 
-// Re-export powerscore constants so existing import paths work unchanged
 export {
 	allLeagueIds,
 	stallPenaltySteps,
@@ -26,6 +27,8 @@ export {
 	scoreMaxLeadChanges,
 	scoreMaxComeback,
 	scoreMaxTotal,
+	scoreMaxSignalsSubtotal,
+	scoreWinProbVarianceMax,
 	scorerTunables,
 	sportTypeConfigs,
 	sportTypeConfigMap,
@@ -33,56 +36,96 @@ export {
 	leagueConfigMap,
 };
 
-// App identity (sourced from package.json)
 export const appName = pkg.name;
 export const appVersion = pkg.version;
 export const appDescription = pkg.description;
 
 export const pollIntervalMs = 15_000;
-export const maxHistorySnapshots = 20; // ~5 minutes of history at 15s poll interval
+// Safety net for sports not yet in sportTypeConfigMap; in practice every config defines its own.
+export const historyWindowMs = 300_000;
 
 // After this many consecutive empty polls a league switches to dormant mode
 export const pollDormantThresholdPolls = 2;
 export const pollDormantMinMs = 120_000;
 export const pollDormantMaxMs = 180_000;
 
-// Switch behavior defaults
+// The interval scales continuously with PowerScore: high scores approach pollMinEagerMs, low
+// scores pollMaxEagerMs. Every live game is polled at least every pollMaxEagerMs so a boring one
+// can still catch a momentum shift. pollIntervalMs remains the stagger, demo and fallback value.
+export const pollMinEagerMs = 6_000;
+export const pollMaxEagerMs = 25_000;
+export const pollIntermissionMs = 40_000;
+
 export const defaultSensitivity = 4 as const;
 export const defaultCooldownSecs = 45;
 export const defaultSwitchDelaySecs = 0;
 export const defaultFavoriteTeamBonusPoints = 10;
+export const defaultPostseasonBoostPoints = 5;
+export const defaultUpcomingGamesDays = 7;
+export const upcomingGamesDaysMin = 1;
+export const upcomingGamesDaysMax = 14;
 
-// Sensitivity level → score delta required to trigger a tab switch
+
+// Score delta required to trigger a switch. Calibrated via `npm run powerscore:simulate`, then
+// nudged ~25% stickier; level 4 sits just above the median best-vs-runner-up gap.
 export const sensitivityThresholds: Record<number, number> = {
-	1: 65,
-	2: 42,
-	3: 26,
-	4: 14,
-	5: 8,
-	6: 4,
+	1: 37,
+	2: 27,
+	3: 18,
+	4: 11,
+	5: 6,
+	6: 3,
 	7: 1
 };
 
-export const leagueLogoFallbacks: Record<LeagueId, string> = {
+// Win over ESPN's API, which for these leagues returns only a generic sport icon.
+const leagueLogoOverrides: Partial<Record<LeagueId, string>> = {
+	cbase: 'https://a.espncdn.com/i/espn/misc_logos/500/ncaa_baseball.png',
+	csoft: 'https://a.espncdn.com/i/espn/misc_logos/500/ncaa_womens_softball.png',
+	olybb: 'https://a.espncdn.com/i/espn/misc_logos/500-dark/olympics.png',
+	olymih: 'https://a.espncdn.com/i/espn/misc_logos/500-dark/olympics.png',
+	olywih: 'https://a.espncdn.com/i/espn/misc_logos/500-dark/olympics.png',
+	olybkm: 'https://a.espncdn.com/i/espn/misc_logos/500-dark/olympics.png',
+	olybkw: 'https://a.espncdn.com/i/espn/misc_logos/500-dark/olympics.png',
+	olysocm: 'https://a.espncdn.com/i/espn/misc_logos/500-dark/olympics.png',
+	olysocw: 'https://a.espncdn.com/i/espn/misc_logos/500-dark/olympics.png',
+};
+
+// ESPN serves a usable logo for most of these, so the fallback only shows before the first fetch:
+// the demo tab and the onboarding picker both render leagues with no scoreboard response behind
+// them, and a league missing from here draws no crest at all.
+export const leagueLogoFallbacks: Partial<Record<LeagueId, string>> = {
 	nba: 'https://a.espncdn.com/i/teamlogos/leagues/500/nba.png',
 	wnba: 'https://a.espncdn.com/i/teamlogos/leagues/500/wnba.png',
-	ncaab: 'https://a.espncdn.com/redesign/assets/img/icons/ESPN-icon-basketball.png',
-	ncaaw: 'https://a.espncdn.com/redesign/assets/img/icons/ESPN-icon-basketball.png',
 	nhl: 'https://a.espncdn.com/i/teamlogos/leagues/500/nhl.png',
-	ncaamh: 'https://a.espncdn.com/redesign/assets/img/icons/ESPN-icon-hockey.png',
 	mlb: 'https://a.espncdn.com/i/teamlogos/leagues/500/mlb.png',
 	nfl: 'https://a.espncdn.com/i/teamlogos/leagues/500/nfl.png',
-	ncaaf: 'https://a.espncdn.com/redesign/assets/img/icons/ESPN-icon-football-college.png',
+	ncaab: 'https://a.espncdn.com/i/espn/misc_logos/500-dark/ncaa.png',
+	ncaaw: 'https://a.espncdn.com/i/espn/misc_logos/500-dark/ncaa.png',
+	ncaaf: 'https://a.espncdn.com/i/espn/misc_logos/500-dark/ncaa.png',
+	ncaamh: 'https://a.espncdn.com/i/espn/misc_logos/500-dark/ncaa.png',
 	mls: 'https://a.espncdn.com/i/teamlogos/leagues/500/mls.png',
 	epl: 'https://a.espncdn.com/i/leaguelogos/soccer/500-dark/23.png',
 	fifawc: 'https://a.espncdn.com/i/leaguelogos/soccer/500-dark/4.png',
+	wbbc: 'https://a.espncdn.com/redesign/assets/img/icons/ESPN-icon-baseball.png',
+	ufl: 'https://a.espncdn.com/i/teamlogos/leagues/500/ufl.png',
+	laliga: 'https://a.espncdn.com/i/leaguelogos/soccer/500-dark/15.png',
+	bundesliga: 'https://a.espncdn.com/i/leaguelogos/soccer/500-dark/10.png',
+	seriea: 'https://a.espncdn.com/i/leaguelogos/soccer/500-dark/12.png',
+	ligamx: 'https://a.espncdn.com/i/leaguelogos/soccer/500-dark/22.png',
+	ucl: 'https://a.espncdn.com/i/leaguelogos/soccer/500-dark/2.png',
+	uel: 'https://a.espncdn.com/i/leaguelogos/soccer/500-dark/2310.png',
+	nwsl: 'https://a.espncdn.com/i/leaguelogos/soccer/500-dark/2323.png',
+	fifawwc: 'https://a.espncdn.com/i/leaguelogos/soccer/500-dark/60.png',
 };
 
-export const resolveLeagueLogoUrl = (leagueId: LeagueId, espnLogoUrl?: string): string => (
-	typeof espnLogoUrl === 'string' && espnLogoUrl.length > 0
+export const resolveLeagueLogoUrl = (leagueId: LeagueId, espnLogoUrl?: string): string => {
+	const override = leagueLogoOverrides[leagueId];
+	if (override) return override;
+	return typeof espnLogoUrl === 'string' && espnLogoUrl.length > 0
 		? espnLogoUrl
-		: leagueLogoFallbacks[leagueId]
-);
+		: (leagueLogoFallbacks[leagueId] ?? '');
+};
 
 const isLeagueId = (value: unknown): value is LeagueId => (
 	typeof value === 'string' && allLeagueIds.includes(value as LeagueId)
@@ -107,6 +150,65 @@ export const createFavoriteTeamKey = (leagueId: LeagueId, teamId: string): strin
 export const isFavoriteTeamKey = (value: unknown): value is string => (
 	typeof value === 'string' && parseFavoriteTeamKey(value) !== null
 );
+
+export const allSignalNames: readonly SignalName[] = ['closeness', 'lateGame', 'momentum', 'leadChanges', 'comeback'] as const;
+
+const signalMaxMap: Record<SignalName, number> = {
+	closeness: scoreMaxCloseness,
+	lateGame: scoreMaxLateGame,
+	momentum: scoreMaxMomentum,
+	leadChanges: scoreMaxLeadChanges,
+	comeback: scoreMaxComeback,
+};
+
+export const applyDisabledSignals = (
+	result: import('powerscore').PowerScoreResult,
+	disabledSignals: readonly SignalName[],
+): import('powerscore').PowerScoreResult => {
+	if (disabledSignals.length === 0) return result;
+
+	const disabled = new Set<SignalName>(disabledSignals);
+	const enabledMax = allSignalNames
+		.filter(s => !disabled.has(s))
+		.reduce((sum, s) => sum + signalMaxMap[s], 0);
+
+	if (enabledMax === 0) return result;
+
+	const closeness = disabled.has('closeness') ? 0 : result.closeness;
+	const lateGame = disabled.has('lateGame') ? 0 : result.lateGame;
+	const momentum = disabled.has('momentum') ? 0 : result.momentum;
+	const leadChanges = disabled.has('leadChanges') ? 0 : result.leadChanges;
+	const comeback = disabled.has('comeback') ? 0 : result.comeback;
+
+	// Turning signals off shrinks the reachable ceiling, so the survivors are rescaled to keep the
+	// 0-100 range meaningful — otherwise a closeness-only setup could never exceed 42.
+	//
+	// The scale targets scoreMaxSignalsSubtotal, not scoreMaxTotal: signalsSubtotal is the raw
+	// pre-cap subtotal (see scorer.ts, which clamps it to the signals ceiling deliberately), and
+	// `total` gets capped at 100 downstream. Scaling to 100 here would double-apply that cap and
+	// deflate every score — disabling comeback alone cost 26%.
+	const enabledSum = closeness + lateGame + momentum + leadChanges + comeback;
+	const scalingFactor = scoreMaxSignalsSubtotal / enabledMax;
+	const newSignalsSubtotal = Math.min(Math.round(enabledSum * scalingFactor), scoreMaxSignalsSubtotal);
+
+	// The stall penalty comes off the signals subtotal, so it rescales with them; volatility sits
+	// on top of that subtotal and carries over at full value.
+	const scaledStallPenalty = Math.round((result.stallPenalty ?? 0) * scalingFactor);
+	const variance = result.winProbabilityVariance ?? 0;
+	const newTotal = Math.min(Math.max(newSignalsSubtotal - scaledStallPenalty + variance, 0), scoreMaxTotal);
+
+	return {
+		...result,
+		closeness,
+		lateGame,
+		momentum,
+		leadChanges,
+		comeback,
+		signalsSubtotal: newSignalsSubtotal,
+		total: newTotal,
+		...(result.stallPenalty !== undefined ? { stallPenalty: scaledStallPenalty } : {}),
+	};
+};
 
 const isSensitivityValue = (value: unknown): value is UserPreferences['sensitivity'] => (
 	typeof value === 'number' && value >= 1 && value <= 7
@@ -151,6 +253,11 @@ export const createDefaultUserPreferences = (): UserPreferences => ({
 	notificationsEnabled: true,
 	standbyStreamEnabled: false,
 	standbyStreamThreshold: 20,
+	bettingEnabled: false,
+	temperatureUnit: 'F' as const,
+	postseasonBoostPoints: defaultPostseasonBoostPoints,
+	upcomingGamesDays: defaultUpcomingGamesDays,
+	disabledSignals: [],
 });
 
 export const normalizeUserPreferences = (storedPrefs: unknown): UserPreferences => {
@@ -159,8 +266,10 @@ export const normalizeUserPreferences = (storedPrefs: unknown): UserPreferences 
 
 	const candidate = storedPrefs as Partial<UserPreferences> & { enabledLeagues?: unknown; favoriteTeamIds?: unknown };
 	const hasEnabledLeaguesField = Object.prototype.hasOwnProperty.call(candidate, 'enabledLeagues');
+	// Order is the user's league display order, so it is preserved — but a repeated id would break
+	// the reorder UI's index math and duplicate React keys.
 	const parsedEnabledLeagues = Array.isArray(candidate.enabledLeagues)
-		? candidate.enabledLeagues.filter(isLeagueId)
+		? [...new Set(candidate.enabledLeagues.filter(isLeagueId))]
 		: [];
 
 	return {
@@ -178,5 +287,14 @@ export const normalizeUserPreferences = (storedPrefs: unknown): UserPreferences 
 		standbyStreamThreshold: typeof candidate.standbyStreamThreshold === 'number' && isFinite(candidate.standbyStreamThreshold)
 			? Math.max(0, Math.min(100, Math.round(candidate.standbyStreamThreshold)))
 			: defaults.standbyStreamThreshold,
+		bettingEnabled: typeof candidate.bettingEnabled === 'boolean' ? candidate.bettingEnabled : defaults.bettingEnabled,
+		temperatureUnit: candidate.temperatureUnit === 'C' ? 'C' : 'F',
+		postseasonBoostPoints: normalizeSecondsPreference(candidate.postseasonBoostPoints, defaults.postseasonBoostPoints),
+		upcomingGamesDays: typeof candidate.upcomingGamesDays === 'number' && Number.isFinite(candidate.upcomingGamesDays)
+			? Math.max(upcomingGamesDaysMin, Math.min(upcomingGamesDaysMax, Math.round(candidate.upcomingGamesDays)))
+			: defaults.upcomingGamesDays,
+		disabledSignals: Array.isArray(candidate.disabledSignals)
+			? (candidate.disabledSignals as unknown[]).filter((s): s is SignalName => allSignalNames.includes(s as SignalName))
+			: defaults.disabledSignals,
 	};
 };

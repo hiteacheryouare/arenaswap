@@ -1,4 +1,3 @@
-// Types that live in powerscore — re-exported here so existing import paths work
 import type {
 	SportType,
 	LeagueId,
@@ -7,9 +6,10 @@ import type {
 	PowerScoreResult,
 	SportTypeConfig,
 	ScorerTunables,
-	BaseballInningScoreTier,
 	LeagueConfig,
 } from 'powerscore';
+
+export type SignalName = 'closeness' | 'lateGame' | 'momentum' | 'leadChanges' | 'comeback';
 export type {
 	SportType,
 	LeagueId,
@@ -18,7 +18,6 @@ export type {
 	PowerScoreResult,
 	SportTypeConfig,
 	ScorerTunables,
-	BaseballInningScoreTier,
 	LeagueConfig,
 };
 
@@ -27,9 +26,19 @@ export interface Team {
 	name: string;
 	abbreviation: string;
 	score: number;
+	// Soccer only, once a match reaches a shootout: `score` stays frozen at the 120-minute
+	// scoreline while this decides the tie.
+	shootoutScore?: number;
 	logo?: string;
-	/** Primary team color as a CSS hex string (e.g. "#002B5C"), sourced from the API */
+	// CSS hex, from the API. `alternateColor` is used when the primary clashes with the opponent.
 	color?: string;
+	alternateColor?: string;
+}
+
+export interface GameCondition {
+	// °F, as reported by ESPN.
+	temperatureF: number;
+	conditionLabel: string;
 }
 
 export interface GameOddsProvider {
@@ -44,6 +53,7 @@ export interface GameOdds {
 	provider?: GameOddsProvider;
 }
 
+
 export interface Game {
 	id: string;
 	league: LeagueId;
@@ -57,12 +67,25 @@ export interface Game {
 	startTime?: string;
 	broadcasts?: string[];
 	odds?: GameOdds;
-	/** True while the game is in halftime or between-period intermission */
 	intermission?: boolean;
-	/** Top of inning = true, bottom = false; undefined when unavailable (non-baseball or pre-game) */
+	// Top of inning = true, bottom = false.
 	topOfInning?: boolean;
-	/** Which bases have runners; undefined when unavailable (non-baseball or no active at-bat) */
 	baseRunners?: { first: boolean; second: boolean; third: boolean };
+	bso?: { balls: number; strikes: number; outs: number };
+	// Football only, from here down. e.g. "3rd & 5".
+	downDistance?: string;
+	// ESPN's "ABBR yardLine" label; joined onto downDistance via gameCard.downDistanceAt.
+	fieldPosition?: string;
+	isRedZone?: boolean;
+	// Weights the red-zone scoring-opportunity boost.
+	down?: number;
+	distance?: number;
+	isGoalToGo?: boolean;
+	weather?: GameCondition;
+	// ESPN signals this three different ways — see resolvePostseason in apiClient.ts.
+	isPostseason?: boolean;
+	delayed?: boolean;
+	delayDescription?: string;
 }
 
 export interface UserPreferences {
@@ -71,15 +94,22 @@ export interface UserPreferences {
 	switchDelaySeconds: number;
 	enabled: boolean;
 	enabledLeagues: LeagueId[];
-	/** Stored as `${league}:${teamId}` keys (for example: `nba:20`) */
+	// Stored as `${league}:${teamId}`, e.g. `nba:20`.
 	favoriteTeamIds: string[];
 	favoriteTeamBonusPoints: number;
 	showUpcomingGames: boolean;
 	proTipsEnabled: boolean;
 	notificationsEnabled: boolean;
 	standbyStreamEnabled: boolean;
-	/** PowerScore threshold (0–100): switch to standby when ALL registered games fall below this */
+	// Switch to standby once every registered game falls below this.
 	standbyStreamThreshold: number;
+	bettingEnabled: boolean;
+	temperatureUnit: 'F' | 'C';
+	postseasonBoostPoints: number;
+	// 1–14.
+	upcomingGamesDays: number;
+	// The remaining signals are renormalized to 0–100.
+	disabledSignals: SignalName[];
 }
 
 export interface TabRegistration {
@@ -99,11 +129,15 @@ export interface PowerScoreSnapshot {
 	momentum: number;
 	leadChanges: number;
 	comeback: number;
-	baseTotal: number;
+	winProbabilityVariance?: number;
+	signalsSubtotal: number;
 	favoriteBonus: number;
 	favoriteTeamCount: number;
 	gameBoost?: number;
+	scoringOpportunityBoost?: number;
+	postseasonBoost?: number;
 	stalled: boolean;
+	stallPenalty?: number;
 	reason: string;
 }
 
@@ -120,7 +154,7 @@ export interface BackgroundState {
 	standbyStreamTabId: number | null;
 }
 
-export type ScoresUpdatedMessage = {
+export interface ScoresUpdatedMessage {
 	type: 'SCORES_UPDATED';
 	scores: PowerScoreResult[];
 	games: Game[];
@@ -130,38 +164,63 @@ export type ScoresUpdatedMessage = {
 	gameBoosts: Record<string, number>;
 	onStandbyStream: boolean;
 	standbyStreamTabId: number | null;
-};
+}
 
-export type UpdatePrefsMessage = {
+export interface UpdatePrefsMessage {
 	type: 'UPDATE_PREFS';
 	prefs: UserPreferences;
-};
+}
 
-export type UpdateRegistryMessage = {
+export interface UpdateRegistryMessage {
 	type: 'UPDATE_REGISTRY';
 	tabRegistry: TabRegistration[];
-};
+}
 
-export type SetGameBoostMessage = {
+export interface SetGameBoostMessage {
 	type: 'SET_GAME_BOOST';
 	gameId: string;
 	boost: number;
-};
+}
 
-export type GetStateMessage = {
+export interface GetStateMessage {
 	type: 'GET_STATE';
 	forceRefresh?: boolean;
-};
+}
 
-export type SetDemoModeMessage = {
+export interface SetDemoModeMessage {
 	type: 'SET_DEMO_MODE';
 	enabled: boolean;
-};
+}
 
-export type SetStandbyStreamTabMessage = {
+export interface SetStandbyStreamTabMessage {
 	type: 'SET_STANDBY_STREAM_TAB';
 	tabId: number | null;
-};
+}
+
+export interface GetDebugStateMessage {
+	type: 'GET_DEBUG_STATE';
+}
+
+export interface DebugState {
+	pollModes: Record<string, 'eager' | 'dormant'>;
+	leagueIntervals: Record<string, number>;
+	demoMode: boolean;
+	lastSwitchTime: number;
+	pendingSwitch: { gameId: string; tabId: number; reason?: string } | null;
+	liveGameCount: number;
+	upcomingGameCount: number;
+	totalGameCount: number;
+	tabRegistry: TabRegistration[];
+	onStandbyStream: boolean;
+	standbyStreamTabId: number | null;
+	clockStalls: Record<string, { lastClock: number; stallCount: number }>;
+	scores: PowerScoreResult[];
+	gameLabels: Record<string, string>;
+	enabledLeagues: string[];
+	sensitivity: number;
+	cooldownSeconds: number;
+	switchDelaySeconds: number;
+}
 
 export type ExtensionMessage =
 	| ScoresUpdatedMessage
@@ -170,4 +229,5 @@ export type ExtensionMessage =
 	| SetGameBoostMessage
 	| GetStateMessage
 	| SetDemoModeMessage
-	| SetStandbyStreamTabMessage;
+	| SetStandbyStreamTabMessage
+	| GetDebugStateMessage;

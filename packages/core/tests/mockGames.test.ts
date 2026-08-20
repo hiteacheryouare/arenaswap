@@ -2,17 +2,18 @@ import { leagueConfigMap } from '../src/constants';
 import { MockGameSimulator } from '../src/mockGames';
 import type { Game } from '../src/types';
 
-type SimState = {
+interface SimState {
 	streak: 'home' | 'away' | null;
 	streakTicks: number;
 	postTicks: number;
 	preTicks: number;
-};
+	driveIndex: number;
+}
 
-type SimulatorInternals = {
+interface SimulatorInternals {
 	games: Game[];
 	state: Map<string, SimState>;
-};
+}
 
 const getGameById = (games: Game[], id: string): Game => {
 	const game = games.find(candidate => candidate.id === id);
@@ -23,6 +24,13 @@ const getGameById = (games: Game[], id: string): Game => {
 const getInternals = (simulator: MockGameSimulator): SimulatorInternals => (
 	simulator as unknown as SimulatorInternals
 );
+
+// 'PHI 48' and 'DAL 48' are 4 yards apart on the field but read almost the same, so comparing the
+// yard lines as written would score a 44-yard gain as a 4-yard loss. PHI has the ball in mock-5.
+const yardsFromOwnGoal = (fieldPosition: string): number => {
+	const [side, yardLine] = fieldPosition.split(' ');
+	return side === 'PHI' ? Number(yardLine) : 100 - Number(yardLine);
+};
 
 describe('MockGameSimulator', () => {
 	test('returns deep-copied game objects from tick()', () => {
@@ -126,6 +134,7 @@ describe('MockGameSimulator', () => {
 			streakTicks: 0,
 			postTicks: 2,
 			preTicks: 0,
+			driveIndex: 0,
 		});
 
 		const updated = getGameById(simulator.tick(), game.id);
@@ -150,6 +159,7 @@ describe('MockGameSimulator', () => {
 			streakTicks: 0,
 			postTicks: 0,
 			preTicks: 1,
+			driveIndex: 0,
 		});
 
 		const first = getGameById(simulator.tick(), game.id);
@@ -182,6 +192,7 @@ describe('MockGameSimulator', () => {
 			streakTicks: 2,
 			postTicks: 3,
 			preTicks: 0,
+			driveIndex: 0,
 		});
 
 		const reset = getGameById(simulator.tick(), game.id);
@@ -214,6 +225,7 @@ describe('MockGameSimulator', () => {
 			streakTicks: 0,
 			postTicks: 2,
 			preTicks: 0,
+			driveIndex: 0,
 		});
 
 		const beforeReset = getGameById(simulator.tick(), game.id);
@@ -307,5 +319,168 @@ describe('MockGameSimulator', () => {
 		}
 
 		randomSpy.mockRestore();
+	});
+
+	describe('BSO simulation (baseball)', () => {
+		test('baseball mock games start with a defined bso field', () => {
+			const simulator = new MockGameSimulator();
+			const games = simulator.tick();
+			expect(getGameById(games, 'mock-4').bso).toBeDefined();
+			expect(getGameById(games, 'mock-16').bso).toBeDefined();
+		});
+
+		test('non-baseball mock games do not have a bso field', () => {
+			const simulator = new MockGameSimulator();
+			const games = simulator.tick();
+			expect(getGameById(games, 'mock-1').bso).toBeUndefined();
+			expect(getGameById(games, 'mock-5').bso).toBeUndefined();
+			expect(getGameById(games, 'mock-3').bso).toBeUndefined();
+		});
+
+		test('bso values stay within valid ranges across 30 ticks', () => {
+			const simulator = new MockGameSimulator();
+			for (let i = 0; i < 30; i++) {
+				const games = simulator.tick();
+				for (const game of games) {
+					if (!game.bso) continue;
+					expect(game.bso.balls).toBeGreaterThanOrEqual(0);
+					expect(game.bso.balls).toBeLessThanOrEqual(3);
+					expect(game.bso.strikes).toBeGreaterThanOrEqual(0);
+					expect(game.bso.strikes).toBeLessThanOrEqual(2);
+					expect(game.bso.outs).toBeGreaterThanOrEqual(0);
+					expect(game.bso.outs).toBeLessThanOrEqual(2);
+				}
+			}
+		});
+
+		test('bso is deep-copied so mutating returned games does not affect the simulator', () => {
+			const simulator = new MockGameSimulator();
+			const firstTick = simulator.tick();
+			const mlbGame = getGameById(firstTick, 'mock-4');
+			expect(mlbGame.bso).toBeDefined();
+
+			mlbGame.bso!.balls = 999;
+			mlbGame.bso!.strikes = 999;
+
+			const secondTick = simulator.tick();
+			const updated = getGameById(secondTick, 'mock-4');
+			expect(updated.bso?.balls).toBeLessThanOrEqual(3);
+			expect(updated.bso?.strikes).toBeLessThanOrEqual(2);
+		});
+
+		test('post-game reset sets bso back to all zeros', () => {
+			const randomSpy = jest.spyOn(Math, 'random').mockReturnValue(0.99);
+			const simulator = new MockGameSimulator();
+			const internals = getInternals(simulator);
+			const game = internals.games.find(g => g.id === 'mock-4')!;
+
+			game.status = 'post';
+			game.bso = { balls: 2, strikes: 1, outs: 2 };
+			internals.state.set(game.id, { streak: null, streakTicks: 0, postTicks: 3, preTicks: 0, driveIndex: 3 });
+
+			const reset = getGameById(simulator.tick(), game.id);
+			expect(reset.bso).toEqual({ balls: 0, strikes: 0, outs: 0 });
+
+			randomSpy.mockRestore();
+		});
+	});
+
+	describe('downDistance simulation (football)', () => {
+		test('football mock game (mock-5) starts with a defined downDistance string', () => {
+			const simulator = new MockGameSimulator();
+			const games = simulator.tick();
+			const nflGame = getGameById(games, 'mock-5');
+			expect(nflGame.downDistance).toBeDefined();
+			expect(typeof nflGame.downDistance).toBe('string');
+		});
+
+		test('non-football mock games do not have a downDistance field', () => {
+			const simulator = new MockGameSimulator();
+			const games = simulator.tick();
+			expect(getGameById(games, 'mock-4').downDistance).toBeUndefined();
+			expect(getGameById(games, 'mock-1').downDistance).toBeUndefined();
+			expect(getGameById(games, 'mock-3').downDistance).toBeUndefined();
+		});
+
+		test('downDistance changes when random is below the play threshold', () => {
+			const simulator = new MockGameSimulator();
+			const internals = getInternals(simulator);
+			const game = internals.games.find(g => g.id === 'mock-5')!;
+			game.downDistance = '1st & 10';
+
+			const randomSpy = jest.spyOn(Math, 'random').mockReturnValue(0.1);
+			const updated = getGameById(simulator.tick(), 'mock-5');
+			expect(updated.downDistance).not.toBe('1st & 10');
+
+			randomSpy.mockRestore();
+		});
+
+		test('downDistance stays the same when random is above the play threshold', () => {
+			const simulator = new MockGameSimulator();
+			const internals = getInternals(simulator);
+			const game = internals.games.find(g => g.id === 'mock-5')!;
+			game.downDistance = '2nd & 8';
+
+			const randomSpy = jest.spyOn(Math, 'random').mockReturnValue(0.9);
+			const updated = getGameById(simulator.tick(), 'mock-5');
+			expect(updated.downDistance).toBe('2nd & 8');
+
+			randomSpy.mockRestore();
+		});
+
+		// Regression: the table was walked by looking the current down up in it, but '1st & 10' sits at
+		// indices 0, 4 and 7, so every lookup resolved to index 0 — indices 5-7 were unreachable and
+		// the card teleported from DAL 48 back to PHI 27, a 25-yard retreat across midfield.
+		test('walks the whole drive table without losing yards inside a drive', () => {
+			// Under the 0.35 play threshold so every tick advances the drive, and over football's
+			// scoring probabilities so the clock is the only other thing moving.
+			const randomSpy = jest.spyOn(Math, 'random').mockReturnValue(0.1);
+			const simulator = new MockGameSimulator();
+
+			const walk = Array.from({ length: 9 }, () => {
+				const game = getGameById(simulator.tick(), 'mock-5');
+				return { downDistance: game.downDistance!, fieldPosition: game.fieldPosition! };
+			});
+
+			// A full cycle starting from the table's second entry, so all eight positions are visited.
+			expect(walk).toEqual([
+				{ downDistance: '2nd & 8', fieldPosition: 'PHI 27' },
+				{ downDistance: '3rd & 5', fieldPosition: 'PHI 30' },
+				{ downDistance: '4th & 2', fieldPosition: 'PHI 33' },
+				{ downDistance: '1st & 10', fieldPosition: 'DAL 48' },
+				{ downDistance: '2nd & 4', fieldPosition: 'DAL 42' },
+				{ downDistance: '3rd & Goal', fieldPosition: 'DAL 5' },
+				{ downDistance: '1st & 10', fieldPosition: 'PHI 25' },
+				{ downDistance: '1st & 10', fieldPosition: 'PHI 25' },
+				{ downDistance: '2nd & 8', fieldPosition: 'PHI 27' },
+			]);
+
+			const startOfDrive = { downDistance: '1st & 10', fieldPosition: 'PHI 25' };
+			walk.forEach((snap, index) => {
+				const previous = index === 0 ? startOfDrive : walk[index - 1]!;
+				// The goal-line snap ends the drive, so the entry after it is a fresh possession.
+				if (previous.downDistance === '3rd & Goal') return;
+				expect(yardsFromOwnGoal(snap.fieldPosition))
+					.toBeGreaterThanOrEqual(yardsFromOwnGoal(previous.fieldPosition));
+			});
+
+			randomSpy.mockRestore();
+		});
+
+		test('post-game reset sets downDistance back to "1st & 10"', () => {
+			const randomSpy = jest.spyOn(Math, 'random').mockReturnValue(0.99);
+			const simulator = new MockGameSimulator();
+			const internals = getInternals(simulator);
+			const game = internals.games.find(g => g.id === 'mock-5')!;
+
+			game.status = 'post';
+			game.downDistance = '4th & 2';
+			internals.state.set(game.id, { streak: null, streakTicks: 0, postTicks: 3, preTicks: 0, driveIndex: 3 });
+
+			const reset = getGameById(simulator.tick(), game.id);
+			expect(reset.downDistance).toBe('1st & 10');
+
+			randomSpy.mockRestore();
+		});
 	});
 });

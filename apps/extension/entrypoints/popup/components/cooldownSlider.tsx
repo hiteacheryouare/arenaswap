@@ -1,3 +1,6 @@
+import { i18n } from '#i18n';
+import SettingTooltipIcon from './settingTooltipIcon';
+
 interface cooldownSliderProps {
 	value: number;
 	onChange: (val: number) => void;
@@ -14,29 +17,33 @@ const formatSeconds = (secs: number): string => {
 
 const cooldownSlider = ({ value, onChange }: cooldownSliderProps) => {
 	const idx = steps.indexOf(value);
-	const currentIdx = idx >= 0 ? idx : 2; // default to 45s
+	const currentIdx = idx >= 0 ? idx : 2;
 
 	return (
 		<div>
 			<div className='d-flex justify-content-between align-items-center mb-1'>
-				<label className='text-body-secondary setting-toggle-label'><i className='bi bi-clock me-1 text-primary' />Switch cooldown</label>
+				<div className='d-flex align-items-center gap-1'>
+					<label htmlFor='cooldown-range' className='text-body-secondary setting-toggle-label'><i className='bi bi-clock me-1 text-primary' />{i18n.t('cooldown.label')}</label>
+					<SettingTooltipIcon text={i18n.t('cooldown.explainer')} />
+				</div>
 				<span className='fw-semibold setting-value-label'>{formatSeconds(steps[currentIdx]!)}</span>
 			</div>
 			<input
+				id='cooldown-range'
 				type='range'
 				min={0}
 				max={steps.length - 1}
 				step={1}
 				value={currentIdx}
-				onChange={e => onChange(steps[Number(e.target.value)]!)}
+				onChange={e => {
+					const next = steps[Number(e.target.value)]!;
+					if (next !== value) onChange(next);
+				}}
 				className='form-range w-100'
 			/>
 			<div className='d-flex justify-content-between'>
 				<span className='text-body-secondary setting-toggle-label'>{formatSeconds(steps[0]!)}</span>
 				<span className='text-body-secondary setting-toggle-label'>{formatSeconds(steps[steps.length - 1]!)}</span>
-			</div>
-			<div className='mt-1 setting-explainer'>
-				Sets the minimum time between automatic switches to reduce rapid tab flipping.
 			</div>
 		</div>
 	);

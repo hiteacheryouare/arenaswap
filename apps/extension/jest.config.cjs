@@ -5,12 +5,18 @@ const commonProjectConfig = {
 		'^@arenaswap/core/(.*)$': '<rootDir>/../../packages/core/src/$1.ts',
 		'^powerscore$': '<rootDir>/../../packages/powerscore/src/index.ts',
 		'^wxt/browser$': '<rootDir>/tests/stubs/wxtBrowser.ts',
+		'^#i18n$': '<rootDir>/tests/stubs/i18n.ts',
 	},
 	transform: {
 		'^.+\\.[jt]sx?$': [
-			'ts-jest',
+			'@swc/jest',
 			{
-				tsconfig: '<rootDir>/tsconfig.jest.json',
+				jsc: {
+					parser: { syntax: 'typescript', tsx: true },
+					transform: { react: { runtime: 'automatic' } },
+					target: 'es2020',
+				},
+				module: { type: 'commonjs' },
 			},
 		],
 	},
@@ -24,16 +30,6 @@ module.exports = {
 			...commonProjectConfig,
 			displayName: 'unit',
 			testMatch: ['<rootDir>/tests/**/*.test.ts'],
-		},
-		{
-			...commonProjectConfig,
-			displayName: 'component',
-			testEnvironment: 'jest-environment-jsdom',
-			testMatch: ['<rootDir>/tests/**/*.test.tsx'],
-			setupFilesAfterEnv: [
-				'<rootDir>/jestSetup.ts',
-				'@testing-library/jest-dom',
-			],
 		},
 	],
 };

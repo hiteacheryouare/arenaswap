@@ -12,28 +12,38 @@ import {
 } from '../src/constants';
 
 describe('scoreMaxTotal', () => {
-	it('equals the sum of all signal maxes', () => {
-		expect(scoreMaxTotal).toBe(
-			scoreMaxCloseness + scoreMaxLateGame + scoreMaxMomentum + scoreMaxLeadChanges + scoreMaxComeback
-		);
+	it('is the 100-point headline cap', () => {
+		expect(scoreMaxTotal).toBe(100);
+	});
+
+	it('is below the sum of per-signal ceilings (overcomplete, so exciting games can saturate)', () => {
+		const sumOfCeilings = scoreMaxCloseness + scoreMaxLateGame + scoreMaxMomentum + scoreMaxLeadChanges + scoreMaxComeback;
+		expect(sumOfCeilings).toBeGreaterThan(scoreMaxTotal);
 	});
 });
 
-describe('scorerTunables max-score alignment', () => {
-	it('closeness.tied equals scoreMaxCloseness', () => {
-		expect(scorerTunables.scores.closeness.tied).toBe(scoreMaxCloseness);
+// Both sides are asserted against literals. Checking that a tunable equals the constant it is
+// defined from cannot fail, and so would not notice either of them being retuned.
+describe('signal ceilings', () => {
+	it('tops closeness out at 42', () => {
+		expect(scoreMaxCloseness).toBe(42);
+		expect(scorerTunables.scores.closeness.tied).toBe(42);
 	});
-	it('lateGame.overtime equals scoreMaxLateGame', () => {
-		expect(scorerTunables.scores.lateGame.overtime).toBe(scoreMaxLateGame);
+	it('tops late-game pressure out at 38', () => {
+		expect(scoreMaxLateGame).toBe(38);
+		expect(scorerTunables.scores.lateGame.overtime).toBe(38);
 	});
-	it('momentum.bigRun equals scoreMaxMomentum', () => {
-		expect(scorerTunables.scores.momentum.bigRun).toBe(scoreMaxMomentum);
+	it('tops momentum out at 38', () => {
+		expect(scoreMaxMomentum).toBe(38);
+		expect(scorerTunables.scores.momentum.bigRun).toBe(38);
 	});
-	it('leadChanges.multiple equals scoreMaxLeadChanges', () => {
-		expect(scorerTunables.scores.leadChanges.multiple).toBe(scoreMaxLeadChanges);
+	it('tops lead changes out at 18', () => {
+		expect(scoreMaxLeadChanges).toBe(18);
+		expect(scorerTunables.scores.leadChanges.multiple).toBe(18);
 	});
-	it('comeback.big equals scoreMaxComeback', () => {
-		expect(scorerTunables.scores.comeback.big).toBe(scoreMaxComeback);
+	it('tops comeback out at 20', () => {
+		expect(scoreMaxComeback).toBe(20);
+		expect(scorerTunables.scores.comeback.big).toBe(20);
 	});
 });
 
@@ -70,23 +80,154 @@ describe('leagueConfigMap coverage', () => {
 	});
 });
 
-describe('sportTypeConfigs late-game curve config', () => {
-	it('defines curve tunables for every sport with a matching model', () => {
-		for (const config of sportTypeConfigs) {
-			if (config.clockBased) {
-				expect(config.lateGameCurve.model).toBe('clock');
-				if (config.lateGameCurve.model === 'clock') {
-					expect(config.lateGameCurve.finalPeriodCurve.maxScore).toBeLessThanOrEqual(scoreMaxLateGame);
-					expect(config.lateGameCurve.previousPeriodCurve.maxScore).toBeLessThanOrEqual(scoreMaxLateGame);
-				}
-				continue;
-			}
+describe('baseball & softball league configs', () => {
+	it('cbase is a 9-inning baseball league', () => {
+		expect(leagueConfigMap.cbase).toBeDefined();
+		expect(leagueConfigMap.cbase.sportType).toBe('baseball');
+		expect(leagueConfigMap.cbase.espnPath).toBe('baseball/college-baseball');
+		expect(leagueConfigMap.cbase.regularPeriods).toBe(9);
+		expect(leagueConfigMap.cbase.periodFormat).toBe('innings');
+	});
 
-			expect(config.lateGameCurve.model).toBe('baseball');
-			if (config.lateGameCurve.model === 'baseball') {
-				expect(config.lateGameCurve.regulationCurve.maxScore).toBeLessThanOrEqual(scoreMaxLateGame);
-				expect(config.lateGameCurve.extraInningsCurve.maxScore).toBeLessThanOrEqual(scoreMaxLateGame);
-			}
+	it('csoft is a 7-inning softball league', () => {
+		expect(leagueConfigMap.csoft).toBeDefined();
+		expect(leagueConfigMap.csoft.sportType).toBe('softball');
+		expect(leagueConfigMap.csoft.espnPath).toBe('baseball/college-softball');
+		expect(leagueConfigMap.csoft.regularPeriods).toBe(7);
+		expect(leagueConfigMap.csoft.periodFormat).toBe('innings');
+	});
+
+	it('olybb is a 9-inning baseball league with the correct Olympics ESPN path', () => {
+		expect(leagueConfigMap.olybb).toBeDefined();
+		expect(leagueConfigMap.olybb.sportType).toBe('baseball');
+		expect(leagueConfigMap.olybb.espnPath).toBe('baseball/olympics-baseball');
+		expect(leagueConfigMap.olybb.regularPeriods).toBe(9);
+	});
+
+	it('wbbc is a 9-inning baseball league', () => {
+		expect(leagueConfigMap.wbbc).toBeDefined();
+		expect(leagueConfigMap.wbbc.sportType).toBe('baseball');
+		expect(leagueConfigMap.wbbc.espnPath).toBe('baseball/world-baseball-classic');
+	});
+});
+
+describe('soccer league configs — new', () => {
+	const soccerLeagues: Array<{ id: string; espnPath: string; label: string }> = [
+		{ id: 'olysocm', espnPath: 'soccer/fifa.olympics', label: "Olympic Men's Soccer" },
+		{ id: 'olysocw', espnPath: 'soccer/fifa.w.olympics', label: "Olympic Women's Soccer" },
+		{ id: 'laliga', espnPath: 'soccer/esp.1', label: 'La Liga' },
+		{ id: 'bundesliga', espnPath: 'soccer/ger.1', label: 'Bundesliga' },
+		{ id: 'seriea', espnPath: 'soccer/ita.1', label: 'Serie A' },
+		{ id: 'ligamx', espnPath: 'soccer/mex.1', label: 'Liga MX' },
+		{ id: 'ucl', espnPath: 'soccer/uefa.champions', label: 'UEFA Champions League' },
+		{ id: 'uel', espnPath: 'soccer/uefa.europa', label: 'UEFA Europa League' },
+		{ id: 'nwsl', espnPath: 'soccer/usa.nwsl', label: 'NWSL' },
+		{ id: 'fifawwc', espnPath: 'soccer/fifa.wwc', label: "FIFA Women's World Cup" },
+	];
+
+	it.each(soccerLeagues)('$id has sportType soccer, correct espnPath, 2 halves', ({ id, espnPath }) => {
+		const config = leagueConfigMap[id as keyof typeof leagueConfigMap];
+		expect(config).toBeDefined();
+		expect(config.sportType).toBe('soccer');
+		expect(config.espnPath).toBe(espnPath);
+		expect(config.regularPeriods).toBe(2);
+		expect(config.periodFormat).toBe('halves');
+	});
+});
+
+describe('Olympic basketball league configs', () => {
+	it('olybkm is FIBA-spec basketball (10-min quarters)', () => {
+		expect(leagueConfigMap.olybkm).toBeDefined();
+		expect(leagueConfigMap.olybkm.sportType).toBe('basketball');
+		expect(leagueConfigMap.olybkm.espnPath).toBe('basketball/mens-olympics-basketball');
+		expect(leagueConfigMap.olybkm.regularPeriods).toBe(4);
+		expect(leagueConfigMap.olybkm.periodDurationSecs).toBe(600);
+		expect(leagueConfigMap.olybkm.periodFormat).toBe('quarters');
+	});
+
+	it('olybkw is FIBA-spec womens basketball (10-min quarters)', () => {
+		expect(leagueConfigMap.olybkw).toBeDefined();
+		expect(leagueConfigMap.olybkw.sportType).toBe('basketball');
+		expect(leagueConfigMap.olybkw.espnPath).toBe('basketball/womens-olympics-basketball');
+		expect(leagueConfigMap.olybkw.regularPeriods).toBe(4);
+		expect(leagueConfigMap.olybkw.periodDurationSecs).toBe(600);
+	});
+});
+
+describe('hockey league configs — new', () => {
+	it('olymih is Olympic mens ice hockey with correct ESPN path', () => {
+		expect(leagueConfigMap.olymih).toBeDefined();
+		expect(leagueConfigMap.olymih.sportType).toBe('hockey');
+		expect(leagueConfigMap.olymih.espnPath).toBe('hockey/olympics-mens-ice-hockey');
+		expect(leagueConfigMap.olymih.regularPeriods).toBe(3);
+	});
+
+	it('olywih is Olympic womens ice hockey with correct ESPN path', () => {
+		expect(leagueConfigMap.olywih).toBeDefined();
+		expect(leagueConfigMap.olywih.sportType).toBe('hockey');
+		expect(leagueConfigMap.olywih.espnPath).toBe('hockey/olympics-womens-ice-hockey');
+		expect(leagueConfigMap.olywih.regularPeriods).toBe(3);
+	});
+});
+
+describe('UFL league config', () => {
+	it('ufl is a football league with correct ESPN path', () => {
+		expect(leagueConfigMap.ufl).toBeDefined();
+		expect(leagueConfigMap.ufl.sportType).toBe('football');
+		expect(leagueConfigMap.ufl.espnPath).toBe('football/ufl');
+		expect(leagueConfigMap.ufl.regularPeriods).toBe(4);
+		expect(leagueConfigMap.ufl.periodDurationSecs).toBe(900);
+		expect(leagueConfigMap.ufl.periodFormat).toBe('quarters');
+	});
+});
+
+describe('softball sport type config', () => {
+	it('exists in sportTypeConfigs', () => {
+		const softball = sportTypeConfigs.find(c => c.id === 'softball');
+		expect(softball).toBeDefined();
+	});
+
+	it('is not clock-based and uses 7-inning lateGameCurve', () => {
+		const softball = sportTypeConfigs.find(c => c.id === 'softball');
+		expect(softball!.clockBased).toBe(false);
+		expect(softball!.lateGameCurve?.model).toBe('baseball');
+		if (softball!.lateGameCurve?.model === 'baseball') {
+			expect(softball!.lateGameCurve.regulationInnings).toBe(7);
+			expect(softball!.lateGameCurve.regulationStartInning).toBe(5);
+		}
+	});
+
+	it('disables the OT pre-boost (no clock)', () => {
+		const softball = sportTypeConfigs.find(c => c.id === 'softball');
+		expect(softball!.otPreBoostWindowSecs).toBe(0);
+	});
+});
+
+describe('sportTypeConfigs late-game config', () => {
+	it('clock sports derive the ramp from period/clock and carry no inning curve', () => {
+		for (const config of sportTypeConfigs) {
+			if (!config.clockBased) continue;
+			expect(config.lateGameCurve).toBeUndefined();
+			expect(config.otPreBoostWindowSecs).toBeGreaterThan(0);
+		}
+	});
+
+	it('baseball defines inning anchors and disables the OT pre-boost', () => {
+		const baseball = sportTypeConfigs.find(c => c.id === 'baseball');
+		expect(baseball).toBeDefined();
+		expect(baseball!.lateGameCurve?.model).toBe('baseball');
+		if (baseball!.lateGameCurve?.model === 'baseball') {
+			expect(baseball!.lateGameCurve.regulationInnings).toBe(9);
+			expect(baseball!.lateGameCurve.regulationStartInning).toBe(6);
+		}
+		expect(baseball!.otPreBoostWindowSecs).toBe(0);
+	});
+
+	it('every sport defines sport-scaled decay half-lives', () => {
+		for (const config of sportTypeConfigs) {
+			expect(config.decayHalfLifeMs.momentum).toBeGreaterThan(0);
+			expect(config.decayHalfLifeMs.leadChange).toBeGreaterThan(0);
+			expect(config.decayHalfLifeMs.comeback).toBeGreaterThan(0);
 		}
 	});
 });

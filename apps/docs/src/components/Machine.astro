@@ -1,0 +1,49 @@
+---
+import MachineScene from './MachineScene.tsx';
+---
+<section id="machine" class="machine-section">
+	<noscript>
+		<style>
+			.machine-viewport { display: none !important; }
+			.machine-fallback { display: block !important; }
+		</style>
+	</noscript>
+
+	<div class="container machine-header reveal">
+		<h2 class="section-title mb-3">Watch it work.</h2>
+		<p class="section-sub mx-auto">
+			ArenaSwap scores every live game as it happens — then puts your tab on the
+			best one. Here's what that looks like.
+		</p>
+	</div>
+
+	<!-- Auto-playing ECharts + SVG explainer (hydrates on view) -->
+	<MachineScene client:visible />
+
+	<!-- Static fallback: shown before hydration, with JS off, or reduced motion -->
+	<div class="machine-fallback container" data-machine-fallback>
+		<div class="row g-4">
+			<div class="col-md-4">
+				<div class="feature-card">
+					<i class="bi bi-eye-fill feature-icon"></i>
+					<h3 class="h5">Watch</h3>
+					<p class="section-sub mb-0" style="font-size:0.95rem;">Every live game in every league you follow, at once.</p>
+				</div>
+			</div>
+			<div class="col-md-4">
+				<div class="feature-card">
+					<i class="bi bi-lightning-fill feature-icon"></i>
+					<h3 class="h5">Score</h3>
+					<p class="section-sub mb-0" style="font-size:0.95rem;">PowerScore rates how exciting each game is, live.</p>
+				</div>
+			</div>
+			<div class="col-md-4">
+				<div class="feature-card">
+					<i class="bi bi-arrow-left-right feature-icon"></i>
+					<h3 class="h5">Switch</h3>
+					<p class="section-sub mb-0" style="font-size:0.95rem;">Your tab jumps to the best game automatically.</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>

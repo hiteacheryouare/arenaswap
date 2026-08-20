@@ -1,0 +1,116 @@
+---
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import OrangeDots from '../components/OrangeDots.astro';
+import '../styles/tailwind.css';
+import '../styles/global.scss';
+import { chromeWebStore, edgeAddons, firefoxAddons } from '../lib/installTargets';
+
+interface Props {
+	title: string;
+	description: string;
+	// Path without the base, e.g. `releases/`. Used for the canonical and og:url.
+	path?: string;
+	ogTitle?: string;
+	// Article, for a blog post or a release note. Anything else is a page.
+	ogType?: 'website' | 'article';
+	// Absolute or base-relative. Falls back to the app icon, because `summary_large_image` with no
+	// image is a card that renders as a bare link.
+	image?: string;
+	imageAlt?: string;
+	// Keeps a page out of search results. It also drops the canonical, because a noindex page
+	// asserting its own canonical URL is a mixed signal.
+	noindex?: boolean;
+}
+
+const { title, description, path = '', ogTitle, ogType = 'website', image, imageAlt, noindex = false } = Astro.props;
+const site = Astro.site ?? new URL('https://hiteacheryouare.github.io');
+const canonical = new URL(`${import.meta.env.BASE_URL}${path}`, site);
+const socialImage = new URL(image ?? `${import.meta.env.BASE_URL}images/128.png`, site);
+---
+<!doctype html>
+<html lang='en'>
+<head>
+	<meta charset='UTF-8' />
+	<meta name='viewport' content='width=device-width, initial-scale=1.0' />
+	<meta name='description' content={description} />
+	{noindex
+		? <meta name='robots' content='noindex' />
+		: <link rel='canonical' href={canonical.href} />}
+	<meta property='og:title' content={ogTitle ?? title} />
+	<meta property='og:description' content={description} />
+	<meta property='og:type' content={ogType} />
+	<meta property='og:url' content={canonical.href} />
+	<meta property='og:image' content={socialImage.href} />
+	<meta property='og:image:alt' content={imageAlt ?? ogTitle ?? title} />
+	<meta name='twitter:card' content='summary_large_image' />
+	<meta name='twitter:image' content={socialImage.href} />
+	<title>{title}</title>
+	<link rel='shortcut icon' href={`${import.meta.env.BASE_URL}images/128.png`} type='image/x-icon' />
+	<link rel='alternate' type='application/rss+xml' title='ArenaSwap release notes' href={`${import.meta.env.BASE_URL}releases/rss.xml`} />
+	<noscript><style>.reveal { opacity: 1 !important; transform: none !important; }</style></noscript>
+
+	<script is:inline define:vars={{ chromeUrl: chromeWebStore, firefoxUrl: firefoxAddons, edgeUrl: edgeAddons }}>
+			const arenaSwapInstallFork = (name, href) => ({ name, icon: 'bi-download', href });
+
+			window.arenaSwapInstall = (() => {
+				const ua = navigator.userAgent;
+				const chrome  = { name: 'Chrome',  icon: 'bi-browser-chrome',  href: chromeUrl };
+				const firefox = { name: 'Firefox', icon: 'bi-browser-firefox', href: firefoxUrl };
+				const edge    = { name: 'Edge',    icon: 'bi-browser-edge',    href: edgeUrl };
+
+				const detected =
+					/Firefox\//.test(ua)         ? { primary: firefox,         alternates: [chrome, edge] }
+					: /Edg(?:A|iOS)?\//.test(ua) ? { primary: edge,            alternates: [chrome, firefox] }
+					// Chromium forks install from the Chrome Web Store, so they get its link under their own
+					// name and a neutral icon — Bootstrap Icons ships no mark for any of them.
+					: navigator.brave             ? { primary: arenaSwapInstallFork('Brave', chromeUrl),   alternates: [firefox, edge] }
+					: /OPR\//.test(ua)           ? { primary: arenaSwapInstallFork('Opera', chromeUrl),   alternates: [firefox, edge] }
+					: /Vivaldi/.test(ua)          ? { primary: arenaSwapInstallFork('Vivaldi', chromeUrl), alternates: [firefox, edge] }
+					: /Chrome\//.test(ua)        ? { primary: chrome,          alternates: [firefox, edge] }
+					: { primary: chrome, alternates: [firefox, edge] };
+
+			return {
+				applyCta(el) {
+					if (!el) return;
+					el.href = detected.primary.href;
+					el.querySelector('[data-install-icon]').className = `bi ${detected.primary.icon} me-2`;
+					el.querySelector('[data-install-label]').textContent = `Add to ${detected.primary.name}`;
+				},
+				applyAlternates(el) {
+					if (!el) return;
+					el.querySelectorAll('[data-install-alternate]').forEach((link, i) => {
+						link.href = detected.alternates[i].href;
+						link.textContent = detected.alternates[i].name;
+					});
+				},
+			};
+		})();
+	</script>
+</head>
+<body>
+	<Nav />
+	<main>
+		<slot />
+	</main>
+	<Footer />
+	<OrangeDots />
+
+	<script>
+		import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+	</script>
+
+	<script>
+		const revealElements = document.querySelectorAll('.reveal');
+		const observer = new IntersectionObserver(
+			(entries) => {
+				entries.forEach(entry => {
+					if (entry.isIntersecting) entry.target.classList.add('visible');
+				});
+			},
+			{ threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
+		);
+		revealElements.forEach(el => observer.observe(el));
+	</script>
+</body>
+</html>

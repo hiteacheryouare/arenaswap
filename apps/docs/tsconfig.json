@@ -2,9 +2,9 @@
 	"extends": "astro/tsconfigs/strict",
 	"compilerOptions": {
 		"jsx": "react-jsx",
-		"jsxImportSource": "react",
-		"baseUrl": ".",
-		"paths": {}
+		"jsxImportSource": "react"
+		// No `baseUrl`: TypeScript 7 removed the option, and `paths` here resolve relative to
+		// this file. Nothing in the app relied on baseUrl-style non-relative resolution.
 	},
 	"include": ["src/**/*", ".astro/**/*"]
 }

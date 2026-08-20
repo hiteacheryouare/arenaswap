@@ -1,6 +1,5 @@
-// Declares the WXT-injected `browser` global so unit-test compilations of
-// modules that reference it succeed without pulling in WXT's full type bundle.
-// Uses `any` for return types so background.ts can destructure responses freely.
+// Declares the WXT-injected `browser` global so unit-test compilations succeed without pulling
+// in WXT's full type bundle.
 /* eslint-disable @typescript-eslint/no-explicit-any */
 declare const browser: {
 	runtime: {
@@ -38,5 +37,4 @@ declare const browser: {
 	};
 };
 
-// WXT-injected global that wraps the background service worker entry point.
 declare const defineBackground: (fn: () => unknown) => unknown;

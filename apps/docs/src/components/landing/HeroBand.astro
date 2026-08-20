@@ -1,0 +1,31 @@
+---
+import BrowserHero from '../hero/BrowserHero';
+import InstallAlternates from '../InstallAlternates.astro';
+import InstallCta from '../InstallCta.astro';
+import TeamStrip from './TeamStrip.astro';
+---
+<section class='band band-hero' id='hero'>
+	<div class='container'>
+		<div class='hero-grid'>
+
+			<div class='hero-copy'>
+				<h1 class='display-lg'>Never miss<br>the moment.</h1>
+
+				<p class='band-lede' style='margin-top:1.35rem'>
+					ArenaSwap watches every live game across 31 leagues and automatically switches your
+					browser tab to the most exciting one, as fast as every 6 seconds.
+				</p>
+
+				<div class='hero-actions'>
+					<InstallCta />
+					<InstallAlternates class='hero-actions-alt' />
+				</div>
+
+				<TeamStrip />
+			</div>
+
+			<BrowserHero client:load />
+
+		</div>
+	</div>
+</section>

@@ -1,0 +1,380 @@
+---
+import './_screenshot.scss';
+import { Image } from 'astro:assets';
+import ScreenshotCard from '../../components/ScreenshotCard';
+import logoImg from '../../assets/full_logo_white_on_transparent.svg';
+
+const nflGame = {
+	id: 'fl7-nfl',
+	league: 'nfl',
+	sportType: 'football',
+	awayTeam: { id: '12', name: 'Kansas City Chiefs', abbreviation: 'KC', score: 21, logo: 'https://a.espncdn.com/i/teamlogos/nfl/500/kc.png', color: '#E31837', alternateColor: '#FFB612' },
+	homeTeam: { id: '21', name: 'Philadelphia Eagles', abbreviation: 'PHI', score: 17, logo: 'https://a.espncdn.com/i/teamlogos/nfl/500/phi.png', color: '#004C54', alternateColor: '#A5ACAF' },
+	period: 4, clockSeconds: 210, status: 'in',
+	venueName: 'Lincoln Financial Field · Philadelphia, PA',
+	broadcasts: ['NFL+'],
+};
+const nflScore = { gameId: 'fl7-nfl', total: 86, closeness: 24, lateGame: 24, momentum: 18, leadChanges: 12, comeback: 8, reason: '' };
+
+const plGame = {
+	id: 'fl7-pl',
+	league: 'epl',
+	sportType: 'soccer',
+	awayTeam: { id: 'man', name: 'Manchester City', abbreviation: 'MCI', score: 2, logo: 'https://a.espncdn.com/i/teamlogos/soccer/500/382.png', color: '#6CABDD', alternateColor: '#1C2C5B' },
+	homeTeam: { id: 'ars', name: 'Arsenal', abbreviation: 'ARS', score: 2, logo: 'https://a.espncdn.com/i/teamlogos/soccer/500/359.png', color: '#EF0107', alternateColor: '#063672' },
+	period: 2, clockSeconds: 0, status: 'in',
+	venueName: 'Emirates Stadium · London, ENG',
+	broadcasts: ['Peacock'],
+};
+const plScore = { gameId: 'fl7-pl', total: 79, closeness: 28, lateGame: 18, momentum: 16, leadChanges: 10, comeback: 7, reason: '' };
+
+const nhlGame = {
+	id: 'fl7-nhl',
+	league: 'nhl',
+	sportType: 'hockey',
+	awayTeam: { id: 'bos', name: 'Boston Bruins', abbreviation: 'BOS', score: 3, logo: 'https://a.espncdn.com/i/teamlogos/nhl/500/bos.png', color: '#FFB81C', alternateColor: '#000000' },
+	homeTeam: { id: 'tbl', name: 'Tampa Bay Lightning', abbreviation: 'TBL', score: 3, logo: 'https://a.espncdn.com/i/teamlogos/nhl/500/tbl.png', color: '#002868', alternateColor: '#FFFFFF' },
+	period: 3, clockSeconds: 120, status: 'in',
+	venueName: 'Amalie Arena · Tampa, FL',
+	broadcasts: ['ESPN+'],
+};
+const nhlScore = { gameId: 'fl7-nhl', total: 82, closeness: 28, lateGame: 20, momentum: 16, leadChanges: 12, comeback: 6, reason: '' };
+---
+<!doctype html>
+<html lang='en'>
+<head>
+	<meta charset='UTF-8' />
+	<meta name='robots' content='noindex' />
+	<title>Flyer 2 — Every Sport. Every Night.</title>
+</head>
+<body>
+	<div class='canvas fl-canvas'>
+		<div class='bottom-glow'></div>
+		<div class='over-glow'></div>
+
+		<div class='fl-inner'>
+
+			<Image src={logoImg} alt='ArenaSwap' class='fl-logo' />
+
+			<h1 class='fl-headline'>Every Sport<span class='fl-dot'>.</span><br>Every Night<span class='fl-dot'>.</span></h1>
+			<p class='fl-subhead'>ArenaSwap monitors 31 leagues simultaneously and<br>always keeps you watching the most exciting one.</p>
+
+			<div class='fl-demo'>
+				<div class='fl-browser'>
+					<div class='fl-browser-chrome'>
+						<div class='fl-traffic'>
+							<span class='dot-r'></span><span class='dot-y'></span><span class='dot-g'></span>
+						</div>
+						<div class='fl-tabs'>
+							<div class='fl-tab'>
+								<div class='fl-fav' style='background:#013369'>F</div>
+								<span>NFL+</span>
+							</div>
+							<div class='fl-tab fl-tab-active'>
+								<div class='fl-fav' style='background:#000'>P</div>
+								<span>Peacock</span>
+							</div>
+							<div class='fl-tab'>
+								<div class='fl-fav' style='background:#CC0000'>E</div>
+								<span>ESPN+</span>
+							</div>
+							<div class='fl-tab'>
+								<div class='fl-fav' style='background:#041E42'>M</div>
+								<span>MLB.TV</span>
+							</div>
+						</div>
+					</div>
+					<div class='fl-stream'>
+						<img
+							src='https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Baseball_Backyard_Brawl.jpg/960px-Baseball_Backyard_Brawl.jpg'
+							alt='Baseball game'
+							class='fl-stream-img'
+						/>
+						<div class='fl-stream-tint'></div>
+						<div class='fl-live-pill'>
+							<span class='fl-live-dot'></span>LIVE · BOTTOM 7TH
+						</div>
+					</div>
+				</div>
+
+				<div class='fl-popup-anchor'>
+					<div class='popup'>
+						<div class='popup-inner'>
+							<div class='popup-header'>
+								<Image src={logoImg} alt='ArenaSwap' class='popup-logo' />
+								<div class='popup-header-right'>
+									<div class='popup-switch'><div class='popup-switch-thumb'></div></div>
+								</div>
+							</div>
+							<div class='popup-section-title'>Active Tabs</div>
+							<div class='popup-league-label'>NFL</div>
+							<ScreenshotCard game={nflGame} excitementResult={nflScore} tabLabel='Tab 1: NFL+' />
+							<div class='popup-league-label'>PREMIER LEAGUE</div>
+							<ScreenshotCard game={plGame} excitementResult={plScore} tabLabel='Tab 2: Peacock' />
+							<div class='popup-league-label'>NHL</div>
+							<ScreenshotCard game={nhlGame} excitementResult={nhlScore} tabLabel='Tab 3: ESPN+' />
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class='fl-features'>
+
+				<div class='fl-feat'>
+					<svg class='fl-icon' viewBox='0 0 24 24' fill='currentColor'>
+						<path d='M13 2L4.09 12.97H11L10 22L20.09 11.03H13L13 2Z'/>
+					</svg>
+					<div class='fl-feat-body'>
+						<div class='fl-feat-title'>PowerScore keeps you on the right game</div>
+						<div class='fl-feat-desc'>A live 0–100 excitement score rebuilt every few seconds from closeness, momentum, late-game pressure, and comebacks. You always end up on the game that's exciting</div>
+					</div>
+				</div>
+
+				<div class='fl-feat'>
+					<svg class='fl-icon' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.75' stroke-linecap='round'>
+						<line x1='2' y1='7' x2='22' y2='7'/>
+						<circle cx='7' cy='7' r='3'/>
+						<line x1='2' y1='17' x2='22' y2='17'/>
+						<circle cx='17' cy='17' r='3'/>
+					</svg>
+					<div class='fl-feat-body'>
+						<div class='fl-feat-title'>Your settings, your rules</div>
+						<div class='fl-feat-desc'>Set a Favorite Team Bonus, dial in sensitivity, tweak how long it waits before switching. You can also pin any game to keep it front-and-center no matter its score.</div>
+					</div>
+				</div>
+
+				<div class='fl-feat'>
+					<svg class='fl-icon' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'>
+						<rect x='2' y='3' width='20' height='14' rx='2'/>
+						<line x1='8' y1='21' x2='16' y2='21'/>
+						<line x1='12' y1='17' x2='12' y2='21'/>
+						<path d='M8 10 L11 8 L11 12 Z' fill='currentColor' stroke='none'/>
+						<path d='M13 9.5 C14.5 9 16.5 10 16.5 12 C16.5 14 14.5 15 13 14.5'/>
+					</svg>
+					<div class='fl-feat-body'>
+						<div class='fl-feat-title'>Standby Stream fills the dead air</div>
+						<div class='fl-feat-desc'>Designate a fallback tab — a pregame show, a highlights feed, anything. When all games hit halftime or turn into blowouts, ArenaSwap switches there automatically.</div>
+					</div>
+				</div>
+
+			</div>
+
+			<div class='fl-store-badges'>
+				<img
+					src='https://developer.chrome.com/static/docs/webstore/branding/image/UV4C4ybeBTsZt43U4xis.png'
+					alt='Available in the Chrome Web Store'
+					class='fl-store-img'
+				/>
+				<img
+					src='https://extensionworkshop.com/assets/img/documentation/publish/get-the-addon-178x60px.dad84b42.png'
+					alt='Get the Add-on for Firefox'
+					class='fl-store-img'
+				/>
+			</div>
+
+		</div>
+	</div>
+
+	<style>
+		html, body { width: 816px !important; height: 1056px !important; }
+		.fl-canvas { width: 816px !important; height: 1056px !important; }
+
+		.fl-inner {
+			position: relative;
+			z-index: 2;
+			width: 816px;
+			height: 1056px;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			padding: 44px 60px 40px;
+		}
+
+		.fl-logo {
+			height: 34px;
+			width: auto;
+			margin-bottom: 20px;
+		}
+
+		.fl-headline {
+			font-size: 60px;
+			font-weight: 700;
+			letter-spacing: -0.045em;
+			line-height: 1.02;
+			text-align: center;
+			color: #fff;
+			margin-bottom: 10px;
+		}
+
+		.fl-subhead {
+			font-size: 0.95rem;
+			color: rgba(230,237,243,0.55);
+			text-align: center;
+			line-height: 1.5;
+			margin-bottom: 16px;
+		}
+
+		.fl-dot { color: #F75C03; }
+
+		.fl-demo {
+			width: 100%;
+			height: 340px;
+			flex-shrink: 0;
+			position: relative;
+			margin-bottom: 16px;
+			overflow: hidden;
+			border-radius: 10px;
+		}
+
+		.fl-browser {
+			position: absolute;
+			inset: 0;
+			background: #0d1117;
+			border-radius: 10px;
+			overflow: hidden;
+			border: 1px solid #30363d;
+		}
+
+		.fl-browser-chrome {
+			background: #161b22;
+			border-bottom: 1px solid #30363d;
+			padding: 8px 12px 0;
+			display: flex;
+			align-items: flex-end;
+			gap: 10px;
+			height: 36px;
+		}
+
+		.fl-traffic { display: flex; gap: 5px; padding-bottom: 10px; align-items: center; }
+		.fl-traffic span { width: 10px; height: 10px; border-radius: 50%; display: block; flex-shrink: 0; }
+		.dot-r { background: #ff5f57; }
+		.dot-y { background: #febc2e; }
+		.dot-g { background: #28c840; }
+
+		.fl-tabs { display: flex; gap: 2px; align-items: flex-end; flex: 1; min-width: 0; overflow: hidden; }
+
+		.fl-tab {
+			display: flex; align-items: center; gap: 6px;
+			padding: 7px 10px;
+			border-radius: 7px 7px 0 0;
+			flex: 1; max-width: 140px; min-width: 0;
+			color: #8b949e;
+			font-size: 0.68rem; font-weight: 500;
+			white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+		}
+
+		.fl-tab-active {
+			background: #0d1117;
+			color: #e6edf3;
+			border: 1px solid #30363d;
+			border-bottom: none;
+		}
+
+		.fl-fav {
+			width: 13px; height: 13px; border-radius: 3px;
+			display: flex; align-items: center; justify-content: center;
+			color: #fff; font-size: 0.5rem; font-weight: 800;
+			flex-shrink: 0;
+		}
+
+		.fl-stream {
+			position: relative;
+			height: calc(100% - 36px);
+			overflow: hidden;
+		}
+
+		.fl-stream-img {
+			width: 100%; height: 100%;
+			object-fit: cover;
+			filter: blur(10px) saturate(1.1);
+			transform: scale(1.06);
+		}
+
+		.fl-stream-tint {
+			position: absolute;
+			inset: 0;
+			background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.5)),
+			            radial-gradient(circle at 65% 55%, rgba(247,92,3,0.08), transparent 55%);
+		}
+
+		.fl-live-pill {
+			position: absolute;
+			top: 12px; left: 14px;
+			display: flex; align-items: center; gap: 5px;
+			background: #e53935;
+			color: #fff;
+			padding: 3px 8px;
+			border-radius: 4px;
+			font-size: 0.65rem; font-weight: 800;
+			letter-spacing: 0.08em;
+		}
+
+		.fl-live-dot {
+			width: 5px; height: 5px;
+			border-radius: 50%; background: #fff;
+			animation: popup-live-pulse 1.5s ease-in-out infinite;
+		}
+
+		.fl-popup-anchor {
+			position: absolute;
+			right: 12px;
+			top: 8px;
+			z-index: 5;
+		}
+
+		/* 3 cards need more room — scale down further */
+		.fl-popup-anchor .popup {
+			width: 280px;
+			transform: scale(0.52) !important;
+			transform-origin: top right;
+		}
+
+		.fl-features {
+			display: flex;
+			flex-direction: column;
+			width: 100%;
+		}
+
+		.fl-feat {
+			display: flex;
+			align-items: flex-start;
+			gap: 14px;
+			padding: 9px 0;
+			border-bottom: 1px solid rgba(255,255,255,0.07);
+		}
+
+		.fl-feat:last-child { border-bottom: none; }
+
+		.fl-icon {
+			width: 22px; height: 22px;
+			color: #F75C03;
+			flex-shrink: 0;
+			margin-top: 1px;
+		}
+
+		.fl-feat-title {
+			font-size: 0.9rem; font-weight: 700;
+			color: #e6edf3; margin-bottom: 3px;
+		}
+
+		.fl-feat-desc {
+			font-size: 0.78rem;
+			color: rgba(230,237,243,0.5);
+			line-height: 1.5;
+		}
+
+		.fl-store-badges {
+			display: flex;
+			gap: 12px;
+			align-items: center;
+			margin-top: auto;
+		}
+
+		.fl-store-img {
+			height: 48px;
+			width: auto;
+			display: block;
+		}
+	</style>
+</body>
+</html>

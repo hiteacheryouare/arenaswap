@@ -105,39 +105,33 @@ describe('createPollModeTracker', () => {
 
 		test('alternating empty polls across leagues do not cross-contaminate counts', () => {
 			const tracker = createPollModeTracker();
-			// Each league only gets one empty poll — neither should go dormant
 			tracker.recordPollResult('nba', false);
 			tracker.recordPollResult('nhl', false);
 			tracker.recordPollResult('nba', false);
-			// nba now has 2, nhl still has 1
 			expect(tracker.getMode('nba')).toBe('dormant');
 			expect(tracker.getMode('nhl')).toBe('eager');
 		});
 	});
 
 	describe('error neutrality', () => {
-		// Errors in background.ts skip calling recordPollResult entirely.
-		// These tests simulate that by simply not calling it.
+		// background.ts skips recordPollResult entirely on error, which these tests simulate by
+		// simply not calling it.
 
 		test('one empty + error (skipped) + one more empty → dormant', () => {
 			const tracker = createPollModeTracker();
 			tracker.recordPollResult('nba', false); // count: 1
-			// error — recordPollResult not called
 			tracker.recordPollResult('nba', false); // count: 2
 			expect(tracker.getMode('nba')).toBe('dormant');
 		});
 
 		test('error without any prior calls leaves league eager', () => {
 			const tracker = createPollModeTracker();
-			// error — recordPollResult not called at all
 			expect(tracker.getMode('nba')).toBe('eager');
 		});
 
 		test('errors do not reset the empty count', () => {
 			const tracker = createPollModeTracker();
 			tracker.recordPollResult('nba', false); // count: 1
-			// two errors in a row — no calls
-			// count is still 1, not reset to 0
 			tracker.recordPollResult('nba', false); // count: 2
 			expect(tracker.getMode('nba')).toBe('dormant');
 		});

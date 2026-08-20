@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { i18n } from '#i18n';
 import type { Browser } from 'wxt/browser';
 import type {
 	Game,
@@ -8,19 +9,22 @@ import type {
 	TabRegistration,
 	UserPreferences,
 } from '@arenaswap/core/types';
-import { resolveLeagueLogoUrl } from '@arenaswap/core/constants';
+import { LeagueSectionHeader, PopupHeader, PopupSectionTitle } from '@arenaswap/ui/src/components/popupChrome';
 import GameCard from './gameCard';
 import PopupFooter from './popupFooter';
 import ProTip from './proTip';
 import EmptyGameState from './emptyGameState';
 import GameListHeader from './gameListHeader';
 import ReviewPromptBanner from './reviewPromptBanner';
-import { buildFavoritePinnedComparator, buildUpcomingComparator, getRandomLoadingMessage, groupByDate, groupByLeague, leagueLabels } from '../popupHelpers';
+import { buildFavoritePinnedComparator, buildLeagueRank, buildUpcomingComparator, getRandomLoadingMessage, groupByDate, groupByLeague } from '../popupHelpers';
+import type { BettingDisplayPrefs, WeatherDisplayPrefs } from './gameCardTypes';
+
+const emptyScoreMap = new Map<string, PowerScoreResult>();
 
 interface gameSectionProps {
 	title: string;
 	games: Game[];
-	scores: PowerScoreResult[];
+	scoreMap: Map<string, PowerScoreResult>;
 	leagueLogos: LeagueLogoMap;
 	favoriteTeamIds: Set<string>;
 	onToggleFavoriteTeam: (leagueId: LeagueId, teamId: string) => void;
@@ -30,27 +34,11 @@ interface gameSectionProps {
 	onRegistryChange: (updated: TabRegistration[]) => void;
 	formatTabLabel: (tab: Browser.tabs.Tab) => string;
 	onOpenGameDetail: (gameId: string) => void;
+	bettingPrefs: BettingDisplayPrefs;
+	weatherPrefs: WeatherDisplayPrefs;
 	groupDates?: boolean;
+	first?: boolean;
 }
-
-const LeagueSectionHeader = ({ league, logos }: { league: LeagueId; logos: LeagueLogoMap }) => {
-	const [imgFailed, setImgFailed] = useState(false);
-	const logoUrl = resolveLeagueLogoUrl(league, logos[league]);
-	return (
-		<div className='fw-bold text-uppercase popup-section-label'>
-			{!imgFailed && logoUrl && (
-				<img
-					src={logoUrl}
-					alt=''
-					className='popup-league-logo'
-					loading='lazy'
-					onError={() => setImgFailed(true)}
-				/>
-			)}
-			{leagueLabels[league] ?? league.toUpperCase()}
-		</div>
-	);
-};
 
 interface mainViewProps {
 	prefs: UserPreferences;
@@ -67,6 +55,7 @@ interface mainViewProps {
 	onStandbyStream: boolean;
 	onOpenGameDetail: (gameId: string) => void;
 	onOpenSetup: () => void;
+	onStartWalkthrough: () => void;
 	onRefresh: () => void;
 	showReviewPrompt: boolean;
 	onToggleEnabled: () => void;
@@ -87,7 +76,7 @@ const dateDivider = (label: string) => (
 
 const leagueRows = (
 	games: Game[],
-	scores: PowerScoreResult[],
+	scoreMap: Map<string, PowerScoreResult>,
 	leagueLogos: LeagueLogoMap,
 	favoriteTeamIds: Set<string>,
 	onToggleFavoriteTeam: (leagueId: LeagueId, teamId: string) => void,
@@ -97,6 +86,8 @@ const leagueRows = (
 	onRegistryChange: (updated: TabRegistration[]) => void,
 	formatTabLabel: (tab: Browser.tabs.Tab) => string,
 	onOpenGameDetail: (gameId: string) => void,
+	bettingPrefs: BettingDisplayPrefs,
+	weatherPrefs: WeatherDisplayPrefs,
 ) => groupByLeague(games).map(({ league, games: groupedGames }) => (
 	<div key={league}>
 		<LeagueSectionHeader league={league} logos={leagueLogos} />
@@ -104,7 +95,7 @@ const leagueRows = (
 			<GameCard
 				key={game.id}
 				game={game}
-				excitementResult={scores.find(s => s.gameId === game.id)}
+				excitementResult={scoreMap.get(game.id)}
 				favoriteTeamIds={favoriteTeamIds}
 				onToggleFavoriteTeam={onToggleFavoriteTeam}
 				gameBoosts={gameBoosts}
@@ -113,6 +104,8 @@ const leagueRows = (
 				onRegistryChange={onRegistryChange}
 				formatTabLabel={formatTabLabel}
 				onOpenGameDetail={onOpenGameDetail}
+				bettingPrefs={bettingPrefs}
+				weatherPrefs={weatherPrefs}
 			/>
 		))}
 	</div>
@@ -121,7 +114,7 @@ const leagueRows = (
 const gameSection = ({
 	title,
 	games,
-	scores,
+	scoreMap,
 	leagueLogos,
 	favoriteTeamIds,
 	onToggleFavoriteTeam,
@@ -131,18 +124,21 @@ const gameSection = ({
 	onRegistryChange,
 	formatTabLabel,
 	onOpenGameDetail,
+	bettingPrefs,
+	weatherPrefs,
 	groupDates,
+	first,
 }: gameSectionProps) => (
 	<div className='mt-2'>
-		<div className='fw-bold text-body text-center popup-section-title'>{title}</div>
+		<PopupSectionTitle first={first}>{title}</PopupSectionTitle>
 		{groupDates
 			? groupByDate(games).map(({ dateLabel, games: dayGames }) => (
 				<div key={dateLabel}>
 					{dateDivider(dateLabel)}
-					{leagueRows(dayGames, scores, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail)}
+					{leagueRows(dayGames, scoreMap, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs, weatherPrefs)}
 				</div>
 			))
-			: leagueRows(games, scores, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail)
+			: leagueRows(games, scoreMap, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs, weatherPrefs)
 		}
 	</div>
 );
@@ -162,6 +158,7 @@ const mainView = ({
 	onStandbyStream,
 	onOpenGameDetail,
 	onOpenSetup,
+	onStartWalkthrough,
 	onRefresh,
 	showReviewPrompt,
 	onToggleEnabled,
@@ -171,44 +168,65 @@ const mainView = ({
 	onRegistryChange,
 	formatTabLabel,
 }: mainViewProps) => {
-	const oneWeekFromNow = Date.now() + 7 * 24 * 60 * 60 * 1000;
 	const noLeaguesSelected = prefs.enabledLeagues.length === 0;
 	const loadingMessage = useMemo(() => getRandomLoadingMessage(), []);
 	const scoreByGameId = useMemo(() => new Map(scores.map(s => [s.gameId, s.total])), [scores]);
+	const scoreMap = useMemo(() => new Map(scores.map(s => [s.gameId, s])), [scores]);
+	const leagueRank = useMemo(() => buildLeagueRank(prefs.enabledLeagues), [prefs.enabledLeagues]);
 	const sortGames = useMemo(
-		() => buildFavoritePinnedComparator(favoriteTeamIds, scoreByGameId),
-		[favoriteTeamIds, scoreByGameId],
+		() => buildFavoritePinnedComparator(leagueRank, favoriteTeamIds, scoreByGameId),
+		[leagueRank, favoriteTeamIds, scoreByGameId],
 	);
 	const sortUpcomingGames = useMemo(
-		() => buildUpcomingComparator(favoriteTeamIds, scoreByGameId),
-		[favoriteTeamIds, scoreByGameId],
+		() => buildUpcomingComparator(leagueRank, favoriteTeamIds, scoreByGameId),
+		[leagueRank, favoriteTeamIds, scoreByGameId],
 	);
-	const liveGames = games.filter(g => g.status === 'in');
-	const upcomingGames = games
-		.filter(g => g.status === 'pre')
-		.filter(g => !g.startTime || new Date(g.startTime).getTime() <= oneWeekFromNow)
-		.sort(sortUpcomingGames);
-
-	const registeredGameIds = new Set(registry.map(r => r.gameId));
-	const assignedLiveGames = liveGames.filter(g => registeredGameIds.has(g.id)).sort(sortGames);
-	const unassignedLiveGames = liveGames.filter(g => !registeredGameIds.has(g.id)).sort(sortGames);
+	const upcomingCutoffMs = useMemo(
+		() => Date.now() + prefs.upcomingGamesDays * 24 * 60 * 60 * 1000,
+		[prefs.upcomingGamesDays],
+	);
+	const liveGames = useMemo(() => games.filter(g => g.status === 'in'), [games]);
+	const upcomingGames = useMemo(
+		() => games
+			.filter(g => g.status === 'pre')
+			.filter(g => !g.startTime || new Date(g.startTime).getTime() <= upcomingCutoffMs)
+			.toSorted(sortUpcomingGames),
+		[games, sortUpcomingGames, upcomingCutoffMs],
+	);
+	const [showAllUpcoming, setShowAllUpcoming] = useState(false);
+	const upcomingInitialLimit = 10;
+	const visibleUpcomingGames = showAllUpcoming ? upcomingGames : upcomingGames.slice(0, upcomingInitialLimit);
+	const hiddenUpcomingCount = upcomingGames.length - upcomingInitialLimit;
+	const registeredGameIds = useMemo(() => new Set(registry.map(r => r.gameId)), [registry]);
+	const assignedLiveGames = useMemo(
+		() => liveGames.filter(g => registeredGameIds.has(g.id)).toSorted(sortGames),
+		[liveGames, registeredGameIds, sortGames],
+	);
+	const unassignedLiveGames = useMemo(
+		() => liveGames.filter(g => !registeredGameIds.has(g.id)).toSorted(sortGames),
+		[liveGames, registeredGameIds, sortGames],
+	);
 
 	const showNoGames = !isLoading && !noLeaguesSelected && liveGames.length === 0
 		&& registry.length === 0 && (!prefs.showUpcomingGames || upcomingGames.length === 0);
 
+	const bettingPrefs: BettingDisplayPrefs = {
+		bettingEnabled: prefs.bettingEnabled,
+	};
+	const weatherPrefs: WeatherDisplayPrefs = {
+		temperatureUnit: prefs.temperatureUnit,
+	};
+
 	return (
 		<div className='popup-container d-flex flex-column'>
-			<div className='d-flex justify-content-between align-items-center mb-2 pb-2'>
-				<img src='/images/full_logo_white_on_transparent.png' alt='ArenaSwap' className='arenaswap-logo' />
-				<div className='d-flex align-items-center gap-2'>
-					<button className='btn btn-sm p-0 popup-settings-button' onClick={onOpenSetup} title='Settings'>
-						<i className='bi bi-gear-fill popup-settings-icon' />
-					</button>
-					<div className='form-check form-switch mb-0'>
-						<input className='form-check-input' type='checkbox' id='enableToggle' checked={prefs.enabled} onChange={onToggleEnabled} disabled={!prefsLoaded} />
-					</div>
-				</div>
-			</div>
+			<PopupHeader
+				logoSrc='/images/full_logo_white_on_transparent.svg'
+				enabled={prefs.enabled}
+				prefsLoaded={prefsLoaded}
+				onToggleEnabled={onToggleEnabled}
+				onOpenSettings={onOpenSetup}
+				onStartTour={onStartWalkthrough}
+			/>
 
 			<GameListHeader isLoading={isLoading} hasError={hasError} loadingMessage={loadingMessage} onRefresh={onRefresh} />
 
@@ -219,7 +237,7 @@ const mainView = ({
 			{onStandbyStream && (
 				<div className='d-flex align-items-center gap-2 px-2 py-1 mb-1 rounded text-body-secondary small bg-body-secondary'>
 					<i className='bi bi-broadcast text-primary' />
-					<span>On standby stream — waiting for action</span>
+					<span>{i18n.t('main.onStandbyStream')}</span>
 				</div>
 			)}
 
@@ -231,9 +249,22 @@ const mainView = ({
 			/>
 
 			{!isLoading && !noLeaguesSelected && prefs.proTipsEnabled && <ProTip context='main' />}
-			{!isLoading && !noLeaguesSelected && assignedLiveGames.length > 0 && gameSection({ title: 'Active Live Tabs', games: assignedLiveGames, scores, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail })}
-			{!isLoading && !noLeaguesSelected && unassignedLiveGames.length > 0 && gameSection({ title: 'Other Live Games', games: unassignedLiveGames, scores, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail })}
-			{!isLoading && !noLeaguesSelected && prefs.showUpcomingGames && upcomingGames.length > 0 && gameSection({ title: 'Up Next', games: upcomingGames, scores: [], leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, groupDates: true })}
+			{!isLoading && !noLeaguesSelected && assignedLiveGames.length > 0 && gameSection({ title: i18n.t('main.sectionActiveLiveTabs'), games: assignedLiveGames, scoreMap, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs, weatherPrefs, first: true })}
+			{!isLoading && !noLeaguesSelected && unassignedLiveGames.length > 0 && gameSection({ title: i18n.t('main.sectionOtherLiveGames'), games: unassignedLiveGames, scoreMap, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs, weatherPrefs, first: assignedLiveGames.length === 0 })}
+			{!isLoading && !noLeaguesSelected && prefs.showUpcomingGames && upcomingGames.length > 0 && (
+				<>
+					{gameSection({ title: i18n.t('main.sectionUpNext'), games: visibleUpcomingGames, scoreMap: emptyScoreMap, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs, weatherPrefs, groupDates: true, first: assignedLiveGames.length === 0 && unassignedLiveGames.length === 0 })}
+					{!showAllUpcoming && hiddenUpcomingCount > 0 && (
+						<button
+							type='button'
+							className='btn btn-sm btn-outline-secondary w-100 mt-1 mb-2'
+							onClick={() => setShowAllUpcoming(true)}
+						>
+							{i18n.t('main.showMoreUpcoming', { count: String(hiddenUpcomingCount) })}
+						</button>
+					)}
+				</>
+			)}
 
 			<PopupFooter />
 		</div>

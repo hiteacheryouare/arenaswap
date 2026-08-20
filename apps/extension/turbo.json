@@ -1,0 +1,29 @@
+{
+	"extends": ["//"],
+	"tasks": {
+		// Each browser target writes to its own directory and its own zip filename. Declaring
+		// `.output/**` (or a shared `.output/*.zip`) on all six tasks would make them claim each
+		// other's artifacts, so restoring one target from cache could hand back another's build.
+		"build": {
+			"outputs": [".output/chrome-mv3/**"]
+		},
+		"build:firefox": {
+			"outputs": [".output/firefox-mv3/**"]
+		},
+		"build:edge": {
+			"outputs": [".output/edge-mv3/**"]
+		},
+		// The root config pairs each zip with the build for its own target (`zip` -> `build`,
+		// `zip:firefox` -> `build:firefox`, `zip:edge` -> `build:edge`), so zipping Firefox never
+		// builds Chrome for nothing. These entries only declare which artifact each one produces.
+		"zip": {
+			"outputs": [".output/*-chrome.zip"]
+		},
+		"zip:firefox": {
+			"outputs": [".output/*-firefox.zip", ".output/*-sources.zip"]
+		},
+		"zip:edge": {
+			"outputs": [".output/*-edge.zip"]
+		}
+	}
+}

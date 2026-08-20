@@ -1,0 +1,58 @@
+---
+import Shell from '../layouts/Shell.astro';
+import NotFoundCard from '../components/NotFoundCard';
+
+const base = import.meta.env.BASE_URL;
+---
+<Shell
+	title='404 — ArenaSwap'
+	description="That page isn't on the schedule. Head back to ArenaSwap."
+	noindex
+>
+	<section class='notfound'>
+		<div class='notfound-glow' aria-hidden='true'></div>
+		<div class='container'>
+			<div class='notfound-inner'>
+
+				<div class='notfound-card'>
+					<NotFoundCard />
+				</div>
+
+				<h1 class='notfound-title'>This one isn't on the schedule.</h1>
+
+				<p class='notfound-sub'>
+					The page you're after was traded, retired, or never suited up in the first place.
+				</p>
+
+				<p class='notfound-path' data-no-dots>
+					<span class='notfound-path-key'>Requested</span>
+					<code id='notfound-path'>{base}</code>
+				</p>
+
+				<div class='notfound-cta'>
+					<a href={base} class='btn btn-cta'>
+						<i class='bi bi-house-door me-2'></i>Back home
+					</a>
+					<a href={`${base}releases/`} class='btn btn-outline-secondary-custom'>
+						Read the release notes
+					</a>
+				</div>
+
+				<div class='notfound-links'>
+					<a href={`${base}powerscore/`}>PowerScore</a>
+					<a href={`${base}docs/extension/`}>Docs</a>
+					<a href={`${base}faq/`}>FAQ</a>
+					<a href={`${base}legal/`}>Legal notices</a>
+				</div>
+
+			</div>
+		</div>
+	</section>
+
+	<script>
+		// GitHub Pages serves this file for any unknown URL under the base path, so the address bar
+		// is the only record of what was actually requested.
+		const target = document.getElementById('notfound-path');
+		if (target) target.textContent = location.pathname + location.search;
+	</script>
+</Shell>

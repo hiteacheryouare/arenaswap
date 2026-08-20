@@ -1,0 +1,46 @@
+// Import this BEFORE @import 'bootstrap/scss/bootstrap' in each app.
+// App-specific overrides (border-radius, font-size-base, form controls, etc.)
+// should be declared AFTER this import and BEFORE the Bootstrap import.
+
+$prefix:               'as-';
+$primary:              #F75C03;
+// $secondary is a UI accent — links, buttons, focus. Every ArenaSwap surface is dark, and
+// #2274A5 only reached 3.70:1 on $body-bg, below the AA floor, so the accent lifted.
+//
+// #2274A5 is NOT retired. It is momentum's colour in the PowerScore signal palette
+// (closeness green, late-game orange, momentum blue, lead-changes yellow, comeback pink), which
+// is a data palette anchored to the light breakdown card and identical on every surface that
+// draws those five signals. Do not "fix" a signal blue to match this token — they are different
+// jobs that happened to share a hex.
+$secondary:            #3E9BD1;
+$secondary-on-light:   #2274A5;
+$success:              #00CC66;
+$warning:              #F1C40F;
+$danger:               #D90368;
+$dark:                 #0d1117;
+$body-bg:              #0d1117;
+$body-color:           #e6edf3;
+$body-secondary-color: #8b949e;
+$border-color:         #30363d;
+$card-bg:              #161b22;
+$card-border-color:    #30363d;
+$card-cap-bg:          transparent;
+$input-bg:             #161b22;
+$input-border-color:   #30363d;
+$input-color:          #e6edf3;
+$form-select-bg:       #161b22;
+$form-select-color:    #e6edf3;
+$form-select-border-color: #30363d;
+$font-family-base:     'DM Sans', system-ui, -apple-system, sans-serif;
+$font-monospace:       'Lekton', monospace;
+
+// Bootstrap picks a filled button's label with color-contrast(); the lighter $secondary now
+// resolves to the dark side, and this keeps that side on-theme instead of pure black.
+$color-contrast-dark:  #0d1117;
+
+* {
+	&::selection {
+		background: $primary;
+		color: $body-color;
+	}
+}

@@ -1,0 +1,467 @@
+// The landing page reads as a stack of full-width bands, one idea each, separated by a hairline
+// rather than by whitespace alone. Type is the only decoration: there is no illustration on the
+// page, so the headline sizes have to carry it.
+
+.band {
+	padding: 3.5rem 0;
+	border-top: 1px solid #21262d;
+
+	&.band-quiet {
+		background: #0b0f14;
+	}
+
+	&:first-child {
+		border-top: 0;
+	}
+}
+
+.band-split {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	gap: 3.5rem;
+	align-items: center;
+}
+
+.band-hero {
+	padding: 6rem 0 3.5rem;
+}
+
+// Copy left, window right, weighted towards the window. It used to sit under the copy, which pushed
+// the one thing on the page that shows the product doing anything most of the way below the fold.
+//
+// The weighting matters because the window holds a 320px popup at the popup's real size: the narrower
+// the window, the more of it that popup occupies. At an even split it took a third of the width and
+// all of the height, which is not what an extension popup looks like in a browser.
+.hero-grid {
+	display: grid;
+	// The copy takes a comfortable measure and stops; the window takes everything left over. Sharing
+	// by ratio meant the window kept a fixed fraction of the page no matter how much room there was,
+	// so on a wide display both columns stayed cramped while the gutters got wider.
+	grid-template-columns: minmax(20rem, 26rem) minmax(0, 1fr);
+	gap: 2.5rem;
+	align-items: center;
+}
+
+.hero-copy {
+	max-width: 34rem;
+}
+
+// Bootstrap stops widening the container at 1320px, which on a large display leaves a third of the
+// screen as gutter while the hero is squeezed. The whole page widens together — nav, hero and bands —
+// so nothing ends up misaligned with anything else.
+@media (min-width: 1600px) {
+	.container {
+		max-width: 1560px;
+	}
+}
+
+@media (min-width: 1920px) {
+	.container {
+		max-width: 1720px;
+	}
+}
+
+// Side by side only where there is room for both. Below this the window was coming out at 534px with
+// a 320px popup beside it, which is neither a browser nor a popup. Stacked, the window gets the whole
+// container and the video is not cropped at all — it costs the fold at these widths, which is the
+// better trade of the two.
+@media (max-width: 1399.98px) {
+	.hero-grid {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 2.5rem;
+	}
+
+	.hero-copy {
+		max-width: none;
+	}
+}
+
+// ─── Above the fold: who is covered ──────────────────────────────────────────
+.team-strip {
+	display: block;
+	margin-top: 2.25rem;
+	padding-top: 1.5rem;
+	border-top: 1px solid #21262d;
+	text-decoration: none;
+
+	&:hover .team-strip-label {
+		color: var(--color-text);
+	}
+}
+
+.team-strip-label {
+	display: block;
+	font-size: 0.8rem;
+	color: var(--color-muted);
+	margin-bottom: 0.85rem;
+	transition: color 0.15s ease;
+}
+
+.team-strip-logos {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.7rem;
+
+	// `_crest.scss` guarantees the image and its placeholder share a box; the size of that box is the
+	// call site's job, and without it `.crest` is an inline-flex with an absolutely positioned child
+	// and collapses to nothing.
+	.crest {
+		width: 1.8rem;
+		height: 1.8rem;
+		// Held slightly back so no one crest shouts over the rest, and brought up together on hover.
+		opacity: 0.9;
+		transition: opacity 0.15s ease;
+	}
+
+	.crest-fallback {
+		font-size: 0.52rem;
+	}
+}
+
+.team-strip:hover .team-strip-logos .crest {
+	opacity: 1;
+}
+
+// ─── Display type ────────────────────────────────────────────────────────────
+// Two sizes only. The dot at the end of a headline is the brand's, painted orange by
+// OrangeDots at runtime, so nothing here has to hardcode it.
+
+.display-lg {
+	font-size: clamp(2.4rem, 5.2vw, 3.75rem);
+	font-weight: 700;
+	letter-spacing: -0.055em;
+	line-height: 0.99;
+}
+
+.display-md {
+	font-size: clamp(1.9rem, 3.6vw, 2.5rem);
+	font-weight: 700;
+	letter-spacing: -0.045em;
+	line-height: 1.05;
+}
+
+.band-lede {
+	font-size: 1.125rem;
+	color: #a7b0ba;
+	line-height: 1.55;
+	max-width: 42ch;
+}
+
+.band-copy {
+	font-size: 1rem;
+	color: var(--color-muted);
+	line-height: 1.7;
+	max-width: 46ch;
+
+	b {
+		color: var(--color-text);
+		font-weight: 600;
+	}
+}
+
+// ─── Hero headline block ─────────────────────────────────────────────────────
+.hero-actions {
+	display: flex;
+	align-items: center;
+	gap: 1.1rem;
+	margin-top: 1.75rem;
+	flex-wrap: wrap;
+}
+
+.hero-actions-alt {
+	font-size: 0.875rem;
+	color: var(--color-muted);
+
+	a {
+		color: var(--color-text);
+		text-decoration: underline;
+		text-decoration-color: rgba(247, 92, 3, 0.55);
+		text-underline-offset: 3px;
+	}
+}
+
+// ─── The three steps ─────────────────────────────────────────────────────────
+// An ordered list, and left as one: the order is the whole content, so the browser's own numbering
+// is doing real work here rather than decorating three cards with 01/02/03.
+.steps {
+	list-style: decimal;
+	margin: 0;
+	padding-left: 1.4rem;
+	counter-reset: none;
+
+	li {
+		padding: 0 0 1.1rem;
+	}
+
+	li::marker {
+		font-family: var(--font-mono);
+		font-size: 0.8rem;
+		color: var(--color-primary);
+	}
+
+	h3 {
+		font-size: 1.05rem;
+		font-weight: 600;
+		letter-spacing: -0.02em;
+		color: var(--color-text);
+		margin: 0;
+	}
+
+	p {
+		font-size: 0.9rem;
+		color: var(--color-muted);
+		line-height: 1.6;
+		margin: 0.3rem 0 0;
+		max-width: 46ch;
+	}
+}
+
+// ─── Leagues ─────────────────────────────────────────────────────────────────
+// A list grouped by sport, with each league's real mark. It replaced a marquee that slid 31
+// logos past faster than anyone could read and repeated the NCAA crest eight times.
+
+.leagues-head {
+	display: flex;
+	align-items: baseline;
+	gap: 1.75rem;
+	margin-bottom: 2rem;
+	flex-wrap: wrap;
+}
+
+.leagues-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+	gap: 0 1.5rem;
+}
+
+.leagues-group {
+	border-top: 1px solid var(--color-border);
+	padding-top: 0.85rem;
+
+	h3 {
+		font-family: var(--font-mono);
+		font-size: 0.65rem;
+		letter-spacing: 0.16em;
+		text-transform: uppercase;
+		color: var(--color-primary);
+		margin-bottom: 0.7rem;
+	}
+
+	ul {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+	}
+
+	li {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		font-size: 0.85rem;
+		color: var(--color-muted);
+		padding: 0.28rem 0;
+		line-height: 1.35;
+	}
+
+	img {
+		width: 1.15rem;
+		height: 1.15rem;
+		object-fit: contain;
+		flex-shrink: 0;
+		padding: 1px;
+		border-radius: 3px;
+		background: #e6edf3;
+	}
+}
+
+// An even split, for bands where both columns are text. `band-split` sizes its second column to
+// its content, which is right beside a 320px panel and wrong beside a paragraph: it strands the
+// copy against the right edge of the page.
+.band-split-even {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 3.5rem;
+	align-items: start;
+}
+
+@media (max-width: 991.98px) {
+	.band-split-even {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 1.5rem;
+	}
+}
+
+// ─── Settings ────────────────────────────────────────────────────────────────
+// The six group names and descriptions are the extension's own, from locales/en.json.
+
+.settings-groups {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+	gap: 0 1.6rem;
+	margin-top: 1.75rem;
+}
+
+.settings-group {
+	border-top: 1px solid var(--color-border);
+	padding: 0.95rem 1.6rem 1.25rem 0;
+
+	h3 {
+		font-size: 1.125rem;
+		font-weight: 700;
+		letter-spacing: -0.03em;
+		color: var(--color-text);
+	}
+
+	p {
+		font-size: 0.875rem;
+		color: var(--color-muted);
+		line-height: 1.55;
+		margin: 0.45rem 0 0;
+	}
+}
+
+// ─── Charts ──────────────────────────────────────────────────────────────────
+.charts-grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 1rem;
+	margin-top: 2rem;
+}
+
+@media (max-width: 767.98px) {
+	.charts-grid {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}
+
+.chart-tile {
+	background: var(--color-card);
+	border: 1px solid #21262d;
+	border-radius: 0.6rem;
+	padding: 0.9rem 1rem 0.7rem;
+}
+
+.chart-tile-title {
+	font-size: 0.8rem;
+	font-weight: 600;
+	color: var(--color-text);
+	letter-spacing: -0.01em;
+	margin: 0 0 0.6rem;
+}
+
+@media (max-width: 991.98px) {
+	.band-split {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 2.25rem;
+	}
+
+	.band-hero {
+		padding: 5.5rem 0 3rem;
+	}
+}
+
+// ─── Settings panel ──────────────────────────────────────────────────────────
+// A still of one settings group as the popup draws it: label left, control right. It is a
+// picture of a panel rather than a working one, so nothing here is focusable.
+
+.settings-panel-demo {
+	width: 320px;
+	background: var(--color-card);
+	border: 1px solid var(--color-border);
+	border-radius: 0.6rem;
+	padding: 0.85rem 0.95rem;
+}
+
+.settings-panel-head {
+	font-size: 0.62rem;
+	font-weight: 700;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	color: var(--color-muted);
+	padding-bottom: 0.6rem;
+	border-bottom: 1px solid #21262d;
+	margin: 0 0 0.25rem;
+}
+
+.settings-panel-row {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	padding: 0.55rem 0;
+	border-bottom: 1px solid #21262d;
+	font-size: 0.8rem;
+	color: #c9d1d9;
+
+	&:last-child {
+		border-bottom: 0;
+	}
+
+	> :last-child {
+		margin-left: auto;
+	}
+}
+
+.settings-value {
+	font-family: var(--font-mono);
+	font-size: 0.78rem;
+	color: var(--color-text);
+}
+
+.settings-dots {
+	display: flex;
+	gap: 0.2rem;
+
+	i {
+		width: 0.5rem;
+		height: 0.5rem;
+		border-radius: 50%;
+		background: var(--color-border);
+
+		&.is-on {
+			background: var(--color-primary);
+		}
+	}
+}
+
+.settings-switch {
+	position: relative;
+	width: 1.65rem;
+	height: 0.9rem;
+	border-radius: 999px;
+	background: var(--color-border);
+
+	&::after {
+		content: '';
+		position: absolute;
+		top: 0.13rem;
+		left: 0.13rem;
+		width: 0.64rem;
+		height: 0.64rem;
+		border-radius: 50%;
+		background: #6e7681;
+	}
+
+	&.is-on {
+		background: var(--color-primary);
+
+		&::after {
+			left: auto;
+			right: 0.13rem;
+			background: #fff;
+		}
+	}
+}
+
+@media (max-width: 991.98px) {
+	.settings-panel-demo {
+		margin-left: auto;
+		margin-right: auto;
+	}
+}
+
+@media (max-width: 359.98px) {
+	.settings-panel-demo {
+		width: 100%;
+	}
+}

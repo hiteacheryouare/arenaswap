@@ -1,0 +1,30 @@
+// Set $font-base-url before importing this file:
+//   $font-base-url: '/arenaswap/fonts';  // docs (GitHub Pages base path)
+//   $font-base-url: '/fonts';            // extension (no base path)
+// Defaults to '/fonts' if not set.
+
+$font-base-url: '/fonts' !default;
+
+@mixin as-woff2-face($family, $file, $weight) {
+	@font-face {
+		font-family: $family;
+		src: url('#{$font-base-url}/#{$file}.woff2') format('woff2');
+		font-weight: $weight;
+		font-style: normal;
+		font-display: swap;
+	}
+}
+
+@include as-woff2-face('DM Sans', 'DMSans-Regular',  400);
+@include as-woff2-face('DM Sans', 'DMSans-Medium',   500);
+@include as-woff2-face('DM Sans', 'DMSans-SemiBold', 600);
+@include as-woff2-face('DM Sans', 'DMSans-Bold',     700);
+// Only for the Lattice & Company parent lockup, never for ArenaSwap's own type.
+@include as-woff2-face('DM Serif Text', 'DMSerifText-Regular', 400);
+@include as-woff2-face('Lekton', 'Lekton-Regular',   400);
+@include as-woff2-face('Lekton', 'Lekton-Bold',      700);
+// Scoreboard figures only — see the scoreboard-figures mixin in _game-card.scss.
+// DM Sans ships no tabular figures, Geist does.
+// SemiBold carries the detail view's sticky bar, where Bold at 1rem shouts.
+@include as-woff2-face('Geist', 'Geist-SemiBold', 600);
+@include as-woff2-face('Geist', 'Geist-Bold', 700);

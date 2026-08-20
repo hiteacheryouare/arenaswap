@@ -3,12 +3,12 @@ import type { Game } from './types';
 
 const espnCdn = 'https://a.espncdn.com/i/teamlogos';
 
-/** Internal simulation state per game */
 interface SimState {
 	streak: 'home' | 'away' | null;
 	streakTicks: number;
 	postTicks: number;
 	preTicks: number;
+	driveIndex: number;
 }
 
 const clockTick = 15; // seconds of game time per tick (matches poll interval)
@@ -25,20 +25,42 @@ const rareScoreChance = 0.3;
 const lateGameThresholdSeconds = 300;
 const lateGameComebackChance = 0.4;
 
-/** Sport-family simulation params (local to mock simulator only) */
+// Yard lines advance across midfield so the demo card reads like a real drive rather than a
+// random pair of strings; the last entry starts the next possession over. '1st & 10' repeats
+// three times, so the position in this table is tracked in SimState rather than looked up by
+// down — looking it up always matched index 0 and the card jumped backwards across midfield.
+const footballDrivePatterns = [
+	{ downDistance: '1st & 10', fieldPosition: 'PHI 25' },
+	{ downDistance: '2nd & 8', fieldPosition: 'PHI 27' },
+	{ downDistance: '3rd & 5', fieldPosition: 'PHI 30' },
+	{ downDistance: '4th & 2', fieldPosition: 'PHI 33' },
+	{ downDistance: '1st & 10', fieldPosition: 'DAL 48' },
+	{ downDistance: '2nd & 4', fieldPosition: 'DAL 42' },
+	{ downDistance: '3rd & Goal', fieldPosition: 'DAL 5' },
+	{ downDistance: '1st & 10', fieldPosition: 'PHI 25' },
+] as const;
+
+// Per-tick scoring probabilities are tuned to realistic per-game totals at the 15s tick rate, so
+// each sport's demo cadence matches reality. The continuous pulse for low-scoring sports comes
+// from the progress ramp and decay tails, not from unrealistically frequent scoring.
+// Sanity check (regulation ticks × normalScoreProb × avg points ≈ points/team/game):
+//   basketball ~192 ticks → ~110 pts   football ~240 → ~26   hockey ~240 → ~3.5
+//   soccer ~360 → ~2      baseball ~60 half-inning ticks → ~4.5 runs
 const sportParams: Record<Game['sportType'], {
-	/** Points/goals scored per tick for each team on normal play */
 	normalScoreProb: number;
+	// While the team is on a hot streak (flurry, power play, scoring drive).
 	streakScoreProb: number;
+	// For the cold team while the other side is streaking.
 	offScoreProb: number;
-	/** Score values: [frequent, rare] */
+	// [frequent, rare]
 	scoreValues: [number, number];
 }> = {
 	basketball: { normalScoreProb: 0.25, streakScoreProb: 0.55, offScoreProb: 0.1, scoreValues: [2, 3] },
-	hockey: { normalScoreProb: 0.06, streakScoreProb: 0.18, offScoreProb: 0.02, scoreValues: [1, 1] },
-	baseball: { normalScoreProb: 0.12, streakScoreProb: 0.35, offScoreProb: 0.04, scoreValues: [1, 2] },
-	football: { normalScoreProb: 0.15, streakScoreProb: 0.4, offScoreProb: 0.05, scoreValues: [7, 3] },
-	soccer: { normalScoreProb: 0.05, streakScoreProb: 0.14, offScoreProb: 0.02, scoreValues: [1, 1] },
+	football: { normalScoreProb: 0.02, streakScoreProb: 0.1, offScoreProb: 0.01, scoreValues: [7, 3] },
+	baseball: { normalScoreProb: 0.06, streakScoreProb: 0.22, offScoreProb: 0.03, scoreValues: [1, 2] },
+	softball: { normalScoreProb: 0.07, streakScoreProb: 0.25, offScoreProb: 0.03, scoreValues: [1, 2] },
+	hockey: { normalScoreProb: 0.014, streakScoreProb: 0.05, offScoreProb: 0.006, scoreValues: [1, 1] },
+	soccer: { normalScoreProb: 0.006, streakScoreProb: 0.022, offScoreProb: 0.003, scoreValues: [1, 1] },
 };
 
 const getStreakAdjustedProb = (
@@ -53,14 +75,10 @@ const getStreakAdjustedProb = (
 
 const getLateGameMarginThreshold = (sportType: Game['sportType']): number => {
 	if (sportType === 'hockey' || sportType === 'soccer') return 2;
-	if (sportType === 'baseball') return 3;
+	if (sportType === 'baseball' || sportType === 'softball') return 3;
 	return 10;
 };
 
-/**
- * Simulates evolving game state for demo/testing across multiple sports.
- * Each call to tick() advances all games by one poll interval.
- */
 export class MockGameSimulator {
 	private games: Game[];
 	private state: Map<string, SimState>;
@@ -86,8 +104,8 @@ export class MockGameSimulator {
 				id: 'mock-2',
 				league: 'nba',
 				sportType: 'basketball',
-				homeTeam: { id: '20', name: 'Philadelphia 76ers', abbreviation: 'PHI', score: 68, logo: `${espnCdn}/nba/500/20.png`, color: '#006BB6' },
-				awayTeam: { id: '4', name: 'Chicago Bulls', abbreviation: 'CHI', score: 65, logo: `${espnCdn}/nba/500/4.png`, color: '#CE1141' },
+				homeTeam: { id: '20', name: 'Philadelphia 76ers', abbreviation: 'PHI', score: 68, logo: `${espnCdn}/nba/500/phi.png`, color: '#006BB6' },
+				awayTeam: { id: '4', name: 'Chicago Bulls', abbreviation: 'CHI', score: 65, logo: `${espnCdn}/nba/500/chi.png`, color: '#CE1141' },
 				venueName: 'Xfinity Mobile Arena',
 				period: 3, clockSeconds: 284, status: 'in',
 				broadcasts: ['ESPN', 'NBCSN'],
@@ -101,8 +119,8 @@ export class MockGameSimulator {
 				id: 'mock-3',
 				league: 'nhl',
 				sportType: 'hockey',
-				homeTeam: { id: '15', name: 'Philadelphia Flyers', abbreviation: 'PHI', score: 2, logo: `${espnCdn}/nhl/500/15.png`, color: '#F74902' },
-				awayTeam: { id: '16', name: 'Pittsburgh Penguins', abbreviation: 'PIT', score: 1, logo: `${espnCdn}/nhl/500/16.png`, color: '#CFC493' },
+				homeTeam: { id: '15', name: 'Philadelphia Flyers', abbreviation: 'PHI', score: 2, logo: `${espnCdn}/nhl/500/phi.png`, color: '#F74902' },
+				awayTeam: { id: '16', name: 'Pittsburgh Penguins', abbreviation: 'PIT', score: 1, logo: `${espnCdn}/nhl/500/pit.png`, color: '#CFC493' },
 				venueName: 'Xfinity Mobile Arena',
 				period: 3, clockSeconds: 412, status: 'in',
 				broadcasts: ['NHL Net'],
@@ -116,20 +134,25 @@ export class MockGameSimulator {
 				id: 'mock-4',
 				league: 'mlb',
 				sportType: 'baseball',
-				homeTeam: { id: '22', name: 'Philadelphia Phillies', abbreviation: 'PHI', score: 3, logo: `${espnCdn}/mlb/500/22.png`, color: '#E81828' },
-				awayTeam: { id: '21', name: 'New York Mets', abbreviation: 'NYM', score: 2, logo: `${espnCdn}/mlb/500/21.png`, color: '#002D72' },
+				homeTeam: { id: '22', name: 'Philadelphia Phillies', abbreviation: 'PHI', score: 3, logo: `${espnCdn}/mlb/500/phi.png`, color: '#E81828' },
+				awayTeam: { id: '21', name: 'New York Mets', abbreviation: 'NYM', score: 2, logo: `${espnCdn}/mlb/500/nym.png`, color: '#002D72' },
 				venueName: 'Citizens Bank Park',
 				period: 8, clockSeconds: 0, status: 'in',
+				topOfInning: false,
+				baseRunners: { first: true, second: false, third: true },
+				bso: { balls: 1, strikes: 0, outs: 1 },
 				broadcasts: ['MLB.TV'],
 			},
 			{
 				id: 'mock-5',
 				league: 'nfl',
 				sportType: 'football',
-				homeTeam: { id: '21', name: 'Philadelphia Eagles', abbreviation: 'PHI', score: 17, logo: `${espnCdn}/nfl/500/21.png`, color: '#004C54' },
-				awayTeam: { id: '6', name: 'Dallas Cowboys', abbreviation: 'DAL', score: 14, logo: `${espnCdn}/nfl/500/6.png`, color: '#003594' },
+				homeTeam: { id: '21', name: 'Philadelphia Eagles', abbreviation: 'PHI', score: 17, logo: `${espnCdn}/nfl/500/phi.png`, color: '#004C54' },
+				awayTeam: { id: '6', name: 'Dallas Cowboys', abbreviation: 'DAL', score: 14, logo: `${espnCdn}/nfl/500/dal.png`, color: '#003594' },
 				venueName: 'Lincoln Financial Field',
 				period: 4, clockSeconds: 480, status: 'in',
+				downDistance: '1st & 10',
+				fieldPosition: 'PHI 25',
 				broadcasts: ['NBC', 'Peacock'],
 			},
 			{
@@ -203,11 +226,59 @@ export class MockGameSimulator {
 				id: 'mock-13',
 				league: 'fifawc',
 				sportType: 'soccer',
-				homeTeam: { id: '564', name: 'United States', abbreviation: 'USA', score: 1, logo: `${espnCdn}/soccer/500/564.png`, color: '#002868' },
-				awayTeam: { id: '239', name: 'Mexico', abbreviation: 'MEX', score: 1, logo: `${espnCdn}/soccer/500/239.png`, color: '#006847' },
+				homeTeam: { id: '564', name: 'United States', abbreviation: 'USA', score: 1, logo: `${espnCdn}/countries/500/usa.png`, color: '#002868' },
+				awayTeam: { id: '239', name: 'Mexico', abbreviation: 'MEX', score: 1, logo: `${espnCdn}/countries/500/mex.png`, color: '#006847' },
 				venueName: 'Lincoln Financial Field',
 				period: 2, clockSeconds: 2400, status: 'in',
 				broadcasts: ['Fox'],
+			},
+			{
+				id: 'mock-14',
+				league: 'nhl',
+				sportType: 'hockey',
+				homeTeam: { id: '3', name: 'New York Rangers', abbreviation: 'NYR', score: 2, logo: `${espnCdn}/nhl/500/nyr.png`, color: '#0038A8' },
+				awayTeam: { id: '1', name: 'Boston Bruins', abbreviation: 'BOS', score: 2, logo: `${espnCdn}/nhl/500/bos.png`, color: '#FFB81C' },
+				venueName: 'Madison Square Garden',
+				period: 4, clockSeconds: 214, status: 'in',
+				broadcasts: ['TNT'],
+				odds: { details: 'NYR -115', overUnder: 5.5 },
+			},
+			{
+				id: 'mock-15',
+				league: 'nba',
+				sportType: 'basketball',
+				homeTeam: { id: '5', name: 'Cleveland Cavaliers', abbreviation: 'CLE', score: 108, logo: `${espnCdn}/nba/500/cle.png`, color: '#860038' },
+				awayTeam: { id: '13', name: 'Milwaukee Bucks', abbreviation: 'MIL', score: 107, logo: `${espnCdn}/nba/500/mil.png`, color: '#00471B' },
+				venueName: 'Rocket Arena',
+				period: 4, clockSeconds: 38, status: 'in',
+				broadcasts: ['ESPN'],
+				odds: { details: 'CLE -1.5', overUnder: 224.5 },
+			},
+			{
+				id: 'mock-16',
+				league: 'mlb',
+				sportType: 'baseball',
+				homeTeam: { id: '28', name: 'Houston Astros', abbreviation: 'HOU', score: 4, logo: `${espnCdn}/mlb/500/hou.png`, color: '#EB6E1F' },
+				awayTeam: { id: '10', name: 'Los Angeles Dodgers', abbreviation: 'LAD', score: 4, logo: `${espnCdn}/mlb/500/lad.png`, color: '#005A9C' },
+				venueName: 'Daikin Park',
+				period: 10, clockSeconds: 0, status: 'in',
+				topOfInning: true,
+				baseRunners: { first: false, second: true, third: false },
+				bso: { balls: 0, strikes: 1, outs: 0 },
+				broadcasts: ['Fox'],
+			},
+			{
+				id: 'mock-17',
+				league: 'csoft',
+				sportType: 'softball',
+				homeTeam: { id: '111', name: 'Northeastern Huskies', abbreviation: 'NU', score: 3, logo: `${espnCdn}/ncaa/500/111.png`, color: '#CC0000' },
+				awayTeam: { id: '103', name: 'Boston College Eagles', abbreviation: 'BC', score: 2, logo: `${espnCdn}/ncaa/500/103.png`, color: '#98002E' },
+				venueName: 'Friedman Diamond',
+				period: 5, clockSeconds: 0, status: 'in',
+				topOfInning: true,
+				baseRunners: { first: false, second: true, third: false },
+				bso: { balls: 1, strikes: 0, outs: 0 },
+				broadcasts: ['ESPNU'],
 			},
 		];
 
@@ -218,11 +289,11 @@ export class MockGameSimulator {
 				streakTicks: 0,
 				postTicks: 0,
 				preTicks: g.status === 'pre' ? preGameTicksBeforeStart : 0,
+				driveIndex: 0,
 			});
 		}
 	}
 
-	/** Advance simulation by one tick and return current game states. */
 	tick = (): Game[] => {
 		for (const game of this.games) {
 			const simState = this.state.get(game.id)!;
@@ -239,23 +310,45 @@ export class MockGameSimulator {
 			}
 		}
 
-		// Return deep copies so consumers can't mutate internal state
+		// Deep copies, so consumers can't mutate internal state.
 		return this.games.map(g => ({
 			...g,
 			homeTeam: { ...g.homeTeam },
 			awayTeam: { ...g.awayTeam },
+			bso: g.bso ? { ...g.bso } : undefined,
 		}));
 	};
 
 	private advanceLive = (game: Game, simState: SimState): void => {
 		const regularPeriods = leagueConfigMap[game.league].regularPeriods;
 
-		if (game.sportType === 'baseball') {
-			// MLB: simulate half-innings; advance inning every few ticks
-			this.scorePoints(game, simState);
+		if (game.sportType === 'baseball' || game.sportType === 'softball') {
+				if (game.bso) {
+				const roll = Math.random();
+				if (roll < 0.3) {
+					// A 4th ball is a walk, which resets the count; ESPN reports 0-3.
+					const newBalls = game.bso.balls + 1;
+					game.bso = newBalls >= 4
+						? { balls: 0, strikes: 0, outs: game.bso.outs }
+						: { ...game.bso, balls: newBalls };
+				} else if (roll < 0.6) {
+					// A 3rd strike is a strikeout, which resets the count; ESPN reports 0-2.
+					const newStrikes = game.bso.strikes + 1;
+					game.bso = newStrikes >= 3
+						? { balls: 0, strikes: 0, outs: game.bso.outs }
+						: { ...game.bso, strikes: newStrikes };
+				} else if (roll < 0.75) {
+					// A 3rd out retires the side and resets outs; ESPN reports 0-2.
+					const newOuts = game.bso.outs + 1;
+					game.bso = newOuts >= 3
+						? { balls: 0, strikes: 0, outs: 0 }
+						: { balls: 0, strikes: 0, outs: newOuts };
+				}
+				}
+
+				this.scorePoints(game, simState);
 			if (Math.random() < baseballInningAdvanceChance) {
-				// inning ends
-				if (game.period >= regularPeriods && game.homeTeam.score !== game.awayTeam.score) {
+					if (game.period >= regularPeriods && game.homeTeam.score !== game.awayTeam.score) {
 					game.status = 'post';
 					simState.postTicks = 0;
 				} else {
@@ -263,6 +356,17 @@ export class MockGameSimulator {
 				}
 			}
 			return;
+		}
+
+		// Field position advances with the drive so the card's "3rd & 5 at PHI 47" line stays
+		// internally consistent — a goal-line down has to sit on a goal-line yard marker.
+		if (game.sportType === 'football' && game.downDistance !== undefined) {
+			if (Math.random() < 0.35) {
+				simState.driveIndex = (simState.driveIndex + 1) % footballDrivePatterns.length;
+				const next = footballDrivePatterns[simState.driveIndex]!;
+				game.downDistance = next.downDistance;
+				if (game.fieldPosition !== undefined) game.fieldPosition = next.fieldPosition;
+			}
 		}
 
 		game.clockSeconds = Math.max(0, game.clockSeconds - clockTick);
@@ -273,8 +377,7 @@ export class MockGameSimulator {
 				game.period++;
 				game.clockSeconds = leagueConfigMap[game.league].periodDurationSecs;
 			} else if (game.homeTeam.score === game.awayTeam.score) {
-				// Tied → overtime
-				game.period++;
+					game.period++;
 				game.clockSeconds = overtimePeriodSeconds;
 			} else {
 				game.status = 'post';
@@ -286,7 +389,6 @@ export class MockGameSimulator {
 	private scorePoints = (game: Game, simState: SimState): void => {
 		const params = sportParams[game.sportType];
 
-		// Manage scoring streaks
 		if (simState.streak) {
 			simState.streakTicks++;
 			if (simState.streakTicks > streakMaxTicks || Math.random() < streakEndChance) {
@@ -307,7 +409,6 @@ export class MockGameSimulator {
 		if (Math.random() < homeProb) game.homeTeam.score += pointsForScore();
 		if (Math.random() < awayProb) game.awayTeam.score += pointsForScore();
 
-		// Late-game drama: trailing team gets a boost when losing badly
 		const regularPeriods = leagueConfigMap[game.league].regularPeriods;
 		const isLate = game.sportType === 'baseball'
 			? game.period >= baseballLateInningThreshold
@@ -332,6 +433,10 @@ export class MockGameSimulator {
 			game.clockSeconds = leagueConfig.periodDurationSecs;
 			game.homeTeam.score = 0;
 			game.awayTeam.score = 0;
+			if (game.bso) game.bso = { balls: 0, strikes: 0, outs: 0 };
+			if (game.downDistance !== undefined) game.downDistance = '1st & 10';
+			if (game.fieldPosition !== undefined) game.fieldPosition = 'PHI 25';
+			simState.driveIndex = 0;
 			simState.streak = null;
 			simState.streakTicks = 0;
 		}

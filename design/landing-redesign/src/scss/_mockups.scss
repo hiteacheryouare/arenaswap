@@ -1,0 +1,238 @@
+// Bands, third pass. Palette and type from packages/ui/src/_bootstrap.scss.
+// The game card, the popup, the charts and the settings rows are all copied from
+// the shipped components rather than redrawn.
+
+.mk {
+	font-size: 16px; line-height: 1.5;
+	background: #0d1117; color: #e6edf3; font-family: 'DM Sans', sans-serif;
+	* { box-sizing: border-box; }
+	p, h1, h2, h3, h4, ul, ol { margin: 0; }
+	ul { list-style: none; padding: 0; }
+	a { text-decoration: none; color: inherit; }
+	code { font-family: 'Lekton', monospace; color: #F75C03; }
+}
+
+.btn { display: inline-block; background: #F75C03; color: #fff; font-size: 15px; font-weight: 600; padding: 13px 24px; border-radius: 7px; }
+.btn-sm { display: inline-block; background: #F75C03; color: #fff; font-size: 13px; font-weight: 600; padding: 8px 16px; border-radius: 6px; }
+.alt { font-size: 13.5px; color: #8b949e; u { text-decoration-color: #F75C03; text-underline-offset: 3px; } }
+
+.nv {
+	display: flex; align-items: center; gap: 26px; padding: 20px 56px;
+	.m { font-size: 17px; font-weight: 700; letter-spacing: -0.035em; span { color: #F75C03; } }
+	ul { display: flex; gap: 24px; margin-left: auto; font-size: 14px; }
+	li { color: #8b949e; &.on { color: #e6edf3; } &.soon { color: #4d545c; } }
+}
+
+// ═══ BANDS ═══════════════════════════════════════════════════════════════════
+.bd {
+	.bd-hero { padding: 44px 56px 0; }
+	.bd-h1 { font-size: 112px; font-weight: 700; letter-spacing: -0.068em; line-height: 0.86; span { color: #F75C03; } }
+	.bd-under { display: flex; align-items: flex-end; gap: 60px; margin-top: 34px; }
+	.bd-sub { font-size: 18px; color: #a7b0ba; line-height: 1.55; max-width: 42ch; }
+	.bd-cta { display: flex; align-items: center; gap: 18px; margin-left: auto; flex-shrink: 0; }
+
+	.bd-band {
+		display: grid; grid-template-columns: 1fr 400px; gap: 60px; align-items: center;
+		padding: 52px 56px; border-top: 1px solid #21262d;
+		&.alt { background: #0b0f14; }
+		&.wide { grid-template-columns: 1fr; gap: 0; }
+	}
+	.bd-big { font-size: 60px; font-weight: 700; letter-spacing: -0.055em; line-height: 0.98; span { color: #F75C03; } }
+	.bd-mid { font-size: 40px; font-weight: 700; letter-spacing: -0.045em; line-height: 1.04; span { color: #F75C03; } }
+	.bd-num { font-family: 'Lekton', monospace; font-size: 104px; font-weight: 700; line-height: 0.86; letter-spacing: -0.04em; color: #F75C03; }
+	.bd-p { font-size: 16px; color: #8b949e; line-height: 1.7; b { color: #e6edf3; font-weight: 600; } }
+	.bd-tail {
+		padding: 44px 56px; display: flex; align-items: center; gap: 26px; border-top: 1px solid #21262d;
+		.t { font-size: 28px; font-weight: 700; letter-spacing: -0.04em; span { color: #F75C03; } }
+		.r { margin-left: auto; display: flex; align-items: center; gap: 16px; }
+	}
+}
+
+// ═══ HERO MOTION ═════════════════════════════════════════════════════════════
+// Four real game cards. The scripted timeline moves the scores, the PowerScore
+// bars and which card is on screen. Every value is hardcoded, so nothing fetches.
+.hs { padding: 44px 56px 40px; }
+// Three cards, not four. The shipped card needs about 300px once the 2.1rem
+// scoreline and its 2.4ch-per-digit floor are accounted for, so four of them at
+// their real size do not fit inside the page gutters.
+.hs-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; align-items: start; }
+
+.hs-slot { position: relative; padding-top: 20px; transition: transform 380ms ease; }
+.hs-slot .gc { max-width: 330px; margin: 0 auto; }
+.hs-slot.on { transform: translateY(-6px); }
+
+// The ring and the flag are the page's annotation layer, not part of the card.
+.hs-slot .gc { transition: box-shadow 380ms ease; }
+.hs-slot.on .gc { box-shadow: 0 0 0 2px #F75C03, 0 16px 40px rgba(0, 0, 0, 0.5); }
+
+.hs-flag {
+	position: absolute; top: 0; left: 0;
+	display: flex; align-items: center; gap: 6px;
+	font-family: 'Lekton', monospace; font-size: 9.5px; letter-spacing: 0.15em;
+	text-transform: uppercase; color: #4d545c;
+	transition: color 380ms ease;
+	i { display: block; width: 5px; height: 5px; border-radius: 50%; background: #30363d; transition: background 380ms ease; }
+}
+.hs-slot.on .hs-flag { color: #F75C03; i { background: #F75C03; } }
+
+.hs-screen {
+	display: flex; align-items: center; gap: 12px;
+	margin-top: 22px; padding-top: 15px; border-top: 1px solid #21262d;
+	font-size: 14px; color: #8b949e;
+	.sl { font-family: 'Lekton', monospace; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: #4d545c; }
+	.sv { color: #e6edf3; font-weight: 600; transition: opacity 260ms ease; }
+	.sv.swap { opacity: 0; }
+	.sr { margin-left: auto; font-family: 'Lekton', monospace; font-size: 10.5px; letter-spacing: 0.1em; color: #4d545c; b { color: #F75C03; font-weight: 400; } }
+}
+
+// ═══ THE POPUP ═══════════════════════════════════════════════════════════════
+// entrypoints/popup: dark chrome, real section labels, white game cards inside.
+.pu {
+	width: 340px; background: #0d1117; border: 1px solid #30363d; border-radius: 10px;
+	overflow: hidden; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+}
+.pu-head {
+	display: flex; align-items: center; gap: 9px; padding: 10px 12px;
+	border-bottom: 1px solid #21262d; background: #161b22;
+	.w { font-size: 13.5px; font-weight: 700; letter-spacing: -0.03em; span { color: #F75C03; } }
+	.i { margin-left: auto; display: flex; gap: 9px; align-items: center; }
+	.g { font-family: 'Lekton', monospace; font-size: 11px; color: #8b949e; }
+	.s {
+		width: 26px; height: 14px; border-radius: 7px; background: #F75C03; position: relative;
+		&::after { content: ''; position: absolute; top: 2px; right: 2px; width: 10px; height: 10px; border-radius: 50%; background: #fff; }
+	}
+}
+.pu-body { padding: 10px 12px 12px; }
+.pu-sec {
+	font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+	color: #8b949e; margin: 0 0 8px;
+	&.gap { margin-top: 14px; }
+}
+.pu-league {
+	display: flex; align-items: center; gap: 7px; margin: 0 0 6px;
+	font-size: 11px; font-weight: 600; letter-spacing: 0.04em; color: #c9d1d9;
+	.d { width: 15px; height: 15px; border-radius: 3px; flex-shrink: 0; }
+}
+.pu-stack > * + * { margin-top: 8px; }
+.pu-foot {
+	border-top: 1px solid #21262d; padding: 9px 12px;
+	display: flex; align-items: center; gap: 10px;
+	font-family: 'Lekton', monospace; font-size: 10px; letter-spacing: 0.08em; color: #4d545c;
+	b { margin-left: auto; color: #6e7681; font-weight: 400; }
+}
+
+// ═══ CHARTS ══════════════════════════════════════════════════════════════════
+// Axis and grid colours from gameDetailChartOptions.ts; series colours from the
+// stacked-signal option in the same file.
+.ch-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+.ch {
+	background: #161b22; border: 1px solid #21262d; border-radius: 8px; padding: 14px 15px 10px;
+}
+.ch-t { font-size: 12.5px; font-weight: 600; color: #e6edf3; letter-spacing: -0.01em; margin-bottom: 3px; }
+.ch-s { font-family: 'Lekton', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #6e7681; margin-bottom: 10px; }
+.ch svg { display: block; width: 100%; height: auto; }
+.ch-legend {
+	display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 9px;
+	font-family: 'Lekton', monospace; font-size: 10px; letter-spacing: 0.06em; color: #8b949e;
+	span { display: flex; align-items: center; gap: 5px; }
+	i { display: block; width: 8px; height: 8px; border-radius: 2px; }
+}
+
+// ═══ LEAGUES ═════════════════════════════════════════════════════════════════
+// A list, grouped by sport. Replaces the marquee in Leagues.astro, which slid 31
+// logos past at a speed nobody can read and repeated the NCAA mark eight times.
+.lg-head { display: flex; align-items: baseline; gap: 26px; margin-bottom: 22px; }
+.lg-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 0 24px; }
+.lg-col {
+	border-top: 1px solid #30363d; padding-top: 13px;
+	h4 {
+		font-family: 'Lekton', monospace; font-size: 10px; letter-spacing: 0.16em;
+		text-transform: uppercase; color: #F75C03; margin-bottom: 11px;
+	}
+	li { font-size: 13.5px; color: #8b949e; padding: 4px 0; line-height: 1.4; }
+}
+
+// ═══ SETTINGS ════════════════════════════════════════════════════════════════
+// The six categories and their descriptions come from locales/en.json (setup.group*).
+// Two columns, not three: this list sits in the band's 1fr column beside a 340px
+// panel, and three tracks put "Standby Stream" onto two lines.
+.st-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0 26px; }
+.st-item {
+	border-top: 1px solid #30363d; padding: 15px 26px 20px 0;
+	h4 { font-size: 18px; font-weight: 700; letter-spacing: -0.03em; color: #e6edf3; span { color: #F75C03; } }
+	p { font-size: 14px; color: #8b949e; line-height: 1.55; margin-top: 7px; }
+}
+
+// The settings panel as the popup draws it: label on the left, value on the right.
+.st-panel {
+	width: 340px; background: #161b22; border: 1px solid #30363d; border-radius: 10px; padding: 14px 15px;
+}
+.st-panel-h {
+	font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+	color: #8b949e; padding-bottom: 10px; border-bottom: 1px solid #21262d; margin-bottom: 4px;
+}
+.st-row {
+	display: flex; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid #21262d;
+	&:last-child { border-bottom: 0; }
+	.l { font-size: 12.5px; color: #c9d1d9; }
+	.v { margin-left: auto; font-family: 'Lekton', monospace; font-size: 12px; color: #e6edf3; }
+}
+.st-dots { margin-left: auto; display: flex; gap: 3px; }
+.st-dot { width: 8px; height: 8px; border-radius: 50%; background: #30363d; &.on { background: #F75C03; } }
+.st-toggle {
+	margin-left: auto; width: 26px; height: 14px; border-radius: 7px; background: #30363d; position: relative;
+	&::after { content: ''; position: absolute; top: 2px; left: 2px; width: 10px; height: 10px; border-radius: 50%; background: #6e7681; }
+	&.on { background: #F75C03; &::after { left: auto; right: 2px; background: #fff; } }
+}
+
+// ═══ Shared reading shell for release notes and docs ═════════════════════════
+.rs-nav {
+	display: flex; align-items: center; gap: 26px; padding: 16px 40px; border-bottom: 1px solid #21262d;
+	.m { font-size: 15.5px; font-weight: 700; letter-spacing: -0.035em; span { color: #F75C03; } }
+	ul { display: flex; gap: 22px; margin-left: auto; font-size: 13.5px; }
+	li { color: #8b949e; &.on { color: #e6edf3; } &.soon { color: #4d545c; } }
+}
+.rs { display: grid; grid-template-columns: 196px 1fr 168px; gap: 38px; padding: 34px 40px 44px; }
+.rs-side {
+	.g { font-family: 'Lekton', monospace; font-size: 9.5px; letter-spacing: 0.15em; text-transform: uppercase; color: #4d545c; margin: 20px 0 8px; &:first-child { margin-top: 0; } }
+	li { font-size: 13px; color: #8b949e; padding: 4px 0; &.on { color: #F75C03; } }
+}
+.rs-h { font-size: 34px; font-weight: 700; letter-spacing: -0.045em; span { color: #F75C03; } }
+.rs-p { font-size: 14.5px; color: #8b949e; line-height: 1.75; margin-top: 13px; max-width: 62ch; }
+.rs-h2 { font-size: 19px; font-weight: 600; letter-spacing: -0.025em; margin-top: 24px; }
+.rs-code {
+	background: #161b22; border: 1px solid #21262d; border-radius: 6px; padding: 13px 15px;
+	font-family: 'Lekton', monospace; font-size: 12.5px; line-height: 1.8; color: #c9d1d9; margin-top: 14px;
+	.k { color: #F75C03; } .s { color: #00CC66; } .c { color: #4d545c; } .n { color: #2274A5; }
+}
+.rs-on {
+	.g { font-family: 'Lekton', monospace; font-size: 9.5px; letter-spacing: 0.15em; text-transform: uppercase; color: #4d545c; padding-bottom: 7px; border-bottom: 1px solid #21262d; margin-bottom: 9px; }
+	li { font-size: 12.5px; color: #6e7681; padding: 4px 0; &.on { color: #e6edf3; } }
+}
+.rl-head {
+	display: flex; align-items: baseline; gap: 15px; padding-bottom: 11px;
+	border-bottom: 1px solid #30363d; margin-top: 26px;
+	.v { font-size: 26px; font-weight: 700; letter-spacing: -0.04em; }
+	.d { font-family: 'Lekton', monospace; font-size: 11.5px; color: #6e7681; }
+	.c { margin-left: auto; font-family: 'Lekton', monospace; font-size: 11px; color: #F75C03; }
+}
+.rl-sum { font-size: 14.5px; color: #8b949e; line-height: 1.7; margin-top: 14px; max-width: 66ch; }
+.rl-g { margin-top: 22px; }
+.rl-gh {
+	font-family: 'Lekton', monospace; font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase;
+	color: #6e7681; padding-bottom: 6px; border-bottom: 1px solid #21262d; display: flex;
+	b { margin-left: auto; color: #4d545c; font-weight: 400; }
+}
+.rl-i {
+	padding: 12px 0; border-bottom: 1px solid #21262d;
+	h4 { font-size: 14.5px; font-weight: 600; letter-spacing: -0.02em; color: #e6edf3; line-height: 1.35; max-width: 56ch; span { color: #F75C03; } }
+	p { font-size: 13px; color: #8b949e; line-height: 1.65; margin-top: 6px; max-width: 72ch; }
+	ul { margin-top: 8px; }
+	li {
+		font-size: 12.5px; color: #8b949e; line-height: 1.6; padding-left: 14px; position: relative; margin-bottom: 4px;
+		&::before { content: ''; position: absolute; left: 0; top: 7px; width: 4px; height: 4px; background: #F75C03; border-radius: 1px; }
+		b { color: #e6edf3; font-weight: 600; }
+	}
+}
+
+@import 'gamecard';

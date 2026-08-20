@@ -1,0 +1,729 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ArenaSwap — landing page proposal</title>
+<meta name="description" content="The Bands landing page design for arenaswap.app, using the shipped game card, popup, charts and settings. The hero animation runs on hardcoded frames and never calls the API.">
+<link rel="stylesheet" href="assets/main.css">
+</head>
+<body>
+
+<div class="bar">
+	<div class="shell">
+		<b>Arena<span>Swap</span></b>
+		<nav>
+			<a href="#page" class="js-nav">The page</a>
+			<a href="#real" class="js-nav">Real UI</a>
+			<a href="#motion" class="js-nav">Hero motion</a>
+			<a href="#slop" class="js-nav">Slop pass</a>
+			<a href="#inner" class="js-nav">Inner pages</a>
+			<a href="#plan" class="js-nav">Plan</a>
+			<a href="#ask" class="js-nav">Questions</a>
+		</nav>
+	</div>
+</div>
+
+<section>
+	<div class="shell">
+		<h1>Landing page proposal<span class="dot">.</span></h1>
+		<p class="lede">
+			A marketing page for arenaswap<span class="dot">.</span>app whose only job is to get a sports fan to install the
+			extension<span class="dot">.</span> Dark palette, DM Sans and Lekton, copy in the voice we already write in<span class="dot">.</span>
+		</p>
+		<p class="lede">
+			Every piece of product on it is the shipped component, not a redrawing<span class="dot">.</span> The hero animates on
+			hardcoded frames, so it works with no network and no games on<span class="dot">.</span> Two new sections cover the charts
+			and the settings<span class="dot">.</span>
+		</p>
+	</div>
+</section>
+
+<section id="page">
+	<div class="shell">
+		<h2>The page<span class="dot">.</span></h2>
+		<div class="shots">
+			<span class="shot-tab" aria-selected="true">Homepage</span>
+			<span class="shot-note">1240px wide, scaled to fit · animation live</span>
+		</div>
+
+		<div class="frame" id="home">
+			<div class="frame-canvas">
+				<div class="chrome"><span class="chrome-dot"></span><span class="chrome-dot"></span><span class="chrome-dot"></span><span class="chrome-url">arenaswap.app</span></div>
+				<div class="mk bd">
+					<div class="nv">
+						<span class="m">Arena<span>Swap</span></span>
+						<ul><li class="on">Home</li><li>PowerScore</li><li>Release notes</li><li class="soon">Docs</li></ul>
+						<a class="btn-sm">Add to Chrome</a>
+					</div>
+
+					<div class="bd-hero">
+						<h1 class="bd-h1">Never miss<br>the moment<span>.</span></h1>
+						<div class="bd-under">
+							<p class="bd-sub">ArenaSwap watches every live game across 30+ leagues and automatically switches your browser tab to the most exciting one, as fast as every 6 seconds.</p>
+							<div class="bd-cta"><a class="btn">Add to Chrome</a><span class="alt">Firefox &nbsp;·&nbsp; Edge</span></div>
+						</div>
+					</div>
+
+					<!-- Hero motion. Four shipped game cards on a scripted timeline. -->
+					<div class="hs" id="hs">
+						<div class="hs-row" id="hs-row">
+<div class="hs-slot" data-slot="0"><span class="hs-flag"><i></i>NBA</span><div class="gc" style="--away:#007A33;--home:#006BB6;--away-wash:#007A3328;--home-wash:#006BB628" data-card="0"><div class="gc-live"><span class="gc-dot"></span>Live</div><div class="gc-matchup"><div class="gc-team"><span class="gc-logo" style="background:#007A33">BOS</span><span class="gc-abbr">BOS</span><span class="gc-star">&#9734;</span></div><div class="gc-center"><div class="gc-scores"><span class="gc-score" data-role="away">96</span><span class="gc-sep"></span><span class="gc-score" data-role="home">99</span></div><span class="gc-clock" data-role="clock">4:12</span><span class="gc-period" data-role="period">3rd</span></div><div class="gc-team"><span class="gc-logo" style="background:#006BB6">NYK</span><span class="gc-abbr">NYK</span><span class="gc-star">&#9734;</span></div></div><div class="gc-meta"><span class="gc-venue">Madison Square Garden</span><span class="gc-nets"><b>ESPN</b></span></div><div class="gc-ps"><span class="gc-ps-lab">PowerScore</span><div class="gc-ps-track"><div class="gc-ps-bar" data-role="bar" style="width:58%;background-color:rgb(202,116,68)"></div></div><span class="gc-ps-val" data-role="val" style="color:rgb(202,116,68)">58 / 100</span></div><div class="gc-tab"><span class="gc-select">Tab 1: ESPN</span></div></div></div>
+<div class="hs-slot on" data-slot="1"><span class="hs-flag"><i></i>On your screen</span><div class="gc" style="--away:#00A3E0;--home:#E81828;--away-wash:#00A3E028;--home-wash:#E8182828" data-card="1"><div class="gc-live"><span class="gc-dot"></span>Live</div><div class="gc-matchup"><div class="gc-team"><span class="gc-logo" style="background:#00A3E0">MIA</span><span class="gc-abbr">MIA</span><span class="gc-star">&#9734;</span></div><div class="gc-center"><div class="gc-scores"><span class="gc-score" data-role="away">2</span><span class="gc-diamond" aria-hidden="true"><span class="gc-base gc-base-2">&#9670;</span><span class="gc-base gc-base-3 on">&#9670;</span><span class="gc-base gc-base-1 on">&#9670;</span></span><span class="gc-score" data-role="home">4</span></div><span class="gc-period" data-role="period">Inn 7</span><span class="gc-bso"><span class="gc-bso-lab">B</span><span class="gc-bso-dot on">&#9679;</span><span class="gc-bso-dot on">&#9679;</span><span class="gc-bso-dot">&#9679;</span><span class="gc-bso-lab">S</span><span class="gc-bso-dot on">&#9679;</span><span class="gc-bso-dot">&#9679;</span><span class="gc-bso-lab">O</span><span class="gc-bso-dot on">&#9679;</span><span class="gc-bso-dot">&#9679;</span></span></div><div class="gc-team"><span class="gc-logo" style="background:#E81828">PHI</span><span class="gc-abbr">PHI</span><span class="gc-star on">&#9733;</span></div></div><div class="gc-meta"><span class="gc-venue">Citizens Bank Park</span><span class="gc-nets"><b>ESPN+</b></span></div><div class="gc-ps"><span class="gc-ps-lab">PowerScore</span><div class="gc-ps-track"><div class="gc-ps-bar" data-role="bar" style="width:78%;background-color:rgb(223,104,37)"></div></div><span class="gc-ps-val" data-role="val" style="color:rgb(223,104,37)">78 / 100</span></div><div class="gc-tab"><span class="gc-select">Tab 2: ESPN+</span></div></div></div>
+<div class="hs-slot" data-slot="2"><span class="hs-flag"><i></i>NHL</span><div class="gc" style="--away:#6F263D;--home:#041E42;--away-wash:#6F263D28;--home-wash:#041E4228" data-card="2"><div class="gc-live"><span class="gc-dot"></span>Live</div><div class="gc-matchup"><div class="gc-team"><span class="gc-logo" style="background:#6F263D">COL</span><span class="gc-abbr">COL</span><span class="gc-star">&#9734;</span></div><div class="gc-center"><div class="gc-scores"><span class="gc-score" data-role="away">1</span><span class="gc-sep"></span><span class="gc-score" data-role="home">5</span></div><span class="gc-clock" data-role="clock">8:20</span><span class="gc-period" data-role="period">3rd</span></div><div class="gc-team"><span class="gc-logo" style="background:#041E42">EDM</span><span class="gc-abbr">EDM</span><span class="gc-star">&#9734;</span></div></div><div class="gc-meta"><span class="gc-venue">Rogers Place</span><span class="gc-nets"><b>TNT</b></span></div><div class="gc-ps"><span class="gc-ps-lab">PowerScore</span><div class="gc-ps-track"><div class="gc-ps-bar" data-role="bar" style="width:22%;background-color:rgb(163,136,124)"></div></div><span class="gc-ps-val" data-role="val" style="color:rgb(163,136,124)">22 / 100</span></div><div class="gc-tab"><span class="gc-select">Tab 3: TNT</span></div></div></div>
+						</div>
+						<div class="hs-screen">
+							<span class="sl">On your screen</span>
+							<span class="sv" id="hs-screen">Marlins at Phillies</span>
+							<span class="sr">ArenaSwap moves your tab<b>.</b> You don&rsquo;t<b>.</b></span>
+						</div>
+					</div>
+
+					<div class="bd-band">
+						<div class="bd-big">Stop babysitting<br>your tabs<span>.</span></div>
+						<p class="bd-p">Open your streams, assign each one to a game, walk away. ArenaSwap unmutes the game you are on and mutes the rest, every time it moves you. <b>No clicking, no checking, no missing.</b></p>
+					</div>
+
+					<div class="bd-band alt">
+						<div>
+							<div class="bd-big">Everything you&rsquo;re<br>watching, in one<br>panel<span>.</span></div>
+							<p class="bd-p" style="margin-top:22px;max-width:44ch">Assigned tabs at the top, the rest of tonight underneath, and what starts next after that. Assign a game to a tab from the dropdown on its card. <b>Nothing else to learn.</b></p>
+						</div>
+						<div class="pu"><div class="pu-head"><span class="w">Arena<span>Swap</span></span><span class="i"><span class="g">Tour</span><span class="g">Settings</span><span class="s"></span></span></div><div class="pu-body"><div class="pu-sec">Active Tabs</div><div class="pu-league"><span class="d" style="background:#1d428a"></span>NBA</div><div class="pu-stack"><div class="gc" style="--away:#007A33;--home:#006BB6;--away-wash:#007A3328;--home-wash:#006BB628" data-card="0"><div class="gc-live"><span class="gc-dot"></span>Live</div><div class="gc-matchup"><div class="gc-team"><span class="gc-logo" style="background:#007A33">BOS</span><span class="gc-abbr">BOS</span><span class="gc-star">&#9734;</span></div><div class="gc-center"><div class="gc-scores"><span class="gc-score" data-role="away">96</span><span class="gc-sep"></span><span class="gc-score" data-role="home">99</span></div><span class="gc-clock" data-role="clock">4:12</span><span class="gc-period" data-role="period">3rd</span></div><div class="gc-team"><span class="gc-logo" style="background:#006BB6">NYK</span><span class="gc-abbr">NYK</span><span class="gc-star">&#9734;</span></div></div><div class="gc-meta"><span class="gc-venue">Madison Square Garden</span><span class="gc-nets"><b>ESPN</b></span></div><div class="gc-ps"><span class="gc-ps-lab">PowerScore</span><div class="gc-ps-track"><div class="gc-ps-bar" data-role="bar" style="width:58%;background-color:rgb(202,116,68)"></div></div><span class="gc-ps-val" data-role="val" style="color:rgb(202,116,68)">58 / 100</span></div></div></div><div class="pu-league" style="margin-top:12px"><span class="d" style="background:#041e42"></span>MLB</div><div class="pu-stack"><div class="gc" style="--away:#00A3E0;--home:#E81828;--away-wash:#00A3E028;--home-wash:#E8182828" data-card="1"><div class="gc-live"><span class="gc-dot"></span>Live</div><div class="gc-matchup"><div class="gc-team"><span class="gc-logo" style="background:#00A3E0">MIA</span><span class="gc-abbr">MIA</span><span class="gc-star">&#9734;</span></div><div class="gc-center"><div class="gc-scores"><span class="gc-score" data-role="away">2</span><span class="gc-diamond" aria-hidden="true"><span class="gc-base gc-base-2">&#9670;</span><span class="gc-base gc-base-3 on">&#9670;</span><span class="gc-base gc-base-1 on">&#9670;</span></span><span class="gc-score" data-role="home">4</span></div><span class="gc-period" data-role="period">Inn 7</span><span class="gc-bso"><span class="gc-bso-lab">B</span><span class="gc-bso-dot on">&#9679;</span><span class="gc-bso-dot on">&#9679;</span><span class="gc-bso-dot">&#9679;</span><span class="gc-bso-lab">S</span><span class="gc-bso-dot on">&#9679;</span><span class="gc-bso-dot">&#9679;</span><span class="gc-bso-lab">O</span><span class="gc-bso-dot on">&#9679;</span><span class="gc-bso-dot">&#9679;</span></span></div><div class="gc-team"><span class="gc-logo" style="background:#E81828">PHI</span><span class="gc-abbr">PHI</span><span class="gc-star on">&#9733;</span></div></div><div class="gc-meta"><span class="gc-venue">Citizens Bank Park</span><span class="gc-nets"><b>ESPN+</b></span></div><div class="gc-ps"><span class="gc-ps-lab">PowerScore</span><div class="gc-ps-track"><div class="gc-ps-bar" data-role="bar" style="width:78%;background-color:rgb(223,104,37)"></div></div><span class="gc-ps-val" data-role="val" style="color:rgb(223,104,37)">78 / 100</span></div></div></div><div class="pu-sec gap">Up Next</div><div class="pu-league"><span class="d" style="background:#013369"></span>NFL &nbsp;&middot;&nbsp; 4 games today</div></div><div class="pu-foot">Enable auto-switching<b>ON</b></div></div>
+					</div>
+
+					<div class="bd-band wide">
+						<div style="max-width:52ch;margin-bottom:30px">
+							<div class="bd-mid">See why<span>.</span> Every time<span>.</span></div>
+							<p class="bd-p" style="margin-top:12px">Open any game and you get the whole argument: how the score got there, how close it has been, and which of the five signals is doing the work right now. <b>No black-box guessing.</b></p>
+						</div>
+						<div class="ch-grid">
+<div class="ch"><div class="ch-t">PowerScore over time</div><div class="ch-s">One line, 0 to 100</div><svg viewBox="0 0 520 132" role="img" aria-label="PowerScore over time"><line x1="30.0" y1="112.0" x2="512.0" y2="112.0" stroke="rgba(71,85,105,0.34)" stroke-width="1"/><text x="25.0" y="115.0" fill="#8b949e" font-size="9" font-family="Lekton,monospace" text-anchor="end">0</text><line x1="30.0" y1="61.0" x2="512.0" y2="61.0" stroke="rgba(71,85,105,0.34)" stroke-width="1"/><text x="25.0" y="64.0" fill="#8b949e" font-size="9" font-family="Lekton,monospace" text-anchor="end">50</text><line x1="30.0" y1="10.0" x2="512.0" y2="10.0" stroke="rgba(71,85,105,0.34)" stroke-width="1"/><text x="25.0" y="13.0" fill="#8b949e" font-size="9" font-family="Lekton,monospace" text-anchor="end">100</text><line x1="30.0" y1="112.0" x2="512.0" y2="112.0" stroke="rgba(71,85,105,0.95)" stroke-width="1"/><text x="30.0" y="124.0" fill="#8b949e" font-size="9" font-family="Lekton,monospace" text-anchor="middle">7:05</text><text x="126.4" y="124.0" fill="#8b949e" font-size="9" font-family="Lekton,monospace" text-anchor="middle">7:20</text><text x="222.8" y="124.0" fill="#8b949e" font-size="9" font-family="Lekton,monospace" text-anchor="middle">7:35</text><text x="319.2" y="124.0" fill="#8b949e" font-size="9" font-family="Lekton,monospace" text-anchor="middle">7:50</text><text x="415.6" y="124.0" fill="#8b949e" font-size="9" font-family="Lekton,monospace" text-anchor="middle">8:05</text><text x="512.0" y="124.0" fill="#8b949e" font-size="9" font-family="Lekton,monospace" text-anchor="middle">8:20</text><path d="M30.0 70.2 L126.4 59.0 L222.8 52.8 L319.2 46.7 L415.6 39.6 L512.0 26.3 L512.0 112.0 L30.0 112.0 Z" fill="#F75C03" opacity="0.14"/><path d="M30.0 70.2 L126.4 59.0 L222.8 52.8 L319.2 46.7 L415.6 39.6 L512.0 26.3" fill="none" stroke="#F75C03" stroke-width="2" stroke-linejoin="round"/></svg></div>
+<div class="ch"><div class="ch-t">Game score over time</div><div class="ch-s">Both teams</div><svg viewBox="0 0 520 132" role="img" aria-label="Game score over time"><line x1="30.0" y1="112.0" x2="512.0" y2="112.0" stroke="rgba(71,85,105,0.34)" stroke-width="1"/><text x="25.0" y="115.0" fill="#8b949e" font-size="9" font-family="Lekton,monospace" text-anchor="end">14</text><line x1="30.0" y1="61.0" x2="512.0" y2="61.0" stroke="rgba(71,85,105,0.34)" stroke-width="1"/><text x="25.0" y="64.0" fill="#8b949e" font-size="9" font-family="Lekton,monospace" text-anchor="end">64</text><line x1="30.0" y1="10.0" x2="512.0" y2="10.0" stroke="rgba(71,85,105,0.34)" stroke-width="1"/><text x="25.0" y="13.0" fill="#8b949e" font-size="9" font-family="Lekton,monospace" text-anchor="end">114</text><line x1="30.0" y1="112.0" x2="512.0" y2="112.0" stroke="rgba(71,85,105,0.95)" stroke-width="1"/><text x="30.0" y="124.0" fill="#8b949e" font-size="9" font-family="Lekton,monospace" text-anchor="middle">7:05</text><text x="126.4" y="124.0" fill="#8b949e" font-size="9" font-family="Lekton,monospace" text-anchor="middle">7:20</text><text x="222.8" y="124.0" fill="#8b949e" font-size="9" font-family="Lekton,monospace" text-anchor="middle">7:35</text><text x="319.2" y="124.0" fill="#8b949e" font-size="9" font-family="Lekton,monospace" text-anchor="middle">7:50</text><text x="415.6" y="124.0" fill="#8b949e" font-size="9" font-family="Lekton,monospace" text-anchor="middle">8:05</text><text x="512.0" y="124.0" fill="#8b949e" font-size="9" font-family="Lekton,monospace" text-anchor="middle">8:20</text><path d="M30.0 107.9 L126.4 81.4 L222.8 67.1 L319.2 44.7 L415.6 28.4 L512.0 16.1" fill="none" stroke="#007A33" stroke-width="2" stroke-linejoin="round"/><path d="M30.0 104.9 L126.4 87.5 L222.8 61.0 L319.2 48.8 L415.6 22.2 L512.0 13.1" fill="none" stroke="#006BB6" stroke-width="2" stroke-linejoin="round"/></svg><div class="ch-legend"><span><i style="background:#007A33"></i>BOS</span><span><i style="background:#006BB6"></i>NYK</span></div></div>
+<div class="ch"><div class="ch-t">Win probability</div><div class="ch-s">Per cent, home</div><svg viewBox="0 0 520 132" role="img" aria-label="Win probability"><line x1="30.0" y1="112.0" x2="512.0" y2="112.0" stroke="rgba(71,85,105,0.34)" stroke-width="1"/><text x="25.0" y="115.0" fill="#8b949e" font-size="9" font-family="Lekton,monospace" text-anchor="end">0</text><line x1="30.0" y1="61.0" x2="512.0" y2="61.0" stroke="rgba(71,85,105,0.34)" stroke-width="1"/><text x="25.0" y="64.0" fill="#8b949e" font-size="9" font-family="Lekton,monospace" text-anchor="end">50</text><line x1="30.0" y1="10.0" x2="512.0" y2="10.0" stroke="rgba(71,85,105,0.34)" stroke-width="1"/><text x="25.0" y="13.0" fill="#8b949e" font-size="9" font-family="Lekton,monospace" text-anchor="end">100</text><line x1="30.0" y1="112.0" x2="512.0" y2="112.0" stroke="rgba(71,85,105,0.95)" stroke-width="1"/><text x="30.0" y="124.0" fill="#8b949e" font-size="9" font-family="Lekton,monospace" text-anchor="middle">7:05</text><text x="126.4" y="124.0" fill="#8b949e" font-size="9" font-family="Lekton,monospace" text-anchor="middle">7:20</text><text x="222.8" y="124.0" fill="#8b949e" font-size="9" font-family="Lekton,monospace" text-anchor="middle">7:35</text><text x="319.2" y="124.0" fill="#8b949e" font-size="9" font-family="Lekton,monospace" text-anchor="middle">7:50</text><text x="415.6" y="124.0" fill="#8b949e" font-size="9" font-family="Lekton,monospace" text-anchor="middle">8:05</text><text x="512.0" y="124.0" fill="#8b949e" font-size="9" font-family="Lekton,monospace" text-anchor="middle">8:20</text><path d="M30.0 59.0 L126.4 65.1 L222.8 52.8 L319.2 55.9 L415.6 47.7 L512.0 39.6 L512.0 112.0 L30.0 112.0 Z" fill="#006BB6" opacity="0.14"/><path d="M30.0 59.0 L126.4 65.1 L222.8 52.8 L319.2 55.9 L415.6 47.7 L512.0 39.6" fill="none" stroke="#006BB6" stroke-width="2" stroke-linejoin="round"/></svg></div>
+<div class="ch"><div class="ch-t">PowerScore components over time</div><div class="ch-s">Stacked to the total</div><svg viewBox="0 0 520 132" role="img" aria-label="PowerScore components over time"><line x1="30.0" y1="112.0" x2="512.0" y2="112.0" stroke="rgba(71,85,105,0.34)" stroke-width="1"/><text x="25.0" y="115.0" fill="#8b949e" font-size="9" font-family="Lekton,monospace" text-anchor="end">0</text><line x1="30.0" y1="61.0" x2="512.0" y2="61.0" stroke="rgba(71,85,105,0.34)" stroke-width="1"/><text x="25.0" y="64.0" fill="#8b949e" font-size="9" font-family="Lekton,monospace" text-anchor="end">50</text><line x1="30.0" y1="10.0" x2="512.0" y2="10.0" stroke="rgba(71,85,105,0.34)" stroke-width="1"/><text x="25.0" y="13.0" fill="#8b949e" font-size="9" font-family="Lekton,monospace" text-anchor="end">100</text><line x1="30.0" y1="112.0" x2="512.0" y2="112.0" stroke="rgba(71,85,105,0.95)" stroke-width="1"/><text x="30.0" y="124.0" fill="#8b949e" font-size="9" font-family="Lekton,monospace" text-anchor="middle">7:05</text><text x="126.4" y="124.0" fill="#8b949e" font-size="9" font-family="Lekton,monospace" text-anchor="middle">7:20</text><text x="222.8" y="124.0" fill="#8b949e" font-size="9" font-family="Lekton,monospace" text-anchor="middle">7:35</text><text x="319.2" y="124.0" fill="#8b949e" font-size="9" font-family="Lekton,monospace" text-anchor="middle">7:50</text><text x="415.6" y="124.0" fill="#8b949e" font-size="9" font-family="Lekton,monospace" text-anchor="middle">8:05</text><text x="512.0" y="124.0" fill="#8b949e" font-size="9" font-family="Lekton,monospace" text-anchor="middle">8:20</text><rect x="9.1" y="101.8" width="41.8" height="10.2" fill="#22c55e"/><rect x="9.1" y="97.7" width="41.8" height="4.1" fill="#f75c03"/><rect x="9.1" y="83.4" width="41.8" height="14.3" fill="#2274a5"/><rect x="9.1" y="79.4" width="41.8" height="4.1" fill="#f1c40f"/><rect x="9.1" y="77.3" width="41.8" height="2.0" fill="#d90368"/><rect x="105.5" y="97.7" width="41.8" height="14.3" fill="#22c55e"/><rect x="105.5" y="90.6" width="41.8" height="7.1" fill="#f75c03"/><rect x="105.5" y="72.2" width="41.8" height="18.4" fill="#2274a5"/><rect x="105.5" y="66.1" width="41.8" height="6.1" fill="#f1c40f"/><rect x="105.5" y="63.0" width="41.8" height="3.1" fill="#d90368"/><rect x="201.9" y="94.7" width="41.8" height="17.3" fill="#22c55e"/><rect x="201.9" y="83.4" width="41.8" height="11.2" fill="#f75c03"/><rect x="201.9" y="68.1" width="41.8" height="15.3" fill="#2274a5"/><rect x="201.9" y="60.0" width="41.8" height="8.2" fill="#f1c40f"/><rect x="201.9" y="55.9" width="41.8" height="4.1" fill="#d90368"/><rect x="298.3" y="91.6" width="41.8" height="20.4" fill="#22c55e"/><rect x="298.3" y="76.3" width="41.8" height="15.3" fill="#f75c03"/><rect x="298.3" y="64.1" width="41.8" height="12.2" fill="#2274a5"/><rect x="298.3" y="54.9" width="41.8" height="9.2" fill="#f1c40f"/><rect x="298.3" y="49.8" width="41.8" height="5.1" fill="#d90368"/><rect x="394.7" y="87.5" width="41.8" height="24.5" fill="#22c55e"/><rect x="394.7" y="66.1" width="41.8" height="21.4" fill="#f75c03"/><rect x="394.7" y="51.8" width="41.8" height="14.3" fill="#2274a5"/><rect x="394.7" y="41.6" width="41.8" height="10.2" fill="#f1c40f"/><rect x="394.7" y="36.5" width="41.8" height="5.1" fill="#d90368"/><rect x="491.1" y="83.4" width="41.8" height="28.6" fill="#22c55e"/><rect x="491.1" y="56.9" width="41.8" height="26.5" fill="#f75c03"/><rect x="491.1" y="40.6" width="41.8" height="16.3" fill="#2274a5"/><rect x="491.1" y="29.4" width="41.8" height="11.2" fill="#f1c40f"/><rect x="491.1" y="23.3" width="41.8" height="6.1" fill="#d90368"/></svg><div class="ch-legend"><span><i style="background:#22c55e"></i>Closeness</span><span><i style="background:#f75c03"></i>Late-game</span><span><i style="background:#2274a5"></i>Momentum</span><span><i style="background:#f1c40f"></i>Lead changes</span><span><i style="background:#d90368"></i>Comeback</span></div></div>
+						</div>
+					</div>
+
+					<div class="bd-band wide">
+						<div class="lg-head">
+							<span class="bd-num">31</span>
+							<div>
+								<div class="bd-mid">Leagues<span>.</span> Six sports<span>.</span></div>
+								<p class="bd-p" style="margin-top:10px;max-width:52ch">Turn off the ones you do not watch and ArenaSwap stops polling them. Put the rest in whatever order you actually watch them in.</p>
+							</div>
+						</div>
+						<div class="lg-grid">
+<div class="lg-col"><h4>Basketball</h4><ul><li>NBA</li><li>WNBA</li><li>NCAA Men&rsquo;s</li><li>NCAA Women&rsquo;s</li></ul></div>
+<div class="lg-col"><h4>Football</h4><ul><li>NFL</li><li>NCAA Football</li><li>UFL</li></ul></div>
+<div class="lg-col"><h4>Hockey</h4><ul><li>NHL</li><li>NCAA Men&rsquo;s</li></ul></div>
+<div class="lg-col"><h4>Baseball</h4><ul><li>MLB</li><li>NCAA Baseball</li><li>NCAA Softball</li><li>World Baseball Classic</li></ul></div>
+<div class="lg-col"><h4>Soccer</h4><ul><li>Premier League</li><li>La Liga</li><li>Bundesliga</li><li>Serie A</li><li>Liga MX</li><li>MLS</li><li>NWSL</li><li>Champions League</li><li>Europa League</li><li>FIFA World Cup</li><li>FIFA Women&rsquo;s World Cup</li></ul></div>
+<div class="lg-col"><h4>Olympics</h4><ul><li>Basketball (M)</li><li>Basketball (W)</li><li>Hockey (M)</li><li>Hockey (W)</li><li>Soccer (M)</li><li>Soccer (W)</li><li>Baseball</li></ul></div>
+						</div>
+					</div>
+
+					<div class="bd-band alt">
+						<div>
+							<div class="bd-big">And you stay<br>in charge<span>.</span></div>
+							<p class="bd-p" style="margin-top:20px;max-width:44ch">Six groups of settings, and none of them are buried. Sensitivity too high? Slow it down. Love your team but want the best game? Add a bonus. Going on a beer run? <b>Standby Stream keeps something on screen.</b></p>
+							<div class="st-list" style="margin-top:28px">
+<div class="st-item"><h4>Switching<span>.</span></h4><p>How eager ArenaSwap is to move you to a better game.</p></div>
+<div class="st-item"><h4>Scoring<span>.</span></h4><p>Which signals feed a PowerScore, and what earns bonus points.</p></div>
+<div class="st-item"><h4>Leagues<span>.</span></h4><p>Which leagues get tracked, and the order they appear in.</p></div>
+<div class="st-item"><h4>Display<span>.</span></h4><p>What shows up on the main screen.</p></div>
+<div class="st-item"><h4>Standby Stream<span>.</span></h4><p>Where to park you when every game goes quiet.</p></div>
+<div class="st-item"><h4>Demo mode<span>.</span></h4><p>Scripted games, so you can watch a switch happen on demand.</p></div>
+							</div>
+						</div>
+						<div class="st-panel"><div class="st-panel-h">Switching</div><div class="st-row"><span class="l">Sensitivity</span><span class="st-dots"><span class="st-dot on"></span><span class="st-dot on"></span><span class="st-dot on"></span><span class="st-dot on"></span><span class="st-dot"></span><span class="st-dot"></span><span class="st-dot"></span></span></div><div class="st-row"><span class="l">Switch cooldown</span><span class="v">45s</span></div><div class="st-row"><span class="l">Switch delay</span><span class="v">Off</span></div><div class="st-row"><span class="l">Favorite team bonus</span><span class="v">+10</span></div><div class="st-row"><span class="l">Postseason boost</span><span class="v">+5</span></div><div class="st-row"><span class="l">Switch notifications</span><span class="st-toggle on"></span></div><div class="st-row"><span class="l">Standby Stream</span><span class="st-toggle"></span></div></div>
+					</div>
+
+					<div class="bd-tail">
+						<span class="t">Free<span>.</span> No account<span>.</span> Nothing leaves your browser<span>.</span></span>
+						<span class="r"><a class="btn">Add to Chrome</a><span class="alt">Works with any stream that runs in a browser</span></span>
+					</div>
+				</div>
+			</div>
+		</div>
+		<button class="replay" id="replay" type="button">Replay the hero</button>
+	</div>
+</section>
+
+<section id="real">
+	<div class="shell">
+		<h2>What came out of the codebase<span class="dot">.</span></h2>
+		<p class="lede narrow">
+			The cards, the popup, the charts and the settings rows are the shipped components with their real
+			values, not approximations of them. A few of those values were a surprise.
+		</p>
+		<ul class="notes">
+			<li>
+				<b>The game card is a light card, and I had been drawing it dark</b>
+				<code>.game-card</code> is <code>#ffffff</code> with a <code>#dee2e6</code> border. <code>buildGameCardStyle()</code> then paints a
+				<code>linear-gradient(to right, awayColor28, homeColor28)</code> wash over the white and puts 5px of each
+				team&rsquo;s colour down the left and right edges. Four white cards against the dark hero is a much
+				stronger picture than the dark cards in the last pass, and it is what the product actually looks like.
+				<span class="src">packages/ui/src/_game-card.scss:53 · gameCardShared.tsx:105</span>
+			</li>
+			<li>
+				<b>Scores are set in Geist, not DM Sans</b>
+				DM Sans ships no tabular figures, so a <code>1</code> is under half the width of a <code>0</code> and a score pair&rsquo;s
+				optical centre drifts off the card axis. The card uses Geist for scorelines and holds a <code>2.4ch</code>
+				minimum per digit. Geist is now back in the font set for this page.
+				<span class="src">_game-card.scss:45 · scoreboard-figures mixin</span>
+			</li>
+			<li>
+				<b>The PowerScore bar has a computed colour, not a fixed one</b>
+				<code>powerScoreColor()</code> interpolates from <code>rgb(139,148,158)</code> at 0 to <code>rgb(247,92,3)</code> at 100, so the bar
+				warms as the game gets better. The hero animation recomputes it every frame with the same function,
+				which is why the MLB card visibly cools as its score falls.
+				<span class="src">gameCardShared.tsx:54</span>
+			</li>
+			<li>
+				<b>The baseball card gets the base diamond and the ball-strike-out dots</b>
+				Second base sits above third and first, pulled up so the three read as one cluster, and the markers
+				are squashed to <code>scaleY(0.74)</code> because the glyph is square and Apple&rsquo;s is not. This is the kind of
+				detail that makes a screenshot look real, so the MLB card in the hero has it.
+				<span class="src">_game-card.scss:250</span>
+			</li>
+			<li>
+				<b>The charts already exist, and there are four of them</b>
+				PowerScore over time, Game score over time, Win probability, and PowerScore components over time.
+				The stacked one uses <code>#22c55e</code>, <code>#f75c03</code>, <code>#2274a5</code>, <code>#f1c40f</code>, <code>#d90368</code>, and the axes are
+				<code>#8b949e</code> on <code>rgba(71,85,105,0.34)</code> split lines. Those are the colours in the section above.
+				<span class="src">gameDetailChartOptions.ts</span>
+			</li>
+			<li>
+				<b>The six settings groups already have marketing copy</b>
+				&ldquo;How eager ArenaSwap is to move you to a better game.&rdquo; &ldquo;Where to park you when every game goes
+				quiet.&rdquo; Those are the shipped strings, straight out of the locale file, and they are better than
+				anything I would have written for the section. All six are used verbatim.
+				<span class="src">apps/extension/locales/en.json → setup.group*</span>
+			</li>
+			<li>
+				<b>Demo mode exists in the product</b>
+				&ldquo;Scripted games, so you can watch a switch happen on demand.&rdquo; The extension already ships a scripted
+				demo for exactly the reason the hero needs one, which settles the question of whether a scripted hero
+				is honest. It is the same idea, in the same voice.
+				<span class="src">settingsCatalog.ts · setup.groupDemoDesc</span>
+			</li>
+			<li>
+				<b>Popup labels are the real ones</b>
+				&ldquo;Active Tabs&rdquo;, &ldquo;Up Next&rdquo;, &ldquo;Enable auto-switching&rdquo;, &ldquo;Settings&rdquo;, &ldquo;Tour&rdquo;. No invented chrome.
+				<span class="src">locales/en.json → main.*</span>
+			</li>
+		</ul>
+		<p class="lede narrow" style="margin-top:28px">
+			One thing on that hero is <em>not</em> product UI, and I want to be explicit about it: the orange ring and
+			the <code>ON YOUR SCREEN</code> flag on the active card. The extension has no such state, because in the extension
+			the active tab is the browser tab. Those two marks are the page&rsquo;s annotation layer.
+		</p>
+	</div>
+</section>
+
+<section id="motion">
+	<div class="shell">
+		<h2>The hero motion<span class="dot">.</span></h2>
+		<p class="lede narrow">
+			Twelve seconds, twenty frames, 600ms apart. Every score and every PowerScore is written into an array.
+			Which card is on screen is not animated separately: it is whichever PowerScore is highest, the rule the
+			switcher uses, so the switch falls out of the data.
+		</p>
+		<ul class="timeline">
+			<li>
+				<span class="t">0:00</span>
+				<p>Three assigned tabs, three live games. <b>The MLB card is on screen</b> at 78, lifted with an orange ring. A close basketball game sits at 58 and a hockey blowout sits at 22.</p>
+			</li>
+			<li>
+				<span class="t">0:00&ndash;4:48</span>
+				<p>Scores move and the PowerScore bars move with them. <b>The NBA game climbs from 58</b> as it gets close late. The MLB game slides from 78 as the Phillies pull away, and its bar cools from orange back toward grey.</p>
+			</li>
+			<li>
+				<span class="t">0:04.8</span>
+				<p><b>The NBA card passes it and takes the screen.</b> The ring and the flag move across, the old card drops flat, and the line underneath fades to &ldquo;Celtics at Knicks&rdquo;.</p>
+			</li>
+			<li>
+				<span class="t">to 0:12</span>
+				<p>The NBA game climbs to 88 and nothing switches again, which is the second half of the point: it moves when it should and leaves you alone when it should not.</p>
+			</li>
+			<li>
+				<span class="t">Settled</span>
+				<p>It holds the last frame instead of looping, so scores never jump backwards while somebody is reading. <b>Reduced motion gets the settled frame immediately.</b></p>
+			</li>
+		</ul>
+		<div class="split" style="margin-top:36px">
+			<div>
+				<h3>Why the numbers should not be invented</h3>
+				<p>A scripted demo reads as fake the moment a number is implausible. <code>scripts/powerscore/validateLive.ts</code> already captures real sequences from live games, so the twenty frames should be lifted from one close game we watched rather than typed at the keyboard. That is the first build step.</p>
+			</div>
+			<div>
+				<h3>What it costs</h3>
+				<p>About 60 lines and no dependency. The animation reuses the shipped card markup and only writes text content and two style properties, so it cannot drift away from the component it is animating.</p>
+			</div>
+		</div>
+	</div>
+</section>
+
+<section id="slop">
+	<div class="shell">
+		<h2>The slop pass<span class="dot">.</span></h2>
+		<p class="lede narrow">
+			What came out, and why. The test each element had to pass: would this exist if it were not a familiar
+			web-design pattern.
+		</p>
+		<ul class="notes">
+			<li>
+				<b>Cut: the label above the hero demo</b>
+				It read &ldquo;Four tabs, four games / watch which tab has the sound&rdquo;, sitting above a strip that already has
+				a line underneath naming what is on screen. Two labels for one object. The line underneath survived
+				because it changes when the switch happens, so it carries information; the one above only announced.
+			</li>
+			<li>
+				<b>Cut: the invented tab shapes</b>
+				The last pass drew browser-tab trapezoids with a league code and a score in them, which was a diagram
+				of a game card standing in for a game card. Replaced with the component.
+			</li>
+			<li>
+				<b>Cut: <code>SOUND ON</code> and <code>MUTED</code> labels on every card</b>
+				Four copies of a status word to communicate one piece of state. The ring and the flag on the active
+				card say the same thing once, and muting is explained in the band below in a sentence.
+			</li>
+			<li>
+				<b>Kept: the 31</b>
+				A number set at 104px is the graphic in a design with no imagery, and it answers the question most
+				visitors actually have. It is also the real count rather than a rounded-up one.
+			</li>
+			<li>
+				<b>Kept: the &ldquo;Free. No account.&rdquo; tail</b>
+				It reads like a marketing flourish and it is doing real work: those are the three objections left at
+				the bottom of the page, answered in the order people raise them.
+			</li>
+			<li>
+				<b>Not added: a FAQ, testimonials, a logo wall, a second CTA band</b>
+				The page has two install buttons, at the top and the bottom, and nothing in between. The FAQ is worth
+				keeping for search but belongs on its own page.
+			</li>
+			<li>
+				<b>Prose: fewer em dashes, no inflated claims</b>
+				This document had an em dash in most paragraphs and phrases like &ldquo;the whole product in one second of
+				motion&rdquo;. Both are gone. Section headings are sentence case throughout.
+			</li>
+		</ul>
+	</div>
+</section>
+
+<section id="inner">
+	<div class="shell">
+		<h2>Release notes and docs<span class="dot">.</span></h2>
+		<p class="lede narrow">Unchanged. One quiet reading shell for both, so only the homepage carries the visual idea.</p>
+
+		<div class="shots" role="tablist" aria-label="Inner pages">
+			<button class="shot-tab" role="tab" aria-selected="true"  data-frame="i-rel">Release notes</button>
+			<button class="shot-tab" role="tab" aria-selected="false" data-frame="i-doc">Docs · 2.1</button>
+			<span class="shot-note">1240px wide, scaled to fit</span>
+		</div>
+
+		<div class="frame" id="i-rel">
+			<div class="frame-canvas">
+				<div class="chrome"><span class="chrome-dot"></span><span class="chrome-dot"></span><span class="chrome-dot"></span><span class="chrome-url">arenaswap.app/releases/</span></div>
+				<div class="mk">
+					<div class="rs-nav">
+						<span class="m">Arena<span>Swap</span></span>
+						<ul><li>Home</li><li>PowerScore</li><li class="on">Release notes</li><li class="soon">Docs</li></ul>
+						<a class="btn-sm">Add to Chrome</a>
+					</div>
+					<div class="rs">
+						<div class="rs-side">
+							<div class="g">Releases</div>
+							<ul><li class="on">2.0</li></ul>
+							<div class="g">In 2.0</div>
+							<ul><li>Scoring</li><li>Game detail</li><li>Settings</li><li>Leagues</li><li>Languages</li><li>Colour</li></ul>
+							<div class="g">Subscribe</div>
+							<ul><li>RSS</li></ul>
+						</div>
+						<div>
+							<h1 class="rs-h">Release notes<span>.</span></h1>
+							<p class="rs-p">What changed, what it was doing wrong before, and why it behaves differently now.</p>
+							<div class="rl-head"><span class="v">2.0</span><span class="d">15 Aug 2026</span><span class="c">88 changes since 1.4.3</span></div>
+							<p class="rl-sum">PowerScore is rebuilt, the screens around it are rebuilt to match, and the extension now covers 31 leagues across six sports in 12 languages.</p>
+							<div class="rl-g">
+								<div class="rl-gh">Scoring<b>19 changes</b></div>
+								<div class="rl-i">
+									<h4>A game at halftime was worth 10 points for doing nothing<span>.</span></h4>
+									<p>The scorer has always zeroed a frozen game. The boosts never got the memo, so a halftime game with a favorite team in it still collected its +10, enough to beat a genuinely quiet live game and take the tab.</p>
+									<ul>
+										<li><b>Halftime, intermissions and delays score 0 no matter what boosts apply.</b> Held back until play resumes, then paid out exactly as before.</li>
+										<li><b>The scoring-opportunity boost now respects intermissions</b>, not just delays.</li>
+									</ul>
+								</div>
+								<div class="rl-i"><h4>A red-zone drive while up 31 was worth as much as one in a tie game<span>.</span></h4></div>
+							</div>
+							<div class="rl-g">
+								<div class="rl-gh">Settings<b>11 changes</b></div>
+								<div class="rl-i">
+									<h4>Twenty controls in one flat column, and none of them looked more important than any other<span>.</span></h4>
+									<p>Settings is now an index. Six categories, each opening a focused page that fits in one window.</p>
+								</div>
+							</div>
+						</div>
+						<div class="rs-on">
+							<div class="g">On this page</div>
+							<ul><li class="on">2.0</li><li>Scoring</li><li>Settings</li><li>Leagues</li><li>Languages</li></ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="frame" id="i-doc" hidden>
+			<div class="frame-canvas">
+				<div class="chrome"><span class="chrome-dot"></span><span class="chrome-dot"></span><span class="chrome-dot"></span><span class="chrome-url">arenaswap.app/docs/powerscore/scoring/</span></div>
+				<div class="mk">
+					<div class="rs-nav">
+						<span class="m">Arena<span>Swap</span></span>
+						<ul><li>Home</li><li>PowerScore</li><li>Release notes</li><li class="on">Docs</li></ul>
+						<a class="btn-sm">Add to Chrome</a>
+					</div>
+					<div class="rs">
+						<div class="rs-side">
+							<div class="g">Extension</div>
+							<ul><li>Install</li><li>Assigning tabs</li><li>Settings</li><li>Standby Stream</li></ul>
+							<div class="g">PowerScore</div>
+							<ul><li>Getting started</li><li class="on">Scoring a game</li><li>Signals</li><li>Boosts &amp; penalties</li><li>Types</li></ul>
+						</div>
+						<div>
+							<h1 class="rs-h">Scoring a game<span>.</span></h1>
+							<p class="rs-p">One function, one game, one number. <code>score()</code> takes a game in whatever shape your data source hands it to you and returns a 0&ndash;100 rating of how exciting that game is right now, plus the five signal contributions behind it.</p>
+							<div class="rs-code"><span class="c">// A tied game with two minutes left.</span><br><span class="k">import</span> { score } <span class="k">from</span> <span class="s">'powerscore'</span>;<br><br><span class="k">const</span> result = score(game);<br><br>result.total       <span class="c">// =&gt;</span> <span class="n">84</span><br>result.closeness   <span class="c">// =&gt;</span> <span class="n">28</span></div>
+							<h2 class="rs-h2">Frozen games</h2>
+							<p class="rs-p">A game at halftime, in an intermission, or under a delay scores exactly 0, every signal and every boost together. <code>isPlayFrozen()</code> is exported if you need the same rule elsewhere.</p>
+						</div>
+						<div class="rs-on">
+							<div class="g">On this page</div>
+							<ul><li class="on">Scoring a game</li><li>Frozen games</li><li>What comes back</li><li>Signals</li></ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+
+<section id="plan">
+	<div class="shell">
+		<h2>The rest of the plan<span class="dot">.</span></h2>
+		<p class="lede narrow">Settled across the earlier passes, restated so this page stands on its own.</p>
+
+		<table class="routes" style="margin-top:24px">
+			<thead><tr><th>Route</th><th>What it is</th><th></th></tr></thead>
+			<tbody>
+				<tr><td>/</td><td>The landing page above</td><td class="tag">rebuild</td></tr>
+				<tr><td>/powerscore/</td><td>Package landing page, restyled, keeps the live examples</td><td class="tag">restyle</td></tr>
+				<tr class="add"><td>/releases/</td><td>Release notes. One entry per version, 2.0 at launch</td><td class="tag">new</td></tr>
+				<tr class="add"><td>/releases/2.0/</td><td>Permalink for the store listings</td><td class="tag">new</td></tr>
+				<tr class="add"><td>/releases/rss.xml</td><td>Feed</td><td class="tag">new</td></tr>
+				<tr class="retire"><td>/blog/</td><td>Retires into a stub pointing at /releases/</td><td class="tag">gone</td></tr>
+				<tr class="retire"><td>/blog/introducing-v2/</td><td>Its content becomes the 2.0 entry</td><td class="tag">gone</td></tr>
+				<tr class="later"><td>/docs/extension/</td><td>Install, assigning tabs, settings, Standby Stream</td><td class="tag">2.1</td></tr>
+				<tr class="later"><td>/docs/powerscore/</td><td>Getting started, scoring, signals, boosts, types</td><td class="tag">2.1</td></tr>
+				<tr><td>/404</td><td>Brought into the new system</td><td class="tag">restyle</td></tr>
+				<tr><td>/screenshots/1&ndash;9</td><td>Store assets, unlisted, left alone</td><td class="tag">no change</td></tr>
+			</tbody>
+		</table>
+
+		<div class="split" style="margin-top:40px">
+			<div>
+				<h3>Release notes come from the changelog</h3>
+				<p><code>CHANGELOG.md</code> holds every change back to 1.4.3 and all of it is 2.0 work. Versions get promoted to <code>#</code> headings so a parser knows what shipped together, and nothing else about how you write changes. Entries group by their <code>###</code> subhead, collapse to headline plus lede, and <code>### Tests</code> stays out of the public feed.</p>
+			</div>
+			<div>
+				<h3>Docs ship empty now, filled in 2.1</h3>
+				<p>A layout shell with a side-nav slot, a <code>docs</code> collection with the schema settled and no entries, the URL tree reserved and linked, a prose scope built for release notes and inherited by docs, the MDX embed pipeline proven on the four blog explorers, and a header slot for Pagefind.</p>
+			</div>
+		</div>
+
+		<ul class="steps" style="margin-top:40px">
+			<li class="step">
+				<div class="when">First</div>
+				<div>
+					<h3>Capture a real PowerScore sequence for the hero</h3>
+					<p>Watch a close game with <code>powerscore:validate-live</code> running and keep twenty frames. Cheap, and it settles the only argument the hero animation can lose.</p>
+					<div class="files">scripts/powerscore/validateLive.ts</div>
+				</div>
+			</li>
+			<li class="step">
+				<div class="when">Then</div>
+				<div>
+					<h3>The system, on a page nobody ships</h3>
+					<p>Type scale, band rhythm, buttons, prose scope, layout shell, reviewed on an unlisted specimen page. Whatever the site and extension genuinely share moves into <code>@arenaswap/ui</code>.</p>
+					<div class="files">_tokens.scss · _prose.scss · Shell.astro · /specimen</div>
+				</div>
+			</li>
+			<li class="step">
+				<div class="when">Then</div>
+				<div>
+					<h3>Release notes, and the blog retires</h3>
+					<p>The smallest page that exercises the shell, the prose scope and the collection pipeline at once, with content that already exists.</p>
+					<div class="files">parse.ts · /releases/ · rss.xml · /blog/ stubs</div>
+				</div>
+			</li>
+			<li class="step">
+				<div class="when">Then</div>
+				<div>
+					<h3>The landing page</h3>
+					<p>Bands, the hero animation, the popup band, the charts, the leagues and the settings. The game card and popup come from <code>@arenaswap/ui</code> rather than being rebuilt, which is the whole reason this design is affordable.</p>
+					<div class="files">/ · hero timeline · shared components</div>
+				</div>
+			</li>
+			<li class="step">
+				<div class="when">Then</div>
+				<div>
+					<h3>PowerScore page, 404, and the pass nobody enjoys</h3>
+					<p>Contrast, reduced motion, keyboard order, and a look at what the rebuild did to search traffic.</p>
+					<div class="files">/powerscore/ · /404 · a11y and SEO check</div>
+				</div>
+			</li>
+			<li class="step later">
+				<div class="when">2.1</div>
+				<div>
+					<h3>Documentation</h3>
+					<p>Markdown lands in <code>src/content/docs/</code>, search gets wired, no design work needed.</p>
+					<div class="files">/docs/extension/ · /docs/powerscore/ · pagefind</div>
+				</div>
+			</li>
+		</ul>
+	</div>
+</section>
+
+<section id="ask">
+	<div class="shell">
+		<h2>Questions<span class="dot">.</span></h2>
+		<div class="split">
+			<div>
+				<h3>Does the site import the real components, or copy them?</h3>
+				<p>The mockup above reimplements the card in CSS because it has to run standalone. The real page should import <code>liveGameCard</code> from <code>@arenaswap/ui</code>, which means the site inherits card changes for free and can never drift. It also means a card bug on the extension becomes a card bug on the homepage, so the shared surface needs the Cypress coverage it already has.</p>
+			</div>
+			<div>
+				<h3>Do the charts use ECharts on the landing page?</h3>
+				<p><code>echarts</code> is already a docs dependency and the four options builders are already written, so the honest version is to reuse them with canned history. The alternative is static SVG like the mockup, which is a fraction of the weight on the page that most matters for load time. I would start with SVG and only reach for ECharts if the section needs interaction.</p>
+			</div>
+			<div>
+				<h3>Where does the FAQ go?</h3>
+				<p>It is on the current homepage and not on this one. Eight questions on leagues, streaming services, privacy and the algorithm are worth keeping for search, so I would give them a page rather than delete them.</p>
+			</div>
+			<div>
+				<h3>Is 2.0 one release, or the 1.4.3 to 2.0 increments?</h3>
+				<p>Still open. Everything in the changelog is V2 work, so the simple answer is one 2.0 entry holding all 88 changes. If those intermediate versions shipped to users and you want them kept, the feed can split them.</p>
+			</div>
+		</div>
+	</div>
+</section>
+
+<footer class="shell foot">
+	ArenaSwap landing page proposal · shipped components, hardcoded hero frames
+</footer>
+
+<script>
+(function () {
+	'use strict';
+
+	Array.prototype.forEach.call(document.querySelectorAll('.shots'), function (group) {
+		var tabs = Array.prototype.slice.call(group.querySelectorAll('.shot-tab[data-frame]'));
+		tabs.forEach(function (tab) {
+			tab.addEventListener('click', function () {
+				tabs.forEach(function (t) {
+					var on = t === tab;
+					t.setAttribute('aria-selected', String(on));
+					var el = document.getElementById(t.dataset.frame);
+					if (el) el.hidden = !on;
+				});
+				fitAll();
+			});
+		});
+	});
+
+	var frames = Array.prototype.slice.call(document.querySelectorAll('.frame'));
+
+	function fit(frame) {
+		if (frame.hidden) return;
+		var canvas = frame.firstElementChild;
+		var scale = frame.clientWidth / 1240;
+		canvas.style.transform = 'scale(' + scale + ')';
+		frame.style.height = Math.round(canvas.offsetHeight * scale) + 'px';
+	}
+	function fitAll() { frames.forEach(fit); }
+
+	if ('ResizeObserver' in window) {
+		var ro = new ResizeObserver(function (entries) {
+			entries.forEach(function (e) { fit(e.target); });
+		});
+		frames.forEach(function (f) { ro.observe(f); });
+	}
+	window.addEventListener('resize', fitAll, { passive: true });
+	window.addEventListener('load', fitAll);
+	if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitAll);
+	fitAll();
+
+	// ══ HERO MOTION ════════════════════════════════════════════════════════
+	// Twenty frames, 600ms apart, all values hardcoded. The card on screen is
+	// whichever PowerScore is highest, which is the rule the switcher uses, so
+	// the switch is a consequence of the data rather than its own animation.
+	var STEP = 600;
+
+	// Ported from gameCardShared.powerScoreColor so the bar warms and cools
+	// exactly as it does in the extension.
+	function psColor(score) {
+		var r = Math.min(score / 100, 1);
+		return 'rgb(' + Math.round(139 + 108 * r) + ',' + Math.round(148 - 56 * r) + ',' + Math.round(158 - 155 * r) + ')';
+	}
+
+	var GAMES = [
+		{
+			title: 'Celtics at Knicks',
+			ps: [58,60,62,65,67,70,72,75,78,81,84,85,86,86,87,87,88,88,88,88],
+			a:  [96,96,98,98,100,101,101,103,104,106,106,108,108,108,108,110,110,111,111,111],
+			h:  [99,101,101,103,103,103,105,105,107,107,109,109,111,111,111,111,113,113,114,114],
+			ck: ['4:12','3:40','2:55','2:10','1:22','0:38','11:40','10:05','8:22','6:44','5:10','4:02','3:15','2:30','1:58','1:42','1:20','0:58','0:36','0:12'],
+			pd: ['3rd','3rd','3rd','3rd','3rd','3rd','4th','4th','4th','4th','4th','4th','4th','4th','4th','4th','4th','4th','4th','4th']
+		},
+		{
+			title: 'Marlins at Phillies',
+			ps: [78,78,77,78,79,78,77,76,75,74,73,72,71,70,70,69,69,68,68,67],
+			a:  [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
+			h:  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
+			ck: null,
+			pd: ['Inn 7','Inn 7','Inn 7','Inn 8','Inn 8','Inn 8','Inn 8','Inn 8','Inn 8','Inn 8','Inn 8','Inn 9','Inn 9','Inn 9','Inn 9','Inn 9','Inn 9','Inn 9','Inn 9','Inn 9']
+		},
+		{
+			title: 'Avalanche at Oilers',
+			ps: [22,21,21,20,20,19,19,18,18,18,17,17,17,16,16,16,15,15,15,14],
+			a:  [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+			h:  [5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5],
+			ck: ['8:20','7:48','7:11','6:35','6:02','5:24','4:50','4:12','3:40','3:05','2:33','2:01','1:38','1:14','0:58','0:44','0:31','0:24','0:18','0:11'],
+			pd: ['3rd','3rd','3rd','3rd','3rd','3rd','3rd','3rd','3rd','3rd','3rd','3rd','3rd','3rd','3rd','3rd','3rd','3rd','3rd','3rd']
+		}
+	];
+
+	var LEAGUES = ['NBA', 'MLB', 'NHL'];
+	var FRAMES = GAMES[0].ps.length;
+	var row = document.getElementById('hs-row');
+	var screenEl = document.getElementById('hs-screen');
+	var replayBtn = document.getElementById('replay');
+
+	if (row && screenEl) {
+		var slots = Array.prototype.slice.call(row.querySelectorAll('.hs-slot')).map(function (el) {
+			return {
+				el: el,
+				flag: el.querySelector('.hs-flag'),
+				away: el.querySelector('[data-role="away"]'),
+				home: el.querySelector('[data-role="home"]'),
+				clock: el.querySelector('[data-role="clock"]'),
+				period: el.querySelector('[data-role="period"]'),
+				bar: el.querySelector('[data-role="bar"]'),
+				val: el.querySelector('[data-role="val"]')
+			};
+		});
+
+		var timer = 0;
+		var shown = -1;
+
+		function leaderAt(f) {
+			var best = 0;
+			for (var i = 1; i < GAMES.length; i++) {
+				if (GAMES[i].ps[f] > GAMES[best].ps[f]) best = i;
+			}
+			return best;
+		}
+
+		function render(f, animateSwap) {
+			var lead = leaderAt(f);
+			slots.forEach(function (s, i) {
+				var g = GAMES[i];
+				var ps = g.ps[f];
+				var colour = psColor(ps);
+				s.away.textContent = g.a[f];
+				s.home.textContent = g.h[f];
+				if (s.clock && g.ck) s.clock.textContent = g.ck[f];
+				if (s.period) s.period.textContent = g.pd[f];
+				s.bar.style.width = ps + '%';
+				s.bar.style.backgroundColor = colour;
+				s.val.style.color = colour;
+				s.val.textContent = ps + ' / 100';
+				var on = i === lead;
+				s.el.classList.toggle('on', on);
+				s.flag.lastChild.textContent = on ? 'On your screen' : LEAGUES[i];
+			});
+			if (lead !== shown) {
+				if (animateSwap && shown !== -1) {
+					screenEl.classList.add('swap');
+					setTimeout(function () {
+						screenEl.textContent = GAMES[lead].title;
+						screenEl.classList.remove('swap');
+					}, 260);
+				} else {
+					screenEl.textContent = GAMES[lead].title;
+				}
+				shown = lead;
+			}
+		}
+
+		function play() {
+			clearInterval(timer);
+			shown = -1;
+			var f = 0;
+			render(f, false);
+			timer = setInterval(function () {
+				f++;
+				if (f >= FRAMES) { clearInterval(timer); return; }
+				render(f, true);
+			}, STEP);
+		}
+
+		function settle() {
+			clearInterval(timer);
+			shown = -1;
+			render(FRAMES - 1, false);
+		}
+
+		var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+		if (reduced) {
+			settle();
+		} else if ('IntersectionObserver' in window) {
+			var started = false;
+			new IntersectionObserver(function (entries) {
+				entries.forEach(function (e) {
+					if (e.isIntersecting && !started) { started = true; play(); }
+				});
+			}, { threshold: 0.2 }).observe(row);
+		} else {
+			play();
+		}
+
+		if (replayBtn) {
+			replayBtn.addEventListener('click', function () { reduced ? settle() : play(); });
+		}
+	}
+
+	var links = Array.prototype.slice.call(document.querySelectorAll('.js-nav'));
+	var byId = {};
+	links.forEach(function (a) { byId[a.getAttribute('href').slice(1)] = a; });
+
+	var spy = new IntersectionObserver(function (entries) {
+		entries.forEach(function (e) {
+			if (!e.isIntersecting) return;
+			links.forEach(function (a) { a.classList.remove('on'); });
+			if (byId[e.target.id]) byId[e.target.id].classList.add('on');
+		});
+	}, { rootMargin: '-54px 0px -70% 0px' });
+
+	Object.keys(byId).forEach(function (id) {
+		var el = document.getElementById(id);
+		if (el) spy.observe(el);
+	});
+})();
+</script>
+
+</body>
+</html>

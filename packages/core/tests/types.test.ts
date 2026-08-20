@@ -33,6 +33,9 @@ describe('types runtime smoke', () => {
 			notificationsEnabled: true,
 			standbyStreamEnabled: false,
 			standbyStreamThreshold: 20,
+			bettingEnabled: false,
+			temperatureUnit: 'F',
+			postseasonBoostPoints: 5,
 		};
 		const message: ExtensionMessage = { type: 'UPDATE_PREFS', prefs };
 
@@ -55,7 +58,7 @@ describe('types runtime smoke', () => {
 				momentum: 2,
 				leadChanges: 3,
 				comeback: 2,
-				baseTotal: 21,
+				signalsSubtotal: 21,
 				favoriteBonus: 0,
 				favoriteTeamCount: 0,
 				gameBoost: 0,
@@ -126,7 +129,7 @@ describe('types runtime smoke', () => {
 			momentum: 2,
 			leadChanges: 3,
 			comeback: 2,
-			baseTotal: 21,
+			signalsSubtotal: 21,
 			favoriteBonus: 0,
 			favoriteTeamCount: 0,
 			gameBoost: 25,

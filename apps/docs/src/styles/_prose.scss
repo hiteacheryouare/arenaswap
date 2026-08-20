@@ -1,0 +1,128 @@
+// Prose scope. Everything written as Markdown, release notes and documentation alike, renders inside
+// `.prose`, so a body of text picks up the right measure and rhythm without every page setting
+// them again. Scoped rather than global on purpose: the landing page's type is not this type.
+
+.prose {
+	color: #a7b0ba;
+	font-size: 1rem;
+	line-height: 1.75;
+	max-width: 68ch;
+
+	> * + * {
+		margin-top: 1.15rem;
+	}
+
+	h2, h3, h4 {
+		color: var(--color-text);
+		letter-spacing: -0.03em;
+		line-height: 1.2;
+		margin-top: 2.4rem;
+	}
+
+	h2 {
+		font-size: 1.55rem;
+		font-weight: 700;
+	}
+
+	h3 {
+		font-size: 1.2rem;
+		font-weight: 600;
+	}
+
+	h4 {
+		font-size: 1rem;
+		font-weight: 600;
+	}
+
+	strong {
+		color: var(--color-text);
+		font-weight: 600;
+	}
+
+	a {
+		color: var(--color-primary);
+		text-decoration: underline;
+		text-underline-offset: 2px;
+	}
+
+	code {
+		font-family: var(--font-mono);
+		font-size: 0.9em;
+		color: var(--color-primary);
+	}
+
+	pre {
+		background: var(--color-card);
+		border: 1px solid #21262d;
+		border-radius: 0.4rem;
+		padding: 0.9rem 1rem;
+		overflow-x: auto;
+
+		code {
+			color: #c9d1d9;
+			font-size: 0.82rem;
+			line-height: 1.75;
+		}
+	}
+
+	blockquote {
+		margin: 0;
+		padding-left: 1.1rem;
+		border-left: 2px solid var(--color-primary);
+		color: var(--color-muted);
+	}
+
+	// Bootstrap's reboot leaves the marker to the UA, and the site's base styles strip it. A list
+	// in a body of prose should look like one.
+	ul {
+		list-style: disc;
+		padding-left: 1.2rem;
+	}
+
+	ol {
+		list-style: decimal;
+		padding-left: 1.2rem;
+	}
+
+	li::marker {
+		color: #6e7681;
+	}
+
+	li + li {
+		margin-top: 0.35rem;
+	}
+
+	// Markdown lists inherit the paragraph rhythm, which is too airy between short bullets.
+	li > p {
+		margin: 0;
+	}
+
+	img {
+		max-width: 100%;
+		height: auto;
+		border-radius: 0.5rem;
+	}
+
+	hr {
+		border: 0;
+		border-top: 1px solid #21262d;
+		margin: 2.4rem 0;
+	}
+
+	table {
+		width: 100%;
+		border-collapse: collapse;
+		font-size: 0.9rem;
+	}
+
+	th, td {
+		text-align: left;
+		padding: 0.5rem 0.75rem 0.5rem 0;
+		border-bottom: 1px solid #21262d;
+	}
+
+	th {
+		color: var(--color-text);
+		font-weight: 600;
+	}
+}

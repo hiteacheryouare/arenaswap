@@ -1,0 +1,57 @@
+---
+import Shell from '../../layouts/Shell.astro';
+import LegalNav from '../../components/LegalNav.astro';
+
+// A hub rather than one long page: these four get linked individually — to a store reviewer, to an
+// issue, to a licence header — and a URL that lands on the right clause beats a URL plus "scroll
+// down a bit".
+
+const base = import.meta.env.BASE_URL;
+
+const notices = [
+	{
+		path: 'legal/privacy/',
+		title: 'Privacy',
+		blurb: 'The preferences ArenaSwap retains, the information it transmits and to whom, and the permissions it requests of your browser.',
+	},
+	{
+		path: 'legal/licenses/',
+		title: 'Licenses',
+		blurb: 'The license under which ArenaSwap is distributed, together with the open-source software and typefaces upon which it depends.',
+	},
+	{
+		path: 'legal/credits/',
+		title: 'Credits',
+		blurb: 'Attribution for the footage appearing on this website, and the ownership of the scores, marks and crests it displays.',
+	},
+	{
+		path: 'legal/terms/',
+		title: 'Disclaimers',
+		blurb: 'Disclaimers of affiliation and of warranty, and the limits of what ArenaSwap undertakes to provide.',
+	},
+];
+---
+<Shell
+	title='Legal notices — ArenaSwap'
+	description='The ArenaSwap privacy notice, license disclosures, footage attribution and disclaimers.'
+	path='legal/'
+>
+	<div class='container'>
+		<div class='page-head'>
+			<h1 class='page-title'>Legal notices.</h1>
+		</div>
+
+		<div class='reading-shell'>
+			<LegalNav current='legal/' />
+
+			<ul class='legal-index'>
+				{notices.map(notice => (
+					<li>
+						<h2><a href={`${base}${notice.path}`}>{notice.title}</a></h2>
+						<p>{notice.blurb}</p>
+					</li>
+				))}
+			</ul>
+		</div>
+	</div>
+</Shell>

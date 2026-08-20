@@ -1,0 +1,455 @@
+// The hero: a Chrome window on macOS with three streams open and the popup running inside it.
+//
+// Drawn to Chrome's actual anatomy rather than to a generic idea of a browser, because the point of
+// the frame is that a visitor recognises it without being told. That means the tab strip doubles as
+// the window's title bar with the traffic lights inset into it, the active tab flares outward at its
+// base into the toolbar, inactive tabs are divided by hairlines rather than drawn as boxes, and the
+// omnibox is a full pill with the site-information icon on the left.
+//
+// The popup is drawn at its real 320x560. Everything around it is sized off that, because a popup
+// scaled to fit a layout stops being evidence of anything.
+
+$popup-width: 320px;
+$popup-height: 560px;
+
+// Chrome's own dark-theme relationships, which are most of what makes the frame read as Chrome: the
+// strip is darker than the toolbar, and the omnibox is darker than both.
+$chrome-strip: #1c1f24;
+$chrome-toolbar: #282c34;
+$chrome-omnibox: #17191d;
+$chrome-icon: #9aa4b2;
+$tab-radius: 9px;
+// Title bar plus toolbar. The popup is positioned off this; both are fixed-height rows of text, so a
+// token is steadier here than reading layout back out of the DOM at runtime.
+$chrome-height: 5.15rem;
+
+// How far the popup sits outside the window's right edge. The popup is 320px at its shipped size, and
+// a window narrow enough to fit beside the hero copy is not a whole screen, so a popup pinned fully
+// inside it covered better than a third of the video. Hanging most of it off the edge puts the
+// coverage back at roughly what it is on a real screen, and it stays visibly anchored to the pinned
+// extension button, which sits inside the popup's horizontal span.
+$popup-overhang: 150px;
+
+.browser-hero {
+	position: relative;
+}
+
+.browser {
+	position: relative;
+	// Narrowed by the overhang so the popup's right edge still lands on the column's right edge.
+	width: calc(100% - #{$popup-overhang});
+	border-radius: 0.7rem 0.7rem 0.55rem 0.55rem;
+	background: $chrome-strip;
+	// A window sits on the page rather than being drawn into it: a hairline highlight along the top
+	// edge, and a shadow with both a tight contact layer and a wide ambient one.
+	box-shadow:
+		inset 0 1px 0 rgba(255, 255, 255, 0.07),
+		0 1px 2px rgba(0, 0, 0, 0.5),
+		0 24px 70px rgba(0, 0, 0, 0.6);
+}
+
+// ─── Title bar and tabs ──────────────────────────────────────────────────────
+.browser-titlebar {
+	display: flex;
+	align-items: flex-end;
+	gap: 0.75rem;
+	height: 2.45rem;
+	padding: 0 0.7rem 0 1rem;
+}
+
+.browser-lights {
+	display: flex;
+	gap: 0.5rem;
+	padding-bottom: 0.62rem;
+	flex-shrink: 0;
+
+	i {
+		width: 0.75rem;
+		height: 0.75rem;
+		border-radius: 50%;
+		// macOS draws a darker rim inside each light rather than a flat disc.
+		box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.35);
+	}
+
+	i:nth-child(1) { background: #ff5f57; }
+	i:nth-child(2) { background: #febc2e; }
+	i:nth-child(3) { background: #28c840; }
+}
+
+.browser-tabs {
+	display: flex;
+	align-items: flex-end;
+	min-width: 0;
+	flex-grow: 1;
+}
+
+.browser-tab {
+	position: relative;
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	min-width: 0;
+	flex: 0 1 13.5rem;
+	height: 2rem;
+	padding: 0 0.7rem;
+	border-radius: $tab-radius $tab-radius 0 0;
+	font-size: 0.76rem;
+	color: $chrome-icon;
+	background: transparent;
+	transition: background 0.28s ease, color 0.28s ease;
+
+	// Chrome divides inactive tabs with a short hairline instead of giving each one a box.
+	& + &::before {
+		content: '';
+		position: absolute;
+		left: 0;
+		top: 25%;
+		height: 50%;
+		width: 1px;
+		background: rgba(255, 255, 255, 0.12);
+	}
+
+	&.is-active {
+		background: $chrome-toolbar;
+		color: #e8eaed;
+		z-index: 1;
+
+		&::before {
+			opacity: 0;
+		}
+
+		// The flare at the base of the active tab, which is the shape people actually recognise: a
+		// square of toolbar colour with a quarter-disc bitten out of the corner facing the tab.
+		&::after {
+			content: '';
+			position: absolute;
+			bottom: 0;
+			left: -$tab-radius;
+			width: $tab-radius;
+			height: $tab-radius;
+			background: radial-gradient(circle at 0 0, transparent $tab-radius, $chrome-toolbar $tab-radius);
+		}
+	}
+
+	// The divider immediately after the active tab is hidden too, or it floats over the flare.
+	&.is-active + &::before {
+		opacity: 0;
+	}
+}
+
+// The right-hand flare, as its own element: a tab has only two pseudo-elements and the left flare
+// and the divider have taken both.
+.browser-tab-flare {
+	position: absolute;
+	bottom: 0;
+	right: -$tab-radius;
+	width: $tab-radius;
+	height: $tab-radius;
+	background: radial-gradient(circle at 100% 0, transparent $tab-radius, $chrome-toolbar $tab-radius);
+	opacity: 0;
+	transition: opacity 0.28s ease;
+
+	.browser-tab.is-active & {
+		opacity: 1;
+	}
+}
+
+.browser-tab-favicon {
+	width: 1rem;
+	height: 1rem;
+	object-fit: contain;
+	flex-shrink: 0;
+}
+
+.browser-tab-title {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	flex-grow: 1;
+}
+
+.browser-tab-close {
+	flex-shrink: 0;
+	width: 0.95rem;
+	height: 0.95rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 50%;
+	font-size: 0.6rem;
+	color: $chrome-icon;
+	opacity: 0;
+
+	.browser-tab.is-active & {
+		opacity: 1;
+	}
+}
+
+.browser-newtab {
+	flex-shrink: 0;
+	width: 1.6rem;
+	height: 1.6rem;
+	margin: 0 0 0.2rem 0.35rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 50%;
+	color: $chrome-icon;
+	font-size: 0.78rem;
+}
+
+// ─── Toolbar ─────────────────────────────────────────────────────────────────
+.browser-toolbar {
+	display: flex;
+	align-items: center;
+	gap: 0.45rem;
+	height: 2.7rem;
+	padding: 0 0.6rem;
+	background: $chrome-toolbar;
+}
+
+.browser-nav {
+	display: flex;
+	align-items: center;
+	gap: 0.1rem;
+	flex-shrink: 0;
+
+	i {
+		width: 1.75rem;
+		height: 1.75rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 50%;
+		font-size: 0.85rem;
+		color: $chrome-icon;
+	}
+
+	// Forward is unavailable, which is the state a browser is in almost all the time.
+	i:nth-child(2) {
+		color: #565c66;
+	}
+}
+
+.browser-omnibox {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	flex-grow: 1;
+	min-width: 0;
+	height: 1.85rem;
+	padding: 0 0.75rem;
+	border-radius: 999px;
+	background: $chrome-omnibox;
+	font-size: 0.78rem;
+	color: #c8cdd4;
+}
+
+.browser-omnibox-info {
+	font-size: 0.72rem;
+	color: $chrome-icon;
+	flex-shrink: 0;
+}
+
+.browser-omnibox-url {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+// Chrome dims everything after the host and leaves the host itself at full strength.
+.browser-omnibox-path {
+	color: #7d858f;
+}
+
+.browser-omnibox-star {
+	margin-left: auto;
+	font-size: 0.72rem;
+	color: $chrome-icon;
+	flex-shrink: 0;
+}
+
+.browser-toolbar-end {
+	display: flex;
+	align-items: center;
+	gap: 0.15rem;
+	flex-shrink: 0;
+
+	> i {
+		width: 1.75rem;
+		height: 1.75rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 50%;
+		font-size: 0.85rem;
+		color: $chrome-icon;
+	}
+}
+
+// The pinned extension, the one thing in this frame that is ours. Chrome tints a pinned action's
+// background while its popup is open, and that tint is the only cue tying the panel below to the
+// button above it.
+.browser-extension {
+	flex-shrink: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 1.75rem;
+	height: 1.75rem;
+	border-radius: 50%;
+	background: rgba(247, 92, 3, 0.18);
+
+	img {
+		width: 1.05rem;
+		height: 1.05rem;
+	}
+}
+
+.browser-avatar {
+	flex-shrink: 0;
+	width: 1.4rem;
+	height: 1.4rem;
+	margin-left: 0.2rem;
+	border-radius: 50%;
+	background: linear-gradient(140deg, #3E9BD1, $secondary-on-light);
+	box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.15);
+}
+
+// ─── Page ────────────────────────────────────────────────────────────────────
+// Tall enough to contain the popup, with the video filling all of it.
+//
+// Letting the window take the clips' own shape instead is tempting — the video would never be cropped
+// — but it makes the window shorter than the popup, and the popup then hangs off the bottom and lands
+// on the caption underneath. The clips are encoded to roughly this box's shape (see
+// fetchHeroClips.sh), so filling it costs a little off the sides rather than a keyhole crop.
+.browser-viewport {
+	position: relative;
+	// Explicit width matters: `aspect-ratio` with a `min-height` resolves in both directions, and with
+	// an auto width it once grew this box to 1200px inside a 936px window. Pinned to the parent, the
+	// ratio only ever decides the height.
+	width: 100%;
+	aspect-ratio: 840 / 580;
+	// The floor is the popup. Above it the window keeps the clips' own shape and the video is not
+	// cropped at all; below it the window stays tall enough to contain the popup and the video gives up
+	// a little off the sides.
+	min-height: 580px;
+	background: #000;
+	overflow: hidden;
+	border-radius: 0 0 0.5rem 0.5rem;
+}
+
+.browser-video {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	opacity: 0;
+	// Held back so the popup keeps its contrast over whatever is playing underneath it.
+	filter: brightness(0.72) saturate(0.94);
+	transition: opacity 0.45s ease;
+
+	&.is-active {
+		opacity: 1;
+	}
+}
+
+// Enough of a stream page under the player to explain why the window is taller than the video: the
+// title of what is on, and nothing else. Anything more would be a fake website competing with the
+// popup for attention.
+.browser-popup {
+	position: absolute;
+	// Under the pinned extension button, which is where a popup opens, and out past the window's right
+	// edge so it covers the corner of the stream rather than the middle of it.
+	top: calc(#{$chrome-height} + 0.5rem);
+	right: 0;
+	width: $popup-width;
+	border-radius: 0.75rem;
+	overflow: hidden;
+	box-shadow: 0 8px 16px rgba(0, 0, 0, 0.45), 0 24px 60px rgba(0, 0, 0, 0.55);
+
+	// The popup ships its own 320x560 frame and its own scrolling. Nothing here changes either.
+	.popup-container {
+		scrollbar-width: thin;
+		scrollbar-color: #30363d transparent;
+	}
+}
+
+// Wider viewports have the room to push the popup further out, which leaves more of the stream
+// visible. Narrower ones do not: every pixel the popup moves out is a pixel off the window, and past
+// a point the window gets square enough that filling it crops a third of every frame.
+@media (min-width: 1600px) {
+	.browser {
+		width: calc(100% - 190px);
+	}
+}
+
+.browser-caption {
+	margin: 1.25rem 0 0;
+	font-size: 0.9rem;
+	color: var(--color-muted);
+
+	b {
+		color: var(--color-text);
+		font-weight: 600;
+	}
+}
+
+.browser-replay {
+	display: inline-block;
+	margin: 0.9rem 0 0;
+	padding: 0.45rem 1rem;
+	border: 1px solid var(--color-border);
+	border-radius: 999px;
+	background: transparent;
+	color: var(--color-text);
+	font-size: 0.82rem;
+}
+
+// Under this width the popup would cover most of the stream it is supposed to be sitting on top of,
+// so it comes out of the page area and sits underneath at its real size.
+@media (max-width: 991.98px) {
+	.browser {
+		// Nothing hanging off the side down here, so the window gets the full column back.
+		width: 100%;
+	}
+
+	.browser-popup {
+		position: static;
+		width: $popup-width;
+		margin: 1.1rem auto 0;
+	}
+
+	.browser-tabs {
+		overflow-x: auto;
+		scrollbar-width: none;
+	}
+
+	.browser-tab {
+		flex: 0 0 9.5rem;
+	}
+
+	.browser-toolbar-end {
+		display: none;
+	}
+}
+
+@media (max-width: 400px) {
+	.browser-popup {
+		width: 100%;
+	}
+
+	.browser-popup .popup-container {
+		width: 100%;
+		height: #{$popup-height};
+	}
+
+	.browser-titlebar {
+		padding-left: 0.7rem;
+	}
+
+	.browser-lights {
+		display: none;
+	}
+}

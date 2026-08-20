@@ -1,0 +1,141 @@
+---
+import { getCollection, render } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import Shell from '../../layouts/Shell.astro';
+
+// A release note reads like an announcement, so it is laid out like one: centred masthead, an
+// optional lead image, one column of prose, and the note's own section headings pinned beside it.
+
+export const getStaticPaths = async () => {
+	const releases = (await getCollection('releases', ({ data }) => !data.draft))
+		.toSorted((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+	return releases.map((release, index) => ({
+		params: { version: release.data.version },
+		props: {
+			release,
+			// Sorted newest first, so the next index is the older release.
+			newer: releases[index - 1],
+			older: releases[index + 1],
+		},
+	}));
+};
+
+interface Props {
+	release: CollectionEntry<'releases'>;
+	newer?: CollectionEntry<'releases'>;
+	older?: CollectionEntry<'releases'>;
+}
+
+const { release, newer, older } = Astro.props;
+const { Content, headings } = await render(release);
+
+const base = import.meta.env.BASE_URL;
+
+// Only the note's own top-level sections. Deeper headings would turn the aside into an outline of
+// an outline.
+const sections = headings.filter(heading => heading.depth === 2);
+
+const formatted = release.data.date.toLocaleDateString('en-US', {
+	month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC',
+});
+---
+<Shell
+	title={`${release.data.title} — ArenaSwap ${release.data.version}`}
+	description={release.data.summary}
+	path={`releases/${release.data.version}/`}
+	ogType='article'
+	image={release.data.image}
+	imageAlt={release.data.imageAlt}
+>
+	<div class='release-page'>
+		<div class='container'>
+			<a class='release-back' href={`${base}releases/`}>
+				<span aria-hidden='true'>←</span> Back to release notes
+			</a>
+		</div>
+
+		<header class='release-masthead'>
+			<div class='container'>
+				<p class='release-meta'>
+					<time datetime={release.data.date.toISOString()}>{formatted}</time>
+					<span aria-hidden='true'> · </span>
+					Version {release.data.version}
+				</p>
+				<h1 class='release-title'>{release.data.title}</h1>
+				<p class='release-summary'>{release.data.summary}</p>
+
+				{release.data.image && (
+					<figure class='release-figure'>
+						<img src={release.data.image} alt={release.data.imageAlt ?? ''} loading='eager' />
+					</figure>
+				)}
+			</div>
+		</header>
+
+		<div class='container'>
+			<div class='release-body'>
+				<article class='prose' id='release-prose'>
+					<Content />
+				</article>
+
+				{sections.length > 1 && (
+					<aside class='release-toc' aria-label='In this release'>
+						<ul>
+							{sections.map(section => (
+								<li><a href={`#${section.slug}`} data-toc-link={section.slug}>{section.text}</a></li>
+							))}
+						</ul>
+					</aside>
+				)}
+			</div>
+
+			{(newer || older) && (
+				<nav class='release-adjacent' aria-label='Other releases'>
+					{older && (
+						<a href={`${base}releases/${older.data.version}/`}>
+							<span class='release-adjacent-label'>Previous</span>
+							{older.data.version}<span aria-hidden='true'> · </span>{older.data.title}
+						</a>
+					)}
+					{newer && (
+						<a href={`${base}releases/${newer.data.version}/`} class='release-adjacent-next'>
+							<span class='release-adjacent-label'>Next</span>
+							{newer.data.version}<span aria-hidden='true'> · </span>{newer.data.title}
+						</a>
+					)}
+				</nav>
+			)}
+		</div>
+	</div>
+
+	<script>
+		// Marks the section you are reading in the aside. Progressive: without this the list is still
+		// a working set of anchors.
+		const links = document.querySelectorAll<HTMLAnchorElement>('[data-toc-link]');
+		const headings = [...links]
+			.map(link => document.getElementById(link.dataset.tocLink ?? ''))
+			.filter((heading): heading is HTMLElement => heading !== null);
+
+		if (headings.length > 0) {
+			const setCurrent = (slug: string) => {
+				links.forEach(link => link.classList.toggle('is-current', link.dataset.tocLink === slug));
+			};
+
+			const observer = new IntersectionObserver(
+				entries => {
+					// The topmost heading currently in the reading band wins, so scrolling up highlights
+					// the section you are moving into rather than the one you just left.
+					const visible = entries
+						.filter(entry => entry.isIntersecting)
+						.toSorted((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+
+					if (visible[0]) setCurrent(visible[0].target.id);
+				},
+				{ rootMargin: '-25% 0px -65% 0px' }
+			);
+
+			headings.forEach(heading => observer.observe(heading));
+		}
+	</script>
+</Shell>

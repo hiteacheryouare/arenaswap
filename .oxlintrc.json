@@ -1,0 +1,28 @@
+{
+	"$schema": "./node_modules/oxlint/configuration_schema.json",
+	"plugins": ["react", "typescript", "jsx-a11y", "unicorn"],
+	"categories": {
+		"correctness": "error",
+		"suspicious": "error"
+	},
+	"rules": {
+		"no-console": "warn",
+		"no-debugger": "error",
+		"no-var": "error",
+		"prefer-const": "error",
+		"typescript/no-explicit-any": "off",
+		"typescript/consistent-type-definitions": ["error", "interface"],
+		"react/display-name": "off",
+		"react/react-in-jsx-scope": "off",
+		"jsx-a11y/prefer-tag-over-role": "off",
+		"no-new": "off"
+	},
+	"ignorePatterns": [
+		"node_modules",
+		"dist",
+		".output",
+		".wxt",
+		"docs/_astro",
+		"**/*.d.ts"
+	]
+}

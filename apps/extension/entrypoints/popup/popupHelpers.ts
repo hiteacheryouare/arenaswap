@@ -1,20 +1,17 @@
-import { normalizePowerScoreResult, isObjectRecord, isFiniteNumber, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts } from '@arenaswap/core';
+import { BackgroundStateSchema } from '@arenaswap/core';
 import { createFavoriteTeamKey, leagueConfigs } from '@arenaswap/core/constants';
 import type {
 	BackgroundState,
 	Game,
 	LeagueId,
-	LeagueLogoMap,
-	PowerScoreHistoryMap,
-	PowerScoreResult,
-	ScoreHistoryMap,
 	SportType,
 } from '@arenaswap/core/types';
 import type { Browser } from 'wxt/browser';
+import { i18n } from '#i18n';
 
 export type popupView = 'main' | 'setup' | 'detail';
-export type leagueGroup = { league: LeagueId; games: Game[] };
-export type dateGroup = { dateLabel: string; games: Game[] };
+export interface leagueGroup { league: LeagueId; games: Game[] }
+export interface dateGroup { dateLabel: string; games: Game[] }
 
 export const leagueOrder = Object.fromEntries(leagueConfigs.map((config, index) => [config.id, index])) as Record<LeagueId, number>;
 export const sportTypeOrder: Record<SportType, number> = {
@@ -22,96 +19,37 @@ export const sportTypeOrder: Record<SportType, number> = {
 	football: 1,
 	hockey: 2,
 	baseball: 3,
-	soccer: 4,
+	softball: 4,
+	soccer: 5,
 };
 export const sportTypeLabels: Record<SportType, string> = {
-	basketball: 'Basketball',
-	football: 'Football',
-	hockey: 'Hockey',
-	baseball: 'Baseball',
-	soccer: 'Soccer',
+	basketball: i18n.t('sport.basketball'),
+	football: i18n.t('sport.football'),
+	hockey: i18n.t('sport.hockey'),
+	baseball: i18n.t('sport.baseball'),
+	softball: i18n.t('sport.softball'),
+	soccer: i18n.t('sport.soccer'),
 };
 export const leagueLabels = Object.fromEntries(leagueConfigs.map(config => [config.id, config.label])) as Record<LeagueId, string>;
 
-export const loadingMessages: string[] = [
-	'Reviewing the playbook...',
-	'Studying the game film...',
-	'Calling an audible...',
-	'Warming up the bench...',
-	'Hyping up the crowd...',
-	'Cueing the walk-out music...',
-	'Polishing the trophy...',
-	'Synchronizing the game clock...',
-	'Booting up the jumbotron...',
-	'Counting the timeouts...',
-	'Cracking open the rulebook...',
-	'Tuning the stadium speakers...',
-	'Filling the water bottles...',
-	'Adjusting the spotlights...',
-	'Bribing the refs...',
-	'Consulting the sports almanac...',
-	'Considering whether to go for it on fourth down...',
-	'Updating the GOAT debate...',
-	'Filling the press box...',
-	'Unfurling the banners...',
-	'Syncing the broadcast feed...',
-	'Counting the crowd...',
-	'Polishing the championship rings...',
-	'Hyping up the mascots...',
-	'Powering up the stadium lights...',
-	'Hitting the gym...',
-	'Filling the coolors...',
-	'Reviewing the highlight reels...',
-	'Booing the commissioner...',
-	'Finding the arenas...',
-	'Getting a cheesesteak...',
-	'Arguing with the sports bar patrons...',
-	'Rearranging the fantasy league standings...',
-	'Consulting the sports oracle...',
-	'Challenging that play...',
-	'Checking for a flag on the play...',
-	'Reviewing the instant replay...',
-	'Playing the hype video...',
-	'Considering a mid-game snack...',
-	'Planning the post-game celebration...',
-	'Wearing the lucky jersey...',
-	'Visualizing the victory dance...',
-	'Polishing the trophy case...',
-	'Brushing up on sports trivia...',
-	'Organizing the tailgate party...',
-	'Getting the face paint ready...',
-	'Coordinating team uniforms...',
-	'Running the numbers...',
-	'Analyzing the stats...',
-	'Launching the fireworks...',
-	'Getting the light show ready...',
-	'Checking the weather for game day...',
-	'Updating the fantasy football lineup...',
-	'Yelling at the TV...',
-	'Yelling at the refs...',
-	'go birds',
-	'Reviewing the coach\'s clipboard...',
-	'Checking if the hot dog guy is ready...',
-	'Deflating... er, inflating the footballs...',
-	'Consulting the Vegas odds...',
-	'Tightening the batting gloves...',
-	'Stretching out the kicker\'s hamstring...',
-	'Reviewing the contract negotiations...',
-	'Ordering the victory pizza...',
-	'Checking the backup QB\'s confidence level...',
-	'Reconsidering that trade...',
-	'Polishing up the player stats cards...',
-	'Setting up the slow-motion replay...',
-	'Confirming the coin flip is real...',
-	'Briefing the ball boy...',
-	'Turning up the crowd noise...',
-	'Dusting off the championship merchandise...',
-	'Hydrating the water boy...',
-];
+// Must match the number of `loading.mN` keys in the locale files.
+const LOADING_MESSAGE_COUNT = 73;
 
-export const getRandomLoadingMessage = (): string => (
-	loadingMessages[Math.floor(Math.random() * loadingMessages.length)] ?? ''
-);
+export const getRandomLoadingMessage = (): string => {
+	const index = Math.floor(Math.random() * LOADING_MESSAGE_COUNT) + 1;
+	return i18n.t(`loading.m${index}` as Parameters<typeof i18n.t>[0]);
+};
+
+// Must match the number of `noGames.mN` keys in the locale files.
+const NO_GAMES_MESSAGE_COUNT = 7;
+
+export const getRandomNoGamesMessage = (): { title: string; sub: string } => {
+	const index = Math.floor(Math.random() * NO_GAMES_MESSAGE_COUNT) + 1;
+	return {
+		title: i18n.t(`noGames.m${index}.title` as Parameters<typeof i18n.t>[0]),
+		sub: i18n.t(`noGames.m${index}.sub` as Parameters<typeof i18n.t>[0]),
+	};
+};
 export const leaguesBySportType = leagueConfigs.reduce<Record<SportType, typeof leagueConfigs>>((groups, config) => {
 	if (config.sportType in groups) groups[config.sportType].push(config);
 	return groups;
@@ -120,10 +58,44 @@ export const leaguesBySportType = leagueConfigs.reduce<Record<SportType, typeof 
 	football: [],
 	hockey: [],
 	baseball: [],
+	softball: [],
 	soccer: [],
 });
 
 export const byLeague = (a: Game, b: Game) => (leagueOrder[a.league] ?? 99) - (leagueOrder[b.league] ?? 99);
+
+// Leagues absent from `enabledLeagues` sort after every enabled one, keeping their canonical
+// order relative to each other.
+export const buildLeagueRank = (enabledLeagues: LeagueId[]): Record<LeagueId, number> => {
+	const ranks = {} as Record<LeagueId, number>;
+	for (const [index, leagueId] of enabledLeagues.entries()) {
+		if (ranks[leagueId] === undefined) ranks[leagueId] = index;
+	}
+	for (const leagueId of Object.keys(leagueOrder) as LeagueId[]) {
+		if (ranks[leagueId] === undefined) ranks[leagueId] = enabledLeagues.length + leagueOrder[leagueId];
+	}
+	return ranks;
+};
+
+// Drops the league just after the last enabled one that canonically precedes it, so it lands
+// beside its nearest familiar neighbour even when the list has been hand-sorted.
+export const insertLeagueAtDefaultPosition = (order: LeagueId[], leagueId: LeagueId): LeagueId[] => {
+	if (order.includes(leagueId)) return order;
+	const rank = leagueOrder[leagueId] ?? 99;
+	const lastPredecessor = order.findLastIndex(id => (leagueOrder[id] ?? 99) < rank);
+	const insertAt = lastPredecessor + 1;
+	return [...order.slice(0, insertAt), leagueId, ...order.slice(insertAt)];
+};
+
+export const moveLeague = (order: LeagueId[], fromIndex: number, toIndex: number): LeagueId[] => {
+	const moved = order[fromIndex];
+	if (moved === undefined) return order;
+	const target = Math.max(0, Math.min(order.length - 1, toIndex));
+	if (target === fromIndex) return order;
+	const next = order.filter((_, index) => index !== fromIndex);
+	next.splice(target, 0, moved);
+	return next;
+};
 
 export const isFavoriteTeamGame = (game: Game, favoriteTeamIds: Set<string>): boolean => (
 	favoriteTeamIds.has(createFavoriteTeamKey(game.league, game.homeTeam.id))
@@ -131,10 +103,11 @@ export const isFavoriteTeamGame = (game: Game, favoriteTeamIds: Set<string>): bo
 );
 
 export const buildFavoritePinnedComparator = (
+	leagueRank: Record<LeagueId, number>,
 	favoriteTeamIds: Set<string>,
 	scoreByGameId: Map<string, number>,
 ) => (a: Game, b: Game): number => {
-	const leagueDiff = (leagueOrder[a.league] ?? 99) - (leagueOrder[b.league] ?? 99);
+	const leagueDiff = (leagueRank[a.league] ?? 99) - (leagueRank[b.league] ?? 99);
 	if (leagueDiff !== 0) return leagueDiff;
 	const aFav = isFavoriteTeamGame(a, favoriteTeamIds);
 	const bFav = isFavoriteTeamGame(b, favoriteTeamIds);
@@ -142,16 +115,18 @@ export const buildFavoritePinnedComparator = (
 	return (scoreByGameId.get(b.id) ?? 0) - (scoreByGameId.get(a.id) ?? 0);
 };
 
+const dayStart = (game: Game): number => {
+	if (!game.startTime) return Number.POSITIVE_INFINITY;
+	const date = new Date(game.startTime);
+	return new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+};
+
 export const buildUpcomingComparator = (
+	leagueRank: Record<LeagueId, number>,
 	favoriteTeamIds: Set<string>,
 	scoreByGameId: Map<string, number>,
 ) => {
-	const fallbackSort = buildFavoritePinnedComparator(favoriteTeamIds, scoreByGameId);
-	const dayStart = (game: Game): number => {
-		if (!game.startTime) return Number.POSITIVE_INFINITY;
-		const date = new Date(game.startTime);
-		return new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
-	};
+	const fallbackSort = buildFavoritePinnedComparator(leagueRank, favoriteTeamIds, scoreByGameId);
 	return (a: Game, b: Game): number => {
 		const aDay = dayStart(a);
 		const bDay = dayStart(b);
@@ -160,14 +135,15 @@ export const buildUpcomingComparator = (
 	};
 };
 
+const toKey = (d: Date) => `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+
 const formatDateLabel = (dateStr: string): string => {
 	const today = new Date();
 	const tomorrow = new Date(today);
 	tomorrow.setDate(today.getDate() + 1);
-	const toKey = (d: Date) => `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
 	const gameDate = new Date(dateStr);
-	if (toKey(gameDate) === toKey(today)) return 'Today';
-	if (toKey(gameDate) === toKey(tomorrow)) return 'Tomorrow';
+	if (toKey(gameDate) === toKey(today)) return i18n.t('date.today');
+	if (toKey(gameDate) === toKey(tomorrow)) return i18n.t('date.tomorrow');
 	return gameDate.toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' });
 };
 
@@ -181,10 +157,10 @@ export const groupByDate = (games: Game[]): dateGroup[] => {
 		group.push(game);
 		groups.set(key, group);
 	}
-	return Array.from(groups.entries()).map(([key, grpGames]) => {
+	return Array.from(groups.entries()).map(([_key, grpGames]) => {
 		const first = grpGames[0];
 		return {
-			dateLabel: first?.startTime ? formatDateLabel(first.startTime) : 'Upcoming',
+			dateLabel: first?.startTime ? formatDateLabel(first.startTime) : i18n.t('date.upcoming'),
 			games: grpGames,
 		};
 	});
@@ -201,57 +177,8 @@ export const groupByLeague = (games: Game[]): leagueGroup[] => (
 	}, [])
 );
 
-const isGameArray = (value: unknown): value is Game[] => (
-	Array.isArray(value)
-);
-
-const isLeagueLogoMap = (value: unknown): value is LeagueLogoMap => (
-	isObjectRecord(value)
-);
-
-const isPowerScoreLike = (value: unknown): value is Partial<PowerScoreResult> & Pick<PowerScoreResult, 'gameId'> => {
-	if (!isObjectRecord(value)) return false;
-	return typeof value.gameId === 'string';
-};
-
-const normalizeScores = (value: unknown): PowerScoreResult[] => {
-	if (!Array.isArray(value)) return [];
-	return value
-		.filter(isPowerScoreLike)
-		.map(score => normalizePowerScoreResult(score, { allowTotalOverflow: true }));
-};
-
-const normalizeScoreHistory = (value: unknown): ScoreHistoryMap => {
-	if (!isObjectRecord(value)) return {};
-	return Object.entries(value).reduce<ScoreHistoryMap>((acc, [gameId, snapshots]) => {
-		if (!Array.isArray(snapshots)) return acc;
-		acc[gameId] = snapshots.filter(isScoreSnapshotLike);
-		return acc;
-	}, {});
-};
-
-const normalizePowerScoreHistory = (value: unknown): PowerScoreHistoryMap => {
-	if (!isObjectRecord(value)) return {};
-	return Object.entries(value).reduce<PowerScoreHistoryMap>((acc, [gameId, snapshots]) => {
-		if (!Array.isArray(snapshots)) return acc;
-		acc[gameId] = snapshots.filter(isPowerScoreSnapshotLike);
-		return acc;
-	}, {});
-};
-
-export const normalizeBackgroundState = (value: unknown): BackgroundState => {
-	if (!isObjectRecord(value)) return { games: [], scores: [], leagueLogos: {}, scoreHistory: {}, powerScoreHistory: {}, gameBoosts: {}, onStandbyStream: false, standbyStreamTabId: null };
-	return {
-		games: isGameArray(value.games) ? value.games : [],
-		scores: normalizeScores(value.scores),
-		leagueLogos: isLeagueLogoMap(value.leagueLogos) ? value.leagueLogos : {},
-		scoreHistory: normalizeScoreHistory(value.scoreHistory),
-		powerScoreHistory: normalizePowerScoreHistory(value.powerScoreHistory),
-		gameBoosts: normalizeGameBoosts(value.gameBoosts),
-		onStandbyStream: value.onStandbyStream === true,
-		standbyStreamTabId: typeof value.standbyStreamTabId === 'number' ? value.standbyStreamTabId : null,
-	};
-};
+export const normalizeBackgroundState = (value: unknown): BackgroundState =>
+	BackgroundStateSchema.parse(value);
 
 export const fetchState = async (forceRefresh = false): Promise<BackgroundState> => {
 	const state = await browser.runtime.sendMessage({ type: 'GET_STATE', forceRefresh });
@@ -260,7 +187,7 @@ export const fetchState = async (forceRefresh = false): Promise<BackgroundState>
 
 export const formatTabLabel = (tab: Browser.tabs.Tab, allTabs: Browser.tabs.Tab[]): string => {
 	const title = tab.title ?? '';
-	if (!title) return `Tab #${tab.id}`;
+	if (!title) return i18n.t('tab.fallback', [String(tab.id)]);
 	const duplicates = allTabs.filter(t => t.title === title);
 	if (duplicates.length <= 1) return title.slice(0, 35);
 	try {

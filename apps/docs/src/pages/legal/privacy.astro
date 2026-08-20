@@ -1,0 +1,118 @@
+---
+import Shell from '../../layouts/Shell.astro';
+import LegalNav from '../../components/LegalNav.astro';
+
+// Written against the code rather than from a template. Every claim here is checkable: the
+// permissions and the two hosts are in apps/extension/wxt.config.ts, and the storage calls are in
+// apps/extension/utils/prefsStorage.ts — preferences go to storage.sync with storage.local as the
+// fallback, and everything else is storage.session.
+
+const updated = 'August 19, 2026';
+---
+<Shell
+	title='Privacy — ArenaSwap'
+	description='The ArenaSwap privacy notice: the preferences the extension retains, the information it transmits, the browser permissions it requests, and the treatment of this website.'
+	path='legal/privacy/'
+>
+	<div class='container'>
+		<div class='page-head'>
+			<h1 class='page-title'>Privacy.</h1>
+		</div>
+
+		<div class='reading-shell'>
+			<LegalNav current='legal/privacy/' />
+
+			<div class='prose'>
+				<p class='legal-updated'>Last updated {updated}</p>
+
+				<h2>Information the extension retains</h2>
+				<p>
+					The extension retains the preferences you set. These comprise the leagues you follow,
+					the teams you have marked as favorites, your sensitivity, cooldown and switch delay
+					settings, your Standby Stream threshold, and the manner in which the score is composed.
+					Your browser holds these preferences as it holds your bookmarks, and may accordingly
+					make them available to you on any other computer at which you are signed in to the same
+					browser profile.
+				</p>
+				<p>
+					All other information belongs to the browsing session in which it arises and is
+					discarded when that session ends. This comprises the tabs you have assigned to
+					particular games, the tab you have designated as your Standby Stream, any manual
+					adjustment you have applied to a game, and the recent scoring history from which the
+					charts are drawn.
+				</p>
+				<p>
+					The extension does not retain your name, your address, an account, a contact detail or
+					any other particular by which you may be identified. No such particular is requested of
+					you at any point.
+				</p>
+
+				<h2>Information the extension transmits</h2>
+				<p>
+					The extension communicates with two hosts, both of them operated by ESPN, and it is
+					capable of reaching no others:
+				</p>
+				<ul>
+					<li><code>site.api.espn.com</code>, for scores, schedules, game clocks, odds and win probabilities.</li>
+					<li><code>a.espncdn.com</code>, for team crests and league marks.</li>
+				</ul>
+				<p>
+					These are ordinary requests for information that ESPN publishes openly. ESPN therefore
+					receives your network address and a record of the league scoreboards requested, precisely
+					as it would were you to visit its website yourself. The extension attaches to those
+					requests no identifier, no account and no personal information whatever. Where you
+					disable a league in Settings, the extension ceases to request that league at all.
+				</p>
+
+				<h2>Browser permissions</h2>
+				<p>
+					The extension requests three permissions of your browser, and each is exercised only for
+					the purpose stated:
+				</p>
+				<ul>
+					<li>
+						<strong>Tabs.</strong> To present the tabs you have open, so that you may assign games
+						to them, and to switch, mute and unmute those tabs. This permission conveys the list
+						of tabs and nothing further. No part of the extension runs within the pages you visit.
+					</li>
+					<li><strong>Storage.</strong> To retain the preferences described above.</li>
+					<li><strong>Notifications.</strong> To inform you that a switch has occurred. Your browser composes and displays each notification, and nothing leaves your computer in the process.</li>
+				</ul>
+
+				<h2>This website</h2>
+				<p>
+					This website sets no cookies, employs no analytics and carries no tracking of any
+					description, and requests your consent to nothing because there is nothing to consent
+					to. It is hosted by GitHub Pages, and GitHub records requests made to its servers in the
+					ordinary course of providing that hosting. The typefaces are served from this website
+					rather than from any third party.
+				</p>
+				<p>
+					Two features of this website do communicate with ESPN from your browser. The
+					demonstration screens request team crests from <code>a.espncdn.com</code>, and the
+					<a href={`${import.meta.env.BASE_URL}powerscore/`}>PowerScore page</a> scores games in
+					progress and therefore requests live scoreboards for so long as you leave it open.
+				</p>
+
+				<h2>Children</h2>
+				<p>
+					The extension collects no personal information from any person of any age, and this
+					includes children under the age of thirteen.
+				</p>
+
+				<h2>Modifications to this notice</h2>
+				<p>
+					This notice may be revised from time to time. A revision takes effect upon publication,
+					and the date stated above records when this notice was last revised. Your continued use
+					of the extension after publication constitutes your acceptance of the notice as revised.
+				</p>
+
+				<h2>Questions</h2>
+				<p>
+					Questions concerning this notice may be directed to the project's
+					<a href='https://github.com/hiteacheryouare/arenaswap/issues'>issue tracker on GitHub</a>.
+				</p>
+			</div>
+		</div>
+	</div>
+</Shell>

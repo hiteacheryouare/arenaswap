@@ -1,0 +1,6 @@
+# Served at /arenaswap/robots.txt. Crawlers only honour the origin root, so this file is a
+# pointer to the sitemap rather than an enforcement mechanism; the noindex meta tags do that work.
+User-agent: *
+Allow: /
+
+Sitemap: https://hiteacheryouare.github.io/arenaswap/sitemap-index.xml

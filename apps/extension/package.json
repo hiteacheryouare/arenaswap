@@ -1,6 +1,6 @@
 {
 	"name": "@arenaswap/extension",
-	"version": "1.4.3",
+	"version": "2.0.0",
 	"description": "ArenaSwap browser extension — automatically flip to the most exciting game",
 	"private": true,
 	"scripts": {
@@ -9,36 +9,42 @@
 		"build": "wxt build",
 		"build:firefox": "wxt build --browser firefox --mv3",
 		"build:edge": "wxt build --browser edge --mv3",
-		"zip": "node ../../scripts/zip-builds.js",
+		"zip": "wxt zip",
+		"zip:firefox": "wxt zip -b firefox --mv3",
+		"zip:edge": "wxt zip -b edge",
 		"test": "npm run test:unit && npm run test:component",
 		"test:unit": "jest --passWithNoTests --selectProjects unit",
-		"test:component": "jest --passWithNoTests --selectProjects component",
-		"typecheck": "wxt prepare && tsc --noEmit"
+		"test:component": "cypress run --component",
+		"cypress:open": "cypress open --component",
+		"typecheck": "wxt prepare && tsc --noEmit && tsc --noEmit -p cypress",
+		"lint": "oxlint ."
 	},
 	"dependencies": {
 		"@arenaswap/core": "*",
+		"@arenaswap/ui": "*",
 		"@porkyproductions/hat": "^1.5.0",
+		"@wxt-dev/i18n": "^0.2.7",
 		"canvas-confetti": "^1.9.4",
-		"echarts": "^6.0.0",
+		"echarts": "^6.1.0",
 		"powerscore": "*",
-		"swr": "^2.4.1"
+		"swr": "^2.5.1"
 	},
 	"devDependencies": {
-		"@testing-library/jest-dom": "^6.9.1",
-		"@testing-library/react": "^16.3.2",
-		"@testing-library/user-event": "^14.6.1",
-		"@types/react": "^19.0.0",
-		"@types/react-dom": "^19.0.0",
+		"@swc/jest": "^0.2.39",
+		"@types/bootstrap": "^5.2.11",
+		"@types/canvas-confetti": "^1.9.0",
+		"@types/react": "^19.2.18",
+		"@types/react-dom": "^19.2.4",
 		"@wxt-dev/module-react": "^1.2.2",
-		"autoprefixer": "^10.4.27",
+		"autoprefixer": "^10.5.4",
 		"bootstrap": "^5.3.8",
 		"bootstrap-icons": "^1.13.1",
-		"jest-environment-jsdom": "^30.4.1",
-		"react": "^19.2.6",
-		"react-dom": "^19.2.6",
-		"sass": "^1.99.0",
-		"tailwindcss": "^4.2.2",
-		"typescript": "^6.0.3",
-		"wxt": "^0.20.20"
+		"cypress": "^15.21.0",
+		"jest": "^30.4.2",
+		"react": "^19.2.8",
+		"react-dom": "^19.2.8",
+		"sass": "^1.102.0",
+		"typescript": "^7.0.2",
+		"wxt": "^0.21.4"
 	}
 }

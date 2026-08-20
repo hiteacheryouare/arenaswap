@@ -1,0 +1,85 @@
+---
+import {
+	defaultCooldownSecs,
+	defaultFavoriteTeamBonusPoints,
+	defaultPostseasonBoostPoints,
+	defaultSensitivity,
+	defaultSwitchDelaySecs,
+	sensitivityThresholds,
+} from '@arenaswap/core/constants';
+import { defaultStrings } from '@arenaswap/ui/src/components/defaultStrings';
+
+// Individual settings rather than the six groups they live in: a group name tells you where a
+// control is filed, and what people want to know is what the control does. The panel beside them
+// shows the shipped defaults, imported so they cannot go stale the next time one is retuned.
+
+const settings = [
+	{ name: `Sensitivity (1–${Object.keys(sensitivityThresholds).length})`, desc: 'How large a score gap needs to be before ArenaSwap switches.' },
+	{ name: 'Switch cooldown', desc: 'Minimum time between switches. Stops rapid tab-flipping.' },
+	{ name: 'Switch delay', desc: 'Waits before switching, for when your stream runs behind the data.' },
+	{ name: 'Favorite team bonus', desc: 'Extra points for any game your teams are playing in.' },
+	{ name: 'Standby Stream', desc: 'When every live game goes quiet, ArenaSwap parks you on a fallback tab you pick.' },
+	{ name: 'Game boost', desc: "Raise any game's PowerScore by hand to keep it on screen longer." },
+];
+
+const sensitivityLevels = Object.keys(sensitivityThresholds).length;
+---
+<section class='band' id='settings'>
+	<div class='container'>
+		<div class='band-split'>
+			<div>
+				<h2 class='display-md'>Tuned in to you.</h2>
+				<p class='band-copy' style='margin-top:1.25rem'>
+					Sensitivity too high? Slow it down. Love your team but want the best game? Add a bonus.
+					Going on a beer run? Standby Stream keeps something on screen. ArenaSwap works however
+					you need it to.
+				</p>
+
+				<div class='settings-groups'>
+					{settings.map(setting => (
+						<div class='settings-group'>
+							<h3>{setting.name}</h3>
+							<p>{setting.desc}</p>
+						</div>
+					))}
+				</div>
+			</div>
+
+			<div class='settings-panel-demo'>
+				<p class='settings-panel-head'>{defaultStrings['setup.groupSwitching']}</p>
+				<div class='settings-panel-row'>
+					<span>Sensitivity</span>
+					<span class='settings-dots' aria-label={`Level ${defaultSensitivity} of ${sensitivityLevels}`}>
+						{Array.from({ length: sensitivityLevels }).map((_, index) => (
+							<i class={index < defaultSensitivity ? 'is-on' : ''}></i>
+						))}
+					</span>
+				</div>
+				<div class='settings-panel-row'>
+					<span>Switch cooldown</span>
+					<span class='settings-value'>{defaultCooldownSecs}s</span>
+				</div>
+				<div class='settings-panel-row'>
+					<span>Switch delay</span>
+					<span class='settings-value'>{defaultSwitchDelaySecs === 0 ? 'Off' : `${defaultSwitchDelaySecs}s`}</span>
+				</div>
+				<div class='settings-panel-row'>
+					<span>Favorite team bonus</span>
+					<span class='settings-value'>+{defaultFavoriteTeamBonusPoints}</span>
+				</div>
+				<div class='settings-panel-row'>
+					<span>Postseason boost</span>
+					<span class='settings-value'>+{defaultPostseasonBoostPoints}</span>
+				</div>
+				<div class='settings-panel-row'>
+					<span>Switch notifications</span>
+					<span class='settings-switch is-on'></span>
+				</div>
+				<div class='settings-panel-row'>
+					<span>{defaultStrings['setup.groupStandby']}</span>
+					<span class='settings-switch'></span>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>

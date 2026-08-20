@@ -1,0 +1,13 @@
+---
+import { chromeWebStore } from '../lib/installTargets';
+
+interface Props {
+	class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+<a href={chromeWebStore} class:list={['btn', 'btn-cta', className]} data-install-cta>
+	<i class='bi bi-browser-chrome me-2' data-install-icon></i><span data-install-label>Add to Chrome</span>
+</a>
+<script is:inline>window.arenaSwapInstall?.applyCta(document.currentScript.previousElementSibling);</script>

@@ -1,0 +1,13 @@
+---
+import { edgeAddons, firefoxAddons } from '../lib/installTargets';
+
+interface Props {
+	class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+<span class={className}>
+	Also for <a href={firefoxAddons} data-install-alternate>Firefox</a> and <a href={edgeAddons} data-install-alternate>Edge</a>
+</span>
+<script is:inline>window.arenaSwapInstall?.applyAlternates(document.currentScript.previousElementSibling);</script>

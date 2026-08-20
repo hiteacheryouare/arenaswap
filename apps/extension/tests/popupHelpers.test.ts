@@ -1,17 +1,29 @@
 import {
 	buildFavoritePinnedComparator,
+	buildLeagueRank,
+	buildUpcomingComparator,
 	byLeague,
 	fetchState,
 	formatTabLabel,
 	getRandomLoadingMessage,
 	groupByLeague,
+	insertLeagueAtDefaultPosition,
 	isFavoriteTeamGame,
+	leagueOrder,
 	leaguesBySportType,
-	loadingMessages,
+	moveLeague,
 	normalizeBackgroundState,
 } from '../entrypoints/popup/popupHelpers';
 import { createFavoriteTeamKey, leagueConfigs } from '@arenaswap/core/constants';
-import type { Game } from '@arenaswap/core/types';
+import type { Game, LeagueId } from '@arenaswap/core/types';
+
+const mockSendMessage = (returnValue: unknown) => {
+	const fn = jest.fn().mockResolvedValueOnce(returnValue);
+	(globalThis as unknown as { browser: { runtime: { sendMessage: typeof fn } } }).browser = {
+		runtime: { sendMessage: fn },
+	};
+	return fn;
+};
 
 const makeGame = (overrides: Partial<Game> & { id: string }): Game => ({
 	league: 'nba',
@@ -32,13 +44,12 @@ describe('leaguesBySportType', () => {
 		expect(leaguesBySportType.football.every(l => l.sportType === 'football')).toBe(true);
 	});
 
-	// Regression: before the `in` guard was added, groups[config.sportType].push(config) would
-	// crash with "Cannot read properties of undefined (reading 'push')" for any unknown sport type.
+	// Regression: without the `in` guard this crashed on any unknown sport type.
 	test('includes every configured league in exactly one sport bucket with no duplicates', () => {
-		const allIds = leagueConfigs.map(c => c.id).sort();
+		const allIds = leagueConfigs.map(c => c.id).toSorted();
 		const bucketedIds = (Object.values(leaguesBySportType) as (typeof leagueConfigs)[])
 			.flatMap(configs => configs.map(c => c.id))
-			.sort();
+			.toSorted();
 		expect(bucketedIds).toEqual(allIds);
 	});
 
@@ -60,9 +71,10 @@ describe('leaguesBySportType', () => {
 });
 
 describe('getRandomLoadingMessage', () => {
-	test('returns one of the configured loading messages', () => {
+	test('returns a non-empty localized loading message', () => {
 		const message = getRandomLoadingMessage();
-		expect(loadingMessages).toContain(message);
+		expect(typeof message).toBe('string');
+		expect(message.length).toBeGreaterThan(0);
 	});
 });
 
@@ -72,7 +84,7 @@ describe('byLeague', () => {
 			makeGame({ id: 'nfl-1', league: 'nfl', sportType: 'football' }),
 			makeGame({ id: 'nba-1', league: 'nba' }),
 		];
-		const sorted = [...games].sort(byLeague);
+		const sorted = games.toSorted(byLeague);
 		expect(sorted[0]!.league).toBe('nba');
 	});
 });
@@ -112,8 +124,8 @@ describe('buildFavoritePinnedComparator', () => {
 			['plain', 50],
 		]);
 
-		const comparator = buildFavoritePinnedComparator(favorites, scores);
-		const sorted = [plain, fav].sort(comparator);
+		const comparator = buildFavoritePinnedComparator(leagueOrder, favorites, scores);
+		const sorted = [plain, fav].toSorted(comparator);
 		expect(sorted.map(g => g.id)).toEqual(['fav', 'plain']);
 	});
 
@@ -124,9 +136,118 @@ describe('buildFavoritePinnedComparator', () => {
 			['high', 80],
 			['low', 20],
 		]);
-		const comparator = buildFavoritePinnedComparator(new Set(), scores);
-		const sorted = [low, high].sort(comparator);
+		const comparator = buildFavoritePinnedComparator(leagueOrder, new Set(), scores);
+		const sorted = [low, high].toSorted(comparator);
 		expect(sorted.map(g => g.id)).toEqual(['high', 'low']);
+	});
+
+	test('honours the user league order ahead of favorites and PowerScore', () => {
+		const nbaFav = makeGame({
+			id: 'nba-fav',
+			homeTeam: { id: 'home-1', name: 'Home', abbreviation: 'HOM', score: 0 },
+			awayTeam: { id: 'away-1', name: 'Away', abbreviation: 'AWY', score: 0 },
+		});
+		const nfl = makeGame({ id: 'nfl-1', league: 'nfl', sportType: 'football' });
+		const favorites = new Set([createFavoriteTeamKey('nba', 'home-1')]);
+		const scores = new Map<string, number>([['nba-fav', 99], ['nfl-1', 1]]);
+
+		const defaultSorted = [nfl, nbaFav].toSorted(buildFavoritePinnedComparator(leagueOrder, favorites, scores));
+		expect(defaultSorted.map(g => g.id)).toEqual(['nba-fav', 'nfl-1']);
+
+		const customRank = buildLeagueRank(['nfl', 'nba']);
+		const customSorted = [nbaFav, nfl].toSorted(buildFavoritePinnedComparator(customRank, favorites, scores));
+		expect(customSorted.map(g => g.id)).toEqual(['nfl-1', 'nba-fav']);
+	});
+});
+
+describe('buildLeagueRank', () => {
+	test('ranks enabled leagues by their position in the custom order', () => {
+		const rank = buildLeagueRank(['nhl', 'mlb', 'nba']);
+		expect(rank.nhl).toBe(0);
+		expect(rank.mlb).toBe(1);
+		expect(rank.nba).toBe(2);
+	});
+
+	test('sorts leagues outside the custom order after every enabled one', () => {
+		const enabled: LeagueId[] = ['nhl', 'mlb'];
+		const rank = buildLeagueRank(enabled);
+		expect(rank.nfl).toBeGreaterThanOrEqual(enabled.length);
+		expect(rank.nhl).toBeLessThan(rank.nfl);
+		expect(rank.mlb).toBeLessThan(rank.nfl);
+	});
+
+	test('keeps canonical order among the leagues outside the custom order', () => {
+		const rank = buildLeagueRank(['mls']);
+		expect(rank.nba).toBeLessThan(rank.nfl);
+	});
+
+	test('assigns a rank to every configured league', () => {
+		const rank = buildLeagueRank([]);
+		for (const config of leagueConfigs) {
+			expect(typeof rank[config.id]).toBe('number');
+		}
+	});
+});
+
+describe('insertLeagueAtDefaultPosition', () => {
+	test('inserts a re-enabled league at its canonical slot rather than the end', () => {
+		expect(insertLeagueAtDefaultPosition(['nba', 'mls'], 'nhl')).toEqual(['nba', 'nhl', 'mls']);
+	});
+
+	test('appends when the league sorts after everything already enabled', () => {
+		const result = insertLeagueAtDefaultPosition(['nba', 'nhl'], 'mls');
+		expect(result[result.length - 1]).toBe('mls');
+	});
+
+	test('prepends when the league sorts before everything already enabled', () => {
+		expect(insertLeagueAtDefaultPosition(['nhl', 'mls'], 'nba')).toEqual(['nba', 'nhl', 'mls']);
+	});
+
+	test('returns the original array untouched when the league is already present', () => {
+		const order: LeagueId[] = ['nba', 'nhl'];
+		expect(insertLeagueAtDefaultPosition(order, 'nba')).toBe(order);
+	});
+
+	test('respects a custom order when picking the insertion point', () => {
+		// mls was dragged above nba; re-enabling nhl still slots it after nba.
+		expect(insertLeagueAtDefaultPosition(['mls', 'nba'], 'nhl')).toEqual(['mls', 'nba', 'nhl']);
+	});
+});
+
+describe('moveLeague', () => {
+	test('moves a league up', () => {
+		expect(moveLeague(['nba', 'nhl', 'mlb'], 1, 0)).toEqual(['nhl', 'nba', 'mlb']);
+	});
+
+	test('moves a league down', () => {
+		expect(moveLeague(['nba', 'nhl', 'mlb'], 0, 2)).toEqual(['nhl', 'mlb', 'nba']);
+	});
+
+	test('clamps a target index past the end of the list', () => {
+		expect(moveLeague(['nba', 'nhl'], 0, 9)).toEqual(['nhl', 'nba']);
+	});
+
+	test('clamps a negative target index', () => {
+		expect(moveLeague(['nba', 'nhl'], 1, -3)).toEqual(['nhl', 'nba']);
+	});
+
+	test('returns the original array for a no-op or out-of-range source', () => {
+		const order: LeagueId[] = ['nba', 'nhl'];
+		expect(moveLeague(order, 1, 1)).toBe(order);
+		expect(moveLeague(order, 5, 0)).toBe(order);
+		expect(moveLeague(order, -1, 0)).toBe(order);
+	});
+});
+
+describe('buildUpcomingComparator', () => {
+	test('still buckets by day before applying the custom league order', () => {
+		const today = new Date();
+		const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000);
+		const nbaTomorrow = makeGame({ id: 'nba-tmr', status: 'pre', startTime: tomorrow.toISOString() });
+		const nflToday = makeGame({ id: 'nfl-today', league: 'nfl', sportType: 'football', status: 'pre', startTime: today.toISOString() });
+
+		const comparator = buildUpcomingComparator(buildLeagueRank(['nba', 'nfl']), new Set(), new Map());
+		expect([nbaTomorrow, nflToday].toSorted(comparator).map(g => g.id)).toEqual(['nfl-today', 'nba-tmr']);
 	});
 });
 
@@ -235,23 +356,9 @@ describe('normalizeBackgroundState', () => {
 });
 
 describe('fetchState', () => {
-	// Regression: the SWR fetcher in app.tsx was calling fetchState(true), which sent
-	// forceRefresh:true to the background and triggered a full tick(). tick() does a
-	// complete overwrite of the games array (games = fetchResult.games), which could
-	// erase live game data that tickLeague() had already placed there.
-	// Additionally, SWR's default revalidateIfStale:true caused a second fetch on React
-	// StrictMode remount (React 19 changed store re-snapshot timing), which could
-	// overwrite a SCORES_UPDATED mutation that had already set live game data.
-	// Fixes: (1) app.tsx uses fetchState(false) on initial load; (2) revalidateIfStale:false
-	// prevents unnecessary re-fetches — updates come via SCORES_UPDATED push messages.
+	// Regression: fetchState(true) triggered a full tick() that overwrote the games array, and
+	// SWR's default revalidateIfStale then clobbered data a SCORES_UPDATED mutation had set.
 
-	const mockSendMessage = (returnValue: unknown) => {
-		const fn = jest.fn().mockResolvedValueOnce(returnValue);
-		(globalThis as unknown as { browser: { runtime: { sendMessage: typeof fn } } }).browser = {
-			runtime: { sendMessage: fn },
-		};
-		return fn;
-	};
 
 	const liveGameState = {
 		games: [makeGame({ id: 'live-1', status: 'in' })],

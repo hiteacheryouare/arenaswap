@@ -1,0 +1,24 @@
+{
+	"name": "@arenaswap/ui",
+	"version": "2.0.0",
+	"description": "ArenaSwap shared design system — Bootstrap tokens, font declarations, Tailwind theme, and shared React UI components",
+	"private": true,
+	"scripts": {
+		"test": "npm run test:unit",
+		"test:unit": "jest --passWithNoTests --selectProjects unit",
+		"typecheck": "tsc --noEmit",
+		"lint": "oxlint ."
+	},
+	"peerDependencies": {
+		"react": "^19.2.8",
+		"react-dom": "^19.2.8"
+	},
+	"dependencies": {
+		"@arenaswap/core": "*"
+	},
+	"devDependencies": {
+		"@types/jest": "^30.0.0",
+		"echarts": "^6.1.0",
+		"jest": "^30.4.2"
+	}
+}

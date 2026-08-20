@@ -1,5 +1,9 @@
 ---
+import { Image } from 'astro:assets';
 import './_screenshot.scss';
+import ScreenshotCard from '../../components/ScreenshotCard';
+import logoImg from '../../assets/full_logo_white_on_transparent.svg';
+import iconImg from '../../assets/icon_white_on_transparent.svg';
 
 const tabs = [
 	{ name: 'ESPN+',           color: '#CC0000', initial: 'E' },
@@ -10,11 +14,37 @@ const tabs = [
 	{ name: 'MLS Season Pass', color: '#001E62', initial: 'M' },
 	{ name: 'Peacock',         color: '#000000', initial: 'P' },
 ];
+
+const chiPhiGame = {
+	id: 'sc2-nba',
+	league: 'nba',
+	sportType: 'basketball',
+	awayTeam: { id: '4', name: 'Chicago Bulls', abbreviation: 'CHI', score: 65, logo: 'https://a.espncdn.com/i/teamlogos/nba/500/4.png', color: '#CE1141', alternateColor: '#000000' },
+	homeTeam: { id: '20', name: 'Philadelphia 76ers', abbreviation: 'PHI', score: 68, logo: 'https://a.espncdn.com/i/teamlogos/nba/500/20.png', color: '#006BB6', alternateColor: '#ED174C' },
+	period: 3, clockSeconds: 284, status: 'in',
+	venueName: 'Xfinity Mobile Arena · Philadelphia, PA',
+	broadcasts: ['NBA League Pass'],
+};
+const chiPhiScore = { gameId: 'sc2-nba', total: 84, closeness: 24, lateGame: 20, momentum: 20, leadChanges: 12, comeback: 8, reason: '' };
+
+const bosNyyGame = {
+	id: 'sc2-mlb',
+	league: 'mlb',
+	sportType: 'baseball',
+	awayTeam: { id: 'bos', name: 'Boston Red Sox', abbreviation: 'BOS', score: 3, logo: 'https://a.espncdn.com/i/teamlogos/mlb/500/bos.png', color: '#BD3039', alternateColor: '#0C2340' },
+	homeTeam: { id: 'nyy', name: 'New York Yankees', abbreviation: 'NYY', score: 2, logo: 'https://a.espncdn.com/i/teamlogos/mlb/500/nyy.png', color: '#003087', alternateColor: '#E4002C' },
+	period: 5, clockSeconds: 0, status: 'in',
+	topOfInning: true,
+	venueName: 'Fenway Park · Boston, MA',
+	broadcasts: ['MLB.TV'],
+};
+const bosNyyScore = { gameId: 'sc2-mlb', total: 71, closeness: 20, lateGame: 15, momentum: 18, leadChanges: 10, comeback: 8, reason: '' };
 ---
 <!doctype html>
 <html lang='en'>
 <head>
 	<meta charset='UTF-8' />
+	<meta name='robots' content='noindex' />
 	<title>Screenshot 2 — Open Your Streams</title>
 </head>
 <body>
@@ -27,7 +57,6 @@ const tabs = [
 
 		<div class='stage' style='bottom:60px;'>
 			<div class='browser-window'>
-				<!-- Chrome window controls + tab strip -->
 				<div class='browser-chrome'>
 					<div class='traffic'>
 						<span class='dot-r'></span>
@@ -46,7 +75,6 @@ const tabs = [
 					</div>
 				</div>
 
-				<!-- Address bar -->
 				<div class='address-bar'>
 					<div class='nav-buttons'>
 						<i class='bi bi-arrow-left'></i>
@@ -60,7 +88,7 @@ const tabs = [
 					<div class='ext-row'>
 						<div class='puzzle-icon'><i class='bi bi-puzzle-fill'></i></div>
 						<div class='ext-icon-active'>
-							<img src='/arenaswap/images/icon_white_on_transparent.png' alt='ArenaSwap' />
+							<Image src={iconImg} alt='ArenaSwap' />
 							<div class='ext-badge'></div>
 						</div>
 					</div>
@@ -87,12 +115,11 @@ const tabs = [
 				</div>
 			</div>
 
-			<!-- Floating popup showing extension detected the streams -->
 			<div class='popup-float'>
 				<div class='popup'>
 					<div class='popup-inner'>
 						<div class='popup-header'>
-							<img src='/arenaswap/images/full_logo_white_on_transparent.png' alt='ArenaSwap' class='popup-logo' />
+							<Image src={logoImg} alt='ArenaSwap' class='popup-logo' />
 							<div class='popup-header-right'>
 								<i class='bi bi-gear-fill' style='color:#8b949e;font-size:0.9rem;'></i>
 								<div class='popup-switch'>
@@ -104,88 +131,10 @@ const tabs = [
 						<div class='popup-section-title'>Active Tabs</div>
 
 						<div class='popup-league-label'>NBA</div>
-						<div class='popup-card' style='border-left:5px solid #CE1141;border-right:5px solid #006BB6;background:linear-gradient(to right,#CE114128,#006BB628),#ffffff;'>
-							<div class='popup-card-top'>
-								<div class='popup-live'>
-									<span class='popup-live-dot'></span>
-									LIVE
-								</div>
-								<div class='popup-ps' style='background:#F75C03;'>
-									PowerScore: 84 / 100
-								</div>
-							</div>
-							<div class='popup-matchup'>
-								<div class='popup-team-col'>
-									<div style='width:40px;height:40px;border-radius:50%;background:#CE1141;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:0.7rem;'>CHI</div>
-									<i class='bi bi-star' style='font-size:0.7rem;color:#6c757d;'></i>
-									<span class='popup-team-abbr'>CHI</span>
-								</div>
-								<div class='popup-center-col'>
-									<div class='popup-scores'>
-										<span class='popup-score'>65</span>
-										<span class='popup-score'>68</span>
-									</div>
-									<span class='popup-clock'>4:44</span>
-									<span class='popup-period'>3rd</span>
-								</div>
-								<div class='popup-team-col'>
-									<div style='width:40px;height:40px;border-radius:50%;background:#006BB6;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:0.7rem;'>PHI</div>
-									<i class='bi bi-star-fill' style='font-size:0.7rem;color:#f1c40f;'></i>
-									<span class='popup-team-abbr'>PHI</span>
-								</div>
-							</div>
-							<div class='popup-meta'>
-								<span class='popup-meta-venue'>Xfinity Mobile Arena · Philadelphia, PA</span>
-								<span class='popup-meta-network'>NBA League Pass</span>
-							</div>
-							<div class='popup-tab-row'>
-								<select class='popup-select'>
-									<option>Tab 2: NBA League Pass</option>
-								</select>
-							</div>
-						</div>
+						<ScreenshotCard game={chiPhiGame} excitementResult={chiPhiScore} tabLabel='Tab 2: NBA League Pass' />
 
 						<div class='popup-league-label'>MLB</div>
-						<div class='popup-card' style='border-left:5px solid #BD3039;border-right:5px solid #003087;background:linear-gradient(to right,#BD303928,#00308728),#ffffff;'>
-							<div class='popup-card-top'>
-								<div class='popup-live'>
-									<span class='popup-live-dot'></span>
-									LIVE
-								</div>
-								<div class='popup-ps' style='background:#d06800;'>
-									PowerScore: 71 / 100
-								</div>
-							</div>
-							<div class='popup-matchup'>
-								<div class='popup-team-col'>
-									<div style='width:40px;height:40px;border-radius:50%;background:#BD3039;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:0.7rem;'>BOS</div>
-									<i class='bi bi-star' style='font-size:0.7rem;color:#6c757d;'></i>
-									<span class='popup-team-abbr'>BOS</span>
-								</div>
-								<div class='popup-center-col'>
-									<div class='popup-scores'>
-										<span class='popup-score'>3</span>
-										<span class='popup-score'>2</span>
-									</div>
-									<span class='popup-clock'>T 5</span>
-									<span class='popup-period'>1 OUT</span>
-								</div>
-								<div class='popup-team-col'>
-									<div style='width:40px;height:40px;border-radius:50%;background:#003087;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:0.7rem;'>NYY</div>
-									<i class='bi bi-star' style='font-size:0.7rem;color:#6c757d;'></i>
-									<span class='popup-team-abbr'>NYY</span>
-								</div>
-							</div>
-							<div class='popup-meta'>
-								<span class='popup-meta-venue'>Fenway Park · Boston, MA</span>
-								<span class='popup-meta-network'>MLB.TV</span>
-							</div>
-							<div class='popup-tab-row'>
-								<select class='popup-select'>
-									<option>Tab 5: MLB.TV</option>
-								</select>
-							</div>
-						</div>
+						<ScreenshotCard game={bosNyyGame} excitementResult={bosNyyScore} tabLabel='Tab 5: MLB.TV' />
 					</div>
 				</div>
 			</div>

@@ -136,7 +136,7 @@ describe('core API + excitement e2e flow', () => {
 		const { computePowerScore } = await import('powerscore');
 
 		const games = await fetchGames(['nba']);
-		expect(games.map(game => game.id).sort()).toEqual(['nba-live-1', 'nba-pre-1']);
+		expect(games.map(game => game.id).toSorted()).toEqual(['nba-live-1', 'nba-pre-1']);
 		expect(games.every(game => game.status !== 'post')).toBe(true);
 
 		const liveGames = await fetchLiveGames(['nba']);
@@ -156,11 +156,11 @@ describe('core API + excitement e2e flow', () => {
 				game,
 				score: computePowerScore(game, historyByGameId[game.id] ?? []),
 			}))
-			.sort((a, b) => b.score.total - a.score.total);
+			.toSorted((a, b) => b.score.total - a.score.total);
 
 		expect(rankedScores[0]?.game.id).toBe('nba-live-1');
 		expect(rankedScores[0]?.score.total).toBeGreaterThan(rankedScores[1]?.score.total ?? 0);
-		expect(rankedScores[0]?.score.reason).toContain('10-0 run');
+		expect(rankedScores[0]?.score.reason).toContain('outscoring AWY 10-0');
 		expect(rankedScores[0]?.score.reason).toContain('cutting into it');
 
 		const requestedUrls = fetchSpy.mock.calls.map(([input]) => toUrl(input as RequestInfo | URL));
@@ -213,7 +213,7 @@ describe('core API + excitement e2e flow', () => {
 
 		const result = await fetchGamesWithLeagueLogos(['nba'], { includeUpcoming: false });
 
-		expect(result.games.map(game => game.id).sort()).toEqual(['nba-live-today-only', 'nba-pre-today-only']);
+		expect(result.games.map(game => game.id).toSorted()).toEqual(['nba-live-today-only', 'nba-pre-today-only']);
 		expect(result.games.every(game => game.status !== 'post')).toBe(true);
 		expect(result.games.find(game => game.id === 'nba-pre-today-only')?.startTime).toBe('2026-02-11T02:30:00.000Z');
 		expect(result.leagueLogos.nba).toBe('https://example.com/nba-today-logo.png');
@@ -266,7 +266,7 @@ describe('core API + excitement e2e flow', () => {
 
 		const result = await fetchGamesWithLeagueLogos(['nba', 'nhl', 'wnba'], { includeUpcoming: false });
 
-		expect(result.games.map(game => game.id).sort()).toEqual(['nba-live-multi', 'wnba-live-multi']);
+		expect(result.games.map(game => game.id).toSorted()).toEqual(['nba-live-multi', 'wnba-live-multi']);
 		expect(result.leagueLogos).toEqual({
 			nba: 'https://example.com/nba-logo.png',
 			wnba: 'https://example.com/wnba-logo.png',
@@ -340,12 +340,13 @@ describe('core API + excitement e2e flow', () => {
 				id: game.id,
 				score: computePowerScore(game, historyByGameId[game.id] ?? []),
 			}))
-			.sort((a, b) => b.score.total - a.score.total);
+			.toSorted((a, b) => b.score.total - a.score.total);
 
 		expect(ranked.map(item => item.id)).toEqual(['nba-live-momentum', 'nba-live-critical', 'nba-live-fringe']);
-		expect(ranked.map(item => item.score.total)).toEqual([80, 52, 5]);
-		expect(ranked[0]?.score.reason).toContain('HOM on a 10-0 run');
-		expect(ranked[1]?.score.reason).toContain('under 5 min left');
+		expect(ranked.map(item => item.score.total)).toEqual([100, 77, 8]);
+		expect(ranked[0]?.score.reason).toContain('HOM outscoring AWY 10-0');
+		// Critical game is tied in the final 45s → OT anticipation headlines.
+		expect(ranked[1]?.score.reason).toContain('overtime looming');
 		expect(ranked[1]?.score.reason).toContain('tied');
 	});
 

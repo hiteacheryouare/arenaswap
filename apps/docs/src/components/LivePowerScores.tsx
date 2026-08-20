@@ -1,7 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
-import { allLeagueIds, leagueConfigMap } from '../../../../packages/powerscore/src/constants';
-import { computePowerScore } from '../../../../packages/powerscore/src/scorer';
-import type { Game, LeagueId, ScoreSnapshot } from '../../../../packages/powerscore/src/types';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { allLeagueIds, computePowerScore, leagueConfigMap } from 'powerscore';
+import type { Game, LeagueId, ScoreSnapshot } from 'powerscore';
 
 interface EspnCompetitor {
 	id: string;
@@ -109,7 +108,10 @@ const fetchLiveGames = async (): Promise<Game[]> => {
 	return settled.flatMap(result => result.status === 'fulfilled' ? result.value : []);
 };
 
-const formatClock = (clockSeconds: number): string => {
+// `clockSeconds` and `period` are optional on Game, so both fall back the same way the
+// extension's own card formatters do.
+const formatClock = (clockSeconds: number | undefined): string => {
+	if (clockSeconds === undefined) return '';
 	const mins = Math.floor(clockSeconds / 60);
 	const secs = clockSeconds % 60;
 	return `${mins}:${String(secs).padStart(2, '0')}`;
@@ -117,11 +119,12 @@ const formatClock = (clockSeconds: number): string => {
 
 const formatPeriod = (game: Game): string => {
 	const config = leagueConfigMap[game.league];
-	if (config.periodFormat === 'innings') return `Inning ${game.period}`;
-	if (game.period > config.regularPeriods) return 'OT';
-	if (config.periodFormat === 'quarters') return `Q${game.period}`;
-	if (config.periodFormat === 'halves') return `H${game.period}`;
-	return `P${game.period}`;
+	const period = game.period ?? 1;
+	if (config.periodFormat === 'innings') return `Inning ${period}`;
+	if (period > config.regularPeriods) return 'OT';
+	if (config.periodFormat === 'quarters') return `Q${period}`;
+	if (config.periodFormat === 'halves') return `H${period}`;
+	return `P${period}`;
 };
 
 const LivePowerScores = () => {
@@ -133,7 +136,7 @@ const LivePowerScores = () => {
 	const previousClockRef = useRef<Record<string, number>>({});
 	const stallRef = useRef<Record<string, number>>({});
 
-	const refresh = async () => {
+	const refresh = useCallback(async () => {
 		try {
 			const liveGames = await fetchLiveGames();
 			const now = Date.now();
@@ -143,7 +146,7 @@ const LivePowerScores = () => {
 					? (stallRef.current[game.id] ?? 0) + 1
 					: 0;
 				stallRef.current[game.id] = nextStall;
-				previousClockRef.current[game.id] = game.clockSeconds;
+				previousClockRef.current[game.id] = game.clockSeconds ?? 0;
 
 				const nextSnapshot: ScoreSnapshot = {
 					gameId: game.id,
@@ -170,14 +173,14 @@ const LivePowerScores = () => {
 				if (!activeGameIds.has(gameId)) delete stallRef.current[gameId];
 			}
 
-			setCards(nextCards.sort((a, b) => b.score - a.score));
+			setCards(nextCards.toSorted((a, b) => b.score - a.score));
 			setError(null);
 		} catch {
 			setError('Unable to load live game data right now.');
 		} finally {
 			setLoading(false);
 		}
-	};
+	}, []);
 
 	useEffect(() => {
 		void refresh();
@@ -185,7 +188,7 @@ const LivePowerScores = () => {
 			void refresh();
 		}, refreshIntervalMs);
 		return () => window.clearInterval(timer);
-	}, []);
+	}, [refresh]);
 
 	if (loading) {
 		return (
@@ -211,7 +214,7 @@ const LivePowerScores = () => {
 			<div className='feature-card'>
 				<span className='fw-semibold mb-3 d-block'>No live games right now</span>
 				<p className='mb-0 section-sub'>
-					When games go live, this section will auto-refresh every 15 seconds and show real-time PowerScores across all supported leagues.
+					When games go live, this section will auto-refresh and show real-time PowerScores across all supported leagues.
 				</p>
 			</div>
 		);

@@ -1,0 +1,67 @@
+---
+// The games in the hero are a college basketball game, an Army-Navy game and a college hockey game,
+// because those are the games in the only footage that can legally be put on this page. They are
+// real, and they are also not the teams most people are here for. This is the answer to the question
+// those clips raise: yes, it covers your team.
+//
+// Crests are ESPN's, the same source the game cards pull from, and the row links to the full league
+// list rather than pretending to be a filter.
+//
+// Ten, not twelve: the copy column is about 450px and twelve wrapped to a second row holding three
+// orphans, which reads as a mistake rather than as a grid.
+
+const espnTeam = (path: string) => `https://a.espncdn.com/i/teamlogos/${path}.png`;
+
+// Philadelphia first, which is where this is built, then Boston, which is the other half of the
+// footer. The rest are picked to read on a dark page as much as for being famous: the Cowboys' navy
+// star and the Yankees' navy monogram are both nearly invisible on #0d1117, so neither is here.
+const teams = [
+	{ name: 'Philadelphia Eagles', abbr: 'PHI', logo: espnTeam('nfl/500/phi') },
+	{ name: 'Philadelphia Phillies', abbr: 'PHI', logo: espnTeam('mlb/500/phi') },
+	{ name: 'Philadelphia Flyers', abbr: 'PHI', logo: espnTeam('nhl/500/phi') },
+	{ name: 'Philadelphia 76ers', abbr: 'PHI', logo: espnTeam('nba/500/phi') },
+	{ name: 'Boston Celtics', abbr: 'BOS', logo: espnTeam('nba/500/bos') },
+	{ name: 'Boston Red Sox', abbr: 'BOS', logo: espnTeam('mlb/500/bos') },
+	{ name: 'Kansas City Chiefs', abbr: 'KC', logo: espnTeam('nfl/500/kc') },
+	{ name: 'Los Angeles Lakers', abbr: 'LAL', logo: espnTeam('nba/500/lal') },
+	{ name: 'Arsenal', abbr: 'ARS', logo: espnTeam('soccer/500/359') },
+	{ name: 'Manchester City', abbr: 'MCI', logo: espnTeam('soccer/500/382') },
+];
+---
+<a class='team-strip' href={`${import.meta.env.BASE_URL}#leagues`}>
+	<span class='team-strip-label'>Works with every team in 31 leagues. Yours included.</span>
+	<span class='team-strip-logos'>
+		{teams.map(team => (
+			<span class='crest' data-crest-state='pending' role='img' aria-label={team.name} title={team.name}>
+				<span class='crest-fallback' aria-hidden='true'>{team.abbr}</span>
+				<img src={team.logo} alt='' loading='eager' />
+			</span>
+		))}
+	</span>
+</a>
+
+<script>
+	// Static markup rather than an island: this row sits directly under the hero, which is already
+	// hydrating a React tree, and flipping one attribute on ten images is not worth a second.
+	// Same contract as the shared Crest component, so both drive the same stylesheet.
+	//
+	// The `complete` check is not padding — this is a deferred module, so a crest above the fold has
+	// usually fired `load` before it runs. And `complete` is true for a broken image too, which is
+	// what `naturalWidth` is deciding.
+	document.querySelectorAll<HTMLElement>('.team-strip-logos .crest').forEach(crest => {
+		const image = crest.querySelector('img');
+		if (!image) return;
+
+		const settle = (state: 'loaded' | 'failed') => { crest.dataset.crestState = state; };
+		if (image.complete) {
+			settle(image.naturalWidth > 0 ? 'loaded' : 'failed');
+			return;
+		}
+		image.addEventListener('load', () => settle('loaded'), { once: true });
+		image.addEventListener('error', () => settle('failed'), { once: true });
+	});
+</script>
+
+<!-- Without the script the row never leaves `pending`, and every placeholder would sit behind a
+     loaded crest, showing through the transparent parts of it. -->
+<noscript><style>.team-strip-logos .crest-fallback { display: none; }</style></noscript>

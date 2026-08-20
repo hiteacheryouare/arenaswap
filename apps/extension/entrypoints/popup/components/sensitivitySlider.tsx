@@ -1,4 +1,8 @@
+import { useState } from 'react';
 import { sensitivityThresholds } from '@arenaswap/core/constants';
+import { i18n } from '#i18n';
+import SettingTooltipIcon from './settingTooltipIcon';
+import LudicrousSpeedOverlay from './ludicrousSpeedOverlay';
 
 interface sensitivitySliderProps {
 	value: number;
@@ -6,28 +10,52 @@ interface sensitivitySliderProps {
 }
 
 const labels: Record<number, string> = {
-	1: 'Barely Active',
-	2: 'Passive',
-	3: 'Conservative',
-	4: 'Balanced',
-	5: 'Eager',
-	6: 'Trigger Happy',
-	7: 'Overkill'
+	1: i18n.t('sensitivity.level.l1'),
+	2: i18n.t('sensitivity.level.l2'),
+	3: i18n.t('sensitivity.level.l3'),
+	4: i18n.t('sensitivity.level.l4'),
+	5: i18n.t('sensitivity.level.l5'),
+	6: i18n.t('sensitivity.level.l6'),
+	7: i18n.t('sensitivity.level.l7'),
 };
 
-const sensitivitySlider = ({ value, onChange }: sensitivitySliderProps) => (
+const sensitivitySlider = ({ value, onChange }: sensitivitySliderProps) => {
+	const [showLudicrous, setShowLudicrous] = useState(false);
+
+	return (
 	<div>
+		{showLudicrous && <LudicrousSpeedOverlay onClose={() => setShowLudicrous(false)} />}
 		<div className='d-flex justify-content-between align-items-center mb-1'>
-			<label className='text-body-secondary setting-toggle-label'><i className='bi bi-sliders me-1 text-primary' />Switch sensitivity</label>
-			<span className='fw-semibold setting-value-label'>{labels[value]} (PowerScore gap ≥ {sensitivityThresholds[value]})</span>
+			<div className='d-flex align-items-center gap-1'>
+				<label htmlFor='sensitivity-range' className='text-body-secondary setting-toggle-label'><i className='bi bi-sliders me-1 text-primary' />{i18n.t('sensitivity.label')}</label>
+				<SettingTooltipIcon text={i18n.t('sensitivity.explainer')} />
+			</div>
+			{value === 7 ? (
+				<button
+					className='fw-semibold setting-value-label ludicrous-speed ludicrous-speed-clickable'
+					onClick={() => setShowLudicrous(true)}
+					title={i18n.t('sensitivity.hyperdriveTitle')}
+					style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: 'inherit' }}
+				>
+					{i18n.t('sensitivity.valueLabel', { label: labels[value]!, gap: sensitivityThresholds[value]! })}
+				</button>
+			) : (
+				<span className='fw-semibold setting-value-label'>
+					{i18n.t('sensitivity.valueLabel', { label: labels[value]!, gap: sensitivityThresholds[value]! })}
+				</span>
+			)}
 		</div>
 		<input
+			id='sensitivity-range'
 			type='range'
 			min={1}
 			max={7}
 			step={1}
 			value={value}
-			onChange={e => onChange(Number(e.target.value))}
+			onChange={e => {
+				const next = Number(e.target.value);
+				if (next !== value) onChange(next);
+			}}
 			className='form-range w-100'
 		/>
 		<div className='position-relative sensitivity-ticks'>
@@ -40,10 +68,8 @@ const sensitivitySlider = ({ value, onChange }: sensitivitySliderProps) => (
 				</span>
 			))}
 		</div>
-		<div className='mt-1 setting-explainer'>
-			Controls how big the PowerScore gap must be before ArenaSwap switches tabs.
-		</div>
 	</div>
-);
+	);
+};
 
 export default sensitivitySlider;

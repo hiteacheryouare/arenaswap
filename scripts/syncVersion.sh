@@ -34,7 +34,11 @@ while IFS= read -r file; do
 
 	echo "  $file  $current ~> $version"
 	updated=$((updated + 1))
-done < <(find "$root" -name "package.json" -not -path "*/node_modules/*")
+done < <(find "$root" -name "package.json" \
+	-not -path "*/node_modules/*" \
+	-not -path "*/.output/*" \
+	-not -path "*/dist/*" \
+	-not -path "*/.astro/*")
 
 readme=""
 if [ -f "$root/.github/README.md" ]; then
@@ -68,6 +72,7 @@ const majorMinorVersion = (value) => {
 
 const rootPackage = readJson(path.join(root, 'package.json'));
 const extensionPackage = readJson(path.join(root, 'apps/extension/package.json'));
+const docsPackage = readJson(path.join(root, 'apps/docs/package.json'));
 const tsconfig = readJson(path.join(root, 'tsconfig.base.json'));
 const npmVersion = (rootPackage.packageManager || '').match(/^npm@(\d+)/)?.[1] || '';
 const esTarget = tsconfig.compilerOptions?.target || '';
@@ -77,7 +82,9 @@ const nextBadgeValues = {
 	TypeScript: majorVersion(getDependencyVersion(rootPackage, 'typescript')),
 	JavaScript: esTarget,
 	WXT: majorMinorVersion(getDependencyVersion(extensionPackage, 'wxt')),
-	TailwindCSS: majorVersion(getDependencyVersion(extensionPackage, 'tailwindcss')),
+	// Tailwind is a docs-site dependency, not an extension one. Reading it off the extension
+	// package silently returned '' and froze the badge instead of failing.
+	TailwindCSS: majorVersion(getDependencyVersion(docsPackage, 'tailwindcss')),
 	Bootstrap: majorVersion(getDependencyVersion(extensionPackage, 'bootstrap')),
 	Turborepo: majorVersion(getDependencyVersion(rootPackage, 'turbo')),
 	npm: npmVersion,
@@ -98,6 +105,14 @@ const replacements = [
 
 let content = fs.readFileSync(readmePath, 'utf8');
 let readmeUpdated = false;
+
+// A dependency that moved packages resolves to '' here. Say so rather than leaving a stale badge
+// behind, which is how the TailwindCSS badge quietly froze.
+for (const [name, value] of Object.entries(nextBadgeValues)) {
+	if (!value) {
+		console.warn(`  warning: no version resolved for the ${name} badge; leaving it unchanged`);
+	}
+}
 
 for (const { pattern, value } of replacements) {
 	if (!value) {

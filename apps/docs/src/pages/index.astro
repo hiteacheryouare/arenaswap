@@ -1,65 +1,23 @@
 ---
-import Nav from '../components/Nav.astro';
-import Hero from '../components/Hero.astro';
-import Features from '../components/Features.astro';
-import Leagues from '../components/Leagues.astro';
-import HowItWorks from '../components/HowItWorks.astro';
-import PowerScoreSection from '../components/PowerScoreSection.astro';
-import Settings from '../components/Settings.astro';
-import FAQSection from '../components/FAQSection.astro';
-import Footer from '../components/Footer.astro';
-import '../styles/global.scss';
+import Shell from '../layouts/Shell.astro';
+import HeroBand from '../components/landing/HeroBand.astro';
+import TabsBand from '../components/landing/TabsBand.astro';
+
+import ChartsBand from '../components/landing/ChartsBand.astro';
+import LeaguesBand from '../components/landing/LeaguesBand.astro';
+import SettingsBand from '../components/landing/SettingsBand.astro';
+
+
+const description = 'ArenaSwap watches every live game across 31 leagues and switches your browser tab to the most exciting one. Free, no account, no tracking.';
 ---
-<!doctype html>
-<html lang='en'>
-<head>
-	<meta charset='UTF-8' />
-	<meta name='viewport' content='width=device-width, initial-scale=1.0' />
-	<meta name='description' content='ArenaSwap automatically switches your browser tabs to the most exciting live sports game. Twelve leagues. Five signals. Zero manual flipping.' />
-	<meta property='og:title' content='ArenaSwap -Never miss the moment.' />
-	<meta property='og:description' content='Automatically switches your browser tabs to the most exciting live sports game across 12 leagues.' />
-	<meta property='og:type' content='website' />
-	<title>ArenaSwap</title>
-	<link rel="shortcut icon" href="/arenaswap/images/128.png" type="image/x-icon">
-</head>
-<body>
-	<Nav />
-	<main>
-		<Hero />
-		<div class='section-divider'></div>
-		<Features />
-		<div class='section-divider'></div>
-		<Leagues />
-		<div class='section-divider'></div>
-		<HowItWorks />
-		<div class='section-divider'></div>
-		<PowerScoreSection />
-		<div class='section-divider'></div>
-		<Settings />
-		<div class='section-divider'></div>
-		<FAQSection />
-	</main>
-	<Footer />
-
-	<!-- Bootstrap JS (for navbar collapse only) -->
-	<script>
-		import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-	</script>
-
-	<!-- Scroll reveal -->
-	<script>
-		const revealElements = document.querySelectorAll('.reveal');
-		const observer = new IntersectionObserver(
-			(entries) => {
-				entries.forEach(entry => {
-					if (entry.isIntersecting) {
-						entry.target.classList.add('visible');
-					}
-				});
-			},
-			{ threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
-		);
-		revealElements.forEach(el => observer.observe(el));
-	</script>
-</body>
-</html>
+<Shell
+	title='ArenaSwap — Never miss the moment.'
+	ogTitle='ArenaSwap — Never miss the moment.'
+	description={description}
+>
+	<HeroBand />
+	<TabsBand />
+	<ChartsBand />
+	<LeaguesBand />
+	<SettingsBand />
+</Shell>

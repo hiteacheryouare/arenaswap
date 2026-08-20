@@ -27,6 +27,7 @@ This is not a consensus-driven repository. Final authority rests with maintainer
 ## Governance Model
 
 This repository operates under centralized maintainership.
+- **Owner:** Lattice & Company
 - **Primary Maintainer:** Ryan Mullin
 
 Maintainers retain unilateral authority over:

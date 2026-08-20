@@ -1,5 +1,4 @@
 import {
-	computeStallPenaltyPercent,
 	formatClock,
 	formatPeriod,
 	formatStartDateTime,
@@ -36,6 +35,12 @@ describe('formatPeriod', () => {
 	test('formats soccer halves as 1H and 2H', () => {
 		expect(formatPeriod(makeGame({ league: 'mls', sportType: 'soccer', period: 1 }))).toBe('1H');
 		expect(formatPeriod(makeGame({ league: 'mls', sportType: 'soccer', period: 2 }))).toBe('2H');
+	});
+
+	test('formats soccer extra time as ET1/ET2 and a shootout as PENS', () => {
+		expect(formatPeriod(makeGame({ league: 'mls', sportType: 'soccer', period: 3 }))).toBe('ET1');
+		expect(formatPeriod(makeGame({ league: 'mls', sportType: 'soccer', period: 4 }))).toBe('ET2');
+		expect(formatPeriod(makeGame({ league: 'mls', sportType: 'soccer', period: 5 }))).toBe('PENS');
 	});
 
 	test('formats MLB innings as "Inn N"', () => {
@@ -108,9 +113,7 @@ describe('powerScoreColor', () => {
 });
 
 describe('isInteractiveCardTarget', () => {
-	// Most positive cases require a real DOM and live in component-level tests.
-	// These cover the contract the function exposes to non-DOM targets, which is
-	// what callers pass when an event originates from a non-element source.
+	// Positive cases need a real DOM and live in the component tests.
 	test('returns false for null', () => {
 		expect(isInteractiveCardTarget(null)).toBe(false);
 	});
@@ -124,19 +127,3 @@ describe('isInteractiveCardTarget', () => {
 	});
 });
 
-describe('computeStallPenaltyPercent', () => {
-	test('returns a positive integer percentage when rawTotal exceeds baseTotal', () => {
-		const result = computeStallPenaltyPercent(100, 70);
-		expect(Number.isInteger(result)).toBe(true);
-		expect(result).toBeGreaterThan(0);
-		expect(result).toBeLessThanOrEqual(100);
-	});
-
-	test('returns 0 when rawTotal is 0', () => {
-		expect(computeStallPenaltyPercent(0, 0)).toBe(0);
-	});
-
-	test('returns 0 when rawTotal equals baseTotal (no penalty)', () => {
-		expect(computeStallPenaltyPercent(50, 50)).toBe(0);
-	});
-});

@@ -1,93 +1,27 @@
-// ─── Bootstrap variable overrides ───────────────────────────────────────────
-$prefix: 		    'as-';
-$primary:           #F75C03;
-$secondary:         #2274A5;
-$success:           #00CC66;
-$danger:            #D90368;
-$warning:           #F1C40F;
-$body-bg:           #0d1117;
-$body-color:        #e6edf3;
-$border-color:      #30363d;
-$card-bg:           #161b22;
-$card-border-color: #30363d;
-$link-color:        #F75C03;
-$link-hover-color:  #d44e00;
-$font-family-base:  'DM Sans', system-ui, sans-serif;
-$border-radius:     0.5rem;
-$border-radius-lg:  0.75rem;
-$navbar-dark-color:           rgba(230, 237, 243, 0.7);
-$navbar-dark-hover-color:     #e6edf3;
-$navbar-dark-brand-color:     #e6edf3;
-$navbar-dark-active-color:    #F75C03;
-$input-bg:          #161b22;
-$input-border-color: #30363d;
-$input-color:       #e6edf3;
-$accordion-bg:              #161b22;
-$accordion-border-color:    #30363d;
-$accordion-button-bg:       #161b22;
-$accordion-button-active-bg: #0d1117;
-$accordion-button-color:    #e6edf3;
-$accordion-button-active-color: #F75C03;
-$accordion-body-padding-x:  1.25rem;
-$accordion-body-padding-y:  1rem;
-* {
-	&::selection {
-		background: $primary;
-		color: #fff;
-	}
-}
+// ─── Shared Bootstrap variable overrides (colors, dark theme, fonts) ─────────
+@import '@arenaswap/ui/src/bootstrap';
+
+// ─── Docs-specific Bootstrap overrides ───────────────────────────────────────
+$link-color:                    #F75C03;
+$link-hover-color:              #d44e00;
+$border-radius:                 0.5rem;
+$border-radius-lg:              0.75rem;
+$navbar-dark-color:             rgba(230, 237, 243, 0.7);
+$navbar-dark-hover-color:       #e6edf3;
+$navbar-dark-brand-color:       #e6edf3;
+$navbar-dark-active-color:      #F75C03;
 
 @import 'bootstrap/scss/bootstrap';
+@import 'bootstrap/scss/reboot';
 @import 'bootstrap-icons/font/bootstrap-icons.scss';
+@import '@arenaswap/ui/src/game-card';
+// The popup chrome the site's demos are built from. Shared with the extension so the two cannot
+// describe different popups.
+@import '@arenaswap/ui/src/popup';
 
-// ─── Font faces ─────────────────────────────────────────────────────────────
-@font-face {
-	font-family: 'DM Sans';
-	src: url('/arenaswap/fonts/DMSans-Regular.woff2') format('woff2');
-	font-weight: 400;
-	font-style: normal;
-	font-display: swap;
-}
-
-@font-face {
-	font-family: 'DM Sans';
-	src: url('/arenaswap/fonts/DMSans-Medium.woff2') format('woff2');
-	font-weight: 500;
-	font-style: normal;
-	font-display: swap;
-}
-
-@font-face {
-	font-family: 'DM Sans';
-	src: url('/arenaswap/fonts/DMSans-SemiBold.woff2') format('woff2');
-	font-weight: 600;
-	font-style: normal;
-	font-display: swap;
-}
-
-@font-face {
-	font-family: 'DM Sans';
-	src: url('/arenaswap/fonts/DMSans-Bold.woff2') format('woff2');
-	font-weight: 700;
-	font-style: normal;
-	font-display: swap;
-}
-
-@font-face {
-	font-family: 'Lekton';
-	src: url('/arenaswap/fonts/Lekton-Regular.woff2') format('woff2');
-	font-weight: 400;
-	font-style: normal;
-	font-display: swap;
-}
-
-@font-face {
-	font-family: 'Lekton';
-	src: url('/arenaswap/fonts/Lekton-Bold.woff2') format('woff2');
-	font-weight: 700;
-	font-style: normal;
-	font-display: swap;
-}
+// ─── Font faces ───────────────────────────────────────────────────────────────
+$font-base-url: '/arenaswap/fonts';
+@import '@arenaswap/ui/src/fonts';
 
 @font-face {
 	font-family: 'bootstrap-icons';
@@ -97,35 +31,10 @@ $accordion-body-padding-y:  1rem;
 }
 
 // ─── CSS custom properties ───────────────────────────────────────────────────
+// The colour and font tokens live in packages/ui/src/tailwind.css, imported through the Tailwind
+// entry. Only tokens with no @theme equivalent belong here.
 :root {
-	--color-bg:        #0d1117;
-	--color-card:      #161b22;
-	--color-border:    #30363d;
-	--color-primary:   #F75C03;
-	--color-secondary: #2274A5;
-	--color-text:      #e6edf3;
-	--color-muted:     #8b949e;
-	--color-success:   #00CC66;
-	--color-danger:    #D90368;
-	--color-warning:   #F1C40F;
 	--gradient-sig:    linear-gradient(to right, #fdb913, #f36f21, #c9234a, #645faa, #0089cf, #0db14b);
-	--font-mono:       'Lekton', 'Courier New', monospace;
-}
-
-// ─── Tailwind ────────────────────────────────────────────────────────────────
-@import 'tailwindcss';
-
-@theme {
-	--color-primary:   #F75C03;
-	--color-secondary: #2274A5;
-	--color-card:      #161b22;
-	--color-border:    #30363d;
-	--color-muted:     #8b949e;
-	--color-success:   #00CC66;
-	--color-danger:    #D90368;
-	--color-warning:   #F1C40F;
-	--font-sans:       'DM Sans', system-ui, sans-serif;
-	--font-mono:       'Lekton', 'Courier New', monospace;
 }
 
 // ─── Global resets & base ────────────────────────────────────────────────────
@@ -148,6 +57,13 @@ body {
 	max-width: 100%;
 }
 
+// ─── Orange dots ─────────────────────────────────────────────────────────────
+// Brand flourish: every period in body copy is painted ArenaSwap orange. Wrapped
+// at runtime by OrangeDots.astro, and inside React islands by their own markup.
+.as-dot {
+	color: var(--color-primary);
+}
+
 // ─── Scroll reveal ───────────────────────────────────────────────────────────
 .reveal {
 	opacity: 0;
@@ -161,11 +77,18 @@ body {
 	transform: translateY(0);
 }
 
-.reveal-delay-1 { transition-delay: 0.1s; }
-.reveal-delay-2 { transition-delay: 0.2s; }
-.reveal-delay-3 { transition-delay: 0.3s; }
-.reveal-delay-4 { transition-delay: 0.4s; }
-.reveal-delay-5 { transition-delay: 0.5s; }
+@for $i from 1 through 5 {
+	.reveal-delay-#{$i} { transition-delay: #{$i * 0.1}s; }
+}
+
+// Fail-safe: users who prefer reduced motion get the content immediately, with no reveal animation.
+@media (prefers-reduced-motion: reduce) {
+	.reveal {
+		opacity: 1;
+		transform: none;
+		transition: none;
+	}
+}
 
 // ─── Live pulse dot ──────────────────────────────────────────────────────────
 @keyframes pulse-live {
@@ -182,18 +105,188 @@ body {
 	animation: pulse-live 1.5s ease-in-out infinite;
 }
 
-// ─── Navbar ──────────────────────────────────────────────────────────────────
-#main-nav {
-	transition: background 0.3s ease, backdrop-filter 0.3s ease, box-shadow 0.3s ease;
-	max-width: 100%;
-	width: 100%;
+// ─── Site header / nav ────────────────────────────────────────────────────────
+body.nav-open {
+	overflow: hidden;
 }
 
-#main-nav.scrolled {
-	background: rgba(13, 17, 23, 0.9) !important;
-	backdrop-filter: blur(16px);
-	-webkit-backdrop-filter: blur(16px);
-	box-shadow: 0 1px 0 var(--color-border);
+.site-header {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	z-index: 1000;
+}
+
+.site-nav {
+	height: 64px;
+	display: flex;
+	align-items: center;
+	transition: background 0.3s ease, backdrop-filter 0.3s ease, box-shadow 0.3s ease;
+
+	.site-header.scrolled & {
+		background: rgba(13, 17, 23, 0.9);
+		backdrop-filter: blur(16px);
+		-webkit-backdrop-filter: blur(16px);
+		box-shadow: 0 1px 0 var(--color-border);
+	}
+}
+
+.nav-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1.5rem;
+}
+
+.nav-logo {
+	flex-shrink: 0;
+
+	img {
+		height: 28px;
+		width: auto;
+		display: block;
+	}
+}
+
+.nav-desktop-links {
+	display: flex;
+	align-items: center;
+	gap: 0.125rem;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+
+	a {
+		display: block;
+		padding: 0.375rem 0.75rem;
+		font-size: 0.875rem;
+		font-weight: 500;
+		color: rgba(230, 237, 243, 0.72);
+		text-decoration: none;
+		border-radius: 0.5rem;
+		transition: color 0.15s ease, background 0.15s ease;
+		white-space: nowrap;
+
+		&:hover {
+			color: var(--color-text);
+			background: rgba(230, 237, 243, 0.06);
+		}
+	}
+
+	@media (max-width: 991px) {
+		display: none;
+	}
+}
+
+.nav-end {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	flex-shrink: 0;
+}
+
+.nav-cta-desktop {
+	font-size: 0.85rem;
+	padding: 0.6rem 1.25rem;
+
+	@media (max-width: 991px) {
+		display: none !important;
+	}
+}
+
+.nav-hamburger {
+	display: none;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	gap: 5px;
+	width: 36px;
+	height: 36px;
+	padding: 0;
+	background: none;
+	border: none;
+	cursor: pointer;
+	flex-shrink: 0;
+
+	@media (max-width: 991px) {
+		display: flex;
+	}
+}
+
+.ham-bar {
+	display: block;
+	width: 22px;
+	height: 1.5px;
+	background: var(--color-text);
+	border-radius: 2px;
+	transform-origin: center;
+	transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.22s ease;
+}
+
+.nav-hamburger.open {
+	.ham-bar:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+	.ham-bar:nth-child(2) { opacity: 0; transform: scaleX(0); }
+	.ham-bar:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+}
+
+.nav-drawer {
+	position: fixed;
+	top: 64px;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: rgba(13, 17, 23, 0.98);
+	backdrop-filter: blur(20px);
+	-webkit-backdrop-filter: blur(20px);
+	border-top: 1px solid var(--color-border);
+	padding: 1.5rem 1.25rem;
+	transform: translateY(-8px);
+	opacity: 0;
+	pointer-events: none;
+	visibility: hidden;
+	transition: transform 0.26s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.26s ease, visibility 0.26s ease;
+	overflow-y: auto;
+	z-index: 999;
+
+	&.open {
+		transform: translateY(0);
+		opacity: 1;
+		pointer-events: auto;
+		visibility: visible;
+	}
+
+	ul {
+		list-style: none;
+		padding: 0;
+		margin: 0 0 2rem;
+	}
+
+	li {
+		border-bottom: 1px solid var(--color-border);
+
+		&:last-child {
+			border-bottom: none;
+		}
+
+		a {
+			display: block;
+			padding: 1rem 0;
+			font-size: 1.1rem;
+			font-weight: 500;
+			color: var(--color-text);
+			text-decoration: none;
+			transition: color 0.15s ease;
+
+			&:hover {
+				color: var(--color-primary);
+			}
+		}
+	}
+}
+
+.nav-drawer-cta {
+	padding-top: 0.5rem;
 }
 
 // ─── Buttons ─────────────────────────────────────────────────────────────────
@@ -224,15 +317,6 @@ body {
 	&:active {
 		transform: translateY(0);
 	}
-}
-
-@keyframes cta-glow {
-	0%, 100% { box-shadow: 0 0 0 0 rgba(247, 92, 3, 0.2); }
-	50%       { box-shadow: 0 0 0 10px rgba(247, 92, 3, 0); }
-}
-
-.btn-cta-pulse {
-	animation: cta-glow 2.5s ease-in-out infinite;
 }
 
 .btn-outline-secondary-custom {
@@ -273,7 +357,9 @@ body {
 	max-width: 560px;
 }
 
-// ─── Feature cards ────────────────────────────────────────────────────────────
+// ─── Cards ───────────────────────────────────────────────────────────────────
+// Still used by /powerscore/, the engine explainer and the live PowerScore examples. The landing
+// page's own feature grid is gone; this is not that.
 .feature-card {
 	background: var(--color-card);
 	border: 1px solid var(--color-border);
@@ -311,28 +397,13 @@ body {
 	}
 }
 
-// ─── How it works steps ───────────────────────────────────────────────────────
-.step-number {
-	font-size: clamp(5rem, 12vw, 9rem);
-	font-weight: 700;
-	letter-spacing: -0.06em;
-	line-height: 1;
-	color: rgba(230, 237, 243, 0.06);
-	user-select: none;
-	transition: color 0.3s ease;
-}
+@media (prefers-reduced-motion: reduce) {
+	.feature-card {
+		transition: none;
 
-.step-card:hover .step-number {
-	color: rgba(247, 92, 3, 0.12);
-}
-
-.step-card {
-	border-top: 1px solid var(--color-border);
-	padding: 2.5rem 0;
-	transition: border-color 0.3s ease;
-
-	&:hover {
-		border-top-color: rgba(247, 92, 3, 0.3);
+		&:hover {
+			transform: none;
+		}
 	}
 }
 
@@ -351,57 +422,6 @@ body {
 	transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-// ─── Settings preview ─────────────────────────────────────────────────────────
-.settings-preview {
-	background: var(--color-card);
-	border: 1px solid var(--color-border);
-	border-radius: 1rem;
-	padding: 1.5rem;
-	width: 100%;
-	max-width: 380px;
-}
-
-.settings-row {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	padding: 0.75rem 0;
-	border-bottom: 1px solid var(--color-border);
-	font-size: 0.875rem;
-
-	&:last-child {
-		border-bottom: none;
-		padding-bottom: 0;
-	}
-
-	.label {
-		color: var(--color-muted);
-		font-weight: 500;
-	}
-
-	.value {
-		color: var(--color-text);
-		font-weight: 600;
-		font-family: 'Lekton', monospace;
-	}
-}
-
-.sensitivity-dots {
-	display: flex;
-	gap: 4px;
-
-	.dot {
-		width: 8px;
-		height: 8px;
-		border-radius: 50%;
-		background: var(--color-border);
-
-		&.active {
-			background: var(--color-primary);
-		}
-	}
-}
-
 // ─── Footer ───────────────────────────────────────────────────────────────────
 .footer-gradient-bar {
 	width: 100%;
@@ -413,6 +433,96 @@ body {
 		font-size: 0.72rem;
 		font-weight: 700;
 		color: rgba(255, 255, 255, 0.85);
+	}
+}
+
+// ─── Footer brand band ───────────────────────────────────────────────────────
+// ArenaSwap beside its parent company at the top of the footer, sized so the
+// two read as peers rather than product-and-badge.
+.footer-brand-band {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-wrap: wrap;
+	gap: 2rem;
+}
+
+.footer-brand-item {
+	display: inline-flex;
+	align-items: center;
+	text-decoration: none;
+	transition: opacity 0.18s ease;
+
+	&:hover {
+		opacity: 0.75;
+	}
+}
+
+.footer-arenaswap-mark {
+	height: 44px;
+	width: auto;
+}
+
+.footer-brand-rule {
+	width: 1px;
+	height: 44px;
+	background: var(--color-border);
+}
+
+.footer-tagline {
+	margin: 1.25rem 0 0;
+	text-align: center;
+	font-size: 0.9rem;
+	line-height: 1.6;
+	color: var(--color-muted);
+}
+
+// ─── Lattice & Company endorsement ───────────────────────────────────────────
+// Parent-company lockup: DM Serif Text, never DM Sans. The mark is never
+// recolored; the ampersand steps back into ArenaSwap's own muted gray rather
+// than a Lattice gray.
+.latticeco-lockup {
+	gap: 0.75rem;
+}
+
+.latticeco-mark {
+	height: 44px;
+	width: 44px;
+}
+
+.latticeco-word {
+	font-family: 'DM Serif Text', Georgia, serif;
+	font-size: 1.65rem;
+	line-height: 1;
+	color: var(--color-text);
+}
+
+.latticeco-amp {
+	color: var(--color-muted);
+}
+
+// Stacked on phones, where a vertical rule between wrapped rows reads as noise.
+@media (max-width: 575.98px) {
+	.footer-brand-band {
+		gap: 1.25rem;
+	}
+
+	.footer-arenaswap-mark {
+		height: 34px;
+	}
+
+	.footer-brand-rule {
+		width: 64px;
+		height: 1px;
+	}
+
+	.latticeco-mark {
+		height: 34px;
+		width: 34px;
+	}
+
+	.latticeco-word {
+		font-size: 1.3rem;
 	}
 }
 
@@ -434,399 +544,6 @@ body {
 	line-height: 1.5;
 }
 
-// ─── League carousel ──────────────────────────────────────────────────────────
-.league-carousel-card {
-	background: var(--color-card);
-	border: 1px solid var(--color-border);
-	border-radius: 1rem;
-	padding: 2rem;
-	display: flex;
-	flex-direction: column;
-	align-items: flex-start;
-	gap: 0.75rem;
-	min-height: 200px;
-	justify-content: center;
-}
-
-.league-carousel-full {
-	font-size: 1rem;
-	color: var(--color-text);
-	font-weight: 600;
-	line-height: 1.3;
-	letter-spacing: -0.01em;
-}
-
-.carousel-indicators.league-carousel-indicators {
-	position: static;
-	display: flex;
-	gap: 5px;
-	margin: 1.25rem 0 0;
-	justify-content: flex-start;
-
-	button {
-		width: 6px;
-		height: 6px;
-		border-radius: 50%;
-		border: none;
-		background: var(--color-border);
-		padding: 0;
-		opacity: 1;
-		flex: none;
-		text-indent: 0;
-		transition: background 0.2s ease, width 0.25s ease;
-
-		&.active {
-			background: var(--color-primary);
-			width: 18px;
-			border-radius: 999px;
-		}
-	}
-}
-
-// ─── Hero ─────────────────────────────────────────────────────────────────────
-.hero-glow {
-	position: absolute;
-	top: 30%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	width: 700px;
-	height: 700px;
-	background: radial-gradient(circle, rgba(247,92,3,0.07) 0%, transparent 65%);
-	pointer-events: none;
-}
-
-// Hero headline word-by-word entrance
-@keyframes hero-word-in {
-	from {
-		opacity: 0;
-		transform: translateY(24px);
-		filter: blur(6px);
-	}
-	to {
-		opacity: 1;
-		transform: translateY(0);
-		filter: blur(0);
-	}
-}
-
-.hero-headline {
-	font-size: clamp(3.5rem, 8vw, 5.5rem);
-	font-weight: 700;
-	letter-spacing: -0.04em;
-	line-height: 1.02;
-	margin-bottom: 1.5rem;
-}
-
-.hero-word {
-	display: inline-block;
-	opacity: 0;
-	animation: hero-word-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.hero-word-1 { animation-delay: 0.1s; }
-.hero-word-2 { animation-delay: 0.22s; }
-.hero-word-3 { animation-delay: 0.34s; }
-.hero-word-4 { animation-delay: 0.46s; }
-
-.hero-sub {
-	opacity: 0;
-	animation: hero-word-in 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.62s forwards;
-	font-size: 1.1rem;
-	color: var(--color-muted);
-	line-height: 1.65;
-	max-width: 520px;
-	margin-bottom: 2rem;
-}
-
-.hero-cta {
-	opacity: 0;
-	animation: hero-word-in 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.78s forwards;
-}
-
-// ─── Demo popup (pixel-accurate extension replica) ────────────────────────────
-@keyframes hero-float {
-	0%, 100% { transform: translateY(0px) rotate(-1.5deg); }
-	50%       { transform: translateY(-10px) rotate(-1.5deg); }
-}
-
-@keyframes demo-live-pulse {
-	0%, 100% { opacity: 1; }
-	50%       { opacity: 0.3; }
-}
-
-.demo-popup-wrapper {
-	opacity: 0;
-	animation: hero-word-in 1s cubic-bezier(0.16, 1, 0.3, 1) 0.5s forwards;
-}
-
-.demo-popup {
-	width: 320px;
-	height: 560px;
-	background: #0d1117;
-	border-radius: 14px;
-	overflow: hidden;
-	display: flex;
-	flex-direction: column;
-	animation: hero-float 5.5s ease-in-out infinite;
-	box-shadow:
-		0 0 0 1px rgba(255,255,255,0.05),
-		0 32px 80px rgba(0, 0, 0, 0.7),
-		0 0 80px rgba(247, 92, 3, 0.08);
-}
-
-.demo-popup-inner {
-	flex: 1;
-	padding: 0.75rem;
-	overflow: hidden;
-	color: #e6edf3;
-}
-
-.demo-header {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	margin-bottom: 0.5rem;
-	padding-bottom: 0.5rem;
-	border-bottom: 1px solid #30363d;
-}
-
-.demo-logo-img {
-	height: 36px;
-	width: auto;
-	object-fit: contain;
-}
-
-.demo-header-right {
-	display: flex;
-	align-items: center;
-	gap: 8px;
-}
-
-.demo-switch {
-	width: 32px;
-	height: 18px;
-	background: #F75C03;
-	border-radius: 999px;
-	position: relative;
-	flex-shrink: 0;
-}
-
-.demo-switch-thumb {
-	position: absolute;
-	right: 2px;
-	top: 2px;
-	width: 14px;
-	height: 14px;
-	background: #fff;
-	border-radius: 50%;
-}
-
-.demo-section-title {
-	font-size: 1.35rem;
-	font-weight: 700;
-	text-align: center;
-	letter-spacing: -0.01em;
-	color: #e6edf3;
-	margin-bottom: 0.25rem;
-	margin-top: 0.25rem;
-}
-
-.demo-league-label {
-	font-size: 0.75rem;
-	font-weight: 700;
-	text-transform: uppercase;
-	letter-spacing: 0.1em;
-	color: #8b949e;
-	margin-bottom: 0.4rem;
-	margin-top: 0.25rem;
-}
-
-.demo-card {
-	border-radius: 0.5rem;
-	padding: 0.75rem;
-	margin-bottom: 0.5rem;
-	border: 1px solid #dee2e6;
-}
-
-.demo-card-top {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	margin-bottom: 0.25rem;
-}
-
-.demo-live {
-	display: flex;
-	align-items: center;
-	gap: 4px;
-	font-size: 0.65rem;
-	font-weight: 700;
-	text-transform: uppercase;
-	letter-spacing: 0.08em;
-	color: #F75C03;
-}
-
-.demo-live-dot {
-	width: 6px;
-	height: 6px;
-	border-radius: 50%;
-	background: #e53935;
-	animation: demo-live-pulse 1.5s ease-in-out infinite;
-	flex-shrink: 0;
-}
-
-.demo-ps {
-	font-size: 0.55rem;
-	font-weight: 700;
-	color: #fff;
-	padding: 0.1rem 0.4rem;
-	border-radius: 0.25rem;
-	display: flex;
-	align-items: center;
-	gap: 3px;
-	letter-spacing: 0.03em;
-}
-
-.demo-matchup {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	gap: 0.75rem;
-	margin: 0.5rem 0 0.4rem;
-}
-
-.demo-team-col {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	min-width: 60px;
-	gap: 2px;
-}
-
-.demo-team-logo {
-	width: 44px;
-	height: 44px;
-	border-radius: 50%;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	font-size: 0.55rem;
-	font-weight: 700;
-	letter-spacing: 0.02em;
-}
-
-.demo-team-logo-wrap {
-	width: 44px;
-	height: 44px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-}
-
-.demo-team-logo-img {
-	width: 44px;
-	height: 44px;
-	object-fit: contain;
-}
-
-.demo-star-icon {
-	font-size: 0.78rem;
-	color: #6c757d;
-}
-
-.demo-team-abbr {
-	font-size: 0.7rem;
-	color: #111827;
-	font-weight: 700;
-}
-
-.demo-center-col {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	min-width: 80px;
-	gap: 2px;
-}
-
-.demo-scores {
-	display: flex;
-	gap: 1.25rem;
-	align-items: baseline;
-}
-
-.demo-score {
-	font-size: 1.75rem;
-	font-weight: 700;
-	color: #111827;
-	letter-spacing: -0.02em;
-	font-variant-numeric: tabular-nums;
-}
-
-.demo-clock {
-	font-family: 'Lekton', monospace;
-	font-size: 0.85rem;
-	color: #374151;
-	font-variant-numeric: tabular-nums;
-}
-
-.demo-period {
-	font-family: 'Lekton', monospace;
-	font-size: 0.7rem;
-	color: #6c757d;
-}
-
-.demo-meta {
-	display: flex;
-	flex-direction: column;
-	gap: 1px;
-	margin-top: 0.25rem;
-}
-
-.demo-meta-venue {
-	font-size: 0.6rem;
-	color: #6c757d;
-}
-
-.demo-meta-network {
-	font-size: 0.58rem;
-	color: #495057;
-}
-
-.demo-tab-row {
-	margin-top: 0.4rem;
-}
-
-.demo-select {
-	width: 100%;
-	background: #f8f9fa;
-	color: #374151;
-	border: 1px solid #dee2e6;
-	border-radius: 0.25rem;
-	font-size: 0.6rem;
-	padding: 0.15rem 0.4rem;
-}
-
-.hero-scroll-indicator {
-	position: absolute;
-	bottom: 2rem;
-	left: 50%;
-	transform: translateX(-50%);
-	opacity: 0;
-	animation: hero-word-in 0.9s cubic-bezier(0.16, 1, 0.3, 1) 1.1s forwards;
-	color: var(--color-muted);
-	font-size: 1.1rem;
-}
-
-// ─── League carousel logo ─────────────────────────────────────────────────────
-.league-carousel-logo {
-	width: 140px;
-	height: 52px;
-	object-fit: contain;
-	object-position: left center;
-	display: block;
-	margin-bottom: 0.75rem;
-}
-
 // ─── Divider ──────────────────────────────────────────────────────────────────
 .section-divider {
 	height: 1px;
@@ -835,30 +552,26 @@ body {
 	max-width: 800px;
 }
 
-// ─── Accordion overrides ──────────────────────────────────────────────────────
-.accordion-button::after {
-	filter: invert(1);
-}
-
-.accordion-button:not(.collapsed)::after {
-	filter: invert(1);
-}
-
 // ─── PowerScore page ─────────────────────────────────────────────────────────
 
 // Gradient accent bar (section dividers & hero bar)
 .ps-gradient-bar {
 	width: 100%;
 	height: 3px;
-	background: linear-gradient(to right, #22c55e, #F75C03, #2274A5, #F1C40F, #D90368);
+	background: linear-gradient(to right, #22c55e, #F75C03, $secondary-on-light, #F1C40F, #D90368);
 }
 
 // Signal card top-border accents
-.ps-signal-card-green  { border-top: 2px solid rgba(34, 197, 94, 0.7) !important; }
-.ps-signal-card-orange { border-top: 2px solid rgba(247, 92, 3, 0.7) !important; }
-.ps-signal-card-blue   { border-top: 2px solid rgba(34, 116, 165, 0.7) !important; }
-.ps-signal-card-yellow { border-top: 2px solid rgba(241, 196, 15, 0.7) !important; }
-.ps-signal-card-pink   { border-top: 2px solid rgba(217, 3, 104, 0.7) !important; }
+$ps-signal-colors: (
+	'green':  rgba(34, 197, 94, 0.7),
+	'orange': rgba(247, 92, 3, 0.7),
+	'blue':   rgba(34, 116, 165, 0.7),
+	'yellow': rgba(241, 196, 15, 0.7),
+	'pink':   rgba(217, 3, 104, 0.7),
+);
+@each $name, $color in $ps-signal-colors {
+	.ps-signal-card-#{$name} { border-top: 2px solid $color !important; }
+}
 
 // Live score bar
 .ps-score-bar-track {
@@ -872,7 +585,7 @@ body {
 .ps-score-bar-fill {
 	height: 100%;
 	border-radius: 999px;
-	background: linear-gradient(to right, #22c55e, #F75C03, #2274A5, #F1C40F, #D90368);
+	background: linear-gradient(to right, #22c55e, #F75C03, $secondary-on-light, #F1C40F, #D90368);
 	transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -937,7 +650,7 @@ body {
 .ps-hero-bar {
 	width: 64px;
 	height: 3px;
-	background: linear-gradient(to right, #22c55e, #F75C03, #2274A5, #F1C40F, #D90368);
+	background: linear-gradient(to right, #22c55e, #F75C03, $secondary-on-light, #F1C40F, #D90368);
 	border-radius: 999px;
 	margin: 0 auto 2.75rem;
 	opacity: 0;
@@ -964,7 +677,7 @@ body {
 		to right,
 		#22c55e 0%,
 		#F75C03 22%,
-		#2274A5 44%,
+		$secondary-on-light 44%,
 		#F1C40F 66%,
 		#D90368 85%,
 		#22c55e 100%
@@ -1066,3 +779,638 @@ body {
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 }
+
+// ─── Footer columns ───────────────────────────────────────────────────────────
+.footer-col-label {
+	font-size: 0.72rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	color: var(--color-muted);
+	margin-bottom: 1rem;
+}
+
+.footer-links {
+	display: flex;
+	flex-direction: column;
+	gap: 0.6rem;
+
+	li a {
+		font-size: 0.85rem;
+		color: var(--color-muted);
+		text-decoration: none;
+		transition: color 0.18s ease;
+
+		&:hover {
+			color: var(--color-text);
+		}
+	}
+}
+
+
+// ─── Auto-playing explainer (issue #41) ──────────────────────────────────────
+// An auto-looping, ECharts + SVG explainer: watch every live game, score each
+// one, open one game for its full PowerScore breakdown, then switch to the best
+// tab. No-JS / reduced-motion visitors get the static `.machine-fallback`.
+.machine-section {
+	position: relative;
+	overflow: hidden;
+	padding: 6rem 1rem 5rem;
+	background:
+		radial-gradient(120% 80% at 50% 45%, rgba(247, 92, 3, 0.06), transparent 60%),
+		linear-gradient(180deg, var(--color-bg), #0b0f14 55%, var(--color-bg));
+}
+
+.machine-header {
+	text-align: center;
+	max-width: 46rem;
+	margin: 0 auto 2.5rem;
+}
+
+.machine-viewport {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	max-width: 1040px;
+	height: min(82vh, 780px);
+	margin: 0 auto;
+}
+
+.machine-stage-area {
+	position: relative;
+	flex: 1;
+	min-height: 0;
+}
+
+// ─── Scene crossfade ──────────────────────────────────────────────────────────
+.machine-scene {
+	position: absolute;
+	inset: 0;
+	opacity: 0;
+	transform: scale(0.96);
+	transition: opacity 0.9s ease, transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+	pointer-events: none;
+}
+
+.machine-scene[data-active='true'] {
+	opacity: 1;
+	transform: scale(1);
+}
+
+.machine-scene-center {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+// ─── Caption (soft blended backing keeps it readable) ─────────────────────────
+.machine-caption {
+	position: relative;
+	height: 4.5rem;
+	margin: 0.75rem 0 0;
+	text-align: center;
+	z-index: 5;
+}
+
+.machine-caption-line {
+	position: absolute;
+	inset: 0;
+	margin: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: clamp(1.1rem, 2.5vw, 1.7rem);
+	font-weight: 600;
+	line-height: 1.3;
+	color: var(--color-text);
+	text-shadow: 0 2px 18px rgba(13, 17, 23, 0.95);
+	opacity: 0;
+	transform: translateY(10px);
+	transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+	            transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.machine-caption-line[data-active='true'] {
+	opacity: 1;
+	transform: none;
+}
+
+// ─── Scene 1 & 2: SVG network ─────────────────────────────────────────────────
+.mw-net {
+	width: 100%;
+	height: 100%;
+	display: block;
+}
+
+.mw-wire-base {
+	stroke: rgba(247, 92, 3, 0.14);
+	stroke-width: 1.5;
+}
+
+.mw-wire-dot {
+	stroke: var(--color-primary);
+	stroke-width: 3;
+	stroke-linecap: round;
+	stroke-dasharray: 2 15;
+	filter: drop-shadow(0 0 3px rgba(247, 92, 3, 0.7));
+	animation: mw-flow 1.1s linear infinite;
+}
+
+@keyframes mw-flow {
+	from { stroke-dashoffset: 0; }
+	to   { stroke-dashoffset: 17; }
+}
+
+.mw-core-glow {
+	fill: rgba(247, 92, 3, 0.10);
+	animation: mw-glow 3s ease-in-out infinite;
+}
+
+@keyframes mw-glow {
+	0%, 100% { opacity: 0.5; }
+	50%      { opacity: 1; }
+}
+
+.mw-core-ring {
+	fill: #0d1117;
+	stroke: rgba(247, 92, 3, 0.6);
+	stroke-width: 2;
+	filter: drop-shadow(0 0 16px rgba(247, 92, 3, 0.5));
+}
+
+.mw-chip {
+	fill: #131922;
+	stroke: rgba(247, 92, 3, 0.45);
+	stroke-width: 2;
+	filter: drop-shadow(0 0 10px rgba(247, 92, 3, 0.22));
+}
+
+.mw-badge {
+	opacity: 0;
+	transition: opacity 0.5s ease;
+
+	circle { fill: var(--color-primary); }
+
+	text {
+		fill: #0d1117;
+		font-family: var(--font-mono);
+		font-weight: 700;
+		font-size: 14px;
+	}
+}
+
+.mw-net[data-scores='true'] .mw-badge {
+	opacity: 1;
+}
+
+// ─── Scene 3: game card + PowerScore breakdown ────────────────────────────────
+.mw-card {
+	width: min(600px, 94%);
+	background: rgba(22, 27, 34, 0.94);
+	border: 1px solid var(--color-border);
+	border-radius: 1.25rem;
+	padding: 1.75rem;
+	box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+	backdrop-filter: blur(4px);
+}
+
+.mw-card-teams {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+}
+
+.mw-team {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.4rem;
+	width: 5rem;
+}
+
+.mw-team .crest {
+	width: 52px;
+	height: 52px;
+}
+
+.mw-team .crest-fallback { font-size: 0.8rem; }
+
+.mw-team-abbr {
+	font-weight: 700;
+	font-size: 0.9rem;
+}
+
+.mw-team-mid {
+	text-align: center;
+}
+
+.mw-team-scores {
+	font-family: var(--font-mono);
+	font-size: 2.4rem;
+	font-weight: 700;
+	letter-spacing: -0.02em;
+}
+
+.mw-team-dash {
+	color: var(--color-muted);
+	margin: 0 0.5rem;
+}
+
+.mw-team-status {
+	display: flex;
+	align-items: center;
+	gap: 0.4rem;
+	justify-content: center;
+	font-size: 0.8rem;
+	color: var(--color-muted);
+	margin-top: 0.25rem;
+}
+
+.mw-power {
+	display: flex;
+	align-items: center;
+	gap: 1.25rem;
+	margin: 1.35rem 0;
+}
+
+.mw-power-num {
+	font-family: var(--font-mono);
+	font-size: 2.9rem;
+	font-weight: 700;
+	color: var(--color-primary);
+	line-height: 1;
+
+	span {
+		font-size: 1rem;
+		color: var(--color-muted);
+		margin-left: 0.25rem;
+	}
+}
+
+.mw-power-meta {
+	flex: 1;
+	min-width: 0;
+}
+
+.mw-power-label {
+	display: block;
+	font-size: 0.72rem;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+	color: var(--color-muted);
+	margin-bottom: 0.25rem;
+}
+
+.mw-chart {
+	width: 100%;
+	height: 56px;
+}
+
+.mw-signals {
+	display: flex;
+	flex-direction: column;
+	gap: 0.7rem;
+}
+
+.mw-signal-head {
+	display: flex;
+	justify-content: space-between;
+	font-size: 0.82rem;
+	margin-bottom: 0.3rem;
+}
+
+.mw-signal-val {
+	font-family: var(--font-mono);
+	font-weight: 700;
+}
+
+// ─── Scene 4: switch to the best tab ──────────────────────────────────────────
+.mw-browser {
+	width: min(720px, 96%);
+	background: #0d1117;
+	border: 1px solid var(--color-border);
+	border-radius: 1rem;
+	overflow: hidden;
+	box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
+}
+
+.mw-browser-bar {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.8rem 1rem 0;
+	background: #161b22;
+	border-bottom: 1px solid var(--color-border);
+}
+
+.mw-dot {
+	width: 11px;
+	height: 11px;
+	border-radius: 50%;
+	flex: none;
+	margin-bottom: 0.8rem;
+}
+
+.mw-tabs {
+	display: flex;
+	gap: 0.3rem;
+	margin-left: 0.75rem;
+	flex: 1;
+	min-width: 0;
+}
+
+.mw-tab {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.5rem 0.75rem;
+	border-radius: 0.55rem 0.55rem 0 0;
+	background: rgba(255, 255, 255, 0.03);
+	border: 1px solid transparent;
+	border-bottom: none;
+	font-size: 0.8rem;
+	color: var(--color-muted);
+	white-space: nowrap;
+	max-width: 3.2rem;
+	overflow: hidden;
+	transition: max-width 0.5s cubic-bezier(0.16, 1, 0.3, 1), background 0.35s ease, color 0.35s ease, border-color 0.35s ease;
+}
+
+.mw-tab-fav {
+	width: 13px;
+	height: 13px;
+	border-radius: 3px;
+	flex: none;
+}
+
+.mw-tab-title {
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.mw-tab-flag {
+	font-size: 0.6rem;
+	font-weight: 700;
+	letter-spacing: 0.02em;
+	color: #0d1117;
+	background: var(--color-primary);
+	padding: 0.1rem 0.4rem;
+	border-radius: 999px;
+	flex: none;
+}
+
+.mw-tab[data-active='true'] {
+	max-width: 22rem;
+	background: rgba(247, 92, 3, 0.14);
+	border-color: rgba(247, 92, 3, 0.5);
+	color: var(--color-text);
+	box-shadow: 0 0 20px rgba(247, 92, 3, 0.22);
+}
+
+.mw-browser-body {
+	position: relative;
+	height: 16rem;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 0.25rem;
+	background: radial-gradient(circle at 50% 42%, rgba(247, 92, 3, 0.08), transparent 68%);
+}
+
+.mw-browser-mark {
+	width: 58px;
+	height: 46px;
+	object-fit: contain;
+	margin-bottom: 0.85rem;
+}
+
+.mw-now-label {
+	font-size: 0.72rem;
+	letter-spacing: 0.18em;
+	text-transform: uppercase;
+	color: var(--color-muted);
+}
+
+.mw-now-game {
+	font-size: 1.7rem;
+	font-weight: 700;
+}
+
+.mw-now-on {
+	color: var(--color-muted);
+}
+
+// ─── Progress pips ────────────────────────────────────────────────────────────
+.machine-progress {
+	display: flex;
+	justify-content: center;
+	gap: 0.4rem;
+	margin-top: 0.5rem;
+	z-index: 5;
+}
+
+.machine-pip {
+	width: 8px;
+	height: 8px;
+	border-radius: 999px;
+	background: var(--color-border);
+	transition: width 0.4s ease, background 0.4s ease;
+}
+
+.machine-pip[data-active='true'] {
+	width: 22px;
+	background: var(--color-primary);
+}
+
+// ─── Static fallback (no-JS / reduced motion) ─────────────────────────────────
+.machine-fallback {
+	display: none;
+	width: 100%;
+	padding: 7rem 1rem;
+}
+
+.machine-section.is-reduced {
+	min-height: auto;
+	display: block;
+}
+
+.machine-section.is-reduced .machine-viewport {
+	display: none;
+}
+
+.machine-section.is-reduced .machine-fallback {
+	display: block;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.mw-wire-dot,
+	.mw-core-glow {
+		animation: none;
+	}
+
+	.machine-scene,
+	.machine-caption-line,
+	.mw-tab,
+	.ps-bar-fill {
+		transition: none;
+	}
+}
+
+@media (max-width: 767.98px) {
+	.machine-section {
+		padding: 3rem 0.5rem;
+	}
+
+	.machine-viewport {
+		height: min(74vh, 560px);
+	}
+
+	.mw-card {
+		padding: 1.25rem;
+	}
+
+	.mw-team-scores {
+		font-size: 2rem;
+	}
+
+	.mw-power-num {
+		font-size: 2.3rem;
+	}
+
+	.mw-now-game {
+		font-size: 1.4rem;
+	}
+}
+
+// ─── 404 page ─────────────────────────────────────────────────────────────────
+// The missing page, presented as a scoreboard: three digits, a final horn, and a
+// PowerScore of zero.
+.notfound {
+	position: relative;
+	display: flex;
+	align-items: center;
+	min-height: calc(100vh - 64px);
+	padding: 4rem 0 5rem;
+	overflow: hidden;
+}
+
+.notfound-glow {
+	position: absolute;
+	top: -12%;
+	left: 50%;
+	transform: translateX(-50%);
+	width: min(900px, 130vw);
+	height: 620px;
+	background: radial-gradient(ellipse at center, rgba(247, 92, 3, 0.16), transparent 70%);
+	pointer-events: none;
+}
+
+.notfound-inner {
+	position: relative;
+	max-width: 640px;
+	margin: 0 auto;
+	text-align: center;
+}
+
+// ─── Game card ───────────────────────────────────────────────────────────────
+// The real extension card, given the same lift it has in the hero popup.
+.notfound-card {
+	max-width: 340px;
+	margin: 0 auto 2.5rem;
+	filter: drop-shadow(0 24px 64px rgba(0, 0, 0, 0.55));
+	animation: notfound-card-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes notfound-card-in {
+	from { opacity: 0; transform: translateY(14px); }
+	to   { opacity: 1; transform: translateY(0); }
+}
+
+// ─── Copy & links ────────────────────────────────────────────────────────────
+.notfound-title {
+	font-size: clamp(1.9rem, 5vw, 3rem);
+	font-weight: 700;
+	letter-spacing: -0.04em;
+	line-height: 1.1;
+	margin-bottom: 1rem;
+}
+
+.notfound-sub {
+	max-width: 30rem;
+	margin: 0 auto 1.5rem;
+	font-size: 1.05rem;
+	line-height: 1.65;
+	color: var(--color-muted);
+}
+
+.notfound-path {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.6rem;
+	max-width: 100%;
+	margin-bottom: 2.25rem;
+	padding: 0.35rem 0.9rem;
+	background: var(--color-card);
+	border: 1px solid var(--color-border);
+	border-radius: 999px;
+
+	code {
+		min-width: 0;
+		overflow: hidden;
+		font-family: var(--font-mono);
+		font-size: 0.8rem;
+		color: var(--color-text);
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+}
+
+.notfound-path-key {
+	flex-shrink: 0;
+	font-size: 0.62rem;
+	text-transform: uppercase;
+	letter-spacing: 0.1em;
+	color: var(--color-muted);
+}
+
+.notfound-cta {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 0.75rem;
+	margin-bottom: 2.5rem;
+}
+
+.notfound-links {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 0.5rem 1.5rem;
+	padding-top: 1.5rem;
+	border-top: 1px solid var(--color-border);
+
+	a {
+		font-size: 0.85rem;
+		color: var(--color-muted);
+		text-decoration: none;
+		transition: color 0.15s ease;
+
+		&:hover {
+			color: var(--color-text);
+		}
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.notfound-card {
+		animation: none;
+	}
+}
+
+// ─── Landing page: bands, hero browser, reading shell ────────────────────────
+@import 'bands';
+@import 'browser-hero';
+@import 'shell';
+@import 'prose';

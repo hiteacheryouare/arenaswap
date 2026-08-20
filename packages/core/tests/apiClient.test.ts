@@ -22,10 +22,15 @@ const makeEvent = (params: {
 	awayScore: string;
 	date?: string;
 	withOdds?: boolean;
-	situation?: { onFirst?: boolean; onSecond?: boolean; onThird?: boolean };
+	situation?: Record<string, unknown>;
+	season?: Record<string, unknown>;
+	notes?: Record<string, unknown>[];
+	homeShootoutScore?: number;
+	awayShootoutScore?: number;
 }): Record<string, unknown> => ({
 	id: params.id,
 	date: params.date ?? '2026-10-05T00:00:00.000Z',
+	...(params.season !== undefined && { season: params.season }),
 	competitions: [
 		{
 			competitors: [
@@ -33,6 +38,7 @@ const makeEvent = (params: {
 					id: `home-${params.id}`,
 					homeAway: 'home',
 					score: params.homeScore,
+					...(params.homeShootoutScore !== undefined && { shootoutScore: params.homeShootoutScore }),
 					team: {
 						displayName: 'Home Team',
 						abbreviation: 'HOM',
@@ -45,6 +51,7 @@ const makeEvent = (params: {
 					id: `away-${params.id}`,
 					homeAway: 'away',
 					score: params.awayScore,
+					...(params.awayShootoutScore !== undefined && { shootoutScore: params.awayShootoutScore }),
 					team: {
 						displayName: 'Away Team',
 						abbreviation: 'AWY',
@@ -64,6 +71,7 @@ const makeEvent = (params: {
 				},
 			},
 			situation: params.situation,
+			...(params.notes !== undefined && { notes: params.notes }),
 			venue: { fullName: 'Arena Name' },
 			broadcasts: [{ names: [' ESPN ', 'ESPN'] }],
 			geoBroadcasts: [{ media: { shortName: 'ESPN2' } }],
@@ -98,6 +106,8 @@ const loadApiClient = (): typeof import('../src/apiClient') => {
 	jest.resetModules();
 	return require('../src/apiClient') as typeof import('../src/apiClient');
 };
+
+const parseEspnDate = (s: string) => new Date(`${s.slice(0, 4)}-${s.slice(4, 6)}-${s.slice(6, 8)}`);
 
 describe('apiClient', () => {
 	test('returns empty results and avoids fetch when enabled leagues list is empty', async () => {
@@ -274,7 +284,7 @@ describe('apiClient', () => {
 		const { fetchGamesWithLeagueLogos } = loadApiClient();
 
 		const result = await fetchGamesWithLeagueLogos(['nba']);
-		expect(result.games.map(game => game.id).sort()).toEqual(['live-1', 'pre-1']);
+		expect(result.games.map(game => game.id).toSorted()).toEqual(['live-1', 'pre-1']);
 		expect(result.leagueLogos.nba).toBe('https://cdn.example/nba-logo.png');
 
 		const live = result.games.find(game => game.id === 'live-1');
@@ -305,6 +315,23 @@ describe('apiClient', () => {
 		const calledUrls = fetchMock.mock.calls.map(([url]) => String(url));
 		expect(calledUrls[0]).toContain('/basketball/nba/scoreboard');
 		expect(calledUrls[1]).toContain('dates=');
+	});
+
+	test('uses upcomingDays to build the dates query parameter', async () => {
+		const fetchMock = jest.fn().mockResolvedValue(createResponse({ events: [] }));
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+		const { fetchGamesWithLeagueLogos } = loadApiClient();
+
+		await fetchGamesWithLeagueLogos(['nba'], { includeUpcoming: true, upcomingDays: 3 });
+
+		const calledUrls = fetchMock.mock.calls.map(([url]) => String(url));
+		const datesUrl = calledUrls.find(u => u.includes('dates='));
+		expect(datesUrl).toBeDefined();
+
+		const datesParam = new URL(datesUrl!).searchParams.get('dates')!;
+		const [startStr, endStr] = datesParam.split('-');
+		const diffDays = (parseEspnDate(endStr!).getTime() - parseEspnDate(startStr!).getTime()) / (1000 * 60 * 60 * 24);
+		expect(diffDays).toBe(3);
 	});
 
 	test('supports includeUpcoming=false with only one scoreboard request', async () => {
@@ -352,6 +379,29 @@ describe('apiClient', () => {
 		expect(floatGame?.clockSeconds).toBe(45);
 		expect(dec75Game?.clockSeconds).toBe(45); // 0.75 minutes = 45 seconds
 		expect(dec5Game?.clockSeconds).toBe(30);  // 0.5 minutes = 30 seconds
+	});
+
+	test('parses soccer prime-notation clock values (e.g. "85\'", "90\'+8\'")', async () => {
+		const fetchMock = jest.fn().mockResolvedValue(createResponse({
+			events: [
+				makeEvent({ id: 'soccer-normal', state: 'in', period: 2, clock: "85'", homeScore: '1', awayScore: '0' }),
+				makeEvent({ id: 'soccer-stoppage', state: 'in', period: 2, clock: "90'+8'", homeScore: '1', awayScore: '1' }),
+				makeEvent({ id: 'soccer-45', state: 'in', period: 1, clock: "45'", homeScore: '0', awayScore: '0' }),
+				makeEvent({ id: 'soccer-zero', state: 'in', period: 1, clock: "0'", homeScore: '0', awayScore: '0' }),
+			],
+		}));
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+		const { fetchGamesWithLeagueLogos } = loadApiClient();
+
+		const result = await fetchGamesWithLeagueLogos(['mls'], { includeUpcoming: false });
+		const normalGame = result.games.find(g => g.id === 'soccer-normal');
+		const stoppageGame = result.games.find(g => g.id === 'soccer-stoppage');
+		const halfGame = result.games.find(g => g.id === 'soccer-45');
+		const zeroGame = result.games.find(g => g.id === 'soccer-zero');
+		expect(normalGame?.clockSeconds).toBe(5100);  // 85 * 60
+		expect(stoppageGame?.clockSeconds).toBe(5880); // (90 + 8) * 60
+		expect(halfGame?.clockSeconds).toBe(2700);    // 45 * 60
+		expect(zeroGame?.clockSeconds).toBe(0);       // 0 * 60
 	});
 
 	test('defensively handles malformed events, clocks, colors, and odds variants', async () => {
@@ -420,7 +470,7 @@ describe('apiClient', () => {
 		const { fetchGamesWithLeagueLogos } = loadApiClient();
 
 		const result = await fetchGamesWithLeagueLogos(['nba'], { includeUpcoming: false });
-		expect(result.games.map(game => game.id).sort()).toEqual(['fallback-live', 'odds-variants']);
+		expect(result.games.map(game => game.id).toSorted()).toEqual(['fallback-live', 'odds-variants']);
 
 		const fallbackGame = result.games.find(game => game.id === 'fallback-live');
 		expect(fallbackGame).toMatchObject({
@@ -501,11 +551,11 @@ describe('apiClient', () => {
 
 		const result = await fetchGamesWithLeagueLogos(['nba']);
 		expect(fetchMock).toHaveBeenCalledTimes(2);
-		expect(result.games.map(game => game.id).sort()).toEqual(['today-live', 'today-pre', 'upcoming-pre']);
+		expect(result.games.map(game => game.id).toSorted()).toEqual(['today-live', 'today-pre', 'upcoming-pre']);
 		expect(result.games.some(game => game.status === 'post')).toBe(false);
 	});
 
-	test('adds NCAA basketball groups=50 query and uses fallback league logo when needed', async () => {
+	test('adds NCAA basketball groups=50 query parameter', async () => {
 		const fetchMock = jest.fn()
 			.mockResolvedValueOnce(createResponse({ events: [makeEvent({
 				id: 'ncaab-live',
@@ -521,8 +571,7 @@ describe('apiClient', () => {
 		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
 		const { fetchLeagueLogos } = loadApiClient();
 
-		const logos = await fetchLeagueLogos(['ncaab']);
-		expect(logos.ncaab).toBe(leagueLogoFallbacks.ncaab);
+		await fetchLeagueLogos(['ncaab']);
 
 		const calledUrls = fetchMock.mock.calls.map(([url]) => String(url));
 		expect(calledUrls).toHaveLength(2);
@@ -530,7 +579,7 @@ describe('apiClient', () => {
 		expect(calledUrls[1]).toContain('groups=50');
 	});
 
-	test('adds NCAA womens basketball groups=49 query and uses fallback league logo when needed', async () => {
+	test('adds NCAA womens basketball groups=49 query parameter', async () => {
 		const fetchMock = jest.fn()
 			.mockResolvedValueOnce(createResponse({ events: [makeEvent({
 				id: 'ncaaw-live',
@@ -546,8 +595,7 @@ describe('apiClient', () => {
 		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
 		const { fetchLeagueLogos } = loadApiClient();
 
-		const logos = await fetchLeagueLogos(['ncaaw']);
-		expect(logos.ncaaw).toBe(leagueLogoFallbacks.ncaaw);
+		await fetchLeagueLogos(['ncaaw']);
 
 		const calledUrls = fetchMock.mock.calls.map(([url]) => String(url));
 		expect(calledUrls).toHaveLength(2);
@@ -684,7 +732,7 @@ describe('apiClient', () => {
 		const { fetchGamesWithLeagueLogos } = loadApiClient();
 
 		const result = await fetchGamesWithLeagueLogos(['nba', 'nfl']);
-		expect(result.games.map(game => game.id).sort()).toEqual(['nba-live', 'nba-pre']);
+		expect(result.games.map(game => game.id).toSorted()).toEqual(['nba-live', 'nba-pre']);
 		expect(result.games.every(game => game.league === 'nba')).toBe(true);
 		expect(result.leagueLogos).toEqual({ nba: 'https://cdn.example/nba-logo.png' });
 	});
@@ -841,7 +889,7 @@ describe('apiClient', () => {
 		const { fetchGamesWithLeagueLogos } = loadApiClient();
 
 		const result = await fetchGamesWithLeagueLogos(['nba']);
-		expect(result.games.map(g => g.id).sort()).toEqual(['dates-only-pre', 'shared-live']);
+		expect(result.games.map(g => g.id).toSorted()).toEqual(['dates-only-pre', 'shared-live']);
 		expect(result.games.filter(g => g.id === 'shared-live')).toHaveLength(1);
 	});
 
@@ -875,5 +923,886 @@ describe('apiClient', () => {
 		expect(games).toHaveLength(1);
 		expect(games[0]!.id).toBe('live-only');
 		expect(games[0]!.status).toBe('in');
+	});
+
+	test('soccer finished game with odds: [null] does not discard valid events in same response', async () => {
+		// Regression: ESPN returns null as an *array element* for finished soccer games, and without
+		// .nullable() on the element Zod rejected the whole response, dropping valid pre-games too.
+		const postGame = makeEvent({
+			id: 'post-null-odds',
+			state: 'post',
+			period: 2,
+			clock: "90'",
+			homeScore: '1',
+			awayScore: '0',
+		});
+		getCompetition(postGame).odds = [null];
+
+		const preGame = makeEvent({
+			id: 'pre-valid',
+			state: 'scheduled',
+			period: 1,
+			clock: "0'",
+			homeScore: '0',
+			awayScore: '0',
+		});
+
+		const fetchMock = jest.fn().mockResolvedValue(createResponse({
+			events: [postGame, preGame],
+		}));
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+		const { fetchGamesWithLeagueLogos } = loadApiClient();
+
+		const result = await fetchGamesWithLeagueLogos(['mls'], { includeUpcoming: false });
+		expect(result.games.map(g => g.id)).toEqual(['pre-valid']);
+		expect(result.games[0]!.status).toBe('pre');
+	});
+
+	test('FIFAWC opening-day scenario: multiple finished games with odds: [null] do not hide upcoming matches', async () => {
+		// Reproduces the June 11 2026 bug: two finished games with odds: [null] failed the whole
+		// response, dropping a third game that was still scheduled for that evening.
+		const rsa_mex = makeEvent({ id: 'rsa-mex', state: 'post', period: 2, clock: "90'", homeScore: '0', awayScore: '2' });
+		getCompetition(rsa_mex).odds = [null];
+
+		const cze_kor = makeEvent({ id: 'cze-kor', state: 'pre', period: 1, clock: "0'", homeScore: '0', awayScore: '0',
+			date: '2026-06-12T02:00:00.000Z' });
+		getCompetition(cze_kor).odds = [null];
+
+		const fetchMock = jest.fn().mockResolvedValue(createResponse({
+			events: [rsa_mex, cze_kor],
+		}));
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+		const { fetchGamesWithLeagueLogos } = loadApiClient();
+
+		const result = await fetchGamesWithLeagueLogos(['fifawc'], { includeUpcoming: false });
+		expect(result.games.map(g => g.id)).toEqual(['cze-kor']);
+		expect(result.games[0]!.status).toBe('pre');
+		expect(result.games[0]!.startTime).toBe('2026-06-12T02:00:00.000Z');
+	});
+
+	test('null odds element pattern applies consistently across all three soccer leagues', async () => {
+		// MLS, EPL and FIFAWC all return odds: [null] for finished games.
+		const soccerLeagues = ['mls', 'epl', 'fifawc'] as const;
+		for (const league of soccerLeagues) {
+			const post = makeEvent({ id: 'post', state: 'post', period: 2, clock: "90'", homeScore: '1', awayScore: '0' });
+			getCompetition(post).odds = [null];
+			const pre = makeEvent({ id: 'pre', state: 'pre', period: 1, clock: "0'", homeScore: '0', awayScore: '0' });
+
+			const fetchMock = jest.fn().mockResolvedValue(createResponse({ events: [post, pre] }));
+			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+			const { fetchGamesWithLeagueLogos } = loadApiClient();
+
+			const result = await fetchGamesWithLeagueLogos([league], { includeUpcoming: false });
+			expect(result.games.map(g => g.id)).toEqual(['pre']);
+		}
+	});
+
+	test('NFL preseason rich odds object with extra fields parses cleanly', async () => {
+		// NFL preseason returns a far richer odds object than in-season, with fields the schema does
+		// not declare; Zod's non-strict default has to keep ignoring them.
+		const event = makeEvent({
+			id: 'nfl-pre-rich-odds',
+			state: 'pre',
+			period: 1,
+			clock: '0:00',
+			homeScore: '0',
+			awayScore: '0',
+			withOdds: false,
+		});
+		getCompetition(event).odds = [{
+			details: 'SEA -3.5',
+			overUnder: 44.5,
+			provider: {
+				name: 'DraftKings',
+				displayName: 'DraftKings',
+				logos: [{ href: 'https://cdn.dk.com/dark.png', rel: ['dark'] }],
+			},
+			spread: -3.5,
+			awayTeamOdds: { favorite: false, underdog: true },
+			homeTeamOdds: { favorite: true, underdog: false },
+			moneyline: { displayName: 'Moneyline', shortDisplayName: 'ML' },
+			pointSpread: { displayName: 'Spread' },
+			total: { displayName: 'Total' },
+			link: 'https://sportsbook.draftkings.com/event/34118042',
+			header: 'DraftKings',
+			footer: 'footer text',
+		}];
+
+		const fetchMock = jest.fn().mockResolvedValue(createResponse({ events: [event] }));
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+		const { fetchGamesWithLeagueLogos } = loadApiClient();
+
+		const result = await fetchGamesWithLeagueLogos(['nfl'], { includeUpcoming: false });
+		expect(result.games).toHaveLength(1);
+		expect(result.games[0]!.id).toBe('nfl-pre-rich-odds');
+		expect(result.games[0]!.odds).toMatchObject({
+			details: 'SEA -3.5',
+			overUnder: 44.5,
+		});
+	});
+
+	// Fixture shapes are derived from live ESPN API responses for each league.
+
+	test('NHL: live game with END_PERIOD intermission flag is correctly set', async () => {
+		const fetchMock = jest.fn().mockResolvedValue(createResponse({
+			leagues: [{ logos: [{ href: 'https://cdn.example/nhl-logo.png' }] }],
+			events: [makeEvent({
+				id: 'nhl-live',
+				state: 'in',
+				statusName: 'END_PERIOD',
+				period: 2,
+				clock: '0:00',
+				homeScore: '2',
+				awayScore: '1',
+			})],
+		}));
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+		const { fetchGamesWithLeagueLogos } = loadApiClient();
+
+		const result = await fetchGamesWithLeagueLogos(['nhl'], { includeUpcoming: false });
+		expect(result.games).toHaveLength(1);
+		const game = result.games[0]!;
+		expect(game.sportType).toBe('hockey');
+		expect(game.league).toBe('nhl');
+		expect(game.status).toBe('in');
+		expect(game.period).toBe(2);
+		expect(game.intermission).toBe(true);
+		expect(game.homeTeam.score).toBe(2);
+		expect(game.awayTeam.score).toBe(1);
+		expect(game.startTime).toBeUndefined();
+	});
+
+	test('NHL: pre-game from range has correct hockey sportType and startTime', async () => {
+		const fetchMock = jest.fn()
+			.mockResolvedValueOnce(createResponse({ events: [] }))
+			.mockResolvedValueOnce(createResponse({
+				leagues: [{ logos: [{ href: 'https://cdn.example/nhl-logo.png' }] }],
+				events: [makeEvent({
+					id: 'nhl-pre-range',
+					state: 'pre',
+					period: 1,
+					clock: '0:00',
+					homeScore: '0',
+					awayScore: '0',
+					date: '2026-10-10T00:00:00.000Z',
+				})],
+			}));
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+		const { fetchGamesWithLeagueLogos } = loadApiClient();
+
+		const result = await fetchGamesWithLeagueLogos(['nhl']);
+		expect(result.games).toHaveLength(1);
+		const game = result.games[0]!;
+		expect(game.sportType).toBe('hockey');
+		expect(game.league).toBe('nhl');
+		expect(game.status).toBe('pre');
+		expect(game.startTime).toBe('2026-10-10T00:00:00.000Z');
+		expect(game.intermission).toBe(false);
+		expect(game.topOfInning).toBeUndefined();
+		expect(game.baseRunners).toBeUndefined();
+	});
+
+	test('MLB: pre-game from range has no topOfInning or baseRunners', async () => {
+		const fetchMock = jest.fn()
+			.mockResolvedValueOnce(createResponse({ events: [] }))
+			.mockResolvedValueOnce(createResponse({
+				events: [makeEvent({
+					id: 'mlb-pre-range',
+					state: 'pre',
+					period: 1,
+					clock: '0:00',
+					homeScore: '0',
+					awayScore: '0',
+					date: '2026-06-14T23:10:00.000Z',
+				})],
+			}));
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+		const { fetchGamesWithLeagueLogos } = loadApiClient();
+
+		const result = await fetchGamesWithLeagueLogos(['mlb']);
+		expect(result.games).toHaveLength(1);
+		const game = result.games[0]!;
+		expect(game.sportType).toBe('baseball');
+		expect(game.league).toBe('mlb');
+		expect(game.status).toBe('pre');
+		expect(game.startTime).toBe('2026-06-14T23:10:00.000Z');
+		expect(game.topOfInning).toBeUndefined();
+		expect(game.baseRunners).toBeUndefined();
+	});
+
+	test('NFL: preseason game from range with rich spread odds produces valid Game', async () => {
+		const event = makeEvent({
+			id: 'nfl-pre-range',
+			state: 'pre',
+			period: 0,
+			clock: '0:00',
+			homeScore: '0',
+			awayScore: '0',
+			date: '2026-08-07T00:00:00.000Z',
+			withOdds: false,
+		});
+		getCompetition(event).odds = [{
+			details: 'CAR -1.5',
+			overUnder: 35.5,
+			provider: { name: 'DraftKings', logos: [{ href: 'https://cdn.dk.com/dark.png', rel: ['dark'] }, { href: 'https://cdn.dk.com/light.png', rel: ['light'] }] },
+			spread: -1.5,
+			awayTeamOdds: { favorite: false },
+			homeTeamOdds: { favorite: true },
+			moneyline: { displayName: 'Moneyline' },
+			pointSpread: { displayName: 'Spread' },
+		}];
+
+		const fetchMock = jest.fn()
+			.mockResolvedValueOnce(createResponse({ events: [] }))
+			.mockResolvedValueOnce(createResponse({ events: [event] }));
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+		const { fetchGamesWithLeagueLogos } = loadApiClient();
+
+		const result = await fetchGamesWithLeagueLogos(['nfl']);
+		expect(result.games).toHaveLength(1);
+		const game = result.games[0]!;
+		expect(game.sportType).toBe('football');
+		expect(game.league).toBe('nfl');
+		expect(game.status).toBe('pre');
+		expect(game.startTime).toBe('2026-08-07T00:00:00.000Z');
+		expect(game.odds).toMatchObject({ details: 'CAR -1.5', overUnder: 35.5 });
+		expect(game.topOfInning).toBeUndefined();
+		expect(game.baseRunners).toBeUndefined();
+	});
+
+	test('NCAAF: preseason game from range produces correct football sportType Game', async () => {
+		const fetchMock = jest.fn()
+			.mockResolvedValueOnce(createResponse({ events: [] }))
+			.mockResolvedValueOnce(createResponse({
+				events: [makeEvent({
+					id: 'ncaaf-pre-range',
+					state: 'pre',
+					period: 0,
+					clock: '0:00',
+					homeScore: '0',
+					awayScore: '0',
+					date: '2026-08-29T00:00:00.000Z',
+				})],
+			}));
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+		const { fetchGamesWithLeagueLogos } = loadApiClient();
+
+		const result = await fetchGamesWithLeagueLogos(['ncaaf']);
+		expect(result.games).toHaveLength(1);
+		const game = result.games[0]!;
+		expect(game.sportType).toBe('football');
+		expect(game.league).toBe('ncaaf');
+		expect(game.status).toBe('pre');
+		expect(game.startTime).toBe('2026-08-29T00:00:00.000Z');
+	});
+
+	test('WNBA: large batch from range all produce valid Game objects with correct fields', async () => {
+		// A real 30-day WNBA range in season, to exercise the pipeline on a large batch.
+		const events = Array.from({ length: 10 }, (_, i) => makeEvent({
+			id: `wnba-pre-${i}`,
+			state: 'pre',
+			period: 1,
+			clock: '0:00',
+			homeScore: '0',
+			awayScore: '0',
+			date: `2026-07-${String(i + 1).padStart(2, '0')}T00:00:00.000Z`,
+		}));
+
+		const fetchMock = jest.fn()
+			.mockResolvedValueOnce(createResponse({ events: [] }))
+			.mockResolvedValueOnce(createResponse({ events }));
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+		const { fetchGamesWithLeagueLogos } = loadApiClient();
+
+		const result = await fetchGamesWithLeagueLogos(['wnba']);
+		expect(result.games).toHaveLength(10);
+		for (const game of result.games) {
+			expect(game.sportType).toBe('basketball');
+			expect(game.league).toBe('wnba');
+			expect(game.status).toBe('pre');
+			expect(game.startTime).toBeDefined();
+			expect(game.homeTeam.id).toBeTruthy();
+			expect(game.awayTeam.id).toBeTruthy();
+			expect(typeof game.homeTeam.score).toBe('number');
+			expect(typeof game.awayTeam.score).toBe('number');
+		}
+	});
+
+	test('MLS: in-season live game from today returned when range endpoint is empty', async () => {
+		// MLS publishes no far-ahead schedule on the range endpoint, so live games have to come
+		// from the no-date today endpoint instead.
+		const liveGame = makeEvent({
+			id: 'mls-live',
+			state: 'in',
+			period: 2,
+			clock: "67'",
+			homeScore: '1',
+			awayScore: '0',
+		});
+
+		const fetchMock = jest.fn()
+			.mockResolvedValueOnce(createResponse({ events: [liveGame] }))
+			.mockResolvedValueOnce(createResponse({ events: [] }));
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+		const { fetchGamesWithLeagueLogos } = loadApiClient();
+
+		const result = await fetchGamesWithLeagueLogos(['mls']);
+		expect(result.games).toHaveLength(1);
+		const game = result.games[0]!;
+		expect(game.sportType).toBe('soccer');
+		expect(game.league).toBe('mls');
+		expect(game.status).toBe('in');
+		expect(game.clockSeconds).toBe(67 * 60);
+		expect(game.startTime).toBeUndefined();
+	});
+
+	test('EPL: in-season live game from today returned when range endpoint is empty', async () => {
+		const liveGame = makeEvent({
+			id: 'epl-live',
+			state: 'in',
+			period: 1,
+			clock: "33'",
+			homeScore: '0',
+			awayScore: '1',
+		});
+
+		const fetchMock = jest.fn()
+			.mockResolvedValueOnce(createResponse({ events: [liveGame] }))
+			.mockResolvedValueOnce(createResponse({ events: [] }));
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+		const { fetchGamesWithLeagueLogos } = loadApiClient();
+
+		const result = await fetchGamesWithLeagueLogos(['epl']);
+		expect(result.games).toHaveLength(1);
+		const game = result.games[0]!;
+		expect(game.sportType).toBe('soccer');
+		expect(game.league).toBe('epl');
+		expect(game.status).toBe('in');
+		expect(game.clockSeconds).toBe(33 * 60);
+		expect(game.startTime).toBeUndefined();
+	});
+
+	test('soccer: HALFTIME status name sets intermission=true', async () => {
+		for (const statusName of ['HALFTIME', 'STATUS_HALFTIME', 'END_PERIOD', 'INTERMISSION']) {
+			const game = makeEvent({ id: 'soccer-break', state: 'in', statusName, period: 1, clock: "45'", homeScore: '1', awayScore: '0' });
+			const fetchMock = jest.fn().mockResolvedValue(createResponse({ events: [game] }));
+			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+			const { fetchGamesWithLeagueLogos } = loadApiClient();
+
+			const result = await fetchGamesWithLeagueLogos(['mls'], { includeUpcoming: false });
+			expect(result.games[0]!.intermission).toBe(true);
+		}
+	});
+
+	test('FIFAWC: knockout-round placeholder with null odds from range appears as upcoming', async () => {
+		// Knockout games have odds: [null] before opponents are determined, and must still survive
+		// as pre-games so the full bracket shows.
+		const knockout = makeEvent({
+			id: 'ko-r16',
+			state: 'pre',
+			period: 1,
+			clock: "0'",
+			homeScore: '0',
+			awayScore: '0',
+			date: '2026-06-28T19:00:00.000Z',
+		});
+		const comp = getCompetition(knockout);
+		(comp.competitors as Record<string, unknown>[])[0]!.team = { displayName: 'Group A 2nd Place', abbreviation: '2A' };
+		(comp.competitors as Record<string, unknown>[])[1]!.team = { displayName: 'Group B 2nd Place', abbreviation: '2B' };
+		comp.odds = [null];
+
+		const fetchMock = jest.fn()
+			.mockResolvedValueOnce(createResponse({ events: [] }))
+			.mockResolvedValueOnce(createResponse({ events: [knockout] }));
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+		const { fetchGamesWithLeagueLogos } = loadApiClient();
+
+		const result = await fetchGamesWithLeagueLogos(['fifawc']);
+		expect(result.games).toHaveLength(1);
+		const game = result.games[0]!;
+		expect(game.sportType).toBe('soccer');
+		expect(game.status).toBe('pre');
+		expect(game.startTime).toBe('2026-06-28T19:00:00.000Z');
+		expect(game.odds).toBeUndefined();
+		expect(game.homeTeam.name).toBe('Group A 2nd Place');
+		expect(game.homeTeam.abbreviation).toBe('2A');
+	});
+
+	test('FIFAWC: group stage pre-game with rich soccer odds parses details and overUnder correctly', async () => {
+		// Group stage games carry soccer-specific odds fields the schema does not declare.
+		const groupGame = makeEvent({
+			id: 'group-bih-can',
+			state: 'pre',
+			period: 1,
+			clock: "0'",
+			homeScore: '0',
+			awayScore: '0',
+			date: '2026-06-12T19:00:00.000Z',
+			withOdds: false,
+		});
+		getCompetition(groupGame).odds = [{
+			details: 'CAN -120',
+			overUnder: 2.5,
+			provider: { name: 'DraftKings', logos: [{ href: 'https://cdn.dk.com/dark.png', rel: ['dark'] }, { href: 'https://cdn.dk.com/light.png', rel: ['light'] }] },
+			drawOdds: { moneyLine: 250 },
+			total: { displayName: 'Total' },
+			pointSpread: { displayName: 'Spread' },
+			moneyline: { displayName: 'Moneyline' },
+		}];
+
+		const fetchMock = jest.fn()
+			.mockResolvedValueOnce(createResponse({ events: [] }))
+			.mockResolvedValueOnce(createResponse({ events: [groupGame] }));
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+		const { fetchGamesWithLeagueLogos } = loadApiClient();
+
+		const result = await fetchGamesWithLeagueLogos(['fifawc']);
+		expect(result.games).toHaveLength(1);
+		const game = result.games[0]!;
+		expect(game.odds).toMatchObject({ details: 'CAN -120', overUnder: 2.5 });
+		expect(game.odds?.provider?.name).toBe('DraftKings');
+	});
+
+	test('FIFAWC: range batch mixing knockout (null odds) and group stage (real odds) returns all', async () => {
+		const ko1 = makeEvent({ id: 'ko-1', state: 'pre', period: 1, clock: "0'", homeScore: '0', awayScore: '0', date: '2026-06-28T19:00:00.000Z' });
+		getCompetition(ko1).odds = [null];
+		const ko2 = makeEvent({ id: 'ko-2', state: 'pre', period: 1, clock: "0'", homeScore: '0', awayScore: '0', date: '2026-06-29T17:00:00.000Z' });
+		getCompetition(ko2).odds = [null];
+		const group = makeEvent({ id: 'group-1', state: 'pre', period: 1, clock: "0'", homeScore: '0', awayScore: '0', date: '2026-06-12T19:00:00.000Z', withOdds: false });
+
+		const fetchMock = jest.fn()
+			.mockResolvedValueOnce(createResponse({ events: [] }))
+			.mockResolvedValueOnce(createResponse({ events: [ko1, ko2, group] }));
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+		const { fetchGamesWithLeagueLogos } = loadApiClient();
+
+		const result = await fetchGamesWithLeagueLogos(['fifawc']);
+		expect(result.games.map(g => g.id).toSorted()).toEqual(['group-1', 'ko-1', 'ko-2']);
+		expect(result.games.find(g => g.id === 'ko-1')!.odds).toBeUndefined();
+		expect(result.games.find(g => g.id === 'ko-2')!.odds).toBeUndefined();
+		expect(result.games.every(g => g.status === 'pre')).toBe(true);
+		expect(result.games.every(g => !!g.startTime)).toBe(true);
+	});
+
+	test('NCAAB: off-season returns 0 games gracefully without error or crash', async () => {
+		const fetchMock = jest.fn().mockResolvedValue(createResponse({ events: [] }));
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+		const { fetchGamesWithLeagueLogos } = loadApiClient();
+
+		const result = await fetchGamesWithLeagueLogos(['ncaab']);
+		expect(result.games).toHaveLength(0);
+		expect(result.leagueLogos.ncaab).toBeDefined();
+	});
+
+	test('all leagues: pre-game startTime is defined, live game startTime is undefined', async () => {
+		// startTime on a live game would break the popup's "Up Next" vs "Live Now" split.
+		const preGame = makeEvent({ id: 'pre', state: 'pre', period: 1, clock: '0:00', homeScore: '0', awayScore: '0', date: '2026-09-01T00:00:00.000Z' });
+		const liveGame = makeEvent({ id: 'live', state: 'in', period: 3, clock: '5:00', homeScore: '88', awayScore: '85' });
+
+		const fetchMock = jest.fn()
+			.mockResolvedValueOnce(createResponse({ events: [liveGame] }))
+			.mockResolvedValueOnce(createResponse({ events: [preGame] }));
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+		const { fetchGamesWithLeagueLogos } = loadApiClient();
+
+		const result = await fetchGamesWithLeagueLogos(['nba']);
+		const pre = result.games.find(g => g.id === 'pre')!;
+		const live = result.games.find(g => g.id === 'live')!;
+		expect(pre.startTime).toBe('2026-09-01T00:00:00.000Z');
+		expect(live.startTime).toBeUndefined();
+	});
+
+	describe('BSO (balls/strikes/outs) parsing', () => {
+		test('populates bso for a live MLB game with full situation', async () => {
+			const fetchMock = jest.fn().mockResolvedValue(createResponse({
+				events: [makeEvent({ id: 'mlb-bso', state: 'in', period: 7, clock: '0:00', homeScore: '3', awayScore: '2', situation: { balls: 2, strikes: 1, outs: 1 } })],
+			}));
+			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+			const { fetchGamesWithLeagueLogos } = loadApiClient();
+			const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'mlb-bso')?.bso).toEqual({ balls: 2, strikes: 1, outs: 1 });
+		});
+
+		test('defaults strikes and outs to 0 when only balls is in situation', async () => {
+			const fetchMock = jest.fn().mockResolvedValue(createResponse({
+				events: [makeEvent({ id: 'mlb-partial', state: 'in', period: 3, clock: '0:00', homeScore: '0', awayScore: '0', situation: { balls: 3 } })],
+			}));
+			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+			const { fetchGamesWithLeagueLogos } = loadApiClient();
+			const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'mlb-partial')?.bso).toEqual({ balls: 3, strikes: 0, outs: 0 });
+		});
+
+		test('leaves bso undefined when situation has no balls field', async () => {
+			const fetchMock = jest.fn().mockResolvedValue(createResponse({
+				events: [makeEvent({ id: 'mlb-no-bso', state: 'in', period: 5, clock: '0:00', homeScore: '1', awayScore: '0', situation: { onFirst: true } })],
+			}));
+			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+			const { fetchGamesWithLeagueLogos } = loadApiClient();
+			const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'mlb-no-bso')?.bso).toBeUndefined();
+		});
+
+		test('leaves bso undefined for a pre-game MLB event', async () => {
+			const fetchMock = jest.fn().mockResolvedValue(createResponse({
+				events: [makeEvent({ id: 'mlb-pre', state: 'scheduled', period: 1, clock: '0:00', homeScore: '0', awayScore: '0', situation: { balls: 1, strikes: 0, outs: 0 } })],
+			}));
+			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+			const { fetchGamesWithLeagueLogos } = loadApiClient();
+			const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
+			const game = result.games.find(g => g.id === 'mlb-pre');
+			expect(game?.status).toBe('pre');
+			expect(game?.bso).toBeUndefined();
+		});
+
+		test('leaves bso undefined for a live non-baseball game even with BSO situation', async () => {
+			const fetchMock = jest.fn().mockResolvedValue(createResponse({
+				events: [makeEvent({ id: 'nba-bso', state: 'in', period: 3, clock: '5:00', homeScore: '80', awayScore: '78', situation: { balls: 2, strikes: 1, outs: 0 } })],
+			}));
+			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+			const { fetchGamesWithLeagueLogos } = loadApiClient();
+			const result = await fetchGamesWithLeagueLogos(['nba'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'nba-bso')?.bso).toBeUndefined();
+		});
+	});
+
+	describe('downDistance parsing', () => {
+		test('builds down/distance string for a live NFL game', async () => {
+			const fetchMock = jest.fn().mockResolvedValue(createResponse({
+				events: [makeEvent({ id: 'nfl-dd', state: 'in', period: 3, clock: '7:32', homeScore: '17', awayScore: '14', situation: { down: 2, distance: 8 } })],
+			}));
+			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+			const { fetchGamesWithLeagueLogos } = loadApiClient();
+			const result = await fetchGamesWithLeagueLogos(['nfl'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'nfl-dd')?.downDistance).toBe('2nd & 8');
+		});
+
+		test('prefers shortDownDistanceText over computed down/distance', async () => {
+			const fetchMock = jest.fn().mockResolvedValue(createResponse({
+				events: [makeEvent({ id: 'nfl-short', state: 'in', period: 4, clock: '0:28', homeScore: '24', awayScore: '21', situation: { down: 3, distance: 2, shortDownDistanceText: '3rd & 2' } })],
+			}));
+			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+			const { fetchGamesWithLeagueLogos } = loadApiClient();
+			const result = await fetchGamesWithLeagueLogos(['nfl'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'nfl-short')?.downDistance).toBe('3rd & 2');
+		});
+
+		test('returns "Nth & Goal" when distance is 0 or negative', async () => {
+			const fetchMock = jest.fn().mockResolvedValue(createResponse({
+				events: [makeEvent({ id: 'nfl-goal', state: 'in', period: 1, clock: '12:00', homeScore: '0', awayScore: '0', situation: { down: 3, distance: 0 } })],
+			}));
+			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+			const { fetchGamesWithLeagueLogos } = loadApiClient();
+			const result = await fetchGamesWithLeagueLogos(['nfl'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'nfl-goal')?.downDistance).toBe('3rd & Goal');
+		});
+
+		test('returns undefined when down is 0 (between-play state)', async () => {
+			const fetchMock = jest.fn().mockResolvedValue(createResponse({
+				events: [makeEvent({ id: 'nfl-d0', state: 'in', period: 2, clock: '6:00', homeScore: '7', awayScore: '3', situation: { down: 0, distance: 10 } })],
+			}));
+			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+			const { fetchGamesWithLeagueLogos } = loadApiClient();
+			const result = await fetchGamesWithLeagueLogos(['nfl'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'nfl-d0')?.downDistance).toBeUndefined();
+		});
+
+		test('returns undefined when down is out of range (> 4)', async () => {
+			const fetchMock = jest.fn().mockResolvedValue(createResponse({
+				events: [makeEvent({ id: 'nfl-d5', state: 'in', period: 2, clock: '6:00', homeScore: '7', awayScore: '3', situation: { down: 5, distance: 10 } })],
+			}));
+			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+			const { fetchGamesWithLeagueLogos } = loadApiClient();
+			const result = await fetchGamesWithLeagueLogos(['nfl'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'nfl-d5')?.downDistance).toBeUndefined();
+		});
+
+		test('returns undefined for a pre-game NFL event', async () => {
+			const fetchMock = jest.fn().mockResolvedValue(createResponse({
+				events: [makeEvent({ id: 'nfl-pre', state: 'scheduled', period: 1, clock: '0:00', homeScore: '0', awayScore: '0', situation: { down: 1, distance: 10 } })],
+			}));
+			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+			const { fetchGamesWithLeagueLogos } = loadApiClient();
+			const result = await fetchGamesWithLeagueLogos(['nfl'], { includeUpcoming: false });
+			const game = result.games.find(g => g.id === 'nfl-pre');
+			expect(game?.status).toBe('pre');
+			expect(game?.downDistance).toBeUndefined();
+		});
+
+		test('returns undefined for a live non-football game', async () => {
+			const fetchMock = jest.fn().mockResolvedValue(createResponse({
+				events: [makeEvent({ id: 'mls-dd', state: 'in', period: 2, clock: '5:00', homeScore: '1', awayScore: '0', situation: { down: 2, distance: 5 } })],
+			}));
+			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+			const { fetchGamesWithLeagueLogos } = loadApiClient();
+			const result = await fetchGamesWithLeagueLogos(['mls'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'mls-dd')?.downDistance).toBeUndefined();
+		});
+
+		test('builds all four ordinal downs correctly', async () => {
+			const makeNfl = (id: string, down: number, distance: number) => makeEvent({ id, state: 'in', period: 2, clock: '8:00', homeScore: '7', awayScore: '7', situation: { down, distance } });
+			const fetchMock = jest.fn().mockResolvedValue(createResponse({
+				events: [makeNfl('d1', 1, 10), makeNfl('d2', 2, 7), makeNfl('d3', 3, 4), makeNfl('d4', 4, 1)],
+			}));
+			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+			const { fetchGamesWithLeagueLogos } = loadApiClient();
+			const result = await fetchGamesWithLeagueLogos(['nfl'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'd1')?.downDistance).toBe('1st & 10');
+			expect(result.games.find(g => g.id === 'd2')?.downDistance).toBe('2nd & 7');
+			expect(result.games.find(g => g.id === 'd3')?.downDistance).toBe('3rd & 4');
+			expect(result.games.find(g => g.id === 'd4')?.downDistance).toBe('4th & 1');
+		});
+	});
+
+	// possessionText is the yard-marker half of what ESPN pre-joins into downDistanceText; the
+	// halves are joined in the locale files instead.
+	describe('fieldPosition parsing', () => {
+		const parseFor = async (league: 'nfl' | 'mls', situation: Record<string, unknown> | undefined, state = 'in') => {
+			const fetchMock = jest.fn().mockResolvedValue(createResponse({
+				events: [makeEvent({ id: 'fp', state, period: 2, clock: '8:00', homeScore: '7', awayScore: '7', situation })],
+			}));
+			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+			const { fetchGamesWithLeagueLogos } = loadApiClient();
+			const result = await fetchGamesWithLeagueLogos([league], { includeUpcoming: false });
+			return result.games.find(g => g.id === 'fp');
+		};
+
+		test('carries possessionText through as fieldPosition', async () => {
+			const game = await parseFor('nfl', { down: 2, distance: 11, possessionText: 'ARI 34' });
+			expect(game?.fieldPosition).toBe('ARI 34');
+			expect(game?.downDistance).toBe('2nd & 11');
+		});
+
+		test('trims whitespace and treats a blank label as absent', async () => {
+			expect((await parseFor('nfl', { down: 1, distance: 10, possessionText: '  MIN 25 ' }))?.fieldPosition).toBe('MIN 25');
+			expect((await parseFor('nfl', { down: 1, distance: 10, possessionText: '   ' }))?.fieldPosition).toBeUndefined();
+		});
+
+		test('is undefined when ESPN omits it, as it does between drives', async () => {
+			expect((await parseFor('nfl', { down: 2, distance: 11 }))?.fieldPosition).toBeUndefined();
+			expect((await parseFor('nfl', undefined))?.fieldPosition).toBeUndefined();
+		});
+
+		test('is undefined for a pre-game event and for non-football leagues', async () => {
+			expect((await parseFor('nfl', { down: 1, distance: 10, possessionText: 'ARI 34' }, 'pre'))?.fieldPosition).toBeUndefined();
+			expect((await parseFor('mls', { down: 1, distance: 10, possessionText: 'ARI 34' }))?.fieldPosition).toBeUndefined();
+		});
+	});
+
+	// These feed the red-zone boost's down weighting, so they have to survive the messy shapes
+	// ESPN actually sends, not only the tidy one.
+	describe('gridiron down, distance and goal-to-go', () => {
+		const parseNfl = async (situation: Record<string, unknown> | undefined, state = 'in') => {
+			const fetchMock = jest.fn().mockResolvedValue(createResponse({
+				events: [makeEvent({ id: 'n1', state, period: 2, clock: '8:00', homeScore: '7', awayScore: '7', situation })],
+			}));
+			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+			const { fetchGamesWithLeagueLogos } = loadApiClient();
+			const result = await fetchGamesWithLeagueLogos(['nfl'], { includeUpcoming: false });
+			return result.games.find(g => g.id === 'n1');
+		};
+
+		test('carries down and distance through', async () => {
+			const game = await parseNfl({ down: 3, distance: 7 });
+			expect(game?.down).toBe(3);
+			expect(game?.distance).toBe(7);
+			expect(game?.isGoalToGo).toBe(false);
+		});
+
+		test("reads goal-to-go off ESPN's own label", async () => {
+			const game = await parseNfl({ down: 4, distance: 1, shortDownDistanceText: '4th & Goal' });
+			expect(game?.isGoalToGo).toBe(true);
+		});
+
+		test('treats a missing or zero distance on a live down as goal-to-go', async () => {
+			expect((await parseNfl({ down: 1 }))?.isGoalToGo).toBe(true);
+			expect((await parseNfl({ down: 2, distance: 0 }))?.isGoalToGo).toBe(true);
+		});
+
+		test('reports nothing when there is no situation or the game is not live', async () => {
+			const noSituation = await parseNfl(undefined);
+			expect(noSituation?.down).toBeUndefined();
+			expect(noSituation?.isGoalToGo).toBeUndefined();
+			const notLive = await parseNfl({ down: 4, distance: 1 }, 'pre');
+			expect(notLive?.down).toBeUndefined();
+		});
+
+		test('does not attach gridiron fields to non-football leagues', async () => {
+			const fetchMock = jest.fn().mockResolvedValue(createResponse({
+				events: [makeEvent({ id: 'b1', state: 'in', period: 5, clock: '0:00', homeScore: '2', awayScore: '1', situation: { onFirst: true } })],
+			}));
+			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+			const { fetchGamesWithLeagueLogos } = loadApiClient();
+			const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'b1')?.isGoalToGo).toBeUndefined();
+		});
+	});
+
+	describe('isPostseason', () => {
+		const fetchWith = (events: Record<string, unknown>[]) => {
+			const fetchMock = jest.fn().mockResolvedValue(createResponse({ events }));
+			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+			return loadApiClient();
+		};
+
+		test('sets isPostseason true when season.type is 3', async () => {
+			const { fetchGamesWithLeagueLogos } = fetchWith([
+				makeEvent({ id: 'playoff-game', state: 'in', period: 2, clock: '5:00', homeScore: '3', awayScore: '2', season: { year: 2026, type: 3, slug: 'post-season' } }),
+			]);
+			const result = await fetchGamesWithLeagueLogos(['nba'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'playoff-game')?.isPostseason).toBe(true);
+		});
+
+		test('sets isPostseason false when season.type is 2 (regular season)', async () => {
+			const { fetchGamesWithLeagueLogos } = fetchWith([
+				makeEvent({ id: 'reg-game', state: 'in', period: 2, clock: '5:00', homeScore: '3', awayScore: '2', season: { year: 2026, type: 2, slug: 'regular-season' } }),
+			]);
+			const result = await fetchGamesWithLeagueLogos(['nba'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'reg-game')?.isPostseason).toBe(false);
+		});
+
+		test('sets isPostseason false when season field is absent', async () => {
+			const { fetchGamesWithLeagueLogos } = fetchWith([
+				makeEvent({ id: 'no-season', state: 'in', period: 1, clock: '10:00', homeScore: '0', awayScore: '0' }),
+			]);
+			const result = await fetchGamesWithLeagueLogos(['nba'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'no-season')?.isPostseason).toBe(false);
+		});
+
+		test('sets isPostseason false when season.type is 1 (preseason)', async () => {
+			const { fetchGamesWithLeagueLogos } = fetchWith([
+				makeEvent({ id: 'pre-season', state: 'in', period: 1, clock: '10:00', homeScore: '0', awayScore: '0', season: { year: 2025, type: 1, slug: 'pre-season' } }),
+			]);
+			const result = await fetchGamesWithLeagueLogos(['nba'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'pre-season')?.isPostseason).toBe(false);
+		});
+
+		// These competitions use a per-tournament type id that is never 3, so slug is the only
+		// signal. Every pair below is a real payload, not an invented shape.
+		describe('competitions where season.type is never 3', () => {
+			const expectPostseason = async (
+				league: Parameters<Awaited<ReturnType<typeof loadApiClient>>['fetchGamesWithLeagueLogos']>[0][number],
+				season: Record<string, unknown>,
+				expected: boolean,
+			) => {
+				const { fetchGamesWithLeagueLogos } = fetchWith([
+					makeEvent({ id: 'e1', state: 'in', period: 2, clock: '60:00', homeScore: '1', awayScore: '1', season }),
+				]);
+				const result = await fetchGamesWithLeagueLogos([league], { includeUpcoming: false });
+				expect(result.games.find(g => g.id === 'e1')?.isPostseason).toBe(expected);
+			};
+
+			test('World Cup: knockout rounds are postseason, group stage is not', async () => {
+				await expectPostseason('fifawc', { year: 2022, type: 10948, slug: 'final' }, true);
+				await expectPostseason('fifawc', { year: 2022, type: 10952, slug: 'round-of-16' }, true);
+				await expectPostseason('fifawc', { year: 2022, type: 10949, slug: '3rd-place-match' }, true);
+				await expectPostseason('fifawc', { year: 2022, type: 10953, slug: 'group-stage' }, false);
+			});
+
+			test("Women's World Cup uses 3rd-place, not the men's 3rd-place-match", async () => {
+				await expectPostseason('fifawwc', { year: 2023, type: 10633, slug: '3rd-place' }, true);
+				await expectPostseason('fifawwc', { year: 2023, type: 10632, slug: 'final' }, true);
+			});
+
+			test('UCL/UEL: the 2024-25 knockout-round-playoffs counts, the league phase does not', async () => {
+				await expectPostseason('ucl', { year: 2024, type: 12886, slug: 'knockout-round-playoffs' }, true);
+				await expectPostseason('ucl', { year: 2024, type: 12884, slug: 'round-of-16' }, true);
+				await expectPostseason('ucl', { year: 2023, type: 12082, slug: 'final' }, true);
+				await expectPostseason('uel', { year: 2024, type: 12886, slug: 'league-phase' }, false);
+			});
+
+			test('Liga MX Liguilla and MLS/NWSL playoffs match on their per-tournament slugs', async () => {
+				await expectPostseason('ligamx', { year: 2023, type: 11826, slug: 'apertura-2023---finals' }, true);
+				await expectPostseason('ligamx', { year: 2023, type: 11800, slug: 'torneo-apertura' }, false);
+				await expectPostseason('mls', { year: 2023, type: 12188, slug: 'mls-cup' }, true);
+				await expectPostseason('nwsl', { year: 2023, type: 11666, slug: 'playoffs--quarterfinals' }, true);
+			});
+
+			test('WBC hyphenates semi-finals and pluralizes finals', async () => {
+				await expectPostseason('wbbc', { year: 2023, type: 5, slug: 'semi-finals' }, true);
+				await expectPostseason('wbbc', { year: 2023, type: 6, slug: 'finals' }, true);
+				await expectPostseason('wbbc', { year: 2023, type: 2, slug: '1st-round' }, false);
+			});
+
+			test('domestic leagues have no postseason and their season-long slugs must not match', async () => {
+				await expectPostseason('epl', { year: 2023, type: 11864, slug: '2023-24-english-premier-league' }, false);
+				await expectPostseason('laliga', { year: 2023, type: 11865, slug: '2023-24-laliga' }, false);
+			});
+		});
+
+		// The Olympics report `type: 2, slug: 'regular-season'` for every game including the Gold
+		// Medal Game; the round exists only in competition.notes[0].headline.
+		describe('Olympic medal rounds, where slug is useless', () => {
+			const olympicGame = (id: string, headline?: string) => makeEvent({
+				id,
+				state: 'in',
+				period: 3,
+				clock: '5:00',
+				homeScore: '70',
+				awayScore: '68',
+				season: { year: 2024, type: 2, slug: 'regular-season' },
+				...(headline !== undefined && { notes: [{ headline }] }),
+			});
+
+			const isPostseason = async (event: Record<string, unknown>, league: 'olybkm' | 'olymih' | 'nba') => {
+				const { fetchGamesWithLeagueLogos } = fetchWith([event]);
+				const result = await fetchGamesWithLeagueLogos([league], { includeUpcoming: false });
+				return result.games[0]?.isPostseason;
+			};
+
+			test('detects the gold and bronze medal games and the semifinal', async () => {
+				expect(await isPostseason(olympicGame('g', "2024 Olympic Men's Basketball - Gold Medal Game"), 'olybkm')).toBe(true);
+				expect(await isPostseason(olympicGame('b', "2024 Olympic Men's Basketball - Bronze Medal Game"), 'olybkm')).toBe(true);
+				expect(await isPostseason(olympicGame('s', "2024 Olympic Men's Basketball - Semifinal"), 'olybkm')).toBe(true);
+				expect(await isPostseason(olympicGame('q', "2024 Olympic Men's Basketball - Quarterfinal"), 'olybkm')).toBe(true);
+				expect(await isPostseason(olympicGame('h', 'Milano Cortina 2026 Men\'s Hockey - Gold Medal Game'), 'olymih')).toBe(true);
+			});
+
+			test('leaves group-stage games alone', async () => {
+				expect(await isPostseason(olympicGame('grp', "2024 Olympic Men's Basketball - Group C"), 'olybkm')).toBe(false);
+				expect(await isPostseason(olympicGame('none'), 'olybkm')).toBe(false);
+			});
+
+			// Scoped to the Olympic leagues because headline is free-text editorial copy.
+			test('does not apply the headline heuristic to non-Olympic leagues', async () => {
+				expect(await isPostseason(olympicGame('nba1', 'Some Invitational - Semifinal'), 'nba')).toBe(false);
+			});
+		});
+	});
+
+	describe('penalty shootout score', () => {
+		test('parses shootoutScore onto both teams when ESPN supplies it', async () => {
+			const fetchMock = jest.fn().mockResolvedValue(createResponse({
+				events: [makeEvent({
+					id: 'pens',
+					state: 'in',
+					period: 5,
+					clock: "120'",
+					homeScore: '1',
+					awayScore: '1',
+					homeShootoutScore: 5,
+					awayShootoutScore: 3,
+				})],
+			}));
+			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+			const { fetchGamesWithLeagueLogos } = loadApiClient();
+			const result = await fetchGamesWithLeagueLogos(['ucl'], { includeUpcoming: false });
+			const game = result.games.find(g => g.id === 'pens');
+			// The 120-minute scoreline stays put; the shootout rides alongside it.
+			expect(game?.homeTeam.score).toBe(1);
+			expect(game?.awayTeam.score).toBe(1);
+			expect(game?.homeTeam.shootoutScore).toBe(5);
+			expect(game?.awayTeam.shootoutScore).toBe(3);
+		});
+
+		test('leaves shootoutScore undefined for every match that never reached one', async () => {
+			const fetchMock = jest.fn().mockResolvedValue(createResponse({
+				events: [makeEvent({ id: 'normal', state: 'in', period: 2, clock: "60'", homeScore: '2', awayScore: '0' })],
+			}));
+			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+			const { fetchGamesWithLeagueLogos } = loadApiClient();
+			const result = await fetchGamesWithLeagueLogos(['ucl'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'normal')?.homeTeam.shootoutScore).toBeUndefined();
+		});
 	});
 });

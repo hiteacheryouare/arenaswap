@@ -18,3 +18,13 @@ live-sports
 game-tracker
 sports-dashboard
 powerscore
+ufl
+nwsl
+laliga
+bundesliga
+champions-league
+serie-a
+liga-mx
+olympics
+softball
+world-baseball-classic

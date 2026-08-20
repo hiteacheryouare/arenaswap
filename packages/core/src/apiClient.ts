@@ -1,8 +1,30 @@
 import { leagueConfigMap, resolveLeagueLogoUrl } from './constants';
-import type { Game, GameOdds, LeagueConfig, LeagueId, LeagueLogoMap } from './types';
+import {
+	EspnSummarySchema,
+	parseScoreboard,
+	parseTeams,
+} from './espnSchemas';
+import type {
+	EspnCompetition,
+	EspnEvent,
+	EspnOddsProvider,
+	EspnScoreboardResponse,
+	EspnSituation,
+} from './espnSchemas';
+import { logWarn } from './logger';
+import type { Game, GameCondition, GameOdds, LeagueConfig, LeagueId, LeagueLogoMap } from './types';
 
 const espnBase = 'https://site.api.espn.com/apis/site/v2/sports';
-const upcomingDateWindowDays = 4;
+
+// ESPN ships a malformed row often enough that a dropped count is a steady state, not an event, so
+// warning on every poll would bury the console at the 6s floor. Only a change in the count is news.
+const lastWarnedDroppedCounts = new Map<string, number>();
+
+const warnOnDroppedCountChange = (key: string, dropped: number, buildMessage: () => string): void => {
+	if (lastWarnedDroppedCounts.get(key) === dropped) return;
+	lastWarnedDroppedCounts.set(key, dropped);
+	if (dropped > 0) logWarn(buildMessage());
+};
 
 const parseClockToSeconds = (clock: string): number => {
 	// Soccer prime notation: "85'" or "90'+8'" (base minutes + optional stoppage)
@@ -39,25 +61,25 @@ const toQueryDate = (date: Date): string => (
 	`${date.getUTCFullYear()}${String(date.getUTCMonth() + 1).padStart(2, '0')}${String(date.getUTCDate()).padStart(2, '0')}`
 );
 
-const buildUpcomingDatesRangeQuery = (): string => {
-	// Start from today so morning pre-game events aren't missed.
-	// ESPN's default (no-dates) scoreboard only reliably surfaces active/recent games;
-	// the explicit dates query returns all scheduled events for the requested range.
+const buildUpcomingDatesRangeQuery = (days: number): string => {
+	// ESPN's default no-dates scoreboard only reliably surfaces active and recent games; the
+	// explicit range returns every scheduled event, including this morning's pre-game ones.
 	const start = new Date();
 	const end = new Date(start);
-	end.setUTCDate(end.getUTCDate() + upcomingDateWindowDays);
+	end.setUTCDate(end.getUTCDate() + days);
 	return `${toQueryDate(start)}-${toQueryDate(end)}`;
 };
 
-// WCAG relative luminance — used to detect colors that would vanish on the app's black background
+const ch = (n: number): number => {
+	const c = n / 255;
+	return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+};
+
+// WCAG relative luminance.
 const hexLuminance = (hex: string): number => {
 	const matched = /^#([\da-fA-F]{6})$/.exec(hex);
 	if (!matched) return 0;
 	const h = matched[1]!;
-	const ch = (n: number) => {
-		const c = n / 255;
-		return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
-	};
 	return (0.2126 * ch(parseInt(h.slice(0, 2), 16)))
 		+ (0.7152 * ch(parseInt(h.slice(2, 4), 16)))
 		+ (0.0722 * ch(parseInt(h.slice(4, 6), 16)));
@@ -66,141 +88,36 @@ const hexLuminance = (hex: string): number => {
 // Colors with luminance below this threshold risk blending into the black app background
 const darkOnBlackThreshold = 0.04;
 
-const normalizeTeamColor = (primary?: string, alternate?: string): string | undefined => {
-	const normalizeOne = (value?: string): string | undefined => {
-		if (!value) return undefined;
-		const clean = value.trim().replace('#', '');
-		if (/^[0-9a-fA-F]{3}$/.test(clean)) {
-			const expanded = clean
-				.split('')
-				.map(char => `${char}${char}`)
-				.join('');
-			return `#${expanded.toUpperCase()}`;
-		}
-		if (/^[0-9a-fA-F]{6}$/.test(clean)) return `#${clean.toUpperCase()}`;
-		return undefined;
-	};
-
-	const normalizedPrimary = normalizeOne(primary);
-	const normalizedAlternate = normalizeOne(alternate);
-
-	if (!normalizedPrimary) return normalizedAlternate;
-
-	// If the primary color is too dark for the black background, prefer alternate when it's brighter
-	if (hexLuminance(normalizedPrimary) < darkOnBlackThreshold) {
-		if (normalizedAlternate && hexLuminance(normalizedAlternate) > hexLuminance(normalizedPrimary)) {
-			return normalizedAlternate;
-		}
+const normalizeOne = (value?: string): string | undefined => {
+	if (!value) return undefined;
+	const clean = value.trim().replace('#', '');
+	if (/^[0-9a-fA-F]{3}$/.test(clean)) {
+		const expanded = clean
+			.split('')
+			.map(char => `${char}${char}`)
+			.join('');
+		return `#${expanded.toUpperCase()}`;
 	}
-
-	return normalizedPrimary;
+	if (/^[0-9a-fA-F]{6}$/.test(clean)) return `#${clean.toUpperCase()}`;
+	return undefined;
 };
 
-interface EspnLeagueLogo {
-	href?: string;
-	rel?: string[];
-}
+const resolveTeamColors = (primary?: string, alternate?: string): { color?: string; alternateColor?: string } => {
+	const p = normalizeOne(primary);
+	const a = normalizeOne(alternate);
+	if (!p) return { color: a };
+	// Primary is too dark for the UI. Keep it as the alternate so the pair-resolver can still
+	// lighten it for charts.
+	if (hexLuminance(p) < darkOnBlackThreshold && a && hexLuminance(a) > hexLuminance(p)) {
+		return { color: a, alternateColor: p };
+	}
+	return { color: p, alternateColor: a };
+};
 
-// ESPN returns multiple logo variants; prefer the "dark" one (light-colored, for dark UIs).
-const pickLeagueLogo = (logos?: EspnLeagueLogo[]): string | undefined => (
+// The "dark" variant is the light-coloured one, meant for dark UIs.
+const pickLeagueLogo = (logos?: { href?: string; rel?: string[] }[]): string | undefined => (
 	logos?.find(l => l.rel?.includes('dark') && l.href)?.href ?? logos?.[0]?.href
 );
-
-interface EspnLeague {
-	id?: string;
-	logos?: EspnLeagueLogo[];
-}
-
-interface EspnTeam {
-	displayName: string;
-	abbreviation?: string;
-	logo?: string;
-	/** Primary team color as a hex string without '#' (e.g. "002B5C") */
-	color?: string;
-	/** Secondary team color as a hex string without '#' */
-	alternateColor?: string;
-}
-
-interface EspnCompetitor {
-	id: string;
-	homeAway: 'home' | 'away' | string;
-	score?: string;
-	team: EspnTeam;
-}
-
-interface EspnCompetitionStatus {
-	period?: number;
-	displayClock?: string;
-	type?: {
-		state?: string;
-		name?: string;
-		shortDetail?: string;
-	};
-}
-
-interface EspnSituation {
-	onFirst?: boolean;
-	onSecond?: boolean;
-	onThird?: boolean;
-}
-
-interface EspnCompetitionVenue {
-	fullName?: string;
-	name?: string;
-}
-
-interface EspnCompetitionBroadcast {
-	names?: string[];
-}
-
-interface EspnCompetitionGeoBroadcast {
-	media?: {
-		shortName?: string;
-	};
-}
-
-interface EspnOddsProviderLogo {
-	href?: string;
-	rel?: string[];
-}
-
-interface EspnOddsProvider {
-	name?: string;
-	displayName?: string;
-	logos?: EspnOddsProviderLogo[];
-}
-
-interface EspnCompetitionOdds {
-	details?: string;
-	overUnder?: number | string;
-	provider?: EspnOddsProvider;
-}
-
-interface EspnCompetition {
-	competitors: EspnCompetitor[];
-	status: EspnCompetitionStatus;
-	situation?: EspnSituation;
-	venue?: EspnCompetitionVenue;
-	broadcasts?: EspnCompetitionBroadcast[];
-	geoBroadcasts?: EspnCompetitionGeoBroadcast[];
-	odds?: EspnCompetitionOdds[];
-}
-
-interface EspnEvent {
-	id: string;
-	date?: string;
-	status?: {
-		type?: {
-			state?: string;
-		};
-	};
-	competitions: EspnCompetition[];
-}
-
-interface EspnScoreboardResponse {
-	events?: EspnEvent[];
-	leagues?: EspnLeague[];
-}
 
 class LeagueFetchError extends Error {
 	leagueId: LeagueId;
@@ -246,29 +163,97 @@ const parseOdds = (competition: EspnCompetition): GameOdds | undefined => {
 	const raw = competition.odds?.[0];
 	if (!raw) return undefined;
 	const providerName = raw.provider?.displayName ?? raw.provider?.name;
-	const providerLogoUrl = pickProviderLogo(raw.provider, 'light');
-	const providerDarkLogoUrl = pickProviderLogo(raw.provider, 'dark');
+	const providerLogoUrl = raw.provider ? pickProviderLogo(raw.provider, 'light') : undefined;
+	const providerDarkLogoUrl = raw.provider ? pickProviderLogo(raw.provider, 'dark') : undefined;
 	const overUnderValue = typeof raw.overUnder === 'number'
 		? raw.overUnder
 		: typeof raw.overUnder === 'string'
 			? Number.parseFloat(raw.overUnder)
 			: undefined;
 	const overUnder = Number.isFinite(overUnderValue) ? overUnderValue : undefined;
-
 	const parsed: GameOdds = {
 		details: raw.details?.trim() || undefined,
 		overUnder,
 		provider: providerName
-			? {
-				name: providerName,
-				logoUrl: providerLogoUrl,
-				darkLogoUrl: providerDarkLogoUrl,
-			}
+			? { name: providerName, logoUrl: providerLogoUrl, darkLogoUrl: providerDarkLogoUrl }
 			: undefined,
 	};
-
 	if (!parsed.details && parsed.overUnder === undefined && !parsed.provider) return undefined;
 	return parsed;
+};
+
+const parseWeather = (event: EspnEvent): GameCondition | undefined => {
+	const w = event.weather;
+	if (!w || typeof w.temperature !== 'number') return undefined;
+	// ESPN inconsistently puts the text label in either displayValue or conditionId
+	const label = [w.displayValue, w.conditionId].find(v => v?.trim() && !/^\d+$/.test(v.trim()));
+	if (!label) return undefined;
+	return { temperatureF: Math.round(w.temperature), conditionLabel: label.trim() };
+};
+
+const downOrdinals = ['', '1st', '2nd', '3rd', '4th'] as const;
+
+// ESPN's own label is the primary signal; the `distance <= 0` fallback mirrors buildDownDistance.
+// Returns false rather than undefined when neither applies, so an unknown situation costs the
+// boost its bonus rather than misreporting goal-to-go.
+const parseGoalToGo = (situation: EspnSituation): boolean => {
+	if (/goal/i.test(situation.shortDownDistanceText ?? '')) return true;
+	return typeof situation.down === 'number' && (typeof situation.distance !== 'number' || situation.distance <= 0);
+};
+
+const buildDownDistance = (situation: EspnSituation): string | undefined => {
+	if (situation.shortDownDistanceText) return situation.shortDownDistanceText;
+	const { down, distance } = situation;
+	if (typeof down !== 'number' || down < 1 || down > 4) return undefined;
+	const ordinal = downOrdinals[down] ?? `${down}th`;
+	if (typeof distance !== 'number' || distance <= 0) return `${ordinal} & Goal`;
+	return `${ordinal} & ${distance}`;
+};
+
+// ESPN encodes "this is a knockout game" three mutually incompatible ways, and all three are
+// needed:
+//  1. `season.type === 3` — the US pro/college leagues, plus the WBC's second round by coincidence.
+//  2. `season.slug` — international soccer, Liga MX, MLS, NWSL and the rest of the WBC, whose
+//     `season.type` is a per-tournament id that is never 3 (2022 World Cup final: 10948).
+//  3. `competition.notes[0].headline` — the Olympics, where even the Gold Medal Game reports
+//     `type: 2, slug: 'regular-season'` and the round survives only in display copy.
+const postseasonSlugs = new Set([
+	'knockout-round-playoffs', // UCL/UEL 2024-25 format onward
+	'round-of-16',
+	'quarterfinals',
+	'semifinals',
+	'semi-finals', // WBC hyphenates
+	'final',
+	'finals', // WBC pluralizes
+	'3rd-place', // FIFA Women's World Cup
+	'3rd-place-match', // FIFA (men's) World Cup
+	'gold-medal-match',
+	'bronze-medal-match',
+	'mls-cup',
+]);
+
+// Liga MX, MLS and NWSL generate a slug per tournament instance (`apertura-2023---finals`), so
+// the round can only be matched as a substring. Verified safe against their regular-season slugs
+// and against the domestic leagues' season-long ones.
+const postseasonSlugPatterns = [/quarterfinals?$/, /semi-?finals?$/, /finals?$/, /playoffs/, /liguilla/];
+
+// Scoped to the Olympic leagues because headline is free-text editorial copy: matching it
+// everywhere would sweep in regular-season bracket events like November invitationals.
+const olympicHeadlineLeagues = new Set<LeagueId>(['olybkm', 'olybkw', 'olymih', 'olywih', 'olybb']);
+const postseasonHeadlinePattern = /quarterfinal|semifinal|medal game/i;
+
+const resolvePostseason = (event: EspnEvent, comp: EspnCompetition, league: LeagueId): boolean => {
+	if (event.season?.type === 3) return true;
+
+	const slug = event.season?.slug?.trim().toLowerCase();
+	if (slug && (postseasonSlugs.has(slug) || postseasonSlugPatterns.some(p => p.test(slug)))) return true;
+
+	if (olympicHeadlineLeagues.has(league)) {
+		const headline = comp.notes?.[0]?.headline;
+		if (headline && postseasonHeadlinePattern.test(headline)) return true;
+	}
+
+	return false;
 };
 
 const parseTopOfInning = (shortDetail?: string): boolean | undefined => {
@@ -286,9 +271,12 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 	if (!home || !away) return null;
 	const status = comp.status;
 	const state = parseStatus(status.type?.state ?? 'post');
+	const isDelayed = /delay|suspend/i.test(status.type?.name ?? '');
+	const delayDescription = isDelayed ? (status.type?.description?.trim() || undefined) : undefined;
 	const leagueConfig = leagueConfigMap[league];
-	const isBaseball = leagueConfig.sportType === 'baseball';
+	const isInningSport = leagueConfig.periodFormat === 'innings';
 	const situation = comp.situation;
+	const isGridironSituation = leagueConfig.sportType === 'football' && state === 'in' && situation !== undefined;
 
 	return {
 		id: event.id,
@@ -299,16 +287,18 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 			name: home.team.displayName,
 			abbreviation: home.team.abbreviation || home.team.displayName?.slice(0, 3).toUpperCase() || '?',
 			score: parseInt(home.score ?? '0', 10) || 0,
+			shootoutScore: home.shootoutScore,
 			logo: home.team.logo ?? undefined,
-			color: normalizeTeamColor(home.team.color, home.team.alternateColor),
+			...resolveTeamColors(home.team.color, home.team.alternateColor),
 		},
 		awayTeam: {
 			id: away.id,
 			name: away.team.displayName,
 			abbreviation: away.team.abbreviation || away.team.displayName?.slice(0, 3).toUpperCase() || '?',
 			score: parseInt(away.score ?? '0', 10) || 0,
+			shootoutScore: away.shootoutScore,
 			logo: away.team.logo ?? undefined,
-			color: normalizeTeamColor(away.team.color, away.team.alternateColor),
+			...resolveTeamColors(away.team.color, away.team.alternateColor),
 		},
 		venueName: comp.venue?.fullName ?? comp.venue?.name ?? undefined,
 		period: status.period ?? 1,
@@ -318,12 +308,29 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 		broadcasts: parseBroadcasts(comp),
 		odds: parseOdds(comp),
 		intermission: /HALFTIME|END_PERIOD|INTERMISSION/i.test(status.type?.name ?? ''),
-		topOfInning: isBaseball ? parseTopOfInning(status.type?.shortDetail) : undefined,
-		baseRunners: isBaseball && situation ? {
+		topOfInning: isInningSport ? parseTopOfInning(status.type?.shortDetail) : undefined,
+		baseRunners: isInningSport && situation ? {
 			first: situation.onFirst ?? false,
 			second: situation.onSecond ?? false,
 			third: situation.onThird ?? false,
 		} : undefined,
+		bso: isInningSport && state === 'in' && situation && typeof situation.balls === 'number'
+			? { balls: situation.balls, strikes: situation.strikes ?? 0, outs: situation.outs ?? 0 }
+			: undefined,
+		downDistance: leagueConfig.sportType === 'football' && state === 'in' && situation
+			? buildDownDistance(situation)
+			: undefined,
+		fieldPosition: isGridironSituation ? situation.possessionText?.trim() || undefined : undefined,
+		isRedZone: leagueConfig.sportType === 'football' && state === 'in' && situation
+			? (situation.isRedZone ?? false)
+			: undefined,
+		down: isGridironSituation ? situation.down : undefined,
+		distance: isGridironSituation ? situation.distance : undefined,
+		isGoalToGo: isGridironSituation ? parseGoalToGo(situation) : undefined,
+		weather: parseWeather(event),
+		isPostseason: resolvePostseason(event, comp, league),
+		delayed: isDelayed || undefined,
+		delayDescription,
 	};
 };
 
@@ -340,16 +347,20 @@ const fetchScoreboard = async (url: string, leagueId: LeagueId): Promise<EspnSco
 		},
 	});
 	if (!res.ok) throw new LeagueFetchError(leagueId, res.status);
-	return res.json() as Promise<EspnScoreboardResponse>;
+	const parsed = parseScoreboard(await res.json());
+	warnOnDroppedCountChange(
+		`scoreboard:${leagueId}`,
+		parsed.droppedEvents,
+		() => `Skipped ${parsed.droppedEvents} unparseable ${leagueId} event(s); kept ${parsed.events.length}.`,
+	);
+	return parsed;
 };
 
-const fetchLeagueGames = async (config: LeagueConfig, options: { includeUpcoming?: boolean } = {}): Promise<LeagueGamesResult> => {
-	const { includeUpcoming = true } = options;
+const fetchLeagueGames = async (config: LeagueConfig, options: { includeUpcoming?: boolean; upcomingDays?: number } = {}): Promise<LeagueGamesResult> => {
+	const { includeUpcoming = true, upcomingDays = 7 } = options;
 	const baseParams = new URLSearchParams();
-	// ESPN requires `groups=50` for reliable NCAA men's basketball scoreboard coverage
-	// and to avoid 404 responses on date-range queries.
+	// Required for reliable coverage and to avoid 404s on date-range queries.
 	if (config.id === 'ncaab') baseParams.set('groups', '50');
-	// ESPN requires `groups=49` for reliable NCAA women's basketball scoreboard coverage.
 	if (config.id === 'ncaaw') baseParams.set('groups', '49');
 
 	const scoreboardUrl = `${espnBase}/${config.espnPath}/scoreboard`;
@@ -366,7 +377,7 @@ const fetchLeagueGames = async (config: LeagueConfig, options: { includeUpcoming
 		return { leagueId: config.id, games: parsedGames, logoUrl };
 	}
 
-	const upcomingDates = buildUpcomingDatesRangeQuery();
+	const upcomingDates = buildUpcomingDatesRangeQuery(upcomingDays);
 	const upcomingParams = new URLSearchParams(baseParams);
 	upcomingParams.set('dates', upcomingDates);
 	const upcomingUrl = `${scoreboardUrl}?${upcomingParams.toString()}`;
@@ -406,7 +417,7 @@ const getEnabledLeagueConfigs = (enabledLeagues: LeagueId[]): LeagueConfig[] => 
 		.filter((config): config is LeagueConfig => Boolean(config))
 );
 
-export const fetchGamesWithLeagueLogos = async (enabledLeagues: LeagueId[], options: { includeUpcoming?: boolean } = {}): Promise<{ games: Game[]; leagueLogos: LeagueLogoMap }> => {
+export const fetchGamesWithLeagueLogos = async (enabledLeagues: LeagueId[], options: { includeUpcoming?: boolean; upcomingDays?: number } = {}): Promise<{ games: Game[]; leagueLogos: LeagueLogoMap }> => {
 	if (enabledLeagues.length === 0) return { games: [], leagueLogos: {} };
 	const leagueConfigs = getEnabledLeagueConfigs(enabledLeagues);
 	if (leagueConfigs.length === 0) return { games: [], leagueLogos: {} };
@@ -424,22 +435,40 @@ export const fetchGamesWithLeagueLogos = async (enabledLeagues: LeagueId[], opti
 	return { games, leagueLogos };
 };
 
-// Returns all live + upcoming games for enabled leagues (excludes finished games)
 export const fetchGames = async (enabledLeagues: LeagueId[]): Promise<Game[]> => {
 	if (enabledLeagues.length === 0) return [];
 	const { games } = await fetchGamesWithLeagueLogos(enabledLeagues);
 	return games;
 };
 
-// Convenience: only live games (for switching logic)
 export const fetchLiveGames = async (enabledLeagues: LeagueId[]): Promise<Game[]> => {
 	const games = await fetchGames(enabledLeagues);
 	return games.filter(g => g.status === 'in');
 };
 
-export const fetchLeagueLogos = async (enabledLeagues: LeagueId[], options: { includeUpcoming?: boolean } = {}): Promise<LeagueLogoMap> => {
+export const fetchLeagueLogos = async (enabledLeagues: LeagueId[], options: { includeUpcoming?: boolean; upcomingDays?: number } = {}): Promise<LeagueLogoMap> => {
 	const { leagueLogos } = await fetchGamesWithLeagueLogos(enabledLeagues, options);
 	return leagueLogos;
+};
+
+// Home-win fractions in [0, 1], oldest first. Lives on the summary endpoint, so it costs one
+// request per game — call it on a slower cadence than the scoreboard poll. Empty whenever ESPN
+// has nothing, which the scorer reads as "no signal" rather than a neutral zero.
+export const fetchWinProbability = async (game: Pick<Game, 'id' | 'league'>, init?: { signal?: AbortSignal }): Promise<number[]> => {
+	const config = leagueConfigMap[game.league];
+	if (!config) return [];
+
+	const url = `${espnBase}/${config.espnPath}/summary?event=${encodeURIComponent(game.id)}`;
+	const res = await fetch(url, { headers: { 'Accept': 'application/json' }, signal: init?.signal });
+	if (!res.ok) throw new Error(`Failed to fetch win probability for ${game.id}: HTTP ${res.status}`);
+
+	const parsed = EspnSummarySchema.safeParse(await res.json());
+	if (!parsed.success) return [];
+
+	return (parsed.data.winprobability ?? [])
+		.map(entry => entry.homeWinPercentage)
+		.filter((p): p is number => typeof p === 'number' && Number.isFinite(p))
+		.map(p => Math.min(Math.max(p, 0), 1));
 };
 
 export interface EspnTeamEntry {
@@ -450,20 +479,6 @@ export interface EspnTeamEntry {
 	logo?: string;
 }
 
-interface EspnTeamsResponse {
-	sports?: Array<{
-		leagues?: Array<{
-			teams?: Array<{
-				team: {
-					id: string;
-					displayName: string;
-					abbreviation?: string;
-					logos?: Array<{ href: string }>;
-				};
-			}>;
-		}>;
-	}>;
-}
 
 export const fetchTeamsForLeagues = async (leagueIds: LeagueId[]): Promise<EspnTeamEntry[]> => {
 	if (leagueIds.length === 0) return [];
@@ -479,9 +494,13 @@ export const fetchTeamsForLeagues = async (leagueIds: LeagueId[]): Promise<EspnT
 			const url = `${espnBase}/${config.espnPath}/teams?${params.toString()}`;
 			const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
 			if (!res.ok) throw new Error(`Failed to fetch teams for ${config.id}: HTTP ${res.status}`);
-			const json = await res.json() as EspnTeamsResponse;
-			const rawTeams = json?.sports?.[0]?.leagues?.[0]?.teams ?? [];
-			return rawTeams
+			const parsed = parseTeams(await res.json());
+			warnOnDroppedCountChange(
+				`teams:${config.id}`,
+				parsed.droppedTeams,
+				() => `Skipped ${parsed.droppedTeams} unparseable ${config.id} team(s); kept ${parsed.teams.length}.`,
+			);
+			return parsed.teams
 				.filter(({ team }) => team.id && team.displayName)
 				.map(({ team }) => ({
 					leagueId: config.id,

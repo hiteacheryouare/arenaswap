@@ -1,9 +1,13 @@
-export { fetchGames, fetchLiveGames, fetchLeagueLogos, fetchGamesWithLeagueLogos, fetchTeamsForLeagues } from './apiClient';
+export { fetchGames, fetchLiveGames, fetchLeagueLogos, fetchGamesWithLeagueLogos, fetchTeamsForLeagues, fetchWinProbability } from './apiClient';
+export { logWarn, logError, setVerboseLogging, isVerboseLogging } from './logger';
+export { computeEagerIntervalMs, computeLeagueIntervalMs, pollWinProbabilityMs } from './pollIntervalComputer';
 export type { EspnTeamEntry } from './apiClient';
-export { computePowerScore, normalizePowerScoreResult } from 'powerscore';
+export { computePowerScore, computeScoringOpportunityBoost, computeWinProbVarianceScore, isPlayFrozen, normalizePowerScoreResult } from 'powerscore';
+export { scoreMaxTotal } from 'powerscore';
 export { MockGameSimulator } from './mockGames';
 export { createPollModeTracker } from './pollModeTracker';
 export type { PollMode, PollModeTracker } from './pollModeTracker';
 export * from './types';
 export * from './constants';
 export * from './typeGuards';
+export { BackgroundStateSchema } from './backgroundSchema';

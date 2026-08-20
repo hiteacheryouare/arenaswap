@@ -1,0 +1,83 @@
+---
+import Shell from '../../layouts/Shell.astro';
+import LegalNav from '../../components/LegalNav.astro';
+
+const base = import.meta.env.BASE_URL;
+---
+<Shell
+	title='Disclaimers — ArenaSwap'
+	description='ArenaSwap disclaims affiliation with ESPN and with every league named, provides its software without warranty, and relies upon data it does not control.'
+	path='legal/terms/'
+>
+	<div class='container'>
+		<div class='page-head'>
+			<h1 class='page-title'>Disclaimers.</h1>
+		</div>
+
+		<div class='reading-shell'>
+			<LegalNav current='legal/terms/' />
+
+			<div class='prose'>
+				<h2>No affiliation</h2>
+				<p>
+					ArenaSwap is not affiliated with, sponsored by, endorsed by or otherwise connected to
+					ESPN, the NFL, the NBA, the WNBA, the NHL, MLB, MLS, the NWSL, the NCAA, the UFL, FIFA,
+					UEFA, the International Olympic Committee, or any other league, club, broadcaster or
+					streaming service. League and team names, marks and crests are the property of their
+					respective owners and appear here for the sole purpose of identifying games.
+				</p>
+
+				<h2>Not a streaming service</h2>
+				<p>
+					ArenaSwap does not host, rebroadcast, decrypt, unlock or otherwise furnish access to any
+					game. It moves between browser tabs that you have opened yourself, upon services you are
+					already entitled to view. Whether you are entitled to view a given game is a matter
+					between you and the party that sells it to you.
+				</p>
+
+				<h2>Data obtained from third parties</h2>
+				<p>
+					Scores, game clocks, schedules, odds and win probabilities are obtained from ESPN.
+					ArenaSwap does not control that data, cannot warrant that it is accurate, complete,
+					current or available, and has no influence over when it changes. Such data may be
+					delayed, erroneous or absent, and a stream will ordinarily run behind the data feed.
+					Nothing presented in the extension should be treated as an official score, and no wager
+					should be placed in reliance upon it.
+				</p>
+
+				<h2>PowerScore is an estimate</h2>
+				<p>
+					PowerScore estimates from publicly available figures how compelling a game presently
+					appears. It is not a prediction, a probability, a betting model or a statement of fact,
+					and it will on occasion direct you away from the game you wished to watch. The
+					<a href={`${base}faq/`}>sensitivity, cooldown and favorite team settings</a> exist to
+					address that.
+				</p>
+
+				<h2>No warranty</h2>
+				<p>
+					The software is provided "as is", without warranty of any kind, express or implied,
+					including without limitation the implied warranties of merchantability and fitness for a
+					particular purpose. No person involved in ArenaSwap shall be liable for any damages
+					arising out of its use. The full text appears on the
+					<a href={`${base}legal/licenses/`}>licenses page</a>.
+				</p>
+
+				<h2>Availability</h2>
+				<p>
+					ArenaSwap is provided free of charge, is unfunded, and is maintained in its authors'
+					spare time. Browsers alter the rules governing extensions, the services from which it
+					reads alter without notice, and nothing here is accompanied by a service level
+					agreement. Any feature may be altered or withdrawn in a subsequent version.
+				</p>
+
+				<h2>Nothing here is legal advice</h2>
+				<p>
+					These pages describe the behavior of a browser extension. They do not constitute advice,
+					and they create no contract beyond the ISC License under which the software is
+					distributed.
+				</p>
+			</div>
+		</div>
+	</div>
+</Shell>

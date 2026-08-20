@@ -2,9 +2,13 @@ const commonProjectConfig = {
   testEnvironment: 'node',
   transform: {
     '^.+\\.tsx?$': [
-      'ts-jest',
+      '@swc/jest',
       {
-        tsconfig: '<rootDir>/tsconfig.jest.json',
+        jsc: {
+          parser: { syntax: 'typescript', tsx: false },
+          target: 'es2020',
+        },
+        module: { type: 'commonjs' },
       },
     ],
   },

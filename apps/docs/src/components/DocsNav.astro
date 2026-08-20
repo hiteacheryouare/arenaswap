@@ -1,0 +1,27 @@
+---
+interface Props {
+	// Path without the base, e.g. `docs/extension/`. Marks the matching link as current.
+	current?: string;
+}
+
+const { current = '' } = Astro.props;
+const base = import.meta.env.BASE_URL;
+
+const sections = [
+	{ path: 'docs/extension/', label: 'The extension' },
+	{ path: 'docs/powerscore/', label: 'PowerScore' },
+	{ path: 'powerscore/', label: 'Package reference' },
+];
+---
+<nav class='reading-nav' aria-label='Documentation'>
+	<h2>Documentation</h2>
+	<ul>
+		{sections.map(section => (
+			<li>
+				<a href={`${base}${section.path}`} aria-current={current === section.path ? 'page' : undefined}>
+					{section.label}
+				</a>
+			</li>
+		))}
+	</ul>
+</nav>

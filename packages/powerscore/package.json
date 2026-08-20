@@ -1,14 +1,14 @@
 {
 	"name": "powerscore",
-	"version": "1.4.3",
+	"version": "2.0.0",
 	"description": "The PowerScore excitement scoring engine for live sports games",
 	"type": "module",
 	"main": "./dist/index.js",
 	"types": "./dist/index.d.ts",
 	"exports": {
 		".": {
-			"import": "./dist/index.js",
-			"types": "./dist/index.d.ts"
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js"
 		}
 	},
 	"files": [
@@ -24,7 +24,8 @@
 		"prepack": "npm run build",
 		"test": "npm run test:unit",
 		"test:unit": "jest --passWithNoTests --selectProjects unit",
-		"typecheck": "tsc --noEmit"
+		"typecheck": "tsc --noEmit && tsc --noEmit -p tests",
+		"lint": "oxlint ."
 	},
 	"keywords": [
 		"sports",
@@ -43,15 +44,14 @@
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/hiteacheryouare/arenaswap.git",
-		"directory": "packages/powerScore"
+		"directory": "packages/powerscore"
 	},
 	"bugs": {
 		"url": "https://github.com/hiteacheryouare/arenaswap/issues"
 	},
 	"devDependencies": {
 		"@types/jest": "^30.0.0",
-		"jest": "^30.3.0",
-		"ts-jest": "^29.4.9",
-		"typescript": "^6.0.3"
+		"jest": "^30.4.2",
+		"typescript": "^7.0.2"
 	}
 }

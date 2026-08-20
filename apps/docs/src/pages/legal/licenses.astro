@@ -1,0 +1,118 @@
+---
+import Shell from '../../layouts/Shell.astro';
+import LegalNav from '../../components/LegalNav.astro';
+import { directDependencies } from '../../lib/dependencyLicences';
+
+// The dependency table is read from the manifests at build time, so it cannot drift from what is
+// actually installed. See src/lib/dependencyLicences.ts.
+
+const dependencies = directDependencies();
+
+const fonts = [
+	{ name: 'DM Sans', by: 'Colophon Foundry, Jonny Pinhorn and Indian Type Foundry', licence: 'OFL 1.1' },
+	{ name: 'DM Serif Text', by: 'Colophon Foundry and Jonny Pinhorn', licence: 'OFL 1.1' },
+	{ name: 'Lekton', by: 'ISIA Urbino', licence: 'OFL 1.1' },
+	{ name: 'Geist', by: 'Vercel', licence: 'OFL 1.1' },
+];
+---
+<Shell
+	title='Licenses — ArenaSwap'
+	description='ArenaSwap is distributed under the ISC License. The open-source software and typefaces upon which it depends are listed here with the license each carries.'
+	path='legal/licenses/'
+>
+	<div class='container'>
+		<div class='page-head'>
+			<h1 class='page-title'>Licenses.</h1>
+		</div>
+
+		<div class='reading-shell'>
+			<LegalNav current='legal/licenses/' />
+
+			<div class='legal-measure'>
+				<div class='prose'>
+					<h2>ArenaSwap</h2>
+					<p>
+						The ISC License, set out in full below, governs the extension, this website, the
+						shared interface components and the client through which scores are obtained.
+					</p>
+					<pre><code>{`ISC License
+
+Copyright (c) 2026 Ryan Mullin, Lattice & Company, and contributors
+
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted, provided that the above
+copyright notice and this permission notice appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.`}</code></pre>
+
+					<h2>Software</h2>
+					<p>
+						ArenaSwap is built upon the software listed below, each item of which remains subject
+						to the license stated against it. Follow any entry for the full text of its license.
+					</p>
+				</div>
+
+				<div class='table-responsive'>
+					<table class='table table-dark table-sm align-middle'>
+						<thead>
+							<tr>
+								<th scope='col'>Package</th>
+								<th scope='col'>Version</th>
+								<th scope='col'>License</th>
+							</tr>
+						</thead>
+						<tbody>
+							{dependencies.map(dependency => (
+								<tr>
+									<th scope='row' class='fw-normal'>
+										<a
+											href={dependency.url}
+											class='link-light link-underline-opacity-0 link-underline-opacity-100-hover'
+										>{dependency.name}</a>
+									</th>
+									<td>{dependency.version}</td>
+									<td>{dependency.licence}</td>
+								</tr>
+							))}
+						</tbody>
+					</table>
+				</div>
+
+				<div class='prose'>
+					<h2>Typefaces</h2>
+					<p>
+						The typefaces below are served from this website and remain subject to the license
+						stated against each.
+					</p>
+				</div>
+
+				<div class='table-responsive'>
+					<table class='table table-dark table-sm align-middle'>
+						<thead>
+							<tr>
+								<th scope='col'>Family</th>
+								<th scope='col'>By</th>
+								<th scope='col'>License</th>
+							</tr>
+						</thead>
+						<tbody>
+							{fonts.map(font => (
+								<tr>
+									<th scope='row' class='fw-normal'>{font.name}</th>
+									<td>{font.by}</td>
+									<td>{font.licence}</td>
+								</tr>
+							))}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</Shell>

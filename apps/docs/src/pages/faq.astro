@@ -1,0 +1,87 @@
+---
+import { leagueConfigs } from '@arenaswap/core/constants';
+import Shell from '../layouts/Shell.astro';
+
+// Off the homepage and onto its own page. The eight questions are worth keeping for search — they
+// are what people actually type — but they were the fourth thing competing for attention at the
+// bottom of the landing page.
+//
+// Native <details> rather than the React accordion this used to be: no JavaScript, open by
+// default when JS never arrives, and Cmd-F finds an answer that is collapsed.
+
+const leagueCount = leagueConfigs.length;
+
+const items = [
+	{
+		q: 'What leagues does ArenaSwap support?',
+		a: `${leagueCount} leagues across six sports. Basketball: NBA, WNBA, NCAA Basketball, NCAA Women's Basketball and both Olympic tournaments. Football: NFL, NCAA Football and the UFL. Hockey: NHL, NCAA Men's Hockey and both Olympic tournaments. Baseball and softball: MLB, NCAA Baseball, NCAA Softball, the World Baseball Classic and Olympic Baseball. Soccer: the Premier League, La Liga, Bundesliga, Serie A, Liga MX, MLS, NWSL, the Champions League, the Europa League, both FIFA World Cups and both Olympic tournaments.`,
+	},
+	{
+		q: 'How does tab switching work?',
+		a: 'You assign each of your open streams to a game. ArenaSwap scores every live game with PowerScore, and when one pulls far enough ahead of the game you are on, it switches your tab to it, unmutes it, and mutes the rest. Sensitivity sets how far ahead is far enough, and a cooldown stops it bouncing you between two games.',
+	},
+	{
+		q: 'Do I need an account or a subscription?',
+		a: "No. ArenaSwap is free, has no account, and collects nothing. It runs entirely in your browser and reads public scores from ESPN. Nothing about what you watch is sent anywhere.",
+	},
+	{
+		q: 'Will it work with my streaming service?',
+		a: 'Any stream that plays in a browser tab works, because ArenaSwap switches and mutes tabs rather than integrating with a service. That covers ESPN+, Peacock, Paramount+, YouTube TV, Hulu Live, Fubo and the free league streams. It cannot help with a native app or a set-top box.',
+	},
+	{
+		q: 'How does PowerScore work?',
+		a: 'PowerScore is a 0 to 100 rating built from five signals: how close the game is, how late it is, momentum from recent scoring, lead changes, and how big a comeback is underway. Each sport gets its own idea of close, so a one-goal hockey game and a one-point basketball game are treated alike. Your teams and the postseason add points; a game that has gone quiet loses them, and a game in a delay or an intermission scores zero.',
+	},
+	{
+		q: 'Can I stop it switching away from a game?',
+		a: 'Yes. Unassign the tab and ArenaSwap leaves it alone, or turn auto-switching off with the toggle in the popup header. Lowering sensitivity or raising the cooldown makes switches rarer without turning them off.',
+	},
+	{
+		q: 'What happens when every game is boring?',
+		a: 'Turn on Standby Stream and pick a tab. When nothing you are tracking clears the threshold, ArenaSwap parks you there instead of leaving you on whichever game is least bad.',
+	},
+	{
+		q: 'Is the source available?',
+		a: 'Yes, on GitHub, including the PowerScore algorithm, which is published on npm on its own so you can score games without the extension.',
+	},
+];
+
+const structuredData = {
+	'@context': 'https://schema.org',
+	'@type': 'FAQPage',
+	mainEntity: items.map(item => ({
+		'@type': 'Question',
+		name: item.q,
+		acceptedAnswer: { '@type': 'Answer', text: item.a },
+	})),
+};
+---
+<Shell
+	title='FAQ — ArenaSwap'
+	description='How ArenaSwap switches tabs, which leagues and streaming services it works with, what PowerScore measures, and what it does with your data.'
+	path='faq/'
+>
+	<div class='container'>
+		<div class='page-head'>
+			<h1 class='page-title'>Questions.</h1>
+			<p class='page-lede'>
+				If something is not here, <a href='https://github.com/hiteacheryouare/arenaswap/issues'>open
+				an issue</a> and it probably should be.
+			</p>
+		</div>
+
+		<div class='reading-shell reading-shell-plain'>
+			<div class='faq-list'>
+				{items.map((item, index) => (
+					<details class='faq-item' open={index === 0}>
+						<summary>{item.q}</summary>
+						<p>{item.a}</p>
+					</details>
+				))}
+
+			</div>
+		</div>
+	</div>
+
+	<script type='application/ld+json' set:html={JSON.stringify(structuredData)} is:inline />
+</Shell>

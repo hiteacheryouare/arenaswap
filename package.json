@@ -1,7 +1,7 @@
 {
 	"name": "arenaswap",
-	"version": "1.4.3",
-	"description": "Watches every live game across 12 leagues and auto-switches your browser tab to the most exciting one every 15 seconds.",
+	"version": "2.0.0",
+	"description": "Watches every live game across 31 leagues and auto-switches your browser tab to the most exciting one, as fast as every 6 seconds.",
 	"private": true,
 	"workspaces": [
 		"apps/*",
@@ -12,18 +12,34 @@
 		"build": "turbo run build",
 		"build:all": "turbo run build build:firefox build:edge",
 		"zip": "turbo run zip",
+		"zip:firefox": "turbo run zip:firefox",
+		"zip:edge": "turbo run zip:edge",
+		"zip:all": "turbo run zip zip:firefox zip:edge",
 		"test": "turbo run test",
-		"typecheck": "turbo run typecheck"
+		"typecheck": "turbo run typecheck",
+		"lint": "turbo run lint",
+		"powerscore:simulate": "rolldown scripts/powerscore/simulateDistribution.ts --platform=node --file=scripts/powerscore/simulateDistribution.cjs --format=cjs --log-level=silent && node scripts/powerscore/simulateDistribution.cjs 100000",
+		"powerscore:validate-live": "rolldown scripts/powerscore/validateLive.ts --platform=node --file=scripts/powerscore/validateLive.cjs --format=cjs --log-level=silent && node scripts/powerscore/validateLive.cjs",
+		"docs:validate-hero": "rolldown scripts/docs/validateHeroTimeline.ts --platform=node --file=scripts/docs/validateHeroTimeline.cjs --format=cjs --log-level=silent && node scripts/docs/validateHeroTimeline.cjs"
 	},
 	"devDependencies": {
-		"turbo": "^2.9.16",
-		"typescript": "^6.0.3"
+		"@swc/core": "^1.16.1",
+		"@swc/jest": "^0.2.39",
+		"oxlint": "^1.79.0",
+		"rolldown": "^1.2.5",
+		"turbo": "^2.10.11",
+		"typescript": "^7.0.2"
 	},
 	"overrides": {
-		"@webext-core/fake-browser": "1.3.4"
+		"@webext-core/fake-browser": "1.3.4",
+		"shell-quote": "1.8.4"
 	},
-	"packageManager": "npm@10.9.0",
+	"engines": {
+		"node": "^20.17.0 || >=22.9.0",
+		"npm": ">=11.0.0"
+	},
+	"packageManager": "npm@11.16.0",
 	"dependencies": {
-		"skills": "^1.5.7"
+		"skills": "^1.5.23"
 	}
 }

@@ -1,24 +1,29 @@
+import { i18n } from '#i18n';
 import { randomInRange } from '@porkyproductions/hat';
-import { fetchGamesWithLeagueLogos, computePowerScore, normalizePowerScoreResult, MockGameSimulator, createPollModeTracker, isObjectRecord, isFiniteNumber, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts } from '@arenaswap/core';
+import { fetchGamesWithLeagueLogos, fetchWinProbability, computePowerScore, computeScoringOpportunityBoost, isPlayFrozen, normalizePowerScoreResult, scoreMaxTotal, MockGameSimulator, createPollModeTracker, isObjectRecord, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts, computeLeagueIntervalMs, pollWinProbabilityMs as winProbPollIntervalMs, logWarn, logError } from '@arenaswap/core';
 import { computeStandbyStreamDecision } from '../utils/standbyStreamLogic';
+import { loadStoredUserPreferences } from '../utils/prefsStorage';
 import {
 	normalizeReviewPromptState,
 	recordSuccessfulReviewPromptSwitch,
 	reviewPromptStorageKey,
 } from '../utils/reviewPrompt';
 import {
+	applyDisabledSignals,
 	createDefaultUserPreferences,
 	createFavoriteTeamKey,
-	leagueLogoFallbacks,
 	normalizeUserPreferences,
 	pollIntervalMs,
 	pollDormantMinMs,
 	pollDormantMaxMs,
-	maxHistorySnapshots,
+	pollMaxEagerMs,
+	historyWindowMs,
+	resolveLeagueLogoUrl,
 	sensitivityThresholds,
 	sportTypeConfigMap,
 } from '@arenaswap/core/constants';
 import type {
+	DebugState,
 	ExtensionMessage,
 	Game,
 	LeagueId,
@@ -31,6 +36,58 @@ import type {
 	TabRegistration,
 	UserPreferences,
 } from '@arenaswap/core/types';
+
+const recordSuccessfulSwitchForReviewPrompt = async (switchedAt: number) => {
+	try {
+		const stored = await browser.storage.local.get({ [reviewPromptStorageKey]: null });
+		const current = normalizeReviewPromptState(stored[reviewPromptStorageKey]);
+		await browser.storage.local.set({
+			[reviewPromptStorageKey]: recordSuccessfulReviewPromptSwitch(current, switchedAt),
+		});
+	} catch (err) {
+		logWarn('Failed to update review prompt state.', err);
+	}
+};
+
+const getFavoriteTeamCount = (game: Game, favoriteTeamIds: Set<string>): number => {
+	let count = 0;
+	const homeFavoriteTeamKey = createFavoriteTeamKey(game.league, game.homeTeam.id);
+	const awayFavoriteTeamKey = createFavoriteTeamKey(game.league, game.awayTeam.id);
+	if (favoriteTeamIds.has(homeFavoriteTeamKey)) count++;
+	if (favoriteTeamIds.has(awayFavoriteTeamKey)) count++;
+	return count;
+};
+
+const getHistoryWindowMsForGame = (game: Game): number => {
+	const sportConfig = sportTypeConfigMap[game.sportType] ?? sportTypeConfigMap.basketball;
+	return sportConfig.historyWindowMs ?? historyWindowMs;
+};
+
+const maxHistoryWindowMs = Math.max(
+	historyWindowMs,
+	...Object.values(sportTypeConfigMap).map(config => config.historyWindowMs ?? historyWindowMs),
+);
+
+// Backstop only — the time window is the real policy. Stops the arrays growing without bound if
+// polling ever runs faster than expected. Soccer's 20-minute window at the 6s eager floor is 200
+// snapshots, so this leaves headroom without letting a runaway loop fill session storage.
+const maxSnapshotsPerGame = 400;
+
+const trimSnapshots = <T extends { timestamp: number }>(snapshots: T[], cutoff: number): void => {
+	while (snapshots.length > 1 && snapshots[0]!.timestamp < cutoff) snapshots.shift();
+	if (snapshots.length > maxSnapshotsPerGame) snapshots.splice(0, snapshots.length - maxSnapshotsPerGame);
+};
+
+const capitalizeFirst = (s: string) => s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+
+const getOpenTabIds = async (): Promise<Set<number>> => {
+	const allTabs = await browser.tabs.query({});
+	return new Set(
+		allTabs
+			.map(tab => tab.id)
+			.filter((tabId): tabId is number => tabId !== undefined)
+	);
+};
 
 export default defineBackground(() => {
 	let games: Game[] = [];
@@ -46,33 +103,36 @@ export default defineBackground(() => {
 	let simulator: MockGameSimulator | null = null;
 	let prefs: UserPreferences = createDefaultUserPreferences();
 	let lastSwitchTime = 0;
-	// Per-league timeouts for staggered live polling
 	const leagueTimers = new Map<string, ReturnType<typeof setTimeout>>();
+	const leagueNextIntervalMs = new Map<string, number>();
+	// Lives on the summary endpoint (one request per game) rather than the scoreboard, so it
+	// refreshes on its own slow cadence. Every PowerScore reader pulls from here, so the card,
+	// the detail screen and the switcher all agree on the same number.
+	const winProbHistory = new Map<string, number[]>();
+	let winProbTimer: ReturnType<typeof setTimeout> | null = null;
+	// Bumped on every stop so a sweep that is already in flight cannot reschedule itself.
+	let winProbGeneration = 0;
 	const pollModeTracker = createPollModeTracker();
-	// Interval used only in demo mode
 	let demoTimer: ReturnType<typeof setInterval> | null = null;
 	let inFlightRefresh: Promise<void> | null = null;
-	let upcomingGamesReady: Promise<void> | undefined;
 	let pendingSwitchTimer: ReturnType<typeof setTimeout> | null = null;
 	let pendingSwitch: { gameId: string; tabId: number; reason?: string } | null = null;
 	let standbyStreamTabId: number | null = null;
 	let onStandbyStream = false;
-	// Tabs ArenaSwap has muted, tracked so a tab that leaves our control gets unmuted again
-	// instead of being left silent with nothing in the UI explaining why.
+	// Mirrored into session storage because MV3 tears the service worker down whenever it goes
+	// idle — an in-memory set would come back empty and strand every muted tab silent with no
+	// record that we were the cause.
 	const mutedTabIds = new Set<number>();
-	const historyStorageDefaults = { scoreHistory: {}, powerScoreHistory: {}, gameBoosts: {} };
+	const historyStorageDefaults = { scoreHistory: {}, powerScoreHistory: {}, gameBoosts: {}, mutedTabIds: [] };
 
-	const recordSuccessfulSwitchForReviewPrompt = async (switchedAt: number) => {
+	const persistMutedTabIds = async () => {
 		try {
-			const stored = await browser.storage.local.get({ [reviewPromptStorageKey]: null });
-			const current = normalizeReviewPromptState(stored[reviewPromptStorageKey]);
-			await browser.storage.local.set({
-				[reviewPromptStorageKey]: recordSuccessfulReviewPromptSwitch(current, switchedAt),
-			});
+			await browser.storage.session.set({ mutedTabIds: [...mutedTabIds] });
 		} catch (err) {
-			console.error('ArenaSwap: Failed to update review prompt state:', err);
+			logWarn('Failed to persist muted tab ids.', err);
 		}
 	};
+
 
 	const hydrateHistoryMaps = (storedScoreHistory: unknown, storedPowerScoreHistory: unknown) => {
 		history.clear();
@@ -81,52 +141,50 @@ export default defineBackground(() => {
 		if (isObjectRecord(storedScoreHistory)) {
 			Object.entries(storedScoreHistory).forEach(([gameId, snapshots]) => {
 				if (!Array.isArray(snapshots)) return;
-				const normalizedSnapshots = snapshots.filter(isScoreSnapshotLike).slice(-maxHistorySnapshots);
-				if (normalizedSnapshots.length === 0) return;
-				history.set(gameId, normalizedSnapshots);
+				const valid = snapshots.filter(isScoreSnapshotLike);
+				if (valid.length === 0) return;
+				// Runs before the first fetch, so there is no Game to read a per-sport window from
+				// yet. Trimming to the widest window keeps the sports that use one — the global value
+				// would discard 15 of soccer's 20 minutes on every worker wake — and the next
+				// updateHistory pass re-trims to the sport's real window.
+				const cutoff = valid[valid.length - 1]!.timestamp - maxHistoryWindowMs;
+				const trimmed = valid.filter(s => s.timestamp >= cutoff).slice(-maxSnapshotsPerGame);
+				if (trimmed.length === 0) return;
+				history.set(gameId, trimmed);
 			});
 		}
 
 		if (isObjectRecord(storedPowerScoreHistory)) {
 			Object.entries(storedPowerScoreHistory).forEach(([gameId, snapshots]) => {
 				if (!Array.isArray(snapshots)) return;
-				const normalizedSnapshots = snapshots.filter(isPowerScoreSnapshotLike).slice(-maxHistorySnapshots);
-				if (normalizedSnapshots.length === 0) return;
-				powerScoreHistory.set(gameId, normalizedSnapshots);
+				const valid = snapshots.filter(isPowerScoreSnapshotLike);
+				if (valid.length === 0) return;
+				const cutoff = valid[valid.length - 1]!.timestamp - maxHistoryWindowMs;
+				const trimmed = valid.filter(s => s.timestamp >= cutoff).slice(-maxSnapshotsPerGame);
+				if (trimmed.length === 0) return;
+				powerScoreHistory.set(gameId, trimmed);
 			});
 		}
 	};
 
-	const getFavoriteTeamCount = (game: Game, favoriteTeamIds: Set<string>): number => {
-		let count = 0;
-		const homeFavoriteTeamKey = createFavoriteTeamKey(game.league, game.homeTeam.id);
-		const awayFavoriteTeamKey = createFavoriteTeamKey(game.league, game.awayTeam.id);
-		if (favoriteTeamIds.has(homeFavoriteTeamKey)) count++;
-		if (favoriteTeamIds.has(awayFavoriteTeamKey)) count++;
-		return count;
-	};
-
-	const getMaxSnapshotsForGame = (game: Game): number => {
-		const sportConfig = sportTypeConfigMap[game.sportType] ?? sportTypeConfigMap.basketball;
-		return sportConfig.maxHistorySnapshots ?? maxHistorySnapshots;
-	};
 
 	const updateHistory = (currentGames: Game[]) => {
+		const now = Date.now();
 		currentGames.forEach(game => {
 			const snapshots = history.get(game.id) ?? [];
 			snapshots.push({
 				gameId: game.id,
-				timestamp: Date.now(),
+				timestamp: now,
 				homeScore: game.homeTeam.score,
 				awayScore: game.awayTeam.score,
 			});
-			const maxSnapshots = getMaxSnapshotsForGame(game);
-			if (snapshots.length > maxSnapshots) snapshots.shift();
+			trimSnapshots(snapshots, now - getHistoryWindowMsForGame(game));
 			history.set(game.id, snapshots);
 		});
 	};
 
 	const updatePowerScoreHistory = (liveGames: Game[], scores: PowerScoreResult[], changedLeagueId: LeagueId | null) => {
+		const now = Date.now();
 		const liveGameById = new Map(liveGames.map(game => [game.id, game]));
 		scores.forEach(score => {
 			const game = liveGameById.get(score.gameId);
@@ -136,22 +194,24 @@ export default defineBackground(() => {
 			const snapshots = powerScoreHistory.get(score.gameId) ?? [];
 			snapshots.push({
 				gameId: score.gameId,
-				timestamp: Date.now(),
+				timestamp: now,
 				total: score.total,
 				closeness: score.closeness,
 				lateGame: score.lateGame,
 				momentum: score.momentum,
 				leadChanges: score.leadChanges,
 				comeback: score.comeback,
-				baseTotal: score.baseTotal ?? score.total,
+				...(score.winProbabilityVariance !== undefined ? { winProbabilityVariance: score.winProbabilityVariance } : {}),
+				signalsSubtotal: score.signalsSubtotal ?? score.total,
 				favoriteBonus: score.favoriteBonus ?? 0,
 				favoriteTeamCount: score.favoriteTeamCount ?? 0,
 				gameBoost: score.gameBoost ?? 0,
+				scoringOpportunityBoost: score.scoringOpportunityBoost ?? 0,
+				postseasonBoost: score.postseasonBoost ?? 0,
 				stalled: score.stalled ?? false,
 				reason: score.reason,
 			});
-			const maxSnapshots = getMaxSnapshotsForGame(game);
-			if (snapshots.length > maxSnapshots) snapshots.shift();
+			trimSnapshots(snapshots, now - getHistoryWindowMsForGame(game));
 			powerScoreHistory.set(score.gameId, snapshots);
 		});
 	};
@@ -173,7 +233,7 @@ export default defineBackground(() => {
 			scoreHistory: serializeScoreHistory(),
 			powerScoreHistory: serializePowerScoreHistory(),
 		}).catch(err => {
-			console.error('ArenaSwap: Failed to persist score history:', err);
+			logWarn('Failed to persist score history to session storage.', err);
 		});
 	};
 
@@ -192,6 +252,7 @@ export default defineBackground(() => {
 		browser.runtime.sendMessage({ type: 'SCORES_UPDATED', ...buildBackgroundState() }).catch(() => {});
 	};
 
+
 	const getGameLabel = (gameId: string): string => {
 		const game = games.find(g => g.id === gameId);
 		return game ? `${game.awayTeam.abbreviation} vs ${game.homeTeam.abbreviation}` : 'Unknown Game';
@@ -202,9 +263,8 @@ export default defineBackground(() => {
 		return game?.venueName ?? 'the arena';
 	};
 
-	// Every tab whose audio ArenaSwap owns. The standby stream tab lives outside the game
-	// registry but is still ours to mute — otherwise it keeps playing over whichever game
-	// the user is actually watching.
+	// The standby tab lives outside the game registry but is still ours to mute — otherwise it
+	// keeps playing over whichever game the user is actually watching.
 	const getManagedTabIds = (): number[] => {
 		const managedTabIds = tabRegistry.map(reg => reg.tabId);
 		if (prefs.standbyStreamEnabled && standbyStreamTabId !== null) {
@@ -217,17 +277,11 @@ export default defineBackground(() => {
 		const managedTabIds = getManagedTabIds();
 		if (managedTabIds.length === 0 && mutedTabIds.size === 0) return;
 
-		const allTabs = await browser.tabs.query({});
-		const openTabIds = new Set(
-			allTabs
-				.map(tab => tab.id)
-				.filter((tabId): tabId is number => tabId !== undefined)
-		);
+		const openTabIds = await getOpenTabIds();
 
 		const managedOpenTabIds = managedTabIds.filter(tabId => openTabIds.has(tabId));
 
-		// Tabs we muted earlier that are no longer ours (unregistered, standby switched off,
-		// or a different standby tab picked) must be handed back to the user unmuted.
+		// Tabs we muted earlier that are no longer ours must be handed back to the user unmuted.
 		const releasedTabIds = [...mutedTabIds].filter(
 			tabId => openTabIds.has(tabId) && !managedOpenTabIds.includes(tabId)
 		);
@@ -246,14 +300,25 @@ export default defineBackground(() => {
 			nextMuteStates.set(tabId, enabled ? tabId !== watchedTabId : false);
 		}
 
+		// A tab can close between the query above and the update below. Failing the whole batch
+		// would abort the caller mid-poll, including the switch evaluation in afterFetch, so each
+		// tab is settled on its own and the muted record is written from what actually landed.
+		const failedTabIds = new Set<number>();
+		await Promise.all(
+			[...nextMuteStates].map(async ([tabId, muted]) => {
+				try {
+					await browser.tabs.update(tabId, { muted });
+				} catch {
+					failedTabIds.add(tabId);
+				}
+			})
+		);
+
 		mutedTabIds.clear();
 		for (const [tabId, muted] of nextMuteStates) {
-			if (muted) mutedTabIds.add(tabId);
+			if (muted && !failedTabIds.has(tabId)) mutedTabIds.add(tabId);
 		}
-
-		await Promise.all(
-			[...nextMuteStates].map(([tabId, muted]) => browser.tabs.update(tabId, { muted }))
-		);
+		await persistMutedTabIds();
 	};
 
 	const clearPendingSwitch = () => {
@@ -262,6 +327,50 @@ export default defineBackground(() => {
 			pendingSwitchTimer = null;
 		}
 		pendingSwitch = null;
+	};
+
+	// Leaving a closed tab's registration in place poisons switching: it still wins the reduce in
+	// resolveSwitchTarget whenever its game holds the top PowerScore, and every switch attempt
+	// then no-ops. Same for the standby tab, which otherwise answers `switchToStandby` forever.
+	const forgetClosedTab = async (tabId: number) => {
+		const hadRegistration = tabRegistry.some(reg => reg.tabId === tabId);
+		const wasStandby = standbyStreamTabId === tabId;
+		const wasMuted = mutedTabIds.delete(tabId);
+		if (!hadRegistration && !wasStandby && !wasMuted) return;
+
+		if (hadRegistration) tabRegistry = tabRegistry.filter(reg => reg.tabId !== tabId);
+		if (wasStandby) {
+			standbyStreamTabId = null;
+			onStandbyStream = false;
+		}
+		if (pendingSwitch?.tabId === tabId) clearPendingSwitch();
+
+		try {
+			await browser.storage.session.set({ tabRegistry, standbyStreamTabId, mutedTabIds: [...mutedTabIds] });
+		} catch (err) {
+			logWarn('Failed to persist state after a tab closed.', err);
+		}
+		if (hadRegistration || wasStandby) broadcastScoresUpdated();
+	};
+
+	// MV3 tears the service worker down whenever it goes idle, so tabs close with no onRemoved
+	// listener alive to hear it and the registry comes back from session storage still pointing
+	// at them. Runs on every worker start, before the first switch evaluation.
+	const reconcileClosedTabs = async () => {
+		const openTabIds = await getOpenTabIds();
+		// Nothing legitimately reports zero tabs while the worker is running, so an empty result
+		// means we cannot see the tab strip. Treat that as unknown rather than as proof that every
+		// tracked tab closed, which would wipe a perfectly good registry.
+		if (openTabIds.size === 0) return;
+
+		const trackedTabIds = new Set([
+			...tabRegistry.map(reg => reg.tabId),
+			...mutedTabIds,
+			...(standbyStreamTabId !== null ? [standbyStreamTabId] : []),
+		]);
+		for (const tabId of trackedTabIds) {
+			if (!openTabIds.has(tabId)) await forgetClosedTab(tabId);
+		}
 	};
 
 	const executeSwitch = async (tabId: number, gameId?: string, reason?: string) => {
@@ -282,28 +391,62 @@ export default defineBackground(() => {
 				await browser.notifications.create({
 					type: 'basic',
 					iconUrl: 'icon/128.png',
-					title: 'On standby stream | ArenaSwap',
-					message: 'All games went quiet. Parked on your standby stream.',
+					title: i18n.t('notification.standbyTitle'),
+					message: i18n.t('notification.standbyMessage'),
 				});
 			} else {
 				const game = games.find(g => g.id === gameId);
 				const scoreTitle = game
 					? `${game.awayTeam.abbreviation} ${game.awayTeam.score}-${game.homeTeam.score} ${game.homeTeam.abbreviation}`
 					: getGameLabel(gameId);
-				const capitalizeFirst = (s: string) => s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
 				const venue = getVenueName(gameId);
+				// `reason` is generated English text from the powerscore engine, so it stays English
+				// in every locale — the same way it already reads on the game detail screen.
 				const message = reason
-					? `${capitalizeFirst(reason)}. Taking you to ${venue} now!`
-					: `Taking you to ${venue} now!`;
+					? i18n.t('notification.switchedMessageWithReason', { reason: capitalizeFirst(reason), venue })
+					: i18n.t('notification.switchedMessage', { venue });
 
 				await browser.notifications.create({
 					type: 'basic',
 					iconUrl: 'icon/128.png',
-					title: `Switched → ${scoreTitle} | ArenaSwap`,
+					title: i18n.t('notification.switchedTitle', { score: scoreTitle }),
 					message,
 				});
 			}
 		}
+	};
+
+	// Reads `currentScores` so a switch that waited out `switchDelaySeconds` re-targets against
+	// what the games are doing when it fires, not the decision made a minute ago.
+	const resolveSwitchTarget = (
+		openTabIds: Set<number>,
+		activeTabId: number,
+	): { tabId: number; gameId: string; reason?: string } | null => {
+		const liveRegistry = tabRegistry.filter(reg => openTabIds.has(reg.tabId));
+		const activeReg = liveRegistry.find(reg => reg.tabId === activeTabId);
+		const activeScore = currentScores.find(s => s.gameId === activeReg?.gameId)?.total ?? 0;
+
+		const registeredGameIds = new Set(liveRegistry.map(reg => reg.gameId));
+		const candidates = currentScores.filter(s => registeredGameIds.has(s.gameId));
+		if (candidates.length === 0) return null;
+
+		const best = candidates.reduce((a, b) => a.total > b.total ? a : b);
+		// With several tabs on the same game, picking any but the focused one would switch the
+		// user between two tabs of the game they are already watching.
+		const bestReg = activeReg?.gameId === best.gameId
+			? activeReg
+			: liveRegistry.find(reg => reg.gameId === best.gameId)!;
+		if (bestReg.tabId === activeTabId) return null;
+
+		const threshold = sensitivityThresholds[prefs.sensitivity] ?? 0;
+		// With no game tab in focus the threshold has nothing to measure against, so the best game
+		// wins by default. Every frozen game scores 0, so without the `> 0` guard a league sitting
+		// at halftime would pull the user off whatever they were actually doing.
+		const notWatchingAGame = !activeReg && best.total > 0;
+		if (!notWatchingAGame && best.total < activeScore + threshold) return null;
+		if (Date.now() - lastSwitchTime <= prefs.cooldownSeconds * 1000) return null;
+
+		return { tabId: bestReg.tabId, gameId: best.gameId, reason: best.reason };
 	};
 
 	const executePendingSwitch = async () => {
@@ -312,12 +455,25 @@ export default defineBackground(() => {
 		pendingSwitch = null;
 		if (!queuedSwitch || !prefs.enabled) return;
 
-		const matchingRegistration = tabRegistry.find(
-			reg => reg.gameId === queuedSwitch.gameId && reg.tabId === queuedSwitch.tabId
-		);
-		if (!matchingRegistration) return;
+		const [activeTab] = await browser.tabs.query({ active: true, lastFocusedWindow: true });
+		if (activeTab?.id === undefined) return;
 
-		await executeSwitch(queuedSwitch.tabId, queuedSwitch.gameId, queuedSwitch.reason);
+		const openTabIds = await getOpenTabIds();
+
+		// Everything went quiet during the delay: park on the standby stream on the next poll
+		// instead of dropping the user into the least-boring game.
+		if (prefs.standbyStreamEnabled && standbyStreamTabId !== null) {
+			const registeredGameIds = new Set(
+				tabRegistry.filter(reg => openTabIds.has(reg.tabId)).map(reg => reg.gameId)
+			);
+			const registeredScores = currentScores.filter(s => registeredGameIds.has(s.gameId));
+			if (registeredScores.length > 0 && registeredScores.every(s => s.total < prefs.standbyStreamThreshold)) return;
+		}
+
+		const target = resolveSwitchTarget(openTabIds, activeTab.id);
+		if (!target) return;
+
+		await executeSwitch(target.tabId, target.gameId, target.reason);
 	};
 
 	const queuePendingSwitch = (gameId: string, tabId: number, reason?: string) => {
@@ -335,16 +491,15 @@ export default defineBackground(() => {
 			return;
 		}
 		try {
-			const result = await fetchGamesWithLeagueLogos(prefs.enabledLeagues, { includeUpcoming: true });
+			const result = await fetchGamesWithLeagueLogos(prefs.enabledLeagues, { includeUpcoming: true, upcomingDays: prefs.upcomingGamesDays });
 			upcomingGames = result.games.filter(g => g.status === 'pre');
 		} catch (err) {
-			console.error('ArenaSwap: Failed to fetch upcoming games:', err);
+			logWarn('Failed to fetch upcoming games.', err);
 		}
 	};
 
-	// Shared post-fetch processing: stall tracking, score computation, broadcast, tab switching.
-	// Pass changedLeagueId to scope stall tracking and history to just the updated league;
-	// pass null (full refresh) to process all live games.
+	// A changedLeagueId scopes stall tracking and history to just that league; null processes
+	// every live game.
 	const afterFetch = async (changedLeagueId: LeagueId | null, allowTabSwitch: boolean) => {
 		const liveGames = games.filter(g => g.status === 'in');
 		const freshGames = changedLeagueId ? liveGames.filter(g => g.league === changedLeagueId) : liveGames;
@@ -366,26 +521,48 @@ export default defineBackground(() => {
 
 		const favoriteTeamIds = new Set(prefs.favoriteTeamIds);
 		const favoriteBonusPoints = prefs.favoriteTeamBonusPoints;
+		const postseasonBoostPoints = prefs.postseasonBoostPoints;
 		const scores = liveGames.map(g => {
 			const stallCount = clockStallMap.get(g.id)?.stallCount ?? 0;
-			const baseScore = normalizePowerScoreResult(computePowerScore(g, history.get(g.id) ?? [], stallCount));
+			const baseScore = applyDisabledSignals(
+				normalizePowerScoreResult(
+					computePowerScore(g, history.get(g.id) ?? [], stallCount, winProbHistory.get(g.id) ?? []),
+				),
+				prefs.disabledSignals,
+			);
 			const favoriteTeamCount = getFavoriteTeamCount(g, favoriteTeamIds);
-			const favoriteBonus = favoriteTeamCount * favoriteBonusPoints;
-			const gameBoost = gameBoosts[g.id] ?? 0;
+			// computePowerScore already zeroes a frozen game's signals, and the boosts have to follow
+			// it down: otherwise a game sitting at halftime with a favorite in it still out-scores the
+			// games actually being played.
+			const frozen = isPlayFrozen(g);
+			const favoriteBonus = frozen ? 0 : favoriteTeamCount * favoriteBonusPoints;
+			const gameBoost = frozen ? 0 : (gameBoosts[g.id] ?? 0);
+			const scoringOpportunityBoost = computeScoringOpportunityBoost(g);
+			const postseasonBoost = !frozen && g.isPostseason ? postseasonBoostPoints : 0;
+			// Automatic scoring saturates at 100; only a manual game boost may push the headline
+			// total past the ceiling.
+			const automaticTotal = Math.min(
+				scoreMaxTotal,
+				baseScore.total + favoriteBonus + scoringOpportunityBoost + postseasonBoost,
+			);
 			const reasonParts = [
 				baseScore.reason,
 				favoriteBonus > 0 && `favorite bonus (+${favoriteBonus})`,
 				gameBoost > 0 && `game boost (+${gameBoost})`,
+				scoringOpportunityBoost > 0 && `scoring opportunity (+${scoringOpportunityBoost})`,
+				postseasonBoost > 0 && `postseason (+${postseasonBoost})`,
 			].filter(Boolean);
 
 			return normalizePowerScoreResult(
 				{
 					...baseScore,
-					baseTotal: baseScore.total,
+					signalsSubtotal: baseScore.signalsSubtotal ?? baseScore.total,
 					favoriteBonus,
 					favoriteTeamCount,
 					gameBoost,
-					total: baseScore.total + favoriteBonus + gameBoost,
+					scoringOpportunityBoost,
+					postseasonBoost,
+					total: automaticTotal + gameBoost,
 					reason: reasonParts.join(', '),
 				},
 				{ allowTotalOverflow: true },
@@ -410,46 +587,44 @@ export default defineBackground(() => {
 		const [activeTab] = await browser.tabs.query({ active: true, lastFocusedWindow: true });
 		if (activeTab?.id === undefined) return;
 
-		const activeReg = tabRegistry.find(r => r.tabId === activeTab.id);
-		const activeScore = scores.find(s => s.gameId === activeReg?.gameId)?.total ?? 0;
-
-		const registeredGameIds = new Set(tabRegistry.map(r => r.gameId));
+		const openTabIds = await getOpenTabIds();
+		const liveRegistry = tabRegistry.filter(reg => openTabIds.has(reg.tabId));
+		const registeredGameIds = new Set(liveRegistry.map(reg => reg.gameId));
 		const registeredScores = scores.filter(s => registeredGameIds.has(s.gameId));
 		if (registeredScores.length === 0) return;
-		if (pendingSwitch) return;
 
 		const standbyDecision = computeStandbyStreamDecision({
 			standbyStreamEnabled: prefs.standbyStreamEnabled,
-			standbyStreamTabId,
+			standbyStreamTabId: standbyStreamTabId !== null && openTabIds.has(standbyStreamTabId) ? standbyStreamTabId : null,
 			standbyStreamThreshold: prefs.standbyStreamThreshold,
 			registeredScores,
 			onStandbyStream,
 			activeTabIsStandby: activeTab.id === standbyStreamTabId,
 		});
 
+		// Evaluated ahead of the pending-switch guard so a queued switch cannot freeze the standby
+		// state machine. When standby takes over, the queued game is below the threshold anyway.
 		if (standbyDecision === 'switchToStandby') {
+			clearPendingSwitch();
 			onStandbyStream = true;
 			await executeSwitch(standbyStreamTabId!);
 			return;
 		}
-		if (standbyDecision === 'stayOnStandby') return;
+		if (standbyDecision === 'stayOnStandby') {
+			clearPendingSwitch();
+			return;
+		}
 		if (standbyDecision === 'resume') onStandbyStream = false;
 
-		const best = registeredScores.reduce((a, b) => a.total > b.total ? a : b);
-		const bestReg = tabRegistry.find(r => r.gameId === best.gameId)!;
-		const threshold = sensitivityThresholds[prefs.sensitivity] ?? 0;
-		const cooldownOk = Date.now() - lastSwitchTime > prefs.cooldownSeconds * 1000;
+		if (pendingSwitch) return;
 
-		if (
-			bestReg.tabId !== activeTab.id &&
-			best.total > activeScore + threshold &&
-			cooldownOk
-		) {
-			if (prefs.switchDelaySeconds > 0) {
-				queuePendingSwitch(best.gameId, bestReg.tabId, best.reason);
-			} else {
-				await executeSwitch(bestReg.tabId, best.gameId, best.reason);
-			}
+		const target = resolveSwitchTarget(openTabIds, activeTab.id);
+		if (!target) return;
+
+		if (prefs.switchDelaySeconds > 0) {
+			queuePendingSwitch(target.gameId, target.tabId, target.reason);
+		} else {
+			await executeSwitch(target.tabId, target.gameId, target.reason);
 		}
 	};
 
@@ -459,7 +634,8 @@ export default defineBackground(() => {
 			games = simulator.tick();
 			const demoLeagues = [...new Set(games.map(game => game.league))];
 			leagueLogos = demoLeagues.reduce<LeagueLogoMap>((acc, leagueId) => {
-				acc[leagueId] = leagueLogoFallbacks[leagueId];
+				// No ESPN response behind a demo game, so this resolves to the override or fallback.
+				acc[leagueId] = resolveLeagueLogoUrl(leagueId);
 				return acc;
 			}, {});
 		} else {
@@ -468,10 +644,9 @@ export default defineBackground(() => {
 				games = fetchResult.games;
 				leagueLogos = fetchResult.leagueLogos;
 			} catch (err) {
-				console.error('Arenaswap: Failed to fetch games:', err);
+				logError('Failed to fetch games.', err);
 				return;
 			}
-			// Merge cached upcoming games, excluding any that have since gone live
 			const freshGameIds = new Set(games.map(g => g.id));
 			const stillUpcoming = upcomingGames.filter(g => !freshGameIds.has(g.id));
 			games = [...games, ...stillUpcoming];
@@ -480,11 +655,6 @@ export default defineBackground(() => {
 		await afterFetch(null, allowTabSwitch);
 	};
 
-	// Fetch a single league and merge results into shared state, then reschedule.
-	// Each league runs on its own pollIntervalMs rhythm with ±2s jitter to
-	// continuously spread requests across the window and prevent thundering herds.
-	// When a league has returned no live games for pollDormantThresholdPolls consecutive
-	// fetches it switches to dormant mode and polls every 2-3 min instead.
 	const tickLeague = async (leagueId: LeagueId, allowTabSwitch: boolean) => {
 		let fetchSucceeded = false;
 		try {
@@ -498,16 +668,25 @@ export default defineBackground(() => {
 			pollModeTracker.recordPollResult(leagueId, hasLiveGames);
 			fetchSucceeded = true;
 		} catch (err) {
-			console.error(`ArenaSwap: Failed to fetch ${leagueId}:`, err);
+			logWarn(`Failed to fetch ${leagueId} games.`, err);
 		}
 
-		// Reschedule before awaiting post-processing so the next tick is always queued.
-		// On error fall back to eager interval so we retry promptly.
-		// Guard against rescheduling a league that was disabled while this fetch was in flight.
+		// Reschedule before awaiting post-processing so the next tick is always queued, and skip
+		// leagues that were disabled while this fetch was in flight.
 		if (!demoMode && prefs.enabledLeagues.includes(leagueId)) {
-			const nextInterval = fetchSucceeded && pollModeTracker.getMode(leagueId) === 'dormant'
-				? pollDormantMinMs + randomInRange(0, pollDormantMaxMs - pollDormantMinMs)
-				: pollIntervalMs + randomInRange(-2_000, 2_000);
+			let nextInterval: number;
+			if (fetchSucceeded && pollModeTracker.getMode(leagueId) === 'dormant') {
+				nextInterval = pollDormantMinMs + randomInRange(0, pollDormantMaxMs - pollDormantMinMs);
+			} else if (fetchSucceeded) {
+				const liveLeagueGames = games.filter(g => g.league === leagueId && g.status === 'in');
+				const base = computeLeagueIntervalMs(liveLeagueGames, currentScores);
+				// Proportional so fast polls stay dense and slow polls spread out.
+				const jitterMax = Math.round((base / pollMaxEagerMs) * 2_000);
+				nextInterval = base + randomInRange(-jitterMax, jitterMax);
+			} else {
+				nextInterval = pollIntervalMs + randomInRange(-2_000, 2_000);
+			}
+			leagueNextIntervalMs.set(leagueId, nextInterval);
 			scheduleLeagueTick(leagueId, nextInterval);
 		}
 
@@ -525,8 +704,7 @@ export default defineBackground(() => {
 		leagueTimers.clear();
 	};
 
-	// Spread each enabled league's first tick randomly across pollIntervalMs so
-	// they never all fire at the same moment after the initial full fetch.
+	// Spreads each league's first tick across pollIntervalMs so they never all fire at once.
 	const startLeaguePolling = () => {
 		stopLeaguePolling();
 		pollModeTracker.reset();
@@ -543,51 +721,118 @@ export default defineBackground(() => {
 		return inFlightRefresh;
 	};
 
-	// Load persisted state before any refresh to avoid race conditions on popup reopen.
+	// One request per game, so this deliberately runs far slower than the scoreboard poll — a
+	// win-probability line moves on the scale of possessions, not seconds.
+	const refreshWinProbabilities = async (): Promise<void> => {
+		const liveGames = games.filter(g => g.status === 'in');
+
+		const liveIds = new Set(liveGames.map(g => g.id));
+		for (const gameId of winProbHistory.keys()) {
+			if (!liveIds.has(gameId)) winProbHistory.delete(gameId);
+		}
+
+		if (liveGames.length === 0) return;
+
+		await Promise.all(liveGames.map(async game => {
+			try {
+				const line = await fetchWinProbability(game);
+				// ESPN returns [] during delays and brief interruptions even when earlier play
+				// produced a line; keep the last good one rather than dropping the signal.
+				if (line.length > 0) winProbHistory.set(game.id, line);
+			} catch (err) {
+				logWarn(`Failed to fetch win probability for ${game.id}.`, err);
+			}
+		}));
+	};
+
+	const stopWinProbabilityPolling = () => {
+		winProbGeneration++;
+		if (winProbTimer !== null) clearTimeout(winProbTimer);
+		winProbTimer = null;
+	};
+
+	const scheduleWinProbabilityPolling = () => {
+		stopWinProbabilityPolling();
+		const generation = winProbGeneration;
+		const run = async () => {
+			await refreshWinProbabilities();
+			// The timer that started this sweep has already fired, so neither a stop nor a restart
+			// during the sweep could have cancelled it. Without this check a resolving run brings a
+			// stopped chain back to life, or adds a second live one that nothing holds a handle to.
+			if (generation !== winProbGeneration) return;
+			winProbTimer = setTimeout(() => void run(), winProbPollIntervalMs);
+		};
+		winProbTimer = setTimeout(() => void run(), winProbPollIntervalMs);
+	};
+
 	const stateReady = Promise.all([
-		browser.storage.sync.get({ prefs: null }),
+		loadStoredUserPreferences(),
 		browser.storage.session.get({ tabRegistry: [], standbyStreamTabId: null, ...historyStorageDefaults }),
 		browser.storage.local.get({ demoMode: false }),
-	]).then(([prefsResult, sessionResult, demoResult]) => {
-		prefs = normalizeUserPreferences(prefsResult.prefs);
+	]).then(([storedPrefs, sessionResult, demoResult]) => {
+		prefs = storedPrefs;
 		tabRegistry = sessionResult.tabRegistry as TabRegistration[];
 		standbyStreamTabId = (sessionResult.standbyStreamTabId as number | null) ?? null;
 		gameBoosts = normalizeGameBoosts(sessionResult.gameBoosts);
+		if (Array.isArray(sessionResult.mutedTabIds)) {
+			for (const tabId of sessionResult.mutedTabIds) {
+				if (typeof tabId === 'number' && Number.isFinite(tabId)) mutedTabIds.add(tabId);
+			}
+		}
 		hydrateHistoryMaps(sessionResult.scoreHistory, sessionResult.powerScoreHistory);
 		demoMode = demoResult.demoMode as boolean;
 		if (demoMode) simulator = new MockGameSimulator();
 	}).catch(err => {
-		console.error('ArenaSwap: Failed to load persisted state, using defaults:', err);
+		logError('Failed to load persisted state; falling back to defaults.', err);
 	});
 
 	stateReady.then(async () => {
-		upcomingGamesReady = refreshUpcomingGames().catch(() => {});
-		await upcomingGamesReady;
-		refreshScores(false).finally(() => {
-			if (demoMode) {
-				if (!demoTimer) {
-					demoTimer = setInterval(() => void tick(true), pollIntervalMs);
-				}
-			} else {
-				startLeaguePolling();
-			}
+		await reconcileClosedTabs().catch(err => {
+			logWarn('Failed to reconcile the tab registry against open tabs.', err);
 		});
+		await refreshUpcomingGames().catch(() => {});
+		await refreshScores(false).catch(err => {
+			logError('Initial score refresh failed; starting polling anyway.', err);
+		});
+
+		if (demoMode) {
+			if (!demoTimer) {
+				// Routed through refreshScores so a slow tick cannot overlap the next one.
+				demoTimer = setInterval(() => void refreshScores(true), pollIntervalMs);
+			}
+			return;
+		}
+
+		startLeaguePolling();
+		scheduleWinProbabilityPolling();
+		// Seed the lines now that the games are known, then re-score so the first thing the popup
+		// renders already carries volatility.
+		await refreshWinProbabilities();
+		await refreshScores(false);
 	});
 
-	// Handle messages from popup
 	browser.runtime.onMessage.addListener((msg: ExtensionMessage) => {
 		if (msg.type === 'GET_STATE') {
 			if (msg.forceRefresh === true || games.length === 0) {
-				// Popup opened or worker just woke up; fetch fresh state before responding.
-				// Upcoming games load in the background and arrive via SCORES_UPDATED push.
 				return stateReady
 					.then(async () => {
-						// Re-sync prefs from storage in case popup wrote prefs but closed before
-						// the UPDATE_PREFS message was delivered.
+						// The popup may have written prefs then closed before its UPDATE_PREFS
+						// message was delivered, so this path has to re-arm what that handler would
+						// have: the league timers below still point at the old league set. Mute state
+						// needs no help — the refreshScores at the end lands in afterFetch, which
+						// syncs it against whatever prefs.enabled ends up as.
+						const previousLeagues = new Set(prefs.enabledLeagues);
 						try {
-							const stored = await browser.storage.sync.get({ prefs: null });
-							prefs = normalizeUserPreferences(stored.prefs);
+							prefs = await loadStoredUserPreferences();
 						} catch { /* keep current in-memory prefs */ }
+						const newLeagues = new Set(prefs.enabledLeagues);
+						const leaguesChanged = previousLeagues.size !== newLeagues.size ||
+							[...previousLeagues].some(leagueId => !newLeagues.has(leagueId));
+						if (leaguesChanged && !demoMode) {
+							startLeaguePolling();
+							// A league switched off keeps its cached lines until the next sweep otherwise.
+							void refreshWinProbabilities();
+						}
 						await refreshScores(false);
 						return buildBackgroundState();
 					});
@@ -598,29 +843,32 @@ export default defineBackground(() => {
 			return stateReady.then(async () => {
 				const wasEnabled = prefs.enabled;
 				const prevShowUpcoming = prefs.showUpcomingGames;
+				const prevUpcomingGamesDays = prefs.upcomingGamesDays;
 				const prevLeagues = new Set(prefs.enabledLeagues);
 				prefs = normalizeUserPreferences(msg.prefs);
 				if (wasEnabled && !prefs.enabled) lastSwitchTime = 0;
 				clearPendingSwitch();
-				await browser.storage.sync.set({ prefs });
+				// The popup persists before it sends, and the GET_STATE recovery path relies on that,
+				// so writing again here would only double the storage.sync traffic against Chrome's
+				// 120-writes-per-minute ceiling.
 				await syncManagedTabMuteState(prefs.enabled);
-				if (prefs.showUpcomingGames !== prevShowUpcoming) {
+				const upcomingSettingChanged = prefs.showUpcomingGames !== prevShowUpcoming ||
+					(prefs.showUpcomingGames && prefs.upcomingGamesDays !== prevUpcomingGamesDays);
+				if (upcomingSettingChanged) {
 					await refreshUpcomingGames();
-					// Rebuild games: keep live/in-progress games, replace upcoming slice with updated cache
 					games = [...games.filter(g => g.status !== 'pre'), ...upcomingGames];
 					broadcastScoresUpdated();
 				}
-				// Restart staggered polling when the league set changes
 				const newLeagues = new Set(prefs.enabledLeagues);
 				const leaguesChanged = prevLeagues.size !== newLeagues.size ||
 					[...prevLeagues].some(l => !newLeagues.has(l as LeagueId));
 				if (leaguesChanged && !demoMode) {
-					// Refresh upcoming games so newly-enabled leagues get their schedule
 					await refreshUpcomingGames();
-					// Rebuild games: keep live/in-progress games, replace upcoming slice with updated cache
 					games = [...games.filter(g => g.status !== 'pre'), ...upcomingGames];
 					broadcastScoresUpdated();
 					startLeaguePolling();
+					// A league switched off keeps its cached lines until the next sweep otherwise.
+					void refreshWinProbabilities();
 				}
 			});
 		}
@@ -651,16 +899,21 @@ export default defineBackground(() => {
 				if (demoMode) {
 					simulator = new MockGameSimulator();
 					stopLeaguePolling();
+					// Demo games have no ESPN summary behind them; drop any real lines we cached.
+					stopWinProbabilityPolling();
+					winProbHistory.clear();
 					if (!demoTimer) {
-						demoTimer = setInterval(() => void tick(true), pollIntervalMs);
+						// Routed through refreshScores so a slow tick cannot overlap the next one.
+						demoTimer = setInterval(() => void refreshScores(true), pollIntervalMs);
 					}
 				} else {
 					simulator = null;
 					if (demoTimer) { clearInterval(demoTimer); demoTimer = null; }
 					startLeaguePolling();
+					scheduleWinProbabilityPolling();
 				}
 				await browser.storage.local.set({ demoMode });
-				await refreshScores(false); // immediately refresh
+				await refreshScores(false);
 			});
 		}
 		if (msg.type === 'SET_STANDBY_STREAM_TAB') {
@@ -668,13 +921,51 @@ export default defineBackground(() => {
 				standbyStreamTabId = msg.tabId;
 				onStandbyStream = false;
 				await browser.storage.session.set({ standbyStreamTabId });
-				// Mute the freshly designated tab right away rather than waiting for the next poll
 				await syncManagedTabMuteState(prefs.enabled);
+			});
+		}
+		if (msg.type === 'GET_DEBUG_STATE') {
+			return stateReady.then((): DebugState => {
+				const gameLabels: Record<string, string> = {};
+				for (const g of games) {
+					gameLabels[g.id] = `${g.awayTeam.abbreviation}·${g.homeTeam.abbreviation}`;
+				}
+				return {
+					pollModes: Object.fromEntries(
+						prefs.enabledLeagues.map(leagueId => [leagueId, pollModeTracker.getMode(leagueId)])
+					),
+					leagueIntervals: Object.fromEntries(leagueNextIntervalMs.entries()),
+					demoMode,
+					lastSwitchTime,
+					pendingSwitch,
+					liveGameCount: games.filter(g => g.status === 'in').length,
+					upcomingGameCount: games.filter(g => g.status === 'pre').length,
+					totalGameCount: games.length,
+					tabRegistry,
+					onStandbyStream,
+					standbyStreamTabId,
+					clockStalls: Object.fromEntries(clockStallMap.entries()),
+					scores: currentScores,
+					gameLabels,
+					enabledLeagues: prefs.enabledLeagues,
+					sensitivity: prefs.sensitivity,
+					cooldownSeconds: prefs.cooldownSeconds,
+					switchDelaySeconds: prefs.switchDelaySeconds,
+				};
 			});
 		}
 	});
 
-	browser.tabs.onActivated.addListener(() => {
-		void stateReady.then(() => syncManagedTabMuteState(prefs.enabled));
+	browser.tabs.onActivated.addListener(({ tabId }) => {
+		void stateReady.then(() => {
+			// A manual switch starts the cooldown too, otherwise landing on a quieter game by hand
+			// gets overridden by the very next poll.
+			if (tabRegistry.some(reg => reg.tabId === tabId)) lastSwitchTime = Date.now();
+			return syncManagedTabMuteState(prefs.enabled);
+		});
+	});
+
+	browser.tabs.onRemoved.addListener(tabId => {
+		void stateReady.then(() => forgetClosedTab(tabId));
 	});
 }) as unknown;

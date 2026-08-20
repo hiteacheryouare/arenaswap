@@ -1,46 +1,97 @@
 ---
+import { Image } from 'astro:assets';
+import logoImg from '../assets/full_logo_white_on_transparent.svg';
+import latticeMark from '../assets/lattice-rosette-white.svg';
+import { chromeWebStore, edgeAddons, firefoxAddons } from '../lib/installTargets';
 ---
 <footer style="background:var(--color-bg);">
 	<div class="section-divider"></div>
 	<div class="container py-5">
 
-		<div class="row align-items-center g-4">
-			<div class="col-lg-4">
-				<img src="/arenaswap/images/full_logo_white_on_transparent.png" alt="ArenaSwap" style="height:24px;width:auto;" class="mb-3" />
-				<p style="font-size:0.85rem;color:var(--color-muted);margin:0;">
-					Built by sports fans, for sports fans.
-				</p>
-			</div>
-
-			<div class="col-lg-4 d-flex justify-content-lg-center gap-4 flex-wrap">
-				<a href="/arenaswap/#features" style="font-size:0.85rem;color:var(--color-muted);text-decoration:none;">Features</a>
-				<a href="/arenaswap/#how-it-works" style="font-size:0.85rem;color:var(--color-muted);text-decoration:none;">How It Works</a>
-				<a href="/arenaswap/#powerscore" style="font-size:0.85rem;color:var(--color-muted);text-decoration:none;">PowerScore</a>
-				<a href="/arenaswap/powerscore/" style="font-size:0.85rem;color:var(--color-muted);text-decoration:none;">Package</a>
-				<a href="/arenaswap/#faq" style="font-size:0.85rem;color:var(--color-muted);text-decoration:none;">FAQ</a>
-			</div>
-
-			<div class="col-lg-4 d-flex justify-content-lg-end gap-3">
-				<a href="https://github.com/hiteacheryouare/arenaswap" title="GitHub" class="footer-icon-link"><i class="bi bi-github"></i></a>
-				<a href="https://chromewebstore.google.com/detail/arenaswap/gibojibgihombdmmfnhnimajppamfeee" title="Chrome Web Store" class="footer-icon-link"><i class="bi bi-browser-chrome"></i></a>
-				<a href="https://addons.mozilla.org/addon/arenaswap/" title="Firefox Add-ons" class="footer-icon-link"><i class="bi bi-browser-firefox"></i></a>
-				<a href="https://microsoftedge.microsoft.com/addons/detail/arenaswap/oeballpnidkinkcbjokogdgjckdjeeba" title="Edge Add-ons" class="footer-icon-link"><i class="bi bi-browser-edge"></i></a>
-			</div>
+		<!-- Brand band: ArenaSwap and the parent company, equal weight -->
+		<div class="footer-brand-band">
+			<a href="/arenaswap/" title="ArenaSwap" class="footer-brand-item">
+				<Image src={logoImg} alt="ArenaSwap" class="footer-arenaswap-mark" />
+			</a>
+			<span class="footer-brand-rule" aria-hidden="true"></span>
+			<a href="https://latticeandcompany.github.io" title="Lattice &amp; Company" class="footer-brand-item latticeco-lockup">
+				<Image src={latticeMark} alt="" aria-hidden="true" class="latticeco-mark" />
+				<span class="latticeco-word">Lattice <span class="latticeco-amp">&amp;</span> Company</span>
+			</a>
 		</div>
 
-		<div class="section-divider my-4"></div>
+		<p class="footer-tagline">Built by sports fans, for sports fans.</p>
+
+		<div class="section-divider my-5"></div>
+
+		<div class="row g-5">
+
+			<!-- Product -->
+			<div class="col-12 col-md-4">
+				<p class="footer-col-label">Product</p>
+				<ul class="list-unstyled footer-links">
+					<li><a href="/arenaswap/faq/">FAQ</a></li>
+					<li><a href="/arenaswap/docs/extension/">Documentation</a></li>
+					<li><a href="/arenaswap/powerscore/">PowerScore package</a></li>
+					<li><a href="/arenaswap/releases/">Release notes</a></li>
+					<li><a href="https://github.com/hiteacheryouare/arenaswap">GitHub</a></li>
+				</ul>
+			</div>
+
+			<!-- Legal -->
+			<div class="col-12 col-md-4">
+				<p class="footer-col-label">Legal</p>
+				<ul class="list-unstyled footer-links">
+					<li><a href="/arenaswap/legal/privacy/">Privacy</a></li>
+					<li><a href="/arenaswap/legal/licenses/">Licenses</a></li>
+					<li><a href="/arenaswap/legal/credits/">Credits</a></li>
+					<li><a href="/arenaswap/legal/terms/">Disclaimers</a></li>
+				</ul>
+			</div>
+
+			<!-- Install -->
+			<div class="col-12 col-md-4">
+				<p class="footer-col-label">Install</p>
+				<ul class="list-unstyled footer-links">
+					<li>
+						<a href={chromeWebStore}>
+							<i class="bi bi-browser-chrome me-2" style="font-size:0.85rem;"></i>Chrome Web Store
+						</a>
+					</li>
+					<li>
+						<a href={firefoxAddons}>
+							<i class="bi bi-browser-firefox me-2" style="font-size:0.85rem;"></i>Firefox Add-ons
+						</a>
+					</li>
+					<li>
+						<a href={edgeAddons}>
+							<i class="bi bi-browser-edge me-2" style="font-size:0.85rem;"></i>Edge Add-ons
+						</a>
+					</li>
+				</ul>
+			</div>
+
+		</div>
+
+		<div class="section-divider my-5"></div>
 
 		<div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
-
-			<span style="font-size:0.78rem;color:var(--color-muted);">ISC License</span>
+			<a href="/arenaswap/legal/licenses/" style="font-size:0.78rem;color:var(--color-muted);text-decoration:none;">ISC License</a>
+			<div class="d-flex gap-3">
+				<a href="https://github.com/hiteacheryouare/arenaswap" title="GitHub" class="footer-icon-link"><i class="bi bi-github"></i></a>
+				<a href={chromeWebStore} title="Chrome Web Store" class="footer-icon-link"><i class="bi bi-browser-chrome"></i></a>
+				<a href={firefoxAddons} title="Firefox Add-ons" class="footer-icon-link"><i class="bi bi-browser-firefox"></i></a>
+				<a href={edgeAddons} title="Edge Add-ons" class="footer-icon-link"><i class="bi bi-browser-edge"></i></a>
+			</div>
 		</div>
 
 		<p class="footer-disclaimer">
 			Not affiliated with or endorsed by ESPN, the NFL, NBA, NHL, MLB, MLS, or any other league tracked by this extension.
+			<a href="/arenaswap/legal/">Legal notices</a>.
 		</p>
 
 	</div>
-	<div class="footer-gradient-bar tracking-tight">
-		<span>Made with ❤️ in Philadelphia & Boston by <a href="https://hiteacheryouare.github.io">Ryan Mullin</a></span>
+	<div class="footer-gradient-bar">
+		<span>Made with ❤️ in Philadelphia &amp; Boston by <a href="https://hiteacheryouare.github.io">Ryan Mullin</a></span>
 	</div>
 </footer>

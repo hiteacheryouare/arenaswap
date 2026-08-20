@@ -1,10 +1,13 @@
 ---
+import { Image } from 'astro:assets';
 import './_screenshot.scss';
+import iconImg from '../../assets/128.png';
 ---
 <!doctype html>
 <html lang='en'>
 <head>
 	<meta charset='UTF-8' />
+	<meta name='robots' content='noindex' />
 	<title>Screenshot 4 — Watch the Magic</title>
 </head>
 <body>
@@ -16,7 +19,6 @@ import './_screenshot.scss';
 		<div class='over-glow'></div>
 
 		<div class='stage' style='bottom:60px;'>
-			<!-- Faded browser/desktop scene -->
 			<div class='desktop-frame'>
 				<div class='dim-overlay'></div>
 
@@ -67,7 +69,7 @@ import './_screenshot.scss';
 				<div class='notif-wrap'>
 					<div class='notif'>
 						<div class='notif-icon'>
-							<img src='/arenaswap/images/128.png' alt='ArenaSwap' />
+							<Image src={iconImg} alt='ArenaSwap' />
 						</div>
 						<div class='notif-body'>
 							<div class='notif-row'>
@@ -84,7 +86,7 @@ import './_screenshot.scss';
 
 					<div class='notif notif-back'>
 						<div class='notif-icon'>
-							<img src='/arenaswap/images/128.png' alt='ArenaSwap' />
+							<Image src={iconImg} alt='ArenaSwap' />
 						</div>
 						<div class='notif-body'>
 							<div class='notif-row'>
@@ -101,10 +103,7 @@ import './_screenshot.scss';
 	</div>
 
 	<script>
-		// Fire an actual OS notification matching the extension's exact format.
-		// Title:   `ArenaSwap → ${away.abbreviation} vs ${home.abbreviation}`
-		// Message: `${reason}. Taking you to ${venueName} now!`
-		// Icon:    extension icon
+		// Fires a real OS notification in the extension's exact format.
 		const fireRealNotification = async () => {
 			if (!('Notification' in window)) return;
 			let permission = Notification.permission;
@@ -122,12 +121,9 @@ import './_screenshot.scss';
 			});
 		};
 
-		// Auto-fire on page load if permission is already granted; otherwise the
-		// page just shows the rendered notification replica.
 		if ('Notification' in window && Notification.permission === 'granted') {
 			fireRealNotification();
 		} else if ('Notification' in window && Notification.permission === 'default') {
-			// One-time permission prompt on first user gesture.
 			document.addEventListener('click', () => { void fireRealNotification(); }, { once: true });
 		}
 	</script>

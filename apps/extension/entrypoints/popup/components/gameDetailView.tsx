@@ -1,27 +1,27 @@
-import { useMemo } from 'react';
-import {
-	scorerTunables,
-	scoreMaxCloseness,
-	scoreMaxComeback,
-	scoreMaxLateGame,
-	scoreMaxLeadChanges,
-	scoreMaxMomentum,
-	scoreMaxTotal,
-	sportTypeConfigMap,
-} from '@arenaswap/core/constants';
-import type { Game, PowerScoreResult, PowerScoreSnapshot, ScoreSnapshot } from '@arenaswap/core/types';
-import BaseDiamond from './baseDiamond';
-import DetailTeamPill from './detailTeamPill';
-import FlipScore from './flipScore';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { i18n } from '#i18n';
+import type { Browser } from 'wxt/browser';
+import { leagueConfigMap, scoreMaxTotal, sportTypeConfigMap } from '@arenaswap/core/constants';
+import type { Game, LeagueId, PowerScoreResult, PowerScoreSnapshot, ScoreSnapshot, SignalName, TabRegistration } from '@arenaswap/core/types';
+import DetailHero from './detailHero';
+import DetailPosterHero from './detailPosterHero';
+import DetailStickyBar from './detailStickyBar';
 import GameDetailChart from './gameDetailChart';
+import GameBoostInput from './gameBoostInput';
+import GameInfoPanel from './gameInfoPanel';
+import PowerScoreBreakdown from './powerScoreBreakdown';
+import PregameSetup from './pregameSetup';
 import ProTip from './proTip';
+import { resolveStatusText } from './gameSituation';
 import {
 	buildComponentContributionOption,
 	buildPowerScoreOption,
 	buildTeamScoreOption,
-	resolveReadableSeriesColor,
+	buildWinProbabilityOption,
 } from './gameDetailChartOptions';
-import { formatClock, formatPeriod, gameMeta as GameMeta, powerScoreColor } from './gameCardShared';
+import { resolveTeamColorPair } from '@arenaswap/ui/src/components/colorUtils';
+import useSummaryData from './useSummaryData';
+import type { BettingDisplayPrefs, WeatherDisplayPrefs } from './gameCardTypes';
 
 interface gameDetailViewProps {
 	game: Game;
@@ -30,29 +30,62 @@ interface gameDetailViewProps {
 	powerScoreHistory: PowerScoreSnapshot[];
 	proTipsEnabled: boolean;
 	gameBoosts: Record<string, number>;
+	bettingPrefs: BettingDisplayPrefs;
+	weatherPrefs: WeatherDisplayPrefs;
+	disabledSignals?: readonly SignalName[];
+	// Pre-game only: the setup card and the poster's favourite stars need these. They are
+	// optional so the live screen, and anything mounting it, is unaffected.
+	favoriteTeamIds?: ReadonlySet<string>;
+	openTabs?: Browser.tabs.Tab[];
+	registry?: TabRegistration[];
+	onToggleFavoriteTeam?: (leagueId: LeagueId, teamId: string) => void;
+	onRegistryChange?: (updated: TabRegistration[]) => void;
+	formatTabLabel?: (tab: Browser.tabs.Tab) => string;
 	onSetGameBoost: (gameId: string, boost: number) => void;
 	onBack: () => void;
 }
 
+const noFavorites: ReadonlySet<string> = new Set();
+
+// The signal palette belongs to the PowerScore breakdown card above this chart, so momentum
+// keeps that card's #2274a5 rather than the dark-surface $secondary. Same signal, one colour.
 const componentLegendItems = [
-	{ label: 'Closeness', color: '#22c55e' },
-	{ label: 'Late-game', color: '#f75c03' },
-	{ label: 'Momentum', color: '#2274a5' },
-	{ label: 'Lead changes', color: '#f1c40f' },
-	{ label: 'Comeback', color: '#d90368' },
+	{ label: i18n.t('detail.legendCloseness'), color: '#22c55e' },
+	{ label: i18n.t('detail.legendLateGame'), color: '#f75c03' },
+	{ label: i18n.t('detail.legendMomentum'), color: '#2274a5' },
+	{ label: i18n.t('detail.legendLeadChanges'), color: '#f1c40f' },
+	{ label: i18n.t('detail.legendComeback'), color: '#d90368' },
 ];
 
 const withMatchupAlpha = (color: string, fallback: string): string => (
 	/^#[\da-fA-F]{6}$/.test(color) ? `${color}28` : fallback
 );
 
-const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistory, proTipsEnabled, gameBoosts, onSetGameBoost, onBack }: gameDetailViewProps) => {
+const gameDetailView = ({
+	game,
+	excitementResult,
+	scoreHistory,
+	powerScoreHistory,
+	proTipsEnabled,
+	gameBoosts,
+	bettingPrefs,
+	weatherPrefs,
+	disabledSignals = [],
+	favoriteTeamIds = noFavorites,
+	openTabs = [],
+	registry = [],
+	onToggleFavoriteTeam = () => {},
+	onRegistryChange = () => {},
+	formatTabLabel = tab => tab.title ?? '',
+	onSetGameBoost,
+	onBack,
+}: gameDetailViewProps) => {
 	const orderedScoreHistory = useMemo(
-		() => [...scoreHistory].sort((a, b) => a.timestamp - b.timestamp),
+		() => scoreHistory.toSorted((a, b) => a.timestamp - b.timestamp),
 		[scoreHistory],
 	);
 	const orderedPowerScoreHistory = useMemo(
-		() => [...powerScoreHistory].sort((a, b) => a.timestamp - b.timestamp),
+		() => powerScoreHistory.toSorted((a, b) => a.timestamp - b.timestamp),
 		[powerScoreHistory],
 	);
 	const fallbackPowerScore = orderedPowerScoreHistory[orderedPowerScoreHistory.length - 1];
@@ -63,21 +96,23 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 	const momentum = activePowerScore?.momentum ?? 0;
 	const leadChanges = activePowerScore?.leadChanges ?? 0;
 	const comeback = activePowerScore?.comeback ?? 0;
-	const total = activePowerScore?.total ?? 0;
 	const rawSubtotal = closeness + lateGame + momentum + leadChanges + comeback;
-	const baseTotal = activePowerScore?.baseTotal ?? rawSubtotal;
+	// When stalled this is the pre-stall signals sum stored by the scorer, which may exceed 100.
+	const signalsSubtotal = activePowerScore?.signalsSubtotal ?? rawSubtotal;
+	const stallPenalty = activePowerScore?.stallPenalty ?? 0;
+	// Baseball/softball never accumulate a stall count (background.ts only tracks clock-based
+	// sports), so the breakdown hides the row entirely rather than pinning it at zero. Falls back to
+	// basketball for an unrecognized sportType, mirroring computePowerScore's own fallback.
+	const clockBased = (sportTypeConfigMap[game.sportType] ?? sportTypeConfigMap.basketball).clockBased;
 	const favoriteBonus = activePowerScore?.favoriteBonus ?? 0;
 	const favoriteTeamCount = activePowerScore?.favoriteTeamCount ?? 0;
 	const currentBoost = gameBoosts[game.id] ?? 0;
+	// The breakdown mirrors the scorer, which drops every boost while play is frozen. The boost input
+	// keeps showing the stored value, since the setting survives halftime even though it pays nothing.
+	const appliedBoost = activePowerScore?.gameBoost ?? currentBoost;
+	const scoringOpportunityBoost = activePowerScore?.scoringOpportunityBoost ?? 0;
+	const postseasonBoost = activePowerScore?.postseasonBoost ?? 0;
 	const reason = activePowerScore?.reason ?? 'Best Available';
-	const stallPenaltyPoints = activePowerScore?.stalled ? Math.max(0, rawSubtotal - baseTotal) : 0;
-
-	const sportConfig = sportTypeConfigMap[game.sportType];
-	const isZeroZeroGame = game.homeTeam.score === 0 && game.awayTeam.score === 0;
-	const hasZeroZeroPenalty = !sportConfig.zeroZeroAsFullTie || sportConfig.zeroZeroPenaltyPeriods?.includes(game.period) === true;
-	const zeroZeroPenalty = isZeroZeroGame && hasZeroZeroPenalty
-		? scorerTunables.scores.closeness.tied - scorerTunables.scores.closeness.zeroZero
-		: 0;
 
 	const powerScoreOption = useMemo(() => (
 		buildPowerScoreOption(orderedPowerScoreHistory)
@@ -88,106 +123,145 @@ const gameDetailView = ({ game, excitementResult, scoreHistory, powerScoreHistor
 	const componentOption = useMemo(() => (
 		buildComponentContributionOption(orderedPowerScoreHistory)
 	), [orderedPowerScoreHistory]);
+	const { winProbability, seriesInfo, records } = useSummaryData(game);
+	const winProbabilityOption = useMemo(() => (
+		buildWinProbabilityOption(winProbability, game)
+	), [winProbability, game]);
+	// Read from the scorer, not recomputed from the line fetched above: that would put a different
+	// number here than on the card you tapped. Undefined means ESPN gave too little data.
+	const winProbabilityVariance = activePowerScore?.winProbabilityVariance;
+	const total = activePowerScore?.total ?? 0;
 
-	const awayLineColor = resolveReadableSeriesColor(game.awayTeam.color, '#60a5fa');
-	const homeLineColor = resolveReadableSeriesColor(game.homeTeam.color, '#f87171');
+	const [awayLineColor, homeLineColor] = resolveTeamColorPair(game.awayTeam, game.homeTeam, '#60a5fa', '#f87171', true);
 	const teamLegendItems = useMemo(() => ([
 		{ label: game.awayTeam.abbreviation, color: awayLineColor },
 		{ label: game.homeTeam.abbreviation, color: homeLineColor },
 	]), [awayLineColor, game.awayTeam.abbreviation, game.homeTeam.abbreviation, homeLineColor]);
 
-	const awayAccent = game.awayTeam.color ?? '#2274A5';
-	const homeAccent = game.homeTeam.color ?? '#F75C03';
-	const matchupCardStyle = {
+	const isDelayed = game.delayed === true;
+	const isPreGame = game.status === 'pre';
+	const [awayAccent, homeAccent] = resolveTeamColorPair(game.awayTeam, game.homeTeam, '#2274A5', '#F75C03');
+	const matchupCardStyle = isDelayed ? {
+		borderLeft: '5px solid #F1C40F',
+		borderRight: '5px solid #F1C40F',
+		background: 'linear-gradient(to right, rgba(241,196,15,0.12), rgba(241,196,15,0.12)), #ffffff',
+	} : {
 		borderLeft: `5px solid ${awayAccent}`,
 		borderRight: `5px solid ${homeAccent}`,
 		background: `linear-gradient(to right, ${withMatchupAlpha(awayAccent, '#dee2e628')}, ${withMatchupAlpha(homeAccent, '#dee2e628')}), #ffffff`,
 	};
-	const inningHalf = game.topOfInning !== undefined ? (game.topOfInning ? '▲ ' : '▼ ') : '';
-	const statusDetail = game.status === 'in'
-		? game.sportType === 'baseball'
-			? `${inningHalf}${formatPeriod(game)}`
-			: `${formatPeriod(game)} • ${formatClock(game.clockSeconds)}`
-		: game.status === 'pre' ? 'Starts soon' : 'Final';
+	const isInningSport = leagueConfigMap[game.league]?.periodFormat === 'innings';
+	const statusText = resolveStatusText(game, isInningSport, i18n.t);
 	const totalLabel = total > scoreMaxTotal
-		? `${total} (base max ${scoreMaxTotal})`
-		: `${total} / ${scoreMaxTotal}`;
+		? i18n.t('detail.totalLabelBaseMax', { total, max: scoreMaxTotal })
+		: i18n.t('detail.totalLabel', { total, max: scoreMaxTotal });
+
+	// Observing the card itself rather than a scroll offset keeps the sticky-bar handoff exact at
+	// any hero height — pre-game, inning sports and postseason all differ.
+	const shellRef = useRef<HTMLDivElement>(null);
+	const heroRef = useRef<HTMLDivElement>(null);
+	const [heroScrolledAway, setHeroScrolledAway] = useState(false);
+
+	useEffect(() => {
+		const root = shellRef.current;
+		const target = heroRef.current;
+		if (!root || !target || typeof IntersectionObserver === 'undefined') return;
+
+		const observer = new IntersectionObserver(
+			entries => { for (const entry of entries) setHeroScrolledAway(!entry.isIntersecting); },
+			{ root, threshold: 0 },
+		);
+		observer.observe(target);
+		return () => observer.disconnect();
+	}, []);
 
 	return (
-		<div className='popup-container game-detail-shell'>
-			<div className='game-detail-header'>
-				<button type='button' className='btn btn-sm game-detail-back-button' onClick={onBack}>
-					<i className='bi bi-arrow-left' />
-					<span>Back</span>
-				</button>
-				<div className='game-detail-title'>Game Detail</div>
-			</div>
+		<div className='popup-container game-detail-shell' ref={shellRef}>
+			<DetailStickyBar game={game} statusText={statusText} compact={heroScrolledAway} onBack={onBack} />
 
-			<div className='game-card game-detail-matchup' style={matchupCardStyle}>
-				<DetailTeamPill team={game.awayTeam} />
-				<div className='game-detail-center'>
-					{game.sportType === 'baseball' && game.baseRunners && <BaseDiamond {...game.baseRunners} />}
-					<div className='d-flex align-items-baseline game-detail-score-row'>
-						<FlipScore value={game.awayTeam.score} className='fw-bold lh-1 game-detail-score-value' />
-						<FlipScore value={game.homeTeam.score} className='fw-bold lh-1 game-detail-score-value' />
-					</div>
-					<div className='game-detail-period'>{statusDetail}</div>
-					{game.status !== 'pre' && (
-						<div className='powerscore game-detail-powerscore-label' style={{ backgroundColor: powerScoreColor(total, scoreMaxTotal) }}>
-							PowerScore: {totalLabel}
-						</div>
-					)}
-				</div>
-				<DetailTeamPill team={game.homeTeam} />
-			</div>
-			<GameMeta game={game} dark />
-
-			<section className='powerscore-breakdown game-detail-formula-card'>
-				<div className='powerscore-breakdown-heading'>How PowerScore is calculated</div>
-				<div className='powerscore-breakdown-row'><span>Closeness</span><span>{closeness} / {scoreMaxCloseness}</span></div>
-				<div className='powerscore-breakdown-row'><span>Late-game pressure</span><span>{lateGame} / {scoreMaxLateGame}</span></div>
-				<div className='powerscore-breakdown-row'><span>Momentum</span><span>{momentum} / {scoreMaxMomentum}</span></div>
-				<div className='powerscore-breakdown-row'><span>Lead changes</span><span>{leadChanges} / {scoreMaxLeadChanges}</span></div>
-				<div className='powerscore-breakdown-row'><span>Comeback</span><span>{comeback} / {scoreMaxComeback}</span></div>
-				<div className='powerscore-breakdown-row powerscore-breakdown-row-subtotal'><span>Raw subtotal</span><span>{rawSubtotal} / {scoreMaxTotal}</span></div>
-				<div className='powerscore-breakdown-row powerscore-breakdown-row-penalty'><span>0-0 penalty</span><span>{zeroZeroPenalty > 0 ? `-${zeroZeroPenalty}` : '0'}</span></div>
-				<div className='powerscore-breakdown-row powerscore-breakdown-row-penalty'><span>Clock stall penalty</span><span>{stallPenaltyPoints > 0 ? `-${stallPenaltyPoints}` : '0'}</span></div>
-				<div className='powerscore-breakdown-row'><span>Favorite bonus</span><span>{favoriteBonus > 0 ? `+${favoriteBonus}` : '0'}</span></div>
-				{favoriteBonus > 0 && <div className='powerscore-breakdown-note'>{favoriteTeamCount} favorite team{favoriteTeamCount === 1 ? '' : 's'} in matchup</div>}
-				<div className='powerscore-breakdown-row'><span>Game boost</span><span>{currentBoost > 0 ? `+${currentBoost}` : '0'}</span></div>
-				<div className='powerscore-breakdown-row powerscore-breakdown-row-total'><span>Final PowerScore</span><span>{totalLabel}</span></div>
-				<div className='powerscore-breakdown-reason'>Headline reason: {reason}</div>
-			</section>
-
-			<div className='game-detail-boost-section'>
-				<div className='game-detail-boost-heading'>Game boost</div>
-				<div className='game-detail-boost-row'>
-					<span className='game-detail-boost-explainer'>Add points to this game's PowerScore to raise its priority.</span>
-					<input
-						id={`boost-detail-${game.id}`}
-						type='number'
-						min={0}
-						step={1}
-						value={currentBoost}
-						onChange={e => onSetGameBoost(game.id, Math.max(0, Math.round(Number(e.target.value) || 0)))}
-						className='powerscore-boost-input'
+			<div ref={heroRef}>
+				{isPreGame ? (
+					<DetailPosterHero
+						game={game}
+						seriesInfo={seriesInfo}
+						records={records}
+						statusText={statusText}
+						favoriteTeamIds={favoriteTeamIds}
+						onToggleFavoriteTeam={onToggleFavoriteTeam}
 					/>
-				</div>
+				) : (
+					<DetailHero
+						game={game}
+						seriesInfo={seriesInfo}
+						records={records}
+						isDelayed={isDelayed}
+						isInningSport={isInningSport}
+						statusText={statusText}
+						heroStyle={matchupCardStyle}
+					/>
+				)}
 			</div>
+
+			{/* Nothing has happened yet, so there is no PowerScore to break down — every signal
+			    would read zero. The screen offers what you can actually decide in advance instead. */}
+			{isPreGame ? (
+				<>
+					<PregameSetup
+						game={game}
+						currentBoost={currentBoost}
+						openTabs={openTabs}
+						registry={registry}
+						onSetGameBoost={onSetGameBoost}
+						onRegistryChange={onRegistryChange}
+						formatTabLabel={formatTabLabel}
+					/>
+					<GameInfoPanel game={game} bettingPrefs={bettingPrefs} weatherPrefs={weatherPrefs} />
+				</>
+			) : (
+				<>
+					<PowerScoreBreakdown
+						closeness={closeness}
+						lateGame={lateGame}
+						momentum={momentum}
+						leadChanges={leadChanges}
+						comeback={comeback}
+						winProbabilityVariance={winProbabilityVariance}
+						signalsSubtotal={signalsSubtotal}
+						stallPenalty={stallPenalty}
+						clockBased={clockBased}
+						favoriteBonus={favoriteBonus}
+						favoriteTeamCount={favoriteTeamCount}
+						currentBoost={appliedBoost}
+						scoringOpportunityBoost={scoringOpportunityBoost}
+						postseasonBoost={postseasonBoost}
+						totalLabel={totalLabel}
+						reason={reason ? reason.charAt(0).toUpperCase() + reason.slice(1) : undefined}
+						disabledSignals={disabledSignals}
+					/>
+
+					<GameBoostInput gameId={game.id} currentBoost={currentBoost} onSetGameBoost={onSetGameBoost} />
+
+					<GameInfoPanel game={game} bettingPrefs={bettingPrefs} weatherPrefs={weatherPrefs} />
+				</>
+			)}
 
 			{proTipsEnabled && <ProTip context='detail' />}
 
-			{orderedPowerScoreHistory.length > 0
-				? <GameDetailChart title='PowerScore over time' option={powerScoreOption} />
-				: <div className='game-detail-empty-state'>PowerScore trend appears after a few refreshes.</div>}
+			{orderedPowerScoreHistory.length > 0 && (
+				<GameDetailChart title={i18n.t('detail.chartPowerScoreTitle')} option={powerScoreOption} />
+			)}
 
-			{orderedScoreHistory.length > 0
-				? <GameDetailChart title='Game score over time' option={scoreTrendOption} legendItems={teamLegendItems} />
-				: <div className='game-detail-empty-state'>Score trend appears after a few refreshes.</div>}
+			{orderedScoreHistory.length > 0 && (
+				<GameDetailChart title={i18n.t('detail.chartScoreTitle')} option={scoreTrendOption} legendItems={teamLegendItems} />
+			)}
 
-			{orderedPowerScoreHistory.length > 0
-				? <GameDetailChart title='PowerScore components over time' option={componentOption} legendItems={componentLegendItems} />
-				: <div className='game-detail-empty-state'>Component trend appears after a few refreshes.</div>}
+			{winProbability.length > 0 && (
+				<GameDetailChart title={i18n.t('detail.chartWinProbTitle')} option={winProbabilityOption} legendItems={teamLegendItems} />
+			)}
+
+			{orderedPowerScoreHistory.length > 0 && (
+				<GameDetailChart title={i18n.t('detail.chartComponentsTitle')} option={componentOption} legendItems={componentLegendItems} />
+			)}
 		</div>
 	);
 };

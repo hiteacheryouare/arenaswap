@@ -1,6 +1,8 @@
-import { useState } from 'react';
-import { leagueConfigs, resolveLeagueLogoUrl } from '@arenaswap/core/constants';
+import { i18n } from '#i18n';
+import { resolveLeagueLogoUrl } from '@arenaswap/core/constants';
 import type { LeagueId, LeagueLogoMap, SportType } from '@arenaswap/core/types';
+import Crest from '@arenaswap/ui/src/components/crest';
+import { toLeagueInitials, type leagueConfig } from './leagueLogo';
 import { leaguesBySportType, sportTypeLabels, sportTypeOrder } from '../popupHelpers';
 
 interface onboardingLeaguePickerProps {
@@ -12,37 +14,23 @@ interface onboardingLeaguePickerProps {
 	onNext: () => void;
 }
 
-type leagueConfig = (typeof leagueConfigs)[number];
-
 const sportEmojis: Record<SportType, string> = {
 	basketball: '🏀',
 	football: '🏈',
 	hockey: '🏒',
 	baseball: '⚾',
+	softball: '🥎',
 	soccer: '⚽',
 };
 
-const LeagueLogo = ({ league, logos }: { league: leagueConfig; logos: LeagueLogoMap }) => {
-	const [imageFailed, setImageFailed] = useState(false);
-	const logoUrl = resolveLeagueLogoUrl(league.id, logos[league.id]);
-	const initials = league.label.split(/\s+/).map(p => p[0] ?? '').join('').slice(0, 3).toUpperCase();
-	if (imageFailed) {
-		return (
-			<span className='league-toggle-logo league-toggle-logo-fallback d-inline-flex align-items-center justify-content-center fw-bold'>
-				{initials}
-			</span>
-		);
-	}
-	return (
-		<img
-			src={logoUrl}
-			alt={`${league.label} logo`}
-			className='league-toggle-logo'
-			loading='eager'
-			onError={() => setImageFailed(true)}
-		/>
-	);
-};
+const LeagueLogo = ({ league, logos }: { league: leagueConfig; logos: LeagueLogoMap }) => (
+	<Crest
+		logo={resolveLeagueLogoUrl(league.id, logos[league.id])}
+		abbreviation={toLeagueInitials(league)}
+		className='onb-league-logo'
+		loading='eager'
+	/>
+);
 
 const onboardingLeaguePicker = ({
 	selectedLeagues,
@@ -55,15 +43,15 @@ const onboardingLeaguePicker = ({
 	<div className='popup-container'>
 		<div className='d-flex align-items-center mb-1'>
 			<button className='btn btn-link btn-sm p-0 text-body-secondary small' onClick={onBack}>
-				<i className='bi bi-arrow-left me-1' />Back
+				<i className='bi bi-arrow-left me-1' />{i18n.t('leaguePicker.back')}
 			</button>
-			<span className='small text-body-secondary text-uppercase ms-auto'>Step 2 of 3</span>
+			<span className='small text-body-secondary text-uppercase ms-auto'>{i18n.t('leaguePicker.step', [2, 3])}</span>
 		</div>
-		<div className='fw-bold lh-sm mb-3 fs-5'>Which sports do you watch?</div>
+		<div className='fw-bold lh-sm mb-3 fs-5'>{i18n.t('leaguePicker.title')}</div>
 
 		<div>
 			{(Object.keys(sportTypeOrder) as SportType[])
-				.sort((a, b) => sportTypeOrder[a] - sportTypeOrder[b])
+				.toSorted((a, b) => sportTypeOrder[a] - sportTypeOrder[b])
 				.map(sportType => {
 					const leagues = leaguesBySportType[sportType];
 					const allSelected = leagues.every(l => selectedLeagues.has(l.id));
@@ -82,12 +70,12 @@ const onboardingLeaguePicker = ({
 										onChange={() => onToggleSport(sportType, !allSelected)}
 									/>
 									<label className='form-check-label small text-body-secondary' htmlFor={`sport-all-${sportType}`}>
-										All
+										{i18n.t('leaguePicker.all')}
 									</label>
 								</div>
 							</div>
 							{leagues.map(league => (
-								<div key={league.id} className='d-flex align-items-center gap-2 mt-1 ps-3 league-toggle-row'>
+								<div key={league.id} className='d-flex align-items-center gap-2 mt-1 ps-3 py-1'>
 									<div className='form-check mb-0'>
 										<input
 											className='form-check-input'
@@ -97,7 +85,7 @@ const onboardingLeaguePicker = ({
 											onChange={() => onToggleLeague(league.id)}
 										/>
 									</div>
-									<label className='d-flex align-items-center gap-2 min-w-0 mb-0 grow' htmlFor={`onb-league-${league.id}`}>
+									<label className='d-flex align-items-center gap-2 min-w-0 mb-0' htmlFor={`onb-league-${league.id}`}>
 										<LeagueLogo league={league} logos={leagueLogos} />
 										<span className='fw-semibold text-body lh-sm league-toggle-label'>{league.label}</span>
 									</label>
@@ -113,7 +101,7 @@ const onboardingLeaguePicker = ({
 			onClick={onNext}
 			disabled={selectedLeagues.size === 0}
 		>
-			Next <i className='bi bi-arrow-right' />
+			{i18n.t('leaguePicker.next')} <i className='bi bi-arrow-right' />
 		</button>
 	</div>
 );
