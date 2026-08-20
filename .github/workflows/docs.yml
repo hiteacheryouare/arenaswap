@@ -31,7 +31,7 @@ jobs:
         run: npm ci
 
       - name: Build docs
-        run: npm run build --workspace=@arenaswap/docs
+        run: npx turbo run build --filter=@arenaswap/docs
 
       - name: Commit built docs
         run: |
