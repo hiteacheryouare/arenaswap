@@ -1,5 +1,8 @@
 # Changelog
 
+> [!NOTE]
+> This is the seperator between 2.0.0. Everything below is part of 2.0.0 and everything above this is after.
+
 ## Clock stall penalty: hidden with no clock, shown as a plain deduction — 2026-08-20
 
 The breakdown card always rendered a "Clock stall penalty" row, even for baseball and softball, which never accumulate a stall count in the first place since `background.ts` only tracks clock-based sports. It's gone entirely for non-clock games now, and the row that remains drops the redundant "before → after" note in favor of just the subtotal and the amount subtracted. The underlying math is unchanged — same PowerScore for the same inputs.
