@@ -1,0 +1,141 @@
+---
+import { getCollection, render } from 'astro:content';
+import Shell from '../../../layouts/Shell.astro';
+import DocsNav from '../../../components/DocsNav.astro';
+import { docPath, docSlug, docsSections, type DocsSection } from '../../../lib/docs';
+
+// One article, one URL. Drafts are excluded from the route table, so a draft is a 404 rather than
+// a page nothing links to.
+export const getStaticPaths = async () => {
+	const pages = await getCollection('docs', ({ data }) => !data.draft);
+
+	return pages.map(page => ({
+		params: { section: page.data.section, slug: docSlug(page) },
+		props: { page },
+	}));
+};
+
+const { page } = Astro.props;
+const { title, description, faq } = page.data;
+const section = page.data.section as DocsSection;
+const meta = docsSections[section];
+const base = import.meta.env.BASE_URL;
+const path = docPath(page);
+
+const { Content } = await render(page);
+
+// Previous and next inside this section only. Walking from the last extension article into the
+// first PowerScore one would hand a reader documentation for a package they never asked about.
+const siblings = (await getCollection('docs', ({ data }) => !data.draft && data.section === section))
+	.toSorted((a, b) => a.data.order - b.data.order);
+const index = siblings.findIndex(sibling => sibling.id === page.id);
+const previous = siblings[index - 1];
+const next = siblings[index + 1];
+
+const site = Astro.site ?? new URL('https://hiteacheryouare.github.io');
+const url = new URL(`${base}${path}`, site).href;
+
+const structuredData: Record<string, unknown>[] = [
+	{
+		'@context': 'https://schema.org',
+		'@type': 'TechArticle',
+		headline: title,
+		description,
+		url,
+		inLanguage: 'en',
+		isPartOf: {
+			'@type': 'WebSite',
+			name: 'ArenaSwap',
+			url: new URL(base, site).href,
+		},
+		publisher: {
+			'@type': 'Organization',
+			name: 'Lattice & Company',
+		},
+	},
+	{
+		'@context': 'https://schema.org',
+		'@type': 'BreadcrumbList',
+		itemListElement: [
+			{ '@type': 'ListItem', position: 1, name: 'Documentation', item: new URL(`${base}docs/`, site).href },
+			{ '@type': 'ListItem', position: 2, name: meta.title, item: new URL(`${base}docs/${section}/`, site).href },
+			{ '@type': 'ListItem', position: 3, name: title, item: url },
+		],
+	},
+];
+
+if (faq?.length) {
+	structuredData.push({
+		'@context': 'https://schema.org',
+		'@type': 'FAQPage',
+		mainEntity: faq.map(item => ({
+			'@type': 'Question',
+			name: item.q,
+			acceptedAnswer: { '@type': 'Answer', text: item.a },
+		})),
+	});
+}
+---
+<Shell
+	title={`${title} — ArenaSwap`}
+	description={description}
+	path={path}
+	ogType='article'
+>
+	<div class='container'>
+		<div class='page-head'>
+			<p class='docs-breadcrumb'>
+				<a href={`${base}docs/`}>Documentation</a>
+				<span aria-hidden='true'> · </span>
+				<a href={`${base}docs/${section}/`}>{meta.title}</a>
+			</p>
+			<h1 class='page-title docs-title'>{title}</h1>
+			<p class='page-lede'>{description}</p>
+		</div>
+
+		<div class='reading-shell'>
+			<DocsNav current={path} />
+
+			<div>
+				<article class='prose'>
+					<Content />
+				</article>
+
+				{faq?.length && (
+					<section class='docs-faq' aria-labelledby='docs-faq-head'>
+						<h2 id='docs-faq-head'>Common questions</h2>
+						<div class='faq-list'>
+							{faq.map((item, position) => (
+								<details class='faq-item' open={position === 0}>
+									<summary>{item.q}</summary>
+									<p>{item.a}</p>
+								</details>
+							))}
+						</div>
+					</section>
+				)}
+
+				{(previous || next) && (
+					<nav class='docs-adjacent' aria-label='Nearby articles'>
+						{previous && (
+							<a href={`${base}${docPath(previous)}`}>
+								<span class='docs-adjacent-label'>Previous</span>
+								{previous.data.title}
+							</a>
+						)}
+						{next && (
+							<a class='docs-adjacent-next' href={`${base}${docPath(next)}`}>
+								<span class='docs-adjacent-label'>Next</span>
+								{next.data.title}
+							</a>
+						)}
+					</nav>
+				)}
+			</div>
+		</div>
+	</div>
+
+	{structuredData.map(data => (
+		<script type='application/ld+json' set:html={JSON.stringify(data)} is:inline />
+	))}
+</Shell>

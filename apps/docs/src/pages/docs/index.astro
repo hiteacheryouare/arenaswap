@@ -1,0 +1,50 @@
+---
+import Shell from '../../layouts/Shell.astro';
+import { docPath, docsSectionOrder, docsSections, getSectionDocs } from '../../lib/docs';
+
+// The hub. Two trees with two audiences: people watching sports, and people scoring games in their
+// own code. Splitting them at the top means neither has to scroll past the other.
+
+const base = import.meta.env.BASE_URL;
+
+const trees = await Promise.all(docsSectionOrder.map(async section => ({
+	section,
+	meta: docsSections[section],
+	pages: await getSectionDocs(section),
+})));
+---
+<Shell
+	title='ArenaSwap documentation'
+	description='Guides for watching several games at once with ArenaSwap, and the developer reference for the PowerScore package that decides which game wins.'
+	path='docs/'
+>
+	<div class='container'>
+		<div class='page-head'>
+			<h1 class='page-title'>Documentation.</h1>
+			<p class='page-lede'>
+				Two halves. One for watching sports, one for scoring them in your own code.
+			</p>
+		</div>
+
+		<div class='docs-hub'>
+			{trees.map(tree => (
+				<section class='docs-hub-tree' aria-labelledby={`hub-${tree.section}`}>
+					<h2 id={`hub-${tree.section}`}>
+						<a href={`${base}docs/${tree.section}/`}>{tree.meta.heading}</a>
+					</h2>
+					<p class='docs-hub-lede'>{tree.meta.description}</p>
+
+					{tree.pages.length === 0 ? (
+						<p class='docs-hub-empty'>Being written.</p>
+					) : (
+						<ul class='docs-hub-list'>
+							{tree.pages.map(page => (
+								<li><a href={`${base}${docPath(page)}`}>{page.data.title}</a></li>
+							))}
+						</ul>
+					)}
+				</section>
+			))}
+		</div>
+	</div>
+</Shell>

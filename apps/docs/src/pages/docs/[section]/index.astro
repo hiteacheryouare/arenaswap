@@ -1,0 +1,63 @@
+---
+import Shell from '../../../layouts/Shell.astro';
+import DocsNav from '../../../components/DocsNav.astro';
+import { docPath, docsSectionOrder, docsSections, getSectionDocs, type DocsSection } from '../../../lib/docs';
+
+// Written out rather than derived from docsSectionOrder: Astro hoists getStaticPaths into its own
+// module, so it cannot see the component scope.
+export const getStaticPaths = async () => {
+	return [{ params: { section: 'extension' } }, { params: { section: 'powerscore' } }];
+};
+
+const section = Astro.params.section as DocsSection;
+const meta = docsSections[section];
+const base = import.meta.env.BASE_URL;
+const other = docsSectionOrder.find(candidate => candidate !== section)!;
+
+const pages = await getSectionDocs(section);
+---
+<Shell
+	title={`${meta.heading} — ArenaSwap documentation`}
+	description={meta.description}
+	path={`docs/${section}/`}
+>
+	<div class='container'>
+		<div class='page-head'>
+			<p class='docs-breadcrumb'>
+				<a href={`${base}docs/`}>Documentation</a>
+			</p>
+			<h1 class='page-title'>{meta.heading}.</h1>
+			<p class='page-lede'>{meta.description}</p>
+		</div>
+
+		<div class='reading-shell'>
+			<DocsNav current={`docs/${section}/`} />
+
+			<div>
+				{pages.length === 0 ? (
+					<div class='prose'>
+						<p>
+							This section is being written. In the meantime, the
+							<a href={`${base}faq/`}>FAQ</a> answers most of what people ask and the
+							<a href={`${base}releases/`}>release notes</a> cover what changed.
+						</p>
+					</div>
+				) : (
+					<ul class='docs-index'>
+						{pages.map(page => (
+							<li>
+								<h2><a href={`${base}${docPath(page)}`}>{page.data.title}</a></h2>
+								<p>{page.data.description}</p>
+							</li>
+						))}
+					</ul>
+				)}
+
+				<p class='docs-crosslink'>
+					Looking for {docsSections[other].title.toLowerCase()}?
+					<a href={`${base}docs/${other}/`}>{docsSections[other].heading}</a>.
+				</p>
+			</div>
+		</div>
+	</div>
+</Shell>
