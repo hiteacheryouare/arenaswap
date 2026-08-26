@@ -94,14 +94,12 @@ const formatted = release.data.date.toLocaleDateString('en-US', {
 				<nav class='release-adjacent' aria-label='Other releases'>
 					{older && (
 						<a href={`${base}releases/${older.data.version}/`}>
-							<span class='release-adjacent-label'>Previous</span>
-							{older.data.version}<span aria-hidden='true'> · </span>{older.data.title}
+							<span aria-hidden='true'>← </span>{older.data.version}<span aria-hidden='true'> · </span>{older.data.title}
 						</a>
 					)}
 					{newer && (
 						<a href={`${base}releases/${newer.data.version}/`} class='release-adjacent-next'>
-							<span class='release-adjacent-label'>Next</span>
-							{newer.data.version}<span aria-hidden='true'> · </span>{newer.data.title}
+							{newer.data.version}<span aria-hidden='true'> · </span>{newer.data.title}<span aria-hidden='true'> →</span>
 						</a>
 					)}
 				</nav>

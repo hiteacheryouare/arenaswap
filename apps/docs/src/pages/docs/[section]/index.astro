@@ -1,7 +1,7 @@
 ---
 import Shell from '../../../layouts/Shell.astro';
 import DocsNav from '../../../components/DocsNav.astro';
-import { docPath, docsSectionOrder, docsSections, getSectionDocs, type DocsSection } from '../../../lib/docs';
+import { docPath, docsSections, getSectionDocs, type DocsSection } from '../../../lib/docs';
 
 // Written out rather than derived from docsSectionOrder: Astro hoists getStaticPaths into its own
 // module, so it cannot see the component scope.
@@ -12,7 +12,6 @@ export const getStaticPaths = async () => {
 const section = Astro.params.section as DocsSection;
 const meta = docsSections[section];
 const base = import.meta.env.BASE_URL;
-const other = docsSectionOrder.find(candidate => candidate !== section)!;
 
 const pages = await getSectionDocs(section);
 ---
@@ -23,9 +22,6 @@ const pages = await getSectionDocs(section);
 >
 	<div class='container'>
 		<div class='page-head'>
-			<p class='docs-breadcrumb'>
-				<a href={`${base}docs/`}>Documentation</a>
-			</p>
 			<h1 class='page-title'>{meta.heading}.</h1>
 			<p class='page-lede'>{meta.description}</p>
 		</div>
@@ -52,11 +48,6 @@ const pages = await getSectionDocs(section);
 						))}
 					</ul>
 				)}
-
-				<p class='docs-crosslink'>
-					Looking for {docsSections[other].title.toLowerCase()}?
-					<a href={`${base}docs/${other}/`}>{docsSections[other].heading}</a>.
-				</p>
 			</div>
 		</div>
 	</div>

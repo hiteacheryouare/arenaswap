@@ -84,11 +84,6 @@ if (faq?.length) {
 >
 	<div class='container'>
 		<div class='page-head'>
-			<p class='docs-breadcrumb'>
-				<a href={`${base}docs/`}>Documentation</a>
-				<span aria-hidden='true'> · </span>
-				<a href={`${base}docs/${section}/`}>{meta.title}</a>
-			</p>
 			<h1 class='page-title docs-title'>{title}</h1>
 			<p class='page-lede'>{description}</p>
 		</div>
@@ -102,8 +97,7 @@ if (faq?.length) {
 				</article>
 
 				{faq?.length && (
-					<section class='docs-faq' aria-labelledby='docs-faq-head'>
-						<h2 id='docs-faq-head'>Common questions</h2>
+					<section class='docs-faq' aria-label='Common questions'>
 						<div class='faq-list'>
 							{faq.map((item, position) => (
 								<details class='faq-item' open={position === 0}>
@@ -119,14 +113,12 @@ if (faq?.length) {
 					<nav class='docs-adjacent' aria-label='Nearby articles'>
 						{previous && (
 							<a href={`${base}${docPath(previous)}`}>
-								<span class='docs-adjacent-label'>Previous</span>
-								{previous.data.title}
+								<span aria-hidden='true'>← </span>{previous.data.title}
 							</a>
 						)}
 						{next && (
 							<a class='docs-adjacent-next' href={`${base}${docPath(next)}`}>
-								<span class='docs-adjacent-label'>Next</span>
-								{next.data.title}
+								{next.data.title}<span aria-hidden='true'> →</span>
 							</a>
 						)}
 					</nav>
