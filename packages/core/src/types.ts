@@ -28,8 +28,12 @@ export interface ProbableStarter {
 	// Present for 97% of pitchers and every goalie sampled. Soccer has almost none, which is why
 	// the UI needs a fallback rather than treating absence as an edge case.
 	headshot?: string;
-	// Pre-formatted by ESPN: "(7-7, 5.17)" is a pitcher's W-L and ERA. Absent for goalies, whose
-	// record field is always empty.
+	// Assembled from the separate wins and losses stats rather than parsed back out of `line`, so
+	// each number can carry its own label. All 182 upcoming probables sampled had both, plus ERA.
+	winLoss?: string;
+	era?: string;
+	// ESPN's own pre-formatted "(7-7, 5.17)". Rendered unlabelled, and only when the two above are
+	// missing — which no baseball probable sampled was, and every goalie is.
 	line?: string;
 	// Hockey only. ESPN sends no starter status for baseball.
 	status?: 'expected' | 'confirmed';

@@ -290,7 +290,7 @@ export class MockGameSimulator {
 				homeTeam: {
 					id: '19', name: 'New York Mets', abbreviation: 'NYM', score: 0, logo: `${espnCdn}/mlb/500/nym.png`, color: '#002D72',
 					record: '76-58',
-					probableStarter: { name: 'D. Peterson', line: '(7-7, 5.17)', headshot: `${espnShots}/mlb/players/full/40921.png` },
+					probableStarter: { name: 'D. Peterson', winLoss: '7-7', era: '5.17', headshot: `${espnShots}/mlb/players/full/40921.png` },
 					leaders: [
 						{ category: 'avg', fallbackLabel: 'BA', player: 'F. Lindor', value: '.276' },
 						{ category: 'homeruns', fallbackLabel: 'HR', player: 'J. Soto', value: '33', headshot: `${espnShots}/mlb/players/full/36969.png` },
@@ -300,7 +300,7 @@ export class MockGameSimulator {
 				awayTeam: {
 					id: '16', name: 'Detroit Tigers', abbreviation: 'DET', score: 0, logo: `${espnCdn}/mlb/500/det.png`, color: '#0C2340',
 					record: '70-64',
-					probableStarter: { name: 'T. Skubal', line: '(13-4, 2.21)', headshot: `${espnShots}/mlb/players/full/39909.png` },
+					probableStarter: { name: 'T. Skubal', winLoss: '13-4', era: '2.21', headshot: `${espnShots}/mlb/players/full/39909.png` },
 					leaders: [
 						{ category: 'avg', fallbackLabel: 'BA', player: 'R. Greene', value: '.265' },
 						{ category: 'homeruns', fallbackLabel: 'HR', player: 'K. Carpenter', value: '28' },

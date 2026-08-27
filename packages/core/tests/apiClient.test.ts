@@ -1933,8 +1933,11 @@ describe('apiClient', () => {
 					headshot: 'https://a.espncdn.com/i/headshots/mlb/players/full/40921.png',
 				},
 				statistics: [
+					{ name: 'saves', abbreviation: 'SV', displayValue: '1' },
+					{ name: 'losses', abbreviation: 'L', displayValue: '7' },
 					{ name: 'wins', abbreviation: 'W', displayValue: '7' },
 					{ name: 'ERA', abbreviation: 'ERA', displayValue: '5.17' },
+					{ name: 'errors', abbreviation: 'E', displayValue: '2' },
 				],
 				record: '(7-7, 5.17)',
 			}],
@@ -1950,7 +1953,7 @@ describe('apiClient', () => {
 			}],
 		};
 
-		test('reads a baseball pitcher with the line ESPN pre-formats', async () => {
+		test('reads a baseball pitcher, splitting the record and ERA out of statistics', async () => {
 			const { fetchGamesWithLeagueLogos } = mockSingleEvent(makeEvent({
 				id: 'mlb-sp', state: 'pre', period: 1, clock: '0:00', homeScore: '0', awayScore: '0',
 				homeExtra: pitcher,
@@ -1960,6 +1963,8 @@ describe('apiClient', () => {
 				.toEqual({
 					name: 'D. Peterson',
 					headshot: 'https://a.espncdn.com/i/headshots/mlb/players/full/40921.png',
+					winLoss: '7-7',
+					era: '5.17',
 					line: '(7-7, 5.17)',
 					status: undefined,
 				});
@@ -1972,9 +1977,54 @@ describe('apiClient', () => {
 			}));
 			const result = await fetchGamesWithLeagueLogos(['nhl'], { includeUpcoming: false });
 			expect(result.games.find(g => g.id === 'nhl-sg')?.homeTeam.probableStarter)
-				.toEqual({ name: 'C. Ellis', headshot: undefined, line: undefined, status: 'confirmed' });
+				.toEqual({
+					name: 'C. Ellis',
+					headshot: undefined,
+					winLoss: undefined,
+					era: undefined,
+					line: undefined,
+					status: 'confirmed',
+				});
 		});
 
+
+		// The record needs both halves to mean anything; ERA stands on its own.
+		test('leaves the record off when only one of wins and losses is present', async () => {
+			const { fetchGamesWithLeagueLogos } = mockSingleEvent(makeEvent({
+				id: 'mlb-half', state: 'pre', period: 1, clock: '0:00', homeScore: '0', awayScore: '0',
+				homeExtra: { probables: [{
+					name: 'probableStartingPitcher',
+					athlete: { shortName: 'D. Peterson' },
+					statistics: [
+						{ name: 'wins', abbreviation: 'W', displayValue: '7' },
+						{ name: 'ERA', abbreviation: 'ERA', displayValue: '5.17' },
+					],
+				}] },
+			}));
+			const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
+			const starter = result.games.find(g => g.id === 'mlb-half')?.homeTeam.probableStarter;
+			expect(starter?.winLoss).toBeUndefined();
+			expect(starter?.era).toBe('5.17');
+		});
+
+		test('reads a zero win total rather than discarding it as falsy', async () => {
+			const { fetchGamesWithLeagueLogos } = mockSingleEvent(makeEvent({
+				id: 'mlb-zero', state: 'pre', period: 1, clock: '0:00', homeScore: '0', awayScore: '0',
+				homeExtra: { probables: [{
+					name: 'probableStartingPitcher',
+					athlete: { shortName: 'R. Rookie' },
+					statistics: [
+						{ name: 'wins', abbreviation: 'W', displayValue: '0' },
+						{ name: 'losses', abbreviation: 'L', displayValue: '0' },
+						{ name: 'ERA', abbreviation: 'ERA', displayValue: '0.00' },
+					],
+				}] },
+			}));
+			const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
+			const starter = result.games.find(g => g.id === 'mlb-zero')?.homeTeam.probableStarter;
+			expect(starter?.winLoss).toBe('0-0');
+			expect(starter?.era).toBe('0.00');
+		});
 		test('ignores a status value outside the two ESPN sends', async () => {
 			const { fetchGamesWithLeagueLogos } = mockSingleEvent(makeEvent({
 				id: 'nhl-odd', state: 'pre', period: 1, clock: '0:00', homeScore: '0', awayScore: '0',

@@ -226,7 +226,7 @@ describe('pre-game detail screen', () => {
 				name: 'New York Mets',
 				abbreviation: 'NYM',
 				record: '76-58',
-				probableStarter: { name: 'D. Peterson', line: '(7-7, 5.17)', headshot: shot('40921') },
+				probableStarter: { name: 'D. Peterson', winLoss: '7-7', era: '5.17', headshot: shot('40921') },
 				leaders: [
 					{ category: 'homeruns', fallbackLabel: 'HR', player: 'J. Soto', value: '33', headshot: shot('36969') },
 					{ category: 'rbis', fallbackLabel: 'RBI', player: 'P. Alonso', value: '83' },
@@ -237,7 +237,7 @@ describe('pre-game detail screen', () => {
 				name: 'Detroit Tigers',
 				abbreviation: 'DET',
 				record: '70-64',
-				probableStarter: { name: 'T. Skubal', line: '(13-4, 2.21)', headshot: shot('39909') },
+				probableStarter: { name: 'T. Skubal', winLoss: '13-4', era: '2.21', headshot: shot('39909') },
 				leaders: [
 					{ category: 'homeruns', fallbackLabel: 'HR', player: 'K. Carpenter', value: '28' },
 					{ category: 'rbis', fallbackLabel: 'RBI', player: 'S. Torkelson', value: '100' },
@@ -287,12 +287,48 @@ describe('pre-game detail screen', () => {
 			},
 		};
 
-		it('shows both pitchers with the line ESPN pre-formats', () => {
+		it('shows both pitchers with their record and ERA', () => {
 			mountPre(pitchers);
 			cy.get('.gd-pregame-stats .gd-pregame-starter-name').should('have.length', 2);
 			cy.get('.gd-pregame-starter-name').eq(0).should('have.text', 'T. Skubal');
-			cy.get('.gd-pregame-starter-line').eq(0).should('have.text', '(13-4, 2.21)');
 			cy.get('.gd-pregame-starter-name').eq(1).should('have.text', 'D. Peterson');
+			cy.get('.gd-pregame-stat-value').eq(0).should('have.text', '13-4');
+			cy.get('.gd-pregame-stat-value').eq(1).should('have.text', '2.21');
+		});
+
+		// "(3-1, 4.23)" says nothing about what either number is.
+		it('labels each pitcher number under the value', () => {
+			mountPre(pitchers);
+			cy.get('.gd-pregame-stat').should('have.length', 4);
+			cy.get('.gd-pregame-stat-label').eq(0).should('have.text', 'W-L');
+			cy.get('.gd-pregame-stat-label').eq(1).should('have.text', 'ERA');
+			cy.get('.gd-pregame-stat').eq(0).then(([pair]: JQuery<HTMLElement>) => {
+				const value = pair.querySelector('.gd-pregame-stat-value')!.getBoundingClientRect();
+				const label = pair.querySelector('.gd-pregame-stat-label')!.getBoundingClientRect();
+				expect(label.top, 'label sits under its value').to.be.at.least(value.bottom - 1);
+			});
+		});
+
+		// Not Lekton. These are read as numbers in prose, not scanned down a column.
+		it('sets the pitcher and leader numbers in the body face', () => {
+			mountPre(pitchers);
+			cy.get('.gd-pregame-stat-value').eq(0).then(([el]: JQuery<HTMLElement>) => {
+				expect(getComputedStyle(el).fontFamily.toLowerCase()).to.not.include('lekton');
+			});
+			cy.get('.gd-pregame-leader-value').eq(0).then(([el]: JQuery<HTMLElement>) => {
+				expect(getComputedStyle(el).fontFamily.toLowerCase()).to.not.include('lekton');
+			});
+		});
+
+		// A sport that sends a pre-formatted line and no separate stats still shows the line.
+		it('falls back to the unlabelled ESPN line when there are no separate stats', () => {
+			mountPre({
+				...pitchers,
+				homeTeam: { ...pitchers.homeTeam, probableStarter: { name: 'D. Peterson', line: '(7-7, 5.17)' } },
+				awayTeam: { ...pitchers.awayTeam, probableStarter: undefined },
+			});
+			cy.get('.gd-pregame-starter-line').should('have.text', '(7-7, 5.17)');
+			cy.get('.gd-pregame-stat').should('not.exist');
 		});
 
 		it('keeps each starter on its own team side of the card', () => {
@@ -323,6 +359,7 @@ describe('pre-game detail screen', () => {
 			mountPre(goalies);
 			cy.contains('.gd-setup-heading', 'Probable goalies').should('exist');
 			cy.get('.gd-pregame-starter-line').should('not.exist');
+			cy.get('.gd-pregame-stat').should('not.exist');
 			cy.get('.gd-pregame-starter-status').eq(0).should('have.text', 'Expected');
 			cy.get('.gd-pregame-starter-status').eq(1).should('have.text', 'Confirmed');
 		});
@@ -427,6 +464,31 @@ describe('pre-game detail screen', () => {
 			cy.get('.gd-poster-record').eq(1).should('have.text', '76-58');
 		});
 
+
+		// The two labels share one half-card row, so a locale that goes native — ja ships 勝敗 and
+		// 防御率 where most ship W-L and ERA — has to fit both without wrapping the pair.
+		it('fits every locale pitcher label beside its partner', () => {
+			mountPre(pitchers);
+			// The budget is the half-card the starter gets, not the row's own shrink-to-fit width:
+			// the row grows with its content, so measuring it before the swap measures English.
+			cy.get('.gd-pregame-starter').eq(0).then(([column]: JQuery<HTMLElement>) => {
+				const budget = column.getBoundingClientRect().width;
+				const row = column.querySelector<HTMLElement>('.gd-pregame-starter-stats')!;
+				const labels = row.querySelectorAll<HTMLElement>('.gd-pregame-stat-label');
+				const [recordLabel, eraLabel] = labels;
+				const baseHeight = recordLabel!.getBoundingClientRect().height;
+				for (const [name, locale] of Object.entries(locales)) {
+					const detail = locale.detail as unknown as Record<string, string>;
+					recordLabel!.textContent = detail.pitcherRecordLabel ?? '';
+					eraLabel!.textContent = detail.pitcherEraLabel ?? '';
+					expect(row.scrollWidth, `${name} pitcher labels fit the row`).to.be.at.most(Math.ceil(budget));
+					for (const label of labels) {
+						expect(label.getBoundingClientRect().height, `${name} label stays on one line`)
+							.to.be.at.most(baseHeight + 1);
+					}
+				}
+			});
+		});
 		it('fits every locale category label on one line', () => {
 			mountPre(pitchers);
 			cy.get('.gd-pregame-category').eq(0).then(([label]: JQuery<HTMLElement>) => {

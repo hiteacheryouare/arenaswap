@@ -252,6 +252,8 @@
 		"probablePitchers": "Arremessadores prováveis",
 		"probableGoalies": "Goleiros prováveis",
 		"starterConfirmed": "Confirmado",
+		"pitcherRecordLabel": "W-L",
+		"pitcherEraLabel": "ERA",
 		"starterExpected": "Esperado",
 		"teamLeaders": "Líderes do time",
 		"leaderAvg": "AVG",

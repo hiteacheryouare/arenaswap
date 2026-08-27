@@ -996,9 +996,40 @@ $bootstrap-icons-font-dir: '/fonts';
 	overflow-wrap: anywhere;
 }
 
+// The unlabelled fallback, for a sport that sends a pre-formatted line and no separate stats.
 .gd-pregame-starter-line {
 	font-size: 0.6rem;
 	color:     #4b5563;
+}
+
+.gd-pregame-starter-stats {
+	display:         flex;
+	justify-content: center;
+	gap:             0.6rem;
+	margin-top:      0.06rem;
+}
+
+.gd-pregame-stat {
+	display:        flex;
+	flex-direction: column;
+	align-items:    center;
+	line-height:    1.15;
+}
+
+.gd-pregame-stat-value {
+	font-size:   0.68rem;
+	font-weight: 600;
+	color:       #111827;
+}
+
+// Quiet enough that the number stays the thing being read, and uppercase so a two-letter label
+// does not read as an initial.
+.gd-pregame-stat-label {
+	font-size:      0.5rem;
+	font-weight:    600;
+	color:          #6b7280;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
 }
 
 .gd-pregame-starter-status {

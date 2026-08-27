@@ -252,6 +252,8 @@
 		"probablePitchers": "先发投手",
 		"probableGoalies": "先发守门员",
 		"starterConfirmed": "确认",
+		"pitcherRecordLabel": "胜败",
+		"pitcherEraLabel": "防御率",
 		"starterExpected": "预计",
 		"teamLeaders": "主力球员",
 		"leaderAvg": "打击率",

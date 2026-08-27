@@ -252,6 +252,8 @@
 		"probablePitchers": "Lanciatori probabili",
 		"probableGoalies": "Portieri probabili",
 		"starterConfirmed": "Confermato",
+		"pitcherRecordLabel": "W-L",
+		"pitcherEraLabel": "ERA",
 		"starterExpected": "Previsto",
 		"teamLeaders": "Leader di squadra",
 		"leaderAvg": "AVG",

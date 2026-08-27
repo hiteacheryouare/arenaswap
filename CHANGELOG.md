@@ -38,9 +38,14 @@ one gist that describes `records[].type` lists a value that does not exist.
   to, with the player's headshot ringed in the team's colour. A game with only one side named leaves
   the other half empty rather than re-centring the name it has — 14 of 98 upcoming games were
   one-sided, and a lone centred name reads as belonging to neither team
-- **Baseball shows the line ESPN pre-formats** — `(7-7, 5.17)`, a pitcher's record and ERA, already
-  assembled. Hockey shows a goalie's name and whether the start is confirmed, and no line, because
-  a goalie's record field is always empty
+- **A pitcher's numbers say what they are.** ESPN pre-formats them as `(3-1, 4.23)`, which is two
+  numbers and no indication of what either one is. They are split back out of the separate `wins`,
+  `losses` and `ERA` stats — present on all 182 upcoming probables sampled — and rendered as two
+  labelled pairs, value over label, the way a box score heads a column. Hockey shows a goalie's name
+  and whether the start is confirmed, and no numbers at all, because a goalie's record field is
+  always empty and its statistics array is empty with it
+- Neither those numbers nor the leader values are set in Lekton any more. The monospace face is for
+  figures you scan down a column — a clock, a score — and these are read in place
 - **Team leaders get the full width of the card, not half of it.** They were mirrored too at first,
   and it did not survive football: a value there runs to 21 characters — `14/23, 141 YDS, 1 INT` —
   against four for baseball's `.276`, and no half-width column fits both. Every leader now gets one
@@ -80,13 +85,14 @@ pre-game screen the scoreboard cannot supply, so a soccer or regular-season base
 keeps them working before their season is underway.
 
 ### Strings and coverage
-- Twenty new `detail` keys across all twelve locales: the two starter headings, the two starter
-  statuses, the leaders heading, and fifteen stat-column abbreviations. They sit in a fixed-width
-  centre column, and a Cypress spec measures every locale's string against it. Most keep the English
-  abbreviation, which is not laziness — German BBL and Japanese B.League print PTS, REB and AST in
-  their own official box scores. German and French hockey take T / V / PKT and B / A / PTS from
-  NHL.com's own localized glossaries, and both Chinese locales use the native terms CPBL and CBA
-  print
+- Twenty-two new `detail` keys across all twelve locales: the two starter headings, the two starter
+  statuses, the leaders heading, the two pitcher stat labels, and fifteen stat abbreviations. A
+  Cypress spec renders every locale's string in place and measures it, since these are the strings
+  with the least room to grow into. Most keep the English abbreviation, which is not laziness —
+  German BBL and Japanese B.League print PTS, REB and AST in their own official box scores, and
+  Italian FIBS's own abbreviation for a home run is literally HR. Where a language does have its
+  own, it is used: German and French hockey take T / V / PKT and B / A / PTS from NHL.com's own
+  localized glossaries, and both Chinese locales use the native terms CPBL and CBA print
 - **30 new unit tests on the parse**, each built from a transcribed live payload — the NHL's `ytd`
   record, college football's four record types, a goalie with an empty line, the duplicate category
   pairs, and the state gate

@@ -252,6 +252,8 @@
 		"probablePitchers": "선발 투수",
 		"probableGoalies": "선발 골리",
 		"starterConfirmed": "확정",
+		"pitcherRecordLabel": "W-L",
+		"pitcherEraLabel": "ERA",
 		"starterExpected": "예상",
 		"teamLeaders": "주요 선수",
 		"leaderAvg": "AVG",

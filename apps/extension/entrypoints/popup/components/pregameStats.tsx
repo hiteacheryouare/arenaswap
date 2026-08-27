@@ -40,6 +40,20 @@ const PlayerShot = ({ url, name, color, className }: {
 	/>
 );
 
+const hasLabelledStats = (starter: ProbableStarter): boolean => (
+	starter.winLoss !== undefined || starter.era !== undefined
+);
+
+// "(3-1, 4.23)" says nothing about what either number is. The label goes under the value rather
+// than beside it: a box score puts the heading above its column, and two labelled pairs still fit
+// the half-card a starter gets.
+const StatPair = ({ value, label }: { value: string; label: string }) => (
+	<div className='gd-pregame-stat'>
+		<span className='gd-pregame-stat-value'>{value}</span>
+		<span className='gd-pregame-stat-label'>{label}</span>
+	</div>
+);
+
 // Away left, home right, under the crests they belong to. A missing starter leaves its half empty
 // rather than re-centring the one we have: 14 of 98 upcoming games named only one side, and a lone
 // centred name reads as belonging to neither team.
@@ -51,7 +65,14 @@ const StarterColumn = ({ starter, color }: { starter?: ProbableStarter; color: s
 					<PlayerShot url={starter.headshot} name={starter.name} color={color} className='gd-pregame-shot-img' />
 				</div>
 				<div className='gd-pregame-starter-name'>{starter.name}</div>
-				{starter.line && <div className='gd-pregame-starter-line font-lekton'>{starter.line}</div>}
+				{hasLabelledStats(starter) ? (
+					<div className='gd-pregame-starter-stats'>
+						{starter.winLoss && <StatPair value={starter.winLoss} label={i18n.t('detail.pitcherRecordLabel')} />}
+						{starter.era && <StatPair value={starter.era} label={i18n.t('detail.pitcherEraLabel')} />}
+					</div>
+				) : starter.line && (
+					<div className='gd-pregame-starter-line'>{starter.line}</div>
+				)}
 				{starter.status && (
 					<div className='gd-pregame-starter-status'>{i18n.t(starterStatusKeys[starter.status])}</div>
 				)}
@@ -74,7 +95,7 @@ const LeaderRow = ({ leader, team, color }: { leader?: TeamLeader; team: Team; c
 			<span className='gd-pregame-leader-player'>{leader.player}</span>
 			{/* Verbatim from ESPN. The football values carry their own English units and there is no
 			    version of "12 CAR, 68 YDS, 1 TD" we could assemble ourselves. */}
-			<span className='gd-pregame-leader-value font-lekton'>{leader.value}</span>
+			<span className='gd-pregame-leader-value'>{leader.value}</span>
 		</div>
 	);
 };

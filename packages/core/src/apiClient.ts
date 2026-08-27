@@ -8,6 +8,7 @@ import type {
 	EspnCompetition,
 	EspnCompetitor,
 	EspnEvent,
+	EspnProbable,
 	EspnOddsProvider,
 	EspnScoreboardResponse,
 	EspnSituation,
@@ -204,15 +205,23 @@ const parseCompetitorRecord = (competitor: EspnCompetitor): string | undefined =
 // Baseball's `probableStartingPitcher` and hockey's `probableStartingGoalie` are the only two
 // values ESPN sends. Matching the shared prefix rather than either name means a third sport can
 // start shipping a starter without needing a change here.
+const starterStat = (probable: EspnProbable, name: string): string | undefined => (
+	probable.statistics?.find(stat => stat.name === name)?.displayValue?.trim() || undefined
+);
+
 const parseProbableStarter = (competitor: EspnCompetitor): ProbableStarter | undefined => {
 	const probable = competitor.probables?.find(entry => entry.name?.startsWith('probableStarting'));
 	if (!probable) return undefined;
 	const name = probable.athlete?.shortName?.trim() || probable.athlete?.displayName?.trim();
 	if (!name) return undefined;
 	const status = probable.status?.type?.trim().toLowerCase();
+	const wins = starterStat(probable, 'wins');
+	const losses = starterStat(probable, 'losses');
 	return {
 		name,
 		headshot: probable.athlete?.headshot?.trim() || undefined,
+		winLoss: wins !== undefined && losses !== undefined ? `${wins}-${losses}` : undefined,
+		era: starterStat(probable, 'ERA'),
 		// Empty for every goalie sampled; a pitcher's arrives assembled as "(7-7, 5.17)".
 		line: probable.record?.trim() || undefined,
 		status: status === 'expected' || status === 'confirmed' ? status : undefined,

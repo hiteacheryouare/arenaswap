@@ -252,6 +252,8 @@
 		"probablePitchers": "先發投手",
 		"probableGoalies": "先發守門員",
 		"starterConfirmed": "確認",
+		"pitcherRecordLabel": "勝敗",
+		"pitcherEraLabel": "防禦率",
 		"starterExpected": "預計",
 		"teamLeaders": "主力球員",
 		"leaderAvg": "打擊率",

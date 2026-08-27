@@ -252,6 +252,8 @@
 		"probablePitchers": "先発投手",
 		"probableGoalies": "先発ゴーリー",
 		"starterConfirmed": "確定",
+		"pitcherRecordLabel": "勝敗",
+		"pitcherEraLabel": "防御率",
 		"starterExpected": "予想",
 		"teamLeaders": "主要選手",
 		"leaderAvg": "AVG",
