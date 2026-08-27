@@ -208,4 +208,167 @@ describe('pre-game detail screen', () => {
 			}
 		});
 	});
+
+	describe('probable starters and team leaders', () => {
+		const pitchers: Game = {
+			...preGame,
+			id: 'mlb-pre',
+			league: 'mlb',
+			sportType: 'baseball',
+			homeTeam: {
+				...preGame.homeTeam,
+				name: 'New York Mets',
+				abbreviation: 'NYM',
+				record: '76-58',
+				probableStarter: { name: 'D. Peterson', line: '(7-7, 5.17)' },
+				leaders: [
+					{ category: 'homeruns', fallbackLabel: 'HR', player: 'J. Soto', value: '33' },
+					{ category: 'rbis', fallbackLabel: 'RBI', player: 'P. Alonso', value: '83' },
+				],
+			},
+			awayTeam: {
+				...preGame.awayTeam,
+				name: 'Detroit Tigers',
+				abbreviation: 'DET',
+				record: '70-64',
+				probableStarter: { name: 'T. Skubal', line: '(13-4, 2.21)' },
+				leaders: [
+					{ category: 'homeruns', fallbackLabel: 'HR', player: 'K. Carpenter', value: '28' },
+					{ category: 'rbis', fallbackLabel: 'RBI', player: 'S. Torkelson', value: '100' },
+				],
+			},
+		};
+
+		const goalies: Game = {
+			...preGame,
+			id: 'nhl-pre',
+			league: 'nhl',
+			sportType: 'hockey',
+			homeTeam: {
+				...preGame.homeTeam,
+				record: '24-16-4',
+				probableStarter: { name: 'J. Swayman', status: 'confirmed' },
+			},
+			awayTeam: {
+				...preGame.awayTeam,
+				record: '22-18-5',
+				probableStarter: { name: 'S. Montembeault', status: 'expected' },
+			},
+		};
+
+		it('shows both pitchers with the line ESPN pre-formats', () => {
+			mountPre(pitchers);
+			cy.get('.gd-pregame-stats .gd-pregame-starter-name').should('have.length', 2);
+			cy.get('.gd-pregame-starter-name').eq(0).should('have.text', 'T. Skubal');
+			cy.get('.gd-pregame-starter-line').eq(0).should('have.text', '(13-4, 2.21)');
+			cy.get('.gd-pregame-starter-name').eq(1).should('have.text', 'D. Peterson');
+		});
+
+		// Away left, home right, on the same side of the card as their crest. Not asserted as a
+		// pixel-identical centroid: the poster and this card have different padding and different
+		// centre columns, so the two grids cannot share one centre line.
+		it('keeps each starter on its own team side of the card', () => {
+			mountPre(pitchers);
+			cy.get('.gd-pregame-stats').then(([card]: JQuery<HTMLElement>) => {
+				const midline = card.getBoundingClientRect().left + card.getBoundingClientRect().width / 2;
+				cy.get('.gd-pregame-starter').eq(0).then(([away]: JQuery<HTMLElement>) => {
+					expect(away.getBoundingClientRect().right).to.be.at.most(midline);
+				});
+				cy.get('.gd-pregame-starter').eq(1).then(([home]: JQuery<HTMLElement>) => {
+					expect(home.getBoundingClientRect().left).to.be.at.least(midline);
+				});
+			});
+		});
+
+		it('holds the grid when only one side has a starter', () => {
+			mountPre({ ...pitchers, homeTeam: { ...pitchers.homeTeam, probableStarter: undefined } });
+			cy.get('.gd-pregame-starter-name').should('have.length', 1);
+			cy.get('.gd-pregame-mirror').eq(0).then(([row]: JQuery<HTMLElement>) => {
+				const columns = getComputedStyle(row).gridTemplateColumns.split(' ').map(parseFloat);
+				expect(columns).to.have.length(3);
+				// The two outer columns stay equal, so the one name we have does not re-centre.
+				expect(Math.abs(columns[0]! - columns[2]!)).to.be.at.most(1);
+			});
+		});
+
+		it('shows a goalie with a status and no stat line', () => {
+			mountPre(goalies);
+			cy.contains('.gd-setup-heading', 'Probable goalies').should('exist');
+			cy.get('.gd-pregame-starter-line').should('not.exist');
+			cy.get('.gd-pregame-starter-status').eq(0).should('have.text', 'Expected');
+			cy.get('.gd-pregame-starter-status').eq(1).should('have.text', 'Confirmed');
+		});
+
+		it('renders one leader row per category, away and home either side of the label', () => {
+			mountPre(pitchers);
+			cy.contains('.gd-setup-heading', 'Team leaders').should('exist');
+			cy.get('.gd-pregame-leader').should('have.length', 4);
+			cy.get('.gd-pregame-label').eq(1).should('have.text', 'HR');
+			cy.get('.gd-pregame-label').eq(2).should('have.text', 'RBI');
+			cy.get('.gd-pregame-leader-value').eq(0).should('have.text', '28');
+			cy.get('.gd-pregame-leader-value').eq(1).should('have.text', '33');
+		});
+
+		// A hockey points leader must not borrow basketball's label, and vice versa.
+		it('labels a category by sport, not by ESPN name alone', () => {
+			const hockeyPoints = {
+				...goalies,
+				homeTeam: { ...goalies.homeTeam, leaders: [{ category: 'points', fallbackLabel: 'Points', player: 'D. Pastrnak', value: '69' }] },
+			};
+			mountPre(hockeyPoints);
+			cy.get('.gd-pregame-label').last().should('have.text', 'PTS');
+		});
+
+		it('falls back to the ESPN abbreviation for a category we have no label for', () => {
+			const unknown = {
+				...pitchers,
+				homeTeam: { ...pitchers.homeTeam, leaders: [{ category: 'stolenbases', fallbackLabel: 'SB', player: 'F. Lindor', value: '29' }] },
+				awayTeam: { ...pitchers.awayTeam, leaders: [] },
+			};
+			mountPre(unknown);
+			cy.get('.gd-pregame-label').last().should('have.text', 'SB');
+		});
+
+		it('renders nothing at all when a sport sends neither', () => {
+			mountPre(preGame);
+			cy.get('.gd-pregame-stats').should('not.exist');
+			cy.get('.gd-setup').should('exist');
+		});
+
+		it('prefers the scoreboard record over a summary fetch on the poster', () => {
+			mountPre(pitchers);
+			cy.get('.gd-poster-record').eq(0).should('have.text', '70-64');
+			cy.get('.gd-poster-record').eq(1).should('have.text', '76-58');
+		});
+
+		// The centre column is the only fixed width in the grid, so it is the one thing a long
+		// translation can push out of shape.
+		it('fits every locale leader label in the centre column', () => {
+			mountPre(pitchers);
+			cy.get('.gd-pregame-label').eq(1).then(([label]: JQuery<HTMLElement>) => {
+				const budget = label.getBoundingClientRect().width;
+				const keys = [
+					'leaderAvg', 'leaderHomeRuns', 'leaderRbis', 'leaderPoints', 'leaderRebounds',
+					'leaderAssists', 'leaderGoals', 'leaderHockeyAssists', 'leaderHockeyPoints',
+					'leaderPassing', 'leaderRushing', 'leaderReceiving',
+				];
+				const probe = document.createElement('span');
+				const style = getComputedStyle(label);
+				probe.style.font = style.font;
+				probe.style.letterSpacing = style.letterSpacing;
+				probe.style.position = 'absolute';
+				probe.style.whiteSpace = 'nowrap';
+				document.body.appendChild(probe);
+				for (const [name, locale] of Object.entries(locales)) {
+					const detail = locale.detail as unknown as Record<string, string>;
+					for (const key of keys) {
+						probe.textContent = detail[key] ?? '';
+						expect(probe.getBoundingClientRect().width, `${name}.${key} fits the label column`)
+							.to.be.at.most(budget);
+					}
+				}
+				probe.remove();
+			});
+		});
+	});
 });

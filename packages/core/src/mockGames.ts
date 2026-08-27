@@ -280,6 +280,68 @@ export class MockGameSimulator {
 				bso: { balls: 1, strikes: 0, outs: 0 },
 				broadcasts: ['ESPNU'],
 			},
+			// The two sports ESPN names a starter for. Records, starters and leaders are all shaped
+			// the way the live scoreboard sends them, including the goalie's absent stat line.
+			{
+				id: 'mock-18',
+				league: 'mlb',
+				sportType: 'baseball',
+				homeTeam: {
+					id: '19', name: 'New York Mets', abbreviation: 'NYM', score: 0, logo: `${espnCdn}/mlb/500/nym.png`, color: '#002D72',
+					record: '76-58',
+					probableStarter: { name: 'D. Peterson', line: '(7-7, 5.17)' },
+					leaders: [
+						{ category: 'avg', fallbackLabel: 'BA', player: 'F. Lindor', value: '.276' },
+						{ category: 'homeruns', fallbackLabel: 'HR', player: 'J. Soto', value: '33' },
+						{ category: 'rbis', fallbackLabel: 'RBI', player: 'P. Alonso', value: '83' },
+					],
+				},
+				awayTeam: {
+					id: '16', name: 'Detroit Tigers', abbreviation: 'DET', score: 0, logo: `${espnCdn}/mlb/500/det.png`, color: '#0C2340',
+					record: '70-64',
+					probableStarter: { name: 'T. Skubal', line: '(13-4, 2.21)' },
+					leaders: [
+						{ category: 'avg', fallbackLabel: 'BA', player: 'R. Greene', value: '.265' },
+						{ category: 'homeruns', fallbackLabel: 'HR', player: 'K. Carpenter', value: '28' },
+						{ category: 'rbis', fallbackLabel: 'RBI', player: 'S. Torkelson', value: '100' },
+					],
+				},
+				venueName: 'Citi Field',
+				period: 1, clockSeconds: 0, status: 'pre',
+				startTime: new Date(Date.now() + 5 * 60 * 60 * 1000).toISOString(),
+				broadcasts: ['SNY'],
+				odds: { details: 'NYM -1.5', overUnder: 8.5 },
+			},
+			{
+				id: 'mock-19',
+				league: 'nhl',
+				sportType: 'hockey',
+				homeTeam: {
+					id: '1', name: 'Boston Bruins', abbreviation: 'BOS', score: 0, logo: `${espnCdn}/nhl/500/bos.png`, color: '#FFB81C',
+					record: '24-16-4',
+					// Goalies arrive with an empty record string, so there is no line to render.
+					probableStarter: { name: 'J. Swayman', status: 'confirmed' },
+					leaders: [
+						{ category: 'goals', fallbackLabel: 'Goals', player: 'D. Pastrnak', value: '31' },
+						{ category: 'assists', fallbackLabel: 'Assists', player: 'C. Geekie', value: '38' },
+						{ category: 'points', fallbackLabel: 'Points', player: 'D. Pastrnak', value: '69' },
+					],
+				},
+				awayTeam: {
+					id: '2', name: 'Montreal Canadiens', abbreviation: 'MTL', score: 0, logo: `${espnCdn}/nhl/500/mtl.png`, color: '#AF1E2D',
+					record: '22-18-5',
+					probableStarter: { name: 'S. Montembeault', status: 'expected' },
+					leaders: [
+						{ category: 'goals', fallbackLabel: 'Goals', player: 'C. Caufield', value: '27' },
+						{ category: 'assists', fallbackLabel: 'Assists', player: 'N. Suzuki', value: '41' },
+						{ category: 'points', fallbackLabel: 'Points', player: 'N. Suzuki', value: '63' },
+					],
+				},
+				venueName: 'TD Garden',
+				period: 1, clockSeconds: 1200, status: 'pre',
+				startTime: new Date(Date.now() + 9 * 60 * 60 * 1000).toISOString(),
+				broadcasts: ['NESN'],
+			},
 		];
 
 		this.state = new Map();

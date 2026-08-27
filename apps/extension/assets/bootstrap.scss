@@ -934,6 +934,77 @@ $bootstrap-icons-font-dir: '/fonts';
 	min-width: 0;
 }
 
+// Who is starting and who leads the two teams, in the same light card family as the setup block
+// above it. The three-column grid is the poster's away | vs | home geometry repeated, so a name
+// lines up under the crest it belongs to and the stat label lands where the "vs" does.
+.gd-pregame-mirror {
+	display:               grid;
+	grid-template-columns: 1fr auto 1fr;
+	align-items:           center;
+	column-gap:            0.4rem;
+	padding:               0.24rem 0;
+}
+
+.gd-pregame-starter {
+	display:        flex;
+	flex-direction: column;
+	align-items:    center;
+	text-align:     center;
+	min-width:      0;
+}
+
+.gd-pregame-starter-name {
+	font-size:     0.66rem;
+	font-weight:   600;
+	line-height:   1.2;
+	// A long name wraps rather than pushing the column past its half of the card.
+	overflow-wrap: anywhere;
+}
+
+.gd-pregame-starter-line {
+	font-size: 0.6rem;
+	color:     #4b5563;
+}
+
+.gd-pregame-starter-status {
+	font-size:      0.54rem;
+	color:          #6b7280;
+	text-transform: uppercase;
+	letter-spacing: 0.02em;
+}
+
+.gd-pregame-leader {
+	display:         flex;
+	align-items:     baseline;
+	justify-content: center;
+	gap:             0.28rem;
+	min-width:       0;
+}
+
+.gd-pregame-leader-player {
+	font-size:     0.62rem;
+	color:         #374151;
+	overflow:      hidden;
+	text-overflow: ellipsis;
+	white-space:   nowrap;
+}
+
+.gd-pregame-leader-value {
+	font-size:   0.62rem;
+	font-weight: 600;
+	flex-shrink: 0;
+}
+
+// The centre column is the only fixed width in the grid, so it is the one thing a long
+// translation can overflow. pregameDetail.cy.tsx asserts every locale fits it.
+.gd-pregame-label {
+	min-width:   2.2rem;
+	font-size:   0.56rem;
+	font-weight: 700;
+	color:       #6b7280;
+	text-align:  center;
+}
+
 // Venue / broadcast / odds / weather, as one titled section rather than four stacked centred
 // lines. Takes the chart cards' treatment, not the breakdown's white card: everything below the
 // PowerScore math reads as one dark column of sections.

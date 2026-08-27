@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { leagueConfigMap } from '@arenaswap/core/constants';
 import { logWarn } from '@arenaswap/core';
 import type { Game, LeagueId } from '@arenaswap/core/types';
+import { seriesSports } from './seriesDots';
 
 export interface SeriesCompetitor {
 	homeAway: string;
@@ -73,9 +74,10 @@ export const parseTeamRecords = (data: unknown, homeTeamId: string, awayTeamId: 
 	};
 };
 
-type SummaryGameArg = Pick<Game, 'id' | 'league' | 'status'> & {
-	homeTeam: Pick<Game['homeTeam'], 'id' | 'score'>;
-	awayTeam: Pick<Game['awayTeam'], 'id' | 'score'>;
+type SummaryGameArg = Pick<Game, 'id' | 'league' | 'status' | 'sportType'> & {
+	homeTeam: Pick<Game['homeTeam'], 'id' | 'score' | 'record'>;
+	awayTeam: Pick<Game['awayTeam'], 'id' | 'score' | 'record'>;
+	isPostseason?: boolean;
 };
 
 // Deterministic so mock charts do not change between renders.
@@ -147,20 +149,40 @@ const mockRecordsMap: Record<string, TeamRecords> = {
 	'mock-17': { home: '28-16', away: '24-20' },
 };
 
+// The scoreboard now carries both teams' records, so a pre-game screen has nothing left to ask
+// the summary endpoint for except the series dots — no chart renders before a game starts. When
+// the records are already in hand and dots cannot appear, the whole request is skipped.
+//
+// A league that sends no scoreboard record still falls through to the fetch on its own, which is
+// what keeps hockey and basketball working: they ship records only once their season is underway.
+export const shouldFetchSummary = (game: SummaryGameArg): boolean => {
+	if (game.status !== 'pre') return true;
+	if (!game.homeTeam.record || !game.awayTeam.record) return true;
+	return seriesSports.has(game.sportType) && game.isPostseason === true;
+};
+
 const useSummaryData = (game: SummaryGameArg): summaryDataResult => {
 	const { id: gameId, league, status } = game;
 	const [winProbability, setWinProbability] = useState<number[]>([]);
 	const [seriesInfo, setSeriesInfo] = useState<SeriesInfo | null>(null);
 	const [records, setRecords] = useState<TeamRecords>(emptyTeamRecords);
+	// The scoreboard's records win when it has them; the summary is the fallback for the leagues
+	// and dates where it does not.
+	const resolvedRecords: TeamRecords = {
+		home: game.homeTeam.record ?? records.home,
+		away: game.awayTeam.record ?? records.away,
+	};
 	// Snapshotted, not tracked: depending on these directly would refetch whenever the caller
 	// hands us a fresh team object, and depending on a live score would refetch ESPN on every
 	// made basket. This effect is declared before the fetch below so the refs are already
 	// current by the time it runs.
 	const teamIdsRef = useRef({ home: game.homeTeam.id, away: game.awayTeam.id });
 	const scoreRef = useRef({ home: game.homeTeam.score, away: game.awayTeam.score });
+	const gameRef = useRef(game);
 	useEffect(() => {
 		teamIdsRef.current = { home: game.homeTeam.id, away: game.awayTeam.id };
 		scoreRef.current = { home: game.homeTeam.score, away: game.awayTeam.score };
+		gameRef.current = game;
 	});
 
 	useEffect(() => {
@@ -180,6 +202,7 @@ const useSummaryData = (game: SummaryGameArg): summaryDataResult => {
 
 		const config = leagueConfigMap[league as LeagueId];
 		if (!config) return;
+		if (!shouldFetchSummary(gameRef.current)) return;
 
 		// Fetched once per game rather than per score change: the line only moves on the scale of
 		// possessions, and the switcher reads volatility from the background scorer, not from here.
@@ -211,7 +234,7 @@ const useSummaryData = (game: SummaryGameArg): summaryDataResult => {
 		return () => controller.abort();
 	}, [gameId, league, status]);
 
-	return { winProbability, seriesInfo, records };
+	return { winProbability, seriesInfo, records: resolvedRecords };
 };
 
 export default useSummaryData;
