@@ -534,6 +534,28 @@
 		"placeholder": "— Atribuir uma aba —",
 		"inUse": " (em uso)"
 	},
+	"suggest": {
+		"bannerTitle": "Essas abas parecem jogos",
+		"bannerCopy": {
+			"1": "1 aba que você tem aberta bate com um jogo da sua grade.",
+			"n": "$1 abas que você tem abertas batem com jogos da sua grade."
+		},
+		"bannerAction": "Dar uma olhada",
+		"bannerDismiss": "Dispensar sugestões",
+		"header": "Abas sugeridas",
+		"lede": "Desmarque o que a gente errou. O menu suspenso de cada card ainda tem a palavra final.",
+		"empty": "Nada do que você tem aberto parece um jogo da sua grade.",
+		"rowLabel": "Vincular {tab} com {away} em {home}",
+		"apply": {
+			"1": "Atribuir 1 aba",
+			"n": "Atribuir $1 abas"
+		},
+		"applyNone": "Atribuir abas",
+		"toastApplied": {
+			"1": "1 aba atribuída.",
+			"n": "$1 abas atribuídas."
+		}
+	},
 	"favoriteTeamBonus": {
 		"label": "Bônus de time favorito",
 		"perTeam": "+$1 por time",

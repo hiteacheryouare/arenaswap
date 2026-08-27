@@ -534,6 +534,28 @@
 		"placeholder": "— 탭 할당 —",
 		"inUse": " (사용 중)"
 	},
+	"suggest": {
+		"bannerTitle": "이 탭들, 경기 같아 보여요",
+		"bannerCopy": {
+			"1": "열려 있는 탭 1개가 오늘 경기와 일치해요.",
+			"n": "열려 있는 탭 $1개가 오늘 경기들과 일치해요."
+		},
+		"bannerAction": "살짝 보기",
+		"bannerDismiss": "추천 닫기",
+		"header": "추천 탭",
+		"lede": "잘못된 항목은 체크 해제하세요. 각 카드의 드롭다운이 최종 결정권을 가지고 있어요.",
+		"empty": "열려 있는 탭 중에 오늘 경기 같아 보이는 게 없어요.",
+		"rowLabel": "{tab} {away} vs {home} 경기 연결",
+		"apply": {
+			"1": "탭 1개 할당",
+			"n": "탭 $1개 할당"
+		},
+		"applyNone": "탭 할당",
+		"toastApplied": {
+			"1": "탭 1개를 할당했어요.",
+			"n": "탭 $1개를 할당했어요."
+		}
+	},
 	"favoriteTeamBonus": {
 		"label": "응원팀 보너스",
 		"perTeam": "팀당 +$1",
