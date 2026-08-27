@@ -15,6 +15,16 @@ import { i18n } from '#i18n';
 import { TranslationContext } from '@arenaswap/ui/src/components/i18nContext';
 import useFavoriteScoreConfetti from './useFavoriteScoreConfetti';
 import useToast from './useToast';
+import SuggestView from './components/suggestView';
+import {
+	applyTabSuggestions,
+	dismissSuggestions,
+	normalizeDismissedSuggestions,
+	suggestTabAssignments,
+	tabSuggestionDismissalsKey,
+	type SuggestionTab,
+	type TabSuggestion,
+} from '../../utils/tabSuggestions';
 import { hasStoredUserPreferences, loadStoredUserPreferences, persistStoredUserPreferences } from '../../utils/prefsStorage';
 import type { ReviewPromptState } from '../../utils/reviewPrompt';
 import {
@@ -50,6 +60,7 @@ export default () => {
 	const [walkthroughActive, setWalkthroughActive] = useState(false);
 	const [standbyOnboardingDone, setStandbyOnboardingDone] = useState(false);
 	const [standbyStreamTabId, setStandbyStreamTabId] = useState<number | null>(null);
+	const [dismissedSuggestions, setDismissedSuggestions] = useState<string[]>([]);
 	const [reviewPromptState, setReviewPromptState] = useState<ReviewPromptState>(normalizeReviewPromptState(null));
 	const [settled, setSettled] = useState(false);
 	const [allLeagueLogoCache, setAllLeagueLogoCache] = useState<LeagueLogoMap>({});
@@ -73,6 +84,18 @@ export default () => {
 	}, []);
 
 	const games = useMemo(() => data?.games ?? [], [data?.games]);
+
+	// openTabs is a mount-time snapshot, so this settles once per popup open. That is what lets a
+	// dismissal stick for the session while still re-raising when a genuinely new pair shows up.
+	const suggestions = useMemo(() => suggestTabAssignments({
+		tabs: openTabs.flatMap<SuggestionTab>(tab => tab.id === undefined || !tab.url
+			? []
+			: [{ id: tab.id, title: tab.title ?? '', url: tab.url }]),
+		games,
+		registry,
+		dismissed: dismissedSuggestions,
+		standbyStreamTabId,
+	}), [openTabs, games, registry, dismissedSuggestions, standbyStreamTabId]);
 	const scores = useMemo(() => data?.scores ?? [], [data?.scores]);
 	const leagueLogos = useMemo<LeagueLogoMap>(
 		() => ({ ...allLeagueLogoCache, ...data?.leagueLogos }),
@@ -114,9 +137,10 @@ export default () => {
 
 		void init();
 
-		browser.storage.session.get({ tabRegistry: [], standbyStreamTabId: null }).then(result => {
+		browser.storage.session.get({ tabRegistry: [], standbyStreamTabId: null, [tabSuggestionDismissalsKey]: [] }).then(result => {
 			setRegistry(result.tabRegistry as TabRegistration[]);
 			setStandbyStreamTabId((result.standbyStreamTabId as number | null) ?? null);
+			setDismissedSuggestions(normalizeDismissedSuggestions(result[tabSuggestionDismissalsKey]));
 		});
 
 		void browser.tabs.query({ currentWindow: true }).then(tabs => {
@@ -234,6 +258,26 @@ export default () => {
 		setRegistry(updated);
 		void browser.storage.session.set({ tabRegistry: updated });
 		void browser.runtime.sendMessage({ type: 'UPDATE_REGISTRY', tabRegistry: updated });
+	};
+
+	// Every pair the sheet showed is recorded, not just the accepted ones. Leaving the rejected rows
+	// out would raise the banner again the next time the popup opened.
+	const retireShownSuggestions = () => {
+		const updated = dismissSuggestions(dismissedSuggestions, suggestions);
+		setDismissedSuggestions(updated);
+		void browser.storage.session.set({ [tabSuggestionDismissalsKey]: updated });
+	};
+
+	const onApplySuggestions = (accepted: TabSuggestion[]) => {
+		onRegistryChange(applyTabSuggestions(registry, accepted));
+		retireShownSuggestions();
+		setView('main');
+		showToast(i18n.t('suggest.toastApplied', accepted.length), 'success');
+	};
+
+	const onDismissSuggestions = () => {
+		retireShownSuggestions();
+		setView('main');
 	};
 
 	// Shared by the game list and the pre-game poster's stars, so the two can't drift.
@@ -379,6 +423,9 @@ export default () => {
 						onStandbyStream={onStandbyStream}
 						onOpenGameDetail={openGameDetail}
 						onOpenSetup={() => setView('setup')}
+						suggestionCount={suggestions.length}
+						onReviewSuggestions={() => setView('suggest')}
+						onDismissSuggestions={onDismissSuggestions}
 						onStartWalkthrough={() => setWalkthroughActive(true)}
 						showReviewPrompt={shouldShowReviewPrompt(reviewPromptState)}
 						onToggleEnabled={() => persistPrefs(currentPrefs => ({ ...currentPrefs, enabled: !currentPrefs.enabled }))}
@@ -387,6 +434,16 @@ export default () => {
 						onToggleFavoriteTeam={toggleFavoriteTeam}
 						onRegistryChange={onRegistryChange}
 						formatTabLabel={tab => formatTabLabel(tab, openTabs)}
+					/>
+				)}
+				{view === 'suggest' && (
+					<SuggestView
+						suggestions={suggestions}
+						games={games}
+						openTabs={openTabs}
+						formatTabLabel={tab => formatTabLabel(tab, openTabs)}
+						onApply={onApplySuggestions}
+						onBack={() => setView('main')}
 					/>
 				)}
 				{view === 'detail' && selectedGame && (
