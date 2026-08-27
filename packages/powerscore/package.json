@@ -20,7 +20,7 @@
 		"LICENSE"
 	],
 	"scripts": {
-		"build": "tsc",
+		"build": "rolldown -c && tsc --emitDeclarationOnly",
 		"prepack": "npm run build",
 		"test": "npm run test:unit",
 		"test:unit": "jest --passWithNoTests --selectProjects unit",
@@ -52,6 +52,7 @@
 	"devDependencies": {
 		"@types/jest": "^30.0.0",
 		"jest": "^30.4.2",
+		"rolldown": "^1.2.5",
 		"typescript": "^7.0.2"
 	}
 }
