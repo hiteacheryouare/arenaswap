@@ -218,11 +218,15 @@ const parseProbableStarter = (competitor: EspnCompetitor): ProbableStarter | und
 	};
 };
 
-// ESPN sends the same stat under more than one name — WNBA has both `points` and `pointsPerGame`,
-// soccer both `goals` and `goalsLeaders` — so the suffix comes off before anything dedupes on the
-// result. `Leaders` is listed before `Leader` because alternation is tried left to right.
+// Soccer sends the same stat twice, as `goals` and `goalsLeaders`, so the suffix comes off before
+// anything dedupes on the result. `Leaders` is listed before `Leader` because alternation is tried
+// left to right.
+//
+// `PerGame` is deliberately NOT stripped. No league was found sending both a total and a per-game
+// variant of the same stat, so collapsing them buys nothing — and it would relabel the WNBA's
+// `pointsPerGame` of 19.4 as season points, which is a different number.
 const normalizeLeaderCategory = (name: string): string => (
-	name.replace(/(PerGame|Leaders|Leader)$/, '').toLowerCase()
+	name.replace(/(Leaders|Leader)$/, '').toLowerCase()
 );
 
 // The proprietary composites — MLB's `MLBRating` (552.8) and basketball's `rating`

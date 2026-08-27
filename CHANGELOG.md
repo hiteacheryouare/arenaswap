@@ -44,6 +44,12 @@ one gist that describes `records[].type` lists a value that does not exist.
 - **Team leaders, one row per category**, capped at three. The proprietary composites are dropped by
   a rule about how ESPN names things rather than a list of the names themselves, which is what keeps
   `MLBRating` and basketball's `rating` out without anyone maintaining an inventory
+- **A per-game average is labelled as one.** The first version of this collapsed ESPN's
+  `pointsPerGame` into `points` on the theory that they were duplicates, which would have printed
+  the WNBA's 19.4 under the season-points label. Live data says the WNBA sends only the per-game
+  variants and the NBA only the totals — no league sends both — so the two stay distinct and the
+  per-game rows carry PPG, RPG and APG. Soccer's `goals` and `goalsLeaders` really are duplicates
+  and really are collapsed
 - **Labels are keyed by sport, not by category name.** `points` and `assists` mean one thing in
   basketball and another in hockey, and `goals` is shared by hockey and soccer, so a flat map would
   print a hockey points leader as a basketball one. A category we have no label for falls back to
@@ -62,9 +68,13 @@ pre-game screen the scoreboard cannot supply, so a soccer or regular-season base
 keeps them working before their season is underway.
 
 ### Strings and coverage
-- Seventeen new `detail` keys across all twelve locales: the two starter headings, the two starter
-  statuses, the leaders heading, and twelve stat-column abbreviations. The abbreviations sit in a
-  fixed-width centre column, and a Cypress spec measures every locale's against it
+- Twenty new `detail` keys across all twelve locales: the two starter headings, the two starter
+  statuses, the leaders heading, and fifteen stat-column abbreviations. They sit in a fixed-width
+  centre column, and a Cypress spec measures every locale's string against it. Most keep the English
+  abbreviation, which is not laziness — German BBL and Japanese B.League print PTS, REB and AST in
+  their own official box scores. German and French hockey take T / V / PKT and B / A / PTS from
+  NHL.com's own localized glossaries, and both Chinese locales use the native terms CPBL and CBA
+  print
 - **30 new unit tests on the parse**, each built from a transcribed live payload — the NHL's `ytd`
   record, college football's four record types, a goalie with an empty line, the duplicate category
   pairs, and the state gate

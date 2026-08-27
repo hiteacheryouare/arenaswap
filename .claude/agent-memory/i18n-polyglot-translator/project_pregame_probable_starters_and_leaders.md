@@ -1,11 +1,19 @@
 ---
 name: project-pregame-probable-starters-and-leaders
-description: Approved detail.probablePitchers/probableGoalies/starterConfirmed/starterExpected/teamLeaders/leader* (17 keys) translations across all 11 non-English locales, added 2026-08-27
+description: Approved detail.probablePitchers/probableGoalies/starterConfirmed/starterExpected/teamLeaders/leader* (20 keys, incl. the PPG/RPG/APG correction) translations across all 11 non-English locales, added 2026-08-27
 metadata:
   type: project
 ---
 
 Added 17 new `detail` keys (probable-starter headings, per-player confirmed/expected status, and 12 team-leader stat-column labels) to all locales, inserted immediately after `pregameTabExplainer`. Renders via `apps/extension/entrypoints/popup/components/pregameStats.tsx` and `pregameLabels.ts`. Extends [[project_pregame_gameinfo_translations]].
+
+## Follow-up correction (same day, 2026-08-27): don't collapse per-game averages into season totals
+
+The original 12 `leader*` keys included a `leaderPoints`/`leaderRebounds`/`leaderAssists` set that normalized ESPN's `pointsPerGame` category down to `points` and reused the season-total label. Live data proved that wrong: **the WNBA sends only the per-game variants (`pointsPerGame: 19.4`), the NBA sends only season totals (`points: 23`) — no league sends both**, so the collapse mislabelled a per-game average as a total for every WNBA game. Added three sibling keys, `leaderPointsPerGame`/`leaderReboundsPerGame`/`leaderAssistsPerGame`, inserted immediately after `leaderAssists` (position matters — the Cypress width test in [[reference_locale_file_mechanics]] hardcodes the key list). `en.json` values: `PPG`/`RPG`/`APG`.
+
+**Chinese was the one locale where this needed real verification, not the established total-stays-native pattern.** `leaderPoints`/`leaderRebounds`/`leaderAssists` are native in zh_CN/zh_TW (得分/篮板/助攻) per the original ruling below. The naive move would've been a native per-game construction (`场均得分` etc, 4 characters) — but that's ~2x the width of the 2-character total and risked blowing the `.gd-pregame-label` column's 2.2rem/35.2px min-width. Checked real Chinese basketball data platforms before guessing: **Hupu's own NBA stats tables (nba.hupu.com/stats/players) use the literal English suffix pattern — GP/MPG/SPG/BPG/PPG/RPG/APG — directly in an otherwise Chinese-language UI**, and Baidu Zhidao has users asking what "PPG/RPG/APG" mean, confirming these are encountered untranslated by Chinese fans rather than as a native-language gap. Same pattern confirmed independently for German (easyCredit BBL's own stats page: "18.5 PPG"), French (LNB via 365scores aggregator), and Japanese (B.League: "平均得点(PPG)") — **every locale checked borrows the bare English *PG suffix for per-game averages, with zero exceptions**, unlike the season-total/hockey-letter cases where de/fr/zh genuinely diverge. Shipped literal `PPG`/`RPG`/`APG` in all 11 non-English locales, identical to `en.json`. This mirrors the existing `leaderPassing`/`leaderRushing`/`leaderReceiving` precedent below ("there's nothing to translate to") rather than the `leaderPoints` native-Chinese precedent — **don't assume the zh-goes-native pattern carries over to a new key just because the adjacent key used it; check the specific term.**
+
+Verified via the Cypress width test itself (not just math): all three new keys are already in the hardcoded key list in `pregameDetail.cy.tsx`'s "fits every locale leader label in the centre column" test, and since they're the same 3-Latin-character length class as the already-passing `PTS`/`REB`/`AST`/`AST` labels, none came close to the ~35.2px budget — no locale diverged from the English abbreviation, so there was nothing to measure at the margin.
 
 ## Key finding: this app mirrors ESPN's own localized sites, not domestic leagues
 

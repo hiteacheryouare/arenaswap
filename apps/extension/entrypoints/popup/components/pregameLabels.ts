@@ -31,10 +31,15 @@ const leaderLabelKeys = {
 		homeruns: 'detail.leaderHomeRuns',
 		rbis: 'detail.leaderRbis',
 	},
+	// The NBA and the college leagues send season totals; the WNBA sends per-game averages under
+	// their own names. Both are labelled for what they are rather than collapsed into one.
 	basketball: {
 		points: 'detail.leaderPoints',
 		rebounds: 'detail.leaderRebounds',
 		assists: 'detail.leaderAssists',
+		pointspergame: 'detail.leaderPointsPerGame',
+		reboundspergame: 'detail.leaderReboundsPerGame',
+		assistspergame: 'detail.leaderAssistsPerGame',
 	},
 	// Hockey points are goals plus assists, not basketball's points, so they do not share a label.
 	hockey: {

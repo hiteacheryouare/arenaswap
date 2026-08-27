@@ -354,6 +354,7 @@ describe('pre-game detail screen', () => {
 				const keys = [
 					'leaderAvg', 'leaderHomeRuns', 'leaderRbis', 'leaderPoints', 'leaderRebounds',
 					'leaderAssists', 'leaderGoals', 'leaderHockeyAssists', 'leaderHockeyPoints',
+					'leaderPointsPerGame', 'leaderReboundsPerGame', 'leaderAssistsPerGame',
 					'leaderPassing', 'leaderRushing', 'leaderReceiving',
 				];
 				const probe = document.createElement('span');

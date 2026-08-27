@@ -2052,21 +2052,25 @@ describe('apiClient', () => {
 				.toEqual([{ category: 'goals', fallbackLabel: 'Goals', player: 'D. Kamada', value: '1' }]);
 		});
 
-		test('collapses the per-game duplicates the WNBA sends and still fills three rows', async () => {
+		// The WNBA sends only the per-game variants and the NBA only the totals; no league was found
+		// sending both. Collapsing them would relabel 19.4 as season points, a different number.
+		test('keeps the per-game categories the WNBA sends distinct from season totals', async () => {
 			const { fetchGamesWithLeagueLogos } = mockSingleEvent(makeEvent({
 				id: 'wnba-ldr', state: 'pre', period: 1, clock: '0:00', homeScore: '0', awayScore: '0',
 				homeExtra: { leaders: [
-					leaderCategory('points', 'Pts', 'A. Wilson', '19'),
 					leaderCategory('pointsPerGame', 'PPG', 'A. Wilson', '19.4'),
-					leaderCategory('rebounds', 'Reb', 'A. Wilson', '12'),
 					leaderCategory('reboundsPerGame', 'RPG', 'A. Wilson', '12.4'),
-					leaderCategory('assists', 'Ast', 'C. Gray', '7'),
 					leaderCategory('assistsPerGame', 'APG', 'C. Gray', '7.4'),
+					leaderCategory('rating', 'RAT', 'A. Wilson', '16.1 PPG, 12.4 RPG, 2.7 APG'),
 				] },
 			}));
 			const result = await fetchGamesWithLeagueLogos(['wnba'], { includeUpcoming: false });
-			expect(result.games.find(g => g.id === 'wnba-ldr')?.homeTeam.leaders?.map(l => l.category))
-				.toEqual(['points', 'rebounds', 'assists']);
+			expect(result.games.find(g => g.id === 'wnba-ldr')?.homeTeam.leaders)
+				.toEqual([
+					{ category: 'pointspergame', fallbackLabel: 'PPG', player: 'A. Wilson', value: '19.4' },
+					{ category: 'reboundspergame', fallbackLabel: 'RPG', player: 'A. Wilson', value: '12.4' },
+					{ category: 'assistspergame', fallbackLabel: 'APG', player: 'C. Gray', value: '7.4' },
+				]);
 		});
 
 		test('normalizes the Leader suffix football uses', async () => {
