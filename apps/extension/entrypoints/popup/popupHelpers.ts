@@ -9,7 +9,7 @@ import type {
 import type { Browser } from 'wxt/browser';
 import { i18n } from '#i18n';
 
-export type popupView = 'main' | 'setup' | 'detail';
+export type popupView = 'main' | 'setup' | 'detail' | 'suggest';
 export interface leagueGroup { league: LeagueId; games: Game[] }
 export interface dateGroup { dateLabel: string; games: Game[] }
 

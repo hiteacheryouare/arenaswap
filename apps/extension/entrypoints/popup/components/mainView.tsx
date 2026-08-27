@@ -16,6 +16,7 @@ import ProTip from './proTip';
 import EmptyGameState from './emptyGameState';
 import GameListHeader from './gameListHeader';
 import ReviewPromptBanner from './reviewPromptBanner';
+import SuggestBanner from './suggestBanner';
 import { buildFavoritePinnedComparator, buildLeagueRank, buildUpcomingComparator, getRandomLoadingMessage, groupByDate, groupByLeague } from '../popupHelpers';
 import type { BettingDisplayPrefs, WeatherDisplayPrefs } from './gameCardTypes';
 
@@ -55,6 +56,9 @@ interface mainViewProps {
 	onStandbyStream: boolean;
 	onOpenGameDetail: (gameId: string) => void;
 	onOpenSetup: () => void;
+	suggestionCount: number;
+	onReviewSuggestions: () => void;
+	onDismissSuggestions: () => void;
 	onStartWalkthrough: () => void;
 	onRefresh: () => void;
 	showReviewPrompt: boolean;
@@ -158,6 +162,9 @@ const mainView = ({
 	onStandbyStream,
 	onOpenGameDetail,
 	onOpenSetup,
+	suggestionCount,
+	onReviewSuggestions,
+	onDismissSuggestions,
 	onStartWalkthrough,
 	onRefresh,
 	showReviewPrompt,
@@ -230,6 +237,13 @@ const mainView = ({
 
 			<GameListHeader isLoading={isLoading} hasError={hasError} loadingMessage={loadingMessage} onRefresh={onRefresh} />
 
+			{suggestionCount > 0 && (
+				<SuggestBanner
+					count={suggestionCount}
+					onReview={onReviewSuggestions}
+					onDismiss={onDismissSuggestions}
+				/>
+			)}
 			{showReviewPrompt && (
 				<ReviewPromptBanner onDismiss={onDismissReviewPrompt} onLeaveReview={onLeaveReview} />
 			)}

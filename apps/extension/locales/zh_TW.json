@@ -534,6 +534,28 @@
 		"placeholder": "— 指派分頁 —",
 		"inUse": "（使用中）"
 	},
+	"suggest": {
+		"bannerTitle": "這些分頁看起來像比賽",
+		"bannerCopy": {
+			"1": "你打開的 1 個分頁，符合你賽程上的一場比賽。",
+			"n": "你打開的 $1 個分頁，符合你賽程上的比賽。"
+		},
+		"bannerAction": "查看",
+		"bannerDismiss": "忽略建議",
+		"header": "分頁建議",
+		"lede": "取消勾選我們猜錯的項目。每張卡片上的下拉選單依然握有最終決定權。",
+		"empty": "你打開的內容裡，沒有一個像你賽程上的比賽。",
+		"rowLabel": "將 {tab} 與 {away} 對戰 {home} 的比賽配對",
+		"apply": {
+			"1": "指派 1 個分頁",
+			"n": "指派 $1 個分頁"
+		},
+		"applyNone": "指派分頁",
+		"toastApplied": {
+			"1": "已指派 1 個分頁。",
+			"n": "已指派 $1 個分頁。"
+		}
+	},
 	"favoriteTeamBonus": {
 		"label": "收藏球隊加成",
 		"perTeam": "+$1（每支球隊）",

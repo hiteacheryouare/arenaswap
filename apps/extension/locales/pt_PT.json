@@ -534,6 +534,28 @@
 		"placeholder": "— Associa um separador —",
 		"inUse": " (em uso)"
 	},
+	"suggest": {
+		"bannerTitle": "Estes separadores parecem jogos",
+		"bannerCopy": {
+			"1": "1 separador que tens aberto coincide com um jogo do teu calendário.",
+			"n": "$1 separadores que tens abertos coincidem com jogos do teu calendário."
+		},
+		"bannerAction": "Espreitar",
+		"bannerDismiss": "Dispensar sugestões",
+		"header": "Separadores sugeridos",
+		"lede": "Desmarca o que identificámos mal. O menu pendente de cada cartão continua a ter a última palavra.",
+		"empty": "Nada do que tens aberto parece um jogo do teu calendário.",
+		"rowLabel": "Associar {tab} a {away} em {home}",
+		"apply": {
+			"1": "Associar 1 separador",
+			"n": "Associar $1 separadores"
+		},
+		"applyNone": "Associar separadores",
+		"toastApplied": {
+			"1": "1 separador associado.",
+			"n": "$1 separadores associados."
+		}
+	},
 	"favoriteTeamBonus": {
 		"label": "Bónus de equipa favorita",
 		"perTeam": "+$1 por equipa",

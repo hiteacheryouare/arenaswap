@@ -534,6 +534,28 @@
 		"placeholder": "— Associer un onglet —",
 		"inUse": " (en cours d'utilisation)"
 	},
+	"suggest": {
+		"bannerTitle": "Ces onglets ressemblent à des matchs",
+		"bannerCopy": {
+			"1": "1 onglet que tu as ouvert correspond à un match de ton programme.",
+			"n": "$1 onglets que tu as ouverts correspondent à des matchs de ton programme."
+		},
+		"bannerAction": "Jeter un œil",
+		"bannerDismiss": "Ignorer les suggestions",
+		"header": "Onglets suggérés",
+		"lede": "Décoche ce qu'on a mal deviné. Le menu déroulant de chaque fiche garde toujours le dernier mot.",
+		"empty": "Rien de ce que tu as ouvert ne ressemble à un match de ton programme.",
+		"rowLabel": "Associer {tab} au match {away} à {home}",
+		"apply": {
+			"1": "Associer 1 onglet",
+			"n": "Associer $1 onglets"
+		},
+		"applyNone": "Associer des onglets",
+		"toastApplied": {
+			"1": "1 onglet associé.",
+			"n": "$1 onglets associés."
+		}
+	},
 	"favoriteTeamBonus": {
 		"label": "Bonus d'équipe favorite",
 		"perTeam": "+$1 par équipe",

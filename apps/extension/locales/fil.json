@@ -534,6 +534,28 @@
 		"placeholder": "— Mag-assign ng tab —",
 		"inUse": " (ginagamit na)"
 	},
+	"suggest": {
+		"bannerTitle": "Mukhang mga laro ang mga tab na ito",
+		"bannerCopy": {
+			"1": "1 tab na bukas mo ay tumutugma sa isang laro mo ngayon.",
+			"n": "$1 na tab na bukas mo ay tumutugma sa mga laro mo ngayon."
+		},
+		"bannerAction": "Tingnan",
+		"bannerDismiss": "I-dismiss ang mga mungkahi",
+		"header": "Mga Iminumungkahing Tab",
+		"lede": "Alisan ng check ang mali naming na-detect. Ang dropdown sa bawat card ang may huling say pa rin.",
+		"empty": "Wala sa mga bukas mong tab na mukhang isang laro mo ngayon.",
+		"rowLabel": "I-pair ang {tab} sa {away} at {home}",
+		"apply": {
+			"1": "I-assign ang 1 tab",
+			"n": "I-assign ang $1 na tab"
+		},
+		"applyNone": "I-assign ang mga tab",
+		"toastApplied": {
+			"1": "Na-assign ang 1 tab.",
+			"n": "Na-assign ang $1 na tab."
+		}
+	},
 	"favoriteTeamBonus": {
 		"label": "Bonus ng Paboritong Team",
 		"perTeam": "+$1 kada team",

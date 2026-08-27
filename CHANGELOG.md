@@ -1,5 +1,66 @@
 # Changelog
 
+## ArenaSwap reads your tabs and guesses — 2026-08-27
+
+Pairing a tab with a game was the one part of the workflow that scaled badly. The only control was
+the `— Assign a tab —` dropdown on each game card, one game at a time, and every dropdown listed
+every open tab with no hint which one was right. Nothing in the extension had ever looked at what a
+tab was actually showing.
+
+It does now. ArenaSwap scores the open tabs against the games it knows about and offers the pairings
+in a review sheet. It is a suggestion and never an assignment — nothing reaches the registry until
+the Assign button is pressed, and the dropdown still has the final say.
+
+### What counts as a match
+- **Whole tokens, never substrings.** The tab's title and decoded URL become one padded token
+  string, so `BOS` cannot match inside `jobs`, `Boston`, or `bosnia`. The entire class of
+  abbreviation false positives is a property of the data structure rather than a special case
+- **A signal either identifies a team or corroborates one.** A full name or a nickname identifies;
+  a bare city, a lone abbreviation, and the league name only corroborate. A pair has to be
+  identified by something before it can appear at all
+- **Two faint reads count as one firm one.** `new york` in a team name and `ohio state` in another
+  are the same shape — nothing in the string says one is a city and the other a school. So the
+  decision is made across both teams at once: `Ohio State vs Michigan` matches because both sides
+  register, and `The New York Times` does not because only one does
+- **ESPN's own gamecast is matched exactly.** `Game.id` is the ESPN event id, and ESPN's URLs carry
+  it. It only counts behind a recognisable key — a bare number is ignored, since soccer event ids
+  are six digits and would otherwise match half the product pages on the web
+- **No maintained lists.** A streaming-domain allowlist and a replay-keyword filter were both
+  considered and dropped. The one list that ships is ~30 club-form words (`fc`, `united`, `real`,
+  `state`), which tracks language rather than the outside world and does not grow when a league adds
+  a team
+
+### The sheet
+- A dismissible banner in the main view opens `suggestView`, a fourth popup view. One row per tab,
+  paired with its best game, so the list is bounded by how many tabs are open rather than by the
+  size of the slate
+- **No score, badge or confidence meter is ever drawn.** A weak row simply arrives unchecked
+- Checking a row releases whichever row was holding that game, so the list never shows a state it
+  will not honour
+- Dismissal is per pair and lasts the session. Every row that was shown is recorded, not just the
+  accepted ones — otherwise the rejected rows would raise the banner again on the next open
+- Scheduled games are eligible alongside live ones. When a tab fits both, live wins, as a tiebreak
+  rather than a bonus: a weak live match should not beat a strong scheduled one
+
+### One thing this tidied on the way past
+`tabAssignSelect` had the registry's one-tab-one-game rule inlined in its change handler. It is now
+`assignTabToGame` in `utils/tabSuggestions.ts`, shared by the dropdown and the apply step, with a
+test asserting the extraction reproduces the old behavior. Two writers drifting on that invariant
+was the likeliest way this feature could have corrupted the registry.
+
+### Strings and coverage
+- A `suggest` namespace across all twelve locales — eleven keys each, including the two-form plural
+  counts on the banner copy, the apply button and the confirmation toast. "Slate" was translated for
+  meaning rather than calqued, so it reads as the day's fixtures in each language
+- Every row carries a full `rowLabel` for screen readers. The visible row is crests, abbreviations
+  and a truncated tab title, none of which announces well on its own
+- **38 unit tests on the matcher**, weighted toward the matches that must *not* happen: `Boston
+  Globe`, `The New York Times`, `Best Jobs in Boston`, `OSU Extension Service` on `extension.osu.edu`,
+  a bare event id in a query string, and a six-digit soccer id in a product URL
+- **8 component tests on the sheet**, including one asserting no score ever reaches the DOM and one
+  measuring every locale's apply label against the real button width, since a wrapped primary button
+  reads as a layout bug rather than a long word
+
 ## Documentation, split in two and given real URLs — 2026-08-23
 
 The docs site had a schema, a side nav and two section pages, and no content in them. It now has
