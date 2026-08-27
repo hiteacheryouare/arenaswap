@@ -58,6 +58,11 @@ one gist that describes `records[].type` lists a value that does not exist.
   leaders, every goalie sampled — except in soccer, which sends one for roughly a leader in ten, so
   the placeholder is a designed state rather than a failure: a circle in the team's colour carrying
   the player's initials, holding the row's height and left edge exactly
+- The placeholder is laid out and hidden entirely by `_crest.scss`. Restating any of it here is what
+  put a white halo around every player's head for a while: a nested `.crest-fallback` rule matches
+  `[data-crest-state='loaded'] > .crest-fallback` on specificity and beats it on source order, so
+  the disc stayed in the layout behind a headshot. Team logos never showed the bug because they are
+  opaque; these are transparent PNGs
 - **Team leaders, one row per category**, capped at three. The proprietary composites are dropped by
   a rule about how ESPN names things rather than a list of the names themselves, which is what keeps
   `MLBRating` and basketball's `rating` out without anyone maintaining an inventory

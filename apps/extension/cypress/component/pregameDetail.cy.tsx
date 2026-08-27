@@ -18,6 +18,10 @@ import zhTW from '../../locales/zh_TW.json';
 
 const shot = (id: string) => `https://a.espncdn.com/i/headshots/mlb/players/full/${id}.png`;
 
+// A 1x1 fully transparent PNG. Deterministic and offline, and transparent on purpose: an opaque
+// image would paint over a placeholder that failed to hide and the test would pass regardless.
+const transparentPixel = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==';
+
 const locales = { de, en, es, fil, fr, it: itLocale, ja, ko, pt_BR: ptBR, pt_PT: ptPT, zh_CN: zhCN, zh_TW: zhTW };
 
 const preGame: Game = {
@@ -389,6 +393,39 @@ describe('pre-game detail screen', () => {
 			});
 		});
 
+
+		// ESPN headshots are transparent PNGs, so a placeholder left in the layout behind one reads
+		// as a white halo around the player's head. That is what happened: a nested `.crest-fallback`
+		// rule here matched the hide rule in _crest.scss on specificity and beat it on source order.
+		it('hides the initials once a headshot has loaded', () => {
+			mountPre({
+				...pitchers,
+				awayTeam: {
+					...pitchers.awayTeam,
+					probableStarter: { name: 'T. Skubal', winLoss: '13-4', era: '2.21', headshot: transparentPixel },
+					leaders: [{ category: 'homeruns', fallbackLabel: 'HR', player: 'K. Carpenter', value: '28', headshot: transparentPixel }],
+				},
+				homeTeam: {
+					...pitchers.homeTeam,
+					probableStarter: { name: 'D. Peterson', winLoss: '7-7', era: '5.17', headshot: transparentPixel },
+					leaders: [{ category: 'homeruns', fallbackLabel: 'HR', player: 'J. Soto', value: '33', headshot: transparentPixel }],
+				},
+			});
+			cy.get('.gd-pregame-starter-shot .crest').should('have.attr', 'data-crest-state', 'loaded');
+			cy.get('.gd-pregame-stats .crest-fallback').should('have.length', 4);
+			cy.get('.gd-pregame-stats .crest-fallback').each(($el: JQuery<HTMLElement>) => {
+				expect(getComputedStyle($el[0]!).display, 'placeholder is out of the layout').to.equal('none');
+			});
+		});
+
+		// The other half of the same rule: a starter with no headshot must still show its initials.
+		it('keeps the initials when there is no headshot to load', () => {
+			mountPre(goalies);
+			cy.get('.gd-pregame-starter-shot .crest').should('have.attr', 'data-crest-state', 'missing');
+			cy.get('.gd-pregame-starter-shot .crest-fallback').each(($el: JQuery<HTMLElement>) => {
+				expect(getComputedStyle($el[0]!).display).to.not.equal('none');
+			});
+		});
 		it('tints each leader row with its own team colour', () => {
 			mountPre(pitchers);
 			cy.get('.gd-pregame-leader-row').eq(0).should('have.attr', 'style').and('include', 'linear-gradient');

@@ -969,24 +969,20 @@ $bootstrap-icons-font-dir: '/fonts';
 	flex-shrink:   0;
 }
 
+// `cover` rather than the crest's own `contain`: a headshot is a 350x254 crop of a person, and
+// letterboxing one inside a circle leaves bands above and below the head.
+//
+// Nothing here restates `.crest-fallback`. _crest.scss lays the placeholder out and hides it with
+// `[data-crest-state='loaded'] > .crest-fallback`, which is the same specificity as a nested rule
+// here would be — so re-declaring `display: flex` wins on source order and pins the placeholder up
+// for good. Team logos never showed it because they are opaque; these headshots are transparent
+// PNGs, so the disc reads as a white halo around the player's head.
 .gd-pregame-shot-img,
 .gd-pregame-leader-shot {
 	width:  100%;
 	height: 100%;
 
 	img { width: 100%; height: 100%; object-fit: cover; object-position: top center; }
-
-	// A placeholder is the common case in soccer, not a rare failure: ESPN sends a headshot for
-	// barely one leader in ten there.
-	.crest-fallback {
-		display:         flex;
-		align-items:     center;
-		justify-content: center;
-		width:           100%;
-		height:          100%;
-		font-weight:     700;
-		letter-spacing:  0.01em;
-	}
 }
 
 .gd-pregame-starter-name {
@@ -1075,6 +1071,7 @@ $bootstrap-icons-font-dir: '/fonts';
 	background:    #ffffff;
 	box-shadow:    0 0 0 1px rgba(17, 24, 39, 0.14);
 
+	// Only the size, so the hide rule in _crest.scss keeps its say.
 	.crest-fallback { font-size: 0.44rem; }
 }
 
