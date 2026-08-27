@@ -1,5 +1,77 @@
 # Changelog
 
+## The pre-game screen was throwing away the answer — 2026-08-27
+
+A pre-game game gave you two crests, "vs", a start time and an odds line. For a baseball game the
+single most useful thing you could know in advance — who is pitching — was not on the screen, and
+neither was any team context at all.
+
+It was never a missing request. `EspnCompetitorSchema` declared five keys, and Zod's default strip
+mode silently deleted every other field on a competitor before the parser ever saw it. The probable
+starters, the team records and the statistical leaders were all in the payload we already fetch, and
+were discarded on every poll. Declaring them costs no additional ESPN calls; the detail screen now
+makes one fewer.
+
+### What the survey turned up
+The first pass sampled a single day, 2026-08-27, which put the NHL and the NBA in their offseason
+and made it look like they send none of this. Re-sampled at in-season dates, three things changed
+the shape of the work:
+
+- **Probables are not baseball-only.** Hockey sends `probableStartingGoalie` on every in-season
+  competitor sampled, with an empty record string and an `expected` / `confirmed` status baseball
+  never sends. Matching the shared `probableStarting` prefix covers both sports with one rule and
+  leaves room for a third
+- **The overall record is not consistently keyed.** It is `type: 'total'` in most leagues, `'ytd'`
+  in the NHL and `'standingsoverall'` in the AFL, so a lone `find` on `'total'` returns nothing at
+  all for hockey. Resolution is a preference chain ending in a positional fallback, since index 0
+  held the overall record in every league sampled
+- **Leaders change meaning with the event state.** The same MLB category reads `27` before a game,
+  `0-0` during it, and `"1-4, HR, 4 RBI, 2 R, BB"` after — that game's box line, repeated
+  identically across every category. Gating leaders on the pre-game state is correctness, not
+  economy
+
+Community documentation was no help: `probables` is undocumented in every public reference, and the
+one gist that describes `records[].type` lists a value that does not exist.
+
+### On the screen
+- **Probable starters in the poster's away | label | home geometry**, so each name lands on its own
+  team's side. A game with only one side named leaves the other column empty rather than re-centring
+  the name it has — 11 of 97 upcoming games were one-sided, and a lone centred name reads as
+  belonging to neither team
+- **Baseball shows the line ESPN pre-formats** — `(7-7, 5.17)`, a pitcher's record and ERA, already
+  assembled. Hockey shows a goalie's name and whether the start is confirmed, and no line, because
+  a goalie's record field is always empty
+- **Team leaders, one row per category**, capped at three. The proprietary composites are dropped by
+  a rule about how ESPN names things rather than a list of the names themselves, which is what keeps
+  `MLBRating` and basketball's `rating` out without anyone maintaining an inventory
+- **Labels are keyed by sport, not by category name.** `points` and `assists` mean one thing in
+  basketball and another in hockey, and `goals` is shared by hockey and soccer, so a flat map would
+  print a hockey points leader as a basketball one. A category we have no label for falls back to
+  ESPN's own abbreviation instead of rendering a raw key
+- Values render verbatim. The football ones carry their own English units and there is no version of
+  `"12 CAR, 68 YDS, 1 TD"` we could assemble ourselves
+- The block does not render at all for a sport that sends neither, so college football and college
+  hockey screens are unchanged
+
+### One fewer request
+Team records used to cost a per-game `/summary` fetch on every detail screen. They now come off the
+scoreboard, with `/summary` kept as the fallback for the leagues and dates that send none. That
+makes the request skippable before a game starts: the series dots are the only thing left on a
+pre-game screen the scoreboard cannot supply, so a soccer or regular-season baseball game fires no
+`/summary` call at all. Hockey and basketball fall through to the fetch on their own, which is what
+keeps them working before their season is underway.
+
+### Strings and coverage
+- Seventeen new `detail` keys across all twelve locales: the two starter headings, the two starter
+  statuses, the leaders heading, and twelve stat-column abbreviations. The abbreviations sit in a
+  fixed-width centre column, and a Cypress spec measures every locale's against it
+- **30 new unit tests on the parse**, each built from a transcribed live payload — the NHL's `ytd`
+  record, college football's four record types, a goalie with an empty line, the duplicate category
+  pairs, and the state gate
+- 10 new component tests on the block, including the two degradation cases and the sport-keyed label
+  lookup. One of them changed shape while being written: it first claimed each starter shared a
+  centre line with its crest, which the two grids cannot hold, and now asserts the invariant the
+  grid does keep
 ## ArenaSwap reads your tabs and guesses — 2026-08-27
 
 Pairing a tab with a game was the one part of the workflow that scaled badly. The only control was
