@@ -41,7 +41,7 @@ export default defineConfig({
 	// Firefox 115+ as well. Neither is polyfilled — build.target down-levels syntax, not built-ins —
 	// so these floors have to exclude the browsers the popup would crash on open.
 	manifest: ({ browser }) => ({
-		name: 'ArenaSwap',
+		name: 'ArenaSwap — Auto-Switch Live NFL, NBA, MarchMadness & MLB Games',
 		default_locale: 'en',
 		description: 'Watches every live game across 31 leagues and auto-switches your browser tab to the most exciting one, as fast as every 6 seconds.',
 		// Chrome-only key: AMO's linter flags it as an unknown property, and Firefox's floor is

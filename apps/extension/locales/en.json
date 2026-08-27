@@ -534,6 +534,28 @@
 		"placeholder": "— Assign a tab —",
 		"inUse": " (in use)"
 	},
+	"suggest": {
+		"bannerTitle": "These tabs look like games",
+		"bannerCopy": {
+			"1": "One tab you have open lines up with a game on your slate.",
+			"n": "$1 tabs you have open line up with games on your slate."
+		},
+		"bannerAction": "Take a look",
+		"bannerDismiss": "Dismiss suggestions",
+		"header": "Suggested tabs",
+		"lede": "Uncheck anything we got wrong. The dropdown on each card still has the final say.",
+		"empty": "Nothing you have open looks like a game on your slate.",
+		"rowLabel": "Pair {tab} with {away} at {home}",
+		"apply": {
+			"1": "Assign 1 tab",
+			"n": "Assign $1 tabs"
+		},
+		"applyNone": "Assign tabs",
+		"toastApplied": {
+			"1": "1 tab assigned.",
+			"n": "$1 tabs assigned."
+		}
+	},
 	"favoriteTeamBonus": {
 		"label": "Favorite team bonus",
 		"perTeam": "+$1 per team",

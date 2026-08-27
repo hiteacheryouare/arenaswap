@@ -534,6 +534,28 @@
 		"placeholder": "— Assegna una scheda —",
 		"inUse": " (in uso)"
 	},
+	"suggest": {
+		"bannerTitle": "Queste schede sembrano partite",
+		"bannerCopy": {
+			"1": "1 scheda che hai aperta corrisponde a una partita del tuo palinsesto.",
+			"n": "$1 schede che hai aperte corrispondono a partite del tuo palinsesto."
+		},
+		"bannerAction": "Dai un'occhiata",
+		"bannerDismiss": "Ignora i suggerimenti",
+		"header": "Schede suggerite",
+		"lede": "Deseleziona ciò che abbiamo capito male. Il menu a tendina su ogni scheda della partita ha comunque l'ultima parola.",
+		"empty": "Niente di quello che hai aperto sembra una partita del tuo palinsesto.",
+		"rowLabel": "Abbina {tab} a {away} in casa di {home}",
+		"apply": {
+			"1": "Assegna 1 scheda",
+			"n": "Assegna $1 schede"
+		},
+		"applyNone": "Assegna schede",
+		"toastApplied": {
+			"1": "1 scheda assegnata.",
+			"n": "$1 schede assegnate."
+		}
+	},
 	"favoriteTeamBonus": {
 		"label": "Bonus squadra preferita",
 		"perTeam": "+$1 per squadra",

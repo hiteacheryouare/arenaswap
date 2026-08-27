@@ -195,8 +195,7 @@
 	}
 
 	li::marker {
-		font-family: var(--font-mono);
-		font-size: 0.8rem;
+		font-size: 0.9rem;
 		color: var(--color-primary);
 	}
 
@@ -240,10 +239,8 @@
 	padding-top: 0.85rem;
 
 	h3 {
-		font-family: var(--font-mono);
-		font-size: 0.65rem;
-		letter-spacing: 0.16em;
-		text-transform: uppercase;
+		font-size: 0.85rem;
+		font-weight: 600;
 		color: var(--color-primary);
 		margin-bottom: 0.7rem;
 	}

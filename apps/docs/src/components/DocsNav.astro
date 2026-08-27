@@ -1,27 +1,43 @@
 ---
+import { docPath, docsSectionOrder, docsSections, getSectionDocs } from '../lib/docs';
+
 interface Props {
-	// Path without the base, e.g. `docs/extension/`. Marks the matching link as current.
+	// Path without the base, e.g. `docs/extension/installing/`. Marks the matching link as current.
 	current?: string;
 }
 
 const { current = '' } = Astro.props;
 const base = import.meta.env.BASE_URL;
 
-const sections = [
-	{ path: 'docs/extension/', label: 'The extension' },
-	{ path: 'docs/powerscore/', label: 'PowerScore' },
-	{ path: 'powerscore/', label: 'Package reference' },
-];
+// Both trees, always, with the articles under them. A reader on a PowerScore page can see the
+// extension pages exist without going back to a hub to find out.
+const trees = await Promise.all(docsSectionOrder.map(async section => ({
+	section,
+	label: docsSections[section].title,
+	index: `docs/${section}/`,
+	pages: await getSectionDocs(section),
+})));
 ---
-<nav class='reading-nav' aria-label='Documentation'>
-	<h2>Documentation</h2>
-	<ul>
-		{sections.map(section => (
-			<li>
-				<a href={`${base}${section.path}`} aria-current={current === section.path ? 'page' : undefined}>
-					{section.label}
+<nav class='reading-nav docs-nav' aria-label='Documentation'>
+	{trees.map(tree => (
+		<Fragment>
+			<h2>
+				<a href={`${base}${tree.index}`} aria-current={current === tree.index ? 'page' : undefined}>
+					{tree.label}
 				</a>
-			</li>
-		))}
-	</ul>
+			</h2>
+			<ul>
+				{tree.pages.map(page => (
+					<li>
+						<a
+							href={`${base}${docPath(page)}`}
+							aria-current={current === docPath(page) ? 'page' : undefined}
+						>
+							{page.data.navLabel ?? page.data.title}
+						</a>
+					</li>
+				))}
+			</ul>
+		</Fragment>
+	))}
 </nav>

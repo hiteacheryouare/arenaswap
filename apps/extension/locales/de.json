@@ -534,6 +534,28 @@
 		"placeholder": "— Tab zuweisen —",
 		"inUse": " (in Verwendung)"
 	},
+	"suggest": {
+		"bannerTitle": "Diese Tabs sehen nach Spielen aus",
+		"bannerCopy": {
+			"1": "1 offener Tab passt zu einem Spiel auf deinem Spielplan.",
+			"n": "$1 offene Tabs passen zu Spielen auf deinem Spielplan."
+		},
+		"bannerAction": "Mal reinschauen",
+		"bannerDismiss": "Vorschläge ausblenden",
+		"header": "Vorgeschlagene Tabs",
+		"lede": "Entferne das Häkchen bei allem, was wir falsch erkannt haben. Das Dropdown auf jeder Spielkarte hat trotzdem das letzte Wort.",
+		"empty": "Nichts, was du offen hast, sieht nach einem Spiel auf deinem Spielplan aus.",
+		"rowLabel": "{tab} mit {away} bei {home} verknüpfen",
+		"apply": {
+			"1": "1 Tab zuweisen",
+			"n": "$1 Tabs zuweisen"
+		},
+		"applyNone": "Tabs zuweisen",
+		"toastApplied": {
+			"1": "1 Tab zugewiesen.",
+			"n": "$1 Tabs zugewiesen."
+		}
+	},
 	"favoriteTeamBonus": {
 		"label": "Lieblingsteam-Bonus",
 		"perTeam": "+$1 pro Team",

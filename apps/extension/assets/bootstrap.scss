@@ -376,6 +376,37 @@ $bootstrap-icons-font-dir: '/fonts';
 	}
 }
 
+.suggest-list {
+	display:        flex;
+	flex-direction: column;
+}
+
+.suggest-row {
+	display:       flex;
+	align-items:   center;
+	gap:           0.6rem;
+	padding:       0.6rem 0.15rem;
+	border-bottom: 1px solid #21262d;
+	cursor:        pointer;
+
+	&:hover { background: rgba(230, 237, 243, 0.035); }
+}
+
+.suggest-crest {
+	width:  0.95rem;
+	height: 0.95rem;
+}
+
+.suggest-matchup {
+	font-size: 0.72rem;
+}
+
+.suggest-tab-label {
+	margin-top: 0.1rem;
+	font-size:  0.62rem;
+	color:      #6e7681;
+}
+
 .settings-index-icon {
 	width:       1.15rem;
 	flex-shrink: 0;

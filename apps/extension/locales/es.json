@@ -534,6 +534,28 @@
 		"placeholder": "— Asigna una pestaña —",
 		"inUse": " (en uso)"
 	},
+	"suggest": {
+		"bannerTitle": "Estas pestañas parecen partidos",
+		"bannerCopy": {
+			"1": "1 pestaña que tienes abierta coincide con un partido de tu cartelera.",
+			"n": "$1 pestañas que tienes abiertas coinciden con partidos de tu cartelera."
+		},
+		"bannerAction": "Echar un vistazo",
+		"bannerDismiss": "Descartar sugerencias",
+		"header": "Pestañas sugeridas",
+		"lede": "Desmarca lo que hayamos identificado mal. El menú desplegable de cada tarjeta sigue teniendo la última palabra.",
+		"empty": "Nada de lo que tienes abierto parece un partido de tu cartelera.",
+		"rowLabel": "Vincular {tab} con {away} en {home}",
+		"apply": {
+			"1": "Asignar 1 pestaña",
+			"n": "Asignar $1 pestañas"
+		},
+		"applyNone": "Asignar pestañas",
+		"toastApplied": {
+			"1": "1 pestaña asignada.",
+			"n": "$1 pestañas asignadas."
+		}
+	},
 	"favoriteTeamBonus": {
 		"label": "Bonificación de equipo favorito",
 		"perTeam": "+$1 por equipo",

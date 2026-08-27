@@ -61,6 +61,9 @@ const defaultProps = {
 	onRegistryChange: () => {},
 	onStartWalkthrough: () => {},
 	formatTabLabel: () => 'Tab',
+	suggestionCount: 0,
+	onReviewSuggestions: () => {},
+	onDismissSuggestions: () => {},
 };
 
 describe('mainView review prompt', () => {

@@ -25,11 +25,8 @@ const formatDate = (date: Date) => date.toLocaleDateString('en-US', {
 >
 	<div class='container release-index-page'>
 		<div class='page-head'>
-			<h1 class='page-title'>Release notes.</h1>
-			<p class='page-lede'>
-				What shipped in each version, written for people using ArenaSwap rather than people
-				building it. <a href={`${base}releases/rss.xml`}>Subscribe by RSS</a>.
-			</p>
+			<h1 class='page-title pb-2'>Release notes.</h1>
+			<a href={`${base}releases/rss.xml`}>Subscribe by RSS <i class="bi bi-rss-fill"></i></a>.
 		</div>
 
 		<div class='release-index'>
@@ -46,31 +43,25 @@ const formatDate = (date: Date) => date.toLocaleDateString('en-US', {
 						<a href={`${base}releases/${latest.data.version}/`}>{latest.data.title}</a>
 					</h2>
 					<p class='release-latest-summary'>{latest.data.summary}</p>
-					<a class='release-read' href={`${base}releases/${latest.data.version}/`}>
-						Read the notes<span aria-hidden='true'> →</span>
-					</a>
 				</article>
 			)}
 
 			{earlier.length > 0 && (
-				<>
-					<h2 class='release-earlier-head'>Earlier versions</h2>
-					<ul class='release-list'>
-						{earlier.map(release => (
-							<li>
-								<p class='release-meta'>
-									<time datetime={release.data.date.toISOString()}>{formatDate(release.data.date)}</time>
-									<span aria-hidden='true'> · </span>
-									Version {release.data.version}
-								</p>
-								<h3>
-									<a href={`${base}releases/${release.data.version}/`}>{release.data.title}</a>
-								</h3>
-								<p class='release-list-summary'>{release.data.summary}</p>
-							</li>
-						))}
-					</ul>
-				</>
+				<ul class='release-list'>
+					{earlier.map(release => (
+						<li>
+							<p class='release-meta'>
+								<time datetime={release.data.date.toISOString()}>{formatDate(release.data.date)}</time>
+								<span aria-hidden='true'> · </span>
+								Version {release.data.version}
+							</p>
+							<h3>
+								<a href={`${base}releases/${release.data.version}/`}>{release.data.title}</a>
+							</h3>
+							<p class='release-list-summary'>{release.data.summary}</p>
+						</li>
+					))}
+				</ul>
 			)}
 		</div>
 	</div>
