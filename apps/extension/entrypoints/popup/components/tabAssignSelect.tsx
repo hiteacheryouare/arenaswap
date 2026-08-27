@@ -1,6 +1,7 @@
 import { i18n } from '#i18n';
 import type { Browser } from 'wxt/browser';
 import type { TabRegistration } from '@arenaswap/core/types';
+import { assignTabToGame } from '../../../utils/tabSuggestions';
 
 interface tabAssignSelectProps {
 	gameId: string;
@@ -15,12 +16,10 @@ const tabAssignSelect = ({ gameId, openTabs, registry, onChange, formatTabLabel 
 
 	const onSelect = (tabIdStr: string) => {
 		const tabId = Number(tabIdStr);
-		let updated = registry.filter(r => r.gameId !== gameId);
-		if (tabId) {
-			updated = updated.filter(r => r.tabId !== tabId);
-			updated = [...updated, { tabId, gameId }];
-		}
-		onChange(updated);
+		// The placeholder option is '', which Number turns into a falsy 0 — that is the unassign path.
+		onChange(tabId
+			? assignTabToGame(registry, tabId, gameId)
+			: registry.filter(r => r.gameId !== gameId));
 	};
 
 	const assignedTabIds = new Set(
