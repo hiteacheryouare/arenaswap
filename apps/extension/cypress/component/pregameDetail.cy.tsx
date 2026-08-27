@@ -200,7 +200,11 @@ describe('pre-game detail screen', () => {
 			const oneLine = parseFloat(style.lineHeight) + parseFloat(style.paddingBottom) + 1;
 			for (const [name, locale] of Object.entries(locales)) {
 				const detail = locale.detail as unknown as Record<string, string>;
-				for (const key of ['getReadyTipOff', 'getReadyKickoff', 'getReadyPuckDrop', 'getReadyFirstPitch', 'getReadyGametime']) {
+				const headingKeys = [
+					'getReadyTipOff', 'getReadyKickoff', 'getReadyPuckDrop', 'getReadyFirstPitch', 'getReadyGametime',
+					'probablePitchers', 'probableGoalies', 'teamLeaders',
+				];
+				for (const key of headingKeys) {
 					heading.textContent = detail[key] ?? '';
 					expect(heading.getBoundingClientRect().height, `${name}.${key} stays on one line`)
 						.to.be.at.most(oneLine);
