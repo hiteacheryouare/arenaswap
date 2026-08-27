@@ -27,6 +27,10 @@ const makeEvent = (params: {
 	notes?: Record<string, unknown>[];
 	homeShootoutScore?: number;
 	awayShootoutScore?: number;
+	// Merged into the competitor, for the per-competitor blocks ESPN only sends on some sports:
+	// probables, records, leaders.
+	homeExtra?: Record<string, unknown>;
+	awayExtra?: Record<string, unknown>;
 }): Record<string, unknown> => ({
 	id: params.id,
 	date: params.date ?? '2026-10-05T00:00:00.000Z',
@@ -39,6 +43,7 @@ const makeEvent = (params: {
 					homeAway: 'home',
 					score: params.homeScore,
 					...(params.homeShootoutScore !== undefined && { shootoutScore: params.homeShootoutScore }),
+					...params.homeExtra,
 					team: {
 						displayName: 'Home Team',
 						abbreviation: 'HOM',
@@ -52,6 +57,7 @@ const makeEvent = (params: {
 					homeAway: 'away',
 					score: params.awayScore,
 					...(params.awayShootoutScore !== undefined && { shootoutScore: params.awayShootoutScore }),
+					...params.awayExtra,
 					team: {
 						displayName: 'Away Team',
 						abbreviation: 'AWY',
@@ -108,6 +114,19 @@ const loadApiClient = (): typeof import('../src/apiClient') => {
 };
 
 const parseEspnDate = (s: string) => new Date(`${s.slice(0, 4)}-${s.slice(4, 6)}-${s.slice(6, 8)}`);
+
+const mockSingleEvent = (event: Record<string, unknown>) => {
+	const fetchMock = jest.fn().mockResolvedValue(createResponse({ events: [event] }));
+	(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+	return loadApiClient();
+};
+
+const leaderCategory = (name: string, shortDisplayName: string, player: string, displayValue: string) => ({
+	name,
+	shortDisplayName,
+	abbreviation: shortDisplayName,
+	leaders: [{ displayValue, athlete: { displayName: player, shortName: player } }],
+});
 
 describe('apiClient', () => {
 	test('returns empty results and avoids fetch when enabled leagues list is empty', async () => {
@@ -1803,6 +1822,313 @@ describe('apiClient', () => {
 			const { fetchGamesWithLeagueLogos } = loadApiClient();
 			const result = await fetchGamesWithLeagueLogos(['ucl'], { includeUpcoming: false });
 			expect(result.games.find(g => g.id === 'normal')?.homeTeam.shootoutScore).toBeUndefined();
+		});
+	});
+
+	// Every payload shape in this block was transcribed from live site.api.espn.com scoreboard
+	// responses sampled 2026-08-27 across in-season date windows. Sampling one day put the NHL and
+	// NBA in their offseason and made it look like they send none of this.
+	describe('team records', () => {
+		test('reads the overall record from type total', async () => {
+			const { fetchGamesWithLeagueLogos } = mockSingleEvent(makeEvent({
+				id: 'mlb-rec', state: 'pre', period: 1, clock: '0:00', homeScore: '0', awayScore: '0',
+				homeExtra: { records: [
+					{ name: 'overall', abbreviation: 'Total', type: 'total', summary: '76-58' },
+					{ name: 'Home', abbreviation: 'Home', type: 'home', summary: '38-27' },
+					{ name: 'Road', abbreviation: 'AWAY', type: 'road', summary: '38-31' },
+				] },
+			}));
+			const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'mlb-rec')?.homeTeam.record).toBe('76-58');
+		});
+
+		test('reads the NHL overall record from type ytd, which is not total', async () => {
+			const { fetchGamesWithLeagueLogos } = mockSingleEvent(makeEvent({
+				id: 'nhl-rec', state: 'pre', period: 1, clock: '0:00', homeScore: '0', awayScore: '0',
+				homeExtra: { records: [
+					{ name: 'YTD', abbreviation: 'Game', type: 'ytd', summary: '24-16-4' },
+					{ name: 'Home', abbreviation: 'HOME', type: 'home', summary: '14-6-2' },
+					{ name: 'Road', abbreviation: 'AWAY', type: 'road', summary: '10-10-2' },
+				] },
+			}));
+			const result = await fetchGamesWithLeagueLogos(['nhl'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'nhl-rec')?.homeTeam.record).toBe('24-16-4');
+		});
+
+		test('prefers total over the conference and venue splits college football also sends', async () => {
+			const { fetchGamesWithLeagueLogos } = mockSingleEvent(makeEvent({
+				id: 'ncaaf-rec', state: 'pre', period: 1, clock: '0:00', homeScore: '0', awayScore: '0',
+				homeExtra: { records: [
+					{ name: 'overall', type: 'total', summary: '9-2' },
+					{ name: 'Home', type: 'homerecord', summary: '5-0' },
+					{ name: 'Road', type: 'awayrecord', summary: '4-2' },
+					{ name: 'vs. Conf.', type: 'vsconf', summary: '6-1' },
+				] },
+			}));
+			const result = await fetchGamesWithLeagueLogos(['ncaaf'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'ncaaf-rec')?.homeTeam.record).toBe('9-2');
+		});
+
+		test('falls back to the first entry when no known overall type is present', async () => {
+			const { fetchGamesWithLeagueLogos } = mockSingleEvent(makeEvent({
+				id: 'odd-rec', state: 'pre', period: 1, clock: '0:00', homeScore: '0', awayScore: '0',
+				homeExtra: { records: [{ name: 'standings-overall', type: 'somethingNew', summary: '12-3-1' }] },
+			}));
+			const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'odd-rec')?.homeTeam.record).toBe('12-3-1');
+		});
+
+		test('prefers summary over displayValue, which the NHL pads with standings points', async () => {
+			const { fetchGamesWithLeagueLogos } = mockSingleEvent(makeEvent({
+				id: 'nhl-pts', state: 'pre', period: 1, clock: '0:00', homeScore: '0', awayScore: '0',
+				homeExtra: { records: [{ type: 'ytd', summary: '28-28-10', displayValue: '28-28-10, 66 PTS' }] },
+			}));
+			const result = await fetchGamesWithLeagueLogos(['nhl'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'nhl-pts')?.homeTeam.record).toBe('28-28-10');
+		});
+
+		test('uses displayValue when summary is absent', async () => {
+			const { fetchGamesWithLeagueLogos } = mockSingleEvent(makeEvent({
+				id: 'dv-only', state: 'pre', period: 1, clock: '0:00', homeScore: '0', awayScore: '0',
+				homeExtra: { records: [{ type: 'total', displayValue: '5-1' }] },
+			}));
+			const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'dv-only')?.homeTeam.record).toBe('5-1');
+		});
+
+		test('leaves record undefined for the empty array ESPN sends in the offseason', async () => {
+			const { fetchGamesWithLeagueLogos } = mockSingleEvent(makeEvent({
+				id: 'no-rec', state: 'pre', period: 1, clock: '0:00', homeScore: '0', awayScore: '0',
+				homeExtra: { records: [] },
+			}));
+			const result = await fetchGamesWithLeagueLogos(['nhl'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'no-rec')?.homeTeam.record).toBeUndefined();
+		});
+
+		test('carries the record on a live game too, not only pre-game', async () => {
+			const { fetchGamesWithLeagueLogos } = mockSingleEvent(makeEvent({
+				id: 'live-rec', state: 'in', period: 5, clock: '0:00', homeScore: '3', awayScore: '1',
+				homeExtra: { records: [{ type: 'total', summary: '76-58' }] },
+			}));
+			const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'live-rec')?.homeTeam.record).toBe('76-58');
+		});
+	});
+
+	describe('probable starter parsing', () => {
+		const pitcher = {
+			probables: [{
+				name: 'probableStartingPitcher',
+				displayName: 'Probable Starting Pitcher',
+				athlete: { fullName: 'David Peterson', displayName: 'David Peterson', shortName: 'D. Peterson', jersey: '19' },
+				statistics: [
+					{ name: 'wins', abbreviation: 'W', displayValue: '7' },
+					{ name: 'ERA', abbreviation: 'ERA', displayValue: '5.17' },
+				],
+				record: '(7-7, 5.17)',
+			}],
+		};
+		const goalie = {
+			probables: [{
+				name: 'probableStartingGoalie',
+				displayName: 'Probable Starting Goalie',
+				athlete: { fullName: 'Colten Ellis', displayName: 'Colten Ellis', shortName: 'C. Ellis', jersey: '92' },
+				status: { id: '102', name: 'Confirmed', type: 'confirmed' },
+				statistics: [],
+				record: '',
+			}],
+		};
+
+		test('reads a baseball pitcher with the line ESPN pre-formats', async () => {
+			const { fetchGamesWithLeagueLogos } = mockSingleEvent(makeEvent({
+				id: 'mlb-sp', state: 'pre', period: 1, clock: '0:00', homeScore: '0', awayScore: '0',
+				homeExtra: pitcher,
+			}));
+			const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'mlb-sp')?.homeTeam.probableStarter)
+				.toEqual({ name: 'D. Peterson', line: '(7-7, 5.17)', status: undefined });
+		});
+
+		test('reads a hockey goalie through the same rule, with no line and a status', async () => {
+			const { fetchGamesWithLeagueLogos } = mockSingleEvent(makeEvent({
+				id: 'nhl-sg', state: 'pre', period: 1, clock: '0:00', homeScore: '0', awayScore: '0',
+				homeExtra: goalie,
+			}));
+			const result = await fetchGamesWithLeagueLogos(['nhl'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'nhl-sg')?.homeTeam.probableStarter)
+				.toEqual({ name: 'C. Ellis', line: undefined, status: 'confirmed' });
+		});
+
+		test('ignores a status value outside the two ESPN sends', async () => {
+			const { fetchGamesWithLeagueLogos } = mockSingleEvent(makeEvent({
+				id: 'nhl-odd', state: 'pre', period: 1, clock: '0:00', homeScore: '0', awayScore: '0',
+				homeExtra: { probables: [{ name: 'probableStartingGoalie', athlete: { shortName: 'C. Ellis' }, status: { type: 'scratched' } }] },
+			}));
+			const result = await fetchGamesWithLeagueLogos(['nhl'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'nhl-odd')?.homeTeam.probableStarter?.status).toBeUndefined();
+		});
+
+		test('falls back to displayName when ESPN omits shortName', async () => {
+			const { fetchGamesWithLeagueLogos } = mockSingleEvent(makeEvent({
+				id: 'mlb-long', state: 'pre', period: 1, clock: '0:00', homeScore: '0', awayScore: '0',
+				homeExtra: { probables: [{ name: 'probableStartingPitcher', athlete: { displayName: 'David Peterson' } }] },
+			}));
+			const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'mlb-long')?.homeTeam.probableStarter?.name).toBe('David Peterson');
+		});
+
+		test('handles one side having a starter and the other not', async () => {
+			const { fetchGamesWithLeagueLogos } = mockSingleEvent(makeEvent({
+				id: 'mlb-one', state: 'pre', period: 1, clock: '0:00', homeScore: '0', awayScore: '0',
+				awayExtra: pitcher,
+			}));
+			const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
+			const game = result.games.find(g => g.id === 'mlb-one');
+			expect(game?.awayTeam.probableStarter?.name).toBe('D. Peterson');
+			expect(game?.homeTeam.probableStarter).toBeUndefined();
+		});
+
+		test('ignores a probables entry that is not a starter', async () => {
+			const { fetchGamesWithLeagueLogos } = mockSingleEvent(makeEvent({
+				id: 'mlb-other', state: 'pre', period: 1, clock: '0:00', homeScore: '0', awayScore: '0',
+				homeExtra: { probables: [{ name: 'somethingElse', athlete: { shortName: 'X. Y' } }] },
+			}));
+			const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'mlb-other')?.homeTeam.probableStarter).toBeUndefined();
+		});
+
+		test('leaves the starter off a live game, where ESPN keeps sending it', async () => {
+			const { fetchGamesWithLeagueLogos } = mockSingleEvent(makeEvent({
+				id: 'mlb-live-sp', state: 'in', period: 3, clock: '0:00', homeScore: '1', awayScore: '0',
+				homeExtra: pitcher,
+			}));
+			const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'mlb-live-sp')?.homeTeam.probableStarter).toBeUndefined();
+		});
+	});
+
+	describe('team leaders parsing', () => {
+		test('keeps the three real baseball categories and drops MLBRating', async () => {
+			const { fetchGamesWithLeagueLogos } = mockSingleEvent(makeEvent({
+				id: 'mlb-ldr', state: 'pre', period: 1, clock: '0:00', homeScore: '0', awayScore: '0',
+				homeExtra: { leaders: [
+					leaderCategory('avg', 'BA', 'P. Crow-Armstrong', '.276'),
+					leaderCategory('homeRuns', 'HR', 'J. Soto', '33'),
+					leaderCategory('RBIs', 'RBI', 'F. Lindor', '83'),
+					leaderCategory('MLBRating', 'MLB', 'J. Soto', '552.8'),
+				] },
+			}));
+			const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'mlb-ldr')?.homeTeam.leaders).toEqual([
+				{ category: 'avg', fallbackLabel: 'BA', player: 'P. Crow-Armstrong', value: '.276' },
+				{ category: 'homeruns', fallbackLabel: 'HR', player: 'J. Soto', value: '33' },
+				{ category: 'rbis', fallbackLabel: 'RBI', player: 'F. Lindor', value: '83' },
+			]);
+		});
+
+		test('drops basketball rating, whose value is a whole stat line', async () => {
+			const { fetchGamesWithLeagueLogos } = mockSingleEvent(makeEvent({
+				id: 'nba-ldr', state: 'pre', period: 1, clock: '0:00', homeScore: '0', awayScore: '0',
+				homeExtra: { leaders: [
+					leaderCategory('points', 'Pts', 'J. Tatum', '23'),
+					leaderCategory('rating', 'RAT', 'J. Tatum', '15 PTS, 9 REB, 8 AST, 3 BLK'),
+				] },
+			}));
+			const result = await fetchGamesWithLeagueLogos(['nba'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'nba-ldr')?.homeTeam.leaders)
+				.toEqual([{ category: 'points', fallbackLabel: 'Pts', player: 'J. Tatum', value: '23' }]);
+		});
+
+		test('collapses the duplicate goals category soccer sends alongside goalsLeaders', async () => {
+			const { fetchGamesWithLeagueLogos } = mockSingleEvent(makeEvent({
+				id: 'epl-ldr', state: 'pre', period: 1, clock: '0:00', homeScore: '0', awayScore: '0',
+				homeExtra: { leaders: [
+					leaderCategory('goals', 'Goals', 'D. Kamada', '1'),
+					leaderCategory('goalsLeaders', 'Goals', 'D. Kamada', '1'),
+				] },
+			}));
+			const result = await fetchGamesWithLeagueLogos(['epl'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'epl-ldr')?.homeTeam.leaders)
+				.toEqual([{ category: 'goals', fallbackLabel: 'Goals', player: 'D. Kamada', value: '1' }]);
+		});
+
+		test('collapses the per-game duplicates the WNBA sends and still fills three rows', async () => {
+			const { fetchGamesWithLeagueLogos } = mockSingleEvent(makeEvent({
+				id: 'wnba-ldr', state: 'pre', period: 1, clock: '0:00', homeScore: '0', awayScore: '0',
+				homeExtra: { leaders: [
+					leaderCategory('points', 'Pts', 'A. Wilson', '19'),
+					leaderCategory('pointsPerGame', 'PPG', 'A. Wilson', '19.4'),
+					leaderCategory('rebounds', 'Reb', 'A. Wilson', '12'),
+					leaderCategory('reboundsPerGame', 'RPG', 'A. Wilson', '12.4'),
+					leaderCategory('assists', 'Ast', 'C. Gray', '7'),
+					leaderCategory('assistsPerGame', 'APG', 'C. Gray', '7.4'),
+				] },
+			}));
+			const result = await fetchGamesWithLeagueLogos(['wnba'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'wnba-ldr')?.homeTeam.leaders?.map(l => l.category))
+				.toEqual(['points', 'rebounds', 'assists']);
+		});
+
+		test('normalizes the Leader suffix football uses', async () => {
+			const { fetchGamesWithLeagueLogos } = mockSingleEvent(makeEvent({
+				id: 'nfl-ldr', state: 'pre', period: 1, clock: '0:00', homeScore: '0', awayScore: '0',
+				homeExtra: { leaders: [leaderCategory('passingLeader', 'PASS', 'S. Bennett IV', '19/31, 181 YDS')] },
+			}));
+			const result = await fetchGamesWithLeagueLogos(['nfl'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'nfl-ldr')?.homeTeam.leaders)
+				.toEqual([{ category: 'passing', fallbackLabel: 'PASS', player: 'S. Bennett IV', value: '19/31, 181 YDS' }]);
+		});
+
+		test('caps at three even when every category is distinct', async () => {
+			const { fetchGamesWithLeagueLogos } = mockSingleEvent(makeEvent({
+				id: 'many-ldr', state: 'pre', period: 1, clock: '0:00', homeScore: '0', awayScore: '0',
+				homeExtra: { leaders: [
+					leaderCategory('a', 'A', 'P One', '1'),
+					leaderCategory('b', 'B', 'P Two', '2'),
+					leaderCategory('c', 'C', 'P Three', '3'),
+					leaderCategory('d', 'D', 'P Four', '4'),
+				] },
+			}));
+			const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'many-ldr')?.homeTeam.leaders).toHaveLength(3);
+		});
+
+		test('skips a category with no athletes in it', async () => {
+			const { fetchGamesWithLeagueLogos } = mockSingleEvent(makeEvent({
+				id: 'empty-ldr', state: 'pre', period: 1, clock: '0:00', homeScore: '0', awayScore: '0',
+				homeExtra: { leaders: [
+					{ name: 'homeRuns', shortDisplayName: 'HR', leaders: [] },
+					leaderCategory('RBIs', 'RBI', 'F. Lindor', '83'),
+				] },
+			}));
+			const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'empty-ldr')?.homeTeam.leaders?.map(l => l.category)).toEqual(['rbis']);
+		});
+
+		test('falls back to the ESPN name when shortDisplayName is absent', async () => {
+			const { fetchGamesWithLeagueLogos } = mockSingleEvent(makeEvent({
+				id: 'nolabel-ldr', state: 'pre', period: 1, clock: '0:00', homeScore: '0', awayScore: '0',
+				homeExtra: { leaders: [{ name: 'homeRuns', leaders: [{ displayValue: '33', athlete: { shortName: 'J. Soto' } }] }] },
+			}));
+			const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'nolabel-ldr')?.homeTeam.leaders?.[0]?.fallbackLabel).toBe('homeRuns');
+		});
+
+		test('leaves leaders off a finished game, where the categories hold that game box line', async () => {
+			const { fetchGamesWithLeagueLogos } = mockSingleEvent(makeEvent({
+				id: 'post-ldr', state: 'post', period: 9, clock: '0:00', homeScore: '5', awayScore: '2',
+				homeExtra: { leaders: [leaderCategory('homeRuns', 'HR', 'J. Soto', '1-4, HR, 4 RBI, 2 R, BB')] },
+			}));
+			const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'post-ldr')?.homeTeam.leaders).toBeUndefined();
+		});
+
+		test('leaves leaders undefined when the key is absent, as in college football', async () => {
+			const { fetchGamesWithLeagueLogos } = mockSingleEvent(makeEvent({
+				id: 'ncaaf-ldr', state: 'pre', period: 1, clock: '0:00', homeScore: '0', awayScore: '0',
+			}));
+			const result = await fetchGamesWithLeagueLogos(['ncaaf'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'ncaaf-ldr')?.homeTeam.leaders).toBeUndefined();
 		});
 	});
 });

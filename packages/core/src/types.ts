@@ -21,6 +21,26 @@ export type {
 	LeagueConfig,
 };
 
+// Baseball pitchers and hockey goalies arrive in the same `probables` structure, so this is not
+// named for either one.
+export interface ProbableStarter {
+	name: string;
+	// Pre-formatted by ESPN: "(7-7, 5.17)" is a pitcher's W-L and ERA. Absent for goalies, whose
+	// record field is always empty.
+	line?: string;
+	// Hockey only. ESPN sends no starter status for baseball.
+	status?: 'expected' | 'confirmed';
+}
+
+export interface TeamLeader {
+	// ESPN's category name, normalized. The key a label is looked up by, never display text.
+	category: string;
+	// ESPN's own abbreviation, rendered only for a category we have no translation for.
+	fallbackLabel: string;
+	player: string;
+	value: string;
+}
+
 export interface Team {
 	id: string;
 	name: string;
@@ -33,6 +53,14 @@ export interface Team {
 	// CSS hex, from the API. `alternateColor` is used when the primary clashes with the opponent.
 	color?: string;
 	alternateColor?: string;
+	// The overall record, e.g. "76-58". Carried in every status because the detail hero shows it
+	// for live and finished games too.
+	record?: string;
+	// Pre-game only, and only where ESPN sends them. Leaders in particular are pre-game only for
+	// correctness rather than economy: once a game starts, the same categories hold that game's box
+	// line ("1-4, HR, 4 RBI") instead of a season total.
+	probableStarter?: ProbableStarter;
+	leaders?: TeamLeader[];
 }
 
 export interface GameCondition {
