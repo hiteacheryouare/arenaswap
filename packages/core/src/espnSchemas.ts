@@ -27,6 +27,7 @@ const EspnAthleteRefSchema = zod.object({
 	displayName: zod.string().optional(),
 	shortName: zod.string().optional(),
 	jersey: espnNumericText.optional(),
+	headshot: zod.string().optional(),
 });
 
 // Baseball sends `probableStartingPitcher`, hockey `probableStartingGoalie`, and no other sport

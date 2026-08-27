@@ -16,6 +16,8 @@ import ptPT from '../../locales/pt_PT.json';
 import zhCN from '../../locales/zh_CN.json';
 import zhTW from '../../locales/zh_TW.json';
 
+const shot = (id: string) => `https://a.espncdn.com/i/headshots/mlb/players/full/${id}.png`;
+
 const locales = { de, en, es, fil, fr, it: itLocale, ja, ko, pt_BR: ptBR, pt_PT: ptPT, zh_CN: zhCN, zh_TW: zhTW };
 
 const preGame: Game = {
@@ -224,9 +226,9 @@ describe('pre-game detail screen', () => {
 				name: 'New York Mets',
 				abbreviation: 'NYM',
 				record: '76-58',
-				probableStarter: { name: 'D. Peterson', line: '(7-7, 5.17)' },
+				probableStarter: { name: 'D. Peterson', line: '(7-7, 5.17)', headshot: shot('40921') },
 				leaders: [
-					{ category: 'homeruns', fallbackLabel: 'HR', player: 'J. Soto', value: '33' },
+					{ category: 'homeruns', fallbackLabel: 'HR', player: 'J. Soto', value: '33', headshot: shot('36969') },
 					{ category: 'rbis', fallbackLabel: 'RBI', player: 'P. Alonso', value: '83' },
 				],
 			},
@@ -235,10 +237,35 @@ describe('pre-game detail screen', () => {
 				name: 'Detroit Tigers',
 				abbreviation: 'DET',
 				record: '70-64',
-				probableStarter: { name: 'T. Skubal', line: '(13-4, 2.21)' },
+				probableStarter: { name: 'T. Skubal', line: '(13-4, 2.21)', headshot: shot('39909') },
 				leaders: [
 					{ category: 'homeruns', fallbackLabel: 'HR', player: 'K. Carpenter', value: '28' },
 					{ category: 'rbis', fallbackLabel: 'RBI', player: 'S. Torkelson', value: '100' },
+				],
+			},
+		};
+
+		// The reason the leaders row is full width. Real values from a live NFL scoreboard.
+		const football: Game = {
+			...preGame,
+			id: 'nfl-pre',
+			sportType: 'football',
+			homeTeam: {
+				...preGame.homeTeam,
+				abbreviation: 'BUF',
+				record: '2-0',
+				leaders: [
+					{ category: 'passing', fallbackLabel: 'PASS', player: 'K. Allen', value: '10/12, 128 YDS, 1 TD' },
+					{ category: 'rushing', fallbackLabel: 'RUSH', player: 'J. Cook', value: '14 CAR, 56 YDS' },
+				],
+			},
+			awayTeam: {
+				...preGame.awayTeam,
+				abbreviation: 'PIT',
+				record: '1-1',
+				leaders: [
+					{ category: 'passing', fallbackLabel: 'PASS', player: 'A. Rodgers', value: '14/23, 141 YDS, 1 INT' },
+					{ category: 'rushing', fallbackLabel: 'RUSH', player: 'J. Warren', value: '9 CAR, 41 YDS, 1 TD' },
 				],
 			},
 		};
@@ -268,18 +295,16 @@ describe('pre-game detail screen', () => {
 			cy.get('.gd-pregame-starter-name').eq(1).should('have.text', 'D. Peterson');
 		});
 
-		// Away left, home right, on the same side of the card as their crest. Not asserted as a
-		// pixel-identical centroid: the poster and this card have different padding and different
-		// centre columns, so the two grids cannot share one centre line.
 		it('keeps each starter on its own team side of the card', () => {
 			mountPre(pitchers);
 			cy.get('.gd-pregame-stats').then(([card]: JQuery<HTMLElement>) => {
-				const midline = card.getBoundingClientRect().left + card.getBoundingClientRect().width / 2;
+				const box = card.getBoundingClientRect();
+				const midline = box.left + box.width / 2;
 				cy.get('.gd-pregame-starter').eq(0).then(([away]: JQuery<HTMLElement>) => {
-					expect(away.getBoundingClientRect().right).to.be.at.most(midline);
+					expect(away.getBoundingClientRect().right).to.be.at.most(midline + 1);
 				});
 				cy.get('.gd-pregame-starter').eq(1).then(([home]: JQuery<HTMLElement>) => {
-					expect(home.getBoundingClientRect().left).to.be.at.least(midline);
+					expect(home.getBoundingClientRect().left).to.be.at.least(midline - 1);
 				});
 			});
 		});
@@ -287,11 +312,10 @@ describe('pre-game detail screen', () => {
 		it('holds the grid when only one side has a starter', () => {
 			mountPre({ ...pitchers, homeTeam: { ...pitchers.homeTeam, probableStarter: undefined } });
 			cy.get('.gd-pregame-starter-name').should('have.length', 1);
-			cy.get('.gd-pregame-mirror').eq(0).then(([row]: JQuery<HTMLElement>) => {
+			cy.get('.gd-pregame-starters').then(([row]: JQuery<HTMLElement>) => {
 				const columns = getComputedStyle(row).gridTemplateColumns.split(' ').map(parseFloat);
-				expect(columns).to.have.length(3);
-				// The two outer columns stay equal, so the one name we have does not re-centre.
-				expect(Math.abs(columns[0]! - columns[2]!)).to.be.at.most(1);
+				expect(columns).to.have.length(2);
+				expect(Math.abs(columns[0]! - columns[1]!)).to.be.at.most(1);
 			});
 		});
 
@@ -303,24 +327,82 @@ describe('pre-game detail screen', () => {
 			cy.get('.gd-pregame-starter-status').eq(1).should('have.text', 'Confirmed');
 		});
 
-		it('renders one leader row per category, away and home either side of the label', () => {
+		it('renders a headshot for each starter and leader', () => {
+			mountPre(pitchers);
+			cy.get('.gd-pregame-starter-shot img').should('have.length', 2);
+			cy.get('.gd-pregame-starter-shot img').eq(0).should('have.attr', 'src').and('include', '39909');
+			cy.get('.gd-pregame-leader-shot').should('have.length', 4);
+		});
+
+		// Soccer sends a headshot for roughly one leader in ten, so the placeholder is the common
+		// case there and has to hold the row's shape rather than collapse it.
+		it('falls back to team-coloured initials when there is no headshot', () => {
+			mountPre(pitchers);
+			cy.get('.gd-pregame-leader-row').eq(0).within(() => {
+				cy.get('img').should('not.exist');
+				cy.get('.crest-fallback').should('have.text', 'KC');
+			});
+			cy.get('.gd-pregame-leader-row').eq(0).then(([withFallback]: JQuery<HTMLElement>) => {
+				cy.get('.gd-pregame-leader-row').eq(1).then(([withImage]: JQuery<HTMLElement>) => {
+					const a = withFallback.getBoundingClientRect();
+					const bBox = withImage.getBoundingClientRect();
+					expect(Math.abs(a.height - bBox.height), 'placeholder row matches image row height').to.be.at.most(1);
+					expect(Math.abs(a.left - bBox.left), 'and its left edge').to.be.at.most(1);
+				});
+			});
+		});
+
+		it('tints each leader row with its own team colour', () => {
+			mountPre(pitchers);
+			cy.get('.gd-pregame-leader-row').eq(0).should('have.attr', 'style').and('include', 'linear-gradient');
+			cy.get('.gd-pregame-leader-team').eq(0).should('have.text', 'DET');
+			cy.get('.gd-pregame-leader-team').eq(1).should('have.text', 'NYM');
+			// Away and home must not resolve to the same tint, or the colour carries no information.
+			cy.get('.gd-pregame-leader-row').eq(0).then(([away]: JQuery<HTMLElement>) => {
+				cy.get('.gd-pregame-leader-row').eq(1).then(([home]: JQuery<HTMLElement>) => {
+					expect(getComputedStyle(away).backgroundImage).to.not.equal(getComputedStyle(home).backgroundImage);
+				});
+			});
+		});
+
+		it('renders one row per team per category, grouped under the category', () => {
 			mountPre(pitchers);
 			cy.contains('.gd-setup-heading', 'Team leaders').should('exist');
-			cy.get('.gd-pregame-leader').should('have.length', 4);
-			cy.get('.gd-pregame-label').eq(1).should('have.text', 'HR');
-			cy.get('.gd-pregame-label').eq(2).should('have.text', 'RBI');
+			cy.get('.gd-pregame-category').should('have.length', 2);
+			cy.get('.gd-pregame-category').eq(0).should('have.text', 'HR');
+			cy.get('.gd-pregame-leader-row').should('have.length', 4);
 			cy.get('.gd-pregame-leader-value').eq(0).should('have.text', '28');
 			cy.get('.gd-pregame-leader-value').eq(1).should('have.text', '33');
 		});
 
-		// A hockey points leader must not borrow basketball's label, and vice versa.
+		// The whole reason for the full-width row. A clipped stat is unreadable in a way a clipped
+		// name is not, so the value is what must never be cut.
+		it('never truncates a football stat value', () => {
+			mountPre(football);
+			cy.get('.gd-pregame-leader-value').each(($el: JQuery<HTMLElement>) => {
+				const [el] = $el;
+				expect(el!.scrollWidth, `${el!.textContent} renders whole`).to.be.at.most(el!.clientWidth + 1);
+			});
+			cy.get('.gd-pregame-leader-value').eq(0).should('have.text', '14/23, 141 YDS, 1 INT');
+		});
+
+		it('keeps a football row inside the card', () => {
+			mountPre(football);
+			cy.get('.gd-pregame-stats').then(([card]: JQuery<HTMLElement>) => {
+				const limit = card.getBoundingClientRect().right;
+				cy.get('.gd-pregame-leader-row').each(($el: JQuery<HTMLElement>) => {
+					expect($el[0]!.getBoundingClientRect().right).to.be.at.most(limit);
+				});
+			});
+		});
+
 		it('labels a category by sport, not by ESPN name alone', () => {
 			const hockeyPoints = {
 				...goalies,
 				homeTeam: { ...goalies.homeTeam, leaders: [{ category: 'points', fallbackLabel: 'Points', player: 'D. Pastrnak', value: '69' }] },
 			};
 			mountPre(hockeyPoints);
-			cy.get('.gd-pregame-label').last().should('have.text', 'PTS');
+			cy.get('.gd-pregame-category').last().should('have.text', 'PTS');
 		});
 
 		it('falls back to the ESPN abbreviation for a category we have no label for', () => {
@@ -330,7 +412,7 @@ describe('pre-game detail screen', () => {
 				awayTeam: { ...pitchers.awayTeam, leaders: [] },
 			};
 			mountPre(unknown);
-			cy.get('.gd-pregame-label').last().should('have.text', 'SB');
+			cy.get('.gd-pregame-category').last().should('have.text', 'SB');
 		});
 
 		it('renders nothing at all when a sport sends neither', () => {
@@ -345,34 +427,24 @@ describe('pre-game detail screen', () => {
 			cy.get('.gd-poster-record').eq(1).should('have.text', '76-58');
 		});
 
-		// The centre column is the only fixed width in the grid, so it is the one thing a long
-		// translation can push out of shape.
-		it('fits every locale leader label in the centre column', () => {
+		it('fits every locale category label on one line', () => {
 			mountPre(pitchers);
-			cy.get('.gd-pregame-label').eq(1).then(([label]: JQuery<HTMLElement>) => {
-				const budget = label.getBoundingClientRect().width;
+			cy.get('.gd-pregame-category').eq(0).then(([label]: JQuery<HTMLElement>) => {
+				const oneLine = parseFloat(getComputedStyle(label).lineHeight) + 1;
 				const keys = [
 					'leaderAvg', 'leaderHomeRuns', 'leaderRbis', 'leaderPoints', 'leaderRebounds',
 					'leaderAssists', 'leaderGoals', 'leaderHockeyAssists', 'leaderHockeyPoints',
 					'leaderPointsPerGame', 'leaderReboundsPerGame', 'leaderAssistsPerGame',
 					'leaderPassing', 'leaderRushing', 'leaderReceiving',
 				];
-				const probe = document.createElement('span');
-				const style = getComputedStyle(label);
-				probe.style.font = style.font;
-				probe.style.letterSpacing = style.letterSpacing;
-				probe.style.position = 'absolute';
-				probe.style.whiteSpace = 'nowrap';
-				document.body.appendChild(probe);
 				for (const [name, locale] of Object.entries(locales)) {
 					const detail = locale.detail as unknown as Record<string, string>;
 					for (const key of keys) {
-						probe.textContent = detail[key] ?? '';
-						expect(probe.getBoundingClientRect().width, `${name}.${key} fits the label column`)
-							.to.be.at.most(budget);
+						label.textContent = detail[key] ?? '';
+						expect(label.getBoundingClientRect().height, `${name}.${key} stays on one line`)
+							.to.be.at.most(oneLine);
 					}
 				}
-				probe.remove();
 			});
 		});
 	});

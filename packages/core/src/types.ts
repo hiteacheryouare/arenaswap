@@ -25,6 +25,9 @@ export type {
 // named for either one.
 export interface ProbableStarter {
 	name: string;
+	// Present for 97% of pitchers and every goalie sampled. Soccer has almost none, which is why
+	// the UI needs a fallback rather than treating absence as an edge case.
+	headshot?: string;
 	// Pre-formatted by ESPN: "(7-7, 5.17)" is a pitcher's W-L and ERA. Absent for goalies, whose
 	// record field is always empty.
 	line?: string;
@@ -39,6 +42,7 @@ export interface TeamLeader {
 	fallbackLabel: string;
 	player: string;
 	value: string;
+	headshot?: string;
 }
 
 export interface Team {

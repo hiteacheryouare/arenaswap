@@ -67,3 +67,16 @@ export const leaderLabelKey = (sportType: SportType | undefined, category: strin
 	const forSport: Partial<Record<string, LeaderLabelKey>> = sportType ? leaderLabelKeys[sportType] : {};
 	return forSport[category];
 };
+
+// Two letters for the circle a missing headshot leaves behind. ESPN's shortName is already
+// initialled — "D. Peterson", "P. Crow-Armstrong" — so splitting on dots and spaces gives the
+// first initial and the surname's, which is what a placeholder avatar wants.
+export const playerInitials = (name: string): string => (
+	name
+		.split(/[\s.]+/)
+		.filter(Boolean)
+		.slice(0, 2)
+		.map(part => part.charAt(0))
+		.join('')
+		.toUpperCase()
+);

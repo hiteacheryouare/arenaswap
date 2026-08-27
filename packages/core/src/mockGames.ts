@@ -2,6 +2,7 @@ import { leagueConfigMap } from './constants';
 import type { Game } from './types';
 
 const espnCdn = 'https://a.espncdn.com/i/teamlogos';
+const espnShots = 'https://a.espncdn.com/i/headshots';
 
 interface SimState {
 	streak: 'home' | 'away' | null;
@@ -289,17 +290,17 @@ export class MockGameSimulator {
 				homeTeam: {
 					id: '19', name: 'New York Mets', abbreviation: 'NYM', score: 0, logo: `${espnCdn}/mlb/500/nym.png`, color: '#002D72',
 					record: '76-58',
-					probableStarter: { name: 'D. Peterson', line: '(7-7, 5.17)' },
+					probableStarter: { name: 'D. Peterson', line: '(7-7, 5.17)', headshot: `${espnShots}/mlb/players/full/40921.png` },
 					leaders: [
 						{ category: 'avg', fallbackLabel: 'BA', player: 'F. Lindor', value: '.276' },
-						{ category: 'homeruns', fallbackLabel: 'HR', player: 'J. Soto', value: '33' },
+						{ category: 'homeruns', fallbackLabel: 'HR', player: 'J. Soto', value: '33', headshot: `${espnShots}/mlb/players/full/36969.png` },
 						{ category: 'rbis', fallbackLabel: 'RBI', player: 'P. Alonso', value: '83' },
 					],
 				},
 				awayTeam: {
 					id: '16', name: 'Detroit Tigers', abbreviation: 'DET', score: 0, logo: `${espnCdn}/mlb/500/det.png`, color: '#0C2340',
 					record: '70-64',
-					probableStarter: { name: 'T. Skubal', line: '(13-4, 2.21)' },
+					probableStarter: { name: 'T. Skubal', line: '(13-4, 2.21)', headshot: `${espnShots}/mlb/players/full/39909.png` },
 					leaders: [
 						{ category: 'avg', fallbackLabel: 'BA', player: 'R. Greene', value: '.265' },
 						{ category: 'homeruns', fallbackLabel: 'HR', player: 'K. Carpenter', value: '28' },
@@ -320,9 +321,9 @@ export class MockGameSimulator {
 					id: '1', name: 'Boston Bruins', abbreviation: 'BOS', score: 0, logo: `${espnCdn}/nhl/500/bos.png`, color: '#FFB81C',
 					record: '24-16-4',
 					// Goalies arrive with an empty record string, so there is no line to render.
-					probableStarter: { name: 'J. Swayman', status: 'confirmed' },
+					probableStarter: { name: 'J. Swayman', status: 'confirmed', headshot: `${espnShots}/nhl/players/full/4736758.png` },
 					leaders: [
-						{ category: 'goals', fallbackLabel: 'Goals', player: 'D. Pastrnak', value: '31' },
+						{ category: 'goals', fallbackLabel: 'Goals', player: 'D. Pastrnak', value: '31', headshot: `${espnShots}/nhl/players/full/3891.png` },
 						{ category: 'assists', fallbackLabel: 'Assists', player: 'C. Geekie', value: '38' },
 						{ category: 'points', fallbackLabel: 'Points', player: 'D. Pastrnak', value: '69' },
 					],

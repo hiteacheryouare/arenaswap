@@ -212,6 +212,7 @@ const parseProbableStarter = (competitor: EspnCompetitor): ProbableStarter | und
 	const status = probable.status?.type?.trim().toLowerCase();
 	return {
 		name,
+		headshot: probable.athlete?.headshot?.trim() || undefined,
 		// Empty for every goalie sampled; a pitcher's arrives assembled as "(7-7, 5.17)".
 		line: probable.record?.trim() || undefined,
 		status: status === 'expected' || status === 'confirmed' ? status : undefined,
@@ -255,7 +256,13 @@ const parseTeamLeaders = (competitor: EspnCompetitor): TeamLeader[] | undefined 
 		seen.add(category);
 		// `value` goes through verbatim. ESPN bakes English into the football ones — "12 CAR, 68 YDS,
 		// 1 TD" — and there is no version of that string we could assemble ourselves.
-		leaders.push({ category, fallbackLabel: cat.shortDisplayName?.trim() || name, player, value });
+		leaders.push({
+			category,
+			fallbackLabel: cat.shortDisplayName?.trim() || name,
+			player,
+			value,
+			headshot: top?.athlete?.headshot?.trim() || undefined,
+		});
 		if (leaders.length === maxLeadersPerTeam) break;
 	}
 

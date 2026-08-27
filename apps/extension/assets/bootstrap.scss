@@ -935,14 +935,17 @@ $bootstrap-icons-font-dir: '/fonts';
 }
 
 // Who is starting and who leads the two teams, in the same light card family as the setup block
-// above it. The three-column grid is the poster's away | vs | home geometry repeated, so a name
-// lines up under the crest it belongs to and the stat label lands where the "vs" does.
-.gd-pregame-mirror {
+// above it.
+//
+// The starters mirror the poster: two short names side by side, each under the crest it belongs to.
+// The leaders do not, and cannot. A football value runs to 21 characters — "14/23, 141 YDS, 1 INT"
+// — against four for baseball's ".276", and no half-width column fits both, so every leader gets
+// the full width of the card and the team is carried by colour instead of by position.
+.gd-pregame-starters {
 	display:               grid;
-	grid-template-columns: 1fr auto 1fr;
-	align-items:           center;
+	grid-template-columns: 1fr 1fr;
 	column-gap:            0.4rem;
-	padding:               0.24rem 0;
+	padding:               0.3rem 0 0.24rem;
 }
 
 .gd-pregame-starter {
@@ -951,13 +954,45 @@ $bootstrap-icons-font-dir: '/fonts';
 	align-items:    center;
 	text-align:     center;
 	min-width:      0;
+	gap:            0.12rem;
+}
+
+// The ring is the team's colour, which is the only thing distinguishing two headshots on a card
+// that has no crests of its own.
+.gd-pregame-starter-shot {
+	width:         38px;
+	height:        38px;
+	border:        2px solid #d1d5db;
+	border-radius: 50%;
+	overflow:      hidden;
+	background:    #ffffff;
+	flex-shrink:   0;
+}
+
+.gd-pregame-shot-img,
+.gd-pregame-leader-shot {
+	width:  100%;
+	height: 100%;
+
+	img { width: 100%; height: 100%; object-fit: cover; object-position: top center; }
+
+	// A placeholder is the common case in soccer, not a rare failure: ESPN sends a headshot for
+	// barely one leader in ten there.
+	.crest-fallback {
+		display:         flex;
+		align-items:     center;
+		justify-content: center;
+		width:           100%;
+		height:          100%;
+		font-weight:     700;
+		letter-spacing:  0.01em;
+	}
 }
 
 .gd-pregame-starter-name {
 	font-size:     0.66rem;
 	font-weight:   600;
 	line-height:   1.2;
-	// A long name wraps rather than pushing the column past its half of the card.
 	overflow-wrap: anywhere;
 }
 
@@ -973,12 +1008,49 @@ $bootstrap-icons-font-dir: '/fonts';
 	letter-spacing: 0.02em;
 }
 
-.gd-pregame-leader {
-	display:         flex;
-	align-items:     baseline;
-	justify-content: center;
-	gap:             0.28rem;
-	min-width:       0;
+.gd-pregame-leaders {
+	padding-top: 0.16rem;
+}
+
+.gd-pregame-category {
+	font-size:      0.54rem;
+	font-weight:    700;
+	color:          #6b7280;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	margin:         0.24rem 0 0.1rem;
+
+	&:first-child { margin-top: 0; }
+}
+
+// `1fr` on the name and `auto` on the value, deliberately: a truncated name is still readable and
+// a truncated stat is not, so the name is what gives way when a row runs out of room.
+.gd-pregame-leader-row {
+	display:               grid;
+	grid-template-columns: 20px 1.6rem 1fr auto;
+	align-items:           center;
+	column-gap:            0.3rem;
+	padding:               0.11rem 0.24rem 0.11rem 0.14rem;
+	border-radius:         0.2rem;
+
+	& + & { margin-top: 0.08rem; }
+}
+
+.gd-pregame-leader-shot {
+	width:         20px;
+	height:        20px;
+	border-radius: 50%;
+	overflow:      hidden;
+	background:    #ffffff;
+	box-shadow:    0 0 0 1px rgba(17, 24, 39, 0.14);
+
+	.crest-fallback { font-size: 0.44rem; }
+}
+
+.gd-pregame-leader-team {
+	font-size:      0.56rem;
+	font-weight:    700;
+	letter-spacing: 0.02em;
 }
 
 .gd-pregame-leader-player {
@@ -992,17 +1064,8 @@ $bootstrap-icons-font-dir: '/fonts';
 .gd-pregame-leader-value {
 	font-size:   0.62rem;
 	font-weight: 600;
-	flex-shrink: 0;
-}
-
-// The centre column is the only fixed width in the grid, so it is the one thing a long
-// translation can overflow. pregameDetail.cy.tsx asserts every locale fits it.
-.gd-pregame-label {
-	min-width:   2.2rem;
-	font-size:   0.56rem;
-	font-weight: 700;
-	color:       #6b7280;
-	text-align:  center;
+	text-align:  right;
+	white-space: nowrap;
 }
 
 // Venue / broadcast / odds / weather, as one titled section rather than four stacked centred

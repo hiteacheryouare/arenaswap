@@ -34,13 +34,25 @@ Community documentation was no help: `probables` is undocumented in every public
 one gist that describes `records[].type` lists a value that does not exist.
 
 ### On the screen
-- **Probable starters in the poster's away | label | home geometry**, so each name lands on its own
-  team's side. A game with only one side named leaves the other column empty rather than re-centring
-  the name it has — 11 of 97 upcoming games were one-sided, and a lone centred name reads as
-  belonging to neither team
+- **Probable starters mirror the poster**, away left and home right, each under the crest it belongs
+  to, with the player's headshot ringed in the team's colour. A game with only one side named leaves
+  the other half empty rather than re-centring the name it has — 14 of 98 upcoming games were
+  one-sided, and a lone centred name reads as belonging to neither team
 - **Baseball shows the line ESPN pre-formats** — `(7-7, 5.17)`, a pitcher's record and ERA, already
   assembled. Hockey shows a goalie's name and whether the start is confirmed, and no line, because
   a goalie's record field is always empty
+- **Team leaders get the full width of the card, not half of it.** They were mirrored too at first,
+  and it did not survive football: a value there runs to 21 characters — `14/23, 141 YDS, 1 INT` —
+  against four for baseball's `.276`, and no half-width column fits both. Every leader now gets one
+  full-width row grouped under its category, and the team is carried by a wash of its own colour
+  across the row rather than by which side of the card it sits on
+- Within a row, the name takes the slack and the value keeps its own width. A clipped name is still
+  readable; a clipped stat is not
+- **Headshots throughout**, 38px on a starter and 20px on a leader, from the same
+  `a.espncdn.com` host the team logos already come from. They are near-universal — 776 of 776 MLB
+  leaders, every goalie sampled — except in soccer, which sends one for roughly a leader in ten, so
+  the placeholder is a designed state rather than a failure: a circle in the team's colour carrying
+  the player's initials, holding the row's height and left edge exactly
 - **Team leaders, one row per category**, capped at three. The proprietary composites are dropped by
   a rule about how ESPN names things rather than a list of the names themselves, which is what keeps
   `MLBRating` and basketball's `rating` out without anyone maintaining an inventory
@@ -78,10 +90,11 @@ keeps them working before their season is underway.
 - **30 new unit tests on the parse**, each built from a transcribed live payload — the NHL's `ytd`
   record, college football's four record types, a goalie with an empty line, the duplicate category
   pairs, and the state gate
-- 10 new component tests on the block, including the two degradation cases and the sport-keyed label
-  lookup. One of them changed shape while being written: it first claimed each starter shared a
-  centre line with its crest, which the two grids cannot hold, and now asserts the invariant the
-  grid does keep
+- 15 new component tests on the block, including both degradation cases, the sport-keyed label
+  lookup, the initials placeholder holding a row's geometry, and an assertion that no football value
+  is ever clipped. Two changed shape while being written: one claimed each starter shared a centre
+  line with its crest, which two grids with different padding cannot hold, and one measured the
+  leader label against a fixed-width column that the full-width redesign removed
 ## ArenaSwap reads your tabs and guesses — 2026-08-27
 
 Pairing a tab with a game was the one part of the workflow that scaled badly. The only control was

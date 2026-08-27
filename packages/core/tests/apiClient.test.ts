@@ -128,6 +128,11 @@ const leaderCategory = (name: string, shortDisplayName: string, player: string, 
 	leaders: [{ displayValue, athlete: { displayName: player, shortName: player } }],
 });
 
+const withHeadshot = (cat: ReturnType<typeof leaderCategory>, url: string) => ({
+	...cat,
+	leaders: cat.leaders.map(l => ({ ...l, athlete: { ...l.athlete, headshot: url } })),
+});
+
 describe('apiClient', () => {
 	test('returns empty results and avoids fetch when enabled leagues list is empty', async () => {
 		const fetchMock = jest.fn();
@@ -1920,7 +1925,13 @@ describe('apiClient', () => {
 			probables: [{
 				name: 'probableStartingPitcher',
 				displayName: 'Probable Starting Pitcher',
-				athlete: { fullName: 'David Peterson', displayName: 'David Peterson', shortName: 'D. Peterson', jersey: '19' },
+				athlete: {
+					fullName: 'David Peterson',
+					displayName: 'David Peterson',
+					shortName: 'D. Peterson',
+					jersey: '19',
+					headshot: 'https://a.espncdn.com/i/headshots/mlb/players/full/40921.png',
+				},
 				statistics: [
 					{ name: 'wins', abbreviation: 'W', displayValue: '7' },
 					{ name: 'ERA', abbreviation: 'ERA', displayValue: '5.17' },
@@ -1946,7 +1957,12 @@ describe('apiClient', () => {
 			}));
 			const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
 			expect(result.games.find(g => g.id === 'mlb-sp')?.homeTeam.probableStarter)
-				.toEqual({ name: 'D. Peterson', line: '(7-7, 5.17)', status: undefined });
+				.toEqual({
+					name: 'D. Peterson',
+					headshot: 'https://a.espncdn.com/i/headshots/mlb/players/full/40921.png',
+					line: '(7-7, 5.17)',
+					status: undefined,
+				});
 		});
 
 		test('reads a hockey goalie through the same rule, with no line and a status', async () => {
@@ -1956,7 +1972,7 @@ describe('apiClient', () => {
 			}));
 			const result = await fetchGamesWithLeagueLogos(['nhl'], { includeUpcoming: false });
 			expect(result.games.find(g => g.id === 'nhl-sg')?.homeTeam.probableStarter)
-				.toEqual({ name: 'C. Ellis', line: undefined, status: 'confirmed' });
+				.toEqual({ name: 'C. Ellis', headshot: undefined, line: undefined, status: 'confirmed' });
 		});
 
 		test('ignores a status value outside the two ESPN sends', async () => {
@@ -2020,12 +2036,27 @@ describe('apiClient', () => {
 			}));
 			const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
 			expect(result.games.find(g => g.id === 'mlb-ldr')?.homeTeam.leaders).toEqual([
-				{ category: 'avg', fallbackLabel: 'BA', player: 'P. Crow-Armstrong', value: '.276' },
-				{ category: 'homeruns', fallbackLabel: 'HR', player: 'J. Soto', value: '33' },
-				{ category: 'rbis', fallbackLabel: 'RBI', player: 'F. Lindor', value: '83' },
+				{ category: 'avg', fallbackLabel: 'BA', player: 'P. Crow-Armstrong', value: '.276', headshot: undefined },
+				{ category: 'homeruns', fallbackLabel: 'HR', player: 'J. Soto', value: '33', headshot: undefined },
+				{ category: 'rbis', fallbackLabel: 'RBI', player: 'F. Lindor', value: '83', headshot: undefined },
 			]);
 		});
 
+
+		test('carries the athlete headshot ESPN sends with a leader', async () => {
+			const { fetchGamesWithLeagueLogos } = mockSingleEvent(makeEvent({
+				id: 'shot-ldr', state: 'pre', period: 1, clock: '0:00', homeScore: '0', awayScore: '0',
+				homeExtra: { leaders: [
+					withHeadshot(
+						leaderCategory('homeRuns', 'HR', 'J. Soto', '33'),
+						'https://a.espncdn.com/i/headshots/mlb/players/full/36969.png',
+					),
+				] },
+			}));
+			const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'shot-ldr')?.homeTeam.leaders?.[0]?.headshot)
+				.toBe('https://a.espncdn.com/i/headshots/mlb/players/full/36969.png');
+		});
 		test('drops basketball rating, whose value is a whole stat line', async () => {
 			const { fetchGamesWithLeagueLogos } = mockSingleEvent(makeEvent({
 				id: 'nba-ldr', state: 'pre', period: 1, clock: '0:00', homeScore: '0', awayScore: '0',
@@ -2036,7 +2067,7 @@ describe('apiClient', () => {
 			}));
 			const result = await fetchGamesWithLeagueLogos(['nba'], { includeUpcoming: false });
 			expect(result.games.find(g => g.id === 'nba-ldr')?.homeTeam.leaders)
-				.toEqual([{ category: 'points', fallbackLabel: 'Pts', player: 'J. Tatum', value: '23' }]);
+				.toEqual([{ category: 'points', fallbackLabel: 'Pts', player: 'J. Tatum', value: '23', headshot: undefined }]);
 		});
 
 		test('collapses the duplicate goals category soccer sends alongside goalsLeaders', async () => {
@@ -2049,7 +2080,7 @@ describe('apiClient', () => {
 			}));
 			const result = await fetchGamesWithLeagueLogos(['epl'], { includeUpcoming: false });
 			expect(result.games.find(g => g.id === 'epl-ldr')?.homeTeam.leaders)
-				.toEqual([{ category: 'goals', fallbackLabel: 'Goals', player: 'D. Kamada', value: '1' }]);
+				.toEqual([{ category: 'goals', fallbackLabel: 'Goals', player: 'D. Kamada', value: '1', headshot: undefined }]);
 		});
 
 		// The WNBA sends only the per-game variants and the NBA only the totals; no league was found
@@ -2067,9 +2098,9 @@ describe('apiClient', () => {
 			const result = await fetchGamesWithLeagueLogos(['wnba'], { includeUpcoming: false });
 			expect(result.games.find(g => g.id === 'wnba-ldr')?.homeTeam.leaders)
 				.toEqual([
-					{ category: 'pointspergame', fallbackLabel: 'PPG', player: 'A. Wilson', value: '19.4' },
-					{ category: 'reboundspergame', fallbackLabel: 'RPG', player: 'A. Wilson', value: '12.4' },
-					{ category: 'assistspergame', fallbackLabel: 'APG', player: 'C. Gray', value: '7.4' },
+					{ category: 'pointspergame', fallbackLabel: 'PPG', player: 'A. Wilson', value: '19.4', headshot: undefined },
+					{ category: 'reboundspergame', fallbackLabel: 'RPG', player: 'A. Wilson', value: '12.4', headshot: undefined },
+					{ category: 'assistspergame', fallbackLabel: 'APG', player: 'C. Gray', value: '7.4', headshot: undefined },
 				]);
 		});
 
@@ -2080,7 +2111,7 @@ describe('apiClient', () => {
 			}));
 			const result = await fetchGamesWithLeagueLogos(['nfl'], { includeUpcoming: false });
 			expect(result.games.find(g => g.id === 'nfl-ldr')?.homeTeam.leaders)
-				.toEqual([{ category: 'passing', fallbackLabel: 'PASS', player: 'S. Bennett IV', value: '19/31, 181 YDS' }]);
+				.toEqual([{ category: 'passing', fallbackLabel: 'PASS', player: 'S. Bennett IV', value: '19/31, 181 YDS', headshot: undefined }]);
 		});
 
 		test('caps at three even when every category is distinct', async () => {
