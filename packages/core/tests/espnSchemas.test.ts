@@ -94,4 +94,54 @@ describe('parseTeams', () => {
 		expect(parseTeams('nope')).toEqual({ teams: [], droppedTeams: 0 });
 		expect(parseTeams(null)).toEqual({ teams: [], droppedTeams: 0 });
 	});
+	describe('the per-competitor blocks only some sports send', () => {
+		test('keeps probables, records and leaders through the parse', () => {
+			const event = withCompetitor('rich', {
+				id: 'h1',
+				homeAway: 'home',
+				score: '0',
+				team: { displayName: 'Home' },
+				probables: [{ name: 'probableStartingPitcher', athlete: { shortName: 'D. Peterson' }, record: '(7-7, 5.17)' }],
+				records: [{ type: 'total', summary: '76-58' }],
+				leaders: [{ name: 'homeRuns', shortDisplayName: 'HR', leaders: [{ displayValue: '33', athlete: { shortName: 'J. Soto' } }] }],
+			});
+
+			const competitor = parseScoreboard({ events: [event] }).events[0]?.competitions[0]?.competitors[0];
+
+			expect(competitor?.probables?.[0]?.record).toBe('(7-7, 5.17)');
+			expect(competitor?.records?.[0]?.summary).toBe('76-58');
+			expect(competitor?.leaders?.[0]?.leaders?.[0]?.displayValue).toBe('33');
+		});
+
+		// Cricket returns a `$ref` string where every other sport returns an array. Not a league we
+		// ship, but adding one must not be able to take the event down with it.
+		test('survives leaders arriving as a $ref string instead of an array', () => {
+			const event = withCompetitor('ref', {
+				id: 'h1',
+				homeAway: 'home',
+				score: '0',
+				team: { displayName: 'Home' },
+				leaders: 'http://sports.core.api.espn.com/v2/leaders?lang=en',
+			});
+
+			const result = parseScoreboard({ events: [event] });
+
+			expect(result.droppedEvents).toBe(0);
+			expect(result.events[0]?.competitions[0]?.competitors[0]?.leaders).toEqual([]);
+		});
+
+		test('coerces a jersey number sent as a number rather than a string', () => {
+			const event = withCompetitor('jersey', {
+				id: 'h1',
+				homeAway: 'home',
+				score: '0',
+				team: { displayName: 'Home' },
+				probables: [{ name: 'probableStartingGoalie', athlete: { shortName: 'C. Ellis', jersey: 92 } }],
+			});
+
+			const competitor = parseScoreboard({ events: [event] }).events[0]?.competitions[0]?.competitors[0];
+
+			expect(competitor?.probables?.[0]?.athlete?.jersey).toBe('92');
+		});
+	});
 });

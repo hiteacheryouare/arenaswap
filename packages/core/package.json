@@ -2,6 +2,7 @@
 	"name": "@arenaswap/core",
 	"version": "2.0.0",
 	"description": "ESPN API client, game model, and preferences for ArenaSwap",
+	"type": "module",
 	"main": "./dist/index.js",
 	"types": "./dist/index.d.ts",
 	"exports": {
@@ -19,7 +20,7 @@
 		}
 	},
 	"scripts": {
-		"build": "tsc",
+		"build": "rolldown -c && tsc --emitDeclarationOnly",
 		"test": "npm run test:unit && npm run test:e2e",
 		"test:unit": "jest --passWithNoTests --selectProjects unit",
 		"test:e2e": "jest --passWithNoTests --selectProjects e2e",
@@ -33,6 +34,7 @@
 	"devDependencies": {
 		"@types/jest": "^30.0.0",
 		"jest": "^30.4.2",
+		"rolldown": "^1.2.5",
 		"typescript": "^7.0.2"
 	}
 }

@@ -934,6 +934,168 @@ $bootstrap-icons-font-dir: '/fonts';
 	min-width: 0;
 }
 
+// Who is starting and who leads the two teams, in the same light card family as the setup block
+// above it.
+//
+// The starters mirror the poster: two short names side by side, each under the crest it belongs to.
+// The leaders do not, and cannot. A football value runs to 21 characters — "14/23, 141 YDS, 1 INT"
+// — against four for baseball's ".276", and no half-width column fits both, so every leader gets
+// the full width of the card and the team is carried by colour instead of by position.
+.gd-pregame-starters {
+	display:               grid;
+	grid-template-columns: 1fr 1fr;
+	column-gap:            0.4rem;
+	padding:               0.3rem 0 0.24rem;
+}
+
+.gd-pregame-starter {
+	display:        flex;
+	flex-direction: column;
+	align-items:    center;
+	text-align:     center;
+	min-width:      0;
+	gap:            0.12rem;
+}
+
+// The disc is the team's colour, which is the only thing distinguishing two headshots on a card
+// that has no crests of its own. The hairline keeps a pale team colour from dissolving into the
+// card behind it. Grey underneath for a team whose colour ESPN sent as something unparseable.
+.gd-pregame-disc {
+	display:       inline-flex;
+	border-radius: 50%;
+	overflow:      hidden;
+	flex-shrink:   0;
+	background:    #e5e7eb;
+	box-shadow:    0 0 0 1px rgba(17, 24, 39, 0.14);
+}
+
+.gd-pregame-starter-shot {
+	width:  38px;
+	height: 38px;
+}
+
+// `cover` rather than the crest's own `contain`: a headshot is a 350x254 crop of a person, and
+// letterboxing one inside a circle leaves bands above and below the head.
+//
+// Nothing here restates `.crest-fallback`. _crest.scss lays the placeholder out and hides it with
+// `[data-crest-state='loaded'] > .crest-fallback`, which is the same specificity as a nested rule
+// here would be — so re-declaring `display: flex` wins on source order and pins the placeholder up
+// for good. Team logos never showed it because they are opaque; these headshots are transparent
+// PNGs, so the disc reads as a white halo around the player's head.
+.gd-pregame-disc-crest {
+	width:  100%;
+	height: 100%;
+
+	img { width: 100%; height: 100%; object-fit: cover; object-position: top center; }
+}
+
+.gd-pregame-starter-name {
+	font-size:     0.66rem;
+	font-weight:   600;
+	line-height:   1.2;
+	overflow-wrap: anywhere;
+}
+
+// The unlabelled fallback, for a sport that sends a pre-formatted line and no separate stats.
+.gd-pregame-starter-line {
+	font-size: 0.6rem;
+	color:     #4b5563;
+}
+
+.gd-pregame-starter-stats {
+	display:         flex;
+	justify-content: center;
+	gap:             0.6rem;
+	margin-top:      0.06rem;
+}
+
+.gd-pregame-stat {
+	display:        flex;
+	flex-direction: column;
+	align-items:    center;
+	line-height:    1.15;
+}
+
+.gd-pregame-stat-value {
+	font-size:   0.68rem;
+	font-weight: 600;
+	color:       #111827;
+}
+
+// Quiet enough that the number stays the thing being read, and uppercase so a two-letter label
+// does not read as an initial.
+.gd-pregame-stat-label {
+	font-size:      0.5rem;
+	font-weight:    600;
+	color:          #6b7280;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+}
+
+.gd-pregame-starter-status {
+	font-size:      0.54rem;
+	color:          #6b7280;
+	text-transform: uppercase;
+	letter-spacing: 0.02em;
+}
+
+.gd-pregame-leaders {
+	padding-top: 0.16rem;
+}
+
+.gd-pregame-category {
+	font-size:      0.54rem;
+	font-weight:    700;
+	color:          #6b7280;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	margin:         0.24rem 0 0.1rem;
+
+	&:first-child { margin-top: 0; }
+}
+
+// `1fr` on the name and `auto` on the value, deliberately: a truncated name is still readable and
+// a truncated stat is not, so the name is what gives way when a row runs out of room.
+.gd-pregame-leader-row {
+	display:               grid;
+	grid-template-columns: 20px 1.6rem 1fr auto;
+	align-items:           center;
+	column-gap:            0.3rem;
+	padding:               0.11rem 0.24rem 0.11rem 0.14rem;
+	border-radius:         0.2rem;
+
+	& + & { margin-top: 0.08rem; }
+}
+
+.gd-pregame-leader-shot {
+	width:  20px;
+	height: 20px;
+
+	// Only the size, so the hide rule in _crest.scss keeps its say.
+	.crest-fallback { font-size: 0.44rem; }
+}
+
+.gd-pregame-leader-team {
+	font-size:      0.56rem;
+	font-weight:    700;
+	letter-spacing: 0.02em;
+}
+
+.gd-pregame-leader-player {
+	font-size:     0.62rem;
+	color:         #374151;
+	overflow:      hidden;
+	text-overflow: ellipsis;
+	white-space:   nowrap;
+}
+
+.gd-pregame-leader-value {
+	font-size:   0.62rem;
+	font-weight: 600;
+	text-align:  right;
+	white-space: nowrap;
+}
+
 // Venue / broadcast / odds / weather, as one titled section rather than four stacked centred
 // lines. Takes the chart cards' treatment, not the breakdown's white card: everything below the
 // PowerScore math reads as one dark column of sections.

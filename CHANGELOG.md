@@ -1,5 +1,116 @@
 # Changelog
 
+## The pre-game screen was throwing away the answer — 2026-08-27
+
+A pre-game game gave you two crests, "vs", a start time and an odds line. For a baseball game the
+single most useful thing you could know in advance — who is pitching — was not on the screen, and
+neither was any team context at all.
+
+It was never a missing request. `EspnCompetitorSchema` declared five keys, and Zod's default strip
+mode silently deleted every other field on a competitor before the parser ever saw it. The probable
+starters, the team records and the statistical leaders were all in the payload we already fetch, and
+were discarded on every poll. Declaring them costs no additional ESPN calls; the detail screen now
+makes one fewer.
+
+### What the survey turned up
+The first pass sampled a single day, 2026-08-27, which put the NHL and the NBA in their offseason
+and made it look like they send none of this. Re-sampled at in-season dates, three things changed
+the shape of the work:
+
+- **Probables are not baseball-only.** Hockey sends `probableStartingGoalie` on every in-season
+  competitor sampled, with an empty record string and an `expected` / `confirmed` status baseball
+  never sends. Matching the shared `probableStarting` prefix covers both sports with one rule and
+  leaves room for a third
+- **The overall record is not consistently keyed.** It is `type: 'total'` in most leagues, `'ytd'`
+  in the NHL and `'standingsoverall'` in the AFL, so a lone `find` on `'total'` returns nothing at
+  all for hockey. Resolution is a preference chain ending in a positional fallback, since index 0
+  held the overall record in every league sampled
+- **Leaders change meaning with the event state.** The same MLB category reads `27` before a game,
+  `0-0` during it, and `"1-4, HR, 4 RBI, 2 R, BB"` after — that game's box line, repeated
+  identically across every category. Gating leaders on the pre-game state is correctness, not
+  economy
+
+Community documentation was no help: `probables` is undocumented in every public reference, and the
+one gist that describes `records[].type` lists a value that does not exist.
+
+### On the screen
+- **Probable starters mirror the poster**, away left and home right, each under the crest it belongs
+  to, with the player's headshot ringed in the team's colour. A game with only one side named leaves
+  the other half empty rather than re-centring the name it has — 14 of 98 upcoming games were
+  one-sided, and a lone centred name reads as belonging to neither team
+- **A pitcher's numbers say what they are.** ESPN pre-formats them as `(3-1, 4.23)`, which is two
+  numbers and no indication of what either one is. They are split back out of the separate `wins`,
+  `losses` and `ERA` stats — present on all 182 upcoming probables sampled — and rendered as two
+  labelled pairs, value over label, the way a box score heads a column. Hockey shows a goalie's name
+  and whether the start is confirmed, and no numbers at all, because a goalie's record field is
+  always empty and its statistics array is empty with it
+- Neither those numbers nor the leader values are set in Lekton any more. The monospace face is for
+  figures you scan down a column — a clock, a score — and these are read in place
+- **Team leaders get the full width of the card, not half of it.** They were mirrored too at first,
+  and it did not survive football: a value there runs to 21 characters — `14/23, 141 YDS, 1 INT` —
+  against four for baseball's `.276`, and no half-width column fits both. Every leader now gets one
+  full-width row grouped under its category, and the team is carried by a wash of its own colour
+  across the row rather than by which side of the card it sits on
+- Within a row, the name takes the slack and the value keeps its own width. A clipped name is still
+  readable; a clipped stat is not
+- **Headshots throughout**, 38px on a starter and 20px on a leader, from the same
+  `a.espncdn.com` host the team logos already come from. They are near-universal — 776 of 776 MLB
+  leaders, every goalie sampled — except in soccer, which sends one for roughly a leader in ten, so
+  the placeholder is a designed state rather than a failure: a circle in the team's colour carrying
+  the player's initials, holding the row's height and left edge exactly
+- **The disc a player stands on is the team's colour**, and the initials sit on the same disc rather
+  than bringing their own background. ESPN headshots are cut-outs with transparent backgrounds, so
+  the disc is what the player is actually standing on and it has to outlive the placeholder. The ink
+  on it follows the colour's luminance — white on a navy, near-black on a Bruins gold, since 0.1833
+  is where white stops clearing 4.5:1
+- Getting there took a wrong turn worth recording. The placeholder is laid out *and hidden* by
+  `_crest.scss`, and restating any of it in a call site is a silent override: a nested
+  `.crest-fallback` rule matches `[data-crest-state='loaded'] > .crest-fallback` on specificity and
+  beats it on source order, so the placeholder stayed in the layout and its white initials showed
+  through every loaded headshot. Team logos never exposed it because they are opaque
+- **Team leaders, one row per category**, capped at three. The proprietary composites are dropped by
+  a rule about how ESPN names things rather than a list of the names themselves, which is what keeps
+  `MLBRating` and basketball's `rating` out without anyone maintaining an inventory
+- **A per-game average is labelled as one.** The first version of this collapsed ESPN's
+  `pointsPerGame` into `points` on the theory that they were duplicates, which would have printed
+  the WNBA's 19.4 under the season-points label. Live data says the WNBA sends only the per-game
+  variants and the NBA only the totals — no league sends both — so the two stay distinct and the
+  per-game rows carry PPG, RPG and APG. Soccer's `goals` and `goalsLeaders` really are duplicates
+  and really are collapsed
+- **Labels are keyed by sport, not by category name.** `points` and `assists` mean one thing in
+  basketball and another in hockey, and `goals` is shared by hockey and soccer, so a flat map would
+  print a hockey points leader as a basketball one. A category we have no label for falls back to
+  ESPN's own abbreviation instead of rendering a raw key
+- Values render verbatim. The football ones carry their own English units and there is no version of
+  `"12 CAR, 68 YDS, 1 TD"` we could assemble ourselves
+- The block does not render at all for a sport that sends neither, so college football and college
+  hockey screens are unchanged
+
+### One fewer request
+Team records used to cost a per-game `/summary` fetch on every detail screen. They now come off the
+scoreboard, with `/summary` kept as the fallback for the leagues and dates that send none. That
+makes the request skippable before a game starts: the series dots are the only thing left on a
+pre-game screen the scoreboard cannot supply, so a soccer or regular-season baseball game fires no
+`/summary` call at all. Hockey and basketball fall through to the fetch on their own, which is what
+keeps them working before their season is underway.
+
+### Strings and coverage
+- Twenty-two new `detail` keys across all twelve locales: the two starter headings, the two starter
+  statuses, the leaders heading, the two pitcher stat labels, and fifteen stat abbreviations. A
+  Cypress spec renders every locale's string in place and measures it, since these are the strings
+  with the least room to grow into. Most keep the English abbreviation, which is not laziness —
+  German BBL and Japanese B.League print PTS, REB and AST in their own official box scores, and
+  Italian FIBS's own abbreviation for a home run is literally HR. Where a language does have its
+  own, it is used: German and French hockey take T / V / PKT and B / A / PTS from NHL.com's own
+  localized glossaries, and both Chinese locales use the native terms CPBL and CBA print
+- **30 new unit tests on the parse**, each built from a transcribed live payload — the NHL's `ytd`
+  record, college football's four record types, a goalie with an empty line, the duplicate category
+  pairs, and the state gate
+- 15 new component tests on the block, including both degradation cases, the sport-keyed label
+  lookup, the initials placeholder holding a row's geometry, and an assertion that no football value
+  is ever clipped. Two changed shape while being written: one claimed each starter shared a centre
+  line with its crest, which two grids with different padding cannot hold, and one measured the
+  leader label against a fixed-width column that the full-width redesign removed
 ## ArenaSwap reads your tabs and guesses — 2026-08-27
 
 Pairing a tab with a game was the one part of the workflow that scaled badly. The only control was

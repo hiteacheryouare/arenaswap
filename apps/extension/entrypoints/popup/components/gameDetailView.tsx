@@ -11,6 +11,7 @@ import GameBoostInput from './gameBoostInput';
 import GameInfoPanel from './gameInfoPanel';
 import PowerScoreBreakdown from './powerScoreBreakdown';
 import PregameSetup from './pregameSetup';
+import PregameStats from './pregameStats';
 import ProTip from './proTip';
 import { resolveStatusText } from './gameSituation';
 import {
@@ -215,6 +216,7 @@ const gameDetailView = ({
 						onRegistryChange={onRegistryChange}
 						formatTabLabel={formatTabLabel}
 					/>
+					<PregameStats game={game} />
 					<GameInfoPanel game={game} bettingPrefs={bettingPrefs} weatherPrefs={weatherPrefs} />
 				</>
 			) : (

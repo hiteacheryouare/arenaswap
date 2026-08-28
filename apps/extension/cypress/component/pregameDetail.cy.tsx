@@ -16,6 +16,12 @@ import ptPT from '../../locales/pt_PT.json';
 import zhCN from '../../locales/zh_CN.json';
 import zhTW from '../../locales/zh_TW.json';
 
+const shot = (id: string) => `https://a.espncdn.com/i/headshots/mlb/players/full/${id}.png`;
+
+// A 1x1 fully transparent PNG. Deterministic and offline, and transparent on purpose: an opaque
+// image would paint over a placeholder that failed to hide and the test would pass regardless.
+const transparentPixel = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==';
+
 const locales = { de, en, es, fil, fr, it: itLocale, ja, ko, pt_BR: ptBR, pt_PT: ptPT, zh_CN: zhCN, zh_TW: zhTW };
 
 const preGame: Game = {
@@ -200,12 +206,391 @@ describe('pre-game detail screen', () => {
 			const oneLine = parseFloat(style.lineHeight) + parseFloat(style.paddingBottom) + 1;
 			for (const [name, locale] of Object.entries(locales)) {
 				const detail = locale.detail as unknown as Record<string, string>;
-				for (const key of ['getReadyTipOff', 'getReadyKickoff', 'getReadyPuckDrop', 'getReadyFirstPitch', 'getReadyGametime']) {
+				const headingKeys = [
+					'getReadyTipOff', 'getReadyKickoff', 'getReadyPuckDrop', 'getReadyFirstPitch', 'getReadyGametime',
+					'probablePitchers', 'probableGoalies', 'teamLeaders',
+				];
+				for (const key of headingKeys) {
 					heading.textContent = detail[key] ?? '';
 					expect(heading.getBoundingClientRect().height, `${name}.${key} stays on one line`)
 						.to.be.at.most(oneLine);
 				}
 			}
+		});
+	});
+
+	describe('probable starters and team leaders', () => {
+		const pitchers: Game = {
+			...preGame,
+			id: 'mlb-pre',
+			league: 'mlb',
+			sportType: 'baseball',
+			homeTeam: {
+				...preGame.homeTeam,
+				name: 'New York Mets',
+				abbreviation: 'NYM',
+				record: '76-58',
+				probableStarter: { name: 'D. Peterson', winLoss: '7-7', era: '5.17', headshot: shot('40921') },
+				leaders: [
+					{ category: 'homeruns', fallbackLabel: 'HR', player: 'J. Soto', value: '33', headshot: shot('36969') },
+					{ category: 'rbis', fallbackLabel: 'RBI', player: 'P. Alonso', value: '83' },
+				],
+			},
+			awayTeam: {
+				...preGame.awayTeam,
+				name: 'Detroit Tigers',
+				abbreviation: 'DET',
+				record: '70-64',
+				probableStarter: { name: 'T. Skubal', winLoss: '13-4', era: '2.21', headshot: shot('39909') },
+				leaders: [
+					{ category: 'homeruns', fallbackLabel: 'HR', player: 'K. Carpenter', value: '28' },
+					{ category: 'rbis', fallbackLabel: 'RBI', player: 'S. Torkelson', value: '100' },
+				],
+			},
+		};
+
+		// The reason the leaders row is full width. Real values from a live NFL scoreboard.
+		const football: Game = {
+			...preGame,
+			id: 'nfl-pre',
+			sportType: 'football',
+			homeTeam: {
+				...preGame.homeTeam,
+				abbreviation: 'BUF',
+				record: '2-0',
+				leaders: [
+					{ category: 'passing', fallbackLabel: 'PASS', player: 'K. Allen', value: '10/12, 128 YDS, 1 TD' },
+					{ category: 'rushing', fallbackLabel: 'RUSH', player: 'J. Cook', value: '14 CAR, 56 YDS' },
+				],
+			},
+			awayTeam: {
+				...preGame.awayTeam,
+				abbreviation: 'PIT',
+				record: '1-1',
+				leaders: [
+					{ category: 'passing', fallbackLabel: 'PASS', player: 'A. Rodgers', value: '14/23, 141 YDS, 1 INT' },
+					{ category: 'rushing', fallbackLabel: 'RUSH', player: 'J. Warren', value: '9 CAR, 41 YDS, 1 TD' },
+				],
+			},
+		};
+
+		const goalies: Game = {
+			...preGame,
+			id: 'nhl-pre',
+			league: 'nhl',
+			sportType: 'hockey',
+			homeTeam: {
+				...preGame.homeTeam,
+				record: '24-16-4',
+				probableStarter: { name: 'J. Swayman', status: 'confirmed' },
+			},
+			awayTeam: {
+				...preGame.awayTeam,
+				record: '22-18-5',
+				probableStarter: { name: 'S. Montembeault', status: 'expected' },
+			},
+		};
+
+		it('shows both pitchers with their record and ERA', () => {
+			mountPre(pitchers);
+			cy.get('.gd-pregame-stats .gd-pregame-starter-name').should('have.length', 2);
+			cy.get('.gd-pregame-starter-name').eq(0).should('have.text', 'T. Skubal');
+			cy.get('.gd-pregame-starter-name').eq(1).should('have.text', 'D. Peterson');
+			cy.get('.gd-pregame-stat-value').eq(0).should('have.text', '13-4');
+			cy.get('.gd-pregame-stat-value').eq(1).should('have.text', '2.21');
+		});
+
+		// "(3-1, 4.23)" says nothing about what either number is.
+		it('labels each pitcher number under the value', () => {
+			mountPre(pitchers);
+			cy.get('.gd-pregame-stat').should('have.length', 4);
+			cy.get('.gd-pregame-stat-label').eq(0).should('have.text', 'W-L');
+			cy.get('.gd-pregame-stat-label').eq(1).should('have.text', 'ERA');
+			cy.get('.gd-pregame-stat').eq(0).then(([pair]: JQuery<HTMLElement>) => {
+				const value = pair.querySelector('.gd-pregame-stat-value')!.getBoundingClientRect();
+				const label = pair.querySelector('.gd-pregame-stat-label')!.getBoundingClientRect();
+				expect(label.top, 'label sits under its value').to.be.at.least(value.bottom - 1);
+			});
+		});
+
+		// Not Lekton. These are read as numbers in prose, not scanned down a column.
+		it('sets the pitcher and leader numbers in the body face', () => {
+			mountPre(pitchers);
+			cy.get('.gd-pregame-stat-value').eq(0).then(([el]: JQuery<HTMLElement>) => {
+				expect(getComputedStyle(el).fontFamily.toLowerCase()).to.not.include('lekton');
+			});
+			cy.get('.gd-pregame-leader-value').eq(0).then(([el]: JQuery<HTMLElement>) => {
+				expect(getComputedStyle(el).fontFamily.toLowerCase()).to.not.include('lekton');
+			});
+		});
+
+		// A sport that sends a pre-formatted line and no separate stats still shows the line.
+		it('falls back to the unlabelled ESPN line when there are no separate stats', () => {
+			mountPre({
+				...pitchers,
+				homeTeam: { ...pitchers.homeTeam, probableStarter: { name: 'D. Peterson', line: '(7-7, 5.17)' } },
+				awayTeam: { ...pitchers.awayTeam, probableStarter: undefined },
+			});
+			cy.get('.gd-pregame-starter-line').should('have.text', '(7-7, 5.17)');
+			cy.get('.gd-pregame-stat').should('not.exist');
+		});
+
+		it('keeps each starter on its own team side of the card', () => {
+			mountPre(pitchers);
+			cy.get('.gd-pregame-stats').then(([card]: JQuery<HTMLElement>) => {
+				const box = card.getBoundingClientRect();
+				const midline = box.left + box.width / 2;
+				cy.get('.gd-pregame-starter').eq(0).then(([away]: JQuery<HTMLElement>) => {
+					expect(away.getBoundingClientRect().right).to.be.at.most(midline + 1);
+				});
+				cy.get('.gd-pregame-starter').eq(1).then(([home]: JQuery<HTMLElement>) => {
+					expect(home.getBoundingClientRect().left).to.be.at.least(midline - 1);
+				});
+			});
+		});
+
+		it('holds the grid when only one side has a starter', () => {
+			mountPre({ ...pitchers, homeTeam: { ...pitchers.homeTeam, probableStarter: undefined } });
+			cy.get('.gd-pregame-starter-name').should('have.length', 1);
+			cy.get('.gd-pregame-starters').then(([row]: JQuery<HTMLElement>) => {
+				const columns = getComputedStyle(row).gridTemplateColumns.split(' ').map(parseFloat);
+				expect(columns).to.have.length(2);
+				expect(Math.abs(columns[0]! - columns[1]!)).to.be.at.most(1);
+			});
+		});
+
+		it('shows a goalie with a status and no stat line', () => {
+			mountPre(goalies);
+			cy.contains('.gd-setup-heading', 'Probable goalies').should('exist');
+			cy.get('.gd-pregame-starter-line').should('not.exist');
+			cy.get('.gd-pregame-stat').should('not.exist');
+			cy.get('.gd-pregame-starter-status').eq(0).should('have.text', 'Expected');
+			cy.get('.gd-pregame-starter-status').eq(1).should('have.text', 'Confirmed');
+		});
+
+		it('renders a headshot for each starter and leader', () => {
+			mountPre(pitchers);
+			cy.get('.gd-pregame-starter-shot img').should('have.length', 2);
+			cy.get('.gd-pregame-starter-shot img').eq(0).should('have.attr', 'src').and('include', '39909');
+			cy.get('.gd-pregame-leader-shot').should('have.length', 4);
+		});
+
+		// Soccer sends a headshot for roughly one leader in ten, so the placeholder is the common
+		// case there and has to hold the row's shape rather than collapse it.
+		it('falls back to team-coloured initials when there is no headshot', () => {
+			mountPre(pitchers);
+			cy.get('.gd-pregame-leader-row').eq(0).within(() => {
+				cy.get('img').should('not.exist');
+				cy.get('.crest-fallback').should('have.text', 'KC');
+			});
+			cy.get('.gd-pregame-leader-row').eq(0).then(([withFallback]: JQuery<HTMLElement>) => {
+				cy.get('.gd-pregame-leader-row').eq(1).then(([withImage]: JQuery<HTMLElement>) => {
+					const a = withFallback.getBoundingClientRect();
+					const bBox = withImage.getBoundingClientRect();
+					expect(Math.abs(a.height - bBox.height), 'placeholder row matches image row height').to.be.at.most(1);
+					expect(Math.abs(a.left - bBox.left), 'and its left edge').to.be.at.most(1);
+				});
+			});
+		});
+
+
+		// ESPN headshots are transparent PNGs, so a placeholder left in the layout behind one reads
+		// as a white halo around the player's head. That is what happened: a nested `.crest-fallback`
+		// rule here matched the hide rule in _crest.scss on specificity and beat it on source order.
+		it('hides the initials once a headshot has loaded', () => {
+			mountPre({
+				...pitchers,
+				awayTeam: {
+					...pitchers.awayTeam,
+					probableStarter: { name: 'T. Skubal', winLoss: '13-4', era: '2.21', headshot: transparentPixel },
+					leaders: [{ category: 'homeruns', fallbackLabel: 'HR', player: 'K. Carpenter', value: '28', headshot: transparentPixel }],
+				},
+				homeTeam: {
+					...pitchers.homeTeam,
+					probableStarter: { name: 'D. Peterson', winLoss: '7-7', era: '5.17', headshot: transparentPixel },
+					leaders: [{ category: 'homeruns', fallbackLabel: 'HR', player: 'J. Soto', value: '33', headshot: transparentPixel }],
+				},
+			});
+			cy.get('.gd-pregame-starter-shot .crest').should('have.attr', 'data-crest-state', 'loaded');
+			cy.get('.gd-pregame-stats .crest-fallback').should('have.length', 4);
+			cy.get('.gd-pregame-stats .crest-fallback').each(($el: JQuery<HTMLElement>) => {
+				expect(getComputedStyle($el[0]!).display, 'placeholder is out of the layout').to.equal('none');
+			});
+		});
+
+		// The other half of the same rule: a starter with no headshot must still show its initials.
+		it('keeps the initials when there is no headshot to load', () => {
+			mountPre(goalies);
+			cy.get('.gd-pregame-starter-shot .crest').should('have.attr', 'data-crest-state', 'missing');
+			cy.get('.gd-pregame-starter-shot .crest-fallback').each(($el: JQuery<HTMLElement>) => {
+				expect(getComputedStyle($el[0]!).display).to.not.equal('none');
+			});
+		});
+
+		// The disc has to survive the placeholder being hidden: it is the team colour behind a
+		// transparent cut-out, not a property of the initials that happened to show through.
+		it('keeps the team-coloured disc behind a loaded headshot', () => {
+			mountPre({
+				...pitchers,
+				awayTeam: { ...pitchers.awayTeam, probableStarter: { name: 'T. Skubal', winLoss: '13-4', era: '2.21', headshot: transparentPixel } },
+				homeTeam: { ...pitchers.homeTeam, probableStarter: { name: 'D. Peterson', winLoss: '7-7', era: '5.17', headshot: transparentPixel } },
+			});
+			cy.get('.gd-pregame-starter-shot .crest').should('have.attr', 'data-crest-state', 'loaded');
+			cy.get('.gd-pregame-starter-shot').eq(0).then(([away]: JQuery<HTMLElement>) => {
+				const disc = getComputedStyle(away).backgroundColor;
+				expect(disc, 'disc is painted, not the plain card').to.not.equal('rgba(0, 0, 0, 0)');
+				expect(disc, 'and not the unparseable-colour grey').to.not.equal('rgb(229, 231, 235)');
+				cy.get('.gd-pregame-starter-shot').eq(1).then(([home]: JQuery<HTMLElement>) => {
+					expect(getComputedStyle(home).backgroundColor, 'each side gets its own colour').to.not.equal(disc);
+				});
+			});
+		});
+
+		it('gives a leader row the same coloured disc', () => {
+			mountPre(pitchers);
+			cy.get('.gd-pregame-leader-shot').eq(0).then(([first]: JQuery<HTMLElement>) => {
+				expect(getComputedStyle(first).backgroundColor).to.not.equal('rgba(0, 0, 0, 0)');
+				cy.get('.gd-pregame-leader-shot').eq(1).then(([second]: JQuery<HTMLElement>) => {
+					expect(getComputedStyle(second).backgroundColor)
+						.to.not.equal(getComputedStyle(first).backgroundColor);
+				});
+			});
+		});
+
+		// White initials on a gold disc are unreadable, so the ink follows the disc's luminance.
+		it('darkens the initials on a pale team colour', () => {
+			const gold = {
+				...goalies,
+				homeTeam: { ...goalies.homeTeam, color: '#FFB81C', alternateColor: '#FFB81C' },
+				awayTeam: { ...goalies.awayTeam, color: '#0C2340', alternateColor: '#0C2340' },
+			};
+			mountPre(gold);
+			cy.get('.gd-pregame-starter-shot .crest-fallback').eq(1).then(([onGold]: JQuery<HTMLElement>) => {
+				expect(getComputedStyle(onGold).color).to.equal('rgb(17, 24, 39)');
+			});
+			cy.get('.gd-pregame-starter-shot .crest-fallback').eq(0).then(([onNavy]: JQuery<HTMLElement>) => {
+				expect(getComputedStyle(onNavy).color).to.equal('rgb(255, 255, 255)');
+			});
+		});
+		it('tints each leader row with its own team colour', () => {
+			mountPre(pitchers);
+			cy.get('.gd-pregame-leader-row').eq(0).should('have.attr', 'style').and('include', 'linear-gradient');
+			cy.get('.gd-pregame-leader-team').eq(0).should('have.text', 'DET');
+			cy.get('.gd-pregame-leader-team').eq(1).should('have.text', 'NYM');
+			// Away and home must not resolve to the same tint, or the colour carries no information.
+			cy.get('.gd-pregame-leader-row').eq(0).then(([away]: JQuery<HTMLElement>) => {
+				cy.get('.gd-pregame-leader-row').eq(1).then(([home]: JQuery<HTMLElement>) => {
+					expect(getComputedStyle(away).backgroundImage).to.not.equal(getComputedStyle(home).backgroundImage);
+				});
+			});
+		});
+
+		it('renders one row per team per category, grouped under the category', () => {
+			mountPre(pitchers);
+			cy.contains('.gd-setup-heading', 'Team leaders').should('exist');
+			cy.get('.gd-pregame-category').should('have.length', 2);
+			cy.get('.gd-pregame-category').eq(0).should('have.text', 'HR');
+			cy.get('.gd-pregame-leader-row').should('have.length', 4);
+			cy.get('.gd-pregame-leader-value').eq(0).should('have.text', '28');
+			cy.get('.gd-pregame-leader-value').eq(1).should('have.text', '33');
+		});
+
+		// The whole reason for the full-width row. A clipped stat is unreadable in a way a clipped
+		// name is not, so the value is what must never be cut.
+		it('never truncates a football stat value', () => {
+			mountPre(football);
+			cy.get('.gd-pregame-leader-value').each(($el: JQuery<HTMLElement>) => {
+				const [el] = $el;
+				expect(el!.scrollWidth, `${el!.textContent} renders whole`).to.be.at.most(el!.clientWidth + 1);
+			});
+			cy.get('.gd-pregame-leader-value').eq(0).should('have.text', '14/23, 141 YDS, 1 INT');
+		});
+
+		it('keeps a football row inside the card', () => {
+			mountPre(football);
+			cy.get('.gd-pregame-stats').then(([card]: JQuery<HTMLElement>) => {
+				const limit = card.getBoundingClientRect().right;
+				cy.get('.gd-pregame-leader-row').each(($el: JQuery<HTMLElement>) => {
+					expect($el[0]!.getBoundingClientRect().right).to.be.at.most(limit);
+				});
+			});
+		});
+
+		it('labels a category by sport, not by ESPN name alone', () => {
+			const hockeyPoints = {
+				...goalies,
+				homeTeam: { ...goalies.homeTeam, leaders: [{ category: 'points', fallbackLabel: 'Points', player: 'D. Pastrnak', value: '69' }] },
+			};
+			mountPre(hockeyPoints);
+			cy.get('.gd-pregame-category').last().should('have.text', 'PTS');
+		});
+
+		it('falls back to the ESPN abbreviation for a category we have no label for', () => {
+			const unknown = {
+				...pitchers,
+				homeTeam: { ...pitchers.homeTeam, leaders: [{ category: 'stolenbases', fallbackLabel: 'SB', player: 'F. Lindor', value: '29' }] },
+				awayTeam: { ...pitchers.awayTeam, leaders: [] },
+			};
+			mountPre(unknown);
+			cy.get('.gd-pregame-category').last().should('have.text', 'SB');
+		});
+
+		it('renders nothing at all when a sport sends neither', () => {
+			mountPre(preGame);
+			cy.get('.gd-pregame-stats').should('not.exist');
+			cy.get('.gd-setup').should('exist');
+		});
+
+		it('prefers the scoreboard record over a summary fetch on the poster', () => {
+			mountPre(pitchers);
+			cy.get('.gd-poster-record').eq(0).should('have.text', '70-64');
+			cy.get('.gd-poster-record').eq(1).should('have.text', '76-58');
+		});
+
+
+		// The two labels share one half-card row, so a locale that goes native — ja ships 勝敗 and
+		// 防御率 where most ship W-L and ERA — has to fit both without wrapping the pair.
+		it('fits every locale pitcher label beside its partner', () => {
+			mountPre(pitchers);
+			// The budget is the half-card the starter gets, not the row's own shrink-to-fit width:
+			// the row grows with its content, so measuring it before the swap measures English.
+			cy.get('.gd-pregame-starter').eq(0).then(([column]: JQuery<HTMLElement>) => {
+				const budget = column.getBoundingClientRect().width;
+				const row = column.querySelector<HTMLElement>('.gd-pregame-starter-stats')!;
+				const labels = row.querySelectorAll<HTMLElement>('.gd-pregame-stat-label');
+				const [recordLabel, eraLabel] = labels;
+				const baseHeight = recordLabel!.getBoundingClientRect().height;
+				for (const [name, locale] of Object.entries(locales)) {
+					const detail = locale.detail as unknown as Record<string, string>;
+					recordLabel!.textContent = detail.pitcherRecordLabel ?? '';
+					eraLabel!.textContent = detail.pitcherEraLabel ?? '';
+					expect(row.scrollWidth, `${name} pitcher labels fit the row`).to.be.at.most(Math.ceil(budget));
+					for (const label of labels) {
+						expect(label.getBoundingClientRect().height, `${name} label stays on one line`)
+							.to.be.at.most(baseHeight + 1);
+					}
+				}
+			});
+		});
+		it('fits every locale category label on one line', () => {
+			mountPre(pitchers);
+			cy.get('.gd-pregame-category').eq(0).then(([label]: JQuery<HTMLElement>) => {
+				const oneLine = parseFloat(getComputedStyle(label).lineHeight) + 1;
+				const keys = [
+					'leaderAvg', 'leaderHomeRuns', 'leaderRbis', 'leaderPoints', 'leaderRebounds',
+					'leaderAssists', 'leaderGoals', 'leaderHockeyAssists', 'leaderHockeyPoints',
+					'leaderPointsPerGame', 'leaderReboundsPerGame', 'leaderAssistsPerGame',
+					'leaderPassing', 'leaderRushing', 'leaderReceiving',
+				];
+				for (const [name, locale] of Object.entries(locales)) {
+					const detail = locale.detail as unknown as Record<string, string>;
+					for (const key of keys) {
+						label.textContent = detail[key] ?? '';
+						expect(label.getBoundingClientRect().height, `${name}.${key} stays on one line`)
+							.to.be.at.most(oneLine);
+					}
+				}
+			});
 		});
 	});
 });

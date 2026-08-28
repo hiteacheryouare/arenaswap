@@ -2,7 +2,7 @@ import type { Game } from '@arenaswap/core/types';
 import type { SeriesInfo } from './useSummaryData';
 import { resolveTeamColorPair } from '@arenaswap/ui/src/components/colorUtils';
 
-const seriesSports = new Set(['baseball', 'basketball', 'hockey', 'softball']);
+export const seriesSports = new Set(['baseball', 'basketball', 'hockey', 'softball']);
 
 interface seriesDotsProps {
 	info: SeriesInfo;

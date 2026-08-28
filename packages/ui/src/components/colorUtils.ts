@@ -58,6 +58,13 @@ const pickPair = (ap: string, aa: string, hp: string, ha: string): [string, stri
 	return colorDistance(best[0], best[1]) > colorDistance(ap, hp) ? best : [ap, hp];
 };
 
+// White on a team colour is fine for the navies and reds and unreadable on a gold. 0.1833 is where
+// white stops clearing 4.5:1 — contrast is 1.05 / (L + 0.05) — and these labels are too small to
+// qualify for the 3:1 large-text allowance.
+export const readableInkOn = (background: string, light = '#ffffff', dark = '#111827'): string => (
+	hexToRgb(background) && luminance(background) > 0.1833 ? dark : light
+);
+
 export const resolveTeamColorPair = (
 	away: { color?: string; alternateColor?: string },
 	home: { color?: string; alternateColor?: string },

@@ -23,6 +23,49 @@ const EspnTeamSchema = zod.object({
 	alternateColor: zod.string().optional(),
 });
 
+const EspnAthleteRefSchema = zod.object({
+	displayName: zod.string().optional(),
+	shortName: zod.string().optional(),
+	jersey: espnNumericText.optional(),
+	headshot: zod.string().optional(),
+});
+
+// Baseball sends `probableStartingPitcher`, hockey `probableStartingGoalie`, and no other sport
+// sends anything here. `record` is the athlete's own line, pre-formatted by ESPN as "(7-7, 5.17)"
+// for a pitcher and always empty for a goalie. `status` is hockey-only.
+const EspnProbableSchema = zod.object({
+	name: zod.string().optional(),
+	athlete: EspnAthleteRefSchema.optional(),
+	record: zod.string().optional(),
+	status: zod.object({ type: zod.string().optional() }).optional(),
+	// Declared but unread: a pitcher's W/L/ERA already arrives assembled in `record`, and whether
+	// a goalie carries GAA here cannot be checked until the NHL season starts.
+	statistics: zod.array(zod.object({
+		name: zod.string().optional(),
+		abbreviation: zod.string().optional(),
+		displayValue: espnNumericText.optional(),
+	})).catch([]).optional(),
+});
+
+// `type` is open-ended: `total` in most leagues, `ytd` in the NHL, `standingsoverall` in the AFL,
+// alongside `home`, `road`, `vsconf`, `homerecord` and `awayrecord`.
+const EspnRecordEntrySchema = zod.object({
+	name: zod.string().optional(),
+	type: zod.string().optional(),
+	summary: zod.string().optional(),
+	displayValue: zod.string().optional(),
+});
+
+const EspnLeaderCategorySchema = zod.object({
+	name: zod.string().optional(),
+	shortDisplayName: zod.string().optional(),
+	abbreviation: zod.string().optional(),
+	leaders: zod.array(zod.object({
+		displayValue: espnNumericText.optional(),
+		athlete: EspnAthleteRefSchema.optional(),
+	})).catch([]).optional(),
+});
+
 const EspnCompetitorSchema = zod.object({
 	id: espnNumericText,
 	homeAway: zod.string(),
@@ -30,6 +73,12 @@ const EspnCompetitorSchema = zod.object({
 	// Soccer shootouts only, where `score` stays frozen at the 120-minute scoreline.
 	shootoutScore: zod.number().optional(),
 	team: EspnTeamSchema,
+	probables: zod.array(EspnProbableSchema).catch([]).optional(),
+	records: zod.array(EspnRecordEntrySchema).catch([]).optional(),
+	// `.catch` sits on the array rather than the row because cricket returns a `$ref` string here
+	// where every other sport returns an array. Not a league we ship, but adding one must not be
+	// able to take the whole competitor down with it.
+	leaders: zod.array(EspnLeaderCategorySchema).catch([]).optional(),
 });
 
 const EspnCompetitionStatusSchema = zod.object({
@@ -219,6 +268,10 @@ export const parseTeams = (raw: unknown): EspnTeamsResult => {
 export type EspnLeagueLogo = zod.infer<typeof EspnLeagueLogoSchema>;
 export type EspnLeague = zod.infer<typeof EspnLeagueSchema>;
 export type EspnTeam = zod.infer<typeof EspnTeamSchema>;
+export type EspnAthleteRef = zod.infer<typeof EspnAthleteRefSchema>;
+export type EspnProbable = zod.infer<typeof EspnProbableSchema>;
+export type EspnRecordEntry = zod.infer<typeof EspnRecordEntrySchema>;
+export type EspnLeaderCategory = zod.infer<typeof EspnLeaderCategorySchema>;
 export type EspnCompetitor = zod.infer<typeof EspnCompetitorSchema>;
 export type EspnCompetitionStatus = zod.infer<typeof EspnCompetitionStatusSchema>;
 export type EspnSituation = zod.infer<typeof EspnSituationSchema>;

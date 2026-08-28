@@ -6,13 +6,15 @@ import {
 } from './espnSchemas';
 import type {
 	EspnCompetition,
+	EspnCompetitor,
 	EspnEvent,
+	EspnProbable,
 	EspnOddsProvider,
 	EspnScoreboardResponse,
 	EspnSituation,
 } from './espnSchemas';
 import { logWarn } from './logger';
-import type { Game, GameCondition, GameOdds, LeagueConfig, LeagueId, LeagueLogoMap } from './types';
+import type { Game, GameCondition, GameOdds, LeagueConfig, LeagueId, LeagueLogoMap, ProbableStarter, TeamLeader } from './types';
 
 const espnBase = 'https://site.api.espn.com/apis/site/v2/sports';
 
@@ -182,6 +184,108 @@ const parseOdds = (competition: EspnCompetition): GameOdds | undefined => {
 	return parsed;
 };
 
+// `type` is not a stable discriminator across leagues. The overall record is `total` in most of
+// them, `ytd` in the NHL and `standingsoverall` in the AFL, so a lone `find` on `total` silently
+// returns nothing for hockey. Index 0 held the overall record in every league sampled, which is
+// all the positional fallback rests on.
+const overallRecordTypes = ['total', 'ytd', 'standingsoverall'];
+
+const parseCompetitorRecord = (competitor: EspnCompetitor): string | undefined => {
+	const records = competitor.records;
+	if (!records || records.length === 0) return undefined;
+	const overall = overallRecordTypes
+		.map(type => records.find(entry => entry.type === type))
+		.find(entry => entry !== undefined)
+		?? records[0];
+	// `summary` beats `displayValue` because the NHL appends standings points to the latter —
+	// "28-28-10, 66 PTS", twice the width of the column it has to sit in.
+	return (overall?.summary ?? overall?.displayValue ?? '').trim() || undefined;
+};
+
+// Baseball's `probableStartingPitcher` and hockey's `probableStartingGoalie` are the only two
+// values ESPN sends. Matching the shared prefix rather than either name means a third sport can
+// start shipping a starter without needing a change here.
+const starterStat = (probable: EspnProbable, name: string): string | undefined => (
+	probable.statistics?.find(stat => stat.name === name)?.displayValue?.trim() || undefined
+);
+
+const parseProbableStarter = (competitor: EspnCompetitor): ProbableStarter | undefined => {
+	const probable = competitor.probables?.find(entry => entry.name?.startsWith('probableStarting'));
+	if (!probable) return undefined;
+	const name = probable.athlete?.shortName?.trim() || probable.athlete?.displayName?.trim();
+	if (!name) return undefined;
+	const status = probable.status?.type?.trim().toLowerCase();
+	const wins = starterStat(probable, 'wins');
+	const losses = starterStat(probable, 'losses');
+	return {
+		name,
+		headshot: probable.athlete?.headshot?.trim() || undefined,
+		winLoss: wins !== undefined && losses !== undefined ? `${wins}-${losses}` : undefined,
+		era: starterStat(probable, 'ERA'),
+		// Empty for every goalie sampled; a pitcher's arrives assembled as "(7-7, 5.17)".
+		line: probable.record?.trim() || undefined,
+		status: status === 'expected' || status === 'confirmed' ? status : undefined,
+	};
+};
+
+// Soccer sends the same stat twice, as `goals` and `goalsLeaders`, so the suffix comes off before
+// anything dedupes on the result. `Leaders` is listed before `Leader` because alternation is tried
+// left to right.
+//
+// `PerGame` is deliberately NOT stripped. No league was found sending both a total and a per-game
+// variant of the same stat, so collapsing them buys nothing — and it would relabel the WNBA's
+// `pointsPerGame` of 19.4 as season points, which is a different number.
+const normalizeLeaderCategory = (name: string): string => (
+	name.replace(/(Leaders|Leader)$/, '').toLowerCase()
+);
+
+// The proprietary composites — MLB's `MLBRating` (552.8) and basketball's `rating`
+// ("15 PTS, 9 REB, 8 AST, 3 BLK") — are useless in a column this narrow. A rule about how ESPN
+// names things outlives a list of the names themselves.
+const isCompositeRating = (name: string): boolean => /rating$/i.test(name);
+
+const maxLeadersPerTeam = 3;
+
+const parseTeamLeaders = (competitor: EspnCompetitor): TeamLeader[] | undefined => {
+	const leaders: TeamLeader[] = [];
+	const seen = new Set<string>();
+
+	for (const cat of competitor.leaders ?? []) {
+		const name = cat.name?.trim();
+		if (!name || isCompositeRating(name)) continue;
+
+		const category = normalizeLeaderCategory(name);
+		if (seen.has(category)) continue;
+
+		const top = cat.leaders?.[0];
+		const player = top?.athlete?.shortName?.trim() || top?.athlete?.displayName?.trim();
+		const value = top?.displayValue?.trim();
+		if (!player || !value) continue;
+
+		seen.add(category);
+		// `value` goes through verbatim. ESPN bakes English into the football ones — "12 CAR, 68 YDS,
+		// 1 TD" — and there is no version of that string we could assemble ourselves.
+		leaders.push({
+			category,
+			fallbackLabel: cat.shortDisplayName?.trim() || name,
+			player,
+			value,
+			headshot: top?.athlete?.headshot?.trim() || undefined,
+		});
+		if (leaders.length === maxLeadersPerTeam) break;
+	}
+
+	return leaders.length > 0 ? leaders : undefined;
+};
+
+// Spread into both team literals below, the way resolveTeamColors already is. Records ride every
+// status; the other two are pre-game only.
+const parseTeamContext = (competitor: EspnCompetitor, state: Game['status']) => ({
+	record: parseCompetitorRecord(competitor),
+	probableStarter: state === 'pre' ? parseProbableStarter(competitor) : undefined,
+	leaders: state === 'pre' ? parseTeamLeaders(competitor) : undefined,
+});
+
 const parseWeather = (event: EspnEvent): GameCondition | undefined => {
 	const w = event.weather;
 	if (!w || typeof w.temperature !== 'number') return undefined;
@@ -290,6 +394,7 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 			shootoutScore: home.shootoutScore,
 			logo: home.team.logo ?? undefined,
 			...resolveTeamColors(home.team.color, home.team.alternateColor),
+			...parseTeamContext(home, state),
 		},
 		awayTeam: {
 			id: away.id,
@@ -299,6 +404,7 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 			shootoutScore: away.shootoutScore,
 			logo: away.team.logo ?? undefined,
 			...resolveTeamColors(away.team.color, away.team.alternateColor),
+			...parseTeamContext(away, state),
 		},
 		venueName: comp.venue?.fullName ?? comp.venue?.name ?? undefined,
 		period: status.period ?? 1,
