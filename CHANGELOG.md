@@ -58,11 +58,16 @@ one gist that describes `records[].type` lists a value that does not exist.
   leaders, every goalie sampled — except in soccer, which sends one for roughly a leader in ten, so
   the placeholder is a designed state rather than a failure: a circle in the team's colour carrying
   the player's initials, holding the row's height and left edge exactly
-- The placeholder is laid out and hidden entirely by `_crest.scss`. Restating any of it here is what
-  put a white halo around every player's head for a while: a nested `.crest-fallback` rule matches
-  `[data-crest-state='loaded'] > .crest-fallback` on specificity and beats it on source order, so
-  the disc stayed in the layout behind a headshot. Team logos never showed the bug because they are
-  opaque; these are transparent PNGs
+- **The disc a player stands on is the team's colour**, and the initials sit on the same disc rather
+  than bringing their own background. ESPN headshots are cut-outs with transparent backgrounds, so
+  the disc is what the player is actually standing on and it has to outlive the placeholder. The ink
+  on it follows the colour's luminance — white on a navy, near-black on a Bruins gold, since 0.1833
+  is where white stops clearing 4.5:1
+- Getting there took a wrong turn worth recording. The placeholder is laid out *and hidden* by
+  `_crest.scss`, and restating any of it in a call site is a silent override: a nested
+  `.crest-fallback` rule matches `[data-crest-state='loaded'] > .crest-fallback` on specificity and
+  beats it on source order, so the placeholder stayed in the layout and its white initials showed
+  through every loaded headshot. Team logos never exposed it because they are opaque
 - **Team leaders, one row per category**, capped at three. The proprietary composites are dropped by
   a rule about how ESPN names things rather than a list of the names themselves, which is what keeps
   `MLBRating` and basketball's `rating` out without anyone maintaining an inventory

@@ -957,16 +957,21 @@ $bootstrap-icons-font-dir: '/fonts';
 	gap:            0.12rem;
 }
 
-// The ring is the team's colour, which is the only thing distinguishing two headshots on a card
-// that has no crests of its own.
-.gd-pregame-starter-shot {
-	width:         38px;
-	height:        38px;
-	border:        2px solid #d1d5db;
+// The disc is the team's colour, which is the only thing distinguishing two headshots on a card
+// that has no crests of its own. The hairline keeps a pale team colour from dissolving into the
+// card behind it. Grey underneath for a team whose colour ESPN sent as something unparseable.
+.gd-pregame-disc {
+	display:       inline-flex;
 	border-radius: 50%;
 	overflow:      hidden;
-	background:    #ffffff;
 	flex-shrink:   0;
+	background:    #e5e7eb;
+	box-shadow:    0 0 0 1px rgba(17, 24, 39, 0.14);
+}
+
+.gd-pregame-starter-shot {
+	width:  38px;
+	height: 38px;
 }
 
 // `cover` rather than the crest's own `contain`: a headshot is a 350x254 crop of a person, and
@@ -977,8 +982,7 @@ $bootstrap-icons-font-dir: '/fonts';
 // here would be — so re-declaring `display: flex` wins on source order and pins the placeholder up
 // for good. Team logos never showed it because they are opaque; these headshots are transparent
 // PNGs, so the disc reads as a white halo around the player's head.
-.gd-pregame-shot-img,
-.gd-pregame-leader-shot {
+.gd-pregame-disc-crest {
 	width:  100%;
 	height: 100%;
 
@@ -1064,12 +1068,8 @@ $bootstrap-icons-font-dir: '/fonts';
 }
 
 .gd-pregame-leader-shot {
-	width:         20px;
-	height:        20px;
-	border-radius: 50%;
-	overflow:      hidden;
-	background:    #ffffff;
-	box-shadow:    0 0 0 1px rgba(17, 24, 39, 0.14);
+	width:  20px;
+	height: 20px;
 
 	// Only the size, so the hide rule in _crest.scss keeps its say.
 	.crest-fallback { font-size: 0.44rem; }

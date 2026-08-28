@@ -2,7 +2,7 @@ import { i18n } from '#i18n';
 import { Fragment } from 'react';
 import type { Game, ProbableStarter, Team, TeamLeader } from '@arenaswap/core/types';
 import Crest from '@arenaswap/ui/src/components/crest';
-import { resolveTeamColorPair } from '@arenaswap/ui/src/components/colorUtils';
+import { readableInkOn, resolveTeamColorPair } from '@arenaswap/ui/src/components/colorUtils';
 import { leaderLabelKey, playerInitials, starterHeadingKey } from './pregameLabels';
 
 interface pregameStatsProps {
@@ -22,22 +22,29 @@ const rowWash = (color: string): string | undefined => (
 	isHex(color) ? `linear-gradient(90deg, ${color}28, ${color}00 72%)` : undefined
 );
 
-// Soccer sends a headshot for barely one leader in ten, so the placeholder is the common case
-// there rather than a rare failure. Crest already does the URL-keyed retry and the text fallback;
-// the initials go where a team abbreviation would.
+// The team colour lives on the disc, not on the placeholder. ESPN headshots are cut-outs with
+// transparent backgrounds, so the disc is what the player is standing on — and it has to survive
+// the placeholder being hidden the moment the image lands.
+//
+// Soccer sends a headshot for barely one leader in ten, so the initials are the common case there
+// rather than a rare failure. Crest already does the URL-keyed retry and the text fallback.
 const PlayerShot = ({ url, name, color, className }: {
 	url?: string;
 	name: string;
 	color: string;
 	className: string;
 }) => (
-	<Crest
-		logo={url}
-		abbreviation={playerInitials(name)}
-		className={className}
-		fallbackStyle={isHex(color) ? { background: color, color: '#ffffff' } : undefined}
-		loading='lazy'
-	/>
+	<span className={`gd-pregame-disc ${className}`} style={isHex(color) ? { background: color } : undefined}>
+		<Crest
+			logo={url}
+			abbreviation={playerInitials(name)}
+			className='gd-pregame-disc-crest'
+			// Transparent so the disc shows through, and the initials take whichever ink stays
+			// readable on it.
+			fallbackStyle={{ background: 'transparent', color: readableInkOn(color) }}
+			loading='lazy'
+		/>
+	</span>
 );
 
 const hasLabelledStats = (starter: ProbableStarter): boolean => (
@@ -61,9 +68,7 @@ const StarterColumn = ({ starter, color }: { starter?: ProbableStarter; color: s
 	<div className='gd-pregame-starter'>
 		{starter && (
 			<>
-				<div className='gd-pregame-starter-shot' style={{ borderColor: isHex(color) ? color : undefined }}>
-					<PlayerShot url={starter.headshot} name={starter.name} color={color} className='gd-pregame-shot-img' />
-				</div>
+				<PlayerShot url={starter.headshot} name={starter.name} color={color} className='gd-pregame-starter-shot' />
 				<div className='gd-pregame-starter-name'>{starter.name}</div>
 				{hasLabelledStats(starter) ? (
 					<div className='gd-pregame-starter-stats'>

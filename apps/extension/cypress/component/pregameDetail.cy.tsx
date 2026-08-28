@@ -426,6 +426,52 @@ describe('pre-game detail screen', () => {
 				expect(getComputedStyle($el[0]!).display).to.not.equal('none');
 			});
 		});
+
+		// The disc has to survive the placeholder being hidden: it is the team colour behind a
+		// transparent cut-out, not a property of the initials that happened to show through.
+		it('keeps the team-coloured disc behind a loaded headshot', () => {
+			mountPre({
+				...pitchers,
+				awayTeam: { ...pitchers.awayTeam, probableStarter: { name: 'T. Skubal', winLoss: '13-4', era: '2.21', headshot: transparentPixel } },
+				homeTeam: { ...pitchers.homeTeam, probableStarter: { name: 'D. Peterson', winLoss: '7-7', era: '5.17', headshot: transparentPixel } },
+			});
+			cy.get('.gd-pregame-starter-shot .crest').should('have.attr', 'data-crest-state', 'loaded');
+			cy.get('.gd-pregame-starter-shot').eq(0).then(([away]: JQuery<HTMLElement>) => {
+				const disc = getComputedStyle(away).backgroundColor;
+				expect(disc, 'disc is painted, not the plain card').to.not.equal('rgba(0, 0, 0, 0)');
+				expect(disc, 'and not the unparseable-colour grey').to.not.equal('rgb(229, 231, 235)');
+				cy.get('.gd-pregame-starter-shot').eq(1).then(([home]: JQuery<HTMLElement>) => {
+					expect(getComputedStyle(home).backgroundColor, 'each side gets its own colour').to.not.equal(disc);
+				});
+			});
+		});
+
+		it('gives a leader row the same coloured disc', () => {
+			mountPre(pitchers);
+			cy.get('.gd-pregame-leader-shot').eq(0).then(([first]: JQuery<HTMLElement>) => {
+				expect(getComputedStyle(first).backgroundColor).to.not.equal('rgba(0, 0, 0, 0)');
+				cy.get('.gd-pregame-leader-shot').eq(1).then(([second]: JQuery<HTMLElement>) => {
+					expect(getComputedStyle(second).backgroundColor)
+						.to.not.equal(getComputedStyle(first).backgroundColor);
+				});
+			});
+		});
+
+		// White initials on a gold disc are unreadable, so the ink follows the disc's luminance.
+		it('darkens the initials on a pale team colour', () => {
+			const gold = {
+				...goalies,
+				homeTeam: { ...goalies.homeTeam, color: '#FFB81C', alternateColor: '#FFB81C' },
+				awayTeam: { ...goalies.awayTeam, color: '#0C2340', alternateColor: '#0C2340' },
+			};
+			mountPre(gold);
+			cy.get('.gd-pregame-starter-shot .crest-fallback').eq(1).then(([onGold]: JQuery<HTMLElement>) => {
+				expect(getComputedStyle(onGold).color).to.equal('rgb(17, 24, 39)');
+			});
+			cy.get('.gd-pregame-starter-shot .crest-fallback').eq(0).then(([onNavy]: JQuery<HTMLElement>) => {
+				expect(getComputedStyle(onNavy).color).to.equal('rgb(255, 255, 255)');
+			});
+		});
 		it('tints each leader row with its own team colour', () => {
 			mountPre(pitchers);
 			cy.get('.gd-pregame-leader-row').eq(0).should('have.attr', 'style').and('include', 'linear-gradient');
