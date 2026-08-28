@@ -73,6 +73,8 @@ one gist that describes `records[].type` lists a value that does not exist.
   across the row rather than by which side of the card it sits on
 - Within a row, the name takes the slack and the value keeps its own width. A clipped name is still
   readable; a clipped stat is not
+- Headshots crop with `object-fit: cover`, not the crest's `contain`. A headshot is a 350x254 photo
+  of a person, and fitting one whole inside a circle leaves empty bands above and below the head
 - **Headshots throughout**, 38px on a starter and 20px on a leader, from the same
   `a.espncdn.com` host the team logos already come from. They are near-universal — 776 of 776 MLB
   leaders, every goalie sampled — except in soccer, which sends one for roughly a leader in ten, so
@@ -82,7 +84,8 @@ one gist that describes `records[].type` lists a value that does not exist.
   than bringing their own background. ESPN headshots are cut-outs with transparent backgrounds, so
   the disc is what the player is actually standing on and it has to outlive the placeholder. The ink
   on it follows the colour's luminance — white on a navy, near-black on a Bruins gold, since 0.1833
-  is where white stops clearing 4.5:1
+  is where white stops clearing 4.5:1. `readableInkOn` sits in `colorUtils` next to the luminance
+  maths it needs, rather than repeating that arithmetic inside a component
 - Getting there took a wrong turn worth recording. The placeholder is laid out *and hidden* by
   `_crest.scss`, and restating any of it in a call site is a silent override: a nested
   `.crest-fallback` rule matches `[data-crest-state='loaded'] > .crest-fallback` on specificity and
@@ -123,14 +126,32 @@ keeps them working before their season is underway.
   Italian FIBS's own abbreviation for a home run is literally HR. Where a language does have its
   own, it is used: German and French hockey take T / V / PKT and B / A / PTS from NHL.com's own
   localized glossaries, and both Chinese locales use the native terms CPBL and CBA print
-- **30 new unit tests on the parse**, each built from a transcribed live payload — the NHL's `ytd`
-  record, college football's four record types, a goalie with an empty line, the duplicate category
-  pairs, and the state gate
-- 15 new component tests on the block, including both degradation cases, the sport-keyed label
-  lookup, the initials placeholder holding a row's geometry, and an assertion that no football value
-  is ever clipped. Two changed shape while being written: one claimed each starter shared a centre
-  line with its crest, which two grids with different padding cannot hold, and one measured the
-  leader label against a fixed-width column that the full-width redesign removed
+- **31 new unit tests on the parse**, each built from a payload transcribed off the live API. The
+  NHL's `ytd` record, college football's four record types, a goalie whose record string is empty,
+  both duplicate category pairs, a rookie at `0-0` that a truthiness check would have eaten, and the
+  state gate. One more covers a `leaders` field arriving as a `$ref` string instead of an array,
+  which is what cricket sends and no league we ship does yet
+- **11 on the two helpers pulled out of components.** `shouldFetchSummary` is an exported predicate
+  rather than a condition inside a `useEffect`, and `playerInitials` lives in a `.ts` file rather
+  than the `.tsx` that renders it. Same reason for both: the extension's Jest runs in a node
+  environment with no DOM, and there is no React Testing Library anywhere in the repo, so a decision
+  buried in a component is a decision nothing can test
+- **24 component tests on the block.** Both degradation cases, the sport-keyed label lookup, the
+  placeholder holding a row's height and left edge, every locale's labels measured where they
+  actually render, and an assertion that no football value is ever clipped. The headshot tests mount
+  a 1x1 transparent PNG as a data URI, so they are deterministic and need no network. Transparent on
+  purpose: an opaque image would paint over a placeholder that failed to hide and pass with the bug
+  still in place. That test was run against the unfixed stylesheet and confirmed failing before the
+  fix went in
+- Three assertions changed shape while being written, each wrong in its own way. One claimed a
+  starter shared a centre line with its crest, which two grids with different padding cannot hold.
+  One measured a leader label against a fixed-width column the full-width redesign had removed. One
+  took a locale's budget from the row's own shrink-to-fit width before swapping longer text in, so
+  it measured Japanese against a box sized for English and failed a layout that was fine
+- Demo mode gets an MLB pre-game game and an NHL one, so the block is visible without waiting on a
+  real slate. The Canadiens goalie in it has no headshot on purpose, because the initials disc is
+  the state most likely to rot without anyone noticing
+
 ## ArenaSwap reads your tabs and guesses — 2026-08-27
 
 Pairing a tab with a game was the one part of the workflow that scaled badly. The only control was
