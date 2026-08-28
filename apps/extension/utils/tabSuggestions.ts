@@ -95,6 +95,11 @@ interface NameMatch {
 	strong: boolean;
 }
 
+interface TeamNameMatch extends NameMatch {
+	// The text the match was made on, so two teams cannot both claim the same mention.
+	phrase: string;
+}
+
 interface NameCandidate {
 	start: number;
 	end: number;
@@ -127,7 +132,7 @@ const classifyNameCandidate = ({ start, end, tokenCount, anchor }: NameCandidate
 	return { multiplier: tabSuggestionWeights.partialMultiplier, strong: false };
 };
 
-const matchTeamName = (haystack: string, name: string): NameMatch | null => {
+const matchTeamName = (haystack: string, name: string): TeamNameMatch | null => {
 	const tokens = tokenize(name);
 	if (tokens.length === 0) return null;
 	const anchor = anchorIndex(tokens);
@@ -143,7 +148,10 @@ const matchTeamName = (haystack: string, name: string): NameMatch | null => {
 				if (start !== anchor && token.length < tabSuggestionWeights.minLeadingTokenLength) continue;
 			}
 			if (!containsPhrase(haystack, phrase)) continue;
-			return classifyNameCandidate({ start, end: start + length, tokenCount: tokens.length, anchor });
+			return {
+				...classifyNameCandidate({ start, end: start + length, tokenCount: tokens.length, anchor }),
+				phrase: phrase.join(' '),
+			};
 		}
 	}
 	return null;
@@ -153,6 +161,8 @@ interface TeamSignal {
 	score: number;
 	strong: boolean;
 	matched: boolean;
+	abbreviationHit: boolean;
+	phrase: string | null;
 }
 
 const scoreTeam = (haystack: string, team: Team): TeamSignal => {
@@ -167,6 +177,26 @@ const scoreTeam = (haystack: string, team: Team): TeamSignal => {
 			+ (abbreviationHit ? tabSuggestionWeights.abbreviation : 0),
 		strong: name?.strong ?? false,
 		matched: name !== null || abbreviationHit,
+		abbreviationHit,
+		phrase: name?.phrase ?? null,
+	};
+};
+
+const phrasesShareText = (a: string, b: string): boolean =>
+	` ${a} `.includes(` ${b} `) || ` ${b} `.includes(` ${a} `);
+
+// Los Angeles Rams and Los Angeles Chargers both match the one 'los angeles' in a Dodgers URL, and
+// two teams reading the same mention is a single coincidence billed twice. A weak match whose text
+// the other team already claimed is dropped, so a shared city cannot be evidence for both sides.
+const dropSharedMention = (subject: TeamSignal, other: TeamSignal): TeamSignal => {
+	if (subject.strong || subject.phrase === null || other.phrase === null) return subject;
+	if (!phrasesShareText(subject.phrase, other.phrase)) return subject;
+	return {
+		score: subject.abbreviationHit ? tabSuggestionWeights.abbreviation : 0,
+		strong: false,
+		matched: subject.abbreviationHit,
+		abbreviationHit: subject.abbreviationHit,
+		phrase: null,
 	};
 };
 
@@ -207,8 +237,10 @@ const matchesEventId = (url: string, gameId: string): boolean => {
 
 const scoreHaystack = (haystack: string, url: string, game: Game): number => {
 	const idHit = matchesEventId(url, game.id);
-	const home = scoreTeam(haystack, game.homeTeam);
-	const away = scoreTeam(haystack, game.awayTeam);
+	const rawHome = scoreTeam(haystack, game.homeTeam);
+	const rawAway = scoreTeam(haystack, game.awayTeam);
+	const home = dropSharedMention(rawHome, rawAway);
+	const away = dropSharedMention(rawAway, rawHome);
 
 	// One team identified outright is enough. So is a faint read on both of them at once — two
 	// coincidences in one tab is not a coincidence. Anything less stays silent, which is what keeps

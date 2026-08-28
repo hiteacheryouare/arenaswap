@@ -326,3 +326,62 @@ describe('isSuggestableUrl', () => {
 		}
 	});
 });
+
+describe('same-city collisions', () => {
+	// Both reported from manual testing against real Xfinity Stream tabs, where the title is
+	// useless and everything worth matching on lives in the URL.
+	const ramsChargers = makeGame(
+		'401700010', 'nfl', 'football',
+		team('24', 'Los Angeles Chargers', 'LAC'),
+		team('14', 'Los Angeles Rams', 'LAR'),
+	);
+	const dodgersBraves = makeGame(
+		'401580011', 'mlb', 'baseball',
+		team('15', 'Atlanta Braves', 'ATL'),
+		team('19', 'Los Angeles Dodgers', 'LAD'),
+	);
+	const cubsWhiteSox = makeGame(
+		'401580012', 'mlb', 'baseball',
+		team('16', 'Chicago White Sox', 'CWS'),
+		team('16', 'Chicago Cubs', 'CHC'),
+	);
+
+	const mlbTab = makeTab(40, 'MLB - Xfinity Stream',
+		'https://www.xfinity.com/stream/live/Watch-MLB-Baseball---Los-Angeles-Dodgers-at-Atlanta-Braves/5628918118244997105/FS1HD');
+
+	it('does not let one city stand in for two teams that share it', () => {
+		expect(scoreTabGamePair(mlbTab, ramsChargers)).toBe(0);
+	});
+
+	it('still matches the game the tab is actually showing', () => {
+		expect(scoreTabGamePair(mlbTab, dodgersBraves)).toBe(103);
+	});
+
+	it('ignores a bare city shared by two teams in the same league', () => {
+		const tab = makeTab(41, 'Chicago', 'https://example.com/chicago');
+		expect(scoreTabGamePair(tab, cubsWhiteSox)).toBe(0);
+	});
+
+	it('still matches an all-one-city game once the nicknames appear', () => {
+		const tab = makeTab(42, 'Rams vs Chargers live', 'https://example.com/watch');
+		expect(scoreTabGamePair(tab, ramsChargers)).toBeGreaterThan(50);
+	});
+
+	it('does not credit the other side when only one team is named', () => {
+		const tab = makeTab(43, 'Los Angeles Rams', 'https://example.com/watch');
+		// The Rams full name identifies them; the Chargers cannot ride the same 'los angeles'.
+		expect(scoreTabGamePair(tab, ramsChargers)).toBe(30);
+	});
+
+	it('reads a matchup out of the URL when the title says nothing', () => {
+		const tab = makeTab(44, 'All Channels - Xfinity Stream',
+			'https://www.xfinity.com/stream/live/Watch-NFL-Football---Pittsburgh-Steelers-at-Buffalo-Bills/5032472274863868105/NFLHD');
+		const billsSteelers = makeGame(
+			'401700013', 'nfl', 'football',
+			team('2', 'Buffalo Bills', 'BUF'),
+			team('23', 'Pittsburgh Steelers', 'PIT'),
+		);
+		expect(scoreTabGamePair(tab, billsSteelers)).toBe(103);
+		expect(scoreTabGamePair(tab, ramsChargers)).toBe(0);
+	});
+});

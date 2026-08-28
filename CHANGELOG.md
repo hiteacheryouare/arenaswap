@@ -1,5 +1,25 @@
 # Changelog
 
+## A shared city stops standing in for two teams — 2026-08-27
+
+Manual testing turned up a suggestion that should never have been made: an Xfinity tab streaming
+**Dodgers at Braves** was offered, pre-checked, as **Rams @ Chargers**.
+
+The cause was the rule that lets two faint reads count as one firm one — the thing that stops a tab
+titled "Boston Globe" surfacing every Boston game. It assumed the two reads were independent. They
+are not when both teams share a city: the single `Los-Angeles` in that URL was scored once for the
+Rams and again for the Chargers, then collected the both-teams bonus on top. Eighteen plus eighteen
+plus twenty-five is sixty-one, which clears the pre-check gate. One coincidence, billed twice.
+
+A weak match whose text the other team has already claimed is now dropped, so a shared city cannot
+be evidence for both sides of the same game. `Ohio State vs Michigan` is unaffected — those are two
+different mentions — and the all-Los-Angeles game still matches the moment either nickname appears.
+The same fix covers Chicago, New York, and every other shared market for free.
+
+Six tests, five of them built from the URLs that exposed it. Worth recording that the correct game
+scored 103 on that same tab throughout: the matcher had always read the URL, and had the Dodgers
+game been eligible it would have won on merit.
+
 ## The pre-game screen was throwing away the answer — 2026-08-27
 
 A pre-game game gave you two crests, "vs", a start time and an odds line. For a baseball game the
