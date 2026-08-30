@@ -1154,6 +1154,18 @@ $bootstrap-icons-font-dir: '/fonts';
 	color:       #e7edf5;
 }
 
+// The building carries the weight; the city sits under it at the same size the weather sub-line
+// uses, so the value column keeps a single sub-line idiom rather than growing a second one.
+.game-info-venue-name {
+	font-weight: 600;
+}
+
+.game-info-venue-location {
+	margin-top: 0.04rem;
+	font-size:  0.58rem;
+	color:      #8b949e;
+}
+
 .game-info-weather {
 	display:     flex;
 	align-items: center;
@@ -1163,14 +1175,29 @@ $bootstrap-icons-font-dir: '/fonts';
 	color:       #8b949e;
 }
 
-.game-info-attribution {
-	display:      inline-flex;
-	align-items:  center;
-	margin-left:  0.35rem;
-	font-size:    0.54rem;
-	color:        #6e7b8a;
-	opacity:      0.8;
-	white-space:  nowrap;
+// Matches the shape of Reboot's `[type="button"]:not(:disabled)` so the help cursor survives it.
+button.game-info-attribution {
+	&:not(:disabled) { cursor: help; }
+
+	display:       inline-flex;
+	align-items:   center;
+	margin-left:   0.35rem;
+	font-size:     0.54rem;
+	color:         #6e7b8a;
+	opacity:       0.8;
+	white-space:   nowrap;
+	padding:       0;
+	background:    transparent;
+	border:        none;
+	border-bottom: 1px dotted currentColor;
+
+	&:hover { opacity: 1; }
+	&:focus-visible {
+		opacity:        1;
+		outline:        1px solid $primary;
+		outline-offset: 1px;
+		border-radius:  2px;
+	}
 }
 
 .series-dots-wrap {
@@ -1179,10 +1206,12 @@ $bootstrap-icons-font-dir: '/fonts';
 }
 
 .series-dots-summary {
-	font-size: 0.58rem;
-	color: #8b949e;
-	font-family: 'Lekton', monospace;
-	letter-spacing: 0.02em;
+	font-size:      0.6rem;
+	font-weight:    600;
+	color:          #6b7280;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	line-height:    1;
 }
 
 .series-dot {
@@ -1198,8 +1227,7 @@ $bootstrap-icons-font-dir: '/fonts';
 
 	.game-meta-venue,
 	.game-meta-networks,
-	.game-meta-odds,
-	.game-meta-provider {
+	.game-meta-odds {
 		color: #c6ced8;
 	}
 }
