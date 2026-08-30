@@ -6,8 +6,9 @@ import { startStaticServer } from './cypress/staticServer';
 const root = (rel: string) => path.resolve(__dirname, rel);
 
 // E2E drives the real `wxt build` output rather than a Cypress-bundled copy of the source, so the
-// bundle under test is byte-for-byte the one that ships.
-const popupBuildDir = root('./.output/chrome-mv3');
+// bundle under test is byte-for-byte the one that ships. It reads its own build rather than the
+// shared `.output/chrome-mv3`, which `wxt zip` deletes and rewrites while this server is serving it.
+const popupBuildDir = root('./.output/e2e/chrome-mv3');
 const e2ePort = 5199;
 
 const componentStubs: Record<string, string> = {
@@ -64,7 +65,7 @@ export default defineConfig({
 		viewportHeight: 560,
 		async setupNodeEvents(on, config) {
 			if (!existsSync(path.join(popupBuildDir, 'popup.html'))) {
-				throw new Error(`No built popup at ${popupBuildDir}. Run \`npm run test:e2e\` from the repo root, which builds first, or \`npm run build\` here.`);
+				throw new Error(`No built popup at ${popupBuildDir}. Run \`npm run test:e2e\` from the repo root, which builds first, or \`npm run build:e2e\` here.`);
 			}
 			const server = await startStaticServer(popupBuildDir, e2ePort);
 			on('after:run', () => new Promise<void>(resolve => { server.close(() => resolve()); }));

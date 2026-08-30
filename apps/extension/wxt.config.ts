@@ -7,6 +7,11 @@ const banner = `/*! ArenaSwap v${version} Copyright (c) ${year} Ryan Mullin, Lat
 
 export default defineConfig({
 	modules: ['@wxt-dev/module-react', '@wxt-dev/i18n/module'],
+	// Cypress serves a build directory over HTTP for the whole length of an e2e run, and `wxt zip`
+	// wipes and rewrites `.output/chrome-mv3` as part of its own build. Turbo schedules those two
+	// tasks in parallel, so they raced and left the served directory half-written. The e2e build
+	// takes this override to claim a directory nothing else writes.
+	outDir: process.env.WXT_OUT_DIR ?? '.output',
 	// dist/ is gitignored build output from the retired zip-builds scripts, so a stale copy on one
 	// machine would otherwise be swept into the sources archive an AMO reviewer downloads. marketing/
 	// is store screenshots and promo tiles — ~7MB of the archive, and nothing to do with building.

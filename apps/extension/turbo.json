@@ -13,6 +13,9 @@
 		"build:edge": {
 			"outputs": [".output/edge-mv3/**"]
 		},
+		"build:e2e": {
+			"outputs": [".output/e2e/**"]
+		},
 		// The root config pairs each zip with the build for its own target (`zip` -> `build`,
 		// `zip:firefox` -> `build:firefox`, `zip:edge` -> `build:edge`), so zipping Firefox never
 		// builds Chrome for nothing. These entries only declare which artifact each one produces.
@@ -25,10 +28,11 @@
 		"zip:edge": {
 			"outputs": [".output/*-edge.zip"]
 		},
-		// Cypress serves .output/chrome-mv3 rather than re-bundling the source, so this needs this
-		// package's own build — not just its dependencies' — before it can run.
+		// Cypress serves a real build rather than re-bundling the source, so this needs this
+		// package's own build — not just its dependencies' — before it can run. It depends on the
+		// e2e build specifically: `zip` rebuilds .output/chrome-mv3 underneath a running server.
 		"test:e2e": {
-			"dependsOn": ["build"]
+			"dependsOn": ["build:e2e"]
 		}
 	}
 }

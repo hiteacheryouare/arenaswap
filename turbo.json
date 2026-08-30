@@ -12,6 +12,9 @@
 		"build:edge": {
 			"dependsOn": ["^build"]
 		},
+		"build:e2e": {
+			"dependsOn": ["^build"]
+		},
 		"zip": {
 			"dependsOn": ["^build", "build"],
 			"cache": false
