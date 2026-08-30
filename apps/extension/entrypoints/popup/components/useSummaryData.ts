@@ -16,6 +16,7 @@ export interface SeriesEvent {
 }
 
 export interface SeriesInfo {
+	type?: string;
 	summary?: string;
 	totalCompetitions?: number;
 	events?: SeriesEvent[];
@@ -77,7 +78,6 @@ export const parseTeamRecords = (data: unknown, homeTeamId: string, awayTeamId: 
 type SummaryGameArg = Pick<Game, 'id' | 'league' | 'status' | 'sportType'> & {
 	homeTeam: Pick<Game['homeTeam'], 'id' | 'score' | 'record'>;
 	awayTeam: Pick<Game['awayTeam'], 'id' | 'score' | 'record'>;
-	isPostseason?: boolean;
 };
 
 // Deterministic so mock charts do not change between renders.
@@ -158,7 +158,15 @@ const mockRecordsMap: Record<string, TeamRecords> = {
 export const shouldFetchSummary = (game: SummaryGameArg): boolean => {
 	if (game.status !== 'pre') return true;
 	if (!game.homeTeam.record || !game.awayTeam.record) return true;
-	return seriesSports.has(game.sportType) && game.isPostseason === true;
+	return seriesSports.has(game.sportType);
+};
+
+// ESPN mints a 'current' entry only once a series is actually underway, and does not reliably put
+// it first: a pre-game screen commonly sees ['preseason', 'season'] instead. Picking blindly by
+// index is what leaves a pre-game card with no dots at all.
+export const pickSeriesEntry = (entries: SeriesInfo[] | undefined): SeriesInfo | null => {
+	if (!Array.isArray(entries)) return null;
+	return entries.find(entry => entry.type === 'current') ?? entries.find(entry => entry.type === 'season') ?? null;
 };
 
 const useSummaryData = (game: SummaryGameArg): summaryDataResult => {
@@ -220,10 +228,7 @@ const useSummaryData = (game: SummaryGameArg): summaryDataResult => {
 				if (Array.isArray(wp) && wp.length > 0) {
 					setWinProbability(wp.map((p: { homeWinPercentage?: number }) => p.homeWinPercentage ?? 0.5));
 				}
-				const series = (data?.seasonseries as SeriesInfo[] | undefined)?.[0];
-				if ((series as { type?: string } | undefined)?.type === 'current') {
-					setSeriesInfo(series ?? null);
-				}
+				setSeriesInfo(pickSeriesEntry(data?.seasonseries as SeriesInfo[] | undefined));
 				setRecords(parseTeamRecords(data, teamIdsRef.current.home, teamIdsRef.current.away));
 			})
 			.catch(err => {
