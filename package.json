@@ -16,6 +16,7 @@
 		"zip:edge": "turbo run zip:edge",
 		"zip:all": "turbo run zip zip:firefox zip:edge",
 		"test": "turbo run test",
+		"test:e2e": "turbo run test:e2e",
 		"typecheck": "turbo run typecheck",
 		"lint": "turbo run lint",
 		"powerscore:simulate": "rolldown scripts/powerscore/simulateDistribution.ts --platform=node --file=scripts/powerscore/simulateDistribution.cjs --format=cjs --log-level=silent && node scripts/powerscore/simulateDistribution.cjs 100000",

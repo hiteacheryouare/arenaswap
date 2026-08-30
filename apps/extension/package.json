@@ -15,7 +15,9 @@
 		"test": "npm run test:unit && npm run test:component",
 		"test:unit": "jest --passWithNoTests --selectProjects unit",
 		"test:component": "cypress run --component",
+		"test:e2e": "cypress run --e2e",
 		"cypress:open": "cypress open --component",
+		"cypress:open:e2e": "cypress open --e2e",
 		"typecheck": "wxt prepare && tsc --noEmit && tsc --noEmit -p cypress",
 		"lint": "oxlint ."
 	},

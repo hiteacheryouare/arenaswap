@@ -1,7 +1,14 @@
 import { defineConfig } from 'cypress';
+import { existsSync } from 'node:fs';
 import path from 'path';
+import { startStaticServer } from './cypress/staticServer';
 
 const root = (rel: string) => path.resolve(__dirname, rel);
+
+// E2E drives the real `wxt build` output rather than a Cypress-bundled copy of the source, so the
+// bundle under test is byte-for-byte the one that ships.
+const popupBuildDir = root('./.output/chrome-mv3');
+const e2ePort = 5199;
 
 const componentStubs: Record<string, string> = {
 	'./flipScore': root('./cypress/stubs/flipScore.tsx'),
@@ -47,5 +54,21 @@ export default defineConfig({
 		},
 		specPattern: 'cypress/component/**/*.cy.{ts,tsx}',
 		supportFile: 'cypress/support/component.ts',
+	},
+	e2e: {
+		baseUrl: `http://localhost:${e2ePort}`,
+		specPattern: 'cypress/e2e/**/*.cy.ts',
+		supportFile: 'cypress/support/e2e.ts',
+		// The popup is 320x560 and never renders at anything else.
+		viewportWidth: 320,
+		viewportHeight: 560,
+		async setupNodeEvents(on, config) {
+			if (!existsSync(path.join(popupBuildDir, 'popup.html'))) {
+				throw new Error(`No built popup at ${popupBuildDir}. Run \`npm run test:e2e\` from the repo root, which builds first, or \`npm run build\` here.`);
+			}
+			const server = await startStaticServer(popupBuildDir, e2ePort);
+			on('after:run', () => new Promise<void>(resolve => { server.close(() => resolve()); }));
+			return config;
+		},
 	},
 });

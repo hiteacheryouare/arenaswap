@@ -32,6 +32,11 @@
 		"test": {
 			"dependsOn": ["^build"]
 		},
+		// packages/core answers this with an offline Jest project; apps/extension answers it with
+		// Cypress against a real build, and overrides the dependency in its own config to say so.
+		"test:e2e": {
+			"dependsOn": ["^build"]
+		},
 		"typecheck": {
 			"dependsOn": ["^build"]
 		},

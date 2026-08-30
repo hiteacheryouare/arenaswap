@@ -24,6 +24,11 @@
 		},
 		"zip:edge": {
 			"outputs": [".output/*-edge.zip"]
+		},
+		// Cypress serves .output/chrome-mv3 rather than re-bundling the source, so this needs this
+		// package's own build — not just its dependencies' — before it can run.
+		"test:e2e": {
+			"dependsOn": ["build"]
 		}
 	}
 }
