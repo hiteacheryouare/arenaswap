@@ -1,5 +1,6 @@
 import { i18n } from '#i18n';
 import type { Game } from '@arenaswap/core/types';
+import HoverTooltip from '@arenaswap/ui/src/components/hoverTooltip';
 import { OddsProvider, oddsSummary } from './gameCardShared';
 import { conditionIcon, formatTemperature } from './weatherUtils';
 import type { BettingDisplayPrefs, WeatherDisplayPrefs } from './gameCardTypes';
@@ -21,11 +22,13 @@ const InfoRow = ({ icon, label, children }: { icon: string; label: string; child
 const GameInfoPanel = ({ game, bettingPrefs, weatherPrefs }: gameInfoPanelProps) => {
 	const networks = game.broadcasts?.join(' • ');
 	const venueName = game.venueName;
+	const venueLocation = game.venueLocation;
+	const hasVenue = Boolean(venueName || venueLocation);
 	const weather = game.weather;
 	const bettingOn = bettingPrefs.bettingEnabled;
 	const odds = bettingOn ? oddsSummary(game) : null;
 	const hasOddsProvider = bettingOn && Boolean(game.odds?.provider?.name);
-	if (!networks && !venueName && !weather && !odds && !hasOddsProvider) return null;
+	if (!networks && !hasVenue && !weather && !odds && !hasOddsProvider) return null;
 
 	// Conditions belong to the venue, so they ride in its row rather than claiming a line of their
 	// own. A dome game has no weather, and a neutral site may arrive with no venue we know.
@@ -44,9 +47,10 @@ const GameInfoPanel = ({ game, bettingPrefs, weatherPrefs }: gameInfoPanelProps)
 				</InfoRow>
 			)}
 
-			{venueName && (
+			{hasVenue && (
 				<InfoRow icon='bi-geo-alt' label={i18n.t('detail.infoVenue')}>
-					<span>{venueName}</span>
+					{venueName && <div className='game-info-venue-name'>{venueName}</div>}
+					{venueLocation && <div className='game-info-venue-location'>{venueLocation}</div>}
 					{conditions && (
 						<div className='game-info-weather'>
 							<i className={`bi ${conditions.icon}`} aria-hidden='true' />
@@ -56,7 +60,7 @@ const GameInfoPanel = ({ game, bettingPrefs, weatherPrefs }: gameInfoPanelProps)
 				</InfoRow>
 			)}
 
-			{!venueName && conditions && (
+			{!hasVenue && conditions && (
 				<InfoRow icon={conditions.icon} label={i18n.t('detail.infoWeather')}>
 					<span>{conditions.text}</span>
 				</InfoRow>
@@ -67,10 +71,14 @@ const GameInfoPanel = ({ game, bettingPrefs, weatherPrefs }: gameInfoPanelProps)
 					{odds && <span>{odds}</span>}
 					{hasOddsProvider && (
 						// Attribution rides at the end of the line it describes instead of spending a
-						// row of its own; the title carries the wording a visible label used to.
-						<span className='game-info-attribution' title={i18n.t('gameCard.oddsProvidedBy')}>
+						// row of its own; the tooltip carries the wording a visible label used to,
+						// provider name included so its trailing colon still introduces something.
+						<HoverTooltip
+							className='game-info-attribution'
+							text={`${i18n.t('gameCard.oddsProvidedBy')} ${game.odds!.provider!.name}`}
+						>
 							<OddsProvider game={game} dark />
-						</span>
+						</HoverTooltip>
 					)}
 				</InfoRow>
 			)}

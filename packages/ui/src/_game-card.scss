@@ -387,12 +387,32 @@ $pre-game-time-color: shade-color($warning, 60%);
 	line-height: 1.2;
 }
 
-.game-meta-provider {
-	gap: 0.25rem;
-	font-size: 0.58rem;
-	color: #495057;
+// A tooltip nobody can tell is there is a tooltip nobody opens, so the dotted rule and the help
+// cursor are the whole point of this block, not decoration.
+// The help cursor is half of what makes this element discoverable, and Reboot claims it first with
+// `[type="button"]:not(:disabled)`. Matching that shape is what it costs to win the cursor back.
+button.game-meta-attribution {
+	&:not(:disabled) { cursor: help; }
+
+	display: inline-flex;
+	align-items: center;
+	margin-left: 0.1rem;
+	padding: 0;
+	background: transparent;
+	border: none;
+	color: inherit;
+	font-size: 0.54rem;
+	opacity: 0.8;
 	white-space: nowrap;
-	line-height: 1.2;
+	border-bottom: 1px dotted currentColor;
+
+	&:hover { opacity: 1; }
+	&:focus-visible {
+		opacity: 1;
+		outline: 1px solid var(--as-primary);
+		outline-offset: 1px;
+		border-radius: 2px;
+	}
 }
 
 .game-score-sep {

@@ -5,6 +5,7 @@ import type { Game, LeagueId, Team } from '@arenaswap/core/types';
 import type { BettingDisplayPrefs } from './gameCardTypes';
 import { resolveTeamColorPair } from './colorUtils';
 import Crest from './crest';
+import HoverTooltip from './hoverTooltip';
 import { useT } from './i18nContext';
 
 export const formatPeriod = (game: Game): string => {
@@ -171,6 +172,8 @@ export const GameMeta = ({
 }) => {
 	const t = useT();
 	const networks = hideBroadcasts ? undefined : game.broadcasts?.join(' • ');
+	// The card names the building only. `venueLocation` is a detail-screen line — see GameInfoPanel
+	// — because the answer a card exists to give is "should I switch to this", not "where is it".
 	const venueName = hideVenue ? undefined : game.venueName;
 	const bettingOn = bettingPrefs?.bettingEnabled ?? false;
 	const odds = bettingOn ? oddsSummary(game) : null;
@@ -186,11 +189,22 @@ export const GameMeta = ({
 					<span>{t('gameCard.watchLabel')}</span> {networks}
 				</div>
 			)}
-			{odds && <div className='d-flex align-items-center justify-content-center game-meta-odds'><span>{odds}</span></div>}
-			{hasOddsProvider && (
-				<div className='d-flex align-items-center justify-content-center game-meta-provider'>
-					<span>{t('gameCard.oddsProvidedBy')}</span>
-					<OddsProvider game={game} dark={dark} />
+			{(odds || hasOddsProvider) && (
+				<div className='d-flex align-items-center justify-content-center game-meta-odds'>
+					{odds && <span>{odds}</span>}
+					{hasOddsProvider && (
+						// Attribution rides at the end of the line it describes rather than spending a
+						// line of its own, as it already does in the detail panel; the tooltip carries
+						// the wording, the sportsbook's own name and logo stay visible. The provider
+						// goes into the tooltip too, because that string ends in the colon it used to
+						// introduce a visible name with.
+						<HoverTooltip
+							className='game-meta-attribution'
+							text={`${t('gameCard.oddsProvidedBy')} ${game.odds!.provider!.name}`}
+						>
+							<OddsProvider game={game} dark={dark} />
+						</HoverTooltip>
+					)}
 				</div>
 			)}
 		</div>
