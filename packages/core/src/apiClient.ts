@@ -12,6 +12,7 @@ import type {
 	EspnOddsProvider,
 	EspnScoreboardResponse,
 	EspnSituation,
+	EspnVenueAddress,
 } from './espnSchemas';
 import { logWarn } from './logger';
 import type { Game, GameCondition, GameOdds, LeagueConfig, LeagueId, LeagueLogoMap, ProbableStarter, TeamLeader } from './types';
@@ -148,6 +149,18 @@ const parseBroadcasts = (competition: EspnCompetition): string[] | undefined => 
 	}
 	const parsed = [...names];
 	return parsed.length > 0 ? parsed : undefined;
+};
+
+const parseVenueLocation = (address?: EspnVenueAddress): string | undefined => {
+	const city = address?.city?.trim();
+	const state = address?.state?.trim();
+	const country = address?.country?.trim();
+	if (!city && !state && !country) return undefined;
+	// Country only stands in where ESPN sent no state, so a domestic game reads "Inglewood, CA"
+	// rather than "Inglewood, CA, USA".
+	if (city && state) return `${city}, ${state}`;
+	if (city && country) return `${city}, ${country}`;
+	return city || state || country;
 };
 
 const pickProviderLogo = (provider?: EspnOddsProvider, rel?: string): string | undefined => {
@@ -407,6 +420,7 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 			...parseTeamContext(away, state),
 		},
 		venueName: comp.venue?.fullName ?? comp.venue?.name ?? undefined,
+		venueLocation: parseVenueLocation(comp.venue?.address),
 		period: status.period ?? 1,
 		clockSeconds: parseClockToSeconds(status.displayClock ?? '0:00'),
 		status: state,

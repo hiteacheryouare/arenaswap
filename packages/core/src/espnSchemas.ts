@@ -109,9 +109,18 @@ const EspnSituationSchema = zod.object({
 	possessionText: zod.string().optional(),
 });
 
+// ESPN is not consistent about `state`: the NFL and NHL send abbreviations, MLB sends full names,
+// and leagues outside North America send no state at all and lean on `country` instead.
+const EspnVenueAddressSchema = zod.object({
+	city: zod.string().optional(),
+	state: zod.string().optional(),
+	country: zod.string().optional(),
+});
+
 const EspnCompetitionVenueSchema = zod.object({
 	fullName: zod.string().optional(),
 	name: zod.string().optional(),
+	address: EspnVenueAddressSchema.optional(),
 	indoor: zod.boolean().optional(),
 });
 
@@ -276,6 +285,7 @@ export type EspnCompetitor = zod.infer<typeof EspnCompetitorSchema>;
 export type EspnCompetitionStatus = zod.infer<typeof EspnCompetitionStatusSchema>;
 export type EspnSituation = zod.infer<typeof EspnSituationSchema>;
 export type EspnCompetitionVenue = zod.infer<typeof EspnCompetitionVenueSchema>;
+export type EspnVenueAddress = zod.infer<typeof EspnVenueAddressSchema>;
 export type EspnCompetitionBroadcast = zod.infer<typeof EspnCompetitionBroadcastSchema>;
 export type EspnCompetitionGeoBroadcast = zod.infer<typeof EspnCompetitionGeoBroadcastSchema>;
 export type EspnOddsProviderLogo = zod.infer<typeof EspnOddsProviderLogoSchema>;

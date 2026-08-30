@@ -25,6 +25,7 @@ const makeEvent = (params: {
 	situation?: Record<string, unknown>;
 	season?: Record<string, unknown>;
 	notes?: Record<string, unknown>[];
+	venue?: Record<string, unknown>;
 	homeShootoutScore?: number;
 	awayShootoutScore?: number;
 	// Merged into the competitor, for the per-competitor blocks ESPN only sends on some sports:
@@ -78,7 +79,7 @@ const makeEvent = (params: {
 			},
 			situation: params.situation,
 			...(params.notes !== undefined && { notes: params.notes }),
-			venue: { fullName: 'Arena Name' },
+			venue: params.venue ?? { fullName: 'Arena Name' },
 			broadcasts: [{ names: [' ESPN ', 'ESPN'] }],
 			geoBroadcasts: [{ media: { shortName: 'ESPN2' } }],
 			odds: params.withOdds === false
@@ -1434,6 +1435,52 @@ describe('apiClient', () => {
 		const live = result.games.find(g => g.id === 'live')!;
 		expect(pre.startTime).toBe('2026-09-01T00:00:00.000Z');
 		expect(live.startTime).toBeUndefined();
+	});
+
+	describe('venue location parsing', () => {
+		// Every address below is a verbatim ESPN payload, which is why the state styles disagree:
+		// the NFL and NHL send abbreviations, MLB sends full names, and England sends no state.
+		const cases: [string, Record<string, unknown> | undefined, string | undefined][] = [
+			['city and abbreviated state', { city: 'Inglewood', state: 'CA', country: 'USA' }, 'Inglewood, CA'],
+			['city and spelled-out state', { city: 'Chicago', state: 'Illinois' }, 'Chicago, Illinois'],
+			['country dropped when a state is present', { city: 'Toronto', state: 'ON', country: 'Canada' }, 'Toronto, ON'],
+			['country standing in for a missing state', { city: 'London', country: 'England' }, 'London, England'],
+			['city alone', { city: 'Paris' }, 'Paris'],
+			['no city', { state: 'CA' }, 'CA'],
+			['blank fields', { city: '  ', state: '', country: '' }, undefined],
+			['no address at all', undefined, undefined],
+		];
+
+		test.each(cases)('%s', async (_label, address, expected) => {
+			const { fetchGamesWithLeagueLogos } = mockSingleEvent(makeEvent({
+				id: 'venue',
+				state: 'in',
+				period: 1,
+				clock: '5:00',
+				homeScore: '1',
+				awayScore: '0',
+				venue: { fullName: 'Arena Name', ...(address !== undefined && { address }) },
+			}));
+
+			const result = await fetchGamesWithLeagueLogos(['nba']);
+			expect(result.games[0]?.venueLocation).toBe(expected);
+			expect(result.games[0]?.venueName).toBe('Arena Name');
+		});
+
+		test('trims the whitespace ESPN occasionally pads addresses with', async () => {
+			const { fetchGamesWithLeagueLogos } = mockSingleEvent(makeEvent({
+				id: 'venue-padded',
+				state: 'in',
+				period: 1,
+				clock: '5:00',
+				homeScore: '1',
+				awayScore: '0',
+				venue: { fullName: 'Arena Name', address: { city: '  Boston  ', state: ' MA ' } },
+			}));
+
+			const result = await fetchGamesWithLeagueLogos(['nba']);
+			expect(result.games[0]?.venueLocation).toBe('Boston, MA');
+		});
 	});
 
 	describe('BSO (balls/strikes/outs) parsing', () => {

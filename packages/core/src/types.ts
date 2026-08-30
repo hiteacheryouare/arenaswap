@@ -97,6 +97,8 @@ export interface Game {
 	homeTeam: Team;
 	awayTeam: Team;
 	venueName?: string;
+	// Already comma-joined for display, e.g. 'Inglewood, CA' or 'London, England'.
+	venueLocation?: string;
 	period: number;
 	clockSeconds: number;
 	status: 'pre' | 'in' | 'post';
