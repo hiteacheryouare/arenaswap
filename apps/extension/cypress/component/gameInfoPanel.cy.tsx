@@ -1,5 +1,3 @@
-import '../../assets/bootstrap.scss';
-import '../../assets/global.scss';
 import GameDetailView from '../../entrypoints/popup/components/gameDetailView';
 import type { Game, PowerScoreResult } from '@arenaswap/core/types';
 import de from '../../locales/de.json';
@@ -78,6 +76,36 @@ describe('game info panel', () => {
 		cy.get('.game-info-row').eq(2).should('contain.text', 'KC -3.5 • O/U 47.5');
 	});
 
+	it('stacks the location under the venue name, unbolded', () => {
+		mountDetail({ ...liveGame, venueLocation: 'Kansas City, MO' });
+		cy.get('.game-info-venue-name').should('have.text', 'Arrowhead Stadium');
+		cy.get('.game-info-venue-location').should('have.text', 'Kansas City, MO');
+		cy.get('.game-info-venue-name').then(([name]: JQuery<HTMLElement>) => {
+			cy.get('.game-info-venue-location').should(([location]: JQuery<HTMLElement>) => {
+				const nameWeight = Number(getComputedStyle(name).fontWeight);
+				const locationWeight = Number(getComputedStyle(location).fontWeight);
+				expect(nameWeight, 'venue name is the bolder of the two').to.be.greaterThan(locationWeight);
+				expect(location.getBoundingClientRect().top, 'location sits on its own line below')
+					.to.be.greaterThan(name.getBoundingClientRect().bottom - 1);
+			});
+		});
+	});
+
+	it('drops to the location alone when ESPN names no building', () => {
+		mountDetail({ ...liveGame, venueName: undefined, venueLocation: 'Kansas City, MO' });
+		cy.get('.game-info-row').should('have.length', 3);
+		cy.get('.game-info-venue-name').should('not.exist');
+		cy.get('.game-info-row').eq(1).should('contain.text', 'Kansas City, MO');
+	});
+
+	it('keeps the longest venue block inside the panel', () => {
+		mountDetail({ ...liveGame, venueName: 'Mercedes-Benz Superdome', venueLocation: 'New Orleans, Louisiana' });
+		cy.get('.game-info-row').eq(1).find('.game-info-value').should($value => {
+			const el = $value[0];
+			expect(el.scrollWidth, 'venue block does not overflow its column').to.be.at.most(el.clientWidth);
+		});
+	});
+
 	// Conditions describe the venue, so they cost a sub-line rather than a row of their own.
 	it('rides the weather inside the venue row', () => {
 		mountDetail(liveGame);
@@ -102,9 +130,14 @@ describe('game info panel', () => {
 	it('keeps the odds provider inside the line row', () => {
 		mountDetail(liveGame);
 		cy.get('.game-info-row').eq(2).find('.game-info-attribution').should('contain.text', 'ESPN BET');
-		cy.get('.game-info-attribution')
-			.should('have.attr', 'title')
-			.and('match', /Odds provided by/);
+		// Gated on data-bs-original-title because Bootstrap arrives on a lazily imported chunk and
+		// only takes ownership of the element once it lands.
+		cy.get('.game-info-attribution').should('have.attr', 'data-bs-original-title');
+		cy.get('.game-info-attribution').trigger('mouseover');
+		cy.get('.tooltip.show').should('be.visible')
+			.and('contain.text', 'Odds provided by')
+			.and('contain.text', 'ESPN BET');
+		cy.get('.game-info-attribution').trigger('mouseout');
 	});
 
 	it('drops the line row when betting display is off', () => {

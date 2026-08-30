@@ -2,8 +2,6 @@
 // stylesheets and measures boxes: the point of the component is that the placeholder occupies
 // exactly the image's footprint, and that is not something the markup alone can show.
 import { useState } from 'react';
-import '../../assets/bootstrap.scss';
-import '../../assets/global.scss';
 import Crest from '@arenaswap/ui/src/components/crest';
 
 const loadableLogo = `data:image/svg+xml,${encodeURIComponent(

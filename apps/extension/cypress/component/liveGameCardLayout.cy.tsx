@@ -1,7 +1,5 @@
 // Layout-only, which is why this spec loads the real stylesheets; the sibling liveGameCard spec
 // asserts on content and mounts unstyled.
-import '../../assets/bootstrap.scss';
-import '../../assets/global.scss';
 import LiveGameCard from '@arenaswap/ui/src/components/liveGameCard';
 import type { Game, PowerScoreResult } from '@arenaswap/core/types';
 

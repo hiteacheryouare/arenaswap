@@ -1,5 +1,3 @@
-import '../../assets/bootstrap.scss';
-import '../../assets/global.scss';
 import GameDetailView from '../../entrypoints/popup/components/gameDetailView';
 import type { Game, SportType } from '@arenaswap/core/types';
 import de from '../../locales/de.json';

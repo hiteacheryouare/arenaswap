@@ -1,5 +1,3 @@
-import '../../assets/bootstrap.scss';
-import '../../assets/global.scss';
 import de from '../../locales/de.json';
 import en from '../../locales/en.json';
 import es from '../../locales/es.json';
