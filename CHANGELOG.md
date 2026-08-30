@@ -1,5 +1,86 @@
 # Changelog
 
+## The series dots went missing when the postseason did — 2026-08-30
+
+A pre-game screen drew no series dots at all. The scoreboard had started carrying both teams'
+records, which left the summary endpoint with nothing to answer for a game that has not started
+except the dots themselves, so the request was gated off — and the gate asked for a postseason game.
+Every regular-season series went dark. Baseball plays a three-game set roughly every three days
+from March to September, so this was most of the year.
+
+The gate now asks only whether the sport draws dots at all. Football and soccer pre-game screens
+still skip the request, which was the saving worth having; baseball, basketball, hockey and
+softball make it again.
+
+Restoring the request was half of it. ESPN returns `seasonseries` as an array and only mints an
+entry of type `current` once a series is actually underway, so the pre-game payload for a series
+opener carries `season` instead — and not reliably at index 0, since a `preseason` entry can sit in
+front of it. Reading `[0]` and demanding `current` therefore found nothing on exactly the screens
+this was meant to fix. It is a named lookup now: `current` when the series has started, the season
+head-to-head before it has, and nothing at all rather than a guess when neither is there. A series
+opener consequently shows the season matchup — six dots across the year rather than three for the
+set — which is more than the screen showed before, and honest about which series it is naming.
+
+The summary beside the dots was set in Lekton, which is the face this project reserves for figures
+that change in place: the game clock, the scores, the records. "BOS leads series 3-2" is a caption,
+not a column, and it now takes the same uppercase sans treatment as every other small label on the
+screen. It needed `line-height: 1` to sit on the dots' optical centre, the row being centred against
+circular icons.
+
+Separately, `test:e2e` had been failing on the full verification run and passing on its own. Cypress
+serves `.output/chrome-mv3` for the length of a run, and `wxt zip` deletes and rebuilds that same
+directory as part of its own build. Turbo had no edge between the two tasks, so it scheduled them
+together and the server lost its files mid-run. Worse, the abort left the directory half-written,
+which broke the next run before it started and made the whole thing look like a missing build. The
+e2e build takes its own `outDir` now, and the two tasks stop sharing a directory.
+
+## The venue named the building but not the city — 2026-08-28
+
+The venue line read "Xfinity Mobile Arena". Which is in Philadelphia, though the popup never said
+so, and neither did "Rocket Arena" or "Daikin Park" — buildings that have all been renamed inside
+the last three years and carry no city in their names at all.
+
+ESPN had been sending the address the whole time. `EspnCompetitionVenueSchema` declared three keys,
+and Zod's strip mode deleted `address` before the parser could look at it — the same failure as the
+pre-game competitor fields, two entries up. The schema keeps `city`, `state` and `country` now, and
+the popup finally names the city.
+
+The state is passed through exactly as ESPN sends it, which means the NFL and NHL read "Inglewood,
+CA" while MLB reads "Chicago, Illinois". Normalising that would mean owning a state-and-province
+lookup table forever to win nothing but tidiness. `country` only stands in where there is no state,
+so an English fixture reads "London, England" and a domestic game never reads "Inglewood, CA, USA".
+
+It shows on the detail screen and nowhere else. The building takes bold and the city sits under it
+at normal weight, so weight does the separating and no punctuation, colour change or second size is
+needed to tell them apart.
+
+The cards were tried both ways first — stacked, then run onto one line — and neither earned the
+room. A card exists to answer "should I switch to this", and the city is not part of that answer;
+it is what you want once you have already opened the game. So the cards name the building and stop,
+at the weight of the meta around them. The same run took the odds attribution off its own line and
+moved it to the end of the line it describes, which leaves the live card at 208px, twelve pixels
+shorter than before any of this.
+
+The attribution's first attempt was a bare `title` attribute, which turned out to be a tooltip in
+name only: a second of hover delay, no cursor change, nothing drawn, and 8.6px of text to find it
+on. It is a real Bootstrap tooltip now, on the same themed styling the settings explainers use,
+with a dotted rule and a help cursor to say there is something there. The trigger is a `button`
+rather than a span, which puts it in the tab order without a hand-placed `tabIndex` and means the
+card's own click handler already ignores it — `isInteractiveCardTarget` has skipped anything inside
+a button since long before this. The provider's name rides in the tooltip text too, because that
+string ends in a colon it used to introduce a visible name with.
+
+Bootstrap arrives on a lazily imported chunk so the marketing site, which renders these cards but
+never an odds line, does not pay for it. Two things fell out of that. Tearing the tooltip down while
+it was still shown threw from inside Popper once React had removed the element, which surfaced as a
+test failing roughly half the time in a completely unrelated assertion; `animation: false` plus an
+explicit `hide()` before `dispose()` fixed it. And any test that fires the hover before the chunk
+lands passes only because a previous test warmed the module, so both now wait on
+`data-bs-original-title` first.
+
+Ten parser tests, every address taken verbatim from a live ESPN response, plus a card spec whose
+fixture carries a location throughout precisely so that the cards can be caught rendering it.
+
 ## A shared city stops standing in for two teams — 2026-08-27
 
 Manual testing turned up a suggestion that should never have been made: an Xfinity tab streaming

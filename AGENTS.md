@@ -63,6 +63,7 @@ The tech stack should never fall more than 2 years behind the latest and greates
 - After every time you change something, update @CHANGELOG.md
 - All code changes should be internationalized to every language we support at the moment.
 - When opening PRs, Issues, etc via the GitHub API or any access you have to github, ALWAYS add the "robotic" label so we know it was assisted by agents.
+- To verify, run my "everything command": `npm run lint test test:e2e build build:edge build:firefox zip zip:edge zip:firefox`
 
 
 ## UI Mistakes to Avoid:
