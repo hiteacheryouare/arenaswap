@@ -12,20 +12,22 @@ The gate now asks only whether the sport draws dots at all. Football and soccer 
 still skip the request, which was the saving worth having; baseball, basketball, hockey and
 softball make it again.
 
-Restoring the request was half of it. ESPN returns `seasonseries` as an array and only mints an
-entry of type `current` once a series is actually underway, so the pre-game payload for a series
-opener carries `season` instead — and not reliably at index 0, since a `preseason` entry can sit in
-front of it. Reading `[0]` and demanding `current` therefore found nothing on exactly the screens
-this was meant to fix. It is a named lookup now: `current` when the series has started, the season
-head-to-head before it has, and nothing at all rather than a guess when neither is there. A series
-opener consequently shows the season matchup — six dots across the year rather than three for the
-set — which is more than the screen showed before, and honest about which series it is naming.
+Restoring the request was most of it. The other half was that `seasonseries` is an array and the
+entry wanted is not reliably its first element — a `preseason` entry can sit in front of the one
+that matters — so the lookup is by name now rather than by index.
+
+Only `current` counts. ESPN mints that entry once a series is actually underway and keeps it there
+through the pre-game hours before each remaining game, which is exactly the window the dots are
+for: MIA at WSH, four hours from first pitch, reads `current`, "WSH leads series 2-1", four games.
+A series that has not started has no `current` entry at all, only a `season` one holding the whole
+head-to-head — and PHI at ARI, opening a series tomorrow, carries "ARI leads series 2-1" from their
+last meeting in June. Captioning an unplayed series with the result of a previous one is worse than
+saying nothing, so a series opener draws nothing.
 
 The summary beside the dots was set in Lekton, which is the face this project reserves for figures
-that change in place: the game clock, the scores, the records. "BOS leads series 3-2" is a caption,
-not a column, and it now takes the same uppercase sans treatment as every other small label on the
-screen. It needed `line-height: 1` to sit on the dots' optical centre, the row being centred against
-circular icons.
+that change in place: the game clock, the scores, the records. "WSH leads series 2-1" is a caption,
+not a column, and it reads as a sentence in sans at its own casing. It needed `line-height: 1` to
+sit on the dots' optical centre, the row being centred against circular icons.
 
 Separately, `test:e2e` had been failing on the full verification run and passing on its own. Cypress
 serves `.output/chrome-mv3` for the length of a run, and `wxt zip` deletes and rebuilds that same

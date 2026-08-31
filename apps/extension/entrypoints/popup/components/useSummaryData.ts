@@ -161,12 +161,13 @@ export const shouldFetchSummary = (game: SummaryGameArg): boolean => {
 	return seriesSports.has(game.sportType);
 };
 
-// ESPN mints a 'current' entry only once a series is actually underway, and does not reliably put
-// it first: a pre-game screen commonly sees ['preseason', 'season'] instead. Picking blindly by
-// index is what leaves a pre-game card with no dots at all.
+// Only the series being played right now. ESPN also ships a 'season' entry holding the whole
+// head-to-head — six meetings spread across the year — and a series opener carries that and
+// nothing else, so falling back to it captions a series that has not started with the record from
+// the last one. It is not reliably index 0 either: a 'preseason' entry can sit in front of it.
 export const pickSeriesEntry = (entries: SeriesInfo[] | undefined): SeriesInfo | null => {
 	if (!Array.isArray(entries)) return null;
-	return entries.find(entry => entry.type === 'current') ?? entries.find(entry => entry.type === 'season') ?? null;
+	return entries.find(entry => entry.type === 'current') ?? null;
 };
 
 const useSummaryData = (game: SummaryGameArg): summaryDataResult => {
