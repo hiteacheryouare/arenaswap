@@ -1,5 +1,5 @@
 import { i18n } from '#i18n';
-import { getRandomNoGamesMessage } from '../popupHelpers';
+import NoGamesMessage from './noGamesMessage';
 
 interface emptyGameStateProps {
 	noLeaguesSelected: boolean;
@@ -21,19 +21,7 @@ const emptyGameState = ({ noLeaguesSelected, noGames, onOpenSetup, onRefresh }: 
 		);
 	}
 
-	if (noGames) {
-		const msg = getRandomNoGamesMessage();
-		return (
-			<div className='mt-3 text-center popup-no-games-wrap'>
-				<div className='fw-bold text-body mb-1 popup-no-games-title'>{msg.title}</div>
-				<div className='popup-no-games-sub mb-2'>{msg.sub}</div>
-				<div className='d-flex justify-content-center gap-3'>
-					<button className='btn btn-link btn-sm p-0 popup-settings-link' onClick={onRefresh}>{i18n.t('empty.refresh')}</button>
-					<button className='btn btn-link btn-sm p-0 popup-settings-link' onClick={onOpenSetup}>{i18n.t('empty.settings')}</button>
-				</div>
-			</div>
-		);
-	}
+	if (noGames) return <NoGamesMessage onOpenSetup={onOpenSetup} onRefresh={onRefresh} />;
 
 	return null;
 };
