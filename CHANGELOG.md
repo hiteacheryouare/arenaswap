@@ -1,5 +1,40 @@
 # Changelog
 
+## The empty state stopped shuffling its own message — 2026-08-30
+
+With nothing live and upcoming games turned off, the popup shows one of seven written "no games"
+lines. It was visibly flipping through several of them before settling, most often right after a
+refresh.
+
+The roll was sitting in the render body. Render is meant to be a pure function of props and state,
+so React is free to run it as often as it likes, and `mutate` re-renders the popup more than once as
+it settles. Every one of those passes drew a new message. It only looked intermittent because seven
+options means a one-in-seven chance of drawing the same line twice and hiding the seam.
+
+Moving the roll into `useState` was most of it, but not all of it. `EmptyGameState` renders
+unconditionally and returns `null` internally, so it never unmounts, and a `useState` at the top of
+it would have frozen one message for the whole time the popup stayed open. A slate that emptied,
+filled and emptied again would have shown the same line both times. The `noGames` branch is its own
+file now, `noGamesMessage.tsx`, rendered only while the empty state is up. React mounts it when the
+state appears and unmounts it when games arrive, so the message lasts exactly as long as the thing
+it captions.
+
+The initializer is passed to `useState` rather than called into it. `useState(getRandomNoGamesMessage())`
+also fixes the flicker, since React ignores the argument after the first render, but it leaves two
+`i18n.t` lookups running on every pass for a result that gets thrown away.
+
+The issue asked for a fresh message once a refresh completes. That one was dropped on purpose. SWR
+reports `isLoading` only when it has no cached data, so a manual refresh over an existing slate never
+flips it, and honouring the request would have meant threading a refresh counter from `App.tsx` down
+through `mainView` for the sake of re-rolling a joke. Holding the message steady through a refresh is
+closer to what the bug was complaining about anyway.
+
+Three component tests. One asserts the message survives twelve re-renders, which a re-rolling render
+body clears about once in thirteen billion runs, and it was confirmed failing against the old code
+before the fix went in. One takes the empty state away and brings it back twenty times and asserts
+more than one message appears, which is the mount boundary doing its job rather than a `useState`
+that simply never re-runs. The third checks the text is one of the seven lines we actually wrote.
+
 ## The series dots went missing when the postseason did — 2026-08-30
 
 A pre-game screen drew no series dots at all. The scoreboard had started carrying both teams'
