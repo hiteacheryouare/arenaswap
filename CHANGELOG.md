@@ -1,5 +1,72 @@
 # Changelog
 
+## Up Next pages by day instead of cutting the slate at ten — 2026-09-01
+
+"Show 10 more" could hide half of one day. On a full MLB day you saw eight of fifteen games, with
+the rest of that same date behind the button and a date divider above them claiming to head the lot.
+
+The cut ran before the grouping. `mainView` sliced the flat, already-sorted list at a hardcoded 10
+and `groupByDate` only ran afterwards, on whatever survived, so the cut point was wherever game ten
+happened to fall. Nothing about that has to do with a date boundary.
+
+Up Next now shows exactly one day. Grouping runs first and the section renders a single group, so a
+day cannot be split — not by a smarter limit, but because there is no longer a number to get wrong.
+
+The control is Bootstrap's `.pagination`, which was already compiled into the popup's CSS and unused.
+It replaces the date divider rather than sitting under the list: the divider and a pager naming the
+same date would have said it twice on any light day, and a pager at the foot of a fifteen-game list
+leaves you at the bottom of a fresh day after every press. The arrows take the slack and the day
+keeps its natural width, so both controls get a real hit area without stretching the active page
+into a full-width bar of `$primary`.
+
+Adopting it turned up a gap in the theme. Bootstrap 5.3's pagination is entirely CSS-variable
+driven, so it picked up `--as-body-bg` and `--as-border-color` for free — but its disabled and hover
+fills come from `--as-secondary-bg` and `--as-tertiary-bg`, which this theme never overrode and
+which are therefore still Bootstrap's light defaults, `#e9ecef` and `#f8f9fa`. Nothing in the popup
+had asked for them before. Rendered, the arrow at the end of the range was a white slab on a
+`#0d1117` popup, and a focused arrow flashed white. They are set to popup colours here rather than
+on `$body-secondary-bg`, so nothing else in the extension has to move.
+
+`$pagination-active-color` goes to `#0d1117` for the same class of reason: Bootstrap picks the
+active page's label with `$component-active-color`, a flat white that reaches only 3.22:1 on
+`$primary`. Buttons escape this because they run the colour through `color-contrast()`; pagination
+does not. And `$pagination-font-size` drops to 0.72rem, since this pagination heads a section rather
+than closing a page of results, and `$font-size-base` is 15px.
+
+None of the three light-default bugs were visible to a test that only asked what was in the DOM.
+They were caught by rendering the popup at 320x560 and looking at it, and each now has an assertion
+on the computed colour.
+
+The pager renders on a one-day slate too, with both arrows disabled, because it is the only thing
+naming the day now and that day would otherwise be unheaded.
+
+The page is held as a date key rather than an index. The day list is rebuilt on every poll — games
+kick off and leave the `pre` list, the range setting moves, midnight rolls the labels forward — and
+an index survives all of that still pointing at whatever now sits in that slot. Store `2` and a day
+dropping off the front moves you to Thursday without saying so. Store Wednesday and you are on
+Wednesday for as long as there is one.
+
+When there is no longer one, the pager snaps to the first day rather than hunting for the nearest
+surviving date. Landing somewhere real beats landing somewhere clever, and the case it costs you is
+narrow: the day you were reading has to empty out entirely while you sit on it, which in practice
+means its last game kicked off and the day you wanted is now live.
+
+`main.showMoreUpcoming` is gone from all twelve locales, replaced by three keys the pager needs.
+All three are accessible names: the nav's label and the two arrows, which are chevrons with no text
+of their own. The visible text is the date, which comes from `toLocaleDateString` and not from our
+locale files at all — so its length is not something a string audit can bound, and the width test
+measures a German date rather than reading one out of the JSON.
+
+Nine tests on the pager, five on the section and four on the resolver. The first section test
+mounts a twelve-game day and asserts all twelve render, which is #103 stated directly and fails
+against the old slice.
+
+One existing test changed shape rather than being deleted. `sorts upcoming games by day before
+league priority` read two cards out of one flat list, and there is no longer a flat list spanning
+days. The invariant still matters — day-first sorting is what lets `groupByDate` build its groups in
+a single pass — so it is now asserted as page order instead of row order, which also pins the days
+into chronological order on the way past.
+
 ## The empty state stopped shuffling its own message — 2026-08-30
 
 With nothing live and upcoming games turned off, the popup shows one of seven written "no games"
