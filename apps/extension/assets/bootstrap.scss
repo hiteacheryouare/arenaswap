@@ -17,6 +17,21 @@ $form-check-input-checked-border-color: #F75C03;
 $tooltip-color: #f8fafc;
 $tooltip-bg:    #1f2937;
 
+// The Up Next day pager is the only pagination in the popup, and it heads a section rather than
+// closing a page of results, so it takes the scale of a heading label instead of body text.
+$pagination-font-size: 0.72rem;
+// Bootstrap picks the active page's label with $component-active-color, a flat white that only
+// reaches 3.22:1 on $primary. Buttons escape this because they run the colour through
+// color-contrast(); pagination does not.
+$pagination-active-color: #0d1117;
+// Pagination is the first thing in the popup to reach for --as-secondary-bg and --as-tertiary-bg,
+// which this theme never overrode and which are therefore still Bootstrap's light defaults: #e9ecef
+// disabled, #f8f9fa on hover. Left alone, an arrow at the end of the range is a white slab on a
+// #0d1117 popup. Set here rather than on $body-secondary-bg so nothing else has to move.
+$pagination-disabled-bg: #0d1117;
+$pagination-hover-bg: #161b22;
+$pagination-focus-bg: #161b22;
+
 @import 'bootstrap/scss/bootstrap';
 
 $bootstrap-icons-font-dir: '/fonts';

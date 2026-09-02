@@ -212,7 +212,9 @@
 		"sectionActiveLiveTabs": "アクティブタブ",
 		"sectionOtherLiveGames": "ライブ試合",
 		"sectionUpNext": "次の試合",
-		"showMoreUpcoming": "さらに{count}件表示",
+		"upcomingDayNavLabel": "日付ごとの今後の試合",
+		"upcomingPreviousDay": "前の日",
+		"upcomingNextDay": "次の日",
 		"enableToggleLabel": "自動切り替えを有効にする"
 	},
 	"detail": {

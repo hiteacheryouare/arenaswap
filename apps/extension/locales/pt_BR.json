@@ -212,7 +212,9 @@
 		"sectionActiveLiveTabs": "Abas ativas",
 		"sectionOtherLiveGames": "Jogos ao vivo",
 		"sectionUpNext": "A seguir",
-		"showMoreUpcoming": "Ver mais {count}",
+		"upcomingDayNavLabel": "Próximos jogos por dia",
+		"upcomingPreviousDay": "Dia anterior",
+		"upcomingNextDay": "Próximo dia",
 		"enableToggleLabel": "Ativar troca automática"
 	},
 	"detail": {

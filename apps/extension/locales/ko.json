@@ -212,7 +212,9 @@
 		"sectionActiveLiveTabs": "활성 탭",
 		"sectionOtherLiveGames": "진행 중인 경기",
 		"sectionUpNext": "다음 경기",
-		"showMoreUpcoming": "{count}개 더 보기",
+		"upcomingDayNavLabel": "날짜별 예정 경기",
+		"upcomingPreviousDay": "이전 날",
+		"upcomingNextDay": "다음 날",
 		"enableToggleLabel": "자동 전환 활성화"
 	},
 	"detail": {

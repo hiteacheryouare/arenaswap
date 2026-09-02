@@ -212,7 +212,9 @@
 		"sectionActiveLiveTabs": "活跃标签页",
 		"sectionOtherLiveGames": "直播比赛",
 		"sectionUpNext": "即将开赛",
-		"showMoreUpcoming": "再显示 {count} 场",
+		"upcomingDayNavLabel": "按日期查看即将开始的比赛",
+		"upcomingPreviousDay": "前一天",
+		"upcomingNextDay": "后一天",
 		"enableToggleLabel": "启用自动切换"
 	},
 	"detail": {

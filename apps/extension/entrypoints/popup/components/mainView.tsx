@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import type { ReactNode } from 'react';
 import { i18n } from '#i18n';
 import type { Browser } from 'wxt/browser';
 import type {
@@ -17,7 +18,8 @@ import EmptyGameState from './emptyGameState';
 import GameListHeader from './gameListHeader';
 import ReviewPromptBanner from './reviewPromptBanner';
 import SuggestBanner from './suggestBanner';
-import { buildFavoritePinnedComparator, buildLeagueRank, buildUpcomingComparator, getRandomLoadingMessage, groupByDate, groupByLeague } from '../popupHelpers';
+import UpcomingDayPager from './upcomingDayPager';
+import { buildFavoritePinnedComparator, buildLeagueRank, buildUpcomingComparator, getRandomLoadingMessage, groupByDate, groupByLeague, resolveSelectedDayIndex } from '../popupHelpers';
 import type { BettingDisplayPrefs, WeatherDisplayPrefs } from './gameCardTypes';
 
 const emptyScoreMap = new Map<string, PowerScoreResult>();
@@ -37,7 +39,7 @@ interface gameSectionProps {
 	onOpenGameDetail: (gameId: string) => void;
 	bettingPrefs: BettingDisplayPrefs;
 	weatherPrefs: WeatherDisplayPrefs;
-	groupDates?: boolean;
+	afterTitle?: ReactNode;
 	first?: boolean;
 }
 
@@ -69,14 +71,6 @@ interface mainViewProps {
 	onRegistryChange: (updated: TabRegistration[]) => void;
 	formatTabLabel: (tab: Browser.tabs.Tab) => string;
 }
-
-const dateDivider = (label: string) => (
-	<div className='d-flex align-items-center gap-2 my-2'>
-		<hr className='flex-grow-1 m-0 border-secondary-subtle opacity-50' />
-		<span className='text-body-tertiary' style={{ fontSize: '0.65rem', letterSpacing: '0.04em', textTransform: 'uppercase', fontWeight: 600, whiteSpace: 'nowrap' }}>{label}</span>
-		<hr className='flex-grow-1 m-0 border-secondary-subtle opacity-50' />
-	</div>
-);
 
 const leagueRows = (
 	games: Game[],
@@ -130,20 +124,13 @@ const gameSection = ({
 	onOpenGameDetail,
 	bettingPrefs,
 	weatherPrefs,
-	groupDates,
+	afterTitle,
 	first,
 }: gameSectionProps) => (
 	<div className='mt-2'>
 		<PopupSectionTitle first={first}>{title}</PopupSectionTitle>
-		{groupDates
-			? groupByDate(games).map(({ dateLabel, games: dayGames }) => (
-				<div key={dateLabel}>
-					{dateDivider(dateLabel)}
-					{leagueRows(dayGames, scoreMap, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs, weatherPrefs)}
-				</div>
-			))
-			: leagueRows(games, scoreMap, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs, weatherPrefs)
-		}
+		{afterTitle}
+		{leagueRows(games, scoreMap, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs, weatherPrefs)}
 	</div>
 );
 
@@ -200,10 +187,11 @@ const mainView = ({
 			.toSorted(sortUpcomingGames),
 		[games, sortUpcomingGames, upcomingCutoffMs],
 	);
-	const [showAllUpcoming, setShowAllUpcoming] = useState(false);
-	const upcomingInitialLimit = 10;
-	const visibleUpcomingGames = showAllUpcoming ? upcomingGames : upcomingGames.slice(0, upcomingInitialLimit);
-	const hiddenUpcomingCount = upcomingGames.length - upcomingInitialLimit;
+	// Grouping runs before any truncation, so what Up Next shows is always exactly one whole day.
+	const upcomingDays = useMemo(() => groupByDate(upcomingGames), [upcomingGames]);
+	const [selectedDayKey, setSelectedDayKey] = useState<string | null>(null);
+	const selectedDayIndex = resolveSelectedDayIndex(upcomingDays, selectedDayKey);
+	const selectedDay = upcomingDays[selectedDayIndex];
 	const registeredGameIds = useMemo(() => new Set(registry.map(r => r.gameId)), [registry]);
 	const assignedLiveGames = useMemo(
 		() => liveGames.filter(g => registeredGameIds.has(g.id)).toSorted(sortGames),
@@ -265,20 +253,31 @@ const mainView = ({
 			{!isLoading && !noLeaguesSelected && prefs.proTipsEnabled && <ProTip context='main' />}
 			{!isLoading && !noLeaguesSelected && assignedLiveGames.length > 0 && gameSection({ title: i18n.t('main.sectionActiveLiveTabs'), games: assignedLiveGames, scoreMap, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs, weatherPrefs, first: true })}
 			{!isLoading && !noLeaguesSelected && unassignedLiveGames.length > 0 && gameSection({ title: i18n.t('main.sectionOtherLiveGames'), games: unassignedLiveGames, scoreMap, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs, weatherPrefs, first: assignedLiveGames.length === 0 })}
-			{!isLoading && !noLeaguesSelected && prefs.showUpcomingGames && upcomingGames.length > 0 && (
-				<>
-					{gameSection({ title: i18n.t('main.sectionUpNext'), games: visibleUpcomingGames, scoreMap: emptyScoreMap, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs, weatherPrefs, groupDates: true, first: assignedLiveGames.length === 0 && unassignedLiveGames.length === 0 })}
-					{!showAllUpcoming && hiddenUpcomingCount > 0 && (
-						<button
-							type='button'
-							className='btn btn-sm btn-outline-secondary w-100 mt-1 mb-2'
-							onClick={() => setShowAllUpcoming(true)}
-						>
-							{i18n.t('main.showMoreUpcoming', { count: String(hiddenUpcomingCount) })}
-						</button>
-					)}
-				</>
-			)}
+			{!isLoading && !noLeaguesSelected && prefs.showUpcomingGames && selectedDay && gameSection({
+				title: i18n.t('main.sectionUpNext'),
+				games: selectedDay.games,
+				scoreMap: emptyScoreMap,
+				leagueLogos,
+				favoriteTeamIds,
+				onToggleFavoriteTeam,
+				gameBoosts,
+				openTabs,
+				registry,
+				onRegistryChange,
+				formatTabLabel,
+				onOpenGameDetail,
+				bettingPrefs,
+				weatherPrefs,
+				afterTitle: (
+					<UpcomingDayPager
+						dayLabel={selectedDay.dateLabel}
+						index={selectedDayIndex}
+						total={upcomingDays.length}
+						onSelect={index => setSelectedDayKey(upcomingDays[index]?.key ?? null)}
+					/>
+				),
+				first: assignedLiveGames.length === 0 && unassignedLiveGames.length === 0,
+			})}
 
 			<PopupFooter />
 		</div>

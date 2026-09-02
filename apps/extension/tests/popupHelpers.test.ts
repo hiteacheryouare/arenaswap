@@ -13,6 +13,7 @@ import {
 	leaguesBySportType,
 	moveLeague,
 	normalizeBackgroundState,
+	resolveSelectedDayIndex,
 } from '../entrypoints/popup/popupHelpers';
 import { createFavoriteTeamKey, leagueConfigs } from '@arenaswap/core/constants';
 import type { Game, LeagueId } from '@arenaswap/core/types';
@@ -381,5 +382,33 @@ describe('fetchState', () => {
 		const send = mockSendMessage(liveGameState);
 		await fetchState(true);
 		expect(send).toHaveBeenCalledWith({ type: 'GET_STATE', forceRefresh: true });
+	});
+});
+
+describe('resolveSelectedDayIndex', () => {
+	const days = [
+		{ key: 'Mon Sep 01 2026', dateLabel: 'Today', games: [] },
+		{ key: 'Tue Sep 02 2026', dateLabel: 'Tomorrow', games: [] },
+		{ key: 'Wed Sep 03 2026', dateLabel: 'Wednesday, Sep 3', games: [] },
+	];
+
+	it('opens on the first day before anything has been navigated to', () => {
+		expect(resolveSelectedDayIndex(days, null)).toBe(0);
+	});
+
+	it('finds the day matching the selected key', () => {
+		expect(resolveSelectedDayIndex(days, 'Wed Sep 03 2026')).toBe(2);
+	});
+
+	// The day you were parked on can vanish between polls, most often by kicking off and leaving the
+	// pre list. Snapping to the first day always lands on a real one.
+	it('falls back to the first day when the selected one is gone', () => {
+		expect(resolveSelectedDayIndex(days, 'Sun Aug 31 2026')).toBe(0);
+	});
+
+	it('stays in range when there are no upcoming days at all', () => {
+		const index = resolveSelectedDayIndex([], 'Wed Sep 03 2026');
+		expect(index).toBeGreaterThanOrEqual(0);
+		expect(index).toBeLessThanOrEqual(0);
 	});
 });

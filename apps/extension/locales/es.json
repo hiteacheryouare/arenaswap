@@ -212,7 +212,9 @@
 		"sectionActiveLiveTabs": "Pestañas activas",
 		"sectionOtherLiveGames": "Partidos en vivo",
 		"sectionUpNext": "A continuación",
-		"showMoreUpcoming": "Ver {count} más",
+		"upcomingDayNavLabel": "Próximos partidos por día",
+		"upcomingPreviousDay": "Día anterior",
+		"upcomingNextDay": "Día siguiente",
 		"enableToggleLabel": "Activar cambio automático"
 	},
 	"detail": {

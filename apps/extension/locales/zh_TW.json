@@ -212,7 +212,9 @@
 		"sectionActiveLiveTabs": "活躍分頁",
 		"sectionOtherLiveGames": "直播比賽",
 		"sectionUpNext": "即將開賽",
-		"showMoreUpcoming": "再顯示 {count} 場",
+		"upcomingDayNavLabel": "依日期查看即將開始的比賽",
+		"upcomingPreviousDay": "前一天",
+		"upcomingNextDay": "後一天",
 		"enableToggleLabel": "啟用自動切換"
 	},
 	"detail": {

@@ -132,14 +132,18 @@ describe('mainView game sections', () => {
 		cy.get('[data-testid="game-card-upcoming-1"]').should('not.exist');
 	});
 
+	// Day-first sorting is what lets groupByDate build its groups in one pass, so it is still worth
+	// pinning. It now shows up as page order rather than row order: the earlier day pages first even
+	// though the NBA outranks the WNBA within a day.
 	it('sorts upcoming games by day before league priority', () => {
 		const todayGame = makeGame('today-wnba', 'pre', { league: 'wnba', startTime: '2026-05-27T23:00:00.000Z' });
 		const tomorrowGame = makeGame('tomorrow-nba', 'pre', { league: 'nba', startTime: '2026-05-28T20:30:00.000Z' });
 		cy.mount(<MainView {...defaultProps} games={[tomorrowGame, todayGame]} />);
-		cy.get('[data-testid^="game-card-"]').then($cards => {
-			expect($cards[0]).to.have.attr('data-testid', 'game-card-today-wnba');
-			expect($cards[1]).to.have.attr('data-testid', 'game-card-tomorrow-nba');
-		});
+		cy.get('[data-testid="game-card-today-wnba"]').should('exist');
+		cy.get('[data-testid="game-card-tomorrow-nba"]').should('not.exist');
+		cy.get('[data-testid="upcoming-day-next"]').click();
+		cy.get('[data-testid="game-card-tomorrow-nba"]').should('exist');
+		cy.get('[data-testid="game-card-today-wnba"]').should('not.exist');
 	});
 
 	it('orders live league sections by the default league order', () => {
@@ -160,5 +164,61 @@ describe('mainView game sections', () => {
 			expect($cards[0]).to.have.attr('data-testid', 'game-card-live-wnba');
 			expect($cards[1]).to.have.attr('data-testid', 'game-card-live-nba');
 		});
+	});
+});
+
+// Anchored to local noon so a spec run near midnight cannot land a game on the wrong calendar day,
+// which is the boundary groupByDate keys on.
+const dayAt = (offsetDays: number) => {
+	const date = new Date();
+	date.setDate(date.getDate() + offsetDays);
+	date.setHours(12, 0, 0, 0);
+	return date.toISOString();
+};
+
+describe('mainView up next day pager', () => {
+	// The regression #103 describes: truncation used to slice the flat list at 10 games, so a
+	// 12-game day lost its last two under a divider claiming to head the whole day.
+	it('shows every game on the selected day rather than the first ten of the slate', () => {
+		const today = Array.from({ length: 12 }, (_, i) => makeGame(`today-${i}`, 'pre', { startTime: dayAt(0) }));
+		cy.mount(<MainView {...defaultProps} games={[...today, makeGame('tomorrow-0', 'pre', { startTime: dayAt(1) })]} />);
+		cy.get('[data-testid^="game-card-today-"]').should('have.length', 12);
+	});
+
+	it('shows only the selected day, never games from the next one', () => {
+		cy.mount(<MainView {...defaultProps} games={[
+			makeGame('today-0', 'pre', { startTime: dayAt(0) }),
+			makeGame('tomorrow-0', 'pre', { startTime: dayAt(1) }),
+		]} />);
+		cy.get('[data-testid="game-card-today-0"]').should('exist');
+		cy.get('[data-testid="game-card-tomorrow-0"]').should('not.exist');
+	});
+
+	it('pages forward to the next day and back again', () => {
+		cy.mount(<MainView {...defaultProps} games={[
+			makeGame('today-0', 'pre', { startTime: dayAt(0) }),
+			makeGame('tomorrow-0', 'pre', { startTime: dayAt(1) }),
+		]} />);
+		cy.get('[data-testid="upcoming-day-label"]').should('have.text', 'Today');
+		cy.get('[data-testid="upcoming-day-next"]').click();
+		cy.get('[data-testid="upcoming-day-label"]').should('have.text', 'Tomorrow');
+		cy.get('[data-testid="game-card-tomorrow-0"]').should('exist');
+		cy.get('[data-testid="game-card-today-0"]').should('not.exist');
+		cy.get('[data-testid="upcoming-day-previous"]').click();
+		cy.get('[data-testid="upcoming-day-label"]').should('have.text', 'Today');
+		cy.get('[data-testid="game-card-today-0"]').should('exist');
+	});
+
+	// The pager replaced the date divider, so it is the only thing naming the day. Dropping it on a
+	// single-day slate would leave that day unheaded.
+	it('still heads a one-day slate', () => {
+		cy.mount(<MainView {...defaultProps} games={[makeGame('today-0', 'pre', { startTime: dayAt(0) })]} />);
+		cy.get('[data-testid="upcoming-day-pager"]').should('exist');
+		cy.get('[data-testid="upcoming-day-label"]').should('have.text', 'Today');
+	});
+
+	it('draws no pager when upcoming games are turned off', () => {
+		cy.mount(<MainView {...defaultProps} prefs={{ ...defaultPrefs, showUpcomingGames: false }} games={[makeGame('today-0', 'pre', { startTime: dayAt(0) })]} />);
+		cy.get('[data-testid="upcoming-day-pager"]').should('not.exist');
 	});
 });

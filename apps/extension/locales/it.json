@@ -212,7 +212,9 @@
 		"sectionActiveLiveTabs": "Schede attive",
 		"sectionOtherLiveGames": "In diretta",
 		"sectionUpNext": "A seguire",
-		"showMoreUpcoming": "Mostra altre {count}",
+		"upcomingDayNavLabel": "Prossime partite per giorno",
+		"upcomingPreviousDay": "Giorno precedente",
+		"upcomingNextDay": "Giorno successivo",
 		"enableToggleLabel": "Attiva il cambio automatico"
 	},
 	"detail": {

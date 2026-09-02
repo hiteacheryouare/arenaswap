@@ -212,7 +212,9 @@
 		"sectionActiveLiveTabs": "Onglets actifs",
 		"sectionOtherLiveGames": "Matchs en direct",
 		"sectionUpNext": "À suivre",
-		"showMoreUpcoming": "Voir {count} de plus",
+		"upcomingDayNavLabel": "Prochains matchs par jour",
+		"upcomingPreviousDay": "Jour précédent",
+		"upcomingNextDay": "Jour suivant",
 		"enableToggleLabel": "Activer le changement automatique"
 	},
 	"detail": {

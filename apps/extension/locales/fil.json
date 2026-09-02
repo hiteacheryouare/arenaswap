@@ -212,7 +212,9 @@
 		"sectionActiveLiveTabs": "Mga Aktibong Tab",
 		"sectionOtherLiveGames": "Mga Live na Laro",
 		"sectionUpNext": "Susunod",
-		"showMoreUpcoming": "Ipakita ang {count} pa",
+		"upcomingDayNavLabel": "Mga paparating na laro ayon sa araw",
+		"upcomingPreviousDay": "Nakaraang araw",
+		"upcomingNextDay": "Susunod na araw",
 		"enableToggleLabel": "I-enable ang awtomatikong paglipat"
 	},
 	"detail": {
