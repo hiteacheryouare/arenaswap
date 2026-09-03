@@ -1,5 +1,5 @@
-import { useMemo, useState } from 'react';
-import type { ReactNode } from 'react';
+import { useMemo } from 'react';
+import type { ReactNode, RefObject } from 'react';
 import { i18n } from '#i18n';
 import type { Browser } from 'wxt/browser';
 import type {
@@ -21,6 +21,7 @@ import SuggestBanner from './suggestBanner';
 import UpcomingDayPager from './upcomingDayPager';
 import { buildFavoritePinnedComparator, buildLeagueRank, buildUpcomingComparator, getRandomLoadingMessage, groupByDate, groupByLeague, resolveSelectedDayIndex } from '../popupHelpers';
 import type { BettingDisplayPrefs, WeatherDisplayPrefs } from './gameCardTypes';
+import useRestoredScroll from '../useRestoredScroll';
 
 const emptyScoreMap = new Map<string, PowerScoreResult>();
 
@@ -70,6 +71,9 @@ interface mainViewProps {
 	onToggleFavoriteTeam: (leagueId: LeagueId, teamId: string) => void;
 	onRegistryChange: (updated: TabRegistration[]) => void;
 	formatTabLabel: (tab: Browser.tabs.Tab) => string;
+	scrollOffsetRef: RefObject<number>;
+	selectedDayKey: string | null;
+	onSelectDay: (dayKey: string | null) => void;
 }
 
 const leagueRows = (
@@ -161,7 +165,11 @@ const mainView = ({
 	onToggleFavoriteTeam,
 	onRegistryChange,
 	formatTabLabel,
+	scrollOffsetRef,
+	selectedDayKey,
+	onSelectDay,
 }: mainViewProps) => {
+	const scrollerRef = useRestoredScroll(scrollOffsetRef);
 	const noLeaguesSelected = prefs.enabledLeagues.length === 0;
 	const loadingMessage = useMemo(() => getRandomLoadingMessage(), []);
 	const scoreByGameId = useMemo(() => new Map(scores.map(s => [s.gameId, s.total])), [scores]);
@@ -189,7 +197,6 @@ const mainView = ({
 	);
 	// Grouping runs before any truncation, so what Up Next shows is always exactly one whole day.
 	const upcomingDays = useMemo(() => groupByDate(upcomingGames), [upcomingGames]);
-	const [selectedDayKey, setSelectedDayKey] = useState<string | null>(null);
 	const selectedDayIndex = resolveSelectedDayIndex(upcomingDays, selectedDayKey);
 	const selectedDay = upcomingDays[selectedDayIndex];
 	const registeredGameIds = useMemo(() => new Set(registry.map(r => r.gameId)), [registry]);
@@ -213,7 +220,7 @@ const mainView = ({
 	};
 
 	return (
-		<div className='popup-container d-flex flex-column'>
+		<div ref={scrollerRef} className='popup-container d-flex flex-column'>
 			<PopupHeader
 				logoSrc='/images/full_logo_white_on_transparent.svg'
 				enabled={prefs.enabled}
@@ -273,7 +280,7 @@ const mainView = ({
 						dayLabel={selectedDay.dateLabel}
 						index={selectedDayIndex}
 						total={upcomingDays.length}
-						onSelect={index => setSelectedDayKey(upcomingDays[index]?.key ?? null)}
+						onSelect={index => onSelectDay(upcomingDays[index]?.key ?? null)}
 					/>
 				),
 				first: assignedLiveGames.length === 0 && unassignedLiveGames.length === 0,

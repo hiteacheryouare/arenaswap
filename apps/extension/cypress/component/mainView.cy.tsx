@@ -1,3 +1,4 @@
+import { useRef, useState } from 'react';
 import MainView from '../../entrypoints/popup/components/mainView';
 import type { UserPreferences } from '@arenaswap/core/types';
 
@@ -64,6 +65,53 @@ const defaultProps = {
 	suggestionCount: 0,
 	onReviewSuggestions: () => {},
 	onDismissSuggestions: () => {},
+	scrollOffsetRef: { current: 0 },
+	selectedDayKey: null,
+	onSelectDay: () => {},
+};
+
+// The day page and the scroll offset both live in `app.tsx` now, so a bare `cy.mount(<MainView/>)`
+// has no state behind the pager. This stands in for the part of the app the view no longer owns.
+const StatefulMainView = ({ games, prefs = defaultPrefs }: { games: ReturnType<typeof makeGame>[]; prefs?: UserPreferences }) => {
+	const scrollOffsetRef = useRef(0);
+	const [selectedDayKey, setSelectedDayKey] = useState<string | null>(null);
+	return (
+		<MainView
+			{...defaultProps}
+			prefs={prefs}
+			games={games}
+			scrollOffsetRef={scrollOffsetRef}
+			selectedDayKey={selectedDayKey}
+			onSelectDay={setSelectedDayKey}
+		/>
+	);
+};
+
+// Mirrors the `key={view}` remount in `app.tsx`: leaving the list unmounts it outright, so anything
+// the view owned itself would be gone by the time you came back.
+const NavigatingMainView = ({ games }: { games: ReturnType<typeof makeGame>[] }) => {
+	const scrollOffsetRef = useRef(0);
+	const [selectedDayKey, setSelectedDayKey] = useState<string | null>(null);
+	const [view, setView] = useState<'main' | 'detail'>('main');
+	return (
+		<div key={view}>
+			{view === 'main' && (
+				<>
+					<button type='button' data-testid='fake-open-detail' onClick={() => setView('detail')}>Open</button>
+					<MainView
+						{...defaultProps}
+						games={games}
+						scrollOffsetRef={scrollOffsetRef}
+						selectedDayKey={selectedDayKey}
+						onSelectDay={setSelectedDayKey}
+					/>
+				</>
+			)}
+			{view === 'detail' && (
+				<button type='button' data-testid='fake-back' onClick={() => setView('main')}>Back</button>
+			)}
+		</div>
+	);
 };
 
 describe('mainView review prompt', () => {
@@ -138,7 +186,7 @@ describe('mainView game sections', () => {
 	it('sorts upcoming games by day before league priority', () => {
 		const todayGame = makeGame('today-wnba', 'pre', { league: 'wnba', startTime: '2026-05-27T23:00:00.000Z' });
 		const tomorrowGame = makeGame('tomorrow-nba', 'pre', { league: 'nba', startTime: '2026-05-28T20:30:00.000Z' });
-		cy.mount(<MainView {...defaultProps} games={[tomorrowGame, todayGame]} />);
+		cy.mount(<StatefulMainView games={[tomorrowGame, todayGame]} />);
 		cy.get('[data-testid="game-card-today-wnba"]').should('exist');
 		cy.get('[data-testid="game-card-tomorrow-nba"]').should('not.exist');
 		cy.get('[data-testid="upcoming-day-next"]').click();
@@ -195,7 +243,7 @@ describe('mainView up next day pager', () => {
 	});
 
 	it('pages forward to the next day and back again', () => {
-		cy.mount(<MainView {...defaultProps} games={[
+		cy.mount(<StatefulMainView games={[
 			makeGame('today-0', 'pre', { startTime: dayAt(0) }),
 			makeGame('tomorrow-0', 'pre', { startTime: dayAt(1) }),
 		]} />);
@@ -220,5 +268,23 @@ describe('mainView up next day pager', () => {
 	it('draws no pager when upcoming games are turned off', () => {
 		cy.mount(<MainView {...defaultProps} prefs={{ ...defaultPrefs, showUpcomingGames: false }} games={[makeGame('today-0', 'pre', { startTime: dayAt(0) })]} />);
 		cy.get('[data-testid="upcoming-day-pager"]').should('not.exist');
+	});
+
+	// #104: the day page used to be component state inside the view, so it went out with the remount
+	// and Up Next silently reset to the first day.
+	it('holds the day page across a trip out of the list', () => {
+		cy.mount(<NavigatingMainView games={[
+			makeGame('today-0', 'pre', { startTime: dayAt(0) }),
+			makeGame('tomorrow-0', 'pre', { startTime: dayAt(1) }),
+		]} />);
+		cy.get('[data-testid="upcoming-day-next"]').click();
+		cy.get('[data-testid="upcoming-day-label"]').should('have.text', 'Tomorrow');
+
+		cy.get('[data-testid="fake-open-detail"]').click();
+		cy.get('[data-testid="upcoming-day-pager"]').should('not.exist');
+		cy.get('[data-testid="fake-back"]').click();
+
+		cy.get('[data-testid="upcoming-day-label"]').should('have.text', 'Tomorrow');
+		cy.get('[data-testid="game-card-tomorrow-0"]').should('exist');
 	});
 });

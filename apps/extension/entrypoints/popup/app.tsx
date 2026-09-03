@@ -50,6 +50,10 @@ const isScoreUpdateMessage = (value: unknown): value is { type: 'SCORES_UPDATED'
 export default () => {
 	const [view, setView] = useState<popupView>('main');
 	const [selectedGameId, setSelectedGameId] = useState<string | null>(null);
+	// Held here rather than inside MainView: the view shell is keyed on `view`, so anything the main
+	// view owns itself is thrown away the moment you open a game, a setting or the suggestion sheet.
+	const [selectedDayKey, setSelectedDayKey] = useState<string | null>(null);
+	const mainScrollOffset = useRef(0);
 	const [prefs, setPrefs] = useState<UserPreferences>(createDefaultUserPreferences());
 	const prefsRef = useRef<UserPreferences>(createDefaultUserPreferences());
 	const [prefsLoaded, setPrefsLoaded] = useState(false);
@@ -434,6 +438,9 @@ export default () => {
 						onToggleFavoriteTeam={toggleFavoriteTeam}
 						onRegistryChange={onRegistryChange}
 						formatTabLabel={tab => formatTabLabel(tab, openTabs)}
+						scrollOffsetRef={mainScrollOffset}
+						selectedDayKey={selectedDayKey}
+						onSelectDay={setSelectedDayKey}
 					/>
 				)}
 				{view === 'suggest' && (

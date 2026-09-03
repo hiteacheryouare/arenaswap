@@ -1,5 +1,60 @@
 # Changelog
 
+## Coming back from a game keeps your place in the list — 2026-09-02
+
+Open a game card, come back, and the popup dumped you at the top. On a busy slate that meant
+scrolling down again to reach the game you had just been looking at, and it took the Up Next day
+page with it, so a Thursday you had paged to was a Wednesday again on the way back.
+
+Both came off the same line. `app.tsx` renders the view shell as `<div key={view}>`, and a changed
+key tells React the old view is a different thing entirely, so it unmounts. The day page was
+`useState` inside the view and went with it. The scroll offset is not React state at all: `scrollTop`
+lives on the `.popup-container` element, which React has no model of and therefore cannot preserve.
+Nothing warned about either one.
+
+The key stays. It is what replays the slide-in on `.popup-view-shell`, and the animation is worth
+keeping. What moved is the state. `selectedDayKey` is now held in `app.tsx`, and the offset is parked
+in a ref the app owns, so both outlive any single mount of the view.
+
+Because the offset belongs to the app rather than to the game screen, it is not the game screen
+specifically that restores it. Settings and the tab suggestion sheet return you to your place too,
+which falls out of where the ref lives rather than being three separate cases to keep in step.
+
+`useRestoredScroll` restores in a layout effect rather than an effect. Both run after React commits
+the DOM, but only a layout effect runs before the browser paints. With a plain effect the user sees
+one frame at the top of the list and then a jump, which is worse than the bug it replaces.
+
+The offset is captured twice, and both halves earn their place. A scroll listener covers the ordinary
+case. A read during cleanup covers the frame the view is left in, because scroll events are
+dispatched asynchronously and a scroll immediately before a click never reaches the listener. That
+one is real rather than theoretical: it is what made the settings round trip fail while the game
+screen passed. The cleanup read is guarded on `isConnected`, since a detached node reports 0 and
+would overwrite a good offset with a bad one.
+
+Restoring an offset the list has outgrown needs no guard. Assigning past the maximum clamps silently,
+so you land at the bottom instead of throwing, and reading the value straight back records the
+clamped number. A day whose games have kicked off while you were away cannot leave a saved offset
+pointing into empty space.
+
+Five tests on the hook, one on the day page and three end to end. The day page test was confirmed
+failing with the state moved back inside the view before the fix went in.
+
+Two things about the popup turned up while writing those tests, both worth recording because they
+will bite the next layout test.
+
+Bootstrap Icons is a webfont, and every game card measures two pixels shorter once it lands. Chrome's
+scroll anchoring then nudges the offset to compensate, which reads as the restore being four pixels
+out. `document.fonts.ready` is not enough on its own, since it resolves before a face nothing has
+painted yet is ever requested. The spec forces every declared face in before it measures anything.
+
+And `cy.get` resolves once while `should` retries against that same element. Querying the scroller
+before the list is back pins the assertion to the detached container, which reports `scrollTop` 0 for
+the whole four second retry window and looks exactly like the bug. Both round trip tests wait on the
+list first.
+
+The pro tip still re-rolls on every mount, so returning from a game can still insert or remove a
+two line alert. At a five percent chance per mount that is rare enough to leave alone for now.
+
 ## Up Next pages by day instead of cutting the slate at ten — 2026-09-01
 
 "Show 10 more" could hide half of one day. On a full MLB day you saw eight of fifteen games, with
