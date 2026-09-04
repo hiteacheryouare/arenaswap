@@ -34,7 +34,7 @@
 		"@types/bootstrap": "^5.2.11",
 		"@types/canvas-confetti": "^1.9.0",
 		"@types/react": "^19.2.18",
-		"@types/react-dom": "^19.2.4",
+		"@types/react-dom": "^19.2.5",
 		"@wxt-dev/module-react": "^1.2.2",
 		"autoprefixer": "^10.5.4",
 		"bootstrap": "^5.3.8",
@@ -43,7 +43,7 @@
 		"jest": "^30.4.2",
 		"react": "^19.2.8",
 		"react-dom": "^19.2.8",
-		"sass": "^1.102.0",
+		"sass": "^1.103.1",
 		"typescript": "^7.0.2",
 		"wxt": "^0.21.4"
 	}
