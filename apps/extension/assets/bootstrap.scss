@@ -1242,11 +1242,6 @@ button.game-info-attribution {
 	padding: var(--gd-inset);
 	background: #0d1117;
 
-	// Enough to clear the bulbs without taking a visible bite out of the content column.
-	&.has-holiday-lights {
-		--gd-inset: 1.1rem;
-	}
-
 	.game-meta-venue,
 	.game-meta-networks,
 	.game-meta-odds {

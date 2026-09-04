@@ -160,7 +160,6 @@
 		"temperatureUnitF": "°F",
 		"temperatureUnitC": "°C",
 		"temperatureUnitRomer": "°Rø",
-		"romerRevealed": "Ole Rømer, 1701. Salzlake bei 0, Körperwärme bei 22,5.",
 		"holidayDecorations": "Festtagsschmuck",
 		"holidayDecorationsExplainer": "Schnee fällt, wenn es im Stadion schneit, Laub in der Thanksgiving-Woche und Lichter den ganzen Dezember.",
 		"holidaySnow": "Schnee",
@@ -724,11 +723,5 @@
 			"l3": "Wir müssen erst langsamer werden.",
 			"l4": "Halt dieses Ding an! Ich befehle es!"
 		}
-	},
-	"standbyTestCard": {
-		"heading": "BITTE WARTEN",
-		"atMax": "Du hast verlangt, jedes Spiel auszusetzen, das unter 100 punktet. Keines tut das.",
-		"atMin": "Du hast verlangt, jedes Spiel auszusetzen, das unter 0 punktet. Keines tut das.",
-		"dismiss": "Zum Zurückkehren tippen"
 	}
 }

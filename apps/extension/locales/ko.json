@@ -160,7 +160,6 @@
 		"temperatureUnitF": "°F",
 		"temperatureUnitC": "°C",
 		"temperatureUnitRomer": "°Rø",
-		"romerRevealed": "올레 뢰머, 1701년. 소금물이 0, 체온이 22.5.",
 		"holidayDecorations": "홀리데이 장식",
 		"holidayDecorationsExplainer": "경기장에 눈이 오면 눈, 추수감사절 주간에는 낙엽, 12월 내내 조명이 나타납니다.",
 		"holidaySnow": "눈",
@@ -724,11 +723,5 @@
 			"l3": "먼저 속도를 줄여야 해.",
 			"l4": "그냥 이거 멈추라고! 명령이다!"
 		}
-	},
-	"standbyTestCard": {
-		"heading": "잠시만 기다려 주십시오",
-		"atMax": "100점 미만인 경기를 모두 건너뛰도록 설정하셨습니다. 그런 경기는 없습니다.",
-		"atMin": "0점 미만인 경기를 모두 건너뛰도록 설정하셨습니다. 그런 경기는 없습니다.",
-		"dismiss": "아무 곳이나 눌러 돌아가기"
 	}
 }

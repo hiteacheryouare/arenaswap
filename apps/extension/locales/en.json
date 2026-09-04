@@ -160,7 +160,6 @@
 		"temperatureUnitF": "°F",
 		"temperatureUnitC": "°C",
 		"temperatureUnitRomer": "°Rø",
-		"romerRevealed": "Ole Rømer, 1701. Brine at 0, body heat at 22.5.",
 		"holidayDecorations": "Holiday decorations",
 		"holidayDecorationsExplainer": "Snow falls when it snows at the game, leaves the week of Thanksgiving, and lights all December.",
 		"holidaySnow": "Snow",
@@ -724,11 +723,5 @@
 			"l3": "We've got to slow down first.",
 			"l4": "Just stop this thing! I order you!"
 		}
-	},
-	"standbyTestCard": {
-		"heading": "PLEASE STAND BY",
-		"atMax": "You have asked to sit out any game that scores below 100. None of them do.",
-		"atMin": "You have asked to sit out any game that scores below 0. None of them do.",
-		"dismiss": "Tap anywhere to return"
 	}
 }

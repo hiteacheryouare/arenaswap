@@ -160,7 +160,6 @@
 		"temperatureUnitF": "°F",
 		"temperatureUnitC": "°C",
 		"temperatureUnitRomer": "°Rø",
-		"romerRevealed": "Ole Rømer，1701 年。鹽水為 0，體溫為 22.5。",
 		"holidayDecorations": "節日裝飾",
 		"holidayDecorationsExplainer": "比賽現場下雪時飄雪，感恩節當週飄落葉，整個十二月掛彩燈。",
 		"holidaySnow": "雪",
@@ -724,11 +723,5 @@
 			"l3": "我們得先減速。",
 			"l4": "快停下這東西！這是命令！"
 		}
-	},
-	"standbyTestCard": {
-		"heading": "請稍候",
-		"atMax": "你要求跳過所有低於 100 分的比賽。沒有比賽會這樣。",
-		"atMin": "你要求跳過所有低於 0 分的比賽。沒有比賽會這樣。",
-		"dismiss": "點擊任意處返回"
 	}
 }

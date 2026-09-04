@@ -10,8 +10,8 @@ interface temperatureUnitToggleProps {
 	onUnlockRomer: () => void;
 }
 
-// Matches the caption's own animation, which holds and then fades itself out.
-const revealDurationMs = 6000;
+// Matches the sweep on the button. There is nothing to read afterwards, so nothing outlives it.
+const revealDurationMs = 1200;
 
 const unitLabelKeys = {
 	F: 'setup.temperatureUnitF',
@@ -60,11 +60,6 @@ const temperatureUnitToggle = ({ unit, romerUnlocked, disabled, onCycle, onUnloc
 					{i18n.t(unitLabelKeys[unit])}
 				</button>
 			</div>
-			{revealing && (
-				<div className='romer-credit text-body-secondary' role='status'>
-					{i18n.t('setup.romerRevealed')}
-				</div>
-			)}
 		</>
 	);
 };

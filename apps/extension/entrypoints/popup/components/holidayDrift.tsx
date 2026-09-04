@@ -10,7 +10,7 @@ interface holidayDriftProps {
 const maxDriftPx = 96;
 const driftWidth = 320;
 
-const leafColors = ['#c2571a', '#d98324', '#a33b12', '#e0a539', '#7d3b0e', '#8f4b16'];
+const leafColors = ['#c2571a', '#d98324', '#a33b12', '#e0a539', '#6d3009', '#8f4b16', '#b8860b', '#94340f'];
 
 // Deterministic, so the pile does not reshuffle itself every time the poll re-renders the screen.
 const pseudoRandom = (seed: number): number => {
@@ -65,60 +65,77 @@ const drawSnowDrift = (ctx: CanvasRenderingContext2D, width: number, height: num
 	ctx.restore();
 };
 
+// A leaf, from its stem. Two arcs and a midrib: without the rib a shape this size is an almond,
+// and a heap of almonds is the mush this replaces.
 const drawLeaf = (ctx: CanvasRenderingContext2D, size: number, color: string) => {
 	ctx.fillStyle = color;
 	ctx.beginPath();
 	ctx.moveTo(0, -size);
-	ctx.quadraticCurveTo(size * 0.78, -size * 0.2, 0, size);
-	ctx.quadraticCurveTo(-size * 0.78, -size * 0.2, 0, -size);
+	ctx.quadraticCurveTo(size * 0.72, -size * 0.15, 0, size);
+	ctx.quadraticCurveTo(-size * 0.72, -size * 0.15, 0, -size);
 	ctx.closePath();
 	ctx.fill();
 
-	// The midrib. Without it a leaf at this size is an almond, and a pile of almonds is a pile of mush.
-	ctx.strokeStyle = 'rgba(60, 26, 6, 0.45)';
+	ctx.strokeStyle = 'rgba(48, 20, 4, 0.55)';
 	ctx.lineWidth = 0.7;
 	ctx.beginPath();
-	ctx.moveTo(0, -size * 0.85);
-	ctx.lineTo(0, size * 0.85);
+	ctx.moveTo(0, -size * 0.88);
+	ctx.lineTo(0, size * 0.88);
+	ctx.stroke();
+
+	// Two ribs off the midrib, which is what stops a fallen leaf reading as a petal.
+	ctx.lineWidth = 0.5;
+	ctx.beginPath();
+	ctx.moveTo(0, -size * 0.1);
+	ctx.lineTo(size * 0.38, size * 0.3);
+	ctx.moveTo(0, -size * 0.1);
+	ctx.lineTo(-size * 0.38, size * 0.3);
 	ctx.stroke();
 };
 
-// A pile of leaves is leaves. The only thing under them is a shadow deep enough that the gaps do
-// not show the page through.
+// The pile is made of leaves and nothing else. There is no mound underneath: the shape comes from
+// where the leaves are, and the gaps between them are the popup's own background rather than a
+// brown wash standing in for depth.
 const drawLeafDrift = (ctx: CanvasRenderingContext2D, width: number, height: number, driftHeight: number) => {
-	const baseY = height - driftHeight;
+	const leafCount = Math.max(40, Math.round(driftHeight * 9));
+	const placed: { x: number; y: number; up: number; size: number; angle: number; color: string }[] = [];
 
-	ctx.save();
-	ctx.fillStyle = 'rgba(46, 22, 8, 0.82)';
-	ctx.beginPath();
-	ctx.moveTo(-4, height + 4);
-	ctx.lineTo(-4, baseY + driftHeight * 0.55);
-	for (let x = 0; x <= width; x += 8) {
-		const ripple = Math.sin(x / 41) * 0.5 + Math.sin(x / 17 + 1.4) * 0.3;
-		ctx.lineTo(x, baseY + driftHeight * (0.28 - 0.16 * ripple));
-	}
-	ctx.lineTo(width + 4, height + 4);
-	ctx.closePath();
-	ctx.fill();
-	ctx.restore();
-
-	// Back to front, so the near leaves overlap the far ones and the pile has a front face.
-	const leafCount = Math.max(14, Math.round(driftHeight * 1.9));
 	for (let i = 0; i < leafCount; i += 1) {
-		const depthRatio = i / leafCount;
-		const x = pseudoRandom(i * 1.7) * (width + 20) - 10;
-		const spread = 0.18 + pseudoRandom(i * 5.3) * 0.82;
-		const y = height - driftHeight * spread * (0.35 + depthRatio * 0.75);
-		const size = 4.4 + pseudoRandom(i * 9.1) * 3.6;
+		const seed = i * 37 + 11;
+		const x = pseudoRandom(seed * 1.7) * (width + 26) - 13;
+		// Mounded: deepest down the middle, thinning towards both edges the way a swept heap does.
+		const profile = 0.58 + 0.42 * Math.cos((x / width - 0.5) * Math.PI);
+		// Squared, so the leaves pack solid along the floor and thin out towards the top edge. A
+		// uniform spread reads as leaves scattered on the ground rather than piled on it.
+		const up = pseudoRandom(seed * 5.3) ** 2 * driftHeight * profile;
+		placed.push({
+			x,
+			y: height - up,
+			up,
+			size: 4.2 + pseudoRandom(seed * 9.1) * 3.4,
+			angle: pseudoRandom(seed * 4.4) * Math.PI * 2,
+			color: leafColors[i % leafColors.length]!,
+		});
+	}
 
+	// Highest first, so the ones nearer the front of the heap are drawn over the ones behind them.
+	placed.sort((a, b) => a.y - b.y);
+
+	for (const leaf of placed) {
 		ctx.save();
-		ctx.translate(x, y);
-		ctx.rotate(pseudoRandom(i * 4.4) * Math.PI * 2);
-		// Far leaves sit in the shade of the ones in front of them.
-		ctx.globalAlpha = 0.72 + depthRatio * 0.28;
-		drawLeaf(ctx, size, leafColors[i % leafColors.length]!);
+		ctx.translate(leaf.x, leaf.y);
+		ctx.rotate(leaf.angle);
+		drawLeaf(ctx, leaf.size, leaf.color);
 		ctx.restore();
 	}
+
+	// The deepest part of the heap is in its own shadow. Drawn over the leaves rather than under
+	// them, so it darkens the pile instead of showing through its gaps as a brown field.
+	const shade = ctx.createLinearGradient(0, height - driftHeight * 0.55, 0, height);
+	shade.addColorStop(0, 'rgba(24, 11, 3, 0)');
+	shade.addColorStop(1, 'rgba(24, 11, 3, 0.45)');
+	ctx.fillStyle = shade;
+	ctx.fillRect(0, height - driftHeight * 0.55, width, driftHeight * 0.55);
 };
 
 const holidayDrift = ({ kind, depth }: holidayDriftProps) => {

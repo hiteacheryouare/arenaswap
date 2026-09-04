@@ -160,7 +160,6 @@
 		"temperatureUnitF": "°F",
 		"temperatureUnitC": "°C",
 		"temperatureUnitRomer": "°Rø",
-		"romerRevealed": "Ole Rømer, 1701. Brine sa 0, temperatura ng katawan sa 22.5.",
 		"holidayDecorations": "Holiday decorations",
 		"holidayDecorationsExplainer": "May snow kapag umuulan ng niyebe sa laro, dahon tuwing linggo ng Thanksgiving, at ilaw buong Disyembre.",
 		"holidaySnow": "Niyebe",
@@ -724,11 +723,5 @@
 			"l3": "We've got to slow down first.",
 			"l4": "Just stop this thing! I order you!"
 		}
-	},
-	"standbyTestCard": {
-		"heading": "PLEASE STAND BY",
-		"atMax": "Hiniling mong laktawan ang bawat laro na wala pang 100 ang score. Wala namang ganoon.",
-		"atMin": "Hiniling mong laktawan ang bawat laro na wala pang 0 ang score. Wala namang ganoon.",
-		"dismiss": "I-tap kahit saan para bumalik"
 	}
 }

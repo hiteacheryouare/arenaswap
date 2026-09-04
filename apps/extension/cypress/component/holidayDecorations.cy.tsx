@@ -1,4 +1,5 @@
 import GameDetailView from '../../entrypoints/popup/components/gameDetailView';
+import HolidayLights from '../../entrypoints/popup/components/holidayLights';
 import SetupView from '../../entrypoints/popup/components/setupView';
 import type { Game, UserPreferences } from '@arenaswap/core/types';
 import { resolveDecorationDate } from '../../utils/holidayDecorations';
@@ -82,7 +83,7 @@ describe('holiday decorations on the detail screen', () => {
 	it('hangs lights through December for any game at all', () => {
 		mountDetail(clear, december);
 		cy.get('.holiday-lights').should('exist');
-		cy.get('.holiday-bulb').should('have.length.at.least', 24);
+		cy.get('.holiday-bulb').should('have.length', 9);
 	});
 
 	it('takes the lights down for the rest of the year', () => {
@@ -117,42 +118,32 @@ describe('holiday decorations on the detail screen', () => {
 		});
 	});
 
-	// An SVG with a viewBox carries an intrinsic aspect ratio, so a frame given only three offsets
-	// sizes its fourth from the other side and comes up short. Both dimensions are set from the
-	// measured scroll container instead.
-	it('frames the scroll container exactly, clear of the scrollbar', () => {
+	// The string drapes over the matchup card the way FOX drapes it over the scorebug, which means
+	// clearing the sticky back bar rather than hiding behind it or sitting on the button.
+	it('hangs the string under the back bar and keeps it there while scrolling', () => {
 		mountDetail(clear, december);
-		cy.get('.popup-container').then(([scroller]: JQuery<HTMLElement>) => {
-			const gutter = Math.round(scroller.getBoundingClientRect().width - scroller.clientWidth);
-			expect(gutter, 'the harness renders a real scrollbar to clear').to.be.greaterThan(0);
-			cy.get('.holiday-lights').should(([frame]: JQuery<HTMLElement>) => {
-				const rect = frame.getBoundingClientRect();
-				expect(Math.round(rect.width), 'frame width excludes the scrollbar').to.equal(scroller.clientWidth);
-				expect(Math.round(rect.height), 'frame height is the full popup').to.equal(scroller.clientHeight);
+		cy.get('.game-detail-header').then(([header]: JQuery<HTMLElement>) => {
+			const headerBottom = header.getBoundingClientRect().bottom;
+			cy.get('.holiday-lights').should(([lights]: JQuery<HTMLElement>) => {
+				expect(lights.getBoundingClientRect().top, 'clears the back bar').to.be.at.least(headerBottom - 1);
 			});
+		});
+		cy.get('.popup-container').scrollTo('bottom');
+		cy.get('.holiday-lights').should(([lights]: JQuery<HTMLElement>) => {
+			const rect = lights.getBoundingClientRect();
+			expect(Math.round(rect.top), 'still pinned under the bar').to.equal(40);
+			expect(Math.round(rect.height), 'still drawn at full height').to.equal(22);
 		});
 	});
 
-	it('runs bulbs down all four sides, every one of them hanging inward', () => {
+	it('starts flush at the left edge and stops where the scrollbar already is', () => {
 		mountDetail(clear, december);
-		cy.get('.holiday-lights').should(([frame]: JQuery<HTMLElement>) => {
-			const frameRect = frame.getBoundingClientRect();
-			const bulbs = Array.from(frame.querySelectorAll('.holiday-bulb'))
-				.map(bulb => bulb.getBoundingClientRect());
-			expect(bulbs.length, 'bulbs all the way round').to.be.greaterThan(24);
-
-			const near = 24;
-			expect(bulbs.some(b => b.top - frameRect.top < near), 'a top run').to.equal(true);
-			expect(bulbs.some(b => frameRect.bottom - b.bottom < near), 'a bottom run').to.equal(true);
-			expect(bulbs.some(b => b.left - frameRect.left < near), 'a left run').to.equal(true);
-			expect(bulbs.some(b => frameRect.right - b.right < near), 'a right run').to.equal(true);
-
-			for (const bulb of bulbs) {
-				expect(bulb.left, 'no bulb hangs off the left edge').to.be.at.least(frameRect.left - 0.5);
-				expect(bulb.right, 'no bulb hangs off the right edge').to.be.at.most(frameRect.right + 0.5);
-				expect(bulb.top, 'no bulb hangs off the top edge').to.be.at.least(frameRect.top - 0.5);
-				expect(bulb.bottom, 'no bulb hangs off the bottom edge').to.be.at.most(frameRect.bottom + 0.5);
-			}
+		cy.get('.popup-container').then(([scroller]: JQuery<HTMLElement>) => {
+			cy.get('.holiday-lights').should(([lights]: JQuery<HTMLElement>) => {
+				const rect = lights.getBoundingClientRect();
+				expect(Math.round(rect.left), 'flush left').to.equal(Math.round(scroller.getBoundingClientRect().left));
+				expect(Math.round(rect.width), 'stops short of the scrollbar').to.equal(scroller.clientWidth);
+			});
 		});
 	});
 
@@ -342,48 +333,67 @@ const textLeafHeights = (): Cypress.Chainable<Record<string, number>> =>
 		return heights;
 	});
 
-describe('the light frame and the content column', () => {
-	// Both mounts are enqueued at the top level rather than nested in a `.then`. A mount inside a
-	// callback replaces the root while the surrounding chain still holds the old, detached nodes,
-	// and every measurement then comes back from a screen that is no longer on screen.
-	it('takes a slice off the column without wrapping anything that fitted before', () => {
+describe('the lights and the content column', () => {
+	// The string sits over the matchup card rather than around the popup, so the column keeps its
+	// full width. Every text leaf is measured with the lights off and again with them on, and
+	// anything that changed height would be a wrap the decoration caused.
+	it('costs the content column nothing at all', () => {
 		mountDetail(clear, august);
-		textLeafHeights().as('withoutFrame');
+		textLeafHeights().as('withoutLights');
 
 		mountDetail(clear, december);
 		cy.get('.holiday-lights').should('exist');
-		textLeafHeights().then(function compare(this: Mocha.Context, withFrame: Record<string, number>) {
-			const withoutFrame = this.withoutFrame as Record<string, number>;
-			const wrapped = Object.keys(withFrame)
-				.filter(key => withoutFrame[key] !== undefined && withFrame[key]! > withoutFrame[key]!)
-				.map(key => `${key} grew ${withoutFrame[key]}px to ${withFrame[key]}px`);
-			expect(Object.keys(withFrame).length, 'there was something to measure').to.be.greaterThan(10);
-			expect(wrapped, 'nothing gained a line when the frame pushed the content in').to.deep.equal([]);
+		textLeafHeights().then(withLights => {
+			cy.get<Record<string, number>>('@withoutLights').then(withoutLights => {
+				const changed = Object.keys(withLights)
+					.filter(key => withoutLights[key] !== undefined && withLights[key] !== withoutLights[key])
+					.map(key => `${key} was ${withoutLights[key]}px, now ${withLights[key]}px`);
+				expect(Object.keys(withLights).length, 'there was something to measure').to.be.greaterThan(10);
+				expect(changed, 'nothing moved when the lights went up').to.deep.equal([]);
+			});
 		});
 	});
 
-	it('keeps the bite out of the column small enough to be worth it', () => {
+	it('leaves the matchup card exactly as wide as it was', () => {
 		mountDetail(clear, august);
 		cy.get('.gd-hero').invoke('outerWidth').as('bareWidth');
 
 		mountDetail(clear, december);
 		cy.get('.holiday-lights').should('exist');
-		cy.get('.gd-hero').then(function compare(this: Mocha.Context, [framed]: JQuery<HTMLElement>) {
-			const lost = (this.bareWidth as number) - framed.getBoundingClientRect().width;
-			expect(lost, 'the frame actually pushes the content in').to.be.greaterThan(4);
-			expect(lost, 'but not far enough to be worth noticing').to.be.at.most(16);
+		cy.get('.gd-hero').then(([lit]: JQuery<HTMLElement>) => {
+			const litWidth = lit.getBoundingClientRect().width;
+			cy.get<number>('@bareWidth').then(bareWidth => {
+				expect(litWidth, 'the column is untouched').to.equal(bareWidth);
+			});
+		});
+	});
+});
+
+describe('the lights celebrating a favourite', () => {
+	it('twinkles in the palette when nothing has happened', () => {
+		mountDetail(clear, december);
+		cy.get('.holiday-lights').should('not.have.class', 'is-celebrating');
+		cy.get('.holiday-bulb').first().should(([bulb]: JQuery<HTMLElement>) => {
+			expect(getComputedStyle(bulb).animationDuration, 'the resting shimmer').to.equal('3.4s');
 		});
 	});
 
-	it('bleeds the back bar back out to the popup edge at the wider inset', () => {
-		mountDetail(clear, december);
-		cy.get('.popup-container').then(([scroller]: JQuery<HTMLElement>) => {
-			const scrollerRect = scroller.getBoundingClientRect();
-			cy.get('.game-detail-header').should(([header]: JQuery<HTMLElement>) => {
-				const headerRect = header.getBoundingClientRect();
-				expect(Math.round(headerRect.left), 'flush left').to.equal(Math.round(scrollerRect.left));
-				expect(Math.round(headerRect.top), 'flush top').to.equal(Math.round(scrollerRect.top));
-			});
+	it('takes the team colours and picks up the pace once one is passed in', () => {
+		cy.viewport(320, 560);
+		cy.mount(<HolidayLights flashColors={['#004C54', '#A5ACAF']} />);
+		cy.get('.holiday-lights').should('have.class', 'is-celebrating');
+		cy.get('.holiday-bulb').should(([first, second]: JQuery<HTMLElement>) => {
+			expect(getComputedStyle(first).color, 'first bulb takes the primary').to.equal('rgb(0, 76, 84)');
+			expect(getComputedStyle(second!).color, 'second takes the alternate').to.equal('rgb(165, 172, 175)');
+			expect(getComputedStyle(first).animationDuration, 'and it flashes rather than shimmers').to.equal('0.5s');
+		});
+	});
+
+	it('handles a team with only one usable colour', () => {
+		cy.viewport(320, 560);
+		cy.mount(<HolidayLights flashColors={['#003594']} />);
+		cy.get('.holiday-bulb').should('have.length', 9).each($bulb => {
+			expect(getComputedStyle($bulb[0]!).color).to.equal('rgb(0, 53, 148)');
 		});
 	});
 });

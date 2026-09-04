@@ -160,7 +160,6 @@
 		"temperatureUnitF": "°F",
 		"temperatureUnitC": "°C",
 		"temperatureUnitRomer": "°Rø",
-		"romerRevealed": "Ole Rømer, 1701. Saumure à 0, chaleur du corps à 22,5.",
 		"holidayDecorations": "Décorations de fête",
 		"holidayDecorationsExplainer": "De la neige quand il neige au stade, des feuilles la semaine de Thanksgiving et des lumières tout décembre.",
 		"holidaySnow": "Neige",
@@ -724,11 +723,5 @@
 			"l3": "Il faut d'abord réduire la vitesse.",
 			"l4": "Arrêtez ça ! Je vous l'ordonne !"
 		}
-	},
-	"standbyTestCard": {
-		"heading": "VEUILLEZ PATIENTER",
-		"atMax": "Tu as demandé à zapper tout match qui marque moins de 100. Aucun ne le fait.",
-		"atMin": "Tu as demandé à zapper tout match qui marque moins de 0. Aucun ne le fait.",
-		"dismiss": "Touche n’importe où pour revenir"
 	}
 }

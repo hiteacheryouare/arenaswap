@@ -626,38 +626,26 @@ button, input, select, optgroup, textarea {
 	100% { background-color: transparent; border-color: var(--as-border-color); color: inherit; transform: scale(1); box-shadow: none; }
 }
 
-@keyframes romerCredit {
-	0%   { opacity: 0; transform: translateY(-4px); }
-	8%   { opacity: 1; transform: translateY(0); }
-	85%  { opacity: 1; transform: translateY(0); }
-	100% { opacity: 0; transform: translateY(0); }
-}
-
 .romer-revealing {
 	animation: romerFrost 1.2s ease-in-out;
 }
 
-.romer-credit {
-	animation: romerCredit 6s ease-in-out forwards;
-	font-size: 0.72rem;
-	line-height: 1.3;
-	margin-top: 0.35rem;
-}
-
 @media (prefers-reduced-motion: reduce) {
 	.romer-revealing { animation: none; }
-	.romer-credit { animation: none; opacity: 1; }
 }
 
 /* ─── Holiday decorations ─────────────────────────────────────────────────── */
-/* A frame around the whole popup rather than a string over the scorebug, pinned to the window so
-   it does not scroll away. Above the sticky back bar on purpose: the lights are in front of the
-   set, the way FOX hangs them in front of the bug. */
-/* Position and size come from the measured scroll container, set inline. */
+/* The string hangs immediately under the sticky back bar and stays there while the screen scrolls,
+   the way FOX drapes lights over the scorebug rather than over the pitch. The bar is sticky at
+   minus the shell's own padding to reach the popup edge, so this offset re-adds it. */
 .holiday-lights {
-	position: fixed;
-	z-index: 6;
+	position: sticky;
+	top: calc(var(--gd-inset) + 1rem);
+	z-index: 4;
 	display: block;
+	width: calc(100% + var(--gd-inset) * 2);
+	height: 22px;
+	margin: 0 calc(var(--gd-inset) * -1) -22px;
 	pointer-events: none;
 }
 
@@ -686,6 +674,23 @@ button, input, select, optgroup, textarea {
 	50%      { opacity: 0.48; }
 }
 
+/* A favourite has just scored. Faster, brighter and in that team's colours, for as long as the
+   confetti on the main screen would have run. */
+.is-celebrating {
+	.holiday-bulb {
+		animation: holidayBulbCelebrate 0.5s ease-in-out infinite;
+	}
+
+	.holiday-bulb-glass {
+		filter: drop-shadow(0 0 7px currentcolor);
+	}
+}
+
+@keyframes holidayBulbCelebrate {
+	0%, 100% { opacity: 1; }
+	50%      { opacity: 0.25; }
+}
+
 /* Fixed rather than absolute: the flakes belong to the popup window, not to the scrolling
    document, so a long detail screen does not scroll its own weather away. */
 .holiday-fall {
@@ -709,88 +714,4 @@ button, input, select, optgroup, textarea {
 
 @media (prefers-reduced-motion: reduce) {
 	.holiday-bulb { animation: none; }
-}
-
-/* ─── Standby test card ───────────────────────────────────────────────────── */
-.stc-overlay {
-	position: fixed;
-	inset: 0;
-	z-index: 9999;
-	display: flex;
-	flex-direction: column;
-	background: #000;
-	cursor: pointer;
-	overflow: hidden;
-	animation: stcSignalOn 0.32s ease-out;
-}
-
-/* An old set finding the signal: a bright horizontal line that opens out to the full frame. */
-@keyframes stcSignalOn {
-	0%   { transform: scaleY(0.004); filter: brightness(3); }
-	45%  { transform: scaleY(0.06); filter: brightness(2); }
-	100% { transform: scaleY(1); filter: brightness(1); }
-}
-
-.stc-bars {
-	display: flex;
-	flex: 1 1 auto;
-
-	span {
-		flex: 1 1 0;
-	}
-}
-
-.stc-bars-inverted {
-	flex: 0 0 12%;
-	filter: brightness(0.42);
-}
-
-.stc-card {
-	flex: 0 0 auto;
-	padding: 1rem 0.9rem 1.1rem;
-	background: #000;
-	text-align: center;
-}
-
-.stc-heading {
-	font-family: 'Lekton', monospace;
-	font-size: 1.05rem;
-	font-weight: 700;
-	letter-spacing: 0.14em;
-	color: #f2f6fa;
-}
-
-.stc-body {
-	margin: 0.5rem 0 0;
-	font-size: 0.78rem;
-	line-height: 1.35;
-	color: #b9c4cf;
-}
-
-.stc-dismiss {
-	margin-top: 0.85rem;
-	font-size: 0.66rem;
-	letter-spacing: 0.08em;
-	text-transform: uppercase;
-	color: #6b7683;
-}
-
-/* The slow bright band an untuned analogue picture rolls up the screen. */
-.stc-roll {
-	position: absolute;
-	inset-inline: 0;
-	height: 26%;
-	background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.07) 50%, rgba(255, 255, 255, 0) 100%);
-	pointer-events: none;
-	animation: stcRoll 6.5s linear infinite;
-}
-
-@keyframes stcRoll {
-	0%   { top: 100%; }
-	100% { top: -26%; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-	.stc-overlay { animation: none; }
-	.stc-roll { display: none; }
 }

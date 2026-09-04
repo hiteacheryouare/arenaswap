@@ -160,7 +160,6 @@
 		"temperatureUnitF": "°F",
 		"temperatureUnitC": "°C",
 		"temperatureUnitRomer": "°Rø",
-		"romerRevealed": "Ole Rømer, 1701. Salamoia a 0, temperatura corporea a 22,5.",
 		"holidayDecorations": "Decorazioni delle feste",
 		"holidayDecorationsExplainer": "Neve quando nevica allo stadio, foglie nella settimana del Ringraziamento e luci per tutto dicembre.",
 		"holidaySnow": "Neve",
@@ -724,11 +723,5 @@
 			"l3": "Dobbiamo prima rallentare.",
 			"l4": "Fermate questa cosa! Ve lo ordino!"
 		}
-	},
-	"standbyTestCard": {
-		"heading": "ATTENDERE PREGO",
-		"atMax": "Hai chiesto di saltare ogni partita che segna meno di 100. Nessuna lo fa.",
-		"atMin": "Hai chiesto di saltare ogni partita che segna meno di 0. Nessuna lo fa.",
-		"dismiss": "Tocca ovunque per tornare"
 	}
 }

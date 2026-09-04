@@ -26,6 +26,7 @@ import {
 import { resolveTeamColorPair } from '@arenaswap/ui/src/components/colorUtils';
 import useSummaryData from './useSummaryData';
 import { resolveDecorations, type holidayDecorationPrefs } from '../../../utils/holidayDecorations';
+import { favoriteScoreFlashColors, scorelineOf, type gameScoreline } from '../../../utils/favoriteScoreFlash';
 import type { BettingDisplayPrefs, WeatherDisplayPrefs } from './gameCardTypes';
 
 interface gameDetailViewProps {
@@ -54,6 +55,8 @@ interface gameDetailViewProps {
 }
 
 const noFavorites: ReadonlySet<string> = new Set();
+
+const favoriteFlashMs = 5000;
 
 // The signal palette belongs to the PowerScore breakdown card above this chart, so momentum
 // keeps that card's #2274a5 rather than the dark-surface $secondary. Same signal, one colour.
@@ -117,6 +120,22 @@ const gameDetailView = ({
 	const favoriteBonus = activePowerScore?.favoriteBonus ?? 0;
 	const favoriteTeamCount = activePowerScore?.favoriteTeamCount ?? 0;
 	const decorations = resolveDecorations(game, decorationDate ?? new Date(), decorationPrefs);
+
+	const [scoreFlash, setScoreFlash] = useState<string[] | null>(null);
+	const previousScoreline = useRef<gameScoreline | null>(null);
+	const flashTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
+	useEffect(() => {
+		const colors = favoriteScoreFlashColors(previousScoreline.current, game, favoriteTeamIds);
+		// Seeded on the first pass so opening the screen mid-game does not read as a goal.
+		previousScoreline.current = scorelineOf(game);
+		if (!colors) return;
+		setScoreFlash(colors);
+		clearTimeout(flashTimer.current);
+		flashTimer.current = setTimeout(() => setScoreFlash(null), favoriteFlashMs);
+	}, [game, favoriteTeamIds]);
+
+	useEffect(() => () => clearTimeout(flashTimer.current), []);
 	const currentBoost = gameBoosts[game.id] ?? 0;
 	// The breakdown mirrors the scorer, which drops every boost while play is frozen. The boost input
 	// keeps showing the stored value, since the setting survives halftime even though it pays nothing.
@@ -187,10 +206,10 @@ const gameDetailView = ({
 	}, []);
 
 	return (
-		<div className={`popup-container game-detail-shell${decorations.lights ? ' has-holiday-lights' : ''}`} ref={shellRef}>
+		<div className='popup-container game-detail-shell' ref={shellRef}>
 			{decorations.falling && <HolidayFall kind={decorations.falling} />}
-			{decorations.lights && <HolidayLights />}
 			<DetailStickyBar game={game} statusText={statusText} compact={heroScrolledAway} onBack={onBack} />
+			{decorations.lights && <HolidayLights flashColors={scoreFlash} />}
 
 			<div ref={heroRef}>
 				{isPreGame ? (

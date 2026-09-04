@@ -287,16 +287,22 @@ describe('setupView Rømer unlock', () => {
 		openGroup('display');
 		clickToggle(6);
 		cy.get('@onUnlock').should('not.have.been.called');
-		cy.get('.romer-credit').should('not.exist');
+		cy.get('#temperatureUnitToggle').should('not.have.class', 'romer-revealing');
 	});
 
-	it('unlocks on the seventh click and shows the credit', () => {
+	it('unlocks on the seventh click', () => {
 		const onUnlock = cy.spy().as('onUnlock');
 		cy.mount(<SetupView {...defaultProps} onUnlockRomer={onUnlock} />);
 		openGroup('display');
 		clickToggle(7);
 		cy.get('@onUnlock').should('have.been.calledOnce');
-		cy.get('.romer-credit').should('be.visible').and('contain', 'Rømer');
+	});
+
+	it('says nothing about what was found — the sweep is the whole reveal', () => {
+		cy.mount(<SetupView {...defaultProps} />);
+		openGroup('display');
+		clickToggle(7);
+		cy.get('.game-detail-shell, .popup-container').should('not.contain', 'Rømer');
 	});
 
 	it('plays the reveal animation on the toggle itself', () => {

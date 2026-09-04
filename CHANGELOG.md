@@ -1,5 +1,62 @@
 # Changelog
 
+## The lights go back on the scorebug, and the leaf pile is made of leaves — 2026-09-03
+
+### The frame was in the way
+
+Running the string around all four sides put bulbs across every row of text on the screen. The two
+side columns were the problem: they cross the full height of the content, where the horizontal runs
+only cross the back bar and the foot of the page. It is back to one sagging run of nine bulbs
+draped over the matchup card, pinned under the sticky back bar, which is where it started and where
+FOX puts it.
+
+The whole content inset goes with it. `--gd-inset` survives, because the back bar and the drift both
+bleed by it and one variable is better than three literals, but nothing moves it off 0.75rem any
+more. Two tests now assert the lights cost the column nothing: one measures every text leaf with the
+lights off and on and fails on any change at all, the other pins the matchup card to exactly the
+width it has without them.
+
+### The lights flash a favourite's colours when it scores
+
+A followed team scoring turns the string that team's colours and takes the twinkle from a 3.4s
+shimmer to a 0.5s flash, for five seconds. It is the confetti's job done by the only decoration this
+screen has.
+
+The detection is its own module rather than a condition inside the effect: the extension's Jest runs
+in a node environment with no DOM, so anything buried in a component cannot be tested. It takes both
+of a team's colours where ESPN sends two, so the string alternates rather than reading as one flat
+wash, and it accepts them with or without the leading hash because ESPN sends both. A score going
+down does not fire it, which is what a correction looks like. The first pass after mounting seeds
+the comparison and fires nothing, so opening a screen mid-game is not a goal.
+
+### The leaf pile is leaves now
+
+The previous one drew a brown mound and scattered leaves on top of it, and the mound read as exactly
+what it was: a wash of colour behind the leaves.
+
+There is no mound. The pile is about 850 individual leaves at full depth and nothing else, so the
+gaps between them are the popup's own background rather than mud. They are placed against a squared
+distribution, which packs them solid along the floor and thins them to individual leaves at the top
+edge — a uniform spread reads as leaves scattered on the ground rather than piled on it — and
+against a cosine profile across the width, so the heap is deepest down the middle. They are drawn
+highest first so the near ones cover the far ones, and each leaf now carries two ribs off its midrib,
+which is what stops a fallen leaf reading as a petal. The only thing drawn over them is a shadow
+gradient in the deepest half.
+
+The snow pile is unchanged. Both depths come from the same `accumulationDepth`, which never learns
+which kind is falling: it grows through a period and resets to zero at the break, with a ceiling of
+`period / regularPeriods` so each period ends deeper than the last. Walked end to end, an NFL game
+reads 0.25 at the end of the 1st, 0.5 at the end of the 2nd, 0.75 at the 3rd and 1.0 at the 4th, and
+0.000 at the top of every one of them.
+
+### Two things removed
+
+The Rømer credit line is gone. The sweep on the button is the whole reveal now, and a test asserts
+the popup never names Rømer at all. One key out of twelve locales.
+
+The standby test card is gone entirely — component, spec, styles and four keys across twelve
+locales. The threshold value at 0 and at 100 is plain text again.
+
 ## The decorations, rebuilt: a light frame, real piles, and snow for every sport — 2026-09-03
 
 Four things were wrong with the first pass.

@@ -160,7 +160,6 @@
 		"temperatureUnitF": "°F",
 		"temperatureUnitC": "°C",
 		"temperatureUnitRomer": "°Rø",
-		"romerRevealed": "Ole Rømer, 1701. Salmuera a 0, temperatura corporal a 22.5.",
 		"holidayDecorations": "Decoración navideña",
 		"holidayDecorationsExplainer": "Nieve cuando nieva en el partido, hojas la semana de Acción de Gracias y luces todo diciembre.",
 		"holidaySnow": "Nieve",
@@ -724,11 +723,5 @@
 			"l3": "Primero tenemos que reducir la velocidad.",
 			"l4": "¡Para esto ahora! ¡Te lo ordeno!"
 		}
-	},
-	"standbyTestCard": {
-		"heading": "POR FAVOR ESPERE",
-		"atMax": "Pediste saltarte todo partido que puntúe menos de 100. Ninguno lo hace.",
-		"atMin": "Pediste saltarte todo partido que puntúe menos de 0. Ninguno lo hace.",
-		"dismiss": "Toca en cualquier lugar para volver"
 	}
 }

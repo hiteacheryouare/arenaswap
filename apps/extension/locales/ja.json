@@ -160,7 +160,6 @@
 		"temperatureUnitF": "°F",
 		"temperatureUnitC": "°C",
 		"temperatureUnitRomer": "°Rø",
-		"romerRevealed": "オーレ・レーマー、1701年。塩水が0、体温が22.5。",
 		"holidayDecorations": "ホリデー装飾",
 		"holidayDecorationsExplainer": "会場で雪が降れば雪、感謝祭の週には落ち葉、12月中はライトが表示されます。",
 		"holidaySnow": "雪",
@@ -724,11 +723,5 @@
 			"l3": "まず減速しないといけない。",
 			"l4": "止めろ！命令だ！"
 		}
-	},
-	"standbyTestCard": {
-		"heading": "しばらくお待ちください",
-		"atMax": "100点未満の試合をすべて見送るよう設定しました。そんな試合はありません。",
-		"atMin": "0点未満の試合をすべて見送るよう設定しました。そんな試合はありません。",
-		"dismiss": "どこかをタップで戻る"
 	}
 }
