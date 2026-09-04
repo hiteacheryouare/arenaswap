@@ -154,6 +154,8 @@
 		"temperatureUnit": "Unidade de temperatura",
 		"temperatureUnitF": "°F",
 		"temperatureUnitC": "°C",
+		"temperatureUnitRomer": "°Rø",
+		"romerRevealed": "Ole Rømer, 1701. Salmoura a 0, temperatura do corpo a 22,5.",
 		"signalsSection": "Sinais do PowerScore",
 		"signalsExplainer": "Os sinais desactivados são excluídos da pontuação. As pontuações são renormalizadas para se manterem no intervalo.",
 		"signalLastActive": "Pelo menos um sinal tem de ficar activo",

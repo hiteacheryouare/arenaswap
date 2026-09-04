@@ -154,6 +154,8 @@
 		"temperatureUnit": "Yunit ng Temperatura",
 		"temperatureUnitF": "°F",
 		"temperatureUnitC": "°C",
+		"temperatureUnitRomer": "°Rø",
+		"romerRevealed": "Ole Rømer, 1701. Brine sa 0, temperatura ng katawan sa 22.5.",
 		"signalsSection": "PowerScore Signals",
 		"signalsExplainer": "Hindi kasama sa scoring ang mga naka-disable na signal. Ina-adjust ulit ang mga score para manatili sa tamang range.",
 		"signalLastActive": "Dapat may kahit isang signal na naka-active",

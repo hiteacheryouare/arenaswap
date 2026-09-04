@@ -154,6 +154,8 @@
 		"temperatureUnit": "溫度單位",
 		"temperatureUnitF": "°F",
 		"temperatureUnitC": "°C",
+		"temperatureUnitRomer": "°Rø",
+		"romerRevealed": "Ole Rømer，1701 年。鹽水為 0，體溫為 22.5。",
 		"signalsSection": "PowerScore 信號",
 		"signalsExplainer": "已停用的信號不計入評分，分數會重新校準以維持在範圍內。",
 		"signalLastActive": "至少須保留一個信號處於啟用狀態",

@@ -10,6 +10,7 @@ import PostseasonBoostInput from './postseasonBoostInput';
 import SensitivitySlider from './sensitivitySlider';
 import SettingTooltipIcon from './settingTooltipIcon';
 import SwitchDelaySlider from './switchDelaySlider';
+import TemperatureUnitToggle from './temperatureUnitToggle';
 import StandbyStreamGuide from './standbyStreamGuide';
 import { searchSettings, settingsGroups, type settingsGroupId } from './settingsCatalog';
 import { leaguesBySportType, sportTypeLabels, sportTypeOrder } from '../popupHelpers';
@@ -43,6 +44,7 @@ interface setupViewProps {
 	onStandbyOnboardingDone: () => void;
 	onToggleBetting: () => void;
 	onToggleTemperatureUnit: () => void;
+	onUnlockRomer: () => void;
 	onPostseasonBoostChange: (val: number) => void;
 	onToggleSignal: (signal: SignalName) => void;
 }
@@ -61,7 +63,7 @@ const setupView = ({
 	onFavoriteTeamBonusChange, onToggleLeague, onToggleSport, onReorderLeague, onResetLeagueOrder,
 	onToggleShowUpcoming, onUpcomingGamesDaysChange,
 	onToggleProTips, onToggleNotifications, onToggleDemo, onToggleStandbyStream, onStandbyThresholdChange,
-	onSetStandbyTab, onStandbyOnboardingDone, onToggleBetting, onToggleTemperatureUnit, onPostseasonBoostChange,
+	onSetStandbyTab, onStandbyOnboardingDone, onToggleBetting, onToggleTemperatureUnit, onUnlockRomer, onPostseasonBoostChange,
 	onToggleSignal,
 }: setupViewProps) => {
 	const [page, setPage] = useState<settingsGroupId | null>(null);
@@ -198,18 +200,13 @@ const setupView = ({
 				</div>
 			</div>
 
-			<div className='d-flex justify-content-between align-items-center mt-2'>
-				<label className='text-body-secondary setting-toggle-label' htmlFor='temperatureUnitToggle'>{i18n.t('setup.temperatureUnit')}</label>
-				<button
-					type='button'
-					id='temperatureUnitToggle'
-					className='btn btn-sm btn-outline-secondary temperature-unit-toggle'
-					onClick={onToggleTemperatureUnit}
-					disabled={!prefsLoaded}
-				>
-					{prefs.temperatureUnit === 'F' ? i18n.t('setup.temperatureUnitF') : i18n.t('setup.temperatureUnitC')}
-				</button>
-			</div>
+			<TemperatureUnitToggle
+				unit={prefs.temperatureUnit}
+				romerUnlocked={prefs.romerUnlocked}
+				disabled={!prefsLoaded}
+				onCycle={onToggleTemperatureUnit}
+				onUnlockRomer={onUnlockRomer}
+			/>
 		</>
 	);
 

@@ -26,6 +26,7 @@ import {
 	type TabSuggestion,
 } from '../../utils/tabSuggestions';
 import { hasStoredUserPreferences, loadStoredUserPreferences, persistStoredUserPreferences } from '../../utils/prefsStorage';
+import { nextTemperatureUnit } from '../../utils/temperatureUnitCycle';
 import type { ReviewPromptState } from '../../utils/reviewPrompt';
 import {
 	getReviewPromptUrl,
@@ -405,7 +406,8 @@ export default () => {
 						onSetStandbyTab={onSetStandbyTab}
 						onStandbyOnboardingDone={onStandbyOnboardingDone}
 						onToggleBetting={() => persistPrefs(currentPrefs => ({ ...currentPrefs, bettingEnabled: !currentPrefs.bettingEnabled }))}
-						onToggleTemperatureUnit={() => persistPrefs(currentPrefs => ({ ...currentPrefs, temperatureUnit: currentPrefs.temperatureUnit === 'F' ? 'C' : 'F' }))}
+						onToggleTemperatureUnit={() => persistPrefs(currentPrefs => ({ ...currentPrefs, temperatureUnit: nextTemperatureUnit(currentPrefs.temperatureUnit, currentPrefs.romerUnlocked) }))}
+						onUnlockRomer={() => persistPrefs(currentPrefs => ({ ...currentPrefs, romerUnlocked: true, temperatureUnit: 'Ro' }))}
 						onPostseasonBoostChange={val => persistPrefs(currentPrefs => ({ ...currentPrefs, postseasonBoostPoints: val }))}
 						onToggleSignal={onToggleSignal}
 					/>

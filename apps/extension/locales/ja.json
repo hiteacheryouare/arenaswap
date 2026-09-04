@@ -154,6 +154,8 @@
 		"temperatureUnit": "温度単位",
 		"temperatureUnitF": "°F",
 		"temperatureUnitC": "°C",
+		"temperatureUnitRomer": "°Rø",
+		"romerRevealed": "オーレ・レーマー、1701年。塩水が0、体温が22.5。",
 		"signalsSection": "PowerScoreシグナル",
 		"signalsExplainer": "無効なシグナルはスコアリングから除外されます。スコアは範囲内に収まるよう再正規化されます。",
 		"signalLastActive": "少なくとも1つのシグナルは有効にしてください",

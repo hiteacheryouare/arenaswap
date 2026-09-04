@@ -1,3 +1,7 @@
+import type { UserPreferences } from '@arenaswap/core/types';
+
+export type temperatureDisplayUnit = UserPreferences['temperatureUnit'];
+
 const conditionIconMap: Record<string, string> = {
 	'sunny': 'bi-sun',
 	'fair': 'bi-sun',
@@ -48,7 +52,10 @@ export const conditionIcon = (label: string): string => {
 	return conditionIconMap[primary] ?? 'bi-cloud';
 };
 
-export const formatTemperature = (tempF: number, unit: 'F' | 'C'): string => {
+export const formatTemperature = (tempF: number, unit: temperatureDisplayUnit): string => {
 	if (unit === 'C') return `${Math.round((tempF - 32) * 5 / 9)}°C`;
+	// A Rømer degree is nearly twice the size of a Fahrenheit one, so whole numbers would round
+	// away the half degrees the scale is built on — blood heat is 22.5 on it, freezing 7.5.
+	if (unit === 'Ro') return `${Number(((tempF - 32) * 7 / 24 + 7.5).toFixed(1))}°Rø`;
 	return `${tempF}°F`;
 };

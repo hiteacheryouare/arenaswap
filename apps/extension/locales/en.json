@@ -154,6 +154,8 @@
 		"temperatureUnit": "Temperature unit",
 		"temperatureUnitF": "°F",
 		"temperatureUnitC": "°C",
+		"temperatureUnitRomer": "°Rø",
+		"romerRevealed": "Ole Rømer, 1701. Brine at 0, body heat at 22.5.",
 		"signalsSection": "PowerScore Signals",
 		"signalsExplainer": "Disabled signals are excluded from scoring. Scores are re-normalized to stay in range.",
 		"signalLastActive": "At least one signal must stay active",

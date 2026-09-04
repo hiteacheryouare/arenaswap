@@ -154,6 +154,8 @@
 		"temperatureUnit": "Unità di temperatura",
 		"temperatureUnitF": "°F",
 		"temperatureUnitC": "°C",
+		"temperatureUnitRomer": "°Rø",
+		"romerRevealed": "Ole Rømer, 1701. Salamoia a 0, temperatura corporea a 22,5.",
 		"signalsSection": "Segnali PowerScore",
 		"signalsExplainer": "I segnali disattivati sono esclusi dal punteggio. I punteggi vengono riscalati per restare nel range.",
 		"signalLastActive": "Almeno un segnale deve restare attivo",

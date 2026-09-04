@@ -154,6 +154,8 @@
 		"temperatureUnit": "温度单位",
 		"temperatureUnitF": "°F",
 		"temperatureUnitC": "°C",
+		"temperatureUnitRomer": "°Rø",
+		"romerRevealed": "Ole Rømer，1701 年。盐水为 0，体温为 22.5。",
 		"signalsSection": "PowerScore 信号",
 		"signalsExplainer": "已禁用的信号不计入评分。分数将重新归一化以保持在范围内。",
 		"signalLastActive": "至少需要保留一个信号处于启用状态",

@@ -1,5 +1,51 @@
 # Changelog
 
+## A third temperature unit nobody asked for — 2026-09-03
+
+The temperature setting has a Rømer scale now, and no way to reach it from the settings list. Seven
+clicks on the °F/°C toggle inside three seconds and the button lands on °Rø, where it stays as a
+permanent third stop in the cycle.
+
+Ole Rømer built the scale in 1701 with brine freezing at 0 and body heat somewhere near 22.5, and
+Fahrenheit built his own by multiplying Rømer's numbers by four. So a warm August game reads about
+23°Rø. There is no reason to want this.
+
+Seven, in a rolling three-second window, is the ten-click heart in the footer scaled down. The
+toggle was the only control in that row, so pushing it to its limit means pushing it repeatedly, and
+someone flipping between Fahrenheit and Celsius to compare two numbers trips it without meaning to.
+Every one of those seven clicks still cycles the unit, so the button flickers °F °C °F °C and then
+lands on °Rø, which is more satisfying than a button that ignores you six times.
+
+Two problems had to be solved before a stored preference would survive a restart.
+
+`normalizeUserPreferences` read `candidate.temperatureUnit === 'C' ? 'C' : 'F'`, which is a
+whitelist by omission: anything it does not recognise silently becomes Fahrenheit. That is the right
+default for untrusted storage, and it would have eaten a Rømer preference on every popup open. It
+now runs through `normalizeTemperatureUnit`, which knows three values.
+
+The unlock is its own boolean rather than being implied by the unit, because the cycle has to stay
+two-wide until it is found. That opens a state where the two disagree, so a stored `Ro` counts as
+proof the unlock happened. Nobody can be stranded on a unit their button will not advance past.
+
+Rømer degrees are nearly twice the size of Fahrenheit ones, so `formatTemperature` keeps one decimal
+and drops a trailing zero. Whole numbers would round freezing from 7.5 to 8 and throw away the half
+degrees the whole scale is built on. Water still boils at exactly 60, which is a test.
+
+The reveal is a 1.2s sweep on the button, warm through cold to frost and back to an ordinary outline
+button, with a one-line credit to Rømer under the row that fades itself out after six seconds. It is
+the thermometer's own journey, and it is the only place in the popup that says what you found.
+Both animations sit behind `prefers-reduced-motion`.
+
+`settingsCatalog` gets nothing. Searching the settings for "romer" returns the empty state, which is
+the point.
+
+Two keys across all twelve locales. `°Rø` is a symbol and stays identical everywhere; the credit
+line is translated, and the decimal separator follows each locale rather than the formula.
+
+Nineteen tests. Five on the cycle, three on normalization, four on the conversion, and seven
+component tests including one asserting six clicks do nothing and one asserting the settings search
+never names Rømer before it is found.
+
 ## Coming back from a game keeps your place in the list — 2026-09-02
 
 Open a game card, come back, and the popup dumped you at the top. On a busy slate that meant

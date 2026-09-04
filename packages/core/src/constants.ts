@@ -255,10 +255,15 @@ export const createDefaultUserPreferences = (): UserPreferences => ({
 	standbyStreamThreshold: 20,
 	bettingEnabled: false,
 	temperatureUnit: 'F' as const,
+	romerUnlocked: false,
 	postseasonBoostPoints: defaultPostseasonBoostPoints,
 	upcomingGamesDays: defaultUpcomingGamesDays,
 	disabledSignals: [],
 });
+
+const normalizeTemperatureUnit = (value: unknown): UserPreferences['temperatureUnit'] => (
+	value === 'C' || value === 'Ro' ? value : 'F'
+);
 
 export const normalizeUserPreferences = (storedPrefs: unknown): UserPreferences => {
 	const defaults = createDefaultUserPreferences();
@@ -288,7 +293,10 @@ export const normalizeUserPreferences = (storedPrefs: unknown): UserPreferences 
 			? Math.max(0, Math.min(100, Math.round(candidate.standbyStreamThreshold)))
 			: defaults.standbyStreamThreshold,
 		bettingEnabled: typeof candidate.bettingEnabled === 'boolean' ? candidate.bettingEnabled : defaults.bettingEnabled,
-		temperatureUnit: candidate.temperatureUnit === 'C' ? 'C' : 'F',
+		temperatureUnit: normalizeTemperatureUnit(candidate.temperatureUnit),
+		// A stored Rømer unit is itself proof the unlock happened, so the two can never
+		// disagree in the direction that would strand someone on a unit they cannot cycle back to.
+		romerUnlocked: candidate.romerUnlocked === true || candidate.temperatureUnit === 'Ro',
 		postseasonBoostPoints: normalizeSecondsPreference(candidate.postseasonBoostPoints, defaults.postseasonBoostPoints),
 		upcomingGamesDays: typeof candidate.upcomingGamesDays === 'number' && Number.isFinite(candidate.upcomingGamesDays)
 			? Math.max(upcomingGamesDaysMin, Math.min(upcomingGamesDaysMax, Math.round(candidate.upcomingGamesDays)))

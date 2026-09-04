@@ -154,6 +154,8 @@
 		"temperatureUnit": "Temperatureinheit",
 		"temperatureUnitF": "°F",
 		"temperatureUnitC": "°C",
+		"temperatureUnitRomer": "°Rø",
+		"romerRevealed": "Ole Rømer, 1701. Salzlake bei 0, Körperwärme bei 22,5.",
 		"signalsSection": "PowerScore-Signale",
 		"signalsExplainer": "Deaktivierte Signale werden bei der Bewertung ausgeschlossen. Die Punktzahlen werden neu normiert, um im Bereich zu bleiben.",
 		"signalLastActive": "Mindestens ein Signal muss aktiv bleiben",

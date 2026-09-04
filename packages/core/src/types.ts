@@ -142,7 +142,10 @@ export interface UserPreferences {
 	// Switch to standby once every registered game falls below this.
 	standbyStreamThreshold: number;
 	bettingEnabled: boolean;
-	temperatureUnit: 'F' | 'C';
+	temperatureUnit: 'F' | 'C' | 'Ro';
+	// Rømer is not offered by the settings list, so the toggle needs to know whether this user
+	// has found it before it will cycle through a third unit.
+	romerUnlocked: boolean;
 	postseasonBoostPoints: number;
 	// 1–14.
 	upcomingGamesDays: number;

@@ -48,6 +48,7 @@ describe('constants', () => {
 			standbyStreamThreshold: 20,
 			bettingEnabled: false,
 			temperatureUnit: 'F',
+			romerUnlocked: false,
 			postseasonBoostPoints: 5,
 			upcomingGamesDays: 7,
 			disabledSignals: [],
@@ -82,10 +83,27 @@ describe('constants', () => {
 			standbyStreamThreshold: 20,
 			bettingEnabled: false,
 			temperatureUnit: 'F',
+			romerUnlocked: false,
 			postseasonBoostPoints: 5,
 			upcomingGamesDays: 7,
 			disabledSignals: [],
 		});
+	});
+
+	test('keeps a stored Rømer unit instead of silently rewriting it to Fahrenheit', () => {
+		expect(normalizeUserPreferences({ temperatureUnit: 'Ro', romerUnlocked: true }).temperatureUnit).toBe('Ro');
+		expect(normalizeUserPreferences({ temperatureUnit: 'C' }).temperatureUnit).toBe('C');
+	});
+
+	test('falls back to Fahrenheit for a temperature unit it does not recognize', () => {
+		expect(normalizeUserPreferences({ temperatureUnit: 'K' }).temperatureUnit).toBe('F');
+		expect(normalizeUserPreferences({ temperatureUnit: 7 }).temperatureUnit).toBe('F');
+	});
+
+	test('treats a stored Rømer unit as proof the unlock already happened', () => {
+		const normalized = normalizeUserPreferences({ temperatureUnit: 'Ro' });
+		expect(normalized.romerUnlocked).toBe(true);
+		expect(normalizeUserPreferences({ temperatureUnit: 'F' }).romerUnlocked).toBe(false);
 	});
 
 	test('resets legacy raw team ids while keeping valid league-scoped keys', () => {

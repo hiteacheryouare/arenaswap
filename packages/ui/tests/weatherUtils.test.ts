@@ -36,4 +36,18 @@ describe('formatTemperature', () => {
 		expect(formatTemperature(-4, 'F')).toBe('-4°F');
 		expect(formatTemperature(-4, 'C')).toBe('-20°C');
 	});
+
+	test('converts to Rømer against the scale\'s own reference points', () => {
+		expect(formatTemperature(32, 'Ro')).toBe('7.5°Rø');
+		expect(formatTemperature(212, 'Ro')).toBe('60°Rø');
+	});
+
+	test('keeps one decimal of Rømer but never a trailing zero', () => {
+		expect(formatTemperature(62, 'Ro')).toBe('16.3°Rø');
+		expect(formatTemperature(85, 'Ro')).toBe('23°Rø');
+	});
+
+	test('handles sub-brine temperatures, which Rømer takes negative', () => {
+		expect(formatTemperature(-4, 'Ro')).toBe('-3°Rø');
+	});
 });

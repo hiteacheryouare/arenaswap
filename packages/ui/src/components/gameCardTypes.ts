@@ -1,12 +1,13 @@
 import type { ReactNode } from 'react';
 import type { Game, LeagueId, PowerScoreResult } from '@arenaswap/core/types';
+import type { temperatureDisplayUnit } from './weatherUtils';
 
 export interface BettingDisplayPrefs {
 	bettingEnabled: boolean;
 }
 
 export interface WeatherDisplayPrefs {
-	temperatureUnit: 'F' | 'C';
+	temperatureUnit: temperatureDisplayUnit;
 }
 
 export interface GameCardDisplayProps {

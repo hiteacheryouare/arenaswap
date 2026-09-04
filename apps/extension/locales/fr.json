@@ -154,6 +154,8 @@
 		"temperatureUnit": "Unité de température",
 		"temperatureUnitF": "°F",
 		"temperatureUnitC": "°C",
+		"temperatureUnitRomer": "°Rø",
+		"romerRevealed": "Ole Rømer, 1701. Saumure à 0, chaleur du corps à 22,5.",
 		"signalsSection": "Signaux PowerScore",
 		"signalsExplainer": "Les signaux désactivés sont exclus du calcul. Les scores sont renormalisés pour rester dans la plage.",
 		"signalLastActive": "Au moins un signal doit rester actif",

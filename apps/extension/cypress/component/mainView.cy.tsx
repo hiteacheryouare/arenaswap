@@ -17,6 +17,7 @@ const defaultPrefs: UserPreferences = {
 	standbyStreamThreshold: 20,
 	bettingEnabled: false,
 	temperatureUnit: 'F',
+	romerUnlocked: false,
 	postseasonBoostPoints: 0,
 	upcomingGamesDays: 14,
 	disabledSignals: [],

@@ -16,6 +16,7 @@ const defaultPrefs: UserPreferences = {
 	standbyStreamThreshold: 20,
 	bettingEnabled: false,
 	temperatureUnit: 'F',
+	romerUnlocked: false,
 	postseasonBoostPoints: 0,
 	upcomingGamesDays: 7,
 	disabledSignals: [],
@@ -50,6 +51,7 @@ const defaultProps = {
 	onStandbyOnboardingDone: () => {},
 	onToggleBetting: () => {},
 	onToggleTemperatureUnit: () => {},
+	onUnlockRomer: () => {},
 	onPostseasonBoostChange: () => {},
 	onToggleSignal: () => {},
 };
@@ -247,6 +249,66 @@ describe('setupView display group', () => {
 		cy.mount(<SetupView {...defaultProps} prefs={{ ...defaultPrefs, temperatureUnit: 'C' }} />);
 		openGroup('display');
 		cy.get('#temperatureUnitToggle').should('contain', '°C');
+	});
+
+	it('shows °Rø label when temperatureUnit is Ro', () => {
+		cy.mount(<SetupView {...defaultProps} prefs={{ ...defaultPrefs, temperatureUnit: 'Ro', romerUnlocked: true }} />);
+		openGroup('display');
+		cy.get('#temperatureUnitToggle').should('contain', '°Rø');
+	});
+});
+
+const clickToggle = (times: number) => {
+	for (let i = 0; i < times; i += 1) cy.get('#temperatureUnitToggle').click();
+};
+
+describe('setupView Rømer unlock', () => {
+	it('cycles the unit on every click, unlocked or not', () => {
+		const onCycle = cy.spy().as('onCycle');
+		cy.mount(<SetupView {...defaultProps} onToggleTemperatureUnit={onCycle} />);
+		openGroup('display');
+		clickToggle(3);
+		cy.get('@onCycle').should('have.callCount', 3);
+	});
+
+	it('does not unlock on six clicks', () => {
+		const onUnlock = cy.spy().as('onUnlock');
+		cy.mount(<SetupView {...defaultProps} onUnlockRomer={onUnlock} />);
+		openGroup('display');
+		clickToggle(6);
+		cy.get('@onUnlock').should('not.have.been.called');
+		cy.get('.romer-credit').should('not.exist');
+	});
+
+	it('unlocks on the seventh click and shows the credit', () => {
+		const onUnlock = cy.spy().as('onUnlock');
+		cy.mount(<SetupView {...defaultProps} onUnlockRomer={onUnlock} />);
+		openGroup('display');
+		clickToggle(7);
+		cy.get('@onUnlock').should('have.been.calledOnce');
+		cy.get('.romer-credit').should('be.visible').and('contain', 'Rømer');
+	});
+
+	it('plays the reveal animation on the toggle itself', () => {
+		cy.mount(<SetupView {...defaultProps} />);
+		openGroup('display');
+		clickToggle(7);
+		cy.get('#temperatureUnitToggle').should('have.class', 'romer-revealing');
+	});
+
+	it('stops counting clicks once Rømer is already unlocked', () => {
+		const onUnlock = cy.spy().as('onUnlock');
+		cy.mount(<SetupView {...defaultProps} prefs={{ ...defaultPrefs, romerUnlocked: true }} onUnlockRomer={onUnlock} />);
+		openGroup('display');
+		clickToggle(9);
+		cy.get('@onUnlock').should('not.have.been.called');
+	});
+
+	it('never names Rømer anywhere in the settings before it is found', () => {
+		cy.mount(<SetupView {...defaultProps} />);
+		cy.get('#settingsSearch').type('romer');
+		cy.get('.settings-index-row').should('not.exist');
+		cy.get('.settings-search-empty').should('exist');
 	});
 });
 
