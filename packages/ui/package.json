@@ -19,6 +19,6 @@
 	"devDependencies": {
 		"@types/jest": "^30.0.0",
 		"echarts": "^6.1.0",
-		"jest": "^30.4.2"
+		"jest": "^30.5.1"
 	}
 }
