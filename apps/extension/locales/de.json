@@ -719,5 +719,11 @@
 			"l3": "Wir müssen erst langsamer werden.",
 			"l4": "Halt dieses Ding an! Ich befehle es!"
 		}
+	},
+	"standbyTestCard": {
+		"heading": "BITTE WARTEN",
+		"atMax": "Du hast verlangt, jedes Spiel auszusetzen, das unter 100 punktet. Keines tut das.",
+		"atMin": "Du hast verlangt, jedes Spiel auszusetzen, das unter 0 punktet. Keines tut das.",
+		"dismiss": "Zum Zurückkehren tippen"
 	}
 }

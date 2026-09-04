@@ -719,5 +719,11 @@
 			"l3": "Precisamos reduzir primeiro.",
 			"l4": "Para agora! Estou ordenando!"
 		}
+	},
+	"standbyTestCard": {
+		"heading": "AGUARDE, POR FAVOR",
+		"atMax": "Você pediu para pular todo jogo que pontue abaixo de 100. Nenhum pontua.",
+		"atMin": "Você pediu para pular todo jogo que pontue abaixo de 0. Nenhum pontua.",
+		"dismiss": "Toque em qualquer lugar para voltar"
 	}
 }

@@ -719,5 +719,11 @@
 			"l3": "Dobbiamo prima rallentare.",
 			"l4": "Fermate questa cosa! Ve lo ordino!"
 		}
+	},
+	"standbyTestCard": {
+		"heading": "ATTENDERE PREGO",
+		"atMax": "Hai chiesto di saltare ogni partita che segna meno di 100. Nessuna lo fa.",
+		"atMin": "Hai chiesto di saltare ogni partita che segna meno di 0. Nessuna lo fa.",
+		"dismiss": "Tocca ovunque per tornare"
 	}
 }

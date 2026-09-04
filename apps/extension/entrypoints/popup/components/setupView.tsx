@@ -12,6 +12,7 @@ import SettingTooltipIcon from './settingTooltipIcon';
 import SwitchDelaySlider from './switchDelaySlider';
 import TemperatureUnitToggle from './temperatureUnitToggle';
 import StandbyStreamGuide from './standbyStreamGuide';
+import StandbyTestCard from './standbyTestCard';
 import { searchSettings, settingsGroups, type settingsGroupId } from './settingsCatalog';
 import { leaguesBySportType, sportTypeLabels, sportTypeOrder } from '../popupHelpers';
 
@@ -74,6 +75,10 @@ const setupView = ({
 	const [page, setPage] = useState<settingsGroupId | null>(null);
 	const [query, setQuery] = useState('');
 	const [showStandbyGuide, setShowStandbyGuide] = useState(false);
+	// Pinning the threshold to either end asks for something that cannot happen: nothing scores a
+	// perfect 100, and nothing scores below zero. The value label goes live at both ends.
+	const thresholdLimit = prefs.standbyStreamThreshold === 100 ? 'max' : prefs.standbyStreamThreshold === 0 ? 'min' : null;
+	const [testCardLimit, setTestCardLimit] = useState<'min' | 'max' | null>(null);
 
 	const results = useMemo(() => searchSettings(query), [query]);
 	const noLeaguesSelected = prefsLoaded && prefs.enabledLeagues.length === 0;
@@ -259,6 +264,8 @@ const setupView = ({
 				</div>
 			</div>
 
+			{testCardLimit && <StandbyTestCard limit={testCardLimit} onClose={() => setTestCardLimit(null)} />}
+
 			{prefs.standbyStreamEnabled && (
 				<div className='mt-3 d-flex flex-column gap-3'>
 					<div>
@@ -266,7 +273,18 @@ const setupView = ({
 							<label className='text-body-secondary setting-toggle-label' htmlFor='standbyThresholdSlider'>
 								{i18n.t('setup.standbyBelow')}
 							</label>
-							<span className='fw-semibold text-body small'>{prefs.standbyStreamThreshold}</span>
+							{thresholdLimit ? (
+								<button
+									type='button'
+									id='standbyThresholdValue'
+									className='fw-semibold text-body small standby-threshold-pinned'
+									onClick={() => setTestCardLimit(thresholdLimit)}
+								>
+									{prefs.standbyStreamThreshold}
+								</button>
+							) : (
+								<span id='standbyThresholdValue' className='fw-semibold text-body small'>{prefs.standbyStreamThreshold}</span>
+							)}
 						</div>
 						<input
 							type='range'

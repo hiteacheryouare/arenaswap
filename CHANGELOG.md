@@ -1,5 +1,38 @@
 # Changelog
 
+## The standby threshold at either end asks for something impossible — 2026-09-03
+
+Drag the Standby Stream threshold to 100 or to 0 and the value beside the label becomes a control.
+Click it and the popup loses the signal and comes back as a broadcast test card: seven SMPTE colour
+bars, the inverted strip under them, and PLEASE STAND BY set in Lekton over a black band.
+
+Both ends are absurd, in opposite directions, and the copy is the same sentence twice. At 100 you
+have asked to sit out any game that scores below 100, and none of them do, so standby is where you
+live now. At 0 you have asked to sit out any game that scores below 0, and none of them do either,
+so the standby tab you picked will never once be shown to you.
+
+This is the Ludicrous Speed shape, which is the bar #108 sets: a control pushed to its limit, and a
+real thing behind it rather than a joke string. A test card is what the Standby Stream is for, so it
+is the one overlay in the popup that is also an explanation.
+
+The trigger has to be findable without being advertised, so the value is styled exactly as the plain
+text it replaces apart from a dotted underline and a help cursor. Same weight, same size, same
+colour. Bootstrap gives a `<button>` the keyboard affordance for free, so it is in the tab order
+without a hand-placed `tabIndex`.
+
+The overlay opens with a 0.32s scale from a bright horizontal line, which is an old set finding its
+picture, and a slow bright band rolls up the frame every 6.5s the way an untuned analogue signal
+does. Click anywhere or press Escape to go back. Both animations sit behind
+`prefers-reduced-motion`, which leaves the card itself perfectly readable.
+
+Four keys across all twelve locales. The heading is the string with no room to grow into, since it
+is the only one on the card at a fixed size in a monospace face, so a test measures each locale's
+heading on one line at 320px. The body copy is free to wrap.
+
+Nine component tests: the value stays plain text anywhere in the middle of the slider, goes live at
+both ends, carries the right sentence for the end it came from, draws fourteen bars across two
+strips, covers the popup at exactly 320x560, and closes on both a click and Escape.
+
 ## It snows on the detail screen when it snows at the game — 2026-09-03
 
 The game detail screen decorates itself. Snow falls on a game ESPN reports snow at, leaves fall on
