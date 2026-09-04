@@ -1236,7 +1236,16 @@ button.game-info-attribution {
 }
 
 .game-detail-shell {
+	// The shell's own padding, and the amount the sticky bar has to bleed back out to reach the
+	// popup edge. One variable so the light frame can push both inwards together.
+	--gd-inset: 0.75rem;
+	padding: var(--gd-inset);
 	background: #0d1117;
+
+	// Enough to clear the bulbs without taking a visible bite out of the content column.
+	&.has-holiday-lights {
+		--gd-inset: 1.1rem;
+	}
 
 	.game-meta-venue,
 	.game-meta-networks,
@@ -1249,17 +1258,16 @@ button.game-info-attribution {
 	position: sticky;
 	// Sticky offsets resolve against the scroll container's *padding* box, so top:0 would
 	// park the bar 0.75rem down. Pulling it back by that padding pins it flush to the top.
-	top: -0.75rem;
+	top: calc(var(--gd-inset) * -1);
 	z-index: 5;
 	display: flex;
 	align-items: center;
 	// Fixed height in both states so the compact matchup fading in never shifts the layout.
 	height: 2.5rem;
-	// .popup-container carries 0.75rem of padding that scrolls away with the content.
-	// Bleed the bar full-width and re-add that padding inside, so rows sliding under it
-	// are covered edge to edge instead of showing through a 12px gap above.
-	margin: -0.75rem -0.75rem 0.5rem;
-	padding: 0 0.75rem;
+	// The shell's padding scrolls away with the content. Bleed the bar back out to the popup edge
+	// and re-add that padding inside, so rows sliding under it are covered edge to edge.
+	margin: calc(var(--gd-inset) * -1) calc(var(--gd-inset) * -1) 0.5rem;
+	padding: 0 var(--gd-inset);
 	background: #0d1117;
 	border-bottom: 1px solid #30363d;
 }

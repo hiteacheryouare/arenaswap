@@ -239,3 +239,29 @@ describe('demo season', () => {
 		expect(resolveDecorations(snowy, borrowed, allOn).lights).toBe(false);
 	});
 });
+
+describe('snow is a weather rule, not a sport rule', () => {
+	const snowyWeather = { temperatureF: 27, conditionLabel: 'Snow' };
+	const august = new Date(2026, 7, 14, 13);
+
+	test('falls on every sport that reports it', () => {
+		const sports = [
+			{ league: 'nfl' as const, sportType: 'football' as const },
+			{ league: 'mls' as const, sportType: 'soccer' as const },
+			{ league: 'mlb' as const, sportType: 'baseball' as const },
+			{ league: 'nhl' as const, sportType: 'hockey' as const },
+		];
+		for (const sport of sports) {
+			const game = football({ ...sport, weather: snowyWeather });
+			expect(resolveDecorations(game, august, allOn).falling).toBe('snow');
+		}
+	});
+
+	test('falls on none of them without it', () => {
+		const sports = ['football', 'soccer', 'baseball', 'hockey'] as const;
+		for (const sportType of sports) {
+			const game = football({ sportType, weather: { temperatureF: 21, conditionLabel: 'Cloudy' } });
+			expect(resolveDecorations(game, august, allOn).falling).toBe(null);
+		}
+	});
+});

@@ -1,5 +1,93 @@
 # Changelog
 
+## The decorations, rebuilt: a light frame, real piles, and snow for every sport — 2026-09-03
+
+Four things were wrong with the first pass.
+
+### Snow reached one sport in demo, and only one
+
+The rule was already right: snow is gated on the weather reading and nothing else, so any sport can
+get it. What was wrong is that the NFL fixture was the only demo game carrying snow, which made a
+sport-agnostic rule look like a football rule. Two of the four outdoor demo games snow now, across
+football and soccer, and the other two are clear. Neither the gate nor the containment is visible
+from a single fixture. A test asserts snow on four sports and none on a clear game of each.
+
+### The pile followed you down the screen
+
+The drift was drawn on the same viewport-fixed canvas as the falling snow, so it sat at the foot of
+the *window* and slid down the page as you scrolled. Snow settles on the ground, and the ground is
+the foot of the page.
+
+It is its own element now, last in the flow, bleeding the shell's padding to reach both edges. The
+falling stays on the fixed canvas, because weather does belong to the window. Splitting them also
+took the landing-line arithmetic out of the animation loop: flakes now reset at the bottom of the
+screen rather than against a mound in a coordinate system they no longer share.
+
+### Both piles looked like mush
+
+A gradient with a wavy top edge is fog, not snow, and a brown one is mud rather than leaves.
+
+The snow drift is a crown of overlapping lumps, filled solid, white along the top and cooling into
+blue at the foot, with contour strokes clipped inside it so the lumps read as volume. Snow is lit
+from above and its shadows are blue; a white-to-transparent gradient has neither of those and that
+is exactly why it read as fog.
+
+The leaf pile is leaves. Up to about 180 of them depending on depth, drawn back to front so the near
+ones overlap the far ones, each with a midrib — without it a leaf at this size is an almond, and a
+heap of almonds is the mush we started with. The only thing under them is a shadow dark enough that
+the gaps do not show the page through. Both piles are laid out from a seeded pseudo-random so the
+arrangement does not reshuffle itself on every poll.
+
+### The lights framed the scorebug, not the popup
+
+They run all the way round now, top, bottom and both sides, with every bulb hanging inward off the
+wire so the cap stays against the popup edge. Horizontal runs sag between their bulbs; the vertical
+runs are drawn straight, since a wire hanging down its own length does not bow sideways.
+
+The content moves in to make room. `--gd-inset` is one variable on the detail shell that drives both
+the shell's own padding and the negative margin the sticky back bar uses to bleed back out to the
+edge, so the two cannot drift apart. It goes from 0.75rem to 1.1rem when the lights are up, which
+takes 11px off the content column.
+
+Positioning the frame took three attempts, and the two failures are worth recording.
+
+`position: fixed; inset: 0` is sized against the window, so its right edge lands under the scrollbar
+and slices that entire column of bulbs in half.
+
+A zero-height sticky wrapper fixes the width, since sticky elements are laid out in the content box
+and the content box excludes the scrollbar. But sticky cannot lift an element above its own flow
+position, so at scroll zero the frame sat `--gd-inset` low and its bottom run fell off the screen
+until you scrolled. It only looked correct because the first screenshot of it was taken scrolled
+down.
+
+The frame is measured now: `clientWidth` and `clientHeight` of the scroll container are exactly the
+box it wants, excluding the scrollbar and including the padding the bulbs sit in. It reads them in a
+layout effect, before the paint that would otherwise show one frame of a mis-sized string.
+
+A third thing turned up while measuring. An SVG with a viewBox carries an intrinsic aspect ratio, so
+a frame given three offsets and no explicit height derives the fourth from the other side: at 305px
+wide it came out 534px tall against a 560px popup, and the bottom run was simply in the wrong place.
+Both dimensions are set explicitly.
+
+### Checking the narrower column
+
+A narrower column is where a label that fitted on one line quietly becomes two, so a test measures
+every text leaf on the screen with the frame off and again with it on and fails on anything that
+grew. Nothing does at 1.1rem. A second test pins the bite at more than 4px and at most 16.
+
+Writing it turned up two things about the harness, both of which had quietly made earlier tests
+lie.
+
+A `cy.mount` nested inside a `.then` replaces the root while the surrounding chain still holds the
+old, detached nodes, so every measurement comes back from a screen that is no longer on screen.
+Both mounts are enqueued at the top level instead.
+
+And a second `cy.clock` in the same test does not re-arm, so a test that mounts twice renders the
+first date both times and the December mount had no lights in it at all. The date is a prop on the
+detail view already, for demo mode, so the spec passes it directly and mocks no clock anywhere.
+
+24 component tests on the decorations now, up from 17.
+
 ## Demo mode can borrow a date, so the decorations are reachable in September — 2026-09-03
 
 The holiday decorations were only visible when the world cooperated: a game ESPN reports snow at,

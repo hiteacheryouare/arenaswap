@@ -9,6 +9,7 @@ import DetailStickyBar from './detailStickyBar';
 import GameDetailChart from './gameDetailChart';
 import GameBoostInput from './gameBoostInput';
 import GameInfoPanel from './gameInfoPanel';
+import HolidayDrift from './holidayDrift';
 import HolidayFall from './holidayFall';
 import HolidayLights from './holidayLights';
 import PowerScoreBreakdown from './powerScoreBreakdown';
@@ -186,10 +187,10 @@ const gameDetailView = ({
 	}, []);
 
 	return (
-		<div className='popup-container game-detail-shell' ref={shellRef}>
-			{decorations.falling && <HolidayFall kind={decorations.falling} depth={decorations.depth} />}
-			<DetailStickyBar game={game} statusText={statusText} compact={heroScrolledAway} onBack={onBack} />
+		<div className={`popup-container game-detail-shell${decorations.lights ? ' has-holiday-lights' : ''}`} ref={shellRef}>
+			{decorations.falling && <HolidayFall kind={decorations.falling} />}
 			{decorations.lights && <HolidayLights />}
+			<DetailStickyBar game={game} statusText={statusText} compact={heroScrolledAway} onBack={onBack} />
 
 			<div ref={heroRef}>
 				{isPreGame ? (
@@ -275,6 +276,8 @@ const gameDetailView = ({
 			{orderedPowerScoreHistory.length > 0 && (
 				<GameDetailChart title={i18n.t('detail.chartComponentsTitle')} option={componentOption} legendItems={componentLegendItems} />
 			)}
+
+			{decorations.falling && <HolidayDrift kind={decorations.falling} depth={decorations.depth} />}
 		</div>
 	);
 };

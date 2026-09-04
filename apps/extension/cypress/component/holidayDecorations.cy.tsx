@@ -46,9 +46,10 @@ const game = (over: Partial<Game> = {}): Game => ({
 const snowing = game({ weather: { temperatureF: 24, conditionLabel: 'Snow' } });
 const clear = game({ weather: { temperatureF: 52, conditionLabel: 'Partly Cloudy' } });
 
+// The date is passed as a prop rather than mocked with cy.clock. A second cy.clock in the same test
+// does not re-arm, so a test that mounts twice silently renders the first date both times.
 const mountDetail = (subject: Game, now: Date, prefs = allOn) => {
 	cy.viewport(320, 560);
-	cy.clock(now, ['Date']);
 	cy.mount(
 		<GameDetailView
 			game={subject}
@@ -60,6 +61,7 @@ const mountDetail = (subject: Game, now: Date, prefs = allOn) => {
 			bettingPrefs={{ bettingEnabled: false }}
 			weatherPrefs={{ temperatureUnit: 'F' }}
 			decorationPrefs={prefs}
+			decorationDate={now}
 			onSetGameBoost={() => {}}
 			onBack={() => {}}
 		/>,
@@ -80,7 +82,7 @@ describe('holiday decorations on the detail screen', () => {
 	it('hangs lights through December for any game at all', () => {
 		mountDetail(clear, december);
 		cy.get('.holiday-lights').should('exist');
-		cy.get('.holiday-bulb').should('have.length', 9);
+		cy.get('.holiday-bulb').should('have.length.at.least', 24);
 	});
 
 	it('takes the lights down for the rest of the year', () => {
@@ -115,22 +117,75 @@ describe('holiday decorations on the detail screen', () => {
 		});
 	});
 
-	// The string is meant to drape over the matchup card the way FOX drapes it over the scorebug,
-	// which means clearing the sticky back bar rather than hiding behind it.
-	it('hangs the string below the back bar and keeps it there while scrolling', () => {
+	// An SVG with a viewBox carries an intrinsic aspect ratio, so a frame given only three offsets
+	// sizes its fourth from the other side and comes up short. Both dimensions are set from the
+	// measured scroll container instead.
+	it('frames the scroll container exactly, clear of the scrollbar', () => {
 		mountDetail(clear, december);
-		cy.get('.game-detail-header').then(([header]: JQuery<HTMLElement>) => {
-			const headerBottom = header.getBoundingClientRect().bottom;
-			cy.get('.holiday-lights').should(([lights]: JQuery<HTMLElement>) => {
-				expect(lights.getBoundingClientRect().top, 'clears the back bar').to.be.at.least(headerBottom - 1);
+		cy.get('.popup-container').then(([scroller]: JQuery<HTMLElement>) => {
+			const gutter = Math.round(scroller.getBoundingClientRect().width - scroller.clientWidth);
+			expect(gutter, 'the harness renders a real scrollbar to clear').to.be.greaterThan(0);
+			cy.get('.holiday-lights').should(([frame]: JQuery<HTMLElement>) => {
+				const rect = frame.getBoundingClientRect();
+				expect(Math.round(rect.width), 'frame width excludes the scrollbar').to.equal(scroller.clientWidth);
+				expect(Math.round(rect.height), 'frame height is the full popup').to.equal(scroller.clientHeight);
 			});
 		});
-		cy.get('.popup-container').scrollTo('bottom');
-		cy.get('.holiday-lights').should(([lights]: JQuery<HTMLElement>) => {
-			const rect = lights.getBoundingClientRect();
-			expect(Math.round(rect.top), 'still pinned under the bar').to.equal(40);
-			expect(Math.round(rect.height), 'still drawn at full height').to.equal(22);
+	});
+
+	it('runs bulbs down all four sides, every one of them hanging inward', () => {
+		mountDetail(clear, december);
+		cy.get('.holiday-lights').should(([frame]: JQuery<HTMLElement>) => {
+			const frameRect = frame.getBoundingClientRect();
+			const bulbs = Array.from(frame.querySelectorAll('.holiday-bulb'))
+				.map(bulb => bulb.getBoundingClientRect());
+			expect(bulbs.length, 'bulbs all the way round').to.be.greaterThan(24);
+
+			const near = 24;
+			expect(bulbs.some(b => b.top - frameRect.top < near), 'a top run').to.equal(true);
+			expect(bulbs.some(b => frameRect.bottom - b.bottom < near), 'a bottom run').to.equal(true);
+			expect(bulbs.some(b => b.left - frameRect.left < near), 'a left run').to.equal(true);
+			expect(bulbs.some(b => frameRect.right - b.right < near), 'a right run').to.equal(true);
+
+			for (const bulb of bulbs) {
+				expect(bulb.left, 'no bulb hangs off the left edge').to.be.at.least(frameRect.left - 0.5);
+				expect(bulb.right, 'no bulb hangs off the right edge').to.be.at.most(frameRect.right + 0.5);
+				expect(bulb.top, 'no bulb hangs off the top edge').to.be.at.least(frameRect.top - 0.5);
+				expect(bulb.bottom, 'no bulb hangs off the bottom edge').to.be.at.most(frameRect.bottom + 0.5);
+			}
 		});
+	});
+
+	// The pile belongs to the ground, which is the foot of the page rather than the foot of the
+	// window. Scrolling has to move it, which is exactly what a fixed overlay would not do.
+	it('leaves the pile at the bottom of the page instead of dragging it down the screen', () => {
+		mountDetail(snowing, august);
+		cy.get('.holiday-drift').should('exist');
+		cy.get('.popup-container').scrollTo('top');
+		cy.get('.holiday-drift').then(([drift]: JQuery<HTMLElement>) => {
+			const atTop = drift.getBoundingClientRect().top;
+			cy.get('.popup-container').scrollTo('bottom');
+			cy.get('.holiday-drift').should(([scrolled]: JQuery<HTMLElement>) => {
+				expect(scrolled.getBoundingClientRect().top, 'the pile scrolled up into view').to.be.lessThan(atTop);
+			});
+		});
+	});
+
+	it('lands the pile flush with the very bottom of the content', () => {
+		mountDetail(snowing, august);
+		cy.get('.popup-container').scrollTo('bottom');
+		cy.get('.popup-container').then(([scroller]: JQuery<HTMLElement>) => {
+			cy.get('.holiday-drift').should(([drift]: JQuery<HTMLElement>) => {
+				const gap = scroller.getBoundingClientRect().bottom - drift.getBoundingClientRect().bottom;
+				expect(Math.round(gap), 'no gap under the pile').to.equal(0);
+			});
+		});
+	});
+
+	it('draws no pile at all before anything has settled', () => {
+		mountDetail(game({ status: 'pre', period: 0, clockSeconds: 0, weather: { temperatureF: 24, conditionLabel: 'Snow' } }), august);
+		cy.get('.holiday-fall').should('exist');
+		cy.get('.holiday-drift').should('not.exist');
 	});
 });
 
@@ -251,7 +306,6 @@ describe('reaching the decorations from demo mode', () => {
 	// The point of the borrowed date: a September session can still see all three.
 	it('decorates a snowy game in September once December is borrowed', () => {
 		cy.viewport(320, 560);
-		cy.clock(august, ['Date']);
 		cy.mount(
 			<GameDetailView
 				game={snowing}
@@ -270,5 +324,66 @@ describe('reaching the decorations from demo mode', () => {
 		);
 		cy.get('.holiday-lights').should('exist');
 		cy.get('.holiday-fall').should('exist');
+	});
+});
+
+// Pushing the content in for the light frame narrows the column, and a narrower column is where a
+// label that fitted on one line quietly becomes two. Every text leaf is measured with the frame off
+// and again with it on, and any that grew is a wrap the inset caused.
+const textLeafHeights = (): Cypress.Chainable<Record<string, number>> =>
+	cy.get('.game-detail-shell').then(([shell]: JQuery<HTMLElement>) => {
+		const heights: Record<string, number> = {};
+		shell.querySelectorAll<HTMLElement>('*').forEach(el => {
+			if (el.children.length > 0) return;
+			const text = el.textContent?.trim();
+			if (!text) return;
+			heights[`${el.className}|${text}`] = Math.round(el.getBoundingClientRect().height);
+		});
+		return heights;
+	});
+
+describe('the light frame and the content column', () => {
+	// Both mounts are enqueued at the top level rather than nested in a `.then`. A mount inside a
+	// callback replaces the root while the surrounding chain still holds the old, detached nodes,
+	// and every measurement then comes back from a screen that is no longer on screen.
+	it('takes a slice off the column without wrapping anything that fitted before', () => {
+		mountDetail(clear, august);
+		textLeafHeights().as('withoutFrame');
+
+		mountDetail(clear, december);
+		cy.get('.holiday-lights').should('exist');
+		textLeafHeights().then(function compare(this: Mocha.Context, withFrame: Record<string, number>) {
+			const withoutFrame = this.withoutFrame as Record<string, number>;
+			const wrapped = Object.keys(withFrame)
+				.filter(key => withoutFrame[key] !== undefined && withFrame[key]! > withoutFrame[key]!)
+				.map(key => `${key} grew ${withoutFrame[key]}px to ${withFrame[key]}px`);
+			expect(Object.keys(withFrame).length, 'there was something to measure').to.be.greaterThan(10);
+			expect(wrapped, 'nothing gained a line when the frame pushed the content in').to.deep.equal([]);
+		});
+	});
+
+	it('keeps the bite out of the column small enough to be worth it', () => {
+		mountDetail(clear, august);
+		cy.get('.gd-hero').invoke('outerWidth').as('bareWidth');
+
+		mountDetail(clear, december);
+		cy.get('.holiday-lights').should('exist');
+		cy.get('.gd-hero').then(function compare(this: Mocha.Context, [framed]: JQuery<HTMLElement>) {
+			const lost = (this.bareWidth as number) - framed.getBoundingClientRect().width;
+			expect(lost, 'the frame actually pushes the content in').to.be.greaterThan(4);
+			expect(lost, 'but not far enough to be worth noticing').to.be.at.most(16);
+		});
+	});
+
+	it('bleeds the back bar back out to the popup edge at the wider inset', () => {
+		mountDetail(clear, december);
+		cy.get('.popup-container').then(([scroller]: JQuery<HTMLElement>) => {
+			const scrollerRect = scroller.getBoundingClientRect();
+			cy.get('.game-detail-header').should(([header]: JQuery<HTMLElement>) => {
+				const headerRect = header.getBoundingClientRect();
+				expect(Math.round(headerRect.left), 'flush left').to.equal(Math.round(scrollerRect.left));
+				expect(Math.round(headerRect.top), 'flush top').to.equal(Math.round(scrollerRect.top));
+			});
+		});
 	});
 });

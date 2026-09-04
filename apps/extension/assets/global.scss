@@ -650,17 +650,14 @@ button, input, select, optgroup, textarea {
 }
 
 /* ─── Holiday decorations ─────────────────────────────────────────────────── */
-/* The string hangs immediately under the sticky back bar and stays there while the screen
-   scrolls, the way FOX drapes lights over the scorebug rather than over the pitch. The bar is
-   sticky at -0.75rem to cancel the container's padding, so this offset re-adds it. */
+/* A frame around the whole popup rather than a string over the scorebug, pinned to the window so
+   it does not scroll away. Above the sticky back bar on purpose: the lights are in front of the
+   set, the way FOX hangs them in front of the bug. */
+/* Position and size come from the measured scroll container, set inline. */
 .holiday-lights {
-	position: sticky;
-	top: 1.75rem;
-	z-index: 4;
+	position: fixed;
+	z-index: 6;
 	display: block;
-	width: calc(100% + 1.5rem);
-	height: 22px;
-	margin: 0 -0.75rem -22px;
 	pointer-events: none;
 }
 
@@ -694,26 +691,24 @@ button, input, select, optgroup, textarea {
 .holiday-fall {
 	position: fixed;
 	inset: 0;
-	z-index: 6;
+	z-index: 7;
 	width: 100%;
 	height: 100%;
 	pointer-events: none;
 }
 
-@media (prefers-reduced-motion: reduce) {
-	.holiday-bulb { animation: none; }
+/* The pile is the opposite: it belongs to the ground, which is the foot of the page. Last element
+   in the flow, bleeding the shell's padding so it reaches both edges. */
+.holiday-drift {
+	display: block;
+	width: calc(100% + var(--gd-inset) * 2);
+	height: 96px;
+	margin: 0 calc(var(--gd-inset) * -1) calc(var(--gd-inset) * -1);
+	pointer-events: none;
 }
 
-/* The value label only becomes a control at the two ends of the slider, so it is styled to look
-   exactly like the plain label it replaces apart from the cursor and a dotted underline. */
-.standby-threshold-pinned {
-	padding: 0;
-	border: none;
-	border-bottom: 1px dotted #6b7683;
-	background: none;
-	color: inherit;
-	cursor: help;
-	line-height: 1.2;
+@media (prefers-reduced-motion: reduce) {
+	.holiday-bulb { animation: none; }
 }
 
 /* ─── Standby test card ───────────────────────────────────────────────────── */

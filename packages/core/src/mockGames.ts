@@ -147,6 +147,7 @@ export class MockGameSimulator {
 				baseRunners: { first: true, second: false, third: true },
 				bso: { balls: 1, strikes: 0, outs: 1 },
 				broadcasts: ['MLB.TV'],
+				weather: { temperatureF: 61, conditionLabel: 'Clear' },
 			},
 			{
 				id: 'mock-5',
@@ -160,8 +161,9 @@ export class MockGameSimulator {
 				downDistance: '1st & 10',
 				fieldPosition: 'PHI 25',
 				broadcasts: ['NBC', 'Peacock'],
-				// Snowing, so demo mode has a game the detail screen decorates. The other outdoor
-				// games below are deliberately clear: the weather belongs to one game, not the popup.
+				// Two of the outdoor demo games snow and two do not, across four different sports.
+				// Snow is gated on the weather reading alone, and the weather belongs to a game
+				// rather than to the popup — neither of which is visible from a single fixture.
 				weather: { temperatureF: 26, conditionLabel: 'Snow' },
 			},
 			{
@@ -192,7 +194,7 @@ export class MockGameSimulator {
 				venueLocation: 'Chester, PA',
 				period: 2, clockSeconds: 742, status: 'in',
 				broadcasts: ['Apple TV'],
-				weather: { temperatureF: 58, conditionLabel: 'Cloudy' },
+				weather: { temperatureF: 31, conditionLabel: 'Light Snow' },
 			},
 			{
 				id: 'mock-10',
