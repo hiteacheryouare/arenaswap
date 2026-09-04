@@ -146,6 +146,11 @@ export interface UserPreferences {
 	// Rømer is not offered by the settings list, so the toggle needs to know whether this user
 	// has found it before it will cycle through a third unit.
 	romerUnlocked: boolean;
+	// Seasonal decoration on the game detail screen. The parent gates all three.
+	holidayDecorationsEnabled: boolean;
+	holidaySnowEnabled: boolean;
+	holidayLightsEnabled: boolean;
+	holidayLeavesEnabled: boolean;
 	postseasonBoostPoints: number;
 	// 1–14.
 	upcomingGamesDays: number;

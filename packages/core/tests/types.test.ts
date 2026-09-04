@@ -36,6 +36,10 @@ describe('types runtime smoke', () => {
 			bettingEnabled: false,
 			temperatureUnit: 'F',
 			romerUnlocked: false,
+			holidayDecorationsEnabled: true,
+			holidaySnowEnabled: true,
+			holidayLightsEnabled: true,
+			holidayLeavesEnabled: true,
 			postseasonBoostPoints: 5,
 		};
 		const message: ExtensionMessage = { type: 'UPDATE_PREFS', prefs };

@@ -9,6 +9,8 @@ import DetailStickyBar from './detailStickyBar';
 import GameDetailChart from './gameDetailChart';
 import GameBoostInput from './gameBoostInput';
 import GameInfoPanel from './gameInfoPanel';
+import HolidayFall from './holidayFall';
+import HolidayLights from './holidayLights';
 import PowerScoreBreakdown from './powerScoreBreakdown';
 import PregameSetup from './pregameSetup';
 import PregameStats from './pregameStats';
@@ -22,6 +24,7 @@ import {
 } from './gameDetailChartOptions';
 import { resolveTeamColorPair } from '@arenaswap/ui/src/components/colorUtils';
 import useSummaryData from './useSummaryData';
+import { resolveDecorations, type holidayDecorationPrefs } from '../../../utils/holidayDecorations';
 import type { BettingDisplayPrefs, WeatherDisplayPrefs } from './gameCardTypes';
 
 interface gameDetailViewProps {
@@ -33,6 +36,7 @@ interface gameDetailViewProps {
 	gameBoosts: Record<string, number>;
 	bettingPrefs: BettingDisplayPrefs;
 	weatherPrefs: WeatherDisplayPrefs;
+	decorationPrefs: holidayDecorationPrefs;
 	disabledSignals?: readonly SignalName[];
 	// Pre-game only: the setup card and the poster's favourite stars need these. They are
 	// optional so the live screen, and anything mounting it, is unaffected.
@@ -71,6 +75,7 @@ const gameDetailView = ({
 	gameBoosts,
 	bettingPrefs,
 	weatherPrefs,
+	decorationPrefs,
 	disabledSignals = [],
 	favoriteTeamIds = noFavorites,
 	openTabs = [],
@@ -107,6 +112,7 @@ const gameDetailView = ({
 	const clockBased = (sportTypeConfigMap[game.sportType] ?? sportTypeConfigMap.basketball).clockBased;
 	const favoriteBonus = activePowerScore?.favoriteBonus ?? 0;
 	const favoriteTeamCount = activePowerScore?.favoriteTeamCount ?? 0;
+	const decorations = resolveDecorations(game, new Date(), decorationPrefs);
 	const currentBoost = gameBoosts[game.id] ?? 0;
 	// The breakdown mirrors the scorer, which drops every boost while play is frozen. The boost input
 	// keeps showing the stored value, since the setting survives halftime even though it pays nothing.
@@ -178,7 +184,9 @@ const gameDetailView = ({
 
 	return (
 		<div className='popup-container game-detail-shell' ref={shellRef}>
+			{decorations.falling && <HolidayFall kind={decorations.falling} depth={decorations.depth} />}
 			<DetailStickyBar game={game} statusText={statusText} compact={heroScrolledAway} onBack={onBack} />
+			{decorations.lights && <HolidayLights />}
 
 			<div ref={heroRef}>
 				{isPreGame ? (

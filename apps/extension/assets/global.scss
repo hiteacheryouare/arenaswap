@@ -648,3 +648,58 @@ button, input, select, optgroup, textarea {
 	.romer-revealing { animation: none; }
 	.romer-credit { animation: none; opacity: 1; }
 }
+
+/* ─── Holiday decorations ─────────────────────────────────────────────────── */
+/* The string hangs immediately under the sticky back bar and stays there while the screen
+   scrolls, the way FOX drapes lights over the scorebug rather than over the pitch. The bar is
+   sticky at -0.75rem to cancel the container's padding, so this offset re-adds it. */
+.holiday-lights {
+	position: sticky;
+	top: 1.75rem;
+	z-index: 4;
+	display: block;
+	width: calc(100% + 1.5rem);
+	height: 22px;
+	margin: 0 -0.75rem -22px;
+	pointer-events: none;
+}
+
+.holiday-lights-wire {
+	fill: none;
+	stroke: #2f3a45;
+	stroke-width: 1;
+}
+
+.holiday-bulb {
+	fill: currentcolor;
+	animation: holidayBulbTwinkle 3.4s ease-in-out infinite;
+}
+
+.holiday-bulb-cap {
+	fill: #4a5561;
+}
+
+.holiday-bulb-glass {
+	filter: drop-shadow(0 0 4px currentcolor);
+}
+
+/* Slow enough to read as a shimmer rather than a strobe, and it never goes fully dark. */
+@keyframes holidayBulbTwinkle {
+	0%, 100% { opacity: 1; }
+	50%      { opacity: 0.48; }
+}
+
+/* Fixed rather than absolute: the flakes belong to the popup window, not to the scrolling
+   document, so a long detail screen does not scroll its own weather away. */
+.holiday-fall {
+	position: fixed;
+	inset: 0;
+	z-index: 6;
+	width: 100%;
+	height: 100%;
+	pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.holiday-bulb { animation: none; }
+}

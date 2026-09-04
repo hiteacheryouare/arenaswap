@@ -408,6 +408,10 @@ export default () => {
 						onToggleBetting={() => persistPrefs(currentPrefs => ({ ...currentPrefs, bettingEnabled: !currentPrefs.bettingEnabled }))}
 						onToggleTemperatureUnit={() => persistPrefs(currentPrefs => ({ ...currentPrefs, temperatureUnit: nextTemperatureUnit(currentPrefs.temperatureUnit, currentPrefs.romerUnlocked) }))}
 						onUnlockRomer={() => persistPrefs(currentPrefs => ({ ...currentPrefs, romerUnlocked: true, temperatureUnit: 'Ro' }))}
+						onToggleHolidayDecorations={() => persistPrefs(currentPrefs => ({ ...currentPrefs, holidayDecorationsEnabled: !currentPrefs.holidayDecorationsEnabled }))}
+						onToggleHolidaySnow={() => persistPrefs(currentPrefs => ({ ...currentPrefs, holidaySnowEnabled: !currentPrefs.holidaySnowEnabled }))}
+						onToggleHolidayLights={() => persistPrefs(currentPrefs => ({ ...currentPrefs, holidayLightsEnabled: !currentPrefs.holidayLightsEnabled }))}
+						onToggleHolidayLeaves={() => persistPrefs(currentPrefs => ({ ...currentPrefs, holidayLeavesEnabled: !currentPrefs.holidayLeavesEnabled }))}
 						onPostseasonBoostChange={val => persistPrefs(currentPrefs => ({ ...currentPrefs, postseasonBoostPoints: val }))}
 						onToggleSignal={onToggleSignal}
 					/>
@@ -468,6 +472,12 @@ export default () => {
 						}}
 						weatherPrefs={{
 							temperatureUnit: prefs.temperatureUnit,
+						}}
+						decorationPrefs={{
+							holidayDecorationsEnabled: prefs.holidayDecorationsEnabled,
+							holidaySnowEnabled: prefs.holidaySnowEnabled,
+							holidayLightsEnabled: prefs.holidayLightsEnabled,
+							holidayLeavesEnabled: prefs.holidayLeavesEnabled,
 						}}
 						disabledSignals={prefs.disabledSignals}
 						favoriteTeamIds={favoriteTeamIds}

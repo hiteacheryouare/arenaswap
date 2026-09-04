@@ -1,5 +1,87 @@
 # Changelog
 
+## It snows on the detail screen when it snows at the game — 2026-09-03
+
+The game detail screen decorates itself. Snow falls on a game ESPN reports snow at, leaves fall on
+football through the week of Thanksgiving, and coloured lights hang off the back bar all December
+for every sport regardless of weather. It is contained to the one game you have open, so a snowy
+Buffalo game and a clear Miami one do not both get weather.
+
+The reference is the FOX scorebug, which drapes a string of bulbs over the bar itself rather than
+over the field. Ours hangs immediately under the sticky back bar, which puts it across the top of
+the matchup card, and it stays pinned there while the rest of the screen scrolls under it. Nine
+bulbs on a sagging wire, in ArenaSwap's own five PowerScore colours rather than a generic red and
+green, twinkling on a 3.4s cycle that never takes one fully dark.
+
+### The pile deepens through a period and resets at the break
+
+Snow and leaves accumulate along the floor of the popup, and how deep depends on how far through
+the current period, quarter, half or inning the game is. Every period ends deeper than the one
+before it, so a 4th quarter buries the bottom of the screen and a 1st barely dusts it, and each
+break wipes it back to nothing. Four builds of escalating drama instead of the same one four times.
+
+None of that needed new data. `leagueConfigs` already carries `regularPeriods` and
+`periodDurationSecs` per league, so an NHL game builds in thirds and an NCAAB game in halves without
+either being a special case, and overtime holds at the regulation maximum instead of piling past it.
+The ceiling is `period / regularPeriods` and the depth is that times the progress through it.
+
+Soccer needed the one adjustment. Its clock is total elapsed rather than per-half, so a second half
+runs 45:00 to 90:00 and the offset has to come back off before the fraction means anything. Stoppage
+time clamps rather than running past a full half.
+
+The inning sports have no clock to read at all, and `periodDurationSecs` is 0 for exactly those
+leagues — so "does this sport have a clock" is a property of the data rather than a list of league
+ids somebody has to maintain. Progress comes off the outs instead: six to an inning, three to a
+half, which makes each out a sixth and the half change the midpoint. Base runners were considered
+and dropped, because a pile that shrinks when a runner is thrown out at second is a strange thing to
+ship. The side effect is that the snow visibly stalls during a long rally, since an inning where
+nobody is retired sits at zero for as long as it lasts.
+
+### What falls, and when
+
+Leaves take the Thanksgiving week off snow. Snow gets the whole rest of the winter, and Thanksgiving
+is four days a year, so the rarer one wins the overlap — which is a real collision most years, not a
+hypothetical, given where the late-November NFL slate is played. Leaves are football only, so a
+snowy hockey game that week still gets snow.
+
+The Thanksgiving window is the full Monday-to-Sunday week around the fourth Thursday of November, so
+Tuesday and Wednesday college football are in. Lights run the whole of December and come down on the
+1st of January.
+
+Snow matches on the word rather than an exact set, because ESPN varies the wording a lot: "Snow",
+"Light Snow", "Snow Showers/Wind" and "Flurries" all count, and so does sleet. Freezing rain does
+not, since it does not settle as snow.
+
+Nothing settles before the first pitch and everything has by the final, so a pre-game screen gets
+falling weather with a clean floor and a finished game gets the full pile.
+
+### Settings
+
+A "Holiday decorations" parent in the display group with snow, lights and leaves under it, all on by
+default, the sub-switches hidden while the parent is off. It is in the settings search under
+christmas, snow, lights, leaves and thanksgiving. Six keys across all twelve locales.
+
+The lights sit behind `prefers-reduced-motion`, and so does the falling: reduced motion draws the
+accumulated pile and skips the animation entirely, rather than dropping the decoration altogether.
+
+### Coverage
+
+25 unit tests on the resolver, which takes `now` as an argument rather than calling `new Date()`
+inside — that is what makes December and Thanksgiving week plain unit tests instead of clock
+mocking. 13 component tests on the rendering, including the canvas covering the popup at exactly
+320x560 with `pointer-events: none`, the light string still pinned 40px down after scrolling to the
+bottom, and every locale's four labels measured on one line beside their switches.
+
+Two things turned up while writing those.
+
+Cypress reports the light string as not visible even when it is drawn, pinned and 305px wide.
+Asserting its rect is both more precise and true; `be.visible` on an SVG with a negative bottom
+margin is not.
+
+And the string measures 305px rather than 320 because the detail screen's scrollbar takes 15 of
+them. It bleeds the container's padding the same way the back bar does, so it starts flush at the
+left edge and stops short at the right, which is where the scrollbar already is.
+
 ## A third temperature unit nobody asked for — 2026-09-03
 
 The temperature setting has a Rømer scale now, and no way to reach it from the settings list. Seven

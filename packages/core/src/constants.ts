@@ -256,6 +256,10 @@ export const createDefaultUserPreferences = (): UserPreferences => ({
 	bettingEnabled: false,
 	temperatureUnit: 'F' as const,
 	romerUnlocked: false,
+	holidayDecorationsEnabled: true,
+	holidaySnowEnabled: true,
+	holidayLightsEnabled: true,
+	holidayLeavesEnabled: true,
 	postseasonBoostPoints: defaultPostseasonBoostPoints,
 	upcomingGamesDays: defaultUpcomingGamesDays,
 	disabledSignals: [],
@@ -297,6 +301,10 @@ export const normalizeUserPreferences = (storedPrefs: unknown): UserPreferences 
 		// A stored Rømer unit is itself proof the unlock happened, so the two can never
 		// disagree in the direction that would strand someone on a unit they cannot cycle back to.
 		romerUnlocked: candidate.romerUnlocked === true || candidate.temperatureUnit === 'Ro',
+		holidayDecorationsEnabled: typeof candidate.holidayDecorationsEnabled === 'boolean' ? candidate.holidayDecorationsEnabled : defaults.holidayDecorationsEnabled,
+		holidaySnowEnabled: typeof candidate.holidaySnowEnabled === 'boolean' ? candidate.holidaySnowEnabled : defaults.holidaySnowEnabled,
+		holidayLightsEnabled: typeof candidate.holidayLightsEnabled === 'boolean' ? candidate.holidayLightsEnabled : defaults.holidayLightsEnabled,
+		holidayLeavesEnabled: typeof candidate.holidayLeavesEnabled === 'boolean' ? candidate.holidayLeavesEnabled : defaults.holidayLeavesEnabled,
 		postseasonBoostPoints: normalizeSecondsPreference(candidate.postseasonBoostPoints, defaults.postseasonBoostPoints),
 		upcomingGamesDays: typeof candidate.upcomingGamesDays === 'number' && Number.isFinite(candidate.upcomingGamesDays)
 			? Math.max(upcomingGamesDaysMin, Math.min(upcomingGamesDaysMax, Math.round(candidate.upcomingGamesDays)))

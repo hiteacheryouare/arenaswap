@@ -52,6 +52,7 @@ export const settingsEntries: readonly settingsEntry[] = [
 	{ group: 'display', labelKey: 'setup.switchNotifications', keywordsKey: 'setup.keywordsNotifications' },
 	{ group: 'display', labelKey: 'setup.showBetting', keywordsKey: 'setup.keywordsBetting' },
 	{ group: 'display', labelKey: 'setup.temperatureUnit', keywordsKey: 'setup.keywordsTemperature' },
+	{ group: 'display', labelKey: 'setup.holidayDecorations', keywordsKey: 'setup.keywordsHoliday' },
 	{ group: 'standby', labelKey: 'setup.enableStandby', keywordsKey: 'setup.keywordsStandby' },
 	{ group: 'standby', labelKey: 'setup.standbyBelow', keywordsKey: 'setup.keywordsStandbyThreshold' },
 	{ group: 'standby', labelKey: 'setup.standbyTab', keywordsKey: 'setup.keywordsStandbyTab' },
