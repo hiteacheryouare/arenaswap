@@ -14,12 +14,14 @@ import TemperatureUnitToggle from './temperatureUnitToggle';
 import StandbyStreamGuide from './standbyStreamGuide';
 import StandbyTestCard from './standbyTestCard';
 import { searchSettings, settingsGroups, type settingsGroupId } from './settingsCatalog';
+import type { demoSeason } from '../../../utils/holidayDecorations';
 import { leaguesBySportType, sportTypeLabels, sportTypeOrder } from '../popupHelpers';
 
 interface setupViewProps {
 	prefs: UserPreferences;
 	prefsLoaded: boolean;
 	demoMode: boolean;
+	demoSeason: demoSeason;
 	leagueLogos: LeagueLogoMap;
 	standbyStreamTabId: number | null;
 	standbyOnboardingDone: boolean;
@@ -39,6 +41,7 @@ interface setupViewProps {
 	onToggleProTips: () => void;
 	onToggleNotifications: () => void;
 	onToggleDemo: () => void;
+	onDemoSeasonChange: (season: demoSeason) => void;
 	onToggleStandbyStream: () => void;
 	onStandbyThresholdChange: (val: number) => void;
 	onSetStandbyTab: (tabId: number | null) => void;
@@ -63,11 +66,11 @@ const setupSignalMeta = [
 ] as const;
 
 const setupView = ({
-	prefs, prefsLoaded, demoMode, leagueLogos, standbyStreamTabId, standbyOnboardingDone,
+	prefs, prefsLoaded, demoMode, demoSeason, leagueLogos, standbyStreamTabId, standbyOnboardingDone,
 	openTabs, formatTabLabel, onClose, onSensitivityChange, onCooldownChange, onSwitchDelayChange,
 	onFavoriteTeamBonusChange, onToggleLeague, onToggleSport, onReorderLeague, onResetLeagueOrder,
 	onToggleShowUpcoming, onUpcomingGamesDaysChange,
-	onToggleProTips, onToggleNotifications, onToggleDemo, onToggleStandbyStream, onStandbyThresholdChange,
+	onToggleProTips, onToggleNotifications, onToggleDemo, onDemoSeasonChange, onToggleStandbyStream, onStandbyThresholdChange,
 	onSetStandbyTab, onStandbyOnboardingDone, onToggleBetting, onToggleTemperatureUnit, onUnlockRomer, onPostseasonBoostChange,
 	onToggleHolidayDecorations, onToggleHolidaySnow, onToggleHolidayLights, onToggleHolidayLeaves,
 	onToggleSignal,
@@ -332,12 +335,31 @@ const setupView = ({
 	);
 
 	const demoPage = (
-		<div className='d-flex justify-content-between align-items-center'>
-			<label className='text-body-secondary setting-toggle-label' htmlFor='demoToggle'>{i18n.t('setup.demoMode')}</label>
-			<div className='form-check form-switch mb-0'>
-				<input className='form-check-input' type='checkbox' id='demoToggle' checked={demoMode} onChange={onToggleDemo} />
+		<>
+			<div className='d-flex justify-content-between align-items-center'>
+				<label className='text-body-secondary setting-toggle-label' htmlFor='demoToggle'>{i18n.t('setup.demoMode')}</label>
+				<div className='form-check form-switch mb-0'>
+					<input className='form-check-input' type='checkbox' id='demoToggle' checked={demoMode} onChange={onToggleDemo} />
+				</div>
 			</div>
-		</div>
+
+			{demoMode && (
+				<div className='mt-3'>
+					<label className='text-body-secondary setting-toggle-label d-block mb-1' htmlFor='demoSeasonSelect'>{i18n.t('setup.demoSeason')}</label>
+					<select
+						id='demoSeasonSelect'
+						className='form-select form-select-sm'
+						value={demoSeason}
+						onChange={event => onDemoSeasonChange(event.target.value as demoSeason)}
+					>
+						<option value='real'>{i18n.t('setup.demoSeasonReal')}</option>
+						<option value='thanksgiving'>{i18n.t('setup.demoSeasonThanksgiving')}</option>
+						<option value='december'>{i18n.t('setup.demoSeasonDecember')}</option>
+					</select>
+					<div className='setting-explainer mt-1'>{i18n.t('setup.demoSeasonExplainer')}</div>
+				</div>
+			)}
+		</>
 	);
 
 	const leaguesPage = (

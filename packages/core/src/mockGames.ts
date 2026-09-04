@@ -160,6 +160,9 @@ export class MockGameSimulator {
 				downDistance: '1st & 10',
 				fieldPosition: 'PHI 25',
 				broadcasts: ['NBC', 'Peacock'],
+				// Snowing, so demo mode has a game the detail screen decorates. The other outdoor
+				// games below are deliberately clear: the weather belongs to one game, not the popup.
+				weather: { temperatureF: 26, conditionLabel: 'Snow' },
 			},
 			{
 				id: 'mock-6',
@@ -172,6 +175,7 @@ export class MockGameSimulator {
 				period: 1, clockSeconds: 900, status: 'pre',
 				startTime: new Date(Date.now() + 36 * 60 * 60 * 1000).toISOString(),
 				broadcasts: ['ESPN'],
+				weather: { temperatureF: 44, conditionLabel: 'Partly Cloudy' },
 				odds: {
 					details: 'PSU -6.5',
 					overUnder: 48.5,
@@ -188,6 +192,7 @@ export class MockGameSimulator {
 				venueLocation: 'Chester, PA',
 				period: 2, clockSeconds: 742, status: 'in',
 				broadcasts: ['Apple TV'],
+				weather: { temperatureF: 58, conditionLabel: 'Cloudy' },
 			},
 			{
 				id: 'mock-10',

@@ -52,6 +52,22 @@ export const isThanksgivingWeek = (now: Date): boolean => {
 
 export const isDecember = (now: Date): boolean => now.getMonth() === 11;
 
+export type demoSeason = 'real' | 'thanksgiving' | 'december';
+
+export const demoSeasons: readonly demoSeason[] = ['real', 'thanksgiving', 'december'];
+
+export const isDemoSeason = (value: unknown): value is demoSeason =>
+	demoSeasons.includes(value as demoSeason);
+
+// Demo mode borrows a date rather than forcing a decoration, so what it shows is a state the real
+// rules can actually produce. Thanksgiving is computed for the current year rather than pinned to
+// one, so this cannot go stale.
+export const resolveDecorationDate = (now: Date, season: demoSeason): Date => {
+	if (season === 'thanksgiving') return thanksgivingDate(now.getFullYear());
+	if (season === 'december') return new Date(now.getFullYear(), 11, 14, 12);
+	return now;
+};
+
 // How far through the current period, quarter, half or inning the game is.
 //
 // The clock sports read it off the clock and the league's own period length. Soccer's clock is

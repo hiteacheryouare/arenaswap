@@ -27,6 +27,7 @@ import {
 } from '../../utils/tabSuggestions';
 import { hasStoredUserPreferences, loadStoredUserPreferences, persistStoredUserPreferences } from '../../utils/prefsStorage';
 import { nextTemperatureUnit } from '../../utils/temperatureUnitCycle';
+import { isDemoSeason, resolveDecorationDate, type demoSeason } from '../../utils/holidayDecorations';
 import type { ReviewPromptState } from '../../utils/reviewPrompt';
 import {
 	getReviewPromptUrl,
@@ -61,6 +62,7 @@ export default () => {
 	const [registry, setRegistry] = useState<TabRegistration[]>([]);
 	const [openTabs, setOpenTabs] = useState<Browser.tabs.Tab[]>([]);
 	const [demoMode, setDemoMode] = useState(false);
+	const [demoSeason, setDemoSeason] = useState<demoSeason>('real');
 	const [onboardingDone, setOnboardingDone] = useState<boolean | null>(null);
 	const [walkthroughActive, setWalkthroughActive] = useState(false);
 	const [standbyOnboardingDone, setStandbyOnboardingDone] = useState(false);
@@ -122,11 +124,13 @@ export default () => {
 
 			const localResult = await browser.storage.local.get({
 				demoMode: false,
+				demoSeason: 'real',
 				onboardingCompleted: null,
 				standbyOnboardingDone: false,
 				[reviewPromptStorageKey]: null,
 			});
 			setDemoMode(localResult.demoMode as boolean);
+			setDemoSeason(isDemoSeason(localResult.demoSeason) ? localResult.demoSeason : 'real');
 			setStandbyOnboardingDone(localResult.standbyOnboardingDone as boolean);
 			setReviewPromptState(normalizeReviewPromptState(localResult[reviewPromptStorageKey]));
 
@@ -378,6 +382,7 @@ export default () => {
 						prefs={prefs}
 						prefsLoaded={prefsLoaded}
 						demoMode={demoMode}
+						demoSeason={demoSeason}
 						leagueLogos={leagueLogos}
 						standbyStreamTabId={standbyStreamTabId}
 						standbyOnboardingDone={standbyOnboardingDone}
@@ -400,6 +405,10 @@ export default () => {
 							const next = !demoMode;
 							setDemoMode(next);
 							void browser.runtime.sendMessage({ type: 'SET_DEMO_MODE', enabled: next });
+						}}
+						onDemoSeasonChange={season => {
+							setDemoSeason(season);
+							void browser.storage.local.set({ demoSeason: season });
 						}}
 						onToggleStandbyStream={() => persistPrefs(currentPrefs => ({ ...currentPrefs, standbyStreamEnabled: !currentPrefs.standbyStreamEnabled }))}
 						onStandbyThresholdChange={val => persistPrefs(currentPrefs => ({ ...currentPrefs, standbyStreamThreshold: val }))}
@@ -479,6 +488,7 @@ export default () => {
 							holidayLightsEnabled: prefs.holidayLightsEnabled,
 							holidayLeavesEnabled: prefs.holidayLeavesEnabled,
 						}}
+						decorationDate={resolveDecorationDate(new Date(), demoMode ? demoSeason : 'real')}
 						disabledSignals={prefs.disabledSignals}
 						favoriteTeamIds={favoriteTeamIds}
 						openTabs={openTabs}

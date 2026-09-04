@@ -37,6 +37,8 @@ interface gameDetailViewProps {
 	bettingPrefs: BettingDisplayPrefs;
 	weatherPrefs: WeatherDisplayPrefs;
 	decorationPrefs: holidayDecorationPrefs;
+	// Demo mode borrows a date so the calendar-gated decorations are reachable in September.
+	decorationDate?: Date;
 	disabledSignals?: readonly SignalName[];
 	// Pre-game only: the setup card and the poster's favourite stars need these. They are
 	// optional so the live screen, and anything mounting it, is unaffected.
@@ -76,6 +78,7 @@ const gameDetailView = ({
 	bettingPrefs,
 	weatherPrefs,
 	decorationPrefs,
+	decorationDate,
 	disabledSignals = [],
 	favoriteTeamIds = noFavorites,
 	openTabs = [],
@@ -112,7 +115,7 @@ const gameDetailView = ({
 	const clockBased = (sportTypeConfigMap[game.sportType] ?? sportTypeConfigMap.basketball).clockBased;
 	const favoriteBonus = activePowerScore?.favoriteBonus ?? 0;
 	const favoriteTeamCount = activePowerScore?.favoriteTeamCount ?? 0;
-	const decorations = resolveDecorations(game, new Date(), decorationPrefs);
+	const decorations = resolveDecorations(game, decorationDate ?? new Date(), decorationPrefs);
 	const currentBoost = gameBoosts[game.id] ?? 0;
 	// The breakdown mirrors the scorer, which drops every boost while play is frozen. The boost input
 	// keeps showing the stored value, since the setting survives halftime even though it pays nothing.

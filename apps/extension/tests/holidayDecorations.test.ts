@@ -2,10 +2,12 @@ import type { Game } from '@arenaswap/core/types';
 import {
 	accumulationDepth,
 	isDecember,
+	isDemoSeason,
 	isSnowing,
 	isThanksgivingWeek,
 	inningProgress,
 	periodProgress,
+	resolveDecorationDate,
 	resolveDecorations,
 	thanksgivingDate,
 } from '../utils/holidayDecorations';
@@ -198,5 +200,42 @@ describe('resolveDecorations', () => {
 	test('depth is only reported when something is actually falling', () => {
 		expect(resolveDecorations(snowy, december, allOn).depth).toBe(1);
 		expect(resolveDecorations(football({ period: 4, clockSeconds: 0 }), december, allOn).depth).toBe(0);
+	});
+});
+
+describe('demo season', () => {
+	const september = new Date(2026, 8, 3, 13);
+
+	test('leaves the real date alone by default', () => {
+		expect(resolveDecorationDate(september, 'real')).toBe(september);
+	});
+
+	test('borrows a date the real rules would decorate', () => {
+		expect(isThanksgivingWeek(resolveDecorationDate(september, 'thanksgiving'))).toBe(true);
+		expect(isDecember(resolveDecorationDate(september, 'december'))).toBe(true);
+	});
+
+	test('computes Thanksgiving for the current year rather than pinning one', () => {
+		expect(resolveDecorationDate(new Date(2027, 4, 1), 'thanksgiving').getFullYear()).toBe(2027);
+		expect(resolveDecorationDate(new Date(2031, 4, 1), 'thanksgiving').getDate()).toBe(thanksgivingDate(2031).getDate());
+	});
+
+	test('rejects a stored season it does not recognize', () => {
+		expect(isDemoSeason('december')).toBe(true);
+		expect(isDemoSeason('halloween')).toBe(false);
+		expect(isDemoSeason(undefined)).toBe(false);
+	});
+
+	test('the borrowed December date decorates a snowy football game with both', () => {
+		const snowy = football({ period: 4, clockSeconds: 0, weather: { temperatureF: 26, conditionLabel: 'Snow' } });
+		const borrowed = resolveDecorationDate(september, 'december');
+		expect(resolveDecorations(snowy, borrowed, allOn)).toEqual({ lights: true, falling: 'snow', depth: 1 });
+	});
+
+	test('the borrowed Thanksgiving date turns that same game over to leaves', () => {
+		const snowy = football({ period: 4, clockSeconds: 0, weather: { temperatureF: 26, conditionLabel: 'Snow' } });
+		const borrowed = resolveDecorationDate(september, 'thanksgiving');
+		expect(resolveDecorations(snowy, borrowed, allOn).falling).toBe('leaves');
+		expect(resolveDecorations(snowy, borrowed, allOn).lights).toBe(false);
 	});
 });

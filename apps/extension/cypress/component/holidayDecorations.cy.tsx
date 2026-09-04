@@ -1,6 +1,7 @@
 import GameDetailView from '../../entrypoints/popup/components/gameDetailView';
 import SetupView from '../../entrypoints/popup/components/setupView';
 import type { Game, UserPreferences } from '@arenaswap/core/types';
+import { resolveDecorationDate } from '../../utils/holidayDecorations';
 import { createDefaultUserPreferences } from '@arenaswap/core/constants';
 import de from '../../locales/de.json';
 import en from '../../locales/en.json';
@@ -139,6 +140,7 @@ const setupProps = {
 	prefs: defaultPrefs,
 	prefsLoaded: true,
 	demoMode: false,
+	demoSeason: 'real' as const,
 	leagueLogos: {},
 	standbyStreamTabId: null,
 	standbyOnboardingDone: true,
@@ -158,6 +160,7 @@ const setupProps = {
 	onToggleProTips: () => {},
 	onToggleNotifications: () => {},
 	onToggleDemo: () => {},
+	onDemoSeasonChange: () => {},
 	onToggleStandbyStream: () => {},
 	onStandbyThresholdChange: () => {},
 	onSetStandbyTab: () => {},
@@ -216,5 +219,56 @@ describe('holiday decoration settings', () => {
 				});
 			});
 		});
+	});
+});
+
+describe('reaching the decorations from demo mode', () => {
+	beforeEach(() => {
+		cy.viewport(320, 560);
+	});
+
+	it('offers no season control while demo mode is off', () => {
+		cy.mount(<SetupView {...setupProps} />);
+		cy.get('#settingsGroup-demo').click();
+		cy.get('#demoSeasonSelect').should('not.exist');
+	});
+
+	it('offers the three seasons once demo mode is on', () => {
+		cy.mount(<SetupView {...setupProps} demoMode />);
+		cy.get('#settingsGroup-demo').click();
+		cy.get('#demoSeasonSelect').should('have.value', 'real');
+		cy.get('#demoSeasonSelect option').should('have.length', 3);
+	});
+
+	it('reports the season the user picked', () => {
+		const onChange = cy.spy().as('onChange');
+		cy.mount(<SetupView {...setupProps} demoMode onDemoSeasonChange={onChange} />);
+		cy.get('#settingsGroup-demo').click();
+		cy.get('#demoSeasonSelect').select('december');
+		cy.get('@onChange').should('have.been.calledWith', 'december');
+	});
+
+	// The point of the borrowed date: a September session can still see all three.
+	it('decorates a snowy game in September once December is borrowed', () => {
+		cy.viewport(320, 560);
+		cy.clock(august, ['Date']);
+		cy.mount(
+			<GameDetailView
+				game={snowing}
+				excitementResult={undefined}
+				scoreHistory={[]}
+				powerScoreHistory={[]}
+				proTipsEnabled={false}
+				gameBoosts={{}}
+				bettingPrefs={{ bettingEnabled: false }}
+				weatherPrefs={{ temperatureUnit: 'F' }}
+				decorationPrefs={allOn}
+				decorationDate={resolveDecorationDate(august, 'december')}
+				onSetGameBoost={() => {}}
+				onBack={() => {}}
+			/>,
+		);
+		cy.get('.holiday-lights').should('exist');
+		cy.get('.holiday-fall').should('exist');
 	});
 });

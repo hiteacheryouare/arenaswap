@@ -1,5 +1,37 @@
 # Changelog
 
+## Demo mode can borrow a date, so the decorations are reachable in September — 2026-09-03
+
+The holiday decorations were only visible when the world cooperated: a game ESPN reports snow at,
+or the actual week of Thanksgiving, or the actual month of December. That makes two of the three
+unreachable for ten months of the year, including while they are being built.
+
+Demo mode now carries a "Pretend it is" select — the real date, Thanksgiving week, or December —
+which only moves the date the decorations are resolved against. Nothing else in the popup shifts.
+
+Borrowing a date rather than forcing a decoration matters. A switch reading "force snow" can put the
+screen in a state the real rules would never produce, and then it is testing itself rather than the
+feature. Picking December and opening a snowy game gives snow and lights together because that is
+what December and snow actually mean, which is also the most common real combination and the one
+worth looking at.
+
+Thanksgiving is computed for whatever year it currently is rather than pinned to a date, so this
+cannot rot. The December stand-in is the 14th, comfortably inside the month at either end.
+
+The demo games had no weather at all, so there was nothing to snow on. The NFL game at the Linc is
+snowing at 26°F now. The college football game at the same stadium and the MLS game at Subaru Park
+are deliberately clear — the weather belongs to a game rather than to the popup, and two outdoor
+games in different conditions is the only way to see that from the inside.
+
+The control is only rendered while demo mode is on, and it is stored next to `demoMode` in
+`storage.local` rather than in user preferences, since the background never needs to know about it.
+An unrecognised stored value falls back to the real date.
+
+Six keys across all twelve locales. 14 new tests: 6 on the date resolver, including one asserting
+the borrowed December date puts a snowy football game at lights plus snow plus full depth and the
+borrowed Thanksgiving date turns that same game over to leaves, and 4 component tests covering the
+control's absence while demo mode is off and a September session seeing both decorations at once.
+
 ## The standby threshold at either end asks for something impossible — 2026-09-03
 
 Drag the Standby Stream threshold to 100 or to 0 and the value beside the label becomes a control.
