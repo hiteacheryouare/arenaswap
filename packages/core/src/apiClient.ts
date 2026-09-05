@@ -318,6 +318,16 @@ const parseGoalToGo = (situation: EspnSituation): boolean => {
 	return typeof situation.down === 'number' && (typeof situation.distance !== 'number' || situation.distance <= 0);
 };
 
+// `possession` disappears at every dead ball while the rest of the situation survives, so a
+// timeout or the end of a quarter would otherwise take the field diagram's direction of travel
+// with it. `lastPlay.team` holds the offense through those states: at the end of the 2nd quarter
+// of FRES at USC it read 278 for a Fresno State drive ESPN scored at -1 yard, which only balances
+// if Fresno State — the away side — was driving toward 0.
+const parsePossession = (situation: EspnSituation, homeId: string, awayId: string): string | undefined => {
+	const candidate = situation.possession ?? situation.lastPlay?.team?.id;
+	return candidate === homeId || candidate === awayId ? candidate : undefined;
+};
+
 const buildDownDistance = (situation: EspnSituation): string | undefined => {
 	if (situation.shortDownDistanceText) return situation.shortDownDistanceText;
 	const { down, distance } = situation;
@@ -447,6 +457,9 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 		down: isGridironSituation ? situation.down : undefined,
 		distance: isGridironSituation ? situation.distance : undefined,
 		isGoalToGo: isGridironSituation ? parseGoalToGo(situation) : undefined,
+		yardLine: isGridironSituation ? situation.yardLine : undefined,
+		possessionTeamId: isGridironSituation ? parsePossession(situation, home.id, away.id) : undefined,
+		driveStartYardLine: isGridironSituation ? situation.lastPlay?.drive?.start?.yardLine : undefined,
 		weather: parseWeather(event),
 		isPostseason: resolvePostseason(event, comp, league),
 		delayed: isDelayed || undefined,

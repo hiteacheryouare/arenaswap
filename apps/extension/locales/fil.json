@@ -304,6 +304,10 @@
 		"topOfInning": "Top of inning",
 		"bottomOfInning": "Bottom of inning"
 	},
+	"field": {
+		"possession": "Nasa {team} ang bola",
+		"noPossession": "Posisyon sa field"
+	},
 	"gameBoost": {
 		"heading": "Boost ng Laro",
 		"explainer": "Magdagdag ng points sa PowerScore ng larong ito para itaas ang prayoridad nito."

@@ -304,6 +304,10 @@
 		"topOfInning": "Início da entrada",
 		"bottomOfInning": "Fim da entrada"
 	},
+	"field": {
+		"possession": "{team} tem a bola",
+		"noPossession": "Posição no campo"
+	},
 	"gameBoost": {
 		"heading": "Impulso do jogo",
 		"explainer": "Adiciona pontos ao PowerScore deste jogo para aumentar a sua prioridade."

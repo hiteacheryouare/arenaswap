@@ -304,6 +304,10 @@
 		"topOfInning": "Parte alta dell'inning",
 		"bottomOfInning": "Parte bassa dell'inning"
 	},
+	"field": {
+		"possession": "{team} ha la palla",
+		"noPossession": "Posizione in campo"
+	},
 	"gameBoost": {
 		"heading": "Boost partita",
 		"explainer": "Aggiungi punti al PowerScore di questa partita per aumentarne la priorità."

@@ -439,3 +439,130 @@ button.game-meta-attribution {
 		}
 	}
 }
+
+
+// The football field. Drawn in yards through the SVG viewBox, so the only thing this stylesheet
+// sets is colour, weight and motion — never a position.
+.ff-strip {
+	position: relative;
+	width: 100%;
+}
+
+.ff-field {
+	display: block;
+	width: 100%;
+	height: auto;
+	border-radius: 3px;
+}
+
+// Two greens a shade apart, which is all a mown band is. Pushing them further apart reads as a
+// striped rug rather than as grass cut in opposite directions.
+.ff-turf {
+	fill: #22683B;
+}
+
+.ff-mow {
+	fill: #2A7645;
+}
+
+// Hairlines: non-scaling-stroke keeps every painted line at one device pixel rather than thinning
+// out with the viewBox, which is what stops the hash marks disappearing entirely.
+.ff-yard-line,
+.ff-goal-line,
+.ff-sideline,
+.ff-hashes {
+	stroke: rgba(255, 255, 255, 0.62);
+	stroke-width: 1;
+	vector-effect: non-scaling-stroke;
+	fill: none;
+}
+
+.ff-yard-line.is-midfield {
+	stroke: rgba(255, 255, 255, 0.78);
+}
+
+.ff-hashes {
+	stroke: rgba(255, 255, 255, 0.44);
+}
+
+// The goal line and the sideline are the two the eye uses to find the shape of the field, and the
+// goal line is also the only thing separating a dark team colour from dark grass.
+.ff-goal-line,
+.ff-sideline {
+	stroke: rgba(255, 255, 255, 0.95);
+	stroke-width: 2;
+}
+
+.ff-number {
+	fill: rgba(255, 255, 255, 0.82);
+	font-weight: 700;
+	letter-spacing: -0.04em;
+	text-anchor: middle;
+	dominant-baseline: central;
+}
+
+.ff-endzone-label {
+	font-size: 5.4px;
+	font-weight: 700;
+	letter-spacing: 0.16em;
+	text-anchor: middle;
+	dominant-baseline: central;
+}
+
+// Painted on, so it sits under the ball and the two live lines but over the yard lines the way a
+// real midfield logo covers the 50.
+.ff-logo {
+	opacity: 0.72;
+}
+
+// Ground the offense has already covered on this drive, washed rather than barred: at 77px tall a
+// horizontal bar would have to cross the numbers and the hash rows to say the same thing.
+.ff-drive {
+	fill-opacity: 0.34;
+}
+
+// Broadcast yellow. This is the one colour on the field a football fan reads without being told
+// what it means, so it takes $warning rather than a team's own.
+.ff-first-down {
+	fill: #F1C40F;
+}
+
+// Blue, not the offense's own colour. Sportvision put a yellow line to gain and a blue line of
+// scrimmage on ESPN in September 1998 and every broadcast since has kept them, so a football fan
+// reads blue-to-yellow as the distance to go without being told. A team colour would also collide:
+// the Steelers and the Packers would paint a second yellow line beside the real one.
+.ff-scrimmage {
+	fill: #2E86FF;
+	fill-opacity: 0.92;
+}
+
+// The emoji is whatever the platform draws, so it brings its own colours and its own weight. The
+// shadow is what lifts it off grass that is nearly as dark as the ball itself.
+.ff-ball {
+	font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
+	text-anchor: middle;
+	dominant-baseline: central;
+	filter: drop-shadow(0 0.4px 1.2px rgba(0, 0, 0, 0.6));
+}
+
+// `x` on a <rect> is a CSS geometry property and `x` on a <text> is not, so the yellow line eases
+// its own attribute while the ball and the line of scrimmage ride a transform together.
+.ff-marker {
+	transition: transform 0.45s ease-out;
+}
+
+.ff-first-down {
+	transition: x 0.45s ease-out;
+}
+
+.ff-drive {
+	transition: x 0.45s ease-out, width 0.45s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.ff-marker,
+	.ff-first-down,
+	.ff-drive {
+		transition: none;
+	}
+}

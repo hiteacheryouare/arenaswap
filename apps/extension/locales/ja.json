@@ -304,6 +304,10 @@
 		"topOfInning": "イニングの表",
 		"bottomOfInning": "イニングの裏"
 	},
+	"field": {
+		"possession": "{team}がボールを保持",
+		"noPossession": "フィールドポジション"
+	},
 	"gameBoost": {
 		"heading": "ゲームブースト",
 		"explainer": "この試合のPowerScoreにポイントを追加して優先度を上げます。"

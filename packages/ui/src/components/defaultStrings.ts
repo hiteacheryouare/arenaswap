@@ -23,6 +23,8 @@ export const defaultStrings: Record<string, string> = {
 	'gameCard.bottomOfInning': 'Bottom of inning',
 	'gameCard.shootout': 'PENS {away}–{home}',
 	'gameCard.downDistanceAt': '{downDistance} at {fieldPosition}',
+	'field.possession': '{team} has the ball',
+	'field.noPossession': 'Field position',
 	'main.tourButton': 'Tour',
 	'main.settingsButton': 'Settings',
 	'main.sectionActiveLiveTabs': 'Active Tabs',

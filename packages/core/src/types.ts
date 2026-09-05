@@ -119,6 +119,14 @@ export interface Game {
 	down?: number;
 	distance?: number;
 	isGoalToGo?: boolean;
+	// Absolute field coordinate, 0-100: 0 is the home team's own goal line and 100 is the away
+	// team's. So the home offense always drives toward 100 and the away offense toward 0, and the
+	// field diagram reads its direction of travel off `possessionTeamId` alone.
+	yardLine?: number;
+	// Matches `homeTeam.id` or `awayTeam.id`.
+	possessionTeamId?: string;
+	// Where the current drive began, in the same coordinates as `yardLine`.
+	driveStartYardLine?: number;
 	weather?: GameCondition;
 	// ESPN signals this three different ways — see resolvePostseason in apiClient.ts.
 	isPostseason?: boolean;

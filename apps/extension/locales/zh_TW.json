@@ -304,6 +304,10 @@
 		"topOfInning": "上半局",
 		"bottomOfInning": "下半局"
 	},
+	"field": {
+		"possession": "{team}持球進攻",
+		"noPossession": "球場位置"
+	},
 	"gameBoost": {
 		"heading": "比賽加成",
 		"explainer": "為這場比賽的 PowerScore 加分，提高它的優先權。"

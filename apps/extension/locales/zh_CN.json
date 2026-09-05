@@ -304,6 +304,10 @@
 		"topOfInning": "上半局",
 		"bottomOfInning": "下半局"
 	},
+	"field": {
+		"possession": "{team}持球进攻",
+		"noPossession": "球场位置"
+	},
 	"gameBoost": {
 		"heading": "比赛加速",
 		"explainer": "为本场比赛的 PowerScore 加分，提高其优先级。"

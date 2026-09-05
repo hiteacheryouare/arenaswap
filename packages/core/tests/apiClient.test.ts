@@ -1709,6 +1709,88 @@ describe('apiClient', () => {
 		});
 	});
 
+	// Every situation below was transcribed off the live college-football scoreboard on 2026-09-04,
+	// with the two competitor ids renamed to the ones makeEvent mints.
+	describe('field position, possession and drive parsing', () => {
+		const parseField = async (situation: Record<string, unknown> | undefined, state = 'in', league: 'nfl' | 'mls' = 'nfl') => {
+			const fetchMock = jest.fn().mockResolvedValue(createResponse({
+				events: [makeEvent({ id: 'ff', state, period: 3, clock: '6:58', homeScore: '31', awayScore: '10', situation })],
+			}));
+			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+			const { fetchGamesWithLeagueLogos } = loadApiClient();
+			const result = await fetchGamesWithLeagueLogos([league], { includeUpcoming: false });
+			return result.games.find(g => g.id === 'ff');
+		};
+
+		// UTEP at Oklahoma, 3rd & 17. UTEP is the away side on its own 18, which ESPN sends as 82 —
+		// the coordinate is measured from the home goal line whoever is holding the ball.
+		test('carries the absolute yardLine through untouched', async () => {
+			const game = await parseField({ down: 3, distance: 17, yardLine: 82, possessionText: 'UTEP 18', possession: 'away-ff' });
+			expect(game?.yardLine).toBe(82);
+			expect(game?.fieldPosition).toBe('UTEP 18');
+		});
+
+		test('resolves possession to whichever competitor id ESPN names', async () => {
+			expect((await parseField({ down: 1, distance: 10, yardLine: 25, possession: 'home-ff' }))?.possessionTeamId).toBe('home-ff');
+			expect((await parseField({ down: 1, distance: 10, yardLine: 25, possession: 'away-ff' }))?.possessionTeamId).toBe('away-ff');
+		});
+
+		// A team id that belongs to neither competitor is worse than none: it would leave the field
+		// diagram drawing a direction of travel for a team that is not in this game. The numeric
+		// form is the shape ESPN sends on some endpoints, and it is normalized before the compare.
+		test('drops a possession id matching neither competitor', async () => {
+			expect((await parseField({ down: 1, distance: 10, yardLine: 25, possession: '99999' }))?.possessionTeamId).toBeUndefined();
+			expect((await parseField({ down: 1, distance: 10, yardLine: 25, possession: 12345 }))?.possessionTeamId).toBeUndefined();
+		});
+
+		// Fresno State at USC at the end of the 2nd quarter: ESPN drops `possession` entirely at a
+		// dead ball while the rest of the situation survives.
+		test('falls back to lastPlay.team when possession is dropped at a dead ball', async () => {
+			const game = await parseField({
+				down: 2,
+				distance: 10,
+				yardLine: 76,
+				possessionText: 'FRES 24',
+				lastPlay: { team: { id: 'away-ff' }, drive: { start: { yardLine: 75 } } },
+			});
+			expect(game?.possessionTeamId).toBe('away-ff');
+			expect(game?.driveStartYardLine).toBe(75);
+		});
+
+		test('prefers possession over lastPlay.team when both are present', async () => {
+			const game = await parseField({
+				down: 1, distance: 10, yardLine: 25,
+				possession: 'home-ff',
+				lastPlay: { team: { id: 'away-ff' } },
+			});
+			expect(game?.possessionTeamId).toBe('home-ff');
+		});
+
+		// Stanford's 11-play, 69-yard drive: 94 - 25 is exactly the yardage ESPN reported for it.
+		test('carries the drive start through', async () => {
+			const game = await parseField({
+				down: 4, distance: 6, yardLine: 94, possession: 'home-ff',
+				lastPlay: { team: { id: 'home-ff' }, drive: { start: { yardLine: 25 } } },
+			});
+			expect(game?.driveStartYardLine).toBe(25);
+			expect((game?.yardLine ?? 0) - (game?.driveStartYardLine ?? 0)).toBe(69);
+		});
+
+		test('leaves the drive undefined when ESPN sends no lastPlay', async () => {
+			const game = await parseField({ down: 1, distance: 10, yardLine: 25, possession: 'home-ff' });
+			expect(game?.driveStartYardLine).toBeUndefined();
+		});
+
+		test('attaches none of it to a pre-game event or to a non-football league', async () => {
+			const pre = await parseField({ down: 1, distance: 10, yardLine: 25, possession: 'home-ff' }, 'pre');
+			expect(pre?.yardLine).toBeUndefined();
+			expect(pre?.possessionTeamId).toBeUndefined();
+			const soccer = await parseField({ down: 1, distance: 10, yardLine: 25, possession: 'home-ff' }, 'in', 'mls');
+			expect(soccer?.yardLine).toBeUndefined();
+			expect(soccer?.driveStartYardLine).toBeUndefined();
+		});
+	});
+
 	describe('isPostseason', () => {
 		const fetchWith = (events: Record<string, unknown>[]) => {
 			const fetchMock = jest.fn().mockResolvedValue(createResponse({ events }));

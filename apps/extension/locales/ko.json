@@ -304,6 +304,10 @@
 		"topOfInning": "초",
 		"bottomOfInning": "말"
 	},
+	"field": {
+		"possession": "{team} 공격권",
+		"noPossession": "필드 포지션"
+	},
 	"gameBoost": {
 		"heading": "게임 부스트",
 		"explainer": "이 경기의 PowerScore에 점수를 더해 우선순위를 높여요."

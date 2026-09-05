@@ -1,5 +1,163 @@
 # Changelog
 
+## A live football game draws the field it is being played on — 2026-09-05
+
+Under the score on the detail screen, where the baseball base diamond sits, a football game now
+draws its own field: grass in mown bands, yard lines and hash marks, painted numbers, both end zones
+in their teams' colours, the home crest on the 50, and on top of all of it the line of scrimmage,
+the line to gain, the ground the current drive has taken and the ball itself. The reference is the
+Apple Sports strip. The field markings come from the NFL and NCAA rulebooks by way of the sports
+analyst, and several of them are not what they look like.
+
+### Which way is downfield
+
+ESPN's `situation.yardLine` is an absolute field coordinate rather than the yard marker it prints
+beside it, and which end it counts from is the whole feature. Measured against fourteen drives of
+UTEP at Oklahoma it is unambiguous: `"OU 24"` arrives as 24, `"UTEP 3"` as 97, `"UTEP 25"` as 75.
+**Zero is the home team's own goal line and 100 is the away team's**, whoever is holding the ball,
+which means the home offense always drives toward 100 and the away offense toward 0.
+
+That is not a guess about a convention. It balances against ESPN's own arithmetic: Stanford at home
+went 25 to 94 under a drive it described as "11 plays, 69 yards", and Fresno State away went 75 to
+76 under "1 play, -1 yard". Both only work one way round.
+
+The field draws the away end zone on the left, which puts each team's territory under the crest that
+owns it — the matchup card already washes away-colour left and home-colour right — and leaves the
+away offense moving left to right. `possessionText` cannot do this job on its own, because it names
+the side of the field rather than the team: in Apple's own screenshot the ball is on NC A&T's 29 and
+Georgia State has it.
+
+`possession` is the field that says who, and it was being deleted before the parser ever saw it —
+the same Zod strip-mode failure that ate the venue address and the pre-game competitor fields. It is
+declared now, along with `lastPlay.drive.start`, and neither costs an extra request.
+
+### The ball is not always on the field
+
+Two states arrive looking exactly like a snap and are not, and both were caught against live games
+rather than reasoned about.
+
+A **college kickoff** sends `down: 1, distance: 10` and a real yard line. Nothing in the numbers
+separates it from a first down; the only tell is that ESPN nulls every text field. The NFL sends
+`down: 0` for the same play, so the down cannot carry the gate either, and the mapped
+`possessionText` does it instead.
+
+**After any score** both leagues send `down: -1` alongside a yard line that is simply wrong: one home
+field goal reported 35 and the touchdown before it 65 for what is the same spot.
+
+The opposite problem is a dead ball. A timeout, the two-minute warning and the end of a period all
+clear the down and the yard marker while the ball sits exactly where play will resume from, and a
+timeout is one of the moments somebody is most likely to be looking at the popup. So the last good
+frame is held rather than dropped, and what tells a timeout from a score is whether the yard line
+moved: it held at 62, 84, 6 and 75 through timeouts and jumped 6 to 65, 83 to 35 and 97 to 65 after
+scores.
+
+### The drive, and the two ways it lies
+
+The ground the offense has covered on this drive is washed in its own colour, from where the drive
+began to where the ball is now, which is what makes the direction of travel legible in a still
+screenshot rather than only in motion. It was a bar across the middle of the field first; at 77px
+tall a bar has to cross both rows of numbers and both hash rows to say the same thing, and a wash is
+a fill rather than another edge.
+
+`lastPlay.drive` still describes the **previous** team's drive for the one poll after a change of
+possession, and a punt leaves it pointing tens of yards backwards. Every one of those stale reads is
+negative in the new offense's direction, so ground is only drawn where it was actually gained —
+which also drops the washes too narrow to see.
+
+That guard does not catch the second one. ESPN publishes `drive.start.yardLine: 0` as a placeholder
+on a drive it has only just opened, under a description that reports the real yardage: three live
+games carried it at once, one of them "1 play, 5 yards" against a coordinate that would have washed
+forty. It inflates the gain rather than inverting it, so a goal line is rejected as a drive start
+outright. A real drive begins at a touchback spot or a recovery, never on the paint.
+
+### The field is a field
+
+The viewBox is `0 0 120 32` — 120 yards of length at true scale, and the 53⅓ yards across squashed
+into 32 so the whole thing fits in 77px inside a 320px popup. Every x is a real down-field
+measurement and every y is a real cross-field one put through the same squash. Strokes carry
+`vector-effect: non-scaling-stroke`, which is doing more work than it looks: at this size a 4-inch
+painted line is 0.27 of a device pixel, so every line weight on the field is a deliberate
+exaggeration and only their *ratios* are honest.
+
+- **Hash marks run lengthwise**, parallel to the sideline, straddling each yard rather than crossing
+  it. They were drawn as little crossing ticks first, which is more legible and simply not what a
+  field looks like: 24 inches of paint on a 36-inch pitch leaves a gap of a foot, so a hash row
+  reads from above as a nearly solid dashed line. They are one `path` of 160 segments rather than
+  320 elements, they skip the yard lines because a mark painted on a line is just the line, and they
+  stop at the goal lines because both rulebooks scope them to the field of play
+- **The two codes disagree about where those rows go**, and it is the only geometric difference
+  between them worth drawing. The NFL sets its hashes 70'9" from each sideline, leaving them 18'6"
+  apart — exactly the width of the uprights, which is why a snap from either hash gives the same
+  angle. College hashes are 60' from each sideline and 40' apart. An unknown league falls back to
+  the professional pair rather than losing its hash rows
+- **The goal line is double the weight of a yard line**, which is the rulebook's own ratio: 8 inches
+  against 4. It is also the only thing keeping a dark team colour off dark grass, which matters
+  more now that the end zones are not lightened
+- **Mown bands are 10 yards with their edges on the 10-yard lines.** Five is the authentic pitch and
+  turns the field into a barcode at 12px a band. They are a fill difference rather than an edge, so
+  they are the one marking here that physically cannot alias
+- **Numbers are painted on the field in two rows**, mirrored about the centre line and four times
+  over-scale, since a 2-yard numeral would render under 3px. A real field points the top of each
+  numeral at the centre of the field, which from above means one row upside down; both rows are
+  upright here, which is the same simplification Apple makes. Directional arrows would be 2.3 by 0.7
+  pixels and are not drawn
+- **Each end zone is its team's real colour**, unaltered. An earlier pass lifted both toward white
+  to clear 3:1 against a dark slab, which is the wrong problem now that the slab is grass — the
+  goal line does the separating instead, and `readableFillOn` is deleted rather than left unused
+
+**The line of scrimmage is blue and the line to gain is yellow**, which is not a decorative choice.
+Sportvision put those two colours on ESPN in September 1998 and every broadcast since has kept them,
+so a football fan reads blue-to-yellow as the distance to go without being told. The scrimmage line
+was the offense's own colour first, which is more informative and collides: the Steelers and the
+Packers would each paint a second yellow line beside the real one.
+
+The ball is the 🏈 emoji. It is the platform's own glyph, so it brings its own colours and looks
+different on every OS, and it is the one marker on the field that is self-labelling at a size where
+nothing else is.
+
+The line to gain moves between polls by transitioning `x`, which is a CSS geometry property. The
+ball cannot: `x` on a `<text>` is a coordinate list rather than a geometry property, so the ball and
+the scrimmage line ride a translated group instead and move together for free. A browser without
+either lands on the same positions with no tween — the same thing `prefers-reduced-motion` asks for.
+
+The caption above the field is in the sans face rather than Lekton. Lekton is for figures scanned
+down a column and this is a sentence about one snap — and its ampersand closes up at caption size,
+so "3rd & 5" was rendering as "3rd 6 5".
+
+### Not drawn, and not on the cards
+
+It was on live game cards too for a while, as a field with the numbers stripped out. It is off them
+now. A card answers "should I switch to this", and where the ball is on the field is not part of
+that answer; it is what you want once the game is already open.
+
+The red zone is not marked. There is no painted convention to borrow — it is a statistical region
+rather than a marking — and `isRedZone` is not stable enough to bind anything to: it drops to false
+during a timeout while the ball is still sitting on the opponent's 16.
+
+Timeouts remaining are not drawn either. They belong to the team rather than to the field, which is
+why Apple hangs them off the scoreline instead, and that is a different change.
+
+### Coverage
+
+39 unit tests on the geometry, including the college kickoff, the post-score yard line, both
+placeholder drive starts, the dead-ball hold in both directions, an assertion that the hold is
+idempotent since the component writes it back into a ref during render, and the hash path checked
+for its 160 marks, its 24-inch length, and for staying out of the end zones and off the yard lines.
+
+Eight parser tests, every situation transcribed off the live college-football scoreboard, including
+the dead-ball fallback from `possession` to `lastPlay.team` and a possession id belonging to neither
+competitor.
+
+Fifteen component tests measuring what only a browser can answer: that 120 yards of viewBox put the
+ball on the yard marker ESPN named, that all eighteen painted numbers sit on the lines they label in
+two rows mirrored about the centre, that the end zones carry the teams' exact hexes, that the
+college hash rows come out more than twice as far apart as the professional ones, that the midfield
+crest stays inside its 13-yard cap and clear of the numbers, and that no field is drawn on a list
+card.
+
+The demo football game carries a full drive, every line to gain landing on PHI 35 and then DAL 38,
+so the yellow line holds still across a set of downs instead of following the ball.
+
 ## The lights go back on the scorebug, and the leaf pile is made of leaves — 2026-09-03
 
 ### The frame was in the way

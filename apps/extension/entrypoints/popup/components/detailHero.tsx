@@ -4,6 +4,7 @@ import BaseDiamond from './baseDiamond';
 import BsoIndicator from './bsoIndicator';
 import DetailTeamPill from './detailTeamPill';
 import FlipScore from './flipScore';
+import FootballFieldStrip from './footballFieldStrip';
 import InningHalfIcon from './inningHalfIcon';
 import SeriesDots from './seriesDots';
 import StartCountdownDisplay from './startCountdownDisplay';
@@ -21,6 +22,13 @@ interface detailHeroProps {
 
 const detailHero = ({ game, seriesInfo, records = emptyTeamRecords, isDelayed, isInningSport, statusText, heroStyle }: detailHeroProps) => {
 	const isPre = game.status === 'pre';
+	// The list card carries this line itself; on the detail screen it is the field strip's caption,
+	// and it is the only place the down, the distance and the yard marker appear as words.
+	const downDistanceLine = game.downDistance && game.fieldPosition
+		? i18n.t('gameCard.downDistanceAt', { downDistance: game.downDistance, fieldPosition: game.fieldPosition })
+		: game.downDistance;
+	const showField = game.sportType === 'football' && game.status === 'in'
+		&& (typeof game.yardLine === 'number' || downDistanceLine !== undefined);
 
 	return (
 		<div className={`game-card game-detail-matchup gd-hero${isDelayed ? ' is-delayed' : ''}`} style={heroStyle}>
@@ -50,6 +58,13 @@ const detailHero = ({ game, seriesInfo, records = emptyTeamRecords, isDelayed, i
 
 			{isInningSport && game.bso && (
 				<div className='gd-bso-row'><BsoIndicator {...game.bso} /></div>
+			)}
+
+			{showField && (
+				<div className='gd-field-row'>
+					{downDistanceLine && <div className='gd-field-caption'>{downDistanceLine}</div>}
+					<FootballFieldStrip game={game} />
+				</div>
 			)}
 
 			{isPre && <StartCountdownDisplay startTime={game.startTime} />}

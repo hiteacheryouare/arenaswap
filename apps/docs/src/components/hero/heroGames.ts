@@ -91,14 +91,18 @@ export const heroGames: HeroGameScript[] = [
 		periodSeconds: 900,
 		// Last on the board and last on screen: two lead changes inside the fourth quarter, then a
 		// drive into the red zone with the game inside a score.
+		// Possession alternates off the scoring: a team that has just scored kicks off, so the next
+		// beat hands the ball to the other side at its own 25. The two yard markers that used to
+		// leave the ball in the scoring team's hands moved to keep that true, which is also what
+		// lets the closing drive read as one 67-yard march rather than a jump.
 		beats: [
 			{ tick: 0, away: 10, home: 0, period: 3, clock: 495, downDistance: '2nd & 7', fieldPosition: 'NAVY 38', down: 2, distance: 7 },
 			{ tick: 3, home: 3, period: 3, clock: 360, downDistance: '1st & 10', fieldPosition: 'ARMY 41', down: 1, distance: 10, note: 'NAVY 3' },
 			{ tick: 7, period: 3, clock: 180, downDistance: '2nd & 6', fieldPosition: 'ARMY 45', down: 2, distance: 6 },
 			{ tick: 11, period: 4, clock: 900, downDistance: '1st & 10', fieldPosition: 'NAVY 48', down: 1, distance: 10 },
-			{ tick: 14, home: 10, period: 4, clock: 765, downDistance: '1st & 10', fieldPosition: 'ARMY 25', down: 1, distance: 10, note: 'NAVY 10, within three' },
-			{ tick: 17, home: 13, period: 4, clock: 630, downDistance: '1st & 10', fieldPosition: 'NAVY 30', down: 1, distance: 10, note: 'NAVY 13, first lead change' },
-			{ tick: 20, away: 17, period: 4, clock: 495, downDistance: '1st & 10', fieldPosition: 'ARMY 28', down: 1, distance: 10, note: 'ARMY 17, second lead change' },
+			{ tick: 14, home: 10, period: 4, clock: 765, downDistance: '1st & 10', fieldPosition: 'ARMY 25', down: 1, distance: 10, note: 'NAVY 10, level' },
+			{ tick: 17, home: 13, period: 4, clock: 630, downDistance: '1st & 10', fieldPosition: 'ARMY 32', down: 1, distance: 10, note: 'NAVY 13, first lead change' },
+			{ tick: 20, away: 17, period: 4, clock: 495, downDistance: '1st & 10', fieldPosition: 'NAVY 25', down: 1, distance: 10, note: 'ARMY 17, second lead change' },
 			{ tick: 22, downDistance: '2nd & 6', fieldPosition: 'ARMY 12', down: 2, distance: 6, isRedZone: true, note: 'Navy in the red zone, down four' },
 			{ tick: 23, downDistance: '3rd & 2', fieldPosition: 'ARMY 8', down: 3, distance: 2, isRedZone: true },
 		],

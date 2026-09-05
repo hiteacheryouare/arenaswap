@@ -651,13 +651,6 @@ $bootstrap-icons-font-dir: '/fonts';
 	border-radius: 50%;
 }
 
-.onb-league-logo .crest-fallback {
-	background:     #30363d;
-	color:          #e6edf3;
-	font-size:      0.5rem;
-	letter-spacing: 0.04em;
-}
-
 .league-toggle-grid {
 	display:               grid;
 	grid-template-columns: 1fr 1fr;
@@ -1515,6 +1508,21 @@ button.game-info-attribution {
 	.bso-indicator {
 		margin-top: 0;
 	}
+}
+
+.gd-field-row {
+	margin-top: 0.4rem;
+	padding: 0 0.15rem;
+}
+
+.gd-field-caption {
+	font-size: 0.66rem;
+	font-weight: 700;
+	color: #495057;
+	letter-spacing: 0.01em;
+	text-align: center;
+	white-space: nowrap;
+	margin-bottom: 0.22rem;
 }
 
 .gd-countdown {

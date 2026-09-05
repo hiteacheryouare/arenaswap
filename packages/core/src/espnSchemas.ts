@@ -92,6 +92,19 @@ const EspnCompetitionStatusSchema = zod.object({
 	}).optional(),
 });
 
+// `yardLine` here and on the drive is an absolute field coordinate: 0 is the home team's own goal
+// line and 100 is the away team's, whichever team is holding the ball. So the home offense drives
+// toward 100 and the away offense toward 0 — verified against ESPN's own drive yardage, which
+// equals `yardLine - drive.start.yardLine` for a home drive and the negation of it for an away one.
+const EspnDriveSchema = zod.object({
+	start: zod.object({ yardLine: zod.number().optional() }).optional(),
+});
+
+const EspnLastPlaySchema = zod.object({
+	team: zod.object({ id: espnNumericText.optional() }).optional(),
+	drive: EspnDriveSchema.optional(),
+});
+
 const EspnSituationSchema = zod.object({
 	onFirst: zod.boolean().optional(),
 	onSecond: zod.boolean().optional(),
@@ -107,6 +120,10 @@ const EspnSituationSchema = zod.object({
 	// ESPN also ships these pre-joined into `downDistanceText`, but that string is English-only,
 	// so the halves are read separately and joined through the locale files.
 	possessionText: zod.string().optional(),
+	// The team id holding the ball. Dropped at every dead ball — timeouts, the end of a period —
+	// while `yardLine` survives, so the field diagram falls back to `lastPlay.team`.
+	possession: espnNumericText.optional(),
+	lastPlay: EspnLastPlaySchema.optional(),
 });
 
 // ESPN is not consistent about `state`: the NFL and NHL send abbreviations, MLB sends full names,

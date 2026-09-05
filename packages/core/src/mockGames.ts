@@ -30,16 +30,24 @@ const lateGameComebackChance = 0.4;
 // random pair of strings; the last entry starts the next possession over. '1st & 10' repeats
 // three times, so the position in this table is tracked in SimState rather than looked up by
 // down — looking it up always matched index 0 and the card jumped backwards across midfield.
+// `yardLine` is the same absolute coordinate ESPN sends: 0 is Philadelphia's own goal line and 100
+// is Dallas's, so the Eagles holding the ball at home means the drive counts upward. Every line to
+// gain below lands on PHI 35 and then DAL 38, which is what makes the yellow line hold still across
+// a set of downs instead of following the ball.
 const footballDrivePatterns = [
-	{ downDistance: '1st & 10', fieldPosition: 'PHI 25' },
-	{ downDistance: '2nd & 8', fieldPosition: 'PHI 27' },
-	{ downDistance: '3rd & 5', fieldPosition: 'PHI 30' },
-	{ downDistance: '4th & 2', fieldPosition: 'PHI 33' },
-	{ downDistance: '1st & 10', fieldPosition: 'DAL 48' },
-	{ downDistance: '2nd & 4', fieldPosition: 'DAL 42' },
-	{ downDistance: '3rd & Goal', fieldPosition: 'DAL 5' },
-	{ downDistance: '1st & 10', fieldPosition: 'PHI 25' },
+	{ downDistance: '1st & 10', fieldPosition: 'PHI 25', down: 1, distance: 10, yardLine: 25 },
+	{ downDistance: '2nd & 8', fieldPosition: 'PHI 27', down: 2, distance: 8, yardLine: 27 },
+	{ downDistance: '3rd & 5', fieldPosition: 'PHI 30', down: 3, distance: 5, yardLine: 30 },
+	{ downDistance: '4th & 2', fieldPosition: 'PHI 33', down: 4, distance: 2, yardLine: 33 },
+	{ downDistance: '1st & 10', fieldPosition: 'DAL 48', down: 1, distance: 10, yardLine: 52 },
+	{ downDistance: '2nd & 4', fieldPosition: 'DAL 42', down: 2, distance: 4, yardLine: 58 },
+	{ downDistance: '3rd & Goal', fieldPosition: 'DAL 5', down: 3, distance: 5, yardLine: 95 },
+	{ downDistance: '1st & 10', fieldPosition: 'PHI 25', down: 1, distance: 10, yardLine: 25 },
 ] as const;
+
+// The drive starts on the Eagles' own 25 and the pattern wraps back to it, so the wash grows across
+// the whole table and resets with the possession.
+const footballDriveStartYardLine = 25;
 
 // Per-tick scoring probabilities are tuned to realistic per-game totals at the 15s tick rate, so
 // each sport's demo cadence matches reality. The continuous pulse for low-scoring sports comes
@@ -160,6 +168,11 @@ export class MockGameSimulator {
 				period: 4, clockSeconds: 480, status: 'in',
 				downDistance: '1st & 10',
 				fieldPosition: 'PHI 25',
+				down: 1,
+				distance: 10,
+				yardLine: 25,
+				possessionTeamId: '21',
+				driveStartYardLine: footballDriveStartYardLine,
 				broadcasts: ['NBC', 'Peacock'],
 				// Two of the outdoor demo games snow and two do not, across four different sports.
 				// Snow is gated on the weather reading alone, and the weather belongs to a game
@@ -453,6 +466,11 @@ export class MockGameSimulator {
 				const next = footballDrivePatterns[simState.driveIndex]!;
 				game.downDistance = next.downDistance;
 				if (game.fieldPosition !== undefined) game.fieldPosition = next.fieldPosition;
+				game.down = next.down;
+				game.distance = next.distance;
+				game.yardLine = next.yardLine;
+				game.isGoalToGo = /goal/i.test(next.downDistance);
+				game.isRedZone = next.yardLine >= 80;
 			}
 		}
 
@@ -523,6 +541,7 @@ export class MockGameSimulator {
 			if (game.bso) game.bso = { balls: 0, strikes: 0, outs: 0 };
 			if (game.downDistance !== undefined) game.downDistance = '1st & 10';
 			if (game.fieldPosition !== undefined) game.fieldPosition = 'PHI 25';
+			if (game.yardLine !== undefined) game.yardLine = footballDriveStartYardLine;
 			simState.driveIndex = 0;
 			simState.streak = null;
 			simState.streakTicks = 0;

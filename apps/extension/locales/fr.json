@@ -304,6 +304,10 @@
 		"topOfInning": "Début de la manche",
 		"bottomOfInning": "Fin de la manche"
 	},
+	"field": {
+		"possession": "{team} a le ballon",
+		"noPossession": "Position sur le terrain"
+	},
 	"gameBoost": {
 		"heading": "Coup de boost",
 		"explainer": "Ajoute des points au PowerScore de ce match pour augmenter sa priorité."
