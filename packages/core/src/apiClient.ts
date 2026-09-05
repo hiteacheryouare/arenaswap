@@ -60,17 +60,39 @@ const parseStatus = (state: string): Game['status'] => {
 	return 'post';
 };
 
-const toQueryDate = (date: Date): string => (
-	`${date.getUTCFullYear()}${String(date.getUTCMonth() + 1).padStart(2, '0')}${String(date.getUTCDate()).padStart(2, '0')}`
-);
+// ESPN files its scoreboard by US Eastern calendar date, not by UTC: a 2026-09-04T02:10Z first
+// pitch comes back under dates=20260903. The popup groups and labels games by the viewer's own
+// calendar day, so the window is chosen in local days and translated to Eastern here rather than
+// being built in a third zone that agrees with neither.
+const espnFilingDateFormat = new Intl.DateTimeFormat('en-US', {
+	timeZone: 'America/New_York',
+	year: 'numeric',
+	month: '2-digit',
+	day: '2-digit',
+});
 
-const buildUpcomingDatesRangeQuery = (days: number): string => {
+const toQueryDate = (date: Date): string => {
+	const parts = espnFilingDateFormat.formatToParts(date);
+	const part = (type: Intl.DateTimeFormatPartTypes): string => parts.find(p => p.type === type)?.value ?? '';
+	return `${part('year')}${part('month')}${part('day')}`;
+};
+
+const localDayStart = (date: Date): Date => new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+export const buildUpcomingDatesRangeQuery = (days: number, now: Date = new Date()): string => {
 	// ESPN's default no-dates scoreboard only reliably surfaces active and recent games; the
 	// explicit range returns every scheduled event, including this morning's pre-game ones.
-	const start = new Date();
-	const end = new Date(start);
-	end.setUTCDate(end.getUTCDate() + days);
-	return `${toQueryDate(start)}-${toQueryDate(end)}`;
+	const windowStart = localDayStart(now);
+	// The popup's cutoff is a rolling `days * 24h` from now, so the last day it can label is the
+	// local day that instant falls in. Ending on that day's final millisecond rather than on its
+	// midnight keeps the range out of an Eastern date nothing on screen would come from.
+	const lastLocalDay = localDayStart(new Date(now.getTime() + (days * 24 * 60 * 60 * 1000)));
+	const windowEnd = new Date(new Date(
+		lastLocalDay.getFullYear(),
+		lastLocalDay.getMonth(),
+		lastLocalDay.getDate() + 1,
+	).getTime() - 1);
+	return `${toQueryDate(windowStart)}-${toQueryDate(windowEnd)}`;
 };
 
 const ch = (n: number): number => {

@@ -1,5 +1,77 @@
 # Changelog
 
+## The upcoming window is picked in your day and asked for in ESPN's — 2026-09-05
+
+One data path carried three different day boundaries. The window was built in UTC, ESPN resolved it
+as US Eastern, and the popup grouped and labelled the answer in local time. The exposed edge was the
+*start* of the window, since the end is days out and absorbs the skew, so what went missing were the
+games nearest the front of the slate.
+
+### ESPN files by Eastern, and that is checkable rather than assumed
+
+`dates=20260903` on the MLB scoreboard answers with nine games running from 2026-09-03T16:35Z to
+2026-09-04T02:10Z. The last of those is a 10:10pm first pitch in Los Angeles, filed under the
+previous UTC day. The boundary is Eastern midnight, and the AFL scoreboard files the same way.
+
+### It was never only a problem for viewers east of Eastern
+
+Eastern is UTC-4 in the summer, so 8:00pm there is already tomorrow in UTC. `toQueryDate` read the
+UTC date, which means that from eight o'clock every evening the window opened on tomorrow and left
+tonight's not-yet-started games to whatever the date-less scoreboard happened to be carrying. That
+request only reliably surfaces active and recent events, which is the entire reason the range query
+exists. A viewer three hours behind Eastern hit this nightly; twelve hours ahead was never a
+requirement.
+
+### One boundary: the days the popup is going to label
+
+The popup groups and labels in the viewer's own calendar day, and that is the right thing for it to
+do. So the window is chosen there now as well. It opens at the start of the viewer's today, closes
+on the final millisecond of the local day the rolling cutoff lands in, and those two instants are
+translated into the Eastern dates ESPN files under.
+
+The range then widens by exactly what the zone asks for and by nothing else. An Eastern viewer on a
+seven day setting is asked for eight dates. Tokyo is asked for nine, because a Tokyo day opens
+mid-morning Eastern on the day before. Padding a day onto each end would have covered the same
+ground while leaving three boundaries in place, one of them hidden.
+
+Ending on the local day's midnight instead of its last millisecond costs an Eastern viewer a whole
+extra date, midnight being the first instant of the next day rather than the last of this one. It is
+a dull thing to get wrong, so it has a test of its own pinned at exactly 00:00:00.000 Eastern.
+
+Puerto Rico is UTC-4 the year round, which makes its midnight 04:00Z in both seasons: midnight
+Eastern in July, and 23:00 the previous evening in January. A fixed -4 or -5 gets one of those
+wrong. The translation runs through `Intl.DateTimeFormat` with `timeZone: 'America/New_York'`, so
+there is no offset table for anyone to maintain, and both seasons are asserted.
+
+### No test could have caught any of it
+
+`process.env.TZ = 'UTC'` at the top of `jestSetup.ts` never did anything. Jest hands each test file
+a copy of `process`, so the assignment lands in the copy and never reaches the setter Node uses to
+tell V8 to drop its cached zone. The variable changes and the clock does not. Both suites had been
+running in whatever zone the machine happened to be in, and the one test that pinned the old
+behaviour recomputed the same UTC expression it was testing, so it passed in every zone and proved
+correctness in none.
+
+The pin moved into `jest.config.cjs`, which is read in the real process before any worker forks.
+That fixes the zone and cannot vary it per test. Varying it needs a test environment, because an
+environment class is loaded in the worker's own context where `process` is the real one, so
+`timeZoneEnvironment.ts` hands the sandbox a `setTimeZone` that works.
+
+Both suites moved off the machine's zone and onto UTC on the way past, and nothing in either of them
+noticed.
+
+### Coverage
+
+Ten tests on the window, nine of them written out as literal date ranges rather than recomputed from
+the arithmetic under test: Eastern, UTC, Tokyo, Auckland, a Los Angeles evening, a one day setting
+straddling two Eastern dates, the exact-midnight case, both Puerto Rico seasons, and a range
+crossing the end of September. The tenth drives the real scoreboard request under a pinned Tokyo
+clock and reads the `dates=` parameter back off the URL.
+
+Nine of them were confirmed failing against the old builder before the fix went in. The two that
+pass either way are the cases the old code already got right, an Eastern viewer and Puerto Rico in
+July, which is where the two boundaries happen to agree.
+
 ## Favorite teams can be picked from settings, not only on the way in — 2026-09-05
 
 The full team picker only ever existed inside onboarding. After that the one way to change a

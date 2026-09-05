@@ -114,8 +114,6 @@ const loadApiClient = (): typeof import('../src/apiClient') => {
 	return require('../src/apiClient') as typeof import('../src/apiClient');
 };
 
-const parseEspnDate = (s: string) => new Date(`${s.slice(0, 4)}-${s.slice(4, 6)}-${s.slice(6, 8)}`);
-
 const mockSingleEvent = (event: Record<string, unknown>) => {
 	const fetchMock = jest.fn().mockResolvedValue(createResponse({ events: [event] }));
 	(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
@@ -343,6 +341,7 @@ describe('apiClient', () => {
 	});
 
 	test('uses upcomingDays to build the dates query parameter', async () => {
+		jest.useFakeTimers().setSystemTime(new Date('2026-09-05T12:00:00.000Z'));
 		const fetchMock = jest.fn().mockResolvedValue(createResponse({ events: [] }));
 		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
 		const { fetchGamesWithLeagueLogos } = loadApiClient();
@@ -352,11 +351,9 @@ describe('apiClient', () => {
 		const calledUrls = fetchMock.mock.calls.map(([url]) => String(url));
 		const datesUrl = calledUrls.find(u => u.includes('dates='));
 		expect(datesUrl).toBeDefined();
-
-		const datesParam = new URL(datesUrl!).searchParams.get('dates')!;
-		const [startStr, endStr] = datesParam.split('-');
-		const diffDays = (parseEspnDate(endStr!).getTime() - parseEspnDate(startStr!).getTime()) / (1000 * 60 * 60 * 24);
-		expect(diffDays).toBe(3);
+		// TZ is UTC in these tests, so the viewer's Sep 5 through Sep 8 runs from 20:00 Eastern on
+		// Sep 4 to 19:59 Eastern on Sep 8, which is five Eastern dates for a three day setting.
+		expect(new URL(datesUrl!).searchParams.get('dates')).toBe('20260904-20260908');
 	});
 
 	test('supports includeUpcoming=false with only one scoreboard request', async () => {
@@ -863,25 +860,6 @@ describe('apiClient', () => {
 
 		expect(game?.topOfInning).toBeUndefined();
 		expect(game?.baseRunners).toBeUndefined();
-	});
-
-	test('dates range query starts from today so morning pre-game events are not missed', async () => {
-		const fetchMock = jest.fn().mockResolvedValue(createResponse({ events: [] }));
-		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
-		const { fetchGamesWithLeagueLogos } = loadApiClient();
-
-		await fetchGamesWithLeagueLogos(['nba']);
-
-		const calledUrls = fetchMock.mock.calls.map(([url]) => String(url));
-		const datesUrl = calledUrls.find(u => u.includes('dates='));
-		expect(datesUrl).toBeDefined();
-
-		const datesParam = new URL(datesUrl!).searchParams.get('dates')!;
-		const [rangeStart] = datesParam.split('-');
-
-		const todayUtc = new Date();
-		const expectedToday = `${todayUtc.getUTCFullYear()}${String(todayUtc.getUTCMonth() + 1).padStart(2, '0')}${String(todayUtc.getUTCDate()).padStart(2, '0')}`;
-		expect(rangeStart).toBe(expectedToday);
 	});
 
 	test('deduplicates events that appear in both default and dates responses', async () => {

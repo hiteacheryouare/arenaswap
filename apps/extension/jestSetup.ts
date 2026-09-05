@@ -1,5 +1,3 @@
-process.env.TZ = 'UTC';
-
 // Stubs the WXT-injected global so unit tests can load modules that reference `browser`.
 (globalThis as { browser?: unknown }).browser = {};
 
