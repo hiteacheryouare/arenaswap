@@ -651,6 +651,39 @@ $bootstrap-icons-font-dir: '/fonts';
 	border-radius: 50%;
 }
 
+// The same white disc the pre-game poster puts its crests on, at list size, tinted with a colour
+// sampled from the crest itself. A navy or black logo on the dark popup is otherwise a silhouette.
+.team-pick-crest {
+	display:         inline-flex;
+	align-items:     center;
+	justify-content: center;
+	width:           28px;
+	height:          28px;
+	border-radius:   999px;
+	overflow:        hidden;
+	box-shadow:      0 0 0 1px rgba(255, 255, 255, 0.28);
+}
+
+.team-pick-crest-logo {
+	width:  21px;
+	height: 21px;
+}
+
+// The disc already carries the wash, so a second grey disc inside it would read as a hole. The
+// disc under a crest that never loaded is plain white, so the initials take a dark ink.
+.team-pick-crest-logo .crest-fallback {
+	background:  transparent;
+	color:       #111827;
+	font-size:   0.46rem;
+}
+
+.onb-league-logo .crest-fallback {
+	background:     #30363d;
+	color:          #e6edf3;
+	font-size:      0.5rem;
+	letter-spacing: 0.04em;
+}
+
 .league-toggle-grid {
 	display:               grid;
 	grid-template-columns: 1fr 1fr;

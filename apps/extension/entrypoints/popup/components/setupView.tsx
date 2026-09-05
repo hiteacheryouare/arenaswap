@@ -3,7 +3,7 @@ import { i18n } from '#i18n';
 import type { LeagueId, LeagueLogoMap, SignalName, SportType, UserPreferences } from '@arenaswap/core/types';
 import type { Browser } from 'wxt/browser';
 import CooldownSlider from './cooldownSlider';
-import FavoriteTeamBonusInput from './favoriteTeamBonusInput';
+import FavoriteTeamsPage from './favoriteTeamsPage';
 import LeagueLogo from './leagueLogo';
 import LeagueOrderList from './leagueOrderList';
 import PostseasonBoostInput from './postseasonBoostInput';
@@ -22,6 +22,7 @@ interface setupViewProps {
 	demoMode: boolean;
 	demoSeason: demoSeason;
 	leagueLogos: LeagueLogoMap;
+	favoriteTeamIds: ReadonlySet<string>;
 	standbyStreamTabId: number | null;
 	standbyOnboardingDone: boolean;
 	openTabs: Browser.tabs.Tab[];
@@ -31,6 +32,7 @@ interface setupViewProps {
 	onCooldownChange: (val: number) => void;
 	onSwitchDelayChange: (val: number) => void;
 	onFavoriteTeamBonusChange: (val: number) => void;
+	onToggleFavoriteTeam: (leagueId: LeagueId, teamId: string) => void;
 	onToggleLeague: (leagueId: LeagueId) => void;
 	onToggleSport: (sport: SportType, selectAll: boolean) => void;
 	onReorderLeague: (fromIndex: number, toIndex: number) => void;
@@ -65,9 +67,9 @@ const setupSignalMeta = [
 ] as const;
 
 const setupView = ({
-	prefs, prefsLoaded, demoMode, demoSeason, leagueLogos, standbyStreamTabId, standbyOnboardingDone,
+	prefs, prefsLoaded, demoMode, demoSeason, leagueLogos, favoriteTeamIds, standbyStreamTabId, standbyOnboardingDone,
 	openTabs, formatTabLabel, onClose, onSensitivityChange, onCooldownChange, onSwitchDelayChange,
-	onFavoriteTeamBonusChange, onToggleLeague, onToggleSport, onReorderLeague, onResetLeagueOrder,
+	onFavoriteTeamBonusChange, onToggleFavoriteTeam, onToggleLeague, onToggleSport, onReorderLeague, onResetLeagueOrder,
 	onToggleShowUpcoming, onUpcomingGamesDaysChange,
 	onToggleProTips, onToggleNotifications, onToggleDemo, onDemoSeasonChange, onToggleStandbyStream, onStandbyThresholdChange,
 	onSetStandbyTab, onStandbyOnboardingDone, onToggleBetting, onToggleTemperatureUnit, onUnlockRomer, onPostseasonBoostChange,
@@ -146,10 +148,19 @@ const setupView = ({
 
 			<div className='fw-bold popup-section-label mt-3'><i className='bi bi-plus-slash-minus' />{i18n.t('setup.bonusesSection')}</div>
 			<div className='settings-stack'>
-				<FavoriteTeamBonusInput value={prefs.favoriteTeamBonusPoints} onChange={onFavoriteTeamBonusChange} />
 				<PostseasonBoostInput value={prefs.postseasonBoostPoints} onChange={onPostseasonBoostChange} />
 			</div>
 		</>
+	);
+
+	const favoritesPage = (
+		<FavoriteTeamsPage
+			enabledLeagues={prefs.enabledLeagues}
+			favoriteTeamIds={favoriteTeamIds}
+			favoriteTeamBonusPoints={prefs.favoriteTeamBonusPoints}
+			onFavoriteTeamBonusChange={onFavoriteTeamBonusChange}
+			onToggleFavoriteTeam={onToggleFavoriteTeam}
+		/>
 	);
 
 	const displayPage = (
@@ -420,6 +431,7 @@ const setupView = ({
 	const pages: Record<settingsGroupId, ReactNode> = {
 		switching: switchingPage,
 		scoring: scoringPage,
+		favorites: favoritesPage,
 		leagues: leaguesPage,
 		display: displayPage,
 		standby: standbyPage,
@@ -428,8 +440,11 @@ const setupView = ({
 
 	if (page) {
 		const group = settingsGroups.find(candidate => candidate.id === page);
+		// Every other page is short enough to scroll as one block. The team picker is the only one
+		// that has to keep its own search box in view, so it takes the column and scrolls inside it.
+		const scrollsWithin = page === 'favorites';
 		return (
-			<div className='popup-container'>
+			<div className={`popup-container${scrollsWithin ? ' d-flex flex-column' : ''}`}>
 				<button className='setup-header' onClick={() => setPage(null)}>
 					<i className='bi bi-arrow-left' />
 					{group ? i18n.t(group.labelKey) : i18n.t('setup.header')}

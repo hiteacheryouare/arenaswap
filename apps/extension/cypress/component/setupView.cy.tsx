@@ -1,5 +1,20 @@
 import SetupView from '../../entrypoints/popup/components/setupView';
 import type { UserPreferences } from '@arenaswap/core/types';
+import de from '../../locales/de.json';
+import en from '../../locales/en.json';
+import es from '../../locales/es.json';
+import fil from '../../locales/fil.json';
+import fr from '../../locales/fr.json';
+// Not `it` — that would shadow Mocha's global it() and break every test in this file.
+import itLocale from '../../locales/it.json';
+import ja from '../../locales/ja.json';
+import ko from '../../locales/ko.json';
+import ptBR from '../../locales/pt_BR.json';
+import ptPT from '../../locales/pt_PT.json';
+import zhCN from '../../locales/zh_CN.json';
+import zhTW from '../../locales/zh_TW.json';
+
+const locales = { de, en, es, fil, fr, it: itLocale, ja, ko, pt_BR: ptBR, pt_PT: ptPT, zh_CN: zhCN, zh_TW: zhTW };
 
 const defaultPrefs: UserPreferences = {
 	sensitivity: 4,
@@ -32,6 +47,7 @@ const defaultProps = {
 	demoMode: false,
 	demoSeason: 'real' as const,
 	leagueLogos: {},
+	favoriteTeamIds: new Set<string>(),
 	standbyStreamTabId: null,
 	standbyOnboardingDone: true,
 	openTabs: [],
@@ -41,6 +57,7 @@ const defaultProps = {
 	onCooldownChange: () => {},
 	onSwitchDelayChange: () => {},
 	onFavoriteTeamBonusChange: () => {},
+	onToggleFavoriteTeam: () => {},
 	onToggleLeague: () => {},
 	onToggleSport: () => {},
 	onReorderLeague: () => {},
@@ -76,7 +93,7 @@ describe('setupView index', () => {
 
 	it('lists every settings group with a description', () => {
 		cy.mount(<SetupView {...defaultProps} />);
-		cy.get('.settings-index-row').should('have.length', 6);
+		cy.get('.settings-index-row').should('have.length', 7);
 		cy.get('#settingsGroup-switching').find('.settings-index-desc').should('not.be.empty');
 	});
 
@@ -116,7 +133,7 @@ describe('setupView navigation', () => {
 		cy.mount(<SetupView {...defaultProps} onClose={spy} />);
 		openGroup('display');
 		cy.get('button.setup-header').click();
-		cy.get('.settings-index-row').should('have.length', 6);
+		cy.get('.settings-index-row').should('have.length', 7);
 		cy.get('@onClose').should('not.have.been.called');
 	});
 
@@ -175,7 +192,7 @@ describe('setupView search', () => {
 		cy.contains('.settings-index-row', 'Switch cooldown').click();
 		cy.get('button.setup-header').click();
 		cy.get('#settingsSearch').should('have.value', '');
-		cy.get('.settings-index-row').should('have.length', 6);
+		cy.get('.settings-index-row').should('have.length', 7);
 	});
 });
 
@@ -399,11 +416,69 @@ describe('setupView scoring group', () => {
 		cy.get('#signal-closeness').should('be.disabled');
 	});
 
-	it('renders the bonus inputs', () => {
+	it('renders the postseason boost, the bonus that stayed behind', () => {
 		cy.mount(<SetupView {...defaultProps} />);
 		openGroup('scoring');
-		cy.get('#favoriteTeamBonusInput').should('exist');
 		cy.get('#postseasonBoostInput').should('exist');
+		cy.get('#favoriteTeamBonusInput').should('not.exist');
+	});
+});
+
+// The favorites page fetches rosters on mount, so every test that opens it has to answer that
+// call. One team is the floor, not a convenience: fetchTeamsForLeagues throws outright when every
+// league it asked about comes back empty, so a zero-team stub is a failed load rather than a bare one.
+const stubTeamsFetch = (entries: [string, string][] = [['1', 'Atlanta Hawks']]) => cy.window().then(win => {
+	cy.stub(win, 'fetch').resolves({
+		ok: true,
+		json: () => Promise.resolve({
+			sports: [{ leagues: [{ teams: entries.map(([id, displayName]) => ({ team: { id, displayName, abbreviation: 'ABC' } })) }] }],
+		}),
+	} as unknown as Response);
+});
+
+describe('setupView favorites group', () => {
+	it('opens the picker, with the bonus that moved here out of Scoring', () => {
+		stubTeamsFetch();
+		cy.mount(<SetupView {...defaultProps} />);
+		openGroup('favorites');
+		cy.get('#favoriteTeamBonusInput').should('exist');
+		cy.get('input[type=search]').should('exist');
+	});
+
+	it('keeps the search box in view once the list is scrolled', () => {
+		stubTeamsFetch(Array.from({ length: 60 }, (_, i) => [String(i), `Team ${i}`]));
+		cy.viewport(320, 560);
+		cy.mount(<SetupView {...defaultProps} />);
+		openGroup('favorites');
+		cy.contains('Team 59').should('exist');
+
+		cy.get('.popup-container .overflow-auto').scrollTo('bottom');
+		cy.get('.popup-container .overflow-auto').should(([el]: JQuery<HTMLElement>) => {
+			expect(el.scrollTop, 'the list itself scrolled').to.be.greaterThan(0);
+		});
+		cy.get('input[type=search]').should(([el]: JQuery<HTMLElement>) => {
+			const box = el.getBoundingClientRect();
+			expect(box.top, 'search box did not scroll off the top').to.be.at.least(0);
+			expect(box.bottom, 'search box is still on screen').to.be.at.most(560);
+		});
+	});
+
+	it('keeps every locale\'s group name on one line in the index', () => {
+		cy.viewport(320, 560);
+		cy.mount(<SetupView {...defaultProps} />);
+
+		Object.entries(locales).forEach(([name, locale]) => {
+			cy.get('#settingsGroup-favorites .settings-index-name').should(([el]: JQuery<HTMLElement>) => {
+				el.textContent = locale.setup.groupFavorites;
+				expect(el.getBoundingClientRect().height, `group name stays one line in ${name}`).to.be.at.most(22);
+			});
+		});
+	});
+
+	it('turns up in the search under a word that is nowhere in its label', () => {
+		cy.mount(<SetupView {...defaultProps} />);
+		cy.get('#settingsSearch').type('franchise');
+		cy.contains('.settings-index-row', 'Teams you follow').should('exist');
 	});
 });
 

@@ -4,7 +4,7 @@ import type { Game, LeagueId, Team } from '@arenaswap/core/types';
 import Crest from '@arenaswap/ui/src/components/crest';
 import SeriesDots from './seriesDots';
 import StartCountdownDisplay from './startCountdownDisplay';
-import { resolveTeamColorPair } from '@arenaswap/ui/src/components/colorUtils';
+import { crestBacking, resolveTeamColorPair } from '@arenaswap/ui/src/components/colorUtils';
 import type { SeriesInfo, TeamRecords } from './useSummaryData';
 
 interface detailPosterHeroProps {
@@ -17,15 +17,6 @@ interface detailPosterHeroProps {
 	favoriteTeamIds: ReadonlySet<string>;
 	onToggleFavoriteTeam: (leagueId: LeagueId, teamId: string) => void;
 }
-
-// The crest sits on a white disc tinted with its own team colour rather than on the poster
-// itself: a navy logo on a navy half is invisible, and every league has at least one.
-// `28` is the alpha the matchup card already uses for its team-colour washes.
-const crestBacking = (color: string): string => (
-	/^#[\da-fA-F]{6}$/.test(color)
-		? `linear-gradient(160deg, ${color}14, ${color}28), #ffffff`
-		: '#ffffff'
-);
 
 const PosterTeam = ({
 	team,

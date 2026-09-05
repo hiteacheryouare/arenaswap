@@ -9,7 +9,7 @@ describe('settings round-trip', () => {
 
 	it('reaches the settings index from the games list and back again', () => {
 		openSettings();
-		cy.get('.settings-index-row').should('have.length', 6);
+		cy.get('.settings-index-row').should('have.length', 7);
 
 		cy.get('button.setup-header').click();
 		cy.contains('.popup-section-title', 'Live Games').should('be.visible');
@@ -21,7 +21,7 @@ describe('settings round-trip', () => {
 		cy.get('#sensitivity-range').should('exist');
 
 		cy.get('button.setup-header').click();
-		cy.get('.settings-index-row').should('have.length', 6);
+		cy.get('.settings-index-row').should('have.length', 7);
 	});
 
 	it('persists a sensitivity change to storage and the background', () => {

@@ -1,5 +1,141 @@
 # Changelog
 
+## Favorite teams can be picked from settings, not only on the way in — 2026-09-05
+
+The full team picker only ever existed inside onboarding. After that the one way to change a
+favorite was the star on a game's detail screen, which needs that team to have a game on the slate
+you are looking at — so following someone new in the offseason, or dropping a team you stopped
+watching, meant reinstalling the extension.
+
+Settings has a **Favorite teams** group now, third in the list, and the favorite team bonus moved
+into it out of Scoring. The picker and the number saying what a favorite is worth were two halves of
+one idea kept in different rooms.
+
+### The picker is the list, not the chrome around it
+
+The onboarding version had its chrome baked in: a "step 3 of 3" counter, Back, Skip, Done. None of
+that is true in settings, which saves on each star and leaves by the same back arrow as every other
+page. So the list itself — the search box, the league-grouped rows, the loading and error states —
+is `teamPickerList` now, and each caller wraps it in its own chrome.
+
+It returns a fragment rather than a wrapper. Onboarding's column pins its footer against the
+scrolling list, and a `div` around the two would have broken that relationship to no purpose.
+
+The error state is the one place the two genuinely differ, and it is a prop rather than a copy:
+onboarding offers "Skip for now" because there is somewhere to skip to, and settings does not,
+because there isn't.
+
+### Your favorites sit above the leagues
+
+The pinned section at the top lists every team you have starred. It repeats teams that also appear
+in their league group below, which is deliberate — until now nothing anywhere in the extension
+answered "who am I actually following", and the answer is worth more than the duplication costs.
+
+It is also the only way to reach a favorite in a league you have since switched off. Those are kept
+rather than pruned: a favorite is a fact about you, not about which leagues are on this week, and
+re-enabling the league brings it straight back. So the picker fetches the enabled leagues **plus any
+league holding a favorite**, and marks the latter "not tracked" under the team's name. The league is
+fetched to name the team and for nothing else — it is never offered as a group to star from.
+
+The league list is fixed when the page opens rather than derived on each render. It only changes
+when the leagues do, and recomputing it as teams are starred would refetch every roster on every
+click.
+
+A stored key with no team behind it — a league whose fetch failed, a team ESPN has dropped — is left
+out rather than rendered as its raw id, which would name nothing anybody could act on.
+
+Searching takes the section away rather than filtering it. Filtered, it moved the league groups up
+and down on every keystroke, and a starred team answering the search twice — once here and once in
+its own league — read as a duplicate rather than as a shortcut. Clearing the search brings it back.
+
+### Every crest sits on a disc it tinted itself
+
+A navy or black crest on the dark popup is a silhouette, and a list of two hundred of them is where
+that hurts most. Each one now sits on the same white disc the pre-game poster uses, washed with the
+team's own colour — so `crestBacking` moved out of `detailPosterHero` and into `colorUtils`, where
+both callers read one formula.
+
+The colour is **sampled from the crest the row already drew**, not fetched. ESPN does send `color`
+on its teams endpoint and the schema was dropping it, but taking that route would have meant a wider
+parse for a decorative wash. Instead the loaded image is drawn into a 24x24 canvas and its pixels
+read back, which costs no field and no request: the browser had already decoded that image to paint
+it.
+
+Reading pixels back needs two things. The image has to be requested with `crossOrigin`, or the
+canvas is tainted and `getImageData` throws — so `Crest` takes it as an opt-in prop rather than
+setting it everywhere, since a host answering without CORS headers would then fail to load at all
+rather than merely fail to be sampled. Every team logo we serve is on `a.espncdn.com`, which answers
+`Access-Control-Allow-Origin: *`. And the read is wrapped anyway: a tainted canvas leaves the disc
+plain white, which is the state it degrades to regardless.
+
+Picking the colour is the part with a judgment in it. **Greys, white and black are rejected by
+chroma rather than by lightness**, so a crest on a white plate tints with its mark instead of with
+its plate, and a genuinely monochrome crest tints with nothing at all rather than with a muddy grey.
+Colours are bucketed five bits to a channel before being counted: finer than that and a gradient
+splits its own colour across enough buckets to lose to a flat one covering less of the crest.
+
+The disc under a crest that never loaded is plain white, so the placeholder initials take a dark ink
+rather than the shared grey — that white disc would otherwise be the one unreadable state the disc
+was added to remove.
+
+`onLoaded` hands back the element rather than firing a bare callback, and the cache is keyed on the
+image's own `currentSrc`. Keying it on the prop instead would have meant rebuilding the handler
+whenever the logo changed, and a ref callback that changes identity makes React detach and reattach
+the image on every render.
+
+### The search box stays put
+
+Every other settings page is short enough to scroll as one block. This one runs to a few hundred rows
+once a college league is on, and a search box that scrolls away with them is what makes a list that
+long unusable — onboarding already knew this and gave its own picker an inner scroll region.
+
+The settings shell hands this page the column to do the same. Bootstrap has no `min-height: 0`
+utility, and a flex child that is not itself a scroll container keeps `min-height: auto` and refuses
+to shrink, which puts the scrollbar on the whole page instead of on the list inside it. `.min-h-0`
+sits next to the `.min-w-0` that exists for the same reason on the other axis.
+
+The bonus input scrolls with the list rather than sitting above the search. Pinned, it cost 110px of
+a 560px popup permanently and left five team rows visible.
+
+### Two things this turned up
+
+**`fetchTeamsForLeagues` throws when every league it asked about comes back empty**, rather than
+returning an empty list. A test stub answering with a zero-team envelope is therefore a failed load,
+not a bare one — and the failure was hiding the bonus input, which had been rendered inside the same
+block the roster is gated on. It has nothing to do with whether ESPN answered. The scroll region is
+always mounted now, and the bonus survives a fetch that doesn't.
+
+**`parseFavoriteTeamKey` is exported from core** rather than reimplemented. Working out which leagues
+hold a favorite means reading the `leagueId:teamId` format, and a second reader of that format
+outside the module that writes it is the way the two drift apart.
+
+### Strings and coverage
+
+Six keys across all twelve locales: the group's label and description, the search-result label, its
+keywords, the pinned heading and the not-tracked line. Each locale reuses its own established
+vocabulary rather than new coinage — the existing noun for a favorite team, and the verb already used
+for a tracked league.
+
+Three of them are measured. The group name and the pinned heading are each asserted on one line at
+320px in every locale, and the not-tracked line is measured carrying the longest league label we
+ship, "Olympic Women's Ice Hockey", asserting the row never widens past the popup. That one is free
+to wrap; what it must not do is push the star off the right edge.
+
+21 unit tests on the pure helpers, including a favorite whose league is off pulling that league
+into the fetch, a malformed stored key being ignored, an unresolvable favorite dropping out, the
+untracked rows sorting last against a league order that would otherwise put them first, and the
+colour picker refusing a crest that is only white and black.
+
+21 component tests: 13 on the page, 4 on the group and 4 on the row. The colour is proved by mounting
+a four-pixel PNG of a known green as a data URI and reading the tint back off the computed style,
+which is a thing only a real browser can answer. The scrolling one was confirmed failing with the
+column removed before the layout went in, which is the only way to know it measures the fix rather
+than the default.
+
+Three existing assertions pinned the settings index at six rows and now pin seven, and the scoring
+page's bonus test asserts the favorite bonus is no longer there, so the move is caught in both
+directions.
+
 ## A live football game draws the field it is being played on — 2026-09-05
 
 Under the score on the detail screen, where the baseball base diamond sits, a football game now

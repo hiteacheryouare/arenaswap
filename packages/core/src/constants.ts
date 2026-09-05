@@ -131,7 +131,7 @@ const isLeagueId = (value: unknown): value is LeagueId => (
 	typeof value === 'string' && allLeagueIds.includes(value as LeagueId)
 );
 
-const parseFavoriteTeamKey = (value: string): { leagueId: LeagueId; teamId: string } | null => {
+export const parseFavoriteTeamKey = (value: string): { leagueId: LeagueId; teamId: string } | null => {
 	const trimmed = value.trim();
 	const separatorIndex = trimmed.indexOf(':');
 	if (separatorIndex <= 0 || separatorIndex >= trimmed.length - 1) return null;

@@ -65,6 +65,16 @@ export const readableInkOn = (background: string, light = '#ffffff', dark = '#11
 	hexToRgb(background) && luminance(background) > 0.1833 ? dark : light
 );
 
+// A crest sits on a white disc tinted with its own colour rather than on the surface behind it: a
+// navy logo on a navy half of a poster is invisible, and every league has at least one. `28` is the
+// alpha the matchup card already uses for its team-colour washes. No colour leaves the disc plain
+// white, which still separates the crest from a dark background.
+export const crestBacking = (color: string | null | undefined): string => (
+	color && /^#[\da-fA-F]{6}$/.test(color)
+		? `linear-gradient(160deg, ${color}14, ${color}28), #ffffff`
+		: '#ffffff'
+);
+
 export const resolveTeamColorPair = (
 	away: { color?: string; alternateColor?: string },
 	home: { color?: string; alternateColor?: string },

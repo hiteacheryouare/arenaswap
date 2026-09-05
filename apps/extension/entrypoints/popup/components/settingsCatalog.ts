@@ -1,6 +1,6 @@
 import { i18n, type GeneratedI18nStructure } from '#i18n';
 
-export type settingsGroupId = 'switching' | 'scoring' | 'leagues' | 'display' | 'standby' | 'demo';
+export type settingsGroupId = 'switching' | 'scoring' | 'favorites' | 'leagues' | 'display' | 'standby' | 'demo';
 
 // i18n.t is overloaded, so Parameters<> on it collapses to never. Narrowing the generated
 // structure gives the catalog a real key type. Named substitutions are reported alongside
@@ -27,6 +27,7 @@ export interface settingsEntry {
 export const settingsGroups: readonly settingsGroup[] = [
 	{ id: 'switching', icon: 'speedometer2', labelKey: 'setup.groupSwitching', descriptionKey: 'setup.groupSwitchingDesc' },
 	{ id: 'scoring', icon: 'sliders', labelKey: 'setup.groupScoring', descriptionKey: 'setup.groupScoringDesc' },
+	{ id: 'favorites', icon: 'star', labelKey: 'setup.groupFavorites', descriptionKey: 'setup.groupFavoritesDesc' },
 	{ id: 'leagues', icon: 'trophy', labelKey: 'setup.groupLeagues', descriptionKey: 'setup.groupLeaguesDesc' },
 	{ id: 'display', icon: 'eye', labelKey: 'setup.groupDisplay', descriptionKey: 'setup.groupDisplayDesc' },
 	{ id: 'standby', icon: 'broadcast', labelKey: 'setup.groupStandby', descriptionKey: 'setup.groupStandbyDesc' },
@@ -42,8 +43,9 @@ export const settingsEntries: readonly settingsEntry[] = [
 	{ group: 'scoring', labelKey: 'powerScore.signalMomentum', keywordsKey: 'setup.keywordsMomentum' },
 	{ group: 'scoring', labelKey: 'powerScore.signalLeadChanges', keywordsKey: 'setup.keywordsLeadChanges' },
 	{ group: 'scoring', labelKey: 'powerScore.signalComeback', keywordsKey: 'setup.keywordsComeback' },
-	{ group: 'scoring', labelKey: 'favoriteTeamBonus.label', keywordsKey: 'setup.keywordsFavoriteBonus' },
 	{ group: 'scoring', labelKey: 'postseasonBoost.label', keywordsKey: 'setup.keywordsPostseasonBoost' },
+	{ group: 'favorites', labelKey: 'setup.followedTeams', keywordsKey: 'setup.keywordsFavoriteTeams' },
+	{ group: 'favorites', labelKey: 'favoriteTeamBonus.label', keywordsKey: 'setup.keywordsFavoriteBonus' },
 	{ group: 'leagues', labelKey: 'setup.groupLeagues', keywordsKey: 'setup.keywordsLeagues' },
 	{ group: 'leagues', labelKey: 'setup.leagueOrderSection', keywordsKey: 'setup.keywordsLeagueOrder' },
 	{ group: 'display', labelKey: 'setup.showUpcoming', keywordsKey: 'setup.keywordsUpcoming' },

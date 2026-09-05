@@ -41,6 +41,13 @@ button, input, select, optgroup, textarea {
 	min-width: 0;
 }
 
+/* Same gap on the other axis. A flex child that is not itself a scroll container keeps
+   `min-height: auto`, which stops it shrinking and pushes the scrollbar onto the whole page
+   instead of onto the list inside it. */
+.min-h-0 {
+	min-height: 0;
+}
+
 /* ─── Ludicrous Speed ─────────────────────────────────────────────────────── */
 @keyframes ludicrousSpeed {
 	0%   { color: #ff4500; text-shadow: 0 0 6px #ff4500; }

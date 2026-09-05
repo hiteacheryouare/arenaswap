@@ -384,6 +384,7 @@ export default () => {
 						demoMode={demoMode}
 						demoSeason={demoSeason}
 						leagueLogos={leagueLogos}
+						favoriteTeamIds={favoriteTeamIds}
 						standbyStreamTabId={standbyStreamTabId}
 						standbyOnboardingDone={standbyOnboardingDone}
 						openTabs={openTabs}
@@ -393,6 +394,7 @@ export default () => {
 						onCooldownChange={val => persistPrefs(currentPrefs => ({ ...currentPrefs, cooldownSeconds: val }))}
 						onSwitchDelayChange={val => persistPrefs(currentPrefs => ({ ...currentPrefs, switchDelaySeconds: val }))}
 						onFavoriteTeamBonusChange={val => persistPrefs(currentPrefs => ({ ...currentPrefs, favoriteTeamBonusPoints: val }))}
+						onToggleFavoriteTeam={toggleFavoriteTeam}
 						onToggleLeague={onToggleLeague}
 						onToggleSport={onToggleSport}
 						onReorderLeague={onReorderLeague}

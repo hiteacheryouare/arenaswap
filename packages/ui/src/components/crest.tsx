@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { CSSProperties } from 'react';
 
 type crestState = 'pending' | 'loaded' | 'failed' | 'missing';
@@ -22,6 +22,12 @@ interface crestProps {
 	fallback?: 'abbreviation' | 'blank' | 'none';
 	fallbackStyle?: CSSProperties;
 	loading?: 'eager' | 'lazy';
+	// Both opt-in, and only for a caller that reads the crest's own pixels back off a canvas.
+	// Without `crossOrigin` that canvas is tainted and throws on read; with it the request changes
+	// shape, so a host answering without CORS headers would fail to load at all rather than just
+	// fail to be sampled. Every ESPN logo host we use sends `Access-Control-Allow-Origin: *`.
+	crossOrigin?: 'anonymous';
+	onLoaded?: (image: HTMLImageElement) => void;
 }
 
 // Keyed on the URL rather than on a boolean, so a crest that fails once retries when the URL
@@ -44,8 +50,16 @@ const Crest = ({
 	fallback = 'abbreviation',
 	fallbackStyle,
 	loading,
+	crossOrigin,
+	onLoaded,
 }: crestProps) => {
 	const [outcome, setOutcome] = useState<crestOutcome | null>(null);
+
+	// Held in a ref rather than closed over: `settle` is a ref callback, and rebuilding it whenever
+	// an inline handler changes identity would make React detach and reattach the image every
+	// render. Seeded from the first render, since `settle` fires at commit, before any effect.
+	const onLoadedRef = useRef(onLoaded);
+	useEffect(() => { onLoadedRef.current = onLoaded; }, [onLoaded]);
 
 	// Not defensive padding: the docs site hydrates its islands on load or on intersection, by
 	// which point the crest has usually fired `load` already and the event is gone, leaving the
@@ -53,7 +67,9 @@ const Crest = ({
 	// image too, so `naturalWidth` is what separates the two.
 	const settle = useCallback((image: HTMLImageElement | null) => {
 		if (!logo || !image?.complete) return;
-		setOutcome({ src: logo, status: image.naturalWidth > 0 ? 'loaded' : 'failed' });
+		const status = image.naturalWidth > 0 ? 'loaded' : 'failed';
+		setOutcome({ src: logo, status });
+		if (status === 'loaded') onLoadedRef.current?.(image);
 	}, [logo]);
 
 	return (
@@ -77,7 +93,11 @@ const Crest = ({
 					src={logo}
 					alt=''
 					loading={loading}
-					onLoad={() => setOutcome({ src: logo, status: 'loaded' })}
+					crossOrigin={crossOrigin}
+					onLoad={event => {
+						setOutcome({ src: logo, status: 'loaded' });
+						onLoadedRef.current?.(event.currentTarget);
+					}}
 					onError={() => setOutcome({ src: logo, status: 'failed' })}
 				/>
 			)}
