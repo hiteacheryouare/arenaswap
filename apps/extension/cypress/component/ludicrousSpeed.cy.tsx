@@ -1,21 +1,58 @@
 import LudicrousSpeedOverlay from '../../entrypoints/popup/components/ludicrousSpeedOverlay';
+import { buildScript, type Beat } from '../../entrypoints/popup/components/ludicrousScript';
 import { cockpitBrakeRect, cockpitWindowRect } from '../../entrypoints/popup/components/ludicrousCockpit';
+import { i18n } from '#i18n';
 
 const popupW = 320;
 const popupH = 560;
 
+/* The sequence used to be walked with the transport keys it shipped with, which meant the spec
+   could only ever assert the order of the beats and never their timing. Those keys are gone, so it
+   is walked on a faked clock instead: only setTimeout is stubbed, leaving requestAnimationFrame and
+   the CSS animations real, so the canvas still paints and the brake still has its entry ramp. What
+   the clock buys is that every wait below is the script's own duration rather than a guess. */
+const script = buildScript();
+let cursor = 0;
+
 const mountOverlay = (onClose: () => void = () => {}) => {
+	cursor = 0;
 	cy.viewport(popupW, popupH);
+	cy.clock(Date.now(), ['setTimeout', 'clearTimeout']);
 	cy.mount(<LudicrousSpeedOverlay onClose={onClose} />);
 	cy.get('.ls-overlay').should('exist');
 };
 
-const nextPhase = () => cy.get('.ls-overlay').trigger('keydown', { key: 'n' });
+// Runs the clock forward beat by beat rather than in one jump, so React commits between them.
+const stepTo = (index: number) => {
+	while (cursor < index) {
+		cy.tick(script[cursor]!.ms);
+		cursor += 1;
+	}
+};
 
-// The order the script cuts between cameras, one entry per phase beat.
-const phaseViews = ['rear', 'full', 'full', 'full', 'full', 'full', 'cockpit', 'rear'];
+const beatIndex = (match: (beat: Beat) => boolean, from = 0) => {
+	const found = script.findIndex((beat, i) => i >= from && match(beat));
+	expect(found, 'the script still has the beat this test is about').to.be.greaterThan(-1);
+	return found;
+};
 
-const checkText = () => {
+const nextPhase = () => stepTo(beatIndex(beat => Boolean(beat.phase) || Boolean(beat.end), cursor + 1));
+
+const phaseBeats = script.flatMap((beat, i) => (beat.phase ? [i] : []));
+
+/* What the text layer reads on each beat. Several beats set no display of their own — the brake
+   arrives under a line already on screen — so it is the last one that did. Ticking the clock only
+   schedules React's commit, so every step below settles on a retrying assertion against this before
+   anything reads the DOM; `.then` and `.invoke` do not retry and read the previous beat. */
+const textAt: string[] = [];
+script.reduce((previous, beat, i) => {
+	const text = beat.display ? beat.display.text : previous;
+	textAt[i] = text;
+	return text;
+}, '');
+
+const checkText = (index: number) => {
+		cy.get('.ls-text').should('have.text', textAt[index]);
 		cy.get('.ls-overlay').then($overlay => {
 			const canvas = $overlay.find('.ls-canvas')[0]!;
 			const w = canvas.clientWidth;
@@ -41,13 +78,21 @@ describe('ludicrous speed overlay', () => {
 		const onClose = cy.stub().as('onClose');
 		mountOverlay(onClose);
 		cy.get('.ls-overlay').click('topLeft');
+		cy.get('.ls-overlay').should('have.class', 'ls-view-rear');
+		cy.tick(700);
+		cy.get('.ls-overlay').should('have.class', 'closing');
+		cy.tick(450);
 		cy.get('@onClose').should('have.been.called');
 	});
 
 	it('cuts between the three cameras in the order the sequence calls for', () => {
+		// One entry per phase beat, read off the script so a beat added later cannot be skipped.
+		const views = ['rear', 'full', 'full', 'full', 'full', 'full', 'cockpit', 'rear'];
+		expect(phaseBeats, 'one expected camera per phase beat').to.have.length(views.length);
+
 		mountOverlay();
 		cy.get('.ls-overlay').should('have.class', 'ls-view-cockpit');
-		phaseViews.forEach(view => {
+		views.forEach(view => {
 			nextPhase();
 			cy.get('.ls-overlay').should('have.class', `ls-view-${view}`);
 		});
@@ -56,13 +101,11 @@ describe('ludicrous speed overlay', () => {
 	it('the emergency brake is part of the cockpit console and stops the ship', () => {
 		const onClose = cy.stub().as('onClose');
 		mountOverlay(onClose);
-		// Seven phase jumps land on the panic beat, which is where the brake is armed.
-		for (let i = 0; i < 7; i += 1) nextPhase();
+		// The brake deliberately arrives a couple of beats after the cut to the bridge rather than
+		// sharing its entrance with the payoff line.
+		stepTo(beatIndex(beat => beat.brake === 'visible'));
 		cy.get('.ls-overlay').should('have.class', 'ls-view-cockpit');
-
-		// The brake deliberately arrives a couple of beats after the cut rather than sharing its
-		// entrance with the payoff line, so it is a few seconds out from the jump.
-		cy.get('.ls-emergency-brake', { timeout: 12000 }).should('be.visible');
+		cy.get('.ls-emergency-brake').should('be.visible');
 
 		// Measured off the canvas rather than assumed: the runner's viewport is not exactly the
 		// popup's, and the assertion that matters is that the button lands on the placard the canvas
@@ -81,62 +124,70 @@ describe('ludicrous speed overlay', () => {
 			});
 		});
 		cy.get('.ls-emergency-brake').click();
-		cy.get('@onClose', { timeout: 12000 }).should('have.been.called');
+		cy.tick(500);
+		cy.get('.ls-overlay').should('have.class', 'ls-view-rear');
+		cy.tick(3800);
+		cy.get('.ls-overlay').should('have.class', 'closing');
+		cy.tick(450);
+		cy.get('@onClose').should('have.been.called');
 	});
 
 	it('never lets a text beat overflow the popup or land on the cockpit glass', () => {
 		mountOverlay();
-
-
-
-		checkText();
-		// Every beat, not only the phase beats: the alignment fault this covers was per line.
-		// 42 beats in the script, so 41 steps walks all of them.
-		for (let i = 0; i < 41; i += 1) {
-			cy.get('.ls-overlay').trigger('keydown', { key: 'ArrowRight' });
-			checkText();
+		checkText(0);
+		// Every beat, not only the phase beats: the alignment fault this covers was per line. The last
+		// beat is the one that closes the overlay and carries no text of its own.
+		for (let i = 1; i < script.length - 1; i += 1) {
+			stepTo(i);
+			checkText(i);
 		}
 	});
 
 	it('holds the PLAID sign back until the plaid has arrived', () => {
 		mountOverlay();
-		// Five jumps reach the entry transition, which carries no text at all.
-		for (let i = 0; i < 5; i += 1) nextPhase();
+		// The entry transition carries no text at all; the sign lands on the phase after it.
+		stepTo(beatIndex(beat => beat.phase === 'plaidentry'));
 		cy.get('.ls-text').should('not.contain.text', 'PLAID');
-		nextPhase();
+		stepTo(beatIndex(beat => beat.phase === 'plaid'));
 		cy.get('.ls-text.plaid-rect').should('contain.text', 'PLAID');
 	});
 
 	it('leaves the brake live long enough to notice it and decide', () => {
 		mountOverlay();
-		for (let i = 0; i < 7; i += 1) nextPhase();
-		cy.get('.ls-emergency-brake', { timeout: 12000 }).should('be.visible');
+		stepTo(beatIndex(beat => beat.brake === 'visible'));
+		cy.get('.ls-emergency-brake').should('be.visible');
 		// The label reads NEVER USE, so the joke only works if there is time to consider it anyway.
-		cy.wait(6000);
+		cy.tick(6000);
 		cy.get('.ls-emergency-brake').should('be.visible').and('not.have.class', 'pressed');
 	});
 
 	it('plays the slowdown out instead of cutting away from it', () => {
 		const onClose = cy.stub().as('onClose');
 		mountOverlay(onClose);
-		for (let i = 0; i < 7; i += 1) nextPhase();
-		cy.get('.ls-emergency-brake', { timeout: 12000 }).should('be.visible').click();
+		stepTo(beatIndex(beat => beat.brake === 'visible'));
+		cy.get('.ls-emergency-brake').should('be.visible').click();
+		cy.tick(500);
 		cy.get('.ls-overlay').should('have.class', 'ls-view-rear');
 		// Braking is a beat, not an exit: nothing closes while the ship is still coming off its speed.
-		cy.wait(2500);
+		cy.tick(2500);
 		cy.get('@onClose').should('not.have.been.called');
-		cy.get('@onClose', { timeout: 12000 }).should('have.been.called');
+		cy.tick(1300);
+		cy.get('.ls-overlay').should('have.class', 'closing');
+		cy.tick(450);
+		cy.get('@onClose').should('have.been.called');
 	});
 
 	it('lets the payoff line hold the screen on its own', () => {
 		mountOverlay();
-		for (let i = 0; i < 7; i += 1) nextPhase();
+		const panic = beatIndex(beat => beat.phase === 'panic');
 		// The cut lands first and carries no text, so the line does not share its entrance.
+		stepTo(panic);
 		cy.get('.ls-overlay').should('have.class', 'ls-view-cockpit');
 		cy.get('.ls-text').should('not.contain.text', 'passed');
-		cy.get('.ls-text', { timeout: 4000 }).should('contain.text', 'passed');
 		cy.get('.ls-emergency-brake').should('not.exist');
-		cy.wait(2000);
+		stepTo(panic + 1);
+		cy.get('.ls-text').should('contain.text', 'passed');
+		cy.tick(2000);
 		cy.get('.ls-text').should('contain.text', 'passed');
 	});
 
@@ -169,5 +220,61 @@ describe('ludicrous speed overlay', () => {
 			// Nothing is still queued: the last frame the loop asked for was cancelled on unmount.
 			cy.wait(200).then(() => expect([...pending]).to.have.length(0));
 		});
+	});
+});
+
+/* The egg shipped with the scrubbing controls it was reviewed under — a 4x playback toggle behind
+   `f` that persisted itself to localStorage, and `->` / `n` scene jumps — advertised in a strip of
+   hardcoded English that no locale file ever carried. It is click to skip and nothing else now. */
+describe('ludicrous speed overlay has no transport controls', () => {
+	const removedKeys = ['ArrowRight', 'ArrowDown', 'n', 'f'];
+
+	it('ignores the keys that used to scrub and fast-forward the sequence', () => {
+		mountOverlay();
+		// Parked on a beat with a line on it, so a jump of either kind would change what is on screen.
+		stepTo(2);
+		expect(textAt[2], 'the beat under test has a line on it').to.not.equal('');
+		cy.get('.ls-text').should('have.text', textAt[2]);
+		removedKeys.forEach(key => cy.get('.ls-overlay').trigger('keydown', { key }));
+		cy.get('.ls-text').should('have.text', textAt[2]);
+		cy.get('.ls-overlay').should('have.class', 'ls-view-cockpit');
+	});
+
+	it('never writes the playback rate it used to remember', () => {
+		mountOverlay();
+		removedKeys.forEach(key => cy.get('.ls-overlay').trigger('keydown', { key }));
+		cy.window().then(win => {
+			expect(win.localStorage.getItem('arenaswap.ludicrous.rate'), 'stored playback rate').to.equal(null);
+		});
+	});
+
+	// A rate left behind by someone who pressed `f` while the sequence was in review.
+	it('a stale stored rate has no effect on the timing', () => {
+		cy.window().then(win => win.localStorage.setItem('arenaswap.ludicrous.rate', '4'));
+		mountOverlay();
+		// Pinned to the line that should still be up rather than to the absence of the next one: at 4x
+		// the sequence is six beats further on by now, which "not the second line" is also true of.
+		cy.tick(script[0]!.ms - 1);
+		cy.get('.ls-text').should('have.text', textAt[0]);
+		cy.tick(1);
+		cy.get('.ls-text').should('have.text', textAt[1]);
+	});
+
+	it('renders no string outside the locale files', () => {
+		mountOverlay();
+		cy.get('.ls-transport').should('not.exist');
+		cy.get('.ls-skip').should('have.text', i18n.t('ludicrousSpeed.skip'));
+	});
+
+	// Enter and Space are the click on a role='button', not controls of their own, so they stay.
+	it('still skips from the keyboard', () => {
+		const onClose = cy.stub().as('onClose');
+		mountOverlay(onClose);
+		cy.get('.ls-overlay').trigger('keydown', { key: 'Enter' });
+		cy.get('.ls-overlay').should('have.class', 'ls-view-rear');
+		cy.tick(700);
+		cy.get('.ls-overlay').should('have.class', 'closing');
+		cy.tick(450);
+		cy.get('@onClose').should('have.been.called');
 	});
 });

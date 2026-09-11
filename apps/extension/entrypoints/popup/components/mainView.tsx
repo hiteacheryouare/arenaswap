@@ -252,7 +252,10 @@ const mainView = ({
 					onDismiss={onDismissSuggestions}
 				/>
 			)}
-			{showReviewPrompt && (
+			{/* The only banner here whose condition does not come from the fetch: eligibility is read
+			    out of storage.local and lands well before the slate does. The other two self-suppress
+			    because their inputs are empty until `data` arrives, so this one states the gate. */}
+			{!isLoading && !hasError && showReviewPrompt && (
 				<ReviewPromptBanner onDismiss={onDismissReviewPrompt} onLeaveReview={onLeaveReview} />
 			)}
 

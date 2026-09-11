@@ -2588,3 +2588,81 @@ describe("ESPN's own Final designation", () => {
 	});
 });
 
+
+describe('the polling lookahead', () => {
+	const now = new Date('2026-01-14T17:00:00.000Z');
+	const at = (offsetHours: number) => new Date(now.getTime() + offsetHours * 60 * 60 * 1000).toISOString();
+
+	const mockEvents = (events: Record<string, unknown>[]) => {
+		const fetchMock = jest.fn().mockResolvedValue(createResponse({ events }));
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+		return { fetchMock, ...loadApiClient() };
+	};
+
+	const scheduled = (id: string, date: string) => makeEvent({
+		id, date, state: 'pre', period: 1, clock: '0:00', homeScore: '0', awayScore: '0',
+	});
+
+	test('an empty window is a real answer rather than a failure', async () => {
+		const { fetchNextScheduledStart } = mockEvents([]);
+		await expect(fetchNextScheduledStart('mlb', { now })).resolves.toBeNull();
+	});
+
+	test('reports the earliest kickoff still ahead', async () => {
+		const { fetchNextScheduledStart } = mockEvents([
+			scheduled('later', at(30)),
+			scheduled('next', at(6)),
+			scheduled('middle', at(20)),
+		]);
+		await expect(fetchNextScheduledStart('mlb', { now })).resolves.toBe(new Date(at(6)).getTime());
+	});
+
+	// The window opens at the start of today's local day, so it carries this morning's games too.
+	test('ignores anything that has already started', async () => {
+		const { fetchNextScheduledStart } = mockEvents([
+			scheduled('this-morning', at(-4)),
+			scheduled('tonight', at(3)),
+		]);
+		await expect(fetchNextScheduledStart('mlb', { now })).resolves.toBe(new Date(at(3)).getTime());
+	});
+
+	test('a date ESPN sent as nonsense is skipped rather than thrown on', async () => {
+		const { fetchNextScheduledStart } = mockEvents([
+			scheduled('bad', 'sometime next week'),
+			scheduled('good', at(11)),
+		]);
+		await expect(fetchNextScheduledStart('mlb', { now })).resolves.toBe(new Date(at(11)).getTime());
+	});
+
+	// One request, against the two `fetchLeagueGames` makes: the point of the state this feeds is to
+	// spend fewer of them, so a lookahead that cost the same as a poll would be self-defeating.
+	test('costs exactly one request, over the configured window', async () => {
+		const { fetchMock, fetchNextScheduledStart } = mockEvents([]);
+		await fetchNextScheduledStart('mlb', { days: 7, now });
+		expect(fetchMock).toHaveBeenCalledTimes(1);
+		const url = toUrl(fetchMock.mock.calls[0]![0] as RequestInfo);
+		// Eight Eastern dates for a seven-day window: the suite runs in UTC and the query is rendered
+		// in Eastern, so the local day start on the 14th is the evening of the 13th over there.
+		expect(new URL(url).searchParams.get('dates')).toBe('20260113-20260121');
+	});
+
+	// The same two overrides the scoreboard fetch carries; a college league 404s on a ranged query
+	// without them, which would read as a failed lookahead rather than as a missing parameter.
+	test('carries the NCAA group parameters a ranged query needs', async () => {
+		const { fetchMock, fetchNextScheduledStart } = mockEvents([]);
+		await fetchNextScheduledStart('ncaab', { now });
+		expect(new URL(toUrl(fetchMock.mock.calls[0]![0] as RequestInfo)).searchParams.get('groups')).toBe('50');
+
+		const second = mockEvents([]);
+		await second.fetchNextScheduledStart('ncaaw', { now });
+		expect(new URL(toUrl(second.fetchMock.mock.calls[0]![0] as RequestInfo)).searchParams.get('groups')).toBe('49');
+	});
+
+	// Null is what puts a league to sleep for half an hour, so a failed request must not produce it.
+	test('a failed request throws rather than reading as nothing scheduled', async () => {
+		const fetchMock = jest.fn().mockResolvedValue(createResponse({}, { ok: false, status: 503 }));
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+		const { fetchNextScheduledStart } = loadApiClient();
+		await expect(fetchNextScheduledStart('mlb', { now })).rejects.toThrow();
+	});
+});

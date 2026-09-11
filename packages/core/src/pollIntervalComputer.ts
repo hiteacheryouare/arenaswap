@@ -1,4 +1,11 @@
-import { pollIntermissionMs, pollMaxEagerMs, pollMinEagerMs } from './constants';
+import {
+	pollDormantMaxMs,
+	pollHebetudinousHorizonMs,
+	pollHebetudinousMaxMs,
+	pollIntermissionMs,
+	pollMaxEagerMs,
+	pollMinEagerMs,
+} from './constants';
 import type { Game, PowerScoreResult } from './types';
 
 // One request per live game, for a figure that moves on the scale of possessions and is worth at
@@ -27,4 +34,31 @@ export const computeLeagueIntervalMs = (
 	}, 0);
 
 	return computeEagerIntervalMs(bestScore);
+};
+
+// The earliest kickoff still ahead of us among games we already hold, which is free — the dateless
+// scoreboard carries today's scheduled games on the same payload as the live ones. `null` is "none
+// in what we have", which is the question a lookahead answers rather than one this can.
+export const earliestUpcomingStartMs = (games: Game[], now: number = Date.now()): number | null => {
+	let earliest: number | null = null;
+	for (const game of games) {
+		if (game.status !== 'pre' || !game.startTime) continue;
+		const startMs = new Date(game.startTime).getTime();
+		if (!Number.isFinite(startMs) || startMs <= now) continue;
+		if (earliest === null || startMs < earliest) earliest = startMs;
+	}
+	return earliest;
+};
+
+/* How long a hebetudinous league sleeps: until it is within the horizon of the kickoff it knows
+   about, capped at the ceiling and floored at the dormant beat so this state can never poll faster
+   than the one above it. With no kickoff known it is the flat ceiling, which is what an offseason
+   costs. */
+export const computeHebetudinousIntervalMs = (
+	nextStartMs: number | null,
+	now: number = Date.now(),
+): number => {
+	if (nextStartMs === null) return pollHebetudinousMaxMs;
+	const untilHorizon = nextStartMs - pollHebetudinousHorizonMs - now;
+	return Math.min(pollHebetudinousMaxMs, Math.max(pollDormantMaxMs, untilHorizon));
 };

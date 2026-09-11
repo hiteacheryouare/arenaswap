@@ -9,9 +9,8 @@ import type { Phase, View } from './ludicrousScript';
 
 const numStars = 210;
 
-// How many frames the plaid takes to resolve out of the starfield at 1x playback, set just under
-// the entry beat's length so the weave completes before the PLAID sign lands. Driven off the
-// transport rate rather than wall time so fast-forwarding does not strand it half-built.
+// How many frames the plaid takes to resolve out of the starfield, set just under the entry beat's
+// length so the weave completes before the PLAID sign lands.
 const entryFrames = 106;
 
 interface StageProps {
@@ -19,7 +18,6 @@ interface StageProps {
 	phaseRef: MutableRefObject<Phase>;
 	speedRef: MutableRefObject<number>;
 	logosRef: MutableRefObject<boolean>;
-	rateRef: MutableRefObject<number>;
 	brakeArmed: boolean;
 	brakePulled: boolean;
 	logoImages: HTMLImageElement[];
@@ -31,7 +29,6 @@ const ludicrousStage = ({
 	phaseRef,
 	speedRef,
 	logosRef,
-	rateRef,
 	brakeArmed,
 	brakePulled,
 	logoImages,
@@ -70,7 +67,7 @@ const ludicrousStage = ({
 		}
 
 		if (phase === 'plaidentry') {
-			world.entry = Math.min(1, world.entry + rateRef.current / entryFrames);
+			world.entry = Math.min(1, world.entry + 1 / entryFrames);
 		} else if (phase === 'plaid' || phase === 'panic') {
 			world.entry = 1;
 		} else {

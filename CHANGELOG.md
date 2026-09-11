@@ -1,5 +1,197 @@
 # Changelog
 
+## A league with nothing on stops asking ESPN every three minutes — 2026-09-11
+
+Polling had two states. Eager scales from 6 to 25 seconds off the best live PowerScore in the
+league; dormant is a flat 2–3 minutes for a league with no live games. There is a third below that
+now — **hebetudinous**, an extended dormant — and it is the one an offseason belongs in.
+
+**Dormant cannot see past today.** An MLB league quiet in January with nothing for nine weeks looks
+exactly like one quiet between games, because the only thing dormant asks is the dateless
+scoreboard, which carries the current Eastern day and nothing else. So it polls at the same rate
+either way, forever: at a 150-second average, **576 requests a day per league** to be told nothing
+is happening.
+
+### The state is cheap because of the question that precedes it
+
+On the poll where a league crosses into quiet, it fires **one** ranged request for that league and
+reads the next kickoff off it. One request buys the right to skip dozens, which is what makes the
+whole thing cost less rather than more — and it is also the only way to answer the question at all,
+since the payload dormant was polling has no tomorrow in it.
+
+The answer is cached for six hours, and expires early the moment the kickoff it names has come and
+gone: a start in the past says nothing about the next one. An offseason league costs 4 lookaheads
+and 48 polls a day against dormant's 576.
+
+**Most leagues never spend the request.** `parseEvent` keeps scheduled games on the same payload as
+live ones, so a league with a game tonight already has its own answer, and with Up Next on the slate
+contributes the rest of the week for free. The lookahead only fires when nothing in hand answers it,
+which is exactly the case a league with an empty card is in.
+
+### Three answers, and the third is not the second
+
+`undefined` is "nobody has asked" and `null` is "asked, and there is nothing in the window". Keeping
+them apart is what stops a league that has merely not been polled yet from being sent to the
+ceiling. Unasked means dormant, which is the faster of the two quiet states and the right thing to
+be doing while a request is still out — and it is also where a **failed** lookahead lands, because
+not reaching ESPN is not the same as ESPN saying nobody plays for two months, and the difference is
+27 minutes of not looking.
+
+### The horizon is a full day, and that is most of the design
+
+A league is only allowed to sleep when the gap in front of it is **longer than 24 hours**. A game on
+today's card keeps it on the dormant beat however many hours off first pitch is.
+
+That was an hour first, and it was wrong in a way worth recording, because an hour sounds defensible
+right up until you open the popup. MLB sat in hebetudinous at midday with first pitch at seven — a
+league in the middle of its season, playing that day, polling half-hourly. "No game coming any time
+soon" is not five hours; a league with a game today is having a day.
+
+It also makes the two halves of the lookahead line up. Whatever the poll finds on its own payload is
+today's Eastern card and therefore inside the horizon by definition, so those leagues stay dormant
+and the request is never spent. Hebetudinous is decided entirely by leagues whose card is empty, and
+engages only in a real gap — an offseason, a break, an All-Star weekend. That is the only place the
+576 was ever worth reclaiming.
+
+**The cost, stated plainly:** an in-season league with a game every day never sleeps, so the quiet
+overnight hours are still polled at 2–3 minutes. Buying those back means deciding that a league with
+a game in 14 hours does not need watching, and that is a different judgement from the one this
+change makes.
+
+Above the horizon the interval is the gap minus the horizon, capped at 30 minutes and floored at the
+dormant beat so this state can never poll faster than the one above it. A game nine days out sleeps
+30 minutes at a time; at 24h25m out it sleeps 25 and hands back to dormant, which covers the run-up
+so ESPN moving a start by a few minutes cannot be missed.
+
+**A 30-minute ceiling rather than an hour or four.** It is not there for scheduled games — the
+lookahead already has those — it is there for a fixture nobody told us about, and half an hour is
+how long that can go unnoticed.
+
+A live game returning outranks all of it. `recordPollResult` zeroes the empty count before anything
+else is read, so a game starting drops the league to eager on the poll that finds it, whatever its
+schedule says.
+
+### What survives a reset
+
+`startLeaguePolling` resets the tracker on every preference change, and it now clears the empty-poll
+counts while leaving the schedules alone. A preference change is not news about when anybody plays
+next, and re-asking would cost one request per enabled league — 31 of them — every time somebody
+toggles a setting.
+
+### Coverage
+
+**49 tests on the tracker**, 24 of them new, every instant written out as a literal rather than
+derived from the constant under test, and `now` passed to both the recorder and the reader — a test
+that leans on the default is measuring the machine's clock. Both edges of the horizon are pinned to
+the millisecond.
+
+**12 on the interval**, including one that walks three days in 7-minute steps and requires the answer
+to stay between the dormant beat and the ceiling at every one of them, and a kickoff already in the
+past, which is reachable through a schedule that goes stale between the mode being read and the
+interval being computed and must not come out as a negative delay.
+
+**7 on the lookahead fetch**, including the one that says it costs exactly one request — the point of
+the state is to spend fewer, so a lookahead as expensive as a poll would be self-defeating — and the
+one that says a 503 throws rather than returning `null`, since `null` is what puts a league to sleep.
+
+**9 on the background**, driving the real `tickLeague` rather than `GET_STATE`'s `forceRefresh`,
+which routes through `tick()` and reschedules nothing. The interval is read off `GET_DEBUG_STATE`,
+and one test ignores that number entirely and advances the clock instead: 29 minutes with no poll,
+then a poll. Dormant would have polled ten times before the first assertion.
+
+Two of the nine are the horizon report, one for each way a kickoff reaches the tracker: a game on
+the poll's own payload at 1, 5 and 19 hours out, and a lookahead coming back with tomorrow's game.
+Both fail against the one-hour horizon, along with three of the tracker's.
+
+All seven were confirmed failing against three separate mutations rather than one — paying the
+dormant interval for the third state, dropping the `needsLookahead` guard so the request fires every
+tick, and letting an unknown schedule sleep instead of staying dormant. Each broke a different pair
+of them, which is what says the assertions are about different things.
+
+## The Ludicrous Speed egg is click to skip, and nothing else — 2026-09-11
+
+The egg shipped with the controls it was reviewed under, and its own source said as much:
+
+```
+/* PROPOSAL SCAFFOLDING — the transport keys and the playback rate below come out once the sequence
+   is signed off. */
+```
+
+The sequence is signed off. Gone: `f`, which flipped the whole script between 1× and 4× **and
+persisted the choice to `localStorage`**, so anyone who pressed it once while reviewing has been
+watching a 4× egg ever since, on a key they have no reason to remember pressing. Gone with it, `→`
+for the next beat and `n` for the next phase.
+
+`Enter` and `Space` stay. The overlay is `role='button'`, so those two are the click rather than
+controls of their own. The emergency brake stays too — it is a beat in the script, drawn by the
+cockpit painter and placed onto the rect the canvas drew, not a dev affordance.
+
+### The hint strip was the only untranslated string in the popup
+
+```tsx
+<span className='ls-transport'>{rate === 4 ? ' · → next · n phase · f 4×' : ' · → next · n phase · f fast'}</span>
+```
+
+A literal, not an `i18n.t` call, and there is no `ludicrousSpeed.transport` key in any of the twelve
+locale files. Eleven languages got a translated "click to skip" followed by English debug chrome. No
+locale changes were needed to remove it, because it was never in a locale file.
+
+### The tests had been walking the script with the keys being removed
+
+`nextPhase()` was `trigger('keydown', { key: 'n' })`. Six of the nine specs were built on it, so
+deleting the control deletes the only way the suite could reach beat 34.
+
+They run on a faked clock now, with **only `setTimeout` stubbed** — `requestAnimationFrame` and the
+CSS animations stay real, so the canvas still paints and the brake still has its entry ramp. Each
+step advances by the beat's own duration read off `buildScript()`, which means every wait in the
+file is the script's real timing rather than a jump past it. The spec that walks all 42 beats
+checking text placement now asserts the line it expects on each one, computed from the script, so it
+is in step with the sequence rather than one beat behind it.
+
+**React commits a beat behind the clock**, and that is the thing to know before writing another of
+these: `cy.tick` schedules the commit rather than performing it, so `.then` and `.invoke` read the
+previous beat while `.should` retries into the right one. The first version of the no-scrubbing test
+captured beat 0's line and compared it against beat 2. Every step in the file settles on a retrying
+assertion before anything reads the DOM.
+
+9 specs became 14, and the file went from **33 seconds to 3**.
+
+Four of the five new ones are about the absence: the four keys do nothing, `arenaswap.ludicrous.rate`
+is never written, a stale `4` left over from review does not speed anything up, and `.ls-transport`
+does not exist while `.ls-skip` reads exactly what the locale file says. All four were confirmed
+failing with the controls put back.
+
+The stale-rate test was rewritten after passing for the wrong reason. It asserted the *second* line
+was not yet on screen a millisecond before its beat — which a 4× run also satisfies, six beats
+further on. It pins the line that should still be up instead.
+
+## The review prompt stops appearing on the loading screen — 2026-09-11
+
+Open the popup with the prompt eligible and "Enjoying ArenaSwap?" rendered underneath the spinner,
+before a single game had arrived. Under the red failure banner too, which is worse: a request for a
+five-star review directly beneath a notice that nothing loaded.
+
+Every section below `GameListHeader` is gated on `!isLoading`. The three banners between them are
+not, and two of them only look like they are:
+
+- `suggestionCount` is derived from `games`, which is `[]` until the fetch lands.
+- `onStandbyStream` is `data?.onStandbyStream ?? false`, which is `false` until `data` exists.
+
+`showReviewPrompt` is the exception, and that is the whole bug. Eligibility is read out of
+`storage.local` in the popup's own init effect — a read with nothing to do with the SWR fetch, which
+lands well before it. So it is the only banner here that can be true while the spinner is up.
+
+The gate goes in `mainView` rather than in `shouldShowReviewPrompt`, which is unit-tested on its own
+and should keep answering the question it is named for: whether the user has earned the prompt, not
+whether the list has finished loading.
+
+### Coverage
+
+2 component tests, both confirmed failing against the old gate. Each asserts the spinner or the
+error banner is **present** as well as the banner being absent — an absence test against a state the
+component never reaches passes whether or not the gate exists, which this changelog has recorded
+catching once before.
+
 ## The stylesheets stop using @import, and two dead overrides fall out — 2026-09-11
 
 All 21 of our own `@import` rules are `@use` and `@forward` now, so the four entry stylesheets

@@ -1,6 +1,6 @@
 import { i18n } from '#i18n';
 import { randomInRange } from '@porkyproductions/hat';
-import { fetchGamesWithLeagueLogos, fetchWinProbability, computePowerScore, isWithinFinalRetention, computeScoringOpportunityBoost, isPlayFrozen, normalizePowerScoreResult, scoreMaxTotal, MockGameSimulator, createPollModeTracker, isObjectRecord, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts, computeLeagueIntervalMs, pollWinProbabilityMs as winProbPollIntervalMs, logWarn, logError, postseasonBoostShare } from '@arenaswap/core';
+import { fetchGamesWithLeagueLogos, fetchWinProbability, computePowerScore, isWithinFinalRetention, computeScoringOpportunityBoost, isPlayFrozen, normalizePowerScoreResult, scoreMaxTotal, MockGameSimulator, createPollModeTracker, isObjectRecord, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts, computeLeagueIntervalMs, computeHebetudinousIntervalMs, earliestUpcomingStartMs, fetchNextScheduledStart, pollWinProbabilityMs as winProbPollIntervalMs, logWarn, logError, postseasonBoostShare } from '@arenaswap/core';
 import { computeStandbyStreamDecision } from '../utils/standbyStreamLogic';
 import { loadStoredUserPreferences } from '../utils/prefsStorage';
 import {
@@ -748,17 +748,37 @@ export default defineBackground(() => {
 			games = [...otherGames, ...fetchResult.games, ...leagueUpcoming, ...retainedFinals];
 			leagueLogos = { ...leagueLogos, ...fetchResult.leagueLogos };
 			const hasLiveGames = fetchResult.games.some(g => g.status === 'in');
-			pollModeTracker.recordPollResult(leagueId, hasLiveGames);
+			// Read off the merged list rather than the response: the dateless scoreboard carries
+			// today's scheduled games, and with Up Next on the slate contributes the rest of the week
+			// for free. Either way a kickoff found here is one the lookahead below does not have to
+			// spend a request on.
+			const nextStartMs = earliestUpcomingStartMs(games.filter(g => g.league === leagueId));
+			pollModeTracker.recordPollResult(leagueId, hasLiveGames, nextStartMs);
 			fetchSucceeded = true;
 		} catch (err) {
 			logWarn(`Failed to fetch ${leagueId} games.`, err);
 		}
 
-		// Reschedule before awaiting post-processing so the next tick is always queued, and skip
-		// leagues that were disabled while this fetch was in flight.
+		// Reschedule before awaiting the scoring pass so the next tick is always queued, and skip
+		// leagues that were disabled while this fetch was in flight. The lookahead is the one thing
+		// allowed to hold it up, because its answer is what the interval below is chosen from.
 		if (!demoMode && prefs.enabledLeagues.includes(leagueId)) {
+			// Only ever on the way into a quiet state, and only when nothing already held answers it.
+			// One request buys the right to skip dozens, so it is cheaper than the dormant beat it
+			// replaces; a failure leaves the league dormant, which is the faster of the two.
+			if (fetchSucceeded && pollModeTracker.needsLookahead(leagueId)) {
+				try {
+					pollModeTracker.recordLookahead(leagueId, await fetchNextScheduledStart(leagueId));
+				} catch (err) {
+					logWarn(`Failed to look ahead for ${leagueId}.`, err);
+				}
+			}
+
+			const mode = pollModeTracker.getMode(leagueId);
 			let nextInterval: number;
-			if (fetchSucceeded && pollModeTracker.getMode(leagueId) === 'dormant') {
+			if (fetchSucceeded && mode === 'hebetudinous') {
+				nextInterval = computeHebetudinousIntervalMs(pollModeTracker.getNextStartMs(leagueId) ?? null);
+			} else if (fetchSucceeded && mode === 'dormant') {
 				nextInterval = pollDormantMinMs + randomInRange(0, pollDormantMaxMs - pollDormantMinMs);
 			} else if (fetchSucceeded) {
 				const liveLeagueGames = games.filter(g => g.league === leagueId && g.status === 'in');

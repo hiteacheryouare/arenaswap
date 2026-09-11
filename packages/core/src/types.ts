@@ -276,7 +276,7 @@ export interface GetDebugStateMessage {
 }
 
 export interface DebugState {
-	pollModes: Record<string, 'eager' | 'dormant'>;
+	pollModes: Record<string, 'eager' | 'dormant' | 'hebetudinous'>;
 	leagueIntervals: Record<string, number>;
 	demoMode: boolean;
 	lastSwitchTime: number;

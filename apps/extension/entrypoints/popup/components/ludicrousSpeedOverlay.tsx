@@ -6,32 +6,7 @@ import { preloadLogoImages } from './ludicrousLeagueLogos';
 import { cockpitBrakeRect } from './ludicrousCockpit';
 import LudicrousStage from './ludicrousStage';
 
-/* PROPOSAL SCAFFOLDING — the transport keys and the playback rate below come out once the sequence
-   is signed off. localStorage is used rather than the preference store so that nothing about this
-   survives deleting the two helpers. */
-const rateStorageKey = 'arenaswap.ludicrous.rate';
-
-const readRate = (): number => {
-	try {
-		return window.localStorage.getItem(rateStorageKey) === '4' ? 4 : 1;
-	} catch {
-		return 1;
-	}
-};
-
-const writeRate = (value: number): void => {
-	try {
-		window.localStorage.setItem(rateStorageKey, String(value));
-	} catch {
-		// Private-mode storage denial is not worth failing an easter egg over.
-	}
-};
-
 export default ({ onClose }: { onClose: () => void }) => {
-	const [rate, setRate] = useState(readRate);
-	const rateRef = useRef(rate);
-	useEffect(() => { rateRef.current = rate; }, [rate]);
-
 	const script = useMemo(buildScript, []);
 	const logoImages = useMemo(preloadLogoImages, []);
 
@@ -45,7 +20,6 @@ export default ({ onClose }: { onClose: () => void }) => {
 	const [closing, setClosing] = useState(false);
 	const [size, setSize] = useState<{ w: number; h: number } | null>(null);
 
-	const beatIndexRef = useRef(0);
 	const beatTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 	const manualTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 	const finishedRef = useRef(false);
@@ -80,8 +54,7 @@ export default ({ onClose }: { onClose: () => void }) => {
 		if (beat.brake) setBrakeState(beat.brake);
 		logosRef.current = Boolean(beat.logos);
 
-		beatIndexRef.current = index + 1;
-		beatTimerRef.current = setTimeout(() => runBeat(index + 1), beat.ms / rateRef.current);
+		beatTimerRef.current = setTimeout(() => runBeat(index + 1), beat.ms);
 	}, [script]);
 
 	useEffect(() => {
@@ -98,16 +71,6 @@ export default ({ onClose }: { onClose: () => void }) => {
 		return () => clearTimeout(t);
 	}, [closing, onClose]);
 
-	const jump = useCallback((toNextPhase: boolean) => {
-		if (finishedRef.current) return;
-		clearTimeout(beatTimerRef.current);
-		let index = beatIndexRef.current;
-		if (toNextPhase) {
-			while (index < script.length && !script[index]!.phase && !script[index]!.end) index += 1;
-		}
-		runBeat(Math.min(index, script.length - 1));
-	}, [runBeat, script]);
-
 	const handleSkip = useCallback(() => finish(true), [finish]);
 
 	const handleEmergencyBrake = useCallback((e: React.MouseEvent) => {
@@ -117,31 +80,12 @@ export default ({ onClose }: { onClose: () => void }) => {
 		manualTimersRef.current.push(setTimeout(() => finish(false), 500));
 	}, [brakeState, finish]);
 
+	// The overlay is role='button', so these are the click rather than controls of their own.
 	const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-		if (e.key === 'Enter' || e.key === ' ') {
-			e.preventDefault();
-			handleSkip();
-			return;
-		}
-		if (e.key === 'ArrowRight') {
-			e.preventDefault();
-			jump(false);
-			return;
-		}
-		if (e.key === 'ArrowDown' || e.key === 'n') {
-			e.preventDefault();
-			jump(true);
-			return;
-		}
-		if (e.key === 'f') {
-			e.preventDefault();
-			setRate(prev => {
-				const next = prev === 1 ? 4 : 1;
-				writeRate(next);
-				return next;
-			});
-		}
-	}, [handleSkip, jump]);
+		if (e.key !== 'Enter' && e.key !== ' ') return;
+		e.preventDefault();
+		handleSkip();
+	}, [handleSkip]);
 
 	const handleMeasure = useCallback((w: number, h: number) => setSize({ w, h }), []);
 
@@ -169,7 +113,6 @@ export default ({ onClose }: { onClose: () => void }) => {
 				phaseRef={phaseRef}
 				speedRef={speedRef}
 				logosRef={logosRef}
-				rateRef={rateRef}
 				brakeArmed={brakeState !== 'hidden'}
 				brakePulled={brakeState === 'pressed'}
 				logoImages={logoImages}
@@ -185,10 +128,7 @@ export default ({ onClose }: { onClose: () => void }) => {
 					{i18n.t('ludicrousSpeed.emergencyBrake')}
 				</button>
 			)}
-			<div className='ls-skip'>
-				{i18n.t('ludicrousSpeed.skip')}
-				<span className='ls-transport'>{rate === 4 ? ' · → next · n phase · f 4×' : ' · → next · n phase · f fast'}</span>
-			</div>
+			<div className='ls-skip'>{i18n.t('ludicrousSpeed.skip')}</div>
 		</div>,
 		document.body,
 	);

@@ -84,6 +84,31 @@ export const pollDormantThresholdPolls = 2;
 export const pollDormantMinMs = 120_000;
 export const pollDormantMaxMs = 180_000;
 
+/* Below dormant sits hebetudinous, for a league with nothing coming at all. Dormant cannot tell an
+   MLB slate quiet in January with nothing for nine weeks from one quiet between games, because the
+   dateless scoreboard it polls only carries the current Eastern day — so both poll at the same 2-3
+   minutes forever, which in an offseason is ~576 requests a day per league to be told nothing is
+   happening.
+
+   The horizon is the gap that has to exist before a league is allowed to sleep, and it is a full
+   day: a league with a game on today's card is having a day, whatever hour you happen to open the
+   popup in, and dropping to half-hourly polling at noon because first pitch is at seven is not the
+   saving this is for. A league sleeps until it is within a day of the next start it knows about,
+   then hands back to the dormant beat.
+
+   Practically that means hebetudinous only engages in a real gap — an offseason, a break, an All-Star
+   weekend — which is the only place the ~576 was ever worth reclaiming. Everything the poll finds on
+   its own payload is inside the horizon by definition, so those leagues stay dormant and the
+   lookahead only decides leagues whose card is empty. */
+export const pollHebetudinousHorizonMs = 24 * 60 * 60 * 1000;
+export const pollHebetudinousMaxMs = 30 * 60 * 1000;
+
+// How far ahead a lookahead reaches, and how long its answer is trusted before being asked again.
+// The window has to clear the horizon with room to spare, or "nothing found" would mean "nothing
+// inside the horizon" and every league would sleep.
+export const pollLookaheadDays = 7;
+export const pollLookaheadTtlMs = 6 * 60 * 60 * 1000;
+
 // The interval scales continuously with PowerScore: high scores approach pollMinEagerMs, low
 // scores pollMaxEagerMs. Every live game is polled at least every pollMaxEagerMs so a boring one
 // can still catch a momentum shift. pollIntervalMs remains the stagger, demo and fallback value.

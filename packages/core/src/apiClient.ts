@@ -1,4 +1,4 @@
-import { isWithinFinalRetention, leagueConfigMap, resolveLeagueLogoUrl } from './constants';
+import { isWithinFinalRetention, leagueConfigMap, pollLookaheadDays, resolveLeagueLogoUrl } from './constants';
 import { gradePostseason } from './postseasonRound';
 import {
 	EspnSummarySchema,
@@ -574,6 +574,14 @@ const fetchScoreboard = async (url: string, leagueId: LeagueId): Promise<EspnSco
 	return parsed;
 };
 
+// Required for reliable coverage and to avoid 404s on date-range queries.
+const scoreboardParams = (config: LeagueConfig): URLSearchParams => {
+	const params = new URLSearchParams();
+	if (config.id === 'ncaab') params.set('groups', '50');
+	if (config.id === 'ncaaw') params.set('groups', '49');
+	return params;
+};
+
 const fetchLeagueGames = async (config: LeagueConfig, options: LeagueFetchOptions = {}): Promise<LeagueGamesResult> => {
 	const { includeUpcoming = true, upcomingDays = 7, includeFinal = false } = options;
 	// Declared once so both paths below cannot disagree about which games survive. A final game is
@@ -584,10 +592,7 @@ const fetchLeagueGames = async (config: LeagueConfig, options: LeagueFetchOption
 		if (game.status !== 'post') return true;
 		return includeFinal && isWithinFinalRetention(game);
 	};
-	const baseParams = new URLSearchParams();
-	// Required for reliable coverage and to avoid 404s on date-range queries.
-	if (config.id === 'ncaab') baseParams.set('groups', '50');
-	if (config.id === 'ncaaw') baseParams.set('groups', '49');
+	const baseParams = scoreboardParams(config);
 
 	const scoreboardUrl = `${espnBase}/${config.espnPath}/scoreboard`;
 	const baseQuery = baseParams.toString();
@@ -662,6 +667,35 @@ export const fetchGamesWithLeagueLogos = async (enabledLeagues: LeagueId[], opti
 		return acc;
 	}, {});
 	return { games, leagueLogos };
+};
+
+/* When the next kickoff a league carries is asked for and the answer matters more than the games
+   themselves. One ranged request rather than the two `fetchLeagueGames` makes, and it reads `date`
+   off the envelope rather than parsing every event, because nothing here needs a scoreboard.
+
+   `null` is a real answer — nothing scheduled inside the window — and is what puts a league to
+   sleep, so a failure throws rather than returning it. */
+export const fetchNextScheduledStart = async (
+	leagueId: LeagueId,
+	options: { days?: number; now?: Date } = {},
+): Promise<number | null> => {
+	const config = leagueConfigMap[leagueId];
+	if (!config) return null;
+	const { days = pollLookaheadDays, now = new Date() } = options;
+
+	const params = scoreboardParams(config);
+	params.set('dates', buildUpcomingDatesRangeQuery(days, now));
+	const result = await fetchScoreboard(`${espnBase}/${config.espnPath}/scoreboard?${params.toString()}`, leagueId);
+
+	const nowMs = now.getTime();
+	let earliest: number | null = null;
+	for (const event of result?.events ?? []) {
+		if (!event.date) continue;
+		const startMs = new Date(event.date).getTime();
+		if (!Number.isFinite(startMs) || startMs <= nowMs) continue;
+		if (earliest === null || startMs < earliest) earliest = startMs;
+	}
+	return earliest;
 };
 
 export const fetchGames = async (enabledLeagues: LeagueId[]): Promise<Game[]> => {

@@ -1,6 +1,6 @@
-export { fetchGames, fetchLiveGames, fetchLeagueLogos, fetchGamesWithLeagueLogos, fetchTeamsForLeagues, fetchWinProbability } from './apiClient';
+export { fetchGames, fetchLiveGames, fetchLeagueLogos, fetchGamesWithLeagueLogos, fetchNextScheduledStart, fetchTeamsForLeagues, fetchWinProbability } from './apiClient';
 export { logWarn, logError, setVerboseLogging, isVerboseLogging } from './logger';
-export { computeEagerIntervalMs, computeLeagueIntervalMs, pollWinProbabilityMs } from './pollIntervalComputer';
+export { computeEagerIntervalMs, computeHebetudinousIntervalMs, computeLeagueIntervalMs, earliestUpcomingStartMs, pollWinProbabilityMs } from './pollIntervalComputer';
 export type { EspnTeamEntry } from './apiClient';
 export { computePowerScore, computeScoringOpportunityBoost, computeWinProbVarianceScore, isPlayFrozen, normalizePowerScoreResult } from 'powerscore';
 export { scoreMaxTotal } from 'powerscore';

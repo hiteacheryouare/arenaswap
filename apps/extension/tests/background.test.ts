@@ -1,5 +1,5 @@
 import { pollWinProbabilityMs } from '@arenaswap/core';
-import { createDefaultUserPreferences, createFavoriteTeamKey, historyWindowMs, normalizeUserPreferences, pollIntervalMs } from '@arenaswap/core/constants';
+import { createDefaultUserPreferences, createFavoriteTeamKey, historyWindowMs, normalizeUserPreferences, pollDormantMaxMs, pollHebetudinousMaxMs, pollIntervalMs, pollMaxEagerMs } from '@arenaswap/core/constants';
 import { chartHistory, coversWholeGame } from '../entrypoints/popup/components/wrapCoverage';
 import type { Game, LeagueId, TabRegistration, UserPreferences } from '@arenaswap/core/types';
 import { prefsStorageUpdatedAtKey } from '../utils/prefsStorage';
@@ -12,10 +12,18 @@ jest.mock('@porkyproductions/hat', () => ({
 jest.mock('@arenaswap/core', () => ({
 	...jest.requireActual('@arenaswap/core'),
 	fetchGamesWithLeagueLogos: jest.fn(),
+	fetchNextScheduledStart: jest.fn().mockResolvedValue(null),
 	fetchWinProbability: jest.fn().mockResolvedValue([]),
 }));
 
 const flushPromises = () => new Promise<void>(r => setImmediate(r));
+
+// `loadBackground` resets the module registry, so the mock the background calls is a fresh instance
+// on every load — one captured at spec load is a different function object and would record none of
+// its calls. Read through the registry the same way `fetchMock` is.
+const lookahead = (): jest.Mock => (
+	(require('@arenaswap/core') as { fetchNextScheduledStart: jest.Mock }).fetchNextScheduledStart
+);
 
 // Multiple rounds because each resolved promise can schedule new microtasks.
 const drain = async (rounds = 8) => {
@@ -1348,5 +1356,171 @@ describe('the history a wrap screen reads', () => {
 		const lateStart = { timestamp: startMs + (basketballAllowanceMs * 0.5) };
 		const lateEnd = { timestamp: startMs + (basketballAllowanceMs * 0.95) };
 		expect(coversWholeGame([lateStart, lateEnd], finishedGame, startMs + basketballAllowanceMs)).toBe(false);
+	});
+});
+
+/* Dormant cannot tell a league quiet with a tip-off tonight from one quiet with nothing for nine
+   weeks, because the dateless scoreboard it polls only carries the current Eastern day. These drive
+   the real `tickLeague` rather than GET_STATE's forceRefresh, which routes through `tick()` and
+   never reschedules anything. */
+describe('polling a league with nothing on', () => {
+	const nbaOnly = { enabledLeagues: ['nba' as LeagueId] };
+	const emptySlate = { games: [], leagueLogos: {} };
+
+	const debugState = async () => await sendMessage({ type: 'GET_DEBUG_STATE' }) as {
+		pollModes: Record<string, string>;
+		leagueIntervals: Record<string, number>;
+	};
+
+	// Steps forward until a poll actually lands, so nothing below can pass by virtue of no poll
+	// having run at all. The interval under test is the thing being chosen, so it is never assumed.
+	const pollOnce = async (limitMs = 10 * 60_000) => {
+		fetchMock.mockClear();
+		for (let waited = 0; waited < limitMs && fetchMock.mock.calls.length === 0; waited += 5_000) {
+			jest.advanceTimersByTime(5_000);
+			await drain();
+		}
+		expect(fetchMock).toHaveBeenCalled();
+	};
+
+	// Two empty polls is the dormant threshold, and the second is where the lookahead is spent.
+	const goQuiet = async () => {
+		await pollOnce();
+		await pollOnce();
+	};
+
+	const liveGame: Game = {
+		id: 'live', league: 'nba' as LeagueId, sportType: 'basketball', status: 'in',
+		period: 3, clockSeconds: 400,
+		homeTeam: { id: 'h', name: 'Home', abbreviation: 'HOM', score: 77 },
+		awayTeam: { id: 'a', name: 'Away', abbreviation: 'AWY', score: 75 },
+	};
+
+	const scheduledGame = (startMs: number): Game => ({
+		...liveGame, id: 'tonight', status: 'pre', period: 1, clockSeconds: 0,
+		startTime: new Date(startMs).toISOString(),
+		homeTeam: { ...liveGame.homeTeam, score: 0 },
+		awayTeam: { ...liveGame.awayTeam, score: 0 },
+	});
+
+	const startMs = Date.UTC(2026, 0, 14, 17, 0, 0);
+
+	test('an offseason league sleeps at the ceiling instead of polling every three minutes', async () => {
+		await loadBackground({ prefs: nbaOnly, initialSystemTime: startMs, fetchReturnValue: emptySlate });
+		await goQuiet();
+
+		const state = await debugState();
+		expect(state.pollModes.nba).toBe('hebetudinous');
+		expect(state.leagueIntervals.nba).toBe(pollHebetudinousMaxMs);
+	});
+
+	// The interval is the claim; this is the behaviour. Dormant would have polled ten times by the
+	// first assertion below.
+	test('and genuinely does not poll again until the ceiling is up', async () => {
+		await loadBackground({ prefs: nbaOnly, initialSystemTime: startMs, fetchReturnValue: emptySlate });
+		await goQuiet();
+
+		fetchMock.mockClear();
+		jest.advanceTimersByTime(pollHebetudinousMaxMs - 60_000);
+		await drain();
+		expect(fetchMock).not.toHaveBeenCalled();
+
+		jest.advanceTimersByTime(120_000);
+		await drain();
+		expect(fetchMock).toHaveBeenCalled();
+	});
+
+	test('a league with a tip-off tonight stays on the dormant beat', async () => {
+		await loadBackground({ prefs: nbaOnly, initialSystemTime: startMs, fetchReturnValue: emptySlate });
+		lookahead().mockResolvedValue(startMs + 45 * 60_000);
+		await goQuiet();
+
+		const state = await debugState();
+		expect(state.pollModes.nba).toBe('dormant');
+		expect(state.leagueIntervals.nba).toBe(pollDormantMaxMs);
+	});
+
+	// The whole economy of the feature: one request has to buy the right to skip dozens, so it must
+	// not be spent on every tick the way the poll it replaces was.
+	test('the lookahead is spent once on the way in, not on every tick', async () => {
+		await loadBackground({ prefs: nbaOnly, initialSystemTime: startMs, fetchReturnValue: emptySlate });
+		await goQuiet();
+		expect(lookahead()).toHaveBeenCalledTimes(1);
+		expect(lookahead()).toHaveBeenCalledWith('nba');
+
+		await pollOnce(pollHebetudinousMaxMs + 60_000);
+		await pollOnce(pollHebetudinousMaxMs + 60_000);
+		expect(lookahead()).toHaveBeenCalledTimes(1);
+	});
+
+	/* The report this was reopened on: MLB sat in hebetudinous at midday with first pitch at seven.
+	   A league with a game on today's card is having a day whatever hour the popup is opened in, so
+	   it stays on the dormant beat however far off the first pitch is. Driven off the poll's own
+	   payload, which is where a real slate's kickoff comes from. */
+	test('a game later today keeps the league dormant, however many hours off it is', async () => {
+		const hours = [1, 5, 19];
+		const seen: { hoursOut: number; mode: string; intervalMs: number }[] = [];
+		for (const hoursOut of hours) {
+			await loadBackground({
+				prefs: nbaOnly,
+				initialSystemTime: startMs,
+				fetchReturnValue: { games: [scheduledGame(startMs + hoursOut * 60 * 60_000)], leagueLogos: {} },
+			});
+			await goQuiet();
+
+			const state = await debugState();
+			seen.push({ hoursOut, mode: state.pollModes.nba!, intervalMs: state.leagueIntervals.nba! });
+		}
+		// Collected rather than asserted in the loop so a failure names the hour that broke.
+		expect(seen).toEqual(hours.map(hoursOut => ({ hoursOut, mode: 'dormant', intervalMs: pollDormantMaxMs })));
+	});
+
+	// Today's card comes back on the poll's own payload, so a league with a game later today has
+	// already answered the question and the request is never made.
+	test('a kickoff the poll itself carried costs no lookahead at all', async () => {
+		await loadBackground({
+			prefs: nbaOnly,
+			initialSystemTime: startMs,
+			fetchReturnValue: { games: [scheduledGame(startMs + 6 * 60 * 60_000)], leagueLogos: {} },
+		});
+		await goQuiet();
+
+		expect(lookahead()).not.toHaveBeenCalled();
+	});
+
+	// The other half of the same rule: a lookahead that comes back with tomorrow's game is still
+	// inside the horizon, so an empty card today is not on its own enough to sleep.
+	test('an empty card with a game tomorrow is dormant, not asleep', async () => {
+		await loadBackground({ prefs: nbaOnly, initialSystemTime: startMs, fetchReturnValue: emptySlate });
+		lookahead().mockResolvedValue(startMs + 20 * 60 * 60_000);
+		await goQuiet();
+
+		expect(lookahead()).toHaveBeenCalledTimes(1);
+		expect((await debugState()).pollModes.nba).toBe('dormant');
+	});
+
+	test('a game starting drops it straight back to eager', async () => {
+		await loadBackground({ prefs: nbaOnly, initialSystemTime: startMs, fetchReturnValue: emptySlate });
+		await goQuiet();
+		expect((await debugState()).pollModes.nba).toBe('hebetudinous');
+
+		fetchMock.mockResolvedValue({ games: [liveGame], leagueLogos: {} });
+		await pollOnce(pollHebetudinousMaxMs + 60_000);
+
+		const state = await debugState();
+		expect(state.pollModes.nba).toBe('eager');
+		expect(state.leagueIntervals.nba).toBeLessThanOrEqual(pollMaxEagerMs + 2_000);
+	});
+
+	// Failing to reach ESPN is not the same as ESPN saying nobody plays for two months, and the
+	// difference is 27 minutes of not looking.
+	test('a failed lookahead leaves the league dormant rather than asleep', async () => {
+		await loadBackground({ prefs: nbaOnly, initialSystemTime: startMs, fetchReturnValue: emptySlate });
+		lookahead().mockRejectedValue(new Error('503'));
+		await goQuiet();
+
+		const state = await debugState();
+		expect(state.pollModes.nba).toBe('dormant');
+		expect(state.leagueIntervals.nba).toBe(pollDormantMaxMs);
 	});
 });

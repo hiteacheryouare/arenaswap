@@ -288,11 +288,6 @@ button, input, select, optgroup, textarea {
 	}
 }
 
-.ls-transport {
-	display: block;
-	color: rgba(255, 255, 255, 0.22);
-}
-
 /* ── Per-view text placement ──────────────────────────────────────────────────
    The sequence cuts between three cameras and each frames the screen differently, so every text
    layer is placed against the view it actually appears in rather than being centred and hoped for.

@@ -175,6 +175,21 @@ describe('mainView review prompt', () => {
 		cy.mount(<MainView {...defaultProps} showReviewPrompt={true} />);
 		cy.get('[data-testid="review-prompt"]').should('exist');
 	});
+
+	// Eligibility comes out of storage.local rather than the fetch, so it is true well before the
+	// slate lands. Both selectors are asserted present as well as absent: an absence test against a
+	// state the component never reaches passes whether or not the gate exists.
+	it('stays off the loading screen', () => {
+		cy.mount(<MainView {...defaultProps} isLoading={true} showReviewPrompt={true} />);
+		cy.get('.popup-loading-spinner').should('exist');
+		cy.get('[data-testid="review-prompt"]').should('not.exist');
+	});
+
+	it('stays off the error banner', () => {
+		cy.mount(<MainView {...defaultProps} hasError={true} showReviewPrompt={true} />);
+		cy.get('.popup-error-banner').should('exist');
+		cy.get('[data-testid="review-prompt"]').should('not.exist');
+	});
 });
 
 describe('mainView pro tips', () => {
