@@ -61,6 +61,20 @@ describe('constants', () => {
 		});
 	});
 
+	// The whole feature hangs off this surviving a round trip through storage: the popup writes
+	// through normalizeUserPreferences and the background reads back through it, so a value this
+	// dropped would leave the setting looking set and doing nothing.
+	test('keeps a stored finished-tab choice', () => {
+		expect(normalizeUserPreferences({ finishedTabAction: 'close' }).finishedTabAction).toBe('close');
+		expect(normalizeUserPreferences({ finishedTabAction: 'free' }).finishedTabAction).toBe('free');
+	});
+
+	// 'keep' is the one value that touches nobody's tabs, so anything unrecognised lands there
+	// rather than on a setting that closes things.
+	test.each([undefined, null, 'CLOSE', 'remove', 7, {}])('falls back to keep for %p', value => {
+		expect(normalizeUserPreferences({ finishedTabAction: value }).finishedTabAction).toBe('keep');
+	});
+
 	test('normalizes invalid user preference input safely', () => {
 		expect(normalizeUserPreferences(null)).toEqual(createDefaultUserPreferences());
 
