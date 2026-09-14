@@ -203,6 +203,9 @@ export interface TeamMonoMarks {
 	black?: string;
 }
 
+// Team id to those marks, per league.
+export type TeamMonoLogoMap = Partial<Record<LeagueId, Record<string, TeamMonoMarks>>>;
+
 export type ScoreHistoryMap = Record<string, ScoreSnapshot[]>;
 
 export interface PowerScoreSnapshot {
@@ -297,6 +300,7 @@ export interface GetGuideSlateMessage {
 export interface GuideSlate {
 	games: Game[];
 	leagueLogos: LeagueLogoMap;
+	monoLogos: TeamMonoLogoMap;
 	gameBoosts: Record<string, number>;
 }
 

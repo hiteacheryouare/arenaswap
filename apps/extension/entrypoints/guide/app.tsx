@@ -1,6 +1,6 @@
 import { i18n } from '#i18n';
 import { createDefaultUserPreferences, isFavoriteTeamGame } from '@arenaswap/core/constants';
-import type { Game, GuideSlate, LeagueLogoMap, UserPreferences } from '@arenaswap/core/types';
+import type { Game, GuideSlate, LeagueLogoMap, TeamMonoLogoMap, UserPreferences } from '@arenaswap/core/types';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { browser } from 'wxt/browser';
 import { resolveDecorationDate } from '../../utils/holidayDecorations';
@@ -161,6 +161,7 @@ const App = () => {
 
 	const selectedGame = selectedGameId ? slate?.games.find(game => game.id === selectedGameId) : undefined;
 	const leagueLogos: LeagueLogoMap = slate?.leagueLogos ?? {};
+	const monoLogos: TeamMonoLogoMap = slate?.monoLogos ?? {};
 
 	return (
 		<div className='guide-page'>
@@ -205,7 +206,8 @@ const App = () => {
 					: <p className='guide-loading'>{i18n.t('guide.loading')}</p>
 			) : (
 				<div className='guide-scroller' ref={scrollerRef}>
-					<GuideGrid bars={bars} band={showBand ? band : null} leagueLogos={leagueLogos} now={showingToday ? now : null} onOpen={openGame} />
+					<GuideGrid bars={bars} band={showBand ? band : null} leagueLogos={leagueLogos}
+					monoLogos={monoLogos} now={showingToday ? now : null} onOpen={openGame} />
 				</div>
 			)}
 

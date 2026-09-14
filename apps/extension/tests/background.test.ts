@@ -1620,6 +1620,6 @@ describe('GET_GUIDE_SLATE', () => {
 		});
 		fetchMock.mockRejectedValue(new Error('503'));
 
-		await expect(guideSlate()).resolves.toEqual({ games: [], leagueLogos: {}, gameBoosts: {} });
+		await expect(guideSlate()).resolves.toEqual({ games: [], leagueLogos: {}, monoLogos: {}, gameBoosts: {} });
 	});
 });

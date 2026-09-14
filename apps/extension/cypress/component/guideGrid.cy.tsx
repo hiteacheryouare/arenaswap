@@ -184,11 +184,14 @@ describe('the guide grid', () => {
 
 	// A navy or black crest straight on #0d1117 is an empty box beside an abbreviation doing all the
 	// work, which is what the tinted disc exists for.
-	it('sits every crest on a disc, including the league mark', () => {
+	it('sits the league mark on a disc, and leaves a readable team crest bare', () => {
 		mountGrid(nflSunday());
+		// A team crest is drawn in its own colours with nothing behind it, and only takes the plate
+		// when its ink is measured as failing to stand off the bar. The league mark is always plated.
 		cy.get('.guide-bar').first().find('.guide-crest-disc').should('have.length', 2);
+		cy.get('.guide-bar').first().find('.guide-crest-disc.is-bare').should('have.length', 2);
 		cy.get('.guide-league-disc').should('have.length', 2);
-		cy.get('.guide-crest-disc').first().then(([disc]: JQuery<HTMLElement>) => {
+		cy.get('.guide-league-disc').first().then(([disc]: JQuery<HTMLElement>) => {
 			const backing = getComputedStyle(disc).backgroundColor;
 			expect(backing).to.not.equal('rgba(0, 0, 0, 0)');
 			const [r, g, b] = backing.match(/\d+/g)!.slice(0, 3).map(Number);

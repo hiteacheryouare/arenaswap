@@ -1,6 +1,6 @@
 import { i18n } from '#i18n';
 import { randomInRange } from '@porkyproductions/hat';
-import { fetchGamesWithLeagueLogos, fetchWinProbability, computePowerScore, isWithinFinalRetention, computeScoringOpportunityBoost, isPlayFrozen, normalizePowerScoreResult, scoreMaxTotal, MockGameSimulator, createPollModeTracker, isObjectRecord, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts, computeLeagueIntervalMs, computeHebetudinousIntervalMs, earliestUpcomingStartMs, fetchNextScheduledStart, pollWinProbabilityMs as winProbPollIntervalMs, logWarn, logError, postseasonBoostShare } from '@arenaswap/core';
+import { fetchGamesWithLeagueLogos, fetchTeamMonoLogos, fetchWinProbability, computePowerScore, isWithinFinalRetention, computeScoringOpportunityBoost, isPlayFrozen, normalizePowerScoreResult, scoreMaxTotal, MockGameSimulator, createPollModeTracker, isObjectRecord, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts, computeLeagueIntervalMs, computeHebetudinousIntervalMs, earliestUpcomingStartMs, fetchNextScheduledStart, pollWinProbabilityMs as winProbPollIntervalMs, logWarn, logError, postseasonBoostShare } from '@arenaswap/core';
 import { computeStandbyStreamDecision } from '../utils/standbyStreamLogic';
 import { loadStoredUserPreferences } from '../utils/prefsStorage';
 import {
@@ -32,6 +32,7 @@ import type {
 	PowerScoreResult,
 	PowerScoreSnapshot,
 	LeagueLogoMap,
+	TeamMonoLogoMap,
 	PowerScoreHistoryMap,
 	ScoreSnapshot,
 	ScoreHistoryMap,
@@ -146,6 +147,25 @@ export default defineBackground(() => {
 	let retainedFinalGames: Game[] = [];
 	let currentScores: PowerScoreResult[] = [];
 	let leagueLogos: LeagueLogoMap = {};
+	// ESPN's white team marks, which only `/teams` carries — the scoreboard has a single logo per
+	// competitor and no variants. Held for the guide, which is the one surface that draws a crest per
+	// game on a dark bar. Team artwork does not change on the scale of a browsing session, so this is
+	// fetched once per worker lifetime and per league rather than per guide open.
+	let monoLogos: TeamMonoLogoMap = {};
+	let monoLogoLeagues: string = '';
+
+	const ensureMonoLogos = async (leagueIds: LeagueId[]): Promise<TeamMonoLogoMap> => {
+		const key = leagueIds.toSorted().join(',');
+		if (key === monoLogoLeagues) return monoLogos;
+		try {
+			monoLogos = await fetchTeamMonoLogos(leagueIds);
+			monoLogoLeagues = key;
+		} catch (err) {
+			// A miss costs the guide nothing but the tinted disc it drew before.
+			logWarn('Failed to fetch team mono logos.', err);
+		}
+		return monoLogos;
+	};
 	const history = new Map<string, ScoreSnapshot[]>();
 	const powerScoreHistory = new Map<string, PowerScoreSnapshot[]>();
 	const clockStallMap = new Map<string, { lastClock: number; stallCount: number }>();
@@ -1067,7 +1087,7 @@ export default defineBackground(() => {
 		if (msg.type === 'GET_GUIDE_SLATE') {
 			return stateReady.then(async (): Promise<GuideSlate> => {
 				// Demo mode has no network behind it, so the simulator's own slate is the answer.
-				if (demoMode && simulator) return { games, leagueLogos, gameBoosts };
+				if (demoMode && simulator) return { games, leagueLogos, monoLogos: {}, gameBoosts };
 
 				// Deliberately bypasses both of refreshSlate's preference gates: the guide draws the
 				// whole day whatever the popup is configured to list. Equally deliberately it does not
@@ -1083,10 +1103,10 @@ export default defineBackground(() => {
 						upcomingDays: Math.max(prefs.upcomingGamesDays, guideMinUpcomingDays),
 						includeFinal: true,
 					});
-					return { ...result, gameBoosts };
+					return { ...result, monoLogos: await ensureMonoLogos(prefs.enabledLeagues), gameBoosts };
 				} catch (err) {
 					logWarn('Failed to fetch the guide slate.', err);
-					return { games: [], leagueLogos, gameBoosts };
+					return { games: [], leagueLogos, monoLogos, gameBoosts };
 				}
 			});
 		}

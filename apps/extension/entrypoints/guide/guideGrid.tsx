@@ -1,8 +1,9 @@
 import { i18n } from '#i18n';
 import { resolveLeagueLogoUrl } from '@arenaswap/core/constants';
-import type { Game, LeagueLogoMap } from '@arenaswap/core/types';
+import type { Game, LeagueLogoMap, TeamMonoLogoMap, TeamMonoMarks } from '@arenaswap/core/types';
 import { resolveTeamColorPair } from '@arenaswap/ui/src/components/colorUtils';
 import CrestDisc from '@arenaswap/ui/src/components/crestDisc';
+import TeamCrest from '@arenaswap/ui/src/components/teamCrest';
 import { leagueLabels } from '@arenaswap/ui/src/components/popupChrome';
 import type { CSSProperties } from 'react';
 import { formatGuideTime } from './guideFormat';
@@ -24,7 +25,10 @@ const bandBox = (band: guideBand, fromMs: number): CSSProperties => {
 	return { left: `${left}px`, width: `${Math.max(msToPx(band.toMs, fromMs) - left, 8)}px` };
 };
 
-const GuideBar = ({ bar, fromMs, onOpen }: { bar: guideBar; fromMs: number; onOpen: (gameId: string) => void }) => {
+// The bar is #21262d, which is what a crest drawn on it has to stand off.
+const guideBarSurface = '#21262d';
+
+const GuideBar = ({ bar, fromMs, onOpen, mono }: { bar: guideBar; fromMs: number; onOpen: (gameId: string) => void; mono?: Record<string, TeamMonoMarks> }) => {
 	const { game } = bar;
 	const left = msToPx(bar.startMs, fromMs);
 	const width = Math.max(msToPx(bar.endMs, fromMs) - left, 24);
@@ -46,10 +50,28 @@ const GuideBar = ({ bar, fromMs, onOpen }: { bar: guideBar; fromMs: number; onOp
 				    heartbeat; thirty of them down a grid is a flashing screen. */}
 				{game.status === 'in' && <span className='guide-bar-live' aria-label={i18n.t('gameCard.live')} role='img' />}
 				<span className='guide-bar-time'>{formatTime(bar.startMs)}</span>
-				<CrestDisc logo={game.awayTeam.logo} abbreviation={(game.awayTeam.abbreviation || '?').slice(0, 3)} discClassName='guide-crest-disc' crestClassName='guide-crest' fallback='blank' loading='lazy' />
+				<TeamCrest
+					logo={game.awayTeam.logo}
+					monoMarks={mono?.[game.awayTeam.id]}
+					abbreviation={(game.awayTeam.abbreviation || '?').slice(0, 3)}
+					background={guideBarSurface}
+					discClassName='guide-crest-disc'
+					crestClassName='guide-crest'
+					fallback='blank'
+					loading='lazy'
+				/>
 				<span className='guide-bar-team'>{game.awayTeam.abbreviation}</span>
 				<span className='guide-bar-at'>{i18n.t('guide.at')}</span>
-				<CrestDisc logo={game.homeTeam.logo} abbreviation={(game.homeTeam.abbreviation || '?').slice(0, 3)} discClassName='guide-crest-disc' crestClassName='guide-crest' fallback='blank' loading='lazy' />
+				<TeamCrest
+					logo={game.homeTeam.logo}
+					monoMarks={mono?.[game.homeTeam.id]}
+					abbreviation={(game.homeTeam.abbreviation || '?').slice(0, 3)}
+					background={guideBarSurface}
+					discClassName='guide-crest-disc'
+					crestClassName='guide-crest'
+					fallback='blank'
+					loading='lazy'
+				/>
 				<span className='guide-bar-team'>{game.homeTeam.abbreviation}</span>
 				{bar.isFavorite && <i className='bi bi-star-fill guide-bar-star' aria-label={i18n.t('guide.favoriteGame')} />}
 			</span>
@@ -61,12 +83,15 @@ const GuideGrid = ({
 	bars,
 	band,
 	leagueLogos,
+	monoLogos = {},
 	now,
 	onOpen,
 }: {
 	bars: guideBar[];
 	band: guideBand | null;
 	leagueLogos: LeagueLogoMap;
+	// Optional: a slate fetched before the team marks land, or a demo slate, simply draws the disc.
+	monoLogos?: TeamMonoLogoMap;
 	// Null on any day but today, which has no present moment to mark.
 	now: number | null;
 	onOpen: (gameId: string) => void;
@@ -131,7 +156,7 @@ const GuideGrid = ({
 						<div className='guide-group-rows'>
 							{group.bars.map(bar => (
 								<div key={bar.game.id} className='guide-row' style={{ height: `${rowHeight}px` }}>
-									<GuideBar bar={bar} fromMs={fromMs} onOpen={onOpen} />
+									<GuideBar bar={bar} fromMs={fromMs} onOpen={onOpen} mono={monoLogos[group.league]} />
 								</div>
 							))}
 						</div>

@@ -500,6 +500,12 @@ $guide-ruler-height: 32px;
 	box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.25);
 }
 
+// Bare when the crest carries itself — the plate only ever existed for the ones that do not.
+.guide-crest-disc.is-bare {
+	background: none;
+	box-shadow: none;
+}
+
 .guide-crest {
 	width: 0.85rem;
 	height: 0.85rem;

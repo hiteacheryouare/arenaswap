@@ -273,7 +273,13 @@ const EspnTeamsRowSchema = zod.object({
 		id: zod.string(),
 		displayName: zod.string(),
 		abbreviation: zod.string().optional(),
-		logos: zod.array(zod.object({ href: zod.string() })).optional(),
+		// `rel` names the variant — `default`, `dark`, `primary_logo_white` and a dozen more. Zod
+		// strips what a schema does not declare, so leaving it off made every variant look alike and
+		// there was no way to ask for the white one.
+		logos: zod.array(zod.object({
+			href: zod.string(),
+			rel: zod.array(zod.string()).optional(),
+		})).optional(),
 	}),
 });
 
