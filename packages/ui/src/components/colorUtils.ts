@@ -105,13 +105,44 @@ const clashThreshold = 65;
 
 const isUsable = (hex: string): boolean => { const l = luminance(hex); return l >= 0.03 && l <= 0.95; };
 
+// Within a hair of pure black or pure white. `12` is the threshold `hasHue` already uses, and it is
+// deliberately tight rather than luminance-based: the Yankees' #0C2340 is dark enough that a
+// luminance test calls it unreadable, and it is still a navy rather than ink.
+const isInk = (hex: string): boolean => {
+	const rgb = hexToRgb(hex);
+	if (!rgb) return false;
+	const channels = [rgb.red, rgb.green, rgb.blue];
+	return channels.every(channel => channel <= 12) || channels.every(channel => channel >= 245);
+};
+
+const inkPair = (away: string, home: string): boolean => isInk(away) && isInk(home);
+
+// Every candidate below is a colour one of the two teams published, or the caller's own fallback for
+// a team that published none. Nothing here lightens, darkens or otherwise invents a colour.
 const pickPair = (ap: string, aa: string, hp: string, ha: string): [string, string] => {
-	if (colorDistance(ap, hp) >= clashThreshold) return [ap, hp];
+	if (colorDistance(ap, hp) >= clashThreshold && !inkPair(ap, hp)) return [ap, hp];
+
 	const candidates: [string, string][] = [[ap, ha], [aa, hp], [aa, ha]];
-	const usable = candidates.filter(([a, h]) => isUsable(a) && isUsable(h));
-	const pool = usable.length > 0 ? usable : candidates;
-	const best = pool.reduce((b, c) => colorDistance(c[0], c[1]) > colorDistance(b[0], b[1]) ? c : b);
-	return colorDistance(best[0], best[1]) > colorDistance(ap, hp) ? best : [ap, hp];
+	const farthest = (pool: [string, string][]): [string, string] => pool.reduce(
+		(best, candidate) => colorDistance(candidate[0], candidate[1]) > colorDistance(best[0], best[1]) ? candidate : best,
+	);
+
+	const usable = candidates.filter(([away, home]) => isUsable(away) && isUsable(home));
+	if (usable.length > 0) {
+		const best = farthest(usable);
+		return colorDistance(best[0], best[1]) > colorDistance(ap, hp) ? best : [ap, hp];
+	}
+
+	// No substitution is readable on both sides. Ranking the *unfiltered* candidates by distance is
+	// what this used to do, and that objective has exactly one global optimum: black against white is
+	// 441.7 apart, the largest distance RGB contains, so it won by construction. Baltimore publish a
+	// purple and Indianapolis a navy, and the card drew ink.
+	//
+	// So the teams' own primaries stand — unless they are themselves ink on both sides, in which case
+	// any published combination that is not is worth more than the pair being maximally far apart.
+	if (!inkPair(ap, hp)) return [ap, hp];
+	const notInk = candidates.filter(([away, home]) => !inkPair(away, home));
+	return notInk.length > 0 ? farthest(notInk) : [ap, hp];
 };
 
 // White on a team colour is fine for the navies and reds and unreadable on a gold. 0.1833 is where
@@ -166,4 +197,20 @@ export const resolveTeamColorPair = (
 	return lighten
 		? [resolveReadableSeriesColor(a, awayFallback), resolveReadableSeriesColor(h, homeFallback)]
 		: [a, h];
+};
+
+// The alpha the hero's scrim sits at where the crests are — the gradient ramps 0.18 to 0.52 down the
+// block and the crests are in its upper third.
+const heroScrimAlpha = 0.28;
+const heroScrimColor = { red: 3, green: 7, blue: 12 };
+
+// A team colour as it actually appears under the hero's scrim, which is the surface a crest drawn on
+// that hero has to stand off — not the published colour, which is a good deal lighter.
+export const underHeroScrim = (color: string): string => {
+	const rgb = hexToRgb(color);
+	if (!rgb) return '#0d1117';
+	const mix = (ink: number, over: number): string => (
+		Math.round(ink + (over - ink) * heroScrimAlpha).toString(16).padStart(2, '0')
+	);
+	return `#${mix(rgb.red, heroScrimColor.red)}${mix(rgb.green, heroScrimColor.green)}${mix(rgb.blue, heroScrimColor.blue)}`;
 };

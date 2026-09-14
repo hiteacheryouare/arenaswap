@@ -8,19 +8,22 @@ import FootballFieldStrip from './footballFieldStrip';
 import InningHalfIcon from './inningHalfIcon';
 import SeriesDots from './seriesDots';
 import StartCountdownDisplay from './startCountdownDisplay';
-import { emptyTeamRecords, type SeriesInfo, type TeamRecords } from './useSummaryData';
+import { emptyTeamRecords, type MonoLogos, type SeriesInfo, type TeamRecords } from './useSummaryData';
 
 interface detailHeroProps {
 	game: Game;
 	seriesInfo: SeriesInfo | null;
 	records?: TeamRecords;
+	monoLogos: MonoLogos;
 	isDelayed: boolean;
 	isInningSport: boolean;
 	statusText: string;
 	heroStyle: React.CSSProperties;
+	awayColor: string;
+	homeColor: string;
 }
 
-const detailHero = ({ game, seriesInfo, records = emptyTeamRecords, isDelayed, isInningSport, statusText, heroStyle }: detailHeroProps) => {
+const detailHero = ({ game, seriesInfo, records = emptyTeamRecords, monoLogos, isDelayed, isInningSport, statusText, heroStyle, awayColor, homeColor }: detailHeroProps) => {
 	const isPre = game.status === 'pre';
 	// The list card carries this line itself; on the detail screen it is the field strip's caption,
 	// and it is the only place the down, the distance and the yard marker appear as words.
@@ -40,9 +43,13 @@ const detailHero = ({ game, seriesInfo, records = emptyTeamRecords, isDelayed, i
 	);
 
 	return (
-		<div className={`game-card game-detail-matchup gd-hero${isDelayed ? ' is-delayed' : ''}`} style={heroStyle}>
+		// `gd-poster` is the surface rather than the pre-game screen: the same scrimmed band of team
+		// colour carries the live and final heroes now, so the three states read as one screen. The
+		// white `.game-card` plate is gone with it, and `gd-hero-live` is what the stylesheet hangs
+		// the re-toning on — every child of this hero was drawn for near-black ink on white.
+		<div className={`gd-poster game-detail-matchup gd-hero gd-hero-live${isDelayed ? ' is-delayed' : ''}`} style={heroStyle}>
 			<div className='game-detail-teams-row'>
-				<DetailTeamPill team={game.awayTeam} side='away' record={records.away} />
+				<DetailTeamPill team={game.awayTeam} side='away' record={records.away} monoMarks={monoLogos.away} color={awayColor} />
 				<div className='game-detail-center'>
 					{isPre ? (
 						<div className='gd-vs'>{i18n.t('gameCard.vs')}</div>
@@ -57,7 +64,7 @@ const detailHero = ({ game, seriesInfo, records = emptyTeamRecords, isDelayed, i
 						</div>
 					)}
 				</div>
-				<DetailTeamPill team={game.homeTeam} side='home' record={records.home} />
+				<DetailTeamPill team={game.homeTeam} side='home' record={records.home} monoMarks={monoLogos.home} color={homeColor} />
 				{statusText && (
 					<div className='game-detail-period'>
 						{isInningSport && <InningHalfIcon topOfInning={game.topOfInning} />}{statusText}

@@ -337,6 +337,12 @@ $pre-game-time-color: bs.shade-color(bs.$warning, 60%);
 	font-size: 0.45rem;
 }
 
+// The unfilled half of each count, on the white card. `bi-circle` is a hairline ring, so with no
+// colour of its own it inherits the popup's near-white body ink and all but disappears here.
+.bso-dot.is-empty {
+	color: #4b5563;
+}
+
 .team-crest {
 	width: 64px;
 	height: 64px;

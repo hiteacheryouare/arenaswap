@@ -92,6 +92,60 @@ const contrastOnCard = (hex: string): number => {
 
 // The light detail cards are #f8fafc, luminance 0.9536. Small text wants 4.5:1, which puts the
 // ceiling on the ink at luminance 0.173. Contrast here is (0.9536 + 0.05) / (L + 0.05).
+// Real ESPN palettes, transcribed from `/teams`. Every one of these is a team whose published pair
+// reaches the substitution search, which is where the ink bug lived.
+const ravens = { color: '#29126F', alternateColor: '#000000' };
+const colts = { color: '#003B75', alternateColor: '#FFFFFF' };
+const raiders = { color: '#000000', alternateColor: '#A5ACAF' };
+const whiteSox = { color: '#000000', alternateColor: '#C4CED4' };
+const vancouver = { color: '#FFFFFF', alternateColor: '#00245E' };
+const inkOnly = { color: '#000000' };
+const isInkHex = (value: string): boolean => ['#000000', '#ffffff'].includes(value.toLowerCase());
+
+describe('resolveTeamColorPair never draws one team in black against the other in white', () => {
+	// The reported defect. ESPN sends purple against navy; the pair came back as ink because the
+	// substitution search fell through to ranking every candidate by raw RGB distance, and black to
+	// white is the largest distance that exists in RGB.
+	test('keeps Baltimore purple against Indianapolis navy, exactly as published', () => {
+		expect(resolveTeamColorPair(ravens, colts, '#dee2e6', '#dee2e6'))
+			.toEqual(['#29126F', '#003B75']);
+	});
+
+	test('does not reach for an ink alternate when both teams published a colour', () => {
+		for (const [away, home] of [[ravens, colts], [colts, ravens], [ravens, vancouver], [raiders, colts]]) {
+			const [a, h] = resolveTeamColorPair(away!, home!, '#dee2e6', '#dee2e6');
+			expect(isInkHex(a) && isInkHex(h)).toBe(false);
+		}
+	});
+
+	// A team whose whole palette is ink has to render as ink, and the team it is playing does not.
+	// Ranking by distance alone took the gold off the board and drew two inks instead.
+	test('spends a published colour rather than drawing ink on both sides', () => {
+		const blackAndGold = { color: '#000000', alternateColor: '#FFCD00' };
+		const whiteAndBlack = { color: '#FFFFFF', alternateColor: '#000000' };
+		const [a, h] = resolveTeamColorPair(blackAndGold, whiteAndBlack, '#dee2e6', '#dee2e6');
+		expect(a).toBe('#FFCD00');
+		expect(isInkHex(h)).toBe(true);
+	});
+
+	test('still separates two ink-primary teams through their alternates', () => {
+		const [a, h] = resolveTeamColorPair(raiders, whiteSox, '#dee2e6', '#dee2e6');
+		expect(a).not.toBe(h);
+		expect(isInkHex(a) && isInkHex(h)).toBe(false);
+	});
+
+	// The one case where ink is the honest answer: neither side published anything else.
+	test('draws ink when ink is all either team has', () => {
+		const [a, h] = resolveTeamColorPair(inkOnly, { color: '#FFFFFF' }, '#dee2e6', '#dee2e6');
+		expect([a, h].some(isInkHex)).toBe(true);
+	});
+
+	test('leaves a pair that never clashed completely alone', () => {
+		expect(resolveTeamColorPair({ color: '#FF5910', alternateColor: '#002D72' }, { color: '#0C2340', alternateColor: '#FFFFFF' }, '#dee2e6', '#dee2e6'))
+			.toEqual(['#FF5910', '#0C2340']);
+	});
+});
+
 describe('readableTeamInkOnCard', () => {
 	// Untouched, gold is luminance 0.5379 and reaches 1.71:1 — not text so much as a suggestion
 	// of one. It has to come down a long way, and it lands on a dark bronze rather than a grey.

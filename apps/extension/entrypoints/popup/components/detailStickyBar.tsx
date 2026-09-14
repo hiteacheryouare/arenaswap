@@ -1,12 +1,26 @@
 import { i18n } from '#i18n';
-import type { Game, Team } from '@arenaswap/core/types';
-import Crest from '@arenaswap/ui/src/components/crest';
+import type { Game, Team, TeamMonoMarks } from '@arenaswap/core/types';
+import TeamCrest from '@arenaswap/ui/src/components/teamCrest';
 import { formatCompactCountdown, useStartCountdown } from './startCountdown';
+import type { MonoLogos } from './useSummaryData';
+
+// The bar sits on the shell's own background rather than on team colour, and it is the one place a
+// crest is drawn at 18px with nothing else to identify the team but three letters — a navy monogram
+// there is a blank box. Same three treatments as the hero below it.
+const barSurface = '#0d1117';
 
 // Blank rather than lettered: the abbreviation is already the next element along. It still holds
 // its box, because collapsing an 18px item drags the centred matchup off the card's axis.
-const BarCrest = ({ team }: { team: Team }) => (
-	<Crest logo={team.logo} abbreviation={team.abbreviation} className='gd-bar-logo' fallback='blank' />
+const BarCrest = ({ team, monoMarks }: { team: Team; monoMarks?: TeamMonoMarks | null }) => (
+	<TeamCrest
+		logo={team.logo}
+		monoMarks={monoMarks ?? undefined}
+		abbreviation={team.abbreviation}
+		background={barSurface}
+		discClassName='gd-bar-logo-shell'
+		crestClassName='gd-bar-logo'
+		fallback='blank'
+	/>
 );
 
 interface barSlotProps {
@@ -37,13 +51,14 @@ interface detailStickyBarProps {
 	game: Game;
 	statusText: string;
 	compact: boolean;
+	monoLogos: MonoLogos;
 	onBack: () => void;
 }
 
 // The matchup is absolutely centred and the status pinned separately to the right. In one
 // centred group a longer status string drags the score off the card's axis, and it drifts
 // again every time the period changes.
-const detailStickyBar = ({ game, statusText, compact, onBack }: detailStickyBarProps) => {
+const detailStickyBar = ({ game, statusText, compact, monoLogos, onBack }: detailStickyBarProps) => {
 	// Before a start both scores are 0 and stay 0, so the abbreviations are doing the bar's whole
 	// job on their own and the figures are noise. The rule between them stays either way: it is
 	// what makes the pair read as one matchup rather than two adjacent teams.
@@ -56,13 +71,13 @@ const detailStickyBar = ({ game, statusText, compact, onBack }: detailStickyBarP
 				<span>{i18n.t('detail.back')}</span>
 			</button>
 			<div className={`gd-bar-compact${compact ? ' is-visible' : ''}`} aria-hidden={!compact}>
-				<BarCrest team={game.awayTeam} />
+				<BarCrest team={game.awayTeam} monoMarks={monoLogos.away} />
 				<span className='gd-bar-abbrev'>{game.awayTeam.abbreviation}</span>
 				{showScores && <span className='gd-bar-score'>{game.awayTeam.score}</span>}
 				<span className='gd-bar-sep' aria-hidden='true' />
 				{showScores && <span className='gd-bar-score'>{game.homeTeam.score}</span>}
 				<span className='gd-bar-abbrev'>{game.homeTeam.abbreviation}</span>
-				<BarCrest team={game.homeTeam} />
+				<BarCrest team={game.homeTeam} monoMarks={monoLogos.home} />
 			</div>
 			<BarSlot game={game} statusText={statusText} compact={compact} />
 		</div>

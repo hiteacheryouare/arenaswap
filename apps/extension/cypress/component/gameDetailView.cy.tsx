@@ -170,6 +170,34 @@ const expectSingleLine = (el: HTMLElement, label: string) => {
 		.to.be.at.most(parseFloat(style.lineHeight) + decoration + 1);
 };
 
+// The hero is a band of the two teams' colours, and which colour a team is shown in is the
+// resolver's answer rather than its published primary — two near-identical purples send one side to
+// its alternate. Everything drawn on that hero, the crest included, has to be measured against the
+// colour actually painted, so the resolved pair is what reaches it.
+describe('the hero is painted in the colours the resolver chose', () => {
+	const clashingPurples: Game = {
+		id: 'mock-7',
+		league: 'nba',
+		sportType: 'basketball',
+		status: 'in',
+		period: 3,
+		clockSeconds: 300,
+		awayTeam: { id: 'a', name: 'Away', abbreviation: 'AWY', score: 80, color: '#552583', alternateColor: '#FDB927' },
+		homeTeam: { id: 'h', name: 'Home', abbreviation: 'HOM', score: 78, color: '#5A2D81', alternateColor: '#63727A' },
+	};
+
+	it('paints the alternate when the two primaries clash', () => {
+		mountDetail(clashingPurples);
+		cy.get('.gd-hero-live').should('exist').then($hero => {
+			const image = getComputedStyle($hero[0]!).backgroundImage;
+			// The away side gave up its purple for its gold; the home side kept its own purple.
+			expect(image, 'the away alternate').to.include('rgb(253, 185, 39)');
+			expect(image, 'the home primary').to.include('rgb(90, 45, 129)');
+			expect(image, 'and not the away primary').to.not.include('rgb(85, 37, 131)');
+		});
+	});
+});
+
 describe('gameDetailView countdown', () => {
 	beforeEach(() => {
 		cy.viewport(320, 560);
@@ -258,15 +286,15 @@ describe('gameDetailView hero', () => {
 	});
 
 	// Blank rather than lettered, since the abbreviation is already directly below it — but it still
-	// holds the 32px disc inside its 36px box so the grid does not move when a logo arrives.
+	// holds the 46px disc inside its 52px box so the grid does not move when a logo arrives.
 	it('holds a blank crest box above each team name', () => {
 		mountDetail(makeLiveGame(), { excitementResult: excitement });
 		cy.get('.game-detail-team-logo').should('have.length', 2).each(($crest: JQuery<HTMLElement>) => {
 			expect($crest.attr('data-crest-state')).to.equal('missing');
-			expect($crest[0]!.getBoundingClientRect()).to.deep.include({ width: 36, height: 36 });
+			expect($crest[0]!.getBoundingClientRect()).to.deep.include({ width: 52, height: 52 });
 			expect($crest.text(), 'no letters in this one').to.equal('');
 			expect($crest[0]!.querySelector('.crest-fallback')!.getBoundingClientRect())
-				.to.deep.include({ width: 32, height: 32 });
+				.to.deep.include({ width: 46, height: 46 });
 		});
 	});
 

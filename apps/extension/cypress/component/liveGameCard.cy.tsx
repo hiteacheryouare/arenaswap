@@ -26,6 +26,24 @@ const baseResult: PowerScoreResult = {
 	reason: 'Close game',
 };
 
+const channels = (value: string): [number, number, number] => {
+	const matched = /rgba?\((\d+),\s*(\d+),\s*(\d+)/.exec(value)!;
+	return [Number(matched[1]), Number(matched[2]), Number(matched[3])];
+};
+
+const luminance = (value: string): number => {
+	const linear = channels(value).map(channel => {
+		const scaled = channel / 255;
+		return scaled <= 0.04045 ? scaled / 12.92 : ((scaled + 0.055) / 1.055) ** 2.4;
+	});
+	return (0.2126 * linear[0]!) + (0.7152 * linear[1]!) + (0.0722 * linear[2]!);
+};
+
+const contrastRatio = (a: string, b: string): number => {
+	const [high, low] = [luminance(a), luminance(b)].toSorted((x, y) => y - x);
+	return (high! + 0.05) / (low! + 0.05);
+};
+
 const defaultProps = {
 	game: baseGame,
 	excitementResult: baseResult,
@@ -180,5 +198,41 @@ describe('liveGameCard down & distance', () => {
 	it('renders nothing when there is no down & distance, even with a field position', () => {
 		cy.mount(<LiveGameCard {...defaultProps} game={{ ...nflGame, downDistance: undefined }} />);
 		cy.get('.game-card-center').should('not.contain.text', 'ARI 34');
+	});
+});
+
+describe('liveGameCard balls/strikes/outs', () => {
+	const mlbGame: Game = {
+		...baseGame,
+		league: 'mlb',
+		sportType: 'baseball',
+		period: 7,
+		topOfInning: false,
+		bso: { balls: 1, strikes: 1, outs: 1 },
+	};
+
+	// `bi-circle` is a ring one sixteenth of its em box, so at 0.45rem the stroke is under half a
+	// pixel and the colour is all that carries it. Left to inherit, it takes the popup's near-white
+	// body ink onto the card's white plate and the unfilled half of the count stops being drawn.
+	it('keeps the unfilled dots readable on the card', () => {
+		cy.mount(<LiveGameCard {...defaultProps} game={mlbGame} />);
+		cy.get('.bso-dot.is-empty').should('have.length', 4);
+		cy.get('.game-card').then(([card]: JQuery<HTMLElement>) => {
+			const plate = getComputedStyle(card).backgroundColor;
+			cy.get('.bso-dot.is-empty').each(($dot: JQuery<HTMLElement>) => {
+				const ink = getComputedStyle($dot[0]!).color;
+				expect(ink, 'the dot is not left to inherit the body ink').to.not.equal('rgb(230, 237, 243)');
+				expect(contrastRatio(ink, plate), `${ink} on ${plate}`).to.be.at.least(4.5);
+			});
+		});
+	});
+
+	it('still reads the filled dots as the state they are', () => {
+		cy.mount(<LiveGameCard {...defaultProps} game={mlbGame} />);
+		cy.get('.bso-dot').not('.is-empty').should('have.length', 3).each(($dot: JQuery<HTMLElement>) => {
+			cy.get('.bso-dot.is-empty').first().then(($empty: JQuery<HTMLElement>) => {
+				expect(getComputedStyle($dot[0]!).color).to.not.equal(getComputedStyle($empty[0]!).color);
+			});
+		});
 	});
 });

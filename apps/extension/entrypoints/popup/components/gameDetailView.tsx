@@ -70,10 +70,6 @@ const componentLegendItems = [
 	{ label: i18n.t('detail.legendComeback'), color: '#d90368' },
 ];
 
-const withMatchupAlpha = (color: string, fallback: string): string => (
-	/^#[\da-fA-F]{6}$/.test(color) ? `${color}28` : fallback
-);
-
 const gameDetailView = ({
 	game,
 	excitementResult,
@@ -155,7 +151,7 @@ const gameDetailView = ({
 	const componentOption = useMemo(() => (
 		buildComponentContributionOption(orderedPowerScoreHistory)
 	), [orderedPowerScoreHistory]);
-	const { winProbability, seriesInfo, records, boxScore, gameDurationMins } = useSummaryData(game);
+	const { winProbability, seriesInfo, records, monoLogos, boxScore, gameDurationMins } = useSummaryData(game);
 	const winProbabilityOption = useMemo(() => (
 		buildWinProbabilityOption(winProbability, game)
 	), [winProbability, game]);
@@ -179,14 +175,16 @@ const gameDetailView = ({
 	const chartsCoverGame = !isFinal
 		|| (coversWholeGame(orderedPowerScoreHistory, game) && coversWholeGame(orderedScoreHistory, game));
 	const [awayAccent, homeAccent] = resolveTeamColorPair(game.awayTeam, game.homeTeam, '#2274A5', '#F75C03');
-	const matchupCardStyle = isDelayed ? {
-		borderLeft: '5px solid #F1C40F',
-		borderRight: '5px solid #F1C40F',
-		background: 'linear-gradient(to right, rgba(241,196,15,0.12), rgba(241,196,15,0.12)), #ffffff',
-	} : {
-		borderLeft: `5px solid ${awayAccent}`,
-		borderRight: `5px solid ${homeAccent}`,
-		background: `linear-gradient(to right, ${withMatchupAlpha(awayAccent, '#dee2e628')}, ${withMatchupAlpha(homeAccent, '#dee2e628')}), #ffffff`,
+	// One hero surface for all three states: a band of the two teams' colours with a dark scrim over
+	// them — over, not under, so white type stays readable against a pale team colour without this
+	// having to know which colours those are. A delay tints the scrim yellow rather than draining
+	// the hero, which is what the white card used to do with an opacity.
+	const heroStyle = {
+		backgroundImage: isDelayed
+			? 'linear-gradient(180deg, rgba(28, 22, 3, 0.34) 0%, rgba(28, 22, 3, 0.62) 100%), '
+				+ `linear-gradient(to right, ${awayAccent} 0%, ${awayAccent} 38%, ${homeAccent} 62%, ${homeAccent} 100%)`
+			: 'linear-gradient(180deg, rgba(3, 7, 12, 0.18) 0%, rgba(3, 7, 12, 0.52) 100%), '
+				+ `linear-gradient(to right, ${awayAccent} 0%, ${awayAccent} 38%, ${homeAccent} 62%, ${homeAccent} 100%)`,
 	};
 	const isInningSport = leagueConfigMap[game.league]?.periodFormat === 'innings';
 	const statusText = resolveStatusText(game, isInningSport, i18n.t);
@@ -216,7 +214,7 @@ const gameDetailView = ({
 	return (
 		<div className='popup-container game-detail-shell' ref={shellRef}>
 			{decorations.falling && <HolidayFall kind={decorations.falling} />}
-			<DetailStickyBar game={game} statusText={statusText} compact={heroScrolledAway} onBack={onBack} />
+			<DetailStickyBar game={game} statusText={statusText} compact={heroScrolledAway} monoLogos={monoLogos} onBack={onBack} />
 			{decorations.lights && <HolidayLights flashColors={scoreFlash} />}
 
 			<div ref={heroRef}>
@@ -225,7 +223,11 @@ const gameDetailView = ({
 						game={game}
 						seriesInfo={seriesInfo}
 						records={records}
+						monoLogos={monoLogos}
 						statusText={statusText}
+						heroStyle={heroStyle}
+						awayColor={awayAccent}
+						homeColor={homeAccent}
 						favoriteTeamIds={favoriteTeamIds}
 						onToggleFavoriteTeam={onToggleFavoriteTeam}
 					/>
@@ -234,10 +236,13 @@ const gameDetailView = ({
 						game={game}
 						seriesInfo={seriesInfo}
 						records={records}
+						monoLogos={monoLogos}
 						isDelayed={isDelayed}
 						isInningSport={isInningSport}
 						statusText={statusText}
-						heroStyle={matchupCardStyle}
+						heroStyle={heroStyle}
+						awayColor={awayAccent}
+						homeColor={homeAccent}
 					/>
 				)}
 			</div>

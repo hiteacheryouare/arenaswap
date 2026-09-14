@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { leagueConfigMap } from '@arenaswap/core/constants';
 import { logWarn } from '@arenaswap/core';
-import type { Game, LeagueId } from '@arenaswap/core/types';
-import { seriesSports } from './seriesDots';
+import type { Game, LeagueId, TeamMonoMarks } from '@arenaswap/core/types';
 import { emptyBoxScore, parseBoxScore } from './boxScoreParse';
 import type { BoxScore } from './boxScoreParse';
 
@@ -29,10 +28,18 @@ export interface TeamRecords {
 	away: string | null;
 }
 
+// The monochrome marks ESPN draws for each team, the ones broadcast uses over a photo. Null for a
+// team ESPN has drawn none for, which is every club outside North America.
+export interface MonoLogos {
+	home: TeamMonoMarks | null;
+	away: TeamMonoMarks | null;
+}
+
 interface summaryDataResult {
 	winProbability: number[];
 	seriesInfo: SeriesInfo | null;
 	records: TeamRecords;
+	monoLogos: MonoLogos;
 	boxScore: BoxScore;
 	// Wall-clock length of a finished game, in whole minutes. The one thing that makes an actual
 	// finish time knowable: ESPN publishes no completion timestamp anywhere, so the wrap screen
@@ -46,13 +53,40 @@ interface RecordEntry {
 	displayValue?: string;
 }
 
+interface HeaderLogo {
+	href?: string;
+	rel?: string[];
+}
+
 interface HeaderCompetitor {
 	homeAway?: string;
-	team?: { id?: string };
+	team?: { id?: string; logos?: HeaderLogo[] };
 	record?: RecordEntry[];
 }
 
 export const emptyTeamRecords: TeamRecords = { home: null, away: null };
+export const emptyMonoLogos: MonoLogos = { home: null, away: null };
+
+const espnImageHost = 'https://a.espncdn.com';
+
+// ESPN draws these at 4096x4096 — 225KB for a mark that renders at 44px. The combiner is their own
+// resizer and hands back the same transparent PNG at about 6KB, which is the difference between
+// this being usable on a slate and not.
+const monoLogoUrl = (href: string | undefined): string | undefined => {
+	if (!href || !href.startsWith(`${espnImageHost}/`)) return undefined;
+	return `${espnImageHost}/combiner/i?img=${href.slice(espnImageHost.length)}&w=120&h=120`;
+};
+
+const monoMarksOf = (competitor: HeaderCompetitor | undefined): TeamMonoMarks | null => {
+	const of = (rel: string) => monoLogoUrl(competitor?.team?.logos?.find(logo => logo.rel?.includes(rel))?.href);
+	const white = of('primary_logo_white');
+	const black = of('primary_logo_black');
+	if (!white && !black) return null;
+	const marks: TeamMonoMarks = {};
+	if (white) marks.white = white;
+	if (black) marks.black = black;
+	return marks;
+};
 
 // ESPN sends `gameInfo.gameDuration` as "3:14" — hours and minutes, not a clock time. It is
 // baseball-only among the leagues sampled, which is why the row it feeds is absent rather than
@@ -78,19 +112,36 @@ const totalRecord = (competitor: HeaderCompetitor | undefined): string | null =>
 // Team id is the primary key rather than array position: ESPN orders `competitors` by its own
 // `order` field, which is not away-then-home across every sport. `homeAway` is the fallback for
 // leagues where we synthesize team ids (college hockey) and so can never match.
-export const parseTeamRecords = (data: unknown, homeTeamId: string, awayTeamId: string): TeamRecords => {
+const headerCompetitors = (data: unknown): HeaderCompetitor[] | null => {
 	const competitors = (data as {
 		header?: { competitions?: { competitors?: HeaderCompetitor[] }[] };
 	})?.header?.competitions?.[0]?.competitors;
-	if (!Array.isArray(competitors)) return emptyTeamRecords;
+	return Array.isArray(competitors) ? competitors : null;
+};
 
+// Resolved by id where ESPN gives one and by side where it does not — the same pairing the box
+// score needs, because college hockey ids are synthesized and never match.
+const sidesOf = (data: unknown, homeTeamId: string, awayTeamId: string) => {
+	const competitors = headerCompetitors(data);
+	if (!competitors) return null;
 	const byId = (id: string) => (id ? competitors.find(c => c.team?.id === id) : undefined);
 	const bySide = (side: string) => competitors.find(c => c.homeAway === side);
-
 	return {
-		home: totalRecord(byId(homeTeamId) ?? bySide('home')),
-		away: totalRecord(byId(awayTeamId) ?? bySide('away')),
+		home: byId(homeTeamId) ?? bySide('home'),
+		away: byId(awayTeamId) ?? bySide('away'),
 	};
+};
+
+export const parseTeamRecords = (data: unknown, homeTeamId: string, awayTeamId: string): TeamRecords => {
+	const sides = sidesOf(data, homeTeamId, awayTeamId);
+	if (!sides) return emptyTeamRecords;
+	return { home: totalRecord(sides.home), away: totalRecord(sides.away) };
+};
+
+export const parseMonoLogos = (data: unknown, homeTeamId: string, awayTeamId: string): MonoLogos => {
+	const sides = sidesOf(data, homeTeamId, awayTeamId);
+	if (!sides) return emptyMonoLogos;
+	return { home: monoMarksOf(sides.home), away: monoMarksOf(sides.away) };
 };
 
 type SummaryGameArg = Pick<Game, 'id' | 'league' | 'status' | 'sportType'> & {
@@ -174,18 +225,6 @@ const mockRecordsMap: Record<string, TeamRecords> = {
 	'mock-20': { home: '81-63', away: '74-70' },
 };
 
-// The scoreboard now carries both teams' records, so a pre-game screen has nothing left to ask
-// the summary endpoint for except the series dots — no chart renders before a game starts. When
-// the records are already in hand and dots cannot appear, the whole request is skipped.
-//
-// A league that sends no scoreboard record still falls through to the fetch on its own, which is
-// what keeps hockey and basketball working: they ship records only once their season is underway.
-export const shouldFetchSummary = (game: SummaryGameArg): boolean => {
-	if (game.status !== 'pre') return true;
-	if (!game.homeTeam.record || !game.awayTeam.record) return true;
-	return seriesSports.has(game.sportType);
-};
-
 // Only the series being played right now. ESPN also ships a 'season' entry holding the whole
 // head-to-head — six meetings spread across the year — and a series opener carries that and
 // nothing else, so falling back to it captions a series that has not started with the record from
@@ -200,6 +239,7 @@ const useSummaryData = (game: SummaryGameArg): summaryDataResult => {
 	const [winProbability, setWinProbability] = useState<number[]>([]);
 	const [seriesInfo, setSeriesInfo] = useState<SeriesInfo | null>(null);
 	const [records, setRecords] = useState<TeamRecords>(emptyTeamRecords);
+	const [monoLogos, setMonoLogos] = useState<MonoLogos>(emptyMonoLogos);
 	const [boxScore, setBoxScore] = useState<BoxScore>(emptyBoxScore);
 	const [gameDurationMins, setGameDurationMins] = useState<number | null>(null);
 	// The scoreboard's records win when it has them; the summary is the fallback for the leagues
@@ -229,6 +269,7 @@ const useSummaryData = (game: SummaryGameArg): summaryDataResult => {
 		setWinProbability([]);
 		setSeriesInfo(null);
 		setRecords(emptyTeamRecords);
+		setMonoLogos(emptyMonoLogos);
 		setBoxScore(emptyBoxScore);
 		setGameDurationMins(null);
 
@@ -256,7 +297,6 @@ const useSummaryData = (game: SummaryGameArg): summaryDataResult => {
 
 		const config = leagueConfigMap[league as LeagueId];
 		if (!config) return;
-		if (!shouldFetchSummary(gameRef.current)) return;
 
 		// Fetched once per game rather than per score change: the line only moves on the scale of
 		// possessions, and the switcher reads volatility from the background scorer, not from here.
@@ -276,6 +316,7 @@ const useSummaryData = (game: SummaryGameArg): summaryDataResult => {
 				}
 				setSeriesInfo(pickSeriesEntry(data?.seasonseries as SeriesInfo[] | undefined));
 				setRecords(parseTeamRecords(data, teamIdsRef.current.home, teamIdsRef.current.away));
+				setMonoLogos(parseMonoLogos(data, teamIdsRef.current.home, teamIdsRef.current.away));
 				setGameDurationMins(parseGameDurationMins(data));
 				setBoxScore(parseBoxScore(
 					data,
@@ -293,7 +334,7 @@ const useSummaryData = (game: SummaryGameArg): summaryDataResult => {
 		return () => controller.abort();
 	}, [gameId, league, status]);
 
-	return { winProbability, seriesInfo, records: resolvedRecords, boxScore, gameDurationMins };
+	return { winProbability, seriesInfo, records: resolvedRecords, monoLogos, boxScore, gameDurationMins };
 };
 
 export default useSummaryData;

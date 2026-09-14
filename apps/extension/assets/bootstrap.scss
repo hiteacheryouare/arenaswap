@@ -885,9 +885,19 @@
 
 // White disc, tinted with the team's own colour — the same wash the matchup card uses, so a
 // dark crest never disappears into a dark half of the poster.
+// The plate is a repair, not a decoration: it exists so a crest that would otherwise disappear into
+// a dark surface still reads. A crest that reads on its own — which is most of them — and ESPN's
+// white mark, which reads on anything, are both drawn bare. The box keeps its size either way so a
+// row carrying one of each stays level.
+.gd-poster-crest.is-bare,
+.game-detail-team-logo-shell.is-bare {
+	background: none;
+	box-shadow: none;
+}
+
 .gd-poster-crest {
-	width: 58px;
-	height: 58px;
+	width: 80px;
+	height: 80px;
 	border-radius: 999px;
 	display: flex;
 	align-items: center;
@@ -898,8 +908,8 @@
 }
 
 .gd-poster-crest-logo {
-	width: 44px;
-	height: 44px;
+	width: 64px;
+	height: 64px;
 }
 
 // The disc behind it already carries the team's colour wash, so a second grey disc inside it would
@@ -907,7 +917,7 @@
 .gd-poster-crest-logo .crest-fallback {
 	@include gc.scoreboard-figures;
 	background: transparent;
-	font-size: 0.86rem;
+	font-size: 1.25rem;
 	letter-spacing: 0.02em;
 }
 
@@ -1610,8 +1620,8 @@ button.game-info-attribution {
 }
 
 .game-detail-team-logo-shell {
-	width: 44px;
-	height: 44px;
+	width: 64px;
+	height: 64px;
 	border-radius: 999px;
 	display: flex;
 	align-items: center;
@@ -1621,14 +1631,15 @@ button.game-info-attribution {
 }
 
 .game-detail-team-logo {
-	width: 36px;
-	height: 36px;
+	width: 52px;
+	height: 52px;
 }
 
-// Inset rather than sized, so the 32px disc it has always been stays centred in the 36px box.
+// Inset rather than sized, so the placeholder disc stays centred in the box: 46px inside 52px.
 .game-detail-team-logo .crest-fallback {
-	inset: 2px;
-	background: rgba(17, 24, 39, 0.08);
+	inset: 3px;
+	background: rgba(255, 255, 255, 0.16);
+	color: rgba(255, 255, 255, 0.85);
 }
 
 .game-detail-center {
@@ -1713,6 +1724,21 @@ button.game-info-attribution {
 	height: 18px;
 }
 
+// The shell the crest sits in. Bare unless the artwork was measured as unreadable and the team has
+// no monochrome mark to fall back on, which at this size is the one state worth a plate.
+.gd-bar-logo-shell {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	width: 18px;
+	height: 18px;
+	border-radius: 999px;
+	overflow: hidden;
+
+	&.is-bare { background: none; box-shadow: none; }
+}
+
 .gd-bar-logo .crest-fallback { background: rgba(230, 237, 243, 0.14); }
 
 .gd-bar-abbrev {
@@ -1762,6 +1788,59 @@ button.game-info-attribution {
 	.gd-bar-compact,
 	.gd-bar-status {
 		transition: none;
+	}
+}
+
+// ── The live and final hero, on the same scrim ───────────────────────────────
+// Every one of these children was drawn for near-black ink on a white card. The surface changed, so
+// each is re-toned here rather than forked into a second set of components — the same approach the
+// poster already took for the countdown and the series dots.
+.gd-hero-live {
+	border: 0;
+
+	.game-detail-team-name {
+		color: #ffffff;
+		text-shadow: 0 1px 6px rgba(3, 7, 12, 0.55);
+	}
+
+	.game-detail-team-record { color: rgba(255, 255, 255, 0.78); }
+
+	.game-detail-score-value {
+		color: #ffffff;
+		text-shadow: 0 2px 12px rgba(3, 7, 12, 0.6);
+
+		// The losing side of a finished game. Dimmed against white it was a grey; against the scrim
+		// it is the same idea the other way up — white pulled back rather than black lifted.
+		&.is-loser { color: rgba(255, 255, 255, 0.58); }
+	}
+
+	.game-detail-period { color: rgba(255, 255, 255, 0.82); }
+	.game-score-sep { background: rgba(255, 255, 255, 0.38); }
+	.gd-vs { color: rgba(255, 255, 255, 0.6); }
+	.gd-field-caption { color: rgba(255, 255, 255, 0.86); }
+
+	// The empty half of each indicator. Both were mid-greys chosen against white and neither
+	// survives a scrim: an unlit base and an unfilled count are the half that carries the reading.
+	.base-marker { color: rgba(255, 255, 255, 0.5); }
+	// The unfilled half carries as much of the count as the filled half, and `bi-circle` is a
+	// hairline ring — at 45% on a scrim it reads as nothing at all.
+	.bso-dot.is-empty { color: rgba(255, 255, 255, 0.72); }
+	.bso-label { color: rgba(255, 255, 255, 0.72); }
+
+	.series-dots-summary { color: rgba(255, 255, 255, 0.75); box-shadow: none; }
+	.series-dot-empty { color: rgba(255, 255, 255, 0.45); }
+
+	// A delayed game keeps its hero rather than being dimmed to 40% opacity, which on a dark surface
+	// is a disappearance rather than a dim. The status line carries it, the way the poster's does.
+	&.is-delayed {
+		box-shadow: inset 0 0 0 1px rgba(241, 196, 15, 0.45);
+
+		.game-detail-period {
+			color: #f1c40f;
+			font-weight: 700;
+			letter-spacing: 0.04em;
+			text-transform: uppercase;
+		}
 	}
 }
 

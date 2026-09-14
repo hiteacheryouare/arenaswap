@@ -194,6 +194,15 @@ export interface TabRegistration {
 }
 
 export type LeagueLogoMap = Partial<Record<LeagueId, string>>;
+
+// ESPN's two monochrome marks for a team. They are drawn as a pair — of 916 teams sampled across
+// six leagues, 453 have both and not one has only one of them — so a team either has this or has
+// nothing, and a team with nothing keeps the tinted disc.
+export interface TeamMonoMarks {
+	white?: string;
+	black?: string;
+}
+
 export type ScoreHistoryMap = Record<string, ScoreSnapshot[]>;
 
 export interface PowerScoreSnapshot {
