@@ -144,6 +144,12 @@
 		},
 		"keepFinalGames": "Keep finished games",
 		"keepFinalGamesExplainer": "Finished games stay in the list for 24 hours after they wrap.",
+		"finishedTabAction": "When a game finishes",
+		"finishedTabKeep": "Leave the tab alone",
+		"finishedTabFree": "Free it from ArenaSwap",
+		"finishedTabClose": "Close the tab",
+		"finishedTabActiveExplainer": "The tab you're watching is left alone until you move off it.",
+		"finishedTabCloseExplainer": "A window's last tab is freed instead, so no window closes on you.",
 		"proTips": "Pro tips",
 		"switchNotifications": "Switch notifications",
 		"demoMode": "Demo mode",
@@ -216,6 +222,7 @@
 		"keywordsUpcoming": "future, scheduled, later, schedule",
 		"keywordsUpcomingDays": "days, ahead, range, horizon",
 		"keywordsKeepFinal": "final, finished, ended, results, scores, history, recap",
+		"keywordsFinishedTab": "tab, close, free, release, tidy, clutter, finished, over, done",
 		"keywordsProTips": "hints, help, advice, tips",
 		"keywordsNotifications": "alerts, notify, banner, toast, popup",
 		"keywordsBetting": "odds, lines, spread, gambling, wager, moneyline",
@@ -225,6 +232,16 @@
 		"keywordsStandbyThreshold": "score, cutoff, limit, below, quiet",
 		"keywordsStandbyTab": "tab, window, page, destination",
 		"keywordsDemo": "fake, sample, test, preview, sandbox, dummy"
+	},
+	"finishedTabs": {
+		"toastFreed": {
+			"1": "1 tab is yours again.",
+			"n": "$1 tabs are yours again."
+		},
+		"toastClosed": {
+			"1": "Closed 1 finished game's tab.",
+			"n": "Closed $1 finished games' tabs."
+		}
 	},
 	"main": {
 		"tourButton": "Tour",

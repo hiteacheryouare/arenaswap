@@ -2,6 +2,12 @@ import { i18n } from '#i18n';
 import { randomInRange } from '@porkyproductions/hat';
 import { fetchGamesWithLeagueLogos, fetchWinProbability, computePowerScore, isWithinFinalRetention, computeScoringOpportunityBoost, isPlayFrozen, normalizePowerScoreResult, scoreMaxTotal, MockGameSimulator, createPollModeTracker, isObjectRecord, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts, computeLeagueIntervalMs, computeHebetudinousIntervalMs, earliestUpcomingStartMs, fetchNextScheduledStart, pollWinProbabilityMs as winProbPollIntervalMs, logWarn, logError, postseasonBoostShare } from '@arenaswap/core';
 import { computeStandbyStreamDecision } from '../utils/standbyStreamLogic';
+import {
+	finishedTabNoticeKey,
+	mergeFinishedTabNotice,
+	normalizeFinishedTabNotice,
+	resolveFinishedTabs,
+} from '../utils/finishedTabs';
 import { loadStoredUserPreferences } from '../utils/prefsStorage';
 import {
 	normalizeReviewPromptState,
@@ -135,6 +141,31 @@ const getOpenTabIds = async (): Promise<Set<number>> => {
 			.map(tab => tab.id)
 			.filter((tabId): tabId is number => tabId !== undefined)
 	);
+};
+
+// What the popup reads on its next open to say how many tabs were handed back while it was shut.
+// Accumulated rather than replaced, so a second wave of finals cannot erase the first.
+const recordFinishedTabNotice = async (freed: number, closed: number) => {
+	try {
+		const stored = await browser.storage.session.get({ [finishedTabNoticeKey]: null });
+		const notice = mergeFinishedTabNotice(normalizeFinishedTabNotice(stored[finishedTabNoticeKey]), freed, closed);
+		await browser.storage.session.set({ [finishedTabNoticeKey]: notice });
+	} catch (err) {
+		logWarn('Failed to record which tabs were handed back.', err);
+	}
+};
+
+// The two lookups resolveFinishedTabs needs to tell a tab it can close from a tab whose window
+// would go with it.
+const describeOpenWindows = (allTabs: { id?: number; windowId?: number }[]) => {
+	const windowIdByTabId = new Map<number, number>();
+	const tabCountByWindowId = new Map<number, number>();
+	for (const tab of allTabs) {
+		if (tab.id === undefined || tab.windowId === undefined) continue;
+		windowIdByTabId.set(tab.id, tab.windowId);
+		tabCountByWindowId.set(tab.windowId, (tabCountByWindowId.get(tab.windowId) ?? 0) + 1);
+	}
+	return { windowIdByTabId, tabCountByWindowId };
 };
 
 export default defineBackground(() => {
@@ -554,6 +585,61 @@ export default defineBackground(() => {
 		prefs.keepFinalGames ? retainedFinalGames.filter(g => isWithinFinalRetention(g)) : []
 	);
 
+	// Two reasons to ask the poll for finished games, and only one of them puts them on screen.
+	// Handing a tab back needs to *see* ESPN call the game final: absence from a payload cannot
+	// stand in for it, because a payload legitimately drops games it is still serving elsewhere —
+	// college football's dateless board did exactly that. So the fetch keeps them and the merge
+	// below drops them again when the display preference says they are not wanted.
+	const wantsFinalGames = (): boolean => prefs.keepFinalGames || prefs.finishedTabAction !== 'keep';
+
+	const displayableGames = (fetched: Game[]): Game[] => (
+		prefs.keepFinalGames ? fetched : fetched.filter(game => game.status !== 'post')
+	);
+
+	// Runs on every poll, ahead of the mute sync so a freed tab is unmuted in the same pass that
+	// released it. Demo mode is excluded outright: its games reach 'post' on a script while the
+	// tabs registered to them are real, and mock-20 ships already final — so the first poll after
+	// turning the demo on would close a real tab for a game that was never played.
+	const settleFinishedTabs = async (finishedGames: Game[]) => {
+		if (prefs.finishedTabAction === 'keep' || demoMode) return;
+		if (finishedGames.length === 0 || tabRegistry.length === 0) return;
+
+		const allTabs = await browser.tabs.query({});
+		const [activeTab] = await browser.tabs.query({ active: true, lastFocusedWindow: true });
+		const resolutions = resolveFinishedTabs({
+			registry: tabRegistry,
+			action: prefs.finishedTabAction,
+			finishedGameIds: new Set(finishedGames.map(game => game.id)),
+			openTabIds: new Set(allTabs.flatMap(tab => tab.id === undefined ? [] : [tab.id])),
+			activeTabId: activeTab?.id ?? null,
+			...describeOpenWindows(allTabs),
+		});
+		if (resolutions.length === 0) return;
+
+		const releasedTabIds = new Set(resolutions.map(resolution => resolution.tabId));
+		tabRegistry = tabRegistry.filter(reg => !releasedTabIds.has(reg.tabId));
+		if (pendingSwitch && releasedTabIds.has(pendingSwitch.tabId)) clearPendingSwitch();
+
+		let closed = 0;
+		for (const resolution of resolutions.filter(entry => entry.close)) {
+			try {
+				await browser.tabs.remove(resolution.tabId);
+				closed++;
+			} catch (err) {
+				// The registration is gone either way, so a tab that refuses to close is still
+				// handed back rather than left half-managed.
+				logWarn(`Failed to close tab ${resolution.tabId} after its game finished.`, err);
+			}
+		}
+
+		try {
+			await browser.storage.session.set({ tabRegistry });
+		} catch (err) {
+			logWarn('Failed to persist the registry after handing tabs back.', err);
+		}
+		await recordFinishedTabNotice(resolutions.length - closed, closed);
+	};
+
 	// refreshSlate only runs at worker startup and when preferences change, so a game that goes
 	// final while the worker is already up never passes through it. Recorded here instead, on every
 	// poll: otherwise the game survives only as long as the dateless scoreboard keeps returning it,
@@ -567,8 +653,9 @@ export default defineBackground(() => {
 	};
 
 	// A changedLeagueId scopes stall tracking and history to just that league; null processes
-	// every live game.
-	const afterFetch = async (changedLeagueId: LeagueId | null, allowTabSwitch: boolean) => {
+	// every live game. `finishedGames` is what the fetch saw go final on this pass, which is not
+	// the same as what is in `games` — with Keep finished games off they are dropped on the way in.
+	const afterFetch = async (changedLeagueId: LeagueId | null, allowTabSwitch: boolean, finishedGames: Game[] = []) => {
 		const liveGames = games.filter(g => g.status === 'in');
 		const freshGames = changedLeagueId ? liveGames.filter(g => g.league === changedLeagueId) : liveGames;
 
@@ -651,6 +738,8 @@ export default defineBackground(() => {
 		updatePowerScoreHistory(liveGames, scores, changedLeagueId);
 		persistHistoryToSession();
 
+		await settleFinishedTabs(finishedGames);
+
 		broadcastScoresUpdated();
 
 		await syncManagedTabMuteState(prefs.enabled);
@@ -708,8 +797,12 @@ export default defineBackground(() => {
 
 	const tick = async (allowTabSwitch = true) => {
 		const enabledLeagues = prefs.enabledLeagues;
+		let finishedGames: Game[] = [];
 		if (demoMode && simulator) {
 			games = simulator.tick();
+			// Reported the same way a real poll reports them, so the demo exclusion lives in one
+			// place — settleFinishedTabs — rather than being an accident of what this branch omits.
+			finishedGames = games.filter(g => g.status === 'post');
 			const demoLeagues = [...new Set(games.map(game => game.league))];
 			leagueLogos = demoLeagues.reduce<LeagueLogoMap>((acc, leagueId) => {
 				// No ESPN response behind a demo game, so this resolves to the override or fallback.
@@ -717,29 +810,34 @@ export default defineBackground(() => {
 				return acc;
 			}, {});
 		} else {
+			let fetched: Game[];
 			try {
-				const fetchResult = await fetchGamesWithLeagueLogos(enabledLeagues, { includeUpcoming: false, includeFinal: prefs.keepFinalGames });
-				games = fetchResult.games;
+				const fetchResult = await fetchGamesWithLeagueLogos(enabledLeagues, { includeUpcoming: false, includeFinal: wantsFinalGames() });
+				fetched = fetchResult.games;
 				leagueLogos = fetchResult.leagueLogos;
 			} catch (err) {
 				logError('Failed to fetch games.', err);
 				return;
 			}
-			absorbFinalGames(games);
-			const freshGameIds = new Set(games.map(g => g.id));
+			absorbFinalGames(fetched);
+			finishedGames = fetched.filter(g => g.status === 'post');
+			games = displayableGames(fetched);
+			const freshGameIds = new Set(fetched.map(g => g.id));
 			const stillUpcoming = upcomingGames.filter(g => !freshGameIds.has(g.id));
 			const stillFinal = liveRetainedFinals().filter(g => !freshGameIds.has(g.id));
 			games = [...games, ...stillUpcoming, ...stillFinal];
 		}
 
-		await afterFetch(null, allowTabSwitch);
+		await afterFetch(null, allowTabSwitch, finishedGames);
 	};
 
 	const tickLeague = async (leagueId: LeagueId, allowTabSwitch: boolean) => {
 		let fetchSucceeded = false;
+		let finishedGames: Game[] = [];
 		try {
-			const fetchResult = await fetchGamesWithLeagueLogos([leagueId], { includeUpcoming: false, includeFinal: prefs.keepFinalGames });
+			const fetchResult = await fetchGamesWithLeagueLogos([leagueId], { includeUpcoming: false, includeFinal: wantsFinalGames() });
 			absorbFinalGames(fetchResult.games);
+			finishedGames = fetchResult.games.filter(g => g.status === 'post');
 			const freshGameIds = new Set(fetchResult.games.map(g => g.id));
 			// Every league's finals are rebuilt from the retained list rather than carried through
 			// with the other leagues' games, so one league's poll re-checks the whole set's
@@ -747,7 +845,7 @@ export default defineBackground(() => {
 			const otherGames = games.filter(g => g.league !== leagueId && g.status !== 'post');
 			const leagueUpcoming = upcomingGames.filter(g => g.league === leagueId && !freshGameIds.has(g.id));
 			const retainedFinals = liveRetainedFinals().filter(g => !freshGameIds.has(g.id));
-			games = [...otherGames, ...fetchResult.games, ...leagueUpcoming, ...retainedFinals];
+			games = [...otherGames, ...displayableGames(fetchResult.games), ...leagueUpcoming, ...retainedFinals];
 			leagueLogos = { ...leagueLogos, ...fetchResult.leagueLogos };
 			const hasLiveGames = fetchResult.games.some(g => g.status === 'in');
 			// Read off the merged list rather than the response: the dateless scoreboard carries
@@ -795,7 +893,7 @@ export default defineBackground(() => {
 			scheduleLeagueTick(leagueId, nextInterval);
 		}
 
-		await afterFetch(leagueId, allowTabSwitch);
+		await afterFetch(leagueId, allowTabSwitch, finishedGames);
 	};
 
 	const scheduleLeagueTick = (leagueId: LeagueId, delayMs: number) => {

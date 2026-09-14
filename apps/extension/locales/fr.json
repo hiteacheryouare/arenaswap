@@ -144,6 +144,12 @@
 		},
 		"keepFinalGames": "Conserver les matchs terminés",
 		"keepFinalGamesExplainer": "Les matchs terminés restent dans la liste pendant 24 heures après le coup de sifflet final.",
+		"finishedTabAction": "Quand un match se termine",
+		"finishedTabKeep": "Laisser l'onglet tel quel",
+		"finishedTabFree": "Libérer l'onglet d'ArenaSwap",
+		"finishedTabClose": "Fermer l'onglet",
+		"finishedTabActiveExplainer": "L'onglet que tu regardes reste inchangé jusqu'à ce que tu en changes.",
+		"finishedTabCloseExplainer": "Le dernier onglet d'une fenêtre est libéré à la place, pour qu'aucune fenêtre ne se ferme.",
 		"proTips": "Conseils",
 		"switchNotifications": "Notifications de changement",
 		"demoMode": "Mode démo",
@@ -216,6 +222,7 @@
 		"keywordsUpcoming": "futur, prevu, plus tard, calendrier",
 		"keywordsUpcomingDays": "jours, avance, plage, horizon",
 		"keywordsKeepFinal": "termine, fini, resultats, historique, resume",
+		"keywordsFinishedTab": "onglet, fermer, liberer, relacher, ranger, encombrement, termine, fini, complet",
 		"keywordsProTips": "astuces, aide, conseils, indices",
 		"keywordsNotifications": "alertes, notifier, prevenir, banniere, popup",
 		"keywordsBetting": "cotes, paris, ligne, spread, mise, moneyline",
@@ -225,6 +232,16 @@
 		"keywordsStandbyThreshold": "score, seuil, limite, en dessous, calme",
 		"keywordsStandbyTab": "onglet, fenetre, page, destination",
 		"keywordsDemo": "faux, exemple, test, apercu, bac a sable"
+	},
+	"finishedTabs": {
+		"toastFreed": {
+			"1": "1 onglet est de nouveau à toi.",
+			"n": "$1 onglets sont de nouveau à toi."
+		},
+		"toastClosed": {
+			"1": "1 onglet de match terminé a été fermé.",
+			"n": "$1 onglets de matchs terminés ont été fermés."
+		}
 	},
 	"main": {
 		"tourButton": "Visite guidée",

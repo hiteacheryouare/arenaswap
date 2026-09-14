@@ -44,6 +44,7 @@ At least one signal has to stay on. If a signal is off, ArenaSwap re-normalizes 
 | Show upcoming games | On | On/off | Shows an Up Next section for games in enabled leagues that haven't started yet. |
 | Days ahead | 7 days | 1–14 days | How far ahead Up Next looks. Only shown while Show upcoming games is on. |
 | Keep finished games | Off | On/off | Keeps a game reachable for 24 hours after it ends, in a Final section under Up Next, with your starred teams' games at the top. A finished game can't be assigned a tab or switched to, and its detail screen carries the box score, the venue and the attendance instead of a PowerScore. |
+| When a game finishes | Leave the tab alone | Leave the tab alone, Free it from ArenaSwap, or Close the tab | What ArenaSwap does with a registered tab once its game is over. Freeing drops the registration and unmutes the tab, leaving it open and available for tab suggestions again; closing shuts it. Either way the tab you are currently looking at is left alone until you move off it, and a window's last tab is freed rather than closed so no window disappears. Nothing happens in demo mode. |
 | Pro tips | On | On/off | Shows short contextual tips on the main screen. |
 | Switch notifications | On | On/off | Shows a browser notification with the score, venue, and reason whenever ArenaSwap switches a tab, including switches to and from Standby Stream. |
 | Show betting & odds | Off | On/off | Shows betting lines and the sportsbook's logo on game cards and the detail screen. |

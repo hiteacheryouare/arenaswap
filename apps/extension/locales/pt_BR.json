@@ -144,6 +144,12 @@
 		},
 		"keepFinalGames": "Manter jogos encerrados",
 		"keepFinalGamesExplainer": "Os jogos encerrados ficam na lista por 24 horas após o apito final.",
+		"finishedTabAction": "Quando um jogo termina",
+		"finishedTabKeep": "Deixar a aba como está",
+		"finishedTabFree": "Liberar a aba do ArenaSwap",
+		"finishedTabClose": "Fechar a aba",
+		"finishedTabActiveExplainer": "A aba que você está assistindo fica intocada até você sair dela.",
+		"finishedTabCloseExplainer": "Se for a última aba da janela, ela é liberada em vez de fechada, para a janela não fechar.",
 		"proTips": "Dicas",
 		"switchNotifications": "Notificações de troca",
 		"demoMode": "Modo demonstração",
@@ -216,6 +222,7 @@
 		"keywordsUpcoming": "futuro, agendado, mais tarde, calendario",
 		"keywordsUpcomingDays": "dias, a frente, intervalo, horizonte",
 		"keywordsKeepFinal": "final, encerrado, resultados, historico, resumo",
+		"keywordsFinishedTab": "aba, fechar, liberar, soltar, organizar, bagunca, encerrado, acabado, pronto",
 		"keywordsProTips": "dicas, ajuda, conselhos, sugestoes",
 		"keywordsNotifications": "alertas, notificar, avisar, banner, popup",
 		"keywordsBetting": "odds, apostas, linha, spread, palpite, moneyline",
@@ -225,6 +232,16 @@
 		"keywordsStandbyThreshold": "pontuacao, corte, limite, abaixo, parado",
 		"keywordsStandbyTab": "aba, janela, pagina, destino",
 		"keywordsDemo": "falso, exemplo, teste, previa, simulacao"
+	},
+	"finishedTabs": {
+		"toastFreed": {
+			"1": "1 aba é sua de novo.",
+			"n": "$1 abas são suas de novo."
+		},
+		"toastClosed": {
+			"1": "1 aba de jogo encerrado foi fechada.",
+			"n": "$1 abas de jogos encerrados foram fechadas."
+		}
 	},
 	"main": {
 		"tourButton": "Tour",

@@ -153,6 +153,10 @@ export interface Game {
 	delayDescription?: string;
 }
 
+// What becomes of a registered tab once its game is over. 'keep' is what ArenaSwap has always
+// done. 'free' drops the registration and hands the tab back unmuted; 'close' shuts it.
+export type FinishedTabAction = 'keep' | 'free' | 'close';
+
 export interface UserPreferences {
 	sensitivity: 1 | 2 | 3 | 4 | 5 | 6 | 7;
 	cooldownSeconds: number;
@@ -166,6 +170,7 @@ export interface UserPreferences {
 	// Keeps a finished game reachable for finalRetentionMs after it wrapped instead of discarding
 	// it the instant ESPN reports it final.
 	keepFinalGames: boolean;
+	finishedTabAction: FinishedTabAction;
 	proTipsEnabled: boolean;
 	notificationsEnabled: boolean;
 	standbyStreamEnabled: boolean;

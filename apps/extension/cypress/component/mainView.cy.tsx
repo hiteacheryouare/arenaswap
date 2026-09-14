@@ -10,6 +10,7 @@ const defaultPrefs: UserPreferences = {
 	switchDelaySeconds: 0,
 	showUpcomingGames: true,
 	keepFinalGames: false,
+	finishedTabAction: 'keep' as const,
 	proTipsEnabled: true,
 	notificationsEnabled: false,
 	favoriteTeamBonusPoints: 0,

@@ -1,5 +1,104 @@
 # Changelog
 
+## A tab stops being ArenaSwap's the moment its game is over — 2026-09-12
+
+Watch a full Saturday and you end up with a dozen tabs on games that finished hours ago, every one
+of them still registered, still muted, and still counted as somewhere the switcher could send you.
+A new Display setting decides what becomes of a registered tab once its game wraps: **leave it
+alone**, **free it from ArenaSwap**, or **close it**. Off by default, so nobody's tabs change
+behaviour on update.
+
+### Freeing and closing are one code path with one flag
+
+Freeing drops the registration and lets the existing mute sync hand the tab back unmuted; closing
+does that and then calls `tabs.remove`. The registration goes in both cases, which is what makes
+a failed `tabs.remove` degrade into a free rather than leaving a tab half-managed — registered to
+a game that will never be scored again.
+
+A freed tab is immediately eligible for tab suggestions again, because `suggestTabAssignments`
+filters on the registry. That is not a feature that had to be built; it is what falls out of
+releasing the tab rather than marking it as spent.
+
+### Absence is not the same as final, and ESPN has already proved it
+
+With **Keep finished games** off — the default — a finished game does not merely change status, it
+leaves the payload entirely, so the obvious implementation is to treat a registered game going
+missing as a game that ended.
+
+That is wrong, and the entry three above this one is the proof: college football's dateless
+scoreboard was serving a curated 24 events out of a week of well over a hundred, and it dropped two
+games that were **live at that moment**. A rule that read absence as an ending would have closed
+both of those tabs mid-game.
+
+So the poll asks for finals whenever the setting is on, whatever the display preference says, and
+the finished games are dropped again on the way into `games`. `includeFinal` is a client-side
+filter on the live poll rather than a different request — same URL, same bytes — so seeing the
+whistle costs nothing. Nothing reaches the tab logic that ESPN has not called `post`.
+
+The split has its own pair of tests: that the fetch asks for finals with Keep finished games off,
+and that the finished game still never reaches the popup's list.
+
+### Three things it will not do
+
+**The tab you are looking at.** Being pulled out of a postgame you are watching is worse than the
+clutter. The active tab is skipped and comes back round on the next poll, which has a test for each
+half — that it is spared, and that it is taken once you move away.
+
+**A window's last tab.** `tabs.remove` on it takes the window with it, and on a single-window
+browser that is the browser. Those degrade to being freed, so the setting is honoured everywhere it
+can be and nothing ever closes a window nobody asked to close.
+
+**Anything at all in demo mode.** Demo games reach `post` on a script while the tabs registered to
+them are real, and `mock-20` ships already final — so the first poll after switching the demo on
+would have closed a real tab for a game nobody played. The demo branch reports its finished games
+exactly the way a real poll does and the exclusion lives in one place, which is what makes it
+testable: written the other way the guard was unreachable, and the test for it passed with the
+guard deleted.
+
+### The toast comes on the next open, and accumulates until it does
+
+There is no prompt. The background does the work while the popup is shut and leaves a count in
+session storage; the popup reads it on open, raises a toast and clears it, because it is news
+rather than state.
+
+Freed and closed are counted **separately** rather than as one number and an action, since the
+setting can change between two polls and a session can genuinely have done both. And the count
+adds to whatever is already waiting instead of replacing it — a second wave of finals before the
+popup opens must not erase the first.
+
+### Strings
+
+Nine keys across all twelve locales: six on the setting, one keyword list, and two plural toasts.
+
+`free` is the one that does not survive a literal translation — it means released from ArenaSwap's
+control, not free of charge — so each language took its own release verb rather than the English
+word: German `freigeben`, European Portuguese `libertar` against Brazilian `liberar`, Korean
+`해제` reused from the favourite-team register/unregister pair, which is the same idea. The four CJK
+locales label the setting as a noun phrase (`試合終了時の動作`) rather than the English clause,
+matching how those files already write every other setting label.
+
+### Coverage
+
+21 unit tests on the resolver and the notice, 12 on the background, and 15 in a browser — 10
+component and 5 end-to-end.
+
+The component ones include a width measurement that a rendered-box check could not make: a native
+`select` clips rather than wraps, so an option that does not fit is silently truncated to an
+ellipsis. All three options are measured against the select's content box in all twelve locales,
+off a ruler carrying the select's own resolved font. Confirmed failing against a deliberately
+overlong English string.
+
+Every rule was checked by breaking it: dropping the active-tab exclusion, dropping the sole-tab
+guard, dropping the keep short-circuit, putting the fetch back to `keepFinalGames`, letting finals
+through into the popup list, forgetting the window layout, and removing the demo guard. Each broke
+a different test.
+
+Two things about the harness are worth recording. `background.test.ts` had **mixed line endings**
+— part LF, part CRLF — which silently swallowed three of five scripted edits to it while reporting
+success, and `git diff` shows nothing either way. And the new tests step forward until a poll
+actually lands rather than advancing a fixed interval: the league drops to the dormant beat the
+moment its only game is over, so the delay that carried the first poll is nowhere near the second.
+
 ## The Guide opens on today rather than on the day before yesterday — 2026-09-12
 
 Opening the guide landed on a past day. The pager said the right thing about whatever day it was

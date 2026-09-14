@@ -37,15 +37,20 @@ let storageLocalGet: jest.Mock;
 let storageLocalSet: jest.Mock;
 let tabsQuery: jest.Mock;
 let tabsUpdate: jest.Mock;
+let tabsRemove: jest.Mock;
 let storageSessionSet: jest.Mock;
 let onMessageHandler!: (msg: unknown) => unknown;
 let onActivatedHandler: ((info: { tabId: number }) => unknown) | undefined;
 let onRemovedHandler: ((tabId: number) => unknown) | undefined;
 
-const mockOpenTabIds = (openTabIds: number[], activeTabId: number) => {
+// `windowIds` is opt-in: without it the tabs carry no windowId, which is what the browser never
+// does but every test written before tab closing existed assumes. Only the closing rules read it.
+const mockOpenTabIds = (openTabIds: number[], activeTabId: number, windowIds?: Record<number, number>) => {
 	tabsQuery.mockImplementation((q: unknown) => {
 		if ((q as { active?: boolean }).active) return Promise.resolve([{ id: activeTabId }]);
-		return Promise.resolve(openTabIds.map(id => ({ id })));
+		return Promise.resolve(openTabIds.map(id => (
+			windowIds?.[id] === undefined ? { id } : { id, windowId: windowIds[id] }
+		)));
 	});
 };
 
@@ -101,10 +106,11 @@ const loadBackground = async (options: LoadOptions = {}) => {
 	storageLocalSet = jest.fn().mockResolvedValue(undefined);
 	tabsQuery = jest.fn().mockResolvedValue([]);
 	tabsUpdate = jest.fn().mockResolvedValue(undefined);
+	tabsRemove = jest.fn().mockResolvedValue(undefined);
 	storageSessionSet = jest.fn().mockResolvedValue(undefined);
 	onActivatedHandler = undefined;
 	onRemovedHandler = undefined;
-	if (options.openTabIds) mockOpenTabIds(options.openTabIds, options.activeTabId ?? options.openTabIds[0]!);
+	if (options.openTabIds) mockOpenTabIds(options.openTabIds, options.activeTabId ?? options.openTabIds[0]!, options.windowIds);
 
 	(globalThis as { defineBackground?: unknown }).defineBackground = (fn: () => void) => fn();
 	(globalThis as { browser?: unknown }).browser = {
@@ -134,6 +140,7 @@ const loadBackground = async (options: LoadOptions = {}) => {
 		tabs: {
 			query: tabsQuery,
 			update: tabsUpdate,
+			remove: tabsRemove,
 			onActivated: {
 				addListener: (h: (info: { tabId: number }) => unknown) => { onActivatedHandler = h; },
 			},
@@ -153,6 +160,8 @@ const loadBackground = async (options: LoadOptions = {}) => {
 
 	fetchMock.mockClear();
 	tabsUpdate.mockClear();
+	tabsRemove.mockClear();
+	storageSessionSet.mockClear();
 };
 
 afterEach(() => {
@@ -1621,5 +1630,185 @@ describe('GET_GUIDE_SLATE', () => {
 		fetchMock.mockRejectedValue(new Error('503'));
 
 		await expect(guideSlate()).resolves.toEqual({ games: [], leagueLogos: {}, gameBoosts: {} });
+	});
+});
+
+describe('handing a tab back once its game finishes', () => {
+	const nbaOnly = { enabledLeagues: ['nba' as LeagueId] };
+
+	const finishedTabGame = (id: string, status: Game['status']): Game => ({
+		id,
+		league: 'nba' as LeagueId,
+		sportType: 'basketball',
+		status,
+		period: status === 'post' ? 4 : 3,
+		clockSeconds: status === 'post' ? 0 : 300,
+		startTime: startedHoursAgo(2),
+		homeTeam: { id: 'h', name: 'Home', abbreviation: 'HOM', score: 101 },
+		awayTeam: { id: 'a', name: 'Away', abbreviation: 'AWY', score: 99 },
+	});
+
+	// Two tabs open in one window, so nothing here is a window's last tab unless a test says so.
+	const load = async (finishedTabAction: UserPreferences['finishedTabAction'], overrides: Partial<LoadOptions> = {}) => (
+		loadBackground({
+			prefs: { ...nbaOnly, finishedTabAction, keepFinalGames: false },
+			tabRegistry: [{ tabId: 7, gameId: 'wrapped' }],
+			fetchReturnValue: { games: [finishedTabGame('wrapped', 'in')], leagueLogos: {} },
+			openTabIds: [7, 8],
+			activeTabId: 8,
+			windowIds: { 7: 1, 8: 1 },
+			...overrides,
+		})
+	);
+
+	// Steps forward until a poll actually lands rather than advancing a fixed amount. The league
+	// drops to the dormant beat the moment its only game is over, so the interval that carried the
+	// first poll is nowhere near enough for the second.
+	const poll = async (limitMs = 10 * 60_000) => {
+		fetchMock.mockClear();
+		for (let waited = 0; waited < limitMs && fetchMock.mock.calls.length === 0; waited += 5_000) {
+			jest.advanceTimersByTime(5_000);
+			await drain(16);
+		}
+		expect(fetchMock).toHaveBeenCalled();
+	};
+
+	const whistle = async () => {
+		fetchMock.mockResolvedValue({ games: [finishedTabGame('wrapped', 'post')], leagueLogos: {} });
+		await poll();
+	};
+
+	const registry = async (): Promise<TabRegistration[]> => (await getDebugState()).tabRegistry;
+
+	const notice = (): unknown => storageSessionSet.mock.calls
+		.map(([written]) => (written as Record<string, unknown>).finishedTabNotice)
+		.findLast(value => value !== undefined);
+
+	test('leaves the registration alone by default', async () => {
+		expect(createDefaultUserPreferences().finishedTabAction).toBe('keep');
+		await load('keep');
+		await whistle();
+
+		expect(await registry()).toEqual([{ tabId: 7, gameId: 'wrapped' }]);
+		expect(tabsRemove).not.toHaveBeenCalled();
+	});
+
+	test('frees the tab without closing it', async () => {
+		await load('free');
+		await whistle();
+
+		expect(await registry()).toEqual([]);
+		expect(tabsRemove).not.toHaveBeenCalled();
+		expect(notice()).toEqual({ freed: 1, closed: 0 });
+	});
+
+	test('closes the tab when the setting says close', async () => {
+		await load('close');
+		await whistle();
+
+		expect(tabsRemove).toHaveBeenCalledWith(7);
+		expect(await registry()).toEqual([]);
+		expect(notice()).toEqual({ freed: 0, closed: 1 });
+	});
+
+	// A game that is still on cannot have its tab taken, whatever the setting says.
+	test('does nothing while the game is still being played', async () => {
+		await load('close');
+		await poll();
+
+		expect(await registry()).toEqual([{ tabId: 7, gameId: 'wrapped' }]);
+		expect(tabsRemove).not.toHaveBeenCalled();
+	});
+
+	test('leaves the tab the user is sitting on', async () => {
+		await load('close', { activeTabId: 7 });
+		await whistle();
+
+		expect(await registry()).toEqual([{ tabId: 7, gameId: 'wrapped' }]);
+		expect(tabsRemove).not.toHaveBeenCalled();
+	});
+
+	test('and takes it on the poll after they move away', async () => {
+		await load('close', { activeTabId: 7 });
+		await whistle();
+		expect(tabsRemove).not.toHaveBeenCalled();
+
+		mockOpenTabIds([7, 8], 8, { 7: 1, 8: 1 });
+		await poll();
+
+		expect(tabsRemove).toHaveBeenCalledWith(7);
+	});
+
+	// tabs.remove on a window's last tab takes the window with it.
+	test('frees rather than closes the only tab in its window', async () => {
+		await load('close', { openTabIds: [7, 8], activeTabId: 8, windowIds: { 7: 2, 8: 1 } });
+		await whistle();
+
+		expect(tabsRemove).not.toHaveBeenCalled();
+		expect(await registry()).toEqual([]);
+		expect(notice()).toEqual({ freed: 1, closed: 0 });
+	});
+
+	// The whole point of the split between what the fetch asks for and what reaches `games`:
+	// seeing the game go final is what releases the tab, and the popup's own list is unaffected.
+	test('asks the poll for finals even with Keep finished games off', async () => {
+		await load('free');
+		await whistle();
+
+		expect(fetchMock.mock.calls.length).toBeGreaterThan(0);
+		for (const [, options] of fetchMock.mock.calls) {
+			expect((options as { includeFinal: boolean }).includeFinal).toBe(true);
+		}
+	});
+
+	test('and still keeps the finished game out of the popup list', async () => {
+		await load('free');
+		await whistle();
+
+		const state = await sendMessage({ type: 'GET_STATE' }) as { games: Game[] };
+		expect(state.games).toEqual([]);
+	});
+
+	test('accumulates across polls rather than overwriting what is waiting', async () => {
+		await load('free', {
+			tabRegistry: [{ tabId: 7, gameId: 'wrapped' }, { tabId: 8, gameId: 'other' }],
+			fetchReturnValue: { games: [finishedTabGame('wrapped', 'in'), finishedTabGame('other', 'in')], leagueLogos: {} },
+			openTabIds: [7, 8, 9],
+			activeTabId: 9,
+			windowIds: { 7: 1, 8: 1, 9: 1 },
+		});
+
+		fetchMock.mockResolvedValue({ games: [finishedTabGame('wrapped', 'post'), finishedTabGame('other', 'in')], leagueLogos: {} });
+		await poll();
+		expect(notice()).toEqual({ freed: 1, closed: 0 });
+
+		// storage.session.get is stubbed flat, so the accumulator has to be primed by hand for the
+		// second wave to have anything to add to.
+		(globalThis as { browser: { storage: { session: { get: jest.Mock } } } }).browser.storage.session.get =
+			jest.fn().mockResolvedValue({ finishedTabNotice: { freed: 1, closed: 0 } });
+		fetchMock.mockResolvedValue({ games: [finishedTabGame('wrapped', 'post'), finishedTabGame('other', 'post')], leagueLogos: {} });
+		await poll();
+
+		expect(notice()).toEqual({ freed: 2, closed: 0 });
+	});
+
+	// Demo games reach 'post' on a script and the tabs registered to them are real, so the first
+	// poll after turning the demo on would otherwise close a tab for a game nobody played.
+	test('never touches a tab in demo mode', async () => {
+		await loadBackground({
+			prefs: { ...nbaOnly, finishedTabAction: 'close' },
+			tabRegistry: [{ tabId: 7, gameId: 'mock-20' }],
+			openTabIds: [7, 8],
+			activeTabId: 8,
+			windowIds: { 7: 1, 8: 1 },
+		});
+		await sendMessage({ type: 'SET_DEMO_MODE', enabled: true });
+		// Not `poll()`: demo mode reaches ESPN never, so there is no fetch for it to wait on.
+		await runFirstPoll();
+
+		const state = await sendMessage({ type: 'GET_STATE' }) as { games: Game[] };
+		expect(state.games.find(g => g.id === 'mock-20')?.status).toBe('post');
+		expect(tabsRemove).not.toHaveBeenCalled();
+		expect(await registry()).toEqual([{ tabId: 7, gameId: 'mock-20' }]);
 	});
 });

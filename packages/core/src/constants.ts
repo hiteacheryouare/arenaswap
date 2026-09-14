@@ -1,5 +1,5 @@
 import pkg from '../package.json';
-import type { Game, LeagueId, SignalName, SportType, UserPreferences } from './types';
+import type { FinishedTabAction, Game, LeagueId, SignalName, SportType, UserPreferences } from './types';
 import {
 	allLeagueIds,
 	stallPenaltySteps,
@@ -327,6 +327,7 @@ export const createDefaultUserPreferences = (): UserPreferences => ({
 	favoriteTeamBonusPoints: defaultFavoriteTeamBonusPoints,
 	showUpcomingGames: true,
 	keepFinalGames: false,
+	finishedTabAction: 'keep' as const,
 	proTipsEnabled: true,
 	notificationsEnabled: true,
 	standbyStreamEnabled: false,
@@ -345,6 +346,13 @@ export const createDefaultUserPreferences = (): UserPreferences => ({
 
 const normalizeTemperatureUnit = (value: unknown): UserPreferences['temperatureUnit'] => (
 	value === 'C' || value === 'Ro' ? value : 'F'
+);
+
+// Anything unrecognised falls back to 'keep', which is the one value that touches nobody's tabs.
+// A stored string this does not know about is more likely a typo or a rolled-back release than a
+// request to start closing things.
+const normalizeFinishedTabAction = (value: unknown): FinishedTabAction => (
+	value === 'free' || value === 'close' ? value : 'keep'
 );
 
 export const normalizeUserPreferences = (storedPrefs: unknown): UserPreferences => {
@@ -369,6 +377,7 @@ export const normalizeUserPreferences = (storedPrefs: unknown): UserPreferences 
 		favoriteTeamBonusPoints: normalizeSecondsPreference(candidate.favoriteTeamBonusPoints, defaults.favoriteTeamBonusPoints),
 		showUpcomingGames: typeof candidate.showUpcomingGames === 'boolean' ? candidate.showUpcomingGames : defaults.showUpcomingGames,
 		keepFinalGames: typeof candidate.keepFinalGames === 'boolean' ? candidate.keepFinalGames : defaults.keepFinalGames,
+		finishedTabAction: normalizeFinishedTabAction(candidate.finishedTabAction),
 		proTipsEnabled: typeof candidate.proTipsEnabled === 'boolean' ? candidate.proTipsEnabled : defaults.proTipsEnabled,
 		notificationsEnabled: typeof candidate.notificationsEnabled === 'boolean' ? candidate.notificationsEnabled : defaults.notificationsEnabled,
 		standbyStreamEnabled: typeof candidate.standbyStreamEnabled === 'boolean' ? candidate.standbyStreamEnabled : defaults.standbyStreamEnabled,

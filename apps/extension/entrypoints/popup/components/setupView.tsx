@@ -1,6 +1,6 @@
 import { useMemo, useState, type ReactNode } from 'react';
 import { i18n } from '#i18n';
-import type { LeagueId, LeagueLogoMap, SignalName, SportType, UserPreferences } from '@arenaswap/core/types';
+import type { FinishedTabAction, LeagueId, LeagueLogoMap, SignalName, SportType, UserPreferences } from '@arenaswap/core/types';
 import type { Browser } from 'wxt/browser';
 import CooldownSlider from './cooldownSlider';
 import FavoriteTeamsPage from './favoriteTeamsPage';
@@ -39,6 +39,7 @@ interface setupViewProps {
 	onResetLeagueOrder: () => void;
 	onToggleShowUpcoming: () => void;
 	onToggleKeepFinalGames: () => void;
+	onFinishedTabActionChange: (action: FinishedTabAction) => void;
 	onUpcomingGamesDaysChange: (val: number) => void;
 	onToggleProTips: () => void;
 	onToggleNotifications: () => void;
@@ -71,7 +72,7 @@ const setupView = ({
 	prefs, prefsLoaded, demoMode, demoSeason, leagueLogos, favoriteTeamIds, standbyStreamTabId, standbyOnboardingDone,
 	openTabs, formatTabLabel, onClose, onSensitivityChange, onCooldownChange, onSwitchDelayChange,
 	onFavoriteTeamBonusChange, onToggleFavoriteTeam, onToggleLeague, onToggleSport, onReorderLeague, onResetLeagueOrder,
-	onToggleShowUpcoming, onToggleKeepFinalGames, onUpcomingGamesDaysChange,
+	onToggleShowUpcoming, onToggleKeepFinalGames, onFinishedTabActionChange, onUpcomingGamesDaysChange,
 	onToggleProTips, onToggleNotifications, onToggleDemo, onDemoSeasonChange, onToggleStandbyStream, onStandbyThresholdChange,
 	onSetStandbyTab, onStandbyOnboardingDone, onToggleBetting, onToggleTemperatureUnit, onUnlockRomer, onPostseasonBoostChange,
 	onToggleHolidayDecorations, onToggleHolidaySnow, onToggleHolidayLights, onToggleHolidayLeaves,
@@ -206,6 +207,29 @@ const setupView = ({
 				</div>
 			</div>
 			<div className='setting-explainer mt-1'>{i18n.t('setup.keepFinalGamesExplainer')}</div>
+
+			<div className='mt-3'>
+				<label className='text-body-secondary setting-toggle-label d-block mb-1' htmlFor='finishedTabSelect'>
+					{i18n.t('setup.finishedTabAction')}
+				</label>
+				<select
+					id='finishedTabSelect'
+					className='form-select form-select-sm'
+					value={prefs.finishedTabAction}
+					onChange={event => onFinishedTabActionChange(event.target.value as FinishedTabAction)}
+					disabled={!prefsLoaded}
+				>
+					<option value='keep'>{i18n.t('setup.finishedTabKeep')}</option>
+					<option value='free'>{i18n.t('setup.finishedTabFree')}</option>
+					<option value='close'>{i18n.t('setup.finishedTabClose')}</option>
+				</select>
+				{prefs.finishedTabAction !== 'keep' && (
+					<div className='setting-explainer mt-1'>{i18n.t('setup.finishedTabActiveExplainer')}</div>
+				)}
+				{prefs.finishedTabAction === 'close' && (
+					<div className='setting-explainer mt-1'>{i18n.t('setup.finishedTabCloseExplainer')}</div>
+				)}
+			</div>
 
 			<div className='d-flex justify-content-between align-items-center mt-2'>
 				<label className='text-body-secondary setting-toggle-label' htmlFor='proTipsToggle'>{i18n.t('setup.proTips')}</label>

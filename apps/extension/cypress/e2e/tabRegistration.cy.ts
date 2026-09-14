@@ -67,3 +67,44 @@ describe('registering a tab and watching the lead change', () => {
 		cy.contains('.game-card', 'DAL').should('be.visible');
 	});
 });
+
+// The background hands a finished game's tab back while the popup is shut, so the toast on the
+// next open is the only place the user is told it happened.
+const bootWithNotice = (finishedTabNotice: unknown) => cy.openPopup({
+	local: { onboardingCompleted: true },
+	sync: { prefs: onboardedPrefs() },
+	session: { finishedTabNotice },
+});
+
+describe('the report on tabs handed back', () => {
+	it('reports the tabs that were freed', () => {
+		bootWithNotice({ freed: 2, closed: 0 });
+		cy.contains('2 tabs are yours again.').should('be.visible');
+	});
+
+	it('reports the tabs that were closed, in the singular', () => {
+		bootWithNotice({ freed: 0, closed: 1 });
+		cy.contains("Closed 1 finished game's tab.").should('be.visible');
+	});
+
+	// Both counts are kept, because the setting can change between two polls.
+	it('reports both when the session did both', () => {
+		bootWithNotice({ freed: 1, closed: 3 });
+		cy.contains('1 tab is yours again.').should('be.visible');
+		cy.contains("Closed 3 finished games' tabs.").should('be.visible');
+	});
+
+	// It is news rather than state: a second open must not repeat it.
+	it('clears the notice once it has been shown', () => {
+		bootWithNotice({ freed: 2, closed: 0 });
+		cy.contains('2 tabs are yours again.').should('be.visible');
+		cy.background().its('storage.session').should(store => {
+			expect((store as Map<string, unknown>).has('finishedTabNotice')).to.equal(false);
+		});
+	});
+
+	it('says nothing when nothing was handed back', () => {
+		bootWithNotice(null);
+		cy.get('.toast').should('not.exist');
+	});
+});

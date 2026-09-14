@@ -144,6 +144,12 @@
 		},
 		"keepFinalGames": "Mantieni le partite terminate",
 		"keepFinalGamesExplainer": "Le partite terminate restano nell'elenco per 24 ore dal fischio finale.",
+		"finishedTabAction": "Quando una partita termina",
+		"finishedTabKeep": "Lascia la scheda com'è",
+		"finishedTabFree": "Liberala da ArenaSwap",
+		"finishedTabClose": "Chiudi la scheda",
+		"finishedTabActiveExplainer": "La scheda che stai guardando non viene toccata finché non la lasci.",
+		"finishedTabCloseExplainer": "L'ultima scheda di una finestra viene liberata anziché chiusa, così non si chiude nessuna finestra.",
 		"proTips": "Consigli",
 		"switchNotifications": "Notifiche di cambio",
 		"demoMode": "Modalità demo",
@@ -216,6 +222,7 @@
 		"keywordsUpcoming": "future, programmate, calendario, in arrivo",
 		"keywordsUpcomingDays": "giorni, anticipo, intervallo, orizzonte",
 		"keywordsKeepFinal": "terminata, finita, risultati, cronologia, riepilogo",
+		"keywordsFinishedTab": "scheda, chiudere, liberare, rilasciare, ordine, disordine, terminata, finita, fatta",
 		"keywordsProTips": "suggerimenti, aiuto, consigli",
 		"keywordsNotifications": "avvisi, notifica, banner, toast, popup",
 		"keywordsBetting": "quote, scommesse, spread, moneyline, puntata",
@@ -225,6 +232,16 @@
 		"keywordsStandbyThreshold": "punteggio, soglia, limite, sotto, silenzio",
 		"keywordsStandbyTab": "scheda, finestra, pagina, destinazione",
 		"keywordsDemo": "finto, esempio, test, anteprima, prova"
+	},
+	"finishedTabs": {
+		"toastFreed": {
+			"1": "1 scheda è di nuovo tua.",
+			"n": "$1 schede sono di nuovo tue."
+		},
+		"toastClosed": {
+			"1": "Chiusa la scheda di 1 partita terminata.",
+			"n": "Chiuse le schede di $1 partite terminate."
+		}
 	},
 	"main": {
 		"tourButton": "Tour",
