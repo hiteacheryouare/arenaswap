@@ -144,6 +144,12 @@
 		},
 		"keepFinalGames": "保留已結束的比賽",
 		"keepFinalGamesExplainer": "已結束的比賽會在終場後的 24 小時內留在列表中。",
+		"finishedTabAction": "比賽結束時",
+		"finishedTabKeep": "保留分頁",
+		"finishedTabFree": "從 ArenaSwap 釋放",
+		"finishedTabClose": "關閉分頁",
+		"finishedTabActiveExplainer": "你正在看的分頁會保持不變，直到你切換走為止。",
+		"finishedTabCloseExplainer": "視窗裡的最後一個分頁會被釋放而不是關閉，這樣視窗就不會被關掉。",
 		"proTips": "達人技巧",
 		"switchNotifications": "切換通知",
 		"demoMode": "示範模式",
@@ -216,6 +222,7 @@
 		"keywordsUpcoming": "未來, 已排定, 稍後, 賽程",
 		"keywordsUpcomingDays": "天數, 提前, 範圍, 區間",
 		"keywordsKeepFinal": "已結束, 終場, 結果, 歷史, 回顧",
+		"keywordsFinishedTab": "分頁, 關閉, 釋放, 放開, 整理, 雜亂, 已結束, 結束, 完成",
 		"keywordsProTips": "提示, 幫助, 建議, 技巧",
 		"keywordsNotifications": "警示, 通知, 提醒, 橫幅, 彈出視窗",
 		"keywordsBetting": "賠率, 盤口, 讓分, 博彩, 投注",
@@ -225,6 +232,16 @@
 		"keywordsStandbyThreshold": "分數, 閾值, 下限, 低於, 冷場",
 		"keywordsStandbyTab": "分頁, 視窗, 頁面, 目標",
 		"keywordsDemo": "虛構, 範例, 測試, 預覽, 沙盒"
+	},
+	"finishedTabs": {
+		"toastFreed": {
+			"1": "1 個分頁已還給你了。",
+			"n": "$1 個分頁已還給你了。"
+		},
+		"toastClosed": {
+			"1": "已關閉 1 個已結束比賽的分頁。",
+			"n": "已關閉 $1 個已結束比賽的分頁。"
+		}
 	},
 	"main": {
 		"tourButton": "導覽",

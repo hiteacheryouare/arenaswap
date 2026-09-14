@@ -144,6 +144,12 @@
 		},
 		"keepFinalGames": "Mantener partidos finalizados",
 		"keepFinalGamesExplainer": "Los partidos finalizados permanecen en la lista 24 horas después del final.",
+		"finishedTabAction": "Cuando un partido finaliza",
+		"finishedTabKeep": "Dejar la pestaña como está",
+		"finishedTabFree": "Liberarla de ArenaSwap",
+		"finishedTabClose": "Cerrar la pestaña",
+		"finishedTabActiveExplainer": "La pestaña que estás viendo no se toca hasta que te cambies a otra.",
+		"finishedTabCloseExplainer": "La última pestaña de una ventana se libera en su lugar, para que no se cierre ninguna ventana.",
 		"proTips": "Consejos",
 		"switchNotifications": "Notificaciones de cambio",
 		"demoMode": "Modo demostración",
@@ -216,6 +222,7 @@
 		"keywordsUpcoming": "futuro, programado, mas tarde, calendario",
 		"keywordsUpcomingDays": "dias, adelante, rango, horizonte",
 		"keywordsKeepFinal": "final, finalizado, resultados, historial, resumen",
+		"keywordsFinishedTab": "pestana, cerrar, liberar, soltar, ordenar, desorden, terminado, finalizado, listo",
 		"keywordsProTips": "sugerencias, ayuda, consejos, avisos",
 		"keywordsNotifications": "alertas, avisar, notificar, banner, emergente",
 		"keywordsBetting": "cuotas, apuestas, linea, spread, momio, dinero",
@@ -225,6 +232,16 @@
 		"keywordsStandbyThreshold": "puntuacion, corte, limite, debajo, tranquilo",
 		"keywordsStandbyTab": "pestana, ventana, pagina, destino",
 		"keywordsDemo": "falso, ejemplo, prueba, vista previa, simulacion"
+	},
+	"finishedTabs": {
+		"toastFreed": {
+			"1": "1 pestaña vuelve a ser tuya.",
+			"n": "$1 pestañas vuelven a ser tuyas."
+		},
+		"toastClosed": {
+			"1": "Se cerró la pestaña de 1 partido finalizado.",
+			"n": "Se cerraron las pestañas de $1 partidos finalizados."
+		}
 	},
 	"main": {
 		"tourButton": "Recorrido",

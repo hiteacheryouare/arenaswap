@@ -144,6 +144,12 @@
 		},
 		"keepFinalGames": "Manter jogos terminados",
 		"keepFinalGamesExplainer": "Os jogos terminados ficam na lista durante 24 horas após o apito final.",
+		"finishedTabAction": "Quando um jogo termina",
+		"finishedTabKeep": "Deixar o separador como está",
+		"finishedTabFree": "Libertar o separador do ArenaSwap",
+		"finishedTabClose": "Fechar o separador",
+		"finishedTabActiveExplainer": "O separador que estás a ver fica intocado até saíres dele.",
+		"finishedTabCloseExplainer": "Se for o último separador da janela, é libertado em vez de fechado, para a janela não fechar.",
 		"proTips": "Dicas",
 		"switchNotifications": "Notificações de mudança",
 		"demoMode": "Modo de demonstração",
@@ -216,6 +222,7 @@
 		"keywordsUpcoming": "futuro, agendado, mais tarde, calendario",
 		"keywordsUpcomingDays": "dias, a frente, intervalo, horizonte",
 		"keywordsKeepFinal": "final, terminado, resultados, historico, resumo",
+		"keywordsFinishedTab": "separador, fechar, libertar, largar, arrumar, confusao, terminado, acabado, pronto",
 		"keywordsProTips": "dicas, ajuda, conselhos, sugestoes",
 		"keywordsNotifications": "alertas, notificar, avisar, banner, popup",
 		"keywordsBetting": "odds, apostas, linha, spread, palpite, moneyline",
@@ -225,6 +232,16 @@
 		"keywordsStandbyThreshold": "pontuacao, corte, limite, abaixo, parado",
 		"keywordsStandbyTab": "separador, janela, pagina, destino",
 		"keywordsDemo": "falso, exemplo, teste, pre visualizacao, simulacao"
+	},
+	"finishedTabs": {
+		"toastFreed": {
+			"1": "1 separador voltou a ser teu.",
+			"n": "$1 separadores voltaram a ser teus."
+		},
+		"toastClosed": {
+			"1": "1 separador de um jogo terminado foi fechado.",
+			"n": "$1 separadores de jogos terminados foram fechados."
+		}
 	},
 	"main": {
 		"tourButton": "Visita guiada",

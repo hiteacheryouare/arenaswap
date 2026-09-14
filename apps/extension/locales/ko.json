@@ -144,6 +144,12 @@
 		},
 		"keepFinalGames": "종료된 경기 유지",
 		"keepFinalGamesExplainer": "종료된 경기는 끝난 후 24시간 동안 목록에 남습니다.",
+		"finishedTabAction": "경기 종료 시 동작",
+		"finishedTabKeep": "탭 그대로 두기",
+		"finishedTabFree": "ArenaSwap에서 해제하기",
+		"finishedTabClose": "탭 닫기",
+		"finishedTabActiveExplainer": "지금 보고 있는 탭은 다른 곳으로 이동하기 전까지 그대로 유지돼요.",
+		"finishedTabCloseExplainer": "창의 마지막 탭이면 닫는 대신 해제해서, 창이 저절로 닫히지 않아요.",
 		"proTips": "꿀팁",
 		"switchNotifications": "전환 알림",
 		"demoMode": "데모 모드",
@@ -216,6 +222,7 @@
 		"keywordsUpcoming": "예정, 향후, 나중, 일정",
 		"keywordsUpcomingDays": "일수, 기간, 범위, 앞으로",
 		"keywordsKeepFinal": "종료, 결과, 기록, 다시보기",
+		"keywordsFinishedTab": "탭, 닫기, 해제, 놓기, 정리, 어수선, 종료, 끝, 완료",
 		"keywordsProTips": "힌트, 도움말, 조언, 팁",
 		"keywordsNotifications": "알림, 배너, 토스트, 팝업",
 		"keywordsBetting": "배당률, 라인, 스프레드, 베팅, 도박, 머니라인",
@@ -225,6 +232,16 @@
 		"keywordsStandbyThreshold": "점수, 기준점, 제한, 이하, 조용함",
 		"keywordsStandbyTab": "탭, 창, 페이지, 목적지",
 		"keywordsDemo": "가짜, 샘플, 테스트, 미리보기, 더미"
+	},
+	"finishedTabs": {
+		"toastFreed": {
+			"1": "탭 1개를 돌려받았어요.",
+			"n": "탭 $1개를 돌려받았어요."
+		},
+		"toastClosed": {
+			"1": "종료된 경기의 탭 1개를 닫았어요.",
+			"n": "종료된 경기의 탭 $1개를 닫았어요."
+		}
 	},
 	"main": {
 		"tourButton": "투어",

@@ -144,6 +144,12 @@
 		},
 		"keepFinalGames": "Itago ang mga tapos nang laro",
 		"keepFinalGamesExplainer": "Mananatili sa listahan ang mga natapos nang laro nang 24 oras.",
+		"finishedTabAction": "Kapag natapos ang laro",
+		"finishedTabKeep": "Iwanan na lang ang tab",
+		"finishedTabFree": "I-free mula sa ArenaSwap",
+		"finishedTabClose": "Isara ang tab",
+		"finishedTabActiveExplainer": "Hindi gagalawin ang tab na pinapanood mo hanggang lumipat ka.",
+		"finishedTabCloseExplainer": "Ang huling tab sa isang window ay i-free na lang, para walang window na magsasara.",
 		"proTips": "Mga Pro Tip",
 		"switchNotifications": "Mga Abiso sa Paglipat",
 		"demoMode": "Demo Mode",
@@ -216,6 +222,7 @@
 		"keywordsUpcoming": "susunod, schedule, mamaya, paparating",
 		"keywordsUpcomingDays": "araw, days, range, hanggang kailan",
 		"keywordsKeepFinal": "final, tapos, resulta, kasaysayan, recap",
+		"keywordsFinishedTab": "tab, isara, i-free, bitawan, linisin, kalat, tapos, done, ayos",
 		"keywordsProTips": "hints, tulong, payo, tips",
 		"keywordsNotifications": "alerts, abiso, banner, toast, popup",
 		"keywordsBetting": "odds, lines, spread, sugal, bet, moneyline",
@@ -225,6 +232,16 @@
 		"keywordsStandbyThreshold": "score, cutoff, limit, ibaba, tahimik",
 		"keywordsStandbyTab": "tab, window, page, patutunguhan",
 		"keywordsDemo": "fake, sample, test, preview, sandbox, dummy"
+	},
+	"finishedTabs": {
+		"toastFreed": {
+			"1": "1 tab, sa'yo ulit.",
+			"n": "$1 na tab, sa'yo ulit."
+		},
+		"toastClosed": {
+			"1": "Isinara ang tab ng 1 natapos nang laro.",
+			"n": "Isinara ang mga tab ng $1 natapos nang laro."
+		}
 	},
 	"main": {
 		"tourButton": "Tour",

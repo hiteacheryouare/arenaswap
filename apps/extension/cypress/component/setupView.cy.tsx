@@ -26,6 +26,7 @@ const defaultPrefs: UserPreferences = {
 	favoriteTeamBonusPoints: 0,
 	showUpcomingGames: true,
 	keepFinalGames: false,
+	finishedTabAction: 'keep',
 	proTipsEnabled: true,
 	notificationsEnabled: false,
 	standbyStreamEnabled: false,
@@ -65,6 +66,7 @@ const defaultProps = {
 	onResetLeagueOrder: () => {},
 	onToggleShowUpcoming: () => {},
 	onToggleKeepFinalGames: () => {},
+	onFinishedTabActionChange: () => {},
 	onUpcomingGamesDaysChange: () => {},
 	onToggleProTips: () => {},
 	onToggleNotifications: () => {},
@@ -613,5 +615,110 @@ describe('setupView leagues group', () => {
 		openGroup('leagues');
 		cy.get('.popup-section-label').contains('Leagues').should('exist');
 		cy.get('.setting-tooltip-btn').should('exist');
+	});
+});
+
+describe('what happens to a tab once its game finishes', () => {
+	const optionKeys = ['finishedTabKeep', 'finishedTabFree', 'finishedTabClose'] as const;
+
+	const openDisplay = (prefs: UserPreferences = defaultPrefs, props = {}) => {
+		cy.viewport(320, 560);
+		cy.mount(<SetupView {...defaultProps} {...props} prefs={prefs} />);
+		openGroup('display');
+	};
+
+	it('offers the three choices and opens on leaving the tab alone', () => {
+		openDisplay();
+		cy.get('#finishedTabSelect').should('have.value', 'keep');
+		cy.get('#finishedTabSelect option').should('have.length', 3);
+		cy.get('#finishedTabSelect option').then((options: JQuery<HTMLElement>) => {
+			expect([...options].map(option => (option as HTMLOptionElement).value)).to.deep.equal(['keep', 'free', 'close']);
+		});
+	});
+
+	it('reflects a stored choice', () => {
+		openDisplay({ ...defaultPrefs, finishedTabAction: 'close' });
+		cy.get('#finishedTabSelect').should('have.value', 'close');
+	});
+
+	it('reports the choice that was made', () => {
+		const spy = cy.spy().as('onFinishedTabActionChange');
+		openDisplay(defaultPrefs, { onFinishedTabActionChange: spy });
+		cy.get('#finishedTabSelect').select('free');
+		cy.get('@onFinishedTabActionChange').should('have.been.calledOnceWith', 'free');
+	});
+
+	// Nothing is being taken while it says keep, so there is nothing to explain.
+	it('says nothing extra while it is set to keep', () => {
+		openDisplay();
+		cy.contains(en.setup.finishedTabActiveExplainer).should('not.exist');
+		cy.contains(en.setup.finishedTabCloseExplainer).should('not.exist');
+	});
+
+	it('warns about the tab in front of you as soon as it is doing anything', () => {
+		openDisplay({ ...defaultPrefs, finishedTabAction: 'free' });
+		cy.contains(en.setup.finishedTabActiveExplainer).should('exist');
+		// Nothing is closing, so the sole-tab rule has nothing to say.
+		cy.contains(en.setup.finishedTabCloseExplainer).should('not.exist');
+	});
+
+	it('adds the last-tab rule only when it is closing', () => {
+		openDisplay({ ...defaultPrefs, finishedTabAction: 'close' });
+		cy.contains(en.setup.finishedTabActiveExplainer).should('exist');
+		cy.contains(en.setup.finishedTabCloseExplainer).should('exist');
+	});
+
+	// A native select clips rather than wraps, so a string that does not fit is silently
+	// truncated to an ellipsis — measuring the rendered box would never notice.
+	it('fits all three options inside the select in every locale', () => {
+		openDisplay();
+		cy.get('#finishedTabSelect').should(([select]: JQuery<HTMLElement>) => {
+			const style = getComputedStyle(select);
+			// .form-select keeps its right-hand padding for the chevron, so the text gets the
+			// content box and nothing more.
+			const available = select.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+			expect(available, 'the select has a measurable width').to.be.greaterThan(100);
+
+			const ruler = document.createElement('span');
+			ruler.style.position = 'absolute';
+			ruler.style.visibility = 'hidden';
+			ruler.style.whiteSpace = 'nowrap';
+			ruler.style.font = style.font;
+			ruler.style.fontFamily = style.fontFamily;
+			ruler.style.fontSize = style.fontSize;
+			ruler.style.fontWeight = style.fontWeight;
+			ruler.style.letterSpacing = style.letterSpacing;
+			select.ownerDocument.body.appendChild(ruler);
+
+			try {
+				for (const [name, locale] of Object.entries(locales)) {
+					const setup = locale.setup as unknown as Record<string, string>;
+					for (const key of optionKeys) {
+						ruler.textContent = setup[key]!;
+						expect(ruler.getBoundingClientRect().width, `${name} ${key} fits`).to.be.at.most(available);
+					}
+				}
+			} finally {
+				ruler.remove();
+			}
+		});
+	});
+
+	it('keeps every locale\'s label on one line above it', () => {
+		openDisplay();
+		cy.get('label[for="finishedTabSelect"]').then(([label]: JQuery<HTMLElement>) => {
+			const oneLine = label.getBoundingClientRect().height;
+			for (const [name, locale] of Object.entries(locales)) {
+				label.textContent = (locale.setup as unknown as Record<string, string>).finishedTabAction!;
+				expect(label.getBoundingClientRect().height, `${name} keeps the label on one line`)
+					.to.be.at.most(oneLine + 1);
+			}
+		});
+	});
+
+	it('is reachable from the settings search', () => {
+		cy.mount(<SetupView {...defaultProps} />);
+		cy.get('#settingsSearch').type('clutter');
+		cy.contains(en.setup.finishedTabAction).should('exist');
 	});
 });

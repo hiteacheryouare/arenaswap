@@ -25,6 +25,7 @@ import {
 	type SuggestionTab,
 	type TabSuggestion,
 } from '../../utils/tabSuggestions';
+import { finishedTabNoticeKey, normalizeFinishedTabNotice } from '../../utils/finishedTabs';
 import { loadStoredUserPreferencesWithPresence, persistStoredUserPreferences } from '../../utils/prefsStorage';
 import { nextTemperatureUnit } from '../../utils/temperatureUnitCycle';
 import { isDemoSeason, resolveDecorationDate, type demoSeason } from '../../utils/holidayDecorations';
@@ -152,10 +153,23 @@ export default () => {
 
 		void init();
 
-		browser.storage.session.get({ tabRegistry: [], standbyStreamTabId: null, [tabSuggestionDismissalsKey]: [] }).then(result => {
+		browser.storage.session.get({
+			tabRegistry: [],
+			standbyStreamTabId: null,
+			[tabSuggestionDismissalsKey]: [],
+			[finishedTabNoticeKey]: null,
+		}).then(result => {
 			setRegistry(result.tabRegistry as TabRegistration[]);
 			setStandbyStreamTabId((result.standbyStreamTabId as number | null) ?? null);
 			setDismissedSuggestions(normalizeDismissedSuggestions(result[tabSuggestionDismissalsKey]));
+
+			// The background hands tabs back while the popup is shut, so this is where the user
+			// finds out it happened. Cleared on read: it is news, not state.
+			const finishedTabs = normalizeFinishedTabNotice(result[finishedTabNoticeKey]);
+			if (!finishedTabs) return;
+			if (finishedTabs.freed > 0) showToast(i18n.t('finishedTabs.toastFreed', finishedTabs.freed), 'info');
+			if (finishedTabs.closed > 0) showToast(i18n.t('finishedTabs.toastClosed', finishedTabs.closed), 'info');
+			void browser.storage.session.remove(finishedTabNoticeKey);
 		});
 
 		void browser.tabs.query({ currentWindow: true }).then(tabs => {
@@ -177,7 +191,7 @@ export default () => {
 			clearTimeout(settleTimer);
 			browser.runtime.onMessage.removeListener(handleMessage);
 		};
-	}, [mutate]);
+	}, [mutate, showToast]);
 
 	useEffect(() => {
 		if (data && !settledRef.current) { settledRef.current = true; setSettled(true); }
@@ -407,6 +421,7 @@ export default () => {
 						onResetLeagueOrder={onResetLeagueOrder}
 						onToggleShowUpcoming={() => persistPrefs(currentPrefs => ({ ...currentPrefs, showUpcomingGames: !currentPrefs.showUpcomingGames }))}
 						onToggleKeepFinalGames={() => persistPrefs(currentPrefs => ({ ...currentPrefs, keepFinalGames: !currentPrefs.keepFinalGames }))}
+						onFinishedTabActionChange={action => persistPrefs(currentPrefs => ({ ...currentPrefs, finishedTabAction: action }))}
 						onUpcomingGamesDaysChange={val => persistPrefs(currentPrefs => ({ ...currentPrefs, upcomingGamesDays: val }))}
 						onToggleProTips={() => persistPrefs(currentPrefs => ({ ...currentPrefs, proTipsEnabled: !currentPrefs.proTipsEnabled }))}
 						onToggleNotifications={() => persistPrefs(currentPrefs => ({ ...currentPrefs, notificationsEnabled: !currentPrefs.notificationsEnabled }))}

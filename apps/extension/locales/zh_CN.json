@@ -144,6 +144,12 @@
 		},
 		"keepFinalGames": "保留已结束的比赛",
 		"keepFinalGamesExplainer": "已结束的比赛会在终场后的 24 小时内留在列表中。",
+		"finishedTabAction": "比赛结束时",
+		"finishedTabKeep": "保留标签页",
+		"finishedTabFree": "从 ArenaSwap 释放",
+		"finishedTabClose": "关闭标签页",
+		"finishedTabActiveExplainer": "您正在观看的标签页在您离开前不会受到影响。",
+		"finishedTabCloseExplainer": "窗口中的最后一个标签页会被释放而不是关闭，这样窗口就不会被关掉。",
 		"proTips": "达人技巧",
 		"switchNotifications": "切换通知",
 		"demoMode": "演示模式",
@@ -216,6 +222,7 @@
 		"keywordsUpcoming": "未来, 已排期, 稍后, 赛程",
 		"keywordsUpcomingDays": "天数, 提前, 范围, 时长",
 		"keywordsKeepFinal": "已结束, 终场, 结果, 历史, 回顾",
+		"keywordsFinishedTab": "标签页, 关闭, 释放, 松开, 整理, 杂乱, 已结束, 结束, 完成",
 		"keywordsProTips": "提示, 帮助, 建议, 技巧",
 		"keywordsNotifications": "通知, 提醒, 横幅, 弹窗",
 		"keywordsBetting": "赔率, 博彩, 让分, 盘口, 投注",
@@ -225,6 +232,16 @@
 		"keywordsStandbyThreshold": "分数, 阈值, 下限, 低于, 冷场",
 		"keywordsStandbyTab": "标签页, 窗口, 页面, 目标",
 		"keywordsDemo": "虚构, 示例, 测试, 预览, 沙盒"
+	},
+	"finishedTabs": {
+		"toastFreed": {
+			"1": "1 个标签页已归还给您。",
+			"n": "$1 个标签页已归还给您。"
+		},
+		"toastClosed": {
+			"1": "已关闭 1 个已结束比赛的标签页。",
+			"n": "已关闭 $1 个已结束比赛的标签页。"
+		}
 	},
 	"main": {
 		"tourButton": "引导教程",

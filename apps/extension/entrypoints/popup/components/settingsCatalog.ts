@@ -51,6 +51,7 @@ export const settingsEntries: readonly settingsEntry[] = [
 	{ group: 'display', labelKey: 'setup.showUpcoming', keywordsKey: 'setup.keywordsUpcoming' },
 	{ group: 'display', labelKey: 'setup.upcomingDaysLabel', keywordsKey: 'setup.keywordsUpcomingDays' },
 	{ group: 'display', labelKey: 'setup.keepFinalGames', keywordsKey: 'setup.keywordsKeepFinal' },
+	{ group: 'display', labelKey: 'setup.finishedTabAction', keywordsKey: 'setup.keywordsFinishedTab' },
 	{ group: 'display', labelKey: 'setup.proTips', keywordsKey: 'setup.keywordsProTips' },
 	{ group: 'display', labelKey: 'setup.switchNotifications', keywordsKey: 'setup.keywordsNotifications' },
 	{ group: 'display', labelKey: 'setup.showBetting', keywordsKey: 'setup.keywordsBetting' },

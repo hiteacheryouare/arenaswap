@@ -144,6 +144,12 @@
 		},
 		"keepFinalGames": "Beendete Spiele behalten",
 		"keepFinalGamesExplainer": "Beendete Spiele bleiben 24 Stunden nach Abpfiff in der Liste.",
+		"finishedTabAction": "Wenn ein Spiel endet",
+		"finishedTabKeep": "Tab in Ruhe lassen",
+		"finishedTabFree": "Aus ArenaSwap freigeben",
+		"finishedTabClose": "Tab schließen",
+		"finishedTabActiveExplainer": "Der Tab, den du dir gerade ansiehst, bleibt unberührt, bis du ihn verlässt.",
+		"finishedTabCloseExplainer": "Der letzte Tab eines Fensters wird stattdessen freigegeben, damit sich kein Fenster schließt.",
 		"proTips": "Profi-Tipps",
 		"switchNotifications": "Wechsel-Benachrichtigungen",
 		"demoMode": "Demo-Modus",
@@ -216,6 +222,7 @@
 		"keywordsUpcoming": "zukunft, geplant, spater, spielplan",
 		"keywordsUpcomingDays": "tage, voraus, zeitraum, bereich",
 		"keywordsKeepFinal": "beendet, endstand, ergebnisse, verlauf, ruckblick",
+		"keywordsFinishedTab": "tab, schliessen, freigeben, loslassen, aufraumen, unordnung, beendet, vorbei, fertig",
 		"keywordsProTips": "hinweise, hilfe, ratschlage, tipps",
 		"keywordsNotifications": "benachrichtigung, hinweis, melden, banner, popup",
 		"keywordsBetting": "quoten, wetten, spread, glucksspiel, einsatz, moneyline",
@@ -225,6 +232,16 @@
 		"keywordsStandbyThreshold": "wert, grenze, limit, unter, ruhig",
 		"keywordsStandbyTab": "tab, fenster, seite, ziel",
 		"keywordsDemo": "fake, beispiel, test, vorschau, sandkasten, attrappe"
+	},
+	"finishedTabs": {
+		"toastFreed": {
+			"1": "1 Tab gehört wieder dir.",
+			"n": "$1 Tabs gehören wieder dir."
+		},
+		"toastClosed": {
+			"1": "1 Tab eines beendeten Spiels geschlossen.",
+			"n": "$1 Tabs beendeter Spiele geschlossen."
+		}
 	},
 	"main": {
 		"tourButton": "Tour",
