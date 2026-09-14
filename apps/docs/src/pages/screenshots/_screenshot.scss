@@ -6,12 +6,12 @@
 // Bootstrap load to order these against.
 @use '@arenaswap/ui/src/bootstrap' with ($font-size-base: 0.9375rem);
 @use '@arenaswap/ui/src/game-card';
-@use '@arenaswap/ui/src/fonts' with ($font-base-url: '/fonts');
+@use '@arenaswap/ui/src/fonts' with ($font-base-url: '/src/fonts');
 
 @font-face {
 	font-family: 'bootstrap-icons';
-	src: url('/fonts/bootstrap-icons.woff2') format('woff2'),
-	     url('/fonts/bootstrap-icons.woff') format('woff');
+	src: url('/src/fonts/bootstrap-icons.woff2') format('woff2'),
+	     url('/src/fonts/bootstrap-icons.woff') format('woff');
 	font-display: block;
 }
 

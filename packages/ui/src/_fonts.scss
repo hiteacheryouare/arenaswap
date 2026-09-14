@@ -1,9 +1,15 @@
-// Set $font-base-url before importing this file. It is a path into the app's own public/
-// directory and must NOT carry the deployed base path: Vite's checkPublicFile joins it onto
-// publicDir verbatim, so '/arenaswap/fonts' sends it looking for public/arenaswap/fonts and
-// it gives up with a 'didn't resolve at build time' warning. Written bare, Vite finds the
-// file and prepends `base` itself, which is how the docs site still emits /arenaswap/fonts.
-// Defaults to '/fonts' if not set.
+// Set $font-base-url before importing this file. It is a root-relative path to the font files,
+// and where they have to live depends on whether the app is served under a base path.
+//
+// The extension is served from the root of its own origin, so '/fonts' — the default — is a
+// path into its public/ directory and Vite leaves it alone.
+//
+// The docs site is served under /arenaswap/, and a public/ path cannot express that in both
+// modes at once. Astro sets Vite's `base` for the build and not for the dev server, so Vite
+// resolves a public file to '/arenaswap/fonts/…' when building and to '/fonts/…' in dev —
+// where Astro's own router then 404s it for missing the base. So the docs fonts live in src/
+// and are passed as '/src/fonts', which Vite resolves through its asset pipeline instead of
+// publicDir: it emits a hashed file and applies `base` itself, correctly in both modes.
 
 $font-base-url: '/fonts' !default;
 

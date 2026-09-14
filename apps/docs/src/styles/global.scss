@@ -50,12 +50,12 @@
 	$warning-border-subtle:         #917608,
 	$warning-text-emphasis:         #f7dc6f
 );
-@use 'bootstrap-icons/font/bootstrap-icons.scss' with ($bootstrap-icons-font-dir: '/fonts');
+@use 'bootstrap-icons/font/bootstrap-icons.scss' with ($bootstrap-icons-font-dir: '/src/fonts');
 @use '@arenaswap/ui/src/game-card';
 // The popup chrome the site's demos are built from. Shared with the extension so the two cannot
 // describe different popups.
 @use '@arenaswap/ui/src/popup';
-@use '@arenaswap/ui/src/fonts' with ($font-base-url: '/fonts');
+@use '@arenaswap/ui/src/fonts' with ($font-base-url: '/src/fonts');
 @use 'site';
 
 // ─── Landing page: bands, hero browser, reading shell ────────────────────────
