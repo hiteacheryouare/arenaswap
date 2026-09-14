@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { leagueConfigMap } from '@arenaswap/core/constants';
-import { logWarn } from '@arenaswap/core';
+import { logWarn, monoMarksFromLogos } from '@arenaswap/core';
 import type { Game, LeagueId, TeamMonoMarks } from '@arenaswap/core/types';
 import { emptyBoxScore, parseBoxScore } from './boxScoreParse';
 import type { BoxScore } from './boxScoreParse';
@@ -67,26 +67,11 @@ interface HeaderCompetitor {
 export const emptyTeamRecords: TeamRecords = { home: null, away: null };
 export const emptyMonoLogos: MonoLogos = { home: null, away: null };
 
-const espnImageHost = 'https://a.espncdn.com';
-
-// ESPN draws these at 4096x4096 — 225KB for a mark that renders at 44px. The combiner is their own
-// resizer and hands back the same transparent PNG at about 6KB, which is the difference between
-// this being usable on a slate and not.
-const monoLogoUrl = (href: string | undefined): string | undefined => {
-	if (!href || !href.startsWith(`${espnImageHost}/`)) return undefined;
-	return `${espnImageHost}/combiner/i?img=${href.slice(espnImageHost.length)}&w=120&h=120`;
-};
-
-const monoMarksOf = (competitor: HeaderCompetitor | undefined): TeamMonoMarks | null => {
-	const of = (rel: string) => monoLogoUrl(competitor?.team?.logos?.find(logo => logo.rel?.includes(rel))?.href);
-	const white = of('primary_logo_white');
-	const black = of('primary_logo_black');
-	if (!white && !black) return null;
-	const marks: TeamMonoMarks = {};
-	if (white) marks.white = white;
-	if (black) marks.black = black;
-	return marks;
-};
+// The same two `rel` names and the same combiner rewrite the guide's `/teams` fetch uses, read here
+// off the `/summary` header instead. One copy, in core, so a renamed `rel` is one edit.
+const monoMarksOf = (competitor: HeaderCompetitor | undefined): TeamMonoMarks | null => (
+	monoMarksFromLogos(competitor?.team?.logos)
+);
 
 // ESPN sends `gameInfo.gameDuration` as "3:14" — hours and minutes, not a clock time. It is
 // baseball-only among the leagues sampled, which is why the row it feeds is absent rather than
@@ -263,13 +248,21 @@ const useSummaryData = (game: SummaryGameArg): summaryDataResult => {
 		gameRef.current = game;
 	});
 
+	// The effect below also runs when a game goes from pre to in, and a team's monochrome marks do
+	// not change when it kicks off. Clearing them there dropped a crest that had settled on a mark
+	// back to a tinted plate for the length of the refetch, on a sticky bar that stays mounted
+	// across the transition.
+	const lastGameIdRef = useRef<string | null>(null);
 	useEffect(() => {
+		const sameGame = lastGameIdRef.current === gameId;
+		lastGameIdRef.current = gameId;
+
 		// A detail view reused for a different game must not keep the previous game's line.
 		// oxlint-disable-next-line react/set-state-in-effect
 		setWinProbability([]);
 		setSeriesInfo(null);
 		setRecords(emptyTeamRecords);
-		setMonoLogos(emptyMonoLogos);
+		if (!sameGame) setMonoLogos(emptyMonoLogos);
 		setBoxScore(emptyBoxScore);
 		setGameDurationMins(null);
 

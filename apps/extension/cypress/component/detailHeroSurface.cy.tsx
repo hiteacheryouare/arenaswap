@@ -2,6 +2,7 @@ import DetailHero from '../../entrypoints/popup/components/detailHero';
 import DetailPosterHero from '../../entrypoints/popup/components/detailPosterHero';
 import DetailStickyBar from '../../entrypoints/popup/components/detailStickyBar';
 import type { Game } from '@arenaswap/core/types';
+import type { MonoLogos } from '../../entrypoints/popup/components/useSummaryData';
 
 // Baltimore and Indianapolis: a purple and a navy, the pair that used to come out of the resolver as
 // black against white. Both are dark, which is what makes them the right fixture for a hero whose
@@ -26,7 +27,8 @@ const heroStyle = {
 		+ `linear-gradient(to right, ${awayColor} 0%, ${awayColor} 38%, ${homeColor} 62%, ${homeColor} 100%)`,
 };
 
-const mono = { away: 'https://a.espncdn.com/combiner/i?img=/guid/a/logos/primary_logo_white.png&w=120&h=120', home: 'https://a.espncdn.com/combiner/i?img=/guid/h/logos/primary_logo_white.png&w=120&h=120' };
+const markUrl = (side: string) => `https://a.espncdn.com/combiner/i?img=/guid/${side}/logos/primary_logo_white.png&w=120&h=120`;
+const mono: MonoLogos = { away: { white: markUrl('a') }, home: { white: markUrl('h') } };
 
 const mountLive = (game: Game, monoLogos = mono, isDelayed = false) => {
 	cy.mount(

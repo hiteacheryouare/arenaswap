@@ -1,34 +1,10 @@
-const hexToRgb = (value: string): { red: number; green: number; blue: number } | null => {
-	const matched = /^#([\da-fA-F]{6})$/.exec(value);
-	if (!matched) return null;
-	const hex = matched[1]!;
-	return {
-		red: Number.parseInt(hex.slice(0, 2), 16),
-		green: Number.parseInt(hex.slice(2, 4), 16),
-		blue: Number.parseInt(hex.slice(4, 6), 16),
-	};
-};
-
-const normalizeChannel = (value: number): number => {
-	const channel = value / 255;
-	return channel <= 0.03928 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4;
-};
-
-const luminance = (value: string): number => {
-	const rgb = hexToRgb(value);
-	if (!rgb) return 0;
-	return (0.2126 * normalizeChannel(rgb.red))
-		+ (0.7152 * normalizeChannel(rgb.green))
-		+ (0.0722 * normalizeChannel(rgb.blue));
-};
+import { hexLuminance as luminance, hexToRgb, isHex, rgbToHex } from './colorMath';
 
 const mixTowardWhite = (value: string, amount: number): string => {
 	const rgb = hexToRgb(value);
 	if (!rgb) return value;
-	const red = Math.round(rgb.red + (255 - rgb.red) * amount);
-	const green = Math.round(rgb.green + (255 - rgb.green) * amount);
-	const blue = Math.round(rgb.blue + (255 - rgb.blue) * amount);
-	return `#${[red, green, blue].map(channel => channel.toString(16).padStart(2, '0')).join('')}`;
+	const toward = (channel: number): number => channel + (255 - channel) * amount;
+	return rgbToHex(toward(rgb.red), toward(rgb.green), toward(rgb.blue));
 };
 
 // Scales every channel by the same factor, which raises lightness while leaving the ratios
@@ -38,8 +14,7 @@ const mixTowardWhite = (value: string, amount: number): string => {
 const brighten = (value: string, factor: number): string => {
 	const rgb = hexToRgb(value);
 	if (!rgb) return value;
-	const scaled = [rgb.red, rgb.green, rgb.blue].map(channel => Math.min(255, Math.round(channel * factor)));
-	return `#${scaled.map(channel => channel.toString(16).padStart(2, '0')).join('')}`;
+	return rgbToHex(rgb.red * factor, rgb.green * factor, rgb.blue * factor);
 };
 
 // A pure black or near-black has no hue to preserve, so scaling it does nothing at all. Only these
@@ -149,7 +124,7 @@ const pickPair = (ap: string, aa: string, hp: string, ha: string): [string, stri
 // white stops clearing 4.5:1 — contrast is 1.05 / (L + 0.05) — and these labels are too small to
 // qualify for the 3:1 large-text allowance.
 export const readableInkOn = (background: string, light = '#ffffff', dark = '#111827'): string => (
-	hexToRgb(background) && luminance(background) > 0.1833 ? dark : light
+	isHex(background) && luminance(background) > 0.1833 ? dark : light
 );
 
 // A crest sits on a white disc tinted with its own colour rather than on the surface behind it: a
@@ -157,7 +132,7 @@ export const readableInkOn = (background: string, light = '#ffffff', dark = '#11
 // alpha the matchup card already uses for its team-colour washes. No colour leaves the disc plain
 // white, which still separates the crest from a dark background.
 export const crestBacking = (color: string | null | undefined): string => (
-	color && /^#[\da-fA-F]{6}$/.test(color)
+	isHex(color)
 		? `linear-gradient(160deg, ${color}14, ${color}28), #ffffff`
 		: '#ffffff'
 );
@@ -168,7 +143,7 @@ export const crestBacking = (color: string | null | undefined): string => (
 // same weight everywhere it appears. Read by the pre-game leader rows and the box score's line
 // score; a second copy of the formula is how the two would drift.
 export const teamRowWash = (color: string | null | undefined): string | undefined => (
-	color && /^#[\da-fA-F]{6}$/.test(color)
+	isHex(color)
 		? `linear-gradient(90deg, ${color}28, ${color}00 72%)`
 		: undefined
 );
@@ -209,8 +184,10 @@ const heroScrimColor = { red: 3, green: 7, blue: 12 };
 export const underHeroScrim = (color: string): string => {
 	const rgb = hexToRgb(color);
 	if (!rgb) return '#0d1117';
-	const mix = (ink: number, over: number): string => (
-		Math.round(ink + (over - ink) * heroScrimAlpha).toString(16).padStart(2, '0')
+	const mix = (ink: number, over: number): number => ink + (over - ink) * heroScrimAlpha;
+	return rgbToHex(
+		mix(rgb.red, heroScrimColor.red),
+		mix(rgb.green, heroScrimColor.green),
+		mix(rgb.blue, heroScrimColor.blue),
 	);
-	return `#${mix(rgb.red, heroScrimColor.red)}${mix(rgb.green, heroScrimColor.green)}${mix(rgb.blue, heroScrimColor.blue)}`;
 };

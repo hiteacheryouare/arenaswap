@@ -184,16 +184,25 @@ export default defineBackground(() => {
 	// fetched once per worker lifetime and per league rather than per guide open.
 	let monoLogos: TeamMonoLogoMap = {};
 	let monoLogoLeagues: string = '';
+	// The in-flight fetch, held alongside its result. The guard on the result alone only closes
+	// after the await, so two guide tabs opened together both missed it and both ran the fetch —
+	// which is one `/teams?limit=1000` request per enabled league, so 62 requests where 31 would do.
+	let monoLogoRequest: { key: string; pending: Promise<TeamMonoLogoMap> } | null = null;
 
 	const ensureMonoLogos = async (leagueIds: LeagueId[]): Promise<TeamMonoLogoMap> => {
 		const key = leagueIds.toSorted().join(',');
 		if (key === monoLogoLeagues) return monoLogos;
+		if (monoLogoRequest?.key !== key) {
+			monoLogoRequest = { key, pending: fetchTeamMonoLogos(leagueIds) };
+		}
 		try {
-			monoLogos = await fetchTeamMonoLogos(leagueIds);
+			monoLogos = await monoLogoRequest.pending;
 			monoLogoLeagues = key;
 		} catch (err) {
-			// A miss costs the guide nothing but the tinted disc it drew before.
+			// A miss costs the guide nothing but the tinted disc it drew before. Cleared rather than
+			// kept, so the next open retries instead of awaiting a promise that already rejected.
 			logWarn('Failed to fetch team mono logos.', err);
+			if (monoLogoRequest?.key === key) monoLogoRequest = null;
 		}
 		return monoLogos;
 	};

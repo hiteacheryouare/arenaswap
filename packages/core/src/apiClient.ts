@@ -758,11 +758,28 @@ export interface EspnTeamEntry {
 
 const espnImageHost = 'https://a.espncdn.com';
 
-// ESPN draws the white marks at 4096x4096 — 225KB apiece for something that renders at 15px in a
+// ESPN draws the mono marks at 4096x4096 — 225KB apiece for something that renders at 15px in a
 // guide bar. The combiner is their own resizer and hands the same transparent PNG back at about 6KB.
 export const monoLogoUrl = (href: string | undefined, size: number): string | undefined => {
 	if (!href || !href.startsWith(`${espnImageHost}/`)) return undefined;
 	return `${espnImageHost}/combiner/i?img=${href.slice(espnImageHost.length)}&w=${size}&h=${size}`;
+};
+
+// The white and black marks out of a team's logo list, whichever of them ESPN has drawn. Shared
+// with the popup's `/summary` parse, which reads the same `rel` names off a different payload —
+// two copies is how a renamed `rel` gets fixed in one of the places that reads it.
+export const monoMarksFromLogos = (
+	logos: { href?: string; rel?: string[] }[] | undefined,
+	size = 120,
+): TeamMonoMarks | null => {
+	const of = (rel: string) => monoLogoUrl(logos?.find(logo => logo.rel?.includes(rel))?.href, size);
+	const white = of('primary_logo_white');
+	const black = of('primary_logo_black');
+	if (!white && !black) return null;
+	const marks: TeamMonoMarks = {};
+	if (white) marks.white = white;
+	if (black) marks.black = black;
+	return marks;
 };
 
 // A league's teams keyed by id to ESPN's all-white mark. The scoreboard carries a single logo per
@@ -779,13 +796,8 @@ export const fetchTeamMonoLogos = async (leagueIds: LeagueId[], size = 120): Pro
 		if (!res.ok) throw new Error(`Failed to fetch team logos for ${config.id}: HTTP ${res.status}`);
 		const parsed = parseTeams(await res.json());
 		const entries = parsed.teams.reduce<Record<string, TeamMonoMarks>>((acc, { team }) => {
-			const of = (rel: string) => monoLogoUrl(team.logos?.find(logo => logo.rel?.includes(rel))?.href, size);
-			const marks: TeamMonoMarks = {};
-			const white = of('primary_logo_white');
-			const black = of('primary_logo_black');
-			if (white) marks.white = white;
-			if (black) marks.black = black;
-			if (team.id && (marks.white || marks.black)) acc[team.id] = marks;
+			const marks = monoMarksFromLogos(team.logos, size);
+			if (team.id && marks) acc[team.id] = marks;
 			return acc;
 		}, {});
 		return [config.id, entries] as const;

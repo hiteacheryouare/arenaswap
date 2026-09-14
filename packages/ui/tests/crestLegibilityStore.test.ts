@@ -58,6 +58,6 @@ describe('a stored verdict carries the calibration that produced it', () => {
 	// the only thing that throws them away is this string changing with it.
 	test('is every threshold the verdict depends on', async () => {
 		const { legibilityCalibration } = await withStoredValue(null);
-		expect(legibilityCalibration).toBe('0.04/4.5/0.35/1.3/0.57/48');
+		expect(legibilityCalibration).toBe('0.04/4.5/0.35/1.3/0.57/48/128');
 	});
 });

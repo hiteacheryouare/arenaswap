@@ -1,4 +1,5 @@
-import { crestInkReads, deadInkFraction, hexLuminance, pickMonoMark, strongInkFraction } from '../src/components/logoTint';
+import { hexLuminance } from '../src/components/colorMath';
+import { crestInkReads, deadInkFraction, pickMonoMark, strongInkFraction } from '../src/components/logoTint';
 
 // One RGBA pixel per entry, at full alpha unless an alpha is given.
 const pixels = (...entries: [number, number, number, number?][]): Uint8ClampedArray => (

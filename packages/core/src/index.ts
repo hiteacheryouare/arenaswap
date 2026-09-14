@@ -1,5 +1,6 @@
 export { fetchGames, fetchLiveGames, fetchLeagueLogos, fetchGamesWithLeagueLogos,
-	fetchTeamMonoLogos, fetchNextScheduledStart, fetchTeamsForLeagues, fetchWinProbability } from './apiClient';
+	fetchTeamMonoLogos, fetchNextScheduledStart, fetchTeamsForLeagues, fetchWinProbability,
+	monoMarksFromLogos } from './apiClient';
 export { logWarn, logError, setVerboseLogging, isVerboseLogging } from './logger';
 export { computeEagerIntervalMs, computeHebetudinousIntervalMs, computeLeagueIntervalMs, earliestUpcomingStartMs, pollWinProbabilityMs } from './pollIntervalComputer';
 export type { EspnTeamEntry } from './apiClient';

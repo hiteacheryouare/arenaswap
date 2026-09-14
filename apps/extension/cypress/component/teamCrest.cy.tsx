@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import TeamCrest from '@arenaswap/ui/src/components/teamCrest';
 
 // Solid 8x8 PNGs as data URIs, so the canvas measurement runs for real and is never tainted. Navy is
@@ -118,3 +119,57 @@ describe('the monochrome mark is chosen to suit the surface', () => {
 	});
 });
 
+
+// A verdict is a fact about a crest and a surface, and both of them move underneath a mounted
+// instance: the guide's drawer reconciles one game's detail view into the next, and every hero
+// passes a backdrop mixed from the game's own colours. Held as mount-time state the answer was
+// never revisited, so the previous team's verdict drew the next team's crest — and because the
+// component then stops rendering the colour artwork, nothing ever reloads it to correct the
+// mistake. Both cases below are permanent rather than a flash.
+describe('a crest is re-judged when the crest or the surface changes under it', () => {
+	const marks = { white: whiteMark, black: blackMark };
+
+	const mountSwapping = (initial: { logo: string; background: string }, swapped: { logo: string; background: string }) => {
+		const Swapper = () => {
+			const [next, setNext] = useState(false);
+			const { logo, background } = next ? swapped : initial;
+			return (
+				<div style={{ background, padding: '1rem', width: '120px' }}>
+					<button type='button' className='swap' onClick={() => setNext(true)}>swap</button>
+					<TeamCrest
+						logo={logo}
+						monoMarks={marks}
+						abbreviation='NYY'
+						background={background}
+						discClassName='tc-disc'
+						crestClassName='tc-crest'
+						fallback='blank'
+					/>
+				</div>
+			);
+		};
+		cy.mount(<Swapper />);
+		cy.get('.tc-crest').should('have.attr', 'data-crest-state', 'loaded');
+	};
+
+	it('drops the mark when the same crest moves to a surface it reads on', () => {
+		mountSwapping({ logo: navy, background: popup }, { logo: navy, background: '#f8fafc' });
+		cy.get('.tc-crest').should('have.class', 'is-mono');
+
+		// No image load happens here — only the backdrop moves — so the measurement has to be driven
+		// by the surface changing rather than by the crest arriving.
+		cy.get('.swap').click();
+		// The class rather than the `src`: this spec's black mark is byte-identical to the navy
+		// crest, so a `src` assertion here would pass either way.
+		cy.get('.tc-crest').should('not.have.class', 'is-mono');
+	});
+
+	it('keeps the next team in colour rather than inheriting the last mark', () => {
+		mountSwapping({ logo: navy, background: popup }, { logo: gold, background: popup });
+		cy.get('.tc-crest').should('have.class', 'is-mono');
+
+		cy.get('.swap').click();
+		cy.get('.tc-crest').should('not.have.class', 'is-mono');
+		cy.get('.tc-crest img').should('have.attr', 'src', gold);
+	});
+});
