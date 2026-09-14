@@ -902,9 +902,15 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	overflow: hidden;
 	flex-shrink: 0;
 	box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.35), 0 6px 16px -8px rgba(3, 7, 12, 0.85);
+}
+
+// Only the plate clips, and it clips to three quarters of itself — see `.gd-bar-logo-shell`.
+.gd-poster-crest:not(.is-bare) {
+	overflow: hidden;
+
+	.gd-poster-crest-logo { width: 75%; height: 75%; }
 }
 
 .gd-poster-crest-logo {
@@ -1626,8 +1632,14 @@ button.game-info-attribution {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	overflow: hidden;
 	background: transparent;
+}
+
+// Only the plate clips, and it clips to three quarters of itself — see `.gd-bar-logo-shell`.
+.game-detail-team-logo-shell:not(.is-bare) {
+	overflow: hidden;
+
+	.game-detail-team-logo { width: 75%; height: 75%; }
 }
 
 .game-detail-team-logo {
@@ -1726,6 +1738,13 @@ button.game-info-attribution {
 
 // The shell the crest sits in. Bare unless the artwork was measured as unreadable and the team has
 // no monochrome mark to fall back on, which at this size is the one state worth a plate.
+//
+// Only the plate clips. The crest used to be drawn at the full 18px inside an 18px circle, which
+// took 25px of ink off the Giants' 'ny' — a mark that runs the whole width of its own box, as most
+// wordmarks do — every time this bar was on screen, plate or no plate. Where a plate is drawn the
+// crest is inset to three quarters of it: measured over 264 crests, the furthest ink reaches 65% of
+// the way to the corner of its own box, and it is the share the guide rows and the team picker
+// already use.
 .gd-bar-logo-shell {
 	display: inline-flex;
 	align-items: center;
@@ -1734,7 +1753,12 @@ button.game-info-attribution {
 	width: 18px;
 	height: 18px;
 	border-radius: 999px;
-	overflow: hidden;
+
+	&:not(.is-bare) {
+		overflow: hidden;
+
+		.gd-bar-logo { width: 75%; height: 75%; }
+	}
 
 	&.is-bare { background: none; box-shadow: none; }
 }

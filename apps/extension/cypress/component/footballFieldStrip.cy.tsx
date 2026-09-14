@@ -3,13 +3,18 @@
 // viewBox land where the yard numbers painted on them say they do.
 import FootballFieldStrip from '@arenaswap/ui/src/components/footballFieldStrip';
 import LiveGameCard from '@arenaswap/ui/src/components/liveGameCard';
-import type { Game, PowerScoreResult } from '@arenaswap/core/types';
+import { numberRowsY, stripHeight } from '@arenaswap/ui/src/components/footballField';
+import type { Game, PowerScoreResult, TeamMonoMarks } from '@arenaswap/core/types';
 
 const popupWidth = 320;
 
 // A silver disc rather than a real crest, so the spec needs no network and the logo's own box is
-// the only thing being measured.
+// the only thing being measured. Silver reads on everything the field paints, which is what keeps
+// it out of the way of the legibility treatment below.
 const logoUri = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><circle cx="5" cy="5" r="5" fill="%23C0C0C0"/></svg>';
+// The turf's own green, so not one pixel of it clears 4.5:1 against the grass it is painted on.
+const invisibleOnTurfUri = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><circle cx="5" cy="5" r="5" fill="%2322683B"/></svg>';
+const whiteMarkUri = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><circle cx="5" cy="5" r="5" fill="%23ffffff"/></svg>';
 
 // Philadelphia at home, Dallas away: yardLine 0 is the Eagles' own goal line and 100 the Cowboys'.
 // The two primaries are far enough apart that resolveTeamColorPair keeps both, which is what lets
@@ -21,8 +26,8 @@ const nflGame: Game = {
 	sportType: 'football',
 	period: 4,
 	clockSeconds: 480,
-	homeTeam: { id: 'phi', name: 'Philadelphia Eagles', abbreviation: 'PHI', score: 17, color: '#004C54', logo: logoUri },
-	awayTeam: { id: 'dal', name: 'Dallas Cowboys', abbreviation: 'DAL', score: 14, color: '#003594' },
+	homeTeam: { id: 'phi', name: 'Philadelphia Eagles', nickname: 'Eagles', abbreviation: 'PHI', score: 17, color: '#004C54', logo: logoUri },
+	awayTeam: { id: 'dal', name: 'Dallas Cowboys', nickname: 'Cowboys', abbreviation: 'DAL', score: 14, color: '#003594', logo: logoUri },
 	downDistance: '3rd & 5',
 	fieldPosition: 'PHI 30',
 	down: 3,
@@ -41,11 +46,11 @@ const result: PowerScoreResult = {
 // The card's own inner width: the popup less its padding, less the card's.
 const stripWidth = 289;
 
-const mountStrip = (game: Game) => {
+const mountStrip = (game: Game, monoMarks?: { away?: TeamMonoMarks | null; home?: TeamMonoMarks | null }) => {
 	cy.viewport(popupWidth, 600);
 	cy.mount(
 		<div style={{ width: `${stripWidth}px`, background: '#fff' }}>
-			<FootballFieldStrip game={game} />
+			<FootballFieldStrip game={game} monoMarks={monoMarks} />
 		</div>,
 	);
 	cy.document().its('fonts.ready');
@@ -117,11 +122,91 @@ describe('football field', () => {
 		});
 	});
 
-	it('names both end zones for the team that defends it', () => {
+	it('letters each end zone with the crest and nickname of the team that defends it', () => {
 		mountStrip(nflGame);
-		cy.get('.ff-endzone-label').should($labels => {
-			expect([...$labels].map(label => label.textContent)).to.deep.equal(['DAL', 'PHI']);
+		cy.get('.ff-endzone-name').should($names => {
+			expect([...$names].map(name => name.textContent)).to.deep.equal(['Cowboys', 'Eagles']);
 		});
+		cy.get('.ff-endzone-mark .crest').should('have.length', 2);
+	});
+
+	// The mark has to land on the paint rather than beside it, which is the one thing an HTML
+	// overlay over an SVG can get wrong: the two derive their geometry from different boxes.
+	it('keeps each end zone mark inside the ten yards it is painted on', () => {
+		mountStrip(nflGame);
+		cy.get('.ff-field').then($svg => {
+			const fieldRect = $svg[0].getBoundingClientRect();
+			const zones = [...$svg[0].querySelectorAll('.ff-endzone')].map(z => z.getBoundingClientRect());
+			cy.get('.ff-endzone-mark').should($marks => {
+				[...$marks].forEach((mark, index) => {
+					const rect = mark.getBoundingClientRect();
+					expect(rect.left, 'left edge on the end zone').to.be.closeTo(zones[index]!.left, 0.6);
+					expect(rect.width, 'ten yards wide').to.be.closeTo(fieldRect.width / 12, 0.6);
+					expect(rect.height, 'the full depth of the field').to.be.closeTo(fieldRect.height, 0.6);
+				});
+			});
+		});
+	});
+
+	// Each side reads upright to somebody standing behind it, which is how a field is lettered, and
+	// the crest lies down with it rather than standing up out of the paint.
+	it('mirrors both end zone marks about midfield, crest and lettering together', () => {
+		mountStrip(nflGame);
+		cy.get('.ff-endzone-away .ff-endzone-name').should($name => {
+			expect(getComputedStyle($name[0]!).rotate).to.equal('180deg');
+		});
+		cy.get('.ff-endzone-home .ff-endzone-name').should($name => {
+			expect(getComputedStyle($name[0]!).rotate).to.equal('none');
+		});
+		cy.get('.ff-endzone-away .ff-endzone-crest').should('have.css', 'rotate', '-90deg');
+		cy.get('.ff-endzone-home .ff-endzone-crest').should('have.css', 'rotate', '90deg');
+	});
+
+	// Painted lettering, so it is set in caps whatever case ESPN sends — and the DOM keeps ESPN's
+	// own casing, which is what a screen reader and a test both want.
+	it('letters the nickname in caps without shouting it into the DOM', () => {
+		mountStrip(nflGame);
+		cy.get('.ff-endzone-home .ff-endzone-name')
+			.should('have.text', 'Eagles')
+			.and('have.css', 'text-transform', 'uppercase');
+	});
+
+	// The one thing the end zone cannot do is silently drop half a team's name. Everything the NFL
+	// has and the long college names short of fifteen letters fit; past that it truncates.
+	it('fits the longest nicknames either league puts on a field', () => {
+		const withNicknames = (away: string, home: string): Game => ({
+			...nflGame,
+			awayTeam: { ...nflGame.awayTeam, nickname: away },
+			homeTeam: { ...nflGame.homeTeam, nickname: home },
+		});
+		mountStrip(withNicknames('Commanders', 'Mountaineers'));
+		cy.get('.ff-endzone-name').should($names => {
+			[...$names].forEach(name => {
+				expect(name.scrollHeight, `${name.textContent} fits`)
+					.to.be.at.most(Math.round(name.getBoundingClientRect().height));
+			});
+		});
+	});
+
+	// The crest comes first in the reading direction on both sides, which on the away end zone means
+	// physically lowest: its text runs bottom to top.
+	it('puts the crest ahead of the nickname on both sides', () => {
+		mountStrip(nflGame);
+		cy.get('.ff-endzone-away').should($mark => {
+			const crest = $mark[0]!.querySelector('.crest')!.getBoundingClientRect();
+			const name = $mark[0]!.querySelector('.ff-endzone-name')!.getBoundingClientRect();
+			expect(crest.top, 'crest below the nickname').to.be.greaterThan(name.bottom - 1);
+		});
+		cy.get('.ff-endzone-home').should($mark => {
+			const crest = $mark[0]!.querySelector('.crest')!.getBoundingClientRect();
+			const name = $mark[0]!.querySelector('.ff-endzone-name')!.getBoundingClientRect();
+			expect(crest.bottom, 'crest above the nickname').to.be.lessThan(name.top + 1);
+		});
+	});
+
+	it('falls back to the abbreviation for a team ESPN sent no nickname for', () => {
+		mountStrip({ ...nflGame, awayTeam: { ...nflGame.awayTeam, nickname: undefined } });
+		cy.get('.ff-endzone-away .ff-endzone-name').should('have.text', 'DAL');
 	});
 
 	it('runs the drive bar back from the ball to where the drive started', () => {
@@ -219,6 +304,7 @@ describe('football field', () => {
 		});
 	});
 
+
 	it('paints the home crest on the 50, between the two rows of numbers', () => {
 		mountStrip(nflGame);
 		cy.get('.ff-field').then($svg => {
@@ -229,16 +315,59 @@ describe('football field', () => {
 			// The rule caps a midfield logo at 1200 square feet, about 13 yards across.
 			expect((logo.width / fieldRect.width) * 120).to.be.at.most(13);
 
-			const numbers = [...$svg[0].querySelectorAll('.ff-number')].map(n => n.getBoundingClientRect());
-			const topRow = Math.max(...numbers.filter(n => n.top < fieldRect.top + fieldRect.height / 2).map(n => n.bottom));
-			expect(logo.top, 'clear of the top row').to.be.at.least(topRow);
+			// Against the lines the numerals are anchored to rather than their rendered boxes: a
+			// `<text>` rect is the em box, which for digits reaches about two yards past the last
+			// painted pixel, and holding the stencil off that empty space would cap it at 11 yards.
+			const across = (row: number) => fieldRect.top + (row / stripHeight) * fieldRect.height;
+			expect(logo.top, 'clear of the top row').to.be.at.least(across(numberRowsY[0]));
+			expect(logo.bottom, 'clear of the bottom row').to.be.at.most(across(numberRowsY[1]));
 		});
 	});
 
-	it('leaves out a crest the API never sent', () => {
+	// It is judged against the grass the same way the end zone crests are judged against paint, and
+	// a crest that cannot be read there gives up its colours for ESPN's white mark.
+	it('takes the white mark for a midfield crest the grass swallows', () => {
+		mountStrip(
+			{ ...nflGame, homeTeam: { ...nflGame.homeTeam, logo: invisibleOnTurfUri } },
+			{ home: { white: whiteMarkUri } },
+		);
+		cy.get('.ff-logo .crest > img').should('have.attr', 'src', whiteMarkUri);
+	});
+
+	// Last rung of the same ladder: no mark to fall back to, so the crest keeps its colours and gets
+	// a disc to stand on instead.
+	it('gives a midfield crest a disc when there is no mark to fall back to', () => {
+		mountStrip({ ...nflGame, homeTeam: { ...nflGame.homeTeam, logo: invisibleOnTurfUri } });
+		cy.get('.ff-logo-shell').should('not.have.class', 'is-bare');
+		cy.get('.ff-logo .crest > img').should('have.attr', 'src', invisibleOnTurfUri);
+	});
+
+	it('leaves a readable midfield crest bare, in its own colours', () => {
+		mountStrip(nflGame);
+		cy.get('.ff-logo-shell').should('have.class', 'is-bare');
+		cy.get('.ff-logo .crest > img').should('have.attr', 'src', logoUri);
+	});
+
+	// The whole reason it stays inside the SVG rather than joining the end zone marks on top of it:
+	// the ball and both live lines cross the 50 and belong over the paint, not under it.
+	it('keeps the midfield crest under the ball and the two live lines', () => {
+		mountStrip({ ...nflGame, yardLine: 50, fieldPosition: 'PHI 50' });
+		cy.get('.ff-field').should($svg => {
+			const marks = [...$svg[0].querySelectorAll('*')];
+			const logo = marks.indexOf($svg[0].querySelector('.ff-logo')!);
+			expect(logo, 'under the ball').to.be.lessThan(marks.indexOf($svg[0].querySelector('.ff-marker')!));
+			expect(logo, 'under the line to gain').to.be.lessThan(marks.indexOf($svg[0].querySelector('.ff-first-down')!));
+			expect(logo, 'over the yard lines').to.be.greaterThan(marks.indexOf($svg[0].querySelector('.ff-yard-line')!));
+		});
+	});
+
+	it('leaves out a crest the API never sent, on the 50 and in the end zone alike', () => {
 		mountStrip({ ...nflGame, homeTeam: { ...nflGame.homeTeam, logo: undefined } });
 		cy.get('.ff-field').should('exist');
 		cy.get('.ff-logo').should('not.exist');
+		cy.get('.ff-endzone-home .crest').should('not.exist');
+		cy.get('.ff-endzone-home .ff-endzone-name').should('have.text', 'Eagles');
+		cy.get('.ff-endzone-away .crest').should('exist');
 	});
 
 	it('draws nothing at all without a live football situation', () => {

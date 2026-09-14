@@ -79,7 +79,7 @@ const detailHero = ({ game, seriesInfo, records = emptyTeamRecords, monoLogos, i
 			{showField && (
 				<div className='gd-field-row'>
 					{downDistanceLine && <div className='gd-field-caption'>{downDistanceLine}</div>}
-					<FootballFieldStrip game={game} />
+					<FootballFieldStrip game={game} monoMarks={monoLogos} />
 				</div>
 			)}
 

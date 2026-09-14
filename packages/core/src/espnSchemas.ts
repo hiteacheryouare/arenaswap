@@ -17,6 +17,9 @@ const EspnLeagueSchema = zod.object({
 
 const EspnTeamSchema = zod.object({
 	displayName: zod.string(),
+	// The nickname on its own: "Titans", "Nittany Lions". `shortDisplayName` is the school in
+	// college and the nickname in the pros, so it is the wrong field to reach for.
+	name: zod.string().optional(),
 	abbreviation: zod.string().optional(),
 	logo: zod.string().optional(),
 	color: zod.string().optional(),

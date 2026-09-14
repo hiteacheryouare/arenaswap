@@ -492,6 +492,10 @@ button.game-meta-attribution {
 .ff-strip {
 	position: relative;
 	width: 100%;
+	// The end zone marks sit outside the SVG, so the rounded corner has to be clipped out here
+	// rather than left to `.ff-field`'s own radius.
+	overflow: hidden;
+	border-radius: 3px;
 }
 
 .ff-field {
@@ -499,16 +503,6 @@ button.game-meta-attribution {
 	width: 100%;
 	height: auto;
 	border-radius: 3px;
-}
-
-// Two greens a shade apart, which is all a mown band is. Pushing them further apart reads as a
-// striped rug rather than as grass cut in opposite directions.
-.ff-turf {
-	fill: #22683B;
-}
-
-.ff-mow {
-	fill: #2A7645;
 }
 
 // Hairlines: non-scaling-stroke keeps every painted line at one device pixel rather than thinning
@@ -547,18 +541,140 @@ button.game-meta-attribution {
 	dominant-baseline: central;
 }
 
-.ff-endzone-label {
-	font-size: 5.4px;
+// Crest and nickname painted on the end zone, running its long way the way a real one is lettered.
+// `writing-mode` rather than a rotation, so the box is laid out at the size it actually occupies and
+// the nickname can be truncated against the end zone's real depth. The two sides are mirrored about
+// midfield — each reads upright to somebody standing behind that end zone — so the away side
+// reverses its flex order and turns its own children. Turning the whole block instead would stand
+// the crest on its head rather than laying it on its side with the lettering.
+.ff-endzone-mark {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	width: calc(100% / 12);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	// Every px here is a px the nickname does not get. Measured in Chrome at the popup's own width:
+	// the end zone is 77px deep, which leaves 60 for the lettering — against 55 for "COMMANDERS", the
+	// longest in the NFL, and 58 for "MOUNTAINEERS". The 15-letter college names above those
+	// ("THUNDERING HERD", "GOLDEN HURRICANE") need 70 and do not fit at any legible size, so they
+	// truncate rather than dragging the whole thing smaller for everybody else.
+	gap: 2px;
+	padding: 2px 0;
+	writing-mode: vertical-rl;
+	pointer-events: none;
+}
+
+.ff-endzone-away {
+	left: 0;
+	flex-direction: row-reverse;
+}
+
+.ff-endzone-home {
+	right: 0;
+}
+
+// Quarter-turned to lie with the lettering, which is what `writing-mode` already does to the
+// glyphs. A `rotate` rather than a `writing-mode` because a replaced element has no text flow to
+// inherit one, and because it costs no layout: the box stays square either way.
+.ff-endzone-crest {
+	width: 11px;
+	height: 11px;
+	border-radius: 999px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+}
+
+// The round clip belongs to the plate rather than to the crest. A mark reaches into the corners of
+// its own box — the Giants' 'ny' runs the full width of theirs — so a circle drawn at the size of
+// the artwork shaves the ends off it, and with nothing painted underneath it cuts for nothing.
+.ff-endzone-crest:not(.is-bare) {
+	overflow: hidden;
+}
+
+.ff-endzone-crest-art {
+	width: 9px;
+	height: 9px;
+}
+
+// Three quarters of the plate, which is what the widest mark in any league needs to land on it:
+// measured over 264 crests, the furthest ink reaches 65% of the way to the corner of its own box,
+// so anything above this plates Charlotte and the Royals by amputating them.
+.ff-endzone-crest:not(.is-bare) .ff-endzone-crest-art {
+	width: 75%;
+	height: 75%;
+}
+
+// Bare is the common case: the crest draws in its own colours straight onto the paint, and only a
+// crest that cannot be read there falls back to the tinted disc the class above describes.
+.ff-endzone-crest.is-bare .ff-endzone-crest-art {
+	width: 11px;
+	height: 11px;
+}
+
+.ff-endzone-name {
+	// 7.5 rather than 8: uppercase runs about a tenth longer than the mixed case it replaced, and it
+	// loses nothing for it — no descenders, one cap height, so it reads at a size mixed case would not.
+	font-size: 7.5px;
 	font-weight: 700;
-	letter-spacing: 0.16em;
-	text-anchor: middle;
-	dominant-baseline: central;
+	line-height: 1;
+	text-transform: uppercase;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	min-width: 0;
+	min-height: 0;
+}
+
+.ff-endzone-home .ff-endzone-crest {
+	rotate: 90deg;
+}
+
+.ff-endzone-away .ff-endzone-crest {
+	rotate: -90deg;
+}
+
+.ff-endzone-away .ff-endzone-name {
+	rotate: 180deg;
 }
 
 // Painted on, so it sits under the ball and the two live lines but over the yard lines the way a
-// real midfield logo covers the 50.
+// real midfield logo covers the 50. The fade is paint rather than legibility: what keeps a navy
+// crest off dark grass is `TeamCrest` swapping it for a white mark, and a crest that survives that
+// check at full strength survives it at 72% too.
 .ff-logo {
 	opacity: 0.72;
+}
+
+// Inside a `foreignObject` whose box is the 10 painted yards, so a percentage here is a share of the
+// midfield stencil and needs no second copy of that number.
+.ff-logo-shell {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 999px;
+}
+
+// The same rule the end zones take: only a plate clips, and it clips to three quarters of itself.
+.ff-logo-shell:not(.is-bare) {
+	overflow: hidden;
+}
+
+.ff-logo-art {
+	width: 75%;
+	height: 75%;
+}
+
+// Bare is the common case and the one that should fill the stencil: there is no disc around it to
+// keep clear of.
+.ff-logo-shell.is-bare .ff-logo-art {
+	width: 100%;
+	height: 100%;
 }
 
 // Ground the offense has already covered on this drive, running back from the ball to where the

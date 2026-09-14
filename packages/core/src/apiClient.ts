@@ -484,6 +484,7 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 		homeTeam: {
 			id: home.id,
 			name: home.team.displayName,
+			nickname: home.team.name,
 			abbreviation: home.team.abbreviation || home.team.displayName?.slice(0, 3).toUpperCase() || '?',
 			score: parseInt(home.score ?? '0', 10) || 0,
 			shootoutScore: home.shootoutScore,
@@ -494,6 +495,7 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 		awayTeam: {
 			id: away.id,
 			name: away.team.displayName,
+			nickname: away.team.name,
 			abbreviation: away.team.abbreviation || away.team.displayName?.slice(0, 3).toUpperCase() || '?',
 			score: parseInt(away.score ?? '0', 10) || 0,
 			shootoutScore: away.shootoutScore,

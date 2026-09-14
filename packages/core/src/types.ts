@@ -54,6 +54,10 @@ export interface TeamLeader {
 export interface Team {
 	id: string;
 	name: string;
+	// ESPN's own `team.name`: the nickname alone, without the city or the school. "Titans", not
+	// "Tennessee Titans"; "Nittany Lions", not "Lions", which is why it is carried rather than
+	// sliced off the end of `name`. Painted in the end zones of the football field diagram.
+	nickname?: string;
 	abbreviation: string;
 	score: number;
 	// Soccer only, once a match reaches a shootout: `score` stays frozen at the 120-minute
@@ -205,7 +209,6 @@ export interface TeamMonoMarks {
 
 // Team id to those marks, per league.
 export type TeamMonoLogoMap = Partial<Record<LeagueId, Record<string, TeamMonoMarks>>>;
-
 export type ScoreHistoryMap = Record<string, ScoreSnapshot[]>;
 
 export interface PowerScoreSnapshot {
