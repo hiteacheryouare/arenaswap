@@ -11,7 +11,7 @@ import { loadStoredUserPreferences } from '../../utils/prefsStorage';
 import { bandLabel } from './guideFormat';
 import GuideGrid from './guideGrid';
 import { buildBar, buildHeatCurve } from './guideHeat';
-import { msToPx, axisBounds, defaultDayKey } from './guideLayout';
+import { msToPx, axisBounds, defaultDayKey, gutterPx } from './guideLayout';
 
 // The boost control in the drawer is the real one, not a decoration: a slider that moves and
 // changes nothing is worse than no slider.
@@ -142,7 +142,9 @@ const App = () => {
 		const scroller = scrollerRef.current;
 		if (!bounds || !scroller) return;
 		hasScrolledToNow.current = true;
-		scroller.scrollLeft = Math.max(msToPx(now, bounds.fromMs) - scroller.clientWidth / 3, 0);
+		// Plus the gutter, which is the one place off the grid that has to know about it: every x the
+		// grid draws is measured from the start of the day, and the scroller's is measured from the page.
+		scroller.scrollLeft = Math.max(gutterPx + msToPx(now, bounds.fromMs) - scroller.clientWidth / 3, 0);
 	}, [bars, now, showingToday]);
 
 
@@ -177,13 +179,17 @@ const App = () => {
 						/>
 					</div>
 				)}
-				{/* The sentence about the day sits here rather than over the grid. Anchored to the band
-				    it was four times wider than the band itself, so any horizontal scroll sliced it
-				    into a fragment — a lone '4 games' with nothing saying what it counted. */}
-				{showBand && band && <span className='guide-band-summary'>{bandLabel(band)}</span>}
+				{/* The switch's label opens the sentence and this finishes it, so the header reads 'Best
+				    time to watch · 3:47 PM–4:17 PM · 3 games' across the pair. It sits here rather than over
+				    the grid: anchored to the band it was four times wider than the band itself, so any
+				    horizontal scroll sliced it into a fragment. The leading separator is safe here and only
+				    here — the label it follows is never absent. */}
 				<div className='form-check form-switch mb-0 guide-band-toggle'>
 					<input className='form-check-input' type='checkbox' id='guideBandToggle' checked={showBand} onChange={() => setShowBand(value => !value)} />
 					<label className='form-check-label' htmlFor='guideBandToggle'>{i18n.t('guide.bestWindow')}</label>
+					{/* Inside the control rather than beside it, so the header's own 1rem column gap cannot open
+					    a hole in the middle of a sentence. */}
+					{showBand && band && <span className='guide-band-summary'>{`\u00b7 ${bandLabel(band)}`}</span>}
 				</div>
 			</header>
 

@@ -1,6 +1,7 @@
 import type { Game, LeagueId } from '@arenaswap/core/types';
 import GuideGrid from '../../entrypoints/guide/guideGrid';
 import { buildBar, buildHeatCurve, type guideBar } from '../../entrypoints/guide/guideHeat';
+import { gutterPx } from '../../entrypoints/guide/guideLayout';
 import { makeGame } from '../support/fixtures';
 
 const now = new Date('2026-09-13T20:00:00Z').getTime();
@@ -20,6 +21,11 @@ const bar = (id: string, league: LeagueId, startTime: string, overrides: Partial
 	const built = buildBar(game, isFavorite, now);
 	if (!built) throw new Error('expected a bar');
 	return built;
+};
+
+const lightness = (element: HTMLElement): number => {
+	const [r, g, b] = getComputedStyle(element).backgroundColor.match(/\d+/g)!.slice(0, 3).map(Number);
+	return 0.2126 * r! + 0.7152 * g! + 0.0722 * b!;
 };
 
 const nflSunday = (): guideBar[] => [
@@ -79,19 +85,27 @@ describe('the guide grid', () => {
 		cy.get('.guide-band').should('not.exist');
 	});
 
-	// Every bar is the same grey. Status is carried by the now line crossing it and by the drawer,
-	// not by colour — asserted off the computed style rather than off a class name, since a class
-	// that stops being applied would pass a name check.
-	it('gives a live game the same fill as a scheduled one', () => {
+	// A game that is on right now is the answer to the question the page asks, so it reads before the
+	// rest of the grid. Asserted off the computed style rather than off a class name, since a class
+	// that stops being applied would pass a name check — and by luminance rather than by inequality,
+	// because a live bar that came out darker would satisfy 'different' while reading as recessive.
+	it('lifts a live game off the scheduled ones rather than drawing it the same grey', () => {
 		mountGrid([
 			bar('scheduled', 'nfl', '2026-09-14T01:00:00Z'),
 			bar('live', 'nfl', '2026-09-13T19:00:00Z', { status: 'in' }),
 		]);
-		cy.get('.guide-bar').then(([first, second]: JQuery<HTMLElement>) => {
-			expect(getComputedStyle(second!).backgroundColor).to.equal(getComputedStyle(first!).backgroundColor);
-			expect(getComputedStyle(second!).borderColor).to.equal(getComputedStyle(first!).borderColor);
+		// Addressed by status rather than by position: the grid sorts a group by kickoff, so the live
+		// game is the first bar in the DOM and an index would be comparing the pair the wrong way round.
+		cy.get("[data-status='in']").then(([live]: JQuery<HTMLElement>) => {
+			cy.get("[data-status='pre']").then(([scheduled]: JQuery<HTMLElement>) => {
+				expect(lightness(live!), 'the live bar').to.be.greaterThan(lightness(scheduled!));
+				expect(getComputedStyle(live!).borderColor).to.not.equal(getComputedStyle(scheduled!).borderColor);
+			});
 		});
+		// The dot is the part that does not depend on colour, so it has to actually be there.
+		cy.get('.guide-bar-live').should('have.length', 1);
 	});
+
 
 	it('gives a favourite game the same fill as any other', () => {
 		mountGrid([
@@ -112,7 +126,7 @@ describe('the guide grid', () => {
 			bar('live', 'nfl', '2026-09-13T19:00:00Z', { status: 'in' }),
 			bar('done', 'nfl', '2026-09-13T13:00:00Z', { status: 'post' }),
 		]);
-		cy.get(".guide-bar[data-final='true']").should('have.length', 1).then(([final]: JQuery<HTMLElement>) => {
+		cy.get(".guide-bar[data-status='post']").should('have.length', 1).then(([final]: JQuery<HTMLElement>) => {
 			expect(parseFloat(getComputedStyle(final!).opacity)).to.be.lessThan(1);
 		});
 	});
@@ -182,10 +196,16 @@ describe('the guide grid', () => {
 		});
 	});
 
+	// Visible rather than merely present: the old hairline resolved to #171C22 against a #0D1117 page,
+	// which is a rule a width assertion passes and an eye cannot find.
 	it('rules off each row so the eye can carry a time across the grid', () => {
 		mountGrid(nflSunday());
 		cy.get('.guide-row').first().then(([row]: JQuery<HTMLElement>) => {
 			expect(parseFloat(getComputedStyle(row).borderBottomWidth)).to.be.greaterThan(0);
+			const [r, g, b] = getComputedStyle(row).borderBottomColor.match(/\d+/g)!.slice(0, 3).map(Number);
+			const rule = 0.2126 * r! + 0.7152 * g! + 0.0722 * b!;
+			// The page is #0d1117, whose same measure is 16.1.
+			expect(rule, 'the hairline reads against the page').to.be.greaterThan(26);
 		});
 	});
 
@@ -201,9 +221,37 @@ describe('the guide grid', () => {
 
 	it('opens its first hour label fully on screen rather than half cut off', () => {
 		mountGrid(nflSunday());
-		cy.get('.guide-ruler-mark').first().then(([mark]: JQuery<HTMLElement>) => {
-			const canvas = mark.closest('.guide-canvas')!.getBoundingClientRect();
-			expect(mark.getBoundingClientRect().left).to.be.at.least(canvas.left - 1);
+		cy.get('.guide-ruler-mark').first().find('.guide-ruler-label').then(([label]: JQuery<HTMLElement>) => {
+			const track = label.closest('.guide-ruler-track')!.getBoundingClientRect();
+			expect(label.getBoundingClientRect().left).to.be.at.least(track.left - 1);
+		});
+	});
+
+	// The tick is the thing the hour is actually read off, and it has to sit on the gridline drawn for
+	// the same hour. Centring it on the label — which is what it used to do — put the first one about
+	// 20px right of its own line, because the first label is the one that cannot be centred.
+	it('lands every hour tick on its own gridline, including the first', () => {
+		mountGrid(nflSunday());
+		cy.get('.guide-gridline').then(($lines: JQuery<HTMLElement>) => {
+			const lines = [...$lines].map(line => line.getBoundingClientRect().left);
+			cy.get('.guide-ruler-mark').then(($marks: JQuery<HTMLElement>) => {
+				expect($marks.length).to.equal(lines.length);
+				[...$marks].forEach((mark, index) => {
+					expect(mark.getBoundingClientRect().left, `hour ${index}`).to.be.closeTo(lines[index]!, 1);
+				});
+			});
+		});
+	});
+
+	// A league is a column the bars scroll underneath rather than a heading in a gap, so the name has
+	// to stay put while the grid moves under it.
+	it('keeps the league name on screen at any horizontal scroll position', () => {
+		mountGrid(nflSunday(), true, 500);
+		cy.get('.guide-scroller').scrollTo(600, 0);
+		cy.get('.guide-league').first().then(([gutter]: JQuery<HTMLElement>) => {
+			const scroller = gutter.closest('.guide-scroller')!.getBoundingClientRect();
+			expect(gutter.getBoundingClientRect().left).to.be.closeTo(scroller.left, 1);
+			expect(gutter.getBoundingClientRect().width).to.equal(gutterPx);
 		});
 	});
 
@@ -218,15 +266,16 @@ describe('the guide grid', () => {
 	it('keeps the matchup on screen when the bar starts left of the viewport', () => {
 		// Narrow enough that a single NFL bar overflows it, which is what makes the scroller scroll.
 		mountGrid([bar('early', 'nfl', '2026-09-13T17:00:00Z')], true, 400);
-		cy.get('.guide-scroller').scrollTo(220, 0);
+		// Past the gutter as well as past the viewport: at 220 the bar's own start is still on screen.
+		cy.get('.guide-scroller').scrollTo(340, 0);
 		cy.get('.guide-bar').first().then(([element]: JQuery<HTMLElement>) => {
 			const barBox = element.getBoundingClientRect();
 			const content = element.querySelector('.guide-bar-content')!.getBoundingClientRect();
 			const scroller = element.closest('.guide-scroller')!.getBoundingClientRect();
 			// The bar itself has been scrolled off to the left...
 			expect(barBox.left).to.be.lessThan(scroller.left);
-			// ...and its content has not.
-			expect(content.left).to.be.at.least(scroller.left - 1);
+			// ...and its content has come to rest against the league gutter rather than under it.
+			expect(content.left).to.be.at.least(scroller.left + gutterPx - 1);
 			expect(content.right).to.be.at.most(barBox.right + 1);
 		});
 	});

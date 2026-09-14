@@ -11,6 +11,12 @@ export const pxPerMinute = 2.1;
 export const rowHeight = 30;
 export const barHeight = 22;
 
+// The left column carrying the league mark, which stays on screen at every horizontal scroll
+// position. Nothing drawn on the grid accounts for it: the bars, the hour marks, the gridlines and
+// the band all sit inside containers that begin after it, so their x stays measured from the start
+// of the day. Only the canvas width and the opening scroll position add it.
+export const gutterPx = 168;
+
 const hourMs = 60 * 60_000;
 
 export const minutesToPx = (minutes: number): number => minutes * pxPerMinute;

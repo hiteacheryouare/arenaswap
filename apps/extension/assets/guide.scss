@@ -8,7 +8,15 @@ $guide-border: #30363d;
 $guide-ink: #e6edf3;
 $guide-ink-dim: #8b949e;
 $guide-bar: #21262d;
+// A live bar is a step up off the page rather than a second colour to learn: same hue, more
+// light, brighter ink. Scheduled stays flat and finished stays dimmed.
+$guide-bar-live: #2d333b;
+$guide-bar-live-border: #4d5561;
 $guide-accent: #F75C03;
+// Three weights of rule, so the eye can tell a row from an hour from a league boundary. All three
+// were invisible before: the row hairline resolved to #171C22 on a #0D1117 page.
+$guide-rule: #1e242c;
+$guide-gridline: #262d37;
 $guide-row-height: 30px;
 $guide-ruler-height: 32px;
 
@@ -50,8 +58,8 @@ $guide-ruler-height: 32px;
 	}
 }
 
-// Both this and the summary take the free space, so the pair sits together at the right whether or
-// not there is a summary to show.
+// Takes the free space, so the switch and the sentence after it sit together at the right whether
+// or not there is a window to count.
 .guide-band-toggle {
 	display: flex;
 	align-items: center;
@@ -63,6 +71,15 @@ $guide-ruler-height: 32px;
 		margin-left: 0.4rem;
 		cursor: pointer;
 	}
+}
+// Finishes the sentence the switch's own label starts, so the two read as one line rather than as a
+// summary and a control that happen to say the same phrase 250px apart.
+.guide-band-summary {
+	margin-left: 0.35rem;
+	font-size: 0.78rem;
+	font-weight: 600;
+	color: $guide-accent;
+	white-space: nowrap;
 }
 
 // The row below the header: the grid and, when one is open, the detail drawer beside it.
@@ -116,42 +133,80 @@ $guide-ruler-height: 32px;
 }
 
 // The hour marks stay put while the rows scroll under them, and carry the page background so a bar
-// cannot ride over them on a vertical scroll.
+// cannot ride over them on a vertical scroll. A flex row rather than one positioned surface: the
+// corner is the top of the league gutter and has to stay opaque at every horizontal scroll, and the
+// track beside it is what every hour's x is measured from.
 .guide-ruler {
 	position: sticky;
 	top: 0;
-	z-index: 5;
+	z-index: 6;
+	display: flex;
 	height: $guide-ruler-height;
 	background: $guide-bg;
 	border-bottom: 1px solid $guide-border;
 }
 
+.guide-ruler-corner {
+	position: sticky;
+	left: 0;
+	z-index: 2;
+	flex: 0 0 var(--guide-gutter, 168px);
+	background: $guide-bg;
+	border-right: 1px solid $guide-border;
+}
+
+.guide-ruler-track {
+	position: relative;
+	flex: 1;
+}
+
+// A zero-width anchor sitting exactly on its own hour. The tick is the anchor's edge rather than the
+// middle of the label, so it lands on the gridline below it at every hour including the first — which
+// the old centred tick did not, because the first label is the one that cannot be centred.
 .guide-ruler-mark {
 	position: absolute;
-	top: 9px;
-	transform: translateX(-50%);
-	// The axis opens on a whole hour, so the first mark sits at x=0 and centring it cuts half the
-	// label off the left edge.
-	&:first-child {
-		transform: none;
-		padding-left: 2px;
-	}
+	top: 0;
+	bottom: 0;
+	width: 0;
 
-	font-family: 'Lekton', monospace;
-	font-size: 0.72rem;
-	color: $guide-ink-dim;
-	white-space: nowrap;
-
-	// A tick under each label, so the hour lands on a mark rather than on the middle of a word.
 	&::after {
 		content: '';
 		position: absolute;
-		left: 50%;
-		bottom: -9px;
+		left: 0;
+		bottom: 0;
 		width: 1px;
 		height: 5px;
 		background: $guide-border;
 	}
+}
+
+.guide-ruler-label {
+	position: absolute;
+	top: 9px;
+	left: 0;
+	transform: translateX(-50%);
+	font-family: 'Lekton', monospace;
+	font-size: 0.72rem;
+	color: $guide-ink-dim;
+	white-space: nowrap;
+}
+
+// The axis opens on a whole hour, so the first label sits at the track's own left edge and centring
+// it would put half of it under the gutter.
+.guide-ruler-mark:first-of-type .guide-ruler-label {
+	transform: none;
+	padding-left: 4px;
+}
+
+// The band's edges, marked on the axis rather than on the grid — on the grid they were dashed
+// verticals cutting through every bar they crossed, and up here there is nothing to cut. Unlabelled:
+// the header's own sentence carries the times.
+.guide-ruler-band {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	background: rgba(247, 92, 3, 0.14);
+	border-bottom: 2px solid $guide-accent;
 }
 
 .guide-body {
@@ -159,50 +214,51 @@ $guide-ruler-height: 32px;
 	// Takes the rest of the scroller, so the gridlines, the band and the now line run the full
 	// height of the tab rather than ending under the last row.
 	flex: 1;
-	// Clears the band label, which sits above the first row rather than inside it.
-	padding-top: 22px;
-	padding-bottom: 1.5rem;
+	// A column, so the tail below the last group can take the leftover height and carry the gutter
+	// down to the bottom of the tab.
+	display: flex;
+	flex-direction: column;
 }
+
+// The two plot layers. Both start where the gutter ends and run to the end of the day, which is what
+// lets everything inside them keep an x measured from the start of the day rather than from the page.
+.guide-underlay,
+.guide-overlay {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: var(--guide-gutter, 168px);
+	right: 0;
+	pointer-events: none;
+}
+
+.guide-underlay { z-index: 0; }
+.guide-overlay  { z-index: 5; }
 
 .guide-gridline {
 	position: absolute;
 	top: 0;
 	bottom: 0;
 	width: 1px;
-	background: rgba(48, 54, 61, 0.45);
-	pointer-events: none;
+	background: $guide-gridline;
 }
 
+// A wash and nothing else. The dashed edges it used to carry cut vertically through every bar they
+// crossed, which read as a rendering fault rather than as a marked window; the axis above carries the
+// edge instead, where there is nothing to cut.
 .guide-band {
 	position: absolute;
-	top: 22px;
+	top: 0;
 	bottom: 0;
-	background: rgba(247, 92, 3, 0.08);
-	border-left: 1px dashed rgba(247, 92, 3, 0.5);
-	border-right: 1px dashed rgba(247, 92, 3, 0.5);
-	pointer-events: none;
-	z-index: 1;
-	display: flex;
-	align-items: flex-start;
-}
-
-// In the header rather than over the grid, so it is readable at any scroll position.
-.guide-band-summary {
-	margin-left: auto;
-	font-size: 0.78rem;
-	font-weight: 600;
-	color: $guide-accent;
-	white-space: nowrap;
+	background: rgba(247, 92, 3, 0.07);
 }
 
 .guide-now {
 	position: absolute;
-	top: 22px;
+	top: 0;
 	bottom: 0;
 	width: 2px;
 	background: $guide-accent;
-	z-index: 4;
-	pointer-events: none;
 
 	// A cap on the line, so where it meets the ruler is a point rather than a line that just stops.
 	&::before {
@@ -217,25 +273,65 @@ $guide-ruler-height: 32px;
 	}
 }
 
-.guide-league {
+// A league is a band of rows with its own name pinned to the left, rather than a heading floating
+// above a gap. The gap was 44px per league and carried one word; the rule below carries the same
+// boundary in 1px, and the name stays on screen however far the grid is scrolled.
+.guide-group {
+	display: flex;
+
+	& + & {
+		border-top: 1px solid $guide-border;
+	}
+}
+
+// Empty, and only there to continue the gutter past the last group. It takes no boundary rule of its
+// own, which would read as a league with nothing on.
+.guide-group-tail {
+	flex: 1;
+	border-top: 0 !important;
+}
+
+// The gutter column itself, named once for the cells that carry a league and once for the empty tail
+// that continues it past the last group.
+.guide-league,
+.guide-gutter-tail {
 	position: sticky;
 	left: 0;
-	z-index: 3;
+	z-index: 4;
+	flex: 0 0 var(--guide-gutter, 168px);
+	// Opaque rather than a fade: this is a column the bars scroll underneath, not a label riding
+	// along the grid, so anything showing through it is a bar in the wrong place.
+	background: $guide-bg;
+	border-right: 1px solid $guide-border;
+}
+
+.guide-league {
+	padding: 0.4rem 0.75rem 0.4rem 1rem;
+}
+
+// Rides down a group taller than the screen instead of scrolling away from the rows it names. The
+// offset is the ruler, which is stuck across the top of this same scroller.
+.guide-league-inner {
+	position: sticky;
+	top: calc(#{$guide-ruler-height} + 0.4rem);
 	display: flex;
 	align-items: center;
 	gap: 0.45rem;
-	// Sticky to the left edge, so it needs a width of its own rather than the canvas's — otherwise
-	// the background would paint the full scroll width and cover the gridlines.
-	width: max-content;
-	margin-top: 0.9rem;
-	padding: 0.25rem 1rem 0.3rem 1rem;
-	// Fades out to the right rather than ending on a hard edge, which would read as a panel sitting
-	// on top of the grid rather than as a label riding along it.
-	background: linear-gradient(to right, $guide-bg 0%, $guide-bg 72%, rgba(13, 17, 23, 0) 100%);
 	font-size: 0.75rem;
 	font-weight: 600;
-	letter-spacing: 0.03em;
-	color: $guide-ink-dim;
+	letter-spacing: 0.02em;
+	color: $guide-ink;
+}
+
+// Two lines at most. The longest labels in the table are 22 characters — English Premier League,
+// World Baseball Classic — and a third line would push the name out of a group that only has one
+// game in it.
+.guide-league-label {
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+	line-height: 1.15;
+	overflow: hidden;
 }
 
 // League marks are as dark as team crests — the NHL shield is black — so they take the same tinted
@@ -257,19 +353,33 @@ $guide-ruler-height: 32px;
 	height: 1rem;
 }
 
+.guide-group-rows {
+	flex: 1;
+	min-width: 0;
+	padding: 0.4rem 0;
+}
+
 .guide-row {
 	position: relative;
 	// A hairline per row. At ten-plus rows a guide without them is a field of floating rectangles
-	// and the eye cannot carry a time across the grid.
-	border-bottom: 1px solid rgba(48, 54, 61, 0.3);
+	// and the eye cannot carry a time across the grid — which is what the old value could not do, at
+	// a blended #171C22 against a #0D1117 page. On every row rather than all but the last: a league
+	// with one game in it would otherwise have no rule at all.
+	border-bottom: 1px solid $guide-rule;
+
+	// Banding does the same work the hairline does, one level quieter: a bar is on a shaded row or a
+	// plain one, which is readable at a glance across 1,000px of empty grid.
+	&:nth-child(odd) {
+		background: rgba(255, 255, 255, 0.014);
+	}
 
 	&:hover {
-		background: rgba(255, 255, 255, 0.02);
+		background: rgba(255, 255, 255, 0.035);
 	}
 }
 
-// One flat fill for every bar. Status is carried by the now line crossing it and by the drawer, not
-// by colour: a green "live" fill and an orange "favourite" fill read as two unrelated legends the
+// One fill per state, and only three states exist. Live is the same hue a step lighter rather than a
+// colour of its own: a green 'live' fill and an orange 'favourite' fill are two unrelated legends the
 // reader has to learn before the grid means anything.
 .guide-bar {
 	position: absolute;
@@ -315,12 +425,29 @@ $guide-ruler-height: 32px;
 	background: var(--guide-home);
 }
 
+// A game that is on right now is the answer to the question this whole page asks, so it is the one
+// thing on the grid that reads before anything else.
+.guide-bar[data-status='in'] {
+	background: $guide-bar-live;
+	border-color: $guide-bar-live-border;
+	color: #f0f6fc;
+}
+
+.guide-bar-live {
+	flex-shrink: 0;
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
+	background: #e53935;
+}
+
 .guide-bar:hover,
 .guide-bar:focus-visible {
 	border-color: $guide-ink-dim;
 	transform: translateY(-1px);
 	box-shadow: 0 4px 14px rgba(0, 0, 0, 0.55);
-	z-index: 6;
+	// Above its neighbours and still under the gutter, which a bar must never be drawn over.
+	z-index: 3;
 }
 
 // A ring of its own rather than leaning on the hover lift, which a keyboard user cannot read as
@@ -332,13 +459,15 @@ $guide-ruler-height: 32px;
 
 // A finished game keeps its place so the day keeps its shape, but it is not something to go and
 // watch.
-.guide-bar[data-final='true'] {
+.guide-bar[data-status='post'] {
 	opacity: 0.55;
 }
 
+// Pinned to the right-hand edge of the gutter rather than to the scroller, which would park it
+// underneath the league column.
 .guide-bar-content {
 	position: sticky;
-	left: 0;
+	left: var(--guide-gutter, 168px);
 	display: flex;
 	align-items: center;
 	gap: 0.3rem;
@@ -351,6 +480,10 @@ $guide-ruler-height: 32px;
 	font-size: 0.68rem;
 	color: $guide-ink-dim;
 	margin-right: 0.1rem;
+}
+
+.guide-bar[data-status='in'] .guide-bar-time {
+	color: #b9c2cc;
 }
 
 // A crest on a tinted white disc, because a navy or black crest straight on #0d1117 is an empty box
@@ -393,7 +526,6 @@ $guide-ruler-height: 32px;
 	font-size: 0.6rem;
 	margin-left: 0.1rem;
 }
-
 .guide-drawer {
 	// A layout sibling rather than a fixed overlay, so it can never sit on top of the header's own
 	// controls. 320px is the width the detail screen is laid out against and is not negotiable — and
