@@ -12,6 +12,7 @@ import type {
 } from '@arenaswap/core/types';
 import { LeagueSectionHeader, PopupHeader, PopupSectionTitle } from '@arenaswap/ui/src/components/popupChrome';
 import GameCard from './gameCard';
+import GameCardReveal from './gameCardReveal';
 import PopupFooter from './popupFooter';
 import ProTip from './proTip';
 import EmptyGameState from './emptyGameState';
@@ -22,6 +23,7 @@ import UpcomingDayPager from './upcomingDayPager';
 import { buildFavoritePinnedComparator, buildFinalComparator, buildLeagueRank, buildUpcomingComparator, getRandomLoadingMessage, groupByDate, groupByLeague, resolveSelectedDayIndex } from '../popupHelpers';
 import type { BettingDisplayPrefs, WeatherDisplayPrefs } from './gameCardTypes';
 import useRestoredScroll from '../useRestoredScroll';
+import { revealModeForIndex, type cardRevealPlan, type revealMode } from '../cardReveal';
 
 const emptyScoreMap = new Map<string, PowerScoreResult>();
 
@@ -40,6 +42,7 @@ interface gameSectionProps {
 	onOpenGameDetail: (gameId: string) => void;
 	bettingPrefs: BettingDisplayPrefs;
 	weatherPrefs: WeatherDisplayPrefs;
+	reveal: cardRevealPlan;
 	afterTitle?: ReactNode;
 	first?: boolean;
 }
@@ -75,6 +78,7 @@ interface mainViewProps {
 	scrollOffsetRef: RefObject<number>;
 	selectedDayKey: string | null;
 	onSelectDay: (dayKey: string | null) => void;
+	revealMode?: revealMode;
 }
 
 const leagueRows = (
@@ -91,12 +95,18 @@ const leagueRows = (
 	onOpenGameDetail: (gameId: string) => void,
 	bettingPrefs: BettingDisplayPrefs,
 	weatherPrefs: WeatherDisplayPrefs,
+	reveal: cardRevealPlan,
 ) => groupByLeague(games).map(({ league, games: groupedGames }) => (
 	<div key={league}>
 		<LeagueSectionHeader league={league} logos={leagueLogos} />
 		{groupedGames.map(game => (
-			<GameCard
+			<GameCardReveal
 				key={game.id}
+				game={game}
+				mode={revealModeForIndex(reveal.mode, reveal.order.get(game.id) ?? 0)}
+				index={reveal.order.get(game.id) ?? 0}
+			>
+			<GameCard
 				game={game}
 				excitementResult={scoreMap.get(game.id)}
 				favoriteTeamIds={favoriteTeamIds}
@@ -110,6 +120,7 @@ const leagueRows = (
 				bettingPrefs={bettingPrefs}
 				weatherPrefs={weatherPrefs}
 			/>
+			</GameCardReveal>
 		))}
 	</div>
 ));
@@ -129,13 +140,14 @@ const gameSection = ({
 	onOpenGameDetail,
 	bettingPrefs,
 	weatherPrefs,
+	reveal,
 	afterTitle,
 	first,
 }: gameSectionProps) => (
 	<div className='mt-2'>
 		<PopupSectionTitle first={first}>{title}</PopupSectionTitle>
 		{afterTitle}
-		{leagueRows(games, scoreMap, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs, weatherPrefs)}
+		{leagueRows(games, scoreMap, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs, weatherPrefs, reveal)}
 	</div>
 );
 
@@ -170,6 +182,7 @@ const mainView = ({
 	scrollOffsetRef,
 	selectedDayKey,
 	onSelectDay,
+	revealMode = 'none',
 }: mainViewProps) => {
 	const scrollerRef = useRestoredScroll(scrollOffsetRef);
 	const noLeaguesSelected = prefs.enabledLeagues.length === 0;
@@ -222,6 +235,21 @@ const mainView = ({
 		() => liveGames.filter(g => !registeredGameIds.has(g.id)).toSorted(sortGames),
 		[liveGames, registeredGameIds, sortGames],
 	);
+
+	// The stagger counts down the rendered page, so it has to be built the way the page is built:
+	// four sections in this order, each one grouped by league before it is drawn. Counting within a
+	// section instead would start Up Next back at zero and land its first card on top of the second
+	// live one.
+	const reveal = useMemo<cardRevealPlan>(() => {
+		const order = new Map<string, number>();
+		const take = (list: Game[]) => groupByLeague(list)
+			.forEach(({ games: grouped }) => grouped.forEach(game => order.set(game.id, order.size)));
+		take(assignedLiveGames);
+		take(unassignedLiveGames);
+		if (prefs.showUpcomingGames && selectedDay) take(selectedDay.games);
+		take(finalGames);
+		return { mode: revealMode, order };
+	}, [revealMode, assignedLiveGames, unassignedLiveGames, prefs.showUpcomingGames, selectedDay, finalGames]);
 
 	const showNoGames = !isLoading && !noLeaguesSelected && liveGames.length === 0
 		&& registry.length === 0 && finalGames.length === 0
@@ -277,8 +305,8 @@ const mainView = ({
 			/>
 
 			{!isLoading && !noLeaguesSelected && prefs.proTipsEnabled && <ProTip context='main' />}
-			{!isLoading && !noLeaguesSelected && assignedLiveGames.length > 0 && gameSection({ title: i18n.t('main.sectionActiveLiveTabs'), games: assignedLiveGames, scoreMap, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs, weatherPrefs, first: true })}
-			{!isLoading && !noLeaguesSelected && unassignedLiveGames.length > 0 && gameSection({ title: i18n.t('main.sectionOtherLiveGames'), games: unassignedLiveGames, scoreMap, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs, weatherPrefs, first: assignedLiveGames.length === 0 })}
+			{!isLoading && !noLeaguesSelected && assignedLiveGames.length > 0 && gameSection({ title: i18n.t('main.sectionActiveLiveTabs'), games: assignedLiveGames, scoreMap, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs, weatherPrefs, reveal, first: true })}
+			{!isLoading && !noLeaguesSelected && unassignedLiveGames.length > 0 && gameSection({ title: i18n.t('main.sectionOtherLiveGames'), games: unassignedLiveGames, scoreMap, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs, weatherPrefs, reveal, first: assignedLiveGames.length === 0 })}
 			{!isLoading && !noLeaguesSelected && prefs.showUpcomingGames && selectedDay && gameSection({
 				title: i18n.t('main.sectionUpNext'),
 				games: selectedDay.games,
@@ -294,6 +322,7 @@ const mainView = ({
 				onOpenGameDetail,
 				bettingPrefs,
 				weatherPrefs,
+				reveal,
 				afterTitle: (
 					<UpcomingDayPager
 						dayLabel={selectedDay.dateLabel}
@@ -322,6 +351,7 @@ const mainView = ({
 				onOpenGameDetail,
 				bettingPrefs,
 				weatherPrefs,
+				reveal,
 				first: assignedLiveGames.length === 0 && unassignedLiveGames.length === 0
 					&& !(prefs.showUpcomingGames && selectedDay),
 			})}
