@@ -758,3 +758,380 @@ button, input, select, optgroup, textarea {
 @media (prefers-reduced-motion: reduce) {
 	.holiday-bulb { animation: none; }
 }
+
+/* ─── Popup open reveal ───────────────────────────────────────────────────────
+   Every card arrives as the matchup poster it is underneath. The two team colours wipe in from the
+   outer edges and meet on a leaning seam, the tricodes stand outlined over them, a white bar crosses
+   each side and trades its lettering for its crest as it passes, and then the colour retreats the
+   way it came until all that is left is the 5px rails the card draws for itself anyway. The card's
+   own contents come into focus underneath as the colour leaves them.
+
+   Four things hold it together.
+
+   One angle. The seam, the wipes, their chasers and the edge each wipe reveals along all lean at
+   `--reveal-lean`, measured off each card's own height in `gameCardReveal.tsx` so a taller card
+   does not get a shallower graphic.
+
+   One axis. Nothing moves vertically, so the whole thing reads as a single pass across the card
+   rather than as parts arriving separately.
+
+   One rate. Every duration and delay below is a multiple of `--reveal-rate`, so the second open of
+   the day is this same graphic taken 20% quicker rather than a shorter graphic with beats cut out
+   of it.
+
+   One exact landing. The collapse ends on `buildGameCardStyle`'s own rails, and each crest ends on
+   the card's real crest slot, measured rather than guessed — and it gets there before it starts
+   handing over, so what crossfades is two crests standing in the same place rather than one still
+   travelling past the other.
+
+   Two notes on how this is built. A bar does not fade its side's lettering out and its crest in;
+   the crest layer and the lettering layer are clipped along the same leaning edge from opposite
+   sides, so they are exact complements and the trade happens under the bar itself. And each element
+   gets one animation per property it moves: two animations naming the same property is the trap
+   here, because the later one wins outright and its backwards fill reaches back over the earlier
+   one and erases it before it has played a frame. */
+
+.game-card-reveal {
+	position: relative;
+}
+
+.game-card-reveal-stage,
+.game-card-reveal-sweeps {
+	position:       absolute;
+	inset:          0;
+	overflow:       hidden;
+	border-radius:  0.5rem;
+	pointer-events: none;
+}
+
+/* Under the crests it carries, over everything the card draws. */
+.game-card-reveal-stage {
+	z-index: 2;
+}
+
+/* Over both: a bar passes across a crest, not behind it. A layer of its own rather than a child of
+   the stage, whose z-index would box any descendant in underneath the crests. */
+.game-card-reveal-sweeps {
+	z-index: 4;
+}
+
+/* The graphic builds over the popup's own background rather than over the card, which is white and
+   would flash between the two halves for as long as they are still travelling. Gone the moment they
+   meet, well before the collapse needs the card underneath to be visible again. */
+.game-card-reveal-base {
+	position:   absolute;
+	inset:      0;
+	background: #0d1117;
+	animation:  cardRevealBase calc(3400ms * var(--reveal-rate)) linear var(--reveal-delay) both;
+}
+
+/* Wider than the half it fills so the seam has somewhere to lean, and clipped back to the leaning
+   edge. Both halves grow from their own outer edge, which is the collapse run backwards — the
+   graphic resolves exactly the way it was built. */
+.game-card-reveal-half {
+	position: absolute;
+	top:      0;
+	bottom:   0;
+	width:    calc(50% + var(--reveal-lean));
+	overflow: hidden;
+}
+
+.game-card-reveal-half.is-away {
+	left:       0;
+	background: var(--reveal-away);
+	clip-path:  polygon(0 0, 100% 0, calc(100% - var(--reveal-lean) * 2) 100%, 0 100%);
+	animation:
+		cardRevealHalf calc(3400ms * var(--reveal-rate)) linear var(--reveal-delay) both,
+		cardRevealSeamAway calc(750ms * var(--reveal-rate)) cubic-bezier(0.22, 1, 0.36, 1) calc(var(--reveal-delay) + 2650ms * var(--reveal-rate)) both;
+}
+
+.game-card-reveal-half.is-home {
+	right:      0;
+	background: var(--reveal-home);
+	clip-path:  polygon(calc(var(--reveal-lean) * 2) 0, 100% 0, 100% 100%, 0 100%);
+	animation:
+		cardRevealHalf calc(3400ms * var(--reveal-rate)) linear var(--reveal-delay) both,
+		cardRevealSeamHome calc(750ms * var(--reveal-rate)) cubic-bezier(0.22, 1, 0.36, 1) calc(var(--reveal-delay) + 2650ms * var(--reveal-rate)) both;
+}
+
+/* ── The wipe, and the two layers it trades between ─────────────────────────── */
+
+/* Both span the whole card and are clipped along the same leaning edge as the bar that is crossing
+   it, from opposite sides. `linear`, and over exactly the bar's own window, because the edge and
+   the bar have to be the same line — anything else is a bar with a dissolve near it. */
+.game-card-reveal-wipe,
+.game-card-reveal-mask {
+	position:       absolute;
+	inset:          0;
+	pointer-events: none;
+}
+
+.game-card-reveal-wipe.is-away {
+	animation: cardRevealWipeAway calc(1000ms * var(--reveal-rate)) linear calc(var(--reveal-delay) + 1500ms * var(--reveal-rate)) both;
+}
+
+.game-card-reveal-wipe.is-home {
+	animation: cardRevealWipeHome calc(1000ms * var(--reveal-rate)) linear calc(var(--reveal-delay) + 1500ms * var(--reveal-rate)) both;
+}
+
+.game-card-reveal-mask.is-away {
+	animation: cardRevealMaskAway calc(1000ms * var(--reveal-rate)) linear calc(var(--reveal-delay) + 1500ms * var(--reveal-rate)) both;
+}
+
+.game-card-reveal-mask.is-home {
+	animation: cardRevealMaskHome calc(1000ms * var(--reveal-rate)) linear calc(var(--reveal-delay) + 1500ms * var(--reveal-rate)) both;
+}
+
+/* Centred in its own quarter of the card rather than over the card's team column, which sits high
+   and wide of it — and concentric with the tricode it replaces, so the trade happens in one place
+   instead of moving. */
+.game-card-reveal-crest,
+.game-card-reveal-abbr {
+	position: absolute;
+	top:      50%;
+}
+
+.game-card-reveal-crest {
+	width:     64px;
+	height:    64px;
+	margin:    -32px 0 0 -32px;
+	animation: cardRevealCrest calc(3400ms * var(--reveal-rate)) linear var(--reveal-delay) both;
+}
+
+.game-card-reveal-wipe.is-away .game-card-reveal-crest,
+.game-card-reveal-mask.is-away .game-card-reveal-abbr {
+	left:        25%;
+	--reveal-dx: var(--reveal-away-dx);
+	--reveal-dy: var(--reveal-away-dy);
+}
+
+.game-card-reveal-wipe.is-home .game-card-reveal-crest,
+.game-card-reveal-mask.is-home .game-card-reveal-abbr {
+	left:        75%;
+	--reveal-dx: var(--reveal-home-dx);
+	--reveal-dy: var(--reveal-home-dy);
+}
+
+.game-card-reveal-crest-plate {
+	width:           100%;
+	height:          100%;
+	display:         flex;
+	align-items:     center;
+	justify-content: center;
+	border-radius:   999px;
+}
+
+/* Only the plate clips, and only to three quarters of itself — a wordmark reaches the corners of
+   its own box, and a circle drawn at the size of the mark shaves its ends. */
+.game-card-reveal-crest-plate:not(.is-bare) {
+	overflow: hidden;
+
+	.game-card-reveal-crest-logo { width: 75%; height: 75%; }
+}
+
+.game-card-reveal-crest-logo {
+	width:  100%;
+	height: 100%;
+}
+
+/* The card's own crest waits under the graphic until the overlay has finished walking onto it, then
+   the two trade places while both are standing still. Without this both are on screen for the whole
+   descent, and a crest the colour treatment gave a tinted plate wears that plate as a halo. */
+.game-card-reveal .game-card .team-crest {
+	animation: cardRevealHandoff calc(238ms * var(--reveal-rate)) linear calc(var(--reveal-delay) + 3162ms * var(--reveal-rate)) both;
+}
+
+/* Outlined rather than filled, and in a layer of its own rather than inside its colour half: the
+   half is clipped along the leaning seam, and a diagonal cut through hollow letterforms adds a line
+   across every glyph it crosses. Out here the lettering is whole, and the only thing that ever cuts
+   it is the bar that is meant to. Never fades: it is wiped, which is the point of the bar.
+   `padding-top` is optical, not layout — centring the line box leaves caps sitting high, because
+   the box carries descender space these glyphs never use. */
+.game-card-reveal-abbr {
+	display:             flex;
+	align-items:         center;
+	justify-content:     center;
+	width:               8rem;
+	margin:              -2.2rem 0 0 -4rem;
+	height:              4.4rem;
+	padding-top:         0.08em;
+	font-family:         'DM Sans', sans-serif;
+	font-size:           3.4rem;
+	font-weight:         700;
+	letter-spacing:      0.02em;
+	line-height:         1;
+	white-space:         nowrap;
+	color:               transparent;
+	-webkit-text-stroke: 2px rgba(255, 255, 255, 0.85);
+	animation:           cardRevealAbbrIn calc(420ms * var(--reveal-rate)) ease calc(var(--reveal-delay) + 620ms * var(--reveal-rate)) both;
+}
+
+/* Taller than the card at both ends so the lean never drags a corner into view, and travelling at a
+   constant rate: a wipe that eases is a wipe you can watch thinking about it. The 20.5deg here is
+   `revealSweepAngleDeg` in `cardReveal.ts`, which is what `--reveal-lean` is derived from — the two
+   have to name the same angle or the bar stops being parallel to the edge it is revealing along. */
+.game-card-reveal-sweep {
+	position:   absolute;
+	top:        -30%;
+	bottom:     -30%;
+	width:      22px;
+	background: linear-gradient(to right, rgba(255, 255, 255, 0.5), #ffffff 45%, rgba(255, 255, 255, 0.85));
+}
+
+/* A thin one trailing the thick one, which is how these are cut for broadcast and the cheapest
+   thing there is that separates a wipe from a rectangle sliding past. It runs over ground the
+   thick one has already turned over, since the reveal edge is the leading bar's trailing edge. */
+.game-card-reveal-sweep.is-chaser {
+	width:      6px;
+	background: rgba(255, 255, 255, 0.7);
+}
+
+.game-card-reveal-sweep.is-away {
+	transform: skewX(-20.5deg);
+	animation: cardRevealSweepAway calc(1000ms * var(--reveal-rate)) linear calc(var(--reveal-delay) + 1500ms * var(--reveal-rate)) both;
+}
+
+.game-card-reveal-sweep.is-home {
+	transform: skewX(20.5deg);
+	animation: cardRevealSweepHome calc(1000ms * var(--reveal-rate)) linear calc(var(--reveal-delay) + 1500ms * var(--reveal-rate)) both;
+}
+
+.game-card-reveal-sweep.is-away.is-chaser,
+.game-card-reveal-sweep.is-home.is-chaser {
+	animation-delay: calc(var(--reveal-delay) + 1640ms * var(--reveal-rate));
+}
+
+/* ── The card coming into focus underneath ──────────────────────────────────── */
+
+/* Timed to start as the colour begins to retreat, so the card is arriving rather than waiting
+   behind a curtain that is opening on it. Ordered the way you read a scoreboard: what the game is,
+   then what the score is, then who is playing, then everything around it. */
+.game-card-reveal .game-card-status-row,
+.game-card-reveal .game-card-center,
+.game-card-reveal .team-abbreviation,
+.game-card-reveal [data-team-star='true'],
+.game-card-reveal .game-meta,
+.game-card-reveal .game-card-ps-bar-row {
+	animation: cardRevealContent calc(620ms * var(--reveal-rate)) cubic-bezier(0.22, 1, 0.36, 1) calc(var(--reveal-delay) + 2500ms * var(--reveal-rate)) both;
+}
+
+.game-card-reveal .game-card-center {
+	animation-delay: calc(var(--reveal-delay) + 2580ms * var(--reveal-rate));
+}
+
+.game-card-reveal .team-abbreviation,
+.game-card-reveal [data-team-star='true'] {
+	animation-delay: calc(var(--reveal-delay) + 2660ms * var(--reveal-rate));
+}
+
+.game-card-reveal .game-meta {
+	animation-delay: calc(var(--reveal-delay) + 2740ms * var(--reveal-rate));
+}
+
+.game-card-reveal .game-card-ps-bar-row {
+	animation-delay: calc(var(--reveal-delay) + 2820ms * var(--reveal-rate));
+}
+
+/* A finished game is the one card with no rails to land on — it is flat grey on both edges — so its
+   colour retreats the whole way out instead of stopping 5px short. */
+.game-card-reveal.is-railless .game-card-reveal-half.is-away {
+	animation-name: cardRevealHalfOut, cardRevealSeamAway;
+}
+
+.game-card-reveal.is-railless .game-card-reveal-half.is-home {
+	animation-name: cardRevealHalfOut, cardRevealSeamHome;
+}
+
+/* ── Keyframes ──────────────────────────────────────────────────────────────── */
+
+/* Open, hold, collapse, in one timeline. 26% is 884ms of 3400; 78% is 2652. */
+@keyframes cardRevealHalf {
+	0%       { width: 0; animation-timing-function: cubic-bezier(0.33, 0.9, 0.3, 1); }
+	26%, 78% { width: calc(50% + var(--reveal-lean)); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+	100%     { width: 5px; }
+}
+
+@keyframes cardRevealHalfOut {
+	0%       { width: 0; animation-timing-function: cubic-bezier(0.33, 0.9, 0.3, 1); }
+	26%, 78% { width: calc(50% + var(--reveal-lean)); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+	100%     { width: 0; }
+}
+
+/* Out as soon as the halves have met and are covering it. */
+@keyframes cardRevealBase {
+	0%, 27%   { opacity: 1; }
+	34%, 100% { opacity: 0; }
+}
+
+/* The seam straightens into the card's own vertical rail as the colour retreats. */
+@keyframes cardRevealSeamAway {
+	from { clip-path: polygon(0 0, 100% 0, calc(100% - var(--reveal-lean) * 2) 100%, 0 100%); }
+	to   { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+}
+
+@keyframes cardRevealSeamHome {
+	from { clip-path: polygon(calc(var(--reveal-lean) * 2) 0, 100% 0, 100% 100%, 0 100%); }
+	to   { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+}
+
+/* The four halves of the trade. Away's bar travels left to right, so its crest is drawn only to the
+   left of the edge and its tricode only to the right; home's bar travels the other way and so does
+   everything about it. The percentages are the bar's own travel, and the lean is the bar's own
+   skew, which is what makes the edge and the bar one line rather than two. */
+@keyframes cardRevealWipeAway {
+	from { clip-path: polygon(0 0, calc(-18% + var(--reveal-lean)) 0, calc(-18% - var(--reveal-lean)) 100%, 0 100%); }
+	to   { clip-path: polygon(0 0, calc(118% + var(--reveal-lean)) 0, calc(118% - var(--reveal-lean)) 100%, 0 100%); }
+}
+
+@keyframes cardRevealMaskAway {
+	from { clip-path: polygon(calc(-18% + var(--reveal-lean)) 0, 100% 0, 100% 100%, calc(-18% - var(--reveal-lean)) 100%); }
+	to   { clip-path: polygon(calc(118% + var(--reveal-lean)) 0, 100% 0, 100% 100%, calc(118% - var(--reveal-lean)) 100%); }
+}
+
+@keyframes cardRevealWipeHome {
+	from { clip-path: polygon(calc(118% - var(--reveal-lean)) 0, 100% 0, 100% 100%, calc(118% + var(--reveal-lean)) 100%); }
+	to   { clip-path: polygon(calc(-18% - var(--reveal-lean)) 0, 100% 0, 100% 100%, calc(-18% + var(--reveal-lean)) 100%); }
+}
+
+@keyframes cardRevealMaskHome {
+	from { clip-path: polygon(0 0, calc(118% - var(--reveal-lean)) 0, calc(118% + var(--reveal-lean)) 100%, 0 100%); }
+	to   { clip-path: polygon(0 0, calc(-18% - var(--reveal-lean)) 0, calc(-18% + var(--reveal-lean)) 100%, 0 100%); }
+}
+
+@keyframes cardRevealAbbrIn {
+	from { opacity: 0; }
+	to   { opacity: 1; }
+}
+
+/* Constant rate, edge to edge and out the far side: they cross at the middle of the card and each
+   one leaves under its own steam rather than stopping somewhere and fading. */
+@keyframes cardRevealSweepAway {
+	from { left: -18%; }
+	to   { left: 118%; }
+}
+
+@keyframes cardRevealSweepHome {
+	from { left: 118%; }
+	to   { left: -18%; }
+}
+
+/* Barely moving while the bar uncovers it, so what is revealed is already alive; then the hold,
+   then the walk down onto the card's own crest slot. Stationary from 93%, which is where the card's
+   real crest starts fading up underneath it — the two never move past each other. */
+@keyframes cardRevealCrest {
+	0%, 44% { opacity: 1; transform: translate(0, 0) scale(1.95); animation-timing-function: linear; }
+	74%     { transform: translate(0, 0) scale(1.85); }
+	78%     { transform: translate(0, 0) scale(1.85); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+	93%     { opacity: 1; transform: translate(var(--reveal-dx), var(--reveal-dy)) scale(1); }
+	100%    { opacity: 0; transform: translate(var(--reveal-dx), var(--reveal-dy)) scale(1); }
+}
+
+@keyframes cardRevealHandoff {
+	from { opacity: 0; }
+	to   { opacity: 1; }
+}
+
+@keyframes cardRevealContent {
+	from { opacity: 0; filter: blur(4px); transform: translateY(4px); }
+	to   { opacity: 1; filter: blur(0); transform: translateY(0); }
+}
