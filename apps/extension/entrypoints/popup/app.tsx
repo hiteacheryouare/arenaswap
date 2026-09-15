@@ -14,6 +14,7 @@ import { fetchState, formatTabLabel, insertLeagueAtDefaultPosition, leagueOrder,
 import { i18n } from '#i18n';
 import { TranslationContext } from '@arenaswap/ui/src/components/i18nContext';
 import useFavoriteScoreConfetti from './useFavoriteScoreConfetti';
+import { resolveOpenRevealMode, revealSettleMs } from './cardReveal';
 import useToast from './useToast';
 import SuggestView from './components/suggestView';
 import {
@@ -75,6 +76,10 @@ export default () => {
 	const [dismissedSuggestions, setDismissedSuggestions] = useState<string[]>([]);
 	const [reviewPromptState, setReviewPromptState] = useState<ReviewPromptState>(normalizeReviewPromptState(null));
 	const [settled, setSettled] = useState(false);
+	// Owned up here because the view shell is keyed on `view`: left to MainView it would replay in
+	// full every time you came back from a setting or a game detail. Cleared once the last card has
+	// landed, which is what makes the return trip quiet.
+	const [revealMode, setRevealMode] = useState(resolveOpenRevealMode);
 	const [allLeagueLogoCache, setAllLeagueLogoCache] = useState<LeagueLogoMap>({});
 	const settledRef = useRef(false);
 	const prefsSyncRef = useRef<Promise<void>>(Promise.resolve());
@@ -87,6 +92,16 @@ export default () => {
 		revalidateOnReconnect: false,
 		revalidateIfStale: false,
 	});
+
+	// Timed from the first painted list rather than from mount, because the cards do not exist until
+	// the slate lands and the animation starts with them. Started at mount it would expire partway
+	// through a slow open and take the stage off cards still using it.
+	const listReady = !isLoading && settled;
+	useEffect(() => {
+		if (revealMode === 'none' || !listReady) return;
+		const timer = setTimeout(() => setRevealMode('none'), revealSettleMs(revealMode));
+		return () => clearTimeout(timer);
+	}, [revealMode, listReady]);
 
 	// The onboarding and settings pickers show every league, not just the enabled ones.
 	useEffect(() => {
@@ -481,6 +496,7 @@ export default () => {
 						scrollOffsetRef={mainScrollOffset}
 						selectedDayKey={selectedDayKey}
 						onSelectDay={setSelectedDayKey}
+						revealMode={revealMode}
 					/>
 				)}
 				{view === 'suggest' && (
