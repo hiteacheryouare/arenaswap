@@ -2997,4 +2997,129 @@ describe('a window asked for one day at a time', () => {
 		expect(fetchMock.mock.calls.length).toBeGreaterThan(0);
 		expect(fetchMock.mock.calls.every(([url]) => dateOf(String(url)) !== '')).toBe(true);
 	});
+
+	/* A calendar day moves future → today → past underneath a cached entry, and the entry's own TTL
+	   cannot see that happen. A day fetched as tomorrow carries ten minutes of freshness, so ten
+	   minutes later it is today and still fresh by its own clock — and today must never be served
+	   from the cache. Eastern is UTC-4 here and the suite runs in UTC, so 03:55Z is 23:55 on the
+	   15th and 04:02Z is 00:02 on the 16th. */
+	it('does not serve a day cached as tomorrow once it has become today', async () => {
+		jest.useFakeTimers().setSystemTime(new Date('2026-09-16T03:55:00.000Z'));
+		try {
+			let live = false;
+			const fetchMock = jest.fn().mockImplementation(async (url: string) => createResponse({
+				leagues: [{ logos: [] }],
+				events: dateOf(url) === '20260916'
+					? [live ? liveOn('tipoff') : makeEvent({
+						id: 'tipoff', state: 'pre', period: 1, clock: '0:00', homeScore: '0', awayScore: '0',
+						date: '2026-09-16T04:05:00.000Z',
+					})]
+					: [],
+			}));
+			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+			const { fetchGamesWithLeagueLogos } = loadApiClient();
+
+			// 23:55 on the 15th: the wide window reaches the 16th, which is still tomorrow.
+			const before = await fetchGamesWithLeagueLogos(['nba'], { includeUpcoming: true, upcomingDays: 7 });
+			expect(before.games.find(game => game.id === 'tipoff')?.status).toBe('pre');
+
+			// Seven minutes later it is the 16th and the game has tipped off.
+			live = true;
+			jest.setSystemTime(new Date('2026-09-16T04:02:00.000Z'));
+			const after = await fetchGamesWithLeagueLogos(['nba'], { includeUpcoming: false });
+
+			expect(after.games.find(game => game.id === 'tipoff')?.status).toBe('in');
+			expect(datesAsked(fetchMock)).toContain('20260916');
+		} finally {
+			jest.useRealTimers();
+		}
+	});
+
+	/* Three classifications for a past day rather than two. One with a game in progress never caches,
+	   because that is the kickoff from before Eastern midnight. One whose games are all final cannot
+	   change again. And one holding a game ESPN still calls scheduled is either the postponed game
+	   that will never start or the rain delay that has not started yet, so it takes the shorter
+	   freshness instead of either extreme. */
+	describe('how long a past day stays good for', () => {
+		const pinned = '2026-09-16T18:00:00.000Z';
+		const onYesterday = (state: string, id: string) => makeEvent({
+			id, state, period: 5, clock: '1:00', homeScore: '2', awayScore: '2',
+			date: '2026-09-16T00:30:00.000Z',
+		});
+
+		const askTwice = async (state: string, advanceMs: number): Promise<string[]> => {
+			jest.useFakeTimers().setSystemTime(new Date(pinned));
+			const fetchMock = jest.fn().mockImplementation(async (url: string) => createResponse({
+				leagues: [{ logos: [] }],
+				events: dateOf(url) === '20260915' ? [onYesterday(state, 'yesterday')] : [],
+			}));
+			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+			const { fetchGamesWithLeagueLogos } = loadApiClient();
+
+			await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false, includeFinal: true });
+			fetchMock.mockClear();
+			jest.setSystemTime(new Date(new Date(pinned).getTime() + advanceMs));
+			await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false, includeFinal: true });
+			const asked = datesAsked(fetchMock);
+			jest.useRealTimers();
+			return asked;
+		};
+
+		// Today is always asked for; what these are reading is whether the 15th joins it.
+		it('re-asks immediately while a game on it is in progress', async () => {
+			expect(await askTwice('in', 60_000)).toEqual(['20260915', '20260916']);
+		});
+
+		it('holds it for half an hour once every game is final', async () => {
+			expect(await askTwice('post', 20 * 60_000)).toEqual(['20260916']);
+		});
+
+		it('holds a scheduled leftover for ten minutes, not thirty', async () => {
+			expect(await askTwice('pre', 5 * 60_000)).toEqual(['20260916']);
+			expect(await askTwice('pre', 12 * 60_000)).toEqual(['20260915', '20260916']);
+		});
+	});
+
+	/* The days run chronologically, so the copy from the earliest day would otherwise win — including
+	   one served out of a settled day's half-hour cache, beating today's fresh answer. The case that
+	   puts one event on several days is exactly the one where ESPN has stopped applying the `dates`
+	   filter and every day comes back with the same board. */
+	it('prefers today\'s copy of an event that arrives on more than one day', async () => {
+		jest.useFakeTimers().setSystemTime(new Date('2026-09-16T18:00:00.000Z'));
+		try {
+			const fetchMock = jest.fn().mockImplementation(async (url: string) => createResponse({
+				leagues: [{ logos: [] }],
+				events: [dateOf(url) === '20260916'
+					? liveOn('everywhere')
+					: makeEvent({
+						id: 'everywhere', state: 'pre', period: 1, clock: '0:00', homeScore: '0', awayScore: '0',
+						date: '2026-09-16T22:00:00.000Z',
+					})],
+			}));
+			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+			const { fetchGamesWithLeagueLogos } = loadApiClient();
+
+			const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: true, upcomingDays: 3 });
+			expect(result.games.filter(game => game.id === 'everywhere')).toHaveLength(1);
+			expect(result.games.find(game => game.id === 'everywhere')?.status).toBe('in');
+		} finally {
+			jest.useRealTimers();
+		}
+	});
+
+	// Two surfaces asking for the same league and day at once is one request, not two: a worker start
+	// runs the slate while a guide open or a lookahead can be in flight for the same day.
+	it('makes one request when two callers want the same day at once', async () => {
+		const fetchMock = jest.fn().mockImplementation(async () => createResponse({ events: [], leagues: [{ logos: [] }] }));
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+		const { fetchGamesWithLeagueLogos } = loadApiClient();
+
+		await Promise.all([
+			fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false }),
+			fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false }),
+		]);
+
+		const asked = fetchMock.mock.calls.map(([url]) => dateOf(String(url)));
+		expect(new Set(asked).size).toBe(asked.length);
+	});
 });

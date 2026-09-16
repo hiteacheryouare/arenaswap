@@ -31,8 +31,9 @@ const espnBase = 'https://site.api.espn.com/apis/site/v2/sports';
    contributes nothing and says nothing, so the only symptom is a slate that comes back short — or,
    with enough of them shed, the empty-state screen on a day full of sport.
 
-   Six at a time, which is twelve requests in flight at the worst point, since a league asked for
-   upcoming games makes two. */
+   Six at a time. A league's own days are pooled again inside that — see `espnDayPoolSize`, which is
+   what actually sets the worst point now that a window is a request per day rather than one or two
+   for the whole span. */
 export const espnRequestPoolSize = 6;
 
 const settledInPool = async <T, R>(
@@ -773,16 +774,30 @@ interface CachedDay {
 }
 
 const dayCache = new Map<string, CachedDay>();
+const dayRequests = new Map<string, Promise<CachedDay>>();
 
-/* A past day is settled once nothing on it is still being played — not once everything is final.
-   The difference is the postponed game ESPN leaves sitting as scheduled on a date that has gone by:
-   it will never start, so waiting for it to reach `post` would keep that day uncacheable for as long
-   as the league is polled. Anything actually in progress keeps its day at the live cadence, which is
-   what carries a game that kicked off before Eastern midnight. */
+/* The one seam the tests need. Two readings of the same league and day in one spec file otherwise
+   inherit each other's games, which is as likely to make an assertion pass for the wrong reason as
+   to fail one — `holidayDecorations` hit exactly that and had to reset the module registry. */
+export const clearDayCache = (): void => {
+	dayCache.clear();
+	dayRequests.clear();
+};
+
+/* A past day is settled only once every game on it is final, and a day with anything in progress is
+   never settled at all — that is what carries a game which kicked off before Eastern midnight, so it
+   stays on the live cadence.
+
+   Between those sits the past day holding a game ESPN still calls scheduled. Waiting for it to reach
+   `post` would keep that day uncacheable for as long as the league is polled, because a postponed
+   game never will; calling it settled would hide a rain-delayed start that crosses midnight for half
+   an hour. So it takes the future day's ten minutes: six requests an hour for the postponed case, and
+   a blind spot of ten minutes rather than thirty for the delayed one. */
 const dayTtlMs = (dayKey: string, todayKey: string, games: Game[]): number => {
 	if (dayKey === todayKey) return 0;
 	if (dayKey > todayKey) return futureDayTtlMs;
-	return games.every(game => game.status !== 'in') ? settledDayTtlMs : 0;
+	if (games.some(game => game.status === 'in')) return 0;
+	return games.every(game => game.status === 'post') ? settledDayTtlMs : futureDayTtlMs;
 };
 
 const pruneDayCache = (todayKey: string): void => {
@@ -804,11 +819,13 @@ const pruneDayCache = (todayKey: string): void => {
    the user changed a setting. Today is the exception because today is the live signal: `tickLeague`
    reads a successful tick with nothing live as a quiet league and walks it towards dormant, so
    today's failure has to reach it rather than be papered over. */
-const fetchDayGames = async (config: LeagueConfig, dayKey: string, todayKey: string): Promise<CachedDay> => {
+const fetchDayFromEspn = async (
+	config: LeagueConfig,
+	dayKey: string,
+	todayKey: string,
+	cached: CachedDay | undefined,
+): Promise<CachedDay> => {
 	const cacheKey = `${config.id}:${dayKey}`;
-	const cached = dayCache.get(cacheKey);
-	if (cached && cached.ttlMs > 0 && Date.now() - cached.fetchedAt < cached.ttlMs) return cached;
-
 	const params = scoreboardParams(config);
 	params.set('dates', dayKey);
 	const url = `${espnBase}/${config.espnPath}/scoreboard?${params.toString()}`;
@@ -831,6 +848,34 @@ const fetchDayGames = async (config: LeagueConfig, dayKey: string, todayKey: str
 		if (!cached || dayKey === todayKey) throw err;
 		logWarn(`ESPN would not answer for ${config.id} on ${dayKey}; keeping the last answer for that day.`);
 		return cached;
+	}
+};
+
+const fetchDayGames = async (config: LeagueConfig, dayKey: string, todayKey: string): Promise<CachedDay> => {
+	const cacheKey = `${config.id}:${dayKey}`;
+	const cached = dayCache.get(cacheKey);
+	/* `dayKey !== todayKey` is the load-bearing half, and it has to be asked here rather than
+	   inferred from the TTL written when the entry was made. A calendar day moves future → today →
+	   past underneath a cached entry: a day fetched as tomorrow carries ten minutes, and ten minutes
+	   later it is today and still fresh by its own clock. That served a stale tomorrow as today
+	   across Eastern midnight, so a game live in the first ten minutes of the new day read as
+	   scheduled at 0-0 — which for a Pacific viewer is an ordinary 21:00 tip-off. */
+	if (cached && dayKey !== todayKey && cached.ttlMs > 0 && Date.now() - cached.fetchedAt < cached.ttlMs) {
+		return cached;
+	}
+
+	// One request per league and day even when two surfaces ask at once. A worker start runs the
+	// slate while a guide open or a lookahead can be in flight for the same day, and both would
+	// otherwise miss the cache and fetch — the same trap the team marks got in-flight dedup for.
+	const running = dayRequests.get(cacheKey);
+	if (running) return await running;
+
+	const pending = fetchDayFromEspn(config, dayKey, todayKey, cached);
+	dayRequests.set(cacheKey, pending);
+	try {
+		return await pending;
+	} finally {
+		dayRequests.delete(cacheKey);
 	}
 };
 
@@ -893,15 +938,21 @@ const fetchLeagueGames = async (config: LeagueConfig, options: LeagueFetchOption
 		throw rejected?.reason ?? new LeagueFetchError(config.id);
 	}
 
-	const seenIds = new Set<string>();
-	const games: Game[] = [];
-	for (const day of answered) {
-		for (const game of day.games) {
-			if (seenIds.has(game.id)) continue;
-			seenIds.add(game.id);
-			if (keepGame(game)) games.push(game);
+	/* Today's copy of a duplicated event wins. The days run chronologically, so without this a copy
+	   served out of a settled day's half-hour cache would beat today's fresh one — and the case that
+	   produces the same event on two days is precisely the one where ESPN has stopped applying the
+	   `dates` filter and every day answers with the same board. The two-leg version got this for free
+	   by concatenating the live leg first. Insertion order is kept either way: re-setting an existing
+	   key does not move it. */
+	const byId = new Map<string, Game>();
+	results.forEach((result, index) => {
+		if (result.status !== 'fulfilled') return;
+		const isToday = dayKeys[index] === todayKey;
+		for (const game of result.value.games) {
+			if (isToday || !byId.has(game.id)) byId.set(game.id, game);
 		}
-	}
+	});
+	const games = [...byId.values()].filter(keepGame);
 
 	const espnLogo = answered.find(day => day.espnLogo)?.espnLogo;
 	return { leagueId: config.id, games, logoUrl: resolveLeagueLogoUrl(config.id, espnLogo) };

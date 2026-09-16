@@ -37,6 +37,19 @@ so a frozen copy of today would let a league fall asleep mid-game. On a *wide* w
 missing day among several, which is also what the two-leg version did — a failed live leg still
 returned everything the range leg found.
 
+A review pass caught two ways that TTL could be read at the wrong moment, both now pinned by specs.
+A calendar day moves future → today → past underneath a cached entry and the entry's own TTL cannot
+see it happen: a day fetched as tomorrow carries ten minutes, so ten minutes later it was today and
+still fresh by its own clock, and a game live in the first ten minutes of a new Eastern day read as
+scheduled at 0-0 — an ordinary 21:00 tip-off on the west coast. The day's classification is asked at
+read time now, not inferred from what was written. And a past day has three states rather than two:
+one with a game in progress never caches, one whose games are all final cannot change again, and one
+holding a game ESPN still calls scheduled — the postponed game that will never start, or the rain
+delay that has not started yet — takes the shorter ten minutes instead of either extreme. Also from
+that pass: today's copy of an event arriving on more than one day now wins over the earliest day's,
+which the two-leg version got for free by putting the live leg first, and days dedupe in flight so a
+worker start and a guide open do not both fetch the same one.
+
 Three things fell out. **`limit` is real and we had never sent it**: an MLB month answered 100 events
 without it and 369 with it, so there is a default cap we have been eating, and on a January NCAA
 basketball day it was certainly truncating us. 500 rather than higher, because `limit=1000` answered a
