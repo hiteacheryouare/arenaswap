@@ -3,6 +3,62 @@
 > One or two lines per entry: what changed, and the one thing about it worth knowing later.
 > The code, the tests and the git history hold the rest. Do not write essays here.
 
+## A window is a list of days, because ESPN stopped answering for a span — 2026-09-16
+
+The three entries below diagnosed a real symptom on the wrong axis. It is not that MLB will not take
+a dated window and that which leagues will is ESPN's to say: `dates=20260914-20260915` now answers
+`{"code":400,"message":"Failed to get events endpoint."}` in **all 31 leagues**, at any width
+including a one-day `20260915-20260915`, on `site.api` and on `site.web.api` alike, 20 times out of
+20 on one league — while a single `dates=20260915` answers 200 in all 31. So the per-league latch was
+holding a fact about every league, and what it degraded to cost almost everything: the undated board
+carries one Eastern day in most leagues, so finals went and upcoming went, and college football
+looked fine by accident because *its* undated board is an editorially curated week. Nothing
+multi-day survives, either — comma, encoded comma and encoded hyphen all 400, and a repeated
+`dates=` parameter answers 200 for the first value only, which is worse than failing. `YYYYMM` works
+and is a trap: truncation drops the tail, which is the days furthest ahead, exactly as the entry
+below found.
+
+So a window is its list of Eastern days and costs a request each. The span is still computed exactly
+as the range was and then enumerated, so the days asked for are precisely the days the range covered
+— parity by construction rather than by a second reading of the timezone arithmetic, and the
+zone-by-zone specs kept every literal they had. The two legs collapsed into one list on the way: the
+live window is simply the near end of the wide one, and the day back a late kickoff needs after
+Eastern midnight is the same day yesterday's finals come from.
+
+What pays for it is a cache per league and day whose TTL is read off what came back rather than
+chosen per call site. A past day whose every game is final cannot change again (30 minutes); a future
+day is a schedule (10); today is what the live poll is for and is never served from it; and a past day
+still carrying an unfinished game counts as today, which is what keeps a game that kicked off before
+midnight arriving at the live cadence. A failed refetch falls back to that day's last good answer,
+because the callers rebuild a window only at startup and on a preference change — one 403 on day five
+would otherwise cost a league its whole week. Today is the exception on the live window and must be:
+`tickLeague` reads a successful tick with nothing live as a quiet league and walks it towards dormant,
+so a frozen copy of today would let a league fall asleep mid-game. On a *wide* window today is one
+missing day among several, which is also what the two-leg version did — a failed live leg still
+returned everything the range leg found.
+
+Three things fell out. **`limit` is real and we had never sent it**: an MLB month answered 100 events
+without it and 369 with it, so there is a default cap we have been eating, and on a January NCAA
+basketball day it was certainly truncating us. 500 rather than higher, because `limit=1000` answered a
+dated college football Saturday with 25 events — the curated week, meaning the `dates` filter had
+quietly stopped applying — and verified identical against all 31 on a single-date query, so it only
+ever lifts a cap. **The lookahead was 400ing on every call**, since it built a range too, so every
+league that should have been sleeping was stuck on the dormant beat at ~576 requests a day; it walks
+the days now and stops at the first kickoff, which is one request for a league with anything on soon
+and the whole window only for the league that is about to sleep half an hour at a time. And **the
+guide and the popup now share their overlapping days for free**, which is what the entry below wanted
+when it widened one caller's request for both, without the truncation that made that a mistake.
+
+The cost is honest and worth writing down: a ten-day window is ten requests per league, so 31 leagues
+is 310, which the token bucket paces to about thirty seconds on a genuinely cold start. The day cache
+is what keeps that rare rather than per-open. If it ever stops being affordable, the measured escape
+hatch is `cdn.espn.com/core/<league>/schedule?xhr=1&date=`, which returns 3–7 days in one request, in
+the same event shape the scoreboard uses, with final scores, on 31 of 31 leagues, and answers
+`access-control-allow-origin: *` so it needs no new host permission. `dev` deliberately keeps the
+range version, in case this is ESPN's bug rather than ESPN's decision. One trap: the day cache is
+module scope, which surfaced as a suite's second reading inheriting the first's games — two readings
+of one league on one day. No new locale keys.
+
 ## The popup's slate asks for what the popup wants, because the response has a budget — 2026-09-15
 
 Reverts the one part of this pass that was a genuine mistake rather than a refinement. Having `refreshSlate` ask for the guide's superset so the two could share a fetch looked free, and the reasoning was even written down: `includeUpcoming` already makes it two requests per league, so a wider `dates` range changes the payload and not the request count. The payload is the point. ESPN caps a scoreboard response server-side — near 80 events on a dated college football query, a number already recorded in this file — and the truncation takes the tail, which is the days furthest ahead. Reaching two days back to pick up finals for the guide therefore spent the whole event budget on a college football weekend's *past* games, and what reached the popup was one day of future. Up Next is followed exactly again, `includeFinal` follows the setting again, and the guide asks for its own slate as it did before — still held between opens behind the TTL and still kept current by the live polls, so the repeat opens a day pager invites are free even though the first one is not. Three tests now pin the request shape: the day count is not floored, and the back-reach happens only when finals are actually wanted. The lesson worth keeping: two callers wanting overlapping data is not a reason to widen one request for both when the response has a cap, because the caller that gets truncated is the one that did not ask for the extra.

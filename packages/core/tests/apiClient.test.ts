@@ -1,5 +1,5 @@
 import { allLeagueIds, leagueLogoFallbacks, pollMinEagerMs } from '../src/constants';
-import { buildCurrentDatesQuery } from '../src/apiClient';
+import { buildCurrentDayKeys } from '../src/apiClient';
 
 interface MockResponseInit {
 	ok?: boolean;
@@ -112,7 +112,18 @@ const getCompetition = (event: Record<string, unknown>): Record<string, unknown>
 	(event.competitions as Record<string, unknown>[])[0]!
 );
 
-const datesRange = (url: string): string[] => new URL(url).searchParams.get('dates')!.split('-');
+const dateOf = (url: unknown): string => new URL(String(url)).searchParams.get('dates') ?? '';
+
+/* A window is one request per Eastern day, so a chain of `mockResolvedValueOnce` runs out and
+   resolves `undefined` on the day after its last entry. The chains below list the days they care
+   about and then fall back to this, which is what a day with nothing scheduled answers with anyway. */
+const emptyDay = () => createResponse({ events: [] });
+
+// One Eastern day per request now, so the days a fan-out asked for are read off the calls rather
+// than split out of a single range string.
+const datesAsked = (fetchMock: jest.Mock): string[] => [...new Set(fetchMock.mock.calls
+	.map(([url]) => dateOf(url))
+	.filter(dates => dates !== ''))].toSorted();
 
 const toUrl = (input: RequestInfo | URL): string => {
 	if (typeof input === 'string') return input;
@@ -125,13 +136,10 @@ const loadApiClient = (): typeof import('../src/apiClient') => {
 	return require('../src/apiClient') as typeof import('../src/apiClient');
 };
 
-// Both scoreboard requests carry `dates=` now: the live poll names the two-day window ending
-// today, the slate poll the days ahead. They are told apart by which window they ask for rather
-// than by call order, so a test cannot quietly start reading whichever request came first.
-const isLivePoll = (url: string): boolean => url.includes(`dates=${buildCurrentDatesQuery()}`);
-const findSlatePoll = (urls: string[]): string | undefined => (
-	urls.find(url => url.includes('dates=') && !isLivePoll(url))
-);
+/* Every scoreboard request names exactly one Eastern day, because ESPN stopped answering for a
+   span. So a mock says which day it is answering rather than relying on call order, and the live
+   days are the near end of whatever window was asked for rather than a request of their own. */
+const isLivePoll = (url: string): boolean => buildCurrentDayKeys().includes(dateOf(url));
 
 const mockSingleEvent = (event: Record<string, unknown>) => {
 	const fetchMock = jest.fn().mockResolvedValue(createResponse({ events: [event] }));
@@ -275,7 +283,7 @@ describe('apiClient', () => {
 	});
 
 	test('throws when every team request fails', async () => {
-		const fetchMock = jest.fn()
+		const fetchMock = jest.fn().mockResolvedValue(emptyDay())
 			.mockResolvedValueOnce(createResponse({ message: 'temporary outage' }, { ok: false, status: 503 }))
 			.mockRejectedValueOnce(new Error('network down'));
 
@@ -286,7 +294,7 @@ describe('apiClient', () => {
 	});
 
 	test('parses live and upcoming games with logos, broadcasts, odds, and colors', async () => {
-		const fetchMock = jest.fn()
+		const fetchMock = jest.fn().mockResolvedValue(emptyDay())
 			.mockResolvedValueOnce(createResponse({
 				leagues: [{ logos: [{ href: 'https://cdn.example/nba-logo.png' }] }],
 				events: [
@@ -367,12 +375,13 @@ describe('apiClient', () => {
 
 		await fetchGamesWithLeagueLogos(['nba'], { includeUpcoming: true, upcomingDays: 3 });
 
-		const calledUrls = fetchMock.mock.calls.map(([url]) => String(url));
-		const datesUrl = findSlatePoll(calledUrls);
-		expect(datesUrl).toBeDefined();
 		// TZ is UTC in these tests, so the viewer's Sep 5 through Sep 8 runs from 20:00 Eastern on
-		// Sep 4 to 19:59 Eastern on Sep 8, which is five Eastern dates for a three day setting.
-		expect(new URL(datesUrl!).searchParams.get('dates')).toBe('20260904-20260908');
+		// Sep 4 to 19:59 Eastern on Sep 8. One window covers that now, and it opens a day earlier
+		// than the slate range used to because the live leg's own reach-back is folded into it —
+		// the same Eastern dates the two ranges named between them, each asked for once.
+		expect(datesAsked(fetchMock)).toEqual([
+			'20260903', '20260904', '20260905', '20260906', '20260907', '20260908',
+		]);
 	});
 
 	test('supports includeUpcoming=false with only one scoreboard request', async () => {
@@ -393,11 +402,13 @@ describe('apiClient', () => {
 		const { fetchGamesWithLeagueLogos } = loadApiClient();
 
 		const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
-		expect(fetchMock).toHaveBeenCalledTimes(1);
+		// The live window and nothing past it: today, plus the day back that still carries a kickoff
+		// filed before Eastern midnight. It names the days rather than leaning on ESPN's undated
+		// board, which in college football is a curated week rather than a full card.
+		expect(datesAsked(fetchMock)).toEqual(buildCurrentDayKeys().toSorted());
+		expect(fetchMock.mock.calls.every(([url]) => isLivePoll(String(url)))).toBe(true);
+		// The same event answered for every day of the window is still one game.
 		expect(result.games).toHaveLength(1);
-		// The single request is the live poll, and it names the day rather than leaning on ESPN's
-		// dateless scoreboard — which in college football is a curated week rather than a full card.
-		expect(isLivePoll(String(fetchMock.mock.calls[0][0]))).toBe(true);
 		expect(result.leagueLogos.mlb).toBe(leagueLogoFallbacks.mlb);
 	});
 
@@ -538,102 +549,72 @@ describe('apiClient', () => {
 		});
 	});
 
-	test('filters out post games while combining today and upcoming responses', async () => {
-		const fetchMock = jest.fn()
-			.mockResolvedValueOnce(createResponse({
-				events: [
-					makeEvent({
-						id: 'today-live',
-						state: 'in',
-						period: 3,
-						clock: '1:15',
-						homeScore: '100',
-						awayScore: '98',
-					}),
-					makeEvent({
-						id: 'today-pre',
-						state: 'scheduled',
-						period: 1,
-						clock: '0:00',
-						homeScore: '0',
-						awayScore: '0',
-					}),
-					makeEvent({
-						id: 'today-post',
-						state: 'post',
-						period: 4,
-						clock: '0:00',
-						homeScore: '110',
-						awayScore: '103',
-					}),
-				],
-			}))
-			.mockResolvedValueOnce(createResponse({
-				events: [
-					makeEvent({
-						id: 'upcoming-pre',
-						state: 'pre',
-						period: 1,
-						clock: '0:00',
-						homeScore: '0',
-						awayScore: '0',
-					}),
-					makeEvent({
-						id: 'upcoming-post',
-						state: 'post',
-						period: 4,
-						clock: '0:00',
-						homeScore: '91',
-						awayScore: '90',
-					}),
-				],
-			}));
+	test('filters out post games across every day of the window', async () => {
+		// Keyed on which day is being asked for rather than on call order: the window is many
+		// requests now, so a mock that answered twice and then undefined would crash on day three.
+		const liveDay = [
+			makeEvent({
+				id: 'today-live', state: 'in', period: 3, clock: '1:15', homeScore: '100', awayScore: '98',
+			}),
+			makeEvent({
+				id: 'today-pre', state: 'scheduled', period: 1, clock: '0:00', homeScore: '0', awayScore: '0',
+			}),
+			makeEvent({
+				id: 'today-post', state: 'post', period: 4, clock: '0:00', homeScore: '110', awayScore: '103',
+			}),
+		];
+		const laterDay = [
+			makeEvent({
+				id: 'upcoming-pre', state: 'pre', period: 1, clock: '0:00', homeScore: '0', awayScore: '0',
+			}),
+			makeEvent({
+				id: 'upcoming-post', state: 'post', period: 4, clock: '0:00', homeScore: '91', awayScore: '90',
+			}),
+		];
+		const fetchMock = jest.fn(async (url: string) => createResponse({
+			events: isLivePoll(url) ? liveDay : laterDay,
+		}));
 
 		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
 		const { fetchGamesWithLeagueLogos } = loadApiClient();
 
 		const result = await fetchGamesWithLeagueLogos(['nba']);
-		expect(fetchMock).toHaveBeenCalledTimes(2);
 		expect(result.games.map(game => game.id).toSorted()).toEqual(['today-live', 'today-pre', 'upcoming-pre']);
 		expect(result.games.some(game => game.status === 'post')).toBe(false);
 	});
 
 	test('adds NCAA basketball groups=50 query parameter', async () => {
-		const fetchMock = jest.fn()
-			.mockResolvedValueOnce(createResponse({ events: [makeEvent({
-				id: 'ncaab-live',
-				state: 'live',
-				period: 2,
-				clock: '3:20',
-				homeScore: '77',
-				awayScore: '74',
-				withOdds: false,
-			})] }))
-			.mockResolvedValueOnce(createResponse({ events: [] }));
+		const fetchMock = jest.fn().mockResolvedValue(createResponse({ events: [makeEvent({
+			id: 'ncaab-live',
+			state: 'live',
+			period: 2,
+			clock: '3:20',
+			homeScore: '77',
+			awayScore: '74',
+			withOdds: false,
+		})] }));
 
 		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
 		const { fetchLeagueLogos } = loadApiClient();
 
 		await fetchLeagueLogos(['ncaab']);
 
+		// A window is one request per day, and the override has to ride on every one of them.
 		const calledUrls = fetchMock.mock.calls.map(([url]) => String(url));
-		expect(calledUrls).toHaveLength(2);
-		expect(calledUrls[0]).toContain('groups=50');
-		expect(calledUrls[1]).toContain('groups=50');
+		expect(calledUrls.length).toBeGreaterThan(1);
+		expect(calledUrls.every(url => url.includes('groups=50'))).toBe(true);
 	});
 
 	test('adds NCAA womens basketball groups=49 query parameter', async () => {
-		const fetchMock = jest.fn()
-			.mockResolvedValueOnce(createResponse({ events: [makeEvent({
-				id: 'ncaaw-live',
-				state: 'live',
-				period: 3,
-				clock: '5:00',
-				homeScore: '60',
-				awayScore: '58',
-				withOdds: false,
-			})] }))
-			.mockResolvedValueOnce(createResponse({ events: [] }));
+		const fetchMock = jest.fn().mockResolvedValue(createResponse({ events: [makeEvent({
+			id: 'ncaaw-live',
+			state: 'live',
+			period: 3,
+			clock: '5:00',
+			homeScore: '60',
+			awayScore: '58',
+			withOdds: false,
+		})] }));
 
 		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
 		const { fetchLeagueLogos } = loadApiClient();
@@ -641,14 +622,13 @@ describe('apiClient', () => {
 		await fetchLeagueLogos(['ncaaw']);
 
 		const calledUrls = fetchMock.mock.calls.map(([url]) => String(url));
-		expect(calledUrls).toHaveLength(2);
-		expect(calledUrls[0]).toContain('groups=49');
-		expect(calledUrls[1]).toContain('groups=49');
+		expect(calledUrls.length).toBeGreaterThan(1);
+		expect(calledUrls.every(url => url.includes('groups=49'))).toBe(true);
 		expect(calledUrls[0]).toContain('/basketball/womens-college-basketball/scoreboard');
 	});
 
 	test('fetches EPL scoreboard from correct ESPN path without groups param', async () => {
-		const fetchMock = jest.fn()
+		const fetchMock = jest.fn().mockResolvedValue(emptyDay())
 			.mockResolvedValueOnce(createResponse({
 				leagues: [{ logos: [{ href: 'https://cdn.example/epl-logo.png' }] }],
 				events: [makeEvent({
@@ -679,7 +659,7 @@ describe('apiClient', () => {
 	});
 
 	test('fetches FIFA World Cup scoreboard from correct ESPN path without groups param', async () => {
-		const fetchMock = jest.fn()
+		const fetchMock = jest.fn().mockResolvedValue(emptyDay())
 			.mockResolvedValueOnce(createResponse({
 				leagues: [{ logos: [{ href: 'https://cdn.example/fifawc-logo.png' }] }],
 				events: [makeEvent({
@@ -709,12 +689,14 @@ describe('apiClient', () => {
 		expect(calledUrls[0]).not.toContain('groups=');
 	});
 
-	test('keeps fulfilled games when one scoreboard request fails for a league', async () => {
-		const fetchMock = jest.fn(async (url: string) => {
-			if (url.includes('/basketball/nba/scoreboard') && isLivePoll(url)) {
-				return createResponse({}, { ok: false, status: 500 });
-			}
-			if (url.includes('/basketball/nba/scoreboard') && !isLivePoll(url)) {
+	test('keeps the days that answered when one day of the window fails', async () => {
+		jest.useFakeTimers().setSystemTime(new Date('2026-09-15T18:00:00.000Z'));
+		try {
+			// Today answers, so the league is not shed. A day further out fails and the rest still
+			// contribute — today's own failure is a different case and sinks the league on purpose.
+			const fetchMock = jest.fn(async (url: string) => {
+				if (dateOf(url) === '20260920') return createResponse({}, { ok: false, status: 500 });
+				if (isLivePoll(url)) return createResponse({ events: [] });
 				return createResponse({
 					leagues: [{ logos: [{ href: 'https://cdn.example/nba-upcoming-logo.png' }] }],
 					events: [makeEvent({
@@ -726,16 +708,18 @@ describe('apiClient', () => {
 						awayScore: '0',
 					})],
 				});
-			}
-			throw new Error(`Unexpected url: ${url}`);
-		});
+			});
 
-		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
-		const { fetchGamesWithLeagueLogos } = loadApiClient();
+			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+			const { fetchGamesWithLeagueLogos } = loadApiClient();
 
-		const result = await fetchGamesWithLeagueLogos(['nba']);
-		expect(result.games.map(game => game.id)).toEqual(['upcoming-only']);
-		expect(result.leagueLogos.nba).toBe('https://cdn.example/nba-upcoming-logo.png');
+			const result = await fetchGamesWithLeagueLogos(['nba']);
+			expect(result.games.map(game => game.id)).toEqual(['upcoming-only']);
+			expect(result.leagueLogos.nba).toBe('https://cdn.example/nba-upcoming-logo.png');
+			expect(result.shedLeagues).toEqual([]);
+		} finally {
+			jest.useRealTimers();
+		}
 	});
 
 	test('aggregates fulfilled leagues when another league fails entirely', async () => {
@@ -893,7 +877,7 @@ describe('apiClient', () => {
 			awayScore: '52',
 		});
 
-		const fetchMock = jest.fn()
+		const fetchMock = jest.fn().mockResolvedValue(emptyDay())
 			.mockResolvedValueOnce(createResponse({ events: [sharedEvent] }))
 			.mockResolvedValueOnce(createResponse({
 				events: [
@@ -918,7 +902,7 @@ describe('apiClient', () => {
 	});
 
 	test('fetchLiveGames filters out pre-game entries', async () => {
-		const fetchMock = jest.fn()
+		const fetchMock = jest.fn().mockResolvedValue(emptyDay())
 			.mockResolvedValueOnce(createResponse({
 				events: [makeEvent({
 					id: 'live-only',
@@ -1097,7 +1081,7 @@ describe('apiClient', () => {
 	});
 
 	test('NHL: pre-game from range has correct hockey sportType and startTime', async () => {
-		const fetchMock = jest.fn()
+		const fetchMock = jest.fn().mockResolvedValue(emptyDay())
 			.mockResolvedValueOnce(createResponse({ events: [] }))
 			.mockResolvedValueOnce(createResponse({
 				leagues: [{ logos: [{ href: 'https://cdn.example/nhl-logo.png' }] }],
@@ -1127,7 +1111,7 @@ describe('apiClient', () => {
 	});
 
 	test('MLB: pre-game from range has no topOfInning or baseRunners', async () => {
-		const fetchMock = jest.fn()
+		const fetchMock = jest.fn().mockResolvedValue(emptyDay())
 			.mockResolvedValueOnce(createResponse({ events: [] }))
 			.mockResolvedValueOnce(createResponse({
 				events: [makeEvent({
@@ -1176,7 +1160,7 @@ describe('apiClient', () => {
 			pointSpread: { displayName: 'Spread' },
 		}];
 
-		const fetchMock = jest.fn()
+		const fetchMock = jest.fn().mockResolvedValue(emptyDay())
 			.mockResolvedValueOnce(createResponse({ events: [] }))
 			.mockResolvedValueOnce(createResponse({ events: [event] }));
 		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
@@ -1195,7 +1179,7 @@ describe('apiClient', () => {
 	});
 
 	test('NCAAF: preseason game from range produces correct football sportType Game', async () => {
-		const fetchMock = jest.fn()
+		const fetchMock = jest.fn().mockResolvedValue(emptyDay())
 			.mockResolvedValueOnce(createResponse({ events: [] }))
 			.mockResolvedValueOnce(createResponse({
 				events: [makeEvent({
@@ -1232,7 +1216,7 @@ describe('apiClient', () => {
 			date: `2026-07-${String(i + 1).padStart(2, '0')}T00:00:00.000Z`,
 		}));
 
-		const fetchMock = jest.fn()
+		const fetchMock = jest.fn().mockResolvedValue(emptyDay())
 			.mockResolvedValueOnce(createResponse({ events: [] }))
 			.mockResolvedValueOnce(createResponse({ events }));
 		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
@@ -1264,7 +1248,7 @@ describe('apiClient', () => {
 			awayScore: '0',
 		});
 
-		const fetchMock = jest.fn()
+		const fetchMock = jest.fn().mockResolvedValue(emptyDay())
 			.mockResolvedValueOnce(createResponse({ events: [liveGame] }))
 			.mockResolvedValueOnce(createResponse({ events: [] }));
 		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
@@ -1290,7 +1274,7 @@ describe('apiClient', () => {
 			awayScore: '1',
 		});
 
-		const fetchMock = jest.fn()
+		const fetchMock = jest.fn().mockResolvedValue(emptyDay())
 			.mockResolvedValueOnce(createResponse({ events: [liveGame] }))
 			.mockResolvedValueOnce(createResponse({ events: [] }));
 		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
@@ -1335,7 +1319,7 @@ describe('apiClient', () => {
 		(comp.competitors as Record<string, unknown>[])[1]!.team = { displayName: 'Group B 2nd Place', abbreviation: '2B' };
 		comp.odds = [null];
 
-		const fetchMock = jest.fn()
+		const fetchMock = jest.fn().mockResolvedValue(emptyDay())
 			.mockResolvedValueOnce(createResponse({ events: [] }))
 			.mockResolvedValueOnce(createResponse({ events: [knockout] }));
 		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
@@ -1374,7 +1358,7 @@ describe('apiClient', () => {
 			moneyline: { displayName: 'Moneyline' },
 		}];
 
-		const fetchMock = jest.fn()
+		const fetchMock = jest.fn().mockResolvedValue(emptyDay())
 			.mockResolvedValueOnce(createResponse({ events: [] }))
 			.mockResolvedValueOnce(createResponse({ events: [groupGame] }));
 		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
@@ -1394,7 +1378,7 @@ describe('apiClient', () => {
 		getCompetition(ko2).odds = [null];
 		const group = makeEvent({ id: 'group-1', state: 'pre', period: 1, clock: "0'", homeScore: '0', awayScore: '0', date: '2026-06-12T19:00:00.000Z', withOdds: false });
 
-		const fetchMock = jest.fn()
+		const fetchMock = jest.fn().mockResolvedValue(emptyDay())
 			.mockResolvedValueOnce(createResponse({ events: [] }))
 			.mockResolvedValueOnce(createResponse({ events: [ko1, ko2, group] }));
 		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
@@ -1423,7 +1407,7 @@ describe('apiClient', () => {
 		const preGame = makeEvent({ id: 'pre', state: 'pre', period: 1, clock: '0:00', homeScore: '0', awayScore: '0', date: '2026-09-01T00:00:00.000Z' });
 		const liveGame = makeEvent({ id: 'live', state: 'in', period: 3, clock: '5:00', homeScore: '88', awayScore: '85' });
 
-		const fetchMock = jest.fn()
+		const fetchMock = jest.fn().mockResolvedValue(emptyDay())
 			.mockResolvedValueOnce(createResponse({ events: [liveGame] }))
 			.mockResolvedValueOnce(createResponse({ events: [preGame] }));
 		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
@@ -2521,31 +2505,33 @@ describe('finished games', () => {
 		// the expression under test and wrong across the start of a month.
 		const openingDate = async (now: string, options: Record<string, unknown>): Promise<string[]> => {
 			jest.useFakeTimers().setSystemTime(new Date(now));
-			const urls: string[] = [];
-			const fetchMock = jest.fn().mockImplementation(async (input: RequestInfo | URL) => {
-				urls.push(toUrl(input));
-				return createResponse({ events: [] });
-			});
+			const fetchMock = jest.fn().mockResolvedValue(createResponse({ events: [] }));
 			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
 			const { fetchGamesWithLeagueLogos } = loadApiClient();
 			await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: true, upcomingDays: 7, ...options });
-			// Picked while the clock is still pinned: the live window the slate request is told apart
-			// from is whatever `buildCurrentDatesQuery` answers now, not under the real clock.
-			const slateUrl = findSlatePoll(urls)!;
+			// Read while the clock is still pinned. The two edges of the one window, which is what
+			// the live range and the slate range used to carry between them.
+			const days = datesAsked(fetchMock);
 			jest.useRealTimers();
-			return datesRange(slateUrl);
+			return [days[0]!, days[days.length - 1]!];
 		};
 
 		// Two local days back, not one. Retention runs 24 hours past the estimated wrap, so a game
 		// still inside the window kicked off up to 27.5 hours ago — which is the day before
 		// yesterday for anyone whose local clock has passed midnight.
-		test('reaches back two days for finals and not at all without them', async () => {
+		test('reaches back two days for finals and one without them', async () => {
 			const plain = await openingDate('2026-09-07T12:00:00.000Z', {});
 			const withFinals = await openingDate('2026-09-07T12:00:00.000Z', { includeFinal: true });
 
 			// The clock is UTC and ESPN files by US Eastern, so a UTC day opens on the previous
 			// Eastern date. Both ends go through that same translation.
-			expect(plain[0]).toBe('20260906');
+			//
+			// One day back without finals rather than none, because the live leg's reach-back is part
+			// of this window now instead of being a second request: a kickoff filed under yesterday is
+			// still on screen after Eastern midnight. Two days back with them, because retention runs
+			// 24 hours past an estimated wrap and a final still inside it can have started 27.5 hours
+			// ago, which is the day before yesterday once local midnight has passed.
+			expect(plain[0]).toBe('20260905');
 			expect(withFinals[0]).toBe('20260904');
 			expect(withFinals[1]).toBe(plain[1]);
 		});
@@ -2652,16 +2638,26 @@ describe('the polling lookahead', () => {
 		await expect(fetchNextScheduledStart('mlb', { now })).resolves.toBe(new Date(at(11)).getTime());
 	});
 
-	// One request, against the two `fetchLeagueGames` makes: the point of the state this feeds is to
-	// spend fewer of them, so a lookahead that cost the same as a poll would be self-defeating.
-	test('costs exactly one request, over the configured window', async () => {
-		const { fetchMock, fetchNextScheduledStart } = mockEvents([]);
+	/* The point of the state this feeds is to spend fewer requests, so a lookahead that cost as much
+	   as a poll would be self-defeating. A span is no longer answerable, so instead of one ranged
+	   request it walks the days and stops at the first kickoff — which is one request for any league
+	   with something on soon, and the full window only for the league that has genuinely nothing and
+	   is therefore about to sleep half an hour at a time. */
+	test('stops at the first day carrying a kickoff', async () => {
+		const { fetchMock, fetchNextScheduledStart } = mockEvents([scheduled('tonight', at(3))]);
 		await fetchNextScheduledStart('mlb', { days: 7, now });
 		expect(fetchMock).toHaveBeenCalledTimes(1);
-		const url = toUrl(fetchMock.mock.calls[0]![0] as RequestInfo);
-		// Eight Eastern dates for a seven-day window: the suite runs in UTC and the query is rendered
+	});
+
+	test('only pays for the whole window when there is nothing in it', async () => {
+		const { fetchMock, fetchNextScheduledStart } = mockEvents([]);
+		await fetchNextScheduledStart('mlb', { days: 7, now });
+		// Nine Eastern dates for a seven-day window: the suite runs in UTC and the query is rendered
 		// in Eastern, so the local day start on the 14th is the evening of the 13th over there.
-		expect(new URL(url).searchParams.get('dates')).toBe('20260113-20260121');
+		expect(datesAsked(fetchMock)).toEqual([
+			'20260113', '20260114', '20260115', '20260116', '20260117',
+			'20260118', '20260119', '20260120', '20260121',
+		]);
 	});
 
 	// The same two overrides the scoreboard fetch carries; a college league 404s on a ranged query
@@ -2711,36 +2707,49 @@ describe('how wide a fan-out at ESPN is allowed to get', () => {
 		return { seen, fetchMock };
 	};
 
-	test('never has more than the pool in flight, however many leagues are asked for', async () => {
+	/* Two pools now, one inside the other: leagues six at a time, and the days of a league three at a
+	   time within that. A window is a request per day since ESPN stopped answering for a span, so
+	   without the inner one a ten-day window in 31 leagues would put 310 requests in flight at once —
+	   the shape that got us shed in the first place.
+
+	   Sized to a dozen leagues rather than all 31: twice the outer pool is enough to prove it bounds
+	   anything, and the token bucket deliberately paces a real 31-league sweep over tens of seconds,
+	   which would otherwise be wall time this spec spends waiting. The sweep's own completeness is
+	   pinned separately below, at full width. */
+	const severalLeagues = allLeagueIds.slice(0, 12);
+
+	test('never has more than both pools multiplied in flight', async () => {
 		const { seen } = trackConcurrency();
-		const { fetchGamesWithLeagueLogos, espnRequestPoolSize } = loadApiClient();
+		const { fetchGamesWithLeagueLogos, espnRequestPoolSize, espnDayPoolSize } = loadApiClient();
 
-		await fetchGamesWithLeagueLogos(allLeagueIds, { includeUpcoming: false });
+		await fetchGamesWithLeagueLogos(severalLeagues, { includeUpcoming: false });
 
-		expect(allLeagueIds.length).toBeGreaterThan(espnRequestPoolSize);
+		expect(severalLeagues.length).toBeGreaterThan(espnRequestPoolSize);
 		expect(seen.peak).toBeGreaterThan(1);
-		expect(seen.peak).toBeLessThanOrEqual(espnRequestPoolSize);
+		expect(seen.peak).toBeLessThanOrEqual(espnRequestPoolSize * espnDayPoolSize);
 	});
 
-	// A league asked for upcoming games makes two requests of its own, which is why the pool is
-	// sized against the request count rather than against the league count.
-	test('stays inside twice the pool when each league makes two requests', async () => {
+	// More days than the inner pool, so it is the day pool being proved here and not just the league
+	// one: a two-day-ahead window is four Eastern dates against a day pool of three.
+	test('a window of more days than the inner pool does not widen it', async () => {
 		const { seen } = trackConcurrency();
-		const { fetchGamesWithLeagueLogos, espnRequestPoolSize } = loadApiClient();
+		const { fetchGamesWithLeagueLogos, espnRequestPoolSize, espnDayPoolSize } = loadApiClient();
 
-		await fetchGamesWithLeagueLogos(allLeagueIds, { includeUpcoming: true });
+		await fetchGamesWithLeagueLogos(severalLeagues, { includeUpcoming: true, upcomingDays: 2 });
 
-		expect(seen.peak).toBeLessThanOrEqual(espnRequestPoolSize * 2);
+		expect(seen.peak).toBeLessThanOrEqual(espnRequestPoolSize * espnDayPoolSize);
 	});
 
-	test('still asks for every league it was given', async () => {
+	// At full width, and the reason the timeout is generous: 31 leagues times the live window is ~93
+	// requests, which the bucket paces to about ten a second on purpose.
+	test('still asks every league for every day of the window', async () => {
 		const { fetchMock } = trackConcurrency();
 		const { fetchGamesWithLeagueLogos } = loadApiClient();
 
 		await fetchGamesWithLeagueLogos(allLeagueIds, { includeUpcoming: false });
 
-		expect(fetchMock).toHaveBeenCalledTimes(allLeagueIds.length);
-	});
+		expect(fetchMock).toHaveBeenCalledTimes(allLeagueIds.length * buildCurrentDayKeys().length);
+	}, 30_000);
 
 	test('pools the team fan-out the pickers use as well', async () => {
 		const { seen } = trackConcurrency();
@@ -2749,7 +2758,7 @@ describe('how wide a fan-out at ESPN is allowed to get', () => {
 		await fetchTeamsForLeagues(allLeagueIds);
 
 		expect(seen.peak).toBeLessThanOrEqual(espnRequestPoolSize);
-	});
+	}, 30_000);
 });
 
 /* Polling faster than ESPN refreshes buys a cache hit and no information, so the floor the eager
@@ -2845,98 +2854,147 @@ describe('telling an empty league apart from a refused one', () => {
 	});
 });
 
-const datedCalls = (fetchMock: jest.Mock): string[] => fetchMock.mock.calls
-	.map(([url]) => url as string)
-	.filter(url => url.includes('dates='));
-
-const undatedCalls = (fetchMock: jest.Mock): string[] => fetchMock.mock.calls
-	.map(([url]) => url as string)
-	.filter(url => !url.includes('dates='));
-
-/* MLB answers a dated live-poll window with `{"code":400,"message":"Failed to get events
-   endpoint."}` while college football needs that window to return a full Saturday at all, so which
-   leagues accept one is read off ESPN rather than tabulated here. */
-describe('a league that will not take a dated window on the live board', () => {
-	const rejectDatedFor = (path: string) => jest.fn().mockImplementation(async (url: string) => (
-		url.includes(path) && url.includes('dates=')
-			? createResponse({ code: 400, message: 'Failed to get events endpoint.' }, { ok: false, status: 400 })
-			: createResponse({ events: [], leagues: [{ logos: [] }] })
-	));
-
-	it('falls back to the undated board rather than losing the league', async () => {
-		const fetchMock = rejectDatedFor('/baseball/mlb/');
+/* ESPN stopped answering for a span of dates. All 31 leagues return
+   `{"code":400,"message":"Failed to get events endpoint."}` for `dates=20260914-20260915` at any
+   width — including a one-day `20260915-20260915` — while a single `dates=20260915` still answers 200
+   in all 31, on both `site.api` and `site.web.api`. So a window is a list of days and costs a
+   request each, and these pin what falls out of that. */
+describe('a window asked for one day at a time', () => {
+	const answerWith = (forDay: (dates: string) => Record<string, unknown>) => {
+		const fetchMock = jest.fn().mockImplementation(async (url: string) => (
+			createResponse({ leagues: [{ logos: [] }], ...forDay(dateOf(url)) })
+		));
 		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+		return fetchMock;
+	};
 
-		const { fetchGamesWithLeagueLogos } = loadApiClient();
-		const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
-
-		expect(result.shedLeagues).toEqual([]);
-		expect(undatedCalls(fetchMock)).toHaveLength(1);
+	const finalOn = (id: string) => makeEvent({
+		id, state: 'post', period: 9, clock: '0:00', homeScore: '4', awayScore: '1',
+		date: '2026-09-14T18:00:00.000Z',
+	});
+	const liveOn = (id: string) => makeEvent({
+		id, state: 'in', period: 5, clock: '1:00', homeScore: '2', awayScore: '2',
+		date: '2026-09-15T17:00:00.000Z',
 	});
 
-	it('stops paying the same refusal on every poll for a while', async () => {
-		const fetchMock = rejectDatedFor('/baseball/mlb/');
-		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
-
+	it('names one day per request, and every day of the window exactly once', async () => {
+		const fetchMock = answerWith(() => ({ events: [] }));
 		const { fetchGamesWithLeagueLogos } = loadApiClient();
-		await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
-		fetchMock.mockClear();
-		await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
+		await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: true, upcomingDays: 3 });
 
-		expect(datedCalls(fetchMock)).toEqual([]);
-		expect(undatedCalls(fetchMock)).toHaveLength(1);
+		const asked = fetchMock.mock.calls.map(([url]) => dateOf(String(url)));
+		expect(asked.length).toBeGreaterThan(1);
+		expect(new Set(asked).size).toBe(asked.length);
+		// A single date, never a range: a range is what ESPN refuses.
+		expect(asked.every(dates => /^\d{8}$/.test(dates))).toBe(true);
 	});
 
-	/* The hold has to expire. "Failed to get events endpoint" reads like ESPN's own events service
-	   failing rather than a rejected parameter, and latching a league onto the undated board for the
-	   life of the worker cost that league its finals — the undated board carries only today. */
-	it('tries the window again once the hold has run out', async () => {
+	// Measured: an MLB month answered 100 events without this and 369 with it, and a dated college
+	// football Saturday is 80 events against the undated curated week's 22.
+	it('lifts ESPN\'s default event cap on every one of them', async () => {
+		const fetchMock = answerWith(() => ({ events: [] }));
+		const { fetchGamesWithLeagueLogos } = loadApiClient();
+		await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
+
+		expect(fetchMock.mock.calls.every(
+			([url]) => new URL(String(url)).searchParams.get('limit') === '500',
+		)).toBe(true);
+	});
+
+	/* A day whose every game is final cannot change again, so it stops being asked for. This is what
+	   pays for the window costing a request per day rather than one for the whole span: the reach-back
+	   a late kickoff needs is free for all but the first poll of a session. */
+	it('stops re-asking for a past day once everything on it is final', async () => {
 		jest.useFakeTimers().setSystemTime(new Date('2026-09-15T18:00:00.000Z'));
 		try {
-			const fetchMock = rejectDatedFor('/baseball/mlb/');
-			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
-
+			const fetchMock = answerWith(dates => ({
+				events: dates === '20260915' ? [liveOn('tonight')] : [finalOn(`done-${dates}`)],
+			}));
 			const { fetchGamesWithLeagueLogos } = loadApiClient();
-			await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
 
-			jest.setSystemTime(new Date('2026-09-15T18:11:00.000Z'));
+			await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
+			expect(datesAsked(fetchMock)).toEqual(['20260913', '20260914', '20260915']);
+
 			fetchMock.mockClear();
 			await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
-
-			expect(datedCalls(fetchMock)).toHaveLength(1);
+			// Today is never served from the cache — it is the one the live poll exists for.
+			expect(datesAsked(fetchMock)).toEqual(['20260915']);
 		} finally {
 			jest.useRealTimers();
 		}
 	});
 
-	it('leaves the leagues that do accept a window on it', async () => {
-		const fetchMock = rejectDatedFor('/baseball/mlb/');
-		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+	/* A shed day used to be indistinguishable from a day with nothing on it. The last good answer for
+	   it stands in now, because the callers rebuild a window only at startup and on a preference
+	   change — so one 403 on day five would otherwise cost a league its whole week until the next time
+	   the user changed a setting. */
+	it('serves the last good answer for a day ESPN later refuses', async () => {
+		jest.useFakeTimers().setSystemTime(new Date('2026-09-15T18:00:00.000Z'));
+		try {
+			const pre = makeEvent({
+				id: 'friday', state: 'pre', period: 1, clock: '0:00', homeScore: '0', awayScore: '0',
+				date: '2026-09-18T23:00:00.000Z',
+			});
+			const fetchMock = answerWith(dates => ({ events: dates === '20260918' ? [pre] : [] }));
+			const { fetchGamesWithLeagueLogos } = loadApiClient();
 
-		const { fetchGamesWithLeagueLogos } = loadApiClient();
-		await fetchGamesWithLeagueLogos(['mlb', 'ncaaf'], { includeUpcoming: false });
+			const first = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: true, upcomingDays: 7 });
+			expect(first.games.map(game => game.id)).toContain('friday');
 
-		expect(datedCalls(fetchMock).filter(url => url.includes('/college-football'))).toHaveLength(1);
-		expect(undatedCalls(fetchMock).filter(url => url.includes('/college-football'))).toEqual([]);
+			// That one day starts refusing, past its ten-minute freshness, while the rest still answer.
+			fetchMock.mockImplementation(async (url: string) => (
+				dateOf(url) === '20260918'
+					? createResponse({ code: 400, message: 'Failed to get events endpoint.' }, { ok: false, status: 400 })
+					: createResponse({ events: [], leagues: [{ logos: [] }] })
+			));
+			jest.setSystemTime(new Date('2026-09-15T18:20:00.000Z'));
+
+			const second = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: true, upcomingDays: 7 });
+			expect(second.games.map(game => game.id)).toContain('friday');
+			expect(second.shedLeagues).toEqual([]);
+		} finally {
+			jest.useRealTimers();
+		}
 	});
 
-	/* The one that matters most today: a 403 is ESPN shedding load and says nothing about whether the
-	   window was acceptable. Reading it as a refusal would quietly drop college football back onto the
-	   curated week the dated window exists to avoid. */
-	it('does not give the window up over a 403', async () => {
-		const fetchMock = jest.fn()
-			.mockResolvedValueOnce(createResponse({ message: 'Forbidden' }, { ok: false, status: 403 }))
-			.mockResolvedValue(createResponse({ events: [], leagues: [{ logos: [] }] }));
-		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+	/* Today is the exception and has to be. `tickLeague` reads a successful tick with nothing live as
+	   a quiet league and walks it towards dormant, so a frozen copy of today standing in for a real
+	   answer would let a league fall asleep while its games were being played. */
+	it('does not paper over a failure on today', async () => {
+		jest.useFakeTimers().setSystemTime(new Date('2026-09-15T18:00:00.000Z'));
+		try {
+			const fetchMock = answerWith(() => ({ events: [liveOn('tonight')] }));
+			const { fetchGamesWithLeagueLogos } = loadApiClient();
+			expect((await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false })).shedLeagues).toEqual([]);
 
+			fetchMock.mockResolvedValue(createResponse({ message: 'Forbidden' }, { ok: false, status: 403 }));
+			const shed = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
+
+			// Every other day of that window had a cached answer to fall back on, and the league is
+			// still reported as unanswered.
+			expect(shed.shedLeagues).toEqual(['mlb']);
+		} finally {
+			jest.useRealTimers();
+		}
+	});
+
+	/* Nothing is latched by a refusal any more. The version this replaced dropped a refused league
+	   onto ESPN's undated board, which in college football is an editorially curated week rather than
+	   a day — 22 events against a dated Saturday's 80 — and cost every league its finals, because the
+	   undated board carries only the current Eastern day. */
+	it('keeps naming the days after a refusal rather than giving the window up', async () => {
+		const fetchMock = jest.fn().mockResolvedValue(
+			createResponse({ code: 400, message: 'Failed to get events endpoint.' }, { ok: false, status: 400 }),
+		);
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
 		const { fetchGamesWithLeagueLogos } = loadApiClient();
-		const shed = await fetchGamesWithLeagueLogos(['ncaaf'], { includeUpcoming: false });
-		expect(shed.shedLeagues).toEqual(['ncaaf']);
+
+		expect((await fetchGamesWithLeagueLogos(['ncaaf'], { includeUpcoming: false })).shedLeagues).toEqual(['ncaaf']);
 
 		fetchMock.mockClear();
 		await fetchGamesWithLeagueLogos(['ncaaf'], { includeUpcoming: false });
 
-		expect(datedCalls(fetchMock)).toHaveLength(1);
-		expect(undatedCalls(fetchMock)).toEqual([]);
+		expect(fetchMock.mock.calls.length).toBeGreaterThan(0);
+		expect(fetchMock.mock.calls.every(([url]) => dateOf(String(url)) !== '')).toBe(true);
 	});
 });

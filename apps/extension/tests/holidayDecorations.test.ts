@@ -1,4 +1,3 @@
-import { fetchGames } from '@arenaswap/core';
 import type { Game } from '@arenaswap/core/types';
 import {
 	accumulationDepth,
@@ -267,7 +266,13 @@ describe('snow is a weather rule, not a sport rule', () => {
 	});
 });
 
-// Serves the event as a one-game scoreboard and returns what the parser made of it.
+/* Serves the event as a one-game scoreboard and returns what the parser made of it.
+
+   On a fresh module registry each time, because ESPN stopped answering for a span of dates and the
+   client asks for a window one day at a time now, holding each day's answer so the repeat asks are
+   free. That cache is keyed by league and day and is exactly right in the extension — but here it
+   would hand the second reading below the first one's games, since both are the same league on the
+   same days. */
 const parseThroughFetch = async (event: unknown): Promise<Game> => {
 	(globalThis as { fetch: typeof fetch }).fetch = (async () => ({
 		ok: true,
@@ -277,7 +282,9 @@ const parseThroughFetch = async (event: unknown): Promise<Game> => {
 		headers: new Headers(),
 		json: async () => ({ events: [event] }),
 	})) as unknown as typeof fetch;
-	const games = await fetchGames(['nfl']);
+	jest.resetModules();
+	const { fetchGames: freshFetchGames } = require('@arenaswap/core') as typeof import('@arenaswap/core');
+	const games = await freshFetchGames(['nfl']);
 	expect(games).toHaveLength(1);
 	return games[0]!;
 };

@@ -1,9 +1,12 @@
 import type { ScoreSnapshot } from '../../src/types';
-import { buildCurrentDatesQuery } from '../../src/apiClient';
+import { buildCurrentDayKeys } from '../../src/apiClient';
 
-// Both scoreboard requests name a date window now, so the live poll is identified by the window it
-// asks for rather than by the absence of `dates=`.
-const isLivePoll = (url: string): boolean => url.includes(`dates=${buildCurrentDatesQuery()}`);
+// ESPN stopped answering for a span of dates, so every scoreboard request names exactly one Eastern
+// day. The live poll is the days it asks for — today, and the day back that still carries a kickoff
+// filed before Eastern midnight.
+const isLivePoll = (url: string): boolean => (
+	buildCurrentDayKeys().includes(new URL(url).searchParams.get('dates') ?? '')
+);
 
 const toUrl = (input: RequestInfo | URL): string => {
 	if (typeof input === 'string') return input;
@@ -227,9 +230,10 @@ describe('core API + excitement e2e flow', () => {
 		expect(result.leagueLogos.nba).toBe('https://example.com/nba-today-logo.png');
 
 		const requestedUrls = fetchSpy.mock.calls.map(([input]) => toUrl(input as RequestInfo | URL));
-		expect(requestedUrls).toHaveLength(1);
-		expect(requestedUrls[0]).toContain('/basketball/nba/scoreboard');
-		expect(isLivePoll(requestedUrls[0]!)).toBe(true);
+		// One request per Eastern day of the live window, and nothing past it.
+		expect(requestedUrls).toHaveLength(buildCurrentDayKeys().length);
+		expect(requestedUrls.every(url => url.includes('/basketball/nba/scoreboard'))).toBe(true);
+		expect(requestedUrls.every(url => isLivePoll(url))).toBe(true);
 	});
 
 	it('keeps successful leagues when one league fails in a multi-league fetch', async () => {
@@ -281,7 +285,8 @@ describe('core API + excitement e2e flow', () => {
 		});
 
 		const requestedUrls = fetchSpy.mock.calls.map(([input]) => toUrl(input as RequestInfo | URL));
-		expect(requestedUrls.filter(url => url.includes('/hockey/nhl/scoreboard'))).toHaveLength(1);
+		expect(requestedUrls.filter(url => url.includes('/hockey/nhl/scoreboard')))
+			.toHaveLength(buildCurrentDayKeys().length);
 	});
 
 	it('ranks multiple live games by deterministic excitement totals', async () => {
@@ -399,8 +404,11 @@ describe('core API + excitement e2e flow', () => {
 		expect(result.leagueLogos.nba).toBe('https://example.com/nba-upcoming-only-logo.png');
 
 		const requestedUrls = fetchSpy.mock.calls.map(([input]) => toUrl(input as RequestInfo | URL));
-		expect(requestedUrls).toHaveLength(2);
+		// The wide window asks for each of its days once, and today failing costs only today: the
+		// slate wants the roster of games, and its live signal comes from the per-league polls.
+		expect(new Set(requestedUrls).size).toBe(requestedUrls.length);
 		expect(requestedUrls.some(url => !isLivePoll(url))).toBe(true);
+		expect(requestedUrls.some(url => isLivePoll(url))).toBe(true);
 	});
 
 });
