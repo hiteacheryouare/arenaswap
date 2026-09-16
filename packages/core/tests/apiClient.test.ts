@@ -1,14 +1,18 @@
-import { leagueLogoFallbacks } from '../src/constants';
+import { allLeagueIds, leagueLogoFallbacks, pollMinEagerMs } from '../src/constants';
 import { buildCurrentDatesQuery } from '../src/apiClient';
 
 interface MockResponseInit {
 	ok?: boolean;
 	status?: number;
+	cacheControl?: string;
 }
 
 const createResponse = (data: unknown, init: MockResponseInit = {}): Response => ({
 	ok: init.ok ?? true,
 	status: init.status ?? 200,
+	// `fetchScoreboard` reads `cache-control` off every response to learn how often ESPN will answer
+	// with something new, so a double without headers is not standing in for a Response.
+	headers: new Headers(init.cacheControl ? { 'cache-control': init.cacheControl } : {}),
 	json: async () => data,
 } as Response);
 
@@ -153,7 +157,7 @@ describe('apiClient', () => {
 		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
 
 		const { fetchGamesWithLeagueLogos, fetchGames } = loadApiClient();
-		expect(await fetchGamesWithLeagueLogos([])).toEqual({ games: [], leagueLogos: {} });
+		expect(await fetchGamesWithLeagueLogos([])).toEqual({ games: [], leagueLogos: {}, shedLeagues: [] });
 		expect(await fetchGames([])).toEqual([]);
 		expect(fetchMock).not.toHaveBeenCalled();
 	});
@@ -2678,5 +2682,261 @@ describe('the polling lookahead', () => {
 		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
 		const { fetchNextScheduledStart } = loadApiClient();
 		await expect(fetchNextScheduledStart('mlb', { now })).rejects.toThrow();
+	});
+});
+
+
+// ESPN sheds load on `site.api.espn.com` by recent request volume from an IP and answers 403 to
+// whatever it drops. Every fan-out here collects with `allSettled` and keeps the fulfilled ones, so
+// a shed league contributes nothing and says nothing: the symptom is a slate that comes back short,
+// or the empty-state screen on a day full of sport. Thirty-one leagues at once was over the line.
+describe('how wide a fan-out at ESPN is allowed to get', () => {
+	// Every request holds its slot until a macrotask passes, so the pool's whole width is in flight
+	// at once and the peak is the real thing rather than an artefact of how fast the mock resolves.
+	const trackConcurrency = () => {
+		const seen = { inFlight: 0, peak: 0 };
+		const fetchMock = jest.fn().mockImplementation(async () => {
+			seen.inFlight += 1;
+			seen.peak = Math.max(seen.peak, seen.inFlight);
+			await new Promise<void>(resolve => { setTimeout(resolve, 0); });
+			seen.inFlight -= 1;
+			// Both shapes at once, so the same mock serves the scoreboard and the teams endpoint.
+			return createResponse({
+				events: [],
+				leagues: [{ logos: [] }],
+				sports: [{ leagues: [{ teams: [{ team: { id: '1', displayName: 'Someone', abbreviation: 'SOM' } }] }] }],
+			});
+		});
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+		return { seen, fetchMock };
+	};
+
+	test('never has more than the pool in flight, however many leagues are asked for', async () => {
+		const { seen } = trackConcurrency();
+		const { fetchGamesWithLeagueLogos, espnRequestPoolSize } = loadApiClient();
+
+		await fetchGamesWithLeagueLogos(allLeagueIds, { includeUpcoming: false });
+
+		expect(allLeagueIds.length).toBeGreaterThan(espnRequestPoolSize);
+		expect(seen.peak).toBeGreaterThan(1);
+		expect(seen.peak).toBeLessThanOrEqual(espnRequestPoolSize);
+	});
+
+	// A league asked for upcoming games makes two requests of its own, which is why the pool is
+	// sized against the request count rather than against the league count.
+	test('stays inside twice the pool when each league makes two requests', async () => {
+		const { seen } = trackConcurrency();
+		const { fetchGamesWithLeagueLogos, espnRequestPoolSize } = loadApiClient();
+
+		await fetchGamesWithLeagueLogos(allLeagueIds, { includeUpcoming: true });
+
+		expect(seen.peak).toBeLessThanOrEqual(espnRequestPoolSize * 2);
+	});
+
+	test('still asks for every league it was given', async () => {
+		const { fetchMock } = trackConcurrency();
+		const { fetchGamesWithLeagueLogos } = loadApiClient();
+
+		await fetchGamesWithLeagueLogos(allLeagueIds, { includeUpcoming: false });
+
+		expect(fetchMock).toHaveBeenCalledTimes(allLeagueIds.length);
+	});
+
+	test('pools the team fan-out the pickers use as well', async () => {
+		const { seen } = trackConcurrency();
+		const { fetchTeamsForLeagues, espnRequestPoolSize } = loadApiClient();
+
+		await fetchTeamsForLeagues(allLeagueIds);
+
+		expect(seen.peak).toBeLessThanOrEqual(espnRequestPoolSize);
+	});
+});
+
+/* Polling faster than ESPN refreshes buys a cache hit and no information, so the floor the eager
+   ramp scales down to is read off the response rather than chosen. `Cache-Control` is on the
+   CORS-safelist, which is why this is readable at all on a cross-origin response. */
+describe('how often ESPN says it will answer with something new', () => {
+	it('assumes the constant until a response has been seen', () => {
+		const { scoreboardRefreshMs } = loadApiClient();
+		expect(scoreboardRefreshMs('nba')).toBe(pollMinEagerMs);
+	});
+
+	it('takes the max-age the league actually sent', async () => {
+		const fetchMock = jest.fn().mockResolvedValue(
+			createResponse({ events: [] }, { cacheControl: 'max-age=30' }),
+		);
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+
+		const { fetchGamesWithLeagueLogos, scoreboardRefreshMs } = loadApiClient();
+		await fetchGamesWithLeagueLogos(['nba'], { includeUpcoming: false });
+
+		expect(scoreboardRefreshMs('nba')).toBe(30_000);
+	});
+
+	it('keeps the leagues apart rather than letting one answer set the pace for all of them', async () => {
+		const fetchMock = jest.fn().mockImplementation(async (url: string) => createResponse(
+			{ events: [] },
+			{ cacheControl: url.includes('/hockey/nhl/') ? 'max-age=4' : 'max-age=20' },
+		));
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+
+		const { fetchGamesWithLeagueLogos, scoreboardRefreshMs } = loadApiClient();
+		await fetchGamesWithLeagueLogos(['nba', 'nhl'], { includeUpcoming: false });
+
+		expect(scoreboardRefreshMs('nhl')).toBe(4_000);
+		expect(scoreboardRefreshMs('nba')).toBe(20_000);
+	});
+
+	// A header we cannot make sense of is not a reason to poll at zero.
+	it('ignores a missing or unusable max-age', async () => {
+		for (const cacheControl of [undefined, 'no-store', 'max-age=0', 'max-age=nonsense']) {
+			const fetchMock = jest.fn().mockResolvedValue(createResponse({ events: [] }, { cacheControl }));
+			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+
+			const { fetchGamesWithLeagueLogos, scoreboardRefreshMs } = loadApiClient();
+			await fetchGamesWithLeagueLogos(['nba'], { includeUpcoming: false });
+
+			expect(scoreboardRefreshMs('nba')).toBe(pollMinEagerMs);
+		}
+	});
+});
+
+/* The silence this removes: `allSettled` keeps the leagues that answered and says nothing about the
+   ones that did not, so every caller read a 403 as "this league has nothing on". */
+describe('telling an empty league apart from a refused one', () => {
+	it('names the leagues that were refused', async () => {
+		const fetchMock = jest.fn().mockImplementation(async (url: string) => (
+			url.includes('/hockey/nhl/')
+				? createResponse({ message: 'Forbidden' }, { ok: false, status: 403 })
+				: createResponse({ events: [] })
+		));
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+
+		const { fetchGamesWithLeagueLogos } = loadApiClient();
+		const result = await fetchGamesWithLeagueLogos(['nba', 'nhl'], { includeUpcoming: false });
+
+		expect(result.shedLeagues).toEqual(['nhl']);
+	});
+
+	it('reports nothing shed when a league genuinely has no games', async () => {
+		const fetchMock = jest.fn().mockResolvedValue(createResponse({ events: [] }));
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+
+		const { fetchGamesWithLeagueLogos } = loadApiClient();
+		const result = await fetchGamesWithLeagueLogos(['nba'], { includeUpcoming: false });
+
+		expect(result.games).toEqual([]);
+		expect(result.shedLeagues).toEqual([]);
+	});
+
+	it('still hands back the leagues that did answer', async () => {
+		const fetchMock = jest.fn().mockImplementation(async (url: string) => (
+			url.includes('/hockey/nhl/')
+				? createResponse({ message: 'Forbidden' }, { ok: false, status: 403 })
+				: createResponse({ events: [], leagues: [{ logos: [] }] })
+		));
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+
+		const { fetchGamesWithLeagueLogos } = loadApiClient();
+		const result = await fetchGamesWithLeagueLogos(['nba', 'nhl'], { includeUpcoming: false });
+
+		expect(Object.keys(result.leagueLogos)).toEqual(['nba']);
+		expect(result.shedLeagues).toEqual(['nhl']);
+	});
+});
+
+const datedCalls = (fetchMock: jest.Mock): string[] => fetchMock.mock.calls
+	.map(([url]) => url as string)
+	.filter(url => url.includes('dates='));
+
+const undatedCalls = (fetchMock: jest.Mock): string[] => fetchMock.mock.calls
+	.map(([url]) => url as string)
+	.filter(url => !url.includes('dates='));
+
+/* MLB answers a dated live-poll window with `{"code":400,"message":"Failed to get events
+   endpoint."}` while college football needs that window to return a full Saturday at all, so which
+   leagues accept one is read off ESPN rather than tabulated here. */
+describe('a league that will not take a dated window on the live board', () => {
+	const rejectDatedFor = (path: string) => jest.fn().mockImplementation(async (url: string) => (
+		url.includes(path) && url.includes('dates=')
+			? createResponse({ code: 400, message: 'Failed to get events endpoint.' }, { ok: false, status: 400 })
+			: createResponse({ events: [], leagues: [{ logos: [] }] })
+	));
+
+	it('falls back to the undated board rather than losing the league', async () => {
+		const fetchMock = rejectDatedFor('/baseball/mlb/');
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+
+		const { fetchGamesWithLeagueLogos } = loadApiClient();
+		const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
+
+		expect(result.shedLeagues).toEqual([]);
+		expect(undatedCalls(fetchMock)).toHaveLength(1);
+	});
+
+	it('stops paying the same refusal on every poll for a while', async () => {
+		const fetchMock = rejectDatedFor('/baseball/mlb/');
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+
+		const { fetchGamesWithLeagueLogos } = loadApiClient();
+		await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
+		fetchMock.mockClear();
+		await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
+
+		expect(datedCalls(fetchMock)).toEqual([]);
+		expect(undatedCalls(fetchMock)).toHaveLength(1);
+	});
+
+	/* The hold has to expire. "Failed to get events endpoint" reads like ESPN's own events service
+	   failing rather than a rejected parameter, and latching a league onto the undated board for the
+	   life of the worker cost that league its finals — the undated board carries only today. */
+	it('tries the window again once the hold has run out', async () => {
+		jest.useFakeTimers().setSystemTime(new Date('2026-09-15T18:00:00.000Z'));
+		try {
+			const fetchMock = rejectDatedFor('/baseball/mlb/');
+			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+
+			const { fetchGamesWithLeagueLogos } = loadApiClient();
+			await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
+
+			jest.setSystemTime(new Date('2026-09-15T18:11:00.000Z'));
+			fetchMock.mockClear();
+			await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
+
+			expect(datedCalls(fetchMock)).toHaveLength(1);
+		} finally {
+			jest.useRealTimers();
+		}
+	});
+
+	it('leaves the leagues that do accept a window on it', async () => {
+		const fetchMock = rejectDatedFor('/baseball/mlb/');
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+
+		const { fetchGamesWithLeagueLogos } = loadApiClient();
+		await fetchGamesWithLeagueLogos(['mlb', 'ncaaf'], { includeUpcoming: false });
+
+		expect(datedCalls(fetchMock).filter(url => url.includes('/college-football'))).toHaveLength(1);
+		expect(undatedCalls(fetchMock).filter(url => url.includes('/college-football'))).toEqual([]);
+	});
+
+	/* The one that matters most today: a 403 is ESPN shedding load and says nothing about whether the
+	   window was acceptable. Reading it as a refusal would quietly drop college football back onto the
+	   curated week the dated window exists to avoid. */
+	it('does not give the window up over a 403', async () => {
+		const fetchMock = jest.fn()
+			.mockResolvedValueOnce(createResponse({ message: 'Forbidden' }, { ok: false, status: 403 }))
+			.mockResolvedValue(createResponse({ events: [], leagues: [{ logos: [] }] }));
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+
+		const { fetchGamesWithLeagueLogos } = loadApiClient();
+		const shed = await fetchGamesWithLeagueLogos(['ncaaf'], { includeUpcoming: false });
+		expect(shed.shedLeagues).toEqual(['ncaaf']);
+
+		fetchMock.mockClear();
+		await fetchGamesWithLeagueLogos(['ncaaf'], { includeUpcoming: false });
+
+		expect(datedCalls(fetchMock)).toHaveLength(1);
+		expect(undatedCalls(fetchMock)).toEqual([]);
 	});
 });

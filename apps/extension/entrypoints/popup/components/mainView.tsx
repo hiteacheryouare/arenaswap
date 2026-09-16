@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 import type { ReactNode, RefObject } from 'react';
 import { i18n } from '#i18n';
 import type { Browser } from 'wxt/browser';
@@ -26,6 +26,7 @@ import useRestoredScroll from '../useRestoredScroll';
 import { revealModeForIndex, type cardRevealPlan, type revealMode } from '../cardReveal';
 
 const emptyScoreMap = new Map<string, PowerScoreResult>();
+const emptyRevealOrder = new Map<string, number>();
 
 interface gameSectionProps {
 	title: string;
@@ -100,26 +101,29 @@ const leagueRows = (
 	<div key={league}>
 		<LeagueSectionHeader league={league} logos={leagueLogos} />
 		{groupedGames.map(game => (
+			// A game the plan does not name is one that arrived after the plan was fixed, and it gets
+			// nothing: a card that has been sitting there plainly for two seconds must not suddenly grow
+			// a poster over itself.
 			<GameCardReveal
 				key={game.id}
 				game={game}
-				mode={revealModeForIndex(reveal.mode, reveal.order.get(game.id) ?? 0)}
+				mode={reveal.order.has(game.id) ? revealModeForIndex(reveal.mode, reveal.order.get(game.id)!) : 'none'}
 				index={reveal.order.get(game.id) ?? 0}
 			>
-			<GameCard
-				game={game}
-				excitementResult={scoreMap.get(game.id)}
-				favoriteTeamIds={favoriteTeamIds}
-				onToggleFavoriteTeam={onToggleFavoriteTeam}
-				gameBoosts={gameBoosts}
-				openTabs={openTabs}
-				registry={registry}
-				onRegistryChange={onRegistryChange}
-				formatTabLabel={formatTabLabel}
-				onOpenGameDetail={onOpenGameDetail}
-				bettingPrefs={bettingPrefs}
-				weatherPrefs={weatherPrefs}
-			/>
+				<GameCard
+					game={game}
+					excitementResult={scoreMap.get(game.id)}
+					favoriteTeamIds={favoriteTeamIds}
+					onToggleFavoriteTeam={onToggleFavoriteTeam}
+					gameBoosts={gameBoosts}
+					openTabs={openTabs}
+					registry={registry}
+					onRegistryChange={onRegistryChange}
+					formatTabLabel={formatTabLabel}
+					onOpenGameDetail={onOpenGameDetail}
+					bettingPrefs={bettingPrefs}
+					weatherPrefs={weatherPrefs}
+				/>
 			</GameCardReveal>
 		))}
 	</div>
@@ -240,7 +244,18 @@ const mainView = ({
 	// four sections in this order, each one grouped by league before it is drawn. Counting within a
 	// section instead would start Up Next back at zero and land its first card on top of the second
 	// live one.
+	//
+	// Fixed on the first list that has anything in it, and not recomputed while it is playing. Both
+	// live sections are re-sorted on PowerScore and scores arrive by push every few seconds, so a
+	// resort inside the 3.4s window is the common case rather than the edge one — and a card that
+	// keeps its React identity but changes index gets a new `animation-delay`, which moves a running
+	// animation's current time and jumps the poster by up to 480ms. Worse across the eight-card cap,
+	// where the mode itself flips and a card either grows a poster from nothing or loses one
+	// mid-frame.
+	const revealPlanRef = useRef<Map<string, number> | null>(null);
 	const reveal = useMemo<cardRevealPlan>(() => {
+		if (revealMode === 'none') return { mode: 'none', order: emptyRevealOrder };
+		if (revealPlanRef.current) return { mode: revealMode, order: revealPlanRef.current };
 		const order = new Map<string, number>();
 		const take = (list: Game[]) => groupByLeague(list)
 			.forEach(({ games: grouped }) => grouped.forEach(game => order.set(game.id, order.size)));
@@ -248,6 +263,7 @@ const mainView = ({
 		take(unassignedLiveGames);
 		if (prefs.showUpcomingGames && selectedDay) take(selectedDay.games);
 		take(finalGames);
+		if (order.size > 0) revealPlanRef.current = order;
 		return { mode: revealMode, order };
 	}, [revealMode, assignedLiveGames, unassignedLiveGames, prefs.showUpcomingGames, selectedDay, finalGames]);
 

@@ -763,10 +763,11 @@ button, input, select, optgroup, textarea {
    Every card arrives as the matchup poster it is underneath. The two team colours wipe in from the
    outer edges and meet on a leaning seam, the tricodes stand outlined over them, a white bar crosses
    each side and trades its lettering for its crest as it passes, and then the colour retreats the
-   way it came until all that is left is the 5px rails the card draws for itself anyway. The card's
-   own contents come into focus underneath as the colour leaves them.
+   way it came, off the edge it came in from, uncovering the 5px rails the card has been drawing in
+   those same colours underneath the whole time. The card's own contents come into focus underneath
+   as the colour leaves them.
 
-   Four things hold it together.
+   Five things hold it together.
 
    One angle. The seam, the wipes, their chasers and the edge each wipe reveals along all lean at
    `--reveal-lean`, measured off each card's own height in `gameCardReveal.tsx` so a taller card
@@ -779,10 +780,14 @@ button, input, select, optgroup, textarea {
    the day is this same graphic taken 20% quicker rather than a shorter graphic with beats cut out
    of it.
 
-   One exact landing. The collapse ends on `buildGameCardStyle`'s own rails, and each crest ends on
-   the card's real crest slot, measured rather than guessed — and it gets there before it starts
-   handing over, so what crossfades is two crests standing in the same place rather than one still
-   travelling past the other.
+   One exact landing. Every crest ends on the card's real crest slot, at the card's real crest size,
+   both measured rather than guessed — and it gets there and stops before the card's own crest is
+   allowed to appear underneath it, so what hands over is two identical crests standing in the same
+   place rather than one still travelling past the other, or one three quarters the size of it.
+
+   One box. Every layer here is drawn against the card's own border box. Nothing in this file is
+   allowed to be a few pixels bigger than the thing it is covering, which is worth stating because it
+   was, and everything that was wrong with the graphic in one way or another followed from it.
 
    Two notes on how this is built. A bar does not fade its side's lettering out and its crest in;
    the crest layer and the lettering layer are clipped along the same leaning edge from opposite
@@ -791,8 +796,21 @@ button, input, select, optgroup, textarea {
    here, because the later one wins outright and its backwards fill reaches back over the earlier
    one and erases it before it has played a frame. */
 
+/* The gap between cards belongs to the wrapper, not to the card inside it, so that the wrapper's box
+   is the card's box whatever the wrapper is nested in. Left on the card it depends on the card's
+   bottom margin collapsing out through the wrapper, which it does where `mainView` puts it — a plain
+   block inside a plain block — and does not the moment the wrapper becomes a flex item, because a
+   flex item is a formatting context of its own. Measured both ways: nested as `mainView` nests it
+   the wrapper is the card's 148.44px exactly, and as a flex item it is 156.44px, which is an 8px
+   overhang on every absolutely positioned layer in this file. Pinning the gap here removes the
+   difference rather than relying on it. */
 .game-card-reveal {
-	position: relative;
+	position:      relative;
+	margin-bottom: 0.5rem;
+}
+
+.game-card-reveal > .game-card {
+	margin-bottom: 0;
 }
 
 .game-card-reveal-stage,
@@ -817,12 +835,20 @@ button, input, select, optgroup, textarea {
 
 /* The graphic builds over the popup's own background rather than over the card, which is white and
    would flash between the two halves for as long as they are still travelling. Gone the moment they
-   meet, well before the collapse needs the card underneath to be visible again. */
+   meet, well before the collapse needs the card underneath to be visible again.
+
+   The one layer here that is neither rounded nor inside the stage. Two rounded rectangles of the
+   same radius drawn over one another never quite cover: the clip's antialiased edge lets a sliver of
+   the card's own corner through, and what came through was the card's 5px team-colour rail at all
+   four corners of every card still waiting its turn. Square corners cover it, and this is the
+   popup's own background colour, so the corners it keeps have nothing to show against. */
 .game-card-reveal-base {
-	position:   absolute;
-	inset:      0;
-	background: #0d1117;
-	animation:  cardRevealBase calc(3400ms * var(--reveal-rate)) linear var(--reveal-delay) both;
+	position:       absolute;
+	inset:          0;
+	z-index:        1;
+	background:     #0d1117;
+	pointer-events: none;
+	animation:      cardRevealBase calc(3400ms * var(--reveal-rate)) linear var(--reveal-delay) both;
 }
 
 /* Wider than the half it fills so the seam has somewhere to lean, and clipped back to the leaning
@@ -891,30 +917,34 @@ button, input, select, optgroup, textarea {
 	top:      50%;
 }
 
+/* The card's own crest box, measured, rather than the 64px it happens to be: this is the thing the
+   overlay resolves into, so it is sized by it rather than alongside it. */
 .game-card-reveal-crest {
-	width:     64px;
-	height:    64px;
-	margin:    -32px 0 0 -32px;
+	width:     var(--reveal-crest);
+	height:    var(--reveal-crest);
+	margin:    calc(var(--reveal-crest) / -2) 0 0 calc(var(--reveal-crest) / -2);
 	animation: cardRevealCrest calc(3400ms * var(--reveal-rate)) linear var(--reveal-delay) both;
 }
 
 .game-card-reveal-wipe.is-away .game-card-reveal-crest,
 .game-card-reveal-mask.is-away .game-card-reveal-abbr {
-	left:        25%;
-	--reveal-dx: var(--reveal-away-dx);
-	--reveal-dy: var(--reveal-away-dy);
+	left:             25%;
+	--reveal-dx:      var(--reveal-away-dx);
+	--reveal-dy:      var(--reveal-away-dy);
+	--reveal-surface: var(--reveal-away);
 }
 
 .game-card-reveal-wipe.is-home .game-card-reveal-crest,
 .game-card-reveal-mask.is-home .game-card-reveal-abbr {
-	left:        75%;
-	--reveal-dx: var(--reveal-home-dx);
-	--reveal-dy: var(--reveal-home-dy);
+	left:             75%;
+	--reveal-dx:      var(--reveal-home-dx);
+	--reveal-dy:      var(--reveal-home-dy);
+	--reveal-surface: var(--reveal-home);
 }
 
 .game-card-reveal-crest-plate {
-	width:           100%;
-	height:          100%;
+	position:        absolute;
+	inset:           0;
 	display:         flex;
 	align-items:     center;
 	justify-content: center;
@@ -922,8 +952,17 @@ button, input, select, optgroup, textarea {
 }
 
 /* Only the plate clips, and only to three quarters of itself — a wordmark reaches the corners of
-   its own box, and a circle drawn at the size of the mark shaves its ends. */
+   its own box, and a circle drawn at the size of the mark shaves its ends.
+
+   Which is why the plate is grown around the box rather than the mark shrunk inside it: `inset` of
+   -1/6 makes the plate 4/3 of the box, so three quarters of the plate is the box exactly. A team
+   that gets a plate and a team that does not then draw their mark at the same size all the way
+   through, and both land on the card's own crest rather than one of them landing three quarters of
+   the way onto it and jumping the rest when the card's crest fades up. `revealPlateRatio` in
+   `cardReveal.ts` is this same 4/3, which the hold scale is derived through so a plate this much
+   wider than its mark still cannot outgrow the card. */
 .game-card-reveal-crest-plate:not(.is-bare) {
+	inset:    calc(-100% / 6);
 	overflow: hidden;
 
 	.game-card-reveal-crest-logo { width: 75%; height: 75%; }
@@ -934,36 +973,72 @@ button, input, select, optgroup, textarea {
 	height: 100%;
 }
 
-/* The card's own crest waits under the graphic until the overlay has finished walking onto it, then
-   the two trade places while both are standing still. Without this both are on screen for the whole
-   descent, and a crest the colour treatment gave a tinted plate wears that plate as a halo. */
+/* The card's own crest waits under the graphic until the overlay has finished walking onto it, and
+   then arrives in one step rather than fading. Without the wait both are on screen for the whole
+   descent, and a crest the colour treatment gave a tinted plate wears that plate as a halo. Without
+   the step they cross-fade, and two identical crossfading copies of the same crest are not the same
+   crest: each is half transparent at the midpoint, so the pair washes a quarter of the way to the
+   card underneath and the mark visibly pales and recovers. It appears at full strength underneath an
+   overlay that is still fully opaque and, by now, pixel-identical to it — so nothing happens at the
+   moment it appears, and what the overlay's own fade then takes off the card is the tinted plate. */
 .game-card-reveal .game-card .team-crest {
-	animation: cardRevealHandoff calc(238ms * var(--reveal-rate)) linear calc(var(--reveal-delay) + 3162ms * var(--reveal-rate)) both;
+	animation: cardRevealHandoff calc(3162ms * var(--reveal-rate)) steps(1, end) var(--reveal-delay) both;
 }
 
 /* Outlined rather than filled, and in a layer of its own rather than inside its colour half: the
    half is clipped along the leaning seam, and a diagonal cut through hollow letterforms adds a line
    across every glyph it crosses. Out here the lettering is whole, and the only thing that ever cuts
-   it is the bar that is meant to. Never fades: it is wiped, which is the point of the bar.
+   it is the bar that is meant to. Never fades: it is wiped, which is the point of the bar. */
+.game-card-reveal-abbr {
+	width:     8rem;
+	height:    4.4rem;
+	margin:    -2.2rem 0 0 -4rem;
+	animation: cardRevealAbbrIn calc(420ms * var(--reveal-rate)) ease calc(var(--reveal-delay) + 620ms * var(--reveal-rate)) both;
+}
+
+/* An outline of live text is not a stroke on that text. A stroke follows every contour the font
+   draws, including the ones a filled glyph hides, and DM Sans builds an N out of overlapping stems
+   — so `-webkit-text-stroke` on its own drew the diagonal straight on through both of them, and
+   every junction in NYY and BOS came out cross-hatched with the lines that a fill would have
+   covered. Two copies instead: `-edge` is the glyph solid white and stroked wider than itself,
+   `-face` is the same glyph in the colour behind it laid exactly over the first. All that is left
+   showing is the half of the stroke outside the silhouette, which is the outline and nothing else.
+
+   Opaque white and stroked opaque white, with the softening taken as opacity on the parent: the
+   stroke self-overlaps wherever two contours meet, and at any alpha below 1 those overlaps compound
+   into bright nicks in the notches. Under the parent's opacity the face copy is the surface colour
+   over the surface colour, so it is only ever the band that the fade reaches.
+
    `padding-top` is optical, not layout — centring the line box leaves caps sitting high, because
    the box carries descender space these glyphs never use. */
-.game-card-reveal-abbr {
-	display:             flex;
-	align-items:         center;
-	justify-content:     center;
-	width:               8rem;
-	margin:              -2.2rem 0 0 -4rem;
-	height:              4.4rem;
-	padding-top:         0.08em;
-	font-family:         'DM Sans', sans-serif;
-	font-size:           3.4rem;
-	font-weight:         700;
-	letter-spacing:      0.02em;
-	line-height:         1;
-	white-space:         nowrap;
-	color:               transparent;
-	-webkit-text-stroke: 2px rgba(255, 255, 255, 0.85);
-	animation:           cardRevealAbbrIn calc(420ms * var(--reveal-rate)) ease calc(var(--reveal-delay) + 620ms * var(--reveal-rate)) both;
+.game-card-reveal-abbr-edge,
+.game-card-reveal-abbr-face {
+	position:        absolute;
+	inset:           0;
+	display:         flex;
+	align-items:     center;
+	justify-content: center;
+	padding-top:     0.08em;
+	font-family:     'DM Sans', sans-serif;
+	/* `--reveal-abbr-scale` is `revealAbbrScale` in `cardReveal.ts`. ESPN's abbreviation is not
+	   capped — three characters for a professional club, four or five for a college — and at one
+	   size the two sides collide over the seam: measured on a 296px card, ARMY against NAVY overlaps
+	   by 7.4px and UCONN by 52. Scaled by the longer of the two rather than truncated, because "ARM"
+	   at "NAV" is a worse answer than smaller type. */
+	font-size:       calc(3.4rem * var(--reveal-abbr-scale, 1));
+	font-weight:     700;
+	letter-spacing:  0.02em;
+	line-height:     1;
+	white-space:     nowrap;
+}
+
+.game-card-reveal-abbr-edge {
+	color:               #ffffff;
+	-webkit-text-stroke: 4px #ffffff;
+}
+
+.game-card-reveal-abbr-face {
+	color: var(--reveal-surface);
 }
 
 /* Taller than the card at both ends so the lean never drags a corner into view, and travelling at a
@@ -987,11 +1062,13 @@ button, input, select, optgroup, textarea {
 }
 
 .game-card-reveal-sweep.is-away {
+	left:      -18%;
 	transform: skewX(-20.5deg);
 	animation: cardRevealSweepAway calc(1000ms * var(--reveal-rate)) linear calc(var(--reveal-delay) + 1500ms * var(--reveal-rate)) both;
 }
 
 .game-card-reveal-sweep.is-home {
+	left:      118%;
 	transform: skewX(20.5deg);
 	animation: cardRevealSweepHome calc(1000ms * var(--reveal-rate)) linear calc(var(--reveal-delay) + 1500ms * var(--reveal-rate)) both;
 }
@@ -1028,30 +1105,24 @@ button, input, select, optgroup, textarea {
 	animation-delay: calc(var(--reveal-delay) + 2740ms * var(--reveal-rate));
 }
 
+/* 2780, not 2820: 620ms after it is 3400, which is `revealBaseDurationMs` and the instant the
+   wrapper is removed. At 2820 the last beat was still 40ms from finishing when its element stopped
+   existing — invisible under this easing, which is at 99.9% by then, and a pop under any other. */
 .game-card-reveal .game-card-ps-bar-row {
-	animation-delay: calc(var(--reveal-delay) + 2820ms * var(--reveal-rate));
-}
-
-/* A finished game is the one card with no rails to land on — it is flat grey on both edges — so its
-   colour retreats the whole way out instead of stopping 5px short. */
-.game-card-reveal.is-railless .game-card-reveal-half.is-away {
-	animation-name: cardRevealHalfOut, cardRevealSeamAway;
-}
-
-.game-card-reveal.is-railless .game-card-reveal-half.is-home {
-	animation-name: cardRevealHalfOut, cardRevealSeamHome;
+	animation-delay: calc(var(--reveal-delay) + 2780ms * var(--reveal-rate));
 }
 
 /* ── Keyframes ──────────────────────────────────────────────────────────────── */
 
-/* Open, hold, collapse, in one timeline. 26% is 884ms of 3400; 78% is 2652. */
-@keyframes cardRevealHalf {
-	0%       { width: 0; animation-timing-function: cubic-bezier(0.33, 0.9, 0.3, 1); }
-	26%, 78% { width: calc(50% + var(--reveal-lean)); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
-	100%     { width: 5px; }
-}
+/* Open, hold, collapse, in one timeline. 26% is 884ms of 3400; 78% is 2652.
 
-@keyframes cardRevealHalfOut {
+   All the way off, rather than stopping on the 5px `buildGameCardStyle` draws its rails at. The
+   card has been painting those rails in exactly these colours underneath the whole time, so the
+   last 5px of travel uncovers paint identical to the paint it is taking away and the ending reads
+   the same either way — but a rectangle parked on a rounded border does not match it at the
+   corners, and a finished game, which is flat grey and has no rails at all, no longer needs a
+   second keyframe set of its own to say so. */
+@keyframes cardRevealHalf {
 	0%       { width: 0; animation-timing-function: cubic-bezier(0.33, 0.9, 0.3, 1); }
 	26%, 78% { width: calc(50% + var(--reveal-lean)); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
 	100%     { width: 0; }
@@ -1100,28 +1171,39 @@ button, input, select, optgroup, textarea {
 
 @keyframes cardRevealAbbrIn {
 	from { opacity: 0; }
-	to   { opacity: 1; }
+	to   { opacity: 0.9; }
 }
 
 /* Constant rate, edge to edge and out the far side: they cross at the middle of the card and each
-   one leaves under its own steam rather than stopping somewhere and fading. */
+   one leaves under its own steam rather than stopping somewhere and fading.
+
+   Translated rather than moved on `left`, which is what this was and which Blink cannot composite:
+   a full slate opens with 32 bars running at once and every frame of every one of them was a layout
+   pass. `--reveal-sweep-run` is the card's width times `revealSweepRunShare`, measured in
+   `gameCardReveal.tsx`, because a percentage translation resolves against the 22px bar rather than
+   against the card it is crossing. Each keyframe restates the skew, since naming `transform` at all
+   replaces it. */
 @keyframes cardRevealSweepAway {
-	from { left: -18%; }
-	to   { left: 118%; }
+	from { transform: translateX(0) skewX(-20.5deg); }
+	to   { transform: translateX(var(--reveal-sweep-run)) skewX(-20.5deg); }
 }
 
 @keyframes cardRevealSweepHome {
-	from { left: 118%; }
-	to   { left: -18%; }
+	from { transform: translateX(0) skewX(20.5deg); }
+	to   { transform: translateX(calc(var(--reveal-sweep-run) * -1)) skewX(20.5deg); }
 }
 
 /* Barely moving while the bar uncovers it, so what is revealed is already alive; then the hold,
    then the walk down onto the card's own crest slot. Stationary from 93%, which is where the card's
-   real crest starts fading up underneath it — the two never move past each other. */
+   real crest starts fading up underneath it — the two never move past each other.
+
+   `--reveal-hold` is `revealHoldScale` in `cardReveal.ts`, which sizes the poster off the card it
+   is drawn on rather than off a figure that was right for one card height. Scale 1 is the card's own
+   crest, so the walk down ends on it by construction. */
 @keyframes cardRevealCrest {
-	0%, 44% { opacity: 1; transform: translate(0, 0) scale(1.95); animation-timing-function: linear; }
-	74%     { transform: translate(0, 0) scale(1.85); }
-	78%     { transform: translate(0, 0) scale(1.85); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+	0%, 44% { opacity: 1; transform: translate(0, 0) scale(var(--reveal-hold)); animation-timing-function: linear; }
+	74%     { transform: translate(0, 0) scale(calc(var(--reveal-hold) * 0.95)); }
+	78%     { transform: translate(0, 0) scale(calc(var(--reveal-hold) * 0.95)); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
 	93%     { opacity: 1; transform: translate(var(--reveal-dx), var(--reveal-dy)) scale(1); }
 	100%    { opacity: 0; transform: translate(var(--reveal-dx), var(--reveal-dy)) scale(1); }
 }

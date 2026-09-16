@@ -1,4 +1,4 @@
-import { isWithinFinalRetention, leagueConfigMap, pollLookaheadDays, resolveLeagueLogoUrl } from './constants';
+import { isWithinFinalRetention, leagueConfigMap, pollLookaheadDays, pollMinEagerMs, resolveLeagueLogoUrl } from './constants';
 import { gradePostseason } from './postseasonRound';
 import {
 	EspnSummarySchema,
@@ -19,6 +19,101 @@ import { logWarn } from './logger';
 import type { Game, GameCondition, GameOdds, LeagueConfig, LeagueId, LeagueLogoMap, ProbableStarter, TeamLeader, TeamMonoLogoMap, TeamMonoMarks } from './types';
 
 const espnBase = 'https://site.api.espn.com/apis/site/v2/sports';
+
+/* ESPN sheds load on this host by recent request volume from an IP and answers 403 to whatever it
+   drops. Measured from one machine against the NBA scoreboard: 16 requests at once all came back
+   200, 24 at once lost four of them, and the same size passed cleanly a minute later — so the window
+   is recent volume rather than instantaneous concurrency, and a burst that got through once is no
+   guarantee.
+
+   Thirty-one leagues fanned out at once is past it on its own. What made that hard to see is that
+   every caller below collects with `allSettled` and keeps the fulfilled ones: a shed league
+   contributes nothing and says nothing, so the only symptom is a slate that comes back short — or,
+   with enough of them shed, the empty-state screen on a day full of sport.
+
+   Six at a time, which is twelve requests in flight at the worst point, since a league asked for
+   upcoming games makes two. */
+export const espnRequestPoolSize = 6;
+
+const settledInPool = async <T, R>(
+	items: T[],
+	run: (item: T) => Promise<R>,
+	size = espnRequestPoolSize,
+): Promise<PromiseSettledResult<R>[]> => {
+	const results: PromiseSettledResult<R>[] = [];
+	let next = 0;
+	const worker = async (): Promise<void> => {
+		while (next < items.length) {
+			const index = next;
+			next += 1;
+			const item = items[index] as T;
+			try {
+				results[index] = { status: 'fulfilled', value: await run(item) };
+			} catch (reason) {
+				results[index] = { status: 'rejected', reason };
+			}
+		}
+	};
+	await Promise.all(Array.from({ length: Math.min(size, items.length) }, () => worker()));
+	return results;
+};
+
+/* The pool above bounds one fan-out. This bounds the aggregate, which is what ESPN actually measures
+   — it has no idea which of our surfaces asked. The gap it closes is the one the pool cannot see:
+   every `tickLeague` runs its own single-league fetch on its own timer, so 31 leagues whose timers
+   drift into alignment issue 31 simultaneous requests through 31 separate pools of one. The existing
+   jitter spreads those by a couple of seconds; this puts a ceiling under it.
+
+   A bucket rather than flat spacing, because flat spacing taxes every cold start to bound a case
+   that only happens occasionally. A burst up to the capacity goes through untouched and only the
+   excess waits.
+
+   Both numbers are sized from us rather than from a published limit, because ESPN does not publish
+   one: the capacity is the widest simultaneous fan-out this codebase has measured coming back clean,
+   and the rate sits well above the extension's own worst case — 31 leagues at the 12s floor plus win
+   probability is about 3 requests a second — so nothing waits in steady state and the bucket only
+   ever shapes bursts. If a limit is found empirically, this is the one place to say so. */
+export const espnBurstCapacity = 16;
+export const espnSustainedPerSecond = 10;
+
+let requestTokens = espnBurstCapacity;
+let tokensRefilledAt = Date.now();
+
+const takeRequestSlot = async (): Promise<void> => {
+	for (;;) {
+		const now = Date.now();
+		const refill = ((now - tokensRefilledAt) / 1000) * espnSustainedPerSecond;
+		requestTokens = Math.min(espnBurstCapacity, requestTokens + Math.max(0, refill));
+		tokensRefilledAt = now;
+		if (requestTokens >= 1) {
+			requestTokens -= 1;
+			return;
+		}
+		const waitMs = Math.ceil(((1 - requestTokens) / espnSustainedPerSecond) * 1000);
+		await new Promise(resolve => setTimeout(resolve, waitMs));
+	}
+};
+
+/* How often ESPN will actually tell us something new, per league, read off the `cache-control` it
+   answered with. `Cache-Control` is on the CORS-safelist, so this is readable on a cross-origin
+   response without the host exposing anything.
+
+   Polling faster than this buys a cache hit and no information, so it is the floor the eager
+   interval scales down to rather than a number we chose. Unasked leagues fall back to the
+   assumption in constants. */
+const observedScoreboardMaxAgeMs = new Map<LeagueId, number>();
+
+const recordScoreboardMaxAge = (leagueId: LeagueId, cacheControl: string | null): void => {
+	const match = /max-age\s*=\s*(\d+)/i.exec(cacheControl ?? '');
+	if (!match) return;
+	const seconds = Number(match[1]);
+	if (!Number.isFinite(seconds) || seconds <= 0) return;
+	observedScoreboardMaxAgeMs.set(leagueId, seconds * 1000);
+};
+
+export const scoreboardRefreshMs = (leagueId: LeagueId): number => (
+	observedScoreboardMaxAgeMs.get(leagueId) ?? pollMinEagerMs
+);
 
 // ESPN ships a malformed row often enough that a dropped count is a steady state, not an event, so
 // warning on every poll would bury the console at the 6s floor. Only a change in the count is news.
@@ -571,11 +666,13 @@ interface LeagueGamesResult {
 }
 
 const fetchScoreboard = async (url: string, leagueId: LeagueId): Promise<EspnScoreboardResponse> => {
+	await takeRequestSlot();
 	const res = await fetch(url, {
 		headers: {
 			'Accept': 'application/json',
 		},
 	});
+	recordScoreboardMaxAge(leagueId, res.headers.get('cache-control'));
 	if (!res.ok) throw new LeagueFetchError(leagueId, res.status);
 	const parsed = parseScoreboard(await res.json());
 	warnOnDroppedCountChange(
@@ -594,6 +691,61 @@ const scoreboardParams = (config: LeagueConfig): URLSearchParams => {
 	return params;
 };
 
+/* Naming a date window on the live poll is what stopped a live college football game going missing —
+   ESPN's undated board is an editorially curated week in that league, not a day. But the dated
+   scoreboard is not supported uniformly across the 31: MLB answers
+   `dates=20260914-20260915` with `{"code":400,"message":"Failed to get events endpoint."}`, and the
+   `groups` parameter on the two NCAA basketball leagues is already carried to dodge 404s on dated
+   queries. So which leagues accept one is ESPN's to tell us rather than ours to tabulate: the first
+   rejection per league drops it onto the undated board, which is exactly what shipped in 2.1 and is
+   a genuine substitute for the current day.
+
+   That conclusion expires, though, and deliberately: "Failed to get events endpoint" reads like
+   ESPN's own events service failing rather than like a rejected parameter, the published reference
+   documents `20241201-20241231` as a supported form and gives its single-date example on MLB, and
+   the first version of this latched a league onto the undated board for the life of the worker on
+   one 400 — which cost a whole league's finals, because the undated board carries only the current
+   Eastern day. So it is held long enough not to pay the same 400 every twelve seconds and short
+   enough that a transient upstream failure costs one window rather than an evening.
+
+   Only 400 and 404 count. A 403 is ESPN shedding load and says nothing about whether the window was
+   acceptable, so it must not disable the window that a league genuinely needs. */
+const undatedBoardHoldMs = 10 * 60 * 1000;
+
+const undatedCurrentBoardUntil = new Map<LeagueId, number>();
+
+const onUndatedBoard = (leagueId: LeagueId): boolean => (
+	(undatedCurrentBoardUntil.get(leagueId) ?? 0) > Date.now()
+);
+
+const rejectedTheWindow = (err: unknown): boolean => (
+	err instanceof LeagueFetchError && (err.status === 400 || err.status === 404)
+);
+
+const withParams = (url: string, params: URLSearchParams): string => {
+	const query = params.toString();
+	return query ? `${url}?${query}` : url;
+};
+
+const fetchCurrentScoreboard = async (
+	config: LeagueConfig,
+	scoreboardUrl: string,
+	baseParams: URLSearchParams,
+): Promise<EspnScoreboardResponse> => {
+	if (!onUndatedBoard(config.id)) {
+		const datedParams = new URLSearchParams(baseParams);
+		datedParams.set('dates', buildCurrentDatesQuery());
+		try {
+			return await fetchScoreboard(withParams(scoreboardUrl, datedParams), config.id);
+		} catch (err) {
+			if (!rejectedTheWindow(err)) throw err;
+			undatedCurrentBoardUntil.set(config.id, Date.now() + undatedBoardHoldMs);
+			logWarn(`ESPN rejected a dated scoreboard window for ${config.id}; falling back to the undated board and retrying the window later.`);
+		}
+	}
+	return await fetchScoreboard(withParams(scoreboardUrl, baseParams), config.id);
+};
+
 const fetchLeagueGames = async (config: LeagueConfig, options: LeagueFetchOptions = {}): Promise<LeagueGamesResult> => {
 	const { includeUpcoming = true, upcomingDays = 7, includeFinal = false } = options;
 	// Declared once so both paths below cannot disagree about which games survive. A final game is
@@ -607,12 +759,9 @@ const fetchLeagueGames = async (config: LeagueConfig, options: LeagueFetchOption
 	const baseParams = scoreboardParams(config);
 
 	const scoreboardUrl = `${espnBase}/${config.espnPath}/scoreboard`;
-	const currentParams = new URLSearchParams(baseParams);
-	currentParams.set('dates', buildCurrentDatesQuery());
-	const baseUrl = `${scoreboardUrl}?${currentParams.toString()}`;
 
 	if (!includeUpcoming) {
-		const todayResult = await fetchScoreboard(baseUrl, config.id);
+		const todayResult = await fetchCurrentScoreboard(config, scoreboardUrl, baseParams);
 		const espnLogo = pickLeagueLogo(todayResult?.leagues?.[0]?.logos);
 		const logoUrl = resolveLeagueLogoUrl(config.id, espnLogo);
 		const parsedGames = (todayResult?.events ?? [])
@@ -629,7 +778,7 @@ const fetchLeagueGames = async (config: LeagueConfig, options: LeagueFetchOption
 	upcomingParams.set('dates', upcomingDates);
 	const upcomingUrl = `${scoreboardUrl}?${upcomingParams.toString()}`;
 	const [todayResult, upcomingResult] = await Promise.allSettled([
-		fetchScoreboard(baseUrl, config.id),
+		fetchCurrentScoreboard(config, scoreboardUrl, baseParams),
 		fetchScoreboard(upcomingUrl, config.id),
 	]);
 	if (todayResult.status === 'rejected' && upcomingResult.status === 'rejected') {
@@ -664,22 +813,31 @@ const getEnabledLeagueConfigs = (enabledLeagues: LeagueId[]): LeagueConfig[] => 
 		.filter((config): config is LeagueConfig => Boolean(config))
 );
 
-export const fetchGamesWithLeagueLogos = async (enabledLeagues: LeagueId[], options: LeagueFetchOptions = {}): Promise<{ games: Game[]; leagueLogos: LeagueLogoMap }> => {
-	if (enabledLeagues.length === 0) return { games: [], leagueLogos: {} };
+/* `shedLeagues` is the point of this shape. Collecting with `allSettled` and keeping the fulfilled
+   ones means a league ESPN refused contributes no games and says nothing, so every caller read a
+   403 as "this league has nothing on" — the popup drew the no-games slate on a full Saturday, and
+   the per-league poll recorded a successful tick with nothing live and walked a league down into
+   dormant while its games were being played. The games still come back best-effort; what changed is
+   that the caller can now tell an empty answer from an unanswered one. */
+export const fetchGamesWithLeagueLogos = async (enabledLeagues: LeagueId[], options: LeagueFetchOptions = {}): Promise<{ games: Game[]; leagueLogos: LeagueLogoMap; shedLeagues: LeagueId[] }> => {
+	if (enabledLeagues.length === 0) return { games: [], leagueLogos: {}, shedLeagues: [] };
 	const leagueConfigs = getEnabledLeagueConfigs(enabledLeagues);
-	if (leagueConfigs.length === 0) return { games: [], leagueLogos: {} };
+	if (leagueConfigs.length === 0) return { games: [], leagueLogos: {}, shedLeagues: [] };
 
-	const results = await Promise.allSettled(leagueConfigs.map(config => fetchLeagueGames(config, options)));
+	const results = await settledInPool(leagueConfigs, config => fetchLeagueGames(config, options));
 
 	const fulfilled = results
 		.filter((r): r is PromiseFulfilledResult<LeagueGamesResult> => r.status === 'fulfilled')
 		.map(r => r.value);
+	const shedLeagues = leagueConfigs
+		.filter((_, index) => results[index]?.status === 'rejected')
+		.map(config => config.id);
 	const games = fulfilled.flatMap(result => result.games);
 	const leagueLogos = fulfilled.reduce<LeagueLogoMap>((acc, result) => {
 		acc[result.leagueId] = result.logoUrl;
 		return acc;
 	}, {});
-	return { games, leagueLogos };
+	return { games, leagueLogos, shedLeagues };
 };
 
 /* When the next kickoff a league carries is asked for and the answer matters more than the games
@@ -735,6 +893,7 @@ export const fetchWinProbability = async (game: Pick<Game, 'id' | 'league'>, ini
 	if (!config) return [];
 
 	const url = `${espnBase}/${config.espnPath}/summary?event=${encodeURIComponent(game.id)}`;
+	await takeRequestSlot();
 	const res = await fetch(url, { headers: { 'Accept': 'application/json' }, signal: init?.signal });
 	if (!res.ok) throw new Error(`Failed to fetch win probability for ${game.id}: HTTP ${res.status}`);
 
@@ -790,8 +949,9 @@ export const fetchTeamMonoLogos = async (leagueIds: LeagueId[], size = 120): Pro
 	const configs = getEnabledLeagueConfigs(leagueIds);
 	if (configs.length === 0) return {};
 
-	const results = await Promise.allSettled(configs.map(async (config) => {
+	const results = await settledInPool(configs, async (config) => {
 		const url = `${espnBase}/${config.espnPath}/teams?limit=1000`;
+		await takeRequestSlot();
 		const res = await fetch(url, { headers: { Accept: 'application/json' } });
 		if (!res.ok) throw new Error(`Failed to fetch team logos for ${config.id}: HTTP ${res.status}`);
 		const parsed = parseTeams(await res.json());
@@ -801,7 +961,7 @@ export const fetchTeamMonoLogos = async (leagueIds: LeagueId[], size = 120): Pro
 			return acc;
 		}, {});
 		return [config.id, entries] as const;
-	}));
+	});
 
 	// A league that fails contributes nothing and the rest still land: a missing mark falls back to
 	// the tinted disc, which is the state every team outside North America is in anyway.
@@ -819,31 +979,30 @@ export const fetchTeamsForLeagues = async (leagueIds: LeagueId[]): Promise<EspnT
 	const leagueConfigs = getEnabledLeagueConfigs(leagueIds);
 	if (leagueConfigs.length === 0) return [];
 
-	const results = await Promise.allSettled(
-		leagueConfigs.map(async (config): Promise<EspnTeamEntry[]> => {
-			const params = new URLSearchParams({ limit: '200' });
-			if (config.id === 'ncaab') params.set('groups', '50');
-			if (config.id === 'ncaaw') params.set('groups', '49');
-			const url = `${espnBase}/${config.espnPath}/teams?${params.toString()}`;
-			const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
-			if (!res.ok) throw new Error(`Failed to fetch teams for ${config.id}: HTTP ${res.status}`);
-			const parsed = parseTeams(await res.json());
-			warnOnDroppedCountChange(
-				`teams:${config.id}`,
-				parsed.droppedTeams,
-				() => `Skipped ${parsed.droppedTeams} unparseable ${config.id} team(s); kept ${parsed.teams.length}.`,
-			);
-			return parsed.teams
-				.filter(({ team }) => team.id && team.displayName)
-				.map(({ team }) => ({
-					leagueId: config.id,
-					id: team.id,
-					name: team.displayName,
-					abbreviation: team.abbreviation || team.displayName.slice(0, 3).toUpperCase(),
-					logo: team.logos?.[0]?.href,
-				}));
-		})
-	);
+	const results = await settledInPool(leagueConfigs, async (config): Promise<EspnTeamEntry[]> => {
+		const params = new URLSearchParams({ limit: '200' });
+		if (config.id === 'ncaab') params.set('groups', '50');
+		if (config.id === 'ncaaw') params.set('groups', '49');
+		const url = `${espnBase}/${config.espnPath}/teams?${params.toString()}`;
+		await takeRequestSlot();
+		const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+		if (!res.ok) throw new Error(`Failed to fetch teams for ${config.id}: HTTP ${res.status}`);
+		const parsed = parseTeams(await res.json());
+		warnOnDroppedCountChange(
+			`teams:${config.id}`,
+			parsed.droppedTeams,
+			() => `Skipped ${parsed.droppedTeams} unparseable ${config.id} team(s); kept ${parsed.teams.length}.`,
+		);
+		return parsed.teams
+			.filter(({ team }) => team.id && team.displayName)
+			.map(({ team }) => ({
+				leagueId: config.id,
+				id: team.id,
+				name: team.displayName,
+				abbreviation: team.abbreviation || team.displayName.slice(0, 3).toUpperCase(),
+				logo: team.logos?.[0]?.href,
+			}));
+	});
 
 	const fulfilled = results
 		.filter((result): result is PromiseFulfilledResult<EspnTeamEntry[]> => result.status === 'fulfilled')

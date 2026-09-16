@@ -272,6 +272,9 @@ const parseThroughFetch = async (event: unknown): Promise<Game> => {
 	(globalThis as { fetch: typeof fetch }).fetch = (async () => ({
 		ok: true,
 		status: 200,
+		// The client reads `cache-control` off every scoreboard response to learn how often ESPN will
+		// actually answer with something new, so a double without headers is not a Response.
+		headers: new Headers(),
 		json: async () => ({ events: [event] }),
 	})) as unknown as typeof fetch;
 	const games = await fetchGames(['nfl']);

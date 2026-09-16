@@ -109,10 +109,17 @@ export const pollHebetudinousMaxMs = 30 * 60 * 1000;
 export const pollLookaheadDays = 7;
 export const pollLookaheadTtlMs = 6 * 60 * 60 * 1000;
 
-// The interval scales continuously with PowerScore: high scores approach pollMinEagerMs, low
-// scores pollMaxEagerMs. Every live game is polled at least every pollMaxEagerMs so a boring one
-// can still catch a momentum shift. pollIntervalMs remains the stagger, demo and fallback value.
-export const pollMinEagerMs = 6_000;
+/* The interval scales continuously with PowerScore: high scores approach pollMinEagerMs, low
+   scores pollMaxEagerMs. Every live game is polled at least every pollMaxEagerMs so a boring one
+   can still catch a momentum shift. pollIntervalMs remains the stagger, demo and fallback value.
+
+   The floor is ESPN's, not ours. The scoreboard answers with `cache-control: max-age=12` and our
+   fetch uses the HTTP cache, so a poll inside that window is served the bytes it already has: the
+   6s floor this used to hold spent every other request on the hottest game in the product to be
+   told nothing. This value is only the assumption made until a response says otherwise —
+   `scoreboardRefreshMs` reads the max-age each league actually sent and floors that league there
+   instead, so a league ESPN refreshes faster is polled faster without anyone editing this. */
+export const pollMinEagerMs = 12_000;
 export const pollMaxEagerMs = 25_000;
 export const pollIntermissionMs = 40_000;
 

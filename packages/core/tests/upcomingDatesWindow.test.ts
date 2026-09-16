@@ -80,6 +80,7 @@ describe('the scoreboard request in the viewer\'s own time zone', () => {
 		const fetchMock = jest.fn().mockResolvedValue({
 			ok: true,
 			status: 200,
+			headers: new Headers(),
 			json: async () => ({ events: [] }),
 		} as Response);
 		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;

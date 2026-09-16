@@ -14,6 +14,9 @@ const toUrl = (input: RequestInfo | URL): string => {
 const jsonResponse = (body: unknown, status: number = 200): Response => ({
 	ok: status >= 200 && status < 300,
 	status,
+	// `fetchScoreboard` reads `cache-control` off every response to learn how often ESPN will answer
+	// with something new, so a double without headers is not standing in for a Response.
+	headers: new Headers(),
 	json: async () => body,
 } as Response);
 

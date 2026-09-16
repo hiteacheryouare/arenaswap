@@ -1,4 +1,5 @@
 import { pollWinProbabilityMs } from '@arenaswap/core';
+import { monoLogoCacheKey, monoLogoCacheTtlMs } from '../utils/monoLogoCache';
 import { createDefaultUserPreferences, createFavoriteTeamKey, guideMinUpcomingDays, historyWindowMs, normalizeUserPreferences, pollDormantMaxMs, pollHebetudinousMaxMs, pollIntervalMs, pollMaxEagerMs } from '@arenaswap/core/constants';
 import { chartHistory, coversWholeGame } from '../entrypoints/popup/components/wrapCoverage';
 import type { Game, LeagueId, TabRegistration, UserPreferences } from '@arenaswap/core/types';
@@ -14,6 +15,7 @@ jest.mock('@arenaswap/core', () => ({
 	fetchGamesWithLeagueLogos: jest.fn(),
 	fetchNextScheduledStart: jest.fn().mockResolvedValue(null),
 	fetchWinProbability: jest.fn().mockResolvedValue([]),
+	fetchTeamMonoLogos: jest.fn().mockResolvedValue({}),
 }));
 
 const flushPromises = () => new Promise<void>(r => setImmediate(r));
@@ -24,6 +26,16 @@ const flushPromises = () => new Promise<void>(r => setImmediate(r));
 const lookahead = (): jest.Mock => (
 	(require('@arenaswap/core') as { fetchNextScheduledStart: jest.Mock }).fetchNextScheduledStart
 );
+
+const monoFetch = (): jest.Mock => (
+	(require('@arenaswap/core') as { fetchTeamMonoLogos: jest.Mock }).fetchTeamMonoLogos
+);
+
+// The wide fetch is whichever call carried `includeUpcoming`, no matter which surface asked: the
+// per-league live polls in between ask for the dateless board and carry no day range at all.
+const lastWideFetchOptions = () => fetchMock.mock.calls
+	.filter(([, options]) => (options as { includeUpcoming?: boolean } | undefined)?.includeUpcoming === true)
+	.at(-1)?.[1] as { upcomingDays?: number; includeFinal?: boolean } | undefined;
 
 // Multiple rounds because each resolved promise can schedule new microtasks.
 const drain = async (rounds = 8) => {
@@ -83,7 +95,7 @@ interface LoadOptions {
 	prefs?: Partial<UserPreferences>;
 	tabRegistry?: TabRegistration[];
 	standbyStreamTabId?: number | null;
-	fetchReturnValue?: { games: unknown[]; leagueLogos: Record<string, unknown> };
+	fetchReturnValue?: { games: unknown[]; leagueLogos: Record<string, unknown>; shedLeagues?: LeagueId[] };
 	initialSystemTime?: number;
 	openTabIds?: number[];
 	activeTabId?: number;
@@ -152,7 +164,7 @@ const loadBackground = async (options: LoadOptions = {}) => {
 	};
 
 	fetchMock = (require('@arenaswap/core') as { fetchGamesWithLeagueLogos: jest.Mock }).fetchGamesWithLeagueLogos;
-	fetchMock.mockResolvedValue(options.fetchReturnValue ?? { games: [], leagueLogos: {} });
+	fetchMock.mockResolvedValue(options.fetchReturnValue ?? { games: [], leagueLogos: {}, shedLeagues: [] });
 
 	require('../entrypoints/background');
 
@@ -193,7 +205,7 @@ describe('postseason boost', () => {
 		const postseasonBoostPoints = 8;
 		await loadBackground({
 			prefs: { enabledLeagues: ['nba' as LeagueId], postseasonBoostPoints },
-			fetchReturnValue: { games: [postseasonGame], leagueLogos: {} },
+			fetchReturnValue: { games: [postseasonGame], leagueLogos: {}, shedLeagues: [] },
 		});
 
 		jest.advanceTimersByTime(pollIntervalMs + 2000);
@@ -208,7 +220,7 @@ describe('postseason boost', () => {
 	test('does not apply postseason boost to a regular season game', async () => {
 		await loadBackground({
 			prefs: { enabledLeagues: ['nba' as LeagueId], postseasonBoostPoints: 10 },
-			fetchReturnValue: { games: [regularGame], leagueLogos: {} },
+			fetchReturnValue: { games: [regularGame], leagueLogos: {}, shedLeagues: [] },
 		});
 
 		jest.advanceTimersByTime(pollIntervalMs + 2000);
@@ -222,7 +234,7 @@ describe('postseason boost', () => {
 	test('postseason boost of 0 adds nothing to the total', async () => {
 		await loadBackground({
 			prefs: { enabledLeagues: ['nba' as LeagueId], postseasonBoostPoints: 0 },
-			fetchReturnValue: { games: [postseasonGame], leagueLogos: {} },
+			fetchReturnValue: { games: [postseasonGame], leagueLogos: {}, shedLeagues: [] },
 		});
 
 		jest.advanceTimersByTime(pollIntervalMs + 2000);
@@ -236,7 +248,7 @@ describe('postseason boost', () => {
 	const boostForRound = async (postseasonRound: Game['postseasonRound']) => {
 		await loadBackground({
 			prefs: { enabledLeagues: ['nba' as LeagueId], postseasonBoostPoints: 8 },
-			fetchReturnValue: { games: [{ ...postseasonGame, postseasonRound }], leagueLogos: {} },
+			fetchReturnValue: { games: [{ ...postseasonGame, postseasonRound }], leagueLogos: {}, shedLeagues: [] },
 		});
 		jest.advanceTimersByTime(pollIntervalMs + 2000);
 		await drain(12);
@@ -296,7 +308,7 @@ describe('frozen games', () => {
 				favoriteTeamBonusPoints: 10,
 				postseasonBoostPoints: 8,
 			},
-			fetchReturnValue: { games: [game], leagueLogos: {} },
+			fetchReturnValue: { games: [game], leagueLogos: {}, shedLeagues: [] },
 		});
 
 		await sendMessage({ type: 'SET_GAME_BOOST', gameId: game.id, boost: 15 });
@@ -341,7 +353,7 @@ describe('tickLeague rescheduling', () => {
 		await loadBackground({ prefs: { enabledLeagues: ['nba' as LeagueId] } });
 
 		// Deferred so the league can be disabled before the fetch resolves.
-		let resolveDeferred!: (v: { games: never[]; leagueLogos: Record<string, never> }) => void;
+		let resolveDeferred!: (v: { games: never[]; leagueLogos: Record<string, never>; shedLeagues: never[] }) => void;
 		fetchMock.mockImplementationOnce(
 			() => new Promise(resolve => { resolveDeferred = resolve; })
 		);
@@ -355,9 +367,9 @@ describe('tickLeague rescheduling', () => {
 		});
 
 		fetchMock.mockClear();
-		fetchMock.mockResolvedValue({ games: [], leagueLogos: {} });
+		fetchMock.mockResolvedValue({ games: [], leagueLogos: {}, shedLeagues: [] });
 
-		resolveDeferred({ games: [], leagueLogos: {} });
+		resolveDeferred({ games: [], leagueLogos: {}, shedLeagues: [] });
 		await drain();
 
 		jest.advanceTimersByTime(pollIntervalMs * 2 + 5000);
@@ -456,7 +468,7 @@ describe('win probability polling', () => {
 	const loadWithLiveGame = async (): Promise<jest.Mock> => {
 		await loadBackground({
 			prefs: { enabledLeagues: ['nba' as LeagueId], notificationsEnabled: false },
-			fetchReturnValue: { games: [liveGame], leagueLogos: {} },
+			fetchReturnValue: { games: [liveGame], leagueLogos: {}, shedLeagues: [] },
 		});
 		// The startup seed already swept once, so the count starts from here.
 		const winProbMock = (require('@arenaswap/core') as { fetchWinProbability: jest.Mock }).fetchWinProbability;
@@ -536,7 +548,7 @@ describe('lastSwitchTime reset on disable', () => {
 		await loadBackground({
 			prefs: switchPrefs,
 			tabRegistry: [{ gameId: 'g1', tabId: 2 }],
-			fetchReturnValue: { games: [liveGame], leagueLogos: {} },
+			fetchReturnValue: { games: [liveGame], leagueLogos: {}, shedLeagues: [] },
 			initialSystemTime: 1_000_000,
 		});
 
@@ -767,7 +779,7 @@ describe('closed tab handling', () => {
 		await loadBackground({
 			prefs: switchingPrefs,
 			tabRegistry: registry,
-			fetchReturnValue: { games: [thriller, closeGame], leagueLogos: {} },
+			fetchReturnValue: { games: [thriller, closeGame], leagueLogos: {}, shedLeagues: [] },
 			openTabIds: [1, 3],
 			activeTabId: 1,
 			initialSystemTime: 1_000_000,
@@ -785,7 +797,7 @@ describe('closed tab handling', () => {
 		await loadBackground({
 			prefs: switchingPrefs,
 			tabRegistry: registry,
-			fetchReturnValue: { games: [thriller, closeGame], leagueLogos: {} },
+			fetchReturnValue: { games: [thriller, closeGame], leagueLogos: {}, shedLeagues: [] },
 			openTabIds: [1, 2, 3],
 			activeTabId: 1,
 			initialSystemTime: 1_000_000,
@@ -809,7 +821,7 @@ describe('closed tab handling', () => {
 		await loadBackground({
 			prefs: switchingPrefs,
 			tabRegistry: registry,
-			fetchReturnValue: { games: [thriller, closeGame], leagueLogos: {} },
+			fetchReturnValue: { games: [thriller, closeGame], leagueLogos: {}, shedLeagues: [] },
 			openTabIds: [1, 2, 3],
 			activeTabId: 1,
 			initialSystemTime: 1_000_000,
@@ -827,7 +839,7 @@ describe('closed tab handling', () => {
 			prefs: { ...switchingPrefs, standbyStreamEnabled: true },
 			tabRegistry: [{ gameId: 'thriller', tabId: 2 }],
 			standbyStreamTabId: 5,
-			fetchReturnValue: { games: [blowout], leagueLogos: {} },
+			fetchReturnValue: { games: [blowout], leagueLogos: {}, shedLeagues: [] },
 			openTabIds: [1, 2, 5],
 			activeTabId: 1,
 			initialSystemTime: 1_000_000,
@@ -850,7 +862,7 @@ describe('closed tab handling', () => {
 		await loadBackground({
 			prefs: switchingPrefs,
 			tabRegistry: registry,
-			fetchReturnValue: { games: [thriller, closeGame], leagueLogos: {} },
+			fetchReturnValue: { games: [thriller, closeGame], leagueLogos: {}, shedLeagues: [] },
 			initialSystemTime: 1_000_000,
 		});
 
@@ -866,7 +878,7 @@ describe('pending switch re-validation', () => {
 		await loadBackground({
 			prefs: { ...switchingPrefs, switchDelaySeconds: 60 },
 			tabRegistry: [{ gameId: 'thriller', tabId: 2 }, { gameId: 'close', tabId: 3 }],
-			fetchReturnValue: { games: [thriller, closeGame], leagueLogos: {} },
+			fetchReturnValue: { games: [thriller, closeGame], leagueLogos: {}, shedLeagues: [] },
 			openTabIds: [1, 2, 3],
 			activeTabId: 1,
 			initialSystemTime: 1_000_000,
@@ -883,6 +895,7 @@ describe('pending switch re-validation', () => {
 		fetchMock.mockResolvedValue({
 			games: [{ ...thriller, status: 'post' }, closeGame],
 			leagueLogos: {},
+			shedLeagues: [],
 		});
 		jest.advanceTimersByTime(30_000);
 		await drain(16);
@@ -899,7 +912,7 @@ describe('pending switch re-validation', () => {
 			prefs: { ...switchingPrefs, switchDelaySeconds: 60, standbyStreamEnabled: true },
 			tabRegistry: [{ gameId: 'thriller', tabId: 2 }],
 			standbyStreamTabId: 5,
-			fetchReturnValue: { games: [thriller], leagueLogos: {} },
+			fetchReturnValue: { games: [thriller], leagueLogos: {}, shedLeagues: [] },
 			openTabIds: [1, 2, 5],
 			activeTabId: 1,
 			initialSystemTime: 1_000_000,
@@ -909,7 +922,7 @@ describe('pending switch re-validation', () => {
 		expect((await getDebugState()).pendingSwitch).not.toBeNull();
 
 		// The game falls apart: 78 → 10, under the standby threshold of 20.
-		fetchMock.mockResolvedValue({ games: [blowout], leagueLogos: {} });
+		fetchMock.mockResolvedValue({ games: [blowout], leagueLogos: {}, shedLeagues: [] });
 		jest.advanceTimersByTime(30_000);
 		await drain(16);
 
@@ -931,7 +944,7 @@ describe('manual tab activation', () => {
 		await loadBackground({
 			prefs: switchingPrefs,
 			tabRegistry: [{ gameId: 'thriller', tabId: 2 }],
-			fetchReturnValue: { games: [thriller], leagueLogos: {} },
+			fetchReturnValue: { games: [thriller], leagueLogos: {}, shedLeagues: [] },
 			openTabIds: [1, 2],
 			activeTabId: 1,
 			initialSystemTime: 1_000_000,
@@ -947,7 +960,7 @@ describe('manual tab activation', () => {
 		await loadBackground({
 			prefs: switchingPrefs,
 			tabRegistry: [{ gameId: 'thriller', tabId: 2 }],
-			fetchReturnValue: { games: [thriller], leagueLogos: {} },
+			fetchReturnValue: { games: [thriller], leagueLogos: {}, shedLeagues: [] },
 			openTabIds: [1, 2],
 			activeTabId: 1,
 			initialSystemTime: 1_000_000,
@@ -961,7 +974,7 @@ describe('manual tab activation', () => {
 		await loadBackground({
 			prefs: { ...switchingPrefs, cooldownSeconds: 45 },
 			tabRegistry: [{ gameId: 'thriller', tabId: 2 }],
-			fetchReturnValue: { games: [thriller], leagueLogos: {} },
+			fetchReturnValue: { games: [thriller], leagueLogos: {}, shedLeagues: [] },
 			openTabIds: [1, 2],
 			activeTabId: 1,
 			initialSystemTime: 1_000_000,
@@ -981,7 +994,7 @@ describe('manual tab activation', () => {
 		await loadBackground({
 			prefs: { ...switchingPrefs, cooldownSeconds: 0 },
 			tabRegistry: [{ gameId: 'thriller', tabId: 2 }],
-			fetchReturnValue: { games: [thriller], leagueLogos: {} },
+			fetchReturnValue: { games: [thriller], leagueLogos: {}, shedLeagues: [] },
 			openTabIds: [1, 2],
 			activeTabId: 1,
 			initialSystemTime: 1_000_000,
@@ -997,7 +1010,7 @@ describe('manual tab activation', () => {
 		await loadBackground({
 			prefs: { ...switchingPrefs, cooldownSeconds: 0 },
 			tabRegistry: [{ gameId: 'thriller', tabId: 2 }],
-			fetchReturnValue: { games: [thriller], leagueLogos: {} },
+			fetchReturnValue: { games: [thriller], leagueLogos: {}, shedLeagues: [] },
 			openTabIds: [1, 2],
 			activeTabId: 1,
 			initialSystemTime: 1_000_000,
@@ -1025,7 +1038,7 @@ describe('mute sync resilience', () => {
 		await loadBackground({
 			prefs: switchingPrefs,
 			tabRegistry: [{ gameId: 'thriller', tabId: 2 }, { gameId: 'close', tabId: 3 }],
-			fetchReturnValue: { games: [thriller, closeGame], leagueLogos: {} },
+			fetchReturnValue: { games: [thriller, closeGame], leagueLogos: {}, shedLeagues: [] },
 			openTabIds: [1, 2, 3],
 			activeTabId: 1,
 			initialSystemTime: 1_000_000,
@@ -1094,7 +1107,7 @@ describe('keeping finished games', () => {
 	test('a finished game reaches the popup state', async () => {
 		await loadBackground({
 			prefs: { enabledLeagues: ['nba' as LeagueId], keepFinalGames: true },
-			fetchReturnValue: { games: [finishedGame('done', 4), liveGame('playing')], leagueLogos: {} },
+			fetchReturnValue: { games: [finishedGame('done', 4), liveGame('playing')], leagueLogos: {}, shedLeagues: [] },
 		});
 		expect((await stateGames()).map(g => g.id).toSorted()).toEqual(['done', 'playing']);
 	});
@@ -1105,12 +1118,12 @@ describe('keeping finished games', () => {
 	test('survives a poll that no longer returns it', async () => {
 		await loadBackground({
 			prefs: { enabledLeagues: ['nba' as LeagueId], keepFinalGames: true },
-			fetchReturnValue: { games: [finishedGame('yesterday', 20), liveGame('playing')], leagueLogos: {} },
+			fetchReturnValue: { games: [finishedGame('yesterday', 20), liveGame('playing')], leagueLogos: {}, shedLeagues: [] },
 		});
 		expect((await stateGames()).map(g => g.id)).toContain('yesterday');
 
 		// The next poll answers with the live game alone.
-		fetchMock.mockResolvedValue({ games: [liveGame('playing')], leagueLogos: {} });
+		fetchMock.mockResolvedValue({ games: [liveGame('playing')], leagueLogos: {}, shedLeagues: [] });
 		await sendMessage({ type: 'GET_STATE', forceRefresh: true });
 		expect((await stateGames()).map(g => g.id).toSorted()).toEqual(['playing', 'yesterday']);
 	});
@@ -1118,13 +1131,13 @@ describe('keeping finished games', () => {
 	test('is dropped once it has aged out, without waiting for another fetch', async () => {
 		await loadBackground({
 			prefs: { enabledLeagues: ['nba' as LeagueId], keepFinalGames: true },
-			fetchReturnValue: { games: [finishedGame('ageing', 20), liveGame('playing')], leagueLogos: {} },
+			fetchReturnValue: { games: [finishedGame('ageing', 20), liveGame('playing')], leagueLogos: {}, shedLeagues: [] },
 		});
 		expect((await stateGames()).map(g => g.id)).toContain('ageing');
 
 		// Nine hours on, the game is more than a day past its estimated wrap. The poll still cannot
 		// see it, so nothing but the retention check can remove it.
-		fetchMock.mockResolvedValue({ games: [liveGame('playing')], leagueLogos: {} });
+		fetchMock.mockResolvedValue({ games: [liveGame('playing')], leagueLogos: {}, shedLeagues: [] });
 		jest.setSystemTime(Date.now() + (9 * 60 * 60 * 1000));
 		await sendMessage({ type: 'GET_STATE', forceRefresh: true });
 		expect((await stateGames()).map(g => g.id)).toEqual(['playing']);
@@ -1133,7 +1146,7 @@ describe('keeping finished games', () => {
 	test('turning the setting off clears the finals already in state', async () => {
 		await loadBackground({
 			prefs: { enabledLeagues: ['nba' as LeagueId], keepFinalGames: true },
-			fetchReturnValue: { games: [finishedGame('done', 4), liveGame('playing')], leagueLogos: {} },
+			fetchReturnValue: { games: [finishedGame('done', 4), liveGame('playing')], leagueLogos: {}, shedLeagues: [] },
 		});
 		expect((await stateGames()).map(g => g.id)).toContain('done');
 
@@ -1142,7 +1155,7 @@ describe('keeping finished games', () => {
 			enabledLeagues: ['nba' as LeagueId],
 			keepFinalGames: false,
 		});
-		fetchMock.mockResolvedValue({ games: [liveGame('playing')], leagueLogos: {} });
+		fetchMock.mockResolvedValue({ games: [liveGame('playing')], leagueLogos: {}, shedLeagues: [] });
 		await sendMessage({ type: 'UPDATE_PREFS', prefs });
 		expect((await stateGames()).map(g => g.id)).toEqual(['playing']);
 	});
@@ -1150,7 +1163,7 @@ describe('keeping finished games', () => {
 	test('turning it on brings them in without waiting for the next poll', async () => {
 		await loadBackground({
 			prefs: { enabledLeagues: ['nba' as LeagueId], keepFinalGames: false },
-			fetchReturnValue: { games: [liveGame('playing')], leagueLogos: {} },
+			fetchReturnValue: { games: [liveGame('playing')], leagueLogos: {}, shedLeagues: [] },
 		});
 		expect((await stateGames()).map(g => g.id)).toEqual(['playing']);
 
@@ -1159,7 +1172,7 @@ describe('keeping finished games', () => {
 			enabledLeagues: ['nba' as LeagueId],
 			keepFinalGames: true,
 		});
-		fetchMock.mockResolvedValue({ games: [finishedGame('done', 4), liveGame('playing')], leagueLogos: {} });
+		fetchMock.mockResolvedValue({ games: [finishedGame('done', 4), liveGame('playing')], leagueLogos: {}, shedLeagues: [] });
 		await sendMessage({ type: 'UPDATE_PREFS', prefs });
 		expect((await stateGames()).map(g => g.id).toSorted()).toEqual(['done', 'playing']);
 	});
@@ -1167,7 +1180,7 @@ describe('keeping finished games', () => {
 	test('a finished game is never scored, so it cannot be switched to', async () => {
 		await loadBackground({
 			prefs: { enabledLeagues: ['nba' as LeagueId], keepFinalGames: true },
-			fetchReturnValue: { games: [finishedGame('done', 4), liveGame('playing')], leagueLogos: {} },
+			fetchReturnValue: { games: [finishedGame('done', 4), liveGame('playing')], leagueLogos: {}, shedLeagues: [] },
 		});
 		const state = await sendMessage({ type: 'GET_STATE' }) as { scores: { gameId: string }[] };
 		expect(state.scores.map(s => s.gameId)).toEqual(['playing']);
@@ -1228,18 +1241,18 @@ describe('a game that goes final while the worker is up', () => {
 		await loadBackground({
 			prefs: nbaOnly,
 			initialSystemTime: startMs,
-			fetchReturnValue: { games: [gameAt(startMs, 'in'), alsoPlaying], leagueLogos: {} },
+			fetchReturnValue: { games: [gameAt(startMs, 'in'), alsoPlaying], leagueLogos: {}, shedLeagues: [] },
 		});
 
 		// The scheduled poll finds it final. This is the only place the game is ever seen as post.
-		fetchMock.mockResolvedValue({ games: [gameAt(startMs, 'post'), alsoPlaying], leagueLogos: {} });
+		fetchMock.mockResolvedValue({ games: [gameAt(startMs, 'post'), alsoPlaying], leagueLogos: {}, shedLeagues: [] });
 		jest.setSystemTime(startMs + (2.5 * 60 * 60 * 1000));
 		await pollOnce();
 		expect(await stateIds()).toEqual(['other', 'wrapper']);
 
 		// Eastern midnight rolls over and the dateless scoreboard drops it. Nothing refetches the
 		// range, because nothing restarted the worker.
-		fetchMock.mockResolvedValue({ games: [alsoPlaying], leagueLogos: {} });
+		fetchMock.mockResolvedValue({ games: [alsoPlaying], leagueLogos: {}, shedLeagues: [] });
 		jest.setSystemTime(startMs + (3 * 60 * 60 * 1000));
 		await pollOnce();
 		expect(await stateIds()).toEqual(['other', 'wrapper']);
@@ -1250,13 +1263,13 @@ describe('a game that goes final while the worker is up', () => {
 		await loadBackground({
 			prefs: nbaOnly,
 			initialSystemTime: startMs,
-			fetchReturnValue: { games: [gameAt(startMs, 'post'), alsoPlaying], leagueLogos: {} },
+			fetchReturnValue: { games: [gameAt(startMs, 'post'), alsoPlaying], leagueLogos: {}, shedLeagues: [] },
 		});
 		await pollOnce();
 		expect(await stateIds()).toEqual(['other', 'wrapper']);
 
 		// 24 hours past the 2.5-hour estimated wrap, plus a few minutes.
-		fetchMock.mockResolvedValue({ games: [alsoPlaying], leagueLogos: {} });
+		fetchMock.mockResolvedValue({ games: [alsoPlaying], leagueLogos: {}, shedLeagues: [] });
 		jest.setSystemTime(startMs + (26.6 * 60 * 60 * 1000));
 		await pollOnce();
 		expect(await stateIds()).toEqual(['other']);
@@ -1267,7 +1280,7 @@ describe('a game that goes final while the worker is up', () => {
 		await loadBackground({
 			prefs: nbaOnly,
 			initialSystemTime: startMs,
-			fetchReturnValue: { games: [gameAt(startMs, 'post'), alsoPlaying], leagueLogos: {} },
+			fetchReturnValue: { games: [gameAt(startMs, 'post'), alsoPlaying], leagueLogos: {}, shedLeagues: [] },
 		});
 		await pollOnce();
 		const state = await sendMessage({ type: 'GET_STATE' }) as { scores: { gameId: string }[] };
@@ -1291,6 +1304,7 @@ describe('the history a wrap screen reads', () => {
 					awayTeam: { id: 'a', name: 'Away', abbreviation: 'AWY', score: 0 },
 				}],
 				leagueLogos: {},
+				shedLeagues: [],
 			},
 		});
 		// Two-minute polls from tip-off to a couple of minutes short of the estimated wrap. Real
@@ -1374,7 +1388,7 @@ describe('the history a wrap screen reads', () => {
    never reschedules anything. */
 describe('polling a league with nothing on', () => {
 	const nbaOnly = { enabledLeagues: ['nba' as LeagueId] };
-	const emptySlate = { games: [], leagueLogos: {} };
+	const emptySlate = { games: [], leagueLogos: {}, shedLeagues: [] };
 
 	const debugState = async () => await sendMessage({ type: 'GET_DEBUG_STATE' }) as {
 		pollModes: Record<string, string>;
@@ -1473,7 +1487,7 @@ describe('polling a league with nothing on', () => {
 			await loadBackground({
 				prefs: nbaOnly,
 				initialSystemTime: startMs,
-				fetchReturnValue: { games: [scheduledGame(startMs + hoursOut * 60 * 60_000)], leagueLogos: {} },
+				fetchReturnValue: { games: [scheduledGame(startMs + hoursOut * 60 * 60_000)], leagueLogos: {}, shedLeagues: [] },
 			});
 			await goQuiet();
 
@@ -1490,7 +1504,7 @@ describe('polling a league with nothing on', () => {
 		await loadBackground({
 			prefs: nbaOnly,
 			initialSystemTime: startMs,
-			fetchReturnValue: { games: [scheduledGame(startMs + 6 * 60 * 60_000)], leagueLogos: {} },
+			fetchReturnValue: { games: [scheduledGame(startMs + 6 * 60 * 60_000)], leagueLogos: {}, shedLeagues: [] },
 		});
 		await goQuiet();
 
@@ -1513,7 +1527,7 @@ describe('polling a league with nothing on', () => {
 		await goQuiet();
 		expect((await debugState()).pollModes.nba).toBe('hebetudinous');
 
-		fetchMock.mockResolvedValue({ games: [liveGame], leagueLogos: {} });
+		fetchMock.mockResolvedValue({ games: [liveGame], leagueLogos: {}, shedLeagues: [] });
 		await pollOnce(pollHebetudinousMaxMs + 60_000);
 
 		const state = await debugState();
@@ -1546,8 +1560,9 @@ const game = (id: string, status: Game['status']): Game => ({
 });
 
 // The guide draws today's whole slate — scheduled games, live games and finals — whatever the
-// popup's display preferences say. refreshSlate discards two of those three depending on prefs, so
-// the guide asks for its own.
+// popup's display preferences say. refreshSlate now asks ESPN for that whole superset and applies
+// the display preferences to the answer, so the guide reads what the poll already holds; it only
+// asks for its own when refreshSlate never ran, which is both display preferences off.
 describe('GET_GUIDE_SLATE', () => {
 	const nbaOnly: Partial<UserPreferences> = { enabledLeagues: ['nba' as LeagueId], enabled: false };
 
@@ -1561,7 +1576,7 @@ describe('GET_GUIDE_SLATE', () => {
 	test('asks for scheduled games and finals even with both display preferences off', async () => {
 		await loadBackground({
 			prefs: { ...nbaOnly, showUpcomingGames: false, keepFinalGames: false },
-			fetchReturnValue: { games: [game('live', 'in')], leagueLogos: {} },
+			fetchReturnValue: { games: [game('live', 'in')], leagueLogos: {}, shedLeagues: [] },
 		});
 		fetchMock.mockClear();
 		await guideSlate();
@@ -1574,12 +1589,12 @@ describe('GET_GUIDE_SLATE', () => {
 	test('spans as many days ahead as Up Next is set to', async () => {
 		await loadBackground({
 			prefs: { ...nbaOnly, upcomingGamesDays: 9 },
-			fetchReturnValue: { games: [game('live', 'in')], leagueLogos: {} },
+			fetchReturnValue: { games: [game('live', 'in')], leagueLogos: {}, shedLeagues: [] },
 		});
 		fetchMock.mockClear();
 		await guideSlate();
 
-		expect(fetchMock.mock.calls.at(-1)![1].upcomingDays).toBe(9);
+		expect(lastWideFetchOptions()?.upcomingDays).toBe(9);
 	});
 
 	// The guide pages a day at a time and its whole point is having somewhere to page to, so the
@@ -1587,21 +1602,49 @@ describe('GET_GUIDE_SLATE', () => {
 	test('still reaches a few days out when Up Next is set to one day', async () => {
 		await loadBackground({
 			prefs: { ...nbaOnly, upcomingGamesDays: 1 },
-			fetchReturnValue: { games: [game('live', 'in')], leagueLogos: {} },
+			fetchReturnValue: { games: [game('live', 'in')], leagueLogos: {}, shedLeagues: [] },
 		});
 		fetchMock.mockClear();
 		await guideSlate();
 
-		expect(fetchMock.mock.calls.at(-1)![1].upcomingDays).toBe(guideMinUpcomingDays);
+		expect(lastWideFetchOptions()?.upcomingDays).toBe(guideMinUpcomingDays);
 		expect(guideMinUpcomingDays).toBeGreaterThan(1);
+	});
+
+	/* The first open of a session pays for the slate; the repeat opens a day pager invites do not.
+	   It cannot be shared with `refreshSlate` instead — reaching back far enough to cover the guide
+	   truncated the popup's own future days against ESPN's server-side event cap. */
+	test('spends nothing on a repeat open', async () => {
+		await loadBackground({
+			prefs: nbaOnly,
+			fetchReturnValue: { games: [game('live', 'in')], leagueLogos: {}, shedLeagues: [] },
+		});
+		await guideSlate();
+		fetchMock.mockClear();
+
+		const slate = await guideSlate();
+		expect(fetchMock).not.toHaveBeenCalled();
+		expect(slate.games.map(g => g.id)).toEqual(['live']);
+	});
+
+	test('keeps drawing the slate it holds when ESPN goes down under it', async () => {
+		await loadBackground({
+			prefs: nbaOnly,
+			fetchReturnValue: { games: [game('live', 'in')], leagueLogos: {}, shedLeagues: [] },
+		});
+		await guideSlate();
+		fetchMock.mockRejectedValue(new Error('503'));
+
+		const slate = await guideSlate();
+		expect(slate.games.map(g => g.id)).toEqual(['live']);
 	});
 
 	test('returns the finals the popup would have thrown away', async () => {
 		await loadBackground({
 			prefs: { ...nbaOnly, showUpcomingGames: false, keepFinalGames: false },
-			fetchReturnValue: { games: [game('live', 'in')], leagueLogos: {} },
+			fetchReturnValue: { games: [game('live', 'in')], leagueLogos: {}, shedLeagues: [] },
 		});
-		fetchMock.mockResolvedValue({ games: [game('done', 'post'), game('later', 'pre')], leagueLogos: {} });
+		fetchMock.mockResolvedValue({ games: [game('done', 'post'), game('later', 'pre')], leagueLogos: {}, shedLeagues: [] });
 
 		const slate = await guideSlate();
 		expect(slate.games.map(g => g.id).toSorted()).toEqual(['done', 'later']);
@@ -1612,9 +1655,9 @@ describe('GET_GUIDE_SLATE', () => {
 	test('does not leak its wider slate into the state the switcher scores', async () => {
 		await loadBackground({
 			prefs: { ...nbaOnly, showUpcomingGames: false, keepFinalGames: false },
-			fetchReturnValue: { games: [game('live', 'in')], leagueLogos: {} },
+			fetchReturnValue: { games: [game('live', 'in')], leagueLogos: {}, shedLeagues: [] },
 		});
-		fetchMock.mockResolvedValue({ games: [game('done', 'post'), game('later', 'pre')], leagueLogos: {} });
+		fetchMock.mockResolvedValue({ games: [game('done', 'post'), game('later', 'pre')], leagueLogos: {}, shedLeagues: [] });
 		await guideSlate();
 
 		const state = await guideDebugState();
@@ -1622,10 +1665,12 @@ describe('GET_GUIDE_SLATE', () => {
 		expect(state.upcomingGameCount).toBe(0);
 	});
 
-	test('answers with an empty slate rather than throwing when ESPN cannot be reached', async () => {
+	test('answers with an empty slate rather than throwing when it has nothing and ESPN cannot be reached', async () => {
 		await loadBackground({
-			prefs: nbaOnly,
-			fetchReturnValue: { games: [game('live', 'in')], leagueLogos: {} },
+			// Both display preferences off, so refreshSlate never ran and there is no held slate to
+			// fall back on — the one remaining case where the guide still has to ask ESPN itself.
+			prefs: { ...nbaOnly, showUpcomingGames: false, keepFinalGames: false },
+			fetchReturnValue: { games: [game('live', 'in')], leagueLogos: {}, shedLeagues: [] },
 		});
 		fetchMock.mockRejectedValue(new Error('503'));
 
@@ -1653,7 +1698,7 @@ describe('handing a tab back once its game finishes', () => {
 		loadBackground({
 			prefs: { ...nbaOnly, finishedTabAction, keepFinalGames: false },
 			tabRegistry: [{ tabId: 7, gameId: 'wrapped' }],
-			fetchReturnValue: { games: [finishedTabGame('wrapped', 'in')], leagueLogos: {} },
+			fetchReturnValue: { games: [finishedTabGame('wrapped', 'in')], leagueLogos: {}, shedLeagues: [] },
 			openTabIds: [7, 8],
 			activeTabId: 8,
 			windowIds: { 7: 1, 8: 1 },
@@ -1674,7 +1719,7 @@ describe('handing a tab back once its game finishes', () => {
 	};
 
 	const whistle = async () => {
-		fetchMock.mockResolvedValue({ games: [finishedTabGame('wrapped', 'post')], leagueLogos: {} });
+		fetchMock.mockResolvedValue({ games: [finishedTabGame('wrapped', 'post')], leagueLogos: {}, shedLeagues: [] });
 		await poll();
 	};
 
@@ -1772,13 +1817,13 @@ describe('handing a tab back once its game finishes', () => {
 	test('accumulates across polls rather than overwriting what is waiting', async () => {
 		await load('free', {
 			tabRegistry: [{ tabId: 7, gameId: 'wrapped' }, { tabId: 8, gameId: 'other' }],
-			fetchReturnValue: { games: [finishedTabGame('wrapped', 'in'), finishedTabGame('other', 'in')], leagueLogos: {} },
+			fetchReturnValue: { games: [finishedTabGame('wrapped', 'in'), finishedTabGame('other', 'in')], leagueLogos: {}, shedLeagues: [] },
 			openTabIds: [7, 8, 9],
 			activeTabId: 9,
 			windowIds: { 7: 1, 8: 1, 9: 1 },
 		});
 
-		fetchMock.mockResolvedValue({ games: [finishedTabGame('wrapped', 'post'), finishedTabGame('other', 'in')], leagueLogos: {} });
+		fetchMock.mockResolvedValue({ games: [finishedTabGame('wrapped', 'post'), finishedTabGame('other', 'in')], leagueLogos: {}, shedLeagues: [] });
 		await poll();
 		expect(notice()).toEqual({ freed: 1, closed: 0 });
 
@@ -1786,7 +1831,7 @@ describe('handing a tab back once its game finishes', () => {
 		// second wave to have anything to add to.
 		(globalThis as { browser: { storage: { session: { get: jest.Mock } } } }).browser.storage.session.get =
 			jest.fn().mockResolvedValue({ finishedTabNotice: { freed: 1, closed: 0 } });
-		fetchMock.mockResolvedValue({ games: [finishedTabGame('wrapped', 'post'), finishedTabGame('other', 'post')], leagueLogos: {} });
+		fetchMock.mockResolvedValue({ games: [finishedTabGame('wrapped', 'post'), finishedTabGame('other', 'post')], leagueLogos: {}, shedLeagues: [] });
 		await poll();
 
 		expect(notice()).toEqual({ freed: 2, closed: 0 });
@@ -1810,5 +1855,312 @@ describe('handing a tab back once its game finishes', () => {
 		expect(state.games.find(g => g.id === 'mock-20')?.status).toBe('post');
 		expect(tabsRemove).not.toHaveBeenCalled();
 		expect(await registry()).toEqual([{ tabId: 7, gameId: 'mock-20' }]);
+	});
+});
+
+/* The lie this removes. A league ESPN refuses comes back through `allSettled` with no games and no
+   error, so the poll used to read it as "nothing on here": the popup drew the no-games slate on a
+   full Saturday, and the tail of `tickLeague` handed that to `recordPollResult` and walked a league
+   down towards dormant while its games were being played. */
+describe('a scoreboard ESPN refused', () => {
+	const nbaOnly: Partial<UserPreferences> = { enabledLeagues: ['nba' as LeagueId], enabled: false };
+
+	const liveGame: Game = {
+		id: 'playing', league: 'nba' as LeagueId, sportType: 'basketball', status: 'in',
+		period: 3, clockSeconds: 400,
+		homeTeam: { id: 'h', name: 'Home', abbreviation: 'HOM', score: 77 },
+		awayTeam: { id: 'a', name: 'Away', abbreviation: 'AWY', score: 75 },
+	};
+
+	const state = async () => await sendMessage({ type: 'GET_STATE' }) as {
+		games: Game[];
+		slateShedLeagues: string[];
+	};
+
+	const pollOnce = async () => {
+		fetchMock.mockClear();
+		for (let waited = 0; waited < 120_000 && fetchMock.mock.calls.length === 0; waited += 1_000) {
+			jest.advanceTimersByTime(1_000);
+			await drain();
+		}
+	};
+
+	const loadWithLiveGame = () => loadBackground({
+		prefs: nbaOnly,
+		fetchReturnValue: { games: [liveGame], leagueLogos: {}, shedLeagues: [] },
+	});
+
+	test('is named in the state so the popup can say so instead of reporting a quiet night', async () => {
+		await loadWithLiveGame();
+		fetchMock.mockResolvedValue({ games: [], leagueLogos: {}, shedLeagues: ['nba'] });
+		await pollOnce();
+
+		expect((await state()).slateShedLeagues).toEqual(['nba']);
+	});
+
+	test('does not take the games already on screen down with it', async () => {
+		await loadWithLiveGame();
+		fetchMock.mockResolvedValue({ games: [], leagueLogos: {}, shedLeagues: ['nba'] });
+		await pollOnce();
+
+		expect((await state()).games.map(g => g.id)).toContain('playing');
+	});
+
+	test('stops being reported once the league answers again', async () => {
+		await loadWithLiveGame();
+		fetchMock.mockResolvedValue({ games: [], leagueLogos: {}, shedLeagues: ['nba'] });
+		await pollOnce();
+		expect((await state()).slateShedLeagues).toEqual(['nba']);
+
+		fetchMock.mockResolvedValue({ games: [liveGame], leagueLogos: {}, shedLeagues: [] });
+		await pollOnce();
+
+		expect((await state()).slateShedLeagues).toEqual([]);
+	});
+
+	// An empty answer ESPN actually gave is a quiet night and should read as one.
+	test('is not reported when a league genuinely has nothing on', async () => {
+		await loadBackground({
+			prefs: nbaOnly,
+			fetchReturnValue: { games: [], leagueLogos: {}, shedLeagues: [] },
+		});
+		await pollOnce();
+
+		expect((await state()).slateShedLeagues).toEqual([]);
+	});
+
+	// The lookahead is what a poll spends on its way into a quiet state. A refusal must not buy one,
+	// or a shed league pays an extra request to be put to sleep it should never have been put to.
+	test('does not spend a lookahead on its way to a sleep it has not earned', async () => {
+		await loadWithLiveGame();
+		fetchMock.mockResolvedValue({ games: [], leagueLogos: {}, shedLeagues: ['nba'] });
+		lookahead().mockClear();
+
+		await pollOnce();
+		await pollOnce();
+		await pollOnce();
+
+		expect(lookahead()).not.toHaveBeenCalled();
+	});
+});
+
+/* Held in `storage.local` rather than in this worker's memory, which MV3 discards about thirty
+   seconds after the last event — so the cache the comment described as lasting a worker lifetime was
+   close to one per guide open, at 31 `/teams?limit=1000` requests a time. */
+describe('the team marks the guide draws', () => {
+	const nbaOnly: Partial<UserPreferences> = { enabledLeagues: ['nba' as LeagueId], enabled: false };
+	const marks = { dark: 'dark.png', scoreboard: 'scoreboard.png' };
+
+	const guideMonoLogos = async () => (
+		await onMessageHandler({ type: 'GET_GUIDE_SLATE' }) as { monoLogos: Record<string, unknown> }
+	).monoLogos;
+
+	const storeMarks = (stored: unknown) => {
+		storageLocalGet.mockResolvedValue({
+			demoMode: false,
+			reviewPromptState: null,
+			[monoLogoCacheKey]: stored,
+		});
+	};
+
+	const loadForGuide = (enabledLeagues: LeagueId[] = ['nba' as LeagueId]) => loadBackground({
+		prefs: { ...nbaOnly, enabledLeagues },
+		fetchReturnValue: { games: [], leagueLogos: {}, shedLeagues: [] },
+	});
+
+	test('come out of storage rather than off the network when they were written this week', async () => {
+		await loadForGuide();
+		storeMarks({ fetchedAt: Date.now(), logos: { nba: { '1': marks } } });
+		monoFetch().mockClear();
+
+		expect(await guideMonoLogos()).toEqual({ nba: { '1': marks } });
+		expect(monoFetch()).not.toHaveBeenCalled();
+	});
+
+	// Enabling a 32nd league should cost one request, not re-fetch the 31 already held.
+	test('are asked for only where the stored copy has a gap', async () => {
+		await loadForGuide(['nba' as LeagueId, 'nhl' as LeagueId]);
+		storeMarks({ fetchedAt: Date.now(), logos: { nba: { '1': marks } } });
+		monoFetch().mockClear().mockResolvedValue({ nhl: { '9': marks } });
+
+		expect(await guideMonoLogos()).toEqual({ nba: { '1': marks }, nhl: { '9': marks } });
+		expect(monoFetch()).toHaveBeenCalledTimes(1);
+		expect(monoFetch()).toHaveBeenCalledWith(['nhl']);
+	});
+
+	test('are written back, so the next worker does not repeat the fetch', async () => {
+		await loadForGuide();
+		monoFetch().mockClear().mockResolvedValue({ nba: { '1': marks } });
+		storageLocalSet.mockClear();
+
+		await guideMonoLogos();
+
+		expect(storageLocalSet).toHaveBeenCalledWith({
+			[monoLogoCacheKey]: { fetchedAt: expect.any(Number), logos: { nba: { '1': marks } } },
+		});
+	});
+
+	test('are fetched again once the stored copy has aged out', async () => {
+		await loadForGuide();
+		storeMarks({ fetchedAt: Date.now() - monoLogoCacheTtlMs - 1, logos: { nba: { '1': marks } } });
+		monoFetch().mockClear().mockResolvedValue({ nba: { '2': marks } });
+
+		await guideMonoLogos();
+
+		expect(monoFetch()).toHaveBeenCalledWith(['nba']);
+	});
+
+	// Two guide tabs opened together both miss the cache; only one of them should pay for it.
+	test('are fetched once when two guide tabs open together', async () => {
+		await loadForGuide();
+		monoFetch().mockClear().mockResolvedValue({ nba: { '1': marks } });
+
+		await Promise.all([guideMonoLogos(), guideMonoLogos()]);
+
+		expect(monoFetch()).toHaveBeenCalledTimes(1);
+	});
+});
+
+/* A league whose dated range is refused fails only the slate leg — its live games keep arriving from
+   the undated board while its finals go quiet. Rebuilding the slate lists from the answer wholesale
+   threw those away, which is the "a shed league contributes nothing and says nothing" trap one layer
+   up from where the rest of it was fixed. */
+const slateGame = (id: string, league: string, status: Game['status']): Game => ({
+	id,
+	league: league as LeagueId,
+	sportType: league === 'mlb' ? 'baseball' : 'basketball',
+	status,
+	startTime: new Date(Date.now() - 60 * 60 * 1000).toISOString(),
+	homeTeam: { id: `${id}-h`, name: 'Home', abbreviation: 'HOM', score: 4 },
+	awayTeam: { id: `${id}-a`, name: 'Away', abbreviation: 'AWY', score: 2 },
+	period: 9,
+	clockSeconds: 0,
+});
+
+describe('what the slate keeps for a league that did not answer', () => {
+	const bothLeagues: Partial<UserPreferences> = {
+		enabledLeagues: ['nba' as LeagueId, 'mlb' as LeagueId],
+		enabled: false,
+		keepFinalGames: true,
+		showUpcomingGames: true,
+	};
+
+	const stateGames = async () => (
+		await sendMessage({ type: 'GET_STATE' }) as { games: Game[] }
+	).games.map(g => g.id);
+
+	// A preference move is what re-runs refreshSlate, which is the fetch that rebuilds both lists.
+	const rerunSlate = () => sendMessage({
+		type: 'UPDATE_PREFS',
+		prefs: normalizeUserPreferences({ ...createDefaultUserPreferences(), ...bothLeagues, upcomingGamesDays: 9 }),
+	});
+
+	test('holds on to a final from the league that failed', async () => {
+		await loadBackground({
+			prefs: bothLeagues,
+			fetchReturnValue: {
+				games: [slateGame('mlb-final', 'mlb', 'post'), slateGame('nba-final', 'nba', 'post')],
+				leagueLogos: {},
+				shedLeagues: [],
+			},
+		});
+		expect(await stateGames()).toEqual(expect.arrayContaining(['mlb-final', 'nba-final']));
+
+		// MLB's slate leg is refused; NBA answers with only its own game.
+		fetchMock.mockResolvedValue({
+			games: [slateGame('nba-final', 'nba', 'post')],
+			leagueLogos: {},
+			shedLeagues: ['mlb'],
+		});
+		await rerunSlate();
+
+		expect(await stateGames()).toEqual(expect.arrayContaining(['mlb-final', 'nba-final']));
+	});
+
+	test('still drops a final from a league that answered without it', async () => {
+		await loadBackground({
+			prefs: bothLeagues,
+			fetchReturnValue: {
+				games: [slateGame('nba-final', 'nba', 'post'), slateGame('nba-gone', 'nba', 'post')],
+				leagueLogos: {},
+				shedLeagues: [],
+			},
+		});
+
+		fetchMock.mockResolvedValue({
+			games: [slateGame('nba-final', 'nba', 'post')],
+			leagueLogos: {},
+			shedLeagues: [],
+		});
+		await rerunSlate();
+
+		expect(await stateGames()).not.toContain('nba-gone');
+	});
+
+	test('holds on to a kickoff from the league that failed', async () => {
+		await loadBackground({
+			prefs: bothLeagues,
+			fetchReturnValue: {
+				games: [slateGame('mlb-later', 'mlb', 'pre'), slateGame('nba-later', 'nba', 'pre')],
+				leagueLogos: {},
+				shedLeagues: [],
+			},
+		});
+
+		fetchMock.mockResolvedValue({
+			games: [slateGame('nba-later', 'nba', 'pre')],
+			leagueLogos: {},
+			shedLeagues: ['mlb'],
+		});
+		await rerunSlate();
+
+		expect(await stateGames()).toContain('mlb-later');
+	});
+});
+
+/* The regression this exists to catch. ESPN caps a scoreboard response server-side — near 80 events
+   on a dated college football query — and the truncation takes the days furthest ahead. Widening
+   this fetch so the guide could share it spent that whole budget on a college football weekend's
+   *past* games and left the popup showing one day of future. The guide asks for its own slate. */
+describe('what the popup slate asks ESPN for', () => {
+	const nbaOnly: Partial<UserPreferences> = { enabledLeagues: ['nba' as LeagueId], enabled: false };
+	const emptyResult = { games: [], leagueLogos: {}, shedLeagues: [] };
+
+	// loadBackground clears the startup calls, so the setting is moved to make refreshSlate run again.
+	const rerunSlate = (changed: Partial<UserPreferences>) => sendMessage({
+		type: 'UPDATE_PREFS',
+		prefs: normalizeUserPreferences({ ...createDefaultUserPreferences(), ...nbaOnly, ...changed }),
+	});
+
+	test('follows Up Next exactly, with none of the guide floor', async () => {
+		await loadBackground({
+			prefs: { ...nbaOnly, upcomingGamesDays: 4 },
+			fetchReturnValue: emptyResult,
+		});
+		await rerunSlate({ upcomingGamesDays: 1 });
+
+		expect(lastWideFetchOptions()?.upcomingDays).toBe(1);
+		expect(guideMinUpcomingDays).toBeGreaterThan(1);
+	});
+
+	// Reaching back is what eats the event budget, so it happens only when finals are actually wanted.
+	test('does not reach back for finals when the setting is off', async () => {
+		await loadBackground({
+			prefs: { ...nbaOnly, keepFinalGames: false, upcomingGamesDays: 4 },
+			fetchReturnValue: emptyResult,
+		});
+		await rerunSlate({ keepFinalGames: false, upcomingGamesDays: 5 });
+
+		expect(lastWideFetchOptions()?.includeFinal).toBe(false);
+	});
+
+	test('does reach back when finals are wanted', async () => {
+		await loadBackground({
+			prefs: { ...nbaOnly, keepFinalGames: true, upcomingGamesDays: 4 },
+			fetchReturnValue: emptyResult,
+		});
+		await rerunSlate({ keepFinalGames: true, upcomingGamesDays: 5 });
+
+		expect(lastWideFetchOptions()?.includeFinal).toBe(true);
 	});
 });

@@ -248,6 +248,9 @@ export interface BackgroundState {
 	gameBoosts: Record<string, number>;
 	onStandbyStream: boolean;
 	standbyStreamTabId: number | null;
+	// Leagues ESPN refused on the last slate fetch. An empty slate alongside a non-empty list here
+	// is a slate we cannot vouch for, which the popup reports as a failure rather than as no games.
+	slateShedLeagues: LeagueId[];
 }
 
 export interface ScoresUpdatedMessage {
@@ -260,6 +263,7 @@ export interface ScoresUpdatedMessage {
 	gameBoosts: Record<string, number>;
 	onStandbyStream: boolean;
 	standbyStreamTabId: number | null;
+	slateShedLeagues: LeagueId[];
 }
 
 export interface UpdatePrefsMessage {

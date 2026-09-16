@@ -194,3 +194,44 @@ describe('computeHebetudinousIntervalMs', () => {
 		}
 	});
 });
+
+/* The floor the PowerScore ramp scales down to is ESPN's, read off the `cache-control` it answered
+   the scoreboard with, so these check that supplying one moves the bottom of the ramp and nothing
+   else about its shape. */
+describe('the floor the eager ramp scales down to', () => {
+	it('still pays the whole ramp, just from a different bottom', () => {
+		expect(computeEagerIntervalMs(100, 12_000)).toBe(12_000);
+		expect(computeEagerIntervalMs(0, 12_000)).toBe(pollMaxEagerMs);
+		expect(computeEagerIntervalMs(50, 12_000)).toBe(Math.round((pollMaxEagerMs + 12_000) / 2));
+	});
+
+	it('keeps scaling with PowerScore rather than pinning every live game to the floor', () => {
+		const hot = computeEagerIntervalMs(90, 12_000);
+		const middling = computeEagerIntervalMs(50, 12_000);
+		const dull = computeEagerIntervalMs(10, 12_000);
+		expect(hot).toBeLessThan(middling);
+		expect(middling).toBeLessThan(dull);
+		expect(hot).toBeGreaterThanOrEqual(12_000);
+	});
+
+	it('falls back to the assumed floor when no response has been seen yet', () => {
+		expect(computeEagerIntervalMs(100)).toBe(pollMinEagerMs);
+	});
+
+	// A league reporting a max-age longer than the ceiling would otherwise invert the ramp and have
+	// the most exciting game polled least often.
+	it('never returns anything under the floor, even above the ceiling', () => {
+		const long = pollMaxEagerMs + 30_000;
+		expect(computeEagerIntervalMs(100, long)).toBe(long);
+		expect(computeEagerIntervalMs(0, long)).toBe(long);
+		expect(computeLeagueIntervalMs([], [], long)).toBe(long);
+		expect(computeLeagueIntervalMs([makeGame({ intermission: true })], [], long)).toBe(long);
+	});
+
+	it('carries the floor through the league interval', () => {
+		const game = makeGame({ id: 'thriller' });
+		const scores = [makeScore('thriller', 100)];
+		expect(computeLeagueIntervalMs([game], scores, 12_000)).toBe(12_000);
+		expect(computeLeagueIntervalMs([game], scores, 6_000)).toBe(6_000);
+	});
+});
