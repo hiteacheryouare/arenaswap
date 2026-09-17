@@ -1,4 +1,4 @@
-import { isWithinFinalRetention, leagueConfigMap, pollLookaheadDays, resolveLeagueLogoUrl } from './constants';
+import { isWithinFinalRetention, leagueConfigMap, pollLookaheadDays, pollMinEagerMs, resolveLeagueLogoUrl, upcomingGamesDaysMax } from './constants';
 import { gradePostseason } from './postseasonRound';
 import {
 	EspnSummarySchema,
@@ -19,6 +19,102 @@ import { logWarn } from './logger';
 import type { Game, GameCondition, GameOdds, LeagueConfig, LeagueId, LeagueLogoMap, ProbableStarter, TeamLeader, TeamMonoLogoMap, TeamMonoMarks } from './types';
 
 const espnBase = 'https://site.api.espn.com/apis/site/v2/sports';
+
+/* ESPN sheds load on this host by recent request volume from an IP and answers 403 to whatever it
+   drops. Measured from one machine against the NBA scoreboard: 16 requests at once all came back
+   200, 24 at once lost four of them, and the same size passed cleanly a minute later — so the window
+   is recent volume rather than instantaneous concurrency, and a burst that got through once is no
+   guarantee.
+
+   Thirty-one leagues fanned out at once is past it on its own. What made that hard to see is that
+   every caller below collects with `allSettled` and keeps the fulfilled ones: a shed league
+   contributes nothing and says nothing, so the only symptom is a slate that comes back short — or,
+   with enough of them shed, the empty-state screen on a day full of sport.
+
+   Six at a time. A league's own days are pooled again inside that — see `espnDayPoolSize`, which is
+   what actually sets the worst point now that a window is a request per day rather than one or two
+   for the whole span. */
+export const espnRequestPoolSize = 6;
+
+const settledInPool = async <T, R>(
+	items: T[],
+	run: (item: T) => Promise<R>,
+	size = espnRequestPoolSize,
+): Promise<PromiseSettledResult<R>[]> => {
+	const results: PromiseSettledResult<R>[] = [];
+	let next = 0;
+	const worker = async (): Promise<void> => {
+		while (next < items.length) {
+			const index = next;
+			next += 1;
+			const item = items[index] as T;
+			try {
+				results[index] = { status: 'fulfilled', value: await run(item) };
+			} catch (reason) {
+				results[index] = { status: 'rejected', reason };
+			}
+		}
+	};
+	await Promise.all(Array.from({ length: Math.min(size, items.length) }, () => worker()));
+	return results;
+};
+
+/* The pool above bounds one fan-out. This bounds the aggregate, which is what ESPN actually measures
+   — it has no idea which of our surfaces asked. The gap it closes is the one the pool cannot see:
+   every `tickLeague` runs its own single-league fetch on its own timer, so 31 leagues whose timers
+   drift into alignment issue 31 simultaneous requests through 31 separate pools of one. The existing
+   jitter spreads those by a couple of seconds; this puts a ceiling under it.
+
+   A bucket rather than flat spacing, because flat spacing taxes every cold start to bound a case
+   that only happens occasionally. A burst up to the capacity goes through untouched and only the
+   excess waits.
+
+   Both numbers are sized from us rather than from a published limit, because ESPN does not publish
+   one: the capacity is the widest simultaneous fan-out this codebase has measured coming back clean,
+   and the rate sits well above the extension's own worst case — 31 leagues at the 12s floor plus win
+   probability is about 3 requests a second — so nothing waits in steady state and the bucket only
+   ever shapes bursts. If a limit is found empirically, this is the one place to say so. */
+export const espnBurstCapacity = 16;
+export const espnSustainedPerSecond = 10;
+
+let requestTokens = espnBurstCapacity;
+let tokensRefilledAt = Date.now();
+
+const takeRequestSlot = async (): Promise<void> => {
+	for (;;) {
+		const now = Date.now();
+		const refill = ((now - tokensRefilledAt) / 1000) * espnSustainedPerSecond;
+		requestTokens = Math.min(espnBurstCapacity, requestTokens + Math.max(0, refill));
+		tokensRefilledAt = now;
+		if (requestTokens >= 1) {
+			requestTokens -= 1;
+			return;
+		}
+		const waitMs = Math.ceil(((1 - requestTokens) / espnSustainedPerSecond) * 1000);
+		await new Promise(resolve => setTimeout(resolve, waitMs));
+	}
+};
+
+/* How often ESPN will actually tell us something new, per league, read off the `cache-control` it
+   answered with. `Cache-Control` is on the CORS-safelist, so this is readable on a cross-origin
+   response without the host exposing anything.
+
+   Polling faster than this buys a cache hit and no information, so it is the floor the eager
+   interval scales down to rather than a number we chose. Unasked leagues fall back to the
+   assumption in constants. */
+const observedScoreboardMaxAgeMs = new Map<LeagueId, number>();
+
+const recordScoreboardMaxAge = (leagueId: LeagueId, cacheControl: string | null): void => {
+	const match = /max-age\s*=\s*(\d+)/i.exec(cacheControl ?? '');
+	if (!match) return;
+	const seconds = Number(match[1]);
+	if (!Number.isFinite(seconds) || seconds <= 0) return;
+	observedScoreboardMaxAgeMs.set(leagueId, seconds * 1000);
+};
+
+export const scoreboardRefreshMs = (leagueId: LeagueId): number => (
+	observedScoreboardMaxAgeMs.get(leagueId) ?? pollMinEagerMs
+);
 
 // ESPN ships a malformed row often enough that a dropped count is a steady state, not an event, so
 // warning on every poll would bury the console at the 6s floor. Only a change in the count is news.
@@ -80,12 +176,39 @@ const toQueryDate = (date: Date): string => {
 
 const localDayStart = (date: Date): Date => new Date(date.getFullYear(), date.getMonth(), date.getDate());
 
-// `pastDays` widens the window backwards, which is what makes a finished game from last night
-// reachable this morning: the dateless scoreboard only carries the current Eastern day, so a game
-// filed under yesterday's date has to be asked for by name.
-export const buildUpcomingDatesRangeQuery = (days: number, now: Date = new Date(), pastDays = 0): string => {
-	// ESPN's default no-dates scoreboard only reliably surfaces active and recent games; the
-	// explicit range returns every scheduled event, including this morning's pre-game ones.
+/* A window is a list of Eastern filing dates now, because ESPN stopped answering for a span.
+
+   Every one of the 31 leagues answers `dates=20260914-20260915` with
+   `{"code":400,"message":"Failed to get events endpoint."}`, at any width — including a one-day
+   `20260915-20260915` — while a single `dates=20260915` still answers 200 in all 31. Measured across
+   every league and 20 consecutive times on one of them, on both `site.api` and `site.web.api`, so it
+   is a settled state rather than a service flapping.
+
+   No multi-day form survives it. Comma, encoded comma and encoded hyphen all 400, and a repeated
+   `dates=` parameter answers 200 for the first value only, which is worse than failing. `YYYYMM` and
+   `YYYY` do still work, but truncation drops the tail — the days furthest ahead — so a month cannot
+   stand in for a window that ends in the future.
+
+   The span is still computed exactly as the range was, then enumerated, so the days asked for are
+   precisely the days the range covered. `pastDays` is what makes a finished game from last night
+   reachable this morning, and what lets a late kickoff filed under yesterday survive Eastern
+   midnight. */
+const padDatePart = (value: number): string => String(value).padStart(2, '0');
+
+const shiftDayKey = (dayKey: string, byDays: number): string => {
+	// Stepped at noon UTC: these are calendar dates rather than instants, and noon is the one hour
+	// no DST discontinuity can push onto an adjacent date.
+	const at = Date.UTC(
+		Number(dayKey.slice(0, 4)),
+		Number(dayKey.slice(4, 6)) - 1,
+		Number(dayKey.slice(6, 8)),
+		12,
+	);
+	const moved = new Date(at + (byDays * 24 * 60 * 60 * 1000));
+	return `${moved.getUTCFullYear()}${padDatePart(moved.getUTCMonth() + 1)}${padDatePart(moved.getUTCDate())}`;
+};
+
+export const buildDayWindowKeys = (days: number, now: Date = new Date(), pastDays = 0): string[] => {
 	const firstLocalDay = localDayStart(now);
 	const windowStart = new Date(
 		firstLocalDay.getFullYear(),
@@ -94,25 +217,30 @@ export const buildUpcomingDatesRangeQuery = (days: number, now: Date = new Date(
 	);
 	// The popup's cutoff is a rolling `days * 24h` from now, so the last day it can label is the
 	// local day that instant falls in. Ending on that day's final millisecond rather than on its
-	// midnight keeps the range out of an Eastern date nothing on screen would come from.
+	// midnight keeps the window out of an Eastern date nothing on screen would come from.
 	const lastLocalDay = localDayStart(new Date(now.getTime() + (days * 24 * 60 * 60 * 1000)));
 	const windowEnd = new Date(new Date(
 		lastLocalDay.getFullYear(),
 		lastLocalDay.getMonth(),
 		lastLocalDay.getDate() + 1,
 	).getTime() - 1);
-	return `${toQueryDate(windowStart)}-${toQueryDate(windowEnd)}`;
+
+	const lastKey = toQueryDate(windowEnd);
+	const keys: string[] = [];
+	for (let key = toQueryDate(windowStart); key <= lastKey; key = shiftDayKey(key, 1)) {
+		keys.push(key);
+	}
+	return keys;
 };
 
-// The window the live poll asks for. ESPN's dateless scoreboard is not a full slate in every
-// league: college football files by week rather than by day and trims that week to about 25
-// featured games, so a live game can simply be absent from it. Asking for the days by name returns
-// the complete card in every league instead.
+// The days the live poll asks for. ESPN's undated board is not a full slate in every league —
+// college football files by week rather than by day and trims that week to about 25 featured games,
+// so a live game can simply be absent from it — and naming the days returns the complete card.
 //
-// It reaches back a day because ESPN files a game under its Eastern start date, so an 11pm kickoff
-// is still filed under yesterday while it is on screen after Eastern midnight. `days: 0` ends the
-// window at the end of today, which is the last day a live game can have started.
-export const buildCurrentDatesQuery = (now: Date = new Date()): string => buildUpcomingDatesRangeQuery(0, now, 1);
+// `days: 0` ends the window at the end of today, which is the last day a live game can have started;
+// the day back is there because ESPN files a game under its Eastern start date, so an 11pm kickoff
+// is still filed under yesterday while it is on screen after Eastern midnight.
+export const buildCurrentDayKeys = (now: Date = new Date()): string[] => buildDayWindowKeys(0, now, 1);
 
 const ch = (n: number): number => {
 	const c = n / 255;
@@ -570,92 +698,264 @@ interface LeagueGamesResult {
 	logoUrl: string;
 }
 
-const fetchScoreboard = async (url: string, leagueId: LeagueId): Promise<EspnScoreboardResponse> => {
+const fetchScoreboard = async (url: string, leagueId: LeagueId, warnKey: string = leagueId): Promise<EspnScoreboardResponse> => {
+	await takeRequestSlot();
 	const res = await fetch(url, {
 		headers: {
 			'Accept': 'application/json',
 		},
 	});
+	recordScoreboardMaxAge(leagueId, res.headers.get('cache-control'));
 	if (!res.ok) throw new LeagueFetchError(leagueId, res.status);
 	const parsed = parseScoreboard(await res.json());
 	warnOnDroppedCountChange(
-		`scoreboard:${leagueId}`,
+		`scoreboard:${warnKey}`,
 		parsed.droppedEvents,
 		() => `Skipped ${parsed.droppedEvents} unparseable ${leagueId} event(s); kept ${parsed.events.length}.`,
 	);
 	return parsed;
 };
 
-// Required for reliable coverage and to avoid 404s on date-range queries.
+/* `groups` is required for reliable coverage in the two NCAA basketball leagues.
+
+   `limit` lifts a server-side cap we had been eating silently. The published reference says to pass
+   a high limit alongside `groups` to get a full NCAA slate, and measured, an MLB month query
+   answered 100 events without it and 369 with it. 500 rather than higher because `limit=1000`
+   answered a dated college football Saturday with 25 events — the undated curated week, meaning the
+   `dates` filter had quietly stopped being applied — and 1500 did the same. Verified against all 31
+   leagues on a single-date query: identical answers, so it only ever lifts a cap. */
+const scoreboardEventLimit = 500;
+
 const scoreboardParams = (config: LeagueConfig): URLSearchParams => {
 	const params = new URLSearchParams();
 	if (config.id === 'ncaab') params.set('groups', '50');
 	if (config.id === 'ncaaw') params.set('groups', '49');
+	params.set('limit', String(scoreboardEventLimit));
 	return params;
+};
+
+/* One ESPN answer per league and Eastern day. A window costs a request per day now rather than one
+   for the whole span, and this is what keeps that affordable: the days either side of today barely
+   move, so most of a window is answered from here after the first time it is asked for.
+
+   The TTL is read off what came back rather than chosen per call site. A past day whose every game
+   is final cannot change again. A future day is a schedule, which moves but not quickly. Today is
+   what the live poll is for and is never served from here — ESPN's own `max-age` already collapses
+   two polls inside its window into one cache hit. And a past day still carrying an unfinished game
+   is treated as today, which is what keeps a game that kicked off before Eastern midnight arriving
+   at the live cadence while it is still being played.
+
+   In this worker's memory rather than in `storage.local`, deliberately: MV3 ends a worker about
+   thirty seconds after the last event, but a worker with games on has a timer pending the whole
+   time, so the lifetime this has to cover is exactly the one where the saving matters. */
+const settledDayTtlMs = 30 * 60 * 1000;
+const futureDayTtlMs = 10 * 60 * 1000;
+
+/* Held either side of today, so an entry no window can ask for again stops being kept. Sized off the
+   widest window the product can build rather than picked: Up Next reaches `upcomingGamesDaysMax`
+   ahead and finals two days back, and one more each way covers the Eastern date a local day
+   straddles. In a busy league in season this is the difference between holding a fortnight of games
+   and holding three weeks of them for nothing. */
+const dayCachePastDays = 3;
+const dayCacheFutureDays = upcomingGamesDaysMax + 1;
+
+/* The days of one league, three at a time. The league fan-out runs six at a time, so the widest
+   point is eighteen requests in flight, which the token bucket then shapes to its own rate. Three
+   rather than all of them because a ten-day window in 31 leagues is 310 requests, and the bucket
+   holding that back is the difference between a slow cold start and the 403s that started all of
+   this. */
+export const espnDayPoolSize = 3;
+
+interface CachedDay {
+	games: Game[];
+	espnLogo?: string;
+	fetchedAt: number;
+	ttlMs: number;
+}
+
+const dayCache = new Map<string, CachedDay>();
+const dayRequests = new Map<string, Promise<CachedDay>>();
+
+/* The one seam the tests need. Two readings of the same league and day in one spec file otherwise
+   inherit each other's games, which is as likely to make an assertion pass for the wrong reason as
+   to fail one — `holidayDecorations` hit exactly that and had to reset the module registry. */
+export const clearDayCache = (): void => {
+	dayCache.clear();
+	dayRequests.clear();
+};
+
+/* A past day is settled only once every game on it is final, and a day with anything in progress is
+   never settled at all — that is what carries a game which kicked off before Eastern midnight, so it
+   stays on the live cadence.
+
+   Between those sits the past day holding a game ESPN still calls scheduled. Waiting for it to reach
+   `post` would keep that day uncacheable for as long as the league is polled, because a postponed
+   game never will; calling it settled would hide a rain-delayed start that crosses midnight for half
+   an hour. So it takes the future day's ten minutes: six requests an hour for the postponed case, and
+   a blind spot of ten minutes rather than thirty for the delayed one. */
+const dayTtlMs = (dayKey: string, todayKey: string, games: Game[]): number => {
+	if (dayKey === todayKey) return 0;
+	if (dayKey > todayKey) return futureDayTtlMs;
+	if (games.some(game => game.status === 'in')) return 0;
+	return games.every(game => game.status === 'post') ? settledDayTtlMs : futureDayTtlMs;
+};
+
+const pruneDayCache = (todayKey: string): void => {
+	const first = shiftDayKey(todayKey, -dayCachePastDays);
+	const last = shiftDayKey(todayKey, dayCacheFutureDays);
+	// Deleting the entry the iterator is standing on is safe: a Map iterator visits what is still
+	// there rather than a snapshot taken up front.
+	for (const key of dayCache.keys()) {
+		const dayKey = key.slice(key.lastIndexOf(':') + 1);
+		if (dayKey < first || dayKey > last) dayCache.delete(key);
+	}
+};
+
+/* One day of one league, answered from the cache when it can be.
+
+   A failed refetch falls back to the last good answer for that day, for every day but today. Without
+   that a single shed day would punch a hole in a window its caller only rebuilds at startup and on a
+   preference change, so one 403 on day five would cost a league its whole week until the next time
+   the user changed a setting. Today is the exception because today is the live signal: `tickLeague`
+   reads a successful tick with nothing live as a quiet league and walks it towards dormant, so
+   today's failure has to reach it rather than be papered over. */
+const fetchDayFromEspn = async (
+	config: LeagueConfig,
+	dayKey: string,
+	todayKey: string,
+	cached: CachedDay | undefined,
+): Promise<CachedDay> => {
+	const cacheKey = `${config.id}:${dayKey}`;
+	const params = scoreboardParams(config);
+	params.set('dates', dayKey);
+	const url = `${espnBase}/${config.espnPath}/scoreboard?${params.toString()}`;
+
+	try {
+		const response = await fetchScoreboard(url, config.id, cacheKey);
+		const games = (response.events ?? [])
+			.map(event => parseEvent(event, config.id))
+			.filter((game): game is Game => game !== null);
+		const entry: CachedDay = {
+			games,
+			espnLogo: pickLeagueLogo(response.leagues?.[0]?.logos),
+			fetchedAt: Date.now(),
+			ttlMs: dayTtlMs(dayKey, todayKey, games),
+		};
+		dayCache.set(cacheKey, entry);
+		pruneDayCache(todayKey);
+		return entry;
+	} catch (err) {
+		if (!cached || dayKey === todayKey) throw err;
+		logWarn(`ESPN would not answer for ${config.id} on ${dayKey}; keeping the last answer for that day.`);
+		return cached;
+	}
+};
+
+const fetchDayGames = async (config: LeagueConfig, dayKey: string, todayKey: string): Promise<CachedDay> => {
+	const cacheKey = `${config.id}:${dayKey}`;
+	const cached = dayCache.get(cacheKey);
+	/* `dayKey !== todayKey` is the load-bearing half, and it has to be asked here rather than
+	   inferred from the TTL written when the entry was made. A calendar day moves future → today →
+	   past underneath a cached entry: a day fetched as tomorrow carries ten minutes, and ten minutes
+	   later it is today and still fresh by its own clock. That served a stale tomorrow as today
+	   across Eastern midnight, so a game live in the first ten minutes of the new day read as
+	   scheduled at 0-0 — which for a Pacific viewer is an ordinary 21:00 tip-off. */
+	if (cached && dayKey !== todayKey && cached.ttlMs > 0 && Date.now() - cached.fetchedAt < cached.ttlMs) {
+		return cached;
+	}
+
+	// One request per league and day even when two surfaces ask at once. A worker start runs the
+	// slate while a guide open or a lookahead can be in flight for the same day, and both would
+	// otherwise miss the cache and fetch — the same trap the team marks got in-flight dedup for.
+	const running = dayRequests.get(cacheKey);
+	if (running) return await running;
+
+	const pending = fetchDayFromEspn(config, dayKey, todayKey, cached);
+	dayRequests.set(cacheKey, pending);
+	try {
+		return await pending;
+	} finally {
+		dayRequests.delete(cacheKey);
+	}
 };
 
 const fetchLeagueGames = async (config: LeagueConfig, options: LeagueFetchOptions = {}): Promise<LeagueGamesResult> => {
 	const { includeUpcoming = true, upcomingDays = 7, includeFinal = false } = options;
-	// Declared once so both paths below cannot disagree about which games survive. A final game is
-	// kept only while it is inside the retention window, so an ageing one falls off on its own
-	// rather than needing a sweep.
-	const keepGame = (game: Game | null): game is Game => {
-		if (game === null) return false;
+	// Declared once so nothing below can disagree about which games survive. A final game is kept
+	// only while it is inside the retention window, so an ageing one falls off on its own rather
+	// than needing a sweep.
+	const keepGame = (game: Game): boolean => {
 		if (game.status !== 'post') return true;
 		return includeFinal && isWithinFinalRetention(game);
 	};
-	const baseParams = scoreboardParams(config);
 
-	const scoreboardUrl = `${espnBase}/${config.espnPath}/scoreboard`;
-	const currentParams = new URLSearchParams(baseParams);
-	currentParams.set('dates', buildCurrentDatesQuery());
-	const baseUrl = `${scoreboardUrl}?${currentParams.toString()}`;
+	const now = new Date();
+	const todayKey = toQueryDate(now);
+	/* One list of days rather than a current leg and an upcoming leg. Those were two requests with
+	   their own failure handling because each named a range; now that a window is days, the live
+	   window is simply the near end of the wider one, and the day back a late kickoff needs after
+	   Eastern midnight is the same day yesterday's finals come from.
 
+	   Two days back when finals are wanted, because retention runs 24 hours past an estimated wrap:
+	   a final still inside the window can have kicked off 27.5 hours ago, and 27.5 hours before
+	   00:30 local is 21:00 the day before yesterday. */
+	const dayKeys = buildDayWindowKeys(
+		includeUpcoming ? upcomingDays : 0,
+		now,
+		includeUpcoming && includeFinal ? 2 : 1,
+	);
+
+	const results = await settledInPool(
+		dayKeys,
+		dayKey => fetchDayGames(config, dayKey, todayKey),
+		espnDayPoolSize,
+	);
+	/* On the live window, today's own answer is the whole point and its failure sinks the league.
+	   `tickLeague` reads a successful tick with nothing live as a quiet league and walks it towards
+	   dormant, so a window that lost today while the days either side answered from cache would let a
+	   league fall asleep with its games being played. Every window contains today by construction —
+	   the span opens no later than now and closes no earlier — so a missing entry is the same failure
+	   and takes the same exit.
+
+	   On a wide window it is one missing day among several. The slate and the guide ask for those, and
+	   they want the roster of games rather than a live score; their live signal comes from the
+	   per-league polls either way. Throwing the other nine days away over today would also be a
+	   regression against the two-leg version this replaced, where a failed live leg still returned
+	   everything the range leg found. */
 	if (!includeUpcoming) {
-		const todayResult = await fetchScoreboard(baseUrl, config.id);
-		const espnLogo = pickLeagueLogo(todayResult?.leagues?.[0]?.logos);
-		const logoUrl = resolveLeagueLogoUrl(config.id, espnLogo);
-		const parsedGames = (todayResult?.events ?? [])
-			.map(event => parseEvent(event, config.id))
-			.filter(keepGame);
-		return { leagueId: config.id, games: parsedGames, logoUrl };
+		const todayResult = results[dayKeys.indexOf(todayKey)];
+		if (todayResult?.status !== 'fulfilled') {
+			throw todayResult?.reason ?? new LeagueFetchError(config.id);
+		}
+	}
+	const answered = results
+		.filter((result): result is PromiseFulfilledResult<CachedDay> => result.status === 'fulfilled')
+		.map(result => result.value);
+	// No day at all answered, so this league is unknown rather than empty — which is what
+	// `shedLeagues` upstream exists to say.
+	if (answered.length === 0) {
+		const rejected = results.find((result): result is PromiseRejectedResult => result.status === 'rejected');
+		throw rejected?.reason ?? new LeagueFetchError(config.id);
 	}
 
-	// Retention runs 24 hours past the estimated wrap, so a game still inside the window kicked off
-	// as long as 27.5 hours ago. That is two local days back, not one: 27.5 hours before 00:30 local
-	// is 21:00 the day before yesterday. One day back leaves a hole at the tail of a late kickoff.
-	const upcomingDates = buildUpcomingDatesRangeQuery(upcomingDays, new Date(), includeFinal ? 2 : 0);
-	const upcomingParams = new URLSearchParams(baseParams);
-	upcomingParams.set('dates', upcomingDates);
-	const upcomingUrl = `${scoreboardUrl}?${upcomingParams.toString()}`;
-	const [todayResult, upcomingResult] = await Promise.allSettled([
-		fetchScoreboard(baseUrl, config.id),
-		fetchScoreboard(upcomingUrl, config.id),
-	]);
-	if (todayResult.status === 'rejected' && upcomingResult.status === 'rejected') {
-		const error = todayResult.reason instanceof Error
-			? todayResult.reason
-			: upcomingResult.reason;
-		throw error;
-	}
+	/* Today's copy of a duplicated event wins. The days run chronologically, so without this a copy
+	   served out of a settled day's half-hour cache would beat today's fresh one — and the case that
+	   produces the same event on two days is precisely the one where ESPN has stopped applying the
+	   `dates` filter and every day answers with the same board. The two-leg version got this for free
+	   by concatenating the live leg first. Insertion order is kept either way: re-setting an existing
+	   key does not move it. */
+	const byId = new Map<string, Game>();
+	results.forEach((result, index) => {
+		if (result.status !== 'fulfilled') return;
+		const isToday = dayKeys[index] === todayKey;
+		for (const game of result.value.games) {
+			if (isToday || !byId.has(game.id)) byId.set(game.id, game);
+		}
+	});
+	const games = [...byId.values()].filter(keepGame);
 
-	const todayData = todayResult.status === 'fulfilled' ? todayResult.value : undefined;
-	const upcomingData = upcomingResult.status === 'fulfilled' ? upcomingResult.value : undefined;
-	const espnLogo = pickLeagueLogo(todayData?.leagues?.[0]?.logos)
-		?? pickLeagueLogo(upcomingData?.leagues?.[0]?.logos);
-	const logoUrl = resolveLeagueLogoUrl(config.id, espnLogo);
-
-	const seenIds = new Set<string>();
-	const parsedGames = [...(todayData?.events ?? []), ...(upcomingData?.events ?? [])]
-		.filter(event => {
-			if (seenIds.has(event.id)) return false;
-			seenIds.add(event.id);
-			return true;
-		})
-		.map(event => parseEvent(event, config.id))
-		.filter(keepGame);
-
-	return { leagueId: config.id, games: parsedGames, logoUrl };
+	const espnLogo = answered.find(day => day.espnLogo)?.espnLogo;
+	return { leagueId: config.id, games, logoUrl: resolveLeagueLogoUrl(config.id, espnLogo) };
 };
 
 const getEnabledLeagueConfigs = (enabledLeagues: LeagueId[]): LeagueConfig[] => (
@@ -664,27 +964,45 @@ const getEnabledLeagueConfigs = (enabledLeagues: LeagueId[]): LeagueConfig[] => 
 		.filter((config): config is LeagueConfig => Boolean(config))
 );
 
-export const fetchGamesWithLeagueLogos = async (enabledLeagues: LeagueId[], options: LeagueFetchOptions = {}): Promise<{ games: Game[]; leagueLogos: LeagueLogoMap }> => {
-	if (enabledLeagues.length === 0) return { games: [], leagueLogos: {} };
+/* `shedLeagues` is the point of this shape. Collecting with `allSettled` and keeping the fulfilled
+   ones means a league ESPN refused contributes no games and says nothing, so every caller read a
+   403 as "this league has nothing on" — the popup drew the no-games slate on a full Saturday, and
+   the per-league poll recorded a successful tick with nothing live and walked a league down into
+   dormant while its games were being played. The games still come back best-effort; what changed is
+   that the caller can now tell an empty answer from an unanswered one. */
+export const fetchGamesWithLeagueLogos = async (enabledLeagues: LeagueId[], options: LeagueFetchOptions = {}): Promise<{ games: Game[]; leagueLogos: LeagueLogoMap; shedLeagues: LeagueId[] }> => {
+	if (enabledLeagues.length === 0) return { games: [], leagueLogos: {}, shedLeagues: [] };
 	const leagueConfigs = getEnabledLeagueConfigs(enabledLeagues);
-	if (leagueConfigs.length === 0) return { games: [], leagueLogos: {} };
+	if (leagueConfigs.length === 0) return { games: [], leagueLogos: {}, shedLeagues: [] };
 
-	const results = await Promise.allSettled(leagueConfigs.map(config => fetchLeagueGames(config, options)));
+	const results = await settledInPool(leagueConfigs, config => fetchLeagueGames(config, options));
 
 	const fulfilled = results
 		.filter((r): r is PromiseFulfilledResult<LeagueGamesResult> => r.status === 'fulfilled')
 		.map(r => r.value);
+	const shedLeagues = leagueConfigs
+		.filter((_, index) => results[index]?.status === 'rejected')
+		.map(config => config.id);
 	const games = fulfilled.flatMap(result => result.games);
 	const leagueLogos = fulfilled.reduce<LeagueLogoMap>((acc, result) => {
 		acc[result.leagueId] = result.logoUrl;
 		return acc;
 	}, {});
-	return { games, leagueLogos };
+	return { games, leagueLogos, shedLeagues };
 };
 
 /* When the next kickoff a league carries is asked for and the answer matters more than the games
-   themselves. One ranged request rather than the two `fetchLeagueGames` makes, and it reads `date`
-   off the envelope rather than parsing every event, because nothing here needs a scoreboard.
+   themselves.
+
+   Walked a day at a time and stopped at the first kickoff found, rather than fanned out: this exists
+   to buy the right to sleep, so it has to stay cheaper than the polling it replaces. A league with a
+   game tomorrow costs two requests; only a league with genuinely nothing in the whole window pays
+   for the whole span, and that is precisely the league that then sleeps half an hour at a time
+   instead of polling 576 times a day. It also shares the day cache with the slate, so a lookahead
+   that follows a slate fetch usually costs nothing at all.
+
+   It parses each day rather than reading `date` off the envelope, which the ranged version did to
+   avoid building games it had no use for. Sharing the cache is worth more than skipping the parse.
 
    `null` is a real answer — nothing scheduled inside the window — and is what puts a league to
    sleep, so a failure throws rather than returning it. */
@@ -695,20 +1013,21 @@ export const fetchNextScheduledStart = async (
 	const config = leagueConfigMap[leagueId];
 	if (!config) return null;
 	const { days = pollLookaheadDays, now = new Date() } = options;
-
-	const params = scoreboardParams(config);
-	params.set('dates', buildUpcomingDatesRangeQuery(days, now));
-	const result = await fetchScoreboard(`${espnBase}/${config.espnPath}/scoreboard?${params.toString()}`, leagueId);
-
+	const todayKey = toQueryDate(now);
 	const nowMs = now.getTime();
-	let earliest: number | null = null;
-	for (const event of result?.events ?? []) {
-		if (!event.date) continue;
-		const startMs = new Date(event.date).getTime();
-		if (!Number.isFinite(startMs) || startMs <= nowMs) continue;
-		if (earliest === null || startMs < earliest) earliest = startMs;
+
+	for (const dayKey of buildDayWindowKeys(days, now)) {
+		const { games } = await fetchDayGames(config, dayKey, todayKey);
+		let earliest: number | null = null;
+		for (const game of games) {
+			if (!game.startTime) continue;
+			const startMs = new Date(game.startTime).getTime();
+			if (!Number.isFinite(startMs) || startMs <= nowMs) continue;
+			if (earliest === null || startMs < earliest) earliest = startMs;
+		}
+		if (earliest !== null) return earliest;
 	}
-	return earliest;
+	return null;
 };
 
 export const fetchGames = async (enabledLeagues: LeagueId[]): Promise<Game[]> => {
@@ -735,6 +1054,7 @@ export const fetchWinProbability = async (game: Pick<Game, 'id' | 'league'>, ini
 	if (!config) return [];
 
 	const url = `${espnBase}/${config.espnPath}/summary?event=${encodeURIComponent(game.id)}`;
+	await takeRequestSlot();
 	const res = await fetch(url, { headers: { 'Accept': 'application/json' }, signal: init?.signal });
 	if (!res.ok) throw new Error(`Failed to fetch win probability for ${game.id}: HTTP ${res.status}`);
 
@@ -790,8 +1110,9 @@ export const fetchTeamMonoLogos = async (leagueIds: LeagueId[], size = 120): Pro
 	const configs = getEnabledLeagueConfigs(leagueIds);
 	if (configs.length === 0) return {};
 
-	const results = await Promise.allSettled(configs.map(async (config) => {
+	const results = await settledInPool(configs, async (config) => {
 		const url = `${espnBase}/${config.espnPath}/teams?limit=1000`;
+		await takeRequestSlot();
 		const res = await fetch(url, { headers: { Accept: 'application/json' } });
 		if (!res.ok) throw new Error(`Failed to fetch team logos for ${config.id}: HTTP ${res.status}`);
 		const parsed = parseTeams(await res.json());
@@ -801,7 +1122,7 @@ export const fetchTeamMonoLogos = async (leagueIds: LeagueId[], size = 120): Pro
 			return acc;
 		}, {});
 		return [config.id, entries] as const;
-	}));
+	});
 
 	// A league that fails contributes nothing and the rest still land: a missing mark falls back to
 	// the tinted disc, which is the state every team outside North America is in anyway.
@@ -819,31 +1140,30 @@ export const fetchTeamsForLeagues = async (leagueIds: LeagueId[]): Promise<EspnT
 	const leagueConfigs = getEnabledLeagueConfigs(leagueIds);
 	if (leagueConfigs.length === 0) return [];
 
-	const results = await Promise.allSettled(
-		leagueConfigs.map(async (config): Promise<EspnTeamEntry[]> => {
-			const params = new URLSearchParams({ limit: '200' });
-			if (config.id === 'ncaab') params.set('groups', '50');
-			if (config.id === 'ncaaw') params.set('groups', '49');
-			const url = `${espnBase}/${config.espnPath}/teams?${params.toString()}`;
-			const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
-			if (!res.ok) throw new Error(`Failed to fetch teams for ${config.id}: HTTP ${res.status}`);
-			const parsed = parseTeams(await res.json());
-			warnOnDroppedCountChange(
-				`teams:${config.id}`,
-				parsed.droppedTeams,
-				() => `Skipped ${parsed.droppedTeams} unparseable ${config.id} team(s); kept ${parsed.teams.length}.`,
-			);
-			return parsed.teams
-				.filter(({ team }) => team.id && team.displayName)
-				.map(({ team }) => ({
-					leagueId: config.id,
-					id: team.id,
-					name: team.displayName,
-					abbreviation: team.abbreviation || team.displayName.slice(0, 3).toUpperCase(),
-					logo: team.logos?.[0]?.href,
-				}));
-		})
-	);
+	const results = await settledInPool(leagueConfigs, async (config): Promise<EspnTeamEntry[]> => {
+		const params = new URLSearchParams({ limit: '200' });
+		if (config.id === 'ncaab') params.set('groups', '50');
+		if (config.id === 'ncaaw') params.set('groups', '49');
+		const url = `${espnBase}/${config.espnPath}/teams?${params.toString()}`;
+		await takeRequestSlot();
+		const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+		if (!res.ok) throw new Error(`Failed to fetch teams for ${config.id}: HTTP ${res.status}`);
+		const parsed = parseTeams(await res.json());
+		warnOnDroppedCountChange(
+			`teams:${config.id}`,
+			parsed.droppedTeams,
+			() => `Skipped ${parsed.droppedTeams} unparseable ${config.id} team(s); kept ${parsed.teams.length}.`,
+		);
+		return parsed.teams
+			.filter(({ team }) => team.id && team.displayName)
+			.map(({ team }) => ({
+				leagueId: config.id,
+				id: team.id,
+				name: team.displayName,
+				abbreviation: team.abbreviation || team.displayName.slice(0, 3).toUpperCase(),
+				logo: team.logos?.[0]?.href,
+			}));
+	});
 
 	const fulfilled = results
 		.filter((result): result is PromiseFulfilledResult<EspnTeamEntry[]> => result.status === 'fulfilled')

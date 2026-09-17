@@ -190,6 +190,9 @@ describe('game info panel', () => {
 		cy.stub(window, 'fetch').resolves({
 			ok: true,
 			status: 200,
+			// The client reads `cache-control` off every scoreboard response to learn how often ESPN
+			// will answer with something new, so a stub without headers is not a Response.
+			headers: new Headers(),
 			json: () => Promise.resolve({ events: [domeEvent] }),
 		} as unknown as Response);
 

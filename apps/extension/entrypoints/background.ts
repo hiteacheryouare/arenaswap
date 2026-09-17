@@ -1,7 +1,8 @@
 import { i18n } from '#i18n';
 import { randomInRange } from '@porkyproductions/hat';
-import { fetchGamesWithLeagueLogos, fetchTeamMonoLogos, fetchWinProbability, computePowerScore, isWithinFinalRetention, computeScoringOpportunityBoost, isPlayFrozen, normalizePowerScoreResult, scoreMaxTotal, MockGameSimulator, createPollModeTracker, isObjectRecord, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts, computeLeagueIntervalMs, computeHebetudinousIntervalMs, earliestUpcomingStartMs, fetchNextScheduledStart, pollWinProbabilityMs as winProbPollIntervalMs, logWarn, logError, postseasonBoostShare } from '@arenaswap/core';
+import { fetchGamesWithLeagueLogos, fetchTeamMonoLogos, fetchWinProbability, computePowerScore, isWithinFinalRetention, computeScoringOpportunityBoost, isPlayFrozen, normalizePowerScoreResult, scoreMaxTotal, MockGameSimulator, createPollModeTracker, isObjectRecord, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts, computeLeagueIntervalMs, computeHebetudinousIntervalMs, earliestUpcomingStartMs, fetchNextScheduledStart, scoreboardRefreshMs, pollWinProbabilityMs as winProbPollIntervalMs, logWarn, logError, postseasonBoostShare } from '@arenaswap/core';
 import { computeStandbyStreamDecision } from '../utils/standbyStreamLogic';
+import { isMonoLogoCacheFresh, missingMonoLogoLeagues, monoLogoCacheKey } from '../utils/monoLogoCache';
 import {
 	finishedTabNoticeKey,
 	mergeFinishedTabNotice,
@@ -83,6 +84,11 @@ const maxSnapshotsPerGame = 400;
 // spacing instead of being discarded. Two minutes puts about 100 samples across a football game's
 // first three hours, which is more than 300px of chart can resolve anyway.
 const coarseSampleIntervalMs = 120_000;
+
+// How long the guide will draw the slate the last wide fetch produced. Generous because the live
+// polls merge their answers into it, so what ages here is only the roster of games — a kickoff
+// being added to the day — rather than any score or clock on screen.
+const guideSlateTtlMs = 10 * 60 * 1000;
 
 // Dropping the oldest snapshots would take the start of the game with them, and the start is the
 // end the chart gate measures from. So the cap is met by thinning the already-coarse tail further,
@@ -176,28 +182,54 @@ export default defineBackground(() => {
 	// and replace a league's games wholesale, so anything the range fetch found that the dateless
 	// call cannot see has to be carried across each tick by hand.
 	let retainedFinalGames: Game[] = [];
+	/* The guide's own wider slate, from its own fetch — `refreshSlate` deliberately does not produce
+	   it, because reaching back far enough to cover the guide truncated the popup's future days
+	   against ESPN's server-side event cap. Held between opens rather than re-fetched on each one,
+	   and kept current by the per-league polls below, so the TTL only has to cover the set of games
+	   changing — a kickoff being added — and not the scores inside them.
+
+	   Separate from `games` rather than widening it: `afterFetch` scores off
+	   `games.filter(status === 'in')` and both the switch target and the poll cadence read that same
+	   array, so an extra entry there would change which game the extension switches to. */
+	let guideSlate: Game[] = [];
+	let guideSlateAt = 0;
+	let slateShedLeagues: LeagueId[] = [];
 	let currentScores: PowerScoreResult[] = [];
 	let leagueLogos: LeagueLogoMap = {};
 	// ESPN's white team marks, which only `/teams` carries — the scoreboard has a single logo per
 	// competitor and no variants. Held for the guide, which is the one surface that draws a crest per
-	// game on a dark bar. Team artwork does not change on the scale of a browsing session, so this is
-	// fetched once per worker lifetime and per league rather than per guide open.
+	// game on a dark bar. Backed by `storage.local` rather than by this worker's memory, which MV3
+	// discards about thirty seconds after the last event — see `monoLogoCache`.
 	let monoLogos: TeamMonoLogoMap = {};
-	let monoLogoLeagues: string = '';
+	let monoLogosLoaded = false;
 	// The in-flight fetch, held alongside its result. The guard on the result alone only closes
 	// after the await, so two guide tabs opened together both missed it and both ran the fetch —
 	// which is one `/teams?limit=1000` request per enabled league, so 62 requests where 31 would do.
 	let monoLogoRequest: { key: string; pending: Promise<TeamMonoLogoMap> } | null = null;
 
 	const ensureMonoLogos = async (leagueIds: LeagueId[]): Promise<TeamMonoLogoMap> => {
-		const key = leagueIds.toSorted().join(',');
-		if (key === monoLogoLeagues) return monoLogos;
+		if (!monoLogosLoaded) {
+			try {
+				const stored = (await browser.storage.local.get(monoLogoCacheKey))[monoLogoCacheKey];
+				if (isMonoLogoCacheFresh(stored, Date.now())) monoLogos = { ...stored.logos, ...monoLogos };
+			} catch (err) {
+				logWarn('Failed to read the stored team mono logos.', err);
+			}
+			monoLogosLoaded = true;
+		}
+
+		const missing = missingMonoLogoLeagues(monoLogos, leagueIds);
+		if (missing.length === 0) return monoLogos;
+
+		const key = missing.toSorted().join(',');
 		if (monoLogoRequest?.key !== key) {
-			monoLogoRequest = { key, pending: fetchTeamMonoLogos(leagueIds) };
+			monoLogoRequest = { key, pending: fetchTeamMonoLogos(missing) };
 		}
 		try {
-			monoLogos = await monoLogoRequest.pending;
-			monoLogoLeagues = key;
+			monoLogos = { ...monoLogos, ...await monoLogoRequest.pending };
+			// Re-stamped on every write, so a league added months later does not inherit an expiry from
+			// the fetch that filled the other thirty.
+			await browser.storage.local.set({ [monoLogoCacheKey]: { fetchedAt: Date.now(), logos: monoLogos } });
 		} catch (err) {
 			// A miss costs the guide nothing but the tinted disc it drew before. Cleared rather than
 			// kept, so the next open retries instead of awaiting a promise that already rejected.
@@ -350,6 +382,7 @@ export default defineBackground(() => {
 		gameBoosts,
 		onStandbyStream,
 		standbyStreamTabId,
+		slateShedLeagues,
 	});
 
 	const broadcastScoresUpdated = () => {
@@ -589,6 +622,13 @@ export default defineBackground(() => {
 		}, prefs.switchDelaySeconds * 1000);
 	};
 
+	/* Asks for exactly what the display preferences want and no more. Widening this to cover the guide
+	   as well looked free — `includeUpcoming` already makes it two requests per league, so a wider
+	   `dates` range changes the payload and not the request count — and it cost the future. ESPN caps
+	   a scoreboard response server-side, near 80 events on a dated college football query, and the
+	   truncation takes the tail, which is the days furthest ahead. Reaching two days back to pick up
+	   finals for the guide spent that whole budget on a college football weekend's *past* games and
+	   left one day of future showing. The guide asks for its own superset again. */
 	const refreshSlate = async () => {
 		if (!prefs.showUpcomingGames && !prefs.keepFinalGames) {
 			upcomingGames = [];
@@ -601,11 +641,40 @@ export default defineBackground(() => {
 				upcomingDays: prefs.upcomingGamesDays,
 				includeFinal: prefs.keepFinalGames,
 			});
-			upcomingGames = prefs.showUpcomingGames ? result.games.filter(g => g.status === 'pre') : [];
-			retainedFinalGames = prefs.keepFinalGames ? result.games.filter(g => g.status === 'post') : [];
+			if (result.shedLeagues.length === prefs.enabledLeagues.length) {
+				logWarn(`ESPN shed the whole slate (${result.shedLeagues.length} leagues); keeping what we have.`);
+				return;
+			}
+			/* Only the leagues that answered may have their entries replaced. Rebuilding both lists from
+			   `result.games` wholesale threw away every final and every kickoff belonging to a league
+			   that failed this fetch — and a league whose dated range is refused fails *only* this leg,
+			   so its live games kept arriving from the undated board while its finals silently went.
+			   That is the same "a shed league contributes nothing and says nothing" trap as everywhere
+			   else here, one layer up. */
+			const answered = new Set(prefs.enabledLeagues.filter(id => !result.shedLeagues.includes(id)));
+			const heldFor = (list: Game[]): Game[] => list.filter(g => !answered.has(g.league));
+
+			upcomingGames = prefs.showUpcomingGames
+				? [...heldFor(upcomingGames), ...result.games.filter(g => g.status === 'pre')]
+				: [];
+			retainedFinalGames = prefs.keepFinalGames
+				? [
+					...heldFor(retainedFinalGames).filter(game => isWithinFinalRetention(game)),
+					...result.games.filter(g => g.status === 'post'),
+				]
+				: [];
 		} catch (err) {
 			logWarn('Failed to fetch the slate.', err);
 		}
+	};
+
+	// Any game a poll just reported replaces the copy the slate holds; everything else is kept, which
+	// is what carries the days the dateless poll cannot see. Skipped until a wide fetch has actually
+	// run, so a poll cannot seed a slate that would then look like a whole day to the guide.
+	const mergeGuideSlate = (fresh: Game[]) => {
+		if (guideSlateAt === 0) return;
+		const freshIds = new Set(fresh.map(g => g.id));
+		guideSlate = [...guideSlate.filter(g => !freshIds.has(g.id)), ...fresh];
 	};
 
 	// Re-checked on every merge rather than only on refetch, so a game ages out of the list on its
@@ -842,6 +911,14 @@ export default defineBackground(() => {
 			let fetched: Game[];
 			try {
 				const fetchResult = await fetchGamesWithLeagueLogos(enabledLeagues, { includeUpcoming: false, includeFinal: wantsFinalGames() });
+				// Every league refused is not an empty slate, it is no answer at all. Replacing `games`
+				// from it would clear a live list and report a quiet night to the popup.
+				if (fetchResult.shedLeagues.length === enabledLeagues.length) {
+					logError(`ESPN shed all ${enabledLeagues.length} leagues; keeping the previous games.`);
+					slateShedLeagues = fetchResult.shedLeagues;
+					return;
+				}
+				slateShedLeagues = fetchResult.shedLeagues;
 				fetched = fetchResult.games;
 				leagueLogos = fetchResult.leagueLogos;
 			} catch (err) {
@@ -849,6 +926,7 @@ export default defineBackground(() => {
 				return;
 			}
 			absorbFinalGames(fetched);
+			mergeGuideSlate(fetched);
 			finishedGames = fetched.filter(g => g.status === 'post');
 			games = displayableGames(fetched);
 			const freshGameIds = new Set(fetched.map(g => g.id));
@@ -865,7 +943,13 @@ export default defineBackground(() => {
 		let finishedGames: Game[] = [];
 		try {
 			const fetchResult = await fetchGamesWithLeagueLogos([leagueId], { includeUpcoming: false, includeFinal: wantsFinalGames() });
+			// Thrown rather than merged: a shed league comes back with no games, and the tail of this
+			// function would read that as a successful tick with nothing live, hand it to
+			// `recordPollResult`, and walk a league down into dormant while its games are being played.
+			// Failure keeps the mode it already had, which is the faster of the two.
+			if (fetchResult.shedLeagues.length > 0) throw new Error(`ESPN shed the ${leagueId} scoreboard.`);
 			absorbFinalGames(fetchResult.games);
+			mergeGuideSlate(fetchResult.games);
 			finishedGames = fetchResult.games.filter(g => g.status === 'post');
 			const freshGameIds = new Set(fetchResult.games.map(g => g.id));
 			// Every league's finals are rebuilt from the retained list rather than carried through
@@ -887,6 +971,12 @@ export default defineBackground(() => {
 		} catch (err) {
 			logWarn(`Failed to fetch ${leagueId} games.`, err);
 		}
+
+		// Tracked per league across the steady-state polls, not just across a fan-out: a refusal and a
+		// network failure both mean this league's games are unknown rather than absent.
+		slateShedLeagues = fetchSucceeded
+			? slateShedLeagues.filter(id => id !== leagueId)
+			: [...new Set([...slateShedLeagues, leagueId])];
 
 		// Reschedule before awaiting the scoring pass so the next tick is always queued, and skip
 		// leagues that were disabled while this fetch was in flight. The lookahead is the one thing
@@ -911,10 +1001,14 @@ export default defineBackground(() => {
 				nextInterval = pollDormantMinMs + randomInRange(0, pollDormantMaxMs - pollDormantMinMs);
 			} else if (fetchSucceeded) {
 				const liveLeagueGames = games.filter(g => g.league === leagueId && g.status === 'in');
-				const base = computeLeagueIntervalMs(liveLeagueGames, currentScores);
+				const refreshMs = scoreboardRefreshMs(leagueId);
+				const base = computeLeagueIntervalMs(liveLeagueGames, currentScores, refreshMs);
 				// Proportional so fast polls stay dense and slow polls spread out.
 				const jitterMax = Math.round((base / pollMaxEagerMs) * 2_000);
-				nextInterval = base + randomInRange(-jitterMax, jitterMax);
+				// Floored, because the negative half of the jitter would otherwise land inside the window
+				// ESPN is still serving the previous answer for, which is the poll this floor exists to
+				// stop. De-syncing leagues stays the job of the positive half.
+				nextInterval = Math.max(refreshMs, base + randomInRange(-jitterMax, jitterMax));
 			} else {
 				nextInterval = pollIntervalMs + randomInRange(-2_000, 2_000);
 			}
@@ -1196,6 +1290,13 @@ export default defineBackground(() => {
 				// Demo mode has no network behind it, so the simulator's own slate is the answer.
 				if (demoMode && simulator) return { games, leagueLogos, monoLogos: {}, gameBoosts };
 
+				// The slate this built last time, which the live polls have kept current since. The
+				// first open of a session still pays for it; the repeat opens that a pager invites do
+				// not, where every open used to cost two requests per enabled league.
+				if (guideSlateAt !== 0 && Date.now() - guideSlateAt < guideSlateTtlMs) {
+					return { games: guideSlate, leagueLogos, monoLogos: await ensureMonoLogos(prefs.enabledLeagues), gameBoosts };
+				}
+
 				// Deliberately bypasses both of refreshSlate's preference gates: the guide draws the
 				// whole day whatever the popup is configured to list. Equally deliberately it does not
 				// widen `games` — afterFetch scores off games.filter(status === 'in'), and the switch
@@ -1210,7 +1311,14 @@ export default defineBackground(() => {
 						upcomingDays: Math.max(prefs.upcomingGamesDays, guideMinUpcomingDays),
 						includeFinal: true,
 					});
-					return { ...result, monoLogos: await ensureMonoLogos(prefs.enabledLeagues), gameBoosts };
+					guideSlate = result.games;
+					guideSlateAt = Date.now();
+					return {
+						games: result.games,
+						leagueLogos: result.leagueLogos,
+						monoLogos: await ensureMonoLogos(prefs.enabledLeagues),
+						gameBoosts,
+					};
 				} catch (err) {
 					logWarn('Failed to fetch the guide slate.', err);
 					return { games: [], leagueLogos, monoLogos, gameBoosts };

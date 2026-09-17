@@ -331,6 +331,7 @@ describe('normalizeBackgroundState', () => {
 			gameBoosts: {},
 			onStandbyStream: false,
 			standbyStreamTabId: null,
+			slateShedLeagues: [],
 		};
 		expect(normalizeBackgroundState(null)).toEqual(emptyState);
 		expect(normalizeBackgroundState(undefined)).toEqual(emptyState);

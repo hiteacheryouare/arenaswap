@@ -95,6 +95,31 @@ const StatefulMainView = ({ games, prefs = defaultPrefs }: { games: ReturnType<t
 	);
 };
 
+// Two live games whose order depends on their PowerScores, and a button that swaps them the way a
+// pushed `SCORES_UPDATED` would.
+const score = (gameId: string, total: number) => ({ gameId, total } as never);
+
+const ResortingMainView = () => {
+	const scrollOffsetRef = useRef(0);
+	const [flipped, setFlipped] = useState(false);
+	return (
+		<>
+			<button type='button' data-testid='fake-score-push' onClick={() => setFlipped(true)}>Push</button>
+			<MainView
+				{...defaultProps}
+				games={[makeGame('slow'), makeGame('fast')]}
+				scores={flipped
+					? [score('slow', 10), score('fast', 90)]
+					: [score('slow', 90), score('fast', 10)]}
+				scrollOffsetRef={scrollOffsetRef}
+				selectedDayKey={null}
+				onSelectDay={() => {}}
+				revealMode='full'
+			/>
+		</>
+	);
+};
+
 // Mirrors the `key={view}` remount in `app.tsx`: leaving the list unmounts it outright, so anything
 // the view owned itself would be gone by the time you came back.
 const NavigatingMainView = ({ games }: { games: ReturnType<typeof makeGame>[] }) => {
@@ -359,5 +384,25 @@ describe('mainView up next day pager', () => {
 
 		cy.get('[data-testid="upcoming-day-label"]').should('have.text', 'Tomorrow');
 		cy.get('[data-testid="game-card-tomorrow-0"]').should('exist');
+	});
+
+	// Both live sections are re-sorted on PowerScore, and scores arrive by push every few seconds, so
+	// a resort inside the open animation's 3.4s window is ordinary. The plan the stagger is built from
+	// is fixed on the first list that has anything in it: a card that keeps its React identity but
+	// changes index would otherwise get a new `animation-delay`, which moves a running animation's
+	// current time rather than restarting it, and across the eight-card cap the mode itself flips and
+	// a card grows a poster from nothing or loses one mid-frame.
+	it('holds the reveal stagger still when a score push resorts the list under it', () => {
+		cy.mount(<ResortingMainView />);
+		cy.get('[data-testid="game-card-slow"]').closest('.game-card-reveal').should('have.css', '--reveal-delay', '0ms');
+		cy.get('[data-testid="game-card-fast"]').closest('.game-card-reveal').should('have.css', '--reveal-delay', '80ms');
+
+		cy.get('[data-testid="fake-score-push"]').click();
+
+		// The resort really happened — without this the assertions below pass for the wrong reason.
+		cy.get('.game-card-reveal [data-testid^="game-card-"]').first().should('have.attr', 'data-testid', 'game-card-fast');
+		// And neither card's place in the cascade moved with it.
+		cy.get('[data-testid="game-card-slow"]').closest('.game-card-reveal').should('have.css', '--reveal-delay', '0ms');
+		cy.get('[data-testid="game-card-fast"]').closest('.game-card-reveal').should('have.css', '--reveal-delay', '80ms');
 	});
 });

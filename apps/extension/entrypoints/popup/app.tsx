@@ -15,6 +15,7 @@ import { i18n } from '#i18n';
 import { TranslationContext } from '@arenaswap/ui/src/components/i18nContext';
 import useFavoriteScoreConfetti from './useFavoriteScoreConfetti';
 import { resolveOpenRevealMode, revealSettleMs } from './cardReveal';
+import { isLeagueLogoCacheFresh, leagueLogoCacheKey, seededLeagueLogos } from './leagueLogoCache';
 import useToast from './useToast';
 import SuggestView from './components/suggestView';
 import {
@@ -80,7 +81,9 @@ export default () => {
 	// full every time you came back from a setting or a game detail. Cleared once the last card has
 	// landed, which is what makes the return trip quiet.
 	const [revealMode, setRevealMode] = useState(resolveOpenRevealMode);
-	const [allLeagueLogoCache, setAllLeagueLogoCache] = useState<LeagueLogoMap>({});
+	// Seeded rather than empty: every league already has a pinned or fallback URL, so the pickers are
+	// correct on the first frame and the refresh below is an upgrade rather than the only source.
+	const [allLeagueLogoCache, setAllLeagueLogoCache] = useState<LeagueLogoMap>(seededLeagueLogos);
 	const settledRef = useRef(false);
 	const prefsSyncRef = useRef<Promise<void>>(Promise.resolve());
 	const { toasts, showToast, dismissToast } = useToast();
@@ -96,21 +99,64 @@ export default () => {
 	// Timed from the first painted list rather than from mount, because the cards do not exist until
 	// the slate lands and the animation starts with them. Started at mount it would expire partway
 	// through a slow open and take the stage off cards still using it.
-	const listReady = !isLoading && settled;
+	//
+	// "Painted" means the list is the thing on screen, not merely that a fetch came back. Onboarding
+	// is a shell above `view` and its own initial fetch settles with no leagues enabled, so timed from
+	// the fetch alone the whole window expired behind the wizard — and since `resolveOpenRevealMode`
+	// has stamped the day by then, the first real slate a new user ever sees arrived with the
+	// animation already over and the next open got the quick version. The full one was unreachable on
+	// day one.
+	const listOnScreen = onboardingDone === true && view === 'main' && !isLoading && settled;
+	const revealStartedRef = useRef(false);
 	useEffect(() => {
-		if (revealMode === 'none' || !listReady) return;
+		if (revealMode === 'none') return;
+		if (!listOnScreen) {
+			// Not started yet — onboarding, or the slate still on its way. Wait for it.
+			if (!revealStartedRef.current) return;
+			// Started, and then the list went away. It ends here rather than waiting: MainView unmounts,
+			// each card's own `done` state goes with it, and coming back inside the window would play the
+			// whole graphic again — which is the thing owning the mode up here was meant to prevent.
+			setRevealMode('none');
+			return;
+		}
+		revealStartedRef.current = true;
 		const timer = setTimeout(() => setRevealMode('none'), revealSettleMs(revealMode));
 		return () => clearTimeout(timer);
-	}, [revealMode, listReady]);
+	}, [revealMode, listOnScreen]);
 
-	// The onboarding and settings pickers show every league, not just the enabled ones.
+	// The onboarding and settings pickers show every league, not just the enabled ones — which is 31
+	// scoreboard requests, more than ESPN's burst allowance in one call, and this ran on every single
+	// popup open with the result discarded on close. It was the pickers, not the slate, spending the
+	// budget the slate then came back short of. Cached for a week now, and the seed above means a miss
+	// costs nothing visible.
 	useEffect(() => {
-		void fetchLeagueLogos(allLeagueIds, { includeUpcoming: false })
-			.then(logos => setAllLeagueLogoCache(logos))
-			.catch(() => {});
+		let cancelled = false;
+		void (async () => {
+			try {
+				const stored = (await browser.storage.local.get(leagueLogoCacheKey))[leagueLogoCacheKey];
+				if (isLeagueLogoCacheFresh(stored, Date.now())) {
+					if (!cancelled) setAllLeagueLogoCache(current => ({ ...current, ...stored.logos }));
+					return;
+				}
+				const logos = await fetchLeagueLogos(allLeagueIds, { includeUpcoming: false });
+				if (Object.keys(logos).length === 0) return;
+				await browser.storage.local.set({ [leagueLogoCacheKey]: { fetchedAt: Date.now(), logos } });
+				if (!cancelled) setAllLeagueLogoCache(current => ({ ...current, ...logos }));
+			} catch {
+				// Storage unavailable, or ESPN shed the whole fan-out. The seed is already drawable.
+			}
+		})();
+		return () => { cancelled = true; };
 	}, []);
 
 	const games = useMemo(() => data?.games ?? [], [data?.games]);
+
+	/* An empty list with leagues ESPN refused behind it is not a quiet night, and the no-games panel
+	   said it was — on a full Saturday, with confidence. The fetch itself resolves either way, because
+	   the slate is collected best-effort and a refused league contributes nothing and throws nothing,
+	   so this is the only place the difference is visible. Only when the list is empty: a slate that
+	   lost one league of thirty-one still has games to show, and those are worth more than a banner. */
+	const slateUnvouchable = games.length === 0 && (data?.slateShedLeagues?.length ?? 0) > 0;
 
 	// openTabs is a mount-time snapshot, so this settles once per popup open. That is what lets a
 	// dismissal stick for the session while still re-raising when a genuinely new pair shows up.
@@ -469,7 +515,7 @@ export default () => {
 						prefs={prefs}
 						prefsLoaded={prefsLoaded}
 						isLoading={isLoading || !settled}
-						hasError={Boolean(error && !data)}
+						hasError={Boolean(error && !data) || slateUnvouchable}
 						onRefresh={() => void mutate(() => fetchState(true), { revalidate: false })}
 						games={games}
 						scores={scores}
