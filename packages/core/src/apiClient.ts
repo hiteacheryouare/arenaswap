@@ -854,7 +854,7 @@ const fetchDayFromEspn = async (
 const fetchDayGames = async (config: LeagueConfig, dayKey: string, todayKey: string): Promise<CachedDay> => {
 	const cacheKey = `${config.id}:${dayKey}`;
 	const cached = dayCache.get(cacheKey);
-	/* `dayKey !== todayKey` is the load-bearing half, and it has to be asked here rather than
+	/* `dayKey !== todayKey` is the half that matters, and it has to be asked here rather than
 	   inferred from the TTL written when the entry was made. A calendar day moves future → today →
 	   past underneath a cached entry: a day fetched as tomorrow carries ten minutes, and ten minutes
 	   later it is today and still fresh by its own clock. That served a stale tomorrow as today
