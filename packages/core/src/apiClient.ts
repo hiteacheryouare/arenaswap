@@ -30,9 +30,11 @@ const espnBase = 'https://site.api.espn.com/apis/site/v2/sports';
    symptom is a slate that comes back quietly short. */
 export const espnRequestPoolSize = 6;
 
-// Days within one league, inside the league pool above. Six leagues times three days is eighteen
-// requests at the widest point.
-export const espnDayPoolSize = 3;
+/* Days within one league, inside the league pool above, so the widest point is the two multiplied:
+   six leagues times two days is twelve requests in flight. Two rather than three because twelve is
+   inside the sixteen measured coming back clean and eighteen is not, and this branch has no rate
+   limiter underneath the pools to catch the difference. */
+export const espnDayPoolSize = 2;
 
 const settledInPool = async <T, R>(
 	items: T[],
