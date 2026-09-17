@@ -5,7 +5,9 @@ import {
 	revealBaseDurationMs,
 	revealDurationMs,
 	revealLeanRatio,
+	revealLeanWidthCap,
 	revealStageBleedPx,
+	revealSweepAngleDeg,
 	type revealMode,
 } from '../../entrypoints/popup/cardReveal';
 import type { Game } from '@arenaswap/core/types';
@@ -157,6 +159,56 @@ describe('the popup open reveal', () => {
 				expect(wipe[1]).not.to.equal(wipe[2]);
 			});
 		});
+	});
+
+	// The seam pivots on the card's centre and crosses it by one lean at each end, so a lean taken
+	// from the height alone puts a tall card's join an eighth of the way into the other team's half:
+	// 39.7px on the 210px live card the shipped popup draws, where the bottom row of the away half is
+	// 63% the home team's colour. The stub card here is 148px, which is why this has to say how tall
+	// the card is rather than take the fixture's word for it.
+	it('holds the seam within a tenth of the card whatever the card\'s height', () => {
+		cy.mount(<Harness mode='full' />);
+		// Short card: the full angle, untouched.
+		rectOf('.game-card').then(card => {
+			cy.get('.game-card-reveal').should($wrapper => {
+				const style = getComputedStyle($wrapper[0]);
+				const lean = parseFloat(style.getPropertyValue('--reveal-lean'));
+				const skew = parseFloat(style.getPropertyValue('--reveal-skew'));
+				expect(lean, 'lean on a short card').to.be.lessThan(card.width * revealLeanWidthCap);
+				expect(skew, 'angle on a short card').to.be.closeTo(revealSweepAngleDeg, 0.01);
+			});
+		});
+		// And as tall as the real thing: bounded, with the bars still skewed by the angle it leans at.
+		// Taken back off at the end of the test, because the runner's document outlives a mount and a
+		// style left in it makes every card in every later spec in this file 210px tall.
+		let padding: HTMLStyleElement | null = null;
+		cy.document().then(doc => {
+			padding = doc.createElement('style');
+			padding.textContent = '.game-card { padding-bottom: 75px; }';
+			doc.head.appendChild(padding);
+		});
+		rectOf('.game-card').then(card => {
+			expect(card.height, 'the card this measures').to.be.greaterThan(205);
+			cy.get('.game-card-reveal').should($wrapper => {
+				const style = getComputedStyle($wrapper[0]);
+				const lean = parseFloat(style.getPropertyValue('--reveal-lean'));
+				const skew = parseFloat(style.getPropertyValue('--reveal-skew'));
+				expect(lean, 'lean on a tall card').to.be.closeTo(card.width * revealLeanWidthCap, 0.01);
+				expect(skew, 'angle on a tall card').to.be.lessThan(revealSweepAngleDeg);
+				// The bar is the edge it reveals along, so its skew has to be the lean's own angle.
+				const stage = card.height + revealStageBleedPx * 2;
+				expect(Math.tan((skew * Math.PI) / 180) * (stage / 2), 'what that angle leans').to.be.closeTo(lean, 0.05);
+			});
+		});
+		// Which is what the halves are actually cut to: each one is half the card plus a lean.
+		rectOf('.game-card').then(card => {
+			cy.get('.game-card-reveal-half.is-home').should($half => {
+				const overhang = $half[0].getBoundingClientRect().width - card.width / 2;
+				expect(overhang, 'how far the home colour reaches past the centre')
+					.to.be.closeTo(card.width * revealLeanWidthCap, 0.5);
+			});
+		});
+		cy.then(() => padding?.remove());
 	});
 
 	// A parked bar is a bar you can see, and a skewed strip is wider than the bar it draws: skewing

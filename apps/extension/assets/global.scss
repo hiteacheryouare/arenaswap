@@ -1060,9 +1060,10 @@ button, input, select, optgroup, textarea {
 }
 
 /* Exactly as tall as the stage, and travelling at a constant rate: a wipe that eases is a wipe you
-   can watch thinking about it. The 20.5deg here is `revealSweepAngleDeg` in `cardReveal.ts`, which is
-   what `--reveal-lean` is derived from — the two have to name the same angle or the bar stops being
-   parallel to the edge it is revealing along.
+   can watch thinking about it. `--reveal-skew` is derived from `--reveal-lean` in `cardReveal.ts`
+   rather than named here as a constant, because the bar has to stay parallel to the edge it reveals
+   along, and two figures that have to agree by hand are two figures that will not — the lean is now
+   bounded by the card's width, so the angle is no longer the same on every card.
 
    Not taller. It used to overshoot 30% at each end, on the reasoning that a skewed strip should be
    long enough that the lean never drags a corner into view, and that is what dragged the corners
@@ -1093,13 +1094,13 @@ button, input, select, optgroup, textarea {
    the skewed strip rather than the near one, and the only place it is genuinely off the card. */
 .game-card-reveal-sweep.is-away {
 	left:      calc(-22px - var(--reveal-lean));
-	transform: skewX(-20.5deg);
+	transform: skewX(calc(-1 * var(--reveal-skew)));
 	animation: cardRevealSweepAway calc(1000ms * var(--reveal-rate)) linear calc(var(--reveal-delay) + 1500ms * var(--reveal-rate)) both;
 }
 
 .game-card-reveal-sweep.is-home {
 	left:      calc(100% + var(--reveal-lean));
-	transform: skewX(20.5deg);
+	transform: skewX(var(--reveal-skew));
 	animation: cardRevealSweepHome calc(1000ms * var(--reveal-rate)) linear calc(var(--reveal-delay) + 1500ms * var(--reveal-rate)) both;
 }
 
@@ -1215,13 +1216,13 @@ button, input, select, optgroup, textarea {
    plus two leans, which is exactly the gap between the two parked offsets above. Each keyframe
    restates the skew, since naming `transform` at all replaces it. */
 @keyframes cardRevealSweepAway {
-	from { transform: translateX(0) skewX(-20.5deg); }
-	to   { transform: translateX(var(--reveal-sweep-run)) skewX(-20.5deg); }
+	from { transform: translateX(0) skewX(calc(-1 * var(--reveal-skew))); }
+	to   { transform: translateX(var(--reveal-sweep-run)) skewX(calc(-1 * var(--reveal-skew))); }
 }
 
 @keyframes cardRevealSweepHome {
-	from { transform: translateX(0) skewX(20.5deg); }
-	to   { transform: translateX(calc(var(--reveal-sweep-run) * -1)) skewX(20.5deg); }
+	from { transform: translateX(0) skewX(var(--reveal-skew)); }
+	to   { transform: translateX(calc(var(--reveal-sweep-run) * -1)) skewX(var(--reveal-skew)); }
 }
 
 /* Barely moving while the bar uncovers it, so what is revealed is already alive; then the hold,

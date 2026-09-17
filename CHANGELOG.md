@@ -3,6 +3,34 @@
 > One or two lines per entry: what changed, and the one thing about it worth knowing later.
 > The code, the tests and the git history hold the rest. Do not write essays here.
 
+## The seam crosses the centre by a tenth of the card at most, not by however tall it is — 2026-09-17
+
+The maintainer, on the graphic eating the away side's half: "it's like I took the right block and slid
+it across the table into the left, and part of the left fell off." Measured on a component fixture the
+join was centred to 0.4px and leaning a symmetric ±27px, which is why the first two readings of this
+were wrong. The fixture was the problem: a stub live card is 148px tall and the one the shipped popup
+draws is **210px**, the lean is half the horizontal run of the angle across the card's height, and it
+was bounded by nothing. So the real card's join crossed the centre by 39.7px of a 296px card — better
+than an eighth of the way across — and while each half still held exactly half the card, the bottom
+row of the away half was 63% the home team's colour. Read off a screen rather than a spec, that is a
+block that has been slid sideways. It also explains the Chrome-but-not-Edge report: nothing differs
+between the two engines here, but the amount depends on the card's height, so whichever browser had
+the taller cards on screen showed it worse.
+
+Bounded at a tenth of the card's width, which is what a 158px card reaches at the full 20.5° — so the
+shorter cards in a list are untouched and the tall ones come down to meet them, and the crossing is a
+fact about the card you are looking at rather than about how many rows it happens to carry. The real
+card goes 39.7px → 29.6px at an effective 15.6°. `revealLeanWidthCap` is the one number to turn if
+that is still too far.
+
+The angle stops being a constant on every card, so the bars can no longer name it themselves: 20.5°
+was written into the stylesheet by hand in six places, with a unit test pinning it against
+`revealSweepAngleDeg` precisely because the bar has to stay parallel to the edge it reveals along.
+`--reveal-skew` is derived from the bounded lean now and the stylesheet names no degrees at all,
+which is strictly better than two figures that have to agree: parallelism holds by construction. The
+parked bars come along for free, since their clearance was already one bar width and one lean, and a
+strip skewed by the lean's own angle reaches exactly one lean to either side. No new locale keys.
+
 ## A parked wipe bar is off the card, once the skew is counted — 2026-09-17
 
 The white lines in the corners at the beginning and end of the open animation, which the entry below

@@ -47,19 +47,46 @@ export const revealSettleMs = (mode: revealMode) => (
 	mode === 'none' ? 0 : revealDelayMs(revealStaggerCapIndex, mode) + revealDurationMs(mode)
 );
 
-// tan(20.5 degrees). One angle for the whole graphic: the wipes are skewed by it, the seam between
-// the two team colours leans by it, the edge each wipe reveals its crest along is cut to it, and
-// that seam straightens back to vertical as the card resolves.
+// tan(20.5 degrees). The steepest the graphic ever leans, and on most cards the angle it holds: the
+// bars are skewed by it, the seam between the two team colours leans by it, the edge each wipe
+// reveals its crest along is cut to it, and that seam straightens back to vertical as the card
+// resolves.
 export const revealSweepAngleDeg = 20.5;
 export const revealLeanRatio = Math.tan((revealSweepAngleDeg * Math.PI) / 180);
+
+// How far the seam may cross the card's centre, as a share of the card's width.
+//
+// The lean is half the horizontal run of the angle across the card's height, and the seam pivots on
+// the centre — so it crosses by one lean at the top and one at the bottom, and a taller card crosses
+// further for no reason a viewer can see. Measured in the shipped popup: a live NBA card is 210px
+// tall, which at the full angle is 39.7px of a 296px card, better than an eighth of the way across.
+// The halves still hold exactly half the card each, but the bottom row of one is 63% the other
+// team's colour, which reads as the right-hand block having been slid across into the left.
+//
+// A tenth of the width is what a 158px card reaches at the full angle, so the shorter cards in a
+// list are untouched and the tall ones come down to meet them: the crossing becomes a fact about the
+// card you are looking at rather than about how many rows it happens to carry.
+export const revealLeanWidthCap = 0.1;
+
+export const revealLean = (stageHeight: number, cardWidth: number) => Math.min(
+	(stageHeight * revealLeanRatio) / 2,
+	cardWidth * revealLeanWidthCap,
+);
+
+// And the bars are skewed by whatever angle that lean came out as, rather than by the constant above.
+// Derived rather than named twice: the bar has to stay parallel to the edge it reveals along, and two
+// figures that have to agree by hand are two figures that will not.
+export const revealSkewDeg = (lean: number, stageHeight: number) => (
+	stageHeight <= 0 ? revealSweepAngleDeg : (Math.atan((lean * 2) / stageHeight) * 180) / Math.PI
+);
 
 // How far the stage bleeds past the card, up and down. A cover of exactly the card's shape cannot
 // hide the card's own edges — both are antialiased, so the two coverages fall short of 1 together
 // and what is left of the card shows through as a light line. A pixel of bleed makes every pixel the
 // card paints at all a pixel the cover paints entirely. `global.scss` names the same pixel twice,
 // as the stage's `inset` and as the pixel its clip adds to the other two sides; the lean is measured
-// across the bled height rather than the card's, so the seam holds `revealSweepAngleDeg` and stays
-// parallel to the bar that reveals along it.
+// across the bled height rather than the card's, so the seam leans over the box it is actually drawn
+// on and stays parallel to the bar that reveals along it.
 export const revealStageBleedPx = 1;
 
 // The poster lettering is ESPN's own `abbreviation`, which is not capped: three characters for a

@@ -8,8 +8,9 @@ import {
 	revealDelayMs,
 	revealDurationMs,
 	revealHoldScale,
-	revealLeanRatio,
+	revealLean,
 	revealRate,
+	revealSkewDeg,
 	revealStageBleedPx,
 	revealSweepRun,
 	type revealMode,
@@ -28,6 +29,7 @@ interface revealLanding {
 	homeDx: number;
 	homeDy: number;
 	lean: number;
+	skew: number;
 	crestSize: number;
 	hold: number;
 	sweepRun: number;
@@ -93,17 +95,19 @@ const gameCardReveal = ({ game, mode, index, children }: gameCardRevealProps) =>
 		const away = crestCentre(awayRect, box);
 		const home = crestCentre(homeCrest.getBoundingClientRect(), box);
 		const crestSize = awayRect.width;
-		// Half the horizontal run of a leaning edge across the stage, so the seam and both wipe edges
-		// hold the same angle on a card of any height rather than only on the one they were eyeballed
-		// against. The stage's height, not the card's: it bleeds a pixel past the card at each end, and
-		// the same run over a taller box is a shallower angle.
-		const lean = ((box.height + revealStageBleedPx * 2) * revealLeanRatio) / 2;
+		// Half the horizontal run of the leaning edges across the stage, which is what every part of
+		// the graphic that leans is cut or skewed by. The stage's height, not the card's: it bleeds a
+		// pixel past the card at each end, and the same run over a taller box is a shallower angle.
+		// Bounded by the card's width rather than left to the height alone — see `revealLeanWidthCap`.
+		const stageHeight = box.height + revealStageBleedPx * 2;
+		const lean = revealLean(stageHeight, box.width);
 		setLanding({
 			awayDx: away.x - box.width * 0.25,
 			awayDy: away.y - box.height / 2,
 			homeDx: home.x - box.width * 0.75,
 			homeDy: home.y - box.height / 2,
 			lean,
+			skew: revealSkewDeg(lean, stageHeight),
 			crestSize,
 			hold: revealHoldScale(box.width, box.height, crestSize),
 			sweepRun: revealSweepRun(box.width, lean),
@@ -153,6 +157,7 @@ const gameCardReveal = ({ game, mode, index, children }: gameCardRevealProps) =>
 				'--reveal-delay': `${delay}ms`,
 				'--reveal-rate': revealRate(mode),
 				'--reveal-lean': `${landing?.lean ?? 0}px`,
+				'--reveal-skew': `${landing?.skew ?? 0}deg`,
 				'--reveal-crest': `${landing?.crestSize ?? 0}px`,
 				'--reveal-hold': landing?.hold ?? 1,
 				'--reveal-sweep-run': `${landing?.sweepRun ?? 0}px`,

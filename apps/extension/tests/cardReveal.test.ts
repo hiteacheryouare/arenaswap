@@ -11,7 +11,9 @@ import {
 	revealHoldHeightShare,
 	revealHoldScale,
 	revealHoldWidthShare,
+	revealLean,
 	revealLeanRatio,
+	revealLeanWidthCap,
 	revealMaxCards,
 	revealModeForIndex,
 	revealPlateRatio,
@@ -19,6 +21,7 @@ import {
 	revealSettleMs,
 	revealStaggerCapIndex,
 	revealStaggerStepMs,
+	revealSkewDeg,
 	revealSweepAngleDeg,
 	revealSweepBarPx,
 	revealSweepRun,
@@ -192,14 +195,14 @@ describe('the figures the stylesheet repeats by hand', () => {
 		});
 	});
 
-	// The bars are skewed by a figure written into the stylesheet, and the edge they reveal along is
-	// cut by `--reveal-lean`, which comes off this constant. They stop being one line if either moves.
+	// The bars are skewed by the angle the lean came out as, not by a constant of their own: the bar
+	// and the edge it reveals along are one line, and the lean is no longer the same angle on every
+	// card. A degree figure written into the stylesheet is the bug this pins.
 	it('skews the bars by the angle the lean is derived from', () => {
-		const skews = stylesheet.match(/skewX\(-?([\d.]+)deg\)/g) ?? [];
-		expect(skews.length).toBeGreaterThan(0);
-		skews.forEach(skew => {
-			expect(skew.replace('-', '')).toBe(`skewX(${revealSweepAngleDeg}deg)`);
-		});
+		expect(stylesheet).not.toMatch(/skewX\(-?[\d.]+deg\)/);
+		const skews = stylesheet.match(/skewX\([^)]*var\(--reveal-skew\)[^)]*\)/g) ?? [];
+		// Both static offsets and both keyframe pairs.
+		expect(skews).toHaveLength(6);
 	});
 
 	// The last beat of the card coming into focus has to be over before the wrapper is removed, or a
@@ -236,10 +239,28 @@ describe('the figures the stylesheet repeats by hand', () => {
 });
 
 describe('the one angle the whole graphic is built on', () => {
-	// The stylesheet skews the bars by this same figure by hand. If one moves without the other,
-	// the bar stops being parallel to the edge it is supposed to be revealing along.
 	it('is the tangent of the sweep angle', () => {
 		expect(revealSweepAngleDeg).toBe(20.5);
 		expect(revealLeanRatio).toBeCloseTo(Math.tan((20.5 * Math.PI) / 180), 10);
+	});
+
+	// The seam pivots on the centre and crosses it by one lean at each end, so an unbounded lean puts
+	// a tall card's join an eighth of the way into the other team's half — 39.7px on the 210px live
+	// card the popup really draws. Short cards keep the full angle; tall ones come down to meet them.
+	it('leans by the card\'s height until that would cross more than a tenth of its width', () => {
+		const width = 296;
+		expect(revealLean(158, width)).toBeCloseTo((158 * revealLeanRatio) / 2, 6);
+		expect(revealLean(212, width)).toBeCloseTo(width * revealLeanWidthCap, 6);
+		expect(revealLean(400, width)).toBeCloseTo(width * revealLeanWidthCap, 6);
+	});
+
+	// And whatever the lean came out as, the bars are skewed by exactly the angle it describes, or a
+	// bar stops being the edge it reveals along.
+	it('skews the bars by the angle the lean it was given actually leans at', () => {
+		expect(revealSkewDeg(revealLean(150, 296), 150)).toBeCloseTo(revealSweepAngleDeg, 6);
+		const tall = 300;
+		const lean = revealLean(tall, 296);
+		expect(revealSkewDeg(lean, tall)).toBeLessThan(revealSweepAngleDeg);
+		expect(Math.tan((revealSkewDeg(lean, tall) * Math.PI) / 180) * (tall / 2)).toBeCloseTo(lean, 6);
 	});
 });
