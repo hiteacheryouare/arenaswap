@@ -52,6 +52,13 @@ Sports are meant to be fun. Product design and copy should be lighthearted, a li
 ### Modern
 The tech stack should never fall more than 2 years behind the latest and greatest. We should always be using the best tools available to us, and not be afraid to try new things.
 
+### Never forget that _je ne sais quoi_ 
+We understand we aren't building systems to save people's lives, but we should still take pride in what we do. Sports bring people together and keep people entertained, happy, and inspire people to achieve greatness. 
+
+With that said, never forget the small details that make it feel polished, and never forget that _je ne sais quoi_ that makes a product feel like it was made with love and care (because it is).
+
+If this sounds familiar, it is. We are heavily inspired by the team at [Transit](https://transitapp.com/vision) and the work they do, their philosophy, their design system, and their attention to detail. We want to be like them, but for sports.
+
 ---
 
 ## Stuff for AI Agents:
