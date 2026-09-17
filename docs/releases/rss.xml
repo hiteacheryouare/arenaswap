@@ -7,6 +7,13 @@
 		<description>What shipped in each version of ArenaSwap.</description>
 		<language>en</language>
 		<item>
+			<title>2.1.1 — ArenaSwap 2.1.1: We got ghosted</title>
+			<link>https://hiteacheryouare.github.io/arenaswap/releases/2.1.1/</link>
+			<guid isPermaLink="true">https://hiteacheryouare.github.io/arenaswap/releases/2.1.1/</guid>
+			<pubDate>Mon, 07 Sep 2026 00:00:00 GMT</pubDate>
+			<description>A hotfix for those who use the &quot;upcoming games&quot; feature.</description>
+		</item>
+		<item>
 			<title>2.1.0 — ArenaSwap 2.1: Electric Boogal-one</title>
 			<link>https://hiteacheryouare.github.io/arenaswap/releases/2.1.0/</link>
 			<guid isPermaLink="true">https://hiteacheryouare.github.io/arenaswap/releases/2.1.0/</guid>
