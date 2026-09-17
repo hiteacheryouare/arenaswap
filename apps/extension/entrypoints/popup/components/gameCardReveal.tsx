@@ -11,7 +11,7 @@ import {
 	revealLeanRatio,
 	revealRate,
 	revealStageBleedPx,
-	revealSweepRunShare,
+	revealSweepRun,
 	type revealMode,
 } from '../cardReveal';
 
@@ -93,19 +93,20 @@ const gameCardReveal = ({ game, mode, index, children }: gameCardRevealProps) =>
 		const away = crestCentre(awayRect, box);
 		const home = crestCentre(homeCrest.getBoundingClientRect(), box);
 		const crestSize = awayRect.width;
+		// Half the horizontal run of a leaning edge across the stage, so the seam and both wipe edges
+		// hold the same angle on a card of any height rather than only on the one they were eyeballed
+		// against. The stage's height, not the card's: it bleeds a pixel past the card at each end, and
+		// the same run over a taller box is a shallower angle.
+		const lean = ((box.height + revealStageBleedPx * 2) * revealLeanRatio) / 2;
 		setLanding({
 			awayDx: away.x - box.width * 0.25,
 			awayDy: away.y - box.height / 2,
 			homeDx: home.x - box.width * 0.75,
 			homeDy: home.y - box.height / 2,
-			// Half the horizontal run of a leaning edge across the stage, so the seam and both wipe
-			// edges hold the same angle on a card of any height rather than only on the one they
-			// were eyeballed against. The stage's height, not the card's: it bleeds a pixel past the
-			// card at each end, and the same run over a taller box is a shallower angle.
-			lean: ((box.height + revealStageBleedPx * 2) * revealLeanRatio) / 2,
+			lean,
 			crestSize,
 			hold: revealHoldScale(box.width, box.height, crestSize),
-			sweepRun: box.width * revealSweepRunShare,
+			sweepRun: revealSweepRun(box.width, lean),
 		});
 	}, []);
 

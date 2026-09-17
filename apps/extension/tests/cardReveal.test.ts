@@ -20,7 +20,8 @@ import {
 	revealStaggerCapIndex,
 	revealStaggerStepMs,
 	revealSweepAngleDeg,
-	revealSweepRunShare,
+	revealSweepBarPx,
+	revealSweepRun,
 } from '../entrypoints/popup/cardReveal';
 
 describe('which version of the open animation plays', () => {
@@ -214,13 +215,23 @@ describe('the figures the stylesheet repeats by hand', () => {
 		expect(Math.max(...beats) + contentBeatMs).toBeLessThanOrEqual(revealBaseDurationMs);
 	});
 
-	// A bar leaves 18% of the card clear at each end, so it travels 136% of the card. The stylesheet
-	// parks it at those two offsets and the component measures the distance between them.
+	// A bar is parked one bar width and one lean clear of the edge it comes in from, and leaves one
+	// lean clear of the other — the lean because skewing a strip about its own centre reaches that far
+	// to either side of where it is positioned, which is what a parked bar was showing in a corner
+	// when the offsets were a flat 18% of the card. The stylesheet parks it at those two offsets and
+	// the component measures the distance between them.
 	it('translates a bar exactly as far as the offsets it is parked at', () => {
-		const parked = [...stylesheet.matchAll(/\.game-card-reveal-sweep\.is-\w+ \{\s*\r?\n\s*left:\s*(-?[\d.]+)%;/g)]
-			.map(match => Number(match[1]) / 100);
-		expect(parked).toHaveLength(2);
-		expect(Math.max(...parked) - Math.min(...parked)).toBeCloseTo(revealSweepRunShare, 10);
+		const parked = [...stylesheet.matchAll(/\.game-card-reveal-sweep\.is-\w+ \{\s*\r?\n\s*left:\s*([^;]+);/g)]
+			.map(match => match[1].trim());
+		expect(parked).toEqual([
+			`calc(-${revealSweepBarPx}px - var(--reveal-lean))`,
+			'calc(100% + var(--reveal-lean))',
+		]);
+		// Which is the travel, once `100%` is a card width: the two offsets are a card width, a bar
+		// width and two leans apart.
+		const cardWidth = 296;
+		const lean = 28.12;
+		expect(revealSweepRun(cardWidth, lean)).toBeCloseTo((cardWidth + lean) - (-revealSweepBarPx - lean), 10);
 	});
 });
 

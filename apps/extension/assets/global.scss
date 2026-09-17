@@ -1059,14 +1059,24 @@ button, input, select, optgroup, textarea {
 	color: var(--reveal-surface);
 }
 
-/* Taller than the card at both ends so the lean never drags a corner into view, and travelling at a
-   constant rate: a wipe that eases is a wipe you can watch thinking about it. The 20.5deg here is
-   `revealSweepAngleDeg` in `cardReveal.ts`, which is what `--reveal-lean` is derived from — the two
-   have to name the same angle or the bar stops being parallel to the edge it is revealing along. */
+/* Exactly as tall as the stage, and travelling at a constant rate: a wipe that eases is a wipe you
+   can watch thinking about it. The 20.5deg here is `revealSweepAngleDeg` in `cardReveal.ts`, which is
+   what `--reveal-lean` is derived from — the two have to name the same angle or the bar stops being
+   parallel to the edge it is revealing along.
+
+   Not taller. It used to overshoot 30% at each end, on the reasoning that a skewed strip should be
+   long enough that the lean never drags a corner into view, and that is what dragged the corners
+   into view: skewing about the centre throws a strip's ends sideways by its own half-height times
+   the angle, so 1.6 card-heights of strip made a 22px bar a 112px box, and 13.7px of it was still
+   over the card at the far end of its parked position — a white wedge in the top-left corner for the
+   first second and a half, and in the bottom-left for the last. Skew changes nothing about vertical
+   extent, so a strip the height of the stage covers the card just as completely, and its ends land
+   exactly `--reveal-lean` to either side, that being what the lean is: half the run of this angle
+   across this box. Which is what lets the parking below be exact. */
 .game-card-reveal-sweep {
 	position:   absolute;
-	top:        -30%;
-	bottom:     -30%;
+	top:        0;
+	bottom:     0;
 	width:      22px;
 	background: linear-gradient(to right, rgba(255, 255, 255, 0.5), #ffffff 45%, rgba(255, 255, 255, 0.85));
 }
@@ -1079,14 +1089,16 @@ button, input, select, optgroup, textarea {
 	background: rgba(255, 255, 255, 0.7);
 }
 
+/* Parked one bar width and one lean clear of the edge it comes in from, which is the far corner of
+   the skewed strip rather than the near one, and the only place it is genuinely off the card. */
 .game-card-reveal-sweep.is-away {
-	left:      -18%;
+	left:      calc(-22px - var(--reveal-lean));
 	transform: skewX(-20.5deg);
 	animation: cardRevealSweepAway calc(1000ms * var(--reveal-rate)) linear calc(var(--reveal-delay) + 1500ms * var(--reveal-rate)) both;
 }
 
 .game-card-reveal-sweep.is-home {
-	left:      118%;
+	left:      calc(100% + var(--reveal-lean));
 	transform: skewX(20.5deg);
 	animation: cardRevealSweepHome calc(1000ms * var(--reveal-rate)) linear calc(var(--reveal-delay) + 1500ms * var(--reveal-rate)) both;
 }
@@ -1168,23 +1180,23 @@ button, input, select, optgroup, textarea {
    everything about it. The percentages are the bar's own travel, and the lean is the bar's own
    skew, which is what makes the edge and the bar one line rather than two. */
 @keyframes cardRevealWipeAway {
-	from { clip-path: polygon(0 0, calc(-18% + var(--reveal-lean)) 0, calc(-18% - var(--reveal-lean)) 100%, 0 100%); }
-	to   { clip-path: polygon(0 0, calc(118% + var(--reveal-lean)) 0, calc(118% - var(--reveal-lean)) 100%, 0 100%); }
+	from { clip-path: polygon(0 0, -22px 0, calc(-22px - var(--reveal-lean) * 2) 100%, 0 100%); }
+	to   { clip-path: polygon(0 0, calc(100% + var(--reveal-lean) * 2) 0, 100% 100%, 0 100%); }
 }
 
 @keyframes cardRevealMaskAway {
-	from { clip-path: polygon(calc(-18% + var(--reveal-lean)) 0, 100% 0, 100% 100%, calc(-18% - var(--reveal-lean)) 100%); }
-	to   { clip-path: polygon(calc(118% + var(--reveal-lean)) 0, 100% 0, 100% 100%, calc(118% - var(--reveal-lean)) 100%); }
+	from { clip-path: polygon(-22px 0, 100% 0, 100% 100%, calc(-22px - var(--reveal-lean) * 2) 100%); }
+	to   { clip-path: polygon(calc(100% + var(--reveal-lean) * 2) 0, 100% 0, 100% 100%, 100% 100%); }
 }
 
 @keyframes cardRevealWipeHome {
-	from { clip-path: polygon(calc(118% - var(--reveal-lean)) 0, 100% 0, 100% 100%, calc(118% + var(--reveal-lean)) 100%); }
-	to   { clip-path: polygon(calc(-18% - var(--reveal-lean)) 0, 100% 0, 100% 100%, calc(-18% + var(--reveal-lean)) 100%); }
+	from { clip-path: polygon(100% 0, 100% 0, calc(100% + var(--reveal-lean) * 2) 100%, 100% 100%); }
+	to   { clip-path: polygon(calc(-22px - var(--reveal-lean) * 2) 0, 100% 0, 100% 100%, -22px 100%); }
 }
 
 @keyframes cardRevealMaskHome {
-	from { clip-path: polygon(0 0, calc(118% - var(--reveal-lean)) 0, calc(118% + var(--reveal-lean)) 100%, 0 100%); }
-	to   { clip-path: polygon(0 0, calc(-18% - var(--reveal-lean)) 0, calc(-18% + var(--reveal-lean)) 100%, 0 100%); }
+	from { clip-path: polygon(0 0, 100% 0, calc(100% + var(--reveal-lean) * 2) 100%, 0 100%); }
+	to   { clip-path: polygon(0 0, calc(-22px - var(--reveal-lean) * 2) 0, -22px 100%, 0 100%); }
 }
 
 @keyframes cardRevealAbbrIn {
@@ -1197,10 +1209,11 @@ button, input, select, optgroup, textarea {
 
    Translated rather than moved on `left`, which is what this was and which Blink cannot composite:
    a full slate opens with 32 bars running at once and every frame of every one of them was a layout
-   pass. `--reveal-sweep-run` is the card's width times `revealSweepRunShare`, measured in
+   pass. `--reveal-sweep-run` is `revealSweepRun` in `cardReveal.ts`, measured in
    `gameCardReveal.tsx`, because a percentage translation resolves against the 22px bar rather than
-   against the card it is crossing. Each keyframe restates the skew, since naming `transform` at all
-   replaces it. */
+   against the card it is crossing — and because the distance is the card's width plus a bar width
+   plus two leans, which is exactly the gap between the two parked offsets above. Each keyframe
+   restates the skew, since naming `transform` at all replaces it. */
 @keyframes cardRevealSweepAway {
 	from { transform: translateX(0) skewX(-20.5deg); }
 	to   { transform: translateX(var(--reveal-sweep-run)) skewX(-20.5deg); }

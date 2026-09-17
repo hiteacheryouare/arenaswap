@@ -3,6 +3,29 @@
 > One or two lines per entry: what changed, and the one thing about it worth knowing later.
 > The code, the tests and the git history hold the rest. Do not write essays here.
 
+## A parked wipe bar is off the card, once the skew is counted — 2026-09-17
+
+The white lines in the corners at the beginning and end of the open animation, which the entry below
+was chasing on the wrong layer. The bars park at one end of their travel for two and a half of the
+graphic's 3.4 seconds, and they were not parked off the card: a bar overshot 30% above and below it,
+on the reasoning that a skewed strip should be long enough that the lean never drags a corner into
+view, and that overshoot is exactly what dragged the corners into view. Skewing about the centre
+throws a strip's ends sideways by its own half-height times the angle, so 1.6 card-heights of strip
+made a 22px bar a 112px bounding box, and 18% of the card's width was not enough to clear it — 13.7px
+of white was left over the top-left corner for the first second and a half, and over the bottom-left
+for the last. On a taller card, more: the intrusion grows with the card's height, which is why a live
+card showed it worst.
+
+Skew changes nothing about vertical extent, so the strip is the height of the stage now and covers
+the card just as completely, and its ends land exactly `--reveal-lean` to either side — that being
+what the lean already is, half the run of this angle across this box. Which makes the parking exact
+rather than eyeballed: one bar width and one lean clear of the edge it comes in from, one lean clear
+of the edge it leaves by, so `revealSweepRun` is the card's width plus a bar width plus two leans.
+The four reveal edges moved with it, because the edge a bar reveals along is that bar's own trailing
+side and they stop being one line the moment either end drifts. Pinned by a spec that measures the
+parked bounding box against the card at both ends of the travel: the design figure is zero overlap,
+and the tolerance is the 0.0124px of float noise a skewed box measures with. No new locale keys.
+
 ## The graphic covers the card by a pixel, because a cover of its exact shape cannot — 2026-09-17
 
 The white lines in the corners of the open animation. Both boundaries are antialiased, so at a pixel

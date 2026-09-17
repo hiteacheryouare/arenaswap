@@ -73,11 +73,19 @@ export const revealAbbrScale = (away = '', home = '') => (
 	revealAbbrBaseLength / Math.max(revealAbbrBaseLength, away.length, home.length)
 );
 
-// How far a bar travels, as a multiple of the card's width: it starts its own 18% clear of one edge
-// and leaves 18% clear of the other. Carried as a length rather than left as the `left: -18% → 118%`
-// it reads as, because `left` is a layout property — a thirty-game Saturday opens with 32 bars on it
-// and Blink cannot composite one of them. As a translation they all run off the compositor.
-export const revealSweepRunShare = 1.36;
+// The width the stylesheet draws the leading bar at. Named here because the travel below is measured
+// from it, and a bar has to clear its own width before it is off the card.
+export const revealSweepBarPx = 22;
+
+// How far a bar travels: from parked one bar width and one lean clear of the edge it comes in from,
+// to one lean clear of the edge it leaves by. The lean is in it twice because a strip skewed about
+// its own centre reaches that far to either side of where it is positioned, so the parked position
+// that is genuinely off the card is a lean further out than it looks — 18% of the card's width used
+// to be the figure, and on a card tall enough it was not enough, which put a white wedge in a corner
+// for as long as the bar sat there. Carried as a length rather than left as the `left` offsets it
+// reads as, because `left` is a layout property: a thirty-game Saturday opens with 32 bars on it and
+// Blink cannot composite one of them. As a translation they all run off the compositor.
+export const revealSweepRun = (cardWidth: number, lean: number) => cardWidth + revealSweepBarPx + lean * 2;
 
 // What the product draws a crest plate at wherever it draws one: the mark fills three quarters of
 // it, because a circle the size of a wordmark shaves the wordmark's ends off. The poster crest is

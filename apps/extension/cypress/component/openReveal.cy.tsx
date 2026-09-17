@@ -159,6 +159,33 @@ describe('the popup open reveal', () => {
 		});
 	});
 
+	// A parked bar is a bar you can see, and a skewed strip is wider than the bar it draws: skewing
+	// about the centre throws the strip's ends sideways by its own half-height times the angle, so the
+	// bounding box of a 22px bar is 22px plus two leans. Parked at a flat 18% of the card's width, the
+	// far corner was still 13.7px over a live card — a white wedge in the top-left corner for the first
+	// second and a half of every open, and in the bottom-left for the last.
+	it('parks both bars clear of the card, corners and all', () => {
+		cy.mount(<Harness mode='full' />);
+		rectOf('.game-card').then(card => {
+			// Before the sweep and after it, which is most of the graphic: the whole run is one second
+			// of the 3.4. 2700ms rather than the end, because the chasers are still travelling until
+			// 2640 and the wrapper itself is gone at 3400.
+			([0, 2700] as const).forEach(ms => {
+				scrubTo(ms);
+				cy.get('.game-card-reveal-sweep').should($bars => {
+					[...$bars].forEach(bar => {
+						const box = bar.getBoundingClientRect();
+						const over = Math.min(box.right, card.right) - Math.max(box.left, card.left);
+						// Zero is the design — the strip's far corner lands on the card's own edge — so the
+						// tolerance is the float noise a skewed box measures with (0.0124px here) rather than
+						// slack. The bug it pins was 13.7px, three orders of magnitude the other side of it.
+						expect(over, `${bar.className} over the card at ${ms}ms`).to.be.at.most(0.05);
+					});
+				});
+			});
+		});
+	});
+
 	// And that one edge is the bar itself, not a line near it.
 	it('cuts along the bar rather than somewhere close to it', () => {
 		cy.mount(<Harness mode='full' />);
