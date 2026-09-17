@@ -3,6 +3,41 @@
 > One or two lines per entry: what changed, and the one thing about it worth knowing later.
 > The code, the tests and the git history hold the rest. Do not write essays here.
 
+## The graphic covers the card by a pixel, because a cover of its exact shape cannot — 2026-09-17
+
+The white lines in the corners of the open animation. Both boundaries are antialiased, so at a pixel
+the card's own corner only partly paints, the cover of the identical rounded rectangle over it only
+partly covers, and what is left of the card shows through: measured at 22% of the card's `#dee2e6`
+border along the first and last row of all four corners, against the team colour in front of it. The
+fix that suggests itself does not work, and it is worth writing down why — a cover that merely
+*contains* the card's shape (a smaller radius, a half-pixel of dilation) raises its own coverage to
+no less than the card's, which is not the same as raising it to 1, and the leak is exactly the
+product of the two shortfalls. Only a full pixel of bleed removes it, because then every pixel the
+card paints at all is a pixel the cover paints entirely. Hoisting the rounding to one clip on the
+wrapper was tried first and is worse: Chrome applies a rounded overflow clip per layer, so the dark
+base that used to cover the corners outright inherited the same feathered edge and started leaking
+at the very first frame.
+
+Measuring the whole edge rather than the corner then found the same defect twice, and the second one
+is the wider line the maintainer was seeing on live cards: a card's height is computed, so its bottom
+edge lands mid-pixel — 148.4375px in the popup — and the cover's own bottom edge shares that row with
+the card's border for as much as half of it, right across the width. Same cause, same fix. So the
+stage and the sweeps bleed a pixel above and below the card and take the other two sides from a
+`clip-path` grown to the card's 8px radius plus one, rather than from `overflow` and a radius, which
+can only ever clip to the box itself. The box bleeds on one axis only: `left: 25%` and `75%` are the
+crest slots, and a box 2px wider would land both crests half a pixel off the slot they resolve into,
+while `top: 50%` of a box 2px taller offset by 1px is the line it already was. Nothing needs to paint
+out to the sides anyway — what a half's own left edge feathers against there is the card's 5px rail,
+in that half's own colour, which is why only the top and bottom ever showed a line.
+
+The one thing the bleed must not do is bend the seam, which leans over the stage and not over the
+card: the same horizontal run across a box 2px taller is a shallower angle, and the bar that reveals
+along the seam is skewed by `revealSweepAngleDeg` itself, so the two would quietly stop being one
+line. The lean is measured across the bled height now, through `revealStageBleedPx`, and both facts
+are pinned by specs. Verified by reading pixels at nine frames: no pixel on any edge of the card is
+brighter than the paint beside it while the colour is over it, and the resolved card is untouched. No
+new locale keys.
+
 ## A window is a list of days, because ESPN stopped answering for a span — 2026-09-16
 
 The three entries below diagnosed a real symptom on the wrong axis. It is not that MLB will not take

@@ -10,6 +10,7 @@ import {
 	revealHoldScale,
 	revealLeanRatio,
 	revealRate,
+	revealStageBleedPx,
 	revealSweepRunShare,
 	type revealMode,
 } from '../cardReveal';
@@ -97,10 +98,11 @@ const gameCardReveal = ({ game, mode, index, children }: gameCardRevealProps) =>
 			awayDy: away.y - box.height / 2,
 			homeDx: home.x - box.width * 0.75,
 			homeDy: home.y - box.height / 2,
-			// Half the horizontal run of a leaning edge across this card, so the seam and both wipe
+			// Half the horizontal run of a leaning edge across the stage, so the seam and both wipe
 			// edges hold the same angle on a card of any height rather than only on the one they
-			// were eyeballed against.
-			lean: (box.height * revealLeanRatio) / 2,
+			// were eyeballed against. The stage's height, not the card's: it bleeds a pixel past the
+			// card at each end, and the same run over a taller box is a shallower angle.
+			lean: ((box.height + revealStageBleedPx * 2) * revealLeanRatio) / 2,
 			crestSize,
 			hold: revealHoldScale(box.width, box.height, crestSize),
 			sweepRun: box.width * revealSweepRunShare,
@@ -160,8 +162,8 @@ const gameCardReveal = ({ game, mode, index, children }: gameCardRevealProps) =>
 				'--reveal-home-dy': `${landing?.homeDy ?? 0}px`,
 			} as CSSProperties}
 		>
-			{/* The one layer here with square corners, and the one outside the stage. See the
-			    stylesheet: two rounded rectangles of the same radius never quite cover one another. */}
+			{/* Outside the stage rather than in it: it goes under the crests the stage carries. Square,
+			    like everything else in here — the wrapper holds the one rounded clip. */}
 			<span className='game-card-reveal-base' aria-hidden='true' />
 			<div className='game-card-reveal-stage' aria-hidden='true'>
 				<span className='game-card-reveal-half is-away' />

@@ -53,6 +53,15 @@ export const revealSettleMs = (mode: revealMode) => (
 export const revealSweepAngleDeg = 20.5;
 export const revealLeanRatio = Math.tan((revealSweepAngleDeg * Math.PI) / 180);
 
+// How far the stage bleeds past the card, up and down. A cover of exactly the card's shape cannot
+// hide the card's own edges — both are antialiased, so the two coverages fall short of 1 together
+// and what is left of the card shows through as a light line. A pixel of bleed makes every pixel the
+// card paints at all a pixel the cover paints entirely. `global.scss` names the same pixel twice,
+// as the stage's `inset` and as the pixel its clip adds to the other two sides; the lean is measured
+// across the bled height rather than the card's, so the seam holds `revealSweepAngleDeg` and stays
+// parallel to the bar that reveals along it.
+export const revealStageBleedPx = 1;
+
 // The poster lettering is ESPN's own `abbreviation`, which is not capped: three characters for a
 // professional club, four or five for a college. Drawn at one size the two sides collide over the
 // seam — measured on a 296px card, ARMY against NAVY overlaps by 7px and UCONN by 52 — so the type

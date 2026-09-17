@@ -813,12 +813,31 @@ button, input, select, optgroup, textarea {
 	margin-bottom: 0;
 }
 
+/* A pixel proud of the card on every side, which is what keeps the card's own edges out of the
+   graphic. A cover of exactly the card's shape cannot hide them: both boundaries are antialiased, so
+   at a pixel the card only partly paints the cover only partly covers, and the rest of the card
+   shows through. Measured two ways on one card — 22% of the card's `#dee2e6` border along the first
+   and last row of all four corners, and a light hairline across the whole bottom edge, because a
+   card's height is computed and lands mid-pixel (148.44px in the popup, so most of that row was the
+   card). Both read as white lines in the corners. A cover that merely contains the card's shape
+   fixes neither: containment makes the cover's coverage no less than the card's, which is not the
+   same as making it 1. A pixel of bleed does, because then every pixel the card paints at all is a
+   pixel the cover paints entirely.
+
+   The box bleeds only up and down and the clip takes the other two sides, because `left: 25%` and
+   `75%` below are the crest slots: a box 2px wider lands both crests half a pixel off the slot they
+   resolve into, while `top: 50%` of a box 2px taller offset by 1px is the same line it already was.
+   Nothing needs to paint out to the sides anyway — what a half's own left edge feathers against
+   there is the card's 5px rail, in that half's own colour.
+
+   `clip-path` rather than `overflow` and a radius, which can only ever clip to the box itself. The
+   1px is `revealStageBleedPx` in `cardReveal.ts`, which the lean is measured across: the seam leans
+   over this box rather than over the card, and a bleed is not allowed to bend it. */
 .game-card-reveal-stage,
 .game-card-reveal-sweeps {
 	position:       absolute;
-	inset:          0;
-	overflow:       hidden;
-	border-radius:  0.5rem;
+	inset:          -1px 0;
+	clip-path:      inset(0 -1px round calc(0.5rem + 1px));
 	pointer-events: none;
 }
 
@@ -837,14 +856,13 @@ button, input, select, optgroup, textarea {
    would flash between the two halves for as long as they are still travelling. Gone the moment they
    meet, well before the collapse needs the card underneath to be visible again.
 
-   The one layer here that is neither rounded nor inside the stage. Two rounded rectangles of the
-   same radius drawn over one another never quite cover: the clip's antialiased edge lets a sliver of
-   the card's own corner through, and what came through was the card's 5px team-colour rail at all
-   four corners of every card still waiting its turn. Square corners cover it, and this is the
-   popup's own background colour, so the corners it keeps have nothing to show against. */
+   Square and outside the stage, because it goes under the crests the stage carries rather than over
+   them, and because square corners are what cover the card's rounded ones outright. It bleeds the
+   same pixel the stage does, on all four sides: this is the popup's own colour, so the pixel of it
+   that lands outside the card has nothing to show against. */
 .game-card-reveal-base {
 	position:       absolute;
-	inset:          0;
+	inset:          -1px;
 	z-index:        1;
 	background:     #0d1117;
 	pointer-events: none;

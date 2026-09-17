@@ -1,7 +1,13 @@
 import LiveGameCard from '@arenaswap/ui/src/components/liveGameCard';
 import FinalGameCard from '@arenaswap/ui/src/components/finalGameCard';
 import GameCardReveal from '../../entrypoints/popup/components/gameCardReveal';
-import { revealBaseDurationMs, revealDurationMs, type revealMode } from '../../entrypoints/popup/cardReveal';
+import {
+	revealBaseDurationMs,
+	revealDurationMs,
+	revealLeanRatio,
+	revealStageBleedPx,
+	type revealMode,
+} from '../../entrypoints/popup/cardReveal';
 import type { Game } from '@arenaswap/core/types';
 
 // The same two 8x8 fixtures `teamCrest.cy.tsx` measures, so the real canvas read runs here rather
@@ -189,6 +195,48 @@ describe('the popup open reveal', () => {
 		// And the gap between cards survives the move onto the wrapper.
 		cy.get('.game-card-reveal').should('have.css', 'margin-bottom', '8px');
 		cy.get('.game-card-reveal > .game-card').should('have.css', 'margin-bottom', '0px');
+	});
+
+	// Against it, and then a pixel past it. A cover of exactly the card's shape cannot hide the card's
+	// own edges: both boundaries are antialiased, so at a pixel the card only partly paints the cover
+	// only partly covers, and the rest of the card shows through — 22% of its `#dee2e6` border along
+	// the first and last row of every corner, plus a hairline across the whole bottom edge, whose own
+	// row is shared because a card's height is computed and lands mid-pixel. Both read as white lines
+	// in the corners. Containment does not fix it and a pixel of bleed does.
+	it('bleeds a pixel past the card, so the card\'s own edges cannot show through the cover', () => {
+		cy.mount(<Harness mode='full' />);
+		rectOf('.game-card').then(card => {
+			(['.game-card-reveal-stage', '.game-card-reveal-sweeps'] as const).forEach(selector => {
+				cy.get(selector).should($el => {
+					const box = $el[0].getBoundingClientRect();
+					expect(box.top, `${selector} above the card`).to.be.closeTo(card.top - revealStageBleedPx, 0.1);
+					expect(box.bottom, `${selector} below the card`).to.be.closeTo(card.bottom + revealStageBleedPx, 0.1);
+					// And not out to the sides, where `left: 25%` and `75%` are the crest slots.
+					expect(box.left, `${selector} left`).to.be.closeTo(card.left, 0.1);
+					expect(box.right, `${selector} right`).to.be.closeTo(card.right, 0.1);
+				});
+			});
+		});
+		// The other two sides come from the clip, at the card's own 8px radius plus the same pixel:
+		// grown rather than merely square, or the corners stop being the card's corners.
+		cy.get('.game-card').should('have.css', 'border-radius', '8px');
+		cy.get('.game-card-reveal-stage').should('have.css', 'clip-path', 'inset(0px -1px round 9px)');
+		cy.get('.game-card-reveal-sweeps').should('have.css', 'clip-path', 'inset(0px -1px round 9px)');
+	});
+
+	// The bleed must not bend the seam. The lean is half the horizontal run of a leaning edge across
+	// the box it leans over, and that box is the stage rather than the card — the same run over a
+	// taller box is a shallower angle, and the bar that reveals along the seam is skewed by the angle
+	// itself, so the two would stop being one line.
+	it('measures the lean across the box that leans, not across the card', () => {
+		cy.mount(<Harness mode='full' />);
+		rectOf('.game-card').then(card => {
+			const bled = card.height + revealStageBleedPx * 2;
+			cy.get('.game-card-reveal').should($wrapper => {
+				const lean = parseFloat(getComputedStyle($wrapper[0]).getPropertyValue('--reveal-lean'));
+				expect(lean, 'lean').to.be.closeTo((bled * revealLeanRatio) / 2, 0.01);
+			});
+		});
 	});
 
 	// The last beat takes the colour off the edge it came in from rather than parking a rectangle on
