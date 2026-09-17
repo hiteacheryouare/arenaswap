@@ -13,12 +13,21 @@ const loadApiClient = (): typeof import('../src/apiClient') => {
 };
 
 // ESPN files its scoreboard by US Eastern date while the popup groups and labels by the viewer's
-// own calendar day, so every range below is written out rather than recomputed from the same
+// own calendar day, so every window below is written out rather than recomputed from the same
 // arithmetic it is testing. A recomputed expectation passes in every zone and proves none.
-const rangeIn = (timeZone: string, iso: string, days: number): string => {
+//
+// ESPN stopped answering for a span, so the window is a list of days rather than a range string.
+// What each zone below proves is still its two edges, and the days between them are contiguous by
+// construction — so the edges are what these read, and contiguity is asserted separately. Every
+// literal is untouched from when this asked for a range.
+const edges = (dayKeys: string[]): string => `${dayKeys[0]}-${dayKeys[dayKeys.length - 1]}`;
+
+const windowIn = (timeZone: string, iso: string, days: number): string[] => {
 	setTimeZone(timeZone);
-	return loadApiClient().buildUpcomingDatesRangeQuery(days, new Date(iso));
+	return loadApiClient().buildUpcomingDayKeys(days, new Date(iso));
 };
+
+const rangeIn = (timeZone: string, iso: string, days: number): string => edges(windowIn(timeZone, iso, days));
 
 afterEach(() => {
 	setTimeZone('UTC');
@@ -73,6 +82,34 @@ describe('the upcoming window against the viewer\'s own day', () => {
 	});
 });
 
+/* The edges above are read off a list now, so something has to prove the list between them is every
+   day and each one exactly once. Written out rather than generated, for the same reason the edges
+   are: a generated expectation would agree with a generator that skipped a day. */
+describe('the days between the two edges', () => {
+	test('every Eastern date in the window, once, in order', () => {
+		expect(windowIn('America/New_York', '2026-09-05T18:00:00.000Z', 7)).toEqual([
+			'20260905', '20260906', '20260907', '20260908',
+			'20260909', '20260910', '20260911', '20260912',
+		]);
+	});
+
+	test('a month end is counted rather than subtracted from', () => {
+		expect(windowIn('America/New_York', '2026-09-29T14:00:00.000Z', 3)).toEqual([
+			'20260929', '20260930', '20261001', '20261002',
+		]);
+	});
+
+	test('a leap day is a day', () => {
+		expect(windowIn('America/New_York', '2028-02-28T14:00:00.000Z', 2)).toEqual([
+			'20280228', '20280229', '20280301',
+		]);
+	});
+
+	test('a single day window is one key, not two', () => {
+		expect(windowIn('America/New_York', '2026-09-05T18:00:00.000Z', 0)).toEqual(['20260905']);
+	});
+});
+
 describe('the scoreboard request in the viewer\'s own time zone', () => {
 	test('a Tokyo viewer is offered the Eastern slate their own day opened on', async () => {
 		setTimeZone('Asia/Tokyo');
@@ -87,8 +124,12 @@ describe('the scoreboard request in the viewer\'s own time zone', () => {
 		const leagues: LeagueId[] = ['nba'];
 		await loadApiClient().fetchGamesWithLeagueLogos(leagues);
 
-		const datesUrl = fetchMock.mock.calls.map(([url]) => String(url)).find(u => u.includes('dates='));
-		expect(datesUrl).toBeDefined();
-		expect(new URL(datesUrl!).searchParams.get('dates')).toBe('20260905-20260913');
+		// One request per Eastern day of the window, each naming a single date, plus the undated
+		// board the live games come from.
+		const asked = fetchMock.mock.calls
+			.map(([url]) => new URL(String(url)).searchParams.get('dates'))
+			.filter((dates): dates is string => dates !== null);
+		expect(new Set(asked).size).toBe(asked.length);
+		expect(edges(asked.toSorted())).toBe('20260905-20260913');
 	});
 });

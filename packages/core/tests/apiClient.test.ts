@@ -109,6 +109,12 @@ const toUrl = (input: RequestInfo | URL): string => {
 	return input.url;
 };
 
+/* The upcoming window is one request per Eastern day now, so a chain of `mockResolvedValueOnce`
+   runs out and resolves `undefined` on the day after its last entry. The chains below list the days
+   they care about and then fall back to this, which is what a day with nothing scheduled answers
+   with anyway. */
+const emptyDay = () => createResponse({ events: [] });
+
 const loadApiClient = (): typeof import('../src/apiClient') => {
 	jest.resetModules();
 	return require('../src/apiClient') as typeof import('../src/apiClient');
@@ -256,7 +262,7 @@ describe('apiClient', () => {
 	});
 
 	test('throws when every team request fails', async () => {
-		const fetchMock = jest.fn()
+		const fetchMock = jest.fn().mockResolvedValue(emptyDay())
 			.mockResolvedValueOnce(createResponse({ message: 'temporary outage' }, { ok: false, status: 503 }))
 			.mockRejectedValueOnce(new Error('network down'));
 
@@ -267,7 +273,7 @@ describe('apiClient', () => {
 	});
 
 	test('parses live and upcoming games with logos, broadcasts, odds, and colors', async () => {
-		const fetchMock = jest.fn()
+		const fetchMock = jest.fn().mockResolvedValue(emptyDay())
 			.mockResolvedValueOnce(createResponse({
 				leagues: [{ logos: [{ href: 'https://cdn.example/nba-logo.png' }] }],
 				events: [
@@ -348,12 +354,15 @@ describe('apiClient', () => {
 
 		await fetchGamesWithLeagueLogos(['nba'], { includeUpcoming: true, upcomingDays: 3 });
 
-		const calledUrls = fetchMock.mock.calls.map(([url]) => String(url));
-		const datesUrl = calledUrls.find(u => u.includes('dates='));
-		expect(datesUrl).toBeDefined();
 		// TZ is UTC in these tests, so the viewer's Sep 5 through Sep 8 runs from 20:00 Eastern on
-		// Sep 4 to 19:59 Eastern on Sep 8, which is five Eastern dates for a three day setting.
-		expect(new URL(datesUrl!).searchParams.get('dates')).toBe('20260904-20260908');
+		// Sep 4 to 19:59 Eastern on Sep 8, which is five Eastern dates for a three day setting —
+		// asked for one at a time now, because ESPN stopped answering for a span.
+		const asked = fetchMock.mock.calls
+			.map(([url]) => new URL(String(url)).searchParams.get('dates'))
+			.filter((dates): dates is string => dates !== null);
+		expect(asked.toSorted()).toEqual([
+			'20260904', '20260905', '20260906', '20260907', '20260908',
+		]);
 	});
 
 	test('supports includeUpcoming=false with only one scoreboard request', async () => {
@@ -518,7 +527,7 @@ describe('apiClient', () => {
 	});
 
 	test('filters out post games while combining today and upcoming responses', async () => {
-		const fetchMock = jest.fn()
+		const fetchMock = jest.fn().mockResolvedValue(emptyDay())
 			.mockResolvedValueOnce(createResponse({
 				events: [
 					makeEvent({
@@ -572,13 +581,20 @@ describe('apiClient', () => {
 		const { fetchGamesWithLeagueLogos } = loadApiClient();
 
 		const result = await fetchGamesWithLeagueLogos(['nba']);
-		expect(fetchMock).toHaveBeenCalledTimes(2);
+		// The undated board exactly once, and then one request per Eastern day of the window, each
+		// naming a single date: ESPN stopped answering for a span.
+		const asked = fetchMock.mock.calls
+			.map(([url]) => new URL(String(url)).searchParams.get('dates'));
+		expect(asked.filter(dates => dates === null)).toHaveLength(1);
+		const days = asked.filter((dates): dates is string => dates !== null);
+		expect(days.length).toBeGreaterThan(1);
+		expect(new Set(days).size).toBe(days.length);
 		expect(result.games.map(game => game.id).toSorted()).toEqual(['today-live', 'today-pre', 'upcoming-pre']);
 		expect(result.games.some(game => game.status === 'post')).toBe(false);
 	});
 
 	test('adds NCAA basketball groups=50 query parameter', async () => {
-		const fetchMock = jest.fn()
+		const fetchMock = jest.fn().mockResolvedValue(emptyDay())
 			.mockResolvedValueOnce(createResponse({ events: [makeEvent({
 				id: 'ncaab-live',
 				state: 'live',
@@ -595,14 +611,15 @@ describe('apiClient', () => {
 
 		await fetchLeagueLogos(['ncaab']);
 
+		// A window is the undated board plus one request per day, and the override has to ride on
+		// every one of them.
 		const calledUrls = fetchMock.mock.calls.map(([url]) => String(url));
-		expect(calledUrls).toHaveLength(2);
-		expect(calledUrls[0]).toContain('groups=50');
-		expect(calledUrls[1]).toContain('groups=50');
+		expect(calledUrls.length).toBeGreaterThan(1);
+		expect(calledUrls.every(url => url.includes('groups=50'))).toBe(true);
 	});
 
 	test('adds NCAA womens basketball groups=49 query parameter', async () => {
-		const fetchMock = jest.fn()
+		const fetchMock = jest.fn().mockResolvedValue(emptyDay())
 			.mockResolvedValueOnce(createResponse({ events: [makeEvent({
 				id: 'ncaaw-live',
 				state: 'live',
@@ -619,15 +636,16 @@ describe('apiClient', () => {
 
 		await fetchLeagueLogos(['ncaaw']);
 
+		// A window is the undated board plus one request per day, and the override has to ride on
+		// every one of them.
 		const calledUrls = fetchMock.mock.calls.map(([url]) => String(url));
-		expect(calledUrls).toHaveLength(2);
-		expect(calledUrls[0]).toContain('groups=49');
-		expect(calledUrls[1]).toContain('groups=49');
+		expect(calledUrls.length).toBeGreaterThan(1);
+		expect(calledUrls.every(url => url.includes('groups=49'))).toBe(true);
 		expect(calledUrls[0]).toContain('/basketball/womens-college-basketball/scoreboard');
 	});
 
 	test('fetches EPL scoreboard from correct ESPN path without groups param', async () => {
-		const fetchMock = jest.fn()
+		const fetchMock = jest.fn().mockResolvedValue(emptyDay())
 			.mockResolvedValueOnce(createResponse({
 				leagues: [{ logos: [{ href: 'https://cdn.example/epl-logo.png' }] }],
 				events: [makeEvent({
@@ -658,7 +676,7 @@ describe('apiClient', () => {
 	});
 
 	test('fetches FIFA World Cup scoreboard from correct ESPN path without groups param', async () => {
-		const fetchMock = jest.fn()
+		const fetchMock = jest.fn().mockResolvedValue(emptyDay())
 			.mockResolvedValueOnce(createResponse({
 				leagues: [{ logos: [{ href: 'https://cdn.example/fifawc-logo.png' }] }],
 				events: [makeEvent({
@@ -872,7 +890,7 @@ describe('apiClient', () => {
 			awayScore: '52',
 		});
 
-		const fetchMock = jest.fn()
+		const fetchMock = jest.fn().mockResolvedValue(emptyDay())
 			.mockResolvedValueOnce(createResponse({ events: [sharedEvent] }))
 			.mockResolvedValueOnce(createResponse({
 				events: [
@@ -897,7 +915,7 @@ describe('apiClient', () => {
 	});
 
 	test('fetchLiveGames filters out pre-game entries', async () => {
-		const fetchMock = jest.fn()
+		const fetchMock = jest.fn().mockResolvedValue(emptyDay())
 			.mockResolvedValueOnce(createResponse({
 				events: [makeEvent({
 					id: 'live-only',
@@ -1076,7 +1094,7 @@ describe('apiClient', () => {
 	});
 
 	test('NHL: pre-game from range has correct hockey sportType and startTime', async () => {
-		const fetchMock = jest.fn()
+		const fetchMock = jest.fn().mockResolvedValue(emptyDay())
 			.mockResolvedValueOnce(createResponse({ events: [] }))
 			.mockResolvedValueOnce(createResponse({
 				leagues: [{ logos: [{ href: 'https://cdn.example/nhl-logo.png' }] }],
@@ -1106,7 +1124,7 @@ describe('apiClient', () => {
 	});
 
 	test('MLB: pre-game from range has no topOfInning or baseRunners', async () => {
-		const fetchMock = jest.fn()
+		const fetchMock = jest.fn().mockResolvedValue(emptyDay())
 			.mockResolvedValueOnce(createResponse({ events: [] }))
 			.mockResolvedValueOnce(createResponse({
 				events: [makeEvent({
@@ -1155,7 +1173,7 @@ describe('apiClient', () => {
 			pointSpread: { displayName: 'Spread' },
 		}];
 
-		const fetchMock = jest.fn()
+		const fetchMock = jest.fn().mockResolvedValue(emptyDay())
 			.mockResolvedValueOnce(createResponse({ events: [] }))
 			.mockResolvedValueOnce(createResponse({ events: [event] }));
 		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
@@ -1174,7 +1192,7 @@ describe('apiClient', () => {
 	});
 
 	test('NCAAF: preseason game from range produces correct football sportType Game', async () => {
-		const fetchMock = jest.fn()
+		const fetchMock = jest.fn().mockResolvedValue(emptyDay())
 			.mockResolvedValueOnce(createResponse({ events: [] }))
 			.mockResolvedValueOnce(createResponse({
 				events: [makeEvent({
@@ -1211,7 +1229,7 @@ describe('apiClient', () => {
 			date: `2026-07-${String(i + 1).padStart(2, '0')}T00:00:00.000Z`,
 		}));
 
-		const fetchMock = jest.fn()
+		const fetchMock = jest.fn().mockResolvedValue(emptyDay())
 			.mockResolvedValueOnce(createResponse({ events: [] }))
 			.mockResolvedValueOnce(createResponse({ events }));
 		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
@@ -1243,7 +1261,7 @@ describe('apiClient', () => {
 			awayScore: '0',
 		});
 
-		const fetchMock = jest.fn()
+		const fetchMock = jest.fn().mockResolvedValue(emptyDay())
 			.mockResolvedValueOnce(createResponse({ events: [liveGame] }))
 			.mockResolvedValueOnce(createResponse({ events: [] }));
 		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
@@ -1269,7 +1287,7 @@ describe('apiClient', () => {
 			awayScore: '1',
 		});
 
-		const fetchMock = jest.fn()
+		const fetchMock = jest.fn().mockResolvedValue(emptyDay())
 			.mockResolvedValueOnce(createResponse({ events: [liveGame] }))
 			.mockResolvedValueOnce(createResponse({ events: [] }));
 		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
@@ -1314,7 +1332,7 @@ describe('apiClient', () => {
 		(comp.competitors as Record<string, unknown>[])[1]!.team = { displayName: 'Group B 2nd Place', abbreviation: '2B' };
 		comp.odds = [null];
 
-		const fetchMock = jest.fn()
+		const fetchMock = jest.fn().mockResolvedValue(emptyDay())
 			.mockResolvedValueOnce(createResponse({ events: [] }))
 			.mockResolvedValueOnce(createResponse({ events: [knockout] }));
 		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
@@ -1353,7 +1371,7 @@ describe('apiClient', () => {
 			moneyline: { displayName: 'Moneyline' },
 		}];
 
-		const fetchMock = jest.fn()
+		const fetchMock = jest.fn().mockResolvedValue(emptyDay())
 			.mockResolvedValueOnce(createResponse({ events: [] }))
 			.mockResolvedValueOnce(createResponse({ events: [groupGame] }));
 		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
@@ -1373,7 +1391,7 @@ describe('apiClient', () => {
 		getCompetition(ko2).odds = [null];
 		const group = makeEvent({ id: 'group-1', state: 'pre', period: 1, clock: "0'", homeScore: '0', awayScore: '0', date: '2026-06-12T19:00:00.000Z', withOdds: false });
 
-		const fetchMock = jest.fn()
+		const fetchMock = jest.fn().mockResolvedValue(emptyDay())
 			.mockResolvedValueOnce(createResponse({ events: [] }))
 			.mockResolvedValueOnce(createResponse({ events: [ko1, ko2, group] }));
 		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
@@ -1402,7 +1420,7 @@ describe('apiClient', () => {
 		const preGame = makeEvent({ id: 'pre', state: 'pre', period: 1, clock: '0:00', homeScore: '0', awayScore: '0', date: '2026-09-01T00:00:00.000Z' });
 		const liveGame = makeEvent({ id: 'live', state: 'in', period: 3, clock: '5:00', homeScore: '88', awayScore: '85' });
 
-		const fetchMock = jest.fn()
+		const fetchMock = jest.fn().mockResolvedValue(emptyDay())
 			.mockResolvedValueOnce(createResponse({ events: [liveGame] }))
 			.mockResolvedValueOnce(createResponse({ events: [preGame] }));
 		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;

@@ -391,8 +391,10 @@ describe('core API + excitement e2e flow', () => {
 		expect(result.leagueLogos.nba).toBe('https://example.com/nba-upcoming-only-logo.png');
 
 		const requestedUrls = fetchSpy.mock.calls.map(([input]) => toUrl(input as RequestInfo | URL));
-		expect(requestedUrls).toHaveLength(2);
-		expect(requestedUrls.some(url => url.includes('dates='))).toBe(true);
+		// The undated board once and then a request per Eastern day of the window, so the board
+		// failing costs only the board: ESPN stopped answering for a span of dates.
+		expect(requestedUrls.filter(url => !url.includes('dates='))).toHaveLength(1);
+		expect(requestedUrls.filter(url => url.includes('dates=')).length).toBeGreaterThan(1);
 	});
 
 });

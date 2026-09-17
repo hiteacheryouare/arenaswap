@@ -1,5 +1,39 @@
 # Changelog
 
+## Up Next is asked for a day at a time, because ESPN stopped answering for a span — 2026-09-16
+
+2.1.0 shipped asking for its upcoming window as one `dates=20260905-20260912` range. ESPN has
+stopped answering those. Every one of the 31 leagues now returns
+`{"code":400,"message":"Failed to get events endpoint."}` for a range of any width — including a
+one-day `20260915-20260915` — on `site.api` and on `site.web.api` alike, 20 times out of 20 on one
+league, while a single `dates=20260915` still answers 200 in all 31. Nothing multi-day survives it
+either: comma, encoded comma and encoded hyphen all 400, and a repeated `dates=` parameter answers
+for the first value only, which is worse than failing. `YYYYMM` works and is a trap, because
+truncation drops the tail and the tail is the days furthest ahead.
+
+The live poll never named a date at all — it reads ESPN's undated board — which is exactly why this
+was so easy to miss from the outside: live games kept working and every scheduled game past that
+board simply vanished. Up Next was empty.
+
+So the window is its list of Eastern days, one request each. The span is still computed exactly as
+the range was and then enumerated, so the days asked for are precisely the days the range covered,
+and the zone-by-zone specs kept every literal they had. The undated board is untouched, byte for
+byte the request that shipped, and it goes first so a game on both it and a dated day keeps the
+board's copy — the same precedence the two legs had.
+
+That multiplies requests, so two things came with it rather than after it. Fan-outs are pooled: six
+leagues at a time and three of a league's days inside that, because 31 leagues asking for a week
+each is about 270 requests and firing those at once would have traded one broken feature for a worse
+one — ESPN sheds load by recent request volume from an IP and answers 403, measured at 16 requests
+at once coming back clean and 24 losing four. And the dated requests carry `limit=500`, which lifts
+a default event cap that a busy college basketball day can reach; measured identical against all 31
+leagues on a single-date query, so it only ever raises a ceiling, and deliberately not added to the
+undated board.
+
+A league now fails only when nothing at all answered for it, which is what two rejected legs used to
+mean; one day of a window going missing leaves the rest of the week on screen. No new locale keys,
+no settings moved, and nothing else in 2.1.0 is touched.
+
 ## The site is published in twelve languages, and following a link stays in yours — 2026-09-05
 
 ArenaSwap's own popup has shipped in twelve languages for a long time. The website that sells it

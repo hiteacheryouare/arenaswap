@@ -19,6 +19,44 @@ import type { Game, GameCondition, GameOdds, LeagueConfig, LeagueId, LeagueLogoM
 
 const espnBase = 'https://site.api.espn.com/apis/site/v2/sports';
 
+/* ESPN sheds load on this host by recent request volume from one IP and answers 403 to whatever it
+   drops, so a fan-out has to be bounded. Measured from one machine: 16 requests at once all came
+   back 200 and 24 at once lost four.
+
+   This exists because the upcoming window below is a request per day now rather than one for the
+   whole span. Thirty-one leagues asking for a week each is around 270 requests, and firing those at
+   once would trade one broken feature for a worse one. Every caller here collects with `allSettled`
+   and keeps the fulfilled ones, so a shed league contributes no games and throws nothing — the only
+   symptom is a slate that comes back quietly short. */
+export const espnRequestPoolSize = 6;
+
+// Days within one league, inside the league pool above. Six leagues times three days is eighteen
+// requests at the widest point.
+export const espnDayPoolSize = 3;
+
+const settledInPool = async <T, R>(
+	items: T[],
+	run: (item: T) => Promise<R>,
+	size = espnRequestPoolSize,
+): Promise<PromiseSettledResult<R>[]> => {
+	const results: PromiseSettledResult<R>[] = [];
+	let next = 0;
+	const worker = async (): Promise<void> => {
+		while (next < items.length) {
+			const index = next;
+			next += 1;
+			const item = items[index] as T;
+			try {
+				results[index] = { status: 'fulfilled', value: await run(item) };
+			} catch (reason) {
+				results[index] = { status: 'rejected', reason };
+			}
+		}
+	};
+	await Promise.all(Array.from({ length: Math.min(size, items.length) }, () => worker()));
+	return results;
+};
+
 // ESPN ships a malformed row often enough that a dropped count is a steady state, not an event, so
 // warning on every poll would bury the console at the 6s floor. Only a change in the count is news.
 const lastWarnedDroppedCounts = new Map<string, number>();
@@ -79,20 +117,52 @@ const toQueryDate = (date: Date): string => {
 
 const localDayStart = (date: Date): Date => new Date(date.getFullYear(), date.getMonth(), date.getDate());
 
-export const buildUpcomingDatesRangeQuery = (days: number, now: Date = new Date()): string => {
-	// ESPN's default no-dates scoreboard only reliably surfaces active and recent games; the
-	// explicit range returns every scheduled event, including this morning's pre-game ones.
+const padDatePart = (value: number): string => String(value).padStart(2, '0');
+
+const shiftDayKey = (dayKey: string, byDays: number): string => {
+	// Stepped at noon UTC: these are calendar dates rather than instants, and noon is the one hour no
+	// daylight-saving shift can push onto an adjacent date.
+	const at = Date.UTC(
+		Number(dayKey.slice(0, 4)),
+		Number(dayKey.slice(4, 6)) - 1,
+		Number(dayKey.slice(6, 8)),
+		12,
+	);
+	const moved = new Date(at + (byDays * 24 * 60 * 60 * 1000));
+	return `${moved.getUTCFullYear()}${padDatePart(moved.getUTCMonth() + 1)}${padDatePart(moved.getUTCDate())}`;
+};
+
+/* The upcoming window, as the list of Eastern filing dates it covers.
+
+   This used to be one `dates=20260905-20260912` range, and ESPN stopped answering those. Every one
+   of the 31 leagues now returns `{"code":400,"message":"Failed to get events endpoint."}` for a range
+   of any width — including a one-day `20260915-20260915` — while a single `dates=20260915` still
+   answers 200 in all 31. Nothing multi-day survives it either: comma, encoded comma and encoded
+   hyphen all 400, and a repeated `dates=` parameter answers for the first value only.
+
+   The live poll never named a date at all, which is why live games kept working while every
+   scheduled game past ESPN's undated board disappeared.
+
+   The span is still computed exactly as the range was and then enumerated, so the days asked for are
+   precisely the days the range covered. */
+export const buildUpcomingDayKeys = (days: number, now: Date = new Date()): string[] => {
 	const windowStart = localDayStart(now);
 	// The popup's cutoff is a rolling `days * 24h` from now, so the last day it can label is the
 	// local day that instant falls in. Ending on that day's final millisecond rather than on its
-	// midnight keeps the range out of an Eastern date nothing on screen would come from.
+	// midnight keeps the window out of an Eastern date nothing on screen would come from.
 	const lastLocalDay = localDayStart(new Date(now.getTime() + (days * 24 * 60 * 60 * 1000)));
 	const windowEnd = new Date(new Date(
 		lastLocalDay.getFullYear(),
 		lastLocalDay.getMonth(),
 		lastLocalDay.getDate() + 1,
 	).getTime() - 1);
-	return `${toQueryDate(windowStart)}-${toQueryDate(windowEnd)}`;
+
+	const lastKey = toQueryDate(windowEnd);
+	const keys: string[] = [];
+	for (let key = toQueryDate(windowStart); key <= lastKey; key = shiftDayKey(key, 1)) {
+		keys.push(key);
+	}
+	return keys;
 };
 
 const ch = (n: number): number => {
@@ -532,29 +602,45 @@ const fetchLeagueGames = async (config: LeagueConfig, options: { includeUpcoming
 		return { leagueId: config.id, games: parsedGames, logoUrl };
 	}
 
-	const upcomingDates = buildUpcomingDatesRangeQuery(upcomingDays);
-	const upcomingParams = new URLSearchParams(baseParams);
-	upcomingParams.set('dates', upcomingDates);
-	const upcomingUrl = `${scoreboardUrl}?${upcomingParams.toString()}`;
-	const [todayResult, upcomingResult] = await Promise.allSettled([
-		fetchScoreboard(baseUrl, config.id),
-		fetchScoreboard(upcomingUrl, config.id),
-	]);
-	if (todayResult.status === 'rejected' && upcomingResult.status === 'rejected') {
-		const error = todayResult.reason instanceof Error
-			? todayResult.reason
-			: upcomingResult.reason;
-		throw error;
+	/* The undated board, plus one request per Eastern day of the window. The board is what carries
+	   the live games and is left exactly as it shipped — it never named a date, which is why live
+	   games went on working while every scheduled game past it disappeared. The days are what
+	   replaced the single ranged request ESPN stopped answering.
+
+	   The board goes first so that a game appearing on both it and a dated day keeps the board's
+	   copy, which is the same precedence the two-leg version had. */
+	const dayUrl = (dayKey: string): string => {
+		const params = new URLSearchParams(baseParams);
+		params.set('dates', dayKey);
+		// Lifts a default event cap ESPN applies server-side, which a busy college basketball day can
+		// reach. Measured identical against all 31 leagues on a single-date query, so it only ever
+		// raises a ceiling; deliberately not added to the undated board, which stays byte for byte
+		// the request that shipped.
+		params.set('limit', '500');
+		return `${scoreboardUrl}?${params.toString()}`;
+	};
+
+	const results = await settledInPool(
+		[baseUrl, ...buildUpcomingDayKeys(upcomingDays).map(dayUrl)],
+		url => fetchScoreboard(url, config.id),
+		espnDayPoolSize,
+	);
+	// A league fails only when nothing at all answered for it, which is what the two rejected legs
+	// used to mean. One day of a window going missing now leaves the rest of the week on screen.
+	const answered = results
+		.filter((result): result is PromiseFulfilledResult<EspnScoreboardResponse> => result.status === 'fulfilled')
+		.map(result => result.value);
+	if (answered.length === 0) {
+		const rejected = results.find((result): result is PromiseRejectedResult => result.status === 'rejected');
+		throw rejected?.reason ?? new LeagueFetchError(config.id);
 	}
 
-	const todayData = todayResult.status === 'fulfilled' ? todayResult.value : undefined;
-	const upcomingData = upcomingResult.status === 'fulfilled' ? upcomingResult.value : undefined;
-	const espnLogo = pickLeagueLogo(todayData?.leagues?.[0]?.logos)
-		?? pickLeagueLogo(upcomingData?.leagues?.[0]?.logos);
+	const espnLogo = answered.map(data => pickLeagueLogo(data.leagues?.[0]?.logos)).find(Boolean);
 	const logoUrl = resolveLeagueLogoUrl(config.id, espnLogo);
 
 	const seenIds = new Set<string>();
-	const parsedGames = [...(todayData?.events ?? []), ...(upcomingData?.events ?? [])]
+	const parsedGames = answered
+		.flatMap(data => data.events ?? [])
 		.filter(event => {
 			if (seenIds.has(event.id)) return false;
 			seenIds.add(event.id);
@@ -577,7 +663,7 @@ export const fetchGamesWithLeagueLogos = async (enabledLeagues: LeagueId[], opti
 	const leagueConfigs = getEnabledLeagueConfigs(enabledLeagues);
 	if (leagueConfigs.length === 0) return { games: [], leagueLogos: {} };
 
-	const results = await Promise.allSettled(leagueConfigs.map(config => fetchLeagueGames(config, options)));
+	const results = await settledInPool(leagueConfigs, config => fetchLeagueGames(config, options));
 
 	const fulfilled = results
 		.filter((r): r is PromiseFulfilledResult<LeagueGamesResult> => r.status === 'fulfilled')
@@ -641,8 +727,9 @@ export const fetchTeamsForLeagues = async (leagueIds: LeagueId[]): Promise<EspnT
 	const leagueConfigs = getEnabledLeagueConfigs(leagueIds);
 	if (leagueConfigs.length === 0) return [];
 
-	const results = await Promise.allSettled(
-		leagueConfigs.map(async (config): Promise<EspnTeamEntry[]> => {
+	const results = await settledInPool(
+		leagueConfigs,
+		async (config): Promise<EspnTeamEntry[]> => {
 			const params = new URLSearchParams({ limit: '200' });
 			if (config.id === 'ncaab') params.set('groups', '50');
 			if (config.id === 'ncaaw') params.set('groups', '49');
@@ -664,7 +751,7 @@ export const fetchTeamsForLeagues = async (leagueIds: LeagueId[]): Promise<EspnT
 					abbreviation: team.abbreviation || team.displayName.slice(0, 3).toUpperCase(),
 					logo: team.logos?.[0]?.href,
 				}));
-		})
+		},
 	);
 
 	const fulfilled = results
