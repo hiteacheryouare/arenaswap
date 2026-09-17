@@ -41,6 +41,6 @@
 	},
 	"packageManager": "npm@11.16.0",
 	"dependencies": {
-		"skills": "^1.5.23"
+		"skills": "^1.5.26"
 	}
 }
