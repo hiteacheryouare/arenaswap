@@ -3,6 +3,55 @@
 > One or two lines per entry: what changed, and the one thing about it worth knowing later.
 > The code, the tests and the git history hold the rest. Do not write essays here.
 
+## A crest is the team's crest, in the team's colours, everywhere — 2026-09-17
+
+Reverts the crest colour treatment entirely. It measured each crest's pixels against the surface behind it
+and swapped in ESPN's monochrome mark, or a tinted plate, wherever the artwork did not clear a contrast
+floor — and it was right about legibility and wrong about the product: a crest swapped for a white
+silhouette is no longer that team's crest, and which teams it happened to was not something a reader could
+predict or a designer could see coming. Gone with it: the mono-mark fetch and its `storage.local` cache, the
+`/summary` mark parse, `TeamMonoMarks`, the persisted verdict store, and every `:not(.is-bare)` plate rule.
+`TeamCrest` is now a crest in a sizing box. The one thing kept is the fix underneath all of it: `pickPair`
+still refuses to answer a clash with black against white, so Baltimore's purple stays `#29126F` against
+Indianapolis' `#003B75`. `background` survives as a vestigial prop only because the open-reveal poster still
+passes it and that file is being worked on elsewhere.
+
+## The first open of the day opens on the two crests, too big for the card — 2026-09-17
+
+A beat ahead of the poster, which is a thing this graphic has now been given twice after being refused
+twice. The refusals were right: a light line drawing itself down the centre, and a flourish after the
+card resolved, were each a different graphic wearing this one's clothes. This one is not, and the reason
+is that it is made of nothing new. The two crests the poster already resolves into are drawn at 1.34 of
+the card's height — so neither of them fits, each overhangs about a sixth of the card top and bottom and
+runs off its own outer side — and then they shrink towards the hold the poster holds them at while the
+colour grows over them. There is no transition to design, because the thing that takes the opening away
+is the next beat arriving.
+
+Three details carry that. It is **its own layer**, because the poster's crest layer is clipped to show
+nothing until a bar has crossed it and these have to be up on the first frame. It sits **between the dark
+base and the poster** in the stacking, which is what makes the handoff free — a spec pins that ordering,
+since an inversion would have the oversized pair riding over the card instead of dying under it. And the
+overhang is **cut at the card's edge** by the same clip and the same pixel of bleed the poster's layers
+take: a crest that merely happened to be large reads as a mistake, and one cut off by the frame reads as
+artwork placed deliberately past it. The specs assert the overhang as overhang — off the top, off the
+bottom, off its own outer side — rather than as a size, because a size passes on a card of any height and
+this fails the moment the pair start fitting.
+
+The timeline grew a phase, so `--reveal-delay` stopped being able to mean both things. It is the cascade
+alone now, and **`--reveal-spine`** is when a card's poster starts: 22 delays in the stylesheet moved onto
+it, and the two are the same value in `quick`, which is how that version stays byte-identical for the
+third pass running. What the opening beat costs is one figure the stylesheet names by hand and a spec that
+will not let it drift — the layer has to stay alive at least until the halves meet at 884ms, because they
+part again at the end and anything still underneath would be uncovered a second time.
+
+And the rate came back down, 1.5 → **1.3**. Once there is a beat carrying the extra length, the rest of it
+does not have to come out of playing the same thing slower: 5460ms a card against 5100, and less of it is
+stretch. Two traps worth keeping. `revealDurationMs` is the poster alone and `revealTotalMs` is both
+phases — the card is removed after the second, and reading the first would take the wrapper off a card
+still mid-opening. And every absolute millisecond in the component spec is now offset by the opening beat
+as well as scaled by the rate, which is why they are all written as poster-relative figures and put onto
+the timeline by one helper: the two things that move them have each moved twice.
+
 ## The open animation is cut like a broadcast package rather than timed like one — 2026-09-17
 
 Two passes, and the first one only did the easy half. Length is one constant and that part was right:

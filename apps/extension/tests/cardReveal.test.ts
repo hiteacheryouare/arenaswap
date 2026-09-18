@@ -4,11 +4,14 @@ import {
 	pickRevealMode,
 	revealAbbrBaseLength,
 	revealAbbrScale,
+	revealBaseColor,
 	revealBaseDurationMs,
 	revealDayStamp,
 	revealDelayMs,
 	revealDurationMs,
 	revealFullRate,
+	revealOpenBeatMs,
+	revealOpenMs,
 	revealHoldHeightShare,
 	revealHoldScale,
 	revealHoldWidthShare,
@@ -24,8 +27,10 @@ import {
 	revealStaggerStepMs,
 	revealSkewDeg,
 	revealSweepAngleDeg,
+	revealSpineStartMs,
 	revealSweepBarPx,
 	revealSweepRun,
+	revealTotalMs,
 } from '../entrypoints/popup/cardReveal';
 
 describe('which version of the open animation plays', () => {
@@ -47,30 +52,50 @@ describe('which version of the open animation plays', () => {
 	});
 });
 
-describe('the two speeds', () => {
-	// One choreography, not two. If these ever stop being the same number scaled, one of the versions
-	// has become a different animation and the stylesheet's single `--reveal-rate` is a lie.
-	it('runs both versions at a fixed fraction of the one timeline', () => {
+describe('the two phases and the two speeds', () => {
+	// The poster is one choreography at a rate. If these ever stop being the same number scaled, one of
+	// the versions has become a different animation and the stylesheet's single `--reveal-rate` is a lie.
+	it('runs the poster at a fixed fraction of the one timeline', () => {
 		expect(revealDurationMs('full')).toBe(Math.round(revealBaseDurationMs * revealFullRate));
 		expect(revealDurationMs('quick')).toBe(Math.round(revealBaseDurationMs * revealQuickRate));
-		expect(revealFullRate).toBe(1.5);
+		expect(revealFullRate).toBe(1.3);
 		expect(revealQuickRate).toBe(0.8);
 	});
 
-	// The long cut is five seconds and nothing about it is new — the point of doing it as a rate is
-	// that this number is the whole change, so it is worth stating outright rather than deriving.
-	it('gives the first open of the day about five seconds a card', () => {
-		expect(revealDurationMs('full')).toBe(5100);
+	// The opening beat is the first open of the day's alone, and it is scaled by the same rate as the
+	// poster it runs into — a phase at its own speed would be a second timeline.
+	it('gives the opening beat only to the first open of the day', () => {
+		expect(revealOpenMs('full')).toBe(Math.round(revealOpenBeatMs * revealFullRate));
+		expect(revealOpenMs('quick')).toBe(0);
+		expect(revealOpenMs('none')).toBe(0);
 	});
 
-	// And the regression guard on the whole approach: lengthening the full version must not have
-	// touched the one everybody sees every other time they open the popup.
+	// Stated outright as well as derived: this is the graphic's length, and the one the skip answers for.
+	it('runs the whole of the first open in about five and a half seconds a card', () => {
+		expect(revealOpenMs('full')).toBe(1040);
+		expect(revealDurationMs('full')).toBe(4420);
+		expect(revealTotalMs('full')).toBe(5460);
+	});
+
+	// The regression guard the whole approach rests on, and the reason the opening beat is `full` only:
+	// every open of the popup after the first of the day must be exactly the graphic it has always been.
 	it('leaves every later open of the day exactly where it was', () => {
+		expect(revealTotalMs('quick')).toBe(2720);
 		expect(revealDurationMs('quick')).toBe(2720);
 		expect(revealDelayMs(3, 'quick')).toBe(192);
+		// Which means its poster starts on its cascade, with nothing ahead of it.
+		expect(revealSpineStartMs(3, 'quick')).toBe(revealDelayMs(3, 'quick'));
+	});
+
+	// And on the first open it starts once the opening beat has run, which is what `--reveal-spine`
+	// carries onto the card.
+	it('starts the poster after the opening beat on the first open', () => {
+		expect(revealSpineStartMs(0, 'full')).toBe(revealOpenMs('full'));
+		expect(revealSpineStartMs(2, 'full')).toBe(revealDelayMs(2, 'full') + revealOpenMs('full'));
 	});
 
 	it('takes no time at all when nothing is going to play', () => {
+		expect(revealTotalMs('none')).toBe(0);
 		expect(revealDurationMs('none')).toBe(0);
 		expect(revealDelayMs(3, 'none')).toBe(0);
 	});
@@ -91,7 +116,7 @@ describe('the stagger down the list', () => {
 		expect(revealDelayMs(0, 'full')).toBe(0);
 		expect(revealDelayMs(1, 'full')).toBe(Math.round(revealStaggerStepMs * revealFullRate));
 		expect(revealDelayMs(3, 'full')).toBe(Math.round(revealStaggerStepMs * 3 * revealFullRate));
-		expect(revealDelayMs(1, 'full')).toBe(120);
+		expect(revealDelayMs(1, 'full')).toBe(104);
 	});
 
 	// The cascade is part of the graphic, so it is taken at the graphic's own rate.
@@ -120,15 +145,15 @@ describe('how far down the list the graphic is drawn at all', () => {
 });
 
 describe('when the popup stops being in its opening state', () => {
-	it('waits for the last card to start and then to finish', () => {
-		expect(revealSettleMs('full')).toBe(revealDelayMs(revealStaggerCapIndex, 'full') + revealDurationMs('full'));
-		expect(revealSettleMs('quick')).toBe(revealDelayMs(revealStaggerCapIndex, 'quick') + revealDurationMs('quick'));
+	// Both phases, not just the poster: a card is not finished until its opening beat and its poster
+	// have both run, and the wrapper sitting over a clickable card is the thing this bounds.
+	it('waits for the last card to start and then to finish both its phases', () => {
+		expect(revealSettleMs('full')).toBe(revealDelayMs(revealStaggerCapIndex, 'full') + revealTotalMs('full'));
+		expect(revealSettleMs('quick')).toBe(revealDelayMs(revealStaggerCapIndex, 'quick') + revealTotalMs('quick'));
 	});
 
-	// Pinned outright as well as derived: this is how long the popup is in its opening state, which is
-	// the cost of the long cut and the number the skip exists to answer for.
-	it('holds the opening state for the long cut plus its own cascade', () => {
-		expect(revealSettleMs('full')).toBe(5820);
+	it('holds the opening state for the whole graphic plus its own cascade', () => {
+		expect(revealSettleMs('full')).toBe(6084);
 		expect(revealSettleMs('quick')).toBe(3104);
 	});
 
@@ -213,7 +238,7 @@ describe('the figures the stylesheet repeats by hand', () => {
 	const stylesheet = readFileSync(path.join(__dirname, '../assets/global.scss'), 'utf8');
 
 	it('runs every timeline over the base duration', () => {
-		const durations = stylesheet.match(/calc\((\d+)ms \* var\(--reveal-rate\)\) linear var\(--reveal-delay\)/g) ?? [];
+		const durations = stylesheet.match(/calc\((\d+)ms \* var\(--reveal-rate\)\) linear var\(--reveal-spine\)/g) ?? [];
 		expect(durations.length).toBeGreaterThan(0);
 		durations.forEach(declaration => {
 			expect(declaration).toContain(`${revealBaseDurationMs}ms`);
@@ -235,7 +260,7 @@ describe('the figures the stylesheet repeats by hand', () => {
 	it('finishes the last content beat before the wrapper is taken away', () => {
 		// Every beat that reschedules itself off the card's own delay, which is the staggered run of
 		// contents coming into focus plus the chasing bars.
-		const beats = [...stylesheet.matchAll(/animation-delay:\s+calc\(var\(--reveal-delay\) \+ (\d+)ms/g)]
+		const beats = [...stylesheet.matchAll(/animation-delay:\s+calc\(var\(--reveal-spine\) \+ (\d+)ms/g)]
 			.map(match => Number(match[1]));
 		const contentBeatMs = Number(/cardRevealContent calc\((\d+)ms/.exec(stylesheet)?.[1]);
 		expect(beats.length).toBeGreaterThan(0);
@@ -249,8 +274,8 @@ describe('the figures the stylesheet repeats by hand', () => {
 	// state nobody designed. Both figures are in the stylesheet and neither is derived from the other,
 	// so the agreement is asserted.
 	it('fills the lettering before the bar reaches it', () => {
-		const fill = /cardRevealAbbrFill calc\((\d+)ms \* var\(--reveal-rate\)\) [\w-]+ calc\(var\(--reveal-delay\) \+ (\d+)ms/.exec(stylesheet);
-		const sweep = /cardRevealSweepAway calc\(\d+ms \* var\(--reveal-rate\)\) linear calc\(var\(--reveal-delay\) \+ (\d+)ms/.exec(stylesheet);
+		const fill = /cardRevealAbbrFill calc\((\d+)ms \* var\(--reveal-rate\)\) [\w-]+ calc\(var\(--reveal-spine\) \+ (\d+)ms/.exec(stylesheet);
+		const sweep = /cardRevealSweepAway calc\(\d+ms \* var\(--reveal-rate\)\) linear calc\(var\(--reveal-spine\) \+ (\d+)ms/.exec(stylesheet);
 		expect(fill).not.toBeNull();
 		expect(sweep).not.toBeNull();
 		expect(Number(fill![2]) + Number(fill![1])).toBeLessThanOrEqual(Number(sweep![1]));
@@ -260,9 +285,9 @@ describe('the figures the stylesheet repeats by hand', () => {
 	// the thick bar turns the ground over and the thin ones run behind it. A trailer that left first
 	// would be a bar crossing colour that has not been revealed yet.
 	it('sends the three bars of a pass out in order', () => {
-		const chaser = /\.game-card-reveal-sweep\.is-away\.is-chaser,[\s\S]*?animation-delay:\s+calc\(var\(--reveal-delay\) \+ (\d+)ms/.exec(stylesheet);
-		const trailer = /\.game-card-reveal-sweep\.is-away\.is-trailer,[\s\S]*?animation-delay:\s+calc\(var\(--reveal-delay\) \+ (\d+)ms/.exec(stylesheet);
-		const sweep = /cardRevealSweepAway calc\(\d+ms \* var\(--reveal-rate\)\) linear calc\(var\(--reveal-delay\) \+ (\d+)ms/.exec(stylesheet);
+		const chaser = /\.game-card-reveal-sweep\.is-away\.is-chaser,[\s\S]*?animation-delay:\s+calc\(var\(--reveal-spine\) \+ (\d+)ms/.exec(stylesheet);
+		const trailer = /\.game-card-reveal-sweep\.is-away\.is-trailer,[\s\S]*?animation-delay:\s+calc\(var\(--reveal-spine\) \+ (\d+)ms/.exec(stylesheet);
+		const sweep = /cardRevealSweepAway calc\(\d+ms \* var\(--reveal-rate\)\) linear calc\(var\(--reveal-spine\) \+ (\d+)ms/.exec(stylesheet);
 		expect(Number(sweep![1])).toBeLessThan(Number(chaser![1]));
 		expect(Number(chaser![1])).toBeLessThan(Number(trailer![1]));
 
@@ -274,6 +299,34 @@ describe('the figures the stylesheet repeats by hand', () => {
 		);
 		expect(durationOf(chaser!)).toBeLessThan(durationOf(trailer!));
 		expect(Number(trailer![1]) + durationOf(trailer!)).toBeLessThanOrEqual(revealBaseDurationMs);
+	});
+
+	// The opening beat's window is two figures written into the stylesheet by hand, and both of them
+	// mean something. The first is the beat itself, which has to be the same length the component
+	// reserves ahead of the poster or the pair would still be arriving when the colour starts. The
+	// second is how far the layer stays alive into the poster, and it has to outlast the halves meeting
+	// — they part again at the end, and anything still underneath would be uncovered a second time.
+	it('keeps the opening beat alive until the colour has closed over it', () => {
+		const window = /animation:\s+cardRevealOpeningIn calc\(\((\d+)ms \+ (\d+)ms\) \* var\(--reveal-rate\)\)/.exec(stylesheet);
+		expect(window).not.toBeNull();
+		expect(Number(window![1])).toBe(revealOpenBeatMs);
+
+		// 26% is where `cardRevealHalf` has the two halves meet, and from there the card is covered.
+		const meetAt = revealBaseDurationMs * 0.26;
+		expect(Number(window![2])).toBeGreaterThanOrEqual(meetAt);
+
+		// And the crests inside it share that window, or the two would read off different percentages.
+		const crest = /animation:\s+cardRevealOpeningCrest calc\(\((\d+)ms \+ (\d+)ms\) \* var\(--reveal-rate\)\)/.exec(stylesheet);
+		expect(crest![1]).toBe(window![1]);
+		expect(crest![2]).toBe(window![2]);
+	});
+
+	// The opening pair are drawn against the base and handed its colour in JS, while the stylesheet is
+	// what paints it. Two places, so the agreement is asserted rather than remembered.
+	it('judges the opening crests against the colour the base is actually painted', () => {
+		const painted = /\.game-card-reveal-base \{[\s\S]*?background:\s+(#[0-9a-f]{6});/.exec(stylesheet);
+		expect(painted).not.toBeNull();
+		expect(painted![1]).toBe(revealBaseColor);
 	});
 
 	// A bar is parked one bar width and one lean clear of the edge it comes in from, and leaves one

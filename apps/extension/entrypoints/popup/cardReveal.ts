@@ -10,18 +10,26 @@ export interface cardRevealPlan {
 	skipping: boolean;
 }
 
-// One choreography, played at two speeds. Every delay in `global.scss` is written as a multiple of
-// `--reveal-rate`, so the second open of the day is the same graphic in less time rather than a
-// shorter graphic — there is no beat in this worth cutting, only beats worth taking quicker.
-//
-// Which is also what makes the long cut one number rather than a second timeline. The first open of
-// the day wanted to be nearer five seconds and to carry more on the poster, and the temptation was a
-// phase before the colour arrives and another after it resolves. Both were built on paper and both
-// were wrong: they are a different graphic wearing this one's clothes. At 1.5 every beat this already
-// has takes half again as long in the same proportion to every other, the stylesheet's timing does not
-// move at all, and `quick` stays exactly what it plays today because only `full`'s rate changed.
+// The poster — the two colours wiping in, the trade under the bars, the colour retreating. Every
+// duration and delay in `global.scss` is a multiple of `--reveal-rate`, so a version of this graphic
+// is the same choreography at a different speed rather than a different set of beats.
 export const revealBaseDurationMs = 3400;
-export const revealFullRate = 1.5;
+
+// And the beat that runs ahead of it on the first open of the day: the two crests oversized, bleeding
+// off the card, settling as the colour arrives over them. Rate-scaled like everything else, so it is
+// part of the graphic rather than a preamble to it, and `full` only.
+//
+// A phase was resisted twice before this and the objection was right both times: a light line drawing
+// itself down the centre, and a flourish after the card resolves, were each a different graphic
+// wearing this one's clothes. This one is not, because it is made of the two crests the poster already
+// carries and it never stops moving — the oversized pair shrink straight into the hold the poster
+// holds them at, under colour that is already covering them. There is no cut to hide.
+export const revealOpenBeatMs = 800;
+
+// 1.3 rather than the 1.5 the stretch alone needed. Once there is a beat carrying the extra time, the
+// rest of it does not have to come out of playing the same thing slower: the graphic is longer than it
+// was at 1.5 and less of that length is stretch.
+export const revealFullRate = 1.3;
 export const revealQuickRate = 0.8;
 
 export const revealRate = (mode: revealMode) => {
@@ -30,7 +38,17 @@ export const revealRate = (mode: revealMode) => {
 	return 0;
 };
 
+// The poster's own length, which is what `3400ms * var(--reveal-rate)` resolves to in the stylesheet.
 export const revealDurationMs = (mode: revealMode) => Math.round(revealBaseDurationMs * revealRate(mode));
+
+// Nothing before the poster on any open but the first of the day: `quick` has to stay exactly the
+// graphic it has always played, and a card that is not animating has no phases at all.
+export const revealOpenMs = (mode: revealMode) => (
+	mode === 'full' ? Math.round(revealOpenBeatMs * revealRate(mode)) : 0
+);
+
+// Both phases, which is what the card is removed after and what the popup counts its opening state in.
+export const revealTotalMs = (mode: revealMode) => revealOpenMs(mode) + revealDurationMs(mode);
 
 // Small on purpose: the cascade should read as one graphic arriving down the page rather than as
 // each card taking its turn.
@@ -41,6 +59,14 @@ export const revealStaggerCapIndex = 6;
 
 export const revealDelayMs = (index: number, mode: revealMode) => Math.round(
 	Math.min(index, revealStaggerCapIndex) * revealStaggerStepMs * revealRate(mode),
+);
+
+// When this card's poster starts, which is once its opening beat has run. Written onto the card as
+// `--reveal-spine` and the anchor every delay in the poster's half of the stylesheet is taken from —
+// `--reveal-delay` is the cascade alone, and is what the opening beat itself starts on. The two are
+// the same value in `quick`, which is how that version comes out unchanged.
+export const revealSpineStartMs = (index: number, mode: revealMode) => (
+	revealDelayMs(index, mode) + revealOpenMs(mode)
 );
 
 // Past this the cards are not merely off screen, they are off screen and expensive: each one is a
@@ -55,7 +81,7 @@ export const revealModeForIndex = (mode: revealMode, index: number): revealMode 
 // When the last card to start has finished, and so when the popup stops being in its opening state
 // at all. Going to settings and back after this point must not replay anything.
 export const revealSettleMs = (mode: revealMode) => (
-	mode === 'none' ? 0 : revealDelayMs(revealStaggerCapIndex, mode) + revealDurationMs(mode)
+	mode === 'none' ? 0 : revealDelayMs(revealStaggerCapIndex, mode) + revealTotalMs(mode)
 );
 
 // How long the graphic gets to leave when somebody asks it to. Going straight to 'none' takes the
@@ -63,6 +89,24 @@ export const revealSettleMs = (mode: revealMode) => (
 // card that blanks and then reappears, which is worse than the animation somebody was trying to
 // escape. Short enough to read as leaving rather than as another beat.
 export const revealSkipOutMs = 140;
+
+// How big the opening pair are drawn, against the card's own height. Over 1, because the point of them
+// is that they do not fit: at 1.34 a crest overhangs 17% of the card's height at the top and the same
+// at the bottom, and the stage's clip cuts it at the card's edge, which is what reads as bleed rather
+// than as a crest that happens to be large. Measured against height rather than width so the overhang
+// is the same fraction on a finished card as on a live one — the two differ by half again in height
+// and barely at all in width.
+export const revealOpenCrestShare = 1.34;
+
+// And how far out of the card's centre each of them sits, as a share of its width. Far enough that
+// each bleeds off its own outer edge rather than sitting in the middle of its half, close enough that
+// the pair still read as a pair.
+export const revealOpenCrestOffsetShare = 0.32;
+
+// The colour the graphic builds on, which the opening pair are drawn against and judged against. Named
+// here as well as in `global.scss` because the crests are handed it in JS, and pinned by a spec so the
+// two cannot drift — the stylesheet paints it and this is what the artwork was checked over.
+export const revealBaseColor = '#0d1117';
 
 // tan(20.5 degrees). The steepest the graphic ever leans, and on most cards the angle it holds: the
 // bars are skewed by it, the seam between the two team colours leans by it, the edge each wipe

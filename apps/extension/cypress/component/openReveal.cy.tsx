@@ -5,6 +5,8 @@ import {
 	revealBaseDurationMs,
 	revealDurationMs,
 	revealFullRate,
+	revealOpenBeatMs,
+	revealOpenMs,
 	revealLeanRatio,
 	revealLeanWidthCap,
 	revealStageBleedPx,
@@ -87,11 +89,15 @@ const scrubTo = (ms: number) => {
 	});
 };
 
-// Every millisecond in this file is written where its beat sits in the choreography — the figures the
-// stylesheet itself names, before `--reveal-rate` is applied — and put onto the real timeline here.
-// The long cut is the same graphic at `revealFullRate`, so a beat the stylesheet calls 2000ms happens
-// at 3000, and writing 3000 everywhere would hide which beat was meant the next time the rate moves.
-const spineMs = (ms: number) => ms * revealFullRate;
+// Every millisecond below is written where its beat sits in the poster's own choreography — the
+// figures the stylesheet names, before `--reveal-rate` — and put onto the real timeline here. Two
+// things move it: the rate, and the opening beat that now runs ahead of the poster, so poster-zero is
+// no longer timeline-zero. Writing the resolved figures instead would hide which beat was meant the
+// next time either of those changes, and both have changed twice.
+const spineMs = (ms: number) => revealOpenMs('full') + ms * revealFullRate;
+
+// And the opening beat's own frames, which are measured from the start of the card.
+const openMs = (ms: number) => ms * revealFullRate;
 
 const rectOf = (selector: string) => cy.get(selector).then($el => $el[0].getBoundingClientRect());
 
@@ -161,6 +167,89 @@ describe('the popup open reveal', () => {
 		cy.mount(<Harness mode='none' />);
 		cy.get('.game-card').should('exist');
 		cy.get('.game-card-reveal').should('not.exist');
+	});
+
+	// ── The opening beat ──────────────────────────────────────────────────────────
+
+	// Oversized is the whole point, so it is asserted as overhang rather than as a size: each crest has
+	// to leave the card at the top, at the bottom and off its own outer side. A figure would pass on a
+	// card of any height; this fails the moment the pair start fitting.
+	it('draws the opening pair too big for the card, off three of its edges', () => {
+		cy.mount(<Harness mode='full' />);
+		awaitCrests();
+		scrubTo(openMs(revealOpenBeatMs));
+		rectOf('.game-card').then(card => {
+			cy.get('.game-card-reveal-opening-crest.is-away').should($away => {
+				const box = $away[0].getBoundingClientRect();
+				expect(box.top, 'over the top edge').to.be.lessThan(card.top);
+				expect(box.bottom, 'under the bottom edge').to.be.greaterThan(card.bottom);
+				expect(box.left, 'off its own outer edge').to.be.lessThan(card.left);
+			});
+			cy.get('.game-card-reveal-opening-crest.is-home').should($home => {
+				const box = $home[0].getBoundingClientRect();
+				expect(box.top, 'over the top edge').to.be.lessThan(card.top);
+				expect(box.bottom, 'under the bottom edge').to.be.greaterThan(card.bottom);
+				expect(box.right, 'off its own outer edge').to.be.greaterThan(card.right);
+			});
+		});
+	});
+
+	// And the overhang is cut at the card rather than painted outside it, which is the difference
+	// between artwork placed past the frame and artwork spilling out of a container.
+	it('cuts the overhang at the card\'s own edge', () => {
+		cy.mount(<Harness mode='full' />);
+		rectOf('.game-card').then(card => {
+			rectOf('.game-card-reveal-opening').then(layer => {
+				expect(layer.left, 'clipped to the card').to.be.closeTo(card.left, 0.1);
+				expect(layer.right, 'clipped to the card').to.be.closeTo(card.right, 0.1);
+				// The same pixel of bleed the poster's layers take, for the same reason.
+				expect(layer.top).to.be.closeTo(card.top - revealStageBleedPx, 0.1);
+				expect(layer.bottom).to.be.closeTo(card.bottom + revealStageBleedPx, 0.1);
+			});
+			cy.get('.game-card-reveal-opening')
+				.should('have.css', 'clip-path', `inset(0px -${revealStageBleedPx}px round 9px)`);
+		});
+	});
+
+	// The transition out of the beat is the colour covering it, not a dissolve: the opening sits under
+	// the halves, so the poster arriving is what takes it off screen. If the stacking ever inverts, the
+	// oversized pair would ride over the poster instead.
+	it('keeps the opening beat under the colour that replaces it', () => {
+		cy.mount(<Harness mode='full' />);
+		cy.get('.game-card-reveal-opening').then($opening => {
+			cy.get('.game-card-reveal-stage').then($stage => {
+				const opening = Number(getComputedStyle($opening[0]).zIndex);
+				const stage = Number(getComputedStyle($stage[0]).zIndex);
+				const base = Number(getComputedStyle($opening[0].previousElementSibling!).zIndex);
+				expect(opening, 'over the dark base').to.be.greaterThan(base);
+				expect(opening, 'under the poster').to.be.lessThan(stage);
+			});
+		});
+	});
+
+	// It has to be gone before the colour parts again at the end, or the retreat uncovers it a second
+	// time — which is the one way a layer that is only ever hidden rather than removed can come back.
+	it('is gone before the colour retreats off the card', () => {
+		cy.mount(<Harness mode='full' />);
+		// 78% of the poster is where the halves start retreating.
+		scrubTo(spineMs(revealBaseDurationMs * 0.78));
+		cy.get('.game-card-reveal-opening').should('have.css', 'opacity', '0');
+	});
+
+	// And no later open of the day gets one at all, which is what keeps that version byte-identical.
+	it('gives the quick version no opening beat, and starts its poster at once', () => {
+		cy.mount(<Harness mode='quick' />);
+		cy.get('.game-card-reveal-opening').should('not.exist');
+		cy.get('.game-card-reveal').should('have.css', '--reveal-spine', '0ms');
+	});
+
+	// The poster's own anchor, which every delay in its half of the stylesheet is taken from. On the
+	// first open it is the opening beat's length; a card that read the cascade instead would start its
+	// poster over crests still arriving.
+	it('anchors the poster after the opening beat', () => {
+		cy.mount(<Harness mode='full' />);
+		cy.get('.game-card-reveal').should('have.css', '--reveal-spine', `${revealOpenMs('full')}ms`);
+		cy.get('.game-card-reveal').should('have.css', '--reveal-delay', '0ms');
 	});
 
 	// The tricode is wiped, never faded: the crest layer and the lettering layer are clipped along
@@ -390,15 +479,13 @@ describe('the popup open reveal', () => {
 		});
 	});
 
-	// And the mark inside it lands too, which the box matching does not imply: a crest the colour
-	// treatment gave a plate draws at three quarters of its box, so matching the boxes alone left the
-	// artwork three quarters the size of the card's own and it jumped the rest at the handoff. The
-	// plate is grown around the box instead, so the mark is the box.
-	it('lands the mark itself on the card\'s crest, plate or no plate', () => {
+	// And the mark inside it lands too, which the box matching does not imply: the crest used to be
+	// drawn at three quarters of its box when the colour treatment gave it a plate, so matching the
+	// boxes alone left the artwork three quarters the size of the card's own and it jumped the rest
+	// at the handoff. Every crest is bare now, so the mark is the box.
+	it('lands the mark itself on the card\'s crest', () => {
 		cy.mount(<Harness mode='full' />);
 		awaitCrests();
-		cy.get('.game-card-reveal-wipe.is-away .game-card-reveal-crest-plate').should('not.have.class', 'is-bare');
-		cy.get('.game-card-reveal-wipe.is-home .game-card-reveal-crest-plate').should('have.class', 'is-bare');
 		scrubTo(spineMs(revealBaseDurationMs) + 50);
 		cy.get('.game-card .team-crest').first().then($real => {
 			const real = $real[0].getBoundingClientRect();
@@ -411,10 +498,9 @@ describe('the popup open reveal', () => {
 		});
 	});
 
-	// Both sides draw their mark at one size, whichever treatment each of them ended up with. A card
-	// with one plated crest and one bare one showing two different sizes is the same bug seen from
-	// the other end.
-	it('draws both sides at one size whatever treatment each of them takes', () => {
+	// Both sides draw their mark at one size. A card showing two crests at two different sizes is the
+	// same bug seen from the other end.
+	it('draws both sides at one size', () => {
 		cy.mount(<Harness mode='full' />);
 		awaitCrests();
 		scrubTo(spineMs(2000));

@@ -5,14 +5,18 @@ import { resolveTeamColorPair } from '@arenaswap/ui/src/components/colorUtils';
 import TeamCrest from '@arenaswap/ui/src/components/teamCrest';
 import {
 	revealAbbrScale,
+	revealBaseColor,
 	revealDelayMs,
-	revealDurationMs,
 	revealHoldScale,
 	revealLean,
+	revealOpenCrestOffsetShare,
+	revealOpenCrestShare,
 	revealRate,
 	revealSkewDeg,
+	revealSpineStartMs,
 	revealStageBleedPx,
 	revealSweepRun,
+	revealTotalMs,
 	type revealMode,
 } from '../cardReveal';
 
@@ -34,6 +38,10 @@ interface revealLanding {
 	crestSize: number;
 	hold: number;
 	sweepRun: number;
+	// The card's own box, which the opening pair are sized and placed off rather than off the stage:
+	// they are drawn to overhang it, so it is the thing the overhang is a fraction of.
+	cardWidth: number;
+	cardHeight: number;
 }
 
 const crestCentre = (rect: DOMRect, box: DOMRect) => ({
@@ -77,11 +85,36 @@ const RevealSide = ({ team, surface, side }: { team: Team; surface: string; side
 	</>
 );
 
+// The beat that runs ahead of the poster. The same two crests, drawn past the edges of the card so the
+// stage's clip cuts them, arriving from their own outer side and settling as the colour comes over
+// them. Its own layer rather than the poster's, which is clipped to hide its crests until a bar has
+// passed — these have to be visible from the first frame, and they sit under the colour halves so that
+// the halves growing over them is the whole of the transition. Nothing fades into anything: the pair
+// are still shrinking towards the hold when the colour takes them.
+const RevealOpening = ({ game }: { game: Game }) => (
+	<div className='game-card-reveal-opening' aria-hidden='true'>
+		{([['away', game.awayTeam], ['home', game.homeTeam]] as const).map(([side, team]) => (
+			<span key={side} className={`game-card-reveal-opening-crest is-${side}`}>
+				<TeamCrest
+					logo={team.logo}
+					abbreviation={(team.abbreviation || '?').slice(0, 3)}
+					background={revealBaseColor}
+					discClassName='game-card-reveal-opening-plate'
+					crestClassName='game-card-reveal-opening-logo'
+					fallback='blank'
+					loading='eager'
+				/>
+			</span>
+		))}
+	</div>
+);
+
 const gameCardReveal = ({ game, mode, index, skipping, children }: gameCardRevealProps) => {
 	const wrapperRef = useRef<HTMLDivElement | null>(null);
 	const [landing, setLanding] = useState<revealLanding | null>(null);
 	const [done, setDone] = useState(false);
 	const delay = revealDelayMs(index, mode);
+	const spineStart = revealSpineStartMs(index, mode);
 
 	// Measured rather than derived, because where a crest sits in a card and how big it is are facts
 	// about the card's own flex row — they move with the locale, the sport and whether there is a tab
@@ -112,6 +145,8 @@ const gameCardReveal = ({ game, mode, index, skipping, children }: gameCardRevea
 			crestSize,
 			hold: revealHoldScale(box.width, box.height, crestSize),
 			sweepRun: revealSweepRun(box.width, lean),
+			cardWidth: box.width,
+			cardHeight: box.height,
 		});
 	}, []);
 
@@ -138,7 +173,7 @@ const gameCardReveal = ({ game, mode, index, skipping, children }: gameCardRevea
 	// starts, and until its stage is gone it is a layer sitting over a card you can already click.
 	useLayoutEffect(() => {
 		if (mode === 'none') return;
-		const timer = setTimeout(() => setDone(true), delay + revealDurationMs(mode));
+		const timer = setTimeout(() => setDone(true), delay + revealTotalMs(mode));
 		return () => clearTimeout(timer);
 	}, [mode, delay]);
 
@@ -156,12 +191,15 @@ const gameCardReveal = ({ game, mode, index, skipping, children }: gameCardRevea
 				'--reveal-away': awayColor,
 				'--reveal-home': homeColor,
 				'--reveal-delay': `${delay}ms`,
+				'--reveal-spine': `${spineStart}ms`,
 				'--reveal-rate': revealRate(mode),
 				'--reveal-lean': `${landing?.lean ?? 0}px`,
 				'--reveal-skew': `${landing?.skew ?? 0}deg`,
 				'--reveal-crest': `${landing?.crestSize ?? 0}px`,
 				'--reveal-hold': landing?.hold ?? 1,
 				'--reveal-sweep-run': `${landing?.sweepRun ?? 0}px`,
+				'--reveal-open-crest': `${(landing?.cardHeight ?? 0) * revealOpenCrestShare}px`,
+				'--reveal-open-offset': `${(landing?.cardWidth ?? 0) * revealOpenCrestOffsetShare}px`,
 				'--reveal-abbr-scale': revealAbbrScale(game.awayTeam.abbreviation, game.homeTeam.abbreviation),
 				'--reveal-away-dx': `${landing?.awayDx ?? 0}px`,
 				'--reveal-away-dy': `${landing?.awayDy ?? 0}px`,
@@ -172,6 +210,7 @@ const gameCardReveal = ({ game, mode, index, skipping, children }: gameCardRevea
 			{/* Outside the stage rather than in it: it goes under the crests the stage carries. Square,
 			    like everything else in here — the wrapper holds the one rounded clip. */}
 			<span className='game-card-reveal-base' aria-hidden='true' />
+			{mode === 'full' && <RevealOpening game={game} />}
 			<div className='game-card-reveal-stage' aria-hidden='true'>
 				<span className='game-card-reveal-half is-away' />
 				<span className='game-card-reveal-half is-home' />

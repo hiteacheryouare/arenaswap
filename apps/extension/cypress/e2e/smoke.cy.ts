@@ -43,10 +43,11 @@ describe('popup boots', () => {
 			expect(doc.documentElement.scrollWidth, 'scroll width at the first frame')
 				.to.be.at.most(doc.documentElement.clientWidth);
 		});
-		// And mid-sweep, where the bars are over the card and the crests are at their largest. 3000ms
-		// rather than the 2000 this was: the long cut plays at 1.5×, so the pass does not start until
-		// 2250 and 2000 now reads a frame where every bar is still parked.
-		cy.wait(3000);
+		// And mid-pass, where the bars are over the card and the crests are at their largest. The pass
+		// no longer starts until 2990ms — 1040 of opening beat, then 1500 of poster at 1.3× — so the
+		// 2000 this was written at, and the 3000 it was moved to for the rate alone, both now read a
+		// frame where every bar is still parked off the card.
+		cy.wait(3500);
 		cy.document().should(doc => {
 			expect(doc.documentElement.scrollWidth, 'scroll width mid-sweep')
 				.to.be.at.most(doc.documentElement.clientWidth);

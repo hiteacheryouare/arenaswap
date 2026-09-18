@@ -395,7 +395,7 @@ describe('mainView up next day pager', () => {
 	it('holds the reveal stagger still when a score push resorts the list under it', () => {
 		cy.mount(<ResortingMainView />);
 		cy.get('[data-testid="game-card-slow"]').closest('.game-card-reveal').should('have.css', '--reveal-delay', '0ms');
-		cy.get('[data-testid="game-card-fast"]').closest('.game-card-reveal').should('have.css', '--reveal-delay', '120ms');
+		cy.get('[data-testid="game-card-fast"]').closest('.game-card-reveal').should('have.css', '--reveal-delay', '104ms');
 
 		cy.get('[data-testid="fake-score-push"]').click();
 
@@ -403,6 +403,6 @@ describe('mainView up next day pager', () => {
 		cy.get('.game-card-reveal [data-testid^="game-card-"]').first().should('have.attr', 'data-testid', 'game-card-fast');
 		// And neither card's place in the cascade moved with it.
 		cy.get('[data-testid="game-card-slow"]').closest('.game-card-reveal').should('have.css', '--reveal-delay', '0ms');
-		cy.get('[data-testid="game-card-fast"]').closest('.game-card-reveal').should('have.css', '--reveal-delay', '120ms');
+		cy.get('[data-testid="game-card-fast"]').closest('.game-card-reveal').should('have.css', '--reveal-delay', '104ms');
 	});
 });

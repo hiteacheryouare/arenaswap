@@ -853,9 +853,10 @@ button, input, select, optgroup, textarea {
 	pointer-events:       none;
 }
 
-/* Under the crests it carries, over everything the card draws. */
+/* Under the crests it carries, over everything the card draws — and over the opening beat, which is
+   what lets the colour halves growing across it be the whole of the transition out of it. */
 .game-card-reveal-stage {
-	z-index: 2;
+	z-index: 3;
 }
 
 /* Over both: a bar passes across a crest, not behind it. A layer of its own rather than a child of
@@ -878,7 +879,7 @@ button, input, select, optgroup, textarea {
 	z-index:        1;
 	background:     #0d1117;
 	pointer-events: none;
-	animation:      cardRevealBase calc(3400ms * var(--reveal-rate)) linear var(--reveal-delay) both;
+	animation:      cardRevealBase calc(3400ms * var(--reveal-rate)) linear var(--reveal-spine) both;
 }
 
 /* Wider than the half it fills so the seam has somewhere to lean, and clipped back to the leaning
@@ -915,8 +916,8 @@ button, input, select, optgroup, textarea {
 	--reveal-shade-dir: calc(90deg + var(--reveal-skew));
 	clip-path:          polygon(0 0, 100% 0, calc(100% - var(--reveal-lean) * 2) 100%, 0 100%);
 	animation:
-		cardRevealHalf calc(3400ms * var(--reveal-rate)) linear var(--reveal-delay) both,
-		cardRevealSeamAway calc(750ms * var(--reveal-rate)) cubic-bezier(0.22, 1, 0.36, 1) calc(var(--reveal-delay) + 2650ms * var(--reveal-rate)) both;
+		cardRevealHalf calc(3400ms * var(--reveal-rate)) linear var(--reveal-spine) both,
+		cardRevealSeamAway calc(750ms * var(--reveal-rate)) cubic-bezier(0.22, 1, 0.36, 1) calc(var(--reveal-spine) + 2650ms * var(--reveal-rate)) both;
 }
 
 .game-card-reveal-half.is-home {
@@ -925,8 +926,71 @@ button, input, select, optgroup, textarea {
 	--reveal-shade-dir: calc(-90deg + var(--reveal-skew));
 	clip-path:          polygon(calc(var(--reveal-lean) * 2) 0, 100% 0, 100% 100%, 0 100%);
 	animation:
-		cardRevealHalf calc(3400ms * var(--reveal-rate)) linear var(--reveal-delay) both,
-		cardRevealSeamHome calc(750ms * var(--reveal-rate)) cubic-bezier(0.22, 1, 0.36, 1) calc(var(--reveal-delay) + 2650ms * var(--reveal-rate)) both;
+		cardRevealHalf calc(3400ms * var(--reveal-rate)) linear var(--reveal-spine) both,
+		cardRevealSeamHome calc(750ms * var(--reveal-rate)) cubic-bezier(0.22, 1, 0.36, 1) calc(var(--reveal-spine) + 2650ms * var(--reveal-rate)) both;
+}
+
+/* ── The opening: two crests too big for the card ───────────────────────────────
+
+   What runs ahead of the poster on the first open of the day. The same two crests the poster resolves
+   into, drawn at 1.34 of the card's height so that neither of them fits — each overhangs about a sixth
+   of the card top and bottom and runs off its own outer edge, and the stage's clip cuts them there.
+   That cut is the point: a crest that merely happened to be large would read as a mistake, and one cut
+   off by the frame reads as artwork placed deliberately past it.
+
+   It is a layer of its own rather than the poster's crest layer because that one is clipped to show
+   nothing until a bar has crossed it, and these have to be up from the first frame. Sitting under the
+   halves is what makes the handoff free: the colour grows across the pair and there is no moment where
+   anything is dissolved into anything, because the thing covering them is the next beat arriving.
+
+   The fade is on this layer and the movement is on the crests inside it — one animation per property,
+   which is the rule in here, and it means the two can share a window and read off the same
+   percentages. 800ms is the beat itself (`revealOpenBeatMs`); the 900 after it is how long the layer
+   stays alive into the poster, and it has to be at least the 884ms the halves take to meet, or the
+   colour would part again at the end over crests still sitting underneath. */
+.game-card-reveal-opening {
+	position:             absolute;
+	inset:                -1px 0;
+	z-index:              2;
+	overflow:             clip;
+	overflow-clip-margin: 1px;
+	clip-path:            inset(0 -1px round calc(0.5rem + 1px));
+	pointer-events:       none;
+	animation:            cardRevealOpeningIn calc((800ms + 900ms) * var(--reveal-rate)) linear var(--reveal-delay) both;
+}
+
+.game-card-reveal-opening-crest {
+	position:  absolute;
+	top:       50%;
+	width:     var(--reveal-open-crest);
+	height:    var(--reveal-open-crest);
+	margin:    calc(var(--reveal-open-crest) / -2) 0 0 calc(var(--reveal-open-crest) / -2);
+	animation: cardRevealOpeningCrest calc((800ms + 900ms) * var(--reveal-rate)) linear var(--reveal-delay) both;
+}
+
+/* Out of the centre by `revealOpenCrestOffsetShare` of the card, so each one leaves the card by its own
+   side. `--reveal-drift` is the sign of that side, as it is for the poster's own layers. */
+.game-card-reveal-opening-crest.is-away {
+	left:           calc(50% - var(--reveal-open-offset));
+	--reveal-drift: -1;
+}
+
+.game-card-reveal-opening-crest.is-home {
+	left:           calc(50% + var(--reveal-open-offset));
+	--reveal-drift: 1;
+}
+
+.game-card-reveal-opening-plate {
+	position:        absolute;
+	inset:           0;
+	display:         flex;
+	align-items:     center;
+	justify-content: center;
+}
+
+.game-card-reveal-opening-logo {
+	width:  100%;
+	height: 100%;
 }
 
 /* ── The wipe, and the two layers it trades between ─────────────────────────── */
@@ -942,19 +1006,19 @@ button, input, select, optgroup, textarea {
 }
 
 .game-card-reveal-wipe.is-away {
-	animation: cardRevealWipeAway calc(1000ms * var(--reveal-rate)) linear calc(var(--reveal-delay) + 1500ms * var(--reveal-rate)) both;
+	animation: cardRevealWipeAway calc(1000ms * var(--reveal-rate)) linear calc(var(--reveal-spine) + 1500ms * var(--reveal-rate)) both;
 }
 
 .game-card-reveal-wipe.is-home {
-	animation: cardRevealWipeHome calc(1000ms * var(--reveal-rate)) linear calc(var(--reveal-delay) + 1500ms * var(--reveal-rate)) both;
+	animation: cardRevealWipeHome calc(1000ms * var(--reveal-rate)) linear calc(var(--reveal-spine) + 1500ms * var(--reveal-rate)) both;
 }
 
 .game-card-reveal-mask.is-away {
-	animation: cardRevealMaskAway calc(1000ms * var(--reveal-rate)) linear calc(var(--reveal-delay) + 1500ms * var(--reveal-rate)) both;
+	animation: cardRevealMaskAway calc(1000ms * var(--reveal-rate)) linear calc(var(--reveal-spine) + 1500ms * var(--reveal-rate)) both;
 }
 
 .game-card-reveal-mask.is-home {
-	animation: cardRevealMaskHome calc(1000ms * var(--reveal-rate)) linear calc(var(--reveal-delay) + 1500ms * var(--reveal-rate)) both;
+	animation: cardRevealMaskHome calc(1000ms * var(--reveal-rate)) linear calc(var(--reveal-spine) + 1500ms * var(--reveal-rate)) both;
 }
 
 /* Centred in its own quarter of the card rather than over the card's team column, which sits high
@@ -972,7 +1036,7 @@ button, input, select, optgroup, textarea {
 	width:     var(--reveal-crest);
 	height:    var(--reveal-crest);
 	margin:    calc(var(--reveal-crest) / -2) 0 0 calc(var(--reveal-crest) / -2);
-	animation: cardRevealCrest calc(3400ms * var(--reveal-rate)) linear var(--reveal-delay) both;
+	animation: cardRevealCrest calc(3400ms * var(--reveal-rate)) linear var(--reveal-spine) both;
 }
 
 .game-card-reveal-wipe.is-away .game-card-reveal-crest,
@@ -1033,7 +1097,7 @@ button, input, select, optgroup, textarea {
    overlay that is still fully opaque and, by now, pixel-identical to it — so nothing happens at the
    moment it appears, and what the overlay's own fade then takes off the card is the tinted plate. */
 .game-card-reveal .game-card .team-crest {
-	animation: cardRevealHandoff calc(3162ms * var(--reveal-rate)) steps(1, end) var(--reveal-delay) both;
+	animation: cardRevealHandoff calc(3162ms * var(--reveal-rate)) steps(1, end) var(--reveal-spine) both;
 }
 
 /* Driven on from its own outer edge rather than faded up, and it lands rather than stopping: past its
@@ -1055,7 +1119,7 @@ button, input, select, optgroup, textarea {
 	width:     8rem;
 	height:    4.4rem;
 	margin:    -2.2rem 0 0 -4rem;
-	animation: cardRevealAbbrIn calc(420ms * var(--reveal-rate)) ease calc(var(--reveal-delay) + 620ms * var(--reveal-rate)) both;
+	animation: cardRevealAbbrIn calc(420ms * var(--reveal-rate)) ease calc(var(--reveal-spine) + 620ms * var(--reveal-rate)) both;
 }
 
 /* An outline of live text is not a stroke on that text. A stroke follows every contour the font
@@ -1108,7 +1172,7 @@ button, input, select, optgroup, textarea {
    top of the section about two animations naming one property. */
 .game-card-reveal-abbr-face {
 	color:     var(--reveal-surface);
-	animation: cardRevealAbbrFill calc(200ms * var(--reveal-rate)) ease-in calc(var(--reveal-delay) + 1300ms * var(--reveal-rate)) both;
+	animation: cardRevealAbbrFill calc(200ms * var(--reveal-rate)) ease-in calc(var(--reveal-spine) + 1300ms * var(--reveal-rate)) both;
 }
 
 /* Exactly as tall as the stage, and travelling at a constant rate: a wipe that eases is a wipe you
@@ -1158,24 +1222,24 @@ button, input, select, optgroup, textarea {
 .game-card-reveal-sweep.is-away {
 	left:      calc(-22px - var(--reveal-lean));
 	transform: skewX(calc(-1 * var(--reveal-skew)));
-	animation: cardRevealSweepAway calc(1000ms * var(--reveal-rate)) linear calc(var(--reveal-delay) + 1500ms * var(--reveal-rate)) both;
+	animation: cardRevealSweepAway calc(1000ms * var(--reveal-rate)) linear calc(var(--reveal-spine) + 1500ms * var(--reveal-rate)) both;
 }
 
 .game-card-reveal-sweep.is-home {
 	left:      calc(100% + var(--reveal-lean));
 	transform: skewX(var(--reveal-skew));
-	animation: cardRevealSweepHome calc(1000ms * var(--reveal-rate)) linear calc(var(--reveal-delay) + 1500ms * var(--reveal-rate)) both;
+	animation: cardRevealSweepHome calc(1000ms * var(--reveal-rate)) linear calc(var(--reveal-spine) + 1500ms * var(--reveal-rate)) both;
 }
 
 .game-card-reveal-sweep.is-away.is-chaser,
 .game-card-reveal-sweep.is-home.is-chaser {
-	animation-delay:    calc(var(--reveal-delay) + 1640ms * var(--reveal-rate));
+	animation-delay:    calc(var(--reveal-spine) + 1640ms * var(--reveal-rate));
 	animation-duration: calc(1060ms * var(--reveal-rate));
 }
 
 .game-card-reveal-sweep.is-away.is-trailer,
 .game-card-reveal-sweep.is-home.is-trailer {
-	animation-delay:    calc(var(--reveal-delay) + 1760ms * var(--reveal-rate));
+	animation-delay:    calc(var(--reveal-spine) + 1760ms * var(--reveal-rate));
 	animation-duration: calc(1120ms * var(--reveal-rate));
 }
 
@@ -1190,27 +1254,27 @@ button, input, select, optgroup, textarea {
 .game-card-reveal [data-team-star='true'],
 .game-card-reveal .game-meta,
 .game-card-reveal .game-card-ps-bar-row {
-	animation: cardRevealContent calc(620ms * var(--reveal-rate)) cubic-bezier(0.22, 1, 0.36, 1) calc(var(--reveal-delay) + 2500ms * var(--reveal-rate)) both;
+	animation: cardRevealContent calc(620ms * var(--reveal-rate)) cubic-bezier(0.22, 1, 0.36, 1) calc(var(--reveal-spine) + 2500ms * var(--reveal-rate)) both;
 }
 
 .game-card-reveal .game-card-center {
-	animation-delay: calc(var(--reveal-delay) + 2580ms * var(--reveal-rate));
+	animation-delay: calc(var(--reveal-spine) + 2580ms * var(--reveal-rate));
 }
 
 .game-card-reveal .team-abbreviation,
 .game-card-reveal [data-team-star='true'] {
-	animation-delay: calc(var(--reveal-delay) + 2660ms * var(--reveal-rate));
+	animation-delay: calc(var(--reveal-spine) + 2660ms * var(--reveal-rate));
 }
 
 .game-card-reveal .game-meta {
-	animation-delay: calc(var(--reveal-delay) + 2740ms * var(--reveal-rate));
+	animation-delay: calc(var(--reveal-spine) + 2740ms * var(--reveal-rate));
 }
 
 /* 2780, not 2820: 620ms after it is 3400, which is `revealBaseDurationMs` and the instant the
    wrapper is removed. At 2820 the last beat was still 40ms from finishing when its element stopped
    existing — invisible under this easing, which is at 99.9% by then, and a pop under any other. */
 .game-card-reveal .game-card-ps-bar-row {
-	animation-delay: calc(var(--reveal-delay) + 2780ms * var(--reveal-rate));
+	animation-delay: calc(var(--reveal-spine) + 2780ms * var(--reveal-rate));
 }
 
 /* ── Leaving early ─────────────────────────────────────────────────────────────
@@ -1313,6 +1377,25 @@ button, input, select, optgroup, textarea {
 @keyframes cardRevealMaskHome {
 	from { clip-path: polygon(0 0, 100% 0, calc(100% + var(--reveal-lean) * 2) 100%, 0 100%); }
 	to   { clip-path: polygon(0 0, calc(-22px - var(--reveal-lean) * 2) 0, -22px 100%, 0 100%); }
+}
+
+/* Up almost at once and out under colour that is already covering it. 82% of 1700 is 1394ms, which is
+   594ms into the poster — the halves need 884 to meet, so what takes this off screen is the colour
+   rather than the fade, and the fade is only there so that nothing is left underneath when the colour
+   parts again at the end. */
+@keyframes cardRevealOpeningIn {
+	0%        { opacity: 0; }
+	7%, 82%   { opacity: 1; }
+	100%      { opacity: 0; }
+}
+
+/* 47% of 1700 is 800ms, which is the instant the poster starts. So the pair arrive over the opening
+   beat and are still shrinking towards the hold when the colour takes them: the movement never stops
+   and never resolves, which is what makes this read as one graphic rather than two. */
+@keyframes cardRevealOpeningCrest {
+	0%   { transform: translateX(calc(var(--reveal-drift, 0) * 26px)) scale(1.18); animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); }
+	47%  { transform: translateX(0) scale(1); animation-timing-function: linear; }
+	100% { transform: translateX(0) scale(0.86); }
 }
 
 @keyframes cardRevealAbbrIn {
