@@ -1010,61 +1010,94 @@ button, input, select, optgroup, textarea {
 /* The club named in full, which is the one thing an in-stadium matchup graphic says out loud that this
    one never did — the poster after it carries tricodes, and a tricode is decoded rather than read.
 
+   Set as big as those tricodes and in the same two copies, for the same reason: an outline of live
+   text is not a stroke on that text, since a stroke follows every contour the font draws including
+   the ones a filled glyph hides. Back copy solid white and stroked wider than itself, front copy the
+   same glyph in the colour behind it, and what shows is the stroke outside the silhouette.
+
+   One line per word, so what has to fit the half a card is the longest word rather than the longest
+   name, and `--reveal-name-scale` is that longest word across both sides — one long name pulls both
+   down, exactly as the tricodes do, or the two stop reading as one graphic.
+
    A sibling of the field rather than a child, because the field is `teamCrest`'s own wrapper and takes
    no children; it takes the same geometry and the same seam clip, so a long name is cut by the seam
-   instead of crossing it. Over the crest, because the crest is the picture and this is the caption.
+   instead of crossing it.
 
-   The scrim is what makes it legible rather than a colour choice, and that is deliberate: the field
-   under it is the team's colour on most cards and `teamCrest`'s near-white plate on the rest, and
-   nothing here gets to know which. White on a dark wash reads on both, where an ink picked for one
-   would have been wrong on the other — the same problem the field itself had, one layer up. */
+   Each name sits at the corner where its own half is widest, which is what makes the type big rather
+   than merely large: the seam leans, so the away half is `50% + lean` across at the top and the home
+   half is the same at the bottom. Packed into the narrow end instead, a ten-letter word had 103px to
+   live in and was clipped; at the wide end it has 161px and needs no clearance from the seam at all,
+   because the seam *is* the box's far edge on that row. The diagonal that falls out — one name high
+   and left, the other low and right — is the lean's own direction, which is the only angle in here. */
 .game-card-reveal-opening-name {
 	position:       absolute;
 	top:            0;
 	bottom:         0;
 	width:          calc(50% + var(--reveal-lean));
 	display:        flex;
-	align-items:    flex-end;
 	pointer-events: none;
-	background:     linear-gradient(to bottom, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, 0.62));
 	animation:      cardRevealOpeningName calc((800ms + 900ms) * var(--reveal-rate)) cubic-bezier(0.16, 1, 0.3, 1) var(--reveal-delay) both;
 }
 
 .game-card-reveal-opening-name.is-away {
 	left:           0;
+	align-items:    flex-start;
 	--reveal-drift: -1;
 }
 
 .game-card-reveal-opening-name.is-home {
 	right:          0;
+	align-items:    flex-end;
 	--reveal-drift: 1;
 }
 
-/* Two leans of padding on the seam side, which is what keeps the type off the clip rather than being
-   cut by it: the seam crosses the box by one lean at each end, so two clears it at the bottom, where
-   the name sits. Wraps rather than shrinking — "Washington Commanders" over two lines is how a
-   scoreboard sets it anyway, and the longest single word in the league (13 characters) is what the
-   size is chosen against. */
-.game-card-reveal-opening-name-text {
-	padding:        0.5rem;
+.game-card-reveal-opening-name-type {
+	display:        flex;
+	flex-direction: column;
+	padding:        0.4rem 0.5rem;
+}
+
+.game-card-reveal-opening-name.is-away .game-card-reveal-opening-name-type {
+	align-items: flex-start;
+}
+
+.game-card-reveal-opening-name.is-home .game-card-reveal-opening-name-type {
+	margin-left: auto;
+	align-items: flex-end;
+}
+
+/* Each word is its own line, and its own pair of stacked copies. The line is sized by the glyphs so
+   the two copies can be laid exactly over one another. */
+.game-card-reveal-opening-name-line {
+	position: relative;
+	display:  block;
+}
+
+.game-card-reveal-opening-name-edge,
+.game-card-reveal-opening-name-face {
+	display:        block;
 	font-family:    'DM Sans', sans-serif;
-	font-size:      0.62rem;
+	font-size:      calc(2rem * var(--reveal-name-scale, 1));
 	font-weight:    700;
-	line-height:    1.15;
-	letter-spacing: 0.04em;
+	letter-spacing: 0.01em;
+	line-height:    0.98;
+	white-space:    nowrap;
 	text-transform: uppercase;
-	color:          #ffffff;
-	text-wrap:      balance;
 }
 
-.game-card-reveal-opening-name.is-away .game-card-reveal-opening-name-text {
-	padding-right: calc(0.5rem + var(--reveal-lean) * 2);
+.game-card-reveal-opening-name-edge {
+	color:               #ffffff;
+	-webkit-text-stroke: 3px #ffffff;
 }
 
-.game-card-reveal-opening-name.is-home .game-card-reveal-opening-name-text {
-	margin-left:   auto;
-	padding-left:  calc(0.5rem + var(--reveal-lean) * 2);
-	text-align:    right;
+/* Laid exactly over the back copy, in the colour of the field it is drawn on — which is the team's
+   own on most cards. Where `teamCrest` fell back to its light plate the field is lighter than this,
+   so the letters read as filled in the team's colour rather than hollow: still the same type at the
+   same size, and still legible, which is the part that has to hold. */
+.game-card-reveal-opening-name-face {
+	position: absolute;
+	inset:    0;
+	color:    var(--reveal-name-surface);
 }
 
 /* Centred in its own field rather than offset out of the card's middle, which is what the disc needed

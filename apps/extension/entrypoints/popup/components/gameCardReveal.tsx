@@ -110,7 +110,7 @@ const RevealOpening = ({ game, awayColor, homeColor }: { game: Game; awayColor: 
 				loading='eager'
 			/>
 		))}
-		<RevealOpeningNames game={game} />
+		<RevealOpeningNames game={game} awayColor={awayColor} homeColor={homeColor} />
 	</div>
 );
 

@@ -98,7 +98,6 @@ export const revealSkipOutMs = 140;
 // and barely at all in width.
 export const revealOpenCrestShare = 1.34;
 
-
 // tan(20.5 degrees). The steepest the graphic ever leans, and on most cards the angle it holds: the
 // bars are skewed by it, the seam between the two team colours leans by it, the edge each wipe
 // reveals its crest along is cut to it, and that seam straightens back to vertical as the card
@@ -150,6 +149,32 @@ export const revealAbbrBaseLength = 3;
 
 export const revealAbbrScale = (away = '', home = '') => (
 	revealAbbrBaseLength / Math.max(revealAbbrBaseLength, away.length, home.length)
+);
+
+// The same idea one size up, for the club named in full over the opening beat. Scaled by the longest
+// *word* across both names rather than by the whole string, because the name is set stacked — a line
+// per word — so what has to fit the half is the longest line and not the longest name.
+//
+// Scaled by the pair rather than per side, exactly as the tricodes are: one long name pulls both down,
+// or the two sides arrive at different sizes and stop reading as one graphic.
+//
+// 6.4 is not a word length, it is where the type stops fitting, and it is measured rather than
+// derived — three attempts at deriving it all clipped the away name against the seam. A name sits at
+// the wide corner of its half, which is `50% + lean` less its padding: 160px on the popup's 296px
+// card. What defeats the arithmetic is that an advance is a property of the letters and not of the
+// count — DM Sans bold caps carrying this stroke run 0.637em a character for "MARLINS" and 0.739em
+// for "COMMANDERS", which is a sixth more from the same number of glyphs. So the figure is taken
+// against the widest letters rather than the average, and checked by rendering the shapes real names
+// take: a short pair, a ten-letter pair, the longest word in the product ("Massachusetts"), a
+// twelve-letter place name, and a one-word club. Every one of them lands inside the 160.
+export const revealNameBaseLength = 6.4;
+
+const longestWord = (name: string) => name
+	.split(/\s+/)
+	.reduce((longest, word) => Math.max(longest, word.length), 0);
+
+export const revealNameScale = (away = '', home = '') => (
+	revealNameBaseLength / Math.max(revealNameBaseLength, longestWord(away), longestWord(home))
 );
 
 // The width the stylesheet draws the leading bar at. Named here because the travel below is measured

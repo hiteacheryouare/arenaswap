@@ -19,6 +19,8 @@ import {
 	revealLeanWidthCap,
 	revealMaxCards,
 	revealModeForIndex,
+	revealNameBaseLength,
+	revealNameScale,
 	revealPlateRatio,
 	revealQuickRate,
 	revealSettleMs,
@@ -233,6 +235,34 @@ describe('how the poster lettering is sized', () => {
 // one of them is therefore two numbers that have to agree, and this file has been bitten by exactly
 // that before — a version somebody had to remember to raise, left behind while the thing it
 // versioned moved twice. So the agreement is asserted rather than trusted.
+describe('how the club names are sized', () => {
+	// Sized by the longest *word* rather than the longest name, because the name is set stacked — one
+	// line per word — so what has to fit the half a card is the longest line.
+	it('takes the longest word rather than the longest name', () => {
+		// "Commanders" is the longest word in the pair, not "Washington Commanders".
+		expect(revealNameScale('Washington Commanders', 'Los Angeles Chargers'))
+			.toBeCloseTo(revealNameBaseLength / 10, 10);
+		// And a long name made of short words is not punished for its length: five words here, none of
+		// them over the base, so nothing shrinks.
+		expect(revealNameScale('Inter Miami CF', 'Club de Foot')).toBe(1);
+	});
+
+	// One long word pulls both sides down, exactly as the tricodes do, or the two arrive at different
+	// sizes and stop reading as one graphic.
+	it('sizes the pair together, not each side on its own', () => {
+		const pair = revealNameScale('Miami Marlins', 'Massachusetts Minutemen');
+		expect(pair).toBeCloseTo(revealNameBaseLength / 13, 10);
+		expect(revealNameScale('Massachusetts Minutemen', 'Miami Marlins')).toBeCloseTo(pair, 10);
+	});
+
+	// Never up, like `revealAbbrScale`: the base is the size the type is drawn at, not a target.
+	it('never scales up, and survives a name that is not there', () => {
+		expect(revealNameScale('Ajax', 'Roma')).toBe(1);
+		expect(revealNameScale()).toBe(1);
+		expect(revealNameScale('', '')).toBe(1);
+	});
+});
+
 describe('the figures the stylesheet repeats by hand', () => {
 	const stylesheet = readFileSync(path.join(__dirname, '../assets/global.scss'), 'utf8');
 

@@ -3,28 +3,32 @@
 > One or two lines per entry: what changed, and the one thing about it worth knowing later.
 > The code, the tests and the git history hold the rest. Do not write essays here.
 
-## The opening beat says who is playing, in full — 2026-09-18
+## The opening beat says who is playing, in full and in big letters — 2026-09-18
 
 "Miami Marlins", "Washington Commanders", "Los Angeles Chargers" — the one thing an in-stadium matchup
-graphic says out loud that this one never did. The poster after it carries tricodes, and a tricode is
-something you decode rather than read. ESPN's `displayName`, already carried as `Team.name`, printed
-whole: nothing is assembled from the nickname, because the club is "Penn State Nittany Lions" and the
-nickname alone is "Nittany Lions", so there is no place name to join or slice.
+graphic says out loud that this one never did. ESPN's `displayName`, already carried as `Team.name`,
+printed whole: nothing is assembled from the nickname, because the club is "Penn State Nittany Lions"
+and the nickname alone is "Nittany Lions", so there is no place name to join or slice.
 
-A sibling of each colour field rather than a child of one, because the field is `teamCrest`'s own
-wrapper and takes no children. It carries the same geometry and the same seam clip as the field it
-names — now three selectors on that one rule rather than two — so a club name wider than the short side
-of the lean is cut by the seam instead of crossing it, and two leans of padding on that side mean it is
-never actually cut. Measured on the longest pair in the product: "Portland Trail Blazers" against
-"Massachusetts Minutemen", thirteen characters in one word, against a half-card about 119px wide at the
-bottom. Both wrap to two lines, which is how a scoreboard sets them anyway.
+Set as big as the tricodes it precedes and in the same two copies for the same reason — an outline of
+live text is not a stroke on that text, since a stroke follows every contour the font draws including
+the ones a filled glyph hides. One line per word, so what has to fit is the longest word rather than
+the longest name.
 
-The scrim under the type is legibility rather than taste, and it is the same problem the field had one
-layer up: what is behind the name is the team's colour on most cards and `teamCrest`'s near-white plate
-on the rest, and nothing here gets to know which. White on a dark wash reads on both — on a navy and on
-a bright gold — where an ink picked for either would have been wrong on the other. So the spec pins the
-wash, not the colour. The names arrive 18% into the beat rather than with the crests, because a graphic
-where everything lands at once reads as one lump.
+Each name sits at the corner where its own half is **widest**, which is what makes the type big rather
+than merely large. The seam leans, so the away half is `50% + lean` across at the top and the home half
+is the same at the bottom: packed into the narrow end a ten-letter word had 103px to live in, and at
+the wide end it has 160 and needs no clearance from the seam at all, because there the seam *is* the
+box's far edge. The diagonal that falls out — one name high and left, the other low and right — is the
+lean's own direction, which is the only angle in here.
+
+The size is measured, and it took four goes, which is the thing worth keeping. An advance is a property
+of the letters and not of their number: DM Sans bold caps carrying this stroke run 0.637em a character
+for "MARLINS" and 0.739em for "COMMANDERS", a sixth more from the same count. Every attempt to derive
+the figure from an average clipped the away name against the seam. It is taken against the widest
+letters now and checked by rendering the shapes real names take — a short pair, a ten-letter pair, the
+longest word in the product ("Massachusetts"), a twelve-letter place name, a one-word club — and the
+spec asserts rendered width against the box that holds it rather than anything about characters.
 
 Written as its own component and its own spec file, with two lines added to `gameCardReveal` — an
 import and a call. That file was being edited by another agent at the time, and the footprint is the

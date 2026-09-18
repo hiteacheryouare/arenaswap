@@ -65,29 +65,22 @@ const rectOf = (selector: string) => cy.get(selector).then($el => $el[0].getBoun
 const awaitCrests = () => cy.get('.game-card-reveal-opening-logo[data-crest-state="loaded"]')
 	.should('have.length', 2);
 
-// The run of glyphs rather than the box they sit in, which is the half of the card and says nothing
-// about where the type actually reaches.
-const inkOf = (selector: string) => cy.get(selector).then($el => {
-	const range = $el[0].ownerDocument.createRange();
-	range.selectNodeContents($el[0]);
-	return range.getBoundingClientRect();
-});
-
 describe('the clubs named over the opening beat', () => {
 	beforeEach(() => cy.viewport(320, 560));
 
-	// ESPN's `displayName`, printed whole. Not assembled and not abbreviated: the poster after this
-	// carries the tricodes, and this beat is the one place the graphic says who is playing.
+	// ESPN's `displayName`, printed whole, a line per word. Not assembled and not abbreviated: the
+	// poster after this carries the tricodes, and this beat is the one place the graphic says who is
+	// playing.
 	it('names both clubs in full', () => {
 		cy.mount(<Harness />);
-		cy.get('.game-card-reveal-opening-name.is-away .game-card-reveal-opening-name-text')
-			.should('have.text', 'Miami Marlins');
-		cy.get('.game-card-reveal-opening-name.is-home .game-card-reveal-opening-name-text')
-			.should('have.text', 'Washington Commanders');
+		cy.get('.game-card-reveal-opening-name.is-away .game-card-reveal-opening-name-edge')
+			.then($lines => expect([...$lines].map(l => l.textContent).join(' ')).to.equal('Miami Marlins'));
+		cy.get('.game-card-reveal-opening-name.is-home .game-card-reveal-opening-name-edge')
+			.then($lines => expect([...$lines].map(l => l.textContent).join(' ')).to.equal('Washington Commanders'));
 	});
 
 	// Only on the first open of the day, like the rest of this beat. Every later open is the poster on
-	// its own and has to stay exactly the graphic it has always been, which is the invariant three
+	// its own and has to stay exactly the graphic it has always been, which is the invariant four
 	// passes on this animation have now been measured against.
 	it('names nobody on the versions that have no opening beat', () => {
 		cy.mount(<Harness mode='full' />);
@@ -102,39 +95,66 @@ describe('the clubs named over the opening beat', () => {
 		cy.get('.game-card-reveal-opening-name').should('not.exist');
 	});
 
-	// The names sit on whatever colour the field came out as — the team's own on most cards and the
-	// crest component's near-white plate on the rest — and nothing here gets to know which. The scrim
-	// is what makes white read on both, so it is the thing worth pinning rather than the ink.
-	it('lays a scrim under the type rather than trusting the colour behind it', () => {
+	// Set as big as the tricodes and in the same two copies, for the same reason: a stroke follows
+	// every contour the font draws including the ones a filled glyph hides, so an outline has to be
+	// the back copy showing around the front one rather than a stroke on live text.
+	it('sets the names as outlined type, the way the tricodes are', () => {
 		cy.mount(<Harness />);
-		cy.get('.game-card-reveal-opening-name').should($names => {
-			[...$names].forEach(name => {
-				const image = getComputedStyle(name).backgroundImage;
-				expect(image, 'a wash under the type').to.contain('linear-gradient');
-				expect(image, 'darkening towards the bottom').to.contain('rgba(0, 0, 0, 0)');
-			});
+		cy.get('.game-card-reveal-opening-name.is-home .game-card-reveal-opening-name-edge').first()
+			.should('have.css', 'color', 'rgb(255, 255, 255)')
+			.and('have.css', '-webkit-text-stroke-color', 'rgb(255, 255, 255)');
+		// The front copy is the colour of the field behind it, which is this side's own team colour.
+		cy.get('.game-card-reveal-opening-name.is-home .game-card-reveal-opening-name-face').first()
+			.should('have.css', 'color', 'rgb(255, 184, 28)');
+		// And the two are laid exactly over one another, or the outline is a drop shadow.
+		rectOf('.game-card-reveal-opening-name.is-home .game-card-reveal-opening-name-edge').then(edge => {
+			cy.get('.game-card-reveal-opening-name.is-home .game-card-reveal-opening-name-face').first()
+				.should($face => {
+					const box = $face[0].getBoundingClientRect();
+					expect(box.left).to.be.closeTo(edge.left, 0.1);
+					expect(box.top).to.be.closeTo(edge.top, 0.1);
+				});
 		});
-		cy.get('.game-card-reveal-opening-name-text').first()
-			.should('have.css', 'color', 'rgb(255, 255, 255)');
 	});
 
-	// A long club name is cut by the seam rather than crossing it, and the padding is what keeps it
-	// from actually being cut. The pair that decides this is the longest in the product: thirteen
-	// characters in one word, against a half-card that is about 119px wide at the bottom.
-	it('keeps the longest names inside their own half of the card', () => {
-		cy.mount(<Harness awayName='Portland Trail Blazers' homeName='Massachusetts Minutemen' />);
-		awaitCrests();
-		scrubTo(openMs(revealOpenBeatMs));
+	// Each name sits at the corner where its own half is widest — the seam leans, so that is the top
+	// for the away side and the bottom for the home one. Packed into the narrow end instead, a
+	// ten-letter word had 103px to live in and was clipped.
+	it('puts each name at the wide corner of its own half', () => {
+		cy.mount(<Harness />);
 		rectOf('.game-card').then(card => {
-			inkOf('.game-card-reveal-opening-name.is-away .game-card-reveal-opening-name-text').then(away => {
-				inkOf('.game-card-reveal-opening-name.is-home .game-card-reveal-opening-name-text').then(home => {
-					// Neither reaches the other, so neither has crossed the seam between them.
-					expect(away.right, 'away clear of home').to.be.lessThan(home.left);
-					// And both are on the card, which is what the shared seam clip is there to guarantee.
-					expect(away.left).to.be.at.least(card.left);
-					expect(home.right).to.be.at.most(card.right);
-					expect(away.bottom).to.be.at.most(card.bottom);
-					expect(home.bottom).to.be.at.most(card.bottom);
+			rectOf('.game-card-reveal-opening-name.is-away .game-card-reveal-opening-name-type').then(away => {
+				rectOf('.game-card-reveal-opening-name.is-home .game-card-reveal-opening-name-type').then(home => {
+					expect(away.top - card.top, 'away rides the top').to.be.lessThan(card.height / 2);
+					expect(card.bottom - home.bottom, 'home rides the bottom').to.be.lessThan(card.height / 2);
+				});
+			});
+		});
+	});
+
+	// The fit, which is the thing three attempts at this got wrong: an advance is a property of the
+	// letters and not of their number, so a count-based size clipped "COMMANDERS" against the seam
+	// while "MARLINS" had room to spare. Asserted as rendered width against the box that holds it,
+	// across the shapes real names take — including the longest word in the product.
+	([
+		['Miami Marlins', 'Boston Celtics'],
+		['Washington Commanders', 'Los Angeles Chargers'],
+		['Portland Trail Blazers', 'Massachusetts Minutemen'],
+		['Minnesota Timberwolves', 'Milwaukee Bucks'],
+		['Barcelona', 'Juventus'],
+	] as const).forEach(([awayName, homeName]) => {
+		it(`fits every line inside its half: ${awayName} v ${homeName}`, () => {
+			cy.mount(<Harness awayName={awayName} homeName={homeName} />);
+			awaitCrests();
+			scrubTo(openMs(revealOpenBeatMs));
+			cy.get('.game-card-reveal-opening-name').should($boxes => {
+				[...$boxes].forEach(box => {
+					// The box less the type's own padding, which is what the glyphs actually have.
+					const available = box.getBoundingClientRect().width - 16;
+					[...box.querySelectorAll('.game-card-reveal-opening-name-edge')].forEach(line => {
+						const ink = line.getBoundingClientRect().width;
+						expect(ink, `${line.textContent} inside its half`).to.be.at.most(available);
+					});
 				});
 			});
 		});
