@@ -10,7 +10,6 @@ import {
 	revealLean,
 	revealOpenCrestOffsetShare,
 	revealOpenCrestShare,
-	revealOpenSurfaceColor,
 	revealRate,
 	revealSkewDeg,
 	revealSpineStartMs,
@@ -85,20 +84,25 @@ const RevealSide = ({ team, surface, side }: { team: Team; surface: string; side
 	</>
 );
 
-// The beat that runs ahead of the poster. The same two crests, drawn past the edges of the card so the
-// stage's clip cuts them, arriving from their own outer side and settling as the colour comes over
-// them. Its own layer rather than the poster's, which is clipped to hide its crests until a bar has
-// passed — these have to be visible from the first frame, and they sit under the colour halves so that
-// the halves growing over them is the whole of the transition. Nothing fades into anything: the pair
-// are still shrinking towards the hold when the colour takes them.
-const RevealOpening = ({ game }: { game: Game }) => (
+// The beat that runs ahead of the poster: each crest on a disc of its own team's colour, both drawn
+// past the edges of the card so the stage's clip cuts them, arriving from their own outer side and
+// settling as the colour comes over them. Its own layer rather than the poster's, which is clipped to
+// hide its crests until a bar has passed — these have to be visible from the first frame, and they sit
+// under the colour halves so that the halves growing over them is the whole of the transition. Nothing
+// fades into anything: the pair are still shrinking towards the hold when the colour takes them.
+//
+// The disc carries the team's colour into the beat, which makes it the surface its own crest is drawn
+// against — so it is what gets handed to `teamCrest` as the background, rather than the field behind
+// it. The stylesheet paints the disc from the same pair, so the colour the crest is judged against and
+// the colour it is drawn on cannot come apart.
+const RevealOpening = ({ game, awayColor, homeColor }: { game: Game; awayColor: string; homeColor: string }) => (
 	<div className='game-card-reveal-opening' aria-hidden='true'>
-		{([['away', game.awayTeam], ['home', game.homeTeam]] as const).map(([side, team]) => (
+		{([['away', game.awayTeam, awayColor], ['home', game.homeTeam, homeColor]] as const).map(([side, team, surface]) => (
 			<span key={side} className={`game-card-reveal-opening-crest is-${side}`}>
 				<TeamCrest
 					logo={team.logo}
 					abbreviation={(team.abbreviation || '?').slice(0, 3)}
-					background={revealOpenSurfaceColor}
+					background={surface}
 					discClassName='game-card-reveal-opening-plate'
 					crestClassName='game-card-reveal-opening-logo'
 					fallback='blank'
@@ -210,7 +214,7 @@ const gameCardReveal = ({ game, mode, index, skipping, children }: gameCardRevea
 			{/* Outside the stage rather than in it: it goes under the crests the stage carries. Square,
 			    like everything else in here — the wrapper holds the one rounded clip. */}
 			<span className='game-card-reveal-base' aria-hidden='true' />
-			{mode === 'full' && <RevealOpening game={game} />}
+			{mode === 'full' && <RevealOpening game={game} awayColor={awayColor} homeColor={homeColor} />}
 			<div className='game-card-reveal-stage' aria-hidden='true'>
 				<span className='game-card-reveal-half is-away' />
 				<span className='game-card-reveal-half is-home' />

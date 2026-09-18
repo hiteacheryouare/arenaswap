@@ -3,6 +3,38 @@
 > One or two lines per entry: what changed, and the one thing about it worth knowing later.
 > The code, the tests and the git history hold the rest. Do not write essays here.
 
+## The oversized crests sit on discs of their own team's colour — 2026-09-18
+
+The maintainer, on the entry this replaces: "you took away the discs". Worth recording that this pass
+did not — the crest component had dropped its tinted plate entirely as part of the colour work running
+alongside, and it has come back since, with the monochrome marks beside it.
+
+So the beat has discs, and each one is that team's own colour: which is what carries the colours into
+the graphic before the poster's halves do, and it makes the disc — rather than the field behind it —
+the surface its crest is drawn against. That colour is what gets handed to `teamCrest` as the
+background, and the stylesheet paints the disc from the same pair, so the colour a crest is judged
+against and the colour it is drawn on cannot come apart.
+
+The two treatments compose, and the composition is the point. Where the artwork reads on its team's
+colour, `teamCrest` draws the crest bare and the stylesheet's disc is the one you see — Arizona's gold
+on Arizona's red. Where it does not, the component's own tinted plate wins, because it sets it inline
+and an inline style beats a rule: Miami's navy on Miami's navy, which is the case that plate exists
+for, and which the popup cannot answer with a monochrome mark because its state carries none. Both
+sides end up on a disc either way, which is the thing this beat now guarantees. One spec per path, and
+the shipped fixture card exercises both at once.
+
+The mark is three quarters of its disc, which is `revealPlateRatio` and what every plated crest in the
+product is drawn at — a circle drawn at the size of a wordmark shaves its ends off. That is also what
+sets the bleed now: the disc overhangs the card by a sixth of its height and the mark comes out almost
+exactly the card's height, so the disc runs off the edges and the mark is only just cut by them.
+
+The field behind them stays the mid tone the entry below introduced, and its reason has moved up a
+level. It was there because club artwork is safe on neither a dark field nor a light one; the crests
+are settled on their discs now, so what has to read against it is the disc, and a disc is whatever
+colour a club publishes. A near-black field loses a navy one's edge and a white field loses the tinted
+plate. The spec still bounds the field's luminance rather than its hex — the colour can move, the
+reason cannot.
+
 ## A crest is the team's crest, in the team's colours, everywhere — 2026-09-17
 
 Reverts the crest colour treatment entirely. It measured each crest's pixels against the surface behind it
@@ -15,31 +47,6 @@ predict or a designer could see coming. Gone with it: the mono-mark fetch and it
 still refuses to answer a clash with black against white, so Baltimore's purple stays `#29126F` against
 Indianapolis' `#003B75`. `background` survives as a vestigial prop only because the open-reveal poster still
 passes it and that file is being worked on elsewhere.
-
-## The opening crests get a surface of their own, because club art is safe on neither black nor white — 2026-09-18
-
-The entry below drew them on the `#0d1117` plate the rest of the graphic builds over, and the maintainer's
-read was that they looked "really really bad". They did. Measured on the four shapes real crest art takes:
-a navy monogram was a silhouette you could just make out against the plate, and a black mark with light
-interior detail vanished outright — leaving its gold detail floating with no logo around it.
-
-The obvious fix is the wrong one, and it is worth writing down why. Drawn on white those two are perfect,
-and the inverse breaks: a near-white mark on a light field is a ghost. There is no single light or dark
-surface that holds for artwork we do not get to choose, which is exactly the judgement the crest
-legibility measurement used to make per crest and which this product no longer makes. This beat is also
-the one place a crest is drawn at a size where getting it wrong is unmissable.
-
-So the beat has a surface of its own, and it is a **mid tone** — the answer that needs no decision, since
-every one of those four shapes sits far enough from the middle of the range in one direction or the other.
-Full colour and interior detail survive, which matters: a white knockout of the artwork was tried, read
-very well, and turned a spoked mark into a plain disc. Shaded from the middle out rather than along the
-lean everything else here follows, because this beat has no seam yet and a directional wash would promise
-one in the wrong place.
-
-What is pinned is not the hex. `revealOpenSurfaceColor` is asserted against the stylesheet that paints it,
-because the crests are handed the same value in JS — but the property that actually has to hold is that it
-stays in the middle, so the spec bounds its relative luminance between 0.08 and 0.36. The two surfaces
-that failed sit at 0.006 and 1.0. The colour is free to move; the reason it exists is not.
 
 ## The first open of the day opens on the two crests, too big for the card — 2026-09-17
 

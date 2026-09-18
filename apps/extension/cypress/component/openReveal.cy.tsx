@@ -7,6 +7,7 @@ import {
 	revealFullRate,
 	revealOpenBeatMs,
 	revealOpenMs,
+	revealPlateRatio,
 	revealLeanRatio,
 	revealLeanWidthCap,
 	revealStageBleedPx,
@@ -211,12 +212,52 @@ describe('the popup open reveal', () => {
 		});
 	});
 
-	// Its own surface, and a mid tone: club artwork is safe on neither a dark field nor a light one, and
-	// this beat draws a crest at the one size where that is unmissable. Asserted on the rendered colour
-	// rather than on the stylesheet, which the unit spec already reads — what this catches is the rule
-	// being overridden by something later in the cascade, which is how the beat would quietly go back
-	// to sitting on the dark plate.
-	it('draws the opening pair on a surface of their own rather than on the dark plate', () => {
+	// Every crest in this beat sits on a disc, and the disc is that team's own colour — which is what
+	// carries the colours into the graphic before the poster's halves do. Painted from the stylesheet
+	// rather than by the crest component, which draws its wrapper bare whenever the artwork reads where
+	// it is put.
+	it('sits each oversized crest on a disc of its own team\'s colour', () => {
+		cy.mount(<Harness mode='full' />);
+		awaitCrests();
+		// Arizona's gold on Arizona's red reads, so the crest draws bare and the disc is the one here.
+		cy.get('.game-card-reveal-opening-crest.is-home .game-card-reveal-opening-plate')
+			.should('have.class', 'is-bare')
+			.and('have.css', 'background-color', 'rgb(167, 25, 48)')
+			.and('have.css', 'border-radius', '999px');
+	});
+
+	// And where it does not read, the crest component's own tinted disc takes over — the inline style
+	// it sets beats the rule above, which is the right way round: a crest that cannot be seen on its
+	// team's colour is exactly the case that plate exists for. Both sides still end up on a disc, which
+	// is the thing this beat guarantees.
+	it('gives way to the crest\'s own plate where the artwork cannot read on that colour', () => {
+		cy.mount(<Harness mode='full' />);
+		awaitCrests();
+		// Miami's navy on Miami's navy does not read, and the popup carries no monochrome marks.
+		cy.get('.game-card-reveal-opening-crest.is-away .game-card-reveal-opening-plate')
+			.should('not.have.class', 'is-bare')
+			.and('have.css', 'background-color', 'rgb(255, 255, 255)');
+	});
+
+	// The mark is three quarters of the disc it sits on — `revealPlateRatio`, which every plated crest
+	// in the product is drawn at, because a circle drawn at the size of a wordmark shaves its ends off.
+	// It is also what sets the bleed: the disc overhangs the card and the mark comes out almost exactly
+	// the card's height.
+	it('insets each mark to three quarters of its disc', () => {
+		cy.mount(<Harness mode='full' />);
+		awaitCrests();
+		rectOf('.game-card-reveal-opening-crest.is-away').then(disc => {
+			cy.get('.game-card-reveal-opening-crest.is-away .game-card-reveal-opening-logo').should($mark => {
+				const box = $mark[0].getBoundingClientRect();
+				expect(box.width).to.be.closeTo(disc.width / revealPlateRatio, 0.5);
+				expect(box.height).to.be.closeTo(disc.height / revealPlateRatio, 0.5);
+			});
+		});
+	});
+
+	// The field the discs are drawn on. A mid tone, because a dark team-colour disc has to read as a
+	// disc against it and so does a white one — the two ends of the range each lose one of those.
+	it('draws the discs on a field of their own rather than on the dark plate', () => {
 		cy.mount(<Harness mode='full' />);
 		cy.get('.game-card-reveal-opening')
 			.should('have.css', 'background-color', 'rgb(91, 100, 114)');

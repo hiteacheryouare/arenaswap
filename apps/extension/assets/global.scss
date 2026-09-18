@@ -949,11 +949,11 @@ button, input, select, optgroup, textarea {
    stays alive into the poster, and it has to be at least the 884ms the halves take to meet, or the
    colour would part again at the end over crests still sitting underneath.
 
-   The surface is its own, and a mid tone rather than the dark plate the rest of the graphic builds
-   over. Club artwork is not safe on a dark field or on a light one — a navy monogram vanishes into the
-   first and a near-white mark into the second — and this beat is the one place the product draws a
-   crest at a size where that is unmissable. `revealOpenSurfaceColor` carries the reasoning and the
-   measurements; the crests are handed the same value in JS, and a spec holds the two together.
+   The field is its own, and a mid tone rather than the dark plate the rest of the graphic builds over.
+   Each crest sits on a disc of its team's colour, so what has to read against this field is the disc —
+   and a near-black field loses a navy one's edge while a white field loses the tinted plate a crest
+   falls back to. Neither end of the range holds for colours we do not choose.
+   `revealOpenSurfaceColor` carries the reasoning, and a spec holds it and this together.
 
    Shaded from the middle out rather than along the lean, which everything else here follows, because
    this beat has no seam yet: a directional wash would promise one in the wrong place. */
@@ -984,28 +984,45 @@ button, input, select, optgroup, textarea {
 }
 
 /* Out of the centre by `revealOpenCrestOffsetShare` of the card, so each one leaves the card by its own
-   side. `--reveal-drift` is the sign of that side, as it is for the poster's own layers. */
+   side. `--reveal-drift` is the sign of that side, as it is for the poster's own layers, and
+   `--reveal-open-disc` is that side's own colour out of the pair the card already carries. */
 .game-card-reveal-opening-crest.is-away {
-	left:           calc(50% - var(--reveal-open-offset));
-	--reveal-drift: -1;
+	left:                calc(50% - var(--reveal-open-offset));
+	--reveal-drift:      -1;
+	--reveal-open-disc:  var(--reveal-away);
 }
 
 .game-card-reveal-opening-crest.is-home {
-	left:           calc(50% + var(--reveal-open-offset));
-	--reveal-drift: 1;
+	left:                calc(50% + var(--reveal-open-offset));
+	--reveal-drift:      1;
+	--reveal-open-disc:  var(--reveal-home);
 }
 
+/* The disc, which is what brings each team's colour into the beat before the poster's halves do — and
+   being the thing directly behind the artwork, it is also the surface the crest is drawn against and
+   the colour handed to `teamCrest` as such.
+
+   Painted here rather than by the crest component, which draws a bare wrapper: this disc is the
+   opening beat's own and it is unconditional, where the product's tinted plate was a fallback picked
+   per crest. It clips, and the mark inside it is three quarters of it — `revealPlateRatio`, the ratio
+   every plated crest in the product is drawn at, because a circle drawn at the size of a wordmark
+   shaves the wordmark's ends off. Which is also what sets the bleed: the disc overhangs the card by a
+   sixth of its height and the mark comes out almost exactly the card's height, so the disc runs off
+   the edges and the mark is only just cut by them. */
 .game-card-reveal-opening-plate {
 	position:        absolute;
 	inset:           0;
 	display:         flex;
 	align-items:     center;
 	justify-content: center;
+	border-radius:   999px;
+	overflow:        hidden;
+	background:      var(--reveal-open-disc);
 }
 
 .game-card-reveal-opening-logo {
-	width:  100%;
-	height: 100%;
+	width:  75%;
+	height: 75%;
 }
 
 /* ── The wipe, and the two layers it trades between ─────────────────────────── */
