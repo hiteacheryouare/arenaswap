@@ -886,14 +886,12 @@ button, input, select, optgroup, textarea {
    these same halves at full width: a crest clipped by one of those is clipped along the exact line the
    poster's own half grows into, and one seam written twice is two seams waiting to disagree. */
 .game-card-reveal-half.is-away,
-.game-card-reveal-opening-field.is-away,
-.game-card-reveal-opening-name.is-away {
+.game-card-reveal-opening-field.is-away {
 	clip-path: polygon(0 0, 100% 0, calc(100% - var(--reveal-lean) * 2) 100%, 0 100%);
 }
 
 .game-card-reveal-half.is-home,
-.game-card-reveal-opening-field.is-home,
-.game-card-reveal-opening-name.is-home {
+.game-card-reveal-opening-field.is-home {
 	clip-path: polygon(calc(var(--reveal-lean) * 2) 0, 100% 0, 100% 100%, 0 100%);
 }
 
@@ -1028,47 +1026,46 @@ button, input, select, optgroup, textarea {
    no children; it takes the same geometry and the same seam clip, so a long name is cut by the seam
    instead of crossing it.
 
-   Each name sits at the corner where its own half is widest, which is what makes the type big rather
-   than merely large: the seam leans, so the away half is `50% + lean` across at the top and the home
-   half is the same at the bottom. Packed into the narrow end instead, a ten-letter word had 103px to
-   live in and was clipped; at the wide end it has 161px and needs no clearance from the seam at all,
-   because the seam *is* the box's far edge on that row. The diagonal that falls out — one name high
-   and left, the other low and right — is the lean's own direction, which is the only angle in here. */
+   Dead centre of its own half, which is exactly where the tricode it precedes sits — `top: 50%`,
+   `left: 25%` and `75%`, the two crest slots. That placement is the whole of what makes this read as
+   the naming rather than as a label on the scene before it, and it was a corner caption twice before
+   somebody had to say so.
+
+   Half a card wide, not half plus the lean, and so it carries its own seam rather than the fields'.
+   The two are the same line described against different boxes: against a half, the seam leaves the
+   box by a lean at the top and comes back inside it by a lean at the bottom. */
 .game-card-reveal-opening-name {
-	position:       absolute;
-	top:            0;
-	bottom:         0;
-	width:          calc(50% + var(--reveal-lean));
-	display:        flex;
-	pointer-events: none;
-	animation:      cardRevealOpeningName calc((700ms + 600ms + 900ms) * var(--reveal-rate)) cubic-bezier(0.16, 1, 0.3, 1) var(--reveal-delay) both;
+	position:        absolute;
+	top:             0;
+	bottom:          0;
+	width:           50%;
+	display:         flex;
+	align-items:     center;
+	justify-content: center;
+	pointer-events:  none;
+	animation:       cardRevealOpeningName calc((700ms + 600ms + 900ms) * var(--reveal-rate)) cubic-bezier(0.16, 1, 0.3, 1) var(--reveal-delay) both;
 }
 
 .game-card-reveal-opening-name.is-away {
 	left:           0;
-	align-items:    flex-start;
+	clip-path:      polygon(0 0, calc(100% + var(--reveal-lean)) 0, calc(100% - var(--reveal-lean)) 100%, 0 100%);
 	--reveal-drift: -1;
 }
 
 .game-card-reveal-opening-name.is-home {
 	right:          0;
-	align-items:    flex-end;
+	clip-path:      polygon(var(--reveal-lean) 0, 100% 0, 100% 100%, calc(var(--reveal-lean) * -1) 100%);
 	--reveal-drift: 1;
 }
 
+/* Centred on the slot, and every line centred with it — the tricode is centred in its own box too,
+   and a name set ragged under a centred crest would not read as the same graphic. */
 .game-card-reveal-opening-name-type {
 	display:        flex;
 	flex-direction: column;
-	padding:        0.4rem 0.5rem;
-}
-
-.game-card-reveal-opening-name.is-away .game-card-reveal-opening-name-type {
-	align-items: flex-start;
-}
-
-.game-card-reveal-opening-name.is-home .game-card-reveal-opening-name-type {
-	margin-left: auto;
-	align-items: flex-end;
+	align-items:    center;
+	text-align:     center;
+	padding:        0 0.375rem;
 }
 
 /* Each word is its own line, and its own pair of stacked copies. The line is sized by the glyphs so

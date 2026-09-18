@@ -124,25 +124,30 @@ describe('the clubs named over the opening beat', () => {
 		});
 	});
 
-	// Each name sits at the corner where its own half is widest — the seam leans, so that is the top
-	// for the away side and the bottom for the home one. Packed into the narrow end instead, a
-	// ten-letter word had 103px to live in and was clipped.
-	it('puts each name at the wide corner of its own half', () => {
+	// Dead centre of its own half, which is where the tricode it precedes sits — the crest slots at 25%
+	// and 75%, on the centre line. That placement is what makes this read as the naming rather than as
+	// a label on the scene before it, and it was a corner caption twice before somebody had to say so.
+	it('centres each name on the slot the tricode uses', () => {
 		cy.mount(<Harness />);
+		// Pinned to the naming's own frame: the entry drifts in from its outer side, so read unscrubbed
+		// this measures a name still 20px short of the slot it is arriving at.
+		scrubTo(sceneMs(nameScene));
 		rectOf('.game-card').then(card => {
-			rectOf('.game-card-reveal-opening-name.is-away .game-card-reveal-opening-name-type').then(away => {
-				rectOf('.game-card-reveal-opening-name.is-home .game-card-reveal-opening-name-type').then(home => {
-					expect(away.top - card.top, 'away rides the top').to.be.lessThan(card.height / 2);
-					expect(card.bottom - home.bottom, 'home rides the bottom').to.be.lessThan(card.height / 2);
+			([['away', 0.25], ['home', 0.75]] as const).forEach(([side, slot]) => {
+				rectOf(`.game-card-reveal-opening-name.is-${side} .game-card-reveal-opening-name-type`).then(type => {
+					expect((type.left + type.right) / 2, `${side} on its slot`)
+						.to.be.closeTo(card.left + card.width * slot, 1);
+					expect((type.top + type.bottom) / 2, `${side} on the centre line`)
+						.to.be.closeTo(card.top + card.height / 2, 1);
 				});
 			});
 		});
 	});
 
-	// The fit, which is the thing three attempts at this got wrong: an advance is a property of the
-	// letters and not of their number, so a count-based size clipped "COMMANDERS" against the seam
-	// while "MARLINS" had room to spare. Asserted as rendered width against the box that holds it,
-	// across the shapes real names take — including the longest word in the product.
+	// The fit, which several attempts at this got wrong. Two reasons, and both are in the assertion
+	// now: an advance is a property of the letters and not of their number, so a count-based size
+	// clipped "COMMANDERS" while "MARLINS" had room to spare; and the seam leans, so a box-width check
+	// passes lines that visibly cross it. Measured against the seam at each line's own height.
 	([
 		['Miami Marlins', 'Boston Celtics'],
 		['Washington Commanders', 'Los Angeles Chargers'],
@@ -150,17 +155,25 @@ describe('the clubs named over the opening beat', () => {
 		['Minnesota Timberwolves', 'Milwaukee Bucks'],
 		['Barcelona', 'Juventus'],
 	] as const).forEach(([awayName, homeName]) => {
-		it(`fits every line inside its half: ${awayName} v ${homeName}`, () => {
+		it(`keeps every line clear of the seam: ${awayName} v ${homeName}`, () => {
 			cy.mount(<Harness awayName={awayName} homeName={homeName} />);
 			awaitCrests();
 			scrubTo(sceneMs(nameScene));
 			cy.get('.game-card-reveal-opening-name').should($boxes => {
 				[...$boxes].forEach(box => {
-					// The box less the type's own padding, which is what the glyphs actually have.
-					const available = box.getBoundingClientRect().width - 16;
+					const away = box.classList.contains('is-away');
+					const rect = box.getBoundingClientRect();
+					const lean = parseFloat(getComputedStyle(box.closest('.game-card-reveal')!)
+						.getPropertyValue('--reveal-lean'));
 					[...box.querySelectorAll('.game-card-reveal-opening-name-edge')].forEach(line => {
-						const ink = line.getBoundingClientRect().width;
-						expect(ink, `${line.textContent} inside its half`).to.be.at.most(available);
+						const ink = line.getBoundingClientRect();
+						const mid = ink.top + ink.height / 2 - rect.top;
+						// Where the seam crosses this box at this line's own height. Against a half it
+						// leaves the box by a lean at the top and comes back inside it by a lean at the
+						// bottom, so a lower line has less room than a higher one.
+						const seam = (away ? rect.width + lean : lean) - (2 * lean * mid) / rect.height;
+						const past = away ? ink.right - rect.left - seam : seam - (ink.left - rect.left);
+						expect(past, `${line.textContent} clear of the seam`).to.be.lessThan(0);
 					});
 				});
 			});

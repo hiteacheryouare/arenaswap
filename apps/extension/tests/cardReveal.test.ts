@@ -381,11 +381,8 @@ describe('the figures the stylesheet repeats by hand', () => {
 			const at = stylesheet.indexOf(shared);
 			if (at < 0) return null;
 			const rule = stylesheet.slice(at, stylesheet.indexOf('}', at));
-			// Every selector that has to follow the seam, on the one rule, and the shape it declares.
-			// The name boxes are in here too: a club named in full is wider than the half it belongs to
-			// on the short side of the lean, so the seam is what has to cut it.
+			// Both selectors on the one rule, and the shape it declares.
 			if (!rule.includes(`.game-card-reveal-opening-field.is-${side}`)) return null;
-			if (!rule.includes(`.game-card-reveal-opening-name.is-${side}`)) return null;
 			return /clip-path:\s*(polygon\([^;]+\));/.exec(rule)?.[1] ?? null;
 		};
 
@@ -394,6 +391,24 @@ describe('the figures the stylesheet repeats by hand', () => {
 		// And each one leans, rather than the pair having quietly become a vertical split.
 		expect(seam('away')).toContain('--reveal-lean');
 		expect(seam('home')).toContain('--reveal-lean');
+	});
+
+	// The naming carries the same seam described against a different box, and that is the one place in
+	// here where the line is written twice. It has to be: the fields are half a card plus the lean and
+	// the name boxes are half a card exactly, because a name is centred on the crest slot its tricode
+	// uses and a box that reached past the seam would not centre on it. Against a half, the seam
+	// leaves the box by a lean at the top and comes back inside it by a lean at the bottom — which is
+	// the same line, and is what this checks rather than the coordinates agreeing by eye.
+	it('cuts the naming on that seam too, against its own box', () => {
+		const clip = (side: 'away' | 'home') => {
+			const at = stylesheet.indexOf(`.game-card-reveal-opening-name.is-${side} {`);
+			if (at < 0) return null;
+			return /clip-path:\s*polygon\(([^;]+)\);/.exec(stylesheet.slice(at, stylesheet.indexOf('}', at)))?.[1] ?? null;
+		};
+
+		// The away box keeps its left edge and leans its right one; the home box mirrors it.
+		expect(clip('away')).toBe('0 0, calc(100% + var(--reveal-lean)) 0, calc(100% - var(--reveal-lean)) 100%, 0 100%');
+		expect(clip('home')).toBe('var(--reveal-lean) 0, 100% 0, 100% 100%, calc(var(--reveal-lean) * -1) 100%');
 	});
 
 	// A bar is parked one bar width and one lean clear of the edge it comes in from, and leaves one

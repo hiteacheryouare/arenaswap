@@ -175,7 +175,7 @@ export const revealAbbrScale = (away = '', home = '') => (
 // against the widest letters rather than the average, and checked by rendering the shapes real names
 // take: a short pair, a ten-letter pair, the longest word in the product ("Massachusetts"), a
 // twelve-letter place name, and a one-word club. Every one of them lands inside the 160.
-export const revealNameBaseLength = 6.4;
+export const revealNameBaseLength = 5.5;
 
 const longestWord = (name: string) => name
 	.split(/\s+/)

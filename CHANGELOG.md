@@ -3,30 +3,40 @@
 > One or two lines per entry: what changed, and the one thing about it worth knowing later.
 > The code, the tests and the git history hold the rest. Do not write essays here.
 
-## The naming is a scene of its own, on the colour the crests just left — 2026-09-18
+## The naming is a scene of its own, set where the tricodes are — 2026-09-18
 
-The entry this replaces hung the club names off the oversized crests as a caption, which is not what
-was wanted: "add another scene on the colored background with the full name". So there are two scenes
-ahead of the poster now — the crests, and then the naming — and the thing that makes that cheap is
-that they share everything except what is drawn.
+Two scenes ahead of the poster now: the crests hold the colour fields, then they leave the way they
+came in and the clubs are named in full on the colour they just left.
 
-The colour fields are up for both and never move. They are the coloured background the whole sequence
-is built on, and the poster's own halves grow into the same shape at the end of it, so what changes
-between the scenes is only their contents: the crests leave the way they came in, off their own outer
-side, while the names arrive over the top of that. Neither scene ever cuts to the other, and the field
-underneath is measurably the same colour across both — which is the spec, since that is the property
-the handover rests on.
+The naming is the tricode treatment, which is what it was asked for twice and was not until now. Set
+in the same two stacked copies — a stroke follows every contour the font draws, so an outline has to
+be the back copy showing around the front one — and, the part that had been missed, **centred on the
+crest slots at 25% and 75%, on the centre line.** The two passes before this hung it in a corner, and
+a corner is where a caption goes. "It looks exactly like it did last time" was fair: the pass before
+had changed only when the names appear, not what they look like.
 
-One window carries both, which is what keeps the arithmetic honest. 700ms of crests
-(`revealOpenBeatMs`), 600 of naming (`revealNameBeatMs`), and 900 more in which the layer outlives them
-into the poster — 2200 all told, so the crests land at 32%, hold, and have cleared the field by 59%;
-the naming starts at 41% and is up by 59%; and 59% is where the poster begins. That last coincidence is
-the one thing that has to hold between the scenes, so it is asserted rather than trusted: a spec
-computes the percentage from the two constants and checks the keyframes name it.
+Half a card wide, so the naming carries its own seam rather than the fields'. That is the one place
+the line is written twice and it has to be: the fields are half plus the lean, the name boxes are half
+exactly, because a box that reached past the seam would not centre on the slot. Against a half the
+seam leaves the box by a lean at the top and comes back inside it by a lean at the bottom — the same
+line, and a spec checks that shape rather than trusting two sets of coordinates to agree.
 
-The cost is honest. 6110ms a card against 5460, and 6734 before the list settles, which is what the
-skip is for. `quick` is untouched for the fifth pass running — both scenes are `full` only, so every
-open of the popup after the first of the day is still exactly the graphic it has always been.
+The size is measured, and the measurement is against the seam at each line's own height rather than
+against the box. Two things defeat the arithmetic: an advance is a property of the letters and not of
+their number — 0.637em a character for "MARLINS" and 0.739 for "COMMANDERS" — and the seam leans, so a
+line below the centre has less room than one above it and a box-width check passes lines that visibly
+cross it. Both are in the assertion now, across the shapes real names take.
+
+One window carries both scenes. 700ms of crests (`revealOpenBeatMs`), 600 of naming
+(`revealNameBeatMs`), 900 more in which the layer outlives them into the poster — so the crests land
+at 32% and have cleared by 59%, the naming starts at 41% and is up by 59%, and 59% is where the poster
+begins. That coincidence is the only thing holding the handover together, so a spec computes the
+percentage from the two constants and checks the keyframes name it. The fields never move across
+either scene, which is why neither has to cut to the other, and that is asserted as the field being
+the same colour in both.
+
+6110ms a card against 5460, and 6734 before the list settles, which is what the skip is for. `quick`
+is untouched for the fifth pass running: both scenes are `full` only.
 
 ## The oversized crests take their colour across the whole card, not into a disc — 2026-09-18
 
