@@ -4,6 +4,7 @@ import GameCardReveal from '../../entrypoints/popup/components/gameCardReveal';
 import {
 	revealBaseDurationMs,
 	revealDurationMs,
+	revealFullRate,
 	revealLeanRatio,
 	revealLeanWidthCap,
 	revealStageBleedPx,
@@ -19,23 +20,32 @@ import type { Game } from '@arenaswap/core/types';
 const navyLogo = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAFUlEQVR4nGPkUXb4z4AHMOGTHD4KAH25AX7gsIqPAAAAAElFTkSuQmCC';
 const goldLogo = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAFklEQVR4nGP8v03oPwMewIRPcvgoAADe+QLWq7gZUwAAAABJRU5ErkJggg==';
 
-const game = (status: 'in' | 'post', away = 'MIA', home = 'ARI') => ({
+// Records are ESPN's own strings and it does not send them everywhere, so the default fixture carries
+// them and one spec takes them away again.
+const game = (status: 'in' | 'post', away = 'MIA', home = 'ARI', records = true) => ({
 	id: 'g1',
 	status,
 	league: 'mlb',
 	sportType: 'baseball',
 	period: 5,
 	topOfInning: true,
-	awayTeam: { id: 'a', name: 'Miami', abbreviation: away, score: 3, color: '#0C2340', logo: navyLogo },
-	homeTeam: { id: 'h', name: 'Arizona', abbreviation: home, score: 1, color: '#A71930', logo: goldLogo },
+	awayTeam: { id: 'a', name: 'Miami', abbreviation: away, score: 3, color: '#0C2340', logo: navyLogo, record: records ? '76-58' : undefined },
+	homeTeam: { id: 'h', name: 'Arizona', abbreviation: home, score: 1, color: '#A71930', logo: goldLogo, record: records ? '61-73' : undefined },
 }) as unknown as Game;
 
 // The nesting `mainView` actually builds — `.popup-container`, the section's `.mt-2`, the league's
 // own div, then the wrapper. Not a shortcut: mounted straight into the flex column the container is,
 // the wrapper becomes a flex item and stops the card's bottom margin collapsing out of it, so the
 // box assertions below would be describing a DOM the popup never has.
-const Harness = ({ mode, status = 'in', away, home }: { mode: revealMode; status?: 'in' | 'post'; away?: string; home?: string }) => {
-	const subject = game(status, away, home);
+const Harness = ({ mode, status = 'in', away, home, records = true, skipping = false }: {
+	mode: revealMode;
+	status?: 'in' | 'post';
+	away?: string;
+	home?: string;
+	records?: boolean;
+	skipping?: boolean;
+}) => {
+	const subject = game(status, away, home, records);
 	const shared = {
 		game: subject,
 		excitementResult: undefined,
@@ -48,7 +58,7 @@ const Harness = ({ mode, status = 'in', away, home }: { mode: revealMode; status
 		<div className='popup-container d-flex flex-column'>
 			<div className='mt-2'>
 				<div>
-					<GameCardReveal game={subject} mode={mode} index={0}>
+					<GameCardReveal game={subject} mode={mode} index={0} skipping={skipping}>
 						{status === 'post' ? <FinalGameCard {...shared} /> : <LiveGameCard {...shared} />}
 					</GameCardReveal>
 				</div>
@@ -79,6 +89,12 @@ const scrubTo = (ms: number) => {
 		});
 	});
 };
+
+// Every millisecond in this file is written where its beat sits in the choreography — the figures the
+// stylesheet itself names, before `--reveal-rate` is applied — and put onto the real timeline here.
+// The long cut is the same graphic at `revealFullRate`, so a beat the stylesheet calls 2000ms happens
+// at 3000, and writing 3000 everywhere would hide which beat was meant the next time the rate moves.
+const spineMs = (ms: number) => ms * revealFullRate;
 
 const rectOf = (selector: string) => cy.get(selector).then($el => $el[0].getBoundingClientRect());
 
@@ -113,13 +129,15 @@ const resolveX = (el: Element, expression: string) => {
 describe('the popup open reveal', () => {
 	beforeEach(() => cy.viewport(320, 560));
 
-	it('builds the graphic out of a poster, two wipes and their chasers', () => {
+	it('builds the graphic out of a poster, two wipes and the group that crosses them', () => {
 		cy.mount(<Harness mode='full' />);
 		cy.get('.game-card-reveal-half').should('have.length', 2);
 		cy.get('.game-card-reveal-abbr').should('have.length', 2);
 		cy.get('.game-card-reveal-crest').should('have.length', 2);
-		cy.get('.game-card-reveal-sweep').should('have.length', 4);
-		cy.get('.game-card-reveal-sweep.is-chaser').should('have.length', 2);
+		// Three to a side: the thick bar and the two thinner ones running its path behind it.
+		cy.get('.game-card-reveal-sweep').should('have.length', 6);
+		cy.get('.game-card-reveal-sweep.is-chaser').should('have.length', 4);
+		cy.get('.game-card-reveal-sweep.is-trailer').should('have.length', 2);
 		cy.get('.game-card-reveal-abbr-edge').first().should('have.text', 'MIA');
 		cy.get('.game-card-reveal-abbr-face').first().should('have.text', 'MIA');
 	});
@@ -130,9 +148,17 @@ describe('the popup open reveal', () => {
 		cy.mount(<Harness mode='quick' />);
 		cy.get('.game-card-reveal-half').should('have.length', 2);
 		cy.get('.game-card-reveal-abbr').should('have.length', 2);
+		cy.get('.game-card-reveal-abbr-record').should('have.length', 2);
 		cy.get('.game-card-reveal-crest').should('have.length', 2);
-		cy.get('.game-card-reveal-sweep').should('have.length', 4);
+		cy.get('.game-card-reveal-sweep').should('have.length', 6);
 		cy.get('.game-card-reveal').should('have.css', '--reveal-rate', '0.8');
+	});
+
+	// And the rate is the only thing that differs between them, which is the whole reason the long cut
+	// costs nothing structural. A second timeline would show up here as two numbers to maintain.
+	it('plays the long cut as the same graphic at a longer rate', () => {
+		cy.mount(<Harness mode='full' />);
+		cy.get('.game-card-reveal').should('have.css', '--reveal-rate', String(revealFullRate));
 	});
 
 	it('leaves the card alone entirely when there is no reveal to play', () => {
@@ -146,7 +172,7 @@ describe('the popup open reveal', () => {
 	// edges ever drift apart you get a gap showing the bare colour, or an overlap showing both.
 	it('trades lettering for crest along a single edge, with no gap and no overlap', () => {
 		cy.mount(<Harness mode='full' />);
-		scrubTo(2000);
+		scrubTo(spineMs(2000));
 		cy.get('.game-card-reveal-wipe.is-away').then($wipe => {
 			cy.get('.game-card-reveal-mask.is-away').then($mask => {
 				const wipe = clipPointsX($wipe[0]);
@@ -216,13 +242,15 @@ describe('the popup open reveal', () => {
 	// bounding box of a 22px bar is 22px plus two leans. Parked at a flat 18% of the card's width, the
 	// far corner was still 13.7px over a live card — a white wedge in the top-left corner for the first
 	// second and a half of every open, and in the bottom-left for the last.
-	it('parks both bars clear of the card, corners and all', () => {
+	it('parks every bar clear of the card, corners and all', () => {
 		cy.mount(<Harness mode='full' />);
 		rectOf('.game-card').then(card => {
-			// Before the sweep and after it, which is most of the graphic: the whole run is one second
-			// of the 3.4. 2700ms rather than the end, because the chasers are still travelling until
-			// 2640 and the wrapper itself is gone at 3400.
-			([0, 2700] as const).forEach(ms => {
+			// Before the pass and after it, which is most of the graphic. The far end is 2800 rather
+			// than the timeline's own end because the wrapper is gone at 3400 — and rather than the 2700
+			// this used to be, because the trailing bar leaves at 1760 and does not finish travelling
+			// until 2760, so 2700 now reads a bar that is still on the move.
+			([0, 2800] as const).forEach(spine => {
+				const ms = spineMs(spine);
 				scrubTo(ms);
 				cy.get('.game-card-reveal-sweep').should($bars => {
 					[...$bars].forEach(bar => {
@@ -241,7 +269,7 @@ describe('the popup open reveal', () => {
 	// And that one edge is the bar itself, not a line near it.
 	it('cuts along the bar rather than somewhere close to it', () => {
 		cy.mount(<Harness mode='full' />);
-		scrubTo(2000);
+		scrubTo(spineMs(2000));
 		rectOf('.game-card-reveal-sweeps').then(layer => {
 			rectOf('.game-card-reveal-sweep.is-away').then(bar => {
 				cy.get('.game-card-reveal-wipe.is-away').then($wipe => {
@@ -323,7 +351,7 @@ describe('the popup open reveal', () => {
 	// has been painted underneath since the first frame.
 	it('takes the colour all the way off, onto the rail the card draws for itself', () => {
 		cy.mount(<Harness mode='full' />);
-		scrubTo(revealBaseDurationMs + 50);
+		scrubTo(spineMs(revealBaseDurationMs) + 50);
 		cy.get('.game-card-reveal-half.is-away').should($el => {
 			expect($el[0].getBoundingClientRect().width).to.be.closeTo(0, 0.5);
 		});
@@ -338,7 +366,7 @@ describe('the popup open reveal', () => {
 	// takes the same ending, which is the reason it no longer needs keyframes of its own.
 	it('ends the same way on a finished game, which has no rails at all', () => {
 		cy.mount(<Harness mode='full' status='post' />);
-		scrubTo(revealBaseDurationMs + 50);
+		scrubTo(spineMs(revealBaseDurationMs) + 50);
 		cy.get('.game-card-reveal-half.is-away').should($el => {
 			expect($el[0].getBoundingClientRect().width).to.be.closeTo(0, 0.5);
 		});
@@ -348,7 +376,7 @@ describe('the popup open reveal', () => {
 	// If this drifts, the crest visibly jumps at the handoff.
 	it('walks each crest onto the card\'s own crest slot, to the pixel', () => {
 		cy.mount(<Harness mode='full' />);
-		scrubTo(revealBaseDurationMs + 50);
+		scrubTo(spineMs(revealBaseDurationMs) + 50);
 		rectOf('.game-card-reveal-wipe.is-away .game-card-reveal-crest').then(overlay => {
 			cy.get('.game-card .team-crest').first().then($real => {
 				const real = $real[0].getBoundingClientRect();
@@ -375,7 +403,7 @@ describe('the popup open reveal', () => {
 		awaitCrests();
 		cy.get('.game-card-reveal-wipe.is-away .game-card-reveal-crest-plate').should('not.have.class', 'is-bare');
 		cy.get('.game-card-reveal-wipe.is-home .game-card-reveal-crest-plate').should('have.class', 'is-bare');
-		scrubTo(revealBaseDurationMs + 50);
+		scrubTo(spineMs(revealBaseDurationMs) + 50);
 		cy.get('.game-card .team-crest').first().then($real => {
 			const real = $real[0].getBoundingClientRect();
 			cy.get('.game-card-reveal-wipe.is-away .game-card-reveal-crest-logo').should($mark => {
@@ -393,7 +421,7 @@ describe('the popup open reveal', () => {
 	it('draws both sides at one size whatever treatment each of them takes', () => {
 		cy.mount(<Harness mode='full' />);
 		awaitCrests();
-		scrubTo(2000);
+		scrubTo(spineMs(2000));
 		rectOf('.game-card-reveal-wipe.is-away .game-card-reveal-crest-logo').then(away => {
 			cy.get('.game-card-reveal-wipe.is-home .game-card-reveal-crest-logo').should($home => {
 				expect($home[0].getBoundingClientRect().width).to.be.closeTo(away.width, 1);
@@ -406,7 +434,7 @@ describe('the popup open reveal', () => {
 	it('keeps the poster crest inside the card at its largest', () => {
 		cy.mount(<Harness mode='full' />);
 		awaitCrests();
-		scrubTo(1000);
+		scrubTo(spineMs(1000));
 		rectOf('.game-card').then(card => {
 			cy.get('.game-card-reveal-crest-plate').first().should($plate => {
 				const box = $plate[0].getBoundingClientRect();
@@ -445,6 +473,9 @@ describe('the popup open reveal', () => {
 	// actually behind the lettering.
 	it('knocks the lettering out of the colour behind it rather than stroking it hollow', () => {
 		cy.mount(<Harness mode='full' />);
+		// Pinned to a frame in the hold, not read at mount: the face fills to white before the bar
+		// arrives, so left to real time this is a race against that beat rather than an assertion.
+		scrubTo(spineMs(1000));
 		cy.get('.game-card-reveal-mask.is-away .game-card-reveal-abbr-face')
 			.should('have.css', 'color', 'rgb(12, 35, 64)');
 		cy.get('.game-card-reveal-mask.is-home .game-card-reveal-abbr-face')
@@ -463,14 +494,141 @@ describe('the popup open reveal', () => {
 		});
 	});
 
+	// Outlined while the poster holds, filled solid by the time the bar reaches it — broadcast type
+	// trades between those two states rather than sitting in one. It costs no element: the copy behind
+	// is already solid white, so the glyph reads filled the moment the face stops being the surface
+	// colour. What this pins is that it has finished before the wipe, because a bar crossing a
+	// half-filled glyph is a third state nobody designed.
+	it('fills the outlined lettering before the bar arrives to take it', () => {
+		cy.mount(<Harness mode='full' />);
+		scrubTo(spineMs(1400));
+		cy.get('.game-card-reveal-mask.is-away .game-card-reveal-abbr-face')
+			.should('not.have.css', 'color', 'rgb(255, 255, 255)');
+		scrubTo(spineMs(1500));
+		cy.get('.game-card-reveal-mask.is-away .game-card-reveal-abbr-face')
+			.should('have.css', 'color', 'rgb(255, 255, 255)');
+		cy.get('.game-card-reveal-mask.is-home .game-card-reveal-abbr-face')
+			.should('have.css', 'color', 'rgb(255, 255, 255)');
+	});
+
+	// The record is the one addition to this graphic that is information rather than motion, and the
+	// reason it was cheap is that it lives inside the lettering's own layer — so the bar that takes the
+	// tricode takes the record with it, on the same instant, along the same line. Asserted as the
+	// clip the two share rather than by watching it disappear: if it ever grew a layer of its own, this
+	// is where that would show.
+	it('wipes each record with the tricode it belongs to, along the same edge', () => {
+		cy.mount(<Harness mode='full' />);
+		cy.get('.game-card-reveal-mask.is-away .game-card-reveal-abbr-record').should('have.text', '76-58');
+		cy.get('.game-card-reveal-mask.is-home .game-card-reveal-abbr-record').should('have.text', '61-73');
+		scrubTo(spineMs(2000));
+		rectOf('.game-card-reveal-mask.is-away').then(layer => {
+			// Inside the layer that is being clipped, and below the lettering rather than beside it.
+			rectOf('.game-card-reveal-mask.is-away .game-card-reveal-abbr-edge').then(type => {
+				cy.get('.game-card-reveal-mask.is-away .game-card-reveal-abbr-record').should($record => {
+					const box = $record[0].getBoundingClientRect();
+					expect(box.top, 'record sits under the tricode').to.be.greaterThan(type.top);
+					expect(box.left, 'inside the wiped layer').to.be.at.least(layer.left - 0.5);
+					expect(box.right, 'inside the wiped layer').to.be.at.most(layer.right + 0.5);
+				});
+			});
+		});
+		// Centred on the same axis as the tricode above it, which is the crest slot both resolve onto.
+		inkOf('.game-card-reveal-mask.is-away .game-card-reveal-abbr-edge').then(type => {
+			cy.get('.game-card-reveal-mask.is-away .game-card-reveal-abbr-record').should($record => {
+				const box = $record[0].getBoundingClientRect();
+				expect((box.left + box.right) / 2).to.be.closeTo((type.left + type.right) / 2, 1);
+			});
+		});
+	});
+
+	// ESPN's coverage of records is uneven by league, so a missing one has to be nothing at all rather
+	// than an empty line taking up the space under the tricode.
+	// The box the lettering sits in is 4.4rem whatever the tricode does, so an offset taken off the box
+	// puts the record the same distance below the centre on a full-size tricode and a shrunken one — and
+	// that is not the same distance below the *type*. Measured on this fixture it was 1.8px inside MIA's
+	// own ink and 13.2px clear of UCONN's, which reads as the record having come loose from its team. The
+	// offset carries `--reveal-abbr-scale` now, so what this pins is that the two agree.
+	it('holds the record the same distance under the tricode at any tricode size', () => {
+		const gapFor = (away: string, home: string) => {
+			cy.mount(<Harness mode='full' away={away} home={home} />);
+			scrubTo(spineMs(2000));
+			return inkOf('.game-card-reveal-mask.is-away .game-card-reveal-abbr-edge').then(type => (
+				cy.get('.game-card-reveal-mask.is-away .game-card-reveal-abbr-record')
+					.then($record => $record[0].getBoundingClientRect().top - type.bottom)
+			));
+		};
+		gapFor('MIA', 'ARI').then(pro => {
+			expect(pro, 'a three-character tricode').to.be.within(0, 4);
+			gapFor('UCONN', 'UMASS').then(college => {
+				expect(college, 'a five-letter one, against the same gap').to.be.closeTo(pro, 0.5);
+			});
+		});
+	});
+
+	// And it stays on the card. The shortest card in the product is a finished game, which is also the
+	// one with the least room under its centre line.
+	it('keeps the record inside the card it is drawn on', () => {
+		cy.mount(<Harness mode='full' status='post' />);
+		rectOf('.game-card').then(card => {
+			cy.get('.game-card-reveal-abbr-record').should($records => {
+				[...$records].forEach(record => {
+					const box = record.getBoundingClientRect();
+					expect(box.bottom, 'below the card').to.be.at.most(card.bottom);
+					expect(box.top, 'above the card').to.be.at.least(card.top);
+				});
+			});
+		});
+	});
+
+	it('draws no record at all for a team ESPN sends none for', () => {
+		cy.mount(<Harness mode='full' records={false} />);
+		cy.get('.game-card-reveal-abbr').should('have.length', 2);
+		cy.get('.game-card-reveal-abbr-record').should('not.exist');
+	});
+
+	// The poster is bounded to the card it is drawn on, and the hold is a slow push rather than a
+	// freeze — so the push has to run up to that bound and not through it. Read at both ends of the
+	// hold plus the middle, because a keyframe that overshot would only show between them.
+	it('pushes the poster crest up to its bound through the hold, never past it', () => {
+		cy.mount(<Harness mode='full' />);
+		awaitCrests();
+		rectOf('.game-card').then(card => {
+			([0, 700, 1496] as const).forEach(spine => {
+				scrubTo(spineMs(spine));
+				cy.get('.game-card-reveal-crest-plate').should($plates => {
+					[...$plates].forEach(plate => {
+						const box = plate.getBoundingClientRect();
+						expect(box.top, `top at ${spine}ms`).to.be.at.least(card.top);
+						expect(box.bottom, `bottom at ${spine}ms`).to.be.at.most(card.bottom);
+						expect(box.width, `width at ${spine}ms`).to.be.lessThan(card.width / 2);
+					});
+				});
+			});
+		});
+	});
+
+	// Skipping has to leave the card readable for the whole of the fade, not after it. Every beat of
+	// the card coming into focus fills `both`, so a graphic that merely faded off would take the card
+	// with it and hand back a blank one — worse than the animation somebody was escaping.
+	it('releases the card underneath the moment the graphic is asked to leave', () => {
+		cy.mount(<Harness mode='full' skipping />);
+		cy.get('.game-card-reveal.is-skipping').should('exist');
+		cy.get('.game-card-center').should('have.css', 'opacity', '1');
+		cy.get('.game-card-status-row').should('have.css', 'opacity', '1');
+		cy.get('.game-card .team-crest').should('have.css', 'opacity', '1');
+		// And the dark plate goes at once rather than fading, because for most of the graphic's life it
+		// is already gone — a fade with no `from` would take it back to full and flash it over the card.
+		cy.get('.game-card-reveal-base').should('have.css', 'opacity', '0');
+	});
+
 	// The card's own crest arrives in one step under an overlay that is still fully opaque, rather
 	// than fading up into it: two identical crossfading copies are each half transparent at the
 	// midpoint, so the pair washes a quarter of the way to the card and the mark pales and recovers.
 	it('brings the card\'s own crest up in one step rather than fading it into the overlay', () => {
 		cy.mount(<Harness mode='full' />);
-		scrubTo(revealBaseDurationMs * 0.93 - 20);
+		scrubTo(spineMs(revealBaseDurationMs * 0.93) - 20);
 		cy.get('.game-card .team-crest').first().should('have.css', 'opacity', '0');
-		scrubTo(revealBaseDurationMs * 0.93 + 20);
+		scrubTo(spineMs(revealBaseDurationMs * 0.93) + 20);
 		cy.get('.game-card .team-crest').first().should('have.css', 'opacity', '1');
 	});
 
@@ -479,9 +637,9 @@ describe('the popup open reveal', () => {
 	it('has stopped moving before the card\'s own crest fades up under it', () => {
 		cy.mount(<Harness mode='full' />);
 		const handoffStart = revealBaseDurationMs * 0.93;
-		scrubTo(handoffStart);
+		scrubTo(spineMs(handoffStart));
 		rectOf('.game-card-reveal-wipe.is-away .game-card-reveal-crest').then(atHandoff => {
-			scrubTo(revealBaseDurationMs);
+			scrubTo(spineMs(revealBaseDurationMs));
 			rectOf('.game-card-reveal-wipe.is-away .game-card-reveal-crest').then(atEnd => {
 				expect(atEnd.left, 'left').to.be.closeTo(atHandoff.left, 0.5);
 				expect(atEnd.top, 'top').to.be.closeTo(atHandoff.top, 0.5);
@@ -493,9 +651,9 @@ describe('the popup open reveal', () => {
 	// The card is not simply uncovered, it arrives: everything on it comes up as the colour leaves.
 	it('brings the card\'s own contents into focus as the colour goes', () => {
 		cy.mount(<Harness mode='full' />);
-		scrubTo(2400);
+		scrubTo(spineMs(2400));
 		cy.get('.game-card-center').should('have.css', 'opacity', '0');
-		scrubTo(revealBaseDurationMs);
+		scrubTo(spineMs(revealBaseDurationMs));
 		cy.get('.game-card-center').should('have.css', 'opacity', '1');
 		cy.get('.game-card-status-row').should('have.css', 'opacity', '1');
 		cy.get('.team-abbreviation').first().should('have.css', 'opacity', '1');

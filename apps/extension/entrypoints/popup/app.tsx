@@ -14,7 +14,7 @@ import { fetchState, formatTabLabel, insertLeagueAtDefaultPosition, leagueOrder,
 import { i18n } from '#i18n';
 import { TranslationContext } from '@arenaswap/ui/src/components/i18nContext';
 import useFavoriteScoreConfetti from './useFavoriteScoreConfetti';
-import { resolveOpenRevealMode, revealSettleMs } from './cardReveal';
+import { resolveOpenRevealMode, revealSettleMs, revealSkipOutMs } from './cardReveal';
 import { isLeagueLogoCacheFresh, leagueLogoCacheKey, seededLeagueLogos } from './leagueLogoCache';
 import useToast from './useToast';
 import SuggestView from './components/suggestView';
@@ -123,6 +123,34 @@ export default () => {
 		const timer = setTimeout(() => setRevealMode('none'), revealSettleMs(revealMode));
 		return () => clearTimeout(timer);
 	}, [revealMode, listOnScreen]);
+
+	// Five seconds a card is long enough to need a way out, and the way out is anything at all: the
+	// first touch or keystroke ends it. Capture phase, and the handler neither prevents nor stops the
+	// event — the click that ends the graphic is still the click that opens the card it landed on, and
+	// the Tab that ends it still moves the focus.
+	//
+	// Two steps rather than going straight to 'none', which is what the teardown above does. That
+	// removes the wrapper, and every beat of the card coming into focus fills `both`, so a cut
+	// mid-graphic blanks the card for a frame and then brings it back — a worse thing than the
+	// animation somebody was trying to escape. The class takes the graphic off over `revealSkipOutMs`
+	// and releases the card underneath at once; the mode follows when it has gone.
+	const [revealSkipping, setRevealSkipping] = useState(false);
+	useEffect(() => {
+		if (revealMode === 'none' || revealSkipping) return;
+		const skip = () => setRevealSkipping(true);
+		window.addEventListener('pointerdown', skip, true);
+		window.addEventListener('keydown', skip, true);
+		return () => {
+			window.removeEventListener('pointerdown', skip, true);
+			window.removeEventListener('keydown', skip, true);
+		};
+	}, [revealMode, revealSkipping]);
+
+	useEffect(() => {
+		if (!revealSkipping) return;
+		const timer = setTimeout(() => setRevealMode('none'), revealSkipOutMs);
+		return () => clearTimeout(timer);
+	}, [revealSkipping]);
 
 	// The onboarding and settings pickers show every league, not just the enabled ones — which is 31
 	// scoreboard requests, more than ESPN's burst allowance in one call, and this ran on every single
@@ -543,6 +571,7 @@ export default () => {
 						selectedDayKey={selectedDayKey}
 						onSelectDay={setSelectedDayKey}
 						revealMode={revealMode}
+						revealSkipping={revealSkipping}
 					/>
 				)}
 				{view === 'suggest' && (

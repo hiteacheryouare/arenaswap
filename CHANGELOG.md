@@ -3,6 +3,48 @@
 > One or two lines per entry: what changed, and the one thing about it worth knowing later.
 > The code, the tests and the git history hold the rest. Do not write essays here.
 
+## The first open of the day is the same graphic half again as long, with the records on it — 2026-09-17
+
+Longer is one constant, which is the whole point of how it was done. `--reveal-rate` was already the single
+time knob, so `full` going 1 → **1.5** takes every beat half again as long in the same proportion to every
+other, moves not one line of timing in `global.scss`, and leaves `quick` byte-identical because only
+`full`'s rate changed. 5100ms a card, 5820 for the list once the cascade is counted. It was designed twice
+and the first one is the lesson: a pre-beat before the colour arrives and a flourish after it resolves, all
+of it costed and most of it specced, and all of it a different graphic wearing this one's clothes — the
+leaning line of light it opened on broke the banner's own **one axis** outright.
+
+The elements that replaced it come from looking up what in-stadium matchup graphics are actually made of,
+which is a narrower vocabulary than the trade press suggests. **Each team's record** is the one thing every
+real one carries that this did not, and `Team.record` has been on every competitor the scoreboard parses all
+along. It lives inside the lettering's own layer rather than beside it, which is the whole reason it was
+cheap: that layer is already clipped along the bar's leaning edge, so the record is wiped by the same bar,
+on the same instant, along the same line, with no geometry of its own to keep parallel. Positioned off the
+4.4rem lettering box rather than put in flow with it, because the tricode is concentric with the crest it
+trades for and that landing is measured to the pixel. **The tricodes fill solid** just before the bar takes
+them, which costs no element — the copy behind is already solid white and stroked wider than itself, so the
+glyph reads filled the moment the face stops being the surface colour — and a spec pins that the fill
+finishes before the leading edge arrives, because a bar crossing a half-filled glyph is a third state
+nobody designed. **The pass is cut as three bars a side**, which is how a wipe is cut for broadcast: a group
+on one path, each thinner and fainter than the one ahead. And the crest's hold creeps from 0.97 of
+`--reveal-hold` up to it rather than sitting still, which is not an element but a consequence — 2.2 seconds
+of a motionless logo is the one place a uniform stretch reads as the graphic having stopped. Upward and
+never through it, so the bound `revealHoldScale` puts on the poster holds by construction.
+
+Five seconds a card needs a way out, so any pointer or key event ends it — capture phase, neither prevented
+nor stopped, so the click that ends the graphic is still the click that opens the card it landed on. Two
+steps rather than the existing `setRevealMode('none')`, which takes the wrapper away while every beat of the
+card coming into focus is still filling `both`: a cut mid-graphic blanks the card and hands it back, worse
+than the animation being escaped. The trap is that a fade with no `from` starts from what the element
+computes to without it — right for the stage and the sweeps, which animate no opacity of their own, and
+wrong for the dark base, which does and is already at 0 for most of the graphic's life, so it would have
+gone back to 1 first and flashed the plate over the card somebody was trying to reach. It goes at once
+instead, and nothing is lost: the plate only exists to stop the white card showing between the halves.
+
+One spec failed for a real reason rather than a stale number, and it is the one to keep hold of: the parked
+bars are read at the far end of their travel, which was 2700ms because the chasers used to finish at 2640,
+and the trailing bar does not finish until 2760. No new locale keys — the record is ESPN's own string, as
+the tricode is.
+
 ## The popup stops scrolling sideways while the open animation plays — 2026-09-17
 
 A clip path clips painting and says nothing about scrollable overflow, which is the half of

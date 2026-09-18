@@ -776,9 +776,11 @@ button, input, select, optgroup, textarea {
    One axis. Nothing moves vertically, so the whole thing reads as a single pass across the card
    rather than as parts arriving separately.
 
-   One rate. Every duration and delay below is a multiple of `--reveal-rate`, so the second open of
-   the day is this same graphic taken 20% quicker rather than a shorter graphic with beats cut out
-   of it.
+   One rate. Every duration and delay below is a multiple of `--reveal-rate`, and that is the only
+   thing that differs between the two versions: 1.5 on the first open of the day and 0.8 on every one
+   after it. So the long cut is this graphic taking half again as long in the same proportions, and the
+   quick one is it taken 20% quicker — neither is a graphic with a beat added to or cut out of it. The
+   two figures are `revealFullRate` and `revealQuickRate`; no length lives in this file.
 
    One exact landing. Every crest ends on the card's real crest slot, at the card's real crest size,
    both measured rather than guessed — and it gets there and stops before the card's own crest is
@@ -1065,8 +1067,46 @@ button, input, select, optgroup, textarea {
 	-webkit-text-stroke: 4px #ffffff;
 }
 
+/* Outlined while the poster holds, then filled solid as the bar arrives to take it. Broadcast type
+   cascades between outlined and filled states rather than sitting in one of them, and this costs no
+   element and no motion: the copy behind is already solid white and stroked wider than itself, so the
+   moment the face stops being the surface colour the glyph simply reads solid, and the bar wipes a
+   filled mark instead of a hollow one.
+   `color` is the only property either copy animates, which is the rule in here — see the note at the
+   top of the section about two animations naming one property. */
 .game-card-reveal-abbr-face {
-	color: var(--reveal-surface);
+	color:     var(--reveal-surface);
+	animation: cardRevealAbbrFill calc(200ms * var(--reveal-rate)) ease-in calc(var(--reveal-delay) + 1300ms * var(--reveal-rate)) both;
+}
+
+/* ESPN's own record line, which is what an in-stadium matchup graphic carries under each tricode and
+   the card itself shows nowhere. Lekton, because this is scoreboard data rather than words.
+
+   Positioned off the lettering box rather than placed in flow with it: the tricode is concentric with
+   the crest it trades for, and that is measured to the pixel in the specs — a column that pushed the
+   type up to make room would move the one landing the whole graphic is built around. So the box stays
+   4.4rem and the record hangs below it, on the same centre line, scaled by whatever the tricode was
+   scaled by so a five-letter college card shrinks both together.
+
+   Offset from the centre by the type's own half-height rather than by the box's, which is the whole
+   reason `--reveal-abbr-scale` is in the `top` as well as the `font-size`. The box is 4.4rem whatever
+   the tricode does, so a fixed `top: 100%` put the record the same 35px below the centre on every
+   card — measured on the shipped fixture, 1.8px inside a full-size tricode's own ink and 13.2px clear
+   of a five-letter one, which reads as the record having come loose from the team it belongs to.
+   2.35rem is the scaled ink's half-height plus a hair, so the gap is the same on both. */
+.game-card-reveal-abbr-record {
+	position:       absolute;
+	top:            calc(50% + 2.35rem * var(--reveal-abbr-scale, 1));
+	left:           0;
+	right:          0;
+	text-align:     center;
+	font-size:      calc(0.75rem * var(--reveal-abbr-scale, 1));
+	font-weight:    700;
+	letter-spacing: 0.04em;
+	line-height:    1;
+	color:          #ffffff;
+	opacity:        0.85;
+	white-space:    nowrap;
 }
 
 /* Exactly as tall as the stage, and travelling at a constant rate: a wipe that eases is a wipe you
@@ -1092,12 +1132,20 @@ button, input, select, optgroup, textarea {
 	background: linear-gradient(to right, rgba(255, 255, 255, 0.5), #ffffff 45%, rgba(255, 255, 255, 0.85));
 }
 
-/* A thin one trailing the thick one, which is how these are cut for broadcast and the cheapest
-   thing there is that separates a wipe from a rectangle sliding past. It runs over ground the
-   thick one has already turned over, since the reveal edge is the leading bar's trailing edge. */
+/* Thin ones trailing the thick one, which is how these are cut for broadcast and the cheapest thing
+   there is that separates a wipe from a rectangle sliding past. They run over ground the thick one has
+   already turned over, since the reveal edge is the leading bar's trailing edge.
+   Two of them rather than one: a broadcast wipe is a group travelling one path, and the group is what
+   reads as a wipe. Each is thinner and fainter than the one ahead of it, so the pass tapers off the
+   card instead of stopping. */
 .game-card-reveal-sweep.is-chaser {
 	width:      6px;
 	background: rgba(255, 255, 255, 0.7);
+}
+
+.game-card-reveal-sweep.is-trailer {
+	width:      3px;
+	background: rgba(255, 255, 255, 0.45);
 }
 
 /* Parked one bar width and one lean clear of the edge it comes in from, which is the far corner of
@@ -1117,6 +1165,11 @@ button, input, select, optgroup, textarea {
 .game-card-reveal-sweep.is-away.is-chaser,
 .game-card-reveal-sweep.is-home.is-chaser {
 	animation-delay: calc(var(--reveal-delay) + 1640ms * var(--reveal-rate));
+}
+
+.game-card-reveal-sweep.is-away.is-trailer,
+.game-card-reveal-sweep.is-home.is-trailer {
+	animation-delay: calc(var(--reveal-delay) + 1760ms * var(--reveal-rate));
 }
 
 /* ── The card coming into focus underneath ──────────────────────────────────── */
@@ -1151,6 +1204,51 @@ button, input, select, optgroup, textarea {
    existing — invisible under this easing, which is at 99.9% by then, and a pop under any other. */
 .game-card-reveal .game-card-ps-bar-row {
 	animation-delay: calc(var(--reveal-delay) + 2780ms * var(--reveal-rate));
+}
+
+/* ── Leaving early ─────────────────────────────────────────────────────────────
+
+   Somebody has touched or typed something, which ends the graphic wherever it had got to. Two things
+   have to happen in the same frame, and the second is the one that is easy to forget: the poster goes,
+   and the card underneath is released. Every beat of the card coming into focus fills `both`, so a
+   card whose graphic merely faded off would spend the fade blank and then appear — worse than the
+   animation being escaped. `animation: none` drops each of them back to the state it has in the
+   stylesheet, which is the resolved card.
+
+   The stage and the sweeps fade as wholes and their children keep running underneath, unseen:
+   cancelling those too would cost a rule per element for no visible difference. Neither of those two
+   elements animates anything itself, which is what makes a fade with no `from` correct on them — the
+   value it starts from is the stylesheet's own 1.
+
+   The base cannot have the same treatment, and this is the one trap in here. It *does* animate its own
+   opacity, and it is already at 0 for most of the graphic's life, so a fade with no `from` would take
+   it back to 1 first and flash the dark plate over a card somebody was trying to get to. It goes at
+   once instead. Nothing is lost by that: the plate is only there to stop the white card showing between
+   the two halves while they travel, and a card on its way to being the thing you are looking at does
+   not need hiding.
+
+   `--reveal-delay` is deliberately in none of this — the whole list leaves together, rather than the
+   eighth card taking its stagger's worth of extra time to agree to. */
+.game-card-reveal.is-skipping {
+	.game-card-reveal-base {
+		animation: none;
+		opacity:   0;
+	}
+
+	.game-card-reveal-stage,
+	.game-card-reveal-sweeps {
+		animation: cardRevealSkipOut 140ms linear both;
+	}
+
+	.game-card-status-row,
+	.game-card-center,
+	.team-abbreviation,
+	[data-team-star='true'],
+	.game-meta,
+	.game-card-ps-bar-row,
+	.game-card .team-crest {
+		animation: none;
+	}
 }
 
 /* ── Keyframes ──────────────────────────────────────────────────────────────── */
@@ -1215,6 +1313,12 @@ button, input, select, optgroup, textarea {
 	to   { opacity: 0.9; }
 }
 
+/* The face copy stops being the colour behind it, which fills the glyph the outline was drawing. */
+@keyframes cardRevealAbbrFill {
+	from { color: var(--reveal-surface); }
+	to   { color: #ffffff; }
+}
+
 /* Constant rate, edge to edge and out the far side: they cross at the middle of the card and each
    one leaves under its own steam rather than stopping somewhere and fading.
 
@@ -1239,11 +1343,19 @@ button, input, select, optgroup, textarea {
    then the walk down onto the card's own crest slot. Stationary from 93%, which is where the card's
    real crest starts fading up underneath it — the two never move past each other.
 
+   The hold is a slow push rather than a freeze. It used to sit dead still at `--reveal-hold` from 0 to
+   44%, which at the long cut's rate is 2.2 seconds of a completely motionless logo — the one place a
+   uniform stretch shows as the graphic having stopped rather than as it taking its time. An in-arena
+   logo treatment never sits still. Upwards and arriving at `--reveal-hold` rather than passing through
+   it: that figure is `revealHoldScale`, bounded so the poster cannot outgrow the card it is drawn on,
+   so starting under it and landing on it is inside the bound by construction.
+
    `--reveal-hold` is `revealHoldScale` in `cardReveal.ts`, which sizes the poster off the card it
    is drawn on rather than off a figure that was right for one card height. Scale 1 is the card's own
    crest, so the walk down ends on it by construction. */
 @keyframes cardRevealCrest {
-	0%, 44% { opacity: 1; transform: translate(0, 0) scale(var(--reveal-hold)); animation-timing-function: linear; }
+	0%      { opacity: 1; transform: translate(0, 0) scale(calc(var(--reveal-hold) * 0.97)); animation-timing-function: linear; }
+	44%     { opacity: 1; transform: translate(0, 0) scale(var(--reveal-hold)); animation-timing-function: linear; }
 	74%     { transform: translate(0, 0) scale(calc(var(--reveal-hold) * 0.95)); }
 	78%     { transform: translate(0, 0) scale(calc(var(--reveal-hold) * 0.95)); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
 	93%     { opacity: 1; transform: translate(var(--reveal-dx), var(--reveal-dy)) scale(1); }
@@ -1258,4 +1370,11 @@ button, input, select, optgroup, textarea {
 @keyframes cardRevealContent {
 	from { opacity: 0; filter: blur(4px); transform: translateY(4px); }
 	to   { opacity: 1; filter: blur(0); transform: translateY(0); }
+}
+
+/* No `from`, so it starts from whatever the element computes to without it — which for the two layers
+   this is put on is the stylesheet's own 1, because neither of them animates its own opacity. The one
+   layer that does is handled separately; see the note above the `.is-skipping` block. */
+@keyframes cardRevealSkipOut {
+	to { opacity: 0; }
 }

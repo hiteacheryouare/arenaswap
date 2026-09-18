@@ -20,6 +20,7 @@ interface gameCardRevealProps {
 	game: Game;
 	mode: revealMode;
 	index: number;
+	skipping: boolean;
 	children: ReactNode;
 }
 
@@ -71,12 +72,19 @@ const RevealSide = ({ team, surface, side }: { team: Team; surface: string; side
 			<span className='game-card-reveal-abbr'>
 				<span className='game-card-reveal-abbr-edge'>{team.abbreviation}</span>
 				<span className='game-card-reveal-abbr-face'>{team.abbreviation}</span>
+				{/* The one thing every in-stadium matchup graphic carries that this did not, and the only
+				    addition here that is information rather than motion. Inside the lettering's own layer
+				    on purpose: that layer is already clipped along the bar's leaning edge, so the record
+				    is wiped by the same bar, on the same instant, along the same line, with no geometry
+				    of its own to keep parallel. ESPN's own string, so no locale key — and absent where
+				    ESPN sends none, which is uneven by league. */}
+				{team.record && <span className='font-lekton game-card-reveal-abbr-record'>{team.record}</span>}
 			</span>
 		</span>
 	</>
 );
 
-const gameCardReveal = ({ game, mode, index, children }: gameCardRevealProps) => {
+const gameCardReveal = ({ game, mode, index, skipping, children }: gameCardRevealProps) => {
 	const wrapperRef = useRef<HTMLDivElement | null>(null);
 	const [landing, setLanding] = useState<revealLanding | null>(null);
 	const [done, setDone] = useState(false);
@@ -150,7 +158,7 @@ const gameCardReveal = ({ game, mode, index, children }: gameCardRevealProps) =>
 	return (
 		<div
 			ref={wrapperRef}
-			className='game-card-reveal'
+			className={`game-card-reveal${skipping ? ' is-skipping' : ''}`}
 			style={{
 				'--reveal-away': awayColor,
 				'--reveal-home': homeColor,
@@ -184,11 +192,17 @@ const gameCardReveal = ({ game, mode, index, children }: gameCardRevealProps) =>
 				<RevealSide team={game.homeTeam} surface={homeColor} side='home' />
 			</div>
 			{children}
+			{/* Three to a side rather than two. A broadcast wipe is cut as a group travelling one path —
+			    the thick bar turns the ground over and the thin ones run behind it on the same line — and
+			    a third costs nothing in kind, since all of them translate and none of them touch layout.
+			    A thirty-game Saturday opens with 48 of these instead of 32, all on the compositor. */}
 			<div className='game-card-reveal-sweeps' aria-hidden='true'>
 				<span className='game-card-reveal-sweep is-away' />
 				<span className='game-card-reveal-sweep is-away is-chaser' />
+				<span className='game-card-reveal-sweep is-away is-chaser is-trailer' />
 				<span className='game-card-reveal-sweep is-home' />
 				<span className='game-card-reveal-sweep is-home is-chaser' />
+				<span className='game-card-reveal-sweep is-home is-chaser is-trailer' />
 			</div>
 		</div>
 	);

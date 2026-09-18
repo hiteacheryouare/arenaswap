@@ -80,6 +80,7 @@ interface mainViewProps {
 	selectedDayKey: string | null;
 	onSelectDay: (dayKey: string | null) => void;
 	revealMode?: revealMode;
+	revealSkipping?: boolean;
 }
 
 const leagueRows = (
@@ -109,6 +110,7 @@ const leagueRows = (
 				game={game}
 				mode={reveal.order.has(game.id) ? revealModeForIndex(reveal.mode, reveal.order.get(game.id)!) : 'none'}
 				index={reveal.order.get(game.id) ?? 0}
+				skipping={reveal.skipping}
 			>
 				<GameCard
 					game={game}
@@ -187,6 +189,7 @@ const mainView = ({
 	selectedDayKey,
 	onSelectDay,
 	revealMode = 'none',
+	revealSkipping = false,
 }: mainViewProps) => {
 	const scrollerRef = useRestoredScroll(scrollOffsetRef);
 	const noLeaguesSelected = prefs.enabledLeagues.length === 0;
@@ -254,8 +257,8 @@ const mainView = ({
 	// mid-frame.
 	const revealPlanRef = useRef<Map<string, number> | null>(null);
 	const reveal = useMemo<cardRevealPlan>(() => {
-		if (revealMode === 'none') return { mode: 'none', order: emptyRevealOrder };
-		if (revealPlanRef.current) return { mode: revealMode, order: revealPlanRef.current };
+		if (revealMode === 'none') return { mode: 'none', order: emptyRevealOrder, skipping: false };
+		if (revealPlanRef.current) return { mode: revealMode, order: revealPlanRef.current, skipping: revealSkipping };
 		const order = new Map<string, number>();
 		const take = (list: Game[]) => groupByLeague(list)
 			.forEach(({ games: grouped }) => grouped.forEach(game => order.set(game.id, order.size)));
@@ -264,8 +267,8 @@ const mainView = ({
 		if (prefs.showUpcomingGames && selectedDay) take(selectedDay.games);
 		take(finalGames);
 		if (order.size > 0) revealPlanRef.current = order;
-		return { mode: revealMode, order };
-	}, [revealMode, assignedLiveGames, unassignedLiveGames, prefs.showUpcomingGames, selectedDay, finalGames]);
+		return { mode: revealMode, order, skipping: revealSkipping };
+	}, [revealMode, revealSkipping, assignedLiveGames, unassignedLiveGames, prefs.showUpcomingGames, selectedDay, finalGames]);
 
 	const showNoGames = !isLoading && !noLeaguesSelected && liveGames.length === 0
 		&& registry.length === 0 && finalGames.length === 0

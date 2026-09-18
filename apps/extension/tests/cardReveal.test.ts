@@ -8,6 +8,7 @@ import {
 	revealDayStamp,
 	revealDelayMs,
 	revealDurationMs,
+	revealFullRate,
 	revealHoldHeightShare,
 	revealHoldScale,
 	revealHoldWidthShare,
@@ -47,12 +48,26 @@ describe('which version of the open animation plays', () => {
 });
 
 describe('the two speeds', () => {
-	// One choreography, not two. If these ever stop being the same number scaled, the quick version
+	// One choreography, not two. If these ever stop being the same number scaled, one of the versions
 	// has become a different animation and the stylesheet's single `--reveal-rate` is a lie.
-	it('runs the quick version at a fixed fraction of the full one', () => {
-		expect(revealDurationMs('full')).toBe(revealBaseDurationMs);
+	it('runs both versions at a fixed fraction of the one timeline', () => {
+		expect(revealDurationMs('full')).toBe(Math.round(revealBaseDurationMs * revealFullRate));
 		expect(revealDurationMs('quick')).toBe(Math.round(revealBaseDurationMs * revealQuickRate));
+		expect(revealFullRate).toBe(1.5);
 		expect(revealQuickRate).toBe(0.8);
+	});
+
+	// The long cut is five seconds and nothing about it is new — the point of doing it as a rate is
+	// that this number is the whole change, so it is worth stating outright rather than deriving.
+	it('gives the first open of the day about five seconds a card', () => {
+		expect(revealDurationMs('full')).toBe(5100);
+	});
+
+	// And the regression guard on the whole approach: lengthening the full version must not have
+	// touched the one everybody sees every other time they open the popup.
+	it('leaves every later open of the day exactly where it was', () => {
+		expect(revealDurationMs('quick')).toBe(2720);
+		expect(revealDelayMs(3, 'quick')).toBe(192);
 	});
 
 	it('takes no time at all when nothing is going to play', () => {
@@ -70,10 +85,13 @@ describe('the day a reveal is stamped against', () => {
 });
 
 describe('the stagger down the list', () => {
+	// Taken at the graphic's own rate like everything else, so the long cut's cascade is wider in the
+	// same proportion rather than the same 80ms against beats that are now half again as long.
 	it('steps once per card', () => {
 		expect(revealDelayMs(0, 'full')).toBe(0);
-		expect(revealDelayMs(1, 'full')).toBe(revealStaggerStepMs);
-		expect(revealDelayMs(3, 'full')).toBe(revealStaggerStepMs * 3);
+		expect(revealDelayMs(1, 'full')).toBe(Math.round(revealStaggerStepMs * revealFullRate));
+		expect(revealDelayMs(3, 'full')).toBe(Math.round(revealStaggerStepMs * 3 * revealFullRate));
+		expect(revealDelayMs(1, 'full')).toBe(120);
 	});
 
 	// The cascade is part of the graphic, so it is taken at the graphic's own rate.
@@ -105,6 +123,13 @@ describe('when the popup stops being in its opening state', () => {
 	it('waits for the last card to start and then to finish', () => {
 		expect(revealSettleMs('full')).toBe(revealDelayMs(revealStaggerCapIndex, 'full') + revealDurationMs('full'));
 		expect(revealSettleMs('quick')).toBe(revealDelayMs(revealStaggerCapIndex, 'quick') + revealDurationMs('quick'));
+	});
+
+	// Pinned outright as well as derived: this is how long the popup is in its opening state, which is
+	// the cost of the long cut and the number the skip exists to answer for.
+	it('holds the opening state for the long cut plus its own cascade', () => {
+		expect(revealSettleMs('full')).toBe(5820);
+		expect(revealSettleMs('quick')).toBe(3104);
 	});
 
 	it('is immediate when nothing is going to play', () => {
@@ -216,6 +241,30 @@ describe('the figures the stylesheet repeats by hand', () => {
 		expect(beats.length).toBeGreaterThan(0);
 		expect(Number.isFinite(contentBeatMs)).toBe(true);
 		expect(Math.max(...beats) + contentBeatMs).toBeLessThanOrEqual(revealBaseDurationMs);
+	});
+
+	// The lettering fills as the bar arrives to take it, and the bar is what makes it worth doing: a
+	// wipe over a solid mark reads harder than one over a hollow one. Which only holds if the fill has
+	// finished by the time the leading edge gets there — a bar crossing a half-filled glyph is a third
+	// state nobody designed. Both figures are in the stylesheet and neither is derived from the other,
+	// so the agreement is asserted.
+	it('fills the lettering before the bar reaches it', () => {
+		const fill = /cardRevealAbbrFill calc\((\d+)ms \* var\(--reveal-rate\)\) [\w-]+ calc\(var\(--reveal-delay\) \+ (\d+)ms/.exec(stylesheet);
+		const sweep = /cardRevealSweepAway calc\(\d+ms \* var\(--reveal-rate\)\) linear calc\(var\(--reveal-delay\) \+ (\d+)ms/.exec(stylesheet);
+		expect(fill).not.toBeNull();
+		expect(sweep).not.toBeNull();
+		expect(Number(fill![2]) + Number(fill![1])).toBeLessThanOrEqual(Number(sweep![1]));
+	});
+
+	// The pass is a group travelling one path, so they have to leave in the order they are stacked in:
+	// the thick bar turns the ground over and the thin ones run behind it. A trailer that left first
+	// would be a bar crossing colour that has not been revealed yet.
+	it('sends the three bars of a pass out in order', () => {
+		const chaser = /\.game-card-reveal-sweep\.is-away\.is-chaser,[\s\S]*?animation-delay: calc\(var\(--reveal-delay\) \+ (\d+)ms/.exec(stylesheet);
+		const trailer = /\.game-card-reveal-sweep\.is-away\.is-trailer,[\s\S]*?animation-delay: calc\(var\(--reveal-delay\) \+ (\d+)ms/.exec(stylesheet);
+		const sweep = /cardRevealSweepAway calc\(\d+ms \* var\(--reveal-rate\)\) linear calc\(var\(--reveal-delay\) \+ (\d+)ms/.exec(stylesheet);
+		expect(Number(sweep![1])).toBeLessThan(Number(chaser![1]));
+		expect(Number(chaser![1])).toBeLessThan(Number(trailer![1]));
 	});
 
 	// A bar is parked one bar width and one lean clear of the edge it comes in from, and leaves one

@@ -387,7 +387,7 @@ describe('mainView up next day pager', () => {
 	});
 
 	// Both live sections are re-sorted on PowerScore, and scores arrive by push every few seconds, so
-	// a resort inside the open animation's 3.4s window is ordinary. The plan the stagger is built from
+	// a resort inside the open animation's five-second window is ordinary. The plan the stagger is built from
 	// is fixed on the first list that has anything in it: a card that keeps its React identity but
 	// changes index would otherwise get a new `animation-delay`, which moves a running animation's
 	// current time rather than restarting it, and across the eight-card cap the mode itself flips and
@@ -395,7 +395,7 @@ describe('mainView up next day pager', () => {
 	it('holds the reveal stagger still when a score push resorts the list under it', () => {
 		cy.mount(<ResortingMainView />);
 		cy.get('[data-testid="game-card-slow"]').closest('.game-card-reveal').should('have.css', '--reveal-delay', '0ms');
-		cy.get('[data-testid="game-card-fast"]').closest('.game-card-reveal').should('have.css', '--reveal-delay', '80ms');
+		cy.get('[data-testid="game-card-fast"]').closest('.game-card-reveal').should('have.css', '--reveal-delay', '120ms');
 
 		cy.get('[data-testid="fake-score-push"]').click();
 
@@ -403,6 +403,6 @@ describe('mainView up next day pager', () => {
 		cy.get('.game-card-reveal [data-testid^="game-card-"]').first().should('have.attr', 'data-testid', 'game-card-fast');
 		// And neither card's place in the cascade moved with it.
 		cy.get('[data-testid="game-card-slow"]').closest('.game-card-reveal').should('have.css', '--reveal-delay', '0ms');
-		cy.get('[data-testid="game-card-fast"]').closest('.game-card-reveal').should('have.css', '--reveal-delay', '80ms');
+		cy.get('[data-testid="game-card-fast"]').closest('.game-card-reveal').should('have.css', '--reveal-delay', '120ms');
 	});
 });

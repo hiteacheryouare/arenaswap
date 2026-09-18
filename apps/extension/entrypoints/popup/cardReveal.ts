@@ -5,16 +5,27 @@ export interface cardRevealPlan {
 	// Position down the rendered page, which is not the order of any one list: the page is four
 	// sections and each of those is grouped by league before it is drawn.
 	order: Map<string, number>;
+	// Somebody has asked to be out of it. Carried on the plan rather than read per card, because the
+	// whole list leaves together — a graphic that let go of one card at a time would be eight endings.
+	skipping: boolean;
 }
 
 // One choreography, played at two speeds. Every delay in `global.scss` is written as a multiple of
 // `--reveal-rate`, so the second open of the day is the same graphic in less time rather than a
 // shorter graphic — there is no beat in this worth cutting, only beats worth taking quicker.
+//
+// Which is also what makes the long cut one number rather than a second timeline. The first open of
+// the day wanted to be nearer five seconds and to carry more on the poster, and the temptation was a
+// phase before the colour arrives and another after it resolves. Both were built on paper and both
+// were wrong: they are a different graphic wearing this one's clothes. At 1.5 every beat this already
+// has takes half again as long in the same proportion to every other, the stylesheet's timing does not
+// move at all, and `quick` stays exactly what it plays today because only `full`'s rate changed.
 export const revealBaseDurationMs = 3400;
+export const revealFullRate = 1.5;
 export const revealQuickRate = 0.8;
 
 export const revealRate = (mode: revealMode) => {
-	if (mode === 'full') return 1;
+	if (mode === 'full') return revealFullRate;
 	if (mode === 'quick') return revealQuickRate;
 	return 0;
 };
@@ -46,6 +57,12 @@ export const revealModeForIndex = (mode: revealMode, index: number): revealMode 
 export const revealSettleMs = (mode: revealMode) => (
 	mode === 'none' ? 0 : revealDelayMs(revealStaggerCapIndex, mode) + revealDurationMs(mode)
 );
+
+// How long the graphic gets to leave when somebody asks it to. Going straight to 'none' takes the
+// wrapper away, and every beat of the card coming into focus fills `both` — so a cut mid-graphic is a
+// card that blanks and then reappears, which is worse than the animation somebody was trying to
+// escape. Short enough to read as leaving rather than as another beat.
+export const revealSkipOutMs = 140;
 
 // tan(20.5 degrees). The steepest the graphic ever leans, and on most cards the angle it holds: the
 // bars are skewed by it, the seam between the two team colours leans by it, the edge each wipe
