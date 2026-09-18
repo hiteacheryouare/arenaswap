@@ -3,37 +3,34 @@
 > One or two lines per entry: what changed, and the one thing about it worth knowing later.
 > The code, the tests and the git history hold the rest. Do not write essays here.
 
-## The oversized crests sit on discs of their own team's colour — 2026-09-18
+## The oversized crests take their colour across the whole card, not into a disc — 2026-09-18
 
-The maintainer, on the entry this replaces: "you took away the discs". Worth recording that this pass
-did not — the crest component had dropped its tinted plate entirely as part of the colour work running
-alongside, and it has come back since, with the monochrome marks beside it.
+Three passes on this beat, and each one moved the colour somewhere else: onto the dark plate the rest of
+the graphic builds over, then onto a neutral field, then onto a disc behind each crest. The maintainer's
+call is the one that was in front of us the whole time — take the colour the disc would have been and
+spread it across the card at full size. No disc, no third surface, and each crest clipped where its
+colour ends.
 
-So the beat has discs, and each one is that team's own colour: which is what carries the colours into
-the graphic before the poster's halves do, and it makes the disc — rather than the field behind it —
-the surface its crest is drawn against. That colour is what gets handed to `teamCrest` as the
-background, and the stylesheet paints the disc from the same pair, so the colour a crest is judged
-against and the colour it is drawn on cannot come apart.
+The mechanism is the part worth keeping. The element `teamCrest` paints when a crest's colours will not
+read on the surface it was handed is the same element this file styles, so making *that* the colour
+field means the colour is right without this file working it out. Where the artwork reads on its team's
+colour the wrapper comes back bare and the rule here paints the team colour — a light mark on a navy.
+Where it does not, `teamCrest` sets its tinted plate inline and an inline style wins, so the field
+becomes the lighter surface that crest needs — a navy monogram on navy, which is the case that plate
+exists for and which the popup cannot answer with a monochrome mark because its state carries none.
+Either way the crest ends up on exactly the colour a disc would have given it. One spec per path, and
+the shipped fixture card still exercises both at once.
 
-The two treatments compose, and the composition is the point. Where the artwork reads on its team's
-colour, `teamCrest` draws the crest bare and the stylesheet's disc is the one you see — Arizona's gold
-on Arizona's red. Where it does not, the component's own tinted plate wins, because it sets it inline
-and an inline style beats a rule: Miami's navy on Miami's navy, which is the case that plate exists
-for, and which the popup cannot answer with a monochrome mark because its state carries none. Both
-sides end up on a disc either way, which is the thing this beat now guarantees. One spec per path, and
-the shipped fixture card exercises both at once.
+The seam is now one shape in one place. The opening's two fields are the poster's halves at full width,
+so they take the same two `clip-path` polygons: a crest is clipped along the exact line the poster's own
+half then grows into, and one seam written twice is two seams waiting to disagree. It also means the
+layer carrying them paints nothing itself — the fields cover the card between them — and the mid tone
+the entry below introduced is gone with the reason for it.
 
-The mark is three quarters of its disc, which is `revealPlateRatio` and what every plated crest in the
-product is drawn at — a circle drawn at the size of a wordmark shaves its ends off. That is also what
-sets the bleed now: the disc overhangs the card by a sixth of its height and the mark comes out almost
-exactly the card's height, so the disc runs off the edges and the mark is only just cut by them.
-
-The field behind them stays the mid tone the entry below introduced, and its reason has moved up a
-level. It was there because club artwork is safe on neither a dark field nor a light one; the crests
-are settled on their discs now, so what has to read against it is the disc, and a disc is whatever
-colour a club publishes. A near-black field loses a navy one's edge and a white field loses the tinted
-plate. The spec still bounds the field's luminance rather than its hex — the colour can move, the
-reason cannot.
+What could have been lost is the poster's opening move, since the halves now wipe in over colour that
+is already there. It survives, and the reason is the shading: the halves are washed dark at their outer
+edge and the opening's fields are flat, so what travels inward is a visible edge across the logos
+rather than nothing at all. Checked by reading the frames, not by reasoning about them.
 
 ## A crest is the team's crest, in the team's colours, everywhere — 2026-09-17
 

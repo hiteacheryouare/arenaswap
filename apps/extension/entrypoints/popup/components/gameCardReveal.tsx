@@ -8,7 +8,6 @@ import {
 	revealDelayMs,
 	revealHoldScale,
 	revealLean,
-	revealOpenCrestOffsetShare,
 	revealOpenCrestShare,
 	revealRate,
 	revealSkewDeg,
@@ -37,9 +36,8 @@ interface revealLanding {
 	crestSize: number;
 	hold: number;
 	sweepRun: number;
-	// The card's own box, which the opening pair are sized and placed off rather than off the stage:
-	// they are drawn to overhang it, so it is the thing the overhang is a fraction of.
-	cardWidth: number;
+	// The card's own height, which the opening pair are sized off rather than the stage's: they are
+	// drawn to overhang the card, so it is the thing the overhang is a fraction of.
 	cardHeight: number;
 }
 
@@ -91,24 +89,25 @@ const RevealSide = ({ team, surface, side }: { team: Team; surface: string; side
 // under the colour halves so that the halves growing over them is the whole of the transition. Nothing
 // fades into anything: the pair are still shrinking towards the hold when the colour takes them.
 //
-// The disc carries the team's colour into the beat, which makes it the surface its own crest is drawn
-// against — so it is what gets handed to `teamCrest` as the background, rather than the field behind
-// it. The stylesheet paints the disc from the same pair, so the colour the crest is judged against and
-// the colour it is drawn on cannot come apart.
+// Each crest's colour goes across its own half of the card at full size rather than into a disc behind
+// it, and `teamCrest`'s own wrapper is that field — which is what keeps the colour right without this
+// file deciding it. Handed the team's colour as its surface, the component comes back bare when the
+// artwork reads on it and the stylesheet paints the team colour; when it does not, it sets its tinted
+// plate inline and the field becomes that instead. Either way the crest ends up on the colour a disc
+// would have given it, spread across the card.
 const RevealOpening = ({ game, awayColor, homeColor }: { game: Game; awayColor: string; homeColor: string }) => (
 	<div className='game-card-reveal-opening' aria-hidden='true'>
 		{([['away', game.awayTeam, awayColor], ['home', game.homeTeam, homeColor]] as const).map(([side, team, surface]) => (
-			<span key={side} className={`game-card-reveal-opening-crest is-${side}`}>
-				<TeamCrest
-					logo={team.logo}
-					abbreviation={(team.abbreviation || '?').slice(0, 3)}
-					background={surface}
-					discClassName='game-card-reveal-opening-plate'
-					crestClassName='game-card-reveal-opening-logo'
-					fallback='blank'
-					loading='eager'
-				/>
-			</span>
+			<TeamCrest
+				key={side}
+				logo={team.logo}
+				abbreviation={(team.abbreviation || '?').slice(0, 3)}
+				background={surface}
+				discClassName={`game-card-reveal-opening-field is-${side}`}
+				crestClassName='game-card-reveal-opening-logo'
+				fallback='blank'
+				loading='eager'
+			/>
 		))}
 	</div>
 );
@@ -149,7 +148,6 @@ const gameCardReveal = ({ game, mode, index, skipping, children }: gameCardRevea
 			crestSize,
 			hold: revealHoldScale(box.width, box.height, crestSize),
 			sweepRun: revealSweepRun(box.width, lean),
-			cardWidth: box.width,
 			cardHeight: box.height,
 		});
 	}, []);
@@ -203,7 +201,6 @@ const gameCardReveal = ({ game, mode, index, skipping, children }: gameCardRevea
 				'--reveal-hold': landing?.hold ?? 1,
 				'--reveal-sweep-run': `${landing?.sweepRun ?? 0}px`,
 				'--reveal-open-crest': `${(landing?.cardHeight ?? 0) * revealOpenCrestShare}px`,
-				'--reveal-open-offset': `${(landing?.cardWidth ?? 0) * revealOpenCrestOffsetShare}px`,
 				'--reveal-abbr-scale': revealAbbrScale(game.awayTeam.abbreviation, game.homeTeam.abbreviation),
 				'--reveal-away-dx': `${landing?.awayDx ?? 0}px`,
 				'--reveal-away-dy': `${landing?.awayDy ?? 0}px`,

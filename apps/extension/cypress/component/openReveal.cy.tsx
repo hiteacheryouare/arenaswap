@@ -7,7 +7,6 @@ import {
 	revealFullRate,
 	revealOpenBeatMs,
 	revealOpenMs,
-	revealPlateRatio,
 	revealLeanRatio,
 	revealLeanWidthCap,
 	revealStageBleedPx,
@@ -172,29 +171,6 @@ describe('the popup open reveal', () => {
 
 	// ── The opening beat ──────────────────────────────────────────────────────────
 
-	// Oversized is the whole point, so it is asserted as overhang rather than as a size: each crest has
-	// to leave the card at the top, at the bottom and off its own outer side. A figure would pass on a
-	// card of any height; this fails the moment the pair start fitting.
-	it('draws the opening pair too big for the card, off three of its edges', () => {
-		cy.mount(<Harness mode='full' />);
-		awaitCrests();
-		scrubTo(openMs(revealOpenBeatMs));
-		rectOf('.game-card').then(card => {
-			cy.get('.game-card-reveal-opening-crest.is-away').should($away => {
-				const box = $away[0].getBoundingClientRect();
-				expect(box.top, 'over the top edge').to.be.lessThan(card.top);
-				expect(box.bottom, 'under the bottom edge').to.be.greaterThan(card.bottom);
-				expect(box.left, 'off its own outer edge').to.be.lessThan(card.left);
-			});
-			cy.get('.game-card-reveal-opening-crest.is-home').should($home => {
-				const box = $home[0].getBoundingClientRect();
-				expect(box.top, 'over the top edge').to.be.lessThan(card.top);
-				expect(box.bottom, 'under the bottom edge').to.be.greaterThan(card.bottom);
-				expect(box.right, 'off its own outer edge').to.be.greaterThan(card.right);
-			});
-		});
-	});
-
 	// And the overhang is cut at the card rather than painted outside it, which is the difference
 	// between artwork placed past the frame and artwork spilling out of a container.
 	it('cuts the overhang at the card\'s own edge', () => {
@@ -212,57 +188,76 @@ describe('the popup open reveal', () => {
 		});
 	});
 
-	// Every crest in this beat sits on a disc, and the disc is that team's own colour — which is what
-	// carries the colours into the graphic before the poster's halves do. Painted from the stylesheet
-	// rather than by the crest component, which draws its wrapper bare whenever the artwork reads where
-	// it is put.
-	it('sits each oversized crest on a disc of its own team\'s colour', () => {
+	// Each crest's colour goes across its own half of the card at full size rather than into a disc.
+	// `teamCrest`'s own wrapper is that field, which is what keeps the colour right without this file
+	// deciding it: where the artwork reads on its team's colour the component comes back bare and the
+	// stylesheet paints the team colour.
+	it('lays each team\'s colour across its own half of the card', () => {
 		cy.mount(<Harness mode='full' />);
 		awaitCrests();
-		// Arizona's gold on Arizona's red reads, so the crest draws bare and the disc is the one here.
-		cy.get('.game-card-reveal-opening-crest.is-home .game-card-reveal-opening-plate')
+		// Arizona's gold on Arizona's red reads, so the field is the team colour.
+		cy.get('.game-card-reveal-opening-field.is-home')
 			.should('have.class', 'is-bare')
 			.and('have.css', 'background-color', 'rgb(167, 25, 48)')
-			.and('have.css', 'border-radius', '999px');
+			// Not a disc any more, and nothing rounded left behind.
+			.and('have.css', 'border-radius', '0px');
 	});
 
-	// And where it does not read, the crest component's own tinted disc takes over — the inline style
-	// it sets beats the rule above, which is the right way round: a crest that cannot be seen on its
-	// team's colour is exactly the case that plate exists for. Both sides still end up on a disc, which
-	// is the thing this beat guarantees.
-	it('gives way to the crest\'s own plate where the artwork cannot read on that colour', () => {
+	// And where it does not read, the crest component's tinted plate wins on an inline style — which is
+	// the right way round: that plate exists for exactly the crest that cannot be seen on its team's
+	// colour, and here it becomes the lighter field that crest needs rather than a disc behind it.
+	it('takes the crest\'s own plate colour for that half where the artwork cannot read', () => {
 		cy.mount(<Harness mode='full' />);
 		awaitCrests();
 		// Miami's navy on Miami's navy does not read, and the popup carries no monochrome marks.
-		cy.get('.game-card-reveal-opening-crest.is-away .game-card-reveal-opening-plate')
+		cy.get('.game-card-reveal-opening-field.is-away')
 			.should('not.have.class', 'is-bare')
 			.and('have.css', 'background-color', 'rgb(255, 255, 255)');
 	});
 
-	// The mark is three quarters of the disc it sits on — `revealPlateRatio`, which every plated crest
-	// in the product is drawn at, because a circle drawn at the size of a wordmark shaves its ends off.
-	// It is also what sets the bleed: the disc overhangs the card and the mark comes out almost exactly
-	// the card's height.
-	it('insets each mark to three quarters of its disc', () => {
+	// The two fields cover the card between them, the way the poster's halves do at full width — so
+	// there is no third surface showing through and the layer behind them paints nothing.
+	it('covers the whole card between the two fields', () => {
 		cy.mount(<Harness mode='full' />);
-		awaitCrests();
-		rectOf('.game-card-reveal-opening-crest.is-away').then(disc => {
-			cy.get('.game-card-reveal-opening-crest.is-away .game-card-reveal-opening-logo').should($mark => {
-				const box = $mark[0].getBoundingClientRect();
-				expect(box.width).to.be.closeTo(disc.width / revealPlateRatio, 0.5);
-				expect(box.height).to.be.closeTo(disc.height / revealPlateRatio, 0.5);
+		rectOf('.game-card').then(card => {
+			rectOf('.game-card-reveal-opening-field.is-away').then(away => {
+				rectOf('.game-card-reveal-opening-field.is-home').then(home => {
+					expect(away.left).to.be.closeTo(card.left, 0.5);
+					expect(home.right).to.be.closeTo(card.right, 0.5);
+					// Each is half the card plus the lean, so together they overlap across the seam
+					// rather than leaving a gap at it.
+					expect(away.right).to.be.greaterThan(home.left);
+				});
 			});
 		});
+		cy.get('.game-card-reveal-opening').should('have.css', 'background-image', 'none');
 	});
 
-	// The field the discs are drawn on. A mid tone, because a dark team-colour disc has to read as a
-	// disc against it and so does a white one — the two ends of the range each lose one of those.
-	it('draws the discs on a field of their own rather than on the dark plate', () => {
+	// Oversized is still the point, and the field is what cuts it: the mark overruns its half on every
+	// side and nothing of it is allowed to paint outside the card.
+	it('clips each oversized mark to the card, on every side', () => {
 		cy.mount(<Harness mode='full' />);
-		cy.get('.game-card-reveal-opening')
-			.should('have.css', 'background-color', 'rgb(91, 100, 114)');
-		cy.get('.game-card-reveal-base')
-			.should('have.css', 'background-color', 'rgb(13, 17, 23)');
+		awaitCrests();
+		scrubTo(openMs(revealOpenBeatMs));
+		rectOf('.game-card').then(card => {
+			// The mark's own box is bigger than the card, which is what makes it oversized at all.
+			cy.get('.game-card-reveal-opening-logo').should($marks => {
+				[...$marks].forEach(mark => {
+					expect(mark.getBoundingClientRect().height).to.be.greaterThan(card.height);
+				});
+			});
+			// And every field that cuts them is inside the card, so none of that box is painted.
+			cy.get('.game-card-reveal-opening-field').should($fields => {
+				[...$fields].forEach(field => {
+					const box = field.getBoundingClientRect();
+					expect(box.top, 'field top').to.be.at.least(card.top - revealStageBleedPx);
+					expect(box.bottom, 'field bottom').to.be.at.most(card.bottom + revealStageBleedPx);
+					expect(box.left, 'field left').to.be.at.least(card.left - 0.5);
+					expect(box.right, 'field right').to.be.at.most(card.right + 0.5);
+					expect(getComputedStyle(field).overflow, 'field clips').to.equal('hidden');
+				});
+			});
+		});
 	});
 
 	// The transition out of the beat is the colour covering it, not a dissolve: the opening sits under

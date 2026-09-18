@@ -11,7 +11,6 @@ import {
 	revealFullRate,
 	revealOpenBeatMs,
 	revealOpenMs,
-	revealOpenSurfaceColor,
 	revealHoldHeightShare,
 	revealHoldScale,
 	revealHoldWidthShare,
@@ -32,21 +31,6 @@ import {
 	revealSweepRun,
 	revealTotalMs,
 } from '../entrypoints/popup/cardReveal';
-
-// WCAG relative luminance, which the repo also has in `colorMath.ts` — not imported here because that
-// lives in `packages/ui` and this is a popup spec, and because a test that asserts a bound should not
-// depend on the thing it is bounding for its own arithmetic.
-const linearChannel = (pair: string) => {
-	const srgb = parseInt(pair, 16) / 255;
-	return srgb <= 0.03928 ? srgb / 12.92 : ((srgb + 0.055) / 1.055) ** 2.4;
-};
-
-const relativeLuminance = (hex: string) => {
-	const value = hex.slice(1);
-	return 0.2126 * linearChannel(value.slice(0, 2))
-		+ 0.7152 * linearChannel(value.slice(2, 4))
-		+ 0.0722 * linearChannel(value.slice(4, 6));
-};
 
 describe('which version of the open animation plays', () => {
 	it('gives the full version the first time on a given day', () => {
@@ -336,26 +320,26 @@ describe('the figures the stylesheet repeats by hand', () => {
 		expect(crest![2]).toBe(window![2]);
 	});
 
-	// The opening pair are handed their surface's colour in JS while the stylesheet is what paints it.
-	// Two places, so the agreement is asserted rather than remembered.
-	it('judges the opening crests against the surface they are actually drawn on', () => {
-		const painted = /\.game-card-reveal-opening \{[\s\S]*?background-color:\s+(#[0-9a-f]{6});/.exec(stylesheet);
-		expect(painted).not.toBeNull();
-		expect(painted![1]).toBe(revealOpenSurfaceColor);
-	});
+	// One seam, cut by one pair of shapes. The opening beat's colour fields are the poster's halves at
+	// full width, so a crest clipped by one of those is clipped along the exact line the poster's own
+	// half then grows into — and the two agree because they are the same rule, not because somebody
+	// kept two of them in step. What this pins is that they have not been split apart again.
+	it('cuts the opening fields and the poster halves along one seam', () => {
+		const seam = (side: 'away' | 'home') => {
+			const shared = `.game-card-reveal-half.is-${side},`;
+			const at = stylesheet.indexOf(shared);
+			if (at < 0) return null;
+			const rule = stylesheet.slice(at, stylesheet.indexOf('}', at));
+			// Both selectors on the one rule, and the shape it declares.
+			if (!rule.includes(`.game-card-reveal-opening-field.is-${side}`)) return null;
+			return /clip-path:\s*(polygon\([^;]+\));/.exec(rule)?.[1] ?? null;
+		};
 
-	// And the thing that actually has to hold about that colour, which a hex on its own does not say:
-	// it has to stay in the middle of the range. The whole reason this beat has a surface of its own is
-	// that club artwork is safe on neither a dark field nor a light one — a navy monogram disappears
-	// into the first and a near-white mark into the second — so a surface that drifted towards either
-	// end would quietly take the failure back. Bounded on relative luminance rather than on the hex, so
-	// the colour is free to move and the property is not.
-	it('keeps that surface in the middle of the range, where any artwork reads on it', () => {
-		// Far enough from black that the darkest artwork separates from it, and far enough from white
-		// that the lightest does. Measured: #0d1117 sits at 0.006 and white at 1, and both of those
-		// were tried and failed on real crest shapes.
-		expect(relativeLuminance(revealOpenSurfaceColor)).toBeGreaterThan(0.08);
-		expect(relativeLuminance(revealOpenSurfaceColor)).toBeLessThan(0.36);
+		expect(seam('away')).not.toBeNull();
+		expect(seam('home')).not.toBeNull();
+		// And each one leans, rather than the pair having quietly become a vertical split.
+		expect(seam('away')).toContain('--reveal-lean');
+		expect(seam('home')).toContain('--reveal-lean');
 	});
 
 	// A bar is parked one bar width and one lean clear of the edge it comes in from, and leaves one

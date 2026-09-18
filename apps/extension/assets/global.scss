@@ -882,6 +882,19 @@ button, input, select, optgroup, textarea {
 	animation:      cardRevealBase calc(3400ms * var(--reveal-rate)) linear var(--reveal-spine) both;
 }
 
+/* The seam, as the two shapes that cut it. Shared with the opening beat's colour fields, which are
+   these same halves at full width: a crest clipped by one of those is clipped along the exact line the
+   poster's own half grows into, and one seam written twice is two seams waiting to disagree. */
+.game-card-reveal-half.is-away,
+.game-card-reveal-opening-field.is-away {
+	clip-path: polygon(0 0, 100% 0, calc(100% - var(--reveal-lean) * 2) 100%, 0 100%);
+}
+
+.game-card-reveal-half.is-home,
+.game-card-reveal-opening-field.is-home {
+	clip-path: polygon(calc(var(--reveal-lean) * 2) 0, 100% 0, 100% 100%, 0 100%);
+}
+
 /* Wider than the half it fills so the seam has somewhere to lean, and clipped back to the leaning
    edge. Both halves grow from their own outer edge, which is the collapse run backwards — the
    graphic resolves exactly the way it was built. */
@@ -914,7 +927,6 @@ button, input, select, optgroup, textarea {
 	/* Shaded in from this half's own outer edge, so the wash rotates with the seam it runs towards.
 	   `background-color` rather than the `background` shorthand, which would reset the shade above. */
 	--reveal-shade-dir: calc(90deg + var(--reveal-skew));
-	clip-path:          polygon(0 0, 100% 0, calc(100% - var(--reveal-lean) * 2) 100%, 0 100%);
 	animation:
 		cardRevealHalf calc(3400ms * var(--reveal-rate)) linear var(--reveal-spine) both,
 		cardRevealSeamAway calc(750ms * var(--reveal-rate)) cubic-bezier(0.22, 1, 0.36, 1) calc(var(--reveal-spine) + 2650ms * var(--reveal-rate)) both;
@@ -924,7 +936,6 @@ button, input, select, optgroup, textarea {
 	right:              0;
 	background-color:   var(--reveal-home);
 	--reveal-shade-dir: calc(-90deg + var(--reveal-skew));
-	clip-path:          polygon(calc(var(--reveal-lean) * 2) 0, 100% 0, 100% 100%, 0 100%);
 	animation:
 		cardRevealHalf calc(3400ms * var(--reveal-rate)) linear var(--reveal-spine) both,
 		cardRevealSeamHome calc(750ms * var(--reveal-rate)) cubic-bezier(0.22, 1, 0.36, 1) calc(var(--reveal-spine) + 2650ms * var(--reveal-rate)) both;
@@ -933,14 +944,14 @@ button, input, select, optgroup, textarea {
 /* ── The opening: two crests too big for the card ───────────────────────────────
 
    What runs ahead of the poster on the first open of the day. The same two crests the poster resolves
-   into, drawn at 1.34 of the card's height so that neither of them fits — each overhangs about a sixth
-   of the card top and bottom and runs off its own outer edge, and the stage's clip cuts them there.
-   That cut is the point: a crest that merely happened to be large would read as a mistake, and one cut
-   off by the frame reads as artwork placed deliberately past it.
+   into, drawn at 1.34 of the card's height so that neither of them fits, on the colour their own team
+   brings to the card. Each one is cut where its colour ends — at the card's edges and at the seam —
+   and that cut is the point: a crest that merely happened to be large would read as a mistake, and one
+   clipped by the frame reads as artwork placed deliberately past it.
 
    It is a layer of its own rather than the poster's crest layer because that one is clipped to show
    nothing until a bar has crossed it, and these have to be up from the first frame. Sitting under the
-   halves is what makes the handoff free: the colour grows across the pair and there is no moment where
+   halves is what makes the handoff free: the poster grows across the pair and there is no moment where
    anything is dissolved into anything, because the thing covering them is the next beat arriving.
 
    The fade is on this layer and the movement is on the crests inside it — one animation per property,
@@ -949,14 +960,8 @@ button, input, select, optgroup, textarea {
    stays alive into the poster, and it has to be at least the 884ms the halves take to meet, or the
    colour would part again at the end over crests still sitting underneath.
 
-   The field is its own, and a mid tone rather than the dark plate the rest of the graphic builds over.
-   Each crest sits on a disc of its team's colour, so what has to read against this field is the disc —
-   and a near-black field loses a navy one's edge while a white field loses the tinted plate a crest
-   falls back to. Neither end of the range holds for colours we do not choose.
-   `revealOpenSurfaceColor` carries the reasoning, and a spec holds it and this together.
-
-   Shaded from the middle out rather than along the lean, which everything else here follows, because
-   this beat has no seam yet: a directional wash would promise one in the wrong place. */
+   The layer paints nothing itself. The two fields below cover it exactly, the way the poster's halves
+   do at full width, so anything painted here would only ever show through their antialiased join. */
 .game-card-reveal-opening {
 	position:             absolute;
 	inset:                -1px 0;
@@ -965,64 +970,52 @@ button, input, select, optgroup, textarea {
 	overflow-clip-margin: 1px;
 	clip-path:            inset(0 -1px round calc(0.5rem + 1px));
 	pointer-events:       none;
-	background-color:     #5b6472;
-	background-image:     radial-gradient(
-		120% 140% at 50% 42%,
-		rgba(255, 255, 255, 0.10),
-		rgba(0, 0, 0, 0.20)
-	);
 	animation:            cardRevealOpeningIn calc((800ms + 900ms) * var(--reveal-rate)) linear var(--reveal-delay) both;
 }
 
-.game-card-reveal-opening-crest {
+/* Each team's colour across its own half of the card, full size, rather than a disc behind its crest.
+
+   This element is `teamCrest`'s own wrapper — the one it paints when a crest's colours will not read
+   on the surface it was handed — which is the whole reason the colour is right without this file
+   having to work it out. Where the artwork reads on its team's colour, the wrapper comes back bare and
+   the rule here paints the team colour. Where it does not, `teamCrest` sets its tinted plate inline
+   and that wins, so the field becomes the lighter surface the crest needs. Either way the crest is on
+   the colour a disc would have given it, spread across the card instead of drawn as a circle.
+
+   The geometry is the poster's halves at full width, sharing their clip below so the seam is one
+   shape in one place: the field a crest is clipped by is the same field the poster's own half grows
+   into, which is what lets the layer above paint nothing at all. */
+.game-card-reveal-opening-field {
+	position: absolute;
+	top:      0;
+	bottom:   0;
+	width:    calc(50% + var(--reveal-lean));
+	overflow: hidden;
+}
+
+.game-card-reveal-opening-field.is-away {
+	left:           0;
+	background:     var(--reveal-away);
+	--reveal-drift: -1;
+}
+
+.game-card-reveal-opening-field.is-home {
+	right:          0;
+	background:     var(--reveal-home);
+	--reveal-drift: 1;
+}
+
+/* Centred in its own field rather than offset out of the card's middle, which is what the disc needed
+   when nothing was clipping it at the seam. Oversized against the card's height, so it overruns its
+   field on every side and the field is what cuts it. */
+.game-card-reveal-opening-logo {
 	position:  absolute;
 	top:       50%;
+	left:      50%;
 	width:     var(--reveal-open-crest);
 	height:    var(--reveal-open-crest);
 	margin:    calc(var(--reveal-open-crest) / -2) 0 0 calc(var(--reveal-open-crest) / -2);
 	animation: cardRevealOpeningCrest calc((800ms + 900ms) * var(--reveal-rate)) linear var(--reveal-delay) both;
-}
-
-/* Out of the centre by `revealOpenCrestOffsetShare` of the card, so each one leaves the card by its own
-   side. `--reveal-drift` is the sign of that side, as it is for the poster's own layers, and
-   `--reveal-open-disc` is that side's own colour out of the pair the card already carries. */
-.game-card-reveal-opening-crest.is-away {
-	left:                calc(50% - var(--reveal-open-offset));
-	--reveal-drift:      -1;
-	--reveal-open-disc:  var(--reveal-away);
-}
-
-.game-card-reveal-opening-crest.is-home {
-	left:                calc(50% + var(--reveal-open-offset));
-	--reveal-drift:      1;
-	--reveal-open-disc:  var(--reveal-home);
-}
-
-/* The disc, which is what brings each team's colour into the beat before the poster's halves do — and
-   being the thing directly behind the artwork, it is also the surface the crest is drawn against and
-   the colour handed to `teamCrest` as such.
-
-   Painted here rather than by the crest component, which draws a bare wrapper: this disc is the
-   opening beat's own and it is unconditional, where the product's tinted plate was a fallback picked
-   per crest. It clips, and the mark inside it is three quarters of it — `revealPlateRatio`, the ratio
-   every plated crest in the product is drawn at, because a circle drawn at the size of a wordmark
-   shaves the wordmark's ends off. Which is also what sets the bleed: the disc overhangs the card by a
-   sixth of its height and the mark comes out almost exactly the card's height, so the disc runs off
-   the edges and the mark is only just cut by them. */
-.game-card-reveal-opening-plate {
-	position:        absolute;
-	inset:           0;
-	display:         flex;
-	align-items:     center;
-	justify-content: center;
-	border-radius:   999px;
-	overflow:        hidden;
-	background:      var(--reveal-open-disc);
-}
-
-.game-card-reveal-opening-logo {
-	width:  75%;
-	height: 75%;
 }
 
 /* ── The wipe, and the two layers it trades between ─────────────────────────── */

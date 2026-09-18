@@ -98,29 +98,6 @@ export const revealSkipOutMs = 140;
 // and barely at all in width.
 export const revealOpenCrestShare = 1.34;
 
-// And how far out of the card's centre each of them sits, as a share of its width. Far enough that
-// each bleeds off its own outer edge rather than sitting in the middle of its half, close enough that
-// the pair still read as a pair.
-export const revealOpenCrestOffsetShare = 0.32;
-
-// The field the opening discs are drawn on, and the reason it is neither the dark plate the rest of
-// the graphic builds over nor the white the card resolves into.
-//
-// The crests themselves are no longer the problem — each one sits on a disc now, and `teamCrest`
-// settles the artwork against it. What has to read against this is the *disc*, and a disc is whatever
-// colour a club publishes. A near-black field loses a navy disc's edge entirely; a white one loses the
-// tinted plate a crest falls back to when its colours will not do. Neither end of the range holds for
-// colours we do not get to choose.
-//
-// A mid tone needs no decision, because every colour sits far enough from the middle in one direction
-// or the other. The figure was picked by rendering the four shapes real crest art takes against it —
-// a navy monogram, a black mark with light interior detail, a mid colour and a near-white mark — back
-// when this field carried them directly; it is kept because the discs it now carries span the same
-// range and then some.
-//
-// Named here as well as in `global.scss`, which paints it, and pinned by a spec so the two cannot
-// drift — including a bound on its luminance, which is the property that actually has to hold.
-export const revealOpenSurfaceColor = '#5b6472';
 
 // tan(20.5 degrees). The steepest the graphic ever leans, and on most cards the angle it holds: the
 // bars are skewed by it, the seam between the two team colours leans by it, the edge each wipe
