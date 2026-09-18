@@ -20,6 +20,15 @@
 	}
 }
 
+/* The frame is 320px and nothing in it is ever meant to move sideways, but the shell above arrives
+   on `translateX(14px)` — a transform counts towards scrollable overflow, so for the 0.22s of every
+   view change the popup could be scrolled 14px to the right. `clip` rather than `hidden` because
+   this is a clip and not a scroll container, and on the x axis alone so the page still scrolls
+   down. */
+.popup-root {
+	overflow-x: clip;
+}
+
 .popup-view-shell {
 	width: 100%;
 	height: 100%;

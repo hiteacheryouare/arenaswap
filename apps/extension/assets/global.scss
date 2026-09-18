@@ -830,15 +830,25 @@ button, input, select, optgroup, textarea {
    Nothing needs to paint out to the sides anyway — what a half's own left edge feathers against
    there is the card's 5px rail, in that half's own colour.
 
-   `clip-path` rather than `overflow` and a radius, which can only ever clip to the box itself. The
-   1px is `revealStageBleedPx` in `cardReveal.ts`, which the lean is measured across: the seam leans
-   over this box rather than over the card, and a bleed is not allowed to bend it. */
+   `clip-path` rather than `overflow` and a radius, because that clips to the box itself and can only
+   ever be the card's own shape. It does not replace the `overflow` though, which is the other half
+   of what one does: a clip path clips *painting* and says nothing about scrollable overflow, so
+   with it alone the bars parked off the right-hand edge went on counting towards the page's scroll
+   width and the popup could be scrolled 29px sideways for the length of the animation. `clip` rather
+   than `hidden` because nothing in here is ever meant to be scrollable, even programmatically, and
+   the 1px margin is the bleed again — `overflow` would otherwise cut at the box and take back the
+   pixel the clip path is here to add.
+
+   The 1px is `revealStageBleedPx` in `cardReveal.ts`, which the lean is measured across: the seam
+   leans over this box rather than over the card, and a bleed is not allowed to bend it. */
 .game-card-reveal-stage,
 .game-card-reveal-sweeps {
-	position:       absolute;
-	inset:          -1px 0;
-	clip-path:      inset(0 -1px round calc(0.5rem + 1px));
-	pointer-events: none;
+	position:             absolute;
+	inset:                -1px 0;
+	overflow:             clip;
+	overflow-clip-margin: 1px;
+	clip-path:            inset(0 -1px round calc(0.5rem + 1px));
+	pointer-events:       none;
 }
 
 /* Under the crests it carries, over everything the card draws. */

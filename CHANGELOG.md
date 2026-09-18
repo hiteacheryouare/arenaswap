@@ -3,6 +3,25 @@
 > One or two lines per entry: what changed, and the one thing about it worth knowing later.
 > The code, the tests and the git history hold the rest. Do not write essays here.
 
+## The popup stops scrolling sideways while the open animation plays — 2026-09-17
+
+A clip path clips painting and says nothing about scrollable overflow, which is the half of
+`overflow: hidden` that the entry below quietly dropped when it swapped one for the other on the
+stage and the sweeps. The wipe bars park a bar width and a lean clear of the card's right edge, so
+they went on counting towards the page's scroll width from out there: 334px of it against a 305px
+frame, draggable 29px sideways for the length of the graphic. Both layers take `overflow: clip` back
+alongside the clip path — `clip` rather than `hidden` because nothing in there is meant to be
+scrollable even programmatically — with `overflow-clip-margin: 1px`, which is the bleed again, since
+`overflow` alone cuts at the box and would take back the pixel the clip path is there to add.
+
+Measuring it found a second one underneath, older than any of this and the same shape: the view
+shell arrives on `translateX(14px)`, a transform counts towards scrollable overflow too, and so every
+view change in the popup's history has been 14px draggable for its own 0.22s. `.popup-root` clips its
+x axis now, and only its x axis — a popup that cannot be scrolled down is a worse bug than one that
+can be nudged sideways, so the spec asserts the axis rather than the scroll height, which a two-game
+slate would pass by having nothing to scroll. Pinned on the built popup rather than in a component
+test, because the thing that scrolls is the popup's own frame.
+
 ## The seam crosses the centre by a tenth of the card at most, not by however tall it is — 2026-09-17
 
 The maintainer, on the graphic eating the away side's half: "it's like I took the right block and slid
