@@ -5,12 +5,12 @@ import { resolveTeamColorPair } from '@arenaswap/ui/src/components/colorUtils';
 import TeamCrest from '@arenaswap/ui/src/components/teamCrest';
 import {
 	revealAbbrScale,
-	revealBaseColor,
 	revealDelayMs,
 	revealHoldScale,
 	revealLean,
 	revealOpenCrestOffsetShare,
 	revealOpenCrestShare,
+	revealOpenSurfaceColor,
 	revealRate,
 	revealSkewDeg,
 	revealSpineStartMs,
@@ -98,7 +98,7 @@ const RevealOpening = ({ game }: { game: Game }) => (
 				<TeamCrest
 					logo={team.logo}
 					abbreviation={(team.abbreviation || '?').slice(0, 3)}
-					background={revealBaseColor}
+					background={revealOpenSurfaceColor}
 					discClassName='game-card-reveal-opening-plate'
 					crestClassName='game-card-reveal-opening-logo'
 					fallback='blank'

@@ -16,6 +16,31 @@ still refuses to answer a clash with black against white, so Baltimore's purple 
 Indianapolis' `#003B75`. `background` survives as a vestigial prop only because the open-reveal poster still
 passes it and that file is being worked on elsewhere.
 
+## The opening crests get a surface of their own, because club art is safe on neither black nor white — 2026-09-18
+
+The entry below drew them on the `#0d1117` plate the rest of the graphic builds over, and the maintainer's
+read was that they looked "really really bad". They did. Measured on the four shapes real crest art takes:
+a navy monogram was a silhouette you could just make out against the plate, and a black mark with light
+interior detail vanished outright — leaving its gold detail floating with no logo around it.
+
+The obvious fix is the wrong one, and it is worth writing down why. Drawn on white those two are perfect,
+and the inverse breaks: a near-white mark on a light field is a ghost. There is no single light or dark
+surface that holds for artwork we do not get to choose, which is exactly the judgement the crest
+legibility measurement used to make per crest and which this product no longer makes. This beat is also
+the one place a crest is drawn at a size where getting it wrong is unmissable.
+
+So the beat has a surface of its own, and it is a **mid tone** — the answer that needs no decision, since
+every one of those four shapes sits far enough from the middle of the range in one direction or the other.
+Full colour and interior detail survive, which matters: a white knockout of the artwork was tried, read
+very well, and turned a spoked mark into a plain disc. Shaded from the middle out rather than along the
+lean everything else here follows, because this beat has no seam yet and a directional wash would promise
+one in the wrong place.
+
+What is pinned is not the hex. `revealOpenSurfaceColor` is asserted against the stylesheet that paints it,
+because the crests are handed the same value in JS — but the property that actually has to hold is that it
+stays in the middle, so the spec bounds its relative luminance between 0.08 and 0.36. The two surfaces
+that failed sit at 0.006 and 1.0. The colour is free to move; the reason it exists is not.
+
 ## The first open of the day opens on the two crests, too big for the card — 2026-09-17
 
 A beat ahead of the poster, which is a thing this graphic has now been given twice after being refused

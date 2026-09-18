@@ -947,7 +947,16 @@ button, input, select, optgroup, textarea {
    which is the rule in here, and it means the two can share a window and read off the same
    percentages. 800ms is the beat itself (`revealOpenBeatMs`); the 900 after it is how long the layer
    stays alive into the poster, and it has to be at least the 884ms the halves take to meet, or the
-   colour would part again at the end over crests still sitting underneath. */
+   colour would part again at the end over crests still sitting underneath.
+
+   The surface is its own, and a mid tone rather than the dark plate the rest of the graphic builds
+   over. Club artwork is not safe on a dark field or on a light one — a navy monogram vanishes into the
+   first and a near-white mark into the second — and this beat is the one place the product draws a
+   crest at a size where that is unmissable. `revealOpenSurfaceColor` carries the reasoning and the
+   measurements; the crests are handed the same value in JS, and a spec holds the two together.
+
+   Shaded from the middle out rather than along the lean, which everything else here follows, because
+   this beat has no seam yet: a directional wash would promise one in the wrong place. */
 .game-card-reveal-opening {
 	position:             absolute;
 	inset:                -1px 0;
@@ -956,6 +965,12 @@ button, input, select, optgroup, textarea {
 	overflow-clip-margin: 1px;
 	clip-path:            inset(0 -1px round calc(0.5rem + 1px));
 	pointer-events:       none;
+	background-color:     #5b6472;
+	background-image:     radial-gradient(
+		120% 140% at 50% 42%,
+		rgba(255, 255, 255, 0.10),
+		rgba(0, 0, 0, 0.20)
+	);
 	animation:            cardRevealOpeningIn calc((800ms + 900ms) * var(--reveal-rate)) linear var(--reveal-delay) both;
 }
 

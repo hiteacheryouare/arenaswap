@@ -211,6 +211,19 @@ describe('the popup open reveal', () => {
 		});
 	});
 
+	// Its own surface, and a mid tone: club artwork is safe on neither a dark field nor a light one, and
+	// this beat draws a crest at the one size where that is unmissable. Asserted on the rendered colour
+	// rather than on the stylesheet, which the unit spec already reads — what this catches is the rule
+	// being overridden by something later in the cascade, which is how the beat would quietly go back
+	// to sitting on the dark plate.
+	it('draws the opening pair on a surface of their own rather than on the dark plate', () => {
+		cy.mount(<Harness mode='full' />);
+		cy.get('.game-card-reveal-opening')
+			.should('have.css', 'background-color', 'rgb(91, 100, 114)');
+		cy.get('.game-card-reveal-base')
+			.should('have.css', 'background-color', 'rgb(13, 17, 23)');
+	});
+
 	// The transition out of the beat is the colour covering it, not a dissolve: the opening sits under
 	// the halves, so the poster arriving is what takes it off screen. If the stacking ever inverts, the
 	// oversized pair would ride over the poster instead.
