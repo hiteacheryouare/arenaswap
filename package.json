@@ -26,9 +26,9 @@
 	"devDependencies": {
 		"@swc/core": "^1.16.2",
 		"@swc/jest": "^0.2.39",
-		"oxlint": "^1.81.0",
-		"rolldown": "^1.2.7",
-		"turbo": "^2.10.12",
+		"oxlint": "^1.83.0",
+		"rolldown": "^1.2.8",
+		"turbo": "^2.10.13",
 		"typescript": "^7.0.2"
 	},
 	"overrides": {
