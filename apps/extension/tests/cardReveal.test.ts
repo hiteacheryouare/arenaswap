@@ -235,7 +235,7 @@ describe('the figures the stylesheet repeats by hand', () => {
 	it('finishes the last content beat before the wrapper is taken away', () => {
 		// Every beat that reschedules itself off the card's own delay, which is the staggered run of
 		// contents coming into focus plus the chasing bars.
-		const beats = [...stylesheet.matchAll(/animation-delay: calc\(var\(--reveal-delay\) \+ (\d+)ms/g)]
+		const beats = [...stylesheet.matchAll(/animation-delay:\s+calc\(var\(--reveal-delay\) \+ (\d+)ms/g)]
 			.map(match => Number(match[1]));
 		const contentBeatMs = Number(/cardRevealContent calc\((\d+)ms/.exec(stylesheet)?.[1]);
 		expect(beats.length).toBeGreaterThan(0);
@@ -260,11 +260,20 @@ describe('the figures the stylesheet repeats by hand', () => {
 	// the thick bar turns the ground over and the thin ones run behind it. A trailer that left first
 	// would be a bar crossing colour that has not been revealed yet.
 	it('sends the three bars of a pass out in order', () => {
-		const chaser = /\.game-card-reveal-sweep\.is-away\.is-chaser,[\s\S]*?animation-delay: calc\(var\(--reveal-delay\) \+ (\d+)ms/.exec(stylesheet);
-		const trailer = /\.game-card-reveal-sweep\.is-away\.is-trailer,[\s\S]*?animation-delay: calc\(var\(--reveal-delay\) \+ (\d+)ms/.exec(stylesheet);
+		const chaser = /\.game-card-reveal-sweep\.is-away\.is-chaser,[\s\S]*?animation-delay:\s+calc\(var\(--reveal-delay\) \+ (\d+)ms/.exec(stylesheet);
+		const trailer = /\.game-card-reveal-sweep\.is-away\.is-trailer,[\s\S]*?animation-delay:\s+calc\(var\(--reveal-delay\) \+ (\d+)ms/.exec(stylesheet);
 		const sweep = /cardRevealSweepAway calc\(\d+ms \* var\(--reveal-rate\)\) linear calc\(var\(--reveal-delay\) \+ (\d+)ms/.exec(stylesheet);
 		expect(Number(sweep![1])).toBeLessThan(Number(chaser![1]));
 		expect(Number(chaser![1])).toBeLessThan(Number(trailer![1]));
+
+		// And the group opens out as it crosses rather than holding formation, which means each one
+		// takes longer over the same distance than the one ahead of it — and the last of them still has
+		// to be off the card before the wrapper carrying it is taken away.
+		const durationOf = (rule: RegExpExecArray) => Number(
+			/animation-duration:\s+calc\((\d+)ms/.exec(stylesheet.slice(rule.index))![1],
+		);
+		expect(durationOf(chaser!)).toBeLessThan(durationOf(trailer!));
+		expect(Number(trailer![1]) + durationOf(trailer!)).toBeLessThanOrEqual(revealBaseDurationMs);
 	});
 
 	// A bar is parked one bar width and one lean clear of the edge it comes in from, and leaves one

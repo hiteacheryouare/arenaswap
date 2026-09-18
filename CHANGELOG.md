@@ -3,47 +3,49 @@
 > One or two lines per entry: what changed, and the one thing about it worth knowing later.
 > The code, the tests and the git history hold the rest. Do not write essays here.
 
-## The first open of the day is the same graphic half again as long, with the records on it — 2026-09-17
+## The open animation is cut like a broadcast package rather than timed like one — 2026-09-17
 
-Longer is one constant, which is the whole point of how it was done. `--reveal-rate` was already the single
-time knob, so `full` going 1 → **1.5** takes every beat half again as long in the same proportion to every
-other, moves not one line of timing in `global.scss`, and leaves `quick` byte-identical because only
-`full`'s rate changed. 5100ms a card, 5820 for the list once the cascade is counted. It was designed twice
-and the first one is the lesson: a pre-beat before the colour arrives and a flourish after it resolves, all
-of it costed and most of it specced, and all of it a different graphic wearing this one's clothes — the
-leaning line of light it opened on broke the banner's own **one axis** outright.
+Two passes, and the first one only did the easy half. Length is one constant and that part was right:
+`--reveal-rate` was already the single time knob, so `full` going 1 → **1.5** takes every beat half again
+as long in the same proportion to every other, moves not one line of timing in the stylesheet, and leaves
+`quick` byte-identical because only `full`'s rate changed. 5100ms a card, 5820 for the list. But a graphic
+played slower is still the same graphic, and the maintainer's read was "you didnt do enough".
 
-The elements that replaced it come from looking up what in-stadium matchup graphics are actually made of,
-which is a narrower vocabulary than the trade press suggests. **Each team's record** is the one thing every
-real one carries that this did not, and `Team.record` has been on every competitor the scoreboard parses all
-along. It lives inside the lettering's own layer rather than beside it, which is the whole reason it was
-cheap: that layer is already clipped along the bar's leaning edge, so the record is wiped by the same bar,
-on the same instant, along the same line, with no geometry of its own to keep parallel. Positioned off the
-4.4rem lettering box rather than put in flow with it, because the tricode is concentric with the crest it
-trades for and that landing is measured to the pixel. **The tricodes fill solid** just before the bar takes
-them, which costs no element — the copy behind is already solid white and stroked wider than itself, so the
-glyph reads filled the moment the face stops being the surface colour — and a spec pins that the fill
-finishes before the leading edge arrives, because a bar crossing a half-filled glyph is a third state
-nobody designed. **The pass is cut as three bars a side**, which is how a wipe is cut for broadcast: a group
-on one path, each thinner and fainter than the one ahead. And the crest's hold creeps from 0.97 of
-`--reveal-hold` up to it rather than sitting still, which is not an element but a consequence — 2.2 seconds
-of a motionless logo is the one place a uniform stretch reads as the graphic having stopped. Upward and
-never through it, so the bound `revealHoldScale` puts on the poster holds by construction.
+What was missing was craft rather than content, and naming it took reading up on the motion-design
+vocabulary rather than on stadium graphics: **offset, overshoot, secondary action, parallax, masked
+reveal, easing.** Audited against that list this graphic scored one out of six. Masked reveal it already
+was — the clip-complement wipe is the whole thing, and it is good. Everything else was absent, and one
+source puts it bluntly: elements that overshoot and settle are "the difference between work that feels
+amateur and work that feels considered." Nothing here overshot anything. Every layer sat dead still until
+its cue, then moved once, at one rate, and stopped.
 
-Five seconds a card needs a way out, so any pointer or key event ends it — capture phase, neither prevented
-nor stopped, so the click that ends the graphic is still the click that opens the card it landed on. Two
-steps rather than the existing `setRevealMode('none')`, which takes the wrapper away while every beat of the
-card coming into focus is still filling `both`: a cut mid-graphic blanks the card and hands it back, worse
-than the animation being escaped. The trap is that a fade with no `from` starts from what the element
-computes to without it — right for the stage and the sweeps, which animate no opacity of their own, and
-wrong for the dark base, which does and is already at 0 for most of the graphic's life, so it would have
-gone back to 1 first and flashed the plate over the card somebody was trying to reach. It goes at once
-instead, and nothing is lost: the plate only exists to stop the white card showing between the halves.
+So: the lettering is **driven on from its own outer edge and lands rather than stopping**, past its resting
+place and back, instead of fading up on the spot. The overshoot is scaled by `--reveal-abbr-scale` because
+the clearance between the two sides is scaled by it too — measured, UCONN against UMASS rests 28.0px apart
+and the settle costs 2.4 of it, and the spec that guards that gap is now pinned to the overshoot frame
+rather than to an unscrubbed one where both sides are still parked outward and 44px apart, which is the one
+moment it could never fail. The **crest drifts 5px against the lettering's 16** over the same arrival,
+which is parallax: a nearer layer and a further one at different rates on the one axis this graphic
+allows. Its walk down onto the card's crest **settles** rather than arriving — past the slot a hair and
+back, inside the segment, so the 93% stop is still exactly the card's own crest at exactly scale 1. The
+landing stays the landing. The **colour fields are shaded** from their outer edge in towards the seam,
+along the same lean, which is what puts them in front of the card rather than level with it and makes the
+seam the brightest line on the poster; a black wash over `background-color` rather than a second colour,
+because nothing in here should be inventing one. And the **pass is a group of three bars that opens out as
+it crosses** — each thinner, fainter and slower than the one ahead. Only the leading bar's 1000ms matters,
+since its trailing edge is the reveal edge and the clips are cut to that window.
 
-One spec failed for a real reason rather than a stale number, and it is the one to keep hold of: the parked
-bars are read at the far end of their travel, which was 2700ms because the chasers used to finish at 2640,
-and the trailing bar does not finish until 2760. No new locale keys — the record is ESPN's own string, as
-the tricode is.
+Out again: the team records. They were the previous pass's one addition that was information rather than
+motion, they were correct about what an in-stadium matchup graphic carries, and the maintainer did not want
+them on the card. The measurement they produced is worth keeping though — an offset taken off the lettering
+*box* rather than off the lettering put a thing 35px below the centre on every card regardless of type
+size, which is 1.8px inside a full tricode's ink and 13.2px clear of a five-letter one. Anything hung off
+that box later has the same problem.
+
+One spec failed for a real reason rather than a stale number, which is the one to keep hold of: the parked
+bars are read at the far end of their travel, and that end moves whenever the pass does. It was 2700ms for
+two bars of 1000ms; the trailing bar now leaves at 1760 and drags for 1120, so nothing is parked until
+2880. No new locale keys.
 
 ## The popup stops scrolling sideways while the open animation plays — 2026-09-17
 

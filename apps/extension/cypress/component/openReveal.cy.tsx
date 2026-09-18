@@ -20,32 +20,29 @@ import type { Game } from '@arenaswap/core/types';
 const navyLogo = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAFUlEQVR4nGPkUXb4z4AHMOGTHD4KAH25AX7gsIqPAAAAAElFTkSuQmCC';
 const goldLogo = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAFklEQVR4nGP8v03oPwMewIRPcvgoAADe+QLWq7gZUwAAAABJRU5ErkJggg==';
 
-// Records are ESPN's own strings and it does not send them everywhere, so the default fixture carries
-// them and one spec takes them away again.
-const game = (status: 'in' | 'post', away = 'MIA', home = 'ARI', records = true) => ({
+const game = (status: 'in' | 'post', away = 'MIA', home = 'ARI') => ({
 	id: 'g1',
 	status,
 	league: 'mlb',
 	sportType: 'baseball',
 	period: 5,
 	topOfInning: true,
-	awayTeam: { id: 'a', name: 'Miami', abbreviation: away, score: 3, color: '#0C2340', logo: navyLogo, record: records ? '76-58' : undefined },
-	homeTeam: { id: 'h', name: 'Arizona', abbreviation: home, score: 1, color: '#A71930', logo: goldLogo, record: records ? '61-73' : undefined },
+	awayTeam: { id: 'a', name: 'Miami', abbreviation: away, score: 3, color: '#0C2340', logo: navyLogo },
+	homeTeam: { id: 'h', name: 'Arizona', abbreviation: home, score: 1, color: '#A71930', logo: goldLogo },
 }) as unknown as Game;
 
 // The nesting `mainView` actually builds — `.popup-container`, the section's `.mt-2`, the league's
 // own div, then the wrapper. Not a shortcut: mounted straight into the flex column the container is,
 // the wrapper becomes a flex item and stops the card's bottom margin collapsing out of it, so the
 // box assertions below would be describing a DOM the popup never has.
-const Harness = ({ mode, status = 'in', away, home, records = true, skipping = false }: {
+const Harness = ({ mode, status = 'in', away, home, skipping = false }: {
 	mode: revealMode;
 	status?: 'in' | 'post';
 	away?: string;
 	home?: string;
-	records?: boolean;
 	skipping?: boolean;
 }) => {
-	const subject = game(status, away, home, records);
+	const subject = game(status, away, home);
 	const shared = {
 		game: subject,
 		excitementResult: undefined,
@@ -148,7 +145,6 @@ describe('the popup open reveal', () => {
 		cy.mount(<Harness mode='quick' />);
 		cy.get('.game-card-reveal-half').should('have.length', 2);
 		cy.get('.game-card-reveal-abbr').should('have.length', 2);
-		cy.get('.game-card-reveal-abbr-record').should('have.length', 2);
 		cy.get('.game-card-reveal-crest').should('have.length', 2);
 		cy.get('.game-card-reveal-sweep').should('have.length', 6);
 		cy.get('.game-card-reveal').should('have.css', '--reveal-rate', '0.8');
@@ -245,11 +241,11 @@ describe('the popup open reveal', () => {
 	it('parks every bar clear of the card, corners and all', () => {
 		cy.mount(<Harness mode='full' />);
 		rectOf('.game-card').then(card => {
-			// Before the pass and after it, which is most of the graphic. The far end is 2800 rather
-			// than the timeline's own end because the wrapper is gone at 3400 — and rather than the 2700
-			// this used to be, because the trailing bar leaves at 1760 and does not finish travelling
-			// until 2760, so 2700 now reads a bar that is still on the move.
-			([0, 2800] as const).forEach(spine => {
+			// Before the pass and after it, which is most of the graphic. The far end has to clear the
+			// last bar to finish travelling and still fall before the wrapper is taken away at 3400: the
+			// trailing bar leaves at 1760 and drags for 1120, so nothing is parked until 2880. It was
+			// 2700 when the pass was two bars of 1000ms each, and that now reads a bar mid-flight.
+			([0, 2950] as const).forEach(spine => {
 				const ms = spineMs(spine);
 				scrubTo(ms);
 				cy.get('.game-card-reveal-sweep').should($bars => {
@@ -451,6 +447,12 @@ describe('the popup open reveal', () => {
 	it('keeps two long tricodes clear of each other over the seam', () => {
 		([['ARMY', 'NAVY'], ['UCONN', 'UMASS']] as const).forEach(([away, home]) => {
 			cy.mount(<Harness mode='full' away={away} home={home} />);
+			// Pinned to the frame the lettering overshoots on, which is the closest the two sides ever
+			// come — 620ms plus 70% of the 420ms entry. Read unscrubbed this passed on the backwards
+			// fill, where both sides are still parked outward and 44px apart, so it was asserting on the
+			// one moment that could never fail. Measured at the overshoot the gap is 25.6px against
+			// 28.0px at rest, so the settle costs 2.4 of it.
+			scrubTo(spineMs(620 + 420 * 0.7));
 			inkOf('.game-card-reveal-mask.is-away .game-card-reveal-abbr-edge').then(awayInk => {
 				inkOf('.game-card-reveal-mask.is-home .game-card-reveal-abbr-edge').then(homeInk => {
 					// 4px of clearance, which is the two 2px strokes sitting outside each silhouette.
@@ -509,81 +511,6 @@ describe('the popup open reveal', () => {
 			.should('have.css', 'color', 'rgb(255, 255, 255)');
 		cy.get('.game-card-reveal-mask.is-home .game-card-reveal-abbr-face')
 			.should('have.css', 'color', 'rgb(255, 255, 255)');
-	});
-
-	// The record is the one addition to this graphic that is information rather than motion, and the
-	// reason it was cheap is that it lives inside the lettering's own layer — so the bar that takes the
-	// tricode takes the record with it, on the same instant, along the same line. Asserted as the
-	// clip the two share rather than by watching it disappear: if it ever grew a layer of its own, this
-	// is where that would show.
-	it('wipes each record with the tricode it belongs to, along the same edge', () => {
-		cy.mount(<Harness mode='full' />);
-		cy.get('.game-card-reveal-mask.is-away .game-card-reveal-abbr-record').should('have.text', '76-58');
-		cy.get('.game-card-reveal-mask.is-home .game-card-reveal-abbr-record').should('have.text', '61-73');
-		scrubTo(spineMs(2000));
-		rectOf('.game-card-reveal-mask.is-away').then(layer => {
-			// Inside the layer that is being clipped, and below the lettering rather than beside it.
-			rectOf('.game-card-reveal-mask.is-away .game-card-reveal-abbr-edge').then(type => {
-				cy.get('.game-card-reveal-mask.is-away .game-card-reveal-abbr-record').should($record => {
-					const box = $record[0].getBoundingClientRect();
-					expect(box.top, 'record sits under the tricode').to.be.greaterThan(type.top);
-					expect(box.left, 'inside the wiped layer').to.be.at.least(layer.left - 0.5);
-					expect(box.right, 'inside the wiped layer').to.be.at.most(layer.right + 0.5);
-				});
-			});
-		});
-		// Centred on the same axis as the tricode above it, which is the crest slot both resolve onto.
-		inkOf('.game-card-reveal-mask.is-away .game-card-reveal-abbr-edge').then(type => {
-			cy.get('.game-card-reveal-mask.is-away .game-card-reveal-abbr-record').should($record => {
-				const box = $record[0].getBoundingClientRect();
-				expect((box.left + box.right) / 2).to.be.closeTo((type.left + type.right) / 2, 1);
-			});
-		});
-	});
-
-	// ESPN's coverage of records is uneven by league, so a missing one has to be nothing at all rather
-	// than an empty line taking up the space under the tricode.
-	// The box the lettering sits in is 4.4rem whatever the tricode does, so an offset taken off the box
-	// puts the record the same distance below the centre on a full-size tricode and a shrunken one — and
-	// that is not the same distance below the *type*. Measured on this fixture it was 1.8px inside MIA's
-	// own ink and 13.2px clear of UCONN's, which reads as the record having come loose from its team. The
-	// offset carries `--reveal-abbr-scale` now, so what this pins is that the two agree.
-	it('holds the record the same distance under the tricode at any tricode size', () => {
-		const gapFor = (away: string, home: string) => {
-			cy.mount(<Harness mode='full' away={away} home={home} />);
-			scrubTo(spineMs(2000));
-			return inkOf('.game-card-reveal-mask.is-away .game-card-reveal-abbr-edge').then(type => (
-				cy.get('.game-card-reveal-mask.is-away .game-card-reveal-abbr-record')
-					.then($record => $record[0].getBoundingClientRect().top - type.bottom)
-			));
-		};
-		gapFor('MIA', 'ARI').then(pro => {
-			expect(pro, 'a three-character tricode').to.be.within(0, 4);
-			gapFor('UCONN', 'UMASS').then(college => {
-				expect(college, 'a five-letter one, against the same gap').to.be.closeTo(pro, 0.5);
-			});
-		});
-	});
-
-	// And it stays on the card. The shortest card in the product is a finished game, which is also the
-	// one with the least room under its centre line.
-	it('keeps the record inside the card it is drawn on', () => {
-		cy.mount(<Harness mode='full' status='post' />);
-		rectOf('.game-card').then(card => {
-			cy.get('.game-card-reveal-abbr-record').should($records => {
-				[...$records].forEach(record => {
-					const box = record.getBoundingClientRect();
-					expect(box.bottom, 'below the card').to.be.at.most(card.bottom);
-					expect(box.top, 'above the card').to.be.at.least(card.top);
-				});
-			});
-		});
-	});
-
-	it('draws no record at all for a team ESPN sends none for', () => {
-		cy.mount(<Harness mode='full' records={false} />);
-		cy.get('.game-card-reveal-abbr').should('have.length', 2);
-		cy.get('.game-card-reveal-abbr-record').should('not.exist');
 	});
 
 	// The poster is bounded to the card it is drawn on, and the hold is a slow push rather than a

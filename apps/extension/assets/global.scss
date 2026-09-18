@@ -884,27 +884,46 @@ button, input, select, optgroup, textarea {
 /* Wider than the half it fills so the seam has somewhere to lean, and clipped back to the leaning
    edge. Both halves grow from their own outer edge, which is the collapse run backwards — the
    graphic resolves exactly the way it was built. */
+/* The colour field is shaded rather than flat, from its own outer edge in towards the seam, along the
+   same lean everything else in here follows. A flat fill is the thing that reads as a placeholder for
+   a graphic rather than as one; the shading is what puts the two halves in front of the card instead
+   of level with it, and it makes the seam the brightest line on the poster, which is where the whole
+   composition wants the eye.
+
+   Kept as a black wash over `background-color` rather than as a second colour, deliberately: the
+   colours in here are `resolveTeamColorPair`'s and nothing in this graphic should be inventing one.
+   22% at the outer edge and nothing by 62% — enough to read as a surface, not enough to be the
+   gradient the current broadcast fashion is busy stripping back out. */
 .game-card-reveal-half {
-	position: absolute;
-	top:      0;
-	bottom:   0;
-	width:    calc(50% + var(--reveal-lean));
-	overflow: hidden;
+	position:        absolute;
+	top:             0;
+	bottom:          0;
+	width:           calc(50% + var(--reveal-lean));
+	overflow:        hidden;
+	background-image: linear-gradient(
+		var(--reveal-shade-dir),
+		rgba(0, 0, 0, 0.22),
+		rgba(0, 0, 0, 0) 62%
+	);
 }
 
 .game-card-reveal-half.is-away {
-	left:       0;
-	background: var(--reveal-away);
-	clip-path:  polygon(0 0, 100% 0, calc(100% - var(--reveal-lean) * 2) 100%, 0 100%);
+	left:               0;
+	background-color:   var(--reveal-away);
+	/* Shaded in from this half's own outer edge, so the wash rotates with the seam it runs towards.
+	   `background-color` rather than the `background` shorthand, which would reset the shade above. */
+	--reveal-shade-dir: calc(90deg + var(--reveal-skew));
+	clip-path:          polygon(0 0, 100% 0, calc(100% - var(--reveal-lean) * 2) 100%, 0 100%);
 	animation:
 		cardRevealHalf calc(3400ms * var(--reveal-rate)) linear var(--reveal-delay) both,
 		cardRevealSeamAway calc(750ms * var(--reveal-rate)) cubic-bezier(0.22, 1, 0.36, 1) calc(var(--reveal-delay) + 2650ms * var(--reveal-rate)) both;
 }
 
 .game-card-reveal-half.is-home {
-	right:      0;
-	background: var(--reveal-home);
-	clip-path:  polygon(calc(var(--reveal-lean) * 2) 0, 100% 0, 100% 100%, 0 100%);
+	right:              0;
+	background-color:   var(--reveal-home);
+	--reveal-shade-dir: calc(-90deg + var(--reveal-skew));
+	clip-path:          polygon(calc(var(--reveal-lean) * 2) 0, 100% 0, 100% 100%, 0 100%);
 	animation:
 		cardRevealHalf calc(3400ms * var(--reveal-rate)) linear var(--reveal-delay) both,
 		cardRevealSeamHome calc(750ms * var(--reveal-rate)) cubic-bezier(0.22, 1, 0.36, 1) calc(var(--reveal-delay) + 2650ms * var(--reveal-rate)) both;
@@ -959,6 +978,7 @@ button, input, select, optgroup, textarea {
 .game-card-reveal-wipe.is-away .game-card-reveal-crest,
 .game-card-reveal-mask.is-away .game-card-reveal-abbr {
 	left:             25%;
+	--reveal-drift:   -1;
 	--reveal-dx:      var(--reveal-away-dx);
 	--reveal-dy:      var(--reveal-away-dy);
 	--reveal-surface: var(--reveal-away);
@@ -967,6 +987,7 @@ button, input, select, optgroup, textarea {
 .game-card-reveal-wipe.is-home .game-card-reveal-crest,
 .game-card-reveal-mask.is-home .game-card-reveal-abbr {
 	left:             75%;
+	--reveal-drift:   1;
 	--reveal-dx:      var(--reveal-home-dx);
 	--reveal-dy:      var(--reveal-home-dy);
 	--reveal-surface: var(--reveal-home);
@@ -1015,7 +1036,18 @@ button, input, select, optgroup, textarea {
 	animation: cardRevealHandoff calc(3162ms * var(--reveal-rate)) steps(1, end) var(--reveal-delay) both;
 }
 
-/* Outlined rather than filled, and in a layer of its own rather than inside its colour half: the
+/* Driven on from its own outer edge rather than faded up, and it lands rather than stopping: past its
+   resting place by a couple of pixels and back. That settle is the single clearest difference between
+   motion that reads as produced and motion that reads as CSS — nothing else in this graphic overshoots
+   anything — and the overshoot is scaled by `--reveal-abbr-scale` because the two sides' clearance over
+   the seam is scaled by it too: UCONN against UMASS rests about 4px apart, and an overshoot that did
+   not shrink with the type would spend a frame closing most of that.
+
+   On the x axis only, like everything else in here. `--reveal-drift` is the sign of this side's outer
+   edge, set beside the crest slot below, so the lettering arrives from the same direction its colour
+   did instead of from nowhere.
+
+   Outlined rather than filled, and in a layer of its own rather than inside its colour half: the
    half is clipped along the leaning seam, and a diagonal cut through hollow letterforms adds a line
    across every glyph it crosses. Out here the lettering is whole, and the only thing that ever cuts
    it is the bar that is meant to. Never fades: it is wiped, which is the point of the bar. */
@@ -1079,36 +1111,6 @@ button, input, select, optgroup, textarea {
 	animation: cardRevealAbbrFill calc(200ms * var(--reveal-rate)) ease-in calc(var(--reveal-delay) + 1300ms * var(--reveal-rate)) both;
 }
 
-/* ESPN's own record line, which is what an in-stadium matchup graphic carries under each tricode and
-   the card itself shows nowhere. Lekton, because this is scoreboard data rather than words.
-
-   Positioned off the lettering box rather than placed in flow with it: the tricode is concentric with
-   the crest it trades for, and that is measured to the pixel in the specs — a column that pushed the
-   type up to make room would move the one landing the whole graphic is built around. So the box stays
-   4.4rem and the record hangs below it, on the same centre line, scaled by whatever the tricode was
-   scaled by so a five-letter college card shrinks both together.
-
-   Offset from the centre by the type's own half-height rather than by the box's, which is the whole
-   reason `--reveal-abbr-scale` is in the `top` as well as the `font-size`. The box is 4.4rem whatever
-   the tricode does, so a fixed `top: 100%` put the record the same 35px below the centre on every
-   card — measured on the shipped fixture, 1.8px inside a full-size tricode's own ink and 13.2px clear
-   of a five-letter one, which reads as the record having come loose from the team it belongs to.
-   2.35rem is the scaled ink's half-height plus a hair, so the gap is the same on both. */
-.game-card-reveal-abbr-record {
-	position:       absolute;
-	top:            calc(50% + 2.35rem * var(--reveal-abbr-scale, 1));
-	left:           0;
-	right:          0;
-	text-align:     center;
-	font-size:      calc(0.75rem * var(--reveal-abbr-scale, 1));
-	font-weight:    700;
-	letter-spacing: 0.04em;
-	line-height:    1;
-	color:          #ffffff;
-	opacity:        0.85;
-	white-space:    nowrap;
-}
-
 /* Exactly as tall as the stage, and travelling at a constant rate: a wipe that eases is a wipe you
    can watch thinking about it. `--reveal-skew` is derived from `--reveal-lean` in `cardReveal.ts`
    rather than named here as a constant, because the bar has to stay parallel to the edge it reveals
@@ -1137,7 +1139,10 @@ button, input, select, optgroup, textarea {
    already turned over, since the reveal edge is the leading bar's trailing edge.
    Two of them rather than one: a broadcast wipe is a group travelling one path, and the group is what
    reads as a wipe. Each is thinner and fainter than the one ahead of it, so the pass tapers off the
-   card instead of stopping. */
+   card instead of stopping — and each takes slightly longer over the same distance, so the group opens
+   out as it crosses rather than holding formation like three copies of one bar. Only the leading bar's
+   1000ms has anything depending on it: its trailing edge is the reveal edge and the clips below are cut
+   to that window, so the two behind it are free to drag. */
 .game-card-reveal-sweep.is-chaser {
 	width:      6px;
 	background: rgba(255, 255, 255, 0.7);
@@ -1164,12 +1169,14 @@ button, input, select, optgroup, textarea {
 
 .game-card-reveal-sweep.is-away.is-chaser,
 .game-card-reveal-sweep.is-home.is-chaser {
-	animation-delay: calc(var(--reveal-delay) + 1640ms * var(--reveal-rate));
+	animation-delay:    calc(var(--reveal-delay) + 1640ms * var(--reveal-rate));
+	animation-duration: calc(1060ms * var(--reveal-rate));
 }
 
 .game-card-reveal-sweep.is-away.is-trailer,
 .game-card-reveal-sweep.is-home.is-trailer {
-	animation-delay: calc(var(--reveal-delay) + 1760ms * var(--reveal-rate));
+	animation-delay:    calc(var(--reveal-delay) + 1760ms * var(--reveal-rate));
+	animation-duration: calc(1120ms * var(--reveal-rate));
 }
 
 /* ── The card coming into focus underneath ──────────────────────────────────── */
@@ -1309,8 +1316,9 @@ button, input, select, optgroup, textarea {
 }
 
 @keyframes cardRevealAbbrIn {
-	from { opacity: 0; }
-	to   { opacity: 0.9; }
+	from { opacity: 0; transform: translateX(calc(var(--reveal-drift, 0) * 16px)); }
+	70%  { opacity: 0.9; transform: translateX(calc(var(--reveal-drift, 0) * -2px * var(--reveal-abbr-scale, 1))); }
+	to   { opacity: 0.9; transform: translateX(0); }
 }
 
 /* The face copy stops being the colour behind it, which fills the glyph the outline was drawing. */
@@ -1343,6 +1351,14 @@ button, input, select, optgroup, textarea {
    then the walk down onto the card's own crest slot. Stationary from 93%, which is where the card's
    real crest starts fading up underneath it — the two never move past each other.
 
+   Two things carry depth, which is the other half of why this reads as a package rather than as a
+   slide. The crest drifts 5px against the lettering's 16 over the same arrival — a nearer layer and a
+   further one moving at different rates on one axis is the whole of parallax — and the walk down onto
+   the card's crest settles rather than arriving: `cubic-bezier(0.32, 1.28, 0.6, 1)` carries it a hair
+   past the slot and back. Past, and back *within the segment*, so the 93% stop is still exactly the
+   card's own crest at exactly scale 1 — the landing stays the landing, which is the one thing in here
+   that is not allowed to become approximate.
+
    The hold is a slow push rather than a freeze. It used to sit dead still at `--reveal-hold` from 0 to
    44%, which at the long cut's rate is 2.2 seconds of a completely motionless logo — the one place a
    uniform stretch shows as the graphic having stopped rather than as it taking its time. An in-arena
@@ -1354,10 +1370,10 @@ button, input, select, optgroup, textarea {
    is drawn on rather than off a figure that was right for one card height. Scale 1 is the card's own
    crest, so the walk down ends on it by construction. */
 @keyframes cardRevealCrest {
-	0%      { opacity: 1; transform: translate(0, 0) scale(calc(var(--reveal-hold) * 0.97)); animation-timing-function: linear; }
+	0%      { opacity: 1; transform: translate(calc(var(--reveal-drift, 0) * 5px), 0) scale(calc(var(--reveal-hold) * 0.97)); animation-timing-function: linear; }
 	44%     { opacity: 1; transform: translate(0, 0) scale(var(--reveal-hold)); animation-timing-function: linear; }
 	74%     { transform: translate(0, 0) scale(calc(var(--reveal-hold) * 0.95)); }
-	78%     { transform: translate(0, 0) scale(calc(var(--reveal-hold) * 0.95)); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+	78%     { transform: translate(0, 0) scale(calc(var(--reveal-hold) * 0.95)); animation-timing-function: cubic-bezier(0.32, 1.28, 0.6, 1); }
 	93%     { opacity: 1; transform: translate(var(--reveal-dx), var(--reveal-dy)) scale(1); }
 	100%    { opacity: 0; transform: translate(var(--reveal-dx), var(--reveal-dy)) scale(1); }
 }

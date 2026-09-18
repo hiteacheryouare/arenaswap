@@ -72,13 +72,6 @@ const RevealSide = ({ team, surface, side }: { team: Team; surface: string; side
 			<span className='game-card-reveal-abbr'>
 				<span className='game-card-reveal-abbr-edge'>{team.abbreviation}</span>
 				<span className='game-card-reveal-abbr-face'>{team.abbreviation}</span>
-				{/* The one thing every in-stadium matchup graphic carries that this did not, and the only
-				    addition here that is information rather than motion. Inside the lettering's own layer
-				    on purpose: that layer is already clipped along the bar's leaning edge, so the record
-				    is wiped by the same bar, on the same instant, along the same line, with no geometry
-				    of its own to keep parallel. ESPN's own string, so no locale key — and absent where
-				    ESPN sends none, which is uneven by league. */}
-				{team.record && <span className='font-lekton game-card-reveal-abbr-record'>{team.record}</span>}
 			</span>
 		</span>
 	</>
