@@ -15,16 +15,23 @@ export interface cardRevealPlan {
 // is the same choreography at a different speed rather than a different set of beats.
 export const revealBaseDurationMs = 3400;
 
-// And the beat that runs ahead of it on the first open of the day: the two crests oversized, bleeding
-// off the card, settling as the colour arrives over them. Rate-scaled like everything else, so it is
-// part of the graphic rather than a preamble to it, and `full` only.
+// And the two scenes that run ahead of it on the first open of the day, both on the same pair of
+// colour fields: the crests oversized and bleeding off the card, and then the clubs named in full on
+// the colour the crests just left. Rate-scaled like everything else, so they are part of the graphic
+// rather than a preamble to it, and `full` only.
 //
-// A phase was resisted twice before this and the objection was right both times: a light line drawing
-// itself down the centre, and a flourish after the card resolves, were each a different graphic
-// wearing this one's clothes. This one is not, because it is made of the two crests the poster already
-// carries and it never stops moving — the oversized pair shrink straight into the hold the poster
-// holds them at, under colour that is already covering them. There is no cut to hide.
-export const revealOpenBeatMs = 800;
+// Two scenes rather than two layers, which is the whole reason this stays cheap. The fields are up for
+// both and never move — they are the coloured background the sequence is built on, and the poster's
+// own halves grow into the same shape at the end of it — so what changes between the scenes is only
+// what is drawn on them. The crests leave the way they came in and the names arrive over the top of
+// that, which means neither scene ever cuts to the other.
+//
+// A phase was resisted twice before any of this and the objection was right both times: a light line
+// drawing itself down the centre, and a flourish after the card resolves, were each a different
+// graphic wearing this one's clothes. These are not, because they are made of what the poster already
+// carries — its two crests, and the two clubs it is about.
+export const revealOpenBeatMs = 700;
+export const revealNameBeatMs = 600;
 
 // 1.3 rather than the 1.5 the stretch alone needed. Once there is a beat carrying the extra time, the
 // rest of it does not have to come out of playing the same thing slower: the graphic is longer than it
@@ -41,10 +48,11 @@ export const revealRate = (mode: revealMode) => {
 // The poster's own length, which is what `3400ms * var(--reveal-rate)` resolves to in the stylesheet.
 export const revealDurationMs = (mode: revealMode) => Math.round(revealBaseDurationMs * revealRate(mode));
 
-// Nothing before the poster on any open but the first of the day: `quick` has to stay exactly the
-// graphic it has always played, and a card that is not animating has no phases at all.
+// Everything ahead of the poster, which is both scenes. Nothing on any open but the first of the day:
+// `quick` has to stay exactly the graphic it has always played, and a card that is not animating has
+// no phases at all.
 export const revealOpenMs = (mode: revealMode) => (
-	mode === 'full' ? Math.round(revealOpenBeatMs * revealRate(mode)) : 0
+	mode === 'full' ? Math.round((revealOpenBeatMs + revealNameBeatMs) * revealRate(mode)) : 0
 );
 
 // Both phases, which is what the card is removed after and what the popup counts its opening state in.

@@ -1,6 +1,6 @@
 import LiveGameCard from '@arenaswap/ui/src/components/liveGameCard';
 import GameCardReveal from '../../entrypoints/popup/components/gameCardReveal';
-import { revealOpenBeatMs, revealFullRate, type revealMode } from '../../entrypoints/popup/cardReveal';
+import { revealNameBeatMs, revealOpenBeatMs, revealFullRate, type revealMode } from '../../entrypoints/popup/cardReveal';
 import type { Game } from '@arenaswap/core/types';
 
 // A light mark on navy and a dark mark on gold, so both fields take their team's colour rather than
@@ -60,8 +60,15 @@ const scrubTo = (ms: number) => {
 	});
 };
 
-const openMs = (ms: number) => ms * revealFullRate;
+// Absolute, in the choreography's own units: the crests hold the field to `revealOpenBeatMs`, the
+// naming has it from there, and the poster starts when the two of them are done.
+const sceneMs = (ms: number) => ms * revealFullRate;
+const crestScene = revealOpenBeatMs;
+const nameScene = revealOpenBeatMs + revealNameBeatMs;
 const rectOf = (selector: string) => cy.get(selector).then($el => $el[0].getBoundingClientRect());
+
+const fieldColour = () => cy.get('.game-card-reveal-opening-field.is-home')
+	.then($field => getComputedStyle($field[0]).backgroundColor);
 const awaitCrests = () => cy.get('.game-card-reveal-opening-logo[data-crest-state="loaded"]')
 	.should('have.length', 2);
 
@@ -146,7 +153,7 @@ describe('the clubs named over the opening beat', () => {
 		it(`fits every line inside its half: ${awayName} v ${homeName}`, () => {
 			cy.mount(<Harness awayName={awayName} homeName={homeName} />);
 			awaitCrests();
-			scrubTo(openMs(revealOpenBeatMs));
+			scrubTo(sceneMs(nameScene));
 			cy.get('.game-card-reveal-opening-name').should($boxes => {
 				[...$boxes].forEach(box => {
 					// The box less the type's own padding, which is what the glyphs actually have.
@@ -160,14 +167,36 @@ describe('the clubs named over the opening beat', () => {
 		});
 	});
 
-	// After the crests rather than with them. A graphic where everything arrives at once reads as one
-	// lump, and this is the offset that stops it — 18% of the beat's window before it starts moving.
-	it('brings the names in behind the crests', () => {
+	// Its own scene rather than a caption on the one before it, which is the whole point of the beat:
+	// the crests hold the colour on their own, and then they leave it and the naming takes it. What
+	// this pins is that the two are never up together at either end — an overlap in the middle is the
+	// handover and is meant to be there, but a name on the crests' own frame would be the old design
+	// back, and a crest on the naming's frame would make it a caption again.
+	it('gives the naming a scene of its own, after the crests have left the field', () => {
 		cy.mount(<Harness />);
 		awaitCrests();
-		scrubTo(openMs(revealOpenBeatMs * 0.1));
+
+		// The crests' own frame: they hold the colour, and nothing is named yet.
+		scrubTo(sceneMs(crestScene));
+		cy.get('.game-card-reveal-opening-logo').first().should('have.css', 'opacity', '1');
 		cy.get('.game-card-reveal-opening-name').first().should('have.css', 'opacity', '0');
-		scrubTo(openMs(revealOpenBeatMs));
+
+		// The naming's own frame: the field is theirs and the crests have gone.
+		scrubTo(sceneMs(nameScene));
 		cy.get('.game-card-reveal-opening-name').first().should('have.css', 'opacity', '1');
+		cy.get('.game-card-reveal-opening-logo').first().should('have.css', 'opacity', '0');
+	});
+
+	// And the colour underneath does not change between them — the fields are the background both
+	// scenes are built on, which is what lets the handover happen without a cut.
+	it('holds the same colour field across both scenes', () => {
+		cy.mount(<Harness />);
+		awaitCrests();
+
+		scrubTo(sceneMs(crestScene));
+		fieldColour().then(during => {
+			scrubTo(sceneMs(nameScene));
+			fieldColour().should('equal', during);
+		});
 	});
 });

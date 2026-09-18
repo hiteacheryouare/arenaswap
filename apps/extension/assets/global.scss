@@ -956,11 +956,16 @@ button, input, select, optgroup, textarea {
    halves is what makes the handoff free: the poster grows across the pair and there is no moment where
    anything is dissolved into anything, because the thing covering them is the next beat arriving.
 
-   The fade is on this layer and the movement is on the crests inside it — one animation per property,
-   which is the rule in here, and it means the two can share a window and read off the same
-   percentages. 800ms is the beat itself (`revealOpenBeatMs`); the 900 after it is how long the layer
-   stays alive into the poster, and it has to be at least the 884ms the halves take to meet, or the
-   colour would part again at the end over crests still sitting underneath.
+   Two scenes on one layer, and one window across both, so every element in here reads off the same
+   percentages. 700ms is the crests (`revealOpenBeatMs`), 600 is the naming after it
+   (`revealNameBeatMs`), and the 900 on the end is how long the layer stays alive into the poster —
+   which has to be at least the 884ms the halves take to meet, or the colour would part again at the
+   end over a scene still sitting underneath. 2200ms all told, so the crests land at 32%, hold, and
+   are gone by 59%; the names start at 41% and are up by 59%; and 59% is where the poster begins.
+
+   The fields never move across either scene. They are the coloured background both are built on, and
+   what changes between the scenes is only what is drawn on them, which is why this costs one layer
+   rather than two and why neither scene has to cut to the other.
 
    The layer paints nothing itself. The two fields below cover it exactly, the way the poster's halves
    do at full width, so anything painted here would only ever show through their antialiased join. */
@@ -972,7 +977,7 @@ button, input, select, optgroup, textarea {
 	overflow-clip-margin: 1px;
 	clip-path:            inset(0 -1px round calc(0.5rem + 1px));
 	pointer-events:       none;
-	animation:            cardRevealOpeningIn calc((800ms + 900ms) * var(--reveal-rate)) linear var(--reveal-delay) both;
+	animation:            cardRevealOpeningIn calc((700ms + 600ms + 900ms) * var(--reveal-rate)) linear var(--reveal-delay) both;
 }
 
 /* Each team's colour across its own half of the card, full size, rather than a disc behind its crest.
@@ -1036,7 +1041,7 @@ button, input, select, optgroup, textarea {
 	width:          calc(50% + var(--reveal-lean));
 	display:        flex;
 	pointer-events: none;
-	animation:      cardRevealOpeningName calc((800ms + 900ms) * var(--reveal-rate)) cubic-bezier(0.16, 1, 0.3, 1) var(--reveal-delay) both;
+	animation:      cardRevealOpeningName calc((700ms + 600ms + 900ms) * var(--reveal-rate)) cubic-bezier(0.16, 1, 0.3, 1) var(--reveal-delay) both;
 }
 
 .game-card-reveal-opening-name.is-away {
@@ -1110,7 +1115,7 @@ button, input, select, optgroup, textarea {
 	width:     var(--reveal-open-crest);
 	height:    var(--reveal-open-crest);
 	margin:    calc(var(--reveal-open-crest) / -2) 0 0 calc(var(--reveal-open-crest) / -2);
-	animation: cardRevealOpeningCrest calc((800ms + 900ms) * var(--reveal-rate)) linear var(--reveal-delay) both;
+	animation: cardRevealOpeningCrest calc((700ms + 600ms + 900ms) * var(--reveal-rate)) linear var(--reveal-delay) both;
 }
 
 /* ── The wipe, and the two layers it trades between ─────────────────────────── */
@@ -1509,21 +1514,26 @@ button, input, select, optgroup, textarea {
 	100%      { opacity: 0; }
 }
 
-/* 47% of 1700 is 800ms, which is the instant the poster starts. So the pair arrive over the opening
-   beat and are still shrinking towards the hold when the colour takes them: the movement never stops
-   and never resolves, which is what makes this read as one graphic rather than two. */
+/* The first scene, and its exit. 32% of 2200 is 700ms, the end of the crests' own beat; they creep
+   until 52% and then leave the way they came in, off their own outer side, clearing the field by 59%
+   — which is where the poster starts and where the names have finished arriving over them. Nothing
+   cuts: the pair are still moving out while the naming moves in, and the field underneath both never
+   changes. */
 @keyframes cardRevealOpeningCrest {
-	0%   { transform: translateX(calc(var(--reveal-drift, 0) * 26px)) scale(1.18); animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); }
-	47%  { transform: translateX(0) scale(1); animation-timing-function: linear; }
-	100% { transform: translateX(0) scale(0.86); }
+	0%   { opacity: 1; transform: translateX(calc(var(--reveal-drift, 0) * 26px)) scale(1.18); animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); }
+	32%  { opacity: 1; transform: translateX(0) scale(1); animation-timing-function: linear; }
+	52%  { opacity: 1; transform: translateX(0) scale(0.97); animation-timing-function: cubic-bezier(0.55, 0, 0.9, 0.3); }
+	59%  { opacity: 0; transform: translateX(calc(var(--reveal-drift, 0) * 22px)) scale(0.88); }
+	100% { opacity: 0; transform: translateX(calc(var(--reveal-drift, 0) * 22px)) scale(0.88); }
 }
 
-/* After the crests rather than with them — offset is what stops a graphic arriving as one lump — and
-   in from its own outer side, the direction every other layer in here arrives from. It holds once it
-   lands: what takes it away is the layer's own fade, which is the poster covering all of this. */
+/* The second scene. Nothing until 41% of 2200, which is 900ms — the crests have begun to leave by
+   then and the field is clearing — and fully up by 59%, the instant the poster starts. In from its own
+   outer side, the direction everything in here arrives from. It holds from there: what takes it away
+   is the layer's own fade, which is the poster's colour closing over all of this. */
 @keyframes cardRevealOpeningName {
-	0%, 18% { opacity: 0; transform: translateX(calc(var(--reveal-drift, 0) * 20px)); }
-	46%     { opacity: 1; transform: translateX(0); }
+	0%, 41% { opacity: 0; transform: translateX(calc(var(--reveal-drift, 0) * 20px)); }
+	59%     { opacity: 1; transform: translateX(0); }
 	100%    { opacity: 1; transform: translateX(0); }
 }
 

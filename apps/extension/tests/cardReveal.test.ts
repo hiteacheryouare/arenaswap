@@ -20,6 +20,7 @@ import {
 	revealMaxCards,
 	revealModeForIndex,
 	revealNameBaseLength,
+	revealNameBeatMs,
 	revealNameScale,
 	revealPlateRatio,
 	revealQuickRate,
@@ -63,19 +64,19 @@ describe('the two phases and the two speeds', () => {
 		expect(revealQuickRate).toBe(0.8);
 	});
 
-	// The opening beat is the first open of the day's alone, and it is scaled by the same rate as the
-	// poster it runs into — a phase at its own speed would be a second timeline.
-	it('gives the opening beat only to the first open of the day', () => {
-		expect(revealOpenMs('full')).toBe(Math.round(revealOpenBeatMs * revealFullRate));
+	// Both opening scenes belong to the first open of the day alone, and both are scaled by the same
+	// rate as the poster they run into — a scene at its own speed would be a second timeline.
+	it('gives the two opening scenes only to the first open of the day', () => {
+		expect(revealOpenMs('full')).toBe(Math.round((revealOpenBeatMs + revealNameBeatMs) * revealFullRate));
 		expect(revealOpenMs('quick')).toBe(0);
 		expect(revealOpenMs('none')).toBe(0);
 	});
 
 	// Stated outright as well as derived: this is the graphic's length, and the one the skip answers for.
-	it('runs the whole of the first open in about five and a half seconds a card', () => {
-		expect(revealOpenMs('full')).toBe(1040);
+	it('runs the whole of the first open in about six seconds a card', () => {
+		expect(revealOpenMs('full')).toBe(1690);
 		expect(revealDurationMs('full')).toBe(4420);
-		expect(revealTotalMs('full')).toBe(5460);
+		expect(revealTotalMs('full')).toBe(6110);
 	});
 
 	// The regression guard the whole approach rests on, and the reason the opening beat is `full` only:
@@ -88,9 +89,9 @@ describe('the two phases and the two speeds', () => {
 		expect(revealSpineStartMs(3, 'quick')).toBe(revealDelayMs(3, 'quick'));
 	});
 
-	// And on the first open it starts once the opening beat has run, which is what `--reveal-spine`
+	// And on the first open it starts once both scenes have run, which is what `--reveal-spine`
 	// carries onto the card.
-	it('starts the poster after the opening beat on the first open', () => {
+	it('starts the poster after both opening scenes on the first open', () => {
 		expect(revealSpineStartMs(0, 'full')).toBe(revealOpenMs('full'));
 		expect(revealSpineStartMs(2, 'full')).toBe(revealDelayMs(2, 'full') + revealOpenMs('full'));
 	});
@@ -154,7 +155,7 @@ describe('when the popup stops being in its opening state', () => {
 	});
 
 	it('holds the opening state for the whole graphic plus its own cascade', () => {
-		expect(revealSettleMs('full')).toBe(6084);
+		expect(revealSettleMs('full')).toBe(6734);
 		expect(revealSettleMs('quick')).toBe(3104);
 	});
 
@@ -335,19 +336,39 @@ describe('the figures the stylesheet repeats by hand', () => {
 	// reserves ahead of the poster or the pair would still be arriving when the colour starts. The
 	// second is how far the layer stays alive into the poster, and it has to outlast the halves meeting
 	// — they part again at the end, and anything still underneath would be uncovered a second time.
-	it('keeps the opening beat alive until the colour has closed over it', () => {
-		const window = /animation:\s+cardRevealOpeningIn calc\(\((\d+)ms \+ (\d+)ms\) \* var\(--reveal-rate\)\)/.exec(stylesheet);
-		expect(window).not.toBeNull();
-		expect(Number(window![1])).toBe(revealOpenBeatMs);
+	it('keeps the two opening scenes alive until the colour has closed over them', () => {
+		const window = (keyframes: string) => new RegExp(
+			`animation:\\s+${keyframes} calc\\(\\((\\d+)ms \\+ (\\d+)ms \\+ (\\d+)ms\\) \\* var\\(--reveal-rate\\)\\)`,
+		).exec(stylesheet)?.slice(1, 4).map(Number) ?? null;
+
+		const layer = window('cardRevealOpeningIn');
+		expect(layer).not.toBeNull();
+		// The crests, then the naming, then however long the layer outlives both.
+		expect(layer![0]).toBe(revealOpenBeatMs);
+		expect(layer![1]).toBe(revealNameBeatMs);
 
 		// 26% is where `cardRevealHalf` has the two halves meet, and from there the card is covered.
-		const meetAt = revealBaseDurationMs * 0.26;
-		expect(Number(window![2])).toBeGreaterThanOrEqual(meetAt);
+		// Anything less and the colour would part again at the end over a scene still sitting under it.
+		expect(layer![2]).toBeGreaterThanOrEqual(revealBaseDurationMs * 0.26);
 
-		// And the crests inside it share that window, or the two would read off different percentages.
-		const crest = /animation:\s+cardRevealOpeningCrest calc\(\((\d+)ms \+ (\d+)ms\) \* var\(--reveal-rate\)\)/.exec(stylesheet);
-		expect(crest![1]).toBe(window![1]);
-		expect(crest![2]).toBe(window![2]);
+		// Both scenes share the layer's window, or they would be reading off different percentages —
+		// and the percentages are the only thing holding the handover between them together.
+		expect(window('cardRevealOpeningCrest')).toEqual(layer);
+		expect(window('cardRevealOpeningName')).toEqual(layer);
+	});
+
+	// The two scenes are laid out on that shared window by percentage, and the one thing that has to
+	// hold between them is that the poster starts exactly where the naming finishes arriving. Written
+	// by hand in the keyframes, so the arithmetic is asserted rather than trusted.
+	it('starts the poster on the frame the naming finishes arriving', () => {
+		const total = revealOpenBeatMs + revealNameBeatMs + 900;
+		const posterStartsAt = Math.round(((revealOpenBeatMs + revealNameBeatMs) / total) * 100);
+
+		// The naming reaches full opacity there, and the crests have cleared the field by then.
+		const nameLanded = /@keyframes cardRevealOpeningName \{[\s\S]*?(\d+)%\s+\{ opacity: 1;/.exec(stylesheet);
+		const crestGone = /@keyframes cardRevealOpeningCrest \{[\s\S]*?(\d+)%\s+\{ opacity: 0;/.exec(stylesheet);
+		expect(Number(nameLanded![1])).toBe(posterStartsAt);
+		expect(Number(crestGone![1])).toBe(posterStartsAt);
 	});
 
 	// One seam, cut by one pair of shapes. The opening beat's colour fields are the poster's halves at

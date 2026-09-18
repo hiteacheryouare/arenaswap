@@ -3,36 +3,30 @@
 > One or two lines per entry: what changed, and the one thing about it worth knowing later.
 > The code, the tests and the git history hold the rest. Do not write essays here.
 
-## The opening beat says who is playing, in full and in big letters — 2026-09-18
+## The naming is a scene of its own, on the colour the crests just left — 2026-09-18
 
-"Miami Marlins", "Washington Commanders", "Los Angeles Chargers" — the one thing an in-stadium matchup
-graphic says out loud that this one never did. ESPN's `displayName`, already carried as `Team.name`,
-printed whole: nothing is assembled from the nickname, because the club is "Penn State Nittany Lions"
-and the nickname alone is "Nittany Lions", so there is no place name to join or slice.
+The entry this replaces hung the club names off the oversized crests as a caption, which is not what
+was wanted: "add another scene on the colored background with the full name". So there are two scenes
+ahead of the poster now — the crests, and then the naming — and the thing that makes that cheap is
+that they share everything except what is drawn.
 
-Set as big as the tricodes it precedes and in the same two copies for the same reason — an outline of
-live text is not a stroke on that text, since a stroke follows every contour the font draws including
-the ones a filled glyph hides. One line per word, so what has to fit is the longest word rather than
-the longest name.
+The colour fields are up for both and never move. They are the coloured background the whole sequence
+is built on, and the poster's own halves grow into the same shape at the end of it, so what changes
+between the scenes is only their contents: the crests leave the way they came in, off their own outer
+side, while the names arrive over the top of that. Neither scene ever cuts to the other, and the field
+underneath is measurably the same colour across both — which is the spec, since that is the property
+the handover rests on.
 
-Each name sits at the corner where its own half is **widest**, which is what makes the type big rather
-than merely large. The seam leans, so the away half is `50% + lean` across at the top and the home half
-is the same at the bottom: packed into the narrow end a ten-letter word had 103px to live in, and at
-the wide end it has 160 and needs no clearance from the seam at all, because there the seam *is* the
-box's far edge. The diagonal that falls out — one name high and left, the other low and right — is the
-lean's own direction, which is the only angle in here.
+One window carries both, which is what keeps the arithmetic honest. 700ms of crests
+(`revealOpenBeatMs`), 600 of naming (`revealNameBeatMs`), and 900 more in which the layer outlives them
+into the poster — 2200 all told, so the crests land at 32%, hold, and have cleared the field by 59%;
+the naming starts at 41% and is up by 59%; and 59% is where the poster begins. That last coincidence is
+the one thing that has to hold between the scenes, so it is asserted rather than trusted: a spec
+computes the percentage from the two constants and checks the keyframes name it.
 
-The size is measured, and it took four goes, which is the thing worth keeping. An advance is a property
-of the letters and not of their number: DM Sans bold caps carrying this stroke run 0.637em a character
-for "MARLINS" and 0.739em for "COMMANDERS", a sixth more from the same count. Every attempt to derive
-the figure from an average clipped the away name against the seam. It is taken against the widest
-letters now and checked by rendering the shapes real names take — a short pair, a ten-letter pair, the
-longest word in the product ("Massachusetts"), a twelve-letter place name, a one-word club — and the
-spec asserts rendered width against the box that holds it rather than anything about characters.
-
-Written as its own component and its own spec file, with two lines added to `gameCardReveal` — an
-import and a call. That file was being edited by another agent at the time, and the footprint is the
-point rather than the module boundary. No new locale keys: it is ESPN's own string.
+The cost is honest. 6110ms a card against 5460, and 6734 before the list settles, which is what the
+skip is for. `quick` is untouched for the fifth pass running — both scenes are `full` only, so every
+open of the popup after the first of the day is still exactly the graphic it has always been.
 
 ## The oversized crests take their colour across the whole card, not into a disc — 2026-09-18
 
