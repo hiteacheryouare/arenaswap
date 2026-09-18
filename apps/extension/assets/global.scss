@@ -886,12 +886,14 @@ button, input, select, optgroup, textarea {
    these same halves at full width: a crest clipped by one of those is clipped along the exact line the
    poster's own half grows into, and one seam written twice is two seams waiting to disagree. */
 .game-card-reveal-half.is-away,
-.game-card-reveal-opening-field.is-away {
+.game-card-reveal-opening-field.is-away,
+.game-card-reveal-opening-name.is-away {
 	clip-path: polygon(0 0, 100% 0, calc(100% - var(--reveal-lean) * 2) 100%, 0 100%);
 }
 
 .game-card-reveal-half.is-home,
-.game-card-reveal-opening-field.is-home {
+.game-card-reveal-opening-field.is-home,
+.game-card-reveal-opening-name.is-home {
 	clip-path: polygon(calc(var(--reveal-lean) * 2) 0, 100% 0, 100% 100%, 0 100%);
 }
 
@@ -1003,6 +1005,66 @@ button, input, select, optgroup, textarea {
 	right:          0;
 	background:     var(--reveal-home);
 	--reveal-drift: 1;
+}
+
+/* The club named in full, which is the one thing an in-stadium matchup graphic says out loud that this
+   one never did — the poster after it carries tricodes, and a tricode is decoded rather than read.
+
+   A sibling of the field rather than a child, because the field is `teamCrest`'s own wrapper and takes
+   no children; it takes the same geometry and the same seam clip, so a long name is cut by the seam
+   instead of crossing it. Over the crest, because the crest is the picture and this is the caption.
+
+   The scrim is what makes it legible rather than a colour choice, and that is deliberate: the field
+   under it is the team's colour on most cards and `teamCrest`'s near-white plate on the rest, and
+   nothing here gets to know which. White on a dark wash reads on both, where an ink picked for one
+   would have been wrong on the other — the same problem the field itself had, one layer up. */
+.game-card-reveal-opening-name {
+	position:       absolute;
+	top:            0;
+	bottom:         0;
+	width:          calc(50% + var(--reveal-lean));
+	display:        flex;
+	align-items:    flex-end;
+	pointer-events: none;
+	background:     linear-gradient(to bottom, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, 0.62));
+	animation:      cardRevealOpeningName calc((800ms + 900ms) * var(--reveal-rate)) cubic-bezier(0.16, 1, 0.3, 1) var(--reveal-delay) both;
+}
+
+.game-card-reveal-opening-name.is-away {
+	left:           0;
+	--reveal-drift: -1;
+}
+
+.game-card-reveal-opening-name.is-home {
+	right:          0;
+	--reveal-drift: 1;
+}
+
+/* Two leans of padding on the seam side, which is what keeps the type off the clip rather than being
+   cut by it: the seam crosses the box by one lean at each end, so two clears it at the bottom, where
+   the name sits. Wraps rather than shrinking — "Washington Commanders" over two lines is how a
+   scoreboard sets it anyway, and the longest single word in the league (13 characters) is what the
+   size is chosen against. */
+.game-card-reveal-opening-name-text {
+	padding:        0.5rem;
+	font-family:    'DM Sans', sans-serif;
+	font-size:      0.62rem;
+	font-weight:    700;
+	line-height:    1.15;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	color:          #ffffff;
+	text-wrap:      balance;
+}
+
+.game-card-reveal-opening-name.is-away .game-card-reveal-opening-name-text {
+	padding-right: calc(0.5rem + var(--reveal-lean) * 2);
+}
+
+.game-card-reveal-opening-name.is-home .game-card-reveal-opening-name-text {
+	margin-left:   auto;
+	padding-left:  calc(0.5rem + var(--reveal-lean) * 2);
+	text-align:    right;
 }
 
 /* Centred in its own field rather than offset out of the card's middle, which is what the disc needed
@@ -1421,6 +1483,15 @@ button, input, select, optgroup, textarea {
 	0%   { transform: translateX(calc(var(--reveal-drift, 0) * 26px)) scale(1.18); animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); }
 	47%  { transform: translateX(0) scale(1); animation-timing-function: linear; }
 	100% { transform: translateX(0) scale(0.86); }
+}
+
+/* After the crests rather than with them — offset is what stops a graphic arriving as one lump — and
+   in from its own outer side, the direction every other layer in here arrives from. It holds once it
+   lands: what takes it away is the layer's own fade, which is the poster covering all of this. */
+@keyframes cardRevealOpeningName {
+	0%, 18% { opacity: 0; transform: translateX(calc(var(--reveal-drift, 0) * 20px)); }
+	46%     { opacity: 1; transform: translateX(0); }
+	100%    { opacity: 1; transform: translateX(0); }
 }
 
 @keyframes cardRevealAbbrIn {

@@ -3,6 +3,33 @@
 > One or two lines per entry: what changed, and the one thing about it worth knowing later.
 > The code, the tests and the git history hold the rest. Do not write essays here.
 
+## The opening beat says who is playing, in full — 2026-09-18
+
+"Miami Marlins", "Washington Commanders", "Los Angeles Chargers" — the one thing an in-stadium matchup
+graphic says out loud that this one never did. The poster after it carries tricodes, and a tricode is
+something you decode rather than read. ESPN's `displayName`, already carried as `Team.name`, printed
+whole: nothing is assembled from the nickname, because the club is "Penn State Nittany Lions" and the
+nickname alone is "Nittany Lions", so there is no place name to join or slice.
+
+A sibling of each colour field rather than a child of one, because the field is `teamCrest`'s own
+wrapper and takes no children. It carries the same geometry and the same seam clip as the field it
+names — now three selectors on that one rule rather than two — so a club name wider than the short side
+of the lean is cut by the seam instead of crossing it, and two leans of padding on that side mean it is
+never actually cut. Measured on the longest pair in the product: "Portland Trail Blazers" against
+"Massachusetts Minutemen", thirteen characters in one word, against a half-card about 119px wide at the
+bottom. Both wrap to two lines, which is how a scoreboard sets them anyway.
+
+The scrim under the type is legibility rather than taste, and it is the same problem the field had one
+layer up: what is behind the name is the team's colour on most cards and `teamCrest`'s near-white plate
+on the rest, and nothing here gets to know which. White on a dark wash reads on both — on a navy and on
+a bright gold — where an ink picked for either would have been wrong on the other. So the spec pins the
+wash, not the colour. The names arrive 18% into the beat rather than with the crests, because a graphic
+where everything lands at once reads as one lump.
+
+Written as its own component and its own spec file, with two lines added to `gameCardReveal` — an
+import and a call. That file was being edited by another agent at the time, and the footprint is the
+point rather than the module boundary. No new locale keys: it is ESPN's own string.
+
 ## The oversized crests take their colour across the whole card, not into a disc — 2026-09-18
 
 Three passes on this beat, and each one moved the colour somewhere else: onto the dark plate the rest of

@@ -3,6 +3,7 @@ import type { CSSProperties, ReactNode } from 'react';
 import type { Game, Team } from '@arenaswap/core/types';
 import { resolveTeamColorPair } from '@arenaswap/ui/src/components/colorUtils';
 import TeamCrest from '@arenaswap/ui/src/components/teamCrest';
+import RevealOpeningNames from './revealOpeningNames';
 import {
 	revealAbbrScale,
 	revealDelayMs,
@@ -109,6 +110,7 @@ const RevealOpening = ({ game, awayColor, homeColor }: { game: Game; awayColor: 
 				loading='eager'
 			/>
 		))}
+		<RevealOpeningNames game={game} />
 	</div>
 );
 

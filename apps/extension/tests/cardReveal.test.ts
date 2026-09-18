@@ -330,8 +330,11 @@ describe('the figures the stylesheet repeats by hand', () => {
 			const at = stylesheet.indexOf(shared);
 			if (at < 0) return null;
 			const rule = stylesheet.slice(at, stylesheet.indexOf('}', at));
-			// Both selectors on the one rule, and the shape it declares.
+			// Every selector that has to follow the seam, on the one rule, and the shape it declares.
+			// The name boxes are in here too: a club named in full is wider than the half it belongs to
+			// on the short side of the lean, so the seam is what has to cut it.
 			if (!rule.includes(`.game-card-reveal-opening-field.is-${side}`)) return null;
+			if (!rule.includes(`.game-card-reveal-opening-name.is-${side}`)) return null;
 			return /clip-path:\s*(polygon\([^;]+\));/.exec(rule)?.[1] ?? null;
 		};
 
