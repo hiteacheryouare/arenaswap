@@ -38,6 +38,28 @@ the same colour in both.
 6110ms a card against 5460, and 6734 before the list settles, which is what the skip is for. `quick`
 is untouched for the fifth pass running: both scenes are `full` only.
 
+## The card the graphic was over is the same card afterwards — 2026-09-18
+
+`tabRegistration.cy.ts` was failing on the one step that clears an assignment, and Cypress's message
+sent it the wrong way: `cy.select()` reports the element as `disabled`, but it never reads `disabled`
+— it clicks, asks `getActiveElByDocument` what has focus, and blames the element when the answer is
+nothing. Nothing had focus because the element was gone. `gameCardReveal` returned
+`<div className='game-card-reveal'>…{children}…</div>` while the graphic ran and `<>{children}</>`
+once it was done, and React reconciles children by position: dropping the wrapper reparents the card,
+so the whole card subtree is rebuilt rather than moved. What ends the graphic is somebody interacting
+with the popup, which is exactly when a tab picker is in use — so the interaction that ends the reveal
+destroys the control being interacted with, taking the focus and any open dropdown with it.
+
+One render path now, with `playing` gating each layer in place: `{playing && …}` leaves a hole where
+the element was, so the card keeps its index and the wrapper stays for good, empty. Both halves are
+needed, and the second is the one that hides — keeping the wrapper but collapsing the holes slides the
+card up into a slot a stage layer used to hold, which is the same rebuild by a different route, and it
+was a full debugging pass to find it after the first fix looked right and changed nothing. The empty
+wrapper is layout-neutral, carrying the 0.5rem the card would have carried, and a card that never had
+a stage over it is still handed straight through. The spec that pins it compares the card's DOM node
+across the ending rather than asserting anything about the graphic, and it fails on the old component.
+No test was changed to make this pass: the e2e was describing the product correctly.
+
 ## A crest bound for a monochrome mark stops flashing the colours it is giving up — 2026-09-18
 
 The verdict is read off the colour artwork's own pixels, so the artwork has to load — but it does not

@@ -169,6 +169,24 @@ describe('the popup open reveal', () => {
 		cy.get('.game-card-reveal').should('not.exist');
 	});
 
+	// The card is a node somebody can already be using — the tab picker inside it is a `<select>` —
+	// and what ends the graphic is that somebody interacting with the popup. React reconciles children
+	// by position, so the wrapper and every layer's slot have to outlive the ending: drop the wrapper
+	// and the card is reparented, collapse the holes the layers leave and the card slides up into a
+	// slot that used to hold a different element. Either is a rebuild rather than a move, and it takes
+	// the focus, an open dropdown, and the element a running `select` is holding with it.
+	it('leaves the card the same element after the graphic ends', () => {
+		cy.clock();
+		cy.mount(<Harness mode='quick' />);
+		cy.get('.game-card-reveal-stage').should('exist');
+		cy.get('.game-card').then($card => {
+			const before = $card[0];
+			cy.tick(revealDurationMs('quick') + 1000);
+			cy.get('.game-card-reveal-stage').should('not.exist');
+			cy.get('.game-card').should($after => expect($after[0]).to.equal(before));
+		});
+	});
+
 	// ── The opening beat ──────────────────────────────────────────────────────────
 
 	// And the overhang is cut at the card rather than painted outside it, which is the difference

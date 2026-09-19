@@ -116,6 +116,7 @@ const RevealOpening = ({ game, awayColor, homeColor }: { game: Game; awayColor: 
 
 const gameCardReveal = ({ game, mode, index, skipping, children }: gameCardRevealProps) => {
 	const wrapperRef = useRef<HTMLDivElement | null>(null);
+	const [staged] = useState(() => mode !== 'none');
 	const [landing, setLanding] = useState<revealLanding | null>(null);
 	const [done, setDone] = useState(false);
 	const delay = revealDelayMs(index, mode);
@@ -181,7 +182,19 @@ const gameCardReveal = ({ game, mode, index, skipping, children }: gameCardRevea
 		return () => clearTimeout(timer);
 	}, [mode, delay]);
 
-	if (mode === 'none' || done) return <>{children}</>;
+	// A card that never had a stage over it is handed straight through, which is what a list with no
+	// graphic to play should be. A card that did keeps its wrapper for good, and keeps every layer's
+	// slot with it — the layers stop being rendered, but each `playing &&` leaves a hole where its
+	// element was. Both halves of that matter, and for the same reason: React reconciles children by
+	// position, so dropping the wrapper reparents the card and collapsing the holes slides it up the
+	// list into the slot a stage layer used to hold. Either way it is a different element in that
+	// position, which is a rebuild of the whole card rather than a move. That lands at the instant the
+	// graphic ends, and the thing that ends it is somebody interacting with the popup — so it is
+	// precisely when a tab picker is in use, and it takes the focus, the open dropdown and the
+	// picker's own element with it. The wrapper is layout-neutral: it carries the 0.5rem the card
+	// would have carried.
+	if (!staged) return <>{children}</>;
+	const playing = mode !== 'none' && !done;
 
 	// The pair `buildGameCardStyle` resolves, down to the fallback, so the colour that retreats off
 	// each edge is the colour of the rail the card has been drawing underneath it the whole time.
@@ -190,8 +203,8 @@ const gameCardReveal = ({ game, mode, index, skipping, children }: gameCardRevea
 	return (
 		<div
 			ref={wrapperRef}
-			className={`game-card-reveal${skipping ? ' is-skipping' : ''}`}
-			style={{
+			className={`game-card-reveal${playing && skipping ? ' is-skipping' : ''}`}
+			style={!playing ? undefined : {
 				'--reveal-away': awayColor,
 				'--reveal-home': homeColor,
 				'--reveal-delay': `${delay}ms`,
@@ -212,9 +225,9 @@ const gameCardReveal = ({ game, mode, index, skipping, children }: gameCardRevea
 		>
 			{/* Outside the stage rather than in it: it goes under the crests the stage carries. Square,
 			    like everything else in here — the wrapper holds the one rounded clip. */}
-			<span className='game-card-reveal-base' aria-hidden='true' />
-			{mode === 'full' && <RevealOpening game={game} awayColor={awayColor} homeColor={homeColor} />}
-			<div className='game-card-reveal-stage' aria-hidden='true'>
+			{playing && <span className='game-card-reveal-base' aria-hidden='true' />}
+			{playing && mode === 'full' && <RevealOpening game={game} awayColor={awayColor} homeColor={homeColor} />}
+			{playing && <div className='game-card-reveal-stage' aria-hidden='true'>
 				<span className='game-card-reveal-half is-away' />
 				<span className='game-card-reveal-half is-home' />
 				{/* Judged against the colour it is about to be drawn on rather than against the card's
@@ -225,20 +238,20 @@ const gameCardReveal = ({ game, mode, index, skipping, children }: gameCardRevea
 				    carry, and the maintainer's call was that the plate is what this should draw. */}
 				<RevealSide team={game.awayTeam} surface={awayColor} side='away' />
 				<RevealSide team={game.homeTeam} surface={homeColor} side='home' />
-			</div>
+			</div>}
 			{children}
 			{/* Three to a side rather than two. A broadcast wipe is cut as a group travelling one path —
 			    the thick bar turns the ground over and the thin ones run behind it on the same line — and
 			    a third costs nothing in kind, since all of them translate and none of them touch layout.
 			    A thirty-game Saturday opens with 48 of these instead of 32, all on the compositor. */}
-			<div className='game-card-reveal-sweeps' aria-hidden='true'>
+			{playing && <div className='game-card-reveal-sweeps' aria-hidden='true'>
 				<span className='game-card-reveal-sweep is-away' />
 				<span className='game-card-reveal-sweep is-away is-chaser' />
 				<span className='game-card-reveal-sweep is-away is-chaser is-trailer' />
 				<span className='game-card-reveal-sweep is-home' />
 				<span className='game-card-reveal-sweep is-home is-chaser' />
 				<span className='game-card-reveal-sweep is-home is-chaser is-trailer' />
-			</div>
+			</div>}
 		</div>
 	);
 };
