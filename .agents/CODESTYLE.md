@@ -4,19 +4,6 @@
 
 ---
 
-# General Principles
-
-Prioritize:
-
-- Readability over cleverness
-- Explicitness over implicit behavior
-- Simplicity over unnecessary abstraction
-- Consistency with the existing codebase
-
-If something feels overengineered, it probably is.
-
----
-
 # Formatting
 
 ## Required
@@ -253,22 +240,6 @@ Do not introduce additional UI libraries such as:
 
 ---
 
-# Comments
-
-Comments should explain:
-
-- Complex algorithms
-- Non-obvious implementation decisions
-- Important architectural constraints
-
-Avoid:
-
-- Explaining obvious code
-- Excessive inline comments
-- Unnecessary JSDoc
-
----
-
 # Error Handling
 
 Favor straightforward error handling.
@@ -280,18 +251,6 @@ When fixing bugs:
 1. Start from the last known working behavior.
 2. Prefer the simplest effective solution.
 3. Avoid introducing unnecessary abstraction.
-
----
-
-# Testing
-
-Tests should be:
-
-- Focused
-- Readable
-- Easy to maintain
-
-Avoid overly complicated test setups.
 
 ---
 
@@ -310,27 +269,6 @@ Avoid:
 - Remote-only runtime dependencies
 
 Prefer introducing mature, well-supported dependencies over niche packages.
-
----
-
-# Preferred Coding Style
-
-Prefer:
-
-- Explicit control flow
-- Descriptive names
-- Small, cohesive modules
-- Readable implementations
-- Existing project patterns
-
-Avoid:
-
-- Hidden behavior
-- Magic abstractions
-- Premature optimization
-- Deep nesting
-- Over-commenting
-- Clever code that sacrifices readability
 
 ---
 

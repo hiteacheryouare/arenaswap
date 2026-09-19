@@ -14,30 +14,6 @@ Target users:
 
 ---
 
-## 🏗️ Architecture
-
-### Monorepo (Turborepo)
-
-Root structure:
-- /apps
-	- /extension → actual browser extension (UI + runtime logic)
-	- /docs -> the landing page and documentation website for both the extension and npm package
-- /packages
-	- /powerscore → scoring algorithm
-	- /core → core extension engine
-
-### Tech Stack
-- React (primary UI framework)
-- JavaScript + TypeScript
-- WXT (extension framework)
-- Bootstrap (structural components + utility styling)
-- SCSS (Sass) for everything Bootstrap can't express
-- Tailwind (utility styling) — `apps/docs` only; the extension has no Tailwind build
-- Jest (testing), Cypress (UI testing & validation)
-- npm ONLY (no pnpm, yarn, bun)
-
----
-
 ## Core Values
 
 ### Beautiful Design
@@ -65,9 +41,8 @@ If this sounds familiar, it is. We are heavily inspired by the team at [Transit]
 
 - Skills for you have been provided. Check @.agents/skills
   - When stuck: think "could there be a skill for this", check the skills directory, if yes, use it!
-- Validate your changes by testing and linting
 - Leverage the power of turborepo and caching
-- After every time you change something, update @CHANGELOG.md
+- After every time you change something, update CHANGELOG.md
 - All code changes should be internationalized to every language we support at the moment.
 - When opening PRs, Issues, etc via the GitHub API or any access you have to github, ALWAYS add the "robotic" label so we know it was assisted by agents.
 - To verify, run my "everything command": `npm run lint typecheck test test:e2e build build:edge build:firefox zip zip:edge zip:firefox`
