@@ -15,15 +15,12 @@ import zhTW from '../../locales/zh_TW.json';
 
 const locales = { de, en, es, fil, fr, it: itLocale, ja, ko, pt_BR: ptBR, pt_PT: ptPT, zh_CN: zhCN, zh_TW: zhTW };
 
-// A 1x1 transparent GIF, so the header renders its wordmark box without asking for a file.
-const blankLogo = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-
 const mountHeader = (props: { interactive?: boolean; onOpenGuide?: () => void } = {}) => {
 	const { interactive = true, onOpenGuide = cy.stub().as('onOpenGuide') } = props;
 	cy.viewport(320, 560);
 	cy.mount(
 		<div className='popup-container'>
-			<PopupHeader logoSrc={blankLogo} enabled interactive={interactive} onToggleEnabled={cy.stub()} onOpenSettings={cy.stub()} onStartTour={cy.stub()} onOpenGuide={onOpenGuide} />
+			<PopupHeader enabled interactive={interactive} onToggleEnabled={cy.stub()} onOpenSettings={cy.stub()} onStartTour={cy.stub()} onOpenGuide={onOpenGuide} />
 		</div>,
 	);
 };
@@ -41,7 +38,7 @@ describe('the guide button', () => {
 		cy.viewport(320, 560);
 		cy.mount(
 			<div className='popup-container'>
-				<PopupHeader logoSrc={blankLogo} enabled onToggleEnabled={cy.stub()} onOpenSettings={cy.stub()} onStartTour={cy.stub()} />
+				<PopupHeader enabled onToggleEnabled={cy.stub()} onOpenSettings={cy.stub()} onStartTour={cy.stub()} />
 			</div>,
 		);
 		cy.get('.bi-calendar-week').should('not.exist');

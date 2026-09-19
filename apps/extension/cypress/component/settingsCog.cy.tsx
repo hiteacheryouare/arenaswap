@@ -1,13 +1,10 @@
 import { PopupHeader } from '@arenaswap/ui/src/components/popupChrome';
 
-// A 1x1 transparent GIF, so the header renders its wordmark box without asking for a file.
-const blankLogo = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-
 const mountHeader = (interactive = true) => {
 	cy.viewport(320, 560);
 	cy.mount(
 		<div className='popup-container'>
-			<PopupHeader logoSrc={blankLogo} enabled interactive={interactive} onToggleEnabled={cy.stub()} onOpenSettings={cy.stub()} onStartTour={cy.stub()} />
+			<PopupHeader enabled interactive={interactive} onToggleEnabled={cy.stub()} onOpenSettings={cy.stub()} onStartTour={cy.stub()} />
 		</div>,
 	);
 };

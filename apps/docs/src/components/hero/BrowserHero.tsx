@@ -248,7 +248,7 @@ const HeroWindow = ({ copy }: { copy: HeroStrings }) => {
 			<div className='browser-popup'>
 				<div className='popup-container' ref={popupBodyRef}>
 					<PopupHeader
-						logoSrc={`${base}images/full_logo_white_on_transparent.svg`}
+						scroller={popupBodyRef}
 						enabled
 						interactive={false}
 						toggleId='hero-enable-toggle'

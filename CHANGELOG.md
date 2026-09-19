@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The popup header pins, and the wordmark folds into the favicon behind its own arrows — 2026-09-19
+
+Scrolling the game list past 40px sticks the header to the top and plays a 450ms collapse: each arrow's tail grows inward along its row, masking `ren` and `wap` off at its leading edge, then retracts to favicon length while the `a`, the `s` and the dot slide into the positions the icon holds them in. The mark is inline SVG now rather than an `<img>`, so `logoSrc` is gone from `PopupHeader` and the bar and the dashed tail are round-capped strokes rather than outlines — they have to change length, and a scaled outline turns its round ends into ellipses. `wordmarkFrame.ts` is the whole choreography as pure numbers, which is what lets a test assert the thing that is invisible until it breaks: that a word is fully covered before the letter replacing it starts moving.
+
 ## Halftime and Final are words, so they stop being set like figures — 2026-09-19
 
 Lekton exists in this product to hold a ticking clock's columns still, and the states that replace the clock with a word — Halftime, Intermission, Final, an ESPN delay description — have nothing to hold, so they now take the body face on the live card, the detail hero and the sticky bar. `resolveStatusText` became `resolveStatus` and returns `{ text, tabular }`, which keeps the decision in the one place the branch order already lives rather than duplicating it at three call sites. The period, the clock, the inning and the countdown are unchanged.

@@ -284,7 +284,7 @@ const mainView = ({
 	return (
 		<div ref={scrollerRef} className='popup-container d-flex flex-column'>
 			<PopupHeader
-				logoSrc='/images/full_logo_white_on_transparent.svg'
+				scroller={scrollerRef}
 				enabled={prefs.enabled}
 				prefsLoaded={prefsLoaded}
 				onToggleEnabled={onToggleEnabled}

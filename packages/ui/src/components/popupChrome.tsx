@@ -1,22 +1,96 @@
+import { useEffect, useRef } from 'react';
+import type { RefObject } from 'react';
 import { leagueConfigs, resolveLeagueLogoUrl } from '@arenaswap/core/constants';
 import type { LeagueId, LeagueLogoMap } from '@arenaswap/core/types';
 import Crest from './crest';
 import { useT } from './i18nContext';
+import Wordmark, { applyWordmarkProgress } from './wordmark';
 
 // The chrome the popup's main view is built out of. The website used to redraw these three
 // pieces in its own markup and its own CSS, which drifted: the section title lost its orange
 // rule, the league row lost its logo, and the header switch was a div. Sharing them means the
 // site cannot describe a popup that does not exist.
 //
-// `logoSrc` is a prop because the extension serves the wordmark from `/images` and the site
-// from a `base`-prefixed path. Everything else is identical on both.
+// The wordmark used to be an `<img>` with a `logoSrc` prop, because the extension serves the file
+// from `/images` and the site from a `base`-prefixed path. It is inline SVG now, which settles that
+// question by not asking it, and is what lets the header collapse the mark into the favicon.
+
+// Scroll offsets that start and undo the collapse. The gap between them is deliberate: one
+// threshold means a list resting a pixel either side of it flickers on every wheel nudge.
+const collapseAt = 40;
+const expandAt = 16;
+const collapseMs = 450;
+
+// Poses the header against a scroller. Everything it touches is DOM — a React state per frame
+// would re-render the game list under it 27 times per transition.
+//
+// The popup restores its scroll offset on mount, so the opening pose is read rather than assumed;
+// coming back to a list that was left halfway down must not replay the collapse.
+const usePopupHeaderCollapse = (scroller?: RefObject<HTMLElement | null>) => {
+	const headerRef = useRef<HTMLDivElement>(null);
+	const wordmarkRef = useRef<SVGSVGElement>(null);
+
+	useEffect(() => {
+		const node = scroller?.current;
+		const svg = wordmarkRef.current;
+		if (!node || !svg) return;
+
+		const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		let collapsed = node.scrollTop > collapseAt;
+		let progress = collapsed ? 1 : 0;
+		let frame = 0;
+		let from = progress;
+		let startedAt = 0;
+
+		const pose = (value: number) => {
+			progress = value;
+			applyWordmarkProgress(svg, value);
+		};
+
+		const step = (now: number) => {
+			if (!startedAt) startedAt = now;
+			const target = collapsed ? 1 : 0;
+			// Scaled by how far there is left to go, so reversing a collapse that is already most of
+			// the way home takes the time that trip deserves rather than the full 450ms.
+			const span = Math.max(0.35, Math.abs(target - from)) * collapseMs;
+			const done = Math.min(1, (now - startedAt) / span);
+			pose(from + (target - from) * done);
+			frame = done < 1 ? requestAnimationFrame(step) : 0;
+		};
+
+		const onScroll = () => {
+			const next = node.scrollTop > (collapsed ? expandAt : collapseAt);
+			if (next === collapsed) return;
+			collapsed = next;
+			headerRef.current?.classList.toggle('is-condensed', collapsed);
+			if (reduced) {
+				pose(collapsed ? 1 : 0);
+				return;
+			}
+			from = progress;
+			startedAt = 0;
+			cancelAnimationFrame(frame);
+			frame = requestAnimationFrame(step);
+		};
+
+		headerRef.current?.classList.toggle('is-condensed', collapsed);
+		pose(progress);
+		node.addEventListener('scroll', onScroll, { passive: true });
+		return () => {
+			node.removeEventListener('scroll', onScroll);
+			cancelAnimationFrame(frame);
+		};
+	}, [scroller]);
+
+	return { headerRef, wordmarkRef };
+};
 
 export const leagueLabels = Object.fromEntries(
 	leagueConfigs.map(config => [config.id, config.label]),
 ) as Record<LeagueId, string>;
 
 export const PopupHeader = ({
-	logoSrc,
+	scroller,
 	enabled,
 	prefsLoaded = true,
 	toggleId = 'enableToggle',
@@ -26,7 +100,9 @@ export const PopupHeader = ({
 	onStartTour,
 	onOpenGuide,
 }: {
-	logoSrc: string;
+	// The element the header should collapse against. Absent on the website, which shows this header
+	// as a picture of the popup rather than a scrolling one, so the mark simply stays whole there.
+	scroller?: RefObject<HTMLElement | null>;
 	enabled: boolean;
 	prefsLoaded?: boolean;
 	// The id has to be unique per document, and the website renders this header twice on one page.
@@ -42,9 +118,10 @@ export const PopupHeader = ({
 	onOpenGuide?: () => void;
 }) => {
 	const t = useT();
+	const { headerRef, wordmarkRef } = usePopupHeaderCollapse(scroller);
 	return (
-		<div className='d-flex justify-content-between align-items-center mb-2 pb-2'>
-			<img src={logoSrc} alt='ArenaSwap' className='arenaswap-logo' />
+		<div ref={headerRef} className='popup-header d-flex justify-content-between align-items-center'>
+			<Wordmark ref={wordmarkRef} className='arenaswap-logo' />
 			<div className='d-flex align-items-center gap-2' aria-hidden={interactive ? undefined : true}>
 				{/* Before the help mark rather than after the cog: settingsCog.cy.tsx identifies the cog
 				    as `.popup-settings-button` .last(), and a third button appended after it would
