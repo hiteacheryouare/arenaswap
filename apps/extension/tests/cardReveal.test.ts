@@ -19,9 +19,16 @@ import {
 	revealLeanWidthCap,
 	revealMaxCards,
 	revealModeForIndex,
-	revealNameBaseLength,
 	revealNameBeatMs,
-	revealNameScale,
+	revealNameFit,
+	revealNameHeightShare,
+	revealNameInkBottomEm,
+	revealNameInkTopEm,
+	revealNameLift,
+	revealNameLineHeight,
+	revealNameLines,
+	revealNameMaxPx,
+	revealNameSpread,
 	revealPlateRatio,
 	revealQuickRate,
 	revealSettleMs,
@@ -74,9 +81,9 @@ describe('the two phases and the two speeds', () => {
 
 	// Stated outright as well as derived: this is the graphic's length, and the one the skip answers for.
 	it('runs the whole of the first open in about six seconds a card', () => {
-		expect(revealOpenMs('full')).toBe(1690);
+		expect(revealOpenMs('full')).toBe(3185);
 		expect(revealDurationMs('full')).toBe(4420);
-		expect(revealTotalMs('full')).toBe(6110);
+		expect(revealTotalMs('full')).toBe(7605);
 	});
 
 	// The regression guard the whole approach rests on, and the reason the opening beat is `full` only:
@@ -155,7 +162,7 @@ describe('when the popup stops being in its opening state', () => {
 	});
 
 	it('holds the opening state for the whole graphic plus its own cascade', () => {
-		expect(revealSettleMs('full')).toBe(6734);
+		expect(revealSettleMs('full')).toBe(8229);
 		expect(revealSettleMs('quick')).toBe(3104);
 	});
 
@@ -232,38 +239,138 @@ describe('how the poster lettering is sized', () => {
 	});
 });
 
+// Two lines, and where they break. The nickname is the club's own answer to that question, which is
+// why it is asked for rather than guessed at: a wrap would break "Penn State Nittany Lions" wherever
+// the box ran out, and a split on the last space would turn the Nittany Lions into the Lions.
+describe('how a club name is set on two lines', () => {
+	it('breaks a name before its nickname', () => {
+		expect(revealNameLines('Miami Marlins', 'Marlins')).toEqual(['Miami', 'Marlins']);
+		expect(revealNameLines('Penn State Nittany Lions', 'Nittany Lions')).toEqual(['Penn State', 'Nittany Lions']);
+		expect(revealNameLines('Portland Trail Blazers', 'Trail Blazers')).toEqual(['Portland', 'Trail Blazers']);
+	});
+
+	// ESPN sends a nickname for every club in every league we carry, but a game arriving without one
+	// still has to be named: the last space is the right guess for the two-word clubs that is most of
+	// them, and it is only ever a guess about where to break rather than about what to print.
+	it('breaks at the last space when no nickname came with the game', () => {
+		expect(revealNameLines('Washington Commanders')).toEqual(['Washington', 'Commanders']);
+		expect(revealNameLines('Penn State Nittany Lions')).toEqual(['Penn State Nittany', 'Lions']);
+	});
+
+	// A club whose whole name is its nickname, which is most of soccer.
+	it('leaves a one-word club on one line', () => {
+		expect(revealNameLines('Barcelona', 'Barcelona')).toEqual(['Barcelona']);
+		expect(revealNameLines('Juventus')).toEqual(['Juventus']);
+	});
+
+	it('survives a game with no name on it at all', () => {
+		expect(revealNameLines()).toEqual([]);
+		expect(revealNameLines('', '')).toEqual([]);
+		expect(revealNameLines('  ')).toEqual([]);
+	});
+
+	// Whatever ESPN's spacing was, the lines are what gets measured and drawn.
+	it('collapses the whitespace it was sent', () => {
+		expect(revealNameLines(' Miami   Marlins ', ' Marlins ')).toEqual(['Miami', 'Marlins']);
+	});
+});
+
+// And how big those lines come out. The ratios are what the component measured off the glyphs — a
+// line's width in ems — so these are the real advances DM Sans bold produces, read out of canvas
+// `TextMetrics`: 0.5168em a character for "Pittsburgh" and 0.6629 for "Commanders", which is a
+// quarter more from the same count of letters and is why no arithmetic on `name.length` could ever
+// have sized this.
+// The ink of a stack, which is what the band has to hold: the line boxes, less the gap the first
+// line's ink leaves at the top of its own box, plus the descender the last line hangs below the
+// bottom of its. Written out here rather than imported, so the fit is checked against the geometry
+// rather than against its own helper.
+const inkHeight = (sizes: number[]) => {
+	const boxes = sizes.reduce((total, size) => total + size * revealNameLineHeight, 0);
+	const gap = (revealNameLineHeight / 2 - revealNameInkTopEm) * sizes[0]!;
+	const hang = (revealNameInkBottomEm - revealNameLineHeight / 2) * sizes[sizes.length - 1]!;
+	return boxes - gap + hang;
+};
+
+describe('how the club names are sized', () => {
+	const marlins = [2.96, 3.5701];
+	const commanders = [5.8298, 6.6293];
+	// The popup's own numbers: a 296px card, and half of the live card's 167.
+	const card = 296;
+	const band = 84;
+
+	// Justified rather than set at one size: every line of a name is drawn at whatever size makes it
+	// span the same width as the others, which is what makes the naming read as a block of type.
+	it('justifies every line of a name to one width', () => {
+		const sizes = revealNameFit(marlins, card, band);
+		expect(sizes).toHaveLength(2);
+		expect(sizes[0]! * marlins[0]!).toBeCloseTo(sizes[1]! * marlins[1]!, 6);
+	});
+
+	// The block is as wide as the band lets it be, which on a name of two long lines is three quarters
+	// of the card — and the type on it is drawn at 38px against the 17.6 the version before this could
+	// reach, which is the thing three passes at this never managed. Not the whole card, and the reason
+	// is mixed case: lowercase advances are a quarter narrower than caps, so the same type size covers
+	// less width, and the leading a descender needs costs height that caps did not.
+	it('names a long club across most of the card, at twice the size', () => {
+		const sizes = revealNameFit(commanders, card, band);
+		const drawn = sizes[0]! * commanders[0]!;
+		expect(drawn).toBeGreaterThan(card * 0.7);
+		expect(drawn).toBeLessThanOrEqual(card);
+		expect(sizes[0]!).toBeGreaterThan(35);
+	});
+
+	// And the band's own height is what binds on the short cards, where two lines justified to the
+	// full width of the card would be taller than half of it. Bounded on the ink rather than on the
+	// line boxes: a box does not contain its own descender at this leading, and budgeting by boxes put
+	// the bottom of a "g" within a pixel of the card's edge.
+	it('comes down to the band on a card too short for the width', () => {
+		const short = revealNameFit(marlins, card, 74);
+		const tall = revealNameFit(marlins, card, band);
+		expect(short[0]!).toBeLessThan(tall[0]!);
+		expect(inkHeight(short)).toBeLessThanOrEqual(74 * revealNameHeightShare + 0.001);
+		expect(inkHeight(short)).toBeGreaterThan(74 * revealNameHeightShare - 0.001);
+	});
+
+	// Nothing is drawn bigger than the cap, whatever the arithmetic says: a line of two letters
+	// justified to a card's width is the height of the card, and "AC" over a small "Milan" reads as a
+	// mistake rather than as a lockup. Both bounds bite here — the cap on the short line, the spread
+	// between the two of them.
+	it('will not draw one line of a name away from the other', () => {
+		const sizes = revealNameFit([1.2, 2.8], card, 400);
+		expect(Math.max(...sizes)).toBeLessThanOrEqual(revealNameMaxPx);
+		expect(Math.max(...sizes) / Math.min(...sizes)).toBeLessThanOrEqual(revealNameSpread + 0.001);
+	});
+
+	it('answers nothing for a line it could not measure', () => {
+		expect(revealNameFit([0, 4], card, band)).toEqual([0, 0]);
+		expect(revealNameFit([], card, band)).toEqual([]);
+	});
+
+	// The lift is what centres the ink rather than the boxes, and the case that proves it is a name
+	// whose lines are drawn at different sizes: the correction is half the ink's own offset at each
+	// end, so lifting the block by it leaves the same clearance above the first line as below the last.
+	it('lifts the block until the ink is what sits centred', () => {
+		const sizes = revealNameFit(marlins, card, band);
+		const lift = revealNameLift(sizes);
+		const boxes = sizes.reduce((total, size) => total + size * revealNameLineHeight, 0);
+		const gap = (revealNameLineHeight / 2 - revealNameInkTopEm) * sizes[0]!;
+		const hang = (revealNameInkBottomEm - revealNameLineHeight / 2) * sizes[sizes.length - 1]!;
+		// Where the ink lands once the block is centred in the band and then lifted.
+		const blockTop = (band - boxes) / 2 - lift;
+		// Equal clearance above the first line's ink and below the last line's.
+		expect(blockTop + gap).toBeCloseTo(band - (blockTop + boxes + hang), 6);
+	});
+
+	it('lifts nothing it could not measure', () => {
+		expect(revealNameLift([])).toBe(0);
+		expect(revealNameLift([0, 10])).toBe(0);
+	});
+});
+
 // The stylesheet writes these figures out by hand, because a keyframe cannot read a module. Every
 // one of them is therefore two numbers that have to agree, and this file has been bitten by exactly
 // that before — a version somebody had to remember to raise, left behind while the thing it
 // versioned moved twice. So the agreement is asserted rather than trusted.
-describe('how the club names are sized', () => {
-	// Sized by the longest *word* rather than the longest name, because the name is set stacked — one
-	// line per word — so what has to fit the half a card is the longest line.
-	it('takes the longest word rather than the longest name', () => {
-		// "Commanders" is the longest word in the pair, not "Washington Commanders".
-		expect(revealNameScale('Washington Commanders', 'Los Angeles Chargers'))
-			.toBeCloseTo(revealNameBaseLength / 10, 10);
-		// And a long name made of short words is not punished for its length: five words here, none of
-		// them over the base, so nothing shrinks.
-		expect(revealNameScale('Inter Miami CF', 'Club de Foot')).toBe(1);
-	});
-
-	// One long word pulls both sides down, exactly as the tricodes do, or the two arrive at different
-	// sizes and stop reading as one graphic.
-	it('sizes the pair together, not each side on its own', () => {
-		const pair = revealNameScale('Miami Marlins', 'Massachusetts Minutemen');
-		expect(pair).toBeCloseTo(revealNameBaseLength / 13, 10);
-		expect(revealNameScale('Massachusetts Minutemen', 'Miami Marlins')).toBeCloseTo(pair, 10);
-	});
-
-	// Never up, like `revealAbbrScale`: the base is the size the type is drawn at, not a target.
-	it('never scales up, and survives a name that is not there', () => {
-		expect(revealNameScale('Ajax', 'Roma')).toBe(1);
-		expect(revealNameScale()).toBe(1);
-		expect(revealNameScale('', '')).toBe(1);
-	});
-});
-
 describe('the figures the stylesheet repeats by hand', () => {
 	const stylesheet = readFileSync(path.join(__dirname, '../assets/global.scss'), 'utf8');
 
@@ -354,21 +461,45 @@ describe('the figures the stylesheet repeats by hand', () => {
 		// Both scenes share the layer's window, or they would be reading off different percentages —
 		// and the percentages are the only thing holding the handover between them together.
 		expect(window('cardRevealOpeningCrest')).toEqual(layer);
+		expect(window('cardRevealOpeningBand')).toEqual(layer);
 		expect(window('cardRevealOpeningName')).toEqual(layer);
 	});
 
 	// The two scenes are laid out on that shared window by percentage, and the one thing that has to
-	// hold between them is that the poster starts exactly where the naming finishes arriving. Written
-	// by hand in the keyframes, so the arithmetic is asserted rather than trusted.
-	it('starts the poster on the frame the naming finishes arriving', () => {
-		const total = revealOpenBeatMs + revealNameBeatMs + 900;
+	// hold between them is that the naming has left by the frame the poster starts on. Written by hand
+	// in the keyframes, so the arithmetic is asserted rather than trusted.
+	//
+	// Left, rather than held for the colour to cover. The poster's halves grow in from the outer edges,
+	// so a name still standing there is eaten from its ends inward by colour in its own hue — letters
+	// going out one at a time with nothing visible doing it, which is exactly how this beat used to end
+	// and is the defect this percentage exists to prevent.
+	it('has the naming gone by the frame the poster starts on', () => {
+		const total = revealOpenBeatMs + revealNameBeatMs + 1050;
 		const posterStartsAt = Math.round(((revealOpenBeatMs + revealNameBeatMs) / total) * 100);
 
-		// The naming reaches full opacity there, and the crests have cleared the field by then.
-		const nameLanded = /@keyframes cardRevealOpeningName \{[\s\S]*?(\d+)%\s+\{ opacity: 1;/.exec(stylesheet);
-		const crestGone = /@keyframes cardRevealOpeningCrest \{[\s\S]*?(\d+)%\s+\{ opacity: 0;/.exec(stylesheet);
-		expect(Number(nameLanded![1])).toBe(posterStartsAt);
-		expect(Number(crestGone![1])).toBe(posterStartsAt);
+		const collapsed = /@keyframes cardRevealOpeningName \{[\s\S]*?\n\t(\d+)%, 100% \{ opacity: 0;/.exec(stylesheet);
+		expect(Number(collapsed![1])).toBe(posterStartsAt);
+
+		// And the scene before it is over before the naming lands: the crests have cleared the field
+		// and the bands have closed on the centre line, both of them well inside the poster's start.
+		const crestGone = /@keyframes cardRevealOpeningCrest \{[\s\S]*?\n\t(\d+)%\s+\{ opacity: 0;/.exec(stylesheet);
+		const bandShut = /@keyframes cardRevealOpeningBand \{[\s\S]*?\n\t(\d+)%, 100% \{ clip-path: inset\(0\)/.exec(stylesheet);
+		const nameLanded = /@keyframes cardRevealOpeningName \{[\s\S]*?\n\t(\d+)%, \d+%\s+\{ opacity: 0\.9;/.exec(stylesheet);
+		expect(Number(crestGone![1])).toBeLessThan(Number(bandShut![1]));
+		expect(Number(bandShut![1])).toBeLessThanOrEqual(Number(nameLanded![1]));
+		expect(Number(nameLanded![1])).toBeLessThan(posterStartsAt);
+	});
+
+	// The naming is the one beat of this graphic with something on it to read, which is what the
+	// length of it is for: a first pass held the names for about a sixth of a second and the reading
+	// of it was that it went by far too fast. Asserted in real milliseconds, at the rate the graphic
+	// actually plays, because that is the quantity a person experiences.
+	it('holds the naming still for long enough to read two clubs', () => {
+		const total = revealOpenBeatMs + revealNameBeatMs + 1050;
+		const landed = Number(/@keyframes cardRevealOpeningName \{[\s\S]*?\n\t(\d+)%, \d+%\s+\{ opacity: 0\.9;/.exec(stylesheet)![1]);
+		const leaves = Number(/@keyframes cardRevealOpeningName \{[\s\S]*?\n\t\d+%, (\d+)%\s+\{ opacity: 0\.9;/.exec(stylesheet)![1]);
+		const heldMs = ((leaves - landed) / 100) * total * revealFullRate;
+		expect(heldMs).toBeGreaterThanOrEqual(1000);
 	});
 
 	// One seam, cut by one pair of shapes. The opening beat's colour fields are the poster's halves at
@@ -393,22 +524,40 @@ describe('the figures the stylesheet repeats by hand', () => {
 		expect(seam('home')).toContain('--reveal-lean');
 	});
 
-	// The naming carries the same seam described against a different box, and that is the one place in
-	// here where the line is written twice. It has to be: the fields are half a card plus the lean and
-	// the name boxes are half a card exactly, because a name is centred on the crest slot its tricode
-	// uses and a box that reached past the seam would not centre on it. Against a half, the seam
-	// leaves the box by a lean at the top and comes back inside it by a lean at the bottom — which is
-	// the same line, and is what this checks rather than the coordinates agreeing by eye.
-	it('cuts the naming on that seam too, against its own box', () => {
-		const clip = (side: 'away' | 'home') => {
-			const at = stylesheet.indexOf(`.game-card-reveal-opening-name.is-${side} {`);
+	// The naming's own split is flat, and that is the whole reason it can name a club across the card:
+	// a leaning split gives each side half the width and this one gives it all of it. What this pins
+	// is that the bands are halves of the card wiped in from its own outer edges, with no lean in them
+	// — the seam is the poster's business and the naming is the one beat that does not lean.
+	it('splits the naming scene flat, and wipes each band in from its own edge', () => {
+		const band = (side: 'away' | 'home') => {
+			const at = stylesheet.indexOf(`.game-card-reveal-opening-band.is-${side} {`);
 			if (at < 0) return null;
-			return /clip-path:\s*polygon\(([^;]+)\);/.exec(stylesheet.slice(at, stylesheet.indexOf('}', at)))?.[1] ?? null;
+			return stylesheet.slice(at, stylesheet.indexOf('}', at));
 		};
 
-		// The away box keeps its left edge and leans its right one; the home box mirrors it.
-		expect(clip('away')).toBe('0 0, calc(100% + var(--reveal-lean)) 0, calc(100% - var(--reveal-lean)) 100%, 0 100%');
-		expect(clip('home')).toBe('var(--reveal-lean) 0, 100% 0, 100% 100%, calc(var(--reveal-lean) * -1) 100%');
+		expect(band('away')).toContain('--reveal-band-shut: 0 0 100% 0');
+		expect(band('home')).toContain('--reveal-band-shut: 100% 0 0 0');
+		expect(band('away')).not.toContain('--reveal-lean');
+		expect(band('home')).not.toContain('--reveal-lean');
+	});
+
+	// And it leaves by collapsing onto the slot its tricode appears on, which is a quarter of the
+	// card in from the centre on the centre line. Against a box that is the full width of the card and
+	// half its height, that is a quarter of its width and half its height — the one place in here
+	// where a percentage means something different on each axis, and worth pinning for it.
+	it('collapses each name onto the slot its tricode uses', () => {
+		const slot = (side: 'away' | 'home') => {
+			const at = stylesheet.indexOf(`.game-card-reveal-opening-name.is-${side} {`);
+			if (at < 0) return null;
+			const rule = stylesheet.slice(at, stylesheet.indexOf('}', at));
+			return [
+				/--reveal-name-slot-x:\s*(-?\d+%)/.exec(rule)?.[1],
+				/--reveal-name-slot-y:\s*(-?\d+%)/.exec(rule)?.[1],
+			];
+		};
+
+		expect(slot('away')).toEqual(['-25%', '50%']);
+		expect(slot('home')).toEqual(['25%', '-50%']);
 	});
 
 	// A bar is parked one bar width and one lean clear of the edge it comes in from, and leaves one

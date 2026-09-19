@@ -15,23 +15,27 @@ export interface cardRevealPlan {
 // is the same choreography at a different speed rather than a different set of beats.
 export const revealBaseDurationMs = 3400;
 
-// And the two scenes that run ahead of it on the first open of the day, both on the same pair of
-// colour fields: the crests oversized and bleeding off the card, and then the clubs named in full on
-// the colour the crests just left. Rate-scaled like everything else, so they are part of the graphic
-// rather than a preamble to it, and `full` only.
+// And the two scenes that run ahead of it on the first open of the day, both built out of the same
+// two team colours: the crests oversized and bleeding off the card on the leaning split, and then
+// that split laid flat as a pair of bands with the clubs named in full across them. Rate-scaled like
+// everything else, so they are part of the graphic rather than a preamble to it, and `full` only.
 //
-// Two scenes rather than two layers, which is the whole reason this stays cheap. The fields are up for
-// both and never move — they are the coloured background the sequence is built on, and the poster's
-// own halves grow into the same shape at the end of it — so what changes between the scenes is only
-// what is drawn on them. The crests leave the way they came in and the names arrive over the top of
-// that, which means neither scene ever cuts to the other.
+// Two scenes rather than two layers, which is the whole reason this stays cheap. The colour fields
+// are up for both and never move — the naming's bands are the same two colours re-cut over them, and
+// the poster's own halves then wipe the leaning split back in — so what changes between the scenes is
+// only what is drawn on them, and neither scene ever has to cut to the other.
+//
+// 1750 is the naming, and it is long because it is the one beat of this graphic that has something to
+// read on it: 800 was the first version and left the names standing for about a sixth of a second,
+// which is not long enough to read one club's name never mind two. It buys a full second of hold at
+// the front of the poster, and the whole of it is skippable.
 //
 // A phase was resisted twice before any of this and the objection was right both times: a light line
 // drawing itself down the centre, and a flourish after the card resolves, were each a different
 // graphic wearing this one's clothes. These are not, because they are made of what the poster already
 // carries — its two crests, and the two clubs it is about.
 export const revealOpenBeatMs = 700;
-export const revealNameBeatMs = 600;
+export const revealNameBeatMs = 1750;
 
 // 1.3 rather than the 1.5 the stretch alone needed. Once there is a beat carrying the extra time, the
 // rest of it does not have to come out of playing the same thing slower: the graphic is longer than it
@@ -159,30 +163,129 @@ export const revealAbbrScale = (away = '', home = '') => (
 	revealAbbrBaseLength / Math.max(revealAbbrBaseLength, away.length, home.length)
 );
 
-// The same idea one size up, for the club named in full over the opening beat. Scaled by the longest
-// *word* across both names rather than by the whole string, because the name is set stacked — a line
-// per word — so what has to fit the half is the longest line and not the longest name.
+// How the club named in full is set, now that the naming scene splits the card horizontally and
+// gives each club a band of its own colour the full width of the card.
 //
-// Scaled by the pair rather than per side, exactly as the tricodes are: one long name pulls both down,
-// or the two sides arrive at different sizes and stop reading as one graphic.
+// The name breaks onto two lines or stays on one, and which of those draws it bigger is a fact about
+// the name and the card rather than a rule: "Washington Commanders" on one line is 21px of type and
+// on two it is 38, while "Miami Marlins" is 40 on one line and 35 on two — and the one-line version
+// of it covers the whole card where the two-line version covers a third. So both are fitted and the
+// bigger is drawn. `revealNameSpaceEm` is what makes that free: DM Sans bold advances are additive to
+// the last decimal, measured, so the joined line's width is the two lines' plus a space and the
+// component never has to render a candidate to measure it.
 //
-// 6.4 is not a word length, it is where the type stops fitting, and it is measured rather than
-// derived — three attempts at deriving it all clipped the away name against the seam. A name sits at
-// the wide corner of its half, which is `50% + lean` less its padding: 160px on the popup's 296px
-// card. What defeats the arithmetic is that an advance is a property of the letters and not of the
-// count — DM Sans bold caps carrying this stroke run 0.637em a character for "MARLINS" and 0.739em
-// for "COMMANDERS", which is a sixth more from the same number of glyphs. So the figure is taken
-// against the widest letters rather than the average, and checked by rendering the shapes real names
-// take: a short pair, a ten-letter pair, the longest word in the product ("Massachusetts"), a
-// twelve-letter place name, and a one-word club. Every one of them lands inside the 160.
-export const revealNameBaseLength = 5.5;
+// Two lines at most, and the break is the club's own rather than a wrap: everything ahead of the
+// nickname, then the nickname. ESPN carries both — `displayName` as `Team.name` and `team.name` as
+// `Team.nickname` — so "Penn State Nittany Lions" breaks after "State" rather than inside "Nittany
+// Lions", which is the break a wrap would take and the one that turns the Nittany Lions into the
+// Lions. A club whose whole name is its nickname ("Barcelona") is one line, and a name we were sent
+// no nickname for breaks at its last space, which is the right guess for every two-word club.
+//
+// One word per line was the version before this, and it is what capped the type: the longest word
+// had to fit the box, so "COMMANDERS" sized the whole card and a three-word club came out as three
+// small lines. Two lines of whatever length read as a lockup and leave the type twice the size.
+export const revealNameLines = (name = '', nickname = ''): string[] => {
+	const full = name.trim().replace(/\s+/g, ' ');
+	if (!full) return [];
+	const tail = nickname.trim().replace(/\s+/g, ' ');
+	const breakAt = tail && tail.length < full.length && full.endsWith(tail)
+		? full.length - tail.length
+		: full.lastIndexOf(' ') + 1;
+	if (breakAt <= 0) return [full];
+	return [full.slice(0, breakAt).trim(), full.slice(breakAt)];
+};
 
-const longestWord = (name: string) => name
-	.split(/\s+/)
-	.reduce((longest, word) => Math.max(longest, word.length), 0);
+// And how big those lines are drawn, which is measured rather than counted. An advance is a property
+// of the letters and not of their number — DM Sans bold caps run 0.637em a character for "MARLINS"
+// and 0.739em for "COMMANDERS", a sixth more from the same count — so every version of this that
+// sized the type off `name.length` either clipped the wide names or left the narrow ones small. The
+// component reads each line's own advance off the DOM and hands the ratios in here, so nothing in
+// this file has to know what a letter is worth.
+//
+// Every line of a club's name is justified to one block width, which is what makes the naming read
+// as a lockup rather than as a sentence: "MIAMI" and "MARLINS" are drawn at different sizes so that
+// the two of them span the same width. Each club is fitted to its own band rather than the pair
+// being fitted together, because the bands are separated by a colour change and each one should be
+// as full as its own name allows — sharing a width would let the shorter name's height budget cap
+// the longer name's type.
+//
+// Bound three ways, and which bound bites depends on the name and on the card. The band's width is
+// the obvious one. The band's height is what binds on short cards, because two lines justified to
+// the full width of a 296px card are taller than half a finished card. And the cap is what stops a
+// two-letter line ("AC", of "AC Milan") being drawn at the height of the card for no reason but its
+// own shortness — a little over the tricode's 3.4rem, which is as big as anything in this graphic
+// ever needs to be.
+// The leading, which the fit has to know because the stack's height is the sum of the line boxes
+// rather than of the sizes. It is the one figure in here that the type's case decides. A block of
+// caps sets happily at 0.82 and this was drawn that way for a pass; mixed case cannot, because a
+// line box tighter than the glyphs it holds puts the descenders of one line through the ascenders of
+// the next — measured on "Washington" over "Commanders", 0.92 overlapped them by 3.5px. 1.06 leaves
+// a gap at every size ratio two lines of one name can take, and costs about a tenth of the type's
+// height against the version that had no descenders to clear.
+export const revealNameLineHeight = 1.06;
+export const revealNameMaxPx = 72;
+export const revealNameInsetPx = 12;
+// And the share of the band the stack's ink may fill, the rest being margin. The band's edge is a
+// hard colour boundary rather than a margin of its own — past it is the other club's colour on one
+// side and the popup's background on the other — so this is the only clearance there is.
+export const revealNameHeightShare = 0.86;
 
-export const revealNameScale = (away = '', home = '') => (
-	revealNameBaseLength / Math.max(revealNameBaseLength, longestWord(away), longestWord(home))
+// Where the ink sits inside a line box, per em, measured off DM Sans 700 with canvas `TextMetrics`
+// rather than guessed: `fontBoundingBox` ascent 0.99 and descent 0.31, ink ascent 0.725 (which is an
+// ascender — caps stop at 0.712) and ink descent 0.232. A line box of height L puts its baseline at
+// `L / 2 + 0.34`, so the ink runs from `L / 2 - 0.385` to `L / 2 + 0.572` measured from the top of
+// the box — which is to say the box neither starts nor ends where the letters do, and at any leading
+// under 1.144 the descenders of the last line hang below the box entirely.
+//
+// Two things need that. The height budget is against the ink rather than against the boxes, or the
+// bottom of a "g" lands outside the band it belongs to — measured, it came within a pixel of the
+// card's own edge. And the block is lifted so that the ink is centred in the band rather than the
+// boxes being: the ink sits low in its boxes, by 0.145em at the top and 0.042 at the bottom at this
+// leading, which is 3px of a 5px margin handed from one side to the other.
+export const revealNameInkTopEm = 0.385;
+export const revealNameInkBottomEm = 0.572;
+
+// The space, from the same measurement: 0.2355em, and `measureText('Miami Marlins')` comes to
+// `measureText('Miami') + measureText('Marlins')` plus exactly that.
+export const revealNameSpaceEm = 0.2355;
+
+export const revealNameJoinedRatio = (ratios: number[]) => (
+	ratios.reduce((total, ratio) => total + ratio, 0) + revealNameSpaceEm * Math.max(0, ratios.length - 1)
+);
+
+const inkGapEm = () => Math.max(0, revealNameLineHeight / 2 - revealNameInkTopEm);
+const inkHangEm = () => Math.max(0, revealNameInkBottomEm - revealNameLineHeight / 2);
+
+// And how far apart two lines of one name are allowed to be drawn. Justification alone sizes a line
+// by the reciprocal of its length, so a two-letter line beside a five-letter one comes out two and a
+// half times the height of it — "AC" set over a small "MILAN", which reads as a mistake rather than
+// as a lockup. Past 1.8 the longer line keeps its size and the shorter one stops growing, so the
+// block goes ragged instead: which is what type does, and only ever makes the block shorter than the
+// bound it was already inside.
+export const revealNameSpread = 1.8;
+
+export const revealNameFit = (ratios: number[], boxWidth: number, boxHeight: number) => {
+	if (!ratios.length || ratios.some(ratio => !(ratio > 0))) return ratios.map(() => 0);
+	const width = Math.max(0, boxWidth - revealNameInsetPx * 2);
+	const height = Math.max(0, boxHeight * revealNameHeightShare);
+	// The ink's height per pixel of block width. A line justified to the block is `block / ratio`
+	// tall, so the stack of boxes is `block` times the sum of the reciprocals — and then the ink
+	// starts inside the first box and ends outside the last one.
+	const stacked = ratios.reduce((total, ratio) => total + revealNameLineHeight / ratio, 0);
+	const ink = stacked - inkGapEm() / ratios[0]! + inkHangEm() / ratios[ratios.length - 1]!;
+	const block = Math.min(width, height / ink);
+	const justified = ratios.map(ratio => block / ratio);
+	const spread = Math.min(...justified) * revealNameSpread;
+	return justified.map(size => Math.min(size, spread, revealNameMaxPx));
+};
+
+// How far up the block is drawn from where its boxes would centre it, so that the ink is what ends
+// up centred in the band. The ink is low in its boxes at both ends — a gap at the top of the first,
+// a hang below the bottom of the last — so half the difference is the correction.
+export const revealNameLift = (sizes: number[]) => (
+	sizes.length && sizes.every(size => size > 0)
+		? (inkGapEm() * sizes[0]! + inkHangEm() * sizes[sizes.length - 1]!) / 2
+		: 0
 );
 
 // The width the stylesheet draws the leading bar at. Named here because the travel below is measured

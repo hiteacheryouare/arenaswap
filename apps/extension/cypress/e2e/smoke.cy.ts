@@ -1,4 +1,18 @@
+import { revealFullRate, revealOpenMs, revealSettleMs } from '../../entrypoints/popup/cardReveal';
 import { liveState, onboardedPrefs, openTabs, sixersThunder } from '../support/fixtures';
+
+// A tricode on a live card is under the open animation for as long as the animation runs, and on a
+// first open of the day — which every spec here is, since Cypress clears `localStorage` between
+// tests — that is the whole of the long cut. The poster does not put the lettering up until 3991ms
+// in, so the default 4s retry budget was a coin flip on it and lost the moment the beats ahead of the
+// poster grew. Taken off `revealSettleMs` rather than written down, because this is the third pass to
+// move that figure.
+const revealClear = revealSettleMs('full') + 2000;
+
+// And the frame the wipe bars are actually over the card on, which is the middle of the pass: the
+// poster puts it 1500ms in and it runs for 1000, so this is 500ms into it. Derived for the same
+// reason — written as a flat 2000 and then 3000, it has twice ended up naming a frame where every bar
+// was still parked off the card, which is the one state this spec must not measure.
 
 describe('popup boots', () => {
 	it('serves the built bundle with styles, fonts and translations', () => {
@@ -20,7 +34,7 @@ describe('popup boots', () => {
 		});
 
 		cy.contains('Welcome to ArenaSwap').should('not.exist');
-		cy.contains(sixersThunder.homeTeam.abbreviation).should('be.visible');
+		cy.contains(sixersThunder.homeTeam.abbreviation, { timeout: revealClear }).should('be.visible');
 	});
 
 	// The frame is 320px wide and nothing in it is ever meant to move sideways, but two of the things
@@ -43,11 +57,8 @@ describe('popup boots', () => {
 			expect(doc.documentElement.scrollWidth, 'scroll width at the first frame')
 				.to.be.at.most(doc.documentElement.clientWidth);
 		});
-		// And mid-pass, where the bars are over the card and the crests are at their largest. The pass
-		// no longer starts until 2990ms — 1040 of opening beat, then 1500 of poster at 1.3× — so the
-		// 2000 this was written at, and the 3000 it was moved to for the rate alone, both now read a
-		// frame where every bar is still parked off the card.
-		cy.wait(3500);
+		// And mid-pass, where the bars are over the card and the crests are at their largest.
+		cy.wait(revealOpenMs('full') + (1500 + 500) * revealFullRate);
 		cy.document().should(doc => {
 			expect(doc.documentElement.scrollWidth, 'scroll width mid-sweep')
 				.to.be.at.most(doc.documentElement.clientWidth);
@@ -68,6 +79,6 @@ describe('popup boots', () => {
 
 		cy.contains(sixersThunder.homeTeam.abbreviation).should('not.exist');
 		cy.pushScores(liveState());
-		cy.contains(sixersThunder.homeTeam.abbreviation).should('be.visible');
+		cy.contains(sixersThunder.homeTeam.abbreviation, { timeout: revealClear }).should('be.visible');
 	});
 });

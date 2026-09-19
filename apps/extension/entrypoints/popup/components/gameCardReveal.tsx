@@ -3,7 +3,7 @@ import type { CSSProperties, ReactNode } from 'react';
 import type { Game, Team } from '@arenaswap/core/types';
 import { resolveTeamColorPair } from '@arenaswap/ui/src/components/colorUtils';
 import TeamCrest from '@arenaswap/ui/src/components/teamCrest';
-import RevealOpeningNames from './revealOpeningNames';
+import RevealNamingScene from './revealNamingScene';
 import {
 	revealAbbrScale,
 	revealDelayMs,
@@ -83,19 +83,24 @@ const RevealSide = ({ team, surface, side }: { team: Team; surface: string; side
 	</>
 );
 
-// The beat that runs ahead of the poster: each crest on a disc of its own team's colour, both drawn
-// past the edges of the card so the stage's clip cuts them, arriving from their own outer side and
-// settling as the colour comes over them. Its own layer rather than the poster's, which is clipped to
-// hide its crests until a bar has passed — these have to be visible from the first frame, and they sit
-// under the colour halves so that the halves growing over them is the whole of the transition. Nothing
-// fades into anything: the pair are still shrinking towards the hold when the colour takes them.
+// Everything that runs ahead of the poster, which is two scenes on one layer.
 //
-// Each crest's colour goes across its own half of the card at full size rather than into a disc behind
-// it, and `teamCrest`'s own wrapper is that field — which is what keeps the colour right without this
-// file deciding it. Handed the team's colour as its surface, the component comes back bare when the
-// artwork reads on it and the stylesheet paints the team colour; when it does not, it sets its tinted
-// plate inline and the field becomes that instead. Either way the crest ends up on the colour a disc
-// would have given it, spread across the card.
+// First the crests: each one on its team's colour, drawn past the edges of the card so the stage's
+// clip cuts them, arriving from their own outer side and settling. Each crest's colour goes across
+// its own half of the card at full size rather than into a disc behind it, and `teamCrest`'s own
+// wrapper is that field — which is what keeps the colour right without this file deciding it. Handed
+// the team's colour as its surface, the component comes back bare when the artwork reads on it and
+// the stylesheet paints the team colour; when it does not, it sets its tinted plate inline and the
+// field becomes that instead. Either way the crest ends up on the colour a disc would have given it,
+// spread across the card.
+//
+// Then the naming, which re-cuts the same two colours as a horizontal split and names both clubs
+// across the full width of the card. It draws over the fields rather than replacing them, so the
+// crests leave under a band closing over them and the layer underneath never has to change.
+//
+// Its own layer rather than the poster's, which is clipped to hide its crests until a bar has passed
+// — these have to be visible from the first frame — and it sits under the poster's colour halves, so
+// the halves growing over it are the whole of the transition out of both scenes.
 const RevealOpening = ({ game, awayColor, homeColor }: { game: Game; awayColor: string; homeColor: string }) => (
 	<div className='game-card-reveal-opening' aria-hidden='true'>
 		{([['away', game.awayTeam, awayColor], ['home', game.homeTeam, homeColor]] as const).map(([side, team, surface]) => (
@@ -110,7 +115,7 @@ const RevealOpening = ({ game, awayColor, homeColor }: { game: Game; awayColor: 
 				loading='eager'
 			/>
 		))}
-		<RevealOpeningNames game={game} awayColor={awayColor} homeColor={homeColor} />
+		<RevealNamingScene game={game} />
 	</div>
 );
 

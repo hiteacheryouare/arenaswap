@@ -955,15 +955,18 @@ button, input, select, optgroup, textarea {
    anything is dissolved into anything, because the thing covering them is the next beat arriving.
 
    Two scenes on one layer, and one window across both, so every element in here reads off the same
-   percentages. 700ms is the crests (`revealOpenBeatMs`), 600 is the naming after it
-   (`revealNameBeatMs`), and the 900 on the end is how long the layer stays alive into the poster —
+   percentages. 700ms is the crests (`revealOpenBeatMs`), 1750 is the naming after it
+   (`revealNameBeatMs`), and the 1050 on the end is how long the layer stays alive into the poster —
    which has to be at least the 884ms the halves take to meet, or the colour would part again at the
-   end over a scene still sitting underneath. 2200ms all told, so the crests land at 32%, hold, and
-   are gone by 59%; the names start at 41% and are up by 59%; and 59% is where the poster begins.
+   end over a scene still sitting underneath. 3500ms all told, which is why the figures below are the
+   round percentages they are: the crests land at 20% and have left by 32%, the bands close on the
+   centre line over them by that same 32%, the naming is up from 40% and holds to 64% — a full second
+   of it, which is what this beat is for — and has collapsed onto its slots by 70%, where the poster
+   begins.
 
    The fields never move across either scene. They are the coloured background both are built on, and
-   what changes between the scenes is only what is drawn on them, which is why this costs one layer
-   rather than two and why neither scene has to cut to the other.
+   the naming's own bands are those same two colours re-cut flat over them, which is why this costs
+   one layer rather than two and why neither scene has to cut to the other.
 
    The layer paints nothing itself. The two fields below cover it exactly, the way the poster's halves
    do at full width, so anything painted here would only ever show through their antialiased join. */
@@ -975,7 +978,7 @@ button, input, select, optgroup, textarea {
 	overflow-clip-margin: 1px;
 	clip-path:            inset(0 -1px round calc(0.5rem + 1px));
 	pointer-events:       none;
-	animation:            cardRevealOpeningIn calc((700ms + 600ms + 900ms) * var(--reveal-rate)) linear var(--reveal-delay) both;
+	animation:            cardRevealOpeningIn calc((700ms + 1750ms + 1050ms) * var(--reveal-rate)) linear var(--reveal-delay) both;
 }
 
 /* Each team's colour across its own half of the card, full size, rather than a disc behind its crest.
@@ -1010,96 +1013,119 @@ button, input, select, optgroup, textarea {
 	--reveal-drift: 1;
 }
 
-/* The club named in full, which is the one thing an in-stadium matchup graphic says out loud that this
-   one never did — the poster after it carries tricodes, and a tricode is decoded rather than read.
+/* ── The naming: the split laid flat, and the clubs across it ──────────────────
 
-   Set as big as those tricodes and in the same two copies, for the same reason: an outline of live
-   text is not a stroke on that text, since a stroke follows every contour the font draws including
-   the ones a filled glyph hides. Back copy solid white and stroked wider than itself, front copy the
-   same glyph in the colour behind it, and what shows is the stroke outside the silhouette.
+   The second scene re-cuts the same two colours as a horizontal split — away over home, each band
+   the full width of the card — and names both clubs across it. That is the whole reason the split is
+   laid flat for this one beat: a name gets the width of the card rather than half of it, and at half
+   a card the longest word had to fit, so the naming came out at a third of the size of the tricodes
+   it precedes.
 
-   One line per word, so what has to fit the half a card is the longest word rather than the longest
-   name, and `--reveal-name-scale` is that longest word across both sides — one long name pulls both
-   down, exactly as the tricodes do, or the two stop reading as one graphic.
+   Nothing has to cut to it. The bands close over the fields the crests were standing on, in the
+   colours those fields were already painting, so what arrives is a horizon rather than a surface —
+   and the crests leave underneath it. Nothing has to cut out of it either: the poster's own leaning
+   halves wipe in over the bands, which is the one place in this graphic where colour arrives over
+   colour that is not already its own, so the split visibly pivots back onto the seam.
 
-   A sibling of the field rather than a child, because the field is `teamCrest`'s own wrapper and takes
-   no children; it takes the same geometry and the same seam clip, so a long name is cut by the seam
-   instead of crossing it.
+   A band paints its colour and nothing else, and the naming is a sibling of it rather than a child.
+   Only the exit needs that: a band is clipped to its own half of the card, and a name leaves by
+   collapsing across the centre line onto the slot its tricode appears on. */
+.game-card-reveal-opening-band {
+	position:       absolute;
+	left:           0;
+	right:          0;
+	height:         50%;
+	pointer-events: none;
+	animation:      cardRevealOpeningBand calc((700ms + 1750ms + 1050ms) * var(--reveal-rate)) cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay) both;
+}
 
-   Dead centre of its own half, which is exactly where the tricode it precedes sits — `top: 50%`,
-   `left: 25%` and `75%`, the two crest slots. That placement is the whole of what makes this read as
-   the naming rather than as a label on the scene before it, and it was a corner caption twice before
-   somebody had to say so.
+/* Each one wiped in from the card's own outer edge towards the centre line, which is the poster's two
+   halves meeting on the seam played on the other axis. `--reveal-band-shut` is where that wipe starts
+   from: the whole of the band clipped away against the edge it comes in from. */
+.game-card-reveal-opening-band.is-away {
+	top:                0;
+	background:         var(--reveal-away);
+	--reveal-band-shut: 0 0 100% 0;
+}
 
-   Half a card wide, not half plus the lean, and so it carries its own seam rather than the fields'.
-   The two are the same line described against different boxes: against a half, the seam leaves the
-   box by a lean at the top and comes back inside it by a lean at the bottom. */
+.game-card-reveal-opening-band.is-home {
+	bottom:             0;
+	background:         var(--reveal-home);
+	--reveal-band-shut: 100% 0 0 0;
+}
+
+/* The club named in full, which is the one thing an in-stadium matchup graphic says out loud that
+   this one never did — the poster after this carries tricodes, and a tricode is decoded rather than
+   read.
+
+   The tricodes' own family, weight and tracking, and the same 0.9 the tricode softens its white to,
+   but filled solid rather than outlined. The outline is the tricode's treatment and it stays the
+   tricode's: this is the beat carrying words somebody has to read, and a hollow letterform at the
+   size these are set at is a shape before it is a letter. Filled also means one copy of the glyph
+   rather than the tricode's two — there is no stroke to keep outside a silhouette, so there is
+   nothing to lay a second copy over.
+
+   The box is the band's own half of the card, so a name is centred in the colour it belongs to, and
+   the lines inside it are justified to one block width — `revealNameFit`, measured off the glyphs
+   themselves rather than counted off the string.
+
+   It leaves by collapsing onto the slot its tricode appears on, which is a quarter of the card in
+   from the centre on the centre line: against this box, a quarter of its width and half its height.
+   Nothing clips it, and that is why this is a sibling of the band rather than a child of it — the
+   collapse crosses the centre line. */
 .game-card-reveal-opening-name {
 	position:        absolute;
-	top:             0;
-	bottom:          0;
-	width:           50%;
+	left:            0;
+	right:           0;
+	height:          50%;
 	display:         flex;
 	align-items:     center;
 	justify-content: center;
 	pointer-events:  none;
-	animation:       cardRevealOpeningName calc((700ms + 600ms + 900ms) * var(--reveal-rate)) cubic-bezier(0.16, 1, 0.3, 1) var(--reveal-delay) both;
+	animation:       cardRevealOpeningName calc((700ms + 1750ms + 1050ms) * var(--reveal-rate)) linear var(--reveal-delay) both;
 }
 
 .game-card-reveal-opening-name.is-away {
-	left:           0;
-	clip-path:      polygon(0 0, calc(100% + var(--reveal-lean)) 0, calc(100% - var(--reveal-lean)) 100%, 0 100%);
-	--reveal-drift: -1;
+	top:                  0;
+	--reveal-drift:       -1;
+	--reveal-name-slot-x: -25%;
+	--reveal-name-slot-y: 50%;
 }
 
 .game-card-reveal-opening-name.is-home {
-	right:          0;
-	clip-path:      polygon(var(--reveal-lean) 0, 100% 0, 100% 100%, calc(var(--reveal-lean) * -1) 100%);
-	--reveal-drift: 1;
+	bottom:               0;
+	--reveal-drift:       1;
+	--reveal-name-slot-x: 25%;
+	--reveal-name-slot-y: -50%;
 }
 
-/* Centred on the slot, and every line centred with it — the tricode is centred in its own box too,
-   and a name set ragged under a centred crest would not read as the same graphic. */
+/* Lifted off the centre the flex box would give it, because what has to be centred in the band is
+   the ink and not the line boxes it sits low inside — `revealNameLift`, in pixels, off the sizes the
+   fit just chose. On the inner container rather than the box, whose transform is the scene's own
+   entry and exit. */
 .game-card-reveal-opening-name-type {
 	display:        flex;
 	flex-direction: column;
 	align-items:    center;
-	text-align:     center;
-	padding:        0 0.375rem;
+	transform:      translateY(calc(var(--reveal-name-lift, 0px) * -1));
 }
 
-/* Each word is its own line, and its own pair of stacked copies. The line is sized by the glyphs so
-   the two copies can be laid exactly over one another. */
+/* Every line carries its own size. `--reveal-name-size` is what `revealNameFit` measured for this
+   line; the 2rem is only the size the fit is taken at, and is never on screen.
+
+   The club's name in the case ESPN sent it, which is the case the club writes it in. No optical
+   padding, unlike the tricode — with ascenders and descenders in play the line box is close to
+   centred on its own ink anyway, and `revealNameLineHeight` is what keeps a descender on one line
+   clear of an ascender on the next. Tracking is 0 rather than the tricode's 0.02em: that figure
+   opens up a run of caps, and mixed case at this size needs nothing. */
 .game-card-reveal-opening-name-line {
-	position: relative;
-	display:  block;
-}
-
-.game-card-reveal-opening-name-edge,
-.game-card-reveal-opening-name-face {
-	display:        block;
-	font-family:    'DM Sans', sans-serif;
-	font-size:      calc(2rem * var(--reveal-name-scale, 1));
-	font-weight:    700;
-	letter-spacing: 0.01em;
-	line-height:    0.98;
-	white-space:    nowrap;
-	text-transform: uppercase;
-}
-
-.game-card-reveal-opening-name-edge {
-	color:               #ffffff;
-	-webkit-text-stroke: 3px #ffffff;
-}
-
-/* Laid exactly over the back copy, in the colour of the field it is drawn on — which is the team's
-   own on most cards. Where `teamCrest` fell back to its light plate the field is lighter than this,
-   so the letters read as filled in the team's colour rather than hollow: still the same type at the
-   same size, and still legible, which is the part that has to hold. */
-.game-card-reveal-opening-name-face {
-	position: absolute;
-	inset:    0;
-	color:    var(--reveal-name-surface);
+	display:     block;
+	color:       #ffffff;
+	font-family: 'DM Sans', sans-serif;
+	font-size:   var(--reveal-name-size, 2rem);
+	font-weight: 700;
+	line-height: var(--reveal-name-leading);
+	white-space: nowrap;
 }
 
 /* Centred in its own field rather than offset out of the card's middle, which is what the disc needed
@@ -1112,7 +1138,7 @@ button, input, select, optgroup, textarea {
 	width:     var(--reveal-open-crest);
 	height:    var(--reveal-open-crest);
 	margin:    calc(var(--reveal-open-crest) / -2) 0 0 calc(var(--reveal-open-crest) / -2);
-	animation: cardRevealOpeningCrest calc((700ms + 600ms + 900ms) * var(--reveal-rate)) linear var(--reveal-delay) both;
+	animation: cardRevealOpeningCrest calc((700ms + 1750ms + 1050ms) * var(--reveal-rate)) linear var(--reveal-delay) both;
 }
 
 /* ── The wipe, and the two layers it trades between ─────────────────────────── */
@@ -1413,17 +1439,18 @@ button, input, select, optgroup, textarea {
    elements animates anything itself, which is what makes a fade with no `from` correct on them — the
    value it starts from is the stylesheet's own 1.
 
-   The base cannot have the same treatment, and this is the one trap in here. It *does* animate its own
-   opacity, and it is already at 0 for most of the graphic's life, so a fade with no `from` would take
-   it back to 1 first and flash the dark plate over a card somebody was trying to get to. It goes at
-   once instead. Nothing is lost by that: the plate is only there to stop the white card showing between
-   the two halves while they travel, and a card on its way to being the thing you are looking at does
-   not need hiding.
+   The base and the opening layer cannot have the same treatment, and this is the one trap in here.
+   Both *do* animate their own opacity, and both are already at 0 for most of the graphic's life, so a
+   fade with no `from` would take them back to 1 first and flash the dark plate, or a scene two
+   seconds gone, over a card somebody was trying to get to. They go at once instead. Nothing is lost
+   by that: the plate is only there to stop the white card showing between the two halves while they
+   travel, and a card on its way to being the thing you are looking at does not need hiding.
 
    `--reveal-delay` is deliberately in none of this — the whole list leaves together, rather than the
    eighth card taking its stagger's worth of extra time to agree to. */
 .game-card-reveal.is-skipping {
-	.game-card-reveal-base {
+	.game-card-reveal-base,
+	.game-card-reveal-opening {
 		animation: none;
 		opacity:   0;
 	}
@@ -1501,37 +1528,56 @@ button, input, select, optgroup, textarea {
 	to   { clip-path: polygon(0 0, calc(-22px - var(--reveal-lean) * 2) 0, -22px 100%, 0 100%); }
 }
 
-/* Up almost at once and out under colour that is already covering it. 82% of 1700 is 1394ms, which is
-   594ms into the poster — the halves need 884 to meet, so what takes this off screen is the colour
+/* Up almost at once, and out under colour that is already covering it. 96% of 3500 is 3360ms, which
+   is 910ms into the poster — the halves need 884 to meet, so what takes this off screen is the colour
    rather than the fade, and the fade is only there so that nothing is left underneath when the colour
    parts again at the end. */
 @keyframes cardRevealOpeningIn {
 	0%        { opacity: 0; }
-	7%, 82%   { opacity: 1; }
+	4%, 96%   { opacity: 1; }
 	100%      { opacity: 0; }
 }
 
-/* The first scene, and its exit. 32% of 2200 is 700ms, the end of the crests' own beat; they creep
-   until 52% and then leave the way they came in, off their own outer side, clearing the field by 59%
-   — which is where the poster starts and where the names have finished arriving over them. Nothing
-   cuts: the pair are still moving out while the naming moves in, and the field underneath both never
-   changes. */
+/* The first scene, and its exit. 20% of 3500 is 700ms, the end of the crests' own beat; they creep
+   until 24% and then leave the way they came in, off their own outer side, clearing the field by 31%
+   — a frame ahead of the bands closing over them at 32%. Nothing cuts: the pair are still moving out
+   under a band that is still closing, and the colour underneath neither of them ever changes. The
+   frame of margin is worth having rather than lining the two up exactly: what is left between two
+   bands about to meet is a strip a few pixels tall, and a crest still at full strength in it reads as
+   a seam of debris rather than as a crest being closed out. */
 @keyframes cardRevealOpeningCrest {
 	0%   { opacity: 1; transform: translateX(calc(var(--reveal-drift, 0) * 26px)) scale(1.18); animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); }
-	32%  { opacity: 1; transform: translateX(0) scale(1); animation-timing-function: linear; }
-	52%  { opacity: 1; transform: translateX(0) scale(0.97); animation-timing-function: cubic-bezier(0.55, 0, 0.9, 0.3); }
-	59%  { opacity: 0; transform: translateX(calc(var(--reveal-drift, 0) * 22px)) scale(0.88); }
+	20%  { opacity: 1; transform: translateX(0) scale(1); animation-timing-function: linear; }
+	24%  { opacity: 1; transform: translateX(0) scale(0.97); animation-timing-function: cubic-bezier(0.55, 0, 0.9, 0.3); }
+	31%  { opacity: 0; transform: translateX(calc(var(--reveal-drift, 0) * 22px)) scale(0.88); }
 	100% { opacity: 0; transform: translateX(calc(var(--reveal-drift, 0) * 22px)) scale(0.88); }
 }
 
-/* The second scene. Nothing until 41% of 2200, which is 900ms — the crests have begun to leave by
-   then and the field is clearing — and fully up by 59%, the instant the poster starts. In from its own
-   outer side, the direction everything in here arrives from. It holds from there: what takes it away
-   is the layer's own fade, which is the poster's colour closing over all of this. */
+/* The split laid flat. 25% of 3500 is 875ms, where the crests begin to leave, and the two bands close
+   on the centre line by 32% — the poster's halves meeting on the seam, played on the other axis and a
+   scene early. They hold from there: until the poster's halves have wiped over them these bands are
+   the whole of the card's colour. */
+@keyframes cardRevealOpeningBand {
+	0%, 25%   { clip-path: inset(var(--reveal-band-shut)); }
+	32%, 100% { clip-path: inset(0); }
+}
+
+/* The second scene. Nothing until 31% of 3500, which is 1085ms and the frame the bands are all but
+   shut on, and then it is driven on from its own outer side and lands rather than stopping — past its
+   place by a hair at 38% and back by 40%, which is the tricode's own entry a scene early. Held from
+   there to 64%, which is 840ms of this graphic and 1.09 seconds of real time with two clubs' names
+   standing still on the card: the one thing in here that somebody has to read rather than watch. Then
+   it collapses onto the slot its tricode will appear on and is gone by 70%, which is the frame the
+   poster starts on.
+
+   Gone, rather than left to be covered. The poster's colour grows in from the outer edges, so a name
+   still standing there is eaten from its ends inward by colour in its own hue — letters going out one
+   at a time with nothing visible doing it, which is what this beat used to end on. */
 @keyframes cardRevealOpeningName {
-	0%, 41% { opacity: 0; transform: translateX(calc(var(--reveal-drift, 0) * 20px)); }
-	59%     { opacity: 1; transform: translateX(0); }
-	100%    { opacity: 1; transform: translateX(0); }
+	0%, 31%   { opacity: 0; transform: translate(calc(var(--reveal-drift, 0) * 24px), 0) scale(1); animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); }
+	38%       { opacity: 0.9; transform: translate(calc(var(--reveal-drift, 0) * -3px), 0) scale(1); animation-timing-function: ease-out; }
+	40%, 64%  { opacity: 0.9; transform: translate(0, 0) scale(1); animation-timing-function: cubic-bezier(0.55, 0, 0.9, 0.3); }
+	70%, 100% { opacity: 0; transform: translate(var(--reveal-name-slot-x), var(--reveal-name-slot-y)) scale(0.36); }
 }
 
 @keyframes cardRevealAbbrIn {

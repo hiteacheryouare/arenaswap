@@ -3,6 +3,84 @@
 > One or two lines per entry: what changed, and the one thing about it worth knowing later.
 > The code, the tests and the git history hold the rest. Do not write essays here.
 
+## The naming takes the card, on a split laid flat, filled rather than outlined — 2026-09-18
+
+Fourth pass on this beat and the first one that answers the ask, which was: make the full name look
+like the tricode, bigger, across the whole card. It could not be done where it was. A leaning seam
+leaves each club half a card, and at half a card the longest word set the size for everything — so
+the naming was drawn at a third of the height of the tricodes it precedes and read as a caption on
+somebody else's graphic.
+
+So the split is **laid flat for that one beat**: two bands, away over home, each the full width of
+the card, wiped in from the card's own outer edges to meet on the centre line — which is the poster's
+two halves meeting on the seam, played on the other axis and a scene early. A club then gets the
+whole width of the card, and the poster pivots the split back by wiping its own leaning halves over
+the bands. That is worth having for itself: the halves grow over the bottom-left and top-right in a
+colour those quadrants are not already painted, which makes it the only moment in this graphic where
+colour visibly arrives over colour, and the handover a wipe rather than a cut in the dark. The bands
+take the raw team colours the poster's halves and the card's own rails are drawn in, so nothing has
+to agree with anything.
+
+**Filled solid white, in the club's own case, not outlined and not shouted** — both the maintainer's
+call, and the outline stays the tricode's. Filled also costs an element: there is no stroke to keep
+outside a silhouette, so the two stacked copies the tricode needs collapse to one. **Two lines at
+most, broken at the club's own nickname** rather than a line per word, which is the other half of why
+the type doubled: ESPN sends `Team.nickname`, so "Penn State Nittany Lions" breaks after "State" and
+not wherever a box ran out — and **it stays on one line where that draws it bigger**, which is a fact
+about the name and the card rather than a rule. "Washington Commanders" is 21px of type on one line
+and 38 on two; "Miami Marlins" is 40 on one and 35 on two, and the one-line version covers the whole
+card where the two-line version covers a third. So both are fitted and the bigger wins, which means
+the two clubs on one card can be set differently and sometimes are.
+
+The size is **measured rather than counted**, all of it. The component reads each line's own advance
+off the DOM and `revealNameFit` justifies the lines to one block width, bounded by the band's width,
+the band's ink height, and a cap a little over the tricode's own 3.4rem. An advance is a property of
+the letters and not of their number — 0.5168em a character for "Pittsburgh" against 0.6629 for
+"Commanders", a quarter more from the same count — which is what defeated `revealNameScale` and its
+hand-measured 5.5; that constant and its four tests are gone. `revealNameSpaceEm` is what lets the
+one-line candidate be fitted without rendering it: DM Sans advances are additive to four decimals,
+measured, so the joined line is the two lines plus a space. `revealNameSpread` is the one bound that
+is taste rather than geometry — justification alone draws "AC" two and a half times the height of
+"Milan" — and it is what leaves "Los Angeles" over "Lakers" ragged rather than matched. On the live
+card a long club is named across three quarters of it at 38px and a short one across nine tenths at
+40px, against the 17.6px the version before this could reach.
+
+Mixed case is what the vertical arithmetic is for, and it is all measured off DM Sans 700 with canvas
+`TextMetrics` rather than guessed: font box 0.99/0.31, ink ascent 0.725, ink descent 0.232. Caps sit
+happily at 0.82 leading and this was drawn that way for a pass; letters with descenders cannot, and at
+0.92 the "g" of "Washington" went 3.5px through the ascenders of "Commanders" — the leading is 1.06,
+which leaves a gap at every size ratio two lines of one name can take. The **height budget is against
+the ink rather than the line boxes**, because a box does not contain its own descender at any leading
+under 1.144: budgeting by boxes put the bottom of a "g" one pixel from the card's own edge, measured
+in pixels off a render. And the block is **lifted** so the ink rather than the boxes is what sits
+centred in the band, the ink being low in its boxes by 0.145em at the top and 0.042 at the bottom —
+3px of a 5px margin handed from one side to the other. The spec that guards it measures the real ink
+with its own canvas metrics rather than reading those constants back, since the constants are the
+thing under test.
+
+The exit is the collapse the maintainer picked: the name gathers onto the exact slot its tricode
+appears on, and is **gone by the frame the poster starts**. Gone rather than covered, which is the
+defect this replaces — the poster's colour grows in from the outer edges in the same hue as the band,
+so a name left standing was eaten from its ends inward with nothing visible doing it, letters going
+out one at a time. And it is **slow enough to read**, which the first version of this pass was not:
+`revealNameBeatMs` is 1750 against 800, buying 1.09 seconds of two clubs' names standing still, which
+a spec asserts in real milliseconds at the rate the graphic actually plays. 7605ms a card now against
+6110, 8229 before the list settles, all of it skippable. The window is 700 + 1750 + 1050 = 3500, so
+the crests land at 20% and the poster starts at 70% — round figures on purpose, since every beat in
+here is a percentage of that window written out by hand.
+
+Three traps. A `Range` over text measures the content area — 1.30em of DM Sans against 0.96em of
+actual ink — so a line rect overhangs a block that fits perfectly and it is useless for anything but
+widths. Optical `padding-top`, copied from the tricode, moved the in-flow copy and not the `inset: 0`
+one and turned the outline into a drop shadow; irrelevant now that there is one copy and the lift does
+that job properly, but that is why nothing here has padding. And two specs were racing the clock
+rather than scrubbing, both of which passed for years because the
+poster used to start sooner: the lean spec read a half still 1% short of full and lost by 34ms, and
+the e2e smoke tests waited 4s for a tricode the poster does not put up until 3991ms. Also fixed on the
+way: a skip left the opening layer over the card, since it was never in the `.is-skipping` block — it
+goes at once now, like the dark base and for the same reason. No new locale keys: the only words in
+this beat are ESPN's own.
+
 ## The naming is a scene of its own, set where the tricodes are — 2026-09-18
 
 Two scenes ahead of the poster now: the crests hold the colour fields, then they leave the way they

@@ -378,7 +378,11 @@ describe('the popup open reveal', () => {
 				expect(Math.tan((skew * Math.PI) / 180) * (stage / 2), 'what that angle leans').to.be.closeTo(lean, 0.05);
 			});
 		});
-		// Which is what the halves are actually cut to: each one is half the card plus a lean.
+		// Which is what the halves are actually cut to: each one is half the card plus a lean. Read on
+		// the hold rather than whenever the runner gets here: the width is animated, and an unscrubbed
+		// read is a race against the poster's own opening — which it lost by 34ms the moment the beats
+		// ahead of the poster grew, and passed by measuring a half still 1% short of full.
+		scrubTo(spineMs(1500));
 		rectOf('.game-card').then(card => {
 			cy.get('.game-card-reveal-half.is-home').should($half => {
 				const overhang = $half[0].getBoundingClientRect().width - card.width / 2;
@@ -699,6 +703,10 @@ describe('the popup open reveal', () => {
 		// And the dark plate goes at once rather than fading, because for most of the graphic's life it
 		// is already gone — a fade with no `from` would take it back to full and flash it over the card.
 		cy.get('.game-card-reveal-base').should('have.css', 'opacity', '0');
+		// The opening scenes go the same way and for the same reason: they animate their own opacity
+		// too, and by the time anybody is skipping the poster they are two seconds gone. A fade would
+		// put the crests and the naming back over a card somebody was trying to reach.
+		cy.get('.game-card-reveal-opening').should('have.css', 'opacity', '0');
 	});
 
 	// The card's own crest arrives in one step under an overlay that is still fully opaque, rather
