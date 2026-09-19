@@ -20,8 +20,18 @@ const stripedOnRed = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAYA
 // The Diamondbacks' own red as it appears under the hero's scrim.
 const dbacksBackdrop = '#7b1323';
 
-// A black mark, so a light backdrop has something to reach for. Solid dark 8x8.
-const blackMark = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAFUlEQVR4nGPkUXb4z4AHMOGTHD4KAH25AX7gsIqPAAAAAElFTkSuQmCC';
+// A black mark, so a light backdrop has something to reach for. Solid dark 8x8, and — like the
+// white mark above — deliberately not the same bytes as any crest here: it was a byte-for-byte copy
+// of `navy`, which made the mark the component had swapped *to* indistinguishable from the artwork
+// it had swapped *from*, so the measurement skipped itself and the verdict never landed.
+const blackMark = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAAD0lEQVR42mOQwgEYhpYEAJ8xE4HmivYxAAAAAElFTkSuQmCC';
+
+// Solid fills at a real size, for the crests served over the wire below: the legibility measure
+// walks 48x48 of them and reaches the answer the product would. Yankees navy is the case that ends
+// in a mark — nothing in it stands off the popup.
+const solidSvg = (fill: string) => (
+	`<svg xmlns='http://www.w3.org/2000/svg' width='64' height='64'><rect width='64' height='64' fill='${fill}'/></svg>`
+);
 
 const mount = (logo: string, monoMarks?: { white?: string; black?: string }, background = popup) => {
 	cy.mount(
@@ -171,5 +181,163 @@ describe('a crest is re-judged when the crest or the surface changes under it', 
 		cy.get('.swap').click();
 		cy.get('.tc-crest').should('not.have.class', 'is-mono');
 		cy.get('.tc-crest img').should('have.attr', 'src', gold);
+	});
+});
+
+// The swap to a monochrome mark used to be watchable: the colour artwork appeared as soon as it
+// decoded, which is a frame or more ahead of the commit that swapped it out, and the element went
+// on being free to paint it across the swap. A flash is a fact about frames, so these read frames —
+// the crests are served over intercepted requests so the loads land inside the window being sampled
+// rather than before it.
+describe('a crest bound for a monochrome mark never shows its colours', () => {
+	// Same origin, so `crossOrigin='anonymous'` still leaves the canvas readable. Aliased, because
+	// how many times each one is asked for is half of what these specs are checking.
+	const serve = (name: string, fill: string, delay: number) => {
+		const url = `/crest-test/${Cypress._.uniqueId(name)}.svg`;
+		cy.intercept('GET', url, {
+			delay,
+			statusCode: 200,
+			headers: { 'content-type': 'image/svg+xml' },
+			body: solidSvg(fill),
+		}).as(name);
+		return url;
+	};
+
+	// A real box, from the walkthrough's own class: an image with no size is one Chrome declines to
+	// defer, and the lazy case below would prove nothing against a 0x0 crest.
+	const sizedCrest = 'tc-crest team-crest-32';
+
+	// `asked` is the `src` React has committed and `shown` is `currentSrc`, which is the request the
+	// element is actually drawing from. They are different things for as long as a new source takes
+	// to arrive, and that gap is the bug: an `img` goes on painting the old image the whole time.
+	interface crestFrame {
+		asked: string;
+		shown: string;
+		state: string;
+		painted: boolean;
+	}
+
+	let stopSampling: (() => void) | undefined;
+
+	const sampleEveryFrame = (frames: crestFrame[]) => {
+		cy.window().then(win => {
+			let running = true;
+			stopSampling = () => { running = false; };
+			const tick = () => {
+				if (!running) return;
+				const crest = win.document.querySelector('.tc-crest');
+				const image = crest?.querySelector('img');
+				if (crest && image) {
+					frames.push({
+						asked: image.getAttribute('src') ?? '',
+						shown: image.currentSrc,
+						state: crest.getAttribute('data-crest-state') ?? '',
+						painted: win.getComputedStyle(image).visibility !== 'hidden',
+					});
+				}
+				win.requestAnimationFrame(tick);
+			};
+			win.requestAnimationFrame(tick);
+		});
+	};
+
+	afterEach(() => { stopSampling?.(); });
+
+	it('holds the placeholder up from the abbreviation straight through to the mark', () => {
+		const frames: crestFrame[] = [];
+		const colour = serve('colour', '#0c2340', 80);
+		const mark = serve('mark', '#ffffff', 120);
+
+		sampleEveryFrame(frames);
+		mount(colour, { white: mark, black: mark });
+
+		cy.get('.tc-crest').should('have.class', 'is-mono');
+		cy.get('.tc-crest img').should('have.attr', 'src', mark).and('have.css', 'visibility', 'visible');
+		// Nothing here is vacuous: the colour artwork was fetched, through this element, and the
+		// verdict that reached for the mark could only have come from its pixels.
+		cy.get('@colour.all').should('have.length', 1);
+		cy.then(() => {
+			stopSampling?.();
+			// Not vacuous: the element carried the colour artwork for most of the window, and the
+			// mark it ended on is an answer only that artwork's own pixels could have given.
+			expect(frames.filter(frame => frame.asked === colour).length, 'frames carrying the colour artwork').to.be.greaterThan(0);
+			// The claim itself, in one line: the only thing this crest is ever on screen drawing is
+			// the mark. Read off `currentSrc`, which is the request being painted rather than the
+			// one most recently asked for — the two differ for exactly as long as a swap takes.
+			expect(frames.filter(frame => frame.painted && !frame.shown.endsWith(mark)), 'frames painting anything but the mark').to.deep.equal([]);
+			// Which is the placeholder's doing, so the crest is never `loaded` while the colour is
+			// what the element is asking for.
+			expect(frames.filter(frame => frame.asked === colour && frame.state === 'loaded'), 'frames calling the colour artwork loaded').to.deep.equal([]);
+		});
+	});
+
+	// The majority case, and the one this must not pay for: a crest that reads is abbreviation then
+	// colour, one transition, at the moment it decodes.
+	it('shows a crest that reads as soon as it decodes, mark or no mark', () => {
+		const frames: crestFrame[] = [];
+		const colour = serve('colour', '#ffb612', 80);
+		const mark = serve('mark', '#ffffff', 120);
+
+		sampleEveryFrame(frames);
+		mount(colour, { white: mark, black: mark });
+
+		cy.get('.tc-crest').should('not.have.class', 'is-mono');
+		cy.get('.tc-crest img').should('have.attr', 'src', colour).and('have.css', 'visibility', 'visible');
+		// One fetch, and it is the one the crest is drawn from: the artwork is measured where it is
+		// shown rather than loaded twice, once to be read and once to be painted.
+		cy.get('@colour.all').should('have.length', 1);
+		cy.get('@mark.all').should('have.length', 0);
+		cy.then(() => {
+			stopSampling?.();
+			// The verdict lands in the same load handler that reports the image, so the artwork is
+			// painted in the frame it arrives in or the one after: `load` is not a discrete event
+			// and React's commit can fall the far side of a paint. That single frame is the one the
+			// colour crest used to be painted in, which is the flash. Two would mean the
+			// measurement had been pushed out to an effect.
+			expect(frames.filter(frame => frame.shown.endsWith(colour) && !frame.painted).length, 'frames holding back artwork that had arrived').to.be.lessThan(2);
+		});
+	});
+
+	// The placeholder waits for an answer, so a measurement that cannot produce one has to count as
+	// an answer. `crestReadsOn` declines to write down a verdict it could not reach — a tainted
+	// canvas, or Chrome handing back no context past its memory ceiling, which a guide with a
+	// hundred bars can reach — and a crest waiting on that would never be drawn at all.
+	it('draws a crest whose pixels could not be read at all', () => {
+		// Its own URL, so the pair is genuinely unmeasured: a verdict this spec has already reached
+		// for one of the fixtures above is served out of the cache without a canvas being touched.
+		const colour = serve('colour', '#0c2340', 20);
+		const mark = serve('mark', '#ffffff', 20);
+		cy.window().then(win => {
+			cy.stub(win.CanvasRenderingContext2D.prototype, 'getImageData').throws(new Error('tainted canvas'));
+		});
+		mount(colour, { white: mark, black: mark });
+
+		cy.get('.tc-crest').should('not.have.class', 'is-mono');
+		cy.get('.tc-crest img').should('have.attr', 'src', colour).and('have.css', 'visibility', 'visible');
+	});
+
+	// `visibility` rather than `display` for exactly this: an image taken out of layout has no box
+	// to be scrolled into, and a lazy crest on the guide would never load at all.
+	it('still loads a lazy crest while it is being held back', () => {
+		const colour = serve('colour', '#0c2340', 40);
+		const mark = serve('mark', '#ffffff', 40);
+
+		cy.mount(
+			<div style={{ background: popup, padding: '1rem', width: '120px' }}>
+				<TeamCrest
+					logo={colour}
+					monoMarks={{ white: mark, black: mark }}
+					abbreviation='NYY'
+					background={popup}
+					discClassName='tc-disc'
+					crestClassName={sizedCrest}
+					fallback='blank'
+					loading='lazy'
+				/>
+			</div>,
+		);
+
+		cy.get('.tc-crest').should('have.class', 'is-mono');
+		cy.get('.tc-crest img').should('have.attr', 'src', mark).and('have.css', 'visibility', 'visible');
 	});
 });

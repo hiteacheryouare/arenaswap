@@ -38,6 +38,29 @@ the same colour in both.
 6110ms a card against 5460, and 6734 before the list settles, which is what the skip is for. `quick`
 is untouched for the fifth pass running: both scenes are `full` only.
 
+## A crest bound for a monochrome mark stops flashing the colours it is giving up — 2026-09-18
+
+The verdict is read off the colour artwork's own pixels, so the artwork has to load — but it does not
+have to be on screen while it is being judged, and it was: abbreviation, colour, abbreviation, mark,
+because an image paints the frame it decodes and `load` is not a discrete event, so the commit that
+swaps in the mark lands a frame or more behind it. `TeamCrest` now tells `Crest` how far the
+measurement has got, and a crest carrying that verdict stays behind its placeholder until the artwork
+it is asking for is the artwork that loaded — `visibility` rather than `display`, or a lazy crest on
+the guide would have no box to be scrolled into. Only where the team has a mark at all: with none, an
+unreadable crest keeps its artwork and merely gains a plate behind it, so nothing swaps and there is
+nothing to hold for. The warm path is untouched, since a verdict already in `localStorage` settles
+before the first frame.
+
+The thing to keep hold of is what counts as an answer. `crestReadsOn` refuses to write down a verdict
+it could not reach — a tainted canvas, or Chrome out of canvas memory past a hundred guide bars — so
+the hold is released by the measurement having been *attempted* rather than by a verdict arriving, or
+those crests would sit behind their placeholder for good. Measured by sampling every animation frame:
+nothing but the mark is ever painted, and the spec fails without the fix. The readable majority pays at
+most one frame, and `= 0` was tried and is flaky, which is itself the measurement proving the window is
+real. It also turned up a fixture whose black mark was a byte-for-byte copy of the navy crest, which
+made the mark indistinguishable from the artwork it replaces and skipped the measurement entirely —
+exactly the trap the `whiteMark` fixture's own comment warns about.
+
 ## Zod ships as `zod/mini`, and the string-format validators nobody called go with it — 2026-09-18
 
 Both schema files were written in the chained API, which is the reason the complete Zod 4 build

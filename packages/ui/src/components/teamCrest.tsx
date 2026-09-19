@@ -37,7 +37,10 @@ const TeamCrest = ({ logo, monoMarks, abbreviation, background, discClassName, c
 	// hero passes a different backdrop hex per game. Held in state, the previous team's verdict drew
 	// the next team's crest — Denver as a white silhouette until their PNG landed, on a machine that
 	// already knew the right answer — which is the swap the persisted cache exists to prevent.
-	const [, setMeasurements] = useState(0);
+	//
+	// What state does hold is the pair a measurement has already been attempted for, which is also
+	// what re-renders the component once that measurement has written to the module caches.
+	const [measuredPair, setMeasuredPair] = useState<string>();
 	const readable = logo ? cachedCrestReadsOn(logo, background) : undefined;
 	const monoMark = pickMonoMark(monoMarks, background);
 
@@ -49,6 +52,20 @@ const TeamCrest = ({ logo, monoMarks, abbreviation, background, discClassName, c
 
 	const imageRef = useRef<HTMLImageElement | null>(null);
 
+	// The verdict is read off the colour artwork's own pixels, so the artwork has to load before
+	// anything can be decided — but it does not have to be *shown* while that happens. Where the
+	// team has a mark to fall back to, the answer can be "not this artwork", and a crest bound for
+	// the mark used to paint its colours on the way there anyway, from the frame they decoded in to
+	// the commit that swapped them out. So the placeholder stays up until the answer is in. Only where a mark exists — with none, an unreadable crest keeps the same
+	// artwork and merely gains a plate behind it, and there is nothing to hold the placeholder for.
+	//
+	// A measurement that was attempted and produced nothing counts as an answer. `crestReadsOn`
+	// deliberately declines to write down a verdict it could not reach — a tainted canvas, or
+	// Chrome handing back no context past its memory ceiling, which a guide with a hundred bars can
+	// reach — and waiting for one would leave those crests behind their placeholder for good.
+	const judged = readable !== undefined || measuredPair === `${logo}|${background}`;
+	const verdict = monoMark === undefined ? undefined : judged ? 'settled' : 'pending';
+
 	const measure = useCallback((image: HTMLImageElement) => {
 		imageRef.current = image;
 		if (!logo) return;
@@ -59,7 +76,7 @@ const TeamCrest = ({ logo, monoMarks, abbreviation, background, discClassName, c
 		// neither reads nor has a mark to fall back to. Sampling it for the rest was a second canvas
 		// read of the same image that no branch could ever use.
 		if (!crestReadsOn(image, logo, background) && !monoMark) logoTint(image, logo);
-		setMeasurements(count => count + 1);
+		setMeasuredPair(`${logo}|${background}`);
 	}, [logo, background, monoMark]);
 
 	// The surface can move without the image moving with it — the same crest going from a dark bar
@@ -81,6 +98,7 @@ const TeamCrest = ({ logo, monoMarks, abbreviation, background, discClassName, c
 				fallback={fallback}
 				loading={loading}
 				crossOrigin='anonymous'
+				verdict={verdict}
 				onLoaded={measure}
 			/>
 		</span>
