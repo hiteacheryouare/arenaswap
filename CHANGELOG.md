@@ -38,6 +38,25 @@ the same colour in both.
 6110ms a card against 5460, and 6734 before the list settles, which is what the skip is for. `quick`
 is untouched for the fifth pass running: both scenes are `full` only.
 
+## Zod ships as `zod/mini`, and the string-format validators nobody called go with it — 2026-09-18
+
+Both schema files were written in the chained API, which is the reason the complete Zod 4 build
+survived bundling into each of the two MV3 contexts: 330 `_zod` references apiece, carrying
+`toJSONSchema` and every string-format validator — `nanoid`, `cuid2`, `xid`, `ksuid`, `jwt`, `emoji`,
+`base64url`, `ipv6`, `cidr` — none of which a browser extension has a use for. Ported to the functional
+form, zod's own share of `background.js` goes 79,455 → 17,407 bytes and of the popup's preloaded vendor
+chunk 79,766 → 19,102, measured by building each way with zod aliased to a no-op stub rather than read
+off a raw chunk size; `background.js` itself is 165,087 → 100,961, and all ten dead validators are gone.
+`external` in the rolldown config had to move from `'zod'` to `'zod/mini'` at the same time, since it
+matches by exact string and would otherwise have inlined mini into core's own dist.
+
+The duplication across the two contexts is unchanged and is structural — two contexts, two bundles — and
+the barrel is not the lever for it either: the popup imports `fetchLeagueLogos` and `fetchTeamsForLeagues`,
+so it reaches `apiClient` and its schemas whether or not the barrel re-exports `BackgroundStateSchema`.
+The port was pinned against the old build in one process before landing: `parseScoreboard`, `parseTeams`
+and `EspnSummarySchema` produce byte-identical `JSON.stringify` output on a payload exercising every
+branch in the file, malformed rows included. `BackgroundStateSchema` had no tests at all and now has four.
+
 ## The popup stops preloading a megabyte of charting it will probably never draw — 2026-09-18
 
 `gameDetailView` imported the chart card statically, so echarts was reachable from the popup entry and

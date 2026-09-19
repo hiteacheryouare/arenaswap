@@ -9,7 +9,7 @@ export default defineConfig({
 		constants: './src/constants.ts',
 		types: './src/types.ts',
 	},
-	external: ['powerscore', 'zod'],
+	external: ['powerscore', 'zod/mini'],
 	platform: 'neutral',
 	output: {
 		dir: './dist',
