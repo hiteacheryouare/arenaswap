@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The clashing pair is ranked on readable sides rather than filtered for ink — 2026-09-18
+
+`pickPair` drops its ink special case and ranks the substitutions by how many of their two sides are readable, falling through to distance only on a tie — which is what the `isInk` channel threshold and its two filter passes were approximating. Filtering on readable-on-both-sides leaves nothing to choose between but the discards, and the farthest apart of those is always black against white at 441.7, so Houston's published white and Texas Tech's published black drew two red teams as ink. The ranking keeps Tech's red on the card and still separates the Nationals from the Cardinals through a navy.
+
 ## The naming takes the card, on a split laid flat, filled rather than outlined — 2026-09-18
 
 The full-name beat moved onto two flat full-width bands, away over home, because a leaning seam leaves each club half a card and at half a card the longest word sized everything — the naming was drawn at a third of its tricodes and read as a caption. Set solid white in the club's own case, broken at ESPN's `Team.nickname` and left on one line wherever that draws it bigger, at 38–40px against the 17.6px the pass before could reach. Every size is measured off DOM advances rather than counted from characters, since an advance is a property of the letters and not their number — 0.5168em each for "Pittsburgh" against 0.6629 for "Commanders".

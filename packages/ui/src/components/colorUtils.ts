@@ -80,44 +80,23 @@ const clashThreshold = 65;
 
 const isUsable = (hex: string): boolean => { const l = luminance(hex); return l >= 0.03 && l <= 0.95; };
 
-// Within a hair of pure black or pure white. `12` is the threshold `hasHue` already uses, and it is
-// deliberately tight rather than luminance-based: the Yankees' #0C2340 is dark enough that a
-// luminance test calls it unreadable, and it is still a navy rather than ink.
-const isInk = (hex: string): boolean => {
-	const rgb = hexToRgb(hex);
-	if (!rgb) return false;
-	const channels = [rgb.red, rgb.green, rgb.blue];
-	return channels.every(channel => channel <= 12) || channels.every(channel => channel >= 245);
-};
+const readableSides = ([away, home]: [string, string]): number => (
+	Number(isUsable(away)) + Number(isUsable(home))
+);
 
-const inkPair = (away: string, home: string): boolean => isInk(away) && isInk(home);
-
-// Every candidate below is a colour one of the two teams published, or the caller's own fallback for
-// a team that published none. Nothing here lightens, darkens or otherwise invents a colour.
+// Ranked rather than filtered. Discarding every candidate that is not readable on both sides leaves
+// nothing to choose between but the discards, and the farthest-apart of those is black against
+// white — 441.7, the largest distance RGB contains, so it wins by construction. Houston publish a
+// white and Texas Tech a black, and two red teams drew as ink. Reading a candidate's readable sides
+// first keeps Tech's red on the card; distance still decides between candidates that tie.
 const pickPair = (ap: string, aa: string, hp: string, ha: string): [string, string] => {
-	if (colorDistance(ap, hp) >= clashThreshold && !inkPair(ap, hp)) return [ap, hp];
-
+	if (colorDistance(ap, hp) >= clashThreshold) return [ap, hp];
 	const candidates: [string, string][] = [[ap, ha], [aa, hp], [aa, ha]];
-	const farthest = (pool: [string, string][]): [string, string] => pool.reduce(
-		(best, candidate) => colorDistance(candidate[0], candidate[1]) > colorDistance(best[0], best[1]) ? candidate : best,
-	);
-
-	const usable = candidates.filter(([away, home]) => isUsable(away) && isUsable(home));
-	if (usable.length > 0) {
-		const best = farthest(usable);
-		return colorDistance(best[0], best[1]) > colorDistance(ap, hp) ? best : [ap, hp];
-	}
-
-	// No substitution is readable on both sides. Ranking the *unfiltered* candidates by distance is
-	// what this used to do, and that objective has exactly one global optimum: black against white is
-	// 441.7 apart, the largest distance RGB contains, so it won by construction. Baltimore publish a
-	// purple and Indianapolis a navy, and the card drew ink.
-	//
-	// So the teams' own primaries stand — unless they are themselves ink on both sides, in which case
-	// any published combination that is not is worth more than the pair being maximally far apart.
-	if (!inkPair(ap, hp)) return [ap, hp];
-	const notInk = candidates.filter(([away, home]) => !inkPair(away, home));
-	return notInk.length > 0 ? farthest(notInk) : [ap, hp];
+	const best = candidates.toSorted((a, b) => (
+		readableSides(b) - readableSides(a)
+		|| colorDistance(b[0], b[1]) - colorDistance(a[0], a[1])
+	))[0]!;
+	return colorDistance(best[0], best[1]) > colorDistance(ap, hp) ? best : [ap, hp];
 };
 
 // White on a team colour is fine for the navies and reds and unreadable on a gold. 0.1833 is where
