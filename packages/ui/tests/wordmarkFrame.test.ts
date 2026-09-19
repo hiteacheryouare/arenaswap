@@ -4,6 +4,7 @@ import wordmarkFrameAt, {
 	barRest,
 	barStrokeRest,
 	collapsedBox,
+	collapsedMargin,
 	dashCentreRest,
 	dashFirstCapRest,
 	dashLastCapRest,
@@ -104,9 +105,10 @@ describe('the wordmark collapsed', () => {
 		expect(end.box.width).toBeCloseTo(collapsedBox.width, 6);
 		expect(end.box.height).toBeCloseTo(collapsedBox.height, 6);
 		// The arrowhead is the rightmost thing in the icon once the dot has gone, so the box closes
-		// onto its tip rather than leaving a period's worth of air past it.
+		// onto its tip — one margin clear of it, not a period's width.
 		const right = collapsedBox.x + collapsedBox.width;
-		expect(headRight(1)).toBeCloseTo(right, 1);
+		expect(right - headRight(1)).toBeCloseTo(collapsedMargin, 1);
+		expect(collapsedBox.x).toBe(-collapsedMargin);
 	});
 
 	test('has both doomed words fully behind their masks', () => {

@@ -58,10 +58,23 @@ const barEnd = { left: 194.27, joint: 347.17, centre: 108.41, stroke: 28.33 };
 const dashEnd = { firstCap: 80.26, lastCap: 249.42, stroke: 28.2, centre: 266.22, seg: 56.22, gap: 56.65 };
 
 export const restBox = { x: 0, y: 0, width: 1790, height: 471 };
-// The icon's own content box in the same units: its chevron across to the tip of its arrowhead,
-// its `a`'s ascender down to its `s`'s baseline. Shorter than the wordmark's box because `p`'s
-// descender leaves with `wap`, which is what makes the surviving marks grow by about half.
-export const collapsedBox = { x: 0, y: 0, width: 431.76, height: 354.61 };
+// The icon's own content box in the same units — its chevron across to the tip of its arrowhead,
+// its `a`'s ascender down to its `s`'s baseline — plus a margin on every side. Shorter than the
+// wordmark's box because `p`'s descender leaves with `wap`, which is what makes the surviving marks
+// grow on the way in.
+//
+// The margin is why they do not grow quite as much as that implies. The wordmark is drawn flush to
+// its box and gets away with it: it is long and thin and reads as a line of type. The icon is
+// compact and heavy, and flush it sits on the hairline with its ascender against the top of the
+// bar. 36 units is about 2px at the size this collapses to.
+export const collapsedMargin = 36;
+const iconContent = { width: 431.76, height: 354.61 };
+export const collapsedBox = {
+	x: -collapsedMargin,
+	y: -collapsedMargin,
+	width: iconContent.width + collapsedMargin * 2,
+	height: iconContent.height + collapsedMargin * 2,
+};
 
 // ─── beats ───────────────────────────────────────────────────────────────────────────────────
 // `lead` carries the letters, the bar's tail, the dot and both mask edges: the sweep. `follow`

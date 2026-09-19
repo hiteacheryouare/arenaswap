@@ -42,7 +42,7 @@ const markShouldBe = (width: number) => cy.get('.arenaswap-logo').should(([mark]
 });
 
 const expandedWidth = 1790;
-const collapsedWidth = 431.76;
+const collapsedWidth = 503.76;
 
 describe('the popup header', () => {
 	it('stays at the top of the list rather than scrolling off it', () => {
