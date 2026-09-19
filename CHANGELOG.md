@@ -5,6 +5,14 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Halftime and Final are words, so they stop being set like figures — 2026-09-19
+
+Lekton exists in this product to hold a ticking clock's columns still, and the states that replace the clock with a word — Halftime, Intermission, Final, an ESPN delay description — have nothing to hold, so they now take the body face on the live card, the detail hero and the sticky bar. `resolveStatusText` became `resolveStatus` and returns `{ text, tabular }`, which keeps the decision in the one place the branch order already lives rather than duplicating it at three call sites. The period, the clock, the inning and the countdown are unchanged.
+
+## The opening graphic draws its type in an ink the band can hold — 2026-09-19
+
+Penn State reach the popup as `#FFFFFF` over their navy, because `apiClient` promotes a primary too dark for the rest of the product, so every card they appeared on named them in white on a white band and drew their tricode the same way. `teamDisplayInk` picks the ink per side against WCAG's 3:1 large-text bar, which display type at this size earns: white where white reads, the club's own other colour where it does not, and the near-black only for a club with nothing else to offer. The wipe bars are still white and still vanish crossing a light band, which is a moving element rather than words and was left alone.
+
 ## Every outdated dependency to its latest, `@astrojs/mdx` across a major — 2026-09-18
 
 The only major in the set is `@astrojs/mdx` 7 → 8, which hands MDX processing off to the Markdown processor and is inert here because `astro.config.mjs` calls a bare `mdx()` with no plugins, no `markdown` block and no `extendMarkdownConfig`. A stray root-level `astro` came out with it, since nothing outside `apps/docs` ever imported it, and `npm audit fix` took four transitive advisories to zero. npm 12 declines install scripts it has not been allowlisted for, which is how Cypress lost its binary; `allowScripts` now permits that one postinstall and records the other five as reviewed and refused.

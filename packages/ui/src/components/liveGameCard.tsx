@@ -37,6 +37,9 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 	const downDistanceLine = game.downDistance && game.fieldPosition
 		? t('gameCard.downDistanceAt', { downDistance: game.downDistance, fieldPosition: game.fieldPosition })
 		: game.downDistance;
+	// The one state where this slot holds a word rather than a period, which is why it is the one
+	// state where it drops out of Lekton — there is nothing in "Halftime" to line up in a column.
+	const atHalftime = !isInningSport && game.intermission === true && isHalftime(game);
 	const psBarPercent = Math.min((totalPowerScore / scoreMaxTotal) * 100, 100);
 	const psColor = powerScoreColor(totalPowerScore, scoreMaxTotal);
 	const { onClick: onCardClick, onKeyDown: onCardKeyDown } = buildCardHandlers(onOpenGameDetail, game.id);
@@ -94,9 +97,9 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 					{/* The shootout line already carries the period, so rendering the
 					    period label above it would just say PENS twice. */}
 					{!shootout && (
-						<span className='font-lekton game-period'>
+						<span className={`game-period${atHalftime ? '' : ' font-lekton'}`}>
 							{isInningSport && <InningHalfIcon topOfInning={game.topOfInning} />}
-							{!isInningSport && game.intermission === true && isHalftime(game) ? t('detail.halftime') : formatPeriod(game)}
+							{atHalftime ? t('detail.halftime') : formatPeriod(game)}
 						</span>
 					)}
 					{shootout && (

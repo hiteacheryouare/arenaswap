@@ -17,7 +17,7 @@ import PregameSetup from './pregameSetup';
 import PregameStats from './pregameStats';
 import BoxScore from './boxScore';
 import ProTip from './proTip';
-import { resolveStatusText } from './gameSituation';
+import { resolveStatus } from './gameSituation';
 import {
 	buildComponentContributionOption,
 	buildPowerScoreOption,
@@ -187,7 +187,7 @@ const gameDetailView = ({
 				+ `linear-gradient(to right, ${awayAccent} 0%, ${awayAccent} 38%, ${homeAccent} 62%, ${homeAccent} 100%)`,
 	};
 	const isInningSport = leagueConfigMap[game.league]?.periodFormat === 'innings';
-	const statusText = resolveStatusText(game, isInningSport, i18n.t);
+	const status = resolveStatus(game, isInningSport, i18n.t);
 	const totalLabel = total > scoreMaxTotal
 		? i18n.t('detail.totalLabelBaseMax', { total, max: scoreMaxTotal })
 		: i18n.t('detail.totalLabel', { total, max: scoreMaxTotal });
@@ -214,7 +214,7 @@ const gameDetailView = ({
 	return (
 		<div className='popup-container game-detail-shell' ref={shellRef}>
 			{decorations.falling && <HolidayFall kind={decorations.falling} />}
-			<DetailStickyBar game={game} statusText={statusText} compact={heroScrolledAway} monoLogos={monoLogos} onBack={onBack} />
+			<DetailStickyBar game={game} status={status} compact={heroScrolledAway} monoLogos={monoLogos} onBack={onBack} />
 			{decorations.lights && <HolidayLights flashColors={scoreFlash} />}
 
 			<div ref={heroRef}>
@@ -224,7 +224,7 @@ const gameDetailView = ({
 						seriesInfo={seriesInfo}
 						records={records}
 						monoLogos={monoLogos}
-						statusText={statusText}
+						statusText={status.text}
 						heroStyle={heroStyle}
 						awayColor={awayAccent}
 						homeColor={homeAccent}
@@ -239,7 +239,7 @@ const gameDetailView = ({
 						monoLogos={monoLogos}
 						isDelayed={isDelayed}
 						isInningSport={isInningSport}
-						statusText={statusText}
+						status={status}
 						heroStyle={heroStyle}
 						awayColor={awayAccent}
 						homeColor={homeAccent}

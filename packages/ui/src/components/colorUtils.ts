@@ -1,4 +1,4 @@
-import { hexLuminance as luminance, hexToRgb, isHex, rgbToHex } from './colorMath';
+import { contrastBetween, hexLuminance as luminance, hexToRgb, isHex, rgbToHex, whiteInkContrast } from './colorMath';
 
 const mixTowardWhite = (value: string, amount: number): string => {
 	const rgb = hexToRgb(value);
@@ -105,6 +105,34 @@ const pickPair = (ap: string, aa: string, hp: string, ha: string): [string, stri
 export const readableInkOn = (background: string, light = '#ffffff', dark = '#111827'): string => (
 	isHex(background) && luminance(background) > 0.1833 ? dark : light
 );
+
+// Display type drawn on a team's own colour, which is what the opening graphic sets: a club named
+// across the width of the card, and a tricode at 3.4rem. White is right for most of the league and
+// wrong for the clubs whose published colour is a white or a silver — `apiClient` promotes a
+// near-black primary to its lighter alternate before any of this sees it, so Penn State arrive here
+// as #FFFFFF over their navy and were being named in white on a white band.
+//
+// 3:1 rather than `readableInkOn`'s 4.5:1, which is the allowance the size of this type earns: at
+// the small-text bar a Carolina blue flips too, and inverting a card nobody struggled to read is a
+// worse answer than the one it replaces.
+const displayInkContrast = 3;
+
+// And the ink a light band falls back to is the club's other published colour before it is any grey
+// of ours: Penn State navy on Penn State white is what a broadcast would cut, and it is a colour
+// they already own. The near-black is only for a club that has nothing else to offer — one colour,
+// or two light ones.
+export const teamDisplayInk = (
+	team: { color?: string; alternateColor?: string },
+	surface: string,
+	dark = '#111827',
+): string => {
+	if (!isHex(surface)) return '#ffffff';
+	const backdrop = luminance(surface);
+	if (whiteInkContrast(backdrop) >= displayInkContrast) return '#ffffff';
+	const other = [team.color, team.alternateColor]
+		.find(color => isHex(color) && color.toUpperCase() !== surface.toUpperCase());
+	return isHex(other) && contrastBetween(luminance(other), backdrop) >= displayInkContrast ? other : dark;
+};
 
 // A crest sits on a white disc tinted with its own colour rather than on the surface behind it: a
 // navy logo on a navy half of a poster is invisible, and every league has at least one. `28` is the

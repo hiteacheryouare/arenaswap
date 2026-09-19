@@ -40,7 +40,7 @@ const mountLive = (game: Game, monoLogos = mono, isDelayed = false) => {
 				monoLogos={monoLogos}
 				isDelayed={isDelayed}
 				isInningSport={game.sportType === 'baseball'}
-				statusText='Q2 • 5:00'
+				status={{ text: 'Q2 • 5:00', tabular: true }}
 				heroStyle={heroStyle}
 				awayColor={awayColor}
 				homeColor={homeColor}
@@ -163,7 +163,7 @@ describe('the sticky bar crests', () => {
 			<div style={{ width: '320px', background: '#0d1117' }}>
 				<DetailStickyBar
 					game={liveGame}
-					statusText='Q2 • 5:00'
+					status={{ text: 'Q2 • 5:00', tabular: true }}
 					compact
 					monoLogos={mono}
 					onBack={() => {}}

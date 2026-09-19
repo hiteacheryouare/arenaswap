@@ -1058,7 +1058,7 @@ button, input, select, optgroup, textarea {
    this one never did — the poster after this carries tricodes, and a tricode is decoded rather than
    read.
 
-   The tricodes' own family, weight and tracking, and the same 0.9 the tricode softens its white to,
+   The tricodes' own family, weight and tracking, the same ink and the same 0.9 it softens that to,
    but filled solid rather than outlined. The outline is the tricode's treatment and it stays the
    tricode's: this is the beat carrying words somebody has to read, and a hollow letterform at the
    size these are set at is a shape before it is a letter. Filled also means one copy of the glyph
@@ -1087,6 +1087,7 @@ button, input, select, optgroup, textarea {
 
 .game-card-reveal-opening-name.is-away {
 	top:                  0;
+	--reveal-ink:         var(--reveal-ink-away, #ffffff);
 	--reveal-drift:       -1;
 	--reveal-name-slot-x: -25%;
 	--reveal-name-slot-y: 50%;
@@ -1094,6 +1095,7 @@ button, input, select, optgroup, textarea {
 
 .game-card-reveal-opening-name.is-home {
 	bottom:               0;
+	--reveal-ink:         var(--reveal-ink-home, #ffffff);
 	--reveal-drift:       1;
 	--reveal-name-slot-x: 25%;
 	--reveal-name-slot-y: -50%;
@@ -1118,9 +1120,14 @@ button, input, select, optgroup, textarea {
    centred on its own ink anyway, and `revealNameLineHeight` is what keeps a descender on one line
    clear of an ascender on the next. Tracking is 0 rather than the tricode's 0.02em: that figure
    opens up a run of caps, and mixed case at this size needs nothing. */
+/* `--reveal-ink` is `teamDisplayInk` in `colorUtils`, per side, and on most cards it is white. It is
+   not on the clubs whose published colour is a white or a silver, and Penn State are the case: ESPN
+   promote their navy to the alternate slot because it is too dark for the rest of the product, so
+   the band this is drawn on is #FFFFFF and the name on it used to be as well. On those the ink is
+   the club's own other colour — their navy, here — which is the swap a broadcast would make. */
 .game-card-reveal-opening-name-line {
 	display:     block;
-	color:       #ffffff;
+	color:       var(--reveal-ink);
 	font-family: 'DM Sans', sans-serif;
 	font-size:   var(--reveal-name-size, 2rem);
 	font-weight: 700;
@@ -1194,6 +1201,7 @@ button, input, select, optgroup, textarea {
 	--reveal-dx:      var(--reveal-away-dx);
 	--reveal-dy:      var(--reveal-away-dy);
 	--reveal-surface: var(--reveal-away);
+	--reveal-ink:     var(--reveal-ink-away, #ffffff);
 }
 
 .game-card-reveal-wipe.is-home .game-card-reveal-crest,
@@ -1203,6 +1211,7 @@ button, input, select, optgroup, textarea {
 	--reveal-dx:      var(--reveal-home-dx);
 	--reveal-dy:      var(--reveal-home-dy);
 	--reveal-surface: var(--reveal-home);
+	--reveal-ink:     var(--reveal-ink-home, #ffffff);
 }
 
 .game-card-reveal-crest-plate {
@@ -1274,11 +1283,11 @@ button, input, select, optgroup, textarea {
    draws, including the ones a filled glyph hides, and DM Sans builds an N out of overlapping stems
    — so `-webkit-text-stroke` on its own drew the diagonal straight on through both of them, and
    every junction in NYY and BOS came out cross-hatched with the lines that a fill would have
-   covered. Two copies instead: `-edge` is the glyph solid white and stroked wider than itself,
+   covered. Two copies instead: `-edge` is the glyph solid in the ink and stroked wider than itself,
    `-face` is the same glyph in the colour behind it laid exactly over the first. All that is left
    showing is the half of the stroke outside the silhouette, which is the outline and nothing else.
 
-   Opaque white and stroked opaque white, with the softening taken as opacity on the parent: the
+   Opaque, and stroked at the same opacity, with the softening taken as opacity on the parent: the
    stroke self-overlaps wherever two contours meet, and at any alpha below 1 those overlaps compound
    into bright nicks in the notches. Under the parent's opacity the face copy is the surface colour
    over the surface colour, so it is only ever the band that the fade reaches.
@@ -1307,8 +1316,8 @@ button, input, select, optgroup, textarea {
 }
 
 .game-card-reveal-abbr-edge {
-	color:               #ffffff;
-	-webkit-text-stroke: 4px #ffffff;
+	color:               var(--reveal-ink);
+	-webkit-text-stroke: 4px var(--reveal-ink);
 }
 
 /* Outlined while the poster holds, then filled solid as the bar arrives to take it. Broadcast type
@@ -1589,7 +1598,7 @@ button, input, select, optgroup, textarea {
 /* The face copy stops being the colour behind it, which fills the glyph the outline was drawing. */
 @keyframes cardRevealAbbrFill {
 	from { color: var(--reveal-surface); }
-	to   { color: #ffffff; }
+	to   { color: var(--reveal-ink); }
 }
 
 /* Constant rate, edge to edge and out the far side: they cross at the middle of the card and each

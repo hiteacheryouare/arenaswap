@@ -1,6 +1,7 @@
 import { i18n } from '#i18n';
 import type { Game, Team, TeamMonoMarks } from '@arenaswap/core/types';
 import TeamCrest from '@arenaswap/ui/src/components/teamCrest';
+import type { GameStatus } from './gameSituation';
 import { formatCompactCountdown, useStartCountdown } from './startCountdown';
 import type { MonoLogos } from './useSummaryData';
 
@@ -25,7 +26,7 @@ const BarCrest = ({ team, monoMarks }: { team: Team; monoMarks?: TeamMonoMarks |
 
 interface barSlotProps {
 	game: Game;
-	statusText: string;
+	status: GameStatus;
 	compact: boolean;
 }
 
@@ -35,13 +36,17 @@ interface barSlotProps {
 //
 // Own component so a countdown tick re-renders this span and leaves the hero, the breakdown and
 // the four ECharts canvases untouched, the way startCountdownDisplay does for the hero.
-const BarSlot = ({ game, statusText, compact }: barSlotProps) => {
+const BarSlot = ({ game, status, compact }: barSlotProps) => {
 	const parts = useStartCountdown(game.status === 'pre' ? game.startTime : undefined);
-	const text = statusText || formatCompactCountdown(parts, i18n.t);
+	const countdown = status.text ? '' : formatCompactCountdown(parts, i18n.t);
+	const text = status.text || countdown;
 
 	if (!text) return null;
 	return (
-		<span className={`gd-bar-status${compact ? ' is-visible' : ''}`} aria-hidden={!compact}>
+		<span
+			className={`gd-bar-status${compact ? ' is-visible' : ''}${status.tabular || countdown ? ' font-lekton' : ''}`}
+			aria-hidden={!compact}
+		>
 			{text}
 		</span>
 	);
@@ -49,7 +54,7 @@ const BarSlot = ({ game, statusText, compact }: barSlotProps) => {
 
 interface detailStickyBarProps {
 	game: Game;
-	statusText: string;
+	status: GameStatus;
 	compact: boolean;
 	monoLogos: MonoLogos;
 	onBack: () => void;
@@ -58,7 +63,7 @@ interface detailStickyBarProps {
 // The matchup is absolutely centred and the status pinned separately to the right. In one
 // centred group a longer status string drags the score off the card's axis, and it drifts
 // again every time the period changes.
-const detailStickyBar = ({ game, statusText, compact, monoLogos, onBack }: detailStickyBarProps) => {
+const detailStickyBar = ({ game, status, compact, monoLogos, onBack }: detailStickyBarProps) => {
 	// Before a start both scores are 0 and stay 0, so the abbreviations are doing the bar's whole
 	// job on their own and the figures are noise. The rule between them stays either way: it is
 	// what makes the pair read as one matchup rather than two adjacent teams.
@@ -79,7 +84,7 @@ const detailStickyBar = ({ game, statusText, compact, monoLogos, onBack }: detai
 				<span className='gd-bar-abbrev'>{game.homeTeam.abbreviation}</span>
 				<BarCrest team={game.homeTeam} monoMarks={monoLogos.home} />
 			</div>
-			<BarSlot game={game} statusText={statusText} compact={compact} />
+			<BarSlot game={game} status={status} compact={compact} />
 		</div>
 	);
 };

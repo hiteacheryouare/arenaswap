@@ -1,4 +1,4 @@
-import { readableTeamInkOnCard, resolveTeamColorPair, teamRowWash } from '../src/components/colorUtils';
+import { readableTeamInkOnCard, resolveTeamColorPair, teamDisplayInk, teamRowWash } from '../src/components/colorUtils';
 
 describe('resolveTeamColorPair', () => {
 	const away = { color: '#1D428A', alternateColor: '#FFC72C' };
@@ -288,5 +288,76 @@ describe('every chart colour it returns clears 3:1', () => {
 		expect(lightened('#203731')).toBe('#3f6b5e');
 		expect(lightened('#4F2683')).toBe('#823fd8');
 		expect(lightened('#005A9C')).toBe('#006ab8');
+	});
+});
+
+const contrastOn = (ink: string, surface: string): number => {
+	const measure = (hex: string): number => {
+		const [red, green, blue] = [1, 3, 5].map(at => Number.parseInt(hex.slice(at, at + 2), 16));
+		return 0.2126 * srgbChannel(red!) + 0.7152 * srgbChannel(green!) + 0.0722 * srgbChannel(blue!);
+	};
+	const [a, b] = [measure(ink), measure(surface)];
+	return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+};
+
+// The opening graphic draws a club's name across the card and its tricode at 3.4rem, both on the
+// team's own colour. Penn State is the case that broke it: `apiClient` promotes a near-black primary
+// to the alternate slot, so they reach the popup as #FFFFFF over #061440 and were named in white on
+// a white band.
+describe('teamDisplayInk', () => {
+	const pennState = { color: '#FFFFFF', alternateColor: '#061440' };
+
+	test('names a club on its white band in the navy that club also owns', () => {
+		expect(teamDisplayInk(pennState, '#FFFFFF')).toBe('#061440');
+	});
+
+	// The same club on the other side of the same swap. Nothing about a team with a white in its
+	// palette should cost it the white ink on the half where white is the right answer.
+	test('keeps white where white reads, which is most of the league', () => {
+		expect(teamDisplayInk(pennState, '#061440')).toBe('#ffffff');
+		expect(teamDisplayInk({ color: '#0C2340', alternateColor: '#C8102E' }, '#0C2340')).toBe('#ffffff');
+		expect(teamDisplayInk({ color: '#A71930' }, '#A71930')).toBe('#ffffff');
+	});
+
+	// Carolina blue is the colour the 4.5:1 bar would have flipped. At display size white clears it
+	// at 3.1:1, and inverting a card nobody had trouble reading is the worse answer.
+	test('leaves the mid-tones white at the size this type is set', () => {
+		expect(teamDisplayInk({ color: '#4B9CD3' }, '#4B9CD3')).toBe('#ffffff');
+	});
+
+	test('falls back to the near-black only when the club has no other colour to give', () => {
+		expect(teamDisplayInk({ color: '#FFB81C' }, '#FFB81C')).toBe('#111827');
+		expect(teamDisplayInk({ color: '#B1B3B3', alternateColor: '#FFFFFF' }, '#B1B3B3')).toBe('#111827');
+	});
+
+	// The surface is a resolved colour and the team's are ESPN's, normalised to upper case by
+	// `apiClient` — a match on the raw strings would hand a club its own white back as its ink.
+	test('never draws the ink in the colour it is standing on', () => {
+		expect(teamDisplayInk(pennState, '#ffffff')).toBe('#061440');
+	});
+
+	// A card whose team carries no colour at all is drawn on `gameCardReveal`'s #dee2e6 rail.
+	test('reads a colourless team on the fallback rail', () => {
+		expect(teamDisplayInk({}, '#dee2e6')).toBe('#111827');
+		expect(teamDisplayInk({}, 'not-a-color')).toBe('#ffffff');
+	});
+
+	test('every ink it picks clears 3:1 on the band it is drawn on', () => {
+		const teams = [
+			pennState,
+			{ color: '#FFB81C' },
+			{ color: '#B1B3B3', alternateColor: '#FFFFFF' },
+			{ color: '#FFFFFF', alternateColor: '#C99700' },
+			{ color: '#0C2340', alternateColor: '#C8102E' },
+			{ color: '#FFCB05', alternateColor: '#00274C' },
+			{ color: '#F1C40F' },
+			{ color: '#000000', alternateColor: '#FFFFFF' },
+		];
+		for (const team of teams) {
+			for (const surface of [team.color, team.alternateColor]) {
+				if (!surface) continue;
+				expect(contrastOn(teamDisplayInk(team, surface), surface)).toBeGreaterThanOrEqual(3);
+			}
+		}
 	});
 });

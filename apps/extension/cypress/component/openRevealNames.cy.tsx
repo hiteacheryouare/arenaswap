@@ -24,15 +24,28 @@ const homeColor = 'rgb(255, 184, 28)';
 // The nickname is the club's own, as ESPN sends it, because it is what the line break is taken from.
 const club = (name: string, nickname?: string) => ({ name, nickname: nickname ?? name.split(' ').slice(-1)[0] });
 
-const game = (away: { name: string; nickname: string }, home: { name: string; nickname: string }) => ({
+// Overridable, because which ink a name is drawn in is a fact about the club's own palette: the
+// navy-and-gold pair below is the ordinary case, and a club that publishes a white is not.
+interface palette {
+	away: { color: string; alternateColor?: string };
+	home: { color: string; alternateColor?: string };
+}
+
+const defaultPalette: palette = { away: { color: '#0C2340' }, home: { color: '#FFB81C' } };
+
+const game = (
+	away: { name: string; nickname: string },
+	home: { name: string; nickname: string },
+	colors: palette = defaultPalette,
+) => ({
 	id: 'g1',
 	status: 'in',
 	league: 'mlb',
 	sportType: 'baseball',
 	period: 5,
 	topOfInning: true,
-	awayTeam: { id: 'a', ...away, abbreviation: 'AWY', score: 3, color: '#0C2340', logo: lightMark },
-	homeTeam: { id: 'h', ...home, abbreviation: 'HOM', score: 1, color: '#FFB81C', logo: darkMark },
+	awayTeam: { id: 'a', ...away, ...colors.away, abbreviation: 'AWY', score: 3, logo: lightMark },
+	homeTeam: { id: 'h', ...home, ...colors.home, abbreviation: 'HOM', score: 1, logo: darkMark },
 }) as unknown as Game;
 
 // The card the popup really draws a live game on. Without a PowerScore it is 148px tall and with one
@@ -52,13 +65,14 @@ const scored: PowerScoreResult = {
 	reason: 'Close game',
 };
 
-const Harness = ({ mode = 'full', away = club('Miami Marlins'), home = club('Washington Commanders'), powerScore }: {
+const Harness = ({ mode = 'full', away = club('Miami Marlins'), home = club('Washington Commanders'), powerScore, colors }: {
 	mode?: revealMode;
 	away?: { name: string; nickname: string };
 	home?: { name: string; nickname: string };
 	powerScore?: PowerScoreResult;
+	colors?: palette;
 }) => {
-	const subject = game(away, home);
+	const subject = game(away, home, colors);
 	const shared = {
 		game: subject,
 		excitementResult: powerScore,
@@ -201,25 +215,48 @@ describe('the clubs named over the opening beat', () => {
 	});
 
 	// Filled solid, and the tricode is the one that stays outlined. Same family, weight and tracking
-	// as the tricode, and the same 0.9 it softens its white to, but a hollow letterform at the size
+	// as the tricode, and the same 0.9 it softens its ink to, but a hollow letterform at the size
 	// these are set at is a shape before it is a letter — and this is the beat carrying the words
 	// somebody has to read. Filled also means one copy of the glyph rather than the tricode's two:
 	// there is no stroke to keep outside a silhouette, so there is nothing to lay a second copy over.
 	it('fills the names solid, and leaves the tricodes outlined', () => {
 		cy.mount(<Harness />);
+		linesOf('away').first()
+			.should('have.css', 'color', 'rgb(255, 255, 255)');
+		// Gold is the half that was legible by luck. White reaches 1.7:1 on it, so the name comes down
+		// to the near-black — the club publishes nothing else to be drawn in.
 		linesOf('home').first()
-			.should('have.css', 'color', 'rgb(255, 255, 255)')
+			.should('have.css', 'color', 'rgb(17, 24, 39)')
 			.and('have.css', '-webkit-text-stroke-width', '0px')
 			// And in the case the club writes its own name in, rather than shouted: the tricode is
 			// upper case because ESPN's abbreviation is, and nothing here transforms anything.
 			.and('have.css', 'text-transform', 'none');
 		linesOf('home').first().should($line => expect($line[0].children).to.have.length(0));
 
-		// And the poster's lettering is untouched by any of that: white, and stroked white over the
-		// second copy of itself.
-		cy.get('.game-card-reveal-abbr-edge').first()
+		// And the poster's lettering over the navy is untouched by any of that: white, and stroked
+		// white over the second copy of itself.
+		cy.get('.game-card-reveal-mask.is-away .game-card-reveal-abbr-edge')
 			.should('have.css', '-webkit-text-stroke-color', 'rgb(255, 255, 255)')
 			.and($edge => expect(parseFloat(getComputedStyle($edge[0]).webkitTextStrokeWidth)).to.be.greaterThan(1));
+	});
+
+	// Penn State is the club this was written for. Their navy is too dark for the rest of the product,
+	// so `apiClient` promotes the white they publish alongside it — which reaches the graphic as the
+	// colour of their half, and used to carry their name in white as well. On a band like that the ink
+	// is the club's own other colour, which is the navy that was moved out of the way.
+	it('names a club on a white band in the colour that club also owns', () => {
+		cy.mount(<Harness
+			away={club('Penn State Nittany Lions', 'Nittany Lions')}
+			colors={{ away: { color: '#FFFFFF', alternateColor: '#061440' }, home: { color: '#0C2340' } }}
+		/>);
+		scrubTo(sceneMs(nameScene));
+		linesOf('away').first().should('have.css', 'color', 'rgb(6, 20, 64)');
+		linesOf('home').first().should('have.css', 'color', 'rgb(255, 255, 255)');
+		// And the tricode the poster draws on that same white, which had the identical problem: two
+		// copies of a white glyph on a white half is nothing on screen at all.
+		cy.get('.game-card-reveal-mask.is-away .game-card-reveal-abbr-edge')
+			.should('have.css', 'color', 'rgb(6, 20, 64)')
+			.and('have.css', '-webkit-text-stroke-color', 'rgb(6, 20, 64)');
 	});
 
 	// The fit, which is the point of the whole pass. Every line of a club is justified to one width and

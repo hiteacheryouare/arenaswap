@@ -5,6 +5,7 @@ import BsoIndicator from './bsoIndicator';
 import DetailTeamPill from './detailTeamPill';
 import FlipScore from './flipScore';
 import FootballFieldStrip from './footballFieldStrip';
+import type { GameStatus } from './gameSituation';
 import InningHalfIcon from './inningHalfIcon';
 import SeriesDots from './seriesDots';
 import StartCountdownDisplay from './startCountdownDisplay';
@@ -17,13 +18,13 @@ interface detailHeroProps {
 	monoLogos: MonoLogos;
 	isDelayed: boolean;
 	isInningSport: boolean;
-	statusText: string;
+	status: GameStatus;
 	heroStyle: React.CSSProperties;
 	awayColor: string;
 	homeColor: string;
 }
 
-const detailHero = ({ game, seriesInfo, records = emptyTeamRecords, monoLogos, isDelayed, isInningSport, statusText, heroStyle, awayColor, homeColor }: detailHeroProps) => {
+const detailHero = ({ game, seriesInfo, records = emptyTeamRecords, monoLogos, isDelayed, isInningSport, status, heroStyle, awayColor, homeColor }: detailHeroProps) => {
 	const isPre = game.status === 'pre';
 	// The list card carries this line itself; on the detail screen it is the field strip's caption,
 	// and it is the only place the down, the distance and the yard marker appear as words.
@@ -65,9 +66,9 @@ const detailHero = ({ game, seriesInfo, records = emptyTeamRecords, monoLogos, i
 					)}
 				</div>
 				<DetailTeamPill team={game.homeTeam} side='home' record={records.home} monoMarks={monoLogos.home} color={homeColor} />
-				{statusText && (
-					<div className='game-detail-period'>
-						{isInningSport && <InningHalfIcon topOfInning={game.topOfInning} />}{statusText}
+				{status.text && (
+					<div className={`game-detail-period${status.tabular ? ' font-lekton' : ''}`}>
+						{isInningSport && <InningHalfIcon topOfInning={game.topOfInning} />}{status.text}
 					</div>
 				)}
 			</div>

@@ -1683,11 +1683,13 @@ button.game-info-attribution {
 	&.is-loser { color: bs.$score-loser-color; }
 }
 
+// The face is not set here: the resolver decides it. A period and clock get Lekton's fixed
+// columns, and the states that replace them with a word — Halftime, Final, a delay description —
+// get the body face, since there is nothing in them to line up.
 .game-detail-period {
 	grid-area: status;
 	align-self: start;
 	font-size: 0.68rem;
-	font-family: 'Lekton', monospace;
 	color: #6c757d;
 	text-align: center;
 	white-space: nowrap;
@@ -1795,8 +1797,6 @@ button.game-info-attribution {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-	font-family: 'Lekton', monospace;
-	font-variant-numeric: tabular-nums;
 	font-size: 0.6rem;
 	color: #8b949e;
 	opacity: 0;

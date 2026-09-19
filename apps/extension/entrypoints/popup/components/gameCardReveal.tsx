@@ -1,7 +1,7 @@
 import { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import type { CSSProperties, ReactNode } from 'react';
 import type { Game, Team } from '@arenaswap/core/types';
-import { resolveTeamColorPair } from '@arenaswap/ui/src/components/colorUtils';
+import { resolveTeamColorPair, teamDisplayInk } from '@arenaswap/ui/src/components/colorUtils';
 import TeamCrest from '@arenaswap/ui/src/components/teamCrest';
 import RevealNamingScene from './revealNamingScene';
 import {
@@ -56,7 +56,7 @@ const crestCentre = (rect: DOMRect, box: DOMRect) => ({
 // stroke follows every contour the font draws, including the ones a filled glyph covers up, and DM
 // Sans builds an N out of overlapping stems — so `-webkit-text-stroke` on its own draws the
 // diagonal on through both of them and every junction comes out cross-hatched. The back copy is the
-// glyph solid white and stroked wider than itself; the front copy is the same glyph in the colour
+// glyph solid in the ink and stroked wider than itself; the front copy is the same glyph in the colour
 // behind it, laid exactly over the back one. What is left showing is the stroke outside the
 // silhouette, which is the outline and nothing else.
 const RevealSide = ({ team, surface, side }: { team: Team; surface: string; side: 'away' | 'home' }) => (
@@ -212,6 +212,10 @@ const gameCardReveal = ({ game, mode, index, skipping, children }: gameCardRevea
 			style={!playing ? undefined : {
 				'--reveal-away': awayColor,
 				'--reveal-home': homeColor,
+				// Per side, because each side is its own surface: a club named on a white band and
+				// one named on a navy one are the same beat in two inks.
+				'--reveal-ink-away': teamDisplayInk(game.awayTeam, awayColor),
+				'--reveal-ink-home': teamDisplayInk(game.homeTeam, homeColor),
 				'--reveal-delay': `${delay}ms`,
 				'--reveal-spine': `${spineStart}ms`,
 				'--reveal-rate': revealRate(mode),

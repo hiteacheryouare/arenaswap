@@ -25,6 +25,10 @@ const dayMs = 24 * hourMs;
 // Fixed clock so the countdown is deterministic across runs.
 const now = new Date('2026-08-01T12:00:00.000Z');
 
+// Three DM Sans stacks coexist in this project, so the first family is the assertion rather than
+// the whole string.
+const face = ($el: JQuery<HTMLElement>) => getComputedStyle($el[0]!).fontFamily.split(',')[0]!.replace(/["']/g, '');
+
 const makePreGame = (msUntilStart: number): Game => ({
 	id: 'g1',
 	league: 'nba',
@@ -244,13 +248,8 @@ describe('gameDetailView countdown', () => {
 	// digits beside it and for every other number in the popup.
 	it('sets "Starts soon" in the body font rather than the scoreboard face', () => {
 		mountDetail(makePreGame(0));
-
-		// Three DM Sans stacks coexist in this project, so the first family is the assertion
-		// rather than the whole string.
 		cy.get('.gd-countdown-soon').should($el => {
-			const face = getComputedStyle($el[0]).fontFamily;
-			expect(face.split(',')[0].replace(/["']/g, ''), 'countdown fallback face').to.equal('DM Sans');
-			expect(face.toLowerCase(), 'countdown fallback face').to.not.contain('lekton');
+			expect(face($el), 'countdown fallback face').to.equal('DM Sans');
 		});
 	});
 
@@ -452,6 +451,19 @@ describe('gameDetailView hero', () => {
 	it('says what is happening when the clock is frozen', () => {
 		mountDetail(makeLiveGame({ intermission: true, period: 2 }), { excitementResult: excitement });
 		cy.get('.game-detail-period').should('contain.text', 'Halftime');
+	});
+
+	// Lekton is there to hold a ticking clock's columns still. The states that replace the clock with
+	// a word have nothing to hold, so they read as the words they are.
+	it('sets the word statuses in the body face and keeps the clock in Lekton', () => {
+		mountDetail(makeLiveGame(), { excitementResult: excitement });
+		cy.get('.game-detail-period').should($el => expect(face($el), 'a running clock').to.equal('Lekton'));
+
+		mountDetail(makeLiveGame({ intermission: true, period: 2 }), { excitementResult: excitement });
+		cy.get('.game-detail-period').should($el => expect(face($el), 'halftime').to.equal('DM Sans'));
+
+		mountDetail(makeLiveGame({ status: 'post' }), { excitementResult: excitement });
+		cy.get('.game-detail-period').should($el => expect(face($el), 'a final').to.equal('DM Sans'));
 	});
 
 	it('shows a series without repeating its summary', () => {
