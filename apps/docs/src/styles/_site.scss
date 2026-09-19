@@ -108,7 +108,7 @@ body.nav-open {
 	align-items: center;
 	transition: background 0.3s ease, backdrop-filter 0.3s ease, box-shadow 0.3s ease;
 
-	.site-header.scrolled & {
+	.site-header.is-condensed & {
 		background: rgba(13, 17, 23, 0.9);
 		backdrop-filter: blur(16px);
 		-webkit-backdrop-filter: blur(16px);
@@ -123,11 +123,19 @@ body.nav-open {
 	gap: 1.5rem;
 }
 
+// `--collapse` is written on `.site-header` every frame by `driveWordmarkCollapse`, already eased,
+// and no transition here on purpose: a CSS curve running alongside the mark's own would have the
+// two disagree in the middle.
+//
+// 3px of it is not a flourish. The wordmark is mostly air — its letters are 39% of its box — and
+// the favicon is not, so holding the box height would hand the collapsed mark letters an eighth
+// larger than the ones it replaced. Coming down to 25px is what keeps the `a` and the `s` the size
+// they were, which is the only way a collapse reads as the same mark folding up.
 .nav-logo {
 	flex-shrink: 0;
 
-	img {
-		height: 28px;
+	svg {
+		height: calc(28px - var(--collapse, 0) * 3px);
 		width: auto;
 		display: block;
 	}
