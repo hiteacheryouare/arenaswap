@@ -1,14 +1,10 @@
-import { useEffect, useRef } from 'react';
-import * as echarts from 'echarts/core';
-import { BarChart, LineChart } from 'echarts/charts';
-import { GridComponent, TooltipComponent } from 'echarts/components';
-import { CanvasRenderer } from 'echarts/renderers';
-import type { EChartsOption, EChartsType } from 'echarts';
+import { Suspense, lazy } from 'react';
+import type { EChartsOption } from 'echarts';
 
-// The option builders in @arenaswap/ui only ever emit line and bar series on a cartesian grid with
-// an axis tooltip, so registering those five keeps the full echarts bundle (1.1MB) out of the popup
-// chunk in favour of 513KB. apps/docs renders the same four builders off this same registration.
-echarts.use([LineChart, BarChart, GridComponent, TooltipComponent, CanvasRenderer]);
+// echarts is ~850KB of the popup's vendor chunk and the only charts in the product are the four on
+// this screen, so the canvas is split off behind an import() and the card's own empty canvas box
+// holds its 176px until it lands. The title and legend are plain markup and stay in the eager graph.
+const GameDetailChartCanvas = lazy(() => import('./gameDetailChartCanvas'));
 
 interface gameDetailChartLegendItem {
 	label: string;
@@ -21,52 +17,23 @@ interface gameDetailChartProps {
 	legendItems?: gameDetailChartLegendItem[];
 }
 
-const gameDetailChart = ({ title, option, legendItems = [] }: gameDetailChartProps) => {
-	const chartElementRef = useRef<HTMLDivElement | null>(null);
-	const chartInstanceRef = useRef<EChartsType | null>(null);
-	const resizeHandlerRef = useRef<(() => void) | null>(null);
-	const optionRef = useRef(option);
-	optionRef.current = option;
-
-	useEffect(() => {
-		if (!chartElementRef.current) return;
-		const instance = echarts.init(chartElementRef.current, undefined, { renderer: 'canvas' });
-		chartInstanceRef.current = instance;
-		instance.setOption(optionRef.current, true);
-		const onResize = () => instance.resize();
-		resizeHandlerRef.current = onResize;
-		window.addEventListener('resize', onResize);
-
-		return () => {
-			if (resizeHandlerRef.current) {
-				window.removeEventListener('resize', resizeHandlerRef.current);
-				resizeHandlerRef.current = null;
-			}
-			instance.dispose();
-			chartInstanceRef.current = null;
-		};
-	}, []);
-
-	useEffect(() => {
-		chartInstanceRef.current?.setOption(option, true);
-	}, [option]);
-
-	return (
-		<section className='game-detail-chart-card'>
-			<div className='game-detail-chart-title'>{title}</div>
-			{legendItems.length > 0 && (
-				<div className='game-detail-chart-inline-legend'>
-					{legendItems.map(item => (
-						<div key={item.label} className='game-detail-chart-legend-item'>
-							<span className='game-detail-chart-legend-swatch' style={{ backgroundColor: item.color }} />
-							<span>{item.label}</span>
-						</div>
-					))}
-				</div>
-			)}
-			<div ref={chartElementRef} className='game-detail-chart-canvas' />
-		</section>
-	);
-};
+const gameDetailChart = ({ title, option, legendItems = [] }: gameDetailChartProps) => (
+	<section className='game-detail-chart-card'>
+		<div className='game-detail-chart-title'>{title}</div>
+		{legendItems.length > 0 && (
+			<div className='game-detail-chart-inline-legend'>
+				{legendItems.map(item => (
+					<div key={item.label} className='game-detail-chart-legend-item'>
+						<span className='game-detail-chart-legend-swatch' style={{ backgroundColor: item.color }} />
+						<span>{item.label}</span>
+					</div>
+				))}
+			</div>
+		)}
+		<Suspense fallback={<div className='game-detail-chart-canvas' />}>
+			<GameDetailChartCanvas option={option} />
+		</Suspense>
+	</section>
+);
 
 export default gameDetailChart;

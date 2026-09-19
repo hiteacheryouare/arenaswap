@@ -38,6 +38,24 @@ the same colour in both.
 6110ms a card against 5460, and 6734 before the list settles, which is what the skip is for. `quick`
 is untouched for the fifth pass running: both scenes are `full` only.
 
+## The popup stops preloading a megabyte of charting it will probably never draw — 2026-09-18
+
+`gameDetailView` imported the chart card statically, so echarts was reachable from the popup entry and
+rode into the vendor chunk `popup.html` modulepreloads — 1,005,346 bytes fetched and parsed before the
+list draws, for four charts that only exist on a screen most opens never reach. The split is inside
+`gameDetailChart` rather than at its four call sites, which is the part worth keeping: the title and
+legend are plain markup and stay eager, only the `init`/`resize`/`dispose` half moved to
+`gameDetailChartCanvas` behind the same `import()` idiom confetti already uses, and the Suspense fallback
+is the card's own empty `.game-detail-chart-canvas` box — so the 176px is reserved by the very rule that
+will size the chart and nothing moves when it lands.
+
+Measured on a `chrome-mv3` build the vendor chunk goes 1,005,346 → 487,940 and the eager pair 1,163,840 →
+646,434, against a 516,671-byte chart chunk that now loads only on opening a game. The guide page preloads
+that same vendor chunk and has never drawn a chart at all, so it gains the whole half megabyte for
+nothing. One trap: the Cypress component harness stubs `./gameDetailChart` on the exact specifier, so no
+spec there ever loads echarts — the real lazy path is only reachable by importing the component by its
+full path.
+
 ## The oversized crests take their colour across the whole card, not into a disc — 2026-09-18
 
 Three passes on this beat, and each one moved the colour somewhere else: onto the dark plate the rest of
