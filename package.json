@@ -24,11 +24,11 @@
 		"docs:validate-hero": "rolldown scripts/docs/validateHeroTimeline.ts --platform=node --file=scripts/docs/validateHeroTimeline.cjs --format=cjs --log-level=silent && node scripts/docs/validateHeroTimeline.cjs"
 	},
 	"devDependencies": {
-		"@swc/core": "^1.16.1",
+		"@swc/core": "^1.16.2",
 		"@swc/jest": "^0.2.39",
-		"oxlint": "^1.79.0",
-		"rolldown": "^1.2.5",
-		"turbo": "^2.10.11",
+		"oxlint": "^1.83.0",
+		"rolldown": "^1.2.9",
+		"turbo": "^2.11.2",
 		"typescript": "^7.0.2"
 	},
 	"overrides": {
@@ -41,6 +41,14 @@
 	},
 	"packageManager": "npm@11.16.0",
 	"dependencies": {
-		"skills": "^1.5.23"
+		"skills": "^1.7.0"
+	},
+	"allowScripts": {
+		"cypress": true,
+		"@swc/core": false,
+		"esbuild": false,
+		"unrs-resolver": false,
+		"@parcel/watcher": false,
+		"fsevents": false
 	}
 }
