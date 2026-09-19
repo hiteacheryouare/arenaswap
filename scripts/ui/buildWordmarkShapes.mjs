@@ -229,5 +229,10 @@ const d1 = icon.dash1, d2 = icon.dash2, r = d1.h/2;
 console.log('  dashes firstCap', t(d1.minX + r, ox).toFixed(2), 'lastCap', t(d2.maxX - r, ox).toFixed(2),
             'centreY', t((d1.minY+d1.maxY)/2, oy).toFixed(2), 'stroke', (d1.h*k).toFixed(2),
             'seg', ((d1.w - d1.h)*k).toFixed(2), 'gap', (((d2.minX-d1.minX) - (d1.w - d1.h) - d1.h)*k).toFixed(2));
-const boxW = (dot.cx + dot.rx + dot.sw/2) * k - ox, boxH = icon.s.maxY * k - oy;
-console.log('  collapsed box', boxW.toFixed(2), 'x', boxH.toFixed(2));
+// The icon file carries an orange period the shipped icon does not: every PNG under
+// `apps/extension/public/icon` has zero orange pixels, and their white ink measures 1.212 wide for
+// its height against this box's 1.218 and the with-the-dot box's 1.414. The mark ends at the
+// arrowhead, so the dot is animated away rather than parked.
+const boxW = icon.head.maxX * k - ox, boxH = icon.s.maxY * k - oy;
+console.log('  collapsed box (no dot)', boxW.toFixed(2), 'x', boxH.toFixed(2), ' aspect', (boxW/boxH).toFixed(4));
+console.log('  dot would have reached cx', (dot.cx * k - ox).toFixed(2), 'cy', (dot.cy * k - oy).toFixed(2));

@@ -30,12 +30,19 @@ const scrollTo = (top: number) => cy.get('.popup-container').then(([node]: JQuer
 // The viewBox is the collapse: everything else follows from it. Asserted inside `should` rather
 // than read out through `then`, because only `should` retries — and every one of these is being
 // read in the middle of a 450ms animation.
+// `rgba(13, 17, 23, 0)` and `rgb(13, 17, 23)` are the two ends of the same declaration, so what
+// these specs mean is the alpha, not the string.
+const surfaceAlpha = (header: HTMLElement) => {
+	const parts = getComputedStyle(header).backgroundColor.match(/[\d.]+/g) as string[];
+	return parts.length > 3 ? parseFloat(parts[3] as string) : 1;
+};
+
 const markShouldBe = (width: number) => cy.get('.arenaswap-logo').should(([mark]: JQuery<HTMLElement>) => {
 	expect(parseFloat(String(mark.getAttribute('viewBox')).split(' ')[2])).to.be.closeTo(width, 0.5);
 });
 
 const expandedWidth = 1790;
-const collapsedWidth = 501.52;
+const collapsedWidth = 431.76;
 
 describe('the popup header', () => {
 	it('stays at the top of the list rather than scrolling off it', () => {
@@ -115,9 +122,51 @@ describe('the popup header', () => {
 		scrollTo(200);
 		cy.get('.popup-header').should(([header]: JQuery<HTMLElement>) => {
 			const style = getComputedStyle(header);
-			expect(style.backgroundColor).to.equal('rgb(13, 17, 23)');
-			expect(style.borderBottomColor).to.equal('rgb(48, 54, 61)');
+			expect(surfaceAlpha(header)).to.equal(1);
+			expect(style.backgroundColor).to.contain('13, 17, 23');
+			expect(style.borderBottomColor).to.contain('48, 54, 61');
 			expect(style.backdropFilter === 'none' || style.backdropFilter === '').to.equal(true);
+		});
+	});
+
+	// The surface is not on the collapse curve. A card is behind the bar from the first pixel of
+	// scroll — 40px before the collapse starts and 450ms before it finishes — and a background
+	// easing in on that curve shows the list straight through the header, worst on a fast flick.
+	// Read synchronously on the scroll, with no wait, which is the frame the bug was visible in.
+	it('has a surface from the very first pixel of scroll', () => {
+		mountList();
+		cy.get('.popup-header').should(([header]: JQuery<HTMLElement>) => {
+			expect(surfaceAlpha(header)).to.equal(0);
+		});
+		scrollTo(1);
+		cy.get('.popup-header').then(([header]: JQuery<HTMLElement>) => {
+			expect(surfaceAlpha(header)).to.equal(1);
+		});
+	});
+
+	// And it goes away again the moment the list is back at the top, rather than trailing the
+	// expand animation out by 450ms.
+	it('drops the surface as soon as the list is back at the top', () => {
+		mountList();
+		scrollTo(200);
+		markShouldBe(collapsedWidth);
+		scrollTo(0);
+		cy.get('.popup-header').then(([header]: JQuery<HTMLElement>) => {
+			expect(surfaceAlpha(header)).to.equal(0);
+		});
+	});
+
+	// The orange period belongs to the wordmark, not the icon: every shipped PNG under
+	// `public/icon` has zero orange pixels in it.
+	it('closes the orange period away rather than parking it next to the `s`', () => {
+		mountList();
+		cy.get('[data-wm="dot"]').should(([dot]: JQuery<HTMLElement>) => {
+			expect(parseFloat(dot.getAttribute('rx') as string)).to.be.greaterThan(20);
+		});
+		scrollTo(200);
+		cy.get('[data-wm="dot"]').should(([dot]: JQuery<HTMLElement>) => {
+			expect(parseFloat(dot.getAttribute('rx') as string)).to.equal(0);
+			expect(parseFloat(dot.getAttribute('stroke-width') as string)).to.equal(0);
 		});
 	});
 

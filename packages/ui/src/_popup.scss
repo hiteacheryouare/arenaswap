@@ -95,10 +95,12 @@
 	padding-right: 0.75rem;
 	padding-top: calc(0.75rem - var(--collapse, 0) * 0.35rem);
 	padding-bottom: calc(0.5rem - var(--collapse, 0) * 0.2rem);
-	// Solid, not frosted. Cards pass directly under this at 320px wide and a translucent bar reads
-	// as a smudge over them rather than as a surface they go behind.
-	background-color: rgba(13, 17, 23, var(--collapse, 0));
-	border-bottom: 1px solid rgba(48, 54, 61, var(--collapse, 0));
+	// Solid, not frosted, and on `--lifted` rather than `--collapse` — the bar needs a surface from
+	// the first pixel of scroll, which is 40px and 450ms before the collapse has finished bringing
+	// one up. Cards pass directly under this at 320px wide and anything the eye can see through
+	// reads as a smudge over them rather than as a surface they go behind.
+	background-color: rgba(13, 17, 23, var(--lifted, 0));
+	border-bottom: 1px solid rgba(48, 54, 61, var(--lifted, 0));
 }
 
 .popup-container {

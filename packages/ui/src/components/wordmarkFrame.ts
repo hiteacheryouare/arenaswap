@@ -44,15 +44,24 @@ const dashGapRest = 63.1;
 // ─── where the favicon puts them ─────────────────────────────────────────────────────────────
 const aEnd = { x: 12.74, y: 0, w: 166.21, h: 183.94 };
 const sEnd = { x: 268.34, y: 170.63, w: 155.25, h: 183.98 };
-const dotEnd = { cx: 482.88, cy: 296.98, rx: 18.441, ry: 17.361, stroke: 0.393 };
+// The dot is a destination, not a resting place. `icon_white_on_transparent.svg` carries an orange
+// period that the shipped icon does not have — every PNG under `apps/extension/public/icon` has
+// zero orange pixels in it, and their white ink measures 1.212 wide for its height, which is this
+// mark without the dot (1.218) and not with it (1.414). So the dot sweeps left through `wap`, doing
+// the work of clearing it, and then closes to nothing behind the `s`.
+const dotEnd = { cx: 482.88, cy: 296.98, rx: 0, ry: 0, stroke: 0 };
+// Its own window, late and short. It has to stay full size long enough to be the thing visibly
+// pushing `wap` off the row, and be gone before the box narrows past where it ends up.
+const dotCloseFrom = 0.5;
+const dotCloseTo = 0.74;
 const barEnd = { left: 194.27, joint: 347.17, centre: 108.41, stroke: 28.33 };
 const dashEnd = { firstCap: 80.26, lastCap: 249.42, stroke: 28.2, centre: 266.22, seg: 56.22, gap: 56.65 };
 
 export const restBox = { x: 0, y: 0, width: 1790, height: 471 };
-// The icon's own content box in the same units: its chevron to the far side of its dot across, its
-// `a`'s ascender to its `s`'s baseline down. Shorter than the wordmark's box because `p`'s
-// descender leaves with `wap`, which is what makes the surviving marks grow about a third.
-export const collapsedBox = { x: 0, y: 0, width: 501.52, height: 354.61 };
+// The icon's own content box in the same units: its chevron across to the tip of its arrowhead,
+// its `a`'s ascender down to its `s`'s baseline. Shorter than the wordmark's box because `p`'s
+// descender leaves with `wap`, which is what makes the surviving marks grow by about half.
+export const collapsedBox = { x: 0, y: 0, width: 431.76, height: 354.61 };
 
 // ─── beats ───────────────────────────────────────────────────────────────────────────────────
 // `lead` carries the letters, the bar's tail, the dot and both mask edges: the sweep. `follow`
@@ -145,6 +154,7 @@ const wordmarkFrameAt = (t: number): wordmarkFrame => {
 	const barStroke = mix(barStrokeRest, barEnd.stroke, follow);
 	const barLeft = aRight + mix(barRest - (aBox.x + aBox.w), barEnd.left - (aEnd.x + aEnd.w), lead);
 
+	const closing = easeInOut(seg(t, dotCloseFrom, dotCloseTo));
 	const arenEdge = mix(aBox.x, aEnd.x, lead) - arenLead;
 	const wapEdge = mix(wapEdgeRest, wapEdgeEnd, lead);
 
@@ -162,9 +172,9 @@ const wordmarkFrameAt = (t: number): wordmarkFrame => {
 		dot: {
 			cx: mix(dotRest.cx, dotEnd.cx, lead),
 			cy: mix(dotRest.cy, dotEnd.cy, lead),
-			rx: mix(dotRest.rx, dotEnd.rx, lead),
-			ry: mix(dotRest.ry, dotEnd.ry, lead),
-			stroke: mix(dotRest.stroke, dotEnd.stroke, lead),
+			rx: mix(dotRest.rx, dotEnd.rx, closing),
+			ry: mix(dotRest.ry, dotEnd.ry, closing),
+			stroke: mix(dotRest.stroke, dotEnd.stroke, closing),
 		},
 		chevronMorph: lead,
 		headMorph: follow,

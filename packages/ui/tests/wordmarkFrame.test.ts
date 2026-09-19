@@ -12,13 +12,24 @@ import wordmarkFrameAt, {
 	restBox,
 	wordmarkExtents as extents,
 } from '../src/components/wordmarkFrame';
+import { headFrom, headTo } from '../src/components/wordmarkShapes';
 
 // Sampled rather than spot-checked. Every failure this guards against is a few frames wide — a
 // letter blinking out for 40ms behind something that has not quite covered it — so the interesting
 // question is never what one value is, it is whether a property holds across the whole run.
 const everyFrame = Array.from({ length: 601 }, (_, step) => step / 600);
 
-const headWidth = 89.92;
+// The arrowhead's true right edge at a given point along its morph, read off the ring the
+// component actually draws. Standing in for it with a scaled constant is close but not exact, and
+// the box now closes onto this tip precisely enough for the difference to matter.
+const headRight = (morph: number) => {
+	let max = -Infinity;
+	for (let i = 0; i < headFrom.length; i += 2) {
+		const from = headFrom[i] as number;
+		max = Math.max(max, from + ((headTo[i] as number) - from) * morph);
+	}
+	return max;
+};
 
 // A box's placement under a frame's pose, which is what the browser actually draws.
 const placed = (box: { x: number; y: number; w: number; h: number }, at: { x: number; y: number; scaleX: number; scaleY: number }) => ({
@@ -72,9 +83,10 @@ describe('the wordmark collapsed', () => {
 		expect(s.top).toBeCloseTo(extents.sEnd.y, 2);
 		expect(s.right - s.left).toBeCloseTo(extents.sEnd.w, 2);
 
-		(['cx', 'cy', 'rx', 'ry', 'stroke'] as const).forEach(key => {
-			expect(end.dot[key]).toBeCloseTo(extents.dotEnd[key], 6);
-		});
+		// The period is gone, not parked: the shipped icon has no orange in it at any size.
+		expect(end.dot.rx).toBe(0);
+		expect(end.dot.ry).toBe(0);
+		expect(end.dot.stroke).toBe(0);
 		expect(end.barX1 - end.barStroke / 2).toBeCloseTo(extents.barEnd.left, 2);
 		expect(end.barX2).toBeCloseTo(extents.barEnd.joint, 2);
 		expect(end.barStroke).toBeCloseTo(extents.barEnd.stroke, 2);
@@ -91,9 +103,10 @@ describe('the wordmark collapsed', () => {
 	test('closes the box around what survives, with nothing hanging out of it', () => {
 		expect(end.box.width).toBeCloseTo(collapsedBox.width, 6);
 		expect(end.box.height).toBeCloseTo(collapsedBox.height, 6);
+		// The arrowhead is the rightmost thing in the icon once the dot has gone, so the box closes
+		// onto its tip rather than leaving a period's worth of air past it.
 		const right = collapsedBox.x + collapsedBox.width;
-		expect(end.dot.cx + end.dot.rx + end.dot.stroke / 2).toBeLessThanOrEqual(right + 0.01);
-		expect(end.barX2 + headWidth * (extents.barEnd.stroke / barStrokeRest)).toBeLessThanOrEqual(right);
+		expect(headRight(1)).toBeCloseTo(right, 1);
 	});
 
 	test('has both doomed words fully behind their masks', () => {
@@ -132,11 +145,32 @@ describe('across the whole run', () => {
 		});
 	});
 
+	// It has to still be there long enough to be the thing visibly clearing `wap`, and gone before
+	// the box narrows past where it ends up — otherwise it either survives into the icon or winks
+	// out while there is still a letter for it to push.
+	test('keeps the period until the word it is clearing has gone, then closes it', () => {
+		const wapGone = everyFrame.find(t => {
+			const frame = wordmarkFrameAt(t);
+			return frame.wapFade.to <= placed(extents.wapBox, frame.wap).left;
+		}) as number;
+		const dotGone = everyFrame.find(t => wordmarkFrameAt(t).dot.rx === 0) as number;
+		expect(wapGone).toBeLessThanOrEqual(dotGone);
+
+		everyFrame.filter(t => t < wapGone * 0.6).forEach(t => {
+			expect(wordmarkFrameAt(t).dot.rx).toBeGreaterThan(10);
+		});
+		// While it can still be seen it has to be somewhere the box can show it. Where its centre
+		// drifts after that does not matter, because there is nothing left of it to draw.
+		everyFrame.filter(t => wordmarkFrameAt(t).dot.rx > 0).forEach(t => {
+			const frame = wordmarkFrameAt(t);
+			expect(frame.dot.cx + frame.dot.rx).toBeLessThanOrEqual(frame.box.x + frame.box.width);
+		});
+	});
+
 	test('never lets the arrowhead leave the box or the bar turn inside out', () => {
 		everyFrame.forEach(t => {
 			const frame = wordmarkFrameAt(t);
-			const head = frame.barX2 + headWidth * (frame.barStroke / barStrokeRest);
-			expect(head).toBeLessThanOrEqual(frame.box.x + frame.box.width);
+			expect(headRight(frame.headMorph)).toBeLessThanOrEqual(frame.box.x + frame.box.width);
 			expect(frame.barX2 - frame.barX1).toBeGreaterThan(frame.barStroke / 2);
 		});
 	});

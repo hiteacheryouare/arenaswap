@@ -21,6 +21,17 @@ const collapseAt = 40;
 const expandAt = 16;
 const collapseMs = 450;
 
+// Whether the bar has a surface is a different question from how far it has condensed, and tying
+// the two together is wrong in both directions. A card is behind the header from the very first
+// pixel of scroll, 40 short of where the collapse starts and 450ms short of where it finishes, so
+// a background fading in on the collapse curve leaves the bar see-through over moving content —
+// worst on a fast flick, which is exactly when there is most to see through it. And on the way back
+// up the tint would linger after the list had already returned to the top.
+//
+// So the surface is its own signal, and it snaps: at one pixel of scroll there is one pixel of card
+// behind the bar, and nothing about that is worth easing.
+const liftedFrom = 0;
+
 // Poses the header against a scroller. Everything it touches is DOM — a React state per frame
 // would re-render the game list under it 27 times per transition.
 //
@@ -75,7 +86,14 @@ const usePopupHeaderCollapse = (scroller?: RefObject<HTMLElement | null>) => {
 			frame = done < 1 ? requestAnimationFrame(step) : 0;
 		};
 
+		const lift = () => {
+			headerRef.current?.style.setProperty('--lifted', node.scrollTop > liftedFrom ? '1' : '0');
+		};
+
 		const onScroll = () => {
+			// Before the early return: the surface has to answer every scroll, not just the two that
+			// cross a collapse threshold.
+			lift();
 			const next = node.scrollTop > (collapsed ? expandAt : collapseAt);
 			if (next === collapsed) return;
 			collapsed = next;
@@ -91,6 +109,7 @@ const usePopupHeaderCollapse = (scroller?: RefObject<HTMLElement | null>) => {
 		};
 
 		headerRef.current?.classList.toggle('is-condensed', collapsed);
+		lift();
 		pose(progress);
 		node.addEventListener('scroll', onScroll, { passive: true });
 		return () => {
