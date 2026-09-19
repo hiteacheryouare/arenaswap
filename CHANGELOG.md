@@ -1,562 +1,125 @@
 # Changelog
 
-> One or two lines per entry: what changed, and the one thing about it worth knowing later.
-> The code, the tests and the git history hold the rest. Do not write essays here.
+> **Two or three sentences per entry. No sub-headings, no tables, no coverage sections.**
+> Say what changed and the one thing about it worth knowing later — the code, the tests and the
+> git history hold everything else. An entry that wants more than that wants an issue or a source
+> comment instead. Do not match the length of whatever you see below; match this rule.
 
 ## The naming takes the card, on a split laid flat, filled rather than outlined — 2026-09-18
 
-Fourth pass on this beat and the first one that answers the ask, which was: make the full name look
-like the tricode, bigger, across the whole card. It could not be done where it was. A leaning seam
-leaves each club half a card, and at half a card the longest word set the size for everything — so
-the naming was drawn at a third of the height of the tricodes it precedes and read as a caption on
-somebody else's graphic.
-
-So the split is **laid flat for that one beat**: two bands, away over home, each the full width of
-the card, wiped in from the card's own outer edges to meet on the centre line — which is the poster's
-two halves meeting on the seam, played on the other axis and a scene early. A club then gets the
-whole width of the card, and the poster pivots the split back by wiping its own leaning halves over
-the bands. That is worth having for itself: the halves grow over the bottom-left and top-right in a
-colour those quadrants are not already painted, which makes it the only moment in this graphic where
-colour visibly arrives over colour, and the handover a wipe rather than a cut in the dark. The bands
-take the raw team colours the poster's halves and the card's own rails are drawn in, so nothing has
-to agree with anything.
-
-**Filled solid white, in the club's own case, not outlined and not shouted** — both the maintainer's
-call, and the outline stays the tricode's. Filled also costs an element: there is no stroke to keep
-outside a silhouette, so the two stacked copies the tricode needs collapse to one. **Two lines at
-most, broken at the club's own nickname** rather than a line per word, which is the other half of why
-the type doubled: ESPN sends `Team.nickname`, so "Penn State Nittany Lions" breaks after "State" and
-not wherever a box ran out — and **it stays on one line where that draws it bigger**, which is a fact
-about the name and the card rather than a rule. "Washington Commanders" is 21px of type on one line
-and 38 on two; "Miami Marlins" is 40 on one and 35 on two, and the one-line version covers the whole
-card where the two-line version covers a third. So both are fitted and the bigger wins, which means
-the two clubs on one card can be set differently and sometimes are.
-
-The size is **measured rather than counted**, all of it. The component reads each line's own advance
-off the DOM and `revealNameFit` justifies the lines to one block width, bounded by the band's width,
-the band's ink height, and a cap a little over the tricode's own 3.4rem. An advance is a property of
-the letters and not of their number — 0.5168em a character for "Pittsburgh" against 0.6629 for
-"Commanders", a quarter more from the same count — which is what defeated `revealNameScale` and its
-hand-measured 5.5; that constant and its four tests are gone. `revealNameSpaceEm` is what lets the
-one-line candidate be fitted without rendering it: DM Sans advances are additive to four decimals,
-measured, so the joined line is the two lines plus a space. `revealNameSpread` is the one bound that
-is taste rather than geometry — justification alone draws "AC" two and a half times the height of
-"Milan" — and it is what leaves "Los Angeles" over "Lakers" ragged rather than matched. On the live
-card a long club is named across three quarters of it at 38px and a short one across nine tenths at
-40px, against the 17.6px the version before this could reach.
-
-Mixed case is what the vertical arithmetic is for, and it is all measured off DM Sans 700 with canvas
-`TextMetrics` rather than guessed: font box 0.99/0.31, ink ascent 0.725, ink descent 0.232. Caps sit
-happily at 0.82 leading and this was drawn that way for a pass; letters with descenders cannot, and at
-0.92 the "g" of "Washington" went 3.5px through the ascenders of "Commanders" — the leading is 1.06,
-which leaves a gap at every size ratio two lines of one name can take. The **height budget is against
-the ink rather than the line boxes**, because a box does not contain its own descender at any leading
-under 1.144: budgeting by boxes put the bottom of a "g" one pixel from the card's own edge, measured
-in pixels off a render. And the block is **lifted** so the ink rather than the boxes is what sits
-centred in the band, the ink being low in its boxes by 0.145em at the top and 0.042 at the bottom —
-3px of a 5px margin handed from one side to the other. The spec that guards it measures the real ink
-with its own canvas metrics rather than reading those constants back, since the constants are the
-thing under test.
-
-The exit is the collapse the maintainer picked: the name gathers onto the exact slot its tricode
-appears on, and is **gone by the frame the poster starts**. Gone rather than covered, which is the
-defect this replaces — the poster's colour grows in from the outer edges in the same hue as the band,
-so a name left standing was eaten from its ends inward with nothing visible doing it, letters going
-out one at a time. And it is **slow enough to read**, which the first version of this pass was not:
-`revealNameBeatMs` is 1750 against 800, buying 1.09 seconds of two clubs' names standing still, which
-a spec asserts in real milliseconds at the rate the graphic actually plays. 7605ms a card now against
-6110, 8229 before the list settles, all of it skippable. The window is 700 + 1750 + 1050 = 3500, so
-the crests land at 20% and the poster starts at 70% — round figures on purpose, since every beat in
-here is a percentage of that window written out by hand.
-
-Three traps. A `Range` over text measures the content area — 1.30em of DM Sans against 0.96em of
-actual ink — so a line rect overhangs a block that fits perfectly and it is useless for anything but
-widths. Optical `padding-top`, copied from the tricode, moved the in-flow copy and not the `inset: 0`
-one and turned the outline into a drop shadow; irrelevant now that there is one copy and the lift does
-that job properly, but that is why nothing here has padding. And two specs were racing the clock
-rather than scrubbing, both of which passed for years because the
-poster used to start sooner: the lean spec read a half still 1% short of full and lost by 34ms, and
-the e2e smoke tests waited 4s for a tricode the poster does not put up until 3991ms. Also fixed on the
-way: a skip left the opening layer over the card, since it was never in the `.is-skipping` block — it
-goes at once now, like the dark base and for the same reason. No new locale keys: the only words in
-this beat are ESPN's own.
+The full-name beat moved onto two flat full-width bands, away over home, because a leaning seam leaves each club half a card and at half a card the longest word sized everything — the naming was drawn at a third of its tricodes and read as a caption. Set solid white in the club's own case, broken at ESPN's `Team.nickname` and left on one line wherever that draws it bigger, at 38–40px against the 17.6px the pass before could reach. Every size is measured off DOM advances rather than counted from characters, since an advance is a property of the letters and not their number — 0.5168em each for "Pittsburgh" against 0.6629 for "Commanders".
 
 ## The naming is a scene of its own, set where the tricodes are — 2026-09-18
 
-Two scenes ahead of the poster now: the crests hold the colour fields, then they leave the way they
-came in and the clubs are named in full on the colour they just left.
-
-The naming is the tricode treatment, which is what it was asked for twice and was not until now. Set
-in the same two stacked copies — a stroke follows every contour the font draws, so an outline has to
-be the back copy showing around the front one — and, the part that had been missed, **centred on the
-crest slots at 25% and 75%, on the centre line.** The two passes before this hung it in a corner, and
-a corner is where a caption goes. "It looks exactly like it did last time" was fair: the pass before
-had changed only when the names appear, not what they look like.
-
-Half a card wide, so the naming carries its own seam rather than the fields'. That is the one place
-the line is written twice and it has to be: the fields are half plus the lean, the name boxes are half
-exactly, because a box that reached past the seam would not centre on the slot. Against a half the
-seam leaves the box by a lean at the top and comes back inside it by a lean at the bottom — the same
-line, and a spec checks that shape rather than trusting two sets of coordinates to agree.
-
-The size is measured, and the measurement is against the seam at each line's own height rather than
-against the box. Two things defeat the arithmetic: an advance is a property of the letters and not of
-their number — 0.637em a character for "MARLINS" and 0.739 for "COMMANDERS" — and the seam leans, so a
-line below the centre has less room than one above it and a box-width check passes lines that visibly
-cross it. Both are in the assertion now, across the shapes real names take.
-
-One window carries both scenes. 700ms of crests (`revealOpenBeatMs`), 600 of naming
-(`revealNameBeatMs`), 900 more in which the layer outlives them into the poster — so the crests land
-at 32% and have cleared by 59%, the naming starts at 41% and is up by 59%, and 59% is where the poster
-begins. That coincidence is the only thing holding the handover together, so a spec computes the
-percentage from the two constants and checks the keyframes name it. The fields never move across
-either scene, which is why neither has to cut to the other, and that is asserted as the field being
-the same colour in both.
-
-6110ms a card against 5460, and 6734 before the list settles, which is what the skip is for. `quick`
-is untouched for the fifth pass running: both scenes are `full` only.
+The names take the tricode's own treatment — two stacked copies, since a stroke follows every contour the font draws — and are centred on the crest slots at 25% and 75% rather than hung in a corner, which is what the two passes before this had missed. One window carries crests and naming, and the poster begins at the frame the naming clears; a spec computes that percentage from the two constants rather than trusting the keyframes to agree.
 
 ## The card the graphic was over is the same card afterwards — 2026-09-18
 
-`tabRegistration.cy.ts` was failing on the one step that clears an assignment, and Cypress's message
-sent it the wrong way: `cy.select()` reports the element as `disabled`, but it never reads `disabled`
-— it clicks, asks `getActiveElByDocument` what has focus, and blames the element when the answer is
-nothing. Nothing had focus because the element was gone. `gameCardReveal` returned
-`<div className='game-card-reveal'>…{children}…</div>` while the graphic ran and `<>{children}</>`
-once it was done, and React reconciles children by position: dropping the wrapper reparents the card,
-so the whole card subtree is rebuilt rather than moved. What ends the graphic is somebody interacting
-with the popup, which is exactly when a tab picker is in use — so the interaction that ends the reveal
-destroys the control being interacted with, taking the focus and any open dropdown with it.
-
-One render path now, with `playing` gating each layer in place: `{playing && …}` leaves a hole where
-the element was, so the card keeps its index and the wrapper stays for good, empty. Both halves are
-needed, and the second is the one that hides — keeping the wrapper but collapsing the holes slides the
-card up into a slot a stage layer used to hold, which is the same rebuild by a different route, and it
-was a full debugging pass to find it after the first fix looked right and changed nothing. The empty
-wrapper is layout-neutral, carrying the 0.5rem the card would have carried, and a card that never had
-a stage over it is still handed straight through. The spec that pins it compares the card's DOM node
-across the ending rather than asserting anything about the graphic, and it fails on the old component.
-No test was changed to make this pass: the e2e was describing the product correctly.
+`gameCardReveal` dropped its wrapper element when the graphic finished, and React reconciles children by position, so the card subtree was rebuilt rather than moved — destroying whatever the user was interacting with, which is exactly the interaction that ends the reveal. One render path now with `playing` gating each layer in place, so the card keeps its index and the empty wrapper stays for good.
 
 ## A crest bound for a monochrome mark stops flashing the colours it is giving up — 2026-09-18
 
-The verdict is read off the colour artwork's own pixels, so the artwork has to load — but it does not
-have to be on screen while it is being judged, and it was: abbreviation, colour, abbreviation, mark,
-because an image paints the frame it decodes and `load` is not a discrete event, so the commit that
-swaps in the mark lands a frame or more behind it. `TeamCrest` now tells `Crest` how far the
-measurement has got, and a crest carrying that verdict stays behind its placeholder until the artwork
-it is asking for is the artwork that loaded — `visibility` rather than `display`, or a lazy crest on
-the guide would have no box to be scrolled into. Only where the team has a mark at all: with none, an
-unreadable crest keeps its artwork and merely gains a plate behind it, so nothing swaps and there is
-nothing to hold for. The warm path is untouched, since a verdict already in `localStorage` settles
-before the first frame.
-
-The thing to keep hold of is what counts as an answer. `crestReadsOn` refuses to write down a verdict
-it could not reach — a tainted canvas, or Chrome out of canvas memory past a hundred guide bars — so
-the hold is released by the measurement having been *attempted* rather than by a verdict arriving, or
-those crests would sit behind their placeholder for good. Measured by sampling every animation frame:
-nothing but the mark is ever painted, and the spec fails without the fix. The readable majority pays at
-most one frame, and `= 0` was tried and is flaky, which is itself the measurement proving the window is
-real. It also turned up a fixture whose black mark was a byte-for-byte copy of the navy crest, which
-made the mark indistinguishable from the artwork it replaces and skipped the measurement entirely —
-exactly the trap the `whiteMark` fixture's own comment warns about.
+The verdict is read off the colour artwork's pixels, so the artwork must load — but it was also being painted while judged, giving abbreviation, colour, abbreviation, mark. `Crest` holds behind its placeholder until the artwork it asks for is the artwork that loaded, using `visibility` rather than `display` so a lazy guide crest still has a box to be scrolled into. The hold releases on the measurement having been *attempted* rather than answered, since `crestReadsOn` refuses to record a verdict off a tainted canvas and those crests would otherwise never appear.
 
 ## Zod ships as `zod/mini`, and the string-format validators nobody called go with it — 2026-09-18
 
-Both schema files were written in the chained API, which is the reason the complete Zod 4 build
-survived bundling into each of the two MV3 contexts: 330 `_zod` references apiece, carrying
-`toJSONSchema` and every string-format validator — `nanoid`, `cuid2`, `xid`, `ksuid`, `jwt`, `emoji`,
-`base64url`, `ipv6`, `cidr` — none of which a browser extension has a use for. Ported to the functional
-form, zod's own share of `background.js` goes 79,455 → 17,407 bytes and of the popup's preloaded vendor
-chunk 79,766 → 19,102, measured by building each way with zod aliased to a no-op stub rather than read
-off a raw chunk size; `background.js` itself is 165,087 → 100,961, and all ten dead validators are gone.
-`external` in the rolldown config had to move from `'zod'` to `'zod/mini'` at the same time, since it
-matches by exact string and would otherwise have inlined mini into core's own dist.
-
-The duplication across the two contexts is unchanged and is structural — two contexts, two bundles — and
-the barrel is not the lever for it either: the popup imports `fetchLeagueLogos` and `fetchTeamsForLeagues`,
-so it reaches `apiClient` and its schemas whether or not the barrel re-exports `BackgroundStateSchema`.
-The port was pinned against the old build in one process before landing: `parseScoreboard`, `parseTeams`
-and `EspnSummarySchema` produce byte-identical `JSON.stringify` output on a payload exercising every
-branch in the file, malformed rows included. `BackgroundStateSchema` had no tests at all and now has four.
+Both schema files were written in the chained API, which is why the complete Zod 4 build survived into each MV3 bundle carrying `nanoid`, `cuid2`, `jwt`, `ipv6` and six more validators an extension cannot use. Ported to the functional form, zod's own share goes 79,455 → 17,407 bytes in `background.js` and 79,766 → 19,102 in the popup's preloaded vendor chunk. `external` in the rolldown config had to move from `'zod'` to `'zod/mini'` at the same time, since it matches by exact string.
 
 ## The popup stops preloading a megabyte of charting it will probably never draw — 2026-09-18
 
-`gameDetailView` imported the chart card statically, so echarts was reachable from the popup entry and
-rode into the vendor chunk `popup.html` modulepreloads — 1,005,346 bytes fetched and parsed before the
-list draws, for four charts that only exist on a screen most opens never reach. The split is inside
-`gameDetailChart` rather than at its four call sites, which is the part worth keeping: the title and
-legend are plain markup and stay eager, only the `init`/`resize`/`dispose` half moved to
-`gameDetailChartCanvas` behind the same `import()` idiom confetti already uses, and the Suspense fallback
-is the card's own empty `.game-detail-chart-canvas` box — so the 176px is reserved by the very rule that
-will size the chart and nothing moves when it lands.
-
-Measured on a `chrome-mv3` build the vendor chunk goes 1,005,346 → 487,940 and the eager pair 1,163,840 →
-646,434, against a 516,671-byte chart chunk that now loads only on opening a game. The guide page preloads
-that same vendor chunk and has never drawn a chart at all, so it gains the whole half megabyte for
-nothing. One trap: the Cypress component harness stubs `./gameDetailChart` on the exact specifier, so no
-spec there ever loads echarts — the real lazy path is only reachable by importing the component by its
-full path.
+echarts was reachable from the popup entry, so `popup.html` modulepreloaded 1,005,346 bytes for four charts most opens never reach. The split is inside `gameDetailChart` rather than at its call sites: only the init/resize/dispose half moved behind `import()`, and the Suspense fallback is the card's own empty canvas box, so the 176px is reserved by the rule that will size the chart. Vendor chunk 1,005,346 → 487,940, and the guide page — which has never drawn a chart — gains the whole half megabyte.
 
 ## The oversized crests take their colour across the whole card, not into a disc — 2026-09-18
 
-Three passes on this beat, and each one moved the colour somewhere else: onto the dark plate the rest of
-the graphic builds over, then onto a neutral field, then onto a disc behind each crest. The maintainer's
-call is the one that was in front of us the whole time — take the colour the disc would have been and
-spread it across the card at full size. No disc, no third surface, and each crest clipped where its
-colour ends.
-
-The mechanism is the part worth keeping. The element `teamCrest` paints when a crest's colours will not
-read on the surface it was handed is the same element this file styles, so making *that* the colour
-field means the colour is right without this file working it out. Where the artwork reads on its team's
-colour the wrapper comes back bare and the rule here paints the team colour — a light mark on a navy.
-Where it does not, `teamCrest` sets its tinted plate inline and an inline style wins, so the field
-becomes the lighter surface that crest needs — a navy monogram on navy, which is the case that plate
-exists for and which the popup cannot answer with a monochrome mark because its state carries none.
-Either way the crest ends up on exactly the colour a disc would have given it. One spec per path, and
-the shipped fixture card still exercises both at once.
-
-The seam is now one shape in one place. The opening's two fields are the poster's halves at full width,
-so they take the same two `clip-path` polygons: a crest is clipped along the exact line the poster's own
-half then grows into, and one seam written twice is two seams waiting to disagree. It also means the
-layer carrying them paints nothing itself — the fields cover the card between them — and the mid tone
-the entry below introduced is gone with the reason for it.
-
-What could have been lost is the poster's opening move, since the halves now wipe in over colour that
-is already there. It survives, and the reason is the shading: the halves are washed dark at their outer
-edge and the opening's fields are flat, so what travels inward is a visible edge across the logos
-rather than nothing at all. Checked by reading the frames, not by reasoning about them.
+Third pass on where this beat's colour goes, and the answer is across the card at full size with no disc and no third surface. The field is the same element `teamCrest` already paints, so it is correct by construction — bare where the artwork reads on its team's colour, `teamCrest`'s inline tinted plate where it does not. The two fields also take the poster's own `clip-path` polygons, so the seam is one shape written once.
 
 ## A crest is the team's crest, in the team's colours, everywhere — 2026-09-17
 
-Reverts the crest colour treatment entirely. It measured each crest's pixels against the surface behind it
-and swapped in ESPN's monochrome mark, or a tinted plate, wherever the artwork did not clear a contrast
-floor — and it was right about legibility and wrong about the product: a crest swapped for a white
-silhouette is no longer that team's crest, and which teams it happened to was not something a reader could
-predict or a designer could see coming. Gone with it: the mono-mark fetch and its `storage.local` cache, the
-`/summary` mark parse, `TeamMonoMarks`, the persisted verdict store, and every `:not(.is-bare)` plate rule.
-`TeamCrest` is now a crest in a sizing box. The one thing kept is the fix underneath all of it: `pickPair`
-still refuses to answer a clash with black against white, so Baltimore's purple stays `#29126F` against
-Indianapolis' `#003B75`. `background` survives as a vestigial prop only because the open-reveal poster still
-passes it and that file is being worked on elsewhere.
+Reverts the crest contrast treatment entirely: a crest swapped for a white silhouette is no longer that team's crest, and which teams it caught was not something a reader could predict or a designer could see coming. Gone with it are the mono-mark fetch and its cache, the `/summary` mark parse, `TeamMonoMarks`, the persisted verdict store and every plate rule. Kept: `pickPair` still refuses to answer a clash with black against white.
 
 ## The first open of the day opens on the two crests, too big for the card — 2026-09-17
 
-A beat ahead of the poster, which is a thing this graphic has now been given twice after being refused
-twice. The refusals were right: a light line drawing itself down the centre, and a flourish after the
-card resolved, were each a different graphic wearing this one's clothes. This one is not, and the reason
-is that it is made of nothing new. The two crests the poster already resolves into are drawn at 1.34 of
-the card's height — so neither of them fits, each overhangs about a sixth of the card top and bottom and
-runs off its own outer side — and then they shrink towards the hold the poster holds them at while the
-colour grows over them. There is no transition to design, because the thing that takes the opening away
-is the next beat arriving.
-
-Three details carry that. It is **its own layer**, because the poster's crest layer is clipped to show
-nothing until a bar has crossed it and these have to be up on the first frame. It sits **between the dark
-base and the poster** in the stacking, which is what makes the handoff free — a spec pins that ordering,
-since an inversion would have the oversized pair riding over the card instead of dying under it. And the
-overhang is **cut at the card's edge** by the same clip and the same pixel of bleed the poster's layers
-take: a crest that merely happened to be large reads as a mistake, and one cut off by the frame reads as
-artwork placed deliberately past it. The specs assert the overhang as overhang — off the top, off the
-bottom, off its own outer side — rather than as a size, because a size passes on a card of any height and
-this fails the moment the pair start fitting.
-
-The timeline grew a phase, so `--reveal-delay` stopped being able to mean both things. It is the cascade
-alone now, and **`--reveal-spine`** is when a card's poster starts: 22 delays in the stylesheet moved onto
-it, and the two are the same value in `quick`, which is how that version stays byte-identical for the
-third pass running. What the opening beat costs is one figure the stylesheet names by hand and a spec that
-will not let it drift — the layer has to stay alive at least until the halves meet at 884ms, because they
-part again at the end and anything still underneath would be uncovered a second time.
-
-And the rate came back down, 1.5 → **1.3**. Once there is a beat carrying the extra length, the rest of it
-does not have to come out of playing the same thing slower: 5460ms a card against 5100, and less of it is
-stretch. Two traps worth keeping. `revealDurationMs` is the poster alone and `revealTotalMs` is both
-phases — the card is removed after the second, and reading the first would take the wrapper off a card
-still mid-opening. And every absolute millisecond in the component spec is now offset by the opening beat
-as well as scaled by the rate, which is why they are all written as poster-relative figures and put onto
-the timeline by one helper: the two things that move them have each moved twice.
+A beat before the poster — the two crests at 1.34 of the card's height, overhanging and cut at the card's edge, shrinking towards the hold the poster takes them to. It was accepted after two refusals because it is made of nothing new: the thing that takes it away is the next beat arriving, so there is no transition to design. `--reveal-delay` split into the cascade and `--reveal-spine` (when a card's poster starts) now that the timeline has two phases, and the rate came back 1.5 → 1.3.
 
 ## The open animation is cut like a broadcast package rather than timed like one — 2026-09-17
 
-Two passes, and the first one only did the easy half. Length is one constant and that part was right:
-`--reveal-rate` was already the single time knob, so `full` going 1 → **1.5** takes every beat half again
-as long in the same proportion to every other, moves not one line of timing in the stylesheet, and leaves
-`quick` byte-identical because only `full`'s rate changed. 5100ms a card, 5820 for the list. But a graphic
-played slower is still the same graphic, and the maintainer's read was "you didnt do enough".
-
-What was missing was craft rather than content, and naming it took reading up on the motion-design
-vocabulary rather than on stadium graphics: **offset, overshoot, secondary action, parallax, masked
-reveal, easing.** Audited against that list this graphic scored one out of six. Masked reveal it already
-was — the clip-complement wipe is the whole thing, and it is good. Everything else was absent, and one
-source puts it bluntly: elements that overshoot and settle are "the difference between work that feels
-amateur and work that feels considered." Nothing here overshot anything. Every layer sat dead still until
-its cue, then moved once, at one rate, and stopped.
-
-So: the lettering is **driven on from its own outer edge and lands rather than stopping**, past its resting
-place and back, instead of fading up on the spot. The overshoot is scaled by `--reveal-abbr-scale` because
-the clearance between the two sides is scaled by it too — measured, UCONN against UMASS rests 28.0px apart
-and the settle costs 2.4 of it, and the spec that guards that gap is now pinned to the overshoot frame
-rather than to an unscrubbed one where both sides are still parked outward and 44px apart, which is the one
-moment it could never fail. The **crest drifts 5px against the lettering's 16** over the same arrival,
-which is parallax: a nearer layer and a further one at different rates on the one axis this graphic
-allows. Its walk down onto the card's crest **settles** rather than arriving — past the slot a hair and
-back, inside the segment, so the 93% stop is still exactly the card's own crest at exactly scale 1. The
-landing stays the landing. The **colour fields are shaded** from their outer edge in towards the seam,
-along the same lean, which is what puts them in front of the card rather than level with it and makes the
-seam the brightest line on the poster; a black wash over `background-color` rather than a second colour,
-because nothing in here should be inventing one. And the **pass is a group of three bars that opens out as
-it crosses** — each thinner, fainter and slower than the one ahead. Only the leading bar's 1000ms matters,
-since its trailing edge is the reveal edge and the clips are cut to that window.
-
-Out again: the team records. They were the previous pass's one addition that was information rather than
-motion, they were correct about what an in-stadium matchup graphic carries, and the maintainer did not want
-them on the card. The measurement they produced is worth keeping though — an offset taken off the lettering
-*box* rather than off the lettering put a thing 35px below the centre on every card regardless of type
-size, which is 1.8px inside a full tricode's ink and 13.2px clear of a five-letter one. Anything hung off
-that box later has the same problem.
-
-One spec failed for a real reason rather than a stale number, which is the one to keep hold of: the parked
-bars are read at the far end of their travel, and that end moves whenever the pass does. It was 2700ms for
-two bars of 1000ms; the trailing bar now leaves at 1760 and drags for 1120, so nothing is parked until
-2880. No new locale keys.
+Slowing the graphic was the easy half and did not land. Audited against the motion-design vocabulary — offset, overshoot, secondary action, parallax, masked reveal, easing — it scored one of six, so the lettering now drives in from its outer edge and overshoots, the crest drifts 5px against the lettering's 16, the colour fields are shaded inward along the lean, and the pass became three bars opening out as they cross. The team records added in the previous pass came back out at the maintainer's call.
 
 ## The popup stops scrolling sideways while the open animation plays — 2026-09-17
 
-A clip path clips painting and says nothing about scrollable overflow, which is the half of
-`overflow: hidden` that the entry below quietly dropped when it swapped one for the other on the
-stage and the sweeps. The wipe bars park a bar width and a lean clear of the card's right edge, so
-they went on counting towards the page's scroll width from out there: 334px of it against a 305px
-frame, draggable 29px sideways for the length of the graphic. Both layers take `overflow: clip` back
-alongside the clip path — `clip` rather than `hidden` because nothing in there is meant to be
-scrollable even programmatically — with `overflow-clip-margin: 1px`, which is the bleed again, since
-`overflow` alone cuts at the box and would take back the pixel the clip path is there to add.
-
-Measuring it found a second one underneath, older than any of this and the same shape: the view
-shell arrives on `translateX(14px)`, a transform counts towards scrollable overflow too, and so every
-view change in the popup's history has been 14px draggable for its own 0.22s. `.popup-root` clips its
-x axis now, and only its x axis — a popup that cannot be scrolled down is a worse bug than one that
-can be nudged sideways, so the spec asserts the axis rather than the scroll height, which a two-game
-slate would pass by having nothing to scroll. Pinned on the built popup rather than in a component
-test, because the thing that scrolls is the popup's own frame.
+A clip path clips painting and says nothing about scrollable overflow, so the parked wipe bars went on counting toward scroll width from off the card — 334px against a 305px frame. Both layers take `overflow: clip` back alongside the clip path with `overflow-clip-margin: 1px`, and measuring it found `.popup-root` had been 14px draggable for every view change in the popup's history, from the shell's own `translateX(14px)`.
 
 ## The seam crosses the centre by a tenth of the card at most, not by however tall it is — 2026-09-17
 
-The maintainer, on the graphic eating the away side's half: "it's like I took the right block and slid
-it across the table into the left, and part of the left fell off." Measured on a component fixture the
-join was centred to 0.4px and leaning a symmetric ±27px, which is why the first two readings of this
-were wrong. The fixture was the problem: a stub live card is 148px tall and the one the shipped popup
-draws is **210px**, the lean is half the horizontal run of the angle across the card's height, and it
-was bounded by nothing. So the real card's join crossed the centre by 39.7px of a 296px card — better
-than an eighth of the way across — and while each half still held exactly half the card, the bottom
-row of the away half was 63% the home team's colour. Read off a screen rather than a spec, that is a
-block that has been slid sideways. It also explains the Chrome-but-not-Edge report: nothing differs
-between the two engines here, but the amount depends on the card's height, so whichever browser had
-the taller cards on screen showed it worse.
-
-Bounded at a tenth of the card's width, which is what a 158px card reaches at the full 20.5° — so the
-shorter cards in a list are untouched and the tall ones come down to meet them, and the crossing is a
-fact about the card you are looking at rather than about how many rows it happens to carry. The real
-card goes 39.7px → 29.6px at an effective 15.6°. `revealLeanWidthCap` is the one number to turn if
-that is still too far.
-
-The angle stops being a constant on every card, so the bars can no longer name it themselves: 20.5°
-was written into the stylesheet by hand in six places, with a unit test pinning it against
-`revealSweepAngleDeg` precisely because the bar has to stay parallel to the edge it reveals along.
-`--reveal-skew` is derived from the bounded lean now and the stylesheet names no degrees at all,
-which is strictly better than two figures that have to agree: parallelism holds by construction. The
-parked bars come along for free, since their clearance was already one bar width and one lean, and a
-strip skewed by the lean's own angle reaches exactly one lean to either side. No new locale keys.
+The lean is half the horizontal run of the angle across the card's height and was bounded by nothing, so the shipped 210px card's seam crossed the centre by 39.7px of 296 while the 148px component fixture measured symmetric — which is why the first two readings of this were wrong. Bounded at a tenth of the card's width, and `--reveal-skew` is derived from the bounded lean, so the stylesheet no longer names 20.5° in six places and the bar stays parallel to the edge it reveals by construction.
 
 ## A parked wipe bar is off the card, once the skew is counted — 2026-09-17
 
-The white lines in the corners at the beginning and end of the open animation, which the entry below
-was chasing on the wrong layer. The bars park at one end of their travel for two and a half of the
-graphic's 3.4 seconds, and they were not parked off the card: a bar overshot 30% above and below it,
-on the reasoning that a skewed strip should be long enough that the lean never drags a corner into
-view, and that overshoot is exactly what dragged the corners into view. Skewing about the centre
-throws a strip's ends sideways by its own half-height times the angle, so 1.6 card-heights of strip
-made a 22px bar a 112px bounding box, and 18% of the card's width was not enough to clear it — 13.7px
-of white was left over the top-left corner for the first second and a half, and over the bottom-left
-for the last. On a taller card, more: the intrusion grows with the card's height, which is why a live
-card showed it worst.
-
-Skew changes nothing about vertical extent, so the strip is the height of the stage now and covers
-the card just as completely, and its ends land exactly `--reveal-lean` to either side — that being
-what the lean already is, half the run of this angle across this box. Which makes the parking exact
-rather than eyeballed: one bar width and one lean clear of the edge it comes in from, one lean clear
-of the edge it leaves by, so `revealSweepRun` is the card's width plus a bar width plus two leans.
-The four reveal edges moved with it, because the edge a bar reveals along is that bar's own trailing
-side and they stop being one line the moment either end drifts. Pinned by a spec that measures the
-parked bounding box against the card at both ends of the travel: the design figure is zero overlap,
-and the tolerance is the 0.0124px of float noise a skewed box measures with. No new locale keys.
+Skewing about the centre throws a strip's ends sideways by half its height times the angle, so a bar overshooting 30% above and below the card had a 112px bounding box and left 13.7px of white in a corner for a second and a half. The strip is the stage's height now, so its ends land exactly `--reveal-lean` to either side and `revealSweepRun` is the card's width plus a bar width plus two leans.
 
 ## The graphic covers the card by a pixel, because a cover of its exact shape cannot — 2026-09-17
 
-The white lines in the corners of the open animation. Both boundaries are antialiased, so at a pixel
-the card's own corner only partly paints, the cover of the identical rounded rectangle over it only
-partly covers, and what is left of the card shows through: measured at 22% of the card's `#dee2e6`
-border along the first and last row of all four corners, against the team colour in front of it. The
-fix that suggests itself does not work, and it is worth writing down why — a cover that merely
-*contains* the card's shape (a smaller radius, a half-pixel of dilation) raises its own coverage to
-no less than the card's, which is not the same as raising it to 1, and the leak is exactly the
-product of the two shortfalls. Only a full pixel of bleed removes it, because then every pixel the
-card paints at all is a pixel the cover paints entirely. Hoisting the rounding to one clip on the
-wrapper was tried first and is worse: Chrome applies a rounded overflow clip per layer, so the dark
-base that used to cover the corners outright inherited the same feathered edge and started leaking
-at the very first frame.
-
-Measuring the whole edge rather than the corner then found the same defect twice, and the second one
-is the wider line the maintainer was seeing on live cards: a card's height is computed, so its bottom
-edge lands mid-pixel — 148.4375px in the popup — and the cover's own bottom edge shares that row with
-the card's border for as much as half of it, right across the width. Same cause, same fix. So the
-stage and the sweeps bleed a pixel above and below the card and take the other two sides from a
-`clip-path` grown to the card's 8px radius plus one, rather than from `overflow` and a radius, which
-can only ever clip to the box itself. The box bleeds on one axis only: `left: 25%` and `75%` are the
-crest slots, and a box 2px wider would land both crests half a pixel off the slot they resolve into,
-while `top: 50%` of a box 2px taller offset by 1px is the line it already was. Nothing needs to paint
-out to the sides anyway — what a half's own left edge feathers against there is the card's 5px rail,
-in that half's own colour, which is why only the top and bottom ever showed a line.
-
-The one thing the bleed must not do is bend the seam, which leans over the stage and not over the
-card: the same horizontal run across a box 2px taller is a shallower angle, and the bar that reveals
-along the seam is skewed by `revealSweepAngleDeg` itself, so the two would quietly stop being one
-line. The lean is measured across the bled height now, through `revealStageBleedPx`, and both facts
-are pinned by specs. Verified by reading pixels at nine frames: no pixel on any edge of the card is
-brighter than the paint beside it while the colour is over it, and the resolved card is untouched. No
-new locale keys.
+Both boundaries antialias, so a cover of the card's exact shape leaks 22% of its border at the corners — and a cover that merely *contains* the shape does not fix it, because raising its coverage to no less than the card's is not raising it to 1. Only a full pixel of bleed does, via `clip-path` at the card's radius plus one, on the vertical axis alone since `left: 25%`/`75%` are the crest slots. The lean is measured across the bled height, or the seam and the bar revealing it quietly stop being one line.
 
 ## A window is a list of days, because ESPN stopped answering for a span — 2026-09-16
 
-The three entries below diagnosed a real symptom on the wrong axis. It is not that MLB will not take
-a dated window and that which leagues will is ESPN's to say: `dates=20260914-20260915` now answers
-`{"code":400,"message":"Failed to get events endpoint."}` in **all 31 leagues**, at any width
-including a one-day `20260915-20260915`, on `site.api` and on `site.web.api` alike, 20 times out of
-20 on one league — while a single `dates=20260915` answers 200 in all 31. So the per-league latch was
-holding a fact about every league, and what it degraded to cost almost everything: the undated board
-carries one Eastern day in most leagues, so finals went and upcoming went, and college football
-looked fine by accident because *its* undated board is an editorially curated week. Nothing
-multi-day survives, either — comma, encoded comma and encoded hyphen all 400, and a repeated
-`dates=` parameter answers 200 for the first value only, which is worse than failing. `YYYYMM` works
-and is a trap: truncation drops the tail, which is the days furthest ahead, exactly as the entry
-below found.
-
-So a window is its list of Eastern days and costs a request each. The span is still computed exactly
-as the range was and then enumerated, so the days asked for are precisely the days the range covered
-— parity by construction rather than by a second reading of the timezone arithmetic, and the
-zone-by-zone specs kept every literal they had. The two legs collapsed into one list on the way: the
-live window is simply the near end of the wide one, and the day back a late kickoff needs after
-Eastern midnight is the same day yesterday's finals come from.
-
-What pays for it is a cache per league and day whose TTL is read off what came back rather than
-chosen per call site. A past day whose every game is final cannot change again (30 minutes); a future
-day is a schedule (10); today is what the live poll is for and is never served from it; and a past day
-still carrying an unfinished game counts as today, which is what keeps a game that kicked off before
-midnight arriving at the live cadence. A failed refetch falls back to that day's last good answer,
-because the callers rebuild a window only at startup and on a preference change — one 403 on day five
-would otherwise cost a league its whole week. Today is the exception on the live window and must be:
-`tickLeague` reads a successful tick with nothing live as a quiet league and walks it towards dormant,
-so a frozen copy of today would let a league fall asleep mid-game. On a *wide* window today is one
-missing day among several, which is also what the two-leg version did — a failed live leg still
-returned everything the range leg found.
-
-A review pass caught two ways that TTL could be read at the wrong moment, both now pinned by specs.
-A calendar day moves future → today → past underneath a cached entry and the entry's own TTL cannot
-see it happen: a day fetched as tomorrow carries ten minutes, so ten minutes later it was today and
-still fresh by its own clock, and a game live in the first ten minutes of a new Eastern day read as
-scheduled at 0-0 — an ordinary 21:00 tip-off on the west coast. The day's classification is asked at
-read time now, not inferred from what was written. And a past day has three states rather than two:
-one with a game in progress never caches, one whose games are all final cannot change again, and one
-holding a game ESPN still calls scheduled — the postponed game that will never start, or the rain
-delay that has not started yet — takes the shorter ten minutes instead of either extreme. Also from
-that pass: today's copy of an event arriving on more than one day now wins over the earliest day's,
-which the two-leg version got for free by putting the live leg first, and days dedupe in flight so a
-worker start and a guide open do not both fetch the same one.
-
-Three things fell out. **`limit` is real and we had never sent it**: an MLB month answered 100 events
-without it and 369 with it, so there is a default cap we have been eating, and on a January NCAA
-basketball day it was certainly truncating us. 500 rather than higher, because `limit=1000` answered a
-dated college football Saturday with 25 events — the curated week, meaning the `dates` filter had
-quietly stopped applying — and verified identical against all 31 on a single-date query, so it only
-ever lifts a cap. **The lookahead was 400ing on every call**, since it built a range too, so every
-league that should have been sleeping was stuck on the dormant beat at ~576 requests a day; it walks
-the days now and stops at the first kickoff, which is one request for a league with anything on soon
-and the whole window only for the league that is about to sleep half an hour at a time. And **the
-guide and the popup now share their overlapping days for free**, which is what the entry below wanted
-when it widened one caller's request for both, without the truncation that made that a mistake.
-
-The cost is honest and worth writing down: a ten-day window is ten requests per league, so 31 leagues
-is 310, which the token bucket paces to about thirty seconds on a genuinely cold start. The day cache
-is what keeps that rare rather than per-open. If it ever stops being affordable, the measured escape
-hatch is `cdn.espn.com/core/<league>/schedule?xhr=1&date=`, which returns 3–7 days in one request, in
-the same event shape the scoreboard uses, with final scores, on 31 of 31 leagues, and answers
-`access-control-allow-origin: *` so it needs no new host permission. `dev` deliberately keeps the
-range version, in case this is ESPN's bug rather than ESPN's decision. One trap: the day cache is
-module scope, which surfaced as a suite's second reading inheriting the first's games — two readings
-of one league on one day. No new locale keys.
+`dates=20260914-20260915` now answers 400 in **all 31 leagues** at any width including a single day, while `dates=20260915` answers 200 — so the three entries below diagnosed a real symptom as a per-league quirk when it is universal. A window is enumerated as its Eastern days at one request each, behind a per-league-per-day cache whose TTL is read off what came back: 30 minutes for a settled past day, 10 for a schedule, never for today. Two things fell out: `limit` is real and had never been sent (an MLB month gives 100 events without it and 369 with), and the lookahead had been 400ing on every call, so no league had been sleeping at all.
 
 ## The popup's slate asks for what the popup wants, because the response has a budget — 2026-09-15
 
-Reverts the one part of this pass that was a genuine mistake rather than a refinement. Having `refreshSlate` ask for the guide's superset so the two could share a fetch looked free, and the reasoning was even written down: `includeUpcoming` already makes it two requests per league, so a wider `dates` range changes the payload and not the request count. The payload is the point. ESPN caps a scoreboard response server-side — near 80 events on a dated college football query, a number already recorded in this file — and the truncation takes the tail, which is the days furthest ahead. Reaching two days back to pick up finals for the guide therefore spent the whole event budget on a college football weekend's *past* games, and what reached the popup was one day of future. Up Next is followed exactly again, `includeFinal` follows the setting again, and the guide asks for its own slate as it did before — still held between opens behind the TTL and still kept current by the live polls, so the repeat opens a day pager invites are free even though the first one is not. Three tests now pin the request shape: the day count is not floored, and the back-reach happens only when finals are actually wanted. The lesson worth keeping: two callers wanting overlapping data is not a reason to widen one request for both when the response has a cap, because the caller that gets truncated is the one that did not ask for the extra.
+Reverts having `refreshSlate` fetch the guide's superset so the two could share one request. ESPN caps a scoreboard response server-side and truncates the tail, so reaching two days back for the guide's finals spent the whole event budget on a college football weekend's *past* games and left the popup one day of future. Two callers wanting overlapping data is not a reason to widen one request for both when the response has a cap.
 
 ## A final survives the league that failed to mention it — 2026-09-15
 
-Two corrections to the entry below, both from it losing MLB's final scores. The fallback latched a league onto the undated board for the life of the worker on a single 400, and the undated board carries only the current Eastern day — so the live games kept arriving and the finals quietly stopped. That was over-trusting one response: the published reference documents `20241201-20241231` as a supported form and gives its single-date example on MLB, and "Failed to get events endpoint" reads like ESPN's own events service failing rather than like a rejected parameter, so a latch has to be able to be wrong. It now expires after ten minutes — long enough not to pay the same 400 every twelve seconds, short enough that a transient upstream failure costs one window rather than an evening. The deeper one is in `refreshSlate`, and it predates the fallback: it rebuilt `upcomingGames` and `retainedFinalGames` from `result.games` wholesale, so every final and every kickoff belonging to a league that failed *that* fetch was thrown away. A league whose dated range is refused fails only the slate leg, which is exactly how a league can go on showing live games while its finals disappear. Now only the leagues that answered have their entries replaced and the rest are held, still subject to retention — a league that answers without a game it had before still drops it, which is the case that makes the distinction worth drawing. Same trap as everywhere else in this pass: an unanswered league and an empty one had been the same value.
+Two corrections after the entry below lost MLB's finals. The undated-board latch now expires after ten minutes rather than lasting the worker's life, since "Failed to get events endpoint" reads like ESPN's service failing rather than a rejected parameter. The deeper one predates the fallback: `refreshSlate` rebuilt `upcomingGames` and `retainedFinalGames` from `result.games` wholesale, so a league that failed only its slate leg had every final thrown away — only the leagues that answered have their entries replaced now.
 
 ## MLB will not take a dated window on the live board, so which leagues will is ESPN's to say — 2026-09-15
 
-Found from one URL: `site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard?dates=20260914-20260915` answering `{"code":400,"message":"Failed to get events endpoint."}`. That is `buildCurrentDatesQuery` — the live poll's own two-day window, which the college football fix on 2026-09-11 started naming in *every* league. v2.1.0 polls the undated board (`.../mlb/scoreboard`, no parameters at all; only its upcoming leg ever set `dates`), which is the whole reason the store build kept working while a dev build did not, and it is not a rate limit — 403 and this 400 are unrelated failures that happened to land in the same afternoon. Tabulating the 31 leagues by hand was the obvious fix and the wrong one: the window is exactly what stops a live college football game going missing, since ESPN's undated board is an editorially curated week in that league rather than a day, and the `groups` parameter already carried on the two NCAA basketball leagues is there to dodge 404s on dated queries, so the support is genuinely uneven and undocumented. So the first refusal per league is remembered and every later poll for it goes straight to the undated board, degrading precisely to what 2.1 shipped. Only 400 and 404 count as a refusal: a 403 is ESPN shedding load and says nothing about whether the window was acceptable, and reading one as a refusal would quietly drop college football back onto the curated week for the rest of the worker's life. The upcoming leg is left alone — it has no undated equivalent, and a league that rejects a range there simply contributes no upcoming games, which may well have been true of MLB all along and gone unnoticed for exactly the reason the entry below is about.
+MLB's scoreboard answered 400 to the two-day window the college football fix started sending in every league, so the first refusal per league is remembered and later polls fall back to the undated board. Only 400 and 404 count as a refusal — a 403 is ESPN shedding load and would otherwise drop college football onto its curated week for the worker's life. Superseded by the 2026-09-16 entry above: the refusal is not per-league.
 
 ## A refused scoreboard stops reading as an empty one, and four ways of asking ESPN less — 2026-09-15
 
-**The poll floor is ESPN's now, not ours.** The scoreboard answers with `cache-control: max-age=12` and `fetchScoreboard` passes no `cache` option, so it uses the HTTP cache: the 6s floor spent every other request on the hottest game in the product to be handed back bytes it already had. It is not a new constant either — `scoreboardRefreshMs` reads the max-age each league actually sent and floors that league there, so `pollMinEagerMs` is only the assumption held until a response says otherwise and a league ESPN refreshes faster is polled faster with nobody editing anything. The PowerScore ramp is untouched: 0 still polls at `pollMaxEagerMs`, 100 still polls at the floor, the floor just moved. Clamped above the floor so a league reporting a long max-age cannot invert the ramp, and the jitter is floored too, because its negative half landed back inside the window ESPN was still serving the old answer for.
-
-**A token bucket over every ESPN request, for the gap the pool cannot see.** `settledInPool` bounds one fan-out, but `tickLeague` runs a single-league fetch on its own timer through its own pool of one, so 31 leagues whose timers drift into alignment issue 31 simultaneous requests. Capacity 16 — the widest simultaneous fan-out this repo has measured coming back clean — refilling at 10/s, which is well above the extension's own worst case of about 3 requests a second, so nothing waits in steady state and the bucket only ever shapes bursts. Both numbers are sized from us rather than from a published limit, because ESPN does not publish one; that comment is the one place to correct if a real limit is ever measured. Set to 4/s first, which put 12 seconds on a cold 62-request sweep and was a plain latency regression.
-
-**The guide reads the slate the poll already holds.** `GET_GUIDE_SLATE` cost two scoreboard requests per enabled league plus 31 `/teams` on *every* open. `refreshSlate` now asks for the guide's exact superset — free, because `includeUpcoming` already made it two requests per league and widening the date range changes the payload, not the count — applies the popup's display gates to the answer as before, and keeps the ungated superset beside them. The live polls merge their answers into it, so what ages is the roster of games rather than any score on screen, which is what lets the TTL be ten minutes. Deliberately still a separate array from `games`: `afterFetch` scores off `games.filter(status === 'in')` and the switch target reads that same array.
-
-**The team marks live in `storage.local`.** They were a module-scope `let` commented as lasting a worker lifetime; MV3 ends a worker lifetime about thirty seconds after the last event, so in practice that was close to per-guide-open, 31 `/teams?limit=1000` at a time, and `wxt dev` wiped it on every file save on top of that. Weekly TTL, stored per league so enabling a 32nd costs one request instead of re-fetching the 31 already held.
-
-**And the thing all of it was hiding.** `fetchGamesWithLeagueLogos` collects with `allSettled` and keeps the fulfilled ones, so a refused league contributed no games and threw nothing — every caller read a 403 as "this league has nothing on". Three consequences, all fixed by returning `shedLeagues`: the popup drew the no-games slate on a full Saturday and now raises the existing `gameListHeader.loadFailed` banner when an empty list has refusals behind it; a whole-slate refusal replaced `games` with nothing and now keeps what it has; and `tickLeague` recorded a successful tick with nothing live, handed that to `recordPollResult` and walked a league down towards dormant *while its games were being played*, which is the one that made this self-sustaining. A partial shed with games still showing stays quiet — five of eight games beats a banner. Twenty new tests. No new locale keys. One trap worth keeping hold of: a `Response` double without `headers` now fails the whole fetch, which surfaced as six unrelated suites going red in places that had nothing to do with any of this.
+`fetchGamesWithLeagueLogos` collects with `allSettled`, so a 403 league contributed nothing and threw nothing — every caller read it as "this league has nothing on", which drew the empty slate on a full Saturday and, worse, walked a league towards dormant while its games were being played. It returns `shedLeagues` now. Four cost reductions ride along: the eager poll floor is read off each league's own `cache-control: max-age`, a 16-token bucket refilling at 10/s shapes the bursts `settledInPool` cannot see, the guide reads the slate the poll already holds, and the team marks moved from a module-scope `let` to `storage.local` on a weekly TTL.
 
 ## The site's live demo stops asking about 31 leagues to draw eight cards — 2026-09-15
 
-Chased from a machine where every ESPN request was coming back 403 while the store build of the extension was fine. Measured with curl: nothing at all was running locally and the host was still shedding about a third of single requests spaced three seconds apart, and nine of twelve rapid sequential ones — so the limit is far tighter than the window the entry below was written against, and it decays rather than clears. The first suspect out of that measurement was wrong and is worth writing down so nobody spends an afternoon on it again: a request carrying a Chrome `User-Agent` and none of the `sec-*` headers that really accompany one is refused deterministically, 5/5, which looks exactly like the extension being fingerprinted. It isn't. A complete Chrome header set behaves the same as bare curl; the block only catches a half-spoofed UA, which is a shape no browser ever sends and only my own probe did. `LivePowerScores` was the real steady cost — `Promise.allSettled` over all 31 leagues every 15 seconds for as long as the tab stayed open, 124 requests a minute, `client:visible` governing only when it hydrates and nothing after that. Now the 15s cadence asks only the leagues with something live, the full 31 are swept for newcomers every two minutes, the sweep is walked six at a time, and a hidden tab or one scrolled past the section asks for nothing: ~15 requests a minute with no games on, ~31 with four leagues live, 0 unwatched. The poll is a self-scheduling timeout rather than an interval, because a fan-out that outruns its own gap otherwise gets the next one started on top of it and a slow answer turns into more requests. Two things fell out on the way, both the same shape as the note below about `allSettled` being silent by construction: a page shed on all 31 leagues drew the identical "nothing is live" panel as a quiet Tuesday, so the shed count comes back now and the existing error string gets used; and a sweep that comes back entirely shed stamps its clock anyway, so it backs off to the two-minute cadence instead of retrying all 31 fifteen seconds later. Only a sweep may narrow the rotation — narrowing on a narrow poll would let one shed request drop a league that is mid-game. No new locale keys.
+`LivePowerScores` fanned all 31 leagues every 15 seconds for as long as the tab stayed open — 124 requests a minute, with `client:visible` governing only when it hydrates. The 15s cadence now asks only the leagues with something live, the full 31 are swept every two minutes six at a time, and a hidden or scrolled-past tab asks for nothing. Worth knowing: a half-spoofed Chrome `User-Agent` is refused deterministically by ESPN and looks exactly like fingerprinting — a complete header set behaves like bare curl.
 
 ## The popup stops spending the whole of ESPN's burst allowance on the league pickers — 2026-09-15
 
-Chased from "no games on a day full of sport, but only in a dev build". ESPN sheds load on `site.api.espn.com` by recent request volume from an IP and answers 403 to whatever it drops — measured with curl from one machine, 16 requests at once all came back 200 and 24 at once lost four, and the same width passed cleanly a minute later, so the window is recent volume rather than instantaneous concurrency. `app.tsx` fanned all 31 leagues out on *every popup open* to fill the onboarding and settings pickers, held the answer in component state, and threw it away when the popup closed. That is more than the allowance in a single call, and because every fan-out here collects with `allSettled` and keeps the fulfilled ones, a shed league contributed nothing and said nothing: the slate simply came back short, or empty. Production never showed it because a real person opens the popup a few times an evening; a dev loop reopens it every few seconds and never leaves the window. None of it needed the network in the first place — `resolveLeagueLogoUrl` answers for all 31 offline, nine of them pinned to an override it returns without ever looking at ESPN's and the other 22 to a hardcoded fallback on the same CDN — so the pickers are seeded from that and the fetch became a weekly upgrade written to `storage.local`. The three 31-wide fan-outs in `apiClient` (games, team mono marks, the team picker's roster) now run six at a time through one pooled helper, which is twelve requests in flight at the worst point since a league asked for upcoming games makes two. The thing worth keeping hold of: `allSettled` over a rate-limited host is silent by construction, so the only evidence a limit was ever hit is a number that is quietly too small.
+`app.tsx` fanned all 31 leagues on every popup open to fill the onboarding and settings pickers, which is more than ESPN's burst allowance from one IP, and `allSettled` made the resulting 403s silent — the slate simply came back short. None of it needed the network: `resolveLeagueLogoUrl` answers for all 31 offline, so the pickers are seeded from that and the fetch became a weekly `storage.local` upgrade.
 
 ## Every layer of the open animation is drawn against the card's own box, and the outline is an outline — 2026-09-15
 
-Two review passes on the entry below, the maintainer's by eye and an agent's over the diff. The lettering was the clearest one: `-webkit-text-stroke` strokes every contour the font draws, including the ones a filled glyph hides, and DM Sans builds an N out of overlapping stems — so the diagonal came out drawn straight through both of them and every junction was cross-hatched. Not an alpha problem, which was the first guess and rendered identically; it takes two stacked copies, the back one the glyph solid white and stroked wider than itself, the front one the same glyph in the colour behind it. And it is not one size any more: ESPN's abbreviation is uncapped, so on a 296px card ARMY against NAVY overlapped by 7.4px and UCONN against UMASS by 52, for the second and a half both tricodes share the screen. Scaled by the longer of the two rather than truncated — "ARM" at "NAV" is a worse answer than smaller type. The crest plate is now grown around the crest box (`inset: calc(-100% / 6)`, so three quarters of it is the box) instead of the mark being shrunk to three quarters inside it, which is what had a plated mark landing at three quarters of the card's crest and jumping the rest at the handoff; both treatments now draw at one size, and `revealHoldScale` sizes the poster off the card's own height and half its width so a plate cannot outgrow the card either. The card's crest arrives in one `steps(1, end)` rather than crossfading, because two identical crossfading copies are each half transparent at the midpoint and the pair washes a quarter of the way to the card, so the mark visibly paled and recovered. The dark base left the stage and kept square corners, since two rounded rectangles of the same radius never quite cover and the card's own rail came through all four corners of every card still waiting its turn. The halves collapse to nothing rather than parking on the 5px rails: the card has been painting those rails in the same colours underneath the whole time, so the ending is identical paint, but a square-cornered rectangle on a rounded border is not, and a finished game stopped needing keyframes of its own to say it has no rails. Four more came from reading rather than looking, and all four are the same seam — the graphic was built against a card that never moves. The stagger plan is fixed on the first list that has anything in it, because both live sections re-sort on PowerScore and a push inside the 3.4s window moves a running animation's `animation-delay`, which moves its current time, and across the eight-card cap flips the mode outright. The measurement is a `ResizeObserver` rather than a mount-time read, because a PowerScore landing on a later push grows a bar row the card was not drawing. The reveal now waits for the list to be the thing on screen and ends if it stops being: onboarding's own fetch settles with no leagues, so the whole window used to expire behind the wizard and a new user could never see the full version, and leaving for a game detail inside the window replayed it on the way back. The bars travel on a transform rather than on `left`, which Blink cannot composite and which a full slate ran 32 of at once. One thing worth keeping hold of: the 8px box mismatch this was first diagnosed as does not exist in the popup — it was the Cypress harness mounting the wrapper straight into a flex column, where a flex item's formatting context stops the card's bottom margin collapsing out. The gap moved onto the wrapper anyway, because a layer geometry that does not depend on margin collapsing is the better contract, and the specs mount the nesting `mainView` really builds. The tinted plates stay, on the maintainer's call. No new locale keys.
+Review pass on the reveal. `-webkit-text-stroke` strokes every contour the font draws including the ones a filled glyph hides, so DM Sans' overlapping stems came out cross-hatched — it takes two stacked copies, not an alpha fix. The tricodes now scale by the longer of the two (UCONN against UMASS overlapped by 52px), the crest plate grows around the crest box rather than shrinking the mark inside it, and the stagger plan is fixed on the first non-empty list because both live sections re-sort inside the animation window.
 
 ## The popup opens on the matchup, and the bar that crosses it is what turns the tricode into the crest — 2026-09-15
 
-From a Figma storyboard. Every card in the list arrives as the matchup poster it is underneath: the two team colours wipe in from the outer edges and meet on a leaning seam, the tricodes stand outlined over them, a white bar crosses each side, and the colour then retreats the way it came, off the edge it came in from, uncovering the 5px rails `buildGameCardStyle` has been drawing in those same colours underneath the whole time — which is the one thing worth keeping hold of here. The ending is paint that is already identical, and each crest lands on the card's real crest slot, measured in a layout effect rather than derived, so the stage is simply removed at the end and nothing has to cover a seam. The trade under the bar is a clip complement, not a dissolve: the crest layer and the lettering layer are clipped along one leaning edge from opposite sides, so every pixel shows exactly one of them and the edge is the bar rather than a line near it. Poster crests go through `TeamCrest` against the team colour, because these are the only crests in the product not drawn on white. One angle throughout (20.5°, as `--reveal-lean`, measured off each card's own height); one rate throughout (`--reveal-rate`), so the second open of the day is the same graphic at 0.8× rather than a shorter one. Two traps found on the way: two animations naming the same property means the later one wins outright and its backwards fill erases the earlier one before it plays a frame, so each element gets one keyframe set per property it moves; and a "has played" guard in the mode resolver has to be a memo rather than a guard, or StrictMode's doubled initialiser leaves the development build the only build that never animates. Capped at the first eight cards, which is cost rather than taste — a thirty-game Saturday is otherwise three hundred animated elements, none of them on screen. No new locale keys: the only text in it is ESPN's own tricode.
+From a Figma storyboard: every card arrives as the matchup poster it is underneath — two team colours wiping in to meet on a leaning seam, outlined tricodes, a white bar crossing each side, then the colour retreating to uncover the 5px rails `buildGameCardStyle` had been drawing in those same colours all along, so the ending is paint that is already identical. The trade under the bar is a clip complement rather than a dissolve, so every pixel shows exactly one layer and the edge *is* the bar. Capped at eight cards, since a thirty-game Saturday is otherwise three hundred animated elements.
 
 ## A crest is judged where it is drawn, every time it is drawn — 2026-09-14
 
-A pass over the colour and crest work that moves no threshold and changes no rendering. `TeamCrest` held its verdict as mount-time state, and both halves of a verdict move underneath a mounted instance — the guide's drawer reconciles one game's detail view into the next, and every hero mixes its backdrop out of the game's own colours — so the last team's answer drew the next team's crest, permanently, because a component showing a mono mark never reloads the artwork that would correct it. It is read out of the module caches on every render now, with a re-measure for a surface that moves without the image. A failure is no longer written down as a verdict: `getContext` returning null past Chrome's canvas ceiling used to persist "this crest reads fine" for the life of the profile. `minAlpha` joined the calibration string it should always have been in, the two ink shares walk the pixels once rather than twice, the tint is sampled only for the crests that draw a plate and on one document-wide canvas rather than two per crest, and the three copies of the sRGB luminance formula became `colorMath.ts`. Around the edges: the mono-mark fetch dedupes in flight, where two guide tabs opened together ran 62 `/teams` requests for 31 leagues; `monoLogoUrl` has one home in core instead of two; a team keeps its marks when its game goes from pre to live; and two crest fixtures that had never typechecked now do, which the everything command does not check.
+`TeamCrest` held its contrast verdict as mount-time state, but the guide's drawer reconciles one game's detail into the next and every hero remixes its backdrop — so the last team's answer drew the next team's crest permanently, since a component showing a mono mark never reloads the artwork that would correct it. The verdict is read out of the module caches on every render now, and a `getContext` failure past Chrome's canvas ceiling is no longer written down as "this crest reads fine" for the life of the profile.
 
 ## A crest stops losing its ends to the circle drawn around it — 2026-09-13
 
-The sticky bar drew an 18px crest inside an 18px round clip, which took 25px of ink off the Giants' 'ny' every time that bar was on screen — a wordmark reaches the corners of its own box, and a circle drawn at the size of the mark shaves its ends. The end zone and midfield stencils did the same at 11 and 24px. The clip belongs to the plate, so it is gone wherever `is-bare` says nothing is painted underneath, and where a plate is drawn the crest is inset to three quarters of it: measured over 264 crests, the furthest ink reaches 65% of the way to its own corner, which is what Charlotte and the Royals need to land on the plate rather than be amputated by it. Only the plated case pays for it — 64→60px on the pre-game hero and 52→48 on the live one, for the minority of teams that fall back to one. The midfield stencil also went 10→13 yards, which is the NFL’s own 1200 sq ft cap and the largest that keeps the tallest crest in either league off the painted numbers; the spec that guards that gap now measures the lines the numerals are anchored to rather than their em boxes, which reach two yards past the last painted pixel.
+The sticky bar drew an 18px crest inside an 18px round clip, shaving 25px of ink off the Giants' 'ny' — a wordmark reaches the corners of its own box. The clip belongs to the plate, so it is gone wherever `is-bare` says nothing is painted underneath, and where a plate is drawn the crest insets to three quarters of it: measured over 264 crests, the furthest ink reaches 65% of the way to its own corner.
 
 ## The crest on the 50 is judged against the grass it is painted on — 2026-09-13
 
-Same three-rung treatment the end zones and the detail hero take, against `turfColor` — which moved out of the stylesheet into `footballField.ts`, because the paint and the verdict reading a different hex is how the two would drift. It sits in a `foreignObject` rather than joining the end zone marks in the overlay above the SVG: the ball and both live lines cross the 50 and belong over the paint. The 0.72 fade stays and is not part of the check — it is weathering, and a crest that survives the check at full strength survives it at 72%.
+Midfield takes the same three-rung treatment as the end zones, against `turfColor` — which moved out of the stylesheet into `footballField.ts`, since the paint and the verdict reading different hexes is how the two would drift. It sits in a `foreignObject` rather than joining the end zone marks in the overlay, because the ball and both live lines cross the 50 and belong over the paint.
 
 ## Both end zones are lettered with the crest and nickname of the team that defends them — 2026-09-13
 
-Replaces the rotated abbreviation. The nickname is ESPN's own `team.name`, carried as `Team.nickname` rather than sliced off the end of `displayName`, which would turn the Nittany Lions into the Lions. The marks are HTML over the SVG, not more of it, because the crest is the same `TeamCrest` the detail hero draws and that measures its own pixels against the surface — here the raw end zone colour, unscrimmed. `writing-mode` rather than a rotation, so the lettering truncates against the end zone's real depth: 60px of the 77, against 55 for "COMMANDERS" and 58 for "MOUNTAINEERS". The fifteen-letter college names ("THUNDERING HERD") need 70 and fit at no legible size, so they truncate rather than dragging the type smaller for everybody else — caps at 7.5px because caps have no descenders and one height, and read where the mixed case they replaced would not.
+Replaces the rotated abbreviation, using ESPN's own `team.name` carried as `Team.nickname` rather than sliced off `displayName`, which would turn the Nittany Lions into the Lions. `writing-mode` rather than a rotation, so the lettering truncates against the end zone's real 60px depth; the fifteen-letter college names fit at no legible size and truncate rather than dragging the type smaller for everybody else.
 
 ## A team shown in its own second colour keeps its crest, and the detail heroes draw it bigger — 2026-09-13
 
-USC's cardinal on USC's gold is 2.6:1 and the Athletics' green on their gold is 3.7:1 — both plainly legible large letterforms, both thrown away for a black mark, because `strongInkReachShare` asked for 60% of what the surface could reach and a club picks its two colours to be told apart rather than to clear a text bar. It is 35%, which moves 19 team-and-surface pairs and **only on team-colour heroes**: a guide bar reaches 15.2:1 and the popup 18.9:1, so both still hold the full 4.5 and no verdict there moves. `pickMonoMark` now takes the flat floor instead of the capped one — a crest a club published is judged against the backdrop it was drawn for, but a substitute we pick has to earn 4.5:1 when the tinted disc is always available. The one team that comes along and shouldn't is Houston on their own red, where the white mark was better. Crests on the detail heroes go 44→64px (pre-game) and 36→52px (live and final), picked by rendering four candidates side by side at the real 320px shell with the longest names in the product: nothing overflows at any of them, so the thing that decides it is the gap left to the score, which runs 18/15/13/10px.
+`strongInkReachShare` asked for 60% of what the surface could reach, which threw USC's cardinal on their own gold (2.6:1) away for a black mark — a club picks its two colours to be told apart, not to clear a text bar. It is 35%, and **only on team-colour heroes**: a guide bar reaches 15.2:1 and the popup 18.9:1, so no verdict there moves. Hero crests go 44→64px pre-game and 36→52px live, decided by the gap left to the score.
 
 ## The Marlins keep their own colours, because a share is an area and an outline is not — 2026-09-13
 
-Miami drew as a white monochrome mark on the guide: their crest is a black M with a thin blue-and-pink stroke, and a tenth of the ink is more area than any outline has — measured in Chrome over 124 crests on four surfaces each, the crests with genuinely nothing in them sit at 0.0–0.4%, so the strong share is 4%. `deadInkFloor` goes to 1.3 because 1.5 called black-on-a-guide-bar absent at 1.37:1 when it is the letterform you read, while the same ink on the Rockies' own purple is 1.21:1 and is a hole — which is what keeps their CR monochrome on the hero. No contrast floor could have done this: Baltimore's orange on a bar is 3.77:1 and the Rangers' brightest navy on their own navy is 3.73:1. The persisted verdicts carry the thresholds they were reached under — joined into a string from the constants themselves, not a number somebody has to remember to raise, which was tried first and left behind within two commits while stale answers went on being served.
+Miami's crest is a black M with a thin blue-and-pink stroke, and a tenth of the ink is more area than any outline has; measured over 124 crests on four surfaces each, the genuinely empty ones sit at 0.0–0.4%, so the strong share is 4%. No contrast floor could have separated these — Baltimore's orange on a bar is 3.77:1 and the Rangers' brightest navy on their own navy is 3.73:1. Persisted verdicts carry the thresholds they were reached under, joined into a string from the constants themselves rather than a number somebody must remember to raise.
 
 ## The docs fonts load in dev again, out of src/ rather than public/ — 2026-09-13
 

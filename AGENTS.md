@@ -42,7 +42,7 @@ If this sounds familiar, it is. We are heavily inspired by the team at [Transit]
 - Skills for you have been provided. Check @.agents/skills
   - When stuck: think "could there be a skill for this", check the skills directory, if yes, use it!
 - Leverage the power of turborepo and caching
-- After every time you change something, update CHANGELOG.md
+- After every time you change something, update CHANGELOG.md. **Two or three sentences, under the heading and nothing else** — no sub-headings, no tables, no coverage or testing section. Do not imitate the length of older entries; the rule at the top of that file wins.
 - All code changes should be internationalized to every language we support at the moment.
 - When opening PRs, Issues, etc via the GitHub API or any access you have to github, ALWAYS add the "robotic" label so we know it was assisted by agents.
 - To verify, run my "everything command": `npm run lint typecheck test test:e2e build build:edge build:firefox zip zip:edge zip:firefox`
