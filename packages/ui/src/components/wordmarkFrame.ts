@@ -1,186 +1,200 @@
-// The choreography of the wordmark collapsing into the favicon, as pure numbers. Nothing here
-// touches the DOM, which is what lets `wordmarkFrame.test.ts` assert the parts of it that are easy
-// to get wrong by eye: that the mark is untouched at rest, that a word is fully gone before the
-// letter replacing it moves, and that nothing reappears on the way back out.
+// The wordmark turning into the favicon, as pure numbers. Nothing here touches the DOM, which is
+// what lets `wordmarkFrame.test.ts` assert the parts that are easy to get wrong by eye.
 //
-// The mark is two rows that mirror each other — `arena` with an arrow running right off the end,
-// `swap.` with an arrow running left off the front — and the favicon is the same two rows with the
-// words removed. So the collapse has two beats:
+// The end of this animation is the icon file, not an impression of it. Every target below was
+// measured off `icon_white_on_transparent.svg` and mapped into the wordmark's units by the ratio of
+// the two files' letter heights — 0.34545, which is exact to five places for both the `a` and the
+// `s`, because the icon's letters *are* the wordmark's letters. Its arrows are not: the icon draws
+// a wider arrowhead and a lighter chevron, so those two morph between point rings rather than
+// scaling. See `wordmarkShapes.ts`.
 //
-//   1. Swallow.  Each arrow's tail grows inward along its own row. The letters are masked off at
-//      the tail's leading edge, so the arrow appears to absorb them rather than fade them.
-//   2. Collapse. The arrows retract to favicon length, the surviving `a` and `s` slide into the
-//      positions they hold there, and the viewBox closes around what is left.
+// What the mark loses on the way is `aren` and `wap`. Neither is covered by an arrow sweeping over
+// it — the surviving letters stay on screen the whole time, so nothing may pass across them.
+// Instead each row is masked at the leading edge of the thing that replaces it:
 //
-// The beats overlap: the box starts closing before the last letter is gone. Everything is a pure
-// function of `t`, so running `t` backwards is the reverse animation, exactly.
-
-// Coordinates are the source viewBox of `full_logo_white_on_transparent.svg`. Measurements are
-// flattened bounding boxes of the real outlines, not the control-point hulls, which run several
-// units wide on every curve in this mark and would put the mask edges in the wrong place.
-const arenRight = 898;        // right edge of the final `a`, and so of the whole top word
-const aLeft = 732.6;          // that `a` on its own
-const aWidth = 165.4;
-const sLeft = 914;
-const sWidth = 154.8;
-const wapRight = 1789.3;      // outer edge of the orange dot, including its stroke
-const dotCx = 1761.12;
-const dotOuter = 28.17;
-
-// The bar is redrawn as a round-capped stroke rather than kept as an outline, so its length can
-// animate without the cap turning into an ellipse. Same for the dashed tail on the bottom row.
-export const barHalfWidth = 15;       // half the bar's stroke, and so its cap radius
-export const barJoint = 1691;         // where the bar meets the flat back of the arrowhead
-export const barRest = 910;           // the bar's left edge in the full mark
-export const dashHalfWidth = 15.9;
-export const dashFirstCap = 115.8;    // centre of the first pill's left cap; the train starts here
-export const dashRest = 908.6;        // right edge of the seventh and last pill
-export const dashPattern = '56.9 63.1';
-
-// Where each piece ends up in the favicon arrangement. Taken from `icon_white_on_transparent.svg`
-// by scaling its letter heights onto this mark's, then keeping this mark's own outlines: the icon
-// redraws the arrows ~5% heavier and the dot half again as large, and borrowing those proportions
-// would mean the glyphs changing weight mid-animation for a difference invisible at 36px.
-const aCollapsedLeft = 13.8;
-const arrowCollapsedLeft = 194.6;
-const arrowCollapsedLength = 237.4;
-const sCollapsedLeft = 314;
-const dotGap = 22;            // a round `s` wants more air before the dot than the flat `p` did
-const headWidth = 88.9;       // 1691 -> 1779.9, the arrowhead's own extent
-
-export const aShiftEnd = aCollapsedLeft - aLeft;
-export const barEnd = arrowCollapsedLeft;
-export const headShiftEnd = arrowCollapsedLeft + arrowCollapsedLength - headWidth - barJoint;
-export const sShiftEnd = sCollapsedLeft - sLeft;
-export const dashEnd = dashFirstCap + 120 + 56.9 + dashHalfWidth;   // two pills instead of seven
-export const dotShiftEnd = sCollapsedLeft + sWidth + dotGap + dotOuter - dotCx;
-
-// How far past the mark each tail runs before the beat turns around. Both overshoot: the top bar
-// has to clear the collapsed `a`'s left edge by a full fade width before that `a` arrives there,
-// and the bottom tail has to cover the dot early enough to give it a window to move in.
-const barSwallowed = -70;
-const dashSwallowed = 1950;
-
-// Width of the soft edge the letters dissolve across, in viewBox units — about 4px at the 36px the
-// popup renders this at. The band sits inside the arrow's leading end rather than ahead of it, so
-// at rest it lands in the gap between word and arrow and the mark is pixel-identical to the source.
-export const fadeWidth = 55;
-
-// Beat boundaries. `swallowEnd` is the turnaround: before it every tail grows, after it every tail
-// retracts. `shrinkStart` overlaps the two so the box is already closing as the last letter goes.
-const shrinkStart = 0.38;
-const swallowEnd = 0.47;
-const aShiftStart = 0.27;
-const rowTwoShiftStart = 0.35;
-
-// The retraction is two stages rather than one glide, because the two rows have wildly different
-// distances to cover: the top bar has 265 units to walk back, the bottom tail has 1641. Run both on
-// one curve and the `s` surfaces a fifth of the animation after the `a`, which reads as the bottom
-// row lagging rather than as a stagger.
+//   top     the `a` slides left along its own row and the letters go as it reaches them
+//   bottom  the dot sweeps left through `wap` to close up behind the `s`
 //
-// So each tail first returns to the edge of what it is still hiding — fast, and invisible, since
-// nothing is uncovered by it — and only then walks off the letter underneath. The second stage is
-// the same curve over the same window for both rows, so the two reveals land together.
-const returnUntil = 0.16;
-const uncoverFrom = 0.1;
+// Both edges only ever close, so nothing that has gone can come back, and running `t` backwards is
+// exactly the reverse animation.
+
+// ─── where the wordmark puts things ──────────────────────────────────────────────────────────
+// Flattened bounding boxes of the real outlines, not the control-point hulls, which run several
+// units wide on every curve in this mark.
+const arenRight = 711.08;
+const aBox = { x: 732.63, y: 0.54, w: 165.37, h: 183.88 };
+const sBox = { x: 914, y: 212.51, w: 154.76, h: 184.04 };
+const wapBox = { x: 1070, y: 212.93, w: 648.75, h: 257.07 };
+const dotRest = { cx: 1761.1208, cy: 368.38882, rx: 27.602106, ry: 26.288622, stroke: 1.13729 };
+
+// The bar and the dashed tail are redrawn as round-capped strokes rather than kept as outlines,
+// because both change length and weight between the two marks and a scaled outline would squash
+// its round ends into ellipses. They sit within a unit of the shapes they replace.
+export const barJoint = 1691;
+export const barRest = 910;
+export const barStrokeRest = 30;
+export const barCentreRest = 115;
+export const dashFirstCapRest = 115.8;
+export const dashLastCapRest = 892.7;
+export const dashStrokeRest = 31.8;
+export const dashCentreRest = 304.75;
+const dashSegRest = 56.9;
+const dashGapRest = 63.1;
+
+// ─── where the favicon puts them ─────────────────────────────────────────────────────────────
+const aEnd = { x: 12.74, y: 0, w: 166.21, h: 183.94 };
+const sEnd = { x: 268.34, y: 170.63, w: 155.25, h: 183.98 };
+const dotEnd = { cx: 482.88, cy: 296.98, rx: 18.441, ry: 17.361, stroke: 0.393 };
+const barEnd = { left: 194.27, joint: 347.17, centre: 108.41, stroke: 28.33 };
+const dashEnd = { firstCap: 80.26, lastCap: 249.42, stroke: 28.2, centre: 266.22, seg: 56.22, gap: 56.65 };
 
 export const restBox = { x: 0, y: 0, width: 1790, height: 471 };
-// Closed around what survives: the chevron's left edge to the dot's right, and the `a`'s ascender
-// to the `s`'s baseline. Dropping `p`'s descender is why this is shorter than the full box, and
-// why the surviving marks grow about 19% on the way in — the same thing the favicon does.
-export const collapsedBox = { x: 1.1, y: 0.5, width: 546.1, height: 396.1 };
+// The icon's own content box in the same units: its chevron to the far side of its dot across, its
+// `a`'s ascender to its `s`'s baseline down. Shorter than the wordmark's box because `p`'s
+// descender leaves with `wap`, which is what makes the surviving marks grow about a third.
+export const collapsedBox = { x: 0, y: 0, width: 501.52, height: 354.61 };
+
+// ─── beats ───────────────────────────────────────────────────────────────────────────────────
+// `lead` carries the letters, the bar's tail, the dot and both mask edges: the sweep. `follow`
+// carries the arrowhead, and with it the box — so for the first third the arrow *lengthens*, its
+// tail running inward across `aren` while its head is still out at the right, and only then does
+// the whole thing close up. Tying the box to the head is also what keeps the head inside it.
+const leadEnd = 0.72;
+const followFrom = 0.18;
+
+// Width of the soft edge the letters dissolve across. Small: at the end the top mask edge sits
+// only 38 units clear of where `aren` starts, so a wide band would leave the first `a` showing.
+export const fadeWidth = 30;
+// How far the top edge runs ahead of the sliding `a`. At rest that puts the band in the gap between
+// word and arrow, so the mark is pixel-identical to the file it came from.
+const arenLead = 14;
+const wapEdgeRest = 1725;
+const wapEdgeEnd = 384;
 
 const clamp01 = (value: number) => Math.min(1, Math.max(0, value));
 const seg = (t: number, from: number, to: number) => clamp01((t - from) / (to - from));
 const easeInOut = (x: number) => (x < 0.5 ? 4 * x * x * x : 1 - ((-2 * x + 2) ** 3) / 2);
-const easeOut = (x: number) => 1 - (1 - x) ** 3;
 const mix = (from: number, to: number, k: number) => from + (to - from) * k;
 
-// A two-stop gradient span. The mask rect is filled with it, so `from` is the fully-opaque end and
-// `to` the fully-transparent one; the stops beyond either end pad, which is what makes a 55-unit
-// gradient mask an entire row.
+// A two-stop gradient span, `from` opaque and `to` transparent. The stops beyond either end pad,
+// which is what lets a 30-unit gradient mask an entire row.
 export interface fadeSpan {
 	from: number;
 	to: number;
 }
 
-export interface wordmarkFrame {
-	box: { x: number; y: number; width: number; height: number };
-	barX1: number;
-	barX2: number;
-	headShift: number;
-	dashX2: number;
-	aShift: number;
-	sShift: number;
-	dotShift: number;
-	// `aren` and `wap` are masked separately from the letters replacing them. They share an edge
-	// during the swallow, then part ways: the arrows retract and would otherwise uncover the very
-	// words they just ate.
-	arenFade: fadeSpan;
-	aFade: fadeSpan;
-	wapFade: fadeSpan;
-	sFade: fadeSpan;
+// Non-uniform on purpose. The icon's letters are half a percent wider for their height than the
+// wordmark's, and allowing the two axes to differ is what makes the last frame the icon exactly
+// rather than nearly.
+export interface pose {
+	x: number;
+	y: number;
+	scaleX: number;
+	scaleY: number;
 }
 
+export interface wordmarkFrame {
+	box: { x: number; y: number; width: number; height: number };
+	// How far the collapse has closed, 0 to 1 and eased. The header reads it back to shrink itself
+	// and bring its background up, so the bar and the mark move on one curve rather than two.
+	closed: number;
+	a: pose;
+	s: pose;
+	wap: pose;
+	dot: { cx: number; cy: number; rx: number; ry: number; stroke: number };
+	// How far along each point ring has walked, 0 at the wordmark's outline and 1 at the icon's.
+	chevronMorph: number;
+	headMorph: number;
+	barX1: number;
+	barX2: number;
+	barStroke: number;
+	barCentre: number;
+	dashX1: number;
+	dashX2: number;
+	dashStroke: number;
+	dashCentre: number;
+	dashPattern: string;
+	arenFade: fadeSpan;
+	wapFade: fadeSpan;
+}
+
+const boxPose = (from: typeof aBox, to: typeof aEnd, k: number): pose => {
+	const scaleX = mix(1, to.w / from.w, k);
+	const scaleY = mix(1, to.h / from.h, k);
+	return {
+		scaleX,
+		scaleY,
+		x: mix(from.x, to.x, k) - from.x * scaleX,
+		y: mix(from.y, to.y, k) - from.y * scaleY,
+	};
+};
+
 const wordmarkFrameAt = (t: number): wordmarkFrame => {
-	const swallow = easeInOut(seg(t, 0, swallowEnd));
-	const retract = seg(t, swallowEnd, 1);
-	const close = easeInOut(seg(t, shrinkStart, 1));
+	const lead = easeInOut(seg(t, 0, leadEnd));
+	const follow = easeInOut(seg(t, followFrom, 1));
 
-	// The monotone edges. These only ever close, which is what keeps the eaten words eaten.
-	const arenEdge = mix(barRest, barSwallowed, swallow);
-	const wapEdge = mix(dashRest, dashSwallowed, swallow);
+	const a = boxPose(aBox, aEnd, lead);
+	const s = boxPose(sBox, sEnd, lead);
+	// `wap` rides the `s`'s transform so the word never tears away from the letter it starts with
+	// while the dot is eating it.
+	const wap = boxPose(wapBox, { ...wapBox, x: wapBox.x + (sEnd.x - sBox.x), y: wapBox.y + (sEnd.y - sBox.y) }, lead);
 
-	// The arrows themselves, which turn around and come back. `staged` is where each one has given
-	// back every unit it can without uncovering anything: a fade width clear of the `a` on top, and
-	// of the dot on the bottom, those being the outermost things each mask is still holding down.
-	const returning = easeInOut(clamp01(retract / returnUntil));
-	const uncover = easeOut(clamp01((retract - uncoverFrom) / (1 - uncoverFrom)));
-	const walkBack = (swallowed: number, staged: number, end: number) =>
-		mix(mix(swallowed, staged, returning), end, uncover);
+	// The bar's tail is pinned just off the `a`'s shoulder, so extending inward is not a separate
+	// animation — it is the bar keeping up with the letter while its head stays behind.
+	const aRight = mix(aBox.x, aEnd.x, lead) + mix(aBox.w, aEnd.w, lead);
+	const barStroke = mix(barStrokeRest, barEnd.stroke, follow);
+	const barLeft = aRight + mix(barRest - (aBox.x + aBox.w), barEnd.left - (aEnd.x + aEnd.w), lead);
 
-	const barLeft = retract > 0
-		? walkBack(barSwallowed, aCollapsedLeft - fadeWidth, barEnd)
-		: arenEdge;
-	const dashRight = retract > 0
-		? walkBack(dashSwallowed, dotShiftEnd + dotCx + dotOuter + fadeWidth, dashEnd)
-		: wapEdge;
-
-	const headShift = mix(0, headShiftEnd, close);
+	const arenEdge = mix(aBox.x, aEnd.x, lead) - arenLead;
+	const wapEdge = mix(wapEdgeRest, wapEdgeEnd, lead);
 
 	return {
 		box: {
-			x: mix(restBox.x, collapsedBox.x, close),
-			y: mix(restBox.y, collapsedBox.y, close),
-			width: mix(restBox.width, collapsedBox.width, close),
-			height: mix(restBox.height, collapsedBox.height, close),
+			x: mix(restBox.x, collapsedBox.x, follow),
+			y: mix(restBox.y, collapsedBox.y, follow),
+			width: mix(restBox.width, collapsedBox.width, follow),
+			height: mix(restBox.height, collapsedBox.height, follow),
 		},
-		barX1: barLeft + barHalfWidth,
-		barX2: barJoint + headShift,
-		headShift,
-		dashX2: dashRight - dashHalfWidth,
-		aShift: mix(0, aShiftEnd, easeInOut(seg(t, aShiftStart, swallowEnd))),
-		sShift: mix(0, sShiftEnd, easeInOut(seg(t, rowTwoShiftStart, swallowEnd))),
-		dotShift: mix(0, dotShiftEnd, easeInOut(seg(t, rowTwoShiftStart, swallowEnd))),
+		closed: follow,
+		a,
+		s,
+		wap,
+		dot: {
+			cx: mix(dotRest.cx, dotEnd.cx, lead),
+			cy: mix(dotRest.cy, dotEnd.cy, lead),
+			rx: mix(dotRest.rx, dotEnd.rx, lead),
+			ry: mix(dotRest.ry, dotEnd.ry, lead),
+			stroke: mix(dotRest.stroke, dotEnd.stroke, lead),
+		},
+		chevronMorph: lead,
+		headMorph: follow,
+		barX1: barLeft + barStroke / 2,
+		barX2: mix(barJoint, barEnd.joint, follow),
+		barStroke,
+		barCentre: mix(barCentreRest, barEnd.centre, follow),
+		dashX1: mix(dashFirstCapRest, dashEnd.firstCap, lead),
+		dashX2: mix(dashLastCapRest, dashEnd.lastCap, lead),
+		dashStroke: mix(dashStrokeRest, dashEnd.stroke, lead),
+		dashCentre: mix(dashCentreRest, dashEnd.centre, lead),
+		dashPattern: `${mix(dashSegRest, dashEnd.seg, lead)} ${mix(dashGapRest, dashEnd.gap, lead)}`,
 		arenFade: { from: arenEdge, to: arenEdge + fadeWidth },
-		aFade: { from: barLeft, to: barLeft + fadeWidth },
-		wapFade: { from: wapEdge, to: wapEdge - fadeWidth },
-		sFade: { from: dashRight, to: dashRight - fadeWidth },
+		wapFade: { from: wapEdge, to: wapEdge + fadeWidth },
 	};
 };
 
 // Exported for the test, which needs to know what the mask edges are protecting.
 export const wordmarkExtents = {
+	arenLeft: 36.79,
 	arenRight,
-	aLeft,
-	aWidth,
-	sLeft,
-	sWidth,
-	wapRight,
-	dotCx,
-	dotOuter,
-	aCollapsedLeft,
-	sCollapsedLeft,
+	aBox,
+	sBox,
+	wapBox,
+	dotRest,
+	aEnd,
+	sEnd,
+	dotEnd,
+	barEnd,
+	dashEnd,
 };
 
 export default wordmarkFrameAt;

@@ -5,9 +5,9 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
-## The popup header pins, and the wordmark folds into the favicon behind its own arrows — 2026-09-19
+## The popup header pins, and the wordmark folds into the favicon — 2026-09-19
 
-Scrolling the game list past 40px sticks the header to the top and plays a 450ms collapse: each arrow's tail grows inward along its row, masking `ren` and `wap` off at its leading edge, then retracts to favicon length while the `a`, the `s` and the dot slide into the positions the icon holds them in. The mark is inline SVG now rather than an `<img>`, so `logoSrc` is gone from `PopupHeader` and the bar and the dashed tail are round-capped strokes rather than outlines — they have to change length, and a scaled outline turns its round ends into ellipses. `wordmarkFrame.ts` is the whole choreography as pure numbers, which is what lets a test assert the thing that is invisible until it breaks: that a word is fully covered before the letter replacing it starts moving.
+Scrolling the game list past 40px sticks the header to the top and plays a 450ms collapse into the icon: the `a` slides left along its row with the arrow's tail pinned off its shoulder, the dot sweeps left through `wap` to close up behind the `s`, and the two surviving letters are on screen for every frame of it rather than being covered and brought back. The last frame is `icon_white_on_transparent.svg` itself — the two files share their letterforms, so those travel under a transform, while the icon's wider arrowhead and lighter chevron are reached by lerping matched point rings that `npm run ui:wordmark-shapes` bakes out of both SVGs. The bar condenses solid and ~19px shorter, and suppresses scroll anchoring while it does, because handing those 19px back to `scrollTop` is enough to drop the list under the threshold and flutter the header open and shut.
 
 ## Halftime and Final are words, so they stop being set like figures — 2026-09-19
 

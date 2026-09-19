@@ -42,9 +42,26 @@ const usePopupHeaderCollapse = (scroller?: RefObject<HTMLElement | null>) => {
 		let from = progress;
 		let startedAt = 0;
 
+		// One number drives everything. The mark reads it through `applyWordmarkProgress`, and the bar
+		// reads the eased result back out as `--collapse` to shrink its own padding and bring its
+		// background up — so the chrome and the logo move on one curve instead of a CSS transition
+		// racing a rAF tween.
+		//
+		// And the list must not move while that happens. Condensing takes about 19px out of the bar,
+		// and the browser hands those 19px straight back to `scrollTop` so the content under the reader
+		// holds still. That is the right instinct for a list whose cards reorder on their own and the
+		// wrong one for a bar that resizes *because* of where the list is scrolled to: it drops the
+		// offset back under the threshold and the header flutters open and shut, and it loses the
+		// position the popup restores when you come back from a game. Reading `scrollTop` flushes the
+		// layout the resize caused, so putting it back here is both necessary and sufficient.
 		const pose = (value: number) => {
 			progress = value;
-			applyWordmarkProgress(svg, value);
+			const parked = node.scrollTop;
+			const closed = applyWordmarkProgress(svg, value);
+			headerRef.current?.style.setProperty('--collapse', String(Math.round(closed * 1000) / 1000));
+			// `scrollTo` rather than assigning `scrollTop`: same effect, and it does not read as
+			// mutating a value the hook was handed.
+			if (node.scrollTop !== parked) node.scrollTo({ top: parked });
 		};
 
 		const step = (now: number) => {

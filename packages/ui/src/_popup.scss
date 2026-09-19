@@ -65,22 +65,24 @@
 	height: 20px;
 }
 
+// `--collapse` is written on `.popup-header` every frame by `usePopupHeaderCollapse`, already
+// eased, and everything the bar does on the way in is a `calc()` off it. No transitions here on
+// purpose: a CSS curve running alongside the mark's own would have the two disagree in the middle.
 .arenaswap-logo {
 	display: block;
-	height: 36px;
+	height: calc(36px - var(--collapse, 0) * 10px);
 	width: auto;
 	flex-shrink: 0;
 	object-fit: contain;
 }
 
 // The header pins to the top of the list instead of scrolling off it, which is the only reason the
-// wordmark's collapse is worth animating: unpinned it would be gone 40px into the scroll, which is
-// roughly where the collapse finishes.
+// collapse is worth animating: unpinned the mark is gone 40px into the scroll, which is roughly
+// where the collapse starts.
 //
 // The negative margins pull the bar out to the container's edges and up over its 0.75rem of top
-// padding, and the matching padding puts the contents back where they were. That is what makes
-// `top: 0` land on the spot the header already occupies, so sticking is not a jump — and it is what
-// gives the background something to cover the full 320px with once cards start passing underneath.
+// padding, and the padding puts the contents back. That is what gives the background the full
+// 320px to cover once cards start passing underneath.
 .popup-header {
 	position: sticky;
 	// Not `0`. Sticky holds the *margin* box inside the scrollport, and the margin box here starts
@@ -89,27 +91,14 @@
 	top: -0.75rem;
 	z-index: 5;
 	margin: -0.75rem -0.75rem 0.5rem;
-	padding: 0.75rem 0.75rem 0.5rem;
-	background-color: rgba(13, 17, 23, 0);
-	border-bottom: 1px solid transparent;
-	// `blur(0)` rather than `none` at rest: the two do not interpolate, so `none` would snap the
-	// blur on at the end of the fade instead of bringing it in with the tint.
-	backdrop-filter: blur(0);
-	-webkit-backdrop-filter: blur(0);
-	transition: background-color 0.3s ease, border-color 0.3s ease, backdrop-filter 0.3s ease;
-}
-
-.popup-header.is-condensed {
-	background-color: rgba(13, 17, 23, 0.82);
-	border-bottom-color: #30363d;
-	backdrop-filter: blur(10px);
-	-webkit-backdrop-filter: blur(10px);
-}
-
-@media (prefers-reduced-motion: reduce) {
-	.popup-header {
-		transition: none;
-	}
+	padding-left: 0.75rem;
+	padding-right: 0.75rem;
+	padding-top: calc(0.75rem - var(--collapse, 0) * 0.35rem);
+	padding-bottom: calc(0.5rem - var(--collapse, 0) * 0.2rem);
+	// Solid, not frosted. Cards pass directly under this at 320px wide and a translucent bar reads
+	// as a smudge over them rather than as a surface they go behind.
+	background-color: rgba(13, 17, 23, var(--collapse, 0));
+	border-bottom: 1px solid rgba(48, 54, 61, var(--collapse, 0));
 }
 
 .popup-container {
