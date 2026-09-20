@@ -99,8 +99,8 @@ export class MockGameSimulator {
 				id: 'mock-1',
 				league: 'ncaab',
 				sportType: 'basketball',
-				homeTeam: { id: '111', name: 'Northeastern Huskies', abbreviation: 'NU', score: 45, logo: `${espnCdn}/ncaa/500/111.png`, color: '#CC0000' },
-				awayTeam: { id: '104', name: 'Boston University Terriers', abbreviation: 'BU', score: 42, logo: `${espnCdn}/ncaa/500/104.png`, color: '#CC0000' },
+				homeTeam: { id: '111', name: 'Northeastern Huskies', abbreviation: 'NU', score: 45, logo: `${espnCdn}/ncaa/500/111.png`, color: '#CC0000', rank: 8 },
+				awayTeam: { id: '104', name: 'Boston University Terriers', abbreviation: 'BU', score: 42, logo: `${espnCdn}/ncaa/500/104.png`, color: '#CC0000', rank: 15 },
 				venueName: 'Matthews Arena',
 				venueLocation: 'Boston, MA',
 				period: 4, clockSeconds: 162, status: 'in',
@@ -155,6 +155,13 @@ export class MockGameSimulator {
 				topOfInning: false,
 				baseRunners: { first: true, second: false, third: true },
 				bso: { balls: 1, strikes: 0, outs: 1 },
+				// No headshots: the demo slate carries no player portraits, so this is also the
+				// fixture that exercises the panel's initials fallback.
+				atBat: {
+					pitcher: { name: 'Edwin Diaz', jersey: '39', position: 'RP', summary: '0.2 IP, 0 ER, H, BB' },
+					batter: { name: 'Bryce Harper', jersey: '3', position: 'RF', summary: '2-3, 2B, RBI' },
+				},
+				lastPlay: 'Pitch 2 : Ball 1',
 				broadcasts: ['MLB.TV'],
 				weather: { temperatureF: 61, conditionLabel: 'Clear' },
 			},
@@ -162,8 +169,8 @@ export class MockGameSimulator {
 				id: 'mock-5',
 				league: 'nfl',
 				sportType: 'football',
-				homeTeam: { id: '21', name: 'Philadelphia Eagles', nickname: 'Eagles', abbreviation: 'PHI', score: 17, logo: `${espnCdn}/nfl/500/phi.png`, color: '#004C54' },
-				awayTeam: { id: '6', name: 'Dallas Cowboys', nickname: 'Cowboys', abbreviation: 'DAL', score: 14, logo: `${espnCdn}/nfl/500/dal.png`, color: '#003594' },
+				homeTeam: { id: '21', name: 'Philadelphia Eagles', nickname: 'Eagles', abbreviation: 'PHI', score: 17, logo: `${espnCdn}/nfl/500/phi.png`, color: '#004C54', timeouts: 2 },
+				awayTeam: { id: '6', name: 'Dallas Cowboys', nickname: 'Cowboys', abbreviation: 'DAL', score: 14, logo: `${espnCdn}/nfl/500/dal.png`, color: '#003594', timeouts: 3 },
 				venueName: 'Lincoln Financial Field',
 				venueLocation: 'Philadelphia, PA',
 				period: 4, clockSeconds: 480, status: 'in',
@@ -174,6 +181,8 @@ export class MockGameSimulator {
 				yardLine: 25,
 				possessionTeamId: '21',
 				driveStartYardLine: footballDriveStartYardLine,
+				lastPlay: 'J.Hurts pass short right to D.Smith for 8 yards (T.Diggs).',
+				lastPlayDrive: '3 plays, 12 yards, 1:24',
 				broadcasts: ['NBC', 'Peacock'],
 				// Two of the outdoor demo games snow and two do not, across four different sports.
 				// Snow is gated on the weather reading alone, and the weather belongs to a game
@@ -426,6 +435,7 @@ export class MockGameSimulator {
 		homeTeam: { ...g.homeTeam },
 		awayTeam: { ...g.awayTeam },
 		bso: g.bso ? { ...g.bso } : undefined,
+		atBat: g.atBat ? { pitcher: { ...g.atBat.pitcher }, batter: { ...g.atBat.batter } } : undefined,
 	}));
 
 	// The slate as constructed, before any tick has advanced it. Anything that needs the shipped

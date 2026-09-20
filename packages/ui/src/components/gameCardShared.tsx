@@ -8,6 +8,7 @@ import { resolveTeamColorPair } from './colorUtils';
 import Crest from './crest';
 import HoverTooltip from './hoverTooltip';
 import { useT } from './i18nContext';
+import TimeoutDots from './timeoutDots';
 
 export const formatPeriod = (game: Game): string => {
 	const config = leagueConfigMap[game.league];
@@ -119,8 +120,18 @@ export const TeamColumn = ({
 		<div className='d-flex flex-column align-items-center gap-1 team-column'>
 			<Crest logo={team.logo} abbreviation={(team.abbreviation || '?').slice(0, 3)} className='team-crest' />
 			<span className='fw-bold text-center text-nowrap team-abbreviation'>
+				{/* Smaller and greyed rather than same-size, so the tricode stays the thing you read
+				    first. A ranked pair is the widest this column ever gets — see the layout spec. */}
+				{team.rank !== undefined && (
+					<span className='team-rank' title={t('gameCard.teamRank', { rank: team.rank })}>
+						#{team.rank}
+					</span>
+				)}
 				{team.abbreviation}
 			</span>
+			{team.timeouts !== undefined && (
+				<TimeoutDots remaining={team.timeouts} teamAbbreviation={team.abbreviation} />
+			)}
 			<button
 				type='button'
 				className='btn btn-link p-0 border-0 lh-1'

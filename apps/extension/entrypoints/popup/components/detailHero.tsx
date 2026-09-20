@@ -1,5 +1,6 @@
 import { i18n } from '#i18n';
 import type { Game } from '@arenaswap/core/types';
+import AtBatPanel from './atBatPanel';
 import BaseDiamond from './baseDiamond';
 import BsoIndicator from './bsoIndicator';
 import DetailTeamPill from './detailTeamPill';
@@ -76,6 +77,10 @@ const detailHero = ({ game, seriesInfo, records = emptyTeamRecords, monoLogos, i
 			{isInningSport && game.bso && (
 				<div className='gd-bso-row'><BsoIndicator {...game.bso} /></div>
 			)}
+
+			{/* Directly under the count, because the count is the question this answers: who is
+			    the game waiting on. Absent between innings, when ESPN drops the pair. */}
+			<AtBatPanel game={game} />
 
 			{showField && (
 				<div className='gd-field-row'>

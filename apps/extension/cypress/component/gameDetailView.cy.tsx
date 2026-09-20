@@ -362,6 +362,11 @@ describe('gameDetailView hero', () => {
 
 	// Records add a third row to the matchup grid, so the hero's height budget is re-asserted
 	// against the layout every real game gets.
+	//
+	// The breakdown budget is 206 rather than the 200 the plain hero gets because the tab strip
+	// now sits between the two, and a records hero is the tallest thing it can sit under. Still
+	// comfortably inside the popup's 560px: what this guards is that the PowerScore is the first
+	// thing on the screen, not an exact offset.
 	it('keeps the hero and the breakdown inside their pixel budgets with records shown', () => {
 		mountDetail(makeLiveGame({ id: recordsGameId }), { excitementResult: excitement });
 		cy.get('.game-detail-team-record').should('have.length', 2);
@@ -372,7 +377,57 @@ describe('gameDetailView hero', () => {
 			});
 		});
 		cy.get('.powerscore-breakdown').then(([el]: JQuery<HTMLElement>) => {
-			expect(el.getBoundingClientRect().top, 'breakdown starts high').to.be.at.most(200);
+			expect(el.getBoundingClientRect().top, 'breakdown starts high').to.be.at.most(206);
+		});
+	});
+
+	/* The two budgets above cover a hero with nothing extra on it. These two cover the shapes this
+	   change adds, because neither of those fixtures carries a timeout row or an at-bat pair and so
+	   neither would notice the hero growing.
+
+	   Gridiron still fits: the timeout row costs a line and lands at 185 against the same 190.
+	   Baseball deliberately does not. The at-bat pair is two 32px portraits on a plate, and it takes
+	   the hero to 233 and the breakdown to 273 — half a 560px popup before the PowerScore starts.
+	   That is a real cost, taken with eyes on it, and it is pinned here so it cannot grow again
+	   quietly. If it ever has to come back down, the portraits are most of it. */
+	it('keeps the gridiron hero inside the plain budget once timeouts are on it', () => {
+		mountDetail(makeLiveGame({
+			id: recordsGameId,
+			league: 'nfl',
+			sportType: 'football',
+			period: 4,
+			homeTeam: { id: '1', name: 'Boston Celtics', abbreviation: 'BOS', score: 17, timeouts: 1 },
+			awayTeam: { id: '3', name: 'Oklahoma City Thunder', abbreviation: 'OKC', score: 17, timeouts: 3 },
+		}), { excitementResult: excitement });
+
+		cy.get('.gd-hero-live .timeout-dots').should('have.length', 2);
+		cy.get('.game-detail-header').then(([header]: JQuery<HTMLElement>) => {
+			cy.get('.gd-hero').then(([hero]: JQuery<HTMLElement>) => {
+				const height = hero.getBoundingClientRect().bottom - header.getBoundingClientRect().top;
+				expect(height, 'hero height').to.be.at.most(190);
+			});
+		});
+	});
+
+	it('holds the at-bat hero to its own, larger budget', () => {
+		mountDetail({
+			...makeInningGame(),
+			id: recordsGameId,
+			atBat: {
+				pitcher: { name: 'Will Dion', jersey: '76', position: 'RP', summary: '1.1 IP, 0 ER, H, BB' },
+				batter: { name: 'Nathan Church', jersey: '27', position: 'CF', summary: '0-2, K' },
+			},
+		}, { excitementResult: excitement });
+
+		cy.get('.gd-atbat-panel').should('exist');
+		cy.get('.game-detail-header').then(([header]: JQuery<HTMLElement>) => {
+			cy.get('.gd-hero').then(([hero]: JQuery<HTMLElement>) => {
+				const height = hero.getBoundingClientRect().bottom - header.getBoundingClientRect().top;
+				expect(height, 'hero height with the at-bat pair').to.be.at.most(240);
+			});
+		});
+		cy.get('.powerscore-breakdown').then(([el]: JQuery<HTMLElement>) => {
+			expect(el.getBoundingClientRect().top, 'breakdown still on the first screen').to.be.at.most(280);
 		});
 	});
 
@@ -701,5 +756,235 @@ describe('win probability volatility', () => {
 			/>,
 		);
 		cy.get('.game-card-ps-score').should('have.text', '72 / 100');
+	});
+});
+
+// This used to live on the list card, directly above the venue and the networks, where it read as
+// one more line of venue chrome. Its home now is a titled section of its own, first in the live
+// stack — so the assertions are about the heading and the ordering as much as the text.
+describe('gameDetailView latest play', () => {
+	beforeEach(() => {
+		cy.viewport(320, 560);
+	});
+
+	it('gives the play a heading of its own', () => {
+		mountDetail(makeLiveGame({ lastPlay: 'J.Tatum makes 26-foot three point jumper' }), { excitementResult: excitement });
+		cy.get('.gd-play-heading').should('have.text', 'Latest play');
+		cy.get('.gd-play-text').should('have.text', 'J.Tatum makes 26-foot three point jumper');
+	});
+
+	it('sits above the PowerScore breakdown, not beside the venue', () => {
+		mountDetail(makeLiveGame({ lastPlay: 'J.Tatum makes 26-foot three point jumper' }), { excitementResult: excitement });
+		cy.get('.gd-play-panel').then(([play]: JQuery<HTMLElement>) => {
+			cy.get('.powerscore-breakdown').then(([breakdown]: JQuery<HTMLElement>) => {
+				expect(play.compareDocumentPosition(breakdown) & Node.DOCUMENT_POSITION_FOLLOWING, 'breakdown follows the play').to.be.greaterThan(0);
+			});
+			cy.get('.game-info-panel').then(([info]: JQuery<HTMLElement>) => {
+				expect(play.compareDocumentPosition(info) & Node.DOCUMENT_POSITION_FOLLOWING, 'the venue panel is further down still').to.be.greaterThan(0);
+			});
+		});
+	});
+
+	// ESPN joins a penalty's two sentences with a newline. Collapsing it produces one run-on
+	// sentence that reads as a single play.
+	it('keeps a two-sentence penalty on two lines', () => {
+		const penalty = 'A.Jeanty up the middle to LAC 49 for 1 yard (D.Phillips).\nPENALTY on LV-S.Burford, Offensive Holding, 10 yards, enforced at 50 - No Play.';
+		mountDetail(makeLiveGame({ sportType: 'football', league: 'nfl', lastPlay: penalty }), { excitementResult: excitement });
+		cy.get('.gd-play-text').should(([el]: JQuery<HTMLElement>) => {
+			expect(getComputedStyle(el).whiteSpace).to.equal('pre-line');
+			// A block element reports one client rect however many lines it draws, so the count has
+			// to come off a Range over the text itself.
+			const range = el.ownerDocument.createRange();
+			range.selectNodeContents(el);
+			const lineTops = new Set([...range.getClientRects()].map(rect => Math.round(rect.top)));
+			expect(lineTops.size, 'the penalty draws on its own line').to.be.greaterThan(1);
+		});
+	});
+
+	it('carries the drive summary under the play where football sends one', () => {
+		mountDetail(
+			makeLiveGame({ sportType: 'football', league: 'nfl', lastPlay: 'Timeout #1 by GB at 01:11.', lastPlayDrive: '1 play, 0 yards, 0:04' }),
+			{ excitementResult: excitement },
+		);
+		cy.get('.gd-play-drive').should('have.text', '1 play, 0 yards, 0:04');
+	});
+
+	it('is absent entirely when ESPN sends no play', () => {
+		mountDetail(makeLiveGame(), { excitementResult: excitement });
+		cy.get('.gd-play-panel').should('not.exist');
+	});
+
+	it('keeps the heading on one line in every locale', () => {
+		mountDetail(makeLiveGame({ lastPlay: 'J.Tatum makes 26-foot three point jumper' }), { excitementResult: excitement });
+		Object.entries(locales).forEach(([name, locale]) => {
+			cy.get('.gd-play-heading').should(([el]: JQuery<HTMLElement>) => {
+				el.textContent = locale.detail.latestPlayHeading;
+				expect(el.scrollWidth, `no overflow in ${name}`).to.be.at.most(el.clientWidth);
+			});
+		});
+	});
+});
+
+describe('gameDetailView at-bat panel', () => {
+	const atBat = {
+		pitcher: { name: 'Will Dion', jersey: '76', position: 'RP', summary: '1.1 IP, 0 ER, H, BB' },
+		batter: { name: 'Nathan Church', jersey: '27', position: 'CF', summary: '0-2, K' },
+	};
+
+	beforeEach(() => {
+		cy.viewport(320, 560);
+	});
+
+	it('names both players and carries ESPN\'s line for each', () => {
+		mountDetail(makeInningGame(), { excitementResult: excitement });
+		cy.get('.gd-atbat-panel').should('not.exist');
+
+		// The fixture is the bottom of the 7th, so the visitors are pitching and their man stands
+		// on the left, under his own club.
+		mountDetail({ ...makeInningGame(), atBat }, { excitementResult: excitement });
+		cy.get('.gd-atbat-name').first().should('have.text', 'Will Dion');
+		cy.get('.gd-atbat-name').last().should('have.text', 'Nathan Church');
+		cy.get('.gd-atbat-line').first().should('have.text', '1.1 IP, 0 ER, H, BB');
+		cy.get('.gd-atbat-line').last().should('have.text', '0-2, K');
+		cy.get('.gd-atbat-role').first().should('have.text', 'Pitching');
+		cy.get('.gd-atbat-role').last().should('have.text', 'At bat');
+	});
+
+	// The hero puts the away team on the left, and the halves of an inning decide who bats. A
+	// fixed pitcher-left panel would stand a man under the other team's crest for half the game.
+	it('swaps the two ends at the half-inning so each player stands under his own club', () => {
+		mountDetail({ ...makeInningGame(), topOfInning: true, atBat }, { excitementResult: excitement });
+		cy.get('.gd-atbat-side').first().should('have.class', 'gd-atbat-away');
+		cy.get('.gd-atbat-role').first().should('have.text', 'At bat');
+		cy.get('.gd-atbat-name').first().should('have.text', 'Nathan Church');
+		cy.get('.gd-atbat-role').last().should('have.text', 'Pitching');
+		cy.get('.gd-atbat-name').last().should('have.text', 'Will Dion');
+
+		mountDetail({ ...makeInningGame(), topOfInning: false, atBat }, { excitementResult: excitement });
+		cy.get('.gd-atbat-role').first().should('have.text', 'Pitching');
+		cy.get('.gd-atbat-name').first().should('have.text', 'Will Dion');
+	});
+
+	// Whichever role occupies it, the right-hand half mirrors so the two portraits bracket the
+	// panel — the mirroring is keyed on the side, not on the role, so it must not swap too.
+	it('keeps the mirrored half on the home side through the swap', () => {
+		mountDetail({ ...makeInningGame(), topOfInning: true, atBat }, { excitementResult: excitement });
+		cy.get('.gd-atbat-side.gd-atbat-home').should(([el]: JQuery<HTMLElement>) => {
+			expect(getComputedStyle(el).flexDirection).to.equal('row-reverse');
+		});
+		cy.get('.gd-atbat-side.gd-atbat-away').should(([el]: JQuery<HTMLElement>) => {
+			expect(getComputedStyle(el).flexDirection).to.equal('row');
+		});
+	});
+
+	// ESPN draws no portrait for a good share of players, so the initials are a normal state
+	// rather than a failure.
+	it('falls back to initials when a player has no headshot', () => {
+		mountDetail({ ...makeInningGame(), atBat }, { excitementResult: excitement });
+		cy.get('.gd-atbat-face-crest').should('have.length', 2);
+		cy.get('.gd-atbat-face-crest').first().should('have.text', 'WD');
+		cy.get('.gd-atbat-face-crest').last().should('have.text', 'NC');
+	});
+
+	// Its whole point is telling one figure from another at a glance, which a proportional face
+	// does as well here as a monospaced one — and Lekton is reserved for columns that line up.
+	it('sets the line in the body face rather than in Lekton', () => {
+		mountDetail({ ...makeInningGame(), atBat }, { excitementResult: excitement });
+		cy.get('.gd-atbat-line').first().should(([el]: JQuery<HTMLElement>) => {
+			expect(getComputedStyle(el).fontFamily).to.not.match(/Lekton/i);
+		});
+	});
+
+	it('keeps both role labels on one line in every locale', () => {
+		mountDetail({ ...makeInningGame(), atBat }, { excitementResult: excitement });
+		Object.entries(locales).forEach(([name, locale]) => {
+			cy.get('.gd-atbat-role').should(($roles: JQuery<HTMLElement>) => {
+				const labels = [locale.detail.pitchingLabel, locale.detail.atBatLabel];
+				$roles.each((index, el) => {
+					el.textContent = labels[index] ?? '';
+					expect(el.scrollWidth, `no overflow in ${name}`).to.be.at.most(el.parentElement!.clientWidth);
+				});
+			});
+		});
+	});
+});
+
+// The same 3px rule the game list's section titles carry, in the colour of whoever made the play.
+describe('gameDetailView latest play accent', () => {
+	beforeEach(() => {
+		cy.viewport(320, 560);
+	});
+
+	const coloured = makeLiveGame({
+		lastPlay: 'J.Tatum makes 26-foot three point jumper',
+		homeTeam: { id: '1', name: 'Boston Celtics', abbreviation: 'BOS', score: 108, color: '#007A33' },
+		awayTeam: { id: '3', name: 'Oklahoma City Thunder', abbreviation: 'OKC', score: 112, color: '#007AC1' },
+	});
+
+	it('takes the colour of the side that made the play', () => {
+		mountDetail({ ...coloured, lastPlayTeamId: '1' }, { excitementResult: excitement });
+		cy.get('.gd-play-body').should('have.class', 'has-accent').then(([home]: JQuery<HTMLElement>) => {
+			const homeInk = getComputedStyle(home).borderLeftColor;
+
+			mountDetail({ ...coloured, lastPlayTeamId: '3' }, { excitementResult: excitement });
+			cy.get('.gd-play-body').should(([away]: JQuery<HTMLElement>) => {
+				expect(getComputedStyle(away).borderLeftColor, 'the two sides are not drawn alike').to.not.equal(homeInk);
+			});
+		});
+	});
+
+	it('keeps the indent but drops the rule when ESPN names nobody', () => {
+		mountDetail(coloured, { excitementResult: excitement });
+		cy.get('.gd-play-body').should('not.have.class', 'has-accent').should(([el]: JQuery<HTMLElement>) => {
+			const style = getComputedStyle(el);
+			expect(style.borderLeftColor, 'no team, no colour').to.equal('rgba(0, 0, 0, 0)');
+			// The indent survives so the block does not jump sideways between plays.
+			expect(parseFloat(style.paddingLeft), 'the indent survives').to.be.greaterThan(0);
+		});
+	});
+
+	it('marks the play rather than the heading, which reads the same whoever did it', () => {
+		mountDetail({ ...coloured, lastPlayTeamId: '1' }, { excitementResult: excitement });
+		cy.get('.gd-play-heading').should(([el]: JQuery<HTMLElement>) => {
+			expect(parseFloat(getComputedStyle(el).borderLeftWidth)).to.equal(0);
+		});
+	});
+});
+
+describe('gameDetailView hero timeouts', () => {
+	beforeEach(() => {
+		cy.viewport(320, 560);
+	});
+
+	const gridiron = makeLiveGame({
+		league: 'nfl',
+		sportType: 'football',
+		period: 4,
+		homeTeam: { id: '1', name: 'Boston Celtics', abbreviation: 'BOS', score: 17, timeouts: 1 },
+		awayTeam: { id: '3', name: 'Oklahoma City Thunder', abbreviation: 'OKC', score: 17, timeouts: 3 },
+	});
+
+	it('draws each side its own row under the record', () => {
+		mountDetail(gridiron, { excitementResult: excitement });
+		cy.get('.gd-hero-live .timeout-dots').should('have.length', 2);
+		cy.get('.gd-area-away-timeouts .timeout-dot').not('.is-empty').should('have.length', 3);
+		cy.get('.gd-area-home-timeouts .timeout-dot').not('.is-empty').should('have.length', 1);
+	});
+
+	// The card's rule for these is a light-surface grey, and it has to lose to the hero's — the
+	// same trap the balls/strikes/outs count fell into.
+	it('re-tones both halves of the row for the scrim', () => {
+		mountDetail(gridiron, { excitementResult: excitement });
+		cy.get('.gd-hero-live .timeout-dot.is-empty').first().should(([el]: JQuery<HTMLElement>) => {
+			expect(getComputedStyle(el).color, 'not the light-card grey').to.not.equal('rgb(156, 163, 175)');
+		});
+		cy.get('.gd-hero-live .timeout-dot').not('.is-empty').first().should(([el]: JQuery<HTMLElement>) => {
+			expect(getComputedStyle(el).color, 'not the light-card ink').to.not.equal('rgb(55, 65, 81)');
+		});
+	});
+
+	it('leaves the hero untouched for a sport with no timeouts', () => {
+		mountDetail(makeLiveGame(), { excitementResult: excitement });
+		cy.get('.gd-hero-live .timeout-dots').should('not.exist');
 	});
 });

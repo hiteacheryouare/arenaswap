@@ -1,5 +1,7 @@
 # i18n Polyglot Translator — Memory Index
 
+- [project_poll_rank_timeout_playbyplay_translations.md](project_poll_rank_timeout_playbyplay_translations.md) — 2026-09-20: teamRank/timeoutsRemaining/timeoutsShort + latestPlayHeading/pitchingLabel/atBatLabel, 11 locales; "TO" kept universal like OT, pt_BR/pt_PT timeout-word split, atBat real-idiom research
+
 - [project_delay_translations.md](project_delay_translations.md) — Approved gameCard.delay / gameCard.delayFallback translations for all 7 non-English locales (2026-07-21)
 - [project_shootout_translations.md](project_shootout_translations.md) — Approved gameCard.shootout (PENS badge) translations for all 8 locales incl. pt_PT/pt_BR split (2026-08-03)
 - [project_pregame_gameinfo_translations.md](project_pregame_gameinfo_translations.md) — detail.getReady*/detail.info* rulings: hockey/baseball loanwords, pt_PT tu-register, shared kickoff key issue (2026-08-10)

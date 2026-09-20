@@ -16,6 +16,7 @@ import GameInfoPanel from './gameInfoPanel';
 import HolidayDrift from './holidayDrift';
 import HolidayFall from './holidayFall';
 import HolidayLights from './holidayLights';
+import LatestPlayPanel from './latestPlayPanel';
 import PowerScoreBreakdown from './powerScoreBreakdown';
 import PregameSetup from './pregameSetup';
 import PregameStats from './pregameStats';
@@ -247,6 +248,11 @@ const gameDetailView = ({
 			</>
 		) : (
 			<>
+				{/* First, and deliberately not next to the info panel: what just happened is
+				    the most time-sensitive thing on this screen, and putting it beside the
+				    venue and the networks is what made it read as venue chrome on the card. */}
+				<LatestPlayPanel game={game} awayColor={awayLineColor} homeColor={homeLineColor} />
+
 				<PowerScoreBreakdown
 					closeness={closeness}
 					lateGame={lateGame}

@@ -236,3 +236,76 @@ describe('liveGameCard balls/strikes/outs', () => {
 		});
 	});
 });
+
+describe('liveGameCard team rank', () => {
+	it('puts the rank in front of the tricode without replacing it', () => {
+		cy.mount(<LiveGameCard {...defaultProps} game={{
+			...baseGame,
+			league: 'ncaab',
+			homeTeam: { ...baseGame.homeTeam, abbreviation: 'ALA', rank: 2 },
+			awayTeam: { ...baseGame.awayTeam, abbreviation: 'UGA', rank: 14 },
+		}} />);
+
+		cy.get('.team-abbreviation').first().should('have.text', '#14UGA');
+		cy.get('.team-abbreviation').last().should('have.text', '#2ALA');
+		cy.get('.team-rank').should('have.length', 2);
+	});
+
+	it('draws nothing for an unranked team', () => {
+		// 99 is ESPN's code for unranked and never reaches the card — parseCuratedRank drops it —
+		// so an unranked side arrives here as an absent field rather than as a number.
+		cy.mount(<LiveGameCard {...defaultProps} game={{
+			...baseGame,
+			homeTeam: { ...baseGame.homeTeam, rank: 5 },
+		}} />);
+		cy.get('.team-rank').should('have.length', 1).should('have.text', '#5');
+	});
+});
+
+describe('liveGameCard timeout dots', () => {
+	const withTimeouts = (home: number, away: number): Game => ({
+		...baseGame,
+		league: 'nfl',
+		sportType: 'football',
+		homeTeam: { ...baseGame.homeTeam, timeouts: home },
+		awayTeam: { ...baseGame.awayTeam, timeouts: away },
+	});
+
+	it('lights one dot per timeout left, against the full allotment', () => {
+		cy.mount(<LiveGameCard {...defaultProps} game={withTimeouts(2, 3)} />);
+
+		cy.get('.timeout-dots').should('have.length', 2);
+		cy.get('.timeout-dots').last().find('.timeout-dot').should('have.length', 3);
+		cy.get('.timeout-dots').last().find('.timeout-dot').not('.is-empty').should('have.length', 2);
+		cy.get('.timeout-dots').last().find('.timeout-dot.is-empty').should('have.length', 1);
+	});
+
+	it('draws an empty row rather than nothing when a team is out of timeouts', () => {
+		cy.mount(<LiveGameCard {...defaultProps} game={withTimeouts(0, 3)} />);
+		cy.get('.timeout-dots').last().find('.timeout-dot.is-empty').should('have.length', 3);
+		cy.get('.timeout-dots').last().find('.timeout-dot').not('.is-empty').should('have.length', 0);
+	});
+
+	it('names the count for a screen reader, which cannot see the dots', () => {
+		cy.mount(<LiveGameCard {...defaultProps} game={withTimeouts(2, 3)} />);
+		cy.get('.timeout-dots').last().should('have.attr', 'aria-label', 'HOM: 2 timeouts left');
+	});
+
+	it('falls back to a numeral for a sport with more timeouts than fit', () => {
+		// The NBA carries seven. Seven rings do not fit a 60px column, and a row silently clipped
+		// to three would misreport the count rather than merely look wrong.
+		cy.mount(
+			<LiveGameCard {...defaultProps} game={{
+				...baseGame,
+				homeTeam: { ...baseGame.homeTeam, timeouts: 6 },
+			}} />,
+		);
+		cy.get('.timeout-dots-numeric').should('have.length', 1).should('have.text', '6 TO');
+		cy.get('.timeout-dot').should('not.exist');
+	});
+
+	it('draws nothing when the sport sends no timeouts at all', () => {
+		cy.mount(<LiveGameCard {...defaultProps} game={baseGame} />);
+		cy.get('.timeout-dots').should('not.exist');
+	});
+});

@@ -13,10 +13,11 @@ import type {
 	EspnOddsProvider,
 	EspnScoreboardResponse,
 	EspnSituation,
+	EspnSituationPlayer,
 	EspnVenueAddress,
 } from './espnSchemas';
 import { logWarn } from './logger';
-import type { Game, GameCondition, GameOdds, LeagueConfig, LeagueId, LeagueLogoMap, ProbableStarter, TeamLeader, TeamMonoLogoMap, TeamMonoMarks } from './types';
+import type { AtBat, AtBatPlayer, Game, GameCondition, GameOdds, LeagueConfig, LeagueId, LeagueLogoMap, ProbableStarter, TeamLeader, TeamMonoLogoMap, TeamMonoMarks } from './types';
 
 const espnBase = 'https://site.api.espn.com/apis/site/v2/sports';
 
@@ -460,10 +461,22 @@ const parseTeamLeaders = (competitor: EspnCompetitor): TeamLeader[] | undefined 
 	return leaders.length > 0 ? leaders : undefined;
 };
 
-// Spread into both team literals below, the way resolveTeamColors already is. Records ride every
-// status; the other two are pre-game only.
+// ESPN's code for "unranked" is 99, and it sends it for every professional league on every game
+// rather than omitting the block — so the presence of `curatedRank` says nothing and only the value
+// does. The upper bound is the poll's own size; anything at or above 99 is the sentinel.
+const unrankedCuratedRank = 99;
+
+const parseCuratedRank = (competitor: EspnCompetitor): number | undefined => {
+	const rank = competitor.curatedRank?.current;
+	if (typeof rank !== 'number' || !Number.isInteger(rank)) return undefined;
+	return rank >= 1 && rank < unrankedCuratedRank ? rank : undefined;
+};
+
+// Spread into both team literals below, the way resolveTeamColors already is. Records and rank ride
+// every status; the other two are pre-game only.
 const parseTeamContext = (competitor: EspnCompetitor, state: Game['status']) => ({
 	record: parseCompetitorRecord(competitor),
+	rank: parseCuratedRank(competitor),
 	probableStarter: state === 'pre' ? parseProbableStarter(competitor) : undefined,
 	leaders: state === 'pre' ? parseTeamLeaders(competitor) : undefined,
 });
@@ -490,6 +503,49 @@ const downOrdinals = ['', '1st', '2nd', '3rd', '4th'] as const;
 const parseGoalToGo = (situation: EspnSituation): boolean => {
 	if (/goal/i.test(situation.shortDownDistanceText ?? '')) return true;
 	return typeof situation.down === 'number' && (typeof situation.distance !== 'number' || situation.distance <= 0);
+};
+
+/* ESPN's play text arrives dirty in two ways that both matter on a 320px screen. Most football
+   plays carry a leading space, and a penalty is two sentences joined by a newline —
+   " A.Jeanty up the middle to LAC 49 for 1 yard (D.Phillips).\nPENALTY on LV-S.Burford, Offensive
+   Holding, 10 yards, enforced at 50 - No Play." Both halves are worth reading, so the newline is
+   kept and each line is trimmed around it, rather than flattening the pair into one run-on. */
+const parseLastPlay = (situation: EspnSituation): string | undefined => {
+	const lines = (situation.lastPlay?.text ?? '')
+		.split('\n')
+		.map(line => line.trim())
+		.filter(line => line.length > 0);
+	return lines.length > 0 ? lines.join('\n') : undefined;
+};
+
+// Whoever ESPN hangs the play on. Deliberately not parsePossession's fallback chain: that answers
+// "who has the ball now", which survives a dead ball, while this answers "who just did something"
+// and should go quiet rather than guess when ESPN names a team we cannot match.
+const parseLastPlayTeam = (situation: EspnSituation, homeId: string, awayId: string): string | undefined => {
+	const candidate = situation.lastPlay?.team?.id;
+	return candidate === homeId || candidate === awayId ? candidate : undefined;
+};
+
+const parseAtBatPlayer = (player: EspnSituationPlayer | undefined): AtBatPlayer | undefined => {
+	const athlete = player?.athlete;
+	const name = athlete?.displayName?.trim() || athlete?.shortName?.trim();
+	if (!name) return undefined;
+	return {
+		name,
+		headshot: athlete?.headshot?.trim() || undefined,
+		jersey: athlete?.jersey?.trim() || undefined,
+		position: athlete?.position?.trim() || undefined,
+		summary: player?.summary?.trim() || undefined,
+	};
+};
+
+// Both sides or neither. ESPN drops the pair between innings while the rest of the situation
+// survives, and a panel captioned "pitching" with nobody opposite it reads as a failure rather
+// than as a gap.
+const parseAtBat = (situation: EspnSituation): AtBat | undefined => {
+	const pitcher = parseAtBatPlayer(situation.pitcher);
+	const batter = parseAtBatPlayer(situation.batter);
+	return pitcher && batter ? { pitcher, batter } : undefined;
 };
 
 // `possession` disappears at every dead ball while the rest of the situation survives, so a
@@ -600,6 +656,9 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 	const isInningSport = leagueConfig.periodFormat === 'innings';
 	const situation = comp.situation;
 	const isGridironSituation = leagueConfig.sportType === 'football' && state === 'in' && situation !== undefined;
+	// The sport-agnostic half of the same gate. ESPN only sends a situation on a live game, but
+	// saying so here is what lets the type narrow for the readers below.
+	const liveSituation = state === 'in' && situation !== undefined;
 	const postseason = resolvePostseason(event, comp, league);
 	const grade = postseason
 		? gradePostseason({ league, seasonType: event.season?.type, seasonSlug: event.season?.slug, notes: comp.notes })
@@ -619,6 +678,7 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 			logo: home.team.logo ?? undefined,
 			...resolveTeamColors(home.team.color, home.team.alternateColor),
 			...parseTeamContext(home, state),
+			timeouts: liveSituation ? situation.homeTimeouts : undefined,
 		},
 		awayTeam: {
 			id: away.id,
@@ -630,6 +690,7 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 			logo: away.team.logo ?? undefined,
 			...resolveTeamColors(away.team.color, away.team.alternateColor),
 			...parseTeamContext(away, state),
+			timeouts: liveSituation ? situation.awayTimeouts : undefined,
 		},
 		venueName: comp.venue?.fullName ?? comp.venue?.name ?? undefined,
 		venueLocation: parseVenueLocation(comp.venue?.address),
@@ -673,6 +734,11 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 		yardLine: isGridironSituation ? situation.yardLine : undefined,
 		possessionTeamId: isGridironSituation ? parsePossession(situation, home.id, away.id) : undefined,
 		driveStartYardLine: isGridironSituation ? situation.lastPlay?.drive?.start?.yardLine : undefined,
+		atBat: isInningSport && liveSituation ? parseAtBat(situation) : undefined,
+		// No sport gate: baseball and hockey describe their last play as readily as football does.
+		lastPlay: liveSituation ? parseLastPlay(situation) : undefined,
+		lastPlayTeamId: liveSituation ? parseLastPlayTeam(situation, home.id, away.id) : undefined,
+		lastPlayDrive: isGridironSituation ? situation.lastPlay?.drive?.description?.trim() || undefined : undefined,
 		weather: parseWeather(event, comp.venue?.indoor),
 		isPostseason: postseason,
 		// Only graded when the game is actually postseason: the headline is display copy, and a

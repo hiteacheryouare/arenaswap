@@ -41,6 +41,28 @@ export interface ProbableStarter {
 	status?: 'expected' | 'confirmed';
 }
 
+// The live counterpart to ProbableStarter. That one is deliberately pre-game only, because the
+// categories behind it turn into a box line at first pitch — this is that box line, for the two
+// players the game is currently waiting on.
+export interface AtBatPlayer {
+	name: string;
+	// Absent often enough that the panel needs an initials fallback rather than a broken image.
+	headshot?: string;
+	jersey?: string;
+	// A bare string here — "RP", "CF" — unlike the object `leaders` sends under the same name.
+	position?: string;
+	// ESPN's own pre-formatted line: "1.1 IP, 0 ER, H, BB" for a pitcher, "0-2, K" for a batter.
+	// Passed through rather than reassembled, the same way ProbableStarter.line is.
+	summary?: string;
+}
+
+// Only ever set when both sides arrived, so the panel cannot be drawn half-empty. ESPN drops the
+// pair between innings while the rest of the situation survives.
+export interface AtBat {
+	pitcher: AtBatPlayer;
+	batter: AtBatPlayer;
+}
+
 export interface TeamLeader {
 	// ESPN's category name, normalized. The key a label is looked up by, never display text.
 	category: string;
@@ -75,6 +97,12 @@ export interface Team {
 	// line ("1-4, HR, 4 RBI") instead of a season total.
 	probableStarter?: ProbableStarter;
 	leaders?: TeamLeader[];
+	// Poll position, 1–25. Undefined for an unranked team and for every league without a poll —
+	// ESPN sends 99 in both cases, which is filtered out on the way in rather than rendered.
+	rank?: number;
+	// Timeouts left. Live games only, and only in the sports that send them, which among the
+	// leagues we ship is the two gridiron ones.
+	timeouts?: number;
 }
 
 export interface GameCondition {
@@ -123,6 +151,18 @@ export interface Game {
 	topOfInning?: boolean;
 	baseRunners?: { first: boolean; second: boolean; third: boolean };
 	bso?: { balls: number; strikes: number; outs: number };
+	// Inning sports only. Dropped between innings, which is what makes the panel come and go.
+	atBat?: AtBat;
+	// The play that just happened, as ESPN describes it. Live games only, and absent in soccer,
+	// which sends no situation at all. Newlines are meaningful — a penalty is two sentences — so
+	// this is rendered with `white-space: pre-line` rather than collapsed.
+	lastPlay?: string;
+	// ESPN's own summary of the drive in progress, e.g. "3 plays, 5 yards, 0:10". Football only.
+	lastPlayDrive?: string;
+	// Whose play it was, as ESPN attributes it — the offense in football, the shooting side in
+	// hockey, the fielding side in baseball. Matches `homeTeam.id` or `awayTeam.id`, and is
+	// undefined when ESPN names a team we do not recognise. Colours the play's accent bar.
+	lastPlayTeamId?: string;
 	// Football only, from here down. e.g. "3rd & 5".
 	downDistance?: string;
 	// ESPN's "ABBR yardLine" label; joined onto downDistance via gameCard.downDistanceAt.

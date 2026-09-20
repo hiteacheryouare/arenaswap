@@ -381,6 +381,45 @@ $pre-game-time-color: bs.shade-color(bs.$warning, 60%);
 	color: #111827;
 }
 
+// A qualifier on the tricode, not a second name for the team: smaller and greyed so "ALA" still
+// reads first. The widest pair this column has to hold is a two-digit rank against a four-letter
+// tricode — "#15 TENN" — which is what liveGameCardLayout measures.
+.team-rank {
+	font-size: 0.58rem;
+	font-weight: 700;
+	color: #6c757d;
+	margin-right: 0.18em;
+	// The tricode's own weight is a Bootstrap utility on the parent and would otherwise be
+	// inherited at full strength.
+	letter-spacing: 0;
+}
+
+.timeout-dots {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.14rem;
+	line-height: 1;
+}
+
+.timeout-dot {
+	font-size: 0.45rem;
+	color: #374151;
+}
+
+// The unlit half of the allotment carries as much of the reading as the lit half — two timeouts
+// left only means anything against a row of three. `bi-circle` is a hairline ring, so at anything
+// lighter than this it disappears on the card's tinted plate and a 2-of-3 row looks like a 2.
+.timeout-dot.is-empty {
+	color: #9ca3af;
+}
+
+.timeout-dots-numeric {
+	font-size: 0.5rem;
+	font-weight: 700;
+	color: #4b5563;
+	letter-spacing: 0.02em;
+}
+
 [data-team-star='true'] {
 	font-size: 0.78rem;
 	text-decoration: none;

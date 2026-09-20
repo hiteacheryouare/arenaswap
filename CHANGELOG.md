@@ -5,6 +5,18 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Three things the scoreboard poll was already carrying — 2026-09-20
+
+A ranked team wears its poll position in front of its tricode on the cards and in front of its full
+name on the detail hero, a gridiron team carries its timeouts as dots in both places, and the play
+that just happened gets a titled section at the top of the live detail screen with a left rule in
+the colour of whoever made it — all of it read off `situation` and `curatedRank`, which the
+scoreboard response has always included and `espnSchemas` has always stripped. The play
+deliberately does not sit on the list card: directly above the venue and the networks it read as one
+more line of venue chrome. Baseball also gets the live pitcher-batter pair under the count, which is
+what replaces `probableStarter` once the first pitch is thrown, and the two swap ends at the half so
+each man stands under his own club rather than holding a fixed pitcher-left layout.
+
 ## The game detail screen files itself under tabs, and one of them is the table — 2026-09-20
 
 The screen is Overview / Box score / Standings now rather than one long scroll, on Bootstrap’s own `Tab` plugin — it owns the active classes, the roving tabindex and the arrow keys, and React leaves them alone because the `className` it renders never changes between renders. The table is the whole league off `/apis/v2/.../standings?level=3`, divisions grouped under their conference, which is 4-15KB gzipped and so is fetched alongside the summary rather than on click; men’s and women’s college basketball and college football keep the matchup’s own conference out of the `/summary` block instead, because their full tables are 6.2MB, 6.2MB and 2.6MB for 365, 363 and 138 teams. The two teams playing carry the line score’s team-colour row wash, and a tab is drawn only once there is something behind it.

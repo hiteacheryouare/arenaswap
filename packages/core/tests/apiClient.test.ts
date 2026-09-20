@@ -3123,3 +3123,170 @@ describe('a window asked for one day at a time', () => {
 		expect(new Set(asked).size).toBe(asked.length);
 	});
 });
+
+// Three fields that ride the scoreboard poll we already make, and one — the rank — that every
+// league sends whether it has a poll or not.
+describe('rank, timeouts and the last play', () => {
+	const parseOne = async (
+		league: 'nfl' | 'mlb' | 'ncaab' | 'epl',
+		params: { situation?: Record<string, unknown>; state?: string; homeExtra?: Record<string, unknown>; awayExtra?: Record<string, unknown> },
+	) => {
+		const fetchMock = jest.fn().mockResolvedValue(createResponse({
+			events: [makeEvent({
+				id: 'x1',
+				state: params.state ?? 'in',
+				period: 2,
+				clock: '8:00',
+				homeScore: '7',
+				awayScore: '7',
+				situation: params.situation,
+				homeExtra: params.homeExtra,
+				awayExtra: params.awayExtra,
+			})],
+		}));
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+		const { fetchGamesWithLeagueLogos } = loadApiClient();
+		const result = await fetchGamesWithLeagueLogos([league], { includeUpcoming: false, includeFinal: true });
+		return result.games.find(g => g.id === 'x1');
+	};
+
+	describe('curatedRank', () => {
+		test('carries a real poll position onto the team', async () => {
+			const game = await parseOne('ncaab', { homeExtra: { curatedRank: { current: 2 } }, awayExtra: { curatedRank: { current: 25 } } });
+			expect(game?.homeTeam.rank).toBe(2);
+			expect(game?.awayTeam.rank).toBe(25);
+		});
+
+		// ESPN sends the block on every professional game with `current` pinned at 99, so keying on
+		// the field being present would put "#99" beside every NFL team in the league.
+		test('drops 99, which is ESPN\'s code for unranked', async () => {
+			const game = await parseOne('nfl', { homeExtra: { curatedRank: { current: 99 } } });
+			expect(game?.homeTeam.rank).toBeUndefined();
+		});
+
+		test('drops the field entirely for a league that sends no rank', async () => {
+			const game = await parseOne('epl', {});
+			expect(game?.homeTeam.rank).toBeUndefined();
+			expect(game?.awayTeam.rank).toBeUndefined();
+		});
+
+		// Unlike the two live-only fields below, a ranked matchup is ranked before and after it is
+		// played, so this one is not gated on the game being in progress.
+		test('survives on a finished game', async () => {
+			const game = await parseOne('ncaab', { state: 'post', homeExtra: { curatedRank: { current: 7 } } });
+			expect(game?.homeTeam.rank).toBe(7);
+		});
+	});
+
+	describe('timeouts', () => {
+		test('lands each side on its own team', async () => {
+			const game = await parseOne('nfl', { situation: { homeTimeouts: 1, awayTimeouts: 3 } });
+			expect(game?.homeTeam.timeouts).toBe(1);
+			expect(game?.awayTeam.timeouts).toBe(3);
+		});
+
+		test('keeps zero, which is a count rather than an absence', async () => {
+			const game = await parseOne('nfl', { situation: { homeTimeouts: 0, awayTimeouts: 2 } });
+			expect(game?.homeTeam.timeouts).toBe(0);
+		});
+
+		test('is absent on a game that is not in progress', async () => {
+			const game = await parseOne('nfl', { state: 'post', situation: { homeTimeouts: 2, awayTimeouts: 2 } });
+			expect(game?.homeTeam.timeouts).toBeUndefined();
+		});
+	});
+
+	describe('lastPlay', () => {
+		test('trims the leading space ESPN puts in front of most football plays', async () => {
+			const game = await parseOne('nfl', { situation: { lastPlay: { text: ' (Shotgun) T.Lawrence pass incomplete deep left.' } } });
+			expect(game?.lastPlay).toBe('(Shotgun) T.Lawrence pass incomplete deep left.');
+		});
+
+		// A penalty arrives as two sentences joined by a newline. Both are worth reading, so the
+		// break survives and only the whitespace around it is cleaned up.
+		test('keeps the line break inside a penalty and trims around it', async () => {
+			const game = await parseOne('nfl', {
+				situation: { lastPlay: { text: ' A.Jeanty up the middle for 1 yard. \n PENALTY on LV-S.Burford, Offensive Holding. ' } },
+			});
+			expect(game?.lastPlay).toBe('A.Jeanty up the middle for 1 yard.\nPENALTY on LV-S.Burford, Offensive Holding.');
+		});
+
+		test('is not gated on football — baseball describes its last pitch too', async () => {
+			const game = await parseOne('mlb', { situation: { lastPlay: { text: 'Pitch 2 : Ball 1' } } });
+			expect(game?.lastPlay).toBe('Pitch 2 : Ball 1');
+		});
+
+		test('is absent when the text is empty or missing', async () => {
+			expect((await parseOne('nfl', { situation: { lastPlay: { text: '   ' } } }))?.lastPlay).toBeUndefined();
+			expect((await parseOne('nfl', { situation: {} }))?.lastPlay).toBeUndefined();
+			expect((await parseOne('epl', {}))?.lastPlay).toBeUndefined();
+		});
+
+		// Colours the play's accent bar, so naming the wrong side is worse than naming none.
+		test('attributes the play to whichever side ESPN names', async () => {
+			const game = await parseOne('nfl', { situation: { lastPlay: { text: 'Sack.', team: { id: 'home-x1' } } } });
+			expect(game?.lastPlayTeamId).toBe('home-x1');
+			expect(game?.lastPlayTeamId).toBe(game?.homeTeam.id);
+		});
+
+		// parsePossession falls back through `possession` to answer "who has the ball now". This
+		// answers "who just did something", and goes quiet rather than guessing at a dead ball.
+		test('stays quiet when ESPN names a team that is not playing', async () => {
+			const game = await parseOne('nfl', { situation: { lastPlay: { text: 'Sack.', team: { id: '99999' } } } });
+			expect(game?.lastPlayTeamId).toBeUndefined();
+		});
+
+		test('keeps the play but names nobody when ESPN attributes it to nobody', async () => {
+			const game = await parseOne('nfl', { situation: { lastPlay: { text: 'Two-Minute Warning' } } });
+			expect(game?.lastPlay).toBe('Two-Minute Warning');
+			expect(game?.lastPlayTeamId).toBeUndefined();
+		});
+
+		test('carries the drive summary for football and nothing else', async () => {
+			const withDrive = { lastPlay: { text: 'Timeout #1 by GB.', drive: { description: '1 play, 0 yards, 0:04' } } };
+			expect((await parseOne('nfl', { situation: withDrive }))?.lastPlayDrive).toBe('1 play, 0 yards, 0:04');
+			expect((await parseOne('mlb', { situation: withDrive }))?.lastPlayDrive).toBeUndefined();
+		});
+	});
+
+	describe('atBat', () => {
+		const pair = {
+			pitcher: { athlete: { displayName: 'Will Dion', jersey: 76, position: 'RP', headshot: 'https://a.espncdn.com/x.png' }, summary: '1.1 IP, 0 ER, H, BB' },
+			batter: { athlete: { displayName: 'Nathan Church', jersey: 27, position: 'CF' }, summary: '0-2, K' },
+		};
+
+		test('reads both sides, including the jersey ESPN sends as a number', async () => {
+			const game = await parseOne('mlb', { situation: pair });
+			expect(game?.atBat?.pitcher).toEqual({
+				name: 'Will Dion', jersey: '76', position: 'RP', headshot: 'https://a.espncdn.com/x.png', summary: '1.1 IP, 0 ER, H, BB',
+			});
+			expect(game?.atBat?.batter.name).toBe('Nathan Church');
+			expect(game?.atBat?.batter.headshot).toBeUndefined();
+		});
+
+		// ESPN drops the pair between innings. Half a panel reads as a fault rather than a gap.
+		test('is undefined unless both sides arrived', async () => {
+			expect((await parseOne('mlb', { situation: { pitcher: pair.pitcher } }))?.atBat).toBeUndefined();
+			expect((await parseOne('mlb', { situation: { batter: pair.batter } }))?.atBat).toBeUndefined();
+		});
+
+		test('is absent outside the inning sports and outside a live game', async () => {
+			expect((await parseOne('nfl', { situation: pair }))?.atBat).toBeUndefined();
+			expect((await parseOne('mlb', { state: 'post', situation: pair }))?.atBat).toBeUndefined();
+		});
+
+		// The pitcher's `position` is a bare string where the same key inside `leaders` is an
+		// object. Declaring one schema for both would empty every leaders block through its
+		// `.catch([])` rather than failing loudly, so this is the guard for that.
+		test('does not disturb the leaders block on the same payload', async () => {
+			const leaders = [{
+				name: 'battingAverage',
+				shortDisplayName: 'AVG',
+				leaders: [{ displayValue: '.312', athlete: { shortName: 'B. Harper', position: { abbreviation: '1B' } } }],
+			}];
+			const game = await parseOne('mlb', { state: 'pre', homeExtra: { leaders }, awayExtra: { leaders } });
+			expect(game?.homeTeam.leaders?.[0]?.player).toBe('B. Harper');
+			expect(game?.homeTeam.leaders?.[0]?.value).toBe('.312');
+		});
+	});
+});

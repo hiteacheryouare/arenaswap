@@ -177,3 +177,40 @@ describe('the sticky bar crests', () => {
 	});
 });
 
+
+// The at-bat panel is the one thing on the hero drawn on a plate of its own rather than straight
+// onto the scrim, so its ink has to clear the plate, not the gradient underneath it.
+describe('detail hero at-bat panel on the scrim', () => {
+	const withAtBat = {
+		...liveGame,
+		league: 'mlb' as const,
+		sportType: 'baseball' as const,
+		period: 7,
+		atBat: {
+			pitcher: { name: 'Will Dion', jersey: '76', position: 'RP', summary: '1.1 IP, 0 ER, H, BB' },
+			batter: { name: 'Nathan Church', jersey: '27', position: 'CF', summary: '0-2, K' },
+		},
+	};
+
+	// The panel's plate is translucent over the scrim, so the ink still has to clear the darkest
+	// the scrimmed gradient gets — which is exactly what contrastOnHero already models.
+	const readableOnPanel = (selector: string, label: string, floor: number) => {
+		cy.get(selector).first().then($el => {
+			expect(contrastOnHero(getComputedStyle($el[0]!).color), label).to.be.greaterThan(floor);
+		});
+	};
+
+	it('keeps the name and the line readable against the scrim beneath its plate', () => {
+		mountLive(withAtBat);
+		readableOnPanel('.gd-atbat-name', 'the player name', 4.5);
+		readableOnPanel('.gd-atbat-line', "ESPN's line", 4.5);
+		// A 0.5rem uppercase label is large text for nobody, but it is a caption for the name
+		// beside it rather than the reading itself, so it takes the 3:1 bar.
+		readableOnPanel('.gd-atbat-role', 'the role label', 3);
+	});
+
+	it('is absent on a sport that never has one', () => {
+		mountLive(liveGame);
+		cy.get('.gd-atbat-panel').should('not.exist');
+	});
+});

@@ -82,6 +82,9 @@ const EspnCompetitorSchema = z.object({
 	// where every other sport returns an array. Not a league we ship, but adding one must not be
 	// able to take the whole competitor down with it.
 	leaders: z.optional(z.catch(z.array(EspnLeaderCategorySchema), [])),
+	// ESPN's poll position. Sent by the pro leagues too, where it is permanently 99 — its code for
+	// unranked — so the reader gates on the value rather than on the key being present.
+	curatedRank: z.optional(z.object({ current: z.optional(z.number()) })),
 });
 
 const EspnCompetitionStatusSchema = z.object({
@@ -101,11 +104,36 @@ const EspnCompetitionStatusSchema = z.object({
 // equals `yardLine - drive.start.yardLine` for a home drive and the negation of it for an away one.
 const EspnDriveSchema = z.object({
 	start: z.optional(z.object({ yardLine: z.optional(z.number()) })),
+	// ESPN's own summary of the drive so far — "3 plays, 5 yards, 0:10". Football only.
+	description: z.optional(z.string()),
 });
 
 const EspnLastPlaySchema = z.object({
 	team: z.optional(z.object({ id: z.optional(espnNumericText) })),
 	drive: z.optional(EspnDriveSchema),
+	// A sentence describing the play that just happened. Arrives on every sport that sends a
+	// situation at all, and routinely carries a leading space and an embedded newline — a penalty
+	// is two sentences. Normalized in parseLastPlay rather than here.
+	text: z.optional(z.string()),
+});
+
+// The pitcher and batter carry a `position` that is a bare string — "RP", "CF" — where the same
+// key inside `leaders` is an object. EspnAthleteRefSchema is shared with leaders, and its array
+// carries a `.catch([])`, so declaring a string position there would empty every leaders block
+// instead of failing loudly. Hence a second athlete schema rather than one more optional key.
+const EspnSituationAthleteSchema = z.object({
+	displayName: z.optional(z.string()),
+	shortName: z.optional(z.string()),
+	jersey: z.optional(espnNumericText),
+	headshot: z.optional(z.string()),
+	position: z.optional(z.string()),
+});
+
+// Baseball and softball only. `summary` is ESPN's own pre-formatted line for the player's day —
+// "1.1 IP, 0 ER, H, BB" for the pitcher, "0-2, K" for the batter.
+const EspnSituationPlayerSchema = z.object({
+	athlete: z.optional(EspnSituationAthleteSchema),
+	summary: z.optional(z.string()),
 });
 
 const EspnSituationSchema = z.object({
@@ -126,6 +154,13 @@ const EspnSituationSchema = z.object({
 	// The team id holding the ball. Dropped at every dead ball — timeouts, the end of a period —
 	// while `yardLine` survives, so the field diagram falls back to `lastPlay.team`.
 	possession: z.optional(espnNumericText),
+	// Football only, and only while a game is live. Counted down from 3 in both gridiron leagues;
+	// other sports carry their own ceiling, which is why the indicator takes a max rather than
+	// assuming one.
+	homeTimeouts: z.optional(z.number()),
+	awayTimeouts: z.optional(z.number()),
+	pitcher: z.optional(EspnSituationPlayerSchema),
+	batter: z.optional(EspnSituationPlayerSchema),
 	lastPlay: z.optional(EspnLastPlaySchema),
 });
 
@@ -310,6 +345,8 @@ export type EspnLeagueLogo = z.infer<typeof EspnLeagueLogoSchema>;
 export type EspnLeague = z.infer<typeof EspnLeagueSchema>;
 export type EspnTeam = z.infer<typeof EspnTeamSchema>;
 export type EspnAthleteRef = z.infer<typeof EspnAthleteRefSchema>;
+export type EspnSituationAthlete = z.infer<typeof EspnSituationAthleteSchema>;
+export type EspnSituationPlayer = z.infer<typeof EspnSituationPlayerSchema>;
 export type EspnProbable = z.infer<typeof EspnProbableSchema>;
 export type EspnRecordEntry = z.infer<typeof EspnRecordEntrySchema>;
 export type EspnLeaderCategory = z.infer<typeof EspnLeaderCategorySchema>;
