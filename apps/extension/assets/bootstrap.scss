@@ -1376,6 +1376,101 @@
 	height: 13px;
 }
 
+// ── Detail screen tab strip ──────────────────────────────────────────────────
+// The strip that files the whole screen, sitting on the dark shell rather than on a light card.
+// That is why it is `.nav-underline` and not the lifted `.nav-tabs` the box score's away/home
+// switcher uses: `$nav-tabs-link-active-bg` is #f8fafc for that card, and a tab in #f8fafc here
+// would be a white slab across a #0d1117 screen.
+//
+// Bootstrap exposes the whole component through custom properties, so every line below sets one
+// rather than overriding a rule. The two colours are the ones the popup already uses on dark:
+// $body-secondary-color for the labels it is not on, and the brand orange — 5.9:1 here — for the
+// one it is.
+.gd-tabs {
+	--as-nav-link-color:                  #8b949e;
+	--as-nav-link-hover-color:            #e7edf5;
+	--as-nav-underline-link-active-color: #f75c03;
+	--as-nav-underline-border-width:      0.14rem;
+	--as-nav-underline-gap:               0;
+
+	// Tighter than the 0.5rem the cards below take. This is chrome rather than content, and every
+	// pixel it spends here comes off the PowerScore breakdown's head start down the screen.
+	margin-top:    0.34rem;
+	margin-bottom: 0.05rem;
+	// The rule the underline is drawn against, so an unselected tab reads as sitting on the same
+	// line rather than floating above nothing.
+	border-bottom: 1px solid #30363d;
+
+	// Three labels across 320px read as one control when they divide the width evenly, and the
+	// underline then measures the tab rather than the word inside it.
+	.nav-item { flex: 1 1 0; }
+
+	.nav-link {
+		width:      100%;
+		padding:    0.26rem 0.2rem;
+		text-align: center;
+		// Onto the strip's own rule rather than a pixel above it.
+		margin-bottom: -1px;
+	}
+}
+
+// ── Standings ────────────────────────────────────────────────────────────────
+// The same light card and the same table skin as the box score, because it is the same kind of
+// thing: rows of numbers read down a column. Only the team column differs, and only because a
+// standings row is named rather than abbreviated — ESPN sends no abbreviation in this block at
+// all, so the name column has to hold "Brighton & Hove Albion" as well as "Miami".
+.gd-standings > .gd-standings-block:first-child > :first-child { margin-top: 0.14rem; }
+
+.gd-standings-block + .gd-standings-block { margin-top: 0.45rem; }
+
+// The conference over its divisions. Darker and a step larger than the division subheadings
+// under it, and carrying the card's own rule, so two levels of heading read as two levels rather
+// than as one list of eight. Absent entirely for a flat league — a Premier League table has
+// nothing above it to name.
+.gd-standings-conference {
+	font-size:      0.62rem;
+	font-weight:    700;
+	color:          #111827;
+	border-bottom:  1px solid #d1d5db;
+	padding-bottom: 0.16rem;
+	margin-bottom:  0.1rem;
+}
+
+.gd-standings-rank {
+	width:       1.15rem;
+	font-weight: 600;
+	color:       #6b7280;
+}
+
+// A flex span inside the cell rather than `display: flex` on the cell itself, the same way the
+// line score's team cell does it: a table cell that stops being one drops out of the layout
+// keeping the number columns aligned.
+.gd-standings-id {
+	display:     flex;
+	align-items: center;
+	gap:         0.24rem;
+	min-width:   0;
+}
+
+.gd-standings-crest {
+	width:       13px;
+	height:      13px;
+	flex-shrink: 0;
+}
+
+// The name gives way first. `.gd-box-name` truncates the cell; a flex child inside it needs its
+// own `min-width: 0` before it will shrink far enough to let that happen.
+.gd-standings-name {
+	min-width:     0;
+	overflow:      hidden;
+	text-overflow: ellipsis;
+	white-space:   nowrap;
+}
+
+// The wash is doing the work of saying which two rows these are. The weight is what carries it
+// for a team whose colour is too pale to register as a 16% tint.
+.gd-standings-matchup { font-weight: 700; }
+
 // btn-link is the right component and its colour is the link orange, which only reaches 3.0:1 on
 // this card.
 .gd-box-more {

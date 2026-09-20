@@ -281,6 +281,8 @@
 		"legendMomentum": "Momentum",
 		"legendLeadChanges": "Sorpassi",
 		"legendComeback": "Rimonta",
+		"tabOverview": "Panoramica",
+		"tabStandings": "Classifica",
 		"startsSoon": "Inizia a breve",
 		"final": "Finale",
 		"totalLabel": "{total} / {max}",
@@ -332,6 +334,21 @@
 		"leaderPassing": "PASS",
 		"leaderRushing": "RUSH",
 		"leaderReceiving": "REC"
+	},
+	"standings": {
+		"wins": "V",
+		"losses": "P",
+		"ties": "N",
+		"draws": "N",
+		"winPercent": "PCT",
+		"gamesBehind": "GB",
+		"otLosses": "OTL",
+		"points": "Pt",
+		"soccerPoints": "Pt",
+		"gamesPlayed": "PG",
+		"goalDifference": "DR",
+		"conference": "Conf.",
+		"overall": "Totale"
 	},
 	"box": {
 		"heading": "Boxscore",

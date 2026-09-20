@@ -281,6 +281,8 @@
 		"legendMomentum": "勢い",
 		"legendLeadChanges": "リード交代",
 		"legendComeback": "逆転",
+		"tabOverview": "概要",
+		"tabStandings": "順位表",
 		"startsSoon": "まもなく開始",
 		"final": "終了",
 		"totalLabel": "{total} / {max}",
@@ -332,6 +334,21 @@
 		"leaderPassing": "PASS",
 		"leaderRushing": "RUSH",
 		"leaderReceiving": "REC"
+	},
+	"standings": {
+		"wins": "勝",
+		"losses": "敗",
+		"ties": "分",
+		"draws": "分",
+		"winPercent": "勝率",
+		"gamesBehind": "差",
+		"otLosses": "OTL",
+		"points": "勝点",
+		"soccerPoints": "勝点",
+		"gamesPlayed": "試合",
+		"goalDifference": "得失点差",
+		"conference": "カンファレンス",
+		"overall": "全体"
 	},
 	"box": {
 		"heading": "ボックススコア",

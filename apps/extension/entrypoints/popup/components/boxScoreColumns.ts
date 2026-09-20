@@ -1,5 +1,5 @@
 import type { SportType } from '@arenaswap/core/types';
-import type { BoxScoreAthlete, BoxScoreCategory, BoxScoreTeam, TeamComparisonRow } from './boxScoreParse';
+import type { BoxScore, BoxScoreAthlete, BoxScoreCategory, BoxScoreTeam, TeamComparisonRow } from './boxScoreParse';
 
 // Which categories a sport shows, in what order, and which of ESPN's columns each one keeps.
 //
@@ -549,3 +549,17 @@ export const buildComparison = (
 	const anyPenalty = conditional.some(row => !isZero(row.away) || !isZero(row.home));
 	return anyPenalty ? [...always, ...conditional] : always;
 };
+
+// Whether there is a box score to show at all. The detail screen asks before offering a tab that
+// leads to it, and the card itself asks before drawing — one answer, so the two cannot disagree
+// and strand the reader on an empty panel.
+//
+// Both sides are checked rather than the selected one: the opening minutes of a football game
+// parse to categories with no athletes on the side you happen to be looking at, and the strip is
+// what gets you to the side that has them.
+export const hasBoxScoreContent = (sportType: SportType | undefined, box: BoxScore): boolean => (
+	box.lineScore !== null
+	|| buildComparison(sportType, box.teamComparison).length > 0
+	|| (box.away !== null && buildSections(sportType, box.away).length > 0)
+	|| (box.home !== null && buildSections(sportType, box.home).length > 0)
+);

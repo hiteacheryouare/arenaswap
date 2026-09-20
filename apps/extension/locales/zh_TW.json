@@ -281,6 +281,8 @@
 		"legendMomentum": "氣勢",
 		"legendLeadChanges": "領先交替",
 		"legendComeback": "逆轉",
+		"tabOverview": "總覽",
+		"tabStandings": "排名",
 		"startsSoon": "即將開始",
 		"final": "終場",
 		"totalLabel": "{total} / {max}",
@@ -332,6 +334,21 @@
 		"leaderPassing": "PASS",
 		"leaderRushing": "RUSH",
 		"leaderReceiving": "REC"
+	},
+	"standings": {
+		"wins": "勝",
+		"losses": "負",
+		"ties": "和",
+		"draws": "平",
+		"winPercent": "勝率",
+		"gamesBehind": "勝差",
+		"otLosses": "OTL",
+		"points": "積分",
+		"soccerPoints": "積分",
+		"gamesPlayed": "出賽",
+		"goalDifference": "淨勝球",
+		"conference": "聯盟戰績",
+		"overall": "總戰績"
 	},
 	"box": {
 		"heading": "數據統計",

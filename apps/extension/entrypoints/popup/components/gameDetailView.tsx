@@ -6,6 +6,10 @@ import type { Game, LeagueId, PowerScoreResult, PowerScoreSnapshot, ScoreSnapsho
 import DetailHero from './detailHero';
 import DetailPosterHero from './detailPosterHero';
 import DetailStickyBar from './detailStickyBar';
+import DetailTabs from './detailTabs';
+import type { DetailTab, DetailTabId } from './detailTabs';
+import StandingsTable from './standingsTable';
+import { hasBoxScoreContent } from './boxScoreColumns';
 import GameDetailChart from './gameDetailChart';
 import GameBoostInput from './gameBoostInput';
 import GameInfoPanel from './gameInfoPanel';
@@ -151,7 +155,7 @@ const gameDetailView = ({
 	const componentOption = useMemo(() => (
 		buildComponentContributionOption(orderedPowerScoreHistory)
 	), [orderedPowerScoreHistory]);
-	const { winProbability, seriesInfo, records, monoLogos, boxScore, gameDurationMins } = useSummaryData(game);
+	const { winProbability, seriesInfo, records, monoLogos, boxScore, standings, gameDurationMins } = useSummaryData(game);
 	const winProbabilityOption = useMemo(() => (
 		buildWinProbabilityOption(winProbability, game)
 	), [winProbability, game]);
@@ -211,6 +215,108 @@ const gameDetailView = ({
 		return () => observer.disconnect();
 	}, []);
 
+	// Everything that is not the box score or the table: the PowerScore and what explains
+	// it, what is happening in the game, and where it is being played. Lifted out of the
+	// panel below so the tab markup stays legible as tab markup.
+	const overviewPanel = (
+		<>
+		{/* Nothing has happened yet, so there is no PowerScore to break down — every signal
+		    would read zero. The screen offers what you can actually decide in advance instead. */}
+		{isFinal ? (
+			<>
+				{/* No PowerScore anywhere on a wrap. The number is a live judgement about what to
+				    watch next, and a game that is over is not a candidate — printing its last
+				    value would read as a verdict on the game rather than as the switching signal
+				    it actually was. The boost input goes for the same reason: it can only ever
+				    change a score that will never be computed again. */}
+				<GameInfoPanel game={game} bettingPrefs={bettingPrefs} weatherPrefs={weatherPrefs} gameDurationMins={gameDurationMins} />
+			</>
+		) : isPreGame ? (
+			<>
+				<PregameSetup
+					game={game}
+					currentBoost={currentBoost}
+					openTabs={openTabs}
+					registry={registry}
+					onSetGameBoost={onSetGameBoost}
+					onRegistryChange={onRegistryChange}
+					formatTabLabel={formatTabLabel}
+				/>
+				<PregameStats game={game} />
+				<GameInfoPanel game={game} bettingPrefs={bettingPrefs} weatherPrefs={weatherPrefs} />
+			</>
+		) : (
+			<>
+				<PowerScoreBreakdown
+					closeness={closeness}
+					lateGame={lateGame}
+					momentum={momentum}
+					leadChanges={leadChanges}
+					comeback={comeback}
+					winProbabilityVariance={winProbabilityVariance}
+					signalsSubtotal={signalsSubtotal}
+					stallPenalty={stallPenalty}
+					clockBased={clockBased}
+					favoriteBonus={favoriteBonus}
+					favoriteTeamCount={favoriteTeamCount}
+					currentBoost={appliedBoost}
+					scoringOpportunityBoost={scoringOpportunityBoost}
+					postseasonBoost={postseasonBoost}
+					postseasonLabel={game?.postseasonLabel}
+					totalLabel={totalLabel}
+					reason={reason ? reason.charAt(0).toUpperCase() + reason.slice(1) : undefined}
+					disabledSignals={disabledSignals}
+				/>
+
+				<GameBoostInput gameId={game.id} currentBoost={currentBoost} onSetGameBoost={onSetGameBoost} />
+
+				<GameInfoPanel game={game} bettingPrefs={bettingPrefs} weatherPrefs={weatherPrefs} />
+			</>
+		)}
+
+		{proTipsEnabled && <ProTip context='detail' />}
+
+		{chartsCoverGame && orderedPowerScoreHistory.length > 0 && (
+			<GameDetailChart title={i18n.t('detail.chartPowerScoreTitle')} option={powerScoreOption} />
+		)}
+
+		{chartsCoverGame && orderedScoreHistory.length > 0 && (
+			<GameDetailChart title={i18n.t('detail.chartScoreTitle')} option={scoreTrendOption} legendItems={teamLegendItems} />
+		)}
+
+		{winProbability.length > 0 && (
+			<GameDetailChart title={i18n.t('detail.chartWinProbTitle')} option={winProbabilityOption} legendItems={teamLegendItems} />
+		)}
+
+		{chartsCoverGame && orderedPowerScoreHistory.length > 0 && (
+			<GameDetailChart title={i18n.t('detail.chartComponentsTitle')} option={componentOption} legendItems={componentLegendItems} />
+		)}
+		</>
+	);
+
+	// A tab is offered only once there is something behind it. Both of the optional two arrive
+	// with the `/summary` fetch, so the strip grows from nothing to its final shape a moment
+	// after the screen opens — and stays absent for the leagues that never fill either one.
+	const tabs: DetailTab[] = [
+		{ id: 'overview', label: i18n.t('detail.tabOverview') },
+		...(!isPreGame && hasBoxScoreContent(game.sportType, boxScore)
+			? [{ id: 'box' as const, label: i18n.t('box.heading') }]
+			: []),
+		...(standings.length > 0
+			? [{ id: 'standings' as const, label: i18n.t('detail.tabStandings') }]
+			: []),
+	];
+	const tabId = (id: DetailTabId) => `gd-tab-${game.id}-${id}`;
+	const paneId = (id: DetailTabId) => `gd-pane-${game.id}-${id}`;
+	// One tab is not a choice, so there is no strip and the overview is simply the screen.
+	const tabbed = tabs.length > 1;
+
+	const paneFor = (id: DetailTabId) => (
+		id === 'standings' ? <StandingsTable game={game} standings={standings} />
+			: id === 'box' ? <BoxScore game={game} boxScore={boxScore} />
+				: overviewPanel
+	);
+
 	return (
 		<div className='popup-container game-detail-shell' ref={shellRef}>
 			{decorations.falling && <HolidayFall kind={decorations.falling} />}
@@ -247,82 +353,25 @@ const gameDetailView = ({
 				)}
 			</div>
 
-			{/* Nothing has happened yet, so there is no PowerScore to break down — every signal
-			    would read zero. The screen offers what you can actually decide in advance instead. */}
-			{isFinal ? (
+			{tabbed ? (
 				<>
-					{/* No PowerScore anywhere on a wrap. The number is a live judgement about what to
-					    watch next, and a game that is over is not a candidate — printing its last
-					    value would read as a verdict on the game rather than as the switching signal
-					    it actually was. The boost input goes for the same reason: it can only ever
-					    change a score that will never be computed again. */}
-					<BoxScore game={game} boxScore={boxScore} />
-					<GameInfoPanel game={game} bettingPrefs={bettingPrefs} weatherPrefs={weatherPrefs} gameDurationMins={gameDurationMins} />
+					<DetailTabs tabs={tabs} tabId={tabId} paneId={paneId} />
+					<div className='tab-content'>
+						{tabs.map((tab, index) => (
+							<div
+								key={tab.id}
+								id={paneId(tab.id)}
+								className={`tab-pane fade${index === 0 ? ' show active' : ''}`}
+								role='tabpanel'
+								aria-labelledby={tabId(tab.id)}
+								tabIndex={0}
+							>
+								{paneFor(tab.id)}
+							</div>
+						))}
+					</div>
 				</>
-			) : isPreGame ? (
-				<>
-					<PregameSetup
-						game={game}
-						currentBoost={currentBoost}
-						openTabs={openTabs}
-						registry={registry}
-						onSetGameBoost={onSetGameBoost}
-						onRegistryChange={onRegistryChange}
-						formatTabLabel={formatTabLabel}
-					/>
-					<PregameStats game={game} />
-					<GameInfoPanel game={game} bettingPrefs={bettingPrefs} weatherPrefs={weatherPrefs} />
-				</>
-			) : (
-				<>
-					<PowerScoreBreakdown
-						closeness={closeness}
-						lateGame={lateGame}
-						momentum={momentum}
-						leadChanges={leadChanges}
-						comeback={comeback}
-						winProbabilityVariance={winProbabilityVariance}
-						signalsSubtotal={signalsSubtotal}
-						stallPenalty={stallPenalty}
-						clockBased={clockBased}
-						favoriteBonus={favoriteBonus}
-						favoriteTeamCount={favoriteTeamCount}
-						currentBoost={appliedBoost}
-						scoringOpportunityBoost={scoringOpportunityBoost}
-						postseasonBoost={postseasonBoost}
-						postseasonLabel={game?.postseasonLabel}
-						totalLabel={totalLabel}
-						reason={reason ? reason.charAt(0).toUpperCase() + reason.slice(1) : undefined}
-						disabledSignals={disabledSignals}
-					/>
-
-					<GameBoostInput gameId={game.id} currentBoost={currentBoost} onSetGameBoost={onSetGameBoost} />
-
-					{/* Above the venue and broadcast panel: what is happening in the game beats
-					    where it is being played, once it has started. */}
-					<BoxScore game={game} boxScore={boxScore} />
-
-					<GameInfoPanel game={game} bettingPrefs={bettingPrefs} weatherPrefs={weatherPrefs} />
-				</>
-			)}
-
-			{proTipsEnabled && <ProTip context='detail' />}
-
-			{chartsCoverGame && orderedPowerScoreHistory.length > 0 && (
-				<GameDetailChart title={i18n.t('detail.chartPowerScoreTitle')} option={powerScoreOption} />
-			)}
-
-			{chartsCoverGame && orderedScoreHistory.length > 0 && (
-				<GameDetailChart title={i18n.t('detail.chartScoreTitle')} option={scoreTrendOption} legendItems={teamLegendItems} />
-			)}
-
-			{winProbability.length > 0 && (
-				<GameDetailChart title={i18n.t('detail.chartWinProbTitle')} option={winProbabilityOption} legendItems={teamLegendItems} />
-			)}
-
-			{chartsCoverGame && orderedPowerScoreHistory.length > 0 && (
-				<GameDetailChart title={i18n.t('detail.chartComponentsTitle')} option={componentOption} legendItems={componentLegendItems} />
-			)}
+			) : overviewPanel}
 
 			{decorations.falling && <HolidayDrift kind={decorations.falling} depth={decorations.depth} />}
 		</div>

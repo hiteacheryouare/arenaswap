@@ -4,6 +4,9 @@ import { logWarn, monoMarksFromLogos } from '@arenaswap/core';
 import type { Game, LeagueId, TeamMonoMarks } from '@arenaswap/core/types';
 import { emptyBoxScore, parseBoxScore } from './boxScoreParse';
 import type { BoxScore } from './boxScoreParse';
+import { emptyStandings, parseLeagueStandings, parseStandings, usesFullLeagueStandings } from './standingsParse';
+import type { StandingsGroup } from './standingsParse';
+import { mockStandingsPayloads } from './mockStandings';
 
 export interface SeriesCompetitor {
 	homeAway: string;
@@ -41,6 +44,10 @@ interface summaryDataResult {
 	records: TeamRecords;
 	monoLogos: MonoLogos;
 	boxScore: BoxScore;
+	// Empty for the leagues ESPN publishes no table for — college hockey, college baseball and
+	// softball, Olympic basketball — and for a knockout tie whose two sides came out of different
+	// groups. The tab is absent rather than empty in all of those.
+	standings: StandingsGroup[];
 	// Wall-clock length of a finished game, in whole minutes. The one thing that makes an actual
 	// finish time knowable: ESPN publishes no completion timestamp anywhere, so the wrap screen
 	// adds this to the start rather than printing an estimate.
@@ -226,6 +233,7 @@ const useSummaryData = (game: SummaryGameArg): summaryDataResult => {
 	const [records, setRecords] = useState<TeamRecords>(emptyTeamRecords);
 	const [monoLogos, setMonoLogos] = useState<MonoLogos>(emptyMonoLogos);
 	const [boxScore, setBoxScore] = useState<BoxScore>(emptyBoxScore);
+	const [standings, setStandings] = useState<StandingsGroup[]>(emptyStandings);
 	const [gameDurationMins, setGameDurationMins] = useState<number | null>(null);
 	// The scoreboard's records win when it has them; the summary is the fallback for the leagues
 	// and dates where it does not.
@@ -264,11 +272,20 @@ const useSummaryData = (game: SummaryGameArg): summaryDataResult => {
 		setRecords(emptyTeamRecords);
 		if (!sameGame) setMonoLogos(emptyMonoLogos);
 		setBoxScore(emptyBoxScore);
+		setStandings(emptyStandings);
 		setGameDurationMins(null);
 
 		if (gameId.startsWith('mock-')) {
 			setRecords(mockRecordsMap[gameId] ?? emptyTeamRecords);
 			setGameDurationMins(mockGameDurationMins[gameId] ?? null);
+			// Unlike the rest of the demo state, a table is worth showing before a start: it is
+			// the context for a game that has not begun. The fixtures are shaped like whichever
+			// endpoint the league really answers from, so the demo runs the same parser the live
+			// screen does rather than a simplified stand-in.
+			const canned = mockStandingsPayloads[gameId];
+			setStandings(usesFullLeagueStandings(league)
+				? parseLeagueStandings(canned, gameRef.current.sportType)
+				: parseStandings(canned, gameRef.current.sportType, teamIdsRef.current.home, teamIdsRef.current.away));
 			if (status === 'pre') return;
 			setWinProbability(generateMockWinProbs(gameId, scoreRef.current.home, scoreRef.current.away));
 			setSeriesInfo(mockSeriesMap[gameId] ?? null);
@@ -311,6 +328,16 @@ const useSummaryData = (game: SummaryGameArg): summaryDataResult => {
 				setRecords(parseTeamRecords(data, teamIdsRef.current.home, teamIdsRef.current.away));
 				setMonoLogos(parseMonoLogos(data, teamIdsRef.current.home, teamIdsRef.current.away));
 				setGameDurationMins(parseGameDurationMins(data));
+				// Only where the whole-league fetch below is not running. Both would otherwise
+				// write this state, and whichever landed second would win.
+				if (!usesFullLeagueStandings(league)) {
+					setStandings(parseStandings(
+						data,
+						gameRef.current.sportType,
+						teamIdsRef.current.home,
+						teamIdsRef.current.away,
+					));
+				}
 				setBoxScore(parseBoxScore(
 					data,
 					teamIdsRef.current.home,
@@ -324,10 +351,29 @@ const useSummaryData = (game: SummaryGameArg): summaryDataResult => {
 				logWarn(`Failed to load summary data for ${gameId}.`, err);
 			});
 
+		// The whole league, alongside the summary rather than when the Standings tab is opened.
+		// It is 4-15KB gzipped and identical for every game in the league, so the browser serves
+		// the second one from cache — and the tab only exists if this answers, so waiting for a
+		// click would mean never offering it for the leagues whose summary carries no table at
+		// all (college hockey, college baseball and softball).
+		if (usesFullLeagueStandings(league)) {
+			const standingsUrl = `https://site.api.espn.com/apis/v2/sports/${config.espnPath}/standings?level=3`;
+			fetch(standingsUrl, { headers: { Accept: 'application/json' }, signal: controller.signal })
+				.then(r => {
+					if (!r.ok) throw new Error(`HTTP ${r.status}`);
+					return r.json();
+				})
+				.then((data: unknown) => setStandings(parseLeagueStandings(data, gameRef.current.sportType)))
+				.catch(err => {
+					if (err instanceof DOMException && err.name === 'AbortError') return;
+					logWarn(`Failed to load standings for ${league}.`, err);
+				});
+		}
+
 		return () => controller.abort();
 	}, [gameId, league, status]);
 
-	return { winProbability, seriesInfo, records: resolvedRecords, monoLogos, boxScore, gameDurationMins };
+	return { winProbability, seriesInfo, records: resolvedRecords, monoLogos, boxScore, standings, gameDurationMins };
 };
 
 export default useSummaryData;

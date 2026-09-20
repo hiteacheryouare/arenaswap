@@ -60,7 +60,7 @@ const preGame: Game = {
 	startTime: new Date(Date.now() + 3 * 3600_000).toISOString(),
 };
 
-const mount = (game: Game) => {
+const mountScreen = (game: Game) => {
 	cy.mount(
 		<GameDetailView
 			game={game}
@@ -82,6 +82,14 @@ const mount = (game: Game) => {
 			onBack={() => {}}
 		/>,
 	);
+};
+
+// The box score sits behind the detail screen's tab strip, so every assertion below has to open
+// that tab first. A plain `cy.get` rather than a conditional click: the strip appears only once
+// the summary data resolves, and retrying until it does is the point.
+const mount = (game: Game) => {
+	mountScreen(game);
+	cy.get(`#gd-tab-${game.id}-box`).click();
 };
 
 // A parsed box score mounted at the width the card actually gets. The popup is 320px, the detail
@@ -143,10 +151,12 @@ describe('box score', () => {
 	});
 
 	it('renders nothing on a pre-game screen', () => {
-		mount(preGame);
+		// Mounted without opening a tab, because the missing tab is half of what is being asserted.
+		mountScreen(preGame);
 		// The pre-game screen itself rendered — this is not an empty mount asserting nothing.
 		cy.get('.gd-pregame-setup, .gd-setup').should('exist');
 		cy.get('.gd-box').should('not.exist');
+		cy.get(`#gd-tab-${preGame.id}-box`).should('not.exist');
 	});
 
 	describe('line score', () => {
@@ -348,7 +358,8 @@ describe('box score', () => {
 			cy.get('.gd-box-tabs .nav-link.active').should('contain.text', 'CHI');
 
 			// The panel follows the selection rather than staying labelled by the first tab.
-			cy.get('[role="tabpanel"]').then($panel => {
+			// Scoped to the card: the detail screen's own tab strip puts a second panel on the page.
+			cy.get('.gd-box [role="tabpanel"]').then($panel => {
 				cy.get('.gd-box-tabs .nav-link.active')
 					.should('have.attr', 'id', $panel.attr('aria-labelledby'));
 			});

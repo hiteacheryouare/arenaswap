@@ -281,6 +281,8 @@
 		"legendMomentum": "势头",
 		"legendLeadChanges": "领先权易手",
 		"legendComeback": "逆转",
+		"tabOverview": "概览",
+		"tabStandings": "排名",
 		"startsSoon": "即将开始",
 		"final": "终场",
 		"totalLabel": "{total} / {max}",
@@ -332,6 +334,21 @@
 		"leaderPassing": "PASS",
 		"leaderRushing": "RUSH",
 		"leaderReceiving": "REC"
+	},
+	"standings": {
+		"wins": "胜",
+		"losses": "负",
+		"ties": "平",
+		"draws": "平",
+		"winPercent": "胜率",
+		"gamesBehind": "胜差",
+		"otLosses": "OTL",
+		"points": "积分",
+		"soccerPoints": "积分",
+		"gamesPlayed": "场次",
+		"goalDifference": "净胜球",
+		"conference": "联盟战绩",
+		"overall": "总战绩"
 	},
 	"box": {
 		"heading": "数据统计",

@@ -9,6 +9,7 @@ import type { BoxScore, BoxScoreAthlete, LineScoreRow } from './boxScoreParse';
 import {
 	buildComparison,
 	buildSections,
+	hasBoxScoreContent,
 	lineScoreHeadingKey,
 	periodLabels,
 } from './boxScoreColumns';
@@ -208,7 +209,7 @@ const boxScore = ({ game, boxScore: box }: boxScoreProps) => {
 	const sections = active ? buildSections(game.sportType, active) : [];
 	const hasBothSides = box.away !== null && box.home !== null;
 
-	if (!box.lineScore && comparison.length === 0 && sections.length === 0) return null;
+	if (!hasBoxScoreContent(game.sportType, box)) return null;
 
 	const line = box.lineScore;
 	// Baseball is the only sport that sends per-inning hits and errors, which is what turns the

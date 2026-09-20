@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The game detail screen files itself under tabs, and one of them is the table — 2026-09-20
+
+The screen is Overview / Box score / Standings now rather than one long scroll, on Bootstrap’s own `Tab` plugin — it owns the active classes, the roving tabindex and the arrow keys, and React leaves them alone because the `className` it renders never changes between renders. The table is the whole league off `/apis/v2/.../standings?level=3`, divisions grouped under their conference, which is 4-15KB gzipped and so is fetched alongside the summary rather than on click; men’s and women’s college basketball and college football keep the matchup’s own conference out of the `/summary` block instead, because their full tables are 6.2MB, 6.2MB and 2.6MB for 365, 363 and 138 teams. The two teams playing carry the line score’s team-colour row wash, and a tab is drawn only once there is something behind it.
+
 ## The opening animation has a switch — 2026-09-19
 
 Display settings carry an on/off for the popup's open reveal, and off resolves the mode to `none` before a card is drawn. It lives in `UserPreferences` like every other setting, but `resolveOpenRevealMode` runs inside a `useState` initialiser and `browser.storage` cannot answer that early, so the popup mirrors the value into `localStorage` once the prefs land and the animation reads the mirror on the next open — the same arrangement the day stamp already uses, and the reason the switch takes effect one open later. Turning it off leaves the day unstamped, so turning it back on returns the long version rather than the quick one.
