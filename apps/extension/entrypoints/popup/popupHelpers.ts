@@ -33,7 +33,7 @@ export const sportTypeLabels: Record<SportType, string> = {
 export const leagueLabels = Object.fromEntries(leagueConfigs.map(config => [config.id, config.label])) as Record<LeagueId, string>;
 
 // Must match the number of `loading.mN` keys in the locale files.
-const LOADING_MESSAGE_COUNT = 73;
+const LOADING_MESSAGE_COUNT = 112;
 
 export const getRandomLoadingMessage = (): string => {
 	const index = Math.floor(Math.random() * LOADING_MESSAGE_COUNT) + 1;

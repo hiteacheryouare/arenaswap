@@ -1,5 +1,6 @@
 # i18n Polyglot Translator — Memory Index
 
+- [project_loading_messages_m74_m100.md](project_loading_messages_m74_m100.md) — 2026-09-20: loading.m74-m112 spinner jokes (39 keys, 2 batches), 11 locales; gerund templates, sport-superstition swaps, real chat-app localization, m101-112 oblique-scandal-wink rule + m106 Fail Mary per-locale gridiron-jargon fallback
 - [project_poll_rank_timeout_playbyplay_translations.md](project_poll_rank_timeout_playbyplay_translations.md) — 2026-09-20: teamRank/timeoutsRemaining/timeoutsShort + latestPlayHeading/pitchingLabel/atBatLabel, 11 locales; "TO" kept universal like OT, pt_BR/pt_PT timeout-word split, atBat real-idiom research
 
 - [project_delay_translations.md](project_delay_translations.md) — Approved gameCard.delay / gameCard.delayFallback translations for all 7 non-English locales (2026-07-21)

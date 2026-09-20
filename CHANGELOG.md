@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The loading spinner learns 39 more jokes — 2026-09-20
+
+The pool goes from 73 lines to 112, filling in the sports the list barely acknowledged — hockey, soccer, tennis, cricket — plus fan superstition, a few where the extension is self-aware about ranking games by chaos, and a run of oblique winks at famous sports fiascos in the vein of the Deflategate line already there. Those last ones never name what they are pointing at, which is the whole joke, so the translations were told to keep the reference buried rather than clarify it for the local market. `LOADING_MESSAGE_COUNT` in `popupHelpers.ts` is still hand-maintained and is the only thing tying the random index to the twelve locale files, so it has to move with the key count.
+
 ## Three things the scoreboard poll was already carrying — 2026-09-20
 
 A ranked team wears its poll position in front of its tricode on the cards and in front of its full
