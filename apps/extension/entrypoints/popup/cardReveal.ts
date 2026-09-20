@@ -335,8 +335,32 @@ export const revealDayStamp = (now: Date) => [
 	String(now.getDate()).padStart(2, '0'),
 ].join('-');
 
-export const pickRevealMode = (lastDay: string | null, today: string, reducedMotion: boolean): revealMode => {
-	if (reducedMotion) return 'none';
+// The setting, mirrored out of `UserPreferences` and into `localStorage` for the same reason the day
+// stamp lives there: the prefs themselves come back from `browser.storage` asynchronously, and by the
+// time that read resolves the first cards have been drawn and the animation is already running. A
+// setting that can only be honoured a frame late is a setting that plays the graphic it was meant to
+// suppress. The prefs remain the record — this is a copy the first render can read in time, written
+// on every open by the popup once the real value has loaded.
+//
+// Absent means on, so a fresh profile and a profile whose `localStorage` has been cleared both get
+// the animation rather than losing it to a missing key.
+export const openRevealEnabledKey = 'arenaswap.openRevealEnabled';
+
+export const readOpenRevealEnabled = (): boolean => (
+	globalThis.localStorage?.getItem(openRevealEnabledKey) !== 'off'
+);
+
+export const writeOpenRevealEnabled = (enabled: boolean) => {
+	globalThis.localStorage?.setItem(openRevealEnabledKey, enabled ? 'on' : 'off');
+};
+
+export const pickRevealMode = (
+	lastDay: string | null,
+	today: string,
+	reducedMotion: boolean,
+	enabled: boolean,
+): revealMode => {
+	if (reducedMotion || !enabled) return 'none';
 	return lastDay === today ? 'quick' : 'full';
 };
 
@@ -350,9 +374,9 @@ export const resolveOpenRevealMode = (now = new Date()): revealMode => {
 	const today = revealDayStamp(now);
 	const lastDay = globalThis.localStorage?.getItem(lastRevealDayKey) ?? null;
 	const reducedMotion = globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches === true;
-	resolved = pickRevealMode(lastDay, today, reducedMotion);
-	// Not written when the mode is 'none': somebody who has asked for less motion should still get
-	// the full version on the day they turn that preference back off.
+	resolved = pickRevealMode(lastDay, today, reducedMotion, readOpenRevealEnabled());
+	// Not written when the mode is 'none': somebody who has asked for less motion, or switched the
+	// animation off, should still get the full version on the day they turn that preference back off.
 	if (resolved !== 'none') globalThis.localStorage?.setItem(lastRevealDayKey, today);
 	return resolved;
 };

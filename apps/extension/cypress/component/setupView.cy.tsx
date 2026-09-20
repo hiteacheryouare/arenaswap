@@ -34,6 +34,7 @@ const defaultPrefs: UserPreferences = {
 	bettingEnabled: false,
 	temperatureUnit: 'F',
 	romerUnlocked: false,
+	openRevealEnabled: true,
 	holidayDecorationsEnabled: true,
 	holidaySnowEnabled: true,
 	holidayLightsEnabled: true,
@@ -79,6 +80,7 @@ const defaultProps = {
 	onToggleBetting: () => {},
 	onToggleTemperatureUnit: () => {},
 	onUnlockRomer: () => {},
+	onToggleOpenReveal: () => {},
 	onToggleHolidayDecorations: () => {},
 	onToggleHolidaySnow: () => {},
 	onToggleHolidayLights: () => {},
@@ -167,6 +169,14 @@ describe('setupView search', () => {
 		cy.mount(<SetupView {...defaultProps} />);
 		cy.get('#settingsSearch').type('celsius');
 		cy.contains('.settings-index-row', 'Temperature unit').should('exist');
+	});
+
+	// The thing somebody wants off is a thing they have only ever seen, never read a name for, so the
+	// words they reach for are their own rather than the label's.
+	it('finds the opening animation by what it looks like rather than what it is called', () => {
+		cy.mount(<SetupView {...defaultProps} />);
+		cy.get('#settingsSearch').type('intro');
+		cy.contains('.settings-index-row', 'Opening animation').should('exist');
 	});
 
 	it('ignores case and accents', () => {
@@ -375,6 +385,33 @@ describe('setupView display group', () => {
 		cy.mount(<SetupView {...defaultProps} prefs={{ ...defaultPrefs, temperatureUnit: 'Ro', romerUnlocked: true }} />);
 		openGroup('display');
 		cy.get('#temperatureUnitToggle').should('contain', '°Rø');
+	});
+
+	it('calls onToggleOpenReveal when the opening animation is switched off', () => {
+		const spy = cy.spy().as('onToggleOpenReveal');
+		cy.mount(<SetupView {...defaultProps} onToggleOpenReveal={spy} />);
+		openGroup('display');
+		cy.get('#openRevealToggle').should('be.checked').click();
+		cy.get('@onToggleOpenReveal').should('have.been.calledOnce');
+	});
+
+	it('shows the switch off when the animation is off', () => {
+		cy.mount(<SetupView {...defaultProps} prefs={{ ...defaultPrefs, openRevealEnabled: false }} />);
+		openGroup('display');
+		cy.get('#openRevealToggle').should('not.be.checked');
+	});
+
+	it('keeps its label beside the switch on one line in every locale', () => {
+		cy.mount(<SetupView {...defaultProps} />);
+		openGroup('display');
+		cy.get('label[for="openRevealToggle"]').then(([label]: JQuery<HTMLElement>) => {
+			const oneLine = label.getBoundingClientRect().height;
+			for (const [name, locale] of Object.entries(locales)) {
+				label.textContent = (locale.setup as unknown as Record<string, string>).openReveal;
+				expect(label.getBoundingClientRect().height, `${name} keeps the label on one line`)
+					.to.be.at.most(oneLine + 1);
+			}
+		});
 	});
 });
 

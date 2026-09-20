@@ -51,6 +51,7 @@ describe('constants', () => {
 			bettingEnabled: false,
 			temperatureUnit: 'F',
 			romerUnlocked: false,
+			openRevealEnabled: true,
 			holidayDecorationsEnabled: true,
 			holidaySnowEnabled: true,
 			holidayLightsEnabled: true,
@@ -67,6 +68,13 @@ describe('constants', () => {
 	test('keeps a stored finished-tab choice', () => {
 		expect(normalizeUserPreferences({ finishedTabAction: 'close' }).finishedTabAction).toBe('close');
 		expect(normalizeUserPreferences({ finishedTabAction: 'free' }).finishedTabAction).toBe('free');
+	});
+
+	// Same round trip, and the same failure if it breaks: the animation reads its own copy of this in
+	// localStorage, and that copy is only ever written from what comes back through here.
+	test('keeps a stored opening-animation choice', () => {
+		expect(normalizeUserPreferences({ openRevealEnabled: false }).openRevealEnabled).toBe(false);
+		expect(normalizeUserPreferences({ openRevealEnabled: 'false' }).openRevealEnabled).toBe(true);
 	});
 
 	// 'keep' is the one value that touches nobody's tabs, so anything unrecognised lands there
@@ -106,6 +114,7 @@ describe('constants', () => {
 			bettingEnabled: false,
 			temperatureUnit: 'F',
 			romerUnlocked: false,
+			openRevealEnabled: true,
 			holidayDecorationsEnabled: true,
 			holidaySnowEnabled: true,
 			holidayLightsEnabled: true,

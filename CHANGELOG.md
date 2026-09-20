@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The opening animation has a switch — 2026-09-19
+
+Display settings carry an on/off for the popup's open reveal, and off resolves the mode to `none` before a card is drawn. It lives in `UserPreferences` like every other setting, but `resolveOpenRevealMode` runs inside a `useState` initialiser and `browser.storage` cannot answer that early, so the popup mirrors the value into `localStorage` once the prefs land and the animation reads the mirror on the next open — the same arrangement the day stamp already uses, and the reason the switch takes effect one open later. Turning it off leaves the day unstamped, so turning it back on returns the long version rather than the quick one.
+
 ## The site header folds its mark the same way — 2026-09-19
 
 The website's navigation runs the extension's own collapse rather than an impression of it: `driveWordmarkCollapse` came out of the popup hook as a plain module an Astro script can call, and the nav draws the real `Wordmark` instead of a picture of one. The bar keeps its 64px, because the drawer hangs off that height and the hero measures against it, so the only thing that moves is the mark — down to 25px rather than 28, which is what holds the `a` and the `s` at the size they were once the box stops being four-fifths air. The background arrives on the same signal now instead of a listener of its own, which costs every page 4.3KB of inline SVG and an 8.4KB script it did not carry before.

@@ -154,6 +154,7 @@ const listPrefs: UserPreferences = {
 	bettingEnabled: false,
 	temperatureUnit: 'F',
 	romerUnlocked: false,
+	openRevealEnabled: true,
 	holidayDecorationsEnabled: false,
 	holidaySnowEnabled: false,
 	holidayLightsEnabled: false,

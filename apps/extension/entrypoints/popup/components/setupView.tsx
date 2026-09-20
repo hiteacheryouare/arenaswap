@@ -52,6 +52,7 @@ interface setupViewProps {
 	onToggleBetting: () => void;
 	onToggleTemperatureUnit: () => void;
 	onUnlockRomer: () => void;
+	onToggleOpenReveal: () => void;
 	onToggleHolidayDecorations: () => void;
 	onToggleHolidaySnow: () => void;
 	onToggleHolidayLights: () => void;
@@ -74,7 +75,8 @@ const setupView = ({
 	onFavoriteTeamBonusChange, onToggleFavoriteTeam, onToggleLeague, onToggleSport, onReorderLeague, onResetLeagueOrder,
 	onToggleShowUpcoming, onToggleKeepFinalGames, onFinishedTabActionChange, onUpcomingGamesDaysChange,
 	onToggleProTips, onToggleNotifications, onToggleDemo, onDemoSeasonChange, onToggleStandbyStream, onStandbyThresholdChange,
-	onSetStandbyTab, onStandbyOnboardingDone, onToggleBetting, onToggleTemperatureUnit, onUnlockRomer, onPostseasonBoostChange,
+	onSetStandbyTab, onStandbyOnboardingDone, onToggleBetting, onToggleTemperatureUnit, onUnlockRomer, onToggleOpenReveal,
+	onPostseasonBoostChange,
 	onToggleHolidayDecorations, onToggleHolidaySnow, onToggleHolidayLights, onToggleHolidayLeaves,
 	onToggleSignal,
 }: setupViewProps) => {
@@ -259,6 +261,16 @@ const setupView = ({
 				onCycle={onToggleTemperatureUnit}
 				onUnlockRomer={onUnlockRomer}
 			/>
+
+			<div className='d-flex justify-content-between align-items-center mt-2'>
+				<div className='d-flex align-items-center gap-1'>
+					<label className='text-body-secondary setting-toggle-label' htmlFor='openRevealToggle'>{i18n.t('setup.openReveal')}</label>
+					<SettingTooltipIcon text={i18n.t('setup.openRevealExplainer')} />
+				</div>
+				<div className='form-check form-switch mb-0'>
+					<input className='form-check-input' type='checkbox' id='openRevealToggle' checked={prefs.openRevealEnabled} onChange={onToggleOpenReveal} disabled={!prefsLoaded} />
+				</div>
+			</div>
 
 			<div className='d-flex justify-content-between align-items-center mt-2'>
 				<div className='d-flex align-items-center gap-1'>

@@ -14,7 +14,7 @@ import { fetchState, formatTabLabel, insertLeagueAtDefaultPosition, leagueOrder,
 import { i18n } from '#i18n';
 import { TranslationContext } from '@arenaswap/ui/src/components/i18nContext';
 import useFavoriteScoreConfetti from './useFavoriteScoreConfetti';
-import { resolveOpenRevealMode, revealSettleMs, revealSkipOutMs } from './cardReveal';
+import { resolveOpenRevealMode, revealSettleMs, revealSkipOutMs, writeOpenRevealEnabled } from './cardReveal';
 import { isLeagueLogoCacheFresh, leagueLogoCacheKey, seededLeagueLogos } from './leagueLogoCache';
 import useToast from './useToast';
 import SuggestView from './components/suggestView';
@@ -151,6 +151,16 @@ export default () => {
 		const timer = setTimeout(() => setRevealMode('none'), revealSkipOutMs);
 		return () => clearTimeout(timer);
 	}, [revealSkipping]);
+
+	// The setting is read a whole popup open before it is written — `resolveOpenRevealMode` runs in a
+	// `useState` initialiser, and the prefs it belongs to are still in flight then. So the copy it
+	// reads is refreshed here instead, once per open, as soon as the real value lands: switching the
+	// animation off takes effect the next time the popup opens, which is the only open it could ever
+	// have affected anyway.
+	useEffect(() => {
+		if (!prefsLoaded) return;
+		writeOpenRevealEnabled(prefs.openRevealEnabled);
+	}, [prefsLoaded, prefs.openRevealEnabled]);
 
 	// The onboarding and settings pickers show every league, not just the enabled ones — which is 31
 	// scoreboard requests, more than ESPN's burst allowance in one call, and this ran on every single
@@ -530,6 +540,7 @@ export default () => {
 						onToggleBetting={() => persistPrefs(currentPrefs => ({ ...currentPrefs, bettingEnabled: !currentPrefs.bettingEnabled }))}
 						onToggleTemperatureUnit={() => persistPrefs(currentPrefs => ({ ...currentPrefs, temperatureUnit: nextTemperatureUnit(currentPrefs.temperatureUnit, currentPrefs.romerUnlocked) }))}
 						onUnlockRomer={() => persistPrefs(currentPrefs => ({ ...currentPrefs, romerUnlocked: true, temperatureUnit: 'Ro' }))}
+						onToggleOpenReveal={() => persistPrefs(currentPrefs => ({ ...currentPrefs, openRevealEnabled: !currentPrefs.openRevealEnabled }))}
 						onToggleHolidayDecorations={() => persistPrefs(currentPrefs => ({ ...currentPrefs, holidayDecorationsEnabled: !currentPrefs.holidayDecorationsEnabled }))}
 						onToggleHolidaySnow={() => persistPrefs(currentPrefs => ({ ...currentPrefs, holidaySnowEnabled: !currentPrefs.holidaySnowEnabled }))}
 						onToggleHolidayLights={() => persistPrefs(currentPrefs => ({ ...currentPrefs, holidayLightsEnabled: !currentPrefs.holidayLightsEnabled }))}

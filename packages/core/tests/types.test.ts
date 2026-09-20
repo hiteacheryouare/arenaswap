@@ -36,6 +36,7 @@ describe('types runtime smoke', () => {
 			bettingEnabled: false,
 			temperatureUnit: 'F',
 			romerUnlocked: false,
+			openRevealEnabled: true,
 			holidayDecorationsEnabled: true,
 			holidaySnowEnabled: true,
 			holidayLightsEnabled: true,

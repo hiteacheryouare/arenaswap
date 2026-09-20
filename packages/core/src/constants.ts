@@ -342,6 +342,7 @@ export const createDefaultUserPreferences = (): UserPreferences => ({
 	bettingEnabled: false,
 	temperatureUnit: 'F' as const,
 	romerUnlocked: false,
+	openRevealEnabled: true,
 	holidayDecorationsEnabled: true,
 	holidaySnowEnabled: true,
 	holidayLightsEnabled: true,
@@ -396,6 +397,7 @@ export const normalizeUserPreferences = (storedPrefs: unknown): UserPreferences 
 		// A stored Rømer unit is itself proof the unlock happened, so the two can never
 		// disagree in the direction that would strand someone on a unit they cannot cycle back to.
 		romerUnlocked: candidate.romerUnlocked === true || candidate.temperatureUnit === 'Ro',
+		openRevealEnabled: typeof candidate.openRevealEnabled === 'boolean' ? candidate.openRevealEnabled : defaults.openRevealEnabled,
 		holidayDecorationsEnabled: typeof candidate.holidayDecorationsEnabled === 'boolean' ? candidate.holidayDecorationsEnabled : defaults.holidayDecorationsEnabled,
 		holidaySnowEnabled: typeof candidate.holidaySnowEnabled === 'boolean' ? candidate.holidaySnowEnabled : defaults.holidaySnowEnabled,
 		holidayLightsEnabled: typeof candidate.holidayLightsEnabled === 'boolean' ? candidate.holidayLightsEnabled : defaults.holidayLightsEnabled,

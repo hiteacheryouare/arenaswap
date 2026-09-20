@@ -20,6 +20,7 @@ const defaultPrefs: UserPreferences = {
 	bettingEnabled: false,
 	temperatureUnit: 'F',
 	romerUnlocked: false,
+	openRevealEnabled: true,
 	holidayDecorationsEnabled: true,
 	holidaySnowEnabled: true,
 	holidayLightsEnabled: true,

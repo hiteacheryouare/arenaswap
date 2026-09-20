@@ -25,6 +25,7 @@ const thanksgivingWeek = new Date('2026-11-26T18:00:00.000Z');
 const august = new Date('2026-08-14T20:00:00.000Z');
 
 const allOn = {
+	openRevealEnabled: true,
 	holidayDecorationsEnabled: true,
 	holidaySnowEnabled: true,
 	holidayLightsEnabled: true,
@@ -218,6 +219,7 @@ const setupProps = {
 	onToggleBetting: () => {},
 	onToggleTemperatureUnit: () => {},
 	onUnlockRomer: () => {},
+	onToggleOpenReveal: () => {},
 	onToggleHolidayDecorations: () => {},
 	onToggleHolidaySnow: () => {},
 	onToggleHolidayLights: () => {},

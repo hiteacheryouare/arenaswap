@@ -1,7 +1,9 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import {
+	openRevealEnabledKey,
 	pickRevealMode,
+	readOpenRevealEnabled,
 	revealAbbrBaseLength,
 	revealAbbrScale,
 	revealBaseDurationMs,
@@ -40,24 +42,70 @@ import {
 	revealSweepBarPx,
 	revealSweepRun,
 	revealTotalMs,
+	writeOpenRevealEnabled,
 } from '../entrypoints/popup/cardReveal';
 
 describe('which version of the open animation plays', () => {
 	it('gives the full version the first time on a given day', () => {
-		expect(pickRevealMode(null, '2026-09-15', false)).toBe('full');
-		expect(pickRevealMode('2026-09-14', '2026-09-15', false)).toBe('full');
+		expect(pickRevealMode(null, '2026-09-15', false, true)).toBe('full');
+		expect(pickRevealMode('2026-09-14', '2026-09-15', false, true)).toBe('full');
 	});
 
 	it('gives every open after that the same graphic, quicker', () => {
-		expect(pickRevealMode('2026-09-15', '2026-09-15', false)).toBe('quick');
+		expect(pickRevealMode('2026-09-15', '2026-09-15', false, true)).toBe('quick');
 	});
 
 	// Reduced motion wins over both, and deliberately leaves the stored day alone in
 	// `resolveOpenRevealMode` — so turning the preference back off restores the full version that
 	// day rather than a quick one against a day that was never actually shown.
 	it('plays nothing at all under reduced motion', () => {
-		expect(pickRevealMode(null, '2026-09-15', true)).toBe('none');
-		expect(pickRevealMode('2026-09-15', '2026-09-15', true)).toBe('none');
+		expect(pickRevealMode(null, '2026-09-15', true, true)).toBe('none');
+		expect(pickRevealMode('2026-09-15', '2026-09-15', true, true)).toBe('none');
+	});
+
+	// And the setting does exactly what the media query does, for the same reason: somebody who
+	// switched it off gets the first open of the day back if they switch it on again.
+	it('plays nothing at all with the setting off', () => {
+		expect(pickRevealMode(null, '2026-09-15', false, false)).toBe('none');
+		expect(pickRevealMode('2026-09-15', '2026-09-15', false, false)).toBe('none');
+	});
+});
+
+// The prefs come back from `browser.storage` long after the first cards are drawn, so what the
+// animation actually reads is this copy. A miss has to mean on: a profile that has never opened the
+// settings, or one whose `localStorage` was cleared, should still get the graphic.
+describe('the copy of the setting the first render can read', () => {
+	// These tests run under the node environment, which has no `localStorage` at all. Two keys' worth
+	// of one is enough, and standing it up by hand is also the only way to reach the case the popup
+	// cannot produce — a browser that has the API turned off entirely.
+	const store = new Map<string, string>();
+	const stub = {
+		getItem: (key: string) => store.get(key) ?? null,
+		setItem: (key: string, value: string) => { store.set(key, value); },
+	} as unknown as Storage;
+
+	beforeEach(() => {
+		store.clear();
+		Object.defineProperty(globalThis, 'localStorage', { value: stub, configurable: true });
+	});
+
+	it('treats an unwritten setting as on', () => {
+		expect(readOpenRevealEnabled()).toBe(true);
+	});
+
+	it('round trips both answers', () => {
+		writeOpenRevealEnabled(false);
+		expect(store.get(openRevealEnabledKey)).toBe('off');
+		expect(readOpenRevealEnabled()).toBe(false);
+
+		writeOpenRevealEnabled(true);
+		expect(readOpenRevealEnabled()).toBe(true);
+	});
+
+	it('leaves the animation on where there is nowhere to store the answer', () => {
+		Object.defineProperty(globalThis, 'localStorage', { value: undefined, configurable: true });
+		expect(() => writeOpenRevealEnabled(false)).not.toThrow();
+		expect(readOpenRevealEnabled()).toBe(true);
 	});
 });
 

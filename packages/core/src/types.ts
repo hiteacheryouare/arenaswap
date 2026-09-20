@@ -185,6 +185,9 @@ export interface UserPreferences {
 	// Rømer is not offered by the settings list, so the toggle needs to know whether this user
 	// has found it before it will cycle through a third unit.
 	romerUnlocked: boolean;
+	// The matchup poster every card arrives as when the popup opens. Off means the list is simply
+	// there, the way it was before the graphic existed.
+	openRevealEnabled: boolean;
 	// Seasonal decoration on the game detail screen. The parent gates all three.
 	holidayDecorationsEnabled: boolean;
 	holidaySnowEnabled: boolean;

@@ -52,6 +52,23 @@ describe('settings round-trip', () => {
 		});
 	});
 
+	// The one setting that cannot be read at the moment it is needed: the animation picks its mode
+	// inside a `useState` initialiser, long before storage answers, so what it reads is a copy the
+	// previous open left in localStorage. Which makes the second open the only one that can prove it.
+	it('stops the opening animation from the next open onwards', () => {
+		cy.get('.game-card-reveal-stage').should('exist');
+
+		openSettings();
+		openGroup('display');
+		cy.get('#openRevealToggle').should('be.checked').uncheck({ force: true });
+
+		cy.background().its('prefs').then(prefs => {
+			cy.openPopup({ ...onboarded, state: liveState(), sync: { prefs } });
+			cy.contains('.popup-section-title', 'Live Games').should('be.visible');
+			cy.get('.game-card-reveal-stage').should('not.exist');
+		});
+	});
+
 	it('reorders leagues and reports the new order', () => {
 		openSettings();
 		openGroup('leagues');
