@@ -491,10 +491,10 @@ describe('the lights and a reader who asked for less motion', () => {
 		});
 	});
 
-	// FAILING ON PURPOSE. The opt-out is written as `.holiday-bulb`, one class specific, while the
-	// celebration is `.is-celebrating .holiday-bulb`, two. The opt-out therefore loses, and a reader
-	// who asked for stillness gets the whole string strobing at 2Hz the moment a favourite scores —
-	// which is the one piece of motion on this screen it is least safe to leave running.
+	// The opt-out used to be written as `.holiday-bulb`, one class specific, while the celebration
+	// is `.is-celebrating .holiday-bulb`, two. The opt-out lost on specificity, so a reader who had
+	// asked for stillness got the whole string strobing at 2Hz the moment a favourite scored — the
+	// one piece of motion on this screen it is least safe to leave running. Both selectors now.
 	it('puts the celebration strobe out as well', () => {
 		emulateReducedMotion();
 		cy.viewport(320, 560);

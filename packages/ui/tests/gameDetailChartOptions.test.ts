@@ -98,7 +98,7 @@ describe('buildPowerScoreOption', () => {
 	test('marks a lone reading with a symbol, since a one-point line draws nothing', () => {
 		const lone = seriesOf(buildPowerScoreOption([powerPoint(0)]))[0]!;
 		expect(lone.showSymbol).toBe(true);
-		expect(lone.symbolSize).toBeGreaterThan(0);
+		expect(lone.symbolSize).toBeGreaterThanOrEqual(4);
 	});
 
 	test('drops the symbols once there is a line to see', () => {
@@ -179,7 +179,7 @@ describe('buildTeamScoreOption', () => {
 	test('marks a lone reading on both lines', () => {
 		for (const line of seriesOf(buildTeamScoreOption([scorePoint(0, 2, 0)], game))) {
 			expect(line.showSymbol).toBe(true);
-			expect(line.symbolSize).toBeGreaterThan(0);
+			expect(line.symbolSize).toBeGreaterThanOrEqual(4);
 		}
 	});
 
@@ -254,7 +254,8 @@ describe('buildWinProbabilityOption', () => {
 		const option = buildWinProbabilityOption([0.62], game);
 		for (const name of ['CLE', 'BOS']) {
 			expect(byName(option, name).showSymbol).toBe(true);
-			expect(byName(option, name).symbolSize).toBeGreaterThan(0);
+			// Not `> 0`: a 1px dot satisfies that and is invisible, which is the failure itself.
+			expect(byName(option, name).symbolSize).toBeGreaterThanOrEqual(4);
 		}
 	});
 

@@ -1,17 +1,13 @@
-// PARTLY FAILING ON PURPOSE. These tests describe what the live PowerScore board should render for
-// a soccer match. Two of the three now hold; the third does not, and the fix belongs to whoever
-// owns the component.
+// What the live PowerScore board renders for a soccer match, and the reason it is worth a spec of
+// its own: `LivePowerScores.tsx` used to carry private copies of three helpers the project already
+// had, and all three disagreed with the extension.
 //
-// `LivePowerScores.tsx` used to carry private copies of three helpers the project already had.
-// Two of them are gone: it now imports `formatPeriod` from
-// `packages/ui/src/components/periodFormat.ts` and `parseClockToSeconds` from
-// `@arenaswap/core/gameClock`, so the half label and the parsed minute both match the extension.
-//
-// The third copy is still there. `formatClock` at the bottom of the component is `MM:SS` only,
-// where the extension prints a soccer clock as a minute and a prime through `formatGameClock` in
-// `packages/ui/src/components/gameCardShared.tsx`. So the same live match still reads one way in
-// the extension and another way on the page selling it — which is the whole complaint this spec
-// was written to make.
+// The clock copy understood only `MM:SS`, so a `90'+5'` match parsed to 0 and scored as though the
+// half had not started. The period copy printed `H2` for `2H` and a flat `OT` for `ET1`/`ET2`/
+// `PENS`. The display copy printed `95:00` where the extension prints `95'`. All three are gone:
+// the component imports `parseClockToSeconds` from `@arenaswap/core/gameClock`, and `formatPeriod`
+// and `formatGameClock` from `packages/ui/src/components/gameFormat.ts`. These rows are what keeps
+// the page and the product it is selling reading the same.
 //
 // The fixture is a real ESPN eng.1 scoreboard captured 2026-09-21 — event ids, clubs, abbreviations
 // and the `90'+5'` clock are exactly what ESPN returned. Two things are authored: the state is
@@ -58,16 +54,13 @@ describe('the live board and the extension describe the same soccer match', () =
 		cy.get('#live-scores').should('not.contain.text', '0:00');
 	});
 
-	/* RED. The minute is parsed correctly now and then printed in the wrong notation.
-	   `90'+5'` parses to 5700 seconds, which the extension's `formatGameClock` renders as `95'`
-	   and this page's private `formatClock` renders as `95:00` — a soccer match reported in
-	   minutes and seconds, which is not how anybody writes a soccer clock.
+	/* The minute can parse correctly and still print in the wrong notation, which is how the
+	   third duplicated helper survived the first two being shared. `90'+5'` parses to 5700
+	   seconds; the extension renders that `95'` and the page's own `formatClock` rendered it
+	   `95:00`, a soccer match reported in minutes and seconds.
 
-	   The test above passes only because `95:00` is not the string `0:00`. It was written to
-	   catch this and its assertion is too weak to.
-
-	   The fix is to move `formatGameClock` next to `formatPeriod` in `periodFormat.ts` and call
-	   it here, the same way the other two copies were resolved. */
+	   Asserted on the notation rather than on the absence of `0:00`: the test above is satisfied
+	   by `95:00`, so it could never have caught this on its own. */
 	it('prints the soccer clock in the notation the extension prints', () => {
 		visitWithEplLive();
 

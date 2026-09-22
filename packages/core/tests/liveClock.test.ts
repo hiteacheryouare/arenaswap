@@ -1,14 +1,15 @@
 import type { LeagueId } from '../src/types';
 import { parseClockToSeconds } from '../src/gameClock';
 
-/* `parseClockToSeconds` is total everywhere except one branch, and the exception produces NaN
-   rather than an error. It matters because `clockSeconds` is not decoration: it feeds the lateGame
-   signal, which is worth up to a quarter of a PowerScore, and it is what the popup renders on the
-   card. A NaN there compares false against every threshold, so the game scores as though the clock
-   said nothing, and it survives into storage as `null`. Nothing logs, nothing drops, nothing counts.
+/* Why this suite is thorough about a string parser: `clockSeconds` is not decoration. It feeds the
+   lateGame signal, which is worth up to a quarter of a PowerScore, and it is what the popup renders
+   on the card. A NaN there compares false against every threshold, so the game scores as though the
+   clock said nothing, and it survives into storage as `null` — a third shape for whatever reads it
+   back. Nothing logs, nothing drops, nothing counts.
 
-   Read the function and the intent is plain — `(min ?? 0)` and `Math.floor(sec ?? 0)` are written to
-   stop exactly this. They do not fire, because `??` catches null and undefined and NaN is neither. */
+   That is not hypothetical. The function used to end in `(min ?? 0) * 60 + Math.floor(sec ?? 0)`,
+   written to stop exactly this and unable to, because `??` catches null and undefined and NaN is
+   neither. It is a finite check now, and these rows are what keeps it one. */
 
 const createResponse = (data: unknown): Response => ({
 	ok: true,
@@ -101,7 +102,8 @@ describe('the shapes ESPN is known to send', () => {
 
    Three rows are worth arguing about and none of them are reachable from the wire:
 
-     * a leading minus survives, so '-5:30' is -270 and the card renders that as '-5:-30'
+     * a leading minus survives a two-part clock, so '-5:30' is -270 and the card renders that
+       as '-5:-30'. A single-part '-5' does not survive: it reads 0 like every other bad value
      * a negative seconds half subtracts, so '5:-3' is 297 rather than 303 or 0
      * Number() accepts hex and exponent notation, so '0x10:00' is sixteen minutes
 

@@ -223,10 +223,11 @@ describe('what survives the service worker being torn down', () => {
 	   that has not started counting yet, so every switch is refused for the whole hour of skew on
 	   top of the ten minutes they asked for.
 
-	   Currently red. `Number.isFinite` rejects a string and lets a number through, but a timestamp
-	   from the future is a finite number, and session storage now carries it across every worker
-	   restart instead of losing it on the next teardown. The user sees auto-switching silently
-	   stop, with nothing in the UI to say why. */
+	   A finiteness check is not enough on its own: it rejects a string and lets a number through,
+	   but a timestamp from the future is a finite number, and persisting the value means session
+	   storage carries it across every worker restart rather than losing it on the next teardown.
+	   Left unguarded the user sees auto-switching silently stop, with nothing in the UI to say why,
+	   so anything negative or later than now reads as 0. */
 	test('does not freeze switching when the stored switch time is in the future', async () => {
 		seedStorage(switchingPrefs, { lastSwitchTime: 4_600_000 });
 
