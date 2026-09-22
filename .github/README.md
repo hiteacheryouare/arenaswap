@@ -46,9 +46,6 @@
 
 ArenaSwap watches every live game across 31 leagues and automatically switches your browser tab to the most exciting one — powered by **PowerScore**, a real-time excitement algorithm built from closeness, momentum, lead changes, late-game pressure, and comebacks.
 
-Docs, the PowerScore reference, and release notes are at
-[hiteacheryouare.github.io/arenaswap](https://hiteacheryouare.github.io/arenaswap/).
-
 <div align="center">
   <img src="../apps/extension/marketing/img/demo-live-games.png" alt="Live Games view" width="150">
   &nbsp;
@@ -112,12 +109,6 @@ packages/
   powerscore/  → Scoring algorithm, published to npm as powerscore
   ui/          → Components shared by the extension and the site
 ```
-
-## Contributing
-
-Start with [CONTRIBUTING.md](CONTRIBUTING.md) — the branching policy and code standards there
-are mandatory. Vulnerabilities go through [SECURITY.md](SECURITY.md), and everyone taking part
-is held to the [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## License
 
