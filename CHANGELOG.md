@@ -5,6 +5,14 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The README catches up — 2026-09-21
+
+The README was still promising a 6-second switch cadence that the code gave up when `pollMinEagerMs` went to 12 seconds, asking for Node 20.17+ against an `engines` field that starts at 22.9, and drawing a package tree with `packages/ui` missing from it. Guide, tab suggestions, Up Next, the game detail tabs and the 12 locales are in the feature list now, and the website, CONTRIBUTING, SECURITY and the Code of Conduct are linked from it for the first time. That same stale 6-second figure is still sitting in `en.json` and `desc_long.md` where correcting it means 11 translations, so it was deliberately left for a pass that can do them.
+
+## The README shows five screens — 2026-09-21
+
+The screenshot row grew from three shots to five: game detail now appears twice, once as an NFL drive and once as an MLB at-bat, and the box score is in the README for the first time. The `demo-1/2/3` filenames became descriptive names because the numbers never matched display order — the old README rendered them 1, 3, 2 — and the superseded `demo-3.png` is kept in `marketing/img` for store listings rather than deleted. Thumbnails went 190px to 150px since five at 190 overflow the ~896px readme column on a repo home page, and 150 is the widest that still holds one line down to an 800px column.
+
 ## The fixes get audited — 2026-09-21
 
 Every fix from the coverage round was mutation-tested — each one reverted to confirm the test standing guard over it genuinely goes red — and the momentum floor, the cooldown that now survives a worker restart, the ink crossover at luminance 0.1993 and the win-probability symbols all held up. Four defects came out of the pass and are left as failing tests rather than fixed: a switch time recorded by a fast clock now outlives the worker and refuses every switch until the skew passes, `parseClockToSeconds` reads `1.0` as one second and `0.9` as fifty-four so a countdown appears to run backwards, the docs site prints a soccer clock as `95:00` where the popup prints `95'` because `formatGameClock` was the one helper the extraction left behind, and the reduced-motion opt-out loses on specificity to the celebration rule so a reader who asked for less motion still gets the strobe.
