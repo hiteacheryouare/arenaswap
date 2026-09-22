@@ -1,4 +1,5 @@
 import { pollWinProbabilityMs } from '@arenaswap/core';
+import { gameEndTimesKey } from '../utils/gameEndTimes';
 import { monoLogoCacheKey, monoLogoCacheTtlMs } from '../utils/monoLogoCache';
 import { createDefaultUserPreferences, createFavoriteTeamKey, guideMinUpcomingDays, historyWindowMs, normalizeUserPreferences, pollDormantMaxMs, pollHebetudinousMaxMs, pollIntervalMs, pollMaxEagerMs } from '@arenaswap/core/constants';
 import { chartHistory, coversWholeGame } from '../entrypoints/popup/components/wrapCoverage';
@@ -16,6 +17,7 @@ jest.mock('@arenaswap/core', () => ({
 	fetchNextScheduledStart: jest.fn().mockResolvedValue(null),
 	fetchWinProbability: jest.fn().mockResolvedValue([]),
 	fetchTeamMonoLogos: jest.fn().mockResolvedValue({}),
+	fetchGameDurationMins: jest.fn().mockResolvedValue(null),
 }));
 
 const flushPromises = () => new Promise<void>(r => setImmediate(r));
@@ -29,6 +31,14 @@ const lookahead = (): jest.Mock => (
 
 const monoFetch = (): jest.Mock => (
 	(require('@arenaswap/core') as { fetchTeamMonoLogos: jest.Mock }).fetchTeamMonoLogos
+);
+
+const durationFetch = (): jest.Mock => (
+	(require('@arenaswap/core') as { fetchGameDurationMins: jest.Mock }).fetchGameDurationMins
+);
+
+const runtimeSendMessage = (): jest.Mock => (
+	(globalThis as unknown as { browser: { runtime: { sendMessage: jest.Mock } } }).browser.runtime.sendMessage
 );
 
 // The wide fetch is whichever call carried `includeUpcoming`, no matter which surface asked: the
@@ -97,6 +107,7 @@ interface LoadOptions {
 	standbyStreamTabId?: number | null;
 	fetchReturnValue?: { games: unknown[]; leagueLogos: Record<string, unknown>; shedLeagues?: LeagueId[] };
 	initialSystemTime?: number;
+	storedLocal?: Record<string, unknown>;
 	openTabIds?: number[];
 	activeTabId?: number;
 }
@@ -114,7 +125,7 @@ const loadBackground = async (options: LoadOptions = {}) => {
 
 	storageSyncGet = jest.fn().mockResolvedValue({ prefs });
 	storageSyncSet = jest.fn().mockResolvedValue(undefined);
-	storageLocalGet = jest.fn().mockResolvedValue({ demoMode: false, reviewPromptState: null });
+	storageLocalGet = jest.fn().mockResolvedValue({ demoMode: false, reviewPromptState: null, ...options.storedLocal });
 	storageLocalSet = jest.fn().mockResolvedValue(undefined);
 	tabsQuery = jest.fn().mockResolvedValue([]);
 	tabsUpdate = jest.fn().mockResolvedValue(undefined);
@@ -1674,7 +1685,83 @@ describe('GET_GUIDE_SLATE', () => {
 		});
 		fetchMock.mockRejectedValue(new Error('503'));
 
-		await expect(guideSlate()).resolves.toEqual({ games: [], leagueLogos: {}, monoLogos: {}, gameBoosts: {} });
+		await expect(guideSlate()).resolves.toEqual({ games: [], leagueLogos: {}, monoLogos: {}, gameBoosts: {}, endTimes: {} });
+	});
+});
+
+describe('when a guide game actually ended', () => {
+	const nbaOnly: Partial<UserPreferences> = { enabledLeagues: ['nba' as LeagueId] };
+	const guideSlate = () => onMessageHandler({ type: 'GET_GUIDE_SLATE' }) as Promise<{ endTimes: Record<string, number> }>;
+
+	const poll = async (limitMs = 10 * 60_000) => {
+		fetchMock.mockClear();
+		for (let waited = 0; waited < limitMs && fetchMock.mock.calls.length === 0; waited += 5_000) {
+			jest.advanceTimersByTime(5_000);
+			await drain(16);
+		}
+		expect(fetchMock).toHaveBeenCalled();
+	};
+
+	const mlbFinal: Game = {
+		...game('mlb-final', 'post'),
+		league: 'mlb' as LeagueId,
+		sportType: 'baseball',
+		startTime: '2026-09-21T17:10:00Z',
+	};
+
+	test('stamps a game with the poll that first saw it final', async () => {
+		await loadBackground({ prefs: nbaOnly, fetchReturnValue: { games: [game('g', 'in')], leagueLogos: {}, shedLeagues: [] } });
+		await guideSlate();
+
+		fetchMock.mockResolvedValue({ games: [game('g', 'post')], leagueLogos: {}, shedLeagues: [] });
+		await poll();
+		const sawFinalAt = Date.now();
+
+		const { endTimes } = await guideSlate();
+		expect(endTimes.g).toBeLessThanOrEqual(sawFinalAt);
+		expect(endTimes.g).toBeGreaterThan(sawFinalAt - 5_000);
+	});
+
+	// Stamping the moment it was found would stretch a noon kickoff into the evening.
+	test('leaves a game it only ever saw final without an end time', async () => {
+		await loadBackground({ prefs: nbaOnly, fetchReturnValue: { games: [game('g', 'post')], leagueLogos: {}, shedLeagues: [] } });
+
+		expect((await guideSlate()).endTimes).toEqual({});
+	});
+
+	// The worker that saw the game live is usually not the one that sees it end.
+	test('remembers seeing a game live across a worker restart', async () => {
+		await loadBackground({
+			prefs: nbaOnly,
+			storedLocal: { [gameEndTimesKey]: { g: { seenLiveAt: Date.now() - 60 * 60_000 } } },
+			fetchReturnValue: { games: [game('g', 'post')], leagueLogos: {}, shedLeagues: [] },
+		});
+
+		expect((await guideSlate()).endTimes.g).toBeDefined();
+	});
+
+	test('asks baseball how long a final it never saw end took, then tells the guide', async () => {
+		await loadBackground({ prefs: nbaOnly, fetchReturnValue: { games: [mlbFinal, game('nba-final', 'post')], leagueLogos: {}, shedLeagues: [] } });
+		durationFetch().mockResolvedValue(196);
+
+		await guideSlate();
+		await drain();
+
+		expect(durationFetch()).toHaveBeenCalledTimes(1);
+		expect(durationFetch().mock.calls[0]![0].id).toBe('mlb-final');
+		expect(runtimeSendMessage()).toHaveBeenCalledWith({ type: 'GUIDE_SLATE_UPDATED' });
+		expect((await guideSlate()).endTimes['mlb-final']).toBe(new Date('2026-09-21T17:10:00Z').getTime() + 196 * 60_000);
+	});
+
+	test('asks only once for a final whose summary has no duration', async () => {
+		await loadBackground({ prefs: nbaOnly, fetchReturnValue: { games: [mlbFinal], leagueLogos: {}, shedLeagues: [] } });
+
+		await guideSlate();
+		await drain();
+		await guideSlate();
+		await drain();
+
+		expect(durationFetch()).toHaveBeenCalledTimes(1);
 	});
 });
 

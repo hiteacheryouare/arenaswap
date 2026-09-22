@@ -1,3 +1,4 @@
+import { computeGameProgress } from '@arenaswap/core';
 import { leagueConfigMap } from '@arenaswap/core/constants';
 import type { Game, LeagueRunMinutes, SportType } from '@arenaswap/core/types';
 
@@ -24,10 +25,11 @@ const leverageCurves: Record<SportType | 'ncaam', readonly leveragePoint[]> = {
 	soccer:     [[0, 0.2], [0.42, 0.38], [0.425, 0], [0.545, 0], [0.55, 0.45], [0.68, 0.6], [0.81, 0.82], [0.94, 1], [1, 1]],
 };
 
-// A live game's bar is never allowed to end behind the now line. One rule covers a double overtime,
-// a rain delay and a knockout going to penalties without any per-sport extrapolation, and it is
-// always wrong in the safe direction — which matters because with no live colour on a bar, crossing
-// the now line is the only thing saying the game is still on.
+// A live game's bar is never allowed to end behind the now line. The projection below already runs
+// it out to the end of regulation, but overtime, a rain delay and a knockout going to penalties all
+// sit past that, and this one rule covers them without any per-sport extrapolation. It is always
+// wrong in the safe direction, which matters because with no live colour on a bar, crossing the now
+// line is the only thing saying the game is still on.
 export const liveBarFloorMs = 10 * 60 * 1000;
 
 const interpolate = (curve: readonly leveragePoint[], x: number): number => {
@@ -66,23 +68,45 @@ export interface guideBar {
 	startMs: number;
 	endMs: number;
 	isFavorite: boolean;
+	// Set only on a final whose end was seen or published, rather than estimated.
+	endIsActual?: boolean;
 }
 
-export const buildBar = (game: Game, isFavorite: boolean, now: number): guideBar | null => {
+// A final ends where it actually ended when that is known, and at its estimate when it is not. A live
+// game ends a typical game's worth of what regulation has left after now, which is what stretches a
+// slow one past its slot and pulls a quick one in, rather than drawing both at the schedule.
+export const buildBar = (game: Game, isFavorite: boolean, now: number, endedAt?: number): guideBar | null => {
 	if (!game.startTime) return null;
 	const startMs = new Date(game.startTime).getTime();
 	if (!Number.isFinite(startMs)) return null;
 
-	const estimatedEnd = startMs + resolveRunMinutes(game).bar * 60_000;
-	const endMs = game.status === 'in' ? Math.max(estimatedEnd, now + liveBarFloorMs) : estimatedEnd;
-	return { game, startMs, endMs, isFavorite };
+	const runMs = resolveRunMinutes(game).bar * 60_000;
+	if (game.status === 'post' && endedAt !== undefined && endedAt > startMs) {
+		return { game, startMs, endMs: endedAt, isFavorite, endIsActual: true };
+	}
+	if (game.status === 'in') {
+		const projectedEnd = now + runMs * (1 - computeGameProgress(game));
+		return { game, startMs, endMs: Math.max(projectedEnd, now + liveBarFloorMs), isFavorite };
+	}
+	return { game, startMs, endMs: startMs + runMs, isFavorite };
 };
 
 // The probability the game is still running at `t`: flat to p25, then a smoothstep taper to p99.
 // Summing survival probabilities rather than thresholding on the drawn bar is what gives a smooth
 // curve instead of a staircase that drops by nine the moment the one o'clock window nominally ends.
+//
+// A final with a known end is simply on until then. A live game's bar is already a projection
+// from where it stands, so the taper hangs off the end of the bar rather than off the start time.
 export const occupancy = (bar: guideBar, t: number): number => {
 	if (t < bar.startMs) return 0;
+	if (bar.endIsActual) return t < bar.endMs ? 1 : 0;
+	if (bar.game.status === 'in') {
+		if (t <= bar.endMs) return 1;
+		const { bar: typical, p99 } = resolveRunMinutes(bar.game);
+		const x = (t - bar.endMs) / ((p99 - typical) * 60_000);
+		return x >= 1 ? 0 : 1 - x * x * (3 - 2 * x);
+	}
+
 	const elapsedMinutes = (t - bar.startMs) / 60_000;
 	const { p25, p99 } = resolveRunMinutes(bar.game);
 	if (elapsedMinutes <= p25) return 1;

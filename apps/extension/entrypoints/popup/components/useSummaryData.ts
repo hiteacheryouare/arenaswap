@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { leagueConfigMap } from '@arenaswap/core/constants';
-import { logWarn, monoMarksFromLogos } from '@arenaswap/core';
+import { logWarn, monoMarksFromLogos, parseGameDurationMins } from '@arenaswap/core';
 import type { Game, LeagueId, TeamMonoMarks } from '@arenaswap/core/types';
 import { emptyBoxScore, parseBoxScore } from './boxScoreParse';
 import type { BoxScore } from './boxScoreParse';
@@ -79,17 +79,6 @@ export const emptyMonoLogos: MonoLogos = { home: null, away: null };
 const monoMarksOf = (competitor: HeaderCompetitor | undefined): TeamMonoMarks | null => (
 	monoMarksFromLogos(competitor?.team?.logos)
 );
-
-// ESPN sends `gameInfo.gameDuration` as "3:14" — hours and minutes, not a clock time. It is
-// baseball-only among the leagues sampled, which is why the row it feeds is absent rather than
-// blank everywhere else. Anything that is not h:mm is ignored rather than guessed at.
-export const parseGameDurationMins = (data: unknown): number | null => {
-	const raw = (data as { gameInfo?: { gameDuration?: unknown } })?.gameInfo?.gameDuration;
-	if (typeof raw !== 'string') return null;
-	const matched = /^(\d{1,2}):([0-5]\d)$/.exec(raw.trim());
-	if (!matched) return null;
-	return (Number(matched[1]) * 60) + Number(matched[2]);
-};
 
 // `summary` beats `displayValue` because the NHL appends standings points there —
 // "28-28-10, 66 PTS" — twice the width of the column it has to sit in.

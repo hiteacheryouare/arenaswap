@@ -1,10 +1,10 @@
 export { fetchGames, fetchLiveGames, fetchLeagueLogos, fetchGamesWithLeagueLogos,
-	fetchTeamMonoLogos, fetchNextScheduledStart, fetchTeamsForLeagues, fetchWinProbability,
+	fetchTeamMonoLogos, fetchNextScheduledStart, fetchTeamsForLeagues, fetchWinProbability, fetchGameDurationMins, parseGameDurationMins,
 	monoMarksFromLogos, scoreboardRefreshMs } from './apiClient';
 export { logWarn, logError, setVerboseLogging, isVerboseLogging } from './logger';
 export { computeEagerIntervalMs, computeHebetudinousIntervalMs, computeLeagueIntervalMs, earliestUpcomingStartMs, pollWinProbabilityMs } from './pollIntervalComputer';
 export type { EspnTeamEntry } from './apiClient';
-export { computePowerScore, computeScoringOpportunityBoost, computeWinProbVarianceScore, isPlayFrozen, normalizePowerScoreResult } from 'powerscore';
+export { computeGameProgress, computePowerScore, computeScoringOpportunityBoost, computeWinProbVarianceScore, isPlayFrozen, normalizePowerScoreResult } from 'powerscore';
 export { scoreMaxTotal } from 'powerscore';
 export { MockGameSimulator } from './mockGames';
 export { gradePostseason, postseasonBoostShare, reduceEventName } from './postseasonRound';

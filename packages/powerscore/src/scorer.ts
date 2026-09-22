@@ -230,6 +230,12 @@ const getGameProgress = (game: Game, config: SportTypeConfig): number => {
 	return clamp((periodsDone + elapsedInPeriod / periodDuration) / regularPeriods, 0, 1);
 };
 
+// Public so a consumer drawing a game on a timeline projects its end from the same clock the
+// lateGame signal reads, rather than from a second copy of it.
+export const computeGameProgress = (game: Game): number => (
+	getGameProgress(game, sportTypeConfigMap[game.sportType] ?? sportTypeConfigMap.basketball)
+);
+
 const getBaseballRegulationProgress = (
 	inning: number,
 	curve: BaseballLateGameCurveConfig,

@@ -1111,6 +1111,30 @@ export const fetchWinProbability = async (game: Pick<Game, 'id' | 'league'>, ini
 		.map(p => Math.min(Math.max(p, 0), 1));
 };
 
+// ESPN sends `gameInfo.gameDuration` as "3:14" — hours and minutes, not a clock time. It is
+// baseball-only among the leagues sampled, which is why the row it feeds is absent rather than
+// blank everywhere else. Anything that is not h:mm is ignored rather than guessed at.
+export const parseGameDurationMins = (data: unknown): number | null => {
+	const raw = (data as { gameInfo?: { gameDuration?: unknown } })?.gameInfo?.gameDuration;
+	if (typeof raw !== 'string') return null;
+	const matched = /^(\d{1,2}):([0-5]\d)$/.exec(raw.trim());
+	if (!matched) return null;
+	return (Number(matched[1]) * 60) + Number(matched[2]);
+};
+
+// A whole summary payload for one short string, so worth asking only where the league sends it —
+// MLB did and the NFL and MLS did not, when sampled in September 2026.
+export const fetchGameDurationMins = async (game: Pick<Game, 'id' | 'league'>): Promise<number | null> => {
+	const config = leagueConfigMap[game.league];
+	if (!config) return null;
+
+	const url = `${espnBase}/${config.espnPath}/summary?event=${encodeURIComponent(game.id)}`;
+	await takeRequestSlot();
+	const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+	if (!res.ok) throw new Error(`Failed to fetch the duration of ${game.id}: HTTP ${res.status}`);
+	return parseGameDurationMins(await res.json());
+};
+
 export interface EspnTeamEntry {
 	leagueId: LeagueId;
 	id: string;

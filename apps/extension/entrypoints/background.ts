@@ -1,7 +1,9 @@
 import { i18n } from '#i18n';
 import { randomInRange } from '@porkyproductions/hat';
-import { fetchGamesWithLeagueLogos, fetchTeamMonoLogos, fetchWinProbability, computePowerScore, isWithinFinalRetention, computeScoringOpportunityBoost, isPlayFrozen, normalizePowerScoreResult, scoreMaxTotal, MockGameSimulator, createPollModeTracker, isObjectRecord, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts, computeLeagueIntervalMs, computeHebetudinousIntervalMs, earliestUpcomingStartMs, fetchNextScheduledStart, scoreboardRefreshMs, pollWinProbabilityMs as winProbPollIntervalMs, logWarn, logError, postseasonBoostShare } from '@arenaswap/core';
+import { fetchGamesWithLeagueLogos, fetchGameDurationMins, fetchTeamMonoLogos, fetchWinProbability, computePowerScore, isWithinFinalRetention, computeScoringOpportunityBoost, isPlayFrozen, normalizePowerScoreResult, scoreMaxTotal, MockGameSimulator, createPollModeTracker, isObjectRecord, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts, computeLeagueIntervalMs, computeHebetudinousIntervalMs, earliestUpcomingStartMs, fetchNextScheduledStart, scoreboardRefreshMs, pollWinProbabilityMs as winProbPollIntervalMs, logWarn, logError, postseasonBoostShare } from '@arenaswap/core';
 import { computeStandbyStreamDecision } from '../utils/standbyStreamLogic';
+import { gameEndTimes, gameEndTimesKey, gamesNeedingDuration, pruneGameEndRecords, readGameEndRecords, recordGameEnds } from '../utils/gameEndTimes';
+import type { gameEndRecords } from '../utils/gameEndTimes';
 import { isMonoLogoCacheFresh, missingMonoLogoLeagues, monoLogoCacheKey } from '../utils/monoLogoCache';
 import {
 	finishedTabNoticeKey,
@@ -202,6 +204,11 @@ export default defineBackground(() => {
 	let guideSlate: Game[] = [];
 	let guideSlateAt = 0;
 	let slateShedLeagues: LeagueId[] = [];
+	// When each finished game actually ended, so the guide can stop drawing it at its estimate.
+	let endRecords: gameEndRecords = {};
+	// Per worker rather than persisted: a final whose summary has no duration would otherwise cost a
+	// request on every guide open, and a new worker trying once more is cheap.
+	const durationRequested = new Set<string>();
 	let currentScores: PowerScoreResult[] = [];
 	let leagueLogos: LeagueLogoMap = {};
 	// ESPN's white team marks, which only `/teams` carries — the scoreboard has a single logo per
@@ -246,6 +253,47 @@ export default defineBackground(() => {
 		}
 		return monoLogos;
 	};
+	const storeEndRecords = (next: gameEndRecords) => {
+		endRecords = pruneGameEndRecords(next, Date.now());
+		void browser.storage.local.set({ [gameEndTimesKey]: endRecords }).catch(err => {
+			logWarn('Failed to persist game end times.', err);
+		});
+	};
+
+	const noteGameEnds = (fetched: Game[]) => {
+		if (demoMode) return;
+		const next = recordGameEnds(endRecords, fetched, Date.now());
+		if (next) storeEndRecords(next);
+	};
+
+	// Baseball's summary says how long a game took, which covers the finals nobody saw end. Run after
+	// the slate has gone back rather than in front of it: a cold day of MLB finals is a dozen summary
+	// requests, and the guide can draw estimates while they land.
+	const fillMissingDurations = async (slateGames: Game[]) => {
+		const pending = gamesNeedingDuration(slateGames, endRecords).filter(game => !durationRequested.has(game.id));
+		if (pending.length === 0) return;
+		for (const game of pending) durationRequested.add(game.id);
+
+		const found = await Promise.all(pending.map(async game => {
+			try {
+				const minutes = await fetchGameDurationMins(game);
+				const startMs = game.startTime ? new Date(game.startTime).getTime() : Number.NaN;
+				return minutes && Number.isFinite(startMs) ? { id: game.id, endedAt: startMs + minutes * 60_000 } : null;
+			} catch (err) {
+				logWarn(`Failed to fetch the duration of ${game.id}.`, err);
+				durationRequested.delete(game.id);
+				return null;
+			}
+		}));
+
+		const ended = found.filter(entry => entry !== null);
+		if (ended.length === 0) return;
+		const next = { ...endRecords };
+		for (const { id, endedAt } of ended) next[id] = { ...next[id], endedAt };
+		storeEndRecords(next);
+		browser.runtime.sendMessage({ type: 'GUIDE_SLATE_UPDATED' }).catch(() => {});
+	};
+
 	const history = new Map<string, ScoreSnapshot[]>();
 	const powerScoreHistory = new Map<string, PowerScoreSnapshot[]>();
 	const clockStallMap = new Map<string, { lastClock: number; stallCount: number }>();
@@ -943,6 +991,7 @@ export default defineBackground(() => {
 				return;
 			}
 			absorbFinalGames(fetched);
+			noteGameEnds(fetched);
 			mergeGuideSlate(fetched);
 			finishedGames = fetched.filter(g => g.status === 'post');
 			games = displayableGames(fetched);
@@ -966,6 +1015,7 @@ export default defineBackground(() => {
 			// Failure keeps the mode it already had, which is the faster of the two.
 			if (fetchResult.shedLeagues.length > 0) throw new Error(`ESPN shed the ${leagueId} scoreboard.`);
 			absorbFinalGames(fetchResult.games);
+			noteGameEnds(fetchResult.games);
 			mergeGuideSlate(fetchResult.games);
 			finishedGames = fetchResult.games.filter(g => g.status === 'post');
 			const freshGameIds = new Set(fetchResult.games.map(g => g.id));
@@ -1111,7 +1161,7 @@ export default defineBackground(() => {
 	const stateReady = Promise.all([
 		loadStoredUserPreferences(),
 		browser.storage.session.get({ tabRegistry: [], standbyStreamTabId: null, lastSwitchTime: 0, ...historyStorageDefaults }),
-		browser.storage.local.get({ demoMode: false }),
+		browser.storage.local.get({ demoMode: false, [gameEndTimesKey]: {} }),
 	]).then(([storedPrefs, sessionResult, demoResult]) => {
 		prefs = storedPrefs;
 		tabRegistry = sessionResult.tabRegistry as TabRegistration[];
@@ -1125,6 +1175,7 @@ export default defineBackground(() => {
 		}
 		hydrateHistoryMaps(sessionResult.scoreHistory, sessionResult.powerScoreHistory);
 		demoMode = demoResult.demoMode as boolean;
+		endRecords = readGameEndRecords(demoResult[gameEndTimesKey]);
 		if (demoMode) simulator = new MockGameSimulator();
 	}).catch(err => {
 		logError('Failed to load persisted state; falling back to defaults.', err);
@@ -1306,13 +1357,14 @@ export default defineBackground(() => {
 		if (msg.type === 'GET_GUIDE_SLATE') {
 			return stateReady.then(async (): Promise<GuideSlate> => {
 				// Demo mode has no network behind it, so the simulator's own slate is the answer.
-				if (demoMode && simulator) return { games, leagueLogos, monoLogos: {}, gameBoosts };
+				if (demoMode && simulator) return { games, leagueLogos, monoLogos: {}, gameBoosts, endTimes: {} };
 
 				// The slate this built last time, which the live polls have kept current since. The
 				// first open of a session still pays for it; the repeat opens that a pager invites do
 				// not, where every open used to cost two requests per enabled league.
 				if (guideSlateAt !== 0 && Date.now() - guideSlateAt < guideSlateTtlMs) {
-					return { games: guideSlate, leagueLogos, monoLogos: await ensureMonoLogos(prefs.enabledLeagues), gameBoosts };
+					void fillMissingDurations(guideSlate);
+					return { games: guideSlate, leagueLogos, monoLogos: await ensureMonoLogos(prefs.enabledLeagues), gameBoosts, endTimes: gameEndTimes(endRecords) };
 				}
 
 				// Deliberately bypasses both of refreshSlate's preference gates: the guide draws the
@@ -1331,15 +1383,18 @@ export default defineBackground(() => {
 					});
 					guideSlate = result.games;
 					guideSlateAt = Date.now();
+					noteGameEnds(result.games);
+					void fillMissingDurations(result.games);
 					return {
 						games: result.games,
 						leagueLogos: result.leagueLogos,
 						monoLogos: await ensureMonoLogos(prefs.enabledLeagues),
 						gameBoosts,
+						endTimes: gameEndTimes(endRecords),
 					};
 				} catch (err) {
 					logWarn('Failed to fetch the guide slate.', err);
-					return { games: [], leagueLogos, monoLogos, gameBoosts };
+					return { games: [], leagueLogos, monoLogos, gameBoosts, endTimes: {} };
 				}
 			});
 		}

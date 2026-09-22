@@ -76,7 +76,7 @@ export const installFakeBrowser = (win: Window, options: fakeBrowserOptions): fa
 		standbyStreamTabId: null,
 		sent: [],
 		openedUrls: [],
-		guideSlate: options.guideSlate ?? { games: [], leagueLogos: {}, monoLogos: {}, gameBoosts: {} },
+		guideSlate: options.guideSlate ?? { games: [], leagueLogos: {}, monoLogos: {}, gameBoosts: {}, endTimes: {} },
 		storage: {
 			local:   new Map(Object.entries(options.local ?? {})),
 			session: new Map(Object.entries(options.session ?? {})),

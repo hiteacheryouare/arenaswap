@@ -29,7 +29,7 @@ const eagles = game('nfl-eagles', 'nfl', '2026-09-13T17:00:00Z', {
 const niners = game('nfl-niners', 'nfl', '2026-09-13T20:25:00Z');
 const sixers = game('nba-sixers', 'nba', '2026-09-14T23:00:00Z');
 
-const slateOf = (games: Game[]): GuideSlate => ({ games, leagueLogos: {}, monoLogos: {}, gameBoosts: {} });
+const slateOf = (games: Game[]): GuideSlate => ({ games, leagueLogos: {}, monoLogos: {}, gameBoosts: {}, endTimes: {} });
 
 interface MountOptions {
 	/** Held open so the spec can decide when — or whether — the slate ever arrives. */

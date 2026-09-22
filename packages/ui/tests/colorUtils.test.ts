@@ -28,6 +28,14 @@ describe('resolveTeamColorPair', () => {
 		expect([a, h]).not.toEqual(['#0A1F44', '#0C2340']);
 	});
 
+	// ESPN's NHL scoreboard sends no alternates at all. A clash with nothing to swap in keeps both
+	// teams' own colours rather than handing one side the default.
+	test('keeps both primaries when a clash has no alternate to swap in', () => {
+		const sabres = { color: '#00468B' };
+		const blueJackets = { color: '#002D62' };
+		expect(resolveTeamColorPair(blueJackets, sabres, '#2274A5', '#F75C03')).toEqual(['#002D62', '#00468B']);
+	});
+
 	test('returns well-separated primaries unchanged when lighten is off', () => {
 		const separatedAway = { color: '#1D428A', alternateColor: '#FFC72C' };
 		const separatedHome = { color: '#F1C40F', alternateColor: '#C8102E' };

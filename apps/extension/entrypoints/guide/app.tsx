@@ -56,10 +56,11 @@ const App = () => {
 	}, [loadSlate]);
 
 	// The background already broadcasts on every poll, so the guide rides that rather than polling
-	// on a timer of its own.
+	// on a timer of its own. The second message is end times that landed after the slate went back.
 	useEffect(() => {
 		const onMessage = (message: unknown) => {
-			if ((message as { type?: string })?.type === 'SCORES_UPDATED') void loadSlate();
+			const type = (message as { type?: string })?.type;
+			if (type === 'SCORES_UPDATED' || type === 'GUIDE_SLATE_UPDATED') void loadSlate();
 		};
 		browser.runtime.onMessage.addListener(onMessage);
 		return () => browser.runtime.onMessage.removeListener(onMessage);
@@ -125,9 +126,9 @@ const App = () => {
 
 	const bars = useMemo(() => (
 		(selectedDay?.games ?? [])
-			.map(game => buildBar(game, isFavoriteTeamGame(game, favoriteTeamIds), now))
+			.map(game => buildBar(game, isFavoriteTeamGame(game, favoriteTeamIds), now, slate?.endTimes?.[game.id]))
 			.filter((bar): bar is NonNullable<typeof bar> => bar !== null)
-	), [selectedDay, favoriteTeamIds, now]);
+	), [selectedDay, favoriteTeamIds, now, slate]);
 
 	const { band } = useMemo(
 		() => buildHeatCurve(bars, { weightFavorites: true, favoriteBonusPoints: prefs.favoriteTeamBonusPoints }),

@@ -1,4 +1,4 @@
-import { parseGameDurationMins } from '../entrypoints/popup/components/useSummaryData';
+import { parseGameDurationMins } from '../src/apiClient';
 
 // ESPN sends `gameInfo.gameDuration` as hours and minutes — "3:14" — not as a clock time. It is
 // the only field anywhere in the payload that makes an actual finish time knowable, since no

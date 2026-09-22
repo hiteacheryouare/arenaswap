@@ -5,6 +5,14 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The Guide draws games as long as they actually ran — 2026-09-22
+
+A final now ends on the Guide where it really ended, not at its league's estimate: the background stamps the poll that first sees a game it watched live go final, and for baseball finals it never saw end it asks the summary for `gameDuration`, the only league that sends one. A live bar is projected from `computeGameProgress`, newly exported by powerscore, as a typical game's worth of what regulation has left, so a slow game grows past its slot instead of trailing ten minutes ahead of the now line.
+
+## Clashing NHL teams keep their own colours — 2026-09-22
+
+ESPN's NHL scoreboard has stopped sending `alternateColor`, and when two primaries clashed (Sabres and Blue Jackets navy, Hurricanes and Panthers red) `resolveTeamColorPair` used the default orange as the home team's "alternate" and chose it. A missing alternate now falls back to the team's own primary, so a clash with nothing to swap in draws both teams' real colours rather than handing one side the default.
+
 ## The README catches up — 2026-09-21
 
 The README was still promising a 6-second switch cadence that the code gave up when `pollMinEagerMs` went to 12 seconds, asking for Node 20.17+ against an `engines` field that starts at 22.9, and drawing a package tree with `packages/ui` missing from it. Guide, tab suggestions, Up Next, the game detail tabs and the 12 locales are in the feature list now, and the website, CONTRIBUTING, SECURITY and the Code of Conduct are linked from it for the first time. That same stale 6-second figure is still sitting in `en.json` and `desc_long.md` where correcting it means 11 translations, so it was deliberately left for a pass that can do them.

@@ -176,11 +176,13 @@ export const resolveTeamColorPair = (
 	homeFallback = '#f87171',
 	lighten = false,
 ): [string, string] => {
+	const awayPrimary = isHex(away.color) ? away.color : awayFallback;
+	const homePrimary = isHex(home.color) ? home.color : homeFallback;
 	const [a, h] = pickPair(
-		away.color ?? awayFallback,
-		away.alternateColor ?? awayFallback,
-		home.color ?? homeFallback,
-		home.alternateColor ?? homeFallback,
+		awayPrimary,
+		away.alternateColor ?? awayPrimary,
+		homePrimary,
+		home.alternateColor ?? homePrimary,
 	);
 	return lighten
 		? [resolveReadableSeriesColor(a, awayFallback), resolveReadableSeriesColor(h, homeFallback)]

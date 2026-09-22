@@ -125,10 +125,21 @@ describe('a live bar', () => {
 		expect(bar.endMs).toBeGreaterThanOrEqual(now + liveBarFloorMs);
 	});
 
-	test('is left at its estimate while the estimate is still ahead of now', () => {
-		const now = at('2026-09-13T18:00:00Z');
-		const game = makeGame('nfl-1', 'nfl', '2026-09-13T17:00:00Z', { status: 'in' });
-		expect(barFor(game, false, now).endMs).toBe(at('2026-09-13T17:00:00Z') + 195 * 60_000);
+	// Three hours in and only through the third quarter: the schedule said 8:15, but a quarter and a
+	// bit is still to be played.
+	test('runs a slow game past its slot by what regulation has left', () => {
+		const now = at('2026-09-13T20:00:00Z');
+		const game = makeGame('nfl-1', 'nfl', '2026-09-13T17:00:00Z', { status: 'in', period: 3, clockSeconds: 300 });
+		const left = 195 * (1 - (2 + 600 / 900) / 4);
+		expect(barFor(game, false, now).endMs).toBeCloseTo(now + left * 60_000, -3);
+		expect(barFor(game, false, now).endMs).toBeGreaterThan(at('2026-09-13T17:00:00Z') + 195 * 60_000);
+	});
+
+	test('pulls a quick game in ahead of its slot', () => {
+		const now = at('2026-09-13T19:00:00Z');
+		const game = makeGame('mlb-1', 'mlb', '2026-09-13T17:00:00Z', { status: 'in', period: 8, topOfInning: false });
+		const estimate = at('2026-09-13T17:00:00Z') + resolveRunMinutes(game).bar * 60_000;
+		expect(barFor(game, false, now).endMs).toBeLessThan(estimate);
 	});
 
 	test('a scheduled game is not extended, so the floor cannot pull a whole slate forward', () => {
@@ -141,6 +152,41 @@ describe('a live bar', () => {
 		const game = makeGame('nfl-1', 'nfl', '2026-09-13T17:00:00Z');
 		delete (game as { startTime?: string }).startTime;
 		expect(buildBar(game, false, Date.now())).toBeNull();
+	});
+});
+
+describe('a final', () => {
+	const game = makeGame('nba-1', 'nba', '2026-09-13T17:00:00Z', { status: 'post' });
+	const estimate = at('2026-09-13T17:00:00Z') + resolveRunMinutes(game).bar * 60_000;
+
+	test('ends where it actually ended', () => {
+		const endedAt = at('2026-09-13T20:10:00Z');
+		const bar = buildBar(game, false, Date.now(), endedAt);
+		expect(bar?.endMs).toBe(endedAt);
+		expect(bar?.endIsActual).toBe(true);
+	});
+
+	test('keeps its estimate when nobody saw it end', () => {
+		const bar = buildBar(game, false, Date.now());
+		expect(bar?.endMs).toBe(estimate);
+		expect(bar?.endIsActual).toBeUndefined();
+	});
+
+	test('ignores an end time that lands before the start', () => {
+		expect(buildBar(game, false, Date.now(), at('2026-09-13T16:00:00Z'))?.endMs).toBe(estimate);
+	});
+
+	// A stamp belongs to a final. One left over on a game ESPN has since put back in play means nothing.
+	test('ignores an end time on a game that is not final', () => {
+		const live = makeGame('nba-1', 'nba', '2026-09-13T17:00:00Z', { status: 'in', period: 2, clockSeconds: 300 });
+		expect(buildBar(live, false, at('2026-09-13T18:00:00Z'), at('2026-09-13T18:30:00Z'))?.endIsActual).toBeUndefined();
+	});
+
+	test('is running right up to a known end and not a moment after', () => {
+		const endedAt = at('2026-09-13T19:05:00Z');
+		const bar = buildBar(game, false, Date.now(), endedAt)!;
+		expect(occupancy(bar, endedAt - 60_000)).toBe(1);
+		expect(occupancy(bar, endedAt)).toBe(0);
 	});
 });
 

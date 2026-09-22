@@ -357,6 +357,14 @@ export interface GuideSlate {
 	leagueLogos: LeagueLogoMap;
 	monoLogos: TeamMonoLogoMap;
 	gameBoosts: Record<string, number>;
+	// Game id to the moment it ended, for the finals whose end is actually known. Everything else is
+	// still drawn at its estimate.
+	endTimes: Record<string, number>;
+}
+
+// Sent when end times land after the slate already went back, so an open guide asks again.
+export interface GuideSlateUpdatedMessage {
+	type: 'GUIDE_SLATE_UPDATED';
 }
 
 export interface DebugState {
