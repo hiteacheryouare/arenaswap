@@ -2,6 +2,10 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { allLeagueIds, computePowerScore, leagueConfigMap } from 'powerscore';
 import type { Game, LeagueId, ScoreSnapshot } from 'powerscore';
+// The real ones, rather than copies. Both live in dependency-free modules precisely so this
+// island can read them without dragging zod or the card's React tree onto a marketing page.
+import { parseClockToSeconds } from '@arenaswap/core/gameClock';
+import { formatGameClock, formatPeriod } from '@arenaswap/ui/src/components/gameFormat';
 
 interface EspnCompetitor {
 	id: string;
@@ -55,13 +59,6 @@ const requestPoolSize = 6;
 // Scrolling back to the section and returning to the tab both ask for a fresh draw, and neither
 // should be worth a request when one just landed.
 const minPollGapMs = 5000;
-
-const parseClockToSeconds = (clock: string): number => {
-	const parts = clock.split(':');
-	if (parts.length !== 2) return 0;
-	const [min, sec] = parts.map(Number);
-	return ((min ?? 0) * 60) + (sec ?? 0);
-};
 
 const parseLiveState = (state?: string): boolean => {
 	const normalized = (state ?? '').trim().toLowerCase();
@@ -146,25 +143,6 @@ const fetchLiveGames = async (leagueIds: LeagueId[]): Promise<leagueSweep> => {
 		games: perLeague.flatMap(games => games ?? []),
 		shed: perLeague.filter(games => games === null).length,
 	};
-};
-
-// `clockSeconds` and `period` are optional on Game, so both fall back the same way the
-// extension's own card formatters do.
-const formatClock = (clockSeconds: number | undefined): string => {
-	if (clockSeconds === undefined) return '';
-	const mins = Math.floor(clockSeconds / 60);
-	const secs = clockSeconds % 60;
-	return `${mins}:${String(secs).padStart(2, '0')}`;
-};
-
-const formatPeriod = (game: Game): string => {
-	const config = leagueConfigMap[game.league];
-	const period = game.period ?? 1;
-	if (config.periodFormat === 'innings') return `Inning ${period}`;
-	if (period > config.regularPeriods) return 'OT';
-	if (config.periodFormat === 'quarters') return `Q${period}`;
-	if (config.periodFormat === 'halves') return `H${period}`;
-	return `P${period}`;
 };
 
 interface Strings {
@@ -352,7 +330,7 @@ const LivePowerScores = ({ strings }: { strings: Strings }) => {
 							</div>
 							<div className='text-center text-[0.78rem] text-[var(--color-muted)]'>
 								<div>{formatPeriod(card.game)}</div>
-								<div>{card.game.sportType === 'baseball' ? strings.live : formatClock(card.game.clockSeconds)}</div>
+								<div>{card.game.sportType === 'baseball' ? strings.live : formatGameClock(card.game)}</div>
 							</div>
 							<div className='d-flex align-items-center gap-2'>
 								<span className='text-[var(--color-muted)]'>{card.game.homeTeam.score}</span>

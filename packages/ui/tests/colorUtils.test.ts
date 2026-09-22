@@ -1,4 +1,5 @@
-import { readableTeamInkOnCard, resolveTeamColorPair, teamDisplayInk, teamRowWash } from '../src/components/colorUtils';
+import { crestBacking, readableInkOn, readableTeamInkOnCard, resolveTeamColorPair, teamDisplayInk, teamRowWash, underHeroScrim } from '../src/components/colorUtils';
+import { hexLuminance } from '../src/components/colorMath';
 
 describe('resolveTeamColorPair', () => {
 	const away = { color: '#1D428A', alternateColor: '#FFC72C' };
@@ -359,5 +360,141 @@ describe('teamDisplayInk', () => {
 				expect(contrastOn(teamDisplayInk(team, surface), surface)).toBeGreaterThanOrEqual(3);
 			}
 		}
+	});
+});
+
+// Drawn on a team's own colour at label size: the end zone name on the football strip, and the
+// pre-game leader rows in the popup.
+describe('readableInkOn', () => {
+	test('keeps white on the colours most of the league publishes', () => {
+		for (const navy of ['#0C2340', '#002D72', '#003594', '#4F2683', '#860038', '#C8102E']) {
+			expect(readableInkOn(navy)).toBe('#ffffff');
+		}
+	});
+
+	test('flips to the near-black on the colours white disappears into', () => {
+		for (const light of ['#FFB81C', '#FDBB30', '#FFFFFF', '#F1C40F', '#B1B3B3']) {
+			expect(readableInkOn(light)).toBe('#111827');
+		}
+	});
+
+	test('takes the caller\'s own pair of inks', () => {
+		expect(readableInkOn('#0C2340', '#f8fafc', '#000000')).toBe('#f8fafc');
+		expect(readableInkOn('#FFB81C', '#f8fafc', '#000000')).toBe('#000000');
+	});
+
+	// A team with no colour reaches this as whatever string ESPN sent. The light ink is the right
+	// default because the surfaces it lands on in that state are dark.
+	test('takes the light ink on a background it cannot read', () => {
+		expect(readableInkOn('not-a-color')).toBe('#ffffff');
+		expect(readableInkOn('')).toBe('#ffffff');
+	});
+
+	// The band this whole function turns on. 0.1833 is where *white* drops under 4.5:1, but
+	// #111827 sits at luminance 0.0092 and does not clear 4.5:1 there either — the two inks are
+	// equally readable at 0.19930, and the best either manages anywhere between is 4.21:1. A fixed
+	// threshold at 0.1833 therefore spends that whole band handing back the worse of the two:
+	// Atlanta's and Portland's #E03A3E would read at 4.09:1 where white gives 4.34:1, and the
+	// Chargers' #0080C6 at 4.14:1 where white gives 4.28:1 — on the end zone carrying their name.
+	test('keeps white across the band where neither ink clears the small-text bar', () => {
+		for (const surface of ['#E03A3E', '#0080C6', '#777777', '#7b7b7b']) {
+			expect(readableInkOn(surface)).toBe('#ffffff');
+		}
+	});
+
+	// The flip belongs where the two curves cross, not where one of them leaves the bar. Calgary,
+	// Carolina and Miami publish the first colours past the crossing, and they are the ones that
+	// genuinely do read better in the near-black.
+	test('flips only once the near-black overtakes white, and not a shade before', () => {
+		for (const nowDark of ['#EF3B24', '#0085CA', '#008E97', '#7c7c7c']) {
+			expect(readableInkOn(nowDark)).toBe('#111827');
+		}
+	});
+
+	// Swept rather than sampled, because every fixed threshold is wrong somewhere and a handful of
+	// team colours will not say where. A grey is the cheapest surface that walks the entire
+	// luminance range, and these 256 straddle the crossing from both sides.
+	test('never hands back the less legible of its two inks, on any grey it can be given', () => {
+		for (let channel = 0; channel <= 255; channel++) {
+			const grey = `#${channel.toString(16).padStart(2, '0').repeat(3)}`;
+			const chosen = readableInkOn(grey);
+			const rejected = chosen === '#ffffff' ? '#111827' : '#ffffff';
+			expect(contrastOn(chosen, grey)).toBeGreaterThanOrEqual(contrastOn(rejected, grey));
+		}
+	});
+
+	// Both ends, where the answer is not a judgement call at all.
+	test('takes the obvious ink at either end of the range', () => {
+		expect(readableInkOn('#000000')).toBe('#ffffff');
+		expect(readableInkOn('#FFFFFF')).toBe('#111827');
+		expect(contrastOn('#ffffff', '#000000')).toBeCloseTo(21, 10);
+	});
+
+	// LATENT rather than live: both callers — the football strip's end zone and the popup's
+	// pre-game leader discs — take the default pair, so nothing reaches this today. Written down
+	// because the failure mode is silent. `hexLuminance` measures an unparseable ink as 0, so a
+	// non-hex impersonates pure black, beats #111827 on every surface there is, and is handed
+	// straight back into a `color` rule. Here that paints white type onto a white band.
+	test('cannot measure an ink that is not a hex, and returns the unreadable one anyway', () => {
+		expect(readableInkOn('#FFFFFF', 'white')).toBe('white');
+		expect(readableInkOn('#FFFFFF', 'var(--as-body-color)')).toBe('var(--as-body-color)');
+	});
+});
+
+// A crest sits on its own tinted white disc rather than on the surface behind it, because a navy
+// mark on a navy poster is invisible and every league has at least one.
+describe('crestBacking', () => {
+	test('tints the disc with the team colour over white', () => {
+		expect(crestBacking('#0C2340')).toBe('linear-gradient(160deg, #0C234014, #0C234028), #ffffff');
+	});
+
+	// The same 28 the matchup card and the row wash use, so one team's colour reads at one weight
+	// wherever it appears.
+	test('lands the tint at the alpha the rest of the product uses', () => {
+		expect(crestBacking('#E81828')).toContain('#E8182828');
+		expect(teamRowWash('#E81828')).toContain('#E8182828');
+	});
+
+	test('falls back to a plain white disc, which still lifts a crest off a dark page', () => {
+		expect(crestBacking(undefined)).toBe('#ffffff');
+		expect(crestBacking(null)).toBe('#ffffff');
+		expect(crestBacking('')).toBe('#ffffff');
+		expect(crestBacking('rgb(1,2,3)')).toBe('#ffffff');
+	});
+});
+
+// The hero draws its crests over a scrim, so the surface a crest has to stand off is not the
+// team's published colour — it is that colour with a near-black laid over it at 0.28. Judging the
+// crest against the published hex would call a mark readable on a backdrop it never appears on.
+describe('underHeroScrim', () => {
+	test('lays the scrim over the colour at the alpha the hero uses', () => {
+		// 0.72 of the team colour plus 0.28 of rgb(3, 7, 12), channel by channel.
+		expect(underHeroScrim('#0C2340')).toBe('#091b31');
+		expect(underHeroScrim('#FFFFFF')).toBe('#b8babb');
+	});
+
+	test('darkens every colour, which is the whole reason the crest is judged against it', () => {
+		for (const color of ['#0C2340', '#C8102E', '#FFB81C', '#4B9CD3', '#FFFFFF', '#860038']) {
+			expect(hexLuminance(underHeroScrim(color))).toBeLessThan(hexLuminance(color));
+		}
+	});
+
+	test('always hands back a colour the rest of the arithmetic can read', () => {
+		for (const color of ['#0C2340', '#FFFFFF', '#000000', '#FFB81C']) {
+			expect(underHeroScrim(color)).toMatch(/^#[\da-f]{6}$/);
+		}
+	});
+
+	// A team with no colour still gets a hero, and its crest still has to be judged against
+	// something — the page behind the scrim, which is what the block fades into.
+	test('falls back to the page behind it for a colour it cannot read', () => {
+		expect(underHeroScrim('not-a-color')).toBe('#0d1117');
+		expect(underHeroScrim('')).toBe('#0d1117');
+	});
+
+	// The scrim is near-black rather than black, so a pure black comes back a shade lighter. It
+	// must not come back as something a crest could disappear into by accident.
+	test('leaves a black essentially black', () => {
+		expect(hexLuminance(underHeroScrim('#000000'))).toBeLessThan(0.01);
 	});
 });

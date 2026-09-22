@@ -86,6 +86,7 @@
 );
 @use 'bootstrap-icons/font/bootstrap-icons' with ($bootstrap-icons-font-dir: '/fonts');
 @use '@arenaswap/ui/src/game-card' as gc;
+@use '@arenaswap/ui/src/motion' as m;
 @use '@arenaswap/ui/src/popup';
 
 @keyframes livePulse {
@@ -111,7 +112,7 @@
 	animation: onbFadeSlideUp 0.45s ease 0.58s both;
 }
 
-@media (prefers-reduced-motion: reduce) {
+@include m.reduced-motion {
 	.onb-logo-wrap,
 	.onb-content-wrap {
 		animation: none;
@@ -1875,7 +1876,7 @@ button.game-info-attribution {
 	// Centred on the bar rather than laid out in the flex row, so the matchup stays on the
 	// card's axis no matter how wide the back button's label runs in a given locale.
 	transform: translate(-50%, calc(-50% + 4px));
-	transition: opacity 0.2s ease, transform 0.2s ease;
+	transition: opacity m.$motion-base m.$motion-ease, transform m.$motion-base m.$motion-ease;
 
 	&.is-visible {
 		opacity: 1;
@@ -1951,17 +1952,17 @@ button.game-info-attribution {
 	color: #8b949e;
 	opacity: 0;
 	pointer-events: none;
-	transition: opacity 0.2s ease;
+	transition: opacity m.$motion-base m.$motion-ease;
 
 	&.is-visible {
 		opacity: 1;
 	}
 }
 
-@media (prefers-reduced-motion: reduce) {
+@include m.reduced-motion {
 	.gd-bar-compact,
 	.gd-bar-status {
-		transition: none;
+		@include m.motion-still;
 	}
 }
 
@@ -2247,10 +2248,10 @@ button.game-info-attribution {
 }
 
 .toast-slide-up {
-	animation: toastSlideUp 0.18s ease-out forwards;
+	animation: toastSlideUp m.$motion-base m.$motion-ease forwards;
 }
 
-@media (prefers-reduced-motion: reduce) {
+@include m.reduced-motion {
 	.toast-slide-up { animation: none; }
 }
 
@@ -2258,7 +2259,7 @@ button.game-info-attribution {
 	filter: drop-shadow(0 0 14px rgba(217, 3, 104, 0.45));
 }
 
-@media (prefers-reduced-motion: reduce) {
+@include m.reduced-motion {
 	.error-boundary-icon {
 		animation: none;
 	}

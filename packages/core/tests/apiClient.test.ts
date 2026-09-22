@@ -431,8 +431,11 @@ describe('apiClient', () => {
 		const dec5Game = result.games.find(g => g.id === 'sub-min-dec-5');
 		expect(intGame?.clockSeconds).toBe(45);
 		expect(floatGame?.clockSeconds).toBe(45);
-		expect(dec75Game?.clockSeconds).toBe(45); // 0.75 minutes = 45 seconds
-		expect(dec5Game?.clockSeconds).toBe(30);  // 0.5 minutes = 30 seconds
+		// Seconds, not decimal minutes. Checked against ESPN on 2026-09-21: the basketball leagues
+		// drop the colon under a minute and count down 40.8 -> 0.1, so 0.75 is three quarters of a
+		// second and floors to nothing left, not to 45 seconds.
+		expect(dec75Game?.clockSeconds).toBe(0);
+		expect(dec5Game?.clockSeconds).toBe(0);
 	});
 
 	test('parses soccer prime-notation clock values (e.g. "85\'", "90\'+8\'")', async () => {

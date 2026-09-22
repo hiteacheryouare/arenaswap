@@ -239,6 +239,14 @@ describe('resolveFieldDiagram', () => {
 			}))!.firstDownX).toBe(68);
 		});
 
+		// The snap gate lets a zero distance through, and there is no line to draw for it: the line
+		// to gain would land on the ball, which reads as a marker rather than as a target.
+		test('draws no line when there is no distance left to gain', () => {
+			expect(resolveFieldDiagram(makeGame({
+				yardLine: 30, distance: 0, down: 1, possessionTeamId: 'phi',
+			}))!.firstDownX).toBeNull();
+		});
+
 		test('draws no line when the offense is unknown', () => {
 			expect(resolveFieldDiagram(makeGame({ yardLine: 30, distance: 5 }))!.firstDownX).toBeNull();
 		});

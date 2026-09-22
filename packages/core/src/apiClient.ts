@@ -1,4 +1,5 @@
 import { isWithinFinalRetention, leagueConfigMap, pollLookaheadDays, pollMinEagerMs, resolveLeagueLogoUrl, upcomingGamesDaysMax } from './constants';
+import { parseClockToSeconds } from './gameClock';
 import { gradePostseason } from './postseasonRound';
 import {
 	EspnSummarySchema,
@@ -127,29 +128,6 @@ const warnOnDroppedCountChange = (key: string, dropped: number, buildMessage: ()
 	if (dropped > 0) logWarn(buildMessage());
 };
 
-const parseClockToSeconds = (clock: string): number => {
-	// Soccer prime notation: "85'" or "90'+8'" (base minutes + optional stoppage)
-	if (clock.includes("'")) {
-		const primeMatch = /^(\d+)'\+(\d+)'$/.exec(clock) ?? /^(\d+)'$/.exec(clock);
-		if (primeMatch) {
-			const base = parseInt(primeMatch[1]!, 10);
-			const stoppage = primeMatch[2] ? parseInt(primeMatch[2], 10) : 0;
-			return (base + stoppage) * 60;
-		}
-		return 0;
-	}
-	const parts = clock.split(':');
-	if (parts.length === 1) {
-		const n = Number(parts[0]);
-		if (!n || isNaN(n)) return 0;
-		// Values in (0,1) are decimal minutes (e.g. ESPN pre-game "0.0", live "0.75" = 45s)
-		if (n < 1) return Math.round(n * 60);
-		return Math.floor(n);
-	}
-	if (parts.length !== 2) return 0;
-	const [min, sec] = parts.map(Number);
-	return ((min ?? 0) * 60) + Math.floor(sec ?? 0);
-};
 
 const parseStatus = (state: string): Game['status'] => {
 	const normalized = state.trim().toLowerCase();

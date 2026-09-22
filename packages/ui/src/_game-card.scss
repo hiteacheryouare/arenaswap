@@ -1,6 +1,7 @@
 // Loaded after the theme, whose $warning and $score-loser-color it reads.
 @use 'bootstrap' as bs;
 @use 'crest';
+@use 'motion' as m;
 
 @keyframes scoreSlideOut {
 	from { transform: translateY(0%); }
@@ -31,11 +32,11 @@
 	left:      0;
 	right:     0;
 	text-align: inherit;
-	animation: scoreSlideOut 0.3s cubic-bezier(0.4, 0, 1, 1) forwards;
+	animation: scoreSlideOut m.$motion-base m.$motion-ease-in forwards;
 }
 
 .flip-score-digit-in {
-	animation: scoreSlideIn 0.3s cubic-bezier(0, 0, 0.6, 1) forwards;
+	animation: scoreSlideIn m.$motion-base m.$motion-ease forwards;
 }
 
 .font-lekton {
@@ -86,7 +87,7 @@
 
 .game-card-clickable {
 	cursor: pointer;
-	transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+	transition: transform m.$motion-quick m.$motion-ease, box-shadow m.$motion-quick m.$motion-ease, border-color m.$motion-quick m.$motion-ease;
 
 	&:hover {
 		transform: translateY(-1px);
@@ -110,7 +111,7 @@
 	border-radius: 50%;
 	background:    #e53935;
 	flex-shrink:   0;
-	animation:     livePulse 1.5s ease-in-out infinite;
+	animation:     livePulse m.$motion-pulse m.$motion-ease-in-out infinite;
 }
 
 .live-status-label {
@@ -145,7 +146,7 @@
 	height: 5px;
 
 	.progress-bar {
-		transition: width 0.4s ease;
+		transition: width m.$motion-slow m.$motion-ease;
 	}
 }
 
@@ -752,21 +753,31 @@ button.game-meta-attribution {
 // `x` on a <rect> is a CSS geometry property and `x` on a <text> is not, so the yellow line eases
 // its own attribute while the ball and the line of scrimmage ride a transform together.
 .ff-marker {
-	transition: transform 0.45s ease-out;
+	transition: transform m.$motion-slow m.$motion-ease;
 }
 
 .ff-first-down {
-	transition: x 0.45s ease-out;
+	transition: x m.$motion-slow m.$motion-ease;
 }
 
 .ff-drive {
-	transition: x 0.45s ease-out, width 0.45s ease-out;
+	transition: x m.$motion-slow m.$motion-ease, width m.$motion-slow m.$motion-ease;
 }
 
-@media (prefers-reduced-motion: reduce) {
+@include m.reduced-motion {
+	.flip-score-digit-out,
+	.flip-score-digit-in,
+	.live-dot,
+	.game-card-ps-progress .progress-bar,
 	.ff-marker,
 	.ff-first-down,
 	.ff-drive {
-		transition: none;
+		@include m.motion-still;
+	}
+
+	// The out digit is positioned over the in digit and only leaves because it animates away. With
+	// the animation off it would sit on top of the new score forever.
+	.flip-score-digit-out {
+		display: none;
 	}
 }

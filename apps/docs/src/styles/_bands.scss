@@ -1,6 +1,7 @@
 // The landing page reads as a stack of full-width bands, one idea each, separated by a hairline
 // rather than by whitespace alone. Type is the only decoration: there is no illustration on the
 // page, so the headline sizes have to carry it.
+@use '@arenaswap/ui/src/motion' as m;
 
 .band {
 	padding: 3.5rem 0;
@@ -94,7 +95,7 @@
 	font-size: 0.8rem;
 	color: var(--color-muted);
 	margin-bottom: 0.85rem;
-	transition: color 0.15s ease;
+	transition: color m.$motion-instant m.$motion-ease;
 }
 
 .team-strip-logos {
@@ -111,7 +112,7 @@
 		height: 1.8rem;
 		// Held slightly back so no one crest shouts over the rest, and brought up together on hover.
 		opacity: 0.9;
-		transition: opacity 0.15s ease;
+		transition: opacity m.$motion-instant m.$motion-ease;
 	}
 
 	.crest-fallback {

@@ -1,53 +1,18 @@
 import type { ReactNode } from 'react';
 import { useState } from 'react';
 import type { KeyboardEvent, MouseEvent } from 'react';
-import { leagueConfigMap } from '@arenaswap/core/constants';
 import type { Game, LeagueId, Team } from '@arenaswap/core/types';
 import type { BettingDisplayPrefs } from './gameCardTypes';
 import { resolveTeamColorPair } from './colorUtils';
 import Crest from './crest';
 import HoverTooltip from './hoverTooltip';
 import { useT } from './i18nContext';
+import { formatClock, formatGameClock, formatPeriod, isHalftime } from './gameFormat';
 import TimeoutDots from './timeoutDots';
 
-export const formatPeriod = (game: Game): string => {
-	const config = leagueConfigMap[game.league];
-	if (!config) return `P${game.period}`;
-	const regular = config.regularPeriods;
-	const period = game.period;
-	if (period > regular) {
-		if (config.periodFormat === 'periods') return 'OT';
-		if (config.periodFormat === 'innings') return `Inn ${period}`;
-		// Soccer plays two extra-time halves (periods 3 and 4) and then a shootout (period 5), so
-		// "OT1/OT2/OT3" is the wrong vocabulary and flatly wrong for the shootout. Keyed on
-		// sportType, not periodFormat, so NCAA basketball's halves keep their OT numbering.
-		if (game.sportType === 'soccer') {
-			const extraTimeHalf = period - regular;
-			return extraTimeHalf <= 2 ? `ET${extraTimeHalf}` : 'PENS';
-		}
-		return `OT${period - regular}`;
-	}
-	if (config.periodFormat === 'halves') return period === 1 ? '1H' : '2H';
-	if (config.periodFormat === 'periods') return `P${period}`;
-	if (config.periodFormat === 'innings') return `Inn ${period}`;
-	return `Q${period}`;
-};
+// Re-exported so the card's existing callers keep one import site.
+export { formatClock, formatGameClock, formatPeriod, isHalftime };
 
-export const isHalftime = (game: Game): boolean => {
-	const regular = leagueConfigMap[game.league]?.regularPeriods;
-	return regular !== undefined && regular % 2 === 0 && game.period === regular / 2;
-};
-
-export const formatClock = (seconds: number): string => {
-	const minutes = Math.floor(seconds / 60);
-	const remainder = String(seconds % 60).padStart(2, '0');
-	return `${minutes}:${remainder}`;
-};
-
-export const formatGameClock = (game: Game): string => {
-	if (game.sportType === 'soccer') return `${Math.floor(game.clockSeconds / 60)}'`;
-	return formatClock(game.clockSeconds);
-};
 
 export const formatStartDateTime = (iso: string): string => {
 	const date = new Date(iso);

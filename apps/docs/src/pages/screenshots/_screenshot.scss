@@ -6,6 +6,7 @@
 // Bootstrap load to order these against.
 @use '@arenaswap/ui/src/bootstrap' with ($font-size-base: 0.9375rem);
 @use '@arenaswap/ui/src/game-card';
+@use '@arenaswap/ui/src/motion' as m;
 @use '@arenaswap/ui/src/fonts' with ($font-base-url: '/src/fonts');
 
 @font-face {
@@ -200,7 +201,7 @@ html, body {
 	height: 6px;
 	border-radius: 50%;
 	background: #e53935;
-	animation: popup-live-pulse 1.5s ease-in-out infinite;
+	animation: popup-live-pulse m.$motion-pulse m.$motion-ease-in-out infinite;
 	flex-shrink: 0;
 }
 

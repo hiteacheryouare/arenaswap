@@ -6,6 +6,16 @@ const year = new Date().getFullYear();
 const version = pkg.version;
 const banner = `/*! ArenaSwap v${version} Copyright (c) ${year} Ryan Mullin, Lattice & Company, and Contributors. All rights reserved. */`;
 
+// Coverage instrumentation for the e2e build only. `build:e2e` writes to .output/e2e, which is
+// gitignored and never zipped, and the environment variable is set by the coverage script
+// alone — so `wxt build`, `build:firefox` and `build:edge` produce the same bytes they always
+// have. vite-plugin-istanbul ships ESM only and this config is loaded as CommonJS.
+const istanbulPlugins = async () => {
+	if (process.env.ARENASWAP_COVERAGE_TARGET !== 'e2e') return [];
+	const { default: istanbul } = await import('vite-plugin-istanbul');
+	return [istanbul({ requireEnv: false, forceBuildInstrument: true })];
+};
+
 export default defineConfig({
 	modules: ['@wxt-dev/module-react', '@wxt-dev/i18n/module'],
 	// Cypress serves a build directory over HTTP for the whole length of an e2e run, and `wxt zip`
@@ -19,8 +29,9 @@ export default defineConfig({
 	zip: {
 		excludeSources: ['dist/**', 'marketing/**'],
 	},
-	vite: () => ({
+	vite: async () => ({
 		plugins: [
+			...(await istanbulPlugins()),
 			{
 				name: 'arenaswap-banner',
 				generateBundle(_, bundle) {

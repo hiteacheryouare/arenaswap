@@ -1,0 +1,74 @@
+{
+	"events": [
+		{
+			"id": "401817027",
+			"competitions": [
+				{
+					"competitors": [
+						{
+							"id": "1",
+							"homeAway": "home",
+							"score": "1",
+							"team": {
+								"displayName": "Baltimore Orioles",
+								"abbreviation": "BAL"
+							}
+						},
+						{
+							"id": "14",
+							"homeAway": "away",
+							"score": "3",
+							"team": {
+								"displayName": "Toronto Blue Jays",
+								"abbreviation": "TOR"
+							}
+						}
+					],
+					"status": {
+						"period": 1,
+						"displayClock": "0:00",
+						"type": {
+							"state": "in",
+							"name": "STATUS_IN_PROGRESS"
+						}
+					}
+				}
+			]
+		},
+		{
+			"id": "401817028",
+			"competitions": [
+				{
+					"competitors": [
+						{
+							"id": "6",
+							"homeAway": "home",
+							"score": "4",
+							"team": {
+								"displayName": "Detroit Tigers",
+								"abbreviation": "DET"
+							}
+						},
+						{
+							"id": "20",
+							"homeAway": "away",
+							"score": "0",
+							"team": {
+								"displayName": "Washington Nationals",
+								"abbreviation": "WSH"
+							}
+						}
+					],
+					"status": {
+						"period": 4,
+						"displayClock": "0:00",
+						"type": {
+							"state": "in",
+							"name": "STATUS_IN_PROGRESS"
+						}
+					}
+				}
+			]
+		}
+	]
+}

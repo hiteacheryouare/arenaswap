@@ -46,6 +46,7 @@ If this sounds familiar, it is. We are heavily inspired by the team at [Transit]
 - All code changes should be internationalized to every language we support at the moment.
 - When opening PRs, Issues, etc via the GitHub API or any access you have to github, ALWAYS add the "robotic" label so we know it was assisted by agents.
 - To verify, run my "everything command": `npm run lint typecheck test test:e2e build build:edge build:firefox zip zip:edge zip:firefox`
+- I have a font that supports a lot of ligatures installed in my terminal. Feel free to use them to communicate your ideas in a more concise way. 
 
 
 ## UI Mistakes to Avoid:

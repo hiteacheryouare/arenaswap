@@ -30,6 +30,15 @@ const commonProjectConfig = {
 };
 
 module.exports = {
+	coverageDirectory: '<rootDir>/coverage/unit',
+	coverageReporters: ['json-summary', 'lcov', 'text'],
+	collectCoverageFrom: [
+		'entrypoints/**/*.{ts,tsx,js,jsx}',
+		'utils/**/*.{ts,tsx}',
+		'!**/*.d.ts',
+		'!.wxt/**',
+		'!**/node_modules/**',
+	],
 	projects: [
 		{
 			...commonProjectConfig,

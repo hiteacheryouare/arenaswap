@@ -59,6 +59,14 @@ const recordSuccessfulSwitchForReviewPrompt = async (switchedAt: number) => {
 	}
 };
 
+// A stored switch time in the future reads as a cooldown that never elapses, which stops
+// switching altogether with nothing on screen to explain it. An NTP correction or a manual clock
+// change is enough to write one, and session storage carries it across every restart, so it is
+// sanitised on the way back in rather than trusted.
+const readStoredSwitchTime = (value: unknown, now: number): number => (
+	typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= now ? value : 0
+);
+
 const getFavoriteTeamCount = (game: Game, favoriteTeamIds: Set<string>): number => {
 	let count = 0;
 	const homeFavoriteTeamKey = createFavoriteTeamKey(game.league, game.homeTeam.id);
@@ -247,6 +255,15 @@ export default defineBackground(() => {
 	let simulator: MockGameSimulator | null = null;
 	let prefs: UserPreferences = createDefaultUserPreferences();
 	let lastSwitchTime = 0;
+	// Session-backed like the rest of the switching state: MV3 tears the worker down whenever it
+	// idles, and a cooldown held only in this closure restarts at 0 on the next wake, handing back
+	// the free switch the user set the dial to prevent.
+	const setLastSwitchTime = (at: number): void => {
+		lastSwitchTime = at;
+		void browser.storage.session.set({ lastSwitchTime: at }).catch(err => {
+			logWarn('Failed to persist the switch cooldown to session storage.', err);
+		});
+	};
 	const leagueTimers = new Map<string, ReturnType<typeof setTimeout>>();
 	const leagueNextIntervalMs = new Map<string, number>();
 	// Lives on the summary endpoint (one request per game) rather than the scoreboard, so it
@@ -519,7 +536,7 @@ export default defineBackground(() => {
 		if (!tabExists) return;
 
 		await browser.tabs.update(tabId, { active: true });
-		lastSwitchTime = Date.now();
+		setLastSwitchTime(Date.now());
 		await syncManagedTabMuteState(true);
 		if (gameId) await recordSuccessfulSwitchForReviewPrompt(lastSwitchTime);
 
@@ -1093,12 +1110,13 @@ export default defineBackground(() => {
 
 	const stateReady = Promise.all([
 		loadStoredUserPreferences(),
-		browser.storage.session.get({ tabRegistry: [], standbyStreamTabId: null, ...historyStorageDefaults }),
+		browser.storage.session.get({ tabRegistry: [], standbyStreamTabId: null, lastSwitchTime: 0, ...historyStorageDefaults }),
 		browser.storage.local.get({ demoMode: false }),
 	]).then(([storedPrefs, sessionResult, demoResult]) => {
 		prefs = storedPrefs;
 		tabRegistry = sessionResult.tabRegistry as TabRegistration[];
 		standbyStreamTabId = (sessionResult.standbyStreamTabId as number | null) ?? null;
+		lastSwitchTime = readStoredSwitchTime(sessionResult.lastSwitchTime, Date.now());
 		gameBoosts = normalizeGameBoosts(sessionResult.gameBoosts);
 		if (Array.isArray(sessionResult.mutedTabIds)) {
 			for (const tabId of sessionResult.mutedTabIds) {
@@ -1175,7 +1193,7 @@ export default defineBackground(() => {
 				const prevUpcomingGamesDays = prefs.upcomingGamesDays;
 				const prevLeagues = new Set(prefs.enabledLeagues);
 				prefs = normalizeUserPreferences(msg.prefs);
-				if (wasEnabled && !prefs.enabled) lastSwitchTime = 0;
+				if (wasEnabled && !prefs.enabled) setLastSwitchTime(0);
 				clearPendingSwitch();
 				// The popup persists before it sends, and the GET_STATE recovery path relies on that,
 				// so writing again here would only double the storage.sync traffic against Chrome's
@@ -1331,7 +1349,7 @@ export default defineBackground(() => {
 		void stateReady.then(() => {
 			// A manual switch starts the cooldown too, otherwise landing on a quieter game by hand
 			// gets overridden by the very next poll.
-			if (tabRegistry.some(reg => reg.tabId === tabId)) lastSwitchTime = Date.now();
+			if (tabRegistry.some(reg => reg.tabId === tabId)) setLastSwitchTime(Date.now());
 			return syncManagedTabMuteState(prefs.enabled);
 		});
 	});

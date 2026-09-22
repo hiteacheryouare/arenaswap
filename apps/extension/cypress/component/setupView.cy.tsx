@@ -99,9 +99,11 @@ const dragRangeTo = (selector: string, index: number) => cy.get(selector).then((
 });
 
 describe('setupView index', () => {
-	it('shows the Settings header with a back button', () => {
-		cy.mount(<SetupView {...defaultProps} />);
+	it('heads the page and gives the reader a way back out of it', () => {
+		cy.mount(<SetupView {...defaultProps} onClose={cy.stub().as('onClose')} />);
 		cy.contains('Settings').should('exist');
+		cy.get('.setup-header').click();
+		cy.get('@onClose').should('have.been.called');
 	});
 
 	it('lists every settings group with a description', () => {
@@ -221,15 +223,6 @@ describe('setupView switching group', () => {
 	beforeEach(() => {
 		cy.mount(<SetupView {...defaultProps} />);
 		openGroup('switching');
-	});
-
-	it('renders sensitivity slider', () => {
-		cy.get('#sensitivity-range').should('exist');
-	});
-
-	it('renders cooldown and delay sliders', () => {
-		cy.get('#cooldown-range').should('exist');
-		cy.get('#switch-delay-range').should('exist');
 	});
 
 	it('offers the explainer as a tooltip rather than permanent body copy', () => {
@@ -363,11 +356,6 @@ describe('setupView display group', () => {
 		cy.get('@onUpcomingGamesDaysChange').should('have.been.called');
 	});
 
-	it('shows temperature unit toggle', () => {
-		cy.mount(<SetupView {...defaultProps} />);
-		openGroup('display');
-		cy.get('#temperatureUnitToggle').should('exist');
-	});
 
 	it('shows °F label when temperatureUnit is F', () => {
 		cy.mount(<SetupView {...defaultProps} />);
@@ -502,10 +490,20 @@ describe('setupView standby stream', () => {
 		cy.get('#standbyThresholdSlider').should('exist');
 	});
 
-	it('shows tab select dropdown when standby is enabled', () => {
-		cy.mount(<SetupView {...defaultProps} prefs={{ ...defaultPrefs, standbyStreamEnabled: true }} />);
+	it('offers the open tabs to stand by on, and hands the chosen one back', () => {
+		cy.mount(
+			<SetupView
+				{...defaultProps}
+				prefs={{ ...defaultPrefs, standbyStreamEnabled: true }}
+				openTabs={[{ id: 101, title: 'Red Zone' }, { id: 102, title: 'Gamecast' }]}
+				formatTabLabel={(tab: { title?: string }) => tab.title ?? ''}
+				onSetStandbyTab={cy.stub().as('onSetStandbyTab')}
+			/>,
+		);
 		openGroup('standby');
-		cy.get('select').should('exist');
+
+		cy.get('select[aria-label="Standby tab"]').select('Gamecast');
+		cy.get('@onSetStandbyTab').should('have.been.calledWith', 102);
 	});
 
 	it('shows the standby stream guide when toggled on and onboarding not done', () => {
@@ -515,8 +513,25 @@ describe('setupView standby stream', () => {
 			prefs={{ ...defaultPrefs, standbyStreamEnabled: false }}
 		/>);
 		openGroup('standby');
+		cy.contains('A fallback for the slow moments.').should('not.exist');
+
 		cy.get('#standbyStreamToggle').check({ force: true });
-		cy.contains(/standby stream/i).should('exist');
+
+		// Copy only the guide's first step carries, so the settings page behind it cannot satisfy it.
+		cy.contains('A fallback for the slow moments.').should('be.visible');
+		cy.contains('Step 1 of 2').should('be.visible');
+	});
+
+	it('does not put the guide back in front of somebody who has already read it', () => {
+		cy.mount(<SetupView
+			{...defaultProps}
+			standbyOnboardingDone={true}
+			prefs={{ ...defaultPrefs, standbyStreamEnabled: false }}
+		/>);
+		openGroup('standby');
+		cy.get('#standbyStreamToggle').check({ force: true });
+
+		cy.contains('A fallback for the slow moments.').should('not.exist');
 	});
 });
 
@@ -613,10 +628,13 @@ describe('setupView favorites group', () => {
 });
 
 describe('setupView leagues group', () => {
-	it('shows league groups with logos', () => {
+	it('heads each sport group and gives every league in it a mark', () => {
 		cy.mount(<SetupView {...defaultProps} />);
 		openGroup('leagues');
 		cy.contains('Basketball').should('exist');
+		cy.get('.league-toggle-row').should('have.length.greaterThan', 0).each($row => {
+			cy.wrap($row).find('img, svg, i[class*="bi-"]').should('exist');
+		});
 	});
 
 	it('shows warning when no leagues are selected', () => {

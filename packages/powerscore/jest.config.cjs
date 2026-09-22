@@ -17,6 +17,13 @@ const commonProjectConfig = {
 };
 
 module.exports = {
+  collectCoverageFrom: [
+    'src/**/*.ts',
+    '!src/index.ts',
+    '!src/types.ts',
+  ],
+  coverageDirectory: '<rootDir>/coverage',
+  coverageReporters: ['json-summary', 'lcov', 'text'],
   projects: [
     {
       ...commonProjectConfig,

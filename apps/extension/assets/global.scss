@@ -3,6 +3,7 @@
 // than beside the rules that ask for the family. Where a @font-face sits relative to a rule makes
 // no difference to either. Sass comments rather than CSS ones, so this note does not ship.
 @use '@arenaswap/ui/src/fonts';
+@use '@arenaswap/ui/src/motion' as m;
 
 /* ─── Reset carry-overs ───────────────────────────────────────────────────────
    The popup used to pull in `@import 'tailwindcss'` here, which never actually
@@ -414,6 +415,21 @@ button, input, select, optgroup, textarea {
 	50%      { opacity: 0.45; }
 }
 
+/* The two walkthrough controls that recolour on state take their palette inline from league and
+   team data, so their timing had been sitting inline next to it — and was the only motion in the
+   popup the shared scale could not reach. This is the hook they borrow instead. */
+.motion-tint {
+	transition: background-color m.$motion-instant m.$motion-ease,
+	            border-color     m.$motion-instant m.$motion-ease,
+	            color            m.$motion-instant m.$motion-ease;
+}
+
+@include m.reduced-motion {
+	.motion-tint {
+		@include m.motion-still;
+	}
+}
+
 /* ─── PowerScore Walkthrough Orbit Animation ─── */
 @keyframes powerscoreOrbit {
 	from { transform: rotate(0deg); }
@@ -442,10 +458,10 @@ button, input, select, optgroup, textarea {
 	height: 100px;
 	border: 1px dashed rgba(255, 255, 255, 0.15);
 	border-radius: 50%;
-	transition: transform 0.5s ease-out;
+	transition: transform m.$motion-slow m.$motion-ease;
 
 	&.animating {
-		animation: powerscoreOrbit 10s linear infinite;
+		animation: powerscoreOrbit 10s m.$motion-linear infinite;
 	}
 }
 
@@ -469,14 +485,14 @@ button, input, select, optgroup, textarea {
 	height: 16px;
 	border-radius: 50%;
 	background-color: currentColor;
-	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	transition: all m.$motion-base m.$motion-ease;
 	box-shadow: 0 0 8px currentColor, 0 0 3px currentColor;
 	cursor: pointer;
 
 	&.active {
 		transform: scale(1.5);
 		z-index: 15;
-		animation: powerscorePulseHighlight 1.8s ease-in-out infinite;
+		animation: powerscorePulseHighlight m.$motion-pulse m.$motion-ease-in-out infinite;
 	}
 
 	&.dimmed {
@@ -496,7 +512,7 @@ button, input, select, optgroup, textarea {
 	justify-content: center;
 	margin: 1.5rem auto 2rem;
 	box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
-	transition: all 0.3s ease;
+	transition: all m.$motion-base m.$motion-ease;
 }
 
 /* Progress dots bar */
@@ -517,7 +533,7 @@ button, input, select, optgroup, textarea {
 	border: none;
 	cursor: pointer;
 	padding: 0;
-	transition: all 0.2s ease;
+	transition: all m.$motion-quick m.$motion-ease;
 
 	&:hover {
 		background: #8b949e;
@@ -566,7 +582,7 @@ button, input, select, optgroup, textarea {
 	opacity: 0;
 
 	&.ps-bloom-blooming {
-		animation: psBloomIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+		animation: psBloomIn m.$motion-slow m.$motion-ease forwards;
 	}
 
 	&.ps-bloom-visible {
@@ -575,7 +591,7 @@ button, input, select, optgroup, textarea {
 	}
 
 	&.ps-bloom-shrinking {
-		animation: psBloomOut 0.4s cubic-bezier(0.55, 0, 1, 0.45) forwards;
+		animation: psBloomOut m.$motion-slow m.$motion-ease-in forwards;
 	}
 }
 
@@ -651,7 +667,7 @@ button, input, select, optgroup, textarea {
 	font-weight: 700;
 	font-size: 0.85rem;
 	cursor: pointer;
-	transition: opacity 0.15s;
+	transition: opacity m.$motion-instant m.$motion-ease;
 
 	&:hover {
 		opacity: 0.88;
@@ -670,10 +686,10 @@ button, input, select, optgroup, textarea {
 }
 
 .romer-revealing {
-	animation: romerFrost 1.2s ease-in-out;
+	animation: romerFrost m.$motion-epic m.$motion-ease-in-out;
 }
 
-@media (prefers-reduced-motion: reduce) {
+@include m.reduced-motion {
 	.romer-revealing { animation: none; }
 }
 
@@ -700,7 +716,7 @@ button, input, select, optgroup, textarea {
 
 .holiday-bulb {
 	fill: currentcolor;
-	animation: holidayBulbTwinkle 3.4s ease-in-out infinite;
+	animation: holidayBulbTwinkle m.$motion-ambient m.$motion-ease-in-out infinite;
 }
 
 .holiday-bulb-cap {
@@ -721,7 +737,7 @@ button, input, select, optgroup, textarea {
    confetti on the main screen would have run. */
 .is-celebrating {
 	.holiday-bulb {
-		animation: holidayBulbCelebrate 0.5s ease-in-out infinite;
+		animation: holidayBulbCelebrate m.$motion-urgent m.$motion-ease-in-out infinite;
 	}
 
 	.holiday-bulb-glass {
@@ -755,8 +771,12 @@ button, input, select, optgroup, textarea {
 	pointer-events: none;
 }
 
-@media (prefers-reduced-motion: reduce) {
-	.holiday-bulb { animation: none; }
+@include m.reduced-motion {
+	// The celebration rule is `.is-celebrating .holiday-bulb`, two classes, so a single-class
+	// opt-out loses to it and the 2Hz scoring strobe kept running for a reader who asked for
+	// stillness. Both selectors, or this only ever silenced the calm shimmer.
+	.holiday-bulb,
+	.is-celebrating .holiday-bulb { animation: none; }
 }
 
 /* ─── Popup open reveal ───────────────────────────────────────────────────────

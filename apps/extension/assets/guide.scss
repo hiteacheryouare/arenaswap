@@ -1,6 +1,7 @@
 // The guide's own surface. Deliberately does not reuse `.popup-container`, which is a hard
 // 320x560 — the one place that class IS reused here is inside the detail drawer, where the width is
 // exactly what the detail screen is designed against and the height is overridden to fill the tab.
+@use '@arenaswap/ui/src/motion' as m;
 
 $guide-bg: #0d1117;
 $guide-surface: #161b22;
@@ -400,7 +401,7 @@ $guide-ruler-height: 32px;
 	white-space: nowrap;
 	text-align: left;
 	cursor: pointer;
-	transition: border-color 0.14s ease-out, transform 0.14s ease-out, box-shadow 0.14s ease-out;
+	transition: border-color m.$motion-snap m.$motion-ease, transform m.$motion-snap m.$motion-ease, box-shadow m.$motion-snap m.$motion-ease;
 }
 
 // Team colour as two hairlines at the ends rather than as a fill: at 22px tall a filled bar is a
@@ -543,11 +544,11 @@ $guide-ruler-height: 32px;
 	border-left: 1px solid $guide-border;
 	background: $guide-surface;
 	box-shadow: -12px 0 32px rgba(0, 0, 0, 0.45);
-	animation: guideDrawerIn 0.22s cubic-bezier(0.2, 0, 0, 1);
+	animation: guideDrawerIn m.$motion-base m.$motion-ease;
 }
 
 .guide-drawer[data-closing='true'] {
-	animation: guideDrawerOut 0.18s cubic-bezier(0.4, 0, 1, 1) forwards;
+	animation: guideDrawerOut m.$motion-quick m.$motion-ease-in forwards;
 }
 
 // The detail screen is a hard 320x560 by design — 320 is the width it is laid out against and is
@@ -568,7 +569,7 @@ $guide-ruler-height: 32px;
 	to { transform: translateX(100%); }
 }
 
-@media (prefers-reduced-motion: reduce) {
+@include m.reduced-motion {
 	.guide-bar {
 		transition: none;
 	}

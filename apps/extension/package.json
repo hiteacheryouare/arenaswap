@@ -15,8 +15,11 @@
 		"zip:edge": "wxt zip -b edge",
 		"test": "npm run test:unit && npm run test:component",
 		"test:unit": "jest --passWithNoTests --selectProjects unit",
+		"test:coverage": "jest --passWithNoTests --selectProjects unit --coverage",
 		"test:component": "cypress run --component",
+		"test:component:coverage": "ARENASWAP_COVERAGE_TARGET=component cypress run --component",
 		"test:e2e": "cypress run --e2e",
+		"test:e2e:coverage": "ARENASWAP_COVERAGE_TARGET=e2e npm run build:e2e && ARENASWAP_COVERAGE_TARGET=e2e cypress run --e2e",
 		"cypress:open": "cypress open --component",
 		"cypress:open:e2e": "cypress open --e2e",
 		"typecheck": "wxt prepare && tsc --noEmit && tsc --noEmit -p cypress",
@@ -33,6 +36,7 @@
 		"swr": "^2.5.1"
 	},
 	"devDependencies": {
+		"@cypress/code-coverage": "^4.0.3",
 		"@swc/jest": "^0.2.39",
 		"@types/bootstrap": "^5.2.11",
 		"@types/canvas-confetti": "^1.9.0",
@@ -48,6 +52,7 @@
 		"react-dom": "^19.3.0",
 		"sass": "^1.104.1",
 		"typescript": "^7.0.2",
+		"vite-plugin-istanbul": "^9.0.1",
 		"wxt": "^0.21.4"
 	}
 }

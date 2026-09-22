@@ -44,8 +44,17 @@ export const startStaticServer = (rootDir: string, basePath: string, port: numbe
 			filePath = join(filePath, 'index.html');
 		}
 
+		// GitHub Pages answers an unknown path under the base with 404.html and a 404 status, which
+		// is the only way that page is ever reached. Serving plain text here meant the site's most
+		// visited error page could not be opened by a spec at all.
 		if (!existsSync(filePath) || !statSync(filePath).isFile()) {
-			res.writeHead(404).end('Not found');
+			const notFoundPage = join(rootDir, '404.html');
+			if (!existsSync(notFoundPage)) {
+				res.writeHead(404).end('Not found');
+				return;
+			}
+			res.writeHead(404, { 'Content-Type': 'text/html', 'Cache-Control': 'no-store' });
+			createReadStream(notFoundPage).pipe(res);
 			return;
 		}
 

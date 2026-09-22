@@ -251,27 +251,62 @@ describe('mainView loading and error states', () => {
 	});
 });
 
+/* The real emptyGameState is stubbed out under this runner, so its copy is emptyGameState.cy.tsx's
+   business. What belongs here is which of the two states mainView decided it was in: telling a user
+   with four leagues on that they have none picked sends them into settings for nothing. */
 describe('mainView empty states', () => {
-	it('shows no-leagues CTA when no leagues are selected', () => {
+	it('asks for leagues, and only that, when none are selected', () => {
 		cy.mount(<MainView {...defaultProps} prefs={{ ...defaultPrefs, enabledLeagues: [] }} />);
-		cy.contains(/choose leagues to get started/i).should('exist');
+		cy.get('[data-testid="empty-no-leagues"]').should('exist');
+		cy.get('[data-testid="empty-no-games"]').should('not.exist');
 	});
 
-	it('shows no-games message when leagues are selected but no live games exist', () => {
+	it('reports a quiet night, not a missing setup, when leagues are on and nothing is live', () => {
 		cy.mount(<MainView {...defaultProps} />);
-		cy.contains(/no games right now/i).should('exist');
+		cy.get('[data-testid="empty-no-games"]').should('exist');
+		cy.get('[data-testid="empty-no-leagues"]').should('not.exist');
+	});
+
+	it('shows neither once a game arrives', () => {
+		cy.mount(<MainView {...defaultProps} games={[makeGame('g1')]} />);
+		cy.get('[data-testid="empty-no-games"]').should('not.exist');
+		cy.get('[data-testid="empty-no-leagues"]').should('not.exist');
 	});
 });
 
+/* The heading a card sits under is the whole answer to "is this game one of mine?". Asserting only
+   that the card exists cannot tell the two sections apart, which is the one thing this split is
+   for. */
+const sectionTitleOf = (gameId: string) => cy
+	.get(`[data-testid="game-card-${gameId}"]`)
+	.closest('.mt-2')
+	.find('.popup-section-title');
+
 describe('mainView game sections', () => {
-	it('renders assigned live games when registry has matching games', () => {
-		cy.mount(<MainView {...defaultProps} games={[makeGame('g1')]} registry={[{ gameId: 'g1', tabId: 1 }]} />);
-		cy.get('[data-testid="game-card-g1"]').should('exist');
+	it('files a game with a tab assigned under Active Tabs and one without under Live Games', () => {
+		cy.mount(
+			<MainView
+				{...defaultProps}
+				games={[makeGame('assigned'), makeGame('loose')]}
+				registry={[{ gameId: 'assigned', tabId: 1 }]}
+			/>,
+		);
+
+		sectionTitleOf('assigned').should('have.text', 'Active Tabs');
+		sectionTitleOf('loose').should('have.text', 'Live Games');
 	});
 
-	it('renders unassigned live games in a separate section', () => {
-		cy.mount(<MainView {...defaultProps} games={[makeGame('g2')]} />);
-		cy.get('[data-testid="game-card-g2"]').should('exist');
+	it('moves a game between the two sections when its tab assignment changes', () => {
+		cy.mount(<MainView {...defaultProps} games={[makeGame('g1')]} />);
+		sectionTitleOf('g1').should('have.text', 'Live Games');
+
+		cy.mount(<MainView {...defaultProps} games={[makeGame('g1')]} registry={[{ gameId: 'g1', tabId: 1 }]} />);
+		sectionTitleOf('g1').should('have.text', 'Active Tabs');
+	});
+
+	it('drops the Active Tabs heading entirely when nothing is assigned', () => {
+		cy.mount(<MainView {...defaultProps} games={[makeGame('g1')]} />);
+		cy.contains('.popup-section-title', 'Active Tabs').should('not.exist');
 	});
 
 	it('does not render upcoming games section when showUpcomingGames is false', () => {

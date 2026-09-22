@@ -1,0 +1,74 @@
+{
+	"events": [
+		{
+			"id": "401879276",
+			"competitions": [
+				{
+					"competitors": [
+						{
+							"id": "349",
+							"homeAway": "home",
+							"score": "0",
+							"team": {
+								"displayName": "AFC Bournemouth",
+								"abbreviation": "BOU"
+							}
+						},
+						{
+							"id": "364",
+							"homeAway": "away",
+							"score": "1",
+							"team": {
+								"displayName": "Liverpool",
+								"abbreviation": "LIV"
+							}
+						}
+					],
+					"status": {
+						"period": 2,
+						"displayClock": "90'+5'",
+						"type": {
+							"state": "in",
+							"name": "STATUS_IN_PROGRESS"
+						}
+					}
+				}
+			]
+		},
+		{
+			"id": "401879273",
+			"competitions": [
+				{
+					"competitors": [
+						{
+							"id": "357",
+							"homeAway": "home",
+							"score": "0",
+							"team": {
+								"displayName": "Leeds United",
+								"abbreviation": "LEE"
+							}
+						},
+						{
+							"id": "384",
+							"homeAway": "away",
+							"score": "0",
+							"team": {
+								"displayName": "Crystal Palace",
+								"abbreviation": "CRY"
+							}
+						}
+					],
+					"status": {
+						"period": 3,
+						"displayClock": "105'",
+						"type": {
+							"state": "in",
+							"name": "STATUS_IN_PROGRESS"
+						}
+					}
+				}
+			]
+		}
+	]
+}

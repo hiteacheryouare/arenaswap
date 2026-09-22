@@ -24,6 +24,7 @@
 		"prepack": "npm run build",
 		"test": "npm run test:unit",
 		"test:unit": "jest --passWithNoTests --selectProjects unit",
+		"test:coverage": "jest --passWithNoTests --selectProjects unit --coverage",
 		"typecheck": "tsc --noEmit && tsc --noEmit -p tests",
 		"lint": "oxlint ."
 	},

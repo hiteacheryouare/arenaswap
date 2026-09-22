@@ -362,12 +362,18 @@ const gameDetailView = ({
 			{tabbed ? (
 				<>
 					<DetailTabs tabs={tabs} tabId={tabId} paneId={paneId} />
+					{/* No `fade`. These three are one screen's worth of the same game seen three ways, not
+					    three places to travel between, and crossfading them puts a beat of half-legible
+					    scoreline between a tap and the table it asked for. Bootstrap reads the class to
+					    decide whether to wait on a transition before revealing the pane, so dropping it is
+					    what makes the swap synchronous — `show` is inert without it and is left on to match
+					    what the plugin adds to every pane it activates. */}
 					<div className='tab-content'>
 						{tabs.map((tab, index) => (
 							<div
 								key={tab.id}
 								id={paneId(tab.id)}
-								className={`tab-pane fade${index === 0 ? ' show active' : ''}`}
+								className={`tab-pane${index === 0 ? ' show active' : ''}`}
 								role='tabpanel'
 								aria-labelledby={tabId(tab.id)}
 								tabIndex={0}

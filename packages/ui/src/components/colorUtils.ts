@@ -99,12 +99,18 @@ const pickPair = (ap: string, aa: string, hp: string, ha: string): [string, stri
 	return colorDistance(best[0], best[1]) > colorDistance(ap, hp) ? best : [ap, hp];
 };
 
-// White on a team colour is fine for the navies and reds and unreadable on a gold. 0.1833 is where
-// white stops clearing 4.5:1 — contrast is 1.05 / (L + 0.05) — and these labels are too small to
-// qualify for the 3:1 large-text allowance.
-export const readableInkOn = (background: string, light = '#ffffff', dark = '#111827'): string => (
-	isHex(background) && luminance(background) > 0.1833 ? dark : light
-);
+// White on a team colour is fine for the navies and reds and unreadable on a gold. Neither ink
+// clears 4.5:1 across the whole range, so this takes the better of the two rather than switching
+// where white leaves the bar: 0.1833 is where white drops under 4.5:1, but #111827 is already
+// under it there too, and between 0.1833 and 0.1993 — Atlanta's #E03A3E, the Chargers' #0080C6 —
+// the old threshold threw away the more legible white. Comparing follows a caller's own inks.
+export const readableInkOn = (background: string, light = '#ffffff', dark = '#111827'): string => {
+	if (!isHex(background)) return light;
+	const backdrop = luminance(background);
+	return contrastBetween(backdrop, luminance(dark)) > contrastBetween(backdrop, luminance(light))
+		? dark
+		: light;
+};
 
 // Display type drawn on a team's own colour, which is what the opening graphic sets: a club named
 // across the width of the card, and a tricode at 3.4rem. White is right for most of the league and

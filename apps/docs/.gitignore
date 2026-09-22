@@ -1,0 +1,3 @@
+# The nyc temp directory a coverage e2e run writes. The report itself lands in coverage/, which
+# the repository root already ignores.
+.nyc_output/

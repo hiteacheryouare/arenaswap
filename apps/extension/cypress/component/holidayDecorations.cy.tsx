@@ -380,7 +380,8 @@ describe('the lights celebrating a favourite', () => {
 		mountDetail(clear, december);
 		cy.get('.holiday-lights').should('not.have.class', 'is-celebrating');
 		cy.get('.holiday-bulb').first().should(([bulb]: JQuery<HTMLElement>) => {
-			expect(getComputedStyle(bulb).animationDuration, 'the resting shimmer').to.equal('3.4s');
+			// Was a hand-picked 3.4s; it now rides $motion-ambient with the rest of the idle motion.
+			expect(getComputedStyle(bulb).animationDuration, 'the resting shimmer').to.equal('3s');
 		});
 	});
 
@@ -400,6 +401,106 @@ describe('the lights celebrating a favourite', () => {
 		cy.mount(<HolidayLights flashColors={['#003594']} />);
 		cy.get('.holiday-bulb').should('have.length', 9).each($bulb => {
 			expect(getComputedStyle($bulb[0]!).color).to.equal('rgb(0, 53, 148)');
+		});
+	});
+});
+
+const firstBulbAnimation = () => cy.get('.holiday-bulb').first()
+	.then(([bulb]: JQuery<HTMLElement>) => bulb.getAnimations()[0] as CSSAnimation);
+
+// Chrome's own media emulation, because a `prefers-reduced-motion` block cannot be reached from
+// the page.
+const emulateReducedMotion = () => cy.wrap(Cypress.automation('remote:debugger:protocol', {
+	command: 'Emulation.setEmulatedMedia',
+	params: { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] },
+}));
+
+// A duration in the computed style is a declaration, not a fact. `animation-duration` reads back
+// whatever the stylesheet asked for even when the named keyframes do not exist, and an animation
+// that is paused, cancelled or pointed at nothing satisfies it exactly as well as one that plays.
+// These read the live timeline instead.
+describe('the lights actually moving', () => {
+	it('runs the resting shimmer on a loop rather than only declaring it', () => {
+		mountDetail(clear, december);
+		firstBulbAnimation().then(shimmer => {
+			expect(shimmer, 'the bulb has an animation at all').to.not.equal(undefined);
+			expect(shimmer.animationName, 'the keyframes it is running').to.equal('holidayBulbTwinkle');
+			expect(shimmer.playState, 'and it is playing').to.equal('running');
+			const timing = shimmer.effect!.getTiming();
+			expect(timing.duration, 'one cycle, read off the live timeline in milliseconds').to.equal(3000);
+			expect(timing.iterations, 'and it never stops').to.equal(Infinity);
+		});
+	});
+
+	it('advances along that loop on its own', () => {
+		mountDetail(clear, december);
+		firstBulbAnimation().then(shimmer => {
+			const started = Number(shimmer.currentTime);
+			cy.wrap(null).should(() => {
+				expect(Number(shimmer.currentTime), 'the shimmer moved without being pushed').to.be.greaterThan(started);
+			});
+		});
+	});
+
+	// Proof the keyframes reach the element rather than merely being named by it: scrubbed to the
+	// midpoint of the cycle the bulb has to actually be dimmer, and back at the top of it, full.
+	it('dims the bulb halfway through the cycle and brings it back', () => {
+		mountDetail(clear, december);
+		firstBulbAnimation().then(shimmer => {
+			shimmer.pause();
+			shimmer.currentTime = 1500;
+			cy.get('.holiday-bulb').first().should(([bulb]: JQuery<HTMLElement>) => {
+				expect(getComputedStyle(bulb).opacity, 'dimmed at the midpoint').to.equal('0.48');
+			});
+			cy.then(() => { shimmer.currentTime = 0; });
+			cy.get('.holiday-bulb').first().should(([bulb]: JQuery<HTMLElement>) => {
+				expect(getComputedStyle(bulb).opacity, 'full again at the top of the cycle').to.equal('1');
+			});
+		});
+	});
+
+	it('runs the celebration on a loop too', () => {
+		cy.viewport(320, 560);
+		cy.mount(<HolidayLights flashColors={['#004C54', '#A5ACAF']} />);
+		firstBulbAnimation().then(flash => {
+			expect(flash.animationName, 'the keyframes a celebrating bulb runs').to.equal('holidayBulbCelebrate');
+			expect(flash.playState, 'and it is playing').to.equal('running');
+			const timing = flash.effect!.getTiming();
+			expect(timing.duration, 'the urgent cadence').to.equal(500);
+			expect(timing.iterations, 'and it never stops').to.equal(Infinity);
+		});
+	});
+});
+
+// Chrome's own media emulation, because a `prefers-reduced-motion` block cannot be reached from
+// the page. Asserted as an empty animation list rather than a duration string: `animation: none`
+// and a stylesheet that failed to load both read back as `0s`.
+describe('the lights and a reader who asked for less motion', () => {
+	afterEach(() => {
+		cy.then(() => Cypress.automation('remote:debugger:protocol', {
+			command: 'Emulation.setEmulatedMedia',
+			params: { features: [] },
+		}));
+	});
+
+	it('puts the resting shimmer out entirely', () => {
+		emulateReducedMotion();
+		mountDetail(clear, december);
+		cy.get('.holiday-bulb').first().should(([bulb]: JQuery<HTMLElement>) => {
+			expect(bulb.getAnimations(), 'nothing left running').to.have.length(0);
+		});
+	});
+
+	// FAILING ON PURPOSE. The opt-out is written as `.holiday-bulb`, one class specific, while the
+	// celebration is `.is-celebrating .holiday-bulb`, two. The opt-out therefore loses, and a reader
+	// who asked for stillness gets the whole string strobing at 2Hz the moment a favourite scores —
+	// which is the one piece of motion on this screen it is least safe to leave running.
+	it('puts the celebration strobe out as well', () => {
+		emulateReducedMotion();
+		cy.viewport(320, 560);
+		cy.mount(<HolidayLights flashColors={['#004C54', '#A5ACAF']} />);
+		cy.get('.holiday-bulb').first().should(([bulb]: JQuery<HTMLElement>) => {
+			expect(bulb.getAnimations(), 'nothing left flashing').to.have.length(0);
 		});
 	});
 });

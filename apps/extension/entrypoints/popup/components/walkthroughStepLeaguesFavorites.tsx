@@ -17,8 +17,8 @@ const LeagueRow = ({ label, color, enabled, onToggle }: LeagueRowProps) => (
 	<div className='d-flex align-items-center justify-content-between py-1'>
 		<div className='d-flex align-items-center gap-2'>
 			<span
-				className='badge fw-bold'
-				style={{ backgroundColor: enabled ? color : 'transparent', color: enabled ? '#fff' : '#6c757d', border: `1px solid ${enabled ? color : '#6c757d'}`, minWidth: '3rem', transition: 'all 0.2s' }}
+				className='badge fw-bold motion-tint'
+				style={{ backgroundColor: enabled ? color : 'transparent', color: enabled ? '#fff' : '#6c757d', border: `1px solid ${enabled ? color : '#6c757d'}`, minWidth: '3rem' }}
 			>
 				{label}
 			</span>
@@ -56,8 +56,8 @@ const TeamRow = ({ name, abbr, color, starred, onStar }: TeamRowProps) => (
 		</div>
 		<button
 			type='button'
-			className='btn btn-sm p-0'
-			style={{ background: 'none', border: 'none', color: starred ? '#f1c40f' : '#6c757d', fontSize: '1rem', lineHeight: 1, transition: 'color 0.2s' }}
+			className='btn btn-sm p-0 motion-tint'
+			style={{ background: 'none', border: 'none', color: starred ? '#f1c40f' : '#6c757d', fontSize: '1rem', lineHeight: 1 }}
 			onClick={onStar}
 			aria-label={starred ? i18n.t('stepLeaguesFavorites.unstarAriaLabel', { team: name }) : i18n.t('stepLeaguesFavorites.starAriaLabel', { team: name })}
 		>

@@ -4,6 +4,8 @@
 //
 // The second `@use` is not redundant: `@forward` re-exports members without making them available
 // here, and the ::selection rule at the bottom of this file needs two of them.
+@use 'motion' as m;
+
 @forward 'bootstrap/scss/bootstrap' with (
 	$prefix:               'as-' !default,
 	$primary:              #F75C03 !default,
@@ -60,7 +62,38 @@
 	// not smuggled in here.
 	// Bootstrap picks a filled button's label with color-contrast(); the lighter $secondary now
 	// resolves to the dark side, and this keeps that side on-theme instead of pure black.
-	$color-contrast-dark:  #0d1117 !default
+	$color-contrast-dark:  #0d1117 !default,
+	// Bootstrap's own motion, brought onto our scale. Without these a Bootstrap button, dropdown,
+	// accordion or offcanvas keeps animating on the framework's defaults — .15s and .2s and .3s on
+	// `ease-in-out` — while the component sitting next to it, which we wrote, is on 180ms and our
+	// curve. That gap is the one place a shared scale cannot reach from a rule, because these
+	// timings are compiled into Bootstrap's own declarations.
+	//
+	// `$accordion-transition` has to be restated rather than inherited: its default is
+	// `$btn-transition` plus a `border-radius .15s ease` of its own, and that tail keeps the
+	// framework's timing even once the button token moves. The FAQ page renders these.
+	$transition-base:           (all m.$motion-quick m.$motion-ease) !default,
+	$transition-fade:           (opacity m.$motion-instant m.$motion-ease) !default,
+	$transition-collapse:       (height m.$motion-slow m.$motion-ease) !default,
+	$transition-collapse-width: (width m.$motion-slow m.$motion-ease) !default,
+	$btn-transition:            (color m.$motion-quick m.$motion-ease, background-color m.$motion-quick m.$motion-ease, border-color m.$motion-quick m.$motion-ease, box-shadow m.$motion-quick m.$motion-ease) !default,
+	$input-transition:          (border-color m.$motion-quick m.$motion-ease, box-shadow m.$motion-quick m.$motion-ease) !default,
+	$nav-link-transition:       (color m.$motion-quick m.$motion-ease, background-color m.$motion-quick m.$motion-ease, border-color m.$motion-quick m.$motion-ease) !default,
+	$navbar-toggler-transition: (box-shadow m.$motion-quick m.$motion-ease) !default,
+	$accordion-icon-transition: (transform m.$motion-quick m.$motion-ease) !default,
+	$accordion-transition:      (color m.$motion-quick m.$motion-ease, background-color m.$motion-quick m.$motion-ease, border-color m.$motion-quick m.$motion-ease, box-shadow m.$motion-quick m.$motion-ease, border-radius m.$motion-quick m.$motion-ease) !default,
+	// The four below are the Bootstrap components this product actually renders that carry their own
+	// timing rather than inheriting one of the tokens above: the walkthrough's league switches, the
+	// cooldown slider, the Up Next pager and the site footer's icon links.
+	$form-switch-transition:    (background-position m.$motion-quick m.$motion-ease) !default,
+	$form-range-thumb-transition: (background-color m.$motion-quick m.$motion-ease, border-color m.$motion-quick m.$motion-ease, box-shadow m.$motion-quick m.$motion-ease) !default,
+	$pagination-transition:     (color m.$motion-quick m.$motion-ease, background-color m.$motion-quick m.$motion-ease, border-color m.$motion-quick m.$motion-ease, box-shadow m.$motion-quick m.$motion-ease) !default,
+	$icon-link-icon-transition: (m.$motion-quick m.$motion-ease transform) !default,
+	$modal-transition:          (transform m.$motion-base m.$motion-ease) !default,
+	$offcanvas-transition-duration: m.$motion-base !default,
+	// The game card's PowerScore bar is the main consumer and already re-declares this value on its
+	// own `.progress-bar`; matching here means the two agree instead of one overriding the other.
+	$progress-bar-transition:   (width m.$motion-slow m.$motion-ease) !default
 );
 @use 'bootstrap/scss/bootstrap' as bs;
 

@@ -5,6 +5,26 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The fixes get audited — 2026-09-21
+
+Every fix from the coverage round was mutation-tested — each one reverted to confirm the test standing guard over it genuinely goes red — and the momentum floor, the cooldown that now survives a worker restart, the ink crossover at luminance 0.1993 and the win-probability symbols all held up. Four defects came out of the pass and are left as failing tests rather than fixed: a switch time recorded by a fast clock now outlives the worker and refuses every switch until the skew passes, `parseClockToSeconds` reads `1.0` as one second and `0.9` as fifty-four so a countdown appears to run backwards, the docs site prints a soccer clock as `95:00` where the popup prints `95'` because `formatGameClock` was the one helper the extraction left behind, and the reduced-motion opt-out loses on specificity to the celebration rule so a reader who asked for less motion still gets the strobe.
+
+## Seven silent bugs, found by pointing coverage at the whole repo — 2026-09-21
+
+Every workspace reports coverage now — Jest in four of them, Cypress behind an environment variable in the two that build, so a shipped bundle is never instrumented — and one auditor per workspace went after the gap between tested and verified rather than after the percentage. Seven real defects came out of it, each proved with a failing test before anything was changed: an overturned goal scoring as maximum momentum for the other team, `NaN` reaching the game clock and then storage as a third type, the switch cooldown resetting on every MV3 teardown so the setting quietly stopped holding, and a win-probability line one poll old drawing nothing at all. The clock parser and the period formatter now live in dependency-free modules both apps import, which is what the duplicated copies cost.
+
+## The website gets a net under it — 2026-09-21
+
+Four new Cypress specs cover what a visitor to the docs site actually does: every internal link, sitemap entry, `<html lang>` and locale page is checked against the finished build in one pass, the React demos are proved to hydrate and to speak the page’s language, and the install button is driven under seven user agents to confirm Firefox and Edge visitors reach their own stores. Client-side coverage is available behind `ARENASWAP_SITE_COVERAGE=1`, which instruments the islands and redirects nothing — a normal build still ships clean JavaScript to the tracked `docs/` output. `liveBoardSoccer.cy.ts` caught `LivePowerScores.tsx` keeping private copies of `formatPeriod` and the ESPN clock parser, neither carrying the soccer handling the shared originals have; both copies are gone now.
+
+## The detail tabs cut rather than fade — 2026-09-21
+
+Overview, Box score and Standings swap with no crossfade: the panes drop Bootstrap's `fade` class, which is also the flag its tab plugin reads to decide whether to wait on a transition before revealing one, so the swap is synchronous rather than merely fast. They are one game seen three ways rather than three places to travel between, and a beat of half-legible scoreline between the tap and the table was the wrong thing to spend it on. The tab buttons keep their own hover and active feedback.
+
+## Both apps move on one clock — 2026-09-21
+
+The extension and the website had drifted to 17 durations and 16 easing curves between them, including two near-identical signature ease-outs doing the same job in different places, so `packages/ui/src/_motion.scss` now holds seven durations, three loop cadences and four curves and everything ambient reads from it — including Bootstrap's own components, whose timings are compiled into its declarations and so had to be reached through `$btn-transition` and its neighbours in the theme rather than from a rule. `cubic-bezier(0.22, 1, 0.36, 1)` won the signature, so the site's 19 uses of `cubic-bezier(0.16, 1, 0.3, 1)` came to it. The hand-tuned set pieces are deliberately exempt — the card reveal, Ludicrous Speed, the wordmark collapse and the onboarding rise keep their own beats — and `prefers-reduced-motion` now goes through one mixin with a stated rule about what belongs inside it: movement and looping, not a colour settling on hover.
+
 ## The loading spinner learns 39 more jokes — 2026-09-20
 
 The pool goes from 73 lines to 112, filling in the sports the list barely acknowledged — hockey, soccer, tennis, cricket — plus fan superstition, a few where the extension is self-aware about ranking games by chaos, and a run of oblique winks at famous sports fiascos in the vein of the Deflategate line already there. Those last ones never name what they are pointing at, which is the whole joke, so the translations were told to keep the reference buried rather than clarify it for the local market. `LOADING_MESSAGE_COUNT` in `popupHelpers.ts` is still hand-maintained and is the only thing tying the random index to the twelve locale files, so it has to move with the key count.

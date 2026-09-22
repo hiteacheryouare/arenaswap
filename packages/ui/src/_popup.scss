@@ -1,6 +1,7 @@
 // Popup chrome. Loaded after the theme, whose $font-family-base and $primary it reads, and
 // after `game-card`.
 @use 'bootstrap' as bs;
+@use 'motion' as m;
 //
 // These rules used to live only in `apps/extension/assets/bootstrap.scss`, which meant the
 // website's popup mockups were a hand-copied approximation that drifted every time the popup
@@ -21,7 +22,7 @@
 }
 
 /* The frame is 320px and nothing in it is ever meant to move sideways, but the shell above arrives
-   on `translateX(14px)` — a transform counts towards scrollable overflow, so for the 0.22s of every
+   on `translateX(14px)` — a transform counts towards scrollable overflow, so for the length of every
    view change the popup could be scrolled 14px to the right. `clip` rather than `hidden` because
    this is a clip and not a scroll container, and on the x axis alone so the page still scrolls
    down. */
@@ -32,7 +33,7 @@
 .popup-view-shell {
 	width: 100%;
 	height: 100%;
-	animation: popupViewSlideIn 0.22s ease;
+	animation: popupViewSlideIn m.$motion-base m.$motion-ease;
 }
 
 .popup-section-title {
@@ -133,7 +134,7 @@
 // picture of the popup with both buttons disabled. A disabled button still matches `:hover`,
 // and a control that answers the pointer and then does nothing is worse than an inert one.
 .popup-settings-button .bi-gear-fill::before {
-	transition: transform 0.35s ease-out;
+	transition: transform m.$motion-slow m.$motion-ease;
 }
 
 .popup-settings-button:not(:disabled):hover .bi-gear-fill::before,
@@ -186,12 +187,11 @@
 	height: 176px;
 }
 
-@media (prefers-reduced-motion: reduce) {
+@include m.reduced-motion {
 	.popup-view-shell,
 	.game-card-clickable,
 	.popup-settings-button .bi-gear-fill::before {
-		animation: none;
-		transition: none;
+		@include m.motion-still;
 	}
 
 	.popup-settings-button:not(:disabled):hover .bi-gear-fill::before,

@@ -10,6 +10,10 @@
 			"types": "./dist/index.d.ts",
 			"import": "./dist/index.js"
 		},
+		"./gameClock": {
+			"types": "./dist/gameClock.d.ts",
+			"import": "./dist/gameClock.js"
+		},
 		"./constants": {
 			"types": "./dist/constants.d.ts",
 			"import": "./dist/constants.js"
@@ -24,7 +28,8 @@
 		"test": "npm run test:unit && npm run test:e2e",
 		"test:unit": "jest --passWithNoTests --selectProjects unit",
 		"test:e2e": "jest --passWithNoTests --selectProjects e2e",
-		"typecheck": "tsc --noEmit",
+		"test:coverage": "jest --coverage",
+		"typecheck": "tsc --noEmit && tsc --noEmit -p tests",
 		"lint": "oxlint ."
 	},
 	"dependencies": {

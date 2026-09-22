@@ -38,6 +38,7 @@ export const defaultStrings: Record<string, string> = {
 	'main.enableToggleLabel': 'Enable auto-switching',
 	'main.onStandbyStream': 'On standby stream, waiting for action',
 	'tabAssign.placeholder': '— Assign a tab —',
+	'detail.halftime': 'Halftime',
 	'detail.chartPowerScoreTitle': 'PowerScore over time',
 	'detail.chartScoreTitle': 'Game score over time',
 	'detail.chartWinProbTitle': 'Win probability',

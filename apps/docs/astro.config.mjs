@@ -3,12 +3,28 @@ import react from '@astrojs/react';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
+import istanbul from 'vite-plugin-istanbul';
 import pkg from '../../package.json';
 import { localeCodes } from './src/i18n/locales.ts';
 import sassOptions from '@arenaswap/ui/src/sassOptions.ts';
 
 const year = new Date().getFullYear();
 const version = pkg.version;
+
+// Off unless ARENASWAP_SITE_COVERAGE is set, so a normal build — including the one that writes the
+// tracked docs/ directory GitHub Pages serves — never ships instrumented JavaScript. Only the files
+// that actually reach a browser are listed: the React islands and the one helper they share. The
+// rest of src/ runs in Astro frontmatter at build time, and counting it would report a denominator
+// no visitor ever executes.
+const coverage = process.env.ARENASWAP_SITE_COVERAGE === '1';
+const coveragePlugins = coverage
+	? [istanbul({
+		include: ['src/components/**', 'src/i18n/islandStrings.ts'],
+		extension: ['.ts', '.tsx'],
+		// `astro build` is a production build, which the plugin skips instrumenting by default.
+		forceBuildInstrument: true,
+	})]
+	: [];
 
 export default defineConfig({
 	integrations: [
@@ -44,7 +60,7 @@ export default defineConfig({
 		},
 	},
 	vite: {
-		plugins: [tailwindcss()],
+		plugins: [tailwindcss(), ...coveragePlugins],
 		// Silences Bootstrap 5.3's Sass deprecation warnings, and only for as long as Bootstrap
 		// is the one emitting them. See packages/ui/src/sassOptions.ts.
 		css: {
