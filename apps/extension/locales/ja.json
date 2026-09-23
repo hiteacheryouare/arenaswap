@@ -309,8 +309,6 @@
 			"1": "1件がお気に入り",
 			"n": "$1件がお気に入り"
 		},
-		"empty": "今日は試合がお休みです。",
-		"loading": "今日の試合を読み込み中…",
 		"favoriteGame": "あなたのお気に入りチーム",
 		"at": "vs"
 	},
@@ -327,6 +325,7 @@
 		"totalLabel": "{total} / {max}",
 		"totalLabelBaseMax": "{total}（ベース上限 {max}）",
 		"back": "戻る",
+		"close": "閉じる",
 		"teamRecord": "戦績: {record}",
 		"unitDays": "日",
 		"unitHours": "時間",

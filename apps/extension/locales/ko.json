@@ -309,8 +309,6 @@
 			"1": "내 팀 1경기",
 			"n": "내 팀 $1경기"
 		},
-		"empty": "오늘은 경기가 없네요.",
-		"loading": "오늘 경기 불러오는 중…",
 		"favoriteGame": "응원팀 경기",
 		"at": "vs"
 	},
@@ -327,6 +325,7 @@
 		"totalLabel": "{total} / {max}",
 		"totalLabelBaseMax": "{total} (기본 최대 {max})",
 		"back": "뒤로",
+		"close": "닫기",
 		"teamRecord": "전적: {record}",
 		"unitDays": "일",
 		"unitHours": "시간",

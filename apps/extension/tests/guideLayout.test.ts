@@ -2,7 +2,7 @@ import type { Game, LeagueId } from '@arenaswap/core/types';
 import { leagueConfigs } from '@arenaswap/core/constants';
 import { buildBar, type guideBar } from '../entrypoints/guide/guideHeat';
 import { groupByDate } from '../entrypoints/popup/popupHelpers';
-import { axisBounds, defaultDayKey, groupByLeague, hourMarks, minutesToPx, msToPx, pxPerMinute } from '../entrypoints/guide/guideLayout';
+import { axisBounds, defaultDayKey, fillAxis, groupByLeague, hourMarks, minutesToPx, msToPx, pxPerMinute } from '../entrypoints/guide/guideLayout';
 
 const at = (iso: string) => new Date(iso).getTime();
 const now = at('2026-09-13T12:00:00Z');
@@ -53,6 +53,21 @@ describe('axis bounds', () => {
 
 	test('an empty slate has no axis rather than a zero-width one', () => {
 		expect(axisBounds([])).toBeNull();
+	});
+});
+
+describe('filling the width', () => {
+	const bounds = { fromMs: at('2026-09-13T23:00:00Z'), toMs: at('2026-09-14T02:00:00Z') };
+
+	test('runs a short evening out to the edge of the tab in whole hours', () => {
+		const filled = fillAxis(bounds, 1000);
+		expect(msToPx(filled.toMs, filled.fromMs)).toBeGreaterThanOrEqual(1000);
+		expect((filled.toMs - filled.fromMs) % (60 * 60_000)).toBe(0);
+		expect(filled.fromMs).toBe(bounds.fromMs);
+	});
+
+	test('leaves a day already wider than the tab alone', () => {
+		expect(fillAxis(bounds, 200)).toEqual(bounds);
 	});
 });
 

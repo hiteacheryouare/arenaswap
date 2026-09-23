@@ -309,8 +309,6 @@
 			"1": "1 场收藏",
 			"n": "$1 场收藏"
 		},
-		"empty": "今天没什么好看的。",
-		"loading": "今天的比赛加载中……",
 		"favoriteGame": "您收藏的球队之一",
 		"at": "vs"
 	},
@@ -327,6 +325,7 @@
 		"totalLabel": "{total} / {max}",
 		"totalLabelBaseMax": "{total}（基础上限 {max}）",
 		"back": "返回",
+		"close": "关闭",
 		"teamRecord": "战绩：{record}",
 		"unitDays": "天",
 		"unitHours": "时",

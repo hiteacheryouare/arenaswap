@@ -309,8 +309,6 @@
 			"1": "1 favorito",
 			"n": "$1 favoritos"
 		},
-		"empty": "Hoy no hay nada en cartelera.",
-		"loading": "Cargando los partidos de hoy…",
 		"favoriteGame": "Uno de tus equipos favoritos",
 		"at": "vs."
 	},
@@ -327,6 +325,7 @@
 		"totalLabel": "{total} / {max}",
 		"totalLabelBaseMax": "{total} (máx. base {max})",
 		"back": "Atrás",
+		"close": "Cerrar",
 		"teamRecord": "Récord: {record}",
 		"unitDays": "d",
 		"unitHours": "h",

@@ -73,7 +73,7 @@ describe('the guide grid', () => {
 
 	it('opens the game it was clicked on', () => {
 		mountGrid([bar('only', 'nfl', '2026-09-13T17:00:00Z')]);
-		cy.get('.guide-bar').click();
+		cy.get('.guide-bar-shape').click();
 		cy.get('@onOpen').should('have.been.calledOnceWith', 'only');
 	});
 
@@ -96,8 +96,8 @@ describe('the guide grid', () => {
 		]);
 		// Addressed by status rather than by position: the grid sorts a group by kickoff, so the live
 		// game is the first bar in the DOM and an index would be comparing the pair the wrong way round.
-		cy.get("[data-status='in']").then(([live]: JQuery<HTMLElement>) => {
-			cy.get("[data-status='pre']").then(([scheduled]: JQuery<HTMLElement>) => {
+		cy.get("[data-status='in'] .guide-bar-shape").then(([live]: JQuery<HTMLElement>) => {
+			cy.get("[data-status='pre'] .guide-bar-shape").then(([scheduled]: JQuery<HTMLElement>) => {
 				expect(lightness(live!), 'the live bar').to.be.greaterThan(lightness(scheduled!));
 				expect(getComputedStyle(live!).borderColor).to.not.equal(getComputedStyle(scheduled!).borderColor);
 			});
@@ -112,7 +112,7 @@ describe('the guide grid', () => {
 			bar('plain', 'nfl', '2026-09-13T17:00:00Z'),
 			bar('mine', 'nfl', '2026-09-13T17:00:00Z', {}, true),
 		]);
-		cy.get('.guide-bar').then(([first, second]: JQuery<HTMLElement>) => {
+		cy.get('.guide-bar-shape').then(([first, second]: JQuery<HTMLElement>) => {
 			expect(getComputedStyle(second!).backgroundColor).to.equal(getComputedStyle(first!).backgroundColor);
 		});
 		// The star is the only thing distinguishing it, and it has to actually be there — otherwise
@@ -120,15 +120,73 @@ describe('the guide grid', () => {
 		cy.get('.guide-bar-star').should('have.length', 1);
 	});
 
-	// A finished game keeps its place so the day keeps its shape, but it is dimmed.
-	it('dims a finished game without recolouring it', () => {
+	// A finished game keeps its place so the day keeps its shape, but it recedes: the plate sinks and
+	// the ink steps down. Its crests stay whole, which fading the whole bar did not.
+	it('sinks a finished game below the live one without fading its crests', () => {
 		mountGrid([
 			bar('live', 'nfl', '2026-09-13T19:00:00Z', { status: 'in' }),
 			bar('done', 'nfl', '2026-09-13T13:00:00Z', { status: 'post' }),
 		]);
-		cy.get(".guide-bar[data-status='post']").should('have.length', 1).then(([final]: JQuery<HTMLElement>) => {
-			expect(parseFloat(getComputedStyle(final!).opacity)).to.be.lessThan(1);
+		cy.get("[data-status='post'] .guide-bar-shape").then(([final]: JQuery<HTMLElement>) => {
+			cy.get("[data-status='in'] .guide-bar-shape").then(([live]: JQuery<HTMLElement>) => {
+				expect(lightness(final!)).to.be.lessThan(lightness(live!));
+			});
 		});
+		cy.get("[data-status='post'] .guide-crest-disc").each(($crest: JQuery<HTMLElement>) => {
+			let element: HTMLElement | null = $crest[0]!;
+			while (element) {
+				expect(parseFloat(getComputedStyle(element).opacity)).to.equal(1);
+				element = element.parentElement;
+			}
+		});
+	});
+
+	// What a card says in its status row, at bar size.
+	it('reads a live game as a scoreboard: both scores and where the game is', () => {
+		mountGrid([bar('live', 'nfl', '2026-09-13T19:00:00Z', {
+			status: 'in', period: 2, clockSeconds: 312,
+			awayTeam: { id: 'a', name: 'Away', abbreviation: 'KC', score: 14 },
+			homeTeam: { id: 'h', name: 'Home', abbreviation: 'LAC', score: 13 },
+		})]);
+		cy.get('.guide-bar-score').then(($scores: JQuery<HTMLElement>) => {
+			expect([...$scores].map(score => score.textContent)).to.deep.equal(['14', '13']);
+		});
+		cy.get('.guide-bar-status').should('have.text', 'Q2 • 5:12');
+		cy.get('.guide-bar-at').should('not.exist');
+	});
+
+	it('prints a final with the loser receded, as the final card does', () => {
+		mountGrid([bar('done', 'nfl', '2026-09-13T13:00:00Z', {
+			status: 'post', finalPeriodSuffix: 'OT',
+			awayTeam: { id: 'a', name: 'Away', abbreviation: 'BUF', score: 31 },
+			homeTeam: { id: 'h', name: 'Home', abbreviation: 'MIA', score: 10 },
+		})]);
+		cy.get('.guide-bar-status').should('have.text', 'Final/OT');
+		cy.get('.guide-bar-side.is-loser').should('have.length', 1).and('contain.text', 'MIA');
+		cy.contains('.guide-bar-side', 'BUF').find('.guide-bar-score').then(([winner]: JQuery<HTMLElement>) => {
+			cy.contains('.guide-bar-side', 'MIA').find('.guide-bar-score').then(([loser]: JQuery<HTMLElement>) => {
+				expect(getComputedStyle(loser!).color).to.not.equal(getComputedStyle(winner!).color);
+			});
+		});
+	});
+
+	it('dims neither side of a level final', () => {
+		mountGrid([bar('draw', 'nfl', '2026-09-13T13:00:00Z', {
+			status: 'post',
+			awayTeam: { id: 'a', name: 'Away', abbreviation: 'ARS', score: 2 },
+			homeTeam: { id: 'h', name: 'Home', abbreviation: 'LIV', score: 2 },
+		})]);
+		cy.get('.guide-bar-side.is-loser').should('not.exist');
+	});
+
+	// Before a game there is no score to print, so the bar carries what a guide is for: when, and
+	// on what.
+	it('gives a scheduled game its kickoff and its network instead of a 0–0', () => {
+		mountGrid([bar('later', 'nfl', '2026-09-14T00:20:00Z', { broadcasts: ['NBC', 'Peacock'] })]);
+		cy.get('.guide-bar-score').should('not.exist');
+		cy.get('.guide-bar-time').should('exist');
+		cy.get('.guide-bar-at').should('exist');
+		cy.get('.guide-bar-network').should('have.text', 'NBC');
 	});
 
 	it('puts the now line where now is, between the bars that have started and those that have not', () => {
@@ -149,7 +207,7 @@ describe('the guide grid', () => {
 	// hold two crests and a matchup, which is what a row has to be readable as.
 	it('keeps every bar wide enough to read a matchup off', () => {
 		mountGrid(nflSunday());
-		cy.get('.guide-bar').each(($bar: JQuery<HTMLElement>) => {
+		cy.get('.guide-bar-shape').each(($bar: JQuery<HTMLElement>) => {
 			expect($bar[0]!.getBoundingClientRect().width).to.be.greaterThan(200);
 		});
 	});
@@ -158,7 +216,7 @@ describe('the guide grid', () => {
 	// colour swatch you cannot read a matchup off.
 	it('carries each team colour as a rail at its own end of the bar', () => {
 		mountGrid([bar('a', 'nfl', '2026-09-13T17:00:00Z')]);
-		cy.get('.guide-bar').first().then(([element]: JQuery<HTMLElement>) => {
+		cy.get('.guide-bar-shape').first().then(([element]: JQuery<HTMLElement>) => {
 			const away = getComputedStyle(element, '::before').backgroundColor;
 			const home = getComputedStyle(element, '::after').backgroundColor;
 			expect(away).to.not.equal(home);
@@ -173,7 +231,7 @@ describe('the guide grid', () => {
 	// page, which is the whole reason the pair is resolved through the lightening climb.
 	it('lifts a navy off the background rather than drawing it raw', () => {
 		mountGrid([bar('a', 'nfl', '2026-09-13T17:00:00Z')]);
-		cy.get('.guide-bar').first().then(([element]: JQuery<HTMLElement>) => {
+		cy.get('.guide-bar-shape').first().then(([element]: JQuery<HTMLElement>) => {
 			for (const pseudo of ['::before', '::after']) {
 				const [r, g, b] = getComputedStyle(element, pseudo).backgroundColor.match(/\d+/g)!.slice(0, 3).map(Number);
 				const luminance = (0.2126 * r! + 0.7152 * g! + 0.0722 * b!) / 255;
@@ -272,7 +330,7 @@ describe('the guide grid', () => {
 		// Past the gutter as well as past the viewport: at 220 the bar's own start is still on screen.
 		cy.get('.guide-scroller').scrollTo(340, 0);
 		cy.get('.guide-bar').first().then(([element]: JQuery<HTMLElement>) => {
-			const barBox = element.getBoundingClientRect();
+			const barBox = element.querySelector('.guide-bar-shape')!.getBoundingClientRect();
 			const content = element.querySelector('.guide-bar-content')!.getBoundingClientRect();
 			const scroller = element.closest('.guide-scroller')!.getBoundingClientRect();
 			// The bar itself has been scrolled off to the left...
@@ -283,16 +341,97 @@ describe('the guide grid', () => {
 		});
 	});
 
-	// The pinning must not push content out of a bar whose right edge has arrived: sticky is bounded
-	// by its containing block, and this is the assertion that says so rather than assuming it.
-	it('stops pinning at the end of the bar rather than dragging the label past it', () => {
-		mountGrid([bar('early', 'nfl', '2026-09-13T17:00:00Z')], true, 400);
+	// A game that ended an hour ago still owns its row. Bounded by the bar, the label was dragged
+	// under the gutter with it, leaving a scrap like 'F @ MIA' or, once the bar had gone, an empty row.
+	it('keeps a label beside the league column after its bar has scrolled away', () => {
+		mountGrid([bar('early', 'nfl', '2026-09-13T17:00:00Z'), bar('late', 'nfl', '2026-09-14T02:00:00Z')], true, 600);
 		cy.get('.guide-scroller').scrollTo('right');
-		cy.get('.guide-bar').first().then(([element]: JQuery<HTMLElement>) => {
-			const barBox = element.getBoundingClientRect();
+		cy.get("[data-game-id='early']").then(([element]: JQuery<HTMLElement>) => {
+			const shape = element.querySelector('.guide-bar-shape')!.getBoundingClientRect();
 			const content = element.querySelector('.guide-bar-content')!.getBoundingClientRect();
-			expect(content.right).to.be.at.most(barBox.right + 1);
-			expect(content.left).to.be.at.least(barBox.left - 1);
+			const scroller = element.closest('.guide-scroller')!.getBoundingClientRect();
+			expect(shape.right, 'the bar itself is gone').to.be.lessThan(scroller.left + gutterPx);
+			expect(content.left).to.be.closeTo(scroller.left + gutterPx, 1);
+			expect(content.width).to.be.greaterThan(100);
 		});
+	});
+
+	// Half a bar with its label hanging off the end had the bar's own end rule running through the
+	// text. Once the label no longer fits, the bar goes and the label stays.
+	it('lets a bar go once its pinned label no longer fits in what is left of it', () => {
+		mountGrid([bar('early', 'nfl', '2026-09-13T17:00:00Z'), bar('late', 'nfl', '2026-09-14T02:00:00Z')], true, 600);
+		cy.get("[data-game-id='early']").should('not.have.attr', 'data-cut');
+		cy.get('.guide-scroller').scrollTo('right');
+		cy.get("[data-game-id='early']").should('have.attr', 'data-cut');
+		cy.get("[data-game-id='early'] .guide-bar-shape").should('have.css', 'opacity', '0');
+		cy.get("[data-game-id='early'] .guide-bar-content").should('be.visible');
+	});
+
+	it('shows no hour label that is only partly on screen', () => {
+		mountGrid(nflSunday(), true, 700);
+		cy.get('.guide-scroller').scrollTo(190, 0);
+		cy.get('.guide-ruler-label[data-clipped]').should('have.length.at.least', 1);
+		cy.get('.guide-scroller').should(([scroller]: JQuery<HTMLElement>) => {
+			const view = scroller!.getBoundingClientRect();
+			for (const label of scroller!.querySelectorAll<HTMLElement>('.guide-ruler-label:not([data-clipped])')) {
+				const box = label.getBoundingClientRect();
+				expect(box.left).to.be.at.least(view.left + gutterPx - 0.5);
+				expect(box.right).to.be.at.most(view.right + 0.5);
+			}
+		});
+	});
+
+	// The now line is over the bars but never over the column naming the leagues.
+	it('draws the now line under the league column', () => {
+		// Two leagues, so there is a divider between them for the line to leak through.
+		mountGrid([bar('early', 'nfl', '2026-09-13T17:00:00Z'), bar('late', 'nba', '2026-09-14T02:00:00Z')], true, 600);
+		cy.get('.guide-now').then(([line]: JQuery<HTMLElement>) => {
+			const scroller = line!.closest('.guide-scroller') as HTMLElement;
+			const canvas = line!.closest('.guide-canvas')!;
+			// Parked halfway across the gutter, which is where the line sits once the grid is scrolled
+			// a little past the present.
+			const canvasX = line!.getBoundingClientRect().left - canvas.getBoundingClientRect().left;
+			scroller.scrollLeft = canvasX - gutterPx / 2;
+			// elementFromPoint skips anything the pointer passes through, which the overlay is built to be.
+			line!.parentElement!.style.pointerEvents = 'auto';
+			line!.style.pointerEvents = 'auto';
+			const box = line!.getBoundingClientRect();
+			const view = scroller.getBoundingClientRect();
+			expect(box.left - view.left, 'the line is under the gutter').to.be.closeTo(gutterPx / 2, 2);
+			const hit = document.elementFromPoint(box.left + 1, box.top + 40);
+			expect(hit, 'something is drawn there').to.not.equal(null);
+			expect(hit!.closest('.guide-league'), 'the league column is on top').to.not.equal(null);
+			// The rule between two leagues has to be the gutter's own border, painted by its opaque box.
+			// Drawn by the group instead it was a 1px gap the line showed through. Asserted on the boxes,
+			// since hit-testing snaps to whole pixels and cannot see a gap this thin.
+			const group = document.querySelectorAll('.guide-group')[1]!;
+			const league = group.querySelector('.guide-league')!;
+			expect(league.getBoundingClientRect().top, 'the rule is inside the gutter cell').to.be.closeTo(group.getBoundingClientRect().top, 0.01);
+			expect(getComputedStyle(league).borderTopWidth).to.equal('1px');
+		});
+	});
+
+	// A short evening runs its hours out to the edge of the tab rather than stopping partway across.
+	it('fills the width it is given on a short day', () => {
+		cy.viewport(1600, 800);
+		cy.mount(
+			<div className='guide-page'>
+				<div className='guide-scroller'>
+					<GuideGrid bars={[bar('only', 'nfl', '2026-09-14T00:00:00Z')]} band={null} leagueLogos={{}} now={null} minPlotPx={1600 - gutterPx} onOpen={() => {}} />
+				</div>
+			</div>,
+		);
+		cy.get('.guide-canvas').invoke('outerWidth').should('be.at.least', 1600);
+	});
+
+	it('marks the game the drawer is showing', () => {
+		cy.mount(
+			<div className='guide-page'>
+				<div className='guide-scroller'>
+					<GuideGrid bars={[bar('a', 'nfl', '2026-09-13T17:00:00Z'), bar('b', 'nfl', '2026-09-13T17:00:00Z')]} band={null} leagueLogos={{}} now={null} selectedGameId='b' onOpen={() => {}} />
+				</div>
+			</div>,
+		);
+		cy.get("[data-selected='true']").should('have.length', 1).and('have.attr', 'data-game-id', 'b');
 	});
 });

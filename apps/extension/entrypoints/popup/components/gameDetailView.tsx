@@ -57,6 +57,9 @@ interface gameDetailViewProps {
 	onToggleFavoriteTeam?: (leagueId: LeagueId, teamId: string) => void;
 	onRegistryChange?: (updated: TabRegistration[]) => void;
 	formatTabLabel?: (tab: Browser.tabs.Tab) => string;
+	tabAssignEnabled?: boolean;
+	// A panel beside a page closes; a screen in the popup goes back to the list it came from.
+	dismiss?: 'back' | 'close';
 	onSetGameBoost: (gameId: string, boost: number) => void;
 	onBack: () => void;
 }
@@ -93,6 +96,8 @@ const gameDetailView = ({
 	onToggleFavoriteTeam = () => {},
 	onRegistryChange = () => {},
 	formatTabLabel = tab => tab.title ?? '',
+	tabAssignEnabled = true,
+	dismiss = 'back',
 	onSetGameBoost,
 	onBack,
 }: gameDetailViewProps) => {
@@ -242,6 +247,7 @@ const gameDetailView = ({
 					onSetGameBoost={onSetGameBoost}
 					onRegistryChange={onRegistryChange}
 					formatTabLabel={formatTabLabel}
+					tabAssignEnabled={tabAssignEnabled}
 				/>
 				<PregameStats game={game} />
 				<GameInfoPanel game={game} bettingPrefs={bettingPrefs} weatherPrefs={weatherPrefs} />
@@ -326,7 +332,7 @@ const gameDetailView = ({
 	return (
 		<div className='popup-container game-detail-shell' ref={shellRef}>
 			{decorations.falling && <HolidayFall kind={decorations.falling} />}
-			<DetailStickyBar game={game} status={status} compact={heroScrolledAway} monoLogos={monoLogos} onBack={onBack} />
+			<DetailStickyBar game={game} status={status} compact={heroScrolledAway} monoLogos={monoLogos} dismiss={dismiss} onBack={onBack} />
 			{decorations.lights && <HolidayLights flashColors={scoreFlash} />}
 
 			<div ref={heroRef}>

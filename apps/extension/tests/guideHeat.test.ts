@@ -250,6 +250,29 @@ describe('the best-time band', () => {
 		expect(band!.peakMs).toBeLessThanOrEqual(band!.toMs);
 	});
 
+	// Opened at twenty to six, the fourth quarters of the one o'clock games are long over. Telling
+	// somebody the best time to watch was two hours ago is not advice.
+	test('looks only ahead of the moment it is given', () => {
+		const tooLate = at('2026-09-13T21:40:00Z');
+		const { band } = buildHeatCurve(nflSunday(), { ...options, notBeforeMs: tooLate });
+		expect(band).not.toBeNull();
+		expect(band!.fromMs).toBeGreaterThanOrEqual(tooLate);
+		expect(band!.peakMs).toBeGreaterThanOrEqual(tooLate);
+	});
+
+	test('widens forward rather than back across the moment it is given', () => {
+		const sparse = [barFor(makeGame('a', 'nhl', '2026-09-13T23:00:00Z'), false, now)];
+		const { band: open } = buildHeatCurve(sparse, options);
+		const { band } = buildHeatCurve(sparse, { ...options, notBeforeMs: open!.peakMs });
+		expect(band!.fromMs).toBe(open!.peakMs);
+		expect(band!.toMs - band!.fromMs).toBeGreaterThanOrEqual(30 * 60_000);
+	});
+
+	test('has no band once everything on the slate is over', () => {
+		const { band } = buildHeatCurve(nflSunday(), { ...options, notBeforeMs: at('2026-09-14T06:00:00Z') });
+		expect(band).toBeNull();
+	});
+
 	test('an empty slate yields no band rather than throwing', () => {
 		expect(buildHeatCurve([], options)).toEqual({ points: [], band: null });
 	});

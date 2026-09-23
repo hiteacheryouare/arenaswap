@@ -170,6 +170,7 @@ export const installFakeBrowser = (win: Window, options: fakeBrowserOptions): fa
 			},
 		},
 		i18n: {
+			getUILanguage: () => 'en-US',
 			getMessage: (key: string, substitutions?: string | string[]) =>
 				translate(options.messages, key, substitutions),
 		},

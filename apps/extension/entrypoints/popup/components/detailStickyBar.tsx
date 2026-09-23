@@ -57,13 +57,14 @@ interface detailStickyBarProps {
 	status: GameStatus;
 	compact: boolean;
 	monoLogos: MonoLogos;
+	dismiss?: 'back' | 'close';
 	onBack: () => void;
 }
 
 // The matchup is absolutely centred and the status pinned separately to the right. In one
 // centred group a longer status string drags the score off the card's axis, and it drifts
 // again every time the period changes.
-const detailStickyBar = ({ game, status, compact, monoLogos, onBack }: detailStickyBarProps) => {
+const detailStickyBar = ({ game, status, compact, monoLogos, dismiss = 'back', onBack }: detailStickyBarProps) => {
 	// Before a start both scores are 0 and stay 0, so the abbreviations are doing the bar's whole
 	// job on their own and the figures are noise. The rule between them stays either way: it is
 	// what makes the pair read as one matchup rather than two adjacent teams.
@@ -72,8 +73,8 @@ const detailStickyBar = ({ game, status, compact, monoLogos, onBack }: detailSti
 	return (
 		<div className='game-detail-header'>
 			<button type='button' className='btn btn-sm game-detail-back-button' onClick={onBack}>
-				<i className='bi bi-arrow-left' aria-hidden='true' />
-				<span>{i18n.t('detail.back')}</span>
+				<i className={dismiss === 'close' ? 'bi bi-x-lg' : 'bi bi-arrow-left'} aria-hidden='true' />
+				<span>{i18n.t(dismiss === 'close' ? 'detail.close' : 'detail.back')}</span>
 			</button>
 			<div className={`gd-bar-compact${compact ? ' is-visible' : ''}`} aria-hidden={!compact}>
 				<BarCrest team={game.awayTeam} monoMarks={monoLogos.away} />

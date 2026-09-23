@@ -309,8 +309,6 @@
 			"1": "1 Favorit",
 			"n": "$1 Favoriten"
 		},
-		"empty": "Heute läuft nichts.",
-		"loading": "Die heutigen Spiele werden geladen…",
 		"favoriteGame": "Eines deiner Lieblingsteams",
 		"at": "-"
 	},
@@ -327,6 +325,7 @@
 		"totalLabel": "{total} / {max}",
 		"totalLabelBaseMax": "{total} (Basis-Maximum {max})",
 		"back": "Zurück",
+		"close": "Schließen",
 		"teamRecord": "Bilanz: {record}",
 		"unitDays": "T",
 		"unitHours": "Std",

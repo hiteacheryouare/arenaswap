@@ -309,8 +309,6 @@
 			"1": "1 favorito",
 			"n": "$1 favoritos"
 		},
-		"empty": "Hoje não há jogos.",
-		"loading": "A carregar os jogos de hoje…",
 		"favoriteGame": "Uma das tuas equipas favoritas",
 		"at": "-"
 	},
@@ -327,6 +325,7 @@
 		"totalLabel": "{total} / {max}",
 		"totalLabelBaseMax": "{total} (máx. base {max})",
 		"back": "Voltar",
+		"close": "Fechar",
 		"teamRecord": "Balanço: {record}",
 		"unitDays": "d",
 		"unitHours": "h",

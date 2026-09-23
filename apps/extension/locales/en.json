@@ -309,8 +309,6 @@
 			"1": "1 of yours",
 			"n": "$1 of yours"
 		},
-		"empty": "Nothing on today",
-		"loading": "Loading today's games…",
 		"favoriteGame": "One of your teams",
 		"at": "@"
 	},
@@ -327,6 +325,7 @@
 		"totalLabel": "{total} / {max}",
 		"totalLabelBaseMax": "{total} (base max {max})",
 		"back": "Back",
+		"close": "Close",
 		"teamRecord": "Record: {record}",
 		"unitDays": "d",
 		"unitHours": "h",

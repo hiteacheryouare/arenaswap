@@ -309,8 +309,6 @@
 			"1": "1 paborito",
 			"n": "$1 na paborito"
 		},
-		"empty": "Walang laro ngayon.",
-		"loading": "Nilo-load ang mga laro ngayon…",
 		"favoriteGame": "Isa sa mga paborito mong team",
 		"at": "vs"
 	},
@@ -327,6 +325,7 @@
 		"totalLabel": "{total} / {max}",
 		"totalLabelBaseMax": "{total} (max na base {max})",
 		"back": "Bumalik",
+		"close": "Isara",
 		"teamRecord": "Record: {record}",
 		"unitDays": "d",
 		"unitHours": "h",

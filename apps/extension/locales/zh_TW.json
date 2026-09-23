@@ -309,8 +309,6 @@
 			"1": "1 場收藏",
 			"n": "$1 場收藏"
 		},
-		"empty": "今天沒什麼好看的。",
-		"loading": "今天的比賽載入中……",
 		"favoriteGame": "你收藏的球隊之一",
 		"at": "vs"
 	},
@@ -327,6 +325,7 @@
 		"totalLabel": "{total} / {max}",
 		"totalLabelBaseMax": "{total}（基礎上限 {max}）",
 		"back": "返回",
+		"close": "關閉",
 		"teamRecord": "戰績：{record}",
 		"unitDays": "天",
 		"unitHours": "時",

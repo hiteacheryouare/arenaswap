@@ -3,23 +3,29 @@
 // exactly what the detail screen is designed against and the height is overridden to fill the tab.
 @use '@arenaswap/ui/src/motion' as m;
 
-$guide-bg: #0d1117;
-$guide-surface: #161b22;
-$guide-border: #30363d;
-$guide-ink: #e6edf3;
-$guide-ink-dim: #8b949e;
-$guide-bar: #21262d;
+// The theme's own tokens, read at runtime rather than copied: the popup's stylesheet already emits
+// them on :root, and pulling the Sass theme in here would compile Bootstrap into the page twice.
+$guide-bg: var(--as-body-bg);
+$guide-surface: var(--as-tertiary-bg);
+$guide-border: var(--as-border-color);
+$guide-ink: var(--as-body-color);
+$guide-ink-dim: var(--as-secondary-color);
+$guide-bar: var(--as-secondary-bg);
 // A live bar is a step up off the page rather than a second colour to learn: same hue, more
 // light, brighter ink. Scheduled stays flat and finished stays dimmed.
 $guide-bar-live: #2d333b;
 $guide-bar-live-border: #4d5561;
-$guide-accent: #F75C03;
+$guide-accent: var(--as-primary);
+// The popup's quieter muted grey, for what is on the grid but already over.
+$guide-ink-faint: #6e7681;
 // Three weights of rule, so the eye can tell a row from an hour from a league boundary. All three
 // were invisible before: the row hairline resolved to #171C22 on a #0D1117 page.
 $guide-rule: #1e242c;
 $guide-gridline: #262d37;
 $guide-row-height: 30px;
-$guide-ruler-height: 32px;
+// The detail screen's sticky bar is 2.5rem, and the drawer sits beside this ruler: at 32px the two
+// rules under them met the seam 8px apart.
+$guide-ruler-height: 2.5rem;
 
 .guide-page {
 	min-height: 100vh;
@@ -35,7 +41,11 @@ $guide-ruler-height: 32px;
 	flex-wrap: wrap;
 	gap: 0.5rem 1rem;
 	flex-shrink: 0;
-	padding: 0.7rem 1.25rem;
+	// A whole number of pixels, rule included. Its content made it 52.875px, and the drawer below
+	// starts on that fraction: as its own compositing layer it smeared its top edge into this rule,
+	// leaving the line visibly darker above the drawer than above the grid.
+	min-height: 3.25rem;
+	padding: 0.5rem 1.25rem;
 	border-bottom: 1px solid $guide-border;
 	background: $guide-bg;
 }
@@ -93,23 +103,10 @@ $guide-ruler-height: 32px;
 	min-width: 0;
 }
 
-.guide-empty {
+.guide-status {
 	margin: auto;
-	max-width: 22rem;
-	padding: 1.25rem 1.5rem;
-	border: 1px solid rgba(247, 92, 3, 0.45);
-	background: rgba(247, 92, 3, 0.08);
-	border-radius: 0.375rem;
-	color: $guide-ink;
-	font-size: 0.85rem;
-	text-align: center;
-}
-
-.guide-loading {
-	margin: auto;
+	max-width: 24rem;
 	padding: 1.25rem;
-	color: $guide-ink-dim;
-	font-size: 0.85rem;
 }
 
 .guide-scroller {
@@ -183,20 +180,32 @@ $guide-ruler-height: 32px;
 
 .guide-ruler-label {
 	position: absolute;
-	top: 9px;
+	top: 13px;
 	left: 0;
 	transform: translateX(-50%);
 	font-family: 'Lekton', monospace;
 	font-size: 0.72rem;
 	color: $guide-ink-dim;
 	white-space: nowrap;
+	transition: opacity m.$motion-quick m.$motion-ease;
+
+	// Half under the league column or half off the end of the scroll, where it read as 'PM' or '12:'
+	// on its own. Flagged by useEdgeClipping.
+	&[data-clipped] {
+		opacity: 0;
+	}
 }
 
-// The axis opens on a whole hour, so the first label sits at the track's own left edge and centring
-// it would put half of it under the gutter.
+// The axis opens and closes on a whole hour, so the first and last labels sit on the track's own
+// edges, and centring either would put half of it under the gutter or past the end of the scroll.
 .guide-ruler-mark:first-of-type .guide-ruler-label {
 	transform: none;
 	padding-left: 4px;
+}
+
+.guide-ruler-mark:last-of-type .guide-ruler-label {
+	transform: translateX(-100%);
+	padding-right: 4px;
 }
 
 // The band's edges, marked on the axis rather than on the grid — on the grid they were dashed
@@ -206,7 +215,7 @@ $guide-ruler-height: 32px;
 	position: absolute;
 	top: 0;
 	bottom: 0;
-	background: rgba(247, 92, 3, 0.14);
+	background: rgba(var(--as-primary-rgb), 0.14);
 	border-bottom: 2px solid $guide-accent;
 }
 
@@ -233,8 +242,10 @@ $guide-ruler-height: 32px;
 	pointer-events: none;
 }
 
+// The now line is over the bars and under the league column, which it used to cut straight through
+// once the grid was scrolled past the present.
 .guide-underlay { z-index: 0; }
-.guide-overlay  { z-index: 5; }
+.guide-overlay  { z-index: 4; }
 
 .guide-gridline {
 	position: absolute;
@@ -251,7 +262,7 @@ $guide-ruler-height: 32px;
 	position: absolute;
 	top: 0;
 	bottom: 0;
-	background: rgba(247, 92, 3, 0.07);
+	background: rgba(var(--as-primary-rgb), 0.07);
 }
 
 .guide-now {
@@ -280,7 +291,10 @@ $guide-ruler-height: 32px;
 .guide-group {
 	display: flex;
 
-	& + & {
+	// On the two cells rather than on the group, so the gutter's share of the rule is painted by the
+	// gutter's own opaque box. On the group it was a 1px gap the now line showed through.
+	& + & > .guide-league,
+	& + & > .guide-group-rows {
 		border-top: 1px solid $guide-border;
 	}
 }
@@ -289,7 +303,6 @@ $guide-ruler-height: 32px;
 // own, which would read as a league with nothing on.
 .guide-group-tail {
 	flex: 1;
-	border-top: 0 !important;
 }
 
 // The gutter column itself, named once for the cells that carry a league and once for the empty tail
@@ -298,7 +311,7 @@ $guide-ruler-height: 32px;
 .guide-gutter-tail {
 	position: sticky;
 	left: 0;
-	z-index: 4;
+	z-index: 5;
 	flex: 0 0 var(--guide-gutter, 168px);
 	// Opaque rather than a fade: this is a column the bars scroll underneath, not a label riding
 	// along the grid, so anything showing through it is a bar in the wrong place.
@@ -379,36 +392,55 @@ $guide-ruler-height: 32px;
 	}
 }
 
-// One fill per state, and only three states exist. Live is the same hue a step lighter rather than a
-// colour of its own: a green 'live' fill and an orange 'favourite' fill are two unrelated legends the
-// reader has to learn before the grid means anything.
+// Transparent and running to the end of the day, with the pointer taken only by the shape and the
+// label inside it (see GuideBar). So none of the button's own box is ever painted or outlined.
 .guide-bar {
 	position: absolute;
 	top: 4px;
+	right: 0;
 	z-index: 2;
-	display: flex;
-	align-items: center;
-	padding: 0 0.5rem;
+	display: block;
+	padding: 0;
+	border: 0;
+	background: none;
+	color: $guide-ink;
+	font-size: 0.72rem;
+	white-space: nowrap;
+	text-align: left;
+	pointer-events: none;
+
+	&:focus-visible {
+		outline: none;
+	}
+}
+
+.guide-bar-shape,
+.guide-bar-content {
+	pointer-events: auto;
+	cursor: pointer;
+}
+
+// One fill per state, and only three states exist. Live is the same hue a step lighter rather than a
+// colour of its own: a green 'live' fill and an orange 'favourite' fill are two unrelated legends the
+// reader has to learn before the grid means anything.
+.guide-bar-shape {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	width: var(--guide-bar-width);
 	border: 1px solid $guide-border;
 	border-radius: 5px;
 	background: $guide-bar;
-	color: $guide-ink;
-	font-size: 0.72rem;
-	// `clip` rather than `hidden`: hidden would make the bar its own scroll container, and the
-	// sticky content below resolves against the nearest one — which has to be .guide-scroller for
-	// the pinning to follow the horizontal scroll.
-	overflow: clip;
-	white-space: nowrap;
-	text-align: left;
-	cursor: pointer;
-	transition: border-color m.$motion-snap m.$motion-ease, transform m.$motion-snap m.$motion-ease, box-shadow m.$motion-snap m.$motion-ease;
+	overflow: hidden;
+	transition: border-color m.$motion-snap m.$motion-ease, transform m.$motion-snap m.$motion-ease, box-shadow m.$motion-snap m.$motion-ease, opacity m.$motion-quick m.$motion-ease;
 }
 
 // Team colour as two hairlines at the ends rather than as a fill: at 22px tall a filled bar is a
 // colour swatch you cannot read a matchup off, and half the league's primaries are navies that would
 // be indistinguishable from the bar anyway.
-.guide-bar::before,
-.guide-bar::after {
+.guide-bar-shape::before,
+.guide-bar-shape::after {
 	content: '';
 	position: absolute;
 	top: 0;
@@ -416,12 +448,12 @@ $guide-ruler-height: 32px;
 	width: 3px;
 }
 
-.guide-bar::before {
+.guide-bar-shape::before {
 	left: 0;
 	background: var(--guide-away);
 }
 
-.guide-bar::after {
+.guide-bar-shape::after {
 	right: 0;
 	background: var(--guide-home);
 }
@@ -429,9 +461,24 @@ $guide-ruler-height: 32px;
 // A game that is on right now is the answer to the question this whole page asks, so it is the one
 // thing on the grid that reads before anything else.
 .guide-bar[data-status='in'] {
-	background: $guide-bar-live;
-	border-color: $guide-bar-live-border;
 	color: #f0f6fc;
+
+	.guide-bar-shape {
+		background: $guide-bar-live;
+		border-color: $guide-bar-live-border;
+	}
+}
+
+// A finished game keeps its place so the day keeps its shape, but it is not something to go and
+// watch: the plate sinks to the surface below it and the ink steps down, the way the popup's final
+// card recedes. The crests and the rails stay whole, since fading them read as a loading fault.
+.guide-bar[data-status='post'] {
+	color: $guide-ink-dim;
+
+	.guide-bar-shape {
+		background: $guide-surface;
+		border-color: $guide-gridline;
+	}
 }
 
 .guide-bar-live {
@@ -442,49 +489,117 @@ $guide-ruler-height: 32px;
 	background: #e53935;
 }
 
-.guide-bar:hover,
-.guide-bar:focus-visible {
+.guide-bar:hover .guide-bar-shape,
+.guide-bar:focus-visible .guide-bar-shape {
 	border-color: $guide-ink-dim;
 	transform: translateY(-1px);
 	box-shadow: 0 4px 14px rgba(0, 0, 0, 0.55);
-	// Above its neighbours and still under the gutter, which a bar must never be drawn over.
+}
+
+// Above its neighbours and still under the gutter, which a bar must never be drawn over.
+.guide-bar:hover,
+.guide-bar:focus-visible {
 	z-index: 3;
+}
+
+// Once the pinned label no longer fits in what is left of its bar, the bar goes and the label stays:
+// the bar's end ran through the middle of the text otherwise. Flagged by useEdgeClipping.
+.guide-bar[data-cut] .guide-bar-shape {
+	opacity: 0;
+	pointer-events: none;
+}
+
+// The game the drawer is showing, which otherwise had nothing tying it back to its row.
+.guide-bar[data-selected='true'] .guide-bar-shape {
+	border-color: $guide-accent;
+	box-shadow: 0 0 0 1px $guide-accent;
 }
 
 // A ring of its own rather than leaning on the hover lift, which a keyboard user cannot read as
 // position. Offset outward so it never sits on top of the team rails.
-.guide-bar:focus-visible {
+.guide-bar:focus-visible .guide-bar-shape {
 	outline: 2px solid $guide-accent;
 	outline-offset: 2px;
 }
 
-// A finished game keeps its place so the day keeps its shape, but it is not something to go and
-// watch.
-.guide-bar[data-status='post'] {
-	opacity: 0.55;
-}
-
 // Pinned to the right-hand edge of the gutter rather than to the scroller, which would park it
-// underneath the league column.
+// underneath the league column. Never wider than the bar it labels, so it is clipped by the bar's
+// length rather than spilling past the bar's end.
 .guide-bar-content {
 	position: sticky;
 	left: var(--guide-gutter, 168px);
 	display: flex;
 	align-items: center;
+	gap: 0.4rem;
+	width: max-content;
+	max-width: var(--guide-bar-width);
+	height: 100%;
+	padding: 0 0.65rem;
+	overflow: clip;
+}
+
+.guide-bar-side {
+	display: inline-flex;
+	align-items: center;
 	gap: 0.3rem;
-	// Clears the away rail, which the bar's own padding sits under.
-	padding-left: 0.15rem;
+}
+
+.guide-bar-time,
+.guide-bar-status.is-tabular {
+	font-family: 'Lekton', monospace;
+	font-variant-numeric: tabular-nums;
+	font-size: 0.7rem;
 }
 
 .guide-bar-time {
-	font-family: 'Lekton', monospace;
-	font-size: 0.68rem;
 	color: $guide-ink-dim;
-	margin-right: 0.1rem;
 }
 
-.guide-bar[data-status='in'] .guide-bar-time {
+.guide-bar-status {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.2rem;
+	margin-left: 0.15rem;
+	color: $guide-ink-dim;
+	font-size: 0.68rem;
+	font-weight: 600;
+}
+
+.guide-bar[data-status='in'] .guide-bar-status {
 	color: #b9c2cc;
+}
+
+.guide-bar[data-status='post'] .guide-bar-status {
+	color: $guide-ink-faint;
+}
+
+.guide-bar-status .inning-half-icon {
+	font-size: 0.55rem;
+}
+
+// The popup's scoreboard face, Geist with tabular figures, so a score that ticks over does not
+// shuffle the matchup beside it.
+.guide-bar-score {
+	font-family: 'Geist', 'DM Sans', system-ui, sans-serif;
+	font-variant-numeric: tabular-nums;
+	font-weight: 700;
+	font-size: 0.78rem;
+	min-width: 1.4ch;
+}
+
+// The result is carried by weight and a receded grey, as on the popup's final card.
+.guide-bar-side.is-loser {
+	.guide-bar-team,
+	.guide-bar-score {
+		color: $guide-ink-faint;
+		font-weight: 600;
+	}
+}
+
+.guide-bar-network {
+	margin-left: 0.15rem;
+	color: $guide-ink-dim;
+	font-size: 0.66rem;
 }
 
 // A crest on a tinted white disc, because a navy or black crest straight on #0d1117 is an empty box
@@ -544,6 +659,9 @@ $guide-ruler-height: 32px;
 	border-left: 1px solid $guide-border;
 	background: $guide-surface;
 	box-shadow: -12px 0 32px rgba(0, 0, 0, 0.45);
+	// Only the shadow cast over the grid. Unclipped, its blur climbed into the header and dimmed the
+	// header's own rule above the drawer.
+	clip-path: inset(0 0 0 -48px);
 	animation: guideDrawerIn m.$motion-base m.$motion-ease;
 }
 
@@ -554,6 +672,16 @@ $guide-ruler-height: 32px;
 // The detail screen is a hard 320x560 by design — 320 is the width it is laid out against and is
 // kept, but 560 is the popup's frame rather than anything about the content, so in a tab it fills
 // the height instead of leaving a band of empty surface under it.
+// The popup's confetti, over the whole tab rather than a 320px frame.
+.guide-confetti-canvas {
+	position: fixed;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	pointer-events: none;
+	z-index: 20;
+}
+
 .guide-drawer .popup-container {
 	height: 100%;
 	background: $guide-surface;
@@ -570,7 +698,8 @@ $guide-ruler-height: 32px;
 }
 
 @include m.reduced-motion {
-	.guide-bar {
+	.guide-bar-shape,
+	.guide-ruler-label {
 		transition: none;
 	}
 

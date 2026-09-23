@@ -5,6 +5,22 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Release notes for 2.2 — 2026-09-22
+
+`apps/docs/src/content/releases/2.2.0.md` covers everything in PR #120, the Guide polish still sitting uncommitted on `dev` included, and the entries below are its source. A change that was introduced and then reverted inside the PR, the monochrome crest treatment, is described by where it ended up: a crest is always the team's own crest in its own colors. The notes carry no byte counts, request counts or tooling names, and call ESPN "our sources" throughout.
+
+## Cypress typechecks the confetti hook against its real declaration — 2026-09-22
+
+The Guide now imports `useFavoriteScoreConfetti`, which pulled the hook into the Cypress tsconfig for the first time, and that project never included the hand-written `canvasConfetti.d.ts`, so `tsc -p cypress` failed. The declaration is now in its `include` list beside `scss.d.ts`.
+
+## The Guide reads like a scoreboard — 2026-09-22
+
+Guide bars now carry the score and clock for a live game, the final score with the loser dimmed, or the kickoff and network before the start. Labels stay pinned beside the league column after their bar has scrolled away, and the drawer shows the game's real PowerScore and charts: it takes them from `GET_STATE` and `SCORES_UPDATED`, which it previously ignored. "Best time to watch" on today's page now looks only ahead of the current time.
+
+## The team picker loads with the popup's own spinner — 2026-09-22
+
+The team picker in Favorite Teams and onboarding now shows the same orange `popup-loading-spinner`, with its caption underneath, that the game list uses, instead of a small grey Bootstrap default.
+
 ## The Guide draws games as long as they actually ran — 2026-09-22
 
 A final now ends on the Guide where it really ended, not at its league's estimate: the background stamps the poll that first sees a game it watched live go final, and for baseball finals it never saw end it asks the summary for `gameDuration`, the only league that sends one. A live bar is projected from `computeGameProgress`, newly exported by powerscore, as a typical game's worth of what regulation has left, so a slow game grows past its slot instead of trailing ten minutes ahead of the now line.

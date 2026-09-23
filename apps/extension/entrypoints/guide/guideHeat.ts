@@ -142,13 +142,21 @@ const bandThreshold = 0.9;
 // — it reads as "be watching at 3:55" when what is true is "late afternoon is the good part".
 const minBandMs = 30 * 60_000;
 
+interface heatCurveOptions {
+	weightFavorites: boolean;
+	favoriteBonusPoints: number;
+	// Today's page passes the present, so the band is the best of what is left rather than the best
+	// of a day that is mostly behind the reader.
+	notBeforeMs?: number;
+}
+
 export const buildHeatCurve = (
 	bars: guideBar[],
-	{ weightFavorites, favoriteBonusPoints }: { weightFavorites: boolean; favoriteBonusPoints: number },
+	{ weightFavorites, favoriteBonusPoints, notBeforeMs = -Infinity }: heatCurveOptions,
 ): heatCurveResult => {
 	if (bars.length === 0) return { points: [], band: null };
 
-	const from = Math.min(...bars.map(b => b.startMs));
+	const from = Math.max(Math.min(...bars.map(b => b.startMs)), notBeforeMs);
 	const to = Math.max(...bars.map(b => b.endMs));
 	const weightOf = (bar: guideBar) => (
 		weightFavorites && bar.isFavorite ? 1 + favoriteBonusPoints / 10 : 1
@@ -178,8 +186,8 @@ export const buildHeatCurve = (
 	const rawTo = points[endIndex]?.t ?? peak.t;
 	const shortfall = minBandMs - (rawTo - rawFrom);
 	const pad = shortfall > 0 ? shortfall / 2 : 0;
-	const fromMs = rawFrom - pad;
-	const toMs = rawTo + pad;
+	const fromMs = Math.max(rawFrom - pad, notBeforeMs);
+	const toMs = Math.max(rawTo + pad, fromMs + minBandMs);
 	const running = bars.filter(bar => bar.startMs <= peak.t && bar.endMs > peak.t);
 
 	return {

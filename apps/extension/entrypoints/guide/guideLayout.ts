@@ -34,6 +34,13 @@ export const axisBounds = (bars: guideBar[]): { fromMs: number; toMs: number } |
 	};
 };
 
+// Runs the axis on past the last game until it fills the width it is drawn in. Whole hours, so the
+// last mark still lands on the canvas's own edge.
+export const fillAxis = (bounds: { fromMs: number; toMs: number }, minPlotPx: number): { fromMs: number; toMs: number } => {
+	const hoursToFill = Math.ceil(minPlotPx / (pxPerMinute * 60));
+	return { fromMs: bounds.fromMs, toMs: Math.max(bounds.toMs, bounds.fromMs + hoursToFill * hourMs) };
+};
+
 export const hourMarks = (fromMs: number, toMs: number): number[] => {
 	const marks: number[] = [];
 	for (let t = fromMs; t <= toMs; t += hourMs) marks.push(t);

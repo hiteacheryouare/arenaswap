@@ -309,8 +309,6 @@
 			"1": "1 preferita",
 			"n": "$1 preferite"
 		},
-		"empty": "Niente in programma oggi.",
-		"loading": "Caricamento partite di oggi…",
 		"favoriteGame": "Una delle tue squadre preferite",
 		"at": "-"
 	},
@@ -327,6 +325,7 @@
 		"totalLabel": "{total} / {max}",
 		"totalLabelBaseMax": "{total} (max base {max})",
 		"back": "Indietro",
+		"close": "Chiudi",
 		"teamRecord": "Bilancio: {record}",
 		"unitDays": "g",
 		"unitHours": "h",

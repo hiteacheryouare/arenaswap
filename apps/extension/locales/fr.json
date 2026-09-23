@@ -309,8 +309,6 @@
 			"1": "1 favori",
 			"n": "$1 favoris"
 		},
-		"empty": "Rien à l'affiche aujourd'hui.",
-		"loading": "Chargement des matchs du jour…",
 		"favoriteGame": "Une de tes équipes favorites",
 		"at": "-"
 	},
@@ -327,6 +325,7 @@
 		"totalLabel": "{total} / {max}",
 		"totalLabelBaseMax": "{total} (base max {max})",
 		"back": "Retour",
+		"close": "Fermer",
 		"teamRecord": "Bilan : {record}",
 		"unitDays": "j",
 		"unitHours": "h",

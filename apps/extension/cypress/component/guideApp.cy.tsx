@@ -1,7 +1,7 @@
-import type { Game, GuideSlate, LeagueId } from '@arenaswap/core/types';
+import type { BackgroundState, Game, GuideSlate, LeagueId } from '@arenaswap/core/types';
 import { createDefaultUserPreferences } from '@arenaswap/core/constants';
 import App from '../../entrypoints/guide/app';
-import { makeGame } from '../support/fixtures';
+import { makeGame, makeScore } from '../support/fixtures';
 import '../../assets/guide.scss';
 
 // A Sunday afternoon with the early games under way. Fixed rather than relative so the grid, the
@@ -36,6 +36,8 @@ interface MountOptions {
 	deferSlate?: boolean;
 	games?: Game[];
 	atMs?: number;
+	/** What GET_STATE answers with: the popup's own state, scores and history included. */
+	state?: Partial<BackgroundState>;
 }
 
 interface guideHandle {
@@ -47,7 +49,7 @@ interface guideHandle {
 	slateRequests: () => number;
 }
 
-const mountGuide = ({ deferSlate = false, games = [eagles, niners, sixers], atMs = now }: MountOptions = {}) => {
+const mountGuide = ({ deferSlate = false, games = [eagles, niners, sixers], atMs = now, state }: MountOptions = {}) => {
 	cy.clock(atMs, ['Date', 'setInterval', 'clearInterval']);
 	cy.viewport(1280, 800);
 
@@ -61,6 +63,7 @@ const mountGuide = ({ deferSlate = false, games = [eagles, niners, sixers], atMs
 		runtime: {
 			sendMessage: (message: { type: string;[key: string]: unknown }) => {
 				sentMessages.push(message);
+				if (message.type === 'GET_STATE') return Promise.resolve(state);
 				if (message.type !== 'GET_GUIDE_SLATE') return Promise.resolve(undefined);
 				if (!deferSlate) return Promise.resolve(slate);
 				return new Promise<GuideSlate>(resolve => { releaseSlate = resolve; });
@@ -73,6 +76,7 @@ const mountGuide = ({ deferSlate = false, games = [eagles, niners, sixers], atMs
 				},
 			},
 		},
+		i18n: { getUILanguage: () => 'en-US' },
 		storage: {
 			sync: { get: () => Promise.resolve({ prefs: createDefaultUserPreferences(), prefsUpdatedAt: 0 }) },
 			local: { get: () => Promise.resolve({ prefs: null, prefsUpdatedAt: 0 }) },
@@ -94,7 +98,7 @@ const mountGuide = ({ deferSlate = false, games = [eagles, niners, sixers], atMs
 };
 
 const openFirstGame = () => {
-	cy.get('.guide-bar').first().click();
+	cy.get('.guide-bar-shape').first().click();
 	cy.get('.guide-drawer').should('exist');
 };
 
@@ -105,24 +109,24 @@ describe('the guide page', () => {
 	it('says it is still loading rather than reporting a quiet day it has not heard about', () => {
 		mountGuide({ deferSlate: true });
 
-		cy.get('.guide-loading').should('be.visible');
-		cy.get('.guide-empty').should('not.exist');
+		cy.get('.popup-loading-spinner').should('be.visible');
+		cy.get('.popup-no-games-wrap').should('not.exist');
 		cy.get('.guide-bar').should('not.exist');
 
 		cy.get<guideHandle>('@guide').then(guide => guide.deliver([eagles, niners]));
 
-		cy.get('.guide-loading').should('not.exist');
+		cy.get('.popup-loading-spinner').should('not.exist');
 		cy.get('.guide-bar').should('have.length', 2);
 	});
 
 	it('says the day is empty only once the background has answered with nothing', () => {
 		mountGuide({ deferSlate: true });
-		cy.get('.guide-loading').should('be.visible');
+		cy.get('.popup-loading-spinner').should('be.visible');
 
 		cy.get<guideHandle>('@guide').then(guide => guide.deliver([]));
 
-		cy.get('.guide-empty').should('be.visible');
-		cy.get('.guide-loading').should('not.exist');
+		cy.get('.popup-no-games-wrap').should('be.visible');
+		cy.get('.popup-loading-spinner').should('not.exist');
 	});
 
 	it('draws only the selected day, not the whole slate', () => {
@@ -208,7 +212,7 @@ describe('the guide page', () => {
 		// Escape starts the exit, then the second bar is clicked before it completes.
 		cy.get('body').trigger('keydown', { key: 'Escape' });
 		cy.get('.guide-drawer[data-closing="true"]').should('exist');
-		cy.get('.guide-bar').eq(1).click();
+		cy.get('.guide-bar-shape').eq(1).click();
 
 		cy.get('.guide-drawer').should('exist').and('not.have.attr', 'data-closing');
 		cy.get('.guide-drawer').contains('nfl-niners Home').should('exist');
@@ -242,9 +246,34 @@ describe('the guide page', () => {
 		cy.get('.guide-band').should('not.exist');
 	});
 
+	// The slate carries the day but no scores. Without the popup's own state beside it, the drawer
+	// read 0 / 100 on a live game.
+	it('shows the live game its real PowerScore in the drawer', () => {
+		mountGuide({ state: { games: [eagles], scores: [makeScore(eagles.id, 71)] } });
+		openFirstGame();
+		cy.get('.guide-drawer .powerscore-breakdown-row-total').should('contain.text', '71 / 100');
+	});
+
+	// The popup's patter while it waits, and no band switch for a grid that is not there yet.
+	it('waits with a spinner and a line rather than a control that does nothing', () => {
+		mountGuide({ deferSlate: true });
+		cy.get('.popup-loading-text').invoke('text').should('not.be.empty');
+		cy.get('#guideBandToggle').should('not.exist');
+	});
+
+	// The guide has no tab registry to write to, so a picker there would list nothing and save
+	// nothing. The panel closes rather than going back, since there is nothing behind it.
+	it('offers no tab picker on a scheduled game, and closes rather than going back', () => {
+		mountGuide();
+		cy.get("[data-game-id='nfl-niners'] .guide-bar-shape").click();
+		cy.get('.guide-drawer .gd-setup').should('exist');
+		cy.get('.guide-drawer select').should('not.exist');
+		cy.get('.guide-drawer .game-detail-back-button').should('contain.text', 'Close').find('.bi-x-lg').should('exist');
+	});
+
 	it('still draws the grid when the slate comes back with no day it can anchor to now', () => {
 		mountGuide({ games: [sixers], atMs: tomorrow });
 		cy.get('.guide-bar').should('have.length', 1);
-		cy.get('.guide-empty').should('not.exist');
+		cy.get('.popup-no-games-wrap').should('not.exist');
 	});
 });

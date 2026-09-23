@@ -309,8 +309,6 @@
 			"1": "1 favorito",
 			"n": "$1 favoritos"
 		},
-		"empty": "Nada rolando hoje.",
-		"loading": "Carregando os jogos de hoje…",
 		"favoriteGame": "Um dos seus times favoritos",
 		"at": "x"
 	},
@@ -327,6 +325,7 @@
 		"totalLabel": "{total} / {max}",
 		"totalLabelBaseMax": "{total} (máx. base {max})",
 		"back": "Voltar",
+		"close": "Fechar",
 		"teamRecord": "Campanha: {record}",
 		"unitDays": "d",
 		"unitHours": "h",
