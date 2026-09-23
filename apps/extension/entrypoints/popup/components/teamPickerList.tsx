@@ -59,11 +59,11 @@ const teamPickerList = ({
 				{leading}
 
 				{isLoading && (
-					<div className='d-flex justify-content-center align-items-center mt-4 gap-2'>
-						<div className='spinner-border spinner-border-sm' role='status'>
+					<div className='d-flex flex-column justify-content-center align-items-center mt-4 popup-loading-wrap'>
+						<div className='spinner-border popup-loading-spinner' role='status'>
 							<span className='visually-hidden'>{i18n.t('teamPicker.loading')}</span>
 						</div>
-						<span className='small text-body-secondary'>{i18n.t('teamPicker.loading')}</span>
+						<div className='mt-2 text-center popup-loading-text'>{i18n.t('teamPicker.loading')}</div>
 					</div>
 				)}
 

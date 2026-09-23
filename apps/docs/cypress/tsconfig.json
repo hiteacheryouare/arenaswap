@@ -1,7 +1,10 @@
 {
 	"extends": "../../../tsconfig.base.json",
 	"compilerOptions": {
-		"types": ["cypress", "node"],
+		// `astro/client` because cypress.config.ts reads the locale list out of src/i18n/locales.ts
+		// rather than keeping a second copy of the twelve codes, and that module resolves
+		// `import.meta.env.BASE_URL`.
+		"types": ["cypress", "node", "astro/client"],
 		// Reading `subject[0]` off a query result is the whole idiom in these specs, and a spec
 		// that queried nothing should fail the assertion rather than be guarded at every site.
 		"noUncheckedIndexedAccess": false

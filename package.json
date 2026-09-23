@@ -1,6 +1,6 @@
 {
 	"name": "arenaswap",
-	"version": "2.1.1",
+	"version": "2.2.0",
 	"description": "Watches every live game across 31 leagues and auto-switches your browser tab to the most exciting one, as fast as every 6 seconds.",
 	"private": true,
 	"workspaces": [
@@ -21,14 +21,15 @@
 		"lint": "turbo run lint",
 		"powerscore:simulate": "rolldown scripts/powerscore/simulateDistribution.ts --platform=node --file=scripts/powerscore/simulateDistribution.cjs --format=cjs --log-level=silent && node scripts/powerscore/simulateDistribution.cjs 100000",
 		"powerscore:validate-live": "rolldown scripts/powerscore/validateLive.ts --platform=node --file=scripts/powerscore/validateLive.cjs --format=cjs --log-level=silent && node scripts/powerscore/validateLive.cjs",
+		"ui:wordmark-shapes": "node scripts/ui/buildWordmarkShapes.mjs",
 		"docs:validate-hero": "rolldown scripts/docs/validateHeroTimeline.ts --platform=node --file=scripts/docs/validateHeroTimeline.cjs --format=cjs --log-level=silent && node scripts/docs/validateHeroTimeline.cjs"
 	},
 	"devDependencies": {
 		"@swc/core": "^1.16.2",
 		"@swc/jest": "^0.2.39",
-		"oxlint": "^1.81.0",
-		"rolldown": "^1.2.7",
-		"turbo": "^2.10.12",
+		"oxlint": "^1.83.0",
+		"rolldown": "^1.2.9",
+		"turbo": "^2.11.2",
 		"typescript": "^7.0.2"
 	},
 	"overrides": {
@@ -39,8 +40,16 @@
 		"node": "^22.9.0 || ^24.0.0 || >=26.0.0",
 		"npm": ">=11.0.0"
 	},
-	"packageManager": "npm@11.16.0",
+	"packageManager": "npm@12.1.0",
 	"dependencies": {
-		"skills": "^1.5.23"
+		"skills": "^1.7.0"
+	},
+	"allowScripts": {
+		"cypress": true,
+		"@swc/core": false,
+		"esbuild": false,
+		"unrs-resolver": false,
+		"@parcel/watcher": false,
+		"fsevents": false
 	}
 }

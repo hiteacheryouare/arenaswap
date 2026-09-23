@@ -14,30 +14,6 @@ Target users:
 
 ---
 
-## 🏗️ Architecture
-
-### Monorepo (Turborepo)
-
-Root structure:
-- /apps
-	- /extension → actual browser extension (UI + runtime logic)
-	- /docs -> the landing page and documentation website for both the extension and npm package
-- /packages
-	- /powerscore → scoring algorithm
-	- /core → core extension engine
-
-### Tech Stack
-- React (primary UI framework)
-- JavaScript + TypeScript
-- WXT (extension framework)
-- Bootstrap (structural components + utility styling)
-- SCSS (Sass) for everything Bootstrap can't express
-- Tailwind (utility styling) — `apps/docs` only; the extension has no Tailwind build
-- Jest (testing), Cypress (UI testing & validation)
-- npm ONLY (no pnpm, yarn, bun)
-
----
-
 ## Core Values
 
 ### Beautiful Design
@@ -52,18 +28,26 @@ Sports are meant to be fun. Product design and copy should be lighthearted, a li
 ### Modern
 The tech stack should never fall more than 2 years behind the latest and greatest. We should always be using the best tools available to us, and not be afraid to try new things.
 
+### Never forget that _je ne sais quoi_ 
+We understand we aren't building systems to save people's lives, but we should still take pride in what we do. Sports bring people together and keep people entertained, happy, and inspire people to achieve greatness. 
+
+With that said, never forget the small details that make it feel polished, and never forget that _je ne sais quoi_ that makes a product feel like it was made with love and care (because it is).
+
+If this sounds familiar, it is. We are heavily inspired by the team at [Transit](https://transitapp.com/vision) and the work they do, their philosophy, their design system, and their attention to detail. We want to be like them, but for sports.
+
 ---
 
 ## Stuff for AI Agents:
 
 - Skills for you have been provided. Check @.agents/skills
   - When stuck: think "could there be a skill for this", check the skills directory, if yes, use it!
-- Validate your changes by testing and linting
 - Leverage the power of turborepo and caching
-- After every time you change something, update @CHANGELOG.md
+- After every time you change something, update CHANGELOG.md. **Two or three sentences, under the heading and nothing else** — no sub-headings, no tables, no coverage or testing section. Do not imitate the length of older entries; the rule at the top of that file wins.
 - All code changes should be internationalized to every language we support at the moment.
 - When opening PRs, Issues, etc via the GitHub API or any access you have to github, ALWAYS add the "robotic" label so we know it was assisted by agents.
-- To verify, run my "everything command": `npm run lint test test:e2e build build:edge build:firefox zip zip:edge zip:firefox`
+- To verify, run my "everything command": `npm run lint typecheck test test:e2e build build:edge build:firefox zip zip:edge zip:firefox`
+- I have a font that supports a lot of ligatures installed in my terminal. Feel free to use them to communicate your ideas in a more concise way. 
+- And dont mention ESPN in any prose, marketing, copy, text, etc. Say "our sources" (bonus points if you can very subtly allude that they are a network of covert spies with binoculars)
 
 
 ## UI Mistakes to Avoid:

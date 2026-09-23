@@ -1,0 +1,6 @@
+{
+	"report-dir": "./coverage",
+	"reporter": ["json-summary", "lcov", "text"],
+	"extension": [".ts", ".tsx"],
+	"excludeAfterRemap": false
+}

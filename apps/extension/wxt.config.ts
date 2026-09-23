@@ -1,9 +1,20 @@
 import { defineConfig } from 'wxt';
 import pkg from '../../package.json';
+import sassOptions from '@arenaswap/ui/src/sassOptions';
 
 const year = new Date().getFullYear();
 const version = pkg.version;
 const banner = `/*! ArenaSwap v${version} Copyright (c) ${year} Ryan Mullin, Lattice & Company, and Contributors. All rights reserved. */`;
+
+// Coverage instrumentation for the e2e build only. `build:e2e` writes to .output/e2e, which is
+// gitignored and never zipped, and the environment variable is set by the coverage script
+// alone — so `wxt build`, `build:firefox` and `build:edge` produce the same bytes they always
+// have. vite-plugin-istanbul ships ESM only and this config is loaded as CommonJS.
+const istanbulPlugins = async () => {
+	if (process.env.ARENASWAP_COVERAGE_TARGET !== 'e2e') return [];
+	const { default: istanbul } = await import('vite-plugin-istanbul');
+	return [istanbul({ requireEnv: false, forceBuildInstrument: true })];
+};
 
 export default defineConfig({
 	modules: ['@wxt-dev/module-react', '@wxt-dev/i18n/module'],
@@ -15,11 +26,13 @@ export default defineConfig({
 	// dist/ is gitignored build output from the retired zip-builds scripts, so a stale copy on one
 	// machine would otherwise be swept into the sources archive an AMO reviewer downloads. marketing/
 	// is store screenshots and promo tiles — ~7MB of the archive, and nothing to do with building.
+	// coverage/ and cypress/screenshots/ are gitignored test output, ~10MB between them.
 	zip: {
-		excludeSources: ['dist/**', 'marketing/**'],
+		excludeSources: ['dist/**', 'marketing/**', 'coverage/**', 'cypress/screenshots/**'],
 	},
-	vite: () => ({
+	vite: async () => ({
 		plugins: [
+			...(await istanbulPlugins()),
 			{
 				name: 'arenaswap-banner',
 				generateBundle(_, bundle) {
@@ -33,6 +46,13 @@ export default defineConfig({
 		],
 		build: {
 			target: 'es2023',
+		},
+		// Silences Bootstrap 5.3's Sass deprecation warnings, and only for as long as Bootstrap
+		// is the one emitting them. See packages/ui/src/sassOptions.ts.
+		css: {
+			preprocessorOptions: {
+				scss: sassOptions,
+			},
 		},
 		// Firefox MV3 dev server: serve responses uncompressed. Compressed responses trip
 		// NS_ERROR_CORRUPTED_CONTENT when loaded from an extension page.

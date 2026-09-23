@@ -1,7 +1,16 @@
 import { i18n } from '#i18n';
 import { randomInRange } from '@porkyproductions/hat';
-import { fetchGamesWithLeagueLogos, fetchWinProbability, computePowerScore, computeScoringOpportunityBoost, isPlayFrozen, normalizePowerScoreResult, scoreMaxTotal, MockGameSimulator, createPollModeTracker, isObjectRecord, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts, computeLeagueIntervalMs, pollWinProbabilityMs as winProbPollIntervalMs, logWarn, logError } from '@arenaswap/core';
+import { fetchGamesWithLeagueLogos, fetchGameDurationMins, fetchTeamMonoLogos, fetchWinProbability, computePowerScore, isWithinFinalRetention, computeScoringOpportunityBoost, isPlayFrozen, normalizePowerScoreResult, scoreMaxTotal, MockGameSimulator, createPollModeTracker, isObjectRecord, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts, computeLeagueIntervalMs, computeHebetudinousIntervalMs, earliestUpcomingStartMs, fetchNextScheduledStart, scoreboardRefreshMs, pollWinProbabilityMs as winProbPollIntervalMs, logWarn, logError, postseasonBoostShare } from '@arenaswap/core';
 import { computeStandbyStreamDecision } from '../utils/standbyStreamLogic';
+import { gameEndTimes, gameEndTimesKey, gamesNeedingDuration, pruneGameEndRecords, readGameEndRecords, recordGameEnds } from '../utils/gameEndTimes';
+import type { gameEndRecords } from '../utils/gameEndTimes';
+import { isMonoLogoCacheFresh, missingMonoLogoLeagues, monoLogoCacheKey } from '../utils/monoLogoCache';
+import {
+	finishedTabNoticeKey,
+	mergeFinishedTabNotice,
+	normalizeFinishedTabNotice,
+	resolveFinishedTabs,
+} from '../utils/finishedTabs';
 import { loadStoredUserPreferences } from '../utils/prefsStorage';
 import {
 	normalizeReviewPromptState,
@@ -12,6 +21,7 @@ import {
 	applyDisabledSignals,
 	createDefaultUserPreferences,
 	createFavoriteTeamKey,
+	guideMinUpcomingDays,
 	normalizeUserPreferences,
 	pollIntervalMs,
 	pollDormantMinMs,
@@ -26,10 +36,12 @@ import type {
 	DebugState,
 	ExtensionMessage,
 	Game,
+	GuideSlate,
 	LeagueId,
 	PowerScoreResult,
 	PowerScoreSnapshot,
 	LeagueLogoMap,
+	TeamMonoLogoMap,
 	PowerScoreHistoryMap,
 	ScoreSnapshot,
 	ScoreHistoryMap,
@@ -49,6 +61,14 @@ const recordSuccessfulSwitchForReviewPrompt = async (switchedAt: number) => {
 	}
 };
 
+// A stored switch time in the future reads as a cooldown that never elapses, which stops
+// switching altogether with nothing on screen to explain it. An NTP correction or a manual clock
+// change is enough to write one, and session storage carries it across every restart, so it is
+// sanitised on the way back in rather than trusted.
+const readStoredSwitchTime = (value: unknown, now: number): number => (
+	typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= now ? value : 0
+);
+
 const getFavoriteTeamCount = (game: Game, favoriteTeamIds: Set<string>): number => {
 	let count = 0;
 	const homeFavoriteTeamKey = createFavoriteTeamKey(game.league, game.homeTeam.id);
@@ -63,19 +83,70 @@ const getHistoryWindowMsForGame = (game: Game): number => {
 	return sportConfig.historyWindowMs ?? historyWindowMs;
 };
 
-const maxHistoryWindowMs = Math.max(
-	historyWindowMs,
-	...Object.values(sportTypeConfigMap).map(config => config.historyWindowMs ?? historyWindowMs),
-);
-
-// Backstop only — the time window is the real policy. Stops the arrays growing without bound if
-// polling ever runs faster than expected. Soccer's 20-minute window at the 6s eager floor is 200
-// snapshots, so this leaves headroom without letting a runaway loop fill session storage.
+// Backstop only — the thinning below is the real policy. Stops the arrays growing without bound if
+// polling ever runs faster than expected. A thinned football game is about 100 coarse samples plus
+// soccer's worst-case 200 inside its window, so this leaves headroom without letting a runaway loop
+// fill session storage.
 const maxSnapshotsPerGame = 400;
 
-const trimSnapshots = <T extends { timestamp: number }>(snapshots: T[], cutoff: number): void => {
-	while (snapshots.length > 1 && snapshots[0]!.timestamp < cutoff) snapshots.shift();
-	if (snapshots.length > maxSnapshotsPerGame) snapshots.splice(0, snapshots.length - maxSnapshotsPerGame);
+// Snapshots older than the scorer's window are only ever drawn as a chart line, and a wrap screen
+// draws the whole game rather than the last few minutes of it — so the tail is thinned to this
+// spacing instead of being discarded. Two minutes puts about 100 samples across a football game's
+// first three hours, which is more than 300px of chart can resolve anyway.
+const coarseSampleIntervalMs = 120_000;
+
+// How long the guide will draw the slate the last wide fetch produced. Generous because the live
+// polls merge their answers into it, so what ages here is only the roster of games — a kickoff
+// being added to the day — rather than any score or clock on screen.
+const guideSlateTtlMs = 10 * 60 * 1000;
+
+// Dropping the oldest snapshots would take the start of the game with them, and the start is the
+// end the chart gate measures from. So the cap is met by thinning the already-coarse tail further,
+// which costs resolution rather than span.
+const thinToCap = <T extends { timestamp: number }>(coarse: T[], recent: T[]): T[] => {
+	let kept = coarse;
+	while (kept.length + recent.length > maxSnapshotsPerGame && kept.length > 2) {
+		kept = kept.filter((_, index) => index % 2 === 0 || index === kept.length - 1);
+	}
+	return [...kept, ...recent].slice(-maxSnapshotsPerGame);
+};
+
+// What the scorer sees, which is byte-identical to what the old single-window trim left behind.
+const recentSnapshots = <T extends { timestamp: number }>(snapshots: readonly T[], cutoff: number): T[] => {
+	const recent = snapshots.filter(snapshot => snapshot.timestamp >= cutoff);
+	return recent.length > 0 ? recent : snapshots.slice(-1);
+};
+
+// Everything inside the scorer's window is kept exactly as it arrived, because that is the slice
+// computePowerScore reads. Everything before it is thinned rather than dropped — but only when the
+// wrap screen it exists for is reachable at all. A finished game leaves the list entirely unless
+// Keep finished games is on, so with the setting off there is nothing to draw the tail on and this
+// is the plain window it has always been, at the storage cost it has always had. That matters
+// because both maps are written to session storage on every poll, and a busy Saturday is thirty
+// live games at once.
+const retainSnapshots = <T extends { timestamp: number }>(
+	snapshots: T[],
+	cutoff: number,
+	keepWholeGame: boolean,
+): T[] => {
+	if (!keepWholeGame) return recentSnapshots(snapshots, cutoff);
+	const coarse: T[] = [];
+	const recent: T[] = [];
+	for (const snapshot of snapshots) {
+		if (snapshot.timestamp >= cutoff) {
+			recent.push(snapshot);
+			continue;
+		}
+		const previous = coarse[coarse.length - 1];
+		if (!previous || snapshot.timestamp - previous.timestamp >= coarseSampleIntervalMs) coarse.push(snapshot);
+	}
+	// A game whose entire history predates the window still has to report a current value, and the
+	// thinning may not have kept its newest snapshot.
+	if (recent.length === 0) {
+		const newest = snapshots[snapshots.length - 1];
+		if (newest && coarse[coarse.length - 1] !== newest) coarse.push(newest);
+	}
+	return thinToCap(coarse, recent);
 };
 
 const capitalizeFirst = (s: string) => s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
@@ -89,11 +160,140 @@ const getOpenTabIds = async (): Promise<Set<number>> => {
 	);
 };
 
+// What the popup reads on its next open to say how many tabs were handed back while it was shut.
+// Accumulated rather than replaced, so a second wave of finals cannot erase the first.
+const recordFinishedTabNotice = async (freed: number, closed: number) => {
+	try {
+		const stored = await browser.storage.session.get({ [finishedTabNoticeKey]: null });
+		const notice = mergeFinishedTabNotice(normalizeFinishedTabNotice(stored[finishedTabNoticeKey]), freed, closed);
+		await browser.storage.session.set({ [finishedTabNoticeKey]: notice });
+	} catch (err) {
+		logWarn('Failed to record which tabs were handed back.', err);
+	}
+};
+
+// The two lookups resolveFinishedTabs needs to tell a tab it can close from a tab whose window
+// would go with it.
+const describeOpenWindows = (allTabs: { id?: number; windowId?: number }[]) => {
+	const windowIdByTabId = new Map<number, number>();
+	const tabCountByWindowId = new Map<number, number>();
+	for (const tab of allTabs) {
+		if (tab.id === undefined || tab.windowId === undefined) continue;
+		windowIdByTabId.set(tab.id, tab.windowId);
+		tabCountByWindowId.set(tab.windowId, (tabCountByWindowId.get(tab.windowId) ?? 0) + 1);
+	}
+	return { windowIdByTabId, tabCountByWindowId };
+};
+
 export default defineBackground(() => {
 	let games: Game[] = [];
 	let upcomingGames: Game[] = [];
+	// Both lists exist for the same reason: the per-league polls below use the dateless scoreboard
+	// and replace a league's games wholesale, so anything the range fetch found that the dateless
+	// call cannot see has to be carried across each tick by hand.
+	let retainedFinalGames: Game[] = [];
+	/* The guide's own wider slate, from its own fetch — `refreshSlate` deliberately does not produce
+	   it, because reaching back far enough to cover the guide truncated the popup's future days
+	   against ESPN's server-side event cap. Held between opens rather than re-fetched on each one,
+	   and kept current by the per-league polls below, so the TTL only has to cover the set of games
+	   changing — a kickoff being added — and not the scores inside them.
+
+	   Separate from `games` rather than widening it: `afterFetch` scores off
+	   `games.filter(status === 'in')` and both the switch target and the poll cadence read that same
+	   array, so an extra entry there would change which game the extension switches to. */
+	let guideSlate: Game[] = [];
+	let guideSlateAt = 0;
+	let slateShedLeagues: LeagueId[] = [];
+	// When each finished game actually ended, so the guide can stop drawing it at its estimate.
+	let endRecords: gameEndRecords = {};
+	// Per worker rather than persisted: a final whose summary has no duration would otherwise cost a
+	// request on every guide open, and a new worker trying once more is cheap.
+	const durationRequested = new Set<string>();
 	let currentScores: PowerScoreResult[] = [];
 	let leagueLogos: LeagueLogoMap = {};
+	// ESPN's white team marks, which only `/teams` carries — the scoreboard has a single logo per
+	// competitor and no variants. Held for the guide, which is the one surface that draws a crest per
+	// game on a dark bar. Backed by `storage.local` rather than by this worker's memory, which MV3
+	// discards about thirty seconds after the last event — see `monoLogoCache`.
+	let monoLogos: TeamMonoLogoMap = {};
+	let monoLogosLoaded = false;
+	// The in-flight fetch, held alongside its result. The guard on the result alone only closes
+	// after the await, so two guide tabs opened together both missed it and both ran the fetch —
+	// which is one `/teams?limit=1000` request per enabled league, so 62 requests where 31 would do.
+	let monoLogoRequest: { key: string; pending: Promise<TeamMonoLogoMap> } | null = null;
+
+	const ensureMonoLogos = async (leagueIds: LeagueId[]): Promise<TeamMonoLogoMap> => {
+		if (!monoLogosLoaded) {
+			try {
+				const stored = (await browser.storage.local.get(monoLogoCacheKey))[monoLogoCacheKey];
+				if (isMonoLogoCacheFresh(stored, Date.now())) monoLogos = { ...stored.logos, ...monoLogos };
+			} catch (err) {
+				logWarn('Failed to read the stored team mono logos.', err);
+			}
+			monoLogosLoaded = true;
+		}
+
+		const missing = missingMonoLogoLeagues(monoLogos, leagueIds);
+		if (missing.length === 0) return monoLogos;
+
+		const key = missing.toSorted().join(',');
+		if (monoLogoRequest?.key !== key) {
+			monoLogoRequest = { key, pending: fetchTeamMonoLogos(missing) };
+		}
+		try {
+			monoLogos = { ...monoLogos, ...await monoLogoRequest.pending };
+			// Re-stamped on every write, so a league added months later does not inherit an expiry from
+			// the fetch that filled the other thirty.
+			await browser.storage.local.set({ [monoLogoCacheKey]: { fetchedAt: Date.now(), logos: monoLogos } });
+		} catch (err) {
+			// A miss costs the guide nothing but the tinted disc it drew before. Cleared rather than
+			// kept, so the next open retries instead of awaiting a promise that already rejected.
+			logWarn('Failed to fetch team mono logos.', err);
+			if (monoLogoRequest?.key === key) monoLogoRequest = null;
+		}
+		return monoLogos;
+	};
+	const storeEndRecords = (next: gameEndRecords) => {
+		endRecords = pruneGameEndRecords(next, Date.now());
+		void browser.storage.local.set({ [gameEndTimesKey]: endRecords }).catch(err => {
+			logWarn('Failed to persist game end times.', err);
+		});
+	};
+
+	const noteGameEnds = (fetched: Game[]) => {
+		if (demoMode) return;
+		const next = recordGameEnds(endRecords, fetched, Date.now());
+		if (next) storeEndRecords(next);
+	};
+
+	// Baseball's summary says how long a game took, which covers the finals nobody saw end. Run after
+	// the slate has gone back rather than in front of it: a cold day of MLB finals is a dozen summary
+	// requests, and the guide can draw estimates while they land.
+	const fillMissingDurations = async (slateGames: Game[]) => {
+		const pending = gamesNeedingDuration(slateGames, endRecords).filter(game => !durationRequested.has(game.id));
+		if (pending.length === 0) return;
+		for (const game of pending) durationRequested.add(game.id);
+
+		const found = await Promise.all(pending.map(async game => {
+			try {
+				const minutes = await fetchGameDurationMins(game);
+				const startMs = game.startTime ? new Date(game.startTime).getTime() : Number.NaN;
+				return minutes && Number.isFinite(startMs) ? { id: game.id, endedAt: startMs + minutes * 60_000 } : null;
+			} catch (err) {
+				logWarn(`Failed to fetch the duration of ${game.id}.`, err);
+				durationRequested.delete(game.id);
+				return null;
+			}
+		}));
+
+		const ended = found.filter(entry => entry !== null);
+		if (ended.length === 0) return;
+		const next = { ...endRecords };
+		for (const { id, endedAt } of ended) next[id] = { ...next[id], endedAt };
+		storeEndRecords(next);
+		browser.runtime.sendMessage({ type: 'GUIDE_SLATE_UPDATED' }).catch(() => {});
+	};
+
 	const history = new Map<string, ScoreSnapshot[]>();
 	const powerScoreHistory = new Map<string, PowerScoreSnapshot[]>();
 	const clockStallMap = new Map<string, { lastClock: number; stallCount: number }>();
@@ -103,6 +303,15 @@ export default defineBackground(() => {
 	let simulator: MockGameSimulator | null = null;
 	let prefs: UserPreferences = createDefaultUserPreferences();
 	let lastSwitchTime = 0;
+	// Session-backed like the rest of the switching state: MV3 tears the worker down whenever it
+	// idles, and a cooldown held only in this closure restarts at 0 on the next wake, handing back
+	// the free switch the user set the dial to prevent.
+	const setLastSwitchTime = (at: number): void => {
+		lastSwitchTime = at;
+		void browser.storage.session.set({ lastSwitchTime: at }).catch(err => {
+			logWarn('Failed to persist the switch cooldown to session storage.', err);
+		});
+	};
 	const leagueTimers = new Map<string, ReturnType<typeof setTimeout>>();
 	const leagueNextIntervalMs = new Map<string, number>();
 	// Lives on the summary endpoint (one request per game) rather than the scoreboard, so it
@@ -143,14 +352,11 @@ export default defineBackground(() => {
 				if (!Array.isArray(snapshots)) return;
 				const valid = snapshots.filter(isScoreSnapshotLike);
 				if (valid.length === 0) return;
-				// Runs before the first fetch, so there is no Game to read a per-sport window from
-				// yet. Trimming to the widest window keeps the sports that use one — the global value
-				// would discard 15 of soccer's 20 minutes on every worker wake — and the next
-				// updateHistory pass re-trims to the sport's real window.
-				const cutoff = valid[valid.length - 1]!.timestamp - maxHistoryWindowMs;
-				const trimmed = valid.filter(s => s.timestamp >= cutoff).slice(-maxSnapshotsPerGame);
-				if (trimmed.length === 0) return;
-				history.set(gameId, trimmed);
+				// Taken as persisted. What was written out was already thinned by retainSnapshots, and
+				// re-applying a window here would throw away the coarse tail of the game on every
+				// worker wake — which MV3 does constantly, so the wrap screen would never see a full
+				// game. The cap is kept as the same backstop it is everywhere else.
+				history.set(gameId, valid.slice(-maxSnapshotsPerGame));
 			});
 		}
 
@@ -159,10 +365,7 @@ export default defineBackground(() => {
 				if (!Array.isArray(snapshots)) return;
 				const valid = snapshots.filter(isPowerScoreSnapshotLike);
 				if (valid.length === 0) return;
-				const cutoff = valid[valid.length - 1]!.timestamp - maxHistoryWindowMs;
-				const trimmed = valid.filter(s => s.timestamp >= cutoff).slice(-maxSnapshotsPerGame);
-				if (trimmed.length === 0) return;
-				powerScoreHistory.set(gameId, trimmed);
+				powerScoreHistory.set(gameId, valid.slice(-maxSnapshotsPerGame));
 			});
 		}
 	};
@@ -178,8 +381,7 @@ export default defineBackground(() => {
 				homeScore: game.homeTeam.score,
 				awayScore: game.awayTeam.score,
 			});
-			trimSnapshots(snapshots, now - getHistoryWindowMsForGame(game));
-			history.set(game.id, snapshots);
+			history.set(game.id, retainSnapshots(snapshots, now - getHistoryWindowMsForGame(game), prefs.keepFinalGames));
 		});
 	};
 
@@ -211,8 +413,7 @@ export default defineBackground(() => {
 				stalled: score.stalled ?? false,
 				reason: score.reason,
 			});
-			trimSnapshots(snapshots, now - getHistoryWindowMsForGame(game));
-			powerScoreHistory.set(score.gameId, snapshots);
+			powerScoreHistory.set(score.gameId, retainSnapshots(snapshots, now - getHistoryWindowMsForGame(game), prefs.keepFinalGames));
 		});
 	};
 
@@ -246,6 +447,7 @@ export default defineBackground(() => {
 		gameBoosts,
 		onStandbyStream,
 		standbyStreamTabId,
+		slateShedLeagues,
 	});
 
 	const broadcastScoresUpdated = () => {
@@ -382,7 +584,7 @@ export default defineBackground(() => {
 		if (!tabExists) return;
 
 		await browser.tabs.update(tabId, { active: true });
-		lastSwitchTime = Date.now();
+		setLastSwitchTime(Date.now());
 		await syncManagedTabMuteState(true);
 		if (gameId) await recordSuccessfulSwitchForReviewPrompt(lastSwitchTime);
 
@@ -485,22 +687,138 @@ export default defineBackground(() => {
 		}, prefs.switchDelaySeconds * 1000);
 	};
 
-	const refreshUpcomingGames = async () => {
-		if (!prefs.showUpcomingGames) {
+	/* Asks for exactly what the display preferences want and no more. Widening this to cover the guide
+	   as well looked free — `includeUpcoming` already makes it two requests per league, so a wider
+	   `dates` range changes the payload and not the request count — and it cost the future. ESPN caps
+	   a scoreboard response server-side, near 80 events on a dated college football query, and the
+	   truncation takes the tail, which is the days furthest ahead. Reaching two days back to pick up
+	   finals for the guide spent that whole budget on a college football weekend's *past* games and
+	   left one day of future showing. The guide asks for its own superset again. */
+	const refreshSlate = async () => {
+		if (!prefs.showUpcomingGames && !prefs.keepFinalGames) {
 			upcomingGames = [];
+			retainedFinalGames = [];
 			return;
 		}
 		try {
-			const result = await fetchGamesWithLeagueLogos(prefs.enabledLeagues, { includeUpcoming: true, upcomingDays: prefs.upcomingGamesDays });
-			upcomingGames = result.games.filter(g => g.status === 'pre');
+			const result = await fetchGamesWithLeagueLogos(prefs.enabledLeagues, {
+				includeUpcoming: true,
+				upcomingDays: prefs.upcomingGamesDays,
+				includeFinal: prefs.keepFinalGames,
+			});
+			if (result.shedLeagues.length === prefs.enabledLeagues.length) {
+				logWarn(`ESPN shed the whole slate (${result.shedLeagues.length} leagues); keeping what we have.`);
+				return;
+			}
+			/* Only the leagues that answered may have their entries replaced. Rebuilding both lists from
+			   `result.games` wholesale threw away every final and every kickoff belonging to a league
+			   that failed this fetch — and a league whose dated range is refused fails *only* this leg,
+			   so its live games kept arriving from the undated board while its finals silently went.
+			   That is the same "a shed league contributes nothing and says nothing" trap as everywhere
+			   else here, one layer up. */
+			const answered = new Set(prefs.enabledLeagues.filter(id => !result.shedLeagues.includes(id)));
+			const heldFor = (list: Game[]): Game[] => list.filter(g => !answered.has(g.league));
+
+			upcomingGames = prefs.showUpcomingGames
+				? [...heldFor(upcomingGames), ...result.games.filter(g => g.status === 'pre')]
+				: [];
+			retainedFinalGames = prefs.keepFinalGames
+				? [
+					...heldFor(retainedFinalGames).filter(game => isWithinFinalRetention(game)),
+					...result.games.filter(g => g.status === 'post'),
+				]
+				: [];
 		} catch (err) {
-			logWarn('Failed to fetch upcoming games.', err);
+			logWarn('Failed to fetch the slate.', err);
 		}
 	};
 
+	// Any game a poll just reported replaces the copy the slate holds; everything else is kept, which
+	// is what carries the days the dateless poll cannot see. Skipped until a wide fetch has actually
+	// run, so a poll cannot seed a slate that would then look like a whole day to the guide.
+	const mergeGuideSlate = (fresh: Game[]) => {
+		if (guideSlateAt === 0) return;
+		const freshIds = new Set(fresh.map(g => g.id));
+		guideSlate = [...guideSlate.filter(g => !freshIds.has(g.id)), ...fresh];
+	};
+
+	// Re-checked on every merge rather than only on refetch, so a game ages out of the list on its
+	// own schedule instead of waiting for the next slate fetch to notice.
+	const liveRetainedFinals = (): Game[] => (
+		prefs.keepFinalGames ? retainedFinalGames.filter(g => isWithinFinalRetention(g)) : []
+	);
+
+	// Two reasons to ask the poll for finished games, and only one of them puts them on screen.
+	// Handing a tab back needs to *see* ESPN call the game final: absence from a payload cannot
+	// stand in for it, because a payload legitimately drops games it is still serving elsewhere —
+	// college football's dateless board did exactly that. So the fetch keeps them and the merge
+	// below drops them again when the display preference says they are not wanted.
+	const wantsFinalGames = (): boolean => prefs.keepFinalGames || prefs.finishedTabAction !== 'keep';
+
+	const displayableGames = (fetched: Game[]): Game[] => (
+		prefs.keepFinalGames ? fetched : fetched.filter(game => game.status !== 'post')
+	);
+
+	// Runs on every poll, ahead of the mute sync so a freed tab is unmuted in the same pass that
+	// released it. Demo mode is excluded outright: its games reach 'post' on a script while the
+	// tabs registered to them are real, and mock-20 ships already final — so the first poll after
+	// turning the demo on would close a real tab for a game that was never played.
+	const settleFinishedTabs = async (finishedGames: Game[]) => {
+		if (prefs.finishedTabAction === 'keep' || demoMode) return;
+		if (finishedGames.length === 0 || tabRegistry.length === 0) return;
+
+		const allTabs = await browser.tabs.query({});
+		const [activeTab] = await browser.tabs.query({ active: true, lastFocusedWindow: true });
+		const resolutions = resolveFinishedTabs({
+			registry: tabRegistry,
+			action: prefs.finishedTabAction,
+			finishedGameIds: new Set(finishedGames.map(game => game.id)),
+			openTabIds: new Set(allTabs.flatMap(tab => tab.id === undefined ? [] : [tab.id])),
+			activeTabId: activeTab?.id ?? null,
+			...describeOpenWindows(allTabs),
+		});
+		if (resolutions.length === 0) return;
+
+		const releasedTabIds = new Set(resolutions.map(resolution => resolution.tabId));
+		tabRegistry = tabRegistry.filter(reg => !releasedTabIds.has(reg.tabId));
+		if (pendingSwitch && releasedTabIds.has(pendingSwitch.tabId)) clearPendingSwitch();
+
+		let closed = 0;
+		for (const resolution of resolutions.filter(entry => entry.close)) {
+			try {
+				await browser.tabs.remove(resolution.tabId);
+				closed++;
+			} catch (err) {
+				// The registration is gone either way, so a tab that refuses to close is still
+				// handed back rather than left half-managed.
+				logWarn(`Failed to close tab ${resolution.tabId} after its game finished.`, err);
+			}
+		}
+
+		try {
+			await browser.storage.session.set({ tabRegistry });
+		} catch (err) {
+			logWarn('Failed to persist the registry after handing tabs back.', err);
+		}
+		await recordFinishedTabNotice(resolutions.length - closed, closed);
+	};
+
+	// refreshSlate only runs at worker startup and when preferences change, so a game that goes
+	// final while the worker is already up never passes through it. Recorded here instead, on every
+	// poll: otherwise the game survives only as long as the dateless scoreboard keeps returning it,
+	// and the Eastern-day rollover drops it a couple of hours old against a promised 24. The fresh
+	// copy replaces any retained one, so a score corrected after the whistle is the one that sticks.
+	const absorbFinalGames = (fresh: Game[]) => {
+		if (!prefs.keepFinalGames) return;
+		const byId = new Map(retainedFinalGames.map(game => [game.id, game]));
+		fresh.filter(game => game.status === 'post').forEach(game => byId.set(game.id, game));
+		retainedFinalGames = [...byId.values()].filter(game => isWithinFinalRetention(game));
+	};
+
 	// A changedLeagueId scopes stall tracking and history to just that league; null processes
-	// every live game.
-	const afterFetch = async (changedLeagueId: LeagueId | null, allowTabSwitch: boolean) => {
+	// every live game. `finishedGames` is what the fetch saw go final on this pass, which is not
+	// the same as what is in `games` — with Keep finished games off they are dropped on the way in.
+	const afterFetch = async (changedLeagueId: LeagueId | null, allowTabSwitch: boolean, finishedGames: Game[] = []) => {
 		const liveGames = games.filter(g => g.status === 'in');
 		const freshGames = changedLeagueId ? liveGames.filter(g => g.league === changedLeagueId) : liveGames;
 
@@ -524,9 +842,13 @@ export default defineBackground(() => {
 		const postseasonBoostPoints = prefs.postseasonBoostPoints;
 		const scores = liveGames.map(g => {
 			const stallCount = clockStallMap.get(g.id)?.stallCount ?? 0;
+			// The window, not the whole retained series: the thinned tail below it exists for the wrap
+			// screen's charts, and feeding three hours of a game to a scorer tuned to the last few
+			// minutes would change every signal it computes.
+			const scored = recentSnapshots(history.get(g.id) ?? [], Date.now() - getHistoryWindowMsForGame(g));
 			const baseScore = applyDisabledSignals(
 				normalizePowerScoreResult(
-					computePowerScore(g, history.get(g.id) ?? [], stallCount, winProbHistory.get(g.id) ?? []),
+					computePowerScore(g, scored, stallCount, winProbHistory.get(g.id) ?? []),
 				),
 				prefs.disabledSignals,
 			);
@@ -538,7 +860,13 @@ export default defineBackground(() => {
 			const favoriteBonus = frozen ? 0 : favoriteTeamCount * favoriteBonusPoints;
 			const gameBoost = frozen ? 0 : (gameBoosts[g.id] ?? 0);
 			const scoringOpportunityBoost = computeScoringOpportunityBoost(g);
-			const postseasonBoost = !frozen && g.isPostseason ? postseasonBoostPoints : 0;
+			// Scaled by how close the game is to deciding a trophy rather than paid flat, so a Wild
+			// Card game stops being worth the same as a Super Bowl. A postseason game we could not
+			// grade, or one that deliberately scores nothing like a non-playoff bowl, pays a share
+			// of 0.25 and 0 respectively — see gradePostseason.
+			const postseasonBoost = frozen
+				? 0
+				: Math.round(postseasonBoostPoints * postseasonBoostShare(g.postseasonRound));
 			// Automatic scoring saturates at 100; only a manual game boost may push the headline
 			// total past the ceiling.
 			const automaticTotal = Math.min(
@@ -572,6 +900,8 @@ export default defineBackground(() => {
 		updateHistory(freshGames);
 		updatePowerScoreHistory(liveGames, scores, changedLeagueId);
 		persistHistoryToSession();
+
+		await settleFinishedTabs(finishedGames);
 
 		broadcastScoresUpdated();
 
@@ -630,8 +960,12 @@ export default defineBackground(() => {
 
 	const tick = async (allowTabSwitch = true) => {
 		const enabledLeagues = prefs.enabledLeagues;
+		let finishedGames: Game[] = [];
 		if (demoMode && simulator) {
 			games = simulator.tick();
+			// Reported the same way a real poll reports them, so the demo exclusion lives in one
+			// place — settleFinishedTabs — rather than being an accident of what this branch omits.
+			finishedGames = games.filter(g => g.status === 'post');
 			const demoLeagues = [...new Set(games.map(game => game.league))];
 			leagueLogos = demoLeagues.reduce<LeagueLogoMap>((acc, leagueId) => {
 				// No ESPN response behind a demo game, so this resolves to the override or fallback.
@@ -639,50 +973,109 @@ export default defineBackground(() => {
 				return acc;
 			}, {});
 		} else {
+			let fetched: Game[];
 			try {
-				const fetchResult = await fetchGamesWithLeagueLogos(enabledLeagues, { includeUpcoming: false });
-				games = fetchResult.games;
+				const fetchResult = await fetchGamesWithLeagueLogos(enabledLeagues, { includeUpcoming: false, includeFinal: wantsFinalGames() });
+				// Every league refused is not an empty slate, it is no answer at all. Replacing `games`
+				// from it would clear a live list and report a quiet night to the popup.
+				if (fetchResult.shedLeagues.length === enabledLeagues.length) {
+					logError(`ESPN shed all ${enabledLeagues.length} leagues; keeping the previous games.`);
+					slateShedLeagues = fetchResult.shedLeagues;
+					return;
+				}
+				slateShedLeagues = fetchResult.shedLeagues;
+				fetched = fetchResult.games;
 				leagueLogos = fetchResult.leagueLogos;
 			} catch (err) {
 				logError('Failed to fetch games.', err);
 				return;
 			}
-			const freshGameIds = new Set(games.map(g => g.id));
+			absorbFinalGames(fetched);
+			noteGameEnds(fetched);
+			mergeGuideSlate(fetched);
+			finishedGames = fetched.filter(g => g.status === 'post');
+			games = displayableGames(fetched);
+			const freshGameIds = new Set(fetched.map(g => g.id));
 			const stillUpcoming = upcomingGames.filter(g => !freshGameIds.has(g.id));
-			games = [...games, ...stillUpcoming];
+			const stillFinal = liveRetainedFinals().filter(g => !freshGameIds.has(g.id));
+			games = [...games, ...stillUpcoming, ...stillFinal];
 		}
 
-		await afterFetch(null, allowTabSwitch);
+		await afterFetch(null, allowTabSwitch, finishedGames);
 	};
 
 	const tickLeague = async (leagueId: LeagueId, allowTabSwitch: boolean) => {
 		let fetchSucceeded = false;
+		let finishedGames: Game[] = [];
 		try {
-			const fetchResult = await fetchGamesWithLeagueLogos([leagueId], { includeUpcoming: false });
+			const fetchResult = await fetchGamesWithLeagueLogos([leagueId], { includeUpcoming: false, includeFinal: wantsFinalGames() });
+			// Thrown rather than merged: a shed league comes back with no games, and the tail of this
+			// function would read that as a successful tick with nothing live, hand it to
+			// `recordPollResult`, and walk a league down into dormant while its games are being played.
+			// Failure keeps the mode it already had, which is the faster of the two.
+			if (fetchResult.shedLeagues.length > 0) throw new Error(`ESPN shed the ${leagueId} scoreboard.`);
+			absorbFinalGames(fetchResult.games);
+			noteGameEnds(fetchResult.games);
+			mergeGuideSlate(fetchResult.games);
+			finishedGames = fetchResult.games.filter(g => g.status === 'post');
 			const freshGameIds = new Set(fetchResult.games.map(g => g.id));
-			const otherGames = games.filter(g => g.league !== leagueId);
+			// Every league's finals are rebuilt from the retained list rather than carried through
+			// with the other leagues' games, so one league's poll re-checks the whole set's
+			// retention instead of each league only ageing out when its own turn comes round.
+			const otherGames = games.filter(g => g.league !== leagueId && g.status !== 'post');
 			const leagueUpcoming = upcomingGames.filter(g => g.league === leagueId && !freshGameIds.has(g.id));
-			games = [...otherGames, ...fetchResult.games, ...leagueUpcoming];
+			const retainedFinals = liveRetainedFinals().filter(g => !freshGameIds.has(g.id));
+			games = [...otherGames, ...displayableGames(fetchResult.games), ...leagueUpcoming, ...retainedFinals];
 			leagueLogos = { ...leagueLogos, ...fetchResult.leagueLogos };
 			const hasLiveGames = fetchResult.games.some(g => g.status === 'in');
-			pollModeTracker.recordPollResult(leagueId, hasLiveGames);
+			// Read off the merged list rather than the response: the dateless scoreboard carries
+			// today's scheduled games, and with Up Next on the slate contributes the rest of the week
+			// for free. Either way a kickoff found here is one the lookahead below does not have to
+			// spend a request on.
+			const nextStartMs = earliestUpcomingStartMs(games.filter(g => g.league === leagueId));
+			pollModeTracker.recordPollResult(leagueId, hasLiveGames, nextStartMs);
 			fetchSucceeded = true;
 		} catch (err) {
 			logWarn(`Failed to fetch ${leagueId} games.`, err);
 		}
 
-		// Reschedule before awaiting post-processing so the next tick is always queued, and skip
-		// leagues that were disabled while this fetch was in flight.
+		// Tracked per league across the steady-state polls, not just across a fan-out: a refusal and a
+		// network failure both mean this league's games are unknown rather than absent.
+		slateShedLeagues = fetchSucceeded
+			? slateShedLeagues.filter(id => id !== leagueId)
+			: [...new Set([...slateShedLeagues, leagueId])];
+
+		// Reschedule before awaiting the scoring pass so the next tick is always queued, and skip
+		// leagues that were disabled while this fetch was in flight. The lookahead is the one thing
+		// allowed to hold it up, because its answer is what the interval below is chosen from.
 		if (!demoMode && prefs.enabledLeagues.includes(leagueId)) {
+			// Only ever on the way into a quiet state, and only when nothing already held answers it.
+			// One request buys the right to skip dozens, so it is cheaper than the dormant beat it
+			// replaces; a failure leaves the league dormant, which is the faster of the two.
+			if (fetchSucceeded && pollModeTracker.needsLookahead(leagueId)) {
+				try {
+					pollModeTracker.recordLookahead(leagueId, await fetchNextScheduledStart(leagueId));
+				} catch (err) {
+					logWarn(`Failed to look ahead for ${leagueId}.`, err);
+				}
+			}
+
+			const mode = pollModeTracker.getMode(leagueId);
 			let nextInterval: number;
-			if (fetchSucceeded && pollModeTracker.getMode(leagueId) === 'dormant') {
+			if (fetchSucceeded && mode === 'hebetudinous') {
+				nextInterval = computeHebetudinousIntervalMs(pollModeTracker.getNextStartMs(leagueId) ?? null);
+			} else if (fetchSucceeded && mode === 'dormant') {
 				nextInterval = pollDormantMinMs + randomInRange(0, pollDormantMaxMs - pollDormantMinMs);
 			} else if (fetchSucceeded) {
 				const liveLeagueGames = games.filter(g => g.league === leagueId && g.status === 'in');
-				const base = computeLeagueIntervalMs(liveLeagueGames, currentScores);
+				const refreshMs = scoreboardRefreshMs(leagueId);
+				const base = computeLeagueIntervalMs(liveLeagueGames, currentScores, refreshMs);
 				// Proportional so fast polls stay dense and slow polls spread out.
 				const jitterMax = Math.round((base / pollMaxEagerMs) * 2_000);
-				nextInterval = base + randomInRange(-jitterMax, jitterMax);
+				// Floored, because the negative half of the jitter would otherwise land inside the window
+				// ESPN is still serving the previous answer for, which is the poll this floor exists to
+				// stop. De-syncing leagues stays the job of the positive half.
+				nextInterval = Math.max(refreshMs, base + randomInRange(-jitterMax, jitterMax));
 			} else {
 				nextInterval = pollIntervalMs + randomInRange(-2_000, 2_000);
 			}
@@ -690,7 +1083,7 @@ export default defineBackground(() => {
 			scheduleLeagueTick(leagueId, nextInterval);
 		}
 
-		await afterFetch(leagueId, allowTabSwitch);
+		await afterFetch(leagueId, allowTabSwitch, finishedGames);
 	};
 
 	const scheduleLeagueTick = (leagueId: LeagueId, delayMs: number) => {
@@ -767,12 +1160,13 @@ export default defineBackground(() => {
 
 	const stateReady = Promise.all([
 		loadStoredUserPreferences(),
-		browser.storage.session.get({ tabRegistry: [], standbyStreamTabId: null, ...historyStorageDefaults }),
-		browser.storage.local.get({ demoMode: false }),
+		browser.storage.session.get({ tabRegistry: [], standbyStreamTabId: null, lastSwitchTime: 0, ...historyStorageDefaults }),
+		browser.storage.local.get({ demoMode: false, [gameEndTimesKey]: {} }),
 	]).then(([storedPrefs, sessionResult, demoResult]) => {
 		prefs = storedPrefs;
 		tabRegistry = sessionResult.tabRegistry as TabRegistration[];
 		standbyStreamTabId = (sessionResult.standbyStreamTabId as number | null) ?? null;
+		lastSwitchTime = readStoredSwitchTime(sessionResult.lastSwitchTime, Date.now());
 		gameBoosts = normalizeGameBoosts(sessionResult.gameBoosts);
 		if (Array.isArray(sessionResult.mutedTabIds)) {
 			for (const tabId of sessionResult.mutedTabIds) {
@@ -781,6 +1175,7 @@ export default defineBackground(() => {
 		}
 		hydrateHistoryMaps(sessionResult.scoreHistory, sessionResult.powerScoreHistory);
 		demoMode = demoResult.demoMode as boolean;
+		endRecords = readGameEndRecords(demoResult[gameEndTimesKey]);
 		if (demoMode) simulator = new MockGameSimulator();
 	}).catch(err => {
 		logError('Failed to load persisted state; falling back to defaults.', err);
@@ -790,7 +1185,7 @@ export default defineBackground(() => {
 		await reconcileClosedTabs().catch(err => {
 			logWarn('Failed to reconcile the tab registry against open tabs.', err);
 		});
-		await refreshUpcomingGames().catch(() => {});
+		await refreshSlate().catch(() => {});
 		await refreshScores(false).catch(err => {
 			logError('Initial score refresh failed; starting polling anyway.', err);
 		});
@@ -806,9 +1201,11 @@ export default defineBackground(() => {
 		startLeaguePolling();
 		scheduleWinProbabilityPolling();
 		// Seed the lines now that the games are known, then re-score so the first thing the popup
-		// renders already carries volatility.
+		// renders already carries volatility. afterFetch rather than refreshScores: the games are
+		// already in hand from the refresh above, and only the scores need recomputing against the
+		// new lines, so going through tick() would refetch every enabled league to no purpose.
 		await refreshWinProbabilities();
-		await refreshScores(false);
+		await afterFetch(null, false);
 	});
 
 	browser.runtime.onMessage.addListener((msg: ExtensionMessage) => {
@@ -843,28 +1240,30 @@ export default defineBackground(() => {
 			return stateReady.then(async () => {
 				const wasEnabled = prefs.enabled;
 				const prevShowUpcoming = prefs.showUpcomingGames;
+				const prevKeepFinalGames = prefs.keepFinalGames;
 				const prevUpcomingGamesDays = prefs.upcomingGamesDays;
 				const prevLeagues = new Set(prefs.enabledLeagues);
 				prefs = normalizeUserPreferences(msg.prefs);
-				if (wasEnabled && !prefs.enabled) lastSwitchTime = 0;
+				if (wasEnabled && !prefs.enabled) setLastSwitchTime(0);
 				clearPendingSwitch();
 				// The popup persists before it sends, and the GET_STATE recovery path relies on that,
 				// so writing again here would only double the storage.sync traffic against Chrome's
 				// 120-writes-per-minute ceiling.
 				await syncManagedTabMuteState(prefs.enabled);
-				const upcomingSettingChanged = prefs.showUpcomingGames !== prevShowUpcoming ||
+				const slateSettingChanged = prefs.showUpcomingGames !== prevShowUpcoming ||
+					prefs.keepFinalGames !== prevKeepFinalGames ||
 					(prefs.showUpcomingGames && prefs.upcomingGamesDays !== prevUpcomingGamesDays);
-				if (upcomingSettingChanged) {
-					await refreshUpcomingGames();
-					games = [...games.filter(g => g.status !== 'pre'), ...upcomingGames];
+				if (slateSettingChanged) {
+					await refreshSlate();
+					games = [...games.filter(g => g.status === 'in'), ...upcomingGames, ...liveRetainedFinals()];
 					broadcastScoresUpdated();
 				}
 				const newLeagues = new Set(prefs.enabledLeagues);
 				const leaguesChanged = prevLeagues.size !== newLeagues.size ||
 					[...prevLeagues].some(l => !newLeagues.has(l as LeagueId));
 				if (leaguesChanged && !demoMode) {
-					await refreshUpcomingGames();
-					games = [...games.filter(g => g.status !== 'pre'), ...upcomingGames];
+					await refreshSlate();
+					games = [...games.filter(g => g.status === 'in'), ...upcomingGames, ...liveRetainedFinals()];
 					broadcastScoresUpdated();
 					startLeaguePolling();
 					// A league switched off keeps its cached lines until the next sweep otherwise.
@@ -954,13 +1353,58 @@ export default defineBackground(() => {
 				};
 			});
 		}
+
+		if (msg.type === 'GET_GUIDE_SLATE') {
+			return stateReady.then(async (): Promise<GuideSlate> => {
+				// Demo mode has no network behind it, so the simulator's own slate is the answer.
+				if (demoMode && simulator) return { games, leagueLogos, monoLogos: {}, gameBoosts, endTimes: {} };
+
+				// The slate this built last time, which the live polls have kept current since. The
+				// first open of a session still pays for it; the repeat opens that a pager invites do
+				// not, where every open used to cost two requests per enabled league.
+				if (guideSlateAt !== 0 && Date.now() - guideSlateAt < guideSlateTtlMs) {
+					void fillMissingDurations(guideSlate);
+					return { games: guideSlate, leagueLogos, monoLogos: await ensureMonoLogos(prefs.enabledLeagues), gameBoosts, endTimes: gameEndTimes(endRecords) };
+				}
+
+				// Deliberately bypasses both of refreshSlate's preference gates: the guide draws the
+				// whole day whatever the popup is configured to list. Equally deliberately it does not
+				// widen `games` — afterFetch scores off games.filter(status === 'in'), and the switch
+				// target and the poll cadence read that same array, so extra entries would change
+				// which game the extension switches to.
+				try {
+					const result = await fetchGamesWithLeagueLogos(prefs.enabledLeagues, {
+						includeUpcoming: true,
+						// Follows the Up Next setting so the two surfaces agree about how far ahead the
+						// product looks, floored so a guide that can only ever show today still has a
+						// future to page into.
+						upcomingDays: Math.max(prefs.upcomingGamesDays, guideMinUpcomingDays),
+						includeFinal: true,
+					});
+					guideSlate = result.games;
+					guideSlateAt = Date.now();
+					noteGameEnds(result.games);
+					void fillMissingDurations(result.games);
+					return {
+						games: result.games,
+						leagueLogos: result.leagueLogos,
+						monoLogos: await ensureMonoLogos(prefs.enabledLeagues),
+						gameBoosts,
+						endTimes: gameEndTimes(endRecords),
+					};
+				} catch (err) {
+					logWarn('Failed to fetch the guide slate.', err);
+					return { games: [], leagueLogos, monoLogos, gameBoosts, endTimes: {} };
+				}
+			});
+		}
 	});
 
 	browser.tabs.onActivated.addListener(({ tabId }) => {
 		void stateReady.then(() => {
 			// A manual switch starts the cooldown too, otherwise landing on a quieter game by hand
 			// gets overridden by the very next poll.
-			if (tabRegistry.some(reg => reg.tabId === tabId)) lastSwitchTime = Date.now();
+			if (tabRegistry.some(reg => reg.tabId === tabId)) setLastSwitchTime(Date.now());
 			return syncManagedTabMuteState(prefs.enabled);
 		});
 	});

@@ -1,6 +1,6 @@
 import { createFavoriteTeamKey } from '@arenaswap/core/constants';
 import type { GameCardDisplayProps } from './gameCardTypes';
-import { buildCardHandlers, buildGameCardStyle, formatStartDateTime, GameMeta, TeamColumn } from './gameCardShared';
+import { CardStatusRow, GameMeta, PostseasonLabel, TeamColumn, buildCardHandlers, buildGameCardStyle, formatStartDateTime } from './gameCardShared';
 import { conditionIcon, formatTemperature } from './weatherUtils';
 import { useT } from './i18nContext';
 
@@ -24,6 +24,11 @@ const preGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, onOpenGameDe
 			onKeyDown={onCardKeyDown}
 			aria-label={t('gameCard.openDetails', { away: game.awayTeam.abbreviation, home: game.homeTeam.abbreviation })}
 		>
+			{/* A scheduled card has no status row of its own, so the label brings one. Rendered only
+			    when there is a round to name, which keeps every non-postseason card the height it
+			    has always been. */}
+			{game.postseasonLabel && <CardStatusRow><PostseasonLabel game={game} /></CardStatusRow>}
+
 			<div className='d-flex align-items-center justify-content-center game-card-matchup'>
 				<TeamColumn leagueId={game.league} team={game.awayTeam} isFavorited={awayFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} />
 				<div className='d-flex flex-column align-items-center game-card-center'>

@@ -12,8 +12,10 @@ const bsoGroup = (label: string, count: number, max: number, fillColor: string) 
 		{Array.from({ length: max }, (_, i) => (
 			<i
 				key={i}
-				className={`bi ${i < count ? 'bi-circle-fill' : 'bi-circle'} bso-dot`}
-				style={{ color: i < count ? fillColor : '#4b5563' }}
+				// The unfilled colour is a class rather than an inline style, so a surface that is not
+				// a white card can re-tone it. An inline style cannot be overridden by a stylesheet.
+				className={`bi ${i < count ? 'bi-circle-fill' : 'bi-circle'} bso-dot${i < count ? '' : ' is-empty'}`}
+				style={i < count ? { color: fillColor } : undefined}
 			/>
 		))}
 	</div>

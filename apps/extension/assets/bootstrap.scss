@@ -1,49 +1,98 @@
-@import '@arenaswap/ui/src/bootstrap';
+// The popup's stylesheet. `@arenaswap/ui/src/bootstrap` is the theme and forwards Bootstrap itself,
+// so configuring it here is how Bootstrap gets configured — there is no second load of Bootstrap to
+// order these against, which is what the old `@import` pair needed.
+@use '@arenaswap/ui/src/bootstrap' as bs with (
+	$font-size-base:   0.9375rem,
+	$font-size-sm:     0.8125rem,
+	$headings-font-weight: 700,
+	$form-range-thumb-bg:  #F75C03,
+	$form-range-track-bg:  #30363d,
+	$btn-border-radius:    0.25rem,
+	$enable-dark-mode:     false,
 
-$font-size-base:   0.9375rem;
-$font-size-sm:     0.8125rem;
-$headings-font-weight: 700;
-$form-range-thumb-bg:  #F75C03;
-$form-range-track-bg:  #30363d;
-$btn-border-radius:    0.25rem;
-$enable-dark-mode:     false;
+	// No $form-switch-checked-bg here: Bootstrap has no such variable — its switch reads
+	// $form-check-input-checked-bg-color, which is the line below and is what actually turns the
+	// toggle orange. The old override set a name nothing read.
+	$form-check-input-checked-bg-color:    #F75C03,
+	$form-check-input-checked-border-color: #F75C03,
 
-$form-switch-checked-bg:               #F75C03;
-$form-check-input-checked-bg-color:    #F75C03;
-$form-check-input-checked-border-color: #F75C03;
+	// Bootstrap's default tooltip-color is var(--as-body-bg), which on this dark theme would be
+	// dark text on a dark background.
+	$tooltip-color: #f8fafc,
+	$tooltip-bg:    #1f2937,
 
-// Bootstrap's default tooltip-color is var(--as-body-bg), which on this dark theme would be
-// dark text on a dark background.
-$tooltip-color: #f8fafc;
-$tooltip-bg:    #1f2937;
+	// The Up Next day pager is the only pagination in the popup, and it heads a section rather than
+	// closing a page of results, so it takes the scale of a heading label instead of body text.
+	$pagination-font-size: 0.72rem,
+	// Bootstrap picks the active page's label with $component-active-color, a flat white that only
+	// reaches 3.22:1 on $primary. Buttons escape this because they run the colour through
+	// color-contrast(); pagination does not.
+	$pagination-active-color: #0d1117,
+	// Pagination was the first thing in the popup to reach for --as-secondary-bg and --as-tertiary-bg,
+	// back when this theme left both at Bootstrap's light defaults and an arrow at the end of the range
+	// was a white slab on a #0d1117 popup. Both tokens are set in packages/ui now, so these are a
+	// choice rather than a repair: a disabled arrow recedes into the popup entirely instead of holding
+	// the secondary surface.
+	$pagination-disabled-bg: #0d1117,
+	$pagination-hover-bg: #161b22,
+	$pagination-focus-bg: #161b22,
 
-// The Up Next day pager is the only pagination in the popup, and it heads a section rather than
-// closing a page of results, so it takes the scale of a heading label instead of body text.
-$pagination-font-size: 0.72rem;
-// Bootstrap picks the active page's label with $component-active-color, a flat white that only
-// reaches 3.22:1 on $primary. Buttons escape this because they run the colour through
-// color-contrast(); pagination does not.
-$pagination-active-color: #0d1117;
-// Pagination is the first thing in the popup to reach for --as-secondary-bg and --as-tertiary-bg,
-// which this theme never overrode and which are therefore still Bootstrap's light defaults: #e9ecef
-// disabled, #f8f9fa on hover. Left alone, an arrow at the end of the range is a white slab on a
-// #0d1117 popup. Set here rather than on $body-secondary-bg so nothing else has to move.
-$pagination-disabled-bg: #0d1117;
-$pagination-hover-bg: #161b22;
-$pagination-focus-bg: #161b22;
+	// ── Box score ────────────────────────────────────────────────────────────────
+	// The box score is the first and only .table and .nav in the popup, so these are set globally
+	// the way $pagination-font-size above is rather than being re-specified on the component.
+	//
+	// Every default here resolves against the dark popup and the box score sits on the light
+	// .gd-setup card, so left alone the table would be a #0d1117 slab with light ink on it. Same
+	// class of bug the pagination arrows had.
+	$table-color:            #111827,
+	// Transparent rather than a colour of its own, so the card it sits on shows through and the two
+	// cannot drift apart.
+	$table-bg:               transparent,
+	$table-border-color:     #d1d5db,
+	// Bootstrap 5.3 draws this only through the opt-in .table-group-divider class, which nothing in
+	// our source uses, so it is a guard rather than an active fix: left at the default currentcolor,
+	// the first table to ask for a divider would draw the table's own #111827 as a heavy bar across
+	// the light card.
+	$table-group-separator-color: #d1d5db,
+	$table-striped-color:    #111827,
+	$table-striped-bg:       rgba(17, 24, 39, 0.045),
+	$table-active-color:     #111827,
+	$table-active-bg:        rgba(17, 24, 39, 0.075),
+	$table-hover-color:      #111827,
+	$table-hover-bg:         rgba(17, 24, 39, 0.06),
+	$table-th-font-weight:   700,
+	// A 320px popup has ~263px inside the card. Bootstrap's .25rem of horizontal padding a side
+	// spends 96px of that on a nine-inning line score before a single digit is drawn.
+	$table-cell-padding-y-sm: 0.12rem,
+	$table-cell-padding-x-sm: 0.16rem,
 
-@import 'bootstrap/scss/bootstrap';
-
-$bootstrap-icons-font-dir: '/fonts';
-@import 'bootstrap-icons/font/bootstrap-icons';
+	// $nav-tabs-link-active-bg is var(--as-body-bg) by default, which would punch a dark hole in the
+	// light card the selected team's tab sits on.
+	$nav-tabs-link-active-bg:           #f8fafc,
+	$nav-tabs-border-color:             #d1d5db,
+	$nav-tabs-link-active-color:        #111827,
+	$nav-tabs-link-active-border-color: #d1d5db #d1d5db #f8fafc,
+	// The default hover border reaches for --as-secondary-bg, which is a dark surface, and this strip
+	// sits on a light card.
+	$nav-tabs-link-hover-border-color:  #e5e7eb #e5e7eb #d1d5db,
+	// $nav-link-color is the link colour, and #F75C03 on #f8fafc is 3.0:1 — under the 4.5:1 an
+	// unselected tab's label needs as body text.
+	$nav-link-color:                    #4b5563,
+	$nav-link-hover-color:              #111827,
+	$nav-link-font-size:                0.64rem,
+	$nav-link-font-weight:              700,
+	$nav-link-padding-y:                0.2rem,
+	$nav-link-padding-x:                0.45rem
+);
+@use 'bootstrap-icons/font/bootstrap-icons' with ($bootstrap-icons-font-dir: '/fonts');
+@use '@arenaswap/ui/src/game-card' as gc;
+@use '@arenaswap/ui/src/motion' as m;
+@use '@arenaswap/ui/src/popup';
 
 @keyframes livePulse {
 	0%, 100% { opacity: 1; }
 	50%       { opacity: 0.3; }
 }
-
-@import '@arenaswap/ui/src/game-card';
-@import '@arenaswap/ui/src/popup';
 
 @keyframes onbLogoRise {
 	from { transform: translateY(200px); }
@@ -63,7 +112,7 @@ $bootstrap-icons-font-dir: '/fonts';
 	animation: onbFadeSlideUp 0.45s ease 0.58s both;
 }
 
-@media (prefers-reduced-motion: reduce) {
+@include m.reduced-motion {
 	.onb-logo-wrap,
 	.onb-content-wrap {
 		animation: none;
@@ -203,7 +252,7 @@ $bootstrap-icons-font-dir: '/fonts';
 
 	&:hover  { color: #e6edf3; }
 	&:focus-visible {
-		outline:        1px solid $primary;
+		outline:        1px solid bs.$primary;
 		outline-offset: 1px;
 		border-radius:  2px;
 	}
@@ -236,6 +285,13 @@ $bootstrap-icons-font-dir: '/fonts';
 
 .powerscore-breakdown-row-penalty span:last-child {
 	color: #991b1b;
+}
+
+// ESPN's round name riding the label it explains, so the row still reads as one line rather than
+// two competing halves. Measured at 169.5px against the row's 276px in the widest locale pairing.
+.powerscore-breakdown-qualifier {
+	color:       #6c757d;
+	font-weight: 400;
 }
 
 .powerscore-breakdown-note {
@@ -385,7 +441,7 @@ $bootstrap-icons-font-dir: '/fonts';
 	&:hover { background: rgba(230, 237, 243, 0.035); }
 
 	&:focus-visible {
-		outline:        1px solid $primary;
+		outline:        1px solid bs.$primary;
 		outline-offset: -1px;
 		border-radius:  0.25rem;
 	}
@@ -407,10 +463,28 @@ $bootstrap-icons-font-dir: '/fonts';
 	&:hover { background: rgba(230, 237, 243, 0.035); }
 }
 
+// The same white disc the team picker uses, at row size. The two crests here sit on the popup's
+// #0d1117, where a navy or black mark is a silhouette. The disc grows around the crest rather than
+// squeezing it, so the mark stays the size it has always been.
+.suggest-crest-disc {
+	display:         inline-flex;
+	align-items:     center;
+	justify-content: center;
+	flex-shrink:     0;
+	width:           1.27rem;
+	height:          1.27rem;
+	border-radius:   999px;
+	overflow:        hidden;
+	box-shadow:      0 0 0 1px rgba(255, 255, 255, 0.28);
+}
+
 .suggest-crest {
 	width:  0.95rem;
 	height: 0.95rem;
 }
+
+// The disc already carries the wash, so the shared grey placeholder inside it would read as a hole.
+.suggest-crest .crest-fallback { background: transparent; }
 
 .suggest-matchup {
 	font-size: 0.72rem;
@@ -428,7 +502,7 @@ $bootstrap-icons-font-dir: '/fonts';
 	font-size:   0.92rem;
 	line-height: 1;
 	text-align:  center;
-	color:       $primary;
+	color:       bs.$primary;
 }
 
 .settings-index-text {
@@ -642,7 +716,7 @@ $bootstrap-icons-font-dir: '/fonts';
 }
 
 @for $i from 0 through 6 {
-	.sensitivity-tick-#{$i} { left: percentage($i / 6); }
+	.sensitivity-tick-#{$i} { left: calc($i / 6 * 100%); }
 }
 
 .onb-league-logo {
@@ -812,29 +886,45 @@ $bootstrap-icons-font-dir: '/fonts';
 
 // White disc, tinted with the team's own colour — the same wash the matchup card uses, so a
 // dark crest never disappears into a dark half of the poster.
+// The plate is a repair, not a decoration: it exists so a crest that would otherwise disappear into
+// a dark surface still reads. A crest that reads on its own — which is most of them — and ESPN's
+// white mark, which reads on anything, are both drawn bare. The box keeps its size either way so a
+// row carrying one of each stays level.
+.gd-poster-crest.is-bare,
+.game-detail-team-logo-shell.is-bare {
+	background: none;
+	box-shadow: none;
+}
+
 .gd-poster-crest {
-	width: 58px;
-	height: 58px;
+	width: 80px;
+	height: 80px;
 	border-radius: 999px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	overflow: hidden;
 	flex-shrink: 0;
 	box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.35), 0 6px 16px -8px rgba(3, 7, 12, 0.85);
 }
 
+// Only the plate clips, and it clips to three quarters of itself — see `.gd-bar-logo-shell`.
+.gd-poster-crest:not(.is-bare) {
+	overflow: hidden;
+
+	.gd-poster-crest-logo { width: 75%; height: 75%; }
+}
+
 .gd-poster-crest-logo {
-	width: 44px;
-	height: 44px;
+	width: 64px;
+	height: 64px;
 }
 
 // The disc behind it already carries the team's colour wash, so a second grey disc inside it would
 // read as a hole. The letter colour is set per-team from the component.
 .gd-poster-crest-logo .crest-fallback {
-	@include scoreboard-figures;
+	@include gc.scoreboard-figures;
 	background: transparent;
-	font-size: 0.86rem;
+	font-size: 1.25rem;
 	letter-spacing: 0.02em;
 }
 
@@ -1137,6 +1227,308 @@ $bootstrap-icons-font-dir: '/fonts';
 	white-space: nowrap;
 }
 
+// ── Box score ────────────────────────────────────────────────────────────────
+// The line score, the team comparison and one team's player tables, in the same light card family
+// as the blocks above. Everything below is Bootstrap's .table doing the work; these rules only
+// re-skin properties Bootstrap already sets on the same elements, plus the two column behaviours a
+// 263px card needs that no utility expresses.
+
+.gd-box-subheading {
+	font-size:      0.55rem;
+	font-weight:    700;
+	color:          #6b7280;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	margin:         0.3rem 0 0.14rem;
+}
+
+.gd-box > .gd-box-line .gd-box-subheading:first-child,
+.gd-box > .gd-box-compare .gd-box-subheading:first-child {
+	margin-top: 0.14rem;
+}
+
+.gd-box-table {
+	font-size:     0.6rem;
+	margin-bottom: 0.2rem;
+
+	// Numbers are read down a column, which is what the monospace face is for in this project.
+	// The name column opts back out below.
+	td,
+	th:not(.gd-box-name) {
+		font-variant-numeric: tabular-nums;
+		text-align:           center;
+		white-space:          nowrap;
+	}
+
+	thead th {
+		font-size:      0.5rem;
+		color:          #4b5563;
+		letter-spacing: 0.02em;
+	}
+
+	tfoot th,
+	tfoot td { font-weight: 700; }
+}
+
+// A truncated name is still readable and a truncated stat is not, so the name column takes all the
+// slack and gives way first. `max-width: 0` is what lets a percentage-width table cell actually
+// ellipsize — without it the cell grows to its content instead.
+.gd-box-name {
+	width:         100%;
+	max-width:     0;
+	overflow:      hidden;
+	text-overflow: ellipsis;
+	white-space:   nowrap;
+	text-align:    left;
+	font-weight:   600;
+}
+
+.gd-box-name-sub { padding-left: 0.7rem !important; }
+
+.gd-box-position {
+	font-size:   0.5rem;
+	font-weight: 400;
+	color:       #6b7280;
+	margin-left: 0.2rem;
+}
+
+.gd-box-dnp {
+	font-size:  0.52rem;
+	color:      #6b7280;
+	font-style: italic;
+}
+
+.gd-box-line-team {
+	font-weight: 700;
+	text-align:  left;
+	white-space: nowrap;
+}
+
+// A flex span inside the cell rather than `display: flex` on the cell itself: a table cell that
+// stops being one drops out of the fixed layout that keeps the innings even.
+.gd-box-line-id {
+	display:     flex;
+	align-items: center;
+	gap:         0.2rem;
+}
+
+.gd-box-line-crest {
+	width:  13px;
+	height: 13px;
+}
+
+.gd-box-line-abbr {
+	font-size:      0.58rem;
+	font-weight:    700;
+	letter-spacing: 0.02em;
+}
+
+.gd-box-line-total { font-weight: 700; }
+
+// Nine innings plus R-H-E is thirteen columns. Fixed layout divides the width evenly instead of
+// letting a two-digit inning steal room from the ones beside it.
+.gd-box-line-table {
+	table-layout: fixed;
+	// Fixed layout divides the table's width evenly however many columns there are, which is what
+	// keeps a two-digit inning from stealing room from the ones beside it. It also means a 13th
+	// inning would squeeze all sixteen columns to 14px and clip their digits, so the min-width is
+	// what makes the table overflow its wrapper and scroll instead. Nine innings plus R-H-E lands
+	// under the card's width and never scrolls.
+	min-width:    calc(3.5rem + var(--gd-box-line-columns) * 1.05rem);
+
+	// Wide enough for a 13px crest and a three-letter abbreviation. Every rem spent here comes
+	// out of the innings, which is why the nine-inning fit is a test rather than a calculation.
+	.gd-box-line-team { width: 3.5rem; }
+}
+
+// The label takes the middle and the two values sit under the abbreviations that own them.
+.gd-box-compare-table {
+	td:first-child,
+	td:last-child,
+	thead th:first-child,
+	thead th:last-child { width: 3.4rem; font-weight: 600; }
+}
+
+.gd-box-compare-team {
+	font-size:      0.58rem;
+	letter-spacing: 0.02em;
+}
+
+.gd-box-compare-label {
+	width:       100%;
+	text-align:  center !important;
+	font-weight: 400 !important;
+	color:       #4b5563;
+	font-size:   0.55rem;
+}
+
+.gd-box-tabs {
+	margin-top: 0.3rem;
+
+	.nav-link {
+		display:     flex;
+		align-items: center;
+		gap:         0.22rem;
+	}
+}
+
+.gd-box-tab-crest {
+	width:  13px;
+	height: 13px;
+}
+
+// ── Detail screen tab strip ──────────────────────────────────────────────────
+// The strip that files the whole screen, sitting on the dark shell rather than on a light card.
+// That is why it is `.nav-underline` and not the lifted `.nav-tabs` the box score's away/home
+// switcher uses: `$nav-tabs-link-active-bg` is #f8fafc for that card, and a tab in #f8fafc here
+// would be a white slab across a #0d1117 screen.
+//
+// Bootstrap exposes the whole component through custom properties, so every line below sets one
+// rather than overriding a rule. The two colours are the ones the popup already uses on dark:
+// $body-secondary-color for the labels it is not on, and the brand orange — 5.9:1 here — for the
+// one it is.
+.gd-tabs {
+	--as-nav-link-color:                  #8b949e;
+	--as-nav-link-hover-color:            #e7edf5;
+	--as-nav-underline-link-active-color: #f75c03;
+	--as-nav-underline-border-width:      0.14rem;
+	--as-nav-underline-gap:               0;
+
+	// Tighter than the 0.5rem the cards below take. This is chrome rather than content, and every
+	// pixel it spends here comes off the PowerScore breakdown's head start down the screen.
+	margin-top:    0.34rem;
+	margin-bottom: 0.05rem;
+	// The rule the underline is drawn against, so an unselected tab reads as sitting on the same
+	// line rather than floating above nothing.
+	border-bottom: 1px solid #30363d;
+
+	// Three labels across 320px read as one control when they divide the width evenly, and the
+	// underline then measures the tab rather than the word inside it.
+	.nav-item { flex: 1 1 0; }
+
+	.nav-link {
+		width:      100%;
+		padding:    0.26rem 0.2rem;
+		text-align: center;
+		// Onto the strip's own rule rather than a pixel above it.
+		margin-bottom: -1px;
+	}
+}
+
+// ── Standings ────────────────────────────────────────────────────────────────
+// The same light card and the same table skin as the box score, because it is the same kind of
+// thing: rows of numbers read down a column. Only the team column differs, and only because a
+// standings row is named rather than abbreviated — ESPN sends no abbreviation in this block at
+// all, so the name column has to hold "Brighton & Hove Albion" as well as "Miami".
+.gd-standings > .gd-standings-block:first-child > :first-child { margin-top: 0.14rem; }
+
+.gd-standings-block + .gd-standings-block { margin-top: 0.45rem; }
+
+// The conference over its divisions. Darker and a step larger than the division subheadings
+// under it, and carrying the card's own rule, so two levels of heading read as two levels rather
+// than as one list of eight. Absent entirely for a flat league — a Premier League table has
+// nothing above it to name.
+.gd-standings-conference {
+	font-size:      0.62rem;
+	font-weight:    700;
+	color:          #111827;
+	border-bottom:  1px solid #d1d5db;
+	padding-bottom: 0.16rem;
+	margin-bottom:  0.1rem;
+}
+
+.gd-standings-rank {
+	width:       1.15rem;
+	font-weight: 600;
+	color:       #6b7280;
+}
+
+// A flex span inside the cell rather than `display: flex` on the cell itself, the same way the
+// line score's team cell does it: a table cell that stops being one drops out of the layout
+// keeping the number columns aligned.
+.gd-standings-id {
+	display:     flex;
+	align-items: center;
+	gap:         0.24rem;
+	min-width:   0;
+}
+
+.gd-standings-crest {
+	width:       13px;
+	height:      13px;
+	flex-shrink: 0;
+}
+
+// The name gives way first. `.gd-box-name` truncates the cell; a flex child inside it needs its
+// own `min-width: 0` before it will shrink far enough to let that happen.
+.gd-standings-name {
+	min-width:     0;
+	overflow:      hidden;
+	text-overflow: ellipsis;
+	white-space:   nowrap;
+}
+
+// The wash is doing the work of saying which two rows these are. The weight is what carries it
+// for a team whose colour is too pale to register as a 16% tint.
+.gd-standings-matchup { font-weight: 700; }
+
+// btn-link is the right component and its colour is the link orange, which only reaches 3.0:1 on
+// this card.
+.gd-box-more {
+	font-size:       0.55rem;
+	font-weight:     700;
+	color:           #4b5563;
+	text-decoration: underline;
+	padding:         0.05rem 0;
+
+	&:hover,
+	&:focus { color: #111827; }
+}
+
+// What just happened, in ESPN's own sentence. Same dark treatment as the info panel below — it is
+// part of the same column of sections — but it sits first in the live stack, directly under the
+// hero, so it is read as live state rather than as reference information.
+.gd-play-panel {
+	margin-top:  0.45rem;
+	padding-top: 0.34rem;
+	border-top:  1px solid #30363d;
+}
+
+.gd-play-heading {
+	font-size:     0.62rem;
+	font-weight:   700;
+	color:         #e7edf5;
+	margin-bottom: 0.24rem;
+}
+
+// The same 3px rule and 0.6rem indent the game list's section titles carry, in the colour of
+// whoever made the play rather than the product orange. Without a team the indent stays and the
+// rule goes, so the block does not shift when ESPN attributes a play to nobody.
+.gd-play-body {
+	padding-left: 0.6rem;
+	border-left:  3px solid transparent;
+}
+
+.gd-play-body.has-accent {
+	border-left-style: solid;
+}
+
+// `pre-line` rather than `normal`: a penalty arrives as two sentences joined by a newline, and
+// flattening them produces one run-on sentence that reads as a single play.
+.gd-play-text {
+	font-size:      0.62rem;
+	line-height:    1.35;
+	color:          #b6c2cf;
+	white-space:    pre-line;
+	overflow-wrap:  anywhere;
+}
+
+.gd-play-drive {
+	margin-top: 0.14rem;
+	font-size:  0.58rem;
+	color:      #8b949e;
+}
+
 // Venue / broadcast / odds / weather, as one titled section rather than four stacked centred
 // lines. Takes the chart cards' treatment, not the breakdown's white card: everything below the
 // PowerScore math reads as one dark column of sections.
@@ -1174,7 +1566,10 @@ $bootstrap-icons-font-dir: '/fonts';
 
 .game-info-label {
 	flex-shrink: 0;
-	width:       2.9rem;
+	// Sized for Attendance, which is the longest label this panel carries in every language it
+	// ships in — 2.9rem was set when Watch, Venue and Line were the whole list, and it wraps
+	// anything over about ten characters. The value column loses 11px and clips nothing.
+	width:       3.6rem;
 	font-size:   0.58rem;
 	color:       #8b949e;
 }
@@ -1235,7 +1630,7 @@ button.game-info-attribution {
 	&:hover { opacity: 1; }
 	&:focus-visible {
 		opacity:        1;
-		outline:        1px solid $primary;
+		outline:        1px solid bs.$primary;
 		outline-offset: 1px;
 		border-radius:  2px;
 	}
@@ -1326,7 +1721,8 @@ button.game-info-attribution {
 	grid-template-areas:
 		"awayCrest  score  homeCrest"
 		"awayLabel  status homeLabel"
-		"awayRecord .      homeRecord";
+		"awayRecord .      homeRecord"
+		"awayTimeouts .    homeTimeouts";
 	align-items: center;
 	justify-items: center;
 	column-gap: 0.25rem;
@@ -1339,6 +1735,8 @@ button.game-info-attribution {
 .gd-area-home-label { grid-area: homeLabel; }
 .gd-area-away-record { grid-area: awayRecord; }
 .gd-area-home-record { grid-area: homeRecord; }
+.gd-area-away-timeouts { grid-area: awayTimeouts; }
+.gd-area-home-timeouts { grid-area: homeTimeouts; }
 
 .game-detail-team-wrap {
 	display: contents;
@@ -1359,6 +1757,14 @@ button.game-info-attribution {
 	white-space: nowrap;
 }
 
+// A qualifier in front of the name, not part of it — so "Alabama Crimson Tide" still reads as the
+// team and "#2" as a fact about it. Re-toned for the live hero further down.
+.game-detail-team-rank {
+	font-weight:  700;
+	color:        #6b7280;
+	margin-right: 0.22em;
+}
+
 .game-detail-team-name {
 	align-self: start;
 	min-width: 0;
@@ -1371,25 +1777,32 @@ button.game-info-attribution {
 }
 
 .game-detail-team-logo-shell {
-	width: 44px;
-	height: 44px;
+	width: 64px;
+	height: 64px;
 	border-radius: 999px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	overflow: hidden;
 	background: transparent;
 }
 
-.game-detail-team-logo {
-	width: 36px;
-	height: 36px;
+// Only the plate clips, and it clips to three quarters of itself — see `.gd-bar-logo-shell`.
+.game-detail-team-logo-shell:not(.is-bare) {
+	overflow: hidden;
+
+	.game-detail-team-logo { width: 75%; height: 75%; }
 }
 
-// Inset rather than sized, so the 32px disc it has always been stays centred in the 36px box.
+.game-detail-team-logo {
+	width: 52px;
+	height: 52px;
+}
+
+// Inset rather than sized, so the placeholder disc stays centred in the box: 46px inside 52px.
 .game-detail-team-logo .crest-fallback {
-	inset: 2px;
-	background: rgba(17, 24, 39, 0.08);
+	inset: 3px;
+	background: rgba(255, 255, 255, 0.16);
+	color: rgba(255, 255, 255, 0.85);
 }
 
 .game-detail-center {
@@ -1408,20 +1821,26 @@ button.game-info-attribution {
 }
 
 .game-detail-score-value {
-	@include scoreboard-figures;
+	@include gc.scoreboard-figures;
 	font-size: 1.68rem;
 	color: #111827;
 	letter-spacing: -0.02em;
 	display: inline-flex;
 	justify-content: center;
 	min-width: 2.4ch;
+
+	// Final games only — see detailHero. The weight lives on the element as a Bootstrap utility,
+	// since `.fw-bold` is `!important` and would beat a font-weight set here.
+	&.is-loser { color: bs.$score-loser-color; }
 }
 
+// The face is not set here: the resolver decides it. A period and clock get Lekton's fixed
+// columns, and the states that replace them with a word — Halftime, Final, a delay description —
+// get the body face, since there is nothing in them to line up.
 .game-detail-period {
 	grid-area: status;
 	align-self: start;
 	font-size: 0.68rem;
-	font-family: 'Lekton', monospace;
 	color: #6c757d;
 	text-align: center;
 	white-space: nowrap;
@@ -1457,7 +1876,7 @@ button.game-info-attribution {
 	// Centred on the bar rather than laid out in the flex row, so the matchup stays on the
 	// card's axis no matter how wide the back button's label runs in a given locale.
 	transform: translate(-50%, calc(-50% + 4px));
-	transition: opacity 0.2s ease, transform 0.2s ease;
+	transition: opacity m.$motion-base m.$motion-ease, transform m.$motion-base m.$motion-ease;
 
 	&.is-visible {
 		opacity: 1;
@@ -1470,6 +1889,33 @@ button.game-info-attribution {
 	height: 18px;
 }
 
+// The shell the crest sits in. Bare unless the artwork was measured as unreadable and the team has
+// no monochrome mark to fall back on, which at this size is the one state worth a plate.
+//
+// Only the plate clips. The crest used to be drawn at the full 18px inside an 18px circle, which
+// took 25px of ink off the Giants' 'ny' — a mark that runs the whole width of its own box, as most
+// wordmarks do — every time this bar was on screen, plate or no plate. Where a plate is drawn the
+// crest is inset to three quarters of it: measured over 264 crests, the furthest ink reaches 65% of
+// the way to the corner of its own box, and it is the share the guide rows and the team picker
+// already use.
+.gd-bar-logo-shell {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	width: 18px;
+	height: 18px;
+	border-radius: 999px;
+
+	&:not(.is-bare) {
+		overflow: hidden;
+
+		.gd-bar-logo { width: 75%; height: 75%; }
+	}
+
+	&.is-bare { background: none; box-shadow: none; }
+}
+
 .gd-bar-logo .crest-fallback { background: rgba(230, 237, 243, 0.14); }
 
 .gd-bar-abbrev {
@@ -1480,7 +1926,7 @@ button.game-info-attribution {
 }
 
 .gd-bar-score {
-	@include scoreboard-figures;
+	@include gc.scoreboard-figures;
 	font-size: 0.95rem;
 	font-weight: 600;
 	line-height: 1;
@@ -1502,23 +1948,81 @@ button.game-info-attribution {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-	font-family: 'Lekton', monospace;
-	font-variant-numeric: tabular-nums;
 	font-size: 0.6rem;
 	color: #8b949e;
 	opacity: 0;
 	pointer-events: none;
-	transition: opacity 0.2s ease;
+	transition: opacity m.$motion-base m.$motion-ease;
 
 	&.is-visible {
 		opacity: 1;
 	}
 }
 
-@media (prefers-reduced-motion: reduce) {
+@include m.reduced-motion {
 	.gd-bar-compact,
 	.gd-bar-status {
-		transition: none;
+		@include m.motion-still;
+	}
+}
+
+// ── The live and final hero, on the same scrim ───────────────────────────────
+// Every one of these children was drawn for near-black ink on a white card. The surface changed, so
+// each is re-toned here rather than forked into a second set of components — the same approach the
+// poster already took for the countdown and the series dots.
+.gd-hero-live {
+	border: 0;
+
+	.game-detail-team-name {
+		color: #ffffff;
+		text-shadow: 0 1px 6px rgba(3, 7, 12, 0.55);
+	}
+
+	.game-detail-team-record { color: rgba(255, 255, 255, 0.78); }
+	.game-detail-team-rank { color: rgba(255, 255, 255, 0.7); }
+
+	.game-detail-score-value {
+		color: #ffffff;
+		text-shadow: 0 2px 12px rgba(3, 7, 12, 0.6);
+
+		// The losing side of a finished game. Dimmed against white it was a grey; against the scrim
+		// it is the same idea the other way up — white pulled back rather than black lifted.
+		&.is-loser { color: rgba(255, 255, 255, 0.58); }
+	}
+
+	.game-detail-period { color: rgba(255, 255, 255, 0.82); }
+	.game-score-sep { background: rgba(255, 255, 255, 0.38); }
+	.gd-vs { color: rgba(255, 255, 255, 0.6); }
+	.gd-field-caption { color: rgba(255, 255, 255, 0.86); }
+
+	// The empty half of each indicator. Both were mid-greys chosen against white and neither
+	// survives a scrim: an unlit base and an unfilled count are the half that carries the reading.
+	.base-marker { color: rgba(255, 255, 255, 0.5); }
+	// The unfilled half carries as much of the count as the filled half, and `bi-circle` is a
+	// hairline ring — at 45% on a scrim it reads as nothing at all.
+	.bso-dot.is-empty { color: rgba(255, 255, 255, 0.72); }
+
+	// Same argument for the timeouts: both halves of the row are the reading, and the card's own
+	// rule for these is a light-surface grey that has to lose to this one.
+	.timeout-dot { color: #ffffff; }
+	.timeout-dot.is-empty { color: rgba(255, 255, 255, 0.72); }
+	.timeout-dots-numeric { color: rgba(255, 255, 255, 0.86); }
+	.bso-label { color: rgba(255, 255, 255, 0.72); }
+
+	.series-dots-summary { color: rgba(255, 255, 255, 0.75); box-shadow: none; }
+	.series-dot-empty { color: rgba(255, 255, 255, 0.45); }
+
+	// A delayed game keeps its hero rather than being dimmed to 40% opacity, which on a dark surface
+	// is a disappearance rather than a dim. The status line carries it, the way the poster's does.
+	&.is-delayed {
+		box-shadow: inset 0 0 0 1px rgba(241, 196, 15, 0.45);
+
+		.game-detail-period {
+			color: #f1c40f;
+			font-weight: 700;
+			letter-spacing: 0.04em;
+			text-transform: uppercase;
+		}
 	}
 }
 
@@ -1541,6 +2045,110 @@ button.game-info-attribution {
 	.bso-indicator {
 		margin-top: 0;
 	}
+}
+
+// Pitcher against batter, on the hero rather than in a section below it — the count directly
+// above poses the question and this answers it. A translucent plate rather than a solid one, so
+// the team colour the hero is painted in still carries through.
+.gd-atbat-panel {
+	display:               grid;
+	grid-template-columns: 1fr auto 1fr;
+	align-items:           center;
+	gap:                   0.4rem;
+	margin-top:            0.5rem;
+	padding:               0.45rem 0.4rem;
+	border-radius:         0.4rem;
+	background:            rgba(3, 7, 12, 0.34);
+	box-shadow:            inset 0 0 0 1px rgba(255, 255, 255, 0.09);
+}
+
+.gd-atbat-side {
+	display:     flex;
+	align-items: center;
+	gap:         0.42rem;
+	min-width:   0;
+}
+
+// Mirrored so the two portraits bracket the panel and the "vs" sits between the names rather than
+// between a name and a face. Keyed on the side of the hero rather than on the role, because the
+// two roles swap ends at the half-inning and the mirroring must not swap with them.
+.gd-atbat-side.gd-atbat-home {
+	flex-direction: row-reverse;
+	text-align:     right;
+}
+
+.gd-atbat-face {
+	width:         32px;
+	height:        32px;
+	border-radius: 999px;
+	flex-shrink:   0;
+	overflow:      hidden;
+	background:    rgba(255, 255, 255, 0.14);
+	box-shadow:    0 0 0 1px rgba(255, 255, 255, 0.28);
+}
+
+.gd-atbat-face-crest {
+	width:  100%;
+	height: 100%;
+
+	// ESPN headshots are cut-outs framed at the shoulders, so they are anchored to the top of the
+	// disc rather than centred in it — centring crops the face.
+	img {
+		object-fit:      cover;
+		object-position: top center;
+	}
+}
+
+.gd-atbat-face-crest .crest-fallback {
+	background:  transparent;
+	color:       rgba(255, 255, 255, 0.85);
+	font-size:   0.56rem;
+}
+
+.gd-atbat-text {
+	display:       flex;
+	flex-direction: column;
+	min-width:     0;
+}
+
+.gd-atbat-role {
+	font-size:      0.5rem;
+	font-weight:    700;
+	letter-spacing: 0.09em;
+	text-transform: uppercase;
+	color:          rgba(255, 255, 255, 0.62);
+	line-height:    1;
+}
+
+.gd-atbat-name,
+.gd-atbat-line {
+	min-width:     0;
+	overflow:      hidden;
+	text-overflow: ellipsis;
+	white-space:   nowrap;
+}
+
+.gd-atbat-name {
+	font-size:   0.68rem;
+	font-weight: 700;
+	color:       #ffffff;
+	line-height: 1.25;
+	text-shadow: 0 1px 5px rgba(3, 7, 12, 0.5);
+}
+
+// Deliberately not Lekton. ESPN's line is prose with numbers in it — "1.1 IP, 0 ER, H, BB" — not
+// a column of figures that has to line up with anything.
+.gd-atbat-line {
+	font-size:   0.58rem;
+	color:       rgba(255, 255, 255, 0.76);
+	line-height: 1.3;
+}
+
+.gd-atbat-versus {
+	font-size:      0.55rem;
+	letter-spacing: 0.08em;
+	color:          rgba(255, 255, 255, 0.5);
+	padding:        0 0.1rem;
 }
 
 .gd-field-row {
@@ -1585,7 +2193,7 @@ button.game-info-attribution {
 
 .gd-countdown-value,
 .gd-countdown-zero {
-	@include scoreboard-figures;
+	@include gc.scoreboard-figures;
 	font-size: 1.15rem;
 	font-weight: 600;
 	line-height: 1;
@@ -1602,7 +2210,6 @@ button.game-info-attribution {
 
 .gd-countdown-soon {
 	font-size: 0.72rem;
-	font-family: 'Lekton', monospace;
 	color: #495057;
 	text-align: center;
 	margin-top: 0.45rem;
@@ -1641,10 +2248,10 @@ button.game-info-attribution {
 }
 
 .toast-slide-up {
-	animation: toastSlideUp 0.18s ease-out forwards;
+	animation: toastSlideUp m.$motion-base m.$motion-ease forwards;
 }
 
-@media (prefers-reduced-motion: reduce) {
+@include m.reduced-motion {
 	.toast-slide-up { animation: none; }
 }
 
@@ -1652,7 +2259,7 @@ button.game-info-attribution {
 	filter: drop-shadow(0 0 14px rgba(217, 3, 104, 0.45));
 }
 
-@media (prefers-reduced-motion: reduce) {
+@include m.reduced-motion {
 	.error-boundary-icon {
 		animation: none;
 	}

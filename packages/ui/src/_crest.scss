@@ -47,3 +47,11 @@
 
 [data-crest-state='failed']  > img,
 [data-crest-state='missing'] > img { display: none; }
+
+// A crest whose treatment is decided by measuring its own pixels carries `data-crest-verdict`, and
+// paints nothing until the artwork it is currently asking for is the artwork that loaded. Both
+// halves of that are needed: an image appears as soon as it decodes, which is ahead of the verdict
+// by a frame or more, and an element mid-swap may still be painting the source it is being moved
+// off. `visibility` rather than `display`, which takes the image out of layout and leaves a lazy
+// one with no box to be scrolled into.
+[data-crest-verdict]:not([data-crest-state='loaded']) > img { visibility: hidden; }

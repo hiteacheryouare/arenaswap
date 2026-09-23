@@ -9,6 +9,8 @@ const defaultPrefs: UserPreferences = {
 	cooldownSeconds: 45,
 	switchDelaySeconds: 0,
 	showUpcomingGames: true,
+	keepFinalGames: false,
+	finishedTabAction: 'keep' as const,
 	proTipsEnabled: true,
 	notificationsEnabled: false,
 	favoriteTeamBonusPoints: 0,
@@ -18,6 +20,7 @@ const defaultPrefs: UserPreferences = {
 	bettingEnabled: false,
 	temperatureUnit: 'F',
 	romerUnlocked: false,
+	openRevealEnabled: true,
 	holidayDecorationsEnabled: true,
 	holidaySnowEnabled: true,
 	holidayLightsEnabled: true,
@@ -66,6 +69,7 @@ const defaultProps = {
 	onToggleFavoriteTeam: () => {},
 	onRegistryChange: () => {},
 	onStartWalkthrough: () => {},
+	onOpenGuide: () => {},
 	formatTabLabel: () => 'Tab',
 	suggestionCount: 0,
 	onReviewSuggestions: () => {},
@@ -89,6 +93,31 @@ const StatefulMainView = ({ games, prefs = defaultPrefs }: { games: ReturnType<t
 			selectedDayKey={selectedDayKey}
 			onSelectDay={setSelectedDayKey}
 		/>
+	);
+};
+
+// Two live games whose order depends on their PowerScores, and a button that swaps them the way a
+// pushed `SCORES_UPDATED` would.
+const score = (gameId: string, total: number) => ({ gameId, total } as never);
+
+const ResortingMainView = () => {
+	const scrollOffsetRef = useRef(0);
+	const [flipped, setFlipped] = useState(false);
+	return (
+		<>
+			<button type='button' data-testid='fake-score-push' onClick={() => setFlipped(true)}>Push</button>
+			<MainView
+				{...defaultProps}
+				games={[makeGame('slow'), makeGame('fast')]}
+				scores={flipped
+					? [score('slow', 10), score('fast', 90)]
+					: [score('slow', 90), score('fast', 10)]}
+				scrollOffsetRef={scrollOffsetRef}
+				selectedDayKey={null}
+				onSelectDay={() => {}}
+				revealMode='full'
+			/>
+		</>
 	);
 };
 
@@ -119,10 +148,75 @@ const NavigatingMainView = ({ games }: { games: ReturnType<typeof makeGame>[] })
 	);
 };
 
+// The plate is read off the banner's own computed style rather than hardcoded, so a surface token
+// that moves cannot leave the ink measured against a colour it no longer sits on.
+const channelsOf = (color: string): number[] => (
+	(color.match(/\d+(\.\d+)?/g) ?? []).slice(0, 3).map(Number)
+);
+
+const relativeLuminance = (color: string): number => {
+	const [red, green, blue] = channelsOf(color).map(value => {
+		const channel = value / 255;
+		return channel <= 0.03928 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4;
+	});
+	return (0.2126 * red!) + (0.7152 * green!) + (0.0722 * blue!);
+};
+
+const contrastRatio = (a: string, b: string): number => {
+	const [high, low] = [relativeLuminance(a), relativeLuminance(b)].toSorted((x, y) => y - x);
+	return (high! + 0.05) / (low! + 0.05);
+};
+
+// The standby strip is the only thing in the extension that reaches for .bg-body-secondary. That
+// token was Bootstrap's light #e9ecef for as long as the strip has existed, while .text-body-
+// secondary is this theme's own dim #8b949e — dark-theme ink printed on a light slab, at 2.59:1.
+describe('mainView standby banner', () => {
+	it('sets its label on its own plate at the small-text bar', () => {
+		cy.viewport(320, 480);
+		cy.mount(<MainView {...defaultProps} onStandbyStream={true} />);
+		cy.get('[data-testid="standby-banner"]').then($banner => {
+			const style = getComputedStyle($banner[0]!);
+			expect(
+				contrastRatio(style.color, style.backgroundColor),
+				`${style.color} on ${style.backgroundColor}`,
+			).to.be.at.least(4.5);
+		});
+	});
+
+	// A surface, not a slab: above the popup so the strip has an edge, below its own ink so it still
+	// reads as part of a dark theme. Either bound alone passes on a colour that is wrong.
+	it('sits between the popup and its own ink', () => {
+		cy.viewport(320, 480);
+		cy.mount(<MainView {...defaultProps} onStandbyStream={true} />);
+		cy.get('[data-testid="standby-banner"]').then($banner => {
+			const style = getComputedStyle($banner[0]!);
+			const popup = getComputedStyle(document.body).backgroundColor;
+			const plate = relativeLuminance(style.backgroundColor);
+			expect(plate, 'plate above the popup').to.be.greaterThan(relativeLuminance(popup));
+			expect(plate, 'plate below its own ink').to.be.lessThan(relativeLuminance(style.color));
+		});
+	});
+});
+
 describe('mainView review prompt', () => {
 	it('shows review banner when review prompt is enabled', () => {
 		cy.mount(<MainView {...defaultProps} showReviewPrompt={true} />);
 		cy.get('[data-testid="review-prompt"]').should('exist');
+	});
+
+	// Eligibility comes out of storage.local rather than the fetch, so it is true well before the
+	// slate lands. Both selectors are asserted present as well as absent: an absence test against a
+	// state the component never reaches passes whether or not the gate exists.
+	it('stays off the loading screen', () => {
+		cy.mount(<MainView {...defaultProps} isLoading={true} showReviewPrompt={true} />);
+		cy.get('.popup-loading-spinner').should('exist');
+		cy.get('[data-testid="review-prompt"]').should('not.exist');
+	});
+
+	it('stays off the error banner', () => {
+		cy.mount(<MainView {...defaultProps} hasError={true} showReviewPrompt={true} />);
+		cy.get('.popup-error-banner').should('exist');
+		cy.get('[data-testid="review-prompt"]').should('not.exist');
 	});
 });
 
@@ -157,27 +251,62 @@ describe('mainView loading and error states', () => {
 	});
 });
 
+/* The real emptyGameState is stubbed out under this runner, so its copy is emptyGameState.cy.tsx's
+   business. What belongs here is which of the two states mainView decided it was in: telling a user
+   with four leagues on that they have none picked sends them into settings for nothing. */
 describe('mainView empty states', () => {
-	it('shows no-leagues CTA when no leagues are selected', () => {
+	it('asks for leagues, and only that, when none are selected', () => {
 		cy.mount(<MainView {...defaultProps} prefs={{ ...defaultPrefs, enabledLeagues: [] }} />);
-		cy.contains(/choose leagues to get started/i).should('exist');
+		cy.get('[data-testid="empty-no-leagues"]').should('exist');
+		cy.get('[data-testid="empty-no-games"]').should('not.exist');
 	});
 
-	it('shows no-games message when leagues are selected but no live games exist', () => {
+	it('reports a quiet night, not a missing setup, when leagues are on and nothing is live', () => {
 		cy.mount(<MainView {...defaultProps} />);
-		cy.contains(/no games right now/i).should('exist');
+		cy.get('[data-testid="empty-no-games"]').should('exist');
+		cy.get('[data-testid="empty-no-leagues"]').should('not.exist');
+	});
+
+	it('shows neither once a game arrives', () => {
+		cy.mount(<MainView {...defaultProps} games={[makeGame('g1')]} />);
+		cy.get('[data-testid="empty-no-games"]').should('not.exist');
+		cy.get('[data-testid="empty-no-leagues"]').should('not.exist');
 	});
 });
 
+/* The heading a card sits under is the whole answer to "is this game one of mine?". Asserting only
+   that the card exists cannot tell the two sections apart, which is the one thing this split is
+   for. */
+const sectionTitleOf = (gameId: string) => cy
+	.get(`[data-testid="game-card-${gameId}"]`)
+	.closest('.mt-2')
+	.find('.popup-section-title');
+
 describe('mainView game sections', () => {
-	it('renders assigned live games when registry has matching games', () => {
-		cy.mount(<MainView {...defaultProps} games={[makeGame('g1')]} registry={[{ gameId: 'g1', tabId: 1 }]} />);
-		cy.get('[data-testid="game-card-g1"]').should('exist');
+	it('files a game with a tab assigned under Active Tabs and one without under Live Games', () => {
+		cy.mount(
+			<MainView
+				{...defaultProps}
+				games={[makeGame('assigned'), makeGame('loose')]}
+				registry={[{ gameId: 'assigned', tabId: 1 }]}
+			/>,
+		);
+
+		sectionTitleOf('assigned').should('have.text', 'Active Tabs');
+		sectionTitleOf('loose').should('have.text', 'Live Games');
 	});
 
-	it('renders unassigned live games in a separate section', () => {
-		cy.mount(<MainView {...defaultProps} games={[makeGame('g2')]} />);
-		cy.get('[data-testid="game-card-g2"]').should('exist');
+	it('moves a game between the two sections when its tab assignment changes', () => {
+		cy.mount(<MainView {...defaultProps} games={[makeGame('g1')]} />);
+		sectionTitleOf('g1').should('have.text', 'Live Games');
+
+		cy.mount(<MainView {...defaultProps} games={[makeGame('g1')]} registry={[{ gameId: 'g1', tabId: 1 }]} />);
+		sectionTitleOf('g1').should('have.text', 'Active Tabs');
+	});
+
+	it('drops the Active Tabs heading entirely when nothing is assigned', () => {
+		cy.mount(<MainView {...defaultProps} games={[makeGame('g1')]} />);
+		cy.contains('.popup-section-title', 'Active Tabs').should('not.exist');
 	});
 
 	it('does not render upcoming games section when showUpcomingGames is false', () => {
@@ -291,5 +420,25 @@ describe('mainView up next day pager', () => {
 
 		cy.get('[data-testid="upcoming-day-label"]').should('have.text', 'Tomorrow');
 		cy.get('[data-testid="game-card-tomorrow-0"]').should('exist');
+	});
+
+	// Both live sections are re-sorted on PowerScore, and scores arrive by push every few seconds, so
+	// a resort inside the open animation's five-second window is ordinary. The plan the stagger is built from
+	// is fixed on the first list that has anything in it: a card that keeps its React identity but
+	// changes index would otherwise get a new `animation-delay`, which moves a running animation's
+	// current time rather than restarting it, and across the eight-card cap the mode itself flips and
+	// a card grows a poster from nothing or loses one mid-frame.
+	it('holds the reveal stagger still when a score push resorts the list under it', () => {
+		cy.mount(<ResortingMainView />);
+		cy.get('[data-testid="game-card-slow"]').closest('.game-card-reveal').should('have.css', '--reveal-delay', '0ms');
+		cy.get('[data-testid="game-card-fast"]').closest('.game-card-reveal').should('have.css', '--reveal-delay', '104ms');
+
+		cy.get('[data-testid="fake-score-push"]').click();
+
+		// The resort really happened — without this the assertions below pass for the wrong reason.
+		cy.get('.game-card-reveal [data-testid^="game-card-"]').first().should('have.attr', 'data-testid', 'game-card-fast');
+		// And neither card's place in the cascade moved with it.
+		cy.get('[data-testid="game-card-slow"]').closest('.game-card-reveal').should('have.css', '--reveal-delay', '0ms');
+		cy.get('[data-testid="game-card-fast"]').closest('.game-card-reveal').should('have.css', '--reveal-delay', '104ms');
 	});
 });

@@ -17,5 +17,5 @@
 			"#i18n": ["./stubs/i18n.ts"]
 		}
 	},
-	"include": ["./**/*.ts", "./**/*.tsx", "../tests/stubs/**/*.ts", "./scss.d.ts"]
+	"include": ["./**/*.ts", "./**/*.tsx", "../tests/stubs/**/*.ts", "./scss.d.ts", "../entrypoints/popup/canvasConfetti.d.ts"]
 }

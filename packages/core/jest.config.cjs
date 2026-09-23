@@ -25,6 +25,15 @@ const commonProjectConfig = {
 };
 
 module.exports = {
+  // Type-only and barrel modules are left out: `types.ts` declares no runtime code at all, and
+  // `index.ts` only re-exports, so both would report a percentage that says nothing about whether
+  // anything is verified.
+  collectCoverageFrom: [
+    'src/**/*.ts',
+    '!src/types.ts',
+    '!src/index.ts',
+  ],
+  coverageReporters: ['json-summary', 'lcov', 'text'],
   projects: [
     {
       ...commonProjectConfig,

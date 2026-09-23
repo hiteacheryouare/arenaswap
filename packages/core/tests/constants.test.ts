@@ -42,6 +42,8 @@ describe('constants', () => {
 			favoriteTeamIds: [],
 			favoriteTeamBonusPoints: 10,
 			showUpcomingGames: true,
+			keepFinalGames: false,
+			finishedTabAction: 'keep',
 			proTipsEnabled: true,
 			notificationsEnabled: true,
 			standbyStreamEnabled: false,
@@ -49,14 +51,36 @@ describe('constants', () => {
 			bettingEnabled: false,
 			temperatureUnit: 'F',
 			romerUnlocked: false,
+			openRevealEnabled: true,
 			holidayDecorationsEnabled: true,
 			holidaySnowEnabled: true,
 			holidayLightsEnabled: true,
 			holidayLeavesEnabled: true,
-			postseasonBoostPoints: 5,
+			postseasonBoostPoints: 8,
 			upcomingGamesDays: 7,
 			disabledSignals: [],
 		});
+	});
+
+	// The whole feature hangs off this surviving a round trip through storage: the popup writes
+	// through normalizeUserPreferences and the background reads back through it, so a value this
+	// dropped would leave the setting looking set and doing nothing.
+	test('keeps a stored finished-tab choice', () => {
+		expect(normalizeUserPreferences({ finishedTabAction: 'close' }).finishedTabAction).toBe('close');
+		expect(normalizeUserPreferences({ finishedTabAction: 'free' }).finishedTabAction).toBe('free');
+	});
+
+	// Same round trip, and the same failure if it breaks: the animation reads its own copy of this in
+	// localStorage, and that copy is only ever written from what comes back through here.
+	test('keeps a stored opening-animation choice', () => {
+		expect(normalizeUserPreferences({ openRevealEnabled: false }).openRevealEnabled).toBe(false);
+		expect(normalizeUserPreferences({ openRevealEnabled: 'false' }).openRevealEnabled).toBe(true);
+	});
+
+	// 'keep' is the one value that touches nobody's tabs, so anything unrecognised lands there
+	// rather than on a setting that closes things.
+	test.each([undefined, null, 'CLOSE', 'remove', 7, {}])('falls back to keep for %p', value => {
+		expect(normalizeUserPreferences({ finishedTabAction: value }).finishedTabAction).toBe('keep');
 	});
 
 	test('normalizes invalid user preference input safely', () => {
@@ -81,6 +105,8 @@ describe('constants', () => {
 			favoriteTeamIds: ['nba:20', 'nfl:20'],
 			favoriteTeamBonusPoints: 11,
 			showUpcomingGames: false,
+			keepFinalGames: false,
+			finishedTabAction: 'keep',
 			proTipsEnabled: false,
 			notificationsEnabled: true,
 			standbyStreamEnabled: false,
@@ -88,11 +114,12 @@ describe('constants', () => {
 			bettingEnabled: false,
 			temperatureUnit: 'F',
 			romerUnlocked: false,
+			openRevealEnabled: true,
 			holidayDecorationsEnabled: true,
 			holidaySnowEnabled: true,
 			holidayLightsEnabled: true,
 			holidayLeavesEnabled: true,
-			postseasonBoostPoints: 5,
+			postseasonBoostPoints: 8,
 			upcomingGamesDays: 7,
 			disabledSignals: [],
 		});
@@ -225,13 +252,13 @@ describe('constants', () => {
 		expect(result).toBe(base);
 	});
 
-	test('postseasonBoostPoints defaults to 5 and normalizes fractional/negative values', () => {
-		expect(createDefaultUserPreferences().postseasonBoostPoints).toBe(5);
-		expect(normalizeUserPreferences({}).postseasonBoostPoints).toBe(5);
+	test('postseasonBoostPoints defaults to 8 and normalizes fractional/negative values', () => {
+		expect(createDefaultUserPreferences().postseasonBoostPoints).toBe(8);
+		expect(normalizeUserPreferences({}).postseasonBoostPoints).toBe(8);
 		expect(normalizeUserPreferences({ postseasonBoostPoints: 12 }).postseasonBoostPoints).toBe(12);
 		expect(normalizeUserPreferences({ postseasonBoostPoints: 7.9 }).postseasonBoostPoints).toBe(8);
 		expect(normalizeUserPreferences({ postseasonBoostPoints: -2 }).postseasonBoostPoints).toBe(0);
-		expect(normalizeUserPreferences({ postseasonBoostPoints: 'bad' }).postseasonBoostPoints).toBe(5);
+		expect(normalizeUserPreferences({ postseasonBoostPoints: 'bad' }).postseasonBoostPoints).toBe(8);
 	});
 
 	test('contains league and sport configuration maps for each league id', () => {

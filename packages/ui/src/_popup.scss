@@ -1,4 +1,7 @@
-// Popup chrome. Import AFTER Bootstrap variables and source, and after `game-card`.
+// Popup chrome. Loaded after the theme, whose $font-family-base and $primary it reads, and
+// after `game-card`.
+@use 'bootstrap' as bs;
+@use 'motion' as m;
 //
 // These rules used to live only in `apps/extension/assets/bootstrap.scss`, which meant the
 // website's popup mockups were a hand-copied approximation that drifted every time the popup
@@ -18,14 +21,23 @@
 	}
 }
 
+/* The frame is 320px and nothing in it is ever meant to move sideways, but the shell above arrives
+   on `translateX(14px)` — a transform counts towards scrollable overflow, so for the length of every
+   view change the popup could be scrolled 14px to the right. `clip` rather than `hidden` because
+   this is a clip and not a scroll container, and on the x axis alone so the page still scrolls
+   down. */
+.popup-root {
+	overflow-x: clip;
+}
+
 .popup-view-shell {
 	width: 100%;
 	height: 100%;
-	animation: popupViewSlideIn 0.22s ease;
+	animation: popupViewSlideIn m.$motion-base m.$motion-ease;
 }
 
 .popup-section-title {
-	font-family: $font-family-base;
+	font-family: bs.$font-family-base;
 	font-size: 1.2rem;
 	font-weight: 700;
 	letter-spacing: -0.01em;
@@ -33,7 +45,7 @@
 	margin-bottom: 0.5rem;
 	margin-top: 1rem;
 	padding-left: 0.6rem;
-	border-left: 3px solid $primary;
+	border-left: 3px solid bs.$primary;
 }
 
 .popup-section-label {
@@ -54,10 +66,42 @@
 	height: 20px;
 }
 
+// `--collapse` is written on `.popup-header` every frame by `usePopupHeaderCollapse`, already
+// eased, and everything the bar does on the way in is a `calc()` off it. No transitions here on
+// purpose: a CSS curve running alongside the mark's own would have the two disagree in the middle.
 .arenaswap-logo {
-	height: 36px;
+	display: block;
+	height: calc(36px - var(--collapse, 0) * 10px);
 	width: auto;
+	flex-shrink: 0;
 	object-fit: contain;
+}
+
+// The header pins to the top of the list instead of scrolling off it, which is the only reason the
+// collapse is worth animating: unpinned the mark is gone 40px into the scroll, which is roughly
+// where the collapse starts.
+//
+// The negative margins pull the bar out to the container's edges and up over its 0.75rem of top
+// padding, and the padding puts the contents back. That is what gives the background the full
+// 320px to cover once cards start passing underneath.
+.popup-header {
+	position: sticky;
+	// Not `0`. Sticky holds the *margin* box inside the scrollport, and the margin box here starts
+	// 0.75rem above the border box, so `top: 0` parks the bar one padding's worth down the list and
+	// lets cards run through the gap above it. Offsetting by the same amount lands it flush.
+	top: -0.75rem;
+	z-index: 5;
+	margin: -0.75rem -0.75rem 0.5rem;
+	padding-left: 0.75rem;
+	padding-right: 0.75rem;
+	padding-top: calc(0.75rem - var(--collapse, 0) * 0.35rem);
+	padding-bottom: calc(0.5rem - var(--collapse, 0) * 0.2rem);
+	// Solid, not frosted, and on `--lifted` rather than `--collapse` — the bar needs a surface from
+	// the first pixel of scroll, which is 40px and 450ms before the collapse has finished bringing
+	// one up. Cards pass directly under this at 320px wide and anything the eye can see through
+	// reads as a smudge over them rather than as a surface they go behind.
+	background-color: rgba(13, 17, 23, var(--lifted, 0));
+	border-bottom: 1px solid rgba(48, 54, 61, var(--lifted, 0));
 }
 
 .popup-container {
@@ -80,6 +124,22 @@
 
 .popup-settings-icon {
 	font-size: 0.9rem;
+}
+
+// The rotation is on the `::before` rather than on the `<i>`, which is an inline box and so
+// takes no transform. The gear has eight lobes, so a quarter turn is two of them and the mark
+// comes to rest on the silhouette it started from — only the travel reads.
+//
+// `:not(:disabled)` is what keeps it off the website, which renders this same header as a
+// picture of the popup with both buttons disabled. A disabled button still matches `:hover`,
+// and a control that answers the pointer and then does nothing is worse than an inert one.
+.popup-settings-button .bi-gear-fill::before {
+	transition: transform m.$motion-slow m.$motion-ease;
+}
+
+.popup-settings-button:not(:disabled):hover .bi-gear-fill::before,
+.popup-settings-button:focus-visible .bi-gear-fill::before {
+	transform: rotate(90deg);
 }
 
 .game-detail-chart-card {
@@ -127,10 +187,15 @@
 	height: 176px;
 }
 
-@media (prefers-reduced-motion: reduce) {
+@include m.reduced-motion {
 	.popup-view-shell,
-	.game-card-clickable {
-		animation: none;
-		transition: none;
+	.game-card-clickable,
+	.popup-settings-button .bi-gear-fill::before {
+		@include m.motion-still;
+	}
+
+	.popup-settings-button:not(:disabled):hover .bi-gear-fill::before,
+	.popup-settings-button:focus-visible .bi-gear-fill::before {
+		transform: none;
 	}
 }

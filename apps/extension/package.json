@@ -1,6 +1,6 @@
 {
 	"name": "@arenaswap/extension",
-	"version": "2.1.1",
+	"version": "2.2.0",
 	"description": "ArenaSwap browser extension — automatically flip to the most exciting game",
 	"private": true,
 	"scripts": {
@@ -15,8 +15,11 @@
 		"zip:edge": "wxt zip -b edge",
 		"test": "npm run test:unit && npm run test:component",
 		"test:unit": "jest --passWithNoTests --selectProjects unit",
+		"test:coverage": "jest --passWithNoTests --selectProjects unit --coverage",
 		"test:component": "cypress run --component",
+		"test:component:coverage": "ARENASWAP_COVERAGE_TARGET=component cypress run --component",
 		"test:e2e": "cypress run --e2e",
+		"test:e2e:coverage": "ARENASWAP_COVERAGE_TARGET=e2e npm run build:e2e && ARENASWAP_COVERAGE_TARGET=e2e cypress run --e2e",
 		"cypress:open": "cypress open --component",
 		"cypress:open:e2e": "cypress open --e2e",
 		"typecheck": "wxt prepare && tsc --noEmit && tsc --noEmit -p cypress",
@@ -33,21 +36,23 @@
 		"swr": "^2.5.1"
 	},
 	"devDependencies": {
+		"@cypress/code-coverage": "^4.0.3",
 		"@swc/jest": "^0.2.39",
 		"@types/bootstrap": "^5.2.11",
 		"@types/canvas-confetti": "^1.9.0",
-		"@types/react": "^19.2.18",
-		"@types/react-dom": "^19.2.7",
+		"@types/react": "^19.3.0",
+		"@types/react-dom": "^19.3.0",
 		"@wxt-dev/module-react": "^1.2.2",
-		"autoprefixer": "^10.5.5",
+		"autoprefixer": "^10.6.1",
 		"bootstrap": "^5.3.8",
 		"bootstrap-icons": "^1.13.1",
-		"cypress": "^16.0.0",
-		"jest": "^30.5.1",
-		"react": "^19.2.8",
-		"react-dom": "^19.2.8",
-		"sass": "^1.104.0",
+		"cypress": "^16.1.0",
+		"jest": "^30.5.2",
+		"react": "^19.3.0",
+		"react-dom": "^19.3.0",
+		"sass": "^1.105.0",
 		"typescript": "^7.0.2",
+		"vite-plugin-istanbul": "^9.0.1",
 		"wxt": "^0.21.4"
 	}
 }

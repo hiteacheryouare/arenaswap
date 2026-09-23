@@ -671,8 +671,9 @@ describe('computePowerScore', () => {
 			clockSeconds: 600,
 		});
 
-		const lightStep = stallPenaltySteps[stallPenaltySteps.length - 1];
-		const result = computePowerScore(game, [], (lightStep?.minPolls ?? 8) - 1);
+		const lightStep = stallPenaltySteps[stallPenaltySteps.length - 1]!;
+		expect(lightStep).toBeDefined();
+		const result = computePowerScore(game, [], lightStep.minPolls - 1);
 		expect(result.stalled).toBe(false);
 		expect(result.stallPenalty).toBe(0);
 		expect(result.total).toBe(result.closeness + result.lateGame + result.momentum + result.leadChanges + result.comeback);
@@ -686,8 +687,8 @@ describe('computePowerScore', () => {
 			clockSeconds: 600,
 		});
 
-		const lightStep = stallPenaltySteps[stallPenaltySteps.length - 1];
-		if (!lightStep) return;
+		const lightStep = stallPenaltySteps[stallPenaltySteps.length - 1]!;
+		expect(lightStep).toBeDefined();
 		const raw = computePowerScore(game, [], lightStep.minPolls - 1);
 		const stalled = computePowerScore(game, [], lightStep.minPolls);
 		expect(stalled.stalled).toBe(true);
@@ -704,8 +705,8 @@ describe('computePowerScore', () => {
 			clockSeconds: 600,
 		});
 
-		const heavyStep = stallPenaltySteps[0];
-		if (!heavyStep) return;
+		const heavyStep = stallPenaltySteps[0]!;
+		expect(heavyStep).toBeDefined();
 		const raw = computePowerScore(game, [], 0);
 		const stalled = computePowerScore(game, [], heavyStep.minPolls);
 		expect(stalled.stalled).toBe(true);

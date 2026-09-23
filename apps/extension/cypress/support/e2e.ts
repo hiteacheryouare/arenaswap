@@ -1,4 +1,5 @@
 import './commands';
+import '@cypress/code-coverage/support';
 import type { BackgroundState } from '@arenaswap/core/types';
 import { installFakeBrowser, type fakeBackground, type fakeBrowserOptions } from './fakeBrowser';
 

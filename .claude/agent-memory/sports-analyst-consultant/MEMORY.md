@@ -10,3 +10,7 @@
 - [football_field_position_model.md](football_field_position_model.md) — ESPN yardLine is a home-anchored 0-100 absolute coordinate; direction, first-down line, goal-to-go math
 - [football_espn_dead_ball_states.md](football_espn_dead_ball_states.md) — Every ESPN gridiron state where down/distance/yardLine lie, and the gate a field diagram must apply
 - [football_field_markings_geometry.md](football_field_markings_geometry.md) — Rulebook-verified NFL/NCAA field marking dimensions, the 120x30 compression factor, and what survives at 289x75px
+- [boxscore_columns_by_sport.md](boxscore_columns_by_sport.md) — Decided box score categories, ordered columns (max 6) and row ordering per sport at 320px
+- [boxscore_espn_stat_key_traps.md](boxscore_espn_stat_key_traps.md) — ESPN stat keys/labels that lie: SOG=shootout goals, YTDG, passing-vs-defensive sacks, IP's dot separator
+- [boxscore_period_labels_et_shootout.md](boxscore_period_labels_et_shootout.md) — Soccer ET1/ET2/PEN and hockey SO headings; verified linescores shape, MLS phantom ET, why period is unreliable
+- [Postseason boost side trophies](postseason_boost_side_trophies.md) — whose-trophy rule: bowls get zero, NIT/Crown/conference finals capped at bottom tier, CFB needs an affirmative round signal

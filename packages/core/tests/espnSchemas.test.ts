@@ -143,5 +143,58 @@ describe('parseTeams', () => {
 
 			expect(competitor?.probables?.[0]?.athlete?.jersey).toBe('92');
 		});
+
+		// Zod strips whatever a schema does not declare, so without this nothing proves the rank is
+		// readable downstream — it would simply arrive undefined and every team would look unranked.
+		test('keeps curatedRank, which decides whether a matchup reads as ranked', () => {
+			const event = withCompetitor('rank', {
+				id: 'h1',
+				homeAway: 'home',
+				score: '0',
+				team: { displayName: 'Home' },
+				curatedRank: { current: 8 },
+			});
+
+			const competitor = parseScoreboard({ events: [event] }).events[0]?.competitions[0]?.competitors[0];
+
+			expect(competitor?.curatedRank?.current).toBe(8);
+		});
+	});
+
+	describe('the live situation block', () => {
+		const withSituation = (id: string, situation: Record<string, unknown>) => {
+			const event = makeEvent(id);
+			(event.competitions[0] as Record<string, unknown>).situation = situation;
+			return event;
+		};
+
+		const situationOf = (situation: Record<string, unknown>) =>
+			parseScoreboard({ events: [withSituation('sit', situation)] }).events[0]?.competitions[0]?.situation;
+
+		test('keeps the timeout counts on both sides', () => {
+			const parsed = situationOf({ homeTimeouts: 2, awayTimeouts: 0 });
+			expect(parsed?.homeTimeouts).toBe(2);
+			expect(parsed?.awayTimeouts).toBe(0);
+		});
+
+		test('keeps the last play text and the drive summary beside it', () => {
+			const parsed = situationOf({ lastPlay: { text: 'Timeout #1 by GB.', drive: { description: '1 play, 0 yards, 0:04' } } });
+			expect(parsed?.lastPlay?.text).toBe('Timeout #1 by GB.');
+			expect(parsed?.lastPlay?.drive?.description).toBe('1 play, 0 yards, 0:04');
+		});
+
+		// The pitcher's position is a bare string; the identically named key inside `leaders` is an
+		// object. They are parsed by two different athlete schemas for exactly that reason.
+		test('reads a pitcher and batter whose position is a plain string', () => {
+			const parsed = situationOf({
+				pitcher: { athlete: { displayName: 'Will Dion', jersey: 76, position: 'RP' }, summary: '1.1 IP, 0 ER, H, BB' },
+				batter: { athlete: { displayName: 'Nathan Church', position: 'CF' }, summary: '0-2, K' },
+			});
+
+			expect(parsed?.pitcher?.athlete?.position).toBe('RP');
+			expect(parsed?.pitcher?.athlete?.jersey).toBe('76');
+			expect(parsed?.pitcher?.summary).toBe('1.1 IP, 0 ER, H, BB');
+			expect(parsed?.batter?.athlete?.displayName).toBe('Nathan Church');
+		});
 	});
 });

@@ -1,51 +1,18 @@
+import type { ReactNode } from 'react';
 import { useState } from 'react';
 import type { KeyboardEvent, MouseEvent } from 'react';
-import { leagueConfigMap } from '@arenaswap/core/constants';
 import type { Game, LeagueId, Team } from '@arenaswap/core/types';
 import type { BettingDisplayPrefs } from './gameCardTypes';
 import { resolveTeamColorPair } from './colorUtils';
 import Crest from './crest';
 import HoverTooltip from './hoverTooltip';
 import { useT } from './i18nContext';
+import { formatClock, formatGameClock, formatPeriod, isHalftime } from './gameFormat';
+import TimeoutDots from './timeoutDots';
 
-export const formatPeriod = (game: Game): string => {
-	const config = leagueConfigMap[game.league];
-	if (!config) return `P${game.period}`;
-	const regular = config.regularPeriods;
-	const period = game.period;
-	if (period > regular) {
-		if (config.periodFormat === 'periods') return 'OT';
-		if (config.periodFormat === 'innings') return `Inn ${period}`;
-		// Soccer plays two extra-time halves (periods 3 and 4) and then a shootout (period 5), so
-		// "OT1/OT2/OT3" is the wrong vocabulary and flatly wrong for the shootout. Keyed on
-		// sportType, not periodFormat, so NCAA basketball's halves keep their OT numbering.
-		if (game.sportType === 'soccer') {
-			const extraTimeHalf = period - regular;
-			return extraTimeHalf <= 2 ? `ET${extraTimeHalf}` : 'PENS';
-		}
-		return `OT${period - regular}`;
-	}
-	if (config.periodFormat === 'halves') return period === 1 ? '1H' : '2H';
-	if (config.periodFormat === 'periods') return `P${period}`;
-	if (config.periodFormat === 'innings') return `Inn ${period}`;
-	return `Q${period}`;
-};
+// Re-exported so the card's existing callers keep one import site.
+export { formatClock, formatGameClock, formatPeriod, isHalftime };
 
-export const isHalftime = (game: Game): boolean => {
-	const regular = leagueConfigMap[game.league]?.regularPeriods;
-	return regular !== undefined && regular % 2 === 0 && game.period === regular / 2;
-};
-
-export const formatClock = (seconds: number): string => {
-	const minutes = Math.floor(seconds / 60);
-	const remainder = String(seconds % 60).padStart(2, '0');
-	return `${minutes}:${remainder}`;
-};
-
-export const formatGameClock = (game: Game): string => {
-	if (game.sportType === 'soccer') return `${Math.floor(game.clockSeconds / 60)}'`;
-	return formatClock(game.clockSeconds);
-};
 
 export const formatStartDateTime = (iso: string): string => {
 	const date = new Date(iso);
@@ -118,8 +85,18 @@ export const TeamColumn = ({
 		<div className='d-flex flex-column align-items-center gap-1 team-column'>
 			<Crest logo={team.logo} abbreviation={(team.abbreviation || '?').slice(0, 3)} className='team-crest' />
 			<span className='fw-bold text-center text-nowrap team-abbreviation'>
+				{/* Smaller and greyed rather than same-size, so the tricode stays the thing you read
+				    first. A ranked pair is the widest this column ever gets — see the layout spec. */}
+				{team.rank !== undefined && (
+					<span className='team-rank' title={t('gameCard.teamRank', { rank: team.rank })}>
+						#{team.rank}
+					</span>
+				)}
 				{team.abbreviation}
 			</span>
+			{team.timeouts !== undefined && (
+				<TimeoutDots remaining={team.timeouts} teamAbbreviation={team.abbreviation} />
+			)}
 			<button
 				type='button'
 				className='btn btn-link p-0 border-0 lh-1'
@@ -156,6 +133,28 @@ export const OddsProvider = ({ game, dark }: { game: Game; dark?: boolean }) => 
 	}
 	return <span className='d-inline-flex align-items-center'>{provider.name}</span>;
 };
+
+// ESPN's own name for the round, trimmed of the prefix that repeats the league and otherwise
+// untouched — sponsors, casing and all. Deliberately not uppercased like the status beside it:
+// uppercasing turns Cheez-It and AT&T into shouting, and the sponsor is most of the reason a bowl
+// name is worth printing.
+//
+// Present on games that score nothing. A non-playoff bowl gets no boost and still gets its name,
+// because the label and the boost answer different questions.
+export const PostseasonLabel = ({ game }: { game: Game }) => (
+	game.postseasonLabel ? <span className='game-postseason-label'>{game.postseasonLabel}</span> : null
+);
+
+// The row every card puts its status on. The postseason label shares it, which costs no vertical
+// space on a card that has none to spare — and when the label is too wide to share, the row wraps
+// and it takes a full line to itself rather than being truncated. Two of the 389 real ESPN round
+// names need that; nothing needs cutting.
+export const CardStatusRow = ({ children, status }: { children?: ReactNode; status?: ReactNode }) => (
+	<div className='d-flex align-items-center flex-wrap game-card-status-row mb-1'>
+		{status}
+		{children}
+	</div>
+);
 
 export const GameMeta = ({
 	game,

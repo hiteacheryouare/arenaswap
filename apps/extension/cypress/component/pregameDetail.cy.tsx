@@ -83,11 +83,17 @@ describe('pre-game detail screen', () => {
 		cy.get('.gd-poster').should('exist');
 	});
 
-	it('keeps the breakdown once the game is live', () => {
+	// The hero surface is the same in all three states now — one scrimmed band of the two team
+	// colours — so `.gd-poster` is no longer what tells a pre-game screen from a live one. The
+	// breakdown is, and the live hero carries its own class for the re-toning the stylesheet does.
+	it('keeps the breakdown once the game is live, on the same hero surface', () => {
 		mountPre({ ...preGame, status: 'in', period: 2, clockSeconds: 300 });
 		cy.get('.powerscore-breakdown').should('exist');
-		cy.get('.gd-poster').should('not.exist');
+		cy.get('.gd-poster').should('exist');
+		cy.get('.gd-hero-live').should('exist');
 		cy.get('.game-detail-matchup').should('exist');
+		// The pre-game furniture is gone even though the surface is shared.
+		cy.get('.gd-poster-teams').should('not.exist');
 	});
 
 	// The poster is a card in the column, not a full-bleed banner: it lines up with the setup
@@ -115,15 +121,15 @@ describe('pre-game detail screen', () => {
 		});
 	});
 
-	// A navy crest on a navy half of the poster is invisible, which is why the disc exists.
-	it('backs each crest with a white disc tinted in its own team colour', () => {
+	// A crest is drawn in the team's own colours with nothing behind it. The plate is a repair, and
+	// it is only applied to a crest measured as unreadable where it lands — which needs the image's
+	// pixels, so an unmeasured crest is bare. `teamCrest.cy.tsx` drives all three treatments.
+	it('draws each crest bare rather than plating it by default', () => {
 		mountPre(preGame);
 		cy.get('.gd-poster-crest').should('have.length', 2);
 		cy.get('.gd-poster-crest').each(($crest: JQuery<HTMLElement>) => {
-			const background = getComputedStyle($crest[0]!).backgroundImage;
-			expect(background, 'tint sits over white').to.contain('linear-gradient');
-			expect(getComputedStyle($crest[0]!).backgroundColor, 'disc is white beneath the tint')
-				.to.equal('rgb(255, 255, 255)');
+			expect($crest[0]!.className, 'no plate').to.include('is-bare');
+			expect(getComputedStyle($crest[0]!).backgroundImage).to.equal('none');
 		});
 	});
 
@@ -132,8 +138,8 @@ describe('pre-game detail screen', () => {
 		mountPre(preGame);
 		cy.get('.gd-poster-crest-logo').should('have.length', 2).each(($crest: JQuery<HTMLElement>) => {
 			const box = $crest[0]!.getBoundingClientRect();
-			expect(box.width, 'crest width').to.equal(44);
-			expect(box.height, 'crest height').to.equal(44);
+			expect(box.width, 'crest width').to.equal(64);
+			expect(box.height, 'crest height').to.equal(64);
 			expect(getComputedStyle($crest[0]!.querySelector('.crest-fallback')!).backgroundColor,
 				'no second disc inside the tinted one').to.equal('rgba(0, 0, 0, 0)');
 		});

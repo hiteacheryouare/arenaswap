@@ -9,7 +9,20 @@ interface gameInfoPanelProps {
 	game: Game;
 	bettingPrefs: BettingDisplayPrefs;
 	weatherPrefs: WeatherDisplayPrefs;
+	// Wall-clock length in minutes, from the summary endpoint. Only a finished game has one, and
+	// only in the leagues that report it, so the row it feeds is absent rather than blank.
+	gameDurationMins?: number | null;
 }
+
+// ESPN publishes no completion timestamp anywhere, so this is the only honest finish time in the
+// product: the start it did publish plus the duration it did publish. Both have to be there.
+const finishedAt = (startTime: string | undefined, durationMins: number | null | undefined): string | null => {
+	if (!startTime || !durationMins) return null;
+	const startMs = new Date(startTime).getTime();
+	if (!Number.isFinite(startMs)) return null;
+	return new Date(startMs + (durationMins * 60 * 1000))
+		.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+};
 
 const InfoRow = ({ icon, label, children }: { icon: string; label: string; children: React.ReactNode }) => (
 	<div className='game-info-row'>
@@ -19,7 +32,7 @@ const InfoRow = ({ icon, label, children }: { icon: string; label: string; child
 	</div>
 );
 
-const GameInfoPanel = ({ game, bettingPrefs, weatherPrefs }: gameInfoPanelProps) => {
+const GameInfoPanel = ({ game, bettingPrefs, weatherPrefs, gameDurationMins }: gameInfoPanelProps) => {
 	const networks = game.broadcasts?.join(' • ');
 	const venueName = game.venueName;
 	const venueLocation = game.venueLocation;
@@ -28,7 +41,12 @@ const GameInfoPanel = ({ game, bettingPrefs, weatherPrefs }: gameInfoPanelProps)
 	const bettingOn = bettingPrefs.bettingEnabled;
 	const odds = bettingOn ? oddsSummary(game) : null;
 	const hasOddsProvider = bettingOn && Boolean(game.odds?.provider?.name);
-	if (!networks && !hasVenue && !weather && !odds && !hasOddsProvider) return null;
+	// ESPN fills the figure in at the same moment it flips the status to final, so its presence is
+	// the gate: a status check beside it could only ever agree. Grouped by the venue rather than
+	// the score, because how many people came is a fact about the building.
+	const attendance = game.attendance;
+	const endedAt = finishedAt(game.startTime, gameDurationMins);
+	if (!networks && !hasVenue && !weather && !odds && !hasOddsProvider && attendance === undefined && !endedAt) return null;
 
 	// Conditions belong to the venue, so they ride in its row rather than claiming a line of their
 	// own. A dome game has no weather, and a neutral site may arrive with no venue we know.
@@ -63,6 +81,18 @@ const GameInfoPanel = ({ game, bettingPrefs, weatherPrefs }: gameInfoPanelProps)
 			{!hasVenue && conditions && (
 				<InfoRow icon={conditions.icon} label={i18n.t('detail.infoWeather')}>
 					<span>{conditions.text}</span>
+				</InfoRow>
+			)}
+
+			{endedAt && (
+				<InfoRow icon='bi-flag' label={i18n.t('detail.infoEnded')}>
+					<span className='game-info-value-strong'>{endedAt}</span>
+				</InfoRow>
+			)}
+
+			{attendance !== undefined && (
+				<InfoRow icon='bi-people' label={i18n.t('detail.infoAttendance')}>
+					<span className='game-info-value-strong'>{attendance.toLocaleString()}</span>
 				</InfoRow>
 			)}
 

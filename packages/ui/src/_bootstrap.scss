@@ -1,46 +1,115 @@
-// Import this BEFORE @import 'bootstrap/scss/bootstrap' in each app.
-// App-specific overrides (border-radius, font-size-base, form controls, etc.)
-// should be declared AFTER this import and BEFORE the Bootstrap import.
-
-$prefix:               'as-';
-$primary:              #F75C03;
-// $secondary is a UI accent — links, buttons, focus. Every ArenaSwap surface is dark, and
-// #2274A5 only reached 3.70:1 on $body-bg, below the AA floor, so the accent lifted.
+// The theme. This forwards Bootstrap with ArenaSwap's tokens already applied, so an app loads
+// Bootstrap by loading this and configures anything further in its own `@use ... with`. Every value
+// is !default, which is what keeps it configurable one level up.
 //
-// #2274A5 is NOT retired. It is momentum's colour in the PowerScore signal palette
-// (closeness green, late-game orange, momentum blue, lead-changes yellow, comeback pink), which
-// is a data palette anchored to the light breakdown card and identical on every surface that
-// draws those five signals. Do not "fix" a signal blue to match this token — they are different
-// jobs that happened to share a hex.
-$secondary:            #3E9BD1;
-$secondary-on-light:   #2274A5;
-$success:              #00CC66;
-$warning:              #F1C40F;
-$danger:               #D90368;
-$dark:                 #0d1117;
-$body-bg:              #0d1117;
-$body-color:           #e6edf3;
-$body-secondary-color: #8b949e;
-$border-color:         #30363d;
-$card-bg:              #161b22;
-$card-border-color:    #30363d;
-$card-cap-bg:          transparent;
-$input-bg:             #161b22;
-$input-border-color:   #30363d;
-$input-color:          #e6edf3;
-$form-select-bg:       #161b22;
-$form-select-color:    #e6edf3;
-$form-select-border-color: #30363d;
-$font-family-base:     'DM Sans', system-ui, -apple-system, sans-serif;
-$font-monospace:       'Lekton', monospace;
+// The second `@use` is not redundant: `@forward` re-exports members without making them available
+// here, and the ::selection rule at the bottom of this file needs two of them.
+@use 'motion' as m;
 
-// Bootstrap picks a filled button's label with color-contrast(); the lighter $secondary now
-// resolves to the dark side, and this keeps that side on-theme instead of pure black.
-$color-contrast-dark:  #0d1117;
+@forward 'bootstrap/scss/bootstrap' with (
+	$prefix:               'as-' !default,
+	$primary:              #F75C03 !default,
+	// $secondary is a UI accent — links, buttons, focus. Every ArenaSwap surface is dark, and
+	// #2274A5 only reached 3.70:1 on $body-bg, below the AA floor, so the accent lifted.
+	//
+	// #2274A5 is NOT retired. It is momentum's colour in the PowerScore signal palette
+	// (closeness green, late-game orange, momentum blue, lead-changes yellow, comeback pink), which
+	// is a data palette anchored to the light breakdown card and identical on every surface that
+	// draws those five signals. Do not "fix" a signal blue to match this token — they are different
+	// jobs that happened to share a hex. It is $secondary-on-light below.
+	$secondary:            #3E9BD1 !default,
+	$success:              #00CC66 !default,
+	$warning:              #F1C40F !default,
+	$danger:               #D90368 !default,
+	$dark:                 #0d1117 !default,
+	$body-bg:              #0d1117 !default,
+	$body-color:           #e6edf3 !default,
+	$body-secondary-color: #8b949e !default,
+	// The two surface steps above $body-bg. Bootstrap computes a light pair on :root and a dark pair
+	// under [data-bs-theme=dark], and this theme never sets that attribute — its darkness is the hand
+	// picked $body-bg above rather than Bootstrap's colour-mode switch — so left unset these stayed at
+	// #e9ecef and #f8f9fa. Every component built on them rendered a near-white slab on a #0d1117
+	// surface, and the popup, the site and the docs each patched their own component around it in turn:
+	// the Up Next pager, the language switcher, the box score's tab hover. The standby banner is the
+	// first to reach for .bg-body-secondary directly, where there is no component variable to patch —
+	// so the tokens are set here and the next thing to ask for one inherits it.
+	//
+	// Ordered the way Bootstrap's own dark values are: tertiary nearest the body, secondary a step
+	// further. Both are already in the palette.
+	$body-tertiary-bg:     #161b22 !default,
+	$body-secondary-bg:    #21262d !default,
+	// $progress-bg is var(--as-secondary-bg), and the two progress bars we draw — the game card's
+	// PowerScore bar and the breakdown's signal bars — both sit on light cards. Pinned to the value
+	// they have always had so the token move above leaves them byte-identical.
+	$progress-bg:          #e9ecef !default,
+	$border-color:         #30363d !default,
+	$card-bg:              #161b22 !default,
+	$card-border-color:    #30363d !default,
+	$card-cap-bg:          transparent !default,
+	$input-bg:             #161b22 !default,
+	$input-border-color:   #30363d !default,
+	$input-color:          #e6edf3 !default,
+	$form-select-bg:       #161b22 !default,
+	$form-select-color:    #e6edf3 !default,
+	$form-select-border-color: #30363d !default,
+	// Parenthesised because a bare comma list inside a `with (...)` argument list would read as
+	// four separate arguments.
+	$font-family-base:     ('DM Sans', system-ui, -apple-system, sans-serif) !default,
+	// There is deliberately no monospace token here. This file used to set `$font-monospace`, which
+	// is not a Bootstrap variable — Bootstrap's is `$font-family-monospace` — and which nothing read,
+	// so Lekton is spelled out literally at each of its ~20 call sites and Bootstrap's code/pre/kbd
+	// stack has never been Lekton. Pointing the real variable at Lekton is a visual change, so it is
+	// not smuggled in here.
+	// Bootstrap picks a filled button's label with color-contrast(); the lighter $secondary now
+	// resolves to the dark side, and this keeps that side on-theme instead of pure black.
+	$color-contrast-dark:  #0d1117 !default,
+	// Bootstrap's own motion, brought onto our scale. Without these a Bootstrap button, dropdown,
+	// accordion or offcanvas keeps animating on the framework's defaults — .15s and .2s and .3s on
+	// `ease-in-out` — while the component sitting next to it, which we wrote, is on 180ms and our
+	// curve. That gap is the one place a shared scale cannot reach from a rule, because these
+	// timings are compiled into Bootstrap's own declarations.
+	//
+	// `$accordion-transition` has to be restated rather than inherited: its default is
+	// `$btn-transition` plus a `border-radius .15s ease` of its own, and that tail keeps the
+	// framework's timing even once the button token moves. The FAQ page renders these.
+	$transition-base:           (all m.$motion-quick m.$motion-ease) !default,
+	$transition-fade:           (opacity m.$motion-instant m.$motion-ease) !default,
+	$transition-collapse:       (height m.$motion-slow m.$motion-ease) !default,
+	$transition-collapse-width: (width m.$motion-slow m.$motion-ease) !default,
+	$btn-transition:            (color m.$motion-quick m.$motion-ease, background-color m.$motion-quick m.$motion-ease, border-color m.$motion-quick m.$motion-ease, box-shadow m.$motion-quick m.$motion-ease) !default,
+	$input-transition:          (border-color m.$motion-quick m.$motion-ease, box-shadow m.$motion-quick m.$motion-ease) !default,
+	$nav-link-transition:       (color m.$motion-quick m.$motion-ease, background-color m.$motion-quick m.$motion-ease, border-color m.$motion-quick m.$motion-ease) !default,
+	$navbar-toggler-transition: (box-shadow m.$motion-quick m.$motion-ease) !default,
+	$accordion-icon-transition: (transform m.$motion-quick m.$motion-ease) !default,
+	$accordion-transition:      (color m.$motion-quick m.$motion-ease, background-color m.$motion-quick m.$motion-ease, border-color m.$motion-quick m.$motion-ease, box-shadow m.$motion-quick m.$motion-ease, border-radius m.$motion-quick m.$motion-ease) !default,
+	// The four below are the Bootstrap components this product actually renders that carry their own
+	// timing rather than inheriting one of the tokens above: the walkthrough's league switches, the
+	// cooldown slider, the Up Next pager and the site footer's icon links.
+	$form-switch-transition:    (background-position m.$motion-quick m.$motion-ease) !default,
+	$form-range-thumb-transition: (background-color m.$motion-quick m.$motion-ease, border-color m.$motion-quick m.$motion-ease, box-shadow m.$motion-quick m.$motion-ease) !default,
+	$pagination-transition:     (color m.$motion-quick m.$motion-ease, background-color m.$motion-quick m.$motion-ease, border-color m.$motion-quick m.$motion-ease, box-shadow m.$motion-quick m.$motion-ease) !default,
+	$icon-link-icon-transition: (m.$motion-quick m.$motion-ease transform) !default,
+	$modal-transition:          (transform m.$motion-base m.$motion-ease) !default,
+	$offcanvas-transition-duration: m.$motion-base !default,
+	// The game card's PowerScore bar is the main consumer and already re-declares this value on its
+	// own `.progress-bar`; matching here means the two agree instead of one overriding the other.
+	$progress-bar-transition:   (width m.$motion-slow m.$motion-ease) !default
+);
+@use 'bootstrap/scss/bootstrap' as bs;
+
+// Not Bootstrap's. Two ArenaSwap tokens that live here because both apps read them, and which are
+// members of this module rather than arguments to it — nothing configures either.
+$secondary-on-light:   #2274A5;
+
+// The dimmed side of a final scoreline. Shared because two files draw it — the card and the detail
+// hero — and a receded grey that only clears contrast in one of them is the drift this avoids. It
+// has to hold 3:1 as large text on both plates the scoreline sits on, the card's #f4f6f8 and the
+// hero's white: 3.37:1 and 3.65:1. The #9aa4b0 it replaced reached 2.33:1 and 2.53:1.
+$score-loser-color:    #7c8794;
 
 * {
 	&::selection {
-		background: $primary;
-		color: $body-color;
+		background: bs.$primary;
+		color: bs.$body-color;
 	}
 }

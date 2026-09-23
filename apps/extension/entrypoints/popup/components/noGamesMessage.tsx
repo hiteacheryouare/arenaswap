@@ -3,7 +3,8 @@ import { i18n } from '#i18n';
 import { getRandomNoGamesMessage } from '../popupHelpers';
 
 interface noGamesMessageProps {
-	onOpenSetup: () => void;
+	// Absent where there is no settings screen to open, as in the Guide's own tab.
+	onOpenSetup?: () => void;
 	onRefresh: () => void;
 }
 
@@ -18,7 +19,7 @@ const noGamesMessage = ({ onOpenSetup, onRefresh }: noGamesMessageProps) => {
 			<div className='popup-no-games-sub mb-2'>{msg.sub}</div>
 			<div className='d-flex justify-content-center gap-3'>
 				<button className='btn btn-link btn-sm p-0 popup-settings-link' onClick={onRefresh}>{i18n.t('empty.refresh')}</button>
-				<button className='btn btn-link btn-sm p-0 popup-settings-link' onClick={onOpenSetup}>{i18n.t('empty.settings')}</button>
+				{onOpenSetup && <button className='btn btn-link btn-sm p-0 popup-settings-link' onClick={onOpenSetup}>{i18n.t('empty.settings')}</button>}
 			</div>
 		</div>
 	);

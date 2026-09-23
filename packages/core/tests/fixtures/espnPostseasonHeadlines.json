@@ -1,0 +1,5532 @@
+[
+	{
+		"league": "cbase",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Athens Regional"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Athens Regional - Elimination Game"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Athens Regional - Georgia advances to Super Regional"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Atlanta Regional"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Atlanta Regional - Elimination Game"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Atlanta Regional - Oklahoma advances to Super Regional"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Atlanta Regional Rescheduled from 5/29"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Auburn Regional"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Auburn Regional - Auburn advances to Super Regional"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Auburn Regional - Elimination Game"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Austin Regional"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Austin Regional - Elimination Game"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Austin Regional - Texas advances to Super Regional"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Chapel Hill Regional"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Chapel Hill Regional - Elimination Game"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Chapel Hill Regional - North Carolina advances to Super Regional"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - College Station Regional"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - College Station Regional - Elimination Game"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - College Station Regional - USC advances to Super Regional"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Eugene Regional"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Eugene Regional - Elimination Game"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Eugene Regional - Oregon advances to Super Regional"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Gainesville Regional"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Gainesville Regional - Elimination Game"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Gainesville Regional - Troy advances to Super Regional"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Hattiesburg Regional"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Hattiesburg Regional - Elimination Game"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Hattiesburg Regional - Little Rock advances to Super Regional"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Lawrence Regional"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Lawrence Regional - Elimination Game"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Lawrence Regional - Kansas advances to Super Regional"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Lincoln Regional"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Lincoln Regional - Elimination Game"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Lincoln Regional - Ole Miss advances to Super Regional"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Los Angeles Regional"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Los Angeles Regional - Cal Poly advances to Super Regional"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Los Angeles Regional - Elimination Game"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Morgantown Regional"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Morgantown Regional - Elimination Game"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Morgantown Regional - West Virginia advances to Super Regional"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Starkville Regional"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Starkville Regional - Elimination Game"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Starkville Regional - Mississippi State advances to Super Regional"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Tallahassee Regional"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Tallahassee Regional - Elimination Game"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Tallahassee Regional - St. John's advances to Super Regional"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Tuscaloosa Regional"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Tuscaloosa Regional - Alabama advances to Super Regional"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Tuscaloosa Regional - Elimination Game"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 4,
+		"seasonSlug": "super-regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Athens Super Regional - Game 1"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 4,
+		"seasonSlug": "super-regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Athens Super Regional - Game 2"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 4,
+		"seasonSlug": "super-regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Auburn Super Regional - Game 1"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 4,
+		"seasonSlug": "super-regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Auburn Super Regional - Game 2"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 4,
+		"seasonSlug": "super-regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Austin Super Regional - Game 1"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 4,
+		"seasonSlug": "super-regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Austin Super Regional - Game 2"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 4,
+		"seasonSlug": "super-regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Chapel Hill Super Regional - Game 1"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 4,
+		"seasonSlug": "super-regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Chapel Hill Super Regional - Game 2"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 4,
+		"seasonSlug": "super-regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Chapel Hill Super Regional - Game 3"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 4,
+		"seasonSlug": "super-regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Lawrence Super Regional - Game 1"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 4,
+		"seasonSlug": "super-regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Lawrence Super Regional - Game 2"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 4,
+		"seasonSlug": "super-regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Morgantown Super Regional - Game 1"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 4,
+		"seasonSlug": "super-regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Morgantown Super Regional - Game 2"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 4,
+		"seasonSlug": "super-regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Troy Super Regional - Game 1"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 4,
+		"seasonSlug": "super-regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Troy Super Regional - Game 2"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 4,
+		"seasonSlug": "super-regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Tuscaloosa Super Regional - Game 1"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 4,
+		"seasonSlug": "super-regionals",
+		"noteType": "event",
+		"headline": "NCAA Baseball Championship - Tuscaloosa Super Regional - Game 2"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 5,
+		"seasonSlug": "world-series",
+		"noteType": "event",
+		"headline": "Men's College World Series - Double Elimination Round"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 5,
+		"seasonSlug": "world-series",
+		"noteType": "event",
+		"headline": "Men's College World Series - Elimination Game"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 5,
+		"seasonSlug": "world-series",
+		"noteType": "event",
+		"headline": "Men's College World Series - North Carolina advances to Championship Series"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 5,
+		"seasonSlug": "world-series",
+		"noteType": "event",
+		"headline": "Men's College World Series - Oklahoma advances to Championship Series"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 6,
+		"seasonSlug": "championship-series",
+		"noteType": "event",
+		"headline": "Men's College World Series Championship Final - Game 1"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 6,
+		"seasonSlug": "championship-series",
+		"noteType": "event",
+		"headline": "Men's College World Series Championship Final - Game 2"
+	},
+	{
+		"league": "cbase",
+		"seasonType": 6,
+		"seasonSlug": "championship-series",
+		"noteType": "event",
+		"headline": "Men's College World Series Championship Final - Game 3"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Athens Regional"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Athens Regional - Elimination Game"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Athens Regional - Georgia advances to Super Regional"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Austin Regional"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Austin Regional - Elimination Game"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Austin Regional - Texas advances to Super Regional"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Baton Rouge Regional"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Baton Rouge Regional - Elimination Game"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Baton Rouge Regional - LSU advances to Super Regional"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - College Station Regional"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - College Station Regional - Arizona State advances to Super Regional"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - College Station Regional - Elimination Game"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Durham Regional"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Durham Regional - Duke advances to Super Regional"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Durham Regional - Elimination Game"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Eugene Regional"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Eugene Regional - Elimination Game"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Eugene Regional - Mississippi State advances to Super Regional"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Fayetteville Regional"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Fayetteville Regional - Arkansas advances to Super Regional"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Fayetteville Regional - Elimination Game"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Gainesville Regional"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Gainesville Regional -  Florida advances to Super Regional"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Gainesville Regional - Elimination Game"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Knoxville Regional"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Knoxville Regional  - Elimination Game"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Knoxville Regional - Elimination Game"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Knoxville Regional - Tennessee advances to Super Regional"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Lincoln Regional"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Lincoln Regional - Elimination Game"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Lincoln Regional - Nebraska advances to Super Regional"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Los Angeles Regional"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Los Angeles Regional - Elimination Game"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Los Angeles Regional - UCLA advances to Super Regional"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Lubbock Regional"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Lubbock Regional - Elimination Game"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Lubbock Regional - Texas Tech advances to Super Regional"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Norman Regional"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Norman Regional - Elimination Game"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Norman Regional - Oklahoma advances to Super Regional"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Stillwater Regional"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Stillwater Regional - Elimination Game"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Stillwater Regional - Oklahoma State advances to Super Regional"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Tallahassee Regional"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Tallahassee Regional - Elimination Game"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Tallahassee Regional - UCF advances to Super Regional"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Tuscaloosa Regional"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Tuscaloosa Regional - Alabama advances to Super Regional"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 3,
+		"seasonSlug": "regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Tuscaloosa Regional - Elimination Game"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 4,
+		"seasonSlug": "super-regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Austin Super Regional - Game 1"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 4,
+		"seasonSlug": "super-regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Austin Super Regional - Game 2"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 4,
+		"seasonSlug": "super-regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Austin Super Regional - Game 3"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 4,
+		"seasonSlug": "super-regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Fayetteville Super Regional - Game 1"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 4,
+		"seasonSlug": "super-regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Fayetteville Super Regional - Game 2"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 4,
+		"seasonSlug": "super-regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Gainesville Super Regional - Game 1"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 4,
+		"seasonSlug": "super-regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Gainesville Super Regional - Game 2"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 4,
+		"seasonSlug": "super-regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Gainesville Super Regional - Game 3"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 4,
+		"seasonSlug": "super-regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Knoxville Super Regional - Game 1"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 4,
+		"seasonSlug": "super-regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Knoxville Super Regional - Game 2"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 4,
+		"seasonSlug": "super-regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Lincoln Super Regional - Game 1"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 4,
+		"seasonSlug": "super-regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Lincoln Super Regional - Game 2"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 4,
+		"seasonSlug": "super-regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Los Angeles Super Regional - Game 1"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 4,
+		"seasonSlug": "super-regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Los Angeles Super Regional - Game 2"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 4,
+		"seasonSlug": "super-regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Norman Super Regional - Game 1"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 4,
+		"seasonSlug": "super-regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Norman Super Regional - Game 2"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 4,
+		"seasonSlug": "super-regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Norman Super Regional - Game 3"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 4,
+		"seasonSlug": "super-regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Tuscaloosa Super Regional - Game 1"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 4,
+		"seasonSlug": "super-regionals",
+		"noteType": "event",
+		"headline": "NCAA Softball Championship - Tuscaloosa Super Regional - Game 2"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 5,
+		"seasonSlug": "world-series",
+		"noteType": "event",
+		"headline": "Women's College World Series -  Texas advances to Championship Finals"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 5,
+		"seasonSlug": "world-series",
+		"noteType": "event",
+		"headline": "Women's College World Series - Double Elimination Round"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 5,
+		"seasonSlug": "world-series",
+		"noteType": "event",
+		"headline": "Women's College World Series - Elimination Game"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 5,
+		"seasonSlug": "world-series",
+		"noteType": "event",
+		"headline": "Women's College World Series - Texas Tech advances to Championship Finals"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 6,
+		"seasonSlug": "championship-series",
+		"noteType": "event",
+		"headline": "Women's College World Series Championship Finals - Game 1"
+	},
+	{
+		"league": "csoft",
+		"seasonType": 6,
+		"seasonSlug": "championship-series",
+		"noteType": "event",
+		"headline": "Women's College World Series Championship Finals - Game 2"
+	},
+	{
+		"league": "fifawc",
+		"seasonType": 13797,
+		"seasonSlug": "3rd-place-match",
+		"noteType": null,
+		"headline": null
+	},
+	{
+		"league": "fifawc",
+		"seasonType": 13798,
+		"seasonSlug": "semifinals",
+		"noteType": null,
+		"headline": null
+	},
+	{
+		"league": "fifawc",
+		"seasonType": 13799,
+		"seasonSlug": "quarterfinals",
+		"noteType": null,
+		"headline": null
+	},
+	{
+		"league": "fifawc",
+		"seasonType": 13800,
+		"seasonSlug": "round-of-16",
+		"noteType": null,
+		"headline": null
+	},
+	{
+		"league": "fifawc",
+		"seasonType": 13800,
+		"seasonSlug": "round-of-16",
+		"noteType": "event",
+		"headline": "Switzerland advance 4-3 on penalties"
+	},
+	{
+		"league": "fifawc",
+		"seasonType": 13801,
+		"seasonSlug": "round-of-32",
+		"noteType": "event",
+		"headline": "Egypt advance 4-2 on penalties"
+	},
+	{
+		"league": "fifawc",
+		"seasonType": 13801,
+		"seasonSlug": "round-of-32",
+		"noteType": "event",
+		"headline": "Morocco advance 3-2 on penalties"
+	},
+	{
+		"league": "fifawc",
+		"seasonType": 13801,
+		"seasonSlug": "round-of-32",
+		"noteType": null,
+		"headline": null
+	},
+	{
+		"league": "fifawc",
+		"seasonType": 13801,
+		"seasonSlug": "round-of-32",
+		"noteType": "event",
+		"headline": "Paraguay advance 4-3 on penalties"
+	},
+	{
+		"league": "fifawc",
+		"seasonType": 13802,
+		"seasonSlug": "group-stage",
+		"noteType": null,
+		"headline": null
+	},
+	{
+		"league": "fifawc",
+		"seasonType": 13803,
+		"seasonSlug": "final",
+		"noteType": null,
+		"headline": null
+	},
+	{
+		"league": "fifawwc",
+		"seasonType": 10632,
+		"seasonSlug": "final",
+		"noteType": null,
+		"headline": null
+	},
+	{
+		"league": "fifawwc",
+		"seasonType": 10633,
+		"seasonSlug": "3rd-place",
+		"noteType": null,
+		"headline": null
+	},
+	{
+		"league": "fifawwc",
+		"seasonType": 10634,
+		"seasonSlug": "semifinals",
+		"noteType": null,
+		"headline": null
+	},
+	{
+		"league": "fifawwc",
+		"seasonType": 10635,
+		"seasonSlug": "quarterfinals",
+		"noteType": "event",
+		"headline": "Australia advance 7-6 on penalties"
+	},
+	{
+		"league": "fifawwc",
+		"seasonType": 10635,
+		"seasonSlug": "quarterfinals",
+		"noteType": null,
+		"headline": null
+	},
+	{
+		"league": "fifawwc",
+		"seasonType": 10636,
+		"seasonSlug": "round-of-16",
+		"noteType": "event",
+		"headline": "England advance 4-2 on penalties"
+	},
+	{
+		"league": "fifawwc",
+		"seasonType": 10636,
+		"seasonSlug": "round-of-16",
+		"noteType": null,
+		"headline": null
+	},
+	{
+		"league": "fifawwc",
+		"seasonType": 10636,
+		"seasonSlug": "round-of-16",
+		"noteType": "event",
+		"headline": "Sweden advance 5-4 on penalties"
+	},
+	{
+		"league": "ligamx",
+		"seasonType": 13433,
+		"seasonSlug": "clausura---finals",
+		"noteType": "event",
+		"headline": "1st Leg"
+	},
+	{
+		"league": "ligamx",
+		"seasonType": 13433,
+		"seasonSlug": "clausura---finals",
+		"noteType": "event",
+		"headline": "2nd Leg - Cruz Azul win 2-1 on aggregate"
+	},
+	{
+		"league": "ligamx",
+		"seasonType": 13434,
+		"seasonSlug": "clausura---semifinals",
+		"noteType": "event",
+		"headline": "1st Leg"
+	},
+	{
+		"league": "ligamx",
+		"seasonType": 13434,
+		"seasonSlug": "clausura---semifinals",
+		"noteType": "event",
+		"headline": "2nd Leg - Cruz Azul advance 4-3 on aggregate"
+	},
+	{
+		"league": "ligamx",
+		"seasonType": 13434,
+		"seasonSlug": "clausura---semifinals",
+		"noteType": "event",
+		"headline": "2nd Leg - Tied on aggregate - Pumas UNAM advanced for being the higher seed"
+	},
+	{
+		"league": "ligamx",
+		"seasonType": 13435,
+		"seasonSlug": "clausura---quarterfinals",
+		"noteType": "event",
+		"headline": "1st Leg"
+	},
+	{
+		"league": "ligamx",
+		"seasonType": 13435,
+		"seasonSlug": "clausura---quarterfinals",
+		"noteType": "event",
+		"headline": "2nd Leg - Cruz Azul advance 4-2 on aggregate"
+	},
+	{
+		"league": "ligamx",
+		"seasonType": 13435,
+		"seasonSlug": "clausura---quarterfinals",
+		"noteType": "event",
+		"headline": "2nd Leg - Pachuca advance 3-0 on aggregate"
+	},
+	{
+		"league": "ligamx",
+		"seasonType": 13435,
+		"seasonSlug": "clausura---quarterfinals",
+		"noteType": "event",
+		"headline": "2nd Leg - Tied on aggregate - AME win on away goals"
+	},
+	{
+		"league": "ligamx",
+		"seasonType": 13435,
+		"seasonSlug": "clausura---quarterfinals",
+		"noteType": "event",
+		"headline": "2nd Leg - Tied on aggregate - Guadalajara advanced for being the higher seed"
+	},
+	{
+		"league": "mlb",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "ALCS - Game 1"
+	},
+	{
+		"league": "mlb",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "ALCS - Game 2"
+	},
+	{
+		"league": "mlb",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "ALCS - Game 3"
+	},
+	{
+		"league": "mlb",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "ALCS - Game 4"
+	},
+	{
+		"league": "mlb",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "ALCS - Game 5"
+	},
+	{
+		"league": "mlb",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "ALCS - Game 6"
+	},
+	{
+		"league": "mlb",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "ALCS - Game 7"
+	},
+	{
+		"league": "mlb",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "ALDS - Game 1"
+	},
+	{
+		"league": "mlb",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "ALDS - Game 2"
+	},
+	{
+		"league": "mlb",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "ALDS - Game 3"
+	},
+	{
+		"league": "mlb",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "ALDS - Game 4"
+	},
+	{
+		"league": "mlb",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "ALDS - Game 5"
+	},
+	{
+		"league": "mlb",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "ALWC - Game 1"
+	},
+	{
+		"league": "mlb",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "ALWC - Game 2"
+	},
+	{
+		"league": "mlb",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "ALWC - Game 3"
+	},
+	{
+		"league": "mlb",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NLCS - Game 1"
+	},
+	{
+		"league": "mlb",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NLCS - Game 2"
+	},
+	{
+		"league": "mlb",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NLCS - Game 3"
+	},
+	{
+		"league": "mlb",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NLCS - Game 4"
+	},
+	{
+		"league": "mlb",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NLDS - Game 1"
+	},
+	{
+		"league": "mlb",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NLDS - Game 2"
+	},
+	{
+		"league": "mlb",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NLDS - Game 3"
+	},
+	{
+		"league": "mlb",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NLDS - Game 4"
+	},
+	{
+		"league": "mlb",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NLDS - Game 5"
+	},
+	{
+		"league": "mlb",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NLWC - Game 1"
+	},
+	{
+		"league": "mlb",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NLWC - Game 2"
+	},
+	{
+		"league": "mlb",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NLWC - Game 3"
+	},
+	{
+		"league": "mlb",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "World Series - Game 1"
+	},
+	{
+		"league": "mlb",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "World Series - Game 2"
+	},
+	{
+		"league": "mlb",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "World Series - Game 3"
+	},
+	{
+		"league": "mlb",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "World Series - Game 4"
+	},
+	{
+		"league": "mlb",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "World Series - Game 5"
+	},
+	{
+		"league": "mlb",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "World Series - Game 6"
+	},
+	{
+		"league": "mlb",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "World Series - Game 7"
+	},
+	{
+		"league": "mls",
+		"seasonType": 13119,
+		"seasonSlug": "mls-cup",
+		"noteType": null,
+		"headline": null
+	},
+	{
+		"league": "mls",
+		"seasonType": 13120,
+		"seasonSlug": "western-conference-playoffs---final",
+		"noteType": null,
+		"headline": null
+	},
+	{
+		"league": "mls",
+		"seasonType": 13121,
+		"seasonSlug": "eastern-conference-playoffs---final",
+		"noteType": null,
+		"headline": null
+	},
+	{
+		"league": "mls",
+		"seasonType": 13122,
+		"seasonSlug": "western-conference-playoffs---semifinals",
+		"noteType": null,
+		"headline": null
+	},
+	{
+		"league": "mls",
+		"seasonType": 13122,
+		"seasonSlug": "western-conference-playoffs---semifinals",
+		"noteType": "event",
+		"headline": "Vancouver Whitecaps advance 4-3 on penalties"
+	},
+	{
+		"league": "mls",
+		"seasonType": 13123,
+		"seasonSlug": "eastern-conference-playoffs---semifinals",
+		"noteType": null,
+		"headline": null
+	},
+	{
+		"league": "mls",
+		"seasonType": 13124,
+		"seasonSlug": "western-conference-playoffs---round-one",
+		"noteType": "event",
+		"headline": "MIN leads series 1-0"
+	},
+	{
+		"league": "mls",
+		"seasonType": 13124,
+		"seasonSlug": "western-conference-playoffs---round-one",
+		"noteType": "event",
+		"headline": "MIN win series 2-1"
+	},
+	{
+		"league": "mls",
+		"seasonType": 13124,
+		"seasonSlug": "western-conference-playoffs---round-one",
+		"noteType": "event",
+		"headline": "Series tied 1-1"
+	},
+	{
+		"league": "mls",
+		"seasonType": 13125,
+		"seasonSlug": "western-conference-playoffs---round-one",
+		"noteType": "event",
+		"headline": "LAFC leads series 1-0"
+	},
+	{
+		"league": "mls",
+		"seasonType": 13125,
+		"seasonSlug": "western-conference-playoffs---round-one",
+		"noteType": "event",
+		"headline": "LAFC win series 2-0"
+	},
+	{
+		"league": "mls",
+		"seasonType": 13126,
+		"seasonSlug": "western-conference-playoffs---round-one",
+		"noteType": "event",
+		"headline": "VAN leads series 1-0"
+	},
+	{
+		"league": "mls",
+		"seasonType": 13126,
+		"seasonSlug": "western-conference-playoffs---round-one",
+		"noteType": "event",
+		"headline": "VAN win series 2-0"
+	},
+	{
+		"league": "mls",
+		"seasonType": 13127,
+		"seasonSlug": "western-conference-playoffs---round-one",
+		"noteType": "event",
+		"headline": "SD leads series 1-0"
+	},
+	{
+		"league": "mls",
+		"seasonType": 13127,
+		"seasonSlug": "western-conference-playoffs---round-one",
+		"noteType": "event",
+		"headline": "SD win series 2-1"
+	},
+	{
+		"league": "mls",
+		"seasonType": 13127,
+		"seasonSlug": "western-conference-playoffs---round-one",
+		"noteType": "event",
+		"headline": "Series tied 1-1"
+	},
+	{
+		"league": "mls",
+		"seasonType": 13128,
+		"seasonSlug": "eastern-conference-playoffs---round-one",
+		"noteType": "event",
+		"headline": "NYC leads series 1-0"
+	},
+	{
+		"league": "mls",
+		"seasonType": 13128,
+		"seasonSlug": "eastern-conference-playoffs---round-one",
+		"noteType": "event",
+		"headline": "NYC win series 2-1"
+	},
+	{
+		"league": "mls",
+		"seasonType": 13128,
+		"seasonSlug": "eastern-conference-playoffs---round-one",
+		"noteType": "event",
+		"headline": "Series tied 1-1"
+	},
+	{
+		"league": "mls",
+		"seasonType": 13129,
+		"seasonSlug": "eastern-conference-playoffs---round-one",
+		"noteType": "event",
+		"headline": "MIA leads series 1-0"
+	},
+	{
+		"league": "mls",
+		"seasonType": 13129,
+		"seasonSlug": "eastern-conference-playoffs---round-one",
+		"noteType": "event",
+		"headline": "MIA win series 2-1"
+	},
+	{
+		"league": "mls",
+		"seasonType": 13129,
+		"seasonSlug": "eastern-conference-playoffs---round-one",
+		"noteType": "event",
+		"headline": "Series tied 1-1"
+	},
+	{
+		"league": "mls",
+		"seasonType": 13130,
+		"seasonSlug": "eastern-conference-playoffs---round-one",
+		"noteType": "event",
+		"headline": "CIN leads series 1-0"
+	},
+	{
+		"league": "mls",
+		"seasonType": 13130,
+		"seasonSlug": "eastern-conference-playoffs---round-one",
+		"noteType": "event",
+		"headline": "CIN win series 2-1"
+	},
+	{
+		"league": "mls",
+		"seasonType": 13130,
+		"seasonSlug": "eastern-conference-playoffs---round-one",
+		"noteType": "event",
+		"headline": "Series tied 1-1"
+	},
+	{
+		"league": "mls",
+		"seasonType": 13131,
+		"seasonSlug": "eastern-conference-playoffs---round-one",
+		"noteType": "event",
+		"headline": "PHI leads series 1-0"
+	},
+	{
+		"league": "mls",
+		"seasonType": 13131,
+		"seasonSlug": "eastern-conference-playoffs---round-one",
+		"noteType": "event",
+		"headline": "PHI win series 2-0"
+	},
+	{
+		"league": "mls",
+		"seasonType": 13132,
+		"seasonSlug": "western-conference-playoffs---wild-card",
+		"noteType": null,
+		"headline": null
+	},
+	{
+		"league": "mls",
+		"seasonType": 13133,
+		"seasonSlug": "eastern-conference-playoffs---wild-card",
+		"noteType": null,
+		"headline": null
+	},
+	{
+		"league": "nba",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "East 1st Round - Game 1"
+	},
+	{
+		"league": "nba",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "East 1st Round - Game 2"
+	},
+	{
+		"league": "nba",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "East 1st Round - Game 3"
+	},
+	{
+		"league": "nba",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "East 1st Round - Game 4"
+	},
+	{
+		"league": "nba",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "East 1st Round - Game 5"
+	},
+	{
+		"league": "nba",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "East 1st Round - Game 6"
+	},
+	{
+		"league": "nba",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "East 1st Round - Game 7"
+	},
+	{
+		"league": "nba",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "East Finals - Game 1"
+	},
+	{
+		"league": "nba",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "East Finals - Game 2"
+	},
+	{
+		"league": "nba",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "East Finals - Game 3"
+	},
+	{
+		"league": "nba",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "East Finals - Game 4"
+	},
+	{
+		"league": "nba",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "East Semifinals - Game 1"
+	},
+	{
+		"league": "nba",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "East Semifinals - Game 2"
+	},
+	{
+		"league": "nba",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "East Semifinals - Game 3"
+	},
+	{
+		"league": "nba",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "East Semifinals - Game 4"
+	},
+	{
+		"league": "nba",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "East Semifinals - Game 5"
+	},
+	{
+		"league": "nba",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "East Semifinals - Game 6"
+	},
+	{
+		"league": "nba",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "East Semifinals - Game 7"
+	},
+	{
+		"league": "nba",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NBA Finals - Game 1"
+	},
+	{
+		"league": "nba",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NBA Finals - Game 2"
+	},
+	{
+		"league": "nba",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NBA Finals - Game 3"
+	},
+	{
+		"league": "nba",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NBA Finals - Game 4"
+	},
+	{
+		"league": "nba",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NBA Finals - Game 5"
+	},
+	{
+		"league": "nba",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "West 1st Round - Game 1"
+	},
+	{
+		"league": "nba",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "West 1st Round - Game 2"
+	},
+	{
+		"league": "nba",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "West 1st Round - Game 3"
+	},
+	{
+		"league": "nba",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "West 1st Round - Game 4"
+	},
+	{
+		"league": "nba",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "West 1st Round - Game 5"
+	},
+	{
+		"league": "nba",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "West 1st Round - Game 6"
+	},
+	{
+		"league": "nba",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "West Finals - Game 1"
+	},
+	{
+		"league": "nba",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "West Finals - Game 2"
+	},
+	{
+		"league": "nba",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "West Finals - Game 3"
+	},
+	{
+		"league": "nba",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "West Finals - Game 4"
+	},
+	{
+		"league": "nba",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "West Finals - Game 5"
+	},
+	{
+		"league": "nba",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "West Finals - Game 6"
+	},
+	{
+		"league": "nba",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "West Finals - Game 7"
+	},
+	{
+		"league": "nba",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "West Semifinals - Game 1"
+	},
+	{
+		"league": "nba",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "West Semifinals - Game 2"
+	},
+	{
+		"league": "nba",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "West Semifinals - Game 3"
+	},
+	{
+		"league": "nba",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "West Semifinals - Game 4"
+	},
+	{
+		"league": "nba",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "West Semifinals - Game 5"
+	},
+	{
+		"league": "nba",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "West Semifinals - Game 6"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "ASUN Championship - Final"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "America East Playoffs - Final"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "America East Playoffs - Semifinal"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "American Conference Championship - 1st Round"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "American Conference Championship - 2nd Round"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "American Conference Championship - Final"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "American Conference Championship - Quarterfinal"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "American Conference Championship - Semifinal"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Atlantic 10 Championship - 1st Round"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Atlantic 10 Championship - 2nd Round"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Atlantic 10 Championship - Final"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Atlantic 10 Championship - Quarterfinal"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Atlantic 10 Championship - Semifinal"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Barbasol Horizon League Championship - 2nd Round"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Barbasol Horizon League Championship - Final"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Barbasol Horizon League Championship - Semifinal"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Big East Tournament - 1st Round"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Big East Tournament - Final"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Big East Tournament - Quarterfinal"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Big East Tournament - Semifinal"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Big Sky Championship - 2nd Round"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Big Sky Championship - 3rd Round"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Big Sky Championship - Final"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Big Sky Championship - Semifinal"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Big South Championship - Final"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Big Ten Tournament - 1st Round"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Big Ten Tournament - 2nd Round"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Big Ten Tournament - 3rd Round"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Big Ten Tournament - Final"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Big Ten Tournament - Quarterfinal"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Big Ten Tournament - Semifinal"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Big West Championship - 1st Round"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Big West Championship - Final"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Big West Championship - Quarterfinal"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Big West Championship - Semifinal"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "CAA Championship - Final"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "CAA Championship - Quarterfinal"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "CAA Championship - Semifinal"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "CUSA Championship - 1st Round"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "CUSA Championship - Final"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "CUSA Championship - Quarterfinal"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "CUSA Championship - Semifinal"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Ivy League Tournament pres. by TIAA - Final"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Ivy League Tournament pres. by TIAA - Semifinal"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "MAAC Championship - Final"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "MAAC Championship - Semifinal"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "MAC Championship - Final"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "MAC Championship - Quarterfinal"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "MAC Championship - Semifinal"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "MEAC Tournament - Final"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "MEAC Tournament - Quarterfinal"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "MEAC Tournament - Semifinal"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "MVC Tournament - Final"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Mountain West Championship - 1st Round"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Mountain West Championship - Final"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Mountain West Championship - Quarterfinal"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Mountain West Championship - Semifinal"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": null,
+		"headline": null
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Northeast Conference Tournament - Final"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Patriot League Championship - Final"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Patriot League Championship - Semifinal"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Phillips 66 Big 12 Tournament - 1st Round"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Phillips 66 Big 12 Tournament - 2nd Round"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Phillips 66 Big 12 Tournament - Final"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Phillips 66 Big 12 Tournament - Quarterfinal"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Phillips 66 Big 12 Tournament - Semifinal"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "SEC Tournament - 1st Round"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "SEC Tournament - 2nd Round"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "SEC Tournament - Final"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "SEC Tournament - Quarterfinal"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "SEC Tournament - Semifinal"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "SWAC Tournament - 1st Round"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "SWAC Tournament - 2nd Round"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "SWAC Tournament - Final"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "SWAC Tournament - Quarterfinal"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "SWAC Tournament - Semifinal"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "SoCon Championship - Final"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "SoCon Championship - Semifinal"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Southland Tournament - 1st Round"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Southland Tournament - Final"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Southland Tournament - Quarterfinal"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Southland Tournament - Semifinal"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Summit League Championship - Final"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Sun Belt Championship - Final"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Sun Belt Championship - Semifinal"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "T. Rowe Price ACC Tournament - 1st Round"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "T. Rowe Price ACC Tournament - 2nd Round"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "T. Rowe Price ACC Tournament - Final"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "T. Rowe Price ACC Tournament - Quarterfinal"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "T. Rowe Price ACC Tournament - Semifinal"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "WAC Tournament - 1st Round"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "WAC Tournament - Final"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "WAC Tournament - Quarterfinal"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "WAC Tournament - Semifinal"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "West Coast Conference Tournament - Final"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "West Coast Conference Tournament - Quarterfinal"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "West Coast Conference Tournament - Semifinal"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "College Basketball Crown - Quarterfinals"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "College Basketball Crown - Semifinals"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "College Basketball Crown Championship Game"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NCAA Men's Basketball Championship - East Region - 1st Round"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NCAA Men's Basketball Championship - East Region - 2nd Round"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NCAA Men's Basketball Championship - East Region - Elite 8"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NCAA Men's Basketball Championship - East Region - Sweet 16"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NCAA Men's Basketball Championship - Final Four"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NCAA Men's Basketball Championship - Midwest Region - 1st Round"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NCAA Men's Basketball Championship - Midwest Region - 2nd Round"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NCAA Men's Basketball Championship - Midwest Region - Elite 8"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NCAA Men's Basketball Championship - Midwest Region - First Four"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NCAA Men's Basketball Championship - Midwest Region - Sweet 16"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NCAA Men's Basketball Championship - National Championship"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NCAA Men's Basketball Championship - South Region - 1st Round"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NCAA Men's Basketball Championship - South Region - 2nd Round"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NCAA Men's Basketball Championship - South Region - Elite 8"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NCAA Men's Basketball Championship - South Region - First Four"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NCAA Men's Basketball Championship - South Region - Sweet 16"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NCAA Men's Basketball Championship - West Region - 1st Round"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NCAA Men's Basketball Championship - West Region - 2nd Round"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NCAA Men's Basketball Championship - West Region - Elite 8"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NCAA Men's Basketball Championship - West Region - First Four"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NCAA Men's Basketball Championship - West Region - Sweet 16"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NIT - 1st Round"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NIT - 2nd Round"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NIT - Championship"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NIT - Quarterfinal"
+	},
+	{
+		"league": "ncaab",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NIT - Semifinal"
+	},
+	{
+		"league": "ncaaf",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "ACC Championship"
+	},
+	{
+		"league": "ncaaf",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "American Championship"
+	},
+	{
+		"league": "ncaaf",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Big 12 Championship"
+	},
+	{
+		"league": "ncaaf",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Big Ten Championship"
+	},
+	{
+		"league": "ncaaf",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Conference USA Championship"
+	},
+	{
+		"league": "ncaaf",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "FCS Championship - Second Round"
+	},
+	{
+		"league": "ncaaf",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "MAC Championship"
+	},
+	{
+		"league": "ncaaf",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Mountain West Championship"
+	},
+	{
+		"league": "ncaaf",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "SEC Championship"
+	},
+	{
+		"league": "ncaaf",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Sun Belt Championship"
+	},
+	{
+		"league": "ncaaf",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "68 Ventures Bowl"
+	},
+	{
+		"league": "ncaaf",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "AutoZone Liberty Bowl"
+	},
+	{
+		"league": "ncaaf",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "Bad Boy Mowers Pinstripe Bowl"
+	},
+	{
+		"league": "ncaaf",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "Bush's Boca Raton Bowl"
+	},
+	{
+		"league": "ncaaf",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "Cheez-It Citrus Bowl"
+	},
+	{
+		"league": "ncaaf",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "College Football Playoff First Round Game"
+	},
+	{
+		"league": "ncaaf",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "College Football Playoff National Championship Presented by AT&T"
+	},
+	{
+		"league": "ncaaf",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "College Football Playoff Quarterfinal at the Allstate Sugar Bowl"
+	},
+	{
+		"league": "ncaaf",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "College Football Playoff Quarterfinal at the Capital One Orange Bowl"
+	},
+	{
+		"league": "ncaaf",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "College Football Playoff Quarterfinal at the Goodyear Cotton Bowl Classic"
+	},
+	{
+		"league": "ncaaf",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "College Football Playoff Quarterfinal at the Rose Bowl Presented by Prudential"
+	},
+	{
+		"league": "ncaaf",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "College Football Playoff Semifinal at the Chick-fil-A Peach Bowl"
+	},
+	{
+		"league": "ncaaf",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "College Football Playoff Semifinal at the Vrbo Fiesta Bowl"
+	},
+	{
+		"league": "ncaaf",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "Duke's Mayo Bowl"
+	},
+	{
+		"league": "ncaaf",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "Famous Idaho Potato Bowl"
+	},
+	{
+		"league": "ncaaf",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "GameAbove Sports Bowl"
+	},
+	{
+		"league": "ncaaf",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "Go Bowling Military Bowl"
+	},
+	{
+		"league": "ncaaf",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "IS4S Salute to Veterans Bowl"
+	},
+	{
+		"league": "ncaaf",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "Isleta New Mexico Bowl"
+	},
+	{
+		"league": "ncaaf",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "JLab Birmingham Bowl"
+	},
+	{
+		"league": "ncaaf",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "Kinder's Texas Bowl"
+	},
+	{
+		"league": "ncaaf",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "Liberty Mutual Music City Bowl"
+	},
+	{
+		"league": "ncaaf",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "Lockheed Martin Armed Forces Bowl"
+	},
+	{
+		"league": "ncaaf",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "Myrtle Beach Bowl"
+	},
+	{
+		"league": "ncaaf",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "New Orleans Bowl"
+	},
+	{
+		"league": "ncaaf",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "Pop-Tarts Bowl"
+	},
+	{
+		"league": "ncaaf",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "Radiance Technologies Independence Bowl"
+	},
+	{
+		"league": "ncaaf",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "Rate Bowl"
+	},
+	{
+		"league": "ncaaf",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "ReliaQuest Bowl"
+	},
+	{
+		"league": "ncaaf",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "SERVPRO First Responder Bowl"
+	},
+	{
+		"league": "ncaaf",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "SRS Distribution Las Vegas Bowl"
+	},
+	{
+		"league": "ncaaf",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "Scooter's Coffee Frisco Bowl"
+	},
+	{
+		"league": "ncaaf",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "Sheraton Hawaiʻi Bowl"
+	},
+	{
+		"league": "ncaaf",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "Snoop Dogg Arizona Bowl"
+	},
+	{
+		"league": "ncaaf",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "StaffDNA Cure Bowl"
+	},
+	{
+		"league": "ncaaf",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "TaxSlayer Gator Bowl"
+	},
+	{
+		"league": "ncaaf",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "Tony the Tiger Sun Bowl"
+	},
+	{
+		"league": "ncaaf",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "Trust & Will Holiday Bowl"
+	},
+	{
+		"league": "ncaaf",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "Union Home Mortgage Gasparilla Bowl"
+	},
+	{
+		"league": "ncaaf",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "Valero Alamo Bowl"
+	},
+	{
+		"league": "ncaaf",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "Wasabi Fenway Bowl"
+	},
+	{
+		"league": "ncaaf",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "Xbox Bowl"
+	},
+	{
+		"league": "ncaamh",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Atlantic Hockey - Final"
+	},
+	{
+		"league": "ncaamh",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Atlantic Hockey - Quarterfinal"
+	},
+	{
+		"league": "ncaamh",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Atlantic Hockey - Semifinal"
+	},
+	{
+		"league": "ncaamh",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Big Ten - Final"
+	},
+	{
+		"league": "ncaamh",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Big Ten - Quarterfinal"
+	},
+	{
+		"league": "ncaamh",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Big Ten - Semifinal"
+	},
+	{
+		"league": "ncaamh",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "CCHA - Final"
+	},
+	{
+		"league": "ncaamh",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "CCHA - Quarterfinal"
+	},
+	{
+		"league": "ncaamh",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "CCHA - Semifinal"
+	},
+	{
+		"league": "ncaamh",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "ECAC - 1st Round"
+	},
+	{
+		"league": "ncaamh",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "ECAC - Final"
+	},
+	{
+		"league": "ncaamh",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "ECAC - Quarterfinal"
+	},
+	{
+		"league": "ncaamh",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "ECAC - Semifinal"
+	},
+	{
+		"league": "ncaamh",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Hockey East - 1st Round"
+	},
+	{
+		"league": "ncaamh",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Hockey East - Final"
+	},
+	{
+		"league": "ncaamh",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Hockey East - Quarterfinal"
+	},
+	{
+		"league": "ncaamh",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Hockey East - Semifinal"
+	},
+	{
+		"league": "ncaamh",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "NCHC - Final"
+	},
+	{
+		"league": "ncaamh",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "NCHC - Quarterfinal"
+	},
+	{
+		"league": "ncaamh",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "NCHC - Semifinal"
+	},
+	{
+		"league": "ncaamh",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": null,
+		"headline": null
+	},
+	{
+		"league": "ncaamh",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "United Collegiate Hockey Cup"
+	},
+	{
+		"league": "ncaamh",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NCAA Men's Hockey Championship - Albany Regional Final"
+	},
+	{
+		"league": "ncaamh",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NCAA Men's Hockey Championship - Albany Regional Semifinal"
+	},
+	{
+		"league": "ncaamh",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NCAA Men's Hockey Championship - Frozen Four"
+	},
+	{
+		"league": "ncaamh",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NCAA Men's Hockey Championship - Loveland Regional Final"
+	},
+	{
+		"league": "ncaamh",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NCAA Men's Hockey Championship - Loveland Regional Semifinal"
+	},
+	{
+		"league": "ncaamh",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NCAA Men's Hockey Championship - Sioux Falls Regional Final"
+	},
+	{
+		"league": "ncaamh",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NCAA Men's Hockey Championship - Sioux Falls Regional Semifinal"
+	},
+	{
+		"league": "ncaamh",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NCAA Men's Hockey Championship - Worcester Regional Final"
+	},
+	{
+		"league": "ncaamh",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NCAA Men's Hockey Championship - Worcester Regional Semifinal"
+	},
+	{
+		"league": "ncaamh",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NCAA Men's Hockey National Championship"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "ASUN Championship - Final"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "ASUN Championship - Quarterfinal"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "ASUN Championship - Semifinal"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Ally ACC Tournament - 1st Round"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Ally ACC Tournament - 2nd Round"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Ally ACC Tournament - Final"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Ally ACC Tournament - Quarterfinal"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Ally ACC Tournament - Semifinal"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "America East Playoffs - Quarterfinal"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "America East Playoffs - Semifinal"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "American Conference Championship - 1st Round"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "American Conference Championship - 2nd Round"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Barbasol Horizon League Championship - 1st Round"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Barbasol Horizon League Championship - 2nd Round"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Barbasol Horizon League Championship - Final"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Barbasol Horizon League Championship - Semifinal"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Betterment Atlantic 10 Championship - 1st Round"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Betterment Atlantic 10 Championship - 2nd Round"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Betterment Atlantic 10 Championship - Final"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Betterment Atlantic 10 Championship - Quarterfinal"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Betterment Atlantic 10 Championship - Semifinal"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Big East Tournament - 1st Round"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Big East Tournament - Final"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Big East Tournament - Quarterfinal"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Big East Tournament - Semifinal"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Big Sky Championship - 1st Round"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Big Sky Championship - 2nd Round"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Big Sky Championship - 3rd Round"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Big Sky Championship - Final"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Big Sky Championship - Semifinal"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Big South Championship - 1st Round"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Big South Championship - Final"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Big South Championship - Quarterfinal"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Big South Championship - Semifinal"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Big Ten Tournament - 1st Round"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Big Ten Tournament - 2nd Round"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Big Ten Tournament - Final"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Big Ten Tournament - Quarterfinal"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Big Ten Tournament - Semifinal"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Big West Championship - 1st Round"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "CAA Championship - 1st Round"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "CUSA Championship - 1st Round"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "CUSA Championship - Quarterfinal"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "MAAC Championship - 1st Round"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "MAAC Championship - Final"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "MAAC Championship - Quarterfinal"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "MAAC Championship - Semifinal"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "MAC Championship - Quarterfinal"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "MEAC Tournament - Quarterfinal"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Mountain West Championship - 1st Round"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Mountain West Championship - Final"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Mountain West Championship - Quarterfinal"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Mountain West Championship - Semifinal"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": null,
+		"headline": null
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Northeast Conference Tournament - Quarterfinal"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "OVC Championship - 1st Round"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "OVC Championship - Final"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "OVC Championship - Quarterfinal"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "OVC Championship - Semifinal"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Patriot League Championship - 1st Round"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Patriot League Championship - Quarterfinal"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Phillips 66 Big 12 Tournament - 1st Round"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Phillips 66 Big 12 Tournament - 2nd Round"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Phillips 66 Big 12 Tournament - Final"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Phillips 66 Big 12 Tournament - Quarterfinal"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Phillips 66 Big 12 Tournament - Semifinal"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "SEC Tournament - 1st Round"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "SEC Tournament - 2nd Round"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "SEC Tournament - Final"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "SEC Tournament - Quarterfinal"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "SEC Tournament - Semifinal"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "SWAC Tournament - 1st Round"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "SWAC Tournament - 2nd Round"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "SWAC Tournament - Quarterfinal"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "SoCon Championship - Final"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "SoCon Championship - Quarterfinal"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "SoCon Championship - Semifinal"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Southland Tournament - 1st Round"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Southland Tournament - Quarterfinal"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Southland Tournament - Semifinal"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Summit League Championship - 1st Round"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Summit League Championship - Final"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Summit League Championship - Quarterfinal"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Summit League Championship - Semifinal"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Sun Belt Championship - 2nd Round"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Sun Belt Championship - 3rd Round"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Sun Belt Championship - 4th Round"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Sun Belt Championship - Final"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Sun Belt Championship - Quarterfinal"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Sun Belt Championship - Semifinal"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "WAC Tournament - 1st Round"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "West Coast Conference Tournament - 1st Round"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "West Coast Conference Tournament - 2nd Round"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "West Coast Conference Tournament - 3rd Round"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "West Coast Conference Tournament - Final"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "West Coast Conference Tournament - Quarterfinal"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "West Coast Conference Tournament - Semifinal"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NCAA Women's Basketball Championship - Final Four"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NCAA Women's Basketball Championship - National Championship"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NCAA Women's Basketball Championship - Regional 1 in Fort Worth - 1st Round"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NCAA Women's Basketball Championship - Regional 1 in Fort Worth - 2nd Round"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NCAA Women's Basketball Championship - Regional 1 in Fort Worth - Elite 8"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NCAA Women's Basketball Championship - Regional 1 in Fort Worth - Sweet 16"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NCAA Women's Basketball Championship - Regional 2 in Sacramento - 1st Round"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NCAA Women's Basketball Championship - Regional 2 in Sacramento - 2nd Round"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NCAA Women's Basketball Championship - Regional 2 in Sacramento - Elite 8"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NCAA Women's Basketball Championship - Regional 2 in Sacramento - First Four"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NCAA Women's Basketball Championship - Regional 2 in Sacramento - Sweet 16"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NCAA Women's Basketball Championship - Regional 3 in Fort Worth - 1st Round"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NCAA Women's Basketball Championship - Regional 3 in Fort Worth - 2nd Round"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NCAA Women's Basketball Championship - Regional 3 in Fort Worth - Elite 8"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NCAA Women's Basketball Championship - Regional 3 in Fort Worth - First Four"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NCAA Women's Basketball Championship - Regional 3 in Fort Worth - Sweet 16"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NCAA Women's Basketball Championship - Regional 4 in Sacramento - 1st Round"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NCAA Women's Basketball Championship - Regional 4 in Sacramento - 2nd Round"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NCAA Women's Basketball Championship - Regional 4 in Sacramento - Elite 8"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NCAA Women's Basketball Championship - Regional 4 in Sacramento - First Four"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NCAA Women's Basketball Championship - Regional 4 in Sacramento - Sweet 16"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "WBIT - 1st Round"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "WBIT - 2nd Round"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "WBIT - Quarterfinal"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "WBIT - Semifinal"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "WBIT Championship Game"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "Women's NIT - 1st Round"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "Women's NIT - 2nd Round"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "Women's NIT - 3rd Round"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "Women's NIT - Championship"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "Women's NIT - Quarterfinal"
+	},
+	{
+		"league": "ncaaw",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "Women's NIT - Semifinal"
+	},
+	{
+		"league": "nfl",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "AFC Championship"
+	},
+	{
+		"league": "nfl",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "AFC Divisional Playoffs"
+	},
+	{
+		"league": "nfl",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "AFC Wild Card Playoffs"
+	},
+	{
+		"league": "nfl",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NFC Championship"
+	},
+	{
+		"league": "nfl",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NFC Divisional Playoffs"
+	},
+	{
+		"league": "nfl",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "NFC Wild Card Playoffs"
+	},
+	{
+		"league": "nfl",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "Pro Bowl Games"
+	},
+	{
+		"league": "nfl",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "Super Bowl LX"
+	},
+	{
+		"league": "nhl",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "East 1st Round - Game 1"
+	},
+	{
+		"league": "nhl",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "East 1st Round - Game 2"
+	},
+	{
+		"league": "nhl",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "East 1st Round - Game 3"
+	},
+	{
+		"league": "nhl",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "East 1st Round - Game 4"
+	},
+	{
+		"league": "nhl",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "East 1st Round - Game 5"
+	},
+	{
+		"league": "nhl",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "East 1st Round - Game 6"
+	},
+	{
+		"league": "nhl",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "East 1st Round - Game 7"
+	},
+	{
+		"league": "nhl",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "East 2nd Round - Game 1"
+	},
+	{
+		"league": "nhl",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "East 2nd Round - Game 2"
+	},
+	{
+		"league": "nhl",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "East 2nd Round - Game 3"
+	},
+	{
+		"league": "nhl",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "East 2nd Round - Game 4"
+	},
+	{
+		"league": "nhl",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "East 2nd Round - Game 5"
+	},
+	{
+		"league": "nhl",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "East 2nd Round - Game 6"
+	},
+	{
+		"league": "nhl",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "East 2nd Round - Game 7"
+	},
+	{
+		"league": "nhl",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "East Final - Game 1"
+	},
+	{
+		"league": "nhl",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "East Final - Game 2"
+	},
+	{
+		"league": "nhl",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "East Final - Game 3"
+	},
+	{
+		"league": "nhl",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "East Final - Game 4"
+	},
+	{
+		"league": "nhl",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "East Final - Game 5"
+	},
+	{
+		"league": "nhl",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "Stanley Cup Final - Game 1"
+	},
+	{
+		"league": "nhl",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "Stanley Cup Final - Game 2"
+	},
+	{
+		"league": "nhl",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "Stanley Cup Final - Game 3"
+	},
+	{
+		"league": "nhl",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "Stanley Cup Final - Game 4"
+	},
+	{
+		"league": "nhl",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "Stanley Cup Final - Game 5"
+	},
+	{
+		"league": "nhl",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "Stanley Cup Final - Game 6"
+	},
+	{
+		"league": "nhl",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "West 1st Round - Game 1"
+	},
+	{
+		"league": "nhl",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "West 1st Round - Game 2"
+	},
+	{
+		"league": "nhl",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "West 1st Round - Game 3"
+	},
+	{
+		"league": "nhl",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "West 1st Round - Game 4"
+	},
+	{
+		"league": "nhl",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "West 1st Round - Game 5"
+	},
+	{
+		"league": "nhl",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "West 1st Round - Game 6"
+	},
+	{
+		"league": "nhl",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "West 2nd Round - Game 1"
+	},
+	{
+		"league": "nhl",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "West 2nd Round - Game 2"
+	},
+	{
+		"league": "nhl",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "West 2nd Round - Game 3"
+	},
+	{
+		"league": "nhl",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "West 2nd Round - Game 4"
+	},
+	{
+		"league": "nhl",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "West 2nd Round - Game 5"
+	},
+	{
+		"league": "nhl",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "West 2nd Round - Game 6"
+	},
+	{
+		"league": "nhl",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "West Final - Game 1"
+	},
+	{
+		"league": "nhl",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "West Final - Game 2"
+	},
+	{
+		"league": "nhl",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "West Final - Game 3"
+	},
+	{
+		"league": "nhl",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "West Final - Game 4"
+	},
+	{
+		"league": "nwsl",
+		"seasonType": 13232,
+		"seasonSlug": "playoffs---championship",
+		"noteType": null,
+		"headline": null
+	},
+	{
+		"league": "nwsl",
+		"seasonType": 13233,
+		"seasonSlug": "playoffs---semifinals",
+		"noteType": null,
+		"headline": null
+	},
+	{
+		"league": "nwsl",
+		"seasonType": 13234,
+		"seasonSlug": "playoffs---quarterfinals",
+		"noteType": null,
+		"headline": null
+	},
+	{
+		"league": "nwsl",
+		"seasonType": 13234,
+		"seasonSlug": "playoffs---quarterfinals",
+		"noteType": "event",
+		"headline": "Washington Spirit advance 3-1 on penalties"
+	},
+	{
+		"league": "nwsl",
+		"seasonType": 13235,
+		"seasonSlug": "regular-season",
+		"noteType": null,
+		"headline": null
+	},
+	{
+		"league": "olybkm",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "2024 Olympic Men's Basketball - Bronze Medal Game"
+	},
+	{
+		"league": "olybkm",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "2024 Olympic Men's Basketball - Gold Medal Game"
+	},
+	{
+		"league": "olybkm",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "2024 Olympic Men's Basketball - Group A"
+	},
+	{
+		"league": "olybkm",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "2024 Olympic Men's Basketball - Group B"
+	},
+	{
+		"league": "olybkm",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "2024 Olympic Men's Basketball - Group C"
+	},
+	{
+		"league": "olybkm",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "2024 Olympic Men's Basketball - Quarterfinal"
+	},
+	{
+		"league": "olybkm",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "2024 Olympic Men's Basketball - Semifinal"
+	},
+	{
+		"league": "olybkw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "2024 Olympic Women's Basketball - Bronze Medal Game"
+	},
+	{
+		"league": "olybkw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "2024 Olympic Women's Basketball - Gold Medal Game"
+	},
+	{
+		"league": "olybkw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "2024 Olympic Women's Basketball - Group A"
+	},
+	{
+		"league": "olybkw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "2024 Olympic Women's Basketball - Group B"
+	},
+	{
+		"league": "olybkw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "2024 Olympic Women's Basketball - Group C"
+	},
+	{
+		"league": "olybkw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "2024 Olympic Women's Basketball - Quarterfinal"
+	},
+	{
+		"league": "olybkw",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "2024 Olympic Women's Basketball - Semifinal"
+	},
+	{
+		"league": "olymih",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Milano Cortina 2026 Men's Hockey - Bronze Medal Game"
+	},
+	{
+		"league": "olymih",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Milano Cortina 2026 Men's Hockey - Gold Medal Game"
+	},
+	{
+		"league": "olymih",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Milano Cortina 2026 Men's Hockey - Preliminary Round - Group A"
+	},
+	{
+		"league": "olymih",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Milano Cortina 2026 Men's Hockey - Preliminary Round - Group B"
+	},
+	{
+		"league": "olymih",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Milano Cortina 2026 Men's Hockey - Preliminary Round - Group C"
+	},
+	{
+		"league": "olymih",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Milano Cortina 2026 Men's Hockey - Qualifications"
+	},
+	{
+		"league": "olymih",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Milano Cortina 2026 Men's Hockey - Quarterfinal"
+	},
+	{
+		"league": "olymih",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Milano Cortina 2026 Men's Hockey - Semifinal"
+	},
+	{
+		"league": "olysocm",
+		"seasonType": 12488,
+		"seasonSlug": "gold-medal-match",
+		"noteType": null,
+		"headline": null
+	},
+	{
+		"league": "olysocm",
+		"seasonType": 12489,
+		"seasonSlug": "bronze-medal-match",
+		"noteType": null,
+		"headline": null
+	},
+	{
+		"league": "olysocm",
+		"seasonType": 12490,
+		"seasonSlug": "semifinals",
+		"noteType": null,
+		"headline": null
+	},
+	{
+		"league": "olysocm",
+		"seasonType": 12491,
+		"seasonSlug": "quarterfinals",
+		"noteType": "event",
+		"headline": "Egypt U23 advance 5-4 on penalties"
+	},
+	{
+		"league": "olysocm",
+		"seasonType": 12491,
+		"seasonSlug": "quarterfinals",
+		"noteType": null,
+		"headline": null
+	},
+	{
+		"league": "olysocm",
+		"seasonType": 12492,
+		"seasonSlug": "group-stage",
+		"noteType": null,
+		"headline": null
+	},
+	{
+		"league": "olysocw",
+		"seasonType": 12483,
+		"seasonSlug": "gold-medal-match",
+		"noteType": null,
+		"headline": null
+	},
+	{
+		"league": "olysocw",
+		"seasonType": 12484,
+		"seasonSlug": "bronze-medal-match",
+		"noteType": null,
+		"headline": null
+	},
+	{
+		"league": "olysocw",
+		"seasonType": 12485,
+		"seasonSlug": "semifinals",
+		"noteType": null,
+		"headline": null
+	},
+	{
+		"league": "olysocw",
+		"seasonType": 12486,
+		"seasonSlug": "quarterfinals",
+		"noteType": "event",
+		"headline": "Germany advance 4-2 on penalties"
+	},
+	{
+		"league": "olysocw",
+		"seasonType": 12486,
+		"seasonSlug": "quarterfinals",
+		"noteType": null,
+		"headline": null
+	},
+	{
+		"league": "olysocw",
+		"seasonType": 12486,
+		"seasonSlug": "quarterfinals",
+		"noteType": "event",
+		"headline": "Spain advance 4-2 on penalties"
+	},
+	{
+		"league": "olywih",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Milano Cortina 2026 Women's Hockey - Bronze Medal Game"
+	},
+	{
+		"league": "olywih",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Milano Cortina 2026 Women's Hockey - Gold Medal Game"
+	},
+	{
+		"league": "olywih",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Milano Cortina 2026 Women's Hockey - Preliminary Round - Group A"
+	},
+	{
+		"league": "olywih",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Milano Cortina 2026 Women's Hockey - Preliminary Round - Group B"
+	},
+	{
+		"league": "olywih",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Milano Cortina 2026 Women's Hockey - Quarterfinal"
+	},
+	{
+		"league": "olywih",
+		"seasonType": 2,
+		"seasonSlug": "regular-season",
+		"noteType": "event",
+		"headline": "Milano Cortina 2026 Women's Hockey - Semifinal"
+	},
+	{
+		"league": "ucl",
+		"seasonType": 13677,
+		"seasonSlug": "final",
+		"noteType": "event",
+		"headline": "Paris Saint-Germain win 4-3 on penalties"
+	},
+	{
+		"league": "ucl",
+		"seasonType": 13678,
+		"seasonSlug": "semifinals",
+		"noteType": "event",
+		"headline": "1st Leg"
+	},
+	{
+		"league": "ucl",
+		"seasonType": 13678,
+		"seasonSlug": "semifinals",
+		"noteType": "event",
+		"headline": "2nd Leg - Arsenal advance 2-1 on aggregate"
+	},
+	{
+		"league": "ucl",
+		"seasonType": 13678,
+		"seasonSlug": "semifinals",
+		"noteType": "event",
+		"headline": "2nd Leg - Paris Saint-Germain advance 6-5 on aggregate"
+	},
+	{
+		"league": "ucl",
+		"seasonType": 13679,
+		"seasonSlug": "quarterfinals",
+		"noteType": "event",
+		"headline": "1st Leg"
+	},
+	{
+		"league": "ucl",
+		"seasonType": 13679,
+		"seasonSlug": "quarterfinals",
+		"noteType": "event",
+		"headline": "2nd Leg - Arsenal advance 1-0 on aggregate"
+	},
+	{
+		"league": "ucl",
+		"seasonType": 13679,
+		"seasonSlug": "quarterfinals",
+		"noteType": "event",
+		"headline": "2nd Leg - Atlético Madrid advance 3-2 on aggregate"
+	},
+	{
+		"league": "ucl",
+		"seasonType": 13679,
+		"seasonSlug": "quarterfinals",
+		"noteType": "event",
+		"headline": "2nd Leg - Bayern Munich advance 6-4 on aggregate"
+	},
+	{
+		"league": "ucl",
+		"seasonType": 13679,
+		"seasonSlug": "quarterfinals",
+		"noteType": "event",
+		"headline": "2nd Leg - Paris Saint-Germain advance 4-0 on aggregate"
+	},
+	{
+		"league": "ucl",
+		"seasonType": 13680,
+		"seasonSlug": "round-of-16",
+		"noteType": "event",
+		"headline": "1st Leg"
+	},
+	{
+		"league": "ucl",
+		"seasonType": 13680,
+		"seasonSlug": "round-of-16",
+		"noteType": "event",
+		"headline": "2nd Leg - Arsenal advance 3-1 on aggregate"
+	},
+	{
+		"league": "ucl",
+		"seasonType": 13680,
+		"seasonSlug": "round-of-16",
+		"noteType": "event",
+		"headline": "2nd Leg - Atlético Madrid advance 7-5 on aggregate"
+	},
+	{
+		"league": "ucl",
+		"seasonType": 13680,
+		"seasonSlug": "round-of-16",
+		"noteType": "event",
+		"headline": "2nd Leg - Barcelona advance 8-3 on aggregate"
+	},
+	{
+		"league": "ucl",
+		"seasonType": 13680,
+		"seasonSlug": "round-of-16",
+		"noteType": "event",
+		"headline": "2nd Leg - Bayern Munich advance 10-2 on aggregate"
+	},
+	{
+		"league": "ucl",
+		"seasonType": 13680,
+		"seasonSlug": "round-of-16",
+		"noteType": "event",
+		"headline": "2nd Leg - Liverpool advance 4-1 on aggregate"
+	},
+	{
+		"league": "ucl",
+		"seasonType": 13680,
+		"seasonSlug": "round-of-16",
+		"noteType": "event",
+		"headline": "2nd Leg - Paris Saint-Germain advance 8-2 on aggregate"
+	},
+	{
+		"league": "ucl",
+		"seasonType": 13680,
+		"seasonSlug": "round-of-16",
+		"noteType": "event",
+		"headline": "2nd Leg - Real Madrid advance 5-1 on aggregate"
+	},
+	{
+		"league": "ucl",
+		"seasonType": 13680,
+		"seasonSlug": "round-of-16",
+		"noteType": "event",
+		"headline": "2nd Leg - Sporting CP advance 5-3 on aggregate"
+	},
+	{
+		"league": "ucl",
+		"seasonType": 13681,
+		"seasonSlug": "knockout-round-playoffs",
+		"noteType": "event",
+		"headline": "1st Leg"
+	},
+	{
+		"league": "ucl",
+		"seasonType": 13681,
+		"seasonSlug": "knockout-round-playoffs",
+		"noteType": "event",
+		"headline": "2nd Leg - Atalanta advance 4-3 on aggregate"
+	},
+	{
+		"league": "ucl",
+		"seasonType": 13681,
+		"seasonSlug": "knockout-round-playoffs",
+		"noteType": "event",
+		"headline": "2nd Leg - Atlético Madrid advance 7-4 on aggregate"
+	},
+	{
+		"league": "ucl",
+		"seasonType": 13681,
+		"seasonSlug": "knockout-round-playoffs",
+		"noteType": "event",
+		"headline": "2nd Leg - Bayer Leverkusen advance 2-0 on aggregate"
+	},
+	{
+		"league": "ucl",
+		"seasonType": 13681,
+		"seasonSlug": "knockout-round-playoffs",
+		"noteType": "event",
+		"headline": "2nd Leg - Bodo/Glimt advance 5-2 on aggregate"
+	},
+	{
+		"league": "ucl",
+		"seasonType": 13681,
+		"seasonSlug": "knockout-round-playoffs",
+		"noteType": "event",
+		"headline": "2nd Leg - Galatasaray advance 7-5 on aggregate"
+	},
+	{
+		"league": "ucl",
+		"seasonType": 13681,
+		"seasonSlug": "knockout-round-playoffs",
+		"noteType": "event",
+		"headline": "2nd Leg - Newcastle United advance 9-3 on aggregate"
+	},
+	{
+		"league": "ucl",
+		"seasonType": 13681,
+		"seasonSlug": "knockout-round-playoffs",
+		"noteType": "event",
+		"headline": "2nd Leg - Paris Saint-Germain advance 5-4 on aggregate"
+	},
+	{
+		"league": "ucl",
+		"seasonType": 13681,
+		"seasonSlug": "knockout-round-playoffs",
+		"noteType": "event",
+		"headline": "2nd Leg - Real Madrid advance 3-1 on aggregate"
+	},
+	{
+		"league": "uel",
+		"seasonType": 13683,
+		"seasonSlug": "final",
+		"noteType": null,
+		"headline": null
+	},
+	{
+		"league": "uel",
+		"seasonType": 13684,
+		"seasonSlug": "semifinals",
+		"noteType": "event",
+		"headline": "1st Leg"
+	},
+	{
+		"league": "uel",
+		"seasonType": 13684,
+		"seasonSlug": "semifinals",
+		"noteType": "event",
+		"headline": "2nd Leg - Aston Villa advance 4-1 on aggregate"
+	},
+	{
+		"league": "uel",
+		"seasonType": 13684,
+		"seasonSlug": "semifinals",
+		"noteType": "event",
+		"headline": "2nd Leg - SC Freiburg advance 4-3 on aggregate"
+	},
+	{
+		"league": "uel",
+		"seasonType": 13685,
+		"seasonSlug": "quarterfinals",
+		"noteType": "event",
+		"headline": "1st Leg"
+	},
+	{
+		"league": "uel",
+		"seasonType": 13685,
+		"seasonSlug": "quarterfinals",
+		"noteType": "event",
+		"headline": "2nd Leg - Aston Villa advance 7-1 on aggregate"
+	},
+	{
+		"league": "uel",
+		"seasonType": 13685,
+		"seasonSlug": "quarterfinals",
+		"noteType": "event",
+		"headline": "2nd Leg - Braga advance 5-3 on aggregate"
+	},
+	{
+		"league": "uel",
+		"seasonType": 13685,
+		"seasonSlug": "quarterfinals",
+		"noteType": "event",
+		"headline": "2nd Leg - Nottingham Forest advance 2-1 on aggregate"
+	},
+	{
+		"league": "uel",
+		"seasonType": 13685,
+		"seasonSlug": "quarterfinals",
+		"noteType": "event",
+		"headline": "2nd Leg - SC Freiburg advance 6-1 on aggregate"
+	},
+	{
+		"league": "uel",
+		"seasonType": 13686,
+		"seasonSlug": "round-of-16",
+		"noteType": "event",
+		"headline": "1st Leg"
+	},
+	{
+		"league": "uel",
+		"seasonType": 13686,
+		"seasonSlug": "round-of-16",
+		"noteType": "event",
+		"headline": "2nd Leg - Aston Villa advance 3-0 on aggregate"
+	},
+	{
+		"league": "uel",
+		"seasonType": 13686,
+		"seasonSlug": "round-of-16",
+		"noteType": "event",
+		"headline": "2nd Leg - Bologna advance 5-4 on aggregate"
+	},
+	{
+		"league": "uel",
+		"seasonType": 13686,
+		"seasonSlug": "round-of-16",
+		"noteType": "event",
+		"headline": "2nd Leg - Braga advance 4-2 on aggregate"
+	},
+	{
+		"league": "uel",
+		"seasonType": 13686,
+		"seasonSlug": "round-of-16",
+		"noteType": "event",
+		"headline": "2nd Leg - Celta Vigo advance 3-1 on aggregate"
+	},
+	{
+		"league": "uel",
+		"seasonType": 13686,
+		"seasonSlug": "round-of-16",
+		"noteType": "event",
+		"headline": "2nd Leg - FC Porto advance 4-1 on aggregate"
+	},
+	{
+		"league": "uel",
+		"seasonType": 13686,
+		"seasonSlug": "round-of-16",
+		"noteType": "event",
+		"headline": "2nd Leg - Real Betis advance 4-1 on aggregate"
+	},
+	{
+		"league": "uel",
+		"seasonType": 13686,
+		"seasonSlug": "round-of-16",
+		"noteType": "event",
+		"headline": "2nd Leg - SC Freiburg advance 5-2 on aggregate"
+	},
+	{
+		"league": "uel",
+		"seasonType": 13686,
+		"seasonSlug": "round-of-16",
+		"noteType": "event",
+		"headline": "2nd Leg - Tied on aggregate - Nottingham Forest advance 3-0 on penalties"
+	},
+	{
+		"league": "uel",
+		"seasonType": 13687,
+		"seasonSlug": "knockout-round-playoffs",
+		"noteType": "event",
+		"headline": "1st Leg"
+	},
+	{
+		"league": "uel",
+		"seasonType": 13687,
+		"seasonSlug": "knockout-round-playoffs",
+		"noteType": "event",
+		"headline": "2nd Leg - Bologna advance 2-0 on aggregate"
+	},
+	{
+		"league": "uel",
+		"seasonType": 13687,
+		"seasonSlug": "knockout-round-playoffs",
+		"noteType": "event",
+		"headline": "2nd Leg - Celta Vigo advance 3-1 on aggregate"
+	},
+	{
+		"league": "uel",
+		"seasonType": 13687,
+		"seasonSlug": "knockout-round-playoffs",
+		"noteType": "event",
+		"headline": "2nd Leg - Ferencvaros advance 3-2 on aggregate"
+	},
+	{
+		"league": "uel",
+		"seasonType": 13687,
+		"seasonSlug": "knockout-round-playoffs",
+		"noteType": "event",
+		"headline": "2nd Leg - Lille advance 2-1 on aggregate"
+	},
+	{
+		"league": "uel",
+		"seasonType": 13687,
+		"seasonSlug": "knockout-round-playoffs",
+		"noteType": "event",
+		"headline": "2nd Leg - Nottingham Forest advance 4-2 on aggregate"
+	},
+	{
+		"league": "uel",
+		"seasonType": 13687,
+		"seasonSlug": "knockout-round-playoffs",
+		"noteType": "event",
+		"headline": "2nd Leg - Racing Genk advance 6-4 on aggregate"
+	},
+	{
+		"league": "uel",
+		"seasonType": 13687,
+		"seasonSlug": "knockout-round-playoffs",
+		"noteType": "event",
+		"headline": "2nd Leg - Tied on aggregate - Panathinaikos advance 4-3 on penalties"
+	},
+	{
+		"league": "uel",
+		"seasonType": 13687,
+		"seasonSlug": "knockout-round-playoffs",
+		"noteType": "event",
+		"headline": "2nd Leg - VfB Stuttgart advance 4-2 on aggregate"
+	},
+	{
+		"league": "ufl",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "UFL Semifinals"
+	},
+	{
+		"league": "ufl",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "United Bowl"
+	},
+	{
+		"league": "wbbc",
+		"seasonType": 2,
+		"seasonSlug": "1st-round",
+		"noteType": "event",
+		"headline": "2023 World Baseball Classic Pool A"
+	},
+	{
+		"league": "wbbc",
+		"seasonType": 2,
+		"seasonSlug": "1st-round",
+		"noteType": "event",
+		"headline": "2023 World Baseball Classic Pool B"
+	},
+	{
+		"league": "wbbc",
+		"seasonType": 2,
+		"seasonSlug": "1st-round",
+		"noteType": "event",
+		"headline": "2023 World Baseball Classic Pool C"
+	},
+	{
+		"league": "wbbc",
+		"seasonType": 2,
+		"seasonSlug": "1st-round",
+		"noteType": "event",
+		"headline": "2023 World Baseball Classic Pool D"
+	},
+	{
+		"league": "wbbc",
+		"seasonType": 2,
+		"seasonSlug": "1st-round",
+		"noteType": "event",
+		"headline": "2023 World Baseball Classic Pool D Completed Early, Mercy Rule"
+	},
+	{
+		"league": "wbbc",
+		"seasonType": 3,
+		"seasonSlug": "2nd-round",
+		"noteType": "event",
+		"headline": "2023 World Baseball Classic Quarterfinal"
+	},
+	{
+		"league": "wbbc",
+		"seasonType": 5,
+		"seasonSlug": "semi-finals",
+		"noteType": "event",
+		"headline": "2023 World Baseball Classic Semifinal"
+	},
+	{
+		"league": "wbbc",
+		"seasonType": 6,
+		"seasonSlug": "finals",
+		"noteType": "event",
+		"headline": "2023 World Baseball Classic Championship"
+	},
+	{
+		"league": "wnba",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "First Round - Game 1"
+	},
+	{
+		"league": "wnba",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "First Round - Game 2"
+	},
+	{
+		"league": "wnba",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "First Round - Game 3"
+	},
+	{
+		"league": "wnba",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "WNBA FINALS - Game 3"
+	},
+	{
+		"league": "wnba",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "WNBA Finals - Game 1"
+	},
+	{
+		"league": "wnba",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "WNBA Finals - Game 2"
+	},
+	{
+		"league": "wnba",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "WNBA Finals - Game 4"
+	},
+	{
+		"league": "wnba",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "WNBA Semifinals - Game 1"
+	},
+	{
+		"league": "wnba",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "WNBA Semifinals - Game 2"
+	},
+	{
+		"league": "wnba",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "WNBA Semifinals - Game 3"
+	},
+	{
+		"league": "wnba",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "WNBA Semifinals - Game 4"
+	},
+	{
+		"league": "wnba",
+		"seasonType": 3,
+		"seasonSlug": "post-season",
+		"noteType": "event",
+		"headline": "WNBA Semifinals - Game 5"
+	}
+]

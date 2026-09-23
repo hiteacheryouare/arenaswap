@@ -15,6 +15,7 @@ interface SimState {
 const clockTick = 15; // seconds of game time per tick (matches poll interval)
 const preGameTicksBeforeStart = 5;
 const resetPostGameAfterTicks = 4;
+const heldFinalGameIds = new Set(['mock-20']);
 const overtimePeriodSeconds = 300;
 const baseballInningAdvanceChance = 0.15;
 const baseballLateInningThreshold = 7;
@@ -98,8 +99,8 @@ export class MockGameSimulator {
 				id: 'mock-1',
 				league: 'ncaab',
 				sportType: 'basketball',
-				homeTeam: { id: '111', name: 'Northeastern Huskies', abbreviation: 'NU', score: 45, logo: `${espnCdn}/ncaa/500/111.png`, color: '#CC0000' },
-				awayTeam: { id: '104', name: 'Boston University Terriers', abbreviation: 'BU', score: 42, logo: `${espnCdn}/ncaa/500/104.png`, color: '#CC0000' },
+				homeTeam: { id: '111', name: 'Northeastern Huskies', abbreviation: 'NU', score: 45, logo: `${espnCdn}/ncaa/500/111.png`, color: '#CC0000', rank: 8 },
+				awayTeam: { id: '104', name: 'Boston University Terriers', abbreviation: 'BU', score: 42, logo: `${espnCdn}/ncaa/500/104.png`, color: '#CC0000', rank: 15 },
 				venueName: 'Matthews Arena',
 				venueLocation: 'Boston, MA',
 				period: 4, clockSeconds: 162, status: 'in',
@@ -154,6 +155,13 @@ export class MockGameSimulator {
 				topOfInning: false,
 				baseRunners: { first: true, second: false, third: true },
 				bso: { balls: 1, strikes: 0, outs: 1 },
+				// No headshots: the demo slate carries no player portraits, so this is also the
+				// fixture that exercises the panel's initials fallback.
+				atBat: {
+					pitcher: { name: 'Edwin Diaz', jersey: '39', position: 'RP', summary: '0.2 IP, 0 ER, H, BB' },
+					batter: { name: 'Bryce Harper', jersey: '3', position: 'RF', summary: '2-3, 2B, RBI' },
+				},
+				lastPlay: 'Pitch 2 : Ball 1',
 				broadcasts: ['MLB.TV'],
 				weather: { temperatureF: 61, conditionLabel: 'Clear' },
 			},
@@ -161,8 +169,8 @@ export class MockGameSimulator {
 				id: 'mock-5',
 				league: 'nfl',
 				sportType: 'football',
-				homeTeam: { id: '21', name: 'Philadelphia Eagles', abbreviation: 'PHI', score: 17, logo: `${espnCdn}/nfl/500/phi.png`, color: '#004C54' },
-				awayTeam: { id: '6', name: 'Dallas Cowboys', abbreviation: 'DAL', score: 14, logo: `${espnCdn}/nfl/500/dal.png`, color: '#003594' },
+				homeTeam: { id: '21', name: 'Philadelphia Eagles', nickname: 'Eagles', abbreviation: 'PHI', score: 17, logo: `${espnCdn}/nfl/500/phi.png`, color: '#004C54', timeouts: 2 },
+				awayTeam: { id: '6', name: 'Dallas Cowboys', nickname: 'Cowboys', abbreviation: 'DAL', score: 14, logo: `${espnCdn}/nfl/500/dal.png`, color: '#003594', timeouts: 3 },
 				venueName: 'Lincoln Financial Field',
 				venueLocation: 'Philadelphia, PA',
 				period: 4, clockSeconds: 480, status: 'in',
@@ -173,6 +181,8 @@ export class MockGameSimulator {
 				yardLine: 25,
 				possessionTeamId: '21',
 				driveStartYardLine: footballDriveStartYardLine,
+				lastPlay: 'J.Hurts pass short right to D.Smith for 8 yards (T.Diggs).',
+				lastPlayDrive: '3 plays, 12 yards, 1:24',
 				broadcasts: ['NBC', 'Peacock'],
 				// Two of the outdoor demo games snow and two do not, across four different sports.
 				// Snow is gated on the weather reading alone, and the weather belongs to a game
@@ -183,8 +193,8 @@ export class MockGameSimulator {
 				id: 'mock-6',
 				league: 'ncaaf',
 				sportType: 'football',
-				homeTeam: { id: '218', name: 'Temple Owls', abbreviation: 'TEM', score: 0, logo: `${espnCdn}/ncaa/500/218.png`, color: '#9D2235' },
-				awayTeam: { id: '213', name: 'Penn State Nittany Lions', abbreviation: 'PSU', score: 0, logo: `${espnCdn}/ncaa/500/213.png`, color: '#041E42' },
+				homeTeam: { id: '218', name: 'Temple Owls', nickname: 'Owls', abbreviation: 'TEM', score: 0, logo: `${espnCdn}/ncaa/500/218.png`, color: '#9D2235' },
+				awayTeam: { id: '213', name: 'Penn State Nittany Lions', nickname: 'Nittany Lions', abbreviation: 'PSU', score: 0, logo: `${espnCdn}/ncaa/500/213.png`, color: '#041E42' },
 				venueName: 'Lincoln Financial Field',
 				venueLocation: 'Philadelphia, PA',
 				period: 1, clockSeconds: 900, status: 'pre',
@@ -201,8 +211,11 @@ export class MockGameSimulator {
 				id: 'mock-9',
 				league: 'mls',
 				sportType: 'soccer',
-				homeTeam: { id: '190', name: 'Philadelphia Union', abbreviation: 'PHI', score: 2, logo: `${espnCdn}/soccer/500/10739.png`, color: '#051c2c' },
-				awayTeam: { id: '183', name: 'New York Red Bull', abbreviation: 'NYR', score: 1, logo: `${espnCdn}/soccer/500/190.png`, color: '#b91f31' },
+				// The ids are ESPN's own and the logo filenames already carried them: Philadelphia
+				// Union is 10739 and the Red Bulls are 190. They had been transposed, which drew
+				// each side's numbers under the other side's crest on the demo box score.
+				homeTeam: { id: '10739', name: 'Philadelphia Union', abbreviation: 'PHI', score: 2, logo: `${espnCdn}/soccer/500/10739.png`, color: '#051c2c' },
+				awayTeam: { id: '190', name: 'New York Red Bull', abbreviation: 'NYR', score: 1, logo: `${espnCdn}/soccer/500/190.png`, color: '#b91f31' },
 				venueName: 'Subaru Park',
 				venueLocation: 'Chester, PA',
 				period: 2, clockSeconds: 742, status: 'in',
@@ -380,6 +393,28 @@ export class MockGameSimulator {
 				startTime: new Date(Date.now() + 9 * 60 * 60 * 1000).toISOString(),
 				broadcasts: ['NESN'],
 			},
+			// The one game that is already over when demo mode starts, so the wrap screen is
+			// reachable without waiting for a simulated game to run its course. Ten innings, so the
+			// line score has an extra column and the card carries an extra-innings label.
+			//
+			// The same two teams as the live MLB game above, and deliberately: the box score behind
+			// it is a real NYM-at-PHI payload keyed by ESPN's own team ids, so a demo game with any
+			// other pair would draw one matchup in the hero and a different one in the line score.
+			// Two games of the same series is also what a Tuesday in September actually looks like.
+			{
+				id: 'mock-20',
+				league: 'mlb',
+				sportType: 'baseball',
+				homeTeam: { id: '22', name: 'Philadelphia Phillies', abbreviation: 'PHI', score: 3, logo: `${espnCdn}/mlb/500/phi.png`, color: '#E81828', record: '81-63' },
+				awayTeam: { id: '21', name: 'New York Mets', abbreviation: 'NYM', score: 2, logo: `${espnCdn}/mlb/500/nym.png`, color: '#002D72', record: '74-70' },
+				venueName: 'Citizens Bank Park',
+				venueLocation: 'Philadelphia, Pennsylvania',
+				period: 10, clockSeconds: 0, status: 'post',
+				startTime: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
+				attendance: 38416,
+				broadcasts: ['NBCSP'],
+				weather: { temperatureF: 68, conditionLabel: 'Clear' },
+			},
 		];
 
 		this.state = new Map();
@@ -393,6 +428,20 @@ export class MockGameSimulator {
 			});
 		}
 	}
+
+	// Deep copies, so consumers can't mutate internal state.
+	private copies = (): Game[] => this.games.map(g => ({
+		...g,
+		homeTeam: { ...g.homeTeam },
+		awayTeam: { ...g.awayTeam },
+		bso: g.bso ? { ...g.bso } : undefined,
+		atBat: g.atBat ? { pitcher: { ...g.atBat.pitcher }, batter: { ...g.atBat.batter } } : undefined,
+	}));
+
+	// The slate as constructed, before any tick has advanced it. Anything that needs the shipped
+	// demo games reads them from here: a test that redeclares them by hand is how the soccer
+	// game's team ids and its box-score fixture drifted apart with every test still green.
+	seed = (): Game[] => this.copies();
 
 	tick = (): Game[] => {
 		for (const game of this.games) {
@@ -410,13 +459,7 @@ export class MockGameSimulator {
 			}
 		}
 
-		// Deep copies, so consumers can't mutate internal state.
-		return this.games.map(g => ({
-			...g,
-			homeTeam: { ...g.homeTeam },
-			awayTeam: { ...g.awayTeam },
-			bso: g.bso ? { ...g.bso } : undefined,
-		}));
+		return this.copies();
 	};
 
 	private advanceLive = (game: Game, simState: SimState): void => {
@@ -530,6 +573,10 @@ export class MockGameSimulator {
 	};
 
 	private advancePost = (game: Game, simState: SimState): void => {
+		// Every other finished game is put back to live after a few ticks, which is what makes a
+		// game ending watchable. The wrap screen is the opposite: it cannot be read at all if the
+		// game restarts underneath the reader, so this one stays finished.
+		if (heldFinalGameIds.has(game.id)) return;
 		simState.postTicks++;
 		if (simState.postTicks >= resetPostGameAfterTicks) {
 			const leagueConfig = leagueConfigMap[game.league];

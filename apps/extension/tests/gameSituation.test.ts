@@ -1,6 +1,6 @@
 import { i18n } from '#i18n';
 import type { Game } from '@arenaswap/core/types';
-import { resolveStatusText } from '../entrypoints/popup/components/gameSituation';
+import { resolveStatus } from '../entrypoints/popup/components/gameSituation';
 
 const t = i18n.t;
 
@@ -16,42 +16,52 @@ const makeGame = (overrides: Partial<Game> = {}): Game => ({
 	...overrides,
 });
 
-describe('resolveStatusText', () => {
+describe('resolveStatus', () => {
 	test('shows period and clock for a live clock sport', () => {
-		expect(resolveStatusText(makeGame(), false, t)).toBe('Q3 • 6:40');
+		expect(resolveStatus(makeGame(), false, t).text).toBe('Q3 • 6:40');
 	});
 
 	test('shows the inning without a clock for inning sports', () => {
 		const game = makeGame({ league: 'mlb', sportType: 'baseball', period: 7 });
-		expect(resolveStatusText(game, true, t)).toBe('Inn 7');
+		expect(resolveStatus(game, true, t).text).toBe('Inn 7');
 	});
 
 	test('formats overtime', () => {
-		expect(resolveStatusText(makeGame({ period: 5 }), false, t)).toBe('OT1 • 6:40');
+		expect(resolveStatus(makeGame({ period: 5 }), false, t).text).toBe('OT1 • 6:40');
 	});
 
 	test('says halftime rather than showing a frozen clock', () => {
-		expect(resolveStatusText(makeGame({ intermission: true, period: 2 }), false, t)).toBe('Halftime');
+		expect(resolveStatus(makeGame({ intermission: true, period: 2 }), false, t).text).toBe('Halftime');
 	});
 
 	test('says intermission outside the midpoint break', () => {
-		expect(resolveStatusText(makeGame({ intermission: true, period: 3 }), false, t)).toBe('Intermission');
+		expect(resolveStatus(makeGame({ intermission: true, period: 3 }), false, t).text).toBe('Intermission');
 	});
 
 	test('a delay outranks the clock and keeps ESPN\'s description', () => {
 		const game = makeGame({ delayed: true, delayDescription: 'Rain Delay', intermission: true });
-		expect(resolveStatusText(game, false, t)).toBe('Rain Delay');
+		expect(resolveStatus(game, false, t).text).toBe('Rain Delay');
 	});
 
 	test('falls back to the shared delay label when ESPN gives no description', () => {
-		expect(resolveStatusText(makeGame({ delayed: true }), false, t)).toBe('Delay');
+		expect(resolveStatus(makeGame({ delayed: true }), false, t).text).toBe('Delay');
 	});
 
 	test('reads Final once the game is over', () => {
-		expect(resolveStatusText(makeGame({ status: 'post' }), false, t)).toBe('Final');
+		expect(resolveStatus(makeGame({ status: 'post' }), false, t).text).toBe('Final');
 	});
 
 	test('is empty before tip-off', () => {
-		expect(resolveStatusText(makeGame({ status: 'pre' }), false, t)).toBe('');
+		expect(resolveStatus(makeGame({ status: 'pre' }), false, t).text).toBe('');
+	});
+
+	// The caller picks the face off this, so a state that says a word has to admit it is not a figure.
+	test('marks the clock and the inning as tabular and the words as not', () => {
+		expect(resolveStatus(makeGame(), false, t).tabular).toBe(true);
+		expect(resolveStatus(makeGame({ league: 'mlb', sportType: 'baseball' }), true, t).tabular).toBe(true);
+		expect(resolveStatus(makeGame({ intermission: true, period: 2 }), false, t).tabular).toBe(false);
+		expect(resolveStatus(makeGame({ intermission: true, period: 3 }), false, t).tabular).toBe(false);
+		expect(resolveStatus(makeGame({ status: 'post' }), false, t).tabular).toBe(false);
+		expect(resolveStatus(makeGame({ delayed: true }), false, t).tabular).toBe(false);
 	});
 });

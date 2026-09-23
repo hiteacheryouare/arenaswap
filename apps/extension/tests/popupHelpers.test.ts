@@ -1,5 +1,6 @@
 import {
 	buildFavoritePinnedComparator,
+	buildFinalComparator,
 	buildLeagueRank,
 	buildUpcomingComparator,
 	byLeague,
@@ -330,6 +331,7 @@ describe('normalizeBackgroundState', () => {
 			gameBoosts: {},
 			onStandbyStream: false,
 			standbyStreamTabId: null,
+			slateShedLeagues: [],
 		};
 		expect(normalizeBackgroundState(null)).toEqual(emptyState);
 		expect(normalizeBackgroundState(undefined)).toEqual(emptyState);
@@ -412,3 +414,84 @@ describe('resolveSelectedDayIndex', () => {
 		expect(index).toBeLessThanOrEqual(0);
 	});
 });
+
+// The venue address, the pre-game competitor block and `situation.possession` were each lost to a
+// schema that silently dropped what it had not declared. `games` goes through a bare Array.isArray
+// rather than a Zod object, so nothing is stripped — but that is worth pinning for the two fields
+// finished games depend on, since neither has any other route to the popup.
+describe('a finished game surviving the trip from the background', () => {
+	test('keeps its attendance and its start time', () => {
+		const game = makeGame({
+			id: 'wrapped',
+			status: 'post',
+			startTime: '2026-09-06T16:10:00.000Z',
+			attendance: 42793,
+		});
+		const state = normalizeBackgroundState({
+			games: [game],
+			scores: [],
+			leagueLogos: {},
+			scoreHistory: {},
+			powerScoreHistory: {},
+			gameBoosts: {},
+			onStandbyStream: false,
+			standbyStreamTabId: null,
+		});
+		expect(state.games[0]?.attendance).toBe(42793);
+		expect(state.games[0]?.startTime).toBe('2026-09-06T16:10:00.000Z');
+		expect(state.games[0]?.status).toBe('post');
+	});
+});
+
+describe('buildFinalComparator', () => {
+	const rank = buildLeagueRank(['nba', 'nfl', 'mlb']);
+	// Same sport, so the wrap allowance is identical and only the start times separate them.
+	const finished = (id: string, startIso: string, league: LeagueId = 'nba'): Game => makeGame({
+		id, league, sportType: 'basketball', status: 'post', startTime: startIso,
+	});
+
+	test('the most recently wrapped game comes first', () => {
+		const games = [
+			finished('early', '2026-09-06T16:00:00.000Z'),
+			finished('late', '2026-09-06T23:00:00.000Z'),
+			finished('middle', '2026-09-06T19:30:00.000Z'),
+		];
+		expect(games.toSorted(buildFinalComparator(rank)).map(g => g.id))
+			.toEqual(['late', 'middle', 'early']);
+	});
+
+	test('a longer sport wrapping later beats an earlier start', () => {
+		// Kicked off half an hour before the basketball game and still ended after it.
+		const football = makeGame({
+			id: 'nfl', league: 'nfl', sportType: 'football', status: 'post',
+			startTime: '2026-09-06T20:00:00.000Z',
+		});
+		const basketball = finished('nba', '2026-09-06T20:30:00.000Z');
+		expect([basketball, football].toSorted(buildFinalComparator(rank)).map(g => g.id))
+			.toEqual(['nfl', 'nba']);
+	});
+
+	test('games wrapping together fall back to the league order the user set', () => {
+		const games = [
+			finished('c', '2026-09-06T20:00:00.000Z', 'mlb'),
+			finished('a', '2026-09-06T20:00:00.000Z', 'nba'),
+			finished('b', '2026-09-06T20:00:00.000Z', 'nfl'),
+		];
+		expect(games.toSorted(buildFinalComparator(rank)).map(g => g.id)).toEqual(['a', 'b', 'c']);
+	});
+
+	test('and then to the id, so the order never depends on how the list arrived', () => {
+		const first = finished('aaa', '2026-09-06T20:00:00.000Z');
+		const second = finished('bbb', '2026-09-06T20:00:00.000Z');
+		expect([second, first].toSorted(buildFinalComparator(rank)).map(g => g.id)).toEqual(['aaa', 'bbb']);
+		expect([first, second].toSorted(buildFinalComparator(rank)).map(g => g.id)).toEqual(['aaa', 'bbb']);
+	});
+
+	test('a league the user has since switched off sorts last rather than first', () => {
+		const enabled = finished('enabled', '2026-09-06T20:00:00.000Z', 'nba');
+		const dropped = finished('dropped', '2026-09-06T20:00:00.000Z', 'nhl');
+		expect([dropped, enabled].toSorted(buildFinalComparator(rank)).map(g => g.id))
+			.toEqual(['enabled', 'dropped']);
+	});
+});
+

@@ -1,3 +1,7 @@
+// Reads $secondary-on-light off the theme.
+@use '@arenaswap/ui/src/bootstrap' as bs;
+@use '@arenaswap/ui/src/motion' as m;
+
 // The hero: a Chrome window on macOS with three streams open and the popup running inside it.
 //
 // Drawn to Chrome's actual anatomy rather than to a generic idea of a browser, because the point of
@@ -96,7 +100,7 @@ $popup-overhang: 150px;
 	font-size: 0.76rem;
 	color: $chrome-icon;
 	background: transparent;
-	transition: background 0.28s ease, color 0.28s ease;
+	transition: background m.$motion-base m.$motion-ease, color m.$motion-base m.$motion-ease;
 
 	// Chrome divides inactive tabs with a short hairline instead of giving each one a box.
 	& + &::before {
@@ -147,7 +151,7 @@ $popup-overhang: 150px;
 	height: $tab-radius;
 	background: radial-gradient(circle at 100% 0, transparent $tab-radius, $chrome-toolbar $tab-radius);
 	opacity: 0;
-	transition: opacity 0.28s ease;
+	transition: opacity m.$motion-base m.$motion-ease;
 
 	.browser-tab.is-active & {
 		opacity: 1;
@@ -312,7 +316,7 @@ $popup-overhang: 150px;
 	height: 1.4rem;
 	margin-left: 0.2rem;
 	border-radius: 50%;
-	background: linear-gradient(140deg, #3E9BD1, $secondary-on-light);
+	background: linear-gradient(140deg, #3E9BD1, bs.$secondary-on-light);
 	box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.15);
 }
 
@@ -348,7 +352,7 @@ $popup-overhang: 150px;
 	opacity: 0;
 	// Held back so the popup keeps its contrast over whatever is playing underneath it.
 	filter: brightness(0.72) saturate(0.94);
-	transition: opacity 0.45s ease;
+	transition: opacity m.$motion-slow m.$motion-ease;
 
 	&.is-active {
 		opacity: 1;

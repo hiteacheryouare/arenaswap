@@ -1,6 +1,6 @@
 {
 	"name": "powerscore",
-	"version": "2.1.1",
+	"version": "2.2.0",
 	"description": "The PowerScore excitement scoring engine for live sports games",
 	"type": "module",
 	"main": "./dist/index.js",
@@ -24,6 +24,7 @@
 		"prepack": "npm run build",
 		"test": "npm run test:unit",
 		"test:unit": "jest --passWithNoTests --selectProjects unit",
+		"test:coverage": "jest --passWithNoTests --selectProjects unit --coverage",
 		"typecheck": "tsc --noEmit && tsc --noEmit -p tests",
 		"lint": "oxlint ."
 	},
@@ -51,8 +52,8 @@
 	},
 	"devDependencies": {
 		"@types/jest": "^30.0.0",
-		"jest": "^30.5.1",
-		"rolldown": "^1.2.7",
+		"jest": "^30.5.2",
+		"rolldown": "^1.2.9",
 		"typescript": "^7.0.2"
 	}
 }

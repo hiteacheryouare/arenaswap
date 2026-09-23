@@ -1,4 +1,4 @@
-import { nextTemperatureUnit, romerUnlockClicks, romerUnlockWindowMs } from '../utils/temperatureUnitCycle';
+import { nextTemperatureUnit } from '../utils/temperatureUnitCycle';
 
 const lap = (unlocked: boolean, steps: number) => {
 	let unit = nextTemperatureUnit('F', unlocked);
@@ -25,10 +25,5 @@ describe('nextTemperatureUnit', () => {
 	test('lands back where it started after a full lap of either cycle', () => {
 		expect(lap(false, 2)).toBe('F');
 		expect(lap(true, 3)).toBe('F');
-	});
-
-	test('the unlock gesture is seven clicks in three seconds', () => {
-		expect(romerUnlockClicks).toBe(7);
-		expect(romerUnlockWindowMs).toBe(3000);
 	});
 });

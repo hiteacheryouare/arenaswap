@@ -1,13 +1,18 @@
-import { leagueLogoFallbacks } from '../src/constants';
+import { allLeagueIds, leagueLogoFallbacks, pollMinEagerMs } from '../src/constants';
+import { buildCurrentDayKeys } from '../src/apiClient';
 
 interface MockResponseInit {
 	ok?: boolean;
 	status?: number;
+	cacheControl?: string;
 }
 
 const createResponse = (data: unknown, init: MockResponseInit = {}): Response => ({
 	ok: init.ok ?? true,
 	status: init.status ?? 200,
+	// `fetchScoreboard` reads `cache-control` off every response to learn how often ESPN will answer
+	// with something new, so a double without headers is not standing in for a Response.
+	headers: new Headers(init.cacheControl ? { 'cache-control': init.cacheControl } : {}),
 	json: async () => data,
 } as Response);
 
@@ -26,6 +31,8 @@ const makeEvent = (params: {
 	season?: Record<string, unknown>;
 	notes?: Record<string, unknown>[];
 	venue?: Record<string, unknown>;
+	weather?: Record<string, unknown>;
+	attendance?: number;
 	homeShootoutScore?: number;
 	awayShootoutScore?: number;
 	// Merged into the competitor, for the per-competitor blocks ESPN only sends on some sports:
@@ -35,6 +42,7 @@ const makeEvent = (params: {
 }): Record<string, unknown> => ({
 	id: params.id,
 	date: params.date ?? '2026-10-05T00:00:00.000Z',
+	...(params.weather !== undefined && { weather: params.weather }),
 	...(params.season !== undefined && { season: params.season }),
 	competitions: [
 		{
@@ -80,6 +88,7 @@ const makeEvent = (params: {
 			situation: params.situation,
 			...(params.notes !== undefined && { notes: params.notes }),
 			venue: params.venue ?? { fullName: 'Arena Name' },
+			...(params.attendance !== undefined && { attendance: params.attendance }),
 			broadcasts: [{ names: [' ESPN ', 'ESPN'] }],
 			geoBroadcasts: [{ media: { shortName: 'ESPN2' } }],
 			odds: params.withOdds === false
@@ -103,22 +112,34 @@ const getCompetition = (event: Record<string, unknown>): Record<string, unknown>
 	(event.competitions as Record<string, unknown>[])[0]!
 );
 
+const dateOf = (url: unknown): string => new URL(String(url)).searchParams.get('dates') ?? '';
+
+/* A window is one request per Eastern day, so a chain of `mockResolvedValueOnce` runs out and
+   resolves `undefined` on the day after its last entry. The chains below list the days they care
+   about and then fall back to this, which is what a day with nothing scheduled answers with anyway. */
+const emptyDay = () => createResponse({ events: [] });
+
+// One Eastern day per request now, so the days a fan-out asked for are read off the calls rather
+// than split out of a single range string.
+const datesAsked = (fetchMock: jest.Mock): string[] => [...new Set(fetchMock.mock.calls
+	.map(([url]) => dateOf(url))
+	.filter(dates => dates !== ''))].toSorted();
+
 const toUrl = (input: RequestInfo | URL): string => {
 	if (typeof input === 'string') return input;
 	if (input instanceof URL) return input.toString();
 	return input.url;
 };
 
-/* The upcoming window is one request per Eastern day now, so a chain of `mockResolvedValueOnce`
-   runs out and resolves `undefined` on the day after its last entry. The chains below list the days
-   they care about and then fall back to this, which is what a day with nothing scheduled answers
-   with anyway. */
-const emptyDay = () => createResponse({ events: [] });
-
 const loadApiClient = (): typeof import('../src/apiClient') => {
 	jest.resetModules();
 	return require('../src/apiClient') as typeof import('../src/apiClient');
 };
+
+/* Every scoreboard request names exactly one Eastern day, because ESPN stopped answering for a
+   span. So a mock says which day it is answering rather than relying on call order, and the live
+   days are the near end of whatever window was asked for rather than a request of their own. */
+const isLivePoll = (url: string): boolean => buildCurrentDayKeys().includes(dateOf(url));
 
 const mockSingleEvent = (event: Record<string, unknown>) => {
 	const fetchMock = jest.fn().mockResolvedValue(createResponse({ events: [event] }));
@@ -144,7 +165,7 @@ describe('apiClient', () => {
 		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
 
 		const { fetchGamesWithLeagueLogos, fetchGames } = loadApiClient();
-		expect(await fetchGamesWithLeagueLogos([])).toEqual({ games: [], leagueLogos: {} });
+		expect(await fetchGamesWithLeagueLogos([])).toEqual({ games: [], leagueLogos: {}, shedLeagues: [] });
 		expect(await fetchGames([])).toEqual([]);
 		expect(fetchMock).not.toHaveBeenCalled();
 	});
@@ -355,13 +376,11 @@ describe('apiClient', () => {
 		await fetchGamesWithLeagueLogos(['nba'], { includeUpcoming: true, upcomingDays: 3 });
 
 		// TZ is UTC in these tests, so the viewer's Sep 5 through Sep 8 runs from 20:00 Eastern on
-		// Sep 4 to 19:59 Eastern on Sep 8, which is five Eastern dates for a three day setting —
-		// asked for one at a time now, because ESPN stopped answering for a span.
-		const asked = fetchMock.mock.calls
-			.map(([url]) => new URL(String(url)).searchParams.get('dates'))
-			.filter((dates): dates is string => dates !== null);
-		expect(asked.toSorted()).toEqual([
-			'20260904', '20260905', '20260906', '20260907', '20260908',
+		// Sep 4 to 19:59 Eastern on Sep 8. One window covers that now, and it opens a day earlier
+		// than the slate range used to because the live leg's own reach-back is folded into it —
+		// the same Eastern dates the two ranges named between them, each asked for once.
+		expect(datesAsked(fetchMock)).toEqual([
+			'20260903', '20260904', '20260905', '20260906', '20260907', '20260908',
 		]);
 	});
 
@@ -383,9 +402,13 @@ describe('apiClient', () => {
 		const { fetchGamesWithLeagueLogos } = loadApiClient();
 
 		const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
-		expect(fetchMock).toHaveBeenCalledTimes(1);
+		// The live window and nothing past it: today, plus the day back that still carries a kickoff
+		// filed before Eastern midnight. It names the days rather than leaning on ESPN's undated
+		// board, which in college football is a curated week rather than a full card.
+		expect(datesAsked(fetchMock)).toEqual(buildCurrentDayKeys().toSorted());
+		expect(fetchMock.mock.calls.every(([url]) => isLivePoll(String(url)))).toBe(true);
+		// The same event answered for every day of the window is still one game.
 		expect(result.games).toHaveLength(1);
-		expect(String(fetchMock.mock.calls[0][0])).not.toContain('dates=');
 		expect(result.leagueLogos.mlb).toBe(leagueLogoFallbacks.mlb);
 	});
 
@@ -408,8 +431,11 @@ describe('apiClient', () => {
 		const dec5Game = result.games.find(g => g.id === 'sub-min-dec-5');
 		expect(intGame?.clockSeconds).toBe(45);
 		expect(floatGame?.clockSeconds).toBe(45);
-		expect(dec75Game?.clockSeconds).toBe(45); // 0.75 minutes = 45 seconds
-		expect(dec5Game?.clockSeconds).toBe(30);  // 0.5 minutes = 30 seconds
+		// Seconds, not decimal minutes. Checked against ESPN on 2026-09-21: the basketball leagues
+		// drop the colon under a minute and count down 40.8 -> 0.1, so 0.75 is three quarters of a
+		// second and floors to nothing left, not to 45 seconds.
+		expect(dec75Game?.clockSeconds).toBe(0);
+		expect(dec5Game?.clockSeconds).toBe(0);
 	});
 
 	test('parses soccer prime-notation clock values (e.g. "85\'", "90\'+8\'")', async () => {
@@ -526,118 +552,78 @@ describe('apiClient', () => {
 		});
 	});
 
-	test('filters out post games while combining today and upcoming responses', async () => {
-		const fetchMock = jest.fn().mockResolvedValue(emptyDay())
-			.mockResolvedValueOnce(createResponse({
-				events: [
-					makeEvent({
-						id: 'today-live',
-						state: 'in',
-						period: 3,
-						clock: '1:15',
-						homeScore: '100',
-						awayScore: '98',
-					}),
-					makeEvent({
-						id: 'today-pre',
-						state: 'scheduled',
-						period: 1,
-						clock: '0:00',
-						homeScore: '0',
-						awayScore: '0',
-					}),
-					makeEvent({
-						id: 'today-post',
-						state: 'post',
-						period: 4,
-						clock: '0:00',
-						homeScore: '110',
-						awayScore: '103',
-					}),
-				],
-			}))
-			.mockResolvedValueOnce(createResponse({
-				events: [
-					makeEvent({
-						id: 'upcoming-pre',
-						state: 'pre',
-						period: 1,
-						clock: '0:00',
-						homeScore: '0',
-						awayScore: '0',
-					}),
-					makeEvent({
-						id: 'upcoming-post',
-						state: 'post',
-						period: 4,
-						clock: '0:00',
-						homeScore: '91',
-						awayScore: '90',
-					}),
-				],
-			}));
+	test('filters out post games across every day of the window', async () => {
+		// Keyed on which day is being asked for rather than on call order: the window is many
+		// requests now, so a mock that answered twice and then undefined would crash on day three.
+		const liveDay = [
+			makeEvent({
+				id: 'today-live', state: 'in', period: 3, clock: '1:15', homeScore: '100', awayScore: '98',
+			}),
+			makeEvent({
+				id: 'today-pre', state: 'scheduled', period: 1, clock: '0:00', homeScore: '0', awayScore: '0',
+			}),
+			makeEvent({
+				id: 'today-post', state: 'post', period: 4, clock: '0:00', homeScore: '110', awayScore: '103',
+			}),
+		];
+		const laterDay = [
+			makeEvent({
+				id: 'upcoming-pre', state: 'pre', period: 1, clock: '0:00', homeScore: '0', awayScore: '0',
+			}),
+			makeEvent({
+				id: 'upcoming-post', state: 'post', period: 4, clock: '0:00', homeScore: '91', awayScore: '90',
+			}),
+		];
+		const fetchMock = jest.fn(async (url: string) => createResponse({
+			events: isLivePoll(url) ? liveDay : laterDay,
+		}));
 
 		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
 		const { fetchGamesWithLeagueLogos } = loadApiClient();
 
 		const result = await fetchGamesWithLeagueLogos(['nba']);
-		// The undated board exactly once, and then one request per Eastern day of the window, each
-		// naming a single date: ESPN stopped answering for a span.
-		const asked = fetchMock.mock.calls
-			.map(([url]) => new URL(String(url)).searchParams.get('dates'));
-		expect(asked.filter(dates => dates === null)).toHaveLength(1);
-		const days = asked.filter((dates): dates is string => dates !== null);
-		expect(days.length).toBeGreaterThan(1);
-		expect(new Set(days).size).toBe(days.length);
 		expect(result.games.map(game => game.id).toSorted()).toEqual(['today-live', 'today-pre', 'upcoming-pre']);
 		expect(result.games.some(game => game.status === 'post')).toBe(false);
 	});
 
 	test('adds NCAA basketball groups=50 query parameter', async () => {
-		const fetchMock = jest.fn().mockResolvedValue(emptyDay())
-			.mockResolvedValueOnce(createResponse({ events: [makeEvent({
-				id: 'ncaab-live',
-				state: 'live',
-				period: 2,
-				clock: '3:20',
-				homeScore: '77',
-				awayScore: '74',
-				withOdds: false,
-			})] }))
-			.mockResolvedValueOnce(createResponse({ events: [] }));
+		const fetchMock = jest.fn().mockResolvedValue(createResponse({ events: [makeEvent({
+			id: 'ncaab-live',
+			state: 'live',
+			period: 2,
+			clock: '3:20',
+			homeScore: '77',
+			awayScore: '74',
+			withOdds: false,
+		})] }));
 
 		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
 		const { fetchLeagueLogos } = loadApiClient();
 
 		await fetchLeagueLogos(['ncaab']);
 
-		// A window is the undated board plus one request per day, and the override has to ride on
-		// every one of them.
+		// A window is one request per day, and the override has to ride on every one of them.
 		const calledUrls = fetchMock.mock.calls.map(([url]) => String(url));
 		expect(calledUrls.length).toBeGreaterThan(1);
 		expect(calledUrls.every(url => url.includes('groups=50'))).toBe(true);
 	});
 
 	test('adds NCAA womens basketball groups=49 query parameter', async () => {
-		const fetchMock = jest.fn().mockResolvedValue(emptyDay())
-			.mockResolvedValueOnce(createResponse({ events: [makeEvent({
-				id: 'ncaaw-live',
-				state: 'live',
-				period: 3,
-				clock: '5:00',
-				homeScore: '60',
-				awayScore: '58',
-				withOdds: false,
-			})] }))
-			.mockResolvedValueOnce(createResponse({ events: [] }));
+		const fetchMock = jest.fn().mockResolvedValue(createResponse({ events: [makeEvent({
+			id: 'ncaaw-live',
+			state: 'live',
+			period: 3,
+			clock: '5:00',
+			homeScore: '60',
+			awayScore: '58',
+			withOdds: false,
+		})] }));
 
 		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
 		const { fetchLeagueLogos } = loadApiClient();
 
 		await fetchLeagueLogos(['ncaaw']);
 
-		// A window is the undated board plus one request per day, and the override has to ride on
-		// every one of them.
 		const calledUrls = fetchMock.mock.calls.map(([url]) => String(url));
 		expect(calledUrls.length).toBeGreaterThan(1);
 		expect(calledUrls.every(url => url.includes('groups=49'))).toBe(true);
@@ -706,12 +692,14 @@ describe('apiClient', () => {
 		expect(calledUrls[0]).not.toContain('groups=');
 	});
 
-	test('keeps fulfilled games when one scoreboard request fails for a league', async () => {
-		const fetchMock = jest.fn(async (url: string) => {
-			if (url.includes('/basketball/nba/scoreboard') && !url.includes('dates=')) {
-				return createResponse({}, { ok: false, status: 500 });
-			}
-			if (url.includes('/basketball/nba/scoreboard') && url.includes('dates=')) {
+	test('keeps the days that answered when one day of the window fails', async () => {
+		jest.useFakeTimers().setSystemTime(new Date('2026-09-15T18:00:00.000Z'));
+		try {
+			// Today answers, so the league is not shed. A day further out fails and the rest still
+			// contribute — today's own failure is a different case and sinks the league on purpose.
+			const fetchMock = jest.fn(async (url: string) => {
+				if (dateOf(url) === '20260920') return createResponse({}, { ok: false, status: 500 });
+				if (isLivePoll(url)) return createResponse({ events: [] });
 				return createResponse({
 					leagues: [{ logos: [{ href: 'https://cdn.example/nba-upcoming-logo.png' }] }],
 					events: [makeEvent({
@@ -723,21 +711,23 @@ describe('apiClient', () => {
 						awayScore: '0',
 					})],
 				});
-			}
-			throw new Error(`Unexpected url: ${url}`);
-		});
+			});
 
-		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
-		const { fetchGamesWithLeagueLogos } = loadApiClient();
+			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+			const { fetchGamesWithLeagueLogos } = loadApiClient();
 
-		const result = await fetchGamesWithLeagueLogos(['nba']);
-		expect(result.games.map(game => game.id)).toEqual(['upcoming-only']);
-		expect(result.leagueLogos.nba).toBe('https://cdn.example/nba-upcoming-logo.png');
+			const result = await fetchGamesWithLeagueLogos(['nba']);
+			expect(result.games.map(game => game.id)).toEqual(['upcoming-only']);
+			expect(result.leagueLogos.nba).toBe('https://cdn.example/nba-upcoming-logo.png');
+			expect(result.shedLeagues).toEqual([]);
+		} finally {
+			jest.useRealTimers();
+		}
 	});
 
 	test('aggregates fulfilled leagues when another league fails entirely', async () => {
 		const fetchMock = jest.fn(async (url: string) => {
-			if (url.includes('/basketball/nba/scoreboard') && !url.includes('dates=')) {
+			if (url.includes('/basketball/nba/scoreboard') && isLivePoll(url)) {
 				return createResponse({
 					leagues: [{ logos: [{ href: 'https://cdn.example/nba-logo.png' }] }],
 					events: [makeEvent({
@@ -750,7 +740,7 @@ describe('apiClient', () => {
 					})],
 				});
 			}
-			if (url.includes('/basketball/nba/scoreboard') && url.includes('dates=')) {
+			if (url.includes('/basketball/nba/scoreboard') && !isLivePoll(url)) {
 				return createResponse({
 					events: [makeEvent({
 						id: 'nba-pre',
@@ -1090,7 +1080,7 @@ describe('apiClient', () => {
 		expect(game.intermission).toBe(true);
 		expect(game.homeTeam.score).toBe(2);
 		expect(game.awayTeam.score).toBe(1);
-		expect(game.startTime).toBeUndefined();
+		expect(game.startTime).toBe('2026-10-05T00:00:00.000Z');
 	});
 
 	test('NHL: pre-game from range has correct hockey sportType and startTime', async () => {
@@ -1274,7 +1264,7 @@ describe('apiClient', () => {
 		expect(game.league).toBe('mls');
 		expect(game.status).toBe('in');
 		expect(game.clockSeconds).toBe(67 * 60);
-		expect(game.startTime).toBeUndefined();
+		expect(game.startTime).toBe('2026-10-05T00:00:00.000Z');
 	});
 
 	test('EPL: in-season live game from today returned when range endpoint is empty', async () => {
@@ -1300,7 +1290,7 @@ describe('apiClient', () => {
 		expect(game.league).toBe('epl');
 		expect(game.status).toBe('in');
 		expect(game.clockSeconds).toBe(33 * 60);
-		expect(game.startTime).toBeUndefined();
+		expect(game.startTime).toBe('2026-10-05T00:00:00.000Z');
 	});
 
 	test('soccer: HALFTIME status name sets intermission=true', async () => {
@@ -1415,7 +1405,7 @@ describe('apiClient', () => {
 		expect(result.leagueLogos.ncaab).toBeDefined();
 	});
 
-	test('all leagues: pre-game startTime is defined, live game startTime is undefined', async () => {
+	test('all leagues: every game carries its start time, whatever its state', async () => {
 		// startTime on a live game would break the popup's "Up Next" vs "Live Now" split.
 		const preGame = makeEvent({ id: 'pre', state: 'pre', period: 1, clock: '0:00', homeScore: '0', awayScore: '0', date: '2026-09-01T00:00:00.000Z' });
 		const liveGame = makeEvent({ id: 'live', state: 'in', period: 3, clock: '5:00', homeScore: '88', awayScore: '85' });
@@ -1430,7 +1420,10 @@ describe('apiClient', () => {
 		const pre = result.games.find(g => g.id === 'pre')!;
 		const live = result.games.find(g => g.id === 'live')!;
 		expect(pre.startTime).toBe('2026-09-01T00:00:00.000Z');
-		expect(live.startTime).toBeUndefined();
+		// A live game keeps its start time too. Nothing renders it — every reader is behind a
+		// pre-game check — but the retention window for finished games has nothing else to
+		// measure from, ESPN publishing no completion timestamp of any kind.
+		expect(live.startTime).toBe('2026-10-05T00:00:00.000Z');
 	});
 
 	describe('venue location parsing', () => {
@@ -1476,6 +1469,79 @@ describe('apiClient', () => {
 
 			const result = await fetchGamesWithLeagueLogos(['nba']);
 			expect(result.games[0]?.venueLocation).toBe('Boston, MA');
+		});
+	});
+
+	describe('weather parsing', () => {
+		// Every weather block below is transcribed off a live scoreboard on 2026-09-09, and every
+		// venue below carries the `indoor` flag ESPN sent with it on that same response.
+		const weatherFor = async (venue: Record<string, unknown>, weather: Record<string, unknown>) => {
+			const { fetchGamesWithLeagueLogos } = mockSingleEvent(makeEvent({
+				id: 'weather',
+				state: 'in',
+				period: 2,
+				clock: '5:00',
+				homeScore: '10',
+				awayScore: '7',
+				venue,
+				weather,
+			}));
+			const result = await fetchGamesWithLeagueLogos(['nfl']);
+			return result.games[0]?.weather;
+		};
+
+		const domeVenue = { fullName: 'U.S. Bank Stadium', address: { city: 'Minneapolis', state: 'MN' }, indoor: true };
+		const openVenue = { fullName: 'Arrowhead Stadium', address: { city: 'Kansas City', state: 'MO' }, indoor: false };
+
+		test('reads the label out of displayValue', async () => {
+			expect(await weatherFor(openVenue, { displayValue: 'Thunderstorms', temperature: 86, highTemperature: 86, conditionId: '15' }))
+				.toEqual({ temperatureF: 86, conditionLabel: 'Thunderstorms' });
+		});
+
+		// ESPN swaps the two fields on live baseball: loanDepot park came back with displayValue '35'
+		// and the words in conditionId. The numeric one has to lose whichever key it arrives under.
+		test('reads the label out of conditionId when displayValue holds the icon number', async () => {
+			expect(await weatherFor(openVenue, { displayValue: '35', temperature: 82, highTemperature: 82, conditionId: 'Partly cloudy' }))
+				.toEqual({ temperatureF: 82, conditionLabel: 'Partly cloudy' });
+		});
+
+		test('drops a reading with no words in either field', async () => {
+			expect(await weatherFor(openVenue, { displayValue: '35', temperature: 82, conditionId: '15' })).toBeUndefined();
+		});
+
+		test('drops a reading with no temperature', async () => {
+			expect(await weatherFor(openVenue, { displayValue: 'Sunny', conditionId: '1' })).toBeUndefined();
+		});
+
+		// The bug this gate exists for: ESPN sends the stadium postcode's outdoor forecast on a dome
+		// exactly as it does on an open-air venue, so a September dome game rendered a weather chip
+		// for conditions nobody in the building could feel.
+		test('drops the outdoor forecast ESPN sends for a dome', async () => {
+			expect(await weatherFor(domeVenue, { displayValue: 'Thunderstorms', temperature: 64, highTemperature: 64, conditionId: '15' }))
+				.toBeUndefined();
+			expect(await weatherFor({ fullName: 'Ford Field', indoor: true }, { displayValue: 'Mostly cloudy', temperature: 80, conditionId: '6' }))
+				.toBeUndefined();
+		});
+
+		// The winter case the decoration reads. ESPN drops the weather block entirely once a game is
+		// final, so a snowy dome payload cannot be fetched back out of January — the venue is verbatim
+		// and the reading is the one a Minneapolis forecast supplies in December.
+		test('drops a snowy dome forecast, which is what feeds the snow decoration', async () => {
+			expect(await weatherFor(domeVenue, { displayValue: 'Snow', temperature: 19, highTemperature: 19, conditionId: '22' }))
+				.toBeUndefined();
+		});
+
+		test('leaves an open-air venue alone', async () => {
+			expect(await weatherFor(openVenue, { displayValue: 'Snow', temperature: 19, highTemperature: 19, conditionId: '22' }))
+				.toEqual({ temperatureF: 19, conditionLabel: 'Snow' });
+		});
+
+		// MLS and the European soccer competitions send no `indoor` key on the venue at all. They send
+		// no weather either, so the pairing never arises today — but a missing flag must not be read
+		// as a dome the day one of them starts carrying a forecast.
+		test('treats a venue with no indoor flag as open air', async () => {
+			expect(await weatherFor({ fullName: 'Subaru Park', address: { city: 'Chester', state: 'PA' } }, { displayValue: 'Snow', temperature: 31, conditionId: '22' }))
+				.toEqual({ temperatureF: 31, conditionLabel: 'Snow' });
 		});
 	});
 
@@ -2329,8 +2395,12 @@ describe('apiClient', () => {
 				id: 'post-ldr', state: 'post', period: 9, clock: '0:00', homeScore: '5', awayScore: '2',
 				homeExtra: { leaders: [leaderCategory('homeRuns', 'HR', 'J. Soto', '1-4, HR, 4 RBI, 2 R, BB')] },
 			}));
-			const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
-			expect(result.games.find(g => g.id === 'post-ldr')?.homeTeam.leaders).toBeUndefined();
+			// includeFinal, or the game is filtered out before the assertion can see it and this
+			// passes whether the leaders are stripped or not.
+			const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false, includeFinal: true });
+			const game = result.games.find(g => g.id === 'post-ldr');
+			expect(game).toBeDefined();
+			expect(game?.homeTeam.leaders).toBeUndefined();
 		});
 
 		test('leaves leaders undefined when the key is absent, as in college football', async () => {
@@ -2339,6 +2409,887 @@ describe('apiClient', () => {
 			}));
 			const result = await fetchGamesWithLeagueLogos(['ncaaf'], { includeUpcoming: false });
 			expect(result.games.find(g => g.id === 'ncaaf-ldr')?.homeTeam.leaders).toBeUndefined();
+		});
+	});
+});
+
+describe('finished games', () => {
+	const finalEvent = (over: Record<string, unknown> = {}) => makeEvent({
+		id: 'final-1', state: 'post', period: 9, clock: '0:00', homeScore: '5', awayScore: '2',
+		date: new Date().toISOString(),
+		...over,
+	});
+
+	describe('attendance off the scoreboard', () => {
+		test('a real figure comes through on a finished game', async () => {
+			const { fetchGamesWithLeagueLogos } = mockSingleEvent(finalEvent({ attendance: 42793 }));
+			const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false, includeFinal: true });
+			expect(result.games[0]?.attendance).toBe(42793);
+		});
+
+		test('the zero ESPN sends before a game is over reads as no figure, not an empty stadium', async () => {
+			const { fetchGamesWithLeagueLogos } = mockSingleEvent(makeEvent({
+				id: 'live-att', state: 'in', period: 3, clock: '5:00', homeScore: '2', awayScore: '1',
+				attendance: 0,
+			}));
+			const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
+			expect(result.games[0]?.attendance).toBeUndefined();
+		});
+
+		test('an absent key is undefined rather than zero', async () => {
+			const { fetchGamesWithLeagueLogos } = mockSingleEvent(finalEvent());
+			const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false, includeFinal: true });
+			expect(result.games[0]).toBeDefined();
+			expect(result.games[0]?.attendance).toBeUndefined();
+		});
+	});
+
+	describe('the includeFinal gate', () => {
+		test('is off by default, so every existing consumer keeps what it had', async () => {
+			const { fetchGamesWithLeagueLogos } = mockSingleEvent(finalEvent());
+			const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
+			expect(result.games).toHaveLength(0);
+		});
+
+		test('and off explicitly too', async () => {
+			const { fetchGamesWithLeagueLogos } = mockSingleEvent(finalEvent());
+			const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false, includeFinal: false });
+			expect(result.games).toHaveLength(0);
+		});
+
+		test('keeps a game that has just wrapped', async () => {
+			const { fetchGamesWithLeagueLogos } = mockSingleEvent(finalEvent());
+			const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false, includeFinal: true });
+			expect(result.games.map(g => g.id)).toEqual(['final-1']);
+		});
+
+		test('drops one that wrapped more than a day ago, even when asked for finals', async () => {
+			const { fetchGamesWithLeagueLogos } = mockSingleEvent(finalEvent({
+				date: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString(),
+			}));
+			const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false, includeFinal: true });
+			expect(result.games).toHaveLength(0);
+		});
+
+		test('never touches live or scheduled games', async () => {
+			const fetchMock = jest.fn().mockResolvedValue(createResponse({
+				events: [
+					makeEvent({ id: 'live', state: 'in', period: 3, clock: '5:00', homeScore: '2', awayScore: '1' }),
+					makeEvent({ id: 'sched', state: 'pre', period: 1, clock: '0:00', homeScore: '0', awayScore: '0' }),
+					finalEvent(),
+				],
+			}));
+			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+			const { fetchGamesWithLeagueLogos } = loadApiClient();
+
+			const withoutFinals = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
+			expect(withoutFinals.games.map(g => g.id).toSorted()).toEqual(['live', 'sched']);
+
+			const withFinals = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false, includeFinal: true });
+			expect(withFinals.games.map(g => g.id).toSorted()).toEqual(['final-1', 'live', 'sched']);
+		});
+
+		test('the range path applies the same gate as the dateless one', async () => {
+			const { fetchGamesWithLeagueLogos } = mockSingleEvent(finalEvent());
+			expect((await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: true })).games).toHaveLength(0);
+
+			const { fetchGamesWithLeagueLogos: again } = mockSingleEvent(finalEvent());
+			expect((await again(['mlb'], { includeUpcoming: true, includeFinal: true })).games).toHaveLength(1);
+		});
+
+		test('a finished game arriving from both the dateless and range calls is returned once', async () => {
+			const { fetchGamesWithLeagueLogos } = mockSingleEvent(finalEvent());
+			const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: true, includeFinal: true });
+			expect(result.games.map(g => g.id)).toEqual(['final-1']);
+		});
+
+		// Written out as literal dates under a pinned clock rather than as arithmetic on the answer.
+		// The previous version asserted the opening date was the plain one minus one, which is both
+		// the expression under test and wrong across the start of a month.
+		const openingDate = async (now: string, options: Record<string, unknown>): Promise<string[]> => {
+			jest.useFakeTimers().setSystemTime(new Date(now));
+			const fetchMock = jest.fn().mockResolvedValue(createResponse({ events: [] }));
+			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+			const { fetchGamesWithLeagueLogos } = loadApiClient();
+			await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: true, upcomingDays: 7, ...options });
+			// Read while the clock is still pinned. The two edges of the one window, which is what
+			// the live range and the slate range used to carry between them.
+			const days = datesAsked(fetchMock);
+			jest.useRealTimers();
+			return [days[0]!, days[days.length - 1]!];
+		};
+
+		// Two local days back, not one. Retention runs 24 hours past the estimated wrap, so a game
+		// still inside the window kicked off up to 27.5 hours ago — which is the day before
+		// yesterday for anyone whose local clock has passed midnight.
+		test('reaches back two days for finals and one without them', async () => {
+			const plain = await openingDate('2026-09-07T12:00:00.000Z', {});
+			const withFinals = await openingDate('2026-09-07T12:00:00.000Z', { includeFinal: true });
+
+			// The clock is UTC and ESPN files by US Eastern, so a UTC day opens on the previous
+			// Eastern date. Both ends go through that same translation.
+			//
+			// One day back without finals rather than none, because the live leg's reach-back is part
+			// of this window now instead of being a second request: a kickoff filed under yesterday is
+			// still on screen after Eastern midnight. Two days back with them, because retention runs
+			// 24 hours past an estimated wrap and a final still inside it can have started 27.5 hours
+			// ago, which is the day before yesterday once local midnight has passed.
+			expect(plain[0]).toBe('20260905');
+			expect(withFinals[0]).toBe('20260904');
+			expect(withFinals[1]).toBe(plain[1]);
+		});
+
+		test('and crosses the start of a month while doing it', async () => {
+			const withFinals = await openingDate('2026-10-01T12:00:00.000Z', { includeFinal: true });
+			expect(withFinals[0]).toBe('20260928');
+		});
+	});
+});
+
+describe("ESPN's own Final designation", () => {
+	const withShortDetail = (state: string, shortDetail: string) => makeEvent({
+		id: 'label', state, period: 9, clock: '0:00', homeScore: '5', awayScore: '2',
+		date: new Date().toISOString(),
+		shortDetail,
+	});
+
+	// Every value here was read off a live scoreboard: MLB sends Final/10, the NHL sends Final/OT
+	// and Final/SO, the NBA sends Final/OT and college football sends Final/3OT.
+	test.each([
+		['extra innings', 'Final/10', '10'],
+		['a single overtime', 'Final/OT', 'OT'],
+		['a triple overtime', 'Final/3OT', '3OT'],
+		['a shootout', 'Final/SO', 'SO'],
+	])('reads the suffix off %s', async (_label, shortDetail, expected) => {
+		const { fetchGamesWithLeagueLogos } = mockSingleEvent(withShortDetail('post', shortDetail));
+		const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false, includeFinal: true });
+		expect(result.games[0]?.finalPeriodSuffix).toBe(expected);
+	});
+
+	test('a game that ended in regulation has no suffix', async () => {
+		const { fetchGamesWithLeagueLogos } = mockSingleEvent(withShortDetail('post', 'Final'));
+		const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false, includeFinal: true });
+		expect(result.games[0]).toBeDefined();
+		expect(result.games[0]?.finalPeriodSuffix).toBeUndefined();
+	});
+
+	// A live game's shortDetail carries the inning — "Top 7th" — and an in-progress overtime reads
+	// "OT 2:41". Neither is a final designation, and neither should be stored as one.
+	test('a live game gets no suffix, whatever its shortDetail says', async () => {
+		const { fetchGamesWithLeagueLogos } = mockSingleEvent(withShortDetail('in', 'OT 2:41'));
+		const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
+		expect(result.games[0]?.status).toBe('in');
+		expect(result.games[0]?.finalPeriodSuffix).toBeUndefined();
+	});
+
+	test('a scheduled game gets none either', async () => {
+		const { fetchGamesWithLeagueLogos } = mockSingleEvent(withShortDetail('pre', '7:05 PM ET'));
+		const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
+		expect(result.games[0]?.finalPeriodSuffix).toBeUndefined();
+	});
+
+	test('an empty suffix after the slash is dropped rather than stored blank', async () => {
+		const { fetchGamesWithLeagueLogos } = mockSingleEvent(withShortDetail('post', 'Final/'));
+		const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false, includeFinal: true });
+		expect(result.games[0]?.finalPeriodSuffix).toBeUndefined();
+	});
+});
+
+
+describe('the polling lookahead', () => {
+	const now = new Date('2026-01-14T17:00:00.000Z');
+	const at = (offsetHours: number) => new Date(now.getTime() + offsetHours * 60 * 60 * 1000).toISOString();
+
+	const mockEvents = (events: Record<string, unknown>[]) => {
+		const fetchMock = jest.fn().mockResolvedValue(createResponse({ events }));
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+		return { fetchMock, ...loadApiClient() };
+	};
+
+	const scheduled = (id: string, date: string) => makeEvent({
+		id, date, state: 'pre', period: 1, clock: '0:00', homeScore: '0', awayScore: '0',
+	});
+
+	test('an empty window is a real answer rather than a failure', async () => {
+		const { fetchNextScheduledStart } = mockEvents([]);
+		await expect(fetchNextScheduledStart('mlb', { now })).resolves.toBeNull();
+	});
+
+	test('reports the earliest kickoff still ahead', async () => {
+		const { fetchNextScheduledStart } = mockEvents([
+			scheduled('later', at(30)),
+			scheduled('next', at(6)),
+			scheduled('middle', at(20)),
+		]);
+		await expect(fetchNextScheduledStart('mlb', { now })).resolves.toBe(new Date(at(6)).getTime());
+	});
+
+	// The window opens at the start of today's local day, so it carries this morning's games too.
+	test('ignores anything that has already started', async () => {
+		const { fetchNextScheduledStart } = mockEvents([
+			scheduled('this-morning', at(-4)),
+			scheduled('tonight', at(3)),
+		]);
+		await expect(fetchNextScheduledStart('mlb', { now })).resolves.toBe(new Date(at(3)).getTime());
+	});
+
+	test('a date ESPN sent as nonsense is skipped rather than thrown on', async () => {
+		const { fetchNextScheduledStart } = mockEvents([
+			scheduled('bad', 'sometime next week'),
+			scheduled('good', at(11)),
+		]);
+		await expect(fetchNextScheduledStart('mlb', { now })).resolves.toBe(new Date(at(11)).getTime());
+	});
+
+	/* The point of the state this feeds is to spend fewer requests, so a lookahead that cost as much
+	   as a poll would be self-defeating. A span is no longer answerable, so instead of one ranged
+	   request it walks the days and stops at the first kickoff — which is one request for any league
+	   with something on soon, and the full window only for the league that has genuinely nothing and
+	   is therefore about to sleep half an hour at a time. */
+	test('stops at the first day carrying a kickoff', async () => {
+		const { fetchMock, fetchNextScheduledStart } = mockEvents([scheduled('tonight', at(3))]);
+		await fetchNextScheduledStart('mlb', { days: 7, now });
+		expect(fetchMock).toHaveBeenCalledTimes(1);
+	});
+
+	test('only pays for the whole window when there is nothing in it', async () => {
+		const { fetchMock, fetchNextScheduledStart } = mockEvents([]);
+		await fetchNextScheduledStart('mlb', { days: 7, now });
+		// Nine Eastern dates for a seven-day window: the suite runs in UTC and the query is rendered
+		// in Eastern, so the local day start on the 14th is the evening of the 13th over there.
+		expect(datesAsked(fetchMock)).toEqual([
+			'20260113', '20260114', '20260115', '20260116', '20260117',
+			'20260118', '20260119', '20260120', '20260121',
+		]);
+	});
+
+	// The same two overrides the scoreboard fetch carries; a college league 404s on a ranged query
+	// without them, which would read as a failed lookahead rather than as a missing parameter.
+	test('carries the NCAA group parameters a ranged query needs', async () => {
+		const { fetchMock, fetchNextScheduledStart } = mockEvents([]);
+		await fetchNextScheduledStart('ncaab', { now });
+		expect(new URL(toUrl(fetchMock.mock.calls[0]![0] as RequestInfo)).searchParams.get('groups')).toBe('50');
+
+		const second = mockEvents([]);
+		await second.fetchNextScheduledStart('ncaaw', { now });
+		expect(new URL(toUrl(second.fetchMock.mock.calls[0]![0] as RequestInfo)).searchParams.get('groups')).toBe('49');
+	});
+
+	// Null is what puts a league to sleep for half an hour, so a failed request must not produce it.
+	test('a failed request throws rather than reading as nothing scheduled', async () => {
+		const fetchMock = jest.fn().mockResolvedValue(createResponse({}, { ok: false, status: 503 }));
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+		const { fetchNextScheduledStart } = loadApiClient();
+		await expect(fetchNextScheduledStart('mlb', { now })).rejects.toThrow();
+	});
+});
+
+
+// ESPN sheds load on `site.api.espn.com` by recent request volume from an IP and answers 403 to
+// whatever it drops. Every fan-out here collects with `allSettled` and keeps the fulfilled ones, so
+// a shed league contributes nothing and says nothing: the symptom is a slate that comes back short,
+// or the empty-state screen on a day full of sport. Thirty-one leagues at once was over the line.
+describe('how wide a fan-out at ESPN is allowed to get', () => {
+	// Every request holds its slot until a macrotask passes, so the pool's whole width is in flight
+	// at once and the peak is the real thing rather than an artefact of how fast the mock resolves.
+	const trackConcurrency = () => {
+		const seen = { inFlight: 0, peak: 0 };
+		const fetchMock = jest.fn().mockImplementation(async () => {
+			seen.inFlight += 1;
+			seen.peak = Math.max(seen.peak, seen.inFlight);
+			await new Promise<void>(resolve => { setTimeout(resolve, 0); });
+			seen.inFlight -= 1;
+			// Both shapes at once, so the same mock serves the scoreboard and the teams endpoint.
+			return createResponse({
+				events: [],
+				leagues: [{ logos: [] }],
+				sports: [{ leagues: [{ teams: [{ team: { id: '1', displayName: 'Someone', abbreviation: 'SOM' } }] }] }],
+			});
+		});
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+		return { seen, fetchMock };
+	};
+
+	/* Two pools now, one inside the other: leagues six at a time, and the days of a league three at a
+	   time within that. A window is a request per day since ESPN stopped answering for a span, so
+	   without the inner one a ten-day window in 31 leagues would put 310 requests in flight at once —
+	   the shape that got us shed in the first place.
+
+	   Sized to a dozen leagues rather than all 31: twice the outer pool is enough to prove it bounds
+	   anything, and the token bucket deliberately paces a real 31-league sweep over tens of seconds,
+	   which would otherwise be wall time this spec spends waiting. The sweep's own completeness is
+	   pinned separately below, at full width. */
+	const severalLeagues = allLeagueIds.slice(0, 12);
+
+	test('never has more than both pools multiplied in flight', async () => {
+		const { seen } = trackConcurrency();
+		const { fetchGamesWithLeagueLogos, espnRequestPoolSize, espnDayPoolSize } = loadApiClient();
+
+		await fetchGamesWithLeagueLogos(severalLeagues, { includeUpcoming: false });
+
+		expect(severalLeagues.length).toBeGreaterThan(espnRequestPoolSize);
+		expect(seen.peak).toBeGreaterThan(1);
+		expect(seen.peak).toBeLessThanOrEqual(espnRequestPoolSize * espnDayPoolSize);
+	});
+
+	// More days than the inner pool, so it is the day pool being proved here and not just the league
+	// one: a two-day-ahead window is four Eastern dates against a day pool of three.
+	test('a window of more days than the inner pool does not widen it', async () => {
+		const { seen } = trackConcurrency();
+		const { fetchGamesWithLeagueLogos, espnRequestPoolSize, espnDayPoolSize } = loadApiClient();
+
+		await fetchGamesWithLeagueLogos(severalLeagues, { includeUpcoming: true, upcomingDays: 2 });
+
+		expect(seen.peak).toBeLessThanOrEqual(espnRequestPoolSize * espnDayPoolSize);
+	});
+
+	// At full width, and the reason the timeout is generous: 31 leagues times the live window is ~93
+	// requests, which the bucket paces to about ten a second on purpose.
+	test('still asks every league for every day of the window', async () => {
+		const { fetchMock } = trackConcurrency();
+		const { fetchGamesWithLeagueLogos } = loadApiClient();
+
+		await fetchGamesWithLeagueLogos(allLeagueIds, { includeUpcoming: false });
+
+		expect(fetchMock).toHaveBeenCalledTimes(allLeagueIds.length * buildCurrentDayKeys().length);
+	}, 30_000);
+
+	test('pools the team fan-out the pickers use as well', async () => {
+		const { seen } = trackConcurrency();
+		const { fetchTeamsForLeagues, espnRequestPoolSize } = loadApiClient();
+
+		await fetchTeamsForLeagues(allLeagueIds);
+
+		expect(seen.peak).toBeLessThanOrEqual(espnRequestPoolSize);
+	}, 30_000);
+});
+
+/* Polling faster than ESPN refreshes buys a cache hit and no information, so the floor the eager
+   ramp scales down to is read off the response rather than chosen. `Cache-Control` is on the
+   CORS-safelist, which is why this is readable at all on a cross-origin response. */
+describe('how often ESPN says it will answer with something new', () => {
+	it('assumes the constant until a response has been seen', () => {
+		const { scoreboardRefreshMs } = loadApiClient();
+		expect(scoreboardRefreshMs('nba')).toBe(pollMinEagerMs);
+	});
+
+	it('takes the max-age the league actually sent', async () => {
+		const fetchMock = jest.fn().mockResolvedValue(
+			createResponse({ events: [] }, { cacheControl: 'max-age=30' }),
+		);
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+
+		const { fetchGamesWithLeagueLogos, scoreboardRefreshMs } = loadApiClient();
+		await fetchGamesWithLeagueLogos(['nba'], { includeUpcoming: false });
+
+		expect(scoreboardRefreshMs('nba')).toBe(30_000);
+	});
+
+	it('keeps the leagues apart rather than letting one answer set the pace for all of them', async () => {
+		const fetchMock = jest.fn().mockImplementation(async (url: string) => createResponse(
+			{ events: [] },
+			{ cacheControl: url.includes('/hockey/nhl/') ? 'max-age=4' : 'max-age=20' },
+		));
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+
+		const { fetchGamesWithLeagueLogos, scoreboardRefreshMs } = loadApiClient();
+		await fetchGamesWithLeagueLogos(['nba', 'nhl'], { includeUpcoming: false });
+
+		expect(scoreboardRefreshMs('nhl')).toBe(4_000);
+		expect(scoreboardRefreshMs('nba')).toBe(20_000);
+	});
+
+	// A header we cannot make sense of is not a reason to poll at zero.
+	it('ignores a missing or unusable max-age', async () => {
+		for (const cacheControl of [undefined, 'no-store', 'max-age=0', 'max-age=nonsense']) {
+			const fetchMock = jest.fn().mockResolvedValue(createResponse({ events: [] }, { cacheControl }));
+			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+
+			const { fetchGamesWithLeagueLogos, scoreboardRefreshMs } = loadApiClient();
+			await fetchGamesWithLeagueLogos(['nba'], { includeUpcoming: false });
+
+			expect(scoreboardRefreshMs('nba')).toBe(pollMinEagerMs);
+		}
+	});
+});
+
+/* The silence this removes: `allSettled` keeps the leagues that answered and says nothing about the
+   ones that did not, so every caller read a 403 as "this league has nothing on". */
+describe('telling an empty league apart from a refused one', () => {
+	it('names the leagues that were refused', async () => {
+		const fetchMock = jest.fn().mockImplementation(async (url: string) => (
+			url.includes('/hockey/nhl/')
+				? createResponse({ message: 'Forbidden' }, { ok: false, status: 403 })
+				: createResponse({ events: [] })
+		));
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+
+		const { fetchGamesWithLeagueLogos } = loadApiClient();
+		const result = await fetchGamesWithLeagueLogos(['nba', 'nhl'], { includeUpcoming: false });
+
+		expect(result.shedLeagues).toEqual(['nhl']);
+	});
+
+	it('reports nothing shed when a league genuinely has no games', async () => {
+		const fetchMock = jest.fn().mockResolvedValue(createResponse({ events: [] }));
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+
+		const { fetchGamesWithLeagueLogos } = loadApiClient();
+		const result = await fetchGamesWithLeagueLogos(['nba'], { includeUpcoming: false });
+
+		expect(result.games).toEqual([]);
+		expect(result.shedLeagues).toEqual([]);
+	});
+
+	it('still hands back the leagues that did answer', async () => {
+		const fetchMock = jest.fn().mockImplementation(async (url: string) => (
+			url.includes('/hockey/nhl/')
+				? createResponse({ message: 'Forbidden' }, { ok: false, status: 403 })
+				: createResponse({ events: [], leagues: [{ logos: [] }] })
+		));
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+
+		const { fetchGamesWithLeagueLogos } = loadApiClient();
+		const result = await fetchGamesWithLeagueLogos(['nba', 'nhl'], { includeUpcoming: false });
+
+		expect(Object.keys(result.leagueLogos)).toEqual(['nba']);
+		expect(result.shedLeagues).toEqual(['nhl']);
+	});
+});
+
+/* ESPN stopped answering for a span of dates. All 31 leagues return
+   `{"code":400,"message":"Failed to get events endpoint."}` for `dates=20260914-20260915` at any
+   width — including a one-day `20260915-20260915` — while a single `dates=20260915` still answers 200
+   in all 31, on both `site.api` and `site.web.api`. So a window is a list of days and costs a
+   request each, and these pin what falls out of that. */
+describe('a window asked for one day at a time', () => {
+	const answerWith = (forDay: (dates: string) => Record<string, unknown>) => {
+		const fetchMock = jest.fn().mockImplementation(async (url: string) => (
+			createResponse({ leagues: [{ logos: [] }], ...forDay(dateOf(url)) })
+		));
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+		return fetchMock;
+	};
+
+	const finalOn = (id: string) => makeEvent({
+		id, state: 'post', period: 9, clock: '0:00', homeScore: '4', awayScore: '1',
+		date: '2026-09-14T18:00:00.000Z',
+	});
+	const liveOn = (id: string) => makeEvent({
+		id, state: 'in', period: 5, clock: '1:00', homeScore: '2', awayScore: '2',
+		date: '2026-09-15T17:00:00.000Z',
+	});
+
+	it('names one day per request, and every day of the window exactly once', async () => {
+		const fetchMock = answerWith(() => ({ events: [] }));
+		const { fetchGamesWithLeagueLogos } = loadApiClient();
+		await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: true, upcomingDays: 3 });
+
+		const asked = fetchMock.mock.calls.map(([url]) => dateOf(String(url)));
+		expect(asked.length).toBeGreaterThan(1);
+		expect(new Set(asked).size).toBe(asked.length);
+		// A single date, never a range: a range is what ESPN refuses.
+		expect(asked.every(dates => /^\d{8}$/.test(dates))).toBe(true);
+	});
+
+	// Measured: an MLB month answered 100 events without this and 369 with it, and a dated college
+	// football Saturday is 80 events against the undated curated week's 22.
+	it('lifts ESPN\'s default event cap on every one of them', async () => {
+		const fetchMock = answerWith(() => ({ events: [] }));
+		const { fetchGamesWithLeagueLogos } = loadApiClient();
+		await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
+
+		expect(fetchMock.mock.calls.every(
+			([url]) => new URL(String(url)).searchParams.get('limit') === '500',
+		)).toBe(true);
+	});
+
+	/* A day whose every game is final cannot change again, so it stops being asked for. This is what
+	   pays for the window costing a request per day rather than one for the whole span: the reach-back
+	   a late kickoff needs is free for all but the first poll of a session. */
+	it('stops re-asking for a past day once everything on it is final', async () => {
+		jest.useFakeTimers().setSystemTime(new Date('2026-09-15T18:00:00.000Z'));
+		try {
+			const fetchMock = answerWith(dates => ({
+				events: dates === '20260915' ? [liveOn('tonight')] : [finalOn(`done-${dates}`)],
+			}));
+			const { fetchGamesWithLeagueLogos } = loadApiClient();
+
+			await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
+			expect(datesAsked(fetchMock)).toEqual(['20260913', '20260914', '20260915']);
+
+			fetchMock.mockClear();
+			await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
+			// Today is never served from the cache — it is the one the live poll exists for.
+			expect(datesAsked(fetchMock)).toEqual(['20260915']);
+		} finally {
+			jest.useRealTimers();
+		}
+	});
+
+	/* A shed day used to be indistinguishable from a day with nothing on it. The last good answer for
+	   it stands in now, because the callers rebuild a window only at startup and on a preference
+	   change — so one 403 on day five would otherwise cost a league its whole week until the next time
+	   the user changed a setting. */
+	it('serves the last good answer for a day ESPN later refuses', async () => {
+		jest.useFakeTimers().setSystemTime(new Date('2026-09-15T18:00:00.000Z'));
+		try {
+			const pre = makeEvent({
+				id: 'friday', state: 'pre', period: 1, clock: '0:00', homeScore: '0', awayScore: '0',
+				date: '2026-09-18T23:00:00.000Z',
+			});
+			const fetchMock = answerWith(dates => ({ events: dates === '20260918' ? [pre] : [] }));
+			const { fetchGamesWithLeagueLogos } = loadApiClient();
+
+			const first = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: true, upcomingDays: 7 });
+			expect(first.games.map(game => game.id)).toContain('friday');
+
+			// That one day starts refusing, past its ten-minute freshness, while the rest still answer.
+			fetchMock.mockImplementation(async (url: string) => (
+				dateOf(url) === '20260918'
+					? createResponse({ code: 400, message: 'Failed to get events endpoint.' }, { ok: false, status: 400 })
+					: createResponse({ events: [], leagues: [{ logos: [] }] })
+			));
+			jest.setSystemTime(new Date('2026-09-15T18:20:00.000Z'));
+
+			const second = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: true, upcomingDays: 7 });
+			expect(second.games.map(game => game.id)).toContain('friday');
+			expect(second.shedLeagues).toEqual([]);
+		} finally {
+			jest.useRealTimers();
+		}
+	});
+
+	/* Today is the exception and has to be. `tickLeague` reads a successful tick with nothing live as
+	   a quiet league and walks it towards dormant, so a frozen copy of today standing in for a real
+	   answer would let a league fall asleep while its games were being played. */
+	it('does not paper over a failure on today', async () => {
+		jest.useFakeTimers().setSystemTime(new Date('2026-09-15T18:00:00.000Z'));
+		try {
+			const fetchMock = answerWith(() => ({ events: [liveOn('tonight')] }));
+			const { fetchGamesWithLeagueLogos } = loadApiClient();
+			expect((await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false })).shedLeagues).toEqual([]);
+
+			fetchMock.mockResolvedValue(createResponse({ message: 'Forbidden' }, { ok: false, status: 403 }));
+			const shed = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
+
+			// Every other day of that window had a cached answer to fall back on, and the league is
+			// still reported as unanswered.
+			expect(shed.shedLeagues).toEqual(['mlb']);
+		} finally {
+			jest.useRealTimers();
+		}
+	});
+
+	/* Nothing is latched by a refusal any more. The version this replaced dropped a refused league
+	   onto ESPN's undated board, which in college football is an editorially curated week rather than
+	   a day — 22 events against a dated Saturday's 80 — and cost every league its finals, because the
+	   undated board carries only the current Eastern day. */
+	it('keeps naming the days after a refusal rather than giving the window up', async () => {
+		const fetchMock = jest.fn().mockResolvedValue(
+			createResponse({ code: 400, message: 'Failed to get events endpoint.' }, { ok: false, status: 400 }),
+		);
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+		const { fetchGamesWithLeagueLogos } = loadApiClient();
+
+		expect((await fetchGamesWithLeagueLogos(['ncaaf'], { includeUpcoming: false })).shedLeagues).toEqual(['ncaaf']);
+
+		fetchMock.mockClear();
+		await fetchGamesWithLeagueLogos(['ncaaf'], { includeUpcoming: false });
+
+		expect(fetchMock.mock.calls.length).toBeGreaterThan(0);
+		expect(fetchMock.mock.calls.every(([url]) => dateOf(String(url)) !== '')).toBe(true);
+	});
+
+	/* A calendar day moves future → today → past underneath a cached entry, and the entry's own TTL
+	   cannot see that happen. A day fetched as tomorrow carries ten minutes of freshness, so ten
+	   minutes later it is today and still fresh by its own clock — and today must never be served
+	   from the cache. Eastern is UTC-4 here and the suite runs in UTC, so 03:55Z is 23:55 on the
+	   15th and 04:02Z is 00:02 on the 16th. */
+	it('does not serve a day cached as tomorrow once it has become today', async () => {
+		jest.useFakeTimers().setSystemTime(new Date('2026-09-16T03:55:00.000Z'));
+		try {
+			let live = false;
+			const fetchMock = jest.fn().mockImplementation(async (url: string) => createResponse({
+				leagues: [{ logos: [] }],
+				events: dateOf(url) === '20260916'
+					? [live ? liveOn('tipoff') : makeEvent({
+						id: 'tipoff', state: 'pre', period: 1, clock: '0:00', homeScore: '0', awayScore: '0',
+						date: '2026-09-16T04:05:00.000Z',
+					})]
+					: [],
+			}));
+			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+			const { fetchGamesWithLeagueLogos } = loadApiClient();
+
+			// 23:55 on the 15th: the wide window reaches the 16th, which is still tomorrow.
+			const before = await fetchGamesWithLeagueLogos(['nba'], { includeUpcoming: true, upcomingDays: 7 });
+			expect(before.games.find(game => game.id === 'tipoff')?.status).toBe('pre');
+
+			// Seven minutes later it is the 16th and the game has tipped off.
+			live = true;
+			jest.setSystemTime(new Date('2026-09-16T04:02:00.000Z'));
+			const after = await fetchGamesWithLeagueLogos(['nba'], { includeUpcoming: false });
+
+			expect(after.games.find(game => game.id === 'tipoff')?.status).toBe('in');
+			expect(datesAsked(fetchMock)).toContain('20260916');
+		} finally {
+			jest.useRealTimers();
+		}
+	});
+
+	/* Three classifications for a past day rather than two. One with a game in progress never caches,
+	   because that is the kickoff from before Eastern midnight. One whose games are all final cannot
+	   change again. And one holding a game ESPN still calls scheduled is either the postponed game
+	   that will never start or the rain delay that has not started yet, so it takes the shorter
+	   freshness instead of either extreme. */
+	describe('how long a past day stays good for', () => {
+		const pinned = '2026-09-16T18:00:00.000Z';
+		const onYesterday = (state: string, id: string) => makeEvent({
+			id, state, period: 5, clock: '1:00', homeScore: '2', awayScore: '2',
+			date: '2026-09-16T00:30:00.000Z',
+		});
+
+		const askTwice = async (state: string, advanceMs: number): Promise<string[]> => {
+			jest.useFakeTimers().setSystemTime(new Date(pinned));
+			const fetchMock = jest.fn().mockImplementation(async (url: string) => createResponse({
+				leagues: [{ logos: [] }],
+				events: dateOf(url) === '20260915' ? [onYesterday(state, 'yesterday')] : [],
+			}));
+			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+			const { fetchGamesWithLeagueLogos } = loadApiClient();
+
+			await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false, includeFinal: true });
+			fetchMock.mockClear();
+			jest.setSystemTime(new Date(new Date(pinned).getTime() + advanceMs));
+			await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false, includeFinal: true });
+			const asked = datesAsked(fetchMock);
+			jest.useRealTimers();
+			return asked;
+		};
+
+		// Today is always asked for; what these are reading is whether the 15th joins it.
+		it('re-asks immediately while a game on it is in progress', async () => {
+			expect(await askTwice('in', 60_000)).toEqual(['20260915', '20260916']);
+		});
+
+		it('holds it for half an hour once every game is final', async () => {
+			expect(await askTwice('post', 20 * 60_000)).toEqual(['20260916']);
+		});
+
+		it('holds a scheduled leftover for ten minutes, not thirty', async () => {
+			expect(await askTwice('pre', 5 * 60_000)).toEqual(['20260916']);
+			expect(await askTwice('pre', 12 * 60_000)).toEqual(['20260915', '20260916']);
+		});
+	});
+
+	/* The days run chronologically, so the copy from the earliest day would otherwise win — including
+	   one served out of a settled day's half-hour cache, beating today's fresh answer. The case that
+	   puts one event on several days is exactly the one where ESPN has stopped applying the `dates`
+	   filter and every day comes back with the same board. */
+	it('prefers today\'s copy of an event that arrives on more than one day', async () => {
+		jest.useFakeTimers().setSystemTime(new Date('2026-09-16T18:00:00.000Z'));
+		try {
+			const fetchMock = jest.fn().mockImplementation(async (url: string) => createResponse({
+				leagues: [{ logos: [] }],
+				events: [dateOf(url) === '20260916'
+					? liveOn('everywhere')
+					: makeEvent({
+						id: 'everywhere', state: 'pre', period: 1, clock: '0:00', homeScore: '0', awayScore: '0',
+						date: '2026-09-16T22:00:00.000Z',
+					})],
+			}));
+			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+			const { fetchGamesWithLeagueLogos } = loadApiClient();
+
+			const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: true, upcomingDays: 3 });
+			expect(result.games.filter(game => game.id === 'everywhere')).toHaveLength(1);
+			expect(result.games.find(game => game.id === 'everywhere')?.status).toBe('in');
+		} finally {
+			jest.useRealTimers();
+		}
+	});
+
+	// Two surfaces asking for the same league and day at once is one request, not two: a worker start
+	// runs the slate while a guide open or a lookahead can be in flight for the same day.
+	it('makes one request when two callers want the same day at once', async () => {
+		const fetchMock = jest.fn().mockImplementation(async () => createResponse({ events: [], leagues: [{ logos: [] }] }));
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+		const { fetchGamesWithLeagueLogos } = loadApiClient();
+
+		await Promise.all([
+			fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false }),
+			fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false }),
+		]);
+
+		const asked = fetchMock.mock.calls.map(([url]) => dateOf(String(url)));
+		expect(new Set(asked).size).toBe(asked.length);
+	});
+});
+
+// Three fields that ride the scoreboard poll we already make, and one — the rank — that every
+// league sends whether it has a poll or not.
+describe('rank, timeouts and the last play', () => {
+	const parseOne = async (
+		league: 'nfl' | 'mlb' | 'ncaab' | 'epl',
+		params: { situation?: Record<string, unknown>; state?: string; homeExtra?: Record<string, unknown>; awayExtra?: Record<string, unknown> },
+	) => {
+		const fetchMock = jest.fn().mockResolvedValue(createResponse({
+			events: [makeEvent({
+				id: 'x1',
+				state: params.state ?? 'in',
+				period: 2,
+				clock: '8:00',
+				homeScore: '7',
+				awayScore: '7',
+				situation: params.situation,
+				homeExtra: params.homeExtra,
+				awayExtra: params.awayExtra,
+			})],
+		}));
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+		const { fetchGamesWithLeagueLogos } = loadApiClient();
+		const result = await fetchGamesWithLeagueLogos([league], { includeUpcoming: false, includeFinal: true });
+		return result.games.find(g => g.id === 'x1');
+	};
+
+	describe('curatedRank', () => {
+		test('carries a real poll position onto the team', async () => {
+			const game = await parseOne('ncaab', { homeExtra: { curatedRank: { current: 2 } }, awayExtra: { curatedRank: { current: 25 } } });
+			expect(game?.homeTeam.rank).toBe(2);
+			expect(game?.awayTeam.rank).toBe(25);
+		});
+
+		// ESPN sends the block on every professional game with `current` pinned at 99, so keying on
+		// the field being present would put "#99" beside every NFL team in the league.
+		test('drops 99, which is ESPN\'s code for unranked', async () => {
+			const game = await parseOne('nfl', { homeExtra: { curatedRank: { current: 99 } } });
+			expect(game?.homeTeam.rank).toBeUndefined();
+		});
+
+		test('drops the field entirely for a league that sends no rank', async () => {
+			const game = await parseOne('epl', {});
+			expect(game?.homeTeam.rank).toBeUndefined();
+			expect(game?.awayTeam.rank).toBeUndefined();
+		});
+
+		// Unlike the two live-only fields below, a ranked matchup is ranked before and after it is
+		// played, so this one is not gated on the game being in progress.
+		test('survives on a finished game', async () => {
+			const game = await parseOne('ncaab', { state: 'post', homeExtra: { curatedRank: { current: 7 } } });
+			expect(game?.homeTeam.rank).toBe(7);
+		});
+	});
+
+	describe('timeouts', () => {
+		test('lands each side on its own team', async () => {
+			const game = await parseOne('nfl', { situation: { homeTimeouts: 1, awayTimeouts: 3 } });
+			expect(game?.homeTeam.timeouts).toBe(1);
+			expect(game?.awayTeam.timeouts).toBe(3);
+		});
+
+		test('keeps zero, which is a count rather than an absence', async () => {
+			const game = await parseOne('nfl', { situation: { homeTimeouts: 0, awayTimeouts: 2 } });
+			expect(game?.homeTeam.timeouts).toBe(0);
+		});
+
+		test('is absent on a game that is not in progress', async () => {
+			const game = await parseOne('nfl', { state: 'post', situation: { homeTimeouts: 2, awayTimeouts: 2 } });
+			expect(game?.homeTeam.timeouts).toBeUndefined();
+		});
+	});
+
+	describe('lastPlay', () => {
+		test('trims the leading space ESPN puts in front of most football plays', async () => {
+			const game = await parseOne('nfl', { situation: { lastPlay: { text: ' (Shotgun) T.Lawrence pass incomplete deep left.' } } });
+			expect(game?.lastPlay).toBe('(Shotgun) T.Lawrence pass incomplete deep left.');
+		});
+
+		// A penalty arrives as two sentences joined by a newline. Both are worth reading, so the
+		// break survives and only the whitespace around it is cleaned up.
+		test('keeps the line break inside a penalty and trims around it', async () => {
+			const game = await parseOne('nfl', {
+				situation: { lastPlay: { text: ' A.Jeanty up the middle for 1 yard. \n PENALTY on LV-S.Burford, Offensive Holding. ' } },
+			});
+			expect(game?.lastPlay).toBe('A.Jeanty up the middle for 1 yard.\nPENALTY on LV-S.Burford, Offensive Holding.');
+		});
+
+		test('is not gated on football — baseball describes its last pitch too', async () => {
+			const game = await parseOne('mlb', { situation: { lastPlay: { text: 'Pitch 2 : Ball 1' } } });
+			expect(game?.lastPlay).toBe('Pitch 2 : Ball 1');
+		});
+
+		test('is absent when the text is empty or missing', async () => {
+			expect((await parseOne('nfl', { situation: { lastPlay: { text: '   ' } } }))?.lastPlay).toBeUndefined();
+			expect((await parseOne('nfl', { situation: {} }))?.lastPlay).toBeUndefined();
+			expect((await parseOne('epl', {}))?.lastPlay).toBeUndefined();
+		});
+
+		// Colours the play's accent bar, so naming the wrong side is worse than naming none.
+		test('attributes the play to whichever side ESPN names', async () => {
+			const game = await parseOne('nfl', { situation: { lastPlay: { text: 'Sack.', team: { id: 'home-x1' } } } });
+			expect(game?.lastPlayTeamId).toBe('home-x1');
+			expect(game?.lastPlayTeamId).toBe(game?.homeTeam.id);
+		});
+
+		// parsePossession falls back through `possession` to answer "who has the ball now". This
+		// answers "who just did something", and goes quiet rather than guessing at a dead ball.
+		test('stays quiet when ESPN names a team that is not playing', async () => {
+			const game = await parseOne('nfl', { situation: { lastPlay: { text: 'Sack.', team: { id: '99999' } } } });
+			expect(game?.lastPlayTeamId).toBeUndefined();
+		});
+
+		test('keeps the play but names nobody when ESPN attributes it to nobody', async () => {
+			const game = await parseOne('nfl', { situation: { lastPlay: { text: 'Two-Minute Warning' } } });
+			expect(game?.lastPlay).toBe('Two-Minute Warning');
+			expect(game?.lastPlayTeamId).toBeUndefined();
+		});
+
+		test('carries the drive summary for football and nothing else', async () => {
+			const withDrive = { lastPlay: { text: 'Timeout #1 by GB.', drive: { description: '1 play, 0 yards, 0:04' } } };
+			expect((await parseOne('nfl', { situation: withDrive }))?.lastPlayDrive).toBe('1 play, 0 yards, 0:04');
+			expect((await parseOne('mlb', { situation: withDrive }))?.lastPlayDrive).toBeUndefined();
+		});
+	});
+
+	describe('atBat', () => {
+		const pair = {
+			pitcher: { athlete: { displayName: 'Will Dion', jersey: 76, position: 'RP', headshot: 'https://a.espncdn.com/x.png' }, summary: '1.1 IP, 0 ER, H, BB' },
+			batter: { athlete: { displayName: 'Nathan Church', jersey: 27, position: 'CF' }, summary: '0-2, K' },
+		};
+
+		test('reads both sides, including the jersey ESPN sends as a number', async () => {
+			const game = await parseOne('mlb', { situation: pair });
+			expect(game?.atBat?.pitcher).toEqual({
+				name: 'Will Dion', jersey: '76', position: 'RP', headshot: 'https://a.espncdn.com/x.png', summary: '1.1 IP, 0 ER, H, BB',
+			});
+			expect(game?.atBat?.batter.name).toBe('Nathan Church');
+			expect(game?.atBat?.batter.headshot).toBeUndefined();
+		});
+
+		// ESPN drops the pair between innings. Half a panel reads as a fault rather than a gap.
+		test('is undefined unless both sides arrived', async () => {
+			expect((await parseOne('mlb', { situation: { pitcher: pair.pitcher } }))?.atBat).toBeUndefined();
+			expect((await parseOne('mlb', { situation: { batter: pair.batter } }))?.atBat).toBeUndefined();
+		});
+
+		test('is absent outside the inning sports and outside a live game', async () => {
+			expect((await parseOne('nfl', { situation: pair }))?.atBat).toBeUndefined();
+			expect((await parseOne('mlb', { state: 'post', situation: pair }))?.atBat).toBeUndefined();
+		});
+
+		// The pitcher's `position` is a bare string where the same key inside `leaders` is an
+		// object. Declaring one schema for both would empty every leaders block through its
+		// `.catch([])` rather than failing loudly, so this is the guard for that.
+		test('does not disturb the leaders block on the same payload', async () => {
+			const leaders = [{
+				name: 'battingAverage',
+				shortDisplayName: 'AVG',
+				leaders: [{ displayValue: '.312', athlete: { shortName: 'B. Harper', position: { abbreviation: '1B' } } }],
+			}];
+			const game = await parseOne('mlb', { state: 'pre', homeExtra: { leaders }, awayExtra: { leaders } });
+			expect(game?.homeTeam.leaders?.[0]?.player).toBe('B. Harper');
+			expect(game?.homeTeam.leaders?.[0]?.value).toBe('.312');
 		});
 	});
 });

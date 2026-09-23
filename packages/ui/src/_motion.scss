@@ -1,0 +1,66 @@
+// The timing vocabulary both apps move on. Nothing here is imported for its own sake — it exists so
+// that a hover in the popup and a hover on the website are the same hover.
+//
+// Before this file the two apps had drifted into 17 durations and 16 curves between them, including
+// two near-identical signature ease-outs doing the same job in different places: the site settled on
+// `cubic-bezier(0.16, 1, 0.3, 1)` and the popup on `cubic-bezier(0.22, 1, 0.36, 1)`. The popup's
+// won, so the site's 19 uses came to it rather than the other way round.
+//
+// Deliberately NOT governed by these tokens: the card reveal timeline in the extension's
+// `global.scss`, Ludicrous Speed, the wordmark collapse in `wordmarkFrame.ts`, and the onboarding
+// logo rise. Those are choreography, not interface — each beat in them is the length it is for a
+// reason written next to it, and a shared scale would only flatten them.
+
+// Durations. The step below the one you want is usually the right one: motion that finishes early
+// reads as responsive, motion that finishes late reads as broken.
+$motion-instant:      100ms;  // colour and opacity only, where movement would be noise
+$motion-snap:         140ms;  // small, frequent, low-travel — icon states, inline affordances
+$motion-quick:        180ms;  // the hover standard: lifts, tints, borders, small transforms
+$motion-base:         240ms;  // the default: view changes, drawers, toasts, anything that arrives
+$motion-slow:         400ms;  // measurable travel — progress fills, layout shifts, field markers
+$motion-deliberate:   700ms;  // motion you are meant to watch: scroll reveals, hero fades
+$motion-epic:        1000ms;  // once per page at most, for a number counting itself up
+
+// Loop cadences, for the handful of things that breathe rather than travel. These are not on the
+// duration scale above and should not be read as part of it: a transition is over, a loop is not,
+// and the number that makes a live dot look alive has nothing to do with the number that makes a
+// hover feel responsive.
+$motion-urgent:       500ms;  // a celebration or an alarm — fast enough to read as excitement
+$motion-pulse:       1500ms;  // the live heartbeat — anything signalling "this is happening now"
+$motion-ambient:     3000ms;  // slow decoration, meant to be caught rather than watched
+
+// Curves. Four, because a fifth would be a preference rather than a job.
+//
+// The signature. Everything that arrives, settles, or answers the pointer uses this: a quick launch
+// and a long tail, so the element is already most of the way there by the time the eye finds it.
+$motion-ease:        cubic-bezier(0.22, 1, 0.36, 1);
+// The mirror, for anything leaving. An exit that eases out drifts; an exit that eases in gets on
+// with it, which is what you want from something you have just dismissed.
+$motion-ease-in:     cubic-bezier(0.4, 0, 1, 1);
+// Symmetrical, for motion that reverses or repeats — pulses, breathing highlights, a value that can
+// travel in either direction and should not look different going back.
+$motion-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+// Constant rate, for anything continuous or seamless. A loop that eases has a visible seam where its
+// slow end meets its own fast start.
+$motion-linear:      linear;
+
+// Reduced motion. Wrapping the query rather than repeating it keeps every opt-out phrased the same
+// way and makes the ones that are missing easy to find.
+//
+// What belongs inside it: movement and repetition. Anything that travels — a transform, a width, a
+// position — and anything that loops forever, and any entrance an element is invisible until it
+// finishes. What does not: a colour or an opacity settling over 100ms on hover. Nobody sets this
+// preference to stop a link going orange, and switching those off costs the interface its feedback
+// without buying the reader anything.
+@mixin reduced-motion {
+	@media (prefers-reduced-motion: reduce) {
+		@content;
+	}
+}
+
+// The usual body of that query. Ends motion without ending the rule that produced it, so a hover
+// still changes colour and a card still lands where it was going.
+@mixin motion-still {
+	animation: none;
+	transition: none;
+}

@@ -11,3 +11,6 @@
 - [PowerScore failure map](review_powerscore_failure_map.md) — unknown-clock→0:00, NaN eating the stall penalty, soccer "overtime", README drift, untypechecked tests
 - [Review targets and commands](reference_review_targets.md) — verification commands, reading refs without touching the shared checkout
 - [Docs site + design system map](review_docs_site_map.md) — token shadowing, "compute don't hardcode" for PowerScore numbers, hand-maintained font dirs, where dead code collects
+- [History window footgun](review_history_window_footgun.md) — score/PowerScore history is a 5–20 min rolling window; any "whole game" history assumption is dead on arrival
+- [Background slate lifecycle](review_background_slate_lifecycle.md) — refreshSlate runs on every worker start and now costs a request per Eastern day per league; 2 empty polls walk a league quiet
+- [Popup open reveal](review_popup_open_reveal.md) — measured DM Sans tricode widths, the harness/production nesting mismatch, the 3400ms JS↔SCSS duplication

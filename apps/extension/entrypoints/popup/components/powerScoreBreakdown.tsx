@@ -27,6 +27,9 @@ interface powerScoreBreakdownProps {
 	currentBoost: number;
 	scoringOpportunityBoost: number;
 	postseasonBoost: number;
+	// ESPN's own round name, so the number has something accounting for it. Untranslated, like
+	// every other string this project passes through from ESPN.
+	postseasonLabel?: string;
 	totalLabel: string;
 	reason?: string;
 	disabledSignals?: readonly SignalName[];
@@ -76,6 +79,7 @@ const PowerScoreBreakdown = ({
 	currentBoost,
 	scoringOpportunityBoost,
 	postseasonBoost,
+	postseasonLabel,
 	totalLabel,
 	reason,
 	disabledSignals = [],
@@ -199,6 +203,7 @@ const PowerScoreBreakdown = ({
 				<span className='d-flex align-items-center gap-1'>
 					<FactorIcon factor='postseason' />
 					{i18n.t('powerScore.postseasonBoost')}
+					{postseasonLabel && <span className='powerscore-breakdown-qualifier'>· {postseasonLabel}</span>}
 					<SettingTooltipIcon text={i18n.t('powerScore.tooltipPostseasonBoost')} />
 				</span>
 				<span style={{ color: postseasonBoost > 0 ? boostPenaltyMeta.postseason.color : undefined }}>{postseasonBoost > 0 ? `+${postseasonBoost}` : '0'}</span>

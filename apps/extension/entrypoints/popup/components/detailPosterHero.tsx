@@ -1,19 +1,26 @@
 import { i18n } from '#i18n';
 import { createFavoriteTeamKey } from '@arenaswap/core/constants';
-import type { Game, LeagueId, Team } from '@arenaswap/core/types';
-import Crest from '@arenaswap/ui/src/components/crest';
+import type { Game, LeagueId, Team, TeamMonoMarks } from '@arenaswap/core/types';
+import TeamCrest from '@arenaswap/ui/src/components/teamCrest';
 import SeriesDots from './seriesDots';
 import StartCountdownDisplay from './startCountdownDisplay';
-import { crestBacking, resolveTeamColorPair } from '@arenaswap/ui/src/components/colorUtils';
-import type { SeriesInfo, TeamRecords } from './useSummaryData';
+import { underHeroScrim } from '@arenaswap/ui/src/components/colorUtils';
+import type { CSSProperties } from 'react';
+import type { MonoLogos, SeriesInfo, TeamRecords } from './useSummaryData';
 
 interface detailPosterHeroProps {
 	game: Game;
 	seriesInfo: SeriesInfo | null;
 	records: TeamRecords;
+	monoLogos: MonoLogos;
 	// Empty for a normal pre-game game; a postponement or delay is the one thing that has
 	// something to say before the start time, so it is not dropped with the rest of the row.
 	statusText: string;
+	// The scrimmed band of the two team colours, built once in the view and handed to whichever
+	// hero renders — a live game gets the same surface a pre-game one does.
+	heroStyle: CSSProperties;
+	awayColor: string;
+	homeColor: string;
 	favoriteTeamIds: ReadonlySet<string>;
 	onToggleFavoriteTeam: (leagueId: LeagueId, teamId: string) => void;
 }
@@ -21,6 +28,7 @@ interface detailPosterHeroProps {
 const PosterTeam = ({
 	team,
 	color,
+	monoMarks,
 	record,
 	leagueId,
 	isFavorited,
@@ -28,20 +36,23 @@ const PosterTeam = ({
 }: {
 	team: Team;
 	color: string;
+	// ESPN's monochrome marks. Reached for only when the colour artwork stops reading against this
+	// team's own half of the poster, which is the hardest surface it faces: a navy crest on navy.
+	monoMarks?: TeamMonoMarks | null;
 	record: string | null;
 	leagueId: LeagueId;
 	isFavorited: boolean;
 	onToggleFavoriteTeam: (leagueId: LeagueId, teamId: string) => void;
 }) => (
 	<div className='gd-poster-team'>
-		<div className='gd-poster-crest' style={{ background: crestBacking(color) }}>
-			<Crest
-				logo={team.logo}
-				abbreviation={team.abbreviation}
-				className='gd-poster-crest-logo'
-				fallbackStyle={{ color }}
-			/>
-		</div>
+		<TeamCrest
+			logo={team.logo}
+			monoMarks={monoMarks ?? undefined}
+			abbreviation={team.abbreviation}
+			background={underHeroScrim(color)}
+			discClassName='gd-poster-crest'
+			crestClassName='gd-poster-crest-logo'
+		/>
 		<div className='gd-poster-name'>{team.name || team.abbreviation}</div>
 		<div className='gd-poster-meta'>
 			{record && <span className='gd-poster-record'>{record}</span>}
@@ -61,25 +72,17 @@ const PosterTeam = ({
 	</div>
 );
 
-const detailPosterHero = ({ game, seriesInfo, records, statusText, favoriteTeamIds, onToggleFavoriteTeam }: detailPosterHeroProps) => {
-	const [awayColor, homeColor] = resolveTeamColorPair(game.awayTeam, game.homeTeam, '#2274A5', '#F75C03');
+const detailPosterHero = ({ game, seriesInfo, records, monoLogos, statusText, heroStyle, awayColor, homeColor, favoriteTeamIds, onToggleFavoriteTeam }: detailPosterHeroProps) => {
 	const awayFavorited = favoriteTeamIds.has(createFavoriteTeamKey(game.league, game.awayTeam.id));
 	const homeFavorited = favoriteTeamIds.has(createFavoriteTeamKey(game.league, game.homeTeam.id));
 
-	// A dark scrim over the team colours, not under them: it makes the white type readable
-	// against a pale team colour without having to know which colours those are.
-	const posterStyle = {
-		backgroundImage:
-			'linear-gradient(180deg, rgba(3, 7, 12, 0.18) 0%, rgba(3, 7, 12, 0.52) 100%), '
-			+ `linear-gradient(to right, ${awayColor} 0%, ${awayColor} 38%, ${homeColor} 62%, ${homeColor} 100%)`,
-	};
-
 	return (
-		<div className='gd-poster' style={posterStyle}>
+		<div className='gd-poster' style={heroStyle}>
 			<div className='gd-poster-teams'>
 				<PosterTeam
 					team={game.awayTeam}
 					color={awayColor}
+					monoMarks={monoLogos.away}
 					record={records.away}
 					leagueId={game.league}
 					isFavorited={awayFavorited}
@@ -89,6 +92,7 @@ const detailPosterHero = ({ game, seriesInfo, records, statusText, favoriteTeamI
 				<PosterTeam
 					team={game.homeTeam}
 					color={homeColor}
+					monoMarks={monoLogos.home}
 					record={records.home}
 					leagueId={game.league}
 					isFavorited={homeFavorited}

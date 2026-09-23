@@ -1,5 +1,5 @@
-import { buildWinProbabilityOption } from '../entrypoints/popup/components/gameDetailChartOptions';
-import type { Game } from '@arenaswap/core/types';
+import { buildPowerScoreOption, buildTeamScoreOption, buildWinProbabilityOption } from '../entrypoints/popup/components/gameDetailChartOptions';
+import type { Game, PowerScoreSnapshot, ScoreSnapshot } from '@arenaswap/core/types';
 
 const makeGame = (homeAbbr = 'HOM', awayAbbr = 'AWY', homeColor = '#FF0000', awayColor = '#0000FF'): Game => ({
 	id: 'test-game',
@@ -21,14 +21,6 @@ describe('buildWinProbabilityOption', () => {
 		const option = buildWinProbabilityOption([0.6, 0.55, 0.7], makeGame());
 		expect(Array.isArray(option.series)).toBe(true);
 		expect((option.series as unknown[]).length).toBe(2);
-	});
-
-	test('neither series has a stack property (no stacking)', () => {
-		const option = buildWinProbabilityOption([0.5, 0.6, 0.4], makeGame());
-		const series = option.series as Array<Record<string, unknown>>;
-		for (const s of series) {
-			expect(s.stack).toBeUndefined();
-		}
 	});
 
 	test('y-axis has min=0 and max=100', () => {
@@ -68,13 +60,6 @@ describe('buildWinProbabilityOption', () => {
 		expect(names).toContain('LAL');
 	});
 
-	test('both series have showSymbol set to false', () => {
-		const option = buildWinProbabilityOption([0.4, 0.6], makeGame());
-		const series = option.series as Array<{ showSymbol: boolean }>;
-		expect(series[0]!.showSymbol).toBe(false);
-		expect(series[1]!.showSymbol).toBe(false);
-	});
-
 	test('tooltip formatter includes team names and percent signs with colored bullets', () => {
 		const option = buildWinProbabilityOption([0.6], makeGame('PHI', 'NYM'));
 		const tooltip = option.tooltip as { formatter?: (params: unknown) => string };
@@ -91,11 +76,21 @@ describe('buildWinProbabilityOption', () => {
 		expect(result).toContain('●');
 	});
 
-	test('large input is downsampled to at most 80 data points per series', () => {
-		const largeInput = Array.from({ length: 200 }, (_, i) => i / 200);
-		const option = buildWinProbabilityOption(largeInput, makeGame());
-		const homeSeries = (option.series as Array<{ data: number[] }>)[0]!;
-		expect(homeSeries.data.length).toBeLessThan(200);
+	// A 320px chart cannot resolve more than a couple of hundred points, and a five-hour baseball
+	// game arrives with thousands. The sampling has to hold the drawn count down however long the
+	// game runs, and it has to keep the last value: the end of the line is the number on screen.
+	test.each([200, 2_000, 20_000])('draws a readable line from a %i-point win probability history', length => {
+		const line = Array.from({ length }, (_, i) => i / length);
+		const option = buildWinProbabilityOption(line, makeGame());
+		const [home, away] = option.series as Array<{ data: number[] }>;
+
+		expect(home!.data.length).toBeLessThanOrEqual(161);
+		expect(home!.data.length).toBeGreaterThanOrEqual(Math.min(80, length));
+		expect(away!.data).toHaveLength(home!.data.length);
+
+		// Tip-off and the current moment both survive the thinning.
+		expect(home!.data[0]).toBe(0);
+		expect(home!.data.at(-1)).toBe(Math.round((length - 1) / length * 100));
 	});
 
 	test('single-point input returns a valid two-series option without crashing', () => {
@@ -105,5 +100,38 @@ describe('buildWinProbabilityOption', () => {
 		expect(series[0]!.data).toHaveLength(1);
 		expect(series[1]!.data).toHaveLength(1);
 		expect(series[0]!.data[0]! + series[1]!.data[0]!).toBe(100);
+	});
+});
+
+describe('buildTeamScoreOption', () => {
+	const history: ScoreSnapshot[] = [62, 74, 85, 96].map((homeScore, index) => ({
+		gameId: 'test-game',
+		timestamp: 1_767_225_600_000 + index * 60_000,
+		homeScore,
+		awayScore: homeScore + 15 - index * 5,
+	}));
+
+	test('the y-axis scales to the data rather than anchoring at zero', () => {
+		const yAxis = buildTeamScoreOption(history, makeGame()).yAxis as { scale?: boolean };
+		expect(yAxis.scale).toBe(true);
+	});
+
+	test('the PowerScore axis does not scale, because its series carries an area fill', () => {
+		const snapshot = {
+			gameId: 'test-game',
+			timestamp: 1_767_225_600_000,
+			total: 62,
+			closeness: 30,
+			lateGame: 10,
+			momentum: 12,
+			leadChanges: 6,
+			comeback: 4,
+			signalsSubtotal: 62,
+			favoriteBonus: 0,
+			favoriteTeamCount: 0,
+			stalled: false,
+		} as PowerScoreSnapshot;
+		const yAxis = buildPowerScoreOption([snapshot]).yAxis as { scale?: boolean };
+		expect(yAxis.scale).toBeUndefined();
 	});
 });

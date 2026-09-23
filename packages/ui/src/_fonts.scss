@@ -1,7 +1,15 @@
-// Set $font-base-url before importing this file:
-//   $font-base-url: '/arenaswap/fonts';  // docs (GitHub Pages base path)
-//   $font-base-url: '/fonts';            // extension (no base path)
-// Defaults to '/fonts' if not set.
+// Set $font-base-url before importing this file. It is a root-relative path to the font files,
+// and where they have to live depends on whether the app is served under a base path.
+//
+// The extension is served from the root of its own origin, so '/fonts' — the default — is a
+// path into its public/ directory and Vite leaves it alone.
+//
+// The docs site is served under /arenaswap/, and a public/ path cannot express that in both
+// modes at once. Astro sets Vite's `base` for the build and not for the dev server, so Vite
+// resolves a public file to '/arenaswap/fonts/…' when building and to '/fonts/…' in dev —
+// where Astro's own router then 404s it for missing the base. So the docs fonts live in src/
+// and are passed as '/src/fonts', which Vite resolves through its asset pipeline instead of
+// publicDir: it emits a hashed file and applies `base` itself, correctly in both modes.
 
 $font-base-url: '/fonts' !default;
 
@@ -15,10 +23,14 @@ $font-base-url: '/fonts' !default;
 	}
 }
 
-@include as-woff2-face('DM Sans', 'DMSans-Regular',  400);
-@include as-woff2-face('DM Sans', 'DMSans-Medium',   500);
-@include as-woff2-face('DM Sans', 'DMSans-SemiBold', 600);
-@include as-woff2-face('DM Sans', 'DMSans-Bold',     700);
+// One file for all four weights. DM Sans ships as a variable font with a wght axis from 100 to
+// 1000, and a single font-weight descriptor pins that axis rather than leaving the browser to
+// synthesize — so these are four real weights out of one download, not one weight and three
+// smears. The four were separate files until 2026-09-11 and were byte-identical to each other.
+@include as-woff2-face('DM Sans', 'DMSans', 400);
+@include as-woff2-face('DM Sans', 'DMSans', 500);
+@include as-woff2-face('DM Sans', 'DMSans', 600);
+@include as-woff2-face('DM Sans', 'DMSans', 700);
 // Only for the Lattice & Company parent lockup, never for ArenaSwap's own type.
 @include as-woff2-face('DM Serif Text', 'DMSerifText-Regular', 400);
 @include as-woff2-face('Lekton', 'Lekton-Regular',   400);

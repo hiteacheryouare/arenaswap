@@ -25,7 +25,14 @@ const pickNewestPrefs = (
 	return localTimestamp > syncTimestamp ? localPrefs : syncPrefs;
 };
 
-export const loadStoredUserPreferences = async (): Promise<UserPreferences> => {
+interface storedUserPreferencesResult {
+	prefs: UserPreferences;
+	hasStored: boolean;
+}
+
+// Presence comes back alongside the prefs because the popup needs both before its first paint, and
+// answering them separately meant reading the same two keys from both stores twice.
+export const loadStoredUserPreferencesWithPresence = async (): Promise<storedUserPreferencesResult> => {
 	const [syncResult, localResult] = await Promise.all([
 		browser.storage.sync.get({ prefs: null, [prefsStorageUpdatedAtKey]: 0 }).catch(err => {
 			logWarn('storage.sync unavailable while loading prefs.', err);
@@ -37,22 +44,20 @@ export const loadStoredUserPreferences = async (): Promise<UserPreferences> => {
 		}),
 	]);
 
-	return normalizeUserPreferences(pickNewestPrefs(
-		syncResult.prefs,
-		syncResult[prefsStorageUpdatedAtKey],
-		localResult.prefs,
-		localResult[prefsStorageUpdatedAtKey],
-	));
+	return {
+		prefs: normalizeUserPreferences(pickNewestPrefs(
+			syncResult.prefs,
+			syncResult[prefsStorageUpdatedAtKey],
+			localResult.prefs,
+			localResult[prefsStorageUpdatedAtKey],
+		)),
+		hasStored: syncResult.prefs !== null || localResult.prefs !== null,
+	};
 };
 
-export const hasStoredUserPreferences = async (): Promise<boolean> => {
-	const [syncResult, localResult] = await Promise.all([
-		browser.storage.sync.get({ prefs: null }).catch(() => ({ prefs: null })),
-		browser.storage.local.get({ prefs: null }).catch(() => ({ prefs: null })),
-	]);
-
-	return syncResult.prefs !== null || localResult.prefs !== null;
-};
+export const loadStoredUserPreferences = async (): Promise<UserPreferences> => (
+	(await loadStoredUserPreferencesWithPresence()).prefs
+);
 
 export const persistStoredUserPreferences = async (prefs: UserPreferences): Promise<void> => {
 	const normalized = normalizeUserPreferences(prefs);

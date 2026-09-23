@@ -1,5 +1,5 @@
 import pkg from '../package.json';
-import type { LeagueId, SignalName, UserPreferences } from './types';
+import type { FinishedTabAction, Game, LeagueId, SignalName, SportType, UserPreferences } from './types';
 import {
 	allLeagueIds,
 	stallPenaltySteps,
@@ -41,6 +41,41 @@ export const appVersion = pkg.version;
 export const appDescription = pkg.description;
 
 export const pollIntervalMs = 15_000;
+
+// How long a finished game stays reachable once it has wrapped, when keepFinalGames is on.
+export const finalRetentionMs = 24 * 60 * 60 * 1000;
+
+// ESPN's scoreboard publishes no completion timestamp — a competition carries `date` and
+// `startDate` and nothing else — so a final game's wrap has to be estimated from its start plus
+// how long the sport actually takes. These are broadcast-window lengths rather than playing time:
+// an NFL game is sixty minutes of clock and about three and a half hours of television.
+//
+// They are deliberately generous. Over-estimating a wrap only keeps a game around slightly
+// longer, which is the harmless direction; under-estimating drops it while somebody is reading it.
+export const sportWrapAllowanceMs: Record<SportType, number> = {
+	football:   3.5  * 60 * 60 * 1000,
+	baseball:   3.25 * 60 * 60 * 1000,
+	softball:   2.5  * 60 * 60 * 1000,
+	basketball: 2.5  * 60 * 60 * 1000,
+	hockey:     2.75 * 60 * 60 * 1000,
+	soccer:     2.5  * 60 * 60 * 1000,
+};
+
+// The instant a final game is treated as having ended. A game with no start time cannot be placed
+// on a clock at all, so it is treated as having just wrapped rather than being dropped: ESPN sends
+// `date` on every event we have ever seen, and losing a real final over a missing field is worse
+// than keeping an old one for a day.
+export const estimatedWrapMs = (game: Pick<Game, 'sportType' | 'startTime'>, now: number): number => {
+	if (!game.startTime) return now;
+	const startMs = new Date(game.startTime).getTime();
+	if (!Number.isFinite(startMs)) return now;
+	return startMs + (sportWrapAllowanceMs[game.sportType] ?? sportWrapAllowanceMs.basketball);
+};
+
+export const isWithinFinalRetention = (
+	game: Pick<Game, 'sportType' | 'startTime'>,
+	now: number = Date.now(),
+): boolean => now - estimatedWrapMs(game, now) <= finalRetentionMs;
 // Safety net for sports not yet in sportTypeConfigMap; in practice every config defines its own.
 export const historyWindowMs = 300_000;
 
@@ -49,10 +84,42 @@ export const pollDormantThresholdPolls = 2;
 export const pollDormantMinMs = 120_000;
 export const pollDormantMaxMs = 180_000;
 
-// The interval scales continuously with PowerScore: high scores approach pollMinEagerMs, low
-// scores pollMaxEagerMs. Every live game is polled at least every pollMaxEagerMs so a boring one
-// can still catch a momentum shift. pollIntervalMs remains the stagger, demo and fallback value.
-export const pollMinEagerMs = 6_000;
+/* Below dormant sits hebetudinous, for a league with nothing coming at all. Dormant cannot tell an
+   MLB slate quiet in January with nothing for nine weeks from one quiet between games, because the
+   dateless scoreboard it polls only carries the current Eastern day — so both poll at the same 2-3
+   minutes forever, which in an offseason is ~576 requests a day per league to be told nothing is
+   happening.
+
+   The horizon is the gap that has to exist before a league is allowed to sleep, and it is a full
+   day: a league with a game on today's card is having a day, whatever hour you happen to open the
+   popup in, and dropping to half-hourly polling at noon because first pitch is at seven is not the
+   saving this is for. A league sleeps until it is within a day of the next start it knows about,
+   then hands back to the dormant beat.
+
+   Practically that means hebetudinous only engages in a real gap — an offseason, a break, an All-Star
+   weekend — which is the only place the ~576 was ever worth reclaiming. Everything the poll finds on
+   its own payload is inside the horizon by definition, so those leagues stay dormant and the
+   lookahead only decides leagues whose card is empty. */
+export const pollHebetudinousHorizonMs = 24 * 60 * 60 * 1000;
+export const pollHebetudinousMaxMs = 30 * 60 * 1000;
+
+// How far ahead a lookahead reaches, and how long its answer is trusted before being asked again.
+// The window has to clear the horizon with room to spare, or "nothing found" would mean "nothing
+// inside the horizon" and every league would sleep.
+export const pollLookaheadDays = 7;
+export const pollLookaheadTtlMs = 6 * 60 * 60 * 1000;
+
+/* The interval scales continuously with PowerScore: high scores approach pollMinEagerMs, low
+   scores pollMaxEagerMs. Every live game is polled at least every pollMaxEagerMs so a boring one
+   can still catch a momentum shift. pollIntervalMs remains the stagger, demo and fallback value.
+
+   The floor is ESPN's, not ours. The scoreboard answers with `cache-control: max-age=12` and our
+   fetch uses the HTTP cache, so a poll inside that window is served the bytes it already has: the
+   6s floor this used to hold spent every other request on the hottest game in the product to be
+   told nothing. This value is only the assumption made until a response says otherwise —
+   `scoreboardRefreshMs` reads the max-age each league actually sent and floors that league there
+   instead, so a league ESPN refreshes faster is polled faster without anyone editing this. */
+export const pollMinEagerMs = 12_000;
 export const pollMaxEagerMs = 25_000;
 export const pollIntermissionMs = 40_000;
 
@@ -60,10 +127,17 @@ export const defaultSensitivity = 4 as const;
 export const defaultCooldownSecs = 45;
 export const defaultSwitchDelaySecs = 0;
 export const defaultFavoriteTeamBonusPoints = 10;
-export const defaultPostseasonBoostPoints = 5;
+// The ceiling a title game is worth, not a flat bump: the round ladder pays quarters of it, so 8
+// gives 2/4/6/8 and every rung lands a whole point clear of the one below. At the previous default
+// of 5 the bottom two rungs rounded onto 1 and 3, which is most of the ladder inside two points.
+export const defaultPostseasonBoostPoints = 8;
 export const defaultUpcomingGamesDays = 7;
 export const upcomingGamesDaysMin = 1;
 export const upcomingGamesDaysMax = 14;
+
+// The guide pages a day at a time and its whole point is having somewhere to page to, so it floors
+// the Up Next setting rather than following it all the way down. At 1 there is no future to look at.
+export const guideMinUpcomingDays = 3;
 
 
 // Score delta required to trigger a switch. Calibrated via `npm run powerscore:simulate`, then
@@ -149,6 +223,16 @@ export const createFavoriteTeamKey = (leagueId: LeagueId, teamId: string): strin
 
 export const isFavoriteTeamKey = (value: unknown): value is string => (
 	typeof value === 'string' && parseFavoriteTeamKey(value) !== null
+);
+
+// Lives here rather than in the popup because the guide asks the same question, and a second
+// favourite-matching path is how the two drift.
+export const isFavoriteTeamGame = (
+	game: Pick<Game, 'league' | 'homeTeam' | 'awayTeam'>,
+	favoriteTeamIds: Set<string>,
+): boolean => (
+	favoriteTeamIds.has(createFavoriteTeamKey(game.league, game.homeTeam.id))
+	|| favoriteTeamIds.has(createFavoriteTeamKey(game.league, game.awayTeam.id))
 );
 
 export const allSignalNames: readonly SignalName[] = ['closeness', 'lateGame', 'momentum', 'leadChanges', 'comeback'] as const;
@@ -249,6 +333,8 @@ export const createDefaultUserPreferences = (): UserPreferences => ({
 	favoriteTeamIds: [],
 	favoriteTeamBonusPoints: defaultFavoriteTeamBonusPoints,
 	showUpcomingGames: true,
+	keepFinalGames: false,
+	finishedTabAction: 'keep' as const,
 	proTipsEnabled: true,
 	notificationsEnabled: true,
 	standbyStreamEnabled: false,
@@ -256,6 +342,7 @@ export const createDefaultUserPreferences = (): UserPreferences => ({
 	bettingEnabled: false,
 	temperatureUnit: 'F' as const,
 	romerUnlocked: false,
+	openRevealEnabled: true,
 	holidayDecorationsEnabled: true,
 	holidaySnowEnabled: true,
 	holidayLightsEnabled: true,
@@ -267,6 +354,13 @@ export const createDefaultUserPreferences = (): UserPreferences => ({
 
 const normalizeTemperatureUnit = (value: unknown): UserPreferences['temperatureUnit'] => (
 	value === 'C' || value === 'Ro' ? value : 'F'
+);
+
+// Anything unrecognised falls back to 'keep', which is the one value that touches nobody's tabs.
+// A stored string this does not know about is more likely a typo or a rolled-back release than a
+// request to start closing things.
+const normalizeFinishedTabAction = (value: unknown): FinishedTabAction => (
+	value === 'free' || value === 'close' ? value : 'keep'
 );
 
 export const normalizeUserPreferences = (storedPrefs: unknown): UserPreferences => {
@@ -290,6 +384,8 @@ export const normalizeUserPreferences = (storedPrefs: unknown): UserPreferences 
 		favoriteTeamIds: normalizeFavoriteTeamIds(candidate.favoriteTeamIds),
 		favoriteTeamBonusPoints: normalizeSecondsPreference(candidate.favoriteTeamBonusPoints, defaults.favoriteTeamBonusPoints),
 		showUpcomingGames: typeof candidate.showUpcomingGames === 'boolean' ? candidate.showUpcomingGames : defaults.showUpcomingGames,
+		keepFinalGames: typeof candidate.keepFinalGames === 'boolean' ? candidate.keepFinalGames : defaults.keepFinalGames,
+		finishedTabAction: normalizeFinishedTabAction(candidate.finishedTabAction),
 		proTipsEnabled: typeof candidate.proTipsEnabled === 'boolean' ? candidate.proTipsEnabled : defaults.proTipsEnabled,
 		notificationsEnabled: typeof candidate.notificationsEnabled === 'boolean' ? candidate.notificationsEnabled : defaults.notificationsEnabled,
 		standbyStreamEnabled: typeof candidate.standbyStreamEnabled === 'boolean' ? candidate.standbyStreamEnabled : defaults.standbyStreamEnabled,
@@ -301,6 +397,7 @@ export const normalizeUserPreferences = (storedPrefs: unknown): UserPreferences 
 		// A stored Rømer unit is itself proof the unlock happened, so the two can never
 		// disagree in the direction that would strand someone on a unit they cannot cycle back to.
 		romerUnlocked: candidate.romerUnlocked === true || candidate.temperatureUnit === 'Ro',
+		openRevealEnabled: typeof candidate.openRevealEnabled === 'boolean' ? candidate.openRevealEnabled : defaults.openRevealEnabled,
 		holidayDecorationsEnabled: typeof candidate.holidayDecorationsEnabled === 'boolean' ? candidate.holidayDecorationsEnabled : defaults.holidayDecorationsEnabled,
 		holidaySnowEnabled: typeof candidate.holidaySnowEnabled === 'boolean' ? candidate.holidaySnowEnabled : defaults.holidaySnowEnabled,
 		holidayLightsEnabled: typeof candidate.holidayLightsEnabled === 'boolean' ? candidate.holidayLightsEnabled : defaults.holidayLightsEnabled,

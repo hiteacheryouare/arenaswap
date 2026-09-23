@@ -2,6 +2,7 @@ import type { EChartsOption } from 'echarts';
 import { scoreMaxTotal } from '@arenaswap/core/constants';
 import type { Game, PowerScoreSnapshot, ScoreSnapshot } from '@arenaswap/core/types';
 import { resolveTeamColorPair } from './colorUtils';
+import { chartEasing, motionDuration } from '../motion';
 
 const axisLabelColor = '#8b949e';
 const axisLineColor = 'rgba(71, 85, 105, 0.95)';
@@ -17,7 +18,8 @@ const baseOption = (
 	labels: string[],
 	gridTop = 24,
 ): EChartsOption => ({
-	animationDuration: 500,
+	animationDuration: motionDuration.slow,
+	animationEasing: chartEasing,
 	tooltip: {
 		trigger: 'axis',
 		backgroundColor: tooltipBackgroundColor,
@@ -77,8 +79,14 @@ export const buildTeamScoreOption = (scoreHistory: ScoreSnapshot[], game: Game):
 	const homeScores = scoreHistory.map(point => point.homeScore);
 	const showSinglePointSymbols = scoreHistory.length === 1;
 	const [awayColor, homeColor] = resolveTeamColorPair(game.awayTeam, game.homeTeam, '#60a5fa', '#f87171', true);
+	const option = baseOption(labels, 24);
 	return {
-		...baseOption(labels, 24),
+		...option,
+		// The history is a rolling window, so a basketball chart's first point is already in the
+		// sixties and a zero baseline spends most of 176px on scores nobody is looking at — which
+		// flattens the gap between the two teams, the one thing the chart exists to show. Safe here
+		// and not on the PowerScore chart above, because these lines carry no area fill.
+		yAxis: { ...(option.yAxis as EChartsOption['yAxis']), scale: true },
 		series: [
 			{
 				type: 'line',
@@ -107,6 +115,9 @@ export const buildWinProbabilityOption = (homeWinPcts: number[], game: Game): EC
 	const step = Math.max(1, Math.floor(homeWinPcts.length / 80));
 	const sampled = homeWinPcts.filter((_, i) => i % step === 0 || i === homeWinPcts.length - 1);
 	const homeVals = sampled.map(p => Math.round(p * 100));
+	// A line one poll old is a single point, and a point with no symbol draws nothing at all.
+	// The score and PowerScore builders above already make this exception.
+	const showSinglePointSymbols = sampled.length === 1;
 	const awayVals = sampled.map(p => 100 - Math.round(p * 100));
 	const labels = sampled.map(() => '');
 	const [awayColor, homeColor] = resolveTeamColorPair(game.awayTeam, game.homeTeam, '#60a5fa', '#f87171', true);
@@ -137,7 +148,8 @@ export const buildWinProbabilityOption = (homeWinPcts: number[], game: Game): EC
 				name: game.homeTeam.abbreviation,
 				data: homeVals,
 				smooth: true,
-				showSymbol: false,
+				showSymbol: showSinglePointSymbols,
+				symbolSize: showSinglePointSymbols ? 7 : 0,
 				lineStyle: { width: 2, color: homeColor },
 				itemStyle: { color: homeColor },
 			},
@@ -146,7 +158,8 @@ export const buildWinProbabilityOption = (homeWinPcts: number[], game: Game): EC
 				name: game.awayTeam.abbreviation,
 				data: awayVals,
 				smooth: true,
-				showSymbol: false,
+				showSymbol: showSinglePointSymbols,
+				symbolSize: showSinglePointSymbols ? 7 : 0,
 				lineStyle: { width: 2, color: awayColor },
 				itemStyle: { color: awayColor },
 			},

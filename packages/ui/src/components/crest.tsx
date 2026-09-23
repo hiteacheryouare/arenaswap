@@ -3,6 +3,12 @@ import type { CSSProperties } from 'react';
 
 type crestState = 'pending' | 'loaded' | 'failed' | 'missing';
 
+// Where a caller picks its artwork by reading the pixels of artwork it may then replace, this is
+// how far it has got: `'pending'` while it is still holding the image up to the light, `'settled'`
+// once it has an answer. `TeamCrest` is the only caller, and the thing it can answer with is a
+// different image.
+type crestVerdict = 'pending' | 'settled';
+
 interface crestOutcome {
 	src: string;
 	status: 'loaded' | 'failed';
@@ -27,15 +33,27 @@ interface crestProps {
 	// shape, so a host answering without CORS headers would fail to load at all rather than just
 	// fail to be sampled. Every ESPN logo host we use sends `Access-Control-Allow-Origin: *`.
 	crossOrigin?: 'anonymous';
+	// Only for that same caller, and passing it at all changes how the image is painted: it is held
+	// behind the placeholder until the `logo` it was last handed is the one that loaded. An image
+	// appears the moment it decodes and owes React nothing — `load` is not a discrete event, so a
+	// commit can land a frame or more later, and that frame is the artwork the verdict is about to
+	// replace. The same holds across a swap, where an element may still be painting the source it
+	// is being moved off. `'pending'` holds it back past the load as well, while the pixels are in
+	// hand and the answer is not.
+	verdict?: crestVerdict;
 	onLoaded?: (image: HTMLImageElement) => void;
 }
 
 // Keyed on the URL rather than on a boolean, so a crest that fails once retries when the URL
 // changes. Both halves of that happen in practice: game cards are reused across polls, and a
 // league mark starts on a hardcoded URL and switches to ESPN's once the live list arrives.
-export const resolveCrestState = (logo: string | undefined, outcome: crestOutcome | null): crestState => {
+export const resolveCrestState = (logo: string | undefined, outcome: crestOutcome | null, verdict?: crestVerdict): crestState => {
 	if (!logo) return 'missing';
-	return outcome?.src === logo ? outcome.status : 'pending';
+	const state = outcome?.src === logo ? outcome.status : 'pending';
+	// A verdict still out holds the placeholder up over artwork that has already loaded. A failure
+	// is exempt: there are no pixels to judge, nothing will ever be swapped in, and reporting it as
+	// pending would lose the one state a caller can tell from the others.
+	return verdict === 'pending' && state !== 'failed' ? 'pending' : state;
 };
 
 // The placeholder and the image share one box, and CSS picks between them off `data-crest-state`.
@@ -51,6 +69,7 @@ const Crest = ({
 	fallbackStyle,
 	loading,
 	crossOrigin,
+	verdict,
 	onLoaded,
 }: crestProps) => {
 	const [outcome, setOutcome] = useState<crestOutcome | null>(null);
@@ -75,7 +94,8 @@ const Crest = ({
 	return (
 		<span
 			className={className ? `crest ${className}` : 'crest'}
-			data-crest-state={resolveCrestState(logo, outcome)}
+			data-crest-state={resolveCrestState(logo, outcome, verdict)}
+			data-crest-verdict={verdict}
 			role={label ? 'img' : undefined}
 			aria-label={label}
 			title={title}

@@ -12,6 +12,7 @@ import {
 	scoreMaxComeback,
 } from '@arenaswap/core/constants';
 import Crest from '@arenaswap/ui/src/components/crest';
+import { chartEasing, motionDuration } from '@arenaswap/ui/src/motion';
 
 echarts.use([LineChart, GridComponent, CanvasRenderer]);
 
@@ -101,8 +102,8 @@ const trend = [58, 62, 61, 69, 72, 79, 85, 92];
 
 const trendOption: EChartsOption = {
 	animation: true,
-	animationDuration: 1300,
-	animationEasing: 'cubicOut',
+	animationDuration: motionDuration.epic,
+	animationEasing: chartEasing,
 	grid: { left: 2, right: 2, top: 8, bottom: 4 },
 	xAxis: { type: 'category', show: false, boundaryGap: false, data: trend.map((_, i) => String(i)) },
 	yAxis: { type: 'value', show: false, min: 0, max: 100 },

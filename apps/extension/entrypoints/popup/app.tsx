@@ -14,6 +14,8 @@ import { fetchState, formatTabLabel, insertLeagueAtDefaultPosition, leagueOrder,
 import { i18n } from '#i18n';
 import { TranslationContext } from '@arenaswap/ui/src/components/i18nContext';
 import useFavoriteScoreConfetti from './useFavoriteScoreConfetti';
+import { resolveOpenRevealMode, revealSettleMs, revealSkipOutMs, writeOpenRevealEnabled } from './cardReveal';
+import { isLeagueLogoCacheFresh, leagueLogoCacheKey, seededLeagueLogos } from './leagueLogoCache';
 import useToast from './useToast';
 import SuggestView from './components/suggestView';
 import {
@@ -25,7 +27,8 @@ import {
 	type SuggestionTab,
 	type TabSuggestion,
 } from '../../utils/tabSuggestions';
-import { hasStoredUserPreferences, loadStoredUserPreferences, persistStoredUserPreferences } from '../../utils/prefsStorage';
+import { finishedTabNoticeKey, normalizeFinishedTabNotice } from '../../utils/finishedTabs';
+import { loadStoredUserPreferencesWithPresence, persistStoredUserPreferences } from '../../utils/prefsStorage';
 import { nextTemperatureUnit } from '../../utils/temperatureUnitCycle';
 import { isDemoSeason, resolveDecorationDate, type demoSeason } from '../../utils/holidayDecorations';
 import type { ReviewPromptState } from '../../utils/reviewPrompt';
@@ -40,6 +43,10 @@ import {
 
 const onSetGameBoost = (gameId: string, boost: number) => {
 	void browser.runtime.sendMessage({ type: 'SET_GAME_BOOST', gameId, boost });
+};
+
+const openGuide = () => {
+	void browser.tabs.create({ url: browser.runtime.getURL('/guide.html') });
 };
 
 const isScoreUpdateMessage = (value: unknown): value is { type: 'SCORES_UPDATED' } => (
@@ -70,7 +77,13 @@ export default () => {
 	const [dismissedSuggestions, setDismissedSuggestions] = useState<string[]>([]);
 	const [reviewPromptState, setReviewPromptState] = useState<ReviewPromptState>(normalizeReviewPromptState(null));
 	const [settled, setSettled] = useState(false);
-	const [allLeagueLogoCache, setAllLeagueLogoCache] = useState<LeagueLogoMap>({});
+	// Owned up here because the view shell is keyed on `view`: left to MainView it would replay in
+	// full every time you came back from a setting or a game detail. Cleared once the last card has
+	// landed, which is what makes the return trip quiet.
+	const [revealMode, setRevealMode] = useState(resolveOpenRevealMode);
+	// Seeded rather than empty: every league already has a pinned or fallback URL, so the pickers are
+	// correct on the first frame and the refresh below is an upgrade rather than the only source.
+	const [allLeagueLogoCache, setAllLeagueLogoCache] = useState<LeagueLogoMap>(seededLeagueLogos);
 	const settledRef = useRef(false);
 	const prefsSyncRef = useRef<Promise<void>>(Promise.resolve());
 	const { toasts, showToast, dismissToast } = useToast();
@@ -83,14 +96,105 @@ export default () => {
 		revalidateIfStale: false,
 	});
 
-	// The onboarding and settings pickers show every league, not just the enabled ones.
+	// Timed from the first painted list rather than from mount, because the cards do not exist until
+	// the slate lands and the animation starts with them. Started at mount it would expire partway
+	// through a slow open and take the stage off cards still using it.
+	//
+	// "Painted" means the list is the thing on screen, not merely that a fetch came back. Onboarding
+	// is a shell above `view` and its own initial fetch settles with no leagues enabled, so timed from
+	// the fetch alone the whole window expired behind the wizard — and since `resolveOpenRevealMode`
+	// has stamped the day by then, the first real slate a new user ever sees arrived with the
+	// animation already over and the next open got the quick version. The full one was unreachable on
+	// day one.
+	const listOnScreen = onboardingDone === true && view === 'main' && !isLoading && settled;
+	const revealStartedRef = useRef(false);
 	useEffect(() => {
-		void fetchLeagueLogos(allLeagueIds, { includeUpcoming: false })
-			.then(logos => setAllLeagueLogoCache(logos))
-			.catch(() => {});
+		if (revealMode === 'none') return;
+		if (!listOnScreen) {
+			// Not started yet — onboarding, or the slate still on its way. Wait for it.
+			if (!revealStartedRef.current) return;
+			// Started, and then the list went away. It ends here rather than waiting: MainView unmounts,
+			// each card's own `done` state goes with it, and coming back inside the window would play the
+			// whole graphic again — which is the thing owning the mode up here was meant to prevent.
+			setRevealMode('none');
+			return;
+		}
+		revealStartedRef.current = true;
+		const timer = setTimeout(() => setRevealMode('none'), revealSettleMs(revealMode));
+		return () => clearTimeout(timer);
+	}, [revealMode, listOnScreen]);
+
+	// Five seconds a card is long enough to need a way out, and the way out is anything at all: the
+	// first touch or keystroke ends it. Capture phase, and the handler neither prevents nor stops the
+	// event — the click that ends the graphic is still the click that opens the card it landed on, and
+	// the Tab that ends it still moves the focus.
+	//
+	// Two steps rather than going straight to 'none', which is what the teardown above does. That
+	// removes the wrapper, and every beat of the card coming into focus fills `both`, so a cut
+	// mid-graphic blanks the card for a frame and then brings it back — a worse thing than the
+	// animation somebody was trying to escape. The class takes the graphic off over `revealSkipOutMs`
+	// and releases the card underneath at once; the mode follows when it has gone.
+	const [revealSkipping, setRevealSkipping] = useState(false);
+	useEffect(() => {
+		if (revealMode === 'none' || revealSkipping) return;
+		const skip = () => setRevealSkipping(true);
+		window.addEventListener('pointerdown', skip, true);
+		window.addEventListener('keydown', skip, true);
+		return () => {
+			window.removeEventListener('pointerdown', skip, true);
+			window.removeEventListener('keydown', skip, true);
+		};
+	}, [revealMode, revealSkipping]);
+
+	useEffect(() => {
+		if (!revealSkipping) return;
+		const timer = setTimeout(() => setRevealMode('none'), revealSkipOutMs);
+		return () => clearTimeout(timer);
+	}, [revealSkipping]);
+
+	// The setting is read a whole popup open before it is written — `resolveOpenRevealMode` runs in a
+	// `useState` initialiser, and the prefs it belongs to are still in flight then. So the copy it
+	// reads is refreshed here instead, once per open, as soon as the real value lands: switching the
+	// animation off takes effect the next time the popup opens, which is the only open it could ever
+	// have affected anyway.
+	useEffect(() => {
+		if (!prefsLoaded) return;
+		writeOpenRevealEnabled(prefs.openRevealEnabled);
+	}, [prefsLoaded, prefs.openRevealEnabled]);
+
+	// The onboarding and settings pickers show every league, not just the enabled ones — which is 31
+	// scoreboard requests, more than ESPN's burst allowance in one call, and this ran on every single
+	// popup open with the result discarded on close. It was the pickers, not the slate, spending the
+	// budget the slate then came back short of. Cached for a week now, and the seed above means a miss
+	// costs nothing visible.
+	useEffect(() => {
+		let cancelled = false;
+		void (async () => {
+			try {
+				const stored = (await browser.storage.local.get(leagueLogoCacheKey))[leagueLogoCacheKey];
+				if (isLeagueLogoCacheFresh(stored, Date.now())) {
+					if (!cancelled) setAllLeagueLogoCache(current => ({ ...current, ...stored.logos }));
+					return;
+				}
+				const logos = await fetchLeagueLogos(allLeagueIds, { includeUpcoming: false });
+				if (Object.keys(logos).length === 0) return;
+				await browser.storage.local.set({ [leagueLogoCacheKey]: { fetchedAt: Date.now(), logos } });
+				if (!cancelled) setAllLeagueLogoCache(current => ({ ...current, ...logos }));
+			} catch {
+				// Storage unavailable, or ESPN shed the whole fan-out. The seed is already drawable.
+			}
+		})();
+		return () => { cancelled = true; };
 	}, []);
 
 	const games = useMemo(() => data?.games ?? [], [data?.games]);
+
+	/* An empty list with leagues ESPN refused behind it is not a quiet night, and the no-games panel
+	   said it was — on a full Saturday, with confidence. The fetch itself resolves either way, because
+	   the slate is collected best-effort and a refused league contributes nothing and throws nothing,
+	   so this is the only place the difference is visible. Only when the list is empty: a slate that
+	   lost one league of thirty-one still has games to show, and those are worth more than a banner. */
+	const slateUnvouchable = games.length === 0 && (data?.slateShedLeagues?.length ?? 0) > 0;
 
 	// openTabs is a mount-time snapshot, so this settles once per popup open. That is what lets a
 	// dismissal stick for the session while still re-raising when a genuinely new pair shows up.
@@ -117,25 +221,27 @@ export default () => {
 
 	useEffect(() => {
 		const init = async () => {
-			const normalizedPrefs = await loadStoredUserPreferences();
+			// Both reads land before the first paint, so they go out together rather than one
+			// awaiting the other.
+			const [{ prefs: normalizedPrefs, hasStored: hasStoredPrefs }, localResult] = await Promise.all([
+				loadStoredUserPreferencesWithPresence(),
+				browser.storage.local.get({
+					demoMode: false,
+					demoSeason: 'real',
+					onboardingCompleted: null,
+					standbyOnboardingDone: false,
+					[reviewPromptStorageKey]: null,
+				}),
+			]);
 			prefsRef.current = normalizedPrefs;
 			setPrefs(normalizedPrefs);
 			setPrefsLoaded(true);
-
-			const localResult = await browser.storage.local.get({
-				demoMode: false,
-				demoSeason: 'real',
-				onboardingCompleted: null,
-				standbyOnboardingDone: false,
-				[reviewPromptStorageKey]: null,
-			});
 			setDemoMode(localResult.demoMode as boolean);
 			setDemoSeason(isDemoSeason(localResult.demoSeason) ? localResult.demoSeason : 'real');
 			setStandbyOnboardingDone(localResult.standbyOnboardingDone as boolean);
 			setReviewPromptState(normalizeReviewPromptState(localResult[reviewPromptStorageKey]));
 
 			const onboardingFlag = localResult.onboardingCompleted === true;
-			const hasStoredPrefs = await hasStoredUserPreferences();
 			if (!onboardingFlag && hasStoredPrefs) {
 				void browser.storage.local.set({ onboardingCompleted: true });
 				setOnboardingDone(true);
@@ -146,10 +252,23 @@ export default () => {
 
 		void init();
 
-		browser.storage.session.get({ tabRegistry: [], standbyStreamTabId: null, [tabSuggestionDismissalsKey]: [] }).then(result => {
+		browser.storage.session.get({
+			tabRegistry: [],
+			standbyStreamTabId: null,
+			[tabSuggestionDismissalsKey]: [],
+			[finishedTabNoticeKey]: null,
+		}).then(result => {
 			setRegistry(result.tabRegistry as TabRegistration[]);
 			setStandbyStreamTabId((result.standbyStreamTabId as number | null) ?? null);
 			setDismissedSuggestions(normalizeDismissedSuggestions(result[tabSuggestionDismissalsKey]));
+
+			// The background hands tabs back while the popup is shut, so this is where the user
+			// finds out it happened. Cleared on read: it is news, not state.
+			const finishedTabs = normalizeFinishedTabNotice(result[finishedTabNoticeKey]);
+			if (!finishedTabs) return;
+			if (finishedTabs.freed > 0) showToast(i18n.t('finishedTabs.toastFreed', finishedTabs.freed), 'info');
+			if (finishedTabs.closed > 0) showToast(i18n.t('finishedTabs.toastClosed', finishedTabs.closed), 'info');
+			void browser.storage.session.remove(finishedTabNoticeKey);
 		});
 
 		void browser.tabs.query({ currentWindow: true }).then(tabs => {
@@ -171,7 +290,7 @@ export default () => {
 			clearTimeout(settleTimer);
 			browser.runtime.onMessage.removeListener(handleMessage);
 		};
-	}, [mutate]);
+	}, [mutate, showToast]);
 
 	useEffect(() => {
 		if (data && !settledRef.current) { settledRef.current = true; setSettled(true); }
@@ -400,6 +519,8 @@ export default () => {
 						onReorderLeague={onReorderLeague}
 						onResetLeagueOrder={onResetLeagueOrder}
 						onToggleShowUpcoming={() => persistPrefs(currentPrefs => ({ ...currentPrefs, showUpcomingGames: !currentPrefs.showUpcomingGames }))}
+						onToggleKeepFinalGames={() => persistPrefs(currentPrefs => ({ ...currentPrefs, keepFinalGames: !currentPrefs.keepFinalGames }))}
+						onFinishedTabActionChange={action => persistPrefs(currentPrefs => ({ ...currentPrefs, finishedTabAction: action }))}
 						onUpcomingGamesDaysChange={val => persistPrefs(currentPrefs => ({ ...currentPrefs, upcomingGamesDays: val }))}
 						onToggleProTips={() => persistPrefs(currentPrefs => ({ ...currentPrefs, proTipsEnabled: !currentPrefs.proTipsEnabled }))}
 						onToggleNotifications={() => persistPrefs(currentPrefs => ({ ...currentPrefs, notificationsEnabled: !currentPrefs.notificationsEnabled }))}
@@ -419,6 +540,7 @@ export default () => {
 						onToggleBetting={() => persistPrefs(currentPrefs => ({ ...currentPrefs, bettingEnabled: !currentPrefs.bettingEnabled }))}
 						onToggleTemperatureUnit={() => persistPrefs(currentPrefs => ({ ...currentPrefs, temperatureUnit: nextTemperatureUnit(currentPrefs.temperatureUnit, currentPrefs.romerUnlocked) }))}
 						onUnlockRomer={() => persistPrefs(currentPrefs => ({ ...currentPrefs, romerUnlocked: true, temperatureUnit: 'Ro' }))}
+						onToggleOpenReveal={() => persistPrefs(currentPrefs => ({ ...currentPrefs, openRevealEnabled: !currentPrefs.openRevealEnabled }))}
 						onToggleHolidayDecorations={() => persistPrefs(currentPrefs => ({ ...currentPrefs, holidayDecorationsEnabled: !currentPrefs.holidayDecorationsEnabled }))}
 						onToggleHolidaySnow={() => persistPrefs(currentPrefs => ({ ...currentPrefs, holidaySnowEnabled: !currentPrefs.holidaySnowEnabled }))}
 						onToggleHolidayLights={() => persistPrefs(currentPrefs => ({ ...currentPrefs, holidayLightsEnabled: !currentPrefs.holidayLightsEnabled }))}
@@ -432,7 +554,7 @@ export default () => {
 						prefs={prefs}
 						prefsLoaded={prefsLoaded}
 						isLoading={isLoading || !settled}
-						hasError={Boolean(error && !data)}
+						hasError={Boolean(error && !data) || slateUnvouchable}
 						onRefresh={() => void mutate(() => fetchState(true), { revalidate: false })}
 						games={games}
 						scores={scores}
@@ -448,6 +570,7 @@ export default () => {
 						onReviewSuggestions={() => setView('suggest')}
 						onDismissSuggestions={onDismissSuggestions}
 						onStartWalkthrough={() => setWalkthroughActive(true)}
+						onOpenGuide={openGuide}
 						showReviewPrompt={shouldShowReviewPrompt(reviewPromptState)}
 						onToggleEnabled={() => persistPrefs(currentPrefs => ({ ...currentPrefs, enabled: !currentPrefs.enabled }))}
 						onDismissReviewPrompt={dismissReviewPrompt}
@@ -458,6 +581,8 @@ export default () => {
 						scrollOffsetRef={mainScrollOffset}
 						selectedDayKey={selectedDayKey}
 						onSelectDay={setSelectedDayKey}
+						revealMode={revealMode}
+						revealSkipping={revealSkipping}
 					/>
 				)}
 				{view === 'suggest' && (

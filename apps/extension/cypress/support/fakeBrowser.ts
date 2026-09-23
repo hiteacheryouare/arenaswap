@@ -1,4 +1,4 @@
-import type { BackgroundState, TabRegistration, UserPreferences } from '@arenaswap/core/types';
+import type { BackgroundState, GuideSlate, TabRegistration, UserPreferences } from '@arenaswap/core/types';
 
 export interface fakeTab { id: number; title: string; url: string }
 
@@ -10,6 +10,7 @@ export interface fakeBrowserOptions {
 	session?: Record<string, unknown>;
 	sync?: Record<string, unknown>;
 	tabs?: fakeTab[];
+	guideSlate?: GuideSlate;
 }
 
 /** Everything a spec can reach into after the popup has booted. */
@@ -21,6 +22,7 @@ export interface fakeBackground {
 	standbyStreamTabId: number | null;
 	sent: { type: string; [key: string]: unknown }[];
 	openedUrls: string[];
+	guideSlate: GuideSlate;
 	storage: { local: Map<string, unknown>; session: Map<string, unknown>; sync: Map<string, unknown> };
 	/** Fires SCORES_UPDATED at the popup the way the real background worker does. */
 	pushScores: (patch?: Partial<BackgroundState>) => void;
@@ -35,6 +37,7 @@ const emptyState = (): BackgroundState => ({
 	gameBoosts: {},
 	onStandbyStream: false,
 	standbyStreamTabId: null,
+	slateShedLeagues: [],
 });
 
 // browser.storage.*.get takes either null (everything) or a defaults object, and resolves the
@@ -73,6 +76,7 @@ export const installFakeBrowser = (win: Window, options: fakeBrowserOptions): fa
 		standbyStreamTabId: null,
 		sent: [],
 		openedUrls: [],
+		guideSlate: options.guideSlate ?? { games: [], leagueLogos: {}, monoLogos: {}, gameBoosts: {}, endTimes: {} },
 		storage: {
 			local:   new Map(Object.entries(options.local ?? {})),
 			session: new Map(Object.entries(options.session ?? {})),
@@ -119,6 +123,11 @@ export const installFakeBrowser = (win: Window, options: fakeBrowserOptions): fa
 				background.standbyStreamTabId = message.tabId as number | null;
 				return undefined;
 
+			// The guide fetches its own slate rather than reading GET_STATE, because it draws finals
+			// and scheduled games whatever the popup's display preferences say.
+			case 'GET_GUIDE_SLATE':
+				return background.guideSlate;
+
 			default:
 				return undefined;
 		}
@@ -161,6 +170,7 @@ export const installFakeBrowser = (win: Window, options: fakeBrowserOptions): fa
 			},
 		},
 		i18n: {
+			getUILanguage: () => 'en-US',
 			getMessage: (key: string, substitutions?: string | string[]) =>
 				translate(options.messages, key, substitutions),
 		},

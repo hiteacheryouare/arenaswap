@@ -7,9 +7,10 @@ export default defineConfig({
 	input: {
 		index: './src/index.ts',
 		constants: './src/constants.ts',
+		gameClock: './src/gameClock.ts',
 		types: './src/types.ts',
 	},
-	external: ['powerscore', 'zod'],
+	external: ['powerscore', 'zod/mini'],
 	platform: 'neutral',
 	output: {
 		dir: './dist',

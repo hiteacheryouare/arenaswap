@@ -25,6 +25,8 @@ const defaultPrefs: UserPreferences = {
 	favoriteTeamIds: [],
 	favoriteTeamBonusPoints: 0,
 	showUpcomingGames: true,
+	keepFinalGames: false,
+	finishedTabAction: 'keep',
 	proTipsEnabled: true,
 	notificationsEnabled: false,
 	standbyStreamEnabled: false,
@@ -32,6 +34,7 @@ const defaultPrefs: UserPreferences = {
 	bettingEnabled: false,
 	temperatureUnit: 'F',
 	romerUnlocked: false,
+	openRevealEnabled: true,
 	holidayDecorationsEnabled: true,
 	holidaySnowEnabled: true,
 	holidayLightsEnabled: true,
@@ -63,6 +66,8 @@ const defaultProps = {
 	onReorderLeague: () => {},
 	onResetLeagueOrder: () => {},
 	onToggleShowUpcoming: () => {},
+	onToggleKeepFinalGames: () => {},
+	onFinishedTabActionChange: () => {},
 	onUpcomingGamesDaysChange: () => {},
 	onToggleProTips: () => {},
 	onToggleNotifications: () => {},
@@ -75,6 +80,7 @@ const defaultProps = {
 	onToggleBetting: () => {},
 	onToggleTemperatureUnit: () => {},
 	onUnlockRomer: () => {},
+	onToggleOpenReveal: () => {},
 	onToggleHolidayDecorations: () => {},
 	onToggleHolidaySnow: () => {},
 	onToggleHolidayLights: () => {},
@@ -93,9 +99,11 @@ const dragRangeTo = (selector: string, index: number) => cy.get(selector).then((
 });
 
 describe('setupView index', () => {
-	it('shows the Settings header with a back button', () => {
-		cy.mount(<SetupView {...defaultProps} />);
+	it('heads the page and gives the reader a way back out of it', () => {
+		cy.mount(<SetupView {...defaultProps} onClose={cy.stub().as('onClose')} />);
 		cy.contains('Settings').should('exist');
+		cy.get('.setup-header').click();
+		cy.get('@onClose').should('have.been.called');
 	});
 
 	it('lists every settings group with a description', () => {
@@ -165,6 +173,14 @@ describe('setupView search', () => {
 		cy.contains('.settings-index-row', 'Temperature unit').should('exist');
 	});
 
+	// The thing somebody wants off is a thing they have only ever seen, never read a name for, so the
+	// words they reach for are their own rather than the label's.
+	it('finds the opening animation by what it looks like rather than what it is called', () => {
+		cy.mount(<SetupView {...defaultProps} />);
+		cy.get('#settingsSearch').type('intro');
+		cy.contains('.settings-index-row', 'Opening animation').should('exist');
+	});
+
 	it('ignores case and accents', () => {
 		cy.mount(<SetupView {...defaultProps} />);
 		cy.get('#settingsSearch').type('COOLDOWN');
@@ -207,15 +223,6 @@ describe('setupView switching group', () => {
 	beforeEach(() => {
 		cy.mount(<SetupView {...defaultProps} />);
 		openGroup('switching');
-	});
-
-	it('renders sensitivity slider', () => {
-		cy.get('#sensitivity-range').should('exist');
-	});
-
-	it('renders cooldown and delay sliders', () => {
-		cy.get('#cooldown-range').should('exist');
-		cy.get('#switch-delay-range').should('exist');
 	});
 
 	it('offers the explainer as a tooltip rather than permanent body copy', () => {
@@ -271,6 +278,54 @@ describe('setupView display group', () => {
 		cy.get('#upcomingToggle').should('not.be.checked');
 	});
 
+	it('offers the keep-finished-games toggle, off by default', () => {
+		cy.mount(<SetupView {...defaultProps} />);
+		openGroup('display');
+		cy.get('#keepFinalToggle').should('exist').and('not.be.checked');
+	});
+
+	it('shows it checked once the pref is on', () => {
+		cy.mount(<SetupView {...defaultProps} prefs={{ ...defaultPrefs, keepFinalGames: true }} />);
+		openGroup('display');
+		cy.get('#keepFinalToggle').should('be.checked');
+	});
+
+	it('calls onToggleKeepFinalGames when it is flipped', () => {
+		const spy = cy.spy().as('onToggleKeepFinalGames');
+		cy.mount(<SetupView {...defaultProps} onToggleKeepFinalGames={spy} />);
+		openGroup('display');
+		cy.get('#keepFinalToggle').click();
+		cy.get('@onToggleKeepFinalGames').should('have.been.calledOnce');
+	});
+
+	// It sits directly under the upcoming pair, which is the other end of the same axis.
+	it('sits below the days-ahead slider and above pro tips', () => {
+		cy.mount(<SetupView {...defaultProps} />);
+		openGroup('display');
+		cy.get('#upcomingDaysSlider').then(([slider]: JQuery<HTMLElement>) => {
+			cy.get('#proTipsToggle').then(([proTips]: JQuery<HTMLElement>) => {
+				cy.get('#keepFinalToggle').should(([keep]: JQuery<HTMLElement>) => {
+					const top = keep.getBoundingClientRect().top;
+					expect(top).to.be.greaterThan(slider.getBoundingClientRect().top);
+					expect(top).to.be.lessThan(proTips.getBoundingClientRect().top);
+				});
+			});
+		});
+	});
+
+	it('keeps its label beside the switch on one line in every locale', () => {
+		cy.mount(<SetupView {...defaultProps} />);
+		openGroup('display');
+		cy.get('label[for="keepFinalToggle"]').then(([label]: JQuery<HTMLElement>) => {
+			const oneLine = label.getBoundingClientRect().height;
+			for (const [name, locale] of Object.entries(locales)) {
+				label.textContent = (locale.setup as unknown as Record<string, string>).keepFinalGames;
+				expect(label.getBoundingClientRect().height, `${name} keeps the label on one line`)
+					.to.be.at.most(oneLine + 1);
+			}
+		});
+	});
+
 	it('shows days-ahead slider when showUpcomingGames is true', () => {
 		cy.mount(<SetupView {...defaultProps} />);
 		openGroup('display');
@@ -301,11 +356,6 @@ describe('setupView display group', () => {
 		cy.get('@onUpcomingGamesDaysChange').should('have.been.called');
 	});
 
-	it('shows temperature unit toggle', () => {
-		cy.mount(<SetupView {...defaultProps} />);
-		openGroup('display');
-		cy.get('#temperatureUnitToggle').should('exist');
-	});
 
 	it('shows °F label when temperatureUnit is F', () => {
 		cy.mount(<SetupView {...defaultProps} />);
@@ -323,6 +373,33 @@ describe('setupView display group', () => {
 		cy.mount(<SetupView {...defaultProps} prefs={{ ...defaultPrefs, temperatureUnit: 'Ro', romerUnlocked: true }} />);
 		openGroup('display');
 		cy.get('#temperatureUnitToggle').should('contain', '°Rø');
+	});
+
+	it('calls onToggleOpenReveal when the opening animation is switched off', () => {
+		const spy = cy.spy().as('onToggleOpenReveal');
+		cy.mount(<SetupView {...defaultProps} onToggleOpenReveal={spy} />);
+		openGroup('display');
+		cy.get('#openRevealToggle').should('be.checked').click();
+		cy.get('@onToggleOpenReveal').should('have.been.calledOnce');
+	});
+
+	it('shows the switch off when the animation is off', () => {
+		cy.mount(<SetupView {...defaultProps} prefs={{ ...defaultPrefs, openRevealEnabled: false }} />);
+		openGroup('display');
+		cy.get('#openRevealToggle').should('not.be.checked');
+	});
+
+	it('keeps its label beside the switch on one line in every locale', () => {
+		cy.mount(<SetupView {...defaultProps} />);
+		openGroup('display');
+		cy.get('label[for="openRevealToggle"]').then(([label]: JQuery<HTMLElement>) => {
+			const oneLine = label.getBoundingClientRect().height;
+			for (const [name, locale] of Object.entries(locales)) {
+				label.textContent = (locale.setup as unknown as Record<string, string>).openReveal;
+				expect(label.getBoundingClientRect().height, `${name} keeps the label on one line`)
+					.to.be.at.most(oneLine + 1);
+			}
+		});
 	});
 });
 
@@ -413,10 +490,20 @@ describe('setupView standby stream', () => {
 		cy.get('#standbyThresholdSlider').should('exist');
 	});
 
-	it('shows tab select dropdown when standby is enabled', () => {
-		cy.mount(<SetupView {...defaultProps} prefs={{ ...defaultPrefs, standbyStreamEnabled: true }} />);
+	it('offers the open tabs to stand by on, and hands the chosen one back', () => {
+		cy.mount(
+			<SetupView
+				{...defaultProps}
+				prefs={{ ...defaultPrefs, standbyStreamEnabled: true }}
+				openTabs={[{ id: 101, title: 'Red Zone' }, { id: 102, title: 'Gamecast' }]}
+				formatTabLabel={(tab: { title?: string }) => tab.title ?? ''}
+				onSetStandbyTab={cy.stub().as('onSetStandbyTab')}
+			/>,
+		);
 		openGroup('standby');
-		cy.get('select').should('exist');
+
+		cy.get('select[aria-label="Standby tab"]').select('Gamecast');
+		cy.get('@onSetStandbyTab').should('have.been.calledWith', 102);
 	});
 
 	it('shows the standby stream guide when toggled on and onboarding not done', () => {
@@ -426,8 +513,25 @@ describe('setupView standby stream', () => {
 			prefs={{ ...defaultPrefs, standbyStreamEnabled: false }}
 		/>);
 		openGroup('standby');
+		cy.contains('A fallback for the slow moments.').should('not.exist');
+
 		cy.get('#standbyStreamToggle').check({ force: true });
-		cy.contains(/standby stream/i).should('exist');
+
+		// Copy only the guide's first step carries, so the settings page behind it cannot satisfy it.
+		cy.contains('A fallback for the slow moments.').should('be.visible');
+		cy.contains('Step 1 of 2').should('be.visible');
+	});
+
+	it('does not put the guide back in front of somebody who has already read it', () => {
+		cy.mount(<SetupView
+			{...defaultProps}
+			standbyOnboardingDone={true}
+			prefs={{ ...defaultPrefs, standbyStreamEnabled: false }}
+		/>);
+		openGroup('standby');
+		cy.get('#standbyStreamToggle').check({ force: true });
+
+		cy.contains('A fallback for the slow moments.').should('not.exist');
 	});
 });
 
@@ -524,10 +628,13 @@ describe('setupView favorites group', () => {
 });
 
 describe('setupView leagues group', () => {
-	it('shows league groups with logos', () => {
+	it('heads each sport group and gives every league in it a mark', () => {
 		cy.mount(<SetupView {...defaultProps} />);
 		openGroup('leagues');
 		cy.contains('Basketball').should('exist');
+		cy.get('.league-toggle-row').should('have.length.greaterThan', 0).each($row => {
+			cy.wrap($row).find('img, svg, i[class*="bi-"]').should('exist');
+		});
 	});
 
 	it('shows warning when no leagues are selected', () => {
@@ -563,5 +670,110 @@ describe('setupView leagues group', () => {
 		openGroup('leagues');
 		cy.get('.popup-section-label').contains('Leagues').should('exist');
 		cy.get('.setting-tooltip-btn').should('exist');
+	});
+});
+
+describe('what happens to a tab once its game finishes', () => {
+	const optionKeys = ['finishedTabKeep', 'finishedTabFree', 'finishedTabClose'] as const;
+
+	const openDisplay = (prefs: UserPreferences = defaultPrefs, props = {}) => {
+		cy.viewport(320, 560);
+		cy.mount(<SetupView {...defaultProps} {...props} prefs={prefs} />);
+		openGroup('display');
+	};
+
+	it('offers the three choices and opens on leaving the tab alone', () => {
+		openDisplay();
+		cy.get('#finishedTabSelect').should('have.value', 'keep');
+		cy.get('#finishedTabSelect option').should('have.length', 3);
+		cy.get('#finishedTabSelect option').then((options: JQuery<HTMLElement>) => {
+			expect([...options].map(option => (option as HTMLOptionElement).value)).to.deep.equal(['keep', 'free', 'close']);
+		});
+	});
+
+	it('reflects a stored choice', () => {
+		openDisplay({ ...defaultPrefs, finishedTabAction: 'close' });
+		cy.get('#finishedTabSelect').should('have.value', 'close');
+	});
+
+	it('reports the choice that was made', () => {
+		const spy = cy.spy().as('onFinishedTabActionChange');
+		openDisplay(defaultPrefs, { onFinishedTabActionChange: spy });
+		cy.get('#finishedTabSelect').select('free');
+		cy.get('@onFinishedTabActionChange').should('have.been.calledOnceWith', 'free');
+	});
+
+	// Nothing is being taken while it says keep, so there is nothing to explain.
+	it('says nothing extra while it is set to keep', () => {
+		openDisplay();
+		cy.contains(en.setup.finishedTabActiveExplainer).should('not.exist');
+		cy.contains(en.setup.finishedTabCloseExplainer).should('not.exist');
+	});
+
+	it('warns about the tab in front of you as soon as it is doing anything', () => {
+		openDisplay({ ...defaultPrefs, finishedTabAction: 'free' });
+		cy.contains(en.setup.finishedTabActiveExplainer).should('exist');
+		// Nothing is closing, so the sole-tab rule has nothing to say.
+		cy.contains(en.setup.finishedTabCloseExplainer).should('not.exist');
+	});
+
+	it('adds the last-tab rule only when it is closing', () => {
+		openDisplay({ ...defaultPrefs, finishedTabAction: 'close' });
+		cy.contains(en.setup.finishedTabActiveExplainer).should('exist');
+		cy.contains(en.setup.finishedTabCloseExplainer).should('exist');
+	});
+
+	// A native select clips rather than wraps, so a string that does not fit is silently
+	// truncated to an ellipsis — measuring the rendered box would never notice.
+	it('fits all three options inside the select in every locale', () => {
+		openDisplay();
+		cy.get('#finishedTabSelect').should(([select]: JQuery<HTMLElement>) => {
+			const style = getComputedStyle(select);
+			// .form-select keeps its right-hand padding for the chevron, so the text gets the
+			// content box and nothing more.
+			const available = select.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+			expect(available, 'the select has a measurable width').to.be.greaterThan(100);
+
+			const ruler = document.createElement('span');
+			ruler.style.position = 'absolute';
+			ruler.style.visibility = 'hidden';
+			ruler.style.whiteSpace = 'nowrap';
+			ruler.style.font = style.font;
+			ruler.style.fontFamily = style.fontFamily;
+			ruler.style.fontSize = style.fontSize;
+			ruler.style.fontWeight = style.fontWeight;
+			ruler.style.letterSpacing = style.letterSpacing;
+			select.ownerDocument.body.appendChild(ruler);
+
+			try {
+				for (const [name, locale] of Object.entries(locales)) {
+					const setup = locale.setup as unknown as Record<string, string>;
+					for (const key of optionKeys) {
+						ruler.textContent = setup[key]!;
+						expect(ruler.getBoundingClientRect().width, `${name} ${key} fits`).to.be.at.most(available);
+					}
+				}
+			} finally {
+				ruler.remove();
+			}
+		});
+	});
+
+	it('keeps every locale\'s label on one line above it', () => {
+		openDisplay();
+		cy.get('label[for="finishedTabSelect"]').then(([label]: JQuery<HTMLElement>) => {
+			const oneLine = label.getBoundingClientRect().height;
+			for (const [name, locale] of Object.entries(locales)) {
+				label.textContent = (locale.setup as unknown as Record<string, string>).finishedTabAction!;
+				expect(label.getBoundingClientRect().height, `${name} keeps the label on one line`)
+					.to.be.at.most(oneLine + 1);
+			}
+		});
+	});
+
+	it('is reachable from the settings search', () => {
+		cy.mount(<SetupView {...defaultProps} />);
+		cy.get('#settingsSearch').type('clutter');
+		cy.contains(en.setup.finishedTabAction).should('exist');
 	});
 });

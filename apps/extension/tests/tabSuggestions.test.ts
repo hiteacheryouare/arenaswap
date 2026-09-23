@@ -207,6 +207,34 @@ describe('suggestTabAssignments', () => {
 		expect(rest).toHaveLength(0);
 	});
 
+	// startTime used to be set only on a pre-game event, so every live game read
+	// MAX_SAFE_INTEGER here and two of them fell through to the id comparison. It is populated for
+	// every state now, which makes this tiebreak reachable for the first time: the two games below
+	// are the same fixture twice, so they score identically, and the ids are ordered against the
+	// kickoffs on purpose. Nothing in the product depends on which one wins — the point is that the
+	// answer is now the earlier game rather than whichever id happened to sort first.
+	it('breaks a tie between two live games on the earlier kickoff, not the lower id', () => {
+		const earlierKickoffHigherId = makeGame(
+			'401700002', 'nba', 'basketball',
+			team('2', 'Boston Celtics', 'BOS'),
+			team('18', 'New York Knicks', 'NYK'),
+			{ status: 'in', startTime: '2026-08-28T19:00:00Z' },
+		);
+		const laterKickoffLowerId = makeGame(
+			'401700001', 'nba', 'basketball',
+			team('2', 'Boston Celtics', 'BOS'),
+			team('18', 'New York Knicks', 'NYK'),
+			{ status: 'in', startTime: '2026-08-28T22:00:00Z' },
+		);
+		const tab = makeTab(1, 'Celtics vs Knicks Live', 'https://example.com/watch');
+		const [first] = suggestTabAssignments({
+			...base,
+			games: [laterKickoffLowerId, earlierKickoffHigherId],
+			tabs: [tab],
+		});
+		expect(first.gameId).toBe(earlierKickoffHigherId.id);
+	});
+
 	it('gives each tab exactly one row, its best game', () => {
 		const tab = makeTab(1, 'Celtics vs Knicks Live', 'https://example.com/watch');
 		const suggestions = suggestTabAssignments({ ...base, tabs: [tab] });

@@ -1,7 +1,9 @@
 import { defineConfig } from 'cypress';
+import codeCoverageTask from '@cypress/code-coverage/task';
 import { existsSync } from 'node:fs';
 import path from 'path';
 import { startStaticServer } from './cypress/staticServer';
+import sassOptions from '@arenaswap/ui/src/sassOptions';
 
 const root = (rel: string) => path.resolve(__dirname, rel);
 
@@ -10,6 +12,19 @@ const root = (rel: string) => path.resolve(__dirname, rel);
 // shared `.output/chrome-mv3`, which `wxt zip` deletes and rewrites while this server is serving it.
 const popupBuildDir = root('./.output/e2e/chrome-mv3');
 const e2ePort = 5199;
+
+// Both Cypress runners share this working directory, so which one is collecting decides where
+// nyc writes (see nyc.config.cjs). Instrumenting the component dev server costs build time on
+// every spec, so it only happens when a coverage run asked for it.
+const coverageTarget = process.env.ARENASWAP_COVERAGE_TARGET;
+
+// vite-plugin-istanbul ships ESM only, and this config is loaded as CommonJS, so it cannot be
+// a static import.
+const istanbulPlugins = async () => {
+	if (coverageTarget !== 'component') return [];
+	const { default: istanbul } = await import('vite-plugin-istanbul');
+	return [istanbul({ requireEnv: false })];
+};
 
 const componentStubs: Record<string, string> = {
 	'./flipScore': root('./cypress/stubs/flipScore.tsx'),
@@ -26,11 +41,25 @@ const componentStubs: Record<string, string> = {
 };
 
 export default defineConfig({
+	// Off unless a coverage run set the target, so a normal `cypress run` neither pays for
+	// instrumentation nor logs the plugin's missing-coverage warning after every spec.
+	expose: { coverage: coverageTarget !== undefined },
+	// Cypress 16 deprecates its bundled Electron and will drop it in a later major. Chrome is
+	// the browser the extension ships against, so both runners take it rather than a flag at each
+	// call site — `defaultBrowser` covers `cypress open` too, which a `--browser` flag would not.
+	defaultBrowser: 'chrome',
 	component: {
 		devServer: {
 			framework: 'react',
 			bundler: 'vite',
-			viteConfig: {
+			viteConfig: async () => ({
+				// The support file imports both .scss entries, so the component runner compiles
+				// Bootstrap the same way the real build does and needs the same silencing.
+				css: {
+					preprocessorOptions: {
+						scss: sassOptions,
+					},
+				},
 				resolve: {
 					alias: [
 						// List subpaths before the root entry to prevent prefix-match collision
@@ -42,6 +71,9 @@ export default defineConfig({
 						{ find: /^#i18n$/, replacement: root('./cypress/stubs/i18n.ts') },
 					],
 				},
+				// The stub resolver stays first so a stubbed specifier never reaches the real
+				// module; istanbul follows it and therefore instruments only what did resolve to
+				// real source. nyc.config.cjs excludes cypress/ so the stubs are never counted.
 				plugins: [
 					{
 						name: 'cypress-component-stubs',
@@ -50,11 +82,16 @@ export default defineConfig({
 							return componentStubs[source] ?? null;
 						},
 					},
+					...(await istanbulPlugins()),
 				],
-			},
+			}),
 		},
 		specPattern: 'cypress/component/**/*.cy.{ts,tsx}',
 		supportFile: 'cypress/support/component.ts',
+		setupNodeEvents(on, config) {
+			codeCoverageTask(on, config);
+			return config;
+		},
 	},
 	e2e: {
 		baseUrl: `http://localhost:${e2ePort}`,
@@ -69,6 +106,7 @@ export default defineConfig({
 			}
 			const server = await startStaticServer(popupBuildDir, e2ePort);
 			on('after:run', () => new Promise<void>(resolve => { server.close(() => resolve()); }));
+			codeCoverageTask(on, config);
 			return config;
 		},
 	},

@@ -1,4 +1,5 @@
-import { countdownParts, countdownShowsSeconds } from '../entrypoints/popup/components/startCountdown';
+import { i18n } from '#i18n';
+import { countdownParts, countdownShowsSeconds, formatCompactCountdown } from '../entrypoints/popup/components/startCountdown';
 
 const minuteMs = 60_000;
 const hourMs = 60 * minuteMs;
@@ -40,5 +41,44 @@ describe('countdownShowsSeconds', () => {
 	test('stops once the game has started', () => {
 		expect(countdownShowsSeconds(partsIn(0))).toBe(false);
 		expect(countdownShowsSeconds(null)).toBe(false);
+	});
+});
+
+describe('formatCompactCountdown', () => {
+	const t = i18n.t;
+
+	test('leads with days and drops the minutes the hero shows', () => {
+		expect(formatCompactCountdown(partsIn(2 * dayMs + 5 * hourMs + 13 * minuteMs), t)).toBe('2d 05h');
+	});
+
+	test('leads with hours inside the final day', () => {
+		expect(formatCompactCountdown(partsIn(5 * hourMs + 13 * minuteMs + 42_000), t)).toBe('5h 13m');
+	});
+
+	test('drops a zero hours segment rather than printing it', () => {
+		expect(formatCompactCountdown(partsIn(13 * minuteMs + 42_000), t)).toBe('13m 42s');
+	});
+
+	test('shows seconds alone under a minute, since there is no unit below to pair', () => {
+		expect(formatCompactCountdown(partsIn(9_000), t)).toBe('9s');
+	});
+
+	test('pads the trailing figure so a ticking string keeps its width', () => {
+		expect(formatCompactCountdown(partsIn(3 * hourMs + 5 * minuteMs), t)).toBe('3h 05m');
+		expect(formatCompactCountdown(partsIn(5 * minuteMs + 7_000), t)).toBe('5m 07s');
+	});
+
+	test('never pads the leading figure', () => {
+		expect(formatCompactCountdown(partsIn(dayMs + hourMs), t)).toBe('1d 01h');
+		expect(formatCompactCountdown(partsIn(2 * hourMs), t)).toBe('2h 00m');
+	});
+
+	test('falls back to "Starts soon" once the clock runs out', () => {
+		expect(formatCompactCountdown(partsIn(0), t)).toBe('Starts soon');
+		expect(formatCompactCountdown(partsIn(-5 * hourMs), t)).toBe('Starts soon');
+	});
+
+	test('renders nothing at all when there is no start time to count to', () => {
+		expect(formatCompactCountdown(null, t)).toBe('');
 	});
 });

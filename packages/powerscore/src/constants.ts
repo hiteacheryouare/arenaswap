@@ -257,6 +257,7 @@ export const leagueConfigs: LeagueConfig[] = [
 		regularPeriods: 4,
 		periodDurationSecs: 720,
 		periodFormat: 'quarters',
+		runMinutes: { bar: 144, p25: 131, p99: 178 },
 	},
 	{
 		id: 'wnba',
@@ -266,6 +267,7 @@ export const leagueConfigs: LeagueConfig[] = [
 		regularPeriods: 4,
 		periodDurationSecs: 600,
 		periodFormat: 'quarters',
+		runMinutes: { bar: 124, p25: 112, p99: 152 },
 	},
 	{
 		id: 'ncaab',
@@ -275,6 +277,7 @@ export const leagueConfigs: LeagueConfig[] = [
 		regularPeriods: 2,
 		periodDurationSecs: 1200,
 		periodFormat: 'halves',
+		runMinutes: { bar: 130, p25: 118, p99: 168 },
 		// 20-min halves: the near-linear late-game ramp spans the whole final half automatically,
 		// so the tension build starts proportionally earlier with no special-casing needed.
 	},
@@ -286,6 +289,7 @@ export const leagueConfigs: LeagueConfig[] = [
 		regularPeriods: 3,
 		periodDurationSecs: 1200,
 		periodFormat: 'periods',
+		runMinutes: { bar: 156, p25: 144, p99: 195 },
 	},
 	{
 		id: 'ncaamh',
@@ -295,6 +299,7 @@ export const leagueConfigs: LeagueConfig[] = [
 		regularPeriods: 3,
 		periodDurationSecs: 1200,
 		periodFormat: 'periods',
+		runMinutes: { bar: 150, p25: 139, p99: 188 },
 	},
 	{
 		id: 'mlb',
@@ -304,6 +309,8 @@ export const leagueConfigs: LeagueConfig[] = [
 		regularPeriods: 9,
 		periodDurationSecs: 0,
 		periodFormat: 'innings',
+		// The 2023 pitch clock took about 25 minutes off this; a pre-2023 memory of it is wrong.
+		runMinutes: { bar: 168, p25: 143, p99: 255 },
 	},
 	{
 		id: 'nfl',
@@ -313,6 +320,7 @@ export const leagueConfigs: LeagueConfig[] = [
 		regularPeriods: 4,
 		periodDurationSecs: 900,
 		periodFormat: 'quarters',
+		runMinutes: { bar: 195, p25: 176, p99: 240 },
 	},
 	{
 		id: 'ncaaf',
@@ -322,6 +330,8 @@ export const leagueConfigs: LeagueConfig[] = [
 		regularPeriods: 4,
 		periodDurationSecs: 900,
 		periodFormat: 'quarters',
+		// The 2023 clock rules took about 24 minutes off this, so it is no longer far longer than the NFL.
+		runMinutes: { bar: 210, p25: 182, p99: 265 },
 	},
 	{
 		id: 'mls',
@@ -331,6 +341,7 @@ export const leagueConfigs: LeagueConfig[] = [
 		regularPeriods: 2,
 		periodDurationSecs: 2700,
 		periodFormat: 'halves',
+		runMinutes: { bar: 120, p25: 112, p99: 140 },
 	},
 	{
 		id: 'ncaaw',
@@ -340,6 +351,7 @@ export const leagueConfigs: LeagueConfig[] = [
 		regularPeriods: 4,
 		periodDurationSecs: 600,
 		periodFormat: 'quarters',
+		runMinutes: { bar: 122, p25: 111, p99: 152 },
 	},
 	{
 		id: 'epl',
@@ -349,6 +361,7 @@ export const leagueConfigs: LeagueConfig[] = [
 		regularPeriods: 2,
 		periodDurationSecs: 2700,
 		periodFormat: 'halves',
+		runMinutes: { bar: 120, p25: 112, p99: 140 },
 	},
 	{
 		id: 'fifawc',
@@ -358,6 +371,10 @@ export const leagueConfigs: LeagueConfig[] = [
 		regularPeriods: 2,
 		periodDurationSecs: 2700,
 		periodFormat: 'halves',
+		// Group matches carry more added time than a league fixture. About 31% of knockout matches
+		// since 2014 have gone to extra time, which is the one rate high enough to move p75 itself.
+		runMinutes: { bar: 124, p25: 114, p99: 145 },
+		knockoutRunMinutes: { bar: 158, p25: 120, p99: 195 },
 	},
 	{
 		id: 'cbase',
@@ -367,6 +384,7 @@ export const leagueConfigs: LeagueConfig[] = [
 		regularPeriods: 9,
 		periodDurationSecs: 0,
 		periodFormat: 'innings',
+		runMinutes: { bar: 192, p25: 160, p99: 275 },
 	},
 	{
 		id: 'csoft',
@@ -376,6 +394,7 @@ export const leagueConfigs: LeagueConfig[] = [
 		regularPeriods: 7,
 		periodDurationSecs: 0,
 		periodFormat: 'innings',
+		runMinutes: { bar: 128, p25: 103, p99: 195 },
 	},
 	{
 		id: 'olybb',
@@ -385,6 +404,9 @@ export const leagueConfigs: LeagueConfig[] = [
 		regularPeriods: 9,
 		periodDurationSecs: 0,
 		periodFormat: 'innings',
+		// SOFT: Olympic baseball has been played in one of the last five Games and the LA 2028 format
+		// is not final. WBSC pitch limits and a 10-run mercy after 7 put it near MLB with a shorter tail.
+		runMinutes: { bar: 172, p25: 145, p99: 225 },
 	},
 	{
 		id: 'wbbc',
@@ -394,6 +416,10 @@ export const leagueConfigs: LeagueConfig[] = [
 		regularPeriods: 9,
 		periodDurationSecs: 0,
 		periodFormat: 'innings',
+		// SOFT, and the softest number in this table: 2026 is the first WBC with a pitch clock, so there
+		// is no measured precedent. Pitch-count limits force 4-6 pitchers a side, which is worth about
+		// +10 against MLB, while the mercy rule and the 10th-inning runner clip the tail. Re-measure.
+		runMinutes: { bar: 178, p25: 145, p99: 235 },
 	},
 	{
 		id: 'ufl',
@@ -403,6 +429,7 @@ export const leagueConfigs: LeagueConfig[] = [
 		regularPeriods: 4,
 		periodDurationSecs: 900,
 		periodFormat: 'quarters',
+		runMinutes: { bar: 178, p25: 160, p99: 210 },
 	},
 	{
 		id: 'olymih',
@@ -412,6 +439,10 @@ export const leagueConfigs: LeagueConfig[] = [
 		regularPeriods: 3,
 		periodDurationSecs: 1200,
 		periodFormat: 'periods',
+		// SOFT: assumes IIHF-like commercial load. Intermissions are 15 minutes against the NHL's 18 and
+		// there are no NHL-mandated TV timeouts, but Milan 2026 has NHL players and a US broadcast,
+		// which could push it back toward the NHL's 156. Re-measure in February.
+		runMinutes: { bar: 142, p25: 131, p99: 185 },
 	},
 	{
 		id: 'olywih',
@@ -421,6 +452,7 @@ export const leagueConfigs: LeagueConfig[] = [
 		regularPeriods: 3,
 		periodDurationSecs: 1200,
 		periodFormat: 'periods',
+		runMinutes: { bar: 136, p25: 127, p99: 178 },
 	},
 	{
 		// FIBA uses 10-minute quarters (600s), not the NBA's 12-minute quarters.
@@ -431,6 +463,9 @@ export const leagueConfigs: LeagueConfig[] = [
 		regularPeriods: 4,
 		periodDurationSecs: 600,
 		periodFormat: 'quarters',
+		// FIBA's 4x10 removes 8 minutes of clock outright and the timeout load is lighter, which is
+		// roughly 32 minutes under the NBA.
+		runMinutes: { bar: 112, p25: 102, p99: 140 },
 	},
 	{
 		id: 'olybkw',
@@ -440,6 +475,7 @@ export const leagueConfigs: LeagueConfig[] = [
 		regularPeriods: 4,
 		periodDurationSecs: 600,
 		periodFormat: 'quarters',
+		runMinutes: { bar: 108, p25: 99, p99: 134 },
 	},
 	{
 		id: 'olysocm',
@@ -449,6 +485,10 @@ export const leagueConfigs: LeagueConfig[] = [
 		regularPeriods: 2,
 		periodDurationSecs: 2700,
 		periodFormat: 'halves',
+		// The highest extra-time rate anywhere in this table: Tokyo 2020 sent 5 of 8 knockout matches to
+		// extra time, Paris 2024 sent 3 of 8.
+		runMinutes: { bar: 122, p25: 113, p99: 140 },
+		knockoutRunMinutes: { bar: 156, p25: 119, p99: 193 },
 	},
 	{
 		id: 'olysocw',
@@ -458,6 +498,8 @@ export const leagueConfigs: LeagueConfig[] = [
 		regularPeriods: 2,
 		periodDurationSecs: 2700,
 		periodFormat: 'halves',
+		runMinutes: { bar: 122, p25: 113, p99: 140 },
+		knockoutRunMinutes: { bar: 156, p25: 119, p99: 193 },
 	},
 	{
 		id: 'laliga',
@@ -467,6 +509,7 @@ export const leagueConfigs: LeagueConfig[] = [
 		regularPeriods: 2,
 		periodDurationSecs: 2700,
 		periodFormat: 'halves',
+		runMinutes: { bar: 120, p25: 112, p99: 140 },
 	},
 	{
 		id: 'bundesliga',
@@ -476,6 +519,7 @@ export const leagueConfigs: LeagueConfig[] = [
 		regularPeriods: 2,
 		periodDurationSecs: 2700,
 		periodFormat: 'halves',
+		runMinutes: { bar: 120, p25: 112, p99: 140 },
 	},
 	{
 		id: 'seriea',
@@ -485,6 +529,7 @@ export const leagueConfigs: LeagueConfig[] = [
 		regularPeriods: 2,
 		periodDurationSecs: 2700,
 		periodFormat: 'halves',
+		runMinutes: { bar: 120, p25: 112, p99: 140 },
 	},
 	{
 		id: 'ligamx',
@@ -494,6 +539,9 @@ export const leagueConfigs: LeagueConfig[] = [
 		regularPeriods: 2,
 		periodDurationSecs: 2700,
 		periodFormat: 'halves',
+		// The Liguilla cannot produce extra time - aggregate ties go to the higher seed - so the tail
+		// stays at a domestic league's rather than blowing out the way the UEFA competitions do.
+		runMinutes: { bar: 120, p25: 112, p99: 140 },
 	},
 	{
 		id: 'ucl',
@@ -503,6 +551,9 @@ export const leagueConfigs: LeagueConfig[] = [
 		regularPeriods: 2,
 		periodDurationSecs: 2700,
 		periodFormat: 'halves',
+		// The +2 over a domestic league is UEFA's longer stoppage and ceremony load, not extra time.
+		// Only a second leg can reach ET, which is about 5% of matches, and that sits in p99.
+		runMinutes: { bar: 122, p25: 113, p99: 180 },
 	},
 	{
 		id: 'uel',
@@ -512,6 +563,7 @@ export const leagueConfigs: LeagueConfig[] = [
 		regularPeriods: 2,
 		periodDurationSecs: 2700,
 		periodFormat: 'halves',
+		runMinutes: { bar: 122, p25: 113, p99: 180 },
 	},
 	{
 		id: 'nwsl',
@@ -521,6 +573,9 @@ export const leagueConfigs: LeagueConfig[] = [
 		regularPeriods: 2,
 		periodDurationSecs: 2700,
 		periodFormat: 'halves',
+		// The real outlier of the soccer group: the 2024 rule adds back every stoppage rather than
+		// estimating it, which runs genuinely longer than MLS.
+		runMinutes: { bar: 128, p25: 116, p99: 158 },
 	},
 	{
 		id: 'fifawwc',
@@ -530,6 +585,10 @@ export const leagueConfigs: LeagueConfig[] = [
 		regularPeriods: 2,
 		periodDurationSecs: 2700,
 		periodFormat: 'halves',
+		// The extra-time rate is 20-25%, so a strict p75 would be about 126. Padded to 150 so the
+		// men's and women's knockout bars do not differ by 32 minutes on adjacent rows.
+		runMinutes: { bar: 122, p25: 113, p99: 142 },
+		knockoutRunMinutes: { bar: 150, p25: 118, p99: 190 },
 	},
 ];
 

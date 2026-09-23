@@ -1,5 +1,8 @@
 # i18n Polyglot Translator — Memory Index
 
+- [project_loading_messages_m74_m100.md](project_loading_messages_m74_m100.md) — 2026-09-20: loading.m74-m112 spinner jokes (39 keys, 2 batches), 11 locales; gerund templates, sport-superstition swaps, real chat-app localization, m101-112 oblique-scandal-wink rule + m106 Fail Mary per-locale gridiron-jargon fallback
+- [project_poll_rank_timeout_playbyplay_translations.md](project_poll_rank_timeout_playbyplay_translations.md) — 2026-09-20: teamRank/timeoutsRemaining/timeoutsShort + latestPlayHeading/pitchingLabel/atBatLabel, 11 locales; "TO" kept universal like OT, pt_BR/pt_PT timeout-word split, atBat real-idiom research
+
 - [project_delay_translations.md](project_delay_translations.md) — Approved gameCard.delay / gameCard.delayFallback translations for all 7 non-English locales (2026-07-21)
 - [project_shootout_translations.md](project_shootout_translations.md) — Approved gameCard.shootout (PENS badge) translations for all 8 locales incl. pt_PT/pt_BR split (2026-08-03)
 - [project_pregame_gameinfo_translations.md](project_pregame_gameinfo_translations.md) — detail.getReady*/detail.info* rulings: hockey/baseball loanwords, pt_PT tu-register, shared kickoff key issue (2026-08-10)
@@ -9,7 +12,7 @@
 - [project_fr_fr_ca_split.md](project_fr_fr_ca_split.md) — REVERTED: fr_FR/fr_CA aren't valid extension locale codes; read before proposing any regional variant
 - [terminology_it.md](terminology_it.md) — it.json (2026-08-15): verified Italian sport terms, native-vs-loanword rulings, Spaceballs dub quotes
 - [project_ko_terminology.md](project_ko_terminology.md) — ko.json (2026-08-15): KBO baseball convention, Konglish-vs-native rulings, shootout=PK fix, unsettled hockey terms
-- [locale_fil_terminology.md](locale_fil_terminology.md) — fil.json (2026-08-15): deliberate Taglish calibration, which sports terms stay English and why
+- [locale_fil_terminology.md](locale_fil_terminology.md) — fil.json: Taglish calibration, which sports terms stay English, and the "Mga + singular English noun" pluralization rule
 - [project_zh_tw_terminology.md](project_zh_tw_terminology.md) — zh_TW.json (2026-08-15): CPBL baseball terms, 你 register, TW-vs-CN software vocabulary, Game Boost consistency fix
 - [reference_cjk_prose_vs_heading_split.md](reference_cjk_prose_vs_heading_split.md) — ja/ko/zh_CN/zh_TW already localize "standby stream" in body prose but keep it literal as a heading/label
 - [reference_cjk_punctuation_and_spacing.md](reference_cjk_punctuation_and_spacing.md) — full vs half-width punctuation and placeholder-spacing rules per CJK locale
@@ -22,3 +25,9 @@
 - [project_store_listing_translations.md](project_store_listing_translations.md) — 2026-09-05: marketing/ store listing translated (11 locales); name_long.txt cap is 75 chars not 132; de separable-verb bug fixed
 - [project_docs_site_i18n_bundle.md](project_docs_site_i18n_bundle.md) — 2026-09-05: apps/docs marketing site strings.json translated (11 locales); heroTagline prefix/token/suffix puzzle solved per language, ui.* copy-from-extension mapping, docs/ build-output cleanup
 - [project_store_listing_kword_stuffing_fix.md](project_store_listing_kword_stuffing_fix.md) — 2026-09-05: SUPPORTED LEAGUES bulleted list -> prose in all 12 desc_long.md; no em dash anywhere in these files, professional/college/Olympic term set per locale
+- [project_box_namespace_terminology.md](project_box_namespace_terminology.md) — 2026-09-07: 98-key box score namespace across 11 locales; which keys took native abbreviations (zh baseball/basketball, de/fr hockey goals) vs kept English, and the whole-header-row width measurement that validated the Chinese choice
+- [project_postseason_boost_ladder_translations.md](project_postseason_boost_ladder_translations.md) — 2026-09-09: postseasonBoost ceiling+ladder copy, 12 locales; first-time semifinal/quarterfinal/title-game/exhibition-game term map, pt_BR/pt_PT football-terminology split, ko 8강 and zh_TW 準決賽 choices
+- [project_guide_view_translations.md](project_guide_view_translations.md) — 2026-09-11: guideButton + guide.* namespace (TV-guide timeline), 12 locales; web-researched away@home separator per locale (hyphen/vs/x/@), bandFavorites "of yours"→"favorite(s)" idiom swap
+- [project_finished_tab_action_translations.md](project_finished_tab_action_translations.md) — 2026-09-12: setup.finishedTab* + finishedTabs.toast* (tab-cleanup-on-finish setting), 11 locales; per-locale tab/window noun table + "free" verb choice
+- [project_open_reveal_translations.md](project_open_reveal_translations.md) — 2026-09-19: setup.openReveal* (opening-animation toggle), 11 locales; "matchup poster" wordplay per language (fr affiche pun, zh 对阵/對戰 reuse), fil literal-English label call
+- [project_standings_tab_terminology.md](project_standings_tab_terminology.md) — 2026-09-20: detail.tabOverview/tabStandings + standings.* column headers, 11 locales; ESPN Deportes/Brasil/NHL.fr confirmed real conventions, zh_TW 和 vs 平 tie/draw split, de PKT/Pkt internal-precedent match

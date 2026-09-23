@@ -1,6 +1,6 @@
 {
 	"name": "@arenaswap/core",
-	"version": "2.1.1",
+	"version": "2.2.0",
 	"description": "ESPN API client, game model, and preferences for ArenaSwap",
 	"type": "module",
 	"main": "./dist/index.js",
@@ -9,6 +9,10 @@
 		".": {
 			"types": "./dist/index.d.ts",
 			"import": "./dist/index.js"
+		},
+		"./gameClock": {
+			"types": "./dist/gameClock.d.ts",
+			"import": "./dist/gameClock.js"
 		},
 		"./constants": {
 			"types": "./dist/constants.d.ts",
@@ -24,17 +28,18 @@
 		"test": "npm run test:unit && npm run test:e2e",
 		"test:unit": "jest --passWithNoTests --selectProjects unit",
 		"test:e2e": "jest --passWithNoTests --selectProjects e2e",
-		"typecheck": "tsc --noEmit",
+		"test:coverage": "jest --coverage",
+		"typecheck": "tsc --noEmit && tsc --noEmit -p tests",
 		"lint": "oxlint ."
 	},
 	"dependencies": {
 		"powerscore": "*",
-		"zod": "^4.5.4"
+		"zod": "^4.4.3"
 	},
 	"devDependencies": {
 		"@types/jest": "^30.0.0",
-		"jest": "^30.5.1",
-		"rolldown": "^1.2.7",
+		"jest": "^30.5.2",
+		"rolldown": "^1.2.9",
 		"typescript": "^7.0.2"
 	}
 }

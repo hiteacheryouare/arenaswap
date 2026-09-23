@@ -7,6 +7,7 @@ import type {
 	SportTypeConfig,
 	ScorerTunables,
 	LeagueConfig,
+	LeagueRunMinutes,
 } from 'powerscore';
 
 export type SignalName = 'closeness' | 'lateGame' | 'momentum' | 'leadChanges' | 'comeback';
@@ -19,6 +20,7 @@ export type {
 	SportTypeConfig,
 	ScorerTunables,
 	LeagueConfig,
+	LeagueRunMinutes,
 };
 
 // Baseball pitchers and hockey goalies arrive in the same `probables` structure, so this is not
@@ -39,6 +41,28 @@ export interface ProbableStarter {
 	status?: 'expected' | 'confirmed';
 }
 
+// The live counterpart to ProbableStarter. That one is deliberately pre-game only, because the
+// categories behind it turn into a box line at first pitch — this is that box line, for the two
+// players the game is currently waiting on.
+export interface AtBatPlayer {
+	name: string;
+	// Absent often enough that the panel needs an initials fallback rather than a broken image.
+	headshot?: string;
+	jersey?: string;
+	// A bare string here — "RP", "CF" — unlike the object `leaders` sends under the same name.
+	position?: string;
+	// ESPN's own pre-formatted line: "1.1 IP, 0 ER, H, BB" for a pitcher, "0-2, K" for a batter.
+	// Passed through rather than reassembled, the same way ProbableStarter.line is.
+	summary?: string;
+}
+
+// Only ever set when both sides arrived, so the panel cannot be drawn half-empty. ESPN drops the
+// pair between innings while the rest of the situation survives.
+export interface AtBat {
+	pitcher: AtBatPlayer;
+	batter: AtBatPlayer;
+}
+
 export interface TeamLeader {
 	// ESPN's category name, normalized. The key a label is looked up by, never display text.
 	category: string;
@@ -52,6 +76,10 @@ export interface TeamLeader {
 export interface Team {
 	id: string;
 	name: string;
+	// ESPN's own `team.name`: the nickname alone, without the city or the school. "Titans", not
+	// "Tennessee Titans"; "Nittany Lions", not "Lions", which is why it is carried rather than
+	// sliced off the end of `name`. Painted in the end zones of the football field diagram.
+	nickname?: string;
 	abbreviation: string;
 	score: number;
 	// Soccer only, once a match reaches a shootout: `score` stays frozen at the 120-minute
@@ -69,6 +97,12 @@ export interface Team {
 	// line ("1-4, HR, 4 RBI") instead of a season total.
 	probableStarter?: ProbableStarter;
 	leaders?: TeamLeader[];
+	// Poll position, 1–25. Undefined for an unranked team and for every league without a poll —
+	// ESPN sends 99 in both cases, which is filtered out on the way in rather than rendered.
+	rank?: number;
+	// Timeouts left. Live games only, and only in the sports that send them, which among the
+	// leagues we ship is the two gridiron ones.
+	timeouts?: number;
 }
 
 export interface GameCondition {
@@ -99,6 +133,13 @@ export interface Game {
 	venueName?: string;
 	// Already comma-joined for display, e.g. 'Inglewood, CA' or 'London, England'.
 	venueLocation?: string;
+	// Only ever set on a final game: ESPN sends the key on every state and fills it in at the same
+	// moment it flips the status, so a scheduled or live game arrives at 0 and is dropped here.
+	attendance?: number;
+	// Whatever ESPN puts after the slash in `Final/3OT`, `Final/10` or `Final/SO` — taken from its
+	// own label rather than derived from the period, which is the only way `SO` is ever produced.
+	// Undefined on a game that ended in regulation, and on every game that has not ended.
+	finalPeriodSuffix?: string;
 	period: number;
 	clockSeconds: number;
 	status: 'pre' | 'in' | 'post';
@@ -110,6 +151,18 @@ export interface Game {
 	topOfInning?: boolean;
 	baseRunners?: { first: boolean; second: boolean; third: boolean };
 	bso?: { balls: number; strikes: number; outs: number };
+	// Inning sports only. Dropped between innings, which is what makes the panel come and go.
+	atBat?: AtBat;
+	// The play that just happened, as ESPN describes it. Live games only, and absent in soccer,
+	// which sends no situation at all. Newlines are meaningful — a penalty is two sentences — so
+	// this is rendered with `white-space: pre-line` rather than collapsed.
+	lastPlay?: string;
+	// ESPN's own summary of the drive in progress, e.g. "3 plays, 5 yards, 0:10". Football only.
+	lastPlayDrive?: string;
+	// Whose play it was, as ESPN attributes it — the offense in football, the shooting side in
+	// hockey, the fielding side in baseball. Matches `homeTeam.id` or `awayTeam.id`, and is
+	// undefined when ESPN names a team we do not recognise. Colours the play's accent bar.
+	lastPlayTeamId?: string;
 	// Football only, from here down. e.g. "3rd & 5".
 	downDistance?: string;
 	// ESPN's "ABBR yardLine" label; joined onto downDistance via gameCard.downDistanceAt.
@@ -130,9 +183,23 @@ export interface Game {
 	weather?: GameCondition;
 	// ESPN signals this three different ways — see resolvePostseason in apiClient.ts.
 	isPostseason?: boolean;
+	// Distance from the trophy: 0 the title game, 1 a semifinal, 2 a quarterfinal, 3 anything
+	// earlier. Undefined on a postseason game that deliberately scores nothing — a non-playoff
+	// bowl, the Pro Bowl, a secondary tournament's early round — as well as on every game that is
+	// not postseason at all. See gradePostseason in postseasonRound.ts.
+	postseasonRound?: 0 | 1 | 2 | 3;
+	// ESPN's own name for the round, trimmed of the prefix that repeats the league and otherwise
+	// untouched, sponsors included. Passed through untranslated like the venue and broadcast names
+	// beside it. Present on games that score nothing, because a bowl's name is worth showing even
+	// when the game is not.
+	postseasonLabel?: string;
 	delayed?: boolean;
 	delayDescription?: string;
 }
+
+// What becomes of a registered tab once its game is over. 'keep' is what ArenaSwap has always
+// done. 'free' drops the registration and hands the tab back unmuted; 'close' shuts it.
+export type FinishedTabAction = 'keep' | 'free' | 'close';
 
 export interface UserPreferences {
 	sensitivity: 1 | 2 | 3 | 4 | 5 | 6 | 7;
@@ -144,6 +211,10 @@ export interface UserPreferences {
 	favoriteTeamIds: string[];
 	favoriteTeamBonusPoints: number;
 	showUpcomingGames: boolean;
+	// Keeps a finished game reachable for finalRetentionMs after it wrapped instead of discarding
+	// it the instant ESPN reports it final.
+	keepFinalGames: boolean;
+	finishedTabAction: FinishedTabAction;
 	proTipsEnabled: boolean;
 	notificationsEnabled: boolean;
 	standbyStreamEnabled: boolean;
@@ -154,6 +225,9 @@ export interface UserPreferences {
 	// Rømer is not offered by the settings list, so the toggle needs to know whether this user
 	// has found it before it will cycle through a third unit.
 	romerUnlocked: boolean;
+	// The matchup poster every card arrives as when the popup opens. Off means the list is simply
+	// there, the way it was before the graphic existed.
+	openRevealEnabled: boolean;
 	// Seasonal decoration on the game detail screen. The parent gates all three.
 	holidayDecorationsEnabled: boolean;
 	holidaySnowEnabled: boolean;
@@ -172,6 +246,17 @@ export interface TabRegistration {
 }
 
 export type LeagueLogoMap = Partial<Record<LeagueId, string>>;
+
+// ESPN's two monochrome marks for a team. They are drawn as a pair — of 916 teams sampled across
+// six leagues, 453 have both and not one has only one of them — so a team either has this or has
+// nothing, and a team with nothing keeps the tinted disc.
+export interface TeamMonoMarks {
+	white?: string;
+	black?: string;
+}
+
+// Team id to those marks, per league.
+export type TeamMonoLogoMap = Partial<Record<LeagueId, Record<string, TeamMonoMarks>>>;
 export type ScoreHistoryMap = Record<string, ScoreSnapshot[]>;
 
 export interface PowerScoreSnapshot {
@@ -206,6 +291,9 @@ export interface BackgroundState {
 	gameBoosts: Record<string, number>;
 	onStandbyStream: boolean;
 	standbyStreamTabId: number | null;
+	// Leagues ESPN refused on the last slate fetch. An empty slate alongside a non-empty list here
+	// is a slate we cannot vouch for, which the popup reports as a failure rather than as no games.
+	slateShedLeagues: LeagueId[];
 }
 
 export interface ScoresUpdatedMessage {
@@ -218,6 +306,7 @@ export interface ScoresUpdatedMessage {
 	gameBoosts: Record<string, number>;
 	onStandbyStream: boolean;
 	standbyStreamTabId: number | null;
+	slateShedLeagues: LeagueId[];
 }
 
 export interface UpdatePrefsMessage {
@@ -255,8 +344,31 @@ export interface GetDebugStateMessage {
 	type: 'GET_DEBUG_STATE';
 }
 
+// The guide draws today's whole slate, including finals, whatever the popup's display preferences
+// say. refreshSlate discards `pre` games when showUpcomingGames is off and `post` games when
+// keepFinalGames is off, and tickLeague evicts anything extra within one poll, so the guide fetches
+// for itself rather than reading GET_STATE.
+export interface GetGuideSlateMessage {
+	type: 'GET_GUIDE_SLATE';
+}
+
+export interface GuideSlate {
+	games: Game[];
+	leagueLogos: LeagueLogoMap;
+	monoLogos: TeamMonoLogoMap;
+	gameBoosts: Record<string, number>;
+	// Game id to the moment it ended, for the finals whose end is actually known. Everything else is
+	// still drawn at its estimate.
+	endTimes: Record<string, number>;
+}
+
+// Sent when end times land after the slate already went back, so an open guide asks again.
+export interface GuideSlateUpdatedMessage {
+	type: 'GUIDE_SLATE_UPDATED';
+}
+
 export interface DebugState {
-	pollModes: Record<string, 'eager' | 'dormant'>;
+	pollModes: Record<string, 'eager' | 'dormant' | 'hebetudinous'>;
 	leagueIntervals: Record<string, number>;
 	demoMode: boolean;
 	lastSwitchTime: number;
@@ -284,4 +396,5 @@ export type ExtensionMessage =
 	| GetStateMessage
 	| SetDemoModeMessage
 	| SetStandbyStreamTabMessage
-	| GetDebugStateMessage;
+	| GetDebugStateMessage
+	| GetGuideSlateMessage;

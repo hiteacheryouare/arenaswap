@@ -1,6 +1,7 @@
-// Import AFTER Bootstrap variables and source.
-
-@import 'crest';
+// Loaded after the theme, whose $warning and $score-loser-color it reads.
+@use 'bootstrap' as bs;
+@use 'crest';
+@use 'motion' as m;
 
 @keyframes scoreSlideOut {
 	from { transform: translateY(0%); }
@@ -31,11 +32,11 @@
 	left:      0;
 	right:     0;
 	text-align: inherit;
-	animation: scoreSlideOut 0.3s cubic-bezier(0.4, 0, 1, 1) forwards;
+	animation: scoreSlideOut m.$motion-base m.$motion-ease-in forwards;
 }
 
 .flip-score-digit-in {
-	animation: scoreSlideIn 0.3s cubic-bezier(0, 0, 0.6, 1) forwards;
+	animation: scoreSlideIn m.$motion-base m.$motion-ease forwards;
 }
 
 .font-lekton {
@@ -64,8 +65,15 @@
 		box-shadow:   0 0 0 1px rgba(#D90368, 0.25);
 	}
 
+	// A finished game is the one card in the list you cannot act on, so it steps back rather than
+	// forward: no team-colour rails, no white plate. It reads as a record instead of an option.
+	&.is-final {
+		background:    #f4f6f8;
+		border-color:  #d7dde3;
+	}
+
 	&.is-delayed {
-		box-shadow: 0 0 0 1px rgba($warning, 0.4);
+		box-shadow: 0 0 0 1px rgba(bs.$warning, 0.4);
 
 		.game-score-value,
 		.game-detail-score-value,
@@ -79,7 +87,7 @@
 
 .game-card-clickable {
 	cursor: pointer;
-	transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+	transition: transform m.$motion-quick m.$motion-ease, box-shadow m.$motion-quick m.$motion-ease, border-color m.$motion-quick m.$motion-ease;
 
 	&:hover {
 		transform: translateY(-1px);
@@ -103,7 +111,7 @@
 	border-radius: 50%;
 	background:    #e53935;
 	flex-shrink:   0;
-	animation:     livePulse 1.5s ease-in-out infinite;
+	animation:     livePulse m.$motion-pulse m.$motion-ease-in-out infinite;
 }
 
 .live-status-label {
@@ -111,10 +119,16 @@
 	letter-spacing: 0.08em;
 }
 
+.final-status-label {
+	font-size: 0.65rem;
+	letter-spacing: 0.08em;
+	color: #6b7280;
+}
+
 .delay-status-label {
 	font-size:      0.65rem;
 	letter-spacing: 0.08em;
-	color:          shade-color($warning, 40%);
+	color:          bs.shade-color(bs.$warning, 40%);
 }
 
 .delay-type-badge {
@@ -132,7 +146,7 @@
 	height: 5px;
 
 	.progress-bar {
-		transition: width 0.4s ease;
+		transition: width m.$motion-slow m.$motion-ease;
 	}
 }
 
@@ -154,6 +168,27 @@
 	letter-spacing: 0.03em;
 }
 
+// The status and the postseason round share one row, so naming the round costs no height on a
+// card that has none to spare. `flex-wrap` is the fallback and the reason nothing is ever
+// truncated: a label too wide to share drops to a line of its own with the card's full width,
+// which two of the 389 real ESPN round names need.
+.game-card-status-row {
+	gap: 0.25rem;
+	justify-content: space-between;
+}
+
+.game-postseason-label {
+	font-size: 0.62rem;
+	font-weight: 600;
+	letter-spacing: 0.02em;
+	color: #6c757d;
+	white-space: nowrap;
+
+	// ESPN's own casing, against the uppercase status beside it. Uppercasing turns Cheez-It and
+	// AT&T into shouting, and the sponsor is most of the reason a bowl's name is worth printing.
+	text-transform: none;
+}
+
 .game-card-matchup {
 	gap: 0.75rem;
 }
@@ -169,7 +204,7 @@
 
 // Shade the warning yellow 60% toward black so it passes WCAG AA on the
 // white card base. contrast-ratio() is Bootstrap's built-in WCAG checker.
-$pre-game-time-color: shade-color($warning, 60%);
+$pre-game-time-color: bs.shade-color(bs.$warning, 60%);
 
 .pre-game-start-time {
 	font-size: 0.7rem;
@@ -196,6 +231,12 @@ $pre-game-time-color: shade-color($warning, 60%);
 	font-size: 2.1rem;
 	color: #111827;
 	letter-spacing: -0.02em;
+
+	// Half of what says who won on a final card; the other half is the weight, which is a
+	// Bootstrap utility on the element because `.fw-bold` is `!important` and would win here.
+	&.is-loser {
+		color: bs.$score-loser-color;
+	}
 }
 
 // Tabular figures equalise single digits, but a two-digit score is still twice the width of a
@@ -297,6 +338,12 @@ $pre-game-time-color: shade-color($warning, 60%);
 	font-size: 0.45rem;
 }
 
+// The unfilled half of each count, on the white card. `bi-circle` is a hairline ring, so with no
+// colour of its own it inherits the popup's near-white body ink and all but disappears here.
+.bso-dot.is-empty {
+	color: #4b5563;
+}
+
 .team-crest {
 	width: 64px;
 	height: 64px;
@@ -333,6 +380,45 @@ $pre-game-time-color: shade-color($warning, 60%);
 .team-abbreviation {
 	font-size: 0.7rem;
 	color: #111827;
+}
+
+// A qualifier on the tricode, not a second name for the team: smaller and greyed so "ALA" still
+// reads first. The widest pair this column has to hold is a two-digit rank against a four-letter
+// tricode — "#15 TENN" — which is what liveGameCardLayout measures.
+.team-rank {
+	font-size: 0.58rem;
+	font-weight: 700;
+	color: #6c757d;
+	margin-right: 0.18em;
+	// The tricode's own weight is a Bootstrap utility on the parent and would otherwise be
+	// inherited at full strength.
+	letter-spacing: 0;
+}
+
+.timeout-dots {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.14rem;
+	line-height: 1;
+}
+
+.timeout-dot {
+	font-size: 0.45rem;
+	color: #374151;
+}
+
+// The unlit half of the allotment carries as much of the reading as the lit half — two timeouts
+// left only means anything against a row of three. `bi-circle` is a hairline ring, so at anything
+// lighter than this it disappears on the card's tinted plate and a 2-of-3 row looks like a 2.
+.timeout-dot.is-empty {
+	color: #9ca3af;
+}
+
+.timeout-dots-numeric {
+	font-size: 0.5rem;
+	font-weight: 700;
+	color: #4b5563;
+	letter-spacing: 0.02em;
 }
 
 [data-team-star='true'] {
@@ -446,6 +532,10 @@ button.game-meta-attribution {
 .ff-strip {
 	position: relative;
 	width: 100%;
+	// The end zone marks sit outside the SVG, so the rounded corner has to be clipped out here
+	// rather than left to `.ff-field`'s own radius.
+	overflow: hidden;
+	border-radius: 3px;
 }
 
 .ff-field {
@@ -453,16 +543,6 @@ button.game-meta-attribution {
 	width: 100%;
 	height: auto;
 	border-radius: 3px;
-}
-
-// Two greens a shade apart, which is all a mown band is. Pushing them further apart reads as a
-// striped rug rather than as grass cut in opposite directions.
-.ff-turf {
-	fill: #22683B;
-}
-
-.ff-mow {
-	fill: #2A7645;
 }
 
 // Hairlines: non-scaling-stroke keeps every painted line at one device pixel rather than thinning
@@ -501,18 +581,140 @@ button.game-meta-attribution {
 	dominant-baseline: central;
 }
 
-.ff-endzone-label {
-	font-size: 5.4px;
+// Crest and nickname painted on the end zone, running its long way the way a real one is lettered.
+// `writing-mode` rather than a rotation, so the box is laid out at the size it actually occupies and
+// the nickname can be truncated against the end zone's real depth. The two sides are mirrored about
+// midfield — each reads upright to somebody standing behind that end zone — so the away side
+// reverses its flex order and turns its own children. Turning the whole block instead would stand
+// the crest on its head rather than laying it on its side with the lettering.
+.ff-endzone-mark {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	width: calc(100% / 12);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	// Every px here is a px the nickname does not get. Measured in Chrome at the popup's own width:
+	// the end zone is 77px deep, which leaves 60 for the lettering — against 55 for "COMMANDERS", the
+	// longest in the NFL, and 58 for "MOUNTAINEERS". The 15-letter college names above those
+	// ("THUNDERING HERD", "GOLDEN HURRICANE") need 70 and do not fit at any legible size, so they
+	// truncate rather than dragging the whole thing smaller for everybody else.
+	gap: 2px;
+	padding: 2px 0;
+	writing-mode: vertical-rl;
+	pointer-events: none;
+}
+
+.ff-endzone-away {
+	left: 0;
+	flex-direction: row-reverse;
+}
+
+.ff-endzone-home {
+	right: 0;
+}
+
+// Quarter-turned to lie with the lettering, which is what `writing-mode` already does to the
+// glyphs. A `rotate` rather than a `writing-mode` because a replaced element has no text flow to
+// inherit one, and because it costs no layout: the box stays square either way.
+.ff-endzone-crest {
+	width: 11px;
+	height: 11px;
+	border-radius: 999px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+}
+
+// The round clip belongs to the plate rather than to the crest. A mark reaches into the corners of
+// its own box — the Giants' 'ny' runs the full width of theirs — so a circle drawn at the size of
+// the artwork shaves the ends off it, and with nothing painted underneath it cuts for nothing.
+.ff-endzone-crest:not(.is-bare) {
+	overflow: hidden;
+}
+
+.ff-endzone-crest-art {
+	width: 9px;
+	height: 9px;
+}
+
+// Three quarters of the plate, which is what the widest mark in any league needs to land on it:
+// measured over 264 crests, the furthest ink reaches 65% of the way to the corner of its own box,
+// so anything above this plates Charlotte and the Royals by amputating them.
+.ff-endzone-crest:not(.is-bare) .ff-endzone-crest-art {
+	width: 75%;
+	height: 75%;
+}
+
+// Bare is the common case: the crest draws in its own colours straight onto the paint, and only a
+// crest that cannot be read there falls back to the tinted disc the class above describes.
+.ff-endzone-crest.is-bare .ff-endzone-crest-art {
+	width: 11px;
+	height: 11px;
+}
+
+.ff-endzone-name {
+	// 7.5 rather than 8: uppercase runs about a tenth longer than the mixed case it replaced, and it
+	// loses nothing for it — no descenders, one cap height, so it reads at a size mixed case would not.
+	font-size: 7.5px;
 	font-weight: 700;
-	letter-spacing: 0.16em;
-	text-anchor: middle;
-	dominant-baseline: central;
+	line-height: 1;
+	text-transform: uppercase;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	min-width: 0;
+	min-height: 0;
+}
+
+.ff-endzone-home .ff-endzone-crest {
+	rotate: 90deg;
+}
+
+.ff-endzone-away .ff-endzone-crest {
+	rotate: -90deg;
+}
+
+.ff-endzone-away .ff-endzone-name {
+	rotate: 180deg;
 }
 
 // Painted on, so it sits under the ball and the two live lines but over the yard lines the way a
-// real midfield logo covers the 50.
+// real midfield logo covers the 50. The fade is paint rather than legibility: what keeps a navy
+// crest off dark grass is `TeamCrest` swapping it for a white mark, and a crest that survives that
+// check at full strength survives it at 72% too.
 .ff-logo {
 	opacity: 0.72;
+}
+
+// Inside a `foreignObject` whose box is the 10 painted yards, so a percentage here is a share of the
+// midfield stencil and needs no second copy of that number.
+.ff-logo-shell {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 999px;
+}
+
+// The same rule the end zones take: only a plate clips, and it clips to three quarters of itself.
+.ff-logo-shell:not(.is-bare) {
+	overflow: hidden;
+}
+
+.ff-logo-art {
+	width: 75%;
+	height: 75%;
+}
+
+// Bare is the common case and the one that should fill the stencil: there is no disc around it to
+// keep clear of.
+.ff-logo-shell.is-bare .ff-logo-art {
+	width: 100%;
+	height: 100%;
 }
 
 // Ground the offense has already covered on this drive, running back from the ball to where the
@@ -551,21 +753,31 @@ button.game-meta-attribution {
 // `x` on a <rect> is a CSS geometry property and `x` on a <text> is not, so the yellow line eases
 // its own attribute while the ball and the line of scrimmage ride a transform together.
 .ff-marker {
-	transition: transform 0.45s ease-out;
+	transition: transform m.$motion-slow m.$motion-ease;
 }
 
 .ff-first-down {
-	transition: x 0.45s ease-out;
+	transition: x m.$motion-slow m.$motion-ease;
 }
 
 .ff-drive {
-	transition: x 0.45s ease-out, width 0.45s ease-out;
+	transition: x m.$motion-slow m.$motion-ease, width m.$motion-slow m.$motion-ease;
 }
 
-@media (prefers-reduced-motion: reduce) {
+@include m.reduced-motion {
+	.flip-score-digit-out,
+	.flip-score-digit-in,
+	.live-dot,
+	.game-card-ps-progress .progress-bar,
 	.ff-marker,
 	.ff-first-down,
 	.ff-drive {
-		transition: none;
+		@include m.motion-still;
+	}
+
+	// The out digit is positioned over the in digit and only leaves because it animates away. With
+	// the animation off it would sit on top of the new score forever.
+	.flip-score-digit-out {
+		display: none;
 	}
 }

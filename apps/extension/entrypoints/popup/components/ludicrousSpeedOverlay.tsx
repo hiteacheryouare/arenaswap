@@ -1,164 +1,69 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { i18n } from '#i18n';
-
-const NUM_STARS = 230;
-
-interface Star {
-	x: number;
-	y: number;
-	z: number;
-	px: number | null;
-	py: number | null;
-}
-
-type Phase = 'prelaunch' | 'cockpit' | 'cruising' | 'lightspeed' | 'ridiculous' | 'ludicrous' | 'plaid' | 'panic' | 'stopping';
-
-interface DisplayState {
-	text: string;
-	cls: string;
-}
-
-const POWERSCORE_COLORS: [number, number, number][] = [
-	[0, 204, 102],  // green  #00CC66
-	[241, 196, 15], // gold   #F1C40F
-	[247, 92, 3],   // orange #F75C03
-	[217, 3, 104],  // red    #D90368
-	[62, 155, 209], // blue   #3E9BD1
-];
-
-function makeStar(): Star {
-	return {
-		x: (Math.random() - 0.5) * 1.5,
-		y: (Math.random() - 0.5) * 1.5,
-		z: Math.random() * 0.8 + 0.15,
-		px: null,
-		py: null,
-	};
-}
-
-function resetStar(s: Star): void {
-	s.x = (Math.random() - 0.5) * 1.5;
-	s.y = (Math.random() - 0.5) * 1.5;
-	s.z = 0.88 + Math.random() * 0.12;
-	s.px = null;
-	s.py = null;
-}
-
-function getStarColor(z: number, phase: Phase, frame: number, starIdx: number): string {
-	const bri = Math.round(220 + (1 - z) * 80);
-	const f = 0.38 + (1 - z) * 0.62;
-
-	switch (phase) {
-		case 'prelaunch':
-		case 'cockpit':
-			return `rgb(${Math.round(bri * 0.35 * f)},${Math.round(bri * 0.5 * f)},${Math.round(bri * f)})`;
-		case 'cruising':
-			return `rgb(${Math.round(bri * f)},${Math.round(bri * 0.8 * f)},${Math.round(bri * 0.45 * f)})`;
-		case 'lightspeed':
-			return `rgb(${Math.round(bri * 0.15 * f)},${Math.round(bri * f)},${Math.round(bri * 0.82 * f)})`;
-		case 'ridiculous':
-			return `rgb(${Math.round(bri * f)},${Math.round(bri * 0.55 * f)},${Math.round(bri * 0.07 * f)})`;
-		case 'ludicrous':
-			return `rgb(${Math.round(bri * f)},${Math.round(bri * 0.15 * f)},${Math.round(bri * 0.04 * f)})`;
-		case 'plaid': {
-			const laneIdx = (starIdx + Math.floor(frame / 40)) % POWERSCORE_COLORS.length;
-			const c = POWERSCORE_COLORS[laneIdx]!;
-			return `rgb(${Math.round(c[0] * f)},${Math.round(c[1] * f)},${Math.round(c[2] * f)})`;
-		}
-		case 'panic':
-			return `rgb(${Math.round(bri * 0.9 * f)},${Math.round(bri * 0.25 * f)},${Math.round(bri * 0.06 * f)})`;
-		case 'stopping':
-			return `rgb(${Math.round(bri * f)},${Math.round(bri * 0.84 * f)},${Math.round(bri * 0.7 * f)})`;
-		default:
-			return `rgb(${Math.round(bri * f)},${Math.round(bri * f)},${Math.round(bri * f)})`;
-	}
-}
+import { createPortal } from 'react-dom';
+import { buildScript, type DisplayState, type Phase, type View } from './ludicrousScript';
+import { preloadLogoImages } from './ludicrousLeagueLogos';
+import { cockpitBrakeRect } from './ludicrousCockpit';
+import LudicrousStage from './ludicrousStage';
 
 export default ({ onClose }: { onClose: () => void }) => {
-	const canvasRef = useRef<HTMLCanvasElement>(null);
-	const starsRef = useRef<Star[]>(Array.from({ length: NUM_STARS }, makeStar));
-	const rafRef = useRef<number>(0);
+	const script = useMemo(buildScript, []);
+	const logoImages = useMemo(preloadLogoImages, []);
 
 	const phaseRef = useRef<Phase>('prelaunch');
-	const targetSpeedRef = useRef(0.08);
-	const currentSpeedRef = useRef(0.08);
-	const frameRef = useRef(0);
-	const manualTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+	const speedRef = useRef(0.08);
+	const logosRef = useRef(false);
 
-	const [display, setDisplay] = useState<DisplayState>({
-		text: i18n.t('ludicrousSpeed.intro.l1'),
-		cls: 'dialogue prelaunch',
-	});
-	const [closing, setClosing] = useState(false);
+	const [view, setView] = useState<View>('cockpit');
+	const [display, setDisplay] = useState<DisplayState>({ text: '', cls: 'dialogue prelaunch' });
 	const [brakeState, setBrakeState] = useState<'hidden' | 'visible' | 'pressed'>('hidden');
+	const [closing, setClosing] = useState(false);
+	const [size, setSize] = useState<{ w: number; h: number } | null>(null);
+
+	const beatTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+	const manualTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+	const finishedRef = useRef(false);
+
+	/* Skipping and braking both stop the ship, and they want different amounts of time for it.
+	   Clicking to skip is someone asking to leave, so it leaves. Pulling the brake is a beat in the
+	   sequence, so the deceleration gets played out the same way the scripted ending does. */
+	const finish = useCallback((fast: boolean) => {
+		if (finishedRef.current) return;
+		finishedRef.current = true;
+		clearTimeout(beatTimerRef.current);
+		phaseRef.current = 'stopping';
+		speedRef.current = 0;
+		logosRef.current = false;
+		setView('rear');
+		setDisplay({ text: i18n.t('ludicrousSpeed.stop'), cls: 'stop' });
+		manualTimersRef.current.push(setTimeout(() => setClosing(true), fast ? 700 : 3800));
+	}, []);
+
+	const runBeat = useCallback((index: number) => {
+		const beat = script[index];
+		if (!beat) return;
+
+		if (beat.end) {
+			setClosing(true);
+			return;
+		}
+		if (beat.phase) phaseRef.current = beat.phase;
+		if (beat.speed !== undefined) speedRef.current = beat.speed;
+		if (beat.view) setView(beat.view);
+		if (beat.display) setDisplay(beat.display);
+		if (beat.brake) setBrakeState(beat.brake);
+		logosRef.current = Boolean(beat.logos);
+
+		beatTimerRef.current = setTimeout(() => runBeat(index + 1), beat.ms);
+	}, [script]);
 
 	useEffect(() => {
-		const canvas = canvasRef.current;
-		if (!canvas) return;
-		const ctx = canvas.getContext('2d');
-		if (!ctx) return;
+		runBeat(0);
+		return () => clearTimeout(beatTimerRef.current);
+	}, [runBeat]);
 
-		canvas.width = canvas.clientWidth;
-		canvas.height = canvas.clientHeight;
-
-		ctx.fillStyle = '#000';
-		ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-		const draw = () => {
-			const phase = phaseRef.current;
-			const frame = frameRef.current++;
-
-			const lerpFactor = phase === 'stopping' ? 0.16 : 0.04;
-			currentSpeedRef.current += (targetSpeedRef.current - currentSpeedRef.current) * lerpFactor;
-			const speed = currentSpeedRef.current;
-
-			const { width, height } = canvas;
-			const cx = width / 2;
-			const cy = height / 2;
-
-			const fadeAlpha = (phase === 'prelaunch' || phase === 'cockpit') ? 0.16 : phase === 'plaid' ? 0.09 : 0.11;
-			ctx.fillStyle = `rgba(0,0,0,${fadeAlpha})`;
-			ctx.fillRect(0, 0, width, height);
-
-			starsRef.current.forEach((star, starIdx) => {
-				const ppx = star.px;
-				const ppy = star.py;
-
-				star.z -= speed * 0.007;
-				if (star.z <= 0.01) { resetStar(star); return; }
-
-				const sx = cx + (star.x / star.z) * cx * 0.80;
-				const sy = cy + (star.y / star.z) * cy * 0.80;
-
-				if (sx < -40 || sx > width + 40 || sy < -40 || sy > height + 40) {
-					resetStar(star); return;
-				}
-
-				if (ppx !== null && ppy !== null && !(phase === 'plaid' && starIdx % 3 === 0)) {
-					ctx.beginPath();
-					ctx.moveTo(ppx, ppy);
-					ctx.lineTo(sx, sy);
-					ctx.strokeStyle = getStarColor(star.z, phase, frame, starIdx);
-					ctx.lineWidth = Math.max(2.5, (1 - star.z) * 9 + speed * 0.22);
-					ctx.stroke();
-				}
-
-				star.px = sx;
-				star.py = sy;
-			});
-
-			if (phase === 'stopping' && speed < 0.04) {
-				setClosing(true);
-				return;
-			}
-
-			rafRef.current = requestAnimationFrame(draw);
-		};
-
-		rafRef.current = requestAnimationFrame(draw);
-		return () => cancelAnimationFrame(rafRef.current);
-	}, []);
+	// Stops a queued skip / emergency-brake timer setting state after unmount.
+	useEffect(() => () => manualTimersRef.current.forEach(clearTimeout), []);
 
 	useEffect(() => {
 		if (!closing) return;
@@ -166,184 +71,65 @@ export default ({ onClose }: { onClose: () => void }) => {
 		return () => clearTimeout(t);
 	}, [closing, onClose]);
 
-	// Stops a queued skip / emergency-brake timer setting state after unmount.
-	useEffect(() => () => manualTimersRef.current.forEach(clearTimeout), []);
-
-	useEffect(() => {
-		const timers: ReturnType<typeof setTimeout>[] = [];
-		let delay = 0;
-
-		const at = (ms: number, fn: () => void) => {
-			timers.push(setTimeout(fn, ms));
-		};
-
-		const introLines = [
-			{ key: 'ludicrousSpeed.intro.l1', ms: 1500 },
-			{ key: 'ludicrousSpeed.intro.l2', ms: 1500 },
-			{ key: 'ludicrousSpeed.intro.l3', ms: 1200 },
-			{ key: 'ludicrousSpeed.intro.l4', ms: 1600 },
-			{ key: 'ludicrousSpeed.intro.l5', ms: 1200 },
-			{ key: 'ludicrousSpeed.intro.l6', ms: 1200 },
-			{ key: 'ludicrousSpeed.intro.l7', ms: 1500 },
-			{ key: 'ludicrousSpeed.intro.l8', ms: 1500 },
-		] as const;
-
-		for (const line of introLines) {
-			const d = delay;
-			at(d, () => setDisplay({ text: i18n.t(line.key), cls: 'dialogue prelaunch' }));
-			delay += line.ms;
-		}
-
-		const prelaunchLines = [
-			{ key: 'ludicrousSpeed.prelaunch.l1', ms: 1500 },
-			{ key: 'ludicrousSpeed.prelaunch.l2', ms: 1100 },
-			{ key: 'ludicrousSpeed.prelaunch.l3', ms: 1600 },
-			{ key: 'ludicrousSpeed.prelaunch.l4', ms: 1300 },
-			{ key: 'ludicrousSpeed.prelaunch.l5', ms: 1300 },
-			{ key: 'ludicrousSpeed.prelaunch.l6', ms: 1300 },
-			{ key: 'ludicrousSpeed.prelaunch.l7', ms: 1300 },
-			{ key: 'ludicrousSpeed.prelaunch.l8', ms: 1200 },
-			{ key: 'ludicrousSpeed.prelaunch.l9', ms: 1400 },
-			{ key: 'ludicrousSpeed.prelaunch.l10', ms: 1500 },
-			{ key: 'ludicrousSpeed.prelaunch.l11', ms: 1100 },
-			{ key: 'ludicrousSpeed.prelaunch.l12', ms: 900 },
-		] as const;
-
-		for (const line of prelaunchLines) {
-			const d = delay;
-			at(d, () => setDisplay({ text: i18n.t(line.key), cls: 'dialogue prelaunch' }));
-			delay += line.ms;
-		}
-
-		at(delay, () => setDisplay({ text: i18n.t('ludicrousSpeed.announce'), cls: 'announce' }));
-		delay += 1600;
-
-		at(delay, () => {
-			phaseRef.current = 'cruising';
-			targetSpeedRef.current = 5.5;
-			setDisplay({ text: i18n.t('ludicrousSpeed.go'), cls: 'go' });
-		});
-		delay += 1300;
-
-		at(delay, () => {
-			setDisplay({ text: '', cls: 'stars-only' });
-		});
-		delay += 1400;
-
-		at(delay, () => setDisplay({ text: i18n.t('ludicrousSpeed.gforce.l1'), cls: 'dialogue postlaunch' }));
-		delay += 1200;
-		at(delay, () => {
-			targetSpeedRef.current = 6.5;
-			setDisplay({ text: i18n.t('ludicrousSpeed.gforce.l2'), cls: 'dialogue postlaunch' });
-		});
-		delay += 1600;
-
-		at(delay, () => {
-			phaseRef.current = 'lightspeed';
-			targetSpeedRef.current = 7.5;
-			setDisplay({ text: i18n.t('ludicrousSpeed.signs.light'), cls: 'speedsign lightspeed' });
-		});
-		delay += 2000;
-
-		at(delay, () => {
-			phaseRef.current = 'ridiculous';
-			targetSpeedRef.current = 9.5;
-			setDisplay({ text: i18n.t('ludicrousSpeed.signs.ridiculous'), cls: 'speedsign ridiculous' });
-		});
-		delay += 2000;
-
-		at(delay, () => {
-			phaseRef.current = 'ludicrous';
-			targetSpeedRef.current = 12.5;
-			setDisplay({ text: i18n.t('ludicrousSpeed.signs.ludicrous'), cls: 'speedsign ludicrous' });
-		});
-		delay += 2200;
-
-		at(delay, () => {
-			phaseRef.current = 'plaid';
-			targetSpeedRef.current = 14;
-			setDisplay({ text: i18n.t('ludicrousSpeed.signs.plaid'), cls: 'plaid-rect' });
-		});
-		delay += 2200;
-
-		at(delay, () => {
-			phaseRef.current = 'panic';
-			targetSpeedRef.current = 10;
-			setBrakeState('visible');
-		});
-
-		const panicLines = [
-			{ key: 'ludicrousSpeed.panic.l1', ms: 1400 },
-			{ key: 'ludicrousSpeed.panic.l2', ms: 1400 },
-			{ key: 'ludicrousSpeed.panic.l3', ms: 1400 },
-			{ key: 'ludicrousSpeed.panic.l4', ms: 1400 },
-		] as const;
-		for (const line of panicLines) {
-			const d = delay;
-			at(d, () => setDisplay({ text: i18n.t(line.key), cls: 'dialogue panic' }));
-			delay += line.ms;
-		}
-
-		at(delay, () => setBrakeState('pressed'));
-		delay += 700;
-
-		at(delay, () => {
-			phaseRef.current = 'stopping';
-			targetSpeedRef.current = 0;
-			setDisplay({ text: i18n.t('ludicrousSpeed.stop'), cls: 'stop' });
-		});
-		delay += 1800;
-
-		at(delay, () => setClosing(true));
-		return () => timers.forEach(clearTimeout);
-	}, []);
-
-	const handleSkip = useCallback(() => {
-		if (phaseRef.current === 'stopping') return;
-		phaseRef.current = 'stopping';
-		targetSpeedRef.current = 0;
-		setDisplay({ text: i18n.t('ludicrousSpeed.stop'), cls: 'stop' });
-		manualTimersRef.current.push(setTimeout(() => setClosing(true), 750));
-	}, []);
+	const handleSkip = useCallback(() => finish(true), [finish]);
 
 	const handleEmergencyBrake = useCallback((e: React.MouseEvent) => {
 		e.stopPropagation();
-		if (brakeState === 'pressed' || phaseRef.current === 'stopping') return;
+		if (brakeState === 'pressed' || finishedRef.current) return;
 		setBrakeState('pressed');
-		manualTimersRef.current.push(setTimeout(() => {
-			if (phaseRef.current === 'stopping') return;
-			phaseRef.current = 'stopping';
-			targetSpeedRef.current = 0;
-			setDisplay({ text: i18n.t('ludicrousSpeed.stop'), cls: 'stop' });
-			manualTimersRef.current.push(setTimeout(() => setClosing(true), 750));
-		}, 500));
-	}, [brakeState]);
+		manualTimersRef.current.push(setTimeout(() => finish(false), 500));
+	}, [brakeState, finish]);
+
+	// The overlay is role='button', so these are the click rather than controls of their own.
+	const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+		if (e.key !== 'Enter' && e.key !== ' ') return;
+		e.preventDefault();
+		handleSkip();
+	}, [handleSkip]);
+
+	const handleMeasure = useCallback((w: number, h: number) => setSize({ w, h }), []);
+
+	const overlayRef = useRef<HTMLDivElement>(null);
+	useEffect(() => overlayRef.current?.focus(), []);
+
+	// The brake is part of the console rather than a floating button, so it is placed onto the rect
+	// the canvas drew its placard into instead of being guessed at in CSS.
+	const brakeRect = size ? cockpitBrakeRect(size.w, size.h) : null;
+	const brakeStyle = brakeRect
+		? { left: `${brakeRect.x}px`, top: `${brakeRect.y}px`, width: `${brakeRect.w}px`, height: `${brakeRect.h}px` }
+		: undefined;
 
 	return createPortal(
 		<div
-			role="button"
-			className={`ls-overlay${closing ? ' closing' : ''}`}
+			ref={overlayRef}
+			role='button'
+			className={`ls-overlay ls-view-${view}${closing ? ' closing' : ''}`}
 			onClick={handleSkip}
-			onKeyDown={(e) => {
-				if (e.key === 'Enter' || e.key === ' ') {
-					e.preventDefault();
-					handleSkip();
-				}
-			}}
+			onKeyDown={handleKeyDown}
 			tabIndex={0}
 		>
-			<canvas ref={canvasRef} className="ls-canvas" />
+			<LudicrousStage
+				view={view}
+				phaseRef={phaseRef}
+				speedRef={speedRef}
+				logosRef={logosRef}
+				brakeArmed={brakeState !== 'hidden'}
+				brakePulled={brakeState === 'pressed'}
+				logoImages={logoImages}
+				onMeasure={handleMeasure}
+			/>
 			<div className={`ls-text ${display.cls}`}>{display.text}</div>
-			{brakeState !== 'hidden' && (
+			{brakeState !== 'hidden' && view === 'cockpit' && brakeStyle && (
 				<button
 					className={`ls-emergency-brake${brakeState === 'pressed' ? ' pressed' : ''}`}
+					style={brakeStyle}
 					onClick={handleEmergencyBrake}
 				>
 					{i18n.t('ludicrousSpeed.emergencyBrake')}
 				</button>
 			)}
-			<div className="ls-skip">{i18n.t('ludicrousSpeed.skip')}</div>
+			<div className='ls-skip'>{i18n.t('ludicrousSpeed.skip')}</div>
 		</div>,
 		document.body,
 	);
-}
+};

@@ -230,6 +230,12 @@ const getGameProgress = (game: Game, config: SportTypeConfig): number => {
 	return clamp((periodsDone + elapsedInPeriod / periodDuration) / regularPeriods, 0, 1);
 };
 
+// Public so a consumer drawing a game on a timeline projects its end from the same clock the
+// lateGame signal reads, rather than from a second copy of it.
+export const computeGameProgress = (game: Game): number => (
+	getGameProgress(game, sportTypeConfigMap[game.sportType] ?? sportTypeConfigMap.basketball)
+);
+
 const getBaseballRegulationProgress = (
 	inning: number,
 	curve: BaseballLateGameCurveConfig,
@@ -398,8 +404,11 @@ const getMomentum = (game: Game, history: ScoreSnapshot[], config: SportTypeConf
 
 	const oldest = history[0]!;
 	const newest = history[history.length - 1]!;
-	const homeDelta = newest.homeScore - oldest.homeScore;
-	const awayDelta = newest.awayScore - oldest.awayScore;
+	// Floored because ESPN revises scores downward: an overturned goal, a reversed touchdown.
+	// Left signed, a team losing points reads as the opponent outscoring them, and the bigger
+	// the reversal the bigger the phantom run.
+	const homeDelta = Math.max(0, newest.homeScore - oldest.homeScore);
+	const awayDelta = Math.max(0, newest.awayScore - oldest.awayScore);
 	const run = Math.abs(homeDelta - awayDelta);
 	const homeIsRunning = homeDelta > awayDelta;
 	const runTeam = homeIsRunning
@@ -416,7 +425,7 @@ const getMomentum = (game: Game, history: ScoreSnapshot[], config: SportTypeConf
 		// `run` is the differential, not an unanswered streak, so both scores are named. Rendering it
 		// as "8-0" claimed a shutout that a 10-2 stretch never was.
 		const scoredFor = Math.max(homeDelta, awayDelta);
-		const scoredAgainst = Math.max(0, Math.min(homeDelta, awayDelta));
+		const scoredAgainst = Math.min(homeDelta, awayDelta);
 		reason = `${runTeam} ${reasons.momentumOutscoring} ${chasingTeam} ${scoredFor}-${scoredAgainst}`;
 	} else if (run >= config.momentumSmallRun) {
 		tier = scores.momentum.smallRun;

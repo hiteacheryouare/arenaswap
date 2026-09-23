@@ -31,9 +31,10 @@ describe('PowerScoreBreakdown signals', () => {
 		});
 	});
 
-	it('displays the final PowerScore total label', () => {
-		cy.mount(<PowerScoreBreakdown {...defaultProps} />);
-		cy.contains('28 / 100').should('exist');
+	it('carries the total label it was handed through to the reader', () => {
+		cy.mount(<PowerScoreBreakdown {...defaultProps} totalLabel='41 / 100' />);
+		cy.contains('41 / 100').should('exist');
+		cy.contains('28 / 100').should('not.exist');
 	});
 });
 
@@ -43,9 +44,11 @@ describe('PowerScoreBreakdown stall penalty', () => {
 		cy.contains('Clock stall penalty').parent().contains('0').should('exist');
 	});
 
-	it('shows negative value when stall penalty > 0', () => {
+	// Scoped to its own row: an unscoped match is satisfied by a -5 anywhere on the card, including
+	// the volatility row directly above it.
+	it('shows the penalty as a negative on the stall row', () => {
 		cy.mount(<PowerScoreBreakdown {...defaultProps} stallPenalty={5} signalsSubtotal={28} />);
-		cy.contains('-5').should('exist');
+		cy.contains('Clock stall penalty').parent().contains('-5').should('exist');
 	});
 
 	it('shows the clock stall penalty row for clock-based sports', () => {
@@ -66,38 +69,38 @@ describe('PowerScoreBreakdown win probability variance', () => {
 		cy.contains(/volatility/i).should('not.exist');
 	});
 
-	it('shows "Volatility Boost" label and positive value for positive variance', () => {
+	it('shows "Volatility boost" label and positive value for positive variance', () => {
 		cy.mount(<PowerScoreBreakdown {...defaultProps} winProbabilityVariance={7} />);
-		cy.contains('Volatility Boost').should('exist');
+		cy.contains('Volatility boost').should('exist');
 		cy.contains('+7').should('exist');
 	});
 
-	it('shows "Volatility Penalty" label and negative value for negative variance', () => {
+	it('shows "Volatility penalty" label and negative value for negative variance', () => {
 		cy.mount(<PowerScoreBreakdown {...defaultProps} winProbabilityVariance={-5} />);
-		cy.contains('Volatility Penalty').should('exist');
+		cy.contains('Volatility penalty').should('exist');
 		cy.contains('-5').should('exist');
 	});
 
-	it('shows "Volatility" label and zero for zero variance', () => {
+	// 'Volatility' is a prefix of both the boost and the penalty label, so a substring match on it
+	// cannot tell a neutral line from one that swung the score either way.
+	it('calls a flat line neither a boost nor a penalty, and scores it at zero', () => {
 		cy.mount(<PowerScoreBreakdown {...defaultProps} winProbabilityVariance={0} />);
-		cy.contains('Volatility').should('exist');
+		cy.contains('Volatility boost').should('not.exist');
+		cy.contains('Volatility penalty').should('not.exist');
+		cy.contains(/^Volatility$/).parent().contains('0').should('exist');
 	});
 });
 
 describe('PowerScoreBreakdown factor icons', () => {
-	it('renders one icon per boost/penalty row, matching the walkthrough legend', () => {
+	// The rule, not the table: every factor row carries exactly one icon and no two rows share one.
+	// Pinning the six class names in source order made choosing a nicer icon a test edit.
+	it('gives every factor row an icon of its own', () => {
 		cy.mount(<PowerScoreBreakdown {...defaultProps} winProbabilityVariance={3} />);
-		const expected = [
-			'bi-hourglass-split',
-			'bi-activity',
-			'bi-star-fill',
-			'bi-lightning-fill',
-			'bi-bullseye',
-			'bi-trophy-fill',
-		];
-		cy.get('.powerscore-factor-icon').should('have.length', expected.length);
-		cy.get('.powerscore-factor-icon').each(($icon, i) => {
-			cy.wrap($icon).should('have.class', expected[i]!);
+		cy.get('.powerscore-factor-icon').then(($icons: JQuery<HTMLElement>) => {
+			const rows = [...$icons].map(icon => icon.closest('.powerscore-breakdown-row'));
+			expect(new Set(rows).size, 'no row carries two icons').to.equal(rows.length);
+			const names = [...$icons].map(icon => [...icon.classList].find(name => name.startsWith('bi-') && name !== 'bi-'));
+			expect(new Set(names).size, 'no icon is used twice').to.equal(names.length);
 		});
 	});
 
@@ -118,7 +121,7 @@ describe('PowerScoreBreakdown factor icons', () => {
 describe('PowerScoreBreakdown boosts', () => {
 	it('shows "+N" for favorite bonus when > 0', () => {
 		cy.mount(<PowerScoreBreakdown {...defaultProps} favoriteBonus={10} favoriteTeamCount={1} />);
-		cy.contains('Favorite Boost').parent().contains('+10').should('exist');
+		cy.contains('Favorite boost').parent().contains('+10').should('exist');
 	});
 
 	it('shows the favorite team count note when favoriteBonus > 0', () => {

@@ -2,7 +2,7 @@ import { i18n } from '#i18n';
 import { Fragment } from 'react';
 import type { Game, ProbableStarter, Team, TeamLeader } from '@arenaswap/core/types';
 import Crest from '@arenaswap/ui/src/components/crest';
-import { readableInkOn, resolveTeamColorPair } from '@arenaswap/ui/src/components/colorUtils';
+import { readableInkOn, readableTeamInkOnCard, resolveTeamColorPair, teamRowWash } from '@arenaswap/ui/src/components/colorUtils';
 import { leaderLabelKey, playerInitials, starterHeadingKey } from './pregameLabels';
 
 interface pregameStatsProps {
@@ -15,12 +15,6 @@ const starterStatusKeys = {
 } as const;
 
 const isHex = (color: string): boolean => /^#[\da-fA-F]{6}$/.test(color);
-
-// The same 28 alpha the matchup card and the poster crest use, fading out to the right so the
-// value at the end of the row sits on the plain card rather than on colour.
-const rowWash = (color: string): string | undefined => (
-	isHex(color) ? `linear-gradient(90deg, ${color}28, ${color}00 72%)` : undefined
-);
 
 // The team colour lives on the disc, not on the placeholder. ESPN headshots are cut-outs with
 // transparent backgrounds, so the disc is what the player is standing on — and it has to survive
@@ -92,9 +86,11 @@ const StarterColumn = ({ starter, color }: { starter?: ProbableStarter; color: s
 const LeaderRow = ({ leader, team, color }: { leader?: TeamLeader; team: Team; color: string }) => {
 	if (!leader) return null;
 	return (
-		<div className='gd-pregame-leader-row' style={{ backgroundImage: rowWash(color) }}>
+		<div className='gd-pregame-leader-row' style={{ backgroundImage: teamRowWash(color) }}>
 			<PlayerShot url={leader.headshot} name={leader.player} color={color} className='gd-pregame-leader-shot' />
-			<span className='gd-pregame-leader-team' style={{ color: isHex(color) ? color : undefined }}>
+			{/* Clamped for contrast: the raw colour is fine on the wash behind it and unreadable as
+			    9px text — a gold reaches 1.7:1 on this card. */}
+			<span className='gd-pregame-leader-team' style={{ color: readableTeamInkOnCard(color) }}>
 				{team.abbreviation}
 			</span>
 			<span className='gd-pregame-leader-player'>{leader.player}</span>

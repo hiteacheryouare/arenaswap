@@ -15,6 +15,27 @@ import SuggestView from '../../entrypoints/popup/components/suggestView';
 import type { Game } from '@arenaswap/core/types';
 import type { TabSuggestion } from '../../utils/tabSuggestions';
 
+// A 4x4 solid #008348 PNG. A data URI so the test needs no network and cannot taint the canvas on
+// its own — what it is proving is that a crest is readable back off the page at all.
+const greenCrest = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAIAAAAmkwkpAAAAD0lEQVR4nGNgaPZAIOI4AEWjDLFo9OSUAAAAAElFTkSuQmCC';
+
+const channelsOf = (color: string): number[] => (
+	(color.match(/\d+(\.\d+)?/g) ?? []).slice(0, 3).map(Number)
+);
+
+const relativeLuminance = (color: string): number => {
+	const [red, green, blue] = channelsOf(color).map(value => {
+		const channel = value / 255;
+		return channel <= 0.03928 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4;
+	});
+	return (0.2126 * red!) + (0.7152 * green!) + (0.0722 * blue!);
+};
+
+const contrastRatio = (a: string, b: string): number => {
+	const [high, low] = [relativeLuminance(a), relativeLuminance(b)].toSorted((x, y) => y - x);
+	return (high! + 0.05) / (low! + 0.05);
+};
+
 const makeGame = (id: string, away: string, home: string): Game => ({
 	id,
 	league: 'nba',
@@ -105,6 +126,71 @@ describe('suggestView', () => {
 });
 
 const locales = { de, en, es, fil, fr, it: itLocale, ja, ko, pt_BR: ptBR, pt_PT: ptPT, zh_CN: zhCN, zh_TW: zhTW };
+
+// The two crests in a row sit on the popup's #0d1117, where a navy or black mark is a silhouette.
+// The white disc is the only thing separating them from it, so its plate is measured rather than
+// trusted to the stylesheet — a disc that resolves to the surface behind it is the whole defect.
+describe('suggestView crest discs', () => {
+	beforeEach(() => cy.viewport(320, 560));
+
+	const withCrests = {
+		...defaultProps,
+		games: games.map(game => ({
+			...game,
+			awayTeam: { ...game.awayTeam, logo: greenCrest },
+			homeTeam: { ...game.homeTeam, logo: greenCrest },
+		})),
+	};
+
+	it('puts a light plate behind every crest', () => {
+		cy.mount(<SuggestView {...withCrests} />);
+		cy.get('.suggest-crest-disc').should('have.length', 4);
+		cy.get('.popup-container').then(([container]: JQuery<HTMLElement>) => {
+			const surface = getComputedStyle(container).backgroundColor;
+			cy.get('.suggest-crest-disc').each(($disc: JQuery<HTMLElement>) => {
+				const plate = getComputedStyle($disc[0]!).backgroundColor;
+				expect(contrastRatio(plate, surface), `${plate} on ${surface}`).to.be.at.least(3);
+			});
+		});
+	});
+
+	it('tints the plate with a colour read out of the crest itself', () => {
+		cy.mount(<SuggestView {...withCrests} />);
+		cy.get('.suggest-crest-disc').first().should(([el]: JQuery<HTMLElement>) => {
+			expect(getComputedStyle(el).backgroundImage).to.contain('0, 131, 72');
+		});
+	});
+
+	// The disc grows around the mark rather than squeezing it: at this size a crest shrunk to fit
+	// inside its old footprint is a smaller crest than the one that was already hard to read.
+	it('leaves the crest the size it was and rings it', () => {
+		cy.mount(<SuggestView {...withCrests} />);
+		cy.get('.suggest-crest').first().should(([crest]: JQuery<HTMLElement>) => {
+			expect(crest.getBoundingClientRect().width, 'crest width').to.be.closeTo(15.2, 0.5);
+		});
+		cy.get('.suggest-crest-disc').first().should(([disc]: JQuery<HTMLElement>) => {
+			const box = disc.getBoundingClientRect();
+			expect(box.width, 'disc width').to.be.closeTo(20.32, 0.5);
+			expect(box.width, 'disc is square').to.be.closeTo(box.height, 0.5);
+		});
+	});
+
+	// The placeholder is the shared grey circle, which on a white plate would read as a hole rather
+	// than as a crest still loading.
+	it('drops the grey placeholder inside the plate', () => {
+		cy.mount(<SuggestView {...defaultProps} />);
+		cy.get('.suggest-crest .crest-fallback').first()
+			.should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+	});
+
+	it('keeps the widened row inside the popup', () => {
+		cy.mount(<SuggestView {...withCrests} />);
+		cy.get('.suggest-row').each(($row: JQuery<HTMLElement>) => {
+			const row = $row[0]!;
+			expect(row.scrollWidth, 'row does not overflow').to.be.at.most(row.clientWidth);
+		});
+	});
+});
 
 describe('suggestView locale widths', () => {
 	// The apply button spans the popup and must not wrap: a two-line primary button pushes the row

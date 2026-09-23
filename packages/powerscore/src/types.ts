@@ -187,4 +187,23 @@ export interface LeagueConfig {
 	// 0 for sports without a game clock.
 	periodDurationSecs: number;
 	periodFormat: 'quarters' | 'halves' | 'periods' | 'innings';
+	// How long a broadcast of this league actually occupies a viewer, in minutes: first pitch or
+	// kickoff through the final whistle, including halftime, intermissions, reviews and commercial
+	// breaks. Deliberately NOT sportWrapAllowanceMs, which is six per-sport values tuned generously
+	// for a 24-hour retention window — at that granularity the NBA and FIBA basketball draw the same
+	// bar despite a real 32-minute gap, and generous lengths overstate concurrency.
+	runMinutes: LeagueRunMinutes;
+	// Only the competitions where a single match reaches extra time often enough to move p75. A
+	// two-legged tie halves that rate by construction, which is why the UEFA competitions are absent.
+	knockoutRunMinutes?: LeagueRunMinutes;
+}
+
+export interface LeagueRunMinutes {
+	// ~p75, and the length that gets drawn. The failure modes are asymmetric: a bar that ends while
+	// the game is still on is the one thing a TV guide must never do, and a slightly long bar only
+	// overstates concurrency a little.
+	bar: number;
+	// Bounds on the occupancy taper — the probability the game is still running at a given moment.
+	p25: number;
+	p99: number;
 }

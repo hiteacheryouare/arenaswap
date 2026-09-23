@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { i18n } from '#i18n';
 import type { Browser } from 'wxt/browser';
 import type { Game, Team } from '@arenaswap/core/types';
-import Crest from '@arenaswap/ui/src/components/crest';
+import CrestDisc from '@arenaswap/ui/src/components/crestDisc';
 import { suggestionPairKey, type TabSuggestion } from '../../../utils/tabSuggestions';
 
 interface suggestViewProps {
@@ -16,7 +16,13 @@ interface suggestViewProps {
 
 const TeamMark = ({ team }: { team: Team }) => (
 	<span className='d-inline-flex align-items-center gap-1 min-w-0'>
-		<Crest logo={team.logo} abbreviation={team.abbreviation} className='suggest-crest' fallback='blank' />
+		<CrestDisc
+			logo={team.logo}
+			abbreviation={team.abbreviation}
+			discClassName='suggest-crest-disc'
+			crestClassName='suggest-crest'
+			fallback='blank'
+		/>
 		<span className='fw-bold text-nowrap'>{team.abbreviation}</span>
 	</span>
 );

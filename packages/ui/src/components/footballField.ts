@@ -12,6 +12,13 @@ export const stripYards = fieldYards + endZoneYards * 2;
 // away offense driving left to right and the home offense right to left.
 export const yardLineToX = (yardLine: number): number => endZoneYards + (fieldYards - yardLine);
 
+// Two greens a shade apart, which is all a mown band is. Pushing them further apart reads as a
+// striped rug rather than as grass cut in opposite directions. Declared here rather than in the
+// stylesheet because the midfield crest is judged for legibility against the turf it is painted on,
+// and a second copy of the hex is how the paint and the verdict would drift apart.
+export const turfColor = '#22683B';
+export const mownColor = '#2A7645';
+
 export const awayEndZoneX = 0;
 export const homeEndZoneX = endZoneYards + fieldYards;
 
