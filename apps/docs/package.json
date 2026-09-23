@@ -1,6 +1,6 @@
 {
 	"name": "@arenaswap/docs",
-	"version": "2.0.0",
+	"version": "2.2.0",
 	"private": true,
 	"scripts": {
 		"dev": "ASTRO_DEV_BACKGROUND=1 astro dev",
@@ -14,16 +14,16 @@
 	"dependencies": {
 		"@arenaswap/core": "*",
 		"@arenaswap/ui": "*",
-		"@astrojs/mdx": "^8.0.1",
-		"@astrojs/react": "^6.0.6",
-		"astro": "^7.3.3",
+		"@astrojs/mdx": "^8.0.2",
+		"@astrojs/react": "^7.0.0",
+		"astro": "^7.3.4",
 		"bootstrap": "^5.3.8",
 		"bootstrap-icons": "^1.13.1",
 		"echarts": "^6.1.0",
 		"powerscore": "*",
 		"react": "^19.3.0",
 		"react-dom": "^19.3.0",
-		"sass": "^1.104.1"
+		"sass": "^1.105.0"
 	},
 	"devDependencies": {
 		"@astrojs/sitemap": "^3.7.4",

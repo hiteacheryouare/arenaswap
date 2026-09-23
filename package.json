@@ -1,6 +1,6 @@
 {
 	"name": "arenaswap",
-	"version": "2.0.0",
+	"version": "2.2.0",
 	"description": "Watches every live game across 31 leagues and auto-switches your browser tab to the most exciting one, as fast as every 6 seconds.",
 	"private": true,
 	"workspaces": [
@@ -40,7 +40,7 @@
 		"node": "^22.9.0 || ^24.0.0 || >=26.0.0",
 		"npm": ">=11.0.0"
 	},
-	"packageManager": "npm@11.16.0",
+	"packageManager": "npm@12.1.0",
 	"dependencies": {
 		"skills": "^1.7.0"
 	},

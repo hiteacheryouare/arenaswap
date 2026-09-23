@@ -26,8 +26,9 @@ export default defineConfig({
 	// dist/ is gitignored build output from the retired zip-builds scripts, so a stale copy on one
 	// machine would otherwise be swept into the sources archive an AMO reviewer downloads. marketing/
 	// is store screenshots and promo tiles — ~7MB of the archive, and nothing to do with building.
+	// coverage/ and cypress/screenshots/ are gitignored test output, ~10MB between them.
 	zip: {
-		excludeSources: ['dist/**', 'marketing/**'],
+		excludeSources: ['dist/**', 'marketing/**', 'coverage/**', 'cypress/screenshots/**'],
 	},
 	vite: async () => ({
 		plugins: [

@@ -1,6 +1,6 @@
 {
 	"name": "@arenaswap/extension",
-	"version": "2.0.0",
+	"version": "2.2.0",
 	"description": "ArenaSwap browser extension — automatically flip to the most exciting game",
 	"private": true,
 	"scripts": {
@@ -50,7 +50,7 @@
 		"jest": "^30.5.2",
 		"react": "^19.3.0",
 		"react-dom": "^19.3.0",
-		"sass": "^1.104.1",
+		"sass": "^1.105.0",
 		"typescript": "^7.0.2",
 		"vite-plugin-istanbul": "^9.0.1",
 		"wxt": "^0.21.4"

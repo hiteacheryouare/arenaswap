@@ -1,6 +1,6 @@
 {
 	"name": "@arenaswap/ui",
-	"version": "2.0.0",
+	"version": "2.2.0",
 	"description": "ArenaSwap shared design system — Bootstrap tokens, font declarations, Tailwind theme, and shared React UI components",
 	"private": true,
 	"scripts": {

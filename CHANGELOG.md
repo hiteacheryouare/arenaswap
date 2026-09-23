@@ -5,6 +5,14 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The Firefox sources zip stops shipping test output — 2026-09-22
+
+`wxt zip:firefox` was sweeping the gitignored `coverage/` reports and failed-run `cypress/screenshots/` into the archive AMO reviewers download, 368 files and ~10MB of a 13.4MB upload. Both are now in `excludeSources`, the same trap `dist/` fell into before: anything left lying in `apps/extension/` ships unless it is listed there.
+
+## Dependencies, Actions and npm brought to latest — 2026-09-22
+
+`@astrojs/react` 7 swaps Babel for Oxc and drops the `babel` option, which the docs config never set, so it went in untouched alongside patch bumps to `astro`, `@astrojs/mdx` and `sass`. The workflows move to `checkout` v7, `setup-node` v7, `github-script` v9 and `fetch-metadata` v3, and `packageManager` now pins npm 12.1.0; `engines` still accepts npm 11, which runs fine and just ignores `allowScripts`.
+
 ## Release notes for 2.2 — 2026-09-22
 
 `apps/docs/src/content/releases/2.2.0.md` covers everything in PR #120, the Guide polish still sitting uncommitted on `dev` included, and the entries below are its source. A change that was introduced and then reverted inside the PR, the monochrome crest treatment, is described by where it ended up: a crest is always the team's own crest in its own colors. The notes carry no byte counts, request counts or tooling names, and call ESPN "our sources" throughout.

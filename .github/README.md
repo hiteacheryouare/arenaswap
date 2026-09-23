@@ -24,9 +24,9 @@
 ![Bootstrap](https://img.shields.io/badge/Bootstrap-5-7952B3?logo=bootstrap&logoColor=white)
 [![jest tested](https://img.shields.io/badge/Jest-tested-eee.svg?logo=jest&labelColor=99424f)](https://github.com/jestjs/jest)
 ![Turborepo](https://img.shields.io/badge/Turborepo-2-EF4444?logo=turborepo&logoColor=white)
-![npm](https://img.shields.io/badge/npm-11-CB3837?logo=npm&logoColor=white)
+![npm](https://img.shields.io/badge/npm-12-CB3837?logo=npm&logoColor=white)
 
-![Version](https://img.shields.io/badge/version-2.0.0-brightgreen)
+![Version](https://img.shields.io/badge/version-2.2.0-brightgreen)
 ![License](https://img.shields.io/github/license/hiteacheryouare/arenaswap)
 ![Stars](https://img.shields.io/github/stars/hiteacheryouare/arenaswap?logo=github)
 ![Forks](https://img.shields.io/github/forks/hiteacheryouare/arenaswap?logo=github)
@@ -38,7 +38,6 @@
 ![Edge](https://img.shields.io/badge/Edge-Extension-0078D4?logo=microsoftedge&logoColor=white)
 ![Leagues](https://img.shields.io/badge/Leagues-31-1DB954?logo=sportify&logoColor=white)
 ![PowerScore](https://img.shields.io/badge/Powered%20by-PowerScore-orange)
-![ESPN API](https://img.shields.io/badge/Data-ESPN%20API-D00000)
 
 </div>
 
