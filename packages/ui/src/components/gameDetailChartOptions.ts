@@ -5,32 +5,38 @@ import { resolveTeamColorPair } from './colorUtils';
 import { chartEasing, motionDuration } from '../motion';
 
 // ECharts draws to a canvas, so these cannot follow the page's CSS variables: whoever builds an
-// option passes the palette for the surface the chart will sit on. Dark is the default because the
-// website's charts only ever sit on dark.
+// option passes the palette for the surface the chart sits on. The values are the v3 tokens for a
+// card (--as-muted labels, --as-line-strong axis, --as-line grid, --as-raised tooltip) spelled out.
+// The series colours are a data palette and are not part of this.
 export interface chartPalette {
 	axisLabel: string;
 	axisLine: string;
 	splitLine: string;
 	text: string;
 	tooltipBackground: string;
+	fontFamily: string;
 	surface: ResolvedTheme;
 }
 
+const chartFont = "'Inter', system-ui, -apple-system, sans-serif";
+
 export const darkChartPalette: chartPalette = {
-	axisLabel: '#8b949e',
-	axisLine: 'rgba(71, 85, 105, 0.95)',
-	splitLine: 'rgba(71, 85, 105, 0.34)',
-	text: '#e6edf3',
-	tooltipBackground: '#111827',
+	axisLabel: '#8c95a1',
+	axisLine: 'rgba(243, 245, 247, 0.16)',
+	splitLine: 'rgba(243, 245, 247, 0.08)',
+	text: '#f3f5f7',
+	tooltipBackground: '#22262d',
+	fontFamily: chartFont,
 	surface: 'dark',
 };
 
 export const lightChartPalette: chartPalette = {
-	axisLabel: '#3d4652',
-	axisLine: 'rgba(71, 85, 105, 0.55)',
-	splitLine: 'rgba(71, 85, 105, 0.16)',
-	text: '#0b1016',
-	tooltipBackground: '#ffffff',
+	axisLabel: '#5a6370',
+	axisLine: 'rgba(14, 16, 19, 0.18)',
+	splitLine: 'rgba(14, 16, 19, 0.1)',
+	text: '#0e1013',
+	tooltipBackground: '#eef0f2',
+	fontFamily: chartFont,
 	surface: 'light',
 };
 
@@ -45,11 +51,12 @@ const baseOption = (
 ): EChartsOption => ({
 	animationDuration: motionDuration.slow,
 	animationEasing: chartEasing,
+	textStyle: { fontFamily: palette.fontFamily },
 	tooltip: {
 		trigger: 'axis',
 		backgroundColor: palette.tooltipBackground,
 		borderColor: palette.axisLine,
-		textStyle: { color: palette.text, fontSize: 11 },
+		textStyle: { color: palette.text, fontSize: 11, fontFamily: palette.fontFamily },
 	},
 	grid: {
 		left: 34,
@@ -161,7 +168,7 @@ export const buildWinProbabilityOption = (homeWinPcts: number[], game: Game, pal
 			trigger: 'axis',
 			backgroundColor: palette.tooltipBackground,
 			borderColor: palette.axisLine,
-			textStyle: { color: palette.text, fontSize: 11 },
+			textStyle: { color: palette.text, fontSize: 11, fontFamily: palette.fontFamily },
 			formatter: (params: unknown) => {
 				const arr = params as Array<{ value: number; seriesName: string; color: string }>;
 				return arr.map(p => `<span style="color:${p.color}">●</span> ${p.seriesName}: ${p.value}%`).join('<br/>');

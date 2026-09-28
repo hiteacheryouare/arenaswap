@@ -120,21 +120,26 @@ describe('holiday decorations on the detail screen', () => {
 		});
 	});
 
-	// The string drapes over the matchup card the way FOX drapes it over the scorebug, which means
-	// clearing the sticky back bar rather than hiding behind it or sitting on the button.
-	it('hangs the string under the back bar and keeps it there while scrolling', () => {
+	// The string drapes across the top of the stage the way FOX drapes it over the scorebug, above
+	// the back control rather than over it, and hangs from the compact bar once that takes over.
+	it('hangs the string above the back control, and under the compact bar while scrolling', () => {
 		mountDetail(clear, december);
-		cy.get('.game-detail-header').then(([header]: JQuery<HTMLElement>) => {
-			const headerBottom = header.getBoundingClientRect().bottom;
+		cy.get('.popup-container').then(([scroller]: JQuery<HTMLElement>) => {
+			const top = scroller.getBoundingClientRect().top;
 			cy.get('.holiday-lights').should(([lights]: JQuery<HTMLElement>) => {
-				expect(lights.getBoundingClientRect().top, 'clears the back bar').to.be.at.least(headerBottom - 1);
+				const rect = lights.getBoundingClientRect();
+				expect(Math.round(rect.top - top), 'along the top edge').to.equal(0);
+				const back = scroller.querySelector('.dt-head .dt-back')!.getBoundingClientRect();
+				expect(back.top, 'clears the back control').to.be.at.least(rect.bottom);
 			});
 		});
 		cy.get('.popup-container').scrollTo('bottom');
-		cy.get('.holiday-lights').should(([lights]: JQuery<HTMLElement>) => {
-			const rect = lights.getBoundingClientRect();
-			expect(Math.round(rect.top), 'still pinned under the bar').to.equal(40);
-			expect(Math.round(rect.height), 'still drawn at full height').to.equal(22);
+		cy.get('.dt-bar').should('have.class', 'is-visible').then(([bar]: JQuery<HTMLElement>) => {
+			cy.get('.holiday-lights').should(([lights]: JQuery<HTMLElement>) => {
+				const rect = lights.getBoundingClientRect();
+				expect(Math.round(rect.top), 'hung from the bar').to.equal(Math.round(bar.getBoundingClientRect().bottom));
+				expect(Math.round(rect.height), 'still drawn at full height').to.equal(22);
+			});
 		});
 	});
 
@@ -255,7 +260,7 @@ describe('holiday decoration settings', () => {
 	it('is reachable from the settings search', () => {
 		cy.mount(<SetupView {...setupProps} />);
 		cy.get('#settingsSearch').type('christmas');
-		cy.contains('.settings-index-row', 'Holiday decorations').should('exist');
+		cy.contains('.st-entry', 'Holiday decorations').should('exist');
 	});
 
 	it('keeps every locale\'s labels on one line beside their switches', () => {
@@ -281,10 +286,12 @@ describe('reaching the decorations from demo mode', () => {
 		cy.viewport(320, 560);
 	});
 
-	it('offers no season control while demo mode is off', () => {
+	// Shown dimmed under the master switch rather than hidden, so it is clear what demo mode unlocks.
+	it('locks the season control while demo mode is off', () => {
 		cy.mount(<SetupView {...setupProps} />);
 		cy.get('#settingsGroup-demo').click();
-		cy.get('#demoSeasonSelect').should('not.exist');
+		cy.get('#demoSeasonSelect').should('be.disabled').click({ force: true });
+		cy.get('.dropdown-menu.show').should('not.exist');
 	});
 
 	it('offers the three seasons once demo mode is on', () => {
@@ -330,7 +337,7 @@ describe('reaching the decorations from demo mode', () => {
 // label that fitted on one line quietly becomes two. Every text leaf is measured with the frame off
 // and again with it on, and any that grew is a wrap the inset caused.
 const textLeafHeights = (): Cypress.Chainable<Record<string, number>> =>
-	cy.get('.game-detail-shell').then(([shell]: JQuery<HTMLElement>) => {
+	cy.get('.popup-container.dt').then(([shell]: JQuery<HTMLElement>) => {
 		const heights: Record<string, number> = {};
 		shell.querySelectorAll<HTMLElement>('*').forEach(el => {
 			if (el.children.length > 0) return;
@@ -342,8 +349,8 @@ const textLeafHeights = (): Cypress.Chainable<Record<string, number>> =>
 	});
 
 describe('the lights and the content column', () => {
-	// The string sits over the matchup card rather than around the popup, so the column keeps its
-	// full width. Every text leaf is measured with the lights off and again with them on, and
+	// The string sits over the stage rather than around the popup, so the column keeps its full
+	// width. Every text leaf is measured with the lights off and again with them on, and
 	// anything that changed height would be a wrap the decoration caused.
 	it('costs the content column nothing at all', () => {
 		mountDetail(clear, august);
@@ -362,13 +369,13 @@ describe('the lights and the content column', () => {
 		});
 	});
 
-	it('leaves the matchup card exactly as wide as it was', () => {
+	it('leaves the stage exactly as wide as it was', () => {
 		mountDetail(clear, august);
-		cy.get('.gd-hero').invoke('outerWidth').as('bareWidth');
+		cy.get('.dt-hero').invoke('outerWidth').as('bareWidth');
 
 		mountDetail(clear, december);
 		cy.get('.holiday-lights').should('exist');
-		cy.get('.gd-hero').then(([lit]: JQuery<HTMLElement>) => {
+		cy.get('.dt-hero').then(([lit]: JQuery<HTMLElement>) => {
 			const litWidth = lit.getBoundingClientRect().width;
 			cy.get<number>('@bareWidth').then(bareWidth => {
 				expect(litWidth, 'the column is untouched').to.equal(bareWidth);

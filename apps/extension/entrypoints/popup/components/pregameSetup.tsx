@@ -17,9 +17,8 @@ interface pregameSetupProps {
 	tabAssignEnabled?: boolean;
 }
 
-// Before a game starts there is nothing to report on it, so the screen offers the two things
-// you would actually want to decide in advance: which tab it lands in, and how much it should
-// outrank everything else. Favourites live on the poster, next to the team they apply to.
+// Before a start there is nothing to report, so the screen leads with the two things worth deciding
+// in advance: which tab the game lands in, and how far it should outrank everything else.
 const pregameSetup = ({
 	game,
 	currentBoost,
@@ -30,12 +29,12 @@ const pregameSetup = ({
 	formatTabLabel,
 	tabAssignEnabled = true,
 }: pregameSetupProps) => (
-	<div className='gd-setup'>
-		<div className='gd-setup-heading'>{i18n.t(startPhraseKey(game.sportType))}</div>
+	<section className='card dt-card dt-setup' aria-labelledby='dt-setup-title'>
+		<h3 className='dt-card-title dt-setup-heading' id='dt-setup-title'>{i18n.t(startPhraseKey(game.sportType))}</h3>
 
 		{tabAssignEnabled && (
-			<div className='gd-setup-row'>
-				<span className='gd-setup-explainer'>{i18n.t('detail.pregameTabExplainer')}</span>
+			<div className='dt-setup-row'>
+				<p className='dt-row-help'>{i18n.t('detail.pregameTabExplainer')}</p>
 				<TabAssignSelect
 					gameId={game.id}
 					openTabs={openTabs}
@@ -46,8 +45,10 @@ const pregameSetup = ({
 			</div>
 		)}
 
-		<GameBoostInput bare gameId={game.id} currentBoost={currentBoost} onSetGameBoost={onSetGameBoost} />
-	</div>
+		<div className='dt-setup-row'>
+			<GameBoostInput bare gameId={game.id} currentBoost={currentBoost} onSetGameBoost={onSetGameBoost} />
+		</div>
+	</section>
 );
 
 export default pregameSetup;

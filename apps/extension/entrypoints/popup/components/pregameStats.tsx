@@ -2,7 +2,8 @@ import { i18n } from '#i18n';
 import { Fragment } from 'react';
 import type { Game, ProbableStarter, Team, TeamLeader } from '@arenaswap/core/types';
 import Crest from '@arenaswap/ui/src/components/crest';
-import { readableInkOn, readableTeamInkOnCard, resolveTeamColorPair, teamRowWash } from '@arenaswap/ui/src/components/colorUtils';
+import { readableInkOn } from '@arenaswap/ui/src/components/colorUtils';
+import { resolveGameColors } from '@arenaswap/ui/src/components/gameSurface';
 import { leaderLabelKey, playerInitials, starterHeadingKey } from './pregameLabels';
 
 interface pregameStatsProps {
@@ -16,25 +17,19 @@ const starterStatusKeys = {
 
 const isHex = (color: string): boolean => /^#[\da-fA-F]{6}$/.test(color);
 
-// The team colour lives on the disc, not on the placeholder. ESPN headshots are cut-outs with
-// transparent backgrounds, so the disc is what the player is standing on — and it has to survive
-// the placeholder being hidden the moment the image lands.
-//
-// Soccer sends a headshot for barely one leader in ten, so the initials are the common case there
-// rather than a rare failure. Crest already does the URL-keyed retry and the text fallback.
+// The team colour lives on the disc, not on the placeholder: headshots are cut-outs with transparent
+// backgrounds, so the disc is what the player stands on, and it has to survive the image landing.
 const PlayerShot = ({ url, name, color, className }: {
 	url?: string;
 	name: string;
 	color: string;
 	className: string;
 }) => (
-	<span className={`gd-pregame-disc ${className}`} style={isHex(color) ? { background: color } : undefined}>
+	<span className={`dt-player-disc ${className}`} style={isHex(color) ? { background: color } : undefined}>
 		<Crest
 			logo={url}
 			abbreviation={playerInitials(name)}
-			className='gd-pregame-disc-crest'
-			// Transparent so the disc shows through, and the initials take whichever ink stays
-			// readable on it.
+			className='dt-player-disc-crest'
 			fallbackStyle={{ background: 'transparent', color: readableInkOn(color) }}
 			loading='lazy'
 		/>
@@ -45,58 +40,48 @@ const hasLabelledStats = (starter: ProbableStarter): boolean => (
 	starter.winLoss !== undefined || starter.era !== undefined
 );
 
-// "(3-1, 4.23)" says nothing about what either number is. The label goes under the value rather
-// than beside it: a box score puts the heading above its column, and two labelled pairs still fit
-// the half-card a starter gets.
 const StatPair = ({ value, label }: { value: string; label: string }) => (
-	<div className='gd-pregame-stat'>
-		<span className='gd-pregame-stat-value'>{value}</span>
-		<span className='gd-pregame-stat-label'>{label}</span>
+	<div className='dt-starter-stat'>
+		<span className='dt-starter-stat-value num'>{value}</span>
+		<span className='dt-starter-stat-label'>{label}</span>
 	</div>
 );
 
-// Away left, home right, under the crests they belong to. A missing starter leaves its half empty
-// rather than re-centring the one we have: 14 of 98 upcoming games named only one side, and a lone
-// centred name reads as belonging to neither team.
+// Away left, home right, under the crests they belong to. A missing starter leaves its half empty:
+// a lone centred name reads as belonging to neither team.
 const StarterColumn = ({ starter, color }: { starter?: ProbableStarter; color: string }) => (
-	<div className='gd-pregame-starter'>
+	<div className='dt-starter'>
 		{starter && (
 			<>
-				<PlayerShot url={starter.headshot} name={starter.name} color={color} className='gd-pregame-starter-shot' />
-				<div className='gd-pregame-starter-name'>{starter.name}</div>
+				<PlayerShot url={starter.headshot} name={starter.name} color={color} className='dt-starter-shot' />
+				<div className='dt-starter-name'>{starter.name}</div>
 				{hasLabelledStats(starter) ? (
-					<div className='gd-pregame-starter-stats'>
+					<div className='dt-starter-stats'>
 						{starter.winLoss && <StatPair value={starter.winLoss} label={i18n.t('detail.pitcherRecordLabel')} />}
 						{starter.era && <StatPair value={starter.era} label={i18n.t('detail.pitcherEraLabel')} />}
 					</div>
 				) : starter.line && (
-					<div className='gd-pregame-starter-line'>{starter.line}</div>
+					<div className='dt-starter-line'>{starter.line}</div>
 				)}
 				{starter.status && (
-					<div className='gd-pregame-starter-status'>{i18n.t(starterStatusKeys[starter.status])}</div>
+					<div className='dt-starter-status'>{i18n.t(starterStatusKeys[starter.status])}</div>
 				)}
 			</>
 		)}
 	</div>
 );
 
-// Full width, one player per row. Football values run to 21 characters — "14/23, 141 YDS, 1 INT" —
-// against four for every other sport, and there is no half-width column that fits both. The name
-// takes the slack and the value keeps its own width, so a long name truncates before a stat does.
+// Full width, one player per row. A football value runs to 21 characters, "14/23, 141 YDS, 1 INT",
+// so the name takes the slack and truncates before a stat does.
 const LeaderRow = ({ leader, team, color }: { leader?: TeamLeader; team: Team; color: string }) => {
 	if (!leader) return null;
 	return (
-		<div className='gd-pregame-leader-row' style={{ backgroundImage: teamRowWash(color) }}>
-			<PlayerShot url={leader.headshot} name={leader.player} color={color} className='gd-pregame-leader-shot' />
-			{/* Clamped for contrast: the raw colour is fine on the wash behind it and unreadable as
-			    9px text — a gold reaches 1.7:1 on this card. */}
-			<span className='gd-pregame-leader-team' style={{ color: readableTeamInkOnCard(color) }}>
-				{team.abbreviation}
-			</span>
-			<span className='gd-pregame-leader-player'>{leader.player}</span>
-			{/* Verbatim from ESPN. The football values carry their own English units and there is no
-			    version of "12 CAR, 68 YDS, 1 TD" we could assemble ourselves. */}
-			<span className='gd-pregame-leader-value'>{leader.value}</span>
+		<div className='dt-leader-row'>
+			<PlayerShot url={leader.headshot} name={leader.player} color={color} className='dt-leader-shot' />
+			<span className='dt-leader-team'>{team.abbreviation}</span>
+			<span className='dt-leader-player'>{leader.player}</span>
+			{/* Verbatim: the football values carry their own English units. */}
+			<span className='dt-leader-value num'>{leader.value}</span>
 		</div>
 	);
 };
@@ -111,27 +96,28 @@ const pregameStats = ({ game }: pregameStatsProps) => {
 	const homeLeaders = game.homeTeam.leaders ?? [];
 	const categories = [...new Set([...awayLeaders, ...homeLeaders].map(l => l.category))];
 
-	if (!hasStarter && categories.length === 0) return null;
-
 	const starterHeading = starterHeadingKey(game.sportType);
-	const [awayColor, homeColor] = resolveTeamColorPair(game.awayTeam, game.homeTeam, '#2274A5', '#F75C03');
+	const showStarters = hasStarter && starterHeading !== undefined;
+	if (!showStarters && categories.length === 0) return null;
+
+	const [awayColor, homeColor] = resolveGameColors(game);
 
 	return (
-		<div className='gd-setup gd-pregame-stats'>
-			{hasStarter && starterHeading && (
-				<>
-					<div className='gd-setup-heading'>{i18n.t(starterHeading)}</div>
-					<div className='gd-pregame-starters'>
+		<>
+			{showStarters && (
+				<section className='card dt-card dt-starters-card'>
+					<h3 className='dt-card-title dt-stats-heading'>{i18n.t(starterHeading)}</h3>
+					<div className='dt-starters'>
 						<StarterColumn starter={awayStarter} color={awayColor} />
 						<StarterColumn starter={homeStarter} color={homeColor} />
 					</div>
-				</>
+				</section>
 			)}
 
 			{categories.length > 0 && (
-				<>
-					<div className='gd-setup-heading'>{i18n.t('detail.teamLeaders')}</div>
-					<div className='gd-pregame-leaders'>
+				<section className='card dt-card dt-leaders-card'>
+					<h3 className='dt-card-title dt-stats-heading'>{i18n.t('detail.teamLeaders')}</h3>
+					<div className='dt-leaders'>
 						{categories.map(category => {
 							const away = awayLeaders.find(l => l.category === category);
 							const home = homeLeaders.find(l => l.category === category);
@@ -139,16 +125,16 @@ const pregameStats = ({ game }: pregameStatsProps) => {
 							const label = labelKey ? i18n.t(labelKey) : (away ?? home)?.fallbackLabel;
 							return (
 								<Fragment key={category}>
-									<div className='gd-pregame-category'>{label}</div>
+									<div className='dt-leader-category'>{label}</div>
 									<LeaderRow leader={away} team={game.awayTeam} color={awayColor} />
 									<LeaderRow leader={home} team={game.homeTeam} color={homeColor} />
 								</Fragment>
 							);
 						})}
 					</div>
-				</>
+				</section>
 			)}
-		</div>
+		</>
 	);
 };
 

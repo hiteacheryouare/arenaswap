@@ -1,11 +1,15 @@
 import type { EChartsOption } from 'echarts';
 import { scoreMaxTotal } from '@arenaswap/core/constants';
 import type { Game, PowerScoreSnapshot, ScoreSnapshot } from '@arenaswap/core/types';
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
 import {
 	buildComponentContributionOption,
 	buildPowerScoreOption,
 	buildTeamScoreOption,
 	buildWinProbabilityOption,
+	darkChartPalette,
+	lightChartPalette,
 } from '../src/components/gameDetailChartOptions';
 
 // The four charts on the game detail screen. None of them can fail loudly: a chart handed the wrong
@@ -351,5 +355,44 @@ describe('buildComponentContributionOption', () => {
 
 	test('draws an empty stack rather than throwing on a game with no readings yet', () => {
 		for (const bar of seriesOf(buildComponentContributionOption([]))) expect(bar.data).toEqual([]);
+	});
+});
+
+// A canvas can't read CSS variables, so the palettes spell the tokens out. Read against the token
+// source itself, so a change to the theme that the charts didn't follow fails here.
+describe('chart palettes', () => {
+	const theme = readFileSync(path.join(__dirname, '../src/_theme.scss'), 'utf8');
+	const token = (mode: 'dark' | 'light', name: string): string => {
+		const block = theme.slice(theme.indexOf(`${mode}: (`));
+		const match = new RegExp(`\\n\\s*${name}:\\s*(rgba?\\([^)]*\\)|[^,\\n]+),`).exec(block);
+		return match![1]!.trim();
+	};
+
+	test.each([['dark', darkChartPalette], ['light', lightChartPalette]] as const)('reads the %s card tokens', (mode, palette) => {
+		expect(palette.axisLabel).toBe(token(mode, 'secondary-color'));
+		expect(palette.splitLine).toBe(token(mode, 'line'));
+		expect(palette.axisLine).toBe(token(mode, 'line-strong'));
+		expect(palette.tooltipBackground).toBe(token(mode, 'secondary-bg'));
+		expect(palette.text).toBe(token(mode, 'body-color'));
+		expect(palette.surface).toBe(mode);
+	});
+
+	test('sets every chart in Inter, axes and tooltip alike', () => {
+		for (const palette of [darkChartPalette, lightChartPalette]) {
+			expect(palette.fontFamily.startsWith("'Inter'")).toBe(true);
+			const option = buildPowerScoreOption([], palette) as { textStyle?: { fontFamily?: string }; tooltip?: { textStyle?: { fontFamily?: string } } };
+			expect(option.textStyle?.fontFamily).toBe(palette.fontFamily);
+			expect(option.tooltip?.textStyle?.fontFamily).toBe(palette.fontFamily);
+		}
+	});
+
+	// The five signals and the PowerScore line are a data palette, the same in both themes.
+	test('keeps the series colours out of the theme', () => {
+		const colours = (palette: typeof darkChartPalette) => [
+			...seriesOf(buildComponentContributionOption([], palette)).map(series => series.itemStyle?.color),
+			seriesOf(buildPowerScoreOption([], palette))[0]!.lineStyle?.color,
+		];
+		expect(colours(lightChartPalette)).toEqual(colours(darkChartPalette));
+		expect(colours(darkChartPalette)).toEqual(['#22c55e', '#f75c03', '#2274a5', '#f1c40f', '#d90368', '#f75c03']);
 	});
 });

@@ -14,21 +14,12 @@ interface detailTabsProps {
 	paneId: (id: DetailTabId) => string;
 }
 
-// Bootstrap's own tab plugin, not a reimplementation of it. It owns the active classes, the
-// roving tabindex, `aria-selected`, and the arrow/Home/End keys, so none of that is written here.
+// Bootstrap's own tab plugin owns the active classes, the roving tabindex, `aria-selected` and the
+// arrow keys. Its keydown handler is bound per instance and its auto-init runs on `window.load`,
+// long before a popup mounts, so every button is instantiated here.
 //
-// Two things the declarative markup does not cover on its own. Importing `Tab` registers the
-// click data-api at module scope, but the keydown handler is bound per instance in the
-// constructor, and the plugin's own auto-init runs on `window.load` — long fired by the time a
-// popup mounts. So every button is instantiated below.
-//
-// The active classes are rendered once, off the tab's position, and never recomputed. React
-// diffs against its previous render rather than the live DOM, so a `className` whose value does
-// not change between renders is left alone — which is what lets Bootstrap own it from there.
-//
-// `.nav-underline` rather than `.nav-tabs`, which the popup already skins for the light
-// `.gd-setup` card the box score's switcher sits on: a lifted #f8fafc tab would be a white slab
-// on this dark shell.
+// The active classes are rendered once, off position, and never recomputed: React diffs against its
+// last render rather than the live DOM, which is what lets Bootstrap own them from then on.
 const detailTabs = ({ tabs, tabId, paneId }: detailTabsProps) => {
 	const listRef = useRef<HTMLUListElement>(null);
 
@@ -38,7 +29,7 @@ const detailTabs = ({ tabs, tabId, paneId }: detailTabsProps) => {
 	}, [tabs.length]);
 
 	return (
-		<ul className='nav nav-underline gd-tabs' role='tablist' ref={listRef}>
+		<ul className='nav nav-underline dt-tabs' role='tablist' ref={listRef}>
 			{tabs.map((tab, index) => (
 				<li className='nav-item' role='presentation' key={tab.id}>
 					<button

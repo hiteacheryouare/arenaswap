@@ -70,7 +70,7 @@ const mount = (game: Game) => {
 
 const openStandings = (game: Game) => {
 	mount(game);
-	cy.get(`#gd-tab-${game.id}-standings`).click();
+	cy.get(`#dt-tab-${game.id}-standings`).click();
 };
 
 describe('detail screen tab strip', () => {
@@ -80,8 +80,8 @@ describe('detail screen tab strip', () => {
 
 	it('files a live game under three tabs', () => {
 		mount(football);
-		cy.get('.gd-tabs .nav-link').should('have.length', 3);
-		cy.get('.gd-tabs .nav-link').then($tabs => {
+		cy.get('.dt-tabs .nav-link').should('have.length', 3);
+		cy.get('.dt-tabs .nav-link').then($tabs => {
 			expect([...$tabs].map(tab => tab.textContent?.trim()))
 				.to.deep.equal([en.detail.tabOverview, en.box.heading, en.detail.tabStandings]);
 		});
@@ -89,21 +89,21 @@ describe('detail screen tab strip', () => {
 
 	it('opens on the overview, which is where the PowerScore is', () => {
 		mount(football);
-		cy.get('.gd-tabs .nav-link.active').should('have.text', en.detail.tabOverview);
+		cy.get('.dt-tabs .nav-link.active').should('have.text', en.detail.tabOverview);
 		cy.get('.tab-pane.active .powerscore-breakdown').should('exist');
-		cy.get('.gd-standings').should('not.be.visible');
+		cy.get('.dt-standings').should('not.be.visible');
 	});
 
 	it('draws no strip at all for a league with neither a box score nor a table', () => {
 		mount(noTable);
-		cy.get('.gd-tabs').should('not.exist');
+		cy.get('.dt-tabs').should('not.exist');
 		// The screen itself still rendered: this is not an empty mount asserting nothing.
-		cy.get('.gd-setup, .gd-pregame-setup').should('exist');
+		cy.get('.dt-body .dt-setup').should('exist');
 	});
 
 	it('offers a table but no box score before a start', () => {
 		mount(preGame);
-		cy.get('.gd-tabs .nav-link').then($tabs => {
+		cy.get('.dt-tabs .nav-link').then($tabs => {
 			expect([...$tabs].map(tab => tab.textContent?.trim()))
 				.to.deep.equal([en.detail.tabOverview, en.detail.tabStandings]);
 		});
@@ -115,39 +115,39 @@ describe('detail screen tab strip', () => {
 	// plugin's work on the next tick.
 	it('hands the selection to Bootstrap, which moves it and the aria with it', () => {
 		mount(football);
-		cy.get(`#gd-tab-${football.id}-standings`).click();
-		cy.get(`#gd-tab-${football.id}-standings`)
+		cy.get(`#dt-tab-${football.id}-standings`).click();
+		cy.get(`#dt-tab-${football.id}-standings`)
 			.should('have.class', 'active')
 			.and('have.attr', 'aria-selected', 'true');
-		cy.get(`#gd-tab-${football.id}-overview`)
+		cy.get(`#dt-tab-${football.id}-overview`)
 			.should('not.have.class', 'active')
 			.and('have.attr', 'aria-selected', 'false');
 	});
 
 	it('shows exactly one pane, and the one the selected tab points at', () => {
 		mount(football);
-		cy.get(`#gd-tab-${football.id}-box`).click();
+		cy.get(`#dt-tab-${football.id}-box`).click();
 		cy.get('.tab-pane.active').should('have.length', 1);
-		cy.get('.tab-pane.active').should('have.id', `gd-pane-${football.id}-box`);
-		cy.get('.tab-pane.active .gd-box').should('exist');
+		cy.get('.tab-pane.active').should('have.id', `dt-pane-${football.id}-box`);
+		cy.get('.tab-pane.active .dt-box').should('exist');
 	});
 
 	it('labels the shown pane with the tab that opened it', () => {
 		mount(football);
-		cy.get(`#gd-tab-${football.id}-standings`).click();
+		cy.get(`#dt-tab-${football.id}-standings`).click();
 		cy.get('.tab-pane.active')
-			.should('have.attr', 'aria-labelledby', `gd-tab-${football.id}-standings`);
+			.should('have.attr', 'aria-labelledby', `dt-tab-${football.id}-standings`);
 	});
 
 	it('moves the selection with the arrow keys, which the plugin binds', () => {
 		mount(football);
-		cy.get('.gd-tabs .nav-link').eq(0).focus().trigger('keydown', { key: 'ArrowRight' });
-		cy.get('.gd-tabs .nav-link.active').should('have.text', en.box.heading);
+		cy.get('.dt-tabs .nav-link').eq(0).focus().trigger('keydown', { key: 'ArrowRight' });
+		cy.get('.dt-tabs .nav-link.active').should('have.text', en.box.heading);
 
 		cy.focused().trigger('keydown', { key: 'End' });
-		cy.get('.gd-tabs .nav-link.active').should('have.text', en.detail.tabStandings);
+		cy.get('.dt-tabs .nav-link.active').should('have.text', en.detail.tabStandings);
 		cy.focused().trigger('keydown', { key: 'Home' });
-		cy.get('.gd-tabs .nav-link.active').should('have.text', en.detail.tabOverview);
+		cy.get('.dt-tabs .nav-link.active').should('have.text', en.detail.tabOverview);
 	});
 
 	// The plugin sets `tabindex="-1"` on the tabs it is not on and leaves the attribute off the
@@ -157,36 +157,47 @@ describe('detail screen tab strip', () => {
 		mount(football);
 		// `should` rather than `then`: the third tab appears when the box score resolves and the
 		// plugin is attached in an effect a commit later, so a single read lands before either.
-		cy.get('.gd-tabs .nav-link').should($tabs => {
+		cy.get('.dt-tabs .nav-link').should($tabs => {
 			const stops = [...$tabs].map(tab => (tab as HTMLButtonElement).tabIndex);
 			expect(stops).to.deep.equal([0, -1, -1]);
 		});
-		cy.get(`#gd-tab-${football.id}-standings`).click();
-		cy.get('.gd-tabs .nav-link').should($tabs => {
+		cy.get(`#dt-tab-${football.id}-standings`).click();
+		cy.get('.dt-tabs .nav-link').should($tabs => {
 			const stops = [...$tabs].map(tab => (tab as HTMLButtonElement).tabIndex);
 			expect(stops, 'the one tab stop follows the selection').to.deep.equal([-1, -1, 0]);
 		});
 	});
 
-	it('reads on the dark shell rather than borrowing the light card colours', () => {
+	// The selected label takes the ink and the orange rule; the others take the muted ink.
+	it('draws the selection in ink over the accent rule, on the page', () => {
 		mount(football);
-		// #f75c03 on #0d1117 is 5.9:1. The nav-tabs skin the box score uses would paint #f8fafc
-		// here, and $nav-link-color's #4b5563 reaches only 2.5:1 on this background.
-		cy.get('.gd-tabs .nav-link.active').then($tab => {
-			const style = getComputedStyle($tab[0]);
-			expect(style.color).to.equal('rgb(247, 92, 3)');
+		cy.get('.dt-tabs .nav-link.active').then($tab => {
+			const style = getComputedStyle($tab[0]!);
+			expect(style.color, 'selected label').to.equal('rgb(243, 245, 247)');
+			expect(style.borderBottomColor, 'the rule').to.equal('rgb(247, 92, 3)');
+			expect(parseFloat(style.borderBottomWidth), 'the rule weight').to.equal(2);
 			expect(style.backgroundColor).to.equal('rgba(0, 0, 0, 0)');
 		});
-		cy.get('.gd-tabs .nav-link').not('.active').first().then($tab => {
-			expect(getComputedStyle($tab[0]).color).to.equal('rgb(139, 148, 158)');
+		cy.get('.dt-tabs .nav-link').not('.active').first().then($tab => {
+			expect(getComputedStyle($tab[0]!).color).to.equal('rgb(140, 149, 161)');
 		});
+		cy.get('.dt-tabs').should('have.css', 'border-bottom-width', '1px');
 	});
 
-	it('divides the width evenly so the underline measures the tab, not the word', () => {
+	// Spread across the width, the rule under each word rather than under a third of the strip.
+	it('spreads the tabs across the width, each rule the width of its label', () => {
 		mount(football);
-		cy.get('.gd-tabs .nav-link').then($tabs => {
-			const widths = [...$tabs].map(tab => Math.round(tab.getBoundingClientRect().width));
-			expect(Math.max(...widths) - Math.min(...widths)).to.be.at.most(1);
+		cy.get('.dt-tabs').then(([strip]: JQuery<HTMLElement>) => {
+			const box = strip.getBoundingClientRect();
+			const tabs = [...strip.querySelectorAll<HTMLElement>('.nav-link')];
+			expect(tabs[0]!.getBoundingClientRect().left - box.left, 'first flush left').to.be.closeTo(4, 1);
+			expect(box.right - tabs.at(-1)!.getBoundingClientRect().right, 'last flush right').to.be.closeTo(4, 1);
+			for (const tab of tabs) {
+				const range = tab.ownerDocument.createRange();
+				range.selectNodeContents(tab);
+				expect(tab.getBoundingClientRect().width, `${tab.textContent} rule measures the word`)
+					.to.be.closeTo(range.getBoundingClientRect().width, 1);
+			}
 		});
 	});
 
@@ -195,7 +206,7 @@ describe('detail screen tab strip', () => {
 	// label has to be measured in the box it will actually render in.
 	it('fits every locale\'s tab labels on one line', () => {
 		mount(football);
-		cy.get('.gd-tabs .nav-link').then($tabs => {
+		cy.get('.dt-tabs .nav-link').then($tabs => {
 			const baseline = [...$tabs].map(tab => tab.getBoundingClientRect().height);
 			for (const [code, bundle] of Object.entries(locales)) {
 				const labels = [
@@ -208,10 +219,12 @@ describe('detail screen tab strip', () => {
 					tab.textContent = labels[index]!;
 					expect(tab.getBoundingClientRect().height, `${code} tab ${index} on one line`)
 						.to.be.at.most(baseline[index]! + 1);
-					expect(tab.scrollWidth, `${code} tab ${index} inside its share of the strip`)
-						.to.be.at.most(tab.clientWidth + 1);
 					tab.textContent = original;
 				});
+				[...$tabs].forEach((tab, index) => { tab.textContent = labels[index]!; });
+				const strip = $tabs[0]!.closest('.dt-tabs') as HTMLElement;
+				expect(strip.scrollWidth, `${code} labels fit the strip together`).to.be.at.most(strip.clientWidth);
+				[...$tabs].forEach(tab => { tab.textContent = ''; });
 			}
 		});
 	});
@@ -224,17 +237,17 @@ describe('standings table', () => {
 
 	it('prints the whole league, not the matchup division', () => {
 		openStandings(football);
-		cy.get('.gd-standings-group').should('have.length', 8);
-		cy.get('.gd-standings-table tbody tr').should('have.length', 32);
+		cy.get('.dt-standings-group').should('have.length', 8);
+		cy.get('.dt-standings-table tbody tr').should('have.length', 32);
 	});
 
 	it('heads each conference once, over the divisions inside it', () => {
 		openStandings(football);
-		cy.get('.gd-standings-conference').then($headings => {
+		cy.get('.dt-standings-conference').then($headings => {
 			expect([...$headings].map(heading => heading.textContent))
 				.to.deep.equal(['American Football Conference', 'National Football Conference']);
 		});
-		cy.get('.gd-standings-group .gd-box-subheading').then($headings => {
+		cy.get('.dt-standings-group .dt-subheading').then($headings => {
 			expect([...$headings].map(heading => heading.textContent)).to.deep.equal([
 				'AFC East', 'AFC North', 'AFC South', 'AFC West',
 				'NFC East', 'NFC North', 'NFC South', 'NFC West',
@@ -244,75 +257,87 @@ describe('standings table', () => {
 
 	it('gives basketball its six divisions under two conferences', () => {
 		openStandings(basketball);
-		cy.get('.gd-standings-conference').should('have.length', 2);
-		cy.get('.gd-standings-group').should('have.length', 6);
-		cy.get('.gd-standings-table tbody tr').should('have.length', 30);
+		cy.get('.dt-standings-conference').should('have.length', 2);
+		cy.get('.dt-standings-group').should('have.length', 6);
+		cy.get('.dt-standings-table tbody tr').should('have.length', 30);
 	});
 
 	it('draws no conference heading over a flat league table', () => {
 		openStandings(soccer);
-		cy.get('.gd-standings-conference').should('not.exist');
-		cy.get('.gd-standings-group').should('have.length', 1);
-		cy.get('.gd-standings-table tbody tr').should('have.length', 20);
+		cy.get('.dt-standings-conference').should('not.exist');
+		cy.get('.dt-standings-group').should('have.length', 1);
+		cy.get('.dt-standings-table tbody tr').should('have.length', 20);
 	});
 
 	it('heads a football table the way a football table is headed', () => {
 		openStandings(football);
-		cy.get('.gd-standings-table').first().find('thead th').then($th => {
+		cy.get('.dt-standings-table').first().find('thead th').then($th => {
 			expect([...$th].map(th => th.textContent)).to.deep.equal([
 				en.standings.wins, en.standings.losses, en.standings.ties, en.standings.winPercent,
 			]);
 		});
 	});
 
-	it('washes the two rows in the matchup and leaves the other thirty alone', () => {
+	it('marks the two rows in the matchup with the accent rule and leaves the other thirty alone', () => {
 		openStandings(football);
-		cy.get('.gd-standings-table tbody tr').then($rows => {
-			const washed = [...$rows].filter(row => getComputedStyle(row).backgroundImage !== 'none');
-			expect(washed).to.have.length(2);
-			expect(washed.map(row => row.querySelector('.gd-standings-name')?.textContent))
+		cy.get('.dt-standings-table tbody tr').then($rows => {
+			const marked = [...$rows].filter(row => getComputedStyle(row.firstElementChild!, '::before').content !== 'none');
+			expect(marked).to.have.length(2);
+			expect(marked.map(row => row.querySelector('.dt-standings-name')?.textContent))
 				.to.deep.equal(['Philadelphia', 'Dallas']);
+			const rule = getComputedStyle(marked[0]!.firstElementChild!, '::before');
+			expect(rule.backgroundColor, 'the accent').to.equal('rgb(247, 92, 3)');
+			expect(rule.width, 'a 3px rule').to.equal('3px');
 		});
 	});
 
 	it('marks the two rows for a screen reader, not only for the eye', () => {
 		openStandings(football);
-		cy.get('.gd-standings-table tbody tr[aria-current="true"]').should('have.length', 2);
+		cy.get('.dt-standings-table tbody tr[aria-current="true"]').should('have.length', 2).and('have.class', 'is-playing');
 	});
 
-	it('draws each matchup team name in its own readable ink', () => {
+	// The rule carries it for the eye; the weight and the ink carry it for a glance down the numbers.
+	it('sets the matchup rows semibold in ink and the rest of the numbers quiet', () => {
 		openStandings(football);
-		// Philadelphia's #004C54 and Dallas's #003594, both already dark enough to keep.
-		cy.contains('.gd-standings-name', 'Philadelphia').should('have.css', 'color', 'rgb(0, 76, 84)');
-		cy.contains('.gd-standings-name', 'Dallas').should('have.css', 'color', 'rgb(0, 53, 148)');
+		cy.contains('tr', 'Philadelphia').find('td').first().should('have.css', 'color', 'rgb(243, 245, 247)')
+			.and('have.css', 'font-weight', '600');
+		cy.contains('tr', 'Buffalo').find('td').first().should('have.css', 'color', 'rgb(140, 149, 161)');
 	});
 
-	it('leaves every other name on the card default ink', () => {
+	it('leaves every other name on the card ink', () => {
 		openStandings(football);
-		cy.contains('.gd-standings-name', 'Buffalo').should('have.css', 'color', 'rgb(17, 24, 39)');
+		cy.contains('.dt-standings-name', 'Buffalo').should('have.css', 'color', 'rgb(243, 245, 247)');
+	});
+
+	// The names line up down the table whether or not a row carries the rule.
+	it('keeps every name on one left edge', () => {
+		openStandings(football);
+		cy.get('.dt-standings-table').first().find('.dt-standings-id').then($ids => {
+			expect(new Set([...$ids].map(id => Math.round(id.getBoundingClientRect().left))).size).to.equal(1);
+		});
 	});
 
 	it('numbers a league table and leaves a division unnumbered', () => {
 		openStandings(soccer);
-		cy.get('.gd-standings-table tbody tr').eq(0).find('.gd-standings-rank').should('have.text', '1');
+		cy.get('.dt-standings-table tbody tr').eq(0).find('.dt-standings-rank').should('have.text', '1');
 		openStandings(football);
-		cy.get('.gd-standings-rank').should('not.exist');
+		cy.get('.dt-standings-rank').should('not.exist');
 	});
 
 	it('reads the record strings a college conference sends instead of a win column', () => {
 		openStandings(preGame);
-		cy.get('.gd-standings-table').first().find('thead th').then($th => {
+		cy.get('.dt-standings-table').first().find('thead th').then($th => {
 			expect([...$th].map(th => th.textContent))
 				.to.deep.equal([en.standings.conference, en.standings.overall]);
 		});
 		// College stays on the summary block, which knows nothing above the conference.
-		cy.get('.gd-standings-conference').should('not.exist');
+		cy.get('.dt-standings-conference').should('not.exist');
 	});
 
 	it('never pushes a cell past the popup edge, in any sport', () => {
 		for (const game of [football, basketball, soccer, preGame]) {
 			openStandings(game);
-			cy.get('.gd-standings-table td, .gd-standings-table th').each($cell => {
+			cy.get('.dt-standings-table td, .dt-standings-table th').each($cell => {
 				expect($cell[0].getBoundingClientRect().right, `${game.id} cell within 320px`)
 					.to.be.at.most(320);
 			});
@@ -324,10 +349,10 @@ describe('standings table', () => {
 	// that clips correctly and a table that cannot clip at all measure the same on this data.
 	it('gives the name column away first rather than clipping a number', () => {
 		openStandings(soccer);
-		cy.get('.gd-standings-table tbody td').each($cell => {
+		cy.get('.dt-standings-table tbody td').each($cell => {
 			expect($cell[0].scrollWidth, 'number cell untruncated').to.be.at.most($cell[0].clientWidth + 1);
 		});
-		cy.contains('.gd-standings-name', 'Manchester City').then($name => {
+		cy.contains('.dt-standings-name', 'Manchester City').then($name => {
 			const element = $name[0];
 			const numbersBefore = [...element.closest('tr')!.querySelectorAll('td')]
 				.map(cell => Math.round(cell.getBoundingClientRect().width));

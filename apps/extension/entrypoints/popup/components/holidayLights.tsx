@@ -20,14 +20,16 @@ interface holidayLightsProps {
 	// Set while a team the user follows has just scored. The string takes that team's colours and
 	// picks up the pace, which is the confetti's job done by the only decoration on this screen.
 	flashColors?: string[] | null;
+	// The compact bar is showing, so the string hangs from its lower edge instead of the popup's top.
+	lifted?: boolean;
 }
 
-const holidayLights = ({ flashColors = null }: holidayLightsProps) => {
+const holidayLights = ({ flashColors = null, lifted = false }: holidayLightsProps) => {
 	const colors = flashColors && flashColors.length > 0 ? flashColors : bulbColors;
 
 	return (
 		<svg
-			className={`holiday-lights${flashColors ? ' is-celebrating' : ''}`}
+			className={`holiday-lights${flashColors ? ' is-celebrating' : ''}${lifted ? ' is-lifted' : ''}`}
 			viewBox={`0 0 ${stringWidth} ${stringHeight}`}
 			preserveAspectRatio='none'
 			aria-hidden='true'

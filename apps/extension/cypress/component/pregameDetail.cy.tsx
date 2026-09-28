@@ -80,91 +80,89 @@ describe('pre-game detail screen', () => {
 	it('drops the PowerScore breakdown entirely', () => {
 		mountPre(preGame);
 		cy.get('.powerscore-breakdown').should('not.exist');
-		cy.get('.gd-poster').should('exist');
+		cy.get('.dt-hero.is-pre').should('exist');
+		cy.get('.dt-hero .as-stage-power').should('not.exist');
 	});
 
-	// The hero surface is the same in all three states now — one scrimmed band of the two team
-	// colours — so `.gd-poster` is no longer what tells a pre-game screen from a live one. The
-	// breakdown is, and the live hero carries its own class for the re-toning the stylesheet does.
-	it('keeps the breakdown once the game is live, on the same hero surface', () => {
+	// One stage for all three states; what changes is what sits between the two teams.
+	it('keeps the breakdown once the game is live, on the same stage', () => {
 		mountPre({ ...preGame, status: 'in', period: 2, clockSeconds: 300 });
 		cy.get('.powerscore-breakdown').should('exist');
-		cy.get('.gd-poster').should('exist');
-		cy.get('.gd-hero-live').should('exist');
-		cy.get('.game-detail-matchup').should('exist');
-		// The pre-game furniture is gone even though the surface is shared.
-		cy.get('.gd-poster-teams').should('not.exist');
+		cy.get('.dt-hero.is-in .as-stage-score').should('exist');
+		cy.get('.dt-hero .as-stage-at').should('not.exist');
 	});
 
-	// The poster is a card in the column, not a full-bleed banner: it lines up with the setup
-	// card below it and carries the same rounded corner as every other card on the screen.
-	it('sits on the same card geometry as the rest of the screen', () => {
+	it('writes "at" between the teams before a start', () => {
 		mountPre(preGame);
-		cy.get('.gd-setup').then(([setup]: JQuery<HTMLElement>) => {
-			cy.get('.gd-poster').should(([poster]: JQuery<HTMLElement>) => {
+		cy.get('.dt-hero .as-stage-at').should('have.text', 'at');
+		cy.get('.dt-hero .as-stage-score').should('not.exist');
+	});
+
+	// The stage runs to the popup's edges and the cards sit inset beneath it.
+	it('runs the stage to the edges, with the setup card inset under it', () => {
+		mountPre(preGame);
+		cy.get('.dt-hero').then(([stage]: JQuery<HTMLElement>) => {
+			const box = stage.getBoundingClientRect();
+			expect(box.left, 'flush left').to.equal(0);
+			expect(box.top, 'flush top').to.equal(0);
+			expect(getComputedStyle(stage).borderBottomLeftRadius, 'rounded at the foot').to.equal('20px');
+			cy.get('.dt-setup').should(([setup]: JQuery<HTMLElement>) => {
 				const card = setup.getBoundingClientRect();
-				const box = poster.getBoundingClientRect();
-				expect(box.left, 'shares the column left edge').to.be.closeTo(card.left, 0.5);
-				expect(box.width, 'shares the column width').to.be.closeTo(card.width, 0.5);
-				expect(getComputedStyle(poster).borderRadius, 'rounded like a card').to.equal('8px');
+				expect(card.left, 'the card is inset').to.equal(12);
+				expect(card.top, 'and sits under the stage').to.be.at.least(box.bottom);
 			});
 		});
 	});
 
-	it('runs the team colours left to right', () => {
+	it('runs the team colours from away to home', () => {
 		mountPre(preGame);
-		cy.get('.gd-poster').should(([poster]: JQuery<HTMLElement>) => {
-			const background = getComputedStyle(poster).backgroundImage;
-			expect(background, 'horizontal, not diagonal').to.contain('linear-gradient(to right');
-			expect(background, 'away colour leads').to.contain('rgb(0, 51, 141)');
-			expect(background, 'home colour trails').to.contain('rgb(227, 24, 55)');
+		cy.get('.dt-hero .as-stage-field').should(([field]: JQuery<HTMLElement>) => {
+			const background = getComputedStyle(field).backgroundImage;
+			const linear = background.slice(background.lastIndexOf('linear-gradient'));
+			expect(linear, 'away colour leads').to.match(/^linear-gradient\(110deg, rgb\(0, 51, 141\)/);
+			expect(linear, 'home colour trails').to.contain('rgb(227, 24, 55)');
 		});
 	});
 
 	// A crest is drawn in the team's own colours with nothing behind it. The plate is a repair, and
-	// it is only applied to a crest measured as unreadable where it lands — which needs the image's
-	// pixels, so an unmeasured crest is bare. `teamCrest.cy.tsx` drives all three treatments.
+	// only for a crest measured as unreadable where it lands — which needs the image's pixels.
 	it('draws each crest bare rather than plating it by default', () => {
 		mountPre(preGame);
-		cy.get('.gd-poster-crest').should('have.length', 2);
-		cy.get('.gd-poster-crest').each(($crest: JQuery<HTMLElement>) => {
+		cy.get('.dt-hero .as-crest').should('have.length', 2).each(($crest: JQuery<HTMLElement>) => {
 			expect($crest[0]!.className, 'no plate').to.include('is-bare');
 			expect(getComputedStyle($crest[0]!).backgroundImage).to.equal('none');
 		});
 	});
 
-	// The poster's crests come from ESPN, so the slot has to hold its box before they arrive.
+	// The crests come over the network, so the slot holds its box, lettered, until they arrive.
 	it('holds the crest box with the abbreviation until the logo lands', () => {
 		mountPre(preGame);
-		cy.get('.gd-poster-crest-logo').should('have.length', 2).each(($crest: JQuery<HTMLElement>) => {
-			const box = $crest[0]!.getBoundingClientRect();
-			expect(box.width, 'crest width').to.equal(64);
-			expect(box.height, 'crest height').to.equal(64);
-			expect(getComputedStyle($crest[0]!.querySelector('.crest-fallback')!).backgroundColor,
-				'no second disc inside the tinted one').to.equal('rgba(0, 0, 0, 0)');
+		cy.get('.dt-hero .as-crest-box').should('have.length', 2).each(($box: JQuery<HTMLElement>) => {
+			expect($box[0]!.getBoundingClientRect()).to.deep.include({ width: 48, height: 48 });
 		});
+		cy.get('.dt-hero .as-crest-box').eq(0).find('.crest-fallback').should('have.text', 'BUF');
 	});
 
 	it('carries a favourite star per team, reflecting current state', () => {
 		mountPre(preGame, { favorites: ['nfl:1'] });
-		cy.get('.gd-poster-star').should('have.length', 2);
-		cy.get('.gd-poster-team').eq(0).find('.gd-poster-star').should('have.attr', 'data-favorited', 'false');
-		cy.get('.gd-poster-team').eq(1).find('.gd-poster-star').should('have.attr', 'data-favorited', 'true');
-		cy.get('.gd-poster-team').eq(1).find('.bi-star-fill').should('exist');
+		cy.get('.dt-hero .as-star').should('have.length', 2);
+		cy.get('.dt-hero .as-stage-team').eq(0).find('.as-star').should('have.attr', 'data-favorited', 'false');
+		cy.get('.dt-hero .as-stage-team').eq(1).find('.as-star').should('have.attr', 'data-favorited', 'true');
+		cy.get('.dt-hero .as-stage-team').eq(1).find('.bi-star-fill').should('exist');
 	});
 
 	it('toggles the team the star belongs to', () => {
 		const toggled: string[] = [];
 		mountPre(preGame, { onToggleFavoriteTeam: (_league, teamId) => toggled.push(teamId) });
-		cy.get('.gd-poster-team').eq(0).find('.gd-poster-star').click();
+		cy.get('.dt-hero .as-stage-team').eq(0).find('.as-star').click({ scrollBehavior: false });
 		cy.wrap(toggled).should('deep.equal', ['3']);
 	});
 
 	it('offers the tab picker and the boost, and no favourites row', () => {
 		mountPre(preGame);
-		cy.get('.gd-setup .game-card-tab-assign .form-select').should('exist');
-		cy.get('.gd-setup .powerscore-boost-input').should('have.value', '10');
-		cy.get('.gd-setup').should('not.contain.text', 'avorite');
+		cy.get('.dt-setup .game-card-tab-assign .form-select').should('exist');
+		cy.get('.dt-setup .powerscore-boost-input').should('have.value', '10');
+		cy.get('.dt-setup').should('not.contain.text', 'avorite');
 	});
 
 	// The boost is the one control that was previously hidden until the game started.
@@ -184,29 +182,29 @@ describe('pre-game detail screen', () => {
 		];
 		for (const [sportType, phrase] of cases) {
 			mountPre({ ...preGame, sportType });
-			cy.get('.gd-setup-heading').should('contain.text', phrase);
+			cy.get('.dt-setup-heading').should('contain.text', phrase);
 		}
 	});
 
 	it('falls back to gametime for a sport with no word of its own', () => {
 		mountPre({ ...preGame, sportType: undefined as unknown as SportType });
-		cy.get('.gd-setup-heading').should('contain.text', 'gametime');
+		cy.get('.dt-setup-heading').should('contain.text', 'gametime');
 	});
 
 	// A postponement is the one thing with something to say before the start time.
-	it('surfaces a delay on the poster', () => {
+	it('surfaces a delay on the stage', () => {
 		mountPre({ ...preGame, delayed: true, delayDescription: 'Postponed' });
-		cy.get('.gd-poster-status').should('contain.text', 'Postponed');
+		cy.get('.dt-hero .as-stage-note .dt-note-delay').should('have.text', 'Postponed');
 	});
 
 	it('has no status line on a normal pre-game game', () => {
 		mountPre(preGame);
-		cy.get('.gd-poster-status').should('not.exist');
+		cy.get('.dt-note-delay').should('not.exist');
 	});
 
 	it('keeps every locale heading on one line in the card', () => {
 		mountPre(preGame);
-		cy.get('.gd-setup-heading').then(([heading]: JQuery<HTMLElement>) => {
+		cy.get('.dt-setup-heading').then(([heading]: JQuery<HTMLElement>) => {
 			const style = getComputedStyle(heading);
 			const oneLine = parseFloat(style.lineHeight) + parseFloat(style.paddingBottom) + 1;
 			for (const [name, locale] of Object.entries(locales)) {
@@ -298,22 +296,22 @@ describe('pre-game detail screen', () => {
 
 		it('shows both pitchers with their record and ERA', () => {
 			mountPre(pitchers);
-			cy.get('.gd-pregame-stats .gd-pregame-starter-name').should('have.length', 2);
-			cy.get('.gd-pregame-starter-name').eq(0).should('have.text', 'T. Skubal');
-			cy.get('.gd-pregame-starter-name').eq(1).should('have.text', 'D. Peterson');
-			cy.get('.gd-pregame-stat-value').eq(0).should('have.text', '13-4');
-			cy.get('.gd-pregame-stat-value').eq(1).should('have.text', '2.21');
+			cy.get('.dt-starters-card .dt-starter-name').should('have.length', 2);
+			cy.get('.dt-starter-name').eq(0).should('have.text', 'T. Skubal');
+			cy.get('.dt-starter-name').eq(1).should('have.text', 'D. Peterson');
+			cy.get('.dt-starter-stat-value').eq(0).should('have.text', '13-4');
+			cy.get('.dt-starter-stat-value').eq(1).should('have.text', '2.21');
 		});
 
 		// "(3-1, 4.23)" says nothing about what either number is.
 		it('labels each pitcher number under the value', () => {
 			mountPre(pitchers);
-			cy.get('.gd-pregame-stat').should('have.length', 4);
-			cy.get('.gd-pregame-stat-label').eq(0).should('have.text', 'W-L');
-			cy.get('.gd-pregame-stat-label').eq(1).should('have.text', 'ERA');
-			cy.get('.gd-pregame-stat').eq(0).then(([pair]: JQuery<HTMLElement>) => {
-				const value = pair.querySelector('.gd-pregame-stat-value')!.getBoundingClientRect();
-				const label = pair.querySelector('.gd-pregame-stat-label')!.getBoundingClientRect();
+			cy.get('.dt-starter-stat').should('have.length', 4);
+			cy.get('.dt-starter-stat-label').eq(0).should('have.text', 'W-L');
+			cy.get('.dt-starter-stat-label').eq(1).should('have.text', 'ERA');
+			cy.get('.dt-starter-stat').eq(0).then(([pair]: JQuery<HTMLElement>) => {
+				const value = pair.querySelector('.dt-starter-stat-value')!.getBoundingClientRect();
+				const label = pair.querySelector('.dt-starter-stat-label')!.getBoundingClientRect();
 				expect(label.top, 'label sits under its value').to.be.at.least(value.bottom - 1);
 			});
 		});
@@ -321,10 +319,10 @@ describe('pre-game detail screen', () => {
 		// Not Lekton. These are read as numbers in prose, not scanned down a column.
 		it('sets the pitcher and leader numbers in the body face', () => {
 			mountPre(pitchers);
-			cy.get('.gd-pregame-stat-value').eq(0).then(([el]: JQuery<HTMLElement>) => {
+			cy.get('.dt-starter-stat-value').eq(0).then(([el]: JQuery<HTMLElement>) => {
 				expect(getComputedStyle(el).fontFamily.toLowerCase()).to.not.include('lekton');
 			});
-			cy.get('.gd-pregame-leader-value').eq(0).then(([el]: JQuery<HTMLElement>) => {
+			cy.get('.dt-leader-value').eq(0).then(([el]: JQuery<HTMLElement>) => {
 				expect(getComputedStyle(el).fontFamily.toLowerCase()).to.not.include('lekton');
 			});
 		});
@@ -336,19 +334,19 @@ describe('pre-game detail screen', () => {
 				homeTeam: { ...pitchers.homeTeam, probableStarter: { name: 'D. Peterson', line: '(7-7, 5.17)' } },
 				awayTeam: { ...pitchers.awayTeam, probableStarter: undefined },
 			});
-			cy.get('.gd-pregame-starter-line').should('have.text', '(7-7, 5.17)');
-			cy.get('.gd-pregame-stat').should('not.exist');
+			cy.get('.dt-starter-line').should('have.text', '(7-7, 5.17)');
+			cy.get('.dt-starter-stat').should('not.exist');
 		});
 
 		it('keeps each starter on its own team side of the card', () => {
 			mountPre(pitchers);
-			cy.get('.gd-pregame-stats').then(([card]: JQuery<HTMLElement>) => {
+			cy.get('.dt-starters-card').then(([card]: JQuery<HTMLElement>) => {
 				const box = card.getBoundingClientRect();
 				const midline = box.left + box.width / 2;
-				cy.get('.gd-pregame-starter').eq(0).then(([away]: JQuery<HTMLElement>) => {
+				cy.get('.dt-starter').eq(0).then(([away]: JQuery<HTMLElement>) => {
 					expect(away.getBoundingClientRect().right).to.be.at.most(midline + 1);
 				});
-				cy.get('.gd-pregame-starter').eq(1).then(([home]: JQuery<HTMLElement>) => {
+				cy.get('.dt-starter').eq(1).then(([home]: JQuery<HTMLElement>) => {
 					expect(home.getBoundingClientRect().left).to.be.at.least(midline - 1);
 				});
 			});
@@ -356,8 +354,8 @@ describe('pre-game detail screen', () => {
 
 		it('holds the grid when only one side has a starter', () => {
 			mountPre({ ...pitchers, homeTeam: { ...pitchers.homeTeam, probableStarter: undefined } });
-			cy.get('.gd-pregame-starter-name').should('have.length', 1);
-			cy.get('.gd-pregame-starters').then(([row]: JQuery<HTMLElement>) => {
+			cy.get('.dt-starter-name').should('have.length', 1);
+			cy.get('.dt-starters').then(([row]: JQuery<HTMLElement>) => {
 				const columns = getComputedStyle(row).gridTemplateColumns.split(' ').map(parseFloat);
 				expect(columns).to.have.length(2);
 				expect(Math.abs(columns[0]! - columns[1]!)).to.be.at.most(1);
@@ -366,30 +364,30 @@ describe('pre-game detail screen', () => {
 
 		it('shows a goalie with a status and no stat line', () => {
 			mountPre(goalies);
-			cy.contains('.gd-setup-heading', 'Probable goalies').should('exist');
-			cy.get('.gd-pregame-starter-line').should('not.exist');
-			cy.get('.gd-pregame-stat').should('not.exist');
-			cy.get('.gd-pregame-starter-status').eq(0).should('have.text', 'Expected');
-			cy.get('.gd-pregame-starter-status').eq(1).should('have.text', 'Confirmed');
+			cy.contains('.dt-stats-heading', 'Probable goalies').should('exist');
+			cy.get('.dt-starter-line').should('not.exist');
+			cy.get('.dt-starter-stat').should('not.exist');
+			cy.get('.dt-starter-status').eq(0).should('have.text', 'Expected');
+			cy.get('.dt-starter-status').eq(1).should('have.text', 'Confirmed');
 		});
 
 		it('renders a headshot for each starter and leader', () => {
 			mountPre(pitchers);
-			cy.get('.gd-pregame-starter-shot img').should('have.length', 2);
-			cy.get('.gd-pregame-starter-shot img').eq(0).should('have.attr', 'src').and('include', '39909');
-			cy.get('.gd-pregame-leader-shot').should('have.length', 4);
+			cy.get('.dt-starter-shot img').should('have.length', 2);
+			cy.get('.dt-starter-shot img').eq(0).should('have.attr', 'src').and('include', '39909');
+			cy.get('.dt-leader-shot').should('have.length', 4);
 		});
 
 		// Soccer sends a headshot for roughly one leader in ten, so the placeholder is the common
 		// case there and has to hold the row's shape rather than collapse it.
 		it('falls back to team-coloured initials when there is no headshot', () => {
 			mountPre(pitchers);
-			cy.get('.gd-pregame-leader-row').eq(0).within(() => {
+			cy.get('.dt-leader-row').eq(0).within(() => {
 				cy.get('img').should('not.exist');
 				cy.get('.crest-fallback').should('have.text', 'KC');
 			});
-			cy.get('.gd-pregame-leader-row').eq(0).then(([withFallback]: JQuery<HTMLElement>) => {
-				cy.get('.gd-pregame-leader-row').eq(1).then(([withImage]: JQuery<HTMLElement>) => {
+			cy.get('.dt-leader-row').eq(0).then(([withFallback]: JQuery<HTMLElement>) => {
+				cy.get('.dt-leader-row').eq(1).then(([withImage]: JQuery<HTMLElement>) => {
 					const a = withFallback.getBoundingClientRect();
 					const bBox = withImage.getBoundingClientRect();
 					expect(Math.abs(a.height - bBox.height), 'placeholder row matches image row height').to.be.at.most(1);
@@ -416,9 +414,9 @@ describe('pre-game detail screen', () => {
 					leaders: [{ category: 'homeruns', fallbackLabel: 'HR', player: 'J. Soto', value: '33', headshot: transparentPixel }],
 				},
 			});
-			cy.get('.gd-pregame-starter-shot .crest').should('have.attr', 'data-crest-state', 'loaded');
-			cy.get('.gd-pregame-stats .crest-fallback').should('have.length', 4);
-			cy.get('.gd-pregame-stats .crest-fallback').each(($el: JQuery<HTMLElement>) => {
+			cy.get('.dt-starter-shot .crest').should('have.attr', 'data-crest-state', 'loaded');
+			cy.get('.dt-starters-card .crest-fallback, .dt-leaders-card .crest-fallback').should('have.length', 4);
+			cy.get('.dt-starters-card .crest-fallback, .dt-leaders-card .crest-fallback').each(($el: JQuery<HTMLElement>) => {
 				expect(getComputedStyle($el[0]!).display, 'placeholder is out of the layout').to.equal('none');
 			});
 		});
@@ -426,8 +424,8 @@ describe('pre-game detail screen', () => {
 		// The other half of the same rule: a starter with no headshot must still show its initials.
 		it('keeps the initials when there is no headshot to load', () => {
 			mountPre(goalies);
-			cy.get('.gd-pregame-starter-shot .crest').should('have.attr', 'data-crest-state', 'missing');
-			cy.get('.gd-pregame-starter-shot .crest-fallback').each(($el: JQuery<HTMLElement>) => {
+			cy.get('.dt-starter-shot .crest').should('have.attr', 'data-crest-state', 'missing');
+			cy.get('.dt-starter-shot .crest-fallback').each(($el: JQuery<HTMLElement>) => {
 				expect(getComputedStyle($el[0]!).display).to.not.equal('none');
 			});
 		});
@@ -440,12 +438,12 @@ describe('pre-game detail screen', () => {
 				awayTeam: { ...pitchers.awayTeam, probableStarter: { name: 'T. Skubal', winLoss: '13-4', era: '2.21', headshot: transparentPixel } },
 				homeTeam: { ...pitchers.homeTeam, probableStarter: { name: 'D. Peterson', winLoss: '7-7', era: '5.17', headshot: transparentPixel } },
 			});
-			cy.get('.gd-pregame-starter-shot .crest').should('have.attr', 'data-crest-state', 'loaded');
-			cy.get('.gd-pregame-starter-shot').eq(0).then(([away]: JQuery<HTMLElement>) => {
+			cy.get('.dt-starter-shot .crest').should('have.attr', 'data-crest-state', 'loaded');
+			cy.get('.dt-starter-shot').eq(0).then(([away]: JQuery<HTMLElement>) => {
 				const disc = getComputedStyle(away).backgroundColor;
 				expect(disc, 'disc is painted, not the plain card').to.not.equal('rgba(0, 0, 0, 0)');
 				expect(disc, 'and not the unparseable-colour grey').to.not.equal('rgb(229, 231, 235)');
-				cy.get('.gd-pregame-starter-shot').eq(1).then(([home]: JQuery<HTMLElement>) => {
+				cy.get('.dt-starter-shot').eq(1).then(([home]: JQuery<HTMLElement>) => {
 					expect(getComputedStyle(home).backgroundColor, 'each side gets its own colour').to.not.equal(disc);
 				});
 			});
@@ -453,9 +451,9 @@ describe('pre-game detail screen', () => {
 
 		it('gives a leader row the same coloured disc', () => {
 			mountPre(pitchers);
-			cy.get('.gd-pregame-leader-shot').eq(0).then(([first]: JQuery<HTMLElement>) => {
+			cy.get('.dt-leader-shot').eq(0).then(([first]: JQuery<HTMLElement>) => {
 				expect(getComputedStyle(first).backgroundColor).to.not.equal('rgba(0, 0, 0, 0)');
-				cy.get('.gd-pregame-leader-shot').eq(1).then(([second]: JQuery<HTMLElement>) => {
+				cy.get('.dt-leader-shot').eq(1).then(([second]: JQuery<HTMLElement>) => {
 					expect(getComputedStyle(second).backgroundColor)
 						.to.not.equal(getComputedStyle(first).backgroundColor);
 				});
@@ -470,52 +468,52 @@ describe('pre-game detail screen', () => {
 				awayTeam: { ...goalies.awayTeam, color: '#0C2340', alternateColor: '#0C2340' },
 			};
 			mountPre(gold);
-			cy.get('.gd-pregame-starter-shot .crest-fallback').eq(1).then(([onGold]: JQuery<HTMLElement>) => {
+			cy.get('.dt-starter-shot .crest-fallback').eq(1).then(([onGold]: JQuery<HTMLElement>) => {
 				expect(getComputedStyle(onGold).color).to.equal('rgb(17, 24, 39)');
 			});
-			cy.get('.gd-pregame-starter-shot .crest-fallback').eq(0).then(([onNavy]: JQuery<HTMLElement>) => {
+			cy.get('.dt-starter-shot .crest-fallback').eq(0).then(([onNavy]: JQuery<HTMLElement>) => {
 				expect(getComputedStyle(onNavy).color).to.equal('rgb(255, 255, 255)');
 			});
 		});
-		it('tints each leader row with its own team colour', () => {
+		// The disc carries the team colour and the abbreviation names it; the row itself stays the card.
+		it('carries each leader\'s team on its disc and its abbreviation', () => {
 			mountPre(pitchers);
-			cy.get('.gd-pregame-leader-row').eq(0).should('have.attr', 'style').and('include', 'linear-gradient');
-			cy.get('.gd-pregame-leader-team').eq(0).should('have.text', 'DET');
-			cy.get('.gd-pregame-leader-team').eq(1).should('have.text', 'NYM');
-			// Away and home must not resolve to the same tint, or the colour carries no information.
-			cy.get('.gd-pregame-leader-row').eq(0).then(([away]: JQuery<HTMLElement>) => {
-				cy.get('.gd-pregame-leader-row').eq(1).then(([home]: JQuery<HTMLElement>) => {
-					expect(getComputedStyle(away).backgroundImage).to.not.equal(getComputedStyle(home).backgroundImage);
+			cy.get('.dt-leader-row').eq(0).should('have.css', 'background-image', 'none');
+			cy.get('.dt-leader-team').eq(0).should('have.text', 'DET');
+			cy.get('.dt-leader-team').eq(1).should('have.text', 'NYM');
+			cy.get('.dt-leader-shot').eq(0).then(([away]: JQuery<HTMLElement>) => {
+				cy.get('.dt-leader-shot').eq(1).should(([home]: JQuery<HTMLElement>) => {
+					expect(getComputedStyle(away).backgroundColor, 'the two sides differ').to.not.equal(getComputedStyle(home).backgroundColor);
 				});
 			});
 		});
 
 		it('renders one row per team per category, grouped under the category', () => {
 			mountPre(pitchers);
-			cy.contains('.gd-setup-heading', 'Team leaders').should('exist');
-			cy.get('.gd-pregame-category').should('have.length', 2);
-			cy.get('.gd-pregame-category').eq(0).should('have.text', 'HR');
-			cy.get('.gd-pregame-leader-row').should('have.length', 4);
-			cy.get('.gd-pregame-leader-value').eq(0).should('have.text', '28');
-			cy.get('.gd-pregame-leader-value').eq(1).should('have.text', '33');
+			cy.contains('.dt-stats-heading', 'Team leaders').should('exist');
+			cy.get('.dt-leader-category').should('have.length', 2);
+			cy.get('.dt-leader-category').eq(0).should('have.text', 'HR');
+			cy.get('.dt-leader-row').should('have.length', 4);
+			cy.get('.dt-leader-value').eq(0).should('have.text', '28');
+			cy.get('.dt-leader-value').eq(1).should('have.text', '33');
 		});
 
 		// The whole reason for the full-width row. A clipped stat is unreadable in a way a clipped
 		// name is not, so the value is what must never be cut.
 		it('never truncates a football stat value', () => {
 			mountPre(football);
-			cy.get('.gd-pregame-leader-value').each(($el: JQuery<HTMLElement>) => {
+			cy.get('.dt-leader-value').each(($el: JQuery<HTMLElement>) => {
 				const [el] = $el;
 				expect(el!.scrollWidth, `${el!.textContent} renders whole`).to.be.at.most(el!.clientWidth + 1);
 			});
-			cy.get('.gd-pregame-leader-value').eq(0).should('have.text', '14/23, 141 YDS, 1 INT');
+			cy.get('.dt-leader-value').eq(0).should('have.text', '14/23, 141 YDS, 1 INT');
 		});
 
 		it('keeps a football row inside the card', () => {
 			mountPre(football);
-			cy.get('.gd-pregame-stats').then(([card]: JQuery<HTMLElement>) => {
+			cy.get('.dt-leaders-card').then(([card]: JQuery<HTMLElement>) => {
 				const limit = card.getBoundingClientRect().right;
-				cy.get('.gd-pregame-leader-row').each(($el: JQuery<HTMLElement>) => {
+				cy.get('.dt-leader-row').each(($el: JQuery<HTMLElement>) => {
 					expect($el[0]!.getBoundingClientRect().right).to.be.at.most(limit);
 				});
 			});
@@ -527,7 +525,7 @@ describe('pre-game detail screen', () => {
 				homeTeam: { ...goalies.homeTeam, leaders: [{ category: 'points', fallbackLabel: 'Points', player: 'D. Pastrnak', value: '69' }] },
 			};
 			mountPre(hockeyPoints);
-			cy.get('.gd-pregame-category').last().should('have.text', 'PTS');
+			cy.get('.dt-leader-category').last().should('have.text', 'PTS');
 		});
 
 		it('falls back to the ESPN abbreviation for a category we have no label for', () => {
@@ -537,19 +535,19 @@ describe('pre-game detail screen', () => {
 				awayTeam: { ...pitchers.awayTeam, leaders: [] },
 			};
 			mountPre(unknown);
-			cy.get('.gd-pregame-category').last().should('have.text', 'SB');
+			cy.get('.dt-leader-category').last().should('have.text', 'SB');
 		});
 
 		it('renders nothing at all when a sport sends neither', () => {
 			mountPre(preGame);
-			cy.get('.gd-pregame-stats').should('not.exist');
-			cy.get('.gd-setup').should('exist');
+			cy.get('.dt-starters-card, .dt-leaders-card').should('not.exist');
+			cy.get('.dt-setup').should('exist');
 		});
 
-		it('prefers the scoreboard record over a summary fetch on the poster', () => {
+		it('prefers the scoreboard record over a summary fetch on the stage', () => {
 			mountPre(pitchers);
-			cy.get('.gd-poster-record').eq(0).should('have.text', '70-64');
-			cy.get('.gd-poster-record').eq(1).should('have.text', '76-58');
+			cy.get('.dt-hero .as-stage-team small').eq(0).should('have.text', '70-64');
+			cy.get('.dt-hero .as-stage-team small').eq(1).should('have.text', '76-58');
 		});
 
 
@@ -559,10 +557,10 @@ describe('pre-game detail screen', () => {
 			mountPre(pitchers);
 			// The budget is the half-card the starter gets, not the row's own shrink-to-fit width:
 			// the row grows with its content, so measuring it before the swap measures English.
-			cy.get('.gd-pregame-starter').eq(0).then(([column]: JQuery<HTMLElement>) => {
+			cy.get('.dt-starter').eq(0).then(([column]: JQuery<HTMLElement>) => {
 				const budget = column.getBoundingClientRect().width;
-				const row = column.querySelector<HTMLElement>('.gd-pregame-starter-stats')!;
-				const labels = row.querySelectorAll<HTMLElement>('.gd-pregame-stat-label');
+				const row = column.querySelector<HTMLElement>('.dt-starter-stats')!;
+				const labels = row.querySelectorAll<HTMLElement>('.dt-starter-stat-label');
 				const [recordLabel, eraLabel] = labels;
 				const baseHeight = recordLabel!.getBoundingClientRect().height;
 				for (const [name, locale] of Object.entries(locales)) {
@@ -579,8 +577,9 @@ describe('pre-game detail screen', () => {
 		});
 		it('fits every locale category label on one line', () => {
 			mountPre(pitchers);
-			cy.get('.gd-pregame-category').eq(0).then(([label]: JQuery<HTMLElement>) => {
-				const oneLine = parseFloat(getComputedStyle(label).lineHeight) + 1;
+			cy.get('.dt-leader-category').eq(0).then(([label]: JQuery<HTMLElement>) => {
+				const style = getComputedStyle(label);
+				const oneLine = parseFloat(style.lineHeight) + parseFloat(style.paddingTop) + parseFloat(style.paddingBottom) + 1;
 				const keys = [
 					'leaderAvg', 'leaderHomeRuns', 'leaderRbis', 'leaderPoints', 'leaderRebounds',
 					'leaderAssists', 'leaderGoals', 'leaderHockeyAssists', 'leaderHockeyPoints',

@@ -4,35 +4,59 @@ interface gameBoostInputProps {
 	gameId: string;
 	currentBoost: number;
 	onSetGameBoost: (gameId: string, boost: number) => void;
-	// Renders the explainer and field alone, for hosts that supply their own card and heading.
+	// The row alone, for a host that supplies its own card.
 	bare?: boolean;
 }
 
-const BoostRow = ({ gameId, currentBoost, onSetGameBoost }: gameBoostInputProps) => (
-	<div className='game-detail-boost-row'>
-		<span className='game-detail-boost-explainer'>{i18n.t('gameBoost.explainer')}</span>
-		<input
-			id={`boost-detail-${gameId}`}
-			type='number'
-			min={0}
-			step={1}
-			value={currentBoost}
-			onChange={e => onSetGameBoost(gameId, Math.max(0, Math.round(Number(e.target.value) || 0)))}
-			className='powerscore-boost-input'
-			aria-label={i18n.t('gameBoost.heading')}
-		/>
-	</div>
-);
+const clamp = (value: number) => Math.max(0, Math.round(value || 0));
 
-const GameBoostInput = ({ gameId, currentBoost, onSetGameBoost, bare = false }: gameBoostInputProps) => {
-	const row = <BoostRow gameId={gameId} currentBoost={currentBoost} onSetGameBoost={onSetGameBoost} />;
-	if (bare) return row;
-
+const BoostRow = ({ gameId, currentBoost, onSetGameBoost, bare }: gameBoostInputProps) => {
+	const inputId = `boost-detail-${gameId}`;
 	return (
-		<div className='game-detail-boost-section'>
-			<div className='game-detail-boost-heading'>{i18n.t('gameBoost.heading')}</div>
-			{row}
+		<div className='dt-boost'>
+			<div className='dt-boost-copy'>
+				<label className={bare ? 'dt-row-label' : 'dt-card-title'} htmlFor={inputId}>{i18n.t('gameBoost.heading')}</label>
+				<p className='dt-boost-explainer'>{i18n.t('gameBoost.explainer')}</p>
+			</div>
+			<div className='dt-stepper'>
+				<button
+					type='button'
+					className='as-icon'
+					aria-label={i18n.t('gameBoost.decrease')}
+					disabled={currentBoost <= 0}
+					onClick={() => onSetGameBoost(gameId, clamp(currentBoost - 1))}
+				>
+					<i className='bi bi-dash-lg' aria-hidden='true' />
+				</button>
+				<input
+					id={inputId}
+					type='number'
+					min={0}
+					step={1}
+					inputMode='numeric'
+					value={currentBoost}
+					onChange={e => onSetGameBoost(gameId, clamp(Number(e.target.value)))}
+					className='powerscore-boost-input num'
+				/>
+				<button
+					type='button'
+					className='as-icon'
+					aria-label={i18n.t('gameBoost.increase')}
+					onClick={() => onSetGameBoost(gameId, clamp(currentBoost + 1))}
+				>
+					<i className='bi bi-plus-lg' aria-hidden='true' />
+				</button>
+			</div>
 		</div>
+	);
+};
+
+const GameBoostInput = (props: gameBoostInputProps) => {
+	if (props.bare) return <BoostRow {...props} />;
+	return (
+		<section className='card dt-card game-detail-boost-section'>
+			<BoostRow {...props} />
+		</section>
 	);
 };
 

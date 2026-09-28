@@ -1,6 +1,6 @@
 import type { Game } from '@arenaswap/core/types';
+import { resolveGameColors } from '@arenaswap/ui/src/components/gameSurface';
 import type { SeriesInfo } from './useSummaryData';
-import { resolveTeamColorPair } from '@arenaswap/ui/src/components/colorUtils';
 
 export const seriesSports = new Set(['baseball', 'basketball', 'hockey', 'softball']);
 
@@ -9,14 +9,15 @@ interface seriesDotsProps {
 	game: Pick<Game, 'sportType' | 'homeTeam' | 'awayTeam'>;
 }
 
+// One mark per game of the series, filled in the winner's colour. The summary line already says
+// who leads, so the marks are decoration for a screen reader.
 const seriesDots = ({ info, game }: seriesDotsProps) => {
 	if (!seriesSports.has(game.sportType)) return null;
 	const total = info.totalCompetitions ?? 0;
 	if (total < 2) return null;
 
-	// Mid-grey fallbacks, not near-white: these dots sit on the light matchup card.
-	const [awayColor, homeColor] = resolveTeamColorPair(game.awayTeam, game.homeTeam, '#6b7280', '#9ca3af');
-	// ESPN returns future games first and completed games last.
+	const [awayColor, homeColor] = resolveGameColors(game);
+	// Our sources list future games first and completed games last.
 	const events = [...(info.events ?? [])].toSorted((a, b) => {
 		const aComp = a.statusType?.completed ? 1 : 0;
 		const bComp = b.statusType?.completed ? 1 : 0;
@@ -24,25 +25,20 @@ const seriesDots = ({ info, game }: seriesDotsProps) => {
 	});
 	const dots = Array.from({ length: total }, (_, i) => {
 		const ev = events[i];
-		if (!ev?.statusType?.completed) {
-			return <i key={i} className='bi bi-circle series-dot series-dot-empty' />;
-		}
-		const winner = ev.competitors?.find(c => c.winner);
-		let color = '#8b949e';
+		if (!ev?.statusType?.completed) return <span key={i} className='dt-series-dot' />;
 		// seriesInfo is the one summary field that never passes a schema, so team may be absent.
-		const winnerTeamId = winner?.team?.id;
-		if (winnerTeamId !== undefined) {
-			if (winnerTeamId === game.homeTeam.id) color = homeColor;
-			else if (winnerTeamId === game.awayTeam.id) color = awayColor;
-		}
-		return <i key={i} className='bi bi-circle-fill series-dot' style={{ color }} />;
+		const winnerTeamId = ev.competitors?.find(c => c.winner)?.team?.id;
+		const color = winnerTeamId === game.homeTeam.id ? homeColor
+			: winnerTeamId === game.awayTeam.id ? awayColor
+				: undefined;
+		return <span key={i} className='dt-series-dot is-played' style={color ? { background: color } : undefined} />;
 	});
 
 	return (
-		<div className='d-flex align-items-center justify-content-center gap-2 series-dots-wrap'>
-			{info.summary && <div className='series-dots-summary'>{info.summary}</div>}
-			<div className='d-flex gap-1'>{dots}</div>
-		</div>
+		<span className='dt-series'>
+			{info.summary && <span className='dt-series-summary'>{info.summary}</span>}
+			<span className='dt-series-dots' aria-hidden='true'>{dots}</span>
+		</span>
 	);
 };
 

@@ -5,16 +5,16 @@ import { GridComponent, TooltipComponent } from 'echarts/components';
 import { CanvasRenderer } from 'echarts/renderers';
 import type { EChartsOption, EChartsType } from 'echarts';
 
-// The option builders in @arenaswap/ui only ever emit line and bar series on a cartesian grid with
-// an axis tooltip, so registering those five keeps the full echarts bundle (1.1MB) out of this
-// chunk in favour of 513KB. apps/docs renders the same four builders off this same registration.
+// The option builders only emit line and bar series on a cartesian grid with an axis tooltip, so
+// registering those five keeps the full echarts bundle out of this chunk.
 echarts.use([LineChart, BarChart, GridComponent, TooltipComponent, CanvasRenderer]);
 
 interface gameDetailChartCanvasProps {
 	option: EChartsOption;
+	label: string;
 }
 
-const gameDetailChartCanvas = ({ option }: gameDetailChartCanvasProps) => {
+const gameDetailChartCanvas = ({ option, label }: gameDetailChartCanvasProps) => {
 	const chartElementRef = useRef<HTMLDivElement | null>(null);
 	const chartInstanceRef = useRef<EChartsType | null>(null);
 	const resizeHandlerRef = useRef<(() => void) | null>(null);
@@ -44,7 +44,7 @@ const gameDetailChartCanvas = ({ option }: gameDetailChartCanvasProps) => {
 		chartInstanceRef.current?.setOption(option, true);
 	}, [option]);
 
-	return <div ref={chartElementRef} className='game-detail-chart-canvas' />;
+	return <div ref={chartElementRef} className='dt-canvas' role='img' aria-label={label} />;
 };
 
 export default gameDetailChartCanvas;

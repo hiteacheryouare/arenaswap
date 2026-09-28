@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { i18n } from '#i18n';
 import type { Browser } from 'wxt/browser';
-import { leagueConfigMap, scoreMaxTotal, sportTypeConfigMap } from '@arenaswap/core/constants';
-import type { Game, LeagueId, PowerScoreResult, PowerScoreSnapshot, ScoreSnapshot, SignalName, TabRegistration } from '@arenaswap/core/types';
+import { scoreMaxTotal, sportTypeConfigMap } from '@arenaswap/core/constants';
+import type { Game, LeagueId, PowerScoreResult, PowerScoreSnapshot, ResolvedTheme, ScoreSnapshot, SignalName, TabRegistration } from '@arenaswap/core/types';
+import { resolveTeamColorPair } from '@arenaswap/ui/src/components/colorUtils';
 import DetailHero from './detailHero';
-import DetailPosterHero from './detailPosterHero';
 import DetailStickyBar from './detailStickyBar';
+import DetailTabCard from './detailTabCard';
 import DetailTabs from './detailTabs';
 import type { DetailTab, DetailTabId } from './detailTabs';
 import StandingsTable from './standingsTable';
@@ -17,12 +18,12 @@ import HolidayDrift from './holidayDrift';
 import HolidayFall from './holidayFall';
 import HolidayLights from './holidayLights';
 import LatestPlayPanel from './latestPlayPanel';
-import PowerScoreBreakdown from './powerScoreBreakdown';
+import PowerScoreBreakdown, { signalMeta } from './powerScoreBreakdown';
 import PregameSetup from './pregameSetup';
 import PregameStats from './pregameStats';
 import BoxScore from './boxScore';
 import ProTip from './proTip';
-import { resolveStatus } from './gameSituation';
+import { tabNumberLabel } from './tabAssignSelect';
 import {
 	buildComponentContributionOption,
 	buildPowerScoreOption,
@@ -31,13 +32,11 @@ import {
 	darkChartPalette,
 	lightChartPalette,
 } from './gameDetailChartOptions';
-import { resolveTeamColorPair } from '@arenaswap/ui/src/components/colorUtils';
 import useSummaryData from './useSummaryData';
 import { chartHistory, coversWholeGame } from './wrapCoverage';
 import { resolveDecorations, type holidayDecorationPrefs } from '../../../utils/holidayDecorations';
 import { favoriteScoreFlashColors, scorelineOf, type gameScoreline } from '../../../utils/favoriteScoreFlash';
-import type { BettingDisplayPrefs, WeatherDisplayPrefs } from './gameCardTypes';
-import type { ResolvedTheme } from '@arenaswap/core/types';
+import type { BettingDisplayPrefs, WeatherDisplayPrefs } from '@arenaswap/ui/src/components/displayPrefs';
 
 interface gameDetailViewProps {
 	game: Game;
@@ -52,11 +51,10 @@ interface gameDetailViewProps {
 	// Demo mode borrows a date so the calendar-gated decorations are reachable in September.
 	decorationDate?: Date;
 	disabledSignals?: readonly SignalName[];
-	// Pre-game only: the setup card and the poster's favourite stars need these. They are
-	// optional so the live screen, and anything mounting it, is unaffected.
 	favoriteTeamIds?: ReadonlySet<string>;
 	openTabs?: Browser.tabs.Tab[];
 	registry?: TabRegistration[];
+	// Absent where favourites can't be changed from here, which leaves the stars as marks.
 	onToggleFavoriteTeam?: (leagueId: LeagueId, teamId: string) => void;
 	onRegistryChange?: (updated: TabRegistration[]) => void;
 	formatTabLabel?: (tab: Browser.tabs.Tab) => string;
@@ -72,15 +70,22 @@ const noFavorites: ReadonlySet<string> = new Set();
 
 const favoriteFlashMs = 5000;
 
-// The signal palette belongs to the PowerScore breakdown card above this chart, so momentum
-// keeps that card's #2274a5 rather than the dark-surface $secondary. Same signal, one colour.
-const componentLegendItems = [
-	{ label: i18n.t('detail.legendCloseness'), color: '#22c55e' },
-	{ label: i18n.t('detail.legendLateGame'), color: '#f75c03' },
-	{ label: i18n.t('detail.legendMomentum'), color: '#2274a5' },
-	{ label: i18n.t('detail.legendLeadChanges'), color: '#f1c40f' },
-	{ label: i18n.t('detail.legendComeback'), color: '#d90368' },
-];
+// The compact bar is 48px tall. It takes over a little before the stage's matchup reaches it, which
+// is while the stage's own back control is still half on screen, so there is always a way back.
+const handoffPx = 48 + 16;
+
+const componentLegendKeys = {
+	closeness: 'detail.legendCloseness',
+	lateGame: 'detail.legendLateGame',
+	momentum: 'detail.legendMomentum',
+	leadChanges: 'detail.legendLeadChanges',
+	comeback: 'detail.legendComeback',
+} as const;
+
+const componentLegendItems = signalMeta.map(signal => ({
+	label: i18n.t(componentLegendKeys[signal.name as keyof typeof componentLegendKeys]),
+	color: signal.color,
+}));
 
 const gameDetailView = ({
 	game,
@@ -97,7 +102,7 @@ const gameDetailView = ({
 	favoriteTeamIds = noFavorites,
 	openTabs = [],
 	registry = [],
-	onToggleFavoriteTeam = () => {},
+	onToggleFavoriteTeam,
 	onRegistryChange = () => {},
 	formatTabLabel = tab => tab.title ?? '',
 	tabAssignEnabled = true,
@@ -126,9 +131,8 @@ const gameDetailView = ({
 	// When stalled this is the pre-stall signals sum stored by the scorer, which may exceed 100.
 	const signalsSubtotal = activePowerScore?.signalsSubtotal ?? rawSubtotal;
 	const stallPenalty = activePowerScore?.stallPenalty ?? 0;
-	// Baseball/softball never accumulate a stall count (background.ts only tracks clock-based
-	// sports), so the breakdown hides the row entirely rather than pinning it at zero. Falls back to
-	// basketball for an unrecognized sportType, mirroring computePowerScore's own fallback.
+	// Only clock sports ever accumulate a stall count, so the row is hidden for the rest rather than
+	// pinned at zero. An unknown sport falls back to basketball, as the scorer does.
 	const clockBased = (sportTypeConfigMap[game.sportType] ?? sportTypeConfigMap.basketball).clockBased;
 	const favoriteBonus = activePowerScore?.favoriteBonus ?? 0;
 	const favoriteTeamCount = activePowerScore?.favoriteTeamCount ?? 0;
@@ -151,7 +155,7 @@ const gameDetailView = ({
 	useEffect(() => () => clearTimeout(flashTimer.current), []);
 	const currentBoost = gameBoosts[game.id] ?? 0;
 	// The breakdown mirrors the scorer, which drops every boost while play is frozen. The boost input
-	// keeps showing the stored value, since the setting survives halftime even though it pays nothing.
+	// keeps the stored value, since the setting survives halftime even though it pays nothing.
 	const appliedBoost = activePowerScore?.gameBoost ?? currentBoost;
 	const scoringOpportunityBoost = activePowerScore?.scoringOpportunityBoost ?? 0;
 	const postseasonBoost = activePowerScore?.postseasonBoost ?? 0;
@@ -171,8 +175,8 @@ const gameDetailView = ({
 	const winProbabilityOption = useMemo(() => (
 		buildWinProbabilityOption(winProbability, game, chartPalette)
 	), [winProbability, game, chartPalette]);
-	// Read from the scorer, not recomputed from the line fetched above: that would put a different
-	// number here than on the card you tapped. Undefined means ESPN gave too little data.
+	// Read from the scorer, not recomputed from the line fetched above, so this screen can never
+	// disagree with the game you tapped. Undefined means there was too little data to measure.
 	const winProbabilityVariance = activePowerScore?.winProbabilityVariance;
 	const total = activePowerScore?.total ?? 0;
 
@@ -182,139 +186,99 @@ const gameDetailView = ({
 		{ label: game.homeTeam.abbreviation, color: homeLineColor },
 	]), [awayLineColor, game.awayTeam.abbreviation, game.homeTeam.abbreviation, homeLineColor]);
 
-	const isDelayed = game.delayed === true;
 	const isPreGame = game.status === 'pre';
+	const isLive = game.status === 'in';
 	const isFinal = game.status === 'post';
-	// A wrap draws a chart only when its line covers the whole game. The win-probability line is
-	// exempt because it is not ours: ESPN builds it from the full play-by-play, so it either
-	// arrives complete or does not arrive.
+	// A wrap draws a chart only when its line covers the whole game. Win probability is exempt: it
+	// arrives complete from our sources' play-by-play or not at all.
 	const chartsCoverGame = !isFinal
 		|| (coversWholeGame(orderedPowerScoreHistory, game) && coversWholeGame(orderedScoreHistory, game));
-	const [awayAccent, homeAccent] = resolveTeamColorPair(game.awayTeam, game.homeTeam, '#2274A5', '#F75C03');
-	// One hero surface for all three states: a band of the two teams' colours with a dark scrim over
-	// them — over, not under, so white type stays readable against a pale team colour without this
-	// having to know which colours those are. A delay tints the scrim yellow rather than draining
-	// the hero, which is what the white card used to do with an opacity.
-	const heroStyle = {
-		backgroundImage: isDelayed
-			? 'linear-gradient(180deg, rgba(28, 22, 3, 0.34) 0%, rgba(28, 22, 3, 0.62) 100%), '
-				+ `linear-gradient(to right, ${awayAccent} 0%, ${awayAccent} 38%, ${homeAccent} 62%, ${homeAccent} 100%)`
-			: 'linear-gradient(180deg, rgba(3, 7, 12, 0.18) 0%, rgba(3, 7, 12, 0.52) 100%), '
-				+ `linear-gradient(to right, ${awayAccent} 0%, ${awayAccent} 38%, ${homeAccent} 62%, ${homeAccent} 100%)`,
-	};
-	const isInningSport = leagueConfigMap[game.league]?.periodFormat === 'innings';
-	const status = resolveStatus(game, isInningSport, i18n.t);
 	const totalLabel = total > scoreMaxTotal
 		? i18n.t('detail.totalLabelBaseMax', { total, max: scoreMaxTotal })
 		: i18n.t('detail.totalLabel', { total, max: scoreMaxTotal });
 
-	// Observing the card itself rather than a scroll offset keeps the sticky-bar handoff exact at
-	// any hero height — pre-game, inning sports and postseason all differ.
+	const tabIdForGame = registry.find(entry => entry.gameId === game.id)?.tabId;
+	const gameTab = tabIdForGame === undefined ? undefined : openTabs.find(tab => tab.id === tabIdForGame);
+	const watched = gameTab?.active === true;
+	const tabLabel = isFinal || tabIdForGame === undefined
+		? undefined
+		: watched ? i18n.t('board.watching', { tab: tabNumberLabel(gameTab) }) : tabNumberLabel(gameTab);
+
 	const shellRef = useRef<HTMLDivElement>(null);
 	const heroRef = useRef<HTMLDivElement>(null);
 	const [heroScrolledAway, setHeroScrolledAway] = useState(false);
 
 	useEffect(() => {
 		const root = shellRef.current;
-		const target = heroRef.current;
+		const target = heroRef.current?.querySelector('.as-stage-match') ?? heroRef.current;
 		if (!root || !target || typeof IntersectionObserver === 'undefined') return;
 
 		const observer = new IntersectionObserver(
-			entries => { for (const entry of entries) setHeroScrolledAway(!entry.isIntersecting); },
-			{ root, threshold: 0 },
+			entries => { for (const entry of entries) setHeroScrolledAway(entry.intersectionRatio < 1); },
+			{ root, threshold: [0, 1], rootMargin: `-${handoffPx}px 0px 0px 0px` },
 		);
 		observer.observe(target);
 		return () => observer.disconnect();
-	}, []);
+	}, [game.status]);
 
-	// Everything that is not the box score or the table: the PowerScore and what explains
-	// it, what is happening in the game, and where it is being played. Lifted out of the
-	// panel below so the tab markup stays legible as tab markup.
 	const overviewPanel = (
 		<>
-		{/* Nothing has happened yet, so there is no PowerScore to break down — every signal
-		    would read zero. The screen offers what you can actually decide in advance instead. */}
-		{isFinal ? (
-			<>
-				{/* No PowerScore anywhere on a wrap. The number is a live judgement about what to
-				    watch next, and a game that is over is not a candidate — printing its last
-				    value would read as a verdict on the game rather than as the switching signal
-				    it actually was. The boost input goes for the same reason: it can only ever
-				    change a score that will never be computed again. */}
-				<GameInfoPanel game={game} bettingPrefs={bettingPrefs} weatherPrefs={weatherPrefs} gameDurationMins={gameDurationMins} />
-			</>
-		) : isPreGame ? (
-			<>
-				<PregameSetup
-					game={game}
-					currentBoost={currentBoost}
-					openTabs={openTabs}
-					registry={registry}
-					onSetGameBoost={onSetGameBoost}
-					onRegistryChange={onRegistryChange}
-					formatTabLabel={formatTabLabel}
-					tabAssignEnabled={tabAssignEnabled}
-				/>
-				<PregameStats game={game} />
-				<GameInfoPanel game={game} bettingPrefs={bettingPrefs} weatherPrefs={weatherPrefs} />
-			</>
-		) : (
-			<>
-				{/* First, and deliberately not next to the info panel: what just happened is
-				    the most time-sensitive thing on this screen, and putting it beside the
-				    venue and the networks is what made it read as venue chrome on the card. */}
-				<LatestPlayPanel game={game} awayColor={awayLineColor} homeColor={homeLineColor} />
+			{isLive && (
+				<>
+					<LatestPlayPanel game={game} awayColor={awayLineColor} homeColor={homeLineColor} />
+					<PowerScoreBreakdown
+						closeness={closeness}
+						lateGame={lateGame}
+						momentum={momentum}
+						leadChanges={leadChanges}
+						comeback={comeback}
+						winProbabilityVariance={winProbabilityVariance}
+						signalsSubtotal={signalsSubtotal}
+						stallPenalty={stallPenalty}
+						clockBased={clockBased}
+						favoriteBonus={favoriteBonus}
+						favoriteTeamCount={favoriteTeamCount}
+						currentBoost={appliedBoost}
+						scoringOpportunityBoost={scoringOpportunityBoost}
+						postseasonBoost={postseasonBoost}
+						postseasonLabel={game.postseasonLabel}
+						totalLabel={totalLabel}
+						reason={reason ? reason.charAt(0).toUpperCase() + reason.slice(1) : undefined}
+						disabledSignals={disabledSignals}
+					/>
+					<GameBoostInput gameId={game.id} currentBoost={currentBoost} onSetGameBoost={onSetGameBoost} />
+				</>
+			)}
 
-				<PowerScoreBreakdown
-					closeness={closeness}
-					lateGame={lateGame}
-					momentum={momentum}
-					leadChanges={leadChanges}
-					comeback={comeback}
-					winProbabilityVariance={winProbabilityVariance}
-					signalsSubtotal={signalsSubtotal}
-					stallPenalty={stallPenalty}
-					clockBased={clockBased}
-					favoriteBonus={favoriteBonus}
-					favoriteTeamCount={favoriteTeamCount}
-					currentBoost={appliedBoost}
-					scoringOpportunityBoost={scoringOpportunityBoost}
-					postseasonBoost={postseasonBoost}
-					postseasonLabel={game?.postseasonLabel}
-					totalLabel={totalLabel}
-					reason={reason ? reason.charAt(0).toUpperCase() + reason.slice(1) : undefined}
-					disabledSignals={disabledSignals}
-				/>
+			{/* Nothing has happened yet, so there is no PowerScore to break down. */}
+			{isPreGame && <PregameStats game={game} />}
 
-				<GameBoostInput gameId={game.id} currentBoost={currentBoost} onSetGameBoost={onSetGameBoost} />
+			{/* No PowerScore anywhere on a wrap: the number is a live judgement about what to watch
+			    next, and printing its last value would read as a verdict on the game. */}
+			<GameInfoPanel game={game} bettingPrefs={bettingPrefs} weatherPrefs={weatherPrefs} gameDurationMins={isFinal ? gameDurationMins : undefined} />
 
-				<GameInfoPanel game={game} bettingPrefs={bettingPrefs} weatherPrefs={weatherPrefs} />
-			</>
-		)}
+			{proTipsEnabled && <ProTip context='detail' />}
 
-		{proTipsEnabled && <ProTip context='detail' />}
+			{chartsCoverGame && orderedPowerScoreHistory.length > 0 && (
+				<GameDetailChart title={i18n.t('detail.chartPowerScoreTitle')} option={powerScoreOption} />
+			)}
 
-		{chartsCoverGame && orderedPowerScoreHistory.length > 0 && (
-			<GameDetailChart title={i18n.t('detail.chartPowerScoreTitle')} option={powerScoreOption} />
-		)}
+			{chartsCoverGame && orderedScoreHistory.length > 0 && (
+				<GameDetailChart title={i18n.t('detail.chartScoreTitle')} option={scoreTrendOption} legendItems={teamLegendItems} />
+			)}
 
-		{chartsCoverGame && orderedScoreHistory.length > 0 && (
-			<GameDetailChart title={i18n.t('detail.chartScoreTitle')} option={scoreTrendOption} legendItems={teamLegendItems} />
-		)}
+			{winProbability.length > 0 && (
+				<GameDetailChart title={i18n.t('detail.chartWinProbTitle')} option={winProbabilityOption} legendItems={teamLegendItems} />
+			)}
 
-		{winProbability.length > 0 && (
-			<GameDetailChart title={i18n.t('detail.chartWinProbTitle')} option={winProbabilityOption} legendItems={teamLegendItems} />
-		)}
-
-		{chartsCoverGame && orderedPowerScoreHistory.length > 0 && (
-			<GameDetailChart title={i18n.t('detail.chartComponentsTitle')} option={componentOption} legendItems={componentLegendItems} />
-		)}
+			{chartsCoverGame && orderedPowerScoreHistory.length > 0 && (
+				<GameDetailChart title={i18n.t('detail.chartComponentsTitle')} option={componentOption} legendItems={componentLegendItems} />
+			)}
 		</>
 	);
 
-	// A tab is offered only once there is something behind it. Both of the optional two arrive
-	// with the `/summary` fetch, so the strip grows from nothing to its final shape a moment
-	// after the screen opens — and stays absent for the leagues that never fill either one.
+	// A tab is offered only once there is something behind it. Both optional ones arrive with the
+	// `/summary` fetch, so the strip grows to its final shape a moment after the screen opens.
 	const tabs: DetailTab[] = [
 		{ id: 'overview', label: i18n.t('detail.tabOverview') },
 		...(!isPreGame && hasBoxScoreContent(game.sportType, boxScore)
@@ -324,78 +288,89 @@ const gameDetailView = ({
 			? [{ id: 'standings' as const, label: i18n.t('detail.tabStandings') }]
 			: []),
 	];
-	const tabId = (id: DetailTabId) => `gd-tab-${game.id}-${id}`;
-	const paneId = (id: DetailTabId) => `gd-pane-${game.id}-${id}`;
+	const tabId = (id: DetailTabId) => `dt-tab-${game.id}-${id}`;
+	const paneId = (id: DetailTabId) => `dt-pane-${game.id}-${id}`;
 	// One tab is not a choice, so there is no strip and the overview is simply the screen.
 	const tabbed = tabs.length > 1;
 
 	const paneFor = (id: DetailTabId) => (
 		id === 'standings' ? <StandingsTable game={game} standings={standings} />
-			: id === 'box' ? <BoxScore game={game} boxScore={boxScore} />
+			: id === 'box' ? <BoxScore game={game} boxScore={boxScore} monoLogos={monoLogos} theme={theme} />
 				: overviewPanel
 	);
 
 	return (
-		<div className='popup-container game-detail-shell' ref={shellRef}>
+		<div className={`popup-container dt${decorations.lights ? ' has-lights' : ''}`} ref={shellRef}>
 			{decorations.falling && <HolidayFall kind={decorations.falling} theme={theme} />}
-			<DetailStickyBar game={game} status={status} compact={heroScrolledAway} monoLogos={monoLogos} dismiss={dismiss} onBack={onBack} theme={theme} />
-			{decorations.lights && <HolidayLights flashColors={scoreFlash} />}
-
-			<div ref={heroRef}>
-				{isPreGame ? (
-					<DetailPosterHero
-						game={game}
-						seriesInfo={seriesInfo}
-						records={records}
-						monoLogos={monoLogos}
-						statusText={status.text}
-						heroStyle={heroStyle}
-						awayColor={awayAccent}
-						homeColor={homeAccent}
-						favoriteTeamIds={favoriteTeamIds}
-						onToggleFavoriteTeam={onToggleFavoriteTeam}
-					/>
-				) : (
-					<DetailHero
-						game={game}
-						seriesInfo={seriesInfo}
-						records={records}
-						monoLogos={monoLogos}
-						isDelayed={isDelayed}
-						isInningSport={isInningSport}
-						status={status}
-						heroStyle={heroStyle}
-						awayColor={awayAccent}
-						homeColor={homeAccent}
-					/>
-				)}
+			<div className='dt-bar-dock'>
+				<DetailStickyBar game={game} compact={heroScrolledAway} monoLogos={monoLogos} dismiss={dismiss} onBack={onBack} theme={theme} />
+				{decorations.lights && <HolidayLights flashColors={scoreFlash} lifted={heroScrolledAway} />}
 			</div>
 
-			{tabbed ? (
-				<>
-					<DetailTabs tabs={tabs} tabId={tabId} paneId={paneId} />
-					{/* No `fade`. These three are one screen's worth of the same game seen three ways, not
-					    three places to travel between, and crossfading them puts a beat of half-legible
-					    scoreline between a tap and the table it asked for. Bootstrap reads the class to
-					    decide whether to wait on a transition before revealing the pane, so dropping it is
-					    what makes the swap synchronous — `show` is inert without it and is left on to match
-					    what the plugin adds to every pane it activates. */}
-					<div className='tab-content'>
-						{tabs.map((tab, index) => (
-							<div
-								key={tab.id}
-								id={paneId(tab.id)}
-								className={`tab-pane${index === 0 ? ' show active' : ''}`}
-								role='tabpanel'
-								aria-labelledby={tabId(tab.id)}
-								tabIndex={0}
-							>
-								{paneFor(tab.id)}
-							</div>
-						))}
-					</div>
-				</>
-			) : overviewPanel}
+			<div ref={heroRef}>
+				<DetailHero
+					game={game}
+					seriesInfo={seriesInfo}
+					records={records}
+					monoLogos={monoLogos}
+					label={tabLabel}
+					powerScore={isLive ? total : null}
+					favoriteTeamIds={favoriteTeamIds}
+					onToggleFavoriteTeam={onToggleFavoriteTeam}
+					dismiss={dismiss}
+					onBack={onBack}
+				/>
+			</div>
+
+			<div className='dt-body'>
+				{isPreGame && (
+					<PregameSetup
+						game={game}
+						currentBoost={currentBoost}
+						openTabs={openTabs}
+						registry={registry}
+						onSetGameBoost={onSetGameBoost}
+						onRegistryChange={onRegistryChange}
+						formatTabLabel={formatTabLabel}
+						tabAssignEnabled={tabAssignEnabled}
+					/>
+				)}
+
+				{isLive && tabAssignEnabled && !watched && (
+					<DetailTabCard
+						gameId={game.id}
+						hasTab={tabIdForGame !== undefined}
+						openTabs={openTabs}
+						registry={registry}
+						onRegistryChange={onRegistryChange}
+						formatTabLabel={formatTabLabel}
+					/>
+				)}
+
+				{tabbed ? (
+					<>
+						<DetailTabs tabs={tabs} tabId={tabId} paneId={paneId} />
+						{/* No `fade`: these are one game seen three ways, and a crossfade puts a beat of
+						    half-legible scoreline between a tap and the table it asked for. */}
+						<div className='tab-content'>
+							{tabs.map((tab, index) => (
+								<div
+									key={tab.id}
+									id={paneId(tab.id)}
+									className={`tab-pane dt-pane${index === 0 ? ' show active' : ''}`}
+									role='tabpanel'
+									aria-labelledby={tabId(tab.id)}
+									tabIndex={0}
+								>
+									{paneFor(tab.id)}
+								</div>
+							))}
+						</div>
+					</>
+				) : (
+					<div className='dt-pane'>{overviewPanel}</div>
+				)}
+			</div>
 
 			{decorations.falling && <HolidayDrift kind={decorations.falling} depth={decorations.depth} theme={theme} />}
 		</div>

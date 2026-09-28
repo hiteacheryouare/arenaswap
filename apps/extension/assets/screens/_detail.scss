@@ -1,0 +1,1655 @@
+// Game detail: the stage on top, then one column of cards on the page. Every card is the same
+// surface with the same padding, so the breakdown, the tables and the charts read as one set.
+@use '@arenaswap/ui/src/motion' as m;
+
+$bar-height: 48px;
+
+.popup-container.dt {
+	padding-bottom: 0;
+	// Anything scrolled into view, a focused control included, lands clear of the compact bar.
+	scroll-padding-top: calc($bar-height + var(--as-space-2));
+}
+
+// ── Back control ─────────────────────────────────────────────────────────────
+// A compact text button. White over the stage, ink on the page.
+
+.dt-back {
+	--as-btn-padding-x: var(--as-space-2);
+	--as-btn-padding-y: 6px;
+	--as-btn-font-size: var(--as-text-sm);
+	--as-btn-font-weight: var(--as-weight-semibold);
+	--as-btn-line-height: var(--as-leading-xs);
+	--as-btn-border-width: 0;
+	--as-btn-color: #ffffff;
+	--as-btn-hover-color: #ffffff;
+	--as-btn-hover-bg: rgba(255, 255, 255, 0.14);
+	--as-btn-active-color: #ffffff;
+	--as-btn-active-bg: rgba(255, 255, 255, 0.2);
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+
+	i {
+		font-size: 14px;
+		line-height: 1;
+		-webkit-text-stroke: 0.4px currentColor;
+	}
+
+	&:focus-visible {
+		outline-color: #ffffff;
+		outline-offset: 0;
+	}
+}
+
+.dt-bar-back {
+	--as-btn-padding-x: var(--as-space-1);
+	--as-btn-font-size: var(--as-text-xs);
+	--as-btn-color: var(--as-ink);
+	--as-btn-hover-color: var(--as-ink);
+	--as-btn-hover-bg: var(--as-hover);
+	--as-btn-active-color: var(--as-ink);
+	--as-btn-active-bg: var(--as-press);
+
+	i {
+		font-size: 12px;
+	}
+
+	&:focus-visible {
+		outline-color: var(--as-accent);
+	}
+}
+
+// ── Stage ────────────────────────────────────────────────────────────────────
+
+.dt-hero {
+	padding-top: 52px;
+
+	// The team columns take what the score leaves, so a name gets more than the list's 64px whenever
+	// the score is narrow enough to allow it. The list sets tricodes against a three-digit score; the
+	// hero sets names, so it takes the score down a step to keep them clear of it.
+	.as-stage-match {
+		grid-template-columns: minmax(64px, 1fr) auto minmax(64px, 1fr);
+		column-gap: var(--as-space-1);
+	}
+
+	.as-stage-score.is-wide {
+		font-size: 36px;
+	}
+
+	// Crest, name, record, timeouts and star sit on rows the two sides share, so they stay level when
+	// one name wraps and the other doesn't. Margins rather than a gap, so a row nobody fills costs nothing.
+	.as-stage-match {
+		grid-template-rows: repeat(5, auto);
+		row-gap: 0;
+	}
+
+	.as-stage-score,
+	.as-stage-at {
+		grid-row: 1 / -1;
+	}
+
+	.as-stage-team {
+		grid-row: 1 / -1;
+		grid-template-columns: minmax(0, 1fr);
+		grid-template-rows: subgrid;
+		row-gap: 0;
+
+		> * + * {
+			margin-top: var(--as-space-1);
+		}
+
+		> small,
+		> .as-star {
+			margin-top: 2px;
+		}
+	}
+
+	// Between words first. A single word wider than its column is gameStage's to shrink.
+	.as-stage-team b {
+		max-width: 100%;
+	}
+}
+
+.dt-head {
+	position: absolute;
+	top: var(--as-space-2);
+	left: var(--as-space-2);
+	right: var(--as-space-4);
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--as-space-2);
+	min-width: 0;
+}
+
+.dt-league {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--as-space-2);
+	min-width: 0;
+	font-size: var(--as-text-sm);
+	font-weight: var(--as-weight-semibold);
+	line-height: var(--as-leading-xs);
+	white-space: nowrap;
+}
+
+.dt-league-disc {
+	display: grid;
+	flex-shrink: 0;
+	place-items: center;
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	background: #ffffff;
+}
+
+.dt-league-logo {
+	width: 14px;
+	height: 14px;
+
+	.crest-fallback {
+		background: transparent;
+	}
+}
+
+// The count, the bases, the at-bat pair and the field, between the matchup and the foot.
+.dt-situation {
+	display: grid;
+	gap: var(--as-space-3);
+	min-width: 0;
+}
+
+.dt-note-lead {
+	color: #ffffff;
+}
+
+.dt-note-delay {
+	color: #ffe58a;
+}
+
+.dt-countdown-clock {
+	color: #ffffff;
+	font-weight: var(--as-weight-semibold);
+	white-space: nowrap;
+
+	.flip-score {
+		overflow: visible;
+		overflow-y: clip;
+	}
+}
+
+.dt-series {
+	display: inline-flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 2px var(--as-space-2);
+}
+
+.dt-series-dots {
+	display: inline-flex;
+	gap: var(--as-space-1);
+}
+
+// Team colour sits on a team colour here, so each played game carries a white ring to hold its edge.
+.dt-series-dot {
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	box-shadow: inset 0 0 0 1px var(--stage-behind);
+
+	&.is-played {
+		background: rgba(255, 255, 255, 0.6);
+		box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.72);
+	}
+}
+
+// Pitcher against batter, each under his own club, the halves swapping at the half-inning.
+.dt-atbat {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+	align-items: center;
+	gap: var(--as-space-2);
+	padding-top: var(--as-space-3);
+	border-top: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.dt-atbat-side {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: var(--as-space-2);
+	min-width: 0;
+
+	&.dt-atbat-home {
+		flex-direction: row-reverse;
+		text-align: right;
+	}
+}
+
+.dt-atbat-face {
+	display: grid;
+	flex-shrink: 0;
+	place-items: center;
+	width: 32px;
+	height: 32px;
+	overflow: hidden;
+	border-radius: 50%;
+	background: rgba(255, 255, 255, 0.16);
+}
+
+.dt-atbat-face-crest {
+	width: 100%;
+	height: 100%;
+
+	> img {
+		object-fit: cover;
+	}
+
+	.crest-fallback {
+		background: transparent;
+		color: #ffffff;
+		font-size: var(--as-text-2xs);
+		font-weight: var(--as-weight-semibold);
+	}
+}
+
+.dt-atbat-text {
+	display: grid;
+	min-width: 0;
+}
+
+.dt-atbat-role,
+.dt-atbat-line {
+	overflow: hidden;
+	font-size: var(--as-text-xs);
+	line-height: var(--as-leading-xs);
+	color: var(--stage-note);
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.dt-atbat-name {
+	overflow: hidden;
+	font-size: var(--as-text-sm);
+	font-weight: var(--as-weight-semibold);
+	line-height: var(--as-leading-xs);
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.dt-atbat-versus {
+	font-size: var(--as-text-xs);
+	line-height: var(--as-leading-xs);
+	color: var(--stage-note);
+}
+
+// ── Compact bar ──────────────────────────────────────────────────────────────
+// Takes no room at rest; the dock is a zero-height sticky anchor the bar hangs from.
+
+.dt-bar-dock {
+	position: sticky;
+	top: 0;
+	z-index: 6;
+	height: 0;
+}
+
+.dt-bar {
+	position: absolute;
+	inset: 0 0 auto;
+	display: grid;
+	// Equal side columns keep the matchup on the bar's axis; `max-content` lets a side grow, moving
+	// the matchup over rather than under it, only when a label will not fit its half.
+	grid-template-columns: minmax(max-content, 1fr) auto minmax(max-content, 1fr);
+	align-items: center;
+	gap: 6px;
+	height: $bar-height;
+	padding: 0 var(--as-space-2);
+	background: var(--as-page);
+	box-shadow: 0 1px 0 var(--as-line);
+	opacity: 0;
+	visibility: hidden;
+	transform: translateY(-4px);
+	transition:
+		opacity m.$motion-quick m.$motion-ease,
+		transform m.$motion-quick m.$motion-ease,
+		visibility 0s linear m.$motion-quick;
+
+	&.is-visible {
+		opacity: 1;
+		visibility: visible;
+		transform: none;
+		transition:
+			opacity m.$motion-quick m.$motion-ease,
+			transform m.$motion-quick m.$motion-ease,
+			visibility 0s;
+	}
+}
+
+.dt-bar-match {
+	display: flex;
+	align-items: center;
+	gap: var(--as-space-1);
+	white-space: nowrap;
+}
+
+.dt-bar-team {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--as-space-1);
+	font-size: var(--as-text-sm);
+	line-height: var(--as-leading-xs);
+
+	b {
+		font-weight: var(--as-weight-semibold);
+	}
+
+	&.is-home {
+		flex-direction: row-reverse;
+	}
+}
+
+.dt-bar-score {
+	min-width: 2ch;
+	font-weight: var(--as-weight-bold);
+	text-align: center;
+}
+
+.dt-bar-sep {
+	width: 1px;
+	height: 14px;
+	background: var(--as-line-strong);
+}
+
+.dt-bar-status {
+	grid-column: 3;
+	justify-self: end;
+	display: inline-flex;
+	align-items: center;
+	gap: 2px;
+	font-size: var(--as-text-xs);
+	font-weight: var(--as-weight-semibold);
+	line-height: var(--as-leading-xs);
+	color: var(--as-muted);
+	white-space: nowrap;
+
+	&.is-delayed {
+		color: var(--as-warning-ink);
+	}
+
+	.inning-half-icon {
+		font-size: 8px;
+	}
+}
+
+// ── Body ─────────────────────────────────────────────────────────────────────
+
+.dt-body {
+	display: grid;
+	gap: var(--as-space-3);
+	padding: var(--as-space-4) var(--as-space-3);
+}
+
+.dt-tabs {
+	flex-wrap: nowrap;
+	justify-content: space-between;
+	padding: 0 var(--as-space-1);
+	border-bottom: 1px solid var(--as-line);
+
+	.nav-link {
+		margin-bottom: -1px;
+		padding: var(--as-space-2) 0;
+		white-space: nowrap;
+	}
+}
+
+.dt-pane,
+.tab-content > .dt-pane.active {
+	display: grid;
+	gap: var(--as-space-3);
+}
+
+.tab-content > .dt-pane:not(.active) {
+	display: none;
+}
+
+.dt-card {
+	padding: var(--as-space-4);
+}
+
+.dt-card-title {
+	display: block;
+	margin: 0 0 var(--as-space-3);
+	font-size: var(--as-text-sm);
+	font-weight: var(--as-weight-semibold);
+	line-height: var(--as-leading-sm);
+	color: var(--as-ink);
+}
+
+.dt-subheading {
+	margin: 0 0 var(--as-space-1);
+	font-size: var(--as-text-xs);
+	font-weight: var(--as-weight-semibold);
+	line-height: var(--as-leading-xs);
+	color: var(--as-muted);
+}
+
+.dt-row-label {
+	display: block;
+	font-size: var(--as-text-sm);
+	font-weight: var(--as-weight-semibold);
+	line-height: var(--as-leading-sm);
+}
+
+.dt-row-help {
+	margin: 0 0 var(--as-space-2);
+	font-size: var(--as-text-xs);
+	line-height: var(--as-leading-xs);
+	color: var(--as-muted);
+	text-wrap: pretty;
+}
+
+.dt .game-card-tab-assign {
+	margin: 0;
+
+	.form-select {
+		min-height: 40px;
+		padding: var(--as-space-2) var(--as-space-8) var(--as-space-2) var(--as-space-3);
+		border-color: var(--as-line-strong);
+		background-color: var(--as-surface);
+		color: var(--as-ink);
+		font-size: var(--as-text-sm);
+		line-height: var(--as-leading-md);
+
+		&:focus {
+			border-color: transparent;
+			box-shadow: 0 0 0 3px var(--as-focus);
+		}
+	}
+
+	.dropdown-menu {
+		--as-dropdown-font-size: var(--as-text-sm);
+		--as-dropdown-item-padding-y: 6px;
+		--as-dropdown-item-padding-x: var(--as-space-3);
+	}
+}
+
+.dt-assign {
+	.dt-card-title {
+		margin-bottom: var(--as-space-2);
+	}
+
+	.dt-row-help {
+		margin: var(--as-space-2) 0 0;
+	}
+}
+
+.dt-setup-row + .dt-setup-row {
+	margin-top: var(--as-space-3);
+	padding-top: var(--as-space-3);
+	border-top: 1px solid var(--as-line);
+}
+
+// The info buttons beside a label: the shared settings icon, sized for these rows.
+.dt .dt-card .setting-tooltip-btn {
+	display: inline-grid;
+	place-items: center;
+	flex-shrink: 0;
+	width: 20px;
+	height: 20px;
+	margin-left: calc(var(--as-space-1) * -1);
+	border-radius: 50%;
+	color: var(--as-muted);
+	font-size: 12px;
+	transition: color m.$motion-quick m.$motion-ease, background-color m.$motion-quick m.$motion-ease;
+
+	&:hover,
+	&:focus-visible,
+	&[aria-describedby] {
+		color: var(--as-ink);
+		background: var(--as-hover);
+	}
+
+	&:focus-visible {
+		outline: 2px solid var(--as-accent);
+		outline-offset: 0;
+	}
+}
+
+// ── PowerScore breakdown ─────────────────────────────────────────────────────
+// Today's rows in today's order: one hairline instead of heavy rules, every number in a tabular
+// column, rows at zero dimmed, gains green, penalties red.
+
+// One set of columns for all five rows, so the bars share a left edge. The name never gives way;
+// a long one (German runs to "Ausgeglichenheit") shortens every bar instead.
+.dt-signals {
+	display: grid;
+	grid-template-columns: minmax(max-content, 1fr) minmax(24px, 64px) 44px;
+	gap: var(--as-space-2) var(--as-space-3);
+}
+
+.powerscore-signal-row {
+	display: grid;
+	grid-column: 1 / -1;
+	grid-template-columns: subgrid;
+	align-items: center;
+	font-size: var(--as-text-sm);
+	line-height: var(--as-leading-xs);
+
+	&.is-off {
+		color: var(--as-muted);
+
+		.powerscore-signal-dot {
+			background: var(--as-faint);
+		}
+	}
+}
+
+.powerscore-signal-name,
+.dt-adjust-name {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--as-space-2);
+	min-width: 0;
+	white-space: nowrap;
+}
+
+.powerscore-signal-dot {
+	flex-shrink: 0;
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	background: var(--signal);
+}
+
+.powerscore-signal-progress {
+	--as-progress-height: 4px;
+	--as-progress-bg: var(--as-raised);
+	--as-progress-border-radius: 2px;
+
+	.progress-bar {
+		border-radius: 2px;
+		background: var(--signal);
+	}
+}
+
+.powerscore-signal-value {
+	text-align: right;
+	font-weight: var(--as-weight-semibold);
+
+	small {
+		font-size: var(--as-text-xs);
+		font-weight: var(--as-weight-regular);
+		color: var(--as-muted);
+	}
+}
+
+.powerscore-signal-off {
+	font-weight: var(--as-weight-medium);
+}
+
+.powerscore-breakdown-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--as-space-3);
+	min-height: 28px;
+	font-size: var(--as-text-sm);
+	line-height: var(--as-leading-xs);
+
+	> .num {
+		flex-shrink: 0;
+		text-align: right;
+		white-space: nowrap;
+	}
+}
+
+.powerscore-breakdown-row-subtotal {
+	margin-top: var(--as-space-3);
+	padding-top: var(--as-space-2);
+	border-top: 1px solid var(--as-line);
+	font-weight: var(--as-weight-semibold);
+}
+
+.powerscore-subtotal-raw {
+	font-weight: var(--as-weight-regular);
+	color: var(--as-muted);
+	text-decoration: line-through;
+}
+
+.dt-adjustments {
+	display: grid;
+	margin-bottom: var(--as-space-2);
+}
+
+.dt-adjust {
+	.powerscore-factor-icon {
+		flex-shrink: 0;
+		width: 14px;
+		font-size: 13px;
+		line-height: 1;
+		text-align: center;
+		color: var(--as-muted);
+	}
+
+	> .num {
+		font-weight: var(--as-weight-semibold);
+	}
+
+	&.is-zero {
+		color: var(--as-muted);
+
+		> .num {
+			font-weight: var(--as-weight-regular);
+		}
+	}
+
+	&.is-gain > .num {
+		color: var(--as-gain);
+	}
+
+	&.is-penalty > .num {
+		color: var(--as-penalty);
+	}
+}
+
+.powerscore-breakdown-note {
+	margin: calc(var(--as-space-1) * -1) 0 var(--as-space-1) 22px;
+	font-size: var(--as-text-xs);
+	line-height: var(--as-leading-xs);
+	color: var(--as-muted);
+
+	.powerscore-breakdown-row-subtotal + & {
+		margin: var(--as-space-1) 0 0;
+	}
+}
+
+.powerscore-breakdown-row-total {
+	padding-top: var(--as-space-3);
+	border-top: 1px solid var(--as-line-strong);
+	font-weight: var(--as-weight-semibold);
+
+	strong {
+		font-size: var(--as-text-lg);
+		font-weight: var(--as-weight-bold);
+		line-height: var(--as-leading-sm);
+		letter-spacing: var(--as-tracking-tight);
+	}
+
+	small {
+		margin-left: 2px;
+		font-size: var(--as-text-xs);
+		font-weight: var(--as-weight-regular);
+		color: var(--as-muted);
+	}
+}
+
+.powerscore-breakdown-reason {
+	margin: var(--as-space-2) 0 0;
+	font-size: var(--as-text-xs);
+	line-height: var(--as-leading-xs);
+	color: var(--as-muted);
+}
+
+// ── Game boost ───────────────────────────────────────────────────────────────
+
+.dt-boost {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--as-space-4);
+}
+
+.dt-boost-copy {
+	min-width: 0;
+
+	.dt-card-title {
+		margin-bottom: var(--as-space-1);
+	}
+}
+
+.dt-boost-explainer {
+	margin: 0;
+	font-size: var(--as-text-xs);
+	line-height: var(--as-leading-xs);
+	color: var(--as-muted);
+	text-wrap: pretty;
+}
+
+.dt-stepper {
+	display: flex;
+	flex-shrink: 0;
+	align-items: center;
+	border: 1px solid var(--as-line-strong);
+	border-radius: var(--as-radius-sm);
+
+	.as-icon {
+		width: 32px;
+		height: 32px;
+		border-radius: 7px;
+		color: var(--as-ink);
+		font-size: 14px;
+
+		&:disabled {
+			color: var(--as-faint);
+		}
+	}
+}
+
+// Today's number input, drawn as the stepper's value.
+.powerscore-boost-input {
+	width: 40px;
+	height: 32px;
+	padding: 0;
+	border: 0;
+	border-radius: 4px;
+	background: transparent;
+	color: var(--as-ink);
+	font-size: var(--as-text-sm);
+	font-weight: var(--as-weight-semibold);
+	text-align: center;
+	appearance: textfield;
+
+	&::-webkit-inner-spin-button,
+	&::-webkit-outer-spin-button {
+		margin: 0;
+		appearance: none;
+	}
+
+	&:focus-visible {
+		outline-offset: -2px;
+	}
+}
+
+// ── Game info ────────────────────────────────────────────────────────────────
+
+// One grid for the whole list, so every value shares a left edge and the label column is exactly
+// as wide as the longest label this game has, in whatever language.
+.game-info-list {
+	display: grid;
+	grid-template-columns: max-content minmax(0, 1fr);
+	gap: var(--as-space-2) var(--as-space-3);
+	margin: 0;
+	font-size: var(--as-text-sm);
+	line-height: var(--as-leading-xs);
+}
+
+.game-info-row {
+	display: contents;
+
+	dt {
+		align-self: start;
+		max-width: 96px;
+		font-weight: var(--as-weight-regular);
+		color: var(--as-muted);
+	}
+
+	dd {
+		display: grid;
+		min-width: 0;
+		margin: 0;
+		font-weight: var(--as-weight-medium);
+		overflow-wrap: anywhere;
+	}
+}
+
+.game-info-venue-location {
+	font-size: var(--as-text-xs);
+	font-weight: var(--as-weight-regular);
+	color: var(--as-muted);
+}
+
+.game-info-weather,
+.game-info-conditions {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+
+	i {
+		color: var(--as-muted);
+	}
+}
+
+// Under the building it belongs to, at the same quiet size as the city.
+.game-info-weather {
+	font-size: var(--as-text-xs);
+	font-weight: var(--as-weight-regular);
+	color: var(--as-muted);
+}
+
+.game-info-odds {
+	display: inline-flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--as-space-1) var(--as-space-2);
+}
+
+// Reboot's `[type="button"]:not(:disabled)` claims the cursor first, so this matches its shape.
+button.game-info-attribution {
+	display: inline-flex;
+	align-items: center;
+	padding: 0;
+	border: 0;
+	background: none;
+	color: var(--as-muted);
+	font: inherit;
+	cursor: help;
+
+	.odds-provider-logo {
+		width: auto;
+		height: 12px;
+	}
+}
+
+.dt-source {
+	margin: var(--as-space-3) 0 0;
+	font-size: var(--as-text-xs);
+	line-height: var(--as-leading-xs);
+	color: var(--as-muted);
+}
+
+// ── Latest play ──────────────────────────────────────────────────────────────
+// The same 3px rule the rest of the product marks a team with, in the colour of whoever made it.
+
+.dt-play-body {
+	padding-left: 10px;
+	border-left: 3px solid transparent;
+}
+
+.dt-play-text {
+	margin: 0;
+	font-size: var(--as-text-sm);
+	line-height: var(--as-leading-sm);
+	white-space: pre-line;
+}
+
+.dt-play-drive {
+	margin: var(--as-space-1) 0 0;
+	font-size: var(--as-text-xs);
+	line-height: var(--as-leading-xs);
+	color: var(--as-muted);
+}
+
+// ── Pre-game ─────────────────────────────────────────────────────────────────
+
+.dt-player-disc {
+	display: grid;
+	flex-shrink: 0;
+	place-items: center;
+	overflow: hidden;
+	border-radius: 50%;
+	background: var(--as-raised);
+	box-shadow: inset 0 0 0 1px var(--as-disc-line);
+}
+
+// `cover` rather than the crest's own `contain`: a headshot is a crop of a person, and letterboxing
+// one inside a circle leaves bands above and below the head.
+.dt-player-disc-crest {
+	width: 100%;
+	height: 100%;
+
+	> img {
+		object-fit: cover;
+	}
+
+	.crest-fallback {
+		font-size: var(--as-text-2xs);
+		font-weight: var(--as-weight-semibold);
+	}
+}
+
+.dt-starters {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: var(--as-space-3);
+}
+
+.dt-starter {
+	display: grid;
+	align-content: start;
+	justify-items: center;
+	gap: 2px;
+	min-width: 0;
+	text-align: center;
+}
+
+.dt-starter-shot {
+	width: 48px;
+	height: 48px;
+	margin-bottom: var(--as-space-1);
+
+	.crest-fallback {
+		font-size: var(--as-text-xs);
+	}
+}
+
+.dt-starter-name {
+	max-width: 100%;
+	overflow: hidden;
+	font-size: var(--as-text-sm);
+	font-weight: var(--as-weight-semibold);
+	line-height: var(--as-leading-xs);
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.dt-starter-stats {
+	display: flex;
+	justify-content: center;
+	gap: var(--as-space-3);
+	margin-top: 2px;
+}
+
+.dt-starter-stat {
+	display: grid;
+	justify-items: center;
+}
+
+.dt-starter-stat-value {
+	font-size: var(--as-text-sm);
+	font-weight: var(--as-weight-semibold);
+	line-height: var(--as-leading-xs);
+}
+
+.dt-starter-stat-label {
+	font-size: var(--as-text-2xs);
+	font-weight: var(--as-weight-medium);
+	line-height: 14px;
+	color: var(--as-muted);
+	white-space: nowrap;
+}
+
+.dt-starter-line,
+.dt-starter-status {
+	font-size: var(--as-text-xs);
+	line-height: var(--as-leading-xs);
+	color: var(--as-muted);
+}
+
+.dt-leaders {
+	display: grid;
+}
+
+.dt-leader-category {
+	padding: var(--as-space-2) 0 var(--as-space-1);
+	font-size: var(--as-text-xs);
+	font-weight: var(--as-weight-semibold);
+	line-height: var(--as-leading-xs);
+	color: var(--as-muted);
+
+	&:first-child {
+		padding-top: 0;
+	}
+}
+
+// The name takes `1fr` and the value `auto`: a truncated name still reads, a truncated stat doesn't.
+.dt-leader-row {
+	display: grid;
+	grid-template-columns: 24px 32px minmax(0, 1fr) auto;
+	align-items: center;
+	gap: var(--as-space-2);
+	min-height: 32px;
+	border-bottom: 1px solid var(--as-line);
+	font-size: var(--as-text-sm);
+	line-height: var(--as-leading-xs);
+
+	&:last-child {
+		border-bottom: 0;
+	}
+}
+
+.dt-leader-shot {
+	width: 24px;
+	height: 24px;
+}
+
+.dt-leader-team {
+	font-size: var(--as-text-xs);
+	font-weight: var(--as-weight-semibold);
+	color: var(--as-muted);
+}
+
+.dt-leader-player {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.dt-leader-value {
+	font-weight: var(--as-weight-semibold);
+	text-align: right;
+	white-space: nowrap;
+}
+
+// ── Tables ───────────────────────────────────────────────────────────────────
+// One rhythm for the box score and the standings: 32px rows, a hairline between them, tabular
+// numbers right-aligned, muted headers.
+
+.dt-box,
+.dt-standings {
+	display: grid;
+	gap: var(--as-space-3);
+}
+
+.dt-table {
+	--as-table-bg: transparent;
+	width: 100%;
+	margin: 0;
+	font-size: var(--as-text-sm);
+	line-height: var(--as-leading-xs);
+
+	> :not(caption) > * > * {
+		height: 32px;
+		padding: 0 var(--as-space-1);
+		border-bottom: 1px solid var(--as-line);
+		background: transparent;
+		box-shadow: none;
+		color: inherit;
+		text-align: right;
+		vertical-align: middle;
+		white-space: nowrap;
+	}
+
+	> :not(caption) > * > :first-child {
+		padding-left: 0;
+		text-align: left;
+	}
+
+	> :not(caption) > * > :last-child {
+		padding-right: 0;
+	}
+
+	> thead > tr > * {
+		height: 24px;
+		font-size: var(--as-text-xs);
+		font-weight: var(--as-weight-medium);
+		color: var(--as-muted);
+	}
+
+	> tbody > tr > th {
+		font-weight: var(--as-weight-medium);
+	}
+
+	> tbody > tr:last-child > * {
+		border-bottom: 0;
+	}
+
+	> tfoot > tr > * {
+		border-top: 1px solid var(--as-line-strong);
+		border-bottom: 0;
+		font-weight: var(--as-weight-semibold);
+	}
+
+	.is-total {
+		font-weight: var(--as-weight-semibold);
+		color: var(--as-ink);
+	}
+}
+
+.dt-team {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--as-space-2);
+	min-width: 0;
+	vertical-align: middle;
+}
+
+.dt-team-abbr {
+	font-weight: var(--as-weight-semibold);
+}
+
+// Nine innings plus R-H-E is thirteen columns. Fixed layout divides the width evenly instead of
+// letting a two-digit inning steal room from the ones beside it; past that, the wrapper scrolls.
+.dt-linescore {
+	min-width: calc(50px + var(--dt-line-columns, 5) * 15px);
+	table-layout: fixed;
+
+	> :not(caption) > * > * {
+		padding: 0;
+	}
+
+	.dt-linescore-team {
+		width: 50px;
+	}
+
+	// A four-letter college abbreviation gives way before an inning does.
+	.dt-team {
+		max-width: 100%;
+		gap: var(--as-space-1);
+	}
+
+	.dt-team-abbr {
+		min-width: 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	> tbody td:not(.is-total) {
+		color: var(--as-muted);
+	}
+}
+
+.dt-compare {
+	table-layout: fixed;
+
+	.dt-compare-team {
+		width: 25%;
+	}
+
+	.is-away {
+		text-align: left;
+	}
+
+	.is-home {
+		text-align: right;
+	}
+
+	td {
+		font-weight: var(--as-weight-semibold);
+	}
+
+	.dt-compare-label {
+		overflow: hidden;
+		text-align: center;
+		text-overflow: ellipsis;
+	}
+
+	> tbody > tr > .dt-compare-label {
+		font-weight: var(--as-weight-regular);
+		color: var(--as-muted);
+	}
+}
+
+// Away or home, one at a time, on a segmented control.
+.dt-switch {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	width: 100%;
+	margin-bottom: var(--as-space-3);
+
+	.dt-switch-option {
+		--as-btn-padding-y: 6px;
+		--as-btn-font-size: var(--as-text-sm);
+		--as-btn-line-height: var(--as-leading-sm);
+		--as-btn-color: var(--as-muted);
+		--as-btn-bg: transparent;
+		--as-btn-border-color: var(--as-line-strong);
+		--as-btn-hover-color: var(--as-ink);
+		--as-btn-hover-bg: var(--as-hover);
+		--as-btn-hover-border-color: var(--as-line-strong);
+		--as-btn-active-color: var(--as-ink);
+		--as-btn-active-bg: var(--as-raised);
+		--as-btn-active-border-color: var(--as-line-strong);
+		display: inline-flex;
+		justify-content: center;
+
+		&:active {
+			transform: none;
+		}
+	}
+
+	.dt-switch-option.active .dt-team-abbr {
+		color: var(--as-ink);
+	}
+}
+
+.dt-box-section + .dt-box-section {
+	margin-top: var(--as-space-4);
+}
+
+.dt-players-table {
+	> :not(caption) > * > * {
+		height: 28px;
+		padding: 0 2px;
+		font-size: var(--as-text-xs);
+	}
+
+	> thead > tr > * {
+		height: 24px;
+		font-size: var(--as-text-2xs);
+	}
+}
+
+// The name column takes the slack and gives way first; `max-width: 0` is what lets a table cell
+// actually ellipsize instead of growing to its content.
+.dt-name {
+	width: 100%;
+	max-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.dt-player {
+	font-size: var(--as-text-sm);
+	font-weight: var(--as-weight-medium);
+}
+
+.dt-position {
+	margin-left: var(--as-space-1);
+	font-size: var(--as-text-2xs);
+	color: var(--as-muted);
+}
+
+.dt-table > :not(caption) > * > .dt-name-sub {
+	padding-left: var(--as-space-3);
+}
+
+.dt-table > tbody > tr > .dt-dnp {
+	color: var(--as-muted);
+	text-align: left;
+}
+
+.btn.dt-more {
+	--as-btn-padding-x: 0;
+	--as-btn-padding-y: 2px;
+	--as-btn-font-size: var(--as-text-xs);
+	--as-btn-border-width: 0;
+	--as-btn-color: var(--as-accent-ink);
+	--as-btn-hover-color: var(--as-accent-ink);
+	--as-btn-active-color: var(--as-accent-ink);
+	margin-top: var(--as-space-2);
+
+	&:hover {
+		text-decoration: underline;
+		text-underline-offset: 2px;
+	}
+}
+
+// ── Standings ────────────────────────────────────────────────────────────────
+
+.dt-standings-group + .dt-standings-group {
+	margin-top: var(--as-space-4);
+}
+
+.dt-standings-table {
+	> :not(caption) > * > :first-child {
+		position: relative;
+		padding-left: 10px;
+	}
+
+	> tbody td {
+		color: var(--as-muted);
+	}
+
+	> tbody > tr.is-playing > * {
+		font-weight: var(--as-weight-semibold);
+		color: var(--as-ink);
+	}
+
+	> tbody > tr.is-playing > :first-child::before {
+		content: '';
+		position: absolute;
+		top: 8px;
+		bottom: 8px;
+		left: 0;
+		width: 3px;
+		border-radius: 2px;
+		background: var(--as-accent);
+	}
+}
+
+.dt-standings-rank {
+	width: 28px;
+}
+
+.dt-standings-id {
+	display: flex;
+	align-items: center;
+	gap: var(--as-space-2);
+	min-width: 0;
+}
+
+.dt-standings-crest {
+	width: 16px;
+	height: 16px;
+
+	.crest-fallback {
+		background: var(--as-raised);
+	}
+}
+
+.dt-standings-name {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+// ── Charts ───────────────────────────────────────────────────────────────────
+
+.dt-chart .dt-card-title {
+	margin-bottom: var(--as-space-2);
+}
+
+.dt-legend {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--as-space-1) var(--as-space-3);
+	margin: 0 0 var(--as-space-2);
+	padding: 0;
+	list-style: none;
+	font-size: var(--as-text-xs);
+	line-height: var(--as-leading-xs);
+	color: var(--as-muted);
+
+	li {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--as-space-1);
+	}
+
+	i {
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+	}
+}
+
+.dt-canvas {
+	height: 176px;
+	margin: calc(var(--as-space-2) * -1) calc(var(--as-space-2) * -1) calc(var(--as-space-3) * -1);
+}
+
+// ── Football field ───────────────────────────────────────────────────────────
+// Drawn in yards through the SVG viewBox, so this only sets colour, weight and motion.
+
+.ff-strip {
+	position: relative;
+	width: 100%;
+	overflow: hidden;
+	border-radius: var(--as-radius-sm);
+	box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12);
+}
+
+.ff-field {
+	display: block;
+	width: 100%;
+	height: auto;
+}
+
+// Hairlines: non-scaling-stroke keeps every painted line at one device pixel.
+.ff-yard-line,
+.ff-goal-line,
+.ff-sideline,
+.ff-hashes {
+	fill: none;
+	stroke: rgba(255, 255, 255, 0.62);
+	stroke-width: 1;
+	vector-effect: non-scaling-stroke;
+}
+
+.ff-yard-line.is-midfield {
+	stroke: rgba(255, 255, 255, 0.78);
+}
+
+.ff-hashes {
+	stroke: rgba(255, 255, 255, 0.44);
+}
+
+// The goal line is also the only thing separating a dark team colour from dark grass.
+.ff-goal-line,
+.ff-sideline {
+	stroke: rgba(255, 255, 255, 0.95);
+	stroke-width: 2;
+}
+
+.ff-number {
+	fill: rgba(255, 255, 255, 0.82);
+	font-weight: var(--as-weight-bold);
+	letter-spacing: -0.04em;
+	text-anchor: middle;
+	dominant-baseline: central;
+}
+
+// Crest and nickname painted along the end zone's long way, mirrored about midfield so each reads
+// upright to somebody standing behind it. `writing-mode` lays the box out at its real size, so the
+// nickname truncates against the end zone's real depth.
+.ff-endzone-mark {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 2px;
+	width: calc(100% / 12);
+	padding: 2px 0;
+	writing-mode: vertical-rl;
+	pointer-events: none;
+}
+
+.ff-endzone-away {
+	left: 0;
+	flex-direction: row-reverse;
+}
+
+.ff-endzone-home {
+	right: 0;
+}
+
+.ff-endzone-crest {
+	display: flex;
+	flex-shrink: 0;
+	align-items: center;
+	justify-content: center;
+	width: 11px;
+	height: 11px;
+	border-radius: 50%;
+
+	&:not(.is-bare) {
+		overflow: hidden;
+	}
+}
+
+.ff-endzone-crest-art {
+	width: 9px;
+	height: 9px;
+}
+
+// Three quarters of the plate, which is what the widest mark in any league needs to land on it.
+.ff-endzone-crest:not(.is-bare) .ff-endzone-crest-art {
+	width: 75%;
+	height: 75%;
+}
+
+.ff-endzone-crest.is-bare .ff-endzone-crest-art {
+	width: 11px;
+	height: 11px;
+}
+
+.ff-endzone-name {
+	min-width: 0;
+	min-height: 0;
+	overflow: hidden;
+	font-size: 7.5px;
+	font-weight: var(--as-weight-bold);
+	line-height: 1;
+	text-overflow: ellipsis;
+	text-transform: uppercase;
+	white-space: nowrap;
+}
+
+.ff-endzone-home .ff-endzone-crest {
+	rotate: 90deg;
+}
+
+.ff-endzone-away .ff-endzone-crest {
+	rotate: -90deg;
+}
+
+.ff-endzone-away .ff-endzone-name {
+	rotate: 180deg;
+}
+
+// Painted on: under the ball and the two live lines, over the yard lines.
+.ff-logo {
+	opacity: 0.72;
+}
+
+.ff-logo-shell {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 100%;
+	border-radius: 50%;
+
+	&:not(.is-bare) {
+		overflow: hidden;
+	}
+}
+
+.ff-logo-art {
+	width: 75%;
+	height: 75%;
+}
+
+.ff-logo-shell.is-bare .ff-logo-art {
+	width: 100%;
+	height: 100%;
+}
+
+// Ground the offense has covered on this drive. The casing keeps a dark team colour off dark grass.
+.ff-drive {
+	stroke: rgba(255, 255, 255, 0.85);
+	stroke-width: 1;
+	vector-effect: non-scaling-stroke;
+	transition: x m.$motion-slow m.$motion-ease, width m.$motion-slow m.$motion-ease;
+}
+
+// Broadcast yellow to gain and broadcast blue at the line of scrimmage, which a fan reads without
+// being told what either means.
+.ff-first-down {
+	fill: #f1c40f;
+	transition: x m.$motion-slow m.$motion-ease;
+}
+
+.ff-scrimmage {
+	fill: #2e86ff;
+	fill-opacity: 0.92;
+}
+
+.ff-ball {
+	font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
+	text-anchor: middle;
+	dominant-baseline: central;
+	filter: drop-shadow(0 0.4px 1.2px rgba(0, 0, 0, 0.6));
+}
+
+// `x` on a <text> is not a CSS property, so the ball and the line of scrimmage ride a transform.
+.ff-marker {
+	transition: transform m.$motion-slow m.$motion-ease;
+}
+
+// ── Holiday decorations ──────────────────────────────────────────────────────
+// The string hangs across the top of the stage and, once the compact bar is showing, from the
+// bar's lower edge. The stage makes room above its back control while it is up.
+
+$lights-height: 22px;
+
+.dt.has-lights {
+	.dt-hero {
+		padding-top: calc(52px + $lights-height - var(--as-space-2) + var(--as-space-1));
+	}
+
+	.dt-head {
+		top: calc($lights-height + var(--as-space-1));
+	}
+}
+
+.holiday-lights {
+	position: absolute;
+	top: 0;
+	left: 0;
+	display: block;
+	width: 100%;
+	height: $lights-height;
+	pointer-events: none;
+	transition: transform m.$motion-base m.$motion-ease;
+
+	&.is-lifted {
+		transform: translateY($bar-height);
+	}
+}
+
+.holiday-lights-wire {
+	fill: none;
+	stroke: #2f3a45;
+	stroke-width: 1;
+}
+
+[data-bs-theme='light'] .holiday-lights.is-lifted .holiday-lights-wire {
+	stroke: #5a6370;
+}
+
+.holiday-bulb {
+	fill: currentColor;
+	animation: holidayBulbTwinkle m.$motion-ambient m.$motion-ease-in-out infinite;
+}
+
+.holiday-bulb-cap {
+	fill: #4a5561;
+}
+
+.holiday-bulb-glass {
+	filter: drop-shadow(0 0 4px currentColor);
+}
+
+// Slow enough to read as a shimmer rather than a strobe, and it never goes fully dark.
+@keyframes holidayBulbTwinkle {
+	0%, 100% { opacity: 1; }
+	50%      { opacity: 0.48; }
+}
+
+// A favourite has just scored: faster, brighter, in that team's colours.
+.is-celebrating {
+	.holiday-bulb {
+		animation: holidayBulbCelebrate m.$motion-urgent m.$motion-ease-in-out infinite;
+	}
+
+	.holiday-bulb-glass {
+		filter: drop-shadow(0 0 7px currentColor);
+	}
+}
+
+@keyframes holidayBulbCelebrate {
+	0%, 100% { opacity: 1; }
+	50%      { opacity: 0.25; }
+}
+
+// Fixed: the flakes belong to the popup window, not to the scrolling document.
+.holiday-fall {
+	position: fixed;
+	inset: 0;
+	z-index: 7;
+	width: 100%;
+	height: 100%;
+	pointer-events: none;
+}
+
+// The pile belongs to the ground, which is the foot of the page.
+.holiday-drift {
+	display: block;
+	width: 100%;
+	height: 96px;
+	pointer-events: none;
+}
+
+@include m.reduced-motion {
+	.dt-bar,
+	.dt-bar.is-visible,
+	.holiday-lights,
+	.ff-marker,
+	.ff-first-down,
+	.ff-drive {
+		@include m.motion-still;
+	}
+
+	.dt-bar {
+		transform: none;
+	}
+
+	// Two classes on the celebration rule, so the opt-out has to name both.
+	.holiday-bulb,
+	.is-celebrating .holiday-bulb {
+		animation: none;
+	}
+}

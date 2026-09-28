@@ -3,33 +3,27 @@ import type { AtBatPlayer, Game } from '@arenaswap/core/types';
 import Crest from '@arenaswap/ui/src/components/crest';
 import { playerInitials } from './pregameLabels';
 
-// The live counterpart to the pre-game probables block. Once the first pitch is thrown
-// `Team.probableStarter` stops being true, and this is the pair that replaces it.
-//
-// Sits on the hero's scrimmed band of team colour rather than on a light card, so it gets a
-// translucent plate and white ink instead of the .gd-setup treatment used lower down the screen.
+// The live counterpart to the pre-game probables. Once the first pitch is thrown the probable
+// starter stops being true, and this is the pair that replaces it.
 const AtBatSide = ({ player, roleLabel, side }: {
 	player: AtBatPlayer;
 	roleLabel: string;
-	// Which half of the panel this player occupies, which is the side of the hero their team is on
-	// — not which of the two roles they are playing.
+	// The half of the stage this player stands on, which is his team's side, not his role.
 	side: 'away' | 'home';
 }) => (
-	<div className={`gd-atbat-side gd-atbat-${side}`}>
-		<span className='gd-atbat-face'>
-			{/* Crest already does the URL-keyed retry and the initials fallback, which is what
-			    covers the players ESPN has drawn no portrait for. */}
+	<div className={`dt-atbat-side dt-atbat-${side}`}>
+		<span className='dt-atbat-face'>
 			<Crest
 				logo={player.headshot}
 				abbreviation={playerInitials(player.name)}
-				className='gd-atbat-face-crest'
+				className='dt-atbat-face-crest'
 				loading='lazy'
 			/>
 		</span>
-		<span className='gd-atbat-text'>
-			<span className='gd-atbat-role'>{roleLabel}</span>
-			<span className='gd-atbat-name'>{player.name}</span>
-			{player.summary && <span className='gd-atbat-line'>{player.summary}</span>}
+		<span className='dt-atbat-text'>
+			<span className='dt-atbat-role'>{roleLabel}</span>
+			<span className='dt-atbat-name'>{player.name}</span>
+			{player.summary && <span className='dt-atbat-line'>{player.summary}</span>}
 		</span>
 	</div>
 );
@@ -38,14 +32,9 @@ const atBatPanel = ({ game }: { game: Game }) => {
 	if (!game.atBat) return null;
 	const { pitcher, batter } = game.atBat;
 
-	/* Each player stands under his own club. The hero puts the away team on the left and the home
-	   team on the right, and the halves of an inning decide who is doing what: the visitors bat in
-	   the top, the home side bats in the bottom. So the pair swaps ends at the half rather than
-	   holding a fixed pitcher-left layout that would put a man on the wrong team's side for half
-	   the game.
-
-	   `topOfInning` is undefined only when ESPN has not said, which is not a state a live at-bat
-	   reaches — treat it as the top, matching how the inning caret reads it. */
+	// The visitors bat in the top of the inning and the home side in the bottom, so the pair swaps
+	// ends at the half and each man stays under his own club. An unknown half reads as the top,
+	// matching the inning caret.
 	const awayIsBatting = game.topOfInning !== false;
 	const left = awayIsBatting
 		? { player: batter, roleLabel: i18n.t('detail.atBatLabel') }
@@ -55,9 +44,9 @@ const atBatPanel = ({ game }: { game: Game }) => {
 		: { player: batter, roleLabel: i18n.t('detail.atBatLabel') };
 
 	return (
-		<div className='gd-atbat-panel'>
+		<div className='dt-atbat'>
 			<AtBatSide {...left} side='away' />
-			<span className='gd-atbat-versus'>{i18n.t('gameCard.vs')}</span>
+			<span className='dt-atbat-versus'>{i18n.t('gameCard.vs')}</span>
 			<AtBatSide {...right} side='home' />
 		</div>
 	);

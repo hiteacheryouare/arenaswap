@@ -59,10 +59,9 @@ const mountPanel = (game: Game, gameDurationMins: number | null) => {
 	);
 };
 
-// `.game-info-value` wraps rather than overflowing — it carries `overflow-wrap: anywhere` and no
-// `white-space: nowrap` — so comparing its scrollWidth against its clientWidth holds however badly
-// the row breaks. An inline run reports one client rect per line it occupies, which is the thing
-// these assertions are actually claiming.
+// `.game-info-value` wraps rather than overflowing, so comparing its scrollWidth against its
+// clientWidth holds however badly the row breaks. An inline run reports one client rect per line it
+// occupies, which is the thing these assertions are actually claiming.
 const lineCount = (el: HTMLElement): number => el.getClientRects().length;
 
 const expectedTime = (startIso: string, mins: number): string => (
@@ -96,9 +95,9 @@ describe('game info panel', () => {
 	it('gives broadcast, venue and line a row each', () => {
 		mountDetail(liveGame);
 		cy.get('.game-info-row').should('have.length', 3);
-		cy.get('.game-info-row').eq(0).should('contain.text', 'CBS • Paramount+ • Westwood One');
+		cy.get('.game-info-row').eq(0).should('contain.text', 'CBS, Paramount+, Westwood One');
 		cy.get('.game-info-row').eq(1).should('contain.text', 'Arrowhead Stadium');
-		cy.get('.game-info-row').eq(2).should('contain.text', 'KC -3.5 • O/U 47.5');
+		cy.get('.game-info-row').eq(2).should('contain.text', 'KC -3.5, O/U 47.5');
 	});
 
 	it('stacks the location under the venue name, unbolded', () => {
@@ -151,14 +150,14 @@ describe('game info panel', () => {
 	// Conditions describe the venue, so they cost a sub-line rather than a row of their own.
 	it('rides the weather inside the venue row', () => {
 		mountDetail(liveGame);
-		cy.get('.game-info-row').eq(1).find('.game-info-weather').should('contain.text', 'Light Snow · 34°F');
+		cy.get('.game-info-row').eq(1).find('.game-info-weather').should('contain.text', 'Light Snow, 34°F');
 		cy.get('.game-info-weather').should('have.length', 1);
 	});
 
 	it('gives the weather its own row when the venue is unknown', () => {
 		mountDetail({ ...liveGame, venueName: undefined });
 		cy.get('.game-info-row').should('have.length', 3);
-		cy.get('.game-info-row').eq(1).should('contain.text', 'Light Snow · 34°F');
+		cy.get('.game-info-row').eq(1).should('contain.text', 'Light Snow, 34°F');
 		cy.get('.game-info-weather').should('not.exist');
 	});
 
@@ -269,7 +268,7 @@ describe('game info panel', () => {
 		it('draws no row on a sport that reports no duration', () => {
 			mountPanel(finalGame, null);
 			cy.contains(en.detail.infoEnded).should('not.exist');
-			cy.get('.bi-flag').should('not.exist');
+			cy.get('.game-info-row').should('have.length', 2);
 		});
 
 		it('draws no row without a start time to add it to', () => {
@@ -314,7 +313,7 @@ describe('game info panel', () => {
 		it('sits under the venue, which is the fact it belongs to', () => {
 			mountDetail(finalGame);
 			cy.get('.game-info-row').eq(1).should('contain.text', 'Arrowhead Stadium');
-			cy.get('.game-info-row').eq(2).find('.bi-people').should('exist');
+			cy.get('.game-info-row').eq(2).find('.game-info-label').should('have.text', en.detail.infoAttendance);
 		});
 
 		// The field is on every scoreboard payload and reads 0 until the game is final, so a live
@@ -322,13 +321,13 @@ describe('game info panel', () => {
 		it('draws no row while the game is still being played', () => {
 			mountDetail(liveGame);
 			cy.get('.game-info-row').should('have.length', 3);
-			cy.get('.bi-people').should('not.exist');
+			cy.contains('.game-info-label', en.detail.infoAttendance).should('not.exist');
 		});
 
 		it('draws no row on a finished game ESPN never announced a figure for', () => {
 			mountDetail({ ...finalGame, attendance: undefined });
 			cy.get('.game-info-row').should('have.length', 3);
-			cy.get('.bi-people').should('not.exist');
+			cy.contains('.game-info-label', en.detail.infoAttendance).should('not.exist');
 		});
 
 		it('groups the digits, which is what makes a five-figure crowd readable at 320px', () => {
@@ -345,23 +344,59 @@ describe('game info panel', () => {
 		});
 	});
 
-	// The label column is fixed so the values share a left edge; a label that wraps breaks the grid.
+	// The spy nod: where the data comes from, without naming anybody.
+	it('signs off with where the data comes from', () => {
+		mountDetail(liveGame);
+		cy.get('.game-info-panel .dt-source').should('have.text', en.detail.sourcesFootnote)
+			.invoke('text').should('not.match', /espn/i);
+	});
+
+	it('sits on the card surface in the card family', () => {
+		mountDetail(liveGame);
+		cy.get('.game-info-panel').should('have.class', 'card').and(([panel]: JQuery<HTMLElement>) => {
+			const style = getComputedStyle(panel);
+			expect(style.borderTopLeftRadius, 'radius 14').to.equal('14px');
+			expect(style.paddingTop, '16px padding').to.equal('16px');
+			expect(style.borderTopWidth, 'hairline').to.equal('1px');
+		});
+		cy.get('.game-info-heading').should('have.css', 'font-size', '13px').and('have.css', 'font-weight', '600');
+	});
+
+	// The sportsbook ships a mark for each surface, and the light one vanishes on the dark card.
+	it('draws the provider mark the theme was drawn for', () => {
+		const logoGame: Game = {
+			...liveGame,
+			odds: { ...liveGame.odds!, provider: { name: 'ESPN BET', logoUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==#light', darkLogoUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==#dark' } },
+		};
+		mountDetail(logoGame);
+		cy.get('.game-info-attribution img').should('have.attr', 'src').and('match', /#dark$/);
+		cy.document().then(doc => doc.documentElement.setAttribute('data-bs-theme', 'light'));
+		mountDetail(logoGame);
+		cy.get('.game-info-attribution img').should('have.attr', 'src').and('match', /#light$/);
+		cy.document().then(doc => doc.documentElement.removeAttribute('data-bs-theme'));
+	});
+
+	// The list is one grid, so the label column is as wide as the longest label present. What must
+	// hold in every language is that no label wraps, the values keep one left edge, and the values
+	// keep enough of the card to be read.
 	it('fits every locale label in the label column', () => {
 		mountDetail(liveGame);
-		cy.get('.game-info-label').first().then(([label]: JQuery<HTMLElement>) => {
-			const column = label.getBoundingClientRect().width;
-			const probe = label.cloneNode(true) as HTMLElement;
-			probe.style.cssText = 'width:auto;display:inline-block;position:absolute;visibility:hidden';
-			label.parentElement?.appendChild(probe);
+		cy.get('.game-info-list').then(([list]: JQuery<HTMLElement>) => {
+			const labels = [...list.querySelectorAll<HTMLElement>('.game-info-label')];
+			const values = () => [...list.querySelectorAll<HTMLElement>('.game-info-value')];
 			for (const [name, locale] of Object.entries(locales)) {
 				const detail = locale.detail as unknown as Record<string, string>;
 				for (const key of labelKeys) {
-					probe.textContent = detail[key] ?? '';
-					expect(probe.getBoundingClientRect().width, `${name}.${key} fits the label column`)
-						.to.be.at.most(column);
+					labels.forEach(label => { label.textContent = detail[key] ?? ''; });
+					const label = labels[0]!;
+					expect(label.getBoundingClientRect().height, `${name}.${key} stays on one line`)
+						.to.be.at.most(parseFloat(getComputedStyle(label).lineHeight) + 1);
+					const edges = new Set(values().map(value => Math.round(value.getBoundingClientRect().left)));
+					expect(edges.size, `${name}.${key}: the values share a left edge`).to.equal(1);
+					expect(values()[0]!.getBoundingClientRect().width, `${name}.${key}: the values keep their room`)
+						.to.be.at.least(150);
 				}
 			}
-			probe.remove();
 		});
 	});
 });

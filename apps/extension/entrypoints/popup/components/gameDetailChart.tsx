@@ -1,9 +1,8 @@
 import { Suspense, lazy } from 'react';
 import type { EChartsOption } from 'echarts';
 
-// echarts is ~850KB of the popup's vendor chunk and the only charts in the product are the four on
-// this screen, so the canvas is split off behind an import() and the card's own empty canvas box
-// holds its 176px until it lands. The title and legend are plain markup and stay in the eager graph.
+// echarts is most of the popup's vendor weight and these four cards are the only charts in the
+// product, so the canvas loads behind an import() and the card's empty canvas holds its height.
 const GameDetailChartCanvas = lazy(() => import('./gameDetailChartCanvas'));
 
 interface gameDetailChartLegendItem {
@@ -18,20 +17,20 @@ interface gameDetailChartProps {
 }
 
 const gameDetailChart = ({ title, option, legendItems = [] }: gameDetailChartProps) => (
-	<section className='game-detail-chart-card'>
-		<div className='game-detail-chart-title'>{title}</div>
+	<section className='card dt-card dt-chart'>
+		<h3 className='dt-card-title'>{title}</h3>
 		{legendItems.length > 0 && (
-			<div className='game-detail-chart-inline-legend'>
+			<ul className='dt-legend'>
 				{legendItems.map(item => (
-					<div key={item.label} className='game-detail-chart-legend-item'>
-						<span className='game-detail-chart-legend-swatch' style={{ backgroundColor: item.color }} />
-						<span>{item.label}</span>
-					</div>
+					<li key={item.label}>
+						<i style={{ backgroundColor: item.color }} aria-hidden='true' />
+						{item.label}
+					</li>
 				))}
-			</div>
+			</ul>
 		)}
-		<Suspense fallback={<div className='game-detail-chart-canvas' />}>
-			<GameDetailChartCanvas option={option} />
+		<Suspense fallback={<div className='dt-canvas' />}>
+			<GameDetailChartCanvas option={option} label={title} />
 		</Suspense>
 	</section>
 );

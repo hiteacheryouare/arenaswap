@@ -1,98 +1,134 @@
 import { i18n } from '#i18n';
-import type { Game } from '@arenaswap/core/types';
+import type { ReactNode } from 'react';
+import { createFavoriteTeamKey, resolveLeagueLogoUrl } from '@arenaswap/core/constants';
+import type { Game, LeagueId } from '@arenaswap/core/types';
+import { downDistanceLine, stageSituation } from '@arenaswap/ui/src/components/boardSituation';
+import { formatStartTime } from '@arenaswap/ui/src/components/boardClock';
+import Crest from '@arenaswap/ui/src/components/crest';
+import GameStage from '@arenaswap/ui/src/components/gameStage';
 import AtBatPanel from './atBatPanel';
-import BaseDiamond from './baseDiamond';
-import BsoIndicator from './bsoIndicator';
-import DetailTeamPill from './detailTeamPill';
-import FlipScore from './flipScore';
 import FootballFieldStrip from './footballFieldStrip';
-import type { GameStatus } from './gameSituation';
-import InningHalfIcon from './inningHalfIcon';
-import SeriesDots from './seriesDots';
+import leagueShortName from './leagueShortName';
+import SeriesDots, { seriesSports } from './seriesDots';
 import StartCountdownDisplay from './startCountdownDisplay';
-import { emptyTeamRecords, type MonoLogos, type SeriesInfo, type TeamRecords } from './useSummaryData';
+import type { MonoLogos, SeriesInfo, TeamRecords } from './useSummaryData';
 
 interface detailHeroProps {
 	game: Game;
 	seriesInfo: SeriesInfo | null;
-	records?: TeamRecords;
+	records: TeamRecords;
 	monoLogos: MonoLogos;
-	isDelayed: boolean;
-	isInningSport: boolean;
-	status: GameStatus;
-	heroStyle: React.CSSProperties;
-	awayColor: string;
-	homeColor: string;
+	// Which tab the game is on, when it has one: "Watching, Tab 2" or "Tab 3".
+	label?: string;
+	// Live games only. A finished game never shows one, and a scheduled one has nothing to score.
+	powerScore: number | null;
+	favoriteTeamIds: ReadonlySet<string>;
+	// Absent where favourites can't be changed, which leaves the stars as marks rather than buttons.
+	onToggleFavoriteTeam?: (leagueId: LeagueId, teamId: string) => void;
+	dismiss: 'back' | 'close';
+	onBack: () => void;
 }
 
-const detailHero = ({ game, seriesInfo, records = emptyTeamRecords, monoLogos, isDelayed, isInningSport, status, heroStyle, awayColor, homeColor }: detailHeroProps) => {
-	const isPre = game.status === 'pre';
-	// The list card carries this line itself; on the detail screen it is the field strip's caption,
-	// and it is the only place the down, the distance and the yard marker appear as words.
-	const downDistanceLine = game.downDistance && game.fieldPosition
-		? i18n.t('gameCard.downDistanceAt', { downDistance: game.downDistance, fieldPosition: game.fieldPosition })
-		: game.downDistance;
-	const showField = game.sportType === 'football' && game.status === 'in'
-		&& (typeof game.yardLine === 'number' || downDistanceLine !== undefined);
+const isSameDay = (a: Date, b: Date) => a.toDateString() === b.toDateString();
 
-	// Only once the game is over. During play a dimmed score would read as the team that is behind
-	// rather than the team that lost, and it would flip back and forth on every basket. The weight
-	// is a Bootstrap utility because `.fw-bold` is `!important` and beats a stylesheet rule here.
-	const scoreClass = (score: number, other: number): string => (
-		game.status === 'post' && score < other
-			? 'lh-1 game-detail-score-value is-loser fw-semibold'
-			: 'lh-1 game-detail-score-value fw-bold'
-	);
+// A game later today needs only its time. Anything further out needs the day as well, since
+// nothing else on this screen says which day it is.
+export const formatStartClock = (iso: string | undefined, now = new Date()): string => {
+	if (!iso) return '';
+	const start = new Date(iso);
+	if (Number.isNaN(start.getTime())) return '';
+	if (isSameDay(start, now)) return formatStartTime(iso);
+	return start.toLocaleString([], { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+};
+
+const networksOf = (game: Game): string | undefined => {
+	const networks = game.broadcasts?.slice(0, 2) ?? [];
+	if (networks.length === 0) return undefined;
+	return new Intl.ListFormat(undefined, { type: 'conjunction' }).format(networks);
+};
+
+const showsSeries = (info: SeriesInfo | null, game: Game): info is SeriesInfo => (
+	info !== null && seriesSports.has(game.sportType) && (info.totalCompetitions ?? 0) >= 2
+);
+
+export const DetailHead = ({ game, dismiss, onBack }: Pick<detailHeroProps, 'game' | 'dismiss' | 'onBack'>) => (
+	<div className='dt-head'>
+		<button type='button' className='btn dt-back' onClick={onBack}>
+			<i className={`bi ${dismiss === 'close' ? 'bi-x-lg' : 'bi-arrow-left'}`} aria-hidden='true' />
+			<span>{i18n.t(dismiss === 'close' ? 'detail.close' : 'detail.back')}</span>
+		</button>
+		<span className='dt-league'>
+			{/* The white disc is what every league mark was drawn for, so it takes the light artwork. */}
+			<span className='dt-league-disc'>
+				<Crest
+					logo={resolveLeagueLogoUrl(game.league, undefined, 'light')}
+					abbreviation={leagueShortName(game.league)}
+					className='dt-league-logo'
+					fallback='blank'
+				/>
+			</span>
+			{leagueShortName(game.league)}
+		</span>
+	</div>
+);
+
+const detailHero = ({
+	game,
+	seriesInfo,
+	records,
+	monoLogos,
+	label,
+	powerScore,
+	favoriteTeamIds,
+	onToggleFavoriteTeam,
+	dismiss,
+	onBack,
+}: detailHeroProps) => {
+	const isPre = game.status === 'pre';
+	const isLive = game.status === 'in';
+	const downDistance = isLive && game.sportType === 'football' ? downDistanceLine(game, i18n.t) : undefined;
+	const showField = isLive && game.sportType === 'football' && (typeof game.yardLine === 'number' || downDistance !== undefined);
+	const bases = isLive ? stageSituation(game) : null;
+	const hasSituation = Boolean(bases) || (isLive && Boolean(game.atBat)) || showField;
+
+	const note: ReactNode[] = [];
+	if (isPre && game.delayed === true) {
+		note.push(<span key='delay' className='dt-note-delay'>{game.delayDescription ?? i18n.t('gameCard.delayFallback')}</span>);
+	}
+	if (isPre) note.push(<StartCountdownDisplay key='countdown' startTime={game.startTime} networks={networksOf(game)} />);
+	if (downDistance) note.push(<span key='down' className='dt-note-lead'>{downDistance}</span>);
+	if (game.postseasonLabel) note.push(<span key='round' className='dt-note-round'>{game.postseasonLabel}</span>);
+	if (showsSeries(seriesInfo, game)) note.push(<SeriesDots key='series' info={seriesInfo} game={game} />);
+
+	const toggle = onToggleFavoriteTeam
+		? (side: 'away' | 'home') => onToggleFavoriteTeam(game.league, (side === 'away' ? game.awayTeam : game.homeTeam).id)
+		: undefined;
 
 	return (
-		// `gd-poster` is the surface rather than the pre-game screen: the same scrimmed band of team
-		// colour carries the live and final heroes now, so the three states read as one screen. The
-		// white `.game-card` plate is gone with it, and `gd-hero-live` is what the stylesheet hangs
-		// the re-toning on — every child of this hero was drawn for near-black ink on white.
-		<div className={`gd-poster game-detail-matchup gd-hero gd-hero-live${isDelayed ? ' is-delayed' : ''}`} style={heroStyle}>
-			<div className='game-detail-teams-row'>
-				<DetailTeamPill team={game.awayTeam} side='away' record={records.away} monoMarks={monoLogos.away} color={awayColor} />
-				<div className='game-detail-center'>
-					{isPre ? (
-						<div className='gd-vs'>{i18n.t('gameCard.vs')}</div>
-					) : (
-						<div className='d-flex align-items-center game-detail-score-row'>
-							<FlipScore value={game.awayTeam.score} className={scoreClass(game.awayTeam.score, game.homeTeam.score)} />
-							{isInningSport && game.baseRunners
-								? <BaseDiamond {...game.baseRunners} />
-								// Without a divider two three-digit scores read as one number: "112108".
-								: <span className='game-score-sep' aria-hidden='true' />}
-							<FlipScore value={game.homeTeam.score} className={scoreClass(game.homeTeam.score, game.awayTeam.score)} />
-						</div>
-					)}
+		<GameStage
+			game={game}
+			className='dt-hero'
+			head={<DetailHead game={game} dismiss={dismiss} onBack={onBack} />}
+			label={label}
+			clock={isPre ? formatStartClock(game.startTime) || undefined : undefined}
+			names='name'
+			records={records}
+			monoMarks={monoLogos}
+			favorites={{
+				away: favoriteTeamIds.has(createFavoriteTeamKey(game.league, game.awayTeam.id)),
+				home: favoriteTeamIds.has(createFavoriteTeamKey(game.league, game.homeTeam.id)),
+			}}
+			onToggleFavorite={toggle}
+			situation={hasSituation ? (
+				<div className='dt-situation'>
+					{bases}
+					{isLive && <AtBatPanel game={game} />}
+					{showField && <FootballFieldStrip game={game} monoMarks={monoLogos} />}
 				</div>
-				<DetailTeamPill team={game.homeTeam} side='home' record={records.home} monoMarks={monoLogos.home} color={homeColor} />
-				{status.text && (
-					<div className={`game-detail-period${status.tabular ? ' font-lekton' : ''}`}>
-						{isInningSport && <InningHalfIcon topOfInning={game.topOfInning} />}{status.text}
-					</div>
-				)}
-			</div>
-
-			{isInningSport && game.bso && (
-				<div className='gd-bso-row'><BsoIndicator {...game.bso} /></div>
-			)}
-
-			{/* Directly under the count, because the count is the question this answers: who is
-			    the game waiting on. Absent between innings, when ESPN drops the pair. */}
-			<AtBatPanel game={game} />
-
-			{showField && (
-				<div className='gd-field-row'>
-					{downDistanceLine && <div className='gd-field-caption'>{downDistanceLine}</div>}
-					<FootballFieldStrip game={game} monoMarks={monoLogos} />
-				</div>
-			)}
-
-			{isPre && <StartCountdownDisplay startTime={game.startTime} />}
-
-			{seriesInfo && <SeriesDots info={seriesInfo} game={game} />}
-		</div>
+			) : undefined}
+			note={note.length > 0 ? note : undefined}
+			power={isLive && powerScore !== null ? { value: powerScore, label: i18n.t('gameCard.powerScore') } : null}
+		/>
 	);
 };
 

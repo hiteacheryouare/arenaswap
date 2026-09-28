@@ -89,16 +89,18 @@ const mountScreen = (game: Game) => {
 // the summary data resolves, and retrying until it does is the point.
 const mount = (game: Game) => {
 	mountScreen(game);
-	cy.get(`#gd-tab-${game.id}-box`).click();
+	cy.get(`#dt-tab-${game.id}-box`).click();
 };
 
-// A parsed box score mounted at the width the card actually gets. The popup is 320px, the detail
-// screen's own scrollbar takes 15 of them, and `.game-detail-shell` spends `--gd-inset` on each
-// side — so a bare mount measures the table against about 40px of room it will never have.
+// A parsed box score mounted at the width the card actually gets: the popup's 320 less the 15 its
+// own scrollbar takes, inside the body's side padding, so the table is measured against the room it
+// really has.
 const mountBox = (game: Game, box: ParsedBoxScore) => {
 	cy.mount(
-		<div className='game-detail-shell' style={{ width: '305px' }}>
-			<BoxScore game={game} boxScore={box} />
+		<div className='popup-container dt' style={{ width: '305px', height: 'auto' }}>
+			<div className='dt-body'>
+				<BoxScore game={game} boxScore={box} />
+			</div>
 		</div>,
 	);
 };
@@ -124,26 +126,29 @@ const soccerPenalties = () => mountPeriodLine(games.soccer, 5);
 // designation suffix is what says so.
 const hockeyShootout = () => mountPeriodLine({ ...games.hockey, finalPeriodSuffix: 'SO' }, 5);
 
-// The ink a cell inherits when no team colour reaches it. Asserting a computed colour is merely
-// readable, or merely not the raw team colour, passes with the whole feature removed — so every
-// colour assertion below is pinned to its own expected value and checked against this default.
-const inheritedCardInk = 'rgb(17, 24, 39)';
+// The card surface on the dark theme, #1a1d22, and the ink the tables are set in on it.
+const cardInk = 'rgb(243, 245, 247)';
+const mutedInk = 'rgb(140, 149, 161)';
 
-// Contrast of a computed `rgb(...)` colour against the light .gd-setup card, #f8fafc, whose
-// luminance is 0.9536.
 const srgbChannel = (value: number): number => {
 	const c = value / 255;
 	return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
 };
 
-const contrastOnCard = (rgb: string): number => {
+const luminanceOf = (rgb: string): number => {
 	const [red, green, blue] = rgb.match(/\d+/g)!.map(Number);
-	const luminance = 0.2126 * srgbChannel(red!) + 0.7152 * srgbChannel(green!) + 0.0722 * srgbChannel(blue!);
-	return (0.9536 + 0.05) / (luminance + 0.05);
+	return 0.2126 * srgbChannel(red!) + 0.7152 * srgbChannel(green!) + 0.0722 * srgbChannel(blue!);
+};
+
+const cardLuminance = luminanceOf('rgb(26, 29, 34)');
+
+const contrastOnCard = (rgb: string): number => {
+	const [light, dark] = [luminanceOf(rgb), cardLuminance].toSorted((x, y) => y - x);
+	return (light! + 0.05) / (dark! + 0.05);
 };
 
 // Every table cell that carries a number, so a clipping check never has to name them one by one.
-const cells = () => cy.get('.gd-box-table td, .gd-box-table th');
+const cells = () => cy.get('.dt-table td, .dt-table th');
 
 describe('box score', () => {
 	beforeEach(() => {
@@ -154,25 +159,25 @@ describe('box score', () => {
 		// Mounted without opening a tab, because the missing tab is half of what is being asserted.
 		mountScreen(preGame);
 		// The pre-game screen itself rendered — this is not an empty mount asserting nothing.
-		cy.get('.gd-pregame-setup, .gd-setup').should('exist');
-		cy.get('.gd-box').should('not.exist');
-		cy.get(`#gd-tab-${preGame.id}-box`).should('not.exist');
+		cy.get('.dt-setup').should('exist');
+		cy.get('.dt-box').should('not.exist');
+		cy.get(`#dt-tab-${preGame.id}-box`).should('not.exist');
 	});
 
 	describe('line score', () => {
 		it('gives baseball an R-H-E line and leaves the unplayed half-inning blank', () => {
 			mount(games.baseball);
-			cy.get('.gd-box-line-table thead th, .gd-box-line-table thead td').then($th => {
+			cy.get('.dt-linescore thead th, .dt-linescore thead td').then($th => {
 				const labels = [...$th].map(el => el.textContent?.trim());
 				expect(labels).to.deep.equal(['', '1', '2', '3', '4', '5', '6', '7', '8', 'R', 'H', 'E']);
 			});
-			cy.get('.gd-box-line-table tbody tr').eq(0).find('td').then($td => {
+			cy.get('.dt-linescore tbody tr').eq(0).find('td').then($td => {
 				expect([...$td].map(el => el.textContent?.trim())).to.deep.equal(
 					['0', '1', '0', '0', '0', '1', '0', '0', '2', '7', '1'],
 				);
 			});
 			// The bottom of the eighth has not been played, so it is empty rather than a 0.
-			cy.get('.gd-box-line-table tbody tr').eq(1).find('td').then($td => {
+			cy.get('.dt-linescore tbody tr').eq(1).find('td').then($td => {
 				expect([...$td].map(el => el.textContent?.trim())).to.deep.equal(
 					['1', '0', '0', '2', '0', '0', '0', '', '3', '7', '1'],
 				);
@@ -184,31 +189,31 @@ describe('box score', () => {
 			// ten-inning game: both rows the same length, no blank half-inning, and every total
 			// summing to what the row above it says.
 			mount(finalGame);
-			cy.get('.gd-box-line-table thead th, .gd-box-line-table thead td').then($th => {
+			cy.get('.dt-linescore thead th, .dt-linescore thead td').then($th => {
 				expect([...$th].map(el => el.textContent?.trim())).to.deep.equal(
 					['', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'R', 'H', 'E'],
 				);
 			});
-			cy.get('.gd-box-line-table tbody tr').eq(0).find('td').then($td => {
+			cy.get('.dt-linescore tbody tr').eq(0).find('td').then($td => {
 				expect([...$td].map(el => el.textContent?.trim())).to.deep.equal(
 					['0', '1', '0', '0', '0', '1', '0', '0', '0', '0', '2', '8', '1'],
 				);
 			});
-			cy.get('.gd-box-line-table tbody tr').eq(1).find('td').then($td => {
+			cy.get('.dt-linescore tbody tr').eq(1).find('td').then($td => {
 				expect([...$td].map(el => el.textContent?.trim())).to.deep.equal(
 					['1', '0', '0', '0', '0', '1', '0', '0', '0', '1', '3', '8', '1'],
 				);
 			});
 			// The R column is the score on the wrap screen above it.
-			cy.get('.gd-box-line-table tbody tr').eq(0).find('.gd-box-line-total').first()
+			cy.get('.dt-linescore tbody tr').eq(0).find('.is-total').first()
 				.should('have.text', String(finalGame.awayTeam.score));
-			cy.get('.gd-box-line-table tbody tr').eq(1).find('.gd-box-line-total').first()
+			cy.get('.dt-linescore tbody tr').eq(1).find('.is-total').first()
 				.should('have.text', String(finalGame.homeTeam.score));
 		});
 
 		it('gives a clock sport one total column and no hits or errors', () => {
 			mount(games.football);
-			cy.get('.gd-box-line-table thead th, .gd-box-line-table thead td').then($th => {
+			cy.get('.dt-linescore thead th, .dt-linescore thead td').then($th => {
 				expect([...$th].map(el => el.textContent?.trim())).to.deep.equal(['', '1', '2', '3', '4', 'T']);
 			});
 		});
@@ -218,14 +223,14 @@ describe('box score', () => {
 			// it are the whole box score. The demo fixture had the two sides transposed, which put
 			// each team's numbers beside the other team's crest and abbreviation.
 			mount(games.soccer);
-			cy.get('.gd-box-line-table tbody tr').eq(0).then($row => {
-				expect($row.find('.gd-box-line-abbr').text()).to.equal(games.soccer.awayTeam.abbreviation);
-				expect($row.find('.gd-box-line-total').first().text())
+			cy.get('.dt-linescore tbody tr').eq(0).then($row => {
+				expect($row.find('.dt-team-abbr').text()).to.equal(games.soccer.awayTeam.abbreviation);
+				expect($row.find('.is-total').first().text())
 					.to.equal(String(games.soccer.awayTeam.score));
 			});
-			cy.get('.gd-box-line-table tbody tr').eq(1).then($row => {
-				expect($row.find('.gd-box-line-abbr').text()).to.equal(games.soccer.homeTeam.abbreviation);
-				expect($row.find('.gd-box-line-total').first().text())
+			cy.get('.dt-linescore tbody tr').eq(1).then($row => {
+				expect($row.find('.dt-team-abbr').text()).to.equal(games.soccer.homeTeam.abbreviation);
+				expect($row.find('.is-total').first().text())
 					.to.equal(String(games.soccer.homeTeam.score));
 			});
 		});
@@ -239,7 +244,7 @@ describe('box score', () => {
 			];
 			for (const [sport, heading] of expected) {
 				mount(games[sport]);
-				cy.get('.gd-box-line .gd-box-subheading').should('have.text', heading);
+				cy.get('.dt-box-line .dt-card-title').should('have.text', heading);
 			}
 		});
 
@@ -256,15 +261,15 @@ describe('box score', () => {
 
 		it('fits a full nine innings plus R-H-E inside the card without scrolling', () => {
 			mountInnings(9);
-			cy.get('.gd-box-line-table thead th, .gd-box-line-table thead td').should('have.length', 13);
+			cy.get('.dt-linescore thead th, .dt-linescore thead td').should('have.length', 13);
 			// Measured with the crests in the team column, which is what they cost the innings.
-			cy.get('.gd-box-line-crest').should('have.length', 2);
-			cy.get('.gd-box-line .table-responsive').then($wrap => {
+			cy.get('.dt-linescore .as-crest-box').should('have.length', 2);
+			cy.get('.dt-box-line .table-responsive').then($wrap => {
 				const el = $wrap[0];
 				expect(el.scrollWidth, 'twelve numeric columns fit in the card')
 					.to.be.at.most(el.clientWidth);
 			});
-			cy.get('.gd-box-line-table td, .gd-box-line-table th').each($cell => {
+			cy.get('.dt-linescore td, .dt-linescore th').each($cell => {
 				expect($cell[0].scrollWidth, 'no inning is squeezed narrower than its own digits')
 					.to.be.at.most($cell[0].clientWidth + 1);
 			});
@@ -274,7 +279,7 @@ describe('box score', () => {
 			// ESPN's soccer linescores are positional — [1H, 2H, ET1, ET2, PENS] — so a fifth
 			// column is the shootout rather than a third overtime.
 			soccerPenalties();
-			cy.get('.gd-box-line-table thead th').then($th => {
+			cy.get('.dt-linescore thead th').then($th => {
 				expect([...$th].map(el => el.textContent?.trim())).to.deep.equal(
 					['1', '2', en.box.periodEt1, en.box.periodEt2, en.box.periodPen, en.box.lineTotal],
 				);
@@ -283,14 +288,14 @@ describe('box score', () => {
 
 		it('names a hockey shootout as one and a second overtime as one', () => {
 			hockeyShootout();
-			cy.get('.gd-box-line-table thead th').then($th => {
+			cy.get('.dt-linescore thead th').then($th => {
 				expect([...$th].map(el => el.textContent?.trim())).to.deep.equal(
 					['1', '2', '3', en.box.overtime, en.box.periodSo, en.box.lineTotal],
 				);
 			});
 			// Same five entries with a playoff suffix, where a shootout cannot happen.
 			mountPeriodLine({ ...games.hockey, finalPeriodSuffix: '2OT' }, 5);
-			cy.get('.gd-box-line-table thead th').then($th => {
+			cy.get('.dt-linescore thead th').then($th => {
 				expect([...$th].map(el => el.textContent?.trim())).to.deep.equal(
 					['1', '2', '3', en.box.overtime, en.box.overtimeNumbered.replace('{count}', '2'), en.box.lineTotal],
 				);
@@ -299,7 +304,7 @@ describe('box score', () => {
 
 		it('scrolls extra innings sideways rather than crushing the ones that fit', () => {
 			mountInnings(13);
-			cy.get('.gd-box-line .table-responsive').then($wrap => {
+			cy.get('.dt-box-line .table-responsive').then($wrap => {
 				const el = $wrap[0];
 				expect(el.scrollWidth, 'the table is wider than the card').to.be.greaterThan(el.clientWidth);
 				// It scrolls inside the card rather than widening the popup.
@@ -311,20 +316,20 @@ describe('box score', () => {
 	describe('player tables', () => {
 		it('opens on the away team and switches to the home team', () => {
 			mount(games.basketball);
-			cy.get('.gd-box-tabs .nav-link').should('have.length', 2);
-			cy.get('.gd-box-tabs .nav-link.active').should('contain.text', 'CHI');
-			cy.get('.gd-box-name').should('contain.text', 'C. White');
+			cy.get('.dt-switch .dt-switch-option').should('have.length', 2);
+			cy.get('.dt-switch .dt-switch-option.active').should('contain.text', 'CHI');
+			cy.get('.dt-name').should('contain.text', 'C. White');
 
-			cy.get('.gd-box-tabs .nav-link').eq(1).click();
-			cy.get('.gd-box-tabs .nav-link.active').should('contain.text', 'PHI');
-			cy.get('.gd-box-name').should('contain.text', 'T. Maxey');
+			cy.get('.dt-switch .dt-switch-option').eq(1).click();
+			cy.get('.dt-switch .dt-switch-option.active').should('contain.text', 'PHI');
+			cy.get('.dt-name').should('contain.text', 'T. Maxey');
 		});
 
 		it('completes the tab pattern its roles announce', () => {
 			// `role='tab'` announces "tab, 1 of 2", which tells the reader a panel exists to move
 			// to. A tab naming a panel that is not in the document is a promise the screen breaks.
 			mount(games.basketball);
-			cy.get('.gd-box-tabs .nav-link').eq(0).then($away => {
+			cy.get('.dt-switch .dt-switch-option').eq(0).then($away => {
 				const panelId = $away.attr('aria-controls');
 				expect(panelId, 'the tab names a panel').to.be.a('string').and.not.equal('');
 				cy.document().then(doc => {
@@ -332,35 +337,35 @@ describe('box score', () => {
 					expect(panel, 'and that panel is on the screen').to.not.equal(null);
 					expect(panel!.getAttribute('role')).to.equal('tabpanel');
 					expect(panel!.getAttribute('aria-labelledby')).to.equal($away.attr('id'));
-					expect(panel!.querySelectorAll('.gd-box-table')).to.have.length.greaterThan(0);
+					expect(panel!.querySelectorAll('.dt-table')).to.have.length.greaterThan(0);
 				});
 			});
 			// Roving: the strip is one tab stop and the arrow keys move inside it.
-			cy.get('.gd-box-tabs .nav-link').eq(0).should('have.attr', 'tabindex', '0');
-			cy.get('.gd-box-tabs .nav-link').eq(1).should('have.attr', 'tabindex', '-1');
+			cy.get('.dt-switch .dt-switch-option').eq(0).should('have.attr', 'tabindex', '0');
+			cy.get('.dt-switch .dt-switch-option').eq(1).should('have.attr', 'tabindex', '-1');
 		});
 
 		it('moves the selection with the arrow keys and takes focus with it', () => {
 			mount(games.basketball);
-			cy.get('.gd-box-tabs .nav-link').eq(0).focus().trigger('keydown', { key: 'ArrowRight' });
-			cy.get('.gd-box-tabs .nav-link.active').should('contain.text', 'PHI');
+			cy.get('.dt-switch .dt-switch-option').eq(0).focus().trigger('keydown', { key: 'ArrowRight' });
+			cy.get('.dt-switch .dt-switch-option.active').should('contain.text', 'PHI');
 			cy.focused().should('contain.text', 'PHI');
-			cy.get('.gd-box-name').should('contain.text', 'T. Maxey');
-			cy.get('.gd-box-tabs .nav-link').eq(1).should('have.attr', 'tabindex', '0');
+			cy.get('.dt-name').should('contain.text', 'T. Maxey');
+			cy.get('.dt-switch .dt-switch-option').eq(1).should('have.attr', 'tabindex', '0');
 
 			cy.focused().trigger('keydown', { key: 'ArrowLeft' });
-			cy.get('.gd-box-tabs .nav-link.active').should('contain.text', 'CHI');
+			cy.get('.dt-switch .dt-switch-option.active').should('contain.text', 'CHI');
 			cy.focused().should('contain.text', 'CHI');
 
 			cy.focused().trigger('keydown', { key: 'End' });
-			cy.get('.gd-box-tabs .nav-link.active').should('contain.text', 'PHI');
+			cy.get('.dt-switch .dt-switch-option.active').should('contain.text', 'PHI');
 			cy.focused().trigger('keydown', { key: 'Home' });
-			cy.get('.gd-box-tabs .nav-link.active').should('contain.text', 'CHI');
+			cy.get('.dt-switch .dt-switch-option.active').should('contain.text', 'CHI');
 
 			// The panel follows the selection rather than staying labelled by the first tab.
 			// Scoped to the card: the detail screen's own tab strip puts a second panel on the page.
-			cy.get('.gd-box [role="tabpanel"]').then($panel => {
-				cy.get('.gd-box-tabs .nav-link.active')
+			cy.get('.dt-box [role="tabpanel"]').then($panel => {
+				cy.get('.dt-switch .dt-switch-option.active')
 					.should('have.attr', 'id', $panel.attr('aria-labelledby'));
 			});
 		});
@@ -386,13 +391,13 @@ describe('box score', () => {
 			] } };
 			mountBox(games.football, parseBoxScore(payload, '21', '6', 'PHI', 'DAL'));
 
-			cy.get('.gd-box-tabs').should('not.exist');
-			cy.get('.gd-box-players .gd-box-player').should('have.text', 'J. Hurts');
+			cy.get('.dt-switch').should('not.exist');
+			cy.get('.dt-box-players .dt-player').should('have.text', 'J. Hurts');
 			// The home side is what rendered, so the home team is what the block may name.
-			cy.get('.gd-box-players .gd-box-line-abbr')
+			cy.get('.dt-box-players .dt-team-abbr')
 				.should('have.length', 1)
 				.and('have.text', games.football.homeTeam.abbreviation);
-			cy.get('.gd-box-players .gd-box-line-crest').should('have.length', 1);
+			cy.get('.dt-box-players .as-crest-box').should('have.length', 1);
 		});
 
 		it('says DNP for a player ESPN flagged without giving a reason', () => {
@@ -411,29 +416,29 @@ describe('box score', () => {
 			] } };
 			mountBox(games.basketball, parseBoxScore(payload, '20', '4', 'PHI', 'CHI'));
 
-			cy.get('.gd-box-dnp').should('have.length', 1).and('have.text', en.box.didNotPlay);
+			cy.get('.dt-dnp').should('have.length', 1).and('have.text', en.box.didNotPlay);
 			// And last, rather than sorted in among the bench.
-			cy.get('.gd-box-players tbody tr').last().should('contain.text', 'Z. Collins');
+			cy.get('.dt-box-players tbody tr').last().should('contain.text', 'Z. Collins');
 		});
 
 		it('collapses an expanded category again when the team switches', () => {
 			// The reader asked for all of Dallas's defenders, not for however many Philadelphia
 			// happens to have.
 			mount(games.football);
-			cy.contains('.gd-box-subheading', en.box.defensive).next('table').as('defense');
+			cy.contains('.dt-subheading', en.box.defensive).next('table').as('defense');
 			cy.get('@defense').find('tbody tr').should('have.length', 6);
-			cy.get('.gd-box-more').click();
+			cy.get('.dt-more').click();
 			cy.get('@defense').find('tbody tr').should('have.length', 8);
 
-			cy.get('.gd-box-tabs .nav-link').eq(1).click();
-			cy.contains('.gd-box-subheading', en.box.defensive).next('table')
+			cy.get('.dt-switch .dt-switch-option').eq(1).click();
+			cy.contains('.dt-subheading', en.box.defensive).next('table')
 				.find('tbody tr').should('have.length', 6);
 		});
 
 		it('gives basketball one table with the condensed column order', () => {
 			mount(games.basketball);
-			cy.get('.gd-box-players .gd-box-subheading').should('have.length', 1).and('have.text', en.box.players);
-			cy.get('.gd-box-players thead th, .gd-box-players thead td').then($th => {
+			cy.get('.dt-box-players .dt-subheading').should('have.length', 1).and('have.text', en.box.players);
+			cy.get('.dt-box-players thead th, .dt-box-players thead td').then($th => {
 				expect([...$th].map(el => el.textContent?.trim())).to.deep.equal(
 					['', 'MIN', 'PTS', 'REB', 'AST', 'FG', '3PT'],
 				);
@@ -442,21 +447,21 @@ describe('box score', () => {
 
 		it('sorts basketball starters, then bench, then did-not-play', () => {
 			mount(games.basketball);
-			cy.get('.gd-box-players tbody .gd-box-name .gd-box-player').then($names => {
+			cy.get('.dt-box-players tbody .dt-name .dt-player').then($names => {
 				const order = [...$names].map(el => el.textContent?.trim());
 				expect(order.slice(0, 5)).to.deep.equal(['C. White', 'N. Vucevic', 'J. Giddey', 'P. Williams', 'M. Buzelis']);
 				expect(order[order.length - 1]).to.equal('Z. Collins');
 			});
 			// DNP says DNP rather than a row of zeros, and never ESPN's English reason.
-			cy.get('.gd-box-dnp').should('have.text', en.box.didNotPlay);
+			cy.get('.dt-dnp').should('have.text', en.box.didNotPlay);
 			cy.contains("COACH'S DECISION").should('not.exist');
 		});
 
 		it('puts the batting order in order and indents the substitute', () => {
 			mount(games.baseball);
-			cy.get('.gd-box-players tbody .gd-box-name').first().should('contain.text', 'F. Lindor');
-			cy.get('.gd-box-name-sub').should('contain.text', 'T. Nimmo');
-			cy.get('.gd-box-name-sub').then($sub => {
+			cy.get('.dt-box-players tbody .dt-name').first().should('contain.text', 'F. Lindor');
+			cy.get('.dt-name-sub').should('contain.text', 'T. Nimmo');
+			cy.get('.dt-name-sub').then($sub => {
 				const indent = Number.parseFloat(getComputedStyle($sub[0]).paddingLeft);
 				expect(indent, 'a substitute sits under the slot it took over').to.be.greaterThan(6);
 			});
@@ -464,14 +469,14 @@ describe('box score', () => {
 
 		it('gives baseball a totals row and football none', () => {
 			mount(games.baseball);
-			cy.get('.gd-box-players tfoot th').first().should('have.text', en.box.totals);
+			cy.get('.dt-box-players tfoot th').first().should('have.text', en.box.totals);
 			mount(games.football);
-			cy.get('.gd-box-players tfoot').should('not.exist');
+			cy.get('.dt-box-players tfoot').should('not.exist');
 		});
 
 		it('splits hockey by position group and drops the empty skaters category', () => {
 			mount(games.hockey);
-			cy.get('.gd-box-players .gd-box-subheading').then($h => {
+			cy.get('.dt-box-players .dt-subheading').then($h => {
 				expect([...$h].map(el => el.textContent?.trim())).to.deep.equal(
 					[en.box.forwards, en.box.defensemen, en.box.goaltending],
 				);
@@ -480,16 +485,16 @@ describe('box score', () => {
 
 		it('drops the goalie who never took the ice', () => {
 			mount(games.hockey);
-			cy.get('.gd-box-players').should('contain.text', 'T. Jarry');
+			cy.get('.dt-box-players').should('contain.text', 'T. Jarry');
 			// The backup arrives all zeros and would show a .000 save percentage.
-			cy.get('.gd-box-players').should('not.contain.text', 'J. Blomqvist');
-			cy.get('.gd-box-players').should('not.contain.text', '.000');
+			cy.get('.dt-box-players').should('not.contain.text', 'J. Blomqvist');
+			cy.get('.dt-box-players').should('not.contain.text', '.000');
 		});
 
 		it('orders hockey skaters by points, not by ESPN array order', () => {
 			mount(games.hockey);
-			cy.get('.gd-box-tabs .nav-link').eq(1).click();
-			cy.get('.gd-box-players tbody .gd-box-player').then($names => {
+			cy.get('.dt-switch .dt-switch-option').eq(1).click();
+			cy.get('.dt-box-players tbody .dt-player').then($names => {
 				// Konecny 1G 1A leads Michkov 1G 0A, who leads Couturier 0G 1A.
 				expect([...$names].map(el => el.textContent?.trim()).slice(0, 3))
 					.to.deep.equal(['T. Konecny', 'M. Michkov', 'S. Couturier']);
@@ -498,38 +503,38 @@ describe('box score', () => {
 
 		it('caps a long football category and expands it on request', () => {
 			mount(games.football);
-			cy.contains('.gd-box-subheading', en.box.defensive)
+			cy.contains('.dt-subheading', en.box.defensive)
 				.next('table').as('defense');
 			cy.get('@defense').find('tbody tr').should('have.length', 6);
-			cy.get('.gd-box-more').should('have.text', en.box.showAll.replace('{count}', '8')).click();
+			cy.get('.dt-more').should('have.text', en.box.showAll.replace('{count}', '8')).click();
 			cy.get('@defense').find('tbody tr').should('have.length', 8);
-			cy.get('.gd-box-more').should('have.text', en.box.showFewer);
+			cy.get('.dt-more').should('have.text', en.box.showFewer);
 		});
 
 		it('keeps a college column set that the NFL sends and college does not', () => {
 			// The NFL fixture carries SACKS under passing and TGTS under receiving; a category is
 			// selected by ESPN's own keys, so a league sending neither simply has fewer columns.
 			mount(games.football);
-			cy.contains('.gd-box-subheading', en.box.passing).next('table').find('thead th, thead td')
+			cy.contains('.dt-subheading', en.box.passing).next('table').find('thead th, thead td')
 				.then($th => expect([...$th].map(el => el.textContent?.trim()))
 					.to.deep.equal(['', 'C/ATT', 'YDS', 'AVG', 'TD', 'INT', 'SACKS']));
 		});
 
 		it('renders no player tables for soccer, which sends none', () => {
 			mount(games.soccer);
-			cy.get('.gd-box').should('exist');
-			cy.get('.gd-box-players').should('not.exist');
-			cy.get('.gd-box-tabs').should('not.exist');
+			cy.get('.dt-box').should('exist');
+			cy.get('.dt-box-players').should('not.exist');
+			cy.get('.dt-switch').should('not.exist');
 		});
 	});
 
 	describe('team comparison', () => {
 		it('puts the away value, the label and the home value in one row', () => {
 			mount(games.soccer);
-			cy.get('.gd-box-compare thead th, .gd-box-compare thead td').then($th => {
+			cy.get('.dt-box-compare thead th, .dt-box-compare thead td').then($th => {
 				expect([...$th].map(el => el.textContent?.trim())).to.deep.equal(['NYR', '', 'PHI']);
 			});
-			cy.contains('.gd-box-compare-label', en.box.possession).parent().find('td')
+			cy.contains('.dt-compare-label', en.box.possession).parent().find('td')
 				.then($td => expect([...$td].map(el => el.textContent?.trim())).to.deep.equal(['53.2', '46.8']));
 		});
 
@@ -540,7 +545,7 @@ describe('box score', () => {
 			// been rendered under our own translated label and the assertion would still pass.
 			// It is the ordering rule and the conditional penalty rows in one measurement now.
 			mount(games.soccer);
-			cy.get('.gd-box-compare tbody .gd-box-compare-label').then($labels => {
+			cy.get('.dt-box-compare tbody .dt-compare-label').then($labels => {
 				expect([...$labels].map(el => el.textContent?.trim())).to.deep.equal([
 					en.box.possession, en.box.shotsTaken, en.box.onGoal, en.box.corners,
 					en.box.savesMade, en.box.offsides, en.box.fouls, en.box.yellowCards,
@@ -551,9 +556,9 @@ describe('box score', () => {
 
 		it('reads nothing from the nested tree baseball sends', () => {
 			mount(games.baseball);
-			cy.get('.gd-box-compare').should('not.exist');
+			cy.get('.dt-box-compare').should('not.exist');
 			// The R-H-E on the line score is already the team line.
-			cy.get('.gd-box-line-table').should('exist');
+			cy.get('.dt-linescore').should('exist');
 		});
 	});
 
@@ -568,42 +573,48 @@ describe('box score', () => {
 			}
 		});
 
-		it('keeps the table on the light card rather than the dark popup default', () => {
+		it('sets the tables in the card ink on the card surface', () => {
 			mount(games.basketball);
-			// $table-bg defaults to var(--as-body-bg), which is #0d1117 on this theme.
-			cy.get('.gd-box-table tbody td').first().then($td => {
-				const style = getComputedStyle($td[0]);
-				expect(style.color).to.equal('rgb(17, 24, 39)');
+			// $table-bg would otherwise paint the page colour into every cell.
+			cy.get('.dt-players-table tbody td').first().then($td => {
+				const style = getComputedStyle($td[0]!);
+				expect(style.color).to.equal(cardInk);
 				expect(style.backgroundColor).to.equal('rgba(0, 0, 0, 0)');
 			});
-			// An absence, deliberately. Bootstrap 5.3 draws the group separator only through the
-			// opt-in `.table-group-divider` class, which nothing in our source uses, so the
-			// `tbody` here has no top border at all — and reading a colour off a border that is
-			// not drawn is an assertion that cannot fail. `$table-group-separator-color` is set in
-			// the stylesheet as a guard for the first component that does opt in.
-			cy.get('.gd-box-table tbody').first().then($tbody => {
-				expect(getComputedStyle($tbody[0]).borderTopWidth).to.equal('0px');
+			// Headers are quiet, and the rows sit on hairlines rather than on Bootstrap's group divider.
+			cy.get('.dt-players-table thead th').first().should('have.css', 'color', mutedInk);
+			cy.get('.dt-table tbody').first().then($tbody => {
+				expect(getComputedStyle($tbody[0]!).borderTopWidth).to.equal('0px');
+			});
+			cy.get('.dt-linescore tbody tr').first().find('td').first().should('have.css', 'border-bottom-width', '1px');
+		});
+
+		// One rhythm for every table: 32px rows on the line score, the comparison and the standings.
+		it('keeps the line score and the comparison on the 32px row rhythm', () => {
+			mount(games.basketball);
+			cy.get('.dt-linescore tbody tr, .dt-compare tbody tr').each($row => {
+				expect($row[0]!.getBoundingClientRect().height).to.be.closeTo(32, 1);
 			});
 		});
 
-		it('keeps the selected tab on the card colour, not the dark body default', () => {
+		it('draws the switcher as one control with the selection lifted', () => {
 			mount(games.basketball);
-			cy.get('.gd-box-tabs .nav-link.active').then($tab => {
-				const style = getComputedStyle($tab[0]);
-				expect(style.backgroundColor).to.equal('rgb(248, 250, 252)');
-				expect(style.color).to.equal('rgb(17, 24, 39)');
+			cy.get('.dt-switch').should('have.class', 'btn-group').and('have.attr', 'role', 'tablist');
+			cy.get('.dt-switch .dt-switch-option.active').then($tab => {
+				const style = getComputedStyle($tab[0]!);
+				expect(style.backgroundColor, 'the raised surface').to.equal('rgb(34, 38, 45)');
+				expect(style.color).to.equal(cardInk);
 			});
-			// $nav-link-color is the orange link colour, which reaches only 3.0:1 here.
-			cy.get('.gd-box-tabs .nav-link').not('.active').then($tab => {
-				expect(getComputedStyle($tab[0]).color).to.equal('rgb(75, 85, 99)');
+			cy.get('.dt-switch .dt-switch-option').not('.active').then($tab => {
+				expect(getComputedStyle($tab[0]!).backgroundColor).to.equal('rgba(0, 0, 0, 0)');
 			});
 		});
 
 		it('truncates a long name instead of a stat', () => {
 			mount(games.football);
-			cy.contains('.gd-box-subheading', en.box.defensive).next('table')
+			cy.contains('.dt-subheading', en.box.defensive).next('table')
 				.find('tbody tr').first().as('row');
-			cy.get('@row').find('.gd-box-name').then($name => {
+			cy.get('@row').find('.dt-name').then($name => {
 				expect(getComputedStyle($name[0]).textOverflow).to.equal('ellipsis');
 			});
 			cy.get('@row').find('td').each($td => {
@@ -615,93 +626,54 @@ describe('box score', () => {
 	describe('team identity', () => {
 		it('puts each team\'s crest beside its abbreviation on the line score', () => {
 			mount(games.baseball);
-			cy.get('.gd-box-line-table tbody tr').should('have.length', 2);
-			cy.get('.gd-box-line-crest').should('have.length', 2);
-			cy.get('.gd-box-line-table tbody tr').eq(0).find('.gd-box-line-abbr').should('have.text', 'NYM');
-			cy.get('.gd-box-line-table tbody tr').eq(1).find('.gd-box-line-abbr').should('have.text', 'PHI');
+			cy.get('.dt-linescore tbody tr').should('have.length', 2);
+			cy.get('.dt-linescore .as-crest-box').should('have.length', 2);
+			cy.get('.dt-linescore tbody tr').eq(0).find('.dt-team-abbr').should('have.text', 'NYM');
+			cy.get('.dt-linescore tbody tr').eq(1).find('.dt-team-abbr').should('have.text', 'PHI');
 			// The crest sits to the left of the abbreviation, the way the leader rows read.
-			cy.get('.gd-box-line-table tbody tr').eq(0).then($row => {
-				const crest = $row.find('.gd-box-line-crest')[0].getBoundingClientRect();
-				const abbr = $row.find('.gd-box-line-abbr')[0].getBoundingClientRect();
+			cy.get('.dt-linescore tbody tr').eq(0).then($row => {
+				const crest = $row.find('.as-crest-box')[0].getBoundingClientRect();
+				const abbr = $row.find('.dt-team-abbr')[0].getBoundingClientRect();
 				expect(crest.right).to.be.at.most(abbr.left + 1);
 			});
 		});
 
-		it('washes each row in its own team\'s colour, fading out before the totals', () => {
+		// The crest carries the team now, the way it does on every other row in the product.
+		it('draws each row on the card with no team wash behind it', () => {
 			mount(games.baseball);
-			cy.get('.gd-box-line-table tbody tr').eq(0).then($row => {
-				// The away row takes the Mets navy at the 28 alpha the matchup card uses.
-				expect(getComputedStyle($row[0]).backgroundImage)
-					.to.contain('rgba(0, 45, 114, 0.157)');
+			cy.get('.dt-linescore tbody tr').each($row => {
+				expect(getComputedStyle($row[0]!).backgroundImage).to.equal('none');
 			});
-			cy.get('.gd-box-line-table tbody tr').eq(1).then($row => {
-				expect(getComputedStyle($row[0]).backgroundImage)
-					.to.contain('rgba(232, 24, 40, 0.157)');
-			});
-		});
-
-		it('leaves a colour that already reads well as the team\'s own', () => {
-			mount(games.baseball);
-			// #002D72 is 12.4:1 on this card, so clamping it would only muddy it.
-			cy.get('.gd-box-line-table tbody tr').eq(0).find('.gd-box-line-abbr')
-				.should('have.css', 'color', 'rgb(0, 45, 114)');
-		});
-
-		it('darkens a gold abbreviation until it is actually readable', () => {
-			mount(games.hockey);
-			// Pittsburgh's #CFC493 reaches 1.68:1 untouched — the case an eyeball lets through. Pinned
-			// to the exact clamped value rather than to "readable", which the inherited ink also is.
-			cy.get('.gd-box-line-table tbody tr').eq(0).find('.gd-box-line-abbr').then($abbr => {
-				const color = getComputedStyle($abbr[0]).color;
-				expect(color, 'the raw gold is gone').to.not.equal('rgb(207, 196, 147)');
-				expect(color, 'and a team colour did arrive, rather than nothing').to.not.equal(inheritedCardInk);
-				expect(color, 'clamped to a dark bronze').to.equal('rgb(114, 108, 80)');
-				expect(contrastOnCard(color)).to.be.at.least(4.5);
-			});
-			// The other side is the Flyers' orange, 3.40:1 raw, so it moves too.
-			cy.get('.gd-box-line-table tbody tr').eq(1).find('.gd-box-line-abbr')
-				.should('have.css', 'color', 'rgb(182, 54, 2)');
 		});
 
 		it('clears 4.5:1 for every team abbreviation in every sport', () => {
 			for (const sport of Object.keys(games) as (keyof typeof games)[]) {
 				mount(games[sport]);
-				cy.get('.gd-box-line-abbr, .gd-box-compare-team').each($el => {
-					const color = getComputedStyle($el[0]).color;
-					// The floor is only worth asserting once a colour is known to have arrived: the
-					// inherited ink clears 4.5:1 on its own.
-					expect(color, `${sport} ${$el.text()} carries a team colour`).to.not.equal(inheritedCardInk);
+				cy.get('.dt-team-abbr, .dt-compare-team').each($el => {
+					const color = getComputedStyle($el[0]!).color;
 					expect(contrastOnCard(color), `${sport} ${$el.text()}`).to.be.at.least(4.5);
 				});
 			}
 		});
 
-		it('colours the team stats column heads to match the line score', () => {
+		it('names the team stats columns with the line score\'s own abbreviations', () => {
 			mount(games.hockey);
-			cy.get('.gd-box-compare-team').should('have.length', 2);
-			cy.get('.gd-box-line-table tbody tr').eq(0).find('.gd-box-line-abbr').then($abbr => {
-				const lineColor = getComputedStyle($abbr[0]).color;
-				// Both being the inherited ink would satisfy "they match" while proving nothing.
-				expect(lineColor).to.not.equal(inheritedCardInk);
-				cy.get('.gd-box-compare-team').eq(0)
-					.should('have.css', 'color', lineColor)
-					.and('have.text', 'PIT');
+			cy.get('.dt-compare-team').should('have.length', 2);
+			cy.get('.dt-linescore tbody tr').eq(0).find('.dt-team-abbr').invoke('text').then(text => {
+				cy.get('.dt-compare-team').eq(0).should('have.text', text).and('have.text', 'PIT');
 			});
 		});
-
 	});
 
 	describe('localization', () => {
-		// Each key measured in the element it actually renders in. `box.heading` is the only one of
-		// these that reaches `.gd-setup-heading`; the four period and section words render in
-		// `.gd-box-subheading`, which is 0.55rem, uppercased and letter-spaced, and the team-stats
-		// heading needs a sport that has a comparison table at all.
+		// Each key measured in the element it actually renders in. `box.heading` is the tab label now,
+		// which the tab strip's own locale test measures; the team-stats heading needs a sport that
+		// has a comparison table at all.
 		const headingCases: [keyof typeof en.box, keyof typeof games, string, number][] = [
-			['heading', 'baseball', '.gd-box > .gd-setup-heading', 0],
-			['byInning', 'baseball', '.gd-box-line .gd-box-subheading', 0],
-			['teamStats', 'hockey', '.gd-box-compare .gd-box-subheading', 0],
-			['batting', 'baseball', '.gd-box-players .gd-box-subheading', 0],
-			['pitching', 'baseball', '.gd-box-players .gd-box-subheading', 1],
+			['byInning', 'baseball', '.dt-box-line .dt-card-title', 0],
+			['teamStats', 'hockey', '.dt-box-compare .dt-card-title', 0],
+			['batting', 'baseball', '.dt-box-players .dt-subheading', 0],
+			['pitching', 'baseball', '.dt-box-players .dt-subheading', 1],
 		];
 
 		for (const [key, sport, selector, index] of headingCases) {
@@ -723,11 +695,11 @@ describe('box score', () => {
 		}
 
 		// `box.totals` is out of the loop above rather than measured in it: it renders in a
-		// `tfoot th.gd-box-name`, which carries `max-width: 0` and an ellipsis and physically
+		// `tfoot th.dt-name`, which carries `max-width: 0` and an ellipsis and physically
 		// cannot wrap however long the word is.
 		it('ellipsizes the totals label rather than wrapping it', () => {
 			mount(games.baseball);
-			cy.get('.gd-box-players tfoot th').first().then($th => {
+			cy.get('.dt-box-players tfoot th').first().then($th => {
 				expect($th.text()).to.equal(en.box.totals);
 				const style = getComputedStyle($th[0]);
 				expect(style.textOverflow).to.equal('ellipsis');
@@ -741,10 +713,10 @@ describe('box score', () => {
 		// measures it against a box it will never render in, which is what once reported both
 		// Chinese locales overflowing a row they fit.
 		const measurePeriodHeadRow = (labelsFor: (bundle: typeof en) => string[]) => {
-			cy.get('.gd-box-line-table').then($table => {
+			cy.get('.dt-linescore').then($table => {
 				const table = $table[0];
 				const heads = [...table.querySelectorAll('thead th')] as HTMLElement[];
-				const teamCell = table.querySelector('thead .gd-box-line-team') as HTMLElement;
+				const teamCell = table.querySelector('thead .dt-linescore-team') as HTMLElement;
 				const originals = heads.map(head => head.textContent);
 
 				for (const [code, bundle] of Object.entries(locales)) {
@@ -797,11 +769,11 @@ describe('box score', () => {
 		for (const [sport, tableIndex, keys] of columnSets) {
 			it(`fits every locale's ${sport} columns without overflowing table ${tableIndex}`, () => {
 				mount(games[sport]);
-				cy.get('.gd-box-players table').eq(tableIndex).then($table => {
+				cy.get('.dt-box-players table').eq(tableIndex).then($table => {
 					const table = $table[0];
 					const heads = [...table.querySelectorAll('thead th')] as HTMLElement[];
 					expect(heads, 'the column set matches what this table renders').to.have.length(keys.length);
-					const nameCell = table.querySelector('tbody .gd-box-name') as HTMLElement;
+					const nameCell = table.querySelector('tbody .dt-name') as HTMLElement;
 					const originals = heads.map(head => head.textContent);
 
 					for (const [code, bundle] of Object.entries(locales)) {

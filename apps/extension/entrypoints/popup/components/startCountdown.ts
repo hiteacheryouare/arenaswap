@@ -30,8 +30,7 @@ export const countdownShowsSeconds = (parts: CountdownParts | null): boolean => 
 	parts !== null && parts.remainingMs > 0 && parts.days === 0
 );
 
-// Injected rather than imported so the formatter stays pure and Jest-testable, matching
-// gameSituation's resolver.
+// Injected rather than imported so the formatter stays pure and Jest-testable.
 type Translate = (key: string, subsOrCount?: unknown, subs?: unknown) => string;
 
 // The trailing figure is padded the way the hero's trailing segments are. This string is pinned to
@@ -41,10 +40,8 @@ const countdownPair = (value: number, unit: string, nextValue: number, nextUnit:
 	`${value}${unit} ${String(nextValue).padStart(2, '0')}${nextUnit}`
 );
 
-// The sticky bar's slot is 5.5rem and shared with the live status text, so it gets two units where
-// the hero gets three: the largest one that is not zero, and the one below it. Dropping a zero
-// leading segment is the difference — the hero prints "0h 13m 42s" a quarter of an hour out, since
-// it picks its segment set once at the day boundary, and two slots cannot spend one on a zero.
+// The sticky bar's slot is shared with the live status text, so it gets two units where the hero
+// gets three: the largest one that is not zero, and the one below it.
 export const formatCompactCountdown = (parts: CountdownParts | null, t: Translate): string => {
 	if (parts === null) return '';
 	if (parts.remainingMs <= 0) return t('detail.startsSoon');
