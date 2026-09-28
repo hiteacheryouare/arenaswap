@@ -4,6 +4,7 @@ import { fetchTeamsForLeagues } from '@arenaswap/core';
 import type { EspnTeamEntry } from '@arenaswap/core';
 import type { LeagueId } from '@arenaswap/core/types';
 import FavoriteTeamBonusInput from './favoriteTeamBonusInput';
+import SettingsGroup from './settingControls';
 import TeamPickerList from './teamPickerList';
 import TeamPickerRow from './teamPickerRow';
 import { favoriteTeamRows, leaguesForFavoritePicker } from '../../../utils/favoriteTeams';
@@ -26,8 +27,7 @@ const favoriteTeamsPage = ({
 	const [hasError, setHasError] = useState(false);
 	const [attempt, setAttempt] = useState(0);
 
-	// Fixed when the page opens. Recomputing it as teams are starred would refetch every league's
-	// roster on each click, and the answer only changes when the leagues themselves do.
+	// Fixed when the page opens: recomputed on every star, it would refetch every roster per click.
 	const [leagues] = useState(() => leaguesForFavoritePicker(enabledLeagues, [...favoriteTeamIds]));
 
 	useEffect(() => {
@@ -46,14 +46,12 @@ const favoriteTeamsPage = ({
 	const trackedLeagues = new Set(enabledLeagues);
 	const trackedTeams = teams.filter(team => trackedLeagues.has(team.leagueId));
 
-	// Searching hides this section rather than filtering it. Filtered, it moved the league groups
-	// up and down on every keystroke, and a starred team answering the search twice — once here and
-	// once in its league — read as a duplicate rather than as a shortcut.
+	// Searching hides this group rather than filtering it: filtered, it moved the league groups on
+	// every keystroke, and a starred team answering twice read as a duplicate.
 	const pinnedRows = query.trim() ? [] : favoriteTeamRows(teams, favoriteTeamIds, enabledLeagues);
 
 	const pinned = pinnedRows.length > 0 ? (
-		<div>
-			<div className='fw-bold text-uppercase popup-section-label mt-2'>{i18n.t('teamPicker.yourFavorites')}</div>
+		<SettingsGroup title={i18n.t('teamPicker.yourFavorites')}>
 			{pinnedRows.map(row => (
 				<TeamPickerRow
 					key={row.key}
@@ -65,14 +63,11 @@ const favoriteTeamsPage = ({
 					onToggle={() => onToggleFavoriteTeam(row.team.leagueId, row.team.id)}
 				/>
 			))}
-		</div>
+		</SettingsGroup>
 	) : null;
 
-	// A column rather than a fragment, so the list below the search box is what scrolls. The roster
-	// runs to a few hundred rows once a college league is on, and a search box that scrolls away
-	// with them is the one thing that makes a list that long unusable.
 	return (
-		<div className='d-flex flex-column min-h-0 flex-grow-1'>
+		<div className='st-favorites d-flex flex-column min-h-0 flex-grow-1'>
 			<TeamPickerList
 				teams={trackedTeams}
 				query={query}
@@ -83,9 +78,9 @@ const favoriteTeamsPage = ({
 				onToggleFavorite={team => onToggleFavoriteTeam(team.leagueId, team.id)}
 				onRetry={() => setAttempt(previous => previous + 1)}
 				leading={(
-					<div className='mb-3'>
+					<SettingsGroup>
 						<FavoriteTeamBonusInput value={favoriteTeamBonusPoints} onChange={onFavoriteTeamBonusChange} />
-					</div>
+					</SettingsGroup>
 				)}
 				pinned={pinned}
 			/>

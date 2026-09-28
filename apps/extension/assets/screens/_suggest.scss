@@ -1,0 +1,73 @@
+// The suggested-tabs sheet: tab and game pairs to accept or reject, in the settings card language.
+@use '@arenaswap/ui/src/motion' as m;
+
+.si-lede {
+	margin: 0 var(--as-space-1) var(--as-space-3);
+}
+
+.suggest-row {
+	display: flex;
+	align-items: center;
+	gap: var(--as-space-3);
+	min-height: 60px;
+	margin: 0;
+	cursor: pointer;
+	transition: background-color m.$motion-quick m.$motion-ease;
+
+	&:hover {
+		background-color: var(--as-hover);
+	}
+
+	.form-check-input {
+		flex-shrink: 0;
+		width: 16px;
+		height: 16px;
+		margin: 0;
+	}
+}
+
+.suggest-copy {
+	display: grid;
+	gap: 2px;
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+.suggest-matchup {
+	display: flex;
+	align-items: center;
+	gap: var(--as-space-2);
+	font-size: var(--as-text-sm);
+	line-height: var(--as-leading-sm);
+}
+
+.suggest-team {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+
+	b {
+		font-weight: var(--as-weight-semibold);
+	}
+}
+
+.suggest-at {
+	font-size: var(--as-text-xs);
+	color: var(--as-muted);
+}
+
+.suggest-tab-label {
+	overflow: hidden;
+	font-size: var(--as-text-xs);
+	line-height: var(--as-leading-xs);
+	color: var(--as-muted);
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.suggest-foot {
+	position: sticky;
+	bottom: 0;
+	padding: var(--as-space-3) var(--as-space-3) var(--as-space-4);
+	background: var(--as-page);
+}

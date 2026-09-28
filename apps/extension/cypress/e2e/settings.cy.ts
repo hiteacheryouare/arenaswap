@@ -3,16 +3,30 @@ import { liveState, onboardedPrefs } from '../support/fixtures';
 const onboarded = { local: { onboardingCompleted: true }, sync: { prefs: onboardedPrefs() } };
 const openSettings = () => cy.get('button.popup-settings-button[aria-label="Settings"]').click();
 const openGroup = (id: string) => cy.get(`#settingsGroup-${id}`).click();
+const back = () => cy.get('.st-back').click();
+const gamesOnScreen = () => cy.get('[data-game]').should('have.length.greaterThan', 0);
 
 describe('settings round-trip', () => {
 	beforeEach(() => cy.openPopup({ ...onboarded, state: liveState() }));
 
 	it('reaches the settings index from the games list and back again', () => {
 		openSettings();
-		cy.get('.settings-index-row').should('have.length', 7);
+		cy.get('.st-entry').should('have.length', 7);
 
-		cy.get('button.setup-header').click();
-		cy.contains('.popup-section-title', 'Live Games').should('be.visible');
+		back();
+		gamesOnScreen();
+		cy.get('button.popup-settings-button[aria-label="Settings"]').should('be.visible');
+	});
+
+	it('says the settings were saved on the way back out', () => {
+		openSettings();
+		openGroup('display');
+		cy.get('#proTipsToggle').click({ force: true });
+		back();
+		back();
+
+		cy.contains('.toast', 'Settings saved').should('be.visible');
+		gamesOnScreen();
 	});
 
 	it('drills into a group and returns to the index', () => {
@@ -20,8 +34,8 @@ describe('settings round-trip', () => {
 		openGroup('switching');
 		cy.get('#sensitivity-range').should('exist');
 
-		cy.get('button.setup-header').click();
-		cy.get('.settings-index-row').should('have.length', 7);
+		back();
+		cy.get('.st-entry').should('have.length', 7);
 	});
 
 	it('persists a sensitivity change to storage and the background', () => {
@@ -29,7 +43,7 @@ describe('settings round-trip', () => {
 		openGroup('switching');
 		cy.get('#sensitivity-range').setInputValue(7);
 
-		cy.contains('.setting-value-label', 'Ludicrous Speed').should('be.visible');
+		cy.contains('.st-value', 'Ludicrous Speed').should('be.visible');
 		cy.background().should(background => {
 			expect(background.prefs?.sensitivity).to.equal(7);
 			// Prefs are mirrored to both areas: sync for portability, local as the offline fallback.
@@ -64,7 +78,7 @@ describe('settings round-trip', () => {
 
 		cy.background().its('prefs').then(prefs => {
 			cy.openPopup({ ...onboarded, state: liveState(), sync: { prefs } });
-			cy.contains('.popup-section-title', 'Live Games').should('be.visible');
+			gamesOnScreen();
 			cy.get('.game-card-reveal-stage').should('not.exist');
 		});
 	});
@@ -86,9 +100,9 @@ describe('settings round-trip', () => {
 		cy.get('#league-nba').uncheck({ force: true });
 		cy.get('#league-nfl').uncheck({ force: true });
 
-		cy.contains('.setup-no-leagues-warn', /No leagues selected/).scrollIntoView().should('be.visible');
-		cy.get('button.setup-header').click();
-		cy.get('#settingsGroup-leagues').find('.settings-index-warn').should('exist');
+		cy.contains('.st-no-leagues', /No leagues selected/).scrollIntoView().should('be.visible');
+		back();
+		cy.get('#settingsGroup-leagues').find('.st-entry-warn').should('exist');
 	});
 
 	it('keeps the last PowerScore signal from being switched off', () => {
@@ -106,8 +120,8 @@ describe('settings round-trip', () => {
 		openSettings();
 		cy.get('#settingsSearch').type('cooldown');
 
-		cy.get('.settings-index-row').should('have.length', 1);
-		cy.contains('.settings-index-row', 'Switching').click();
+		cy.get('.st-entry').should('have.length', 1);
+		cy.contains('.st-entry', 'Switching').click();
 		cy.get('#cooldown-range').should('exist');
 	});
 });
@@ -161,7 +175,7 @@ describe('the theme setting', () => {
 		html().should('have.attr', 'data-bs-theme', 'light');
 		cy.background().should(background => expect(background.prefs?.theme).to.equal('light'));
 		cy.window().then(win => expect(win.localStorage.getItem('arenaswap.theme')).to.equal('light'));
-		cy.get('body').should('have.css', 'background-color', 'rgb(255, 255, 255)');
+		cy.get('body').should('have.css', 'background-color', 'rgb(244, 245, 247)');
 	});
 
 	it('follows the system, including when it changes while the popup is open', () => {
@@ -186,15 +200,15 @@ describe('the theme setting', () => {
 		});
 		cy.openPopup({ ...onboarded, sync: { prefs: onboardedPrefs({ theme: 'light' }) }, state: liveState() });
 
-		cy.get('.game-card').should('have.length.greaterThan', 0);
+		gamesOnScreen();
 		cy.then(() => expect(seen).to.not.be.empty.and.not.include('dark'));
 	});
 
-	it('keeps first-run dark even when a light copy is stored', () => {
+	it('opens first run on the default theme even when a stale light copy is stored', () => {
 		cy.on('window:before:load', win => win.localStorage.setItem('arenaswap.theme', 'light'));
 		cy.openPopup({ state: liveState() });
 
-		cy.get('.onb-logo-wrap').should('exist');
+		cy.get('.ob-welcome').should('exist');
 		html().should('have.attr', 'data-bs-theme', 'dark');
 	});
 

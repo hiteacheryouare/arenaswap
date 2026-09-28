@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { i18n } from '#i18n';
 import { romerUnlockClicks, romerUnlockWindowMs, type temperatureUnit } from '../../../utils/temperatureUnitCycle';
+import { SettingCopy } from './settingControls';
 
 interface temperatureUnitToggleProps {
 	unit: temperatureUnit;
@@ -10,7 +11,7 @@ interface temperatureUnitToggleProps {
 	onUnlockRomer: () => void;
 }
 
-// Matches the sweep on the button. There is nothing to read afterwards, so nothing outlives it.
+// Outlasts the frost sweep on the button, so the class never cuts the animation short.
 const revealDurationMs = 1200;
 
 const unitLabelKeys = {
@@ -47,20 +48,18 @@ const temperatureUnitToggle = ({ unit, romerUnlocked, disabled, onCycle, onUnloc
 	};
 
 	return (
-		<>
-			<div className='d-flex justify-content-between align-items-center mt-2'>
-				<label className='text-body-secondary setting-toggle-label' htmlFor='temperatureUnitToggle'>{i18n.t('setup.temperatureUnit')}</label>
-				<button
-					type='button'
-					id='temperatureUnitToggle'
-					className={`btn btn-sm btn-outline-secondary temperature-unit-toggle${revealing ? ' romer-revealing' : ''}`}
-					onClick={handleClick}
-					disabled={disabled}
-				>
-					{i18n.t(unitLabelKeys[unit])}
-				</button>
-			</div>
-		</>
+		<div className='st-control st-toggle'>
+			<SettingCopy htmlFor='temperatureUnitToggle' label={i18n.t('setup.temperatureUnit')} />
+			<button
+				type='button'
+				id='temperatureUnitToggle'
+				className={`btn btn-quiet st-unit${revealing ? ' romer-revealing' : ''}`}
+				onClick={handleClick}
+				disabled={disabled}
+			>
+				{i18n.t(unitLabelKeys[unit])}
+			</button>
+		</div>
 	);
 };
 

@@ -1,0 +1,664 @@
+// Settings: a directory of sections, then one page per section of grouped cards.
+@use '@arenaswap/ui/src/motion' as m;
+
+.st-back {
+	font-size: 16px;
+}
+
+.st-body {
+	padding: 0 var(--as-space-3);
+}
+
+// ── Search ───────────────────────────────────────────────────────────────────
+
+.st-search {
+	position: relative;
+	margin-bottom: var(--as-space-3);
+
+	.form-control {
+		height: 36px;
+		padding-left: var(--as-space-8);
+		font-size: var(--as-text-sm);
+
+		// Safari draws its own clear button, which collides with the 320px layout.
+		&::-webkit-search-cancel-button {
+			appearance: none;
+		}
+	}
+}
+
+.st-search-icon {
+	position: absolute;
+	top: 50%;
+	left: var(--as-space-3);
+	font-size: 14px;
+	line-height: 1;
+	color: var(--as-muted);
+	transform: translateY(-50%);
+	pointer-events: none;
+}
+
+// ── Groups and cards ─────────────────────────────────────────────────────────
+
+.st-group + .st-group,
+.st-no-leagues + .st-group {
+	margin-top: var(--as-space-4);
+}
+
+.st-group-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--as-space-2);
+	margin: 0 var(--as-space-1) var(--as-space-2);
+}
+
+.st-group-title {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--as-space-1);
+	min-width: 0;
+	margin: 0;
+	font-size: var(--as-text-xs);
+	font-weight: var(--as-weight-semibold);
+	line-height: var(--as-leading-xs);
+	color: var(--as-muted);
+}
+
+.st-group-action {
+	flex-shrink: 0;
+	margin: -2px calc(var(--as-space-1) * -1);
+	padding: 2px var(--as-space-1);
+	border: 0;
+	border-radius: 4px;
+	background: none;
+	color: var(--as-accent-ink);
+	font-size: var(--as-text-xs);
+	font-weight: var(--as-weight-semibold);
+	line-height: var(--as-leading-xs);
+	transition: background-color m.$motion-quick m.$motion-ease;
+
+	&:hover:not(:disabled) {
+		background: var(--as-hover);
+	}
+
+	&:disabled {
+		color: var(--as-muted);
+	}
+}
+
+// The outline rides above the rows, so a row's hover fill can't paint over the card's edge.
+.st-card {
+	position: relative;
+	border-radius: var(--as-radius-md);
+	background: var(--as-surface);
+	overflow: hidden;
+
+	&::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		border-radius: inherit;
+		box-shadow: inset 0 0 0 1px var(--as-line);
+		pointer-events: none;
+	}
+
+	> * + * {
+		box-shadow: inset 0 1px 0 var(--as-line);
+	}
+
+	// A control that depends on the one above it: indented, with its hairline starting at the indent.
+	> .is-nested {
+		position: relative;
+		padding-left: calc(var(--as-space-3) + var(--as-space-4));
+		box-shadow: none;
+
+		&::before {
+			content: '';
+			position: absolute;
+			top: 0;
+			right: 0;
+			left: calc(var(--as-space-3) + var(--as-space-4));
+			height: 1px;
+			background: var(--as-line);
+		}
+	}
+
+	&.is-off > * + * {
+		opacity: 0.45;
+	}
+}
+
+.st-control {
+	padding: var(--as-space-3);
+	transition: opacity m.$motion-quick m.$motion-ease;
+}
+
+// ── Labels ───────────────────────────────────────────────────────────────────
+
+.st-copy {
+	min-width: 0;
+}
+
+.st-label-row {
+	display: flex;
+	align-items: center;
+	gap: var(--as-space-1);
+	min-width: 0;
+}
+
+.st-label {
+	margin: 0;
+	font-size: var(--as-text-sm);
+	font-weight: var(--as-weight-medium);
+	line-height: var(--as-leading-sm);
+	color: var(--as-ink);
+}
+
+.st-note {
+	margin: 2px 0 0;
+	font-size: var(--as-text-xs);
+	line-height: var(--as-leading-xs);
+	color: var(--as-muted);
+	text-wrap: pretty;
+}
+
+.st .setting-tooltip-btn {
+	padding: 2px;
+	border-radius: 50%;
+	font-size: 12px;
+	color: var(--as-muted);
+
+	&:hover {
+		color: var(--as-ink);
+	}
+}
+
+.as-subhead .setting-tooltip-btn {
+	justify-content: center;
+	width: 32px;
+	height: 32px;
+	font-size: 14px;
+}
+
+// ── Toggles and other single-line controls ───────────────────────────────────
+
+.st-toggle {
+	display: flex;
+	align-items: center;
+	gap: var(--as-space-3);
+	min-height: 48px;
+
+	> .st-copy {
+		flex: 1 1 auto;
+	}
+
+	.form-switch {
+		display: flex;
+		flex-shrink: 0;
+		min-height: 0;
+		padding-left: 0;
+
+		.form-check-input {
+			float: none;
+			margin: 0;
+		}
+	}
+}
+
+.st-signal-dot {
+	flex-shrink: 0;
+	width: 8px;
+	height: 8px;
+	margin-right: calc(var(--as-space-1) * -1);
+	border-radius: 50%;
+	transition: background-color m.$motion-quick m.$motion-ease;
+}
+
+.st-number .form-control {
+	flex-shrink: 0;
+	width: 64px;
+	height: 32px;
+	padding: 0 var(--as-space-2);
+	font-size: var(--as-text-sm);
+	text-align: right;
+}
+
+.st-unit {
+	--as-btn-padding-y: 0;
+	--as-btn-padding-x: var(--as-space-3);
+	--as-btn-font-size: var(--as-text-sm);
+	--as-btn-line-height: 30px;
+	flex-shrink: 0;
+	min-width: 56px;
+	font-variant-numeric: tabular-nums;
+}
+
+// The thermometer's own journey, warm through cold to frost, then home to the quiet button.
+@keyframes romerFrost {
+	0%   { background-color: #f75c03; border-color: #f75c03; color: #0e1013; transform: scale(1); }
+	20%  { background-color: #f1c40f; border-color: #f1c40f; color: #0e1013; transform: scale(1.14); }
+	45%  { background-color: #3e9bd1; border-color: #3e9bd1; color: #0e1013; transform: scale(1.14); }
+	70%  { background-color: #cfe9fb; border-color: #cfe9fb; color: #0e1013; transform: scale(1.06); box-shadow: 0 0 14px rgba(207, 233, 251, 0.7); }
+	100% { background-color: var(--as-surface); border-color: var(--as-line); color: var(--as-ink); transform: scale(1); box-shadow: none; }
+}
+
+.romer-revealing {
+	animation: romerFrost m.$motion-epic m.$motion-ease-in-out;
+}
+
+// ── Ranges ───────────────────────────────────────────────────────────────────
+
+// A value too long to share the label's line drops under it, still right-aligned.
+.st-range-head {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0 var(--as-space-2);
+	margin-bottom: var(--as-space-2);
+}
+
+.st-value {
+	flex: 0 1 auto;
+	min-width: 0;
+	margin-left: auto;
+	font-size: var(--as-text-sm);
+	font-weight: var(--as-weight-semibold);
+	line-height: var(--as-leading-sm);
+	color: var(--as-ink);
+	text-align: right;
+	text-wrap: balance;
+}
+
+button.st-value {
+	padding: 0;
+	border: 0;
+	background: none;
+	font-family: inherit;
+}
+
+.st-range .form-range {
+	display: block;
+}
+
+.st-range-ends {
+	display: flex;
+	justify-content: space-between;
+	gap: var(--as-space-2);
+	margin-top: var(--as-space-1);
+	font-size: var(--as-text-xs);
+	line-height: var(--as-leading-xs);
+	color: var(--as-muted);
+}
+
+// One mark under every step, inset by half the thumb so each sits under the thumb's centre.
+.st-ticks {
+	position: relative;
+	height: var(--as-leading-xs);
+	margin: var(--as-space-1) 8px 0;
+	font-size: var(--as-text-xs);
+	line-height: var(--as-leading-xs);
+	color: var(--as-muted);
+
+	span {
+		position: absolute;
+		top: 0;
+		transform: translateX(-50%);
+	}
+}
+
+// ── Pickers ──────────────────────────────────────────────────────────────────
+
+.st-field {
+	display: grid;
+	gap: var(--as-space-2);
+
+	.st-note {
+		margin-top: 0;
+	}
+}
+
+// ── Directory ────────────────────────────────────────────────────────────────
+
+.st-entry {
+	display: grid;
+	grid-template-columns: 20px minmax(0, 1fr) auto 12px;
+	align-items: center;
+	gap: var(--as-space-3);
+	width: 100%;
+	padding: var(--as-space-3);
+	border: 0;
+	background: none;
+	color: var(--as-ink);
+	text-align: left;
+	transition: background-color m.$motion-quick m.$motion-ease;
+
+	&:hover {
+		background-color: var(--as-hover);
+	}
+
+	&:active {
+		background-color: var(--as-press);
+	}
+
+	&:focus-visible {
+		outline-offset: -2px;
+	}
+}
+
+.st-entry-icon {
+	font-size: 18px;
+	line-height: 1;
+	text-align: center;
+	color: var(--as-accent-ink);
+}
+
+.st-entry-copy {
+	display: grid;
+	gap: 2px;
+	min-width: 0;
+}
+
+.st-entry-name {
+	font-size: var(--as-text-sm);
+	font-weight: var(--as-weight-semibold);
+	line-height: var(--as-leading-xs);
+}
+
+.st-entry-desc {
+	font-size: var(--as-text-xs);
+	line-height: var(--as-leading-xs);
+	color: var(--as-muted);
+	text-wrap: pretty;
+}
+
+.st-entry-value {
+	max-width: 96px;
+	font-size: var(--as-text-xs);
+	line-height: var(--as-leading-xs);
+	color: var(--as-muted);
+	text-align: right;
+}
+
+.st-entry-warn {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--as-space-1);
+	font-weight: var(--as-weight-semibold);
+	color: var(--as-warning-ink);
+}
+
+.st-entry-chevron {
+	font-size: 12px;
+	line-height: 1;
+	color: var(--as-muted);
+}
+
+.st-empty {
+	margin: var(--as-space-6) var(--as-space-2);
+	font-size: var(--as-text-sm);
+	line-height: var(--as-leading-sm);
+	color: var(--as-muted);
+	text-align: center;
+	text-wrap: pretty;
+	overflow-wrap: anywhere;
+}
+
+// ── Leagues ──────────────────────────────────────────────────────────────────
+
+.st-no-leagues .as-notice-icon {
+	color: var(--as-warning-ink);
+}
+
+.league-toggle-logo {
+	width: 24px;
+	height: 24px;
+	border-radius: 6px;
+}
+
+// League marks are rounded rects, not discs, so the placeholder can't inherit the shared circle.
+.league-toggle-logo .crest-fallback {
+	border-radius: 6px;
+	background: var(--as-raised);
+	color: var(--as-ink);
+	font-size: 8px;
+	letter-spacing: 0.04em;
+}
+
+.league-order-row {
+	display: flex;
+	align-items: center;
+	gap: var(--as-space-2);
+	min-height: 48px;
+	padding: var(--as-space-1) var(--as-space-1) var(--as-space-1) var(--as-space-2);
+	transition: opacity m.$motion-quick m.$motion-ease;
+
+	&.is-dragging {
+		opacity: 0.45;
+	}
+
+	&.is-drag-over {
+		box-shadow: inset 0 2px 0 var(--as-accent);
+	}
+
+	.league-toggle-logo {
+		flex-shrink: 0;
+	}
+}
+
+.league-order-handle {
+	flex-shrink: 0;
+	font-size: 14px;
+	color: var(--as-faint);
+	cursor: grab;
+
+	&:active {
+		cursor: grabbing;
+	}
+}
+
+.league-order-label {
+	flex: 1 1 auto;
+	min-width: 0;
+	font-size: var(--as-text-sm);
+	font-weight: var(--as-weight-medium);
+	line-height: var(--as-leading-sm);
+	overflow-wrap: anywhere;
+}
+
+// The pair reads as one control, so they sit flush rather than a row gap apart.
+.league-order-move-btn {
+	width: 28px;
+	font-size: 14px;
+	color: var(--as-muted);
+
+	& + & {
+		margin-left: calc(var(--as-space-2) * -1);
+	}
+
+	&:hover:not(:disabled) {
+		color: var(--as-ink);
+	}
+
+	&:disabled {
+		color: var(--as-faint);
+		opacity: 0.4;
+	}
+}
+
+// A card's closing action: the thing you can do to everything above it.
+.st-action-row {
+	display: flex;
+	align-items: center;
+	gap: var(--as-space-2);
+	width: 100%;
+	min-height: 44px;
+	padding: var(--as-space-3);
+	border: 0;
+	background: none;
+	color: var(--as-accent-ink);
+	font-size: var(--as-text-sm);
+	font-weight: var(--as-weight-semibold);
+	line-height: var(--as-leading-sm);
+	text-align: left;
+	transition: background-color m.$motion-quick m.$motion-ease;
+
+	&:hover:not(:disabled) {
+		background-color: var(--as-hover);
+	}
+
+	&:active:not(:disabled) {
+		background-color: var(--as-press);
+	}
+
+	&:focus-visible {
+		outline-offset: -2px;
+	}
+
+	&:disabled {
+		color: var(--as-muted);
+	}
+}
+
+// ── Favorite teams ───────────────────────────────────────────────────────────
+
+.st-favorites {
+	> .st-search {
+		margin: 0 var(--as-space-3) var(--as-space-3);
+	}
+
+	> .team-pick-scroll {
+		padding: 0 var(--as-space-3) var(--as-space-4);
+		scrollbar-width: thin;
+		scrollbar-color: var(--as-line-strong) transparent;
+	}
+}
+
+.team-pick-scroll > * + * {
+	margin-top: var(--as-space-4);
+}
+
+.team-pick-row {
+	display: flex;
+	align-items: center;
+	gap: var(--as-space-3);
+	min-height: 52px;
+	padding: var(--as-space-2) var(--as-space-1) var(--as-space-2) var(--as-space-3);
+}
+
+.team-pick-copy {
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+.team-pick-name {
+	font-size: var(--as-text-sm);
+	font-weight: var(--as-weight-medium);
+	line-height: var(--as-leading-sm);
+	color: var(--as-ink);
+	overflow-wrap: anywhere;
+}
+
+.team-pick-sublabel {
+	font-size: var(--as-text-xs);
+	line-height: var(--as-leading-xs);
+	color: var(--as-muted);
+}
+
+.team-pick-star {
+	font-size: 16px;
+	color: var(--as-muted);
+
+	&.is-on {
+		color: var(--as-accent-ink);
+	}
+
+	i {
+		transition: transform m.$motion-snap m.$motion-spring;
+	}
+
+	&:active i {
+		transform: scale(0.82);
+	}
+}
+
+// ── Standby Stream guide ─────────────────────────────────────────────────────
+
+@keyframes stGuideIn {
+	from {
+		opacity: 0;
+		transform: translateY(8px);
+	}
+}
+
+.st-guide {
+	padding-bottom: 0;
+}
+
+.st-guide-body {
+	flex: 1 0 auto;
+	padding: var(--as-space-6) var(--as-space-3) 0;
+	animation: stGuideIn m.$motion-base m.$motion-ease both;
+}
+
+.st-guide-step {
+	margin: 0 0 var(--as-space-1);
+	font-size: var(--as-text-xs);
+	font-weight: var(--as-weight-semibold);
+	line-height: var(--as-leading-xs);
+	color: var(--as-muted);
+}
+
+.st-guide-title {
+	margin: 0 0 var(--as-space-1);
+	font-size: var(--as-text-lg);
+	font-weight: var(--as-weight-bold);
+	line-height: var(--as-leading-md);
+	letter-spacing: var(--as-tracking-tight);
+}
+
+.st-guide-lede {
+	margin: 0 0 var(--as-space-4);
+	font-size: var(--as-text-sm);
+	line-height: var(--as-leading-sm);
+	color: var(--as-muted);
+}
+
+.st-guide-point {
+	display: grid;
+	grid-template-columns: 20px minmax(0, 1fr);
+	align-items: start;
+	gap: var(--as-space-3);
+
+	> i {
+		font-size: 18px;
+		line-height: var(--as-leading-sm);
+		color: var(--as-accent-ink);
+	}
+}
+
+.st-guide-point-title {
+	margin: 0;
+	font-size: var(--as-text-sm);
+	font-weight: var(--as-weight-semibold);
+	line-height: var(--as-leading-sm);
+}
+
+.st-guide-foot {
+	position: sticky;
+	bottom: 0;
+	padding: var(--as-space-3) var(--as-space-3) var(--as-space-4);
+	background: var(--as-page);
+}
+
+@include m.reduced-motion {
+	.romer-revealing,
+	.st-guide-body {
+		animation: none;
+	}
+
+	.team-pick-star i {
+		transition: none;
+	}
+}

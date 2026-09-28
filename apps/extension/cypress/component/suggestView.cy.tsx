@@ -18,6 +18,8 @@ import type { TabSuggestion } from '../../utils/tabSuggestions';
 // A 4x4 solid #008348 PNG. A data URI so the test needs no network and cannot taint the canvas on
 // its own — what it is proving is that a crest is readable back off the page at all.
 const greenCrest = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAIAAAAmkwkpAAAAD0lEQVR4nGNgaPZAIOI4AEWjDLFo9OSUAAAAAElFTkSuQmCC';
+const navyCrest = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAIAAAAmkwkpAAAAE0lEQVR4nGPklndkgAEmOAsvBwAVtABz/BlSUAAAAABJRU5ErkJggg==';
+const whiteCrest = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAIAAAAmkwkpAAAAE0lEQVR4nGP8//8/AwwwwVl4OQCWbgMF7ZjH1AAAAABJRU5ErkJggg==';
 
 const channelsOf = (color: string): number[] => (
 	(color.match(/\d+(\.\d+)?/g) ?? []).slice(0, 3).map(Number)
@@ -117,74 +119,86 @@ describe('suggestView', () => {
 		cy.contains('Nothing you have open').should('be.visible');
 	});
 
+	it('draws the pairs as one card under a titled header', () => {
+		cy.mount(<SuggestView {...defaultProps} />);
+		cy.get('.as-subhead h2').should('have.text', 'Suggested tabs');
+		cy.get('.st-back').should('have.attr', 'aria-label', 'Back');
+		cy.get('.st-card.suggest-list .suggest-row').should('have.length', 2);
+		cy.get('.suggest-row').first().should('contain.text', 'BOS').and('contain.text', 'NYK').and('contain.text', 'Celtics vs Knicks Live');
+	});
+
+	it('keeps the apply button in reach at the foot of the sheet', () => {
+		cy.viewport(320, 560);
+		cy.mount(<div className='popup-root'><SuggestView {...defaultProps} /></div>);
+		cy.get('.suggest-foot .btn-primary').should(([button]: JQuery<HTMLElement>) => {
+			expect(button.getBoundingClientRect().bottom).to.be.at.most(560);
+		});
+	});
+
 	it('calls back when the header is used', () => {
 		const onBack = cy.stub().as('back');
 		cy.mount(<SuggestView {...defaultProps} onBack={onBack} />);
-		cy.get('.setup-header').click();
+		cy.get('.st-back').click();
 		cy.get('@back').should('have.been.called');
 	});
 });
 
 const locales = { de, en, es, fil, fr, it: itLocale, ja, ko, pt_BR: ptBR, pt_PT: ptPT, zh_CN: zhCN, zh_TW: zhTW };
 
-// The two crests in a row sit on the popup's #0d1117, where a navy or black mark is a silhouette.
-// The white disc is the only thing separating them from it, so its plate is measured rather than
-// trusted to the stylesheet — a disc that resolves to the surface behind it is the whole defect.
-describe('suggestView crest discs', () => {
+// The crests are measured against the card they sit on, like every other crest on the board: a
+// mark that reads there is drawn bare, and one that disappears into it gets a tinted plate.
+describe('suggestView crests', () => {
 	beforeEach(() => cy.viewport(320, 560));
 
-	const withCrests = {
+	const withLogos = (logo: string) => ({
 		...defaultProps,
 		games: games.map(game => ({
 			...game,
-			awayTeam: { ...game.awayTeam, logo: greenCrest },
-			homeTeam: { ...game.homeTeam, logo: greenCrest },
+			awayTeam: { ...game.awayTeam, logo },
+			homeTeam: { ...game.homeTeam, logo },
 		})),
-	};
+	});
 
-	it('puts a light plate behind every crest', () => {
-		cy.mount(<SuggestView {...withCrests} />);
-		cy.get('.suggest-crest-disc').should('have.length', 4);
-		cy.get('.popup-container').then(([container]: JQuery<HTMLElement>) => {
-			const surface = getComputedStyle(container).backgroundColor;
-			cy.get('.suggest-crest-disc').each(($disc: JQuery<HTMLElement>) => {
-				const plate = getComputedStyle($disc[0]!).backgroundColor;
-				expect(contrastRatio(plate, surface), `${plate} on ${surface}`).to.be.at.least(3);
+	it('draws both crests of every pair at row size', () => {
+		cy.mount(<SuggestView {...withLogos(whiteCrest)} />);
+		cy.get('.suggest-crest').should('have.length', 4).each(($crest: JQuery<HTMLElement>) => {
+			const box = $crest[0]!.getBoundingClientRect();
+			expect(box.width, 'crest width').to.equal(20);
+			expect(box.height, 'crest height').to.equal(20);
+		});
+	});
+
+	it('leaves a crest bare where it reads on the card', () => {
+		cy.mount(<SuggestView {...withLogos(whiteCrest)} />);
+		cy.get('.suggest-crest .as-crest').should('have.length', 4).each(($disc: JQuery<HTMLElement>) => {
+			expect($disc[0]).to.have.class('is-bare');
+		});
+	});
+
+	it('puts a light plate, tinted from the crest, behind a crest that disappears into the card', () => {
+		cy.mount(<SuggestView {...withLogos(navyCrest)} />);
+		cy.get('.suggest-list').then(([card]: JQuery<HTMLElement>) => {
+			const surface = getComputedStyle(card).backgroundColor;
+			cy.get('.suggest-crest .as-crest').should('have.length', 4).each(($disc: JQuery<HTMLElement>) => {
+				const disc = $disc[0]!;
+				expect(disc).not.to.have.class('is-bare');
+				expect(getComputedStyle(disc).backgroundImage).to.contain('11, 31, 65');
+				expect(contrastRatio(getComputedStyle(disc).backgroundColor, surface), 'the plate stands off the card').to.be.at.least(3);
 			});
 		});
 	});
 
-	it('tints the plate with a colour read out of the crest itself', () => {
-		cy.mount(<SuggestView {...withCrests} />);
-		cy.get('.suggest-crest-disc').first().should(([el]: JQuery<HTMLElement>) => {
-			expect(getComputedStyle(el).backgroundImage).to.contain('0, 131, 72');
-		});
-	});
-
-	// The disc grows around the mark rather than squeezing it: at this size a crest shrunk to fit
-	// inside its old footprint is a smaller crest than the one that was already hard to read.
-	it('leaves the crest the size it was and rings it', () => {
-		cy.mount(<SuggestView {...withCrests} />);
-		cy.get('.suggest-crest').first().should(([crest]: JQuery<HTMLElement>) => {
-			expect(crest.getBoundingClientRect().width, 'crest width').to.be.closeTo(15.2, 0.5);
-		});
-		cy.get('.suggest-crest-disc').first().should(([disc]: JQuery<HTMLElement>) => {
-			const box = disc.getBoundingClientRect();
-			expect(box.width, 'disc width').to.be.closeTo(20.32, 0.5);
-			expect(box.width, 'disc is square').to.be.closeTo(box.height, 0.5);
-		});
-	});
-
-	// The placeholder is the shared grey circle, which on a white plate would read as a hole rather
-	// than as a crest still loading.
-	it('drops the grey placeholder inside the plate', () => {
+	it('letters a missing crest in its team colour rather than leaving a hole', () => {
 		cy.mount(<SuggestView {...defaultProps} />);
 		cy.get('.suggest-crest .crest-fallback').first()
-			.should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+			.should('have.text', 'BOS')
+			.and(([el]: JQuery<HTMLElement>) => {
+				expect(getComputedStyle(el).backgroundColor).not.to.equal('rgba(0, 0, 0, 0)');
+			});
 	});
 
-	it('keeps the widened row inside the popup', () => {
-		cy.mount(<SuggestView {...withCrests} />);
+	it('keeps every row inside the popup', () => {
+		cy.mount(<SuggestView {...withLogos(greenCrest)} />);
 		cy.get('.suggest-row').each(($row: JQuery<HTMLElement>) => {
 			const row = $row[0]!;
 			expect(row.scrollWidth, 'row does not overflow').to.be.at.most(row.clientWidth);
@@ -198,7 +212,7 @@ describe('suggestView locale widths', () => {
 	it('fits every locale apply label on one line', () => {
 		cy.viewport(320, 560);
 		cy.mount(<SuggestView {...defaultProps} />);
-		cy.get('.mt-auto button').then(([button]: JQuery<HTMLElement>) => {
+		cy.get('.suggest-foot button').then(([button]: JQuery<HTMLElement>) => {
 			const style = getComputedStyle(button);
 			const budget = button.getBoundingClientRect().width
 				- parseFloat(style.paddingLeft)

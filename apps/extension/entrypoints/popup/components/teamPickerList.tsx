@@ -3,6 +3,7 @@ import { i18n } from '#i18n';
 import type { EspnTeamEntry } from '@arenaswap/core';
 import { createFavoriteTeamKey } from '@arenaswap/core/constants';
 import type { LeagueId } from '@arenaswap/core/types';
+import SettingsGroup from './settingControls';
 import TeamPickerRow from './teamPickerRow';
 import { matchesTeamQuery } from '../../../utils/favoriteTeams';
 import { leagueLabels, leagueOrder } from '../popupHelpers';
@@ -17,19 +18,16 @@ interface teamPickerListProps {
 	selectedFavorites: ReadonlySet<string>;
 	onToggleFavorite: (team: EspnTeamEntry) => void;
 	onRetry: () => void;
-	// Onboarding can walk away from a failed load; settings has nowhere to walk to.
-	onSkip?: () => void;
 	// Scrolls away with the list. The search box is what has to stay put.
 	leading?: ReactNode;
-	// Sits above the league groups. Callers drop it while a search is running rather than filtering
-	// it, so it never competes with the results.
+	// Sits above the league groups. Callers drop it while a search runs rather than filtering it.
 	pinned?: ReactNode;
 }
 
-// A fragment rather than a wrapper, so the search box and the scrolling list stay siblings of
-// whatever chrome the caller puts around them — onboarding pins its footer against that column.
+// A fragment, so the search box and the scrolling list are both children of the caller's column and
+// only the list scrolls.
 const teamPickerList = ({
-	teams, query, onQueryChange, isLoading, hasError, selectedFavorites, onToggleFavorite, onRetry, onSkip, leading, pinned,
+	teams, query, onQueryChange, isLoading, hasError, selectedFavorites, onToggleFavorite, onRetry, leading, pinned,
 }: teamPickerListProps) => {
 	const filteredTeams = teams.filter(team => matchesTeamQuery(team, query));
 
@@ -44,35 +42,35 @@ const teamPickerList = ({
 
 	return (
 		<>
-			<input
-				type='search'
-				className='form-control form-control-sm mb-2'
-				placeholder={i18n.t('teamPicker.searchPlaceholder')}
-				value={query}
-				onChange={e => onQueryChange(e.target.value)}
-			/>
+			<div className='st-search'>
+				<i className='bi bi-search st-search-icon' aria-hidden='true' />
+				<input
+					type='search'
+					className='form-control'
+					placeholder={i18n.t('teamPicker.searchPlaceholder')}
+					aria-label={i18n.t('teamPicker.searchPlaceholder')}
+					autoComplete='off'
+					value={query}
+					onChange={e => onQueryChange(e.target.value)}
+				/>
+			</div>
 
-			{/* The scroll region is always mounted, so whatever the caller puts above the list
-			    survives a failed roster fetch — the favorite team bonus has nothing to do with
-			    whether ESPN answered. */}
-			<div className='overflow-auto'>
+			{/* Always mounted, so what the caller puts above the list survives a failed roster fetch. */}
+			<div className='overflow-auto team-pick-scroll'>
 				{leading}
 
 				{isLoading && (
-					<div className='d-flex flex-column justify-content-center align-items-center mt-4 popup-loading-wrap'>
-						<div className='spinner-border popup-loading-spinner' role='status'>
-							<span className='visually-hidden'>{i18n.t('teamPicker.loading')}</span>
-						</div>
-						<div className='mt-2 text-center popup-loading-text'>{i18n.t('teamPicker.loading')}</div>
+					<div className='as-loading' role='status'>
+						<div className='spinner-border' aria-hidden='true' />
+						<span>{i18n.t('teamPicker.loading')}</span>
 					</div>
 				)}
 
 				{hasError && !isLoading && (
-					<div className='text-center mt-3'>
-						<div className='small text-danger mb-2'>{i18n.t('teamPicker.loadError')}</div>
-						<div className='d-flex justify-content-center gap-2'>
-							<button type='button' className='btn btn-sm btn-outline-secondary' onClick={onRetry}>{i18n.t('teamPicker.retry')}</button>
-							{onSkip && <button type='button' className='btn btn-sm btn-link p-0 text-body-secondary' onClick={onSkip}>{i18n.t('teamPicker.skipForNow')}</button>}
+					<div className='as-empty team-pick-error'>
+						<p>{i18n.t('teamPicker.loadError')}</p>
+						<div className='as-empty-actions'>
+							<button type='button' className='btn btn-quiet btn-sm' onClick={onRetry}>{i18n.t('teamPicker.retry')}</button>
 						</div>
 					</div>
 				)}
@@ -81,10 +79,7 @@ const teamPickerList = ({
 					<>
 						{pinned}
 						{sortedLeagues.map(leagueId => (
-							<div key={leagueId}>
-								<div className='fw-bold text-uppercase popup-section-label mt-2'>
-									{leagueLabels[leagueId] ?? leagueId.toUpperCase()}
-								</div>
+							<SettingsGroup key={leagueId} title={leagueLabels[leagueId] ?? leagueId.toUpperCase()}>
 								{(grouped[leagueId] ?? []).map(team => (
 									<TeamPickerRow
 										key={team.id}
@@ -93,12 +88,10 @@ const teamPickerList = ({
 										onToggle={() => onToggleFavorite(team)}
 									/>
 								))}
-							</div>
+							</SettingsGroup>
 						))}
 						{sortedLeagues.length === 0 && query && (
-							<div className='small text-body-secondary text-center mt-3'>
-								{i18n.t('teamPicker.noMatch', { query })}
-							</div>
+							<p className='st-empty'>{i18n.t('teamPicker.noMatch', { query })}</p>
 						)}
 					</>
 				)}

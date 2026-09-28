@@ -1,5 +1,5 @@
 import { i18n } from '#i18n';
-import SettingTooltipIcon from './settingTooltipIcon';
+import { SettingCopy } from './settingControls';
 
 interface favoriteTeamBonusInputProps {
 	value: number;
@@ -7,16 +7,13 @@ interface favoriteTeamBonusInputProps {
 }
 
 const favoriteTeamBonusInput = ({ value, onChange }: favoriteTeamBonusInputProps) => (
-	<div>
-		<div className='d-flex justify-content-between align-items-center mb-1'>
-			<div className='d-flex align-items-center gap-1'>
-				<label className='text-body-secondary setting-toggle-label' htmlFor='favoriteTeamBonusInput'>
-					<i className='bi bi-star me-1 text-primary' />{i18n.t('favoriteTeamBonus.label')}
-				</label>
-				<SettingTooltipIcon text={i18n.t('favoriteTeamBonus.explainer')} />
-			</div>
-			<span className='fw-semibold setting-value-label'>{i18n.t('favoriteTeamBonus.perTeam', [value])}</span>
-		</div>
+	<div className='st-control st-toggle st-number'>
+		<SettingCopy
+			htmlFor='favoriteTeamBonusInput'
+			label={i18n.t('favoriteTeamBonus.label')}
+			tooltip={i18n.t('favoriteTeamBonus.explainer')}
+			note={i18n.t('favoriteTeamBonus.perTeam', [value])}
+		/>
 		<input
 			id='favoriteTeamBonusInput'
 			type='number'
@@ -24,7 +21,7 @@ const favoriteTeamBonusInput = ({ value, onChange }: favoriteTeamBonusInputProps
 			step={1}
 			value={value}
 			onChange={e => onChange(Math.max(0, Math.round(Number(e.target.value) || 0)))}
-			className='form-control form-control-sm'
+			className='form-control num'
 			inputMode='numeric'
 		/>
 	</div>

@@ -25,13 +25,13 @@ export interface settingsEntry {
 }
 
 export const settingsGroups: readonly settingsGroup[] = [
-	{ id: 'switching', icon: 'speedometer2', labelKey: 'setup.groupSwitching', descriptionKey: 'setup.groupSwitchingDesc' },
-	{ id: 'scoring', icon: 'sliders', labelKey: 'setup.groupScoring', descriptionKey: 'setup.groupScoringDesc' },
+	{ id: 'switching', icon: 'arrow-left-right', labelKey: 'setup.groupSwitching', descriptionKey: 'setup.groupSwitchingDesc' },
+	{ id: 'scoring', icon: 'bar-chart', labelKey: 'setup.groupScoring', descriptionKey: 'setup.groupScoringDesc' },
 	{ id: 'favorites', icon: 'star', labelKey: 'setup.groupFavorites', descriptionKey: 'setup.groupFavoritesDesc' },
 	{ id: 'leagues', icon: 'trophy', labelKey: 'setup.groupLeagues', descriptionKey: 'setup.groupLeaguesDesc' },
 	{ id: 'display', icon: 'eye', labelKey: 'setup.groupDisplay', descriptionKey: 'setup.groupDisplayDesc' },
 	{ id: 'standby', icon: 'broadcast', labelKey: 'setup.groupStandby', descriptionKey: 'setup.groupStandbyDesc' },
-	{ id: 'demo', icon: 'joystick', labelKey: 'setup.groupDemo', descriptionKey: 'setup.groupDemoDesc' },
+	{ id: 'demo', icon: 'play', labelKey: 'setup.groupDemo', descriptionKey: 'setup.groupDemoDesc' },
 ] as const;
 
 export const settingsEntries: readonly settingsEntry[] = [

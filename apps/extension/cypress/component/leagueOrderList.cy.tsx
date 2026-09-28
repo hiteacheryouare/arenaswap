@@ -65,6 +65,30 @@ describe('leagueOrderList', () => {
 		cy.get('@onReset').should('have.been.called');
 	});
 
+	it('closes the card with the reset, as its last row', () => {
+		cy.mount(<LeagueOrderList {...defaultProps} order={['mlb', 'nba', 'nhl']} />);
+		cy.get('.st-card.league-order-list > :last-child').should('have.id', 'leagueOrderReset');
+	});
+
+	it('keeps a long league name whole rather than clipping it', () => {
+		cy.viewport(320, 560);
+		cy.mount(
+			<div className='popup-container st'>
+				<div className='st-body'>
+					<LeagueOrderList {...defaultProps} order={['nba', 'ncaaw', 'olybkw', 'olywih']} />
+				</div>
+			</div>,
+		);
+		cy.get('.league-order-label').each(($label: JQuery<HTMLElement>) => {
+			const label = $label[0]!;
+			expect(label.scrollWidth, `${label.textContent} is not cut off`).to.be.at.most(label.clientWidth);
+		});
+		cy.get('.league-order-row').each(($row: JQuery<HTMLElement>) => {
+			const down = $row[0]!.querySelector('.league-order-move-btn:last-child')!;
+			expect(down.getBoundingClientRect().right, 'the arrows stay on the card').to.be.at.most(320 - 12);
+		});
+	});
+
 	it('reorders via drag and drop', () => {
 		const onReorder = cy.spy().as('onReorder');
 		cy.mount(<LeagueOrderList {...defaultProps} onReorder={onReorder} />);

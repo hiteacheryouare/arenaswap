@@ -39,7 +39,7 @@ const LeagueOrderList = ({ order, leagueLogos, disabled, onReorder, onReset }: l
 	};
 
 	return (
-		<div className='league-order-list mb-3'>
+		<div className='st-card league-order-list'>
 			{order.map((leagueId, index) => {
 				const league = leagueConfigMap[leagueId];
 				if (!league) return null;
@@ -57,8 +57,7 @@ const LeagueOrderList = ({ order, leagueLogos, disabled, onReorder, onReset }: l
 							dragIndexRef.current = index;
 							setDraggingIndex(index);
 							event.dataTransfer.effectAllowed = 'move';
-							// Firefox refuses to start a drag with an empty data transfer, and Cypress
-							// cannot drive one either.
+							// Firefox won't start a drag with an empty data transfer, and Cypress can't drive one.
 							event.dataTransfer.setData('text/plain', leagueId);
 						}}
 						onDragOver={event => {
@@ -75,11 +74,11 @@ const LeagueOrderList = ({ order, leagueLogos, disabled, onReorder, onReset }: l
 					>
 						<i className='bi bi-grip-vertical league-order-handle' aria-hidden='true' title={i18n.t('setup.leagueDragHandle')} />
 						<LeagueLogo league={league} logos={leagueLogos} />
-						<span className='league-order-label fw-semibold text-body'>{league.label}</span>
+						<span className='league-order-label'>{league.label}</span>
 						<button
 							type='button'
 							id={`league-order-up-${leagueId}`}
-							className='btn btn-sm btn-link league-order-move-btn'
+							className='as-icon league-order-move-btn'
 							onClick={() => onReorder(index, index - 1)}
 							disabled={disabled || index === 0}
 							aria-label={i18n.t('setup.leagueMoveUp', { label: league.label })}
@@ -89,7 +88,7 @@ const LeagueOrderList = ({ order, leagueLogos, disabled, onReorder, onReset }: l
 						<button
 							type='button'
 							id={`league-order-down-${leagueId}`}
-							className='btn btn-sm btn-link league-order-move-btn'
+							className='as-icon league-order-move-btn'
 							onClick={() => onReorder(index, index + 1)}
 							disabled={disabled || index === order.length - 1}
 							aria-label={i18n.t('setup.leagueMoveDown', { label: league.label })}
@@ -103,11 +102,11 @@ const LeagueOrderList = ({ order, leagueLogos, disabled, onReorder, onReset }: l
 				<button
 					type='button'
 					id='leagueOrderReset'
-					className='btn btn-sm btn-link league-order-reset'
+					className='st-action-row league-order-reset'
 					onClick={onReset}
 					disabled={disabled}
 				>
-					<i className='bi bi-arrow-counterclockwise me-1' aria-hidden='true' />
+					<i className='bi bi-arrow-counterclockwise' aria-hidden='true' />
 					{i18n.t('setup.leagueOrderReset')}
 				</button>
 			)}

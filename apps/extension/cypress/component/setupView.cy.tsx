@@ -104,14 +104,14 @@ describe('setupView index', () => {
 	it('heads the page and gives the reader a way back out of it', () => {
 		cy.mount(<SetupView {...defaultProps} onClose={cy.stub().as('onClose')} />);
 		cy.contains('Settings').should('exist');
-		cy.get('.setup-header').click();
+		cy.get('.st-back').click();
 		cy.get('@onClose').should('have.been.called');
 	});
 
 	it('lists every settings group with a description', () => {
 		cy.mount(<SetupView {...defaultProps} />);
-		cy.get('.settings-index-row').should('have.length', 7);
-		cy.get('#settingsGroup-switching').find('.settings-index-desc').should('not.be.empty');
+		cy.get('.st-entry').should('have.length', 7);
+		cy.get('#settingsGroup-switching').find('.st-entry-desc').should('not.be.empty');
 	});
 
 	it('does not render the old tab bar', () => {
@@ -122,18 +122,18 @@ describe('setupView index', () => {
 	it('calls onClose when the root back button is clicked', () => {
 		const spy = cy.spy().as('onClose');
 		cy.mount(<SetupView {...defaultProps} onClose={spy} />);
-		cy.get('button.setup-header').click();
+		cy.get('.st-back').click();
 		cy.get('@onClose').should('have.been.called');
 	});
 
 	it('flags the leagues row when no leagues are selected', () => {
 		cy.mount(<SetupView {...defaultProps} prefs={{ ...defaultPrefs, enabledLeagues: [] }} />);
-		cy.get('#settingsGroup-leagues').find('.settings-index-warn').should('exist');
+		cy.get('#settingsGroup-leagues').find('.st-entry-warn').should('exist');
 	});
 
 	it('does not flag the leagues row when leagues are selected', () => {
 		cy.mount(<SetupView {...defaultProps} />);
-		cy.get('#settingsGroup-leagues').find('.settings-index-warn').should('not.exist');
+		cy.get('#settingsGroup-leagues').find('.st-entry-warn').should('not.exist');
 	});
 });
 
@@ -141,7 +141,7 @@ describe('setupView navigation', () => {
 	it('opens a group page and hides the index', () => {
 		cy.mount(<SetupView {...defaultProps} />);
 		openGroup('switching');
-		cy.get('.settings-index-row').should('not.exist');
+		cy.get('.st-entry').should('not.exist');
 		cy.get('#sensitivity-range').should('exist');
 	});
 
@@ -149,15 +149,76 @@ describe('setupView navigation', () => {
 		const spy = cy.spy().as('onClose');
 		cy.mount(<SetupView {...defaultProps} onClose={spy} />);
 		openGroup('display');
-		cy.get('button.setup-header').click();
-		cy.get('.settings-index-row').should('have.length', 7);
+		cy.get('.st-back').click();
+		cy.get('.st-entry').should('have.length', 7);
 		cy.get('@onClose').should('not.have.been.called');
 	});
 
-	it('shows the group description as the sub-page lede', () => {
+	// The directory row already said what the section is for, one tap ago.
+	it('titles a group page with its name and goes straight into the controls', () => {
 		cy.mount(<SetupView {...defaultProps} />);
 		openGroup('standby');
-		cy.get('.settings-page-lede').should('not.be.empty');
+		cy.get('.as-subhead h2').should('have.text', en.setup.groupStandby);
+		cy.contains(en.setup.groupStandbyDesc).should('not.exist');
+		cy.get('.st-card').first().find('#standbyStreamToggle').should('exist');
+	});
+
+	it('names the back button for a screen reader', () => {
+		cy.mount(<SetupView {...defaultProps} />);
+		cy.get('.st-back').should('have.attr', 'aria-label', 'Back');
+		openGroup('display');
+		cy.get('.st-back').should('have.attr', 'aria-label', 'Back');
+	});
+});
+
+const valueOf = (id: string) => cy.get(`#settingsGroup-${id} .st-entry-value`);
+
+describe('setupView directory values', () => {
+	it('says where every section stands without opening it', () => {
+		cy.mount(<SetupView {...defaultProps} favoriteTeamIds={new Set(['nba:20', 'nhl:15'])} />);
+		valueOf('switching').should('have.text', 'Balanced');
+		valueOf('scoring').should('have.text', '5 signals');
+		valueOf('favorites').should('have.text', '2 teams');
+		valueOf('leagues').should('have.text', '2 on');
+		valueOf('display').should('have.text', 'Dark');
+		valueOf('standby').should('have.text', 'Off');
+		valueOf('demo').should('have.text', 'Off');
+	});
+
+	it('follows the settings as they change', () => {
+		cy.mount(<SetupView
+			{...defaultProps}
+			demoMode
+			prefs={{ ...defaultPrefs, sensitivity: 7, disabledSignals: ['momentum', 'comeback'], theme: 'system', standbyStreamEnabled: true, enabledLeagues: ['nba'] }}
+		/>);
+		valueOf('switching').should('have.text', 'Ludicrous Speed');
+		valueOf('scoring').should('have.text', '3 signals');
+		valueOf('favorites').should('have.text', 'None');
+		valueOf('leagues').should('have.text', '1 on');
+		valueOf('display').should('have.text', 'System');
+		valueOf('standby').should('have.text', 'On');
+		valueOf('demo').should('have.text', 'On');
+	});
+
+	it('shows nothing it cannot vouch for before the prefs arrive', () => {
+		cy.mount(<SetupView {...defaultProps} prefsLoaded={false} />);
+		cy.get('#settingsGroup-switching .st-entry-value').should('not.exist');
+		cy.get('#settingsGroup-demo .st-entry-value').should('have.text', 'Off');
+	});
+
+	it('keeps every locale\'s longest sensitivity name inside the row', () => {
+		cy.viewport(320, 560);
+		cy.mount(<SetupView {...defaultProps} />);
+		Object.entries(locales).forEach(([name, locale]) => {
+			Object.values(locale.sensitivity.level).forEach(level => {
+				valueOf('switching').should(([el]: JQuery<HTMLElement>) => {
+					el.textContent = level;
+					const row = el.closest('.st-entry')!;
+					expect(row.scrollWidth, `${name} "${level}" stays inside the row`).to.be.at.most(row.clientWidth);
+					expect(el.getBoundingClientRect().width, `${name} "${level}" leaves the description room`).to.be.at.most(96.5);
+				});
+			});
+		});
 	});
 });
 
@@ -165,14 +226,14 @@ describe('setupView search', () => {
 	it('matches a setting by its label', () => {
 		cy.mount(<SetupView {...defaultProps} />);
 		cy.get('#settingsSearch').type('cooldown');
-		cy.contains('.settings-index-row', 'Switch cooldown').should('exist');
-		cy.get('.settings-index-row').should('have.length.lessThan', 6);
+		cy.contains('.st-entry', 'Switch cooldown').should('exist');
+		cy.get('.st-entry').should('have.length.lessThan', 6);
 	});
 
 	it('matches a setting by a synonym that is not in its label', () => {
 		cy.mount(<SetupView {...defaultProps} />);
 		cy.get('#settingsSearch').type('celsius');
-		cy.contains('.settings-index-row', 'Temperature unit').should('exist');
+		cy.contains('.st-entry', 'Temperature unit').should('exist');
 	});
 
 	// The thing somebody wants off is a thing they have only ever seen, never read a name for, so the
@@ -180,44 +241,44 @@ describe('setupView search', () => {
 	it('finds the opening animation by what it looks like rather than what it is called', () => {
 		cy.mount(<SetupView {...defaultProps} />);
 		cy.get('#settingsSearch').type('intro');
-		cy.contains('.settings-index-row', 'Opening animation').should('exist');
+		cy.contains('.st-entry', 'Opening animation').should('exist');
 	});
 
 	it('ignores case and accents', () => {
 		cy.mount(<SetupView {...defaultProps} />);
 		cy.get('#settingsSearch').type('COOLDOWN');
-		cy.contains('.settings-index-row', 'Switch cooldown').should('exist');
+		cy.contains('.st-entry', 'Switch cooldown').should('exist');
 	});
 
 	it('does not spill a group description match onto every setting in that group', () => {
 		cy.mount(<SetupView {...defaultProps} />);
 		cy.get('#settingsSearch').type('bonus');
-		cy.contains('.settings-index-row', 'Favorite team bonus').should('exist');
-		cy.contains('.settings-index-row', 'Postseason boost').should('exist');
-		cy.contains('.settings-index-row', 'Closeness').should('not.exist');
+		cy.contains('.st-entry', 'Favorite team bonus').should('exist');
+		cy.contains('.st-entry', 'Postseason boost').should('exist');
+		cy.contains('.st-entry', 'Closeness').should('not.exist');
 	});
 
 	it('shows an empty state when nothing matches', () => {
 		cy.mount(<SetupView {...defaultProps} />);
 		cy.get('#settingsSearch').type('zzzznope');
-		cy.get('.settings-index-row').should('not.exist');
-		cy.get('.settings-search-empty').should('exist');
+		cy.get('.st-entry').should('not.exist');
+		cy.get('.st-empty').should('exist');
 	});
 
 	it('opens the owning group when a result is clicked', () => {
 		cy.mount(<SetupView {...defaultProps} />);
 		cy.get('#settingsSearch').type('celsius');
-		cy.contains('.settings-index-row', 'Temperature unit').click();
+		cy.contains('.st-entry', 'Temperature unit').click();
 		cy.get('#temperatureUnitToggle').should('exist');
 	});
 
 	it('clears the query after navigating to a group', () => {
 		cy.mount(<SetupView {...defaultProps} />);
 		cy.get('#settingsSearch').type('cooldown');
-		cy.contains('.settings-index-row', 'Switch cooldown').click();
-		cy.get('button.setup-header').click();
+		cy.contains('.st-entry', 'Switch cooldown').click();
+		cy.get('.st-back').click();
 		cy.get('#settingsSearch').should('have.value', '');
-		cy.get('.settings-index-row').should('have.length', 7);
+		cy.get('.st-entry').should('have.length', 7);
 	});
 });
 
@@ -247,7 +308,7 @@ describe('setupView cooldown slider', () => {
 		cy.mount(<SetupView {...defaultProps} prefs={{ ...defaultPrefs, cooldownSeconds: 0 }} />);
 		openGroup('switching');
 
-		cy.get('#cooldown-range').parent().find('.setting-value-label').should('have.text', 'Off');
+		cy.get('#cooldown-range').parent().find('.st-value').should('have.text', 'Off');
 		cy.get('#cooldown-range').parent().should('not.contain.text', '0s');
 	});
 
@@ -257,7 +318,7 @@ describe('setupView cooldown slider', () => {
 		openGroup('switching');
 
 		Object.entries(locales).forEach(([name, locale]) => {
-			cy.get('#cooldown-range').parent().find('.setting-value-label').should(([el]: JQuery<HTMLElement>) => {
+			cy.get('#cooldown-range').parent().find('.st-value').should(([el]: JQuery<HTMLElement>) => {
 				el.textContent = locale.cooldown.off;
 				const row = el.parentElement!;
 				expect(el.getBoundingClientRect().height, `off label stays one line in ${name}`).to.be.at.most(22);
@@ -460,8 +521,8 @@ describe('setupView Rømer unlock', () => {
 	it('never names Rømer anywhere in the settings before it is found', () => {
 		cy.mount(<SetupView {...defaultProps} />);
 		cy.get('#settingsSearch').type('romer');
-		cy.get('.settings-index-row').should('not.exist');
-		cy.get('.settings-search-empty').should('exist');
+		cy.get('.st-entry').should('not.exist');
+		cy.get('.st-empty').should('exist');
 	});
 });
 
@@ -477,19 +538,84 @@ describe('setupView demo group', () => {
 		openGroup('demo');
 		cy.get('#demoToggle').should('be.checked');
 	});
+
+	it('dims the season picker until demo mode is on', () => {
+		cy.mount(<SetupView {...defaultProps} />);
+		openGroup('demo');
+		cy.get('#demoSeasonSelect').should('be.disabled').closest('.st-card').should('have.class', 'is-off');
+		cy.contains(en.setup.demoSeasonExplainer).should('exist');
+	});
+
+	it('calls onToggleDemo when it is flipped', () => {
+		const onToggleDemo = cy.spy().as('onToggleDemo');
+		cy.mount(<SetupView {...defaultProps} onToggleDemo={onToggleDemo} />);
+		openGroup('demo');
+		cy.get('#demoToggle').check({ force: true });
+		cy.get('@onToggleDemo').should('have.been.calledOnce');
+	});
+});
+
+describe('setupView Ludicrous Speed', () => {
+	it('only turns the value into the hyperdrive button at the top of the range', () => {
+		cy.mount(<SetupView {...defaultProps} prefs={{ ...defaultPrefs, sensitivity: 6 }} />);
+		openGroup('switching');
+		cy.get('#sensitivity-range').closest('.st-control').find('button.st-value').should('not.exist');
+		cy.get('#sensitivity-range').closest('.st-control').find('.st-value').should('not.have.class', 'ludicrous-speed');
+	});
+
+	it('engages the hyperdrive from the value at sensitivity 7', () => {
+		cy.mount(<SetupView {...defaultProps} prefs={{ ...defaultPrefs, sensitivity: 7 }} />);
+		openGroup('switching');
+		cy.get('button.st-value.ludicrous-speed')
+			.should('contain.text', 'Ludicrous Speed')
+			.and('have.attr', 'title', 'Engage the hyperdrive...');
+		cy.get('button.st-value.ludicrous-speed').click();
+		// The component run swaps the set piece for a stub (cypress.config.ts); ludicrousSpeed.cy.tsx drives the real one.
+		cy.get('[data-testid="ludicrous-speed-overlay"]').should('exist');
+		cy.get('[data-testid="ludicrous-speed-overlay"] button').click();
+		cy.get('[data-testid="ludicrous-speed-overlay"]').should('not.exist');
+	});
+
+	it('keeps the sensitivity label on one line while the long value takes its own', () => {
+		cy.viewport(320, 560);
+		cy.mount(<SetupView {...defaultProps} prefs={{ ...defaultPrefs, sensitivity: 7 }} />);
+		openGroup('switching');
+		cy.get('label[for="sensitivity-range"]').then(([label]: JQuery<HTMLElement>) => {
+			const oneLine = parseFloat(getComputedStyle(label).lineHeight);
+			for (const [name, locale] of Object.entries(locales)) {
+				label.textContent = locale.sensitivity.label;
+				expect(label.getBoundingClientRect().height, `${name} keeps the label on one line`).to.be.at.most(oneLine + 1);
+			}
+		});
+		cy.get('.st-range-head').first().should(([head]: JQuery<HTMLElement>) => {
+			expect(head.scrollWidth, 'nothing spills out of the head').to.be.at.most(head.clientWidth);
+		});
+	});
 });
 
 describe('setupView standby stream', () => {
-	it('does not show threshold slider when standby is disabled', () => {
+	// The master switch shows what it would unlock rather than hiding it, but nothing under it moves.
+	it('dims and locks the threshold and the tab while standby is off', () => {
 		cy.mount(<SetupView {...defaultProps} />);
 		openGroup('standby');
-		cy.get('#standbyThresholdSlider').should('not.exist');
+		cy.get('#standbyThresholdSlider').should('be.disabled');
+		cy.get('#standbyTabSelect').should('be.disabled');
+		cy.get('#standbyStreamToggle').should('not.be.disabled');
+		cy.get('#standbyStreamToggle').closest('.st-card').should('have.class', 'is-off');
+		cy.get('#standbyThresholdSlider').closest('.st-control').should('have.css', 'opacity', '0.45');
+		cy.get('#standbyStreamToggle').closest('.st-control').should('have.css', 'opacity', '1');
 	});
 
-	it('shows threshold slider when standby stream is enabled', () => {
-		cy.mount(<SetupView {...defaultProps} prefs={{ ...defaultPrefs, standbyStreamEnabled: true }} />);
+	it('hands the threshold and the tab back once standby is on', () => {
+		const onStandbyThresholdChange = cy.spy().as('onStandbyThresholdChange');
+		cy.mount(<SetupView {...defaultProps} prefs={{ ...defaultPrefs, standbyStreamEnabled: true }} onStandbyThresholdChange={onStandbyThresholdChange} />);
 		openGroup('standby');
-		cy.get('#standbyThresholdSlider').should('exist');
+		cy.get('#standbyStreamToggle').closest('.st-card').should('not.have.class', 'is-off');
+		cy.get('#standbyThresholdSlider').should('not.be.disabled').and('have.value', '20');
+		cy.get('#standbyThresholdSlider').closest('.st-control').find('.st-value').should('have.text', '20');
+		dragRangeTo('#standbyThresholdSlider', 35);
+		cy.get('@onStandbyThresholdChange').should('have.been.calledWith', 35);
+		cy.get('#standbyTabSelect').should('not.be.disabled');
 	});
 
 	it('offers the open tabs to stand by on, and hands the chosen one back', () => {
@@ -615,7 +741,7 @@ describe('setupView favorites group', () => {
 		cy.mount(<SetupView {...defaultProps} />);
 
 		Object.entries(locales).forEach(([name, locale]) => {
-			cy.get('#settingsGroup-favorites .settings-index-name').should(([el]: JQuery<HTMLElement>) => {
+			cy.get('#settingsGroup-favorites .st-entry-name').should(([el]: JQuery<HTMLElement>) => {
 				el.textContent = locale.setup.groupFavorites;
 				expect(el.getBoundingClientRect().height, `group name stays one line in ${name}`).to.be.at.most(22);
 			});
@@ -625,7 +751,7 @@ describe('setupView favorites group', () => {
 	it('turns up in the search under a word that is nowhere in its label', () => {
 		cy.mount(<SetupView {...defaultProps} />);
 		cy.get('#settingsSearch').type('franchise');
-		cy.contains('.settings-index-row', 'Teams you follow').should('exist');
+		cy.contains('.st-entry', 'Teams you follow').should('exist');
 	});
 });
 
@@ -634,8 +760,8 @@ describe('setupView leagues group', () => {
 		cy.mount(<SetupView {...defaultProps} />);
 		openGroup('leagues');
 		cy.contains('Basketball').should('exist');
-		cy.get('.league-toggle-row').should('have.length.greaterThan', 0).each($row => {
-			cy.wrap($row).find('img, svg, i[class*="bi-"]').should('exist');
+		cy.get('.st-toggle:has(input[id^="league-"])').should('have.length.greaterThan', 0).each($row => {
+			cy.wrap($row).find('.league-toggle-logo').should('exist');
 		});
 	});
 
@@ -670,8 +796,24 @@ describe('setupView leagues group', () => {
 	it('keeps the leagues heading and its tooltip when the order list is hidden', () => {
 		cy.mount(<SetupView {...defaultProps} prefs={{ ...defaultPrefs, enabledLeagues: ['nba'] }} />);
 		openGroup('leagues');
-		cy.get('.popup-section-label').contains('Leagues').should('exist');
-		cy.get('.setting-tooltip-btn').should('exist');
+		cy.get('.as-subhead h2').should('have.text', 'Leagues');
+		cy.get('.as-subhead .setting-tooltip-btn').should('have.attr', 'aria-label', en.setup.leaguesExplainer);
+	});
+
+	it('selects a whole sport at once, and offers to clear it once it is all on', () => {
+		const onToggleSport = cy.spy().as('onToggleSport');
+		cy.mount(<SetupView {...defaultProps} prefs={{ ...defaultPrefs, enabledLeagues: ['nfl', 'ncaaf', 'ufl'] }} onToggleSport={onToggleSport} />);
+		openGroup('leagues');
+		cy.contains('.st-group-title', 'Basketball').siblings('.st-group-action').should('have.text', 'all').click();
+		cy.get('@onToggleSport').should('have.been.calledWith', 'basketball', true);
+		cy.contains('.st-group-title', 'Football').siblings('.st-group-action').should('have.text', 'none').click();
+		cy.get('@onToggleSport').should('have.been.calledWith', 'football', false);
+	});
+
+	it('puts the no-leagues warning above everything else on the page', () => {
+		cy.mount(<SetupView {...defaultProps} prefs={{ ...defaultPrefs, enabledLeagues: [] }} />);
+		openGroup('leagues');
+		cy.get('.st-body > :first-child').should('have.class', 'st-no-leagues').and('contain.text', en.setup.noLeaguesWarning);
 	});
 });
 
@@ -726,7 +868,7 @@ describe('the theme setting', () => {
 	it('is found by the words people use for it', () => {
 		cy.mount(<SetupView {...defaultProps} />);
 		cy.get('#settingsSearch').type('dark');
-		cy.contains('.settings-index-row', 'Theme').should('exist');
+		cy.contains('.st-entry', 'Theme').should('exist');
 	});
 });
 
@@ -779,10 +921,11 @@ describe('what happens to a tab once its game finishes', () => {
 		cy.contains(en.setup.finishedTabCloseExplainer).should('exist');
 	});
 
-	// A native select clips rather than wraps, so a string that does not fit is silently
-	// truncated to an ellipsis — measuring the rendered box would never notice.
-	it('fits all three options inside the select in every locale', () => {
+	// Measured with a ruler rather than the rendered box, which would grow to fit and never notice.
+	// macOS draws the popup's scrollbar over the page, so this is the width most people get.
+	it('fits all three options on one line in every locale', () => {
 		openDisplay();
+		cy.get('.popup-container').invoke('css', 'scrollbar-width', 'none');
 		cy.get('#finishedTabSelect').should(([select]: JQuery<HTMLElement>) => {
 			const style = getComputedStyle(select);
 			// .form-select keeps its right-hand padding for the chevron, so the text gets the
@@ -811,6 +954,24 @@ describe('what happens to a tab once its game finishes', () => {
 				}
 			} finally {
 				ruler.remove();
+			}
+		});
+	});
+
+	// A classic scrollbar takes its own gutter, and there the longest options run out of room: they
+	// must wrap onto a second line inside the field rather than lose their ends.
+	it('wraps rather than clips an option where the scrollbar takes a gutter', () => {
+		openDisplay();
+		cy.get('#finishedTabSelect').then(([select]: JQuery<HTMLElement>) => {
+			const lineHeight = parseFloat(getComputedStyle(select).lineHeight);
+			for (const [name, locale] of Object.entries(locales)) {
+				const setup = locale.setup as unknown as Record<string, string>;
+				for (const key of optionKeys) {
+					select.textContent = setup[key]!;
+					expect(select.scrollWidth, `${name} ${key} is not cut off at the side`).to.be.at.most(select.clientWidth);
+					expect(select.scrollHeight, `${name} ${key} is not cut off at the bottom`).to.be.at.most(select.clientHeight);
+					expect(select.clientHeight, `${name} ${key} takes two lines at most`).to.be.at.most(lineHeight * 2 + 14 + 1);
+				}
 			}
 		});
 	});

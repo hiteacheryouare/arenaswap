@@ -1,15 +1,15 @@
 import { useState } from 'react';
 import { sensitivityThresholds } from '@arenaswap/core/constants';
 import { i18n } from '#i18n';
-import SettingTooltipIcon from './settingTooltipIcon';
 import LudicrousSpeedOverlay from './ludicrousSpeedOverlay';
+import { SettingRange } from './settingControls';
 
 interface sensitivitySliderProps {
 	value: number;
 	onChange: (val: number) => void;
 }
 
-const labels: Record<number, string> = {
+export const sensitivityLabels: Record<number, string> = {
 	1: i18n.t('sensitivity.level.l1'),
 	2: i18n.t('sensitivity.level.l2'),
 	3: i18n.t('sensitivity.level.l3'),
@@ -19,56 +19,40 @@ const labels: Record<number, string> = {
 	7: i18n.t('sensitivity.level.l7'),
 };
 
+const levels = [1, 2, 3, 4, 5, 6, 7];
+
 const sensitivitySlider = ({ value, onChange }: sensitivitySliderProps) => {
 	const [showLudicrous, setShowLudicrous] = useState(false);
+	const valueText = i18n.t('sensitivity.valueLabel', { label: sensitivityLabels[value]!, gap: sensitivityThresholds[value]! });
 
 	return (
-	<div>
-		{showLudicrous && <LudicrousSpeedOverlay onClose={() => setShowLudicrous(false)} />}
-		<div className='d-flex justify-content-between align-items-center mb-1'>
-			<div className='d-flex align-items-center gap-1'>
-				<label htmlFor='sensitivity-range' className='text-body-secondary setting-toggle-label'><i className='bi bi-sliders me-1 text-primary' />{i18n.t('sensitivity.label')}</label>
-				<SettingTooltipIcon text={i18n.t('sensitivity.explainer')} />
-			</div>
-			{value === 7 ? (
-				<button
-					className='fw-semibold setting-value-label ludicrous-speed ludicrous-speed-clickable'
-					onClick={() => setShowLudicrous(true)}
-					title={i18n.t('sensitivity.hyperdriveTitle')}
-					style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: 'inherit' }}
-				>
-					{i18n.t('sensitivity.valueLabel', { label: labels[value]!, gap: sensitivityThresholds[value]! })}
-				</button>
-			) : (
-				<span className='fw-semibold setting-value-label'>
-					{i18n.t('sensitivity.valueLabel', { label: labels[value]!, gap: sensitivityThresholds[value]! })}
-				</span>
-			)}
-		</div>
-		<input
-			id='sensitivity-range'
-			type='range'
-			min={1}
-			max={7}
-			step={1}
-			value={value}
-			onChange={e => {
-				const next = Number(e.target.value);
-				if (next !== value) onChange(next);
-			}}
-			className='form-range w-100'
-		/>
-		<div className='position-relative sensitivity-ticks'>
-			{[1, 2, 3, 4, 5, 6, 7].map((level, i) => (
-				<span
-					key={level}
-					className={`position-absolute translate-middle-x text-body-secondary sensitivity-tick sensitivity-tick-${i}`}
-				>
-					{sensitivityThresholds[level]}
-				</span>
-			))}
-		</div>
-	</div>
+		<>
+			{showLudicrous && <LudicrousSpeedOverlay onClose={() => setShowLudicrous(false)} />}
+			<SettingRange
+				id='sensitivity-range'
+				label={i18n.t('sensitivity.label')}
+				tooltip={i18n.t('sensitivity.explainer')}
+				valueLabel={value === 7 ? (
+					<button
+						type='button'
+						className='st-value ludicrous-speed ludicrous-speed-clickable'
+						onClick={() => setShowLudicrous(true)}
+						title={i18n.t('sensitivity.hyperdriveTitle')}
+					>
+						{valueText}
+					</button>
+				) : (
+					<span className='st-value'>{valueText}</span>
+				)}
+				value={value}
+				min={1}
+				max={7}
+				onChange={next => {
+					if (next !== value) onChange(next);
+				}}
+				ticks={levels.map(level => sensitivityThresholds[level])}
+			/>
+		</>
 	);
 };
 

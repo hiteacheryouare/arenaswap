@@ -105,7 +105,7 @@ describe('favoriteTeamsPage', () => {
 
 		cy.contains('Philadelphia 76ers').should('exist');
 		cy.contains('Chicago Bulls').should('exist');
-		cy.get('.popup-section-label').should('have.length', 1).and('have.text', 'NBA');
+		cy.get('.st-group-title').should('have.length', 1).and('have.text', 'NBA');
 	});
 
 	it('reports the league and team of a newly starred team', () => {
@@ -119,9 +119,10 @@ describe('favoriteTeamsPage', () => {
 	it('pins what is already starred above the league groups', () => {
 		mountPage({ initialFavorites: ['nba:20'] });
 
-		cy.get('.popup-section-label').first().should('have.text', 'Your favorites');
-		cy.contains('.popup-section-label', 'Your favorites')
-			.next()
+		cy.get('.st-group-title').first().should('have.text', 'Your favorites');
+		cy.contains('.st-group-title', 'Your favorites')
+			.closest('.st-group')
+			.find('.st-card')
 			.should('contain', 'Philadelphia 76ers')
 			.and('contain', 'NBA');
 	});
@@ -130,29 +131,29 @@ describe('favoriteTeamsPage', () => {
 		mountPage({ enabledLeagues: ['nba'], initialFavorites: ['nhl:15'] });
 
 		cy.contains('Philadelphia Flyers').should('exist');
-		cy.contains('NHL · not tracked').should('exist');
+		cy.contains('NHL, not tracked').should('exist');
 		// The league itself is fetched only to name the favorite, never offered as a group.
-		cy.get('.popup-section-label').should('not.contain', 'NHL');
+		cy.get('.st-group-title').should('not.contain', 'NHL');
 	});
 
 	it('drops a team out of the pinned list when it is unstarred there', () => {
 		mountPage({ initialFavorites: ['nba:20'] });
 
-		cy.contains('.popup-section-label', 'Your favorites').should('exist');
+		cy.contains('.st-group-title', 'Your favorites').should('exist');
 		cy.get('[aria-label="Remove Philadelphia 76ers from favorites"]').first().click();
 
-		cy.contains('.popup-section-label', 'Your favorites').should('not.exist');
+		cy.contains('.st-group-title', 'Your favorites').should('not.exist');
 		cy.contains('Philadelphia 76ers').should('exist');
 	});
 
 	it('takes the pinned list away while a search is running', () => {
 		mountPage({ initialFavorites: ['nba:20'] });
 
-		cy.contains('.popup-section-label', 'Your favorites').should('exist');
+		cy.contains('.st-group-title', 'Your favorites').should('exist');
 		cy.get('input[type=search]').type('bulls');
 
 		cy.contains('Chicago Bulls').should('exist');
-		cy.contains('.popup-section-label', 'Your favorites').should('not.exist');
+		cy.contains('.st-group-title', 'Your favorites').should('not.exist');
 	});
 
 	it('shows a starred team once, in its league, while searching', () => {
@@ -168,10 +169,10 @@ describe('favoriteTeamsPage', () => {
 		mountPage({ initialFavorites: ['nba:20'] });
 
 		cy.get('input[type=search]').type('bulls');
-		cy.contains('.popup-section-label', 'Your favorites').should('not.exist');
+		cy.contains('.st-group-title', 'Your favorites').should('not.exist');
 
 		cy.get('input[type=search]').clear();
-		cy.contains('.popup-section-label', 'Your favorites').should('exist');
+		cy.contains('.st-group-title', 'Your favorites').should('exist');
 	});
 
 	it('says when nothing matches at all', () => {
@@ -195,11 +196,11 @@ describe('favoriteTeamsPage', () => {
 		mountPage({ enabledLeagues: ['nba'], initialFavorites: ['nhl:15'] });
 
 		Object.entries(locales).forEach(([name, locale]) => {
-			cy.get('.popup-section-label').first().should(([el]: JQuery<HTMLElement>) => {
+			cy.get('.st-group-title').first().should(([el]: JQuery<HTMLElement>) => {
 				el.textContent = locale.teamPicker.yourFavorites;
 				expect(el.getBoundingClientRect().height, `heading stays one line in ${name}`).to.be.at.most(30);
 			});
-			cy.get('.setting-explainer').first().then(([el]: JQuery<HTMLElement>) => {
+			cy.get('.team-pick-sublabel').first().then(([el]: JQuery<HTMLElement>) => {
 				el.textContent = locale.teamPicker.leagueNotTracked.replace('{league}', longestLeague);
 			});
 			// The sublabel is free to wrap; what it must not do is widen the row past the popup and

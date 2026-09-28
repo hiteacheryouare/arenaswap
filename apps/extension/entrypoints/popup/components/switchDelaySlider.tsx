@@ -1,5 +1,5 @@
 import { i18n } from '#i18n';
-import SettingTooltipIcon from './settingTooltipIcon';
+import { SettingRange } from './settingControls';
 
 interface switchDelaySliderProps {
 	value: number;
@@ -21,29 +21,17 @@ const switchDelaySlider = ({ value, onChange }: switchDelaySliderProps) => {
 	const currentIdx = idx >= 0 ? idx : 0;
 
 	return (
-		<div>
-			<div className='d-flex justify-content-between align-items-center mb-1'>
-				<div className='d-flex align-items-center gap-1'>
-					<label htmlFor='switch-delay-range' className='text-body-secondary setting-toggle-label'><i className='bi bi-hourglass-split me-1 text-primary' />{i18n.t('switchDelay.label')}</label>
-					<SettingTooltipIcon text={i18n.t('switchDelay.explainer')} />
-				</div>
-				<span className='fw-semibold setting-value-label'>{formatSeconds(steps[currentIdx]!)}</span>
-			</div>
-			<input
-				id='switch-delay-range'
-				type='range'
-				min={0}
-				max={steps.length - 1}
-				step={1}
-				value={currentIdx}
-				onChange={e => onChange(steps[Number(e.target.value)]!)}
-				className='form-range w-100'
-			/>
-			<div className='d-flex justify-content-between'>
-				<span className='text-body-secondary setting-toggle-label'>{formatSeconds(steps[0]!)}</span>
-				<span className='text-body-secondary setting-toggle-label'>{formatSeconds(steps[steps.length - 1]!)}</span>
-			</div>
-		</div>
+		<SettingRange
+			id='switch-delay-range'
+			label={i18n.t('switchDelay.label')}
+			tooltip={i18n.t('switchDelay.explainer')}
+			valueLabel={<span className='st-value num'>{formatSeconds(steps[currentIdx]!)}</span>}
+			value={currentIdx}
+			min={0}
+			max={steps.length - 1}
+			onChange={index => onChange(steps[index]!)}
+			ends={[formatSeconds(steps[0]!), formatSeconds(steps.at(-1)!)]}
+		/>
 	);
 };
 

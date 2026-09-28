@@ -1,5 +1,5 @@
 import { i18n } from '#i18n';
-import SettingTooltipIcon from './settingTooltipIcon';
+import { SettingCopy } from './settingControls';
 
 interface postseasonBoostInputProps {
 	value: number;
@@ -7,16 +7,13 @@ interface postseasonBoostInputProps {
 }
 
 const postseasonBoostInput = ({ value, onChange }: postseasonBoostInputProps) => (
-	<div>
-		<div className='d-flex justify-content-between align-items-center mb-1'>
-			<div className='d-flex align-items-center gap-1'>
-				<label className='text-body-secondary setting-toggle-label' htmlFor='postseasonBoostInput'>
-					<i className='bi bi-trophy me-1 text-primary' />{i18n.t('postseasonBoost.label')}
-				</label>
-				<SettingTooltipIcon text={i18n.t('postseasonBoost.explainer')} />
-			</div>
-			<span className='fw-semibold setting-value-label'>{i18n.t('postseasonBoost.points', [value])}</span>
-		</div>
+	<div className='st-control st-toggle st-number'>
+		<SettingCopy
+			htmlFor='postseasonBoostInput'
+			label={i18n.t('postseasonBoost.label')}
+			tooltip={i18n.t('postseasonBoost.explainer')}
+			note={i18n.t('postseasonBoost.points', [value])}
+		/>
 		<input
 			id='postseasonBoostInput'
 			type='number'
@@ -24,7 +21,7 @@ const postseasonBoostInput = ({ value, onChange }: postseasonBoostInputProps) =>
 			step={1}
 			value={value}
 			onChange={e => onChange(Math.max(0, Math.round(Number(e.target.value) || 0)))}
-			className='form-control form-control-sm'
+			className='form-control num'
 			inputMode='numeric'
 		/>
 	</div>

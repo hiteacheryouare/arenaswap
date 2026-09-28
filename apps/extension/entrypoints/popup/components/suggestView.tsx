@@ -2,8 +2,11 @@ import { useState } from 'react';
 import { i18n } from '#i18n';
 import type { Browser } from 'wxt/browser';
 import type { Game, Team } from '@arenaswap/core/types';
-import CrestDisc from '@arenaswap/ui/src/components/crestDisc';
+import BoardCrest from '@arenaswap/ui/src/components/boardCrest';
+import { resolveGameColors } from '@arenaswap/ui/src/components/gameSurface';
+import useDocumentTheme from '@arenaswap/ui/src/components/useDocumentTheme';
 import { suggestionPairKey, type TabSuggestion } from '../../../utils/tabSuggestions';
+import { cardSurface } from './teamPickerRow';
 
 interface suggestViewProps {
 	suggestions: TabSuggestion[];
@@ -14,22 +17,17 @@ interface suggestViewProps {
 	onBack: () => void;
 }
 
-const TeamMark = ({ team }: { team: Team }) => (
-	<span className='d-inline-flex align-items-center gap-1 min-w-0'>
-		<CrestDisc
-			logo={team.logo}
-			abbreviation={team.abbreviation}
-			discClassName='suggest-crest-disc'
-			crestClassName='suggest-crest'
-			fallback='blank'
-		/>
-		<span className='fw-bold text-nowrap'>{team.abbreviation}</span>
+const TeamMark = ({ team, color, surface }: { team: Team; color: string; surface: string }) => (
+	<span className='suggest-team'>
+		<BoardCrest team={team} size={20} surface={surface} color={color} className='suggest-crest' />
+		<b>{team.abbreviation}</b>
 	</span>
 );
 
 const suggestView = ({ suggestions, games, openTabs, formatTabLabel, onApply, onBack }: suggestViewProps) => {
-	// Suggestions arrive best-first, so taking the first pre-checked row per game leaves the
-	// strongest candidate holding it when two tabs both matched the same game.
+	const theme = useDocumentTheme();
+
+	// Suggestions arrive best-first, so the first pre-checked row per game is the strongest claim on it.
 	const [checked, setChecked] = useState<string[]>(() => {
 		const claimed = new Set<string>();
 		const initial: string[] = [];
@@ -41,9 +39,8 @@ const suggestView = ({ suggestions, games, openTabs, formatTabLabel, onApply, on
 		return initial;
 	});
 
-	// A game can only hold one tab, so checking a row has to release whichever row was holding that
-	// game. Resolving it here rather than at apply time means the list never shows a state it will
-	// not honour.
+	// A game holds one tab, so checking a row releases whichever row held that game. Resolved here
+	// rather than at apply time, so the list never shows a state it won't honour.
 	const toggle = (suggestion: TabSuggestion) => {
 		const key = suggestionPairKey(suggestion.tabId, suggestion.gameId);
 		const sameGame = new Set(suggestions
@@ -58,28 +55,34 @@ const suggestView = ({ suggestions, games, openTabs, formatTabLabel, onApply, on
 	const accepted = suggestions.filter(s => checked.includes(suggestionPairKey(s.tabId, s.gameId)));
 
 	return (
-		<div className='popup-container d-flex flex-column'>
-			<button className='setup-header' onClick={onBack}>
-				<i className='bi bi-arrow-left' />
-				{i18n.t('suggest.header')}
-			</button>
+		<div className='popup-container st si d-flex flex-column pb-0'>
+			<header className='as-subhead'>
+				<button type='button' className='as-icon st-back' onClick={onBack} aria-label={i18n.t('setup.back')}>
+					<i className='bi bi-arrow-left' aria-hidden='true' />
+				</button>
+				<h2>{i18n.t('suggest.header')}</h2>
+			</header>
 
-			{suggestions.length === 0
-				? <div className='settings-page-lede'>{i18n.t('suggest.empty')}</div>
-				: (
+			<div className='st-body flex-grow-1'>
+				{suggestions.length === 0 ? (
+					<div className='as-empty'>
+						<p>{i18n.t('suggest.empty')}</p>
+					</div>
+				) : (
 					<>
-						<div className='settings-page-lede'>{i18n.t('suggest.lede')}</div>
-						<div className='suggest-list'>
+						<p className='st-note si-lede'>{i18n.t('suggest.lede')}</p>
+						<div className='st-card suggest-list'>
 							{suggestions.map(suggestion => {
 								const game = games.find(candidate => candidate.id === suggestion.gameId);
 								const tab = openTabs.find(candidate => candidate.id === suggestion.tabId);
 								if (!game || !tab) return null;
 								const key = suggestionPairKey(suggestion.tabId, suggestion.gameId);
+								const [awayColor, homeColor] = resolveGameColors(game, theme);
 
 								return (
 									<label
 										key={key}
-										className='suggest-row'
+										className='st-control suggest-row'
 										htmlFor={`suggest-${key}`}
 										aria-label={i18n.t('suggest.rowLabel', {
 											tab: formatTabLabel(tab),
@@ -90,17 +93,17 @@ const suggestView = ({ suggestions, games, openTabs, formatTabLabel, onApply, on
 										<input
 											type='checkbox'
 											id={`suggest-${key}`}
-											className='form-check-input flex-shrink-0 mt-0'
+											className='form-check-input'
 											checked={checked.includes(key)}
 											onChange={() => toggle(suggestion)}
 										/>
-										<span className='min-w-0'>
-											<span className='d-flex align-items-center gap-1 suggest-matchup'>
-												<TeamMark team={game.awayTeam} />
-												<span className='text-body-tertiary'>@</span>
-												<TeamMark team={game.homeTeam} />
+										<span className='suggest-copy'>
+											<span className='suggest-matchup'>
+												<TeamMark team={game.awayTeam} color={awayColor} surface={cardSurface[theme]} />
+												<span className='suggest-at' aria-hidden='true'>@</span>
+												<TeamMark team={game.homeTeam} color={homeColor} surface={cardSurface[theme]} />
 											</span>
-											<span className='d-block text-truncate suggest-tab-label'>{formatTabLabel(tab)}</span>
+											<span className='suggest-tab-label'>{formatTabLabel(tab)}</span>
 										</span>
 									</label>
 								);
@@ -108,17 +111,18 @@ const suggestView = ({ suggestions, games, openTabs, formatTabLabel, onApply, on
 						</div>
 					</>
 				)}
+			</div>
 
-			<div className='mt-auto pt-3'>
+			<footer className='suggest-foot'>
 				<button
 					type='button'
-					className='btn btn-sm btn-primary w-100'
+					className='btn btn-primary w-100'
 					disabled={accepted.length === 0}
 					onClick={() => onApply(accepted)}
 				>
 					{accepted.length === 0 ? i18n.t('suggest.applyNone') : i18n.t('suggest.apply', accepted.length)}
 				</button>
-			</div>
+			</footer>
 		</div>
 	);
 };
