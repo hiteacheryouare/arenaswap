@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The v3 redesign — 2026-09-28
+
+The popup, the Guide and the website move to the v3 look: Inter throughout, new tokens for both themes in `packages/ui/src/_theme.scss`, and a games board that puts the hottest live game on a team-coloured stage, games at 70 or above in tiles and the rest in rows, with upcoming games and finals under a hairline. The old card components are gone for `gameStage`, `gameTile` and `gameRow` in `packages/ui`, which paint the pair `resolveTeamColorPair` picks under a veil worked out per game so white type clears 4.5:1. Onboarding and the tour now follow the Theme setting instead of staying dark, and a finished game never shows a PowerScore.
+
 ## Every picker in the popup is a Bootstrap dropdown — 2026-09-25
 
 The five native `<select>`s (the tab picker on each card, When a game finishes, the standby tab, the demo season and the walkthrough's demo picker) and the Theme switcher now share `selectDropdown.tsx`: Bootstrap's `Dropdown` opening off a `.form-select`, so they look the same closed but can carry icons, a tick and disabled rows. A card holding an open menu lifts itself above its neighbours, because a hovered card's lift transform makes it a stacking context and the next card was painting over the menu. A native select gave type-to-jump for free, which the dropdown does not; tests drive them through `cy.choose(label)`.
