@@ -1,182 +1,111 @@
 import { useState } from 'react';
+import type { CSSProperties } from 'react';
 import { i18n } from '#i18n';
-import Crest from '@arenaswap/ui/src/components/crest';
-import { powerScoreColor } from './gameCardShared';
+import { resolveLeagueLogoUrl } from '@arenaswap/core/constants';
+import GameStage from '@arenaswap/ui/src/components/gameStage';
+import { signalMeta } from './walkthroughStepPowerScore';
+import WalkthroughFrame from './walkthroughFrame';
+import { eaglesGiantsQ4 } from './walkthroughMocks';
 
 interface walkthroughStepGameDetailProps {
 	onNext: () => void;
 	onBack: () => void;
 }
 
-const mockPsScore = 71;
-const mockPsMax = 100;
-const mockPsColor = powerScoreColor(mockPsScore, mockPsMax);
+const mockPower = 71;
 
-const eaglesColor = '#004C54';
-const giantsColor = '#0B2265';
-const LOGO_EAGLES = 'https://a.espncdn.com/i/teamlogos/nfl/500/phi.png';
-const LOGO_GIANTS = 'https://a.espncdn.com/i/teamlogos/nfl/500/nyg.png';
-
-const TeamLogo = ({ abbr, color, logoUrl }: { abbr: string; color: string; logoUrl: string }) => (
-	<Crest
-		logo={logoUrl}
-		abbreviation={abbr}
-		className='team-crest-28'
-		fallbackStyle={{ backgroundColor: color, color: '#fff' }}
-	/>
-);
+const breakdown = [
+	{ labelKey: 'stepGameDetail.signalCloseness', value: 18 },
+	{ labelKey: 'stepGameDetail.signalLateGame', value: 22 },
+	{ labelKey: 'stepGameDetail.signalMomentum', value: 14 },
+	{ labelKey: 'stepGameDetail.signalLeadChanges', value: 9 },
+	{ labelKey: 'stepGameDetail.signalComeback', value: 8 },
+] as const;
 
 const walkthroughStepGameDetail = ({ onNext, onBack }: walkthroughStepGameDetailProps) => {
-	const [tapped, setTapped] = useState(false);
+	const [opened, setOpened] = useState(false);
+	const open = () => setOpened(true);
 
 	return (
-		<div className='popup-container d-flex flex-column'>
-			<div className='small text-body-secondary text-uppercase text-center pt-3 pb-2'>
-				{i18n.t('stepGameDetail.step', [6, 8])}
-			</div>
-
-			<div className='fw-bold fs-5 text-center mb-1'>{i18n.t('stepGameDetail.title')}</div>
-			<div className='text-body-secondary small text-center mb-3 lh-base'>
-				{i18n.t('stepGameDetail.subtitle')}
-			</div>
-
-			<div className='position-relative mb-3'>
-				<div
-					role='button'
-					tabIndex={0}
-					className='game-card'
-					style={{
-						borderLeft: `4px solid ${eaglesColor}`,
-						borderRight: `4px solid ${giantsColor}`,
-						background: `linear-gradient(to right, ${eaglesColor}28, ${giantsColor}28), #ffffff`,
-						cursor: 'pointer',
-						outline: tapped ? `2px solid ${mockPsColor}` : '2px dashed rgba(255,255,255,0.2)',
-						transition: 'outline 0.2s',
-					}}
-					onClick={() => setTapped(true)}
-					onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') setTapped(true); }}
-				>
-					<div className='d-flex align-items-center gap-1 fw-bold text-uppercase text-primary live-status-label mb-1'>
-						<span className='live-dot' />
-						LIVE
-					</div>
-
-					<div className='d-flex align-items-center justify-content-center game-card-matchup'>
-						<div className='d-flex flex-column align-items-center gap-1 team-column'>
-							<TeamLogo abbr='PHI' color={eaglesColor} logoUrl={LOGO_EAGLES} />
-							<span className='fw-bold text-center text-nowrap team-abbreviation'>PHI</span>
-						</div>
-						<div className='d-flex flex-column align-items-center game-card-center'>
-							<div className='d-flex align-items-center game-score-row'>
-								<span className='fw-bold lh-1 game-score-value'>21</span>
-								<span className='game-score-sep' aria-hidden='true' />
-								<span className='fw-bold lh-1 game-score-value'>17</span>
+		<WalkthroughFrame
+			step={6}
+			stepLabel={i18n.t('stepGameDetail.step', [6, 8])}
+			title={i18n.t('stepGameDetail.title')}
+			lede={i18n.t('stepGameDetail.subtitle')}
+			backLabel={i18n.t('stepGameDetail.back')}
+			onBack={onBack}
+			nextLabel={i18n.t('stepGameDetail.next')}
+			onNext={onNext}
+		>
+			{opened ? (
+				<div className='wt-detail'>
+					<GameStage
+						game={eaglesGiantsQ4}
+						className='wt-stage wt-hero'
+						names='name'
+						records={{ away: eaglesGiantsQ4.awayTeam.record, home: eaglesGiantsQ4.homeTeam.record }}
+						power={{ value: mockPower, label: i18n.t('gameCard.powerScore') }}
+						head={(
+							<div className='wt-hero-bar'>
+								<button type='button' className='as-icon' aria-label={i18n.t('app.backToGames')} onClick={() => setOpened(false)}>
+									<i className='bi bi-arrow-left' aria-hidden='true' />
+								</button>
+								<span className='wt-hero-league'>
+									<img src={resolveLeagueLogoUrl('nfl', undefined, 'light')} alt='' />
+									NFL
+								</span>
 							</div>
-							<span className='font-lekton game-clock'>2:14</span>
-							<span className='font-lekton game-period'>Q4</span>
+						)}
+					/>
+					<section className='wt-card wt-breakdown' aria-labelledby='wt-breakdown-title'>
+						<h3 id='wt-breakdown-title'>{i18n.t('stepGameDetail.detailPreviewTitle')}</h3>
+						<div className='wt-signals'>
+							{breakdown.map((entry, index) => {
+								const signal = signalMeta[index]!;
+								return (
+									<div key={entry.labelKey} className='wt-signal' style={{ '--signal': signal.color } as CSSProperties}>
+										<span className='wt-signal-name'><i aria-hidden='true' />{i18n.t(entry.labelKey)}</span>
+										<span className='wt-bar' role='progressbar' aria-label={i18n.t(entry.labelKey)} aria-valuenow={entry.value} aria-valuemin={0} aria-valuemax={signal.max}>
+											<span style={{ width: `${(entry.value / signal.max) * 100}%` }} />
+										</span>
+										<span className='wt-signal-value num'><b>{entry.value}</b>/{signal.max}</span>
+									</div>
+								);
+							})}
 						</div>
-						<div className='d-flex flex-column align-items-center gap-1 team-column'>
-							<TeamLogo abbr='NYG' color={giantsColor} logoUrl={LOGO_GIANTS} />
-							<span className='fw-bold text-center text-nowrap team-abbreviation'>NYG</span>
-						</div>
-					</div>
-
-					<div className='d-flex align-items-center gap-2 game-card-ps-bar-row'>
-						<span className='game-card-ps-label'>PowerScore</span>
-						<div className='progress flex-grow-1 game-card-ps-progress'>
-							<div
-								className='progress-bar'
-								role='progressbar'
-								style={{ width: `${(mockPsScore / mockPsMax) * 100}%`, backgroundColor: mockPsColor }}
-								aria-valuenow={mockPsScore}
-								aria-valuemin={0}
-								aria-valuemax={mockPsMax}
-							/>
-						</div>
-						<span className='game-card-ps-score' style={{ color: mockPsColor }}>
-							{mockPsScore} / {mockPsMax}
-						</span>
-					</div>
-				</div>
-
-				{!tapped && (
-					<div
-						// `pe-none`, not Tailwind's `pointer-events-none`: the extension has no Tailwind
-						// build, so the hint was swallowing the tap it is asking for.
-						className='position-absolute top-50 start-50 translate-middle text-center pe-none'
-						style={{ zIndex: 2 }}
-					>
-						<span
-							className='badge rounded-pill fw-semibold px-3 py-2'
-							style={{
-								backgroundColor: 'rgba(0,0,0,0.75)',
-								color: '#fff',
-								fontSize: '0.72rem',
-								backdropFilter: 'blur(4px)',
-								border: '1px solid rgba(255,255,255,0.15)',
-							}}
-						>
-							<i className='bi bi-cursor-fill me-1' />
-							{i18n.t('stepGameDetail.tapHint')}
-						</span>
-					</div>
-				)}
-			</div>
-
-			{tapped ? (
-				<div
-					className='border border-secondary-subtle rounded p-2 mb-3'
-					style={{ fontSize: '0.72rem' }}
-				>
-					<div className='fw-semibold text-body mb-2' style={{ fontSize: '0.8rem' }}>
-						<i className='bi bi-bar-chart-line text-primary me-1' />
-						{i18n.t('stepGameDetail.detailPreviewTitle')}
-					</div>
-					<div className='d-flex flex-column gap-1'>
-						{[
-							{ label: i18n.t('stepGameDetail.signalCloseness'), val: 18, color: '#22c55e' },
-							{ label: i18n.t('stepGameDetail.signalLateGame'), val: 22, color: '#f75c03' },
-							{ label: i18n.t('stepGameDetail.signalMomentum'), val: 14, color: '#2274a5' },
-							{ label: i18n.t('stepGameDetail.signalLeadChanges'), val: 9, color: '#f1c40f' },
-							{ label: i18n.t('stepGameDetail.signalComeback'), val: 8, color: '#d90368' },
-						].map(({ label, val, color }) => (
-							<div key={label} className='d-flex align-items-center gap-2'>
-								<span className='text-body-secondary' style={{ minWidth: '5.5rem' }}>{label}</span>
-								<div className='flex-grow-1 progress' style={{ height: '6px' }}>
-									<div
-										className='progress-bar'
-										style={{ width: `${(val / 30) * 100}%`, backgroundColor: color }}
-									/>
-								</div>
-								<span style={{ color, minWidth: '2rem', textAlign: 'right' }}>{val}</span>
-							</div>
-						))}
-					</div>
-					<p className='text-body-secondary mt-2 mb-0' style={{ fontSize: '0.68rem' }}>
-						{i18n.t('stepGameDetail.detailPreviewCaption')}
-					</p>
+						<p className='wt-note'>{i18n.t('stepGameDetail.detailPreviewCaption')}</p>
+					</section>
+					<p className='wt-body'>{i18n.t('stepGameDetail.bodyAfterTap')}</p>
 				</div>
 			) : (
-				<p className='text-body-secondary small lh-base'>
-					{i18n.t('stepGameDetail.body')}
-				</p>
+				<>
+					<GameStage
+						game={eaglesGiantsQ4}
+						className='wt-stage'
+						power={{ value: mockPower, label: i18n.t('gameCard.powerScore') }}
+						note={(
+							<span className='wt-tap'>
+								<i className='bi bi-hand-index-thumb' aria-hidden='true' />
+								{i18n.t('stepGameDetail.tapHint')}
+							</span>
+						)}
+						interactive={{
+							role: 'button',
+							tabIndex: 0,
+							'aria-label': i18n.t('gameCard.openDetails', { away: eaglesGiantsQ4.awayTeam.abbreviation, home: eaglesGiantsQ4.homeTeam.abbreviation }),
+							onClick: open,
+							onKeyDown: event => {
+								if (event.key === 'Enter' || event.key === ' ') {
+									event.preventDefault();
+									open();
+								}
+							},
+						}}
+					/>
+					<p className='wt-body'>{i18n.t('stepGameDetail.body')}</p>
+				</>
 			)}
-
-			{tapped && (
-				<p className='text-body-secondary small lh-base'>
-					{i18n.t('stepGameDetail.bodyAfterTap')}
-				</p>
-			)}
-
-			<div className='d-flex gap-2 mt-auto'>
-				<button type='button' className='btn btn-secondary flex-grow-1' onClick={onBack}>
-					<i className='bi bi-arrow-left' /> {i18n.t('stepGameDetail.back')}
-				</button>
-				<button type='button' className='btn btn-primary flex-grow-1' onClick={onNext}>
-					{i18n.t('stepGameDetail.next')} <i className='bi bi-arrow-right' />
-				</button>
-			</div>
-		</div>
+		</WalkthroughFrame>
 	);
 };
 

@@ -1,0 +1,429 @@
+// First run, and the frame the tour borrows: a segmented bar, the step, a 20px title, and a footer
+// pinned to the bottom of the popup while the step scrolls under it.
+@use '@arenaswap/ui/src/motion' as m;
+
+.ob {
+	display: flex;
+	flex-direction: column;
+	padding: var(--as-space-4) var(--as-space-3) 0;
+}
+
+.ob-progress {
+	display: flex;
+	flex-shrink: 0;
+	gap: var(--as-space-1);
+	margin-bottom: var(--as-space-3);
+
+	i {
+		flex: 1;
+		height: 3px;
+		border-radius: 2px;
+		background: var(--as-raised);
+		box-shadow: inset 0 0 0 1px var(--as-line);
+		transition: background-color m.$motion-slow m.$motion-ease;
+
+		&.is-done {
+			background: var(--as-accent);
+			box-shadow: none;
+		}
+	}
+}
+
+.ob-stepline {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--as-space-2);
+	margin-bottom: var(--as-space-1);
+
+	.ob-step {
+		margin: 0;
+	}
+}
+
+.ob-step {
+	margin: 0 0 var(--as-space-1);
+	font-size: var(--as-text-xs);
+	font-weight: var(--as-weight-semibold);
+	line-height: var(--as-leading-xs);
+	color: var(--as-muted);
+}
+
+.ob-skip {
+	--as-btn-padding-x: var(--as-space-2);
+	--as-btn-padding-y: 2px;
+	--as-btn-font-size: var(--as-text-xs);
+	--as-btn-color: var(--as-muted);
+	--as-btn-hover-color: var(--as-ink);
+	--as-btn-active-color: var(--as-ink);
+	margin: -2px calc(var(--as-space-2) * -1);
+	line-height: var(--as-leading-xs);
+	text-decoration: none;
+}
+
+.ob-title {
+	margin: 0 0 var(--as-space-1);
+	font-size: var(--as-text-lg);
+	font-weight: var(--as-weight-bold);
+	line-height: var(--as-leading-md);
+	letter-spacing: var(--as-tracking-tight);
+	text-wrap: balance;
+}
+
+.ob-lede {
+	margin: 0;
+	font-size: var(--as-text-sm);
+	line-height: var(--as-leading-sm);
+	color: var(--as-muted);
+	text-wrap: pretty;
+}
+
+// ── Tiles ────────────────────────────────────────────────────────────────────
+
+.ob-sport-head,
+.ob-sport > h3 {
+	margin: var(--as-space-4) var(--as-space-1) var(--as-space-2);
+}
+
+.ob-sport-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--as-space-2);
+
+	h3 {
+		margin: 0;
+	}
+}
+
+.ob-sport h3 {
+	font-size: var(--as-text-xs);
+	font-weight: var(--as-weight-semibold);
+	line-height: var(--as-leading-xs);
+	color: var(--as-muted);
+}
+
+.ob-all {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	font-size: var(--as-text-xs);
+	font-weight: var(--as-weight-semibold);
+	line-height: var(--as-leading-xs);
+	color: var(--as-muted);
+	cursor: pointer;
+
+	.form-check-input {
+		width: 14px;
+		height: 14px;
+		margin: 0;
+		cursor: pointer;
+	}
+}
+
+.ob-grid {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: var(--as-space-2);
+}
+
+.ob-tile {
+	position: relative;
+	display: grid;
+	place-items: center;
+	align-content: center;
+	gap: var(--as-space-1);
+	min-width: 0;
+	min-height: 80px;
+	margin: 0;
+	padding: var(--as-space-2);
+	border: 0;
+	border-radius: var(--as-radius-md);
+	background: var(--as-surface);
+	box-shadow: inset 0 0 0 1px var(--as-line);
+	color: var(--as-ink);
+	font: inherit;
+	text-align: center;
+	cursor: pointer;
+	transition: background-color m.$motion-quick m.$motion-ease, box-shadow m.$motion-quick m.$motion-ease, transform m.$motion-snap m.$motion-ease;
+
+	&:hover {
+		background: var(--as-raised);
+	}
+
+	&:active {
+		transform: scale(0.97);
+	}
+
+	&:has(:focus-visible) {
+		outline: 2px solid var(--as-accent);
+		outline-offset: 2px;
+	}
+
+	&.is-on {
+		background: var(--as-raised);
+		box-shadow: inset 0 0 0 1.5px var(--as-accent);
+	}
+}
+
+.ob-tile-name {
+	display: -webkit-box;
+	max-width: 100%;
+	overflow: hidden;
+	font-size: var(--as-text-xs);
+	font-weight: var(--as-weight-semibold);
+	line-height: var(--as-leading-xs);
+	overflow-wrap: break-word;
+	text-wrap: balance;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 3;
+}
+
+.ob-disc {
+	display: inline-grid;
+	place-items: center;
+	width: 36px;
+	height: 36px;
+	margin-bottom: 2px;
+	border-radius: 50%;
+	background: var(--as-disc);
+	box-shadow: inset 0 0 0 1px var(--as-disc-line);
+}
+
+.ob-league-logo {
+	width: 22px;
+	height: 22px;
+
+	.crest-fallback {
+		background: transparent;
+		color: #0e1013;
+		font-size: 8px;
+		letter-spacing: 0.02em;
+	}
+}
+
+.ob-check {
+	position: absolute;
+	top: var(--as-space-2);
+	right: var(--as-space-2);
+	display: grid;
+	place-items: center;
+	width: 16px;
+	height: 16px;
+	border-radius: 50%;
+	background: var(--as-accent);
+	color: var(--as-on-accent);
+	font-size: 10px;
+	opacity: 0;
+	transform: scale(0.6);
+	transition: opacity m.$motion-quick m.$motion-ease, transform m.$motion-quick m.$motion-spring;
+
+	.bi {
+		line-height: 1;
+		-webkit-text-stroke: 0.5px currentColor;
+	}
+
+	.is-on > & {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+
+.ob-team {
+	min-height: 96px;
+
+	.as-crest-box {
+		margin-bottom: 2px;
+	}
+}
+
+// ── Teams ────────────────────────────────────────────────────────────────────
+
+// Held at the top while the teams scroll, so a search is never a scroll back up.
+.ob-search {
+	position: sticky;
+	top: 0;
+	z-index: 2;
+	margin: var(--as-space-3) calc(var(--as-space-3) * -1) 0;
+	padding: var(--as-space-1) var(--as-space-3) 0;
+	background: var(--as-page);
+
+	&::after {
+		content: '';
+		position: absolute;
+		inset: 100% 0 auto;
+		height: var(--as-space-3);
+		background: linear-gradient(to bottom, var(--as-page), transparent);
+		pointer-events: none;
+	}
+
+	.bi-search {
+		position: absolute;
+		top: calc(50% + 2px);
+		left: calc(var(--as-space-3) * 2);
+		font-size: 14px;
+		line-height: 1;
+		color: var(--as-muted);
+		transform: translateY(-50%);
+		pointer-events: none;
+	}
+
+	.form-control {
+		height: 36px;
+		padding-left: var(--as-space-8);
+		font-size: var(--as-text-sm);
+	}
+}
+
+.ob-empty {
+	margin: var(--as-space-6) 0;
+	font-size: var(--as-text-sm);
+	line-height: var(--as-leading-sm);
+	color: var(--as-muted);
+	text-align: center;
+}
+
+.ob-error {
+	padding-top: var(--as-space-8);
+}
+
+// ── Footer ───────────────────────────────────────────────────────────────────
+
+.ob-foot {
+	position: sticky;
+	bottom: 0;
+	z-index: 3;
+	display: flex;
+	flex-shrink: 0;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--as-space-3);
+	margin: auto calc(var(--as-space-3) * -1) 0;
+	padding: var(--as-space-6) var(--as-space-3) var(--as-space-3);
+	background: linear-gradient(to bottom, transparent, var(--as-page) var(--as-space-6));
+	font-size: var(--as-text-xs);
+	line-height: var(--as-leading-xs);
+	color: var(--as-muted);
+
+	.btn {
+		--as-btn-font-size: var(--as-text-sm);
+		flex-shrink: 0;
+	}
+
+	.btn-primary {
+		margin-left: auto;
+	}
+}
+
+.ob-count {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+// ── Welcome and all set ──────────────────────────────────────────────────────
+
+.ob-wordmark {
+	display: block;
+	width: auto;
+	height: 32px;
+}
+
+.ob-welcome .ob-rise {
+	margin: var(--as-space-2) 0 var(--as-space-6);
+}
+
+.ob-points {
+	margin: var(--as-space-4) 0 0;
+	padding: 0;
+	list-style: none;
+	border-radius: var(--as-radius-md);
+	background: var(--as-surface);
+	box-shadow: inset 0 0 0 1px var(--as-line);
+
+	li {
+		display: grid;
+		grid-template-columns: 16px minmax(0, 1fr);
+		gap: var(--as-space-3);
+		padding: var(--as-space-3);
+	}
+
+	li + li {
+		box-shadow: inset 0 1px 0 var(--as-line);
+	}
+
+	.bi {
+		font-size: 16px;
+		line-height: var(--as-leading-sm);
+		color: var(--as-accent-ink);
+	}
+
+	b {
+		display: block;
+		font-size: var(--as-text-sm);
+		font-weight: var(--as-weight-semibold);
+		line-height: var(--as-leading-sm);
+	}
+
+	p {
+		margin: 2px 0 0;
+		font-size: var(--as-text-xs);
+		line-height: var(--as-leading-xs);
+		color: var(--as-muted);
+		text-wrap: pretty;
+	}
+}
+
+.ob-finale-body {
+	display: grid;
+	flex: 1;
+	align-content: center;
+	justify-items: center;
+	gap: var(--as-space-6);
+	padding-bottom: var(--as-space-6);
+	text-align: center;
+
+	.ob-wordmark {
+		height: 44px;
+	}
+}
+
+// The wordmark rises into place and the step settles in behind it. Choreography, so its beats are
+// its own rather than the shared scale's (see _motion.scss).
+@keyframes ob-rise {
+	from { transform: translateY(200px); }
+	to   { transform: translateY(0); }
+}
+
+@keyframes ob-reveal {
+	from { opacity: 0; transform: translateY(10px); }
+	to   { opacity: 1; transform: translateY(0); }
+}
+
+.ob-rise {
+	animation: ob-rise 0.72s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+.ob-reveal,
+.ob-welcome .ob-progress,
+.ob-welcome .ob-foot .btn,
+.ob-finale .ob-foot .btn {
+	animation: ob-reveal 0.45s ease 0.58s both;
+}
+
+@include m.reduced-motion {
+	.ob-tile,
+	.ob-check,
+	.ob-rise,
+	.ob-reveal,
+	.ob-welcome .ob-progress,
+	.ob-welcome .ob-foot .btn,
+	.ob-finale .ob-foot .btn {
+		@include m.motion-still;
+	}
+
+	.ob-tile:active {
+		transform: none;
+	}
+}

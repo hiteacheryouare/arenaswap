@@ -1,125 +1,66 @@
-import Crest from '@arenaswap/ui/src/components/crest';
-import { powerScoreColor } from './gameCardShared';
+import { useLayoutEffect, useRef, useState } from 'react';
 import { i18n } from '#i18n';
-import SelectDropdown from './selectDropdown';
+import type { TabRegistration } from '@arenaswap/core/types';
+import GameRow from '@arenaswap/ui/src/components/gameRow';
+import useDocumentTheme from '@arenaswap/ui/src/components/useDocumentTheme';
+import TabAssignSelect from './tabAssignSelect';
+import WalkthroughFrame from './walkthroughFrame';
+import { eaglesGiantsQ2, tourTabLabel, tourTabs } from './walkthroughMocks';
 
 interface walkthroughStepTabAssignProps {
 	onNext: () => void;
 	onBack: () => void;
 }
 
-const mockPsScore = 52;
-const mockPsMax = 100;
-const mockPsPercent = (mockPsScore / mockPsMax) * 100;
-const mockPsColor = powerScoreColor(mockPsScore, mockPsMax);
+const rowSurface = { dark: '#0e1013', light: '#f4f5f7' } as const;
 
-const eaglesColor = '#004C54';
-const giantsColor = '#0B2265';
+const walkthroughStepTabAssign = ({ onNext, onBack }: walkthroughStepTabAssignProps) => {
+	const theme = useDocumentTheme();
+	const [registry, setRegistry] = useState<TabRegistration[]>([]);
+	const screenRef = useRef<HTMLDivElement>(null);
+	const [hintLeft, setHintLeft] = useState<number>();
 
-const LOGO_EAGLES = 'https://a.espncdn.com/i/teamlogos/nfl/500/phi.png';
-const LOGO_GIANTS = 'https://a.espncdn.com/i/teamlogos/nfl/500/nyg.png';
+	// The hint's arrow sits under the picker's first letter, wherever the translation leaves it.
+	useLayoutEffect(() => {
+		const screen = screenRef.current;
+		const label = screen?.querySelector('.as-picker-label');
+		if (!screen || !label) return;
+		const contentLeft = screen.getBoundingClientRect().left + parseFloat(getComputedStyle(screen).paddingLeft);
+		setHintLeft(Math.max(0, label.getBoundingClientRect().left - contentLeft));
+	}, [registry]);
 
-interface TeamLogoProps {
-	abbr: string;
-	color: string;
-	logoUrl: string;
-}
-
-const TeamLogo = ({ abbr, color, logoUrl }: TeamLogoProps) => (
-	<Crest
-		logo={logoUrl}
-		abbreviation={abbr}
-		className='team-crest-32'
-		fallbackStyle={{ backgroundColor: color, color: '#fff' }}
-	/>
-);
-
-const walkthroughStepTabAssign = ({ onNext, onBack }: walkthroughStepTabAssignProps) => (
-	<div className='popup-container d-flex flex-column'>
-		<div className='small text-body-secondary text-uppercase text-center pt-3 pb-2'>{i18n.t('stepTabAssign.step', [3, 8])}</div>
-
-		<div className='fw-bold fs-5 text-center mb-1'>{i18n.t('stepTabAssign.title')}</div>
-		<div className='text-body-secondary small text-center mb-3 lh-base'>
-			{i18n.t('stepTabAssign.subtitle')}
-		</div>
-
-		<div
-			className='game-card mb-1'
-			style={{
-				borderLeft: `5px solid ${eaglesColor}`,
-				borderRight: `5px solid ${giantsColor}`,
-				background: `linear-gradient(to right, ${eaglesColor}28, ${giantsColor}28), #ffffff`,
-			}}
+	return (
+		<WalkthroughFrame
+			step={3}
+			stepLabel={i18n.t('stepTabAssign.step', [3, 8])}
+			title={i18n.t('stepTabAssign.title')}
+			lede={i18n.t('stepTabAssign.subtitle')}
+			backLabel={i18n.t('stepTabAssign.back')}
+			onBack={onBack}
+			nextLabel={i18n.t('stepTabAssign.next')}
+			onNext={onNext}
 		>
-			<div className='d-flex align-items-center gap-1 fw-bold text-uppercase text-primary live-status-label mb-1'>
-				<span className='live-dot' />
-				LIVE
-			</div>
-
-			<div className='d-flex align-items-center justify-content-center game-card-matchup'>
-				<div className='d-flex flex-column align-items-center gap-1 team-column'>
-					<TeamLogo abbr='PHI' color={eaglesColor} logoUrl={LOGO_EAGLES} />
-					<span className='fw-bold text-center text-nowrap team-abbreviation'>PHI</span>
-				</div>
-
-				<div className='d-flex flex-column align-items-center game-card-center'>
-					<div className='d-flex align-items-center game-score-row'>
-						<span className='fw-bold lh-1 game-score-value'>14</span>
-						<span className='game-score-sep' aria-hidden='true' />
-						<span className='fw-bold lh-1 game-score-value'>10</span>
-					</div>
-					<span className='font-lekton game-clock'>7:43</span>
-					<span className='font-lekton game-period'>Q2</span>
-				</div>
-
-				<div className='d-flex flex-column align-items-center gap-1 team-column'>
-					<TeamLogo abbr='NYG' color={giantsColor} logoUrl={LOGO_GIANTS} />
-					<span className='fw-bold text-center text-nowrap team-abbreviation'>NYG</span>
-				</div>
-			</div>
-
-			<div className='d-flex align-items-center gap-2 game-card-ps-bar-row'>
-				<span className='game-card-ps-label'>PowerScore</span>
-				<div className='progress flex-grow-1 game-card-ps-progress'>
-					<div
-						className='progress-bar'
-						role='progressbar'
-						style={{ width: `${mockPsPercent}%`, backgroundColor: mockPsColor }}
-						aria-valuenow={mockPsScore}
-						aria-valuemin={0}
-						aria-valuemax={mockPsMax}
-					/>
-				</div>
-				<span className='game-card-ps-score' style={{ color: mockPsColor }}>{mockPsScore} / {mockPsMax}</span>
-			</div>
-
-			<div className='d-flex flex-column gap-0 mt-2'>
-				<SelectDropdown
-					value=''
-					onChange={() => {}}
-					options={[
-						{ value: '', label: i18n.t('stepTabAssign.assignPlaceholder') },
-						{ value: '1', label: 'youtube.com/watch?v=Philly_stream' },
-						{ value: '2', label: 'nfl.com/watch/live' },
-					]}
+			<div ref={screenRef} className='wt-screen wt-assign'>
+				<GameRow
+					game={eaglesGiantsQ2}
+					surface={rowSurface[theme]}
+					power={52}
+					status={(
+						<TabAssignSelect
+							gameId={eaglesGiantsQ2.id}
+							openTabs={tourTabs}
+							registry={registry}
+							onChange={setRegistry}
+							formatTabLabel={tourTabLabel}
+							variant='inline'
+						/>
+					)}
 				/>
-				<span className='text-primary fw-semibold ms-1 mt-1' style={{ fontSize: '0.65rem' }}>{i18n.t('stepTabAssign.linkHint')}</span>
+				<span className='wt-hint' style={{ marginLeft: hintLeft }}>{i18n.t('stepTabAssign.linkHint')}</span>
 			</div>
-		</div>
-
-		<p className='text-body-secondary small lh-base mt-1'>
-			{i18n.t('stepTabAssign.body')}
-		</p>
-
-		<div className='d-flex gap-2 mt-auto'>
-			<button type='button' className='btn btn-secondary flex-grow-1' onClick={onBack}>
-				<i className='bi bi-arrow-left' /> {i18n.t('stepTabAssign.back')}
-			</button>
-			<button type='button' className='btn btn-primary flex-grow-1' onClick={onNext}>
-				{i18n.t('stepTabAssign.next')} <i className='bi bi-arrow-right' />
-			</button>
-		</div>
-	</div>
-);
+			<p className='wt-body'>{i18n.t('stepTabAssign.body')}</p>
+		</WalkthroughFrame>
+	);
+};
 
 export default walkthroughStepTabAssign;

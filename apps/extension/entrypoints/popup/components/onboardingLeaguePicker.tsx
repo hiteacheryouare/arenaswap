@@ -2,7 +2,8 @@ import { i18n } from '#i18n';
 import { resolveLeagueLogoUrl } from '@arenaswap/core/constants';
 import type { LeagueId, LeagueLogoMap, SportType } from '@arenaswap/core/types';
 import Crest from '@arenaswap/ui/src/components/crest';
-import { toLeagueInitials, type leagueConfig } from './leagueLogo';
+import { toLeagueInitials } from './leagueLogo';
+import OnboardingStep from './onboardingStep';
 import { leaguesBySportType, sportTypeLabels, sportTypeOrder } from '../popupHelpers';
 
 interface onboardingLeaguePickerProps {
@@ -14,22 +15,28 @@ interface onboardingLeaguePickerProps {
 	onNext: () => void;
 }
 
-const sportEmojis: Record<SportType, string> = {
-	basketball: '🏀',
-	football: '🏈',
-	hockey: '🏒',
-	baseball: '⚾',
-	softball: '🥎',
-	soccer: '⚽',
+const sports = (Object.keys(sportTypeOrder) as SportType[]).toSorted((a, b) => sportTypeOrder[a] - sportTypeOrder[b]);
+
+// A tile sits under its sport's heading, so "Olympic Men's Ice Hockey" can say "Olympic Men's" and
+// fit a third of the popup. The full name stays the checkbox's accessible name.
+const sportNouns: Record<SportType, string[]> = {
+	basketball: ['Basketball'],
+	football: ['Football'],
+	hockey: ['Ice Hockey', 'Hockey'],
+	baseball: ['Baseball'],
+	softball: ['Softball'],
+	soccer: ['Soccer'],
 };
 
-const LeagueLogo = ({ league, logos }: { league: leagueConfig; logos: LeagueLogoMap }) => (
-	<Crest
-		logo={resolveLeagueLogoUrl(league.id, logos[league.id])}
-		abbreviation={toLeagueInitials(league)}
-		className='onb-league-logo'
-		loading='eager'
-	/>
+export const tileLeagueName = (label: string, sportType: SportType): string => {
+	const noun = sportNouns[sportType].find(word => label.endsWith(` ${word}`));
+	return noun ? label.slice(0, -noun.length - 1) : label;
+};
+
+export const TileCheck = () => (
+	<i className='ob-check' aria-hidden='true'>
+		<i className='bi bi-check-lg' />
+	</i>
 );
 
 const onboardingLeaguePicker = ({
@@ -40,70 +47,71 @@ const onboardingLeaguePicker = ({
 	onBack,
 	onNext,
 }: onboardingLeaguePickerProps) => (
-	<div className='popup-container'>
-		<div className='d-flex align-items-center mb-1'>
-			<button className='btn btn-link btn-sm p-0 text-body-secondary small' onClick={onBack}>
-				<i className='bi bi-arrow-left me-1' />{i18n.t('leaguePicker.back')}
-			</button>
-			<span className='small text-body-secondary text-uppercase ms-auto'>{i18n.t('leaguePicker.step', [2, 3])}</span>
-		</div>
-		<div className='fw-bold lh-sm mb-3 fs-5'>{i18n.t('leaguePicker.title')}</div>
-
-		<div>
-			{(Object.keys(sportTypeOrder) as SportType[])
-				.toSorted((a, b) => sportTypeOrder[a] - sportTypeOrder[b])
-				.map(sportType => {
-					const leagues = leaguesBySportType[sportType];
-					const allSelected = leagues.every(l => selectedLeagues.has(l.id));
-					return (
-						<div key={sportType} className='league-toggle-group'>
-							<div className='d-flex align-items-center justify-content-between'>
-								<div className='fw-semibold text-body-secondary setting-toggle-label'>
-									{sportEmojis[sportType]} {sportTypeLabels[sportType]}
-								</div>
-								<div className='form-check mb-0'>
+	<OnboardingStep
+		step={2}
+		total={3}
+		stepLabel={i18n.t('leaguePicker.step', [2, 3])}
+		title={i18n.t('leaguePicker.title')}
+		lede={i18n.t('leaguePicker.lede')}
+		footer={(
+			<>
+				<button type='button' className='btn btn-quiet' onClick={onBack}>{i18n.t('leaguePicker.back')}</button>
+				<span className='ob-count num'>{i18n.t('leaguePicker.count', selectedLeagues.size)}</span>
+				<button type='button' className='btn btn-primary' onClick={onNext} disabled={selectedLeagues.size === 0}>
+					{i18n.t('leaguePicker.next')}
+				</button>
+			</>
+		)}
+	>
+		{sports.map(sportType => {
+			const leagues = leaguesBySportType[sportType];
+			const allSelected = leagues.every(league => selectedLeagues.has(league.id));
+			return (
+				<section key={sportType} className='ob-sport' aria-labelledby={`ob-sport-${sportType}`}>
+					<div className='ob-sport-head'>
+						<h3 id={`ob-sport-${sportType}`}>{sportTypeLabels[sportType]}</h3>
+						<label className='ob-all' htmlFor={`sport-all-${sportType}`}>
+							<input
+								className='form-check-input'
+								type='checkbox'
+								id={`sport-all-${sportType}`}
+								checked={allSelected}
+								onChange={() => onToggleSport(sportType, !allSelected)}
+							/>
+							{i18n.t('leaguePicker.all')}
+						</label>
+					</div>
+					<div className='ob-grid'>
+						{leagues.map(league => {
+							const on = selectedLeagues.has(league.id);
+							return (
+								<label key={league.id} className={`ob-tile${on ? ' is-on' : ''}`} htmlFor={`onb-league-${league.id}`}>
 									<input
-										className='form-check-input'
+										className='visually-hidden'
 										type='checkbox'
-										id={`sport-all-${sportType}`}
-										checked={allSelected}
-										onChange={() => onToggleSport(sportType, !allSelected)}
+										id={`onb-league-${league.id}`}
+										aria-label={league.label}
+										checked={on}
+										onChange={() => onToggleLeague(league.id)}
 									/>
-									<label className='form-check-label small text-body-secondary' htmlFor={`sport-all-${sportType}`}>
-										{i18n.t('leaguePicker.all')}
-									</label>
-								</div>
-							</div>
-							{leagues.map(league => (
-								<div key={league.id} className='d-flex align-items-center gap-2 mt-1 ps-3 py-1'>
-									<div className='form-check mb-0'>
-										<input
-											className='form-check-input'
-											type='checkbox'
-											id={`onb-league-${league.id}`}
-											checked={selectedLeagues.has(league.id)}
-											onChange={() => onToggleLeague(league.id)}
+									<span className='ob-disc'>
+										<Crest
+											logo={resolveLeagueLogoUrl(league.id, leagueLogos[league.id], 'light')}
+											abbreviation={toLeagueInitials(league)}
+											className='ob-league-logo'
+											loading='eager'
 										/>
-									</div>
-									<label className='d-flex align-items-center gap-2 min-w-0 mb-0' htmlFor={`onb-league-${league.id}`}>
-										<LeagueLogo league={league} logos={leagueLogos} />
-										<span className='fw-semibold text-body lh-sm league-toggle-label'>{league.label}</span>
-									</label>
-								</div>
-							))}
-						</div>
-					);
-				})}
-		</div>
-
-		<button
-			className='btn btn-primary w-100 mt-4'
-			onClick={onNext}
-			disabled={selectedLeagues.size === 0}
-		>
-			{i18n.t('leaguePicker.next')} <i className='bi bi-arrow-right' />
-		</button>
-	</div>
+									</span>
+									<span className='ob-tile-name' aria-hidden='true'>{tileLeagueName(league.label, sportType)}</span>
+									<TileCheck />
+								</label>
+							);
+						})}
+					</div>
+				</section>
+			);
+		})}
+	</OnboardingStep>
 );
 
 export default onboardingLeaguePicker;

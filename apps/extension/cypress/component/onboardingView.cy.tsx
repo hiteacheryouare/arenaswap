@@ -40,6 +40,9 @@ const defaultProps = {
 	onStartWalkthrough: () => {},
 };
 
+// The tile is what a person clicks; the checkbox inside it is visually hidden.
+const toggleLeague = (leagueId: string) => cy.get(`label[for="onb-league-${leagueId}"]`).click();
+
 const goToLeaguePicker = () => cy.contains('button', 'Got it').click();
 
 const goToTeamPicker = () => {
@@ -50,13 +53,20 @@ const goToTeamPicker = () => {
 	cy.contains('Pick your teams').should('exist');
 };
 
+const progressShows = (done: number) => {
+	cy.get('.ob-progress i').should('have.length', 3);
+	cy.get('.ob-progress i.is-done').should('have.length', done);
+};
+
 describe('onboardingView', () => {
 	it('opens on the tab-control step', () => {
 		cy.mount(<OnboardingView {...defaultProps} />);
 
 		cy.contains('Welcome to ArenaSwap').should('exist');
 		cy.contains('Step 1 of 3').should('exist');
+		cy.contains('Automatic tab switching').should('exist');
 		cy.contains('Which sports do you watch?').should('not.exist');
+		progressShows(1);
 	});
 
 	it('advances to the league picker with the default leagues pre-selected', () => {
@@ -65,20 +75,25 @@ describe('onboardingView', () => {
 		goToLeaguePicker();
 
 		cy.contains('Which sports do you watch?').should('exist');
+		progressShows(2);
 		for (const leagueId of ['nba', 'nfl', 'nhl', 'mlb']) {
 			cy.get(`#onb-league-${leagueId}`).should('be.checked');
 		}
 		cy.get('#onb-league-wnba').should('not.be.checked');
+		cy.get('.ob-foot').should('contain.text', '4 leagues');
 	});
 
 	it('keeps a league toggle when stepping forward and back', () => {
 		cy.mount(<OnboardingView {...defaultProps} />);
 
 		goToLeaguePicker();
-		cy.get('#onb-league-nba').click().should('not.be.checked');
-		cy.get('#onb-league-wnba').click().should('be.checked');
+		toggleLeague('nba');
+		cy.get('#onb-league-nba').should('not.be.checked');
+		toggleLeague('wnba');
+		cy.get('#onb-league-wnba').should('be.checked');
 
 		goToTeamPicker();
+		progressShows(3);
 		cy.contains('button', 'Back').click();
 
 		cy.get('#onb-league-nba').should('not.be.checked');
@@ -89,7 +104,8 @@ describe('onboardingView', () => {
 		cy.mount(<OnboardingView {...defaultProps} />);
 
 		goToLeaguePicker();
-		cy.get('#onb-league-mlb').click().should('not.be.checked');
+		toggleLeague('mlb');
+		cy.get('#onb-league-mlb').should('not.be.checked');
 		goToTeamPicker();
 
 		cy.contains('Philadelphia 76ers').should('exist');
@@ -101,13 +117,15 @@ describe('onboardingView', () => {
 		cy.mount(<OnboardingView {...defaultProps} onComplete={cy.spy().as('onComplete')} />);
 
 		goToLeaguePicker();
-		cy.get('#onb-league-mlb').click().should('not.be.checked');
+		toggleLeague('mlb');
 		goToTeamPicker();
 
 		cy.get('[aria-label="Add Philadelphia 76ers to favorites"]').click();
+		cy.get('.ob-foot').should('contain.text', '1 team');
 		cy.contains('button', 'Done').click();
 
 		cy.contains("You're all set!").should('exist');
+		progressShows(3);
 		cy.contains('button', 'Jump right in').click();
 
 		cy.get('@onComplete').should('have.been.calledOnceWith', ['nba', 'nfl', 'nhl'], ['nba:20']);

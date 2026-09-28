@@ -1,65 +1,44 @@
 import { i18n } from '#i18n';
+import Wordmark from '@arenaswap/ui/src/components/wordmark';
+import OnboardingStep from './onboardingStep';
 
 interface onboardingTabControlProps {
 	onNext: () => void;
 }
 
+const points = [
+	{ icon: 'bi-tv', title: 'tabControl.feature1Title', body: 'tabControl.feature1Body' },
+	{ icon: 'bi-collection-play', title: 'tabControl.feature2Title', body: 'tabControl.feature2Body' },
+	{ icon: 'bi-sliders', title: 'tabControl.feature3Title', body: 'tabControl.feature3Body' },
+] as const;
+
 const onboardingTabControl = ({ onNext }: onboardingTabControlProps) => (
-	<div className='popup-container d-flex flex-column'>
-
-		<div className='onb-logo-wrap d-flex justify-content-center pt-4 pb-3'>
-			<img
-				src='/images/full_logo_white_on_transparent.svg'
-				alt='ArenaSwap'
-				className='arenaswap-logo'
-			/>
+	<OnboardingStep
+		step={1}
+		total={3}
+		className='ob-welcome'
+		footer={<button type='button' className='btn btn-primary' onClick={onNext}>{i18n.t('tabControl.gotIt')}</button>}
+	>
+		<div className='ob-rise'>
+			<Wordmark className='ob-wordmark' />
 		</div>
-
-		<div className='onb-content-wrap d-flex flex-column'>
-			<div className='small text-body-secondary text-uppercase text-center mb-3'>{i18n.t('tabControl.step', [1, 3])}</div>
-
-			<div className='fw-bold lh-sm mb-2 fs-4 text-center'>{i18n.t('tabControl.title')}</div>
-			<div className='text-body-secondary fs-6 text-center mb-4 lh-base'>
-				{i18n.t('tabControl.subtitle')}
-			</div>
-
-			<div className='d-flex flex-column gap-3 mb-4'>
-				<div className='d-flex gap-3 align-items-start'>
-					<i className='bi bi-tv fs-5 text-primary flex-shrink-0 mt-1' />
-					<div>
-						<div className='fw-semibold text-body lh-sm small'>{i18n.t('tabControl.feature1Title')}</div>
-						<div className='setting-explainer mt-1'>
-							{i18n.t('tabControl.feature1Body')}
+		<div className='ob-reveal'>
+			<p className='ob-step'>{i18n.t('tabControl.step', [1, 3])}</p>
+			<h2 className='ob-title'>{i18n.t('tabControl.title')}</h2>
+			<p className='ob-lede'>{i18n.t('tabControl.subtitle')}</p>
+			<ul className='ob-points'>
+				{points.map(point => (
+					<li key={point.icon}>
+						<i className={`bi ${point.icon}`} aria-hidden='true' />
+						<div>
+							<b>{i18n.t(point.title)}</b>
+							<p>{i18n.t(point.body)}</p>
 						</div>
-					</div>
-				</div>
-
-				<div className='d-flex gap-3 align-items-start'>
-					<i className='bi bi-collection-play fs-5 text-primary flex-shrink-0 mt-1' />
-					<div>
-						<div className='fw-semibold text-body lh-sm small'>{i18n.t('tabControl.feature2Title')}</div>
-						<div className='setting-explainer mt-1'>
-							{i18n.t('tabControl.feature2Body')}
-						</div>
-					</div>
-				</div>
-
-				<div className='d-flex gap-3 align-items-start'>
-					<i className='bi bi-sliders fs-5 text-primary flex-shrink-0 mt-1' />
-					<div>
-						<div className='fw-semibold text-body lh-sm small'>{i18n.t('tabControl.feature3Title')}</div>
-						<div className='setting-explainer mt-1'>
-							{i18n.t('tabControl.feature3Body')}
-						</div>
-					</div>
-				</div>
-			</div>
-
-			<button className='btn btn-primary w-100 mt-auto' onClick={onNext}>
-				{i18n.t('tabControl.gotIt')} <i className='bi bi-arrow-right' />
-			</button>
+					</li>
+				))}
+			</ul>
 		</div>
-	</div>
+	</OnboardingStep>
 );
 
 export default onboardingTabControl;

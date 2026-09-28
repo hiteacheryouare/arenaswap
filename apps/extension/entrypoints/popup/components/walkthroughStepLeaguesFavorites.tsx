@@ -1,158 +1,136 @@
 import { useState } from 'react';
 import { i18n } from '#i18n';
+import { resolveLeagueLogoUrl } from '@arenaswap/core/constants';
+import type { LeagueId, Team } from '@arenaswap/core/types';
+import BoardCrest from '@arenaswap/ui/src/components/boardCrest';
+import Crest from '@arenaswap/ui/src/components/crest';
+import useDocumentTheme from '@arenaswap/ui/src/components/useDocumentTheme';
+import WalkthroughFrame from './walkthroughFrame';
+import { bucks, chiefs, eagles } from './walkthroughMocks';
 
 interface walkthroughStepLeaguesFavoritesProps {
 	onNext: () => void;
 	onBack: () => void;
 }
 
-interface LeagueRowProps {
-	label: string;
-	color: string;
-	enabled: boolean;
-	onToggle: () => void;
-}
+type tab = 'leagues' | 'favorites';
 
-const LeagueRow = ({ label, color, enabled, onToggle }: LeagueRowProps) => (
-	<div className='d-flex align-items-center justify-content-between py-1'>
-		<div className='d-flex align-items-center gap-2'>
-			<span
-				className='badge fw-bold motion-tint'
-				style={{ backgroundColor: enabled ? color : 'transparent', color: enabled ? '#fff' : '#6c757d', border: `1px solid ${enabled ? color : '#6c757d'}`, minWidth: '3rem' }}
-			>
-				{label}
-			</span>
-		</div>
-		<div className='form-check form-switch mb-0'>
-			<input
-				className='form-check-input'
-				type='checkbox'
-				checked={enabled}
-				onChange={onToggle}
-				aria-label={i18n.t('stepLeaguesFavorites.toggleAriaLabel', { label })}
-			/>
-		</div>
-	</div>
-);
+const tourLeagues: { id: LeagueId; label: string }[] = [
+	{ id: 'nfl', label: 'NFL' },
+	{ id: 'nba', label: 'NBA' },
+	{ id: 'nhl', label: 'NHL' },
+	{ id: 'mlb', label: 'MLB' },
+];
 
-interface TeamRowProps {
-	name: string;
-	abbr: string;
-	color: string;
-	starred: boolean;
-	onStar: () => void;
-}
+const tourTeams = [
+	{ key: 'eagles', team: eagles, league: 'NFL' },
+	{ key: 'chiefs', team: chiefs, league: 'NFL' },
+	{ key: 'bucks', team: bucks, league: 'NBA' },
+] as const;
 
-const TeamRow = ({ name, abbr, color, starred, onStar }: TeamRowProps) => (
-	<div className='d-flex align-items-center justify-content-between py-1'>
-		<div className='d-flex align-items-center gap-2'>
-			<div
-				className='d-flex align-items-center justify-content-center rounded fw-bold'
-				style={{ backgroundColor: color, color: '#fff', width: '2rem', height: '2rem', fontSize: '0.6rem' }}
-			>
-				{abbr}
-			</div>
-			<span className='text-body small'>{name}</span>
-		</div>
-		<button
-			type='button'
-			className='btn btn-sm p-0 motion-tint'
-			style={{ background: 'none', border: 'none', color: starred ? '#f1c40f' : '#6c757d', fontSize: '1rem', lineHeight: 1 }}
-			onClick={onStar}
-			aria-label={starred ? i18n.t('stepLeaguesFavorites.unstarAriaLabel', { team: name }) : i18n.t('stepLeaguesFavorites.starAriaLabel', { team: name })}
-		>
-			<i className={starred ? 'bi bi-star-fill' : 'bi bi-star'} />
-		</button>
-	</div>
-);
+const cardSurface = { dark: '#1a1d22', light: '#ffffff' } as const;
 
 const walkthroughStepLeaguesFavorites = ({ onNext, onBack }: walkthroughStepLeaguesFavoritesProps) => {
-	const [tab, setTab] = useState<'leagues' | 'favorites'>('leagues');
-	const [leagues, setLeagues] = useState({ nfl: true, nba: true, nhl: false, mlb: false });
-	const [starred, setStarred] = useState({ eagles: false, chiefs: false, bucks: false });
+	const theme = useDocumentTheme();
+	const [tab, setTab] = useState<tab>('leagues');
+	const [leagues, setLeagues] = useState<Record<string, boolean>>({ nfl: true, nba: true, nhl: false, mlb: false });
+	const [starred, setStarred] = useState<Record<string, boolean>>({ eagles: false, chiefs: false, bucks: false });
+	const anyStarred = Object.values(starred).some(Boolean);
 
-	const toggleLeague = (key: keyof typeof leagues) =>
-		setLeagues(prev => ({ ...prev, [key]: !prev[key] }));
-	const toggleStar = (key: keyof typeof starred) =>
-		setStarred(prev => ({ ...prev, [key]: !prev[key] }));
+	const tabButton = (value: tab, label: string) => (
+		<li className='nav-item' role='presentation'>
+			<button
+				type='button'
+				role='tab'
+				id={`wt-tab-${value}`}
+				aria-controls='wt-tab-panel'
+				aria-selected={tab === value}
+				className={`nav-link${tab === value ? ' active' : ''}`}
+				onClick={() => setTab(value)}
+			>
+				{label}
+			</button>
+		</li>
+	);
 
 	return (
-		<div className='popup-container d-flex flex-column'>
-			<div className='small text-body-secondary text-uppercase text-center pt-3 pb-2'>
-				{i18n.t('stepLeaguesFavorites.step', [7, 8])}
-			</div>
+		<WalkthroughFrame
+			step={7}
+			stepLabel={i18n.t('stepLeaguesFavorites.step', [7, 8])}
+			title={i18n.t('stepLeaguesFavorites.title')}
+			lede={i18n.t('stepLeaguesFavorites.subtitle')}
+			backLabel={i18n.t('stepLeaguesFavorites.back')}
+			onBack={onBack}
+			nextLabel={i18n.t('stepLeaguesFavorites.next')}
+			onNext={onNext}
+		>
+			<ul className='nav nav-underline wt-tabs' role='tablist'>
+				{tabButton('leagues', i18n.t('stepLeaguesFavorites.tabLeagues'))}
+				{tabButton('favorites', i18n.t('stepLeaguesFavorites.tabFavorites'))}
+			</ul>
 
-			<div className='fw-bold fs-5 text-center mb-1'>{i18n.t('stepLeaguesFavorites.title')}</div>
-			<div className='text-body-secondary small text-center mb-3 lh-base'>
-				{i18n.t('stepLeaguesFavorites.subtitle')}
-			</div>
-
-			<div className='d-flex gap-1 mb-2'>
-				<button
-					type='button'
-					className={`btn btn-sm flex-grow-1 ${tab === 'leagues' ? 'btn-primary' : 'btn-outline-secondary'}`}
-					onClick={() => setTab('leagues')}
-				>
-					<i className='bi bi-trophy me-1' />
-					{i18n.t('stepLeaguesFavorites.tabLeagues')}
-				</button>
-				<button
-					type='button'
-					className={`btn btn-sm flex-grow-1 ${tab === 'favorites' ? 'btn-warning' : 'btn-outline-secondary'}`}
-					onClick={() => setTab('favorites')}
-				>
-					<i className='bi bi-star me-1' />
-					{i18n.t('stepLeaguesFavorites.tabFavorites')}
-				</button>
-			</div>
-
-			<div className='border border-secondary-subtle rounded p-2 mb-3' style={{ minHeight: '9rem' }}>
+			<div id='wt-tab-panel' role='tabpanel' aria-labelledby={`wt-tab-${tab}`} className='wt-panel'>
+				<p className='wt-note'>
+					{tab === 'leagues' ? i18n.t('stepLeaguesFavorites.leaguesExplain') : i18n.t('stepLeaguesFavorites.favoritesExplain')}
+				</p>
 				{tab === 'leagues' ? (
-					<>
-						<p className='text-body-secondary mb-2 lh-base' style={{ fontSize: '0.72rem' }}>
-							{i18n.t('stepLeaguesFavorites.leaguesExplain')}
-						</p>
-						<LeagueRow label='NFL' color='#013369' enabled={leagues.nfl} onToggle={() => toggleLeague('nfl')} />
-						<LeagueRow label='NBA' color='#C9082A' enabled={leagues.nba} onToggle={() => toggleLeague('nba')} />
-						<LeagueRow label='NHL' color='#000099' enabled={leagues.nhl} onToggle={() => toggleLeague('nhl')} />
-						<LeagueRow label='MLB' color='#002D72' enabled={leagues.mlb} onToggle={() => toggleLeague('mlb')} />
-					</>
+					<div className='wt-card'>
+						{tourLeagues.map(league => (
+							<div key={league.id} className='wt-control wt-line'>
+								<span className='wt-disc'>
+									<Crest logo={resolveLeagueLogoUrl(league.id, undefined, 'light')} abbreviation={league.label} className='wt-league-logo' />
+								</span>
+								<span className='wt-label'>{league.label}</span>
+								<div className='form-check form-switch m-0'>
+									<input
+										className='form-check-input'
+										type='checkbox'
+										role='switch'
+										checked={leagues[league.id]}
+										aria-checked={leagues[league.id]}
+										onChange={() => setLeagues(previous => ({ ...previous, [league.id]: !previous[league.id] }))}
+										aria-label={i18n.t('stepLeaguesFavorites.toggleAriaLabel', { label: league.label })}
+									/>
+								</div>
+							</div>
+						))}
+					</div>
 				) : (
 					<>
-						<p className='text-body-secondary mb-2 lh-base' style={{ fontSize: '0.72rem' }}>
-							{i18n.t('stepLeaguesFavorites.favoritesExplain')}
-						</p>
-						<TeamRow name='Philadelphia Eagles' abbr='PHI' color='#004C54' starred={starred.eagles} onStar={() => toggleStar('eagles')} />
-						<TeamRow name='Kansas City Chiefs' abbr='KC' color='#E31837' starred={starred.chiefs} onStar={() => toggleStar('chiefs')} />
-						<TeamRow name='Milwaukee Bucks' abbr='MIL' color='#00471B' starred={starred.bucks} onStar={() => toggleStar('bucks')} />
-						{(starred.eagles || starred.chiefs || starred.bucks) && (
-							<div
-								className='mt-2 rounded px-2 py-1 small'
-								style={{ backgroundColor: 'rgba(241,196,15,0.12)', color: '#f1c40f', fontSize: '0.68rem' }}
-							>
-								<i className='bi bi-star-fill me-1' />
-								{i18n.t('stepLeaguesFavorites.favoritesBonusHint')}
+						<div className='wt-card'>
+							{tourTeams.map(({ key, team, league }) => (
+								<div key={key} className='wt-control wt-line'>
+									<BoardCrest team={{ ...team, score: 0 } as Team} size={28} surface={cardSurface[theme]} color={team.color} />
+									<span className='wt-label'>
+										{team.name}
+										<small>{league}</small>
+									</span>
+									<button
+										type='button'
+										className={`as-icon wt-star${starred[key] ? ' is-on' : ''}`}
+										aria-pressed={starred[key]}
+										onClick={() => setStarred(previous => ({ ...previous, [key]: !previous[key] }))}
+										aria-label={starred[key] ? i18n.t('stepLeaguesFavorites.unstarAriaLabel', { team: team.name }) : i18n.t('stepLeaguesFavorites.starAriaLabel', { team: team.name })}
+									>
+										<i className={`bi ${starred[key] ? 'bi-star-fill' : 'bi-star'}`} aria-hidden='true' />
+									</button>
+								</div>
+							))}
+						</div>
+						{anyStarred && (
+							<div className='as-notice is-quiet wt-bonus'>
+								<i className='bi bi-star-fill as-notice-icon' aria-hidden='true' />
+								<span className='as-notice-copy'>{i18n.t('stepLeaguesFavorites.favoritesBonusHint')}</span>
 							</div>
 						)}
 					</>
 				)}
 			</div>
 
-			<p className='text-body-secondary small lh-base'>
-				{tab === 'leagues'
-					? i18n.t('stepLeaguesFavorites.leaguesBody')
-					: i18n.t('stepLeaguesFavorites.favoritesBody')}
+			<p className='wt-body'>
+				{tab === 'leagues' ? i18n.t('stepLeaguesFavorites.leaguesBody') : i18n.t('stepLeaguesFavorites.favoritesBody')}
 			</p>
-
-			<div className='d-flex gap-2 mt-auto'>
-				<button type='button' className='btn btn-secondary flex-grow-1' onClick={onBack}>
-					<i className='bi bi-arrow-left' /> {i18n.t('stepLeaguesFavorites.back')}
-				</button>
-				<button type='button' className='btn btn-primary flex-grow-1' onClick={onNext}>
-					{i18n.t('stepLeaguesFavorites.next')} <i className='bi bi-arrow-right' />
-				</button>
-			</div>
-		</div>
+		</WalkthroughFrame>
 	);
 };
 

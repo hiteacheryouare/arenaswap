@@ -1,179 +1,107 @@
 import { useEffect, useState } from 'react';
-import Crest from '@arenaswap/ui/src/components/crest';
-import { powerScoreColor } from './gameCardShared';
 import { i18n } from '#i18n';
+import type { Game, TabRegistration } from '@arenaswap/core/types';
+import GameRow from '@arenaswap/ui/src/components/gameRow';
+import GameStage from '@arenaswap/ui/src/components/gameStage';
+import useDocumentTheme from '@arenaswap/ui/src/components/useDocumentTheme';
+import TabAssignSelect, { tabNumberLabel } from './tabAssignSelect';
+import WalkthroughFrame from './walkthroughFrame';
+import { eaglesGiantsQ2, sixersCelticsQ4, tourTabLabel, tourTabs } from './walkthroughMocks';
 
 interface walkthroughStepAutoSwitchProps {
 	onNext: () => void;
 	onBack: () => void;
 }
 
-const psMax = 100;
+const rowSurface = { dark: '#0e1013', light: '#f4f5f7' } as const;
 
-const eaglesColor = '#004C54';
-const giantsColor = '#0B2265';
-const sixersColor = '#006BB6';
-const celticsColor = '#007A33';
+const [eaglesTab, sixersTab] = tourTabs as [typeof tourTabs[0], typeof tourTabs[0]];
 
-const LOGO_EAGLES  = 'https://a.espncdn.com/i/teamlogos/nfl/500/phi.png';
-const LOGO_GIANTS  = 'https://a.espncdn.com/i/teamlogos/nfl/500/nyg.png';
-const LOGO_SIXERS  = 'https://a.espncdn.com/i/teamlogos/nba/500/phi.png';
-const LOGO_CELTICS = 'https://a.espncdn.com/i/teamlogos/nba/500/bos.png';
+const registry: TabRegistration[] = [
+	{ gameId: eaglesGiantsQ2.id, tabId: eaglesTab.id! },
+	{ gameId: sixersCelticsQ4.id, tabId: sixersTab.id! },
+];
 
-interface TeamLogoProps {
-	abbr: string;
-	color: string;
-	logoUrl: string;
-}
-
-const TeamLogo = ({ abbr, color, logoUrl }: TeamLogoProps) => (
-	<Crest
-		logo={logoUrl}
-		abbreviation={abbr}
-		className='team-crest-32'
-		fallbackStyle={{ backgroundColor: color, color: '#fff' }}
+const tabPicker = (game: Game, watchedTabId: number) => (
+	<TabAssignSelect
+		gameId={game.id}
+		openTabs={tourTabs}
+		registry={registry}
+		onChange={() => {}}
+		formatTabLabel={tourTabLabel}
+		variant='inline'
+		watchedTabId={watchedTabId}
+		disabled
 	/>
 );
 
-interface mockCardProps {
-	abbr1: string; color1: string; logo1: string;
-	abbr2: string; color2: string; logo2: string;
-	score1: number; score2: number;
-	clock: string; period: string;
-	ps: number; watching: boolean;
-}
-
-const MockCard = ({ abbr1, color1, logo1, abbr2, color2, logo2, score1, score2, clock, period, ps, watching }: mockCardProps) => {
-	const psColor = powerScoreColor(ps, psMax);
-	const psPercent = (ps / psMax) * 100;
-	return (
-		<div
-			className='game-card mb-1'
-			style={{
-				pointerEvents: 'none',
-				borderLeft: `5px solid ${color1}`,
-				borderRight: `5px solid ${color2}`,
-				background: `linear-gradient(to right, ${color1}28, ${color2}28), #ffffff`,
-				outline: watching ? '2px solid var(--bs-primary)' : undefined,
-				transition: 'outline 0.3s',
-			}}
-		>
-			<div className='d-flex align-items-center justify-content-between mb-1'>
-				<div className='d-flex align-items-center gap-1 fw-bold text-uppercase text-primary live-status-label'>
-					<span className='live-dot' />
-					LIVE
-				</div>
-				{watching && (
-					<span className='badge text-bg-primary' style={{ fontSize: '0.6rem' }}>{i18n.t('stepAutoSwitch.watchingBadge')}</span>
-				)}
-			</div>
-
-			<div className='d-flex align-items-center justify-content-center game-card-matchup'>
-				<div className='d-flex flex-column align-items-center gap-1 team-column'>
-					<TeamLogo abbr={abbr1} color={color1} logoUrl={logo1} />
-					<span className='fw-bold text-center text-nowrap team-abbreviation'>{abbr1}</span>
-				</div>
-				<div className='d-flex flex-column align-items-center game-card-center'>
-					<div className='d-flex align-items-center game-score-row'>
-						<span className='fw-bold lh-1 game-score-value'>{score1}</span>
-						<span className='game-score-sep' aria-hidden='true' />
-						<span className='fw-bold lh-1 game-score-value'>{score2}</span>
-					</div>
-					<span className='font-lekton game-clock'>{clock}</span>
-					<span className='font-lekton game-period'>{period}</span>
-				</div>
-				<div className='d-flex flex-column align-items-center gap-1 team-column'>
-					<TeamLogo abbr={abbr2} color={color2} logoUrl={logo2} />
-					<span className='fw-bold text-center text-nowrap team-abbreviation'>{abbr2}</span>
-				</div>
-			</div>
-
-			<div className='d-flex align-items-center gap-2 game-card-ps-bar-row'>
-				<span className='game-card-ps-label'>PowerScore</span>
-				<div className='progress flex-grow-1 game-card-ps-progress'>
-					<div
-						className='progress-bar'
-						role='progressbar'
-						style={{ width: `${psPercent}%`, backgroundColor: psColor, transition: 'width 0.9s ease-out, background-color 0.9s ease-out' }}
-						aria-valuenow={ps}
-						aria-valuemin={0}
-						aria-valuemax={psMax}
-					/>
-				</div>
-				<span className='game-card-ps-score' style={{ color: psColor, transition: 'color 0.9s ease-out' }}>
-					{ps} / {psMax}
-				</span>
-			</div>
-		</div>
-	);
-};
-
+// The board the way the Games screen draws it: the hottest game on the stage, the other in a row.
+// The 76ers climb past the Eagles, take the stage with "Switching to Tab 2", then ArenaSwap moves
+// the window and the label settles on "Watching".
 const walkthroughStepAutoSwitch = ({ onNext, onBack }: walkthroughStepAutoSwitchProps) => {
+	const theme = useDocumentTheme();
 	const [phase, setPhase] = useState(0);
-	const [ps76ers, setPs76ers] = useState(31);
-	const [watching76ers, setWatching76ers] = useState(false);
-	const [flash, setFlash] = useState(false);
+	const [sixersPower, setSixersPower] = useState(31);
+	const [switched, setSwitched] = useState(false);
 
 	useEffect(() => {
-		const t1 = setTimeout(() => setPs76ers(89), 800);
-		const t2 = setTimeout(() => { setFlash(true); setTimeout(() => setFlash(false), 300); setWatching76ers(true); }, 1800);
-		const t3 = setTimeout(() => setPhase(1), 2200);
-		return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
+		const climb = setTimeout(() => setSixersPower(89), 800);
+		const swap = setTimeout(() => setSwitched(true), 1800);
+		const reveal = setTimeout(() => setPhase(1), 2200);
+		return () => { clearTimeout(climb); clearTimeout(swap); clearTimeout(reveal); };
 	}, []);
 
+	const eaglesPower = 52;
+	const sixersLead = sixersPower > eaglesPower;
+	const stage = sixersLead ? sixersCelticsQ4 : eaglesGiantsQ2;
+	const row = sixersLead ? eaglesGiantsQ2 : sixersCelticsQ4;
+	const watchedTabId = switched ? sixersTab.id! : eaglesTab.id!;
+	const watchedGameId = switched ? sixersCelticsQ4.id : eaglesGiantsQ2.id;
+	const powerOf = (game: Game) => (game.id === sixersCelticsQ4.id ? sixersPower : eaglesPower);
+	const stageLabel = sixersLead && !switched
+		? <span className='as-stage-switching'>{i18n.t('board.switchingTo', { tab: tabNumberLabel(sixersTab) })}</span>
+		: tabPicker(stage, watchedTabId);
+
 	return (
-		<div className='popup-container d-flex flex-column'>
-			<div className='small text-body-secondary text-uppercase text-center pt-3 pb-2'>{i18n.t('stepAutoSwitch.step', [4, 8])}</div>
-
-			<div className='fw-bold fs-5 text-center mb-3'>{i18n.t('stepAutoSwitch.title')}</div>
-
-			<div className='position-relative'>
-				<MockCard
-					abbr1='PHI' color1={eaglesColor} logo1={LOGO_EAGLES}
-					abbr2='NYG' color2={giantsColor} logo2={LOGO_GIANTS}
-					score1={14} score2={10}
-					clock='7:43' period='Q2'
-					ps={52} watching={!watching76ers}
-				/>
-				<MockCard
-					abbr1='PHI' color1={sixersColor} logo1={LOGO_SIXERS}
-					abbr2='BOS' color2={celticsColor} logo2={LOGO_CELTICS}
-					score1={98} score2={95}
-					clock='1:22' period='Q4'
-					ps={ps76ers} watching={watching76ers}
-				/>
-				{flash && (
-					<div
-						className='position-absolute top-0 start-0 w-100 h-100 rounded'
-						style={{ backgroundColor: 'rgba(255,255,255,0.25)', pointerEvents: 'none', zIndex: 10 }}
+		<WalkthroughFrame
+			step={4}
+			stepLabel={i18n.t('stepAutoSwitch.step', [4, 8])}
+			title={i18n.t('stepAutoSwitch.title')}
+			backLabel={i18n.t('stepAutoSwitch.back')}
+			onBack={onBack}
+			nextLabel={i18n.t('stepAutoSwitch.next')}
+			onNext={onNext}
+			nextDisabled={phase === 0}
+		>
+			<div className='wt-screen wt-board'>
+				<div key={stage.id} className='wt-arrive'>
+					<GameStage
+						game={stage}
+						label={stageLabel}
+						power={{ value: powerOf(stage), label: i18n.t('gameCard.powerScore') }}
+						watched={stage.id === watchedGameId}
 					/>
-				)}
+				</div>
+				<div key={row.id} className='as-rows wt-arrive'>
+					<GameRow
+						game={row}
+						surface={rowSurface[theme]}
+						power={powerOf(row)}
+						status={tabPicker(row, watchedTabId)}
+						watched={row.id === watchedGameId}
+					/>
+				</div>
 			</div>
 
-			{phase === 0 && (
-				<p className='text-body-secondary small lh-base mt-2 text-center fst-italic'>
-					{i18n.t('stepAutoSwitch.watchingCaption')}
-				</p>
+			{phase === 0 ? (
+				<p className='wt-body wt-caption'>{i18n.t('stepAutoSwitch.watchingCaption')}</p>
+			) : (
+				<div className='wt-reveal'>
+					<p className='wt-reveal-title'>{i18n.t('stepAutoSwitch.reveal')}</p>
+					<p className='wt-body'>{i18n.t('stepAutoSwitch.revealBody')}</p>
+				</div>
 			)}
-
-			{phase === 1 && (
-				<>
-					<p className='fw-semibold text-body mt-2 mb-1'>{i18n.t('stepAutoSwitch.reveal')}</p>
-					<p className='text-body-secondary small lh-base'>
-						{i18n.t('stepAutoSwitch.revealBody')}
-					</p>
-				</>
-			)}
-
-			<div className='d-flex gap-2 mt-auto'>
-				<button type='button' className='btn btn-secondary flex-grow-1' onClick={onBack}>
-					<i className='bi bi-arrow-left' /> {i18n.t('stepAutoSwitch.back')}
-				</button>
-				<button type='button' className='btn btn-primary flex-grow-1' onClick={onNext} disabled={phase === 0}>
-					{i18n.t('stepAutoSwitch.next')} <i className='bi bi-arrow-right' />
-				</button>
-			</div>
-		</div>
+		</WalkthroughFrame>
 	);
 };
 

@@ -1,6 +1,10 @@
 import { useState } from 'react';
 import { i18n } from '#i18n';
+import { resolveLeagueLogoUrl } from '@arenaswap/core/constants';
+import type { LeagueId } from '@arenaswap/core/types';
+import Crest from '@arenaswap/ui/src/components/crest';
 import { cooldownSteps, formatCooldownSeconds } from './cooldownSlider';
+import WalkthroughFrame from './walkthroughFrame';
 
 interface walkthroughStepSettingsProps {
 	onNext: () => void;
@@ -12,81 +16,72 @@ const sensitivityLabels: Record<number, string> = {
 	4: i18n.t('stepSettings.sensitivity4'), 5: i18n.t('stepSettings.sensitivity5'), 6: i18n.t('stepSettings.sensitivity6'), 7: i18n.t('stepSettings.sensitivity7'),
 };
 
+const tourLeagues: { id: LeagueId; label: string }[] = [
+	{ id: 'nfl', label: 'NFL' },
+	{ id: 'nba', label: 'NBA' },
+	{ id: 'nhl', label: 'NHL' },
+	{ id: 'mlb', label: 'MLB' },
+];
+
 const walkthroughStepSettings = ({ onNext, onBack }: walkthroughStepSettingsProps) => {
 	const [sensitivity, setSensitivity] = useState(4);
 	const [cooldownIdx, setCooldownIdx] = useState(2);
 
 	return (
-		<div className='popup-container d-flex flex-column'>
-			<div className='small text-body-secondary text-uppercase text-center pt-3 pb-2'>{i18n.t('stepSettings.step', [5, 8])}</div>
-
-			<div className='fw-bold fs-5 text-center mb-1'>{i18n.t('stepSettings.title')}</div>
-			<div className='text-body-secondary small text-center mb-3 lh-base'>
-				{i18n.t('stepSettings.subtitle')}
-			</div>
-
-			<div className='border border-secondary-subtle rounded p-2 mb-3'>
-				<div className='mb-3'>
-					<div className='d-flex justify-content-between align-items-center mb-1'>
-						<span className='text-body-secondary setting-toggle-label'>
-							<i className='bi bi-sliders me-1 text-primary' />
-							{i18n.t('stepSettings.sensitivityLabel')}
-						</span>
-						<span className={`fw-semibold setting-value-label${sensitivity === 7 ? ' ludicrous-speed' : ''}`}>
+		<WalkthroughFrame
+			step={5}
+			stepLabel={i18n.t('stepSettings.step', [5, 8])}
+			title={i18n.t('stepSettings.title')}
+			lede={i18n.t('stepSettings.subtitle')}
+			backLabel={i18n.t('stepSettings.back')}
+			onBack={onBack}
+			nextLabel={i18n.t('stepSettings.next')}
+			onNext={onNext}
+		>
+			<div className='wt-card'>
+				<div className='wt-control'>
+					<div className='wt-range-head'>
+						<label className='wt-label' htmlFor='wt-sensitivity'>{i18n.t('stepSettings.sensitivityLabel')}</label>
+						<output className={`wt-value${sensitivity === 7 ? ' ludicrous-speed' : ''}`} htmlFor='wt-sensitivity'>
 							{sensitivityLabels[sensitivity]}
-						</span>
+						</output>
 					</div>
 					<input
 						type='range'
-						className='form-range w-100'
+						className='form-range'
+						id='wt-sensitivity'
 						min={1} max={7} step={1}
 						value={sensitivity}
-						onChange={e => setSensitivity(Number(e.target.value))}
+						onChange={event => setSensitivity(Number(event.target.value))}
 					/>
-					<div className='text-body-secondary small lh-base' style={{ fontSize: '0.7rem' }}>
-						{i18n.t('stepSettings.sensitivityHelp')}
-					</div>
+					<p className='wt-note'>{i18n.t('stepSettings.sensitivityHelp')}</p>
 				</div>
-
-				<div>
-					<div className='d-flex justify-content-between align-items-center mb-1'>
-						<span className='text-body-secondary setting-toggle-label'>
-							<i className='bi bi-clock me-1 text-primary' />
-							{i18n.t('stepSettings.cooldownLabel')}
-						</span>
-						<span className='fw-semibold setting-value-label'>
-							{formatCooldownSeconds(cooldownSteps[cooldownIdx]!)}
-						</span>
+				<div className='wt-control'>
+					<div className='wt-range-head'>
+						<label className='wt-label' htmlFor='wt-cooldown'>{i18n.t('stepSettings.cooldownLabel')}</label>
+						<output className='wt-value num' htmlFor='wt-cooldown'>{formatCooldownSeconds(cooldownSteps[cooldownIdx]!)}</output>
 					</div>
 					<input
 						type='range'
-						className='form-range w-100'
+						className='form-range'
+						id='wt-cooldown'
 						min={0} max={cooldownSteps.length - 1} step={1}
 						value={cooldownIdx}
-						onChange={e => setCooldownIdx(Number(e.target.value))}
+						onChange={event => setCooldownIdx(Number(event.target.value))}
 					/>
-					<div className='text-body-secondary small lh-base' style={{ fontSize: '0.7rem' }}>
-						{i18n.t('stepSettings.cooldownHelp')}
-					</div>
-				</div>
-
-				<div className='d-flex gap-1 flex-wrap mt-3'>
-					{['NFL', 'NBA', 'NHL', 'MLB'].map(l => (
-						<span key={l} className='badge text-bg-primary'>{l}</span>
-					))}
-					<span className='badge border border-secondary-subtle text-body-secondary'>{i18n.t('stepSettings.moreLeagues')}</span>
+					<p className='wt-note'>{i18n.t('stepSettings.cooldownHelp')}</p>
 				</div>
 			</div>
 
-			<div className='d-flex gap-2 mt-auto'>
-				<button type='button' className='btn btn-secondary flex-grow-1' onClick={onBack}>
-					<i className='bi bi-arrow-left' /> {i18n.t('stepSettings.back')}
-				</button>
-				<button type='button' className='btn btn-primary flex-grow-1' onClick={onNext}>
-					{i18n.t('stepSettings.next')} <i className='bi bi-arrow-right' />
-				</button>
+			<div className='wt-leagues'>
+				{tourLeagues.map(league => (
+					<span key={league.id} className='wt-disc' title={league.label}>
+						<Crest logo={resolveLeagueLogoUrl(league.id, undefined, 'light')} abbreviation={league.label} label={league.label} className='wt-league-logo' />
+					</span>
+				))}
+				<span className='wt-more'>{i18n.t('stepSettings.moreLeagues')}</span>
 			</div>
-		</div>
+		</WalkthroughFrame>
 	);
 };
 

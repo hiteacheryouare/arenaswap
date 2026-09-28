@@ -1,4 +1,6 @@
-import { liveState, sixersThunder } from '../support/fixtures';
+import { liveState, onboardedPrefs, sixersThunder } from '../support/fixtures';
+
+const html = () => cy.document().its('documentElement');
 
 // The three onboarding steps plus the "all set" screen, from a genuinely empty profile: no stored
 // prefs and no onboardingCompleted flag, which is the only state a real first install is in.
@@ -9,6 +11,11 @@ describe('onboarding', () => {
 		cy.contains('Step 1 of 3').should('be.visible');
 		cy.contains('Welcome to ArenaSwap').should('be.visible');
 		cy.contains('Automatic tab switching').should('be.visible');
+	});
+
+	it('opens on the Theme setting default, which is dark', () => {
+		cy.get('.ob-welcome').should('exist');
+		html().should('have.attr', 'data-bs-theme', 'dark');
 	});
 
 	it('walks all three steps and lands on the games list', () => {
@@ -28,8 +35,9 @@ describe('onboarding', () => {
 		cy.contains(/You.re all set!/).should('be.visible');
 		cy.contains('button', 'Jump right in').click();
 
-		cy.contains('.popup-section-title', 'Live Games').should('be.visible');
-		cy.get('.game-card').should('have.length.at.least', 1);
+		cy.contains('Welcome to ArenaSwap!').should('be.visible');
+		cy.get('.as-stage').should('contain.text', sixersThunder.homeTeam.abbreviation);
+		cy.get('[data-game]').should('have.length.at.least', 1);
 	});
 
 	it('persists the picked leagues and favorites through to the background', () => {
@@ -37,6 +45,7 @@ describe('onboarding', () => {
 		cy.get('#onb-league-nfl').uncheck({ force: true });
 		cy.get('#onb-league-nhl').uncheck({ force: true });
 		cy.get('#onb-league-mlb').uncheck({ force: true });
+		cy.contains('.ob-foot', '1 league').should('be.visible');
 		cy.contains('button', 'Next').click();
 
 		cy.wait('@espnTeams');
@@ -59,8 +68,23 @@ describe('onboarding', () => {
 		}
 		cy.contains('button', 'Next').should('be.disabled');
 
-		cy.get('#onb-league-nba').check({ force: true });
+		cy.get('label[for="onb-league-nba"]').click();
+		cy.get('#onb-league-nba').should('be.checked');
 		cy.contains('button', 'Next').should('be.enabled');
+	});
+
+	it('takes the tour from the all-set screen', () => {
+		cy.contains('button', 'Got it').click();
+		cy.contains('button', 'Next').click();
+		cy.wait('@espnTeams');
+		cy.contains('.ob-stepline button', 'Skip').click();
+		cy.contains('button', 'Take the tour').click();
+
+		cy.contains('Step 1 of 8').should('be.visible');
+		cy.contains('Turning it on & off').should('be.visible');
+		cy.background().should(background => {
+			expect(background.storage.local.get('onboardingCompleted')).to.equal(true);
+		});
 	});
 
 	it('skips onboarding entirely when a profile is already stored', () => {
@@ -71,6 +95,18 @@ describe('onboarding', () => {
 		});
 
 		cy.contains('Step 1 of 3').should('not.exist');
-		cy.contains('.game-card', sixersThunder.homeTeam.abbreviation).should('be.visible');
+		cy.contains('[data-game]', sixersThunder.homeTeam.abbreviation).should('be.visible');
+	});
+});
+
+describe('the tour', () => {
+	it('follows the Theme setting', () => {
+		cy.openPopup({ state: liveState(), local: { onboardingCompleted: true }, sync: { prefs: onboardedPrefs({ theme: 'light' }) } });
+		html().should('have.attr', 'data-bs-theme', 'light');
+
+		cy.get('[aria-label="Tour"]').click();
+
+		cy.contains('Step 1 of 8').should('be.visible');
+		html().should('have.attr', 'data-bs-theme', 'light');
 	});
 });

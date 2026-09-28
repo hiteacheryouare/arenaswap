@@ -3,7 +3,9 @@ import { i18n } from '#i18n';
 import { fetchTeamsForLeagues } from '@arenaswap/core';
 import type { EspnTeamEntry } from '@arenaswap/core';
 import type { LeagueId, LeagueLogoMap, SportType } from '@arenaswap/core/types';
+import Wordmark from '@arenaswap/ui/src/components/wordmark';
 import { leaguesBySportType } from '../popupHelpers';
+import OnboardingStep from './onboardingStep';
 import OnboardingTabControl from './onboardingTabControl';
 import OnboardingLeaguePicker from './onboardingLeaguePicker';
 import OnboardingTeamPicker from './onboardingTeamPicker';
@@ -78,7 +80,7 @@ const onboardingView = ({ leagueLogos, onComplete, onStartWalkthrough }: onboard
 
 	return (
 		<div className='popup-root'>
-			<div className='popup-view-shell'>
+			<div key={step} className='popup-view-shell'>
 				{step === 1 && (
 					<OnboardingTabControl onNext={() => setStep(2)} />
 				)}
@@ -106,38 +108,31 @@ const onboardingView = ({ leagueLogos, onComplete, onStartWalkthrough }: onboard
 					/>
 				)}
 				{step === 4 && (
-					<div className='popup-container d-flex flex-column'>
-						<div className='onb-logo-wrap d-flex justify-content-center pt-4 pb-3'>
-							<img
-								src='/images/full_logo_white_on_transparent.svg'
-								alt='ArenaSwap'
-								className='arenaswap-logo'
-							/>
-						</div>
-						<div className='onb-content-wrap d-flex flex-column'>
-							<div className='fw-bold lh-sm mb-2 fs-4 text-center'>{i18n.t('onboarding.allSetTitle')}</div>
-							<div className='text-body-secondary fs-6 text-center mb-4 lh-base'>
-								{i18n.t('onboarding.allSetSubtitle')}
-							</div>
-							<div className='d-flex flex-column gap-3 mt-auto'>
-								<button
-									type='button'
-									className='btn btn-primary w-100'
-									onClick={() => onStartWalkthrough?.(pendingLeagues, pendingFavorites)}
-								>
-									<i className='bi bi-play-fill me-1' />
-									{i18n.t('onboarding.takeTour')}
-								</button>
-								<button
-									type='button'
-									className='btn btn-outline-secondary w-100'
-									onClick={() => onComplete(pendingLeagues, pendingFavorites)}
-								>
+					<OnboardingStep
+						step={3}
+						total={3}
+						className='ob-finale'
+						footer={(
+							<>
+								<button type='button' className='btn btn-quiet' onClick={() => onComplete(pendingLeagues, pendingFavorites)}>
 									{i18n.t('onboarding.jumpIn')}
 								</button>
+								<button type='button' className='btn btn-primary' onClick={() => onStartWalkthrough?.(pendingLeagues, pendingFavorites)}>
+									{i18n.t('onboarding.takeTour')}
+								</button>
+							</>
+						)}
+					>
+						<div className='ob-finale-body'>
+							<div className='ob-rise'>
+								<Wordmark className='ob-wordmark' />
+							</div>
+							<div className='ob-reveal'>
+								<h2 className='ob-title'>{i18n.t('onboarding.allSetTitle')}</h2>
+								<p className='ob-lede'>{i18n.t('onboarding.allSetSubtitle')}</p>
 							</div>
 						</div>
-					</div>
+					</OnboardingStep>
 				)}
 			</div>
 		</div>

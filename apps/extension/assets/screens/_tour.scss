@@ -1,0 +1,723 @@
+// The tour. It wears the first-run frame (_onboarding.scss) and draws its demos out of the real
+// popup's parts: the header, the stage, rows, tab pickers, and cards cut like Settings and Detail.
+@use '@arenaswap/ui/src/motion' as m;
+
+.wt-body {
+	margin: var(--as-space-4) 0 0;
+	font-size: var(--as-text-sm);
+	line-height: var(--as-leading-sm);
+	color: var(--as-muted);
+	text-wrap: pretty;
+
+	strong {
+		color: var(--as-ink);
+		font-weight: var(--as-weight-semibold);
+	}
+}
+
+.wt-body-center {
+	text-align: center;
+}
+
+// A window onto the popup at 1:1, so the pieces inside it sit on the page they sit on for real.
+.wt-screen {
+	position: relative;
+	flex-shrink: 0;
+	margin-top: var(--as-space-4);
+	overflow: hidden;
+	border-radius: var(--as-radius-md);
+	background: var(--as-page);
+	box-shadow: inset 0 0 0 1px var(--as-line-strong);
+
+	.popup-header {
+		position: relative;
+	}
+}
+
+.wt-card {
+	flex-shrink: 0;
+	margin-top: var(--as-space-4);
+	overflow: hidden;
+	border-radius: var(--as-radius-md);
+	background: var(--as-surface);
+	box-shadow: inset 0 0 0 1px var(--as-line);
+
+	h3 {
+		margin: 0 0 var(--as-space-3);
+		font-size: var(--as-text-sm);
+		font-weight: var(--as-weight-semibold);
+		line-height: var(--as-leading-sm);
+	}
+}
+
+.wt-control {
+	padding: var(--as-space-3);
+
+	& + & {
+		box-shadow: inset 0 1px 0 var(--as-line);
+	}
+
+	.form-range {
+		display: block;
+	}
+}
+
+.wt-line {
+	display: flex;
+	align-items: center;
+	gap: var(--as-space-3);
+}
+
+.wt-range-head {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 2px var(--as-space-2);
+	margin-bottom: var(--as-space-2);
+
+	// A long label and a long value, German's worst case, stack rather than overlap.
+	.wt-label {
+		flex: none;
+	}
+
+	.wt-value {
+		margin-left: auto;
+	}
+}
+
+.wt-label {
+	display: grid;
+	flex: 1;
+	gap: 2px;
+	min-width: 0;
+	margin: 0;
+	font-size: var(--as-text-sm);
+	font-weight: var(--as-weight-medium);
+	line-height: var(--as-leading-sm);
+	color: var(--as-ink);
+
+	small {
+		font-size: var(--as-text-xs);
+		font-weight: var(--as-weight-regular);
+		line-height: var(--as-leading-xs);
+		color: var(--as-muted);
+	}
+}
+
+.wt-value {
+	font-size: var(--as-text-sm);
+	font-weight: var(--as-weight-semibold);
+	line-height: var(--as-leading-sm);
+	color: var(--as-ink);
+	white-space: nowrap;
+}
+
+.wt-note {
+	margin: var(--as-space-2) 0 0;
+	font-size: var(--as-text-xs);
+	line-height: var(--as-leading-xs);
+	color: var(--as-muted);
+	text-wrap: pretty;
+}
+
+.wt-disc {
+	display: inline-grid;
+	flex-shrink: 0;
+	place-items: center;
+	width: 28px;
+	height: 28px;
+	border-radius: 50%;
+	background: var(--as-disc);
+	box-shadow: inset 0 0 0 1px var(--as-disc-line);
+}
+
+.wt-league-logo {
+	width: 18px;
+	height: 18px;
+
+	.crest-fallback {
+		background: transparent;
+		color: #0e1013;
+		font-size: 7px;
+	}
+}
+
+// ── 1. The switch ────────────────────────────────────────────────────────────
+
+.wt-try {
+	display: block;
+	margin-top: -6px;
+	padding: 0 6px 6px 0;
+	font-size: var(--as-text-xs);
+	font-weight: var(--as-weight-semibold);
+	line-height: var(--as-leading-xs);
+	color: var(--as-accent-ink);
+	text-align: right;
+}
+
+.wt-state {
+	margin: 0;
+	padding: var(--as-space-3) var(--as-space-4);
+	box-shadow: inset 0 1px 0 var(--as-line);
+	font-size: var(--as-text-sm);
+	font-weight: var(--as-weight-medium);
+	line-height: var(--as-leading-sm);
+	color: var(--as-muted);
+	transition: color m.$motion-quick m.$motion-ease;
+
+	&.is-on {
+		color: var(--as-ink);
+	}
+}
+
+// ── 2. PowerScore ────────────────────────────────────────────────────────────
+
+.wt-powerscore {
+	position: relative;
+	overflow: hidden;
+}
+
+// The dots sit on the footer, so they hold still as the sub-steps above them change height.
+.wt-powerscore .ob-foot {
+	margin-top: 0;
+}
+
+.wt-orbit {
+	position: relative;
+	display: grid;
+	flex-shrink: 0;
+	place-items: center;
+	width: 130px;
+	height: 130px;
+	margin: var(--as-space-6) auto var(--as-space-2);
+}
+
+.wt-orbit-ring {
+	position: absolute;
+	width: 100px;
+	height: 100px;
+	border: 1px dashed var(--as-line-strong);
+	border-radius: 50%;
+
+	// A set piece: slow enough to be caught rather than watched.
+	&.is-turning {
+		animation: wt-orbit 10s m.$motion-linear infinite;
+	}
+}
+
+@keyframes wt-orbit {
+	from { transform: rotate(0deg); }
+	to   { transform: rotate(360deg); }
+}
+
+.wt-orbit-dot {
+	position: absolute;
+	width: 16px;
+	height: 16px;
+	border-radius: 50%;
+	background: var(--signal);
+	box-shadow: 0 0 0 3px var(--as-page);
+	transition: transform m.$motion-base m.$motion-spring, opacity m.$motion-base m.$motion-ease;
+
+	&.is-active {
+		z-index: 2;
+		transform: scale(1.5);
+	}
+
+	&.is-dimmed {
+		opacity: 0.2;
+	}
+}
+
+.wt-orbit-center {
+	position: relative;
+	z-index: 1;
+	display: grid;
+	place-items: center;
+	width: 48px;
+	height: 48px;
+	border-radius: 50%;
+	background: var(--as-surface);
+	box-shadow: inset 0 0 0 1px var(--as-line-strong);
+}
+
+.wt-orbit-mark {
+	width: 26px;
+	height: 26px;
+	background: var(--as-ink);
+	mask: url('/images/icon_white_on_transparent.svg') center / contain no-repeat;
+}
+
+.wt-boost {
+	display: grid;
+	flex-shrink: 0;
+	justify-items: center;
+	gap: var(--as-space-1);
+	margin-top: var(--as-space-6);
+	text-align: center;
+
+	b {
+		font-size: var(--as-text-md);
+		font-weight: var(--as-weight-semibold);
+		line-height: var(--as-leading-md);
+	}
+
+	p {
+		max-width: 264px;
+		margin: 0;
+		font-size: var(--as-text-sm);
+		line-height: var(--as-leading-sm);
+		color: var(--as-muted);
+		text-wrap: pretty;
+	}
+}
+
+.wt-boost-mark {
+	display: grid;
+	place-items: center;
+	width: 80px;
+	height: 80px;
+	margin-bottom: var(--as-space-3);
+	border-radius: 50%;
+	background: var(--as-surface);
+	box-shadow: inset 0 0 0 1px var(--as-line);
+	color: var(--signal);
+	font-size: 32px;
+	line-height: 1;
+}
+
+.wt-dots {
+	display: flex;
+	flex-shrink: 0;
+	justify-content: center;
+	gap: 6px;
+	margin: auto 0 0;
+	padding: var(--as-space-5) 0 0;
+	list-style: none;
+
+	li {
+		display: flex;
+	}
+}
+
+.powerscore-progress-dot {
+	position: relative;
+	width: 8px;
+	height: 8px;
+	padding: 0;
+	border: 0;
+	border-radius: 50%;
+	background: var(--as-line-strong);
+	cursor: pointer;
+	transition: background-color m.$motion-quick m.$motion-ease, transform m.$motion-quick m.$motion-spring;
+
+	&::after {
+		content: '';
+		position: absolute;
+		inset: -4px -3px;
+	}
+
+	&:hover {
+		background: var(--as-muted);
+	}
+
+	&.active {
+		background: var(--signal);
+		transform: scale(1.35);
+	}
+}
+
+// Stops short of the footer, so Back and Next stay reachable while a signal is on screen.
+.ps-bloom-overlay {
+	position: absolute;
+	inset: 0 0 58px;
+	z-index: 4;
+	display: flex;
+	align-items: center;
+	border-radius: 0 0 var(--as-radius-lg) var(--as-radius-lg);
+	background: var(--signal);
+	color: var(--bloom-ink);
+	cursor: pointer;
+	clip-path: circle(0% at var(--bloom-origin-x, 50%) var(--bloom-origin-y, 50%));
+	opacity: 0;
+
+	&:focus-visible {
+		outline-offset: -4px;
+		outline-color: var(--bloom-ink);
+	}
+
+	&.ps-bloom-blooming {
+		animation: ps-bloom-in m.$motion-slow m.$motion-ease forwards;
+	}
+
+	&.ps-bloom-visible {
+		clip-path: circle(150% at var(--bloom-origin-x, 50%) var(--bloom-origin-y, 50%));
+		opacity: 1;
+	}
+
+	&.ps-bloom-shrinking {
+		animation: ps-bloom-out m.$motion-slow m.$motion-ease-in forwards;
+	}
+}
+
+@keyframes ps-bloom-in {
+	from {
+		clip-path: circle(0% at var(--bloom-origin-x) var(--bloom-origin-y));
+		opacity: 0;
+	}
+
+	to {
+		clip-path: circle(150% at var(--bloom-origin-x) var(--bloom-origin-y));
+		opacity: 1;
+	}
+}
+
+@keyframes ps-bloom-out {
+	from {
+		clip-path: circle(150% at var(--bloom-origin-x) var(--bloom-origin-y));
+		opacity: 1;
+	}
+
+	to {
+		clip-path: circle(0% at var(--bloom-origin-x) var(--bloom-origin-y));
+		opacity: 0;
+	}
+}
+
+.ps-bloom-content {
+	display: grid;
+	justify-items: start;
+	gap: var(--as-space-2);
+	width: 100%;
+	padding: var(--as-space-6);
+}
+
+.ps-bloom-dot {
+	width: 16px;
+	height: 16px;
+	margin-bottom: var(--as-space-2);
+	border-radius: 50%;
+	box-shadow: inset 0 0 0 3px var(--bloom-ink);
+}
+
+.ps-bloom-label {
+	font-size: var(--as-text-lg);
+	font-weight: var(--as-weight-bold);
+	line-height: var(--as-leading-md);
+	letter-spacing: var(--as-tracking-tight);
+}
+
+.ps-bloom-body {
+	margin: 0;
+	font-size: var(--as-text-sm);
+	line-height: var(--as-leading-sm);
+	text-wrap: pretty;
+}
+
+.ps-bloom-tap-hint {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	margin-top: var(--as-space-4);
+	font-size: var(--as-text-xs);
+	font-weight: var(--as-weight-semibold);
+	line-height: var(--as-leading-xs);
+	opacity: 0.8;
+}
+
+// ── 3 and 4. Tabs and the switch itself ──────────────────────────────────────
+
+.wt-assign {
+	padding: var(--as-space-1);
+}
+
+.wt-hint {
+	display: block;
+	margin-top: calc(var(--as-space-2) * -1);
+	padding-bottom: var(--as-space-2);
+	text-wrap: balance;
+	font-size: var(--as-text-xs);
+	font-weight: var(--as-weight-semibold);
+	line-height: var(--as-leading-xs);
+	color: var(--as-accent-ink);
+}
+
+.wt-board {
+	.as-stage {
+		padding-top: var(--as-space-4);
+	}
+
+	.as-rows {
+		padding: var(--as-space-1);
+	}
+}
+
+.wt-arrive {
+	animation: wt-arrive m.$motion-base m.$motion-ease both;
+}
+
+@keyframes wt-arrive {
+	from { opacity: 0; transform: translateY(8px); }
+	to   { opacity: 1; transform: translateY(0); }
+}
+
+.wt-reveal {
+	animation: wt-arrive m.$motion-base m.$motion-ease both;
+
+	.wt-body {
+		margin-top: 0;
+	}
+}
+
+.wt-reveal-title {
+	margin: var(--as-space-4) 0 var(--as-space-1);
+	font-size: var(--as-text-md);
+	font-weight: var(--as-weight-semibold);
+	line-height: var(--as-leading-md);
+}
+
+// ── 5. Settings ──────────────────────────────────────────────────────────────
+
+.wt-leagues {
+	display: flex;
+	flex-shrink: 0;
+	align-items: center;
+	gap: var(--as-space-2);
+	margin-top: var(--as-space-3);
+	padding: 0 var(--as-space-1);
+}
+
+.wt-more {
+	margin-left: var(--as-space-1);
+	font-size: var(--as-text-xs);
+	line-height: var(--as-leading-xs);
+	color: var(--as-muted);
+}
+
+// ── 6. A game's detail ───────────────────────────────────────────────────────
+
+.wt-stage {
+	flex-shrink: 0;
+	margin-top: var(--as-space-4);
+	padding-top: var(--as-space-4);
+	border-radius: var(--as-radius-lg);
+}
+
+.wt-hero {
+	margin-top: 0;
+	padding-top: 52px;
+}
+
+.wt-hero-bar {
+	position: absolute;
+	top: var(--as-space-2);
+	right: var(--as-space-4);
+	left: var(--as-space-2);
+	display: flex;
+	align-items: center;
+	gap: var(--as-space-2);
+
+	.as-icon {
+		color: #ffffff;
+
+		&:hover {
+			background: rgba(255, 255, 255, 0.14);
+		}
+
+		&:active {
+			background: rgba(255, 255, 255, 0.2);
+		}
+	}
+}
+
+.wt-hero-league {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--as-space-2);
+	font-size: var(--as-text-sm);
+	font-weight: var(--as-weight-semibold);
+	line-height: var(--as-leading-xs);
+
+	img {
+		box-sizing: content-box;
+		width: 16px;
+		height: 16px;
+		padding: 2px;
+		border-radius: 50%;
+		background: #ffffff;
+	}
+}
+
+.wt-tap {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	font-weight: var(--as-weight-semibold);
+}
+
+.wt-detail {
+	display: grid;
+	flex-shrink: 0;
+	gap: var(--as-space-3);
+	margin-top: var(--as-space-4);
+	animation: wt-arrive m.$motion-base m.$motion-ease both;
+
+	.wt-card,
+	.wt-body {
+		margin-top: 0;
+	}
+}
+
+.wt-breakdown {
+	padding: var(--as-space-4);
+}
+
+.wt-signals {
+	display: grid;
+	gap: var(--as-space-2);
+}
+
+.wt-signal {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 64px 44px;
+	align-items: center;
+	gap: var(--as-space-3);
+	font-size: var(--as-text-sm);
+	line-height: var(--as-leading-xs);
+}
+
+.wt-signal-name {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--as-space-2);
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+
+	i {
+		flex-shrink: 0;
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+		background: var(--signal);
+	}
+}
+
+.wt-bar {
+	display: block;
+	height: 4px;
+	overflow: hidden;
+	border-radius: 2px;
+	background: var(--as-raised);
+
+	span {
+		display: block;
+		height: 100%;
+		border-radius: 2px;
+		background: var(--signal);
+	}
+}
+
+.wt-signal-value {
+	font-size: var(--as-text-xs);
+	color: var(--as-muted);
+	text-align: right;
+	white-space: nowrap;
+
+	b {
+		font-size: var(--as-text-sm);
+		font-weight: var(--as-weight-semibold);
+		color: var(--as-ink);
+	}
+}
+
+// ── 7. Leagues and favorites ─────────────────────────────────────────────────
+
+.wt-tabs {
+	flex-shrink: 0;
+	margin-top: var(--as-space-4);
+	box-shadow: inset 0 -1px 0 var(--as-line);
+}
+
+.wt-panel {
+	flex-shrink: 0;
+	margin-top: var(--as-space-3);
+
+	> .wt-note {
+		margin: 0;
+	}
+
+	.wt-card {
+		margin-top: var(--as-space-3);
+	}
+
+	.wt-line {
+		min-height: 52px;
+		padding-block: var(--as-space-2);
+	}
+}
+
+.wt-star {
+	margin-right: calc(var(--as-space-2) * -1);
+	color: var(--as-muted);
+	font-size: 16px;
+
+	&.is-on {
+		color: var(--as-accent-ink);
+	}
+}
+
+.wt-bonus {
+	margin-top: var(--as-space-2);
+}
+
+// ── 8. Coming back ───────────────────────────────────────────────────────────
+
+.wt-reaccess {
+	padding-bottom: 44px;
+
+	// Guide first, the tour mark second, the cog and the switch after it.
+	.popup-tools > :not(:nth-child(2)) {
+		opacity: 0.3;
+	}
+
+	.popup-tools > :nth-child(2) {
+		color: var(--as-accent-ink);
+		box-shadow: inset 0 0 0 1.5px var(--as-accent);
+	}
+}
+
+// Under the tour mark: the header's right padding, the switch and its margin, the cog, two gaps
+// and half a 32px button.
+.wt-callout {
+	position: absolute;
+	top: 50px;
+	right: 104px;
+	display: grid;
+	justify-items: center;
+	font-size: var(--as-text-xs);
+	font-weight: var(--as-weight-semibold);
+	line-height: var(--as-leading-xs);
+	color: var(--as-accent-ink);
+	white-space: nowrap;
+	transform: translateX(50%);
+}
+
+@include m.reduced-motion {
+	.wt-orbit-ring.is-turning,
+	.wt-arrive,
+	.wt-reveal,
+	.wt-detail,
+	.wt-orbit-dot,
+	.powerscore-progress-dot {
+		@include m.motion-still;
+	}
+
+	.ps-bloom-overlay.ps-bloom-blooming {
+		animation: none;
+		clip-path: circle(150% at var(--bloom-origin-x, 50%) var(--bloom-origin-y, 50%));
+		opacity: 1;
+	}
+}
