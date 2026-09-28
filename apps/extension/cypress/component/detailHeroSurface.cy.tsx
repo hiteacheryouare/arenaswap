@@ -178,6 +178,39 @@ describe('the sticky bar crests', () => {
 });
 
 
+// A white mark is how a navy crest reads on the dark bar, and it is exactly what vanishes on the light
+// one: the bar is judged against the page it actually sits on. Solid PNGs so the measurement runs.
+describe('the sticky bar crests follow the theme', () => {
+	const navy = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAFUlEQVR4nGPkUXb4z4AHMOGTHD4KAH25AX7gsIqPAAAAAElFTkSuQmCC';
+	const whiteMark = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAFklEQVR4nGP8////fwY8gAmf5PBRAAAbbgQMid1tCwAAAABJRU5ErkJggg==';
+	const blackMark = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAAD0lEQVR42mOQwgEYhpYEAJ8xE4HmivYxAAAAAElFTkSuQmCC';
+	const navyGame: Game = {
+		...liveGame,
+		awayTeam: { ...liveGame.awayTeam, logo: navy },
+		homeTeam: { ...liveGame.homeTeam, logo: navy },
+	};
+	const marks: MonoLogos = { away: { white: whiteMark, black: blackMark }, home: { white: whiteMark, black: blackMark } };
+
+	const mountBar = (theme: 'dark' | 'light') => {
+		cy.mount(
+			<div style={{ width: '320px', background: theme === 'light' ? '#ffffff' : '#0d1117' }}>
+				<DetailStickyBar game={navyGame} status={{ text: 'Q2 • 5:00', tabular: true }} compact monoLogos={marks} onBack={() => {}} theme={theme} />
+			</div>,
+		);
+		cy.get('.gd-bar-logo').should('have.attr', 'data-crest-state', 'loaded');
+	};
+
+	it('swaps a navy crest for its white mark on dark', () => {
+		mountBar('dark');
+		cy.get('.gd-bar-logo').first().should('have.class', 'is-mono').find('img').should('have.attr', 'src', whiteMark);
+	});
+
+	it('keeps the same crest in its own colours on light', () => {
+		mountBar('light');
+		cy.get('.gd-bar-logo').first().should('not.have.class', 'is-mono').find('img').should('have.attr', 'src', navy);
+	});
+});
+
 // The at-bat panel is the one thing on the hero drawn on a plate of its own rather than straight
 // onto the scrim, so its ink has to clear the plate, not the gradient underneath it.
 describe('detail hero at-bat panel on the scrim', () => {

@@ -13,19 +13,37 @@ $guide-ink-dim: var(--as-secondary-color);
 $guide-bar: var(--as-secondary-bg);
 // A live bar is a step up off the page rather than a second colour to learn: same hue, more
 // light, brighter ink. Scheduled stays flat and finished stays dimmed.
-$guide-bar-live: #2d333b;
-$guide-bar-live-border: #4d5561;
+$guide-bar-live: var(--guide-bar-live);
+$guide-bar-live-border: var(--guide-bar-live-border);
 $guide-accent: var(--as-primary);
 // The popup's quieter muted grey, for what is on the grid but already over.
-$guide-ink-faint: #6e7681;
+$guide-ink-faint: var(--as-faint);
 // Three weights of rule, so the eye can tell a row from an hour from a league boundary. All three
 // were invisible before: the row hairline resolved to #171C22 on a #0D1117 page.
-$guide-rule: #1e242c;
-$guide-gridline: #262d37;
+$guide-rule: var(--guide-rule);
+$guide-gridline: var(--guide-gridline);
 $guide-row-height: 30px;
 // The detail screen's sticky bar is 2.5rem, and the drawer sits beside this ruler: at 32px the two
 // rules under them met the seam 8px apart.
 $guide-ruler-height: 2.5rem;
+
+:root {
+	--guide-bar-live: #2d333b;
+	--guide-bar-live-border: #4d5561;
+	--guide-bar-live-ink: #f0f6fc;
+	--guide-rule: #1e242c;
+	--guide-gridline: #262d37;
+}
+
+// On white the step up is a step down: a live bar darkens off the page instead. The rules sit well
+// under the border token, which at full weight turned the grid into a spreadsheet.
+[data-bs-theme='light'] {
+	--guide-bar-live: #d5dbe3;
+	--guide-bar-live-border: #a9b2be;
+	--guide-bar-live-ink: #0b1016;
+	--guide-rule: #eceff3;
+	--guide-gridline: #e1e5ea;
+}
 
 .guide-page {
 	min-height: 100vh;
@@ -89,7 +107,7 @@ $guide-ruler-height: 2.5rem;
 	margin-left: 0.35rem;
 	font-size: 0.78rem;
 	font-weight: 600;
-	color: $guide-accent;
+	color: var(--as-accent-ink);
 	white-space: nowrap;
 }
 
@@ -359,7 +377,7 @@ $guide-ruler-height: 2.5rem;
 	height: 1.35rem;
 	border-radius: 999px;
 	overflow: hidden;
-	box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.22);
+	box-shadow: 0 0 0 1px rgba(var(--as-overlay-rgb), 0.22);
 }
 
 .guide-league-logo {
@@ -384,11 +402,11 @@ $guide-ruler-height: 2.5rem;
 	// Banding does the same work the hairline does, one level quieter: a bar is on a shaded row or a
 	// plain one, which is readable at a glance across 1,000px of empty grid.
 	&:nth-child(odd) {
-		background: rgba(255, 255, 255, 0.014);
+		background: rgba(var(--as-overlay-rgb), 0.014);
 	}
 
 	&:hover {
-		background: rgba(255, 255, 255, 0.035);
+		background: rgba(var(--as-overlay-rgb), 0.035);
 	}
 }
 
@@ -461,7 +479,7 @@ $guide-ruler-height: 2.5rem;
 // A game that is on right now is the answer to the question this whole page asks, so it is the one
 // thing on the grid that reads before anything else.
 .guide-bar[data-status='in'] {
-	color: #f0f6fc;
+	color: var(--guide-bar-live-ink);
 
 	.guide-bar-shape {
 		background: $guide-bar-live;
@@ -566,7 +584,7 @@ $guide-ruler-height: 2.5rem;
 }
 
 .guide-bar[data-status='in'] .guide-bar-status {
-	color: #b9c2cc;
+	color: var(--as-ink-soft);
 }
 
 .guide-bar[data-status='post'] .guide-bar-status {
@@ -613,7 +631,7 @@ $guide-ruler-height: 2.5rem;
 	height: 1.15rem;
 	border-radius: 999px;
 	overflow: hidden;
-	box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.25);
+	box-shadow: 0 0 0 1px rgba(var(--as-overlay-rgb), 0.25);
 }
 
 // Bare when the crest carries itself — the plate only ever existed for the ones that do not.

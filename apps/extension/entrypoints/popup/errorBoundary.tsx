@@ -1,6 +1,8 @@
 import { Component } from 'react';
 import type { ReactNode } from 'react';
 import { i18n } from '#i18n';
+import { readDocumentTheme } from '@arenaswap/ui/src/components/useDocumentTheme';
+import { fullLogoSrc } from '../../utils/theme';
 
 interface errorBoundaryProps {
 	children: ReactNode;
@@ -21,7 +23,7 @@ class ErrorBoundary extends Component<errorBoundaryProps, errorBoundaryState> {
 		if (this.state.error) {
 			return (
 				<div className='popup-container d-flex flex-column align-items-center justify-content-center gap-3 text-center'>
-					<img src='/images/full_logo_white_on_transparent.svg' alt='ArenaSwap' className='arenaswap-logo mb-1' />
+					<img src={fullLogoSrc(readDocumentTheme())} alt='ArenaSwap' className='arenaswap-logo mb-1' />
 					<div>
 						<i className='bi bi-exclamation-triangle-fill text-danger fs-3' />
 						<div className='fw-bold mt-2'>{i18n.t('errorBoundary.title')}</div>

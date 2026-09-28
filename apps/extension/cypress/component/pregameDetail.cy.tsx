@@ -162,7 +162,7 @@ describe('pre-game detail screen', () => {
 
 	it('offers the tab picker and the boost, and no favourites row', () => {
 		mountPre(preGame);
-		cy.get('.gd-setup .game-card-tab-assign select').should('exist');
+		cy.get('.gd-setup .game-card-tab-assign .form-select').should('exist');
 		cy.get('.gd-setup .powerscore-boost-input').should('have.value', '10');
 		cy.get('.gd-setup').should('not.contain.text', 'avorite');
 	});

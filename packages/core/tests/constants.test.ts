@@ -32,6 +32,18 @@ describe('constants', () => {
 		expect(resolveLeagueLogoUrl('nba')).toBe(fallback);
 	});
 
+	// A dark-ground mark is white, and on the light theme it is not there at all. The EPL lion was
+	// the one that went missing first.
+	test('swaps a dark-ground league logo for its light-ground variant on a light surface', () => {
+		const eplDark = 'https://a.espncdn.com/i/leaguelogos/soccer/500-dark/23.png';
+		expect(resolveLeagueLogoUrl('epl', eplDark, 'light')).toBe('https://a.espncdn.com/i/leaguelogos/soccer/500/23.png');
+		expect(resolveLeagueLogoUrl('epl', eplDark)).toBe(eplDark);
+		expect(resolveLeagueLogoUrl('ncaab', undefined, 'light')).toBe('https://a.espncdn.com/i/espn/misc_logos/500/ncaa.png');
+		expect(resolveLeagueLogoUrl('nba', undefined, 'light')).toBe(leagueLogoFallbacks.nba);
+		// An override is still a dark-ground mark, and the Olympics' are all seven of them.
+		expect(resolveLeagueLogoUrl('olybb', undefined, 'light')).toBe('https://a.espncdn.com/i/espn/misc_logos/500/olympics.png');
+	});
+
 	test('creates default user preferences', () => {
 		expect(createDefaultUserPreferences()).toEqual({
 			sensitivity: 4,
@@ -52,6 +64,7 @@ describe('constants', () => {
 			temperatureUnit: 'F',
 			romerUnlocked: false,
 			openRevealEnabled: true,
+			theme: 'dark',
 			holidayDecorationsEnabled: true,
 			holidaySnowEnabled: true,
 			holidayLightsEnabled: true,
@@ -75,6 +88,15 @@ describe('constants', () => {
 	test('keeps a stored opening-animation choice', () => {
 		expect(normalizeUserPreferences({ openRevealEnabled: false }).openRevealEnabled).toBe(false);
 		expect(normalizeUserPreferences({ openRevealEnabled: 'false' }).openRevealEnabled).toBe(true);
+	});
+
+	// Dark is the only look the extension had before this setting, so an unknown value lands there
+	// rather than flipping somebody's popup to a theme they never picked.
+	test('keeps a stored theme and falls back to dark', () => {
+		expect(normalizeUserPreferences({ theme: 'light' }).theme).toBe('light');
+		expect(normalizeUserPreferences({ theme: 'system' }).theme).toBe('system');
+		expect(normalizeUserPreferences({ theme: 'LIGHT' }).theme).toBe('dark');
+		expect(normalizeUserPreferences({ theme: 1 }).theme).toBe('dark');
 	});
 
 	// 'keep' is the one value that touches nobody's tabs, so anything unrecognised lands there
@@ -115,6 +137,7 @@ describe('constants', () => {
 			temperatureUnit: 'F',
 			romerUnlocked: false,
 			openRevealEnabled: true,
+			theme: 'dark',
 			holidayDecorationsEnabled: true,
 			holidaySnowEnabled: true,
 			holidayLightsEnabled: true,

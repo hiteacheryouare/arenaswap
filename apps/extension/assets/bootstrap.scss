@@ -6,7 +6,7 @@
 	$font-size-sm:     0.8125rem,
 	$headings-font-weight: 700,
 	$form-range-thumb-bg:  #F75C03,
-	$form-range-track-bg:  #30363d,
+	$form-range-track-bg:  var(--as-border-color),
 	$btn-border-radius:    0.25rem,
 	$enable-dark-mode:     false,
 
@@ -33,9 +33,18 @@
 	// was a white slab on a #0d1117 popup. Both tokens are set in packages/ui now, so these are a
 	// choice rather than a repair: a disabled arrow recedes into the popup entirely instead of holding
 	// the secondary surface.
-	$pagination-disabled-bg: #0d1117,
-	$pagination-hover-bg: #161b22,
-	$pagination-focus-bg: #161b22,
+	$pagination-disabled-bg: var(--as-body-bg),
+	$pagination-hover-bg: var(--as-tertiary-bg),
+	$pagination-focus-bg: var(--as-tertiary-bg),
+
+	// Every picker in the popup is a Dropdown opening off a .form-select (selectDropdown.tsx), so the
+	// menu takes the select's own surface and type size, and a press dims instead of flashing orange.
+	$dropdown-bg:                 var(--as-tertiary-bg),
+	$dropdown-border-color:       var(--as-border-color),
+	$dropdown-font-size:          0.8125rem,
+	$dropdown-link-hover-bg:      var(--as-secondary-bg),
+	$dropdown-link-active-color:  var(--as-body-color),
+	$dropdown-link-active-bg:     var(--as-secondary-bg),
 
 	// ── Box score ────────────────────────────────────────────────────────────────
 	// The box score is the first and only .table and .nav in the popup, so these are set globally
@@ -88,6 +97,24 @@
 @use '@arenaswap/ui/src/game-card' as gc;
 @use '@arenaswap/ui/src/motion' as m;
 @use '@arenaswap/ui/src/popup';
+@use '@arenaswap/ui/src/theme';
+
+// After the Bootstrap load above, so this beats its `:root, [data-bs-theme=light]` block on source
+// order. Dark needs no block of its own: it is what :root already carries.
+[data-bs-theme='light'] {
+	@include theme.color-mode(light);
+}
+
+// #3E9BD1 is 3.0:1 on white, short of what the button's own label needs as text. The deeper blue
+// is the one the PowerScore signals already use on the light cards.
+[data-bs-theme='light'] .btn-outline-secondary {
+	@include bs.button-outline-variant(bs.$secondary-on-light);
+}
+
+// The toast's check. #00CC66 is under 2:1 on the light toast; an icon needs 3:1.
+[data-bs-theme='light'] .toast .text-success {
+	color: #00854a !important;
+}
 
 @keyframes livePulse {
 	0%, 100% { opacity: 1; }
@@ -244,13 +271,13 @@
 	padding:     0;
 	border:      none;
 	background:  transparent;
-	color:       #6e7681;
+	color:       var(--as-faint);
 	font-size:   0.62rem;
 	line-height: 1;
 	cursor:      pointer;
 	flex-shrink: 0;
 
-	&:hover  { color: #e6edf3; }
+	&:hover  { color: var(--as-body-color); }
 	&:focus-visible {
 		outline:        1px solid bs.$primary;
 		outline-offset: 1px;
@@ -385,6 +412,21 @@
 			box-shadow:   0 0 0 0.15rem rgba(#F75C03, 0.2);
 		}
 	}
+
+	// Scaled to the card's own small picker rather than to the settings pickers the menu defaults to.
+	.dropdown-menu {
+		--as-dropdown-font-size:      0.68rem;
+		--as-dropdown-item-padding-y: 0.2rem;
+		--as-dropdown-item-padding-x: 0.5rem;
+	}
+}
+
+// A hovered card is lifted with a transform, and a transform makes the card a stacking context of
+// its own: the menu's z-index then only counts inside the card, and the next card in the list paints
+// over it. While a card holds an open menu, the card itself is what climbs.
+.game-card:has(.dropdown-menu.show) {
+	position: relative;
+	z-index:  1;
 }
 
 .settings-search {
@@ -398,7 +440,7 @@
 	top:           50%;
 	transform:     translateY(-50%);
 	font-size:     0.72rem;
-	color:         #6e7681;
+	color:         var(--as-faint);
 	pointer-events: none;
 }
 
@@ -406,7 +448,7 @@
 	padding-left: 1.75rem;
 	font-size:    0.72rem;
 
-	&::placeholder { color: #6e7681; }
+	&::placeholder { color: var(--as-faint); }
 
 	// Safari draws its own clear affordance that collides with the 320px layout.
 	&::-webkit-search-cancel-button { appearance: none; }
@@ -414,7 +456,7 @@
 
 .settings-search-empty {
 	font-size:  0.7rem;
-	color:      #6e7681;
+	color:      var(--as-faint);
 	padding:    1.25rem 0.25rem;
 	text-align: center;
 }
@@ -422,7 +464,7 @@
 .settings-index {
 	display:        flex;
 	flex-direction: column;
-	border-top:     1px solid #21262d;
+	border-top:     1px solid var(--as-secondary-bg);
 }
 
 .settings-index-row {
@@ -433,12 +475,12 @@
 	padding:       0.72rem 0.15rem;
 	background:    none;
 	border:        none;
-	border-bottom: 1px solid #21262d;
+	border-bottom: 1px solid var(--as-secondary-bg);
 	color:         inherit;
 	text-align:    left;
 	cursor:        pointer;
 
-	&:hover { background: rgba(230, 237, 243, 0.035); }
+	&:hover { background: rgba(var(--as-body-color-rgb), 0.035); }
 
 	&:focus-visible {
 		outline:        1px solid bs.$primary;
@@ -457,10 +499,10 @@
 	align-items:   center;
 	gap:           0.6rem;
 	padding:       0.6rem 0.15rem;
-	border-bottom: 1px solid #21262d;
+	border-bottom: 1px solid var(--as-secondary-bg);
 	cursor:        pointer;
 
-	&:hover { background: rgba(230, 237, 243, 0.035); }
+	&:hover { background: rgba(var(--as-body-color-rgb), 0.035); }
 }
 
 // The same white disc the team picker uses, at row size. The two crests here sit on the popup's
@@ -475,7 +517,7 @@
 	height:          1.27rem;
 	border-radius:   999px;
 	overflow:        hidden;
-	box-shadow:      0 0 0 1px rgba(255, 255, 255, 0.28);
+	box-shadow:      0 0 0 1px rgba(var(--as-overlay-rgb), 0.28);
 }
 
 .suggest-crest {
@@ -493,7 +535,7 @@
 .suggest-tab-label {
 	margin-top: 0.1rem;
 	font-size:  0.62rem;
-	color:      #6e7681;
+	color:      var(--as-faint);
 }
 
 .settings-index-icon {
@@ -515,7 +557,7 @@
 	font-size:   0.78rem;
 	font-weight: 600;
 	line-height: 1.25;
-	color:       #e6edf3;
+	color:       var(--as-body-color);
 }
 
 .settings-index-desc {
@@ -523,34 +565,44 @@
 	margin-top:  0.05rem;
 	font-size:   0.6rem;
 	line-height: 1.35;
-	color:       #6e7681;
+	color:       var(--as-faint);
 	text-wrap:   pretty;
 }
 
 .settings-index-caret {
 	flex-shrink: 0;
 	font-size:   0.7rem;
-	color:       #4d545c;
+	color:       var(--as-faint);
 }
 
 .settings-index-warn {
 	flex-shrink: 0;
 	font-size:   0.72rem;
-	color:       var(--as-warning);
+	color:       var(--as-warning-ink);
+}
+
+.select-dropdown-check {
+	color: var(--as-accent-ink);
+}
+
+// A native select scrolled its own list; a tab picker with thirty tabs open needs the same.
+.select-dropdown-menu {
+	max-height: 14rem;
+	overflow-y: auto;
 }
 
 .settings-page-lede {
 	margin:      -0.35rem 0 0.9rem;
 	font-size:   0.62rem;
 	line-height: 1.4;
-	color:       #6e7681;
+	color:       var(--as-faint);
 }
 
 // One rhythm for stacked controls, replacing the ad-hoc mt-3 wrappers the flat column used.
 .settings-stack > * + * {
 	margin-top:  0.7rem;
 	padding-top: 0.7rem;
-	border-top:  1px solid #1a2029;
+	border-top:  1px solid var(--as-tertiary-bg);
 }
 
 .setup-header {
@@ -559,10 +611,10 @@
 	gap:           0.5rem;
 	margin-bottom: 0.75rem;
 	padding-bottom: 0.6rem;
-	border-bottom: 1px solid #30363d;
+	border-bottom: 1px solid var(--as-border-color);
 	font-size:     0.8rem;
 	font-weight:   700;
-	color:         #e6edf3;
+	color:         var(--as-body-color);
 	cursor:        pointer;
 	background:    none;
 	border-top:    none;
@@ -574,9 +626,9 @@
 	padding-left:  0;
 	padding-right: 0;
 
-	i { color: #8b949e; }
+	i { color: var(--as-secondary-color); }
 
-	&:hover i { color: #e6edf3; }
+	&:hover i { color: var(--as-body-color); }
 }
 
 .league-toggle-group + .league-toggle-group {
@@ -592,8 +644,8 @@
 // League marks are rounded rects, not discs, so the placeholder cannot inherit the shared circle.
 .league-toggle-logo .crest-fallback {
 	border-radius:  0.3rem;
-	background:     #30363d;
-	color:          #e6edf3;
+	background:     var(--as-border-color);
+	color:          var(--as-body-color);
 	font-size:      0.5rem;
 	letter-spacing: 0.04em;
 }
@@ -620,7 +672,7 @@
 
 .popup-empty-leagues-copy {
 	font-size: 0.78rem;
-	color: #e6edf3;
+	color: var(--as-body-color);
 }
 
 .popup-loading-wrap {
@@ -629,12 +681,12 @@
 
 .popup-loading-text {
 	font-size: 0.78rem;
-	color: #e6edf3;
+	color: var(--as-body-color);
 }
 
 .popup-loading-subtext {
 	font-size: 0.65rem;
-	color: #6e7681;
+	color: var(--as-faint);
 }
 
 .popup-error-banner {
@@ -651,12 +703,12 @@
 
 .popup-no-games-sub {
 	font-size: 0.72rem;
-	color: #6e7681;
+	color: var(--as-faint);
 }
 
 .popup-settings-link {
 	font-size: 0.85rem;
-	color: #3E9BD1;
+	color: var(--as-secondary-ink);
 }
 
 .setting-toggle-label {
@@ -675,7 +727,7 @@
 .setting-explainer {
 	font-size: 0.55rem;
 	line-height: 1.3;
-	color: #6e7681;
+	color: var(--as-faint);
 }
 
 .popup-empty-leagues-title {
@@ -698,7 +750,7 @@
 
 .setup-no-leagues-warn {
 	font-size: 0.65rem;
-	color: var(--as-warning);
+	color: var(--as-warning-ink);
 	padding: 0.35rem 0.5rem;
 	border: 1px solid rgba(var(--as-warning-rgb), 0.3);
 	border-radius: 0.35rem;
@@ -735,7 +787,7 @@
 	height:          28px;
 	border-radius:   999px;
 	overflow:        hidden;
-	box-shadow:      0 0 0 1px rgba(255, 255, 255, 0.28);
+	box-shadow:      0 0 0 1px rgba(var(--as-overlay-rgb), 0.28);
 }
 
 .team-pick-crest-logo {
@@ -752,8 +804,8 @@
 }
 
 .onb-league-logo .crest-fallback {
-	background:     #30363d;
-	color:          #e6edf3;
+	background:     var(--as-border-color);
+	color:          var(--as-body-color);
 	font-size:      0.5rem;
 	letter-spacing: 0.04em;
 }
@@ -771,8 +823,8 @@
 	gap:            0.3rem;
 	padding:        0.4rem 0.5rem;
 	border-radius:  0.35rem;
-	background:     #161b22;
-	border:         1px solid #21262d;
+	background:     var(--as-tertiary-bg);
+	border:         1px solid var(--as-secondary-bg);
 }
 
 .league-toggle-row-top {
@@ -798,8 +850,8 @@
 	gap:           0.4rem;
 	padding:       0.25rem 0.4rem;
 	border-radius: 0.35rem;
-	background:    #161b22;
-	border:        1px solid #21262d;
+	background:    var(--as-tertiary-bg);
+	border:        1px solid var(--as-secondary-bg);
 	border-top:    2px solid transparent;
 
 	// The shared LeagueLogo is sized for the toggle grid; shrink it for these compact rows.
@@ -820,7 +872,7 @@
 }
 
 .league-order-handle {
-	color:       #8b949e;
+	color:       var(--as-secondary-color);
 	cursor:      grab;
 	flex-shrink: 0;
 
@@ -839,11 +891,11 @@
 
 .league-order-move-btn {
 	padding:     0 0.2rem;
-	color:       #8b949e;
+	color:       var(--as-secondary-color);
 	line-height: 1;
 	flex-shrink: 0;
 
-	&:hover:not(:disabled) { color: #e6edf3; }
+	&:hover:not(:disabled) { color: var(--as-body-color); }
 	&:disabled             { opacity: 0.3; }
 }
 
@@ -851,10 +903,10 @@
 	align-self:      flex-start;
 	padding:         0.1rem 0;
 	font-size:       0.7rem;
-	color:           #8b949e;
+	color:           var(--as-secondary-color);
 	text-decoration: none;
 
-	&:hover:not(:disabled) { color: #e6edf3; }
+	&:hover:not(:disabled) { color: var(--as-body-color); }
 }
 
 // ── Pre-game poster ──────────────────────────────────────────────────────────
@@ -1378,19 +1430,17 @@
 }
 
 // ── Detail screen tab strip ──────────────────────────────────────────────────
-// The strip that files the whole screen, sitting on the dark shell rather than on a light card.
-// That is why it is `.nav-underline` and not the lifted `.nav-tabs` the box score's away/home
-// switcher uses: `$nav-tabs-link-active-bg` is #f8fafc for that card, and a tab in #f8fafc here
-// would be a white slab across a #0d1117 screen.
+// The strip that files the whole screen, sitting on the shell rather than on a light card. That is
+// why it is `.nav-underline` and not the lifted `.nav-tabs` the box score's away/home switcher uses:
+// `$nav-tabs-link-active-bg` is #f8fafc for that card, and would be a slab across the dark screen.
 //
 // Bootstrap exposes the whole component through custom properties, so every line below sets one
-// rather than overriding a rule. The two colours are the ones the popup already uses on dark:
-// $body-secondary-color for the labels it is not on, and the brand orange — 5.9:1 here — for the
-// one it is.
+// rather than overriding a rule. The labels it is not on take the muted ink and the one it is on
+// takes the accent ink, which is the brand orange on dark and the deeper one on light.
 .gd-tabs {
-	--as-nav-link-color:                  #8b949e;
-	--as-nav-link-hover-color:            #e7edf5;
-	--as-nav-underline-link-active-color: #f75c03;
+	--as-nav-link-color:                  var(--as-secondary-color);
+	--as-nav-link-hover-color:            var(--as-body-color);
+	--as-nav-underline-link-active-color: var(--as-accent-ink);
 	--as-nav-underline-border-width:      0.14rem;
 	--as-nav-underline-gap:               0;
 
@@ -1400,7 +1450,7 @@
 	margin-bottom: 0.05rem;
 	// The rule the underline is drawn against, so an unselected tab reads as sitting on the same
 	// line rather than floating above nothing.
-	border-bottom: 1px solid #30363d;
+	border-bottom: 1px solid var(--as-border-color);
 
 	// Three labels across 320px read as one control when they divide the width evenly, and the
 	// underline then measures the tab rather than the word inside it.
@@ -1491,13 +1541,13 @@
 .gd-play-panel {
 	margin-top:  0.45rem;
 	padding-top: 0.34rem;
-	border-top:  1px solid #30363d;
+	border-top:  1px solid var(--as-border-color);
 }
 
 .gd-play-heading {
 	font-size:     0.62rem;
 	font-weight:   700;
-	color:         #e7edf5;
+	color:         var(--as-body-color);
 	margin-bottom: 0.24rem;
 }
 
@@ -1518,7 +1568,7 @@
 .gd-play-text {
 	font-size:      0.62rem;
 	line-height:    1.35;
-	color:          #b6c2cf;
+	color:          var(--as-ink-soft);
 	white-space:    pre-line;
 	overflow-wrap:  anywhere;
 }
@@ -1526,7 +1576,7 @@
 .gd-play-drive {
 	margin-top: 0.14rem;
 	font-size:  0.58rem;
-	color:      #8b949e;
+	color:      var(--as-secondary-color);
 }
 
 // Venue / broadcast / odds / weather, as one titled section rather than four stacked centred
@@ -1535,13 +1585,13 @@
 .game-info-panel {
 	margin-top:  0.45rem;
 	padding-top: 0.34rem;
-	border-top:  1px solid #30363d;
+	border-top:  1px solid var(--as-border-color);
 }
 
 .game-info-heading {
 	font-size:     0.62rem;
 	font-weight:   700;
-	color:         #e7edf5;
+	color:         var(--as-body-color);
 	margin-bottom: 0.24rem;
 }
 
@@ -1551,7 +1601,7 @@
 	gap:         0.3rem;
 	padding:     0.14rem 0;
 
-	& + & { border-top: 1px solid #1f2731; }
+	& + & { border-top: 1px solid var(--as-secondary-bg); }
 }
 
 // Same marker column as the breakdown's factor icons, so the two sections share a left edge.
@@ -1561,7 +1611,7 @@
 	font-size:   0.62rem;
 	line-height: 1;
 	flex-shrink: 0;
-	color:       #6e7b8a;
+	color:       var(--as-faint);
 }
 
 .game-info-label {
@@ -1571,7 +1621,7 @@
 	// anything over about ten characters. The value column loses 11px and clips nothing.
 	width:       3.6rem;
 	font-size:   0.58rem;
-	color:       #8b949e;
+	color:       var(--as-secondary-color);
 }
 
 .game-info-value {
@@ -1579,7 +1629,7 @@
 	min-width:   0;
 	font-size:   0.62rem;
 	line-height: 1.25;
-	color:       #b6c2cf;
+	color:       var(--as-ink-soft);
 	overflow-wrap: anywhere;
 }
 
@@ -1587,7 +1637,7 @@
 .game-info-value-strong {
 	font-size:   0.66rem;
 	font-weight: 600;
-	color:       #e7edf5;
+	color:       var(--as-body-color);
 }
 
 // The building carries the weight; the city sits under it at the same size the weather sub-line
@@ -1599,7 +1649,7 @@
 .game-info-venue-location {
 	margin-top: 0.04rem;
 	font-size:  0.58rem;
-	color:      #8b949e;
+	color:      var(--as-secondary-color);
 }
 
 .game-info-weather {
@@ -1608,7 +1658,7 @@
 	gap:         0.25rem;
 	margin-top:  0.08rem;
 	font-size:   0.58rem;
-	color:       #8b949e;
+	color:       var(--as-secondary-color);
 }
 
 // Matches the shape of Reboot's `[type="button"]:not(:disabled)` so the help cursor survives it.
@@ -1619,7 +1669,7 @@ button.game-info-attribution {
 	align-items:   center;
 	margin-left:   0.35rem;
 	font-size:     0.54rem;
-	color:         #6e7b8a;
+	color:         var(--as-faint);
 	opacity:       0.8;
 	white-space:   nowrap;
 	padding:       0;
@@ -1661,12 +1711,12 @@ button.game-info-attribution {
 	// popup edge. One variable so the light frame can push both inwards together.
 	--gd-inset: 0.75rem;
 	padding: var(--gd-inset);
-	background: #0d1117;
+	background: var(--as-body-bg);
 
 	.game-meta-venue,
 	.game-meta-networks,
 	.game-meta-odds {
-		color: #c6ced8;
+		color: var(--as-ink-soft);
 	}
 }
 
@@ -1684,8 +1734,8 @@ button.game-info-attribution {
 	// and re-add that padding inside, so rows sliding under it are covered edge to edge.
 	margin: calc(var(--gd-inset) * -1) calc(var(--gd-inset) * -1) 0.5rem;
 	padding: 0 var(--gd-inset);
-	background: #0d1117;
-	border-bottom: 1px solid #30363d;
+	background: var(--as-body-bg);
+	border-bottom: 1px solid var(--as-border-color);
 }
 
 .game-detail-back-button {
@@ -1693,14 +1743,14 @@ button.game-info-attribution {
 	align-items: center;
 	flex-shrink: 0;
 	gap: 0.35rem;
-	border: 1px solid #30363d;
-	color: #e6edf3;
-	background: #111827;
+	border: 1px solid var(--as-border-color);
+	color: var(--as-body-color);
+	background: var(--as-control-bg);
 	font-size: 0.68rem;
 
 	&:hover {
-		background: #1f2937;
-		color: #fff;
+		background: var(--as-control-hover-bg);
+		color: var(--as-control-hover-color);
 	}
 }
 
@@ -1916,12 +1966,12 @@ button.game-info-attribution {
 	&.is-bare { background: none; box-shadow: none; }
 }
 
-.gd-bar-logo .crest-fallback { background: rgba(230, 237, 243, 0.14); }
+.gd-bar-logo .crest-fallback { background: rgba(var(--as-body-color-rgb), 0.14); }
 
 .gd-bar-abbrev {
 	font-size: 0.66rem;
 	font-weight: 700;
-	color: #c6ced8;
+	color: var(--as-ink-soft);
 	letter-spacing: 0.03em;
 }
 
@@ -1930,13 +1980,13 @@ button.game-info-attribution {
 	font-size: 0.95rem;
 	font-weight: 600;
 	line-height: 1;
-	color: #e6edf3;
+	color: var(--as-body-color);
 }
 
 .gd-bar-sep {
 	width: 1px;
 	height: 0.85em;
-	background: #30363d;
+	background: var(--as-border-color);
 }
 
 .gd-bar-status {
@@ -1949,7 +1999,7 @@ button.game-info-attribution {
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	font-size: 0.6rem;
-	color: #8b949e;
+	color: var(--as-secondary-color);
 	opacity: 0;
 	pointer-events: none;
 	transition: opacity m.$motion-base m.$motion-ease;
@@ -2217,11 +2267,11 @@ button.game-info-attribution {
 
 
 .toast {
-	--as-toast-bg: #21262d;
-	--as-toast-border-color: #30363d;
-	--as-toast-color: #e6edf3;
-	--as-toast-header-bg: #161b22;
-	--as-toast-header-color: #e6edf3;
+	--as-toast-bg: var(--as-secondary-bg);
+	--as-toast-border-color: var(--as-border-color);
+	--as-toast-color: var(--as-body-color);
+	--as-toast-header-bg: var(--as-tertiary-bg);
+	--as-toast-header-color: var(--as-body-color);
 	min-width: 240px;
 	max-width: 288px;
 }
@@ -2229,13 +2279,13 @@ button.game-info-attribution {
 .toast-header {
 	padding: 0.45rem 0.65rem;
 	font-size: 0.78rem;
-	border-bottom-color: #30363d;
+	border-bottom-color: var(--as-border-color);
 }
 
 .toast-body {
 	padding: 0.5rem 0.65rem;
 	font-size: 0.78rem;
-	color: #e6edf3;
+	color: var(--as-body-color);
 }
 
 .toast-container {
@@ -2494,7 +2544,7 @@ button.game-info-attribution {
 	font-family: 'DM Serif Text', Georgia, serif;
 	font-size: 0.8rem;
 	line-height: 1;
-	color: #e6edf3;
+	color: var(--as-body-color);
 
 	// global.scss sets font-family on `*`, which beats the serif this block only passes down by
 	// inheritance. Re-inheriting from the line restores DM Serif Text.
@@ -2505,7 +2555,7 @@ button.game-info-attribution {
 	// The ampersand steps back into ArenaSwap's own muted gray rather than a
 	// Lattice gray, matching the docs footer lockup.
 	.popup-lattice-amp {
-		color: #8b949e;
+		color: var(--as-secondary-color);
 	}
 
 	// 20px is the floor for the small-variant mark; below it the woven gaps close up.

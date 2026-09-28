@@ -1,6 +1,6 @@
 import { useMemo, useState, type ReactNode } from 'react';
 import { i18n } from '#i18n';
-import type { FinishedTabAction, LeagueId, LeagueLogoMap, SignalName, SportType, UserPreferences } from '@arenaswap/core/types';
+import type { FinishedTabAction, LeagueId, LeagueLogoMap, SignalName, SportType, ThemePreference, UserPreferences } from '@arenaswap/core/types';
 import type { Browser } from 'wxt/browser';
 import CooldownSlider from './cooldownSlider';
 import FavoriteTeamsPage from './favoriteTeamsPage';
@@ -11,6 +11,7 @@ import SensitivitySlider from './sensitivitySlider';
 import SettingTooltipIcon from './settingTooltipIcon';
 import SwitchDelaySlider from './switchDelaySlider';
 import TemperatureUnitToggle from './temperatureUnitToggle';
+import SelectDropdown from './selectDropdown';
 import StandbyStreamGuide from './standbyStreamGuide';
 import { searchSettings, settingsGroups, type settingsGroupId } from './settingsCatalog';
 import type { demoSeason } from '../../../utils/holidayDecorations';
@@ -40,6 +41,7 @@ interface setupViewProps {
 	onToggleShowUpcoming: () => void;
 	onToggleKeepFinalGames: () => void;
 	onFinishedTabActionChange: (action: FinishedTabAction) => void;
+	onThemeChange: (theme: ThemePreference) => void;
 	onUpcomingGamesDaysChange: (val: number) => void;
 	onToggleProTips: () => void;
 	onToggleNotifications: () => void;
@@ -73,7 +75,7 @@ const setupView = ({
 	prefs, prefsLoaded, demoMode, demoSeason, leagueLogos, favoriteTeamIds, standbyStreamTabId, standbyOnboardingDone,
 	openTabs, formatTabLabel, onClose, onSensitivityChange, onCooldownChange, onSwitchDelayChange,
 	onFavoriteTeamBonusChange, onToggleFavoriteTeam, onToggleLeague, onToggleSport, onReorderLeague, onResetLeagueOrder,
-	onToggleShowUpcoming, onToggleKeepFinalGames, onFinishedTabActionChange, onUpcomingGamesDaysChange,
+	onToggleShowUpcoming, onToggleKeepFinalGames, onFinishedTabActionChange, onThemeChange, onUpcomingGamesDaysChange,
 	onToggleProTips, onToggleNotifications, onToggleDemo, onDemoSeasonChange, onToggleStandbyStream, onStandbyThresholdChange,
 	onSetStandbyTab, onStandbyOnboardingDone, onToggleBetting, onToggleTemperatureUnit, onUnlockRomer, onToggleOpenReveal,
 	onPostseasonBoostChange,
@@ -169,7 +171,24 @@ const setupView = ({
 
 	const displayPage = (
 		<>
-			<div className='d-flex justify-content-between align-items-center'>
+			<div>
+				<label className='text-body-secondary setting-toggle-label d-block mb-1' htmlFor='themeSelect'>
+					{i18n.t('setup.theme')}
+				</label>
+				<SelectDropdown<ThemePreference>
+					id='themeSelect'
+					value={prefs.theme}
+					onChange={onThemeChange}
+					disabled={!prefsLoaded}
+					options={[
+						{ value: 'light', label: i18n.t('setup.themeLight'), icon: 'bi-sun' },
+						{ value: 'dark', label: i18n.t('setup.themeDark'), icon: 'bi-moon-stars' },
+						{ value: 'system', label: i18n.t('setup.themeSystem'), icon: 'bi-circle-half' },
+					]}
+				/>
+			</div>
+
+			<div className='d-flex justify-content-between align-items-center mt-3'>
 				<label className='text-body-secondary setting-toggle-label' htmlFor='upcomingToggle'>{i18n.t('setup.showUpcoming')}</label>
 				<div className='form-check form-switch mb-0'>
 					<input className='form-check-input' type='checkbox' id='upcomingToggle' checked={prefs.showUpcomingGames} onChange={onToggleShowUpcoming} disabled={!prefsLoaded} />
@@ -214,17 +233,17 @@ const setupView = ({
 				<label className='text-body-secondary setting-toggle-label d-block mb-1' htmlFor='finishedTabSelect'>
 					{i18n.t('setup.finishedTabAction')}
 				</label>
-				<select
+				<SelectDropdown<FinishedTabAction>
 					id='finishedTabSelect'
-					className='form-select form-select-sm'
 					value={prefs.finishedTabAction}
-					onChange={event => onFinishedTabActionChange(event.target.value as FinishedTabAction)}
+					onChange={onFinishedTabActionChange}
 					disabled={!prefsLoaded}
-				>
-					<option value='keep'>{i18n.t('setup.finishedTabKeep')}</option>
-					<option value='free'>{i18n.t('setup.finishedTabFree')}</option>
-					<option value='close'>{i18n.t('setup.finishedTabClose')}</option>
-				</select>
+					options={[
+						{ value: 'keep', label: i18n.t('setup.finishedTabKeep') },
+						{ value: 'free', label: i18n.t('setup.finishedTabFree') },
+						{ value: 'close', label: i18n.t('setup.finishedTabClose') },
+					]}
+				/>
 				{prefs.finishedTabAction !== 'keep' && (
 					<div className='setting-explainer mt-1'>{i18n.t('setup.finishedTabActiveExplainer')}</div>
 				)}
@@ -348,24 +367,17 @@ const setupView = ({
 						<div className='text-body-secondary setting-toggle-label mb-1'>
 							{i18n.t('setup.standbyTab')}
 						</div>
-						<select
-							className='form-select form-select-sm'
-							value={standbyStreamTabId ?? ''}
-							onChange={e => {
-								const val = e.target.value;
-								const num = Number(val);
-								onSetStandbyTab(val && Number.isFinite(num) ? num : null);
-							}}
+						<SelectDropdown
+							id='standbyTabSelect'
+							value={standbyStreamTabId === null ? '' : String(standbyStreamTabId)}
+							onChange={value => onSetStandbyTab(value ? Number(value) : null)}
 							disabled={!prefsLoaded}
-							aria-label={i18n.t('setup.standbyTab')}
-						>
-							<option value=''>{i18n.t('setup.selectTab')}</option>
-							{openTabs.map(openTab => (
-								<option key={openTab.id} value={openTab.id}>
-									{formatTabLabel(openTab)}
-								</option>
-							))}
-						</select>
+							ariaLabel={i18n.t('setup.standbyTab')}
+							options={[
+								{ value: '', label: i18n.t('setup.selectTab') },
+								...openTabs.filter(openTab => openTab.id !== undefined).map(openTab => ({ value: String(openTab.id), label: formatTabLabel(openTab) })),
+							]}
+						/>
 					</div>
 				</div>
 			)}
@@ -384,16 +396,16 @@ const setupView = ({
 			{demoMode && (
 				<div className='mt-3'>
 					<label className='text-body-secondary setting-toggle-label d-block mb-1' htmlFor='demoSeasonSelect'>{i18n.t('setup.demoSeason')}</label>
-					<select
+					<SelectDropdown<demoSeason>
 						id='demoSeasonSelect'
-						className='form-select form-select-sm'
 						value={demoSeason}
-						onChange={event => onDemoSeasonChange(event.target.value as demoSeason)}
-					>
-						<option value='real'>{i18n.t('setup.demoSeasonReal')}</option>
-						<option value='thanksgiving'>{i18n.t('setup.demoSeasonThanksgiving')}</option>
-						<option value='december'>{i18n.t('setup.demoSeasonDecember')}</option>
-					</select>
+						onChange={onDemoSeasonChange}
+						options={[
+							{ value: 'real', label: i18n.t('setup.demoSeasonReal') },
+							{ value: 'thanksgiving', label: i18n.t('setup.demoSeasonThanksgiving') },
+							{ value: 'december', label: i18n.t('setup.demoSeasonDecember') },
+						]}
+					/>
 					<div className='setting-explainer mt-1'>{i18n.t('setup.demoSeasonExplainer')}</div>
 				</div>
 			)}

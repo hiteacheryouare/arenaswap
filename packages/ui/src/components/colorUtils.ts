@@ -1,3 +1,4 @@
+import type { ResolvedTheme } from '@arenaswap/core/types';
 import { contrastBetween, hexLuminance as luminance, hexToRgb, isHex, rgbToHex, whiteInkContrast } from './colorMath';
 
 const mixTowardWhite = (value: string, amount: number): string => {
@@ -68,6 +69,10 @@ const resolveReadableCardTextColor = (
 	}
 	return darkened;
 };
+
+// A chart line on the light page, which is #ffffff, clears the same 3:1 at luminance 0.30 or under.
+// So the light side is the card-text rule with a looser ceiling: gold goes bronze, navy is left alone.
+const seriesOnLightLuminanceCeiling = 0.3;
 
 const colorDistance = (a: string, b: string): number => {
 	const ra = hexToRgb(a);
@@ -174,7 +179,8 @@ export const resolveTeamColorPair = (
 	home: { color?: string; alternateColor?: string },
 	awayFallback = '#60a5fa',
 	homeFallback = '#f87171',
-	lighten = false,
+	// Set for a chart line, to the surface it is drawn on. Left unset, the pair comes back as published.
+	surface?: ResolvedTheme,
 ): [string, string] => {
 	const awayPrimary = isHex(away.color) ? away.color : awayFallback;
 	const homePrimary = isHex(home.color) ? home.color : homeFallback;
@@ -184,9 +190,14 @@ export const resolveTeamColorPair = (
 		homePrimary,
 		home.alternateColor ?? homePrimary,
 	);
-	return lighten
-		? [resolveReadableSeriesColor(a, awayFallback), resolveReadableSeriesColor(h, homeFallback)]
-		: [a, h];
+	if (surface === 'dark') return [resolveReadableSeriesColor(a, awayFallback), resolveReadableSeriesColor(h, homeFallback)];
+	if (surface === 'light') {
+		return [
+			resolveReadableCardTextColor(a, awayFallback, seriesOnLightLuminanceCeiling),
+			resolveReadableCardTextColor(h, homeFallback, seriesOnLightLuminanceCeiling),
+		];
+	}
+	return [a, h];
 };
 
 // The alpha the hero's scrim sits at where the crests are — the gradient ramps 0.18 to 0.52 down the

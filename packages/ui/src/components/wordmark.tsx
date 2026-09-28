@@ -27,7 +27,10 @@ import { arenPath, aPath, chevronFrom, chevronTo, headFrom, headTo, sPath, wapPa
 // Only `aren` and `wap` are masked. Everything else — including the `a` and the `s`, which are the
 // whole point — is on screen for the entire animation.
 
+// The mask ramps stay white whatever the theme: a mask reads luminance, not colour. The letters and
+// arrows are `currentColor`, and the colour comes from the theme, white unless a page says otherwise.
 const white = '#ffffff';
+const ink = 'currentColor';
 const dotOrange = '#ff751f';
 
 const restFades: Record<'aren' | 'wap', fadeSpan> = {
@@ -46,7 +49,7 @@ const Wordmark = ({ className, ref }: { className?: string; ref?: Ref<SVGSVGElem
 			ref={ref}
 			className={className}
 			viewBox={`${restBox.x} ${restBox.y} ${restBox.width} ${restBox.height}`}
-			style={{ aspectRatio: `${restBox.width} / ${restBox.height}` }}
+			style={{ aspectRatio: `${restBox.width} / ${restBox.height}`, color: 'var(--as-wordmark-ink, #ffffff)' }}
 			role='img'
 			aria-label='ArenaSwap'
 		>
@@ -77,11 +80,11 @@ const Wordmark = ({ className, ref }: { className?: string; ref?: Ref<SVGSVGElem
 
 			{/* The two doomed words, underneath, so the letters that replace them pass over rather
 			    than through. */}
-			<g mask={`url(#${uid}-mask-aren)`}><path d={arenPath} fill={white} /></g>
-			<g mask={`url(#${uid}-mask-wap)`}><path data-wm='wap' d={wapPath} fill={white} /></g>
+			<g mask={`url(#${uid}-mask-aren)`}><path d={arenPath} fill={ink} /></g>
+			<g mask={`url(#${uid}-mask-wap)`}><path data-wm='wap' d={wapPath} fill={ink} /></g>
 
-			<path data-wm='a' d={aPath} fill={white} />
-			<path data-wm='s' d={sPath} fill={white} />
+			<path data-wm='a' d={aPath} fill={ink} />
+			<path data-wm='s' d={sPath} fill={ink} />
 			{/* Fill and stroke in the same colour is how the source file draws it; the stroke is
 			    half a unit of extra radius the dot would otherwise lose. */}
 			<ellipse data-wm='dot' cx={1761.1208} cy={368.38882} rx={27.602106} ry={26.288622} fill={dotOrange} stroke={dotOrange} strokeWidth={1.13729} />
@@ -92,20 +95,20 @@ const Wordmark = ({ className, ref }: { className?: string; ref?: Ref<SVGSVGElem
 				x2={barJoint}
 				y1={barCentreRest}
 				y2={barCentreRest}
-				stroke={white}
+				stroke={ink}
 				strokeWidth={barStrokeRest}
 				strokeLinecap='round'
 			/>
-			<path data-wm='head' d={ringPath(headFrom, headTo, 0)} fill={white} />
+			<path data-wm='head' d={ringPath(headFrom, headTo, 0)} fill={ink} />
 
-			<path data-wm='chevron' d={ringPath(chevronFrom, chevronTo, 0)} fill={white} />
+			<path data-wm='chevron' d={ringPath(chevronFrom, chevronTo, 0)} fill={ink} />
 			<line
 				data-wm='dashes'
 				x1={dashFirstCapRest}
 				x2={dashLastCapRest}
 				y1={dashCentreRest}
 				y2={dashCentreRest}
-				stroke={white}
+				stroke={ink}
 				strokeWidth={dashStrokeRest}
 				strokeLinecap='round'
 				strokeDasharray='56.9 63.1'

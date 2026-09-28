@@ -35,6 +35,7 @@ const defaultPrefs: UserPreferences = {
 	temperatureUnit: 'F',
 	romerUnlocked: false,
 	openRevealEnabled: true,
+	theme: 'dark',
 	holidayDecorationsEnabled: true,
 	holidaySnowEnabled: true,
 	holidayLightsEnabled: true,
@@ -68,6 +69,7 @@ const defaultProps = {
 	onToggleShowUpcoming: () => {},
 	onToggleKeepFinalGames: () => {},
 	onFinishedTabActionChange: () => {},
+	onThemeChange: () => {},
 	onUpcomingGamesDaysChange: () => {},
 	onToggleProTips: () => {},
 	onToggleNotifications: () => {},
@@ -502,7 +504,7 @@ describe('setupView standby stream', () => {
 		);
 		openGroup('standby');
 
-		cy.get('select[aria-label="Standby tab"]').select('Gamecast');
+		cy.get('#standbyTabSelect').choose('Gamecast');
 		cy.get('@onSetStandbyTab').should('have.been.calledWith', 102);
 	});
 
@@ -673,6 +675,61 @@ describe('setupView leagues group', () => {
 	});
 });
 
+const chooseTheme = (label: string) => {
+	cy.get('#themeSelect').click();
+	cy.contains('.dropdown-menu.show .dropdown-item', label).click();
+};
+
+describe('the theme setting', () => {
+	const openDisplay = (prefs: UserPreferences = defaultPrefs, props = {}) => {
+		cy.viewport(320, 560);
+		cy.mount(<SetupView {...defaultProps} {...props} prefs={prefs} />);
+		openGroup('display');
+	};
+
+	it('opens on dark, with its icon on the toggle', () => {
+		openDisplay();
+		cy.get('#themeSelect').should('contain.text', 'Dark').find('.bi-moon-stars').should('exist');
+	});
+
+	it('lists light, dark and system, each with an icon, and ticks the current one', () => {
+		openDisplay();
+		cy.get('#themeSelect').click();
+		cy.get('.dropdown-menu.show .dropdown-item').should('have.length', 3).then($items => {
+			expect([...$items].map(item => item.textContent?.trim())).to.deep.equal(['Light', 'Dark', 'Match my system']);
+		});
+		cy.get('.dropdown-menu.show .dropdown-item .bi-sun, .dropdown-menu.show .dropdown-item .bi-moon-stars, .dropdown-menu.show .dropdown-item .bi-circle-half').should('have.length', 3);
+		cy.get('.dropdown-menu.show [aria-current="true"]').should('have.length', 1).and('contain.text', 'Dark').find('.bi-check2').should('exist');
+	});
+
+	it('reflects a stored choice', () => {
+		openDisplay({ ...defaultPrefs, theme: 'system' });
+		cy.get('#themeSelect').should('contain.text', 'Match my system').find('.bi-circle-half').should('exist');
+	});
+
+	it('reports the choice that was made and closes', () => {
+		const spy = cy.spy().as('onThemeChange');
+		openDisplay(defaultPrefs, { onThemeChange: spy });
+		chooseTheme('Light');
+		cy.get('@onThemeChange').should('have.been.calledOnceWith', 'light');
+		cy.get('.dropdown-menu.show').should('not.exist');
+	});
+
+	it('cannot be opened before the prefs have loaded', () => {
+		cy.viewport(320, 560);
+		cy.mount(<SetupView {...defaultProps} prefsLoaded={false} />);
+		openGroup('display');
+		cy.get('#themeSelect').should('be.disabled');
+	});
+
+	// Nobody searches for "theme"; they search for the thing they want to stop squinting at.
+	it('is found by the words people use for it', () => {
+		cy.mount(<SetupView {...defaultProps} />);
+		cy.get('#settingsSearch').type('dark');
+		cy.contains('.settings-index-row', 'Theme').should('exist');
+	});
+});
+
 describe('what happens to a tab once its game finishes', () => {
 	const optionKeys = ['finishedTabKeep', 'finishedTabFree', 'finishedTabClose'] as const;
 
@@ -684,22 +741,21 @@ describe('what happens to a tab once its game finishes', () => {
 
 	it('offers the three choices and opens on leaving the tab alone', () => {
 		openDisplay();
-		cy.get('#finishedTabSelect').should('have.value', 'keep');
-		cy.get('#finishedTabSelect option').should('have.length', 3);
-		cy.get('#finishedTabSelect option').then((options: JQuery<HTMLElement>) => {
-			expect([...options].map(option => (option as HTMLOptionElement).value)).to.deep.equal(['keep', 'free', 'close']);
+		cy.get('#finishedTabSelect').should('contain.text', 'Leave the tab alone');
+		cy.get('#finishedTabSelect').parent().find('.dropdown-item').then((items: JQuery<HTMLElement>) => {
+			expect([...items].map(item => item.textContent?.trim())).to.deep.equal(['Leave the tab alone', 'Free it from ArenaSwap', 'Close the tab']);
 		});
 	});
 
 	it('reflects a stored choice', () => {
 		openDisplay({ ...defaultPrefs, finishedTabAction: 'close' });
-		cy.get('#finishedTabSelect').should('have.value', 'close');
+		cy.get('#finishedTabSelect').should('contain.text', 'Close the tab');
 	});
 
 	it('reports the choice that was made', () => {
 		const spy = cy.spy().as('onFinishedTabActionChange');
 		openDisplay(defaultPrefs, { onFinishedTabActionChange: spy });
-		cy.get('#finishedTabSelect').select('free');
+		cy.get('#finishedTabSelect').choose('Free it from ArenaSwap');
 		cy.get('@onFinishedTabActionChange').should('have.been.calledOnceWith', 'free');
 	});
 

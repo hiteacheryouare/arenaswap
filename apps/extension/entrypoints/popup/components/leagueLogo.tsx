@@ -1,6 +1,7 @@
 import { leagueConfigs, resolveLeagueLogoUrl } from '@arenaswap/core/constants';
 import type { LeagueLogoMap } from '@arenaswap/core/types';
 import Crest from '@arenaswap/ui/src/components/crest';
+import useDocumentTheme from '@arenaswap/ui/src/components/useDocumentTheme';
 
 export type leagueConfig = (typeof leagueConfigs)[number];
 
@@ -13,13 +14,16 @@ export const toLeagueInitials = (league: leagueConfig): string => {
 };
 
 // Decorative: every league mark in the popup sits beside its own visible label.
-const LeagueLogo = ({ league, logos }: { league: leagueConfig; logos: LeagueLogoMap }) => (
-	<Crest
-		logo={resolveLeagueLogoUrl(league.id, logos[league.id])}
-		abbreviation={toLeagueInitials(league)}
-		className='league-toggle-logo'
-		loading='lazy'
-	/>
-);
+const LeagueLogo = ({ league, logos }: { league: leagueConfig; logos: LeagueLogoMap }) => {
+	const theme = useDocumentTheme();
+	return (
+		<Crest
+			logo={resolveLeagueLogoUrl(league.id, logos[league.id], theme)}
+			abbreviation={toLeagueInitials(league)}
+			className='league-toggle-logo'
+			loading='lazy'
+		/>
+	);
+};
 
 export default LeagueLogo;

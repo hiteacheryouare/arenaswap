@@ -1,6 +1,7 @@
 import Crest from '@arenaswap/ui/src/components/crest';
 import { powerScoreColor } from './gameCardShared';
 import { i18n } from '#i18n';
+import SelectDropdown from './selectDropdown';
 
 interface walkthroughStepTabAssignProps {
 	onNext: () => void;
@@ -93,11 +94,15 @@ const walkthroughStepTabAssign = ({ onNext, onBack }: walkthroughStepTabAssignPr
 			</div>
 
 			<div className='d-flex flex-column gap-0 mt-2'>
-				<select className='form-select form-select-sm' onChange={() => {}}>
-					<option value=''>{i18n.t('stepTabAssign.assignPlaceholder')}</option>
-					<option value='1'>youtube.com/watch?v=Philly_stream</option>
-					<option value='2'>nfl.com/watch/live</option>
-				</select>
+				<SelectDropdown
+					value=''
+					onChange={() => {}}
+					options={[
+						{ value: '', label: i18n.t('stepTabAssign.assignPlaceholder') },
+						{ value: '1', label: 'youtube.com/watch?v=Philly_stream' },
+						{ value: '2', label: 'nfl.com/watch/live' },
+					]}
+				/>
 				<span className='text-primary fw-semibold ms-1 mt-1' style={{ fontSize: '0.65rem' }}>{i18n.t('stepTabAssign.linkHint')}</span>
 			</div>
 		</div>

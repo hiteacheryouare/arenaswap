@@ -5,6 +5,7 @@
 // The second `@use` is not redundant: `@forward` re-exports members without making them available
 // here, and the ::selection rule at the bottom of this file needs two of them.
 @use 'motion' as m;
+@use 'theme';
 
 @forward 'bootstrap/scss/bootstrap' with (
 	$prefix:               'as-' !default,
@@ -18,16 +19,18 @@
 	// draws those five signals. Do not "fix" a signal blue to match this token — they are different
 	// jobs that happened to share a hex. It is $secondary-on-light below.
 	$secondary:            #3E9BD1 !default,
+	$link-color:           theme.tone(dark, link-color) !default,
+	$link-hover-color:     theme.tone(dark, link-hover-color) !default,
 	$success:              #00CC66 !default,
 	$warning:              #F1C40F !default,
 	$danger:               #D90368 !default,
 	$dark:                 #0d1117 !default,
-	$body-bg:              #0d1117 !default,
-	$body-color:           #e6edf3 !default,
-	$body-secondary-color: #8b949e !default,
+	$body-bg:              theme.tone(dark, body-bg) !default,
+	$body-color:           theme.tone(dark, body-color) !default,
+	$body-secondary-color: theme.tone(dark, secondary-color) !default,
 	// The two surface steps above $body-bg. Bootstrap computes a light pair on :root and a dark pair
-	// under [data-bs-theme=dark], and this theme never sets that attribute — its darkness is the hand
-	// picked $body-bg above rather than Bootstrap's colour-mode switch — so left unset these stayed at
+	// under [data-bs-theme=dark], and this theme's darkness is the hand picked $body-bg above rather
+	// than Bootstrap's colour-mode switch — so left unset these stayed at
 	// #e9ecef and #f8f9fa. Every component built on them rendered a near-white slab on a #0d1117
 	// surface, and the popup, the site and the docs each patched their own component around it in turn:
 	// the Up Next pager, the language switcher, the box score's tab hover. The standby banner is the
@@ -36,22 +39,23 @@
 	//
 	// Ordered the way Bootstrap's own dark values are: tertiary nearest the body, secondary a step
 	// further. Both are already in the palette.
-	$body-tertiary-bg:     #161b22 !default,
-	$body-secondary-bg:    #21262d !default,
+	$body-tertiary-bg:     theme.tone(dark, tertiary-bg) !default,
+	$body-secondary-bg:    theme.tone(dark, secondary-bg) !default,
 	// $progress-bg is var(--as-secondary-bg), and the two progress bars we draw — the game card's
 	// PowerScore bar and the breakdown's signal bars — both sit on light cards. Pinned to the value
 	// they have always had so the token move above leaves them byte-identical.
 	$progress-bg:          #e9ecef !default,
-	$border-color:         #30363d !default,
-	$card-bg:              #161b22 !default,
-	$card-border-color:    #30363d !default,
+	$border-color:         theme.tone(dark, border-color) !default,
+	// Tokens rather than hexes from here down, so the light palette reaches them.
+	$card-bg:              var(--as-tertiary-bg) !default,
+	$card-border-color:    var(--as-border-color) !default,
 	$card-cap-bg:          transparent !default,
-	$input-bg:             #161b22 !default,
-	$input-border-color:   #30363d !default,
-	$input-color:          #e6edf3 !default,
-	$form-select-bg:       #161b22 !default,
-	$form-select-color:    #e6edf3 !default,
-	$form-select-border-color: #30363d !default,
+	$input-bg:             var(--as-tertiary-bg) !default,
+	$input-border-color:   var(--as-border-color) !default,
+	$input-color:          var(--as-body-color) !default,
+	$form-select-bg:       var(--as-tertiary-bg) !default,
+	$form-select-color:    var(--as-body-color) !default,
+	$form-select-border-color: var(--as-border-color) !default,
 	// Parenthesised because a bare comma list inside a `with (...)` argument list would read as
 	// four separate arguments.
 	$font-family-base:     ('DM Sans', system-ui, -apple-system, sans-serif) !default,
@@ -106,6 +110,10 @@ $secondary-on-light:   #2274A5;
 // has to hold 3:1 as large text on both plates the scoreline sits on, the card's #f4f6f8 and the
 // hero's white: 3.37:1 and 3.65:1. The #9aa4b0 it replaced reached 2.33:1 and 2.53:1.
 $score-loser-color:    #7c8794;
+
+:root {
+	@include theme.arenaswap-tokens(dark);
+}
 
 * {
 	&::selection {

@@ -12,6 +12,7 @@ import UpcomingDayPager from '../popup/components/upcomingDayPager';
 import { fetchState, getRandomLoadingMessage, groupByDate, normalizeBackgroundState, resolveSelectedDayIndex } from '../popup/popupHelpers';
 import useFavoriteScoreConfetti from '../popup/useFavoriteScoreConfetti';
 import { loadStoredUserPreferences } from '../../utils/prefsStorage';
+import { fullLogoSrc, useTheme } from '../../utils/theme';
 import { bandLabel } from './guideFormat';
 import GuideGrid from './guideGrid';
 import { buildBar, buildHeatCurve } from './guideHeat';
@@ -39,6 +40,8 @@ const prefersReducedMotion = () => globalThis.matchMedia?.('(prefers-reduced-mot
 
 const App = () => {
 	const [prefs, setPrefs] = useState<UserPreferences>(() => createDefaultUserPreferences());
+	const [prefsLoaded, setPrefsLoaded] = useState(false);
+	const theme = useTheme(prefsLoaded ? prefs.theme : null);
 	const [slate, setSlate] = useState<GuideSlate | null>(null);
 	// The popup's own state: the scores, the PowerScores and their history. The slate carries the
 	// whole day but none of that, and the drawer printed 0 / 100 on a live game without it.
@@ -60,12 +63,15 @@ const App = () => {
 		if (reply) setSlate(reply);
 	}, []);
 
-	// Both reads go out together rather than one after the other: neither depends on the other, and
-	// both sit in front of the first paint.
+	// The reads go out together rather than one after the other: none depends on another, and all
+	// sit in front of the first paint. Prefs land on their own so the theme does not wait on the network.
 	useEffect(() => {
 		const load = async () => {
-			const [stored] = await Promise.all([loadStoredUserPreferences(), loadSlate(), fetchState().then(setLive, () => {})]);
-			setPrefs(stored);
+			const stored = loadStoredUserPreferences().then(storedPrefs => {
+				setPrefs(storedPrefs);
+				setPrefsLoaded(true);
+			});
+			await Promise.all([stored, loadSlate(), fetchState().then(setLive, () => {})]);
 		};
 		void load();
 	}, [loadSlate]);
@@ -225,7 +231,7 @@ const App = () => {
 		<TranslationContext.Provider value={i18n.t}>
 		<div className='guide-page'>
 			<header className='guide-header'>
-				<img src='/images/full_logo_white_on_transparent.svg' alt='ArenaSwap' className='guide-logo' />
+				<img src={fullLogoSrc(theme)} alt='ArenaSwap' className='guide-logo' />
 				{/* The page has a wordmark and no heading, which leaves a screen reader nothing to
 				    announce it by. */}
 				<h1 className='visually-hidden'>{i18n.t('main.guideButton')}</h1>
@@ -263,7 +269,7 @@ const App = () => {
 				<div className='guide-scroller' ref={scrollerRef}>
 					<GuideGrid bars={bars} band={showBand ? band : null} leagueLogos={leagueLogos}
 					monoLogos={monoLogos} now={showingToday ? now : null} minPlotPx={plotWidthPx}
-					selectedGameId={selectedGameId} onOpen={openGame} />
+					selectedGameId={selectedGameId} onOpen={openGame} theme={theme} />
 				</div>
 			) : (
 				/* The popup's own two states, so a slow network and an empty slate read the way they do
@@ -307,6 +313,7 @@ const App = () => {
 						dismiss='close'
 						onSetGameBoost={setGameBoost}
 						onBack={closeDrawer}
+						theme={theme}
 					/>
 				</aside>
 			)}

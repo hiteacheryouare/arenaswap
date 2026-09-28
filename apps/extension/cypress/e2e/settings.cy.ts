@@ -111,3 +111,99 @@ describe('settings round-trip', () => {
 		cy.get('#cooldown-range').should('exist');
 	});
 });
+
+const html = () => cy.document().its('documentElement');
+const themeLabels: Record<string, string> = { dark: 'Dark', light: 'Light', system: 'Match my system' };
+const chooseTheme = (value: string) => {
+	cy.get('#themeSelect').click();
+	cy.contains('.dropdown-menu.show .dropdown-item', themeLabels[value]!).click();
+};
+const pickTheme = (value: string) => {
+	openSettings();
+	openGroup('display');
+	chooseTheme(value);
+};
+
+// The popup's CSS carries a light palette only under [data-bs-theme=light] on <html>, so the attribute
+// is the whole switch. The copy in localStorage is what the next open's boot script reads.
+describe('the theme setting', () => {
+	// A matchMedia whose answer the test can change, so System can be watched following the OS.
+	const lightScheme = { matches: false, listeners: new Set<() => void>() };
+	const flipScheme = (prefersLight: boolean) => {
+		lightScheme.matches = prefersLight;
+		lightScheme.listeners.forEach(listener => listener());
+	};
+
+	beforeEach(() => {
+		lightScheme.matches = false;
+		lightScheme.listeners.clear();
+		cy.on('window:before:load', win => {
+			const real = win.matchMedia.bind(win);
+			cy.stub(win, 'matchMedia').callsFake((query: string) => (query === '(prefers-color-scheme: light)'
+				? {
+					get matches() { return lightScheme.matches; },
+					addEventListener: (_type: string, listener: () => void) => lightScheme.listeners.add(listener),
+					removeEventListener: (_type: string, listener: () => void) => lightScheme.listeners.delete(listener),
+				}
+				: real(query)));
+		});
+	});
+
+	it('opens dark for somebody who has never touched it', () => {
+		cy.openPopup({ ...onboarded, state: liveState() });
+		html().should('have.attr', 'data-bs-theme', 'dark');
+	});
+
+	it('switches to light, saves it, and leaves a copy for the next open', () => {
+		cy.openPopup({ ...onboarded, state: liveState() });
+		pickTheme('light');
+
+		html().should('have.attr', 'data-bs-theme', 'light');
+		cy.background().should(background => expect(background.prefs?.theme).to.equal('light'));
+		cy.window().then(win => expect(win.localStorage.getItem('arenaswap.theme')).to.equal('light'));
+		cy.get('body').should('have.css', 'background-color', 'rgb(255, 255, 255)');
+	});
+
+	it('follows the system, including when it changes while the popup is open', () => {
+		cy.openPopup({ ...onboarded, state: liveState() });
+		pickTheme('system');
+		html().should('have.attr', 'data-bs-theme', 'dark');
+
+		cy.then(() => flipScheme(true));
+		html().should('have.attr', 'data-bs-theme', 'light');
+
+		cy.then(() => flipScheme(false));
+		html().should('have.attr', 'data-bs-theme', 'dark');
+	});
+
+	// Recorded from before the boot script runs, so a single dark frame on the way to light shows up.
+	it('opens a stored light theme without ever passing through dark', () => {
+		const seen: (string | undefined)[] = [];
+		cy.on('window:before:load', win => {
+			win.localStorage.setItem('arenaswap.theme', 'light');
+			new win.MutationObserver(() => seen.push(win.document.documentElement.dataset.bsTheme))
+				.observe(win.document.documentElement, { attributes: true, attributeFilter: ['data-bs-theme'] });
+		});
+		cy.openPopup({ ...onboarded, sync: { prefs: onboardedPrefs({ theme: 'light' }) }, state: liveState() });
+
+		cy.get('.game-card').should('have.length.greaterThan', 0);
+		cy.then(() => expect(seen).to.not.be.empty.and.not.include('dark'));
+	});
+
+	it('keeps first-run dark even when a light copy is stored', () => {
+		cy.on('window:before:load', win => win.localStorage.setItem('arenaswap.theme', 'light'));
+		cy.openPopup({ state: liveState() });
+
+		cy.get('.onb-logo-wrap').should('exist');
+		html().should('have.attr', 'data-bs-theme', 'dark');
+	});
+
+	it('stops listening to the system once a fixed theme is picked', () => {
+		cy.openPopup({ ...onboarded, state: liveState() });
+		pickTheme('system');
+		chooseTheme('dark');
+
+		cy.then(() => flipScheme(true));
+		html().should('have.attr', 'data-bs-theme', 'dark');
+	});
+});

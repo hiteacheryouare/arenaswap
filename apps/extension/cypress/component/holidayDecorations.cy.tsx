@@ -26,6 +26,7 @@ const august = new Date('2026-08-14T20:00:00.000Z');
 
 const allOn = {
 	openRevealEnabled: true,
+	theme: 'dark',
 	holidayDecorationsEnabled: true,
 	holidaySnowEnabled: true,
 	holidayLightsEnabled: true,
@@ -207,6 +208,7 @@ const setupProps = {
 	onToggleShowUpcoming: () => {},
 	onToggleKeepFinalGames: () => {},
 	onFinishedTabActionChange: () => {},
+	onThemeChange: () => {},
 	onUpcomingGamesDaysChange: () => {},
 	onToggleProTips: () => {},
 	onToggleNotifications: () => {},
@@ -288,15 +290,15 @@ describe('reaching the decorations from demo mode', () => {
 	it('offers the three seasons once demo mode is on', () => {
 		cy.mount(<SetupView {...setupProps} demoMode />);
 		cy.get('#settingsGroup-demo').click();
-		cy.get('#demoSeasonSelect').should('have.value', 'real');
-		cy.get('#demoSeasonSelect option').should('have.length', 3);
+		cy.get('#demoSeasonSelect').should('contain.text', 'The real date');
+		cy.get('#demoSeasonSelect').parent().find('.dropdown-item').should('have.length', 3);
 	});
 
 	it('reports the season the user picked', () => {
 		const onChange = cy.spy().as('onChange');
 		cy.mount(<SetupView {...setupProps} demoMode onDemoSeasonChange={onChange} />);
 		cy.get('#settingsGroup-demo').click();
-		cy.get('#demoSeasonSelect').select('december');
+		cy.get('#demoSeasonSelect').choose('December');
 		cy.get('@onChange').should('have.been.calledWith', 'december');
 	});
 

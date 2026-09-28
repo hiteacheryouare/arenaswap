@@ -1,5 +1,5 @@
 import pkg from '../package.json';
-import type { FinishedTabAction, Game, LeagueId, SignalName, SportType, UserPreferences } from './types';
+import type { FinishedTabAction, Game, LeagueId, SignalName, SportType, ResolvedTheme, ThemePreference, UserPreferences } from './types';
 import {
 	allLeagueIds,
 	stallPenaltySteps,
@@ -193,12 +193,14 @@ export const leagueLogoFallbacks: Partial<Record<LeagueId, string>> = {
 	fifawwc: 'https://a.espncdn.com/i/leaguelogos/soccer/500-dark/60.png',
 };
 
-export const resolveLeagueLogoUrl = (leagueId: LeagueId, espnLogoUrl?: string): string => {
-	const override = leagueLogoOverrides[leagueId];
-	if (override) return override;
-	return typeof espnLogoUrl === 'string' && espnLogoUrl.length > 0
-		? espnLogoUrl
-		: (leagueLogoFallbacks[leagueId] ?? '');
+// Most of what comes back, and many of the fallbacks above, are the variant our sources draw for a
+// dark background: a white mark that vanishes on the light theme. Their CDN serves the light-ground
+// variant beside it at `/500/`, so a light surface swaps the path rather than keeping a second table.
+export const resolveLeagueLogoUrl = (leagueId: LeagueId, espnLogoUrl?: string, surface: ResolvedTheme = 'dark'): string => {
+	const url = leagueLogoOverrides[leagueId]
+		?? (typeof espnLogoUrl === 'string' && espnLogoUrl.length > 0 ? espnLogoUrl : leagueLogoFallbacks[leagueId])
+		?? '';
+	return surface === 'light' ? url.replace('/500-dark/', '/500/') : url;
 };
 
 const isLeagueId = (value: unknown): value is LeagueId => (
@@ -343,6 +345,7 @@ export const createDefaultUserPreferences = (): UserPreferences => ({
 	temperatureUnit: 'F' as const,
 	romerUnlocked: false,
 	openRevealEnabled: true,
+	theme: 'dark' as const,
 	holidayDecorationsEnabled: true,
 	holidaySnowEnabled: true,
 	holidayLightsEnabled: true,
@@ -361,6 +364,10 @@ const normalizeTemperatureUnit = (value: unknown): UserPreferences['temperatureU
 // request to start closing things.
 const normalizeFinishedTabAction = (value: unknown): FinishedTabAction => (
 	value === 'free' || value === 'close' ? value : 'keep'
+);
+
+const normalizeTheme = (value: unknown): ThemePreference => (
+	value === 'light' || value === 'system' ? value : 'dark'
 );
 
 export const normalizeUserPreferences = (storedPrefs: unknown): UserPreferences => {
@@ -398,6 +405,7 @@ export const normalizeUserPreferences = (storedPrefs: unknown): UserPreferences 
 		// disagree in the direction that would strand someone on a unit they cannot cycle back to.
 		romerUnlocked: candidate.romerUnlocked === true || candidate.temperatureUnit === 'Ro',
 		openRevealEnabled: typeof candidate.openRevealEnabled === 'boolean' ? candidate.openRevealEnabled : defaults.openRevealEnabled,
+		theme: normalizeTheme(candidate.theme),
 		holidayDecorationsEnabled: typeof candidate.holidayDecorationsEnabled === 'boolean' ? candidate.holidayDecorationsEnabled : defaults.holidayDecorationsEnabled,
 		holidaySnowEnabled: typeof candidate.holidaySnowEnabled === 'boolean' ? candidate.holidaySnowEnabled : defaults.holidaySnowEnabled,
 		holidayLightsEnabled: typeof candidate.holidayLightsEnabled === 'boolean' ? candidate.holidayLightsEnabled : defaults.holidayLightsEnabled,

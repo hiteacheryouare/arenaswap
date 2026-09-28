@@ -169,12 +169,12 @@ describe('the popup open reveal', () => {
 		cy.get('.game-card-reveal').should('not.exist');
 	});
 
-	// The card is a node somebody can already be using — the tab picker inside it is a `<select>` —
+	// The card is a node somebody can already be using — the tab picker inside it is a dropdown —
 	// and what ends the graphic is that somebody interacting with the popup. React reconciles children
 	// by position, so the wrapper and every layer's slot have to outlive the ending: drop the wrapper
 	// and the card is reparented, collapse the holes the layers leave and the card slides up into a
 	// slot that used to hold a different element. Either is a rebuild rather than a move, and it takes
-	// the focus, an open dropdown, and the element a running `select` is holding with it.
+	// the focus and an open menu with it.
 	it('leaves the card the same element after the graphic ends', () => {
 		cy.clock();
 		cy.mount(<Harness mode='quick' />);

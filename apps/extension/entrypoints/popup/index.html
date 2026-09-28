@@ -1,20 +1,21 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<script src="/themeBoot.js"></script>
 	<style>
 		html, body {
 			width: 320px;
 			height: 560px;
 			margin: 0;
 			padding: 0;
-			background: #0d1117;
+			background: var(--as-body-bg, #0d1117);
 		}
 	</style>
 	<title>ArenaSwap</title>
 </head>
-<body class="dark:bg-gray-900">
+<body>
 	<div id="root"></div>
 	<script type="module" src="./main.jsx"></script>
 </body>

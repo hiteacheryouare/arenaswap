@@ -39,7 +39,7 @@ describe('resolveTeamColorPair', () => {
 	test('returns well-separated primaries unchanged when lighten is off', () => {
 		const separatedAway = { color: '#1D428A', alternateColor: '#FFC72C' };
 		const separatedHome = { color: '#F1C40F', alternateColor: '#C8102E' };
-		expect(resolveTeamColorPair(separatedAway, separatedHome, '#60a5fa', '#f87171', false))
+		expect(resolveTeamColorPair(separatedAway, separatedHome, '#60a5fa', '#f87171'))
 			.toEqual(['#1D428A', '#F1C40F']);
 	});
 
@@ -49,14 +49,14 @@ describe('resolveTeamColorPair', () => {
 	});
 
 	// Chart lines sit on a dark surface, so a very dark team colour is mixed toward white.
-	test('lightens a near-black colour when lighten is on', () => {
-		const [a] = resolveTeamColorPair({ color: '#000000' }, { color: '#00FF00' }, '#60a5fa', '#f87171', true);
+	test('lightens a near-black colour on a dark surface', () => {
+		const [a] = resolveTeamColorPair({ color: '#000000' }, { color: '#00FF00' }, '#60a5fa', '#f87171', 'dark');
 		expect(a).not.toBe('#000000');
 		expect(a).toMatch(/^#[0-9a-f]{6}$/);
 	});
 
-	test('leaves an already-bright colour alone when lighten is on', () => {
-		const [, h] = resolveTeamColorPair({ color: '#000000' }, { color: '#00FF00' }, '#60a5fa', '#f87171', true);
+	test('leaves an already-bright colour alone on a dark surface', () => {
+		const [, h] = resolveTeamColorPair({ color: '#000000' }, { color: '#00FF00' }, '#60a5fa', '#f87171', 'dark');
 		expect(h).toBe('#00FF00');
 	});
 
@@ -70,14 +70,14 @@ describe('resolveTeamColorPair', () => {
 	// turned Mets navy into #7a92b6 and Yankees navy into #818d9c, two greys that read alike.
 	// Scaling the channels instead leaves their ratios, and so the hue, where they were.
 	test('lightens a colour that clears the old 0.10 threshold but not 3:1, without draining it', () => {
-		const [a] = resolveTeamColorPair({ color: '#00694E' }, { color: '#FFC72C' }, '#60a5fa', '#f87171', true);
+		const [a] = resolveTeamColorPair({ color: '#00694E' }, { color: '#FFC72C' }, '#60a5fa', '#f87171', 'dark');
 		expect(a).toBe('#007c5c');
 	});
 
 	// #C8102E is luminance 0.1285, or 3.22:1. It already clears the bar, so lightening it would
 	// only wash it out.
 	test('leaves a colour just above the 3:1 boundary alone', () => {
-		const [a] = resolveTeamColorPair({ color: '#C8102E' }, { color: '#FFC72C' }, '#60a5fa', '#f87171', true);
+		const [a] = resolveTeamColorPair({ color: '#C8102E' }, { color: '#FFC72C' }, '#60a5fa', '#f87171', 'dark');
 		expect(a).toBe('#C8102E');
 	});
 
@@ -227,7 +227,7 @@ const expectSameHue = (result: string, source: string): void => {
 };
 
 const lightened = (color: string): string => (
-	resolveTeamColorPair({ color }, { color: '#FFC72C' }, '#60a5fa', '#f87171', true)[0]
+	resolveTeamColorPair({ color }, { color: '#FFC72C' }, '#60a5fa', '#f87171', 'dark')[0]
 );
 
 describe('lightening a chart colour keeps the team recognisable', () => {
@@ -504,5 +504,36 @@ describe('underHeroScrim', () => {
 	// must not come back as something a crest could disappear into by accident.
 	test('leaves a black essentially black', () => {
 		expect(hexLuminance(underHeroScrim('#000000'))).toBeLessThan(0.01);
+	});
+});
+
+// The light theme draws its charts on #ffffff, where the rule turns over: a line has to be dark
+// enough rather than bright enough, and it is the pale golds that fail instead of the navies.
+const onLight = (color: string): string => (
+	resolveTeamColorPair({ color }, { color: '#002D72' }, '#60a5fa', '#f87171', 'light')[0]
+);
+const contrastOnWhite = (hex: string): number => {
+	const parsed = hex.replace('#', '');
+	const [red, green, blue] = [0, 2, 4].map(i => Number.parseInt(parsed.slice(i, i + 2), 16));
+	const luminance = 0.2126 * srgbChannel(red!) + 0.7152 * srgbChannel(green!) + 0.0722 * srgbChannel(blue!);
+	return 1.05 / (luminance + 0.05);
+};
+
+describe('a chart colour on the light surface', () => {
+	test.each([
+		['Penguins gold', '#FCB514'],
+		['Lakers gold', '#FDB927'],
+		['Carolina blue', '#7BAFD4'],
+		['a pale fallback blue', '#60a5fa'],
+		['pure yellow', '#ffff00'],
+	])('%s is darkened to clear 3:1', (_label, color) => {
+		const result = onLight(color);
+		expect(result).not.toBe(color);
+		expect(contrastOnWhite(result)).toBeGreaterThanOrEqual(3);
+		expectSameHue(result, color);
+	});
+
+	test('a navy that already clears 3:1 is returned untouched', () => {
+		expect(onLight('#0C2340')).toBe('#0C2340');
 	});
 });

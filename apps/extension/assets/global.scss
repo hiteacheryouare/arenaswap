@@ -897,7 +897,7 @@ button, input, select, optgroup, textarea {
 	position:       absolute;
 	inset:          -1px;
 	z-index:        1;
-	background:     #0d1117;
+	background:     var(--as-body-bg);
 	pointer-events: none;
 	animation:      cardRevealBase calc(3400ms * var(--reveal-rate)) linear var(--reveal-spine) both;
 }

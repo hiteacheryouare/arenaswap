@@ -41,7 +41,7 @@
 	font-size: 1.2rem;
 	font-weight: 700;
 	letter-spacing: -0.01em;
-	color: #e6edf3;
+	color: var(--as-body-color);
 	margin-bottom: 0.5rem;
 	margin-top: 1rem;
 	padding-left: 0.6rem;
@@ -54,11 +54,11 @@
 	gap: 0.45rem;
 	font-size: 0.75rem;
 	letter-spacing: 0.03em;
-	color: #8b949e;
+	color: var(--as-secondary-color);
 	margin-top: 0.5rem;
 	margin-bottom: 0.5rem;
 	padding-bottom: 0.35rem;
-	border-bottom: 1px solid #30363d;
+	border-bottom: 1px solid var(--as-border-color);
 }
 
 .popup-league-logo {
@@ -100,8 +100,8 @@
 	// the first pixel of scroll, which is 40px and 450ms before the collapse has finished bringing
 	// one up. Cards pass directly under this at 320px wide and anything the eye can see through
 	// reads as a smudge over them rather than as a surface they go behind.
-	background-color: rgba(13, 17, 23, var(--lifted, 0));
-	border-bottom: 1px solid rgba(48, 54, 61, var(--lifted, 0));
+	background-color: rgba(var(--as-body-bg-rgb), var(--lifted, 0));
+	border-bottom: 1px solid rgba(var(--as-border-color-rgb), var(--lifted, 0));
 }
 
 .popup-container {
@@ -110,13 +110,13 @@
 	width: 320px;
 	height: 560px;
 	padding: 0.75rem;
-	background: #0d1117;
-	color: #e6edf3;
+	background: var(--as-body-bg);
+	color: var(--as-body-color);
 	overflow-y: auto;
 }
 
 .popup-settings-button {
-	color: #8b949e;
+	color: var(--as-secondary-color);
 	background: none;
 	border: none;
 	line-height: 1;
@@ -145,7 +145,7 @@
 .game-detail-chart-card {
 	margin-top: 0.45rem;
 	padding: 0.34rem 0 0.2rem;
-	border-top: 1px solid #30363d;
+	border-top: 1px solid var(--as-border-color);
 	border-radius: 0;
 	background: transparent;
 }
@@ -153,7 +153,7 @@
 .game-detail-chart-title {
 	font-size: 0.62rem;
 	font-weight: 700;
-	color: #e7edf5;
+	color: var(--as-body-color);
 	margin-bottom: 0.18rem;
 }
 
@@ -170,7 +170,7 @@
 	align-items: center;
 	gap: 0.22rem;
 	font-size: 0.53rem;
-	color: #cdd8e6;
+	color: var(--as-ink-soft);
 	letter-spacing: 0.01em;
 }
 
@@ -179,7 +179,7 @@
 	height: 0.46rem;
 	border-radius: 999px;
 	flex-shrink: 0;
-	box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.25);
+	box-shadow: 0 0 0 1px rgba(var(--as-overlay-rgb), 0.25);
 }
 
 .game-detail-chart-canvas {

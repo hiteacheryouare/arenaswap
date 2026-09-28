@@ -1,11 +1,20 @@
 import { useEffect, useRef } from 'react';
 import type { fallingKind } from '../../../utils/holidayDecorations';
+import type { ResolvedTheme } from '@arenaswap/core/types';
 
 interface holidayDriftProps {
 	kind: fallingKind;
 	// 0 to 1, from the resolver.
 	depth: number;
+	theme?: ResolvedTheme;
 }
+
+// Crown, middle and foot of the pile, then the contour lines. A white crown vanishes into a white
+// page, so light starts at pale frost and ends in the same blue-grey the falling flakes use there.
+const snowTones: Record<ResolvedTheme, [string, string, string, string]> = {
+	dark: ['#ffffff', '#eef5fd', '#c3d4e8', '#a8bcd4'],
+	light: ['#e4ecf5', '#c9d7e6', '#9fb3c8', '#8ea3bb'],
+};
 
 const maxDriftPx = 96;
 const driftWidth = 320;
@@ -20,7 +29,8 @@ const pseudoRandom = (seed: number): number => {
 
 // A crown of overlapping lumps rather than a single curve. Real drifts are piled, not poured, and a
 // smooth sine reads as a gradient with a wavy edge instead of as snow.
-const drawSnowDrift = (ctx: CanvasRenderingContext2D, width: number, height: number, driftHeight: number) => {
+const drawSnowDrift = (ctx: CanvasRenderingContext2D, width: number, height: number, driftHeight: number, theme: ResolvedTheme) => {
+	const [crown, middle, foot, contour] = snowTones[theme];
 	const baseY = height - driftHeight;
 	const lumps = 9;
 
@@ -43,16 +53,16 @@ const drawSnowDrift = (ctx: CanvasRenderingContext2D, width: number, height: num
 	// Bright along the crown, cooling into blue shadow at the foot. Snow is lit from above and its
 	// shadows are blue, which is the whole reason a white gradient reads as fog instead.
 	const body = ctx.createLinearGradient(0, baseY, 0, height);
-	body.addColorStop(0, '#ffffff');
-	body.addColorStop(0.45, '#eef5fd');
-	body.addColorStop(1, '#c3d4e8');
+	body.addColorStop(0, crown);
+	body.addColorStop(0.45, middle);
+	body.addColorStop(1, foot);
 	ctx.fillStyle = body;
 	ctx.fill();
 
 	// Contour shadows inside the pile so the lumps read as volume rather than as one flat shape.
 	ctx.clip();
 	ctx.globalAlpha = 0.5;
-	ctx.strokeStyle = '#a8bcd4';
+	ctx.strokeStyle = contour;
 	ctx.lineWidth = 1.4;
 	for (let i = 0; i < 5; i += 1) {
 		const startX = pseudoRandom(i * 7.7) * width;
@@ -138,7 +148,7 @@ const drawLeafDrift = (ctx: CanvasRenderingContext2D, width: number, height: num
 	ctx.fillRect(0, height - driftHeight * 0.55, width, driftHeight * 0.55);
 };
 
-const holidayDrift = ({ kind, depth }: holidayDriftProps) => {
+const holidayDrift = ({ kind, depth, theme = 'dark' }: holidayDriftProps) => {
 	const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
 	useEffect(() => {
@@ -157,9 +167,9 @@ const holidayDrift = ({ kind, depth }: holidayDriftProps) => {
 
 		const driftHeight = maxDriftPx * depth;
 		if (driftHeight <= 0) return;
-		if (kind === 'snow') drawSnowDrift(ctx, width, height, driftHeight);
+		if (kind === 'snow') drawSnowDrift(ctx, width, height, driftHeight, theme);
 		else drawLeafDrift(ctx, width, height, driftHeight);
-	}, [kind, depth]);
+	}, [kind, depth, theme]);
 
 	if (depth <= 0) return null;
 	return <canvas ref={canvasRef} className='holiday-drift' aria-hidden='true' />;

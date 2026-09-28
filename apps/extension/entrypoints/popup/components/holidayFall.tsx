@@ -1,8 +1,10 @@
 import { useEffect, useRef } from 'react';
 import type { fallingKind } from '../../../utils/holidayDecorations';
+import type { ResolvedTheme } from '@arenaswap/core/types';
 
 interface holidayFallProps {
 	kind: fallingKind;
+	theme?: ResolvedTheme;
 }
 
 interface particle {
@@ -18,6 +20,12 @@ interface particle {
 }
 
 const leafColors = ['#c2571a', '#d98324', '#a33b12', '#e0a539', '#7d3b0e'];
+
+// White flakes on a white page are not there at all, so on light they are frosted, with an edge.
+const snowInk: Record<ResolvedTheme, { fill: string; edge?: string }> = {
+	dark: { fill: '238, 247, 255' },
+	light: { fill: '159, 179, 200', edge: '110, 132, 158' },
+};
 
 const settings = {
 	snow: { count: 70, minSize: 1, maxSize: 2.7, minSpeed: 0.22, maxSpeed: 0.78, swayRange: 12 },
@@ -52,7 +60,7 @@ const drawLeafShape = (ctx: CanvasRenderingContext2D, size: number) => {
 
 // Falling only. The pile it lands in lives at the foot of the page in holidayDrift, which is a
 // different place in a different coordinate system — this canvas is pinned to the window.
-const holidayFall = ({ kind }: holidayFallProps) => {
+const holidayFall = ({ kind, theme = 'dark' }: holidayFallProps) => {
 	const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
 	useEffect(() => {
@@ -69,6 +77,7 @@ const holidayFall = ({ kind }: holidayFallProps) => {
 		canvas.height = Math.round(height * ratio);
 		ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
 
+		const ink = snowInk[theme];
 		const particles = Array.from({ length: settings[kind].count }, () => makeParticle(kind, width, height, false));
 		let frame = 0;
 		let animationId = 0;
@@ -84,10 +93,16 @@ const holidayFall = ({ kind }: holidayFallProps) => {
 				if (p.y > height + p.size) Object.assign(p, makeParticle(kind, width, height, true));
 
 				if (kind === 'snow') {
-					ctx.fillStyle = `rgba(238, 247, 255, ${0.45 + p.size / 6})`;
+					const alpha = 0.45 + p.size / 6;
+					ctx.fillStyle = `rgba(${ink.fill}, ${alpha})`;
 					ctx.beginPath();
 					ctx.arc(x, p.y, p.size, 0, Math.PI * 2);
 					ctx.fill();
+					if (ink.edge) {
+						ctx.strokeStyle = `rgba(${ink.edge}, ${alpha * 0.7})`;
+						ctx.lineWidth = 0.6;
+						ctx.stroke();
+					}
 				} else {
 					ctx.save();
 					ctx.translate(x, p.y);
@@ -104,7 +119,7 @@ const holidayFall = ({ kind }: holidayFallProps) => {
 
 		animationId = requestAnimationFrame(tick);
 		return () => cancelAnimationFrame(animationId);
-	}, [kind]);
+	}, [kind, theme]);
 
 	return <canvas ref={canvasRef} className='holiday-fall' aria-hidden='true' />;
 };

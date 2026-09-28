@@ -28,6 +28,8 @@ import {
 	buildPowerScoreOption,
 	buildTeamScoreOption,
 	buildWinProbabilityOption,
+	darkChartPalette,
+	lightChartPalette,
 } from './gameDetailChartOptions';
 import { resolveTeamColorPair } from '@arenaswap/ui/src/components/colorUtils';
 import useSummaryData from './useSummaryData';
@@ -35,6 +37,7 @@ import { chartHistory, coversWholeGame } from './wrapCoverage';
 import { resolveDecorations, type holidayDecorationPrefs } from '../../../utils/holidayDecorations';
 import { favoriteScoreFlashColors, scorelineOf, type gameScoreline } from '../../../utils/favoriteScoreFlash';
 import type { BettingDisplayPrefs, WeatherDisplayPrefs } from './gameCardTypes';
+import type { ResolvedTheme } from '@arenaswap/core/types';
 
 interface gameDetailViewProps {
 	game: Game;
@@ -62,6 +65,7 @@ interface gameDetailViewProps {
 	dismiss?: 'back' | 'close';
 	onSetGameBoost: (gameId: string, boost: number) => void;
 	onBack: () => void;
+	theme?: ResolvedTheme;
 }
 
 const noFavorites: ReadonlySet<string> = new Set();
@@ -100,6 +104,7 @@ const gameDetailView = ({
 	dismiss = 'back',
 	onSetGameBoost,
 	onBack,
+	theme = 'dark',
 }: gameDetailViewProps) => {
 	const orderedScoreHistory = useMemo(
 		() => chartHistory(scoreHistory.toSorted((a, b) => a.timestamp - b.timestamp), game),
@@ -152,25 +157,26 @@ const gameDetailView = ({
 	const postseasonBoost = activePowerScore?.postseasonBoost ?? 0;
 	const reason = activePowerScore?.reason ?? 'Best Available';
 
+	const chartPalette = theme === 'light' ? lightChartPalette : darkChartPalette;
 	const powerScoreOption = useMemo(() => (
-		buildPowerScoreOption(orderedPowerScoreHistory)
-	), [orderedPowerScoreHistory]);
+		buildPowerScoreOption(orderedPowerScoreHistory, chartPalette)
+	), [orderedPowerScoreHistory, chartPalette]);
 	const scoreTrendOption = useMemo(() => (
-		buildTeamScoreOption(orderedScoreHistory, game)
-	), [orderedScoreHistory, game]);
+		buildTeamScoreOption(orderedScoreHistory, game, chartPalette)
+	), [orderedScoreHistory, game, chartPalette]);
 	const componentOption = useMemo(() => (
-		buildComponentContributionOption(orderedPowerScoreHistory)
-	), [orderedPowerScoreHistory]);
+		buildComponentContributionOption(orderedPowerScoreHistory, chartPalette)
+	), [orderedPowerScoreHistory, chartPalette]);
 	const { winProbability, seriesInfo, records, monoLogos, boxScore, standings, gameDurationMins } = useSummaryData(game);
 	const winProbabilityOption = useMemo(() => (
-		buildWinProbabilityOption(winProbability, game)
-	), [winProbability, game]);
+		buildWinProbabilityOption(winProbability, game, chartPalette)
+	), [winProbability, game, chartPalette]);
 	// Read from the scorer, not recomputed from the line fetched above: that would put a different
 	// number here than on the card you tapped. Undefined means ESPN gave too little data.
 	const winProbabilityVariance = activePowerScore?.winProbabilityVariance;
 	const total = activePowerScore?.total ?? 0;
 
-	const [awayLineColor, homeLineColor] = resolveTeamColorPair(game.awayTeam, game.homeTeam, '#60a5fa', '#f87171', true);
+	const [awayLineColor, homeLineColor] = resolveTeamColorPair(game.awayTeam, game.homeTeam, '#60a5fa', '#f87171', chartPalette.surface);
 	const teamLegendItems = useMemo(() => ([
 		{ label: game.awayTeam.abbreviation, color: awayLineColor },
 		{ label: game.homeTeam.abbreviation, color: homeLineColor },
@@ -331,8 +337,8 @@ const gameDetailView = ({
 
 	return (
 		<div className='popup-container game-detail-shell' ref={shellRef}>
-			{decorations.falling && <HolidayFall kind={decorations.falling} />}
-			<DetailStickyBar game={game} status={status} compact={heroScrolledAway} monoLogos={monoLogos} dismiss={dismiss} onBack={onBack} />
+			{decorations.falling && <HolidayFall kind={decorations.falling} theme={theme} />}
+			<DetailStickyBar game={game} status={status} compact={heroScrolledAway} monoLogos={monoLogos} dismiss={dismiss} onBack={onBack} theme={theme} />
 			{decorations.lights && <HolidayLights flashColors={scoreFlash} />}
 
 			<div ref={heroRef}>
@@ -391,7 +397,7 @@ const gameDetailView = ({
 				</>
 			) : overviewPanel}
 
-			{decorations.falling && <HolidayDrift kind={decorations.falling} depth={decorations.depth} />}
+			{decorations.falling && <HolidayDrift kind={decorations.falling} depth={decorations.depth} theme={theme} />}
 		</div>
 	);
 };

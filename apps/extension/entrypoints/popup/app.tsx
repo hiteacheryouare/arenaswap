@@ -30,6 +30,7 @@ import {
 import { finishedTabNoticeKey, normalizeFinishedTabNotice } from '../../utils/finishedTabs';
 import { loadStoredUserPreferencesWithPresence, persistStoredUserPreferences } from '../../utils/prefsStorage';
 import { nextTemperatureUnit } from '../../utils/temperatureUnitCycle';
+import { useTheme } from '../../utils/theme';
 import { isDemoSeason, resolveDecorationDate, type demoSeason } from '../../utils/holidayDecorations';
 import type { ReviewPromptState } from '../../utils/reviewPrompt';
 import {
@@ -77,6 +78,8 @@ export default () => {
 	const [dismissedSuggestions, setDismissedSuggestions] = useState<string[]>([]);
 	const [reviewPromptState, setReviewPromptState] = useState<ReviewPromptState>(normalizeReviewPromptState(null));
 	const [settled, setSettled] = useState(false);
+	// First-run and the tour were designed against dark and stay there whatever the setting says.
+	const theme = useTheme(prefsLoaded ? prefs.theme : null, onboardingDone === false || walkthroughActive);
 	// Owned up here because the view shell is keyed on `view`: left to MainView it would replay in
 	// full every time you came back from a setting or a game detail. Cleared once the last card has
 	// landed, which is what makes the return trip quiet.
@@ -521,6 +524,7 @@ export default () => {
 						onToggleShowUpcoming={() => persistPrefs(currentPrefs => ({ ...currentPrefs, showUpcomingGames: !currentPrefs.showUpcomingGames }))}
 						onToggleKeepFinalGames={() => persistPrefs(currentPrefs => ({ ...currentPrefs, keepFinalGames: !currentPrefs.keepFinalGames }))}
 						onFinishedTabActionChange={action => persistPrefs(currentPrefs => ({ ...currentPrefs, finishedTabAction: action }))}
+						onThemeChange={choice => persistPrefs(currentPrefs => ({ ...currentPrefs, theme: choice }))}
 						onUpcomingGamesDaysChange={val => persistPrefs(currentPrefs => ({ ...currentPrefs, upcomingGamesDays: val }))}
 						onToggleProTips={() => persistPrefs(currentPrefs => ({ ...currentPrefs, proTipsEnabled: !currentPrefs.proTipsEnabled }))}
 						onToggleNotifications={() => persistPrefs(currentPrefs => ({ ...currentPrefs, notificationsEnabled: !currentPrefs.notificationsEnabled }))}
@@ -625,6 +629,7 @@ export default () => {
 						formatTabLabel={tab => formatTabLabel(tab, openTabs)}
 						onSetGameBoost={onSetGameBoost}
 						onBack={() => setView('main')}
+						theme={theme}
 					/>
 				)}
 				{view === 'detail' && !selectedGame && (

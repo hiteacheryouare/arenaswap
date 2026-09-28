@@ -1,14 +1,38 @@
 import type { EChartsOption } from 'echarts';
 import { scoreMaxTotal } from '@arenaswap/core/constants';
-import type { Game, PowerScoreSnapshot, ScoreSnapshot } from '@arenaswap/core/types';
+import type { Game, PowerScoreSnapshot, ResolvedTheme, ScoreSnapshot } from '@arenaswap/core/types';
 import { resolveTeamColorPair } from './colorUtils';
 import { chartEasing, motionDuration } from '../motion';
 
-const axisLabelColor = '#8b949e';
-const axisLineColor = 'rgba(71, 85, 105, 0.95)';
-const splitLineColor = 'rgba(71, 85, 105, 0.34)';
-const textColor = '#e6edf3';
-const tooltipBackgroundColor = '#111827';
+// ECharts draws to a canvas, so these cannot follow the page's CSS variables: whoever builds an
+// option passes the palette for the surface the chart will sit on. Dark is the default because the
+// website's charts only ever sit on dark.
+export interface chartPalette {
+	axisLabel: string;
+	axisLine: string;
+	splitLine: string;
+	text: string;
+	tooltipBackground: string;
+	surface: ResolvedTheme;
+}
+
+export const darkChartPalette: chartPalette = {
+	axisLabel: '#8b949e',
+	axisLine: 'rgba(71, 85, 105, 0.95)',
+	splitLine: 'rgba(71, 85, 105, 0.34)',
+	text: '#e6edf3',
+	tooltipBackground: '#111827',
+	surface: 'dark',
+};
+
+export const lightChartPalette: chartPalette = {
+	axisLabel: '#3d4652',
+	axisLine: 'rgba(71, 85, 105, 0.55)',
+	splitLine: 'rgba(71, 85, 105, 0.16)',
+	text: '#0b1016',
+	tooltipBackground: '#ffffff',
+	surface: 'light',
+};
 
 const formatTimeLabel = (timestamp: number): string => (
 	new Date(timestamp).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
@@ -16,15 +40,16 @@ const formatTimeLabel = (timestamp: number): string => (
 
 const baseOption = (
 	labels: string[],
+	palette: chartPalette,
 	gridTop = 24,
 ): EChartsOption => ({
 	animationDuration: motionDuration.slow,
 	animationEasing: chartEasing,
 	tooltip: {
 		trigger: 'axis',
-		backgroundColor: tooltipBackgroundColor,
-		borderColor: axisLineColor,
-		textStyle: { color: textColor, fontSize: 11 },
+		backgroundColor: palette.tooltipBackground,
+		borderColor: palette.axisLine,
+		textStyle: { color: palette.text, fontSize: 11 },
 	},
 	grid: {
 		left: 34,
@@ -36,22 +61,22 @@ const baseOption = (
 	xAxis: {
 		type: 'category',
 		data: labels,
-		axisLabel: { color: axisLabelColor, fontSize: 10 },
-		axisLine: { lineStyle: { color: axisLineColor } },
+		axisLabel: { color: palette.axisLabel, fontSize: 10 },
+		axisLine: { lineStyle: { color: palette.axisLine } },
 	},
 	yAxis: {
 		type: 'value',
-		axisLabel: { color: axisLabelColor, fontSize: 10 },
-		axisLine: { lineStyle: { color: axisLineColor } },
-		splitLine: { lineStyle: { color: splitLineColor } },
+		axisLabel: { color: palette.axisLabel, fontSize: 10 },
+		axisLine: { lineStyle: { color: palette.axisLine } },
+		splitLine: { lineStyle: { color: palette.splitLine } },
 	},
 });
 
-export const buildPowerScoreOption = (powerHistory: PowerScoreSnapshot[]): EChartsOption => {
+export const buildPowerScoreOption = (powerHistory: PowerScoreSnapshot[], palette = darkChartPalette): EChartsOption => {
 	const labels = powerHistory.map(point => formatTimeLabel(point.timestamp));
 	const totals = powerHistory.map(point => point.total);
 	const showSinglePointSymbols = totals.length === 1;
-	const option = baseOption(labels);
+	const option = baseOption(labels, palette);
 	return {
 		...option,
 		yAxis: {
@@ -73,13 +98,13 @@ export const buildPowerScoreOption = (powerHistory: PowerScoreSnapshot[]): EChar
 	};
 };
 
-export const buildTeamScoreOption = (scoreHistory: ScoreSnapshot[], game: Game): EChartsOption => {
+export const buildTeamScoreOption = (scoreHistory: ScoreSnapshot[], game: Game, palette = darkChartPalette): EChartsOption => {
 	const labels = scoreHistory.map(point => formatTimeLabel(point.timestamp));
 	const awayScores = scoreHistory.map(point => point.awayScore);
 	const homeScores = scoreHistory.map(point => point.homeScore);
 	const showSinglePointSymbols = scoreHistory.length === 1;
-	const [awayColor, homeColor] = resolveTeamColorPair(game.awayTeam, game.homeTeam, '#60a5fa', '#f87171', true);
-	const option = baseOption(labels, 24);
+	const [awayColor, homeColor] = resolveTeamColorPair(game.awayTeam, game.homeTeam, '#60a5fa', '#f87171', palette.surface);
+	const option = baseOption(labels, palette, 24);
 	return {
 		...option,
 		// The history is a rolling window, so a basketball chart's first point is already in the
@@ -110,7 +135,7 @@ export const buildTeamScoreOption = (scoreHistory: ScoreSnapshot[], game: Game):
 	};
 };
 
-export const buildWinProbabilityOption = (homeWinPcts: number[], game: Game): EChartsOption => {
+export const buildWinProbabilityOption = (homeWinPcts: number[], game: Game, palette = darkChartPalette): EChartsOption => {
 	if (homeWinPcts.length === 0) return {};
 	const step = Math.max(1, Math.floor(homeWinPcts.length / 80));
 	const sampled = homeWinPcts.filter((_, i) => i % step === 0 || i === homeWinPcts.length - 1);
@@ -120,23 +145,23 @@ export const buildWinProbabilityOption = (homeWinPcts: number[], game: Game): EC
 	const showSinglePointSymbols = sampled.length === 1;
 	const awayVals = sampled.map(p => 100 - Math.round(p * 100));
 	const labels = sampled.map(() => '');
-	const [awayColor, homeColor] = resolveTeamColorPair(game.awayTeam, game.homeTeam, '#60a5fa', '#f87171', true);
+	const [awayColor, homeColor] = resolveTeamColorPair(game.awayTeam, game.homeTeam, '#60a5fa', '#f87171', palette.surface);
 	return {
-		...baseOption(labels, 24),
+		...baseOption(labels, palette, 24),
 		yAxis: {
 			type: 'value',
 			min: 0,
 			max: 100,
 			interval: 25,
-			axisLabel: { color: axisLabelColor, fontSize: 10, formatter: (v: number) => `${v}%` },
-			axisLine: { lineStyle: { color: axisLineColor } },
-			splitLine: { lineStyle: { color: splitLineColor } },
+			axisLabel: { color: palette.axisLabel, fontSize: 10, formatter: (v: number) => `${v}%` },
+			axisLine: { lineStyle: { color: palette.axisLine } },
+			splitLine: { lineStyle: { color: palette.splitLine } },
 		},
 		tooltip: {
 			trigger: 'axis',
-			backgroundColor: tooltipBackgroundColor,
-			borderColor: axisLineColor,
-			textStyle: { color: textColor, fontSize: 11 },
+			backgroundColor: palette.tooltipBackground,
+			borderColor: palette.axisLine,
+			textStyle: { color: palette.text, fontSize: 11 },
 			formatter: (params: unknown) => {
 				const arr = params as Array<{ value: number; seriesName: string; color: string }>;
 				return arr.map(p => `<span style="color:${p.color}">●</span> ${p.seriesName}: ${p.value}%`).join('<br/>');
@@ -167,7 +192,7 @@ export const buildWinProbabilityOption = (homeWinPcts: number[], game: Game): EC
 	};
 };
 
-export const buildComponentContributionOption = (powerHistory: PowerScoreSnapshot[]): EChartsOption => {
+export const buildComponentContributionOption = (powerHistory: PowerScoreSnapshot[], palette = darkChartPalette): EChartsOption => {
 	const labels = powerHistory.map(point => formatTimeLabel(point.timestamp));
 	const closeness = powerHistory.map(point => point.closeness);
 	const lateGame = powerHistory.map(point => point.lateGame);
@@ -175,7 +200,7 @@ export const buildComponentContributionOption = (powerHistory: PowerScoreSnapsho
 	const leadChanges = powerHistory.map(point => point.leadChanges);
 	const comeback = powerHistory.map(point => point.comeback);
 	return {
-		...baseOption(labels, 24),
+		...baseOption(labels, palette, 24),
 		series: [
 			{ type: 'bar', stack: 'signals', name: 'Closeness', data: closeness, itemStyle: { color: '#22c55e' } },
 			{ type: 'bar', stack: 'signals', name: 'Late-game', data: lateGame, itemStyle: { color: '#f75c03' } },

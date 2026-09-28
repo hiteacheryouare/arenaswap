@@ -155,6 +155,7 @@ const listPrefs: UserPreferences = {
 	temperatureUnit: 'F',
 	romerUnlocked: false,
 	openRevealEnabled: true,
+	theme: 'dark',
 	holidayDecorationsEnabled: false,
 	holidaySnowEnabled: false,
 	holidayLightsEnabled: false,
@@ -222,7 +223,7 @@ describe('a finished game', () => {
 
 		it('offers no tab to assign, because there is nothing to switch to', () => {
 			mountCard(finalGame);
-			cy.get('select').should('not.exist');
+			cy.get('.game-card-tab-assign').should('not.exist');
 		});
 
 		it('draws no PowerScore bar even when a score is handed to it', () => {

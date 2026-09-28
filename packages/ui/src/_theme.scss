@@ -1,0 +1,103 @@
+// ArenaSwap's two palettes, as CSS custom properties. Dark is what :root carries in both apps and
+// what _bootstrap.scss hands Bootstrap; the docs site never sets data-bs-theme, so it only sees dark.
+// Light lives under [data-bs-theme=light], set on <html> from the Theme setting. It restates
+// Bootstrap's body tokens because Bootstrap emits the dark ones on `:root, [data-bs-theme=light]`,
+// and it has to land later in the stylesheet than that block to win.
+@use 'sass:color';
+@use 'sass:map';
+
+$palettes: (
+	dark: (
+		body-color:          #e6edf3,
+		body-bg:             #0d1117,
+		secondary-color:     #8b949e,
+		secondary-bg:        #21262d,
+		tertiary-bg:         #161b22,
+		border-color:        #30363d,
+		link-color:          #f75c03,
+		link-hover-color:    #c64a02,
+		faint:               #6e7681,
+		ink-soft:            #b6c2cf,
+		accent-ink:          #f75c03,
+		secondary-ink:       #3e9bd1,
+		warning-ink:         #f1c40f,
+		control-bg:          #111827,
+		control-hover-bg:    #1f2937,
+		control-hover-color: #ffffff,
+		overlay:             #ffffff,
+		wordmark-ink:        #ffffff,
+	),
+	light: (
+		body-color:          #0b1016,
+		body-bg:             #ffffff,
+		secondary-color:     #3d4652,
+		secondary-bg:        #e7ebf0,
+		tertiary-bg:         #f3f5f8,
+		border-color:        #c3cad3,
+		link-color:          #c2410c,
+		link-hover-color:    #9a3412,
+		faint:               #5a6472,
+		ink-soft:            #252d38,
+		// #F75C03 is 3.24:1 on white, under the 4.5:1 small text needs. Fills keep the brand orange.
+		accent-ink:          #c2410c,
+		secondary-ink:       #2274a5,
+		// #F1C40F is 1.6:1 on white; this is the same amber, darkened until warning text reads.
+		warning-ink:         #8a6100,
+		control-bg:          #f3f5f8,
+		control-hover-bg:    #e7ebf0,
+		control-hover-color: #0b1016,
+		// Crest rings and row washes are drawn in this at low alpha: white lifts off a dark page, ink
+		// settles onto a light one.
+		overlay:             #0b1016,
+		wordmark-ink:        #0b1016,
+	),
+);
+
+@function channels($value) {
+	@return '#{color.channel($value, 'red', $space: rgb)}, #{color.channel($value, 'green', $space: rgb)}, #{color.channel($value, 'blue', $space: rgb)}';
+}
+
+@function tone($mode, $name) {
+	@return map.get($palettes, $mode, $name);
+}
+
+// Ours rather than Bootstrap's, so both apps need these on :root.
+@mixin arenaswap-tokens($mode) {
+	--as-faint: #{tone($mode, faint)};
+	--as-ink-soft: #{tone($mode, ink-soft)};
+	--as-accent-ink: #{tone($mode, accent-ink)};
+	--as-secondary-ink: #{tone($mode, secondary-ink)};
+	--as-warning-ink: #{tone($mode, warning-ink)};
+	--as-control-bg: #{tone($mode, control-bg)};
+	--as-control-hover-bg: #{tone($mode, control-hover-bg)};
+	--as-control-hover-color: #{tone($mode, control-hover-color)};
+	--as-border-color-rgb: #{channels(tone($mode, border-color))};
+	--as-overlay-rgb: #{channels(tone($mode, overlay))};
+	--as-wordmark-ink: #{tone($mode, wordmark-ink)};
+}
+
+@mixin bootstrap-tokens($mode) {
+	--as-body-color: #{tone($mode, body-color)};
+	--as-body-color-rgb: #{channels(tone($mode, body-color))};
+	--as-body-bg: #{tone($mode, body-bg)};
+	--as-body-bg-rgb: #{channels(tone($mode, body-bg))};
+	--as-secondary-color: #{tone($mode, secondary-color)};
+	--as-secondary-color-rgb: #{channels(tone($mode, secondary-color))};
+	--as-secondary-bg: #{tone($mode, secondary-bg)};
+	--as-secondary-bg-rgb: #{channels(tone($mode, secondary-bg))};
+	--as-tertiary-color: #{color.change(tone($mode, body-color), $alpha: 0.5)};
+	--as-tertiary-color-rgb: #{channels(tone($mode, body-color))};
+	--as-tertiary-bg: #{tone($mode, tertiary-bg)};
+	--as-tertiary-bg-rgb: #{channels(tone($mode, tertiary-bg))};
+	--as-border-color: #{tone($mode, border-color)};
+	--as-highlight-color: #{tone($mode, body-color)};
+	--as-link-color: #{tone($mode, link-color)};
+	--as-link-color-rgb: #{channels(tone($mode, link-color))};
+	--as-link-hover-color: #{tone($mode, link-hover-color)};
+	--as-link-hover-color-rgb: #{channels(tone($mode, link-hover-color))};
+}
+
+@mixin color-mode($mode) {
+	@include bootstrap-tokens($mode);
+	@include arenaswap-tokens($mode);
+}

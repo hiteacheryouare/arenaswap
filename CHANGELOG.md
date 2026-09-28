@@ -5,9 +5,17 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Every picker in the popup is a Bootstrap dropdown — 2026-09-25
+
+The five native `<select>`s (the tab picker on each card, When a game finishes, the standby tab, the demo season and the walkthrough's demo picker) and the Theme switcher now share `selectDropdown.tsx`: Bootstrap's `Dropdown` opening off a `.form-select`, so they look the same closed but can carry icons, a tick and disabled rows. A card holding an open menu lifts itself above its neighbours, because a hovered card's lift transform makes it a stacking context and the next card was painting over the menu. A native select gave type-to-jump for free, which the dropdown does not; tests drive them through `cy.choose(label)`.
+
 ## The guide's baseball end-time test stops depending on the date — 2026-09-25
 
 Its fixture game started on 2026-09-21 and end times are kept for three days, so from 2026-09-24 the real clock aged it out of the slate and the test failed with nothing broken. The two tests that use it now pin the fake clock to that evening through `loadBackground`'s `initialSystemTime`.
+
+## Light mode, with a Light / Dark / System setting — 2026-09-25
+
+Display has a Theme setting, defaulting to Dark, and Light is a flat white palette whose tokens live in `packages/ui/src/_theme.scss` and switch on `data-bs-theme` on `<html>`; dark stays what `:root` compiles to, so the website is untouched. `public/themeBoot.js` reads a `localStorage` copy of the setting before first paint so a light popup never opens dark for a frame, and it repeats `utils/theme.ts`'s rule, which a test holds the two to. Charts, snow and league logos are drawn from JavaScript and are told the theme instead of reading CSS; onboarding and the tour stay dark.
 
 ## The Firefox sources zip stops shipping test output — 2026-09-22
 

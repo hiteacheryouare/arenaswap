@@ -3,6 +3,7 @@ import type { RefObject } from 'react';
 import { leagueConfigs, resolveLeagueLogoUrl } from '@arenaswap/core/constants';
 import type { LeagueId, LeagueLogoMap } from '@arenaswap/core/types';
 import Crest from './crest';
+import useDocumentTheme from './useDocumentTheme';
 import { useT } from './i18nContext';
 import Wordmark from './wordmark';
 import driveWordmarkCollapse from './wordmarkCollapse';
@@ -117,7 +118,8 @@ export const PopupSectionTitle = ({ children, first }: { children: string; first
 // say that the row does not already. The crest still holds its box while the mark loads, which is
 // all this row needed. Dropped entirely when the league has no mark to load.
 export const LeagueSectionHeader = ({ league, logos }: { league: LeagueId; logos: LeagueLogoMap }) => {
-	const logoUrl = resolveLeagueLogoUrl(league, logos[league]);
+	const theme = useDocumentTheme();
+	const logoUrl = resolveLeagueLogoUrl(league, logos[league], theme);
 	return (
 		<div className='fw-bold text-uppercase popup-section-label'>
 			{logoUrl && (

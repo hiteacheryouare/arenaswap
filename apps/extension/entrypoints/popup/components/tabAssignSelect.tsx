@@ -2,6 +2,7 @@ import { i18n } from '#i18n';
 import type { Browser } from 'wxt/browser';
 import type { TabRegistration } from '@arenaswap/core/types';
 import { assignTabToGame } from '../../../utils/tabSuggestions';
+import SelectDropdown from './selectDropdown';
 
 interface tabAssignSelectProps {
 	gameId: string;
@@ -16,7 +17,7 @@ const tabAssignSelect = ({ gameId, openTabs, registry, onChange, formatTabLabel 
 
 	const onSelect = (tabIdStr: string) => {
 		const tabId = Number(tabIdStr);
-		// The placeholder option is '', which Number turns into a falsy 0 — that is the unassign path.
+		// The placeholder is '', which Number turns into a falsy 0 — that is the unassign path.
 		onChange(tabId
 			? assignTabToGame(registry, tabId, gameId)
 			: registry.filter(r => r.gameId !== gameId));
@@ -28,21 +29,18 @@ const tabAssignSelect = ({ gameId, openTabs, registry, onChange, formatTabLabel 
 
 	return (
 		<div className='game-card-tab-assign' data-card-control='true'>
-			<select
-				className='form-select form-select-sm'
-				value={currentTabId ?? ''}
-				onChange={e => onSelect(e.target.value)}
-			>
-				<option value=''>{i18n.t('tabAssign.placeholder')}</option>
-				{openTabs.map(tab => {
-					const inUse = tab.id !== undefined && assignedTabIds.has(tab.id);
-					return (
-						<option key={tab.id} value={tab.id} disabled={inUse}>
-							{formatTabLabel(tab)}{inUse ? i18n.t('tabAssign.inUse') : ''}
-						</option>
-					);
-				})}
-			</select>
+			<SelectDropdown
+				value={currentTabId === undefined ? '' : String(currentTabId)}
+				onChange={onSelect}
+				ariaLabel={i18n.t('tabAssign.placeholder')}
+				options={[
+					{ value: '', label: i18n.t('tabAssign.placeholder') },
+					...openTabs.filter(tab => tab.id !== undefined).map(tab => {
+						const inUse = assignedTabIds.has(tab.id!);
+						return { value: String(tab.id), label: `${formatTabLabel(tab)}${inUse ? i18n.t('tabAssign.inUse') : ''}`, disabled: inUse };
+					}),
+				]}
+			/>
 		</div>
 	);
 };

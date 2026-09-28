@@ -34,8 +34,8 @@
 	justify-content: center;
 	overflow:        hidden;
 	border-radius:   999px;
-	background:      rgba(139, 148, 158, 0.18);
-	color:           #8b949e;
+	background:      rgba(var(--as-secondary-color-rgb), 0.18);
+	color:           var(--as-secondary-color);
 	font-weight:     700;
 	font-size:       0.5rem;
 	letter-spacing:  0.02em;

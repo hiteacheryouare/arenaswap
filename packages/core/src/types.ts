@@ -201,6 +201,10 @@ export interface Game {
 // done. 'free' drops the registration and hands the tab back unmuted; 'close' shuts it.
 export type FinishedTabAction = 'keep' | 'free' | 'close';
 
+// 'system' follows prefers-color-scheme, including when it changes while a page is open.
+export type ThemePreference = 'dark' | 'light' | 'system';
+export type ResolvedTheme = Exclude<ThemePreference, 'system'>;
+
 export interface UserPreferences {
 	sensitivity: 1 | 2 | 3 | 4 | 5 | 6 | 7;
 	cooldownSeconds: number;
@@ -228,6 +232,7 @@ export interface UserPreferences {
 	// The matchup poster every card arrives as when the popup opens. Off means the list is simply
 	// there, the way it was before the graphic existed.
 	openRevealEnabled: boolean;
+	theme: ThemePreference;
 	// Seasonal decoration on the game detail screen. The parent gates all three.
 	holidayDecorationsEnabled: boolean;
 	holidaySnowEnabled: boolean;

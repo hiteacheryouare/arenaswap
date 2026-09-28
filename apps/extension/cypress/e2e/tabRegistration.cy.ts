@@ -2,7 +2,7 @@ import { bullsHeat, eaglesCowboys, liveState, makeScore, onboardedPrefs, openTab
 
 const onboarded = { local: { onboardingCompleted: true }, sync: { prefs: onboardedPrefs() } };
 const cardFor = (abbreviation: string) => cy.contains('.game-card', abbreviation);
-const tabPicker = (abbreviation: string) => cardFor(abbreviation).find('.game-card-tab-assign select');
+const tabPicker = (abbreviation: string) => cardFor(abbreviation).find('.game-card-tab-assign .form-select');
 
 describe('registering a tab and watching the lead change', () => {
 	beforeEach(() => cy.openPopup({ ...onboarded, state: liveState(), tabs: openTabs }));
@@ -14,7 +14,7 @@ describe('registering a tab and watching the lead change', () => {
 	});
 
 	it('assigns a tab to a game and tells the background about it', () => {
-		tabPicker(sixersThunder.homeTeam.abbreviation).select(openTabs[0].title);
+		tabPicker(sixersThunder.homeTeam.abbreviation).choose(openTabs[0].title);
 
 		cy.background().its('registry').should('deep.equal', [
 			{ tabId: openTabs[0].id, gameId: sixersThunder.id },
@@ -24,19 +24,38 @@ describe('registering a tab and watching the lead change', () => {
 	});
 
 	it('keeps one tab from serving two games at once', () => {
-		tabPicker(sixersThunder.homeTeam.abbreviation).select(openTabs[0].title);
+		tabPicker(sixersThunder.homeTeam.abbreviation).choose(openTabs[0].title);
 
-		tabPicker(bullsHeat.homeTeam.abbreviation)
-			.contains('option', openTabs[0].title)
+		cardFor(bullsHeat.homeTeam.abbreviation)
+			.find('.game-card-tab-assign')
+			.contains('.dropdown-item', openTabs[0].title)
 			.should('be.disabled');
 	});
 
 	it('releases the tab when the assignment is cleared', () => {
-		tabPicker(sixersThunder.homeTeam.abbreviation).select(openTabs[0].title);
+		tabPicker(sixersThunder.homeTeam.abbreviation).choose(openTabs[0].title);
 		cy.background().its('registry').should('have.length', 1);
 
-		tabPicker(sixersThunder.homeTeam.abbreviation).select('');
+		tabPicker(sixersThunder.homeTeam.abbreviation).choose('— Assign a tab —');
 		cy.background().its('registry').should('deep.equal', []);
+	});
+
+	// A hovered card is lifted with a transform, which makes it a stacking context of its own, and the
+	// card after it in the list then paints over anything that escapes it. Cypress cannot hover, so
+	// the lift is forced on; what is on top at the menu's centre is then asked of the browser itself.
+	it('keeps the open picker above the next card while its own card is hovered', () => {
+		cy.document().then(doc => {
+			const lift = doc.createElement('style');
+			lift.textContent = '.game-card-clickable { transform: translateY(-1px); }';
+			doc.head.appendChild(lift);
+		});
+		tabPicker(sixersThunder.homeTeam.abbreviation).click();
+
+		cy.get('.dropdown-menu.show').should('be.visible').then($menu => {
+			const box = $menu[0]!.getBoundingClientRect();
+			const topmost = $menu[0]!.ownerDocument.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2);
+			expect($menu[0]!.contains(topmost), 'the menu is what is on top').to.equal(true);
+		});
 	});
 
 	it('re-sorts live when the background pushes a new leader', () => {

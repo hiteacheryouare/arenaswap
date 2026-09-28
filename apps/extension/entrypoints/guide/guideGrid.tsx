@@ -11,15 +11,17 @@ import { resolveStatus } from '../popup/components/gameSituation';
 import { formatGuideTime } from './guideFormat';
 import type { guideBand, guideBar } from './guideHeat';
 import useEdgeClipping from './useEdgeClipping';
+import type { ResolvedTheme } from '@arenaswap/core/types';
 import { axisBounds, barHeight, fillAxis, groupByLeague, gutterPx, hourMarks, msToPx, rowHeight } from './guideLayout';
 
 const formatTime = formatGuideTime;
 
-// Lightened, unlike the game card's pair, because these sit on #0d1117 rather than on a white card.
-// Half the league's primaries are navies that reach nothing like 3:1 against it, and the climb
-// scales the channels rather than mixing toward white, so a blue stays a blue.
-const railStyle = (game: Game): CSSProperties => {
-	const [away, home] = resolveTeamColorPair(game.awayTeam, game.homeTeam, '#30363d', '#30363d', true);
+// Lightened on dark, unlike the game card's pair, because these sit on #0d1117 rather than on a white
+// card. Half the league's primaries are navies that reach nothing like 3:1 against it, and the climb
+// scales the channels rather than mixing toward white, so a blue stays a blue. On light it is the
+// golds that fail instead, and they are darkened.
+const railStyle = (game: Game, theme: ResolvedTheme): CSSProperties => {
+	const [away, home] = resolveTeamColorPair(game.awayTeam, game.homeTeam, '#30363d', '#30363d', theme);
 	return { '--guide-away': away, '--guide-home': home } as CSSProperties;
 };
 
@@ -28,16 +30,17 @@ const bandBox = (band: guideBand, fromMs: number): CSSProperties => {
 	return { left: `${left}px`, width: `${Math.max(msToPx(band.toMs, fromMs) - left, 8)}px` };
 };
 
-// The bar is #21262d, which is what a crest drawn on it has to stand off.
-const guideBarSurface = '#21262d';
+// The bar is --as-secondary-bg, which is what a crest drawn on it has to stand off. Spelled out
+// because the legibility check does its arithmetic on a hex, not on a variable.
+const guideBarSurface: Record<ResolvedTheme, string> = { dark: '#21262d', light: '#e7ebf0' };
 
-const BarTeam = ({ team, mono, score, lost }: { team: Team; mono?: TeamMonoMarks; score?: number; lost?: boolean }) => (
+const BarTeam = ({ team, mono, score, lost, theme }: { team: Team; mono?: TeamMonoMarks; score?: number; lost?: boolean; theme: ResolvedTheme }) => (
 	<span className={`guide-bar-side${lost ? ' is-loser' : ''}`}>
 		<TeamCrest
 			logo={team.logo}
 			monoMarks={mono}
 			abbreviation={(team.abbreviation || '?').slice(0, 3)}
-			background={guideBarSurface}
+			background={guideBarSurface[theme]}
 			discClassName='guide-crest-disc'
 			crestClassName='guide-crest'
 			fallback='blank'
@@ -72,13 +75,14 @@ interface guideBarProps {
 	selected: boolean;
 	onOpen: (gameId: string) => void;
 	mono?: Record<string, TeamMonoMarks>;
+	theme: ResolvedTheme;
 }
 
 // The button runs from the game's start to the end of the day, and only the bar drawn inside it and
 // the label take the pointer. That is what lets the label stay pinned beside the league column after
 // the bar itself has scrolled away: sticky content cannot leave its box, and when that box was the
 // bar, a game that ended an hour ago was an empty row or a scrap like 'F @ MIA' under the gutter.
-const GuideBar = ({ bar, fromMs, selected, onOpen, mono }: guideBarProps) => {
+const GuideBar = ({ bar, fromMs, selected, onOpen, mono, theme }: guideBarProps) => {
 	const { game } = bar;
 	const left = msToPx(bar.startMs, fromMs);
 	const width = Math.max(msToPx(bar.endMs, fromMs) - left, 24);
@@ -94,7 +98,7 @@ const GuideBar = ({ bar, fromMs, selected, onOpen, mono }: guideBarProps) => {
 			data-status={game.status}
 			data-game-id={game.id}
 			data-selected={selected ? 'true' : undefined}
-			style={{ left: `${left}px`, height: `${barHeight}px`, '--guide-bar-width': `${width}px`, ...railStyle(game) } as CSSProperties}
+			style={{ left: `${left}px`, height: `${barHeight}px`, '--guide-bar-width': `${width}px`, ...railStyle(game, theme) } as CSSProperties}
 			onClick={() => onOpen(game.id)}
 			title={`${away.name} @ ${home.name} \u00b7 ${formatTime(bar.startMs)}`}
 		>
@@ -104,9 +108,9 @@ const GuideBar = ({ bar, fromMs, selected, onOpen, mono }: guideBarProps) => {
 				    heartbeat; thirty of them down a grid is a flashing screen. */}
 				{game.status === 'in' && <span className='guide-bar-live' aria-label={i18n.t('gameCard.live')} role='img' />}
 				{game.status === 'pre' && <BarStatus game={game} startMs={bar.startMs} />}
-				<BarTeam team={away} mono={mono?.[away.id]} score={scored ? away.score : undefined} lost={decided && away.score < home.score} />
+				<BarTeam team={away} mono={mono?.[away.id]} score={scored ? away.score : undefined} lost={decided && away.score < home.score} theme={theme} />
 				{!scored && <span className='guide-bar-at'>{i18n.t('guide.at')}</span>}
-				<BarTeam team={home} mono={mono?.[home.id]} score={scored ? home.score : undefined} lost={decided && home.score < away.score} />
+				<BarTeam team={home} mono={mono?.[home.id]} score={scored ? home.score : undefined} lost={decided && home.score < away.score} theme={theme} />
 				{bar.isFavorite && <i className='bi bi-star-fill guide-bar-star' aria-label={i18n.t('guide.favoriteGame')} />}
 				{scored && <BarStatus game={game} startMs={bar.startMs} />}
 				{network && <span className='guide-bar-network'>{network}</span>}
@@ -124,6 +128,7 @@ const GuideGrid = ({
 	minPlotPx = 0,
 	selectedGameId = null,
 	onOpen,
+	theme = 'dark',
 }: {
 	bars: guideBar[];
 	band: guideBand | null;
@@ -136,6 +141,7 @@ const GuideGrid = ({
 	minPlotPx?: number;
 	selectedGameId?: string | null;
 	onOpen: (gameId: string) => void;
+	theme?: ResolvedTheme;
 }) => {
 	const canvasRef = useRef<HTMLDivElement | null>(null);
 	useEdgeClipping(canvasRef);
@@ -186,7 +192,7 @@ const GuideGrid = ({
 							    scroller. */}
 							<span className='guide-league-inner'>
 								<CrestDisc
-									logo={resolveLeagueLogoUrl(group.league, leagueLogos[group.league])}
+									logo={resolveLeagueLogoUrl(group.league, leagueLogos[group.league], theme)}
 									abbreviation=''
 									discClassName='guide-league-disc'
 									crestClassName='guide-league-logo'
@@ -199,7 +205,7 @@ const GuideGrid = ({
 						<div className='guide-group-rows'>
 							{group.bars.map(bar => (
 								<div key={bar.game.id} className='guide-row' style={{ height: `${rowHeight}px` }}>
-									<GuideBar bar={bar} fromMs={fromMs} selected={bar.game.id === selectedGameId} onOpen={onOpen} mono={monoLogos[group.league]} />
+									<GuideBar bar={bar} fromMs={fromMs} selected={bar.game.id === selectedGameId} onOpen={onOpen} mono={monoLogos[group.league]} theme={theme} />
 								</div>
 							))}
 						</div>

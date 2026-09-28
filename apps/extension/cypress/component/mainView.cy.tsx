@@ -21,6 +21,7 @@ const defaultPrefs: UserPreferences = {
 	temperatureUnit: 'F',
 	romerUnlocked: false,
 	openRevealEnabled: true,
+	theme: 'dark',
 	holidayDecorationsEnabled: true,
 	holidaySnowEnabled: true,
 	holidayLightsEnabled: true,
