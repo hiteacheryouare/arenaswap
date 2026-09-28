@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The guide's baseball end-time test stops depending on the date — 2026-09-25
+
+Its fixture game started on 2026-09-21 and end times are kept for three days, so from 2026-09-24 the real clock aged it out of the slate and the test failed with nothing broken. The two tests that use it now pin the fake clock to that evening through `loadBackground`'s `initialSystemTime`.
+
 ## The Firefox sources zip stops shipping test output — 2026-09-22
 
 `wxt zip:firefox` was sweeping the gitignored `coverage/` reports and failed-run `cypress/screenshots/` into the archive AMO reviewers download, 368 files and ~10MB of a 13.4MB upload. Both are now in `excludeSources`, the same trap `dist/` fell into before: anything left lying in `apps/extension/` ships unless it is listed there.

@@ -1708,6 +1708,9 @@ describe('when a guide game actually ended', () => {
 		sportType: 'baseball',
 		startTime: '2026-09-21T17:10:00Z',
 	};
+	// That evening, not today: end times are kept for three days, so against the real clock this
+	// game aged out of the slate on 2026-09-24 and the test failed with nothing wrong.
+	const mlbFinalEvening = new Date('2026-09-21T22:00:00Z').getTime();
 
 	test('stamps a game with the poll that first saw it final', async () => {
 		await loadBackground({ prefs: nbaOnly, fetchReturnValue: { games: [game('g', 'in')], leagueLogos: {}, shedLeagues: [] } });
@@ -1741,7 +1744,7 @@ describe('when a guide game actually ended', () => {
 	});
 
 	test('asks baseball how long a final it never saw end took, then tells the guide', async () => {
-		await loadBackground({ prefs: nbaOnly, fetchReturnValue: { games: [mlbFinal, game('nba-final', 'post')], leagueLogos: {}, shedLeagues: [] } });
+		await loadBackground({ prefs: nbaOnly, initialSystemTime: mlbFinalEvening, fetchReturnValue: { games: [mlbFinal, game('nba-final', 'post')], leagueLogos: {}, shedLeagues: [] } });
 		durationFetch().mockResolvedValue(196);
 
 		await guideSlate();
@@ -1754,7 +1757,7 @@ describe('when a guide game actually ended', () => {
 	});
 
 	test('asks only once for a final whose summary has no duration', async () => {
-		await loadBackground({ prefs: nbaOnly, fetchReturnValue: { games: [mlbFinal], leagueLogos: {}, shedLeagues: [] } });
+		await loadBackground({ prefs: nbaOnly, initialSystemTime: mlbFinalEvening, fetchReturnValue: { games: [mlbFinal], leagueLogos: {}, shedLeagues: [] } });
 
 		await guideSlate();
 		await drain();
