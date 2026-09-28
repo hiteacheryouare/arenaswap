@@ -28,6 +28,7 @@ $motion-epic:        1000ms;  // once per page at most, for a number counting it
 $motion-urgent:       500ms;  // a celebration or an alarm — fast enough to read as excitement
 $motion-pulse:       1500ms;  // the live heartbeat — anything signalling "this is happening now"
 $motion-ambient:     3000ms;  // slow decoration, meant to be caught rather than watched
+$motion-drift:          24s;  // the stage's colour field, which should never be noticed moving
 
 // Curves. Four, because a fifth would be a preference rather than a job.
 //
@@ -43,6 +44,9 @@ $motion-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
 // Constant rate, for anything continuous or seamless. A loop that eases has a visible seam where its
 // slow end meets its own fast start.
 $motion-linear:      linear;
+// The one curve that overshoots, for things landing somewhere new: a card taking its new place in
+// the list, a tick popping into a tile.
+$motion-spring:      cubic-bezier(0.3, 1.3, 0.5, 1);
 
 // Reduced motion. Wrapping the query rather than repeating it keeps every opt-out phrased the same
 // way and makes the ones that are missing easy to find.

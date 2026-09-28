@@ -20,11 +20,14 @@ export const motionLoop = {
 	urgent: 500,
 	pulse: 1500,
 	ambient: 3000,
+	drift: 24000,
 } as const;
 
 // ECharts takes an easing by name and has no cubic-bezier input, so the signature curve is named
 // rather than spelled: `cubic-bezier(0.22, 1, 0.36, 1)` is the usual approximation of a quintic
 // ease-out, and `quinticOut` is the closest thing ECharts draws to it.
 export const chartEasing = 'quinticOut';
+
+export const springEasing = 'cubic-bezier(0.3, 1.3, 0.5, 1)';
 
 export default motionDuration;

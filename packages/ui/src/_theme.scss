@@ -1,55 +1,68 @@
-// ArenaSwap's two palettes, as CSS custom properties. Dark is what :root carries in both apps and
-// what _bootstrap.scss hands Bootstrap; the docs site never sets data-bs-theme, so it only sees dark.
-// Light lives under [data-bs-theme=light], set on <html> from the Theme setting. It restates
-// Bootstrap's body tokens because Bootstrap emits the dark ones on `:root, [data-bs-theme=light]`,
-// and it has to land later in the stylesheet than that block to win.
+// ArenaSwap's two palettes, as CSS custom properties. Dark is what :root carries in both apps; light
+// lives under [data-bs-theme=light], set on <html> from the Theme setting, and has to land later in
+// the stylesheet than Bootstrap's own `:root, [data-bs-theme=light]` block to win.
 @use 'sass:color';
 @use 'sass:map';
 
 $palettes: (
 	dark: (
-		body-color:          #e6edf3,
-		body-bg:             #0d1117,
-		secondary-color:     #8b949e,
-		secondary-bg:        #21262d,
-		tertiary-bg:         #161b22,
-		border-color:        #30363d,
+		body-color:          #f3f5f7,
+		body-bg:             #0e1013,
+		secondary-color:     #8c95a1,
+		secondary-bg:        #22262d,
+		tertiary-bg:         #1a1d22,
+		border-color:        #2c3037,
 		link-color:          #f75c03,
-		link-hover-color:    #c64a02,
-		faint:               #6e7681,
-		ink-soft:            #b6c2cf,
+		link-hover-color:    #ff6a14,
+		faint:               #6f7884,
+		ink-soft:            #c4cbd4,
 		accent-ink:          #f75c03,
 		secondary-ink:       #3e9bd1,
 		warning-ink:         #f1c40f,
-		control-bg:          #111827,
-		control-hover-bg:    #1f2937,
-		control-hover-color: #ffffff,
-		overlay:             #ffffff,
-		wordmark-ink:        #ffffff,
+		control-bg:          #1a1d22,
+		control-hover-bg:    #22262d,
+		control-hover-color: #f3f5f7,
+		overlay:             #f3f5f7,
+		wordmark-ink:        #f3f5f7,
+		line:                rgba(243, 245, 247, 0.08),
+		line-strong:         rgba(243, 245, 247, 0.16),
+		hover:               rgba(243, 245, 247, 0.06),
+		press:               rgba(243, 245, 247, 0.1),
+		gain:                #7ee2a8,
+		penalty:             #ff8a80,
+		disc:                #f3f5f7,
+		disc-line:           rgba(14, 16, 19, 0.06),
+		watched:             #f3f5f7,
 	),
 	light: (
-		body-color:          #0b1016,
-		body-bg:             #ffffff,
-		secondary-color:     #3d4652,
-		secondary-bg:        #e7ebf0,
-		tertiary-bg:         #f3f5f8,
-		border-color:        #c3cad3,
+		body-color:          #0e1013,
+		body-bg:             #f4f5f7,
+		secondary-color:     #5a6370,
+		secondary-bg:        #eef0f2,
+		tertiary-bg:         #ffffff,
+		border-color:        #d7dbe0,
 		link-color:          #c2410c,
 		link-hover-color:    #9a3412,
-		faint:               #5a6472,
-		ink-soft:            #252d38,
+		faint:               #6b7480,
+		ink-soft:            #2a313b,
 		// #F75C03 is 3.24:1 on white, under the 4.5:1 small text needs. Fills keep the brand orange.
 		accent-ink:          #c2410c,
 		secondary-ink:       #2274a5,
-		// #F1C40F is 1.6:1 on white; this is the same amber, darkened until warning text reads.
 		warning-ink:         #8a6100,
-		control-bg:          #f3f5f8,
-		control-hover-bg:    #e7ebf0,
-		control-hover-color: #0b1016,
-		// Crest rings and row washes are drawn in this at low alpha: white lifts off a dark page, ink
-		// settles onto a light one.
-		overlay:             #0b1016,
-		wordmark-ink:        #0b1016,
+		control-bg:          #ffffff,
+		control-hover-bg:    #eef0f2,
+		control-hover-color: #0e1013,
+		overlay:             #0e1013,
+		wordmark-ink:        #0e1013,
+		line:                rgba(14, 16, 19, 0.1),
+		line-strong:         rgba(14, 16, 19, 0.18),
+		hover:               rgba(14, 16, 19, 0.04),
+		press:               rgba(14, 16, 19, 0.08),
+		gain:                #11794a,
+		penalty:             #c62828,
+		disc:                #f3f5f7,
+		disc-line:           rgba(14, 16, 19, 0.12),
+		watched:             #0e1013,
 	),
 );
 
@@ -61,8 +74,21 @@ $palettes: (
 	@return map.get($palettes, $mode, $name);
 }
 
-// Ours rather than Bootstrap's, so both apps need these on :root.
 @mixin arenaswap-tokens($mode) {
+	--as-page: #{tone($mode, body-bg)};
+	--as-surface: #{tone($mode, tertiary-bg)};
+	--as-raised: #{tone($mode, secondary-bg)};
+	--as-ink: #{tone($mode, body-color)};
+	--as-muted: #{tone($mode, secondary-color)};
+	--as-line: #{tone($mode, line)};
+	--as-line-strong: #{tone($mode, line-strong)};
+	--as-hover: #{tone($mode, hover)};
+	--as-press: #{tone($mode, press)};
+	--as-gain: #{tone($mode, gain)};
+	--as-penalty: #{tone($mode, penalty)};
+	--as-disc: #{tone($mode, disc)};
+	--as-disc-line: #{tone($mode, disc-line)};
+	--as-watched: #{tone($mode, watched)};
 	--as-faint: #{tone($mode, faint)};
 	--as-ink-soft: #{tone($mode, ink-soft)};
 	--as-accent-ink: #{tone($mode, accent-ink)};
@@ -74,6 +100,49 @@ $palettes: (
 	--as-border-color-rgb: #{channels(tone($mode, border-color))};
 	--as-overlay-rgb: #{channels(tone($mode, overlay))};
 	--as-wordmark-ink: #{tone($mode, wordmark-ink)};
+	color-scheme: #{$mode};
+}
+
+// Everything that doesn't change with the mode: the accent, the type scale, space and radii.
+@mixin scale-tokens {
+	--as-accent: #f75c03;
+	--as-accent-hover: #ff6a14;
+	--as-accent-press: #d94f02;
+	--as-on-accent: #0e1013;
+	--as-focus: rgba(247, 92, 3, 0.5);
+
+	--as-font: 'Inter', system-ui, -apple-system, sans-serif;
+	--as-text-2xs: 10px;
+	--as-text-xs: 11px;
+	--as-text-sm: 13px;
+	--as-text-md: 15px;
+	--as-text-lg: 20px;
+	--as-text-xl: 28px;
+	--as-text-2xl: 44px;
+	--as-leading-xs: 16px;
+	--as-leading-sm: 20px;
+	--as-leading-md: 24px;
+	--as-weight-regular: 400;
+	--as-weight-medium: 500;
+	--as-weight-semibold: 600;
+	--as-weight-bold: 650;
+	--as-tracking-tight: -0.03em;
+	--as-tracking-display: -0.04em;
+
+	--as-space-1: 4px;
+	--as-space-2: 8px;
+	--as-space-3: 12px;
+	--as-space-4: 16px;
+	--as-space-5: 20px;
+	--as-space-6: 24px;
+	--as-space-8: 32px;
+	--as-space-10: 40px;
+	--as-space-12: 48px;
+	--as-space-16: 64px;
+
+	--as-radius-sm: 8px;
+	--as-radius-md: 14px;
+	--as-radius-lg: 20px;
 }
 
 @mixin bootstrap-tokens($mode) {
@@ -95,6 +164,8 @@ $palettes: (
 	--as-link-color-rgb: #{channels(tone($mode, link-color))};
 	--as-link-hover-color: #{tone($mode, link-hover-color)};
 	--as-link-hover-color-rgb: #{channels(tone($mode, link-hover-color))};
+	--as-emphasis-color: #{tone($mode, body-color)};
+	--as-emphasis-color-rgb: #{channels(tone($mode, body-color))};
 }
 
 @mixin color-mode($mode) {

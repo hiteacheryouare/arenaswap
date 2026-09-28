@@ -1,23 +1,26 @@
 /* ─── ArenaSwap shared Tailwind v4 theme tokens ──────────────────────────────
    @import this after @import 'tailwindcss' in each app's Tailwind entry file.
-   These tokens mirror the Bootstrap variables in _bootstrap.scss, so both styling
-   systems stay in sync from a single source.
+   The values are the v3 dark palette in _theme.scss, so a Tailwind utility and a Bootstrap rule
+   land on the same colour.
 
    `static` because the docs SCSS reads several of these through var(), which Tailwind's
    usage scan does not see. Without it the unreferenced ones are pruned and those var()
    calls resolve to nothing. */
 
 @theme static {
-	--color-bg:        #0d1117;
-	--color-card:      #161b22;
-	--color-border:    #30363d;
+	--color-bg:        #0e1013;
+	--color-card:      #1a1d22;
+	--color-raised:    #22262d;
+	--color-border:    rgba(243, 245, 247, 0.08);
+	--color-border-strong: rgba(243, 245, 247, 0.16);
 	--color-primary:   #F75C03;
 	--color-secondary: #3E9BD1;
-	--color-text:      #e6edf3;
-	--color-muted:     #8b949e;
+	--color-text:      #f3f5f7;
+	--color-muted:     #8c95a1;
+	--color-faint:     #6f7884;
 	--color-success:   #00CC66;
 	--color-danger:    #D90368;
 	--color-warning:   #F1C40F;
-	--font-sans:       'DM Sans', system-ui, sans-serif;
-	--font-mono:       'Lekton', 'Courier New', monospace;
+	--font-sans:       'Inter', system-ui, -apple-system, sans-serif;
+	--font-mono:       ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace;
 }

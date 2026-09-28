@@ -24,7 +24,7 @@
 	$success:              #00CC66 !default,
 	$warning:              #F1C40F !default,
 	$danger:               #D90368 !default,
-	$dark:                 #0d1117 !default,
+	$dark:                 #0e1013 !default,
 	$body-bg:              theme.tone(dark, body-bg) !default,
 	$body-color:           theme.tone(dark, body-color) !default,
 	$body-secondary-color: theme.tone(dark, secondary-color) !default,
@@ -44,7 +44,7 @@
 	// $progress-bg is var(--as-secondary-bg), and the two progress bars we draw — the game card's
 	// PowerScore bar and the breakdown's signal bars — both sit on light cards. Pinned to the value
 	// they have always had so the token move above leaves them byte-identical.
-	$progress-bg:          #e9ecef !default,
+	$progress-bg:          var(--as-raised) !default,
 	$border-color:         theme.tone(dark, border-color) !default,
 	// Tokens rather than hexes from here down, so the light palette reaches them.
 	$card-bg:              var(--as-tertiary-bg) !default,
@@ -58,7 +58,7 @@
 	$form-select-border-color: var(--as-border-color) !default,
 	// Parenthesised because a bare comma list inside a `with (...)` argument list would read as
 	// four separate arguments.
-	$font-family-base:     ('DM Sans', system-ui, -apple-system, sans-serif) !default,
+	$font-family-base:     ('Inter', system-ui, -apple-system, sans-serif) !default,
 	// There is deliberately no monospace token here. This file used to set `$font-monospace`, which
 	// is not a Bootstrap variable — Bootstrap's is `$font-family-monospace` — and which nothing read,
 	// so Lekton is spelled out literally at each of its ~20 call sites and Bootstrap's code/pre/kbd
@@ -66,7 +66,13 @@
 	// not smuggled in here.
 	// Bootstrap picks a filled button's label with color-contrast(); the lighter $secondary now
 	// resolves to the dark side, and this keeps that side on-theme instead of pure black.
-	$color-contrast-dark:  #0d1117 !default,
+	$color-contrast-dark:  #0e1013 !default,
+	$min-contrast-ratio:   4.5 !default,
+	$border-radius:        8px !default,
+	$border-radius-sm:     8px !default,
+	$border-radius-lg:     14px !default,
+	$border-radius-xl:     20px !default,
+	$btn-font-weight:      600 !default,
 	// Bootstrap's own motion, brought onto our scale. Without these a Bootstrap button, dropdown,
 	// accordion or offcanvas keeps animating on the framework's defaults — .15s and .2s and .3s on
 	// `ease-in-out` — while the component sitting next to it, which we wrote, is on 180ms and our
@@ -112,6 +118,7 @@ $secondary-on-light:   #2274A5;
 $score-loser-color:    #7c8794;
 
 :root {
+	@include theme.scale-tokens;
 	@include theme.arenaswap-tokens(dark);
 }
 

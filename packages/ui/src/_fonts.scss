@@ -23,20 +23,18 @@ $font-base-url: '/fonts' !default;
 	}
 }
 
-// One file for all four weights. DM Sans ships as a variable font with a wght axis from 100 to
-// 1000, and a single font-weight descriptor pins that axis rather than leaving the browser to
-// synthesize — so these are four real weights out of one download, not one weight and three
-// smears. The four were separate files until 2026-09-11 and were byte-identical to each other.
-@include as-woff2-face('DM Sans', 'DMSans', 400);
-@include as-woff2-face('DM Sans', 'DMSans', 500);
-@include as-woff2-face('DM Sans', 'DMSans', 600);
-@include as-woff2-face('DM Sans', 'DMSans', 700);
+// Inter carries all of ArenaSwap's type. It is a variable font with a weight and an optical-size
+// axis, so one file answers every weight and size between 100 and 900.
+@font-face {
+	font-family: 'Inter';
+	src: url('#{$font-base-url}/Inter.woff2') format('woff2');
+	font-weight: 100 900;
+	font-style: normal;
+	font-display: swap;
+}
+
 // Only for the Lattice & Company parent lockup, never for ArenaSwap's own type.
 @include as-woff2-face('DM Serif Text', 'DMSerifText-Regular', 400);
+// Only for Ludicrous Speed's cockpit readouts and the debug panel.
 @include as-woff2-face('Lekton', 'Lekton-Regular',   400);
 @include as-woff2-face('Lekton', 'Lekton-Bold',      700);
-// Scoreboard figures only — see the scoreboard-figures mixin in _game-card.scss.
-// DM Sans ships no tabular figures, Geist does.
-// SemiBold carries the detail view's sticky bar, where Bold at 1rem shouts.
-@include as-woff2-face('Geist', 'Geist-SemiBold', 600);
-@include as-woff2-face('Geist', 'Geist-Bold', 700);

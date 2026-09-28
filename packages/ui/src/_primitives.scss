@@ -1,0 +1,276 @@
+// Bootstrap, re-skinned onto the v3 tokens. Both apps load this after the theme, so a component
+// only restyles itself where these mappings can't say it.
+@use 'motion' as m;
+
+body {
+	background: var(--as-page);
+	color: var(--as-ink);
+	font-family: var(--as-font);
+	font-optical-sizing: auto;
+	font-feature-settings: 'cv11';
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	--as-focus-ring-color: var(--as-focus);
+}
+
+.num {
+	font-variant-numeric: tabular-nums;
+	font-feature-settings: 'tnum', 'cv11';
+}
+
+:focus-visible {
+	outline: 2px solid var(--as-accent);
+	outline-offset: 2px;
+}
+
+.btn {
+	--as-btn-font-weight: var(--as-weight-semibold);
+	--as-btn-border-radius: var(--as-radius-sm);
+	--as-btn-focus-box-shadow: 0 0 0 3px var(--as-focus);
+	transition: color m.$motion-quick m.$motion-ease, background-color m.$motion-quick m.$motion-ease, border-color m.$motion-quick m.$motion-ease, box-shadow m.$motion-quick m.$motion-ease, transform m.$motion-snap m.$motion-ease;
+
+	&:active {
+		transform: scale(0.98);
+	}
+}
+
+.btn-primary {
+	--as-btn-bg: var(--as-accent);
+	--as-btn-border-color: var(--as-accent);
+	--as-btn-color: var(--as-on-accent);
+	--as-btn-hover-bg: var(--as-accent-hover);
+	--as-btn-hover-border-color: var(--as-accent-hover);
+	--as-btn-hover-color: var(--as-on-accent);
+	--as-btn-active-bg: var(--as-accent-press);
+	--as-btn-active-border-color: var(--as-accent-press);
+	--as-btn-active-color: var(--as-on-accent);
+	--as-btn-disabled-bg: var(--as-accent);
+	--as-btn-disabled-border-color: var(--as-accent);
+	--as-btn-disabled-color: var(--as-on-accent);
+}
+
+.btn-quiet {
+	--as-btn-color: var(--as-ink);
+	--as-btn-bg: var(--as-surface);
+	--as-btn-border-color: var(--as-line);
+	--as-btn-hover-color: var(--as-ink);
+	--as-btn-hover-bg: var(--as-raised);
+	--as-btn-hover-border-color: var(--as-line-strong);
+	--as-btn-active-color: var(--as-ink);
+	--as-btn-active-bg: var(--as-raised);
+	--as-btn-active-border-color: var(--as-line-strong);
+	--as-btn-disabled-color: var(--as-muted);
+	--as-btn-disabled-bg: var(--as-surface);
+	--as-btn-disabled-border-color: var(--as-line);
+}
+
+.form-check-input {
+	background-color: var(--as-line-strong);
+	border-color: transparent;
+
+	&:checked {
+		background-color: var(--as-accent);
+		border-color: var(--as-accent);
+	}
+
+	&:focus {
+		border-color: transparent;
+		box-shadow: 0 0 0 3px var(--as-focus);
+	}
+}
+
+.form-check-input[type='checkbox']:not(:checked):not([role='switch']) {
+	background-color: var(--as-surface);
+	border-color: var(--as-line-strong);
+}
+
+.form-switch .form-check-input {
+	--as-form-switch-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23fff'/%3e%3c/svg%3e");
+	width: 36px;
+	height: 20px;
+	margin-top: 0;
+	cursor: pointer;
+
+	&:focus {
+		--as-form-switch-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23fff'/%3e%3c/svg%3e");
+	}
+}
+
+.form-control,
+.form-select {
+	background-color: var(--as-surface);
+	border-color: var(--as-line);
+	color: var(--as-ink);
+	border-radius: var(--as-radius-sm);
+
+	&::placeholder {
+		color: var(--as-muted);
+	}
+
+	&:focus {
+		background-color: var(--as-surface);
+		color: var(--as-ink);
+		border-color: transparent;
+		box-shadow: 0 0 0 3px var(--as-focus);
+	}
+
+	&:disabled {
+		background-color: var(--as-surface);
+		color: var(--as-muted);
+		opacity: 1;
+	}
+}
+
+// Bootstrap draws the select chevron as an image in a fixed grey, so each mode gets its own in the
+// muted ink.
+.form-select {
+	--as-form-select-bg-img: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%238c95a1' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+}
+
+[data-bs-theme='light'] .form-select {
+	--as-form-select-bg-img: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%235a6370' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+}
+
+.nav-underline {
+	--as-nav-link-color: var(--as-muted);
+	--as-nav-link-hover-color: var(--as-ink);
+	--as-nav-underline-link-active-color: var(--as-ink);
+	--as-nav-underline-border-width: 2px;
+	--as-nav-link-font-size: var(--as-text-sm);
+	--as-nav-link-font-weight: var(--as-weight-semibold);
+	--as-nav-underline-gap: var(--as-space-4);
+
+	.nav-link.active,
+	.show > .nav-link {
+		border-bottom-color: var(--as-accent);
+		font-weight: var(--as-weight-semibold);
+	}
+}
+
+.progress {
+	--as-progress-bg: var(--as-raised);
+	--as-progress-bar-bg: var(--as-accent);
+	--as-progress-border-radius: 2px;
+}
+
+.form-range {
+	height: 20px;
+
+	&::-webkit-slider-runnable-track {
+		height: 4px;
+		border-radius: 2px;
+		background: var(--as-line-strong);
+	}
+
+	&::-webkit-slider-thumb {
+		width: 16px;
+		height: 16px;
+		margin-top: -6px;
+		border: 0;
+		border-radius: 50%;
+		background: var(--as-accent);
+		box-shadow: 0 0 0 3px var(--as-surface);
+		transition: transform m.$motion-quick m.$motion-ease, box-shadow m.$motion-quick m.$motion-ease;
+	}
+
+	&:active::-webkit-slider-thumb {
+		transform: scale(1.15);
+	}
+
+	&:focus::-webkit-slider-thumb {
+		box-shadow: 0 0 0 3px var(--as-surface), 0 0 0 6px var(--as-focus);
+	}
+
+	&::-moz-range-track {
+		height: 4px;
+		border-radius: 2px;
+		background: var(--as-line-strong);
+	}
+
+	&::-moz-range-thumb {
+		width: 16px;
+		height: 16px;
+		border: 0;
+		border-radius: 50%;
+		background: var(--as-accent);
+	}
+
+	&:disabled::-webkit-slider-thumb {
+		background: var(--as-muted);
+	}
+}
+
+.dropdown-menu {
+	--as-dropdown-bg: var(--as-raised);
+	--as-dropdown-color: var(--as-ink);
+	--as-dropdown-border-color: var(--as-line-strong);
+	--as-dropdown-border-radius: var(--as-radius-sm);
+	--as-dropdown-link-color: var(--as-ink);
+	--as-dropdown-link-hover-color: var(--as-ink);
+	--as-dropdown-link-hover-bg: var(--as-hover);
+	--as-dropdown-link-active-color: var(--as-ink);
+	--as-dropdown-link-active-bg: var(--as-press);
+	--as-dropdown-link-disabled-color: var(--as-muted);
+	--as-dropdown-divider-bg: var(--as-line);
+	--as-dropdown-font-size: var(--as-text-sm);
+	--as-dropdown-padding-y: var(--as-space-1);
+	--as-dropdown-item-padding-y: 6px;
+	--as-dropdown-item-padding-x: var(--as-space-3);
+	box-shadow: 0 12px 32px -12px rgba(0, 0, 0, 0.45);
+
+	.dropdown-item {
+		border-radius: 6px;
+		margin: 0 var(--as-space-1);
+		width: calc(100% - var(--as-space-2));
+	}
+}
+
+.tooltip {
+	--as-tooltip-bg: var(--as-raised);
+	--as-tooltip-color: var(--as-ink);
+	--as-tooltip-font-size: var(--as-text-xs);
+	--as-tooltip-border-radius: 6px;
+	--as-tooltip-padding-x: var(--as-space-2);
+	--as-tooltip-padding-y: 6px;
+	--as-tooltip-opacity: 1;
+
+	.tooltip-inner {
+		box-shadow: 0 0 0 1px var(--as-line-strong), 0 8px 24px -8px rgba(0, 0, 0, 0.4);
+		text-align: left;
+	}
+}
+
+.table {
+	--as-table-color: var(--as-ink);
+	--as-table-bg: transparent;
+	--as-table-border-color: var(--as-line);
+	--as-table-striped-color: var(--as-ink);
+	--as-table-striped-bg: var(--as-hover);
+	--as-table-hover-color: var(--as-ink);
+	--as-table-hover-bg: var(--as-hover);
+	--as-table-active-color: var(--as-ink);
+	--as-table-active-bg: var(--as-press);
+}
+
+.alert {
+	--as-alert-border-radius: var(--as-radius-md);
+}
+
+.card {
+	--as-card-bg: var(--as-surface);
+	--as-card-border-color: var(--as-line);
+	--as-card-border-radius: var(--as-radius-md);
+	--as-card-inner-border-radius: calc(var(--as-radius-md) - 1px);
+	--as-card-cap-bg: transparent;
+	--as-card-color: var(--as-ink);
+}
+
+@include m.reduced-motion {
+	.btn:active {
+		transform: none;
+	}
+
+	.form-range:active::-webkit-slider-thumb {
+		transform: none;
+	}
+}
