@@ -74,8 +74,7 @@
 			"teamStrip": "支援 {leagues} 個聯盟裡的每一支球隊，當然也包括你支持的那一支。",
 			"captionSwitched": "ArenaSwap 已經把你從 {from} 切換到 {to}。",
 			"captionWatching": "你正在觀看 {game}，目前最值得看的比賽。",
-			"replay": "播放示範",
-			"tabLabel": "分頁 {number}：{host}"
+			"replay": "播放示範"
 		},
 		"tabs": {
 			"titleLine1": "只要設定一次。",
@@ -331,7 +330,6 @@
 		"liveHeading": "即時 PowerScore",
 		"liveLoading": "正在載入即時 PowerScore",
 		"liveError": "目前無法載入即時比賽資料。",
-		"liveNow": "直播中",
 		"machineHeading": "看看它怎麼運作。",
 		"machineSub": "ArenaSwap 會即時為每場直播比賽評分，然後把你的分頁切換到最精彩的那場。它的運作方式就是這樣。",
 		"machineWatch": "監控",
@@ -343,7 +341,6 @@
 		"liveLoadingCopy": "正在取得直播比賽並計算 PowerScore。",
 		"liveEmptyTitle": "目前沒有直播比賽",
 		"liveEmptyCopy": "當比賽開始直播時，這個區塊會自動重新整理，並顯示所有支援聯盟的即時 PowerScore。",
-		"liveScoreBadge": "PowerScore {score} / 100",
 		"machineAlt": "ArenaSwap 正在監控並為每場直播比賽評分",
 		"machineNowWatching": "正在觀看",
 		"machineNowOn": "在 {service}",
@@ -365,20 +362,22 @@
 		"gameCard": {
 			"live": "直播",
 			"powerScore": "PowerScore",
-			"watchLabel": "觀看：",
 			"oddsProvidedBy": "賠率提供：",
 			"favorited": "已收藏",
 			"addToFavoritesShort": "加入收藏",
 			"addToFavorites": "將 {team} 加入收藏",
 			"removeFromFavorites": "將 {team} 從收藏移除",
 			"openDetails": "查看 {away} 對 {home} 的比賽詳情",
-			"delay": "延誤",
 			"delayFallback": "延誤",
 			"vs": "vs",
 			"topOfInning": "上半局",
 			"bottomOfInning": "下半局",
 			"shootout": "PENS {away}–{home}",
-			"downDistanceAt": "{fieldPosition} {downDistance}"
+			"downDistanceAt": "{fieldPosition} {downDistance}",
+			"final": "終場",
+			"teamRank": "排名第{rank}",
+			"timeoutsRemaining": "{team}：還剩 {count} 次暫停",
+			"timeoutsShort": "{count} TO"
 		},
 		"field": {
 			"possession": "{team}持球進攻",
@@ -387,20 +386,19 @@
 		"main": {
 			"tourButton": "導覽",
 			"settingsButton": "設定",
-			"sectionActiveLiveTabs": "活躍分頁",
-			"sectionOtherLiveGames": "直播比賽",
 			"sectionUpNext": "即將開賽",
 			"enableToggleLabel": "啟用自動切換",
-			"onStandbyStream": "目前在 Standby Stream，等待精彩時刻"
-		},
-		"tabAssign": {
-			"placeholder": "— 指派分頁 —"
+			"onStandbyStream": "目前在 Standby Stream，等待精彩時刻",
+			"guideButton": "節目表"
 		},
 		"detail": {
 			"chartPowerScoreTitle": "PowerScore 走勢",
 			"chartScoreTitle": "比分走勢",
 			"chartWinProbTitle": "勝率",
-			"chartComponentsTitle": "PowerScore 各分項走勢"
+			"chartComponentsTitle": "PowerScore 各分項走勢",
+			"startsSoon": "即將開始",
+			"halftime": "中場休息",
+			"intermission": "節間休息"
 		},
 		"setup": {
 			"groupSwitching": "切換",
@@ -437,6 +435,26 @@
 			"balls": "B",
 			"strikes": "S",
 			"outs": "O"
+		},
+		"board": {
+			"at": "vs",
+			"steady": "持平",
+			"trendUp": "過去一分鐘上升",
+			"trendDown": "過去一分鐘下降",
+			"tab": "分頁 {number}",
+			"assignTab": "指派分頁",
+			"noTab": "無分頁",
+			"watching": "觀看中，{tab}",
+			"switchingTo": "切換到 {tab}",
+			"watchOn": "在 {networks} 觀看",
+			"inMinutes": {
+				"1": "1 分鐘後",
+				"n": "$1 分鐘後"
+			},
+			"inHours": {
+				"1": "1 小時後",
+				"n": "$1 小時後"
+			}
 		}
 	}
 }

@@ -74,8 +74,7 @@
 			"teamStrip": "Gumagana ito sa bawat team sa {leagues} liga. Kasama na ang sa'yo.",
 			"captionSwitched": "Nilipat ka ng ArenaSwap mula sa {from} papunta sa {to}.",
 			"captionWatching": "Pinapanood mo ngayon ang {game}, ang pinakamagandang laro sa board.",
-			"replay": "I-play ang demo",
-			"tabLabel": "Tab {number}: {host}"
+			"replay": "I-play ang demo"
 		},
 		"tabs": {
 			"titleLine1": "I-set once lang.",
@@ -331,7 +330,6 @@
 		"liveHeading": "Live na PowerScore",
 		"liveLoading": "Nilo-load ang live na PowerScore",
 		"liveError": "Hindi ma-load ang live game data sa ngayon.",
-		"liveNow": "Live",
 		"machineHeading": "Panoorin itong gumana.",
 		"machineSub": "Nagbibigay ng score ang ArenaSwap sa bawat live na laro habang nangyayari ito — tapos ilalagay ang tab mo sa pinakamaganda. Ganito ito ka-magmukha.",
 		"machineWatch": "Panoorin",
@@ -343,7 +341,6 @@
 		"liveLoadingCopy": "Kinukuha ang mga live na laro at kinakalkula ang PowerScore ngayon.",
 		"liveEmptyTitle": "Walang live na laro sa ngayon",
 		"liveEmptyCopy": "Kapag naging live na ang mga laro, awtomatikong mag-re-refresh ang section na ito at magpapakita ng real-time na PowerScore mula sa lahat ng suportadong liga.",
-		"liveScoreBadge": "PowerScore {score} / 100",
 		"machineAlt": "Ang ArenaSwap habang nanonood at nagbibigay ng score sa bawat live na laro",
 		"machineNowWatching": "Pinapanood ngayon",
 		"machineNowOn": "sa {service}",
@@ -365,20 +362,22 @@
 		"gameCard": {
 			"live": "LIVE",
 			"powerScore": "PowerScore",
-			"watchLabel": "Panoorin:",
 			"oddsProvidedBy": "Odds mula sa:",
 			"favorited": "Paborito na",
 			"addToFavoritesShort": "Idagdag sa paborito",
 			"addToFavorites": "Idagdag ang {team} sa paborito",
 			"removeFromFavorites": "Alisin ang {team} sa paborito",
 			"openDetails": "Buksan ang detalye ng {away} vs {home}",
-			"delay": "DELAY",
 			"delayFallback": "Delay",
 			"vs": "vs",
 			"topOfInning": "Top of inning",
 			"bottomOfInning": "Bottom of inning",
 			"shootout": "PENS {away}–{home}",
-			"downDistanceAt": "{downDistance} sa {fieldPosition}"
+			"downDistanceAt": "{downDistance} sa {fieldPosition}",
+			"final": "Final",
+			"teamRank": "Ranked #{rank}",
+			"timeoutsRemaining": "{team}: {count} na timeout na lang ang natitira",
+			"timeoutsShort": "{count} TO"
 		},
 		"field": {
 			"possession": "Nasa {team} ang bola",
@@ -387,20 +386,19 @@
 		"main": {
 			"tourButton": "Tour",
 			"settingsButton": "Mga Setting",
-			"sectionActiveLiveTabs": "Mga Aktibong Tab",
-			"sectionOtherLiveGames": "Mga Live na Laro",
 			"sectionUpNext": "Susunod",
 			"enableToggleLabel": "I-enable ang awtomatikong paglipat",
-			"onStandbyStream": "Naka-Standby Stream, naghihintay ng aksyon"
-		},
-		"tabAssign": {
-			"placeholder": "— Mag-assign ng tab —"
+			"onStandbyStream": "Naka-Standby Stream, naghihintay ng aksyon",
+			"guideButton": "Guide"
 		},
 		"detail": {
 			"chartPowerScoreTitle": "Pag-usad ng PowerScore",
 			"chartScoreTitle": "Pag-usad ng Score ng Laro",
 			"chartWinProbTitle": "Posibilidad ng Panalo",
-			"chartComponentsTitle": "Pag-usad ng mga Bahagi ng PowerScore"
+			"chartComponentsTitle": "Pag-usad ng mga Bahagi ng PowerScore",
+			"startsSoon": "Magsisimula na",
+			"halftime": "Halftime",
+			"intermission": "Pahinga"
 		},
 		"setup": {
 			"groupSwitching": "Paglipat",
@@ -437,6 +435,26 @@
 			"balls": "B",
 			"strikes": "S",
 			"outs": "O"
+		},
+		"board": {
+			"at": "vs",
+			"steady": "Stable",
+			"trendUp": "tumaas sa huling minuto",
+			"trendDown": "bumaba sa huling minuto",
+			"tab": "Tab {number}",
+			"assignTab": "Mag-assign ng tab",
+			"noTab": "Walang tab",
+			"watching": "Watching, {tab}",
+			"switchingTo": "Lumilipat sa {tab}",
+			"watchOn": "Panoorin sa {networks}",
+			"inMinutes": {
+				"1": "sa 1 min",
+				"n": "sa $1 min"
+			},
+			"inHours": {
+				"1": "sa 1 oras",
+				"n": "sa $1 na oras"
+			}
 		}
 	}
 }

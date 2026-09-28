@@ -220,14 +220,14 @@
 		"holidaySnow": "Niyebe",
 		"holidayLights": "Ilaw",
 		"holidayLeaves": "Dahon",
-		"signalsSection": "PowerScore Signals",
+		"signalsSection": "PowerScore signals",
 		"signalsExplainer": "Hindi kasama sa scoring ang mga naka-disable na signal. Ina-adjust ulit ang mga score para manatili sa tamang range.",
 		"signalLastActive": "Dapat may kahit isang signal na naka-active",
 		"leaguesExplainer": "Ang mga napiling liga lang ang tine-track at isinasaalang-alang para sa awtomatikong paglipat ng tab.",
 		"selectNone": "wala",
 		"selectAll": "lahat",
 		"noLeaguesWarning": "Walang napiling liga. Hindi makaka-track ang ArenaSwap ng kahit anong laro.",
-		"leagueOrderSection": "Ayos ng Display",
+		"leagueOrderSection": "Ayos ng display",
 		"leagueOrderExplainer": "Ganito lalabas ang mga seksyon ng liga sa main screen. I-drag ang isang liga, o gamitin ang mga arrow para iayos.",
 		"leagueOrderReset": "I-reset sa default na ayos",
 		"leagueMoveUp": "Itaas ang {label}",
@@ -249,6 +249,26 @@
 		"groupDemo": "Demo Mode",
 		"groupDemoDesc": "Mga scripted na laro, para mapanood mo kung paano nangyayari ang paglipat kahit kailan mo gusto.",
 		"bonusesSection": "Mga Bonus",
+		"groupTiming": "Timing",
+		"groupExtras": "Extras",
+		"back": "Bumalik",
+		"signalsCount": {
+			"1": "1 signal",
+			"n": "$1 na signal"
+		},
+		"teamsCount": {
+			"0": "Wala",
+			"1": "1 team",
+			"n": "$1 na team"
+		},
+		"leaguesCount": {
+			"0": "Wala",
+			"1": "1 On",
+			"n": "$1 On"
+		},
+		"themeSystemShort": "System",
+		"stateOn": "On",
+		"stateOff": "Off",
 		"searchPlaceholder": "Maghanap sa mga setting",
 		"searchNoResults": "Walang setting na tumutugma sa \"{query}\"",
 		"keywordsSensitivity": "gap, threshold, sabik, aggressive, trigger, ludicrous, sensitivity",
@@ -295,8 +315,6 @@
 		"settingsButton": "Mga Setting",
 		"guideButton": "Guide",
 		"onStandbyStream": "Naka-Standby Stream, naghihintay ng aksyon",
-		"sectionActiveLiveTabs": "Mga Aktibong Tab",
-		"sectionOtherLiveGames": "Mga Live na Laro",
 		"sectionUpNext": "Susunod",
 		"sectionFinal": "Mga Tapos Na",
 		"upcomingDayNavLabel": "Mga paparating na laro ayon sa araw",
@@ -314,8 +332,7 @@
 			"1": "1 paborito",
 			"n": "$1 na paborito"
 		},
-		"favoriteGame": "Isa sa mga paborito mong team",
-		"at": "vs"
+		"favoriteGame": "Isa sa mga paborito mong team"
 	},
 	"detail": {
 		"legendCloseness": "Kalapitan",
@@ -326,12 +343,14 @@
 		"tabOverview": "Overview",
 		"tabStandings": "Standings",
 		"startsSoon": "Magsisimula na",
-		"final": "Final",
+		"startsIn": "Magsisimula sa {time}",
+		"startsInOn": "Magsisimula sa {time} sa {networks}",
+		"liveTabExplainer": "Puwede lang lumipat ang ArenaSwap sa mga larong may tab.",
+		"sourcesFootnote": "Live mula sa aming mga source, na laging may magandang upuan.",
 		"totalLabel": "{total} / {max}",
 		"totalLabelBaseMax": "{total} (max na base {max})",
 		"back": "Bumalik",
 		"close": "Isara",
-		"teamRecord": "Record: {record}",
 		"unitDays": "d",
 		"unitHours": "h",
 		"unitMinutes": "m",
@@ -505,12 +524,10 @@
 		"addToFavorites": "Idagdag ang {team} sa paborito",
 		"favorited": "Paborito na",
 		"addToFavoritesShort": "Idagdag sa paborito",
-		"watchLabel": "Panoorin:",
 		"oddsProvidedBy": "Odds mula sa:",
 		"openDetails": "Buksan ang detalye ng {away} vs {home}",
 		"live": "LIVE",
 		"final": "Final",
-		"delay": "DELAY",
 		"delayFallback": "Delay",
 		"shootout": "PENS {away}–{home}",
 		"downDistanceAt": "{downDistance} sa {fieldPosition}",
@@ -528,7 +545,9 @@
 	},
 	"gameBoost": {
 		"heading": "Boost ng Laro",
-		"explainer": "Magdagdag ng points sa PowerScore ng larong ito para itaas ang prayoridad nito."
+		"explainer": "Magdagdag ng points sa PowerScore ng larong ito para itaas ang prayoridad nito.",
+		"decrease": "Bawasan ng 1 point",
+		"increase": "Dagdagan ng 1 point"
 	},
 	"powerScore": {
 		"heading": "Breakdown ng PowerScore",
@@ -582,6 +601,11 @@
 		"back": "Bumalik",
 		"step": "Step $1 ng $2",
 		"title": "Anong mga sports ang pinapanood mo?",
+		"lede": "Pumili ng gusto mo, kahit ilan. Puwede mo pa itong baguhin sa Mga Setting mamaya.",
+		"count": {
+			"1": "1 liga",
+			"n": "$1 na liga"
+		},
 		"all": "Lahat",
 		"next": "Susunod"
 	},
@@ -591,7 +615,7 @@
 		"title": "Piliin ang mga Team Mo",
 		"explainer": "May scoring bonus ang mga paborito para mas paboran sila ng ArenaSwap.",
 		"yourFavorites": "Mga Paborito Mo",
-		"leagueNotTracked": "{league} · hindi tine-track",
+		"leagueNotTracked": "{league}, hindi tine-track",
 		"searchPlaceholder": "Maghanap ng team…",
 		"loading": "Nilo-load ang mga team…",
 		"loadError": "Hindi na-load ang mga team.",
@@ -600,6 +624,10 @@
 		"removeFavorite": "Alisin ang {team} sa paborito",
 		"addFavorite": "Idagdag ang {team} sa paborito",
 		"noMatch": "Walang team na tumutugma sa \"{query}\"",
+		"count": {
+			"1": "1 team",
+			"n": "$1 na team"
+		},
 		"skip": "Laktawan",
 		"done": "Tapos na"
 	},
@@ -625,8 +653,8 @@
 		"title": "Pag-on at Pag-off",
 		"subtitle": "Iisang switch ang kumokontrol sa lahat.",
 		"tryIt": "↑ subukan mo",
-		"statusActive": "● Active ang ArenaSwap",
-		"statusPaused": "○ Naka-pause ang Auto-switching",
+		"stateOn": "Active ang ArenaSwap",
+		"stateOff": "Naka-pause ang awtomatikong paglipat",
 		"bodyBeforeOn": "Kapag ",
 		"bodyOn": "naka-on",
 		"bodyAfterOn": ", awtomatikong nililipat ng ArenaSwap ang mga tab mo papunta sa pinaka-exciting na live na laro. I-toggle ito off kahit kailan para bawiin ang kontrol.",
@@ -642,24 +670,13 @@
 		"progressAriaLabel": "Progress ng Tour",
 		"introBody": "Dynamic na sinusuri ng PowerScore ang bawat live na laro para mahanap ang pinaka-exciting na aksyon. Tingnan natin kung ano ang laman ng formula!",
 		"introButton": "Tuklasin ang Formula",
-		"closenessMeasured": "Sinusukat ayon sa point difference, na tinitimbang batay sa progress ng laro.",
-		"lateGameMeasured": "Sinusukat ayon sa period, natitirang oras, at score margin.",
-		"momentumMeasured": "Sinusukat ayon sa rolling net scoring spikes, na humihina sa paglipas ng oras.",
-		"leadChangesMeasured": "Sinusukat ayon sa bilang ng lead flips sa history window.",
-		"comebackMeasured": "Sinusukat ayon sa pagbawas ng margin sa history window.",
 		"boostsHeading": "Mga Boost at Penalty",
 		"boostsSubtitle": "Mga Adjustment na Nag-fine-tune sa Score",
 		"clockStallPenaltyName": "Penalty sa Naka-stall na Clock",
-		"clockStallPenaltyMeasured": "Inilalapat kapag nag-freeze ang game clock sa ilang updates, binabawasan ang subtotal ng signal.",
 		"volatilityName": "Volatility Boost / Penalty",
-		"volatilityMeasured": "Nagbibigay ng boost sa mga larong ang win probability ay malapit sa 50%, pinaparusahan ang mga steady blowout.",
 		"favoriteBoostName": "Boost ng Paborito",
-		"favoriteBoostMeasured": "Naidadagdag kapag kasama sa matchup ang isa sa mga naka-save mong paboritong team.",
 		"gameBoostName": "Boost ng Laro",
-		"gameBoostMeasured": "Mga points na manual mong inilapat para pansamantalang unahin ang isang partikular na laro.",
-		"scoringOpportunityMeasured": "Awtomatikong naidadagdag para sa red zone drives (football) o runners sa base (baseball/softball).",
 		"postseasonBoostName": "Boost sa Postseason",
-		"postseasonBoostMeasured": "Isang flat bonus na inilalapat sa playoff, conference final, at championship games.",
 		"back": "Bumalik",
 		"next": "Susunod",
 		"tapHint": "I-tap kahit saan para magpatuloy"
@@ -668,7 +685,6 @@
 		"step": "Step $1 ng $2",
 		"title": "I-assign ang mga Tab sa mga Laro",
 		"subtitle": "Hihipuin lang ng ArenaSwap ang mga tab na ire-register mo.",
-		"assignPlaceholder": "— Mag-assign ng tab —",
 		"linkHint": "↑ i-link ang isang browser tab dito",
 		"body": "Buksan ang bawat stream sa sarili nitong browser tab, tapos gamitin ang dropdown sa game card para i-link sila. Lilipat lang ang ArenaSwap sa mga tab na na-assign mo.",
 		"back": "Bumalik",
@@ -681,8 +697,7 @@
 		"reveal": "Nakita mo ba 'yon? 👀",
 		"revealBody": "Uminit ang laro ng 76ers (PowerScore 89). Na-detect ito ng ArenaSwap at awtomatikong lumipat. Walang kailangang i-click.",
 		"back": "Bumalik",
-		"next": "Susunod",
-		"watchingBadge": "WATCHING"
+		"next": "Susunod"
 	},
 	"stepSettings": {
 		"step": "Step $1 ng $2",
@@ -791,7 +806,6 @@
 		"switchedMessageWithReason": "{reason}. Dinadala ka na sa {venue}!"
 	},
 	"tabAssign": {
-		"placeholder": "— Mag-assign ng tab —",
 		"inUse": " (ginagamit na)"
 	},
 	"suggest": {
@@ -803,7 +817,7 @@
 		"bannerAction": "Tingnan",
 		"bannerDismiss": "I-dismiss ang mga mungkahi",
 		"header": "Mga Iminumungkahing Tab",
-		"lede": "Alisan ng check ang mali naming na-detect. Ang dropdown sa bawat card ang may huling say pa rin.",
+		"lede": "Alisan ng check ang mali naming na-detect. Puwede pa ring baguhin ang tab ng bawat laro mula sa listahan.",
 		"empty": "Wala sa mga bukas mong tab na mukhang isang laro mo ngayon.",
 		"rowLabel": "I-pair ang {tab} sa {away} at {home}",
 		"apply": {
@@ -947,6 +961,27 @@
 			"l2": "We can't stop. It's too dangerous.",
 			"l3": "We've got to slow down first.",
 			"l4": "Just stop this thing! I order you!"
+		}
+	},
+	"board": {
+		"at": "vs",
+		"steady": "Stable",
+		"trendUp": "tumaas sa huling minuto",
+		"trendDown": "bumaba sa huling minuto",
+		"tab": "Tab {number}",
+		"tabUnknown": "Tab",
+		"assignTab": "Mag-assign ng tab",
+		"noTab": "Walang tab",
+		"watching": "Watching, {tab}",
+		"switchingTo": "Lumilipat sa {tab}",
+		"watchOn": "Panoorin sa {networks}",
+		"inMinutes": {
+			"1": "sa 1 min",
+			"n": "sa $1 min"
+		},
+		"inHours": {
+			"1": "sa 1 oras",
+			"n": "sa $1 na oras"
 		}
 	}
 }

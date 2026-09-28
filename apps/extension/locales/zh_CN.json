@@ -249,6 +249,26 @@
 		"groupDemo": "演示模式",
 		"groupDemoDesc": "用虚构的比赛，随时看一次切换是怎么发生的。",
 		"bonusesSection": "加成",
+		"groupTiming": "时机",
+		"groupExtras": "其他",
+		"back": "返回",
+		"signalsCount": {
+			"1": "1 个信号",
+			"n": "$1 个信号"
+		},
+		"teamsCount": {
+			"0": "无",
+			"1": "1 支球队",
+			"n": "$1 支球队"
+		},
+		"leaguesCount": {
+			"0": "无",
+			"1": "1 个开启",
+			"n": "$1 个开启"
+		},
+		"themeSystemShort": "系统",
+		"stateOn": "开启",
+		"stateOff": "关闭",
 		"searchPlaceholder": "搜索设置",
 		"searchNoResults": "没有与「{query}」匹配的设置",
 		"keywordsSensitivity": "分差, 阈值, 积极, 灵敏, 触发, ludicrous",
@@ -295,8 +315,6 @@
 		"settingsButton": "设置",
 		"guideButton": "节目表",
 		"onStandbyStream": "处于 Standby Stream，等待精彩时刻",
-		"sectionActiveLiveTabs": "活跃标签页",
-		"sectionOtherLiveGames": "直播比赛",
 		"sectionUpNext": "即将开赛",
 		"sectionFinal": "已结束",
 		"upcomingDayNavLabel": "按日期查看即将开始的比赛",
@@ -314,8 +332,7 @@
 			"1": "1 场收藏",
 			"n": "$1 场收藏"
 		},
-		"favoriteGame": "您收藏的球队之一",
-		"at": "vs"
+		"favoriteGame": "您收藏的球队之一"
 	},
 	"detail": {
 		"legendCloseness": "接近度",
@@ -326,12 +343,14 @@
 		"tabOverview": "概览",
 		"tabStandings": "排名",
 		"startsSoon": "即将开始",
-		"final": "终场",
+		"startsIn": "{time}后开始",
+		"startsInOn": "{time}后开始，{networks}直播",
+		"liveTabExplainer": "ArenaSwap 只能切换到有标签页的比赛。",
+		"sourcesFootnote": "现场直播来自我们的线人，他们的座位永远最好。",
 		"totalLabel": "{total} / {max}",
 		"totalLabelBaseMax": "{total}（基础上限 {max}）",
 		"back": "返回",
 		"close": "关闭",
-		"teamRecord": "战绩：{record}",
 		"unitDays": "天",
 		"unitHours": "时",
 		"unitMinutes": "分",
@@ -505,12 +524,10 @@
 		"addToFavorites": "将 {team} 加入收藏",
 		"favorited": "已收藏",
 		"addToFavoritesShort": "加入收藏",
-		"watchLabel": "观看：",
 		"oddsProvidedBy": "赔率来源：",
 		"openDetails": "查看 {away} 与 {home} 的比赛详情",
 		"live": "直播",
 		"final": "终场",
-		"delay": "中断",
 		"delayFallback": "中断",
 		"shootout": "点球 {away}–{home}",
 		"downDistanceAt": "{fieldPosition} {downDistance}",
@@ -528,7 +545,9 @@
 	},
 	"gameBoost": {
 		"heading": "比赛加速",
-		"explainer": "为本场比赛的 PowerScore 加分，提高其优先级。"
+		"explainer": "为本场比赛的 PowerScore 加分，提高其优先级。",
+		"decrease": "减少 1 分",
+		"increase": "增加 1 分"
 	},
 	"powerScore": {
 		"heading": "PowerScore 详细分析",
@@ -582,6 +601,11 @@
 		"back": "返回",
 		"step": "第 $1 步，共 $2 步",
 		"title": "您喜欢看哪些运动？",
+		"lede": "您可以随意选择，之后也能在设置中修改。",
+		"count": {
+			"1": "1 个联赛",
+			"n": "$1 个联赛"
+		},
 		"all": "全部",
 		"next": "下一步"
 	},
@@ -591,7 +615,7 @@
 		"title": "选择您的球队",
 		"explainer": "收藏的球队将获得评分加成，让 ArenaSwap 优先推送这些比赛。",
 		"yourFavorites": "您的收藏",
-		"leagueNotTracked": "{league} · 未追踪",
+		"leagueNotTracked": "{league}，未追踪",
 		"searchPlaceholder": "搜索球队……",
 		"loading": "加载球队中……",
 		"loadError": "球队加载失败。",
@@ -600,6 +624,10 @@
 		"removeFavorite": "从收藏中移除 {team}",
 		"addFavorite": "将 {team} 加入收藏",
 		"noMatch": "没有与「{query}」匹配的球队",
+		"count": {
+			"1": "1 支球队",
+			"n": "$1 支球队"
+		},
 		"skip": "跳过",
 		"done": "完成"
 	},
@@ -625,8 +653,8 @@
 		"title": "开启与关闭",
 		"subtitle": "一个开关，掌控一切。",
 		"tryIt": "↑ 试试看",
-		"statusActive": "● ArenaSwap 已激活",
-		"statusPaused": "○ 自动切换已暂停",
+		"stateOn": "ArenaSwap 已开启",
+		"stateOff": "自动切换已暂停",
 		"bodyBeforeOn": "当",
 		"bodyOn": "开启",
 		"bodyAfterOn": "时，ArenaSwap 会自动将您的标签页切换到最精彩的直播比赛。随时关闭以恢复手动控制。",
@@ -642,24 +670,13 @@
 		"progressAriaLabel": "教程进度",
 		"introBody": "PowerScore 动态评估每场直播比赛，找出最精彩的赛事。来看看这套公式是怎么运作的！",
 		"introButton": "探索公式",
-		"closenessMeasured": "根据分差衡量，并按比赛进度加权。",
-		"lateGameMeasured": "根据节次、剩余时间和分差衡量。",
-		"momentumMeasured": "根据近期净得分峰值衡量，随时间衰减。",
-		"leadChangesMeasured": "根据历史窗口内领先权易手次数衡量。",
-		"comebackMeasured": "根据历史窗口内分差缩小幅度衡量。",
 		"boostsHeading": "加成与惩罚",
 		"boostsSubtitle": "对分数进行精细调整的因子",
 		"clockStallPenaltyName": "时钟停滞惩罚",
-		"clockStallPenaltyMeasured": "当比赛时钟在多次更新中停滞时触发，降低信号小计。",
 		"volatilityName": "波动加成 / 惩罚",
-		"volatilityMeasured": "胜率长期接近 50% 的比赛获得加成；一边倒的比赛被扣分。",
 		"favoriteBoostName": "收藏球队加成",
-		"favoriteBoostMeasured": "当您收藏的球队参与本场对阵时加分。",
 		"gameBoostName": "比赛加速",
-		"gameBoostMeasured": "您手动添加的分数，用于临时提升特定比赛的优先级。",
-		"scoringOpportunityMeasured": "橄榄球红区进攻或棒球/垒球垒上有人时自动加分。",
 		"postseasonBoostName": "季后赛加成",
-		"postseasonBoostMeasured": "对季后赛、分区决赛和冠军赛统一给予固定加分。",
 		"back": "返回",
 		"next": "下一步",
 		"tapHint": "点击屏幕任意位置继续"
@@ -668,7 +685,6 @@
 		"step": "第 $1 步，共 $2 步",
 		"title": "将标签页分配给比赛",
 		"subtitle": "ArenaSwap 只操作您注册的标签页。",
-		"assignPlaceholder": "— 分配标签页 —",
 		"linkHint": "↑ 在此绑定一个浏览器标签页",
 		"body": "在各自的浏览器标签页中打开每路直播流，然后在比赛卡片的下拉菜单中将其绑定。ArenaSwap 只会切换到您已分配的标签页。",
 		"back": "返回",
@@ -681,8 +697,7 @@
 		"reveal": "看到了吗？👀",
 		"revealBody": "76 人队的比赛突然升温（PowerScore 89），ArenaSwap 自动检测并切换过去了。一次点击都不用。",
 		"back": "返回",
-		"next": "下一步",
-		"watchingBadge": "观看中"
+		"next": "下一步"
 	},
 	"stepSettings": {
 		"step": "第 $1 步，共 $2 步",
@@ -791,7 +806,6 @@
 		"switchedMessageWithReason": "{reason}。现在带您前往 {venue}！"
 	},
 	"tabAssign": {
-		"placeholder": "— 分配标签页 —",
 		"inUse": "（已占用）"
 	},
 	"suggest": {
@@ -803,7 +817,7 @@
 		"bannerAction": "查看",
 		"bannerDismiss": "忽略建议",
 		"header": "标签页建议",
-		"lede": "取消勾选我们猜错的选项。每张卡片上的下拉菜单仍拥有最终决定权。",
+		"lede": "取消勾选我们猜错的选项。每场比赛的标签页仍可以在列表中更改。",
 		"empty": "您打开的内容中，没有一项像您赛程上的比赛。",
 		"rowLabel": "将 {tab} 与 {away} 对阵 {home} 的比赛配对",
 		"apply": {
@@ -947,6 +961,27 @@
 			"l2": "没法停。太危险了。",
 			"l3": "我们得先减速。",
 			"l4": "停下来！这是命令！"
+		}
+	},
+	"board": {
+		"at": "vs",
+		"steady": "持平",
+		"trendUp": "过去一分钟上升",
+		"trendDown": "过去一分钟下降",
+		"tab": "标签页 {number}",
+		"tabUnknown": "标签页",
+		"assignTab": "分配标签页",
+		"noTab": "无标签页",
+		"watching": "观看中，{tab}",
+		"switchingTo": "切换到 {tab}",
+		"watchOn": "在 {networks} 观看",
+		"inMinutes": {
+			"1": "1 分钟后",
+			"n": "$1 分钟后"
+		},
+		"inHours": {
+			"1": "1 小时后",
+			"n": "$1 小时后"
 		}
 	}
 }

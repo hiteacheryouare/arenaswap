@@ -249,6 +249,26 @@
 		"groupDemo": "Demo-Modus",
 		"groupDemoDesc": "Erfundene Spiele, damit du einen Wechsel jederzeit sehen kannst.",
 		"bonusesSection": "Boni",
+		"groupTiming": "Timing",
+		"groupExtras": "Extras",
+		"back": "Zurück",
+		"signalsCount": {
+			"1": "1 Signal",
+			"n": "$1 Signale"
+		},
+		"teamsCount": {
+			"0": "Keine",
+			"1": "1 Team",
+			"n": "$1 Teams"
+		},
+		"leaguesCount": {
+			"0": "Keine",
+			"1": "1 an",
+			"n": "$1 an"
+		},
+		"themeSystemShort": "System",
+		"stateOn": "An",
+		"stateOff": "Aus",
 		"searchPlaceholder": "Einstellungen durchsuchen",
 		"searchNoResults": "Keine Einstellungen passen zu \"{query}\"",
 		"keywordsSensitivity": "abstand, schwelle, aggressiv, ungeduldig, ausloser, ludicrous",
@@ -295,8 +315,6 @@
 		"settingsButton": "Einstellungen",
 		"guideButton": "Guide",
 		"onStandbyStream": "Im Standby Stream, wartet auf Action",
-		"sectionActiveLiveTabs": "Aktive Tabs",
-		"sectionOtherLiveGames": "Live-Spiele",
 		"sectionUpNext": "Als Nächstes",
 		"sectionFinal": "Beendet",
 		"upcomingDayNavLabel": "Kommende Spiele nach Tag",
@@ -314,8 +332,7 @@
 			"1": "1 Favorit",
 			"n": "$1 Favoriten"
 		},
-		"favoriteGame": "Eines deiner Lieblingsteams",
-		"at": "-"
+		"favoriteGame": "Eines deiner Lieblingsteams"
 	},
 	"detail": {
 		"legendCloseness": "Ausgeglichenheit",
@@ -326,12 +343,14 @@
 		"tabOverview": "Übersicht",
 		"tabStandings": "Tabelle",
 		"startsSoon": "Beginnt bald",
-		"final": "Endstand",
+		"startsIn": "Beginnt in {time}",
+		"startsInOn": "Beginnt in {time} auf {networks}",
+		"liveTabExplainer": "ArenaSwap kann nur zu Spielen wechseln, die einen Tab haben.",
+		"sourcesFootnote": "Live von unseren Quellen — die haben immer die besten Plätze.",
 		"totalLabel": "{total} / {max}",
 		"totalLabelBaseMax": "{total} (Basis-Maximum {max})",
 		"back": "Zurück",
 		"close": "Schließen",
-		"teamRecord": "Bilanz: {record}",
 		"unitDays": "T",
 		"unitHours": "Std",
 		"unitMinutes": "Min",
@@ -505,12 +524,10 @@
 		"addToFavorites": "{team} zu Favoriten hinzufügen",
 		"favorited": "Favorisiert",
 		"addToFavoritesShort": "Zu Favoriten hinzufügen",
-		"watchLabel": "Schauen:",
 		"oddsProvidedBy": "Quoten bereitgestellt von:",
 		"openDetails": "Details für {away} vs {home} öffnen",
 		"live": "LIVE",
 		"final": "Beendet",
-		"delay": "VERZÖGERUNG",
 		"delayFallback": "Verzögerung",
 		"shootout": "I.E. {away}–{home}",
 		"downDistanceAt": "{downDistance} an {fieldPosition}",
@@ -528,7 +545,9 @@
 	},
 	"gameBoost": {
 		"heading": "Spielboost",
-		"explainer": "Punkte zum PowerScore dieses Spiels hinzufügen, um seine Priorität zu erhöhen."
+		"explainer": "Punkte zum PowerScore dieses Spiels hinzufügen, um seine Priorität zu erhöhen.",
+		"decrease": "Einen Punkt entfernen",
+		"increase": "Einen Punkt hinzufügen"
 	},
 	"powerScore": {
 		"heading": "PowerScore-Aufschlüsselung",
@@ -582,6 +601,11 @@
 		"back": "Zurück",
 		"step": "Schritt $1 von $2",
 		"title": "Welche Sportarten schaust du?",
+		"lede": "Wähle so viele, wie du willst. Du kannst sie später in den Einstellungen ändern.",
+		"count": {
+			"1": "1 Liga",
+			"n": "$1 Ligen"
+		},
 		"all": "Alle",
 		"next": "Weiter"
 	},
@@ -591,7 +615,7 @@
 		"title": "Wähle deine Teams",
 		"explainer": "Favoriten erhalten einen Punktebonus, damit ArenaSwap diese Spiele bevorzugt.",
 		"yourFavorites": "Deine Favoriten",
-		"leagueNotTracked": "{league} · nicht verfolgt",
+		"leagueNotTracked": "{league}, nicht verfolgt",
 		"searchPlaceholder": "Teams suchen…",
 		"loading": "Teams werden geladen…",
 		"loadError": "Teams konnten nicht geladen werden.",
@@ -600,6 +624,10 @@
 		"removeFavorite": "{team} aus Favoriten entfernen",
 		"addFavorite": "{team} zu Favoriten hinzufügen",
 		"noMatch": "Keine Teams passen zu \"{query}\"",
+		"count": {
+			"1": "1 Team",
+			"n": "$1 Teams"
+		},
 		"skip": "Überspringen",
 		"done": "Fertig"
 	},
@@ -625,8 +653,8 @@
 		"title": "Ein- und Ausschalten",
 		"subtitle": "Ein Schalter regelt alles.",
 		"tryIt": "↑ ausprobieren",
-		"statusActive": "● ArenaSwap ist aktiv",
-		"statusPaused": "○ Automatischer Wechsel pausiert",
+		"stateOn": "ArenaSwap ist aktiv",
+		"stateOff": "Automatischer Wechsel pausiert",
 		"bodyBeforeOn": "Wenn ",
 		"bodyOn": "eingeschaltet",
 		"bodyAfterOn": ", wechselt ArenaSwap deine Tabs automatisch zum spannendsten Live-Spiel. Jederzeit ausschalten, um die Kontrolle zurückzubekommen.",
@@ -642,24 +670,13 @@
 		"progressAriaLabel": "Tour-Fortschritt",
 		"introBody": "PowerScore bewertet jedes Live-Spiel dynamisch, um die spannendste Action zu finden. Lass uns ansehen, was in die Formel einfließt!",
 		"introButton": "Formel erkunden",
-		"closenessMeasured": "Gemessen am Punkteabstand, gewichtet nach Spielfortschritt.",
-		"lateGameMeasured": "Gemessen an Spielabschnitt, verbleibender Zeit und Torunterschied.",
-		"momentumMeasured": "Gemessen an rollenden Netto-Scoring-Spitzen, klingt mit der Zeit ab.",
-		"leadChangesMeasured": "Gemessen an der Anzahl der Führungswechsel im Verlaufshistoriefenster.",
-		"comebackMeasured": "Gemessen an der Abstandsreduzierung im Verlaufshistoriefenster.",
 		"boostsHeading": "Boni & Strafen",
 		"boostsSubtitle": "Anpassungen, die die Punktzahl feintunen",
 		"clockStallPenaltyName": "Uhr-Stagnationsstrafe",
-		"clockStallPenaltyMeasured": "Wird angewendet, wenn die Spieluhr über mehrere Aktualisierungen einfriert, und reduziert die Signalzwischensumme.",
 		"volatilityName": "Volatilitätsboost / -strafe",
-		"volatilityMeasured": "Boosted Spiele, bei denen die Siegwahrscheinlichkeit um 50 % pendelt; bestraft klare Dominanz.",
 		"favoriteBoostName": "Favoritenboost",
-		"favoriteBoostMeasured": "Wird hinzugefügt, wenn eines deiner gespeicherten Lieblingsteams im Spiel antritt.",
 		"gameBoostName": "Spielboost",
-		"gameBoostMeasured": "Punkte, die du manuell vergibst, um ein bestimmtes Spiel vorübergehend zu priorisieren.",
-		"scoringOpportunityMeasured": "Wird automatisch für Red-Zone-Angriffe (Football) oder Läufer auf den Bases (Baseball/Softball) hinzugefügt.",
 		"postseasonBoostName": "Postseason-Boost",
-		"postseasonBoostMeasured": "Ein Pauschalbonus für Playoff-, Conference-Final- und Meisterschaftsspiele.",
 		"back": "Zurück",
 		"next": "Weiter",
 		"tapHint": "Irgendwo tippen, um fortzufahren"
@@ -668,7 +685,6 @@
 		"step": "Schritt $1 von $2",
 		"title": "Tabs Spielen zuweisen",
 		"subtitle": "ArenaSwap berührt nur die Tabs, die du registrierst.",
-		"assignPlaceholder": "— Tab zuweisen —",
 		"linkHint": "↑ Browser-Tab hier verknüpfen",
 		"body": "Öffne jeden Stream in seinem eigenen Browser-Tab und nutze dann das Dropdown auf einer Spielkarte, um sie zu verknüpfen. ArenaSwap wechselt nur zu Tabs, die du zugewiesen hast.",
 		"back": "Zurück",
@@ -681,8 +697,7 @@
 		"reveal": "Hast du das gesehen? 👀",
 		"revealBody": "Das 76ers-Spiel wurde heiß (PowerScore 89). ArenaSwap hat es erkannt und automatisch gewechselt. Kein Klick nötig.",
 		"back": "Zurück",
-		"next": "Weiter",
-		"watchingBadge": "WATCHING"
+		"next": "Weiter"
 	},
 	"stepSettings": {
 		"step": "Schritt $1 von $2",
@@ -791,7 +806,6 @@
 		"switchedMessageWithReason": "{reason}. Los geht's jetzt zu {venue}!"
 	},
 	"tabAssign": {
-		"placeholder": "— Tab zuweisen —",
 		"inUse": " (in Verwendung)"
 	},
 	"suggest": {
@@ -803,7 +817,7 @@
 		"bannerAction": "Mal reinschauen",
 		"bannerDismiss": "Vorschläge ausblenden",
 		"header": "Vorgeschlagene Tabs",
-		"lede": "Entferne das Häkchen bei allem, was wir falsch erkannt haben. Das Dropdown auf jeder Spielkarte hat trotzdem das letzte Wort.",
+		"lede": "Entferne das Häkchen bei allem, was wir falsch erkannt haben. Der Tab jedes Spiels lässt sich weiterhin über die Liste ändern.",
 		"empty": "Nichts, was du offen hast, sieht nach einem Spiel auf deinem Spielplan aus.",
 		"rowLabel": "{tab} mit {away} bei {home} verknüpfen",
 		"apply": {
@@ -947,6 +961,27 @@
 			"l2": "Wir können nicht stoppen. Es ist zu gefährlich.",
 			"l3": "Wir müssen erst langsamer werden.",
 			"l4": "Halt dieses Ding an! Ich befehle es!"
+		}
+	},
+	"board": {
+		"at": "-",
+		"steady": "Stabil",
+		"trendUp": "in der letzten Minute gestiegen",
+		"trendDown": "in der letzten Minute gefallen",
+		"tab": "Tab {number}",
+		"tabUnknown": "Tab",
+		"assignTab": "Tab zuweisen",
+		"noTab": "Kein Tab",
+		"watching": "Läuft gerade, {tab}",
+		"switchingTo": "Wechselt zu {tab}",
+		"watchOn": "Schauen auf {networks}",
+		"inMinutes": {
+			"1": "in 1 Min",
+			"n": "in $1 Min"
+		},
+		"inHours": {
+			"1": "in 1 Std",
+			"n": "in $1 Std"
 		}
 	}
 }

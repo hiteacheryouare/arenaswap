@@ -74,8 +74,7 @@
 			"teamStrip": "{leagues}のリーグのすべてのチームに対応。あなたのチームも、もちろん。",
 			"captionSwitched": "ArenaSwapが{from}から{to}へ切り替えました。",
 			"captionWatching": "今、{game}を視聴中です。盤面で最も注目の試合です。",
-			"replay": "デモを再生",
-			"tabLabel": "タブ {number}：{host}"
+			"replay": "デモを再生"
 		},
 		"tabs": {
 			"titleLine1": "一度設定すれば。",
@@ -331,7 +330,6 @@
 		"liveHeading": "ライブPowerScore",
 		"liveLoading": "ライブPowerScoreを読み込み中",
 		"liveError": "現在、ライブ試合のデータを読み込めません。",
-		"liveNow": "ライブ",
 		"machineHeading": "動いている様子を見る。",
 		"machineSub": "ArenaSwapはあらゆるライブ試合をリアルタイムで採点し、あなたのタブを最高の試合に切り替えます。その様子はこちら。",
 		"machineWatch": "監視",
@@ -343,7 +341,6 @@
 		"liveLoadingCopy": "ライブ試合を取得し、PowerScoreを計算しています。",
 		"liveEmptyTitle": "現在ライブ試合はありません",
 		"liveEmptyCopy": "試合がライブになると、このセクションは自動的に更新され、対応するすべてのリーグのリアルタイムPowerScoreを表示します。",
-		"liveScoreBadge": "PowerScore {score} / 100",
 		"machineAlt": "あらゆるライブ試合を監視し採点するArenaSwap",
 		"machineNowWatching": "視聴中",
 		"machineNowOn": "{service}で",
@@ -365,20 +362,22 @@
 		"gameCard": {
 			"live": "ライブ",
 			"powerScore": "PowerScore",
-			"watchLabel": "視聴先：",
 			"oddsProvidedBy": "オッズ提供元：",
 			"favorited": "お気に入り済み",
 			"addToFavoritesShort": "お気に入りに追加",
 			"addToFavorites": "{team}をお気に入りに追加",
 			"removeFromFavorites": "{team}をお気に入りから削除",
 			"openDetails": "{away} vs {home}の詳細を開く",
-			"delay": "中断",
 			"delayFallback": "中断",
 			"vs": "vs",
 			"topOfInning": "イニングの表",
 			"bottomOfInning": "イニングの裏",
 			"shootout": "PK {away}–{home}",
-			"downDistanceAt": "{fieldPosition}で{downDistance}"
+			"downDistanceAt": "{fieldPosition}で{downDistance}",
+			"final": "終了",
+			"teamRank": "ランキング{rank}位",
+			"timeoutsRemaining": "{team}：タイムアウト残り{count}回",
+			"timeoutsShort": "{count} TO"
 		},
 		"field": {
 			"possession": "{team}がボールを保持",
@@ -387,20 +386,19 @@
 		"main": {
 			"tourButton": "ツアー",
 			"settingsButton": "設定",
-			"sectionActiveLiveTabs": "アクティブタブ",
-			"sectionOtherLiveGames": "ライブ試合",
 			"sectionUpNext": "次の試合",
 			"enableToggleLabel": "自動切り替えを有効にする",
-			"onStandbyStream": "Standby Stream 中 — アクションを待っています"
-		},
-		"tabAssign": {
-			"placeholder": "— タブを割り当て —"
+			"onStandbyStream": "Standby Stream 中 — アクションを待っています",
+			"guideButton": "番組表"
 		},
 		"detail": {
 			"chartPowerScoreTitle": "PowerScoreの推移",
 			"chartScoreTitle": "スコアの推移",
 			"chartWinProbTitle": "勝利確率",
-			"chartComponentsTitle": "PowerScoreコンポーネントの推移"
+			"chartComponentsTitle": "PowerScoreコンポーネントの推移",
+			"startsSoon": "まもなく開始",
+			"halftime": "ハーフタイム",
+			"intermission": "インターバル"
 		},
 		"setup": {
 			"groupSwitching": "切り替え",
@@ -437,6 +435,26 @@
 			"balls": "B",
 			"strikes": "S",
 			"outs": "O"
+		},
+		"board": {
+			"at": "vs",
+			"steady": "横ばい",
+			"trendUp": "直近1分で上昇",
+			"trendDown": "直近1分で下降",
+			"tab": "タブ {number}",
+			"assignTab": "タブを割り当て",
+			"noTab": "タブなし",
+			"watching": "視聴中、{tab}",
+			"switchingTo": "{tab}に切り替え中",
+			"watchOn": "{networks}で視聴",
+			"inMinutes": {
+				"1": "あと1分",
+				"n": "あと$1分"
+			},
+			"inHours": {
+				"1": "あと1時間",
+				"n": "あと$1時間"
+			}
 		}
 	}
 }

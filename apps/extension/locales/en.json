@@ -220,14 +220,14 @@
 		"holidaySnow": "Snow",
 		"holidayLights": "Lights",
 		"holidayLeaves": "Leaves",
-		"signalsSection": "PowerScore Signals",
+		"signalsSection": "PowerScore signals",
 		"signalsExplainer": "Disabled signals are excluded from scoring. Scores are re-normalized to stay in range.",
 		"signalLastActive": "At least one signal must stay active",
 		"leaguesExplainer": "Only selected leagues are tracked and considered for automatic switching.",
 		"selectNone": "none",
 		"selectAll": "all",
 		"noLeaguesWarning": "No leagues selected. ArenaSwap won't track any games.",
-		"leagueOrderSection": "Display Order",
+		"leagueOrderSection": "Display order",
 		"leagueOrderExplainer": "League sections appear in this order on the main screen. Drag a league, or nudge it with the arrows.",
 		"leagueOrderReset": "Reset to default order",
 		"leagueMoveUp": "Move {label} up",
@@ -249,6 +249,26 @@
 		"groupDemo": "Demo mode",
 		"groupDemoDesc": "Scripted games, so you can watch a switch happen on demand.",
 		"bonusesSection": "Bonuses",
+		"groupTiming": "Timing",
+		"groupExtras": "Extras",
+		"back": "Back",
+		"signalsCount": {
+			"1": "1 signal",
+			"n": "$1 signals"
+		},
+		"teamsCount": {
+			"0": "None",
+			"1": "1 team",
+			"n": "$1 teams"
+		},
+		"leaguesCount": {
+			"0": "None",
+			"1": "1 on",
+			"n": "$1 on"
+		},
+		"themeSystemShort": "System",
+		"stateOn": "On",
+		"stateOff": "Off",
 		"searchPlaceholder": "Search settings",
 		"searchNoResults": "No settings match \"{query}\"",
 		"keywordsSensitivity": "gap, threshold, eager, aggressive, trigger, ludicrous",
@@ -295,8 +315,6 @@
 		"settingsButton": "Settings",
 		"guideButton": "Guide",
 		"onStandbyStream": "On standby stream, waiting for action",
-		"sectionActiveLiveTabs": "Active Tabs",
-		"sectionOtherLiveGames": "Live Games",
 		"sectionUpNext": "Up Next",
 		"sectionFinal": "Final",
 		"upcomingDayNavLabel": "Upcoming games by day",
@@ -314,8 +332,7 @@
 			"1": "1 of yours",
 			"n": "$1 of yours"
 		},
-		"favoriteGame": "One of your teams",
-		"at": "@"
+		"favoriteGame": "One of your teams"
 	},
 	"detail": {
 		"legendCloseness": "Closeness",
@@ -326,12 +343,14 @@
 		"tabOverview": "Overview",
 		"tabStandings": "Standings",
 		"startsSoon": "Starts soon",
-		"final": "Final",
+		"startsIn": "Starts in {time}",
+		"startsInOn": "Starts in {time} on {networks}",
+		"liveTabExplainer": "ArenaSwap can only switch to games that have a tab.",
+		"sourcesFootnote": "Live from our sources, who always get good seats.",
 		"totalLabel": "{total} / {max}",
 		"totalLabelBaseMax": "{total} (base max {max})",
 		"back": "Back",
 		"close": "Close",
-		"teamRecord": "Record: {record}",
 		"unitDays": "d",
 		"unitHours": "h",
 		"unitMinutes": "m",
@@ -505,12 +524,10 @@
 		"addToFavorites": "Add {team} to favorites",
 		"favorited": "Favorited",
 		"addToFavoritesShort": "Add to favorites",
-		"watchLabel": "Watch:",
 		"oddsProvidedBy": "Odds provided by:",
 		"openDetails": "Open details for {away} vs {home}",
 		"live": "LIVE",
 		"final": "Final",
-		"delay": "DELAY",
 		"delayFallback": "Delay",
 		"shootout": "PENS {away}–{home}",
 		"downDistanceAt": "{downDistance} at {fieldPosition}",
@@ -528,10 +545,12 @@
 	},
 	"gameBoost": {
 		"heading": "Game boost",
-		"explainer": "Add points to this game's PowerScore to raise its priority."
+		"explainer": "Add points to this game's PowerScore to raise its priority.",
+		"decrease": "Remove a point",
+		"increase": "Add a point"
 	},
 	"powerScore": {
-		"heading": "PowerScore Breakdown",
+		"heading": "PowerScore breakdown",
 		"signalCloseness": "Closeness",
 		"signalLateGame": "Late-game",
 		"signalMomentum": "Momentum",
@@ -582,6 +601,11 @@
 		"back": "Back",
 		"step": "Step $1 of $2",
 		"title": "Which sports do you watch?",
+		"lede": "Pick as many as you like. You can change them later in Settings.",
+		"count": {
+			"1": "1 league",
+			"n": "$1 leagues"
+		},
 		"all": "All",
 		"next": "Next"
 	},
@@ -591,7 +615,7 @@
 		"title": "Pick your teams",
 		"explainer": "Favorites get a scoring bonus so ArenaSwap favors those games.",
 		"yourFavorites": "Your favorites",
-		"leagueNotTracked": "{league} · not tracked",
+		"leagueNotTracked": "{league}, not tracked",
 		"searchPlaceholder": "Search teams…",
 		"loading": "Loading teams…",
 		"loadError": "Couldn't load teams.",
@@ -600,6 +624,10 @@
 		"removeFavorite": "Remove {team} from favorites",
 		"addFavorite": "Add {team} to favorites",
 		"noMatch": "No teams match \"{query}\"",
+		"count": {
+			"1": "1 team",
+			"n": "$1 teams"
+		},
 		"skip": "Skip",
 		"done": "Done"
 	},
@@ -625,8 +653,8 @@
 		"title": "Turning it on & off",
 		"subtitle": "One switch controls everything.",
 		"tryIt": "↑ try it",
-		"statusActive": "● ArenaSwap is active",
-		"statusPaused": "○ Auto-switching paused",
+		"stateOn": "ArenaSwap is active",
+		"stateOff": "Auto-switching paused",
 		"bodyBeforeOn": "When ",
 		"bodyOn": "on",
 		"bodyAfterOn": ", ArenaSwap automatically switches your tabs to the most exciting live game. Toggle it off any time to take back control.",
@@ -642,24 +670,13 @@
 		"progressAriaLabel": "Walkthrough progress",
 		"introBody": "PowerScore evaluates every live game dynamically to find the most exciting action. Let's see what goes into the formula!",
 		"introButton": "Explore Formula",
-		"closenessMeasured": "Measured by point difference, weighted by game progress.",
-		"lateGameMeasured": "Measured by period, time remaining, and score margin.",
-		"momentumMeasured": "Measured by rolling net scoring spikes, decaying over time.",
-		"leadChangesMeasured": "Measured by count of lead flips in the history window.",
-		"comebackMeasured": "Measured by margin reduction in the history window.",
 		"boostsHeading": "Boosts & Penalties",
 		"boostsSubtitle": "Adjustments that fine-tune the score",
 		"clockStallPenaltyName": "Clock Stall Penalty",
-		"clockStallPenaltyMeasured": "Applied when the game clock freezes for multiple updates, reducing the signal subtotal.",
 		"volatilityName": "Volatility Boost / Penalty",
-		"volatilityMeasured": "Boosts games with win probability hovering near 50%, penalizes steady blowouts.",
 		"favoriteBoostName": "Favorite Boost",
-		"favoriteBoostMeasured": "Added when one of your saved favorite teams is in the matchup.",
 		"gameBoostName": "Game Boost",
-		"gameBoostMeasured": "Points manually applied by you to temporarily prioritize a specific game.",
-		"scoringOpportunityMeasured": "Added automatically for red zone drives (football) or runners on base (baseball/softball).",
 		"postseasonBoostName": "Postseason Boost",
-		"postseasonBoostMeasured": "A flat bonus applied to playoff, conference final, and championship games.",
 		"back": "Back",
 		"next": "Next",
 		"tapHint": "Tap anywhere to continue"
@@ -668,7 +685,6 @@
 		"step": "Step $1 of $2",
 		"title": "Assign tabs to games",
 		"subtitle": "ArenaSwap only touches tabs you register.",
-		"assignPlaceholder": "— Assign a tab —",
 		"linkHint": "↑ link a browser tab here",
 		"body": "Open each stream in its own browser tab, then use the dropdown on a game card to link them. ArenaSwap will only switch to tabs you've assigned.",
 		"back": "Back",
@@ -681,8 +697,7 @@
 		"reveal": "Did you see that? 👀",
 		"revealBody": "The 76ers game heated up (PowerScore 89). ArenaSwap detected it and switched automatically. No clicks needed.",
 		"back": "Back",
-		"next": "Next",
-		"watchingBadge": "WATCHING"
+		"next": "Next"
 	},
 	"stepSettings": {
 		"step": "Step $1 of $2",
@@ -791,7 +806,6 @@
 		"switchedMessageWithReason": "{reason}. Taking you to {venue} now!"
 	},
 	"tabAssign": {
-		"placeholder": "— Assign a tab —",
 		"inUse": " (in use)"
 	},
 	"suggest": {
@@ -803,7 +817,7 @@
 		"bannerAction": "Take a look",
 		"bannerDismiss": "Dismiss suggestions",
 		"header": "Suggested tabs",
-		"lede": "Uncheck anything we got wrong. The dropdown on each card still has the final say.",
+		"lede": "Uncheck anything we got wrong. Each game's tab can still be changed from the list.",
 		"empty": "Nothing you have open looks like a game on your slate.",
 		"rowLabel": "Pair {tab} with {away} at {home}",
 		"apply": {
@@ -947,6 +961,27 @@
 			"l2": "We can't stop. It's too dangerous.",
 			"l3": "We've got to slow down first.",
 			"l4": "Just stop this thing! I order you!"
+		}
+	},
+	"board": {
+		"at": "at",
+		"steady": "Steady",
+		"trendUp": "up in the last minute",
+		"trendDown": "down in the last minute",
+		"tab": "Tab {number}",
+		"tabUnknown": "Tab",
+		"assignTab": "Assign a tab",
+		"noTab": "No tab",
+		"watching": "Watching, {tab}",
+		"switchingTo": "Switching to {tab}",
+		"watchOn": "Watch on {networks}",
+		"inMinutes": {
+			"1": "in 1 min",
+			"n": "in $1 min"
+		},
+		"inHours": {
+			"1": "in 1 hr",
+			"n": "in $1 hr"
 		}
 	}
 }

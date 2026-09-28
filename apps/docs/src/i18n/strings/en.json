@@ -74,8 +74,7 @@
 			"teamStrip": "Works with every team in {leagues} leagues. Yours included.",
 			"captionSwitched": "ArenaSwap moved you off {from} and onto {to}.",
 			"captionWatching": "You are watching {game}, the best game on the board.",
-			"replay": "Play the demo",
-			"tabLabel": "Tab {number}: {host}"
+			"replay": "Play the demo"
 		},
 		"tabs": {
 			"titleLine1": "Set it once.",
@@ -331,7 +330,6 @@
 		"liveHeading": "Live PowerScores",
 		"liveLoading": "Loading live PowerScores",
 		"liveError": "Unable to load live game data right now.",
-		"liveNow": "Live",
 		"machineHeading": "Watch it work.",
 		"machineSub": "ArenaSwap scores every live game as it happens — then puts your tab on the best one. Here's what that looks like.",
 		"machineWatch": "Watch",
@@ -343,7 +341,6 @@
 		"liveLoadingCopy": "Pulling live games and computing PowerScore now.",
 		"liveEmptyTitle": "No live games right now",
 		"liveEmptyCopy": "When games go live, this section will auto-refresh and show real-time PowerScores across all supported leagues.",
-		"liveScoreBadge": "PowerScore {score} / 100",
 		"machineAlt": "ArenaSwap watching and scoring every live game",
 		"machineNowWatching": "Now watching",
 		"machineNowOn": "on {service}",
@@ -365,20 +362,22 @@
 		"gameCard": {
 			"live": "LIVE",
 			"powerScore": "PowerScore",
-			"watchLabel": "Watch:",
 			"oddsProvidedBy": "Odds provided by:",
 			"favorited": "Favorited",
 			"addToFavoritesShort": "Add to favorites",
 			"addToFavorites": "Add {team} to favorites",
 			"removeFromFavorites": "Remove {team} from favorites",
 			"openDetails": "Open details for {away} vs {home}",
-			"delay": "DELAY",
 			"delayFallback": "Delay",
 			"vs": "vs",
 			"topOfInning": "Top of inning",
 			"bottomOfInning": "Bottom of inning",
 			"shootout": "PENS {away}–{home}",
-			"downDistanceAt": "{downDistance} at {fieldPosition}"
+			"downDistanceAt": "{downDistance} at {fieldPosition}",
+			"final": "Final",
+			"teamRank": "Ranked #{rank}",
+			"timeoutsRemaining": "{team}: {count} timeouts left",
+			"timeoutsShort": "{count} TO"
 		},
 		"field": {
 			"possession": "{team} has the ball",
@@ -387,20 +386,19 @@
 		"main": {
 			"tourButton": "Tour",
 			"settingsButton": "Settings",
-			"sectionActiveLiveTabs": "Active Tabs",
-			"sectionOtherLiveGames": "Live Games",
 			"sectionUpNext": "Up Next",
 			"enableToggleLabel": "Enable auto-switching",
-			"onStandbyStream": "On standby stream, waiting for action"
-		},
-		"tabAssign": {
-			"placeholder": "— Assign a tab —"
+			"onStandbyStream": "On standby stream, waiting for action",
+			"guideButton": "Guide"
 		},
 		"detail": {
 			"chartPowerScoreTitle": "PowerScore over time",
 			"chartScoreTitle": "Game score over time",
 			"chartWinProbTitle": "Win probability",
-			"chartComponentsTitle": "PowerScore components over time"
+			"chartComponentsTitle": "PowerScore components over time",
+			"startsSoon": "Starts soon",
+			"halftime": "Halftime",
+			"intermission": "Intermission"
 		},
 		"setup": {
 			"groupSwitching": "Switching",
@@ -437,6 +435,26 @@
 			"balls": "B",
 			"strikes": "S",
 			"outs": "O"
+		},
+		"board": {
+			"at": "at",
+			"steady": "Steady",
+			"trendUp": "up in the last minute",
+			"trendDown": "down in the last minute",
+			"tab": "Tab {number}",
+			"assignTab": "Assign a tab",
+			"noTab": "No tab",
+			"watching": "Watching, {tab}",
+			"switchingTo": "Switching to {tab}",
+			"watchOn": "Watch on {networks}",
+			"inMinutes": {
+				"1": "in 1 min",
+				"n": "in $1 min"
+			},
+			"inHours": {
+				"1": "in 1 hr",
+				"n": "in $1 hr"
+			}
 		}
 	}
 }

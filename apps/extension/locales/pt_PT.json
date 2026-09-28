@@ -249,6 +249,26 @@
 		"groupDemo": "Modo de demonstração",
 		"groupDemoDesc": "Jogos inventados, para ver uma mudança quando quiseres.",
 		"bonusesSection": "Bónus",
+		"groupTiming": "Timing",
+		"groupExtras": "Extras",
+		"back": "Voltar",
+		"signalsCount": {
+			"1": "1 sinal",
+			"n": "$1 sinais"
+		},
+		"teamsCount": {
+			"0": "Nenhuma",
+			"1": "1 equipa",
+			"n": "$1 equipas"
+		},
+		"leaguesCount": {
+			"0": "Nenhuma",
+			"1": "1 activa",
+			"n": "$1 activas"
+		},
+		"themeSystemShort": "Sistema",
+		"stateOn": "Activado",
+		"stateOff": "Desactivado",
 		"searchPlaceholder": "Procurar definições",
 		"searchNoResults": "Nenhuma definição corresponde a \"{query}\"",
 		"keywordsSensitivity": "diferenca, limiar, ansioso, agressivo, gatilho, ludicrous",
@@ -295,8 +315,6 @@
 		"settingsButton": "Definições",
 		"guideButton": "Guia",
 		"onStandbyStream": "Em Standby Stream, à espera de acção",
-		"sectionActiveLiveTabs": "Separadores activos",
-		"sectionOtherLiveGames": "Jogos em directo",
 		"sectionUpNext": "A seguir",
 		"sectionFinal": "Terminados",
 		"upcomingDayNavLabel": "Próximos jogos por dia",
@@ -314,8 +332,7 @@
 			"1": "1 favorito",
 			"n": "$1 favoritos"
 		},
-		"favoriteGame": "Uma das tuas equipas favoritas",
-		"at": "-"
+		"favoriteGame": "Uma das tuas equipas favoritas"
 	},
 	"detail": {
 		"legendCloseness": "Equilíbrio",
@@ -326,12 +343,14 @@
 		"tabOverview": "Resumo",
 		"tabStandings": "Classificação",
 		"startsSoon": "Começa em breve",
-		"final": "Final",
+		"startsIn": "Começa em {time}",
+		"startsInOn": "Começa em {time} em {networks}",
+		"liveTabExplainer": "O ArenaSwap só muda para jogos que têm um separador.",
+		"sourcesFootnote": "Em directo, graças às nossas fontes, que arranjam sempre os melhores lugares.",
 		"totalLabel": "{total} / {max}",
 		"totalLabelBaseMax": "{total} (máx. base {max})",
 		"back": "Voltar",
 		"close": "Fechar",
-		"teamRecord": "Balanço: {record}",
 		"unitDays": "d",
 		"unitHours": "h",
 		"unitMinutes": "min",
@@ -505,12 +524,10 @@
 		"addToFavorites": "Adicionar {team} aos favoritos",
 		"favorited": "Nos favoritos",
 		"addToFavoritesShort": "Adicionar aos favoritos",
-		"watchLabel": "Ver em:",
 		"oddsProvidedBy": "Odds fornecidas por:",
 		"openDetails": "Abrir detalhes de {away} vs {home}",
 		"live": "EM DIRECTO",
 		"final": "Final",
-		"delay": "SUSPENSO",
 		"delayFallback": "Suspenso",
 		"shootout": "GP {away}–{home}",
 		"downDistanceAt": "{downDistance} na {fieldPosition}",
@@ -528,7 +545,9 @@
 	},
 	"gameBoost": {
 		"heading": "Impulso do jogo",
-		"explainer": "Adiciona pontos ao PowerScore deste jogo para aumentar a sua prioridade."
+		"explainer": "Adiciona pontos ao PowerScore deste jogo para aumentar a sua prioridade.",
+		"decrease": "Remover um ponto",
+		"increase": "Adicionar um ponto"
 	},
 	"powerScore": {
 		"heading": "Análise do PowerScore",
@@ -582,6 +601,11 @@
 		"back": "Voltar",
 		"step": "Passo $1 de $2",
 		"title": "Que desportos segues?",
+		"lede": "Escolhe quantos quiseres. Podes alterá-los mais tarde nas Definições.",
+		"count": {
+			"1": "1 liga",
+			"n": "$1 ligas"
+		},
 		"all": "Todas",
 		"next": "Seguinte"
 	},
@@ -591,7 +615,7 @@
 		"title": "Escolhe as tuas equipas",
 		"explainer": "Os favoritos recebem uma bonificação para que ArenaSwap priorize esses jogos.",
 		"yourFavorites": "Os teus favoritos",
-		"leagueNotTracked": "{league} · não monitorizada",
+		"leagueNotTracked": "{league}, não monitorizada",
 		"searchPlaceholder": "Pesquisar equipas…",
 		"loading": "A carregar equipas…",
 		"loadError": "Não foi possível carregar as equipas.",
@@ -600,6 +624,10 @@
 		"removeFavorite": "Remover {team} dos favoritos",
 		"addFavorite": "Adicionar {team} aos favoritos",
 		"noMatch": "Nenhuma equipa corresponde a \"{query}\"",
+		"count": {
+			"1": "1 equipa",
+			"n": "$1 equipas"
+		},
 		"skip": "Saltar",
 		"done": "Concluído"
 	},
@@ -625,8 +653,8 @@
 		"title": "Ligar e desligar",
 		"subtitle": "Um interruptor controla tudo.",
 		"tryIt": "↑ experimenta",
-		"statusActive": "● ArenaSwap está activo",
-		"statusPaused": "○ Mudança automática em pausa",
+		"stateOn": "O ArenaSwap está activo",
+		"stateOff": "Mudança automática em pausa",
 		"bodyBeforeOn": "Quando está ",
 		"bodyOn": "ligado",
 		"bodyAfterOn": ", ArenaSwap muda automaticamente os teus separadores para o jogo em directo mais emocionante. Desliga quando quiseres para retomar o controlo.",
@@ -642,24 +670,13 @@
 		"progressAriaLabel": "Progresso da visita",
 		"introBody": "O PowerScore avalia dinamicamente cada jogo em directo para encontrar a acção mais emocionante. Vamos ver o que entra na fórmula!",
 		"introButton": "Explorar fórmula",
-		"closenessMeasured": "Medido pela diferença de pontos, ponderada pelo progresso do jogo.",
-		"lateGameMeasured": "Medido pelo período, tempo restante e margem no marcador.",
-		"momentumMeasured": "Medido pelos picos líquidos de pontuação recentes, com decaimento ao longo do tempo.",
-		"leadChangesMeasured": "Medido pelo número de inversões de liderança na janela de histórico.",
-		"comebackMeasured": "Medido pela redução da margem na janela de histórico.",
 		"boostsHeading": "Impulsos e penalizações",
 		"boostsSubtitle": "Ajustes que afinam a pontuação",
 		"clockStallPenaltyName": "Penalização por relógio parado",
-		"clockStallPenaltyMeasured": "Aplicado quando o relógio para durante várias actualizações, reduzindo o subtotal dos sinais.",
 		"volatilityName": "Impulso / penalização de volatilidade",
-		"volatilityMeasured": "Impulsiona jogos com probabilidade de vitória próxima de 50%, penaliza vantagens consistentes.",
 		"favoriteBoostName": "Impulso de favorito",
-		"favoriteBoostMeasured": "Adicionado quando uma das tuas equipas favoritas guardadas participa no confronto.",
 		"gameBoostName": "Impulso do jogo",
-		"gameBoostMeasured": "Pontos que aplicas manualmente para priorizar temporariamente um jogo específico.",
-		"scoringOpportunityMeasured": "Adicionado automaticamente para zonas vermelhas (futebol americano) ou corredores em base (basebol/softbol).",
 		"postseasonBoostName": "Impulso de pós-temporada",
-		"postseasonBoostMeasured": "Um bónus fixo aplicado a jogos de playoffs, finais de conferência e campeonatos.",
 		"back": "Voltar",
 		"next": "Seguinte",
 		"tapHint": "Toca em qualquer lugar para continuar"
@@ -668,7 +685,6 @@
 		"step": "Passo $1 de $2",
 		"title": "Associa separadores aos jogos",
 		"subtitle": "ArenaSwap só toca nos separadores que registas.",
-		"assignPlaceholder": "— Associa um separador —",
 		"linkHint": "↑ liga um separador do navegador aqui",
 		"body": "Abre cada transmissão no seu próprio separador e usa o menu pendente no cartão do jogo para as ligar. ArenaSwap só muda para os separadores que atribuíste.",
 		"back": "Voltar",
@@ -681,8 +697,7 @@
 		"reveal": "Viste isso? 👀",
 		"revealBody": "O jogo dos 76ers aqueceu (PowerScore 89). ArenaSwap detectou-o e mudou automaticamente. Sem um clique sequer.",
 		"back": "Voltar",
-		"next": "Seguinte",
-		"watchingBadge": "A VER"
+		"next": "Seguinte"
 	},
 	"stepSettings": {
 		"step": "Passo $1 de $2",
@@ -791,7 +806,6 @@
 		"switchedMessageWithReason": "{reason}. A levar-te agora para {venue}!"
 	},
 	"tabAssign": {
-		"placeholder": "— Associa um separador —",
 		"inUse": " (em uso)"
 	},
 	"suggest": {
@@ -803,7 +817,7 @@
 		"bannerAction": "Espreitar",
 		"bannerDismiss": "Dispensar sugestões",
 		"header": "Separadores sugeridos",
-		"lede": "Desmarca o que identificámos mal. O menu pendente de cada cartão continua a ter a última palavra.",
+		"lede": "Desmarca o que identificámos mal. O separador de cada jogo ainda pode ser alterado a partir da lista.",
 		"empty": "Nada do que tens aberto parece um jogo do teu calendário.",
 		"rowLabel": "Associar {tab} a {away} em {home}",
 		"apply": {
@@ -947,6 +961,27 @@
 			"l2": "Não podemos parar. É demasiado perigoso.",
 			"l3": "Temos de reduzir primeiro.",
 			"l4": "Para isto agora! Dou-te uma ordem!"
+		}
+	},
+	"board": {
+		"at": "-",
+		"steady": "Estável",
+		"trendUp": "subiu no último minuto",
+		"trendDown": "desceu no último minuto",
+		"tab": "Separador {number}",
+		"tabUnknown": "Separador",
+		"assignTab": "Associa um separador",
+		"noTab": "Nenhum separador",
+		"watching": "A ver, {tab}",
+		"switchingTo": "A mudar para {tab}",
+		"watchOn": "Ver em {networks}",
+		"inMinutes": {
+			"1": "em 1 min",
+			"n": "em $1 min"
+		},
+		"inHours": {
+			"1": "em 1 h",
+			"n": "em $1 h"
 		}
 	}
 }

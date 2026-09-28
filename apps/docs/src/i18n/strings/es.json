@@ -74,8 +74,7 @@
 			"teamStrip": "Funciona con todos los equipos de {leagues} ligas. El tuyo incluido.",
 			"captionSwitched": "ArenaSwap te cambió de {from} a {to}.",
 			"captionWatching": "Estás viendo {game}, el mejor partido del momento.",
-			"replay": "Reproducir la demo",
-			"tabLabel": "Pestaña {number}: {host}"
+			"replay": "Reproducir la demo"
 		},
 		"tabs": {
 			"titleLine1": "Configúralo una vez.",
@@ -331,7 +330,6 @@
 		"liveHeading": "PowerScores en vivo",
 		"liveLoading": "Cargando PowerScores en vivo",
 		"liveError": "No se pueden cargar los datos de partidos en vivo en este momento.",
-		"liveNow": "En vivo",
 		"machineHeading": "Míralo funcionar.",
 		"machineSub": "ArenaSwap puntúa cada partido en vivo a medida que ocurre, y luego pone tu pestaña en el mejor. Así es como se ve.",
 		"machineWatch": "Observar",
@@ -343,7 +341,6 @@
 		"liveLoadingCopy": "Buscando partidos en vivo y calculando el PowerScore ahora mismo.",
 		"liveEmptyTitle": "No hay partidos en vivo ahora mismo",
 		"liveEmptyCopy": "Cuando los partidos se pongan en vivo, esta sección se actualizará sola y mostrará PowerScores en tiempo real de todas las ligas admitidas.",
-		"liveScoreBadge": "PowerScore {score} / 100",
 		"machineAlt": "ArenaSwap observando y puntuando cada partido en vivo",
 		"machineNowWatching": "Viendo ahora",
 		"machineNowOn": "en {service}",
@@ -365,20 +362,22 @@
 		"gameCard": {
 			"live": "EN VIVO",
 			"powerScore": "PowerScore",
-			"watchLabel": "Ver en:",
 			"oddsProvidedBy": "Cuotas proporcionadas por:",
 			"favorited": "En favoritos",
 			"addToFavoritesShort": "Añadir a favoritos",
 			"addToFavorites": "Añadir {team} a favoritos",
 			"removeFromFavorites": "Quitar {team} de favoritos",
 			"openDetails": "Abrir detalles de {away} vs {home}",
-			"delay": "SUSPENDIDO",
 			"delayFallback": "Suspendido",
 			"vs": "vs",
 			"topOfInning": "Parte alta de la entrada",
 			"bottomOfInning": "Parte baja de la entrada",
 			"shootout": "PEN {away}–{home}",
-			"downDistanceAt": "{downDistance} en {fieldPosition}"
+			"downDistanceAt": "{downDistance} en {fieldPosition}",
+			"final": "Final",
+			"teamRank": "Puesto #{rank}",
+			"timeoutsRemaining": "{team}: {count} tiempos fuera restantes",
+			"timeoutsShort": "{count} TO"
 		},
 		"field": {
 			"possession": "{team} tiene el balón",
@@ -387,20 +386,19 @@
 		"main": {
 			"tourButton": "Recorrido",
 			"settingsButton": "Ajustes",
-			"sectionActiveLiveTabs": "Pestañas activas",
-			"sectionOtherLiveGames": "Partidos en vivo",
 			"sectionUpNext": "A continuación",
 			"enableToggleLabel": "Activar cambio automático",
-			"onStandbyStream": "En Standby Stream — esperando acción"
-		},
-		"tabAssign": {
-			"placeholder": "— Asigna una pestaña —"
+			"onStandbyStream": "En Standby Stream — esperando acción",
+			"guideButton": "Guía"
 		},
 		"detail": {
 			"chartPowerScoreTitle": "PowerScore a lo largo del tiempo",
 			"chartScoreTitle": "Marcador a lo largo del tiempo",
 			"chartWinProbTitle": "Probabilidad de victoria",
-			"chartComponentsTitle": "Componentes del PowerScore a lo largo del tiempo"
+			"chartComponentsTitle": "Componentes del PowerScore a lo largo del tiempo",
+			"startsSoon": "Comienza pronto",
+			"halftime": "Descanso",
+			"intermission": "Intermedio"
 		},
 		"setup": {
 			"groupSwitching": "Cambios",
@@ -437,6 +435,26 @@
 			"balls": "B",
 			"strikes": "S",
 			"outs": "O"
+		},
+		"board": {
+			"at": "vs.",
+			"steady": "Estable",
+			"trendUp": "subió en el último minuto",
+			"trendDown": "bajó en el último minuto",
+			"tab": "Pestaña {number}",
+			"assignTab": "Asigna una pestaña",
+			"noTab": "Sin pestaña",
+			"watching": "Viendo, {tab}",
+			"switchingTo": "Cambiando a {tab}",
+			"watchOn": "Ver en {networks}",
+			"inMinutes": {
+				"1": "en 1 min",
+				"n": "en $1 min"
+			},
+			"inHours": {
+				"1": "en 1 h",
+				"n": "en $1 h"
+			}
 		}
 	}
 }

@@ -249,6 +249,26 @@
 		"groupDemo": "데모 모드",
 		"groupDemoDesc": "가상 경기로 원할 때 전환 동작을 확인할 수 있어요.",
 		"bonusesSection": "보너스",
+		"groupTiming": "타이밍",
+		"groupExtras": "기타",
+		"back": "뒤로",
+		"signalsCount": {
+			"1": "시그널 1개",
+			"n": "시그널 $1개"
+		},
+		"teamsCount": {
+			"0": "없음",
+			"1": "1팀",
+			"n": "$1팀"
+		},
+		"leaguesCount": {
+			"0": "없음",
+			"1": "1개 켜짐",
+			"n": "$1개 켜짐"
+		},
+		"themeSystemShort": "시스템",
+		"stateOn": "켜짐",
+		"stateOff": "꺼짐",
 		"searchPlaceholder": "설정 검색",
 		"searchNoResults": "\"{query}\"와 일치하는 설정이 없어요",
 		"keywordsSensitivity": "격차, 기준값, 민감도, 공격적, 트리거, 미친 속도",
@@ -295,8 +315,6 @@
 		"settingsButton": "설정",
 		"guideButton": "편성표",
 		"onStandbyStream": "Standby Stream 대기 중 — 액션을 기다리고 있어요",
-		"sectionActiveLiveTabs": "활성 탭",
-		"sectionOtherLiveGames": "진행 중인 경기",
 		"sectionUpNext": "다음 경기",
 		"sectionFinal": "종료된 경기",
 		"upcomingDayNavLabel": "날짜별 예정 경기",
@@ -314,8 +332,7 @@
 			"1": "내 팀 1경기",
 			"n": "내 팀 $1경기"
 		},
-		"favoriteGame": "응원팀 경기",
-		"at": "vs"
+		"favoriteGame": "응원팀 경기"
 	},
 	"detail": {
 		"legendCloseness": "접전도",
@@ -326,12 +343,14 @@
 		"tabOverview": "개요",
 		"tabStandings": "순위",
 		"startsSoon": "곧 시작",
-		"final": "종료",
+		"startsIn": "{time} 후 시작",
+		"startsInOn": "{time} 후 {networks}에서 시작",
+		"liveTabExplainer": "ArenaSwap은 탭이 있는 경기로만 전환할 수 있어요.",
+		"sourcesFootnote": "저희 소식통이 전하는 생중계예요. 항상 좋은 자리를 차지하거든요.",
 		"totalLabel": "{total} / {max}",
 		"totalLabelBaseMax": "{total} (기본 최대 {max})",
 		"back": "뒤로",
 		"close": "닫기",
-		"teamRecord": "전적: {record}",
 		"unitDays": "일",
 		"unitHours": "시간",
 		"unitMinutes": "분",
@@ -505,12 +524,10 @@
 		"addToFavorites": "{team} 응원팀으로 등록",
 		"favorited": "응원 중",
 		"addToFavoritesShort": "응원팀 등록",
-		"watchLabel": "시청:",
 		"oddsProvidedBy": "배당률 제공:",
 		"openDetails": "{away} vs {home} 상세 정보 열기",
 		"live": "LIVE",
 		"final": "종료",
-		"delay": "지연",
 		"delayFallback": "지연",
 		"shootout": "PK {away}–{home}",
 		"downDistanceAt": "{fieldPosition}에서 {downDistance}",
@@ -528,7 +545,9 @@
 	},
 	"gameBoost": {
 		"heading": "게임 부스트",
-		"explainer": "이 경기의 PowerScore에 점수를 더해 우선순위를 높여요."
+		"explainer": "이 경기의 PowerScore에 점수를 더해 우선순위를 높여요.",
+		"decrease": "1점 감소",
+		"increase": "1점 증가"
 	},
 	"powerScore": {
 		"heading": "PowerScore 세부 내역",
@@ -582,6 +601,11 @@
 		"back": "뒤로",
 		"step": "$1/$2단계",
 		"title": "어떤 스포츠를 보시나요?",
+		"lede": "원하는 만큼 골라보세요. 나중에 설정에서 바꿀 수 있어요.",
+		"count": {
+			"1": "리그 1개",
+			"n": "리그 $1개"
+		},
 		"all": "전체",
 		"next": "다음"
 	},
@@ -591,7 +615,7 @@
 		"title": "응원팀을 선택하세요",
 		"explainer": "응원팀은 점수 보너스를 받아서 ArenaSwap이 그 경기를 더 우선시해요.",
 		"yourFavorites": "내 응원팀",
-		"leagueNotTracked": "{league} · 추적 안 함",
+		"leagueNotTracked": "{league}, 추적 안 함",
 		"searchPlaceholder": "팀 검색…",
 		"loading": "팀 불러오는 중…",
 		"loadError": "팀을 불러오지 못했어요.",
@@ -600,6 +624,10 @@
 		"removeFavorite": "{team} 응원팀에서 해제",
 		"addFavorite": "{team} 응원팀으로 등록",
 		"noMatch": "\"{query}\"와 일치하는 팀이 없어요",
+		"count": {
+			"1": "1팀",
+			"n": "$1팀"
+		},
 		"skip": "건너뛰기",
 		"done": "완료"
 	},
@@ -625,8 +653,8 @@
 		"title": "켜고 끄기",
 		"subtitle": "스위치 하나로 모든 걸 제어해요.",
 		"tryIt": "↑ 눌러보세요",
-		"statusActive": "● ArenaSwap 작동 중",
-		"statusPaused": "○ 자동 전환 일시정지",
+		"stateOn": "ArenaSwap 작동 중",
+		"stateOff": "자동 전환 일시 정지",
 		"bodyBeforeOn": "",
 		"bodyOn": "켜짐",
 		"bodyAfterOn": "일 때, ArenaSwap이 가장 흥미진진한 라이브 경기로 탭을 자동 전환해요. 언제든 꺼서 다시 컨트롤을 되찾으세요.",
@@ -642,24 +670,13 @@
 		"progressAriaLabel": "투어 진행 상황",
 		"introBody": "PowerScore는 모든 라이브 경기를 실시간으로 평가해서 가장 흥미진진한 순간을 찾아내요. 어떤 공식이 숨어 있는지 살펴볼까요!",
 		"introButton": "공식 살펴보기",
-		"closenessMeasured": "점수 차이로 측정하고, 경기 진행도에 따라 가중치를 둬요.",
-		"lateGameMeasured": "피리어드, 남은 시간, 점수 차로 측정해요.",
-		"momentumMeasured": "최근 순득점 급증으로 측정하고, 시간이 지나면 서서히 감소해요.",
-		"leadChangesMeasured": "기록 구간 내 리드 변화 횟수로 측정해요.",
-		"comebackMeasured": "기록 구간 내 점수 차 축소량으로 측정해요.",
 		"boostsHeading": "부스트 & 페널티",
 		"boostsSubtitle": "점수를 세밀하게 조정하는 요소들",
 		"clockStallPenaltyName": "시계 정지 페널티",
-		"clockStallPenaltyMeasured": "경기 시계가 여러 번 업데이트 동안 멈추면 적용되어 시그널 소계를 줄여요.",
 		"volatilityName": "변동성 부스트 / 페널티",
-		"volatilityMeasured": "승리 확률이 50% 근처인 경기는 부스트를 받고, 일방적인 경기는 페널티를 받아요.",
 		"favoriteBoostName": "응원팀 부스트",
-		"favoriteBoostMeasured": "저장해 둔 응원팀이 매치업에 있을 때 추가돼요.",
 		"gameBoostName": "게임 부스트",
-		"gameBoostMeasured": "특정 경기를 일시적으로 우선시하기 위해 직접 적용하는 점수예요.",
-		"scoringOpportunityMeasured": "레드존 공격(미식축구) 또는 출루한 주자(야구/소프트볼)에 대해 자동으로 추가돼요.",
 		"postseasonBoostName": "포스트시즌 부스트",
-		"postseasonBoostMeasured": "플레이오프, 콘퍼런스 파이널, 챔피언십 경기에 적용되는 고정 보너스예요.",
 		"back": "뒤로",
 		"next": "다음",
 		"tapHint": "아무 곳이나 탭하면 계속돼요"
@@ -668,7 +685,6 @@
 		"step": "$1/$2단계",
 		"title": "탭을 경기에 할당하기",
 		"subtitle": "ArenaSwap은 등록한 탭만 건드려요.",
-		"assignPlaceholder": "— 탭 할당 —",
 		"linkHint": "↑ 여기에 브라우저 탭 연결",
 		"body": "각 스트림을 별도의 브라우저 탭에서 열고, 경기 카드의 드롭다운으로 연결하세요. ArenaSwap은 할당한 탭으로만 전환해요.",
 		"back": "뒤로",
@@ -681,8 +697,7 @@
 		"reveal": "방금 보셨나요? 👀",
 		"revealBody": "76ers 경기가 뜨거워졌어요 (PowerScore 89). ArenaSwap이 이를 감지하고 자동으로 전환했어요. 클릭 한 번 필요 없었죠.",
 		"back": "뒤로",
-		"next": "다음",
-		"watchingBadge": "WATCHING"
+		"next": "다음"
 	},
 	"stepSettings": {
 		"step": "$1/$2단계",
@@ -791,7 +806,6 @@
 		"switchedMessageWithReason": "{reason}. 지금 {venue}로 전환해요!"
 	},
 	"tabAssign": {
-		"placeholder": "— 탭 할당 —",
 		"inUse": " (사용 중)"
 	},
 	"suggest": {
@@ -803,7 +817,7 @@
 		"bannerAction": "살짝 보기",
 		"bannerDismiss": "추천 닫기",
 		"header": "추천 탭",
-		"lede": "잘못된 항목은 체크 해제하세요. 각 카드의 드롭다운이 최종 결정권을 가지고 있어요.",
+		"lede": "잘못된 항목은 체크 해제하세요. 각 경기의 탭은 목록에서 언제든지 변경할 수 있어요.",
 		"empty": "열려 있는 탭 중에 오늘 경기 같아 보이는 게 없어요.",
 		"rowLabel": "{tab} {away} vs {home} 경기 연결",
 		"apply": {
@@ -947,6 +961,27 @@
 			"l2": "멈출 수 없어. 너무 위험해.",
 			"l3": "먼저 속도를 줄여야 해.",
 			"l4": "그냥 이거 멈추라고! 명령이다!"
+		}
+	},
+	"board": {
+		"at": "vs",
+		"steady": "유지",
+		"trendUp": "최근 1분 동안 상승",
+		"trendDown": "최근 1분 동안 하락",
+		"tab": "탭 {number}",
+		"tabUnknown": "탭",
+		"assignTab": "탭 할당",
+		"noTab": "탭 없음",
+		"watching": "시청 중, {tab}",
+		"switchingTo": "{tab} 전환 중",
+		"watchOn": "{networks}에서 시청",
+		"inMinutes": {
+			"1": "1분 후",
+			"n": "$1분 후"
+		},
+		"inHours": {
+			"1": "1시간 후",
+			"n": "$1시간 후"
 		}
 	}
 }
