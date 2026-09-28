@@ -7,9 +7,9 @@ interface toastContainerProps {
 }
 
 const variantConfig: Record<string, { icon: string; label: string }> = {
-	success: { icon: 'bi-check-circle-fill text-success', label: i18n.t('toast.success') },
-	error:   { icon: 'bi-x-circle-fill text-danger',      label: i18n.t('toast.error') },
-	info:    { icon: 'bi-info-circle-fill text-primary',   label: i18n.t('toast.info') },
+	success: { icon: 'bi-check-circle-fill is-success', label: i18n.t('toast.success') },
+	error:   { icon: 'bi-x-circle-fill is-error',       label: i18n.t('toast.error') },
+	info:    { icon: 'bi-info-circle-fill is-info',     label: i18n.t('toast.info') },
 };
 
 const toastContainer = ({ toasts, onDismiss }: toastContainerProps) => {
@@ -19,13 +19,13 @@ const toastContainer = ({ toasts, onDismiss }: toastContainerProps) => {
 			{toasts.map(toast => {
 				const { icon, label } = variantConfig[toast.variant] ?? variantConfig['info']!;
 				return (
-					<div key={toast.id} className='toast show toast-slide-up' role='alert' aria-live='assertive' aria-atomic='true'>
-						<div className='toast-header'>
-							<i className={`bi ${icon} me-2`} />
-							<strong className='me-auto'>{label}</strong>
-							<button type='button' className='btn-close btn-close-white' onClick={() => onDismiss(toast.id)} aria-label={i18n.t('toast.close')} />
-						</div>
-						<div className='toast-body'>{toast.message}</div>
+					<div key={toast.id} className='toast show toast-slide-up as-toast' role='alert' aria-live='assertive' aria-atomic='true'>
+						<i className={`bi ${icon} as-toast-icon`} aria-hidden='true' />
+						<span className='visually-hidden'>{label}</span>
+						<div className='as-toast-message'>{toast.message}</div>
+						<button type='button' className='as-icon as-toast-close' onClick={() => onDismiss(toast.id)} aria-label={i18n.t('toast.close')}>
+							<i className='bi bi-x-lg' aria-hidden='true' />
+						</button>
 					</div>
 				);
 			})}

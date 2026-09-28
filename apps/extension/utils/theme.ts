@@ -12,14 +12,9 @@ export const resolveTheme = (preference: ThemePreference, prefersLight: boolean)
 	preference === 'system' ? (prefersLight ? 'light' : 'dark') : preference
 );
 
-export const fullLogoSrc = (theme: ResolvedTheme): string => (
-	theme === 'light' ? '/images/full_logo_black.svg' : '/images/full_logo_white_on_transparent.svg'
-);
-
 // `preference` is null while the stored prefs are still loading, which leaves what themeBoot.js set
-// alone instead of flashing the default in and back out. `pinDark` is for the screens that stay dark
-// whatever the setting says; it changes what is shown and never what is remembered.
-export const useTheme = (preference: ThemePreference | null, pinDark = false): ResolvedTheme => {
+// alone instead of flashing the default in and back out.
+export const useTheme = (preference: ThemePreference | null): ResolvedTheme => {
 	const [theme, setTheme] = useState(readDocumentTheme);
 
 	useEffect(() => {
@@ -28,18 +23,18 @@ export const useTheme = (preference: ThemePreference | null, pinDark = false): R
 	}, [preference]);
 
 	useEffect(() => {
-		if (preference === null && !pinDark) return;
+		if (preference === null) return;
 		const query = window.matchMedia(lightSchemeQuery);
 		const apply = () => {
-			const next = preference === null || pinDark ? 'dark' : resolveTheme(preference, query.matches);
+			const next = resolveTheme(preference, query.matches);
 			document.documentElement.dataset.bsTheme = next;
 			setTheme(next);
 		};
 		apply();
-		if (preference !== 'system' || pinDark) return;
+		if (preference !== 'system') return;
 		query.addEventListener('change', apply);
 		return () => query.removeEventListener('change', apply);
-	}, [preference, pinDark]);
+	}, [preference]);
 
 	return theme;
 };

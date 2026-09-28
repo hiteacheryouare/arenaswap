@@ -5,13 +5,11 @@
 // Two rules, checked here for every frame that has them rather than in each call site's own spec:
 // a bare crest has no plate to keep clear of and is never clipped, and a plated one is inset to
 // three quarters of the plate, the share the widest mark in any league needs to land on it.
+import type { CSSProperties } from 'react';
 import Crest from '@arenaswap/ui/src/components/crest';
 
 // The plate class and the crest class, exactly as each call site passes them to TeamCrest.
 const frames: [string, string][] = [
-	['gd-bar-logo-shell', 'gd-bar-logo'],
-	['gd-poster-crest', 'gd-poster-crest-logo'],
-	['game-detail-team-logo-shell', 'game-detail-team-logo'],
 	['ff-endzone-crest', 'ff-endzone-crest-art'],
 	['ff-logo-shell', 'ff-logo-art'],
 ];
@@ -46,6 +44,41 @@ describe('a round crest frame', () => {
 					expect(mark.width / box.width, `${art} width against its plate`).to.be.at.most(0.75);
 					expect(mark.height / box.height, `${art} height against its plate`).to.be.at.most(0.75);
 				});
+			});
+		});
+	});
+});
+
+const mountBoard = (bare: boolean) => {
+	cy.viewport(200, 200);
+	cy.mount(
+		<span className='as-crest-box' style={{ '--crest': '48px' } as CSSProperties}>
+			<span className={bare ? 'as-crest is-bare' : 'as-crest'}>
+				<Crest abbreviation='NYG' className='as-crest-art' fallback='blank' />
+			</span>
+		</span>,
+	);
+};
+
+// The board's crest, which the detail stage, its compact bar and the box score all draw through. Its
+// plate never clips: the mark is inset far enough inside the circle that there is nothing to cut.
+describe('the board crest frame', () => {
+	it('draws a bare crest whole, at the size of its box', () => {
+		mountBoard(true);
+		cy.get('.as-crest').should('have.css', 'overflow', 'visible');
+		cy.get('.as-crest-art').should(([art]: JQuery<HTMLElement>) => {
+			expect(art.getBoundingClientRect().width).to.equal(48);
+		});
+	});
+
+	it('insets a plated crest to at most three quarters of the plate', () => {
+		mountBoard(false);
+		cy.get('.as-crest').then(([plate]: JQuery<HTMLElement>) => {
+			const box = plate.getBoundingClientRect();
+			cy.get('.as-crest-art').should(([art]: JQuery<HTMLElement>) => {
+				const mark = art.getBoundingClientRect();
+				expect(mark.width / box.width).to.be.at.most(0.75);
+				expect(mark.height / box.height).to.be.at.most(0.75);
 			});
 		});
 	});

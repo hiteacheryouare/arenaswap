@@ -1,4 +1,5 @@
-import LiveGameCard from '@arenaswap/ui/src/components/liveGameCard';
+import GameStage from '@arenaswap/ui/src/components/gameStage';
+import GameTile from '@arenaswap/ui/src/components/gameTile';
 import GameCardReveal from '../../entrypoints/popup/components/gameCardReveal';
 import {
 	revealFullRate,
@@ -48,9 +49,9 @@ const game = (
 	homeTeam: { id: 'h', ...home, ...colors.home, abbreviation: 'HOM', score: 1, logo: darkMark },
 }) as unknown as Game;
 
-// The card the popup really draws a live game on. Without a PowerScore it is 148px tall and with one
-// it is 167, which is the difference between a band of 74px and a band of 84 — and the band's height
-// is what bounds the type on a name of two short lines, so both cards have to be measured.
+// The two hosts the popup draws a live game on: a tile, about 148px tall, and the stage, whose poster
+// runs under the header and is taller again. The band's height is what bounds the type on a name of
+// two short lines, so both have to be measured; a PowerScore handed in here puts the game on the stage.
 const scored: PowerScoreResult = {
 	gameId: 'g1',
 	total: 72,
@@ -73,23 +74,21 @@ const Harness = ({ mode = 'full', away = club('Miami Marlins'), home = club('Was
 	colors?: palette;
 }) => {
 	const subject = game(away, home, colors);
-	const shared = {
-		game: subject,
-		excitementResult: powerScore,
-		favoriteTeamIds: new Set<string>(),
-		onToggleFavoriteTeam: () => {},
-		onOpenGameDetail: () => {},
-		bettingPrefs: { bettingEnabled: false },
-	};
 	return (
-		<div className='popup-container d-flex flex-column'>
-			<div className='mt-2'>
-				<div>
-					<GameCardReveal game={subject} mode={mode} index={0} skipping={false}>
-						<LiveGameCard {...shared} />
-					</GameCardReveal>
+		<div className='popup-container d-flex flex-column gm'>
+			{powerScore ? (
+				<GameCardReveal game={subject} mode={mode} index={0} skipping={false} shape='stage'>
+					<GameStage game={subject} power={{ value: powerScore.total, label: 'PowerScore' }} note='Kendrick Family Ballpark' />
+				</GameCardReveal>
+			) : (
+				<div className='gm-lower'>
+					<div className='gm-tiles is-odd'>
+						<GameCardReveal game={subject} mode={mode} index={0} skipping={false} shape='tile'>
+							<GameTile game={subject} power={72} trend={3} />
+						</GameCardReveal>
+					</div>
 				</div>
-			</div>
+			)}
 		</div>
 	);
 };
@@ -188,7 +187,7 @@ describe('the clubs named over the opening beat', () => {
 		cy.get('.game-card-reveal-opening-band').should('not.exist');
 
 		cy.mount(<Harness mode='none' />);
-		cy.get('.game-card').should('exist');
+		cy.get('[data-game]').should('exist');
 		cy.get('.game-card-reveal-opening-name').should('not.exist');
 	});
 
@@ -197,7 +196,7 @@ describe('the clubs named over the opening beat', () => {
 	it('splits the card horizontally, a band of colour per club', () => {
 		cy.mount(<Harness />);
 		scrubTo(sceneMs(nameScene));
-		rectOf('.game-card').then(card => {
+		rectOf('[data-game]').then(card => {
 			([['away', card.top, awayColor], ['home', card.top + card.height / 2, homeColor]] as const)
 				.forEach(([side, top, colour]) => {
 					cy.get(`.game-card-reveal-opening-band.is-${side}`).should($band => {
@@ -341,7 +340,7 @@ describe('the clubs named over the opening beat', () => {
 			cy.mount(<Harness away={away} home={home} powerScore={scored} />);
 			awaitCrests();
 			scrubTo(sceneMs(nameScene));
-			rectOf('.game-card').should(card => expect(card.height).to.be.greaterThan(160));
+			rectOf('[data-game]').should(card => expect(card.height).to.be.greaterThan(160));
 			(['away', 'home'] as const).forEach(side => {
 				cy.get(`.game-card-reveal-opening-name.is-${side}`).should($box => {
 					const band = $box[0].getBoundingClientRect();
@@ -393,7 +392,7 @@ describe('the clubs named over the opening beat', () => {
 
 		// Onto the slot rather than merely away: what the name leaves towards is the point the tricode
 		// it is standing in for appears on — the crest slots at 25% and 75%, on the centre line.
-		rectOf('.game-card').then(card => {
+		rectOf('[data-game]').then(card => {
 			([['away', 0.25], ['home', 0.75]] as const).forEach(([side, slot]) => {
 				rectOf(`.game-card-reveal-opening-name.is-${side} .game-card-reveal-opening-name-type`)
 					.then(type => {

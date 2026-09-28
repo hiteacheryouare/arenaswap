@@ -1,16 +1,18 @@
 import { bullsHeat, eaglesCowboys, liveState, makeScore, onboardedPrefs, openTabs, sixersThunder } from '../support/fixtures';
 
 const onboarded = { local: { onboardingCompleted: true }, sync: { prefs: onboardedPrefs() } };
-const cardFor = (abbreviation: string) => cy.contains('.game-card', abbreviation);
-const tabPicker = (abbreviation: string) => cardFor(abbreviation).find('.game-card-tab-assign .form-select');
+const cardFor = (abbreviation: string) => cy.contains('[data-game]', abbreviation);
+const tabPicker = (abbreviation: string) => cardFor(abbreviation).find('.game-card-tab-assign .as-picker');
+const powerOf = (abbreviation: string) => cardFor(abbreviation).find('.as-stage-power strong, .as-tile-power, .as-row-power');
 
 describe('registering a tab and watching the lead change', () => {
 	beforeEach(() => cy.openPopup({ ...onboarded, state: liveState(), tabs: openTabs }));
 
-	it('orders the list by PowerScore, highest first', () => {
-		cy.get('.game-card-ps-score').should('have.length', 2);
-		cy.get('.game-card-ps-score').first().should('have.text', '82 / 100');
-		cy.get('.game-card-ps-score').last().should('have.text', '19 / 100');
+	it('puts the higher PowerScore on the stage and the lower one in a row', () => {
+		cy.get('.as-stage').should('contain.text', sixersThunder.homeTeam.abbreviation);
+		powerOf(sixersThunder.homeTeam.abbreviation).should('have.text', '82');
+		cy.get('.as-row').should('contain.text', bullsHeat.homeTeam.abbreviation);
+		powerOf(bullsHeat.homeTeam.abbreviation).should('have.text', '19');
 	});
 
 	it('assigns a tab to a game and tells the background about it', () => {
@@ -19,8 +21,8 @@ describe('registering a tab and watching the lead change', () => {
 		cy.background().its('registry').should('deep.equal', [
 			{ tabId: openTabs[0].id, gameId: sixersThunder.id },
 		]);
-		// A registered game is promoted out of Live Games into its own section.
-		cy.contains('.popup-section-title', 'Active Tabs').should('be.visible');
+		// The picker now names the tab the game is on.
+		tabPicker(sixersThunder.homeTeam.abbreviation).should('have.text', 'Tab 1');
 	});
 
 	it('keeps one tab from serving two games at once', () => {
@@ -36,20 +38,20 @@ describe('registering a tab and watching the lead change', () => {
 		tabPicker(sixersThunder.homeTeam.abbreviation).choose(openTabs[0].title);
 		cy.background().its('registry').should('have.length', 1);
 
-		tabPicker(sixersThunder.homeTeam.abbreviation).choose('— Assign a tab —');
+		tabPicker(sixersThunder.homeTeam.abbreviation).choose('No tab');
 		cy.background().its('registry').should('deep.equal', []);
 	});
 
-	// A hovered card is lifted with a transform, which makes it a stacking context of its own, and the
-	// card after it in the list then paints over anything that escapes it. Cypress cannot hover, so
-	// the lift is forced on; what is on top at the menu's centre is then asked of the browser itself.
-	it('keeps the open picker above the next card while its own card is hovered', () => {
+	// Every game is a stacking context of its own (a pressed tile scales), so the game after it in the
+	// list would paint over a menu escaping it. The transform is forced on; what is on top at the
+	// menu's centre is then asked of the browser itself.
+	it('keeps the open picker above the next game while its own game is pressed', () => {
 		cy.document().then(doc => {
 			const lift = doc.createElement('style');
-			lift.textContent = '.game-card-clickable { transform: translateY(-1px); }';
+			lift.textContent = '.as-stage, .as-tile, .as-row { transform: translateY(-1px); }';
 			doc.head.appendChild(lift);
 		});
-		tabPicker(sixersThunder.homeTeam.abbreviation).click();
+		tabPicker(sixersThunder.homeTeam.abbreviation).click({ scrollBehavior: 'center' });
 
 		cy.get('.dropdown-menu.show').should('be.visible').then($menu => {
 			const box = $menu[0]!.getBoundingClientRect();
@@ -58,21 +60,21 @@ describe('registering a tab and watching the lead change', () => {
 		});
 	});
 
-	it('re-sorts live when the background pushes a new leader', () => {
-		cy.get('.game-card-ps-score').first().should('have.text', '82 / 100');
+	it('hands the stage to a new leader when the background pushes one', () => {
+		cy.get('.as-stage .as-stage-power strong').should('have.text', '82');
 
 		// The blowout turns into the close game and the close one cools off.
 		cy.pushScores({
 			scores: [makeScore(sixersThunder.id, 11), makeScore(bullsHeat.id, 94)],
 		});
 
-		cy.get('.game-card-ps-score').first().should('have.text', '94 / 100');
-		cy.contains('.game-card', bullsHeat.homeTeam.abbreviation)
-			.find('.game-card-ps-score').should('have.text', '94 / 100');
+		cy.get('.as-stage .as-stage-power strong').should('have.text', '94');
+		cy.get('.as-stage').should('contain.text', bullsHeat.homeTeam.abbreviation);
+		powerOf(sixersThunder.homeTeam.abbreviation).should('have.text', '11');
 	});
 
 	it('picks up a game that only appears in a later push', () => {
-		cy.contains('.game-card', 'DAL').should('not.exist');
+		cy.contains('[data-game]', 'DAL').should('not.exist');
 
 		const current = liveState();
 		cy.pushScores({
@@ -80,10 +82,9 @@ describe('registering a tab and watching the lead change', () => {
 			scores: [...current.scores, makeScore(eaglesCowboys.id, 66)],
 		});
 
-		// Three cards overflow a 560px-tall popup, so the newcomer is only reachable by scrolling.
-		cy.contains('.game-card', 'DAL').should('exist');
+		cy.contains('[data-game]', 'DAL').should('exist');
 		cy.get('.popup-container').scrollTo('bottom');
-		cy.contains('.game-card', 'DAL').should('be.visible');
+		cy.contains('[data-game]', 'DAL').should('be.visible');
 	});
 });
 

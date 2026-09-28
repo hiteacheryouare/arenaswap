@@ -10,6 +10,10 @@ const mountPager = (index: number, total: number, dayLabel = 'Tuesday, Sep 2') =
 	);
 };
 
+// The arrows are quiet buttons on the page. Bootstrap's light defaults (#e9ecef, #f8f9fa) have
+// turned up as slabs on this dark popup before, so no state of an arrow may paint one.
+const alphaOf = (color: string) => (color.startsWith('rgba') ? Number(color.split(',')[3]!.replace(')', '')) : 1);
+
 describe('upcomingDayPager', () => {
 	it('names the day it is showing', () => {
 		mountPager(0, 5);
@@ -55,25 +59,28 @@ describe('upcomingDayPager', () => {
 		});
 	});
 
-	// Pagination is the first component in the popup to reach for --as-secondary-bg, which this theme
-	// never overrode and which is therefore still Bootstrap's light default. Unfixed, an arrow at the
-	// end of the range is an #e9ecef slab on a #0d1117 popup.
-	it('keeps a disabled arrow on the popup background rather than a light default', () => {
+
+	it('keeps a disabled arrow transparent on the page', () => {
 		mountPager(0, 5);
-		cy.get('[data-testid="upcoming-day-previous"]').should('have.css', 'background-color', 'rgb(13, 17, 23)');
+		cy.get('[data-testid="upcoming-day-previous"]').should(([arrow]: JQuery<HTMLElement>) => {
+			expect(alphaOf(getComputedStyle(arrow).backgroundColor)).to.equal(0);
+		});
 	});
 
-	// Same gap, via --as-tertiary-bg: a focused arrow used to flash #f8f9fa.
-	it('keeps a focused arrow dark', () => {
+	it('tints a focused arrow with the hover wash, never a light slab', () => {
 		mountPager(2, 5);
-		cy.get('[data-testid="upcoming-day-next"]').click();
-		cy.get('[data-testid="upcoming-day-next"]').should('have.css', 'background-color', 'rgb(22, 27, 34)');
+		cy.get('[data-testid="upcoming-day-next"]').focus();
+		cy.get('[data-testid="upcoming-day-next"]').should(([arrow]: JQuery<HTMLElement>) => {
+			expect(alphaOf(getComputedStyle(arrow).backgroundColor)).to.be.lessThan(0.2);
+		});
 	});
 
-	// The active page is $primary, and Bootstrap's default active colour is a flat white that only
-	// reaches 3.22:1 on it. The override lives in bootstrap.scss and is easy to lose in a refactor.
-	it('sets the active day label dark enough to read on the primary fill', () => {
+	it('sets the day in the ink', () => {
 		mountPager(0, 3);
-		cy.get('[data-testid="upcoming-day-label"]').should('have.css', 'color', 'rgb(13, 17, 23)');
+		cy.get('[data-testid="upcoming-day-label"]').should(([label]: JQuery<HTMLElement>) => {
+			const ink = getComputedStyle(document.documentElement).getPropertyValue('--as-ink').trim();
+			const [red, green, blue] = [1, 3, 5].map(index => Number.parseInt(ink.slice(index, index + 2), 16));
+			expect(getComputedStyle(label).color).to.equal(`rgb(${red}, ${green}, ${blue})`);
+		});
 	});
 });

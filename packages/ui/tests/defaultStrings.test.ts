@@ -3,11 +3,9 @@ import { join } from 'node:path';
 import { defaultStrings } from '../src/components/defaultStrings';
 
 /* `defaultStrings` is the English fallback the shared components fall back to when nothing has put
-   a translator on the context. That is not a hypothetical: `apps/docs` renders `LiveGameCard`
-   straight out of `ScreenshotCard.tsx` with no provider around it, which is how the store
-   screenshots get drawn. A key missing from here throws nothing — `i18nContext`'s default
-   translator does `defaultStrings[key] ?? key` — so what ships is a card with the literal text
-   `gameCard.somethingNew` where a label should be, baked into a screenshot.
+   a translator on the context. A key missing from here throws nothing — `i18nContext`'s default
+   translator does `defaultStrings[key] ?? key` — so what ships is a board with the literal text
+   `board.somethingNew` where a label should be.
 
    Scanning the source rather than rendering, because this project's Jest runs in Node with no
    document. The scan has to see *every* shape a call site uses, not the common one: an earlier
@@ -144,8 +142,8 @@ describe('defaultStrings covers every label the shared components render', () =>
 	// and they are the only call site written as a ternary, so they are the canary for it.
 	test('the scan finds the labels it is supposed to be checking', () => {
 		expect(rendered.size).toBeGreaterThan(25);
-		expect(rendered.has('gameCard.live')).toBe(true);
-		expect(rendered.has('gameCard.openDetails')).toBe(true);
+		expect(rendered.has('board.at')).toBe(true);
+		expect(rendered.get('board.steady')).toEqual(['components/gameTile.tsx']);
 		expect(rendered.get('gameCard.topOfInning')).toEqual(['components/inningHalfIcon.tsx']);
 		expect(rendered.get('gameCard.bottomOfInning')).toEqual(['components/inningHalfIcon.tsx']);
 	});

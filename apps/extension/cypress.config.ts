@@ -28,10 +28,6 @@ const istanbulPlugins = async () => {
 
 const componentStubs: Record<string, string> = {
 	'./flipScore': root('./cypress/stubs/flipScore.tsx'),
-	// tabAssignSelect is deliberately absent: it touches no browser API, so the real control
-	// mounts here. Stubbing it to null had the card and pre-game specs measuring a layout with
-	// no tab picker in it, which is not a layout the extension ever renders.
-	'./gameCard': root('./cypress/stubs/gameCard.tsx'),
 	'./gameDetailChart': root('./cypress/stubs/gameDetailChart.tsx'),
 	'./popupFooter': root('./cypress/stubs/popupFooter.tsx'),
 	'./proTip': root('./cypress/stubs/proTip.tsx'),

@@ -43,7 +43,10 @@ const usePopupHeaderCollapse = (scroller?: RefObject<HTMLElement | null>) => {
 			svg,
 			bar,
 			scroller: node,
-			onScroll: top => bar.style.setProperty('--lifted', top > liftedFrom ? '1' : '0'),
+			onScroll: top => {
+				bar.style.setProperty('--lifted', top > liftedFrom ? '1' : '0');
+				bar.classList.toggle('is-lifted', top > liftedFrom);
+			},
 		});
 	}, [scroller]);
 
@@ -64,6 +67,7 @@ export const PopupHeader = ({
 	onOpenSettings,
 	onStartTour,
 	onOpenGuide,
+	onStage = false,
 }: {
 	// The element the header should collapse against. Absent on the website, which shows this header
 	// as a picture of the popup rather than a scrolling one, so the mark simply stays whole there.
@@ -73,37 +77,42 @@ export const PopupHeader = ({
 	// The id has to be unique per document, and the website renders this header twice on one page.
 	toggleId?: string;
 	// False where the header is being shown rather than used, which is every instance on the
-	// website. Controls that cannot do anything should not take focus or invite a click.
-	interactive?: boolean;
+	// website. Controls that cannot do anything should not take focus or invite a click. 'toggle'
+	// leaves only the switch live, for the tour step that teaches it.
+	interactive?: boolean | 'toggle';
 	onToggleEnabled: () => void;
 	onOpenSettings: () => void;
 	onStartTour: () => void;
 	// Optional, and the button is absent without it. The website renders this header twice and has no
 	// guide page to open, so there is nothing there for a third control to do.
 	onOpenGuide?: () => void;
+	// The header sits over the stage, so until the bar lifts it is drawn in the stage's white ink.
+	onStage?: boolean;
 }) => {
 	const t = useT();
 	const { headerRef, wordmarkRef } = usePopupHeaderCollapse(scroller);
+	const buttonsLive = interactive === true;
+	const toggleLive = interactive !== false;
 	return (
-		<div ref={headerRef} className='popup-header d-flex justify-content-between align-items-center'>
+		<div ref={headerRef} className={`popup-header d-flex justify-content-between align-items-center${onStage ? ' is-on-stage' : ''}`}>
 			<Wordmark ref={wordmarkRef} className='arenaswap-logo' />
-			<div className='d-flex align-items-center gap-2' aria-hidden={interactive ? undefined : true}>
+			<div className='popup-tools d-flex align-items-center' aria-hidden={toggleLive ? undefined : true}>
 				{/* Before the help mark rather than after the cog: settingsCog.cy.tsx identifies the cog
 				    as `.popup-settings-button` .last(), and a third button appended after it would
 				    silently repoint those assertions at this one. */}
 				{onOpenGuide && (
-					<button className='btn btn-sm p-0 popup-settings-button' onClick={onOpenGuide} title={t('main.guideButton')} aria-label={t('main.guideButton')} disabled={!interactive} tabIndex={interactive ? undefined : -1}>
-						<i className='bi bi-calendar-week popup-settings-icon' />
+					<button type='button' className='as-icon popup-settings-button' onClick={onOpenGuide} title={t('main.guideButton')} aria-label={t('main.guideButton')} disabled={!buttonsLive} tabIndex={buttonsLive ? undefined : -1}>
+						<i className='bi bi-calendar popup-settings-icon' aria-hidden='true' />
 					</button>
 				)}
-				<button className='btn btn-sm p-0 popup-settings-button' onClick={onStartTour} title={t('main.tourButton')} aria-label={t('main.tourButton')} disabled={!interactive} tabIndex={interactive ? undefined : -1}>
-					<i className='bi bi-question-circle popup-settings-icon' />
+				<button type='button' className='as-icon popup-settings-button' onClick={onStartTour} title={t('main.tourButton')} aria-label={t('main.tourButton')} disabled={!buttonsLive} tabIndex={buttonsLive ? undefined : -1}>
+					<i className='bi bi-question-circle popup-settings-icon' aria-hidden='true' />
 				</button>
-				<button className='btn btn-sm p-0 popup-settings-button' onClick={onOpenSettings} title={t('main.settingsButton')} aria-label={t('main.settingsButton')} disabled={!interactive} tabIndex={interactive ? undefined : -1}>
-					<i className='bi bi-gear-fill popup-settings-icon' />
+				<button type='button' className='as-icon popup-settings-button' onClick={onOpenSettings} title={t('main.settingsButton')} aria-label={t('main.settingsButton')} disabled={!buttonsLive} tabIndex={buttonsLive ? undefined : -1}>
+					<i className='bi bi-gear popup-settings-icon' aria-hidden='true' />
 				</button>
-				<div className='form-check form-switch mb-0'>
-					<input className='form-check-input' type='checkbox' id={toggleId} checked={enabled} onChange={onToggleEnabled} disabled={!prefsLoaded || !interactive} tabIndex={interactive ? undefined : -1} aria-label={t('main.enableToggleLabel')} />
+				<div className='form-check form-switch mb-0 popup-enable'>
+					<input className='form-check-input' type='checkbox' role='switch' id={toggleId} checked={enabled} aria-checked={enabled} onChange={onToggleEnabled} disabled={!prefsLoaded || !toggleLive} tabIndex={toggleLive ? undefined : -1} aria-label={t('main.enableToggleLabel')} />
 				</div>
 			</div>
 		</div>

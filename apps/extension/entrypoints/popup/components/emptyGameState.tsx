@@ -11,12 +11,12 @@ interface emptyGameStateProps {
 const emptyGameState = ({ noLeaguesSelected, noGames, onOpenSetup, onRefresh }: emptyGameStateProps) => {
 	if (noLeaguesSelected) {
 		return (
-			<div className='text-center rounded mt-2 mb-3 p-3 popup-empty-leagues'>
-				<h2 className='fw-bold text-white lh-sm mb-2 popup-empty-leagues-title'>{i18n.t('empty.leaguesTitle')}</h2>
-				<p className='mb-2 lh-sm popup-empty-leagues-copy'>
-					{i18n.t('empty.leaguesCopy')}
-				</p>
-				<button className='btn btn-primary btn-lg w-100' onClick={onOpenSetup}>{i18n.t('empty.selectLeagues')}</button>
+			<div className='as-empty popup-empty-leagues'>
+				<h2 className='popup-empty-leagues-title'>{i18n.t('empty.leaguesTitle')}</h2>
+				<p className='popup-empty-leagues-copy'>{i18n.t('empty.leaguesCopy')}</p>
+				<div className='as-empty-actions'>
+					<button type='button' className='btn btn-primary w-100' onClick={onOpenSetup}>{i18n.t('empty.selectLeagues')}</button>
+				</div>
 			</div>
 		);
 	}

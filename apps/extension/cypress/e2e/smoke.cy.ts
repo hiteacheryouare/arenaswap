@@ -20,8 +20,9 @@ describe('popup boots', () => {
 
 		// Translated, not a raw messages.json key — proves browser.i18n is wired.
 		cy.contains('Welcome to ArenaSwap').should('be.visible');
-		cy.get('body').should('have.css', 'background-color', 'rgb(13, 17, 23)');
-		cy.get('body').should('have.css', 'font-family').and('contain', 'DM Sans');
+		cy.get('body').should('have.css', 'background-color', 'rgb(14, 16, 19)');
+		cy.get('body').should('have.css', 'font-family').and('contain', 'Inter');
+		cy.document().its('fonts').invoke('check', '600 13px Inter').should('equal', true);
 		cy.background().its('sent').should('deep.include', { type: 'GET_STATE', forceRefresh: false });
 	});
 

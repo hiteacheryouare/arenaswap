@@ -1,0 +1,933 @@
+// The game list's three sizes: the stage for the hottest live game, tiles for the rest of the hot
+// ones, rows for everything else. Team colour only ever arrives through the custom properties
+// gameSurfaceStyle() writes, and text over it dims by colour, never by opacity.
+@use 'crest';
+@use 'motion' as m;
+
+// ── Scores that roll ─────────────────────────────────────────────────────────
+
+@keyframes scoreSlideOut {
+	from { transform: translateY(0%); }
+	to   { transform: translateY(110%); }
+}
+
+@keyframes scoreSlideIn {
+	from { transform: translateY(-110%); }
+	to   { transform: translateY(0%); }
+}
+
+.flip-score {
+	display: inline-block;
+	position: relative;
+	overflow: hidden;
+	height: 1em;
+	vertical-align: baseline;
+}
+
+.flip-score-digit {
+	display: block;
+	line-height: 1;
+}
+
+.flip-score-digit-out {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	text-align: inherit;
+	animation: scoreSlideOut m.$motion-base m.$motion-ease-in forwards;
+}
+
+.flip-score-digit-in {
+	animation: scoreSlideIn m.$motion-base m.$motion-ease forwards;
+}
+
+// ── The small game indicators: inning half, bases, count, timeouts ───────────
+// Drawn in the page's inks here; the stage and the detail hero re-tone them for team colour.
+
+.inning-half-icon {
+	font-size: 0.85em;
+	margin-right: 0.25em;
+	vertical-align: baseline;
+}
+
+// Second base sits on its own row above third and first; the negative margin pulls the lower
+// row up so the three read as one cluster.
+.base-diamond {
+	display: inline-grid;
+	grid-template-columns: repeat(2, auto);
+	column-gap: 0.32em;
+	font-size: 0.8rem;
+	line-height: 1;
+}
+
+.base-second {
+	grid-column: 1 / -1;
+	justify-self: center;
+}
+
+.base-third,
+.base-first {
+	margin-top: -0.34em;
+}
+
+.base-marker {
+	display: block;
+	color: var(--as-faint);
+	opacity: 0.5;
+	transform: scaleY(0.74);
+
+	&.occupied {
+		color: #fbbf24;
+		opacity: 1;
+	}
+}
+
+.bso-label {
+	font-size: var(--as-text-2xs);
+	font-weight: var(--as-weight-bold);
+	color: var(--as-muted);
+	letter-spacing: 0.04em;
+}
+
+.bso-dot {
+	font-size: 7px;
+}
+
+.bso-dot.is-empty {
+	color: var(--as-faint);
+}
+
+.timeout-dots {
+	display: inline-flex;
+	align-items: center;
+	gap: 2px;
+	line-height: 1;
+}
+
+.timeout-dot {
+	font-size: 7px;
+	color: var(--as-ink);
+}
+
+.timeout-dot.is-empty {
+	color: var(--as-faint);
+}
+
+.timeout-dots-numeric {
+	font-size: var(--as-text-2xs);
+	font-weight: var(--as-weight-bold);
+	letter-spacing: 0.02em;
+}
+
+.odds-provider-logo {
+	height: 12px;
+	width: auto;
+}
+
+// ── Crests ───────────────────────────────────────────────────────────────────
+
+.as-crest-box {
+	display: inline-grid;
+	flex-shrink: 0;
+	place-items: center;
+	width: var(--crest);
+	height: var(--crest);
+}
+
+.as-crest {
+	display: grid;
+	place-items: center;
+	width: 100%;
+	height: 100%;
+	border-radius: 50%;
+
+	&:not(.is-bare) {
+		box-shadow: inset 0 0 0 1px var(--as-disc-line);
+	}
+
+	&:not(.is-bare) .as-crest-art {
+		width: 68%;
+		height: 68%;
+	}
+}
+
+.as-crest-art {
+	width: 100%;
+	height: 100%;
+}
+
+.as-crest .crest-fallback {
+	background: var(--mono-bg);
+	color: var(--mono-ink);
+	font-size: calc(var(--crest) * var(--mono-scale, 0.3));
+	font-weight: 800;
+	letter-spacing: -0.02em;
+}
+
+// ── Shared bits ──────────────────────────────────────────────────────────────
+
+.as-clock {
+	display: inline-flex;
+	align-items: center;
+	gap: 2px;
+	font-size: var(--as-text-xs);
+	font-weight: var(--as-weight-semibold);
+	line-height: var(--as-leading-xs);
+	white-space: nowrap;
+
+	.inning-half-icon {
+		font-size: 8px;
+	}
+}
+
+.as-rank {
+	margin-right: 3px;
+	font-size: 0.85em;
+	font-weight: var(--as-weight-medium);
+	opacity: 0.72;
+}
+
+.as-star-mark {
+	margin-left: 4px;
+	font-size: 0.75em;
+	color: var(--as-accent-ink);
+	vertical-align: 0.05em;
+}
+
+// ── Stage ────────────────────────────────────────────────────────────────────
+// A full-bleed field in both teams' colours under a veil sized so white type holds on its lightest
+// part. The same in both modes.
+
+.as-stage {
+	position: relative;
+	isolation: isolate;
+	overflow: hidden;
+	display: grid;
+	gap: var(--as-space-4);
+	padding: 56px var(--as-space-4) var(--as-space-4);
+	border-radius: 0 0 var(--as-radius-lg) var(--as-radius-lg);
+	background: var(--stage-away);
+	color: #ffffff;
+
+	&::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		z-index: -1;
+		background: linear-gradient(180deg, rgba(var(--stage-veil-rgb), var(--stage-veil-top)), rgba(var(--stage-veil-rgb), var(--stage-veil)));
+		pointer-events: none;
+	}
+
+	&[role='button'] {
+		cursor: pointer;
+	}
+
+	&[role='button']:focus-visible {
+		outline-offset: -4px;
+		outline-color: #ffffff;
+	}
+}
+
+.as-stage-field {
+	position: absolute;
+	inset: -24%;
+	z-index: -2;
+	background:
+		radial-gradient(60% 70% at 18% 40%, var(--stage-away) 0%, transparent 70%),
+		radial-gradient(60% 70% at 82% 60%, var(--stage-home) 0%, transparent 70%),
+		linear-gradient(110deg, var(--stage-away), var(--stage-home));
+	animation: as-drift m.$motion-drift ease-in-out infinite alternate;
+	pointer-events: none;
+}
+
+@keyframes as-drift {
+	from {
+		transform: translate3d(-4%, 2%, 0) scale(1.02);
+	}
+
+	to {
+		transform: translate3d(4%, -2%, 0) scale(1.1);
+	}
+}
+
+.as-stage-meta {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--as-space-2);
+	margin-bottom: calc(var(--as-space-1) * -1);
+}
+
+.as-stage-label {
+	display: flex;
+	align-items: center;
+	min-width: 0;
+	font-size: var(--as-text-sm);
+	font-weight: var(--as-weight-semibold);
+	line-height: var(--as-leading-xs);
+}
+
+.as-stage .as-clock.is-delayed,
+.as-tile .as-clock.is-delayed {
+	color: #ffe58a;
+}
+
+.as-stage-match {
+	display: grid;
+	grid-template-columns: 64px minmax(0, 1fr) 64px;
+	align-items: start;
+}
+
+// A score slides vertically when it changes, so only that axis clips; tight tracking would
+// otherwise shave the last digit.
+.as-stage-score .as-score,
+.as-tile-team .as-score,
+.as-row-team .as-score {
+	overflow: visible;
+	overflow-y: clip;
+}
+
+.as-stage-team {
+	display: grid;
+	justify-items: center;
+	gap: var(--as-space-1);
+	min-width: 0;
+	font-size: var(--as-text-sm);
+	font-weight: var(--as-weight-semibold);
+	line-height: var(--as-leading-xs);
+	text-align: center;
+
+	b {
+		font-size: calc(var(--as-text-sm) * var(--name-fit, 1));
+		font-weight: 800;
+
+		&[data-name-fit='wrap'] {
+			overflow-wrap: anywhere;
+		}
+	}
+
+	small {
+		margin-top: -2px;
+		font-size: var(--as-text-xs);
+		font-weight: var(--as-weight-medium);
+		color: var(--stage-note);
+	}
+
+	.timeout-dots,
+	.timeout-dot {
+		color: #ffffff;
+	}
+
+	.timeout-dot.is-empty {
+		color: rgba(255, 255, 255, 0.5);
+	}
+}
+
+.as-stage-score {
+	display: flex;
+	align-self: center;
+	justify-content: center;
+	gap: var(--as-space-4);
+	font-size: var(--as-text-2xl);
+	font-weight: var(--as-weight-bold);
+	line-height: 1;
+	letter-spacing: var(--as-tracking-display);
+
+	.is-behind {
+		color: var(--stage-behind);
+	}
+
+	&.is-wide {
+		gap: var(--as-space-3);
+		font-size: 40px;
+	}
+}
+
+.as-stage-at {
+	align-self: center;
+	justify-self: center;
+	font-size: var(--as-text-md);
+	font-weight: var(--as-weight-medium);
+	color: var(--stage-note);
+}
+
+.as-stage-foot {
+	display: flex;
+	align-items: flex-end;
+	justify-content: space-between;
+	gap: var(--as-space-4);
+}
+
+.as-stage-note {
+	display: grid;
+	gap: 2px;
+	min-width: 0;
+	margin: 0;
+	font-size: var(--as-text-sm);
+	line-height: var(--as-leading-xs);
+	color: var(--stage-note);
+	text-wrap: pretty;
+}
+
+.as-stage-power {
+	display: grid;
+	justify-items: end;
+	flex-shrink: 0;
+
+	strong {
+		font-size: var(--as-text-xl);
+		font-weight: var(--as-weight-bold);
+		line-height: 28px;
+		letter-spacing: var(--as-tracking-tight);
+	}
+
+	small {
+		font-size: var(--as-text-xs);
+		line-height: var(--as-leading-xs);
+		color: var(--stage-note);
+	}
+}
+
+.as-star {
+	display: inline-grid;
+	place-items: center;
+	width: 24px;
+	height: 24px;
+	margin-top: -2px;
+	padding: 0;
+	border: 0;
+	border-radius: 50%;
+	background: none;
+	color: var(--stage-note);
+	font-size: 12px;
+	transition: background-color m.$motion-quick m.$motion-ease, color m.$motion-quick m.$motion-ease, transform m.$motion-snap m.$motion-spring;
+
+	&:hover {
+		background: rgba(255, 255, 255, 0.14);
+		color: #ffffff;
+	}
+
+	&:active {
+		transform: scale(0.9);
+	}
+
+	&[data-favorited='true'] {
+		color: #ffffff;
+	}
+}
+
+.as-stage .as-star-mark,
+.as-tile .as-star-mark {
+	color: #ffffff;
+}
+
+// ── Tiles ────────────────────────────────────────────────────────────────────
+// The same field and veil as the stage, at half the width.
+
+.as-tile {
+	position: relative;
+	isolation: isolate;
+	display: grid;
+	grid-template-rows: auto 1fr auto;
+	gap: var(--as-space-3);
+	min-width: 0;
+	min-height: 136px;
+	padding: var(--as-space-3);
+	overflow: hidden;
+	border-radius: var(--as-radius-md);
+	background: linear-gradient(160deg, var(--stage-away) 0%, var(--stage-home) 100%);
+	color: #ffffff;
+	box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+	transition: box-shadow m.$motion-quick m.$motion-ease, transform m.$motion-snap m.$motion-ease;
+
+	&::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		z-index: -1;
+		background: linear-gradient(180deg, rgba(var(--stage-veil-rgb), var(--stage-veil-top)), rgba(var(--stage-veil-rgb), var(--stage-veil)));
+		pointer-events: none;
+	}
+
+	&[role='button'] {
+		cursor: pointer;
+	}
+
+	&:hover {
+		box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.28);
+	}
+
+	&[role='button']:active {
+		transform: scale(0.99);
+	}
+
+	&:focus-visible {
+		outline-offset: 2px;
+	}
+
+	&.is-watched {
+		box-shadow: inset 0 0 0 1.5px var(--as-watched);
+	}
+}
+
+[data-bs-theme='light'] .as-tile.is-watched {
+	box-shadow: 0 0 0 1.5px var(--as-watched);
+}
+
+.as-tile-top,
+.as-tile-foot {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--as-space-2);
+	min-height: 16px;
+	min-width: 0;
+}
+
+.as-tile-foot {
+	align-items: flex-end;
+}
+
+.as-tile-tab {
+	display: flex;
+	justify-content: flex-end;
+	min-width: 0;
+	font-size: var(--as-text-xs);
+	font-weight: var(--as-weight-semibold);
+	line-height: var(--as-leading-xs);
+	color: var(--stage-note);
+	white-space: nowrap;
+
+	.is-watched & {
+		color: #ffffff;
+	}
+}
+
+.as-tile-teams {
+	display: grid;
+	align-content: center;
+	gap: var(--as-space-2);
+}
+
+.as-tile-team {
+	display: grid;
+	grid-template-columns: 24px minmax(0, 1fr) auto;
+	align-items: center;
+	gap: var(--as-space-2);
+
+	b {
+		overflow: hidden;
+		font-size: var(--as-text-sm);
+		font-weight: var(--as-weight-semibold);
+		line-height: var(--as-leading-xs);
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.as-score {
+		font-size: var(--as-text-lg);
+		font-weight: var(--as-weight-bold);
+		line-height: var(--as-leading-md);
+		letter-spacing: -0.02em;
+		height: auto;
+	}
+
+	.is-behind {
+		color: var(--stage-behind);
+	}
+}
+
+.as-trend {
+	font-size: var(--as-text-xs);
+	font-weight: var(--as-weight-semibold);
+	line-height: var(--as-leading-xs);
+	color: var(--stage-note);
+	white-space: nowrap;
+
+	&.is-up {
+		color: #b8f2cf;
+	}
+
+	&.is-down {
+		color: #ffc4c4;
+	}
+
+	[aria-hidden] {
+		font-size: 8px;
+		vertical-align: 1px;
+	}
+}
+
+.as-tile-power {
+	font-size: var(--as-text-xl);
+	font-weight: var(--as-weight-bold);
+	line-height: 28px;
+	letter-spacing: var(--as-tracking-tight);
+}
+
+// ── Rows ─────────────────────────────────────────────────────────────────────
+// Neutral, on the page. The hairline between two rows belongs to the list rather than the row, so it
+// holds when a row is wrapped by the opening animation.
+
+.as-rows {
+	display: grid;
+
+	> * + * {
+		position: relative;
+	}
+
+	> * + *::before {
+		content: '';
+		position: absolute;
+		inset: 0 var(--as-space-2) auto;
+		z-index: 1;
+		height: 1px;
+		background: var(--as-line);
+		pointer-events: none;
+		transition: opacity m.$motion-quick m.$motion-ease;
+	}
+
+	> :hover::before,
+	> :hover + *::before,
+	> :focus-within + *::before {
+		opacity: 0;
+	}
+}
+
+.as-row {
+	position: relative;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto 40px;
+	align-items: center;
+	gap: var(--as-space-3);
+	min-height: 64px;
+	padding: var(--as-space-2);
+	border-radius: var(--as-radius-md);
+	color: var(--as-ink);
+	transition: background-color m.$motion-quick m.$motion-ease;
+
+	&:hover {
+		background: var(--as-surface);
+	}
+
+	&[role='button'] {
+		cursor: pointer;
+	}
+
+	&.is-watched {
+		box-shadow: inset 0 0 0 1.5px var(--as-watched);
+	}
+}
+
+.as-row-teams {
+	display: grid;
+	gap: var(--as-space-1);
+	min-width: 0;
+}
+
+.as-row-team {
+	display: grid;
+	grid-template-columns: 20px minmax(0, 1fr) auto;
+	align-items: center;
+	gap: var(--as-space-2);
+	max-width: 132px;
+	font-size: var(--as-text-sm);
+	line-height: var(--as-leading-sm);
+
+	b {
+		overflow: hidden;
+		font-weight: var(--as-weight-semibold);
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.as-score {
+		min-width: 24px;
+		height: auto;
+		text-align: right;
+		font-weight: var(--as-weight-bold);
+	}
+
+	.is-behind {
+		color: var(--as-muted);
+		font-weight: var(--as-weight-medium);
+	}
+}
+
+.as-row-status {
+	display: grid;
+	justify-items: end;
+	gap: var(--as-space-1);
+	min-width: 0;
+	font-size: var(--as-text-xs);
+	line-height: var(--as-leading-xs);
+	color: var(--as-muted);
+	text-align: right;
+
+	.as-clock {
+		color: var(--as-ink);
+	}
+
+	.as-clock.is-delayed {
+		color: var(--as-warning-ink);
+	}
+}
+
+.as-row-power {
+	display: grid;
+	justify-items: end;
+	font-size: var(--as-text-lg);
+	font-weight: var(--as-weight-bold);
+	line-height: var(--as-leading-md);
+	letter-spacing: -0.02em;
+
+	.is-quiet & {
+		color: var(--as-muted);
+	}
+}
+
+.as-row.is-quiet .as-clock {
+	color: var(--as-muted);
+}
+
+// ── The Games screen's layout ─────────────────────────────────────────────────
+// Here rather than in the extension because the website's hero draws the same screen.
+
+.gm > * {
+	flex-shrink: 0;
+}
+
+.gm-lower {
+	display: grid;
+	gap: var(--as-space-3);
+	padding: var(--as-space-3) var(--as-space-3) 0;
+
+	&:empty {
+		display: none;
+	}
+}
+
+.gm-tiles {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+	gap: var(--as-space-2);
+
+	&.is-odd > :last-child {
+		grid-column: 1 / -1;
+	}
+}
+
+// Games that aren't live sit after a hairline, so the live board reads as one block.
+.gm-after {
+	display: grid;
+	padding-top: var(--as-space-2);
+	border-top: 1px solid var(--as-line);
+
+	.gm-tiles + &,
+	.gm-rows + & {
+		margin-top: calc(var(--as-space-1) * -1);
+	}
+}
+
+.gm-day {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--as-space-2);
+	padding: 0 0 var(--as-space-1) var(--as-space-2);
+
+	.btn-group .btn {
+		--as-btn-padding-y: 2px;
+		--as-btn-padding-x: 6px;
+		--as-btn-font-size: var(--as-text-xs);
+		--as-btn-color: var(--as-muted);
+		--as-btn-bg: transparent;
+		--as-btn-border-color: transparent;
+		--as-btn-hover-bg: var(--as-hover);
+		--as-btn-hover-color: var(--as-ink);
+		--as-btn-hover-border-color: transparent;
+		--as-btn-disabled-color: var(--as-faint);
+		--as-btn-disabled-bg: transparent;
+		--as-btn-disabled-border-color: transparent;
+		--as-btn-disabled-opacity: 0.5;
+	}
+}
+
+.gm-day-label {
+	font-size: var(--as-text-sm);
+	font-weight: var(--as-weight-semibold);
+	line-height: var(--as-leading-xs);
+	color: var(--as-ink);
+}
+
+.as-stage-switching {
+	font-weight: var(--as-weight-semibold);
+}
+
+.as-stage-situation {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--as-space-4);
+	margin-top: calc(var(--as-space-2) * -1);
+
+	.base-diamond {
+		transform: scale(0.9);
+	}
+
+	.bso-indicator {
+		color: #ffffff;
+	}
+
+	.bso-label {
+		color: var(--stage-note);
+	}
+
+	.bso-dot.is-empty {
+		color: rgba(255, 255, 255, 0.5);
+	}
+
+	.base-marker:not(.occupied) {
+		color: rgba(255, 255, 255, 0.28);
+	}
+
+	.base-marker.occupied {
+		color: #ffffff;
+	}
+}
+
+.as-stage-note {
+	.as-note-lead {
+		color: #ffffff;
+	}
+
+	.as-note-odds {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+	}
+
+	.as-note-provider {
+		padding: 0;
+		border: 0;
+		background: none;
+		color: inherit;
+		font: inherit;
+		opacity: 0.72;
+		text-decoration: underline dotted;
+		text-underline-offset: 3px;
+		cursor: help;
+	}
+
+	.odds-provider-logo {
+		height: 11px;
+		width: auto;
+		opacity: 0.9;
+	}
+}
+
+.as-row-note {
+	display: block;
+	max-width: 150px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+@include m.reduced-motion {
+	.as-stage-field {
+		animation: none;
+	}
+
+	.as-tile[role='button']:active,
+	.as-star:active {
+		transform: none;
+	}
+}
+
+// A game holding an open menu climbs above its neighbours: each is its own stacking context.
+.as-stage:has(.dropdown-menu.show),
+.as-tile:has(.dropdown-menu.show),
+.as-row:has(.dropdown-menu.show) {
+	z-index: 20;
+}
+
+// ── Inline pickers ───────────────────────────────────────────────────────────
+// A line of text with a chevron, living inside a game: the tab it is on, or the offer to give it one.
+
+.game-card-tab-assign.is-inline,
+.game-card-tab-assign.is-inline > .dropdown {
+	display: flex;
+	min-width: 0;
+	margin: 0;
+}
+
+.as-picker {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	min-width: 0;
+	padding: 1px 4px;
+	margin: -1px -4px;
+	border: 0;
+	border-radius: 6px;
+	background: none;
+	color: inherit;
+	font: inherit;
+	line-height: inherit;
+	cursor: pointer;
+	transition: background-color m.$motion-quick m.$motion-ease;
+
+	&:hover,
+	&[aria-expanded='true'] {
+		background: var(--as-hover);
+	}
+
+	&:disabled {
+		cursor: default;
+		background: none;
+	}
+}
+
+.as-picker-label {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.as-picker-chevron {
+	flex-shrink: 0;
+	font-size: 0.75em;
+	-webkit-text-stroke: 0.5px currentColor;
+}
+
+.as-stage .as-picker:hover,
+.as-stage .as-picker[aria-expanded='true'],
+.as-tile .as-picker:hover,
+.as-tile .as-picker[aria-expanded='true'] {
+	background: rgba(255, 255, 255, 0.14);
+}
+
+.as-row .as-picker,
+.is-offer .as-picker {
+	color: var(--as-accent-ink);
+	font-weight: var(--as-weight-semibold);
+}
+
+.as-stage .is-offer .as-picker,
+.as-tile .is-offer .as-picker {
+	color: #ffffff;
+}
+
+.select-dropdown-hint {
+	flex-shrink: 0;
+	font-size: var(--as-text-xs);
+	color: var(--as-muted);
+}
+
+.select-dropdown-menu {
+	max-width: 288px;
+	max-height: 280px;
+	overflow-y: auto;
+}

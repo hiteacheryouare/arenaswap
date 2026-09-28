@@ -80,7 +80,7 @@ const condensedText = (ctx: CanvasRenderingContext2D, text: string, cx: number, 
 	ctx.save();
 	ctx.translate(cx, cy);
 	ctx.scale(0.88, 1);
-	ctx.font = `700 ${size}px 'DM Sans', sans-serif`;
+	ctx.font = `700 ${size}px Inter, sans-serif`;
 	ctx.textAlign = 'center';
 	ctx.textBaseline = 'middle';
 	ctx.fillStyle = color;

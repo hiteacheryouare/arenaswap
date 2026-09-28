@@ -19,8 +19,9 @@ Cypress.Commands.add('setInputValue', { prevSubject: 'element' }, (subject: JQue
 // The popup's pickers are Bootstrap dropdowns (selectDropdown.tsx), so choosing is two clicks on
 // what a person would see rather than one .select() on an element that no longer exists.
 Cypress.Commands.add('choose', { prevSubject: 'element' }, (toggle: JQuery<HTMLElement>, label: string) => {
-	cy.wrap(toggle, { log: false }).click();
-	cy.wrap(toggle, { log: false }).parent().find('.dropdown-menu.show').contains('.dropdown-item', label).click();
+	// Centred, because the popup's header is sticky and a toggle scrolled to the top edge sits under it.
+	cy.wrap(toggle, { log: false }).click({ scrollBehavior: 'center' });
+	cy.wrap(toggle, { log: false }).parent().find('.dropdown-menu.show').contains('.dropdown-item', label).click({ scrollBehavior: 'center' });
 	return cy.wrap(toggle, { log: false });
 });
 

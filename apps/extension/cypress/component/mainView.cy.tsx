@@ -43,9 +43,11 @@ const makeGame = (
 	startTime: overrides.startTime,
 	period: 2,
 	clockSeconds: 300,
-	homeTeam: { id: 'h', name: 'Home', abbreviation: 'HOM', score: 50 },
-	awayTeam: { id: 'a', name: 'Away', abbreviation: 'AWY', score: 48 },
+	homeTeam: { id: `${id}-h`, name: 'Home', abbreviation: 'HOM', score: 50, color: '#1D428A' },
+	awayTeam: { id: `${id}-a`, name: 'Away', abbreviation: 'AWY', score: 48, color: '#CE1141' },
 });
+
+const gameEl = (id: string) => cy.get(`[data-game="${id}"]`);
 
 const defaultProps = {
 	prefs: defaultPrefs,
@@ -275,81 +277,6 @@ describe('mainView empty states', () => {
 	});
 });
 
-/* The heading a card sits under is the whole answer to "is this game one of mine?". Asserting only
-   that the card exists cannot tell the two sections apart, which is the one thing this split is
-   for. */
-const sectionTitleOf = (gameId: string) => cy
-	.get(`[data-testid="game-card-${gameId}"]`)
-	.closest('.mt-2')
-	.find('.popup-section-title');
-
-describe('mainView game sections', () => {
-	it('files a game with a tab assigned under Active Tabs and one without under Live Games', () => {
-		cy.mount(
-			<MainView
-				{...defaultProps}
-				games={[makeGame('assigned'), makeGame('loose')]}
-				registry={[{ gameId: 'assigned', tabId: 1 }]}
-			/>,
-		);
-
-		sectionTitleOf('assigned').should('have.text', 'Active Tabs');
-		sectionTitleOf('loose').should('have.text', 'Live Games');
-	});
-
-	it('moves a game between the two sections when its tab assignment changes', () => {
-		cy.mount(<MainView {...defaultProps} games={[makeGame('g1')]} />);
-		sectionTitleOf('g1').should('have.text', 'Live Games');
-
-		cy.mount(<MainView {...defaultProps} games={[makeGame('g1')]} registry={[{ gameId: 'g1', tabId: 1 }]} />);
-		sectionTitleOf('g1').should('have.text', 'Active Tabs');
-	});
-
-	it('drops the Active Tabs heading entirely when nothing is assigned', () => {
-		cy.mount(<MainView {...defaultProps} games={[makeGame('g1')]} />);
-		cy.contains('.popup-section-title', 'Active Tabs').should('not.exist');
-	});
-
-	it('does not render upcoming games section when showUpcomingGames is false', () => {
-		cy.mount(<MainView {...defaultProps} prefs={{ ...defaultPrefs, showUpcomingGames: false }} games={[makeGame('upcoming-1', 'pre')]} />);
-		cy.get('[data-testid="game-card-upcoming-1"]').should('not.exist');
-	});
-
-	// Day-first sorting is what lets groupByDate build its groups in one pass, so it is still worth
-	// pinning. It now shows up as page order rather than row order: the earlier day pages first even
-	// though the NBA outranks the WNBA within a day.
-	it('sorts upcoming games by day before league priority', () => {
-		const todayGame = makeGame('today-wnba', 'pre', { league: 'wnba', startTime: '2026-05-27T23:00:00.000Z' });
-		const tomorrowGame = makeGame('tomorrow-nba', 'pre', { league: 'nba', startTime: '2026-05-28T20:30:00.000Z' });
-		cy.mount(<StatefulMainView games={[tomorrowGame, todayGame]} />);
-		cy.get('[data-testid="game-card-today-wnba"]').should('exist');
-		cy.get('[data-testid="game-card-tomorrow-nba"]').should('not.exist');
-		cy.get('[data-testid="upcoming-day-next"]').click();
-		cy.get('[data-testid="game-card-tomorrow-nba"]').should('exist');
-		cy.get('[data-testid="game-card-today-wnba"]').should('not.exist');
-	});
-
-	it('orders live league sections by the default league order', () => {
-		const nba = makeGame('live-nba');
-		const wnba = makeGame('live-wnba', 'in', { league: 'wnba' });
-		cy.mount(<MainView {...defaultProps} prefs={{ ...defaultPrefs, enabledLeagues: ['nba', 'wnba'] }} games={[wnba, nba]} />);
-		cy.get('[data-testid^="game-card-"]').then($cards => {
-			expect($cards[0]).to.have.attr('data-testid', 'game-card-live-nba');
-			expect($cards[1]).to.have.attr('data-testid', 'game-card-live-wnba');
-		});
-	});
-
-	it('orders live league sections by the user custom league order', () => {
-		const nba = makeGame('live-nba');
-		const wnba = makeGame('live-wnba', 'in', { league: 'wnba' });
-		cy.mount(<MainView {...defaultProps} prefs={{ ...defaultPrefs, enabledLeagues: ['wnba', 'nba'] }} games={[nba, wnba]} />);
-		cy.get('[data-testid^="game-card-"]').then($cards => {
-			expect($cards[0]).to.have.attr('data-testid', 'game-card-live-wnba');
-			expect($cards[1]).to.have.attr('data-testid', 'game-card-live-nba');
-		});
-	});
-});
-
 // Anchored to local noon so a spec run near midnight cannot land a game on the wrong calendar day,
 // which is the boundary groupByDate keys on.
 const dayAt = (offsetDays: number) => {
@@ -359,13 +286,184 @@ const dayAt = (offsetDays: number) => {
 	return date.toISOString();
 };
 
+// Size is the score: the hottest live game takes the stage, anything at 70 or above is a tile, the
+// rest are rows, and what isn't live sits under a hairline after them.
+describe('mainView board', () => {
+	it('puts the hottest live game on the stage, 70 and up in tiles, and the rest in rows', () => {
+		cy.mount(
+			<MainView
+				{...defaultProps}
+				games={[makeGame('cold'), makeGame('hot'), makeGame('warm'), makeGame('tepid')]}
+				scores={[score('cold', 30), score('hot', 91), score('warm', 74), score('tepid', 70)]}
+			/>,
+		);
+		cy.get('.as-stage').should('have.length', 1).and('have.attr', 'data-game', 'hot');
+		cy.get('.as-tile').then($tiles => {
+			expect([...$tiles].map(tile => tile.dataset.game)).to.deep.equal(['warm', 'tepid']);
+		});
+		cy.get('.as-row').should('have.length', 1).and('have.attr', 'data-game', 'cold');
+		cy.get('.as-stage .as-stage-power strong').should('have.text', '91');
+	});
+
+	it('lets a lone tile take the whole width, since there is nothing to pair it with', () => {
+		cy.mount(
+			<MainView
+				{...defaultProps}
+				games={[makeGame('a'), makeGame('b'), makeGame('c'), makeGame('d')]}
+				scores={[score('a', 95), score('b', 90), score('c', 85), score('d', 80)]}
+			/>,
+		);
+		cy.get('.gm-tiles').should('have.class', 'is-odd');
+		cy.get('.gm-tiles > :last-child').then($last => {
+			const tiles = $last[0]!.parentElement!.getBoundingClientRect();
+			expect($last[0]!.getBoundingClientRect().width).to.be.closeTo(tiles.width, 1);
+		});
+	});
+
+	it('draws the header over the stage, and on the page when there is no stage', () => {
+		cy.mount(<MainView {...defaultProps} games={[makeGame('g1')]} scores={[score('g1', 50)]} />);
+		cy.get('.popup-header').should('have.class', 'is-on-stage');
+		cy.mount(<MainView {...defaultProps} games={[makeGame('later', 'pre', { startTime: dayAt(0) })]} />);
+		cy.get('.popup-header').should('not.have.class', 'is-on-stage');
+	});
+
+	it('breaks a PowerScore tie with favourites, then with the league order', () => {
+		const nba = makeGame('tie-nba');
+		const wnba = makeGame('tie-wnba', 'in', { league: 'wnba' });
+		cy.mount(
+			<MainView
+				{...defaultProps}
+				prefs={{ ...defaultPrefs, enabledLeagues: ['wnba', 'nba'] }}
+				games={[nba, wnba]}
+				scores={[score('tie-nba', 60), score('tie-wnba', 60)]}
+			/>,
+		);
+		cy.get('.as-stage').should('have.attr', 'data-game', 'tie-wnba');
+		cy.mount(
+			<MainView
+				{...defaultProps}
+				prefs={{ ...defaultPrefs, enabledLeagues: ['wnba', 'nba'] }}
+				favoriteTeamIds={new Set(['nba:tie-nba-h'])}
+				games={[nba, wnba]}
+				scores={[score('tie-nba', 60), score('tie-wnba', 60)]}
+			/>,
+		);
+		cy.get('.as-stage').should('have.attr', 'data-game', 'tie-nba');
+	});
+
+	it('opens a game from the stage, a tile and a row, but not from the tab picker inside one', () => {
+		const opened: string[] = [];
+		cy.mount(
+			<MainView
+				{...defaultProps}
+				games={[makeGame('s'), makeGame('t'), makeGame('r')]}
+				scores={[score('s', 90), score('t', 80), score('r', 20)]}
+				openTabs={[{ id: 7, index: 0, title: 'Stream', url: 'https://example.test' } as never]}
+				onOpenGameDetail={id => opened.push(id)}
+			/>,
+		);
+		gameEl('s').click('left', { scrollBehavior: 'center' });
+		gameEl('t').click('left', { scrollBehavior: 'center' });
+		gameEl('r').click('left', { scrollBehavior: 'center' });
+		gameEl('r').find('.as-picker').click({ scrollBehavior: 'center' });
+		cy.wrap(opened).should('deep.equal', ['s', 't', 'r']);
+	});
+
+	it('names the watched game and the tab it is on, and offers a tab to a game without one', () => {
+		cy.mount(
+			<MainView
+				{...defaultProps}
+				games={[makeGame('watched'), makeGame('loose')]}
+				scores={[score('watched', 90), score('loose', 80)]}
+				registry={[{ gameId: 'watched', tabId: 11 }]}
+				openTabs={[
+					{ id: 10, index: 0, title: 'Mail', url: 'https://mail.test' },
+					{ id: 11, index: 1, title: 'Stream', url: 'https://stream.test', active: true },
+				] as never}
+			/>,
+		);
+		gameEl('watched').should('have.class', 'is-watched').find('.as-stage-label').should('contain.text', 'Watching, Tab 2');
+		gameEl('loose').find('.as-picker').should('contain.text', 'No tab');
+	});
+
+	it('says the popup is about to switch when the stage game beats the watched one by the sensitivity gap', () => {
+		const props = {
+			...defaultProps,
+			games: [makeGame('best'), makeGame('watched')],
+			registry: [{ gameId: 'watched', tabId: 11 }, { gameId: 'best', tabId: 12 }],
+			openTabs: [
+				{ id: 11, index: 0, title: 'A', url: 'https://a.test', active: true },
+				{ id: 12, index: 1, title: 'B', url: 'https://b.test' },
+			] as never,
+		};
+		cy.mount(<MainView {...props} scores={[score('best', 90), score('watched', 70)]} />);
+		gameEl('best').find('.as-stage-label').should('have.text', 'Switching to Tab 2');
+
+		cy.mount(<MainView {...props} scores={[score('best', 75), score('watched', 70)]} />);
+		gameEl('best').find('.as-stage-label').should('contain.text', 'Tab 2').and('not.contain.text', 'Switching');
+
+		cy.mount(<MainView {...props} prefs={{ ...defaultPrefs, enabled: false }} scores={[score('best', 90), score('watched', 70)]} />);
+		gameEl('best').find('.as-stage-label').should('not.contain.text', 'Switching');
+	});
+
+	it('lists upcoming and finished games after the live ones, finals last and without a PowerScore', () => {
+		cy.mount(
+			<MainView
+				{...defaultProps}
+				prefs={{ ...defaultPrefs, keepFinalGames: true }}
+				games={[makeGame('done', 'post'), makeGame('later', 'pre', { startTime: dayAt(0) }), makeGame('now')]}
+				scores={[score('now', 40)]}
+			/>,
+		);
+		cy.get('[data-game]').then($games => {
+			expect([...$games].map(game => game.dataset.game)).to.deep.equal(['now', 'later', 'done']);
+		});
+		gameEl('done').find('.as-row-power').should('have.text', '');
+		gameEl('done').find('.as-clock').should('have.text', 'Final');
+	});
+
+	it('drops finished games when Keep finished games is off', () => {
+		cy.mount(<MainView {...defaultProps} games={[makeGame('done', 'post'), makeGame('now')]} scores={[score('now', 40)]} />);
+		gameEl('done').should('not.exist');
+	});
+
+	it('does not render upcoming games when showUpcomingGames is false', () => {
+		cy.mount(<MainView {...defaultProps} prefs={{ ...defaultPrefs, showUpcomingGames: false }} games={[makeGame('upcoming-1', 'pre')]} />);
+		gameEl('upcoming-1').should('not.exist');
+	});
+
+	it('sorts upcoming games by day first', () => {
+		const todayGame = makeGame('today-wnba', 'pre', { league: 'wnba', startTime: dayAt(0) });
+		const tomorrowGame = makeGame('tomorrow-nba', 'pre', { league: 'nba', startTime: dayAt(1) });
+		cy.mount(<StatefulMainView games={[tomorrowGame, todayGame]} />);
+		gameEl('today-wnba').should('exist');
+		gameEl('tomorrow-nba').should('not.exist');
+		cy.get('[data-testid="upcoming-day-next"]').click();
+		gameEl('tomorrow-nba').should('exist');
+		gameEl('today-wnba').should('not.exist');
+	});
+
+	it('shows how far the PowerScore has moved on a tile', () => {
+		const now = Date.now();
+		const snapshot = (total: number, ago: number) => ({ gameId: 't', timestamp: now - ago, total } as never);
+		cy.mount(
+			<MainView
+				{...defaultProps}
+				games={[makeGame('s'), makeGame('t')]}
+				scores={[score('s', 95), score('t', 80)]}
+				powerScoreHistory={{ t: [snapshot(74, 90_000), snapshot(76, 60_000), snapshot(80, 0)] }}
+			/>,
+		);
+		gameEl('t').find('.as-trend').should('have.class', 'is-up').and('contain.text', '4');
+	});
+});
+
 describe('mainView up next day pager', () => {
-	// The regression #103 describes: truncation used to slice the flat list at 10 games, so a
-	// 12-game day lost its last two under a divider claiming to head the whole day.
+	// #103: truncation used to slice the flat list at 10 games, so a 12-game day lost its last two.
 	it('shows every game on the selected day rather than the first ten of the slate', () => {
 		const today = Array.from({ length: 12 }, (_, i) => makeGame(`today-${i}`, 'pre', { startTime: dayAt(0) }));
 		cy.mount(<MainView {...defaultProps} games={[...today, makeGame('tomorrow-0', 'pre', { startTime: dayAt(1) })]} />);
-		cy.get('[data-testid^="game-card-today-"]').should('have.length', 12);
+		cy.get('[data-game^="today-"]').should('have.length', 12);
 	});
 
 	it('shows only the selected day, never games from the next one', () => {
@@ -373,8 +471,8 @@ describe('mainView up next day pager', () => {
 			makeGame('today-0', 'pre', { startTime: dayAt(0) }),
 			makeGame('tomorrow-0', 'pre', { startTime: dayAt(1) }),
 		]} />);
-		cy.get('[data-testid="game-card-today-0"]').should('exist');
-		cy.get('[data-testid="game-card-tomorrow-0"]').should('not.exist');
+		gameEl('today-0').should('exist');
+		gameEl('tomorrow-0').should('not.exist');
 	});
 
 	it('pages forward to the next day and back again', () => {
@@ -383,17 +481,18 @@ describe('mainView up next day pager', () => {
 			makeGame('tomorrow-0', 'pre', { startTime: dayAt(1) }),
 		]} />);
 		cy.get('[data-testid="upcoming-day-label"]').should('have.text', 'Today');
+		cy.get('[data-testid="upcoming-day-previous"]').should('be.disabled');
 		cy.get('[data-testid="upcoming-day-next"]').click();
 		cy.get('[data-testid="upcoming-day-label"]').should('have.text', 'Tomorrow');
-		cy.get('[data-testid="game-card-tomorrow-0"]').should('exist');
-		cy.get('[data-testid="game-card-today-0"]').should('not.exist');
+		cy.get('[data-testid="upcoming-day-next"]').should('be.disabled');
+		gameEl('tomorrow-0').should('exist');
+		gameEl('today-0').should('not.exist');
 		cy.get('[data-testid="upcoming-day-previous"]').click();
 		cy.get('[data-testid="upcoming-day-label"]').should('have.text', 'Today');
-		cy.get('[data-testid="game-card-today-0"]').should('exist');
+		gameEl('today-0').should('exist');
 	});
 
-	// The pager replaced the date divider, so it is the only thing naming the day. Dropping it on a
-	// single-day slate would leave that day unheaded.
+	// The pager is the only thing naming the day, so a one-day slate still gets it.
 	it('still heads a one-day slate', () => {
 		cy.mount(<MainView {...defaultProps} games={[makeGame('today-0', 'pre', { startTime: dayAt(0) })]} />);
 		cy.get('[data-testid="upcoming-day-pager"]').should('exist');
@@ -405,8 +504,7 @@ describe('mainView up next day pager', () => {
 		cy.get('[data-testid="upcoming-day-pager"]').should('not.exist');
 	});
 
-	// #104: the day page used to be component state inside the view, so it went out with the remount
-	// and Up Next silently reset to the first day.
+	// #104: the day page used to be component state inside the view, so it went out with the remount.
 	it('holds the day page across a trip out of the list', () => {
 		cy.mount(<NavigatingMainView games={[
 			makeGame('today-0', 'pre', { startTime: dayAt(0) }),
@@ -420,26 +518,22 @@ describe('mainView up next day pager', () => {
 		cy.get('[data-testid="fake-back"]').click();
 
 		cy.get('[data-testid="upcoming-day-label"]').should('have.text', 'Tomorrow');
-		cy.get('[data-testid="game-card-tomorrow-0"]').should('exist');
+		gameEl('tomorrow-0').should('exist');
 	});
 
-	// Both live sections are re-sorted on PowerScore, and scores arrive by push every few seconds, so
-	// a resort inside the open animation's five-second window is ordinary. The plan the stagger is built from
-	// is fixed on the first list that has anything in it: a card that keeps its React identity but
-	// changes index would otherwise get a new `animation-delay`, which moves a running animation's
-	// current time rather than restarting it, and across the eight-card cap the mode itself flips and
-	// a card grows a poster from nothing or loses one mid-frame.
+	// Scores arrive by push every few seconds, so a resort inside the open animation is ordinary. The
+	// plan is fixed on the first list that has anything in it: a card that changes index would
+	// otherwise get a new `animation-delay`, which moves a running animation rather than restarting it.
 	it('holds the reveal stagger still when a score push resorts the list under it', () => {
 		cy.mount(<ResortingMainView />);
-		cy.get('[data-testid="game-card-slow"]').closest('.game-card-reveal').should('have.css', '--reveal-delay', '0ms');
-		cy.get('[data-testid="game-card-fast"]').closest('.game-card-reveal').should('have.css', '--reveal-delay', '104ms');
+		gameEl('slow').closest('.game-card-reveal').should('have.css', '--reveal-delay', '0ms');
+		gameEl('fast').closest('.game-card-reveal').should('have.css', '--reveal-delay', '104ms');
 
 		cy.get('[data-testid="fake-score-push"]').click();
 
-		// The resort really happened — without this the assertions below pass for the wrong reason.
-		cy.get('.game-card-reveal [data-testid^="game-card-"]').first().should('have.attr', 'data-testid', 'game-card-fast');
-		// And neither card's place in the cascade moved with it.
-		cy.get('[data-testid="game-card-slow"]').closest('.game-card-reveal').should('have.css', '--reveal-delay', '0ms');
-		cy.get('[data-testid="game-card-fast"]').closest('.game-card-reveal').should('have.css', '--reveal-delay', '104ms');
+		// The resort really happened: the stage changed hands.
+		cy.get('.as-stage').should('have.attr', 'data-game', 'fast');
+		gameEl('slow').closest('.game-card-reveal').should('have.css', '--reveal-delay', '0ms');
+		gameEl('fast').closest('.game-card-reveal').should('have.css', '--reveal-delay', '104ms');
 	});
 });

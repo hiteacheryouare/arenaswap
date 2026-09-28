@@ -1,7 +1,5 @@
-// The period label, the halftime predicate and the game clock, split out of `gameCardShared` so
-// the docs site
-// can read them without pulling Crest, the tooltip and the rest of the card's React tree into a
-// marketing-page island. `gameCardShared` re-exports both, so its own callers are unchanged.
+// The period label, the halftime predicate and the game clock, kept free of React so the docs
+// site can read them without pulling the board's component tree into a marketing-page island.
 import { leagueConfigMap } from '@arenaswap/core/constants';
 import type { LeagueId, SportType } from '@arenaswap/core/types';
 

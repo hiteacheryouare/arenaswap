@@ -1,5 +1,4 @@
 import { useRef, useState } from 'react';
-import GameCard from '../../entrypoints/popup/components/gameCard';
 import GameDetailView from '../../entrypoints/popup/components/gameDetailView';
 import MainView from '../../entrypoints/popup/components/mainView';
 import { sportWrapAllowanceMs } from '@arenaswap/core/constants';
@@ -55,24 +54,6 @@ const excitement: PowerScoreResult = {
 	favoriteTeamCount: 0,
 	stalled: false,
 	reason: 'close game',
-};
-
-const cardProps = {
-	excitementResult: undefined,
-	favoriteTeamIds: new Set<string>(),
-	onToggleFavoriteTeam: () => {},
-	gameBoosts: {},
-	openTabs: [],
-	registry: [],
-	onRegistryChange: () => {},
-	formatTabLabel: () => 'Tab',
-	onOpenGameDetail: () => {},
-	bettingPrefs: { bettingEnabled: false },
-	weatherPrefs: { temperatureUnit: 'F' as const },
-};
-
-const mountCard = (game: Game, excitementResult?: PowerScoreResult) => {
-	cy.mount(<GameCard {...cardProps} game={game} excitementResult={excitementResult} />);
 };
 
 // Both arguments come back off a computed style, so they arrive as 'rgb(r, g, b)' rather than as
@@ -165,10 +146,12 @@ const listPrefs: UserPreferences = {
 	disabledSignals: [],
 };
 
-const StatefulMainView = ({ games, prefs, favoriteTeamIds = new Set<string>() }: {
+const StatefulMainView = ({ games, prefs, favoriteTeamIds = new Set<string>(), scores = [], onOpenGameDetail = () => {} }: {
 	games: Game[];
 	prefs: UserPreferences;
 	favoriteTeamIds?: Set<string>;
+	scores?: PowerScoreResult[];
+	onOpenGameDetail?: (gameId: string) => void;
 }) => {
 	const scrollOffsetRef = useRef(0);
 	const [selectedDayKey, setSelectedDayKey] = useState<string | null>(null);
@@ -179,14 +162,14 @@ const StatefulMainView = ({ games, prefs, favoriteTeamIds = new Set<string>() }:
 			isLoading={false}
 			hasError={false}
 			games={games}
-			scores={[]}
+			scores={scores}
 			leagueLogos={{}}
 			registry={[]}
 			favoriteTeamIds={favoriteTeamIds}
 			gameBoosts={{}}
 			openTabs={[]}
 			onStandbyStream={false}
-			onOpenGameDetail={() => {}}
+			onOpenGameDetail={onOpenGameDetail}
 			onOpenSetup={() => {}}
 			suggestionCount={0}
 			onReviewSuggestions={() => {}}
@@ -208,209 +191,127 @@ const StatefulMainView = ({ games, prefs, favoriteTeamIds = new Set<string>() }:
 	);
 };
 
+const order = () => cy.get('[data-game]').then($games => [...$games].map(game => game.dataset.game));
+const rowOf = (id = 'final-1') => cy.get(`.as-row[data-game="${id}"]`);
+
 describe('a finished game', () => {
 	beforeEach(() => {
 		cy.viewport(320, 560);
 	});
 
-	describe('the card', () => {
-		it('says Final instead of running a live dot', () => {
-			mountCard(finalGame);
-			cy.get('.final-status-label').should('have.text', en.gameCard.final);
-			cy.get('.live-dot').should('not.exist');
-			cy.get('.live-status-label').should('not.exist');
+	describe('the row', () => {
+		const mountRow = (game: Game, scores: PowerScoreResult[] = []) => {
+			cy.mount(<StatefulMainView games={[game]} prefs={{ ...listPrefs, showUpcomingGames: false }} scores={scores} />);
+		};
+
+		it('says Final instead of a clock, and runs no live marker', () => {
+			mountRow(finalGame);
+			rowOf().find('.as-clock').should('have.text', en.gameCard.final);
+			rowOf().should('have.class', 'is-post').and('have.class', 'is-quiet');
 		});
 
 		it('offers no tab to assign, because there is nothing to switch to', () => {
-			mountCard(finalGame);
-			cy.get('.game-card-tab-assign').should('not.exist');
+			mountRow(finalGame);
+			rowOf().find('.game-card-tab-assign').should('not.exist');
 		});
 
-		it('draws no PowerScore bar even when a score is handed to it', () => {
-			mountCard(finalGame, excitement);
-			cy.get('.game-card-ps-bar-row').should('not.exist');
-			cy.get('.game-card-ps-progress').should('not.exist');
-			cy.contains('61').should('not.exist');
+		it('shows no PowerScore even when one is handed to it', () => {
+			mountRow(finalGame, [excitement]);
+			rowOf().find('.as-row-power').should('have.text', '');
+			rowOf().should('not.contain.text', '61');
 		});
 
-		// Team colour on the scores was built and rejected: on a plate this light it read as two
-		// unrelated inks rather than as one scoreline. Weight and a receded grey carry the result.
 		it('dims the loser and leaves the winner at full weight', () => {
-			mountCard(finalGame);
-			cy.get('.game-score-value').eq(0).should('have.class', 'is-loser');
-			cy.get('.game-score-value').eq(1).should('not.have.class', 'is-loser');
-			cy.get('.game-score-value').then(([away, home]: JQuery<HTMLElement>) => {
-				const loser = getComputedStyle(away);
-				const winner = getComputedStyle(home);
-				expect(Number(winner.fontWeight), 'the winner is the bolder of the two')
-					.to.be.greaterThan(Number(loser.fontWeight));
+			mountRow(finalGame);
+			rowOf().find('.as-score').eq(0).should('have.class', 'is-behind');
+			rowOf().find('.as-score').eq(1).should('not.have.class', 'is-behind');
+			rowOf().find('.as-score').then(([away, home]: JQuery<HTMLElement>) => {
+				const loser = getComputedStyle(away!);
+				const winner = getComputedStyle(home!);
+				expect(Number(winner.fontWeight), 'the winner is the bolder of the two').to.be.greaterThan(Number(loser.fontWeight));
 				expect(loser.color, 'and a lighter ink').to.not.equal(winner.color);
-				// Pinned, so this cannot pass on whatever a cell happens to inherit.
-				expect(loser.color).to.equal('rgb(124, 135, 148)');
-				expect(winner.color).to.equal('rgb(17, 24, 39)');
 			});
 		});
 
-		// Receded is not the same as illegible. A 2.1rem semibold score is large text, so the dimmed
-		// side still owes 3:1 against the plate it sits on — the same bar the chart and card colour
-		// helpers are built around. The #9aa4b0 this replaced reached 2.33:1 here.
+		// Receded is not the same as illegible: the dimmed side still owes 3:1 against the page.
 		it('dims the loser without dropping it under 3:1', () => {
-			mountCard(finalGame);
-			cy.get('.game-card.is-final').then(([card]: JQuery<HTMLElement>) => {
-				const plate = getComputedStyle(card!).backgroundColor;
-				cy.get('.game-score-value.is-loser').then(([loser]: JQuery<HTMLElement>) => {
+			mountRow(finalGame);
+			cy.get('.popup-container').then(([popup]: JQuery<HTMLElement>) => {
+				const page = getComputedStyle(popup!).backgroundColor;
+				rowOf().find('.as-score.is-behind').then(([loser]: JQuery<HTMLElement>) => {
 					const ink = getComputedStyle(loser!).color;
-					expect(contrastRatio(ink, plate), `${ink} on ${plate}`).to.be.at.least(3);
+					expect(contrastRatio(ink, page), `${ink} on ${page}`).to.be.at.least(3);
 				});
 			});
 		});
 
 		it('dims whichever side lost, not always the away team', () => {
-			mountCard({ ...finalGame, homeTeam: { ...finalGame.homeTeam, score: 98 } });
-			cy.get('.game-score-value').eq(0).should('not.have.class', 'is-loser');
-			cy.get('.game-score-value').eq(1).should('have.class', 'is-loser');
+			mountRow({ ...finalGame, homeTeam: { ...finalGame.homeTeam, score: 98 } });
+			rowOf().find('.as-score').eq(0).should('not.have.class', 'is-behind');
+			rowOf().find('.as-score').eq(1).should('have.class', 'is-behind');
 		});
 
 		it('dims neither side of a draw', () => {
-			mountCard({ ...finalGame, homeTeam: { ...finalGame.homeTeam, score: 104 } });
-			cy.get('.game-score-value.is-loser').should('not.exist');
-			cy.get('.game-score-value').should('have.class', 'fw-bold');
+			mountRow({ ...finalGame, homeTeam: { ...finalGame.homeTeam, score: 104 } });
+			rowOf().find('.as-score.is-behind').should('not.exist');
 		});
 
-		// No team colour anywhere on the scoreline, which is a decision rather than an oversight.
+		// No team colour anywhere on the scoreline: weight and a receded grey carry the result.
 		it('takes no colour from either team', () => {
-			mountCard(finalGame);
-			cy.get('.game-score-value').should('not.have.attr', 'style');
-			cy.get('.game-score-value').then(([away, home]: JQuery<HTMLElement>) => {
-				// CHI red and PHI blue are both on the game; neither reaches the score.
-				for (const el of [away, home]) {
+			mountRow(finalGame);
+			rowOf().find('.as-score').then(([away, home]: JQuery<HTMLElement>) => {
+				for (const el of [away!, home!]) {
 					const [red, green, blue] = getComputedStyle(el).color.match(/\d+/g)!.map(Number);
-					expect(Math.max(red!, green!, blue!) - Math.min(red!, green!, blue!),
-						'a neutral ink, not a hue').to.be.at.most(25);
+					expect(Math.max(red!, green!, blue!) - Math.min(red!, green!, blue!), 'a neutral ink, not a hue').to.be.at.most(25);
 				}
 			});
 		});
 
-		// The scores were plain spans first, which measure differently from the .flip-score box the
-		// live card puts them in — the difference was visible side by side in the list.
-		//
-		// Both mounts are enqueued at the top level. A `cy.mount` nested inside a `.then` replaces
-		// the root while the surrounding chain still holds the old, now-detached nodes, and a
-		// detached node reports an empty computed style rather than failing loudly.
-		it('sets the scores in the same box the live card uses', () => {
-			const live: { className?: string; fontSize?: string; fontFamily?: string; width?: number; height?: number } = {};
-
-			// The winner's score on both, since the loser is deliberately a lighter weight and would
-			// measure narrower for a reason that has nothing to do with the box it sits in.
-			mountCard(liveGame);
-			cy.get('.game-score-value').eq(1).then(([el]: JQuery<HTMLElement>) => {
-				const style = getComputedStyle(el);
-				const box = el.getBoundingClientRect();
-				live.className = el.className;
-				live.fontSize = style.fontSize;
-				live.fontFamily = style.fontFamily;
-				live.width = box.width;
-				live.height = box.height;
-			});
-
-			mountCard(finalGame);
-			cy.get('.game-score-value').eq(1).should(([el]: JQuery<HTMLElement>) => {
-				const style = getComputedStyle(el);
-				const box = el.getBoundingClientRect();
-				// The harness stubs `./flipScore` down to a plain span, so the wrapper itself is not
-				// observable here — what is, and what actually differed, is the class the score
-				// carries and the metrics that class produces.
-				expect(el.classList.contains('game-score-value')).to.equal(true);
-				expect(live.className).to.contain('game-score-value');
-				expect(style.fontSize).to.equal(live.fontSize);
-				expect(style.fontFamily).to.equal(live.fontFamily);
-				expect(box.height).to.be.closeTo(live.height!, 0.5);
-				expect(box.width).to.be.closeTo(live.width!, 0.5);
-			});
+		it('names no broadcast and no attendance, because there is nothing left to tune into', () => {
+			mountRow(finalGame);
+			rowOf().should('not.contain.text', 'TNT').and('not.contain.text', (20478).toLocaleString());
 		});
 
-		it('steps back from a live card rather than carrying its team-colour rails', () => {
-			mountCard(finalGame);
-			cy.get('.game-card').then(([final]: JQuery<HTMLElement>) => {
-				const finalBackground = getComputedStyle(final).backgroundColor;
-				expect(getComputedStyle(final).borderLeftWidth, 'no 5px team rail').to.not.equal('5px');
-				mountCard(liveGame);
-				cy.get('.game-card').should(([live]: JQuery<HTMLElement>) => {
-					expect(getComputedStyle(live).backgroundColor, 'the two cards do not look alike')
-						.to.not.equal(finalBackground);
-				});
-			});
-		});
-
-		it('names no broadcast, because there is nothing left to tune into', () => {
-			mountCard(finalGame);
-			cy.get('.game-meta-networks').should('not.exist');
-			cy.contains(en.gameCard.watchLabel).should('not.exist');
-			// The venue survives: where it was played is still true.
-			cy.get('.game-meta-venue').should('have.text', 'Xfinity Mobile Arena');
-		});
-
-		it('leaves the broadcast on a live card', () => {
-			mountCard(liveGame);
-			cy.get('.game-meta-networks').should('contain.text', 'TNT');
-		});
-
-		it('keeps the attendance off the card entirely', () => {
-			mountCard(finalGame);
-			cy.contains((20478).toLocaleString()).should('not.exist');
-			cy.get('.bi-people').should('not.exist');
-		});
-
-		// ESPN's own label, taken off `shortDetail` rather than derived from the period — which is
-		// the only way SO for a shootout is ever produced.
-		it('carries ESPN\'s own Final designation when there was extra time', () => {
-			mountCard({ ...finalGame, finalPeriodSuffix: 'OT' });
-			cy.get('.final-status-label').should('have.text', `${en.gameCard.final}/OT`);
-			mountCard({ ...finalGame, finalPeriodSuffix: '3OT' });
-			cy.get('.final-status-label').should('have.text', `${en.gameCard.final}/3OT`);
-			mountCard({ ...finalGame, finalPeriodSuffix: '10' });
-			cy.get('.final-status-label').should('have.text', `${en.gameCard.final}/10`);
-			mountCard({ ...finalGame, finalPeriodSuffix: 'SO' });
-			cy.get('.final-status-label').should('have.text', `${en.gameCard.final}/SO`);
+		// Our sources' own label, taken off `shortDetail` rather than derived from the period, which
+		// is the only way SO for a shootout is ever produced.
+		it('carries the Final designation when there was extra time', () => {
+			for (const suffix of ['OT', '3OT', '10', 'SO']) {
+				mountRow({ ...finalGame, finalPeriodSuffix: suffix });
+				rowOf().find('.as-clock').should('have.text', `${en.gameCard.final}/${suffix}`);
+			}
 		});
 
 		it('says just Final on a game that ended in regulation', () => {
-			mountCard(finalGame);
-			cy.get('.final-status-label').should('have.text', en.gameCard.final);
-			cy.get('.final-status-label').should('not.contain.text', '/');
+			mountRow(finalGame);
+			rowOf().find('.as-clock').should('not.contain.text', '/');
 		});
 
 		it('still opens the detail screen when clicked', () => {
 			const onOpenGameDetail = cy.spy().as('open');
-			cy.mount(<GameCard {...cardProps} game={finalGame} onOpenGameDetail={onOpenGameDetail} />);
-			cy.get('.game-card').click();
+			cy.mount(<StatefulMainView games={[finalGame]} prefs={{ ...listPrefs, showUpcomingGames: false }} onOpenGameDetail={onOpenGameDetail} />);
+			rowOf().click('left');
 			cy.get('@open').should('have.been.calledWith', 'final-1');
 		});
 
-		it('keeps the status label on one line in every locale, suffix included', () => {
-			mountCard({ ...finalGame, finalPeriodSuffix: '3OT' });
-			cy.get('.final-status-label').then(([label]: JQuery<HTMLElement>) => {
-				const oneLine = label.getBoundingClientRect().height;
+		it('keeps the status on one line in every locale, suffix included', () => {
+			mountRow({ ...finalGame, finalPeriodSuffix: '3OT' });
+			rowOf().find('.as-clock').then(([label]: JQuery<HTMLElement>) => {
+				const oneLine = label!.getBoundingClientRect().height;
 				for (const [name, locale] of Object.entries(locales)) {
-					label.textContent = `${(locale.gameCard as unknown as Record<string, string>).final}/3OT`;
-					expect(label.getBoundingClientRect().height, `${name} keeps Final on one line`)
-						.to.be.at.most(oneLine + 1);
+					label!.textContent = `${(locale.gameCard as unknown as Record<string, string>).final}/3OT`;
+					expect(label!.getBoundingClientRect().height, `${name} keeps Final on one line`).to.be.at.most(oneLine + 1);
 				}
 			});
 		});
 	});
 
 	describe('the list', () => {
-		// `mainView` imports './gameCard', which the component harness replaces with a stub, so
-		// these assert placement by test id. The card's own internals are measured by the direct
-		// mounts above, which import it by a path the stub does not match.
-		it('gives finished games a section of their own', () => {
+		it('puts finished games after the hairline, labelled for a screen reader', () => {
 			cy.mount(<StatefulMainView games={[finalGame]} prefs={listPrefs} />);
-			cy.get('.popup-section-title').should('contain.text', en.main.sectionFinal);
-			cy.get('[data-testid="game-card-final-1"]').should('exist');
+			cy.get(`section.gm-after[aria-label="${en.main.sectionFinal}"] [data-game="final-1"]`).should('exist');
 		});
 
-		it('puts that section under Up Next, not above it', () => {
+		it('puts them under the upcoming games, not above them', () => {
 			const upcoming: Game = {
 				...finalGame,
 				id: 'pre-1',
@@ -419,53 +320,34 @@ describe('a finished game', () => {
 				startTime: new Date(Date.now() + (4 * 60 * 60 * 1000)).toISOString(),
 			};
 			cy.mount(<StatefulMainView games={[finalGame, upcoming]} prefs={listPrefs} />);
-			cy.get('.popup-section-title').should('have.length', 2);
-			cy.get('.popup-section-title').then(([upNext, final]: JQuery<HTMLElement>) => {
-				expect(upNext.textContent).to.equal(en.main.sectionUpNext);
-				expect(final.textContent).to.equal(en.main.sectionFinal);
-				expect(final.getBoundingClientRect().top, 'Final sits below Up Next')
-					.to.be.greaterThan(upNext.getBoundingClientRect().top);
-			});
+			order().should('deep.equal', ['pre-1', 'final-1']);
 		});
 
-		it('and under the live sections too', () => {
+		it('and under the live games too', () => {
 			cy.mount(<StatefulMainView games={[finalGame, liveGame]} prefs={listPrefs} />);
-			cy.get('.popup-section-title').then(([live, final]: JQuery<HTMLElement>) => {
-				expect(live.textContent).to.equal(en.main.sectionOtherLiveGames);
-				expect(final.textContent).to.equal(en.main.sectionFinal);
-				expect(final.getBoundingClientRect().top).to.be.greaterThan(live.getBoundingClientRect().top);
-			});
+			order().should('deep.equal', ['live-1', 'final-1']);
 		});
 
 		it('shows nothing at all while the setting is off', () => {
 			cy.mount(<StatefulMainView games={[finalGame]} prefs={{ ...listPrefs, keepFinalGames: false }} />);
-			cy.get('.popup-section-title').should('not.exist');
-			cy.get('[data-testid="game-card-final-1"]').should('not.exist');
+			cy.get('[data-game="final-1"]').should('not.exist');
 		});
 
-		// A slate of nothing but results is not an empty slate, and the "no games" state would
-		// otherwise sit above a section full of cards.
+		// A slate of nothing but results is not an empty slate.
 		it('does not read as an empty slate when only results are left', () => {
 			cy.mount(<StatefulMainView games={[finalGame]} prefs={{ ...listPrefs, showUpcomingGames: false }} />);
 			cy.get('[data-testid="empty-no-games"]').should('not.exist');
-			cy.get('[data-testid="game-card-final-1"]').should('exist');
+			cy.get('[data-game="final-1"]').should('exist');
 		});
 
-		// And the reverse, so the assertion above is measuring the new clause rather than a state
-		// this view never reaches.
+		// And the reverse, so the assertion above is measuring the new clause.
 		it('still reads as an empty slate with the setting off and nothing else on', () => {
 			cy.mount(<StatefulMainView games={[finalGame]} prefs={{ ...listPrefs, showUpcomingGames: false, keepFinalGames: false }} />);
 			cy.get('[data-testid="empty-no-games"]').should('exist');
 		});
 
-		// Across the whole section rather than inside each league group: the result you came looking
-		// for is your team's, and it should not be a league header down.
 		it('pins your teams to the top, ahead of a game that ended more recently', () => {
-			const older: Game = {
-				...finalGame,
-				id: 'mine',
-				startTime: new Date(Date.now() - (8 * 60 * 60 * 1000)).toISOString(),
-			};
+			const older: Game = { ...finalGame, id: 'mine', startTime: new Date(Date.now() - (8 * 60 * 60 * 1000)).toISOString() };
 			const newer: Game = {
 				...finalGame,
 				id: 'theirs',
@@ -473,39 +355,15 @@ describe('a finished game', () => {
 				awayTeam: { ...finalGame.awayTeam, id: 'other-a' },
 				startTime: new Date(Date.now() - (1 * 60 * 60 * 1000)).toISOString(),
 			};
-			cy.mount(
-				<StatefulMainView
-					games={[newer, older]}
-					prefs={listPrefs}
-					favoriteTeamIds={new Set(['nba:h'])}
-				/>,
-			);
-			cy.get('[data-testid^="game-card-"]').then(cards => {
-				expect([...cards].map(c => c.getAttribute('data-testid')))
-					.to.deep.equal(['game-card-mine', 'game-card-theirs']);
-			});
+			cy.mount(<StatefulMainView games={[newer, older]} prefs={listPrefs} favoriteTeamIds={new Set(['nba:h'])} />);
+			order().should('deep.equal', ['mine', 'theirs']);
 		});
 
 		it('and falls back to most recently wrapped with no favourites involved', () => {
 			const older: Game = { ...finalGame, id: 'older', startTime: new Date(Date.now() - (8 * 60 * 60 * 1000)).toISOString() };
 			const newer: Game = { ...finalGame, id: 'newer', startTime: new Date(Date.now() - (1 * 60 * 60 * 1000)).toISOString() };
 			cy.mount(<StatefulMainView games={[older, newer]} prefs={listPrefs} />);
-			cy.get('[data-testid^="game-card-"]').then(cards => {
-				expect([...cards].map(c => c.getAttribute('data-testid')))
-					.to.deep.equal(['game-card-newer', 'game-card-older']);
-			});
-		});
-
-		it('keeps the section heading on one line in every locale', () => {
-			cy.mount(<StatefulMainView games={[finalGame]} prefs={listPrefs} />);
-			cy.get('.popup-section-title').last().then(([heading]: JQuery<HTMLElement>) => {
-				const oneLine = heading.getBoundingClientRect().height;
-				for (const [name, locale] of Object.entries(locales)) {
-					heading.textContent = (locale.main as unknown as Record<string, string>).sectionFinal;
-					expect(heading.getBoundingClientRect().height, `${name} keeps the heading on one line`)
-						.to.be.at.most(oneLine + 1);
-				}
-			});
+			order().should('deep.equal', ['newer', 'older']);
 		});
 	});
 
@@ -513,7 +371,9 @@ describe('a finished game', () => {
 		it('carries no PowerScore anywhere', () => {
 			mountDetail(finalGame, { powerScoreHistory: spanning(), scoreHistory: scoreSpan() });
 			cy.get('.powerscore-breakdown').should('not.exist');
+			cy.get('.dt-hero .as-stage-power').should('not.exist');
 			cy.contains(en.powerScore.heading).should('not.exist');
+			cy.contains(en.gameCard.powerScore).should('not.exist');
 			cy.contains('61').should('not.exist');
 			// The rest of the screen is still there, so the assertions above are measuring the
 			// branch rather than a screen that failed to render.
@@ -522,7 +382,8 @@ describe('a finished game', () => {
 
 		it('offers no boost, which could only change a number nothing will compute again', () => {
 			mountDetail(finalGame, { powerScoreHistory: spanning() });
-			cy.get('.game-detail-boost-row').should('not.exist');
+			cy.get('.dt-boost').should('not.exist');
+			cy.get('.powerscore-boost-input').should('not.exist');
 		});
 
 		// Both of the above are absences, so they are worth nothing unless the live screen is shown
@@ -530,7 +391,8 @@ describe('a finished game', () => {
 		it('is missing what a live screen has, rather than the selectors being wrong', () => {
 			mountDetail(liveGame, { powerScoreHistory: spanning(), scoreHistory: scoreSpan() });
 			cy.get('.powerscore-breakdown').should('exist');
-			cy.get('.game-detail-boost-row').should('exist');
+			cy.get('.dt-boost').should('exist');
+			cy.get('.dt-hero .as-stage-power').should('exist');
 		});
 
 		it('shows the box score and the game info panel', () => {
@@ -570,28 +432,27 @@ describe('a finished game', () => {
 			cy.contains(en.detail.chartPowerScoreTitle).should('exist');
 		});
 
-		it('dims the loser in the hero as well as on the card', () => {
+		it('dims the loser on the stage as well as on the list', () => {
 			mountDetail(finalGame);
-			cy.get('.game-detail-score-value').should('have.length', 2);
-			cy.get('.game-detail-score-value').eq(0).should('have.class', 'is-loser');
-			cy.get('.game-detail-score-value').eq(1).should('not.have.class', 'is-loser');
-			cy.get('.game-detail-score-value').then(([away, home]: JQuery<HTMLElement>) => {
-				expect(Number(getComputedStyle(home).fontWeight))
-					.to.be.greaterThan(Number(getComputedStyle(away).fontWeight));
-				expect(getComputedStyle(away).color).to.not.equal(getComputedStyle(home).color);
+			cy.get('.dt-hero .as-score').should('have.length', 2);
+			cy.get('.dt-hero .as-score').eq(0).should('have.class', 'is-behind');
+			cy.get('.dt-hero .as-score').eq(1).should('not.have.class', 'is-behind');
+			cy.get('.dt-hero .as-score').then(([away, home]: JQuery<HTMLElement>) => {
+				expect(getComputedStyle(away!).color, 'the loser reads quieter').to.not.equal(getComputedStyle(home!).color);
 			});
 		});
 
-		// A dimmed score mid-game would read as the team that is behind rather than the team that
-		// lost, and it would flip on every basket.
-		it('dims neither side while the game is still being played', () => {
-			mountDetail(liveGame);
-			cy.get('.game-detail-score-value.is-loser').should('not.exist');
+		// The stage dims whoever is behind while play goes on, the same on the list and here, so a
+		// level game is the case that must dim nobody.
+		it('dims neither side of a level game', () => {
+			mountDetail({ ...liveGame, homeTeam: { ...liveGame.homeTeam, score: 98 }, awayTeam: { ...liveGame.awayTeam, score: 98 } });
+			cy.get('.dt-hero .as-score.is-behind').should('not.exist');
 		});
 
-		it('still says Final in the bar at the top', () => {
+		it('still says Final at the top of the stage and in the compact bar', () => {
 			mountDetail(finalGame);
-			cy.contains(en.detail.final).should('exist');
+			cy.get('.dt-hero .as-clock').should('have.text', en.gameCard.final);
+			cy.get('.dt-bar-status').should('have.text', en.gameCard.final);
 		});
 	});
 });

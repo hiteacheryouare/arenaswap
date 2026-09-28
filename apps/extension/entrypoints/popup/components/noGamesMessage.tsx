@@ -14,12 +14,12 @@ const noGamesMessage = ({ onOpenSetup, onRefresh }: noGamesMessageProps) => {
 	const [msg] = useState(getRandomNoGamesMessage);
 
 	return (
-		<div className='mt-3 text-center popup-no-games-wrap'>
-			<div className='fw-bold text-body mb-1 popup-no-games-title'>{msg.title}</div>
-			<div className='popup-no-games-sub mb-2'>{msg.sub}</div>
-			<div className='d-flex justify-content-center gap-3'>
-				<button className='btn btn-link btn-sm p-0 popup-settings-link' onClick={onRefresh}>{i18n.t('empty.refresh')}</button>
-				{onOpenSetup && <button className='btn btn-link btn-sm p-0 popup-settings-link' onClick={onOpenSetup}>{i18n.t('empty.settings')}</button>}
+		<div className='as-empty popup-no-games-wrap'>
+			<div className='as-empty-title popup-no-games-title'>{msg.title}</div>
+			<div className='as-empty-copy popup-no-games-sub'>{msg.sub}</div>
+			<div className='as-empty-actions'>
+				<button type='button' className='btn btn-quiet popup-settings-link' onClick={onRefresh}>{i18n.t('empty.refresh')}</button>
+				{onOpenSetup && <button type='button' className='btn btn-quiet popup-settings-link' onClick={onOpenSetup}>{i18n.t('empty.settings')}</button>}
 			</div>
 		</div>
 	);

@@ -65,8 +65,8 @@ export const liveState = (): BackgroundState => ({
 });
 
 export const openTabs: fakeTab[] = [
-	{ id: 101, title: 'Sixers vs Thunder — Stream', url: 'https://example.test/sixers' },
-	{ id: 102, title: 'Bulls vs Heat — Stream',     url: 'https://example.test/bulls' },
+	{ id: 101, index: 0, title: 'Sixers vs Thunder — Stream', url: 'https://example.test/sixers' },
+	{ id: 102, index: 1, title: 'Bulls vs Heat — Stream',     url: 'https://example.test/bulls' },
 ];
 
 /** Stored prefs skip onboarding, which is what most flows want. */

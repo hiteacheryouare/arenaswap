@@ -1,5 +1,5 @@
-import { buildGameCardStyle, formatClock, formatGameClock, formatPeriod, isHalftime, oddsSummary, powerScoreColor } from '../src/components/gameCardShared';
-import { leagueConfigs, scoreMaxTotal } from '@arenaswap/core/constants';
+import { formatClock, formatGameClock, formatPeriod, isHalftime } from '../src/components/gameFormat';
+import { leagueConfigs } from '@arenaswap/core/constants';
 import type { Game, LeagueId } from '@arenaswap/core/types';
 
 const makeGame = (league: LeagueId, overrides: Partial<Game> = {}): Game => ({
@@ -72,24 +72,6 @@ describe('formatGameClock', () => {
 
 	test('renders clock sports as mm:ss', () => {
 		expect(formatGameClock(makeGame('nba', { clockSeconds: 402 }))).toBe('6:42');
-	});
-});
-
-describe('powerScoreColor', () => {
-	test('runs from muted slate at zero to brand orange at the ceiling', () => {
-		expect(powerScoreColor(0, scoreMaxTotal)).toBe('rgb(139,148,158)');
-		expect(powerScoreColor(scoreMaxTotal, scoreMaxTotal)).toBe('rgb(247,92,3)');
-	});
-
-	// A manual game boost can push a total past 100, and the gradient has to hold at the top.
-	test('clamps above the ceiling', () => {
-		expect(powerScoreColor(140, scoreMaxTotal)).toBe('rgb(247,92,3)');
-	});
-
-	test('always produces a parseable rgb triple', () => {
-		for (const score of [0, 17, 42, 73, 99, 100]) {
-			expect(powerScoreColor(score, scoreMaxTotal)).toMatch(/^rgb\((\d{1,3}),(\d{1,3}),(\d{1,3})\)$/);
-		}
 	});
 });
 
@@ -176,71 +158,3 @@ describe('isHalftime', () => {
 	});
 });
 
-describe('oddsSummary', () => {
-	const withOdds = (odds: Game['odds']) => oddsSummary(makeGame('nfl', { sportType: 'football', odds }));
-
-	test('prints the spread and the total together', () => {
-		expect(withOdds({ details: 'PHI -3.5', overUnder: 47.5 })).toBe('PHI -3.5 • O/U 47.5');
-	});
-
-	test('prints whichever half of it ESPN actually sent', () => {
-		expect(withOdds({ details: 'PHI -3.5' })).toBe('PHI -3.5');
-		expect(withOdds({ overUnder: 47.5 })).toBe('O/U 47.5');
-	});
-
-	// A whole-number total is published as `44`, and `44.0` reads as a line that moved.
-	test('prints a whole total without a decimal, and a half with one', () => {
-		expect(withOdds({ overUnder: 44 })).toBe('O/U 44');
-		expect(withOdds({ overUnder: 44.5 })).toBe('O/U 44.5');
-	});
-
-	test('says nothing at all when there is nothing to say', () => {
-		expect(withOdds(undefined)).toBeNull();
-		expect(withOdds({})).toBeNull();
-	});
-
-	// A sportsbook with no numbers behind it is an attribution, not a line. The card renders the
-	// logo from elsewhere; this string must not claim odds exist.
-	test('says nothing for a provider that sent no numbers', () => {
-		expect(withOdds({ provider: { name: 'ESPN BET' } })).toBeNull();
-	});
-
-	// A pick'em really does arrive as zero, and dropping it would lose the most interesting line
-	// on the board.
-	test('keeps a total of zero, which is a real line rather than a missing one', () => {
-		expect(withOdds({ overUnder: 0 })).toBe('O/U 0');
-	});
-});
-
-// The two rails down the sides of a card are the only thing distinguishing one matchup from the
-// next in a list of thirty.
-describe('buildGameCardStyle', () => {
-	test('paints each rail in the colour resolved for that side', () => {
-		const game = makeGame('nba', {
-			awayTeam: { id: 'a', name: 'Away', abbreviation: 'AWY', score: 0, color: '#FF0000' },
-			homeTeam: { id: 'h', name: 'Home', abbreviation: 'HOM', score: 0, color: '#00FF00' },
-		});
-		const style = buildGameCardStyle(game);
-		expect(style.borderLeft).toBe('5px solid #FF0000');
-		expect(style.borderRight).toBe('5px solid #00FF00');
-		expect(style.background).toBe('linear-gradient(to right, #FF000028, #00FF0028), #ffffff');
-	});
-
-	test('falls back to the neutral rail for a team with no published colour', () => {
-		const style = buildGameCardStyle(makeGame('nba'));
-		expect(style.borderLeft).toBe('5px solid #dee2e6');
-		expect(style.borderRight).toBe('5px solid #dee2e6');
-	});
-
-	// Two clubs who publish near-identical navies would otherwise get two rails nobody can tell
-	// apart, which is the whole reason the pair is resolved rather than read straight off.
-	test('keeps the two rails distinguishable when both clubs publish the same navy', () => {
-		const derby = makeGame('mlb', {
-			sportType: 'baseball',
-			awayTeam: { id: 'a', name: 'Away', abbreviation: 'NYY', score: 0, color: '#0C2340', alternateColor: '#FFFFFF' },
-			homeTeam: { id: 'h', name: 'Home', abbreviation: 'DET', score: 0, color: '#0C2340', alternateColor: '#FA4616' },
-		});
-		const style = buildGameCardStyle(derby);
-		expect(style.borderLeft).not.toBe(style.borderRight);
-	});
-});

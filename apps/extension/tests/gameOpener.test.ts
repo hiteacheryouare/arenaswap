@@ -1,10 +1,5 @@
-import {
-	formatClock,
-	formatPeriod,
-	formatStartDateTime,
-	isInteractiveCardTarget,
-	powerScoreColor,
-} from '../entrypoints/popup/components/gameCardShared';
+import { formatClock, formatPeriod } from '@arenaswap/ui/src/components/gameFormat';
+import { isInteractiveCardTarget } from '@arenaswap/ui/src/components/gameOpener';
 import type { Game } from '@arenaswap/core/types';
 
 const makeGame = (overrides: Partial<Game> & { league: Game['league']; sportType: Game['sportType']; period: number }): Game => ({
@@ -72,43 +67,6 @@ describe('formatClock', () => {
 
 	test('formats 75 seconds as 1:15', () => {
 		expect(formatClock(75)).toBe('1:15');
-	});
-});
-
-describe('formatStartDateTime', () => {
-	test('returns a "Day • Time" string for a valid ISO timestamp', () => {
-		const formatted = formatStartDateTime('2026-10-05T19:00:00.000Z');
-		expect(formatted).toContain('•');
-		const parts = formatted.split('•').map(s => s.trim());
-		const day = parts[0]!;
-		const time = parts[1]!;
-		expect(day.length).toBeGreaterThan(0);
-		expect(time.length).toBeGreaterThan(0);
-	});
-});
-
-describe('powerScoreColor', () => {
-	test('returns the gray endpoint when score is 0', () => {
-		expect(powerScoreColor(0, 100)).toBe('rgb(139,148,158)');
-	});
-
-	test('returns the orange endpoint when score equals max', () => {
-		expect(powerScoreColor(100, 100)).toBe('rgb(247,92,3)');
-	});
-
-	test('clamps to the orange endpoint when score exceeds max', () => {
-		expect(powerScoreColor(200, 100)).toBe('rgb(247,92,3)');
-	});
-
-	test('returns an interpolated rgb color at the midpoint', () => {
-		const color = powerScoreColor(50, 100);
-		const match = color.match(/^rgb\((\d+),(\d+),(\d+)\)$/);
-		expect(match).not.toBeNull();
-		const [, r, g, b] = match!;
-		expect(Number(r)).toBeGreaterThan(139);
-		expect(Number(r)).toBeLessThan(247);
-		expect(Number(g)).toBeLessThan(148);
-		expect(Number(b)).toBeLessThan(158);
 	});
 });
 

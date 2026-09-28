@@ -1,5 +1,5 @@
-import LiveGameCard from '@arenaswap/ui/src/components/liveGameCard';
-import FinalGameCard from '@arenaswap/ui/src/components/finalGameCard';
+import GameTile from '@arenaswap/ui/src/components/gameTile';
+import GameRow from '@arenaswap/ui/src/components/gameRow';
 import GameCardReveal from '../../entrypoints/popup/components/gameCardReveal';
 import {
 	revealBaseDurationMs,
@@ -33,10 +33,8 @@ const game = (status: 'in' | 'post', away = 'MIA', home = 'ARI') => ({
 	homeTeam: { id: 'h', name: 'Arizona', abbreviation: home, score: 1, color: '#A71930', logo: goldLogo },
 }) as unknown as Game;
 
-// The nesting `mainView` actually builds — `.popup-container`, the section's `.mt-2`, the league's
-// own div, then the wrapper. Not a shortcut: mounted straight into the flex column the container is,
-// the wrapper becomes a flex item and stops the card's bottom margin collapsing out of it, so the
-// box assertions below would be describing a DOM the popup never has.
+// The nesting `mainView` actually builds: a live game as a lone tile across the width of the list,
+// which is the size the poster was drawn for, and a finished one as a row after the hairline.
 const Harness = ({ mode, status = 'in', away, home, skipping = false }: {
 	mode: revealMode;
 	status?: 'in' | 'post';
@@ -45,22 +43,22 @@ const Harness = ({ mode, status = 'in', away, home, skipping = false }: {
 	skipping?: boolean;
 }) => {
 	const subject = game(status, away, home);
-	const shared = {
-		game: subject,
-		excitementResult: undefined,
-		favoriteTeamIds: new Set<string>(),
-		onToggleFavoriteTeam: () => {},
-		onOpenGameDetail: () => {},
-		bettingPrefs: { bettingEnabled: false },
-	};
 	return (
-		<div className='popup-container d-flex flex-column'>
-			<div className='mt-2'>
-				<div>
-					<GameCardReveal game={subject} mode={mode} index={0} skipping={skipping}>
-						{status === 'post' ? <FinalGameCard {...shared} /> : <LiveGameCard {...shared} />}
-					</GameCardReveal>
-				</div>
+		<div className='popup-container d-flex flex-column gm'>
+			<div className='gm-lower'>
+				{status === 'post' ? (
+					<section className='gm-after as-rows'>
+						<GameCardReveal game={subject} mode={mode} index={0} skipping={skipping} shape='row'>
+							<GameRow game={subject} surface='#0e1013' quiet />
+						</GameCardReveal>
+					</section>
+				) : (
+					<div className='gm-tiles is-odd'>
+						<GameCardReveal game={subject} mode={mode} index={0} skipping={skipping} shape='tile'>
+							<GameTile game={subject} power={80} trend={2} tab={<span>Tab 1</span>} />
+						</GameCardReveal>
+					</div>
+				)}
 			</div>
 		</div>
 	);
@@ -165,7 +163,7 @@ describe('the popup open reveal', () => {
 
 	it('leaves the card alone entirely when there is no reveal to play', () => {
 		cy.mount(<Harness mode='none' />);
-		cy.get('.game-card').should('exist');
+		cy.get('.as-tile').should('exist');
 		cy.get('.game-card-reveal').should('not.exist');
 	});
 
@@ -179,11 +177,11 @@ describe('the popup open reveal', () => {
 		cy.clock();
 		cy.mount(<Harness mode='quick' />);
 		cy.get('.game-card-reveal-stage').should('exist');
-		cy.get('.game-card').then($card => {
+		cy.get('.as-tile').then($card => {
 			const before = $card[0];
 			cy.tick(revealDurationMs('quick') + 1000);
 			cy.get('.game-card-reveal-stage').should('not.exist');
-			cy.get('.game-card').should($after => expect($after[0]).to.equal(before));
+			cy.get('.as-tile').should($after => expect($after[0]).to.equal(before));
 		});
 	});
 
@@ -193,7 +191,7 @@ describe('the popup open reveal', () => {
 	// between artwork placed past the frame and artwork spilling out of a container.
 	it('cuts the overhang at the card\'s own edge', () => {
 		cy.mount(<Harness mode='full' />);
-		rectOf('.game-card').then(card => {
+		rectOf('.as-tile').then(card => {
 			rectOf('.game-card-reveal-opening').then(layer => {
 				expect(layer.left, 'clipped to the card').to.be.closeTo(card.left, 0.1);
 				expect(layer.right, 'clipped to the card').to.be.closeTo(card.right, 0.1);
@@ -202,7 +200,7 @@ describe('the popup open reveal', () => {
 				expect(layer.bottom).to.be.closeTo(card.bottom + revealStageBleedPx, 0.1);
 			});
 			cy.get('.game-card-reveal-opening')
-				.should('have.css', 'clip-path', `inset(0px -${revealStageBleedPx}px round 9px)`);
+				.should('have.css', 'clip-path', `inset(0px -${revealStageBleedPx}px round 15px)`);
 		});
 	});
 
@@ -237,7 +235,7 @@ describe('the popup open reveal', () => {
 	// there is no third surface showing through and the layer behind them paints nothing.
 	it('covers the whole card between the two fields', () => {
 		cy.mount(<Harness mode='full' />);
-		rectOf('.game-card').then(card => {
+		rectOf('.as-tile').then(card => {
 			rectOf('.game-card-reveal-opening-field.is-away').then(away => {
 				rectOf('.game-card-reveal-opening-field.is-home').then(home => {
 					expect(away.left).to.be.closeTo(card.left, 0.5);
@@ -257,7 +255,7 @@ describe('the popup open reveal', () => {
 		cy.mount(<Harness mode='full' />);
 		awaitCrests();
 		scrubTo(openMs(revealOpenBeatMs));
-		rectOf('.game-card').then(card => {
+		rectOf('.as-tile').then(card => {
 			// The mark's own box is bigger than the card, which is what makes it oversized at all.
 			cy.get('.game-card-reveal-opening-logo').should($marks => {
 				[...$marks].forEach(mark => {
@@ -347,7 +345,7 @@ describe('the popup open reveal', () => {
 	it('holds the seam within a tenth of the card whatever the card\'s height', () => {
 		cy.mount(<Harness mode='full' />);
 		// Short card: the full angle, untouched.
-		rectOf('.game-card').then(card => {
+		rectOf('.as-tile').then(card => {
 			cy.get('.game-card-reveal').should($wrapper => {
 				const style = getComputedStyle($wrapper[0]);
 				const lean = parseFloat(style.getPropertyValue('--reveal-lean'));
@@ -362,10 +360,10 @@ describe('the popup open reveal', () => {
 		let padding: HTMLStyleElement | null = null;
 		cy.document().then(doc => {
 			padding = doc.createElement('style');
-			padding.textContent = '.game-card { padding-bottom: 75px; }';
+			padding.textContent = '.as-tile { padding-bottom: 75px; }';
 			doc.head.appendChild(padding);
 		});
-		rectOf('.game-card').then(card => {
+		rectOf('.as-tile').then(card => {
 			expect(card.height, 'the card this measures').to.be.greaterThan(205);
 			cy.get('.game-card-reveal').should($wrapper => {
 				const style = getComputedStyle($wrapper[0]);
@@ -383,7 +381,7 @@ describe('the popup open reveal', () => {
 		// read is a race against the poster's own opening — which it lost by 34ms the moment the beats
 		// ahead of the poster grew, and passed by measuring a half still 1% short of full.
 		scrubTo(spineMs(1500));
-		rectOf('.game-card').then(card => {
+		rectOf('.as-tile').then(card => {
 			cy.get('.game-card-reveal-half.is-home').should($half => {
 				const overhang = $half[0].getBoundingClientRect().width - card.width / 2;
 				expect(overhang, 'how far the home colour reaches past the centre')
@@ -400,7 +398,7 @@ describe('the popup open reveal', () => {
 	// second and a half of every open, and in the bottom-left for the last.
 	it('parks every bar clear of the card, corners and all', () => {
 		cy.mount(<Harness mode='full' />);
-		rectOf('.game-card').then(card => {
+		rectOf('.as-tile').then(card => {
 			// Before the pass and after it, which is most of the graphic. The far end has to clear the
 			// last bar to finish travelling and still fall before the wrapper is taken away at 3400: the
 			// trailing bar leaves at 1760 and drags for 1120, so nothing is parked until 2880. It was
@@ -448,16 +446,16 @@ describe('the popup open reveal', () => {
 	it('draws its layers against exactly the box the card occupies', () => {
 		cy.mount(<Harness mode='full' />);
 		rectOf('.game-card-reveal').then(wrapper => {
-			rectOf('.game-card').then(card => {
+			rectOf('.as-tile').then(card => {
 				expect(card.top, 'top').to.be.closeTo(wrapper.top, 0.5);
 				expect(card.bottom, 'bottom').to.be.closeTo(wrapper.bottom, 0.5);
 				expect(card.left, 'left').to.be.closeTo(wrapper.left, 0.5);
 				expect(card.right, 'right').to.be.closeTo(wrapper.right, 0.5);
 			});
 		});
-		// And the gap between cards survives the move onto the wrapper.
-		cy.get('.game-card-reveal').should('have.css', 'margin-bottom', '8px');
-		cy.get('.game-card-reveal > .game-card').should('have.css', 'margin-bottom', '0px');
+		// The gap between games is the list's grid gap, so the wrapper adds none of its own.
+		cy.get('.game-card-reveal').should('have.css', 'margin-bottom', '0px');
+		cy.get('.game-card-reveal > .as-tile').should('have.css', 'margin-bottom', '0px');
 	});
 
 	// Against it, and then a pixel past it. A cover of exactly the card's shape cannot hide the card's
@@ -468,7 +466,7 @@ describe('the popup open reveal', () => {
 	// in the corners. Containment does not fix it and a pixel of bleed does.
 	it('bleeds a pixel past the card, so the card\'s own edges cannot show through the cover', () => {
 		cy.mount(<Harness mode='full' />);
-		rectOf('.game-card').then(card => {
+		rectOf('.as-tile').then(card => {
 			(['.game-card-reveal-stage', '.game-card-reveal-sweeps'] as const).forEach(selector => {
 				cy.get(selector).should($el => {
 					const box = $el[0].getBoundingClientRect();
@@ -480,11 +478,11 @@ describe('the popup open reveal', () => {
 				});
 			});
 		});
-		// The other two sides come from the clip, at the card's own 8px radius plus the same pixel:
-		// grown rather than merely square, or the corners stop being the card's corners.
-		cy.get('.game-card').should('have.css', 'border-radius', '8px');
-		cy.get('.game-card-reveal-stage').should('have.css', 'clip-path', 'inset(0px -1px round 9px)');
-		cy.get('.game-card-reveal-sweeps').should('have.css', 'clip-path', 'inset(0px -1px round 9px)');
+		// The other two sides come from the clip, at the tile's own 14px radius plus the same pixel:
+		// grown rather than merely square, or the corners stop being the tile's corners.
+		cy.get('.as-tile').should('have.css', 'border-radius', '14px');
+		cy.get('.game-card-reveal-stage').should('have.css', 'clip-path', 'inset(0px -1px round 15px)');
+		cy.get('.game-card-reveal-sweeps').should('have.css', 'clip-path', 'inset(0px -1px round 15px)');
 	});
 
 	// The bleed must not bend the seam. The lean is half the horizontal run of a leaning edge across
@@ -493,7 +491,7 @@ describe('the popup open reveal', () => {
 	// itself, so the two would stop being one line.
 	it('measures the lean across the box that leans, not across the card', () => {
 		cy.mount(<Harness mode='full' />);
-		rectOf('.game-card').then(card => {
+		rectOf('.as-tile').then(card => {
 			const bled = card.height + revealStageBleedPx * 2;
 			cy.get('.game-card-reveal').should($wrapper => {
 				const lean = parseFloat(getComputedStyle($wrapper[0]).getPropertyValue('--reveal-lean'));
@@ -503,9 +501,9 @@ describe('the popup open reveal', () => {
 	});
 
 	// The last beat takes the colour off the edge it came in from rather than parking a rectangle on
-	// the card's rounded border. What is left is the card's own 5px rail, in the same colour, which
+	// the tile's rounded border. What is left is the tile's own field, in the same two colours, which
 	// has been painted underneath since the first frame.
-	it('takes the colour all the way off, onto the rail the card draws for itself', () => {
+	it('takes the colour all the way off, onto the field the tile draws for itself', () => {
 		cy.mount(<Harness mode='full' />);
 		scrubTo(spineMs(revealBaseDurationMs) + 50);
 		cy.get('.game-card-reveal-half.is-away').should($el => {
@@ -514,13 +512,12 @@ describe('the popup open reveal', () => {
 		cy.get('.game-card-reveal-half.is-home').should($el => {
 			expect($el[0].getBoundingClientRect().width).to.be.closeTo(0, 0.5);
 		});
-		cy.get('.game-card').should('have.css', 'border-left-width', '5px');
-		cy.get('.game-card').should('have.css', 'border-right-width', '5px');
+		cy.get('.as-tile').should('have.css', 'background-image').and('contain', 'linear-gradient');
 	});
 
-	// A finished game is the one flat card in the product — grey on both edges, no team colour — and
-	// takes the same ending, which is the reason it no longer needs keyframes of its own.
-	it('ends the same way on a finished game, which has no rails at all', () => {
+	// A finished game is a neutral row with no team colour of its own, and takes the same ending,
+	// which is the reason it needs no keyframes of its own.
+	it('ends the same way on a finished game, which is a row on the page', () => {
 		cy.mount(<Harness mode='full' status='post' />);
 		scrubTo(spineMs(revealBaseDurationMs) + 50);
 		cy.get('.game-card-reveal-half.is-away').should($el => {
@@ -534,7 +531,7 @@ describe('the popup open reveal', () => {
 		cy.mount(<Harness mode='full' />);
 		scrubTo(spineMs(revealBaseDurationMs) + 50);
 		rectOf('.game-card-reveal-wipe.is-away .game-card-reveal-crest').then(overlay => {
-			cy.get('.game-card .team-crest').first().then($real => {
+			cy.get('.as-tile [data-reveal-crest]').first().then($real => {
 				const real = $real[0].getBoundingClientRect();
 				expect(overlay.left, 'away crest left').to.be.closeTo(real.left, 1);
 				expect(overlay.top, 'away crest top').to.be.closeTo(real.top, 1);
@@ -542,7 +539,7 @@ describe('the popup open reveal', () => {
 			});
 		});
 		rectOf('.game-card-reveal-wipe.is-home .game-card-reveal-crest').then(overlay => {
-			cy.get('.game-card .team-crest').last().then($real => {
+			cy.get('.as-tile [data-reveal-crest]').last().then($real => {
 				const real = $real[0].getBoundingClientRect();
 				expect(overlay.left, 'home crest left').to.be.closeTo(real.left, 1);
 				expect(overlay.top, 'home crest top').to.be.closeTo(real.top, 1);
@@ -558,7 +555,7 @@ describe('the popup open reveal', () => {
 		cy.mount(<Harness mode='full' />);
 		awaitCrests();
 		scrubTo(spineMs(revealBaseDurationMs) + 50);
-		cy.get('.game-card .team-crest').first().then($real => {
+		cy.get('.as-tile [data-reveal-crest]').first().then($real => {
 			const real = $real[0].getBoundingClientRect();
 			cy.get('.game-card-reveal-wipe.is-away .game-card-reveal-crest-logo').should($mark => {
 				const box = $mark[0].getBoundingClientRect();
@@ -588,7 +585,7 @@ describe('the popup open reveal', () => {
 		cy.mount(<Harness mode='full' />);
 		awaitCrests();
 		scrubTo(spineMs(1000));
-		rectOf('.game-card').then(card => {
+		rectOf('.as-tile').then(card => {
 			cy.get('.game-card-reveal-crest-plate').first().should($plate => {
 				const box = $plate[0].getBoundingClientRect();
 				expect(box.top, 'plate top').to.be.greaterThan(card.top);
@@ -676,7 +673,7 @@ describe('the popup open reveal', () => {
 	it('pushes the poster crest up to its bound through the hold, never past it', () => {
 		cy.mount(<Harness mode='full' />);
 		awaitCrests();
-		rectOf('.game-card').then(card => {
+		rectOf('.as-tile').then(card => {
 			([0, 700, 1496] as const).forEach(spine => {
 				scrubTo(spineMs(spine));
 				cy.get('.game-card-reveal-crest-plate').should($plates => {
@@ -697,9 +694,9 @@ describe('the popup open reveal', () => {
 	it('releases the card underneath the moment the graphic is asked to leave', () => {
 		cy.mount(<Harness mode='full' skipping />);
 		cy.get('.game-card-reveal.is-skipping').should('exist');
-		cy.get('.game-card-center').should('have.css', 'opacity', '1');
-		cy.get('.game-card-status-row').should('have.css', 'opacity', '1');
-		cy.get('.game-card .team-crest').should('have.css', 'opacity', '1');
+		cy.get('.as-tile-team .as-score').should('have.css', 'opacity', '1');
+		cy.get('.as-tile-top').should('have.css', 'opacity', '1');
+		cy.get('.as-tile [data-reveal-crest]').should('have.css', 'opacity', '1');
 		// And the dark plate goes at once rather than fading, because for most of the graphic's life it
 		// is already gone — a fade with no `from` would take it back to full and flash it over the card.
 		cy.get('.game-card-reveal-base').should('have.css', 'opacity', '0');
@@ -715,9 +712,9 @@ describe('the popup open reveal', () => {
 	it('brings the card\'s own crest up in one step rather than fading it into the overlay', () => {
 		cy.mount(<Harness mode='full' />);
 		scrubTo(spineMs(revealBaseDurationMs * 0.93) - 20);
-		cy.get('.game-card .team-crest').first().should('have.css', 'opacity', '0');
+		cy.get('.as-tile [data-reveal-crest]').first().should('have.css', 'opacity', '0');
 		scrubTo(spineMs(revealBaseDurationMs * 0.93) + 20);
-		cy.get('.game-card .team-crest').first().should('have.css', 'opacity', '1');
+		cy.get('.as-tile [data-reveal-crest]').first().should('have.css', 'opacity', '1');
 	});
 
 	// It has to be standing still before it starts handing over, or what you see is one crest
@@ -740,11 +737,11 @@ describe('the popup open reveal', () => {
 	it('brings the card\'s own contents into focus as the colour goes', () => {
 		cy.mount(<Harness mode='full' />);
 		scrubTo(spineMs(2400));
-		cy.get('.game-card-center').should('have.css', 'opacity', '0');
+		cy.get('.as-tile-team .as-score').should('have.css', 'opacity', '0');
 		scrubTo(spineMs(revealBaseDurationMs));
-		cy.get('.game-card-center').should('have.css', 'opacity', '1');
-		cy.get('.game-card-status-row').should('have.css', 'opacity', '1');
-		cy.get('.team-abbreviation').first().should('have.css', 'opacity', '1');
+		cy.get('.as-tile-team .as-score').should('have.css', 'opacity', '1');
+		cy.get('.as-tile-top').should('have.css', 'opacity', '1');
+		cy.get('.as-tile-team b').first().should('have.css', 'opacity', '1');
 	});
 
 	// Nothing in the stage may take a click: the card underneath is live the whole time the graphic

@@ -2,16 +2,23 @@ import { useMemo, useRef } from 'react';
 import type { ReactNode, RefObject } from 'react';
 import { i18n } from '#i18n';
 import type { Browser } from 'wxt/browser';
+import { createFavoriteTeamKey, sensitivityThresholds } from '@arenaswap/core/constants';
 import type {
 	Game,
 	LeagueId,
 	LeagueLogoMap,
 	PowerScoreResult,
+	PowerScoreSnapshot,
 	TabRegistration,
 	UserPreferences,
 } from '@arenaswap/core/types';
-import { LeagueSectionHeader, PopupHeader, PopupSectionTitle } from '@arenaswap/ui/src/components/popupChrome';
-import GameCard from './gameCard';
+import { PopupHeader } from '@arenaswap/ui/src/components/popupChrome';
+import GameStage from '@arenaswap/ui/src/components/gameStage';
+import GameTile from '@arenaswap/ui/src/components/gameTile';
+import GameRow from '@arenaswap/ui/src/components/gameRow';
+import { arrangeLive, powerTrend } from '@arenaswap/ui/src/components/boardLayout';
+import { buildCardHandlers } from '@arenaswap/ui/src/components/gameOpener';
+import useDocumentTheme from '@arenaswap/ui/src/components/useDocumentTheme';
 import GameCardReveal from './gameCardReveal';
 import PopupFooter from './popupFooter';
 import ProTip from './proTip';
@@ -20,33 +27,14 @@ import GameListHeader from './gameListHeader';
 import ReviewPromptBanner from './reviewPromptBanner';
 import SuggestBanner from './suggestBanner';
 import UpcomingDayPager from './upcomingDayPager';
-import { buildFavoritePinnedComparator, buildFinalComparator, buildLeagueRank, buildUpcomingComparator, getRandomLoadingMessage, groupByDate, groupByLeague, resolveSelectedDayIndex } from '../popupHelpers';
-import type { BettingDisplayPrefs, WeatherDisplayPrefs } from './gameCardTypes';
+import TabAssignSelect, { tabNumberLabel } from './tabAssignSelect';
+import { buildFinalComparator, buildLeagueRank, getRandomLoadingMessage, groupByDate, isFavoriteTeamGame, resolveSelectedDayIndex } from '../popupHelpers';
+import { stageSituation, stageNote, upcomingStatus } from '@arenaswap/ui/src/components/boardSituation';
 import useRestoredScroll from '../useRestoredScroll';
 import { revealModeForIndex, type cardRevealPlan, type revealMode } from '../cardReveal';
 
-const emptyScoreMap = new Map<string, PowerScoreResult>();
 const emptyRevealOrder = new Map<string, number>();
-
-interface gameSectionProps {
-	title: string;
-	games: Game[];
-	scoreMap: Map<string, PowerScoreResult>;
-	leagueLogos: LeagueLogoMap;
-	favoriteTeamIds: Set<string>;
-	onToggleFavoriteTeam: (leagueId: LeagueId, teamId: string) => void;
-	gameBoosts: Record<string, number>;
-	openTabs: Browser.tabs.Tab[];
-	registry: TabRegistration[];
-	onRegistryChange: (updated: TabRegistration[]) => void;
-	formatTabLabel: (tab: Browser.tabs.Tab) => string;
-	onOpenGameDetail: (gameId: string) => void;
-	bettingPrefs: BettingDisplayPrefs;
-	weatherPrefs: WeatherDisplayPrefs;
-	reveal: cardRevealPlan;
-	afterTitle?: ReactNode;
-	first?: boolean;
-}
+const rowSurface = { dark: '#0e1013', light: '#f4f5f7' } as const;
 
 interface mainViewProps {
 	prefs: UserPreferences;
@@ -55,6 +43,7 @@ interface mainViewProps {
 	hasError: boolean;
 	games: Game[];
 	scores: PowerScoreResult[];
+	powerScoreHistory?: Record<string, PowerScoreSnapshot[]>;
 	leagueLogos: LeagueLogoMap;
 	registry: TabRegistration[];
 	favoriteTeamIds: Set<string>;
@@ -83,79 +72,20 @@ interface mainViewProps {
 	revealSkipping?: boolean;
 }
 
-const leagueRows = (
-	games: Game[],
-	scoreMap: Map<string, PowerScoreResult>,
-	leagueLogos: LeagueLogoMap,
-	favoriteTeamIds: Set<string>,
-	onToggleFavoriteTeam: (leagueId: LeagueId, teamId: string) => void,
-	gameBoosts: Record<string, number>,
-	openTabs: Browser.tabs.Tab[],
-	registry: TabRegistration[],
-	onRegistryChange: (updated: TabRegistration[]) => void,
-	formatTabLabel: (tab: Browser.tabs.Tab) => string,
-	onOpenGameDetail: (gameId: string) => void,
-	bettingPrefs: BettingDisplayPrefs,
-	weatherPrefs: WeatherDisplayPrefs,
-	reveal: cardRevealPlan,
-) => groupByLeague(games).map(({ league, games: groupedGames }) => (
-	<div key={league}>
-		<LeagueSectionHeader league={league} logos={leagueLogos} />
-		{groupedGames.map(game => (
-			// A game the plan does not name is one that arrived after the plan was fixed, and it gets
-			// nothing: a card that has been sitting there plainly for two seconds must not suddenly grow
-			// a poster over itself.
-			<GameCardReveal
-				key={game.id}
-				game={game}
-				mode={reveal.order.has(game.id) ? revealModeForIndex(reveal.mode, reveal.order.get(game.id)!) : 'none'}
-				index={reveal.order.get(game.id) ?? 0}
-				skipping={reveal.skipping}
-			>
-				<GameCard
-					game={game}
-					excitementResult={scoreMap.get(game.id)}
-					favoriteTeamIds={favoriteTeamIds}
-					onToggleFavoriteTeam={onToggleFavoriteTeam}
-					gameBoosts={gameBoosts}
-					openTabs={openTabs}
-					registry={registry}
-					onRegistryChange={onRegistryChange}
-					formatTabLabel={formatTabLabel}
-					onOpenGameDetail={onOpenGameDetail}
-					bettingPrefs={bettingPrefs}
-					weatherPrefs={weatherPrefs}
-				/>
-			</GameCardReveal>
-		))}
-	</div>
-));
+const favoritesOf = (game: Game, favoriteTeamIds: Set<string>) => ({
+	away: favoriteTeamIds.has(createFavoriteTeamKey(game.league, game.awayTeam.id)),
+	home: favoriteTeamIds.has(createFavoriteTeamKey(game.league, game.homeTeam.id)),
+});
 
-const gameSection = ({
-	title,
-	games,
-	scoreMap,
-	leagueLogos,
-	favoriteTeamIds,
-	onToggleFavoriteTeam,
-	gameBoosts,
-	openTabs,
-	registry,
-	onRegistryChange,
-	formatTabLabel,
-	onOpenGameDetail,
-	bettingPrefs,
-	weatherPrefs,
-	reveal,
-	afterTitle,
-	first,
-}: gameSectionProps) => (
-	<div className='mt-2'>
-		<PopupSectionTitle first={first}>{title}</PopupSectionTitle>
-		{afterTitle}
-		{leagueRows(games, scoreMap, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs, weatherPrefs, reveal)}
-	</div>
-);
+const byStartThenFavorite = (favoriteTeamIds: Set<string>, leagueRank: Record<LeagueId, number>) => (a: Game, b: Game) => {
+	const aStart = a.startTime ? new Date(a.startTime).getTime() : Number.POSITIVE_INFINITY;
+	const bStart = b.startTime ? new Date(b.startTime).getTime() : Number.POSITIVE_INFINITY;
+	if (aStart !== bStart) return aStart - bStart;
+	const aFavorite = isFavoriteTeamGame(a, favoriteTeamIds);
+	const bFavorite = isFavoriteTeamGame(b, favoriteTeamIds);
+	if (aFavorite !== bFavorite) return aFavorite ? -1 : 1;
+	return (leagueRank[a.league] ?? 99) - (leagueRank[b.league] ?? 99);
+};
 
 const mainView = ({
 	prefs,
@@ -164,10 +94,9 @@ const mainView = ({
 	hasError,
 	games,
 	scores,
-	leagueLogos,
+	powerScoreHistory = {},
 	registry,
 	favoriteTeamIds,
-	gameBoosts,
 	openTabs,
 	onStandbyStream,
 	onOpenGameDetail,
@@ -182,7 +111,6 @@ const mainView = ({
 	onToggleEnabled,
 	onDismissReviewPrompt,
 	onLeaveReview,
-	onToggleFavoriteTeam,
 	onRegistryChange,
 	formatTabLabel,
 	scrollOffsetRef,
@@ -192,97 +120,119 @@ const mainView = ({
 	revealSkipping = false,
 }: mainViewProps) => {
 	const scrollerRef = useRestoredScroll(scrollOffsetRef);
+	const theme = useDocumentTheme();
 	const noLeaguesSelected = prefs.enabledLeagues.length === 0;
 	const loadingMessage = useMemo(() => getRandomLoadingMessage(), []);
 	const scoreByGameId = useMemo(() => new Map(scores.map(s => [s.gameId, s.total])), [scores]);
-	const scoreMap = useMemo(() => new Map(scores.map(s => [s.gameId, s])), [scores]);
 	const leagueRank = useMemo(() => buildLeagueRank(prefs.enabledLeagues), [prefs.enabledLeagues]);
-	const sortGames = useMemo(
-		() => buildFavoritePinnedComparator(leagueRank, favoriteTeamIds, scoreByGameId),
-		[leagueRank, favoriteTeamIds, scoreByGameId],
-	);
-	const sortUpcomingGames = useMemo(
-		() => buildUpcomingComparator(leagueRank, favoriteTeamIds, scoreByGameId),
-		[leagueRank, favoriteTeamIds, scoreByGameId],
-	);
-	const sortFinalGames = useMemo(
-		() => buildFinalComparator(leagueRank, favoriteTeamIds),
-		[leagueRank, favoriteTeamIds],
-	);
+	const sortFinalGames = useMemo(() => buildFinalComparator(leagueRank, favoriteTeamIds), [leagueRank, favoriteTeamIds]);
 	const upcomingCutoffMs = useMemo(
 		() => Date.now() + prefs.upcomingGamesDays * 24 * 60 * 60 * 1000,
 		[prefs.upcomingGamesDays],
 	);
 	const liveGames = useMemo(() => games.filter(g => g.status === 'in'), [games]);
+	const board = useMemo(
+		() => arrangeLive(liveGames, scoreByGameId, { favoriteTeamIds, leagueRank }),
+		[liveGames, scoreByGameId, favoriteTeamIds, leagueRank],
+	);
 	// The background already drops a game once it has aged out of the retention window, so this is
-	// only a sort: most recently wrapped first, since that is the game you came looking for.
+	// only a sort: your teams first, then most recently wrapped.
 	const finalGames = useMemo(
-		() => (prefs.keepFinalGames
-			? games.filter(g => g.status === 'post').toSorted(sortFinalGames)
-			: []),
+		() => (prefs.keepFinalGames ? games.filter(g => g.status === 'post').toSorted(sortFinalGames) : []),
 		[games, prefs.keepFinalGames, sortFinalGames],
 	);
 	const upcomingGames = useMemo(
 		() => games
 			.filter(g => g.status === 'pre')
 			.filter(g => !g.startTime || new Date(g.startTime).getTime() <= upcomingCutoffMs)
-			.toSorted(sortUpcomingGames),
-		[games, sortUpcomingGames, upcomingCutoffMs],
+			.toSorted(byStartThenFavorite(favoriteTeamIds, leagueRank)),
+		[games, upcomingCutoffMs, favoriteTeamIds, leagueRank],
 	);
-	// Grouping runs before any truncation, so what Up Next shows is always exactly one whole day.
+	// Grouping runs before any truncation, so the day on show is always exactly one whole day.
 	const upcomingDays = useMemo(() => groupByDate(upcomingGames), [upcomingGames]);
 	const selectedDayIndex = resolveSelectedDayIndex(upcomingDays, selectedDayKey);
 	const selectedDay = upcomingDays[selectedDayIndex];
-	const registeredGameIds = useMemo(() => new Set(registry.map(r => r.gameId)), [registry]);
-	const assignedLiveGames = useMemo(
-		() => liveGames.filter(g => registeredGameIds.has(g.id)).toSorted(sortGames),
-		[liveGames, registeredGameIds, sortGames],
-	);
-	const unassignedLiveGames = useMemo(
-		() => liveGames.filter(g => !registeredGameIds.has(g.id)).toSorted(sortGames),
-		[liveGames, registeredGameIds, sortGames],
-	);
+	const showUpcoming = prefs.showUpcomingGames && selectedDay !== undefined;
 
-	// The stagger counts down the rendered page, so it has to be built the way the page is built:
-	// four sections in this order, each one grouped by league before it is drawn. Counting within a
-	// section instead would start Up Next back at zero and land its first card on top of the second
-	// live one.
-	//
-	// Fixed on the first list that has anything in it, and not recomputed while it is playing. Both
-	// live sections are re-sorted on PowerScore and scores arrive by push every few seconds, so a
-	// resort inside the 3.4s window is the common case rather than the edge one — and a card that
-	// keeps its React identity but changes index gets a new `animation-delay`, which moves a running
-	// animation's current time and jumps the poster by up to 480ms. Worse across the eight-card cap,
-	// where the mode itself flips and a card either grows a poster from nothing or loses one
-	// mid-frame.
+	const tabIdByGame = useMemo(() => new Map(registry.map(r => [r.gameId, r.tabId])), [registry]);
+	const watchedTabId = openTabs.find(tab => tab.active)?.id ?? null;
+	const watchedGameId = watchedTabId === null ? null : registry.find(r => r.tabId === watchedTabId)?.gameId ?? null;
+	const tabOf = (gameId: string) => openTabs.find(tab => tab.id === tabIdByGame.get(gameId));
+
+	// Fixed on the first list that has anything in it and never recomputed while it plays: a card
+	// that keeps its identity but changes index would get a new `animation-delay` and jump.
 	const revealPlanRef = useRef<Map<string, number> | null>(null);
 	const reveal = useMemo<cardRevealPlan>(() => {
 		if (revealMode === 'none') return { mode: 'none', order: emptyRevealOrder, skipping: false };
 		if (revealPlanRef.current) return { mode: revealMode, order: revealPlanRef.current, skipping: revealSkipping };
 		const order = new Map<string, number>();
-		const take = (list: Game[]) => groupByLeague(list)
-			.forEach(({ games: grouped }) => grouped.forEach(game => order.set(game.id, order.size)));
-		take(assignedLiveGames);
-		take(unassignedLiveGames);
-		if (prefs.showUpcomingGames && selectedDay) take(selectedDay.games);
+		const take = (list: Game[]) => list.forEach(game => order.set(game.id, order.size));
+		if (board.stage) take([board.stage]);
+		take(board.tiles);
+		take(board.rows);
+		if (showUpcoming) take(selectedDay.games);
 		take(finalGames);
 		if (order.size > 0) revealPlanRef.current = order;
 		return { mode: revealMode, order, skipping: revealSkipping };
-	}, [revealMode, revealSkipping, assignedLiveGames, unassignedLiveGames, prefs.showUpcomingGames, selectedDay, finalGames]);
+	}, [revealMode, revealSkipping, board, showUpcoming, selectedDay, finalGames]);
 
 	const showNoGames = !isLoading && !noLeaguesSelected && liveGames.length === 0
 		&& registry.length === 0 && finalGames.length === 0
 		&& (!prefs.showUpcomingGames || upcomingGames.length === 0);
+	const listReady = !isLoading && !noLeaguesSelected;
+	const stage = listReady ? board.stage : null;
 
-	const bettingPrefs: BettingDisplayPrefs = {
-		bettingEnabled: prefs.bettingEnabled,
+	const revealed = (game: Game, node: ReactNode, shape: 'stage' | 'tile' | 'row') => (
+		<GameCardReveal
+			key={game.id}
+			game={game}
+			shape={shape}
+			mode={reveal.order.has(game.id) ? revealModeForIndex(reveal.mode, reveal.order.get(game.id)!) : 'none'}
+			index={reveal.order.get(game.id) ?? 0}
+			skipping={reveal.skipping}
+		>
+			{node}
+		</GameCardReveal>
+	);
+
+	const opener = (game: Game) => ({
+		role: 'button',
+		tabIndex: 0,
+		'aria-label': i18n.t('gameCard.openDetails', { away: game.awayTeam.abbreviation, home: game.homeTeam.abbreviation }),
+		...buildCardHandlers(onOpenGameDetail, game.id),
+	});
+
+	const tabPicker = (game: Game, compact = false) => (
+		<TabAssignSelect
+			compact={compact}
+			gameId={game.id}
+			openTabs={openTabs}
+			registry={registry}
+			onChange={onRegistryChange}
+			formatTabLabel={formatTabLabel}
+			variant='inline'
+			watchedTabId={watchedTabId}
+		/>
+	);
+
+	const stageLabel = (game: Game): ReactNode => {
+		const tab = tabOf(game.id);
+		const watched = watchedGameId !== null ? board.all.find(g => g.id === watchedGameId) : undefined;
+		const threshold = sensitivityThresholds[prefs.sensitivity] ?? 11;
+		const overtaking = prefs.enabled && tab && watched && watched.id !== game.id
+			&& (scoreByGameId.get(game.id) ?? 0) >= (scoreByGameId.get(watched.id) ?? 0) + threshold;
+		if (overtaking) return <span className='as-stage-switching'>{i18n.t('board.switchingTo', { tab: tabNumberLabel(tab) })}</span>;
+		return tabPicker(game);
 	};
-	const weatherPrefs: WeatherDisplayPrefs = {
-		temperatureUnit: prefs.temperatureUnit,
+
+	const rowStatus = (game: Game): ReactNode => {
+		if (game.status === 'pre') return <span className='as-row-note'>{upcomingStatus(game, i18n.t)}</span>;
+		if (game.status === 'post') return null;
+		return tabPicker(game);
 	};
 
 	return (
-		<div ref={scrollerRef} className='popup-container d-flex flex-column'>
+		<div ref={scrollerRef} className='popup-container d-flex flex-column gm'>
 			<PopupHeader
 				scroller={scrollerRef}
 				enabled={prefs.enabled}
@@ -291,89 +241,121 @@ const mainView = ({
 				onOpenSettings={onOpenSetup}
 				onStartTour={onStartWalkthrough}
 				onOpenGuide={onOpenGuide}
+				onStage={stage !== null}
 			/>
 
-			<GameListHeader isLoading={isLoading} hasError={hasError} loadingMessage={loadingMessage} onRefresh={onRefresh} />
-
-			{suggestionCount > 0 && (
-				<SuggestBanner
-					count={suggestionCount}
-					onReview={onReviewSuggestions}
-					onDismiss={onDismissSuggestions}
+			{stage && revealed(stage, (
+				<GameStage
+					game={stage}
+					label={stageLabel(stage)}
+					note={stageNote(stage, prefs, i18n.t)}
+					situation={stageSituation(stage)}
+					power={{ value: scoreByGameId.get(stage.id) ?? 0, label: i18n.t('gameCard.powerScore') }}
+					favorites={favoritesOf(stage, favoriteTeamIds)}
+					watched={stage.id === watchedGameId}
+					interactive={opener(stage)}
 				/>
-			)}
-			{/* The only banner here whose condition does not come from the fetch: eligibility is read
-			    out of storage.local and lands well before the slate does. The other two self-suppress
-			    because their inputs are empty until `data` arrives, so this one states the gate. */}
-			{!isLoading && !hasError && showReviewPrompt && (
-				<ReviewPromptBanner onDismiss={onDismissReviewPrompt} onLeaveReview={onLeaveReview} />
-			)}
+			), 'stage')}
 
-			{onStandbyStream && (
-				<div className='d-flex align-items-center gap-2 px-2 py-1 mb-1 rounded text-body-secondary small bg-body-secondary' data-testid='standby-banner'>
-					<i className='bi bi-broadcast text-primary' />
-					<span>{i18n.t('main.onStandbyStream')}</span>
-				</div>
-			)}
+			<div className='gm-lower'>
+				<GameListHeader isLoading={isLoading} hasError={hasError} loadingMessage={loadingMessage} onRefresh={onRefresh} />
 
-			<EmptyGameState
-				noLeaguesSelected={!isLoading && noLeaguesSelected}
-				noGames={showNoGames}
-				onOpenSetup={onOpenSetup}
-				onRefresh={onRefresh}
-			/>
+				{suggestionCount > 0 && (
+					<SuggestBanner count={suggestionCount} onReview={onReviewSuggestions} onDismiss={onDismissSuggestions} />
+				)}
+				{/* The only banner whose condition does not come from the fetch: eligibility is read out
+				    of storage.local and lands well before the slate does, so this one states the gate. */}
+				{!isLoading && !hasError && showReviewPrompt && (
+					<ReviewPromptBanner onDismiss={onDismissReviewPrompt} onLeaveReview={onLeaveReview} />
+				)}
 
-			{!isLoading && !noLeaguesSelected && prefs.proTipsEnabled && <ProTip context='main' />}
-			{!isLoading && !noLeaguesSelected && assignedLiveGames.length > 0 && gameSection({ title: i18n.t('main.sectionActiveLiveTabs'), games: assignedLiveGames, scoreMap, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs, weatherPrefs, reveal, first: true })}
-			{!isLoading && !noLeaguesSelected && unassignedLiveGames.length > 0 && gameSection({ title: i18n.t('main.sectionOtherLiveGames'), games: unassignedLiveGames, scoreMap, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs, weatherPrefs, reveal, first: assignedLiveGames.length === 0 })}
-			{!isLoading && !noLeaguesSelected && prefs.showUpcomingGames && selectedDay && gameSection({
-				title: i18n.t('main.sectionUpNext'),
-				games: selectedDay.games,
-				scoreMap: emptyScoreMap,
-				leagueLogos,
-				favoriteTeamIds,
-				onToggleFavoriteTeam,
-				gameBoosts,
-				openTabs,
-				registry,
-				onRegistryChange,
-				formatTabLabel,
-				onOpenGameDetail,
-				bettingPrefs,
-				weatherPrefs,
-				reveal,
-				afterTitle: (
-					<UpcomingDayPager
-						dayLabel={selectedDay.dateLabel}
-						index={selectedDayIndex}
-						total={upcomingDays.length}
-						onSelect={index => onSelectDay(upcomingDays[index]?.key ?? null)}
-					/>
-				),
-				first: assignedLiveGames.length === 0 && unassignedLiveGames.length === 0,
-			})}
+				{onStandbyStream && (
+					<div className='as-notice is-quiet' data-testid='standby-banner'>
+						<i className='bi bi-broadcast as-notice-icon' aria-hidden='true' />
+						<span className='as-notice-copy'>{i18n.t('main.onStandbyStream')}</span>
+					</div>
+				)}
 
-			{/* Last, under Up Next: results are the one section you are never deciding anything from,
-			    so they sit below the two that you are. */}
-			{!isLoading && !noLeaguesSelected && finalGames.length > 0 && gameSection({
-				title: i18n.t('main.sectionFinal'),
-				games: finalGames,
-				scoreMap: emptyScoreMap,
-				leagueLogos,
-				favoriteTeamIds,
-				onToggleFavoriteTeam,
-				gameBoosts,
-				openTabs,
-				registry,
-				onRegistryChange,
-				formatTabLabel,
-				onOpenGameDetail,
-				bettingPrefs,
-				weatherPrefs,
-				reveal,
-				first: assignedLiveGames.length === 0 && unassignedLiveGames.length === 0
-					&& !(prefs.showUpcomingGames && selectedDay),
-			})}
+				<EmptyGameState
+					noLeaguesSelected={!isLoading && noLeaguesSelected}
+					noGames={showNoGames}
+					onOpenSetup={onOpenSetup}
+					onRefresh={onRefresh}
+				/>
+
+				{listReady && prefs.proTipsEnabled && <ProTip context='main' />}
+
+				{listReady && board.tiles.length > 0 && (
+					<div className={`gm-tiles${board.tiles.length % 2 ? ' is-odd' : ''}`}>
+						{board.tiles.map(game => revealed(game, (
+							<GameTile
+								game={game}
+								power={scoreByGameId.get(game.id) ?? 0}
+								trend={powerTrend(powerScoreHistory[game.id])}
+								tab={tabPicker(game, true)}
+								favorites={favoritesOf(game, favoriteTeamIds)}
+								watched={game.id === watchedGameId}
+								interactive={opener(game)}
+							/>
+						), 'tile'))}
+					</div>
+				)}
+
+				{listReady && board.rows.length > 0 && (
+					<div className='gm-rows as-rows'>
+						{board.rows.map(game => revealed(game, (
+							<GameRow
+								game={game}
+								surface={rowSurface[theme]}
+								power={scoreByGameId.get(game.id) ?? 0}
+								status={rowStatus(game)}
+								favorites={favoritesOf(game, favoriteTeamIds)}
+								watched={game.id === watchedGameId}
+								interactive={opener(game)}
+							/>
+						), 'row'))}
+					</div>
+				)}
+
+				{listReady && showUpcoming && (
+					<section className='gm-after' aria-label={i18n.t('main.sectionUpNext')}>
+						<UpcomingDayPager
+							dayLabel={selectedDay.dateLabel}
+							index={selectedDayIndex}
+							total={upcomingDays.length}
+							onSelect={index => onSelectDay(upcomingDays[index]?.key ?? null)}
+						/>
+						<div className='as-rows'>
+						{selectedDay.games.map(game => revealed(game, (
+							<GameRow
+								game={game}
+								surface={rowSurface[theme]}
+								status={rowStatus(game)}
+								favorites={favoritesOf(game, favoriteTeamIds)}
+								quiet
+								interactive={opener(game)}
+							/>
+						), 'row'))}
+						</div>
+					</section>
+				)}
+
+				{/* Last: results are the one group you are never deciding anything from. */}
+				{listReady && finalGames.length > 0 && (
+					<section className='gm-after as-rows' aria-label={i18n.t('main.sectionFinal')}>
+						{finalGames.map(game => revealed(game, (
+							<GameRow
+								game={game}
+								surface={rowSurface[theme]}
+								status={rowStatus(game)}
+								favorites={favoritesOf(game, favoriteTeamIds)}
+								quiet
+								interactive={opener(game)}
+							/>
+						), 'row'))}
+					</section>
+				)}
+			</div>
 
 			<PopupFooter />
 		</div>

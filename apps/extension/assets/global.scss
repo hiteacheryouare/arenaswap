@@ -28,14 +28,13 @@ img, video {
 }
 
 /* Reboot inherits font metrics on form controls but not colour, so these fell
-   back to the UA's black. `currentColor` consumers (e.g. the walkthrough's
-   .powerscore-progress-dot) depend on this. */
+   back to the UA's black. */
 button, input, select, optgroup, textarea {
 	color: inherit;
 }
 
 *, *::before, *::after {
-	font-family: 'DM Sans', system-ui, sans-serif;
+	font-family: var(--as-font);
 	box-sizing: border-box;
 }
 
@@ -103,7 +102,7 @@ button, input, select, optgroup, textarea {
 .ls-text {
 	position: relative;
 	z-index: 10;
-	font-family: 'DM Sans', sans-serif;
+	font-family: var(--as-font);
 	font-weight: 900;
 	text-align: center;
 	max-width: calc(100% - 1.5rem);
@@ -363,7 +362,7 @@ button, input, select, optgroup, textarea {
 	right: 12px;
 	z-index: 10;
 	font-size: 0.65rem;
-	font-family: 'DM Sans', sans-serif;
+	font-family: var(--as-font);
 	color: rgba(255, 255, 255, 0.25);
 	pointer-events: none;
 	letter-spacing: 0.04em;
@@ -413,370 +412,6 @@ button, input, select, optgroup, textarea {
 @keyframes lsStopFlash {
 	0%, 100% { opacity: 1; }
 	50%      { opacity: 0.45; }
-}
-
-/* The two walkthrough controls that recolour on state take their palette inline from league and
-   team data, so their timing had been sitting inline next to it — and was the only motion in the
-   popup the shared scale could not reach. This is the hook they borrow instead. */
-.motion-tint {
-	transition: background-color m.$motion-instant m.$motion-ease,
-	            border-color     m.$motion-instant m.$motion-ease,
-	            color            m.$motion-instant m.$motion-ease;
-}
-
-@include m.reduced-motion {
-	.motion-tint {
-		@include m.motion-still;
-	}
-}
-
-/* ─── PowerScore Walkthrough Orbit Animation ─── */
-@keyframes powerscoreOrbit {
-	from { transform: rotate(0deg); }
-	to   { transform: rotate(360deg); }
-}
-
-@keyframes powerscorePulseHighlight {
-	0%   { box-shadow: 0 0 4px currentColor, 0 0 0px currentColor; }
-	50%  { box-shadow: 0 0 12px currentColor, 0 0 8px currentColor; }
-	100% { box-shadow: 0 0 4px currentColor, 0 0 0px currentColor; }
-}
-
-.powerscore-orbit-container {
-	position: relative;
-	width: 130px;
-	height: 130px;
-	margin: 0.5rem auto 1rem;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-}
-
-.powerscore-orbit-ring {
-	position: absolute;
-	width: 100px;
-	height: 100px;
-	border: 1px dashed rgba(255, 255, 255, 0.15);
-	border-radius: 50%;
-	transition: transform m.$motion-slow m.$motion-ease;
-
-	&.animating {
-		animation: powerscoreOrbit 10s m.$motion-linear infinite;
-	}
-}
-
-.powerscore-orbit-center {
-	position: absolute;
-	z-index: 10;
-	width: 48px;
-	height: 48px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	background: #161b22;
-	border: 2px solid #30363d;
-	border-radius: 50%;
-	box-shadow: 0 0 12px rgba(0, 0, 0, 0.5);
-}
-
-.powerscore-orbit-dot {
-	position: absolute;
-	width: 16px;
-	height: 16px;
-	border-radius: 50%;
-	background-color: currentColor;
-	transition: all m.$motion-base m.$motion-ease;
-	box-shadow: 0 0 8px currentColor, 0 0 3px currentColor;
-	cursor: pointer;
-
-	&.active {
-		transform: scale(1.5);
-		z-index: 15;
-		animation: powerscorePulseHighlight m.$motion-pulse m.$motion-ease-in-out infinite;
-	}
-
-	&.dimmed {
-		opacity: 0.18;
-		filter: grayscale(40%);
-	}
-}
-
-.powerscore-boost-icon-container {
-	width: 80px;
-	height: 80px;
-	border-radius: 50%;
-	background: rgba(255, 255, 255, 0.03);
-	border: 2px solid rgba(255, 255, 255, 0.1);
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	margin: 1.5rem auto 2rem;
-	box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
-	transition: all m.$motion-base m.$motion-ease;
-}
-
-/* Progress dots bar */
-.powerscore-progress-dots {
-	display: flex;
-	justify-content: center;
-	gap: 6px;
-	margin: 0.5rem 0 1rem;
-	padding: 0;
-	list-style: none;
-}
-
-.powerscore-progress-dot {
-	width: 8px;
-	height: 8px;
-	border-radius: 50%;
-	background: #30363d;
-	border: none;
-	cursor: pointer;
-	padding: 0;
-	transition: all m.$motion-quick m.$motion-ease;
-
-	&:hover {
-		background: #8b949e;
-		transform: scale(1.1);
-	}
-
-	&.active {
-		transform: scale(1.3);
-		background-color: currentColor;
-		box-shadow: 0 0 8px currentColor;
-	}
-}
-
-/* ─── PowerScore Bloom Overlay ─── */
-@keyframes psBloomIn {
-	from {
-		clip-path: circle(0% at var(--bloom-origin-x) var(--bloom-origin-y));
-		opacity: 0;
-	}
-	to {
-		clip-path: circle(150% at var(--bloom-origin-x) var(--bloom-origin-y));
-		opacity: 1;
-	}
-}
-
-@keyframes psBloomOut {
-	from {
-		clip-path: circle(150% at var(--bloom-origin-x) var(--bloom-origin-y));
-		opacity: 1;
-	}
-	to {
-		clip-path: circle(0% at var(--bloom-origin-x) var(--bloom-origin-y));
-		opacity: 0;
-	}
-}
-
-.ps-bloom-overlay {
-	position: absolute;
-	inset: 0;
-	z-index: 100;
-	cursor: pointer;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	clip-path: circle(0% at var(--bloom-origin-x, 50%) var(--bloom-origin-y, 50%));
-	opacity: 0;
-
-	&.ps-bloom-blooming {
-		animation: psBloomIn m.$motion-slow m.$motion-ease forwards;
-	}
-
-	&.ps-bloom-visible {
-		clip-path: circle(150% at var(--bloom-origin-x, 50%) var(--bloom-origin-y, 50%));
-		opacity: 1;
-	}
-
-	&.ps-bloom-shrinking {
-		animation: psBloomOut m.$motion-slow m.$motion-ease-in forwards;
-	}
-}
-
-.ps-bloom-content {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	text-align: center;
-	padding: 1.25rem 1.5rem;
-	max-width: 100%;
-	width: 100%;
-	height: 100%;
-	justify-content: center;
-	gap: 0.35rem;
-}
-
-.ps-bloom-dot-badge {
-	width: 18px;
-	height: 18px;
-	border-radius: 50%;
-	margin-bottom: 0.5rem;
-	box-shadow: 0 0 16px currentColor;
-}
-
-.ps-bloom-label {
-	font-size: 1.25rem;
-	font-weight: 700;
-	letter-spacing: -0.01em;
-	margin-bottom: 0.2rem;
-}
-
-.ps-bloom-tap-hint {
-	display: flex;
-	align-items: center;
-	gap: 0.4rem;
-	font-size: 0.75rem;
-	font-weight: 500;
-	opacity: 0.7;
-	margin-top: 1.5rem;
-	letter-spacing: 0.02em;
-}
-
-.ps-bloom-max-badge {
-	font-size: 0.7rem;
-	border: 1px solid;
-	border-radius: 999px;
-	padding: 0.1rem 0.6rem;
-	font-weight: 600;
-	margin-bottom: 0.6rem;
-	opacity: 0.85;
-}
-
-.ps-bloom-section-head {
-	text-transform: uppercase;
-	font-size: 0.58rem;
-	letter-spacing: 0.07em;
-	font-weight: 600;
-	align-self: flex-start;
-}
-
-.ps-bloom-body {
-	font-size: 0.78rem;
-	line-height: 1.45;
-	text-align: left;
-	align-self: flex-start;
-}
-
-.ps-bloom-got-it {
-	margin-top: 1rem;
-	padding: 0.5rem 1.5rem;
-	border-radius: 999px;
-	border: none;
-	font-weight: 700;
-	font-size: 0.85rem;
-	cursor: pointer;
-	transition: opacity m.$motion-instant m.$motion-ease;
-
-	&:hover {
-		opacity: 0.88;
-	}
-}
-
-/* ─── Rømer reveal ────────────────────────────────────────────────────────── */
-/* Warm through cold to frost, then back to an ordinary outline button. The sweep is the
-   thermometer's own journey, which is the only thing about this unit that makes any sense. */
-@keyframes romerFrost {
-	0%   { background-color: #f75c03; border-color: #f75c03; color: #0d1117; transform: scale(1); }
-	20%  { background-color: #f1c40f; border-color: #f1c40f; color: #0d1117; transform: scale(1.14); }
-	45%  { background-color: #3e9bd1; border-color: #3e9bd1; color: #0d1117; transform: scale(1.14); }
-	70%  { background-color: #cfe9fb; border-color: #cfe9fb; color: #0d1117; transform: scale(1.06); box-shadow: 0 0 14px rgba(207, 233, 251, 0.7); }
-	100% { background-color: transparent; border-color: var(--as-border-color); color: inherit; transform: scale(1); box-shadow: none; }
-}
-
-.romer-revealing {
-	animation: romerFrost m.$motion-epic m.$motion-ease-in-out;
-}
-
-@include m.reduced-motion {
-	.romer-revealing { animation: none; }
-}
-
-/* ─── Holiday decorations ─────────────────────────────────────────────────── */
-/* The string hangs immediately under the sticky back bar and stays there while the screen scrolls,
-   the way FOX drapes lights over the scorebug rather than over the pitch. The bar is sticky at
-   minus the shell's own padding to reach the popup edge, so this offset re-adds it. */
-.holiday-lights {
-	position: sticky;
-	top: calc(var(--gd-inset) + 1rem);
-	z-index: 4;
-	display: block;
-	width: calc(100% + var(--gd-inset) * 2);
-	height: 22px;
-	margin: 0 calc(var(--gd-inset) * -1) -22px;
-	pointer-events: none;
-}
-
-.holiday-lights-wire {
-	fill: none;
-	stroke: #2f3a45;
-	stroke-width: 1;
-}
-
-.holiday-bulb {
-	fill: currentcolor;
-	animation: holidayBulbTwinkle m.$motion-ambient m.$motion-ease-in-out infinite;
-}
-
-.holiday-bulb-cap {
-	fill: #4a5561;
-}
-
-.holiday-bulb-glass {
-	filter: drop-shadow(0 0 4px currentcolor);
-}
-
-/* Slow enough to read as a shimmer rather than a strobe, and it never goes fully dark. */
-@keyframes holidayBulbTwinkle {
-	0%, 100% { opacity: 1; }
-	50%      { opacity: 0.48; }
-}
-
-/* A favourite has just scored. Faster, brighter and in that team's colours, for as long as the
-   confetti on the main screen would have run. */
-.is-celebrating {
-	.holiday-bulb {
-		animation: holidayBulbCelebrate m.$motion-urgent m.$motion-ease-in-out infinite;
-	}
-
-	.holiday-bulb-glass {
-		filter: drop-shadow(0 0 7px currentcolor);
-	}
-}
-
-@keyframes holidayBulbCelebrate {
-	0%, 100% { opacity: 1; }
-	50%      { opacity: 0.25; }
-}
-
-/* Fixed rather than absolute: the flakes belong to the popup window, not to the scrolling
-   document, so a long detail screen does not scroll its own weather away. */
-.holiday-fall {
-	position: fixed;
-	inset: 0;
-	z-index: 7;
-	width: 100%;
-	height: 100%;
-	pointer-events: none;
-}
-
-/* The pile is the opposite: it belongs to the ground, which is the foot of the page. Last element
-   in the flow, bleeding the shell's padding so it reaches both edges. */
-.holiday-drift {
-	display: block;
-	width: calc(100% + var(--gd-inset) * 2);
-	height: 96px;
-	margin: 0 calc(var(--gd-inset) * -1) calc(var(--gd-inset) * -1);
-	pointer-events: none;
-}
-
-@include m.reduced-motion {
-	// The celebration rule is `.is-celebrating .holiday-bulb`, two classes, so a single-class
-	// opt-out loses to it and the 2Hz scoring strobe kept running for a reader who asked for
-	// stillness. Both selectors, or this only ever silenced the calm shimmer.
-	.holiday-bulb,
-	.is-celebrating .holiday-bulb { animation: none; }
 }
 
 /* ─── Popup open reveal ───────────────────────────────────────────────────────
@@ -831,8 +466,14 @@ button, input, select, optgroup, textarea {
 	margin-bottom: 0.5rem;
 }
 
-.game-card-reveal > .game-card {
+.game-card-reveal.is-stage,
+.game-card-reveal.is-tile,
+.game-card-reveal.is-row {
 	margin-bottom: 0;
+}
+
+.game-card-reveal.is-tile > .as-tile {
+	height: 100%;
 }
 
 /* A pixel proud of the card on every side, which is what keeps the card's own edges out of the
@@ -866,10 +507,10 @@ button, input, select, optgroup, textarea {
 .game-card-reveal-stage,
 .game-card-reveal-sweeps {
 	position:             absolute;
-	inset:                -1px 0;
+	inset:                calc(var(--reveal-top, 0px) - 1px) 0 -1px;
 	overflow:             clip;
 	overflow-clip-margin: 1px;
-	clip-path:            inset(0 -1px round calc(0.5rem + 1px));
+	clip-path:            inset(0 -1px round var(--reveal-round, calc(0.5rem + 1px)));
 	pointer-events:       none;
 }
 
@@ -895,7 +536,7 @@ button, input, select, optgroup, textarea {
    that lands outside the card has nothing to show against. */
 .game-card-reveal-base {
 	position:       absolute;
-	inset:          -1px;
+	inset:          calc(var(--reveal-top, 0px) - 1px) -1px -1px;
 	z-index:        1;
 	background:     var(--as-body-bg);
 	pointer-events: none;
@@ -992,11 +633,11 @@ button, input, select, optgroup, textarea {
    do at full width, so anything painted here would only ever show through their antialiased join. */
 .game-card-reveal-opening {
 	position:             absolute;
-	inset:                -1px 0;
+	inset:                calc(var(--reveal-top, 0px) - 1px) 0 -1px;
 	z-index:              2;
 	overflow:             clip;
 	overflow-clip-margin: 1px;
-	clip-path:            inset(0 -1px round calc(0.5rem + 1px));
+	clip-path:            inset(0 -1px round var(--reveal-round, calc(0.5rem + 1px)));
 	pointer-events:       none;
 	animation:            cardRevealOpeningIn calc((700ms + 1750ms + 1050ms) * var(--reveal-rate)) linear var(--reveal-delay) both;
 }
@@ -1110,7 +751,7 @@ button, input, select, optgroup, textarea {
 	--reveal-ink:         var(--reveal-ink-away, #ffffff);
 	--reveal-drift:       -1;
 	--reveal-name-slot-x: -25%;
-	--reveal-name-slot-y: 50%;
+	--reveal-name-slot-y: calc(50% + var(--reveal-name-lift, 0px) * 0.36);
 }
 
 .game-card-reveal-opening-name.is-home {
@@ -1118,7 +759,7 @@ button, input, select, optgroup, textarea {
 	--reveal-ink:         var(--reveal-ink-home, #ffffff);
 	--reveal-drift:       1;
 	--reveal-name-slot-x: 25%;
-	--reveal-name-slot-y: -50%;
+	--reveal-name-slot-y: calc(-50% + var(--reveal-name-lift, 0px) * 0.36);
 }
 
 /* Lifted off the centre the flex box would give it, because what has to be centred in the band is
@@ -1148,7 +789,7 @@ button, input, select, optgroup, textarea {
 .game-card-reveal-opening-name-line {
 	display:     block;
 	color:       var(--reveal-ink);
-	font-family: 'DM Sans', sans-serif;
+	font-family: var(--as-font);
 	font-size:   var(--reveal-name-size, 2rem);
 	font-weight: 700;
 	line-height: var(--reveal-name-leading);
@@ -1273,7 +914,7 @@ button, input, select, optgroup, textarea {
    card underneath and the mark visibly pales and recovers. It appears at full strength underneath an
    overlay that is still fully opaque and, by now, pixel-identical to it — so nothing happens at the
    moment it appears, and what the overlay's own fade then takes off the card is the tinted plate. */
-.game-card-reveal .game-card .team-crest {
+.game-card-reveal [data-reveal-crest] {
 	animation: cardRevealHandoff calc(3162ms * var(--reveal-rate)) steps(1, end) var(--reveal-spine) both;
 }
 
@@ -1293,14 +934,14 @@ button, input, select, optgroup, textarea {
    across every glyph it crosses. Out here the lettering is whole, and the only thing that ever cuts
    it is the bar that is meant to. Never fades: it is wiped, which is the point of the bar. */
 .game-card-reveal-abbr {
-	width:     8rem;
-	height:    4.4rem;
-	margin:    -2.2rem 0 0 -4rem;
+	width:     calc(8rem * var(--reveal-fit, 1));
+	height:    calc(4.4rem * var(--reveal-fit, 1));
+	margin:    calc(-2.2rem * var(--reveal-fit, 1)) 0 0 calc(-4rem * var(--reveal-fit, 1));
 	animation: cardRevealAbbrIn calc(420ms * var(--reveal-rate)) ease calc(var(--reveal-spine) + 620ms * var(--reveal-rate)) both;
 }
 
 /* An outline of live text is not a stroke on that text. A stroke follows every contour the font
-   draws, including the ones a filled glyph hides, and DM Sans builds an N out of overlapping stems
+   draws, including the ones a filled glyph hides, and a bold N is built from overlapping stems
    — so `-webkit-text-stroke` on its own drew the diagonal straight on through both of them, and
    every junction in NYY and BOS came out cross-hatched with the lines that a fill would have
    covered. Two copies instead: `-edge` is the glyph solid in the ink and stroked wider than itself,
@@ -1322,13 +963,13 @@ button, input, select, optgroup, textarea {
 	align-items:     center;
 	justify-content: center;
 	padding-top:     0.08em;
-	font-family:     'DM Sans', sans-serif;
+	font-family:     var(--as-font);
 	/* `--reveal-abbr-scale` is `revealAbbrScale` in `cardReveal.ts`. ESPN's abbreviation is not
 	   capped — three characters for a professional club, four or five for a college — and at one
 	   size the two sides collide over the seam: measured on a 296px card, ARMY against NAVY overlaps
 	   by 7.4px and UCONN by 52. Scaled by the longer of the two rather than truncated, because "ARM"
 	   at "NAV" is a worse answer than smaller type. */
-	font-size:       calc(3.4rem * var(--reveal-abbr-scale, 1));
+	font-size:       calc(3.4rem * var(--reveal-abbr-scale, 1) * var(--reveal-fit, 1));
 	font-weight:     700;
 	letter-spacing:  0.02em;
 	line-height:     1;
@@ -1337,7 +978,7 @@ button, input, select, optgroup, textarea {
 
 .game-card-reveal-abbr-edge {
 	color:               var(--reveal-ink);
-	-webkit-text-stroke: 4px var(--reveal-ink);
+	-webkit-text-stroke: calc(4px * var(--reveal-fit, 1)) var(--reveal-ink);
 }
 
 /* Outlined while the poster holds, then filled solid as the bar arrives to take it. Broadcast type
@@ -1425,32 +1066,50 @@ button, input, select, optgroup, textarea {
 /* Timed to start as the colour begins to retreat, so the card is arriving rather than waiting
    behind a curtain that is opening on it. Ordered the way you read a scoreboard: what the game is,
    then what the score is, then who is playing, then everything around it. */
-.game-card-reveal .game-card-status-row,
-.game-card-reveal .game-card-center,
-.game-card-reveal .team-abbreviation,
 .game-card-reveal [data-team-star='true'],
-.game-card-reveal .game-meta,
-.game-card-reveal .game-card-ps-bar-row {
+.game-card-reveal .as-stage-meta,
+.game-card-reveal .as-tile-top,
+.game-card-reveal .as-row-status,
+.game-card-reveal .as-stage-score,
+.game-card-reveal .as-tile-team .as-score,
+.game-card-reveal .as-row-team .as-score,
+.game-card-reveal .as-stage-team > :not(.as-crest-box),
+.game-card-reveal .as-tile-team b,
+.game-card-reveal .as-row-team b,
+.game-card-reveal .as-stage-note,
+.game-card-reveal .as-stage-situation,
+.game-card-reveal .as-trend,
+.game-card-reveal .as-stage-power,
+.game-card-reveal .as-tile-power,
+.game-card-reveal .as-row-power {
 	animation: cardRevealContent calc(620ms * var(--reveal-rate)) cubic-bezier(0.22, 1, 0.36, 1) calc(var(--reveal-spine) + 2500ms * var(--reveal-rate)) both;
 }
 
-.game-card-reveal .game-card-center {
+.game-card-reveal .as-stage-score,
+.game-card-reveal .as-tile-team .as-score,
+.game-card-reveal .as-row-team .as-score {
 	animation-delay: calc(var(--reveal-spine) + 2580ms * var(--reveal-rate));
 }
 
-.game-card-reveal .team-abbreviation,
-.game-card-reveal [data-team-star='true'] {
+.game-card-reveal [data-team-star='true'],
+.game-card-reveal .as-stage-team > :not(.as-crest-box),
+.game-card-reveal .as-tile-team b,
+.game-card-reveal .as-row-team b {
 	animation-delay: calc(var(--reveal-spine) + 2660ms * var(--reveal-rate));
 }
 
-.game-card-reveal .game-meta {
+.game-card-reveal .as-stage-note,
+.game-card-reveal .as-stage-situation,
+.game-card-reveal .as-trend {
 	animation-delay: calc(var(--reveal-spine) + 2740ms * var(--reveal-rate));
 }
 
 /* 2780, not 2820: 620ms after it is 3400, which is `revealBaseDurationMs` and the instant the
    wrapper is removed. At 2820 the last beat was still 40ms from finishing when its element stopped
    existing — invisible under this easing, which is at 99.9% by then, and a pop under any other. */
-.game-card-reveal .game-card-ps-bar-row {
+.game-card-reveal .as-stage-power,
+.game-card-reveal .as-tile-power,
+.game-card-reveal .as-row-power {
 	animation-delay: calc(var(--reveal-spine) + 2780ms * var(--reveal-rate));
 }
 
@@ -1489,13 +1148,23 @@ button, input, select, optgroup, textarea {
 		animation: cardRevealSkipOut 140ms linear both;
 	}
 
-	.game-card-status-row,
-	.game-card-center,
-	.team-abbreviation,
 	[data-team-star='true'],
-	.game-meta,
-	.game-card-ps-bar-row,
-	.game-card .team-crest {
+	.as-stage-meta,
+	.as-tile-top,
+	.as-row-status,
+	.as-stage-score,
+	.as-tile-team .as-score,
+	.as-row-team .as-score,
+	.as-stage-team > *,
+	.as-tile-team b,
+	.as-row-team b,
+	.as-stage-note,
+	.as-stage-situation,
+	.as-trend,
+	.as-stage-power,
+	.as-tile-power,
+	.as-row-power,
+	[data-reveal-crest] {
 		animation: none;
 	}
 }

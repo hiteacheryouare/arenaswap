@@ -1,6 +1,6 @@
 import type { BackgroundState, GuideSlate, TabRegistration, UserPreferences } from '@arenaswap/core/types';
 
-export interface fakeTab { id: number; title: string; url: string }
+export interface fakeTab { id: number; index: number; title: string; url: string; active?: boolean }
 
 export interface fakeBrowserOptions {
 	/** Flattened messages.json from the build, keyed the way `browser.i18n` keys it (dots → underscores). */

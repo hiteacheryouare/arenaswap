@@ -1,7 +1,8 @@
 import { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import type { CSSProperties, ReactNode } from 'react';
 import type { Game, Team } from '@arenaswap/core/types';
-import { resolveTeamColorPair, teamDisplayInk } from '@arenaswap/ui/src/components/colorUtils';
+import { teamDisplayInk } from '@arenaswap/ui/src/components/colorUtils';
+import { resolveGameColors } from '@arenaswap/ui/src/components/gameSurface';
 import TeamCrest from '@arenaswap/ui/src/components/teamCrest';
 import RevealNamingScene from './revealNamingScene';
 import {
@@ -19,13 +20,28 @@ import {
 	type revealMode,
 } from '../cardReveal';
 
+export type revealShape = 'card' | 'stage' | 'tile' | 'row';
+
 interface gameCardRevealProps {
 	game: Game;
 	mode: revealMode;
 	index: number;
 	skipping: boolean;
+	shape?: revealShape;
 	children: ReactNode;
 }
+
+// The popup header sits over the top of the stage, so the stage's poster starts underneath it.
+const stageHeaderPx = 48;
+const posterWidth = 296;
+const posterHeight = 148;
+
+const roundFor: Record<revealShape, string> = {
+	card: 'calc(0.5rem + 1px)',
+	stage: '0 0 21px 21px',
+	tile: '15px',
+	row: '15px',
+};
 
 interface revealLanding {
 	awayDx: number;
@@ -40,6 +56,8 @@ interface revealLanding {
 	// The card's own height, which the opening pair are sized off rather than the stage's: they are
 	// drawn to overhang the card, so it is the thing the overhang is a fraction of.
 	cardHeight: number;
+	// How much of the full-size poster's type fits a tile's half width or a row's short height.
+	fit: number;
 }
 
 const crestCentre = (rect: DOMRect, box: DOMRect) => ({
@@ -119,7 +137,7 @@ const RevealOpening = ({ game, awayColor, homeColor }: { game: Game; awayColor: 
 	</div>
 );
 
-const gameCardReveal = ({ game, mode, index, skipping, children }: gameCardRevealProps) => {
+const gameCardReveal = ({ game, mode, index, skipping, shape = 'card', children }: gameCardRevealProps) => {
 	const wrapperRef = useRef<HTMLDivElement | null>(null);
 	const [staged] = useState(() => mode !== 'none');
 	const [landing, setLanding] = useState<revealLanding | null>(null);
@@ -133,9 +151,11 @@ const gameCardReveal = ({ game, mode, index, skipping, children }: gameCardRevea
 	const measure = useCallback(() => {
 		const wrapper = wrapperRef.current;
 		if (!wrapper) return;
-		const [awayCrest, homeCrest] = wrapper.querySelectorAll('.game-card .team-crest');
+		const [awayCrest, homeCrest] = wrapper.querySelectorAll('[data-reveal-crest]');
 		if (!awayCrest || !homeCrest) return;
-		const box = wrapper.getBoundingClientRect();
+		const outer = wrapper.getBoundingClientRect();
+		const top = shape === 'stage' ? stageHeaderPx : 0;
+		const box = new DOMRect(outer.left, outer.top + top, outer.width, Math.max(0, outer.height - top));
 		const awayRect = awayCrest.getBoundingClientRect();
 		const away = crestCentre(awayRect, box);
 		const home = crestCentre(homeCrest.getBoundingClientRect(), box);
@@ -157,18 +177,17 @@ const gameCardReveal = ({ game, mode, index, skipping, children }: gameCardRevea
 			hold: revealHoldScale(box.width, box.height, crestSize),
 			sweepRun: revealSweepRun(box.width, lean),
 			cardHeight: box.height,
+			fit: shape === 'card' ? 1 : Math.min(1, box.width / posterWidth, box.height / posterHeight),
 		});
-	}, []);
+	}, [shape]);
 
 	// In a layout effect rather than an effect: this runs after the card is in the DOM but before the
 	// browser paints, so the offsets are already on the element in the animation's first frame.
 	//
-	// Observed rather than taken once, because the card reflows underneath a running graphic. Two
-	// ways, both ordinary: a game's PowerScore arrives on a later push and `liveGameCard` grows a bar
-	// row it was not drawing, and a scheduled game going live swaps `PreGameCard` for `LiveGameCard`
+	// Observed rather than taken once, because the card reflows underneath a running graphic: a
+	// PowerScore arrives on a later push, or a scheduled game goes live and its row becomes a tile
 	// under the same key. Measured once, every offset below is then stale by the height of that
-	// change — the crest lands short of the card's own crest and jumps the rest at the handoff, and
-	// the seam is cut at an angle the bars are no longer skewed by.
+	// change, and the crest lands short of the card's own crest and jumps the rest at the handoff.
 	useLayoutEffect(() => {
 		const wrapper = wrapperRef.current;
 		if (!wrapper) return;
@@ -201,15 +220,18 @@ const gameCardReveal = ({ game, mode, index, skipping, children }: gameCardRevea
 	if (!staged) return <>{children}</>;
 	const playing = mode !== 'none' && !done;
 
-	// The pair `buildGameCardStyle` resolves, down to the fallback, so the colour that retreats off
-	// each edge is the colour of the rail the card has been drawing underneath it the whole time.
-	const [awayColor, homeColor] = resolveTeamColorPair(game.awayTeam, game.homeTeam, '#dee2e6', '#dee2e6');
+	// The same pair the stage and tiles are drawn in, so the colour that retreats is the colour the
+	// card underneath is already wearing.
+	const [awayColor, homeColor] = resolveGameColors(game);
 
 	return (
 		<div
 			ref={wrapperRef}
-			className={`game-card-reveal${playing && skipping ? ' is-skipping' : ''}`}
+			className={`game-card-reveal is-${shape}${playing && skipping ? ' is-skipping' : ''}`}
 			style={!playing ? undefined : {
+				'--reveal-top': shape === 'stage' ? `${stageHeaderPx}px` : '0px',
+				'--reveal-round': roundFor[shape],
+				'--reveal-fit': landing?.fit ?? 1,
 				'--reveal-away': awayColor,
 				'--reveal-home': homeColor,
 				// Per side, because each side is its own surface: a club named on a white band and

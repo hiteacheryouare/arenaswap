@@ -7,16 +7,18 @@ interface suggestBannerProps {
 }
 
 const suggestBanner = ({ count, onReview, onDismiss }: suggestBannerProps) => (
-	<div className='alert alert-primary d-flex align-items-start gap-2 py-2 px-2 mb-2' role='note'>
-		<i className='bi bi-magic' aria-hidden='true' />
-		<div className='min-w-0'>
-			<div className='fw-bold'>{i18n.t('suggest.bannerTitle')}</div>
-			<div>{i18n.t('suggest.bannerCopy', count)}</div>
-			<button type='button' className='btn btn-sm btn-primary mt-2 py-0 px-2' onClick={onReview}>
-				{i18n.t('suggest.bannerAction')}
-			</button>
+	<div className='as-notice' role='note'>
+		<i className='bi bi-magic as-notice-icon' aria-hidden='true' />
+		<div className='as-notice-body'>
+			<span className='as-notice-title'>{i18n.t('suggest.bannerTitle')}</span>
+			<span className='as-notice-copy'>{i18n.t('suggest.bannerCopy', count)}</span>
+			<div className='as-notice-actions'>
+				<button type='button' className='btn btn-primary' onClick={onReview}>{i18n.t('suggest.bannerAction')}</button>
+			</div>
 		</div>
-		<button type='button' className='btn-close btn-sm flex-shrink-0' aria-label={i18n.t('suggest.bannerDismiss')} onClick={onDismiss} />
+		<button type='button' className='as-icon as-notice-close' aria-label={i18n.t('suggest.bannerDismiss')} onClick={onDismiss}>
+			<i className='bi bi-x-lg' aria-hidden='true' />
+		</button>
 	</div>
 );
 

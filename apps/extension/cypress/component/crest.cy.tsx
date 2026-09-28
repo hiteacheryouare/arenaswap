@@ -1,7 +1,7 @@
 // The three states are driven by CSS off `data-crest-state`, so this spec loads the real
 // stylesheets and measures boxes: the point of the component is that the placeholder occupies
 // exactly the image's footprint, and that is not something the markup alone can show.
-import { useState } from 'react';
+import { useState, type CSSProperties, type ReactNode } from 'react';
 import Crest from '@arenaswap/ui/src/components/crest';
 
 const loadableLogo = `data:image/svg+xml,${encodeURIComponent(
@@ -22,18 +22,23 @@ const stallRequest = (url: string) => {
 	});
 };
 
+// The board's crest box, which is what gives a crest its size everywhere it is drawn.
+const sized = (crest: ReactNode, size = 64) => (
+	<span className='as-crest-box' style={{ '--crest': `${size}px` } as CSSProperties}>{crest}</span>
+);
+
 describe('Crest', () => {
 	it('shows the placeholder while the logo is still in flight', () => {
 		const url = slowLogo();
 		stallRequest(url);
-		cy.mount(<Crest logo={url} abbreviation='PHI' className='team-crest' />);
+		cy.mount(sized(<Crest logo={url} abbreviation='PHI' className='as-crest-art' />));
 
 		cy.get('.crest').should('have.attr', 'data-crest-state', 'pending');
 		cy.get('.crest-fallback').should('be.visible').and('have.text', 'PHI');
 	});
 
 	it('hides the placeholder once the logo lands', () => {
-		cy.mount(<Crest logo={loadableLogo} abbreviation='PHI' className='team-crest' />);
+		cy.mount(sized(<Crest logo={loadableLogo} abbreviation='PHI' className='as-crest-art' />));
 
 		cy.get('.crest').should('have.attr', 'data-crest-state', 'loaded');
 		cy.get('.crest-fallback').should('not.be.visible');
@@ -41,7 +46,7 @@ describe('Crest', () => {
 	});
 
 	it('keeps the placeholder up and drops the image when the logo never decodes', () => {
-		cy.mount(<Crest logo={brokenLogo} abbreviation='PHI' className='team-crest' />);
+		cy.mount(sized(<Crest logo={brokenLogo} abbreviation='PHI' className='as-crest-art' />));
 
 		cy.get('.crest').should('have.attr', 'data-crest-state', 'failed');
 		cy.get('.crest-fallback').should('be.visible').and('have.text', 'PHI');
@@ -49,7 +54,7 @@ describe('Crest', () => {
 	});
 
 	it('shows the placeholder for a team with no logo at all', () => {
-		cy.mount(<Crest abbreviation='PHI' className='team-crest' />);
+		cy.mount(sized(<Crest abbreviation='PHI' className='as-crest-art' />));
 
 		cy.get('.crest').should('have.attr', 'data-crest-state', 'missing');
 		cy.get('.crest-fallback').should('be.visible');
@@ -65,7 +70,7 @@ describe('Crest', () => {
 			warm.addEventListener('load', () => resolve(), { once: true });
 			warm.src = loadableLogo;
 		}));
-		cy.mount(<Crest logo={loadableLogo} abbreviation='PHI' className='team-crest' />);
+		cy.mount(sized(<Crest logo={loadableLogo} abbreviation='PHI' className='as-crest-art' />));
 
 		cy.get('.crest').should('have.attr', 'data-crest-state', 'loaded');
 	});
@@ -77,7 +82,7 @@ describe('Crest', () => {
 			const [logo, setLogo] = useState(brokenLogo);
 			return (
 				<>
-					<Crest logo={logo} abbreviation='PHI' className='team-crest' />
+					{sized(<Crest logo={logo} abbreviation='PHI' className='as-crest-art' />)}
 					<button type='button' onClick={() => setLogo(loadableLogo)}>swap</button>
 				</>
 			);
@@ -94,10 +99,10 @@ describe('Crest', () => {
 		stallRequest(url);
 		cy.mount(
 			<>
-				<Crest logo={url} abbreviation='PHI' className='team-crest' />
-				<Crest logo={loadableLogo} abbreviation='PHI' className='team-crest' />
-				<Crest logo={brokenLogo} abbreviation='PHI' className='team-crest' />
-				<Crest abbreviation='PHI' className='team-crest' />
+				{sized(<Crest logo={url} abbreviation='PHI' className='as-crest-art' />)}
+				{sized(<Crest logo={loadableLogo} abbreviation='PHI' className='as-crest-art' />)}
+				{sized(<Crest logo={brokenLogo} abbreviation='PHI' className='as-crest-art' />)}
+				{sized(<Crest abbreviation='PHI' className='as-crest-art' />)}
 			</>,
 		);
 
@@ -116,7 +121,7 @@ describe('Crest', () => {
 	it('omits the placeholder entirely when asked to, and still holds its box', () => {
 		const url = slowLogo();
 		stallRequest(url);
-		cy.mount(<Crest logo={url} abbreviation='PHI' className='gd-bar-logo' fallback='none' />);
+		cy.mount(sized(<Crest logo={url} abbreviation='PHI' className='as-crest-art' fallback='none' />, 18));
 
 		cy.get('.crest-fallback').should('not.exist');
 		cy.get('.crest').then($crest => {
@@ -125,11 +130,11 @@ describe('Crest', () => {
 	});
 
 	it('names itself only when nothing else does', () => {
-		cy.mount(<Crest logo={loadableLogo} abbreviation='PHI' label='Philadelphia Eagles' className='team-crest' />);
+		cy.mount(sized(<Crest logo={loadableLogo} abbreviation='PHI' label='Philadelphia Eagles' className='as-crest-art' />));
 		cy.get('.crest').should('have.attr', 'role', 'img').and('have.attr', 'aria-label', 'Philadelphia Eagles');
 		cy.get('.crest img').should('have.attr', 'alt', '');
 
-		cy.mount(<Crest logo={loadableLogo} abbreviation='PHI' className='team-crest' />);
+		cy.mount(sized(<Crest logo={loadableLogo} abbreviation='PHI' className='as-crest-art' />));
 		cy.get('[role="img"]').should('not.exist');
 	});
 });

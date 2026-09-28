@@ -57,7 +57,7 @@ export const paintStern = (ctx: CanvasRenderingContext2D, w: number, h: number, 
 	ctx.fillStyle = '#d8d3c4';
 	ctx.fillRect(cx - plateW / 2, plateY, plateW, plateH);
 	ctx.fillStyle = '#1a1a18';
-	ctx.font = `700 ${Math.max(4, plateH * 0.56)}px 'DM Sans', sans-serif`;
+	ctx.font = `700 ${Math.max(4, plateH * 0.56)}px Inter, sans-serif`;
 	ctx.textAlign = 'center';
 	ctx.textBaseline = 'middle';
 	ctx.fillText(bumperText, cx, plateY + plateH / 2 + 0.5);

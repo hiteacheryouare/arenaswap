@@ -598,9 +598,11 @@ describe('the figures the stylesheet repeats by hand', () => {
 			const at = stylesheet.indexOf(`.game-card-reveal-opening-name.is-${side} {`);
 			if (at < 0) return null;
 			const rule = stylesheet.slice(at, stylesheet.indexOf('}', at));
+			// The y slot carries the block's lift, scaled with the collapse, so the lifted type lands on
+			// the centre line rather than a lift's worth above it.
 			return [
 				/--reveal-name-slot-x:\s*(-?\d+%)/.exec(rule)?.[1],
-				/--reveal-name-slot-y:\s*(-?\d+%)/.exec(rule)?.[1],
+				/--reveal-name-slot-y:\s*calc\((-?\d+%)\s*\+\s*var\(--reveal-name-lift, 0px\) \* 0\.36\)/.exec(rule)?.[1],
 			];
 		};
 

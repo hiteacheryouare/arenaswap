@@ -170,7 +170,7 @@ export const revealAbbrScale = (away = '', home = '') => (
 // the name and the card rather than a rule: "Washington Commanders" on one line is 21px of type and
 // on two it is 38, while "Miami Marlins" is 40 on one line and 35 on two — and the one-line version
 // of it covers the whole card where the two-line version covers a third. So both are fitted and the
-// bigger is drawn. `revealNameSpaceEm` is what makes that free: DM Sans bold advances are additive to
+// bigger is drawn. `revealNameSpaceEm` is what makes that free: Inter bold advances are additive to
 // the last decimal, measured, so the joined line's width is the two lines' plus a space and the
 // component never has to render a candidate to measure it.
 //
@@ -196,8 +196,8 @@ export const revealNameLines = (name = '', nickname = ''): string[] => {
 };
 
 // And how big those lines are drawn, which is measured rather than counted. An advance is a property
-// of the letters and not of their number — DM Sans bold caps run 0.637em a character for "MARLINS"
-// and 0.739em for "COMMANDERS", a sixth more from the same count — so every version of this that
+// of the letters and not of their number ("COMMANDERS" runs a sixth wider a character than
+// "MARLINS") — so every version of this that
 // sized the type off `name.length` either clipped the wide names or left the narrow ones small. The
 // component reads each line's own advance off the DOM and hands the ratios in here, so nothing in
 // this file has to know what a letter is worth.
@@ -230,24 +230,17 @@ export const revealNameInsetPx = 12;
 // side and the popup's background on the other — so this is the only clearance there is.
 export const revealNameHeightShare = 0.86;
 
-// Where the ink sits inside a line box, per em, measured off DM Sans 700 with canvas `TextMetrics`
-// rather than guessed: `fontBoundingBox` ascent 0.99 and descent 0.31, ink ascent 0.725 (which is an
-// ascender — caps stop at 0.712) and ink descent 0.232. A line box of height L puts its baseline at
-// `L / 2 + 0.34`, so the ink runs from `L / 2 - 0.385` to `L / 2 + 0.572` measured from the top of
-// the box — which is to say the box neither starts nor ends where the letters do, and at any leading
-// under 1.144 the descenders of the last line hang below the box entirely.
-//
-// Two things need that. The height budget is against the ink rather than against the boxes, or the
-// bottom of a "g" lands outside the band it belongs to — measured, it came within a pixel of the
-// card's own edge. And the block is lifted so that the ink is centred in the band rather than the
-// boxes being: the ink sits low in its boxes, by 0.145em at the top and 0.042 at the bottom at this
-// leading, which is 3px of a 5px margin handed from one side to the other.
-export const revealNameInkTopEm = 0.385;
-export const revealNameInkBottomEm = 0.572;
+// Where the ink sits inside a line box, per em, measured off Inter 700 with canvas `TextMetrics`:
+// font ascent 0.97 and descent 0.24, ink ascent 0.728 and ink descent 0.211. A line box of height L
+// puts its baseline at `L / 2 + 0.365`, so the ink runs from `L / 2 - 0.363` to `L / 2 + 0.576`.
+// The height budget is taken against the ink, and the block is lifted so the ink rather than the
+// boxes is centred in the band.
+export const revealNameInkTopEm = 0.363;
+export const revealNameInkBottomEm = 0.576;
 
 // The space, from the same measurement: 0.2355em, and `measureText('Miami Marlins')` comes to
 // `measureText('Miami') + measureText('Marlins')` plus exactly that.
-export const revealNameSpaceEm = 0.2355;
+export const revealNameSpaceEm = 0.2141;
 
 export const revealNameJoinedRatio = (ratios: number[]) => (
 	ratios.reduce((total, ratio) => total + ratio, 0) + revealNameSpaceEm * Math.max(0, ratios.length - 1)

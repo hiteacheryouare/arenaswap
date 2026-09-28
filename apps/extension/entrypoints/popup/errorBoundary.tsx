@@ -1,8 +1,7 @@
 import { Component } from 'react';
 import type { ReactNode } from 'react';
 import { i18n } from '#i18n';
-import { readDocumentTheme } from '@arenaswap/ui/src/components/useDocumentTheme';
-import { fullLogoSrc } from '../../utils/theme';
+import Wordmark from '@arenaswap/ui/src/components/wordmark';
 
 interface errorBoundaryProps {
 	children: ReactNode;
@@ -22,21 +21,21 @@ class ErrorBoundary extends Component<errorBoundaryProps, errorBoundaryState> {
 	render() {
 		if (this.state.error) {
 			return (
-				<div className='popup-container d-flex flex-column align-items-center justify-content-center gap-3 text-center'>
-					<img src={fullLogoSrc(readDocumentTheme())} alt='ArenaSwap' className='arenaswap-logo mb-1' />
-					<div>
-						<i className='bi bi-exclamation-triangle-fill text-danger fs-3' />
-						<div className='fw-bold mt-2'>{i18n.t('errorBoundary.title')}</div>
-						<div className='text-body-secondary small mt-1'>{i18n.t('errorBoundary.body')}</div>
+				<div className='popup-container as-crash'>
+					<Wordmark className='as-crash-mark' />
+					<div className='as-empty'>
+						<h2>{i18n.t('errorBoundary.title')}</h2>
+						<p>{i18n.t('errorBoundary.body')}</p>
 					</div>
-					<div className='alert alert-danger w-100 py-2 px-3 text-start small text-break mb-0' role='alert'>
-						<strong>{i18n.t('errorBoundary.errorLabel')}</strong> {this.state.error.message}
+					<div className='as-notice is-danger' role='alert'>
+						<i className='bi bi-exclamation-triangle as-notice-icon' aria-hidden='true' />
+						<div className='as-notice-body'>
+							<span className='as-notice-title'>{i18n.t('errorBoundary.errorLabel')}</span>
+							<span className='as-notice-copy text-break'>{this.state.error.message}</span>
+						</div>
 					</div>
-					<button
-						className='btn btn-danger btn-sm'
-						onClick={() => this.setState({ error: null })}
-					>
-						<i className='bi bi-arrow-clockwise me-1' />
+					<button type='button' className='btn btn-primary w-100' onClick={() => this.setState({ error: null })}>
+						<i className='bi bi-arrow-clockwise me-2' aria-hidden='true' />
 						{i18n.t('errorBoundary.tryAgain')}
 					</button>
 				</div>

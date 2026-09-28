@@ -2,16 +2,9 @@ import { leagueConfigs, leagueConfigMap } from '@arenaswap/core/constants';
 import type { LeagueId, SportType } from '@arenaswap/core/types';
 import { formatPeriod, isHalftime } from '../src/components/gameFormat';
 
-/* The label in the middle of a live card is the one thing on it that says where the game is. A
-   league config edit — a periodFormat typo, a regularPeriods off by one, a new league copied from
-   the wrong neighbour — changes that label without changing a line of this module, and the
-   existing "renders something non-empty" sweep in gameCardShared.test.ts would stay green through
-   all of it.
-
-   So the expected labels are written out rather than derived from the same config the function
-   reads, which would only prove the function agrees with itself. Every value below was diffed
-   against the pre-split implementation in `gameCardShared.tsx` at commit 0750e61c, for every
-   league and every period from 0 to regularPeriods + 6: identical throughout. */
+/* The period label is the one thing in a clock slot that says where the game is, and a league
+   config edit changes it without touching this module. So the expected labels are written out
+   rather than derived from the config the function reads. */
 
 const periodLabels: Record<LeagueId, string[]> = {
 	nba: ['Q1', 'Q2', 'Q3', 'Q4', 'OT1', 'OT2', 'OT3'],
@@ -159,16 +152,5 @@ describe('the edges the card can reach', () => {
 
 		expect(isHalftime({ league: 'epl', sportType: 'soccer' })).toBe(false);
 		expect(isHalftime({ league: 'epl', sportType: 'soccer', period: 1 })).toBe(true);
-	});
-});
-
-// `gameCardShared` re-exports both, and `apps/extension` re-exports that in turn with `export *`.
-// A default export or a renamed binding anywhere along that chain breaks the popup at runtime
-// without breaking this package.
-describe('the re-export chain still carries both helpers', () => {
-	test('gameCardShared hands on the same functions the module defines', async () => {
-		const shared = await import('../src/components/gameCardShared');
-		expect(shared.formatPeriod).toBe(formatPeriod);
-		expect(shared.isHalftime).toBe(isHalftime);
 	});
 });

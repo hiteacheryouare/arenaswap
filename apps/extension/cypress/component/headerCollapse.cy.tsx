@@ -102,16 +102,17 @@ describe('the popup header', () => {
 		cy.get('.popup-header').should('have.class', 'is-condensed');
 	});
 
-	// The bar gives height back as well as width — the mark drops to 26px and the padding closes
-	// with it, which is most of the point of condensing a header in a 560px panel.
+	// The bar gives height back as well as width: the mark drops to 22px and the bar to 40px, which
+	// is most of the point of condensing a header in a 560px panel.
 	it('gets shorter, not just narrower', () => {
 		mountList();
 		cy.get('.popup-header').invoke('outerHeight').then(before => {
+			expect(before).to.be.closeTo(48, 0.5);
 			scrollTo(200);
 			cy.get('.arenaswap-logo').should(([mark]: JQuery<HTMLElement>) => {
-				expect(mark.getBoundingClientRect().height).to.be.closeTo(26, 0.5);
+				expect(mark.getBoundingClientRect().height).to.be.closeTo(22, 0.5);
 			});
-			cy.get('.popup-header').invoke('outerHeight').should('be.lessThan', (before as number) - 12);
+			cy.get('.popup-header').invoke('outerHeight').should('be.closeTo', 40, 0.5);
 		});
 	});
 
@@ -122,9 +123,10 @@ describe('the popup header', () => {
 		scrollTo(200);
 		cy.get('.popup-header').should(([header]: JQuery<HTMLElement>) => {
 			const style = getComputedStyle(header);
+			const root = getComputedStyle(document.documentElement);
 			expect(surfaceAlpha(header)).to.equal(1);
-			expect(style.backgroundColor).to.contain('13, 17, 23');
-			expect(style.borderBottomColor).to.contain('48, 54, 61');
+			expect(style.backgroundColor).to.contain(root.getPropertyValue('--as-body-bg-rgb').trim());
+			expect(style.boxShadow).to.contain(root.getPropertyValue('--as-border-color-rgb').trim());
 			expect(style.backdropFilter === 'none' || style.backdropFilter === '').to.equal(true);
 		});
 	});

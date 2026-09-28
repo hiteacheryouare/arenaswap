@@ -2,7 +2,8 @@
 // packages/ui/tests/footballField.test.ts; what can only be checked here is that 120 yards of
 // viewBox land where the yard numbers painted on them say they do.
 import FootballFieldStrip from '@arenaswap/ui/src/components/footballFieldStrip';
-import LiveGameCard from '@arenaswap/ui/src/components/liveGameCard';
+import GameStage from '@arenaswap/ui/src/components/gameStage';
+import { stageNote, stageSituation } from '@arenaswap/ui/src/components/boardSituation';
 import { numberRowsY, stripHeight } from '@arenaswap/ui/src/components/footballField';
 import type { Game, PowerScoreResult, TeamMonoMarks } from '@arenaswap/core/types';
 
@@ -383,24 +384,22 @@ describe('football field', () => {
 	});
 });
 
-describe('football field on a list card', () => {
-	// A card answers "should I switch to this", and where the ball is on the field is not part of
+describe('football field on the board', () => {
+	// The board answers "should I switch to this", and where the ball is on the field is not part of
 	// that answer — it is what you want once the game is already open.
-	it('stays off the card entirely', () => {
+	it('stays off the stage entirely', () => {
 		cy.viewport(popupWidth, 600);
 		cy.mount(
 			<div style={{ width: `${popupWidth}px` }}>
-				<LiveGameCard
+				<GameStage
 					game={nflGame}
-					excitementResult={result}
-					favoriteTeamIds={new Set<string>()}
-					onToggleFavoriteTeam={() => {}}
-					onOpenGameDetail={() => {}}
-					bettingPrefs={{ bettingEnabled: false }}
+					situation={stageSituation(nflGame)}
+					note={stageNote(nflGame, { bettingEnabled: false }, key => key)}
+					power={{ value: result.total, label: 'PowerScore' }}
 				/>
 			</div>,
 		);
-		cy.get('.game-card').should('exist');
+		cy.get('.as-stage').should('exist');
 		cy.get('.ff-field').should('not.exist');
 	});
 });

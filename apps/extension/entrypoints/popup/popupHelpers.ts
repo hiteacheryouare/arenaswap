@@ -222,7 +222,7 @@ export const formatTabLabel = (tab: Browser.tabs.Tab, allTabs: Browser.tabs.Tab[
 	const title = tab.title ?? '';
 	if (!title) return i18n.t('tab.fallback', [String(tab.id)]);
 	const duplicates = allTabs.filter(t => t.title === title);
-	if (duplicates.length <= 1) return title.slice(0, 35);
+	if (duplicates.length <= 1) return title.length > 35 ? `${title.slice(0, 34).trimEnd()}…` : title;
 	try {
 		const pathname = new URL(tab.url ?? '').pathname;
 		const truncated = pathname.length > 25 ? `${pathname.slice(0, 22)}...` : pathname;

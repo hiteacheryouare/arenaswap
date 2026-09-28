@@ -78,8 +78,8 @@ export default () => {
 	const [dismissedSuggestions, setDismissedSuggestions] = useState<string[]>([]);
 	const [reviewPromptState, setReviewPromptState] = useState<ReviewPromptState>(normalizeReviewPromptState(null));
 	const [settled, setSettled] = useState(false);
-	// First-run and the tour were designed against dark and stay there whatever the setting says.
-	const theme = useTheme(prefsLoaded ? prefs.theme : null, onboardingDone === false || walkthroughActive);
+	// First run has no stored prefs, so it follows the Theme setting's default, which is Dark.
+	const theme = useTheme(prefsLoaded ? prefs.theme : null);
 	// Owned up here because the view shell is keyed on `view`: left to MainView it would replay in
 	// full every time you came back from a setting or a game detail. Cleared once the last card has
 	// landed, which is what makes the return trip quiet.
@@ -562,6 +562,7 @@ export default () => {
 						onRefresh={() => void mutate(() => fetchState(true), { revalidate: false })}
 						games={games}
 						scores={scores}
+						powerScoreHistory={powerScoreHistory}
 						leagueLogos={leagueLogos}
 						registry={registry}
 						favoriteTeamIds={favoriteTeamIds}

@@ -277,9 +277,10 @@ describe('formatTabLabel', () => {
 		expect(formatTabLabel({ id: 42 }, [{ id: 42 }])).toBe('Tab #42');
 	});
 
-	test('truncates a single-occurrence title to 35 characters', () => {
+	test('cuts a long single-occurrence title at 35 characters with an ellipsis', () => {
 		const title = 'A very long tab title that exceeds the truncation limit by quite a lot';
-		expect(formatTabLabel({ id: 1, title }, [{ id: 1, title }])).toBe(title.slice(0, 35));
+		expect(formatTabLabel({ id: 1, title }, [{ id: 1, title }])).toBe('A very long tab title that exceeds…');
+		expect(formatTabLabel({ id: 1, title: 'Short title' }, [{ id: 1, title: 'Short title' }])).toBe('Short title');
 	});
 
 	test('disambiguates duplicate titles with the URL pathname', () => {
