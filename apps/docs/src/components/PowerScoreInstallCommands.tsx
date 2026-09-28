@@ -34,27 +34,25 @@ const PowerScoreInstallCommands = ({ copyLabel, copiedLabel }: Props) => {
 	};
 
 	return (
-		<div className='feature-card'>
-			<div className='d-flex flex-wrap gap-2 mb-3'>
+		<div className='ps-install'>
+			<div className='nav nav-underline'>
 				{installCommands.map(item => (
 					<button
 						key={item.id}
 						type='button'
-						className={`btn ${activeId === item.id ? 'btn-cta' : 'btn-outline-secondary-custom'} py-2 px-3`}
+						className={`nav-link${activeId === item.id ? ' active' : ''}`}
+						aria-pressed={activeId === item.id}
 						onClick={() => setActiveId(item.id)}
 					>
-						<i className={`bi ${item.icon} me-2`}></i>
+						<i className={`bi ${item.icon}`} aria-hidden='true'></i>
 						{item.label}
 					</button>
 				))}
 			</div>
-			<div
-				className='rounded-4 px-3 py-3 d-flex flex-wrap align-items-center justify-content-between gap-3'
-				style={{ background: 'rgba(13,17,23,0.9)', border: '1px solid var(--color-border)' }}
-			>
-				<code className='mb-0 text-[0.92rem] text-[var(--color-text)] font-[var(--font-mono)]'>{activeCommand?.command}</code>
-				<button type='button' className='btn btn-cta py-2 px-3' onClick={copyCommand}>
-					<i className={`bi ${copied ? 'bi-check2' : 'bi-clipboard'} me-2`}></i>
+			<div className='ps-install-command'>
+				<code>{activeCommand?.command}</code>
+				<button type='button' className='btn btn-quiet btn-sm' onClick={copyCommand}>
+					<i className={`bi ${copied ? 'bi-check2' : 'bi-clipboard'} me-2`} aria-hidden='true'></i>
 					{copied ? copiedLabel : copyLabel}
 				</button>
 			</div>

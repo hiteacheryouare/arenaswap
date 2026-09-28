@@ -9,7 +9,7 @@ interface Props {
 const { class: className } = Astro.props;
 const t = useTranslations(currentLocale(Astro.currentLocale));
 ---
-<a href={chromeWebStore} class:list={['btn', 'btn-cta', className]} data-install-cta>
+<a href={chromeWebStore} class:list={['btn', 'btn-primary', className]} data-install-cta>
 	<i class='bi bi-browser-chrome me-2' data-install-icon></i><span data-install-label>{t('install.addTo', { browser: 'Chrome' })}</span>
 </a>
 <script is:inline>window.arenaSwapInstall?.applyCta(document.currentScript.previousElementSibling);</script>

@@ -133,13 +133,16 @@ describe('the language switcher', () => {
 	});
 
 	// Bootstrap 5.3 builds these out of tokens this theme never overrode, so both were the light
-	// defaults: hovering an item put #e6edf3 on #f8f9fa, and the active item was white on $primary
-	// at 3.22:1. Read off the computed style, because that is the only place the answer lives.
+	// defaults: hovering an item put light ink on #f8f9fa, and the active item was white on $primary
+	// at 3.22:1. Read off the computed style, because that is the only place the answer lives. The
+	// menu is the v3 raised surface and the current language sits on the pressed wash, in ink.
 	it('is themed for a dark page rather than left on Bootstrap defaults', () => {
 		cy.visit('/');
 		cy.get('.lang-switch-trigger').click();
-		cy.get('.lang-switch-menu').should('have.css', 'background-color', 'rgb(22, 27, 34)');
-		cy.get('.lang-switch-menu .dropdown-item.active').should('have.css', 'color', 'rgb(13, 17, 23)');
+		cy.get('.lang-switch-menu').should('have.css', 'background-color', 'rgb(34, 38, 45)');
+		cy.get('.lang-switch-menu .dropdown-item.active')
+			.should('have.css', 'color', 'rgb(243, 245, 247)')
+			.and('have.css', 'background-color', 'rgba(243, 245, 247, 0.1)');
 	});
 
 	it('keeps your place when you change language', () => {
@@ -181,13 +184,13 @@ describe('the language switcher', () => {
 
 describe('the untranslated notice', () => {
 	// Bootstrap computes a light and a dark set of the -bg-subtle tokens and this site sets no
-	// colour mode, so an unthemed alert is a pale slab on a #0d1117 page.
+	// colour mode, so an unthemed alert is a pale slab on the dark page. It is drawn on the v3 surface.
 	it('is a Bootstrap alert that reads on the dark page', () => {
 		cy.visit('/de/docs/extension/getting-started/');
 		cy.get('.untranslated-notice')
 			.should('have.class', 'alert')
-			.and('have.css', 'background-color', 'rgb(12, 31, 42)')
-			.and('have.css', 'color', 'rgb(139, 196, 228)');
+			.and('have.css', 'background-color', 'rgb(26, 29, 34)')
+			.and('have.css', 'color', 'rgb(196, 203, 212)');
 	});
 
 	it('names the language it is written in, in every locale', () => {

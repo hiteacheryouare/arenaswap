@@ -1,8 +1,9 @@
 ---
 import MachineScene from './MachineScene.tsx';
-import { currentLocale, useTranslations } from '../i18n/ui';
+import { currentLocale, uiStrings, useTranslations } from '../i18n/ui';
 
-const t = useTranslations(currentLocale(Astro.currentLocale));
+const locale = currentLocale(Astro.currentLocale);
+const t = useTranslations(locale);
 ---
 <section id="machine" class="machine-section">
 	<noscript>
@@ -13,8 +14,8 @@ const t = useTranslations(currentLocale(Astro.currentLocale));
 	</noscript>
 
 	<div class="container machine-header reveal">
-		<h2 class="section-title mb-3">{t('powerscore.machineHeading')}</h2>
-		<p class="section-sub mx-auto">{t('powerscore.machineSub')}</p>
+		<h2 class="section-title">{t('powerscore.machineHeading')}</h2>
+		<p class="section-sub">{t('powerscore.machineSub')}</p>
 	</div>
 
 	<!-- Auto-playing ECharts + SVG explainer (hydrates on view) -->
@@ -28,30 +29,31 @@ const t = useTranslations(currentLocale(Astro.currentLocale));
 			signals: t.list<string>('powerscore.machineSignals'),
 			powerScore: t('ui.gameCard.powerScore'),
 		}}
+		uiStrings={uiStrings(locale)}
 	/>
 
 	<!-- Static fallback: shown before hydration, with JS off, or reduced motion -->
 	<div class="machine-fallback container" data-machine-fallback>
-		<div class="row g-4">
+		<div class="row g-3">
 			<div class="col-md-4">
 				<div class="feature-card">
-					<i class="bi bi-eye-fill feature-icon"></i>
-					<h3 class="h5">{t('powerscore.machineWatch')}</h3>
-					<p class="section-sub mb-0" style="font-size:0.95rem;">{t('powerscore.machineWatchCopy')}</p>
+					<i class="bi bi-eye feature-icon" aria-hidden="true"></i>
+					<h3>{t('powerscore.machineWatch')}</h3>
+					<p>{t('powerscore.machineWatchCopy')}</p>
 				</div>
 			</div>
 			<div class="col-md-4">
 				<div class="feature-card">
-					<i class="bi bi-lightning-fill feature-icon"></i>
-					<h3 class="h5">{t('powerscore.machineScore')}</h3>
-					<p class="section-sub mb-0" style="font-size:0.95rem;">{t('powerscore.machineScoreCopy')}</p>
+					<i class="bi bi-lightning-charge feature-icon" aria-hidden="true"></i>
+					<h3>{t('powerscore.machineScore')}</h3>
+					<p>{t('powerscore.machineScoreCopy')}</p>
 				</div>
 			</div>
 			<div class="col-md-4">
 				<div class="feature-card">
-					<i class="bi bi-arrow-left-right feature-icon"></i>
-					<h3 class="h5">{t('powerscore.machineSwitch')}</h3>
-					<p class="section-sub mb-0" style="font-size:0.95rem;">{t('powerscore.machineSwitchCopy')}</p>
+					<i class="bi bi-arrow-left-right feature-icon" aria-hidden="true"></i>
+					<h3>{t('powerscore.machineSwitch')}</h3>
+					<p>{t('powerscore.machineSwitchCopy')}</p>
 				</div>
 			</div>
 		</div>

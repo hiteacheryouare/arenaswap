@@ -30,8 +30,8 @@ const formatDate = (date: Date) => date.toLocaleDateString('en-US', {
 >
 	<div class='container release-index-page'>
 		<div class='page-head'>
-			<h1 class='page-title pb-2'>Release notes.</h1>
-			<a href={`${localePath(defaultLocale)}releases/rss.xml`}>Subscribe by RSS <i class="bi bi-rss-fill"></i></a>.
+			<h1 class='page-title'>Release notes.</h1>
+			<a class='release-feed' href={`${localePath(defaultLocale)}releases/rss.xml`}><i class='bi bi-rss-fill' aria-hidden='true'></i>Subscribe by RSS</a>
 		</div>
 
 		<UntranslatedNotice />
@@ -43,8 +43,7 @@ const formatDate = (date: Date) => date.toLocaleDateString('en-US', {
 				<article class='release-latest'>
 					<p class='release-meta'>
 						<time datetime={latest.data.date.toISOString()}>{formatDate(latest.data.date)}</time>
-						<span aria-hidden='true'> · </span>
-						Version {latest.data.version}
+						<span>, version {latest.data.version}</span>
 					</p>
 					<h2 class='release-latest-title'>
 						<a href={localePath(locale, `releases/${latest.data.version}/`)}>{latest.data.title}</a>
@@ -59,8 +58,7 @@ const formatDate = (date: Date) => date.toLocaleDateString('en-US', {
 						<li>
 							<p class='release-meta'>
 								<time datetime={release.data.date.toISOString()}>{formatDate(release.data.date)}</time>
-								<span aria-hidden='true'> · </span>
-								Version {release.data.version}
+								<span>, version {release.data.version}</span>
 							</p>
 							<h3>
 								<a href={localePath(locale, `releases/${release.data.version}/`)}>{release.data.title}</a>

@@ -1,19 +1,24 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { allLeagueIds, computePowerScore, leagueConfigMap } from 'powerscore';
-import type { Game, LeagueId, ScoreSnapshot } from 'powerscore';
-// The real ones, rather than copies. Both live in dependency-free modules precisely so this
-// island can read them without dragging zod or the card's React tree onto a marketing page.
+import type { LeagueId, ScoreSnapshot } from 'powerscore';
+import type { Game, Team } from '@arenaswap/core/types';
+// A dependency-free module, so this island can read it without dragging zod onto a marketing page.
 import { parseClockToSeconds } from '@arenaswap/core/gameClock';
-import { formatGameClock, formatPeriod } from '@arenaswap/ui/src/components/gameFormat';
+import GameTile from '@arenaswap/ui/src/components/gameTile';
+import { TranslationContext, islandTranslator } from '../i18n/islandStrings';
 
 interface EspnCompetitor {
 	id: string;
 	homeAway: 'home' | 'away' | string;
 	score?: string;
 	team: {
+		id?: string;
 		displayName: string;
 		abbreviation?: string;
+		color?: string;
+		alternateColor?: string;
+		logo?: string;
 	};
 }
 
@@ -75,6 +80,20 @@ const buildScoreboardUrl = (leagueId: LeagueId): string => {
 	return query ? `${url}?${query}` : url;
 };
 
+// The scoreboard carries each team's colours and crest, which is all a tile needs to draw it the way
+// the popup does. ESPN writes the colours without the hash.
+const hex = (value?: string) => (value && /^[0-9a-f]{6}$/i.test(value) ? `#${value}` : undefined);
+
+const parseTeam = (competitor: EspnCompetitor, fallback: string): Team => ({
+	id: competitor.team.id ?? competitor.id,
+	name: competitor.team.displayName,
+	abbreviation: competitor.team.abbreviation || competitor.team.displayName?.slice(0, 3).toUpperCase() || fallback,
+	score: Number.parseInt(competitor.score ?? '0', 10) || 0,
+	color: hex(competitor.team.color),
+	alternateColor: hex(competitor.team.alternateColor),
+	logo: competitor.team.logo,
+});
+
 const parseLiveGames = (leagueId: LeagueId, payload: EspnScoreboardResponse): Game[] => {
 	const config = leagueConfigMap[leagueId];
 	return (payload.events ?? []).flatMap(event => {
@@ -90,14 +109,9 @@ const parseLiveGames = (leagueId: LeagueId, payload: EspnScoreboardResponse): Ga
 			id: event.id,
 			league: config.id,
 			sportType: config.sportType,
-			homeTeam: {
-				abbreviation: home.team.abbreviation || home.team.displayName?.slice(0, 3).toUpperCase() || 'HOME',
-				score: Number.parseInt(home.score ?? '0', 10) || 0,
-			},
-			awayTeam: {
-				abbreviation: away.team.abbreviation || away.team.displayName?.slice(0, 3).toUpperCase() || 'AWAY',
-				score: Number.parseInt(away.score ?? '0', 10) || 0,
-			},
+			status: 'in' as const,
+			homeTeam: parseTeam(home, 'HOME'),
+			awayTeam: parseTeam(away, 'AWAY'),
 			period: competition.status?.period ?? 1,
 			clockSeconds: parseClockToSeconds(competition.status?.displayClock ?? '0:00'),
 			intermission: /HALFTIME|END_PERIOD|INTERMISSION/i.test(competition.status?.type?.name ?? ''),
@@ -151,14 +165,12 @@ interface Strings {
 	error: string;
 	emptyTitle: string;
 	emptyCopy: string;
-	scoreBadge: string;
-	live: string;
 }
 
 // `card.reason` is not in here. It is composed by the `powerscore` package from the game state, and
 // translating it means translating the package, which is a change to something published on npm on
 // its own rather than to this page.
-const LivePowerScores = ({ strings }: { strings: Strings }) => {
+const LiveBoard = ({ strings }: { strings: Strings }) => {
 	const [cards, setCards] = useState<LiveScoreCard[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
@@ -285,63 +297,42 @@ const LivePowerScores = ({ strings }: { strings: Strings }) => {
 	const renderBody = (): ReactNode => {
 		if (loading) {
 			return (
-				<div className='feature-card'>
-					<div className='d-flex align-items-center gap-3'>
-						<div className='spinner-border text-[var(--color-primary)]' role='status' aria-label={strings.loading}></div>
-						<span className='section-sub mb-0'>{strings.loadingCopy}</span>
-					</div>
+				<div className='ps-live-state as-loading' role='status'>
+					<div className='spinner-border' aria-label={strings.loading}></div>
+					<span>{strings.loadingCopy}</span>
 				</div>
 			);
 		}
 
 		if (error) {
 			return (
-				<div className='feature-card'>
-					<div className='alert alert-warning mb-0'>{error}</div>
+				<div className='ps-live-state as-notice is-quiet is-danger' role='alert'>
+					<i className='bi bi-exclamation-circle as-notice-icon' aria-hidden='true' />
+					<span className='as-notice-copy'>{error}</span>
 				</div>
 			);
 		}
 
 		if (cards.length === 0) {
 			return (
-				<div className='feature-card'>
-					<span className='fw-semibold mb-3 d-block'>{strings.emptyTitle}</span>
-					<p className='mb-0 section-sub'>{strings.emptyCopy}</p>
+				<div className='ps-live-state as-empty'>
+					<h3 className='as-empty-title'>{strings.emptyTitle}</h3>
+					<p>{strings.emptyCopy}</p>
 				</div>
 			);
 		}
 
 		return (
-			<div className='d-flex flex-column gap-3'>
+			<div className='ps-live'>
 				{cards.slice(0, 8).map(card => (
-					<div key={card.game.id} className='feature-card py-3 px-3'>
-						<div className='d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2'>
-							<span className='text-[0.75rem] tracking-[0.08em] text-[var(--color-muted)]'>
-								{leagueConfigMap[card.game.league].label.toUpperCase()}
-							</span>
-							<span className='badge rounded-pill text-bg-dark px-3 py-2 text-[0.78rem]'>
-								{strings.scoreBadge.split('{score}').join(String(card.score))}
-							</span>
-						</div>
-						<div className='d-flex align-items-center justify-content-between gap-2'>
-							<div className='d-flex align-items-center gap-2'>
-								<span className='fw-semibold'>{card.game.awayTeam.abbreviation}</span>
-								<span className='text-[var(--color-muted)]'>{card.game.awayTeam.score}</span>
-							</div>
-							<div className='text-center text-[0.78rem] text-[var(--color-muted)]'>
-								<div>{formatPeriod(card.game)}</div>
-								<div>{card.game.sportType === 'baseball' ? strings.live : formatGameClock(card.game)}</div>
-							</div>
-							<div className='d-flex align-items-center gap-2'>
-								<span className='text-[var(--color-muted)]'>{card.game.homeTeam.score}</span>
-								<span className='fw-semibold'>{card.game.homeTeam.abbreviation}</span>
-							</div>
-						</div>
-						<div className='mt-1 text-[0.78rem] text-[var(--color-muted)]'>{card.reason}</div>
-						<div className='ps-score-bar-track'>
-							<div className='ps-score-bar-fill' style={{ width: `${card.score}%` }} />
-						</div>
-					</div>
+					<figure key={card.game.id} className='ps-live-game'>
+						<GameTile
+							game={card.game}
+							power={card.score}
+							tab={leagueConfigMap[card.game.league].label}
+						/>
+						{card.reason && <figcaption>{card.reason}</figcaption>}
+					</figure>
 				))}
 			</div>
 		);
@@ -349,5 +340,11 @@ const LivePowerScores = ({ strings }: { strings: Strings }) => {
 
 	return <div ref={hostRef}>{renderBody()}</div>;
 };
+
+const LivePowerScores = ({ strings, uiStrings }: { strings: Strings; uiStrings?: Record<string, string> }) => (
+	<TranslationContext.Provider value={islandTranslator(uiStrings)}>
+		<LiveBoard strings={strings} />
+	</TranslationContext.Provider>
+);
 
 export default LivePowerScores;

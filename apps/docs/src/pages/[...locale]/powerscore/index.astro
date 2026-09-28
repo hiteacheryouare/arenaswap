@@ -4,7 +4,7 @@ import PowerScoreInstallCommands from '../../../components/PowerScoreInstallComm
 import LivePowerScores from '../../../components/LivePowerScores.tsx';
 import Machine from '../../../components/Machine.astro';
 import { localeRoutes } from '../../../i18n/locales';
-import { useTranslations } from '../../../i18n/ui';
+import { uiStrings, useTranslations } from '../../../i18n/ui';
 import {
 	scoreMaxCloseness,
 	scoreMaxComeback,
@@ -59,7 +59,7 @@ const taglineSuffix = t('powerscore.heroTaglineSuffix');
 			<div class='ps-glow ps-glow-bl'></div>
 			<div class='ps-glow ps-glow-br'></div>
 
-			<div class='container' style='position:relative; z-index:1;'>
+			<div class='container position-relative'>
 				<div class='row justify-content-center'>
 					<div class='col-xl-9 col-lg-10 text-center'>
 
@@ -76,11 +76,11 @@ const taglineSuffix = t('powerscore.heroTaglineSuffix');
 						<p class='ps-hero-sub'>{t('powerscore.heroSub')}</p>
 
 						<div class='ps-hero-ctas d-flex flex-wrap gap-3 justify-content-center'>
-							<a href='https://www.npmjs.com/package/powerscore' target='_blank' rel='noreferrer' class='btn btn-cta'>
-								<i class='bi bi-box-arrow-up-right me-2'></i>{t('powerscore.viewOnNpm')}
+							<a href='https://www.npmjs.com/package/powerscore' target='_blank' rel='noreferrer' class='btn btn-primary btn-lg'>
+								<i class='bi bi-box-arrow-up-right me-2' aria-hidden='true'></i>{t('powerscore.viewOnNpm')}
 							</a>
-							<a href='https://github.com/hiteacheryouare/arenaswap/tree/dev/packages/powerscore' target='_blank' rel='noreferrer' class='btn btn-outline-secondary-custom'>
-								<i class='bi bi-github me-2'></i>{t('powerscore.sourceOnGithub')}
+							<a href='https://github.com/hiteacheryouare/arenaswap/tree/dev/packages/powerscore' target='_blank' rel='noreferrer' class='btn btn-quiet btn-lg'>
+								<i class='bi bi-github me-2' aria-hidden='true'></i>{t('powerscore.sourceOnGithub')}
 							</a>
 						</div>
 
@@ -89,64 +89,51 @@ const taglineSuffix = t('powerscore.heroTaglineSuffix');
 			</div>
 		</section>
 
-		<section class='section-pad' style='background:rgba(22,27,34,0.5);'>
+		<section class='section-pad ps-band'>
 			<div class='container'>
-				<div class='row g-4'>
-					<div class='col-12 reveal'>
-						<h2 class='section-title mb-4'>{t('powerscore.installHeading')}</h2>
-					</div>
-					<div class='col-12 reveal reveal-delay-1'>
-						<PowerScoreInstallCommands
-							client:visible
-							copyLabel={t('powerscore.copy')}
-							copiedLabel={t('powerscore.copied')}
-						/>
-					</div>
+				<h2 class='section-title reveal'>{t('powerscore.installHeading')}</h2>
+				<div class='ps-install-wrap reveal reveal-delay-1'>
+					<PowerScoreInstallCommands
+						client:visible
+						copyLabel={t('powerscore.copy')}
+						copiedLabel={t('powerscore.copied')}
+					/>
 				</div>
 			</div>
 		</section>
 
-		<section class='section-pad'>
+		<section class='section-pad ps-band'>
 			<div class='container'>
-				<div class='row g-4'>
-					<div class='col-12 reveal'>
-						<h2 class='section-title mb-3'>{t('powerscore.signalsHeading')}</h2>
-						<p class='section-sub mb-4'>{t('powerscore.signalsSub', { max: scoreMaxTotal })}</p>
-					</div>
+				<div class='reveal'>
+					<h2 class='section-title'>{t('powerscore.signalsHeading')}</h2>
+					<p class='section-sub'>{t('powerscore.signalsSub', { max: scoreMaxTotal })}</p>
+				</div>
+				<div class='ps-signals'>
 					{signals.map((signal, index) => (
-						<div class={`col-md-6 col-xl-4 reveal${index > 0 ? ` reveal-delay-${index}` : ''}`}>
-							<div class={`feature-card ps-signal-card-${signal.tone}`}>
-								<h3>{signal.name}<span aria-hidden='true'> · </span>{t('powerscore.signalMax', { max: signal.max })}</h3>
-								<p>{signal.copy}</p>
-							</div>
+						<div class={`ps-signal ps-signal-${signal.tone} reveal${index > 0 ? ` reveal-delay-${index}` : ''}`}>
+							<h3>{signal.name}<small class='num'>{t('powerscore.signalMax', { max: signal.max })}</small></h3>
+							<p>{signal.copy}</p>
 						</div>
 					))}
 				</div>
 			</div>
 		</section>
 
-		<div class='ps-gradient-bar'></div>
-
-		<section id='live-scores' class='section-pad' style='background:rgba(22,27,34,0.5);'>
+		<section id='live-scores' class='section-pad ps-band'>
 			<div class='container'>
-				<div class='row g-4'>
-					<div class='col-12 reveal'>
-						<h2 class='section-title mb-4'>{t('powerscore.liveHeading')}</h2>
-					</div>
-					<div class='col-12 reveal reveal-delay-1'>
-						<LivePowerScores
-							client:visible
-							strings={{
-								loading: t('powerscore.liveLoading'),
-								loadingCopy: t('powerscore.liveLoadingCopy'),
-								error: t('powerscore.liveError'),
-								emptyTitle: t('powerscore.liveEmptyTitle'),
-								emptyCopy: t('powerscore.liveEmptyCopy'),
-								scoreBadge: t('powerscore.liveScoreBadge'),
-								live: t('powerscore.liveNow'),
-							}}
-						/>
-					</div>
+				<h2 class='section-title reveal'>{t('powerscore.liveHeading')}</h2>
+				<div class='ps-live-wrap reveal reveal-delay-1'>
+					<LivePowerScores
+						client:visible
+						strings={{
+							loading: t('powerscore.liveLoading'),
+							loadingCopy: t('powerscore.liveLoadingCopy'),
+							error: t('powerscore.liveError'),
+							emptyTitle: t('powerscore.liveEmptyTitle'),
+							emptyCopy: t('powerscore.liveEmptyCopy'),
+						}}
+						uiStrings={uiStrings(locale)}
+					/>
 				</div>
 			</div>
 		</section>

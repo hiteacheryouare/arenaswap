@@ -62,8 +62,7 @@ const formatted = release.data.date.toLocaleDateString('en-US', {
 			<div class='container'>
 				<p class='release-meta'>
 					<time datetime={release.data.date.toISOString()}>{formatted}</time>
-					<span aria-hidden='true'> · </span>
-					Version {release.data.version}
+					<span>, version {release.data.version}</span>
 				</p>
 				<h1 class='release-title'>{release.data.title}</h1>
 				<p class='release-summary'>{release.data.summary}</p>
@@ -97,12 +96,14 @@ const formatted = release.data.date.toLocaleDateString('en-US', {
 				<nav class='release-adjacent' aria-label='Other releases'>
 					{older && (
 						<a href={localePath(locale, `releases/${older.data.version}/`)}>
-							<span aria-hidden='true'>← </span>{older.data.version}<span aria-hidden='true'> · </span>{older.data.title}
+							<small><span aria-hidden='true'>← </span>{older.data.version}</small>
+							<span>{older.data.title}</span>
 						</a>
 					)}
 					{newer && (
 						<a href={localePath(locale, `releases/${newer.data.version}/`)} class='release-adjacent-next'>
-							{newer.data.version}<span aria-hidden='true'> · </span>{newer.data.title}<span aria-hidden='true'> →</span>
+							<small>{newer.data.version}<span aria-hidden='true'> →</span></small>
+							<span>{newer.data.title}</span>
 						</a>
 					)}
 				</nav>

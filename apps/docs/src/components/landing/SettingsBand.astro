@@ -28,7 +28,7 @@ const settings = t.list<Setting>('home.settings.items');
 		<div class='band-split'>
 			<div>
 				<h2 class='display-md'>{t('home.settings.title')}</h2>
-				<p class='band-copy' style='margin-top:1.25rem'>{t('home.settings.copy')}</p>
+				<p class='band-copy'>{t('home.settings.copy')}</p>
 
 				<div class='settings-groups'>
 					{settings.map(setting => (
@@ -40,42 +40,56 @@ const settings = t.list<Setting>('home.settings.items');
 				</div>
 			</div>
 
-			<!-- The panel is a piece of the extension rather than a picture of one, so its labels come
-			     from the same `ui` namespace the demo popups read: what it shows is what the installed
-			     extension shows, in the same language. -->
-			<div class='settings-panel-demo'>
+			<!-- A still of the extension's Switching group. Its labels come from the same `ui` namespace
+			     the demo popups read, and its defaults are imported, so it cannot go stale. `inert`
+			     rather than disabled: the controls look the way they do in the popup, and none of them
+			     can be focused or changed. -->
+			<div class='settings-panel-demo' inert>
 				<p class='settings-panel-head'>{t('ui.setup.groupSwitching')}</p>
-				<div class='settings-panel-row'>
-					<span>{t('ui.sensitivity.label')}</span>
-					<span class='settings-dots' aria-label={t('home.settings.levelOf', { level: defaultSensitivity, levels: sensitivityLevels })}>
-						{Array.from({ length: sensitivityLevels }).map((_, index) => (
-							<i class={index < defaultSensitivity ? 'is-on' : ''}></i>
-						))}
-					</span>
-				</div>
-				<div class='settings-panel-row'>
-					<span>{t('ui.cooldown.label')}</span>
-					<span class='settings-value'>{defaultCooldownSecs}s</span>
-				</div>
-				<div class='settings-panel-row'>
-					<span>{t('ui.switchDelay.label')}</span>
-					<span class='settings-value'>{defaultSwitchDelaySecs === 0 ? t('ui.switchDelay.off') : `${defaultSwitchDelaySecs}s`}</span>
-				</div>
-				<div class='settings-panel-row'>
-					<span>{t('ui.favoriteTeamBonus.label')}</span>
-					<span class='settings-value'>+{defaultFavoriteTeamBonusPoints}</span>
-				</div>
-				<div class='settings-panel-row'>
-					<span>{t('ui.postseasonBoost.label')}</span>
-					<span class='settings-value'>+{defaultPostseasonBoostPoints}</span>
-				</div>
-				<div class='settings-panel-row'>
-					<span>{t('ui.setup.switchNotifications')}</span>
-					<span class='settings-switch is-on'></span>
-				</div>
-				<div class='settings-panel-row'>
-					<span>{t('ui.setup.groupStandby')}</span>
-					<span class='settings-switch'></span>
+				<div class='settings-panel-card'>
+					<div class='settings-panel-row settings-panel-range'>
+						<span class='settings-panel-range-head'>
+							<span>{t('ui.sensitivity.label')}</span>
+							<span class='settings-value'>{t('home.settings.levelOf', { level: defaultSensitivity, levels: sensitivityLevels })}</span>
+						</span>
+						<input
+							type='range'
+							class='form-range'
+							min='1'
+							max={sensitivityLevels}
+							value={defaultSensitivity}
+							tabindex='-1'
+							aria-label={t('ui.sensitivity.label')}
+						/>
+					</div>
+					<div class='settings-panel-row'>
+						<span>{t('ui.cooldown.label')}</span>
+						<span class='settings-value num'>{defaultCooldownSecs}s</span>
+					</div>
+					<div class='settings-panel-row'>
+						<span>{t('ui.switchDelay.label')}</span>
+						<span class='settings-value num'>{defaultSwitchDelaySecs === 0 ? t('ui.switchDelay.off') : `${defaultSwitchDelaySecs}s`}</span>
+					</div>
+					<div class='settings-panel-row'>
+						<span>{t('ui.favoriteTeamBonus.label')}</span>
+						<span class='settings-value num'>+{defaultFavoriteTeamBonusPoints}</span>
+					</div>
+					<div class='settings-panel-row'>
+						<span>{t('ui.postseasonBoost.label')}</span>
+						<span class='settings-value num'>+{defaultPostseasonBoostPoints}</span>
+					</div>
+					<div class='settings-panel-row'>
+						<span>{t('ui.setup.switchNotifications')}</span>
+						<span class='form-check form-switch'>
+							<input class='form-check-input' type='checkbox' role='switch' checked tabindex='-1' aria-label={t('ui.setup.switchNotifications')} />
+						</span>
+					</div>
+					<div class='settings-panel-row'>
+						<span>{t('ui.setup.groupStandby')}</span>
+						<span class='form-check form-switch'>
+							<input class='form-check-input' type='checkbox' role='switch' tabindex='-1' aria-label={t('ui.setup.groupStandby')} />
+						</span>
+					</div>
 				</div>
 			</div>
 		</div>

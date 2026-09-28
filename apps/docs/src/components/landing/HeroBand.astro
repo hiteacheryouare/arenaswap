@@ -15,12 +15,12 @@ const leagues = leagueConfigs.length;
 		<div class='hero-grid'>
 
 			<div class='hero-copy'>
-				<h1 class='display-lg'>{t('home.hero.titleLine1')}<br>{t('home.hero.titleLine2')}</h1>
+				<h1 class='hero-title'>{t('home.hero.titleLine1')}<br>{t('home.hero.titleLine2')}</h1>
 
-				<p class='band-lede' style='margin-top:1.35rem'>{t('home.hero.lede', { leagues })}</p>
+				<p class='hero-lede'>{t('home.hero.lede', { leagues })}</p>
 
 				<div class='hero-actions'>
-					<InstallCta />
+					<InstallCta class='btn-lg' />
 					<InstallAlternates class='hero-actions-alt' />
 				</div>
 
@@ -34,7 +34,6 @@ const leagues = leagueConfigs.length;
 					captionSwitched: t('home.hero.captionSwitched'),
 					captionWatching: t('home.hero.captionWatching'),
 					replay: t('home.hero.replay'),
-					tabLabel: t('home.hero.tabLabel'),
 				}}
 			/>
 

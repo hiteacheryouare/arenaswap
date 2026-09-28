@@ -9,48 +9,40 @@ import { currentLocale, tokenize, useTranslations } from '../i18n/ui';
 const locale = currentLocale(Astro.currentLocale);
 const t = useTranslations(locale);
 
-// The name is a link rather than text, so the sentence is broken into parts around it instead of
-// being substituted into.
+// The name is a link rather than text, so the sentence is broken into parts around it.
 const credit = tokenize(t('footer.madeWith'));
 ---
-<footer style="background:var(--color-bg);">
-	<div class="section-divider"></div>
-	<div class="container py-5">
+<footer class='site-footer'>
+	<div class='container'>
+		<div class='footer-top'>
+			<div class='footer-brand'>
+				<div class='footer-brand-band'>
+					<a href={localePath(locale)} title='ArenaSwap' class='footer-brand-item'>
+						<Image src={logoImg} alt='ArenaSwap' class='footer-arenaswap-mark' />
+					</a>
+					<span class='footer-brand-rule' aria-hidden='true'></span>
+					<a href='https://latticeandcompany.github.io' title='Lattice &amp; Company' class='footer-brand-item latticeco-lockup'>
+						<Image src={latticeMark} alt='' aria-hidden='true' class='latticeco-mark' />
+						<span class='latticeco-word'>Lattice <span class='latticeco-amp'>&amp;</span> Company</span>
+					</a>
+				</div>
+				<p class='footer-tagline'>{t('footer.tagline')}</p>
+			</div>
 
-		<!-- Brand band: ArenaSwap and the parent company, equal weight -->
-		<div class="footer-brand-band">
-			<a href={localePath(locale)} title="ArenaSwap" class="footer-brand-item">
-				<Image src={logoImg} alt="ArenaSwap" class="footer-arenaswap-mark" />
-			</a>
-			<span class="footer-brand-rule" aria-hidden="true"></span>
-			<a href="https://latticeandcompany.github.io" title="Lattice &amp; Company" class="footer-brand-item latticeco-lockup">
-				<Image src={latticeMark} alt="" aria-hidden="true" class="latticeco-mark" />
-				<span class="latticeco-word">Lattice <span class="latticeco-amp">&amp;</span> Company</span>
-			</a>
-		</div>
-
-		<p class="footer-tagline">{t('footer.tagline')}</p>
-
-		<div class="section-divider my-5"></div>
-
-		<div class="row g-5">
-
-			<!-- Product -->
-			<div class="col-12 col-md-4">
-				<p class="footer-col-label">{t('footer.product')}</p>
-				<ul class="list-unstyled footer-links">
+			<div>
+				<p class='footer-col-label'>{t('footer.product')}</p>
+				<ul class='footer-links'>
 					<li><a href={localePath(locale, 'faq/')}>{t('nav.faq')}</a></li>
 					<li><a href={localePath(locale, 'docs/')}>{t('footer.documentation')}</a></li>
 					<li><a href={localePath(locale, 'powerscore/')}>{t('footer.powerscorePackage')}</a></li>
 					<li><a href={localePath(locale, 'releases/')}>{t('footer.releaseNotes')}</a></li>
-					<li><a href="https://github.com/hiteacheryouare/arenaswap">GitHub</a></li>
+					<li><a href='https://github.com/hiteacheryouare/arenaswap'>GitHub</a></li>
 				</ul>
 			</div>
 
-			<!-- Legal -->
-			<div class="col-12 col-md-4">
-				<p class="footer-col-label">{t('footer.legal')}</p>
-				<ul class="list-unstyled footer-links">
+			<div>
+				<p class='footer-col-label'>{t('footer.legal')}</p>
+				<ul class='footer-links'>
 					<li><a href={localePath(locale, 'legal/privacy/')}>{t('footer.privacy')}</a></li>
 					<li><a href={localePath(locale, 'legal/licenses/')}>{t('footer.licenses')}</a></li>
 					<li><a href={localePath(locale, 'legal/credits/')}>{t('footer.credits')}</a></li>
@@ -58,51 +50,34 @@ const credit = tokenize(t('footer.madeWith'));
 				</ul>
 			</div>
 
-			<!-- Install -->
-			<div class="col-12 col-md-4">
-				<p class="footer-col-label">{t('footer.install')}</p>
-				<ul class="list-unstyled footer-links">
-					<li>
-						<a href={chromeWebStore}>
-							<i class="bi bi-browser-chrome me-2" style="font-size:0.85rem;"></i>{t('footer.chromeWebStore')}
-						</a>
-					</li>
-					<li>
-						<a href={firefoxAddons}>
-							<i class="bi bi-browser-firefox me-2" style="font-size:0.85rem;"></i>{t('footer.firefoxAddons')}
-						</a>
-					</li>
-					<li>
-						<a href={edgeAddons}>
-							<i class="bi bi-browser-edge me-2" style="font-size:0.85rem;"></i>{t('footer.edgeAddons')}
-						</a>
-					</li>
+			<div>
+				<p class='footer-col-label'>{t('footer.install')}</p>
+				<ul class='footer-links'>
+					<li><a href={chromeWebStore}><i class='bi bi-browser-chrome' aria-hidden='true'></i>{t('footer.chromeWebStore')}</a></li>
+					<li><a href={firefoxAddons}><i class='bi bi-browser-firefox' aria-hidden='true'></i>{t('footer.firefoxAddons')}</a></li>
+					<li><a href={edgeAddons}><i class='bi bi-browser-edge' aria-hidden='true'></i>{t('footer.edgeAddons')}</a></li>
 				</ul>
 			</div>
-
 		</div>
 
-		<div class="section-divider my-5"></div>
-
-		<div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
-			<a href={localePath(locale, 'legal/licenses/')} style="font-size:0.78rem;color:var(--color-muted);text-decoration:none;">{t('footer.iscLicense')}</a>
-			<div class="d-flex gap-3">
-				<a href="https://github.com/hiteacheryouare/arenaswap" title="GitHub" class="footer-icon-link"><i class="bi bi-github"></i></a>
-				<a href={chromeWebStore} title={t('footer.chromeWebStore')} class="footer-icon-link"><i class="bi bi-browser-chrome"></i></a>
-				<a href={firefoxAddons} title={t('footer.firefoxAddons')} class="footer-icon-link"><i class="bi bi-browser-firefox"></i></a>
-				<a href={edgeAddons} title={t('footer.edgeAddons')} class="footer-icon-link"><i class="bi bi-browser-edge"></i></a>
+		<div class='footer-bottom'>
+			<a href={localePath(locale, 'legal/licenses/')} class='footer-licence'>{t('footer.iscLicense')}</a>
+			<div class='footer-icons'>
+				<a href='https://github.com/hiteacheryouare/arenaswap' title='GitHub' aria-label='GitHub' class='footer-icon-link'><i class='bi bi-github' aria-hidden='true'></i></a>
+				<a href={chromeWebStore} title={t('footer.chromeWebStore')} aria-label={t('footer.chromeWebStore')} class='footer-icon-link'><i class='bi bi-browser-chrome' aria-hidden='true'></i></a>
+				<a href={firefoxAddons} title={t('footer.firefoxAddons')} aria-label={t('footer.firefoxAddons')} class='footer-icon-link'><i class='bi bi-browser-firefox' aria-hidden='true'></i></a>
+				<a href={edgeAddons} title={t('footer.edgeAddons')} aria-label={t('footer.edgeAddons')} class='footer-icon-link'><i class='bi bi-browser-edge' aria-hidden='true'></i></a>
 			</div>
 		</div>
 
-		<p class="footer-disclaimer">
-			{t('footer.disclaimer')}
+		<p class='footer-disclaimer'>
+			{t('footer.disclaimer')}{' '}
 			<a href={localePath(locale, 'legal/')}>{t('footer.legalNotices')}</a>.
 		</p>
-
 	</div>
-	<div class="footer-gradient-bar">
+	<div class='footer-credit'>
 		<span>{credit.map(part => (
-			typeof part === 'string' ? part : <a href="https://hiteacheryouare.github.io">Ryan Mullin</a>
+			typeof part === 'string' ? part : <a href='https://hiteacheryouare.github.io'>Ryan Mullin</a>
 		))}</span>
 	</div>
 </footer>

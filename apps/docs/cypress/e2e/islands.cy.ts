@@ -21,19 +21,21 @@ const stubMlbOnly = (fixture: string) => {
 };
 
 describe('the hero runs the extension', () => {
-	it('draws three live game cards inside the browser frame', () => {
+	it('draws the three live games on the popup board inside the browser frame', () => {
 		cy.visit('/');
 
-		// One card per game in the hero script, each one the shipped GameCard rather than markup
-		// copied into this repo.
-		cy.get('.browser-popup .game-card').should('have.length', 3);
-		cy.get('.browser-popup .game-card').first().should('be.visible');
+		// One game per game in the hero script, drawn by the shipped GameStage, GameTile and GameRow
+		// rather than markup copied into this repo. The hottest takes the stage.
+		cy.get('.browser-popup [data-game]').should('have.length', 3);
+		cy.get('.browser-popup .as-stage').should('have.length', 1).and('be.visible');
 
-		// A card with no score in it is a card whose props stopped matching what GameCard reads.
-		cy.get('.browser-popup .game-card').each($card => {
-			expect($card.text(), 'card rendered a score').to.match(/\d/);
+		// A game with no score in it is one whose props stopped matching what the board reads.
+		cy.get('.browser-popup [data-game]').each($game => {
+			expect($game.text(), 'game rendered a score').to.match(/\d/);
 		});
 
+		// The watched game is named on its own picker, the way the popup names it.
+		cy.get('.browser-popup').should('contain.text', 'Watching, Tab');
 		cy.get('.browser-caption').should('not.be.empty');
 	});
 
@@ -42,7 +44,7 @@ describe('the hero runs the extension', () => {
 	// so the only question is whether the page is driving it.
 	it('switches the tab on its own, the way the extension would', () => {
 		cy.visit('/');
-		cy.get('.browser-popup .game-card').should('have.length', 3);
+		cy.get('.browser-popup [data-game]').should('have.length', 3);
 
 		cy.get('.browser-caption').invoke('text').then(opening => {
 			cy.get('.browser-caption', { timeout: 20000 })
@@ -54,15 +56,16 @@ describe('the hero runs the extension', () => {
 
 	// The popup chrome comes from @arenaswap/ui and is handed the site's `ui` string map. When a key
 	// goes missing the island renders the key itself rather than throwing, so the failure mode is a
-	// German page with `main.sectionActiveLiveTabs` where a heading should be.
+	// German page with `main.settingsButton` where a label should be.
 	it('speaks the language of the page it is on', () => {
 		cy.visit('/');
-		cy.get('.browser-popup .popup-section-title').first().invoke('text').then(english => {
-			expect(english.trim(), 'the English popup has a section title').to.have.length.greaterThan(0);
+		cy.get('.browser-popup .popup-settings-button').last().invoke('attr', 'aria-label').then(english => {
+			expect(english, 'the English popup labels its settings button').to.equal('Settings');
 
 			cy.visit('/de/');
-			cy.get('.browser-popup .popup-section-title').first().invoke('text').then(german => {
-				expect(german.trim(), 'the German page did not fall back to English').to.not.equal(english);
+			cy.get('.browser-popup .popup-settings-button').last().invoke('attr', 'aria-label').then(german => {
+				expect(german, 'the German page did not fall back to English').to.not.equal(english);
+				expect(german, 'the German page did not render a key').to.not.match(/^main\./);
 			});
 		});
 	});
@@ -102,16 +105,14 @@ describe('the live PowerScore board', () => {
 		cy.get('#live-scores').scrollIntoView();
 		cy.wait('@scoreboard');
 
-		cy.get('#live-scores .ps-score-bar-fill').should('have.length.at.least', 1);
+		cy.get('#live-scores .as-tile').should('have.length.at.least', 1);
 
-		cy.get('#live-scores .feature-card').then($cards => {
-			const scores = [...$cards].map(card => {
-				const width = (card.querySelector('.ps-score-bar-fill') as HTMLElement | null)?.style.width ?? '';
-				return Number.parseFloat(width);
-			});
-			expect(scores.length, 'a card per live game').to.be.greaterThan(0);
+		cy.get('#live-scores .as-tile-power').then($powers => {
+			const scores = [...$powers].map(power => Number.parseInt(power.textContent ?? '', 10));
+			expect(scores.length, 'a tile per live game').to.be.greaterThan(0);
+			scores.forEach(score => expect(score, 'every tile carries a PowerScore').to.be.within(0, 100));
 			const sorted = scores.toSorted((a, b) => b - a);
-			expect(scores, 'cards are ordered by PowerScore').to.deep.equal(sorted);
+			expect(scores, 'tiles are ordered by PowerScore').to.deep.equal(sorted);
 		});
 
 		// The abbreviations come straight off the payload, so this is the parse working end to end.
@@ -126,10 +127,10 @@ describe('the live PowerScore board', () => {
 		cy.get('#live-scores').scrollIntoView();
 		cy.wait('@scoreboard');
 
-		cy.get('#live-scores .feature-card').should('have.length', 1);
-		cy.get('#live-scores .ps-score-bar-fill').should('not.exist');
-		cy.get('#live-scores .alert').should('not.exist');
-		cy.get('#live-scores .feature-card').invoke('text').should('not.be.empty');
+		cy.get('#live-scores .as-empty').should('have.length', 1);
+		cy.get('#live-scores .as-tile').should('not.exist');
+		cy.get('#live-scores .as-notice').should('not.exist');
+		cy.get('#live-scores .as-empty').invoke('text').should('not.be.empty');
 	});
 
 	// ESPN sheds by IP volume and answers 403. A quiet Tuesday and a shed request used to draw the
@@ -140,8 +141,8 @@ describe('the live PowerScore board', () => {
 		cy.get('#live-scores').scrollIntoView();
 		cy.wait('@shed');
 
-		cy.get('#live-scores .alert').should('be.visible').and('not.be.empty');
-		cy.get('#live-scores .ps-score-bar-fill').should('not.exist');
+		cy.get('#live-scores .as-notice[role="alert"]').should('be.visible').and('not.be.empty');
+		cy.get('#live-scores .as-tile').should('not.exist');
 	});
 
 	// The whole request budget in this component exists because the page once asked 31 leagues
@@ -156,7 +157,7 @@ describe('the live PowerScore board', () => {
 
 		cy.visit('/powerscore/');
 		cy.get('#live-scores').scrollIntoView();
-		cy.get('#live-scores .ps-score-bar-fill').should('have.length.at.least', 1);
+		cy.get('#live-scores .as-tile').should('have.length.at.least', 1);
 
 		cy.then(() => {
 			const sweep = asked.length;
@@ -179,12 +180,17 @@ describe('the live PowerScore board', () => {
 	});
 });
 
+// The server-rendered buttons are on screen before React is listening to them, and a click in that
+// gap is lost. Astro drops `ssr` from the island once it has hydrated.
+const hydrated = (selector: string) => cy.get(selector).closest('astro-island').should('not.have.attr', 'ssr');
+
 describe('the package install commands', () => {
 	it('shows the command for the package manager you picked', () => {
 		cy.intercept('GET', espnScoreboard, { body: { events: [] } });
 		cy.visit('/powerscore/');
 		cy.contains('h2', /./).should('exist');
-		cy.get('.btn-cta').contains('npm').scrollIntoView();
+		cy.get('.ps-install .nav-link').contains('npm').scrollIntoView();
+		hydrated('.ps-install');
 
 		cy.contains('code', 'npm install powerscore').should('be.visible');
 
@@ -206,7 +212,8 @@ describe('the package install commands', () => {
 			},
 		});
 
-		cy.get('.btn-cta').contains('npm').scrollIntoView();
+		cy.get('.ps-install .nav-link').contains('npm').scrollIntoView();
+		hydrated('.ps-install');
 		cy.contains('button', 'yarn').click();
 		cy.contains('code', 'yarn add powerscore').should('be.visible');
 		cy.contains('code', 'yarn add powerscore').parent().find('button').click();
@@ -215,12 +222,13 @@ describe('the package install commands', () => {
 });
 
 describe('the 404 page', () => {
-	// The card is the shipped LiveGameCard from @arenaswap/ui, rendered at build time with no client
+	// The card is the shipped GameStage from @arenaswap/ui, rendered at build time with no client
 	// directive. If that component's props change, this page loses its centrepiece and the build
 	// does not notice.
 	it('renders the joke card out of the shared component', () => {
 		cy.visit('/404.html');
-		cy.get('.notfound-card .game-card').should('be.visible');
+		cy.get('.notfound-card .as-stage').should('be.visible');
+		cy.get('.notfound-card .as-stage-power').should('contain.text', '0');
 		cy.get('.notfound-card').should('contain.text', '404').and('contain.text', 'YOU');
 	});
 

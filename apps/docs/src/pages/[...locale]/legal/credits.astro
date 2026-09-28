@@ -69,23 +69,19 @@ const clips = [
 			<div>
 				<LegalTranslationNotice path='legal/credits/' />
 
-				<h2 class='display-md' style='font-size:1.35rem'>{t('legal.credits.footageHeading')}</h2>
+				<h2 class='legal-heading'>{t('legal.credits.footageHeading')}</h2>
 				<ul class='credit-list'>
 					{clips.map(clip => (
 						<li class='credit-item'>
-							<h3>{clip.sport}<span aria-hidden='true'> · </span>{clip.what}</h3>
+							<h3>{clip.what}</h3>
 							<p>
-								<span>{clip.author}</span>
-								<span aria-hidden='true'> · </span>
-								<a href={clip.licenceUrl} class='credit-licence'>{clip.licence}</a>
-								<span aria-hidden='true'> · </span>
-								<a href={clip.source}>{t('legal.credits.sourceLink')}</a>
+								{clip.sport}, {clip.author}, <a href={clip.licenceUrl} class='credit-licence'>{clip.licence}</a>, <a href={clip.source}>{t('legal.credits.sourceLink')}</a>
 							</p>
 						</li>
 					))}
 				</ul>
 
-				<div class='prose' style='margin-top:2.5rem'>
+				<div class='prose credit-notes'>
 					<h2>{t('legal.credits.scoresHeading')}</h2>
 					<p>{t('legal.credits.scores1')}</p>
 

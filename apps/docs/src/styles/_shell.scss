@@ -1,35 +1,47 @@
 // One quiet reading shell for every page that is not the landing page: release notes, docs, the
-// FAQ, credits. Only the homepage carries the visual idea; these pages carry text, and the job
-// here is a comfortable measure and a side-nav that stays out of the way.
+// FAQ, legal. These pages carry text; the job here is a comfortable measure and a side nav that
+// stays out of the way.
 @use '@arenaswap/ui/src/motion' as m;
 
+// A title link that reads as a heading until you point at it.
+@mixin quiet-link {
+	color: inherit;
+	text-decoration: none;
+	transition: color m.$motion-quick m.$motion-ease;
+
+	&:hover {
+		color: var(--as-accent-ink);
+	}
+}
+
 .page-head {
-	// Clears the fixed header with room to breathe, on a page whose first element is a heading.
-	padding: 7rem 0 0;
+	padding: calc(var(--site-nav-height) + var(--as-space-12)) 0 0;
 }
 
 .page-title {
-	font-size: clamp(2.1rem, 4.6vw, 3rem);
-	font-weight: 700;
-	letter-spacing: -0.045em;
-	line-height: 1.02;
 	margin: 0;
+	font-size: clamp(36px, 4.6vw, 44px);
+	font-weight: var(--as-weight-bold);
+	line-height: 1.05;
+	letter-spacing: var(--as-tracking-display);
+	text-wrap: balance;
 }
 
 .page-lede {
-	font-size: 1.05rem;
-	color: var(--color-muted);
-	line-height: 1.7;
-	margin: 0.9rem 0 0;
-	max-width: 62ch;
+	max-width: 36em;
+	margin: var(--as-space-4) 0 0;
+	color: var(--as-muted);
+	font-size: var(--as-text-lg);
+	line-height: 30px;
+	text-wrap: pretty;
 }
 
 .reading-shell {
 	display: grid;
 	grid-template-columns: 13rem minmax(0, 1fr);
-	gap: 3rem;
-	padding: 2.5rem 0 5rem;
+	gap: var(--as-space-12);
 	align-items: start;
+	padding: var(--as-space-10) 0 var(--as-space-16);
 }
 
 .reading-shell.reading-shell-plain {
@@ -39,15 +51,14 @@
 
 .reading-nav {
 	position: sticky;
-	top: 5.5rem;
+	top: calc(var(--site-nav-height) + var(--as-space-6));
 
-	// Kept flat rather than collapsible: with this few links, a disclosure control would be one
-	// more thing to operate for no less scrolling.
 	h2 {
-		font-size: 0.95rem;
-		font-weight: 600;
-		color: var(--color-text);
-		margin: 1.75rem 0 0.5rem;
+		margin: var(--as-space-8) 0 var(--as-space-2);
+		color: var(--as-ink);
+		font-size: var(--as-text-sm);
+		font-weight: var(--as-weight-semibold);
+		line-height: var(--as-leading-sm);
 
 		&:first-child {
 			margin-top: 0;
@@ -55,209 +66,223 @@
 	}
 
 	ul {
-		list-style: none;
 		margin: 0;
 		padding: 0;
+		list-style: none;
 	}
 
 	a {
 		display: block;
-		font-size: 0.85rem;
-		color: var(--color-muted);
-		padding: 0.28rem 0;
+		margin: 0 calc(var(--as-space-2) * -1);
+		padding: 6px var(--as-space-2);
+		border-radius: var(--as-radius-sm);
+		color: var(--as-muted);
+		font-size: var(--as-text-sm);
+		line-height: var(--as-leading-sm);
 		text-decoration: none;
+		transition: color m.$motion-quick m.$motion-ease, background-color m.$motion-quick m.$motion-ease;
 
 		&:hover {
-			color: var(--color-text);
+			color: var(--as-ink);
+			background: var(--as-hover);
 		}
 
 		&[aria-current='page'] {
-			color: var(--color-primary);
+			color: var(--as-ink);
+			background: var(--as-press);
+			font-weight: var(--as-weight-medium);
 		}
 	}
-
 }
 
 // ─── Documentation ───────────────────────────────────────────────────────────
-// The hub at /docs/, the two section indexes, and one article per page. Everything here shares the
-// reading shell with the release notes; only the pieces the docs add need styles of their own.
-
-// Both trees are listed in the side nav, so the section names became links. `font: inherit` keeps
-// them reading as the headings they are; the generic `.reading-nav a` rule would otherwise shrink
-// them to the size of the articles underneath.
+// The section names are links; they keep reading as the headings they are.
 .docs-nav h2 a {
 	display: inline;
-	font: inherit;
-	color: inherit;
+	margin: 0;
 	padding: 0;
-	text-decoration: none;
+	color: inherit;
+	font: inherit;
+	background: none;
 
 	&:hover {
-		color: var(--color-text);
+		color: var(--as-accent-ink);
+		background: none;
 	}
 
 	&[aria-current='page'] {
-		color: var(--color-primary);
+		color: var(--as-accent-ink);
+		background: none;
 	}
 }
 
-// An article title is a sentence, not a word. At the size the section headings use, "How to watch
-// several games at once" would take three lines and shout while doing it.
+// An article title is a sentence, not a word.
 .docs-title {
-	font-size: clamp(1.9rem, 3.6vw, 2.5rem);
-	letter-spacing: -0.038em;
+	max-width: 24ch;
+	font-size: clamp(32px, 3.6vw, 40px);
 	line-height: 1.1;
-	max-width: 30ch;
 }
 
-.docs-index {
-	list-style: none;
+.docs-index,
+.legal-index {
+	max-width: 68ch;
 	margin: 0;
 	padding: 0;
-	max-width: 68ch;
+	list-style: none;
 
 	li {
-		padding: 1.5rem 0;
-		border-top: 1px solid #21262d;
+		padding: var(--as-space-5) 0;
+		box-shadow: inset 0 1px 0 var(--as-line);
 
 		&:last-child {
-			border-bottom: 1px solid #21262d;
+			box-shadow: inset 0 1px 0 var(--as-line), inset 0 -1px 0 var(--as-line);
 		}
 	}
 
 	h2 {
-		font-size: 1.15rem;
-		font-weight: 600;
-		letter-spacing: -0.025em;
 		margin: 0;
+		font-size: var(--as-text-lg);
+		font-weight: var(--as-weight-semibold);
+		line-height: var(--as-leading-md);
+		letter-spacing: -0.01em;
 
 		a {
-			color: inherit;
-			text-decoration: none;
-
-			&:hover {
-				color: var(--color-primary);
-			}
+			@include quiet-link;
 		}
 	}
 
 	p {
-		font-size: 0.925rem;
-		color: var(--color-muted);
-		line-height: 1.65;
-		margin: 0.4rem 0 0;
+		margin: var(--as-space-1) 0 0;
+		color: var(--as-muted);
+		font-size: var(--as-text-md);
+		line-height: var(--as-leading-md);
 	}
 }
 
-// Questions a reader arrives with, kept below the article rather than woven into it. Same
-// disclosure widget as the FAQ page.
-//
-// No rule of its own: every .faq-item already draws one above itself and the last draws one below,
-// so a section border lands a second identical line a couple of rem from the first, and the band
-// between them reads as a question with nothing in it.
+// Questions a reader arrives with, below the article. The FAQ items draw their own rules.
 .docs-faq {
 	max-width: 68ch;
-	margin: 3.5rem 0 0;
+	margin: var(--as-space-12) 0 0;
 }
 
-.docs-adjacent {
+.docs-adjacent,
+.release-adjacent {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: 1.5rem;
+	gap: var(--as-space-6);
 	max-width: 68ch;
-	margin: 3.5rem 0 0;
-	padding-top: 1.5rem;
-	border-top: 1px solid #21262d;
+	margin: var(--as-space-12) 0 0;
+	padding-top: var(--as-space-5);
+	box-shadow: inset 0 1px 0 var(--as-line);
 
 	a {
-		font-size: 0.9rem;
-		font-weight: 600;
-		color: var(--color-text);
+		display: block;
+		color: var(--as-ink);
+		font-size: var(--as-text-md);
+		font-weight: var(--as-weight-semibold);
+		line-height: var(--as-leading-md);
 		text-decoration: none;
+		transition: color m.$motion-quick m.$motion-ease;
 
 		&:hover {
-			color: var(--color-primary);
+			color: var(--as-accent-ink);
 		}
 	}
 
-	// Sits second in the source so a single "Next" still lands on the right.
-	.docs-adjacent-next {
+	small {
+		display: block;
+		color: var(--as-muted);
+		font-size: var(--as-text-sm);
+		font-weight: var(--as-weight-regular);
+		line-height: var(--as-leading-sm);
+	}
+
+	// Second in the source so a single "Next" still lands on the right.
+	.docs-adjacent-next,
+	.release-adjacent-next {
 		grid-column: 2;
 		text-align: right;
 	}
 }
 
-// The FAQ list closes with a rule of its own, so the nav borrows it rather than drawing a second.
 .docs-faq + .docs-adjacent {
-	margin-top: 1.5rem;
+	margin-top: var(--as-space-6);
 	padding-top: 0;
-	border-top: 0;
+	box-shadow: none;
 }
 
 .docs-hub {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: clamp(2rem, 5vw, 4rem);
-	padding: 3rem 0 5rem;
+	gap: var(--as-space-12);
 	align-items: start;
+	padding: var(--as-space-10) 0 var(--as-space-16);
 }
 
-.docs-hub-tree {
-	h2 {
-		font-size: 1.35rem;
-		font-weight: 700;
-		letter-spacing: -0.03em;
-		margin: 0;
+.docs-hub-tree h2 {
+	margin: 0;
+	font-size: var(--as-text-xl);
+	font-weight: var(--as-weight-bold);
+	line-height: 36px;
+	letter-spacing: var(--as-tracking-tight);
 
-		a {
-			color: inherit;
-			text-decoration: none;
-
-			&:hover {
-				color: var(--color-primary);
-			}
-		}
+	a {
+		@include quiet-link;
 	}
 }
 
 .docs-hub-lede {
-	font-size: 0.925rem;
-	color: var(--color-muted);
-	line-height: 1.65;
-	margin: 0.5rem 0 0;
-	max-width: 48ch;
+	max-width: 44ch;
+	margin: var(--as-space-2) 0 0;
+	color: var(--as-muted);
+	font-size: var(--as-text-md);
+	line-height: var(--as-leading-md);
 }
 
+// The popup's grouped card, holding a list of articles.
 .docs-hub-list {
-	list-style: none;
-	margin: 1.5rem 0 0;
+	margin: var(--as-space-6) 0 0;
 	padding: 0;
+	overflow: hidden;
+	list-style: none;
+	border-radius: var(--as-radius-md);
+	background: var(--as-surface);
+	box-shadow: inset 0 0 0 1px var(--as-line);
 
-	li {
-		border-top: 1px solid #21262d;
-
-		&:last-child {
-			border-bottom: 1px solid #21262d;
-		}
+	li + li {
+		box-shadow: inset 0 1px 0 var(--as-line);
 	}
 
 	a {
-		display: block;
-		padding: 0.8rem 0;
-		font-size: 0.95rem;
-		color: var(--color-text);
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--as-space-3);
+		padding: var(--as-space-3) var(--as-space-4);
+		color: var(--as-ink);
+		font-size: var(--as-text-md);
+		line-height: var(--as-leading-md);
 		text-decoration: none;
+		transition: background-color m.$motion-quick m.$motion-ease;
+
+		&::after {
+			content: '\F285';
+			flex-shrink: 0;
+			color: var(--as-muted);
+			font-family: 'bootstrap-icons';
+			font-size: 12px;
+		}
 
 		&:hover {
-			color: var(--color-primary);
+			background: var(--as-hover);
 		}
 	}
 }
 
 .docs-hub-empty {
-	font-size: 0.9rem;
-	color: #6e7681;
-	margin: 1.5rem 0 0;
+	margin: var(--as-space-6) 0 0;
+	color: var(--as-faint);
+	font-size: var(--as-text-md);
 }
 
 @media (max-width: 767.98px) {
@@ -265,11 +290,13 @@
 		grid-template-columns: minmax(0, 1fr);
 	}
 
-	.docs-adjacent {
+	.docs-adjacent,
+	.release-adjacent {
 		grid-template-columns: minmax(0, 1fr);
 	}
 
-	.docs-adjacent .docs-adjacent-next {
+	.docs-adjacent .docs-adjacent-next,
+	.release-adjacent .release-adjacent-next {
 		grid-column: 1;
 		text-align: left;
 	}
@@ -277,134 +304,146 @@
 
 // ─── Release notes: index ────────────────────────────────────────────────────
 // The newest release carries the page; everything before it is a line in a list.
+.release-index-page .page-head,
 .release-index {
-	padding: 2.75rem 0 5rem;
 	max-width: 70ch;
 	margin: 0 auto;
 }
 
-.release-index-page {
-	.page-head {
-		max-width: 70ch;
-		margin: 0 auto;
+.release-index {
+	padding: var(--as-space-10) 0 var(--as-space-16);
+}
+
+.release-feed {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	margin-top: var(--as-space-4);
+	color: var(--as-muted);
+	font-size: var(--as-text-sm);
+	text-decoration: none;
+	transition: color m.$motion-quick m.$motion-ease;
+
+	&:hover {
+		color: var(--as-ink);
+	}
+
+	.bi {
+		color: var(--as-accent-ink);
 	}
 }
 
 .release-meta {
-	font-size: 0.85rem;
-	color: #6e7681;
 	margin: 0;
+	color: var(--as-muted);
+	font-size: var(--as-text-sm);
+	line-height: var(--as-leading-sm);
 }
 
 .release-latest-title {
-	font-size: clamp(1.85rem, 3.6vw, 2.5rem);
-	font-weight: 700;
-	letter-spacing: -0.04em;
-	line-height: 1.08;
-	margin: 0.7rem 0 0;
+	margin: var(--as-space-2) 0 0;
+	font-size: clamp(28px, 3.6vw, 40px);
+	font-weight: var(--as-weight-bold);
+	line-height: 1.1;
+	letter-spacing: var(--as-tracking-display);
 
 	a {
-		color: inherit;
-		text-decoration: none;
-
-		&:hover {
-			color: var(--color-primary);
-		}
+		@include quiet-link;
 	}
 }
 
 .release-latest-summary {
-	font-size: 1.05rem;
-	color: var(--color-muted);
-	line-height: 1.7;
-	margin: 1rem 0 0;
+	margin: var(--as-space-4) 0 0;
+	color: var(--as-muted);
+	font-size: var(--as-text-lg);
+	line-height: 30px;
 }
 
 .release-list {
-	list-style: none;
-	margin: 4.5rem 0 0;
+	margin: var(--as-space-16) 0 0;
 	padding: 0;
+	list-style: none;
 
 	li {
-		padding: 1.6rem 0;
-		border-top: 1px solid #21262d;
+		padding: var(--as-space-6) 0;
+		box-shadow: inset 0 1px 0 var(--as-line);
 	}
 
 	h3 {
-		font-size: 1.2rem;
-		font-weight: 600;
-		letter-spacing: -0.025em;
-		margin: 0.55rem 0 0;
+		margin: var(--as-space-1) 0 0;
+		font-size: var(--as-text-lg);
+		font-weight: var(--as-weight-semibold);
+		line-height: var(--as-leading-md);
+		letter-spacing: -0.01em;
 
 		a {
-			color: inherit;
-			text-decoration: none;
-
-			&:hover {
-				color: var(--color-primary);
-			}
+			@include quiet-link;
 		}
 	}
 }
 
 .release-list-summary {
-	font-size: 0.925rem;
-	color: var(--color-muted);
-	line-height: 1.65;
-	margin: 0.5rem 0 0;
+	margin: var(--as-space-2) 0 0;
+	color: var(--as-muted);
+	font-size: var(--as-text-md);
+	line-height: var(--as-leading-md);
 }
 
 // ─── Release notes: one release ──────────────────────────────────────────────
 .release-page {
-	padding: 6rem 0 5rem;
+	padding: calc(var(--site-nav-height) + var(--as-space-8)) 0 var(--as-space-16);
 }
 
 .release-back {
-	display: inline-block;
-	font-size: 0.85rem;
-	color: #6e7681;
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	color: var(--as-muted);
+	font-size: var(--as-text-sm);
 	text-decoration: none;
+	transition: color m.$motion-quick m.$motion-ease;
 
 	&:hover {
-		color: var(--color-text);
+		color: var(--as-ink);
 	}
 }
 
 .release-masthead {
+	padding: var(--as-space-12) 0 0;
 	text-align: center;
-	padding: 3.25rem 0 0;
 
 	.release-meta {
-		// Centred by the block, not by the flow: the separator dots would otherwise sit ragged.
 		display: block;
 	}
 }
 
 .release-title {
-	font-size: clamp(2.1rem, 5vw, 3.35rem);
-	font-weight: 700;
-	letter-spacing: -0.045em;
+	max-width: 22ch;
+	margin: var(--as-space-3) auto 0;
+	font-size: clamp(36px, 5vw, 56px);
+	font-weight: var(--as-weight-bold);
 	line-height: 1.04;
-	margin: 1.1rem auto 0;
-	max-width: 24ch;
+	letter-spacing: var(--as-tracking-display);
+	text-wrap: balance;
 }
 
 .release-summary {
-	font-size: 1.05rem;
-	color: var(--color-muted);
-	line-height: 1.7;
-	margin: 1.2rem auto 0;
-	max-width: 62ch;
+	max-width: 36em;
+	margin: var(--as-space-5) auto 0;
+	color: var(--as-muted);
+	font-size: var(--as-text-lg);
+	line-height: 30px;
+	text-wrap: pretty;
 }
 
 .release-figure {
-	margin: 3rem 0 0;
+	margin: var(--as-space-12) 0 0;
 
 	img {
 		width: 100%;
 		height: auto;
-		border: 1px solid #21262d;
-		border-radius: 0.75rem;
+		border-radius: var(--as-radius-lg);
+		box-shadow: 0 0 0 1px var(--as-line);
 	}
 }
 
@@ -412,74 +451,50 @@
 	display: grid;
 	grid-template-columns: minmax(0, 14rem) minmax(0, 68ch) minmax(0, 14rem);
 	justify-content: center;
-	gap: clamp(1.75rem, 4vw, 3.5rem);
+	gap: clamp(var(--as-space-8), 4vw, var(--as-space-12));
 	align-items: start;
-	padding: 3.5rem 0 0;
+	padding: var(--as-space-12) 0 0;
 
 	.prose {
 		grid-column: 2;
 	}
 }
 
-// The note's own section headings, pinned beside it. The bar on the left of each row is the
-// reading position.
+// The note's own section headings, pinned beside it. The bar on the left is the reading position.
 .release-toc {
 	position: sticky;
-	top: 6rem;
+	top: calc(var(--site-nav-height) + var(--as-space-6));
 	grid-column: 3;
 
 	ul {
-		list-style: none;
 		margin: 0;
 		padding: 0;
+		list-style: none;
 	}
 
 	a {
 		display: block;
-		font-size: 0.8rem;
-		line-height: 1.5;
-		color: #6e7681;
-		padding: 0.35rem 0 0.35rem 0.8rem;
-		border-left: 1px solid var(--color-border);
+		padding: 6px 0 6px var(--as-space-3);
+		box-shadow: inset 1px 0 0 var(--as-line-strong);
+		color: var(--as-muted);
+		font-size: var(--as-text-sm);
+		line-height: var(--as-leading-sm);
 		text-decoration: none;
-		transition: color m.$motion-quick m.$motion-ease, border-color m.$motion-quick m.$motion-ease;
+		transition: color m.$motion-quick m.$motion-ease, box-shadow m.$motion-quick m.$motion-ease;
 
 		&:hover {
-			color: var(--color-text);
+			color: var(--as-ink);
 		}
 
 		&.is-current {
-			color: var(--color-text);
-			border-left-color: var(--color-primary);
+			box-shadow: inset 2px 0 0 var(--as-accent);
+			color: var(--as-ink);
 		}
 	}
 }
 
 .release-adjacent {
-	display: grid;
-	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: 1.5rem;
-	max-width: 68ch;
-	margin: 4.5rem auto 0;
-	padding-top: 1.5rem;
-	border-top: 1px solid #21262d;
-
-	a {
-		font-size: 0.9rem;
-		font-weight: 600;
-		color: var(--color-text);
-		text-decoration: none;
-
-		&:hover {
-			color: var(--color-primary);
-		}
-	}
-
-	// Sits second in the source so a single "Next" still lands on the right.
-	.release-adjacent-next {
-		grid-column: 2;
-		text-align: right;
-	}
+	margin: var(--as-space-16) auto 0;
 }
 
 @media (max-width: 991.98px) {
@@ -497,78 +512,35 @@
 	.release-toc {
 		display: none;
 	}
-
-	.release-adjacent {
-		grid-template-columns: minmax(0, 1fr);
-	}
-
-	.release-adjacent .release-adjacent-next {
-		grid-column: 1;
-		text-align: left;
-	}
 }
 
-// ─── Legal notices ───────────────────────────────────────────────────────────
-.legal-index {
-	list-style: none;
-	margin: 0;
-	padding: 0;
-	max-width: 72ch;
-
-	li {
-		padding: 1.5rem 0;
-		border-top: 1px solid #21262d;
-
-		&:last-child {
-			border-bottom: 1px solid #21262d;
-		}
-	}
-
-	h2 {
-		font-size: 1.15rem;
-		font-weight: 600;
-		letter-spacing: -0.025em;
-		margin: 0;
-
-		a {
-			color: inherit;
-			text-decoration: none;
-
-			&:hover {
-				color: var(--color-primary);
-			}
-		}
-	}
-
-	p {
-		font-size: 0.925rem;
-		color: var(--color-muted);
-		line-height: 1.65;
-		margin: 0.4rem 0 0;
-		max-width: 70ch;
-	}
-}
-
-// Bootstrap's alert, doing the work. Only the measure and the two type sizes are set here: an alert
-// is styled for a full-width form, and this one heads a reading column.
+// ─── Notices ─────────────────────────────────────────────────────────────────
+// Bootstrap's alert, on the popup's quiet notice surface. Only the measure and the type are set
+// here.
 .untranslated-notice {
-	margin: 0 0 2rem;
 	max-width: 70ch;
+	margin: 0 0 var(--as-space-8);
+	padding: var(--as-space-3) var(--as-space-4);
+	border-radius: var(--as-radius-md);
+	font-size: var(--as-text-sm);
+	line-height: var(--as-leading-sm);
 }
 
 .untranslated-notice-heading {
-	font-size: 0.925rem;
-	font-weight: 600;
 	margin: 0;
+	color: var(--as-ink);
+	font-size: var(--as-text-sm);
+	font-weight: var(--as-weight-semibold);
 }
 
 .untranslated-notice-body {
-	font-size: 0.875rem;
-	line-height: 1.65;
-	// Bootstrap's .alert sets a bottom margin on its own children; the body is the last thing in
-	// the box and does not need one.
-	margin: 0.3rem 0 0;
-	opacity: 0.85;
+	margin: 2px 0 0;
+	color: var(--as-muted);
+}
+
+.page-head + .untranslated-notice,
+.release-back + .untranslated-notice {
+	margin-top: var(--as-space-8);
 }
 
 .legal-measure {
@@ -576,111 +548,136 @@
 }
 
 .legal-updated {
-	font-size: 0.85rem;
-	color: #6e7681;
+	color: var(--as-muted);
+	font-size: var(--as-text-sm);
 }
 
 // ─── Credits ─────────────────────────────────────────────────────────────────
 .credit-list {
-	list-style: none;
-	margin: 1.5rem 0 0;
+	margin: var(--as-space-6) 0 0;
 	padding: 0;
+	list-style: none;
 }
 
 .credit-item {
-	padding: 1.1rem 0;
-	border-top: 1px solid #21262d;
+	padding: var(--as-space-5) 0;
+	box-shadow: inset 0 1px 0 var(--as-line);
 
 	h3 {
-		font-size: 1rem;
-		font-weight: 600;
-		letter-spacing: -0.02em;
 		margin: 0;
+		font-size: var(--as-text-md);
+		font-weight: var(--as-weight-semibold);
 	}
 
 	p {
-		font-size: 0.875rem;
-		color: var(--color-muted);
-		line-height: 1.65;
-		margin: 0.35rem 0 0;
 		max-width: 74ch;
+		margin: var(--as-space-1) 0 0;
+		color: var(--as-muted);
+		font-size: var(--as-text-md);
+		line-height: var(--as-leading-md);
 	}
 
 	.credit-licence {
-		color: #6e7681;
+		color: var(--as-faint);
+	}
+}
+
+// The licence tables: Bootstrap's table on the v3 tokens, set in the prose measure.
+.legal-measure .table {
+	margin: var(--as-space-4) 0 var(--as-space-10);
+	font-size: var(--as-text-sm);
+
+	th,
+	td {
+		padding: var(--as-space-2) var(--as-space-3) var(--as-space-2) 0;
+	}
+
+	thead th {
+		color: var(--as-muted);
+		font-weight: var(--as-weight-semibold);
+	}
+
+	a {
+		color: var(--as-ink);
+		text-decoration: underline;
+		text-decoration-color: var(--as-line-strong);
+		text-underline-offset: 3px;
+
+		&:hover {
+			text-decoration-color: currentColor;
+		}
 	}
 }
 
 @media (max-width: 991.98px) {
 	.reading-shell {
 		grid-template-columns: minmax(0, 1fr);
-		gap: 1.75rem;
+		gap: var(--as-space-8);
 	}
 
 	.reading-nav {
 		position: static;
-		padding-bottom: 1.25rem;
-		border-bottom: 1px solid #21262d;
+		padding-bottom: var(--as-space-5);
+		box-shadow: inset 0 -1px 0 var(--as-line);
 	}
 }
 
 // ─── FAQ ─────────────────────────────────────────────────────────────────────
 .faq-list {
-	margin-top: 0.5rem;
-	// Without the side nav the list would run the width of the container, leaving each rule about
-	// twice as long as the answer it sits under.
-	max-width: 76ch;
+	max-width: 72ch;
 }
 
-// Native disclosure widgets. The marker is replaced with a caret that rotates, which is the one
-// piece of motion here; everything else about a <details> already works.
-
+// Native disclosure widgets. The marker is a chevron that turns, which is the one piece of motion.
 .faq-item {
-	border-top: 1px solid #21262d;
+	box-shadow: inset 0 1px 0 var(--as-line);
 
 	&:last-of-type {
-		border-bottom: 1px solid #21262d;
+		box-shadow: inset 0 1px 0 var(--as-line), inset 0 -1px 0 var(--as-line);
 	}
 
 	> summary {
 		display: flex;
 		align-items: baseline;
-		gap: 0.75rem;
-		padding: 1rem 0;
-		font-size: 1rem;
-		font-weight: 600;
-		letter-spacing: -0.015em;
-		color: var(--color-text);
-		cursor: pointer;
+		gap: var(--as-space-4);
+		padding: var(--as-space-5) 0;
+		color: var(--as-ink);
+		font-size: var(--as-text-lg);
+		font-weight: var(--as-weight-semibold);
+		line-height: var(--as-leading-md);
+		letter-spacing: -0.01em;
 		list-style: none;
+		cursor: pointer;
+		transition: color m.$motion-quick m.$motion-ease;
 
 		&::-webkit-details-marker {
 			display: none;
 		}
 
 		&::after {
-			content: '';
-			margin-left: auto;
+			content: '\F282';
 			flex-shrink: 0;
-			width: 0.5rem;
-			height: 0.5rem;
-			border-right: 1.5px solid var(--color-primary);
-			border-bottom: 1.5px solid var(--color-primary);
-			transform: rotate(45deg) translateY(-0.15rem);
+			margin-left: auto;
+			color: var(--as-muted);
+			font-family: 'bootstrap-icons';
+			font-size: 14px;
 			transition: transform m.$motion-quick m.$motion-ease;
+		}
+
+		&:hover::after {
+			color: var(--as-ink);
 		}
 	}
 
 	&[open] > summary::after {
-		transform: rotate(-135deg) translateY(-0.15rem);
+		transform: rotate(180deg);
 	}
 
 	> p {
-		font-size: 0.925rem;
-		color: var(--color-muted);
-		line-height: 1.7;
-		margin: 0 0 1.15rem;
-		max-width: 74ch;
+		max-width: 68ch;
+		margin: calc(var(--as-space-1) * -1) 0 var(--as-space-6);
+		color: var(--as-muted);
+		font-size: var(--as-text-md);
+		line-height: var(--as-leading-md);
 	}
 }
 
@@ -688,4 +685,27 @@
 	.faq-item > summary::after {
 		transition: none;
 	}
+}
+
+.legal-heading {
+	margin: 0;
+	font-size: var(--as-text-xl);
+	font-weight: var(--as-weight-bold);
+	line-height: 36px;
+	letter-spacing: var(--as-tracking-tight);
+}
+
+.credit-item a {
+	color: var(--as-ink);
+	text-decoration: underline;
+	text-decoration-color: var(--as-line-strong);
+	text-underline-offset: 3px;
+
+	&:hover {
+		text-decoration-color: currentColor;
+	}
+}
+
+.credit-notes {
+	margin-top: var(--as-space-10);
 }

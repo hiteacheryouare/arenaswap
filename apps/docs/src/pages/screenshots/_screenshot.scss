@@ -1,110 +1,44 @@
-// Screenshot page shared styles — fixed 1280x800 canvas
-// These pages are intentionally throwaway routes used only to capture
-// promotional product screenshots for the Chrome Web Store.
-
-// `@arenaswap/ui/src/bootstrap` is the theme and forwards Bootstrap itself, so there is no second
-// Bootstrap load to order these against.
-@use '@arenaswap/ui/src/bootstrap' with ($font-size-base: 0.9375rem);
-@use '@arenaswap/ui/src/game-card';
-@use '@arenaswap/ui/src/motion' as m;
-@use '@arenaswap/ui/src/fonts' with ($font-base-url: '/src/fonts');
-
-@font-face {
-	font-family: 'bootstrap-icons';
-	src: url('/src/fonts/bootstrap-icons.woff2') format('woff2'),
-	     url('/src/fonts/bootstrap-icons.woff') format('woff');
-	font-display: block;
-}
+// Store screenshots and print flyers: fixed-size canvases, captured rather than visited. The theme,
+// the popup and the browser frame all come from the site's own stylesheet, so a still is the same
+// product the site shows. Only the canvases and what sits on them are drawn here.
 
 * {
 	box-sizing: border-box;
-	margin: 0;
-	padding: 0;
 }
 
-html, body {
+html,
+body {
 	width: 1280px;
 	height: 800px;
+	margin: 0;
 	overflow: hidden;
-	background: #000;
-	color: #fff;
-	font-family: 'DM Sans', system-ui, sans-serif;
-	-webkit-font-smoothing: antialiased;
-}
-
-.bi {
-	font-family: 'bootstrap-icons' !important;
-	font-style: normal;
-	font-weight: normal;
-	font-variant: normal;
-	text-transform: none;
-	line-height: 1;
-	display: inline-block;
+	background: var(--as-page);
 }
 
 .canvas {
 	position: relative;
+	isolation: isolate;
 	width: 1280px;
 	height: 800px;
 	overflow: hidden;
-	isolation: isolate;
-	background: #000;
-}
-
-// Glow is centred at the bottom of the device frames (devices sit at
-// bottom: 60-80px), so the warmest light emanates from right behind the
-// device's bottom edge — making it look like the laptop is sitting on
-// glowing ground rather than floating in front of an unrelated halo.
-.canvas::before {
-	content: '';
-	position: absolute;
-	left: 50%;
-	bottom: -120px;
-	transform: translateX(-50%);
-	width: 1500px;
-	height: 360px;
-	background: radial-gradient(ellipse at center, #ff8c2a 0%, rgba(247,92,3,0.85) 18%, rgba(247,92,3,0.45) 36%, rgba(247,92,3,0.18) 55%, transparent 72%);
-	z-index: 0;
-	pointer-events: none;
-	filter: blur(8px);
-}
-
-// Soft secondary halo at the very bottom — adds the warm "ground" wash
-// you see in Apple-style product shots.
-.canvas::after {
-	content: '';
-	position: absolute;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	height: 220px;
-	background: linear-gradient(to top, rgba(247,92,3,0.35) 0%, rgba(247,92,3,0.12) 50%, transparent 100%);
-	z-index: 0;
-	pointer-events: none;
-}
-
-// Bottom-glow is now baked into the .canvas background gradient.
-// The element is kept (no-op) so existing markup stays valid.
-.bottom-glow,
-.over-glow {
-	display: none;
+	background:
+		radial-gradient(60% 50% at 50% 100%, rgba(255, 255, 255, 0.05), transparent 70%),
+		var(--as-page);
 }
 
 .headline {
-	position: relative;
-	z-index: 2;
-	width: 100%;
-	text-align: center;
-	padding-top: 60px;
-	font-size: 92px;
-	font-weight: 700;
-	letter-spacing: -0.045em;
+	margin: 0;
+	padding-top: 56px;
+	color: var(--as-ink);
+	font-size: 72px;
+	font-weight: var(--as-weight-bold);
 	line-height: 1;
-	color: #fff;
+	letter-spacing: var(--as-tracking-display);
+	text-align: center;
 }
 
-.headline .dot {
-	color: #F75C03;
+.dot {
+	color: var(--as-accent-ink);
 }
 
 .stage {
@@ -112,107 +46,286 @@ html, body {
 	left: 50%;
 	bottom: 0;
 	transform: translateX(-50%);
-	z-index: 1;
 }
 
-// ─── Extension popup (shared across screenshots) ─────────────────────────────
-.popup {
-	width: 320px;
-	background: #0d1117;
-	border-radius: 14px;
-	overflow: hidden;
-	color: #e6edf3;
-	box-shadow:
-		0 0 0 1px rgba(255,255,255,0.08),
-		0 32px 80px rgba(0, 0, 0, 0.7),
-		0 0 80px rgba(247, 92, 3, 0.15);
-	font-family: 'DM Sans', system-ui, sans-serif;
+// The browser runs off the bottom of the canvas, the way a product shot crops a laptop.
+.store-browser {
+	.browser {
+		border-radius: var(--as-radius-md) var(--as-radius-md) 0 0;
+	}
+
+	.browser-viewport {
+		height: var(--viewport-height, 560px);
+		aspect-ratio: auto;
+	}
+
+	.browser-popup {
+		position: absolute;
+		top: 92px;
+		right: 12px;
+		height: var(--popup-height, 480px);
+		margin: 0;
+
+		.popup-container {
+			height: 100%;
+		}
+	}
 }
 
-.popup-inner {
-	padding: 12px;
-}
-
-.popup-header {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	margin-bottom: 8px;
-	padding-bottom: 8px;
-	border-bottom: 1px solid #30363d;
-}
-
-.popup-logo {
-	height: 32px;
-	width: auto;
-	object-fit: contain;
-}
-
-.popup-header-right {
-	display: flex;
-	align-items: center;
-	gap: 8px;
-}
-
-.popup-switch {
-	width: 32px;
-	height: 18px;
-	background: #F75C03;
-	border-radius: 999px;
-	position: relative;
+.browser-tab-initial {
+	display: grid;
 	flex-shrink: 0;
-}
-
-.popup-switch-thumb {
-	position: absolute;
-	right: 2px;
-	top: 2px;
+	place-items: center;
 	width: 14px;
 	height: 14px;
-	background: #fff;
-	border-radius: 50%;
+	border-radius: 4px;
+	color: #ffffff;
+	font-size: 8px;
+	font-weight: var(--as-weight-bold);
 }
 
-.popup-section-title {
-	font-size: 1.2rem;
-	font-weight: 700;
+.stream-still {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	filter: brightness(0.7) saturate(0.9);
+}
+
+// A still of the popup's open tab picker has nowhere for Popper to put the menu, so it is placed by
+// hand under its picker.
+.site-board-menu {
+	top: calc(100% + 4px);
+	right: 0;
+	min-width: 220px;
+}
+
+.site-board-menu .dropdown-item.disabled {
+	color: var(--as-faint);
+}
+
+// ─── A macOS notification, as the system draws the one ArenaSwap sends ────────
+.notif-stack {
+	position: absolute;
+	top: 200px;
+	right: 72px;
+	z-index: 3;
+	display: grid;
+	gap: 8px;
+	width: 360px;
+}
+
+.notif {
+	display: grid;
+	grid-template-columns: 32px minmax(0, 1fr);
+	gap: 10px;
+	padding: 12px;
+	border-radius: 16px;
+	background: rgba(40, 44, 52, 0.92);
+	box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1), 0 16px 40px -16px rgba(0, 0, 0, 0.7);
+	color: var(--as-ink);
+	font-size: var(--as-text-sm);
+	line-height: 18px;
+
+	img {
+		width: 32px;
+		height: 32px;
+		border-radius: 8px;
+	}
+
+	&.is-behind {
+		opacity: 0.72;
+		transform: scale(0.96);
+		transform-origin: top center;
+	}
+}
+
+.notif-row {
+	display: flex;
+	justify-content: space-between;
+	gap: 8px;
+	color: var(--as-muted);
+	font-size: var(--as-text-xs);
+}
+
+.notif-title {
+	font-weight: var(--as-weight-semibold);
+}
+
+.notif-text {
+	color: var(--as-ink-soft);
+}
+
+// ─── Feature lists ───────────────────────────────────────────────────────────
+.features {
+	display: grid;
+	gap: 28px 40px;
+}
+
+.feature {
+	display: grid;
+	grid-template-columns: 24px minmax(0, 1fr);
+	gap: 4px 12px;
+
+	.bi {
+		grid-row: span 2;
+		padding-top: 2px;
+		color: var(--as-accent-ink);
+		font-size: 18px;
+	}
+
+	h3 {
+		margin: 0;
+		color: var(--as-ink);
+		font-size: 17px;
+		font-weight: var(--as-weight-semibold);
+		line-height: var(--as-leading-md);
+		letter-spacing: -0.01em;
+	}
+
+	p {
+		margin: 0;
+		color: var(--as-muted);
+		font-size: var(--as-text-md);
+		line-height: var(--as-leading-md);
+	}
+}
+
+// ─── Flyers: US Letter at 96dpi ──────────────────────────────────────────────
+html.is-flyer,
+html.is-flyer body {
+	width: 816px;
+	height: 1056px;
+}
+
+.flyer {
+	width: 816px;
+	height: 1056px;
+}
+
+.flyer-inner {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	height: 100%;
+	padding: 40px 48px 36px;
 	text-align: center;
-	letter-spacing: -0.01em;
-	color: #e6edf3;
-	margin: 4px 0 8px;
+
+	> * {
+		flex-shrink: 0;
+	}
 }
 
-.popup-league-label {
-	font-size: 0.7rem;
-	font-weight: 700;
-	text-transform: uppercase;
-	letter-spacing: 0.1em;
-	color: #8b949e;
-	margin: 6px 0 4px;
+.flyer-logo {
+	width: auto;
+	height: 32px;
 }
 
-@keyframes popup-live-pulse {
-	0%, 100% { opacity: 1; }
-	50% { opacity: 0.3; }
+.flyer-headline {
+	margin: 20px 0 0;
+	color: var(--as-ink);
+	font-size: 48px;
+	font-weight: var(--as-weight-bold);
+	line-height: 1;
+	letter-spacing: var(--as-tracking-display);
 }
 
-.popup-live-dot {
-	width: 6px;
-	height: 6px;
-	border-radius: 50%;
-	background: #e53935;
-	animation: popup-live-pulse m.$motion-pulse m.$motion-ease-in-out infinite;
-	flex-shrink: 0;
+.flyer-sub {
+	max-width: 32em;
+	margin: 16px 0 0;
+	color: var(--as-muted);
+	font-size: 17px;
+	line-height: 26px;
 }
 
-// Real game cards are taller than the old hand-coded mockups.
-// Scale the popup down so it fits within the 1280×800 canvas.
-.popup-overlay .popup {
-	transform: scale(0.82);
-	transform-origin: top right;
+.flyer-demo {
+	width: 100%;
+	margin-top: 28px;
+	text-align: left;
+
+	.browser-viewport {
+		--viewport-height: 420px;
+	}
+
+	.browser-popup {
+		--popup-height: 404px;
+	}
 }
 
-.popup-float .popup {
-	transform: scale(0.82);
-	transform-origin: bottom right;
+.flyer-features {
+	width: 100%;
+	margin-top: 28px;
+	text-align: left;
+}
+
+.flyer-badges {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 16px;
+	margin-top: auto;
+
+	img {
+		width: auto;
+		height: 48px;
+	}
+}
+
+.site-board-menu .dropdown-item.is-highlighted {
+	background: var(--as-hover);
+}
+
+.store-features {
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 56px 48px;
+	width: 1080px;
+	margin: 104px auto 0;
+
+	h3 {
+		font-size: var(--as-text-lg);
+	}
+
+	p {
+		margin-top: 4px;
+		font-size: 16px;
+		line-height: 26px;
+	}
+
+	.bi {
+		font-size: 20px;
+	}
+}
+
+.flyer-features .features {
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 24px;
+
+	.feature {
+		display: block;
+		padding-top: 16px;
+		box-shadow: inset 0 1px 0 var(--as-line-strong);
+	}
+
+	.bi {
+		display: block;
+		margin-bottom: 8px;
+	}
+
+	h3 {
+		font-size: var(--as-text-md);
+	}
+
+	p {
+		margin-top: 4px;
+		font-size: var(--as-text-sm);
+		line-height: var(--as-leading-sm);
+	}
+}
+
+.flyer-wordmark {
+	display: block;
+	width: auto;
+	height: 32px;
+	color: var(--as-ink);
 }

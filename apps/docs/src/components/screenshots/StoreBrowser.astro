@@ -1,0 +1,48 @@
+---
+import iconImg from '../../assets/icon_white_on_transparent.svg';
+
+// The hero's browser, for the store screenshots: the same classes, with each tab's favicon drawn as
+// the service's initial, because these are streaming sites rather than leagues. The popup goes in
+// the `popup` slot and sits over the stream under the pinned button.
+interface Tab {
+	title: string;
+	initial: string;
+	color: string;
+	active?: boolean;
+}
+
+interface Props {
+	tabs: Tab[];
+	host: string;
+	path?: string;
+	class?: string;
+}
+
+const { tabs, host, path = '/watch/live', class: className } = Astro.props;
+---
+<div class:list={['browser-hero', 'store-browser', className]}>
+	<div class='browser'>
+		<div class='browser-titlebar'>
+			<span class='browser-lights' aria-hidden='true'><i></i><i></i><i></i></span>
+			<div class='browser-tabs'>
+				{tabs.map(tab => (
+					<span class:list={['browser-tab', tab.active && 'is-active']}>
+						<span class='browser-tab-initial' style={`background:${tab.color}`}>{tab.initial}</span>
+						<span class='browser-tab-title'>{tab.title}</span>
+					</span>
+				))}
+			</div>
+		</div>
+		<div class='browser-toolbar'>
+			<span class='browser-nav' aria-hidden='true'><i class='bi bi-arrow-left'></i><i class='bi bi-arrow-right'></i></span>
+			<span class='browser-omnibox'>{host}<span class='browser-omnibox-path'>{path}</span></span>
+			<span class='browser-extension' aria-hidden='true'><img src={iconImg.src} alt='' /></span>
+		</div>
+		<div class='browser-viewport'>
+			<slot />
+		</div>
+	</div>
+	<div class='browser-popup'>
+		<slot name='popup' />
+	</div>
+</div>

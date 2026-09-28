@@ -5,9 +5,9 @@
 // The clock copy understood only `MM:SS`, so a `90'+5'` match parsed to 0 and scored as though the
 // half had not started. The period copy printed `H2` for `2H` and a flat `OT` for `ET1`/`ET2`/
 // `PENS`. The display copy printed `95:00` where the extension prints `95'`. All three are gone:
-// the component imports `parseClockToSeconds` from `@arenaswap/core/gameClock`, and `formatPeriod`
-// and `formatGameClock` from `packages/ui/src/components/gameFormat.ts`. These rows are what keeps
-// the page and the product it is selling reading the same.
+// the component imports `parseClockToSeconds` from `@arenaswap/core/gameClock`, and each game is a
+// shipped GameTile, whose clock comes from `resolveBoardClock` in packages/ui. These tiles are what
+// keeps the page and the product it is selling reading the same.
 //
 // The fixture is a real ESPN eng.1 scoreboard captured 2026-09-21 — event ids, clubs, abbreviations
 // and the `90'+5'` clock are exactly what ESPN returned. Two things are authored: the state is
@@ -26,7 +26,7 @@ const visitWithEplLive = () => {
 	cy.visit('/powerscore/');
 	cy.get('#live-scores').scrollIntoView();
 	cy.wait('@epl');
-	cy.get('#live-scores .ps-score-bar-fill').should('have.length', 2);
+	cy.get('#live-scores .as-tile').should('have.length', 2);
 };
 
 describe('the live board and the extension describe the same soccer match', () => {

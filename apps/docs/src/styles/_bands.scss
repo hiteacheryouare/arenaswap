@@ -1,321 +1,217 @@
-// The landing page reads as a stack of full-width bands, one idea each, separated by a hairline
-// rather than by whitespace alone. Type is the only decoration: there is no illustration on the
-// page, so the headline sizes have to carry it.
+// The landing page: a stack of full-width bands, one idea each, separated by a hairline. Type
+// carries it; the only colour is the games'.
 @use '@arenaswap/ui/src/motion' as m;
 
 .band {
-	padding: 3.5rem 0;
-	border-top: 1px solid #21262d;
-
-	&.band-quiet {
-		background: #0b0f14;
-	}
+	padding: 96px 0;
+	box-shadow: inset 0 1px 0 var(--as-line);
 
 	&:first-child {
-		border-top: 0;
+		box-shadow: none;
 	}
-}
 
-.band-split {
-	display: grid;
-	grid-template-columns: minmax(0, 1fr) auto;
-	gap: 3.5rem;
-	align-items: center;
+	@media (max-width: 767.98px) {
+		padding: var(--as-space-16) 0;
+	}
 }
 
 .band-hero {
-	padding: 6rem 0 3.5rem;
+	padding: calc(var(--site-nav-height) + var(--as-space-8)) 0 var(--as-space-16);
 }
 
-// Copy left, window right, weighted towards the window. It used to sit under the copy, which pushed
-// the one thing on the page that shows the product doing anything most of the way below the fold.
-//
-// The weighting matters because the window holds a 320px popup at the popup's real size: the narrower
-// the window, the more of it that popup occupies. At an even split it took a third of the width and
-// all of the height, which is not what an extension popup looks like in a browser.
-.hero-grid {
-	display: grid;
-	// The copy takes a comfortable measure and stops; the window takes everything left over. Sharing
-	// by ratio meant the window kept a fixed fraction of the page no matter how much room there was,
-	// so on a wide display both columns stayed cramped while the gutters got wider.
-	grid-template-columns: minmax(20rem, 26rem) minmax(0, 1fr);
-	gap: 2.5rem;
-	align-items: center;
-}
-
-.hero-copy {
-	max-width: 34rem;
-}
-
-// Bootstrap stops widening the container at 1320px, which on a large display leaves a third of the
-// screen as gutter while the hero is squeezed. The whole page widens together — nav, hero and bands —
-// so nothing ends up misaligned with anything else.
+// Bootstrap stops widening the container at 1320px. The whole page widens together — nav, hero and
+// bands — so nothing ends up misaligned with anything else.
 @media (min-width: 1600px) {
 	.container {
-		max-width: 1560px;
+		max-width: 1480px;
 	}
 }
 
 @media (min-width: 1920px) {
 	.container {
-		max-width: 1720px;
+		max-width: 1640px;
 	}
 }
 
-// Side by side only where there is room for both. Below this the window was coming out at 534px with
-// a 320px popup beside it, which is neither a browser nor a popup. Stacked, the window gets the whole
-// container and the video is not cropped at all — it costs the fold at these widths, which is the
-// better trade of the two.
-@media (max-width: 1399.98px) {
+.display-md {
+	margin: 0;
+	font-size: clamp(32px, 4vw, 44px);
+	font-weight: var(--as-weight-bold);
+	line-height: 1.05;
+	letter-spacing: var(--as-tracking-display);
+}
+
+.band-copy {
+	max-width: 30em;
+	margin: var(--as-space-4) 0 0;
+	color: var(--as-muted);
+	font-size: var(--as-text-lg);
+	line-height: 30px;
+	text-wrap: pretty;
+
+	b {
+		color: var(--as-ink);
+		font-weight: var(--as-weight-semibold);
+	}
+}
+
+// ─── Hero ────────────────────────────────────────────────────────────────────
+// Copy left, the browser right. The popup inside it is the real 320px board, so the window is
+// sized off the popup rather than the other way round.
+.hero-grid {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 760px);
+	gap: var(--as-space-12);
+	align-items: center;
+}
+
+.hero-title {
+	margin: 0;
+	font-size: clamp(48px, 6vw, 72px);
+	font-weight: var(--as-weight-bold);
+	line-height: 1;
+	letter-spacing: var(--as-tracking-display);
+}
+
+.hero-lede {
+	max-width: 30em;
+	margin: var(--as-space-6) 0 0;
+	color: var(--as-muted);
+	font-size: var(--as-text-lg);
+	line-height: 30px;
+	text-wrap: pretty;
+}
+
+.hero-actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--as-space-3) var(--as-space-5);
+	margin-top: var(--as-space-8);
+}
+
+.hero-actions-alt {
+	color: var(--as-muted);
+	font-size: var(--as-text-sm);
+	line-height: var(--as-leading-sm);
+
+	a {
+		color: var(--as-ink);
+		text-decoration: underline;
+		text-decoration-color: var(--as-line-strong);
+		text-underline-offset: 3px;
+		transition: text-decoration-color m.$motion-quick m.$motion-ease;
+
+		&:hover {
+			text-decoration-color: currentColor;
+		}
+	}
+}
+
+// A laptop: the copy keeps a readable measure and the window gives up a little of the stream.
+@media (min-width: 1200px) and (max-width: 1399.98px) {
 	.hero-grid {
-		grid-template-columns: minmax(0, 1fr);
-		gap: 2.5rem;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 620px);
+		gap: var(--as-space-10);
 	}
 
-	.hero-copy {
-		max-width: none;
+	.hero-title {
+		font-size: 60px;
+	}
+}
+
+@media (max-width: 1199.98px) {
+	.hero-grid {
+		grid-template-columns: minmax(0, 1fr);
+		gap: var(--as-space-12);
 	}
 }
 
 // ─── Above the fold: who is covered ──────────────────────────────────────────
 .team-strip {
 	display: block;
-	margin-top: 2.25rem;
-	padding-top: 1.5rem;
-	border-top: 1px solid #21262d;
+	margin-top: var(--as-space-12);
 	text-decoration: none;
 
 	&:hover .team-strip-label {
-		color: var(--color-text);
+		color: var(--as-ink);
 	}
 }
 
 .team-strip-label {
 	display: block;
-	font-size: 0.8rem;
-	color: var(--color-muted);
-	margin-bottom: 0.85rem;
-	transition: color m.$motion-instant m.$motion-ease;
+	margin-bottom: var(--as-space-3);
+	color: var(--as-muted);
+	font-size: var(--as-text-sm);
+	line-height: var(--as-leading-sm);
+	transition: color m.$motion-quick m.$motion-ease;
 }
 
 .team-strip-logos {
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
-	gap: 0.7rem;
+	gap: var(--as-space-3);
 
-	// `_crest.scss` guarantees the image and its placeholder share a box; the size of that box is the
-	// call site's job, and without it `.crest` is an inline-flex with an absolutely positioned child
-	// and collapses to nothing.
+	// `_crest.scss` guarantees the image and its placeholder share a box; the size is the call
+	// site's job.
 	.crest {
-		width: 1.8rem;
-		height: 1.8rem;
-		// Held slightly back so no one crest shouts over the rest, and brought up together on hover.
-		opacity: 0.9;
-		transition: opacity m.$motion-instant m.$motion-ease;
+		width: 32px;
+		height: 32px;
 	}
 
 	.crest-fallback {
-		font-size: 0.52rem;
-	}
-}
-
-.team-strip:hover .team-strip-logos .crest {
-	opacity: 1;
-}
-
-// ─── Display type ────────────────────────────────────────────────────────────
-// Two sizes only. The dot at the end of a headline is the brand's, painted orange by
-// OrangeDots at runtime, so nothing here has to hardcode it.
-
-.display-lg {
-	font-size: clamp(2.4rem, 5.2vw, 3.75rem);
-	font-weight: 700;
-	letter-spacing: -0.055em;
-	line-height: 0.99;
-}
-
-.display-md {
-	font-size: clamp(1.9rem, 3.6vw, 2.5rem);
-	font-weight: 700;
-	letter-spacing: -0.045em;
-	line-height: 1.05;
-}
-
-.band-lede {
-	font-size: 1.125rem;
-	color: #a7b0ba;
-	line-height: 1.55;
-	max-width: 42ch;
-}
-
-.band-copy {
-	font-size: 1rem;
-	color: var(--color-muted);
-	line-height: 1.7;
-	max-width: 46ch;
-
-	b {
-		color: var(--color-text);
-		font-weight: 600;
-	}
-}
-
-// ─── Hero headline block ─────────────────────────────────────────────────────
-.hero-actions {
-	display: flex;
-	align-items: center;
-	gap: 1.1rem;
-	margin-top: 1.75rem;
-	flex-wrap: wrap;
-}
-
-.hero-actions-alt {
-	font-size: 0.875rem;
-	color: var(--color-muted);
-
-	a {
-		color: var(--color-text);
-		text-decoration: underline;
-		text-decoration-color: rgba(247, 92, 3, 0.55);
-		text-underline-offset: 3px;
+		font-size: 9px;
 	}
 }
 
 // ─── The three steps ─────────────────────────────────────────────────────────
-// An ordered list, and left as one: the order is the whole content, so the browser's own numbering
-// is doing real work here rather than decorating three cards with 01/02/03.
-.steps {
-	list-style: decimal;
-	margin: 0;
-	padding-left: 1.4rem;
-	counter-reset: none;
-
-	li {
-		padding: 0 0 1.1rem;
-	}
-
-	li::marker {
-		font-size: 0.9rem;
-		color: var(--color-primary);
-	}
-
-	h3 {
-		font-size: 1.05rem;
-		font-weight: 600;
-		letter-spacing: -0.02em;
-		color: var(--color-text);
-		margin: 0;
-	}
-
-	p {
-		font-size: 0.9rem;
-		color: var(--color-muted);
-		line-height: 1.6;
-		margin: 0.3rem 0 0;
-		max-width: 46ch;
-	}
-}
-
-// ─── Leagues ─────────────────────────────────────────────────────────────────
-// A list grouped by sport, with each league's real mark. It replaced a marquee that slid 31
-// logos past faster than anyone could read and repeated the NCAA crest eight times.
-
-.leagues-head {
-	display: flex;
-	align-items: baseline;
-	gap: 1.75rem;
-	margin-bottom: 2rem;
-	flex-wrap: wrap;
-}
-
-.leagues-grid {
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
-	gap: 0 1.5rem;
-}
-
-.leagues-group {
-	border-top: 1px solid var(--color-border);
-	padding-top: 0.85rem;
-
-	h3 {
-		font-size: 0.85rem;
-		font-weight: 600;
-		color: var(--color-primary);
-		margin-bottom: 0.7rem;
-	}
-
-	ul {
-		list-style: none;
-		padding: 0;
-		margin: 0;
-	}
-
-	li {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		font-size: 0.85rem;
-		color: var(--color-muted);
-		padding: 0.28rem 0;
-		line-height: 1.35;
-	}
-
-	img {
-		width: 1.15rem;
-		height: 1.15rem;
-		object-fit: contain;
-		flex-shrink: 0;
-		padding: 1px;
-		border-radius: 3px;
-		background: #e6edf3;
-	}
-}
-
-// An even split, for bands where both columns are text. `band-split` sizes its second column to
-// its content, which is right beside a 320px panel and wrong beside a paragraph: it strands the
-// copy against the right edge of the page.
+// Still an ordered list, because the order is the content. The titles say which step is which, so
+// there are no numbers drawn beside them.
 .band-split-even {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: 3.5rem;
+	gap: var(--as-space-12);
 	align-items: start;
+}
+
+.steps {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+
+	li {
+		padding: var(--as-space-5) 0;
+		box-shadow: inset 0 1px 0 var(--as-line);
+
+		&:first-child {
+			padding-top: 0;
+			box-shadow: none;
+		}
+	}
+
+	h3 {
+		margin: 0;
+		color: var(--as-ink);
+		font-size: var(--as-text-lg);
+		font-weight: var(--as-weight-semibold);
+		line-height: var(--as-leading-md);
+		letter-spacing: -0.01em;
+	}
+
+	p {
+		max-width: 34em;
+		margin: var(--as-space-2) 0 0;
+		color: var(--as-muted);
+		font-size: var(--as-text-md);
+		line-height: var(--as-leading-md);
+	}
 }
 
 @media (max-width: 991.98px) {
 	.band-split-even {
 		grid-template-columns: minmax(0, 1fr);
-		gap: 1.5rem;
-	}
-}
-
-// ─── Settings ────────────────────────────────────────────────────────────────
-// The six group names and descriptions are the extension's own, from locales/en.json.
-
-.settings-groups {
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
-	gap: 0 1.6rem;
-	margin-top: 1.75rem;
-}
-
-.settings-group {
-	border-top: 1px solid var(--color-border);
-	padding: 0.95rem 1.6rem 1.25rem 0;
-
-	h3 {
-		font-size: 1.125rem;
-		font-weight: 700;
-		letter-spacing: -0.03em;
-		color: var(--color-text);
-	}
-
-	p {
-		font-size: 0.875rem;
-		color: var(--color-muted);
-		line-height: 1.55;
-		margin: 0.45rem 0 0;
+		gap: var(--as-space-8);
 	}
 }
 
@@ -323,8 +219,8 @@
 .charts-grid {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: 1rem;
-	margin-top: 2rem;
+	gap: var(--as-space-3);
+	margin-top: var(--as-space-10);
 }
 
 @media (max-width: 767.98px) {
@@ -334,132 +230,208 @@
 }
 
 .chart-tile {
-	background: var(--color-card);
-	border: 1px solid #21262d;
-	border-radius: 0.6rem;
-	padding: 0.9rem 1rem 0.7rem;
+	padding: var(--as-space-4) var(--as-space-4) var(--as-space-2);
+	border-radius: var(--as-radius-md);
+	background: var(--as-surface);
+	box-shadow: inset 0 0 0 1px var(--as-line);
 }
 
 .chart-tile-title {
-	font-size: 0.8rem;
-	font-weight: 600;
-	color: var(--color-text);
-	letter-spacing: -0.01em;
-	margin: 0 0 0.6rem;
+	margin: 0 0 var(--as-space-2);
+	color: var(--as-ink);
+	font-size: var(--as-text-sm);
+	font-weight: var(--as-weight-semibold);
+	line-height: var(--as-leading-sm);
 }
 
-@media (max-width: 991.98px) {
-	.band-split {
-		grid-template-columns: minmax(0, 1fr);
-		gap: 2.25rem;
+// ─── Leagues ─────────────────────────────────────────────────────────────────
+// Grouped by sport, with each league's real mark on the disc the popup draws crests on.
+.leagues-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+	gap: var(--as-space-8) var(--as-space-6);
+	margin-top: var(--as-space-10);
+}
+
+.leagues-group {
+	padding-top: var(--as-space-4);
+	box-shadow: inset 0 1px 0 var(--as-line-strong);
+
+	h3 {
+		margin: 0 0 var(--as-space-3);
+		color: var(--as-ink);
+		font-size: var(--as-text-md);
+		font-weight: var(--as-weight-semibold);
+		line-height: var(--as-leading-md);
 	}
 
-	.band-hero {
-		padding: 5.5rem 0 3rem;
+	ul {
+		display: grid;
+		gap: var(--as-space-2);
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	li {
+		display: flex;
+		align-items: center;
+		gap: var(--as-space-2);
+		color: var(--as-muted);
+		font-size: var(--as-text-sm);
+		line-height: var(--as-leading-sm);
+	}
+
+	img {
+		flex-shrink: 0;
+		width: 20px;
+		height: 20px;
+		padding: 3px;
+		border-radius: 50%;
+		background: var(--as-disc);
+		box-shadow: inset 0 0 0 1px var(--as-disc-line);
+		object-fit: contain;
 	}
 }
 
-// ─── Settings panel ──────────────────────────────────────────────────────────
-// A still of one settings group as the popup draws it: label left, control right. It is a
-// picture of a panel rather than a working one, so nothing here is focusable.
+// ─── Settings ────────────────────────────────────────────────────────────────
+.band-split {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	gap: var(--as-space-16);
+	align-items: center;
+}
 
+.settings-groups {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+	gap: 0 var(--as-space-8);
+	margin-top: var(--as-space-10);
+}
+
+.settings-group {
+	padding: var(--as-space-4) 0 var(--as-space-6);
+	box-shadow: inset 0 1px 0 var(--as-line);
+
+	h3 {
+		margin: 0;
+		color: var(--as-ink);
+		font-size: var(--as-text-md);
+		font-weight: var(--as-weight-semibold);
+		line-height: var(--as-leading-md);
+	}
+
+	p {
+		margin: var(--as-space-1) 0 0;
+		color: var(--as-muted);
+		font-size: var(--as-text-md);
+		line-height: var(--as-leading-md);
+	}
+}
+
+// A still of the Switching group as the popup's settings draw it: one grouped card, label on the
+// left and the control on the right. Nothing in it can be focused.
 .settings-panel-demo {
 	width: 320px;
-	background: var(--color-card);
-	border: 1px solid var(--color-border);
-	border-radius: 0.6rem;
-	padding: 0.85rem 0.95rem;
+	padding: var(--as-space-3);
+	border-radius: 18px;
+	background: var(--as-page);
+	box-shadow: 0 0 0 1px var(--as-line-strong), 0 24px 48px -24px rgba(0, 0, 0, 0.5);
 }
 
 .settings-panel-head {
-	font-size: 0.62rem;
-	font-weight: 700;
-	letter-spacing: 0.1em;
-	text-transform: uppercase;
-	color: var(--color-muted);
-	padding-bottom: 0.6rem;
-	border-bottom: 1px solid #21262d;
-	margin: 0 0 0.25rem;
+	margin: var(--as-space-1) var(--as-space-1) var(--as-space-2);
+	color: var(--as-muted);
+	font-size: var(--as-text-xs);
+	font-weight: var(--as-weight-semibold);
+	line-height: var(--as-leading-xs);
+}
+
+.settings-panel-card {
+	overflow: hidden;
+	border-radius: var(--as-radius-md);
+	background: var(--as-surface);
+	box-shadow: inset 0 0 0 1px var(--as-line);
 }
 
 .settings-panel-row {
 	display: flex;
 	align-items: center;
-	gap: 0.75rem;
-	padding: 0.55rem 0;
-	border-bottom: 1px solid #21262d;
-	font-size: 0.8rem;
-	color: #c9d1d9;
+	justify-content: space-between;
+	gap: var(--as-space-3);
+	min-height: 48px;
+	padding: var(--as-space-3);
+	color: var(--as-ink);
+	font-size: var(--as-text-sm);
+	font-weight: var(--as-weight-medium);
+	line-height: var(--as-leading-sm);
 
-	&:last-child {
-		border-bottom: 0;
+	& + & {
+		box-shadow: inset 0 1px 0 var(--as-line);
 	}
 
-	> :last-child {
-		margin-left: auto;
+	.form-switch {
+		min-height: 0;
+		margin: 0;
+		padding: 0;
+
+		.form-check-input {
+			float: none;
+			margin: 0;
+		}
 	}
+}
+
+.settings-panel-range {
+	display: grid;
+	align-items: stretch;
+	justify-content: stretch;
+	gap: var(--as-space-2);
+
+	.form-range {
+		display: block;
+	}
+}
+
+.settings-panel-range-head {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: var(--as-space-2);
 }
 
 .settings-value {
-	font-family: var(--font-mono);
-	font-size: 0.78rem;
-	color: var(--color-text);
-}
-
-.settings-dots {
-	display: flex;
-	gap: 0.2rem;
-
-	i {
-		width: 0.5rem;
-		height: 0.5rem;
-		border-radius: 50%;
-		background: var(--color-border);
-
-		&.is-on {
-			background: var(--color-primary);
-		}
-	}
-}
-
-.settings-switch {
-	position: relative;
-	width: 1.65rem;
-	height: 0.9rem;
-	border-radius: 999px;
-	background: var(--color-border);
-
-	&::after {
-		content: '';
-		position: absolute;
-		top: 0.13rem;
-		left: 0.13rem;
-		width: 0.64rem;
-		height: 0.64rem;
-		border-radius: 50%;
-		background: #6e7681;
-	}
-
-	&.is-on {
-		background: var(--color-primary);
-
-		&::after {
-			left: auto;
-			right: 0.13rem;
-			background: #fff;
-		}
-	}
+	color: var(--as-ink);
+	font-size: var(--as-text-sm);
+	font-weight: var(--as-weight-semibold);
+	white-space: nowrap;
 }
 
 @media (max-width: 991.98px) {
+	.band-split {
+		grid-template-columns: minmax(0, 1fr);
+		gap: var(--as-space-10);
+	}
+
 	.settings-panel-demo {
-		margin-left: auto;
-		margin-right: auto;
+		margin-inline: auto;
 	}
 }
 
 @media (max-width: 359.98px) {
 	.settings-panel-demo {
 		width: 100%;
+	}
+}
+
+// Ten crests on one row on a phone, rather than eight and two orphans.
+@media (max-width: 575.98px) {
+	.team-strip-logos {
+		gap: var(--as-space-2);
+
+		.crest {
+			width: 28px;
+			height: 28px;
+		}
 	}
 }

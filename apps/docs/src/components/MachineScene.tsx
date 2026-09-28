@@ -11,13 +11,16 @@ import {
 	scoreMaxLeadChanges,
 	scoreMaxComeback,
 } from '@arenaswap/core/constants';
-import Crest from '@arenaswap/ui/src/components/crest';
+import type { Game } from '@arenaswap/core/types';
+import GameStage from '@arenaswap/ui/src/components/gameStage';
 import { chartEasing, motionDuration } from '@arenaswap/ui/src/motion';
+import { TranslationContext, islandTranslator } from '../i18n/islandStrings';
 
 echarts.use([LineChart, GridComponent, CanvasRenderer]);
 
 // Four looping scenes: watch every live game, score each one, open one for the full breakdown,
-// land the tab on the best. The scenes are SVG/CSS; the PowerScore trend is a real ECharts graph.
+// land the tab on the best. The opened game is the popup's own stage; the PowerScore trend is a
+// real ECharts graph.
 
 const sceneCount = 4;
 const sceneDurations = [4200, 4200, 6000, 8200];
@@ -65,7 +68,6 @@ const NetworkScene = ({ showScores, alt }: { showScores: boolean; alt: string })
 			</g>
 		))}
 
-		<circle className='mw-core-glow' cx={centerX} cy={centerY} r={92} />
 		<circle className='mw-core-ring' cx={centerX} cy={centerY} r={60} />
 		<image href={`${imageBase}/icon_white_on_transparent.png`} x={centerX - 34} y={centerY - 30} width={68} height={60} preserveAspectRatio='xMidYMid meet' />
 
@@ -73,8 +75,7 @@ const NetworkScene = ({ showScores, alt }: { showScores: boolean; alt: string })
 			<g key={`node-${n.id}`} className='mw-node'>
 				<circle className='mw-chip' cx={n.x} cy={n.y} r={37} />
 				<image href={n.logo} x={n.x - 26} y={n.y - 26} width={52} height={52} preserveAspectRatio='xMidYMid meet' />
-				<g className='mw-badge' transform={`translate(${n.x + 27}, ${n.y - 27})`}>
-					<circle r={16} />
+				<g className='mw-badge' transform={`translate(${n.x}, ${n.y + 62})`}>
 					<text textAnchor='middle' dominantBaseline='central'>{n.score}</text>
 				</g>
 			</g>
@@ -82,15 +83,19 @@ const NetworkScene = ({ showScores, alt }: { showScores: boolean; alt: string })
 	</svg>
 );
 
-const demoGame = {
-	league: 'NBA',
-	status: 'Q4 · 0:48',
-	away: { abbr: 'LAL', name: 'Lakers', score: 112, logo: 'https://a.espncdn.com/i/teamlogos/nba/500/lal.png' },
-	home: { abbr: 'BOS', name: 'Celtics', score: 110, logo: 'https://a.espncdn.com/i/teamlogos/nba/500/bos.png' },
-	power: 92,
+const espnTeamLogo = (path: string) => `https://a.espncdn.com/i/teamlogos/${path}.png`;
+
+const demoGame: Game = {
+	id: 'machine-nba',
+	league: 'nba',
+	sportType: 'basketball',
+	status: 'in',
+	period: 4,
+	clockSeconds: 48,
+	awayTeam: { id: '13', name: 'Los Angeles Lakers', abbreviation: 'LAL', score: 112, logo: espnTeamLogo('nba/500/lal'), color: '#552583', alternateColor: '#FDB927' },
+	homeTeam: { id: '2', name: 'Boston Celtics', abbreviation: 'BOS', score: 110, logo: espnTeamLogo('nba/500/bos'), color: '#007A33', alternateColor: '#BA9653' },
 };
-// Names come in as a list and are paired with the figures by position, so a locale supplies five
-// labels and nothing else. The values and ceilings are the same in every language.
+const demoPower = 92;
 const signalValues = [
 	{ value: 30, max: scoreMaxCloseness, color: '#22c55e' },
 	{ value: 26, max: scoreMaxLateGame, color: orange },
@@ -127,47 +132,28 @@ const trendOption: EChartsOption = {
 
 const GameCard = ({ active, chartElRef, strings }: { active: boolean; chartElRef: React.RefObject<HTMLDivElement | null>; strings: Strings }) => (
 	<div className='mw-card'>
-		<div className='mw-card-teams'>
-			<div className='mw-team'>
-				<Crest logo={demoGame.away.logo} abbreviation={demoGame.away.abbr} loading='lazy' />
-				<span className='mw-team-abbr'>{demoGame.away.abbr}</span>
-			</div>
-			<div className='mw-team-mid'>
-				<span className='mw-team-scores'>{demoGame.away.score}<span className='mw-team-dash'>–</span>{demoGame.home.score}</span>
-				<span className='mw-team-status'><span className='live-dot'></span>{demoGame.league} · {demoGame.status}</span>
-			</div>
-			<div className='mw-team'>
-				<Crest logo={demoGame.home.logo} abbreviation={demoGame.home.abbr} loading='lazy' />
-				<span className='mw-team-abbr'>{demoGame.home.abbr}</span>
-			</div>
-		</div>
-
-		<div className='mw-power'>
-			<div className='mw-power-num'>{demoGame.power}<span>/100</span></div>
-			<div className='mw-power-meta'>
-				<span className='mw-power-label'>{strings.powerScore}</span>
-				<div ref={chartElRef} className='mw-chart' />
-			</div>
-		</div>
-
-		<div className='mw-signals'>
-			{signalValues.map((s, index) => (
-				<div key={strings.signals[index]} className='mw-signal'>
-					<div className='mw-signal-head'>
-						<span>{strings.signals[index]}</span>
-						<span className='mw-signal-val' style={{ color: s.color }}>{s.value}</span>
-					</div>
-					<div className='ps-bar-track'>
-						<div className='ps-bar-fill' style={{ background: s.color, width: active ? `${(s.value / s.max) * 100}%` : '0%' }} />
-					</div>
-				</div>
-			))}
+		<GameStage game={demoGame} label='NBA' power={{ value: demoPower, label: strings.powerScore }} />
+		<div className='mw-breakdown'>
+			<div ref={chartElRef} className='mw-chart' />
+			<ul className='mw-signals'>
+				{signalValues.map((signal, index) => (
+					<li key={strings.signals[index]} className='mw-signal'>
+						<div className='mw-signal-head'>
+							<span>{strings.signals[index]}</span>
+							<span className='mw-signal-val num'>{signal.value}</span>
+						</div>
+						<div className='progress' role='presentation'>
+							<div className='progress-bar' style={{ background: signal.color, width: active ? `${(signal.value / signal.max) * 100}%` : '0%' }} />
+						</div>
+					</li>
+				))}
+			</ul>
 		</div>
 	</div>
 );
 
 const TABS = [
-	{ service: 'ESPN', game: 'Lakers @ Celtics', color: '#d50a0a' },
+	{ service: 'NBA League Pass', game: 'Lakers @ Celtics', color: '#1d428a' },
 	{ service: 'Peacock', game: 'Eagles @ Cowboys', color: '#7c3aed' },
 	{ service: 'MLB.TV', game: 'Yankees @ Astros', color: '#1e56a0' },
 	{ service: 'Sportsnet', game: 'Rangers @ Panthers', color: '#e5a00d' },
@@ -177,15 +163,12 @@ const TAB_ORDER = [2, 1, 3, 0]; // hop around, settle on the best (index 0)
 const TabSwitch = ({ activeTab, strings }: { activeTab: number; strings: Strings }) => (
 	<div className='mw-browser'>
 		<div className='mw-browser-bar'>
-			<span className='mw-dot' style={{ background: '#ff5f57' }} />
-			<span className='mw-dot' style={{ background: '#febc2e' }} />
-			<span className='mw-dot' style={{ background: '#28c840' }} />
+			<span className='mw-lights' aria-hidden='true'><i /><i /><i /></span>
 			<div className='mw-tabs'>
-				{TABS.map((t, i) => (
-					<div key={t.service} className='mw-tab' data-active={i === activeTab}>
-						<span className='mw-tab-fav' style={{ background: t.color }} />
-						<span className='mw-tab-title'>{t.service} · {t.game}</span>
-						{i === activeTab && <span className='mw-tab-flag'>ArenaSwap</span>}
+				{TABS.map((tab, i) => (
+					<div key={tab.service} className='mw-tab' data-active={i === activeTab}>
+						<span className='mw-tab-fav' style={{ background: tab.color }} />
+						<span className='mw-tab-title'>{tab.game}</span>
 					</div>
 				))}
 			</div>
@@ -199,7 +182,7 @@ const TabSwitch = ({ activeTab, strings }: { activeTab: number; strings: Strings
 	</div>
 );
 
-const MachineScene = ({ strings }: { strings: Strings }) => {
+const MachineStages = ({ strings }: { strings: Strings }) => {
 	const [stage, setStage] = useState(0);
 	const [activeTab, setActiveTab] = useState(TAB_ORDER[TAB_ORDER.length - 1]);
 	const [reduced, setReduced] = useState(false);
@@ -290,5 +273,11 @@ const MachineScene = ({ strings }: { strings: Strings }) => {
 		</div>
 	);
 };
+
+const MachineScene = ({ strings, uiStrings }: { strings: Strings; uiStrings?: Record<string, string> }) => (
+	<TranslationContext.Provider value={islandTranslator(uiStrings)}>
+		<MachineStages strings={strings} />
+	</TranslationContext.Provider>
+);
 
 export default MachineScene;

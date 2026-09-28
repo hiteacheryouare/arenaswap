@@ -1,5 +1,7 @@
-import LiveGameCard from '@arenaswap/ui/src/components/liveGameCard';
-import type { Game, PowerScoreResult } from '@arenaswap/core/types';
+import type { Game } from '@arenaswap/core/types';
+import GameStage from '@arenaswap/ui/src/components/gameStage';
+import { stageNote } from '@arenaswap/ui/src/components/boardSituation';
+import { useT } from '@arenaswap/ui/src/components/i18nContext';
 import { TranslationContext, islandTranslator } from '../i18n/islandStrings';
 
 // The missing page as a game the extension would never switch you to.
@@ -16,30 +18,22 @@ const game: Game = {
 	broadcasts: ['Nowhere'],
 };
 
-const excitementResult: PowerScoreResult = {
-	gameId: 'not-found',
-	total: 0,
-	closeness: 0,
-	lateGame: 0,
-	momentum: 0,
-	leadChanges: 0,
-	comeback: 0,
-	reason: '',
+// The two team names, the venue and the network are the joke rather than copy, so they stay as they
+// are. Everything the stage puts around them comes off the site's shared string map.
+const NotFoundStage = () => {
+	const t = useT();
+	return (
+		<GameStage
+			game={game}
+			note={stageNote(game, { bettingEnabled: false }, t as Parameters<typeof stageNote>[2])}
+			power={{ value: 0, label: t('gameCard.powerScore') }}
+		/>
+	);
 };
 
-// The two team names are the joke rather than copy, so they stay as they are. What the card puts
-// around them — the LIVE flag, the labels a screen reader reads out — comes off the same string map
-// the rest of the site's demo popups use.
 const NotFoundCard = ({ strings }: { strings?: Record<string, string> }) => (
 	<TranslationContext.Provider value={islandTranslator(strings)}>
-		<LiveGameCard
-			game={game}
-			excitementResult={excitementResult}
-			favoriteTeamIds={new Set()}
-			onToggleFavoriteTeam={() => {}}
-			onOpenGameDetail={() => {}}
-			bettingPrefs={{ bettingEnabled: false }}
-		/>
+		<NotFoundStage />
 	</TranslationContext.Provider>
 );
 

@@ -1,64 +1,51 @@
 // The site's stylesheet, in load order. `@arenaswap/ui/src/bootstrap` is the theme and forwards
 // Bootstrap itself, so configuring it here is how Bootstrap gets configured.
 //
-// `bootstrap/scss/reboot` used to be loaded again on the line after Bootstrap, which emitted a
-// second identical copy of Reboot. It is gone: `bootstrap.scss` already imports reboot, and
-// `_reboot.scss` reads variables it does not declare, so it cannot stand alone as a module anyway.
+// The site is dark only and never sets data-bs-theme. Bootstrap still builds its components out of
+// light-default subtle tokens (see reference notes on pagination, dropdowns and alerts), so every
+// component the site renders is pointed at the v3 tokens here, before Bootstrap compiles.
 @use '@arenaswap/ui/src/bootstrap' as bs with (
-	// ─── Docs-specific Bootstrap overrides ───────────────────────────────────────
-	$link-color:                    #F75C03,
-	$link-hover-color:              #d44e00,
-	$border-radius:                 0.5rem,
-	$border-radius-lg:              0.75rem,
-	$navbar-dark-color:             rgba(230, 237, 243, 0.7),
-	$navbar-dark-hover-color:       #e6edf3,
-	$navbar-dark-brand-color:       #e6edf3,
-	$navbar-dark-active-color:      #F75C03,
+	$enable-dark-mode:              false,
+	$headings-font-weight:          650,
 
-	// The language switcher is the first dropdown on the site, and it landed on the same gap the Up
-	// Next day pager found in the popup: Bootstrap 5.3 builds $dropdown-link-hover-bg out of
-	// --as-tertiary-bg, which this theme had not yet overridden and which was therefore still the
-	// light default #f8f9fa. Rendered, hovering an item put #e6edf3 text on a near-white slab. The
-	// token is set in packages/ui now; the pin stays because a menu on #161b22 wants the step above
-	// it, not the step below.
-	//
-	// And $dropdown-link-active-color is $component-active-color, a flat white that reaches only
-	// 3.22:1 on $primary. Buttons escape this by running the colour through color-contrast(); a
-	// dropdown does not, so the active item takes the page's own near-black instead.
-	$dropdown-bg:                   #161b22,
-	$dropdown-border-color:         #30363d,
-	$dropdown-link-color:           rgba(230, 237, 243, 0.82),
-	$dropdown-link-hover-color:     #e6edf3,
-	$dropdown-link-hover-bg:        #21262d,
-	$dropdown-link-active-color:    #0d1117,
-	$dropdown-font-size:            0.875rem,
+	$dropdown-bg:                   var(--as-raised),
+	$dropdown-color:                var(--as-ink),
+	$dropdown-border-color:         var(--as-line-strong),
+	$dropdown-font-size:            0.8125rem,
+	$dropdown-link-color:           var(--as-ink),
+	$dropdown-link-hover-color:     var(--as-ink),
+	$dropdown-link-hover-bg:        var(--as-hover),
+	$dropdown-link-active-color:    var(--as-ink),
+	$dropdown-link-active-bg:       var(--as-press),
 
-	// Bootstrap 5.3 builds every alert out of the `-bg-subtle`, `-border-subtle` and `-text-emphasis`
-	// tokens, and it computes two sets of them: a light pair on `:root` and a dark pair under
-	// `[data-bs-theme=dark]`. This site never sets that attribute — its darkness comes from the hand
-	// picked $body-bg in packages/ui rather than from Bootstrap's colour-mode switch — so the light set
-	// wins and every alert renders as a pale slab on a #0d1117 page. Same shape as the pagination and
-	// dropdown gaps before it.
-	//
-	// Switching the whole document to data-bs-theme=dark would fix it and also drag --as-body-bg,
-	// --as-border-color and the rest onto Bootstrap's own dark greys, undoing the theme. So the two
-	// variants the site actually renders take Bootstrap's dark values directly, and nothing else moves.
-	$secondary-bg-subtle:           #0c1f2a,
-	$secondary-border-subtle:       #256b8f,
-	$secondary-text-emphasis:       #8bc4e4,
-	$warning-bg-subtle:             #302701,
-	$warning-border-subtle:         #917608,
-	$warning-text-emphasis:         #f7dc6f
+	$table-color:                   var(--as-ink),
+	$table-bg:                      transparent,
+	$table-border-color:            var(--as-line),
+	$table-group-separator-color:   var(--as-line),
+	$table-striped-color:           var(--as-ink),
+	$table-striped-bg:              var(--as-hover),
+	$table-hover-color:             var(--as-ink),
+	$table-hover-bg:                var(--as-hover),
+	$table-th-font-weight:          600,
+
+	// The two alert variants the site renders, the untranslated notice and the live scores error,
+	// drawn as the popup's quiet notice surface rather than Bootstrap's light tint.
+	$secondary-bg-subtle:           #1a1d22,
+	$secondary-border-subtle:       rgba(243, 245, 247, 0.08),
+	$secondary-text-emphasis:       #c4cbd4,
+	$warning-bg-subtle:             #1a1d22,
+	$warning-border-subtle:         rgba(241, 196, 15, 0.32),
+	$warning-text-emphasis:         #f1c40f
 );
 @use 'bootstrap-icons/font/bootstrap-icons.scss' with ($bootstrap-icons-font-dir: '/src/fonts');
-@use '@arenaswap/ui/src/game-card';
+@use '@arenaswap/ui/src/primitives';
+@use '@arenaswap/ui/src/board';
 // The popup chrome the site's demos are built from. Shared with the extension so the two cannot
 // describe different popups.
 @use '@arenaswap/ui/src/popup';
 @use '@arenaswap/ui/src/fonts' with ($font-base-url: '/src/fonts');
 @use 'site';
 
-// ─── Landing page: bands, hero browser, reading shell ────────────────────────
 // These come last on purpose. See the note at the top of `_site.scss`.
 @use 'bands';
 @use 'browser-hero';

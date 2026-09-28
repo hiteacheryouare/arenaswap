@@ -9,7 +9,13 @@ import { TranslationContext } from '@arenaswap/ui/src/components/i18nContext';
 // place, and a missing key rendered as itself rather than thrown, since an island failing to
 // hydrate would take the whole demo down over one label.
 export const islandTranslator = (strings: Record<string, string> | undefined) =>
-	(key: string, subs?: Record<string, string | number>) => {
+	(key: string, subs?: Record<string, string | number> | number) => {
+		// A count picks one of the extension's plural forms, which flatten to `key.0`, `key.1` and
+		// `key.n`, and fills its `$1`.
+		if (typeof subs === 'number') {
+			const form = strings?.[`${key}.${subs === 0 || subs === 1 ? subs : 'n'}`] ?? strings?.[`${key}.n`] ?? strings?.[key] ?? key;
+			return form.split('$1').join(String(subs));
+		}
 		let value = strings?.[key] ?? key;
 		if (subs) {
 			for (const [name, replacement] of Object.entries(subs)) {

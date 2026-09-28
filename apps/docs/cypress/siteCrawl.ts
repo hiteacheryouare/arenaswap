@@ -37,7 +37,7 @@ const walk = (dir: string): string[] =>
 const keyShaped = /^[a-z][a-zA-Z0-9]*(\.[a-zA-Z][a-zA-Z0-9]*)+$/;
 
 // Hostnames and file names read as keys and are not. Anything with a known suffix is skipped.
-const notAKey = /\.(com|net|org|io|tv|dev|gg|co|uk|br|pt|cn|tw|jp|kr|mx|de|fr|it|ph|es|png|svg|jpg|webp|mp4|xml|json|js|ts|tsx|css|scss|md)$/i;
+const notAKey = /\.(com|net|org|io|tv|dev|gg|co|ca|uk|br|pt|cn|tw|jp|kr|mx|de|fr|it|ph|es|png|svg|jpg|webp|mp4|xml|json|js|ts|tsx|css|scss|md)$/i;
 
 // The PowerScore reference documents an object whose properties are dotted paths, so its code
 // samples are full of text this heuristic would otherwise read as a leaked key. Code is never a

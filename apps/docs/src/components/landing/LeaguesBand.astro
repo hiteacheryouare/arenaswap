@@ -25,17 +25,11 @@ const groups = sportOrder
 const numerals = t.list<string>('home.leagues.numerals');
 const sportCount = numerals[groups.length] ?? String(groups.length);
 ---
-<section class='band band-quiet' id='leagues'>
+<section class='band' id='leagues'>
 	<div class='container'>
 
-		<div class='leagues-head'>
-			<div>
-				<h2 class='display-md'>{t('home.leagues.titleLine1')}<br>{t('home.leagues.titleLine2')}</h2>
-				<p class='band-copy' style='margin-top:0.6rem;max-width:52ch'>
-					{t('home.leagues.copy', { sports: sportCount })}
-				</p>
-			</div>
-		</div>
+		<h2 class='display-md'>{t('home.leagues.titleLine1')}<br>{t('home.leagues.titleLine2')}</h2>
+		<p class='band-copy'>{t('home.leagues.copy', { sports: sportCount })}</p>
 
 		<div class='leagues-grid'>
 			{groups.map(group => (
@@ -44,7 +38,7 @@ const sportCount = numerals[groups.length] ?? String(groups.length);
 					<ul>
 						{group.leagues.map(league => (
 							<li>
-								<img src={`${import.meta.env.BASE_URL}images/leagues/${league.id}.png`} alt='' loading='lazy' width='17' height='17' />
+								<img src={`${import.meta.env.BASE_URL}images/leagues/${league.id}.png`} alt='' loading='lazy' width='20' height='20' />
 								{league.label}
 							</li>
 						))}

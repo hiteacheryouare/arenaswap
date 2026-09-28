@@ -1,193 +1,75 @@
 ---
-import { Image } from 'astro:assets';
+import '../../styles/global.scss';
 import './_screenshot.scss';
-import ScreenshotCard from '../../components/ScreenshotCard';
-import logoImg from '../../assets/full_logo_white_on_transparent.svg';
+import type { Game } from '@arenaswap/core/types';
+import StoreBoard from '../../components/screenshots/StoreBoard';
+import StoreBrowser from '../../components/screenshots/StoreBrowser.astro';
+import { team } from '../../components/screenshots/storeTeams';
+import { uiStrings } from '../../i18n/ui';
 
-const wvuPittGame = {
-	id: 'sc-ncaa-baseball',
+const wvuPitt: Game = {
+	id: 'sc1-cbase',
 	league: 'cbase',
 	sportType: 'baseball',
-	awayTeam: { id: '277', name: 'West Virginia', abbreviation: 'WVU', score: 5, logo: 'https://a.espncdn.com/i/teamlogos/ncaa/500/277.png', color: '#FFC600', alternateColor: '#003594' },
-	homeTeam: { id: '221', name: 'Pittsburgh', abbreviation: 'PITT', score: 4, logo: 'https://a.espncdn.com/i/teamlogos/ncaa/500/221.png', color: '#003594', alternateColor: '#FFB81C' },
-	period: 7, clockSeconds: 0, status: 'in',
+	status: 'in',
+	period: 7,
+	clockSeconds: 0,
 	topOfInning: false,
-	venueName: 'Kendrick Family Ballpark · Morgantown, WV',
-	broadcasts: ['ESPN+', 'ACCN'],
+	venueName: 'Kendrick Family Ballpark, Morgantown, WV',
+	broadcasts: ['ACC Network'],
+	awayTeam: team('ncaa/500/277', '277', 'WVU', 'West Virginia', 5, '#FFC600', '#003594'),
+	homeTeam: team('ncaa/500/221', '221', 'PITT', 'Pittsburgh', 4, '#003594', '#FFB81C'),
 };
-const wvuPittScore = { gameId: 'sc-ncaa-baseball', total: 92, closeness: 26, lateGame: 22, momentum: 24, leadChanges: 12, comeback: 8, reason: '' };
 
-const bosNyyGame = {
-	id: 'sc-mlb',
+const bosNyy: Game = {
+	id: 'sc1-mlb',
 	league: 'mlb',
 	sportType: 'baseball',
-	awayTeam: { id: 'bos', name: 'Boston Red Sox', abbreviation: 'BOS', score: 3, logo: 'https://a.espncdn.com/i/teamlogos/mlb/500/bos.png', color: '#BD3039', alternateColor: '#0C2340' },
-	homeTeam: { id: 'nyy', name: 'New York Yankees', abbreviation: 'NYY', score: 2, logo: 'https://a.espncdn.com/i/teamlogos/mlb/500/nyy.png', color: '#003087', alternateColor: '#E4002C' },
-	period: 5, clockSeconds: 0, status: 'in',
+	status: 'in',
+	period: 5,
+	clockSeconds: 0,
 	topOfInning: true,
-	venueName: 'Fenway Park · Boston, MA',
+	venueName: 'Fenway Park, Boston, MA',
 	broadcasts: ['FOX'],
+	awayTeam: team('mlb/500/bos', 'bos', 'BOS', 'Boston Red Sox', 3, '#BD3039', '#0C2340'),
+	homeTeam: team('mlb/500/nyy', 'nyy', 'NYY', 'New York Yankees', 2, '#003087', '#E4002C'),
 };
-const bosNyyScore = { gameId: 'sc-mlb', total: 71, closeness: 20, lateGame: 15, momentum: 18, leadChanges: 10, comeback: 8, reason: '' };
+
+const tabs = [
+	{ title: 'Red Sox at Yankees', initial: 'F', color: '#003B7A' },
+	{ title: 'West Virginia at Pittsburgh', initial: 'A', color: '#013CA6', active: true },
+];
 ---
 <!doctype html>
 <html lang='en'>
 <head>
 	<meta charset='UTF-8' />
 	<meta name='robots' content='noindex' />
-	<title>Screenshot 1 — Never Miss the Moment</title>
+	<title>Screenshot 1 — Never miss the moment</title>
 </head>
 <body>
 	<div class='canvas'>
-		<div class='bottom-glow'></div>
+		<h1 class='headline'>Never miss the moment<span class='dot'>.</span></h1>
 
-		<h1 class='headline'>Never Miss the Moment<span class='dot'>.</span></h1>
-
-		<div class='over-glow'></div>
-
-		<div class='stage' style='bottom:80px;'>
-			<div class='game-frame'>
+		<div class='stage' style='width:1040px'>
+			<StoreBrowser tabs={tabs} host='accnx.com'>
 				<img
 					src='https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Baseball_Backyard_Brawl.jpg/960px-Baseball_Backyard_Brawl.jpg'
-					alt='Live baseball game'
-					class='game-img'
+					alt=''
+					class='stream-still'
 				/>
-				<div class='game-tint'></div>
-				<div class='game-corners'>
-					<div class='corner-live'>
-						<span class='corner-live-dot'></span>
-						LIVE · BOTTOM 7TH
-					</div>
-					<div class='corner-score'>
-						<span class='team'>WVU</span>
-						<span class='score'>5</span>
-						<span class='dash'>—</span>
-						<span class='score'>4</span>
-						<span class='team'>PITT</span>
-					</div>
-				</div>
-
-				<div class='popup-overlay'>
-					<div class='popup'>
-						<div class='popup-inner'>
-							<div class='popup-header'>
-								<Image src={logoImg} alt='ArenaSwap' class='popup-logo' />
-								<div class='popup-header-right'>
-									<i class='bi bi-gear-fill' style='color:#8b949e;font-size:0.9rem;'></i>
-									<div class='popup-switch'>
-										<div class='popup-switch-thumb'></div>
-									</div>
-								</div>
-							</div>
-
-							<div class='popup-section-title'>Active Tabs</div>
-
-							<div class='popup-league-label'>NCAA BASEBALL</div>
-							<ScreenshotCard game={wvuPittGame} excitementResult={wvuPittScore} tabLabel='Tab 2: ESPN+' />
-
-							<div class='popup-league-label'>MLB</div>
-							<ScreenshotCard game={bosNyyGame} excitementResult={bosNyyScore} tabLabel='Tab 1: FOX' />
-						</div>
-					</div>
-				</div>
-			</div>
+				<StoreBoard
+					slot='popup'
+					client:load
+					id='sc1'
+					games={[wvuPitt, bosNyy]}
+					scores={{ [wvuPitt.id]: 92, [bosNyy.id]: 71 }}
+					tabs={{ [bosNyy.id]: { number: 1 }, [wvuPitt.id]: { number: 2 } }}
+					watchedId={wvuPitt.id}
+					strings={uiStrings('en')}
+				/>
+			</StoreBrowser>
 		</div>
 	</div>
-
-	<style>
-		.game-frame {
-			position: relative;
-			width: 940px;
-			height: 540px;
-			border-radius: 16px;
-			overflow: hidden;
-			box-shadow:
-				0 0 0 1px rgba(255,255,255,0.1),
-				0 24px 60px rgba(0,0,0,0.6);
-		}
-
-		.game-img {
-			width: 100%;
-			height: 100%;
-			object-fit: cover;
-			filter: blur(12px) saturate(1.1);
-			transform: scale(1.08);
-		}
-
-		.game-tint {
-			position: absolute;
-			inset: 0;
-			background:
-				linear-gradient(to bottom, rgba(0,0,0,0.15), rgba(0,0,0,0.45)),
-				radial-gradient(circle at 70% 60%, rgba(247,92,3,0.12), transparent 60%);
-		}
-
-		.game-corners {
-			position: absolute;
-			top: 22px;
-			left: 26px;
-			display: flex;
-			flex-direction: column;
-			gap: 8px;
-			color: #fff;
-		}
-
-		.corner-live {
-			display: flex;
-			align-items: center;
-			gap: 8px;
-			background: rgba(0,0,0,0.55);
-			backdrop-filter: blur(8px);
-			border: 1px solid rgba(255,255,255,0.1);
-			padding: 6px 12px;
-			border-radius: 999px;
-			font-size: 0.72rem;
-			font-weight: 700;
-			letter-spacing: 0.1em;
-			text-transform: uppercase;
-		}
-
-		.corner-live-dot {
-			width: 8px;
-			height: 8px;
-			border-radius: 50%;
-			background: #e53935;
-			animation: popup-live-pulse 1.5s ease-in-out infinite;
-		}
-
-		.corner-score {
-			display: flex;
-			align-items: center;
-			gap: 10px;
-			background: rgba(0,0,0,0.55);
-			backdrop-filter: blur(8px);
-			border: 1px solid rgba(255,255,255,0.1);
-			padding: 8px 14px;
-			border-radius: 12px;
-			font-weight: 700;
-			letter-spacing: -0.01em;
-		}
-
-		.corner-score .team {
-			font-size: 0.85rem;
-			color: rgba(255,255,255,0.8);
-		}
-
-		.corner-score .score {
-			font-size: 1.3rem;
-			color: #fff;
-			font-variant-numeric: tabular-nums;
-		}
-
-		.corner-score .dash {
-			color: rgba(255,255,255,0.4);
-		}
-
-		.popup-overlay {
-			position: absolute;
-			right: 26px;
-			top: 26px;
-		}
-	</style>
 </body>
 </html>
