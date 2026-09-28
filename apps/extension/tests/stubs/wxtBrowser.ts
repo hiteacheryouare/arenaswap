@@ -4,8 +4,16 @@ export namespace Browser {
 	export namespace tabs {
 		export interface Tab {
 			id?: number;
+			index?: number;
+			active?: boolean;
 			title?: string;
 			url?: string;
+		}
+	}
+	export namespace storage {
+		export interface StorageChange {
+			oldValue?: unknown;
+			newValue?: unknown;
 		}
 	}
 }

@@ -2,7 +2,7 @@ import type { Game, LeagueId } from '@arenaswap/core/types';
 import { leagueConfigs } from '@arenaswap/core/constants';
 import { buildBar, type guideBar } from '../entrypoints/guide/guideHeat';
 import { groupByDate } from '../entrypoints/popup/popupHelpers';
-import { axisBounds, defaultDayKey, fillAxis, groupByLeague, hourMarks, minutesToPx, msToPx, pxPerMinute } from '../entrypoints/guide/guideLayout';
+import { axisBounds, defaultDayKey, fillAxis, groupByLeague, hourMarks, minutesToPx, msToPx, pxPerMinute, resolveHeat } from '../entrypoints/guide/guideLayout';
 
 const at = (iso: string) => new Date(iso).getTime();
 const now = at('2026-09-13T12:00:00Z');
@@ -19,8 +19,8 @@ const makeGame = (id: string, league: LeagueId, startTime: string): Game => ({
 	startTime,
 } as Game);
 
-const bar = (id: string, league: LeagueId, startTime: string): guideBar => {
-	const built = buildBar(makeGame(id, league, startTime), false, now);
+const bar = (id: string, league: LeagueId, startTime: string, overrides: Partial<Game> = {}, isFavorite = false): guideBar => {
+	const built = buildBar({ ...makeGame(id, league, startTime), ...overrides }, isFavorite, now);
 	if (!built) throw new Error('expected a bar');
 	return built;
 };
@@ -106,12 +106,12 @@ describe('grouping', () => {
 		expect(groups.map(g => g.league)).toEqual(['nba', 'nhl']);
 	});
 
-	test('orders games by start time inside a league', () => {
+	test('orders games by start time inside a league, which is the order the keyboard walks', () => {
 		const groups = groupByLeague([
 			bar('late', 'nfl', '2026-09-13T20:25:00Z'),
 			bar('early', 'nfl', '2026-09-13T17:00:00Z'),
 		]);
-		expect(groups[0]!.bars.map(b => b.game.id)).toEqual(['early', 'late']);
+		expect(groups[0]!.slots.map(slot => slot.bar.game.id)).toEqual(['early', 'late']);
 	});
 
 	test('puts every bar in exactly one group', () => {
@@ -121,8 +121,113 @@ describe('grouping', () => {
 			bar('c', 'nba', '2026-09-14T00:00:00Z'),
 		];
 		const groups = groupByLeague(bars);
-		expect(groups.flatMap(g => g.bars)).toHaveLength(bars.length);
+		expect(groups.flatMap(g => g.slots)).toHaveLength(bars.length);
 		expect(new Set(groups.map(g => g.league)).size).toBe(groups.length);
+	});
+});
+
+const overlaps = (a: guideBar, b: guideBar) => a.startMs < b.endMs && b.startMs < a.endMs;
+
+describe('lanes', () => {
+	test('gives games that overlap a lane each', () => {
+		const [group] = groupByLeague([
+			bar('first', 'nba', '2026-09-13T23:00:00Z'),
+			bar('second', 'nba', '2026-09-13T23:30:00Z'),
+			bar('third', 'nba', '2026-09-14T00:00:00Z'),
+		]);
+		expect(group!.laneCount).toBe(3);
+		expect(group!.slots.map(slot => slot.lane)).toEqual([0, 1, 2]);
+	});
+
+	test('puts a game that starts after another has ended back in that lane', () => {
+		// An NBA bar runs about two and a half hours, so the 11pm game is clear of both 7pm ones.
+		const [group] = groupByLeague([
+			bar('early-a', 'nba', '2026-09-13T19:00:00Z'),
+			bar('early-b', 'nba', '2026-09-13T19:30:00Z'),
+			bar('late', 'nba', '2026-09-13T23:00:00Z'),
+		]);
+		expect(group!.laneCount).toBe(2);
+		expect(group!.slots.find(slot => slot.bar.game.id === 'late')!.lane).toBe(0);
+	});
+
+	test('never draws two games that overlap in the same lane, on a full NFL Sunday', () => {
+		const bars = [
+			...Array.from({ length: 9 }, (_, i) => bar(`early-${i}`, 'nfl', '2026-09-13T17:00:00Z')),
+			...Array.from({ length: 4 }, (_, i) => bar(`late-${i}`, 'nfl', '2026-09-13T20:25:00Z')),
+			bar('snf', 'nfl', '2026-09-14T00:20:00Z'),
+		];
+		const [group] = groupByLeague(bars);
+		for (const slot of group!.slots) {
+			for (const other of group!.slots) {
+				if (slot === other || slot.lane !== other.lane) continue;
+				expect(overlaps(slot.bar, other.bar)).toBe(false);
+			}
+		}
+		// Nine at once needs nine lanes, and not one more: the later games reuse them.
+		expect(group!.laneCount).toBe(9);
+	});
+
+	test('leaves room between two games sharing a lane rather than butting them together', () => {
+		const first = bar('first', 'nba', '2026-09-13T19:00:00Z');
+		const touching = bar('touching', 'nba', new Date(first.endMs).toISOString());
+		const [group] = groupByLeague([first, touching]);
+		expect(group!.laneCount).toBe(2);
+	});
+
+	// The pinned label of a game may run on until the next game in its lane starts, and no further.
+	test('tells each game where the next one in its lane begins', () => {
+		const [group] = groupByLeague([
+			bar('early', 'nba', '2026-09-13T19:00:00Z'),
+			bar('overlap', 'nba', '2026-09-13T19:30:00Z'),
+			bar('late', 'nba', '2026-09-13T23:00:00Z'),
+		]);
+		const byId = new Map(group!.slots.map(slot => [slot.bar.game.id, slot]));
+		expect(byId.get('early')!.untilMs).toBe(at('2026-09-13T23:00:00Z'));
+		expect(byId.get('overlap')!.untilMs).toBeNull();
+		expect(byId.get('late')!.untilMs).toBeNull();
+	});
+});
+
+describe('heat', () => {
+	const live = (id: string, start: string) => bar(id, 'nba', start, { status: 'in', period: 3, clockSeconds: 300 });
+
+	test('makes the hottest live game tall, anything at the tile floor medium, and the rest short', () => {
+		const bars = [live('hot', '2026-09-13T11:00:00Z'), live('warm', '2026-09-13T11:10:00Z'), live('cool', '2026-09-13T11:20:00Z')];
+		const heat = resolveHeat(bars, new Map([['hot', 91], ['warm', 70], ['cool', 69]]));
+		expect(Object.fromEntries(heat)).toEqual({ hot: 'hot', warm: 'warm', cool: 'cool' });
+	});
+
+	test('gives a game with no PowerScore no heat, however it is doing', () => {
+		const bars = [live('scored', '2026-09-13T11:00:00Z'), live('unscored', '2026-09-13T11:10:00Z')];
+		const heat = resolveHeat(bars, new Map([['scored', 40]]));
+		expect(heat.get('scored')).toBe('hot');
+		expect(heat.get('unscored')).toBe('cool');
+	});
+
+	test('draws nothing tall before the scores have arrived', () => {
+		const heat = resolveHeat([live('a', '2026-09-13T11:00:00Z'), live('b', '2026-09-13T11:10:00Z')], new Map());
+		expect([...heat.values()]).toEqual(['cool', 'cool']);
+	});
+
+	// A final's last PowerScore can still be in the popup's state, and a scheduled game has none.
+	test('keeps finished and scheduled games short whatever score they carry', () => {
+		const bars = [
+			bar('final', 'nba', '2026-09-13T08:00:00Z', { status: 'post' }),
+			bar('later', 'nba', '2026-09-13T20:00:00Z'),
+			live('live', '2026-09-13T11:00:00Z'),
+		];
+		const heat = resolveHeat(bars, new Map([['final', 95], ['later', 90], ['live', 30]]));
+		expect(heat.get('final')).toBe('cool');
+		expect(heat.get('later')).toBe('cool');
+		expect(heat.get('live')).toBe('hot');
+	});
+
+	test('breaks a tie for the tall block in favour of a favourite, then the earlier kickoff', () => {
+		const plain = live('plain', '2026-09-13T10:00:00Z');
+		const favorite = bar('favorite', 'nba', '2026-09-13T11:00:00Z', { status: 'in', period: 3, clockSeconds: 300 }, true);
+		expect(resolveHeat([plain, favorite], new Map([['plain', 80], ['favorite', 80]])).get('favorite')).toBe('hot');
+		const later = live('later', '2026-09-13T11:00:00Z');
+		expect(resolveHeat([later, plain], new Map([['plain', 80], ['later', 80]])).get('plain')).toBe('hot');
 	});
 });
 

@@ -1,16 +1,29 @@
 import { i18n } from '#i18n';
 import type { guideBand } from './guideHeat';
 
-export const formatGuideTime = (ms: number): string => (
-	new Date(ms).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })
-);
+const timeFormat = new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit' });
 
-// The whole sentence back, minus its opening phrase — which is the label on the switch immediately
-// to its left, so the header still reads 'Best time to watch · 3:47 PM–4:17 PM · 3 games' end to end
-// without printing that phrase twice. Assembled from the parts that are present rather than written
-// inline with separators, so a missing piece cannot leave an orphan '·'.
+// A 12-hour reader gets '7 PM' on the axis, the way a printed schedule reads. A 24-hour one keeps
+// the minutes: '19' on its own could be anything.
+const hourFormat = timeFormat.resolvedOptions().hourCycle?.startsWith('h1')
+	? new Intl.DateTimeFormat(undefined, { hour: 'numeric' })
+	: timeFormat;
+
+const dayFormat = new Intl.DateTimeFormat(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
+
+export const formatGuideTime = (ms: number): string => timeFormat.format(ms);
+
+export const formatHourMark = (ms: number): string => hourFormat.format(ms);
+
+export const formatDayDate = (ms: number): string => dayFormat.format(ms);
+
+// The locale's own range, so '7:25 – 7:40 PM' prints its period once and a German reader gets
+// '19:25–19:40 Uhr'.
+export const formatGuideRange = (fromMs: number, toMs: number): string => timeFormat.formatRange(fromMs, toMs);
+
+// Finishes the sentence the switch's label starts: 'Best time to watch' then '7:25 – 7:40 PM, 5 games'.
 export const bandLabel = (band: guideBand): string => [
-	`${formatGuideTime(band.fromMs)}–${formatGuideTime(band.toMs)}`,
+	formatGuideRange(band.fromMs, band.toMs),
 	i18n.t('guide.bandGames', band.gameCount),
 	band.favoriteCount > 0 ? i18n.t('guide.bandFavorites', band.favoriteCount) : '',
-].filter(Boolean).join(' · ');
+].filter(Boolean).join(', ');

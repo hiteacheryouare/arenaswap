@@ -1,4 +1,4 @@
-import type { BackgroundState, Game, GuideSlate, LeagueId } from '@arenaswap/core/types';
+import type { BackgroundState, Game, GuideSlate, LeagueId, TabRegistration, UserPreferences } from '@arenaswap/core/types';
 import { createDefaultUserPreferences } from '@arenaswap/core/constants';
 import App from '../../entrypoints/guide/app';
 import { makeGame, makeScore } from '../support/fixtures';
@@ -38,6 +38,10 @@ interface MountOptions {
 	atMs?: number;
 	/** What GET_STATE answers with: the popup's own state, scores and history included. */
 	state?: Partial<BackgroundState>;
+	/** The tab registry in session storage, and the tabs showing in their windows. */
+	registry?: TabRegistration[];
+	activeTabs?: { id: number; index: number; active: boolean }[];
+	prefs?: Partial<UserPreferences>;
 }
 
 interface guideHandle {
@@ -49,7 +53,7 @@ interface guideHandle {
 	slateRequests: () => number;
 }
 
-const mountGuide = ({ deferSlate = false, games = [eagles, niners, sixers], atMs = now, state }: MountOptions = {}) => {
+const mountGuide = ({ deferSlate = false, games = [eagles, niners, sixers], atMs = now, state, registry = [], activeTabs = [], prefs = {} }: MountOptions = {}) => {
 	cy.clock(atMs, ['Date', 'setInterval', 'clearInterval']);
 	cy.viewport(1280, 800);
 
@@ -78,8 +82,14 @@ const mountGuide = ({ deferSlate = false, games = [eagles, niners, sixers], atMs
 		},
 		i18n: { getUILanguage: () => 'en-US' },
 		storage: {
-			sync: { get: () => Promise.resolve({ prefs: createDefaultUserPreferences(), prefsUpdatedAt: 0 }) },
+			sync: { get: () => Promise.resolve({ prefs: { ...createDefaultUserPreferences(), ...prefs }, prefsUpdatedAt: 0 }) },
 			local: { get: () => Promise.resolve({ prefs: null, prefsUpdatedAt: 0 }) },
+			session: { get: () => Promise.resolve({ tabRegistry: registry }) },
+			onChanged: { addListener: () => {}, removeListener: () => {} },
+		},
+		tabs: {
+			query: ({ active }: { active?: boolean }) => Promise.resolve(active ? activeTabs.filter(tab => tab.active) : activeTabs),
+			onActivated: { addListener: () => {}, removeListener: () => {} },
 		},
 	};
 
@@ -98,7 +108,7 @@ const mountGuide = ({ deferSlate = false, games = [eagles, niners, sixers], atMs
 };
 
 const openFirstGame = () => {
-	cy.get('.guide-bar-shape').first().click();
+	cy.get('.guide-bar-content').first().click();
 	cy.get('.guide-drawer').should('exist');
 };
 
@@ -212,7 +222,7 @@ describe('the guide page', () => {
 		// Escape starts the exit, then the second bar is clicked before it completes.
 		cy.get('body').trigger('keydown', { key: 'Escape' });
 		cy.get('.guide-drawer[data-closing="true"]').should('exist');
-		cy.get('.guide-bar-shape').eq(1).click();
+		cy.get('.guide-bar-content').eq(1).click();
 
 		cy.get('.guide-drawer').should('exist').and('not.have.attr', 'data-closing');
 		cy.get('.guide-drawer').contains('nfl-niners Home').should('exist');
@@ -239,6 +249,7 @@ describe('the guide page', () => {
 	it('drops the best-window summary from the header when the band is switched off', () => {
 		mountGuide();
 		cy.get('.guide-band-summary').should('exist');
+		cy.get('#guideBandToggle').should('have.attr', 'role', 'switch');
 
 		cy.get('#guideBandToggle').uncheck({ force: true });
 
@@ -265,10 +276,128 @@ describe('the guide page', () => {
 	// nothing. The panel closes rather than going back, since there is nothing behind it.
 	it('offers no tab picker on a scheduled game, and closes rather than going back', () => {
 		mountGuide();
-		cy.get("[data-game-id='nfl-niners'] .guide-bar-shape").click();
-		cy.get('.guide-drawer .gd-setup').should('exist');
-		cy.get('.guide-drawer select').should('not.exist');
-		cy.get('.guide-drawer .game-detail-back-button').should('contain.text', 'Close').find('.bi-x-lg').should('exist');
+		cy.get("[data-game-id='nfl-niners'] .guide-bar-content").click();
+		// The setup card is there, so the picker's absence is the prop rather than an empty drawer.
+		cy.get('.guide-drawer .dt-setup').should('exist');
+		cy.get('.guide-drawer .game-card-tab-assign').should('not.exist');
+		cy.get('.guide-drawer .dt-back').should('have.length.at.least', 1).each(($back: JQuery<HTMLElement>) => {
+			expect($back.text()).to.contain('Close');
+			expect($back.find('.bi-x-lg')).to.have.length(1);
+		});
+	});
+
+	// Commas, not middle dots, and one sentence with the switch's own label.
+	it('finishes the switch label with a plain summary of the window', () => {
+		mountGuide();
+		cy.get('.guide-band-summary').invoke('text').should('match', /^\d{1,2}:\d{2}.+, \d+ games?$/).and('not.contain', '\u00b7');
+	});
+
+	it('names the day in the header, and lights the Today button only on today', () => {
+		mountGuide();
+		cy.get('.guide-day').should('have.text', new Date(now).toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' }));
+		cy.get('.guide-day-today').should('have.class', 'active').and('have.attr', 'aria-current', 'date');
+
+		cy.get('.guide-day-pager button').last().click();
+
+		cy.get('.guide-day').should('have.text', new Date(tomorrow).toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' }));
+		cy.get('.guide-day-today').should('not.have.class', 'active').and('not.have.attr', 'aria-current');
+	});
+
+	it('brings the reader back to today from another day', () => {
+		mountGuide();
+		cy.get('.guide-day-pager button').last().click();
+		cy.get('.guide-bar').should('have.length', 1);
+
+		cy.get('.guide-day-today').click();
+
+		cy.get('.guide-bar').should('have.length', 2);
+		cy.get('.guide-day-today').should('have.class', 'active');
+		// Back on the present, rather than at the start of the day.
+		cy.get('.guide-scroller').invoke('scrollLeft').should('be.greaterThan', 0);
+	});
+
+	it('brings the grid back round to now when Today is pressed on today', () => {
+		mountGuide();
+		cy.get('.guide-scroller').invoke('scrollLeft').should('be.greaterThan', 0).then(opened => {
+			cy.get('.guide-scroller').scrollTo(0, 0);
+			cy.get('.guide-scroller').invoke('scrollLeft').should('equal', 0);
+			cy.get('.guide-day-today').click();
+			cy.get('.guide-scroller').invoke('scrollLeft').should('equal', opened);
+		});
+	});
+
+	it('stops the pager at both ends of the slate', () => {
+		mountGuide();
+		cy.get('.guide-day-pager button').first().should('be.disabled');
+		cy.get('.guide-day-pager button').last().should('not.be.disabled').click();
+		cy.get('.guide-day-pager button').last().should('be.disabled');
+		cy.get('.guide-day-pager button').first().should('not.be.disabled');
+	});
+
+	it('offers no way back to a today that has nothing on it', () => {
+		mountGuide({ games: [niners], atMs: tomorrow });
+		cy.get('.guide-bar').should('have.length', 1);
+		cy.get('.guide-day-today').should('be.disabled');
+	});
+
+	// The slate carries no PowerScores; the popup's state does, and the block is sized by it.
+	it('puts the live game\'s real PowerScore on its block, and draws the hottest one tall', () => {
+		mountGuide({ state: { games: [eagles], scores: [makeScore(eagles.id, 71)] } });
+		cy.get("[data-game-id='nfl-eagles'] .guide-bar-value").should('contain.text', '71');
+		cy.get("[data-game-id='nfl-eagles']").should('have.attr', 'data-heat', 'hot');
+		cy.get("[data-game-id='nfl-niners'] .guide-bar-value").should('not.exist');
+	});
+
+	it('draws no PowerScore at all until the popup\'s state has one', () => {
+		mountGuide();
+		cy.get('.guide-bar').should('have.length', 2);
+		cy.get('.guide-bar-value').should('not.exist');
+		cy.get("[data-game-id='nfl-eagles']").should('have.attr', 'data-heat', 'cool');
+	});
+
+	// Read-only: the Guide shows which tab a game is on, and never assigns one.
+	it('marks the game whose tab is showing, by that tab\'s number', () => {
+		mountGuide({
+			registry: [{ tabId: 7, gameId: 'nfl-eagles' }, { tabId: 8, gameId: 'nfl-niners' }],
+			activeTabs: [{ id: 7, index: 2, active: true }, { id: 8, index: 3, active: false }],
+		});
+		cy.get("[data-game-id='nfl-eagles']").should('have.attr', 'data-watched', 'true');
+		cy.get("[data-game-id='nfl-eagles'] .guide-bar-watching").should('have.text', 'Watching, Tab 3');
+		cy.get("[data-game-id='nfl-niners']").should('not.have.attr', 'data-watched');
+	});
+
+	it('draws the wordmark in ink, following the Theme setting', () => {
+		mountGuide({ prefs: { theme: 'light' } });
+		cy.document().its('documentElement.dataset.bsTheme').should('equal', 'light');
+		cy.get('.guide-wordmark').should('have.attr', 'aria-label', 'ArenaSwap').and(([mark]: JQuery<HTMLElement>) => {
+			expect(getComputedStyle(mark!).color).to.equal('rgb(14, 16, 19)');
+		});
+		cy.get('.guide-page').should('have.css', 'background-color', 'rgb(244, 245, 247)');
+		cy.document().then(doc => { delete doc.documentElement.dataset.bsTheme; });
+	});
+
+	// A Sunday of fifteen early kickoffs is taller than the tab. The page holds still and the grid
+	// scrolls inside it, so the header, the ruler and the league names stay where they are.
+	it('holds the header and the ruler still while a long day scrolls under them', () => {
+		const sunday = Array.from({ length: 15 }, (_, index) => game(`nfl-${index}`, 'nfl', '2026-09-13T17:00:00Z'));
+		mountGuide({ games: sunday });
+		cy.get('.guide-bar').should('have.length', 15);
+		cy.get('.guide-header').should(([header]: JQuery<HTMLElement>) => {
+			expect(header!.getBoundingClientRect().height).to.equal(56);
+		});
+		cy.get('.guide-page').should(([page]: JQuery<HTMLElement>) => {
+			expect(page!.getBoundingClientRect().height).to.equal(800);
+		});
+		cy.get('.guide-scroller').should(([scroller]: JQuery<HTMLElement>) => {
+			expect(scroller!.scrollHeight).to.be.greaterThan(scroller!.clientHeight);
+		});
+		cy.get('.guide-scroller').scrollTo(0, 300);
+		cy.get('.guide-ruler').should(([ruler]: JQuery<HTMLElement>) => {
+			expect(ruler!.getBoundingClientRect().top).to.equal(56);
+		});
+		cy.get('.guide-league-inner').should(([name]: JQuery<HTMLElement>) => {
+			expect(name!.getBoundingClientRect().top, 'the league name rides down under the ruler').to.equal(56 + 32);
+		});
 	});
 
 	it('still draws the grid when the slate comes back with no day it can anchor to now', () => {

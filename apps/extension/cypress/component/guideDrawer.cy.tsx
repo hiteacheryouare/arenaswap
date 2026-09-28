@@ -9,6 +9,7 @@ const mountDrawer = (closing = false) => {
 	cy.viewport(1280, 800);
 	cy.mount(
 		<div className='guide-page'>
+			<header className='guide-header'><span style={{ display: 'block', height: 30 }}>header</span></header>
 			<div className='guide-main'>
 				<div className='guide-scroller' />
 				<aside className='guide-drawer' data-closing={closing ? 'true' : undefined}>
@@ -30,6 +31,28 @@ describe('the guide detail drawer', () => {
 			expect(height).to.be.greaterThan(560);
 			const drawer = inner.closest('.guide-drawer')!.getBoundingClientRect();
 			expect(Math.round(height)).to.equal(Math.round(drawer.height));
+		});
+	});
+
+	// The header is a whole 56px, rule included, so the drawer's top edge lands on a pixel rather than
+	// smearing into the rule above it.
+	it('starts on a whole pixel directly under the header', () => {
+		mountDrawer();
+		cy.get('.guide-drawer').should(([drawer]: JQuery<HTMLElement>) => {
+			expect(drawer!.getBoundingClientRect().top).to.equal(56);
+		});
+	});
+
+	// The grid is its own stacking context and the drawer sits above it, so the drawer's shadow falls
+	// across the blocks and the sticky ruler rather than under them.
+	it('casts its shadow over the grid rather than under it', () => {
+		mountDrawer();
+		cy.get('.guide-scroller').should('have.css', 'isolation', 'isolate');
+		cy.get('.guide-drawer').should(([drawer]: JQuery<HTMLElement>) => {
+			const style = getComputedStyle(drawer!);
+			expect(style.position).to.equal('relative');
+			expect(Number(style.zIndex)).to.be.at.least(1);
+			expect(style.boxShadow).to.not.equal('none');
 		});
 	});
 
