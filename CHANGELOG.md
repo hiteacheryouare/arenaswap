@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Spotlight: v3 gets its colour back — 2026-09-29
+
+The redesign is now called Spotlight, and it's louder about your teams: DM Sans is back as the voice (Inter stays on figures, tables and chart axes), crests are bigger (72px on the stage, 32 on tiles, 28 on rows), every row is washed in both teams' colours, and v2's PowerScore bar is back on the stage, tiles and rows. The list has Live, Up Next and Final titles again, and you can star a team straight from the stage or a tile. The board now draws the teams' white and black marks from the background's weekly cache (a new `GET_MONO_LOGOS` message) instead of putting crests on discs, the stage's opening poster covers the header too, and the signature bar no longer scrolls the popup sideways.
+
 ## The v3 redesign — 2026-09-28
 
 The popup, the Guide and the website move to the v3 look: Inter throughout, new tokens for both themes in `packages/ui/src/_theme.scss`, and a games board that puts the hottest live game on a team-coloured stage, games at 70 or above in tiles and the rest in rows, with upcoming games and finals under a hairline. The old card components are gone for `gameStage`, `gameTile` and `gameRow` in `packages/ui`, which paint the pair `resolveTeamColorPair` picks under a veil worked out per game so white type clears 4.5:1. Onboarding and the tour now follow the Theme setting instead of staying dark, and a finished game never shows a PowerScore.
