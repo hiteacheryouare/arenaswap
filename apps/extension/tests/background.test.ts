@@ -2109,6 +2109,15 @@ describe('the team marks the guide draws', () => {
 
 		expect(monoFetch()).toHaveBeenCalledTimes(1);
 	});
+
+	test('reach the popup board from the same store the guide reads', async () => {
+		await loadForGuide();
+		storeMarks({ fetchedAt: Date.now(), logos: { nba: { '1': marks } } });
+		monoFetch().mockClear();
+
+		expect(await onMessageHandler({ type: 'GET_MONO_LOGOS' })).toEqual({ nba: { '1': marks } });
+		expect(monoFetch()).not.toHaveBeenCalled();
+	});
 });
 
 /* A league whose dated range is refused fails only the slate leg — its live games keep arriving from

@@ -128,6 +128,9 @@ export const installFakeBrowser = (win: Window, options: fakeBrowserOptions): fa
 			case 'GET_GUIDE_SLATE':
 				return background.guideSlate;
 
+			case 'GET_MONO_LOGOS':
+				return background.guideSlate.monoLogos;
+
 			default:
 				return undefined;
 		}

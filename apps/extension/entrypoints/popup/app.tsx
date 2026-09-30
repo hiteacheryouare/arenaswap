@@ -14,6 +14,7 @@ import { fetchState, formatTabLabel, insertLeagueAtDefaultPosition, leagueOrder,
 import { i18n } from '#i18n';
 import { TranslationContext } from '@arenaswap/ui/src/components/i18nContext';
 import useFavoriteScoreConfetti from './useFavoriteScoreConfetti';
+import useBoardMonoLogos from './useBoardMonoLogos';
 import { resolveOpenRevealMode, revealSettleMs, revealSkipOutMs, writeOpenRevealEnabled } from './cardReveal';
 import { isLeagueLogoCacheFresh, leagueLogoCacheKey, seededLeagueLogos } from './leagueLogoCache';
 import useToast from './useToast';
@@ -221,6 +222,7 @@ export default () => {
 	const onStandbyStream = data?.onStandbyStream ?? false;
 	const favoriteTeamIds = useMemo(() => new Set(prefs.favoriteTeamIds), [prefs.favoriteTeamIds]);
 	const confettiCanvasRef = useFavoriteScoreConfetti({ games, favoriteTeamIds });
+	const monoLogos = useBoardMonoLogos();
 
 	useEffect(() => {
 		const init = async () => {
@@ -564,6 +566,7 @@ export default () => {
 						scores={scores}
 						powerScoreHistory={powerScoreHistory}
 						leagueLogos={leagueLogos}
+						monoLogos={monoLogos}
 						registry={registry}
 						favoriteTeamIds={favoriteTeamIds}
 						gameBoosts={gameBoosts}

@@ -1354,6 +1354,10 @@ export default defineBackground(() => {
 			});
 		}
 
+		if (msg.type === 'GET_MONO_LOGOS') {
+			return stateReady.then(() => ensureMonoLogos(prefs.enabledLeagues));
+		}
+
 		if (msg.type === 'GET_GUIDE_SLATE') {
 			return stateReady.then(async (): Promise<GuideSlate> => {
 				// Demo mode has no network behind it, so the simulator's own slate is the answer.

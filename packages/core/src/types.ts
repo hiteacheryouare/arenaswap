@@ -357,6 +357,11 @@ export interface GetGuideSlateMessage {
 	type: 'GET_GUIDE_SLATE';
 }
 
+// The board draws ESPN's white and black marks wherever a colour crest would not read.
+export interface GetMonoLogosMessage {
+	type: 'GET_MONO_LOGOS';
+}
+
 export interface GuideSlate {
 	games: Game[];
 	leagueLogos: LeagueLogoMap;
@@ -402,4 +407,5 @@ export type ExtensionMessage =
 	| SetDemoModeMessage
 	| SetStandbyStreamTabMessage
 	| GetDebugStateMessage
-	| GetGuideSlateMessage;
+	| GetGuideSlateMessage
+	| GetMonoLogosMessage;
