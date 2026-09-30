@@ -21,6 +21,7 @@
 	--color-success:   #00CC66;
 	--color-danger:    #D90368;
 	--color-warning:   #F1C40F;
-	--font-sans:       'Inter', system-ui, -apple-system, sans-serif;
+	--font-sans:       'DM Sans', system-ui, -apple-system, sans-serif;
+	--font-figures:    'Inter', system-ui, -apple-system, sans-serif;
 	--font-mono:       ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace;
 }

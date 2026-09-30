@@ -6,14 +6,20 @@ body {
 	background: var(--as-page);
 	color: var(--as-ink);
 	font-family: var(--as-font);
-	font-optical-sizing: auto;
-	font-feature-settings: 'cv11';
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 	--as-focus-ring-color: var(--as-focus);
 }
 
+// Figures that tick or line up in columns: clocks, countdowns, tables. The descendants too, because
+// the extension sets its face on every element rather than letting it inherit.
+.num,
+.num * {
+	font-family: var(--as-font-figures);
+}
+
 .num {
+	font-optical-sizing: auto;
 	font-variant-numeric: tabular-nums;
 	font-feature-settings: 'tnum', 'cv11';
 }

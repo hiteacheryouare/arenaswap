@@ -42,7 +42,7 @@ const BarTeam = ({ abbreviation, crest, score, side }: {
 	<span className={`dt-bar-team is-${side}`}>
 		{crest}
 		<b>{abbreviation}</b>
-		{score !== null && <span className='dt-bar-score num'>{score}</span>}
+		{score !== null && <span className='dt-bar-score'>{score}</span>}
 	</span>
 );
 

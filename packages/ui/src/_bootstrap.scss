@@ -58,7 +58,7 @@
 	$form-select-border-color: var(--as-border-color) !default,
 	// Parenthesised because a bare comma list inside a `with (...)` argument list would read as
 	// four separate arguments.
-	$font-family-base:     ('Inter', system-ui, -apple-system, sans-serif) !default,
+	$font-family-base:     ('DM Sans', system-ui, -apple-system, sans-serif) !default,
 	// There is deliberately no monospace token here. This file used to set `$font-monospace`, which
 	// is not a Bootstrap variable — Bootstrap's is `$font-family-monospace` — and which nothing read,
 	// so Lekton is spelled out literally at each of its ~20 call sites and Bootstrap's code/pre/kbd

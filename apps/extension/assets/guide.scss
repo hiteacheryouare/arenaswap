@@ -147,6 +147,7 @@ $guide-lane-height: 56px;
 	display: flex;
 	flex-shrink: 0;
 	height: $guide-ruler-height;
+	font-family: var(--as-font-figures);
 	background: var(--as-page);
 	border-bottom: 1px solid var(--as-line);
 }

@@ -23,8 +23,17 @@ $font-base-url: '/fonts' !default;
 	}
 }
 
-// Inter carries all of ArenaSwap's type. It is a variable font with a weight and an optical-size
-// axis, so one file answers every weight and size between 100 and 900.
+// DM Sans is ArenaSwap's voice. One variable file with a weight axis from 100 to 1000.
+@font-face {
+	font-family: 'DM Sans';
+	src: url('#{$font-base-url}/DMSans.woff2') format('woff2');
+	font-weight: 100 1000;
+	font-style: normal;
+	font-display: swap;
+}
+
+// Inter carries the figures DM Sans can't: it has tabular digits, so a ticking clock holds still.
+// Also the dense tables and chart axes.
 @font-face {
 	font-family: 'Inter';
 	src: url('#{$font-base-url}/Inter.woff2') format('woff2');
