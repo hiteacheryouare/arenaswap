@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Spotlight lays games out like a scoreboard — 2026-09-30
+
+Every game on the board now reads the way Apple Sports sets one: each team under its crest, the scores beside them and the bases and outs or the down and distance between them, with the two teams' colours holding their own ends instead of mixing into mud. v2's details are back, including the pulsing live dot (pink in overtime, a pause for a delay), the pink overtime ring, the gold favourite star, the hover lift, the "PowerScore 74 / 100" bar as a Bootstrap progress in v2's colour, and the breakdown's coloured boosts. DM Sans is back to v2's weights and spacing.
+
 ## Spotlight: v3 gets its colour back — 2026-09-29
 
 The redesign is now called Spotlight, and it's louder about your teams: DM Sans is back as the voice (Inter stays on figures, tables and chart axes), crests are bigger (72px on the stage, 32 on tiles, 28 on rows), every row is washed in both teams' colours, and v2's PowerScore bar is back on the stage, tiles and rows. The list has Live, Up Next and Final titles again, and you can star a team straight from the stage or a tile. The board now draws the teams' white and black marks from the background's weekly cache (a new `GET_MONO_LOGOS` message) instead of putting crests on discs, the stage's opening poster covers the header too, and the signature bar no longer scrolls the popup sideways.
