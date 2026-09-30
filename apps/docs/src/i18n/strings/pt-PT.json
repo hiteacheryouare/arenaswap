@@ -438,7 +438,6 @@
 			"outs": "O"
 		},
 		"board": {
-			"at": "-",
 			"steady": "Estável",
 			"trendUp": "subiu no último minuto",
 			"trendDown": "desceu no último minuto",
@@ -455,6 +454,15 @@
 			"inHours": {
 				"1": "em 1 h",
 				"n": "em $1 h"
+			},
+			"delayed": "Atraso",
+			"overtime": "Prol.",
+			"extraTime": "Prolongamento",
+			"extraInnings": "Entradas extra",
+			"outs": {
+				"0": "Nenhum eliminado",
+				"1": "1 eliminado",
+				"n": "$1 eliminados"
 			}
 		}
 	}

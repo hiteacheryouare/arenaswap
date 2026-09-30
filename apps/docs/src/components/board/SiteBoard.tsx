@@ -153,7 +153,8 @@ const SiteBoard = ({
 								game={game}
 								theme='dark'
 								power={scoreOf(game)}
-								status={picker(game)}
+								trend={trends[game.id]}
+								tab={picker(game)}
 								favorites={favorites[game.id]}
 								watched={game.id === watchedId}
 								interactive={opener(game)}

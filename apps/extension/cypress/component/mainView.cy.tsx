@@ -339,10 +339,10 @@ describe('mainView board', () => {
 				scores={[score('hot', 91), score('warm', 80)]}
 			/>,
 		);
-		cy.get('.as-stage .as-stage-team').first().find('.as-star').click();
+		cy.get('.as-stage .as-match-team').first().find('.as-star').click();
 		cy.get('@toggle').should('have.been.calledWith', 'nba', 'hot-a');
 		cy.get('.as-tile').focus();
-		cy.get('.as-tile .as-tile-team').eq(1).find('.as-star').click();
+		cy.get('.as-tile .as-match-team').eq(1).find('.as-star').click();
 		cy.get('@toggle').should('have.been.calledWith', 'nba', 'warm-h');
 		cy.get('@open').should('not.have.been.called');
 	});
@@ -409,7 +409,7 @@ describe('mainView board', () => {
 				] as never}
 			/>,
 		);
-		gameEl('watched').should('have.class', 'is-watched').find('.as-stage-label').should('contain.text', 'Watching, Tab 2');
+		gameEl('watched').should('have.class', 'is-watched').find('.as-top-tab').should('contain.text', 'Watching, Tab 2');
 		gameEl('loose').find('.as-picker').should('contain.text', 'No tab');
 	});
 
@@ -424,13 +424,13 @@ describe('mainView board', () => {
 			] as never,
 		};
 		cy.mount(<MainView {...props} scores={[score('best', 90), score('watched', 70)]} />);
-		gameEl('best').find('.as-stage-label').should('have.text', 'Switching to Tab 2');
+		gameEl('best').find('.as-top-tab').should('have.text', 'Switching to Tab 2');
 
 		cy.mount(<MainView {...props} scores={[score('best', 75), score('watched', 70)]} />);
-		gameEl('best').find('.as-stage-label').should('contain.text', 'Tab 2').and('not.contain.text', 'Switching');
+		gameEl('best').find('.as-top-tab').should('contain.text', 'Tab 2').and('not.contain.text', 'Switching');
 
 		cy.mount(<MainView {...props} prefs={{ ...defaultPrefs, enabled: false }} scores={[score('best', 90), score('watched', 70)]} />);
-		gameEl('best').find('.as-stage-label').should('not.contain.text', 'Switching');
+		gameEl('best').find('.as-top-tab').should('not.contain.text', 'Switching');
 	});
 
 	it('lists upcoming and finished games after the live ones, finals last and without a PowerScore', () => {
@@ -445,8 +445,8 @@ describe('mainView board', () => {
 		cy.get('[data-game]').then($games => {
 			expect([...$games].map(game => game.dataset.game)).to.deep.equal(['now', 'later', 'done']);
 		});
-		gameEl('done').find('.as-row-power').should('have.text', '');
-		gameEl('done').find('.as-clock').should('have.text', 'Final');
+		gameEl('done').find('.as-power-line').should('not.exist');
+		gameEl('done').find('.as-centre-word').should('have.text', 'Final');
 	});
 
 	it('drops finished games when Keep finished games is off', () => {

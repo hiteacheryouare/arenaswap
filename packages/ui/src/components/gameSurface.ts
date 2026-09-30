@@ -12,7 +12,7 @@ const delayVeilInk: Rgb = { red: 28, green: 22, blue: 3 };
 const ink = '#ffffff';
 export const veilTopShare = 0.8;
 const veilMin = 0.1;
-const veilMax = 0.82;
+const veilMax = 0.9;
 const veilStep = 0.02;
 const noteAlpha = 0.88;
 const behindAlphaFloor = 0.6;
@@ -70,8 +70,15 @@ export const resolveGameColors = (game: Pick<Game, 'awayTeam' | 'homeTeam'>, sur
 	resolveTeamColorPair(game.awayTeam, game.homeTeam, fallbackColor, fallbackColor, surface)
 );
 
-export const resolveGameSurface = (game: Pick<Game, 'awayTeam' | 'homeTeam' | 'delayed'>): gameSurface => {
-	const [away, home] = resolveGameColors(game);
+// A delay takes both teams' colours away, as v2's card did, so it reads from across the room.
+const delayColor = '#f1c40f';
+
+const boardColors = (game: Pick<Game, 'awayTeam' | 'homeTeam' | 'delayed' | 'status'>): [string, string] => (
+	game.delayed === true && game.status === 'in' ? [delayColor, delayColor] : resolveGameColors(game)
+);
+
+export const resolveGameSurface = (game: Pick<Game, 'awayTeam' | 'homeTeam' | 'delayed' | 'status'>): gameSurface => {
+	const [away, home] = boardColors(game);
 	const veilInkForGame = game.delayed === true ? delayVeilInk : veilInk;
 	const veil = Math.max(veilFor(away, veilInkForGame), veilFor(home, veilInkForGame));
 	const behindAlpha = Math.max(behindFor(away, veilInkForGame, veil), behindFor(home, veilInkForGame, veil));
@@ -97,22 +104,19 @@ export const gameSurfaceStyle = (surface: gameSurface): CSSProperties => ({
 	'--stage-behind': `rgba(255, 255, 255, ${surface.behindAlpha})`,
 } as CSSProperties);
 
-// A row is a quieter band of the same two colours: the away team's line washed in its colour, the
-// home team's in its own, under a veil of the page itself. The veil is lightest at the crests and
-// thickens to the right, so the clock, the tab picker and the number sit on something close to the
-// page. Dark ink on the light page, white on the dark one. Games you aren't deciding anything from
-// (upcoming and final) sit under more of it.
+// A row is a quieter version of the same two colours: each team's colour holds its own end and they
+// meet through the page itself, under a veil of the page sized for the ink. Dark ink on the light
+// page, white on the dark one. Games you aren't deciding anything from (upcoming and final) sit
+// under more of it.
 const rowVeils = {
-	dark: { page: { red: 14, green: 16, blue: 19 }, ink: '#ffffff', note: '#ffffff', noteAlpha: 0.74, floor: 0.5, quietFloor: 0.72, far: 0.9 },
-	light: { page: { red: 244, green: 245, blue: 247 }, ink: '#0e1013', note: '#0e1013', noteAlpha: 0.7, floor: 0.62, quietFloor: 0.8, far: 0.92 },
+	dark: { page: { red: 14, green: 16, blue: 19 }, ink: '#ffffff', note: '#ffffff', noteAlpha: 0.74, floor: 0.5, quietFloor: 0.66 },
+	light: { page: { red: 244, green: 245, blue: 247 }, ink: '#0e1013', note: '#0e1013', noteAlpha: 0.7, floor: 0.62, quietFloor: 0.76 },
 } as const;
-const rowAccent = { dark: '#f75c03', light: '#c2410c' } as const;
 
 export interface rowSurface {
 	away: string;
 	home: string;
 	near: number;
-	far: number;
 	veilRgb: string;
 	crestAway: string;
 	crestHome: string;
@@ -124,8 +128,8 @@ const noteOver = (note: string, surface: string, alpha: number) => {
 	return mixOver(rgb, surface, alpha);
 };
 
-export const resolveRowSurface = (game: Pick<Game, 'awayTeam' | 'homeTeam'>, theme: ResolvedTheme, quiet = false): rowSurface => {
-	const [away, home] = resolveGameColors(game);
+export const resolveRowSurface = (game: Pick<Game, 'awayTeam' | 'homeTeam' | 'delayed' | 'status'>, theme: ResolvedTheme, quiet = false): rowSurface => {
+	const [away, home] = boardColors(game);
 	const tone = rowVeils[theme];
 	const holds = (color: string, share: number) => {
 		const under = mixOver(tone.page, color, share);
@@ -136,18 +140,11 @@ export const resolveRowSurface = (game: Pick<Game, 'awayTeam' | 'homeTeam'>, the
 		while (share < 0.96 && !holds(color, share)) share += veilStep;
 		return Math.min(share, 0.96);
 	};
-	const farFor = (color: string) => {
-		let share: number = tone.far;
-		while (share < 0.98 && contrast(rowAccent[theme], mixOver(tone.page, color, share)) < textContrast) share += veilStep;
-		return Math.min(share, 0.98);
-	};
 	const near = Math.max(nearFor(away), nearFor(home));
-	const far = Math.max(near, farFor(away), farFor(home));
 	return {
 		away,
 		home,
 		near: round(near),
-		far: round(far),
 		veilRgb: `${tone.page.red}, ${tone.page.green}, ${tone.page.blue}`,
 		crestAway: mixOver(tone.page, away, near),
 		crestHome: mixOver(tone.page, home, near),
@@ -162,7 +159,6 @@ export const rowSurfaceStyle = (surface: rowSurface): CSSProperties => {
 		'--row-away': surface.away,
 		'--row-home': surface.home,
 		'--row-near': surface.near,
-		'--row-far': surface.far,
 		'--row-veil-rgb': surface.veilRgb,
 		'--row-ink': tone.ink,
 		'--row-note': `rgba(${note.red}, ${note.green}, ${note.blue}, ${tone.noteAlpha})`,

@@ -86,7 +86,7 @@ const walkthroughStepAutoSwitch = ({ onNext, onBack }: walkthroughStepAutoSwitch
 						game={row}
 						theme={theme}
 						power={powerOf(row)}
-						status={tabPicker(row, watchedTabId)}
+						tab={tabPicker(row, watchedTabId)}
 						watched={row.id === watchedGameId}
 					/>
 				</div>

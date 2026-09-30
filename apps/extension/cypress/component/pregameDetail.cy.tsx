@@ -88,14 +88,14 @@ describe('pre-game detail screen', () => {
 	it('keeps the breakdown once the game is live, on the same stage', () => {
 		mountPre({ ...preGame, status: 'in', period: 2, clockSeconds: 300 });
 		cy.get('.powerscore-breakdown').should('exist');
-		cy.get('.dt-hero.is-in .as-stage-score').should('exist');
-		cy.get('.dt-hero .as-stage-at').should('not.exist');
+		cy.get('.dt-hero.is-in .as-match-score').should('exist');
+		cy.get('.dt-hero .as-centre-time').should('not.exist');
 	});
 
-	it('writes "at" between the teams before a start', () => {
+	it('writes the start time between the teams before a start', () => {
 		mountPre(preGame);
-		cy.get('.dt-hero .as-stage-at').should('have.text', 'at');
-		cy.get('.dt-hero .as-stage-score').should('not.exist');
+		cy.get('.dt-hero .as-centre-time').invoke('text').should('match', /\d/);
+		cy.get('.dt-hero .as-match-score').should('not.exist');
 	});
 
 	// The stage runs to the popup's edges and the cards sit inset beneath it.
@@ -146,15 +146,15 @@ describe('pre-game detail screen', () => {
 	it('carries a favourite star per team, reflecting current state', () => {
 		mountPre(preGame, { favorites: ['nfl:1'] });
 		cy.get('.dt-hero .as-star').should('have.length', 2);
-		cy.get('.dt-hero .as-stage-team').eq(0).find('.as-star').should('have.attr', 'data-favorited', 'false');
-		cy.get('.dt-hero .as-stage-team').eq(1).find('.as-star').should('have.attr', 'data-favorited', 'true');
-		cy.get('.dt-hero .as-stage-team').eq(1).find('.bi-star-fill').should('exist');
+		cy.get('.dt-hero .as-match-team').eq(0).find('.as-star').should('have.attr', 'data-favorited', 'false');
+		cy.get('.dt-hero .as-match-team').eq(1).find('.as-star').should('have.attr', 'data-favorited', 'true');
+		cy.get('.dt-hero .as-match-team').eq(1).find('.bi-star-fill').should('exist');
 	});
 
 	it('toggles the team the star belongs to', () => {
 		const toggled: string[] = [];
 		mountPre(preGame, { onToggleFavoriteTeam: (_league, teamId) => toggled.push(teamId) });
-		cy.get('.dt-hero .as-stage-team').eq(0).find('.as-star').click({ scrollBehavior: false });
+		cy.get('.dt-hero .as-match-team').eq(0).find('.as-star').click({ scrollBehavior: false });
 		cy.wrap(toggled).should('deep.equal', ['3']);
 	});
 
@@ -546,8 +546,8 @@ describe('pre-game detail screen', () => {
 
 		it('prefers the scoreboard record over a summary fetch on the stage', () => {
 			mountPre(pitchers);
-			cy.get('.dt-hero .as-stage-team small').eq(0).should('have.text', '70-64');
-			cy.get('.dt-hero .as-stage-team small').eq(1).should('have.text', '76-58');
+			cy.get('.dt-hero .as-match-record').eq(0).should('have.text', '70-64');
+			cy.get('.dt-hero .as-match-record').eq(1).should('have.text', '76-58');
 		});
 
 

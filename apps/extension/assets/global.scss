@@ -1066,41 +1066,28 @@ button, input, select, optgroup, textarea {
 /* Timed to start as the colour begins to retreat, so the card is arriving rather than waiting
    behind a curtain that is opening on it. Ordered the way you read a scoreboard: what the game is,
    then what the score is, then who is playing, then everything around it. */
-.game-card-reveal [data-team-star='true'],
-.game-card-reveal .as-stage-meta,
-.game-card-reveal .as-tile-top,
-.game-card-reveal .as-row-status,
-.game-card-reveal .as-stage-score,
-.game-card-reveal .as-tile-team .as-score,
-.game-card-reveal .as-row-team .as-score,
-.game-card-reveal .as-stage-team > :not(.as-crest-box),
-.game-card-reveal .as-tile-team b,
-.game-card-reveal .as-row-team b,
+.game-card-reveal .as-top,
+.game-card-reveal .as-match-score,
+.game-card-reveal .as-match-team > :not(.as-crest-box),
+.game-card-reveal .as-centre,
 .game-card-reveal .as-stage-note,
 .game-card-reveal .as-stage-situation,
-.game-card-reveal .as-trend,
 .game-card-reveal .as-stage-power,
-.game-card-reveal .as-tile-power,
-.game-card-reveal .as-row-power {
+.game-card-reveal .as-power-line {
 	animation: cardRevealContent calc(620ms * var(--reveal-rate)) cubic-bezier(0.22, 1, 0.36, 1) calc(var(--reveal-spine) + 2500ms * var(--reveal-rate)) both;
 }
 
-.game-card-reveal .as-stage-score,
-.game-card-reveal .as-tile-team .as-score,
-.game-card-reveal .as-row-team .as-score {
+.game-card-reveal .as-match-score {
 	animation-delay: calc(var(--reveal-spine) + 2580ms * var(--reveal-rate));
 }
 
-.game-card-reveal [data-team-star='true'],
-.game-card-reveal .as-stage-team > :not(.as-crest-box),
-.game-card-reveal .as-tile-team b,
-.game-card-reveal .as-row-team b {
+.game-card-reveal .as-match-team > :not(.as-crest-box) {
 	animation-delay: calc(var(--reveal-spine) + 2660ms * var(--reveal-rate));
 }
 
+.game-card-reveal .as-centre,
 .game-card-reveal .as-stage-note,
-.game-card-reveal .as-stage-situation,
-.game-card-reveal .as-trend {
+.game-card-reveal .as-stage-situation {
 	animation-delay: calc(var(--reveal-spine) + 2740ms * var(--reveal-rate));
 }
 
@@ -1118,8 +1105,7 @@ button, input, select, optgroup, textarea {
    wrapper is removed. At 2820 the last beat was still 40ms from finishing when its element stopped
    existing — invisible under this easing, which is at 99.9% by then, and a pop under any other. */
 .game-card-reveal .as-stage-power,
-.game-card-reveal .as-tile-power,
-.game-card-reveal .as-row-power {
+.game-card-reveal .as-power-line {
 	animation-delay: calc(var(--reveal-spine) + 2780ms * var(--reveal-rate));
 }
 
@@ -1158,22 +1144,14 @@ button, input, select, optgroup, textarea {
 		animation: cardRevealSkipOut 140ms linear both;
 	}
 
-	[data-team-star='true'],
-	.as-stage-meta,
-	.as-tile-top,
-	.as-row-status,
-	.as-stage-score,
-	.as-tile-team .as-score,
-	.as-row-team .as-score,
-	.as-stage-team > *,
-	.as-tile-team b,
-	.as-row-team b,
+	.as-top,
+	.as-match-score,
+	.as-match-team > *,
+	.as-centre,
 	.as-stage-note,
 	.as-stage-situation,
-	.as-trend,
 	.as-stage-power,
-	.as-tile-power,
-	.as-row-power,
+	.as-power-line,
 	[data-reveal-crest] {
 		animation: none;
 	}

@@ -193,7 +193,7 @@ const within = (inner: DOMRect, outer: DOMRect, label: string) => {
 // purpose and clipped, so it is the one thing left out.
 const expectInsideStage = (hero: HTMLElement) => {
 	const stage = hero.getBoundingClientRect();
-	hero.querySelectorAll<HTMLElement>('.dt-head, .as-stage-meta, .as-stage-match, .as-stage-team > *, .as-stage-score, .dt-situation, .dt-situation > *, .as-stage-foot').forEach(el => {
+	hero.querySelectorAll<HTMLElement>('.dt-head, .as-top, .as-match, .as-match-team > *, .as-match-score, .as-centre, .dt-situation, .dt-situation > *, .as-stage-foot').forEach(el => {
 		within(el.getBoundingClientRect(), stage, el.className || el.tagName);
 	});
 };
@@ -238,14 +238,14 @@ describe('gameDetailView countdown', () => {
 	it('leads with the scheduled date and time', () => {
 		const game = makePreGame(2 * dayMs + 5 * hourMs);
 		mountDetail(game);
-		cy.get('.dt-hero .as-clock').should('have.text', formatStartClock(game.startTime, now));
-		cy.get('.dt-hero .as-clock').invoke('text').should('match', /\d/).and('have.length.greaterThan', 8);
+		cy.get('.dt-hero .as-centre-time').should('have.text', formatStartClock(game.startTime, now));
+		cy.get('.dt-hero .as-centre-time').invoke('text').should('match', /\d/).and('have.length.greaterThan', 8);
 	});
 
 	it('gives a start later today its time alone', () => {
 		const game = makePreGame(3 * hourMs);
 		mountDetail(game);
-		cy.get('.dt-hero .as-clock').should('have.text', new Date(game.startTime!).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }));
+		cy.get('.dt-hero .as-centre-time').should('have.text', new Date(game.startTime!).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }));
 	});
 
 	it('counts down in days, hours and minutes when more than a day out', () => {
@@ -324,39 +324,42 @@ describe('gameDetailView stage', () => {
 
 	it('names each team by its nickname, falling back to the full name', () => {
 		mountDetail(makeLiveGame(), { excitementResult: excitement });
-		cy.get('.dt-hero .as-stage-team b').should('have.length', 2);
-		cy.get('.dt-hero .as-stage-team b').first().should('have.text', 'Oklahoma City Thunder');
-		cy.get('.dt-hero .as-stage-team b').last().should('have.text', 'Boston Celtics');
+		cy.get('.dt-hero .as-match-team b').should('have.length', 2);
+		cy.get('.dt-hero .as-match-team b').first().should('have.text', 'Oklahoma City Thunder');
+		cy.get('.dt-hero .as-match-team b').last().should('have.text', 'Boston Celtics');
 
 		const game = makeLiveGame();
 		mountDetail({ ...game, awayTeam: { ...game.awayTeam, nickname: 'Thunder' }, homeTeam: { ...game.homeTeam, nickname: 'Celtics' } }, { excitementResult: excitement });
-		cy.get('.dt-hero .as-stage-team b').first().should('have.text', 'Thunder');
-		cy.get('.dt-hero .as-stage-team b').last().should('have.text', 'Celtics');
+		cy.get('.dt-hero .as-match-team b').first().should('have.text', 'Thunder');
+		cy.get('.dt-hero .as-match-team b').last().should('have.text', 'Celtics');
 	});
 
-	// Letters rather than a blank, since the crest is missing — but inside the same 72px box, so the
-	// columns do not move when a logo arrives.
-	it('holds a 72px crest box above each team name', () => {
+	// Letters rather than a blank, since the crest is missing — but inside the same square box, so the
+	// columns do not move when a logo arrives. Up to 72px; the scores and the clock between them take
+	// some of that back at the popup's width.
+	it('holds a square crest box above each team name', () => {
 		mountDetail(makeLiveGame(), { excitementResult: excitement });
-		cy.get('.dt-hero .as-stage-team .as-crest-box').should('have.length', 2).each(($box: JQuery<HTMLElement>) => {
-			expect($box[0]!.getBoundingClientRect()).to.deep.include({ width: 72, height: 72 });
+		cy.get('.dt-hero .as-match-team .as-crest-box').should('have.length', 2).each(($box: JQuery<HTMLElement>) => {
+			const box = $box[0]!.getBoundingClientRect();
+			expect(box.width).to.be.within(56, 72);
+			expect(box.height).to.equal(box.width);
 			expect($box.find('.crest').attr('data-crest-state')).to.equal('missing');
 		});
-		cy.get('.dt-hero .as-stage-team .as-crest-box').first().should('contain.text', 'OKC');
+		cy.get('.dt-hero .as-match-team .as-crest-box').first().should('contain.text', 'OKC');
 	});
 
 	it('falls back to the abbreviation for a team with no name at all', () => {
 		const game = makeLiveGame();
 		mountDetail({ ...game, awayTeam: { ...game.awayTeam, name: '' } }, { excitementResult: excitement });
-		cy.get('.dt-hero .as-stage-team b').first().should('have.text', 'OKC');
+		cy.get('.dt-hero .as-match-team b').first().should('have.text', 'OKC');
 	});
 
 	it('puts each team\'s record directly under its name', () => {
 		mountDetail(makeLiveGame({ id: recordsGameId }), { excitementResult: excitement });
-		cy.get('.dt-hero .as-stage-team small').should('have.length', 2);
-		cy.get('.dt-hero .as-stage-team small').first().should('have.text', '33-38');
-		cy.get('.dt-hero .as-stage-team small').last().should('have.text', '41-30');
-		cy.get('.dt-hero .as-stage-team').first().should(([team]: JQuery<HTMLElement>) => {
+		cy.get('.dt-hero .as-match-record').should('have.length', 2);
+		cy.get('.dt-hero .as-match-record').first().should('have.text', '33-38');
+		cy.get('.dt-hero .as-match-record').last().should('have.text', '41-30');
+		cy.get('.dt-hero .as-match-team').first().should(([team]: JQuery<HTMLElement>) => {
 			const name = team.querySelector('b')!.getBoundingClientRect();
 			const record = team.querySelector('small')!.getBoundingClientRect();
 			expect(record.top, 'record sits below its name').to.be.at.least(name.bottom - 1);
@@ -365,13 +368,10 @@ describe('gameDetailView stage', () => {
 	});
 
 	// The two sides share their rows, so one name wrapping cannot knock the records out of level.
-	it('keeps both records level when only one team name wraps', () => {
+	it('keeps both records level when one team name is far longer than the other', () => {
 		const game = makeLiveGame({ id: recordsGameId });
 		mountDetail({ ...game, awayTeam: { ...game.awayTeam, nickname: 'Fighting Illini Rams' }, homeTeam: { ...game.homeTeam, nickname: 'Heat' } }, { excitementResult: excitement });
-		cy.get('.dt-hero .as-stage-team b').first().should(([away]: JQuery<HTMLElement>) => {
-			expect(away.getBoundingClientRect().height, 'away name wraps').to.be.greaterThan(20);
-		});
-		cy.get('.dt-hero .as-stage-team small').should(([away, home]: JQuery<HTMLElement>) => {
+		cy.get('.dt-hero .as-match-record').should(([away, home]: JQuery<HTMLElement>) => {
 			expect(away!.getBoundingClientRect().top, 'records share a row')
 				.to.be.closeTo(home!.getBoundingClientRect().top, 1);
 		});
@@ -379,15 +379,15 @@ describe('gameDetailView stage', () => {
 
 	it('omits the record row when the summary has no record for the game', () => {
 		mountDetail(makeLiveGame(), { excitementResult: excitement });
-		cy.get('.dt-hero .as-stage-team small').should('not.exist');
+		cy.get('.dt-hero .as-match-record').should('not.exist');
 	});
 
 	// mock-3 carries an eight-character NHL record, the widest any league produces.
 	it('fits the widest record a league produces inside its team column', () => {
 		mountDetail(makeLiveGame({ id: 'mock-3' }), { excitementResult: excitement });
-		cy.get('.dt-hero .as-stage-team small').first().should('have.text', '30-28-9');
-		cy.get('.dt-hero .as-stage-team small').last().should('have.text', '28-28-10');
-		cy.get('.dt-hero .as-stage-team small').each(($el: JQuery<HTMLElement>) => {
+		cy.get('.dt-hero .as-match-record').first().should('have.text', '30-28-9');
+		cy.get('.dt-hero .as-match-record').last().should('have.text', '28-28-10');
+		cy.get('.dt-hero .as-match-record').each(($el: JQuery<HTMLElement>) => {
 			const el = $el[0]!;
 			expectSingleLine(el, 'widest record');
 			within(el.getBoundingClientRect(), el.parentElement!.getBoundingClientRect(), 'record in its column');
@@ -403,16 +403,17 @@ describe('gameDetailView stage', () => {
 			awayTeam: { ...game.awayTeam, nickname: 'Timberwolves', score: 118 },
 			homeTeam: { ...game.homeTeam, nickname: 'Trail Blazers', score: 121 },
 		}, { excitementResult: excitement });
-		cy.get('.dt-hero .as-stage-score').should('have.class', 'is-wide');
+		cy.get('.dt-hero .as-match').should('have.class', 'is-wide');
 		cy.get('.dt-hero').then(([hero]: JQuery<HTMLElement>) => {
 			const stage = hero.getBoundingClientRect();
-			hero.querySelectorAll<HTMLElement>('.as-stage-team b, .as-stage-score').forEach(el => {
+			hero.querySelectorAll<HTMLElement>('.as-match-team b, .as-match-score').forEach(el => {
 				within(el.getBoundingClientRect(), stage, el.textContent ?? '');
 			});
-			const [away, home] = [...hero.querySelectorAll<HTMLElement>('.as-stage-team b')];
-			const score = hero.querySelector('.as-stage-score')!.getBoundingClientRect();
-			expect(away!.getBoundingClientRect().right, 'away name clears the score').to.be.at.most(score.left + 1);
-			expect(home!.getBoundingClientRect().left, 'home name clears the score').to.be.at.least(score.right - 1);
+			const [away, home] = [...hero.querySelectorAll<HTMLElement>('.as-match-team b')];
+			const awayScore = hero.querySelector('.as-match-score.is-away')!.getBoundingClientRect();
+			const homeScore = hero.querySelector('.as-match-score.is-home')!.getBoundingClientRect();
+			expect(away!.getBoundingClientRect().right, 'away name stays in its column').to.be.at.most(awayScore.left + 1);
+			expect(home!.getBoundingClientRect().left, 'home name stays in its column').to.be.at.least(homeScore.right - 1);
 		});
 	});
 
@@ -527,7 +528,7 @@ describe('gameDetailView stage', () => {
 		cy.get('.dt-hero .as-clock').should('not.have.class', 'num');
 
 		mountDetail(makeLiveGame({ status: 'post' }), { excitementResult: excitement });
-		cy.get('.dt-hero .as-clock').should('not.have.class', 'num').and('have.text', 'Final');
+		cy.get('.dt-hero .as-centre-word').should('not.have.class', 'num').and('have.text', 'Final');
 	});
 
 	it('shows a series once, as a line of the note', () => {
@@ -538,14 +539,16 @@ describe('gameDetailView stage', () => {
 		cy.get('.dt-series-dots').should('have.attr', 'aria-hidden', 'true');
 	});
 
-	it('names the round in the note', () => {
-		mountDetail(makeLiveGame({ postseasonLabel: 'East Semifinals, Game 5' }), { excitementResult: excitement });
-		cy.get('.dt-hero .as-stage-note').should('contain.text', 'East Semifinals, Game 5');
+	it('names the round on the top line, and not again in the note', () => {
+		mountDetail(makeLiveGame({ postseasonLabel: 'East Semifinals · Game 5' }), { excitementResult: excitement });
+		cy.get('.dt-hero .as-top-context').should('have.text', 'East Semifinals, Game 5');
+		cy.get('.dt-hero .as-stage-note').should('not.contain.text', 'East Semifinals');
 	});
 
-	it('writes the down and distance in the note under the field', () => {
+	it('writes the down and distance between the scores, with the field under them', () => {
 		mountDetail(makeLiveGame({ league: 'nfl', sportType: 'football', downDistance: '3rd & 7', down: 3, distance: 7, fieldPosition: 'BOS 34', yardLine: 34, possessionTeamId: '3' }), { excitementResult: excitement });
-		cy.get('.dt-hero .as-stage-note .dt-note-lead').should('have.text', '3rd & 7 at BOS 34');
+		cy.get('.dt-hero .as-centre .as-downs b').should('have.text', '3rd & 7');
+		cy.get('.dt-hero .as-centre .as-downs small').should('have.text', 'BOS 34');
 		cy.get('.dt-hero .dt-situation .ff-strip').should('exist');
 	});
 
@@ -555,7 +558,7 @@ describe('gameDetailView stage', () => {
 		cy.get('.dt-hero').should(([hero]: JQuery<HTMLElement>) => {
 			expect(hero.style.getPropertyValue('--stage-veil-rgb')).to.equal('28, 22, 3');
 		});
-		cy.get('.dt-hero .as-stage-score .as-score').first().should('have.css', 'opacity', '1');
+		cy.get('.dt-hero .as-match-score').first().should('have.css', 'opacity', '1');
 	});
 });
 
@@ -608,21 +611,21 @@ describe('gameDetailView tab status', () => {
 
 	it('says the game is being watched when its tab is the one in front', () => {
 		mountDetail(makeLiveGame(), { excitementResult: excitement, openTabs, registry: [{ tabId: 12, gameId: liveGameId }] });
-		cy.get('.dt-hero .as-stage-label').should('have.text', 'Watching, Tab 2');
+		cy.get('.dt-hero .as-top-tab').should('have.text', 'Watching, Tab 2');
 		// There is nothing to pick for a game already on screen.
 		cy.get('.dt-assign').should('not.exist');
 	});
 
 	it('names the tab of a game that has one, and offers to move it', () => {
 		mountDetail(makeLiveGame(), { excitementResult: excitement, openTabs, registry: [{ tabId: 13, gameId: liveGameId }] });
-		cy.get('.dt-hero .as-stage-label').should('have.text', 'Tab 3');
+		cy.get('.dt-hero .as-top-tab').should('have.text', 'Tab 3');
 		cy.get('.dt-assign .game-card-tab-assign .form-select').should('contain.text', 'Tab 13');
 		cy.get('.dt-assign .dt-row-help').should('not.exist');
 	});
 
 	it('offers a tab to a live game with none, and says why it matters', () => {
 		mountDetail(makeLiveGame(), { excitementResult: excitement, openTabs, registry: [] });
-		cy.get('.dt-hero .as-stage-label').should('be.empty');
+		cy.get('.dt-hero .as-top-tab').should('be.empty');
 		cy.get('.dt-assign .dt-card-title').should('have.text', 'Assign a tab');
 		cy.get('.dt-assign .dt-row-help').should('have.text', en.detail.liveTabExplainer);
 	});
@@ -633,7 +636,7 @@ describe('gameDetailView tab status', () => {
 		cy.get('.dt-assign').should('not.exist');
 		mountDetail(makeLiveGame({ status: 'post' }), { excitementResult: excitement, openTabs, registry: [{ tabId: 13, gameId: liveGameId }] });
 		cy.get('.dt-assign').should('not.exist');
-		cy.get('.dt-hero .as-stage-label').should('be.empty');
+		cy.get('.dt-hero .as-picker').should('not.exist');
 	});
 
 	it('puts the picker straight under the stage, above the tabs', () => {
@@ -1123,8 +1126,8 @@ describe('gameDetailView stage timeouts', () => {
 	it('draws each side its own row under the record', () => {
 		mountDetail(gridiron, { excitementResult: excitement });
 		cy.get('.dt-hero .timeout-dots').should('have.length', 2);
-		cy.get('.dt-hero .as-stage-team').eq(0).find('.timeout-dot').not('.is-empty').should('have.length', 3);
-		cy.get('.dt-hero .as-stage-team').eq(1).find('.timeout-dot').not('.is-empty').should('have.length', 1);
+		cy.get('.dt-hero .as-match-team').eq(0).find('.timeout-dot').not('.is-empty').should('have.length', 3);
+		cy.get('.dt-hero .as-match-team').eq(1).find('.timeout-dot').not('.is-empty').should('have.length', 1);
 	});
 
 	// The old card's rule for these is a light-surface grey, and it has to lose to the stage's.

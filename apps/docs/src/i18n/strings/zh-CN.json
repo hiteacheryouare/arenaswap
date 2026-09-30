@@ -438,7 +438,6 @@
 			"outs": "O"
 		},
 		"board": {
-			"at": "vs",
 			"steady": "持平",
 			"trendUp": "过去一分钟上升",
 			"trendDown": "过去一分钟下降",
@@ -455,6 +454,15 @@
 			"inHours": {
 				"1": "1 小时后",
 				"n": "$1 小时后"
+			},
+			"delayed": "延迟",
+			"overtime": "加时",
+			"extraTime": "加时赛",
+			"extraInnings": "延长局",
+			"outs": {
+				"0": "无人出局",
+				"1": "1人出局",
+				"n": "$1人出局"
 			}
 		}
 	}

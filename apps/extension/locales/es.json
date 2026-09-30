@@ -983,6 +983,15 @@
 		"inHours": {
 			"1": "en 1 h",
 			"n": "en $1 h"
+		},
+		"delayed": "Retraso",
+		"overtime": "Prórroga",
+		"extraTime": "Prórroga",
+		"extraInnings": "Extra innings",
+		"outs": {
+			"0": "Sin outs",
+			"1": "1 out",
+			"n": "$1 outs"
 		}
 	}
 }

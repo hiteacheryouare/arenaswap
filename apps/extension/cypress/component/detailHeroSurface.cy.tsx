@@ -110,15 +110,15 @@ describe('the detail stage surface', () => {
 	for (const [name, game] of [['a dark pair', liveGame], ['two golds', goldGame]] as const) {
 		it(`keeps every line of the stage readable on ${name}`, () => {
 			mountStage(game);
-			expectReadable('.dt-hero .as-stage-team b', 'the team name');
-			expectReadable('.dt-hero .as-stage-team small', 'the record');
+			expectReadable('.dt-hero .as-match-team b', 'the team name');
+			expectReadable('.dt-hero .as-match-record', 'the record');
 			expectReadable('.dt-hero .as-clock', 'the clock');
-			expectReadable('.dt-hero .as-stage-label', 'the tab label');
+			expectReadable('.dt-hero .as-top-tab', 'the tab label');
 			expectReadable('.dt-hero .dt-back', 'the back control');
 			expectReadable('.dt-hero .dt-league', 'the league');
 			expectReadable('.dt-hero .as-stage-power small', 'the PowerScore label');
 			// Display sizes, so large-text contrast. The trailing score dims, and still has to hold.
-			expectReadable('.dt-hero .as-score', 'the scores', 3);
+			expectReadable('.dt-hero .as-match-score', 'the scores', 3);
 			expectReadable('.dt-hero .as-stage-power strong', 'the PowerScore', 3);
 		});
 	}
@@ -152,10 +152,10 @@ describe('the detail stage surface', () => {
 		expectReadable('.dt-hero .as-clock.is-delayed', 'the delay');
 	});
 
-	it('gives a scheduled game the same stage, with "at" between the teams', () => {
+	it('gives a scheduled game the same stage, with its start between the teams', () => {
 		mountStage({ ...liveGame, status: 'pre', startTime: new Date(Date.now() + 3_600_000).toISOString() });
-		cy.get('.dt-hero.is-pre .as-stage-at').should('have.text', 'at');
-		cy.get('.dt-hero .as-stage-score').should('not.exist');
+		cy.get('.dt-hero.is-pre .as-centre-time').invoke('text').should('match', /\d/);
+		cy.get('.dt-hero .as-match-score').should('not.exist');
 		cy.get('.dt-hero .as-stage-power').should('not.exist');
 		cy.get('.dt-hero .as-crest.is-bare').should('have.length', 2);
 		expectReadable('.dt-hero .as-stage-note', 'the countdown sentence');
@@ -172,17 +172,21 @@ describe('the detail stage surface', () => {
 			homeTeam: { ...liveGame.homeTeam, name: 'Cleveland Cavaliers', nickname: 'Cavaliers', abbreviation: 'CLE', score: 108 },
 		});
 		cy.document().its('fonts.ready');
-		cy.get('.dt-hero .as-stage-team b').should($names => {
-			const score = document.querySelector('.dt-hero .as-stage-score')!.getBoundingClientRect();
+		cy.get('.dt-hero .as-match-team b').should($names => {
+			const awayScore = document.querySelector('.dt-hero .as-match-score.is-away')!.getBoundingClientRect();
+			const homeScore = document.querySelector('.dt-hero .as-match-score.is-home')!.getBoundingClientRect();
 			const [away, home] = [...$names].map(name => name.getBoundingClientRect());
 			for (const name of $names) {
 				expect(name.scrollWidth, `${name.textContent} fits its column`).to.be.at.most(name.clientWidth);
 				expect(name.getClientRects().length, `${name.textContent} stays on one line`).to.equal(1);
 			}
-			expect(away!.right, 'the away name clears the score').to.be.at.most(score.left);
-			expect(home!.left, 'the home name clears the score').to.be.at.least(score.right);
+			expect(away!.right, 'the away name stays in its column').to.be.at.most(awayScore.left);
+			expect(home!.left, 'the home name stays in its column').to.be.at.least(homeScore.right);
 		});
-		cy.contains('.dt-hero .as-stage-team b', 'Cavaliers').should('not.have.attr', 'style');
+		cy.contains('.dt-hero .as-match-team b', 'Cavaliers').should($name => {
+			const fit = Number($name[0]!.style.getPropertyValue('--name-fit') || 1);
+			expect(fit, 'a shorter name barely shrinks').to.be.at.least(0.8);
+		});
 	});
 });
 

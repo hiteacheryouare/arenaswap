@@ -709,8 +709,8 @@ describe('the popup open reveal', () => {
 	it('releases the card underneath the moment the graphic is asked to leave', () => {
 		cy.mount(<Harness mode='full' skipping />);
 		cy.get('.game-card-reveal.is-skipping').should('exist');
-		cy.get('.as-tile-team .as-score').should('have.css', 'opacity', '1');
-		cy.get('.as-tile-top').should('have.css', 'opacity', '1');
+		cy.get('.as-match-score').should('have.css', 'opacity', '1');
+		cy.get('.as-tile .as-top').should('have.css', 'opacity', '1');
 		cy.get('.as-tile [data-reveal-crest]').should('have.css', 'opacity', '1');
 		// And the dark plate goes at once rather than fading, because for most of the graphic's life it
 		// is already gone — a fade with no `from` would take it back to full and flash it over the card.
@@ -752,11 +752,11 @@ describe('the popup open reveal', () => {
 	it('brings the card\'s own contents into focus as the colour goes', () => {
 		cy.mount(<Harness mode='full' />);
 		scrubTo(spineMs(2400));
-		cy.get('.as-tile-team .as-score').should('have.css', 'opacity', '0');
+		cy.get('.as-match-score').should('have.css', 'opacity', '0');
 		scrubTo(spineMs(revealBaseDurationMs));
-		cy.get('.as-tile-team .as-score').should('have.css', 'opacity', '1');
-		cy.get('.as-tile-top').should('have.css', 'opacity', '1');
-		cy.get('.as-tile-team b').first().should('have.css', 'opacity', '1');
+		cy.get('.as-match-score').should('have.css', 'opacity', '1');
+		cy.get('.as-tile .as-top').should('have.css', 'opacity', '1');
+		cy.get('.as-match-team b').first().should('have.css', 'opacity', '1');
 	});
 
 	// Nothing in the stage may take a click: the card underneath is live the whole time the graphic

@@ -107,7 +107,7 @@ describe('the live PowerScore board', () => {
 
 		cy.get('#live-scores .as-tile').should('have.length.at.least', 1);
 
-		cy.get('#live-scores .as-tile-power').then($powers => {
+		cy.get('#live-scores .as-power-figure b').then($powers => {
 			const scores = [...$powers].map(power => Number.parseInt(power.textContent ?? '', 10));
 			expect(scores.length, 'a tile per live game').to.be.greaterThan(0);
 			scores.forEach(score => expect(score, 'every tile carries a PowerScore').to.be.within(0, 100));

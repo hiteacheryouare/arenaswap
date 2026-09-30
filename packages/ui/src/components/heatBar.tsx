@@ -1,12 +1,18 @@
 import type { CSSProperties } from 'react';
 import { scoreMaxTotal } from '@arenaswap/core/constants';
 
-// The number beside it is what's read aloud, so the bar is decoration. Its gradient spans the whole
-// scale, slate at nothing to orange at the top, so the tip is the colour of the score it stops at.
+// v2's PowerScore colour: one solid colour for the whole fill, slate at nothing to orange at the top.
+export const powerScoreColor = (score: number, max = scoreMaxTotal): string => {
+	const ratio = Math.max(0, Math.min(score / max, 1));
+	const channel = (from: number, to: number) => Math.round(from + (to - from) * ratio);
+	return `rgb(${channel(139, 247)}, ${channel(148, 92)}, ${channel(158, 3)})`;
+};
+
+// The figure beside it is what gets read aloud, so the bar itself stays out of the accessibility tree.
 const HeatBar = ({ value }: { value: number }) => (
-	<span className='as-heat' style={{ '--heat': Math.max(0, Math.min(value / scoreMaxTotal, 1)) } as CSSProperties} aria-hidden='true'>
-		<span className='as-heat-fill' />
-	</span>
+	<div className='progress as-heat' aria-hidden='true' style={{ '--heat-color': powerScoreColor(value) } as CSSProperties}>
+		<div className='progress-bar' style={{ width: `${Math.max(0, Math.min(value / scoreMaxTotal, 1)) * 100}%` }} />
+	</div>
 );
 
 export default HeatBar;

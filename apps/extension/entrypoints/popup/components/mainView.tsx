@@ -30,7 +30,7 @@ import SuggestBanner from './suggestBanner';
 import UpcomingDayPager from './upcomingDayPager';
 import TabAssignSelect, { tabNumberLabel } from './tabAssignSelect';
 import { buildFinalComparator, buildLeagueRank, getRandomLoadingMessage, groupByDate, isFavoriteTeamGame, resolveSelectedDayIndex } from '../popupHelpers';
-import { stageSituation, stageNote, upcomingStatus } from '@arenaswap/ui/src/components/boardSituation';
+import { stageSituation, stageNote } from '@arenaswap/ui/src/components/boardSituation';
 import useRestoredScroll from '../useRestoredScroll';
 import { revealModeForIndex, revealRate, revealSpineStartMs, type cardRevealPlan, type revealMode } from '../cardReveal';
 
@@ -245,12 +245,6 @@ const mainView = ({
 		return tabPicker(game);
 	};
 
-	const rowStatus = (game: Game): ReactNode => {
-		if (game.status === 'pre') return <span className='as-row-note'>{upcomingStatus(game, i18n.t)}</span>;
-		if (game.status === 'post') return null;
-		return tabPicker(game);
-	};
-
 	return (
 		<div ref={scrollerRef} className='popup-container d-flex flex-column gm'>
 			<PopupHeader
@@ -337,7 +331,8 @@ const mainView = ({
 								game={game}
 								theme={theme}
 								power={scoreByGameId.get(game.id) ?? 0}
-								status={rowStatus(game)}
+								trend={powerTrend(powerScoreHistory[game.id])}
+								tab={tabPicker(game)}
 								favorites={favoritesOf(game, favoriteTeamIds)}
 								monoMarks={marksOf(game, monoLogos)}
 								watched={game.id === watchedGameId}
@@ -360,7 +355,6 @@ const mainView = ({
 							<GameRow
 								game={game}
 								theme={theme}
-								status={rowStatus(game)}
 								favorites={favoritesOf(game, favoriteTeamIds)}
 								monoMarks={marksOf(game, monoLogos)}
 								quiet
@@ -380,7 +374,6 @@ const mainView = ({
 							<GameRow
 								game={game}
 								theme={theme}
-								status={rowStatus(game)}
 								favorites={favoritesOf(game, favoriteTeamIds)}
 								monoMarks={marksOf(game, monoLogos)}
 								quiet

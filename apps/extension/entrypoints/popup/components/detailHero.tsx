@@ -96,8 +96,6 @@ const detailHero = ({
 		note.push(<span key='delay' className='dt-note-delay'>{game.delayDescription ?? i18n.t('gameCard.delayFallback')}</span>);
 	}
 	if (isPre) note.push(<StartCountdownDisplay key='countdown' startTime={game.startTime} networks={networksOf(game)} />);
-	if (downDistance) note.push(<span key='down' className='dt-note-lead'>{downDistance}</span>);
-	if (game.postseasonLabel) note.push(<span key='round' className='dt-note-round'>{game.postseasonLabel}</span>);
 	if (showsSeries(seriesInfo, game)) note.push(<SeriesDots key='series' info={seriesInfo} game={game} />);
 
 	const toggle = onToggleFavoriteTeam
@@ -111,6 +109,7 @@ const detailHero = ({
 			head={<DetailHead game={game} dismiss={dismiss} onBack={onBack} />}
 			label={label}
 			clock={isPre ? formatStartClock(game.startTime) || undefined : undefined}
+			startNote={null}
 			names='name'
 			records={records}
 			monoMarks={monoLogos}

@@ -983,6 +983,15 @@
 		"inHours": {
 			"1": "in 1 Std",
 			"n": "in $1 Std"
+		},
+		"delayed": "Unterbrechung",
+		"overtime": "Verl.",
+		"extraTime": "Verlängerung",
+		"extraInnings": "Extra-Innings",
+		"outs": {
+			"0": "Kein Out",
+			"1": "1 Out",
+			"n": "$1 Outs"
 		}
 	}
 }

@@ -983,6 +983,15 @@
 		"inHours": {
 			"1": "dans 1 h",
 			"n": "dans $1 h"
+		},
+		"delayed": "Retard",
+		"overtime": "Prol.",
+		"extraTime": "Prolongation",
+		"extraInnings": "Manches suppl.",
+		"outs": {
+			"0": "Aucun retrait",
+			"1": "1 retrait",
+			"n": "$1 retraits"
 		}
 	}
 }

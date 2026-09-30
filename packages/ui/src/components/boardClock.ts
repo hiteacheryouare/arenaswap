@@ -51,3 +51,25 @@ export const trailingSide = (game: Pick<Game, 'status' | 'awayTeam' | 'homeTeam'
 	if (game.awayTeam.score === game.homeTeam.score) return null;
 	return game.awayTeam.score < game.homeTeam.score ? 'away' : 'home';
 };
+
+export type boardTone = 'pre' | 'live' | 'overtime' | 'delay' | 'final';
+
+export const isOvertime = (game: Pick<Game, 'status' | 'league' | 'period'>): boolean => (
+	game.status === 'in' && game.period > (leagueConfigMap[game.league]?.regularPeriods ?? 4)
+);
+
+// What the live dot and the status word say: red for live, pink past regulation, a pause for a delay.
+export const resolveBoardTone = (game: Game): boardTone => {
+	if (game.status === 'pre') return 'pre';
+	if (game.status === 'post') return 'final';
+	if (game.delayed === true) return 'delay';
+	return isOvertime(game) ? 'overtime' : 'live';
+};
+
+export const statusWord = (game: Game, tone: boardTone, t: Translate): string | null => {
+	if (tone === 'live') return t('gameCard.live');
+	if (tone === 'delay') return t('board.delayed');
+	if (tone !== 'overtime') return null;
+	if (isInningGame(game)) return t('board.extraInnings');
+	return game.sportType === 'soccer' ? t('board.extraTime') : t('board.overtime');
+};

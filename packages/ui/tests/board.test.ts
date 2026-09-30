@@ -188,8 +188,8 @@ describe('the row surface', () => {
 	const steps = [0x00, 0x33, 0x66, 0x99, 0xcc, 0xff];
 	const colours = steps.flatMap(r => steps.flatMap(g => steps.map(b => rgbToHex(r, g, b))));
 	const themes = [
-		{ theme: 'dark' as const, page: '#0e1013', ink: '#ffffff', accent: '#f75c03', noteAlpha: 0.74 },
-		{ theme: 'light' as const, page: '#f4f5f7', ink: '#0e1013', accent: '#c2410c', noteAlpha: 0.7 },
+		{ theme: 'dark' as const, page: '#0e1013', ink: '#ffffff', noteAlpha: 0.74 },
+		{ theme: 'light' as const, page: '#f4f5f7', ink: '#0e1013', noteAlpha: 0.7 },
 	];
 
 	// The names, scores and the dimmer trailing score sit where the veil is thinnest.
@@ -202,17 +202,29 @@ describe('the row surface', () => {
 		}
 	});
 
-	// The tab picker is drawn in the accent, at the thick end of the veil.
-	test.each(themes)('keeps the $theme accent readable where the tab picker sits', ({ theme, page, accent }) => {
-		for (const colour of colours) {
-			const surface = resolveRowSurface(pairOf(colour), theme);
-			expect(contrast(accent, mix(page, surface.away, surface.far))).toBeGreaterThanOrEqual(4.49);
-		}
-	});
-
 	test('washes upcoming and final games more quietly than live ones', () => {
 		const live = resolveRowSurface(pairOf('#002D72'), 'dark');
 		const quiet = resolveRowSurface(pairOf('#002D72'), 'dark', true);
 		expect(quiet.near).toBeGreaterThan(live.near);
+	});
+});
+
+describe('a delayed game', () => {
+	const delayed = { ...pairOf('#002D72'), delayed: true, status: 'in' as const };
+
+	test('gives both sides over to the warning yellow', () => {
+		expect(resolveRowSurface(delayed, 'dark').away).toBe('#f1c40f');
+		expect(resolveRowSurface(delayed, 'dark').home).toBe('#f1c40f');
+		expect(resolveGameSurface(delayed).away).toBe('#f1c40f');
+	});
+
+	test('keeps white type readable on the yellow stage', () => {
+		const surface = resolveGameSurface(delayed);
+		const top = mix('#1c1603', surface.away, surface.veil * veilTopShare);
+		expect(contrast('#ffffff', top)).toBeGreaterThanOrEqual(4.49);
+	});
+
+	test('keeps its colours before the start, when there is nothing to pause', () => {
+		expect(resolveGameSurface({ ...delayed, status: 'pre' }).away).not.toBe('#f1c40f');
 	});
 });

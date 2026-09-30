@@ -1,6 +1,5 @@
 import type { ReactNode } from 'react';
 import type { Game, UserPreferences } from '@arenaswap/core/types';
-import BaseDiamond from './baseDiamond';
 import BsoIndicator from './bsoIndicator';
 import { isInningGame } from './boardClock';
 import HoverTooltip from './hoverTooltip';
@@ -26,22 +25,24 @@ export const downDistanceLine = (game: Game, t: Translate): string | undefined =
 		: game.downDistance
 );
 
-// The count and the bases, drawn rather than written, between the matchup and the foot.
+// Our sources write rounds as "NLWC · Game 2"; the board doesn't do middle dots.
+export const roundLabel = (game: Pick<Game, 'postseasonLabel'>): string | undefined => (
+	game.postseasonLabel?.replace(/\s*·\s*/g, ', ')
+);
+
+// The full count, under the stage's matchup. The bases and the outs sit between the scores.
 export const stageSituation = (game: Game): ReactNode => {
-	if (!isInningGame(game) || game.status !== 'in') return null;
-	if (!game.bso && !game.baseRunners) return null;
+	if (!isInningGame(game) || game.status !== 'in' || !game.bso) return null;
 	return (
 		<div className='as-stage-situation'>
-			{game.baseRunners && <BaseDiamond {...game.baseRunners} />}
-			{game.bso && <BsoIndicator {...game.bso} />}
+			<BsoIndicator {...game.bso} />
 		</div>
 	);
 };
 
-// Up to three quiet lines beside the PowerScore: what is happening, where to watch, the line.
+// Up to three quiet lines beside the PowerScore: where it is, where to watch, the line.
 export const stageNote = (game: Game, prefs: Pick<UserPreferences, 'bettingEnabled'>, t: Translate): ReactNode => {
-	const situation = game.sportType === 'football' ? downDistanceLine(game, t) : undefined;
-	const lead = situation ?? game.postseasonLabel ?? game.venueName;
+	const lead = game.venueName;
 	const networks = networksOf(game);
 	const odds = prefs.bettingEnabled ? oddsLine(game) : null;
 	const lines = [
@@ -63,7 +64,7 @@ export const stageNote = (game: Game, prefs: Pick<UserPreferences, 'bettingEnabl
 	return lines.length ? lines : null;
 };
 
-// "in 54 min, NBC", or the first networks alone once a start is more than a few hours out.
+// "in 54 min, NBC", or the first network alone once a start is more than a few hours out.
 export const upcomingStatus = (game: Game, t: Translate, now = Date.now()): string => {
 	const parts: string[] = [];
 	const start = game.startTime ? new Date(game.startTime).getTime() : Number.NaN;
@@ -73,7 +74,6 @@ export const upcomingStatus = (game: Game, t: Translate, now = Date.now()): stri
 		else if (minutes < 60) parts.push(t('board.inMinutes', minutes));
 		else if (minutes < 6 * 60) parts.push(t('board.inHours', Math.round(minutes / 60)));
 	}
-	if (game.postseasonLabel) parts.push(game.postseasonLabel);
 	const networks = networksOf(game, 1);
 	if (networks) parts.push(networks);
 	return parts.join(', ');

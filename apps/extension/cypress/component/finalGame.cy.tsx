@@ -206,7 +206,7 @@ describe('a finished game', () => {
 
 		it('says Final instead of a clock, and runs no live marker', () => {
 			mountRow(finalGame);
-			rowOf().find('.as-clock').should('have.text', en.gameCard.final);
+			rowOf().find('.as-centre-word').should('have.text', en.gameCard.final);
 			rowOf().should('have.class', 'is-post').and('have.class', 'is-quiet');
 		});
 
@@ -217,15 +217,15 @@ describe('a finished game', () => {
 
 		it('shows no PowerScore even when one is handed to it', () => {
 			mountRow(finalGame, [excitement]);
-			rowOf().find('.as-row-power').should('have.text', '');
+			rowOf().find('.as-power-line').should('not.exist');
 			rowOf().should('not.contain.text', '61');
 		});
 
 		it('dims the loser and leaves the winner at full weight', () => {
 			mountRow(finalGame);
-			rowOf().find('.as-score').eq(0).should('have.class', 'is-behind');
-			rowOf().find('.as-score').eq(1).should('not.have.class', 'is-behind');
-			rowOf().find('.as-score').then(([away, home]: JQuery<HTMLElement>) => {
+			rowOf().find('.as-match-score').eq(0).should('have.class', 'is-behind');
+			rowOf().find('.as-match-score').eq(1).should('not.have.class', 'is-behind');
+			rowOf().find('.as-match-score').then(([away, home]: JQuery<HTMLElement>) => {
 				const loser = getComputedStyle(away!);
 				const winner = getComputedStyle(home!);
 				expect(Number(winner.fontWeight), 'the winner is the bolder of the two').to.be.greaterThan(Number(loser.fontWeight));
@@ -238,7 +238,7 @@ describe('a finished game', () => {
 			mountRow(finalGame);
 			cy.get('.popup-container').then(([popup]: JQuery<HTMLElement>) => {
 				const page = getComputedStyle(popup!).backgroundColor;
-				rowOf().find('.as-score.is-behind').then(([loser]: JQuery<HTMLElement>) => {
+				rowOf().find('.as-match-score.is-behind').then(([loser]: JQuery<HTMLElement>) => {
 					const ink = getComputedStyle(loser!).color;
 					expect(contrastRatio(ink, page), `${ink} on ${page}`).to.be.at.least(3);
 				});
@@ -247,19 +247,19 @@ describe('a finished game', () => {
 
 		it('dims whichever side lost, not always the away team', () => {
 			mountRow({ ...finalGame, homeTeam: { ...finalGame.homeTeam, score: 98 } });
-			rowOf().find('.as-score').eq(0).should('not.have.class', 'is-behind');
-			rowOf().find('.as-score').eq(1).should('have.class', 'is-behind');
+			rowOf().find('.as-match-score').eq(0).should('not.have.class', 'is-behind');
+			rowOf().find('.as-match-score').eq(1).should('have.class', 'is-behind');
 		});
 
 		it('dims neither side of a draw', () => {
 			mountRow({ ...finalGame, homeTeam: { ...finalGame.homeTeam, score: 104 } });
-			rowOf().find('.as-score.is-behind').should('not.exist');
+			rowOf().find('.as-match-score.is-behind').should('not.exist');
 		});
 
 		// No team colour anywhere on the scoreline: weight and a receded grey carry the result.
 		it('takes no colour from either team', () => {
 			mountRow(finalGame);
-			rowOf().find('.as-score').then(([away, home]: JQuery<HTMLElement>) => {
+			rowOf().find('.as-match-score').then(([away, home]: JQuery<HTMLElement>) => {
 				for (const el of [away!, home!]) {
 					const [red, green, blue] = getComputedStyle(el).color.match(/\d+/g)!.map(Number);
 					expect(Math.max(red!, green!, blue!) - Math.min(red!, green!, blue!), 'a neutral ink, not a hue').to.be.at.most(25);
@@ -277,13 +277,13 @@ describe('a finished game', () => {
 		it('carries the Final designation when there was extra time', () => {
 			for (const suffix of ['OT', '3OT', '10', 'SO']) {
 				mountRow({ ...finalGame, finalPeriodSuffix: suffix });
-				rowOf().find('.as-clock').should('have.text', `${en.gameCard.final}/${suffix}`);
+				rowOf().find('.as-centre-word').should('have.text', `${en.gameCard.final}/${suffix}`);
 			}
 		});
 
 		it('says just Final on a game that ended in regulation', () => {
 			mountRow(finalGame);
-			rowOf().find('.as-clock').should('not.contain.text', '/');
+			rowOf().find('.as-centre-word').should('not.contain.text', '/');
 		});
 
 		it('still opens the detail screen when clicked', () => {
@@ -295,7 +295,7 @@ describe('a finished game', () => {
 
 		it('keeps the status on one line in every locale, suffix included', () => {
 			mountRow({ ...finalGame, finalPeriodSuffix: '3OT' });
-			rowOf().find('.as-clock').then(([label]: JQuery<HTMLElement>) => {
+			rowOf().find('.as-centre-word').then(([label]: JQuery<HTMLElement>) => {
 				const oneLine = label!.getBoundingClientRect().height;
 				for (const [name, locale] of Object.entries(locales)) {
 					label!.textContent = `${(locale.gameCard as unknown as Record<string, string>).final}/3OT`;
@@ -435,10 +435,10 @@ describe('a finished game', () => {
 
 		it('dims the loser on the stage as well as on the list', () => {
 			mountDetail(finalGame);
-			cy.get('.dt-hero .as-score').should('have.length', 2);
-			cy.get('.dt-hero .as-score').eq(0).should('have.class', 'is-behind');
-			cy.get('.dt-hero .as-score').eq(1).should('not.have.class', 'is-behind');
-			cy.get('.dt-hero .as-score').then(([away, home]: JQuery<HTMLElement>) => {
+			cy.get('.dt-hero .as-match-score').should('have.length', 2);
+			cy.get('.dt-hero .as-match-score').eq(0).should('have.class', 'is-behind');
+			cy.get('.dt-hero .as-match-score').eq(1).should('not.have.class', 'is-behind');
+			cy.get('.dt-hero .as-match-score').then(([away, home]: JQuery<HTMLElement>) => {
 				expect(getComputedStyle(away!).color, 'the loser reads quieter').to.not.equal(getComputedStyle(home!).color);
 			});
 		});
@@ -447,12 +447,12 @@ describe('a finished game', () => {
 		// level game is the case that must dim nobody.
 		it('dims neither side of a level game', () => {
 			mountDetail({ ...liveGame, homeTeam: { ...liveGame.homeTeam, score: 98 }, awayTeam: { ...liveGame.awayTeam, score: 98 } });
-			cy.get('.dt-hero .as-score.is-behind').should('not.exist');
+			cy.get('.dt-hero .as-match-score.is-behind').should('not.exist');
 		});
 
 		it('still says Final at the top of the stage and in the compact bar', () => {
 			mountDetail(finalGame);
-			cy.get('.dt-hero .as-clock').should('have.text', en.gameCard.final);
+			cy.get('.dt-hero .as-centre-word').should('have.text', en.gameCard.final);
 			cy.get('.dt-bar-status').should('have.text', en.gameCard.final);
 		});
 	});

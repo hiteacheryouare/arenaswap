@@ -43,7 +43,7 @@ const walkthroughStepTabAssign = ({ onNext, onBack }: walkthroughStepTabAssignPr
 					game={eaglesGiantsQ2}
 					theme={theme}
 					power={52}
-					status={(
+					tab={(
 						<TabAssignSelect
 							gameId={eaglesGiantsQ2.id}
 							openTabs={tourTabs}

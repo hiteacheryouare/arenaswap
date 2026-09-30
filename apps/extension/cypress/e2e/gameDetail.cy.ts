@@ -4,7 +4,7 @@ const onboarded = { local: { onboardingCompleted: true }, sync: { prefs: onboard
 const gameOnList = (abbreviation: string) => cy.contains('[data-game][role="button"]', abbreviation);
 const openDetail = (abbreviation: string) => gameOnList(abbreviation).click();
 const gamesOnScreen = () => cy.get('[data-game][role="button"]').should('have.length.greaterThan', 0);
-const stageName = (name: string) => cy.contains('.dt-hero .as-stage-team b', name);
+const stageName = (name: string) => cy.contains('.dt-hero .as-match-team b', name);
 
 describe('game detail drill-down', () => {
 	beforeEach(() => cy.openPopup({ ...onboarded, state: liveState(), tabs: openTabs }));
@@ -25,8 +25,8 @@ describe('game detail drill-down', () => {
 	it('shows the score and the PowerScore breakdown for the game that was clicked', () => {
 		openDetail(sixersThunder.awayTeam.abbreviation);
 
-		cy.get('.dt-hero .as-score').first().should('have.text', String(sixersThunder.awayTeam.score));
-		cy.get('.dt-hero .as-score').last().should('have.text', String(sixersThunder.homeTeam.score));
+		cy.get('.dt-hero .as-match-score').first().should('have.text', String(sixersThunder.awayTeam.score));
+		cy.get('.dt-hero .as-match-score').last().should('have.text', String(sixersThunder.homeTeam.score));
 		cy.get('.dt-hero .as-stage-power strong').should('have.text', '82');
 
 		cy.contains('.powerscore-breakdown .dt-card-title', 'PowerScore breakdown').should('exist');
@@ -60,7 +60,7 @@ describe('game detail drill-down', () => {
 		cy.background().its('sent').should('deep.include', {
 			type: 'UPDATE_REGISTRY', tabRegistry: [{ tabId: openTabs[1].id, gameId: bullsHeat.id }],
 		});
-		cy.get('.dt-hero .as-stage-label').should('have.text', 'Tab 2');
+		cy.get('.dt-hero .as-top-tab').should('have.text', 'Tab 2');
 	});
 
 	it('tracks a live score push while the detail view is open', () => {
@@ -73,7 +73,7 @@ describe('game detail drill-down', () => {
 			scores: [makeScore(sixersThunder.id, 95), current.scores[1]],
 		});
 
-		cy.get('.dt-hero .as-score').last().should('have.text', '111');
+		cy.get('.dt-hero .as-match-score').last().should('have.text', '111');
 		cy.get('.dt-hero .as-stage-power strong').should('have.text', '95');
 		cy.get('.powerscore-breakdown-row-total').should('contain.text', '95 / 100');
 	});

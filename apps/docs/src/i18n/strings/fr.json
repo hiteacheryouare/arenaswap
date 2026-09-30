@@ -438,7 +438,6 @@
 			"outs": "O"
 		},
 		"board": {
-			"at": "-",
 			"steady": "Stable",
 			"trendUp": "en hausse depuis la dernière minute",
 			"trendDown": "en baisse depuis la dernière minute",
@@ -455,6 +454,15 @@
 			"inHours": {
 				"1": "dans 1 h",
 				"n": "dans $1 h"
+			},
+			"delayed": "Retard",
+			"overtime": "Prol.",
+			"extraTime": "Prolongation",
+			"extraInnings": "Manches suppl.",
+			"outs": {
+				"0": "Aucun retrait",
+				"1": "1 retrait",
+				"n": "$1 retraits"
 			}
 		}
 	}

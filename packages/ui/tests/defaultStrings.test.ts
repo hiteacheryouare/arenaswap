@@ -142,8 +142,8 @@ describe('defaultStrings covers every label the shared components render', () =>
 	// and they are the only call site written as a ternary, so they are the canary for it.
 	test('the scan finds the labels it is supposed to be checking', () => {
 		expect(rendered.size).toBeGreaterThan(25);
-		expect(rendered.has('board.at')).toBe(true);
-		expect(rendered.get('board.steady')).toEqual(['components/gameTile.tsx']);
+		expect(rendered.has('board.watchOn')).toBe(true);
+		expect(rendered.get('board.steady')).toEqual(['components/powerLine.tsx']);
 		expect(rendered.get('gameCard.topOfInning')).toEqual(['components/inningHalfIcon.tsx']);
 		expect(rendered.get('gameCard.bottomOfInning')).toEqual(['components/inningHalfIcon.tsx']);
 	});

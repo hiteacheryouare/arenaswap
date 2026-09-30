@@ -3,7 +3,7 @@ import { bullsHeat, eaglesCowboys, liveState, makeScore, onboardedPrefs, openTab
 const onboarded = { local: { onboardingCompleted: true }, sync: { prefs: onboardedPrefs() } };
 const cardFor = (abbreviation: string) => cy.contains('[data-game]', abbreviation);
 const tabPicker = (abbreviation: string) => cardFor(abbreviation).find('.game-card-tab-assign .as-picker');
-const powerOf = (abbreviation: string) => cardFor(abbreviation).find('.as-stage-power strong, .as-tile-power, .as-row-power');
+const powerOf = (abbreviation: string) => cardFor(abbreviation).find('.as-stage-power strong, .as-power-figure b');
 
 describe('registering a tab and watching the lead change', () => {
 	beforeEach(() => cy.openPopup({ ...onboarded, state: liveState(), tabs: openTabs }));

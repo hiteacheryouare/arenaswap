@@ -983,6 +983,15 @@
 		"inHours": {
 			"1": "in 1 hr",
 			"n": "in $1 hr"
+		},
+		"delayed": "Delay",
+		"overtime": "OT",
+		"extraTime": "Extra time",
+		"extraInnings": "Extras",
+		"outs": {
+			"0": "No outs",
+			"1": "1 out",
+			"n": "$1 outs"
 		}
 	}
 }
