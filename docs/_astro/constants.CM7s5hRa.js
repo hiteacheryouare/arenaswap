@@ -1,2 +1,2 @@
 /*! ArenaSwap v2.2.0 Copyright (c) 2026 Ryan Mullin, Lattice & Company, and Contributors. All rights reserved. */
-import"./islandStrings.CHirjCBo.js";var e=15e3,t={1:37,2:27,3:18,4:11,5:6,6:3,7:1};export{t as n,e as t};
+import"./islandStrings.DloX3lpL.js";var e=15e3,t={1:37,2:27,3:18,4:11,5:6,6:3,7:1};export{t as n,e as t};
