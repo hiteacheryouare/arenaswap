@@ -6,7 +6,7 @@
 // component the site renders is pointed at the v3 tokens here, before Bootstrap compiles.
 @use '@arenaswap/ui/src/bootstrap' as bs with (
 	$enable-dark-mode:              false,
-	$headings-font-weight:          650,
+	$headings-font-weight:          700,
 
 	$dropdown-bg:                   var(--as-raised),
 	$dropdown-color:                var(--as-ink),
