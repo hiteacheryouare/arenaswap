@@ -507,7 +507,7 @@ button, input, select, optgroup, textarea {
 .game-card-reveal-stage,
 .game-card-reveal-sweeps {
 	position:             absolute;
-	inset:                calc(var(--reveal-top, 0px) - 1px) 0 -1px;
+	inset:                -1px 0 -1px;
 	overflow:             clip;
 	overflow-clip-margin: 1px;
 	clip-path:            inset(0 -1px round var(--reveal-round, calc(0.5rem + 1px)));
@@ -536,7 +536,7 @@ button, input, select, optgroup, textarea {
    that lands outside the card has nothing to show against. */
 .game-card-reveal-base {
 	position:       absolute;
-	inset:          calc(var(--reveal-top, 0px) - 1px) -1px -1px;
+	inset:          -1px -1px -1px;
 	z-index:        1;
 	background:     var(--as-body-bg);
 	pointer-events: none;
@@ -633,7 +633,7 @@ button, input, select, optgroup, textarea {
    do at full width, so anything painted here would only ever show through their antialiased join. */
 .game-card-reveal-opening {
 	position:             absolute;
-	inset:                calc(var(--reveal-top, 0px) - 1px) 0 -1px;
+	inset:                -1px 0 -1px;
 	z-index:              2;
 	overflow:             clip;
 	overflow-clip-margin: 1px;
@@ -1102,6 +1102,16 @@ button, input, select, optgroup, textarea {
 .game-card-reveal .as-stage-situation,
 .game-card-reveal .as-trend {
 	animation-delay: calc(var(--reveal-spine) + 2740ms * var(--reveal-rate));
+}
+
+/* The stage's poster covers the header too. The header sits above it, so its ink waits for the last
+   beat, once the colour has cleared. */
+.popup-header.is-revealing > * {
+	animation: cardRevealContent calc(620ms * var(--reveal-rate)) cubic-bezier(0.22, 1, 0.36, 1) calc(var(--reveal-spine) + 2780ms * var(--reveal-rate)) both;
+}
+
+.popup-header.is-revealing.is-skipping > * {
+	animation: none;
 }
 
 /* 2780, not 2820: 620ms after it is 3400, which is `revealBaseDurationMs` and the instant the

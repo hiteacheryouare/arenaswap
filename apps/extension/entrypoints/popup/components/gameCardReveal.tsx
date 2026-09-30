@@ -31,8 +31,6 @@ interface gameCardRevealProps {
 	children: ReactNode;
 }
 
-// The popup header sits over the top of the stage, so the stage's poster starts underneath it.
-const stageHeaderPx = 48;
 const posterWidth = 296;
 const posterHeight = 148;
 
@@ -153,9 +151,7 @@ const gameCardReveal = ({ game, mode, index, skipping, shape = 'card', children 
 		if (!wrapper) return;
 		const [awayCrest, homeCrest] = wrapper.querySelectorAll('[data-reveal-crest]');
 		if (!awayCrest || !homeCrest) return;
-		const outer = wrapper.getBoundingClientRect();
-		const top = shape === 'stage' ? stageHeaderPx : 0;
-		const box = new DOMRect(outer.left, outer.top + top, outer.width, Math.max(0, outer.height - top));
+		const box = wrapper.getBoundingClientRect();
 		const awayRect = awayCrest.getBoundingClientRect();
 		const away = crestCentre(awayRect, box);
 		const home = crestCentre(homeCrest.getBoundingClientRect(), box);
@@ -229,7 +225,6 @@ const gameCardReveal = ({ game, mode, index, skipping, shape = 'card', children 
 			ref={wrapperRef}
 			className={`game-card-reveal is-${shape}${playing && skipping ? ' is-skipping' : ''}`}
 			style={!playing ? undefined : {
-				'--reveal-top': shape === 'stage' ? `${stageHeaderPx}px` : '0px',
 				'--reveal-round': roundFor[shape],
 				'--reveal-fit': landing?.fit ?? 1,
 				'--reveal-away': awayColor,

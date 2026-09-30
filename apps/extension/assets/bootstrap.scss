@@ -476,10 +476,7 @@
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	margin-top: 0.3rem;
-	margin-left: -0.75rem;
-	margin-right: -0.75rem;
-	margin-bottom: -0.75rem;
+	margin: var(--as-space-4) 0 calc(var(--as-space-4) * -1);
 	padding: 0.3rem 0.5rem;
 	background: linear-gradient(to right, #fdb913, #f36f21, #c9234a, #645faa, #0089cf, #0db14b);
 	color: white;
