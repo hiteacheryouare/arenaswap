@@ -166,6 +166,11 @@ export default () => {
 		writeOpenRevealEnabled(prefs.openRevealEnabled);
 	}, [prefsLoaded, prefs.openRevealEnabled]);
 
+	// The HTML says English whatever the UI is in, and screen readers and line breaking both go by it.
+	useEffect(() => {
+		document.documentElement.lang = browser.i18n.getUILanguage();
+	}, []);
+
 	// The onboarding and settings pickers show every league, not just the enabled ones — which is 31
 	// scoreboard requests, more than ESPN's burst allowance in one call, and this ran on every single
 	// popup open with the result discarded on close. It was the pickers, not the slate, spending the

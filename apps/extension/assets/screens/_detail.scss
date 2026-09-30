@@ -1207,6 +1207,14 @@ button.game-info-attribution {
 		height: 24px;
 		font-size: var(--as-text-2xs);
 	}
+
+	// Chinese spells the columns out (安打-打数 for H-AB), which leaves the name column too little.
+	// Those labels may break at their hyphen; a word is never split.
+	> thead > tr > *:lang(zh) {
+		white-space: normal;
+		word-break: keep-all;
+		line-height: 1.2;
+	}
 }
 
 // The name column takes the slack and gives way first; `max-width: 0` is what lets a table cell

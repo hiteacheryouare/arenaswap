@@ -777,6 +777,8 @@ describe('box score', () => {
 					const originals = heads.map(head => head.textContent);
 
 					for (const [code, bundle] of Object.entries(locales)) {
+						// The popup sets the document's language from the UI's, and the headers wrap by it.
+						document.documentElement.lang = code.replace('_', '-');
 						heads.forEach((head, index) => {
 							head.textContent = ((bundle as typeof en).box as Record<string, string>)[keys[index]];
 						});
@@ -790,6 +792,7 @@ describe('box score', () => {
 					}
 
 					heads.forEach((head, index) => { head.textContent = originals[index]; });
+					document.documentElement.lang = 'en';
 				});
 			});
 		}
