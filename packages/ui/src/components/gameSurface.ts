@@ -97,6 +97,78 @@ export const gameSurfaceStyle = (surface: gameSurface): CSSProperties => ({
 	'--stage-behind': `rgba(255, 255, 255, ${surface.behindAlpha})`,
 } as CSSProperties);
 
+// A row is a quieter band of the same two colours: the away team's line washed in its colour, the
+// home team's in its own, under a veil of the page itself. The veil is lightest at the crests and
+// thickens to the right, so the clock, the tab picker and the number sit on something close to the
+// page. Dark ink on the light page, white on the dark one. Games you aren't deciding anything from
+// (upcoming and final) sit under more of it.
+const rowVeils = {
+	dark: { page: { red: 14, green: 16, blue: 19 }, ink: '#ffffff', note: '#ffffff', noteAlpha: 0.74, floor: 0.5, quietFloor: 0.72, far: 0.9 },
+	light: { page: { red: 244, green: 245, blue: 247 }, ink: '#0e1013', note: '#0e1013', noteAlpha: 0.7, floor: 0.62, quietFloor: 0.8, far: 0.92 },
+} as const;
+const rowAccent = { dark: '#f75c03', light: '#c2410c' } as const;
+
+export interface rowSurface {
+	away: string;
+	home: string;
+	near: number;
+	far: number;
+	veilRgb: string;
+	crestAway: string;
+	crestHome: string;
+	theme: ResolvedTheme;
+}
+
+const noteOver = (note: string, surface: string, alpha: number) => {
+	const rgb = hexToRgb(note) ?? { red: 255, green: 255, blue: 255 };
+	return mixOver(rgb, surface, alpha);
+};
+
+export const resolveRowSurface = (game: Pick<Game, 'awayTeam' | 'homeTeam'>, theme: ResolvedTheme, quiet = false): rowSurface => {
+	const [away, home] = resolveGameColors(game);
+	const tone = rowVeils[theme];
+	const holds = (color: string, share: number) => {
+		const under = mixOver(tone.page, color, share);
+		return contrast(tone.ink, under) >= textContrast && contrast(noteOver(tone.note, under, tone.noteAlpha), under) >= textContrast;
+	};
+	const nearFor = (color: string) => {
+		let share: number = quiet ? tone.quietFloor : tone.floor;
+		while (share < 0.96 && !holds(color, share)) share += veilStep;
+		return Math.min(share, 0.96);
+	};
+	const farFor = (color: string) => {
+		let share: number = tone.far;
+		while (share < 0.98 && contrast(rowAccent[theme], mixOver(tone.page, color, share)) < textContrast) share += veilStep;
+		return Math.min(share, 0.98);
+	};
+	const near = Math.max(nearFor(away), nearFor(home));
+	const far = Math.max(near, farFor(away), farFor(home));
+	return {
+		away,
+		home,
+		near: round(near),
+		far: round(far),
+		veilRgb: `${tone.page.red}, ${tone.page.green}, ${tone.page.blue}`,
+		crestAway: mixOver(tone.page, away, near),
+		crestHome: mixOver(tone.page, home, near),
+		theme,
+	};
+};
+
+export const rowSurfaceStyle = (surface: rowSurface): CSSProperties => {
+	const tone = rowVeils[surface.theme];
+	const note = hexToRgb(tone.note) ?? { red: 255, green: 255, blue: 255 };
+	return {
+		'--row-away': surface.away,
+		'--row-home': surface.home,
+		'--row-near': surface.near,
+		'--row-far': surface.far,
+		'--row-veil-rgb': surface.veilRgb,
+		'--row-ink': tone.ink,
+		'--row-note': `rgba(${note.red}, ${note.green}, ${note.blue}, ${tone.noteAlpha})`,
+	} as CSSProperties;
+};
+
 // The lettered disc a team gets when its crest never arrives: its own colour, lettered in its
 // alternate when that reads, otherwise in whichever of white or black reads better.
 export const monogramInk = (team: { alternateColor?: string }, color: string): string => {

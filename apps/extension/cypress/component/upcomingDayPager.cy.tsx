@@ -1,4 +1,5 @@
 import UpcomingDayPager from '../../entrypoints/popup/components/upcomingDayPager';
+import en from '../../locales/en.json';
 
 const mountPager = (index: number, total: number, dayLabel = 'Tuesday, Sep 2') => {
 	cy.viewport(320, 560);
@@ -75,10 +76,12 @@ describe('upcomingDayPager', () => {
 		});
 	});
 
-	it('sets the day in the ink', () => {
+	// Up Next is the title; the day beside it is the quieter half.
+	it('sets the day in the muted ink beside the Up Next title', () => {
 		mountPager(0, 3);
+		cy.get('.gm-title').should('have.text', en.main.sectionUpNext);
 		cy.get('[data-testid="upcoming-day-label"]').should(([label]: JQuery<HTMLElement>) => {
-			const ink = getComputedStyle(document.documentElement).getPropertyValue('--as-ink').trim();
+			const ink = getComputedStyle(document.documentElement).getPropertyValue('--as-muted').trim();
 			const [red, green, blue] = [1, 3, 5].map(index => Number.parseInt(ink.slice(index, index + 2), 16));
 			expect(getComputedStyle(label).color).to.equal(`rgb(${red}, ${green}, ${blue})`);
 		});

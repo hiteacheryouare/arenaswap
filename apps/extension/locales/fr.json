@@ -315,6 +315,7 @@
 		"settingsButton": "Paramètres",
 		"guideButton": "Guide",
 		"onStandbyStream": "En Standby Stream, en attente d'action",
+		"sectionLive": "En direct",
 		"sectionUpNext": "À suivre",
 		"sectionFinal": "Terminés",
 		"upcomingDayNavLabel": "Prochains matchs par jour",

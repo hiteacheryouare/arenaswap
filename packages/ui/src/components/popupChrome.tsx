@@ -1,17 +1,12 @@
 import { useEffect, useRef } from 'react';
-import type { RefObject } from 'react';
-import { leagueConfigs, resolveLeagueLogoUrl } from '@arenaswap/core/constants';
-import type { LeagueId, LeagueLogoMap } from '@arenaswap/core/types';
-import Crest from './crest';
-import useDocumentTheme from './useDocumentTheme';
+import type { CSSProperties, RefObject } from 'react';
+import { leagueConfigs } from '@arenaswap/core/constants';
+import type { LeagueId } from '@arenaswap/core/types';
 import { useT } from './i18nContext';
 import Wordmark from './wordmark';
 import driveWordmarkCollapse from './wordmarkCollapse';
 
-// The chrome the popup's main view is built out of. The website used to redraw these three
-// pieces in its own markup and its own CSS, which drifted: the section title lost its orange
-// rule, the league row lost its logo, and the header switch was a div. Sharing them means the
-// site cannot describe a popup that does not exist.
+// The popup's header, shared so the website can't describe a popup that doesn't exist.
 //
 // The wordmark used to be an `<img>` with a `logoSrc` prop, because the extension serves the file
 // from `/images` and the site from a `base`-prefixed path. It is inline SVG now, which settles that
@@ -68,6 +63,8 @@ export const PopupHeader = ({
 	onStartTour,
 	onOpenGuide,
 	onStage = false,
+	className,
+	style,
 }: {
 	// The element the header should collapse against. Absent on the website, which shows this header
 	// as a picture of the popup rather than a scrolling one, so the mark simply stays whole there.
@@ -88,13 +85,15 @@ export const PopupHeader = ({
 	onOpenGuide?: () => void;
 	// The header sits over the stage, so until the bar lifts it is drawn in the stage's white ink.
 	onStage?: boolean;
+	className?: string;
+	style?: CSSProperties;
 }) => {
 	const t = useT();
 	const { headerRef, wordmarkRef } = usePopupHeaderCollapse(scroller);
 	const buttonsLive = interactive === true;
 	const toggleLive = interactive !== false;
 	return (
-		<div ref={headerRef} className={`popup-header d-flex justify-content-between align-items-center${onStage ? ' is-on-stage' : ''}`}>
+		<div ref={headerRef} className={`popup-header d-flex justify-content-between align-items-center${onStage ? ' is-on-stage' : ''}${className ? ` ${className}` : ''}`} style={style}>
 			<Wordmark ref={wordmarkRef} className='arenaswap-logo' />
 			<div className='popup-tools d-flex align-items-center' aria-hidden={toggleLive ? undefined : true}>
 				{/* Before the help mark rather than after the cog: settingsCog.cy.tsx identifies the cog
@@ -115,26 +114,6 @@ export const PopupHeader = ({
 					<input className='form-check-input' type='checkbox' role='switch' id={toggleId} checked={enabled} aria-checked={enabled} onChange={onToggleEnabled} disabled={!prefsLoaded || !toggleLive} tabIndex={toggleLive ? undefined : -1} aria-label={t('main.enableToggleLabel')} />
 				</div>
 			</div>
-		</div>
-	);
-};
-
-export const PopupSectionTitle = ({ children, first }: { children: string; first?: boolean }) => (
-	<div className='popup-section-title' style={first ? { marginTop: '0.25rem' } : undefined}>{children}</div>
-);
-
-// No placeholder at all: the label is the next element along, so there is nothing a 20px disc could
-// say that the row does not already. The crest still holds its box while the mark loads, which is
-// all this row needed. Dropped entirely when the league has no mark to load.
-export const LeagueSectionHeader = ({ league, logos }: { league: LeagueId; logos: LeagueLogoMap }) => {
-	const theme = useDocumentTheme();
-	const logoUrl = resolveLeagueLogoUrl(league, logos[league], theme);
-	return (
-		<div className='fw-bold text-uppercase popup-section-label'>
-			{logoUrl && (
-				<Crest logo={logoUrl} abbreviation='' className='popup-league-logo' fallback='none' loading='lazy' />
-			)}
-			{leagueLabels[league] ?? league.toUpperCase()}
 		</div>
 	);
 };

@@ -138,7 +138,7 @@ describe('pre-game detail screen', () => {
 	it('holds the crest box with the abbreviation until the logo lands', () => {
 		mountPre(preGame);
 		cy.get('.dt-hero .as-crest-box').should('have.length', 2).each(($box: JQuery<HTMLElement>) => {
-			expect($box[0]!.getBoundingClientRect()).to.deep.include({ width: 48, height: 48 });
+			expect($box[0]!.getBoundingClientRect()).to.deep.include({ width: 72, height: 72 });
 		});
 		cy.get('.dt-hero .as-crest-box').eq(0).find('.crest-fallback').should('have.text', 'BUF');
 	});

@@ -389,7 +389,8 @@
 			"sectionUpNext": "Susunod",
 			"enableToggleLabel": "I-enable ang awtomatikong paglipat",
 			"onStandbyStream": "Naka-Standby Stream, naghihintay ng aksyon",
-			"guideButton": "Guide"
+			"guideButton": "Guide",
+			"sectionLive": "Live"
 		},
 		"detail": {
 			"chartPowerScoreTitle": "Pag-usad ng PowerScore",

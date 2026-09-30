@@ -389,7 +389,8 @@
 			"sectionUpNext": "다음 경기",
 			"enableToggleLabel": "자동 전환 활성화",
 			"onStandbyStream": "Standby Stream 대기 중 — 액션을 기다리고 있어요",
-			"guideButton": "편성표"
+			"guideButton": "편성표",
+			"sectionLive": "진행 중인 경기"
 		},
 		"detail": {
 			"chartPowerScoreTitle": "시간별 PowerScore 추이",

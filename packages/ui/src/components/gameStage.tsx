@@ -1,6 +1,8 @@
 import type { CSSProperties, HTMLAttributes, ReactNode } from 'react';
 import type { Game, Team, TeamMonoMarks } from '@arenaswap/core/types';
 import BoardCrest from './boardCrest';
+import FavoriteStar from './favoriteStar';
+import HeatBar from './heatBar';
 import { resolveBoardClock, trailingSide } from './boardClock';
 import FlipScore from './flipScore';
 import { gameSurfaceStyle, resolveGameSurface } from './gameSurface';
@@ -73,29 +75,14 @@ const StageTeam = ({ game, side, crestSurface, color, options }: {
 	const name = teamName(team, options.names);
 	return (
 		<span className='as-stage-team'>
-			<BoardCrest team={team} size={48} surface={crestSurface} color={color} monoMarks={options.monoMarks?.[side]} />
+			<BoardCrest team={team} size={72} surface={crestSurface} color={color} monoMarks={options.monoMarks?.[side]} />
 			<b key={`${team.rank ?? ''}${name}`} ref={fitName}>
 				{team.rank !== undefined && <span className='as-rank' title={t('gameCard.teamRank', { rank: team.rank })}>#{team.rank}</span>}
 				{name}
 			</b>
 			{record && <small className='num'>{record}</small>}
 			{team.timeouts !== undefined && <TimeoutDots remaining={team.timeouts} teamAbbreviation={team.abbreviation} />}
-			{options.onToggleFavorite ? (
-				<button
-					type='button'
-					className='as-star'
-					data-favorited={favorited}
-					data-team-star='true'
-					aria-pressed={favorited}
-					aria-label={favorited ? t('gameCard.removeFromFavorites', { team: team.abbreviation }) : t('gameCard.addToFavorites', { team: team.abbreviation })}
-					title={favorited ? t('gameCard.favorited') : t('gameCard.addToFavoritesShort')}
-					onClick={() => options.onToggleFavorite?.(side)}
-				>
-					<i className={`bi ${favorited ? 'bi-star-fill' : 'bi-star'}`} aria-hidden='true' />
-				</button>
-			) : favorited && (
-				<i className='bi bi-star-fill as-star-mark' role='img' aria-label={t('gameCard.favorited')} />
-			)}
+			<FavoriteStar team={team} favorited={favorited} onToggle={options.onToggleFavorite && (() => options.onToggleFavorite?.(side))} />
 		</span>
 	);
 };
@@ -134,7 +121,7 @@ const GameStage = ({ game, label, clock, note, situation, power, head, watched, 
 				{game.status === 'pre' ? (
 					<span className='as-stage-at'>{t('board.at')}</span>
 				) : (
-					<span className={`as-stage-score num${wide ? ' is-wide' : ''}`}>
+					<span className={`as-stage-score${wide ? ' is-wide' : ''}`}>
 						<FlipScore value={game.awayTeam.score} className={`as-score${behind === 'away' ? ' is-behind' : ''}`} />
 						<FlipScore value={game.homeTeam.score} className={`as-score${behind === 'home' ? ' is-behind' : ''}`} />
 					</span>
@@ -147,8 +134,9 @@ const GameStage = ({ game, label, clock, note, situation, power, head, watched, 
 					<div className='as-stage-note'>{note}</div>
 					{power && (
 						<span className='as-stage-power'>
-							<strong className='num'>{power.value}</strong>
+							<strong>{power.value}</strong>
 							<small>{power.label}</small>
+							<HeatBar value={power.value} />
 						</span>
 					)}
 				</div>

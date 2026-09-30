@@ -293,7 +293,7 @@ describe('gameDetailView countdown', () => {
 			expect($el[0]!.classList.contains('num'), 'tabular figures').to.equal(true);
 		});
 		mountDetail(makePreGame(0));
-		cy.get('.dt-countdown-soon').should($el => expect(face($el), 'fallback face').to.equal('Inter'));
+		cy.get('.dt-countdown-soon').should($el => expect(face($el), 'fallback face').to.equal('DM Sans'));
 	});
 
 	it('falls back to "Starts soon" when no start time is scheduled', () => {
@@ -334,12 +334,12 @@ describe('gameDetailView stage', () => {
 		cy.get('.dt-hero .as-stage-team b').last().should('have.text', 'Celtics');
 	});
 
-	// Letters rather than a blank, since the crest is missing — but inside the same 48px box, so the
+	// Letters rather than a blank, since the crest is missing — but inside the same 72px box, so the
 	// columns do not move when a logo arrives.
-	it('holds a 48px crest box above each team name', () => {
+	it('holds a 72px crest box above each team name', () => {
 		mountDetail(makeLiveGame(), { excitementResult: excitement });
 		cy.get('.dt-hero .as-stage-team .as-crest-box').should('have.length', 2).each(($box: JQuery<HTMLElement>) => {
-			expect($box[0]!.getBoundingClientRect()).to.deep.include({ width: 48, height: 48 });
+			expect($box[0]!.getBoundingClientRect()).to.deep.include({ width: 72, height: 72 });
 			expect($box.find('.crest').attr('data-crest-state')).to.equal('missing');
 		});
 		cy.get('.dt-hero .as-stage-team .as-crest-box').first().should('contain.text', 'OKC');
@@ -422,10 +422,10 @@ describe('gameDetailView stage', () => {
 		mountDetail(makeLiveGame({ id: recordsGameId }), { excitementResult: excitement });
 		cy.get('.dt-hero').should(([hero]: JQuery<HTMLElement>) => {
 			expect(hero.getBoundingClientRect().top, 'the stage runs to the top edge').to.equal(0);
-			expect(hero.getBoundingClientRect().height, 'stage height').to.be.at.most(280);
+			expect(hero.getBoundingClientRect().height, 'stage height').to.be.at.most(310);
 		});
 		cy.get('.powerscore-breakdown').then(([el]: JQuery<HTMLElement>) => {
-			expect(el.getBoundingClientRect().top, 'breakdown starts on the first screen').to.be.at.most(520);
+			expect(el.getBoundingClientRect().top, 'breakdown starts on the first screen').to.be.at.most(532);
 		});
 	});
 
@@ -440,7 +440,7 @@ describe('gameDetailView stage', () => {
 		}), { excitementResult: excitement });
 		cy.get('.dt-hero .timeout-dots').should('have.length', 2);
 		cy.get('.dt-hero').should(([hero]: JQuery<HTMLElement>) => {
-			expect(hero.getBoundingClientRect().height, 'stage height').to.be.at.most(310);
+			expect(hero.getBoundingClientRect().height, 'stage height').to.be.at.most(320);
 		});
 	});
 
@@ -457,7 +457,7 @@ describe('gameDetailView stage', () => {
 		}, { excitementResult: excitement });
 		cy.get('.dt-atbat').should('exist');
 		cy.get('.dt-hero').should(([hero]: JQuery<HTMLElement>) => {
-			expect(hero.getBoundingClientRect().height, 'stage height with the at-bat pair').to.be.at.most(385);
+			expect(hero.getBoundingClientRect().height, 'stage height with the at-bat pair').to.be.at.most(412);
 		});
 		cy.get('.dt-hero .as-stage-power').should(([power]: JQuery<HTMLElement>) => {
 			expect(power.getBoundingClientRect().bottom, 'the PowerScore is still on the first screen').to.be.at.most(560);
@@ -533,7 +533,7 @@ describe('gameDetailView stage', () => {
 	it('shows a series once, as a line of the note', () => {
 		mountDetail(makeLiveGame({ id: seriesGameId }), { excitementResult: excitement });
 		cy.get('.dt-hero .as-stage-note .dt-series-summary').should('have.length', 1).and('contain.text', 'series');
-		cy.get('.dt-series-summary').should($el => expect(face($el)).to.equal('Inter'));
+		cy.get('.dt-series-summary').should($el => expect(face($el)).to.equal('DM Sans'));
 		cy.get('.dt-series-dot').should('have.length.greaterThan', 1);
 		cy.get('.dt-series-dots').should('have.attr', 'aria-hidden', 'true');
 	});

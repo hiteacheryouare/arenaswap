@@ -389,7 +389,8 @@
 			"sectionUpNext": "A seguir",
 			"enableToggleLabel": "Activar mudança automática",
 			"onStandbyStream": "Em Standby Stream, à espera de acção",
-			"guideButton": "Guia"
+			"guideButton": "Guia",
+			"sectionLive": "Em directo"
 		},
 		"detail": {
 			"chartPowerScoreTitle": "PowerScore ao longo do tempo",

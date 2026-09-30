@@ -12,8 +12,6 @@ interface walkthroughStepTabAssignProps {
 	onBack: () => void;
 }
 
-const rowSurface = { dark: '#0e1013', light: '#f4f5f7' } as const;
-
 const walkthroughStepTabAssign = ({ onNext, onBack }: walkthroughStepTabAssignProps) => {
 	const theme = useDocumentTheme();
 	const [registry, setRegistry] = useState<TabRegistration[]>([]);
@@ -43,7 +41,7 @@ const walkthroughStepTabAssign = ({ onNext, onBack }: walkthroughStepTabAssignPr
 			<div ref={screenRef} className='wt-screen wt-assign'>
 				<GameRow
 					game={eaglesGiantsQ2}
-					surface={rowSurface[theme]}
+					theme={theme}
 					power={52}
 					status={(
 						<TabAssignSelect

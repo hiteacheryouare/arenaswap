@@ -389,7 +389,8 @@
 			"sectionUpNext": "次の試合",
 			"enableToggleLabel": "自動切り替えを有効にする",
 			"onStandbyStream": "Standby Stream 中 — アクションを待っています",
-			"guideButton": "番組表"
+			"guideButton": "番組表",
+			"sectionLive": "試合中"
 		},
 		"detail": {
 			"chartPowerScoreTitle": "PowerScoreの推移",

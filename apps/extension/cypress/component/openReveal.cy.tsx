@@ -49,7 +49,7 @@ const Harness = ({ mode, status = 'in', away, home, skipping = false }: {
 				{status === 'post' ? (
 					<section className='gm-after as-rows'>
 						<GameCardReveal game={subject} mode={mode} index={0} skipping={skipping} shape='row'>
-							<GameRow game={subject} surface='#0e1013' quiet />
+							<GameRow game={subject} theme='dark' quiet />
 						</GameCardReveal>
 					</section>
 				) : (
@@ -344,7 +344,14 @@ describe('the popup open reveal', () => {
 	// the card is rather than take the fixture's word for it.
 	it('holds the seam within a tenth of the card whatever the card\'s height', () => {
 		cy.mount(<Harness mode='full' />);
-		// Short card: the full angle, untouched.
+		// Short card: the full angle, untouched. Pinned short, since a real tile is tall enough now to
+		// reach the cap on its own.
+		let short: HTMLStyleElement | null = null;
+		cy.document().then(doc => {
+			short = doc.createElement('style');
+			short.textContent = '.game-card-reveal.is-tile { height: 140px; } .as-tile { min-height: 0; }';
+			doc.head.appendChild(short);
+		});
 		rectOf('.as-tile').then(card => {
 			cy.get('.game-card-reveal').should($wrapper => {
 				const style = getComputedStyle($wrapper[0]);
@@ -354,6 +361,7 @@ describe('the popup open reveal', () => {
 				expect(skew, 'angle on a short card').to.be.closeTo(revealSweepAngleDeg, 0.01);
 			});
 		});
+		cy.then(() => short?.remove());
 		// And as tall as the real thing: bounded, with the bars still skewed by the angle it leans at.
 		// Taken back off at the end of the test, because the runner's document outlives a mount and a
 		// style left in it makes every card in every later spec in this file 210px tall.
@@ -491,6 +499,12 @@ describe('the popup open reveal', () => {
 	// itself, so the two would stop being one line.
 	it('measures the lean across the box that leans, not across the card', () => {
 		cy.mount(<Harness mode='full' />);
+		let short: HTMLStyleElement | null = null;
+		cy.document().then(doc => {
+			short = doc.createElement('style');
+			short.textContent = '.game-card-reveal.is-tile { height: 140px; } .as-tile { min-height: 0; }';
+			doc.head.appendChild(short);
+		});
 		rectOf('.as-tile').then(card => {
 			const bled = card.height + revealStageBleedPx * 2;
 			cy.get('.game-card-reveal').should($wrapper => {
@@ -498,6 +512,7 @@ describe('the popup open reveal', () => {
 				expect(lean, 'lean').to.be.closeTo((bled * revealLeanRatio) / 2, 0.01);
 			});
 		});
+		cy.then(() => short?.remove());
 	});
 
 	// The last beat takes the colour off the edge it came in from rather than parking a rectangle on

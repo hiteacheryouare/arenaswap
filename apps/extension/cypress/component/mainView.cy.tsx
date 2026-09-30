@@ -287,7 +287,7 @@ const dayAt = (offsetDays: number) => {
 };
 
 // Size is the score: the hottest live game takes the stage, anything at 70 or above is a tile, the
-// rest are rows, and what isn't live sits under a hairline after them.
+// rest are rows, and what isn't live sits under its own title after them.
 describe('mainView board', () => {
 	it('puts the hottest live game on the stage, 70 and up in tiles, and the rest in rows', () => {
 		cy.mount(
@@ -318,6 +318,33 @@ describe('mainView board', () => {
 			const tiles = $last[0]!.parentElement!.getBoundingClientRect();
 			expect($last[0]!.getBoundingClientRect().width).to.be.closeTo(tiles.width, 1);
 		});
+	});
+
+	it('titles the live games under the stage, and leaves a lone stage untitled', () => {
+		cy.mount(<MainView {...defaultProps} games={[makeGame('hot'), makeGame('cold')]} scores={[score('hot', 91), score('cold', 30)]} />);
+		cy.get('.gm-lower > .gm-title').should('have.text', 'Live');
+		cy.mount(<MainView {...defaultProps} games={[makeGame('hot')]} scores={[score('hot', 91)]} />);
+		cy.get('.gm-lower > .gm-title').should('not.exist');
+	});
+
+	it('stars a team straight from the stage and from a tile', () => {
+		const toggle = cy.stub().as('toggle');
+		const open = cy.stub().as('open');
+		cy.mount(
+			<MainView
+				{...defaultProps}
+				onToggleFavoriteTeam={toggle}
+				onOpenGameDetail={open}
+				games={[makeGame('hot'), makeGame('warm')]}
+				scores={[score('hot', 91), score('warm', 80)]}
+			/>,
+		);
+		cy.get('.as-stage .as-stage-team').first().find('.as-star').click();
+		cy.get('@toggle').should('have.been.calledWith', 'nba', 'hot-a');
+		cy.get('.as-tile').focus();
+		cy.get('.as-tile .as-tile-team').eq(1).find('.as-star').click();
+		cy.get('@toggle').should('have.been.calledWith', 'nba', 'warm-h');
+		cy.get('@open').should('not.have.been.called');
 	});
 
 	it('draws the header over the stage, and on the page when there is no stage', () => {
@@ -524,6 +551,15 @@ describe('mainView up next day pager', () => {
 	// Scores arrive by push every few seconds, so a resort inside the open animation is ordinary. The
 	// plan is fixed on the first list that has anything in it: a card that changes index would
 	// otherwise get a new `animation-delay`, which moves a running animation rather than restarting it.
+	// The stage's poster runs up behind the header, so the header's ink waits for it.
+	it('holds the header back for the stage\'s opening', () => {
+		cy.mount(<ResortingMainView />);
+		cy.get('.popup-header').should('have.class', 'is-revealing').then($header => {
+			expect(getComputedStyle($header[0]!).getPropertyValue('--reveal-spine')).to.match(/^\d+ms$/);
+		});
+		cy.get('.popup-header > *').first().should('have.css', 'animation-name', 'cardRevealContent');
+	});
+
 	it('holds the reveal stagger still when a score push resorts the list under it', () => {
 		cy.mount(<ResortingMainView />);
 		gameEl('slow').closest('.game-card-reveal').should('have.css', '--reveal-delay', '0ms');

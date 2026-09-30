@@ -315,6 +315,7 @@
 		"settingsButton": "설정",
 		"guideButton": "편성표",
 		"onStandbyStream": "Standby Stream 대기 중 — 액션을 기다리고 있어요",
+		"sectionLive": "진행 중인 경기",
 		"sectionUpNext": "다음 경기",
 		"sectionFinal": "종료된 경기",
 		"upcomingDayNavLabel": "날짜별 예정 경기",

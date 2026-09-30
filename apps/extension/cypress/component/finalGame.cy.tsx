@@ -306,9 +306,10 @@ describe('a finished game', () => {
 	});
 
 	describe('the list', () => {
-		it('puts finished games after the hairline, labelled for a screen reader', () => {
+		it('puts finished games under their own title, which names the section', () => {
 			cy.mount(<StatefulMainView games={[finalGame]} prefs={listPrefs} />);
-			cy.get(`section.gm-after[aria-label="${en.main.sectionFinal}"] [data-game="final-1"]`).should('exist');
+			cy.get('#gm-final-title').should('have.text', en.main.sectionFinal);
+			cy.get('section.gm-after[aria-labelledby="gm-final-title"] [data-game="final-1"]').should('exist');
 		});
 
 		it('puts them under the upcoming games, not above them', () => {

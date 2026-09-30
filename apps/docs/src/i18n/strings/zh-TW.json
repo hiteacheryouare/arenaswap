@@ -389,7 +389,8 @@
 			"sectionUpNext": "即將開賽",
 			"enableToggleLabel": "啟用自動切換",
 			"onStandbyStream": "目前在 Standby Stream，等待精彩時刻",
-			"guideButton": "節目表"
+			"guideButton": "節目表",
+			"sectionLive": "進行中"
 		},
 		"detail": {
 			"chartPowerScoreTitle": "PowerScore 走勢",

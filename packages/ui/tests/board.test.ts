@@ -1,7 +1,7 @@
 import type { Game, PowerScoreSnapshot } from '@arenaswap/core/types';
 import { arrangeLive, powerTrend, tileFloor } from '../src/components/boardLayout';
 import { formatStartTime, resolveBoardClock, trailingSide } from '../src/components/boardClock';
-import { resolveGameColors, resolveGameSurface, veilTopShare, monogramInk } from '../src/components/gameSurface';
+import { resolveGameColors, resolveGameSurface, resolveRowSurface, veilTopShare, monogramInk } from '../src/components/gameSurface';
 import { resolveTeamColorPair } from '../src/components/colorUtils';
 import { contrastBetween, hexLuminance, hexToRgb, rgbToHex } from '../src/components/colorMath';
 import { defaultStrings } from '../src/components/defaultStrings';
@@ -179,5 +179,40 @@ describe('the stage surface', () => {
 		expect(monogramInk({ alternateColor: '#FFC72C' }, '#1D428A')).toBe('#FFC72C');
 		expect(monogramInk({ alternateColor: '#1E3A8A' }, '#1D428A')).toBe('#ffffff');
 		expect(monogramInk({}, '#FFD200')).toBe('#000000');
+	});
+});
+
+const pairOf = (color: string) => ({ awayTeam: { id: 'a', name: '', abbreviation: '', score: 0, color }, homeTeam: { id: 'h', name: '', abbreviation: '', score: 0, color: '#777777' } });
+
+describe('the row surface', () => {
+	const steps = [0x00, 0x33, 0x66, 0x99, 0xcc, 0xff];
+	const colours = steps.flatMap(r => steps.flatMap(g => steps.map(b => rgbToHex(r, g, b))));
+	const themes = [
+		{ theme: 'dark' as const, page: '#0e1013', ink: '#ffffff', accent: '#f75c03', noteAlpha: 0.74 },
+		{ theme: 'light' as const, page: '#f4f5f7', ink: '#0e1013', accent: '#c2410c', noteAlpha: 0.7 },
+	];
+
+	// The names, scores and the dimmer trailing score sit where the veil is thinnest.
+	test.each(themes)('keeps the $theme ink readable on any team colour', ({ theme, page, ink, noteAlpha }) => {
+		for (const colour of colours) {
+			const surface = resolveRowSurface(pairOf(colour), theme);
+			const under = mix(page, surface.away, surface.near);
+			expect(contrast(ink, under)).toBeGreaterThanOrEqual(4.49);
+			expect(contrast(mix(ink, under, noteAlpha), under)).toBeGreaterThanOrEqual(4.49);
+		}
+	});
+
+	// The tab picker is drawn in the accent, at the thick end of the veil.
+	test.each(themes)('keeps the $theme accent readable where the tab picker sits', ({ theme, page, accent }) => {
+		for (const colour of colours) {
+			const surface = resolveRowSurface(pairOf(colour), theme);
+			expect(contrast(accent, mix(page, surface.away, surface.far))).toBeGreaterThanOrEqual(4.49);
+		}
+	});
+
+	test('washes upcoming and final games more quietly than live ones', () => {
+		const live = resolveRowSurface(pairOf('#002D72'), 'dark');
+		const quiet = resolveRowSurface(pairOf('#002D72'), 'dark', true);
+		expect(quiet.near).toBeGreaterThan(live.near);
 	});
 });

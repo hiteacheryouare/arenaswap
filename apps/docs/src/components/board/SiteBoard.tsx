@@ -37,7 +37,6 @@ interface SiteBoardProps {
 	className?: string;
 }
 
-const rowSurface = '#0e1013';
 const noop = () => {};
 
 // The inline picker SelectDropdown draws, left disabled: there are no tabs here to hand a game to.
@@ -127,6 +126,8 @@ const SiteBoard = ({
 			)}
 
 			<div className='gm-lower'>
+				{(board.tiles.length > 0 || board.rows.length > 0) && <h2 className='gm-title'>{t('main.sectionLive')}</h2>}
+
 				{board.tiles.length > 0 && (
 					<div className={`gm-tiles${board.tiles.length % 2 ? ' is-odd' : ''}`}>
 						{board.tiles.map(game => (
@@ -150,7 +151,7 @@ const SiteBoard = ({
 							<GameRow
 								key={game.id}
 								game={game}
-								surface={rowSurface}
+								theme='dark'
 								power={scoreOf(game)}
 								status={picker(game)}
 								favorites={favorites[game.id]}

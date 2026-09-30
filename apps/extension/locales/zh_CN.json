@@ -315,6 +315,7 @@
 		"settingsButton": "设置",
 		"guideButton": "节目表",
 		"onStandbyStream": "处于 Standby Stream，等待精彩时刻",
+		"sectionLive": "进行中",
 		"sectionUpNext": "即将开赛",
 		"sectionFinal": "已结束",
 		"upcomingDayNavLabel": "按日期查看即将开始的比赛",

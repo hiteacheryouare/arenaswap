@@ -389,7 +389,8 @@
 			"sectionUpNext": "即将开赛",
 			"enableToggleLabel": "启用自动切换",
 			"onStandbyStream": "处于 Standby Stream，等待精彩时刻",
-			"guideButton": "节目表"
+			"guideButton": "节目表",
+			"sectionLive": "进行中"
 		},
 		"detail": {
 			"chartPowerScoreTitle": "PowerScore 走势",

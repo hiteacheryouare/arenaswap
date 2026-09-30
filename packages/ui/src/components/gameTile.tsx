@@ -1,6 +1,8 @@
 import type { CSSProperties, HTMLAttributes, ReactNode } from 'react';
-import type { Game } from '@arenaswap/core/types';
+import type { Game, TeamMonoMarks } from '@arenaswap/core/types';
 import BoardCrest from './boardCrest';
+import FavoriteStar from './favoriteStar';
+import HeatBar from './heatBar';
 import { resolveBoardClock, trailingSide } from './boardClock';
 import FlipScore from './flipScore';
 import { gameSurfaceStyle, resolveGameSurface } from './gameSurface';
@@ -13,6 +15,8 @@ export interface gameTileProps {
 	trend?: number | null;
 	tab?: ReactNode;
 	favorites?: { away: boolean; home: boolean };
+	onToggleFavorite?: (side: 'away' | 'home') => void;
+	monoMarks?: { away?: TeamMonoMarks | null; home?: TeamMonoMarks | null };
 	watched?: boolean;
 	interactive?: HTMLAttributes<HTMLElement>;
 }
@@ -30,7 +34,7 @@ export const Trend = ({ value }: { value: number | null | undefined }) => {
 	);
 };
 
-const GameTile = ({ game, power, trend, tab, favorites, watched, interactive }: gameTileProps) => {
+const GameTile = ({ game, power, trend, tab, favorites, onToggleFavorite, monoMarks, watched, interactive }: gameTileProps) => {
 	const t = useT();
 	const surface = resolveGameSurface(game);
 	const status = resolveBoardClock(game, t);
@@ -56,19 +60,22 @@ const GameTile = ({ game, power, trend, tab, favorites, watched, interactive }: 
 			<div className='as-tile-teams'>
 				{sides.map(({ side, team, color, crest }) => (
 					<span key={side} className='as-tile-team'>
-						<BoardCrest team={team} size={24} surface={crest} color={color} />
-						<b>
-							{team.rank !== undefined && <span className='as-rank'>#{team.rank}</span>}
-							{team.abbreviation}
-							{favorites?.[side] && <i className='bi bi-star-fill as-star-mark' role='img' aria-label={t('gameCard.favorited')} />}
-						</b>
-						<FlipScore value={team.score} className={`as-score num${behind === side ? ' is-behind' : ''}`} />
+						<BoardCrest team={team} size={32} surface={crest} color={color} monoMarks={monoMarks?.[side]} />
+						<span className='as-tile-name'>
+							<b>
+								{team.rank !== undefined && <span className='as-rank'>#{team.rank}</span>}
+								{team.abbreviation}
+							</b>
+							<FavoriteStar team={team} favorited={favorites?.[side] ?? false} onToggle={onToggleFavorite && (() => onToggleFavorite(side))} />
+						</span>
+						<FlipScore value={team.score} className={`as-score${behind === side ? ' is-behind' : ''}`} />
 					</span>
 				))}
 			</div>
 			<footer className='as-tile-foot'>
 				<Trend value={trend} />
-				<strong className='as-tile-power num' aria-label={`${t('gameCard.powerScore')} ${power}`}>{power}</strong>
+				<HeatBar value={power} />
+				<strong className='as-tile-power' aria-label={`${t('gameCard.powerScore')} ${power}`}>{power}</strong>
 			</footer>
 		</article>
 	);

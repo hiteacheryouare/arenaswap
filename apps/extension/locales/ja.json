@@ -315,6 +315,7 @@
 		"settingsButton": "設定",
 		"guideButton": "番組表",
 		"onStandbyStream": "Standby Stream 中 — アクションを待っています",
+		"sectionLive": "試合中",
 		"sectionUpNext": "次の試合",
 		"sectionFinal": "終了した試合",
 		"upcomingDayNavLabel": "日付ごとの今後の試合",

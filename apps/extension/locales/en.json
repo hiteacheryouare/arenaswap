@@ -315,6 +315,7 @@
 		"settingsButton": "Settings",
 		"guideButton": "Guide",
 		"onStandbyStream": "On standby stream, waiting for action",
+		"sectionLive": "Live",
 		"sectionUpNext": "Up Next",
 		"sectionFinal": "Final",
 		"upcomingDayNavLabel": "Upcoming games by day",

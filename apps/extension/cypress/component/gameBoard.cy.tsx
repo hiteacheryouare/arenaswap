@@ -47,6 +47,24 @@ describe('the stage', () => {
 		cy.get('.as-stage-power strong').should('have.text', '93');
 	});
 
+	// A three-digit score takes a little of the crest's column back, never below 64.
+	it('draws 72px crests and a heat bar filled to the PowerScore', () => {
+		cy.mount(<div style={frame}><GameStage game={baseGame} power={{ value: 93, label: 'PowerScore' }} /></div>);
+		cy.get('.as-stage-team .as-crest-box').each($box => {
+			expect($box[0]!.getBoundingClientRect().width).to.be.within(64, 72);
+		});
+		cy.mount(<div style={frame}><GameStage game={{ ...baseGame, awayTeam: { ...baseGame.awayTeam, score: 42 }, homeTeam: { ...baseGame.homeTeam, score: 45 } }} power={{ value: 93, label: 'PowerScore' }} /></div>);
+		cy.get('.as-stage-team .as-crest-box').each($box => {
+			expect($box[0]!.getBoundingClientRect()).to.deep.include({ width: 72, height: 72 });
+		});
+		// Retried: the fill grows in from empty when it first appears.
+		cy.get('.as-stage-power .as-heat').should('have.attr', 'aria-hidden', 'true').should($bar => {
+			expect(getComputedStyle($bar[0]!).getPropertyValue('--heat')).to.equal('0.93');
+			const fill = $bar[0]!.querySelector('.as-heat-fill')!.getBoundingClientRect().width;
+			expect(fill / $bar[0]!.getBoundingClientRect().width).to.be.closeTo(0.93, 0.01);
+		});
+	});
+
 	it('keeps two three-digit scores clear of the crests and inside the stage', () => {
 		cy.mount(<div style={frame}><GameStage game={{ ...baseGame, awayTeam: { ...baseGame.awayTeam, score: 128 }, homeTeam: { ...baseGame.homeTeam, score: 131 } }} /></div>);
 		cy.get('.as-stage-score').should('have.class', 'is-wide').then($score => {
@@ -230,11 +248,42 @@ describe('a tile', () => {
 		cy.mount(<div style={{ width: 144 }}><GameTile game={baseGame} power={88} watched /></div>);
 		cy.get('.as-tile').should('have.class', 'is-watched');
 	});
+
+	it('draws 32px crests and a heat bar between the trend and the number', () => {
+		cy.mount(<div style={{ width: 144 }}><GameTile game={baseGame} power={88} trend={3} /></div>);
+		cy.get('.as-tile-team .as-crest-box').each($box => {
+			expect($box[0]!.getBoundingClientRect()).to.deep.include({ width: 32, height: 32 });
+		});
+		cy.get('.as-tile-foot > *').then($parts => {
+			expect([...$parts].map(part => part.className)).to.deep.equal(['as-trend num is-up', 'as-heat', 'as-tile-power']);
+		});
+	});
+
+	// A tile has no room for an empty star beside a ranked name, so it shows once you're on the tile.
+	it('keeps a favourite starred, and offers the other star once the tile has focus', () => {
+		const toggle = cy.stub().as('toggle');
+		const ranked = { ...baseGame, awayTeam: { ...baseGame.awayTeam, abbreviation: 'UCONN', rank: 12 } };
+		cy.mount(
+			<div style={{ width: 144 }}>
+				<GameTile game={ranked} power={88} favorites={{ away: false, home: true }} onToggleFavorite={toggle} interactive={{ role: 'button', tabIndex: 0 }} />
+			</div>,
+		);
+		cy.get('.as-tile-team').eq(1).find('.as-star').should('be.visible').and('have.attr', 'data-favorited', 'true');
+		cy.get('.as-tile-team').eq(0).find('.as-star').should('not.be.visible');
+		cy.get('.as-tile').focus();
+		cy.get('.as-tile-team').eq(0).find('.as-star').should('be.visible').click();
+		cy.get('@toggle').should('have.been.calledOnceWith', 'away');
+		cy.get('.as-tile').then($tile => {
+			for (const node of $tile[0]!.querySelectorAll('.as-tile-team > *, .as-tile-name > *')) {
+				expect(inside(node, $tile[0]!), node.className).to.equal(true);
+			}
+		});
+	});
 });
 
 describe('a row', () => {
 	it('has no score column before a start and no number when there is none', () => {
-		cy.mount(<div style={frame}><GameRow game={{ ...baseGame, status: 'pre', startTime: '2026-09-28T23:20:00Z' }} surface='#0e1013' status='in 54 min, NBC' quiet /></div>);
+		cy.mount(<div style={frame}><GameRow game={{ ...baseGame, status: 'pre', startTime: '2026-09-28T23:20:00Z' }} theme='dark' status='in 54 min, NBC' quiet /></div>);
 		cy.get('.as-row-team .as-score').should('not.exist');
 		cy.get('.as-row-power').should('have.text', '');
 		cy.get('.as-row-status').should('contain.text', 'in 54 min, NBC');
@@ -242,17 +291,41 @@ describe('a row', () => {
 	});
 
 	it('dims whichever side lost a finished game, and neither side of a draw', () => {
-		cy.mount(<div style={frame}><GameRow game={{ ...baseGame, status: 'post' }} surface='#0e1013' quiet /></div>);
+		cy.mount(<div style={frame}><GameRow game={{ ...baseGame, status: 'post' }} theme='dark' quiet /></div>);
 		cy.get('.as-row-team').first().find('.as-score').should('have.class', 'is-behind');
 		cy.get('.as-row .as-clock').should('have.text', 'Final');
-		cy.mount(<div style={frame}><GameRow game={{ ...baseGame, status: 'post', homeTeam: { ...baseGame.homeTeam, score: 107 } }} surface='#0e1013' quiet /></div>);
+		cy.mount(<div style={frame}><GameRow game={{ ...baseGame, status: 'post', homeTeam: { ...baseGame.homeTeam, score: 107 } }} theme='dark' quiet /></div>);
 		cy.get('.as-row .is-behind').should('not.exist');
 	});
 
+	// The away line sits on the away colour and the home line on the home one.
+	it('washes each team\'s line in its own colour, with 28px crests', () => {
+		cy.mount(<div style={frame}><GameRow game={baseGame} theme='dark' power={40} /></div>);
+		cy.get('.as-row').should($row => {
+			const style = getComputedStyle($row[0]!);
+			expect(style.getPropertyValue('--row-away').toLowerCase()).to.equal('#00471b');
+			expect(style.getPropertyValue('--row-home').toLowerCase()).to.equal('#860038');
+			expect(style.backgroundImage).to.contain('linear-gradient');
+			expect(style.color).to.equal('rgb(255, 255, 255)');
+		});
+		cy.get('.as-row-team .as-crest-box').each($box => {
+			expect($box[0]!.getBoundingClientRect()).to.deep.include({ width: 28, height: 28 });
+		});
+		cy.mount(<div style={frame}><GameRow game={baseGame} theme='light' power={40} /></div>);
+		cy.get('.as-row').should('have.css', 'color', 'rgb(14, 16, 19)');
+	});
+
+	it('puts a heat bar under the number, and none where there is no number', () => {
+		cy.mount(<div style={frame}><GameRow game={baseGame} theme='dark' power={40} /></div>);
+		cy.get('.as-row-power .as-heat').should('have.length', 1);
+		cy.mount(<div style={frame}><GameRow game={{ ...baseGame, status: 'post' }} theme='dark' quiet /></div>);
+		cy.get('.as-heat').should('not.exist');
+	});
+
 	it('draws the inning caret for the inning sports only', () => {
-		cy.mount(<div style={frame}><GameRow game={{ ...baseGame, league: 'mlb', sportType: 'baseball', period: 7, topOfInning: true }} surface='#0e1013' power={40} /></div>);
+		cy.mount(<div style={frame}><GameRow game={{ ...baseGame, league: 'mlb', sportType: 'baseball', period: 7, topOfInning: true }} theme='dark' power={40} /></div>);
 		cy.get('.as-row .inning-half-icon').should('have.class', 'bi-caret-up-fill');
-		cy.mount(<div style={frame}><GameRow game={baseGame} surface='#0e1013' power={40} /></div>);
+		cy.mount(<div style={frame}><GameRow game={baseGame} theme='dark' power={40} /></div>);
 		cy.get('.as-row .inning-half-icon').should('not.exist');
 	});
 });

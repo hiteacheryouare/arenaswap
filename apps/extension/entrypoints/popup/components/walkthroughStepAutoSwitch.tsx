@@ -13,7 +13,6 @@ interface walkthroughStepAutoSwitchProps {
 	onBack: () => void;
 }
 
-const rowSurface = { dark: '#0e1013', light: '#f4f5f7' } as const;
 
 const [eaglesTab, sixersTab] = tourTabs as [typeof tourTabs[0], typeof tourTabs[0]];
 
@@ -85,7 +84,7 @@ const walkthroughStepAutoSwitch = ({ onNext, onBack }: walkthroughStepAutoSwitch
 				<div key={row.id} className='as-rows wt-arrive'>
 					<GameRow
 						game={row}
-						surface={rowSurface[theme]}
+						theme={theme}
 						power={powerOf(row)}
 						status={tabPicker(row, watchedTabId)}
 						watched={row.id === watchedGameId}
