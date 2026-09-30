@@ -64,49 +64,8 @@ $bar-height: 48px;
 .dt-hero {
 	padding-top: 52px;
 
-	// The team columns take what the score leaves, so a name gets more than the list's 64px whenever
-	// the score is narrow enough to allow it. The list sets tricodes against a three-digit score; the
-	// hero sets names, so it takes the score down a step to keep them clear of it.
-	.as-stage-match {
-		grid-template-columns: minmax(64px, 1fr) auto minmax(64px, 1fr);
-		column-gap: var(--as-space-1);
-	}
-
-	.as-stage-score.is-wide {
-		font-size: 36px;
-	}
-
-	// Crest, name, record, timeouts and star sit on rows the two sides share, so they stay level when
-	// one name wraps and the other doesn't. Margins rather than a gap, so a row nobody fills costs nothing.
-	.as-stage-match {
-		grid-template-rows: repeat(5, auto);
-		row-gap: 0;
-	}
-
-	.as-stage-score,
-	.as-stage-at {
-		grid-row: 1 / -1;
-	}
-
-	.as-stage-team {
-		grid-row: 1 / -1;
-		grid-template-columns: minmax(0, 1fr);
-		grid-template-rows: subgrid;
-		row-gap: 0;
-
-		> * + * {
-			margin-top: var(--as-space-1);
-		}
-
-		> small,
-		> .as-star {
-			margin-top: 2px;
-		}
-	}
-
-	// Between words first. A single word wider than its column is gameStage's to shrink.
-	.as-stage-team b {
-		max-width: 100%;
+	.as-match.is-wide {
+		--score-size: 32px;
 	}
 }
 
@@ -603,11 +562,12 @@ $bar-height: 48px;
 	}
 }
 
+// v2's receipt: a heavy rule above each total.
 .powerscore-breakdown-row-subtotal {
 	margin-top: var(--as-space-3);
 	padding-top: var(--as-space-2);
-	border-top: 1px solid var(--as-line);
-	font-weight: var(--as-weight-semibold);
+	border-top: 2px solid var(--as-ink);
+	font-weight: var(--as-weight-bold);
 }
 
 .powerscore-subtotal-raw {
@@ -628,27 +588,21 @@ $bar-height: 48px;
 		font-size: 13px;
 		line-height: 1;
 		text-align: center;
-		color: var(--as-muted);
 	}
 
 	> .num {
-		font-weight: var(--as-weight-semibold);
+		font-weight: var(--as-weight-bold);
 	}
 
-	&.is-zero {
+	&.is-zero > .num {
+		font-weight: var(--as-weight-regular);
 		color: var(--as-muted);
-
-		> .num {
-			font-weight: var(--as-weight-regular);
-		}
 	}
 
-	&.is-gain > .num {
-		color: var(--as-gain);
-	}
-
+	// Pulled toward the ink so the gold and the blue still read as type on either page.
+	&.is-gain > .num,
 	&.is-penalty > .num {
-		color: var(--as-penalty);
+		color: color-mix(in srgb, var(--factor) 78%, var(--as-ink));
 	}
 }
 
@@ -665,8 +619,11 @@ $bar-height: 48px;
 
 .powerscore-breakdown-row-total {
 	padding-top: var(--as-space-3);
-	border-top: 1px solid var(--as-line-strong);
-	font-weight: var(--as-weight-semibold);
+	border-top: 2px solid var(--as-ink);
+	font-size: var(--as-text-xs);
+	font-weight: var(--as-weight-bold);
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
 
 	strong {
 		font-size: var(--as-text-lg);
@@ -688,6 +645,10 @@ $bar-height: 48px;
 	font-size: var(--as-text-xs);
 	line-height: var(--as-leading-xs);
 	color: var(--as-muted);
+
+	&::first-letter {
+		text-transform: uppercase;
+	}
 }
 
 // ── Game boost ───────────────────────────────────────────────────────────────

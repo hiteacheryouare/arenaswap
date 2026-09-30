@@ -45,34 +45,36 @@ export const signalMeta = [
 	{ name: 'comeback' as SignalName, labelKey: 'powerScore.signalComeback', tooltipKey: 'powerScore.tooltipComeback', max: scoreMaxComeback, color: '#d90368' },
 ] as const;
 
-const factorIcons = {
-	clockStall: 'hourglass-split',
-	volatility: 'activity',
-	favorite: 'star',
-	gameBoost: 'lightning',
-	scoringOpp: 'bullseye',
-	postseason: 'trophy',
+// v2's boosts and penalties, each in its own colour. The tour's PowerScore legend uses the same set.
+const factors = {
+	clockStall: { icon: 'hourglass-split', color: '#ef4444' },
+	volatility: { icon: 'activity', color: '#a855f7' },
+	favorite: { icon: 'star-fill', color: '#f1c40f' },
+	gameBoost: { icon: 'lightning-fill', color: '#22c55e' },
+	scoringOpp: { icon: 'bullseye', color: '#f75c03' },
+	postseason: { icon: 'trophy-fill', color: '#2274a5' },
 } as const;
 
-const FactorIcon = ({ factor }: { factor: keyof typeof factorIcons }) => (
-	<i className={`bi bi-${factorIcons[factor]} powerscore-factor-icon`} aria-hidden='true' />
-);
+const penaltyColor = factors.clockStall.color;
 
 const signed = (value: number): string => (value > 0 ? `+${value}` : value < 0 ? `${value}` : '0');
 
 const tone = (value: number): string => (value > 0 ? ' is-gain' : value < 0 ? ' is-penalty' : ' is-zero');
 
 const FactorRow = ({ factor, label, tooltip, value, extraClass = '', children }: {
-	factor: keyof typeof factorIcons;
+	factor: keyof typeof factors;
 	label: string;
 	tooltip: string;
 	value: number;
 	extraClass?: string;
 	children?: ReactNode;
 }) => (
-	<div className={`powerscore-breakdown-row dt-adjust${tone(value)}${extraClass}`}>
+	<div
+		className={`powerscore-breakdown-row dt-adjust${tone(value)}${extraClass}`}
+		style={{ '--factor': value < 0 ? penaltyColor : factors[factor].color } as CSSProperties}
+	>
 		<span className='dt-adjust-name'>
-			<FactorIcon factor={factor} />
+			<i className={`bi bi-${factors[factor].icon} powerscore-factor-icon`} style={{ color: factors[factor].color }} aria-hidden='true' />
 			{label}
 			<SettingTooltipIcon text={tooltip} />
 		</span>
