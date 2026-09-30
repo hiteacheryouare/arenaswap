@@ -610,6 +610,7 @@ export default () => {
 				)}
 				{view === 'detail' && selectedGame && (
 					<GameDetailView
+						boardMonoLogos={monoLogos}
 						game={selectedGame}
 						excitementResult={selectedScore}
 						scoreHistory={selectedScoreHistory}

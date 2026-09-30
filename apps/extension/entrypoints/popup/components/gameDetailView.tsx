@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { i18n } from '#i18n';
 import type { Browser } from 'wxt/browser';
 import { scoreMaxTotal, sportTypeConfigMap } from '@arenaswap/core/constants';
-import type { Game, LeagueId, PowerScoreResult, PowerScoreSnapshot, ResolvedTheme, ScoreSnapshot, SignalName, TabRegistration } from '@arenaswap/core/types';
+import type { Game, LeagueId, PowerScoreResult, PowerScoreSnapshot, ResolvedTheme, ScoreSnapshot, SignalName, TabRegistration, TeamMonoLogoMap } from '@arenaswap/core/types';
 import { resolveTeamColorPair } from '@arenaswap/ui/src/components/colorUtils';
 import DetailHero from './detailHero';
 import DetailStickyBar from './detailStickyBar';
@@ -64,6 +64,8 @@ interface gameDetailViewProps {
 	onSetGameBoost: (gameId: string, boost: number) => void;
 	onBack: () => void;
 	theme?: ResolvedTheme;
+	// The board's cached marks, for a team the game summary didn't send one for.
+	boardMonoLogos?: TeamMonoLogoMap;
 }
 
 const noFavorites: ReadonlySet<string> = new Set();
@@ -110,6 +112,7 @@ const gameDetailView = ({
 	onSetGameBoost,
 	onBack,
 	theme = 'dark',
+	boardMonoLogos,
 }: gameDetailViewProps) => {
 	const orderedScoreHistory = useMemo(
 		() => chartHistory(scoreHistory.toSorted((a, b) => a.timestamp - b.timestamp), game),
@@ -171,7 +174,11 @@ const gameDetailView = ({
 	const componentOption = useMemo(() => (
 		buildComponentContributionOption(orderedPowerScoreHistory, chartPalette)
 	), [orderedPowerScoreHistory, chartPalette]);
-	const { winProbability, seriesInfo, records, monoLogos, boxScore, standings, gameDurationMins } = useSummaryData(game);
+	const { winProbability, seriesInfo, records, monoLogos: summaryMonoLogos, boxScore, standings, gameDurationMins } = useSummaryData(game);
+	const monoLogos = useMemo(() => ({
+		away: summaryMonoLogos.away ?? boardMonoLogos?.[game.league]?.[game.awayTeam.id] ?? null,
+		home: summaryMonoLogos.home ?? boardMonoLogos?.[game.league]?.[game.homeTeam.id] ?? null,
+	}), [summaryMonoLogos, boardMonoLogos, game.league, game.awayTeam.id, game.homeTeam.id]);
 	const winProbabilityOption = useMemo(() => (
 		buildWinProbabilityOption(winProbability, game, chartPalette)
 	), [winProbability, game, chartPalette]);
@@ -210,7 +217,7 @@ const gameDetailView = ({
 
 	useEffect(() => {
 		const root = shellRef.current;
-		const target = heroRef.current?.querySelector('.as-stage-match') ?? heroRef.current;
+		const target = heroRef.current?.querySelector('.as-match') ?? heroRef.current;
 		if (!root || !target || typeof IntersectionObserver === 'undefined') return;
 
 		const observer = new IntersectionObserver(

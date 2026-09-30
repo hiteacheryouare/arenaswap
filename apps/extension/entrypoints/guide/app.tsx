@@ -278,6 +278,7 @@ const App = () => {
 					}}
 				>
 					<GameDetailView
+						boardMonoLogos={monoLogos}
 						game={selectedGame}
 						excitementResult={live?.scores.find(score => score.gameId === selectedGame.id)}
 						scoreHistory={live?.scoreHistory[selectedGame.id] ?? noSnapshots}
