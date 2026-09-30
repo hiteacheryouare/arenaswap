@@ -1,5 +1,7 @@
 import { liveState, onboardedPrefs, sixersThunder } from '../support/fixtures';
 
+const fourDefaultLeagues: `@${string}`[] = ['@espnTeams', '@espnTeams', '@espnTeams', '@espnTeams'];
+
 const html = () => cy.document().its('documentElement');
 
 // The three onboarding steps plus the "all set" screen, from a genuinely empty profile: no stored
@@ -26,7 +28,9 @@ describe('onboarding', () => {
 		cy.get('#onb-league-nba').should('be.checked');
 		cy.contains('button', 'Next').click();
 
-		cy.wait('@espnTeams');
+		// Step 3 waits for every picked league's teams, and the league-logo fan-out competes for the
+		// same request slots, so one response is not enough to go on.
+		cy.wait(fourDefaultLeagues);
 		cy.contains('Step 3 of 3').should('be.visible');
 		cy.contains('Pick your teams').should('be.visible');
 		cy.get('[aria-label="Add Philadelphia 76ers to favorites"]').click();
@@ -76,7 +80,7 @@ describe('onboarding', () => {
 	it('takes the tour from the all-set screen', () => {
 		cy.contains('button', 'Got it').click();
 		cy.contains('button', 'Next').click();
-		cy.wait('@espnTeams');
+		cy.wait(fourDefaultLeagues);
 		cy.contains('.ob-stepline button', 'Skip').click();
 		cy.contains('button', 'Take the tour').click();
 
