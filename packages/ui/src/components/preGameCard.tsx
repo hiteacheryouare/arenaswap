@@ -4,7 +4,7 @@ import { CardStatusRow, GameMeta, PostseasonLabel, TeamColumn, buildCardHandlers
 import { conditionIcon, formatTemperature } from './weatherUtils';
 import { useT } from './i18nContext';
 
-const preGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, onOpenGameDetail, bettingPrefs, weatherPrefs, tabSlot }: GameCardDisplayProps) => {
+const preGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, onOpenGameDetail, bettingPrefs, weatherPrefs, tabSlot, leagueSlot }: GameCardDisplayProps) => {
 	const t = useT();
 	if (!game) return null;
 
@@ -24,10 +24,11 @@ const preGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, onOpenGameDe
 			onKeyDown={onCardKeyDown}
 			aria-label={t('gameCard.openDetails', { away: game.awayTeam.abbreviation, home: game.homeTeam.abbreviation })}
 		>
-			{/* A scheduled card has no status row of its own, so the label brings one. Rendered only
-			    when there is a round to name, which keeps every non-postseason card the height it
-			    has always been. */}
-			{game.postseasonLabel && <CardStatusRow><PostseasonLabel game={game} /></CardStatusRow>}
+			{/* A scheduled card has no status row of its own, so the league mark or the round name
+			    brings one. Without either, the card keeps the height it has always had. */}
+			{(leagueSlot || game.postseasonLabel) && (
+				<CardStatusRow status={leagueSlot}><PostseasonLabel game={game} /></CardStatusRow>
+			)}
 
 			<div className='d-flex align-items-center justify-content-center game-card-matchup'>
 				<TeamColumn leagueId={game.league} team={game.awayTeam} isFavorited={awayFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} />

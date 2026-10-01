@@ -7,7 +7,7 @@ import { useT } from './i18nContext';
 // A finished game offers nothing to act on, so this card is the live one with every affordance
 // taken away: no tab dropdown, no PowerScore bar, no clock, no broadcast line. What is left is the
 // result, and the result is what the card is styled around.
-const finalGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, onOpenGameDetail, bettingPrefs }: GameCardDisplayProps) => {
+const finalGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, onOpenGameDetail, bettingPrefs, leagueSlot }: GameCardDisplayProps) => {
 	const t = useT();
 	if (!game) return null;
 
@@ -48,7 +48,7 @@ const finalGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, onOpenGame
 			onKeyDown={onCardKeyDown}
 			aria-label={t('gameCard.openDetails', { away: game.awayTeam.abbreviation, home: game.homeTeam.abbreviation })}
 		>
-			<CardStatusRow status={<span className='d-flex align-items-center gap-1 fw-bold text-uppercase final-status-label'>{statusLabel}</span>}>
+			<CardStatusRow league={leagueSlot} status={<span className='d-flex align-items-center gap-1 fw-bold text-uppercase final-status-label'>{statusLabel}</span>}>
 				<PostseasonLabel game={game} />
 			</CardStatusRow>
 

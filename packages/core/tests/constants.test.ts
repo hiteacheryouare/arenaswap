@@ -9,6 +9,7 @@ import {
 	isFavoriteTeamKey,
 	leagueConfigMap,
 	leagueLogoFallbacks,
+	leagueShortLabels,
 	createDefaultUserPreferences,
 	normalizeUserPreferences,
 	resolveLeagueLogoUrl,
@@ -54,6 +55,7 @@ describe('constants', () => {
 			favoriteTeamIds: [],
 			favoriteTeamBonusPoints: 10,
 			showUpcomingGames: true,
+			groupByLeague: false,
 			keepFinalGames: false,
 			finishedTabAction: 'keep',
 			proTipsEnabled: true,
@@ -88,6 +90,20 @@ describe('constants', () => {
 	test('keeps a stored opening-animation choice', () => {
 		expect(normalizeUserPreferences({ openRevealEnabled: false }).openRevealEnabled).toBe(false);
 		expect(normalizeUserPreferences({ openRevealEnabled: 'false' }).openRevealEnabled).toBe(true);
+	});
+
+	test('starts a fresh install on the mixed list and keeps league sections for anyone upgrading', () => {
+		expect(normalizeUserPreferences(undefined).groupByLeague).toBe(false);
+		expect(normalizeUserPreferences({ enabledLeagues: ['nba'] }).groupByLeague).toBe(true);
+		expect(normalizeUserPreferences({ groupByLeague: false }).groupByLeague).toBe(false);
+		expect(normalizeUserPreferences({ groupByLeague: true }).groupByLeague).toBe(true);
+	});
+
+	test('has a short label for every league, short enough for a card status row', () => {
+		for (const leagueId of allLeagueIds) {
+			expect(leagueShortLabels[leagueId]).toBeTruthy();
+			expect(leagueShortLabels[leagueId].length).toBeLessThanOrEqual(10);
+		}
 	});
 
 	// Dark is the only look the extension had before this setting, so an unknown value lands there
@@ -127,6 +143,7 @@ describe('constants', () => {
 			favoriteTeamIds: ['nba:20', 'nfl:20'],
 			favoriteTeamBonusPoints: 11,
 			showUpcomingGames: false,
+			groupByLeague: true,
 			keepFinalGames: false,
 			finishedTabAction: 'keep',
 			proTipsEnabled: false,

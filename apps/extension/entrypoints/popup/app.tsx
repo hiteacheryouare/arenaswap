@@ -521,6 +521,7 @@ export default () => {
 						onToggleSport={onToggleSport}
 						onReorderLeague={onReorderLeague}
 						onResetLeagueOrder={onResetLeagueOrder}
+						onToggleGroupByLeague={() => persistPrefs(currentPrefs => ({ ...currentPrefs, groupByLeague: !currentPrefs.groupByLeague }))}
 						onToggleShowUpcoming={() => persistPrefs(currentPrefs => ({ ...currentPrefs, showUpcomingGames: !currentPrefs.showUpcomingGames }))}
 						onToggleKeepFinalGames={() => persistPrefs(currentPrefs => ({ ...currentPrefs, keepFinalGames: !currentPrefs.keepFinalGames }))}
 						onFinishedTabActionChange={action => persistPrefs(currentPrefs => ({ ...currentPrefs, finishedTabAction: action }))}

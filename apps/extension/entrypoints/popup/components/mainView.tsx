@@ -21,7 +21,8 @@ import GameListHeader from './gameListHeader';
 import ReviewPromptBanner from './reviewPromptBanner';
 import SuggestBanner from './suggestBanner';
 import UpcomingDayPager from './upcomingDayPager';
-import { buildFavoritePinnedComparator, buildFinalComparator, buildLeagueRank, buildUpcomingComparator, getRandomLoadingMessage, groupByDate, groupByLeague, resolveSelectedDayIndex } from '../popupHelpers';
+import LeagueMark from '@arenaswap/ui/src/components/leagueMark';
+import { buildFinalComparator, buildLeagueRank, buildLiveComparator, buildUpcomingComparator, getRandomLoadingMessage, groupByDate, groupByLeague, resolveSelectedDayIndex } from '../popupHelpers';
 import type { BettingDisplayPrefs, WeatherDisplayPrefs } from './gameCardTypes';
 import useRestoredScroll from '../useRestoredScroll';
 import { revealModeForIndex, type cardRevealPlan, type revealMode } from '../cardReveal';
@@ -32,6 +33,7 @@ const emptyRevealOrder = new Map<string, number>();
 interface gameSectionProps {
 	title: string;
 	games: Game[];
+	groupByLeague: boolean;
 	scoreMap: Map<string, PowerScoreResult>;
 	leagueLogos: LeagueLogoMap;
 	favoriteTeamIds: Set<string>;
@@ -84,57 +86,10 @@ interface mainViewProps {
 	revealSkipping?: boolean;
 }
 
-const leagueRows = (
-	games: Game[],
-	scoreMap: Map<string, PowerScoreResult>,
-	leagueLogos: LeagueLogoMap,
-	favoriteTeamIds: Set<string>,
-	onToggleFavoriteTeam: (leagueId: LeagueId, teamId: string) => void,
-	gameBoosts: Record<string, number>,
-	openTabs: Browser.tabs.Tab[],
-	registry: TabRegistration[],
-	onRegistryChange: (updated: TabRegistration[]) => void,
-	formatTabLabel: (tab: Browser.tabs.Tab) => string,
-	onOpenGameDetail: (gameId: string) => void,
-	bettingPrefs: BettingDisplayPrefs,
-	weatherPrefs: WeatherDisplayPrefs,
-	reveal: cardRevealPlan,
-) => groupByLeague(games).map(({ league, games: groupedGames }) => (
-	<div key={league}>
-		<LeagueSectionHeader league={league} logos={leagueLogos} />
-		{groupedGames.map(game => (
-			// A game the plan does not name is one that arrived after the plan was fixed, and it gets
-			// nothing: a card that has been sitting there plainly for two seconds must not suddenly grow
-			// a poster over itself.
-			<GameCardReveal
-				key={game.id}
-				game={game}
-				mode={reveal.order.has(game.id) ? revealModeForIndex(reveal.mode, reveal.order.get(game.id)!) : 'none'}
-				index={reveal.order.get(game.id) ?? 0}
-				skipping={reveal.skipping}
-			>
-				<GameCard
-					game={game}
-					excitementResult={scoreMap.get(game.id)}
-					favoriteTeamIds={favoriteTeamIds}
-					onToggleFavoriteTeam={onToggleFavoriteTeam}
-					gameBoosts={gameBoosts}
-					openTabs={openTabs}
-					registry={registry}
-					onRegistryChange={onRegistryChange}
-					formatTabLabel={formatTabLabel}
-					onOpenGameDetail={onOpenGameDetail}
-					bettingPrefs={bettingPrefs}
-					weatherPrefs={weatherPrefs}
-				/>
-			</GameCardReveal>
-		))}
-	</div>
-));
-
 const gameSection = ({
 	title,
 	games,
+	groupByLeague: grouped,
 	scoreMap,
 	leagueLogos,
 	favoriteTeamIds,
@@ -150,13 +105,51 @@ const gameSection = ({
 	reveal,
 	afterTitle,
 	first,
-}: gameSectionProps) => (
-	<div className='mt-2'>
-		<PopupSectionTitle first={first}>{title}</PopupSectionTitle>
-		{afterTitle}
-		{leagueRows(games, scoreMap, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs, weatherPrefs, reveal)}
-	</div>
-);
+}: gameSectionProps) => {
+	const card = (game: Game) => (
+		// A game the plan does not name is one that arrived after the plan was fixed, and it gets
+		// nothing: a card that has been sitting there plainly for two seconds must not suddenly grow
+		// a poster over itself.
+		<GameCardReveal
+			key={game.id}
+			game={game}
+			mode={reveal.order.has(game.id) ? revealModeForIndex(reveal.mode, reveal.order.get(game.id)!) : 'none'}
+			index={reveal.order.get(game.id) ?? 0}
+			skipping={reveal.skipping}
+		>
+			<GameCard
+				game={game}
+				excitementResult={scoreMap.get(game.id)}
+				favoriteTeamIds={favoriteTeamIds}
+				onToggleFavoriteTeam={onToggleFavoriteTeam}
+				gameBoosts={gameBoosts}
+				openTabs={openTabs}
+				registry={registry}
+				onRegistryChange={onRegistryChange}
+				formatTabLabel={formatTabLabel}
+				onOpenGameDetail={onOpenGameDetail}
+				bettingPrefs={bettingPrefs}
+				weatherPrefs={weatherPrefs}
+				leagueSlot={grouped ? undefined : <LeagueMark league={game.league} logos={leagueLogos} />}
+			/>
+		</GameCardReveal>
+	);
+
+	return (
+		<div className='mt-2'>
+			<PopupSectionTitle first={first}>{title}</PopupSectionTitle>
+			{afterTitle}
+			{grouped
+				? groupByLeague(games).map(({ league, games: leagueGames }) => (
+					<div key={league}>
+						<LeagueSectionHeader league={league} logos={leagueLogos} />
+						{leagueGames.map(card)}
+					</div>
+				))
+				: games.map(card)}
+		</div>
+	);
+};
 
 const mainView = ({
 	prefs,
@@ -198,17 +191,18 @@ const mainView = ({
 	const scoreByGameId = useMemo(() => new Map(scores.map(s => [s.gameId, s.total])), [scores]);
 	const scoreMap = useMemo(() => new Map(scores.map(s => [s.gameId, s])), [scores]);
 	const leagueRank = useMemo(() => buildLeagueRank(prefs.enabledLeagues), [prefs.enabledLeagues]);
+	const grouped = prefs.groupByLeague;
 	const sortGames = useMemo(
-		() => buildFavoritePinnedComparator(leagueRank, favoriteTeamIds, scoreByGameId),
-		[leagueRank, favoriteTeamIds, scoreByGameId],
+		() => buildLiveComparator(leagueRank, favoriteTeamIds, scoreByGameId, grouped),
+		[leagueRank, favoriteTeamIds, scoreByGameId, grouped],
 	);
 	const sortUpcomingGames = useMemo(
-		() => buildUpcomingComparator(leagueRank, favoriteTeamIds, scoreByGameId),
-		[leagueRank, favoriteTeamIds, scoreByGameId],
+		() => buildUpcomingComparator(leagueRank, favoriteTeamIds, grouped),
+		[leagueRank, favoriteTeamIds, grouped],
 	);
 	const sortFinalGames = useMemo(
-		() => buildFinalComparator(leagueRank, favoriteTeamIds),
-		[leagueRank, favoriteTeamIds],
+		() => buildFinalComparator(leagueRank, favoriteTeamIds, grouped),
+		[leagueRank, favoriteTeamIds, grouped],
 	);
 	const upcomingCutoffMs = useMemo(
 		() => Date.now() + prefs.upcomingGamesDays * 24 * 60 * 60 * 1000,
@@ -244,10 +238,10 @@ const mainView = ({
 		[liveGames, registeredGameIds, sortGames],
 	);
 
-	// The stagger counts down the rendered page, so it has to be built the way the page is built:
-	// four sections in this order, each one grouped by league before it is drawn. Counting within a
-	// section instead would start Up Next back at zero and land its first card on top of the second
-	// live one.
+	// The stagger counts down the rendered page, so it walks the four sections in page order. Each
+	// list is already sorted league-first when grouped, so its order is the drawn order either way.
+	// Counting within a section instead would start Up Next back at zero and land its first card on
+	// top of the second live one.
 	//
 	// Fixed on the first list that has anything in it, and not recomputed while it is playing. Both
 	// live sections are re-sorted on PowerScore and scores arrive by push every few seconds, so a
@@ -261,8 +255,7 @@ const mainView = ({
 		if (revealMode === 'none') return { mode: 'none', order: emptyRevealOrder, skipping: false };
 		if (revealPlanRef.current) return { mode: revealMode, order: revealPlanRef.current, skipping: revealSkipping };
 		const order = new Map<string, number>();
-		const take = (list: Game[]) => groupByLeague(list)
-			.forEach(({ games: grouped }) => grouped.forEach(game => order.set(game.id, order.size)));
+		const take = (list: Game[]) => list.forEach(game => order.set(game.id, order.size));
 		take(assignedLiveGames);
 		take(unassignedLiveGames);
 		if (prefs.showUpcomingGames && selectedDay) take(selectedDay.games);
@@ -336,11 +329,12 @@ const mainView = ({
 			/>
 
 			{!isLoading && !noLeaguesSelected && prefs.proTipsEnabled && <ProTip context='main' />}
-			{!isLoading && !noLeaguesSelected && assignedLiveGames.length > 0 && gameSection({ title: i18n.t('main.sectionActiveLiveTabs'), games: assignedLiveGames, scoreMap, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs, weatherPrefs, reveal, first: true })}
-			{!isLoading && !noLeaguesSelected && unassignedLiveGames.length > 0 && gameSection({ title: i18n.t('main.sectionOtherLiveGames'), games: unassignedLiveGames, scoreMap, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs, weatherPrefs, reveal, first: assignedLiveGames.length === 0 })}
+			{!isLoading && !noLeaguesSelected && assignedLiveGames.length > 0 && gameSection({ title: i18n.t('main.sectionActiveLiveTabs'), games: assignedLiveGames, groupByLeague: grouped, scoreMap, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs, weatherPrefs, reveal, first: true })}
+			{!isLoading && !noLeaguesSelected && unassignedLiveGames.length > 0 && gameSection({ title: i18n.t('main.sectionOtherLiveGames'), games: unassignedLiveGames, groupByLeague: grouped, scoreMap, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs, weatherPrefs, reveal, first: assignedLiveGames.length === 0 })}
 			{!isLoading && !noLeaguesSelected && prefs.showUpcomingGames && selectedDay && gameSection({
 				title: i18n.t('main.sectionUpNext'),
 				games: selectedDay.games,
+				groupByLeague: grouped,
 				scoreMap: emptyScoreMap,
 				leagueLogos,
 				favoriteTeamIds,
@@ -370,6 +364,7 @@ const mainView = ({
 			{!isLoading && !noLeaguesSelected && finalGames.length > 0 && gameSection({
 				title: i18n.t('main.sectionFinal'),
 				games: finalGames,
+				groupByLeague: grouped,
 				scoreMap: emptyScoreMap,
 				leagueLogos,
 				favoriteTeamIds,

@@ -149,9 +149,14 @@ export const PostseasonLabel = ({ game }: { game: Game }) => (
 // space on a card that has none to spare — and when the label is too wide to share, the row wraps
 // and it takes a full line to itself rather than being truncated. Two of the 389 real ESPN round
 // names need that; nothing needs cutting.
-export const CardStatusRow = ({ children, status }: { children?: ReactNode; status?: ReactNode }) => (
+export const CardStatusRow = ({ children, status, league }: { children?: ReactNode; status?: ReactNode; league?: ReactNode }) => (
 	<div className='d-flex align-items-center flex-wrap game-card-status-row mb-1'>
-		{status}
+		{league ? (
+			<span className='d-flex align-items-center gap-2'>
+				{league}
+				{status}
+			</span>
+		) : status}
 		{children}
 	</div>
 );

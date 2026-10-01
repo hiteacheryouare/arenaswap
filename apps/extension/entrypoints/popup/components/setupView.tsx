@@ -38,6 +38,7 @@ interface setupViewProps {
 	onToggleSport: (sport: SportType, selectAll: boolean) => void;
 	onReorderLeague: (fromIndex: number, toIndex: number) => void;
 	onResetLeagueOrder: () => void;
+	onToggleGroupByLeague: () => void;
 	onToggleShowUpcoming: () => void;
 	onToggleKeepFinalGames: () => void;
 	onFinishedTabActionChange: (action: FinishedTabAction) => void;
@@ -75,7 +76,7 @@ const setupView = ({
 	prefs, prefsLoaded, demoMode, demoSeason, leagueLogos, favoriteTeamIds, standbyStreamTabId, standbyOnboardingDone,
 	openTabs, formatTabLabel, onClose, onSensitivityChange, onCooldownChange, onSwitchDelayChange,
 	onFavoriteTeamBonusChange, onToggleFavoriteTeam, onToggleLeague, onToggleSport, onReorderLeague, onResetLeagueOrder,
-	onToggleShowUpcoming, onToggleKeepFinalGames, onFinishedTabActionChange, onThemeChange, onUpcomingGamesDaysChange,
+	onToggleGroupByLeague, onToggleShowUpcoming, onToggleKeepFinalGames, onFinishedTabActionChange, onThemeChange, onUpcomingGamesDaysChange,
 	onToggleProTips, onToggleNotifications, onToggleDemo, onDemoSeasonChange, onToggleStandbyStream, onStandbyThresholdChange,
 	onSetStandbyTab, onStandbyOnboardingDone, onToggleBetting, onToggleTemperatureUnit, onUnlockRomer, onToggleOpenReveal,
 	onPostseasonBoostChange,
@@ -414,7 +415,14 @@ const setupView = ({
 
 	const leaguesPage = (
 		<>
-			{prefs.enabledLeagues.length > 1 && (
+			<div className='d-flex justify-content-between align-items-center'>
+				<label className='text-body-secondary setting-toggle-label' htmlFor='groupByLeagueToggle'>{i18n.t('setup.groupByLeague')}</label>
+				<div className='form-check form-switch mb-0'>
+					<input className='form-check-input' type='checkbox' id='groupByLeagueToggle' checked={prefs.groupByLeague} onChange={onToggleGroupByLeague} disabled={!prefsLoaded} />
+				</div>
+			</div>
+			<div className='setting-explainer mt-1'>{i18n.t('setup.groupByLeagueExplainer')}</div>
+			{prefs.groupByLeague && prefs.enabledLeagues.length > 1 && (
 				<>
 					<div className='fw-bold popup-section-label'>
 						<i className='bi bi-arrow-down-up' />

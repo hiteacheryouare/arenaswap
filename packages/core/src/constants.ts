@@ -193,6 +193,42 @@ export const leagueLogoFallbacks: Partial<Record<LeagueId, string>> = {
 	fifawwc: 'https://a.espncdn.com/i/leaguelogos/soccer/500-dark/60.png',
 };
 
+// What a game card prints beside the league's logo once the list stops grouping by league. The
+// labels from `powerscore` run as long as "Olympic Men's Ice Hockey", which a status row cannot fit.
+export const leagueShortLabels: Record<LeagueId, string> = {
+	nba: 'NBA',
+	wnba: 'WNBA',
+	ncaab: 'NCAAM',
+	nhl: 'NHL',
+	ncaamh: 'NCAAH',
+	mlb: 'MLB',
+	nfl: 'NFL',
+	ncaaf: 'CFB',
+	mls: 'MLS',
+	ncaaw: 'NCAAW',
+	epl: 'EPL',
+	fifawc: 'WC',
+	cbase: 'NCAA BSB',
+	csoft: 'NCAA SB',
+	olybb: 'OLY BSB',
+	wbbc: 'WBC',
+	ufl: 'UFL',
+	olymih: 'OLY MIH',
+	olywih: 'OLY WIH',
+	olybkm: 'OLY MBB',
+	olybkw: 'OLY WBB',
+	olysocm: 'OLY MSOC',
+	olysocw: 'OLY WSOC',
+	laliga: 'La Liga',
+	bundesliga: 'Bundesliga',
+	seriea: 'Serie A',
+	ligamx: 'Liga MX',
+	ucl: 'UCL',
+	uel: 'UEL',
+	nwsl: 'NWSL',
+	fifawwc: 'WWC',
+};
+
 // Most of what comes back, and many of the fallbacks above, are the variant our sources draw for a
 // dark background: a white mark that vanishes on the light theme. Their CDN serves the light-ground
 // variant beside it at `/500/`, so a light surface swaps the path rather than keeping a second table.
@@ -335,6 +371,7 @@ export const createDefaultUserPreferences = (): UserPreferences => ({
 	favoriteTeamIds: [],
 	favoriteTeamBonusPoints: defaultFavoriteTeamBonusPoints,
 	showUpcomingGames: true,
+	groupByLeague: false,
 	keepFinalGames: false,
 	finishedTabAction: 'keep' as const,
 	proTipsEnabled: true,
@@ -391,6 +428,9 @@ export const normalizeUserPreferences = (storedPrefs: unknown): UserPreferences 
 		favoriteTeamIds: normalizeFavoriteTeamIds(candidate.favoriteTeamIds),
 		favoriteTeamBonusPoints: normalizeSecondsPreference(candidate.favoriteTeamBonusPoints, defaults.favoriteTeamBonusPoints),
 		showUpcomingGames: typeof candidate.showUpcomingGames === 'boolean' ? candidate.showUpcomingGames : defaults.showUpcomingGames,
+		// Saved prefs that predate the setting belong to someone who has only ever seen league
+		// sections, so they keep them. Only a fresh install starts on the mixed list.
+		groupByLeague: typeof candidate.groupByLeague === 'boolean' ? candidate.groupByLeague : true,
 		keepFinalGames: typeof candidate.keepFinalGames === 'boolean' ? candidate.keepFinalGames : defaults.keepFinalGames,
 		finishedTabAction: normalizeFinishedTabAction(candidate.finishedTabAction),
 		proTipsEnabled: typeof candidate.proTipsEnabled === 'boolean' ? candidate.proTipsEnabled : defaults.proTipsEnabled,

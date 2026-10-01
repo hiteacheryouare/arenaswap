@@ -144,6 +144,7 @@ const listPrefs: UserPreferences = {
 	switchDelaySeconds: 0,
 	showUpcomingGames: true,
 	keepFinalGames: true,
+	groupByLeague: false,
 	finishedTabAction: 'keep' as const,
 	proTipsEnabled: false,
 	notificationsEnabled: false,

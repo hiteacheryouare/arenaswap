@@ -69,9 +69,13 @@ describe('settings round-trip', () => {
 		});
 	});
 
-	it('reorders leagues and reports the new order', () => {
+	it('groups games by league, then reorders leagues and reports the new order', () => {
 		openSettings();
 		openGroup('leagues');
+		cy.get('.league-order-row').should('not.exist');
+		cy.get('#groupByLeagueToggle').should('not.be.checked').check({ force: true });
+		cy.background().its('prefs.groupByLeague').should('equal', true);
+
 		cy.get('.league-order-row').first().find('.league-order-label').should('have.text', 'NBA');
 
 		cy.get('#league-order-down-nba').click();

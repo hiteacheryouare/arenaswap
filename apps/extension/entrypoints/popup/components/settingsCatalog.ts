@@ -47,6 +47,7 @@ export const settingsEntries: readonly settingsEntry[] = [
 	{ group: 'favorites', labelKey: 'setup.followedTeams', keywordsKey: 'setup.keywordsFavoriteTeams' },
 	{ group: 'favorites', labelKey: 'favoriteTeamBonus.label', keywordsKey: 'setup.keywordsFavoriteBonus' },
 	{ group: 'leagues', labelKey: 'setup.groupLeagues', keywordsKey: 'setup.keywordsLeagues' },
+	{ group: 'leagues', labelKey: 'setup.groupByLeague', keywordsKey: 'setup.keywordsGroupByLeague' },
 	{ group: 'leagues', labelKey: 'setup.leagueOrderSection', keywordsKey: 'setup.keywordsLeagueOrder' },
 	{ group: 'display', labelKey: 'setup.theme', keywordsKey: 'setup.keywordsTheme' },
 	{ group: 'display', labelKey: 'setup.showUpcoming', keywordsKey: 'setup.keywordsUpcoming' },
