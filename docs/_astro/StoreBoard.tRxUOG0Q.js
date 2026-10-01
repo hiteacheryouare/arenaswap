@@ -1,0 +1,2 @@
+/*! ArenaSwap v2.2.0 Copyright (c) 2026 Ryan Mullin, Lattice & Company, and Contributors. All rights reserved. */
+import{i as e,t}from"./islandStrings.DIHBaJZ3.js";import{t as n}from"./jsx-runtime.C6M427f8.js";import{t as r}from"./SiteBoard.CIqhdw5E.js";var i=n(),a=({games:n,scores:a,tabs:o,watchedId:s,menu:c,strings:l,id:u})=>/* @__PURE__ */ (0,i.jsx)(e.Provider,{value:t(l),children:/* @__PURE__ */ (0,i.jsx)(r,{games:n,scores:new Map(Object.entries(a)),tabs:o,watchedId:s,menu:c,toggleId:`${u}-enable-toggle`})});export{a as default};
