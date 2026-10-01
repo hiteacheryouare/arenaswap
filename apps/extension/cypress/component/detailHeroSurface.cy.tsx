@@ -35,7 +35,6 @@ const mountStage = (game: Game, monoLogos = mono) => {
 				records={{ home: '3-1', away: '2-2' }}
 				monoLogos={monoLogos}
 				label='Tab 2'
-				powerScore={game.status === 'in' ? 71 : null}
 				favoriteTeamIds={new Set<string>()}
 				onToggleFavoriteTeam={() => {}}
 				dismiss='back'
@@ -116,10 +115,10 @@ describe('the detail stage surface', () => {
 			expectReadable('.dt-hero .as-top-tab', 'the tab label');
 			expectReadable('.dt-hero .dt-back', 'the back control');
 			expectReadable('.dt-hero .dt-league', 'the league');
-			expectReadable('.dt-hero .as-stage-power small', 'the PowerScore label');
-			// Display sizes, so large-text contrast. The trailing score dims, and still has to hold.
+			expectReadable('.dt-hero .as-period', 'the period');
+			expectReadable('.dt-hero .as-status', 'the status word');
+			// Display sizes, so large-text contrast.
 			expectReadable('.dt-hero .as-match-score', 'the scores', 3);
-			expectReadable('.dt-hero .as-stage-power strong', 'the PowerScore', 3);
 		});
 	}
 
@@ -156,7 +155,6 @@ describe('the detail stage surface', () => {
 		mountStage({ ...liveGame, status: 'pre', startTime: new Date(Date.now() + 3_600_000).toISOString() });
 		cy.get('.dt-hero.is-pre .as-centre-time').invoke('text').should('match', /\d/);
 		cy.get('.dt-hero .as-match-score').should('not.exist');
-		cy.get('.dt-hero .as-stage-power').should('not.exist');
 		cy.get('.dt-hero .as-crest.is-bare').should('have.length', 2);
 		expectReadable('.dt-hero .as-stage-note', 'the countdown sentence');
 	});

@@ -206,8 +206,10 @@ describe('a finished game', () => {
 
 		it('says Final instead of a clock, and runs no live marker', () => {
 			mountRow(finalGame);
-			rowOf().find('.as-centre-word').should('have.text', en.gameCard.final);
-			rowOf().should('have.class', 'is-post').and('have.class', 'is-quiet');
+			rowOf().find('.as-status.is-final').should('have.text', en.gameCard.final);
+			rowOf().find('.as-clock').should('not.exist');
+			rowOf().find('.as-live-dot').should('not.exist');
+			rowOf().should('have.class', 'is-post');
 		});
 
 		it('offers no tab to assign, because there is nothing to switch to', () => {
@@ -277,13 +279,13 @@ describe('a finished game', () => {
 		it('carries the Final designation when there was extra time', () => {
 			for (const suffix of ['OT', '3OT', '10', 'SO']) {
 				mountRow({ ...finalGame, finalPeriodSuffix: suffix });
-				rowOf().find('.as-centre-word').should('have.text', `${en.gameCard.final}/${suffix}`);
+				rowOf().find('.as-status.is-final').should('have.text', `${en.gameCard.final}/${suffix}`);
 			}
 		});
 
 		it('says just Final on a game that ended in regulation', () => {
 			mountRow(finalGame);
-			rowOf().find('.as-centre-word').should('not.contain.text', '/');
+			rowOf().find('.as-status.is-final').should('not.contain.text', '/');
 		});
 
 		it('still opens the detail screen when clicked', () => {
@@ -295,7 +297,7 @@ describe('a finished game', () => {
 
 		it('keeps the status on one line in every locale, suffix included', () => {
 			mountRow({ ...finalGame, finalPeriodSuffix: '3OT' });
-			rowOf().find('.as-centre-word').then(([label]: JQuery<HTMLElement>) => {
+			rowOf().find('.as-status.is-final').then(([label]: JQuery<HTMLElement>) => {
 				const oneLine = label!.getBoundingClientRect().height;
 				for (const [name, locale] of Object.entries(locales)) {
 					label!.textContent = `${(locale.gameCard as unknown as Record<string, string>).final}/3OT`;
@@ -372,7 +374,6 @@ describe('a finished game', () => {
 		it('carries no PowerScore anywhere', () => {
 			mountDetail(finalGame, { powerScoreHistory: spanning(), scoreHistory: scoreSpan() });
 			cy.get('.powerscore-breakdown').should('not.exist');
-			cy.get('.dt-hero .as-stage-power').should('not.exist');
 			cy.contains(en.powerScore.heading).should('not.exist');
 			cy.contains(en.gameCard.powerScore).should('not.exist');
 			cy.contains('61').should('not.exist');
@@ -393,7 +394,7 @@ describe('a finished game', () => {
 			mountDetail(liveGame, { powerScoreHistory: spanning(), scoreHistory: scoreSpan() });
 			cy.get('.powerscore-breakdown').should('exist');
 			cy.get('.dt-boost').should('exist');
-			cy.get('.dt-hero .as-stage-power').should('exist');
+			cy.get('.powerscore-breakdown-row-total').should('exist');
 		});
 
 		it('shows the box score and the game info panel', () => {
@@ -443,16 +444,15 @@ describe('a finished game', () => {
 			});
 		});
 
-		// The stage dims whoever is behind while play goes on, the same on the list and here, so a
-		// level game is the case that must dim nobody.
-		it('dims neither side of a level game', () => {
-			mountDetail({ ...liveGame, homeTeam: { ...liveGame.homeTeam, score: 98 }, awayTeam: { ...liveGame.awayTeam, score: 98 } });
+		// Only a result dims a side, as v2 did: a live game behind by one is still very much on.
+		it('dims neither side while the game is live', () => {
+			mountDetail({ ...liveGame, homeTeam: { ...liveGame.homeTeam, score: 98 }, awayTeam: { ...liveGame.awayTeam, score: 90 } });
 			cy.get('.dt-hero .as-match-score.is-behind').should('not.exist');
 		});
 
 		it('still says Final at the top of the stage and in the compact bar', () => {
 			mountDetail(finalGame);
-			cy.get('.dt-hero .as-centre-word').should('have.text', en.gameCard.final);
+			cy.get('.dt-hero .as-status.is-final').should('have.text', en.gameCard.final);
 			cy.get('.dt-bar-status').should('have.text', en.gameCard.final);
 		});
 	});

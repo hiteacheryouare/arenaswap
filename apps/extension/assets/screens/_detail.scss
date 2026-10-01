@@ -375,6 +375,26 @@ $bar-height: 48px;
 	padding: var(--as-space-4);
 }
 
+// v2 drew the breakdown and the boost on the same bright plate as the games, in both themes, so the
+// two cards take the plate's inks in place of the page's.
+.dt-card.powerscore-breakdown,
+.dt-card.game-detail-boost-section {
+	--as-ink: var(--as-plate-ink);
+	--as-muted: var(--as-plate-muted);
+	--as-faint: var(--as-plate-faint);
+	--as-raised: #e9ecef;
+	--as-line: rgba(17, 24, 39, 0.08);
+	--as-line-strong: rgba(17, 24, 39, 0.16);
+	--as-hover: rgba(17, 24, 39, 0.05);
+	--as-press: rgba(17, 24, 39, 0.09);
+	--as-gain: var(--as-plate-gain);
+	--as-penalty: var(--as-plate-penalty);
+	--as-card-bg: var(--as-plate);
+	--as-card-border-color: var(--as-plate-line);
+	--as-card-color: var(--as-plate-ink);
+	color: var(--as-plate-ink);
+}
+
 .dt-card-title {
 	display: block;
 	margin: 0 0 var(--as-space-3);

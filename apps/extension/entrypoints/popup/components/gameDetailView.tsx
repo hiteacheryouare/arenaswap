@@ -321,7 +321,6 @@ const gameDetailView = ({
 					records={records}
 					monoLogos={monoLogos}
 					label={tabLabel}
-					powerScore={isLive ? total : null}
 					favoriteTeamIds={favoriteTeamIds}
 					onToggleFavoriteTeam={onToggleFavoriteTeam}
 					dismiss={dismiss}

@@ -1,5 +1,5 @@
 import GameDetailView from '../../entrypoints/popup/components/gameDetailView';
-import { formatStartClock } from '../../entrypoints/popup/components/detailHero';
+import { formatStartDay } from '../../entrypoints/popup/components/detailHero';
 import type { Browser } from 'wxt/browser';
 import type { Game, PowerScoreResult, PowerScoreSnapshot, ScoreSnapshot, TabRegistration } from '@arenaswap/core/types';
 import { countdownParts, formatCompactCountdown } from '../../entrypoints/popup/components/startCountdown';
@@ -193,7 +193,7 @@ const within = (inner: DOMRect, outer: DOMRect, label: string) => {
 // purpose and clipped, so it is the one thing left out.
 const expectInsideStage = (hero: HTMLElement) => {
 	const stage = hero.getBoundingClientRect();
-	hero.querySelectorAll<HTMLElement>('.dt-head, .as-top, .as-match, .as-match-team > *, .as-match-score, .as-centre, .dt-situation, .dt-situation > *, .as-stage-foot').forEach(el => {
+	hero.querySelectorAll<HTMLElement>('.dt-head, .as-top, .as-match, .as-match-team > *, .as-match-score, .as-centre, .dt-situation, .dt-situation > *, .as-stage-note').forEach(el => {
 		within(el.getBoundingClientRect(), stage, el.className || el.tagName);
 	});
 };
@@ -235,17 +235,19 @@ describe('gameDetailView countdown', () => {
 	});
 
 	// Nothing else on the screen says which day it is, so a start that isn't today carries its date.
-	it('leads with the scheduled date and time', () => {
+	it('leads with the scheduled time, and the date under it', () => {
 		const game = makePreGame(2 * dayMs + 5 * hourMs);
 		mountDetail(game);
-		cy.get('.dt-hero .as-centre-time').should('have.text', formatStartClock(game.startTime, now));
-		cy.get('.dt-hero .as-centre-time').invoke('text').should('match', /\d/).and('have.length.greaterThan', 8);
+		cy.get('.dt-hero .as-centre-time').should('have.text', new Date(game.startTime!).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }));
+		cy.get('.dt-hero .as-centre-note').should('have.text', formatStartDay(game.startTime, now));
+		cy.get('.dt-hero .as-crest-box').first().should('have.css', 'width', '64px');
 	});
 
 	it('gives a start later today its time alone', () => {
 		const game = makePreGame(3 * hourMs);
 		mountDetail(game);
 		cy.get('.dt-hero .as-centre-time').should('have.text', new Date(game.startTime!).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }));
+		cy.get('.dt-hero .as-centre-note').should('not.exist');
 	});
 
 	it('counts down in days, hours and minutes when more than a day out', () => {
@@ -460,35 +462,34 @@ describe('gameDetailView stage', () => {
 		cy.get('.dt-hero').should(([hero]: JQuery<HTMLElement>) => {
 			expect(hero.getBoundingClientRect().height, 'stage height with the at-bat pair').to.be.at.most(412);
 		});
-		cy.get('.dt-hero .as-stage-power').should(([power]: JQuery<HTMLElement>) => {
-			expect(power.getBoundingClientRect().bottom, 'the PowerScore is still on the first screen').to.be.at.most(560);
-		});
 	});
 
 	it('keeps the count and the bases inside the stage', () => {
 		mountDetail(makeInningGame(), { excitementResult: excitement });
 		cy.get('.dt-hero .base-diamond').should('exist');
-		cy.get('.dt-hero .as-stage-situation').should(([row]: JQuery<HTMLElement>) => {
-			expect(row.scrollWidth, 'the situation row does not overflow').to.be.at.most(row.clientWidth);
+		cy.get('.dt-hero .as-centre').should(([centre]: JQuery<HTMLElement>) => {
+			expect(centre.scrollWidth, 'the count does not overflow the middle').to.be.at.most(centre.clientWidth);
 		});
 		cy.get('.dt-hero').should(([hero]: JQuery<HTMLElement>) => expectInsideStage(hero));
 	});
 
-	it('centres the balls/strikes/outs count and the bases under the matchup', () => {
+	it('centres the bases between the scores and the count under the inning', () => {
 		mountDetail(makeInningGame(), { excitementResult: excitement });
 		cy.get('.dt-hero').then(([hero]: JQuery<HTMLElement>) => {
 			const stage = hero.getBoundingClientRect();
-			const row = hero.querySelector('.as-stage-situation')!;
-			const first = row.firstElementChild!.getBoundingClientRect();
-			const last = row.lastElementChild!.getBoundingClientRect();
-			expect(first.left - stage.left, 'the pair is centred on the stage').to.be.closeTo(stage.right - last.right, 2);
+			const middle = (element: Element) => {
+				const box = element.getBoundingClientRect();
+				return box.left + box.width / 2 - stage.left;
+			};
+			expect(middle(hero.querySelector('.as-match-mid .base-diamond')!), 'the bases').to.be.closeTo(stage.width / 2, 2);
+			expect(middle(hero.querySelector('.as-centre .bso-indicator')!), 'the count').to.be.closeTo(stage.width / 2, 2);
 		});
 	});
 
-	it('shows the PowerScore on the stage and the same number in the breakdown', () => {
+	// v2's hero carried the teams and the score; the PowerScore is the breakdown's to give.
+	it('leaves the PowerScore to the breakdown under the stage', () => {
 		mountDetail(makeLiveGame(), { excitementResult: excitement });
-		cy.get('.dt-hero .as-stage-power strong').should('have.text', '72');
-		cy.get('.dt-hero .as-stage-power small').should('have.text', 'PowerScore');
+		cy.get('.dt-hero').should('not.contain.text', 'PowerScore');
 		cy.get('.powerscore-breakdown-row-total').should('contain.text', '72 / 100');
 	});
 
@@ -519,16 +520,17 @@ describe('gameDetailView stage', () => {
 	});
 
 	// A clock and an inning line up as figures; a word replacing them has nothing to line up.
-	it('sets a running clock in tabular figures and the word statuses as words', () => {
+	it('stacks v2\'s clock over the period, and writes the word statuses as words', () => {
 		mountDetail(makeLiveGame(), { excitementResult: excitement });
-		cy.get('.dt-hero .as-clock').should('have.class', 'num').and('have.text', 'Q3 6:42')
-			.and($el => expect(face($el)).to.equal('Inter'));
+		cy.get('.dt-hero .as-clock').should('have.text', '6:42').and($el => expect(face($el)).to.equal('DM Sans'));
+		cy.get('.dt-hero .as-period').should('have.text', 'Q3');
 
 		mountDetail(makeLiveGame({ intermission: true, period: 2 }), { excitementResult: excitement });
-		cy.get('.dt-hero .as-clock').should('not.have.class', 'num');
+		cy.get('.dt-hero .as-clock').should('have.class', 'is-word');
+		cy.get('.dt-hero .as-period').should('not.exist');
 
 		mountDetail(makeLiveGame({ status: 'post' }), { excitementResult: excitement });
-		cy.get('.dt-hero .as-centre-word').should('not.have.class', 'num').and('have.text', 'Final');
+		cy.get('.dt-hero .as-status.is-final').should('have.text', 'Final');
 	});
 
 	it('shows a series once, as a line of the note', () => {
@@ -542,13 +544,12 @@ describe('gameDetailView stage', () => {
 	it('names the round on the top line, and not again in the note', () => {
 		mountDetail(makeLiveGame({ postseasonLabel: 'East Semifinals · Game 5' }), { excitementResult: excitement });
 		cy.get('.dt-hero .as-top-context').should('have.text', 'East Semifinals, Game 5');
-		cy.get('.dt-hero .as-stage-note').should('not.contain.text', 'East Semifinals');
+		cy.get('.dt-hero').invoke('text').then(text => expect(text.split('East Semifinals')).to.have.length(2));
 	});
 
-	it('writes the down and distance between the scores, with the field under them', () => {
+	it('writes the down and distance under the clock, with the field under the matchup', () => {
 		mountDetail(makeLiveGame({ league: 'nfl', sportType: 'football', downDistance: '3rd & 7', down: 3, distance: 7, fieldPosition: 'BOS 34', yardLine: 34, possessionTeamId: '3' }), { excitementResult: excitement });
-		cy.get('.dt-hero .as-centre .as-downs b').should('have.text', '3rd & 7');
-		cy.get('.dt-hero .as-centre .as-downs small').should('have.text', 'BOS 34');
+		cy.get('.dt-hero .as-centre .as-downs').should('have.text', '3rd & 7 at BOS 34');
 		cy.get('.dt-hero .dt-situation .ff-strip').should('exist');
 	});
 
@@ -625,7 +626,7 @@ describe('gameDetailView tab status', () => {
 
 	it('offers a tab to a live game with none, and says why it matters', () => {
 		mountDetail(makeLiveGame(), { excitementResult: excitement, openTabs, registry: [] });
-		cy.get('.dt-hero .as-top-tab').should('be.empty');
+		cy.get('.dt-hero .as-top-tab').should('not.exist');
 		cy.get('.dt-assign .dt-card-title').should('have.text', 'Assign a tab');
 		cy.get('.dt-assign .dt-row-help').should('have.text', en.detail.liveTabExplainer);
 	});
@@ -775,8 +776,10 @@ describe('gameDetailView compact bar', () => {
 
 	it('writes overtime the way the stage does', () => {
 		mountDetail(makeLiveGame({ period: 5 }), { excitementResult: excitement, powerScoreHistory });
-		cy.get('.dt-hero .as-clock').invoke('text').then(text => {
-			cy.get('.dt-bar-status').should('have.text', text);
+		cy.get('.dt-hero .as-period').invoke('text').then(period => {
+			cy.get('.dt-hero .as-clock').invoke('text').then(clock => {
+				cy.get('.dt-bar-status').should('have.text', `${period} ${clock}`);
+			});
 		});
 	});
 
@@ -915,7 +918,6 @@ describe('win probability volatility', () => {
 		cy.contains('.powerscore-breakdown-row', /Volatility/).find('.num').should('have.text', '+5');
 		// 77, not 77 + 5 — the variance is already inside the engine total.
 		cy.get('.powerscore-breakdown-row-total').should('contain.text', '77 / 100');
-		cy.get('.dt-hero .as-stage-power strong').should('have.text', '77');
 	});
 
 	// No line means no measurement, so no row — not a fabricated zero.
@@ -923,7 +925,6 @@ describe('win probability volatility', () => {
 		mountDetail(makeLiveGame(), { excitementResult: excitement });
 		cy.contains('.powerscore-breakdown-row', /Volatility/).should('not.exist');
 		cy.get('.powerscore-breakdown-row-total').should('contain.text', '72 / 100');
-		cy.get('.dt-hero .as-stage-power strong').should('have.text', '72');
 	});
 });
 
@@ -1016,7 +1017,7 @@ describe('gameDetailView at-bat panel', () => {
 	it('sits in the stage, under the count it answers', () => {
 		mountDetail({ ...makeInningGame(), atBat }, { excitementResult: excitement });
 		cy.get('.dt-hero .dt-situation .dt-atbat').should('exist');
-		cy.get('.dt-hero .as-stage-situation').then(([count]: JQuery<HTMLElement>) => {
+		cy.get('.dt-hero .as-centre .bso-indicator').then(([count]: JQuery<HTMLElement>) => {
 			cy.get('.dt-atbat').should(([panel]: JQuery<HTMLElement>) => {
 				expect(panel.getBoundingClientRect().top).to.be.greaterThan(count.getBoundingClientRect().bottom);
 			});

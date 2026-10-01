@@ -27,7 +27,7 @@ describe('game detail drill-down', () => {
 
 		cy.get('.dt-hero .as-match-score').first().should('have.text', String(sixersThunder.awayTeam.score));
 		cy.get('.dt-hero .as-match-score').last().should('have.text', String(sixersThunder.homeTeam.score));
-		cy.get('.dt-hero .as-stage-power strong').should('have.text', '82');
+		cy.get('.powerscore-breakdown-row-total').should('contain.text', '82 / 100');
 
 		cy.contains('.powerscore-breakdown .dt-card-title', 'PowerScore breakdown').should('exist');
 		cy.get('.powerscore-breakdown-row-total').should('contain.text', '82 / 100');
@@ -45,7 +45,7 @@ describe('game detail drill-down', () => {
 
 	it('does not open detail when the tab picker is used', () => {
 		gameOnList(sixersThunder.homeTeam.abbreviation)
-			.find('.game-card-tab-assign .as-picker')
+			.find('.game-card-tab-assign .form-select')
 			.choose(openTabs[0].title);
 
 		cy.get('.popup-container.dt').should('not.exist');
@@ -74,7 +74,6 @@ describe('game detail drill-down', () => {
 		});
 
 		cy.get('.dt-hero .as-match-score').last().should('have.text', '111');
-		cy.get('.dt-hero .as-stage-power strong').should('have.text', '95');
 		cy.get('.powerscore-breakdown-row-total').should('contain.text', '95 / 100');
 	});
 

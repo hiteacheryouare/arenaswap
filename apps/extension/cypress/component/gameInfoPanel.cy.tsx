@@ -97,7 +97,7 @@ describe('game info panel', () => {
 		cy.get('.game-info-row').should('have.length', 3);
 		cy.get('.game-info-row').eq(0).should('contain.text', 'CBS, Paramount+, Westwood One');
 		cy.get('.game-info-row').eq(1).should('contain.text', 'Arrowhead Stadium');
-		cy.get('.game-info-row').eq(2).should('contain.text', 'KC -3.5, O/U 47.5');
+		cy.get('.game-info-row').eq(2).should('contain.text', 'KC -3.5 • O/U 47.5');
 	});
 
 	it('stacks the location under the venue name, unbolded', () => {

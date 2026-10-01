@@ -81,7 +81,6 @@ describe('pre-game detail screen', () => {
 		mountPre(preGame);
 		cy.get('.powerscore-breakdown').should('not.exist');
 		cy.get('.dt-hero.is-pre').should('exist');
-		cy.get('.dt-hero .as-stage-power').should('not.exist');
 	});
 
 	// One stage for all three states; what changes is what sits between the two teams.
@@ -138,7 +137,7 @@ describe('pre-game detail screen', () => {
 	it('holds the crest box with the abbreviation until the logo lands', () => {
 		mountPre(preGame);
 		cy.get('.dt-hero .as-crest-box').should('have.length', 2).each(($box: JQuery<HTMLElement>) => {
-			expect($box[0]!.getBoundingClientRect()).to.deep.include({ width: 72, height: 72 });
+			expect($box[0]!.getBoundingClientRect()).to.deep.include({ width: 64, height: 64 });
 		});
 		cy.get('.dt-hero .as-crest-box').eq(0).find('.crest-fallback').should('have.text', 'BUF');
 	});
