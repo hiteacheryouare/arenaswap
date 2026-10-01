@@ -967,9 +967,6 @@
 	},
 	"board": {
 		"at": "-",
-		"steady": "Estável",
-		"trendUp": "subiu no último minuto",
-		"trendDown": "desceu no último minuto",
 		"tab": "Separador {number}",
 		"tabUnknown": "Separador",
 		"assignTab": "Associa um separador",

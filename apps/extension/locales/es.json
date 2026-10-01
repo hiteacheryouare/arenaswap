@@ -967,9 +967,6 @@
 	},
 	"board": {
 		"at": "vs.",
-		"steady": "Estable",
-		"trendUp": "subió en el último minuto",
-		"trendDown": "bajó en el último minuto",
 		"tab": "Pestaña {number}",
 		"tabUnknown": "Pestaña",
 		"assignTab": "Asigna una pestaña",

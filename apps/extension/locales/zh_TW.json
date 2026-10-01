@@ -967,9 +967,6 @@
 	},
 	"board": {
 		"at": "vs",
-		"steady": "持平",
-		"trendUp": "過去一分鐘上升",
-		"trendDown": "過去一分鐘下降",
 		"tab": "分頁 {number}",
 		"tabUnknown": "分頁",
 		"assignTab": "指派分頁",

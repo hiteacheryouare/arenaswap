@@ -522,6 +522,15 @@ $grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width=
 	text-wrap: balance;
 }
 
+.as-centre-weather {
+	display: inline-flex;
+	align-items: center;
+	gap: 3px;
+	font-size: var(--as-text-2xs);
+	line-height: 14px;
+	color: var(--board-note);
+}
+
 .as-outs {
 	display: inline-flex;
 	gap: 4px;
@@ -593,9 +602,6 @@ $grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width=
 	font-size: var(--as-text-2xs);
 	line-height: var(--as-leading-xs);
 
-	&:has(.as-trend) {
-		grid-template-columns: auto minmax(0, 1fr) auto auto;
-	}
 }
 
 .as-power-label {
@@ -614,25 +620,6 @@ $grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width=
 	}
 }
 
-.as-trend {
-	font-weight: var(--as-weight-semibold);
-	color: var(--board-note);
-	white-space: nowrap;
-
-	&.is-up {
-		color: var(--board-gain);
-	}
-
-	&.is-down {
-		color: var(--board-penalty);
-	}
-
-	[aria-hidden] {
-		font-size: 7px;
-		vertical-align: 1px;
-	}
-}
-
 // ── Plates ───────────────────────────────────────────────────────────────────
 // v2's card, in both themes: white under a wash of both teams' colours, each team's colour down its
 // own side, and the dark ink v2 always set on it. Team colour arrives through gamePlateStyle().
@@ -647,14 +634,14 @@ $grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width=
 	--board-overtime: var(--as-plate-overtime);
 	--board-delay: var(--as-plate-delay);
 	--board-start: var(--as-plate-start);
-	--board-gain: var(--as-plate-gain);
-	--board-penalty: var(--as-plate-penalty);
 	--heat-track: #e9ecef;
 	--ring: 0 0 #0000;
 	--rest: 0 0 #0000;
 	position: relative;
 	isolation: isolate;
 	display: grid;
+	// A long page title in the tab select would otherwise widen the card past the popup.
+	grid-template-columns: minmax(0, 1fr);
 	gap: var(--as-space-2);
 	min-width: 0;
 	padding: 10px var(--as-space-3);
@@ -853,34 +840,29 @@ $grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width=
 	gap: var(--as-space-3);
 	padding: var(--as-space-3);
 	border-radius: 12px;
-	--match-gap: 6px;
-	--score-size: 34px;
-	--name-size: var(--as-text-sm);
+	--score-size: 36px;
+	--name-size: var(--as-text-md);
 	--clock-size: var(--as-text-md);
 	--bases-size: 0.95rem;
 	--start-size: 22px;
-
-	.as-match.is-wide {
-		--score-size: 28px;
-	}
 
 	&.is-post {
 		padding-inline: 16px;
 	}
 }
 
-// v2 set the star under the tricode, so the stage's names give up their row to it.
-.as-stage .as-match-name {
+// v2 set the star under the name in the detail header, so the names give up their row to it.
+.as-match.is-hero .as-match-name {
 	display: contents;
 }
 
-.as-stage .as-star,
-.as-stage .as-star-mark {
+.as-match.is-hero .as-star,
+.as-match.is-hero .as-star-mark {
 	order: 1;
 	margin: 0;
 }
 
-.as-stage .as-match-team > * + * {
+.as-match.is-hero .as-match-team > * + * {
 	margin-top: 2px;
 }
 
@@ -899,8 +881,6 @@ $grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width=
 	--board-overtime: #ffffff;
 	--board-delay: #ffffff;
 	--board-start: #ffffff;
-	--board-gain: #7ee2a8;
-	--board-penalty: #ff8a80;
 	--dot-ring: rgba(255, 255, 255, 0.55);
 	--heat-track: rgba(255, 255, 255, 0.2);
 	position: relative;
@@ -987,9 +967,9 @@ $grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width=
 // the tile's full width under all of it.
 
 .as-tile {
-	grid-template-columns: minmax(0, 1fr);
-	grid-template-rows: auto auto 1fr auto;
-	padding: var(--as-space-2) var(--as-space-2) 10px;
+	display: flex;
+	flex-direction: column;
+	padding: var(--as-space-2) 6px 10px;
 	--score-size: 22px;
 	--name-size: var(--as-text-xs);
 	--clock-size: var(--as-text-xs);
@@ -1000,64 +980,84 @@ $grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width=
 	}
 
 	// Half a popup wide, so the label and the figure share a line over the bar.
-	.as-power-line,
-	.as-power-line:has(.as-trend) {
+	.as-power-line {
 		grid-template-columns: minmax(0, 1fr) auto;
 		grid-template-areas:
 			'label figure'
-			'bar trend';
+			'bar bar';
 		row-gap: 3px;
-		align-self: end;
+		margin-top: auto;
 	}
 
 	.as-power-label { grid-area: label; }
 	.as-power-figure { grid-area: figure; }
 	.as-heat { grid-area: bar; align-self: center; }
-	.as-trend { grid-area: trend; }
+
+	// Names run long against half a popup, so each meta line keeps to one and trails off.
+	.as-stage-note > * {
+		max-width: 100%;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
 }
 
-// Each half of a tile stacks its team: the crest, the score, the name. The scores still meet across
-// v2's hairline, and half a tile holds any score at any width.
+// The top game and the tiles stack each team in its own half: the logo, the score, the name. The
+// scores still meet across v2's hairline, and half the width holds any score with the logo at full
+// size.
+.as-match.is-stage,
 .as-match.is-tile {
 	grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-	grid-template-rows: repeat(4, auto);
+	grid-template-rows: repeat(5, auto);
 	column-gap: var(--as-space-1);
 
-	> .as-match-team { grid-row: 1 / 4; }
+	> .as-match-team { grid-row: 1 / 5; }
 	> .as-match-team.is-away { grid-column: 1; }
 	> .as-match-team.is-home { grid-column: 3; }
 	> .as-match-score { grid-row: 2; margin-top: 6px; min-width: 0; text-align: center; }
 	> .as-match-score.is-away { grid-column: 1; }
 	> .as-match-score.is-home { grid-column: 3; }
 	> .as-match-mid { grid-column: 2; grid-row: 2; margin-top: 6px; }
-	> .as-centre { grid-column: 1 / -1; grid-row: 4; margin-top: var(--as-space-1); }
+	> .as-centre { grid-column: 1 / -1; grid-row: 5; margin-top: var(--as-space-1); }
+
+	.as-match-team > .as-crest-box { grid-row: 1; }
 
 	.as-match-name {
 		grid-row: 3;
 		margin-top: 6px;
 	}
 
-	// No room for a star beside a tile's name, so it sits on the crest's corner.
+	.as-match-team > .timeout-dots { grid-row: 4; }
+
+	// No room for a star beside the name, so it sits on the logo's corner.
 	.as-star,
 	.as-star-mark {
 		position: absolute;
-		top: -5px;
-		right: calc(50% - 24px);
+		top: -4px;
+		right: calc(50% - var(--crest-half) - 4px);
 		margin: 0;
 	}
 
 	.as-star {
-		width: 18px;
-		height: 18px;
-		font-size: 10px;
+		width: 20px;
+		height: 20px;
+		font-size: 11px;
 	}
+}
+
+.as-match.is-stage {
+	--crest-half: 48px;
+}
+
+.as-match.is-tile {
+	--crest-half: 28px;
 
 	.as-match-mid .base-diamond {
 		font-size: 0.6rem;
 	}
 }
 
-// An empty star would cover a crest for nothing, so it waits until you're on the tile.
+// An empty star would cover a logo for nothing, so it waits until you're on the tile.
 .as-tile:not(:hover, :focus-within) .as-star[data-favorited='false'] {
 	display: none;
 }
@@ -1081,9 +1081,10 @@ $grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width=
 	grid-template-rows: auto auto;
 	column-gap: 6px;
 
+	// The logos share the scores' line and the clock runs under all three, as v2's card set them.
 	> .as-match-team {
 		display: flex;
-		grid-row: 1 / -1;
+		grid-row: 1;
 		align-items: center;
 		align-self: center;
 		gap: var(--as-space-2);
@@ -1102,7 +1103,7 @@ $grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width=
 	}
 
 	&.is-pre > .as-centre {
-		grid-row: 1 / -1;
+		grid-row: 1;
 	}
 
 	.as-match-mid .base-diamond {

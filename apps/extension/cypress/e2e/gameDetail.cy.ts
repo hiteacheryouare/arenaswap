@@ -144,7 +144,8 @@ describe('returning from a game detail screen', () => {
 
 		// `scrollBehavior: false` matters: Cypress scrolls a click target into view before clicking,
 		// which would move the list out from under the offset the test is about to check.
-		cy.contains('[data-game][role="button"]', 'A4').click({ scrollBehavior: false });
+		// The top game, which is the one still under the pointer at this offset.
+		cy.get('.as-stage[role="button"]').click({ scrollBehavior: false });
 		cy.get('.popup-container.dt').should('exist');
 		cy.get('.dt-head .dt-back').click();
 
@@ -152,7 +153,7 @@ describe('returning from a game detail screen', () => {
 		// `should` retries against that same element, so querying too early pins the assertion to the
 		// detached container -- which reports scrollTop 0 for the whole retry window.
 		cy.get('.popup-container.dt').should('not.exist');
-		cy.contains('[data-game][role="button"]', 'A4').should('exist');
+		cy.get('.as-stage[role="button"]').should('exist');
 		cy.get('.popup-container').should('have.prop', 'scrollTop', 200);
 	});
 

@@ -967,9 +967,6 @@
 	},
 	"board": {
 		"at": "-",
-		"steady": "Stable",
-		"trendUp": "en hausse depuis la dernière minute",
-		"trendDown": "en baisse depuis la dernière minute",
 		"tab": "Onglet {number}",
 		"tabUnknown": "Onglet",
 		"assignTab": "Associer un onglet",

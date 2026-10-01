@@ -8,16 +8,14 @@ import type {
 	LeagueId,
 	LeagueLogoMap,
 	PowerScoreResult,
-	PowerScoreSnapshot,
 	TabRegistration,
-	TeamMonoLogoMap,
 	UserPreferences,
 } from '@arenaswap/core/types';
 import { PopupHeader } from '@arenaswap/ui/src/components/popupChrome';
 import GameStage from '@arenaswap/ui/src/components/gameStage';
 import GameTile from '@arenaswap/ui/src/components/gameTile';
 import GameRow from '@arenaswap/ui/src/components/gameRow';
-import { arrangeLive, powerTrend } from '@arenaswap/ui/src/components/boardLayout';
+import { arrangeLive } from '@arenaswap/ui/src/components/boardLayout';
 import { buildCardHandlers } from '@arenaswap/ui/src/components/gameOpener';
 import GameCardReveal from './gameCardReveal';
 import PopupFooter from './popupFooter';
@@ -29,13 +27,12 @@ import SuggestBanner from './suggestBanner';
 import UpcomingDayPager from './upcomingDayPager';
 import TabAssignSelect, { tabNumberLabel } from './tabAssignSelect';
 import { buildFinalComparator, buildLeagueRank, getRandomLoadingMessage, groupByDate, isFavoriteTeamGame, resolveSelectedDayIndex } from '../popupHelpers';
-import { stageNote } from '@arenaswap/ui/src/components/boardSituation';
+import { liveNote, stageNote } from '@arenaswap/ui/src/components/boardSituation';
 import { resolveGameColors } from '@arenaswap/ui/src/components/gameSurface';
 import useRestoredScroll from '../useRestoredScroll';
 import { revealModeForIndex, type cardRevealPlan, type revealMode } from '../cardReveal';
 
 const emptyRevealOrder = new Map<string, number>();
-const noMonoLogos: TeamMonoLogoMap = {};
 
 interface mainViewProps {
 	prefs: UserPreferences;
@@ -44,9 +41,7 @@ interface mainViewProps {
 	hasError: boolean;
 	games: Game[];
 	scores: PowerScoreResult[];
-	powerScoreHistory?: Record<string, PowerScoreSnapshot[]>;
 	leagueLogos: LeagueLogoMap;
-	monoLogos?: TeamMonoLogoMap;
 	registry: TabRegistration[];
 	favoriteTeamIds: Set<string>;
 	gameBoosts: Record<string, number>;
@@ -79,11 +74,6 @@ const favoritesOf = (game: Game, favoriteTeamIds: Set<string>) => ({
 	home: favoriteTeamIds.has(createFavoriteTeamKey(game.league, game.homeTeam.id)),
 });
 
-const marksOf = (game: Game, monoLogos: TeamMonoLogoMap) => ({
-	away: monoLogos[game.league]?.[game.awayTeam.id],
-	home: monoLogos[game.league]?.[game.homeTeam.id],
-});
-
 const byStartThenFavorite = (favoriteTeamIds: Set<string>, leagueRank: Record<LeagueId, number>) => (a: Game, b: Game) => {
 	const aStart = a.startTime ? new Date(a.startTime).getTime() : Number.POSITIVE_INFINITY;
 	const bStart = b.startTime ? new Date(b.startTime).getTime() : Number.POSITIVE_INFINITY;
@@ -101,8 +91,6 @@ const mainView = ({
 	hasError,
 	games,
 	scores,
-	powerScoreHistory = {},
-	monoLogos = noMonoLogos,
 	registry,
 	favoriteTeamIds,
 	openTabs,
@@ -287,10 +275,8 @@ const mainView = ({
 						tab={stageTab(stage)}
 						note={stageNote(stage, prefs, i18n.t)}
 						power={scoreByGameId.get(stage.id) ?? 0}
-						trend={powerTrend(powerScoreHistory[stage.id])}
 						favorites={favoritesOf(stage, favoriteTeamIds)}
 						onToggleFavorite={toggleFavorite(stage)}
-						monoMarks={marksOf(stage, monoLogos)}
 						watched={stage.id === watchedGameId}
 						interactive={opener(stage)}
 					/>
@@ -302,11 +288,10 @@ const mainView = ({
 							<GameTile
 								game={game}
 								power={scoreByGameId.get(game.id) ?? 0}
-								trend={powerTrend(powerScoreHistory[game.id])}
+								note={liveNote(game, i18n.t)}
 								tab={tabPicker(game, true)}
 								favorites={favoritesOf(game, favoriteTeamIds)}
 								onToggleFavorite={toggleFavorite(game)}
-								monoMarks={marksOf(game, monoLogos)}
 								watched={game.id === watchedGameId}
 								interactive={opener(game)}
 							/>
@@ -320,10 +305,9 @@ const mainView = ({
 							<GameRow
 								game={game}
 								power={scoreByGameId.get(game.id) ?? 0}
-								trend={powerTrend(powerScoreHistory[game.id])}
+								note={liveNote(game, i18n.t)}
 								tab={tabPicker(game)}
 								favorites={favoritesOf(game, favoriteTeamIds)}
-								monoMarks={marksOf(game, monoLogos)}
 								watched={game.id === watchedGameId}
 								interactive={opener(game)}
 							/>
@@ -344,7 +328,7 @@ const mainView = ({
 							<GameRow
 								game={game}
 								favorites={favoritesOf(game, favoriteTeamIds)}
-								monoMarks={marksOf(game, monoLogos)}
+								temperatureUnit={prefs.temperatureUnit}
 								interactive={opener(game)}
 							/>
 						), 'row'))}
@@ -361,7 +345,6 @@ const mainView = ({
 							<GameRow
 								game={game}
 								favorites={favoritesOf(game, favoriteTeamIds)}
-								monoMarks={marksOf(game, monoLogos)}
 								interactive={opener(game)}
 							/>
 						), 'row'))}

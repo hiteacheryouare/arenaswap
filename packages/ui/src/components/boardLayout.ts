@@ -1,5 +1,5 @@
 import { isFavoriteTeamGame } from '@arenaswap/core/constants';
-import type { Game, LeagueId, PowerScoreSnapshot } from '@arenaswap/core/types';
+import type { Game, LeagueId } from '@arenaswap/core/types';
 
 // Size is the score: the hottest live game takes the stage, anything at or above the tile floor is
 // a tile, and everything else is a row.
@@ -34,19 +34,4 @@ export const arrangeLive = (live: Game[], scores: Map<string, number>, { favorit
 		tiles: rest.filter(game => scoreOf(game) >= tileFloor),
 		rows: rest.filter(game => scoreOf(game) < tileFloor),
 	};
-};
-
-const trendWindowMs = 60_000;
-const trendFloorMs = 20_000;
-
-// How far a game's PowerScore has moved over roughly the last minute. Null until there is a reading
-// old enough to compare against, so a game that has just arrived says nothing rather than "Steady".
-export const powerTrend = (history: PowerScoreSnapshot[] | undefined, now = Date.now()): number | null => {
-	if (!history || history.length < 2) return null;
-	const ordered = history.toSorted((a, b) => a.timestamp - b.timestamp);
-	const latest = ordered.at(-1)!;
-	const reference = ordered.findLast(snapshot => snapshot.timestamp <= latest.timestamp - trendWindowMs)
-		?? ordered.find(snapshot => latest.timestamp - snapshot.timestamp >= trendFloorMs);
-	if (!reference || now - latest.timestamp > 5 * trendWindowMs) return null;
-	return Math.round(latest.total - reference.total);
 };

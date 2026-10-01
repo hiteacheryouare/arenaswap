@@ -439,9 +439,6 @@
 			"outs": "O"
 		},
 		"board": {
-			"steady": "Estable",
-			"trendUp": "subió en el último minuto",
-			"trendDown": "bajó en el último minuto",
 			"tab": "Pestaña {number}",
 			"assignTab": "Asigna una pestaña",
 			"noTab": "Sin pestaña",

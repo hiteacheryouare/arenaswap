@@ -439,9 +439,6 @@
 			"outs": "O"
 		},
 		"board": {
-			"steady": "持平",
-			"trendUp": "過去一分鐘上升",
-			"trendDown": "過去一分鐘下降",
 			"tab": "分頁 {number}",
 			"assignTab": "指派分頁",
 			"noTab": "無分頁",

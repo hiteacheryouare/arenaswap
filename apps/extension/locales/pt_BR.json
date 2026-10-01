@@ -967,9 +967,6 @@
 	},
 	"board": {
 		"at": "x",
-		"steady": "Estável",
-		"trendUp": "subiu no último minuto",
-		"trendDown": "caiu no último minuto",
 		"tab": "Aba {number}",
 		"tabUnknown": "Aba",
 		"assignTab": "Atribuir uma aba",

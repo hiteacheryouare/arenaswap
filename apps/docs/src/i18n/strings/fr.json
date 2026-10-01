@@ -439,9 +439,6 @@
 			"outs": "O"
 		},
 		"board": {
-			"steady": "Stable",
-			"trendUp": "en hausse depuis la dernière minute",
-			"trendDown": "en baisse depuis la dernière minute",
 			"tab": "Onglet {number}",
 			"assignTab": "Associer un onglet",
 			"noTab": "Aucun onglet",

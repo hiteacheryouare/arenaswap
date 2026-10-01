@@ -967,9 +967,6 @@
 	},
 	"board": {
 		"at": "vs",
-		"steady": "Stable",
-		"trendUp": "tumaas sa huling minuto",
-		"trendDown": "bumaba sa huling minuto",
 		"tab": "Tab {number}",
 		"tabUnknown": "Tab",
 		"assignTab": "Mag-assign ng tab",

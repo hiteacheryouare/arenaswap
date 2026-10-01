@@ -28,14 +28,26 @@ export const roundLabel = (game: Pick<Game, 'postseasonLabel'>): string | undefi
 	game.postseasonLabel?.replace(/\s*·\s*/g, ', ')
 );
 
-// v2's meta under the stage's matchup: where it is, where to watch, and the line.
-export const stageNote = (game: Game, prefs: Pick<UserPreferences, 'bettingEnabled'>, t: Translate): ReactNode => {
+const placeLines = (game: Game, t: Translate) => {
 	const networks = game.broadcasts?.slice(0, 2).join(' • ');
+	return [
+		game.venueName && <span key='venue' className='as-meta-venue'>{game.venueName}</span>,
+		networks && <span key='watch' className='as-meta-watch'><b>{t('gameCard.watchLabel')}</b> {networks}</span>,
+	];
+};
+
+// Under every live game: where it is and where to watch it.
+export const liveNote = (game: Game, t: Translate): ReactNode => {
+	const lines = placeLines(game, t).filter(Boolean);
+	return lines.length ? lines : null;
+};
+
+// v2's meta under the top game's matchup: where it is, where to watch, and the line.
+export const stageNote = (game: Game, prefs: Pick<UserPreferences, 'bettingEnabled'>, t: Translate): ReactNode => {
 	const odds = prefs.bettingEnabled ? oddsLine(game) : null;
 	const provider = prefs.bettingEnabled ? game.odds?.provider : undefined;
 	const lines = [
-		game.venueName && <span key='venue' className='as-meta-venue'>{game.venueName}</span>,
-		networks && <span key='watch' className='as-meta-watch'><b>{t('gameCard.watchLabel')}</b> {networks}</span>,
+		...placeLines(game, t),
 		(odds || provider?.name) && (
 			<span key='odds' className='as-meta-odds'>
 				{odds}

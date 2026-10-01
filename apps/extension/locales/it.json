@@ -967,9 +967,6 @@
 	},
 	"board": {
 		"at": "-",
-		"steady": "Stabile",
-		"trendUp": "in aumento nell'ultimo minuto",
-		"trendDown": "in calo nell'ultimo minuto",
 		"tab": "Scheda {number}",
 		"tabUnknown": "Scheda",
 		"assignTab": "Assegna una scheda",

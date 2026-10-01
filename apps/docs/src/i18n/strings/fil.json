@@ -439,9 +439,6 @@
 			"outs": "O"
 		},
 		"board": {
-			"steady": "Stable",
-			"trendUp": "tumaas sa huling minuto",
-			"trendDown": "bumaba sa huling minuto",
 			"tab": "Tab {number}",
 			"assignTab": "Mag-assign ng tab",
 			"noTab": "Walang tab",

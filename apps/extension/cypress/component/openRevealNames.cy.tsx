@@ -86,7 +86,7 @@ const Harness = ({ mode = 'full', away = club('Miami Marlins'), home = club('Was
 				<div className='gm-lower'>
 					<div className='gm-tiles is-odd'>
 						<GameCardReveal game={subject} mode={mode} index={0} skipping={false} shape='tile'>
-							<GameTile game={subject} power={72} trend={3} />
+							<GameTile game={subject} power={72} />
 						</GameCardReveal>
 					</div>
 				</div>

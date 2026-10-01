@@ -10,9 +10,10 @@ import FlipScore from './flipScore';
 import { useT } from './i18nContext';
 import InningHalfIcon from './inningHalfIcon';
 import TimeoutDots from './timeoutDots';
+import { conditionIcon, formatTemperature, type temperatureDisplayUnit } from './weatherUtils';
 
 type side = 'away' | 'home';
-export type matchupSize = 'stage' | 'tile' | 'row';
+export type matchupSize = 'stage' | 'hero' | 'tile' | 'row';
 
 export interface matchupTeamOptions {
 	names?: 'abbreviation' | 'name';
@@ -33,9 +34,13 @@ interface boardMatchupProps extends matchupTeamOptions {
 	// Under an upcoming game's start time. Defaults to how long until it and where to watch.
 	startNote?: ReactNode;
 	timeouts?: boolean;
+	// On a white card, where the colour artwork always reads.
+	plainCrests?: boolean;
+	// Set to draw an upcoming game's forecast under its start time, as v2's cards did.
+	temperatureUnit?: temperatureDisplayUnit;
 }
 
-const crestSizes: Record<matchupSize, number> = { stage: 64, tile: 32, row: 28 };
+const crestSizes: Record<matchupSize, number> = { stage: 96, hero: 64, tile: 56, row: 44 };
 
 const teamName = (team: Team, names: matchupTeamOptions['names'] = 'abbreviation') => (
 	names === 'name' ? (team.nickname || team.name || team.abbreviation) : team.abbreviation
@@ -121,7 +126,7 @@ const Situation = ({ game, size }: { game: Game; size: matchupSize }) => {
 	if (!isLive(game)) return null;
 	if (isInningGame(game)) {
 		if (!game.bso) return null;
-		return size === 'stage' ? <BsoIndicator {...game.bso} /> : <OutsDots outs={game.bso.outs} />;
+		return size === 'stage' || size === 'hero' ? <BsoIndicator {...game.bso} /> : <OutsDots outs={game.bso.outs} />;
 	}
 	if (game.sportType !== 'football' || !game.downDistance) return null;
 	if (size !== 'tile') return <span className='as-downs'>{downDistanceLine(game, t as Parameters<typeof downDistanceLine>[1])}</span>;
@@ -145,7 +150,7 @@ const ScoreDivider = ({ game }: { game: Game }) => {
 	return <span className='as-match-mid' aria-hidden='true'><span className='as-match-sep' /></span>;
 };
 
-const Centre = ({ game, size, clock, startNote }: Pick<boardMatchupProps, 'game' | 'size' | 'clock' | 'startNote'>) => {
+const Centre = ({ game, size, clock, startNote, temperatureUnit }: Pick<boardMatchupProps, 'game' | 'size' | 'clock' | 'startNote' | 'temperatureUnit'>) => {
 	const t = useT();
 	if (game.status === 'pre') {
 		const lines = resolveClockLines(game, t);
@@ -154,6 +159,12 @@ const Centre = ({ game, size, clock, startNote }: Pick<boardMatchupProps, 'game'
 			<span className='as-centre is-pre'>
 				<span className='as-centre-time'>{clock ?? lines.main}</span>
 				{note && <span className='as-centre-note'>{note}</span>}
+				{game.weather && temperatureUnit && (
+					<span className='as-centre-weather'>
+						<i className={`bi ${conditionIcon(game.weather.conditionLabel)}`} aria-hidden='true' />
+						{formatTemperature(game.weather.temperatureF, temperatureUnit)}
+					</span>
+				)}
 			</span>
 		);
 	}
@@ -179,13 +190,14 @@ const Centre = ({ game, size, clock, startNote }: Pick<boardMatchupProps, 'game'
 	);
 };
 
-const MatchTeam = ({ game, side, size, crest, color, timeouts, options }: {
+const MatchTeam = ({ game, side, size, crest, color, timeouts, plain, options }: {
 	game: Game;
 	side: side;
 	size: matchupSize;
 	crest: string;
 	color: string;
 	timeouts: boolean;
+	plain: boolean;
 	options: matchupTeamOptions;
 }) => {
 	const t = useT();
@@ -194,7 +206,7 @@ const MatchTeam = ({ game, side, size, crest, color, timeouts, options }: {
 	const record = options.records?.[side];
 	return (
 		<span className={`as-match-team is-${side}`}>
-			<BoardCrest team={team} size={crestSizes[size]} surface={crest} color={color} monoMarks={options.monoMarks?.[side]} />
+			<BoardCrest team={team} size={crestSizes[size]} surface={crest} color={color} monoMarks={options.monoMarks?.[side]} plain={plain} />
 			<span className='as-match-name'>
 				<b key={`${team.rank ?? ''}${name}`} ref={fitName}>
 					{team.rank !== undefined && <span className='as-rank' title={t('gameCard.teamRank', { rank: team.rank })}>{team.rank}</span>}
@@ -214,7 +226,7 @@ const MatchTeam = ({ game, side, size, crest, color, timeouts, options }: {
 
 // One game as v2's card read it: each team under its crest, the two scores together in the middle
 // split by a hairline, and the clock and period stacked under them.
-const BoardMatchup = ({ game, size, crests, colors, clock, startNote, timeouts = false, ...options }: boardMatchupProps) => {
+const BoardMatchup = ({ game, size, crests, colors, clock, startNote, timeouts = false, plainCrests = false, temperatureUnit, ...options }: boardMatchupProps) => {
 	const behind = game.status === 'post' ? trailingSide(game) : null;
 	const wide = Math.max(game.awayTeam.score, game.homeTeam.score) >= 100;
 	const score = (which: side) => (
@@ -225,12 +237,12 @@ const BoardMatchup = ({ game, size, crests, colors, clock, startNote, timeouts =
 	);
 	return (
 		<div className={`as-match is-${size}${game.status === 'pre' ? ' is-pre' : ''}${wide ? ' is-wide' : ''}`}>
-			<MatchTeam game={game} side='away' size={size} crest={crests.away} color={colors.away} timeouts={timeouts} options={options} />
+			<MatchTeam game={game} side='away' size={size} crest={crests.away} color={colors.away} timeouts={timeouts} plain={plainCrests} options={options} />
 			{game.status !== 'pre' && score('away')}
 			{game.status !== 'pre' && <ScoreDivider game={game} />}
 			{game.status !== 'pre' && score('home')}
-			<Centre game={game} size={size} clock={clock} startNote={startNote} />
-			<MatchTeam game={game} side='home' size={size} crest={crests.home} color={colors.home} timeouts={timeouts} options={options} />
+			<Centre game={game} size={size} clock={clock} startNote={startNote} temperatureUnit={temperatureUnit} />
+			<MatchTeam game={game} side='home' size={size} crest={crests.home} color={colors.home} timeouts={timeouts} plain={plainCrests} options={options} />
 		</div>
 	);
 };

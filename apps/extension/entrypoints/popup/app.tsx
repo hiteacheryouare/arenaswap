@@ -569,9 +569,7 @@ export default () => {
 						onRefresh={() => void mutate(() => fetchState(true), { revalidate: false })}
 						games={games}
 						scores={scores}
-						powerScoreHistory={powerScoreHistory}
 						leagueLogos={leagueLogos}
-						monoLogos={monoLogos}
 						registry={registry}
 						favoriteTeamIds={favoriteTeamIds}
 						gameBoosts={gameBoosts}

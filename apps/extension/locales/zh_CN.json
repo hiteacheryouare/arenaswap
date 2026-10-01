@@ -967,9 +967,6 @@
 	},
 	"board": {
 		"at": "vs",
-		"steady": "持平",
-		"trendUp": "过去一分钟上升",
-		"trendDown": "过去一分钟下降",
 		"tab": "标签页 {number}",
 		"tabUnknown": "标签页",
 		"assignTab": "分配标签页",

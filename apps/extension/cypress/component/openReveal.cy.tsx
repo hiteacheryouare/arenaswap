@@ -55,7 +55,7 @@ const Harness = ({ mode, status = 'in', away, home, skipping = false }: {
 				) : (
 					<div className='gm-tiles is-odd'>
 						<GameCardReveal game={subject} mode={mode} index={0} skipping={skipping} shape='tile'>
-							<GameTile game={subject} power={80} trend={2} tab={<span>Tab 1</span>} />
+							<GameTile game={subject} power={80} tab={<span>Tab 1</span>} />
 						</GameCardReveal>
 					</div>
 				)}

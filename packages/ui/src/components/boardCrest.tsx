@@ -1,5 +1,6 @@
 import type { CSSProperties } from 'react';
 import type { Team, TeamMonoMarks } from '@arenaswap/core/types';
+import Crest from './crest';
 import TeamCrest from './teamCrest';
 import { monogramInk, monogramScale } from './gameSurface';
 
@@ -14,9 +15,12 @@ interface boardCrestProps {
 	className?: string;
 	// For long lists, such as the first-run team picker.
 	loading?: 'eager' | 'lazy';
+	// The colour artwork as published, with no legibility swap. v2's white cards always showed it,
+	// and the swap's bar, set for dark backgrounds, traded the Phillies' red P for their black one.
+	plain?: boolean;
 }
 
-const BoardCrest = ({ team, size, surface, color, monoMarks, className, loading }: boardCrestProps) => (
+const BoardCrest = ({ team, size, surface, color, monoMarks, className, loading, plain = false }: boardCrestProps) => (
 	<span
 		className={`as-crest-box${className ? ` ${className}` : ''}`}
 		style={{
@@ -27,15 +31,21 @@ const BoardCrest = ({ team, size, surface, color, monoMarks, className, loading 
 		} as CSSProperties}
 		data-reveal-crest=''
 	>
-		<TeamCrest
-			logo={team.logo}
-			monoMarks={monoMarks ?? undefined}
-			abbreviation={team.abbreviation || '?'}
-			background={surface}
-			discClassName='as-crest'
-			crestClassName='as-crest-art'
-			loading={loading}
-		/>
+		{plain ? (
+			<span className='as-crest is-bare'>
+				<Crest logo={team.logo} abbreviation={team.abbreviation || '?'} className='as-crest-art' loading={loading} />
+			</span>
+		) : (
+			<TeamCrest
+				logo={team.logo}
+				monoMarks={monoMarks ?? undefined}
+				abbreviation={team.abbreviation || '?'}
+				background={surface}
+				discClassName='as-crest'
+				crestClassName='as-crest-art'
+				loading={loading}
+			/>
+		)}
 	</span>
 );
 

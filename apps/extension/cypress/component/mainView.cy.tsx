@@ -477,18 +477,26 @@ describe('mainView board', () => {
 		gameEl('today-wnba').should('not.exist');
 	});
 
-	it('shows how far the PowerScore has moved on a tile', () => {
-		const now = Date.now();
-		const snapshot = (total: number, ago: number) => ({ gameId: 't', timestamp: now - ago, total } as never);
+	it('says where every live game is and where to watch it, and forecasts the upcoming ones', () => {
+		const place = { venueName: 'Rocket Arena', broadcasts: ['ESPN'] };
 		cy.mount(
 			<MainView
 				{...defaultProps}
-				games={[makeGame('s'), makeGame('t')]}
-				scores={[score('s', 95), score('t', 80)]}
-				powerScoreHistory={{ t: [snapshot(74, 90_000), snapshot(76, 60_000), snapshot(80, 0)] }}
+				games={[
+					{ ...makeGame('s'), ...place },
+					{ ...makeGame('t'), ...place },
+					{ ...makeGame('r'), ...place },
+					{ ...makeGame('later', 'pre', { startTime: dayAt(0) }), weather: { temperatureF: 61, conditionLabel: 'Clear' } },
+				]}
+				scores={[score('s', 95), score('t', 80), score('r', 20)]}
 			/>,
 		);
-		gameEl('t').find('.as-trend').should('have.class', 'is-up').and('contain.text', '4');
+		for (const id of ['s', 't', 'r']) {
+			gameEl(id).find('.as-meta-venue').should('have.text', 'Rocket Arena');
+			gameEl(id).find('.as-meta-watch').should('contain.text', 'ESPN');
+		}
+		gameEl('later').find('.as-centre-weather').should('contain.text', '61');
+		cy.get('.as-trend').should('not.exist');
 	});
 });
 

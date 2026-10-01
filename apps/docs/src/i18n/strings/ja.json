@@ -439,9 +439,6 @@
 			"outs": "O"
 		},
 		"board": {
-			"steady": "横ばい",
-			"trendUp": "直近1分で上昇",
-			"trendDown": "直近1分で下降",
 			"tab": "タブ {number}",
 			"assignTab": "タブを割り当て",
 			"noTab": "タブなし",

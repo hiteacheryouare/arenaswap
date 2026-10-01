@@ -21,7 +21,6 @@ export interface gameStageProps extends matchupTeamOptions {
 	// Under the matchup: the at-bat pair, the field.
 	situation?: ReactNode;
 	power?: number | null;
-	trend?: number | null;
 	head?: ReactNode;
 	watched?: boolean;
 	className?: string;
@@ -30,7 +29,7 @@ export interface gameStageProps extends matchupTeamOptions {
 
 export const StageField = () => <div className='as-stage-field' aria-hidden='true' />;
 
-const GameStage = ({ game, surface = 'plate', tab, label, clock, startNote, note, situation, power, trend, head, watched, className, interactive, ...options }: gameStageProps) => {
+const GameStage = ({ game, surface = 'plate', tab, label, clock, startNote, note, situation, power, head, watched, className, interactive, ...options }: gameStageProps) => {
 	const paint = surface === 'paint';
 	const painted = paint ? resolveGameSurface(game) : null;
 	const palette = painted ?? resolveGamePlate(game);
@@ -45,7 +44,8 @@ const GameStage = ({ game, surface = 'plate', tab, label, clock, startNote, note
 			</BoardTop>
 			<BoardMatchup
 				game={game}
-				size='stage'
+				size={paint ? 'hero' : 'stage'}
+				plainCrests={!paint}
 				crests={{ away: palette.crestAway, home: palette.crestHome }}
 				colors={{ away: palette.away, home: palette.home }}
 				clock={clock}
@@ -55,7 +55,7 @@ const GameStage = ({ game, surface = 'plate', tab, label, clock, startNote, note
 			/>
 			{situation}
 			{note && <div className='as-stage-note'>{note}</div>}
-			{power !== undefined && power !== null && <PowerLine value={power} trend={trend} />}
+			{power !== undefined && power !== null && <PowerLine value={power} />}
 			{tab && <div className='as-plate-tab'>{tab}</div>}
 		</article>
 	);

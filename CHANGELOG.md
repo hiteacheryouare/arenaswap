@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The whole popup follows v2's two kinds of surface — 2026-09-30
+
+Anything about a game is a white card in both themes, now including the box score, standings, pre-game stats, latest play and the tab card, with v2's team-colour tint on each team's line-score and standings row and a line under every breakdown row; Game info, the charts and Settings sit flat on the page with a line between rows, as v2 drew them. On the home screen the logos are 96/56/44px (the top game's scores moved under its logos), every live game names its venue and where to watch, upcoming games show the forecast again, the PowerScore trend is gone, and white cards always show the colour logo, since the plain-mark swap was turning the Phillies' red P black. Clicking anywhere on a sub-page's top bar goes back again, as in v2.
+
 ## Spotlight goes back to v2's plates — 2026-09-30
 
 Every game is a bright v2 plate again, in both themes, with a pastel wash of both teams and each team's colour running down its own side. v2's anatomy is back too: Geist scores either side of a hairline (or the bases, in baseball), the clock and period stacked under them, venue, "Watch:" and the line on the stage, and the tab select along the bottom of every game, which now names the tab beside the page. The detail hero keeps its painted two-team poster without the big PowerScore (the breakdown under it, now a plate too, carries it), and the plate inks are darkened just enough to clear 4.5:1 on the darkest wash, which a unit test checks across a colour cube.

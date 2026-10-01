@@ -967,9 +967,6 @@
 	},
 	"board": {
 		"at": "-",
-		"steady": "Stabil",
-		"trendUp": "in der letzten Minute gestiegen",
-		"trendDown": "in der letzten Minute gefallen",
 		"tab": "Tab {number}",
 		"tabUnknown": "Tab",
 		"assignTab": "Tab zuweisen",

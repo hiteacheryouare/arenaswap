@@ -5,7 +5,7 @@ import GameStage from '@arenaswap/ui/src/components/gameStage';
 import GameTile from '@arenaswap/ui/src/components/gameTile';
 import GameRow from '@arenaswap/ui/src/components/gameRow';
 import { arrangeLive } from '@arenaswap/ui/src/components/boardLayout';
-import { stageNote } from '@arenaswap/ui/src/components/boardSituation';
+import { liveNote, stageNote } from '@arenaswap/ui/src/components/boardSituation';
 import { resolveGameColors } from '@arenaswap/ui/src/components/gameSurface';
 import { useT } from '@arenaswap/ui/src/components/i18nContext';
 
@@ -29,7 +29,6 @@ interface SiteBoardProps {
 	tabs?: Record<string, SiteBoardTab>;
 	watchedId?: string | null;
 	switchThreshold?: number;
-	trends?: Record<string, number | null>;
 	favorites?: Record<string, { away: boolean; home: boolean }>;
 	bettingEnabled?: boolean;
 	scroller?: RefObject<HTMLDivElement | null>;
@@ -71,7 +70,6 @@ const SiteBoard = ({
 	tabs = {},
 	watchedId = null,
 	switchThreshold = Number.POSITIVE_INFINITY,
-	trends = {},
 	favorites = {},
 	bettingEnabled = false,
 	scroller,
@@ -123,7 +121,6 @@ const SiteBoard = ({
 						tab={stageTab(board.stage)}
 						note={stageNote(board.stage, { bettingEnabled }, t as Parameters<typeof stageNote>[2])}
 						power={scoreOf(board.stage)}
-						trend={trends[board.stage.id]}
 						favorites={favorites[board.stage.id]}
 						watched={board.stage.id === watchedId}
 						interactive={opener(board.stage)}
@@ -137,7 +134,7 @@ const SiteBoard = ({
 								key={game.id}
 								game={game}
 								power={scoreOf(game)}
-								trend={trends[game.id]}
+								note={liveNote(game, t as Parameters<typeof liveNote>[1])}
 								tab={picker(game)}
 								favorites={favorites[game.id]}
 								watched={game.id === watchedId}
@@ -154,7 +151,7 @@ const SiteBoard = ({
 								key={game.id}
 								game={game}
 								power={scoreOf(game)}
-								trend={trends[game.id]}
+								note={liveNote(game, t as Parameters<typeof liveNote>[1])}
 								tab={picker(game)}
 								favorites={favorites[game.id]}
 								watched={game.id === watchedId}

@@ -2,7 +2,7 @@ import GameStage from '@arenaswap/ui/src/components/gameStage';
 import GameTile from '@arenaswap/ui/src/components/gameTile';
 import GameRow from '@arenaswap/ui/src/components/gameRow';
 import type { Game } from '@arenaswap/core/types';
-import { roundLabel, stageNote, upcomingStatus } from '@arenaswap/ui/src/components/boardSituation';
+import { liveNote, roundLabel, stageNote, upcomingStatus } from '@arenaswap/ui/src/components/boardSituation';
 import { buildCardHandlers } from '@arenaswap/ui/src/components/gameOpener';
 import { i18n } from '#i18n';
 
@@ -68,17 +68,32 @@ describe('the matchup', () => {
 		cy.get('.as-match-score.is-behind').should('not.exist');
 	});
 
-	// The hairline is the plate's axis, and the clock sits on it under the scores.
-	it('keeps the hairline and the clock on the plate\'s centre line, and the scores on the crests\' midline', () => {
+	// The hairline is the card's axis, and the clock sits on it under the scores.
+	it('keeps the hairline and the clock on the card\'s centre line', () => {
 		cy.mount(<div style={frame}><GameStage game={{ ...baseGame, awayTeam: { ...baseGame.awayTeam, score: 1 }, homeTeam: { ...baseGame.homeTeam, score: 108 } }} /></div>);
 		cy.get('.as-stage').then($stage => {
 			const stage = $stage[0]!;
 			const axis = centreOf(stage);
 			expect(centreOf(stage.querySelector('.as-match-sep')!), 'hairline').to.be.closeTo(axis, 1);
 			expect(centreOf(stage.querySelector('.as-clock')!), 'clock').to.be.closeTo(axis, 1);
-			const crest = stage.querySelector('.as-crest-box')!;
-			for (const score of stage.querySelectorAll('.as-match-score')) expect(middleOf(score), 'score').to.be.closeTo(middleOf(crest), 3);
 		});
+	});
+
+	it('sets a row\'s scores on its logos\' midline', () => {
+		cy.mount(<div style={frame}><GameRow game={baseGame} power={40} /></div>);
+		cy.get('.as-row').then($row => {
+			const crest = $row[0]!.querySelector('.as-crest-box')!;
+			for (const score of $row[0]!.querySelectorAll('.as-match-score')) expect(middleOf(score), 'score').to.be.closeTo(middleOf(crest), 3);
+		});
+	});
+
+	// v2's white cards always showed the colour logo; the swap to a plain mark is for dark backgrounds.
+	it('draws the colour logo on a white card even when a plain mark is on hand', () => {
+		const logo = 'https://a.espncdn.com/i/teamlogos/mlb/500/phi.png';
+		const phillies = { ...baseball, homeTeam: { ...baseball.homeTeam, logo } };
+		const marks = { home: { white: 'https://example.test/white.png', black: 'https://example.test/black.png' } };
+		cy.mount(<div style={frame}><GameStage game={phillies} monoMarks={marks} /></div>);
+		cy.get('.as-match-team.is-home img').should('have.attr', 'src', logo).and('not.have.class', 'is-mono');
 	});
 
 	it('sets the scores in Geist\'s tabular figures', () => {
@@ -109,6 +124,14 @@ describe('the matchup', () => {
 		cy.mount(<div style={tileFrame}><GameTile game={football} power={80} /></div>);
 		cy.get('.as-downs.is-stacked b').should('have.text', '3rd & 5');
 		cy.get('.as-downs.is-stacked small').should('have.text', 'PHI 30');
+	});
+
+	it('brings back v2\'s forecast under an upcoming game\'s start time', () => {
+		const later = { ...baseGame, status: 'pre' as const, startTime: new Date(Date.now() + 3_600_000).toISOString(), weather: { temperatureF: 61, conditionLabel: 'Clear' } };
+		cy.mount(<div style={frame}><GameRow game={later} temperatureUnit='F' /></div>);
+		cy.get('.as-centre-weather').should('contain.text', '61°F').find('i.bi').should('exist');
+		cy.mount(<div style={frame}><GameRow game={later} /></div>);
+		cy.get('.as-centre-weather').should('not.exist');
 	});
 
 	it('shows the start time and where to watch before a game, and no scores', () => {
@@ -217,12 +240,17 @@ describe('the live dot and the status word', () => {
 });
 
 describe('the stage', () => {
-	it('draws v2\'s 64px crests, and a PowerScore bar in the colour of the score', () => {
+	it('draws 96px logos over the scores, and a PowerScore bar in the colour of the score', () => {
 		cy.mount(<div style={frame}><GameStage game={{ ...baseGame, period: 2, clockSeconds: 5, awayTeam: { ...baseGame.awayTeam, score: 42 }, homeTeam: { ...baseGame.homeTeam, score: 45 } }} power={93} /></div>);
 		cy.get('.as-match-team .as-crest-box').each($box => {
-			expect($box[0]!.getBoundingClientRect().width).to.equal(64);
+			expect($box[0]!.getBoundingClientRect().width).to.equal(96);
+		});
+		cy.get('.as-match').then($match => {
+			const crest = $match[0]!.querySelector('.as-crest-box')!.getBoundingClientRect();
+			expect($match[0]!.querySelector('.as-match-score')!.getBoundingClientRect().top, 'score under the logo').to.be.at.least(crest.bottom);
 		});
 		cy.get('.as-stage .as-power-figure').should('have.text', '93 / 100');
+		cy.get('.as-stage').should('not.contain.text', 'Steady');
 		cy.get('.as-stage .progress.as-heat').should('have.attr', 'aria-hidden', 'true');
 		// Retried: the fill grows in from empty when it first appears.
 		cy.get('.as-stage .progress-bar').should($bar => {
@@ -232,15 +260,13 @@ describe('the stage', () => {
 		});
 	});
 
-	it('keeps two three-digit scores clear of the crests and inside the stage', () => {
-		cy.mount(<div style={frame}><GameStage game={{ ...baseGame, awayTeam: { ...baseGame.awayTeam, score: 128 }, homeTeam: { ...baseGame.homeTeam, score: 131 } }} /></div>);
+	it('keeps two three-digit scores and full-size logos inside the top game', () => {
+		cy.mount(<div style={frame}><GameStage game={{ ...baseGame, awayTeam: { ...baseGame.awayTeam, score: 128 }, homeTeam: { ...baseGame.homeTeam, score: 131 } }} tab={<button type='button' className='form-select'>Bucks at Cavaliers — NBA League Pass, a very long page title</button>} /></div>);
 		cy.get('.as-match').should('have.class', 'is-wide').then($match => {
-			const [away, home] = [...$match[0]!.querySelectorAll('.as-crest-box')].map(crest => crest.getBoundingClientRect());
-			const scores = [...$match[0]!.querySelectorAll('.as-match-score')].map(score => score.getBoundingClientRect());
-			expect(away!.width, 'crest keeps most of its size').to.be.at.least(52);
-			expect(scores[0]!.left, 'clear of the away crest').to.be.at.least(away!.right);
-			expect(scores[1]!.right, 'clear of the home crest').to.be.at.most(home!.left);
-			for (const part of $match[0]!.querySelectorAll('.as-match > *')) expect(inside(part, $match[0]!.closest('.as-stage')!), part.className).to.equal(true);
+			const stage = $match[0]!.closest('.as-stage')!;
+			for (const crest of $match[0]!.querySelectorAll('.as-crest-box')) expect(crest.getBoundingClientRect().width).to.equal(96);
+			for (const part of $match[0]!.querySelectorAll('.as-match > *')) expect(inside(part, stage), part.className).to.equal(true);
+			expect(stage.scrollWidth, 'a long tab title does not widen the card').to.be.at.most(stage.clientWidth);
 		});
 	});
 
@@ -251,8 +277,8 @@ describe('the stage', () => {
 		});
 	});
 
-	it('names the teams by nickname with records when asked to, the star under the name', () => {
-		cy.mount(<div style={frame}><GameStage game={baseGame} names='name' records={{ away: '44-27', home: '52-19' }} onToggleFavorite={() => {}} favorites={{ away: false, home: false }} /></div>);
+	it('names the teams by nickname with records in the detail header, the star under the name', () => {
+		cy.mount(<div style={frame}><GameStage game={baseGame} surface='paint' names='name' records={{ away: '44-27', home: '52-19' }} onToggleFavorite={() => {}} favorites={{ away: false, home: false }} /></div>);
 		cy.get('.as-match-team.is-away').should('contain.text', 'Bucks').and('contain.text', '44-27').then($team => {
 			const name = $team[0]!.querySelector('b')!.getBoundingClientRect();
 			const star = $team[0]!.querySelector('.as-star')!.getBoundingClientRect();
@@ -308,6 +334,18 @@ describe('the stage meta', () => {
 		cy.get('.as-meta-watch b').should('have.text', 'Watch:');
 	});
 
+	it('puts the venue and where to watch on every live game, with the line only on the top game', () => {
+		const game = { ...baseGame, venueName: 'Mercedes-Benz Superdome at the Caesars Superdome Complex', broadcasts: ['ESPN'], odds: { details: 'CLE -1.5' } };
+		cy.mount(<div style={tileFrame}><GameTile game={game} power={80} note={liveNote(game, i18n.t)} /></div>);
+		cy.get('.as-tile .as-meta-venue').should('contain.text', 'Mercedes-Benz');
+		cy.get('.as-tile .as-meta-watch').should('have.text', 'Watch: ESPN');
+		cy.get('.as-tile').should('not.contain.text', 'CLE -1.5').then($tile => {
+			expect($tile[0]!.scrollWidth, 'a long venue trails off inside the tile').to.be.at.most($tile[0]!.clientWidth);
+		});
+		cy.mount(<div style={frame}><GameRow game={game} power={30} note={liveNote(game, i18n.t)} /></div>);
+		cy.get('.as-row .as-meta-watch').should('have.text', 'Watch: ESPN');
+	});
+
 	it('leaves the down and distance to the middle of the matchup', () => {
 		cy.mount(note({ ...football, venueName: 'Lincoln Financial Field' }));
 		cy.get('.as-stage-note').should('not.contain.text', '3rd & 5');
@@ -356,27 +394,20 @@ describe('the stage meta', () => {
 
 describe('a tile', () => {
 	it('shows LIVE, both teams, the clock, v2\'s PowerScore line and the picker', () => {
-		cy.mount(<div style={tileFrame}><GameTile game={baseGame} power={88} trend={4} tab={<span>Tab 1</span>} /></div>);
+		cy.mount(<div style={tileFrame}><GameTile game={baseGame} power={88} tab={<span>Tab 1</span>} /></div>);
 		cy.get('.as-top .as-status').should('have.text', 'LIVE');
 		cy.get('.as-centre .as-clock').should('have.text', '0:38');
 		cy.get('.as-match-team').should('have.length', 2);
 		cy.get('.as-power-label').should('have.text', 'PowerScore');
 		cy.get('.as-power-figure').should('have.text', '88 / 100');
-		cy.get('.as-trend').should('have.class', 'is-up').and('contain.text', '4');
+		cy.get('.as-power-line').children().should('have.length', 3);
 		cy.get('.as-plate-tab').should('have.text', 'Tab 1');
-	});
-
-	it('says Steady for no movement and nothing before there is a reading to compare', () => {
-		cy.mount(<div style={tileFrame}><GameTile game={baseGame} power={88} trend={0} /></div>);
-		cy.get('.as-trend').should('have.text', 'Steady');
-		cy.mount(<div style={tileFrame}><GameTile game={baseGame} power={88} trend={null} /></div>);
-		cy.get('.as-trend').should('not.exist');
 	});
 
 	// Each half stacks its crest, its score and its name, so no score is too wide for it.
 	it('keeps ranked five-letter schools with three-digit scores whole inside a half-width tile', () => {
 		const wide = { ...baseGame, awayTeam: { ...baseGame.awayTeam, abbreviation: 'UCONN', rank: 12, score: 107 }, homeTeam: { ...baseGame.homeTeam, abbreviation: 'TENN', rank: 15, score: 118 } };
-		cy.mount(<div style={tileFrame}><GameTile game={wide} power={88} trend={-12} tab={<span>Watching, Tab 2</span>} /></div>);
+		cy.mount(<div style={tileFrame}><GameTile game={wide} power={88} tab={<span>Watching, Tab 2</span>} /></div>);
 		cy.get('.as-tile').then($tile => {
 			expect($tile[0]!.scrollWidth, 'nothing runs off the side').to.be.at.most($tile[0]!.clientWidth);
 			for (const node of $tile[0]!.querySelectorAll('.as-top > *, .as-match > *, .as-power-line > *')) {
@@ -393,10 +424,10 @@ describe('a tile', () => {
 		cy.get('.as-tile').should('have.class', 'is-watched');
 	});
 
-	it('draws 32px crests over the scores, with the clock under them', () => {
-		cy.mount(<div style={tileFrame}><GameTile game={{ ...baseGame, awayTeam: { ...baseGame.awayTeam, score: 42 }, homeTeam: { ...baseGame.homeTeam, score: 45 } }} power={88} trend={3} /></div>);
+	it('draws 56px logos over the scores, with the clock under them', () => {
+		cy.mount(<div style={tileFrame}><GameTile game={{ ...baseGame, awayTeam: { ...baseGame.awayTeam, score: 42 }, homeTeam: { ...baseGame.homeTeam, score: 45 } }} power={88} /></div>);
 		cy.get('.as-match-team .as-crest-box').each($box => {
-			expect($box[0]!.getBoundingClientRect()).to.deep.include({ width: 32, height: 32 });
+			expect($box[0]!.getBoundingClientRect()).to.deep.include({ width: 56, height: 56 });
 		});
 		cy.get('.as-match').then($match => {
 			const match = $match[0]!;
@@ -432,10 +463,10 @@ describe('a row', () => {
 		cy.get('.as-top-context').should('have.text', 'Rose Bowl');
 	});
 
-	it('sets each 28px crest beside its tricode, at the outer edges', () => {
+	it('sets each 44px logo beside its tricode, at the outer edges', () => {
 		cy.mount(<div style={frame}><GameRow game={baseGame} power={40} /></div>);
 		cy.get('.as-match-team .as-crest-box').each($box => {
-			expect($box[0]!.getBoundingClientRect()).to.deep.include({ width: 28, height: 28 });
+			expect($box[0]!.getBoundingClientRect()).to.deep.include({ width: 44, height: 44 });
 		});
 		cy.get('.as-match').then($match => {
 			const crest = (side: string) => $match[0]!.querySelector(`.as-match-team.is-${side} .as-crest-box`)!.getBoundingClientRect();
@@ -447,7 +478,7 @@ describe('a row', () => {
 	});
 
 	it('carries v2\'s PowerScore line when there is a score, and none when there isn\'t', () => {
-		cy.mount(<div style={frame}><GameRow game={baseGame} power={40} trend={2} /></div>);
+		cy.mount(<div style={frame}><GameRow game={baseGame} power={40} /></div>);
 		cy.get('.as-power-line .progress.as-heat').should('have.length', 1);
 		cy.get('.as-power-figure').should('have.text', '40 / 100');
 		cy.mount(<div style={frame}><GameRow game={{ ...baseGame, status: 'post' }} /></div>);

@@ -439,9 +439,6 @@
 			"outs": "O"
 		},
 		"board": {
-			"steady": "Estável",
-			"trendUp": "subiu no último minuto",
-			"trendDown": "desceu no último minuto",
 			"tab": "Separador {number}",
 			"assignTab": "Associa um separador",
 			"noTab": "Nenhum separador",

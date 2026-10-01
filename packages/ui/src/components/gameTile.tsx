@@ -1,5 +1,5 @@
 import type { CSSProperties, HTMLAttributes, ReactNode } from 'react';
-import type { Game, TeamMonoMarks } from '@arenaswap/core/types';
+import type { Game } from '@arenaswap/core/types';
 import BoardMatchup, { BoardTop } from './boardMatchup';
 import { resolveBoardTone } from './boardClock';
 import { gamePlateStyle, resolveGamePlate } from './gameSurface';
@@ -8,16 +8,16 @@ import PowerLine from './powerLine';
 export interface gameTileProps {
 	game: Game;
 	power: number;
-	trend?: number | null;
+	// Where it is and where to watch it.
+	note?: ReactNode;
 	tab?: ReactNode;
 	favorites?: { away: boolean; home: boolean };
 	onToggleFavorite?: (side: 'away' | 'home') => void;
-	monoMarks?: { away?: TeamMonoMarks | null; home?: TeamMonoMarks | null };
 	watched?: boolean;
 	interactive?: HTMLAttributes<HTMLElement>;
 }
 
-const GameTile = ({ game, power, trend, tab, favorites, onToggleFavorite, monoMarks, watched, interactive }: gameTileProps) => {
+const GameTile = ({ game, power, note, tab, favorites, onToggleFavorite, watched, interactive }: gameTileProps) => {
 	const plate = resolveGamePlate(game);
 	return (
 		<article
@@ -29,14 +29,15 @@ const GameTile = ({ game, power, trend, tab, favorites, onToggleFavorite, monoMa
 			<BoardTop game={game} />
 			<BoardMatchup
 				game={game}
+				plainCrests
 				size='tile'
 				crests={{ away: plate.crestAway, home: plate.crestHome }}
 				colors={{ away: plate.away, home: plate.home }}
 				favorites={favorites}
 				onToggleFavorite={onToggleFavorite}
-				monoMarks={monoMarks}
 			/>
-			<PowerLine value={power} trend={trend} />
+			{note && <div className='as-stage-note'>{note}</div>}
+			<PowerLine value={power} />
 			{tab && <div className='as-plate-tab'>{tab}</div>}
 		</article>
 	);

@@ -439,9 +439,6 @@
 			"outs": "O"
 		},
 		"board": {
-			"steady": "Steady",
-			"trendUp": "up in the last minute",
-			"trendDown": "down in the last minute",
 			"tab": "Tab {number}",
 			"assignTab": "Assign a tab",
 			"noTab": "No tab",

@@ -1,5 +1,5 @@
-import type { Game, PowerScoreSnapshot } from '@arenaswap/core/types';
-import { arrangeLive, powerTrend, tileFloor } from '../src/components/boardLayout';
+import type { Game } from '@arenaswap/core/types';
+import { arrangeLive, tileFloor } from '../src/components/boardLayout';
 import { formatStartTime, resolveBoardClock, trailingSide } from '../src/components/boardClock';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -55,34 +55,6 @@ describe('arrangeLive', () => {
 	test('treats a game with no score yet as zero rather than dropping it', () => {
 		const board = arrangeLive([game('new'), game('a')], new Map([['a', 40]]));
 		expect(board.all.map(g => g.id)).toEqual(['a', 'new']);
-	});
-});
-
-const at = (ago: number, total: number, now: number) => ({ gameId: 'g', timestamp: now - ago, total } as PowerScoreSnapshot);
-
-describe('powerTrend', () => {
-	const now = 1_800_000_000_000;
-
-	test('compares against the reading about a minute ago', () => {
-		expect(powerTrend([at(120_000, 50, now), at(60_000, 60, now), at(30_000, 65, now), at(0, 66, now)], now)).toBe(6);
-	});
-
-	test('falls back to the oldest reading at least twenty seconds old', () => {
-		expect(powerTrend([at(40_000, 70, now), at(0, 64, now)], now)).toBe(-6);
-	});
-
-	test('says nothing until there is a reading worth comparing', () => {
-		expect(powerTrend(undefined, now)).toBeNull();
-		expect(powerTrend([at(0, 40, now)], now)).toBeNull();
-		expect(powerTrend([at(5_000, 40, now), at(0, 41, now)], now)).toBeNull();
-	});
-
-	test('says nothing about a history that stopped five minutes ago', () => {
-		expect(powerTrend([at(400_000, 40, now), at(310_000, 50, now)], now)).toBeNull();
-	});
-
-	test('reads history in any order', () => {
-		expect(powerTrend([at(0, 80, now), at(60_000, 70, now)], now)).toBe(10);
 	});
 });
 

@@ -439,9 +439,6 @@
 			"outs": "O"
 		},
 		"board": {
-			"steady": "유지",
-			"trendUp": "최근 1분 동안 상승",
-			"trendDown": "최근 1분 동안 하락",
 			"tab": "탭 {number}",
 			"assignTab": "탭 할당",
 			"noTab": "탭 없음",
