@@ -302,7 +302,7 @@ const gameDetailView = ({
 
 	const paneFor = (id: DetailTabId) => (
 		id === 'standings' ? <StandingsTable game={game} standings={standings} />
-			: id === 'box' ? <BoxScore game={game} boxScore={boxScore} monoLogos={monoLogos} theme={theme} />
+			: id === 'box' ? <BoxScore game={game} boxScore={boxScore} />
 				: overviewPanel
 	);
 

@@ -375,16 +375,27 @@ $bar-height: 48px;
 	padding: var(--as-space-4);
 }
 
-// v2 drew the breakdown and the boost on the same bright plate as the games, in both themes, so the
-// two cards take the plate's inks in place of the page's.
+// v2's rule: anything about the game itself is a white card, the same as the game cards on the list,
+// in both themes. These cards take the white card's inks in place of the page's. Game info and the
+// charts are the other half of the rule, flat on the page (below).
 .dt-card.powerscore-breakdown,
-.dt-card.game-detail-boost-section {
+.dt-card.game-detail-boost-section,
+.dt-card.dt-play,
+.dt-card.dt-assign,
+.dt-card.dt-setup,
+.dt-card.dt-starters-card,
+.dt-card.dt-leaders-card,
+.dt-card.dt-box-line,
+.dt-card.dt-box-compare,
+.dt-card.dt-box-players,
+.dt-card.dt-standings-block {
 	--as-ink: var(--as-plate-ink);
 	--as-muted: var(--as-plate-muted);
 	--as-faint: var(--as-plate-faint);
 	--as-raised: #e9ecef;
-	--as-line: rgba(17, 24, 39, 0.08);
-	--as-line-strong: rgba(17, 24, 39, 0.16);
+	--as-surface: #f8f9fa;
+	--as-line: #e2e6ea;
+	--as-line-strong: #cfd6de;
 	--as-hover: rgba(17, 24, 39, 0.05);
 	--as-press: rgba(17, 24, 39, 0.09);
 	--as-gain: var(--as-plate-gain);
@@ -392,7 +403,28 @@ $bar-height: 48px;
 	--as-card-bg: var(--as-plate);
 	--as-card-border-color: var(--as-plate-line);
 	--as-card-color: var(--as-plate-ink);
+	--as-card-border-radius: 10px;
+	--as-card-inner-border-radius: 9px;
 	color: var(--as-plate-ink);
+}
+
+[data-bs-theme='light'] .dt-card {
+	box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+}
+
+// The other half of v2's rule: information about where and when sits flat on the page, under a rule,
+// with a line between its rows.
+.dt-card.game-info-panel,
+.dt-card.dt-chart {
+	padding: var(--as-space-3) 0 0;
+	border: 0;
+	border-top: 1px solid var(--as-line-strong);
+	border-radius: 0;
+	background: transparent;
+
+	[data-bs-theme='light'] & {
+		box-shadow: none;
+	}
 }
 
 .dt-card-title {
@@ -500,10 +532,17 @@ $bar-height: 48px;
 
 // One set of columns for all five rows, so the bars share a left edge. The name never gives way;
 // a long one (German runs to "Ausgeglichenheit") shortens every bar instead.
+.powerscore-breakdown .dt-card-title {
+	margin-bottom: 0;
+	padding-bottom: var(--as-space-2);
+	border-bottom: 1px solid var(--as-line-strong);
+}
+
+// v2's receipt: a line under every row, so each number sits on its own line rather than floating.
 .dt-signals {
 	display: grid;
 	grid-template-columns: minmax(max-content, 1fr) minmax(24px, 64px) 44px;
-	gap: var(--as-space-2) var(--as-space-3);
+	column-gap: var(--as-space-3);
 }
 
 .powerscore-signal-row {
@@ -511,6 +550,8 @@ $bar-height: 48px;
 	grid-column: 1 / -1;
 	grid-template-columns: subgrid;
 	align-items: center;
+	min-height: 32px;
+	border-bottom: 1px solid var(--as-line);
 	font-size: var(--as-text-sm);
 	line-height: var(--as-leading-xs);
 
@@ -571,7 +612,7 @@ $bar-height: 48px;
 	align-items: center;
 	justify-content: space-between;
 	gap: var(--as-space-3);
-	min-height: 28px;
+	min-height: 32px;
 	font-size: var(--as-text-sm);
 	line-height: var(--as-leading-xs);
 
@@ -584,8 +625,7 @@ $bar-height: 48px;
 
 // v2's receipt: a heavy rule above each total.
 .powerscore-breakdown-row-subtotal {
-	margin-top: var(--as-space-3);
-	padding-top: var(--as-space-2);
+	margin-top: -1px;
 	border-top: 2px solid var(--as-ink);
 	font-weight: var(--as-weight-bold);
 }
@@ -599,6 +639,10 @@ $bar-height: 48px;
 .dt-adjustments {
 	display: grid;
 	margin-bottom: var(--as-space-2);
+
+	> .powerscore-breakdown-row {
+		border-top: 1px solid var(--as-line);
+	}
 }
 
 .dt-adjust {
@@ -662,6 +706,8 @@ $bar-height: 48px;
 
 .powerscore-breakdown-reason {
 	margin: var(--as-space-2) 0 0;
+	padding-top: var(--as-space-2);
+	border-top: 1px solid var(--as-line);
 	font-size: var(--as-text-xs);
 	line-height: var(--as-leading-xs);
 	color: var(--as-muted);
@@ -748,7 +794,6 @@ $bar-height: 48px;
 .game-info-list {
 	display: grid;
 	grid-template-columns: max-content minmax(0, 1fr);
-	gap: var(--as-space-2) var(--as-space-3);
 	margin: 0;
 	font-size: var(--as-text-sm);
 	line-height: var(--as-leading-xs);
@@ -756,6 +801,19 @@ $bar-height: 48px;
 
 .game-info-row {
 	display: contents;
+
+	// The space between label and value is padding rather than a gap, so the line between rows is unbroken.
+	> * {
+		padding: var(--as-space-2) 0;
+	}
+
+	> dd {
+		padding-left: var(--as-space-3);
+	}
+
+	+ .game-info-row > * {
+		border-top: 1px solid var(--as-line);
+	}
 
 	dt {
 		align-self: start;
@@ -1264,16 +1322,6 @@ button.game-info-attribution {
 		color: var(--as-ink);
 	}
 
-	> tbody > tr.is-playing > :first-child::before {
-		content: '';
-		position: absolute;
-		top: 8px;
-		bottom: 8px;
-		left: 0;
-		width: 3px;
-		border-radius: 2px;
-		background: var(--as-accent);
-	}
 }
 
 .dt-standings-rank {

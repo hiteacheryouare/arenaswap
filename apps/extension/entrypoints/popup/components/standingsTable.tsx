@@ -1,6 +1,8 @@
 import { i18n } from '#i18n';
 import type { Game } from '@arenaswap/core/types';
+import { readableTeamInkOnCard, teamRowWash } from '@arenaswap/ui/src/components/colorUtils';
 import Crest from '@arenaswap/ui/src/components/crest';
+import { resolveGameColors } from '@arenaswap/ui/src/components/gameSurface';
 import type { StandingsGroup, StandingsRow } from './standingsParse';
 
 interface standingsTableProps {
@@ -32,9 +34,13 @@ const toBlocks = (standings: StandingsGroup[]): block[] => {
 	return blocks;
 };
 
-const TeamRow = ({ row, showRank, playing }: { row: StandingsRow; showRank: boolean; playing: boolean }) => (
-	// The two teams the reader came for, within the set of teams in the table.
-	<tr className={playing ? 'is-playing' : undefined} aria-current={playing ? 'true' : undefined}>
+// The two teams the reader came for, tinted in their own colours as v2 drew them.
+const TeamRow = ({ row, showRank, color }: { row: StandingsRow; showRank: boolean; color: string | undefined }) => (
+	<tr
+		className={color ? 'is-playing' : undefined}
+		aria-current={color ? 'true' : undefined}
+		style={color ? { backgroundImage: teamRowWash(color) } : undefined}
+	>
 		{showRank && <td className='dt-standings-rank'>{row.rank ?? ''}</td>}
 		<th scope='row' className='dt-name'>
 			<span className='dt-standings-id'>
@@ -45,14 +51,14 @@ const TeamRow = ({ row, showRank, playing }: { row: StandingsRow; showRank: bool
 					fallback='blank'
 					loading='lazy'
 				/>
-				<span className='dt-standings-name'>{row.name}</span>
+				<span className='dt-standings-name' style={color ? { color: readableTeamInkOnCard(color) } : undefined}>{row.name}</span>
 			</span>
 		</th>
 		{row.values.map((value, index) => <td key={index}>{value}</td>)}
 	</tr>
 );
 
-const GroupTable = ({ group, isPlaying }: { group: StandingsGroup; isPlaying: (teamId: string) => boolean }) => {
+const GroupTable = ({ group, colorOf }: { group: StandingsGroup; colorOf: (teamId: string) => string | undefined }) => {
 	// Soccer publishes a league position and a five-team division does not, so the column appears
 	// with the number rather than as a row count nobody quoted.
 	const showRank = group.rows.some(row => row.rank !== null);
@@ -78,7 +84,7 @@ const GroupTable = ({ group, isPlaying }: { group: StandingsGroup; isPlaying: (t
 				</thead>
 				<tbody>
 					{group.rows.map(row => (
-						<TeamRow key={row.teamId || row.name} row={row} showRank={showRank} playing={isPlaying(row.teamId)} />
+						<TeamRow key={row.teamId || row.name} row={row} showRank={showRank} color={colorOf(row.teamId)} />
 					))}
 				</tbody>
 			</table>
@@ -88,7 +94,8 @@ const GroupTable = ({ group, isPlaying }: { group: StandingsGroup; isPlaying: (t
 
 const standingsTable = ({ game, standings }: standingsTableProps) => {
 	if (standings.length === 0) return null;
-	const isPlaying = (teamId: string) => teamId === game.awayTeam.id || teamId === game.homeTeam.id;
+	const [awayColor, homeColor] = resolveGameColors(game);
+	const colorOf = (teamId: string) => (teamId === game.awayTeam.id ? awayColor : teamId === game.homeTeam.id ? homeColor : undefined);
 
 	return (
 		<div className='dt-standings'>
@@ -98,7 +105,7 @@ const standingsTable = ({ game, standings }: standingsTableProps) => {
 					{item.groups.map(group => (
 						<div className='dt-standings-group' key={group.header}>
 							{item.nested && <h4 className='dt-subheading'>{group.header}</h4>}
-							<GroupTable group={group} isPlaying={isPlaying} />
+							<GroupTable group={group} colorOf={colorOf} />
 						</div>
 					))}
 				</section>

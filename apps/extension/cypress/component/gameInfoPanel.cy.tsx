@@ -351,14 +351,17 @@ describe('game info panel', () => {
 			.invoke('text').should('not.match', /espn/i);
 	});
 
-	it('sits on the card surface in the card family', () => {
+	// v2 set the game's information flat on the page, under a rule, with a line between its rows.
+	it('sits flat on the page under a rule, with a line between its rows', () => {
 		mountDetail(liveGame);
-		cy.get('.game-info-panel').should('have.class', 'card').and(([panel]: JQuery<HTMLElement>) => {
+		cy.get('.game-info-panel').should(([panel]: JQuery<HTMLElement>) => {
 			const style = getComputedStyle(panel);
-			expect(style.borderTopLeftRadius, 'radius 14').to.equal('14px');
-			expect(style.paddingTop, '16px padding').to.equal('16px');
-			expect(style.borderTopWidth, 'hairline').to.equal('1px');
+			expect(style.backgroundColor).to.equal('rgba(0, 0, 0, 0)');
+			expect(style.borderTopLeftRadius).to.equal('0px');
+			expect(style.borderTopWidth, 'the rule').to.equal('1px');
 		});
+		cy.get('.game-info-row').eq(1).find('dt').should('have.css', 'border-top-width', '1px');
+		cy.get('.game-info-row').eq(0).find('dt').should('have.css', 'border-top-width', '0px');
 		cy.get('.game-info-heading').should('have.css', 'font-size', '13px').and('have.css', 'font-weight', '600');
 	});
 
@@ -389,8 +392,9 @@ describe('game info panel', () => {
 				for (const key of labelKeys) {
 					labels.forEach(label => { label.textContent = detail[key] ?? ''; });
 					const label = labels[0]!;
-					expect(label.getBoundingClientRect().height, `${name}.${key} stays on one line`)
-						.to.be.at.most(parseFloat(getComputedStyle(label).lineHeight) + 1);
+					const style = getComputedStyle(label);
+					const text = label.getBoundingClientRect().height - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom);
+					expect(text, `${name}.${key} stays on one line`).to.be.at.most(parseFloat(style.lineHeight) + 1);
 					const edges = new Set(values().map(value => Math.round(value.getBoundingClientRect().left)));
 					expect(edges.size, `${name}.${key}: the values share a left edge`).to.equal(1);
 					expect(values()[0]!.getBoundingClientRect().width, `${name}.${key}: the values keep their room`)

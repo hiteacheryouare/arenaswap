@@ -2,8 +2,9 @@ import { i18n } from '#i18n';
 import { useRef, useState } from 'react';
 import type { CSSProperties, KeyboardEvent } from 'react';
 import { leagueConfigMap } from '@arenaswap/core/constants';
-import type { Game, LeagueId, ResolvedTheme, Team, TeamMonoMarks } from '@arenaswap/core/types';
+import type { Game, LeagueId, Team } from '@arenaswap/core/types';
 import BoardCrest from '@arenaswap/ui/src/components/boardCrest';
+import { readableTeamInkOnCard, teamRowWash } from '@arenaswap/ui/src/components/colorUtils';
 import { resolveGameColors } from '@arenaswap/ui/src/components/gameSurface';
 import type { BoxScore, BoxScoreAthlete, LineScoreRow } from './boxScoreParse';
 import {
@@ -14,21 +15,16 @@ import {
 	periodLabels,
 } from './boxScoreColumns';
 import type { BoxScoreColumn, BoxScoreSection, PeriodLabel } from './boxScoreColumns';
-import type { MonoLogos } from './useSummaryData';
 
 interface boxScoreProps {
 	game: Game;
 	boxScore: BoxScore;
-	monoLogos?: MonoLogos;
-	theme?: ResolvedTheme;
 }
 
 type side = 'away' | 'home';
 
 const sides: side[] = ['away', 'home'];
 
-// The card a crest is drawn on, as a hex, which is what decides whether its artwork reads there.
-export const cardSurface: Record<ResolvedTheme, string> = { dark: '#1a1d22', light: '#ffffff' };
 
 const periodHeading = (label: PeriodLabel): string => {
 	if (label.kind === 'number') return String(label.value);
@@ -38,31 +34,27 @@ const periodHeading = (label: PeriodLabel): string => {
 		: i18n.t('box.overtimeNumbered', { count: String(label.index) });
 };
 
-export const TeamIdentity = ({ team, color, surface, monoMarks, size = 20 }: {
-	team: Team;
-	color: string;
-	surface: string;
-	monoMarks?: TeamMonoMarks | null;
-	size?: number;
-}) => (
+// The box score is a white card in both themes, as v2 drew it, so the colour logos always read.
+const cardSurface = '#ffffff';
+
+export const TeamIdentity = ({ team, color, size = 20 }: { team: Team; color: string; size?: number }) => (
 	<span className='dt-team'>
-		<BoardCrest team={team} size={size} surface={surface} color={color} monoMarks={monoMarks} />
-		<span className='dt-team-abbr'>{team.abbreviation}</span>
+		<BoardCrest team={team} size={size} surface={cardSurface} color={color} plain />
+		<span className='dt-team-abbr' style={{ color: readableTeamInkOnCard(color) }}>{team.abbreviation}</span>
 	</span>
 );
 
-const LineRow = ({ row, periodCount, showHitsErrors, team, color, surface, monoMarks }: {
+// v2's line score: each team's row tinted in its own colour, fading out before the totals.
+const LineRow = ({ row, periodCount, showHitsErrors, team, color }: {
 	row: LineScoreRow;
 	periodCount: number;
 	showHitsErrors: boolean;
 	team: Team;
 	color: string;
-	surface: string;
-	monoMarks?: TeamMonoMarks | null;
 }) => (
-	<tr>
+	<tr style={{ backgroundImage: teamRowWash(color) }}>
 		<th scope='row' className='dt-linescore-team'>
-			<TeamIdentity team={{ ...team, abbreviation: row.abbreviation }} color={color} surface={surface} monoMarks={monoMarks} size={14} />
+			<TeamIdentity team={{ ...team, abbreviation: row.abbreviation }} color={color} size={14} />
 		</th>
 		{Array.from({ length: periodCount }, (_, index) => (
 			<td key={index}>{row.periods[index]}</td>
@@ -148,7 +140,7 @@ const SectionTable = ({ section, isBatting }: { section: BoxScoreSection; isBatt
 	);
 };
 
-const boxScore = ({ game, boxScore: box, monoLogos, theme = 'dark' }: boxScoreProps) => {
+const boxScore = ({ game, boxScore: box }: boxScoreProps) => {
 	// Away first, which is the order every sport lists the two teams in.
 	const [selected, setSelected] = useState<side>('away');
 	// Built off the game id rather than `useId`, whose output no `#id` selector can hold.
@@ -170,7 +162,6 @@ const boxScore = ({ game, boxScore: box, monoLogos, theme = 'dark' }: boxScorePr
 	};
 
 	const config = leagueConfigMap[game.league as LeagueId];
-	const surface = cardSurface[theme];
 	const [awayColor, homeColor] = resolveGameColors(game);
 	const comparison = buildComparison(game.sportType, box.teamComparison);
 	const teams = { away: box.away, home: box.home };
@@ -182,7 +173,6 @@ const boxScore = ({ game, boxScore: box, monoLogos, theme = 'dark' }: boxScorePr
 	const hasBothSides = box.away !== null && box.home !== null;
 	const teamOf = (which: side) => (which === 'away' ? game.awayTeam : game.homeTeam);
 	const colorOf = (which: side) => (which === 'away' ? awayColor : homeColor);
-	const marksOf = (which: side) => (which === 'away' ? monoLogos?.away : monoLogos?.home);
 
 	if (!hasBoxScoreContent(game.sportType, box)) return null;
 
@@ -233,8 +223,6 @@ const boxScore = ({ game, boxScore: box, monoLogos, theme = 'dark' }: boxScorePr
 										showHitsErrors={showHitsErrors}
 										team={teamOf(which)}
 										color={colorOf(which)}
-										surface={surface}
-										monoMarks={marksOf(which)}
 									/>
 								))}
 							</tbody>
@@ -249,10 +237,10 @@ const boxScore = ({ game, boxScore: box, monoLogos, theme = 'dark' }: boxScorePr
 					<table className='table dt-table dt-compare num'>
 						<thead>
 							<tr>
-								<th scope='col' className='dt-compare-team is-away'>{game.awayTeam.abbreviation}</th>
+								<th scope='col' className='dt-compare-team is-away' style={{ color: readableTeamInkOnCard(awayColor) }}>{game.awayTeam.abbreviation}</th>
 								{/* oxlint-disable-next-line jsx-a11y/control-has-associated-label */}
 								<td className='dt-compare-label' />
-								<th scope='col' className='dt-compare-team is-home'>{game.homeTeam.abbreviation}</th>
+								<th scope='col' className='dt-compare-team is-home' style={{ color: readableTeamInkOnCard(homeColor) }}>{game.homeTeam.abbreviation}</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -287,14 +275,14 @@ const boxScore = ({ game, boxScore: box, monoLogos, theme = 'dark' }: boxScorePr
 									onClick={() => setSelected(which)}
 									onKeyDown={event => onTabKeyDown(event, which)}
 								>
-									<TeamIdentity team={teamOf(which)} color={colorOf(which)} surface={surface} monoMarks={marksOf(which)} size={16} />
+									<TeamIdentity team={teamOf(which)} color={colorOf(which)} size={16} />
 								</button>
 							))}
 						</div>
 					) : (
 						// One side and no switcher, so this is the only thing saying whose numbers these are.
 						<h3 className='dt-card-title'>
-							<TeamIdentity team={teamOf(activeSide)} color={colorOf(activeSide)} surface={surface} monoMarks={marksOf(activeSide)} />
+							<TeamIdentity team={teamOf(activeSide)} color={colorOf(activeSide)} />
 						</h3>
 					)}
 					<div

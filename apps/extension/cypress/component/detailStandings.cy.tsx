@@ -278,16 +278,16 @@ describe('standings table', () => {
 		});
 	});
 
-	it('marks the two rows in the matchup with the accent rule and leaves the other thirty alone', () => {
+	// v2's standings: the two teams in the matchup tinted in their own colours, on a white card.
+	it('tints the two rows in the matchup in their teams\' colours and leaves the other thirty alone', () => {
 		openStandings(football);
+		cy.get('.dt-standings-block').first().should('have.css', 'background-color', 'rgb(255, 255, 255)');
 		cy.get('.dt-standings-table tbody tr').then($rows => {
-			const marked = [...$rows].filter(row => getComputedStyle(row.firstElementChild!, '::before').content !== 'none');
+			const marked = [...$rows].filter(row => getComputedStyle(row).backgroundImage !== 'none');
 			expect(marked).to.have.length(2);
 			expect(marked.map(row => row.querySelector('.dt-standings-name')?.textContent))
 				.to.deep.equal(['Philadelphia', 'Dallas']);
-			const rule = getComputedStyle(marked[0]!.firstElementChild!, '::before');
-			expect(rule.backgroundColor, 'the accent').to.equal('rgb(247, 92, 3)');
-			expect(rule.width, 'a 3px rule').to.equal('3px');
+			expect(getComputedStyle(marked[0]!).backgroundImage).to.match(/^linear-gradient\(90deg/);
 		});
 	});
 
@@ -296,17 +296,18 @@ describe('standings table', () => {
 		cy.get('.dt-standings-table tbody tr[aria-current="true"]').should('have.length', 2).and('have.class', 'is-playing');
 	});
 
-	// The rule carries it for the eye; the weight and the ink carry it for a glance down the numbers.
+	// The tint carries it for the eye; the weight and the ink carry it for a glance down the numbers.
 	it('sets the matchup rows semibold in ink and the rest of the numbers quiet', () => {
 		openStandings(football);
-		cy.contains('tr', 'Philadelphia').find('td').first().should('have.css', 'color', 'rgb(243, 245, 247)')
+		cy.contains('tr', 'Philadelphia').find('td').first().should('have.css', 'color', 'rgb(17, 24, 39)')
 			.and('have.css', 'font-weight', '600');
-		cy.contains('tr', 'Buffalo').find('td').first().should('have.css', 'color', 'rgb(140, 149, 161)');
+		cy.contains('tr', 'Buffalo').find('td').first().should('have.css', 'color', 'rgb(75, 85, 99)');
 	});
 
-	it('leaves every other name on the card ink', () => {
+	it('names the two teams in their own colour and leaves every other name in the card ink', () => {
 		openStandings(football);
-		cy.contains('.dt-standings-name', 'Buffalo').should('have.css', 'color', 'rgb(243, 245, 247)');
+		cy.contains('.dt-standings-name', 'Philadelphia').should('not.have.css', 'color', 'rgb(17, 24, 39)');
+		cy.contains('.dt-standings-name', 'Buffalo').should('have.css', 'color', 'rgb(17, 24, 39)');
 	});
 
 	// The names line up down the table whether or not a row carries the rule.

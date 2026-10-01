@@ -126,9 +126,9 @@ const soccerPenalties = () => mountPeriodLine(games.soccer, 5);
 // designation suffix is what says so.
 const hockeyShootout = () => mountPeriodLine({ ...games.hockey, finalPeriodSuffix: 'SO' }, 5);
 
-// The card surface on the dark theme, #1a1d22, and the ink the tables are set in on it.
-const cardInk = 'rgb(243, 245, 247)';
-const mutedInk = 'rgb(140, 149, 161)';
+// The box score is a white card in both themes, as v2 drew it, and these are the inks on it.
+const cardInk = 'rgb(17, 24, 39)';
+const mutedInk = 'rgb(75, 85, 99)';
 
 const srgbChannel = (value: number): number => {
 	const c = value / 255;
@@ -140,7 +140,7 @@ const luminanceOf = (rgb: string): number => {
 	return 0.2126 * srgbChannel(red!) + 0.7152 * srgbChannel(green!) + 0.0722 * srgbChannel(blue!);
 };
 
-const cardLuminance = luminanceOf('rgb(26, 29, 34)');
+const cardLuminance = luminanceOf('rgb(255, 255, 255)');
 
 const contrastOnCard = (rgb: string): number => {
 	const [light, dark] = [luminanceOf(rgb), cardLuminance].toSorted((x, y) => y - x);
@@ -573,8 +573,9 @@ describe('box score', () => {
 			}
 		});
 
-		it('sets the tables in the card ink on the card surface', () => {
+		it('sets the tables in the dark ink on a white card', () => {
 			mount(games.basketball);
+			cy.get('.dt-box-players').should('have.css', 'background-color', 'rgb(255, 255, 255)');
 			// $table-bg would otherwise paint the page colour into every cell.
 			cy.get('.dt-players-table tbody td').first().then($td => {
 				const style = getComputedStyle($td[0]!);
@@ -602,7 +603,7 @@ describe('box score', () => {
 			cy.get('.dt-switch').should('have.class', 'btn-group').and('have.attr', 'role', 'tablist');
 			cy.get('.dt-switch .dt-switch-option.active').then($tab => {
 				const style = getComputedStyle($tab[0]!);
-				expect(style.backgroundColor, 'the raised surface').to.equal('rgb(34, 38, 45)');
+				expect(style.backgroundColor, 'the raised surface').to.equal('rgb(233, 236, 239)');
 				expect(style.color).to.equal(cardInk);
 			});
 			cy.get('.dt-switch .dt-switch-option').not('.active').then($tab => {
@@ -638,11 +639,11 @@ describe('box score', () => {
 			});
 		});
 
-		// The crest carries the team now, the way it does on every other row in the product.
-		it('draws each row on the card with no team wash behind it', () => {
+		// v2's line score: each team's row tinted in its own colour, fading out before the totals.
+		it('tints each team\'s row in its own colour', () => {
 			mount(games.baseball);
 			cy.get('.dt-linescore tbody tr').each($row => {
-				expect(getComputedStyle($row[0]!).backgroundImage).to.equal('none');
+				expect(getComputedStyle($row[0]!).backgroundImage).to.match(/^linear-gradient\(90deg, rgba\(\d+, \d+, \d+, 0\.157\)/);
 			});
 		});
 
