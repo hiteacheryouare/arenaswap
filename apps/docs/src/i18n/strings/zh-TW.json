@@ -408,7 +408,7 @@
 			"groupScoring": "評分",
 			"groupScoringDesc": "哪些信號會影響 PowerScore，以及哪些能加分。",
 			"groupLeagues": "聯賽",
-			"groupLeaguesDesc": "追蹤哪些聯賽，以及它們的顯示順序。",
+			"groupLeaguesDesc": "追蹤哪些聯賽，以及每個聯賽是否各自獨立成區塊。",
 			"groupDisplay": "顯示",
 			"groupDisplayDesc": "主畫面上會出現什麼內容。",
 			"groupStandby": "Standby Stream",

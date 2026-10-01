@@ -408,7 +408,7 @@
 			"groupScoring": "Scoring",
 			"groupScoringDesc": "Which signals feed a PowerScore, and what earns bonus points.",
 			"groupLeagues": "Leagues",
-			"groupLeaguesDesc": "Which leagues get tracked, and the order they appear in.",
+			"groupLeaguesDesc": "Which leagues get tracked, and whether each one gets its own section.",
 			"groupDisplay": "Display",
 			"groupDisplayDesc": "What shows up on the main screen.",
 			"groupStandby": "Standby Stream",

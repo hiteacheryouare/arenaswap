@@ -408,7 +408,7 @@
 			"groupScoring": "スコアリング",
 			"groupScoringDesc": "PowerScoreを構成するシグナルと、ボーナス点の対象。",
 			"groupLeagues": "リーグ",
-			"groupLeaguesDesc": "追跡するリーグと、その表示順。",
+			"groupLeaguesDesc": "追跡するリーグと、リーグごとにセクションを分けるかどうか。",
 			"groupDisplay": "表示",
 			"groupDisplayDesc": "メイン画面に表示する内容。",
 			"groupStandby": "Standby Stream",

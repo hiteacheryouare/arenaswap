@@ -408,7 +408,7 @@
 			"groupScoring": "Pontuação",
 			"groupScoringDesc": "Que sinais alimentam o PowerScore e o que rende pontos extra.",
 			"groupLeagues": "Ligas",
-			"groupLeaguesDesc": "Que ligas são monitorizadas e por que ordem aparecem.",
+			"groupLeaguesDesc": "Que ligas são monitorizadas e se cada uma tem a sua própria secção.",
 			"groupDisplay": "Apresentação",
 			"groupDisplayDesc": "O que aparece no ecrã principal.",
 			"groupStandby": "Standby Stream",

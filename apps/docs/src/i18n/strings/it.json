@@ -408,7 +408,7 @@
 			"groupScoring": "Punteggio",
 			"groupScoringDesc": "Quali segnali alimentano il PowerScore e cosa fa guadagnare punti bonus.",
 			"groupLeagues": "Leghe",
-			"groupLeaguesDesc": "Quali leghe vengono monitorate e in che ordine appaiono.",
+			"groupLeaguesDesc": "Quali leghe vengono monitorate e se ciascuna ha una sua sezione.",
 			"groupDisplay": "Visualizzazione",
 			"groupDisplayDesc": "Cosa appare nella schermata principale.",
 			"groupStandby": "Standby Stream",

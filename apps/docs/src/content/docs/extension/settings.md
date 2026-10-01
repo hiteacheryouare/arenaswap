@@ -35,7 +35,8 @@ At least one signal has to stay on. If a signal is off, ArenaSwap re-normalizes 
 | Setting | Default | Range | What it does |
 | --- | --- | --- | --- |
 | Enabled leagues | NBA, NFL, NHL, and MLB, chosen during setup | Any of the 31 supported leagues across basketball, football, hockey, baseball, softball, and soccer | Which leagues ArenaSwap tracks and considers for automatic switching. |
-| Display order | ESPN's default league order | Drag a league or use its up and down arrows to reorder | The order league sections appear in on the main screen. Only shown once two or more leagues are enabled. A Reset button appears once the order no longer matches the default. |
+| Group games by league | Off for new installs, on if you upgraded from an earlier version | On/off | Off, each section on the main screen is one list across every league, and each card carries a small league logo and short league name. On, sections split into league runs under league headers. Your favorite teams stay on top either way. |
+| Display order | The default league order | Drag a league or use its up and down arrows to reorder | The order league headers appear in on the main screen. Only shown while **Group games by league** is on and two or more leagues are enabled. A Reset button appears once the order no longer matches the default. |
 
 ## Display
 
