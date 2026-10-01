@@ -47,10 +47,11 @@ describe('teamPickerRow', () => {
 		});
 	});
 
-	it('measures the crest against the card rather than the page', () => {
+	// Settings is v2's flat list again, so the crest is measured against the page it sits on.
+	it('measures the crest against the page the list sits on', () => {
 		mountRow({ logo: greenCrest });
 		cy.get('.team-pick-crest .as-crest img').should('have.attr', 'crossorigin', 'anonymous');
-		cy.get('.team-pick-crest').closest('.st-card').should('have.css', 'background-color', 'rgb(26, 29, 34)');
+		cy.get('.team-pick-crest').closest('.st-card').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
 	});
 
 	it('letters a neutral disc, in readable ink, when there is no crest at all', () => {

@@ -138,6 +138,11 @@
 	transform: rotate(90deg);
 }
 
+// A sub-page's top bar goes back from anywhere on it, as v2's did.
+.is-back {
+	cursor: pointer;
+}
+
 // A screen's own header: back, title, and whatever the screen puts at the end.
 .as-subhead {
 	position: sticky;
@@ -148,7 +153,9 @@
 	align-items: center;
 	gap: var(--as-space-2);
 	min-height: 48px;
-	padding: var(--as-space-2) var(--as-space-3);
+	margin: 0 var(--as-space-3) var(--as-space-3);
+	padding: var(--as-space-2) 0;
+	border-bottom: 1px solid var(--as-line-strong);
 	background: var(--as-page);
 
 	h1,

@@ -7,6 +7,7 @@ import { resolveGameColors } from '@arenaswap/ui/src/components/gameSurface';
 import useDocumentTheme from '@arenaswap/ui/src/components/useDocumentTheme';
 import { suggestionPairKey, type TabSuggestion } from '../../../utils/tabSuggestions';
 import { cardSurface } from './teamPickerRow';
+import Subhead from './subhead';
 
 interface suggestViewProps {
 	suggestions: TabSuggestion[];
@@ -56,12 +57,7 @@ const suggestView = ({ suggestions, games, openTabs, formatTabLabel, onApply, on
 
 	return (
 		<div className='popup-container st si d-flex flex-column pb-0'>
-			<header className='as-subhead'>
-				<button type='button' className='as-icon st-back' onClick={onBack} aria-label={i18n.t('setup.back')}>
-					<i className='bi bi-arrow-left' aria-hidden='true' />
-				</button>
-				<h2>{i18n.t('suggest.header')}</h2>
-			</header>
+			<Subhead title={i18n.t('suggest.header')} onBack={onBack} />
 
 			<div className='st-body flex-grow-1'>
 				{suggestions.length === 0 ? (

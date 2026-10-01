@@ -10,8 +10,8 @@ interface teamPickerRowProps {
 	onToggle: () => void;
 }
 
-// The settings card the row sits on, which is what the crest's legibility check is made against.
-export const cardSurface = { dark: '#1a1d22', light: '#ffffff' } as const;
+// The page the row sits on, which is what the crest's legibility check is made against.
+export const cardSurface = { dark: '#0e1013', light: '#f4f5f7' } as const;
 // The roster carries no team colours, so a crest that never loads letters a neutral disc.
 const monogramColor = '#5a6370';
 

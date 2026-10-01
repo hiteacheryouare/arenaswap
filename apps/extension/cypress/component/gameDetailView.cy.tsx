@@ -576,6 +576,15 @@ describe('gameDetailView head bar', () => {
 		cy.get('@back').should('have.been.calledOnce');
 	});
 
+	// v2's sub-page bars went back from anywhere on them, and so does this one.
+	it('goes back from anywhere on the top bar, once', () => {
+		const onBack = cy.spy().as('back');
+		mountDetail(makeLiveGame(), { excitementResult: excitement, onBack });
+		cy.get('.dt-head .dt-league').click();
+		cy.get('@back').should('have.been.calledOnce');
+		cy.get('.dt-head').should('have.css', 'cursor', 'pointer');
+	});
+
 	it('closes instead, where the screen is a drawer beside a page', () => {
 		mountDetail(makeLiveGame(), { excitementResult: excitement, dismiss: 'close' });
 		cy.get('.dt-head .dt-back').should('have.text', 'Close').find('.bi-x-lg').should('exist');
@@ -1154,13 +1163,23 @@ describe('gameDetailView cards', () => {
 	});
 
 	// One family: the page surface under a hairline, radius 14, 16px padding, 13px semibold titles.
-	it('draws every card below the stage the same way', () => {
+	// v2's two kinds: anything about the game is a white card, and where and when sits flat on the page.
+	it('draws the game\'s cards white and its info and charts flat on the page', () => {
 		mountDetail(makeLiveGame({ lastPlay: 'J.Tatum makes 26-foot three point jumper' }), { excitementResult: excitement, powerScoreHistory, openTabs: [tab(11, 0)], registry: [] });
-		cy.get('.dt-body .dt-card').should('have.length.greaterThan', 5).each(($card: JQuery<HTMLElement>) => {
+		cy.get('.dt-body .dt-card').not('.game-info-panel, .dt-chart').should('have.length.at.least', 4).each(($card: JQuery<HTMLElement>) => {
 			const style = getComputedStyle($card[0]!);
-			expect(style.borderTopLeftRadius, 'radius').to.equal('14px');
+			expect(style.backgroundColor, $card[0]!.className).to.equal('rgb(255, 255, 255)');
+			expect(style.borderTopLeftRadius, 'radius').to.equal('10px');
 			expect(style.paddingLeft, 'padding').to.equal('16px');
-			expect(style.borderTopWidth, 'hairline').to.equal('1px');
+		});
+		cy.get('.dt-body .game-info-panel, .dt-body .dt-chart').should('have.length.at.least', 2).each(($section: JQuery<HTMLElement>) => {
+			const style = getComputedStyle($section[0]!);
+			expect(style.backgroundColor, $section[0]!.className).to.equal('rgba(0, 0, 0, 0)');
+			expect(style.borderTopLeftRadius).to.equal('0px');
+			expect(style.borderTopWidth, 'a rule on top').to.equal('1px');
+			expect(style.borderLeftWidth).to.equal('0px');
+		});
+		cy.get('.dt-body .dt-card').each(($card: JQuery<HTMLElement>) => {
 			const title = $card[0]!.querySelector<HTMLElement>('.dt-card-title');
 			if (title) {
 				expect(getComputedStyle(title).fontSize, 'title size').to.equal('13px');
@@ -1175,7 +1194,7 @@ describe('gameDetailView cards', () => {
 		});
 	});
 
-	it('draws the four charts as cards, with a legend where there are lines to tell apart', () => {
+	it('draws the four charts, with a legend where there are lines to tell apart', () => {
 		mountDetail(makeLiveGame(), { excitementResult: excitement, powerScoreHistory, scoreHistory: [
 			{ gameId: liveGameId, timestamp: now.getTime() - minuteMs, awayScore: 110, homeScore: 104 },
 			{ gameId: liveGameId, timestamp: now.getTime(), awayScore: 112, homeScore: 108 },

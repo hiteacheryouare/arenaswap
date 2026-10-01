@@ -48,9 +48,11 @@ const showsSeries = (info: SeriesInfo | null, game: Game): info is SeriesInfo =>
 	info !== null && seriesSports.has(game.sportType) && (info.totalCompetitions ?? 0) >= 2
 );
 
+// The whole bar goes back, as v2's sub-page bars did; the button is what the keyboard lands on.
 export const DetailHead = ({ game, dismiss, onBack }: Pick<detailHeroProps, 'game' | 'dismiss' | 'onBack'>) => (
-	<div className='dt-head'>
-		<button type='button' className='btn dt-back' onClick={onBack}>
+	// oxlint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
+	<div className='dt-head is-back' onClick={onBack}>
+		<button type='button' className='btn dt-back'>
 			<i className={`bi ${dismiss === 'close' ? 'bi-x-lg' : 'bi-arrow-left'}`} aria-hidden='true' />
 			<span>{i18n.t(dismiss === 'close' ? 'detail.close' : 'detail.back')}</span>
 		</button>

@@ -73,8 +73,10 @@ const detailStickyBar = ({ game, compact, monoLogos, dismiss = 'back', onBack, t
 	);
 
 	return (
-		<div className={`dt-bar${compact ? ' is-visible' : ''}`} aria-hidden={!compact}>
-			<button type='button' className='btn dt-back dt-bar-back' onClick={onBack} tabIndex={compact ? undefined : -1}>
+		// The whole bar goes back, as v2's sub-page bars did; the button is what the keyboard lands on.
+		// oxlint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
+		<div className={`dt-bar is-back${compact ? ' is-visible' : ''}`} aria-hidden={!compact} onClick={onBack}>
+			<button type='button' className='btn dt-back dt-bar-back' tabIndex={compact ? undefined : -1}>
 				<i className={`bi ${dismiss === 'close' ? 'bi-x-lg' : 'bi-arrow-left'}`} aria-hidden='true' />
 				<span>{i18n.t(dismiss === 'close' ? 'detail.close' : 'detail.back')}</span>
 			</button>

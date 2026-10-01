@@ -9,6 +9,7 @@ import LeagueOrderList from './leagueOrderList';
 import PostseasonBoostInput from './postseasonBoostInput';
 import SensitivitySlider, { sensitivityLabels } from './sensitivitySlider';
 import SettingsGroup, { SettingField, SettingRange, SettingToggle } from './settingControls';
+import Subhead from './subhead';
 import SettingTooltipIcon from './settingTooltipIcon';
 import SwitchDelaySlider from './switchDelaySlider';
 import TemperatureUnitToggle from './temperatureUnitToggle';
@@ -79,16 +80,6 @@ const themeValueKeys = {
 } as const;
 
 const sportTypes = (Object.keys(sportTypeOrder) as SportType[]).toSorted((a, b) => sportTypeOrder[a] - sportTypeOrder[b]);
-
-const Subhead = ({ title, onBack, trailing }: { title: string; onBack: () => void; trailing?: ReactNode }) => (
-	<header className='as-subhead'>
-		<button type='button' className='as-icon st-back' onClick={onBack} aria-label={i18n.t('setup.back')}>
-			<i className='bi bi-arrow-left' aria-hidden='true' />
-		</button>
-		<h2>{title}</h2>
-		{trailing}
-	</header>
-);
 
 interface directoryEntryProps {
 	group: settingsGroup;
