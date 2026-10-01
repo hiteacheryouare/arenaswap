@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Lekton only sets clocks that tick — 2026-09-30
+
+Periods, innings, down and distance, shootout tallies, start times, records, the Guide's ruler, the debug panel and the Ludicrous Speed signs are now DM Sans, and Lekton is left on the live clock, the countdown and the hero and sticky-bar status while a clock is running. `GameStatus.tabular` became `ticking` and is true only for a running clock, so an inning now reads in DM Sans too. The `.font-lekton` utility is gone in favour of rules on those few selectors, while the font files, the licence credit and the docs site's code font stay.
+
 ## The top of the list glows in the best game's colours — 2026-09-30
 
 A soft gradient of the two team colours of the live game with the highest PowerScore, the one ArenaSwap would switch to, fades down from behind the header and scrolls away with the list. It's the one piece of the Spotlight redesign kept on v2, sits behind the header and the cards, and doesn't appear when nothing is live.

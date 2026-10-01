@@ -134,7 +134,7 @@ const paintButtonBlock = (ctx: CanvasRenderingContext2D, x: number, y: number, f
 			ctx.fillStyle = (frame + r * 17 + c * 31) % 240 < 26 ? '#fff8e6' : '#e6e6e0';
 			ctx.fillRect(bx, rowY, bw, bh);
 			ctx.fillStyle = 'rgba(0,0,0,0.55)';
-			ctx.font = "600 7px 'Lekton', monospace";
+			ctx.font = "600 7px 'DM Sans', sans-serif";
 			ctx.textAlign = 'center';
 			ctx.textBaseline = 'middle';
 			ctx.fillText(buttonLegends[r * 5 + c]!, bx + bw / 2, rowY + bh / 2 + 0.5);
@@ -143,7 +143,7 @@ const paintButtonBlock = (ctx: CanvasRenderingContext2D, x: number, y: number, f
 		ctx.fillStyle = '#16120b';
 		ctx.fillRect(x + 5 * (bw + gap) + 2, rowY + 1, 56, bh - 2);
 		ctx.fillStyle = 'rgba(222,224,217,0.75)';
-		ctx.font = "700 6px 'Lekton', monospace";
+		ctx.font = "700 6px 'DM Sans', sans-serif";
 		ctx.textAlign = 'left';
 		ctx.fillText(tapeLabels[r]!, x + 5 * (bw + gap) + 5, rowY + bh / 2 + 0.5);
 	}

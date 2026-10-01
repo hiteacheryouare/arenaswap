@@ -39,8 +39,7 @@ const mountAtPopupWidth = (game: Game) => {
 			<LiveGameCard {...defaultProps} game={game} />
 		</div>,
 	);
-	// Lekton is monospace at 0.5em per character, so every width here depends on the webfont
-	// having landed — the fallback reports different numbers.
+	// Every width here depends on the webfont having landed — the fallback reports different numbers.
 	cy.document().its('fonts.ready');
 };
 
@@ -166,5 +165,22 @@ describe('liveGameCard crest placeholder', () => {
 			expect(fallback.getBoundingClientRect()).to.deep.include({ width: 64, height: 64 });
 		});
 		cy.get('.team-crest').first().should('have.text', 'CAR');
+	});
+});
+
+const face = (el: HTMLElement) => getComputedStyle(el).fontFamily.split(',')[0]!.replace(/["']/g, '');
+
+// Lekton is there to hold a ticking clock's digits still. The period and the down beneath it never
+// move, so they read in the body face.
+describe('liveGameCard faces', () => {
+	it('keeps only the clock in Lekton', () => {
+		mountAtPopupWidth(nflGame);
+		cy.get('.game-clock').should($el => expect(face($el[0]!), 'clock').to.equal('Lekton'));
+		cy.get('.game-period').should($lines => {
+			expect($lines).to.have.length(2);
+			$lines.each((_, el) => {
+				expect(face(el), el.textContent ?? '').to.equal('DM Sans');
+			});
+		});
 	});
 });

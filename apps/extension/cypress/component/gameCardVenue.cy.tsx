@@ -41,8 +41,7 @@ const mountLive = (game: Game) => {
 			<LiveGameCard {...cardProps} game={game} excitementResult={result} />
 		</div>,
 	);
-	// Lekton is monospace at 0.5em per character, so every width here depends on the webfont
-	// having landed — the fallback reports different numbers.
+	// Every width here depends on the webfont having landed — the fallback reports different numbers.
 	cy.document().its('fonts.ready');
 };
 

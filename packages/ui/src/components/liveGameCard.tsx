@@ -37,8 +37,6 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 	const downDistanceLine = game.downDistance && game.fieldPosition
 		? t('gameCard.downDistanceAt', { downDistance: game.downDistance, fieldPosition: game.fieldPosition })
 		: game.downDistance;
-	// The one state where this slot holds a word rather than a period, which is why it is the one
-	// state where it drops out of Lekton — there is nothing in "Halftime" to line up in a column.
 	const atHalftime = !isInningSport && game.intermission === true && isHalftime(game);
 	const psBarPercent = Math.min((totalPowerScore / scoreMaxTotal) * 100, 100);
 	const psColor = powerScoreColor(totalPowerScore, scoreMaxTotal);
@@ -92,18 +90,18 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 						<FlipScore value={game.homeTeam.score} className='fw-bold lh-1 game-score-value' />
 					</div>
 					{!isInningSport && hasClock && (
-						<span className='font-lekton game-clock'>{formatGameClock(game)}</span>
+						<span className='game-clock'>{formatGameClock(game)}</span>
 					)}
 					{/* The shootout line already carries the period, so rendering the
 					    period label above it would just say PENS twice. */}
 					{!shootout && (
-						<span className={`game-period${atHalftime ? '' : ' font-lekton'}`}>
+						<span className='game-period'>
 							{isInningSport && <InningHalfIcon topOfInning={game.topOfInning} />}
 							{atHalftime ? t('detail.halftime') : formatPeriod(game)}
 						</span>
 					)}
 					{shootout && (
-						<span className='font-lekton game-shootout-score'>{shootout}</span>
+						<span className='game-shootout-score'>{shootout}</span>
 					)}
 					{isDelayed && (
 						<span className='badge bg-warning text-dark delay-type-badge mt-1'>
@@ -112,7 +110,7 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 					)}
 					{isInningSport && game.bso && <BsoIndicator {...game.bso} />}
 					{game.sportType === 'football' && game.downDistance && (
-						<span className='font-lekton game-period'>{downDistanceLine}</span>
+						<span className='game-period'>{downDistanceLine}</span>
 					)}
 				</div>
 				<TeamColumn leagueId={game.league} team={game.homeTeam} isFavorited={homeFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} />

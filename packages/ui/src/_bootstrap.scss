@@ -59,11 +59,8 @@
 	// Parenthesised because a bare comma list inside a `with (...)` argument list would read as
 	// four separate arguments.
 	$font-family-base:     ('DM Sans', system-ui, -apple-system, sans-serif) !default,
-	// There is deliberately no monospace token here. This file used to set `$font-monospace`, which
-	// is not a Bootstrap variable — Bootstrap's is `$font-family-monospace` — and which nothing read,
-	// so Lekton is spelled out literally at each of its ~20 call sites and Bootstrap's code/pre/kbd
-	// stack has never been Lekton. Pointing the real variable at Lekton is a visual change, so it is
-	// not smuggled in here.
+	// There is deliberately no monospace token here. Lekton is only for clocks that tick, so it is
+	// spelled out on those few selectors, and Bootstrap's code/pre/kbd stack has never been Lekton.
 	// Bootstrap picks a filled button's label with color-contrast(); the lighter $secondary now
 	// resolves to the dark side, and this keeps that side on-theme instead of pure black.
 	$color-contrast-dark:  #0d1117 !default,

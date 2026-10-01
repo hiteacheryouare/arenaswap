@@ -34,7 +34,7 @@ const preGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, onOpenGameDe
 				<div className='d-flex flex-column align-items-center game-card-center'>
 					<span className='pre-game-vs'>{t('gameCard.vs')}</span>
 					{game.startTime && (
-						<span className='font-lekton text-center text-nowrap pre-game-start-time'>
+						<span className='text-center text-nowrap pre-game-start-time'>
 							{formatStartDateTime(game.startTime)}
 						</span>
 					)}

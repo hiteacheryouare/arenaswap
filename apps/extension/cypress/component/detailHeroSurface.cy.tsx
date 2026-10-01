@@ -40,7 +40,7 @@ const mountLive = (game: Game, monoLogos = mono, isDelayed = false) => {
 				monoLogos={monoLogos}
 				isDelayed={isDelayed}
 				isInningSport={game.sportType === 'baseball'}
-				status={{ text: 'Q2 • 5:00', tabular: true }}
+				status={{ text: 'Q2 • 5:00', ticking: true }}
 				heroStyle={heroStyle}
 				awayColor={awayColor}
 				homeColor={homeColor}
@@ -163,7 +163,7 @@ describe('the sticky bar crests', () => {
 			<div style={{ width: '320px', background: '#0d1117' }}>
 				<DetailStickyBar
 					game={liveGame}
-					status={{ text: 'Q2 • 5:00', tabular: true }}
+					status={{ text: 'Q2 • 5:00', ticking: true }}
 					compact
 					monoLogos={mono}
 					onBack={() => {}}
@@ -194,7 +194,7 @@ describe('the sticky bar crests follow the theme', () => {
 	const mountBar = (theme: 'dark' | 'light') => {
 		cy.mount(
 			<div style={{ width: '320px', background: theme === 'light' ? '#ffffff' : '#0d1117' }}>
-				<DetailStickyBar game={navyGame} status={{ text: 'Q2 • 5:00', tabular: true }} compact monoLogos={marks} onBack={() => {}} theme={theme} />
+				<DetailStickyBar game={navyGame} status={{ text: 'Q2 • 5:00', ticking: true }} compact monoLogos={marks} onBack={() => {}} theme={theme} />
 			</div>,
 		);
 		cy.get('.gd-bar-logo').should('have.attr', 'data-crest-state', 'loaded');

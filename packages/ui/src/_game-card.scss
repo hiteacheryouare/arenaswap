@@ -39,11 +39,6 @@
 	animation: scoreSlideIn m.$motion-base m.$motion-ease forwards;
 }
 
-.font-lekton {
-	font-family: 'Lekton', monospace;
-	font-variant-numeric: tabular-nums;
-}
-
 // DM Sans ships no tabular figures at all, so font-variant-numeric is a no-op there and a "1"
 // is under half the width of a "0" — enough to drag a score pair's optical midpoint off the
 // card axis. Geist has real tabular figures, which pins the midpoint back for every score.
@@ -261,6 +256,8 @@ $pre-game-time-color: bs.shade-color(bs.$warning, 60%);
 }
 
 .game-clock {
+	font-family: 'Lekton', monospace;
+	font-variant-numeric: tabular-nums;
 	font-size: 0.85rem;
 	font-weight: 700;
 	color: #111827;

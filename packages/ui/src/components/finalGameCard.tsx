@@ -60,7 +60,7 @@ const finalGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, onOpenGame
 						<span className='game-score-sep' aria-hidden='true' />
 						<FlipScore value={homeScore} className={scoreClass(homeScore, awayScore)} />
 					</div>
-					{shootout && <span className='font-lekton game-shootout-score'>{shootout}</span>}
+					{shootout && <span className='game-shootout-score'>{shootout}</span>}
 				</div>
 				<TeamColumn leagueId={game.league} team={game.homeTeam} isFavorited={homeFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} />
 			</div>

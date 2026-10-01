@@ -68,8 +68,8 @@ const walkthroughStepTabAssign = ({ onNext, onBack }: walkthroughStepTabAssignPr
 						<span className='game-score-sep' aria-hidden='true' />
 						<span className='fw-bold lh-1 game-score-value'>10</span>
 					</div>
-					<span className='font-lekton game-clock'>7:43</span>
-					<span className='font-lekton game-period'>Q2</span>
+					<span className='game-clock'>7:43</span>
+					<span className='game-period'>Q2</span>
 				</div>
 
 				<div className='d-flex flex-column align-items-center gap-1 team-column'>

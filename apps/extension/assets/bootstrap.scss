@@ -999,7 +999,6 @@
 .gd-poster-record {
 	font-size: 0.58rem;
 	font-weight: 600;
-	font-family: 'Lekton', monospace;
 	letter-spacing: 0.02em;
 	color: rgba(255, 255, 255, 0.78);
 }
@@ -1800,7 +1799,6 @@ button.game-info-attribution {
 	font-size: 0.58rem;
 	font-weight: 600;
 	line-height: 1.2;
-	font-family: 'Lekton', monospace;
 	letter-spacing: 0.02em;
 	color: #6b7280;
 	text-align: center;
@@ -1884,9 +1882,6 @@ button.game-info-attribution {
 	&.is-loser { color: bs.$score-loser-color; }
 }
 
-// The face is not set here: the resolver decides it. A period and clock get Lekton's fixed
-// columns, and the states that replace them with a word — Halftime, Final, a delay description —
-// get the body face, since there is nothing in them to line up.
 .game-detail-period {
 	grid-area: status;
 	align-self: start;
@@ -1894,6 +1889,11 @@ button.game-info-attribution {
 	color: #6c757d;
 	text-align: center;
 	white-space: nowrap;
+
+	&.is-ticking {
+		font-family: 'Lekton', monospace;
+		font-variant-numeric: tabular-nums;
+	}
 }
 
 // Spans the full card rather than the narrow centre column so the longest
@@ -2006,6 +2006,11 @@ button.game-info-attribution {
 
 	&.is-visible {
 		opacity: 1;
+	}
+
+	&.is-ticking {
+		font-family: 'Lekton', monospace;
+		font-variant-numeric: tabular-nums;
 	}
 }
 
@@ -2186,8 +2191,6 @@ button.game-info-attribution {
 	text-shadow: 0 1px 5px rgba(3, 7, 12, 0.5);
 }
 
-// Deliberately not Lekton. ESPN's line is prose with numbers in it — "1.1 IP, 0 ER, H, BB" — not
-// a column of figures that has to line up with anything.
 .gd-atbat-line {
 	font-size:   0.58rem;
 	color:       rgba(255, 255, 255, 0.76);
@@ -2333,7 +2336,6 @@ button.game-info-attribution {
 		border-bottom: 1px solid #1a2535;
 
 		.debug-header-title {
-			font-family: 'Lekton', monospace;
 			font-size: 0.6rem;
 			font-weight: 700;
 			letter-spacing: 0.12em;
@@ -2342,7 +2344,6 @@ button.game-info-attribution {
 		}
 
 		.debug-header-version {
-			font-family: 'Lekton', monospace;
 			font-size: 0.6rem;
 			color: #4ade80;
 			letter-spacing: 0.04em;
@@ -2357,7 +2358,6 @@ button.game-info-attribution {
 		}
 
 		.debug-section-title {
-			font-family: 'Lekton', monospace;
 			font-size: 0.52rem;
 			font-weight: 700;
 			letter-spacing: 0.14em;
@@ -2391,7 +2391,6 @@ button.game-info-attribution {
 	}
 
 	.debug-row-label {
-		font-family: 'Lekton', monospace;
 		color: #3d5068;
 		font-size: 0.55rem;
 		min-width: 4.8rem;
@@ -2400,7 +2399,6 @@ button.game-info-attribution {
 	}
 
 	.debug-row-mono {
-		font-family: 'Lekton', monospace;
 		color: #c0ccd8;
 		font-size: 0.6rem;
 	}
@@ -2425,14 +2423,12 @@ button.game-info-attribution {
 	}
 
 	.debug-league-interval {
-		font-family: 'Lekton', monospace;
 		font-size: 0.48rem;
 		color: #4a6278;
 		letter-spacing: 0.02em;
 	}
 
 	.debug-mode-badge {
-		font-family: 'Lekton', monospace;
 		font-size: 0.48rem;
 		font-weight: 700;
 		letter-spacing: 0.04em;
@@ -2469,7 +2465,6 @@ button.game-info-attribution {
 	}
 
 	.debug-score-rank {
-		font-family: 'Lekton', monospace;
 		color: #3d5068;
 		font-size: 0.52rem;
 		width: 0.55rem;
@@ -2478,7 +2473,6 @@ button.game-info-attribution {
 	}
 
 	.debug-score-label {
-		font-family: 'Lekton', monospace;
 		color: #8b949e;
 		font-size: 0.58rem;
 		width: 4.2rem;
@@ -2488,7 +2482,6 @@ button.game-info-attribution {
 	}
 
 	.debug-score-bar {
-		font-family: 'Lekton', monospace;
 		font-size: 0.5rem;
 		color: #0089cf;
 		letter-spacing: -0.06em;
@@ -2496,7 +2489,6 @@ button.game-info-attribution {
 	}
 
 	.debug-score-total {
-		font-family: 'Lekton', monospace;
 		color: #e6edf3;
 		font-size: 0.6rem;
 		width: 1.5rem;
@@ -2505,7 +2497,6 @@ button.game-info-attribution {
 	}
 
 	.debug-stall-badge {
-		font-family: 'Lekton', monospace;
 		font-size: 0.48rem;
 		background: rgba(201, 35, 74, 0.12);
 		color: #f87171;
@@ -2517,7 +2508,6 @@ button.game-info-attribution {
 	.debug-no-bg {
 		padding: 0.5rem 0.6rem;
 		color: #3d5068;
-		font-family: 'Lekton', monospace;
 		font-size: 0.55rem;
 		font-style: italic;
 	}
@@ -2527,7 +2517,6 @@ button.game-info-attribution {
 		justify-content: center;
 		padding: 0.22rem 0.6rem;
 		color: #253040;
-		font-family: 'Lekton', monospace;
 		font-size: 0.5rem;
 		border-top: 1px solid #111d2a;
 	}

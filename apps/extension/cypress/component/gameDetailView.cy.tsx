@@ -244,8 +244,8 @@ describe('gameDetailView countdown', () => {
 		cy.get('.gd-countdown-soon').should('have.text', 'Starts soon');
 	});
 
-	// The fallback is a word, not a figure, so it takes the body face. Lekton is for the countdown
-	// digits beside it and for every other number in the popup.
+	// The fallback is a word, not a figure, so it takes the body face. Lekton is only for the
+	// countdown digits it replaces.
 	it('sets "Starts soon" in the body font rather than the scoreboard face', () => {
 		mountDetail(makePreGame(0));
 		cy.get('.gd-countdown-soon').should($el => {
@@ -508,11 +508,14 @@ describe('gameDetailView hero', () => {
 		cy.get('.game-detail-period').should('contain.text', 'Halftime');
 	});
 
-	// Lekton is there to hold a ticking clock's columns still. The states that replace the clock with
-	// a word have nothing to hold, so they read as the words they are.
-	it('sets the word statuses in the body face and keeps the clock in Lekton', () => {
+	// Lekton is there to hold a ticking clock's digits still. An inning or a word has nothing that
+	// moves, so it reads in the body face.
+	it('keeps only a running clock in Lekton', () => {
 		mountDetail(makeLiveGame(), { excitementResult: excitement });
 		cy.get('.game-detail-period').should($el => expect(face($el), 'a running clock').to.equal('Lekton'));
+
+		mountDetail(makeInningGame(), { excitementResult: excitement });
+		cy.get('.game-detail-period').should($el => expect(face($el), 'an inning').to.equal('DM Sans'));
 
 		mountDetail(makeLiveGame({ intermission: true, period: 2 }), { excitementResult: excitement });
 		cy.get('.game-detail-period').should($el => expect(face($el), 'halftime').to.equal('DM Sans'));
@@ -887,7 +890,7 @@ describe('gameDetailView at-bat panel', () => {
 	});
 
 	// Its whole point is telling one figure from another at a glance, which a proportional face
-	// does as well here as a monospaced one — and Lekton is reserved for columns that line up.
+	// does as well here as a monospaced one — and Lekton is reserved for clocks that tick.
 	it('sets the line in the body face rather than in Lekton', () => {
 		mountDetail({ ...makeInningGame(), atBat }, { excitementResult: excitement });
 		cy.get('.gd-atbat-line').first().should(([el]: JQuery<HTMLElement>) => {
