@@ -55,13 +55,13 @@ describe('resolveStatus', () => {
 		expect(resolveStatus(makeGame({ status: 'pre' }), false, t).text).toBe('');
 	});
 
-	// The caller picks the face off this, so a state that says a word has to admit it is not a figure.
-	test('marks the clock and the inning as tabular and the words as not', () => {
-		expect(resolveStatus(makeGame(), false, t).tabular).toBe(true);
-		expect(resolveStatus(makeGame({ league: 'mlb', sportType: 'baseball' }), true, t).tabular).toBe(true);
-		expect(resolveStatus(makeGame({ intermission: true, period: 2 }), false, t).tabular).toBe(false);
-		expect(resolveStatus(makeGame({ intermission: true, period: 3 }), false, t).tabular).toBe(false);
-		expect(resolveStatus(makeGame({ status: 'post' }), false, t).tabular).toBe(false);
-		expect(resolveStatus(makeGame({ delayed: true }), false, t).tabular).toBe(false);
+	// The caller picks the face off this, and only a running clock gets the monospaced one.
+	test('marks only a running clock as ticking', () => {
+		expect(resolveStatus(makeGame(), false, t).ticking).toBe(true);
+		expect(resolveStatus(makeGame({ league: 'mlb', sportType: 'baseball' }), true, t).ticking).toBe(false);
+		expect(resolveStatus(makeGame({ intermission: true, period: 2 }), false, t).ticking).toBe(false);
+		expect(resolveStatus(makeGame({ intermission: true, period: 3 }), false, t).ticking).toBe(false);
+		expect(resolveStatus(makeGame({ status: 'post' }), false, t).ticking).toBe(false);
+		expect(resolveStatus(makeGame({ delayed: true }), false, t).ticking).toBe(false);
 	});
 });

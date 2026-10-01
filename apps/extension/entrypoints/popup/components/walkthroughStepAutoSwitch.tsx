@@ -79,8 +79,8 @@ const MockCard = ({ abbr1, color1, logo1, abbr2, color2, logo2, score1, score2, 
 						<span className='game-score-sep' aria-hidden='true' />
 						<span className='fw-bold lh-1 game-score-value'>{score2}</span>
 					</div>
-					<span className='font-lekton game-clock'>{clock}</span>
-					<span className='font-lekton game-period'>{period}</span>
+					<span className='game-clock'>{clock}</span>
+					<span className='game-period'>{period}</span>
 				</div>
 				<div className='d-flex flex-column align-items-center gap-1 team-column'>
 					<TeamLogo abbr={abbr2} color={color2} logoUrl={logo2} />

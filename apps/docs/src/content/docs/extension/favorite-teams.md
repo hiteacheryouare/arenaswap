@@ -6,7 +6,7 @@ order: 4
 navLabel: Favorite teams
 faq:
   - q: Does starring a favorite team hide other games?
-    a: No. Every game still shows up. A favorited team's games get a PowerScore bonus and a spot at the top of their league section, but nothing is filtered out.
+    a: No. Every game still shows up. A favorited team's games get a PowerScore bonus and a spot at the top of the list (or the top of their league, if you group games by league), but nothing is filtered out.
   - q: What happens if both teams in a game are my favorites?
     a: The bonus applies once per favorited team, so a game with both teams starred gets it twice.
 ---

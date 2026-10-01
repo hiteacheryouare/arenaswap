@@ -215,6 +215,9 @@ export interface UserPreferences {
 	favoriteTeamIds: string[];
 	favoriteTeamBonusPoints: number;
 	showUpcomingGames: boolean;
+	// Off, the main screen is one list per section across every league; on, each section splits
+	// into league runs in `enabledLeagues` order.
+	groupByLeague: boolean;
 	// Keeps a finished game reachable for finalRetentionMs after it wrapped instead of discarding
 	// it the instant ESPN reports it final.
 	keepFinalGames: boolean;

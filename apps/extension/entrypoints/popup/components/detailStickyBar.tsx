@@ -45,7 +45,7 @@ const BarSlot = ({ game, status, compact }: barSlotProps) => {
 	if (!text) return null;
 	return (
 		<span
-			className={`gd-bar-status${compact ? ' is-visible' : ''}${status.tabular || countdown ? ' font-lekton' : ''}`}
+			className={`gd-bar-status${compact ? ' is-visible' : ''}${status.ticking || countdown ? ' is-ticking' : ''}`}
 			aria-hidden={!compact}
 		>
 			{text}

@@ -10,6 +10,7 @@ const defaultPrefs: UserPreferences = {
 	switchDelaySeconds: 0,
 	showUpcomingGames: true,
 	keepFinalGames: false,
+	groupByLeague: true,
 	finishedTabAction: 'keep' as const,
 	proTipsEnabled: true,
 	notificationsEnabled: false,
@@ -382,6 +383,72 @@ describe('mainView game sections', () => {
 			expect($cards[0]).to.have.attr('data-testid', 'game-card-live-wnba');
 			expect($cards[1]).to.have.attr('data-testid', 'game-card-live-nba');
 		});
+	});
+
+	it('leaves the league to the header when grouped, so cards carry no mark of their own', () => {
+		cy.mount(<MainView {...defaultProps} games={[makeGame('g1')]} />);
+		cy.contains('.popup-section-label', 'NBA').should('exist');
+		cy.get('.game-card-league').should('not.exist');
+	});
+});
+
+const cardOrder = () => cy.get('[data-testid^="game-card-"]').then($cards => $cards.toArray().map(card => card.dataset.testid));
+
+const tomorrowAt = (hour: number) => {
+	const date = new Date();
+	date.setHours(hour, 0, 0, 0);
+	date.setDate(date.getDate() + 1);
+	return date.toISOString();
+};
+
+describe('mainView mixed list', () => {
+	const mixedPrefs = { ...defaultPrefs, groupByLeague: false, enabledLeagues: ['nba', 'wnba'] as UserPreferences['enabledLeagues'] };
+
+	it('ranks live games across leagues by PowerScore alone, under no league headers', () => {
+		cy.mount(
+			<MainView
+				{...defaultProps}
+				prefs={mixedPrefs}
+				games={[makeGame('nba-dull'), makeGame('wnba-thriller', 'in', { league: 'wnba' }), makeGame('nba-close')]}
+				scores={[score('nba-dull', 20), score('wnba-thriller', 90), score('nba-close', 60)]}
+			/>,
+		);
+		cardOrder().should('deep.equal', ['game-card-wnba-thriller', 'game-card-nba-close', 'game-card-nba-dull']);
+		cy.get('.popup-section-label').should('not.exist');
+	});
+
+	it('pins a favorite above a better game from another league', () => {
+		const favorite = { ...makeGame('wnba-fav', 'in', { league: 'wnba' }), homeTeam: { id: 'fav', name: 'Home', abbreviation: 'FAV', score: 50 } };
+		cy.mount(
+			<MainView
+				{...defaultProps}
+				prefs={mixedPrefs}
+				games={[makeGame('nba-thriller'), favorite]}
+				scores={[score('nba-thriller', 95), score('wnba-fav', 5)]}
+				favoriteTeamIds={new Set(['wnba:fav'])}
+			/>,
+		);
+		cardOrder().should('deep.equal', ['game-card-wnba-fav', 'game-card-nba-thriller']);
+	});
+
+	it('lists a day of upcoming games by start time, whatever the league', () => {
+		cy.mount(
+			<StatefulMainView
+				prefs={mixedPrefs}
+				games={[
+					makeGame('nba-late', 'pre', { startTime: tomorrowAt(21) }),
+					makeGame('wnba-early', 'pre', { league: 'wnba', startTime: tomorrowAt(13) }),
+					makeGame('nba-middle', 'pre', { startTime: tomorrowAt(17) }),
+				]}
+			/>,
+		);
+		cardOrder().should('deep.equal', ['game-card-wnba-early', 'game-card-nba-middle', 'game-card-nba-late']);
+	});
+
+	it('names the league on every card instead', () => {
+		cy.mount(<MainView {...defaultProps} prefs={mixedPrefs} games={[makeGame('live'), makeGame('later', 'pre', { league: 'wnba', startTime: dayAt(1) })]} />);
+		cy.get('[data-testid="game-card-live"] .game-card-league').should('have.text', 'NBA');
+		cy.get('[data-testid="game-card-later"] .game-card-league').should('have.text', 'WNBA');
 	});
 });
 

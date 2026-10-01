@@ -408,7 +408,7 @@
 			"groupScoring": "评分",
 			"groupScoringDesc": "哪些信号构成 PowerScore，以及什么能加分。",
 			"groupLeagues": "联赛",
-			"groupLeaguesDesc": "追踪哪些联赛，以及它们的显示顺序。",
+			"groupLeaguesDesc": "追踪哪些联赛，以及每个联赛是否单独分区。",
 			"groupDisplay": "显示",
 			"groupDisplayDesc": "主界面上显示的内容。",
 			"groupStandby": "Standby Stream",

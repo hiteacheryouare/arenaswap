@@ -62,7 +62,7 @@ const BarStatus = ({ game, startMs }: { game: Game; startMs: number }) => {
 	const isInningSport = leagueConfigMap[game.league]?.periodFormat === 'innings';
 	const status = resolveStatus(game, isInningSport, i18n.t);
 	return (
-		<span className={`guide-bar-status${status.tabular ? ' is-tabular' : ''}`}>
+		<span className={`guide-bar-status${status.ticking ? ' is-ticking' : ''}`}>
 			{isInningSport && <InningHalfIcon topOfInning={game.topOfInning} />}
 			{status.text}
 		</span>

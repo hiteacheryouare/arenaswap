@@ -1100,7 +1100,7 @@ $ps-signal-colors: (
 
 	text {
 		fill: #0d1117;
-		font-family: var(--font-mono);
+		font-family: var(--font-sans);
 		font-weight: 700;
 		font-size: 14px;
 	}
@@ -1153,7 +1153,7 @@ $ps-signal-colors: (
 }
 
 .mw-team-scores {
-	font-family: var(--font-mono);
+	font-family: var(--font-sans);
 	font-size: 2.4rem;
 	font-weight: 700;
 	letter-spacing: -0.02em;
@@ -1182,7 +1182,7 @@ $ps-signal-colors: (
 }
 
 .mw-power-num {
-	font-family: var(--font-mono);
+	font-family: var(--font-sans);
 	font-size: 2.9rem;
 	font-weight: 700;
 	color: var(--color-primary);
@@ -1228,7 +1228,7 @@ $ps-signal-colors: (
 }
 
 .mw-signal-val {
-	font-family: var(--font-mono);
+	font-family: var(--font-sans);
 	font-weight: 700;
 }
 

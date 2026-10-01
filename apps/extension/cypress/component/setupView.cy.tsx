@@ -26,6 +26,7 @@ const defaultPrefs: UserPreferences = {
 	favoriteTeamBonusPoints: 0,
 	showUpcomingGames: true,
 	keepFinalGames: false,
+	groupByLeague: true,
 	finishedTabAction: 'keep',
 	proTipsEnabled: true,
 	notificationsEnabled: false,
@@ -68,6 +69,7 @@ const defaultProps = {
 	onResetLeagueOrder: () => {},
 	onToggleShowUpcoming: () => {},
 	onToggleKeepFinalGames: () => {},
+	onToggleGroupByLeague: () => {},
 	onFinishedTabActionChange: () => {},
 	onThemeChange: () => {},
 	onUpcomingGamesDaysChange: () => {},
@@ -665,6 +667,22 @@ describe('setupView leagues group', () => {
 		openGroup('leagues');
 		cy.contains(/display order/i).should('not.exist');
 		cy.get('.league-order-row').should('not.exist');
+	});
+
+	it('hides the display order list while games share one list, since there is no order to show', () => {
+		cy.mount(<SetupView {...defaultProps} prefs={{ ...defaultPrefs, groupByLeague: false }} />);
+		openGroup('leagues');
+		cy.get('#groupByLeagueToggle').should('not.be.checked');
+		cy.contains(/display order/i).should('not.exist');
+		cy.get('.league-order-row').should('not.exist');
+	});
+
+	it('flips league grouping from its switch', () => {
+		const onToggleGroupByLeague = cy.spy().as('onToggleGroupByLeague');
+		cy.mount(<SetupView {...defaultProps} onToggleGroupByLeague={onToggleGroupByLeague} />);
+		openGroup('leagues');
+		cy.get('#groupByLeagueToggle').should('be.checked').click();
+		cy.get('@onToggleGroupByLeague').should('have.been.calledOnce');
 	});
 
 	it('keeps the leagues heading and its tooltip when the order list is hidden', () => {

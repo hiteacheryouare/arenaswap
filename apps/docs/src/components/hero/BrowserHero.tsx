@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { LeagueId } from '@arenaswap/core/types';
 import GameCard from '@arenaswap/ui/src/components/gameCard';
-import { LeagueSectionHeader, PopupHeader, PopupSectionTitle } from '@arenaswap/ui/src/components/popupChrome';
+import LeagueMark from '@arenaswap/ui/src/components/leagueMark';
+import { PopupHeader, PopupSectionTitle } from '@arenaswap/ui/src/components/popupChrome';
 import { useT } from '@arenaswap/ui/src/components/i18nContext';
 import { TranslationContext, islandTranslator, tokenize } from '../../i18n/islandStrings';
 import { heroGames, heroTickCount, heroTickMs } from './heroGames';
@@ -171,14 +172,11 @@ const HeroWindow = ({ copy }: { copy: HeroStrings }) => {
 	}, [onScreenIndex, reduced, lastSwitch]);
 
 	const onScreen = heroGames[onScreenIndex];
-	const scoreById = useMemo(() => new Map(scored.map(s => [s.id, s])), [scored]);
-	const leagueOrder = useMemo(() => {
-		const seen: LeagueId[] = [];
-		heroGames.forEach(script => {
-			if (!seen.includes(script.base.league)) seen.push(script.base.league);
-		});
-		return seen;
-	}, []);
+	// The popup's own order with nothing favorited: one list, best PowerScore on top.
+	const ranked = useMemo(
+		() => scored.toSorted((a, b) => (b.result.total - a.result.total) || (a.index - b.index)),
+		[scored],
+	);
 
 	return (
 		<div className='browser-hero' ref={rootRef}>
@@ -257,28 +255,18 @@ const HeroWindow = ({ copy }: { copy: HeroStrings }) => {
 						onStartTour={noop}
 					/>
 					<PopupSectionTitle first>{t('main.sectionActiveLiveTabs')}</PopupSectionTitle>
-					{leagueOrder.map(league => (
-						<div key={league} data-hero-card={heroGames.find(script => script.base.league === league)?.base.id}>
-							<LeagueSectionHeader league={league} logos={emptyLeagueLogos} />
-							{heroGames
-								.filter(script => script.base.league === league)
-								.map(script => {
-									const entry = scoreById.get(script.base.id);
-									if (!entry) return null;
-									return (
-										<div key={script.base.id}>
-											<GameCard
-												game={entry.game}
-												excitementResult={entry.result}
-												favoriteTeamIds={noFavorites}
-												onToggleFavoriteTeam={noop}
-												onOpenGameDetail={noop}
-												bettingPrefs={{ bettingEnabled: false }}
-												tabSlot={<HeroTabSlot label={copy.tabLabel.split('{number}').join(String(entry.index + 1)).split('{host}').join(script.tabHost)} />}
-											/>
-										</div>
-									);
-								})}
+					{ranked.map(entry => (
+						<div key={entry.id} data-hero-card={entry.id}>
+							<GameCard
+								game={entry.game}
+								excitementResult={entry.result}
+								favoriteTeamIds={noFavorites}
+								onToggleFavoriteTeam={noop}
+								onOpenGameDetail={noop}
+								bettingPrefs={{ bettingEnabled: false }}
+								tabSlot={<HeroTabSlot label={copy.tabLabel.split('{number}').join(String(entry.index + 1)).split('{host}').join(heroGames[entry.index].tabHost)} />}
+								leagueSlot={<LeagueMark league={entry.game.league} logos={emptyLeagueLogos} />}
+							/>
 						</div>
 					))}
 				</div>

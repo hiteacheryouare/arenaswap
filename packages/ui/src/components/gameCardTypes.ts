@@ -19,4 +19,6 @@ export interface GameCardDisplayProps {
 	bettingPrefs: BettingDisplayPrefs;
 	weatherPrefs?: WeatherDisplayPrefs;
 	tabSlot?: ReactNode;
+	// Absent while the list groups games under league headers, which already name the league.
+	leagueSlot?: ReactNode;
 }

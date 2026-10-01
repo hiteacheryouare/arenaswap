@@ -207,6 +207,7 @@ const setupProps = {
 	onResetLeagueOrder: () => {},
 	onToggleShowUpcoming: () => {},
 	onToggleKeepFinalGames: () => {},
+	onToggleGroupByLeague: () => {},
 	onFinishedTabActionChange: () => {},
 	onThemeChange: () => {},
 	onUpcomingGamesDaysChange: () => {},

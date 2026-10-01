@@ -100,18 +100,20 @@ export const moveLeague = (order: LeagueId[], fromIndex: number, toIndex: number
 // Re-exported rather than redefined: it moved to core so the guide can ask the same question.
 export { isFavoriteTeamGame };
 
-export const buildFavoritePinnedComparator = (
-	leagueRank: Record<LeagueId, number>,
-	favoriteTeamIds: Set<string>,
-	scoreByGameId: Map<string, number>,
-) => (a: Game, b: Game): number => {
-	const leagueDiff = (leagueRank[a.league] ?? 99) - (leagueRank[b.league] ?? 99);
-	if (leagueDiff !== 0) return leagueDiff;
-	const aFav = isFavoriteTeamGame(a, favoriteTeamIds);
-	const bFav = isFavoriteTeamGame(b, favoriteTeamIds);
-	if (aFav !== bFav) return aFav ? -1 : 1;
-	return (scoreByGameId.get(b.id) ?? 0) - (scoreByGameId.get(a.id) ?? 0);
+type gameComparator = (a: Game, b: Game) => number;
+
+const firstDifference = (...comparators: (gameComparator | false)[]): gameComparator => (a, b) => {
+	for (const comparator of comparators) {
+		if (!comparator) continue;
+		const difference = comparator(a, b);
+		if (difference !== 0) return difference;
+	}
+	return 0;
 };
+
+const startMs = (game: Game): number => (
+	game.startTime ? new Date(game.startTime).getTime() : Number.POSITIVE_INFINITY
+);
 
 const dayStart = (game: Game): number => {
 	if (!game.startTime) return Number.POSITIVE_INFINITY;
@@ -119,19 +121,51 @@ const dayStart = (game: Game): number => {
 	return new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
 };
 
-export const buildUpcomingComparator = (
+// Subtracting two infinities is NaN, which a sort reads as "equal" and then trips over.
+const ascending = (a: number, b: number): number => (a === b ? 0 : a - b);
+
+const byLeagueRank = (leagueRank: Record<LeagueId, number>): gameComparator => (a, b) => (
+	(leagueRank[a.league] ?? Number.MAX_SAFE_INTEGER) - (leagueRank[b.league] ?? Number.MAX_SAFE_INTEGER)
+);
+const favoritesFirst = (favoriteTeamIds: Set<string>): gameComparator => (a, b) => (
+	Number(isFavoriteTeamGame(b, favoriteTeamIds)) - Number(isFavoriteTeamGame(a, favoriteTeamIds))
+);
+const highestScoreFirst = (scoreByGameId: Map<string, number>): gameComparator => (a, b) => (
+	(scoreByGameId.get(b.id) ?? 0) - (scoreByGameId.get(a.id) ?? 0)
+);
+const earliestStartFirst: gameComparator = (a, b) => ascending(startMs(a), startMs(b));
+const earliestDayFirst: gameComparator = (a, b) => ascending(dayStart(a), dayStart(b));
+const byId: gameComparator = (a, b) => a.id.localeCompare(b.id);
+
+// Grouped, the league comes first so each league is one unbroken run under its header. Mixed, it
+// drops to a tiebreaker and favorites are pinned above every other league's games.
+export const buildLiveComparator = (
 	leagueRank: Record<LeagueId, number>,
 	favoriteTeamIds: Set<string>,
 	scoreByGameId: Map<string, number>,
-) => {
-	const fallbackSort = buildFavoritePinnedComparator(leagueRank, favoriteTeamIds, scoreByGameId);
-	return (a: Game, b: Game): number => {
-		const aDay = dayStart(a);
-		const bDay = dayStart(b);
-		if (aDay !== bDay) return aDay - bDay;
-		return fallbackSort(a, b);
-	};
-};
+	grouped: boolean,
+) => firstDifference(
+	grouped && byLeagueRank(leagueRank),
+	favoritesFirst(favoriteTeamIds),
+	highestScoreFirst(scoreByGameId),
+	earliestStartFirst,
+	byLeagueRank(leagueRank),
+	byId,
+);
+
+// Up Next pages by day, so the day comes before anything else in either mode.
+export const buildUpcomingComparator = (
+	leagueRank: Record<LeagueId, number>,
+	favoriteTeamIds: Set<string>,
+	grouped: boolean,
+) => firstDifference(
+	earliestDayFirst,
+	grouped && byLeagueRank(leagueRank),
+	favoritesFirst(favoriteTeamIds),
+	earliestStartFirst,
+	byLeagueRank(leagueRank),
+	byId,
+);
 
 // Your teams first, then most recently wrapped. Finished games are read as a list of results
 // rather than a set of choices, so PowerScore has no say here — the background stops scoring a game
@@ -139,23 +173,18 @@ export const buildUpcomingComparator = (
 // yesterday's thriller above the game that ended ten minutes ago.
 export const buildFinalComparator = (
 	leagueRank: Record<LeagueId, number>,
-	favoriteTeamIds: Set<string> = new Set(),
-) => (
-	(a: Game, b: Game): number => {
-		// Across the whole section rather than within each league group, because the result you came
-		// looking for is your team's and it should not be a league header down.
-		const aFavorite = isFavoriteTeamGame(a, favoriteTeamIds);
-		const bFavorite = isFavoriteTeamGame(b, favoriteTeamIds);
-		if (aFavorite !== bFavorite) return aFavorite ? -1 : 1;
-		const aWrap = estimatedWrapMs(a, Date.now());
-		const bWrap = estimatedWrapMs(b, Date.now());
-		if (aWrap !== bWrap) return bWrap - aWrap;
-		const aLeague = leagueRank[a.league] ?? Number.MAX_SAFE_INTEGER;
-		const bLeague = leagueRank[b.league] ?? Number.MAX_SAFE_INTEGER;
-		if (aLeague !== bLeague) return aLeague - bLeague;
-		return a.id.localeCompare(b.id);
-	}
-);
+	favoriteTeamIds: Set<string>,
+	grouped: boolean,
+) => {
+	const now = Date.now();
+	return firstDifference(
+		grouped && byLeagueRank(leagueRank),
+		favoritesFirst(favoriteTeamIds),
+		(a, b) => estimatedWrapMs(b, now) - estimatedWrapMs(a, now),
+		byLeagueRank(leagueRank),
+		byId,
+	);
+};
 
 const toKey = (d: Date) => `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
 

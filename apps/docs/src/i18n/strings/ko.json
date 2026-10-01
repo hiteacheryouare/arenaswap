@@ -408,7 +408,7 @@
 			"groupScoring": "점수 계산",
 			"groupScoringDesc": "PowerScore에 반영되는 시그널과 보너스 점수를 얻는 조건이에요.",
 			"groupLeagues": "리그",
-			"groupLeaguesDesc": "추적할 리그와 표시 순서를 설정해요.",
+			"groupLeaguesDesc": "추적할 리그와 리그별 섹션 표시 여부를 설정해요.",
 			"groupDisplay": "화면 표시",
 			"groupDisplayDesc": "메인 화면에 표시되는 내용이에요.",
 			"groupStandby": "Standby Stream",

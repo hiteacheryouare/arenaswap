@@ -29,9 +29,9 @@ If a tab is already assigned to another game, its dropdown entry is grayed out a
 
 Once you've assigned at least one tab, the main screen splits into sections:
 
-- **Active Tabs** holds every live game with an assigned tab, sorted by PowerScore. Your starred teams' games pin to the top of their league section.
+- **Active Tabs** holds every live game with an assigned tab, sorted by PowerScore, with your starred teams' games pinned to the top. By default that's one list across every league. Turn on **Group games by league** and each section splits into league runs instead, favorites first within each league.
 - **Live Games** holds everything else live in your enabled leagues, in the same order, in case something there is worth grabbing a tab for.
-- **Up Next** holds upcoming games in your enabled leagues, one day at a time.
+- **Up Next** holds upcoming games in your enabled leagues, one day at a time, favorites first and then by start time.
 - **Final** holds games that have already ended, your starred teams first and then most recent, and only appears if you've turned on **Keep finished games**. Each card reads Final, or Final/OT and Final/10 where there was extra time, with the winning score at full weight and the losing one dimmed. Nothing here can be assigned a tab or switched to.
 
 ## Let ArenaSwap manage the tabs

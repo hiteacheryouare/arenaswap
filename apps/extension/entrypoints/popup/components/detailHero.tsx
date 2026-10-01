@@ -68,7 +68,7 @@ const detailHero = ({ game, seriesInfo, records = emptyTeamRecords, monoLogos, i
 				</div>
 				<DetailTeamPill team={game.homeTeam} side='home' record={records.home} monoMarks={monoLogos.home} color={homeColor} />
 				{status.text && (
-					<div className={`game-detail-period${status.tabular ? ' font-lekton' : ''}`}>
+					<div className={`game-detail-period${status.ticking ? ' is-ticking' : ''}`}>
 						{isInningSport && <InningHalfIcon topOfInning={game.topOfInning} />}{status.text}
 					</div>
 				)}

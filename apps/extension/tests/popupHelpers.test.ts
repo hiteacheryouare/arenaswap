@@ -1,7 +1,7 @@
 import {
-	buildFavoritePinnedComparator,
 	buildFinalComparator,
 	buildLeagueRank,
+	buildLiveComparator,
 	buildUpcomingComparator,
 	byLeague,
 	fetchState,
@@ -108,7 +108,13 @@ describe('isFavoriteTeamGame', () => {
 	});
 });
 
-describe('buildFavoritePinnedComparator', () => {
+describe('buildLiveComparator', () => {
+	const favoriteHome = (id: string, league: LeagueId = 'nba') => makeGame({
+		id,
+		league,
+		homeTeam: { id: 'home-1', name: 'Home', abbreviation: 'HOM', score: 0 },
+	});
+
 	test('pins favorited games above non-favorited within the same league', () => {
 		const fav = makeGame({
 			id: 'fav',
@@ -126,9 +132,10 @@ describe('buildFavoritePinnedComparator', () => {
 			['plain', 50],
 		]);
 
-		const comparator = buildFavoritePinnedComparator(leagueOrder, favorites, scores);
-		const sorted = [plain, fav].toSorted(comparator);
-		expect(sorted.map(g => g.id)).toEqual(['fav', 'plain']);
+		for (const grouped of [true, false]) {
+			const sorted = [plain, fav].toSorted(buildLiveComparator(leagueOrder, favorites, scores, grouped));
+			expect(sorted.map(g => g.id)).toEqual(['fav', 'plain']);
+		}
 	});
 
 	test('falls back to descending PowerScore when both games have the same favorite status', () => {
@@ -138,12 +145,12 @@ describe('buildFavoritePinnedComparator', () => {
 			['high', 80],
 			['low', 20],
 		]);
-		const comparator = buildFavoritePinnedComparator(leagueOrder, new Set(), scores);
+		const comparator = buildLiveComparator(leagueOrder, new Set(), scores, true);
 		const sorted = [low, high].toSorted(comparator);
 		expect(sorted.map(g => g.id)).toEqual(['high', 'low']);
 	});
 
-	test('honours the user league order ahead of favorites and PowerScore', () => {
+	test('grouped, honours the user league order ahead of favorites and PowerScore', () => {
 		const nbaFav = makeGame({
 			id: 'nba-fav',
 			homeTeam: { id: 'home-1', name: 'Home', abbreviation: 'HOM', score: 0 },
@@ -153,12 +160,43 @@ describe('buildFavoritePinnedComparator', () => {
 		const favorites = new Set([createFavoriteTeamKey('nba', 'home-1')]);
 		const scores = new Map<string, number>([['nba-fav', 99], ['nfl-1', 1]]);
 
-		const defaultSorted = [nfl, nbaFav].toSorted(buildFavoritePinnedComparator(leagueOrder, favorites, scores));
+		const defaultSorted = [nfl, nbaFav].toSorted(buildLiveComparator(leagueOrder, favorites, scores, true));
 		expect(defaultSorted.map(g => g.id)).toEqual(['nba-fav', 'nfl-1']);
 
 		const customRank = buildLeagueRank(['nfl', 'nba']);
-		const customSorted = [nbaFav, nfl].toSorted(buildFavoritePinnedComparator(customRank, favorites, scores));
+		const customSorted = [nbaFav, nfl].toSorted(buildLiveComparator(customRank, favorites, scores, true));
 		expect(customSorted.map(g => g.id)).toEqual(['nfl-1', 'nba-fav']);
+	});
+
+	test('mixed, ranks every league on PowerScore alone', () => {
+		const games = [
+			makeGame({ id: 'nba-dull' }),
+			makeGame({ id: 'nfl-thriller', league: 'nfl', sportType: 'football' }),
+			makeGame({ id: 'nhl-middling', league: 'nhl', sportType: 'hockey' }),
+		];
+		const scores = new Map([['nba-dull', 12], ['nfl-thriller', 88], ['nhl-middling', 50]]);
+		const sorted = games.toSorted(buildLiveComparator(buildLeagueRank(['nba', 'nfl', 'nhl']), new Set(), scores, false));
+		expect(sorted.map(g => g.id)).toEqual(['nfl-thriller', 'nhl-middling', 'nba-dull']);
+	});
+
+	test('mixed, pins a favorite blowout from the last league above a thriller from the first', () => {
+		const thriller = makeGame({ id: 'nba-thriller' });
+		const blowout = favoriteHome('mlb-blowout', 'mlb');
+		const favorites = new Set([createFavoriteTeamKey('mlb', 'home-1')]);
+		const scores = new Map([['nba-thriller', 95], ['mlb-blowout', 3]]);
+		const sorted = [thriller, blowout].toSorted(buildLiveComparator(buildLeagueRank(['nba', 'mlb']), favorites, scores, false));
+		expect(sorted.map(g => g.id)).toEqual(['mlb-blowout', 'nba-thriller']);
+	});
+
+	test('mixed, breaks a PowerScore tie on start time, then league order, then id', () => {
+		const games = [
+			makeGame({ id: 'nfl-late', league: 'nfl', sportType: 'football', startTime: '2026-09-06T21:00:00.000Z' }),
+			makeGame({ id: 'nfl-early', league: 'nfl', sportType: 'football', startTime: '2026-09-06T19:00:00.000Z' }),
+			makeGame({ id: 'nba-b', startTime: '2026-09-06T21:00:00.000Z' }),
+			makeGame({ id: 'nba-a', startTime: '2026-09-06T21:00:00.000Z' }),
+		];
+		const sorted = games.toSorted(buildLiveComparator(buildLeagueRank(['nba', 'nfl']), new Set(), new Map(), false));
+		expect(sorted.map(g => g.id)).toEqual(['nfl-early', 'nba-a', 'nba-b', 'nfl-late']);
 	});
 });
 
@@ -248,8 +286,33 @@ describe('buildUpcomingComparator', () => {
 		const nbaTomorrow = makeGame({ id: 'nba-tmr', status: 'pre', startTime: tomorrow.toISOString() });
 		const nflToday = makeGame({ id: 'nfl-today', league: 'nfl', sportType: 'football', status: 'pre', startTime: today.toISOString() });
 
-		const comparator = buildUpcomingComparator(buildLeagueRank(['nba', 'nfl']), new Set(), new Map());
-		expect([nbaTomorrow, nflToday].toSorted(comparator).map(g => g.id)).toEqual(['nfl-today', 'nba-tmr']);
+		for (const grouped of [true, false]) {
+			const comparator = buildUpcomingComparator(buildLeagueRank(['nba', 'nfl']), new Set(), grouped);
+			expect([nbaTomorrow, nflToday].toSorted(comparator).map(g => g.id)).toEqual(['nfl-today', 'nba-tmr']);
+		}
+	});
+
+	const pre = (id: string, startTime: string, league: LeagueId = 'nba', homeId = 'h') => makeGame({
+		id, league, status: 'pre', startTime,
+		homeTeam: { id: homeId, name: 'Home', abbreviation: 'HOM', score: 0 },
+	});
+	const day = [
+		pre('nfl-1pm', '2026-09-06T13:00:00', 'nfl'),
+		pre('nba-7pm', '2026-09-06T19:00:00'),
+		pre('nba-noon', '2026-09-06T12:00:00'),
+		pre('nfl-fav-8pm', '2026-09-06T20:00:00', 'nfl', 'fav'),
+	];
+	const favorites = new Set([createFavoriteTeamKey('nfl', 'fav')]);
+	const rank = buildLeagueRank(['nba', 'nfl']);
+
+	test('mixed, puts favorites first and then everything else by start time', () => {
+		expect(day.toSorted(buildUpcomingComparator(rank, favorites, false)).map(g => g.id))
+			.toEqual(['nfl-fav-8pm', 'nba-noon', 'nfl-1pm', 'nba-7pm']);
+	});
+
+	test('grouped, orders by start time inside each league', () => {
+		expect(day.toSorted(buildUpcomingComparator(rank, favorites, true)).map(g => g.id))
+			.toEqual(['nba-noon', 'nba-7pm', 'nfl-fav-8pm', 'nfl-1pm']);
 	});
 });
 
@@ -456,7 +519,7 @@ describe('buildFinalComparator', () => {
 			finished('late', '2026-09-06T23:00:00.000Z'),
 			finished('middle', '2026-09-06T19:30:00.000Z'),
 		];
-		expect(games.toSorted(buildFinalComparator(rank)).map(g => g.id))
+		expect(games.toSorted(buildFinalComparator(rank, new Set(), false)).map(g => g.id))
 			.toEqual(['late', 'middle', 'early']);
 	});
 
@@ -467,7 +530,7 @@ describe('buildFinalComparator', () => {
 			startTime: '2026-09-06T20:00:00.000Z',
 		});
 		const basketball = finished('nba', '2026-09-06T20:30:00.000Z');
-		expect([basketball, football].toSorted(buildFinalComparator(rank)).map(g => g.id))
+		expect([basketball, football].toSorted(buildFinalComparator(rank, new Set(), false)).map(g => g.id))
 			.toEqual(['nfl', 'nba']);
 	});
 
@@ -477,21 +540,32 @@ describe('buildFinalComparator', () => {
 			finished('a', '2026-09-06T20:00:00.000Z', 'nba'),
 			finished('b', '2026-09-06T20:00:00.000Z', 'nfl'),
 		];
-		expect(games.toSorted(buildFinalComparator(rank)).map(g => g.id)).toEqual(['a', 'b', 'c']);
+		expect(games.toSorted(buildFinalComparator(rank, new Set(), false)).map(g => g.id)).toEqual(['a', 'b', 'c']);
 	});
 
 	test('and then to the id, so the order never depends on how the list arrived', () => {
 		const first = finished('aaa', '2026-09-06T20:00:00.000Z');
 		const second = finished('bbb', '2026-09-06T20:00:00.000Z');
-		expect([second, first].toSorted(buildFinalComparator(rank)).map(g => g.id)).toEqual(['aaa', 'bbb']);
-		expect([first, second].toSorted(buildFinalComparator(rank)).map(g => g.id)).toEqual(['aaa', 'bbb']);
+		expect([second, first].toSorted(buildFinalComparator(rank, new Set(), false)).map(g => g.id)).toEqual(['aaa', 'bbb']);
+		expect([first, second].toSorted(buildFinalComparator(rank, new Set(), false)).map(g => g.id)).toEqual(['aaa', 'bbb']);
 	});
 
 	test('a league the user has since switched off sorts last rather than first', () => {
 		const enabled = finished('enabled', '2026-09-06T20:00:00.000Z', 'nba');
 		const dropped = finished('dropped', '2026-09-06T20:00:00.000Z', 'nhl');
-		expect([dropped, enabled].toSorted(buildFinalComparator(rank)).map(g => g.id))
+		expect([dropped, enabled].toSorted(buildFinalComparator(rank, new Set(), false)).map(g => g.id))
 			.toEqual(['enabled', 'dropped']);
+	});
+
+	test('grouped, keeps each league in one run so its header appears once', () => {
+		const games = [
+			finished('nba-late', '2026-09-06T23:00:00.000Z', 'nba'),
+			finished('nfl-middle', '2026-09-06T21:00:00.000Z', 'nfl'),
+			finished('nba-early', '2026-09-06T16:00:00.000Z', 'nba'),
+		];
+		const sorted = games.toSorted(buildFinalComparator(rank, new Set(), true));
+		expect(groupByLeague(sorted).map(g => g.league)).toEqual(['nba', 'nfl']);
+		expect(sorted.map(g => g.id)).toEqual(['nba-late', 'nba-early', 'nfl-middle']);
 	});
 });
 

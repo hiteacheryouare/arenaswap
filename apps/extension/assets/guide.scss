@@ -201,7 +201,6 @@ $guide-ruler-height: 2.5rem;
 	top: 13px;
 	left: 0;
 	transform: translateX(-50%);
-	font-family: 'Lekton', monospace;
 	font-size: 0.72rem;
 	color: $guide-ink-dim;
 	white-space: nowrap;
@@ -563,10 +562,13 @@ $guide-ruler-height: 2.5rem;
 }
 
 .guide-bar-time,
-.guide-bar-status.is-tabular {
+.guide-bar-status.is-ticking {
+	font-size: 0.7rem;
+}
+
+.guide-bar-status.is-ticking {
 	font-family: 'Lekton', monospace;
 	font-variant-numeric: tabular-nums;
-	font-size: 0.7rem;
 }
 
 .guide-bar-time {
