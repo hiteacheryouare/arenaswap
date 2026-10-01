@@ -14,3 +14,4 @@
 - [boxscore_espn_stat_key_traps.md](boxscore_espn_stat_key_traps.md) — ESPN stat keys/labels that lie: SOG=shootout goals, YTDG, passing-vs-defensive sacks, IP's dot separator
 - [boxscore_period_labels_et_shootout.md](boxscore_period_labels_et_shootout.md) — Soccer ET1/ET2/PEN and hockey SO headings; verified linescores shape, MLS phantom ET, why period is unreliable
 - [Postseason boost side trophies](postseason_boost_side_trophies.md) — whose-trophy rule: bowls get zero, NIT/Crown/conference finals capped at bottom tier, CFB needs an affirmative round signal
+- [live_moment_signals_audit.md](live_moment_signals_audit.md) — 2026-10-01 missed live moments per sport, verified Core situation/lastPlay fields, no WP for NHL/soccer, new-sport order
