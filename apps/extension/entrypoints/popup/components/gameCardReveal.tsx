@@ -36,9 +36,9 @@ const posterHeight = 148;
 
 const roundFor: Record<revealShape, string> = {
 	card: 'calc(0.5rem + 1px)',
-	stage: '0 0 21px 21px',
-	tile: '15px',
-	row: '15px',
+	stage: '13px',
+	tile: '11px',
+	row: '11px',
 };
 
 interface revealLanding {

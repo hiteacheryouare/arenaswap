@@ -77,9 +77,11 @@ const Harness = ({ mode = 'full', away = club('Miami Marlins'), home = club('Was
 	return (
 		<div className='popup-container d-flex flex-column gm'>
 			{powerScore ? (
-				<GameCardReveal game={subject} mode={mode} index={0} skipping={false} shape='stage'>
-					<GameStage game={subject} power={{ value: powerScore.total, label: 'PowerScore' }} note='Kendrick Family Ballpark' />
-				</GameCardReveal>
+				<div className='gm-lower'>
+					<GameCardReveal game={subject} mode={mode} index={0} skipping={false} shape='stage'>
+						<GameStage game={subject} power={powerScore.total} note='Kendrick Family Ballpark' />
+					</GameCardReveal>
+				</div>
 			) : (
 				<div className='gm-lower'>
 					<div className='gm-tiles is-odd'>
@@ -162,14 +164,13 @@ describe('the clubs named over the opening beat', () => {
 	});
 
 	// And it stays on one line where that draws it bigger, which is the whole of what decides it:
-	// "Miami Marlins" on two lines is bound by the band's height and covers a third of the card at
-	// 35px, and on one line it is 40px across the whole of it. "Washington Commanders" is the other
-	// way about — 21px on one line against 38 on two — so the two clubs on one card can be set
+	// "Utah Jazz" on two lines is bound by the band's height, and on one line it runs across the whole
+	// of it. "Washington Commanders" is the other way about, so the two clubs on one card can be set
 	// differently, and are.
 	it('keeps a short club on one line, where that draws it bigger', () => {
-		cy.mount(<Harness />);
+		cy.mount(<Harness away={club('Utah Jazz')} />);
 		linesOf('away').then($lines => expect([...$lines].map(line => line.textContent))
-			.to.deep.equal(['Miami Marlins']));
+			.to.deep.equal(['Utah Jazz']));
 		linesOf('home').should('have.length', 2);
 	});
 
@@ -329,12 +330,11 @@ describe('the clubs named over the opening beat', () => {
 	// The live card, which is the one the popup spends its time drawing: a PowerScore bar taller, so a
 	// band of 84px, and the height stops binding on anything but the shortest pair of lines. This is
 	// where the ask is answered — a club named across the card rather than labelled in the middle of it
-	// — and how far it gets: a long club on two lines covers about three quarters of the card at 38px
-	// of type, and a short one on a single line covers nine tenths of it at 40, against the 17.6px a
-	// line-per-word block could reach on the same card.
+	// — and how far it gets: a long club on two lines covers about two thirds of the plate, and a short
+	// one nearly half of it, at more than the 17.6px a line-per-word block could reach.
 	([
 		[club('Washington Commanders'), club('Massachusetts Minutemen'), 0.65],
-		[club('Miami Marlins'), club('Boston Celtics'), 0.45],
+		[club('Miami Marlins'), club('Boston Celtics'), 0.42],
 	] as const).forEach(([away, home, share]) => {
 		it(`names a club across the live card: ${away.name} v ${home.name}`, () => {
 			cy.mount(<Harness away={away} home={home} powerScore={scored} />);

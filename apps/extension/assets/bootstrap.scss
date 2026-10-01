@@ -136,6 +136,26 @@
 	color: var(--as-muted);
 }
 
+.select-field.has-hint {
+	display: flex;
+	align-items: center;
+	gap: var(--as-space-2);
+}
+
+.select-field-label {
+	flex: 1 1 auto;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.select-field-hint {
+	flex-shrink: 0;
+	color: var(--as-muted);
+	font-size: var(--as-text-xs);
+}
+
 .popup-root {
 	position: relative;
 	width: 320px;

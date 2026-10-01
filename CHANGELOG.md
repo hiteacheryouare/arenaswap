@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Spotlight goes back to v2's plates — 2026-09-30
+
+Every game is a bright v2 plate again, in both themes, with a pastel wash of both teams and each team's colour running down its own side. v2's anatomy is back too: Geist scores either side of a hairline (or the bases, in baseball), the clock and period stacked under them, venue, "Watch:" and the line on the stage, and the tab select along the bottom of every game, which now names the tab beside the page. The detail hero keeps its painted two-team poster without the big PowerScore (the breakdown under it, now a plate too, carries it), and the plate inks are darkened just enough to clear 4.5:1 on the darkest wash, which a unit test checks across a colour cube.
+
 ## Spotlight lays games out like a scoreboard — 2026-09-30
 
 Every game on the board now reads the way Apple Sports sets one: each team under its crest, the scores beside them and the bases and outs or the down and distance between them, with the two teams' colours holding their own ends instead of mixing into mud. v2's details are back, including the pulsing live dot (pink in overtime, a pause for a delay), the pink overtime ring, the gold favourite star, the hover lift, the "PowerScore 74 / 100" bar as a Bootstrap progress in v2's colour, and the breakdown's coloured boosts. DM Sans is back to v2's weights and spacing.

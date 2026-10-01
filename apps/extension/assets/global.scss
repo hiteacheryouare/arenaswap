@@ -1068,16 +1068,17 @@ button, input, select, optgroup, textarea {
    then what the score is, then who is playing, then everything around it. */
 .game-card-reveal .as-top,
 .game-card-reveal .as-match-score,
+.game-card-reveal .as-match-mid,
 .game-card-reveal .as-match-team > :not(.as-crest-box),
 .game-card-reveal .as-centre,
 .game-card-reveal .as-stage-note,
-.game-card-reveal .as-stage-situation,
-.game-card-reveal .as-stage-power,
-.game-card-reveal .as-power-line {
+.game-card-reveal .as-power-line,
+.game-card-reveal .as-plate-tab {
 	animation: cardRevealContent calc(620ms * var(--reveal-rate)) cubic-bezier(0.22, 1, 0.36, 1) calc(var(--reveal-spine) + 2500ms * var(--reveal-rate)) both;
 }
 
-.game-card-reveal .as-match-score {
+.game-card-reveal .as-match-score,
+.game-card-reveal .as-match-mid {
 	animation-delay: calc(var(--reveal-spine) + 2580ms * var(--reveal-rate));
 }
 
@@ -1086,26 +1087,15 @@ button, input, select, optgroup, textarea {
 }
 
 .game-card-reveal .as-centre,
-.game-card-reveal .as-stage-note,
-.game-card-reveal .as-stage-situation {
+.game-card-reveal .as-stage-note {
 	animation-delay: calc(var(--reveal-spine) + 2740ms * var(--reveal-rate));
-}
-
-/* The stage's poster covers the header too. The header sits above it, so its ink waits for the last
-   beat, once the colour has cleared. */
-.popup-header.is-revealing > * {
-	animation: cardRevealContent calc(620ms * var(--reveal-rate)) cubic-bezier(0.22, 1, 0.36, 1) calc(var(--reveal-spine) + 2780ms * var(--reveal-rate)) both;
-}
-
-.popup-header.is-revealing.is-skipping > * {
-	animation: none;
 }
 
 /* 2780, not 2820: 620ms after it is 3400, which is `revealBaseDurationMs` and the instant the
    wrapper is removed. At 2820 the last beat was still 40ms from finishing when its element stopped
    existing — invisible under this easing, which is at 99.9% by then, and a pop under any other. */
-.game-card-reveal .as-stage-power,
-.game-card-reveal .as-power-line {
+.game-card-reveal .as-power-line,
+.game-card-reveal .as-plate-tab {
 	animation-delay: calc(var(--reveal-spine) + 2780ms * var(--reveal-rate));
 }
 
@@ -1146,12 +1136,12 @@ button, input, select, optgroup, textarea {
 
 	.as-top,
 	.as-match-score,
+	.as-match-mid,
 	.as-match-team > *,
 	.as-centre,
 	.as-stage-note,
-	.as-stage-situation,
-	.as-stage-power,
 	.as-power-line,
+	.as-plate-tab,
 	[data-reveal-crest] {
 		animation: none;
 	}

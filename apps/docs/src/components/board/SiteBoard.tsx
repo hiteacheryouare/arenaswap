@@ -1,11 +1,12 @@
-import type { ReactNode, RefObject } from 'react';
+import type { CSSProperties, ReactNode, RefObject } from 'react';
 import type { Game } from '@arenaswap/core/types';
 import { PopupHeader } from '@arenaswap/ui/src/components/popupChrome';
 import GameStage from '@arenaswap/ui/src/components/gameStage';
 import GameTile from '@arenaswap/ui/src/components/gameTile';
 import GameRow from '@arenaswap/ui/src/components/gameRow';
 import { arrangeLive } from '@arenaswap/ui/src/components/boardLayout';
-import { stageNote, stageSituation } from '@arenaswap/ui/src/components/boardSituation';
+import { stageNote } from '@arenaswap/ui/src/components/boardSituation';
+import { resolveGameColors } from '@arenaswap/ui/src/components/gameSurface';
 import { useT } from '@arenaswap/ui/src/components/i18nContext';
 
 // The popup's Games screen as a picture: the same components and the same markup mainView.tsx
@@ -39,13 +40,13 @@ interface SiteBoardProps {
 
 const noop = () => {};
 
-// The inline picker SelectDropdown draws, left disabled: there are no tabs here to hand a game to.
+// The select SelectDropdown draws along the bottom of a game, left disabled: there are no tabs here
+// to hand a game to.
 const TabPicker = ({ label, offer = false, menu }: { label: string; offer?: boolean; menu?: SiteBoardMenu }) => (
-	<div className='game-card-tab-assign is-inline' data-card-control='true'>
+	<div className='game-card-tab-assign' data-card-control='true'>
 		<div className={`dropdown${offer ? ' is-offer' : ''}`}>
-			<button type='button' className='as-picker' disabled tabIndex={-1} aria-expanded={menu ? 'true' : undefined}>
-				<span className='as-picker-label'>{label}</span>
-				<i className='bi bi-chevron-down as-picker-chevron' aria-hidden='true' />
+			<button type='button' className='form-select select-field text-start' disabled tabIndex={-1} aria-expanded={menu ? 'true' : undefined}>
+				{label}
 			</button>
 			{menu && (
 				<ul className='dropdown-menu select-dropdown-menu show site-board-menu'>
@@ -81,15 +82,16 @@ const SiteBoard = ({
 	const t = useT();
 	const board = arrangeLive(games.filter(game => game.status === 'in'), scores);
 	const scoreOf = (game: Game) => scores.get(game.id) ?? 0;
+	const glow = board.stage ? resolveGameColors(board.stage) : null;
 	const tabLabel = (game: Game) => t('board.tab', { number: tabs[game.id]?.number ?? 0 });
 
-	const picker = (game: Game, compact = false): ReactNode => {
+	const picker = (game: Game): ReactNode => {
 		const open = menu?.gameId === game.id ? menu : undefined;
-		if (!tabs[game.id]) return <TabPicker label={t(compact ? 'board.noTab' : 'board.assignTab')} offer menu={open} />;
+		if (!tabs[game.id]) return <TabPicker label={t('board.assignTab')} offer menu={open} />;
 		return <TabPicker label={game.id === watchedId ? t('board.watching', { tab: tabLabel(game) }) : tabLabel(game)} menu={open} />;
 	};
 
-	const stageLabel = (game: Game): ReactNode => {
+	const stageTab = (game: Game): ReactNode => {
 		const watched = board.all.find(candidate => candidate.id === watchedId);
 		const overtaking = tabs[game.id] && watched && watched.id !== game.id && scoreOf(game) >= scoreOf(watched) + switchThreshold;
 		if (overtaking) return <span className='as-stage-switching'>{t('board.switchingTo', { tab: tabLabel(game) })}</span>;
@@ -100,6 +102,7 @@ const SiteBoard = ({
 
 	return (
 		<div ref={scroller} className={`popup-container d-flex flex-column gm site-board${className ? ` ${className}` : ''}`}>
+			{glow && <div className='gm-glow' style={{ '--glow-away': glow[0], '--glow-home': glow[1] } as CSSProperties} aria-hidden='true' />}
 			<PopupHeader
 				scroller={scroller}
 				enabled
@@ -108,25 +111,24 @@ const SiteBoard = ({
 				onToggleEnabled={noop}
 				onOpenSettings={noop}
 				onStartTour={noop}
-				onStage={board.stage !== null}
 			/>
 
-			{board.stage && (
-				<GameStage
-					key={board.stage.id}
-					game={board.stage}
-					label={stageLabel(board.stage)}
-					note={stageNote(board.stage, { bettingEnabled }, t as Parameters<typeof stageNote>[2])}
-					situation={stageSituation(board.stage)}
-					power={{ value: scoreOf(board.stage), label: t('gameCard.powerScore') }}
-					favorites={favorites[board.stage.id]}
-					watched={board.stage.id === watchedId}
-					interactive={opener(board.stage)}
-				/>
-			)}
-
 			<div className='gm-lower'>
-				{(board.tiles.length > 0 || board.rows.length > 0) && <h2 className='gm-title'>{t('main.sectionLive')}</h2>}
+				{board.stage && <h2 className='gm-title'>{t('main.sectionLive')}</h2>}
+
+				{board.stage && (
+					<GameStage
+						key={board.stage.id}
+						game={board.stage}
+						tab={stageTab(board.stage)}
+						note={stageNote(board.stage, { bettingEnabled }, t as Parameters<typeof stageNote>[2])}
+						power={scoreOf(board.stage)}
+						trend={trends[board.stage.id]}
+						favorites={favorites[board.stage.id]}
+						watched={board.stage.id === watchedId}
+						interactive={opener(board.stage)}
+					/>
+				)}
 
 				{board.tiles.length > 0 && (
 					<div className={`gm-tiles${board.tiles.length % 2 ? ' is-odd' : ''}`}>
@@ -136,7 +138,7 @@ const SiteBoard = ({
 								game={game}
 								power={scoreOf(game)}
 								trend={trends[game.id]}
-								tab={picker(game, true)}
+								tab={picker(game)}
 								favorites={favorites[game.id]}
 								watched={game.id === watchedId}
 								interactive={opener(game)}
@@ -151,7 +153,6 @@ const SiteBoard = ({
 							<GameRow
 								key={game.id}
 								game={game}
-								theme='dark'
 								power={scoreOf(game)}
 								trend={trends[game.id]}
 								tab={picker(game)}

@@ -11,7 +11,7 @@ interface tabAssignSelectProps {
 	onChange: (updated: TabRegistration[]) => void;
 	formatTabLabel: (tab: Browser.tabs.Tab) => string;
 	variant?: 'field' | 'inline';
-	// A tile has half the width, so it offers the shorter wording.
+	// A tile has half the width, so it names the tab rather than the page.
 	compact?: boolean;
 	// The tab ArenaSwap has the window on, which the inline picker names as the one being watched.
 	watchedTabId?: number | null;
@@ -39,13 +39,13 @@ const tabAssignSelect = ({ gameId, openTabs, registry, onChange, formatTabLabel,
 
 	const currentTab = openTabs.find(tab => tab.id === currentTabId);
 	const inline = variant === 'inline';
-	const toggleLabel = !inline
-		? (currentTabId === undefined ? i18n.t('board.assignTab') : undefined)
-		: currentTabId === undefined
-			? i18n.t(compact ? 'board.noTab' : 'board.assignTab')
-			: currentTabId === watchedTabId
-				? i18n.t('board.watching', { tab: tabNumberLabel(currentTab) })
-				: tabNumberLabel(currentTab);
+	const tabName = currentTabId === watchedTabId
+		? i18n.t('board.watching', { tab: tabNumberLabel(currentTab) })
+		: tabNumberLabel(currentTab);
+	// A tile's select is too narrow for a page title, so it names the tab by its place instead.
+	const toggleLabel = currentTabId === undefined
+		? i18n.t(inline && compact ? 'board.noTab' : 'board.assignTab')
+		: inline || compact ? tabName : undefined;
 
 	return (
 		<div className={`game-card-tab-assign${inline ? ' is-inline' : ''}`} data-card-control='true'>
@@ -55,6 +55,7 @@ const tabAssignSelect = ({ gameId, openTabs, registry, onChange, formatTabLabel,
 				ariaLabel={i18n.t('board.assignTab')}
 				variant={variant}
 				toggleLabel={toggleLabel}
+				toggleHint={!inline && !compact && currentTabId !== undefined ? tabName : undefined}
 				disabled={disabled}
 				className={inline && currentTabId === undefined ? 'is-offer' : undefined}
 				options={[
@@ -64,7 +65,7 @@ const tabAssignSelect = ({ gameId, openTabs, registry, onChange, formatTabLabel,
 						return {
 							value: String(tab.id),
 							label: `${formatTabLabel(tab)}${inUse ? i18n.t('tabAssign.inUse') : ''}`,
-							hint: inline ? tabNumberLabel(tab) : undefined,
+							hint: tabNumberLabel(tab),
 							disabled: inUse,
 						};
 					}),

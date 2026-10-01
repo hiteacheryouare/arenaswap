@@ -32,7 +32,6 @@ interface Strings {
 	nowOn: string;
 	captions: string[];
 	signals: string[];
-	powerScore: string;
 }
 
 const imageBase = `${import.meta.env.BASE_URL}images`;
@@ -132,7 +131,7 @@ const trendOption: EChartsOption = {
 
 const GameCard = ({ active, chartElRef, strings }: { active: boolean; chartElRef: React.RefObject<HTMLDivElement | null>; strings: Strings }) => (
 	<div className='mw-card'>
-		<GameStage game={demoGame} label='NBA' power={{ value: demoPower, label: strings.powerScore }} />
+		<GameStage game={demoGame} label='NBA' power={demoPower} />
 		<div className='mw-breakdown'>
 			<div ref={chartElRef} className='mw-chart' />
 			<ul className='mw-signals'>

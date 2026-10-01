@@ -2,8 +2,9 @@ import type { ReactNode } from 'react';
 import type { Game, Team, TeamMonoMarks } from '@arenaswap/core/types';
 import BaseDiamond from './baseDiamond';
 import BoardCrest from './boardCrest';
-import { isInningGame, resolveBoardClock, resolveBoardTone, statusWord, trailingSide, type boardTone } from './boardClock';
-import { upcomingStatus } from './boardSituation';
+import BsoIndicator from './bsoIndicator';
+import { hasShootout, isInningGame, resolveBoardTone, resolveClockLines, statusWord, trailingSide, type boardTone } from './boardClock';
+import { downDistanceLine, upcomingStatus } from './boardSituation';
 import FavoriteStar from './favoriteStar';
 import FlipScore from './flipScore';
 import { useT } from './i18nContext';
@@ -34,7 +35,7 @@ interface boardMatchupProps extends matchupTeamOptions {
 	timeouts?: boolean;
 }
 
-const crestSizes: Record<matchupSize, number> = { stage: 72, tile: 32, row: 28 };
+const crestSizes: Record<matchupSize, number> = { stage: 64, tile: 32, row: 28 };
 
 const teamName = (team: Team, names: matchupTeamOptions['names'] = 'abbreviation') => (
 	names === 'name' ? (team.nickname || team.name || team.abbreviation) : team.abbreviation
@@ -81,18 +82,24 @@ export const StatusWord = ({ game }: { game: Game }) => {
 	const t = useT();
 	const tone = resolveBoardTone(game);
 	const word = statusWord(game, tone, t);
-	return word ? <span className={`as-status is-${tone}`}>{word}</span> : null;
+	if (!word) return null;
+	return (
+		<span className={`as-status is-${tone}`}>
+			<StatusDot tone={tone} />
+			{word}
+		</span>
+	);
 };
 
-// The same line across the top of every game: the tab it's on, the round, and whether it's live.
-export const BoardTop = ({ game, tab, context }: { game: Game; tab?: ReactNode; context?: ReactNode }) => {
+// v2's status row across the top of every game: whether it's live on the left, the round on the right.
+export const BoardTop = ({ game, context, children }: { game: Game; context?: ReactNode; children?: ReactNode }) => {
 	const t = useT();
-	if (!tab && !context && !statusWord(game, resolveBoardTone(game), t)) return null;
+	if (!context && !children && !statusWord(game, resolveBoardTone(game), t)) return null;
 	return (
 		<div className='as-top'>
-			<span className='as-top-tab'>{tab}</span>
-			<span className='as-top-context'>{context}</span>
-			<span className='as-top-status'><StatusWord game={game} /></span>
+			<StatusWord game={game} />
+			{children}
+			{context && <span className='as-top-context'>{context}</span>}
 		</div>
 	);
 };
@@ -106,54 +113,68 @@ const OutsDots = ({ outs }: { outs: number }) => {
 	);
 };
 
-// Drawn where the two scores meet: the bases and the outs, or the down and where the ball is.
-const Situation = ({ game }: { game: Game }) => {
-	if (game.status !== 'in' || game.delayed === true) return null;
+const isLive = (game: Game) => game.status === 'in' && game.delayed !== true;
+
+// Under the clock: the count, or the down and where the ball is.
+const Situation = ({ game, size }: { game: Game; size: matchupSize }) => {
+	const t = useT();
+	if (!isLive(game)) return null;
 	if (isInningGame(game)) {
-		if (!game.baseRunners && !game.bso) return null;
-		return (
-			<span className='as-situation'>
-				{game.baseRunners && <BaseDiamond {...game.baseRunners} />}
-				{game.bso && <OutsDots outs={game.bso.outs} />}
-			</span>
-		);
+		if (!game.bso) return null;
+		return size === 'stage' ? <BsoIndicator {...game.bso} /> : <OutsDots outs={game.bso.outs} />;
 	}
 	if (game.sportType !== 'football' || !game.downDistance) return null;
+	if (size !== 'tile') return <span className='as-downs'>{downDistanceLine(game, t as Parameters<typeof downDistanceLine>[1])}</span>;
 	return (
-		<span className='as-downs'>
+		<span className='as-downs is-stacked'>
 			<b>{game.downDistance}</b>
 			{game.fieldPosition && <small>{game.fieldPosition}</small>}
 		</span>
 	);
 };
 
-const Centre = ({ game, clock, startNote }: Pick<boardMatchupProps, 'game' | 'clock' | 'startNote'>) => {
+// Between the two scores: v2's hairline, or the bases for a game that has them.
+const ScoreDivider = ({ game }: { game: Game }) => {
+	if (isInningGame(game) && isLive(game)) {
+		return (
+			<span className='as-match-mid is-bases'>
+				<BaseDiamond first={game.baseRunners?.first ?? false} second={game.baseRunners?.second ?? false} third={game.baseRunners?.third ?? false} />
+			</span>
+		);
+	}
+	return <span className='as-match-mid' aria-hidden='true'><span className='as-match-sep' /></span>;
+};
+
+const Centre = ({ game, size, clock, startNote }: Pick<boardMatchupProps, 'game' | 'size' | 'clock' | 'startNote'>) => {
 	const t = useT();
-	const status = resolveBoardClock(game, t);
 	if (game.status === 'pre') {
+		const lines = resolveClockLines(game, t);
 		const note = startNote === undefined ? upcomingStatus(game, t as Parameters<typeof upcomingStatus>[1]) : startNote;
 		return (
 			<span className='as-centre is-pre'>
-				<span className='as-centre-time num'>{clock ?? status.text}</span>
+				<span className='as-centre-time'>{clock ?? lines.main}</span>
 				{note && <span className='as-centre-note'>{note}</span>}
 			</span>
 		);
 	}
+	const lines = resolveClockLines(game, t);
+	// The status row already says Final; all a result adds is a shootout's tally.
 	if (game.status === 'post') {
-		return <span className='as-centre is-final'><span className='as-centre-word'>{status.text}</span></span>;
+		if (!hasShootout(game)) return null;
+		return <span className='as-centre'><span className='as-period'>{t('gameCard.shootout', { away: game.awayTeam.shootoutScore ?? 0, home: game.homeTeam.shootoutScore ?? 0 })}</span></span>;
 	}
 	return (
 		<span className='as-centre'>
-			<Situation game={game} />
-			<span className={`as-clock${status.word ? '' : ' num'}${status.delayed ? ' is-delayed' : ''}`}>
-				<StatusDot tone={resolveBoardTone(game)} />
+			<span className={`as-clock${lines.word ? ' is-word' : ''}${game.delayed === true ? ' is-delayed' : ''}`}>
 				{clock ?? (
 					<>
-						{status.topOfInning !== undefined && <InningHalfIcon topOfInning={status.topOfInning} />}
-						{status.text}
+						{lines.topOfInning !== undefined && <InningHalfIcon topOfInning={lines.topOfInning} />}
+						{lines.main}
 					</>
 				)}
 			</span>
+			{!clock && lines.sub && <span className='as-period'>{lines.sub}</span>}
+			<Situation game={game} size={size} />
 		</span>
 	);
 };
@@ -185,16 +206,16 @@ const MatchTeam = ({ game, side, size, crest, color, timeouts, options }: {
 					onToggle={options.onToggleFavorite && (() => options.onToggleFavorite?.(side))}
 				/>
 			</span>
-			{record && <small className='as-match-record num'>{record}</small>}
+			{record && <small className='as-match-record'>{record}</small>}
 			{timeouts && team.timeouts !== undefined && <TimeoutDots remaining={team.timeouts} teamAbbreviation={team.abbreviation} />}
 		</span>
 	);
 };
 
-// One game as a scoreboard reads it: each team under its crest, the scores beside them, and what is
-// happening in the middle.
+// One game as v2's card read it: each team under its crest, the two scores together in the middle
+// split by a hairline, and the clock and period stacked under them.
 const BoardMatchup = ({ game, size, crests, colors, clock, startNote, timeouts = false, ...options }: boardMatchupProps) => {
-	const behind = trailingSide(game);
+	const behind = game.status === 'post' ? trailingSide(game) : null;
 	const wide = Math.max(game.awayTeam.score, game.homeTeam.score) >= 100;
 	const score = (which: side) => (
 		<FlipScore
@@ -206,8 +227,9 @@ const BoardMatchup = ({ game, size, crests, colors, clock, startNote, timeouts =
 		<div className={`as-match is-${size}${game.status === 'pre' ? ' is-pre' : ''}${wide ? ' is-wide' : ''}`}>
 			<MatchTeam game={game} side='away' size={size} crest={crests.away} color={colors.away} timeouts={timeouts} options={options} />
 			{game.status !== 'pre' && score('away')}
-			<Centre game={game} clock={clock} startNote={startNote} />
+			{game.status !== 'pre' && <ScoreDivider game={game} />}
 			{game.status !== 'pre' && score('home')}
+			<Centre game={game} size={size} clock={clock} startNote={startNote} />
 			<MatchTeam game={game} side='home' size={size} crest={crests.home} color={colors.home} timeouts={timeouts} options={options} />
 		</div>
 	);

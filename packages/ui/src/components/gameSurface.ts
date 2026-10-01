@@ -104,66 +104,31 @@ export const gameSurfaceStyle = (surface: gameSurface): CSSProperties => ({
 	'--stage-behind': `rgba(255, 255, 255, ${surface.behindAlpha})`,
 } as CSSProperties);
 
-// A row is a quieter version of the same two colours: each team's colour holds its own end and they
-// meet through the page itself, under a veil of the page sized for the ink. Dark ink on the light
-// page, white on the dark one. Games you aren't deciding anything from (upcoming and final) sit
-// under more of it.
-const rowVeils = {
-	dark: { page: { red: 14, green: 16, blue: 19 }, ink: '#ffffff', note: '#ffffff', noteAlpha: 0.74, floor: 0.5, quietFloor: 0.66 },
-	light: { page: { red: 244, green: 245, blue: 247 }, ink: '#0e1013', note: '#0e1013', noteAlpha: 0.7, floor: 0.62, quietFloor: 0.76 },
-} as const;
+// v2's plate: white under a wash of both teams' colours, each team's colour down its own side as a
+// rail. A finished game steps back to a flat grey plate with no rails at all.
+const plateWashShare = 0.16;
+const plateWhite = '#ffffff';
+const finalPlate = '#f4f6f8';
 
-export interface rowSurface {
+export interface gamePlate {
 	away: string;
 	home: string;
-	near: number;
-	veilRgb: string;
 	crestAway: string;
 	crestHome: string;
-	theme: ResolvedTheme;
 }
 
-const noteOver = (note: string, surface: string, alpha: number) => {
-	const rgb = hexToRgb(note) ?? { red: 255, green: 255, blue: 255 };
-	return mixOver(rgb, surface, alpha);
-};
-
-export const resolveRowSurface = (game: Pick<Game, 'awayTeam' | 'homeTeam' | 'delayed' | 'status'>, theme: ResolvedTheme, quiet = false): rowSurface => {
+export const resolveGamePlate = (game: Pick<Game, 'awayTeam' | 'homeTeam' | 'delayed' | 'status'>): gamePlate => {
 	const [away, home] = boardColors(game);
-	const tone = rowVeils[theme];
-	const holds = (color: string, share: number) => {
-		const under = mixOver(tone.page, color, share);
-		return contrast(tone.ink, under) >= textContrast && contrast(noteOver(tone.note, under, tone.noteAlpha), under) >= textContrast;
-	};
-	const nearFor = (color: string) => {
-		let share: number = quiet ? tone.quietFloor : tone.floor;
-		while (share < 0.96 && !holds(color, share)) share += veilStep;
-		return Math.min(share, 0.96);
-	};
-	const near = Math.max(nearFor(away), nearFor(home));
-	return {
-		away,
-		home,
-		near: round(near),
-		veilRgb: `${tone.page.red}, ${tone.page.green}, ${tone.page.blue}`,
-		crestAway: mixOver(tone.page, away, near),
-		crestHome: mixOver(tone.page, home, near),
-		theme,
-	};
+	const washed = (color: string) => (
+		game.status === 'post' ? finalPlate : mixOver(hexToRgb(color) ?? hexToRgb(fallbackColor)!, plateWhite, plateWashShare)
+	);
+	return { away, home, crestAway: washed(away), crestHome: washed(home) };
 };
 
-export const rowSurfaceStyle = (surface: rowSurface): CSSProperties => {
-	const tone = rowVeils[surface.theme];
-	const note = hexToRgb(tone.note) ?? { red: 255, green: 255, blue: 255 };
-	return {
-		'--row-away': surface.away,
-		'--row-home': surface.home,
-		'--row-near': surface.near,
-		'--row-veil-rgb': surface.veilRgb,
-		'--row-ink': tone.ink,
-		'--row-note': `rgba(${note.red}, ${note.green}, ${note.blue}, ${tone.noteAlpha})`,
-	} as CSSProperties;
-};
+export const gamePlateStyle = (plate: gamePlate): CSSProperties => ({
+	'--plate-away': plate.away,
+	'--plate-home': plate.home,
+} as CSSProperties);
 
 // The lettered disc a team gets when its crest never arrives: its own colour, lettered in its
 // alternate when that reads, otherwise in whichever of white or black reads better.

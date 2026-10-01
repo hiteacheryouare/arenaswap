@@ -370,6 +370,7 @@
 			"openDetails": "{away} vs {home} 상세 정보 열기",
 			"delayFallback": "지연",
 			"vs": "vs",
+			"watchLabel": "시청:",
 			"topOfInning": "초",
 			"bottomOfInning": "말",
 			"shootout": "PK {away}–{home}",
@@ -446,7 +447,6 @@
 			"noTab": "탭 없음",
 			"watching": "시청 중, {tab}",
 			"switchingTo": "{tab} 전환 중",
-			"watchOn": "{networks}에서 시청",
 			"inMinutes": {
 				"1": "1분 후",
 				"n": "$1분 후"

@@ -370,6 +370,7 @@
 			"openDetails": "Abrir detalles de {away} vs {home}",
 			"delayFallback": "Suspendido",
 			"vs": "vs",
+			"watchLabel": "Ver en:",
 			"topOfInning": "Parte alta de la entrada",
 			"bottomOfInning": "Parte baja de la entrada",
 			"shootout": "PEN {away}–{home}",
@@ -446,7 +447,6 @@
 			"noTab": "Sin pestaña",
 			"watching": "Viendo, {tab}",
 			"switchingTo": "Cambiando a {tab}",
-			"watchOn": "Ver en {networks}",
 			"inMinutes": {
 				"1": "en 1 min",
 				"n": "en $1 min"

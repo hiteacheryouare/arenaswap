@@ -22,6 +22,8 @@ interface selectDropdownProps<T extends string> {
 	variant?: 'field' | 'inline';
 	// What the closed control says, when that isn't the selected option's own label.
 	toggleLabel?: string;
+	// Quiet text at the end of the closed field, such as which tab the chosen page is.
+	toggleHint?: string;
 	className?: string;
 }
 
@@ -36,6 +38,7 @@ const selectDropdown = <T extends string>({
 	ariaLabel,
 	variant = 'field',
 	toggleLabel,
+	toggleHint,
 	className,
 }: selectDropdownProps<T>) => {
 	const toggleRef = useRef<HTMLButtonElement>(null);
@@ -49,7 +52,7 @@ const selectDropdown = <T extends string>({
 
 	const toggleClass = variant === 'inline'
 		? 'as-picker'
-		: 'form-select select-field text-start';
+		: `form-select select-field text-start${toggleHint ? ' has-hint' : ''}`;
 
 	return (
 		<div className={`dropdown${className ? ` ${className}` : ''}`}>
@@ -64,7 +67,14 @@ const selectDropdown = <T extends string>({
 				disabled={disabled}
 			>
 				{variant === 'field' && current?.icon && <i className={`bi ${current.icon} select-field-icon`} aria-hidden='true' />}
-				{variant === 'inline' ? <span className='as-picker-label'>{toggleLabel ?? current?.label}</span> : (toggleLabel ?? current?.label)}
+				{variant === 'inline' && <span className='as-picker-label'>{toggleLabel ?? current?.label}</span>}
+				{variant === 'field' && !toggleHint && (toggleLabel ?? current?.label)}
+				{variant === 'field' && toggleHint && (
+					<>
+						<span className='select-field-label'>{toggleLabel ?? current?.label}</span>
+						<span className='select-field-hint'>{toggleHint}</span>
+					</>
+				)}
 				{variant === 'inline' && <i className='bi bi-chevron-down as-picker-chevron' aria-hidden='true' />}
 			</button>
 			<ul className={`dropdown-menu select-dropdown-menu${variant === 'field' ? ' w-100' : ''}`}>

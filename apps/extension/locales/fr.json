@@ -537,6 +537,7 @@
 		"timeoutsShort": "{count} TO",
 		"powerScore": "PowerScore",
 		"vs": "vs",
+		"watchLabel": "Regarder :",
 		"topOfInning": "Début de la manche",
 		"bottomOfInning": "Fin de la manche"
 	},
@@ -975,7 +976,6 @@
 		"noTab": "Aucun onglet",
 		"watching": "En visionnage, {tab}",
 		"switchingTo": "Bascule vers {tab}",
-		"watchOn": "Regarder sur {networks}",
 		"inMinutes": {
 			"1": "dans 1 min",
 			"n": "dans $1 min"

@@ -3,7 +3,7 @@
 // viewBox land where the yard numbers painted on them say they do.
 import FootballFieldStrip from '@arenaswap/ui/src/components/footballFieldStrip';
 import GameStage from '@arenaswap/ui/src/components/gameStage';
-import { stageNote, stageSituation } from '@arenaswap/ui/src/components/boardSituation';
+import { stageNote } from '@arenaswap/ui/src/components/boardSituation';
 import { numberRowsY, stripHeight } from '@arenaswap/ui/src/components/footballField';
 import type { Game, PowerScoreResult, TeamMonoMarks } from '@arenaswap/core/types';
 
@@ -393,9 +393,8 @@ describe('football field on the board', () => {
 			<div style={{ width: `${popupWidth}px` }}>
 				<GameStage
 					game={nflGame}
-					situation={stageSituation(nflGame)}
 					note={stageNote(nflGame, { bettingEnabled: false }, key => key)}
-					power={{ value: result.total, label: 'PowerScore' }}
+					power={result.total}
 				/>
 			</div>,
 		);

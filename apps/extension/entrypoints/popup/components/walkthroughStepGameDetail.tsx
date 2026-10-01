@@ -41,10 +41,10 @@ const walkthroughStepGameDetail = ({ onNext, onBack }: walkthroughStepGameDetail
 				<div className='wt-detail'>
 					<GameStage
 						game={eaglesGiantsQ4}
+						surface='paint'
 						className='wt-stage wt-hero'
 						names='name'
 						records={{ away: eaglesGiantsQ4.awayTeam.record, home: eaglesGiantsQ4.homeTeam.record }}
-						power={{ value: mockPower, label: i18n.t('gameCard.powerScore') }}
 						head={(
 							<div className='wt-hero-bar'>
 								<button type='button' className='as-icon' aria-label={i18n.t('app.backToGames')} onClick={() => setOpened(false)}>
@@ -82,7 +82,7 @@ const walkthroughStepGameDetail = ({ onNext, onBack }: walkthroughStepGameDetail
 					<GameStage
 						game={eaglesGiantsQ4}
 						className='wt-stage'
-						power={{ value: mockPower, label: i18n.t('gameCard.powerScore') }}
+						power={mockPower}
 						note={(
 							<span className='wt-tap'>
 								<i className='bi bi-hand-index-thumb' aria-hidden='true' />

@@ -47,3 +47,8 @@ $font-base-url: '/fonts' !default;
 // Only for Ludicrous Speed's cockpit readouts and the debug panel.
 @include as-woff2-face('Lekton', 'Lekton-Regular',   400);
 @include as-woff2-face('Lekton', 'Lekton-Bold',      700);
+
+// Score figures on the board. DM Sans has no tabular figures, so a "1" is under half the width of
+// a "0" and a score pair drifts off the plate's axis. Geist's tabular figures hold it still.
+@include as-woff2-face('Geist', 'Geist-SemiBold', 600);
+@include as-woff2-face('Geist', 'Geist-Bold', 700);

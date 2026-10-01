@@ -2,8 +2,8 @@ import { bullsHeat, eaglesCowboys, liveState, makeScore, onboardedPrefs, openTab
 
 const onboarded = { local: { onboardingCompleted: true }, sync: { prefs: onboardedPrefs() } };
 const cardFor = (abbreviation: string) => cy.contains('[data-game]', abbreviation);
-const tabPicker = (abbreviation: string) => cardFor(abbreviation).find('.game-card-tab-assign .as-picker');
-const powerOf = (abbreviation: string) => cardFor(abbreviation).find('.as-stage-power strong, .as-power-figure b');
+const tabPicker = (abbreviation: string) => cardFor(abbreviation).find('.game-card-tab-assign .form-select');
+const powerOf = (abbreviation: string) => cardFor(abbreviation).find('.as-power-figure b');
 
 describe('registering a tab and watching the lead change', () => {
 	beforeEach(() => cy.openPopup({ ...onboarded, state: liveState(), tabs: openTabs }));
@@ -22,7 +22,7 @@ describe('registering a tab and watching the lead change', () => {
 			{ tabId: openTabs[0].id, gameId: sixersThunder.id },
 		]);
 		// The picker now names the tab the game is on.
-		tabPicker(sixersThunder.homeTeam.abbreviation).should('have.text', 'Tab 1');
+		tabPicker(sixersThunder.homeTeam.abbreviation).should('contain.text', 'Tab 1');
 	});
 
 	it('keeps one tab from serving two games at once', () => {
@@ -61,14 +61,14 @@ describe('registering a tab and watching the lead change', () => {
 	});
 
 	it('hands the stage to a new leader when the background pushes one', () => {
-		cy.get('.as-stage .as-stage-power strong').should('have.text', '82');
+		cy.get('.as-stage .as-power-figure b').should('have.text', '82');
 
 		// The blowout turns into the close game and the close one cools off.
 		cy.pushScores({
 			scores: [makeScore(sixersThunder.id, 11), makeScore(bullsHeat.id, 94)],
 		});
 
-		cy.get('.as-stage .as-stage-power strong').should('have.text', '94');
+		cy.get('.as-stage .as-power-figure b').should('have.text', '94');
 		cy.get('.as-stage').should('contain.text', bullsHeat.homeTeam.abbreviation);
 		powerOf(sixersThunder.homeTeam.abbreviation).should('have.text', '11');
 	});

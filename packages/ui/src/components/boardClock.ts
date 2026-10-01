@@ -68,8 +68,28 @@ export const resolveBoardTone = (game: Game): boardTone => {
 
 export const statusWord = (game: Game, tone: boardTone, t: Translate): string | null => {
 	if (tone === 'live') return t('gameCard.live');
+	if (tone === 'final') return resolveBoardClock(game, t).text;
 	if (tone === 'delay') return t('board.delayed');
 	if (tone !== 'overtime') return null;
 	if (isInningGame(game)) return t('board.extraInnings');
 	return game.sportType === 'soccer' ? t('board.extraTime') : t('board.overtime');
+};
+
+export interface clockLines {
+	main: string;
+	// The period under a running clock, as v2 stacked them.
+	sub?: string;
+	word: boolean;
+	topOfInning?: boolean;
+}
+
+// The clock slot split into v2's two lines: the clock, then the period under it.
+export const resolveClockLines = (game: Game, t: Translate): clockLines => {
+	const whole = resolveBoardClock(game, t);
+	if (game.status !== 'in' || whole.word || whole.topOfInning !== undefined || hasShootout(game)) {
+		return { main: whole.text, word: whole.word, topOfInning: whole.topOfInning };
+	}
+	const clockBased = sportTypeConfigMap[game.sportType]?.clockBased ?? false;
+	const clock = clockBased ? formatGameClock(game) : '';
+	return clock ? { main: clock, sub: formatPeriod(game), word: false } : { main: whole.text, word: false };
 };

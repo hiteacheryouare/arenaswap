@@ -113,6 +113,7 @@ $palettes: (
 
 	--as-font: 'DM Sans', system-ui, -apple-system, sans-serif;
 	--as-font-figures: 'Inter', system-ui, -apple-system, sans-serif;
+	--as-font-score: 'Geist', 'DM Sans', system-ui, sans-serif;
 	--as-text-2xs: 10px;
 	--as-text-xs: 11px;
 	--as-text-sm: 13px;
@@ -144,6 +145,23 @@ $palettes: (
 	--as-radius-sm: 8px;
 	--as-radius-md: 14px;
 	--as-radius-lg: 20px;
+
+	// The games are bright plates in both themes, as v2 drew them, so their inks don't change with it.
+	--as-plate: #ffffff;
+	--as-plate-ink: #111827;
+	--as-plate-muted: #4b5563;
+	--as-plate-faint: #6b7280;
+	--as-plate-line: #dee2e6;
+	--as-plate-rule: #cfd6de;
+	--as-plate-final: #f4f6f8;
+	--as-plate-final-line: #d7dde3;
+	--as-plate-loser: #7c8794;
+	--as-plate-live: #a3380a;
+	--as-plate-overtime: #b5025a;
+	--as-plate-delay: #6e5600;
+	--as-plate-start: #604e06;
+	--as-plate-gain: #0e6a40;
+	--as-plate-penalty: #b71c1c;
 }
 
 @mixin bootstrap-tokens($mode) {

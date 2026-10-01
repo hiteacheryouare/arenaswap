@@ -370,6 +370,7 @@
 			"openDetails": "{away} vs {home}の詳細を開く",
 			"delayFallback": "中断",
 			"vs": "vs",
+			"watchLabel": "視聴先：",
 			"topOfInning": "イニングの表",
 			"bottomOfInning": "イニングの裏",
 			"shootout": "PK {away}–{home}",
@@ -446,7 +447,6 @@
 			"noTab": "タブなし",
 			"watching": "視聴中、{tab}",
 			"switchingTo": "{tab}に切り替え中",
-			"watchOn": "{networks}で視聴",
 			"inMinutes": {
 				"1": "あと1分",
 				"n": "あと$1分"

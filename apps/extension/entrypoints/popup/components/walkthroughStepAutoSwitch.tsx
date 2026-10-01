@@ -3,7 +3,6 @@ import { i18n } from '#i18n';
 import type { Game, TabRegistration } from '@arenaswap/core/types';
 import GameRow from '@arenaswap/ui/src/components/gameRow';
 import GameStage from '@arenaswap/ui/src/components/gameStage';
-import useDocumentTheme from '@arenaswap/ui/src/components/useDocumentTheme';
 import TabAssignSelect, { tabNumberLabel } from './tabAssignSelect';
 import WalkthroughFrame from './walkthroughFrame';
 import { eaglesGiantsQ2, sixersCelticsQ4, tourTabLabel, tourTabs } from './walkthroughMocks';
@@ -28,7 +27,6 @@ const tabPicker = (game: Game, watchedTabId: number) => (
 		registry={registry}
 		onChange={() => {}}
 		formatTabLabel={tourTabLabel}
-		variant='inline'
 		watchedTabId={watchedTabId}
 		disabled
 	/>
@@ -38,7 +36,6 @@ const tabPicker = (game: Game, watchedTabId: number) => (
 // The 76ers climb past the Eagles, take the stage with "Switching to Tab 2", then ArenaSwap moves
 // the window and the label settles on "Watching".
 const walkthroughStepAutoSwitch = ({ onNext, onBack }: walkthroughStepAutoSwitchProps) => {
-	const theme = useDocumentTheme();
 	const [phase, setPhase] = useState(0);
 	const [sixersPower, setSixersPower] = useState(31);
 	const [switched, setSwitched] = useState(false);
@@ -76,15 +73,14 @@ const walkthroughStepAutoSwitch = ({ onNext, onBack }: walkthroughStepAutoSwitch
 				<div key={stage.id} className='wt-arrive'>
 					<GameStage
 						game={stage}
-						label={stageLabel}
-						power={{ value: powerOf(stage), label: i18n.t('gameCard.powerScore') }}
+						tab={stageLabel}
+						power={powerOf(stage)}
 						watched={stage.id === watchedGameId}
 					/>
 				</div>
 				<div key={row.id} className='as-rows wt-arrive'>
 					<GameRow
 						game={row}
-						theme={theme}
 						power={powerOf(row)}
 						tab={tabPicker(row, watchedTabId)}
 						watched={row.id === watchedGameId}

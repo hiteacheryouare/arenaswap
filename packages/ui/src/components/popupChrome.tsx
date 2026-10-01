@@ -62,7 +62,6 @@ export const PopupHeader = ({
 	onOpenSettings,
 	onStartTour,
 	onOpenGuide,
-	onStage = false,
 	className,
 	style,
 }: {
@@ -83,8 +82,6 @@ export const PopupHeader = ({
 	// Optional, and the button is absent without it. The website renders this header twice and has no
 	// guide page to open, so there is nothing there for a third control to do.
 	onOpenGuide?: () => void;
-	// The header sits over the stage, so until the bar lifts it is drawn in the stage's white ink.
-	onStage?: boolean;
 	className?: string;
 	style?: CSSProperties;
 }) => {
@@ -93,7 +90,7 @@ export const PopupHeader = ({
 	const buttonsLive = interactive === true;
 	const toggleLive = interactive !== false;
 	return (
-		<div ref={headerRef} className={`popup-header d-flex justify-content-between align-items-center${onStage ? ' is-on-stage' : ''}${className ? ` ${className}` : ''}`} style={style}>
+		<div ref={headerRef} className={`popup-header d-flex justify-content-between align-items-center${className ? ` ${className}` : ''}`} style={style}>
 			<Wordmark ref={wordmarkRef} className='arenaswap-logo' />
 			<div className='popup-tools d-flex align-items-center' aria-hidden={toggleLive ? undefined : true}>
 				{/* Before the help mark rather than after the cog: settingsCog.cy.tsx identifies the cog
@@ -101,14 +98,14 @@ export const PopupHeader = ({
 				    silently repoint those assertions at this one. */}
 				{onOpenGuide && (
 					<button type='button' className='as-icon popup-settings-button' onClick={onOpenGuide} title={t('main.guideButton')} aria-label={t('main.guideButton')} disabled={!buttonsLive} tabIndex={buttonsLive ? undefined : -1}>
-						<i className='bi bi-calendar popup-settings-icon' aria-hidden='true' />
+						<i className='bi bi-calendar-week popup-settings-icon' aria-hidden='true' />
 					</button>
 				)}
 				<button type='button' className='as-icon popup-settings-button' onClick={onStartTour} title={t('main.tourButton')} aria-label={t('main.tourButton')} disabled={!buttonsLive} tabIndex={buttonsLive ? undefined : -1}>
 					<i className='bi bi-question-circle popup-settings-icon' aria-hidden='true' />
 				</button>
 				<button type='button' className='as-icon popup-settings-button' onClick={onOpenSettings} title={t('main.settingsButton')} aria-label={t('main.settingsButton')} disabled={!buttonsLive} tabIndex={buttonsLive ? undefined : -1}>
-					<i className='bi bi-gear popup-settings-icon' aria-hidden='true' />
+					<i className='bi bi-gear-fill popup-settings-icon' aria-hidden='true' />
 				</button>
 				<div className='form-check form-switch mb-0 popup-enable'>
 					<input className='form-check-input' type='checkbox' role='switch' id={toggleId} checked={enabled} aria-checked={enabled} onChange={onToggleEnabled} disabled={!prefsLoaded || !toggleLive} tabIndex={toggleLive ? undefined : -1} aria-label={t('main.enableToggleLabel')} />

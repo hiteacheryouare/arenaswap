@@ -1,7 +1,10 @@
 import type { Game, PowerScoreSnapshot } from '@arenaswap/core/types';
 import { arrangeLive, powerTrend, tileFloor } from '../src/components/boardLayout';
 import { formatStartTime, resolveBoardClock, trailingSide } from '../src/components/boardClock';
-import { resolveGameColors, resolveGameSurface, resolveRowSurface, veilTopShare, monogramInk } from '../src/components/gameSurface';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { resolveGameColors, resolveGamePlate, resolveGameSurface, veilTopShare, monogramInk } from '../src/components/gameSurface';
+import { powerScoreColor } from '../src/components/heatBar';
 import { resolveTeamColorPair } from '../src/components/colorUtils';
 import { contrastBetween, hexLuminance, hexToRgb, rgbToHex } from '../src/components/colorMath';
 import { defaultStrings } from '../src/components/defaultStrings';
@@ -143,6 +146,10 @@ const mix = (over: string, under: string, share: number) => {
 	return rgbToHex(a.red * share + b.red * (1 - share), a.green * share + b.green * (1 - share), a.blue * share + b.blue * (1 - share));
 };
 const contrast = (a: string, b: string) => contrastBetween(hexLuminance(a), hexLuminance(b));
+const cssHex = (rgb: string) => {
+	const [red = 0, green = 0, blue = 0] = rgb.match(/\d+/g)!.map(Number);
+	return rgbToHex(red, green, blue);
+};
 const surfaceFor = (color: string) => resolveGameSurface({ awayTeam: { id: 'a', name: '', abbreviation: '', score: 0, color }, homeTeam: { id: 'h', name: '', abbreviation: '', score: 0, color } });
 
 describe('the stage surface', () => {
@@ -184,28 +191,32 @@ describe('the stage surface', () => {
 
 const pairOf = (color: string) => ({ awayTeam: { id: 'a', name: '', abbreviation: '', score: 0, color }, homeTeam: { id: 'h', name: '', abbreviation: '', score: 0, color: '#777777' } });
 
-describe('the row surface', () => {
+describe('the plate', () => {
 	const steps = [0x00, 0x33, 0x66, 0x99, 0xcc, 0xff];
 	const colours = steps.flatMap(r => steps.flatMap(g => steps.map(b => rgbToHex(r, g, b))));
-	const themes = [
-		{ theme: 'dark' as const, page: '#0e1013', ink: '#ffffff', noteAlpha: 0.74 },
-		{ theme: 'light' as const, page: '#f4f5f7', ink: '#0e1013', noteAlpha: 0.7 },
-	];
+	const theme = readFileSync(join(__dirname, '../src/_theme.scss'), 'utf8');
+	const token = (name: string) => theme.match(new RegExp(`--as-plate-${name}: (#[0-9a-f]{6});`))![1]!;
+	const inks = ['ink', 'muted', 'live', 'overtime', 'delay', 'start', 'gain', 'penalty'];
 
-	// The names, scores and the dimmer trailing score sit where the veil is thinnest.
-	test.each(themes)('keeps the $theme ink readable on any team colour', ({ theme, page, ink, noteAlpha }) => {
+	// The wash is darkest at each rail, where one team's colour holds alone, which is where the crest
+	// and the name sit.
+	test.each(inks)('keeps the %s ink readable on any team colour', name => {
 		for (const colour of colours) {
-			const surface = resolveRowSurface(pairOf(colour), theme);
-			const under = mix(page, surface.away, surface.near);
-			expect(contrast(ink, under)).toBeGreaterThanOrEqual(4.49);
-			expect(contrast(mix(ink, under, noteAlpha), under)).toBeGreaterThanOrEqual(4.49);
+			expect(contrast(token(name), resolveGamePlate(pairOf(colour)).crestAway)).toBeGreaterThanOrEqual(4.5);
 		}
 	});
 
-	test('washes upcoming and final games more quietly than live ones', () => {
-		const live = resolveRowSurface(pairOf('#002D72'), 'dark');
-		const quiet = resolveRowSurface(pairOf('#002D72'), 'dark', true);
-		expect(quiet.near).toBeGreaterThan(live.near);
+	test('keeps the PowerScore figure readable at every score', () => {
+		const darkest = resolveGamePlate(pairOf('#000000')).crestAway;
+		for (let score = 0; score <= 100; score += 1) {
+			expect(contrast(mix(cssHex(powerScoreColor(score)), token('ink'), 0.55), darkest)).toBeGreaterThanOrEqual(4.5);
+		}
+	});
+
+	test('steps a finished game back to a flat grey plate', () => {
+		const final = resolveGamePlate({ ...pairOf('#002D72'), status: 'post' as const });
+		expect(final.crestAway).toBe('#f4f6f8');
+		expect(final.crestHome).toBe('#f4f6f8');
 	});
 });
 
@@ -213,8 +224,8 @@ describe('a delayed game', () => {
 	const delayed = { ...pairOf('#002D72'), delayed: true, status: 'in' as const };
 
 	test('gives both sides over to the warning yellow', () => {
-		expect(resolveRowSurface(delayed, 'dark').away).toBe('#f1c40f');
-		expect(resolveRowSurface(delayed, 'dark').home).toBe('#f1c40f');
+		expect(resolveGamePlate(delayed).away).toBe('#f1c40f');
+		expect(resolveGamePlate(delayed).home).toBe('#f1c40f');
 		expect(resolveGameSurface(delayed).away).toBe('#f1c40f');
 	});
 

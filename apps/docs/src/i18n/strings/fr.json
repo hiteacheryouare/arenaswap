@@ -370,6 +370,7 @@
 			"openDetails": "Ouvrir les détails de {away} vs {home}",
 			"delayFallback": "En attente",
 			"vs": "vs",
+			"watchLabel": "Regarder :",
 			"topOfInning": "Début de la manche",
 			"bottomOfInning": "Fin de la manche",
 			"shootout": "TAB {away}–{home}",
@@ -446,7 +447,6 @@
 			"noTab": "Aucun onglet",
 			"watching": "En visionnage, {tab}",
 			"switchingTo": "Bascule vers {tab}",
-			"watchOn": "Regarder sur {networks}",
 			"inMinutes": {
 				"1": "dans 1 min",
 				"n": "dans $1 min"

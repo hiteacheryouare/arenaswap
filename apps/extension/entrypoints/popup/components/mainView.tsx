@@ -19,7 +19,6 @@ import GameTile from '@arenaswap/ui/src/components/gameTile';
 import GameRow from '@arenaswap/ui/src/components/gameRow';
 import { arrangeLive, powerTrend } from '@arenaswap/ui/src/components/boardLayout';
 import { buildCardHandlers } from '@arenaswap/ui/src/components/gameOpener';
-import useDocumentTheme from '@arenaswap/ui/src/components/useDocumentTheme';
 import GameCardReveal from './gameCardReveal';
 import PopupFooter from './popupFooter';
 import ProTip from './proTip';
@@ -30,9 +29,10 @@ import SuggestBanner from './suggestBanner';
 import UpcomingDayPager from './upcomingDayPager';
 import TabAssignSelect, { tabNumberLabel } from './tabAssignSelect';
 import { buildFinalComparator, buildLeagueRank, getRandomLoadingMessage, groupByDate, isFavoriteTeamGame, resolveSelectedDayIndex } from '../popupHelpers';
-import { stageSituation, stageNote } from '@arenaswap/ui/src/components/boardSituation';
+import { stageNote } from '@arenaswap/ui/src/components/boardSituation';
+import { resolveGameColors } from '@arenaswap/ui/src/components/gameSurface';
 import useRestoredScroll from '../useRestoredScroll';
-import { revealModeForIndex, revealRate, revealSpineStartMs, type cardRevealPlan, type revealMode } from '../cardReveal';
+import { revealModeForIndex, type cardRevealPlan, type revealMode } from '../cardReveal';
 
 const emptyRevealOrder = new Map<string, number>();
 const noMonoLogos: TeamMonoLogoMap = {};
@@ -129,7 +129,6 @@ const mainView = ({
 	revealSkipping = false,
 }: mainViewProps) => {
 	const scrollerRef = useRestoredScroll(scrollOffsetRef);
-	const theme = useDocumentTheme();
 	const noLeaguesSelected = prefs.enabledLeagues.length === 0;
 	const loadingMessage = useMemo(() => getRandomLoadingMessage(), []);
 	const scoreByGameId = useMemo(() => new Map(scores.map(s => [s.gameId, s.total])), [scores]);
@@ -191,12 +190,7 @@ const mainView = ({
 	const listReady = !isLoading && !noLeaguesSelected;
 	const stage = listReady ? board.stage : null;
 
-	// The stage's poster runs up behind the header, and the header's ink arrives with the stage's.
-	const stageReveal = stage && reveal.order.get(stage.id) === 0 ? revealModeForIndex(reveal.mode, 0) : 'none';
-	const headerReveal = stageReveal === 'none' ? {} : {
-		className: `is-revealing${reveal.skipping ? ' is-skipping' : ''}`,
-		style: { '--reveal-spine': `${revealSpineStartMs(0, stageReveal)}ms`, '--reveal-rate': revealRate(stageReveal) } as CSSProperties,
-	};
+	const glow = stage ? resolveGameColors(stage) : null;
 
 	const revealed = (game: Game, node: ReactNode, shape: 'stage' | 'tile' | 'row') => (
 		<GameCardReveal
@@ -230,12 +224,11 @@ const mainView = ({
 			registry={registry}
 			onChange={onRegistryChange}
 			formatTabLabel={formatTabLabel}
-			variant='inline'
 			watchedTabId={watchedTabId}
 		/>
 	);
 
-	const stageLabel = (game: Game): ReactNode => {
+	const stageTab = (game: Game): ReactNode => {
 		const tab = tabOf(game.id);
 		const watched = watchedGameId !== null ? board.all.find(g => g.id === watchedGameId) : undefined;
 		const threshold = sensitivityThresholds[prefs.sensitivity] ?? 11;
@@ -247,6 +240,7 @@ const mainView = ({
 
 	return (
 		<div ref={scrollerRef} className='popup-container d-flex flex-column gm'>
+			{glow && <div className='gm-glow' style={{ '--glow-away': glow[0], '--glow-home': glow[1] } as CSSProperties} aria-hidden='true' />}
 			<PopupHeader
 				scroller={scrollerRef}
 				enabled={prefs.enabled}
@@ -255,24 +249,7 @@ const mainView = ({
 				onOpenSettings={onOpenSetup}
 				onStartTour={onStartWalkthrough}
 				onOpenGuide={onOpenGuide}
-				onStage={stage !== null}
-				{...headerReveal}
 			/>
-
-			{stage && revealed(stage, (
-				<GameStage
-					game={stage}
-					label={stageLabel(stage)}
-					note={stageNote(stage, prefs, i18n.t)}
-					situation={stageSituation(stage)}
-					power={{ value: scoreByGameId.get(stage.id) ?? 0, label: i18n.t('gameCard.powerScore') }}
-					favorites={favoritesOf(stage, favoriteTeamIds)}
-					onToggleFavorite={toggleFavorite(stage)}
-					monoMarks={marksOf(stage, monoLogos)}
-					watched={stage.id === watchedGameId}
-					interactive={opener(stage)}
-				/>
-			), 'stage')}
 
 			<div className='gm-lower'>
 				<GameListHeader isLoading={isLoading} hasError={hasError} loadingMessage={loadingMessage} onRefresh={onRefresh} />
@@ -302,9 +279,22 @@ const mainView = ({
 
 				{listReady && prefs.proTipsEnabled && <ProTip context='main' />}
 
-				{listReady && (board.tiles.length > 0 || board.rows.length > 0) && (
-					<h2 className='gm-title'>{i18n.t('main.sectionLive')}</h2>
-				)}
+				{stage && <h2 className='gm-title'>{i18n.t('main.sectionLive')}</h2>}
+
+				{stage && revealed(stage, (
+					<GameStage
+						game={stage}
+						tab={stageTab(stage)}
+						note={stageNote(stage, prefs, i18n.t)}
+						power={scoreByGameId.get(stage.id) ?? 0}
+						trend={powerTrend(powerScoreHistory[stage.id])}
+						favorites={favoritesOf(stage, favoriteTeamIds)}
+						onToggleFavorite={toggleFavorite(stage)}
+						monoMarks={marksOf(stage, monoLogos)}
+						watched={stage.id === watchedGameId}
+						interactive={opener(stage)}
+					/>
+				), 'stage')}
 
 				{listReady && board.tiles.length > 0 && (
 					<div className={`gm-tiles${board.tiles.length % 2 ? ' is-odd' : ''}`}>
@@ -329,7 +319,6 @@ const mainView = ({
 						{board.rows.map(game => revealed(game, (
 							<GameRow
 								game={game}
-								theme={theme}
 								power={scoreByGameId.get(game.id) ?? 0}
 								trend={powerTrend(powerScoreHistory[game.id])}
 								tab={tabPicker(game)}
@@ -354,10 +343,8 @@ const mainView = ({
 						{selectedDay.games.map(game => revealed(game, (
 							<GameRow
 								game={game}
-								theme={theme}
 								favorites={favoritesOf(game, favoriteTeamIds)}
 								monoMarks={marksOf(game, monoLogos)}
-								quiet
 								interactive={opener(game)}
 							/>
 						), 'row'))}
@@ -373,10 +360,8 @@ const mainView = ({
 						{finalGames.map(game => revealed(game, (
 							<GameRow
 								game={game}
-								theme={theme}
 								favorites={favoritesOf(game, favoriteTeamIds)}
 								monoMarks={marksOf(game, monoLogos)}
-								quiet
 								interactive={opener(game)}
 							/>
 						), 'row'))}

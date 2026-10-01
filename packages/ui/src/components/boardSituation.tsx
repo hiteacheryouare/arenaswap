@@ -1,7 +1,5 @@
 import type { ReactNode } from 'react';
 import type { Game, UserPreferences } from '@arenaswap/core/types';
-import BsoIndicator from './bsoIndicator';
-import { isInningGame } from './boardClock';
 import HoverTooltip from './hoverTooltip';
 
 type Translate = (key: string, subsOrCount?: unknown, subs?: unknown) => string;
@@ -14,7 +12,7 @@ export const oddsLine = (game: Game): string | null => {
 	const parts: string[] = [];
 	if (game.odds?.details) parts.push(game.odds.details);
 	if (game.odds?.overUnder !== undefined) parts.push(`O/U ${formatOverUnder(game.odds.overUnder)}`);
-	return parts.length ? parts.join(', ') : null;
+	return parts.length ? parts.join(' • ') : null;
 };
 
 const networksOf = (game: Game, limit = 2) => game.broadcasts?.slice(0, limit).join(', ');
@@ -30,32 +28,22 @@ export const roundLabel = (game: Pick<Game, 'postseasonLabel'>): string | undefi
 	game.postseasonLabel?.replace(/\s*·\s*/g, ', ')
 );
 
-// The full count, under the stage's matchup. The bases and the outs sit between the scores.
-export const stageSituation = (game: Game): ReactNode => {
-	if (!isInningGame(game) || game.status !== 'in' || !game.bso) return null;
-	return (
-		<div className='as-stage-situation'>
-			<BsoIndicator {...game.bso} />
-		</div>
-	);
-};
-
-// Up to three quiet lines beside the PowerScore: where it is, where to watch, the line.
+// v2's meta under the stage's matchup: where it is, where to watch, and the line.
 export const stageNote = (game: Game, prefs: Pick<UserPreferences, 'bettingEnabled'>, t: Translate): ReactNode => {
-	const lead = game.venueName;
-	const networks = networksOf(game);
+	const networks = game.broadcasts?.slice(0, 2).join(' • ');
 	const odds = prefs.bettingEnabled ? oddsLine(game) : null;
+	const provider = prefs.bettingEnabled ? game.odds?.provider : undefined;
 	const lines = [
-		lead && <span key='lead' className='as-note-lead'>{lead}</span>,
-		networks && <span key='watch'>{t('board.watchOn', { networks })}</span>,
-		(odds || (prefs.bettingEnabled && game.odds?.provider?.name)) && (
-			<span key='odds' className='as-note-odds'>
+		game.venueName && <span key='venue' className='as-meta-venue'>{game.venueName}</span>,
+		networks && <span key='watch' className='as-meta-watch'><b>{t('gameCard.watchLabel')}</b> {networks}</span>,
+		(odds || provider?.name) && (
+			<span key='odds' className='as-meta-odds'>
 				{odds}
-				{game.odds?.provider?.name && (
-					<HoverTooltip className='as-note-provider' text={`${t('gameCard.oddsProvidedBy')} ${game.odds.provider.name}`}>
-						{game.odds.provider.darkLogoUrl
-							? <img className='odds-provider-logo' src={game.odds.provider.darkLogoUrl} alt={game.odds.provider.name} />
-							: game.odds.provider.name}
+				{provider?.name && (
+					<HoverTooltip className='as-meta-provider' text={`${t('gameCard.oddsProvidedBy')} ${provider.name}`}>
+						{provider.logoUrl
+							? <img className='odds-provider-logo' src={provider.logoUrl} alt={provider.name} />
+							: provider.name}
 					</HoverTooltip>
 				)}
 			</span>

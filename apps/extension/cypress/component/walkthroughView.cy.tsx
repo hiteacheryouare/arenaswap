@@ -263,9 +263,9 @@ describe('walkthroughView board demos', () => {
 		next(); // 1 -> 2
 		throughPowerScore(); // 2 -> 3
 		cy.get('.wt-assign .as-row').should('exist');
-		cy.get('.wt-assign .as-picker').should('contain.text', 'Assign a tab').click();
+		cy.get('.wt-assign .form-select').should('contain.text', 'Assign a tab').click();
 		cy.get('.wt-assign .dropdown-item').contains('youtube.com/watch?v=Philly_stream').click();
-		cy.get('.wt-assign .as-picker').should('contain.text', 'Tab 1');
+		cy.get('.wt-assign .form-select .select-field-hint').should('have.text', 'Tab 1');
 		cy.contains('link a browser tab here').should('exist');
 	});
 

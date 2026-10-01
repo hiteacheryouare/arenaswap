@@ -370,6 +370,7 @@
 			"openDetails": "Buksan ang detalye ng {away} vs {home}",
 			"delayFallback": "Delay",
 			"vs": "vs",
+			"watchLabel": "Panoorin:",
 			"topOfInning": "Top of inning",
 			"bottomOfInning": "Bottom of inning",
 			"shootout": "PENS {away}–{home}",
@@ -446,7 +447,6 @@
 			"noTab": "Walang tab",
 			"watching": "Watching, {tab}",
 			"switchingTo": "Lumilipat sa {tab}",
-			"watchOn": "Panoorin sa {networks}",
 			"inMinutes": {
 				"1": "sa 1 min",
 				"n": "sa $1 min"

@@ -537,6 +537,7 @@
 		"timeoutsShort": "{count} TO",
 		"powerScore": "PowerScore",
 		"vs": "vs",
+		"watchLabel": "Ver em:",
 		"topOfInning": "Início da entrada",
 		"bottomOfInning": "Fim da entrada"
 	},
@@ -975,7 +976,6 @@
 		"noTab": "Nenhum separador",
 		"watching": "A ver, {tab}",
 		"switchingTo": "A mudar para {tab}",
-		"watchOn": "Ver em {networks}",
 		"inMinutes": {
 			"1": "em 1 min",
 			"n": "em $1 min"

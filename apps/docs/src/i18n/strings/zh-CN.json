@@ -370,6 +370,7 @@
 			"openDetails": "查看 {away} 与 {home} 的比赛详情",
 			"delayFallback": "中断",
 			"vs": "vs",
+			"watchLabel": "观看：",
 			"topOfInning": "上半局",
 			"bottomOfInning": "下半局",
 			"shootout": "点球 {away}–{home}",
@@ -446,7 +447,6 @@
 			"noTab": "无标签页",
 			"watching": "观看中，{tab}",
 			"switchingTo": "切换到 {tab}",
-			"watchOn": "在 {networks} 观看",
 			"inMinutes": {
 				"1": "1 分钟后",
 				"n": "$1 分钟后"

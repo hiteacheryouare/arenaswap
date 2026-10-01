@@ -537,6 +537,7 @@
 		"timeoutsShort": "{count} TO",
 		"powerScore": "PowerScore",
 		"vs": "vs",
+		"watchLabel": "視聴先：",
 		"topOfInning": "イニングの表",
 		"bottomOfInning": "イニングの裏"
 	},
@@ -975,7 +976,6 @@
 		"noTab": "タブなし",
 		"watching": "視聴中、{tab}",
 		"switchingTo": "{tab}に切り替え中",
-		"watchOn": "{networks}で視聴",
 		"inMinutes": {
 			"1": "あと1分",
 			"n": "あと$1分"

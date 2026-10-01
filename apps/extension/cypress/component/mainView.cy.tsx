@@ -302,7 +302,7 @@ describe('mainView board', () => {
 			expect([...$tiles].map(tile => tile.dataset.game)).to.deep.equal(['warm', 'tepid']);
 		});
 		cy.get('.as-row').should('have.length', 1).and('have.attr', 'data-game', 'cold');
-		cy.get('.as-stage .as-stage-power strong').should('have.text', '91');
+		cy.get('.as-stage .as-power-figure').should('have.text', '91 / 100');
 	});
 
 	it('lets a lone tile take the whole width, since there is nothing to pair it with', () => {
@@ -320,10 +320,12 @@ describe('mainView board', () => {
 		});
 	});
 
-	it('titles the live games under the stage, and leaves a lone stage untitled', () => {
+	it('titles the live games over the stage, and leaves a slate with nothing live untitled', () => {
 		cy.mount(<MainView {...defaultProps} games={[makeGame('hot'), makeGame('cold')]} scores={[score('hot', 91), score('cold', 30)]} />);
-		cy.get('.gm-lower > .gm-title').should('have.text', 'Live');
-		cy.mount(<MainView {...defaultProps} games={[makeGame('hot')]} scores={[score('hot', 91)]} />);
+		cy.get('.gm-lower > .gm-title').should('have.text', 'Live').then($title => {
+			expect($title[0]!.getBoundingClientRect().bottom).to.be.at.most(document.querySelector('.as-stage')!.getBoundingClientRect().top);
+		});
+		cy.mount(<MainView {...defaultProps} games={[makeGame('later', 'pre', { startTime: dayAt(0) })]} />);
 		cy.get('.gm-lower > .gm-title').should('not.exist');
 	});
 
@@ -347,11 +349,15 @@ describe('mainView board', () => {
 		cy.get('@open').should('not.have.been.called');
 	});
 
-	it('draws the header over the stage, and on the page when there is no stage', () => {
+	it('glows the hottest game\'s colours behind the header, and nothing when there is no stage', () => {
 		cy.mount(<MainView {...defaultProps} games={[makeGame('g1')]} scores={[score('g1', 50)]} />);
-		cy.get('.popup-header').should('have.class', 'is-on-stage');
+		cy.get('.gm-glow').should(([glow]: JQuery<HTMLElement>) => {
+			expect(glow.style.getPropertyValue('--glow-away')).to.match(/^#/);
+			expect(glow.style.getPropertyValue('--glow-home')).to.match(/^#/);
+			expect(getComputedStyle(glow).backgroundImage).to.contain('radial-gradient');
+		});
 		cy.mount(<MainView {...defaultProps} games={[makeGame('later', 'pre', { startTime: dayAt(0) })]} />);
-		cy.get('.popup-header').should('not.have.class', 'is-on-stage');
+		cy.get('.gm-glow').should('not.exist');
 	});
 
 	it('breaks a PowerScore tie with favourites, then with the league order', () => {
@@ -392,7 +398,7 @@ describe('mainView board', () => {
 		gameEl('s').click('left', { scrollBehavior: 'center' });
 		gameEl('t').click('left', { scrollBehavior: 'center' });
 		gameEl('r').click('left', { scrollBehavior: 'center' });
-		gameEl('r').find('.as-picker').click({ scrollBehavior: 'center' });
+		gameEl('r').find('.form-select').click({ scrollBehavior: 'center' });
 		cy.wrap(opened).should('deep.equal', ['s', 't', 'r']);
 	});
 
@@ -409,8 +415,9 @@ describe('mainView board', () => {
 				] as never}
 			/>,
 		);
-		gameEl('watched').should('have.class', 'is-watched').find('.as-top-tab').should('contain.text', 'Watching, Tab 2');
-		gameEl('loose').find('.as-picker').should('contain.text', 'No tab');
+		gameEl('watched').should('have.class', 'is-watched').find('.select-field-hint').should('have.text', 'Watching, Tab 2');
+		gameEl('watched').find('.select-field-label').should('have.text', 'Tab');
+		gameEl('loose').find('.form-select').should('contain.text', 'Assign a tab');
 	});
 
 	it('says the popup is about to switch when the stage game beats the watched one by the sensitivity gap', () => {
@@ -424,13 +431,13 @@ describe('mainView board', () => {
 			] as never,
 		};
 		cy.mount(<MainView {...props} scores={[score('best', 90), score('watched', 70)]} />);
-		gameEl('best').find('.as-top-tab').should('have.text', 'Switching to Tab 2');
+		gameEl('best').find('.as-plate-tab').should('have.text', 'Switching to Tab 2');
 
 		cy.mount(<MainView {...props} scores={[score('best', 75), score('watched', 70)]} />);
-		gameEl('best').find('.as-top-tab').should('contain.text', 'Tab 2').and('not.contain.text', 'Switching');
+		gameEl('best').find('.as-plate-tab').should('contain.text', 'Tab 2').and('not.contain.text', 'Switching');
 
 		cy.mount(<MainView {...props} prefs={{ ...defaultPrefs, enabled: false }} scores={[score('best', 90), score('watched', 70)]} />);
-		gameEl('best').find('.as-top-tab').should('not.contain.text', 'Switching');
+		gameEl('best').find('.as-plate-tab').should('not.contain.text', 'Switching');
 	});
 
 	it('lists upcoming and finished games after the live ones, finals last and without a PowerScore', () => {
@@ -446,7 +453,7 @@ describe('mainView board', () => {
 			expect([...$games].map(game => game.dataset.game)).to.deep.equal(['now', 'later', 'done']);
 		});
 		gameEl('done').find('.as-power-line').should('not.exist');
-		gameEl('done').find('.as-centre-word').should('have.text', 'Final');
+		gameEl('done').find('.as-status.is-final').should('have.text', 'Final');
 	});
 
 	it('drops finished games when Keep finished games is off', () => {
@@ -551,15 +558,6 @@ describe('mainView up next day pager', () => {
 	// Scores arrive by push every few seconds, so a resort inside the open animation is ordinary. The
 	// plan is fixed on the first list that has anything in it: a card that changes index would
 	// otherwise get a new `animation-delay`, which moves a running animation rather than restarting it.
-	// The stage's poster runs up behind the header, so the header's ink waits for it.
-	it('holds the header back for the stage\'s opening', () => {
-		cy.mount(<ResortingMainView />);
-		cy.get('.popup-header').should('have.class', 'is-revealing').then($header => {
-			expect(getComputedStyle($header[0]!).getPropertyValue('--reveal-spine')).to.match(/^\d+ms$/);
-		});
-		cy.get('.popup-header > *').first().should('have.css', 'animation-name', 'cardRevealContent');
-	});
-
 	it('holds the reveal stagger still when a score push resorts the list under it', () => {
 		cy.mount(<ResortingMainView />);
 		gameEl('slow').closest('.game-card-reveal').should('have.css', '--reveal-delay', '0ms');

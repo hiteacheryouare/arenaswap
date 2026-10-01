@@ -537,6 +537,7 @@
 		"timeoutsShort": "{count} TO",
 		"powerScore": "PowerScore",
 		"vs": "vs",
+		"watchLabel": "Panoorin:",
 		"topOfInning": "Top of inning",
 		"bottomOfInning": "Bottom of inning"
 	},
@@ -975,7 +976,6 @@
 		"noTab": "Walang tab",
 		"watching": "Watching, {tab}",
 		"switchingTo": "Lumilipat sa {tab}",
-		"watchOn": "Panoorin sa {networks}",
 		"inMinutes": {
 			"1": "sa 1 min",
 			"n": "sa $1 min"

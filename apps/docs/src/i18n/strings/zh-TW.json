@@ -370,6 +370,7 @@
 			"openDetails": "查看 {away} 對 {home} 的比賽詳情",
 			"delayFallback": "延誤",
 			"vs": "vs",
+			"watchLabel": "觀看：",
 			"topOfInning": "上半局",
 			"bottomOfInning": "下半局",
 			"shootout": "PENS {away}–{home}",
@@ -446,7 +447,6 @@
 			"noTab": "無分頁",
 			"watching": "觀看中，{tab}",
 			"switchingTo": "切換到 {tab}",
-			"watchOn": "在 {networks} 觀看",
 			"inMinutes": {
 				"1": "1 分鐘後",
 				"n": "$1 分鐘後"

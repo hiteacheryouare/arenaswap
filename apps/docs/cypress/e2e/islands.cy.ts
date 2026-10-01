@@ -228,7 +228,7 @@ describe('the 404 page', () => {
 	it('renders the joke card out of the shared component', () => {
 		cy.visit('/404.html');
 		cy.get('.notfound-card .as-stage').should('be.visible');
-		cy.get('.notfound-card .as-stage-power').should('contain.text', '0');
+		cy.get('.notfound-card .as-power-figure').should('contain.text', '0 / 100');
 		cy.get('.notfound-card').should('contain.text', '404').and('contain.text', 'YOU');
 	});
 

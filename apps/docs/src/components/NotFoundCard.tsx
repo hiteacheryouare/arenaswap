@@ -26,7 +26,7 @@ const NotFoundStage = () => {
 		<GameStage
 			game={game}
 			note={stageNote(game, { bettingEnabled: false }, t as Parameters<typeof stageNote>[2])}
-			power={{ value: 0, label: t('gameCard.powerScore') }}
+			power={0}
 		/>
 	);
 };

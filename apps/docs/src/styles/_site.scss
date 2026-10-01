@@ -1118,11 +1118,6 @@ body.nav-open {
 	display: grid;
 	gap: var(--as-space-3);
 	width: min(360px, 94%);
-
-	.as-stage {
-		border-radius: var(--as-radius-lg);
-		padding-top: var(--as-space-4);
-	}
 }
 
 .mw-breakdown {
@@ -1352,8 +1347,6 @@ body.nav-open {
 	animation: notfound-card-in m.$motion-deliberate m.$motion-ease both;
 
 	.as-stage {
-		padding-top: var(--as-space-4);
-		border-radius: var(--as-radius-lg);
 		box-shadow: 0 24px 48px -24px rgba(0, 0, 0, 0.6);
 	}
 }

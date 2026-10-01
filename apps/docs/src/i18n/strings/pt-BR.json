@@ -370,6 +370,7 @@
 			"openDetails": "Abrir detalhes de {away} vs {home}",
 			"delayFallback": "Suspenso",
 			"vs": "vs",
+			"watchLabel": "Assistir em:",
 			"topOfInning": "Início da entrada",
 			"bottomOfInning": "Fim da entrada",
 			"shootout": "PEN {away}–{home}",
@@ -446,7 +447,6 @@
 			"noTab": "Nenhuma aba",
 			"watching": "Assistindo, {tab}",
 			"switchingTo": "Trocando para {tab}",
-			"watchOn": "Assistir em {networks}",
 			"inMinutes": {
 				"1": "em 1 min",
 				"n": "em $1 min"

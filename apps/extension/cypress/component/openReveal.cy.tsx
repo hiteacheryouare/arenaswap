@@ -49,7 +49,7 @@ const Harness = ({ mode, status = 'in', away, home, skipping = false }: {
 				{status === 'post' ? (
 					<section className='gm-after as-rows'>
 						<GameCardReveal game={subject} mode={mode} index={0} skipping={skipping} shape='row'>
-							<GameRow game={subject} theme='dark' quiet />
+							<GameRow game={subject} />
 						</GameCardReveal>
 					</section>
 				) : (
@@ -200,7 +200,7 @@ describe('the popup open reveal', () => {
 				expect(layer.bottom).to.be.closeTo(card.bottom + revealStageBleedPx, 0.1);
 			});
 			cy.get('.game-card-reveal-opening')
-				.should('have.css', 'clip-path', `inset(0px -${revealStageBleedPx}px round 15px)`);
+				.should('have.css', 'clip-path', `inset(0px -${revealStageBleedPx}px round 11px)`);
 		});
 	});
 
@@ -486,11 +486,11 @@ describe('the popup open reveal', () => {
 				});
 			});
 		});
-		// The other two sides come from the clip, at the tile's own 14px radius plus the same pixel:
+		// The other two sides come from the clip, at the tile's own 10px radius plus the same pixel:
 		// grown rather than merely square, or the corners stop being the tile's corners.
-		cy.get('.as-tile').should('have.css', 'border-radius', '14px');
-		cy.get('.game-card-reveal-stage').should('have.css', 'clip-path', 'inset(0px -1px round 15px)');
-		cy.get('.game-card-reveal-sweeps').should('have.css', 'clip-path', 'inset(0px -1px round 15px)');
+		cy.get('.as-tile').should('have.css', 'border-radius', '10px');
+		cy.get('.game-card-reveal-stage').should('have.css', 'clip-path', 'inset(0px -1px round 11px)');
+		cy.get('.game-card-reveal-sweeps').should('have.css', 'clip-path', 'inset(0px -1px round 11px)');
 	});
 
 	// The bleed must not bend the seam. The lean is half the horizontal run of a leaning edge across

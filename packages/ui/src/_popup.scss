@@ -55,28 +55,6 @@
 	background-color: rgba(var(--as-body-bg-rgb), var(--lifted, 0));
 	box-shadow: 0 1px 0 rgba(var(--as-border-color-rgb), var(--lifted, 0));
 
-	&.is-on-stage:not(.is-lifted) {
-		--as-wordmark-ink: #ffffff;
-		color: #ffffff;
-
-		.as-icon:hover {
-			background: rgba(255, 255, 255, 0.14);
-		}
-
-		.as-icon:active {
-			background: rgba(255, 255, 255, 0.2);
-		}
-
-		.form-check-input:not(:checked) {
-			background-color: rgba(255, 255, 255, 0.28);
-		}
-	}
-}
-
-// Whatever comes first under the header slides up beneath it: the stage wants its colour to run
-// to the top edge of the popup.
-.popup-header.is-on-stage + * {
-	margin-top: -48px;
 }
 
 .popup-tools {
@@ -151,12 +129,12 @@
 
 // The gear has eight lobes, so a quarter turn comes to rest on the silhouette it started from.
 // `:not(:disabled)` keeps it off the website, which renders this header as a picture.
-.popup-settings-button .bi-gear::before {
+.popup-settings-button .bi-gear-fill::before {
 	transition: transform m.$motion-slow m.$motion-ease;
 }
 
-.popup-settings-button:not(:disabled):hover .bi-gear::before,
-.popup-settings-button:focus-visible .bi-gear::before {
+.popup-settings-button:not(:disabled):hover .bi-gear-fill::before,
+.popup-settings-button:focus-visible .bi-gear-fill::before {
 	transform: rotate(90deg);
 }
 
@@ -193,12 +171,12 @@
 
 @include m.reduced-motion {
 	.popup-view-shell,
-	.popup-settings-button .bi-gear::before {
+	.popup-settings-button .bi-gear-fill::before {
 		@include m.motion-still;
 	}
 
-	.popup-settings-button:not(:disabled):hover .bi-gear::before,
-	.popup-settings-button:focus-visible .bi-gear::before {
+	.popup-settings-button:not(:disabled):hover .bi-gear-fill::before,
+	.popup-settings-button:focus-visible .bi-gear-fill::before {
 		transform: none;
 	}
 }

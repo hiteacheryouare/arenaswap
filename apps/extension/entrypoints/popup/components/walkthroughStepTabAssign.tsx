@@ -2,7 +2,6 @@ import { useLayoutEffect, useRef, useState } from 'react';
 import { i18n } from '#i18n';
 import type { TabRegistration } from '@arenaswap/core/types';
 import GameRow from '@arenaswap/ui/src/components/gameRow';
-import useDocumentTheme from '@arenaswap/ui/src/components/useDocumentTheme';
 import TabAssignSelect from './tabAssignSelect';
 import WalkthroughFrame from './walkthroughFrame';
 import { eaglesGiantsQ2, tourTabLabel, tourTabs } from './walkthroughMocks';
@@ -13,7 +12,6 @@ interface walkthroughStepTabAssignProps {
 }
 
 const walkthroughStepTabAssign = ({ onNext, onBack }: walkthroughStepTabAssignProps) => {
-	const theme = useDocumentTheme();
 	const [registry, setRegistry] = useState<TabRegistration[]>([]);
 	const screenRef = useRef<HTMLDivElement>(null);
 	const [hintLeft, setHintLeft] = useState<number>();
@@ -41,7 +39,6 @@ const walkthroughStepTabAssign = ({ onNext, onBack }: walkthroughStepTabAssignPr
 			<div ref={screenRef} className='wt-screen wt-assign'>
 				<GameRow
 					game={eaglesGiantsQ2}
-					theme={theme}
 					power={52}
 					tab={(
 						<TabAssignSelect
@@ -50,7 +47,6 @@ const walkthroughStepTabAssign = ({ onNext, onBack }: walkthroughStepTabAssignPr
 							registry={registry}
 							onChange={setRegistry}
 							formatTabLabel={tourTabLabel}
-							variant='inline'
 						/>
 					)}
 				/>
