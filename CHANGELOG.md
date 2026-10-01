@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The top of the list glows in the best game's colours — 2026-09-30
+
+A soft gradient of the two team colours of the live game with the highest PowerScore, the one ArenaSwap would switch to, fades down from behind the header and scrolls away with the list. It's the one piece of the Spotlight redesign kept on v2, sits behind the header and the cards, and doesn't appear when nothing is live.
+
 ## Every picker in the popup is a Bootstrap dropdown — 2026-09-25
 
 The five native `<select>`s (the tab picker on each card, When a game finishes, the standby tab, the demo season and the walkthrough's demo picker) and the Theme switcher now share `selectDropdown.tsx`: Bootstrap's `Dropdown` opening off a `.form-select`, so they look the same closed but can carry icons, a tick and disabled rows. A card holding an open menu lifts itself above its neighbours, because a hovered card's lift transform makes it a stacking context and the next card was painting over the menu. A native select gave type-to-jump for free, which the dropdown does not; tests drive them through `cy.choose(label)`.

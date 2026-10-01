@@ -283,6 +283,41 @@ const sectionTitleOf = (gameId: string) => cy
 	.closest('.mt-2')
 	.find('.popup-section-title');
 
+describe('mainView header glow', () => {
+	// The live game ArenaSwap would switch to lends its colours to the top of the list.
+	it('glows in the colours of the live game with the best PowerScore', () => {
+		const colored = (id: string, away: string, home: string) => ({
+			...makeGame(id),
+			awayTeam: { id: `${id}-a`, name: 'Away', abbreviation: 'AWY', score: 48, color: away },
+			homeTeam: { id: `${id}-h`, name: 'Home', abbreviation: 'HOM', score: 50, color: home },
+		});
+		cy.mount(
+			<MainView
+				{...defaultProps}
+				games={[colored('cold', '#111111', '#222222'), colored('hot', '#00471B', '#860038')]}
+				scores={[score('cold', 30), score('hot', 91)]}
+			/>,
+		);
+		cy.get('.popup-glow').should(([glow]: JQuery<HTMLElement>) => {
+			expect(glow.style.getPropertyValue('--glow-away').toLowerCase()).to.equal('#00471b');
+			expect(glow.style.getPropertyValue('--glow-home').toLowerCase()).to.equal('#860038');
+			expect(getComputedStyle(glow).backgroundImage).to.contain('radial-gradient');
+		});
+		// Behind the header and the cards, not over them.
+		cy.get('.popup-header').should(([header]: JQuery<HTMLElement>) => {
+			const glow = document.querySelector('.popup-glow')!.getBoundingClientRect();
+			const box = header.getBoundingClientRect();
+			expect(document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2)).to.not.equal(document.querySelector('.popup-glow'));
+			expect(glow.top).to.be.closeTo(box.top, 1);
+		});
+	});
+
+	it('glows nothing when nothing is live', () => {
+		cy.mount(<MainView {...defaultProps} games={[makeGame('later', 'pre', { startTime: dayAt(0) })]} />);
+		cy.get('.popup-glow').should('not.exist');
+	});
+});
+
 describe('mainView game sections', () => {
 	it('files a game with a tab assigned under Active Tabs and one without under Live Games', () => {
 		cy.mount(

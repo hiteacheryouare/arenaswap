@@ -115,6 +115,24 @@
 	overflow-y: auto;
 }
 
+// The top live game's two colours, glowing down from the top corners behind the header and fading
+// into the page. Below the list's own content, and it scrolls away with it.
+.popup-glow {
+	--glow-share: 34%;
+	position: absolute;
+	inset: 0 0 auto;
+	z-index: -1;
+	height: 240px;
+	background:
+		radial-gradient(120% 100% at 0% 0%, color-mix(in srgb, var(--glow-away) var(--glow-share), transparent), transparent 70%),
+		radial-gradient(120% 100% at 100% 0%, color-mix(in srgb, var(--glow-home) var(--glow-share), transparent), transparent 70%);
+	pointer-events: none;
+
+	[data-bs-theme='light'] & {
+		--glow-share: 22%;
+	}
+}
+
 .popup-settings-button {
 	color: var(--as-secondary-color);
 	background: none;

@@ -1,5 +1,5 @@
 import { useMemo, useRef } from 'react';
-import type { ReactNode, RefObject } from 'react';
+import type { CSSProperties, ReactNode, RefObject } from 'react';
 import { i18n } from '#i18n';
 import type { Browser } from 'wxt/browser';
 import type {
@@ -10,6 +10,7 @@ import type {
 	TabRegistration,
 	UserPreferences,
 } from '@arenaswap/core/types';
+import { resolveTeamColorPair } from '@arenaswap/ui/src/components/colorUtils';
 import { LeagueSectionHeader, PopupHeader, PopupSectionTitle } from '@arenaswap/ui/src/components/popupChrome';
 import GameCard from './gameCard';
 import GameCardReveal from './gameCardReveal';
@@ -270,6 +271,16 @@ const mainView = ({
 		return { mode: revealMode, order, skipping: revealSkipping };
 	}, [revealMode, revealSkipping, assignedLiveGames, unassignedLiveGames, prefs.showUpcomingGames, selectedDay, finalGames]);
 
+	// The live game with the best PowerScore, which is the one ArenaSwap would switch to. Its two
+	// colours glow down behind the header.
+	const topLiveGame = useMemo(
+		() => liveGames.reduce<Game | null>((best, game) => (
+			!best || (scoreByGameId.get(game.id) ?? 0) > (scoreByGameId.get(best.id) ?? 0) ? game : best
+		), null),
+		[liveGames, scoreByGameId],
+	);
+	const glow = topLiveGame ? resolveTeamColorPair(topLiveGame.awayTeam, topLiveGame.homeTeam, '#dee2e6', '#dee2e6') : null;
+
 	const showNoGames = !isLoading && !noLeaguesSelected && liveGames.length === 0
 		&& registry.length === 0 && finalGames.length === 0
 		&& (!prefs.showUpcomingGames || upcomingGames.length === 0);
@@ -283,6 +294,7 @@ const mainView = ({
 
 	return (
 		<div ref={scrollerRef} className='popup-container d-flex flex-column'>
+			{glow && <div className='popup-glow' style={{ '--glow-away': glow[0], '--glow-home': glow[1] } as CSSProperties} aria-hidden='true' />}
 			<PopupHeader
 				scroller={scrollerRef}
 				enabled={prefs.enabled}
