@@ -277,7 +277,9 @@ const mainView = ({
 	);
 	const glow = topLiveGame ? resolveTeamColorPair(topLiveGame.awayTeam, topLiveGame.homeTeam, '#dee2e6', '#dee2e6') : null;
 
-	const showNoGames = !isLoading && !noLeaguesSelected && liveGames.length === 0
+	// The error banner already says the slate did not arrive, so the empty state must not add that
+	// it is a quiet night.
+	const showNoGames = !isLoading && !hasError && !noLeaguesSelected && liveGames.length === 0
 		&& registry.length === 0 && finalGames.length === 0
 		&& (!prefs.showUpcomingGames || upcomingGames.length === 0);
 
