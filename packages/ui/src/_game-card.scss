@@ -145,13 +145,15 @@
 	}
 }
 
+// Ticks on every push, so it needs the figures that hold still; in DM Sans "71" and "88" differ in
+// width and the bar beside it twitched with each update.
 .game-card-ps-score {
-	font-size:            0.6rem;
-	font-weight:          700;
-	letter-spacing:       0.01em;
-	white-space:          nowrap;
-	flex-shrink:          0;
-	font-variant-numeric: tabular-nums;
+	@include scoreboard-figures;
+	font-size:      0.6rem;
+	font-weight:    700;
+	letter-spacing: 0.01em;
+	white-space:    nowrap;
+	flex-shrink:    0;
 }
 
 .game-card-ps-label {
