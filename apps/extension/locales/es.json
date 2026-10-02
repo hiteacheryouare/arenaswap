@@ -737,6 +737,7 @@
 		"gameBoostName": "Impulso del partido",
 		"gameBoostMeasured": "Puntos que aplicas manualmente para priorizar temporalmente un partido específico.",
 		"scoringOpportunityMeasured": "Se añade automáticamente en zonas rojas (fútbol americano) o con corredores en base (béisbol/sóftbol).",
+		"scoringOpportunityName": "Oportunidad de anotar",
 		"postseasonBoostName": "Impulso de postemporada",
 		"postseasonBoostMeasured": "Un bono fijo aplicado a partidos de playoffs, finales de conferencia y campeonatos.",
 		"back": "Atrás",

@@ -737,6 +737,7 @@
 		"gameBoostName": "Coup de boost",
 		"gameBoostMeasured": "Points que tu appliques manuellement pour prioriser temporairement un match spécifique.",
 		"scoringOpportunityMeasured": "Ajouté automatiquement pour les drives en zone rouge (football américain) ou les coureurs sur les bases (baseball/softball).",
+		"scoringOpportunityName": "Occasion de marquer",
 		"postseasonBoostName": "Bonus de playoffs",
 		"postseasonBoostMeasured": "Un bonus fixe appliqué aux matchs de playoffs, finales de conférence et championnats.",
 		"back": "Retour",

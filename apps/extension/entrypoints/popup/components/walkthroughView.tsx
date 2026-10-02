@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { i18n } from '#i18n';
+import type { LeagueId } from '@arenaswap/core/types';
 import WalkthroughStepToggle from './walkthroughStepToggle';
 import WalkthroughStepPowerScore from './walkthroughStepPowerScore';
 import WalkthroughStepTabAssign from './walkthroughStepTabAssign';
@@ -14,6 +15,7 @@ type walkthroughStep = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
 
 interface walkthroughViewProps {
 	onComplete: () => void;
+	leagues?: readonly LeagueId[];
 }
 
 const brandColors = ['#F75C03', '#3E9BD1', '#D90368', '#00CC66', '#F1C40F'];
@@ -26,7 +28,7 @@ const celebrate = async () => {
 	void confetti({ particleCount: 120, spread: 70, origin: { y: 0.55 }, colors: brandColors, disableForReducedMotion: true });
 };
 
-const walkthroughView = ({ onComplete }: walkthroughViewProps) => {
+const walkthroughView = ({ onComplete, leagues }: walkthroughViewProps) => {
 	const [step, setStep] = useState<walkthroughStep>(1);
 	const [initialSubStep, setInitialSubStep] = useState<number>(0);
 	const shellRef = useStepTitleFocus(step);
@@ -72,7 +74,7 @@ const walkthroughView = ({ onComplete }: walkthroughViewProps) => {
 				{step === 2 && <WalkthroughStepPowerScore key={`step2-${initialSubStep}`} onNext={next} onBack={() => back(2)} initialSubStep={initialSubStep} />}
 				{step === 3 && <WalkthroughStepTabAssign onNext={next} onBack={() => back(3)} />}
 				{step === 4 && <WalkthroughStepAutoSwitch onNext={next} onBack={() => back(4)} />}
-				{step === 5 && <WalkthroughStepSettings onNext={next} onBack={() => back(5)} />}
+				{step === 5 && <WalkthroughStepSettings onNext={next} onBack={() => back(5)} leagues={leagues} />}
 				{step === 6 && <WalkthroughStepGameDetail onNext={next} onBack={() => back(6)} />}
 				{step === 7 && <WalkthroughStepLeaguesFavorites onNext={next} onBack={() => back(7)} />}
 				{step === 8 && <WalkthroughStepReAccess onNext={finish} onBack={() => back(8)} />}

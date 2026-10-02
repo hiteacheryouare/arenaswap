@@ -737,6 +737,7 @@
 		"gameBoostName": "Spielboost",
 		"gameBoostMeasured": "Punkte, die du manuell vergibst, um ein bestimmtes Spiel vorübergehend zu priorisieren.",
 		"scoringOpportunityMeasured": "Wird automatisch für Red-Zone-Angriffe (Football) oder Läufer auf den Bases (Baseball/Softball) hinzugefügt.",
+		"scoringOpportunityName": "Torgelegenheit",
 		"postseasonBoostName": "Postseason-Boost",
 		"postseasonBoostMeasured": "Ein Pauschalbonus für Playoff-, Conference-Final- und Meisterschaftsspiele.",
 		"back": "Zurück",

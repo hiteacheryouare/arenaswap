@@ -737,6 +737,7 @@
 		"gameBoostName": "Boost partita",
 		"gameBoostMeasured": "Punti che applichi manualmente per dare priorità temporanea a una partita specifica.",
 		"scoringOpportunityMeasured": "Si aggiunge automaticamente per le azioni in zona rossa (football americano) o i corridori in base (baseball/softball).",
+		"scoringOpportunityName": "Opportunità di segnare",
 		"postseasonBoostName": "Boost postseason",
 		"postseasonBoostMeasured": "Un bonus fisso applicato alle partite di playoff, finali di conference e campionati.",
 		"back": "Indietro",

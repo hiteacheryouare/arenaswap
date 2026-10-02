@@ -93,7 +93,7 @@ const boostPenaltyMeta = [
 	},
 	{
 		name: 'scoringOpp',
-		labelKey: 'powerScore.scoringOpportunity',
+		labelKey: 'stepPowerScore.scoringOpportunityName',
 		descriptionKey: 'powerScore.tooltipScoringOpportunity',
 		measuredKey: 'stepPowerScore.scoringOpportunityMeasured',
 		color: '#f75c03',

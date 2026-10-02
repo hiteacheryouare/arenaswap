@@ -1,18 +1,27 @@
 import { useState } from 'react';
 import { i18n } from '#i18n';
+import { leagueShortLabels } from '@arenaswap/core/constants';
+import type { LeagueId } from '@arenaswap/core/types';
 import { cooldownSteps, formatCooldownSeconds } from './cooldownSlider';
 
 interface walkthroughStepSettingsProps {
 	onNext: () => void;
 	onBack: () => void;
+	// The leagues just picked in onboarding, so the preview shows the user's own rather than four
+	// that may not be among them.
+	leagues?: readonly LeagueId[];
 }
+
+const fallbackLeagues: readonly LeagueId[] = ['nfl', 'nba', 'nhl', 'mlb'];
+const previewLeagueCount = 4;
 
 const sensitivityLabels: Record<number, string> = {
 	1: i18n.t('stepSettings.sensitivity1'), 2: i18n.t('stepSettings.sensitivity2'), 3: i18n.t('stepSettings.sensitivity3'),
 	4: i18n.t('stepSettings.sensitivity4'), 5: i18n.t('stepSettings.sensitivity5'), 6: i18n.t('stepSettings.sensitivity6'), 7: i18n.t('stepSettings.sensitivity7'),
 };
 
-const walkthroughStepSettings = ({ onNext, onBack }: walkthroughStepSettingsProps) => {
+const walkthroughStepSettings = ({ onNext, onBack, leagues = fallbackLeagues }: walkthroughStepSettingsProps) => {
+	const shownLeagues = (leagues.length > 0 ? leagues : fallbackLeagues).slice(0, previewLeagueCount);
 	const [sensitivity, setSensitivity] = useState(4);
 	const [cooldownIdx, setCooldownIdx] = useState(2);
 
@@ -71,8 +80,8 @@ const walkthroughStepSettings = ({ onNext, onBack }: walkthroughStepSettingsProp
 				</div>
 
 				<div className='d-flex gap-1 flex-wrap mt-3'>
-					{['NFL', 'NBA', 'NHL', 'MLB'].map(l => (
-						<span key={l} className='badge text-bg-primary'>{l}</span>
+					{shownLeagues.map(league => (
+						<span key={league} className='badge text-bg-primary'>{leagueShortLabels[league]}</span>
 					))}
 					<span className='badge border border-secondary-subtle text-body-secondary'>{i18n.t('stepSettings.moreLeagues')}</span>
 				</div>

@@ -737,6 +737,7 @@
 		"gameBoostName": "Game Boost",
 		"gameBoostMeasured": "Points manually applied by you to temporarily prioritize a specific game.",
 		"scoringOpportunityMeasured": "Added automatically for red zone drives (football) or runners on base (baseball/softball).",
+		"scoringOpportunityName": "Scoring Opportunity",
 		"postseasonBoostName": "Postseason Boost",
 		"postseasonBoostMeasured": "A flat bonus applied to playoff, conference final, and championship games.",
 		"back": "Back",

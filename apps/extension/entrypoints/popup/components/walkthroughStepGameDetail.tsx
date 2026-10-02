@@ -57,7 +57,7 @@ const walkthroughStepGameDetail = ({ onNext, onBack }: walkthroughStepGameDetail
 				>
 					<div className='d-flex align-items-center gap-1 fw-bold text-uppercase live-status-label mb-1'>
 						<span className='live-dot' />
-						LIVE
+						{i18n.t('gameCard.live')}
 					</div>
 
 					<div className='d-flex align-items-center justify-content-center game-card-matchup'>

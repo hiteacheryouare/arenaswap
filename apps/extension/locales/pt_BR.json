@@ -737,6 +737,7 @@
 		"gameBoostName": "Impulso do jogo",
 		"gameBoostMeasured": "Pontos que você aplica manualmente para priorizar temporariamente um jogo específico.",
 		"scoringOpportunityMeasured": "Adicionado automaticamente para zona vermelha (futebol americano) ou corredores em base (beisebol/softbol).",
+		"scoringOpportunityName": "Oportunidade de pontuar",
 		"postseasonBoostName": "Impulso de pós-temporada",
 		"postseasonBoostMeasured": "Um bônus fixo aplicado a jogos de playoffs, finais de conferência e campeonatos.",
 		"back": "Voltar",

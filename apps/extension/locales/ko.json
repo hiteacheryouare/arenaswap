@@ -737,6 +737,7 @@
 		"gameBoostName": "게임 부스트",
 		"gameBoostMeasured": "특정 경기를 일시적으로 우선시하기 위해 직접 적용하는 점수예요.",
 		"scoringOpportunityMeasured": "레드존 공격(미식축구) 또는 출루한 주자(야구/소프트볼)에 대해 자동으로 추가돼요.",
+		"scoringOpportunityName": "득점 기회",
 		"postseasonBoostName": "포스트시즌 부스트",
 		"postseasonBoostMeasured": "플레이오프, 콘퍼런스 파이널, 챔피언십 경기에 적용되는 고정 보너스예요.",
 		"back": "뒤로",

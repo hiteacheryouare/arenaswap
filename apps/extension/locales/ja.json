@@ -737,6 +737,7 @@
 		"gameBoostName": "ゲームブースト",
 		"gameBoostMeasured": "特定の試合を一時的に優先するために手動で適用するポイントです。",
 		"scoringOpportunityMeasured": "レッドゾーン（アメリカンフットボール）または塁上の走者（野球・ソフトボール）に対して自動的に加算されます。",
+		"scoringOpportunityName": "得点チャンス",
 		"postseasonBoostName": "ポストシーズンブースト",
 		"postseasonBoostMeasured": "プレーオフ、カンファレンス決勝、チャンピオンシップ試合に適用されるフラットボーナスです。",
 		"back": "戻る",

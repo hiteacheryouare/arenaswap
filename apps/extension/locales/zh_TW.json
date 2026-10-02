@@ -737,6 +737,7 @@
 		"gameBoostName": "比賽加成",
 		"gameBoostMeasured": "由你手動加的分數，用來臨時提升特定比賽的優先權。",
 		"scoringOpportunityMeasured": "美式足球紅區進攻，或棒球／壘球壘上有跑者時自動加分。",
+		"scoringOpportunityName": "得分機會",
 		"postseasonBoostName": "季後賽加成",
 		"postseasonBoostMeasured": "對季後賽、聯盟冠軍賽和總冠軍賽，統一給予固定加分。",
 		"back": "返回",

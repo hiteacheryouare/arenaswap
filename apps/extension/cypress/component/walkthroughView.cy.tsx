@@ -58,7 +58,7 @@ describe('walkthroughView step navigation', () => {
 		cy.contains('Postseason Boost').should('exist');
 
 		cy.contains('button', 'Back').click();
-		cy.contains('Scoring opportunity').should('exist');
+		cy.contains('Scoring Opportunity').should('exist');
 	});
 
 	it('advances to step 3 (tab-assign) after completing step 2', () => {
@@ -261,6 +261,23 @@ describe('walkthroughView step navigation', () => {
 		cy.contains('button', 'Next').click(); // 7 -> 8
 		cy.contains('button', 'Done').click();
 		cy.get('@onComplete').should('have.been.calledOnce');
+	});
+});
+
+describe('walkthroughView settings preview', () => {
+	// It showed NFL, NBA, NHL and MLB to someone who had just picked only soccer.
+	it('previews the leagues picked in onboarding', () => {
+		cy.clock();
+		cy.mount(<WalkthroughView onComplete={() => {}} leagues={['epl', 'mls']} />);
+		cy.contains('button', 'Next').click(); // 1 -> 2
+		for (let i = 0; i < 12; i++) {
+			cy.get('button.btn-primary').last().click(); // 2 -> 3
+		}
+		cy.contains('button', 'Next').click(); // 3 -> 4
+		cy.tick(2500);
+		cy.get('button.btn-primary').last().click(); // 4 -> 5
+		cy.get('.badge.text-bg-primary').then(badges => [...badges].map(badge => badge.textContent))
+			.should('deep.equal', ['EPL', 'MLS']);
 	});
 });
 

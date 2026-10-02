@@ -498,7 +498,7 @@ export default () => {
 	if (walkthroughActive) {
 		return (
 			<TranslationContext.Provider value={i18n.t}>
-				<WalkthroughView onComplete={() => setWalkthroughActive(false)} />
+				<WalkthroughView onComplete={() => setWalkthroughActive(false)} leagues={prefs.enabledLeagues} />
 			</TranslationContext.Provider>
 		);
 	}

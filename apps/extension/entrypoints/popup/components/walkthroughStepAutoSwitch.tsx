@@ -59,7 +59,7 @@ const MockCard = ({ abbr1, color1, logo1, abbr2, color2, logo2, score1, score2, 
 			<div className='d-flex align-items-center justify-content-between mb-1'>
 				<div className='d-flex align-items-center gap-1 fw-bold text-uppercase live-status-label'>
 					<span className='live-dot' />
-					LIVE
+					{i18n.t('gameCard.live')}
 				</div>
 				{watching && (
 					<span className='badge text-bg-primary' style={{ fontSize: '0.6rem' }}>{i18n.t('stepAutoSwitch.watchingBadge')}</span>
