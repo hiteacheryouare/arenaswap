@@ -742,7 +742,7 @@
 		"postseasonBoostMeasured": "Ein Pauschalbonus für Playoff-, Conference-Final- und Meisterschaftsspiele.",
 		"back": "Zurück",
 		"next": "Weiter",
-		"tapHint": "Irgendwo tippen, um fortzufahren"
+		"tapHint": "Irgendwo klicken, um fortzufahren"
 	},
 	"stepTabAssign": {
 		"step": "Schritt $1 von $2",
@@ -786,8 +786,8 @@
 	"stepGameDetail": {
 		"step": "Schritt $1 von $2",
 		"title": "Jedes Spiel im Detail",
-		"subtitle": "Tippe auf eine Spielkarte, um zu sehen, was seine Punktzahl antreibt.",
-		"tapHint": "tippen zum Öffnen",
+		"subtitle": "Klicke auf eine Spielkarte, um zu sehen, was seine Punktzahl antreibt.",
+		"tapHint": "klicken zum Öffnen",
 		"detailPreviewTitle": "PowerScore-Aufschlüsselung",
 		"signalCloseness": "Ausgeglichenheit",
 		"signalLateGame": "Spielschluss",
@@ -795,7 +795,7 @@
 		"signalLeadChanges": "Führungswechsel",
 		"signalComeback": "Comeback",
 		"detailPreviewCaption": "Spielstanddiagramme und vollständige Signalverläufe sind ebenfalls verfügbar.",
-		"body": "Tippe auf eine beliebige Live-Spielkarte, um die Detailansicht zu öffnen. Du siehst eine vollständige Aufschlüsselung jedes Signals, das zum PowerScore beiträgt, plus ein Diagramm, wie sich die Punktzahl im Spielverlauf entwickelt hat.",
+		"body": "Klicke auf eine beliebige Live-Spielkarte, um die Detailansicht zu öffnen. Du siehst eine vollständige Aufschlüsselung jedes Signals, das zum PowerScore beiträgt, plus ein Diagramm, wie sich die Punktzahl im Spielverlauf entwickelt hat.",
 		"bodyAfterTap": "Du findest auch einen manuellen Spielboost-Regler, um jedes gewünschte Spiel vorübergehend zu priorisieren.",
 		"back": "Zurück",
 		"next": "Weiter"
@@ -820,7 +820,7 @@
 	"stepReAccess": {
 		"step": "Schritt $1 von $2",
 		"title": "Zurück zur Tour",
-		"subtitle": "Die Tour ist immer einen Tipp entfernt.",
+		"subtitle": "Die Tour ist immer nur einen Klick entfernt.",
 		"callout": "genau der",
 		"body": "Tippe jederzeit auf den ?-Knopf in der oberen Leiste, um diese Tour erneut abzuspielen. Funktioniert auch nach der Einrichtung. Praktisch für eine Auffrischung oder um Freunden zu zeigen, wie's funktioniert.",
 		"back": "Zurück",

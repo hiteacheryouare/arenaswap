@@ -742,7 +742,7 @@
 		"postseasonBoostMeasured": "Un bonus fixe appliqué aux matchs de playoffs, finales de conférence et championnats.",
 		"back": "Retour",
 		"next": "Suivant",
-		"tapHint": "Touche n'importe où pour continuer"
+		"tapHint": "Clique n'importe où pour continuer"
 	},
 	"stepTabAssign": {
 		"step": "Étape $1 sur $2",
@@ -786,8 +786,8 @@
 	"stepGameDetail": {
 		"step": "Étape $1 sur $2",
 		"title": "Plonge dans n'importe quel match",
-		"subtitle": "Tape sur une fiche pour voir ce qui propulse son score.",
-		"tapHint": "tape pour ouvrir",
+		"subtitle": "Clique sur une fiche pour voir ce qui propulse son score.",
+		"tapHint": "clique pour ouvrir",
 		"detailPreviewTitle": "Décomposition du PowerScore",
 		"signalCloseness": "Serré",
 		"signalLateGame": "Fin de match",
@@ -795,7 +795,7 @@
 		"signalLeadChanges": "Changements de tête",
 		"signalComeback": "Remontée",
 		"detailPreviewCaption": "Des graphiques de score et l'historique complet des signaux sont aussi disponibles.",
-		"body": "Tape sur n'importe quelle fiche de match en direct pour ouvrir la vue détaillée. Tu verras la décomposition complète de chaque signal contribuant à son PowerScore, plus un graphique de l'évolution du score dans le temps.",
+		"body": "Clique sur n'importe quelle fiche de match en direct pour ouvrir la vue détaillée. Tu verras la décomposition complète de chaque signal contribuant à son PowerScore, plus un graphique de l'évolution du score dans le temps.",
 		"bodyAfterTap": "Tu trouveras aussi un curseur de coup de boost pour prioriser temporairement n'importe quel match.",
 		"back": "Retour",
 		"next": "Suivant"
@@ -820,7 +820,7 @@
 	"stepReAccess": {
 		"step": "Étape $1 sur $2",
 		"title": "Revenir ici",
-		"subtitle": "La visite guidée est toujours à portée d'un tap.",
+		"subtitle": "La visite guidée est toujours à portée de clic.",
 		"callout": "c'est celui-là",
 		"body": "Appuie sur le bouton ? dans la barre supérieure à tout moment pour rejouer cette visite. Ça marche même après la configuration. Pratique si tu veux une piqûre de rappel ou montrer à quelqu'un comment ça fonctionne.",
 		"back": "Retour",

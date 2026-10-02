@@ -742,7 +742,7 @@
 		"postseasonBoostMeasured": "Un bonus fisso applicato alle partite di playoff, finali di conference e campionati.",
 		"back": "Indietro",
 		"next": "Avanti",
-		"tapHint": "Tocca ovunque per continuare"
+		"tapHint": "Fai clic ovunque per continuare"
 	},
 	"stepTabAssign": {
 		"step": "Passo $1 di $2",
@@ -786,8 +786,8 @@
 	"stepGameDetail": {
 		"step": "Passo $1 di $2",
 		"title": "Approfondisci qualsiasi partita",
-		"subtitle": "Tocca una scheda partita per vedere cosa guida il suo punteggio.",
-		"tapHint": "tocca per aprire",
+		"subtitle": "Fai clic su una scheda partita per vedere cosa guida il suo punteggio.",
+		"tapHint": "fai clic per aprire",
 		"detailPreviewTitle": "Dettaglio PowerScore",
 		"signalCloseness": "Equilibrio",
 		"signalLateGame": "Fine gara",
@@ -795,7 +795,7 @@
 		"signalLeadChanges": "Sorpassi",
 		"signalComeback": "Rimonta",
 		"detailPreviewCaption": "Sono disponibili anche i grafici del punteggio e lo storico completo dei segnali.",
-		"body": "Tocca qualsiasi scheda di partita in diretta per aprire la vista dettagliata. Vedrai il dettaglio completo di ogni segnale che contribuisce al suo PowerScore, oltre a un grafico di come il punteggio è cambiato nel tempo.",
+		"body": "Fai clic su qualsiasi scheda di partita in diretta per aprire la vista dettagliata. Vedrai il dettaglio completo di ogni segnale che contribuisce al suo PowerScore, oltre a un grafico di come il punteggio è cambiato nel tempo.",
 		"bodyAfterTap": "Troverai anche uno slider manuale di Boost partita per dare priorità temporanea a qualsiasi partita tu voglia.",
 		"back": "Indietro",
 		"next": "Avanti"
@@ -820,7 +820,7 @@
 	"stepReAccess": {
 		"step": "Passo $1 di $2",
 		"title": "Tornare qui",
-		"subtitle": "Il tour è sempre a un tocco di distanza.",
+		"subtitle": "Il tour è sempre a un clic di distanza.",
 		"callout": "eccolo",
 		"body": "Tocca il pulsante ? nella barra in alto quando vuoi per rivedere questo tour. Funziona anche dopo la configurazione iniziale — comodo per un ripasso o per mostrare a un amico come funziona.",
 		"back": "Indietro",

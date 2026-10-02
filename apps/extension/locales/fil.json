@@ -742,7 +742,7 @@
 		"postseasonBoostMeasured": "Isang flat bonus na inilalapat sa playoff, conference final, at championship games.",
 		"back": "Bumalik",
 		"next": "Susunod",
-		"tapHint": "I-tap kahit saan para magpatuloy"
+		"tapHint": "I-click kahit saan para magpatuloy"
 	},
 	"stepTabAssign": {
 		"step": "Step $1 ng $2",
@@ -786,8 +786,8 @@
 	"stepGameDetail": {
 		"step": "Step $1 ng $2",
 		"title": "Tuklasin ang Kahit Anong Laro",
-		"subtitle": "I-tap ang isang game card para makita kung ano ang nagtutulak sa score nito.",
-		"tapHint": "i-tap para buksan",
+		"subtitle": "I-click ang isang game card para makita kung ano ang nagtutulak sa score nito.",
+		"tapHint": "i-click para buksan",
 		"detailPreviewTitle": "Breakdown ng PowerScore",
 		"signalCloseness": "Kalapitan",
 		"signalLateGame": "Huling Yugto",
@@ -795,7 +795,7 @@
 		"signalLeadChanges": "Pagbabago ng Lead",
 		"signalComeback": "Comeback",
 		"detailPreviewCaption": "Available rin ang mga score chart at buong signal history.",
-		"body": "I-tap ang kahit anong live na game card para buksan ang detail view. Makikita mo ang buong breakdown ng bawat signal na nag-aambag sa PowerScore nito, kasama ang chart ng pag-usad ng score.",
+		"body": "I-click ang kahit anong live na game card para buksan ang detail view. Makikita mo ang buong breakdown ng bawat signal na nag-aambag sa PowerScore nito, kasama ang chart ng pag-usad ng score.",
 		"bodyAfterTap": "May makikita ka ring manual na slider na Boost ng Laro para pansamantalang unahin ang kahit anong laro na gusto mo.",
 		"back": "Bumalik",
 		"next": "Susunod"
@@ -820,7 +820,7 @@
 	"stepReAccess": {
 		"step": "Step $1 ng $2",
 		"title": "Pagbalik Dito",
-		"subtitle": "Isang tap lang ang layo ng tour.",
+		"subtitle": "Isang click lang ang layo ng tour.",
 		"callout": "ayan yun",
 		"body": "Pindutin ang ? button sa top bar kahit kailan para ulitin ang tour na ito. Gumagana pa rin ito kahit tapos na ang setup. Kapaki-pakinabang kung gusto mong mag-refresh o ipakita sa kaibigan mo kung paano ito gumagana.",
 		"back": "Bumalik",

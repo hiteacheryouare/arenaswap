@@ -742,7 +742,7 @@
 		"postseasonBoostMeasured": "플레이오프, 콘퍼런스 파이널, 챔피언십 경기에 적용되는 고정 보너스예요.",
 		"back": "뒤로",
 		"next": "다음",
-		"tapHint": "아무 곳이나 탭하면 계속돼요"
+		"tapHint": "아무 곳이나 클릭하면 계속돼요"
 	},
 	"stepTabAssign": {
 		"step": "$1/$2단계",
@@ -786,8 +786,8 @@
 	"stepGameDetail": {
 		"step": "$1/$2단계",
 		"title": "어떤 경기든 자세히 살펴보세요",
-		"subtitle": "경기 카드를 탭해서 점수를 좌우하는 요인을 확인하세요.",
-		"tapHint": "탭해서 열기",
+		"subtitle": "경기 카드를 클릭해서 점수를 좌우하는 요인을 확인하세요.",
+		"tapHint": "클릭해서 열기",
 		"detailPreviewTitle": "PowerScore 세부 내역",
 		"signalCloseness": "접전도",
 		"signalLateGame": "종반",
@@ -795,7 +795,7 @@
 		"signalLeadChanges": "리드 변화",
 		"signalComeback": "역전",
 		"detailPreviewCaption": "스코어 차트와 전체 시그널 기록도 확인할 수 있어요.",
-		"body": "진행 중인 경기 카드를 탭하면 상세 화면이 열려요. PowerScore에 반영되는 모든 시그널의 세부 내역과 시간에 따른 점수 변화 차트를 볼 수 있어요.",
+		"body": "진행 중인 경기 카드를 클릭하면 상세 화면이 열려요. PowerScore에 반영되는 모든 시그널의 세부 내역과 시간에 따른 점수 변화 차트를 볼 수 있어요.",
 		"bodyAfterTap": "원하는 경기를 일시적으로 우선시할 수 있는 수동 게임 부스트 슬라이더도 있어요.",
 		"back": "뒤로",
 		"next": "다음"
@@ -820,7 +820,7 @@
 	"stepReAccess": {
 		"step": "$1/$2단계",
 		"title": "다시 돌아오는 방법",
-		"subtitle": "투어는 언제든 탭 한 번으로 다시 볼 수 있어요.",
+		"subtitle": "투어는 언제든 클릭 한 번으로 다시 볼 수 있어요.",
 		"callout": "바로 이거예요",
 		"body": "상단 바의 ? 버튼을 언제든 눌러서 이 투어를 다시 볼 수 있어요. 설정을 마친 후에도 사용할 수 있어요. 복습하고 싶거나 친구에게 사용법을 보여주고 싶을 때 유용해요.",
 		"back": "뒤로",

@@ -742,7 +742,7 @@
 		"postseasonBoostMeasured": "Um bónus fixo aplicado a jogos de playoffs, finais de conferência e campeonatos.",
 		"back": "Voltar",
 		"next": "Seguinte",
-		"tapHint": "Toca em qualquer lugar para continuar"
+		"tapHint": "Clica em qualquer lugar para continuar"
 	},
 	"stepTabAssign": {
 		"step": "Passo $1 de $2",
@@ -786,8 +786,8 @@
 	"stepGameDetail": {
 		"step": "Passo $1 de $2",
 		"title": "Aprofunda qualquer jogo",
-		"subtitle": "Toca num cartão para ver o que impulsiona a sua pontuação.",
-		"tapHint": "toca para abrir",
+		"subtitle": "Clica num cartão para ver o que impulsiona a sua pontuação.",
+		"tapHint": "clica para abrir",
 		"detailPreviewTitle": "Análise do PowerScore",
 		"signalCloseness": "Equilíbrio",
 		"signalLateGame": "Fase Final",
@@ -795,7 +795,7 @@
 		"signalLeadChanges": "Mudanças de Liderança",
 		"signalComeback": "Remontada",
 		"detailPreviewCaption": "Também estão disponíveis gráficos do marcador e o histórico completo dos sinais.",
-		"body": "Toca em qualquer cartão de jogo em directo para abrir a vista de detalhe. Verás uma análise completa de cada sinal que contribui para o PowerScore, mais um gráfico de como a pontuação evoluiu ao longo do tempo.",
+		"body": "Clica em qualquer cartão de jogo em directo para abrir a vista de detalhe. Verás uma análise completa de cada sinal que contribui para o PowerScore, mais um gráfico de como a pontuação evoluiu ao longo do tempo.",
 		"bodyAfterTap": "Encontrarás também um controlo deslizante de Impulso do Jogo para priorizar temporariamente qualquer jogo.",
 		"back": "Voltar",
 		"next": "Seguinte"
@@ -820,7 +820,7 @@
 	"stepReAccess": {
 		"step": "Passo $1 de $2",
 		"title": "Como voltar aqui",
-		"subtitle": "A visita guiada está sempre a um toque de distância.",
+		"subtitle": "A visita guiada está sempre a um clique de distância.",
 		"callout": "é esse",
 		"body": "Carrega no botão ? na barra superior quando quiseres para repetir esta visita. Funciona mesmo após a configuração inicial — muito útil para recapitular ou mostrar a um amigo como funciona.",
 		"back": "Voltar",

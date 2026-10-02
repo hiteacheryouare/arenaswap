@@ -742,7 +742,7 @@
 		"postseasonBoostMeasured": "Um bônus fixo aplicado a jogos de playoffs, finais de conferência e campeonatos.",
 		"back": "Voltar",
 		"next": "Próximo",
-		"tapHint": "Toque em qualquer lugar para continuar"
+		"tapHint": "Clique em qualquer lugar para continuar"
 	},
 	"stepTabAssign": {
 		"step": "Etapa $1 de $2",
@@ -786,8 +786,8 @@
 	"stepGameDetail": {
 		"step": "Etapa $1 de $2",
 		"title": "Mergulhe em qualquer jogo",
-		"subtitle": "Toque em um card para ver o que está impulsionando sua pontuação.",
-		"tapHint": "toque para abrir",
+		"subtitle": "Clique em um card para ver o que está impulsionando sua pontuação.",
+		"tapHint": "clique para abrir",
 		"detailPreviewTitle": "Análise do PowerScore",
 		"signalCloseness": "Equilíbrio",
 		"signalLateGame": "Fase Final",
@@ -795,7 +795,7 @@
 		"signalLeadChanges": "Mudanças de Liderança",
 		"signalComeback": "Virada",
 		"detailPreviewCaption": "Gráficos do placar e histórico completo dos sinais também estão disponíveis.",
-		"body": "Toque em qualquer card de jogo ao vivo para abrir a visão de detalhe. Você verá uma análise completa de cada sinal que contribui para o PowerScore, mais um gráfico de como a pontuação evoluiu ao longo do tempo.",
+		"body": "Clique em qualquer card de jogo ao vivo para abrir a visão de detalhe. Você verá uma análise completa de cada sinal que contribui para o PowerScore, mais um gráfico de como a pontuação evoluiu ao longo do tempo.",
 		"bodyAfterTap": "Você também encontrará um controle deslizante de Impulso do Jogo para priorizar temporariamente qualquer jogo.",
 		"back": "Voltar",
 		"next": "Próximo"
@@ -820,7 +820,7 @@
 	"stepReAccess": {
 		"step": "Etapa $1 de $2",
 		"title": "Como voltar aqui",
-		"subtitle": "O tour está sempre a um toque de distância.",
+		"subtitle": "O tour está sempre a um clique de distância.",
 		"callout": "esse é o botão",
 		"body": "Clique no botão ? na barra superior quando quiser para repetir este tour. Funciona mesmo após a configuração inicial — ótimo para revisar ou mostrar pra um amigo como funciona.",
 		"back": "Voltar",

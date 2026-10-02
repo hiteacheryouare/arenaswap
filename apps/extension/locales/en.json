@@ -742,7 +742,7 @@
 		"postseasonBoostMeasured": "A flat bonus applied to playoff, conference final, and championship games.",
 		"back": "Back",
 		"next": "Next",
-		"tapHint": "Tap anywhere to continue"
+		"tapHint": "Click anywhere to continue"
 	},
 	"stepTabAssign": {
 		"step": "Step $1 of $2",
@@ -786,8 +786,8 @@
 	"stepGameDetail": {
 		"step": "Step $1 of $2",
 		"title": "Dive Into Any Game",
-		"subtitle": "Tap a game card to see what's driving its score.",
-		"tapHint": "tap to open",
+		"subtitle": "Click a game card to see what's driving its score.",
+		"tapHint": "click to open",
 		"detailPreviewTitle": "PowerScore Breakdown",
 		"signalCloseness": "Closeness",
 		"signalLateGame": "Late Game",
@@ -795,7 +795,7 @@
 		"signalLeadChanges": "Lead Changes",
 		"signalComeback": "Comeback",
 		"detailPreviewCaption": "Score charts and full signal history are also available.",
-		"body": "Tap any live game card to open the detail view. You'll see a full breakdown of every signal contributing to its PowerScore, plus a chart of how the score has evolved over time.",
+		"body": "Click any live game card to open the detail view. You'll see a full breakdown of every signal contributing to its PowerScore, plus a chart of how the score has evolved over time.",
 		"bodyAfterTap": "You'll also find a manual Game Boost slider to temporarily prioritize any game you want.",
 		"back": "Back",
 		"next": "Next"
@@ -820,7 +820,7 @@
 	"stepReAccess": {
 		"step": "Step $1 of $2",
 		"title": "Coming Back Here",
-		"subtitle": "The tour is always one tap away.",
+		"subtitle": "The tour is always one click away.",
 		"callout": "that's the one",
 		"body": "Hit the ? button in the top bar any time to replay this tour. It works even after setup. Handy if you want a refresher or want to show a friend how it works.",
 		"back": "Back",
