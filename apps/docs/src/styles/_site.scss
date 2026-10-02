@@ -27,10 +27,18 @@
 	box-sizing: border-box;
 }
 
+// The header is fixed at 64px, so a jump to an anchor would otherwise land the heading under it.
 html {
 	scroll-behavior: smooth;
+	scroll-padding-top: 5rem;
 	overflow-x: hidden;
 	max-width: 100%;
+}
+
+@include m.reduced-motion {
+	html {
+		scroll-behavior: auto;
+	}
 }
 
 body {
