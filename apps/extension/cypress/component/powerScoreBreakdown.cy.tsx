@@ -179,6 +179,18 @@ describe('PowerScoreBreakdown legibility', () => {
 		});
 	});
 
+	it('draws its help icons at 3:1 on the card, with the brand focus ring', () => {
+		cy.mount(<PowerScoreBreakdown {...defaultProps} />);
+		cy.get('.powerscore-breakdown').then(([card]: JQuery<HTMLElement>) => {
+			const ground = luminance(getComputedStyle(card).backgroundColor);
+			cy.get('.powerscore-breakdown .setting-tooltip-btn').first().then(([icon]: JQuery<HTMLElement>) => {
+				expect((ground + 0.05) / (luminance(getComputedStyle(icon).color) + 0.05)).to.be.at.least(3);
+				icon.focus();
+			});
+		});
+		cy.get('.powerscore-breakdown .setting-tooltip-btn').first().should('have.css', 'outline-color', 'rgb(247, 92, 3)');
+	});
+
 	it('sets the values in tabular figures so they hold still as they change', () => {
 		cy.mount(<PowerScoreBreakdown {...defaultProps} />);
 		cy.get('.powerscore-breakdown-value, .powerscore-signal-value').each(([value]: JQuery<HTMLElement>) => {

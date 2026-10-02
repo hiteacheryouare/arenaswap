@@ -292,13 +292,13 @@
 	}
 }
 
-// The breakdown is the popup's one light card, so the icon re-tones for it.
+// The breakdown is the popup's one light card, so the icon re-tones for it: #9ca3af was 2.4:1 on
+// the card, under the 3:1 an icon needs. Focus keeps the brand ring every other control draws.
 .powerscore-breakdown .setting-tooltip-btn {
-	color:     #9ca3af;
+	color:     #6b7280;
 	font-size: 0.55rem;
 
-	&:hover { color: #6b7280; }
-	&:focus-visible { outline-color: #6366f1; }
+	&:hover { color: #374151; }
 }
 
 .powerscore-breakdown-row-subtotal {
@@ -364,10 +364,12 @@
 	color:         #111827;
 	font-weight:   700;
 
+	// The same ring the tab picker beside it draws, rather than an indigo one at 12% alpha that
+	// barely showed.
 	&:focus {
 		outline:      none;
-		border-color: #6366f1;
-		box-shadow:   0 0 0 2px #6366f120;
+		border-color: #F75C03;
+		box-shadow:   0 0 0 0.15rem rgba(#F75C03, 0.2);
 	}
 }
 

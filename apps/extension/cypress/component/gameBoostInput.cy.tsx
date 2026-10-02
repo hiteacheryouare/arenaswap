@@ -7,6 +7,11 @@ describe('GameBoostInput', () => {
 		cy.get('input[type="number"]').should('exist');
 	});
 
+	it('takes the brand orange ring when focused, like the tab picker beside it', () => {
+		cy.mount(<GameBoostInput gameId='g1' currentBoost={0} onSetGameBoost={() => {}} />);
+		cy.get('input[type="number"]').focus().should('have.css', 'border-color', 'rgb(247, 92, 3)');
+	});
+
 	it('displays the current boost value', () => {
 		cy.mount(<GameBoostInput gameId='g1' currentBoost={10} onSetGameBoost={() => {}} />);
 		cy.get('input[type="number"]').should('have.value', '10');
