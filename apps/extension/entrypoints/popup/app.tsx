@@ -434,9 +434,17 @@ export default () => {
 		void browser.storage.local.set({ standbyOnboardingDone: true });
 	};
 
+	const settingsSnapshot = () => JSON.stringify([prefsRef.current, demoMode, demoSeason, standbyStreamTabId]);
+	const settingsOnOpenRef = useRef('');
+
+	const openSetup = () => {
+		settingsOnOpenRef.current = settingsSnapshot();
+		setView('setup');
+	};
+
 	const closeSetup = () => {
 		setView('main');
-		showToast(i18n.t('app.settingsSavedToast'), 'success');
+		if (settingsSnapshot() !== settingsOnOpenRef.current) showToast(i18n.t('app.settingsSavedToast'), 'success');
 		void (async () => {
 			await prefsSyncRef.current.catch(() => {});
 			const refreshed = await fetchState(true);
@@ -572,7 +580,7 @@ export default () => {
 						openTabs={openTabs}
 						onStandbyStream={onStandbyStream}
 						onOpenGameDetail={openGameDetail}
-						onOpenSetup={() => setView('setup')}
+						onOpenSetup={openSetup}
 						suggestionCount={suggestions.length}
 						onReviewSuggestions={() => setView('suggest')}
 						onDismissSuggestions={onDismissSuggestions}
