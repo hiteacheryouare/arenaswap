@@ -70,7 +70,7 @@ ArenaSwap watches every live game across 31 leagues and automatically switches y
 - **Leagues & Favorites** — Enable any of 31 leagues across 6 sports; star your teams for a built-in PowerScore bonus
 - **Tuning** — Sensitivity, switch cooldown, switch delay, postseason weighting, and optional switch notifications
 - **12 languages** — English, Spanish, French, German, Italian, Portuguese (BR and PT), Japanese, Korean, Filipino, and Chinese (Simplified and Traditional)
-- **Private by default** — No account, no tracking, no ads. Scores come directly from ESPN's public API; everything else runs locally
+- **Private by default** — No account, no tracking, no ads. Scores come straight from our sources (public scoreboards, no binoculars required); everything else runs locally
 
 ## Development
 
