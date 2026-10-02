@@ -24,8 +24,8 @@ describe('formatPeriod', () => {
 	});
 
 	test('numbers overtime past regulation, and leaves hockey OT unnumbered', () => {
-		expect(formatPeriod(makeGame('nba', { period: 5 }))).toBe('OT1');
-		expect(formatPeriod(makeGame('nba', { period: 6 }))).toBe('OT2');
+		expect(formatPeriod(makeGame('nba', { period: 5 }))).toBe('OT');
+		expect(formatPeriod(makeGame('nba', { period: 6 }))).toBe('2OT');
 		expect(formatPeriod(makeGame('nhl', { period: 4 }))).toBe('OT');
 	});
 
@@ -47,8 +47,8 @@ describe('formatPeriod', () => {
 		});
 
 		test('leaves NCAA basketball halves on OT numbering — the rule is per sport, not per format', () => {
-			expect(formatPeriod(makeGame('ncaab', { period: 3 }))).toBe('OT1');
-			expect(formatPeriod(makeGame('ncaab', { period: 4 }))).toBe('OT2');
+			expect(formatPeriod(makeGame('ncaab', { period: 3 }))).toBe('OT');
+			expect(formatPeriod(makeGame('ncaab', { period: 4 }))).toBe('2OT');
 		});
 	});
 

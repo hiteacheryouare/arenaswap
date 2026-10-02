@@ -4,6 +4,8 @@
 // marketing-page island. `gameCardShared` re-exports both, so its own callers are unchanged.
 import { leagueConfigMap } from '@arenaswap/core/constants';
 import type { LeagueId, SportType } from '@arenaswap/core/types';
+import { defaultTranslate } from './defaultStrings';
+import type { Translator } from './defaultStrings';
 
 // Only the three fields the label actually reads. `powerscore` publishes a narrower `Game` than
 // `@arenaswap/core` does, and the docs site holds that one — naming the fields lets both pass.
@@ -14,27 +16,30 @@ interface PeriodSource {
 	sportType: SportType;
 }
 
-export const formatPeriod = (game: PeriodSource): string => {
+// Overtime reads the way the box score heads its columns: OT, then 2OT, 3OT.
+export const formatPeriod = (game: PeriodSource, t: Translator = defaultTranslate): string => {
 	const period = game.period ?? 1;
 	const config = leagueConfigMap[game.league];
-	if (!config) return `P${period}`;
+	if (!config) return t('gameCard.period', { count: period });
 	const regular = config.regularPeriods;
 	if (period > regular) {
-		if (config.periodFormat === 'periods') return 'OT';
-		if (config.periodFormat === 'innings') return `Inn ${period}`;
+		if (config.periodFormat === 'periods') return t('gameCard.periodOvertime');
+		if (config.periodFormat === 'innings') return t('gameCard.periodInning', { count: period });
 		// Soccer plays two extra-time halves (periods 3 and 4) and then a shootout (period 5), so
-		// "OT1/OT2/OT3" is the wrong vocabulary and flatly wrong for the shootout. Keyed on
+		// "OT/2OT/3OT" is the wrong vocabulary and flatly wrong for the shootout. Keyed on
 		// sportType, not periodFormat, so NCAA basketball's halves keep their OT numbering.
 		if (game.sportType === 'soccer') {
 			const extraTimeHalf = period - regular;
-			return extraTimeHalf <= 2 ? `ET${extraTimeHalf}` : 'PENS';
+			if (extraTimeHalf === 1) return t('gameCard.periodExtraTimeFirst');
+			return extraTimeHalf === 2 ? t('gameCard.periodExtraTimeSecond') : t('gameCard.periodShootout');
 		}
-		return `OT${period - regular}`;
+		const overtime = period - regular;
+		return overtime === 1 ? t('gameCard.periodOvertime') : t('gameCard.periodOvertimeNumbered', { count: overtime });
 	}
-	if (config.periodFormat === 'halves') return period === 1 ? '1H' : '2H';
-	if (config.periodFormat === 'periods') return `P${period}`;
-	if (config.periodFormat === 'innings') return `Inn ${period}`;
-	return `Q${period}`;
+	if (config.periodFormat === 'halves') return period === 1 ? t('gameCard.periodFirstHalf') : t('gameCard.periodSecondHalf');
+	if (config.periodFormat === 'periods') return t('gameCard.period', { count: period });
+	if (config.periodFormat === 'innings') return t('gameCard.periodInning', { count: period });
+	return t('gameCard.periodQuarter', { count: period });
 };
 
 export const isHalftime = (game: PeriodSource): boolean => {

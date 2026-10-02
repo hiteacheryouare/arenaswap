@@ -412,6 +412,16 @@
 			"topOfInning": "Anfang des Innings",
 			"bottomOfInning": "Ende des Innings",
 			"shootout": "I.E. {away}–{home}",
+			"periodQuarter": "Q{count}",
+			"periodFirstHalf": "1. HZ",
+			"periodSecondHalf": "2. HZ",
+			"period": "{count}. Drittel",
+			"periodInning": "{count}. Inning",
+			"periodOvertime": "OT",
+			"periodOvertimeNumbered": "{count}OT",
+			"periodExtraTimeFirst": "V1",
+			"periodExtraTimeSecond": "V2",
+			"periodShootout": "I.E.",
 			"downDistanceAt": "{downDistance} an {fieldPosition}"
 		},
 		"field": {

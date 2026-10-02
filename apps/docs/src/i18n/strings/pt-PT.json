@@ -412,6 +412,16 @@
 			"topOfInning": "Início da entrada",
 			"bottomOfInning": "Fim da entrada",
 			"shootout": "GP {away}–{home}",
+			"periodQuarter": "{count}.º P",
+			"periodFirstHalf": "1.ª P",
+			"periodSecondHalf": "2.ª P",
+			"period": "{count}.º P",
+			"periodInning": "Inn. {count}",
+			"periodOvertime": "OT",
+			"periodOvertimeNumbered": "{count}OT",
+			"periodExtraTimeFirst": "PR1",
+			"periodExtraTimeSecond": "PR2",
+			"periodShootout": "GP",
 			"downDistanceAt": "{downDistance} na {fieldPosition}"
 		},
 		"field": {

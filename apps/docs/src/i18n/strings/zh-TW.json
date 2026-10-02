@@ -411,7 +411,17 @@
 			"vs": "vs",
 			"topOfInning": "上半局",
 			"bottomOfInning": "下半局",
-			"shootout": "PENS {away}–{home}",
+			"shootout": "點球 {away}–{home}",
+			"periodQuarter": "第{count}節",
+			"periodFirstHalf": "上半場",
+			"periodSecondHalf": "下半場",
+			"period": "第{count}節",
+			"periodInning": "第{count}局",
+			"periodOvertime": "OT",
+			"periodOvertimeNumbered": "{count}OT",
+			"periodExtraTimeFirst": "加1",
+			"periodExtraTimeSecond": "加2",
+			"periodShootout": "點球",
 			"downDistanceAt": "{fieldPosition} {downDistance}"
 		},
 		"field": {

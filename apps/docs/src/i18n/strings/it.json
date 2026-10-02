@@ -412,6 +412,16 @@
 			"topOfInning": "Parte alta dell'inning",
 			"bottomOfInning": "Parte bassa dell'inning",
 			"shootout": "RIG {away}–{home}",
+			"periodQuarter": "Q{count}",
+			"periodFirstHalf": "1°T",
+			"periodSecondHalf": "2°T",
+			"period": "{count}° P",
+			"periodInning": "Inn. {count}",
+			"periodOvertime": "OT",
+			"periodOvertimeNumbered": "{count}OT",
+			"periodExtraTimeFirst": "TS1",
+			"periodExtraTimeSecond": "TS2",
+			"periodShootout": "RIG",
 			"downDistanceAt": "{downDistance} a {fieldPosition}"
 		},
 		"field": {

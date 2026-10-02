@@ -96,7 +96,7 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 					{!shootout && (
 						<span className='game-period'>
 							{isInningSport && <InningHalfIcon topOfInning={game.topOfInning} />}
-							{atHalftime ? t('detail.halftime') : formatPeriod(game)}
+							{atHalftime ? t('detail.halftime') : formatPeriod(game, t)}
 						</span>
 					)}
 					{shootout && (

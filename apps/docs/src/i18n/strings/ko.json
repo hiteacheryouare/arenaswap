@@ -412,6 +412,16 @@
 			"topOfInning": "초",
 			"bottomOfInning": "말",
 			"shootout": "PK {away}–{home}",
+			"periodQuarter": "{count}쿼터",
+			"periodFirstHalf": "전반",
+			"periodSecondHalf": "후반",
+			"period": "{count}피리어드",
+			"periodInning": "{count}회",
+			"periodOvertime": "OT",
+			"periodOvertimeNumbered": "{count}OT",
+			"periodExtraTimeFirst": "ET1",
+			"periodExtraTimeSecond": "ET2",
+			"periodShootout": "PK",
 			"downDistanceAt": "{fieldPosition}에서 {downDistance}"
 		},
 		"field": {

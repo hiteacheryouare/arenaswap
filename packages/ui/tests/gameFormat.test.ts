@@ -1,6 +1,7 @@
 import { leagueConfigs, leagueConfigMap } from '@arenaswap/core/constants';
 import type { LeagueId, SportType } from '@arenaswap/core/types';
 import { formatPeriod, isHalftime } from '../src/components/gameFormat';
+import { translateFrom } from '../src/components/defaultStrings';
 
 /* The label in the middle of a live card is the one thing on it that says where the game is. A
    league config edit — a periodFormat typo, a regularPeriods off by one, a new league copied from
@@ -11,30 +12,31 @@ import { formatPeriod, isHalftime } from '../src/components/gameFormat';
    So the expected labels are written out rather than derived from the same config the function
    reads, which would only prove the function agrees with itself. Every value below was diffed
    against the pre-split implementation in `gameCardShared.tsx` at commit 0750e61c, for every
-   league and every period from 0 to regularPeriods + 6: identical throughout. */
+   league and every period from 0 to regularPeriods + 6: identical throughout. Overtime has since
+   moved to the box score's convention, OT then 2OT and 3OT, where the card used to say OT1. */
 
 const periodLabels: Record<LeagueId, string[]> = {
-	nba: ['Q1', 'Q2', 'Q3', 'Q4', 'OT1', 'OT2', 'OT3'],
-	wnba: ['Q1', 'Q2', 'Q3', 'Q4', 'OT1', 'OT2', 'OT3'],
-	ncaab: ['1H', '2H', 'OT1', 'OT2', 'OT3'],
+	nba: ['Q1', 'Q2', 'Q3', 'Q4', 'OT', '2OT', '3OT'],
+	wnba: ['Q1', 'Q2', 'Q3', 'Q4', 'OT', '2OT', '3OT'],
+	ncaab: ['1H', '2H', 'OT', '2OT', '3OT'],
 	nhl: ['P1', 'P2', 'P3', 'OT', 'OT', 'OT'],
 	ncaamh: ['P1', 'P2', 'P3', 'OT', 'OT', 'OT'],
 	mlb: ['Inn 1', 'Inn 2', 'Inn 3', 'Inn 4', 'Inn 5', 'Inn 6', 'Inn 7', 'Inn 8', 'Inn 9', 'Inn 10', 'Inn 11', 'Inn 12'],
-	nfl: ['Q1', 'Q2', 'Q3', 'Q4', 'OT1', 'OT2', 'OT3'],
-	ncaaf: ['Q1', 'Q2', 'Q3', 'Q4', 'OT1', 'OT2', 'OT3'],
+	nfl: ['Q1', 'Q2', 'Q3', 'Q4', 'OT', '2OT', '3OT'],
+	ncaaf: ['Q1', 'Q2', 'Q3', 'Q4', 'OT', '2OT', '3OT'],
 	mls: ['1H', '2H', 'ET1', 'ET2', 'PENS'],
-	ncaaw: ['Q1', 'Q2', 'Q3', 'Q4', 'OT1', 'OT2', 'OT3'],
+	ncaaw: ['Q1', 'Q2', 'Q3', 'Q4', 'OT', '2OT', '3OT'],
 	epl: ['1H', '2H', 'ET1', 'ET2', 'PENS'],
 	fifawc: ['1H', '2H', 'ET1', 'ET2', 'PENS'],
 	cbase: ['Inn 1', 'Inn 2', 'Inn 3', 'Inn 4', 'Inn 5', 'Inn 6', 'Inn 7', 'Inn 8', 'Inn 9', 'Inn 10', 'Inn 11', 'Inn 12'],
 	csoft: ['Inn 1', 'Inn 2', 'Inn 3', 'Inn 4', 'Inn 5', 'Inn 6', 'Inn 7', 'Inn 8', 'Inn 9', 'Inn 10'],
 	olybb: ['Inn 1', 'Inn 2', 'Inn 3', 'Inn 4', 'Inn 5', 'Inn 6', 'Inn 7', 'Inn 8', 'Inn 9', 'Inn 10', 'Inn 11', 'Inn 12'],
 	wbbc: ['Inn 1', 'Inn 2', 'Inn 3', 'Inn 4', 'Inn 5', 'Inn 6', 'Inn 7', 'Inn 8', 'Inn 9', 'Inn 10', 'Inn 11', 'Inn 12'],
-	ufl: ['Q1', 'Q2', 'Q3', 'Q4', 'OT1', 'OT2', 'OT3'],
+	ufl: ['Q1', 'Q2', 'Q3', 'Q4', 'OT', '2OT', '3OT'],
 	olymih: ['P1', 'P2', 'P3', 'OT', 'OT', 'OT'],
 	olywih: ['P1', 'P2', 'P3', 'OT', 'OT', 'OT'],
-	olybkm: ['Q1', 'Q2', 'Q3', 'Q4', 'OT1', 'OT2', 'OT3'],
-	olybkw: ['Q1', 'Q2', 'Q3', 'Q4', 'OT1', 'OT2', 'OT3'],
+	olybkm: ['Q1', 'Q2', 'Q3', 'Q4', 'OT', '2OT', '3OT'],
+	olybkw: ['Q1', 'Q2', 'Q3', 'Q4', 'OT', '2OT', '3OT'],
 	olysocm: ['1H', '2H', 'ET1', 'ET2', 'PENS'],
 	olysocw: ['1H', '2H', 'ET1', 'ET2', 'PENS'],
 	laliga: ['1H', '2H', 'ET1', 'ET2', 'PENS'],
@@ -170,5 +172,36 @@ describe('the re-export chain still carries both helpers', () => {
 		const shared = await import('../src/components/gameCardShared');
 		expect(shared.formatPeriod).toBe(formatPeriod);
 		expect(shared.isHalftime).toBe(isHalftime);
+	});
+});
+
+// The labels used to be English literals, so a German card read "Inn 7" and "2H" beside its
+// translated status line. Every one now comes from the translator it is handed.
+describe('formatPeriod translates', () => {
+	const german = translateFrom(key => ({
+		'gameCard.periodQuarter': 'Q{count}',
+		'gameCard.periodFirstHalf': '1. HZ',
+		'gameCard.periodSecondHalf': '2. HZ',
+		'gameCard.period': '{count}. Drittel',
+		'gameCard.periodInning': '{count}. Inning',
+		'gameCard.periodOvertime': 'OT',
+		'gameCard.periodOvertimeNumbered': '{count}OT',
+		'gameCard.periodExtraTimeFirst': 'V1',
+		'gameCard.periodExtraTimeSecond': 'V2',
+		'gameCard.periodShootout': 'I.E.',
+	} as Record<string, string>)[key]);
+	const label = (league: LeagueId, period: number) => formatPeriod({ league, period, sportType: leagueConfigMap[league]!.sportType }, german);
+
+	test.each([
+		['nba', 2, 'Q2'],
+		['nba', 6, '2OT'],
+		['epl', 2, '2. HZ'],
+		['epl', 3, 'V1'],
+		['epl', 5, 'I.E.'],
+		['nhl', 2, '2. Drittel'],
+		['nhl', 4, 'OT'],
+		['mlb', 7, '7. Inning'],
+	] as [LeagueId, number, string][])('%s period %i reads %s', (league, period, expected) => {
+		expect(label(league, period)).toBe(expected);
 	});
 });

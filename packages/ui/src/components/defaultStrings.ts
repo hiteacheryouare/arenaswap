@@ -27,6 +27,16 @@ export const defaultStrings: Record<string, string> = {
 	'gameCard.teamRank': 'Ranked #{rank}',
 	'gameCard.timeoutsRemaining': '{team}: 1 timeout left | {team}: $1 timeouts left',
 	'gameCard.timeoutsShort': '{count} TO',
+	'gameCard.periodQuarter': 'Q{count}',
+	'gameCard.periodFirstHalf': '1H',
+	'gameCard.periodSecondHalf': '2H',
+	'gameCard.period': 'P{count}',
+	'gameCard.periodInning': 'Inn {count}',
+	'gameCard.periodOvertime': 'OT',
+	'gameCard.periodOvertimeNumbered': '{count}OT',
+	'gameCard.periodExtraTimeFirst': 'ET1',
+	'gameCard.periodExtraTimeSecond': 'ET2',
+	'gameCard.periodShootout': 'PENS',
 	'field.possession': '{team} has the ball',
 	'field.noPossession': 'Field position',
 	'main.tourButton': 'Tour',
@@ -59,3 +69,27 @@ export const defaultStrings: Record<string, string> = {
 	'bso.strikes': 'S',
 	'bso.outs': 'O',
 };
+
+type Substitutions = Record<string, string | number>;
+
+// The extension's i18n.t: a number picks a plural form and fills $1, an object fills {names}.
+export type Translator = (key: string, countOrSubs?: number | Substitutions, subs?: Substitutions) => string;
+
+// Plural strings outside the extension are written "one | other", the shape WXT compiles them to.
+export const translateFrom = (lookup: (key: string) => string | undefined): Translator => (key, countOrSubs, subs) => {
+	const count = typeof countOrSubs === 'number' ? countOrSubs : undefined;
+	const named = typeof countOrSubs === 'object' ? countOrSubs : subs;
+	let str = lookup(key) ?? key;
+	if (count !== undefined) {
+		const forms = str.split(' | ');
+		str = (forms.length === 2 ? forms[count === 1 ? 0 : 1]! : forms[0]!).split('$1').join(String(count));
+	}
+	if (named) {
+		for (const [k, v] of Object.entries(named)) {
+			str = str.split(`{${k}}`).join(String(v));
+		}
+	}
+	return str;
+};
+
+export const defaultTranslate = translateFrom(key => defaultStrings[key]);

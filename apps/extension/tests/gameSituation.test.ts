@@ -27,7 +27,7 @@ describe('resolveStatus', () => {
 	});
 
 	test('formats overtime', () => {
-		expect(resolveStatus(makeGame({ period: 5 }), false, t).text).toBe('OT1 • 6:40');
+		expect(resolveStatus(makeGame({ period: 5 }), false, t).text).toBe('OT • 6:40');
 	});
 
 	test('says halftime rather than showing a frozen clock', () => {

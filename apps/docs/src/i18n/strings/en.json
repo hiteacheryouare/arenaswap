@@ -412,6 +412,16 @@
 			"topOfInning": "Top of inning",
 			"bottomOfInning": "Bottom of inning",
 			"shootout": "PENS {away}–{home}",
+			"periodQuarter": "Q{count}",
+			"periodFirstHalf": "1H",
+			"periodSecondHalf": "2H",
+			"period": "P{count}",
+			"periodInning": "Inn {count}",
+			"periodOvertime": "OT",
+			"periodOvertimeNumbered": "{count}OT",
+			"periodExtraTimeFirst": "ET1",
+			"periodExtraTimeSecond": "ET2",
+			"periodShootout": "PENS",
 			"downDistanceAt": "{downDistance} at {fieldPosition}"
 		},
 		"field": {

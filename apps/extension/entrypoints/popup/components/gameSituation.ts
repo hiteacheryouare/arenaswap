@@ -19,14 +19,14 @@ export const resolveStatus = (game: Game, isInningSport: boolean, t: Translate):
 	if (game.delayed === true) return { text: game.delayDescription ?? t('gameCard.delayFallback'), ticking: false };
 	if (game.status === 'post') return { text: t('detail.final'), ticking: false };
 	if (game.status === 'pre') return { text: '', ticking: false };
-	if (isInningSport) return { text: formatPeriod(game), ticking: false };
+	if (isInningSport) return { text: formatPeriod(game, t), ticking: false };
 	if (game.intermission === true) {
 		return { text: isHalftime(game) ? t('detail.halftime') : t('detail.intermission'), ticking: false };
 	}
 
 	const clockBased = sportTypeConfigMap[game.sportType]?.clockBased ?? false;
 	return {
-		text: clockBased ? `${formatPeriod(game)} • ${formatGameClock(game)}` : formatPeriod(game),
+		text: clockBased ? `${formatPeriod(game, t)} • ${formatGameClock(game)}` : formatPeriod(game, t),
 		ticking: clockBased,
 	};
 };

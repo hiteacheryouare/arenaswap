@@ -412,6 +412,16 @@
 			"topOfInning": "イニングの表",
 			"bottomOfInning": "イニングの裏",
 			"shootout": "PK {away}–{home}",
+			"periodQuarter": "第{count}Q",
+			"periodFirstHalf": "前半",
+			"periodSecondHalf": "後半",
+			"period": "第{count}P",
+			"periodInning": "{count}回",
+			"periodOvertime": "OT",
+			"periodOvertimeNumbered": "{count}OT",
+			"periodExtraTimeFirst": "延前",
+			"periodExtraTimeSecond": "延後",
+			"periodShootout": "PK",
 			"downDistanceAt": "{fieldPosition}で{downDistance}"
 		},
 		"field": {
