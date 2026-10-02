@@ -426,14 +426,36 @@ $pre-game-time-color: bs.shade-color(bs.$warning, 60%);
 	letter-spacing: 0.02em;
 }
 
+// Bootstrap's .btn-link turns its text orange on hover and press through these variables, so the
+// star sets them rather than its colour, or a press would flash the link colour over it.
 [data-team-star='true'] {
+	--as-btn-color:        #6c757d;
+	--as-btn-hover-color:  #6c757d;
+	--as-btn-active-color: #6c757d;
+	position: relative;
 	font-size: 0.78rem;
 	text-decoration: none;
-	color: #6c757d;
+	opacity: 0.75;
+	transition: color m.$motion-snap m.$motion-ease, opacity m.$motion-snap m.$motion-ease;
+
+	// The glyph is 12px across. The target around it is 24px without moving anything.
+	&::after {
+		content: '';
+		position: absolute;
+		inset: -6px;
+	}
+
+	&:hover,
+	&:focus-visible {
+		opacity: 1;
+	}
 }
 
 [data-team-star='true'][data-favorited='true'] {
-	color: #f1c40f;
+	--as-btn-color:        #f1c40f;
+	--as-btn-hover-color:  #f1c40f;
+	--as-btn-active-color: #f1c40f;
+	opacity: 1;
 }
 
 .odds-provider-wrap {
@@ -590,8 +612,15 @@ button.game-meta-attribution {
 	.bso-label,
 	.bso-dot,
 	.timeout-dot,
-	.timeout-dots-numeric,
+	.timeout-dots-numeric {
+		color: inherit;
+	}
+
+	// currentColor on the element's own colour is the inherited ink, the team-side text colour.
 	[data-team-star='true'] {
+		--as-btn-color:        currentColor;
+		--as-btn-hover-color:  currentColor;
+		--as-btn-active-color: currentColor;
 		color: inherit;
 	}
 
