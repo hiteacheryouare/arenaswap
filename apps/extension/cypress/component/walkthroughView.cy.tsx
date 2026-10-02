@@ -265,6 +265,14 @@ describe('walkthroughView step navigation', () => {
 });
 
 describe('walkthroughView skip', () => {
+	// The clicked Next unmounts with its step, so focus would otherwise fall to <body>.
+	it('hands focus to each new step\'s title', () => {
+		cy.mount(<WalkthroughView onComplete={() => {}} />);
+		cy.contains('button', 'Next').click();
+		cy.focused().should('have.attr', 'role', 'heading');
+		cy.focused().should('have.text', 'Meet PowerScore');
+	});
+
 	it('leaves the tour from any step', () => {
 		const spy = cy.spy().as('onComplete');
 		cy.mount(<WalkthroughView onComplete={spy} />);

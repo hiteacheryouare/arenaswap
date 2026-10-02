@@ -37,7 +37,7 @@ const walkthroughStepGameDetail = ({ onNext, onBack }: walkthroughStepGameDetail
 				{i18n.t('stepGameDetail.step', [6, 8])}
 			</div>
 
-			<div className='fw-bold fs-5 text-center mb-1'>{i18n.t('stepGameDetail.title')}</div>
+			<div className='fw-bold fs-5 text-center mb-1 popup-step-title' role='heading' aria-level={1} tabIndex={-1} data-step-title>{i18n.t('stepGameDetail.title')}</div>
 			<div className='text-body-secondary small text-center mb-3 lh-base'>
 				{i18n.t('stepGameDetail.subtitle')}
 			</div>

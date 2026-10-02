@@ -156,6 +156,15 @@ describe('setupView navigation', () => {
 		cy.get('@onClose').should('not.have.been.called');
 	});
 
+	// Both the group button and the page's back button unmount when they're clicked.
+	it('moves focus onto the page it opens, and back to the group it came from', () => {
+		cy.mount(<SetupView {...defaultProps} />);
+		openGroup('display');
+		cy.focused().should('have.class', 'setup-header');
+		cy.get('button.setup-header').click();
+		cy.focused().should('have.id', 'settingsGroup-display');
+	});
+
 	it('shows the group description as the sub-page lede', () => {
 		cy.mount(<SetupView {...defaultProps} />);
 		openGroup('standby');

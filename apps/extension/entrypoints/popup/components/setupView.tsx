@@ -1,4 +1,4 @@
-import { useMemo, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { i18n } from '#i18n';
 import type { FinishedTabAction, LeagueId, LeagueLogoMap, SignalName, SportType, ThemePreference, UserPreferences } from '@arenaswap/core/types';
 import type { Browser } from 'wxt/browser';
@@ -91,10 +91,25 @@ const setupView = ({
 	const results = useMemo(() => searchSettings(query), [query]);
 	const noLeaguesSelected = prefsLoaded && prefs.enabledLeagues.length === 0;
 
+	const pageRef = useRef<HTMLDivElement>(null);
+	const lastGroupRef = useRef<settingsGroupId | null>(null);
+
 	const openGroup = (id: settingsGroupId) => {
+		lastGroupRef.current = id;
 		setPage(id);
 		setQuery('');
 	};
+
+	// The button that was clicked unmounts with the page it was on, which would leave keyboard focus
+	// on <body>. A page takes focus on its own header, and the index hands it back to the group
+	// button it was opened from.
+	useEffect(() => {
+		if (page) {
+			pageRef.current?.querySelector<HTMLElement>('.setup-header')?.focus({ preventScroll: true });
+			return;
+		}
+		if (lastGroupRef.current) document.getElementById(`settingsGroup-${lastGroupRef.current}`)?.focus({ preventScroll: true });
+	}, [page]);
 
 	const handleToggleStandbyStream = () => {
 		if (!prefs.standbyStreamEnabled && !standbyOnboardingDone) {
@@ -510,8 +525,8 @@ const setupView = ({
 		// that has to keep its own search box in view, so it takes the column and scrolls inside it.
 		const scrollsWithin = page === 'favorites';
 		return (
-			<div className={`popup-container${scrollsWithin ? ' d-flex flex-column' : ''}`}>
-				<button className='setup-header' onClick={() => setPage(null)}>
+			<div ref={pageRef} className={`popup-container${scrollsWithin ? ' d-flex flex-column' : ''}`}>
+				<button type='button' className='setup-header' onClick={() => setPage(null)}>
 					<i className='bi bi-arrow-left' />
 					{group ? i18n.t(group.labelKey) : i18n.t('setup.header')}
 				</button>
@@ -523,7 +538,7 @@ const setupView = ({
 
 	return (
 		<div className='popup-container'>
-			<button className='setup-header' onClick={onClose}>
+			<button type='button' className='setup-header' onClick={onClose}>
 				<i className='bi bi-arrow-left' />
 				{i18n.t('setup.header')}
 			</button>

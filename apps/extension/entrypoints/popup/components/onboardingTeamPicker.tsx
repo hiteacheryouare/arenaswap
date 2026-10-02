@@ -38,7 +38,7 @@ const onboardingTeamPicker = ({
 				<span className='small text-body-secondary text-uppercase ms-auto'>{i18n.t('teamPicker.step', [3, 3])}</span>
 			</div>
 
-			<div className='fw-bold lh-sm mb-1 fs-5'>{i18n.t('teamPicker.title')}</div>
+			<div className='fw-bold lh-sm mb-1 fs-5 popup-step-title' role='heading' aria-level={1} tabIndex={-1} data-step-title>{i18n.t('teamPicker.title')}</div>
 			<div className='setting-explainer mb-2'>
 				{i18n.t('teamPicker.explainer')}
 			</div>

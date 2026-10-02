@@ -7,6 +7,7 @@ import { leaguesBySportType } from '../popupHelpers';
 import OnboardingTabControl from './onboardingTabControl';
 import OnboardingLeaguePicker from './onboardingLeaguePicker';
 import OnboardingTeamPicker from './onboardingTeamPicker';
+import useStepTitleFocus from './useStepTitleFocus';
 
 interface onboardingViewProps {
 	leagueLogos: LeagueLogoMap;
@@ -48,6 +49,7 @@ const onboardingView = ({ leagueLogos, onComplete, onStartWalkthrough }: onboard
 	};
 
 	const rosterRequestRef = useRef(0);
+	const shellRef = useStepTitleFocus(step);
 
 	// The picker opens straight away on its own loading state; a roster for a slate of many leagues
 	// takes seconds behind the request throttle. Only the newest request may land, so a double click,
@@ -84,7 +86,7 @@ const onboardingView = ({ leagueLogos, onComplete, onStartWalkthrough }: onboard
 
 	return (
 		<div className='popup-root'>
-			<div className='popup-view-shell'>
+			<div ref={shellRef} className='popup-view-shell'>
 				{step === 1 && (
 					<OnboardingTabControl onNext={() => setStep(2)} />
 				)}
@@ -121,7 +123,7 @@ const onboardingView = ({ leagueLogos, onComplete, onStartWalkthrough }: onboard
 							/>
 						</div>
 						<div className='onb-content-wrap d-flex flex-column'>
-							<div className='fw-bold lh-sm mb-2 fs-4 text-center'>{i18n.t('onboarding.allSetTitle')}</div>
+							<div className='fw-bold lh-sm mb-2 fs-4 text-center popup-step-title' role='heading' aria-level={1} tabIndex={-1} data-step-title>{i18n.t('onboarding.allSetTitle')}</div>
 							<div className='text-body-secondary fs-6 text-center mb-4 lh-base'>
 								{i18n.t('onboarding.allSetSubtitle')}
 							</div>

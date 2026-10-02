@@ -18,7 +18,7 @@ const onboardingTabControl = ({ onNext }: onboardingTabControlProps) => (
 		<div className='onb-content-wrap d-flex flex-column'>
 			<div className='small text-body-secondary text-uppercase text-center mb-3'>{i18n.t('tabControl.step', [1, 3])}</div>
 
-			<div className='fw-bold lh-sm mb-2 fs-4 text-center'>{i18n.t('tabControl.title')}</div>
+			<div className='fw-bold lh-sm mb-2 fs-4 text-center popup-step-title' role='heading' aria-level={1} tabIndex={-1} data-step-title>{i18n.t('tabControl.title')}</div>
 			<div className='text-body-secondary fs-6 text-center mb-4 lh-base'>
 				{i18n.t('tabControl.subtitle')}
 			</div>

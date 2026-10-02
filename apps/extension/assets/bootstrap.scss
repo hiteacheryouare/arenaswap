@@ -134,6 +134,10 @@
 	animation: onbFadeSlideUp 0.45s ease 0.58s both;
 }
 
+// Step titles take focus when a step opens so screen readers announce it. Focus put there by the
+// code, not by the reader, shouldn't draw a ring around a heading.
+.popup-step-title:focus { outline: none; }
+
 // The Standby Stream guide has no logo to wait for, so it fades straight in, and again per step.
 .standby-guide-content {
 	animation: onbFadeSlideUp m.$motion-base m.$motion-ease both;

@@ -347,7 +347,7 @@ const walkthroughStepPowerScore = ({ onNext, onBack, initialSubStep = 0 }: walkt
 		if (subStep === 0) {
 			return (
 				<>
-					<div className='fw-bold fs-5 text-center mb-1'>{i18n.t('stepPowerScore.introTitle')}</div>
+					<div className='fw-bold fs-5 text-center mb-1 popup-step-title' role='heading' aria-level={1} tabIndex={-1} data-step-title>{i18n.t('stepPowerScore.introTitle')}</div>
 					<div className='text-body-secondary small text-center mb-3 lh-base'>
 						{i18n.t('stepPowerScore.subtitle')}
 					</div>
@@ -364,7 +364,7 @@ const walkthroughStepPowerScore = ({ onNext, onBack, initialSubStep = 0 }: walkt
 			const activeDot = dots[subStep - 1]!;
 			return (
 				<>
-					<div className='fw-bold fs-5 text-center mb-1'>{i18n.t('stepPowerScore.title')}</div>
+					<div className='fw-bold fs-5 text-center mb-1 popup-step-title' role='heading' aria-level={1} tabIndex={-1} data-step-title>{i18n.t('stepPowerScore.title')}</div>
 					<div className='text-body-secondary small text-center mb-3 lh-base'>
 						{i18n.t('stepPowerScore.subtitle')}
 					</div>
