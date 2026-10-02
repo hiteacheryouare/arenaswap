@@ -140,7 +140,7 @@ By submitting a contribution, you agree that:
 
 To report misconduct:
 - Contact Ryan directly, using the contact details on Ryan's GitHub profile ([@hiteacheryouare](https://github.com/hiteacheryouare))
-- For security exploitation attempts, use a private [security advisory](../../security/advisories/new) instead, as described in [SECURITY.md](SECURITY.md)
+- For security exploitation attempts, use a private [security advisory](https://github.com/hiteacheryouare/arenaswap/security/advisories/new) instead, as described in [SECURITY.md](SECURITY.md)
 
 Do not report misconduct in a public issue.
 
