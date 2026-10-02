@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The detail screen holds its place and speaks your language — 2026-10-02
+
+Tip-off and the final whistle no longer throw you back to Overview, the overview no longer remounts and replays its charts when the tab strip arrives, the sticky bar takes over the score the moment it slides under, and the Back button keeps its fill and focus ring. Stats line up flush right in Geist, the breakdown's numbers clear 4.5:1 with real minus signs and a name column that fits every language, the count and the bases are read aloud, and the charts honour reduced motion and translate their tooltips. The PowerScore reason is rebuilt from locale strings by `utils/powerScoreReason.ts`, which drops a line it can't fully translate rather than mixing languages, and a test over the scorer's tunables catches any upstream rewording.
+
 ## The main list sweats the small stuff too — 2026-10-02
 
 The notices above the list share one surface that reads in both themes, Retry and Refresh show they're working, the no-games joke stays quiet when the load failed, and Up Next cards drop the day the pager already names. Cards stop twitching and blinking (tabular PowerScore figures, a still live dot, a glow that eases between team colours, one delay label instead of two), the star gets a 24px target, final cards lose the stale betting line, and the period label, the timeouts plural and every date now speak the popup's language. The shared Translator in `packages/ui` takes a plural count the way the extension's `i18n.t` does, and overtime reads OT, 2OT, 3OT to match the box score.
