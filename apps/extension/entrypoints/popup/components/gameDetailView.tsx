@@ -205,24 +205,28 @@ const gameDetailView = ({
 		? i18n.t('detail.totalLabelBaseMax', { total, max: scoreMaxTotal })
 		: i18n.t('detail.totalLabel', { total, max: scoreMaxTotal });
 
-	// Observing the card itself rather than a scroll offset keeps the sticky-bar handoff exact at
-	// any hero height — pre-game, inning sports and postseason all differ.
+	// Observing the scoreline itself rather than a scroll offset keeps the sticky-bar handoff exact
+	// at any hero height — pre-game, inning sports and postseason all differ. It is the scoreline
+	// and not the whole hero, and the root is trimmed by the bar, so the compact matchup arrives as
+	// the score slides under the bar rather than once the at-bat panel or field strip below it has.
 	const shellRef = useRef<HTMLDivElement>(null);
 	const heroRef = useRef<HTMLDivElement>(null);
 	const [heroScrolledAway, setHeroScrolledAway] = useState(false);
 
 	useEffect(() => {
 		const root = shellRef.current;
-		const target = heroRef.current;
-		if (!root || !target || typeof IntersectionObserver === 'undefined') return;
+		const hero = heroRef.current;
+		if (!root || !hero || typeof IntersectionObserver === 'undefined') return;
+		const target = hero.querySelector('.game-detail-center, .gd-poster-teams') ?? hero;
+		const barHeight = root.querySelector<HTMLElement>('.game-detail-header')?.offsetHeight ?? 0;
 
 		const observer = new IntersectionObserver(
 			entries => { for (const entry of entries) setHeroScrolledAway(!entry.isIntersecting); },
-			{ root, threshold: 0 },
+			{ root, threshold: 0, rootMargin: `-${barHeight}px 0px 0px 0px` },
 		);
 		observer.observe(target);
 		return () => observer.disconnect();
-	}, []);
+	}, [isPreGame]);
 
 	// Everything that is not the box score or the table: the PowerScore and what explains
 	// it, what is happening in the game, and where it is being played. Lifted out of the

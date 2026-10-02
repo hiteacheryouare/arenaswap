@@ -568,6 +568,28 @@ describe('gameDetailView sticky bar', () => {
 		cy.get('.gd-bar-compact').should('contain.text', '108').and('contain.text', '112');
 	});
 
+	// The hero runs on below the score with the count, the bases and the at-bat panel. Waiting for
+	// all of that to leave left a stretch of scrolling with no score on screen anywhere.
+	it('takes over the score as soon as it slides under the bar', () => {
+		const atBat = {
+			pitcher: { name: 'Will Dion', jersey: '76', position: 'RP', summary: '1.1 IP, 0 ER, H, BB' },
+			batter: { name: 'Nathan Church', jersey: '27', position: 'CF', summary: '0-2, K' },
+		};
+		mountDetail({ ...makeInningGame(), atBat }, { excitementResult: excitement, powerScoreHistory });
+		cy.get('.popup-container').then(([container]: JQuery<HTMLElement>) => {
+			const header = container.querySelector<HTMLElement>('.game-detail-header')!;
+			const centre = container.querySelector<HTMLElement>('.game-detail-center')!;
+			const hiddenAt = centre.getBoundingClientRect().bottom - header.getBoundingClientRect().bottom;
+			cy.get('.popup-container').scrollTo(0, hiddenAt - 4);
+			cy.get('.gd-bar-compact').should('not.have.class', 'is-visible');
+			cy.get('.popup-container').scrollTo(0, hiddenAt + 4);
+			cy.get('.gd-bar-compact').should('have.class', 'is-visible');
+			cy.get('.gd-poster').should(([hero]: JQuery<HTMLElement>) => {
+				expect(hero.getBoundingClientRect().bottom, 'the rest of the hero is still on screen').to.be.greaterThan(header.getBoundingClientRect().bottom + 20);
+			});
+		});
+	});
+
 	it('centres the compact matchup on the card axis', () => {
 		mountDetail(makeLiveGame(), { excitementResult: excitement, powerScoreHistory });
 		cy.get('.popup-container').scrollTo('bottom');
