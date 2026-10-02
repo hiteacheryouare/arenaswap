@@ -86,7 +86,8 @@ const onboardingView = ({ leagueLogos, onComplete, onStartWalkthrough }: onboard
 
 	return (
 		<div className='popup-root'>
-			<div ref={shellRef} className='popup-view-shell'>
+			{/* Onboarding is what the popup opens on, so it starts in place rather than sliding in. */}
+			<div ref={shellRef} className='popup-view-shell is-opening-view'>
 				{step === 1 && (
 					<OnboardingTabControl onNext={() => setStep(2)} />
 				)}
