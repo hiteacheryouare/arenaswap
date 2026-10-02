@@ -93,3 +93,34 @@ describe('empty game state refresh', () => {
 		});
 	});
 });
+
+// The heading was text-white, which in the light theme put white type on an 8% orange wash over
+// white. Read in both themes, against the page it actually sits on.
+describe('empty game state in both themes', () => {
+	const channels = (value: string) => /rgba?\((\d+),\s*(\d+),\s*(\d+)/.exec(value)!.slice(1).map(Number);
+	const luminance = (value: string) => {
+		const [red, green, blue] = channels(value).map(channel => {
+			const scaled = channel / 255;
+			return scaled <= 0.04045 ? scaled / 12.92 : ((scaled + 0.055) / 1.055) ** 2.4;
+		});
+		return (0.2126 * red!) + (0.7152 * green!) + (0.0722 * blue!);
+	};
+
+	afterEach(() => {
+		document.documentElement.removeAttribute('data-bs-theme');
+	});
+
+	for (const theme of ['dark', 'light']) {
+		it(`sets the pick-your-leagues heading apart from the ${theme} page`, () => {
+			if (theme === 'light') document.documentElement.setAttribute('data-bs-theme', 'light');
+			cy.viewport(popupWidth, 600);
+			cy.mount(<EmptyGameState noLeaguesSelected noGames={false} onOpenSetup={() => {}} onRefresh={() => {}} />);
+			cy.get('.popup-empty-leagues-title').should($title => {
+				const ink = luminance(getComputedStyle($title[0]!).color);
+				const page = luminance(getComputedStyle(document.body).backgroundColor);
+				const ratio = (Math.max(ink, page) + 0.05) / (Math.min(ink, page) + 0.05);
+				expect(ratio).to.be.at.least(4.5);
+			});
+		});
+	}
+});
