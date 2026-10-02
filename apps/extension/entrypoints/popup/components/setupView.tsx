@@ -148,7 +148,7 @@ const setupView = ({
 			<div className='fw-bold popup-section-label'>
 				<i className='bi bi-sliders' />
 				{i18n.t('setup.signalsSection')}
-				<SettingTooltipIcon text={i18n.t('setup.signalsExplainer')} />
+				<SettingTooltipIcon text={i18n.t('setup.signalsExplainer')} label={i18n.t('setup.signalsSection')} />
 			</div>
 			{setupSignalMeta.map(sig => {
 				const isDisabled = prefs.disabledSignals.includes(sig.name);
@@ -170,12 +170,16 @@ const setupView = ({
 								checked={!isDisabled}
 								onChange={() => onToggleSignal(sig.name)}
 								disabled={!prefsLoaded || isLastEnabled}
-								title={isLastEnabled ? i18n.t('setup.signalLastActive') : undefined}
+								aria-describedby={isLastEnabled ? 'signalLastActiveNote' : undefined}
 							/>
 						</div>
 					</div>
 				);
 			})}
+
+			{prefs.disabledSignals.length === setupSignalMeta.length - 1 && (
+				<div id='signalLastActiveNote' className='setting-explainer mt-2'>{i18n.t('setup.signalLastActive')}</div>
+			)}
 
 			<div className='fw-bold popup-section-label mt-3'><i className='bi bi-plus-slash-minus' />{i18n.t('setup.bonusesSection')}</div>
 			<div className='settings-stack'>
@@ -309,7 +313,7 @@ const setupView = ({
 			<div className='d-flex justify-content-between align-items-center mt-2'>
 				<div className='d-flex align-items-center gap-1'>
 					<label className='text-body-secondary setting-toggle-label' htmlFor='openRevealToggle'>{i18n.t('setup.openReveal')}</label>
-					<SettingTooltipIcon text={i18n.t('setup.openRevealExplainer')} />
+					<SettingTooltipIcon text={i18n.t('setup.openRevealExplainer')} label={i18n.t('setup.openReveal')} />
 				</div>
 				<div className='form-check form-switch mb-0'>
 					<input className='form-check-input' type='checkbox' id='openRevealToggle' checked={prefs.openRevealEnabled} onChange={onToggleOpenReveal} disabled={!prefsLoaded} />
@@ -319,7 +323,7 @@ const setupView = ({
 			<div className='d-flex justify-content-between align-items-center mt-2'>
 				<div className='d-flex align-items-center gap-1'>
 					<label className='text-body-secondary setting-toggle-label' htmlFor='holidayDecorationsToggle'>{i18n.t('setup.holidayDecorations')}</label>
-					<SettingTooltipIcon text={i18n.t('setup.holidayDecorationsExplainer')} />
+					<SettingTooltipIcon text={i18n.t('setup.holidayDecorationsExplainer')} label={i18n.t('setup.holidayDecorations')} />
 				</div>
 				<div className='form-check form-switch mb-0'>
 					<input className='form-check-input' type='checkbox' id='holidayDecorationsToggle' checked={prefs.holidayDecorationsEnabled} onChange={onToggleHolidayDecorations} disabled={!prefsLoaded} />
@@ -451,7 +455,7 @@ const setupView = ({
 					<div id='leagueOrderSection' className='fw-bold popup-section-label'>
 						<i className='bi bi-arrow-down-up' />
 						{i18n.t('setup.leagueOrderSection')}
-						<SettingTooltipIcon text={i18n.t('setup.leagueOrderExplainer')} />
+						<SettingTooltipIcon text={i18n.t('setup.leagueOrderExplainer')} label={i18n.t('setup.leagueOrderSection')} />
 					</div>
 					<LeagueOrderList
 						order={prefs.enabledLeagues}
@@ -465,7 +469,7 @@ const setupView = ({
 			<div className='fw-bold popup-section-label'>
 				<i className='bi bi-trophy' />
 				{i18n.t('setup.groupLeagues')}
-				<SettingTooltipIcon text={i18n.t('setup.leaguesExplainer')} />
+				<SettingTooltipIcon text={i18n.t('setup.leaguesExplainer')} label={i18n.t('setup.groupLeagues')} />
 			</div>
 			{(Object.keys(sportTypeOrder) as SportType[])
 				.toSorted((a, b) => sportTypeOrder[a] - sportTypeOrder[b])

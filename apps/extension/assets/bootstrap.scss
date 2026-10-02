@@ -285,7 +285,13 @@
 .setting-tooltip-btn {
 	display:     inline-flex;
 	align-items: center;
-	padding:     0;
+	// A 10px glyph is a 24px target: the padding is the hit area and the margin hands the space back,
+	// so nothing around it moves.
+	justify-content: center;
+	min-width:   24px;
+	min-height:  24px;
+	padding:     7px;
+	margin:      -7px;
 	border:      none;
 	background:  transparent;
 	color:       var(--as-faint);
@@ -297,8 +303,8 @@
 	&:hover  { color: var(--as-body-color); }
 	&:focus-visible {
 		outline:        1px solid bs.$primary;
-		outline-offset: 1px;
-		border-radius:  2px;
+		outline-offset: -6px;
+		border-radius:  50%;
 	}
 }
 

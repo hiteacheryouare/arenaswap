@@ -281,7 +281,9 @@
 		"keywordsStandby": "fallback, backup, tahimik, standby",
 		"keywordsStandbyThreshold": "score, cutoff, limit, ibaba, tahimik",
 		"keywordsStandbyTab": "tab, window, page, patutunguhan",
-		"keywordsDemo": "fake, sample, test, preview, sandbox, dummy"
+		"keywordsDemo": "fake, sample, test, preview, sandbox, dummy",
+		"aboutSetting": "Tungkol sa {setting}",
+		"moreInfo": "Higit pang impormasyon"
 	},
 	"finishedTabs": {
 		"toastFreed": {

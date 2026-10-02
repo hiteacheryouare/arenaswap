@@ -14,7 +14,7 @@ const postseasonBoostInput = ({ value, onChange }: postseasonBoostInputProps) =>
 				<label className='text-body-secondary setting-toggle-label' htmlFor='postseasonBoostInput'>
 					<i className='bi bi-trophy me-1 text-primary' />{i18n.t('postseasonBoost.label')}
 				</label>
-				<SettingTooltipIcon text={i18n.t('postseasonBoost.explainer')} />
+				<SettingTooltipIcon text={i18n.t('postseasonBoost.explainer')} label={i18n.t('postseasonBoost.label')} />
 			</div>
 			<span className='fw-semibold setting-value-label'>{i18n.t('postseasonBoost.points', [value])}</span>
 		</div>

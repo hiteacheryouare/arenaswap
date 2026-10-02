@@ -281,7 +281,9 @@
 		"keywordsStandby": "reserva, backup, inactivo, alternativa, parado",
 		"keywordsStandbyThreshold": "pontuacao, corte, limite, abaixo, parado",
 		"keywordsStandbyTab": "separador, janela, pagina, destino",
-		"keywordsDemo": "falso, exemplo, teste, pre visualizacao, simulacao"
+		"keywordsDemo": "falso, exemplo, teste, pre visualizacao, simulacao",
+		"aboutSetting": "Sobre {setting}",
+		"moreInfo": "Mais informações"
 	},
 	"finishedTabs": {
 		"toastFreed": {

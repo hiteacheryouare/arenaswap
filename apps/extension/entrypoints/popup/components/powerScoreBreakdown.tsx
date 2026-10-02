@@ -111,7 +111,7 @@ const PowerScoreBreakdown = ({
 							<span className='powerscore-signal-name'>{i18n.t(sig.labelKey)}</span>
 							{isDisabled
 								? <span className='powerscore-signal-off-badge'>{i18n.t('powerScore.signalOff')}</span>
-								: <SettingTooltipIcon text={i18n.t(sig.tooltipKey)} />
+								: <SettingTooltipIcon text={i18n.t(sig.tooltipKey)} label={i18n.t(sig.labelKey)} />
 							}
 							<div className='progress powerscore-signal-progress'>
 								<div
@@ -134,7 +134,7 @@ const PowerScoreBreakdown = ({
 			<div className='powerscore-breakdown-row powerscore-breakdown-row-subtotal'>
 				<span className='d-flex align-items-center gap-1'>
 					{i18n.t('powerScore.signalsTotal')}
-					{isSignalNormalized && <SettingTooltipIcon text={i18n.t('powerScore.tooltipSignalsNormalized')} />}
+					{isSignalNormalized && <SettingTooltipIcon text={i18n.t('powerScore.tooltipSignalsNormalized')} label={i18n.t('powerScore.signalsTotal')} />}
 				</span>
 				{isSignalNormalized ? (
 					<span className='d-flex align-items-center gap-1'>
@@ -156,7 +156,7 @@ const PowerScoreBreakdown = ({
 					<span className='d-flex align-items-center gap-1'>
 						<FactorIcon factor='clockStall' />
 						{i18n.t('powerScore.clockStallPenalty')}
-						<SettingTooltipIcon text={i18n.t('powerScore.tooltipClockStallPenalty')} />
+						<SettingTooltipIcon text={i18n.t('powerScore.tooltipClockStallPenalty')} label={i18n.t('powerScore.clockStallPenalty')} />
 					</span>
 					<span className='powerscore-breakdown-value' style={{ color: stallPenalty > 0 ? boostPenaltyMeta.clockStall.ink : undefined }}>
 						{stallPenalty > 0 ? `${minus}${stallPenalty}` : '0'}
@@ -172,7 +172,7 @@ const PowerScoreBreakdown = ({
 							: variance < 0
 								? i18n.t('powerScore.volatilityPenalty')
 								: i18n.t('powerScore.volatility')}
-						<SettingTooltipIcon text={i18n.t('powerScore.tooltipVolatility')} />
+						<SettingTooltipIcon text={i18n.t('powerScore.tooltipVolatility')} label={i18n.t('powerScore.volatility')} />
 					</span>
 					<span className='powerscore-breakdown-value' style={{ color: variance > 0 ? boostPenaltyMeta.volatility.ink : variance < 0 ? boostPenaltyMeta.clockStall.ink : undefined }}>
 						{variance > 0 ? `+${variance}` : variance < 0 ? `${minus}${Math.abs(variance)}` : '0'}
@@ -183,7 +183,7 @@ const PowerScoreBreakdown = ({
 				<span className='d-flex align-items-center gap-1'>
 					<FactorIcon factor='favorite' />
 					{i18n.t('powerScore.favoriteBoost')}
-					<SettingTooltipIcon text={i18n.t('powerScore.tooltipFavoriteBoost')} />
+					<SettingTooltipIcon text={i18n.t('powerScore.tooltipFavoriteBoost')} label={i18n.t('powerScore.favoriteBoost')} />
 				</span>
 				<span className='powerscore-breakdown-value' style={{ color: favoriteBonus > 0 ? boostPenaltyMeta.favorite.ink : undefined }}>{favoriteBonus > 0 ? `+${favoriteBonus}` : '0'}</span>
 			</div>
@@ -192,7 +192,7 @@ const PowerScoreBreakdown = ({
 				<span className='d-flex align-items-center gap-1'>
 					<FactorIcon factor='gameBoost' />
 					{i18n.t('powerScore.gameBoost')}
-					<SettingTooltipIcon text={i18n.t('powerScore.tooltipGameBoost')} />
+					<SettingTooltipIcon text={i18n.t('powerScore.tooltipGameBoost')} label={i18n.t('powerScore.gameBoost')} />
 				</span>
 				<span className='powerscore-breakdown-value' style={{ color: currentBoost > 0 ? boostPenaltyMeta.gameBoost.ink : undefined }}>{currentBoost > 0 ? `+${currentBoost}` : '0'}</span>
 			</div>
@@ -200,7 +200,7 @@ const PowerScoreBreakdown = ({
 				<span className='d-flex align-items-center gap-1'>
 					<FactorIcon factor='scoringOpp' />
 					{i18n.t('powerScore.scoringOpportunity')}
-					<SettingTooltipIcon text={i18n.t('powerScore.tooltipScoringOpportunity')} />
+					<SettingTooltipIcon text={i18n.t('powerScore.tooltipScoringOpportunity')} label={i18n.t('powerScore.scoringOpportunity')} />
 				</span>
 				<span className='powerscore-breakdown-value' style={{ color: scoringOpportunityBoost > 0 ? boostPenaltyMeta.scoringOpp.ink : undefined }}>{scoringOpportunityBoost > 0 ? `+${scoringOpportunityBoost}` : '0'}</span>
 			</div>
@@ -209,7 +209,7 @@ const PowerScoreBreakdown = ({
 					<FactorIcon factor='postseason' />
 					{i18n.t('powerScore.postseasonBoost')}
 					{postseasonLabel && <span className='powerscore-breakdown-qualifier'>· {postseasonLabel}</span>}
-					<SettingTooltipIcon text={i18n.t('powerScore.tooltipPostseasonBoost')} />
+					<SettingTooltipIcon text={i18n.t('powerScore.tooltipPostseasonBoost')} label={i18n.t('powerScore.postseasonBoost')} />
 				</span>
 				<span className='powerscore-breakdown-value' style={{ color: postseasonBoost > 0 ? boostPenaltyMeta.postseason.ink : undefined }}>{postseasonBoost > 0 ? `+${postseasonBoost}` : '0'}</span>
 			</div>

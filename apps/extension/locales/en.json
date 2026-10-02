@@ -281,7 +281,9 @@
 		"keywordsStandby": "fallback, filler, idle, backup, quiet",
 		"keywordsStandbyThreshold": "score, cutoff, limit, below, quiet",
 		"keywordsStandbyTab": "tab, window, page, destination",
-		"keywordsDemo": "fake, sample, test, preview, sandbox, dummy"
+		"keywordsDemo": "fake, sample, test, preview, sandbox, dummy",
+		"aboutSetting": "About {setting}",
+		"moreInfo": "More info"
 	},
 	"finishedTabs": {
 		"toastFreed": {

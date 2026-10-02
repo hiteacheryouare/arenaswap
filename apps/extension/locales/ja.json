@@ -281,7 +281,9 @@
 		"keywordsStandby": "待機, フォールバック, 予備, 代替, 静か",
 		"keywordsStandbyThreshold": "スコア, しきい値, 下限, 以下, 静か",
 		"keywordsStandbyTab": "タブ, ウィンドウ, ページ, 移動先",
-		"keywordsDemo": "架空, サンプル, テスト, プレビュー, ダミー"
+		"keywordsDemo": "架空, サンプル, テスト, プレビュー, ダミー",
+		"aboutSetting": "{setting}について",
+		"moreInfo": "詳細"
 	},
 	"finishedTabs": {
 		"toastFreed": {

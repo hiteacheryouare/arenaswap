@@ -281,7 +281,9 @@
 		"keywordsStandby": "備用, 後備, 閒置, 替補, 冷場",
 		"keywordsStandbyThreshold": "分數, 閾值, 下限, 低於, 冷場",
 		"keywordsStandbyTab": "分頁, 視窗, 頁面, 目標",
-		"keywordsDemo": "虛構, 範例, 測試, 預覽, 沙盒"
+		"keywordsDemo": "虛構, 範例, 測試, 預覽, 沙盒",
+		"aboutSetting": "關於{setting}",
+		"moreInfo": "更多資訊"
 	},
 	"finishedTabs": {
 		"toastFreed": {

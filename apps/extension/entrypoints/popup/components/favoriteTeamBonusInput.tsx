@@ -14,7 +14,7 @@ const favoriteTeamBonusInput = ({ value, onChange }: favoriteTeamBonusInputProps
 				<label className='text-body-secondary setting-toggle-label' htmlFor='favoriteTeamBonusInput'>
 					<i className='bi bi-star me-1 text-primary' />{i18n.t('favoriteTeamBonus.label')}
 				</label>
-				<SettingTooltipIcon text={i18n.t('favoriteTeamBonus.explainer')} />
+				<SettingTooltipIcon text={i18n.t('favoriteTeamBonus.explainer')} label={i18n.t('favoriteTeamBonus.label')} />
 			</div>
 			<span className='fw-semibold setting-value-label'>{i18n.t('favoriteTeamBonus.perTeam', [value])}</span>
 		</div>

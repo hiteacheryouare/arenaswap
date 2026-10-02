@@ -281,7 +281,9 @@
 		"keywordsStandby": "대기, 백업, 예비, 조용함",
 		"keywordsStandbyThreshold": "점수, 기준점, 제한, 이하, 조용함",
 		"keywordsStandbyTab": "탭, 창, 페이지, 목적지",
-		"keywordsDemo": "가짜, 샘플, 테스트, 미리보기, 더미"
+		"keywordsDemo": "가짜, 샘플, 테스트, 미리보기, 더미",
+		"aboutSetting": "{setting} 안내",
+		"moreInfo": "자세히"
 	},
 	"finishedTabs": {
 		"toastFreed": {

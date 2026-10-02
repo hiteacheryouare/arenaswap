@@ -281,7 +281,9 @@
 		"keywordsStandby": "ruckfall, ausweich, leerlauf, reserve, ruhig",
 		"keywordsStandbyThreshold": "wert, grenze, limit, unter, ruhig",
 		"keywordsStandbyTab": "tab, fenster, seite, ziel",
-		"keywordsDemo": "fake, beispiel, test, vorschau, sandkasten, attrappe"
+		"keywordsDemo": "fake, beispiel, test, vorschau, sandkasten, attrappe",
+		"aboutSetting": "Info zu {setting}",
+		"moreInfo": "Mehr erfahren"
 	},
 	"finishedTabs": {
 		"toastFreed": {

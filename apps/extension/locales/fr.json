@@ -281,7 +281,9 @@
 		"keywordsStandby": "repli, secours, inactif, reserve, calme",
 		"keywordsStandbyThreshold": "score, seuil, limite, en dessous, calme",
 		"keywordsStandbyTab": "onglet, fenetre, page, destination",
-		"keywordsDemo": "faux, exemple, test, apercu, bac a sable"
+		"keywordsDemo": "faux, exemple, test, apercu, bac a sable",
+		"aboutSetting": "À propos de {setting}",
+		"moreInfo": "Plus d'infos"
 	},
 	"finishedTabs": {
 		"toastFreed": {

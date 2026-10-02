@@ -28,7 +28,7 @@ const sensitivitySlider = ({ value, onChange }: sensitivitySliderProps) => {
 		<div className='d-flex justify-content-between align-items-center mb-1'>
 			<div className='d-flex align-items-center gap-1'>
 				<label htmlFor='sensitivity-range' className='text-body-secondary setting-toggle-label'><i className='bi bi-sliders me-1 text-primary' />{i18n.t('sensitivity.label')}</label>
-				<SettingTooltipIcon text={i18n.t('sensitivity.explainer')} />
+				<SettingTooltipIcon text={i18n.t('sensitivity.explainer')} label={i18n.t('sensitivity.label')} />
 			</div>
 			{value === 7 ? (
 				<button

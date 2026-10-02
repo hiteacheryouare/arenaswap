@@ -22,7 +22,7 @@ const switchDelaySlider = ({ value, onChange }: switchDelaySliderProps) => {
 			<div className='d-flex justify-content-between align-items-center mb-1'>
 				<div className='d-flex align-items-center gap-1'>
 					<label htmlFor='switch-delay-range' className='text-body-secondary setting-toggle-label'><i className='bi bi-hourglass-split me-1 text-primary' />{i18n.t('switchDelay.label')}</label>
-					<SettingTooltipIcon text={i18n.t('switchDelay.explainer')} />
+					<SettingTooltipIcon text={i18n.t('switchDelay.explainer')} label={i18n.t('switchDelay.label')} />
 				</div>
 				<span className='fw-semibold setting-value-label'>{formatSeconds(steps[currentIdx]!)}</span>
 			</div>

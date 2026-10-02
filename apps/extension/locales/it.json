@@ -281,7 +281,9 @@
 		"keywordsStandby": "riserva, riempitivo, inattivo, backup, silenzio",
 		"keywordsStandbyThreshold": "punteggio, soglia, limite, sotto, silenzio",
 		"keywordsStandbyTab": "scheda, finestra, pagina, destinazione",
-		"keywordsDemo": "finto, esempio, test, anteprima, prova"
+		"keywordsDemo": "finto, esempio, test, anteprima, prova",
+		"aboutSetting": "Info su {setting}",
+		"moreInfo": "Più informazioni"
 	},
 	"finishedTabs": {
 		"toastFreed": {

@@ -281,7 +281,9 @@
 		"keywordsStandby": "respaldo, relleno, inactivo, reserva, tranquilo",
 		"keywordsStandbyThreshold": "puntuacion, corte, limite, debajo, tranquilo",
 		"keywordsStandbyTab": "pestana, ventana, pagina, destino",
-		"keywordsDemo": "falso, ejemplo, prueba, vista previa, simulacion"
+		"keywordsDemo": "falso, ejemplo, prueba, vista previa, simulacion",
+		"aboutSetting": "Acerca de {setting}",
+		"moreInfo": "Más información"
 	},
 	"finishedTabs": {
 		"toastFreed": {
