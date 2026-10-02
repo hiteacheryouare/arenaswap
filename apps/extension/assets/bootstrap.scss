@@ -202,12 +202,22 @@
 // The numbers down the right edge change every poll, so they take the tabular face and stay put.
 .powerscore-breakdown-value { @include gc.scoreboard-figures; }
 
+// The five rows share one set of columns, so the name column is as wide as the widest name in the
+// reader's language and the bars still start on one line. A fixed 4.7rem held English but broke
+// "Ausgeglichenheit" mid-word and wrapped "Mudanças de liderança" onto two lines.
+.powerscore-signal-list {
+	display:               grid;
+	grid-template-columns: auto max-content auto minmax(0, 1fr) auto;
+	column-gap:            0.28rem;
+}
+
 .powerscore-signal-row {
-	display:     flex;
-	align-items: center;
-	gap:         0.28rem;
-	font-size:   0.6rem;
-	padding:     0.12rem 0;
+	display:               grid;
+	grid-column:           1 / -1;
+	grid-template-columns: subgrid;
+	align-items:           center;
+	font-size:             0.6rem;
+	padding:               0.12rem 0;
 }
 
 .powerscore-signal-row + .powerscore-signal-row {
@@ -231,8 +241,7 @@
 }
 
 .powerscore-signal-name {
-	flex-shrink: 0;
-	width:       4.7rem;
+	white-space: nowrap;
 	color:       #374151;
 }
 
