@@ -72,7 +72,7 @@ interface mainViewProps {
 	onDismissSuggestions: () => void;
 	onStartWalkthrough: () => void;
 	onOpenGuide: () => void;
-	onRefresh: () => void;
+	onRefresh: () => unknown;
 	showReviewPrompt: boolean;
 	onToggleEnabled: () => void;
 	onDismissReviewPrompt: () => void;
@@ -314,8 +314,9 @@ const mainView = ({
 			)}
 			{/* The only banner here whose condition does not come from the fetch: eligibility is read
 			    out of storage.local and lands well before the slate does. The other two self-suppress
-			    because their inputs are empty until `data` arrives, so this one states the gate. */}
-			{!isLoading && !hasError && showReviewPrompt && (
+			    because their inputs are empty until `data` arrives, so this one states the gate. It also
+			    waits its turn behind the suggest banner, so two notices never stack above the first game. */}
+			{!isLoading && !hasError && showReviewPrompt && suggestionCount === 0 && (
 				<ReviewPromptBanner onDismiss={onDismissReviewPrompt} onLeaveReview={onLeaveReview} />
 			)}
 

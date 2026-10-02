@@ -221,6 +221,12 @@ describe('mainView review prompt', () => {
 		cy.get('.popup-error-banner').should('exist');
 		cy.get('[data-testid="review-prompt"]').should('not.exist');
 	});
+
+	it('waits behind the suggest banner', () => {
+		cy.mount(<MainView {...defaultProps} showReviewPrompt={true} suggestionCount={2} />);
+		cy.contains('.popup-notice', /look like games/i).should('exist');
+		cy.get('[data-testid="review-prompt"]').should('not.exist');
+	});
 });
 
 describe('mainView pro tips', () => {
