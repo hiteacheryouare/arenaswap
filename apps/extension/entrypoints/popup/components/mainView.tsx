@@ -130,7 +130,7 @@ const gameSection = ({
 				onOpenGameDetail={onOpenGameDetail}
 				bettingPrefs={bettingPrefs}
 				weatherPrefs={weatherPrefs}
-				leagueSlot={grouped ? undefined : <LeagueMark league={game.league} logos={leagueLogos} />}
+				leagueSlot={grouped ? undefined : <LeagueMark league={game.league} logos={leagueLogos} onColor={game.status !== 'post'} />}
 			/>
 		</GameCardReveal>
 	);

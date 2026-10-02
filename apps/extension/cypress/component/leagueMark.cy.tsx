@@ -5,7 +5,7 @@ import FinalGameCard from '@arenaswap/ui/src/components/finalGameCard';
 import LeagueMark from '@arenaswap/ui/src/components/leagueMark';
 import LiveGameCard from '@arenaswap/ui/src/components/liveGameCard';
 import PreGameCard from '@arenaswap/ui/src/components/preGameCard';
-import type { Game, LeagueId } from '@arenaswap/core/types';
+import type { Game, LeagueId, LeagueLogoMap } from '@arenaswap/core/types';
 import type { GameCardDisplayProps } from '@arenaswap/ui/src/components/gameCardTypes';
 
 const popupWidth = 320;
@@ -29,7 +29,7 @@ const cards: [string, ComponentType<GameCardDisplayProps>, Game['status']][] = [
 	['final', FinalGameCard, 'post'],
 ];
 
-const mount = (Card: ComponentType<GameCardDisplayProps>, subject: Game, marked = true) => {
+const mount = (Card: ComponentType<GameCardDisplayProps>, subject: Game, marked = true, logos: LeagueLogoMap = {}) => {
 	cy.viewport(popupWidth, 400);
 	cy.mount(
 		<div style={{ width: `${popupWidth}px` }}>
@@ -40,7 +40,7 @@ const mount = (Card: ComponentType<GameCardDisplayProps>, subject: Game, marked 
 				onToggleFavoriteTeam={() => {}}
 				onOpenGameDetail={() => {}}
 				bettingPrefs={{ bettingEnabled: false }}
-				leagueSlot={marked ? <LeagueMark league={subject.league} logos={{}} /> : undefined}
+				leagueSlot={marked ? <LeagueMark league={subject.league} logos={logos} onColor={subject.status !== 'post'} /> : undefined}
 			/>
 		</div>,
 	);
@@ -89,5 +89,24 @@ describe('league mark on a card', () => {
 		cy.get('.game-card-status-row .game-card-league').should('have.text', 'NBA');
 		mount(PreGameCard, game('pre', 'nba'), false);
 		cy.get('.game-card-status-row').should('not.exist');
+	});
+
+	// On team colour the label is written in its side's ink, the same as the LIVE beside it; the grey
+	// it was given for the white plate does not read there.
+	it('writes the label in the ink of the side it sits on', () => {
+		mount(LiveGameCard, { ...game('in', 'nba'), awayTeam: { ...game('in', 'nba').awayTeam, color: '#FDB71A' }, homeTeam: { ...game('in', 'nba').homeTeam, color: '#0C2340' } });
+		cy.get('.live-status-label').then(([live]: JQuery<HTMLElement>) => {
+			cy.get('.game-card-league').should('have.css', 'color', getComputedStyle(live).color);
+		});
+	});
+
+	// What the scoreboard hands over is the dark-ground logo, which is right on colour and swapped for
+	// its light-ground twin on a final card's plate.
+	it('takes the dark-ground logo on colour and the light-ground one on a final card', () => {
+		const logos: LeagueLogoMap = { nba: 'https://a.espncdn.com/i/teamlogos/leagues/500-dark/nba.png' };
+		mount(LiveGameCard, game('in', 'nba'), true, logos);
+		cy.get('.game-card-league img').should('have.attr', 'src', logos.nba);
+		mount(FinalGameCard, game('post', 'nba'), true, logos);
+		cy.get('.game-card-league img').should('have.attr', 'src', 'https://a.espncdn.com/i/teamlogos/leagues/500/nba.png');
 	});
 });

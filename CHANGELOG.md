@@ -9,6 +9,10 @@
 
 Weather icons now come from the AccuWeather icon number our sources send next to the condition, so all 40 codes are covered, the night codes draw a moon instead of a sun, and the label map is only a fallback. Labels like "Mostly cloudy w/ t-storms" were being split on their slash and falling through to a plain cloud, and the snow decoration had the same bug, so "Mostly cloudy w/ snow" never snowed.
 
+## The league mark reads on team colour — 2026-10-02
+
+The league label on a live or scheduled card now takes the text colour of the side it sits on instead of the grey it had on the white plate, and its logo is the version drawn for a dark ground. Final cards keep the grey label and the light-ground logo.
+
 ## Live and upcoming cards wear both teams' colours — 2026-10-01
 
 Live and scheduled cards, the detail header and the opening graphic are now painted in the two teams' colours, with each side's text in white or near-black depending on what reads on that colour, the crest our sources draw for a dark background, and only the tab picker on a dark panel at the bottom; Final cards keep their plain plate. Colour pairing copies Apple Sports, as worked out from 44 of its matchups: when the two colours look alike (CIEDE2000 under 11) the away team switches to its alternate, or to a colour read off its crest when that alternate is white, the old step that swapped near-black primaries for the alternate is gone, and the series dots and the Guide's edges now draw the published colours rather than lightened ones; chart lines alone are still lifted or darkened to read against the chart. The table of Apple matchups lives in `colorUtils.test.ts`, minus Red Sox @ Yankees and Lakers @ Kings, the two it gets wrong.

@@ -265,7 +265,7 @@ const HeroWindow = ({ copy }: { copy: HeroStrings }) => {
 								onOpenGameDetail={noop}
 								bettingPrefs={{ bettingEnabled: false }}
 								tabSlot={<HeroTabSlot label={copy.tabLabel.split('{number}').join(String(entry.index + 1)).split('{host}').join(heroGames[entry.index].tabHost)} />}
-								leagueSlot={<LeagueMark league={entry.game.league} logos={emptyLeagueLogos} />}
+								leagueSlot={<LeagueMark league={entry.game.league} logos={emptyLeagueLogos} onColor />}
 							/>
 						</div>
 					))}
