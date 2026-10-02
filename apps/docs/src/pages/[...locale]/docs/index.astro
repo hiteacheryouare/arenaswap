@@ -30,9 +30,7 @@ const trees = await Promise.all(docsSectionOrder.map(async section => ({
 		<div class='page-head'>
 			<h1 class='page-title'>{t('reading.docsHeading')}</h1>
 		</div>
-		<div class="p-4">
-			<UntranslatedNotice />
-		</div>
+		<UntranslatedNotice />
 
 		<div class='docs-hub'>
 			{trees.map(tree => (
