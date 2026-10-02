@@ -102,6 +102,7 @@ const coarseSampleIntervalMs = 120_000;
 // polls merge their answers into it, so what ages here is only the roster of games — a kickoff
 // being added to the day — rather than any score or clock on screen.
 const guideSlateTtlMs = 10 * 60 * 1000;
+const switchNotificationId = 'arenaswap-switch';
 
 // Dropping the oldest snapshots would take the start of the game with them, and the start is the
 // end the chart gate measures from. So the cap is met by thinning the already-coarse tail further,
@@ -586,8 +587,10 @@ export default defineBackground(() => {
 		if (gameId) await recordSuccessfulSwitchForReviewPrompt(lastSwitchTime);
 
 		if (prefs.notificationsEnabled) {
+			// One id for every switch, so each notification replaces the last instead of a long game
+			// leaving dozens of them stacked in the notification centre.
 			if (!gameId) {
-				await browser.notifications.create({
+				await browser.notifications.create(switchNotificationId, {
 					type: 'basic',
 					iconUrl: 'icon/128.png',
 					title: i18n.t('notification.standbyTitle'),
@@ -608,7 +611,7 @@ export default defineBackground(() => {
 					? (said ? i18n.t('notification.switchedMessageWithReason', { reason: said, venue }) : i18n.t('notification.switchedMessage', { venue }))
 					: (said ? i18n.t('notification.switchedMessageWithReasonNoVenue', { reason: said }) : i18n.t('notification.switchedMessageNoVenue'));
 
-				await browser.notifications.create({
+				await browser.notifications.create(switchNotificationId, {
 					type: 'basic',
 					iconUrl: 'icon/128.png',
 					title: i18n.t('notification.switchedTitle', { score: scoreTitle }),

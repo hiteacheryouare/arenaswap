@@ -59,6 +59,7 @@ let storageLocalGet: jest.Mock;
 let storageLocalSet: jest.Mock;
 let tabsQuery: jest.Mock;
 let tabsUpdate: jest.Mock;
+let notificationsCreate: jest.Mock;
 let tabsRemove: jest.Mock;
 let storageSessionSet: jest.Mock;
 let onMessageHandler!: (msg: unknown) => unknown;
@@ -129,6 +130,7 @@ const loadBackground = async (options: LoadOptions = {}) => {
 	storageLocalSet = jest.fn().mockResolvedValue(undefined);
 	tabsQuery = jest.fn().mockResolvedValue([]);
 	tabsUpdate = jest.fn().mockResolvedValue(undefined);
+	notificationsCreate = jest.fn().mockResolvedValue(undefined);
 	tabsRemove = jest.fn().mockResolvedValue(undefined);
 	storageSessionSet = jest.fn().mockResolvedValue(undefined);
 	onActivatedHandler = undefined;
@@ -171,7 +173,7 @@ const loadBackground = async (options: LoadOptions = {}) => {
 				addListener: (h: (tabId: number) => unknown) => { onRemovedHandler = h; },
 			},
 		},
-		notifications: { create: jest.fn().mockResolvedValue(undefined) },
+		notifications: { create: notificationsCreate },
 		// A switch notification formats its reason in the UI language, as the popup's fake does.
 		i18n: { getUILanguage: () => 'en-US' },
 	};
@@ -1017,6 +1019,23 @@ describe('manual tab activation', () => {
 
 		await runFirstPoll();
 		expect(tabsUpdate).toHaveBeenCalledWith(2, { active: true });
+	});
+
+	// A fixed id makes each switch notification replace the last rather than pile up.
+	test('posts every switch notification under the same id', async () => {
+		await loadBackground({
+			prefs: { ...switchingPrefs, cooldownSeconds: 0, notificationsEnabled: true },
+			tabRegistry: [{ gameId: 'thriller', tabId: 2 }],
+			fetchReturnValue: { games: [thriller], leagueLogos: {}, shedLeagues: [] },
+			openTabIds: [1, 2],
+			activeTabId: 1,
+			initialSystemTime: 1_000_000,
+		});
+
+		await activateTab(2);
+		await runFirstPoll();
+		expect(tabsUpdate).toHaveBeenCalledWith(2, { active: true });
+		expect(notificationsCreate).toHaveBeenCalledWith('arenaswap-switch', expect.objectContaining({ type: 'basic' }));
 	});
 
 	test('switches when the cooldown is off and the evaluation lands in the same millisecond', async () => {
