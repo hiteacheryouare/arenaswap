@@ -1,4 +1,5 @@
 import SetupView from '../../entrypoints/popup/components/setupView';
+import { settingsEntries } from '../../entrypoints/popup/components/settingsCatalog';
 import type { UserPreferences } from '@arenaswap/core/types';
 import de from '../../locales/de.json';
 import en from '../../locales/en.json';
@@ -173,6 +174,22 @@ describe('setupView navigation', () => {
 });
 
 describe('setupView search', () => {
+	it('lands on the setting a result names, not the top of its page', () => {
+		cy.mount(<SetupView {...defaultProps} />);
+		cy.get('#settingsSearch').type('holiday');
+		cy.contains('.settings-index-row', 'Holiday decorations').click();
+		cy.focused().should('have.id', 'holidayDecorationsToggle');
+	});
+
+	// A control id that drifts from the page it names fails quietly, back to the top of the page.
+	it('points every searchable setting at a control that exists on its page', () => {
+		settingsEntries.filter(entry => entry.controlId).forEach(entry => {
+			cy.mount(<SetupView {...defaultProps} prefs={{ ...defaultPrefs, standbyStreamEnabled: true, showUpcomingGames: true, groupByLeague: true, enabledLeagues: ['nba', 'nfl'] }} />);
+			openGroup(entry.group);
+			cy.get(`#${entry.controlId}`).should('exist');
+		});
+	});
+
 	it('matches a setting by its label', () => {
 		cy.mount(<SetupView {...defaultProps} />);
 		cy.get('#settingsSearch').type('cooldown');

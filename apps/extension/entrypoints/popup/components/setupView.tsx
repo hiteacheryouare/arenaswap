@@ -93,9 +93,11 @@ const setupView = ({
 
 	const pageRef = useRef<HTMLDivElement>(null);
 	const lastGroupRef = useRef<settingsGroupId | null>(null);
+	const pendingControlRef = useRef<string | undefined>(undefined);
 
-	const openGroup = (id: settingsGroupId) => {
+	const openGroup = (id: settingsGroupId, controlId?: string) => {
 		lastGroupRef.current = id;
+		pendingControlRef.current = controlId;
 		setPage(id);
 		setQuery('');
 	};
@@ -105,7 +107,13 @@ const setupView = ({
 	// button it was opened from.
 	useEffect(() => {
 		if (page) {
-			pageRef.current?.querySelector<HTMLElement>('.setup-header')?.focus({ preventScroll: true });
+			// A search result lands on the setting it named, not on top of a dozen others.
+			const control = pendingControlRef.current ? document.getElementById(pendingControlRef.current) : null;
+			pendingControlRef.current = undefined;
+			control?.scrollIntoView({ block: 'center' });
+			control?.focus({ preventScroll: true });
+			// A section heading scrolls into view but can't hold focus, so the page header keeps it.
+			if (!control || document.activeElement !== control) pageRef.current?.querySelector<HTMLElement>('.setup-header')?.focus({ preventScroll: true });
 			return;
 		}
 		if (lastGroupRef.current) document.getElementById(`settingsGroup-${lastGroupRef.current}`)?.focus({ preventScroll: true });
@@ -440,7 +448,7 @@ const setupView = ({
 			<div className='setting-explainer mt-1'>{i18n.t('setup.groupByLeagueExplainer')}</div>
 			{prefs.groupByLeague && prefs.enabledLeagues.length > 1 && (
 				<>
-					<div className='fw-bold popup-section-label'>
+					<div id='leagueOrderSection' className='fw-bold popup-section-label'>
 						<i className='bi bi-arrow-down-up' />
 						{i18n.t('setup.leagueOrderSection')}
 						<SettingTooltipIcon text={i18n.t('setup.leagueOrderExplainer')} />
@@ -565,7 +573,7 @@ const setupView = ({
 								key={`${result.group.id}-${String(result.labelKey)}`}
 								type='button'
 								className='settings-index-row'
-								onClick={() => openGroup(result.group.id)}
+								onClick={() => openGroup(result.group.id, result.controlId)}
 								aria-label={`${result.label}, ${result.sublabel}`}
 							>
 								<span className='settings-index-text'>
