@@ -188,17 +188,17 @@ export const buildFinalComparator = (
 
 const toKey = (d: Date) => `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
 
-const formatDateLabel = (dateStr: string): string => {
+const formatDateLabel = (dateStr: string, locale?: string): string => {
 	const today = new Date();
 	const tomorrow = new Date(today);
 	tomorrow.setDate(today.getDate() + 1);
 	const gameDate = new Date(dateStr);
 	if (toKey(gameDate) === toKey(today)) return i18n.t('date.today');
 	if (toKey(gameDate) === toKey(tomorrow)) return i18n.t('date.tomorrow');
-	return gameDate.toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' });
+	return gameDate.toLocaleDateString(locale, { weekday: 'long', month: 'short', day: 'numeric' });
 };
 
-export const groupByDate = (games: Game[]): dateGroup[] => {
+export const groupByDate = (games: Game[], locale?: string): dateGroup[] => {
 	const groups = new Map<string, Game[]>();
 	for (const game of games) {
 		const key = game.startTime
@@ -212,7 +212,7 @@ export const groupByDate = (games: Game[]): dateGroup[] => {
 		const first = grpGames[0];
 		return {
 			key,
-			dateLabel: first?.startTime ? formatDateLabel(first.startTime) : i18n.t('date.upcoming'),
+			dateLabel: first?.startTime ? formatDateLabel(first.startTime, locale) : i18n.t('date.upcoming'),
 			games: grpGames,
 		};
 	});

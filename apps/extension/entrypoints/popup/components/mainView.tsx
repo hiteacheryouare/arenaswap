@@ -22,6 +22,7 @@ import ReviewPromptBanner from './reviewPromptBanner';
 import SuggestBanner from './suggestBanner';
 import UpcomingDayPager from './upcomingDayPager';
 import LeagueMark from '@arenaswap/ui/src/components/leagueMark';
+import { useDisplayLocale } from '@arenaswap/ui/src/components/i18nContext';
 import useReorderGlide from '@arenaswap/ui/src/components/useReorderGlide';
 import { buildFinalComparator, buildLeagueRank, buildLiveComparator, buildUpcomingComparator, getRandomLoadingMessage, groupByDate, groupByLeague, resolveSelectedDayIndex } from '../popupHelpers';
 import type { BettingDisplayPrefs, WeatherDisplayPrefs } from './gameCardTypes';
@@ -191,6 +192,7 @@ const mainView = ({
 	revealSkipping = false,
 }: mainViewProps) => {
 	const scrollerRef = useRestoredScroll(scrollOffsetRef);
+	const locale = useDisplayLocale();
 	useReorderGlide(scrollerRef);
 	const noLeaguesSelected = prefs.enabledLeagues.length === 0;
 	const loadingMessage = useMemo(() => getRandomLoadingMessage(), []);
@@ -231,7 +233,7 @@ const mainView = ({
 		[games, sortUpcomingGames, upcomingCutoffMs],
 	);
 	// Grouping runs before any truncation, so what Up Next shows is always exactly one whole day.
-	const upcomingDays = useMemo(() => groupByDate(upcomingGames), [upcomingGames]);
+	const upcomingDays = useMemo(() => groupByDate(upcomingGames, locale), [upcomingGames, locale]);
 	const selectedDayIndex = resolveSelectedDayIndex(upcomingDays, selectedDayKey);
 	const selectedDay = upcomingDays[selectedDayIndex];
 	const registeredGameIds = useMemo(() => new Set(registry.map(r => r.gameId)), [registry]);
