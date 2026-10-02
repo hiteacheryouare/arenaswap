@@ -199,6 +199,9 @@
 	}
 }
 
+// The numbers down the right edge change every poll, so they take the tabular face and stay put.
+.powerscore-breakdown-value { @include gc.scoreboard-figures; }
+
 .powerscore-signal-row {
 	display:     flex;
 	align-items: center;
@@ -238,8 +241,8 @@
 }
 
 .powerscore-signal-value {
+	@include gc.scoreboard-figures;
 	font-weight:          700;
-	font-variant-numeric: tabular-nums;
 	text-align:           right;
 	flex-shrink:          0;
 	width:                2.5rem;
@@ -301,7 +304,7 @@
 .powerscore-subtotal-raw {
 	font-weight:     400;
 	letter-spacing:  0;
-	color:           #9ca3af;
+	color:           #6b7280;
 	text-decoration: line-through;
 }
 

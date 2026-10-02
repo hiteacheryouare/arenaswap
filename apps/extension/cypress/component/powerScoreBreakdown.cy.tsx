@@ -46,9 +46,10 @@ describe('PowerScoreBreakdown stall penalty', () => {
 
 	// Scoped to its own row: an unscoped match is satisfied by a -5 anywhere on the card, including
 	// the volatility row directly above it.
+	// A real minus sign, which is the width of the plus it sits under, not a hyphen.
 	it('shows the penalty as a negative on the stall row', () => {
 		cy.mount(<PowerScoreBreakdown {...defaultProps} stallPenalty={5} signalsSubtotal={28} />);
-		cy.contains('Clock stall penalty').parent().contains('-5').should('exist');
+		cy.contains('Clock stall penalty').parent().contains('\u22125').should('exist');
 	});
 
 	it('shows the clock stall penalty row for clock-based sports', () => {
@@ -78,7 +79,7 @@ describe('PowerScoreBreakdown win probability variance', () => {
 	it('shows "Volatility penalty" label and negative value for negative variance', () => {
 		cy.mount(<PowerScoreBreakdown {...defaultProps} winProbabilityVariance={-5} />);
 		cy.contains('Volatility penalty').should('exist');
-		cy.contains('-5').should('exist');
+		cy.contains('\u22125').should('exist');
 	});
 
 	// 'Volatility' is a prefix of both the boost and the penalty label, so a substring match on it
@@ -137,5 +138,36 @@ describe('PowerScoreBreakdown boosts', () => {
 	it('shows "+N" for postseason boost when > 0', () => {
 		cy.mount(<PowerScoreBreakdown {...defaultProps} postseasonBoost={5} />);
 		cy.contains('Postseason boost').parent().contains('+5').should('exist');
+	});
+});
+
+// The breakdown is a #f8fafc card in both themes, and the numbers on it are 0.6rem text. Their
+// colours started as the icon colours, where the gold reached 1.6:1 and the green 2.2:1.
+describe('PowerScoreBreakdown legibility', () => {
+	const channel = (value: number) => {
+		const scaled = value / 255;
+		return scaled <= 0.04045 ? scaled / 12.92 : ((scaled + 0.055) / 1.055) ** 2.4;
+	};
+	const luminance = (rgb: string) => {
+		const [red, green, blue] = rgb.match(/\d+/g)!.map(Number);
+		return 0.2126 * channel(red!) + 0.7152 * channel(green!) + 0.0722 * channel(blue!);
+	};
+
+	it('writes every boost and penalty value at 4.5:1 or better on the card', () => {
+		cy.mount(<PowerScoreBreakdown {...defaultProps} stallPenalty={4} winProbabilityVariance={6} favoriteBonus={10} favoriteTeamCount={1} currentBoost={15} scoringOpportunityBoost={3} postseasonBoost={5} />);
+		cy.get('.powerscore-breakdown').then(([card]: JQuery<HTMLElement>) => {
+			const ground = luminance(getComputedStyle(card).backgroundColor);
+			cy.get('.powerscore-breakdown-value').should('have.length', 6).each(([value]: JQuery<HTMLElement>) => {
+				const ratio = (ground + 0.05) / (luminance(getComputedStyle(value).color) + 0.05);
+				expect(ratio, value.textContent ?? '').to.be.at.least(4.5);
+			});
+		});
+	});
+
+	it('sets the values in tabular figures so they hold still as they change', () => {
+		cy.mount(<PowerScoreBreakdown {...defaultProps} />);
+		cy.get('.powerscore-breakdown-value, .powerscore-signal-value').each(([value]: JQuery<HTMLElement>) => {
+			expect(getComputedStyle(value).fontFamily).to.match(/^"?Geist/);
+		});
 	});
 });
