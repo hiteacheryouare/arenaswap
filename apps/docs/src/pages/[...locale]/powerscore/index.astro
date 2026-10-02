@@ -156,21 +156,6 @@ const taglineSuffix = t('powerscore.heroTaglineSuffix');
 	<Machine />
 
 	<script>
-		const revealElements = document.querySelectorAll('.reveal');
-		const observer = new IntersectionObserver(
-			(entries) => {
-				entries.forEach(entry => {
-					if (entry.isIntersecting) {
-						entry.target.classList.add('visible');
-					}
-				});
-			},
-			{ threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
-		);
-		revealElements.forEach(el => observer.observe(el));
-	</script>
-
-	<script>
 		// One full gradient cycle (0.85s delay + 6s), then a crossfade to a random brand colour.
 		const psColors = ['#22c55e', '#F75C03', '#2274A5', '#F1C40F', '#D90368'];
 		const chosen = psColors[Math.floor(Math.random() * psColors.length)];

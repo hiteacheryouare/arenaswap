@@ -99,7 +99,7 @@ body {
 }
 
 @for $i from 1 through 5 {
-	.reveal-delay-#{$i} { transition-delay: #{$i * 0.1}s; }
+	.reveal-delay-#{$i} { transition-delay: m.$motion-instant * $i; }
 }
 
 // Fail-safe: users who prefer reduced motion get the content immediately, with no reveal animation.
