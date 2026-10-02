@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Settings, onboarding and the tour stop fighting you — 2026-10-02
+
+The boost fields can be cleared and stop at 100, "Settings saved" only appears when something changed, sliders read in your units with digits that hold still, team search ignores accents and the whole row stars a team, the tour can be skipped and ends once, and search results land on the setting they name. Focus follows every step and page change, pickers announce their value, the help buttons are 24px targets, and Ludicrous Speed's strobes hold still under reduced motion. The digits-only `Geist Figures` face in `_fonts.scss` is how a label like "+10 per team" gets steady numbers without re-fonting its words.
+
 ## The detail screen holds its place and speaks your language — 2026-10-02
 
 Tip-off and the final whistle no longer throw you back to Overview, the overview no longer remounts and replays its charts when the tab strip arrives, the sticky bar takes over the score the moment it slides under, and the Back button keeps its fill and focus ring. Stats line up flush right in Geist, the breakdown's numbers clear 4.5:1 with real minus signs and a name column that fits every language, the count and the bases are read aloud, and the charts honour reduced motion and translate their tooltips. The PowerScore reason is rebuilt from locale strings by `utils/powerScoreReason.ts`, which drops a line it can't fully translate rather than mixing languages, and a test over the scorer's tunables catches any upstream rewording.
