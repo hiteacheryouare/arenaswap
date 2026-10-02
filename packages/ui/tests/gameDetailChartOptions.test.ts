@@ -333,6 +333,13 @@ describe('buildWinProbabilityOption', () => {
 	});
 });
 
+describe('win probability series order', () => {
+	test('lists the away team first, like the legend under it', () => {
+		const names = seriesOf(buildWinProbabilityOption([0.4, 0.6], game)).map(series => series.name);
+		expect(names).toEqual([game.awayTeam.abbreviation, game.homeTeam.abbreviation]);
+	});
+});
+
 describe('buildComponentContributionOption', () => {
 	// One distinct value per signal, so a bar reading the wrong field cannot pass.
 	const history = [powerPoint(0, {

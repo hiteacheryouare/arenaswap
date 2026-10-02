@@ -193,17 +193,8 @@ export const buildWinProbabilityOption = (
 				return arr.map(p => `<span style="color:${p.color}">●</span> ${p.seriesName}: ${p.value}%`).join('<br/>');
 			},
 		},
+		// Away first, so the tooltip lists the teams in the order the legend and the hero do.
 		series: [
-			{
-				type: 'line',
-				name: game.homeTeam.abbreviation,
-				data: homeVals,
-				smooth: true,
-				showSymbol: showSinglePointSymbols,
-				symbolSize: showSinglePointSymbols ? 7 : 0,
-				lineStyle: { width: 2, color: homeColor },
-				itemStyle: { color: homeColor },
-			},
 			{
 				type: 'line',
 				name: game.awayTeam.abbreviation,
@@ -213,6 +204,16 @@ export const buildWinProbabilityOption = (
 				symbolSize: showSinglePointSymbols ? 7 : 0,
 				lineStyle: { width: 2, color: awayColor },
 				itemStyle: { color: awayColor },
+			},
+			{
+				type: 'line',
+				name: game.homeTeam.abbreviation,
+				data: homeVals,
+				smooth: true,
+				showSymbol: showSinglePointSymbols,
+				symbolSize: showSinglePointSymbols ? 7 : 0,
+				lineStyle: { width: 2, color: homeColor },
+				itemStyle: { color: homeColor },
 			},
 		],
 	};
