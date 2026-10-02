@@ -8,6 +8,7 @@ import LeagueLogo from './leagueLogo';
 import LeagueOrderList from './leagueOrderList';
 import PostseasonBoostInput from './postseasonBoostInput';
 import SensitivitySlider from './sensitivitySlider';
+import { signalColors } from '@arenaswap/ui/src/components/signalColors';
 import SettingTooltipIcon from './settingTooltipIcon';
 import SwitchDelaySlider from './switchDelaySlider';
 import TemperatureUnitToggle from './temperatureUnitToggle';
@@ -65,11 +66,11 @@ interface setupViewProps {
 }
 
 const setupSignalMeta = [
-	{ name: 'closeness' as SignalName, labelKey: 'powerScore.signalCloseness' as const, color: '#22c55e' },
-	{ name: 'lateGame' as SignalName, labelKey: 'powerScore.signalLateGame' as const, color: '#f75c03' },
-	{ name: 'momentum' as SignalName, labelKey: 'powerScore.signalMomentum' as const, color: '#2274a5' },
-	{ name: 'leadChanges' as SignalName, labelKey: 'powerScore.signalLeadChanges' as const, color: '#f1c40f' },
-	{ name: 'comeback' as SignalName, labelKey: 'powerScore.signalComeback' as const, color: '#d90368' },
+	{ name: 'closeness' as SignalName, labelKey: 'powerScore.signalCloseness' as const, color: signalColors.closeness },
+	{ name: 'lateGame' as SignalName, labelKey: 'powerScore.signalLateGame' as const, color: signalColors.lateGame },
+	{ name: 'momentum' as SignalName, labelKey: 'powerScore.signalMomentum' as const, color: signalColors.momentum },
+	{ name: 'leadChanges' as SignalName, labelKey: 'powerScore.signalLeadChanges' as const, color: signalColors.leadChanges },
+	{ name: 'comeback' as SignalName, labelKey: 'powerScore.signalComeback' as const, color: signalColors.comeback },
 ] as const;
 
 const setupView = ({

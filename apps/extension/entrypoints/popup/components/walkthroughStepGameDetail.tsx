@@ -3,6 +3,7 @@ import { i18n } from '#i18n';
 import Crest from '@arenaswap/ui/src/components/crest';
 import { teamLogoOnColor } from '@arenaswap/core/constants';
 import { matchupSurfaceStyle, powerScoreColor } from './gameCardShared';
+import { signalColors } from '@arenaswap/ui/src/components/signalColors';
 
 interface walkthroughStepGameDetailProps {
 	onNext: () => void;
@@ -133,11 +134,11 @@ const walkthroughStepGameDetail = ({ onNext, onBack }: walkthroughStepGameDetail
 					</div>
 					<div className='d-flex flex-column gap-1'>
 						{[
-							{ label: i18n.t('stepGameDetail.signalCloseness'), val: 18, color: '#22c55e' },
-							{ label: i18n.t('stepGameDetail.signalLateGame'), val: 22, color: '#f75c03' },
-							{ label: i18n.t('stepGameDetail.signalMomentum'), val: 14, color: '#2274a5' },
-							{ label: i18n.t('stepGameDetail.signalLeadChanges'), val: 9, color: '#f1c40f' },
-							{ label: i18n.t('stepGameDetail.signalComeback'), val: 8, color: '#d90368' },
+							{ label: i18n.t('stepGameDetail.signalCloseness'), val: 18, color: signalColors.closeness },
+							{ label: i18n.t('stepGameDetail.signalLateGame'), val: 22, color: signalColors.lateGame },
+							{ label: i18n.t('stepGameDetail.signalMomentum'), val: 14, color: signalColors.momentum },
+							{ label: i18n.t('stepGameDetail.signalLeadChanges'), val: 9, color: signalColors.leadChanges },
+							{ label: i18n.t('stepGameDetail.signalComeback'), val: 8, color: signalColors.comeback },
 						].map(({ label, val, color }) => (
 							<div key={label} className='d-flex align-items-center gap-2'>
 								<span className='text-body-secondary' style={{ minWidth: '5.5rem' }}>{label}</span>

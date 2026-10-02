@@ -1,7 +1,8 @@
 import type { EChartsOption } from 'echarts';
 import { scoreMaxTotal } from '@arenaswap/core/constants';
-import type { Game, PowerScoreSnapshot, ResolvedTheme, ScoreSnapshot } from '@arenaswap/core/types';
+import type { Game, PowerScoreSnapshot, ResolvedTheme, ScoreSnapshot, SignalName } from '@arenaswap/core/types';
 import { resolveChartLineColors } from './colorUtils';
+import { signalColors } from './signalColors';
 import { chartEasing, motionDuration } from '../motion';
 
 // ECharts draws to a canvas, so these cannot follow the page's CSS variables: whoever builds an
@@ -217,7 +218,21 @@ export const buildWinProbabilityOption = (
 	};
 };
 
-export const buildComponentContributionOption = (powerHistory: PowerScoreSnapshot[], palette = darkChartPalette): EChartsOption => {
+// The tooltip prints these, so the popup passes the same translated names its legend uses. English
+// is the fallback for the website, which renders its charts without a translator.
+const englishSignalLabels: Record<SignalName, string> = {
+	closeness: 'Closeness',
+	lateGame: 'Late-game',
+	momentum: 'Momentum',
+	leadChanges: 'Lead changes',
+	comeback: 'Comeback',
+};
+
+export const buildComponentContributionOption = (
+	powerHistory: PowerScoreSnapshot[],
+	palette = darkChartPalette,
+	signalLabels = englishSignalLabels,
+): EChartsOption => {
 	const labels = powerHistory.map(point => formatTimeLabel(point.timestamp));
 	const closeness = powerHistory.map(point => point.closeness);
 	const lateGame = powerHistory.map(point => point.lateGame);
@@ -227,11 +242,11 @@ export const buildComponentContributionOption = (powerHistory: PowerScoreSnapsho
 	return {
 		...baseOption(labels, palette, 24),
 		series: [
-			{ type: 'bar', stack: 'signals', name: 'Closeness', data: closeness, itemStyle: { color: '#22c55e' } },
-			{ type: 'bar', stack: 'signals', name: 'Late-game', data: lateGame, itemStyle: { color: '#f75c03' } },
-			{ type: 'bar', stack: 'signals', name: 'Momentum', data: momentum, itemStyle: { color: '#2274a5' } },
-			{ type: 'bar', stack: 'signals', name: 'Lead changes', data: leadChanges, itemStyle: { color: '#f1c40f' } },
-			{ type: 'bar', stack: 'signals', name: 'Comeback', data: comeback, itemStyle: { color: '#d90368' } },
+			{ type: 'bar', stack: 'signals', name: signalLabels.closeness, data: closeness, itemStyle: { color: signalColors.closeness } },
+			{ type: 'bar', stack: 'signals', name: signalLabels.lateGame, data: lateGame, itemStyle: { color: signalColors.lateGame } },
+			{ type: 'bar', stack: 'signals', name: signalLabels.momentum, data: momentum, itemStyle: { color: signalColors.momentum } },
+			{ type: 'bar', stack: 'signals', name: signalLabels.leadChanges, data: leadChanges, itemStyle: { color: signalColors.leadChanges } },
+			{ type: 'bar', stack: 'signals', name: signalLabels.comeback, data: comeback, itemStyle: { color: signalColors.comeback } },
 		],
 	};
 };

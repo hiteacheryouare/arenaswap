@@ -8,6 +8,7 @@ import {
 } from '@arenaswap/core/constants';
 import type { SignalName } from '@arenaswap/core/types';
 import { i18n } from '#i18n';
+import { signalColors } from '@arenaswap/ui/src/components/signalColors';
 import SettingTooltipIcon from './settingTooltipIcon';
 
 interface powerScoreBreakdownProps {
@@ -35,15 +36,12 @@ interface powerScoreBreakdownProps {
 	disabledSignals?: readonly SignalName[];
 }
 
-// This palette is the signal palette. The component chart further down the detail screen shows
-// the same five signals and reads these colours off this card, so momentum's #2274a5 is a data
-// colour and not $secondary — changing one without the other splits a signal into two blues.
 const signalMeta = [
-	{ name: 'closeness' as SignalName, labelKey: 'powerScore.signalCloseness', tooltipKey: 'powerScore.tooltipCloseness', max: scoreMaxCloseness, color: '#22c55e' },
-	{ name: 'lateGame' as SignalName, labelKey: 'powerScore.signalLateGame', tooltipKey: 'powerScore.tooltipLateGame', max: scoreMaxLateGame, color: '#f75c03' },
-	{ name: 'momentum' as SignalName, labelKey: 'powerScore.signalMomentum', tooltipKey: 'powerScore.tooltipMomentum', max: scoreMaxMomentum, color: '#2274a5' },
-	{ name: 'leadChanges' as SignalName, labelKey: 'powerScore.signalLeadChanges', tooltipKey: 'powerScore.tooltipLeadChanges', max: scoreMaxLeadChanges, color: '#f1c40f' },
-	{ name: 'comeback' as SignalName, labelKey: 'powerScore.signalComeback', tooltipKey: 'powerScore.tooltipComeback', max: scoreMaxComeback, color: '#d90368' },
+	{ name: 'closeness' as SignalName, labelKey: 'powerScore.signalCloseness', tooltipKey: 'powerScore.tooltipCloseness', max: scoreMaxCloseness, color: signalColors.closeness },
+	{ name: 'lateGame' as SignalName, labelKey: 'powerScore.signalLateGame', tooltipKey: 'powerScore.tooltipLateGame', max: scoreMaxLateGame, color: signalColors.lateGame },
+	{ name: 'momentum' as SignalName, labelKey: 'powerScore.signalMomentum', tooltipKey: 'powerScore.tooltipMomentum', max: scoreMaxMomentum, color: signalColors.momentum },
+	{ name: 'leadChanges' as SignalName, labelKey: 'powerScore.signalLeadChanges', tooltipKey: 'powerScore.tooltipLeadChanges', max: scoreMaxLeadChanges, color: signalColors.leadChanges },
+	{ name: 'comeback' as SignalName, labelKey: 'powerScore.signalComeback', tooltipKey: 'powerScore.tooltipComeback', max: scoreMaxComeback, color: signalColors.comeback },
 ] as const;
 
 // Per-factor colors and icons mirror the walkthrough's boost/penalty legend (walkthroughStepPowerScore.tsx).

@@ -8,6 +8,7 @@ import {
 	buildWinProbabilityOption,
 } from '../src/components/gameDetailChartOptions';
 import { chartEasing, motionDuration } from '../src/motion';
+import { signalColors } from '../src/components/signalColors';
 
 // The four charts on the game detail screen. None of them can fail loudly: a chart handed the wrong
 // field, the wrong team's colour or a label list one short of its data still draws, and what it
@@ -341,6 +342,19 @@ describe('buildComponentContributionOption', () => {
 		leadChanges: 9,
 		comeback: 4,
 	})];
+
+	// The tooltip prints the series name, so the popup hands over the legend's translated names.
+	test('names each signal in the language it is given', () => {
+		const labels = { closeness: 'Ausgeglichenheit', lateGame: 'Spätphase', momentum: 'Momentum', leadChanges: 'Führungswechsel', comeback: 'Aufholjagd' };
+		const option = buildComponentContributionOption(history, undefined, labels);
+		expect(byName(option, 'Ausgeglichenheit').data).toEqual([21]);
+		expect(byName(option, 'Aufholjagd').data).toEqual([4]);
+	});
+
+	test('draws each signal in the shared signal palette', () => {
+		const option = buildComponentContributionOption(history);
+		expect(byName(option, 'Momentum').itemStyle!.color).toBe(signalColors.momentum);
+	});
 
 	test('puts each signal under its own name, reading its own field', () => {
 		const option = buildComponentContributionOption(history);

@@ -33,6 +33,7 @@ import {
 } from './gameDetailChartOptions';
 import { resolveChartLineColors, resolveTeamColorPair } from '@arenaswap/ui/src/components/colorUtils';
 import { matchupSurfaceStyle } from '@arenaswap/ui/src/components/gameCardShared';
+import { signalColors } from '@arenaswap/ui/src/components/signalColors';
 import useSwitchCrest from '@arenaswap/ui/src/components/useSwitchCrest';
 import useSummaryData from './useSummaryData';
 import { chartHistory, coversWholeGame } from './wrapCoverage';
@@ -74,15 +75,18 @@ const noFavorites: ReadonlySet<string> = new Set();
 
 const favoriteFlashMs = 5000;
 
-// The signal palette belongs to the PowerScore breakdown card above this chart, so momentum
-// keeps that card's #2274a5 rather than the dark-surface $secondary. Same signal, one colour.
-const componentLegendItems = [
-	{ label: i18n.t('detail.legendCloseness'), color: '#22c55e' },
-	{ label: i18n.t('detail.legendLateGame'), color: '#f75c03' },
-	{ label: i18n.t('detail.legendMomentum'), color: '#2274a5' },
-	{ label: i18n.t('detail.legendLeadChanges'), color: '#f1c40f' },
-	{ label: i18n.t('detail.legendComeback'), color: '#d90368' },
-];
+// The legend and the chart's tooltip print the same names, so a hover reads in the same language
+// as the swatches under it.
+const componentSignalLabels: Record<SignalName, string> = {
+	closeness: i18n.t('detail.legendCloseness'),
+	lateGame: i18n.t('detail.legendLateGame'),
+	momentum: i18n.t('detail.legendMomentum'),
+	leadChanges: i18n.t('detail.legendLeadChanges'),
+	comeback: i18n.t('detail.legendComeback'),
+};
+
+const componentLegendItems = (Object.keys(componentSignalLabels) as SignalName[])
+	.map(signal => ({ label: componentSignalLabels[signal], color: signalColors[signal] }));
 
 const gameDetailView = ({
 	game,
@@ -171,7 +175,7 @@ const gameDetailView = ({
 		buildTeamScoreOption(orderedScoreHistory, game, chartPalette, [awayLineColor, homeLineColor])
 	), [orderedScoreHistory, game, chartPalette, awayLineColor, homeLineColor]);
 	const componentOption = useMemo(() => (
-		buildComponentContributionOption(orderedPowerScoreHistory, chartPalette)
+		buildComponentContributionOption(orderedPowerScoreHistory, chartPalette, componentSignalLabels)
 	), [orderedPowerScoreHistory, chartPalette]);
 	const { winProbability, seriesInfo, records, monoLogos, boxScore, standings, gameDurationMins } = useSummaryData(game);
 	const winProbabilityOption = useMemo(() => (

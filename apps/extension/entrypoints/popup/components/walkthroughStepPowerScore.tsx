@@ -7,6 +7,7 @@ import {
 	scoreMaxMomentum,
 } from '@arenaswap/core/constants';
 import { i18n } from '#i18n';
+import { signalColors } from '@arenaswap/ui/src/components/signalColors';
 
 interface walkthroughStepPowerScoreProps {
 	onNext: () => void;
@@ -21,7 +22,7 @@ const signalMeta = [
 		tooltipKey: 'powerScore.tooltipCloseness',
 		measuredKey: 'stepPowerScore.closenessMeasured',
 		max: scoreMaxCloseness,
-		color: '#22c55e',
+		color: signalColors.closeness,
 	},
 	{
 		name: 'lateGame',
@@ -29,7 +30,7 @@ const signalMeta = [
 		tooltipKey: 'powerScore.tooltipLateGame',
 		measuredKey: 'stepPowerScore.lateGameMeasured',
 		max: scoreMaxLateGame,
-		color: '#f75c03',
+		color: signalColors.lateGame,
 	},
 	{
 		name: 'momentum',
@@ -37,7 +38,7 @@ const signalMeta = [
 		tooltipKey: 'powerScore.tooltipMomentum',
 		measuredKey: 'stepPowerScore.momentumMeasured',
 		max: scoreMaxMomentum,
-		color: '#2274a5',
+		color: signalColors.momentum,
 	},
 	{
 		name: 'leadChanges',
@@ -45,7 +46,7 @@ const signalMeta = [
 		tooltipKey: 'powerScore.tooltipLeadChanges',
 		measuredKey: 'stepPowerScore.leadChangesMeasured',
 		max: scoreMaxLeadChanges,
-		color: '#f1c40f',
+		color: signalColors.leadChanges,
 	},
 	{
 		name: 'comeback',
@@ -53,7 +54,7 @@ const signalMeta = [
 		tooltipKey: 'powerScore.tooltipComeback',
 		measuredKey: 'stepPowerScore.comebackMeasured',
 		max: scoreMaxComeback,
-		color: '#d90368',
+		color: signalColors.comeback,
 	},
 ] as const;
 
