@@ -53,7 +53,7 @@ const currentFor = (path: string) => {
 				<div class="nav-end">
 					<LanguageSwitcher localized={localized} />
 					<InstallCta class="nav-cta-desktop" />
-					<button class="nav-hamburger" id="nav-toggle" aria-label={t('nav.openMenu')} aria-expanded="false">
+					<button class="nav-hamburger" id="nav-toggle" aria-label={t('nav.openMenu')} aria-controls="nav-drawer" aria-expanded="false">
 						<span class="ham-bar"></span>
 						<span class="ham-bar"></span>
 						<span class="ham-bar"></span>
@@ -82,23 +82,28 @@ const toggle = document.getElementById('nav-toggle');
 const drawer = document.getElementById('nav-drawer');
 const header = document.getElementById('site-header');
 
-toggle?.addEventListener('click', () => {
-	const open = toggle.getAttribute('aria-expanded') === 'true';
-	toggle.setAttribute('aria-expanded', String(!open));
-	toggle.classList.toggle('open', !open);
-	drawer?.classList.toggle('open', !open);
-	drawer?.setAttribute('aria-hidden', String(open));
-	document.body.classList.toggle('nav-open', !open);
-});
+const isOpen = () => toggle?.getAttribute('aria-expanded') === 'true';
+
+const setOpen = (open: boolean) => {
+	toggle?.setAttribute('aria-expanded', String(open));
+	toggle?.classList.toggle('open', open);
+	drawer?.classList.toggle('open', open);
+	drawer?.setAttribute('aria-hidden', String(!open));
+	document.body.classList.toggle('nav-open', open);
+};
+
+toggle?.addEventListener('click', () => setOpen(!isOpen()));
 
 drawer?.querySelectorAll('a').forEach(a => {
-	a.addEventListener('click', () => {
-		toggle?.setAttribute('aria-expanded', 'false');
-		toggle?.classList.remove('open');
-		drawer?.classList.remove('open');
-		drawer?.setAttribute('aria-hidden', 'true');
-		document.body.classList.remove('nav-open');
-	});
+	a.addEventListener('click', () => setOpen(false));
+});
+
+// Escape closes the drawer and hands focus back to the button that opened it, rather than leaving
+// it on a link that is about to disappear.
+document.addEventListener('keydown', event => {
+	if (event.key !== 'Escape' || !isOpen()) return;
+	setOpen(false);
+	toggle?.focus();
 });
 
 // The bar keeps its 64px — the drawer hangs off that height and the hero measures against it — so
