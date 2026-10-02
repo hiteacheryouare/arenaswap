@@ -1,0 +1,63 @@
+name: Feature request
+description: Suggest an improvement for ArenaSwap
+labels: [enhancement]
+body:
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: What problem should this solve for someone watching games?
+    validations:
+      required: true
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Proposed behavior
+      description: Describe what you'd see and do, from a user's point of view.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      multiple: true
+      options:
+        - Popup (game list, cards, detail screen, settings)
+        - Guide
+        - Tab switching
+        - PowerScore signals, boosts or penalties
+        - Leagues and sports coverage
+        - Game data and polling
+        - Website and docs
+        - Translations
+        - Developer tooling
+    validations:
+      required: true
+  - type: dropdown
+    id: sport
+    attributes:
+      label: Sport
+      description: Leave blank if it applies to every sport.
+      multiple: true
+      options:
+        - Basketball
+        - Football
+        - Hockey
+        - Baseball
+        - Softball
+        - Soccer
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: What else did you try or consider?
+  - type: textarea
+    id: success
+    attributes:
+      label: Success criteria
+      description: How should maintainers judge whether this is done?
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Mockups, examples, references or related issues.

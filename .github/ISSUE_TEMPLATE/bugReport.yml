@@ -1,0 +1,118 @@
+name: Bug report
+description: Report a reproducible ArenaSwap bug
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. Security problems go through a private [security advisory](https://github.com/hiteacheryouare/arenaswap/security/advisories/new), not here.
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: Describe the bug clearly.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: Which part of ArenaSwap is affected?
+      multiple: true
+      options:
+        - Popup (game list, cards, detail screen, settings)
+        - Guide
+        - Onboarding or tour
+        - Tab switching or background service worker
+        - PowerScore (packages/powerscore)
+        - Game data, scores or polling (packages/core)
+        - Shared UI (packages/ui)
+        - Website (apps/docs)
+        - Translations
+        - Build, typecheck or test tooling
+    validations:
+      required: true
+  - type: dropdown
+    id: sport
+    attributes:
+      label: Sport
+      description: Pick every sport where you saw it, or leave blank if it isn't sport-specific.
+      multiple: true
+      options:
+        - Basketball
+        - Football
+        - Hockey
+        - Baseball
+        - Softball
+        - Soccer
+  - type: input
+    id: league
+    attributes:
+      label: League and game
+      description: The league and matchup, if it happened during a specific game.
+      placeholder: NBA, Celtics @ 76ers
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      value: |
+        1.
+        2.
+        3.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What should happen?
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: What happened instead?
+    validations:
+      required: true
+  - type: dropdown
+    id: browser
+    attributes:
+      label: Browser
+      options:
+        - Chrome
+        - Edge
+        - Firefox
+        - Other Chromium browser
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: ArenaSwap version
+      description: Shown on your browser's extensions page.
+      placeholder: 2.2.0
+    validations:
+      required: true
+  - type: dropdown
+    id: install
+    attributes:
+      label: Install type
+      options:
+        - Browser store
+        - Unpacked development build
+  - type: input
+    id: os
+    attributes:
+      label: Operating system
+      placeholder: macOS 26, Windows 11, …
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs and screenshots
+      description: Console logs, stack traces, screenshots or short recordings.
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Anything else that would help reproduce or diagnose the issue.
