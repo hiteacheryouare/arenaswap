@@ -156,18 +156,19 @@ describe('PowerScoreBreakdown boosts', () => {
 	});
 });
 
+const channel = (value: number) => {
+	const scaled = value / 255;
+	return scaled <= 0.04045 ? scaled / 12.92 : ((scaled + 0.055) / 1.055) ** 2.4;
+};
+
+const luminance = (rgb: string) => {
+	const [red, green, blue] = rgb.match(/\d+/g)!.map(Number);
+	return 0.2126 * channel(red!) + 0.7152 * channel(green!) + 0.0722 * channel(blue!);
+};
+
 // The breakdown is a #f8fafc card in both themes, and the numbers on it are 0.6rem text. Their
 // colours started as the icon colours, where the gold reached 1.6:1 and the green 2.2:1.
 describe('PowerScoreBreakdown legibility', () => {
-	const channel = (value: number) => {
-		const scaled = value / 255;
-		return scaled <= 0.04045 ? scaled / 12.92 : ((scaled + 0.055) / 1.055) ** 2.4;
-	};
-	const luminance = (rgb: string) => {
-		const [red, green, blue] = rgb.match(/\d+/g)!.map(Number);
-		return 0.2126 * channel(red!) + 0.7152 * channel(green!) + 0.0722 * channel(blue!);
-	};
-
 	it('writes every boost and penalty value at 4.5:1 or better on the card', () => {
 		cy.mount(<PowerScoreBreakdown {...defaultProps} stallPenalty={4} winProbabilityVariance={6} favoriteBonus={10} favoriteTeamCount={1} currentBoost={15} scoringOpportunityBoost={3} postseasonBoost={5} />);
 		cy.get('.powerscore-breakdown').then(([card]: JQuery<HTMLElement>) => {
