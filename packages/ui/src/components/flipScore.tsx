@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { motionDuration } from '../motion';
 
 interface flipScoreProps {
 	value: number;
@@ -20,7 +21,8 @@ const flipScore = ({ value, className = '' }: flipScoreProps) => {
 			const prev = prevRef.current;
 			prevRef.current = value;
 			setState(s => ({ current: value, outgoing: prev, animKey: s.animKey + 1 }));
-			const timer = setTimeout(() => setState(s => ({ ...s, outgoing: null })), 350);
+			// The roll is $motion-base in _game-card.scss; the outgoing digit leaves when it lands.
+			const timer = setTimeout(() => setState(s => ({ ...s, outgoing: null })), motionDuration.base);
 			return () => clearTimeout(timer);
 		}
 	}, [value]);
