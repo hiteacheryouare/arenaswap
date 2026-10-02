@@ -1,6 +1,8 @@
 import GameDetailView from '../../entrypoints/popup/components/gameDetailView';
 import { MockGameSimulator } from '@arenaswap/core';
 import type { Game } from '@arenaswap/core/types';
+import { mockBoxScorePayloads } from '../../entrypoints/popup/components/mockBoxScores';
+import { mockStandingsPayloads } from '../../entrypoints/popup/components/mockStandings';
 import de from '../../locales/de.json';
 import en from '../../locales/en.json';
 import es from '../../locales/es.json';
@@ -140,6 +142,19 @@ describe('detail screen tab strip', () => {
 		});
 		cy.get('.gd-tabs .nav-link.active').should('have.text', en.box.heading);
 		cy.get('.tab-pane.active').should('have.id', `gd-pane-${football.id}-box`);
+	});
+
+	// A real id, so the summary goes to the network and the strip arrives a beat after the screen
+	// has drawn with none. The overview's node is marked before that and must survive it.
+	it('keeps the overview mounted when the strip arrives', () => {
+		const live = { ...football, id: '401000005' };
+		cy.intercept({ url: /\/summary\?event=401000005/ }, { body: mockBoxScorePayloads['mock-5'], delay: 300 });
+		cy.intercept({ url: /\/standings\?level=3/ }, { body: mockStandingsPayloads['mock-5'], delay: 300 });
+		mount(live);
+		cy.get('.gd-tabs').should('not.exist');
+		cy.get('.powerscore-breakdown').then($breakdown => { $breakdown[0]!.dataset.probe = 'kept'; });
+		cy.get('.gd-tabs .nav-link').should('have.length', 3);
+		cy.get('.tab-pane.active .powerscore-breakdown').should('have.attr', 'data-probe', 'kept');
 	});
 
 	it('labels the shown pane with the tab that opened it', () => {

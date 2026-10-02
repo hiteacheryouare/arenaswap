@@ -367,31 +367,32 @@ const gameDetailView = ({
 				)}
 			</div>
 
-			{tabbed ? (
-				<>
-					<DetailTabs tabs={tabs} tabId={tabId} paneId={paneId} />
-					{/* No `fade`. These three are one screen's worth of the same game seen three ways, not
-					    three places to travel between, and crossfading them puts a beat of half-legible
-					    scoreline between a tap and the table it asked for. Bootstrap reads the class to
-					    decide whether to wait on a transition before revealing the pane, so dropping it is
-					    what makes the swap synchronous — `show` is inert without it and is left on to match
-					    what the plugin adds to every pane it activates. */}
-					<div className='tab-content'>
-						{tabs.map((tab, index) => (
-							<div
-								key={tab.id}
-								id={paneId(tab.id)}
-								className={`tab-pane${index === 0 ? ' show active' : ''}`}
-								role='tabpanel'
-								aria-labelledby={tabId(tab.id)}
-								tabIndex={0}
-							>
-								{paneFor(tab.id)}
-							</div>
-						))}
+			{tabbed && <DetailTabs tabs={tabs} tabId={tabId} paneId={paneId} />}
+			{/* No `fade`. These three are one screen's worth of the same game seen three ways, not
+			    three places to travel between, and crossfading them puts a beat of half-legible
+			    scoreline between a tap and the table it asked for. Bootstrap reads the class to
+			    decide whether to wait on a transition before revealing the pane, so dropping it is
+			    what makes the swap synchronous — `show` is inert without it and is left on to match
+			    what the plugin adds to every pane it activates.
+
+			    The wrapper and the overview pane render even with one tab, so the summary arriving
+			    and growing the strip does not remount the overview and replay its charts. Untabbed,
+			    the pane drops its classes: a pane Bootstrap had deactivated would otherwise stay
+			    hidden, since React leaves a className alone that did not change between renders. */}
+			<div className='tab-content'>
+				{tabs.map((tab, index) => (
+					<div
+						key={tab.id}
+						id={paneId(tab.id)}
+						className={tabbed ? `tab-pane${index === 0 ? ' show active' : ''}` : undefined}
+						role={tabbed ? 'tabpanel' : undefined}
+						aria-labelledby={tabbed ? tabId(tab.id) : undefined}
+						tabIndex={tabbed ? 0 : undefined}
+					>
+						{paneFor(tab.id)}
 					</div>
-				</>
-			) : overviewPanel}
+				))}
+			</div>
 
 			{decorations.falling && <HolidayDrift kind={decorations.falling} depth={decorations.depth} theme={theme} />}
 		</div>
