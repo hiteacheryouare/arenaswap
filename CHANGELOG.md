@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The contribution docs describe this repo again — 2026-10-02
+
+CONTRIBUTING.md had drifted into describing Firebase, an apps/web workspace and a ban on the Jest and Cypress suites the repo actually runs; it now matches the real workspaces, tooling, everything command, 12-locale rule and robotic label, with its governance voice unchanged. The issue templates are now issue forms, joined by a translation form and a pull request template, and Code of Conduct reports go to a channel that exists.
+
 ## Cards glide when the order changes — 2026-10-02
 
 When a PowerScore push reorders the list, or a game moves between Active Tabs and Live Games, every card that moved slides from its old spot to its new one over 400ms instead of jumping, in the popup and the landing page hero alike. Only an actual reorder starts a glide: a game arriving or leaving still pushes the cards below it without animation, and reduced motion turns the glide off.
