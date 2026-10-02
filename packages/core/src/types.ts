@@ -109,6 +109,8 @@ export interface GameCondition {
 	// °F, as reported by ESPN.
 	temperatureF: number;
 	conditionLabel: string;
+	// AccuWeather icon number, 1–44. Codes 33 and up are the night variants.
+	conditionCode?: number;
 }
 
 export interface GameOddsProvider {

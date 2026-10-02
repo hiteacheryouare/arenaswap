@@ -38,6 +38,8 @@ describe('isSnowing', () => {
 		expect(isSnowing(football({ weather: { temperatureF: 24, conditionLabel: 'Snow Showers/Wind' } }))).toBe(true);
 		expect(isSnowing(football({ weather: { temperatureF: 28, conditionLabel: 'Flurries' } }))).toBe(true);
 		expect(isSnowing(football({ weather: { temperatureF: 30, conditionLabel: 'Sleet' } }))).toBe(true);
+		expect(isSnowing(football({ weather: { temperatureF: 27, conditionLabel: 'Mostly cloudy w/ snow' } }))).toBe(true);
+		expect(isSnowing(football({ weather: { temperatureF: 29, conditionLabel: 'Partly sunny w/ flurries' } }))).toBe(true);
 	});
 
 	test('does not match rain, cold or a missing reading', () => {
@@ -334,7 +336,7 @@ describe('a dome game and the snow decoration, end to end', () => {
 	// to still snow, or the dome case could be passing because the payload never carried snow at all.
 	test('the same reading outdoors still snows', async () => {
 		const game = await parseThroughFetch(openAirEvent);
-		expect(game.weather).toEqual({ temperatureF: 19, conditionLabel: 'Snow' });
+		expect(game.weather).toEqual({ temperatureF: 19, conditionLabel: 'Snow', conditionCode: 22 });
 		expect(isSnowing(game)).toBe(true);
 		expect(resolveDecorations(game, december, allOn).falling).toBe('snow');
 	});

@@ -1495,14 +1495,14 @@ describe('apiClient', () => {
 
 		test('reads the label out of displayValue', async () => {
 			expect(await weatherFor(openVenue, { displayValue: 'Thunderstorms', temperature: 86, highTemperature: 86, conditionId: '15' }))
-				.toEqual({ temperatureF: 86, conditionLabel: 'Thunderstorms' });
+				.toEqual({ temperatureF: 86, conditionLabel: 'Thunderstorms', conditionCode: 15 });
 		});
 
 		// ESPN swaps the two fields on live baseball: loanDepot park came back with displayValue '35'
 		// and the words in conditionId. The numeric one has to lose whichever key it arrives under.
 		test('reads the label out of conditionId when displayValue holds the icon number', async () => {
 			expect(await weatherFor(openVenue, { displayValue: '35', temperature: 82, highTemperature: 82, conditionId: 'Partly cloudy' }))
-				.toEqual({ temperatureF: 82, conditionLabel: 'Partly cloudy' });
+				.toEqual({ temperatureF: 82, conditionLabel: 'Partly cloudy', conditionCode: 35 });
 		});
 
 		test('drops a reading with no words in either field', async () => {
@@ -1533,7 +1533,7 @@ describe('apiClient', () => {
 
 		test('leaves an open-air venue alone', async () => {
 			expect(await weatherFor(openVenue, { displayValue: 'Snow', temperature: 19, highTemperature: 19, conditionId: '22' }))
-				.toEqual({ temperatureF: 19, conditionLabel: 'Snow' });
+				.toEqual({ temperatureF: 19, conditionLabel: 'Snow', conditionCode: 22 });
 		});
 
 		// MLS and the European soccer competitions send no `indoor` key on the venue at all. They send
@@ -1541,7 +1541,7 @@ describe('apiClient', () => {
 		// as a dome the day one of them starts carrying a forecast.
 		test('treats a venue with no indoor flag as open air', async () => {
 			expect(await weatherFor({ fullName: 'Subaru Park', address: { city: 'Chester', state: 'PA' } }, { displayValue: 'Snow', temperature: 31, conditionId: '22' }))
-				.toEqual({ temperatureF: 31, conditionLabel: 'Snow' });
+				.toEqual({ temperatureF: 31, conditionLabel: 'Snow', conditionCode: 22 });
 		});
 	});
 

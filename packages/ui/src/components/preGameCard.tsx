@@ -44,7 +44,7 @@ const preGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, onOpenGameDe
 					)}
 					{game.weather && weatherPrefs && (
 						<div className='pre-game-weather' aria-hidden='true'>
-							<i className={`bi ${conditionIcon(game.weather.conditionLabel)}`} />
+							<i className={`bi ${conditionIcon(game.weather.conditionLabel, game.weather.conditionCode)}`} />
 							<span>{formatTemperature(game.weather.temperatureF, weatherPrefs.temperatureUnit)}</span>
 						</div>
 					)}

@@ -444,10 +444,13 @@ const parseWeather = (event: EspnEvent, indoor: boolean | undefined): GameCondit
 	if (indoor) return undefined;
 	const w = event.weather;
 	if (!w || typeof w.temperature !== 'number') return undefined;
-	// ESPN inconsistently puts the text label in either displayValue or conditionId
-	const label = [w.displayValue, w.conditionId].find(v => v?.trim() && !/^\d+$/.test(v.trim()));
+	// ESPN inconsistently puts the text label in either displayValue or conditionId, and the
+	// AccuWeather icon number in whichever one is left.
+	const fields = [w.displayValue, w.conditionId].map(v => v?.trim() ?? '');
+	const label = fields.find(v => v && !/^\d+$/.test(v));
 	if (!label) return undefined;
-	return { temperatureF: Math.round(w.temperature), conditionLabel: label.trim() };
+	const code = fields.find(v => /^\d+$/.test(v));
+	return { temperatureF: Math.round(w.temperature), conditionLabel: label, conditionCode: code ? Number(code) : undefined };
 };
 
 const downOrdinals = ['', '1st', '2nd', '3rd', '4th'] as const;

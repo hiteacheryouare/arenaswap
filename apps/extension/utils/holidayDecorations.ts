@@ -1,5 +1,6 @@
 import { leagueConfigMap } from '@arenaswap/core/constants';
 import type { Game } from '@arenaswap/core/types';
+import { primaryCondition } from '@arenaswap/ui/src/components/weatherUtils';
 
 export type fallingKind = 'snow' | 'leaves';
 
@@ -21,13 +22,13 @@ export const noDecorations: decorationState = { lights: false, falling: null, de
 
 const clamp01 = (value: number): number => Math.max(0, Math.min(1, value));
 
-// ESPN varies the wording a lot — "Light Snow", "Snow Showers", "Heavy Snow/Wind" — so this reads
-// the primary condition of a compound label and then matches on the word rather than the whole
-// string. Sleet counts; freezing rain does not, since neither of them settles as snow.
+// ESPN varies the wording a lot — "Light Snow", "Mostly cloudy w/ snow", "Heavy Snow/Wind" — so
+// this reads the primary condition of a compound label and then matches on the word rather than the
+// whole string. Sleet counts; freezing rain does not, since neither of them settles as snow.
 export const isSnowing = (game: Game): boolean => {
 	const label = game.weather?.conditionLabel;
 	if (!label) return false;
-	const primary = (label.split('/')[0] ?? label).trim().toLowerCase();
+	const primary = primaryCondition(label);
 	return primary.includes('snow') || primary.includes('sleet') || primary === 'flurries';
 };
 
