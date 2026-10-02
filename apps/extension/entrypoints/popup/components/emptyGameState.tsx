@@ -5,7 +5,7 @@ interface emptyGameStateProps {
 	noLeaguesSelected: boolean;
 	noGames: boolean;
 	onOpenSetup: () => void;
-	onRefresh: () => void;
+	onRefresh: () => unknown;
 }
 
 const emptyGameState = ({ noLeaguesSelected, noGames, onOpenSetup, onRefresh }: emptyGameStateProps) => {

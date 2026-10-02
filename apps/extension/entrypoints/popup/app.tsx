@@ -560,7 +560,7 @@ export default () => {
 						prefsLoaded={prefsLoaded}
 						isLoading={isLoading || !settled}
 						hasError={Boolean(error && !data) || slateUnvouchable}
-						onRefresh={() => void mutate(() => fetchState(true), { revalidate: false })}
+						onRefresh={() => mutate(() => fetchState(true), { revalidate: false })}
 						games={games}
 						scores={scores}
 						leagueLogos={leagueLogos}

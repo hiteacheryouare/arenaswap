@@ -729,6 +729,19 @@
 	color: bs.$danger;
 }
 
+.refresh-button {
+	position: relative;
+}
+
+.refresh-button-spinner {
+	position: absolute;
+	inset: 0;
+	width: 0.7rem;
+	height: 0.7rem;
+	margin: auto;
+	border-width: 0.12em;
+}
+
 .popup-notice-action {
 	font-size: 0.68rem;
 	white-space: nowrap;

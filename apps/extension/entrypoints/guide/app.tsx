@@ -276,7 +276,7 @@ const App = () => {
 				   there: a wait is a spinner with a line of patter, and only an answer is news. */
 				<div className='guide-status'>
 					{slate
-						? <NoGamesMessage onRefresh={() => void loadSlate()} />
+						? <NoGamesMessage onRefresh={() => loadSlate()} />
 						: <GameListHeader isLoading hasError={false} loadingMessage={loadingMessage} onRefresh={() => void loadSlate()} />}
 				</div>
 			)}

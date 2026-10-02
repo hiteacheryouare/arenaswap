@@ -68,3 +68,28 @@ describe('empty game state message', () => {
 		});
 	});
 });
+
+// A refresh that comes back with the same empty slate changes nothing on screen, so the button has
+// to show the request itself, or it reads as broken.
+describe('empty game state refresh', () => {
+	it('holds the button busy, at the same width, until the refresh settles', () => {
+		let settle: () => void = () => {};
+		const onRefresh = () => new Promise<void>(resolve => { settle = resolve; });
+		cy.viewport(popupWidth, 600);
+		cy.mount(<EmptyGameState noLeaguesSelected={false} noGames onOpenSetup={() => {}} onRefresh={onRefresh} />);
+		cy.contains('button', en.empty.refresh).then($idle => {
+			const idleWidth = $idle[0]!.getBoundingClientRect().width;
+			cy.wrap($idle).click();
+			cy.contains('button', en.empty.refresh)
+				.should('be.disabled')
+				.and('have.attr', 'aria-busy', 'true')
+				.find('.spinner-border')
+				.should('exist');
+			cy.contains('button', en.empty.refresh).should($busy => {
+				expect($busy[0]!.getBoundingClientRect().width).to.be.closeTo(idleWidth, 0.5);
+			});
+			cy.then(() => settle());
+			cy.contains('button', en.empty.refresh).should('not.be.disabled').find('.spinner-border').should('not.exist');
+		});
+	});
+});
