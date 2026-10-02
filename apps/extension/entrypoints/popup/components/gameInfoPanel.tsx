@@ -52,7 +52,8 @@ const GameInfoPanel = ({ game, bettingPrefs, weatherPrefs, gameDurationMins }: g
 	// own. A dome game has no weather, and a neutral site may arrive with no venue we know.
 	const conditions = weather && {
 		icon: conditionIcon(weather.conditionLabel, weather.conditionCode),
-		text: `${weather.conditionLabel} · ${formatTemperature(weather.temperatureF, weatherPrefs.temperatureUnit)}`,
+		// The bullet the networks row and the cards' own lines use, so the panel joins things one way.
+		text: `${weather.conditionLabel} • ${formatTemperature(weather.temperatureF, weatherPrefs.temperatureUnit)}`,
 	};
 
 	return (

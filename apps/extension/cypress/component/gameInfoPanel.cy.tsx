@@ -151,14 +151,14 @@ describe('game info panel', () => {
 	// Conditions describe the venue, so they cost a sub-line rather than a row of their own.
 	it('rides the weather inside the venue row', () => {
 		mountDetail(liveGame);
-		cy.get('.game-info-row').eq(1).find('.game-info-weather').should('contain.text', 'Light Snow · 34°F');
+		cy.get('.game-info-row').eq(1).find('.game-info-weather').should('contain.text', 'Light Snow • 34°F');
 		cy.get('.game-info-weather').should('have.length', 1);
 	});
 
 	it('gives the weather its own row when the venue is unknown', () => {
 		mountDetail({ ...liveGame, venueName: undefined });
 		cy.get('.game-info-row').should('have.length', 3);
-		cy.get('.game-info-row').eq(1).should('contain.text', 'Light Snow · 34°F');
+		cy.get('.game-info-row').eq(1).should('contain.text', 'Light Snow • 34°F');
 		cy.get('.game-info-weather').should('not.exist');
 	});
 
