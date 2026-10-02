@@ -238,7 +238,7 @@ const popupFooter = () => {
 					type='button'
 					onClick={handleHeartClick}
 					aria-label={i18n.t('footer.toggleDebug')}
-					className='bg-transparent border-0 p-0 mx-px cursor-default text-inherit leading-none'
+					className='popup-signature-heart'
 				>
 					&nbsp;❤️&nbsp;
 				</button>

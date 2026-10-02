@@ -2631,4 +2631,16 @@ button.game-info-attribution {
 	color: white;
 	font-size: 0.6rem;
 	letter-spacing: 0.02em;
+
+	// The debug panel hides behind this heart, and a pointer cursor would give the secret away.
+	// Nested to outrank Reboot's button:not(:disabled) pointer.
+	.popup-signature-heart {
+		margin: 0 1px;
+		padding: 0;
+		border: 0;
+		background: transparent;
+		color: inherit;
+		line-height: 1;
+		cursor: default;
+	}
 }
