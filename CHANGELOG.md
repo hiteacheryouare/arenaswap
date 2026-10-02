@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The website sweats the small stuff — 2026-10-02
+
+A polish pass over the docs site: buttons keep their colour when pressed and show a focus ring, the top nav marks where you are, wide tables scroll on phones, anchors land below the fixed header, docs links keep you in your language, the frame around the English docs and release notes is translated in all 12 locales with dates formatted per locale, and headlines balance their line breaks. The site's own copy no longer names its data source outside the legal pages, and the fine print, small dates, skip link, Escape-to-close menu and a 180px touch icon bring it up to AA. In-article links are rewritten by a Sätteri hast plugin in `src/lib/relativeDocLinks.ts`, since Astro 7's default Markdown processor ignores `rehypePlugins`.
+
 ## The contribution docs describe this repo again — 2026-10-02
 
 CONTRIBUTING.md had drifted into describing Firebase, an apps/web workspace and a ban on the Jest and Cypress suites the repo actually runs; it now matches the real workspaces, tooling, everything command, 12-locale rule and robotic label, with its governance voice unchanged. The issue templates are now issue forms, joined by a translation form and a pull request template, and Code of Conduct reports go to a channel that exists.
