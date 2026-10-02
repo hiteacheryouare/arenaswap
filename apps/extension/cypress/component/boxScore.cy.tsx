@@ -513,9 +513,9 @@ describe('box score', () => {
 			cy.contains('.gd-box-subheading', en.box.defensive)
 				.next('table').as('defense');
 			cy.get('@defense').find('tbody tr').should('have.length', 6);
-			cy.get('.gd-box-more').should('have.text', en.box.showAll.replace('{count}', '8')).click();
+			cy.get('.gd-box-more').should('have.text', en.box.showAll.replace('{count}', '8')).and('have.attr', 'aria-expanded', 'false').click();
 			cy.get('@defense').find('tbody tr').should('have.length', 8);
-			cy.get('.gd-box-more').should('have.text', en.box.showFewer);
+			cy.get('.gd-box-more').should('have.text', en.box.showFewer).and('have.attr', 'aria-expanded', 'true');
 		});
 
 		it('keeps a college column set that the NFL sends and college does not', () => {

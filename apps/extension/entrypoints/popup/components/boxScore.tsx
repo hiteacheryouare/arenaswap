@@ -154,6 +154,7 @@ const SectionTable = ({ section, isBatting }: { section: BoxScoreSection; isBatt
 				<button
 					type='button'
 					className='btn btn-link btn-sm gd-box-more'
+					aria-expanded={expanded}
 					onClick={() => setExpanded(!expanded)}
 				>
 					{expanded
