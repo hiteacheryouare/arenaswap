@@ -4,7 +4,7 @@ import PowerScoreInstallCommands from '../../../components/PowerScoreInstallComm
 import LivePowerScores from '../../../components/LivePowerScores.tsx';
 import Machine from '../../../components/Machine.astro';
 import { localeRoutes } from '../../../i18n/locales';
-import { useTranslations } from '../../../i18n/ui';
+import { uiStrings, useTranslations } from '../../../i18n/ui';
 import {
 	scoreMaxCloseness,
 	scoreMaxComeback,
@@ -148,6 +148,7 @@ const taglineSuffix = t('powerscore.heroTaglineSuffix');
 								scoreBadge: t('powerscore.liveScoreBadge'),
 								live: t('powerscore.liveNow'),
 							}}
+							ui={uiStrings(locale)}
 						/>
 					</div>
 				</div>
