@@ -6,14 +6,15 @@
 
 **Maintainers**: Ryan Mullin (Primary Maintainer)
 
-**Scope**: All project spaces, primarily GitHub repositories under ArenaSwap, including issues, pull requests, discussions, commits, documentation, and related communications.
+**Scope**: All project spaces, primarily the ArenaSwap GitHub repository, including issues, pull requests, discussions, commits, documentation, the ArenaSwap website, the `powerscore` npm package, and related communications.
 
 ## Purpose
 
 ArenaSwap exists to build and maintain:
-- The ArenaSwap core engine
-- The PowerScore Algorithm
-- The browser extension(s)
+- The ArenaSwap browser extension for Chrome, Firefox and Edge
+- The ArenaSwap core engine and shared UI packages
+- The PowerScore algorithm, published to npm as `powerscore`
+- The ArenaSwap website and its documentation
 
 This project is merit-driven and output-oriented. The objective is high-quality code and maintainable systems — not social experimentation.
 
@@ -25,14 +26,15 @@ This Code of Conduct applies to:
 - Pull Requests
 - Commit Messages
 - Discussions
-- Documentation
+- Documentation and the ArenaSwap website
+- The `powerscore` npm package page
 - Project-linked communication channels
 - Any public interaction representing ArenaSwap.
 
 Private behavior outside project spaces is outside scope unless it directly affects project operations.
 
 
-##  Standards of Conduct
+## Standards of Conduct
 
 ### Expected Behavior
 
@@ -121,9 +123,7 @@ Immediate permanent removal may occur for:
 
 ### Appeals
 
-Appeals may be submitted via:
-- GitHub direct message to Ryan
-- Email (if publicly listed in repository)
+Appeals may be submitted by contacting Ryan through the contact details on Ryan's GitHub profile ([@hiteacheryouare](https://github.com/hiteacheryouare)).
 
 Appeals are reviewed solely by Ryan.
 Decisions after appeal are final.
@@ -139,8 +139,10 @@ By submitting a contribution, you agree that:
 ## Reporting Violations
 
 To report misconduct:
-- Open a private issue marked confidential (if enabled), or
-- Contact Ryan directly
+- Contact Ryan directly, using the contact details on Ryan's GitHub profile ([@hiteacheryouare](https://github.com/hiteacheryouare))
+- For security exploitation attempts, use a private [security advisory](../../security/advisories/new) instead, as described in [SECURITY.md](SECURITY.md)
+
+Do not report misconduct in a public issue.
 
 Reports should include:
 - Links
