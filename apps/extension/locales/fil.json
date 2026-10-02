@@ -696,9 +696,7 @@
 		"gotIt": "Gets Ko!"
 	},
 	"walkthrough": {
-		"allSet": "Handa Na!",
-		"allSetSubtitle": "Ready ka na bang laging panoorin ang pinakamagandang laro?",
-		"letsGo": "Tara Na"
+		"skipTour": "Laktawan ang tour"
 	},
 	"stepToggle": {
 		"step": "Step $1 ng $2",

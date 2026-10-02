@@ -696,9 +696,7 @@
 		"gotIt": "了解"
 	},
 	"walkthrough": {
-		"allSet": "一切就緒！",
-		"allSetSubtitle": "準備好隨時鎖定最精彩的比賽了嗎？",
-		"letsGo": "出發！"
+		"skipTour": "略過導覽"
 	},
 	"stepToggle": {
 		"step": "第 $1 步，共 $2 步",

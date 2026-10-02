@@ -696,9 +696,7 @@
 		"gotIt": "Capito"
 	},
 	"walkthrough": {
-		"allSet": "Tutto pronto!",
-		"allSetSubtitle": "Pronto a guardare sempre la partita migliore?",
-		"letsGo": "Andiamo!"
+		"skipTour": "Salta il tour"
 	},
 	"stepToggle": {
 		"step": "Passo $1 di $2",

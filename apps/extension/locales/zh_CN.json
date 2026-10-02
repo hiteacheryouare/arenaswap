@@ -696,9 +696,7 @@
 		"gotIt": "明白了"
 	},
 	"walkthrough": {
-		"allSet": "一切就绪！",
-		"allSetSubtitle": "准备好随时观看最精彩的比赛了吗？",
-		"letsGo": "出发！"
+		"skipTour": "跳过引导教程"
 	},
 	"stepToggle": {
 		"step": "第 $1 步，共 $2 步",

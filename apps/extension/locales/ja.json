@@ -696,9 +696,7 @@
 		"gotIt": "了解"
 	},
 	"walkthrough": {
-		"allSet": "準備完了！",
-		"allSetSubtitle": "常に最高の試合を観る準備はできましたか？",
-		"letsGo": "さあ行こう"
+		"skipTour": "ツアーをスキップ"
 	},
 	"stepToggle": {
 		"step": "ステップ $1 / $2",

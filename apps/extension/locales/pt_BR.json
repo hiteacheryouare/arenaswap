@@ -696,9 +696,7 @@
 		"gotIt": "Entendido"
 	},
 	"walkthrough": {
-		"allSet": "Tudo certo!",
-		"allSetSubtitle": "Pronto pra sempre assistir o melhor jogo?",
-		"letsGo": "Bora!"
+		"skipTour": "Pular o tour"
 	},
 	"stepToggle": {
 		"step": "Etapa $1 de $2",

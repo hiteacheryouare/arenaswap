@@ -696,9 +696,7 @@
 		"gotIt": "확인"
 	},
 	"walkthrough": {
-		"allSet": "준비 완료!",
-		"allSetSubtitle": "항상 최고의 경기를 볼 준비 되셨나요?",
-		"letsGo": "시작하기"
+		"skipTour": "투어 건너뛰기"
 	},
 	"stepToggle": {
 		"step": "$1/$2단계",

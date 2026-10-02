@@ -696,9 +696,7 @@
 		"gotIt": "Compris"
 	},
 	"walkthrough": {
-		"allSet": "C'est parti !",
-		"allSetSubtitle": "Prêt à toujours regarder le meilleur match ?",
-		"letsGo": "Allons-y"
+		"skipTour": "Passer la visite"
 	},
 	"stepToggle": {
 		"step": "Étape $1 sur $2",

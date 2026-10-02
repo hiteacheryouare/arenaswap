@@ -427,6 +427,22 @@ button, input, select, optgroup, textarea {
 	}
 }
 
+/* ─── Walkthrough ─── */
+// Sits on the step counter's line, over every step, so leaving the tour is never more than one
+// click away. The steps are each a full .popup-container at z-index 1.
+.walkthrough-skip {
+	position:        absolute;
+	top:             1.76rem;
+	right:           0.75rem;
+	z-index:         2;
+	padding:         0;
+	font-size:       0.7rem;
+	color:           var(--as-secondary-color);
+	text-decoration: none;
+
+	&:hover { color: var(--as-body-color); }
+}
+
 /* ─── PowerScore Walkthrough Orbit Animation ─── */
 @keyframes powerscoreOrbit {
 	from { transform: rotate(0deg); }
