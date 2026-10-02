@@ -98,12 +98,22 @@ export const buildPowerScoreOption = (powerHistory: PowerScoreSnapshot[], palett
 	};
 };
 
-export const buildTeamScoreOption = (scoreHistory: ScoreSnapshot[], game: Game, palette = darkChartPalette): EChartsOption => {
+// The line colours are a parameter so a caller that already holds them can pass the same pair its
+// legend is drawn in, and memoise on them.
+const chartTeamColors = (game: Game): [string, string] => (
+	resolveTeamColorPair(game.awayTeam, game.homeTeam, '#60a5fa', '#f87171')
+);
+
+export const buildTeamScoreOption = (
+	scoreHistory: ScoreSnapshot[],
+	game: Game,
+	palette = darkChartPalette,
+	[awayColor, homeColor] = chartTeamColors(game),
+): EChartsOption => {
 	const labels = scoreHistory.map(point => formatTimeLabel(point.timestamp));
 	const awayScores = scoreHistory.map(point => point.awayScore);
 	const homeScores = scoreHistory.map(point => point.homeScore);
 	const showSinglePointSymbols = scoreHistory.length === 1;
-	const [awayColor, homeColor] = resolveTeamColorPair(game.awayTeam, game.homeTeam, '#60a5fa', '#f87171', palette.surface);
 	const option = baseOption(labels, palette, 24);
 	return {
 		...option,
@@ -135,7 +145,12 @@ export const buildTeamScoreOption = (scoreHistory: ScoreSnapshot[], game: Game, 
 	};
 };
 
-export const buildWinProbabilityOption = (homeWinPcts: number[], game: Game, palette = darkChartPalette): EChartsOption => {
+export const buildWinProbabilityOption = (
+	homeWinPcts: number[],
+	game: Game,
+	palette = darkChartPalette,
+	[awayColor, homeColor] = chartTeamColors(game),
+): EChartsOption => {
 	if (homeWinPcts.length === 0) return {};
 	const step = Math.max(1, Math.floor(homeWinPcts.length / 80));
 	const sampled = homeWinPcts.filter((_, i) => i % step === 0 || i === homeWinPcts.length - 1);
@@ -145,7 +160,6 @@ export const buildWinProbabilityOption = (homeWinPcts: number[], game: Game, pal
 	const showSinglePointSymbols = sampled.length === 1;
 	const awayVals = sampled.map(p => 100 - Math.round(p * 100));
 	const labels = sampled.map(() => '');
-	const [awayColor, homeColor] = resolveTeamColorPair(game.awayTeam, game.homeTeam, '#60a5fa', '#f87171', palette.surface);
 	return {
 		...baseOption(labels, palette, 24),
 		yAxis: {

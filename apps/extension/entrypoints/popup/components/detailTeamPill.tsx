@@ -1,35 +1,24 @@
 import { i18n } from '#i18n';
-import type { Team, TeamMonoMarks } from '@arenaswap/core/types';
-import { underHeroScrim } from '@arenaswap/ui/src/components/colorUtils';
-import TeamCrest from '@arenaswap/ui/src/components/teamCrest';
+import type { Team } from '@arenaswap/core/types';
+import OnColorCrest from '@arenaswap/ui/src/components/onColorCrest';
 import TimeoutDots from '@arenaswap/ui/src/components/timeoutDots';
 
 interface detailTeamPillProps {
 	team: Team;
 	side: 'away' | 'home';
 	record?: string | null;
-	// ESPN's monochrome marks, where the team has them. Only reached for when the colour artwork
-	// stops reading against the hero — most crests are built for a dark broadcast background and are
-	// better in their own colours than in any monochrome treatment.
-	monoMarks?: TeamMonoMarks | null;
 	color: string;
 }
 
 // Crest, name and record are emitted as separate grid children via `display: contents`, which
 // is what holds the two sides level: a name that wraps to two lines pushes its own row taller
 // without shifting the logo or the record beside it.
-const detailTeamPill = ({ team, side, record, monoMarks, color }: detailTeamPillProps) => (
-	<div className='game-detail-team-wrap'>
+const detailTeamPill = ({ team, side, record, color }: detailTeamPillProps) => (
+	<div className={`game-detail-team-wrap is-${side}`}>
 		{/* Blank rather than lettered — the abbreviation is directly below it. */}
-		<TeamCrest
-			logo={team.logo}
-			monoMarks={monoMarks ?? undefined}
-			abbreviation={team.abbreviation}
-			background={underHeroScrim(color)}
-			discClassName={`game-detail-team-logo-shell gd-area-${side}-crest`}
-			crestClassName='game-detail-team-logo'
-			fallback='blank'
-		/>
+		<span className={`game-detail-team-logo-shell is-bare gd-area-${side}-crest`}>
+			<OnColorCrest team={team} surface={color} className='game-detail-team-logo' fallback='blank' />
+		</span>
 		<div className={`game-detail-team-name gd-area-${side}-label`}>
 			{/* Reads as "#2 Alabama Crimson Tide". The rank is a separate span rather than part of
 			    the string so it can recede — the name is what identifies the team. */}

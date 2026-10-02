@@ -1000,12 +1000,8 @@ button, input, select, optgroup, textarea {
 
 /* Each team's colour across its own half of the card, full size, rather than a disc behind its crest.
 
-   This element is `teamCrest`'s own wrapper — the one it paints when a crest's colours will not read
-   on the surface it was handed — which is the whole reason the colour is right without this file
-   having to work it out. Where the artwork reads on its team's colour, the wrapper comes back bare and
-   the rule here paints the team colour. Where it does not, `teamCrest` sets its tinted plate inline
-   and that wins, so the field becomes the lighter surface the crest needs. Either way the crest is on
-   the colour a disc would have given it, spread across the card instead of drawn as a circle.
+   The crest on it is the one drawn for a dark ground, as on the card underneath, so the field is
+   always the team's own colour.
 
    The geometry is the poster's halves at full width, sharing their clip below so the seam is one
    shape in one place: the field a crest is clipped by is the same field the poster's own half grows
@@ -1419,6 +1415,11 @@ button, input, select, optgroup, textarea {
 
 /* ── The card coming into focus underneath ──────────────────────────────────── */
 
+/* The live and scheduled cards carry the meta and PowerScore rows on a panel, which fades as one. */
+.game-card-reveal .game-card-footer :is(.game-meta, .game-card-ps-bar-row) {
+	animation: none;
+}
+
 /* Timed to start as the colour begins to retreat, so the card is arriving rather than waiting
    behind a curtain that is opening on it. Ordered the way you read a scoreboard: what the game is,
    then what the score is, then who is playing, then everything around it. */
@@ -1427,7 +1428,8 @@ button, input, select, optgroup, textarea {
 .game-card-reveal .team-abbreviation,
 .game-card-reveal [data-team-star='true'],
 .game-card-reveal .game-meta,
-.game-card-reveal .game-card-ps-bar-row {
+.game-card-reveal .game-card-ps-bar-row,
+.game-card-reveal .game-card-footer {
 	animation: cardRevealContent calc(620ms * var(--reveal-rate)) cubic-bezier(0.22, 1, 0.36, 1) calc(var(--reveal-spine) + 2500ms * var(--reveal-rate)) both;
 }
 
@@ -1501,12 +1503,9 @@ button, input, select, optgroup, textarea {
 
 /* Open, hold, collapse, in one timeline. 26% is 884ms of 3400; 78% is 2652.
 
-   All the way off, rather than stopping on the 5px `buildGameCardStyle` draws its rails at. The
-   card has been painting those rails in exactly these colours underneath the whole time, so the
-   last 5px of travel uncovers paint identical to the paint it is taking away and the ending reads
-   the same either way — but a rectangle parked on a rounded border does not match it at the
-   corners, and a finished game, which is flat grey and has no rails at all, no longer needs a
-   second keyframe set of its own to say so. */
+   All the way off. The card underneath is painted in the same two colours, so the colour leaving
+   uncovers the colour it was standing on, and a finished game, which is flat grey, takes the same
+   ending without a keyframe set of its own. */
 @keyframes cardRevealHalf {
 	0%       { width: 0; animation-timing-function: cubic-bezier(0.33, 0.9, 0.3, 1); }
 	26%, 78% { width: calc(50% + var(--reveal-lean)); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }

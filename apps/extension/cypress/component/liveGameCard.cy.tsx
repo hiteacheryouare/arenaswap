@@ -211,28 +211,23 @@ describe('liveGameCard balls/strikes/outs', () => {
 		bso: { balls: 1, strikes: 1, outs: 1 },
 	};
 
-	// `bi-circle` is a ring one sixteenth of its em box, so at 0.45rem the stroke is under half a
-	// pixel and the colour is all that carries it. Left to inherit, it takes the popup's near-white
-	// body ink onto the card's white plate and the unfilled half of the count stops being drawn.
-	it('keeps the unfilled dots readable on the card', () => {
+	// Both halves of the count are drawn in the ink the middle of the card takes, so neither can
+	// vanish into a team colour; lit and unlit differ by opacity. `bi-circle` is a hairline ring, so
+	// the unlit half is not allowed to fade far.
+	it('draws the count in the card ink, unlit dots at a reduced opacity', () => {
 		cy.mount(<LiveGameCard {...defaultProps} game={mlbGame} />);
 		cy.get('.bso-dot.is-empty').should('have.length', 4);
 		cy.get('.game-card').then(([card]: JQuery<HTMLElement>) => {
-			const plate = getComputedStyle(card).backgroundColor;
-			cy.get('.bso-dot.is-empty').each(($dot: JQuery<HTMLElement>) => {
-				const ink = getComputedStyle($dot[0]!).color;
-				expect(ink, 'the dot is not left to inherit the body ink').to.not.equal('rgb(230, 237, 243)');
-				expect(contrastRatio(ink, plate), `${ink} on ${plate}`).to.be.at.least(4.5);
+			const ink = getComputedStyle(card).getPropertyValue('--matchup-ink-center').trim();
+			cy.get('.bso-dot').each(($dot: JQuery<HTMLElement>) => {
+				expect(contrastRatio(getComputedStyle($dot[0]!).color, ink === '#ffffff' ? 'rgb(255, 255, 255)' : 'rgb(17, 24, 39)')).to.equal(1);
 			});
 		});
-	});
-
-	it('still reads the filled dots as the state they are', () => {
-		cy.mount(<LiveGameCard {...defaultProps} game={mlbGame} />);
+		cy.get('.bso-dot.is-empty').each(($dot: JQuery<HTMLElement>) => {
+			expect(Number(getComputedStyle($dot[0]!).opacity)).to.be.within(0.5, 0.9);
+		});
 		cy.get('.bso-dot').not('.is-empty').should('have.length', 3).each(($dot: JQuery<HTMLElement>) => {
-			cy.get('.bso-dot.is-empty').first().then(($empty: JQuery<HTMLElement>) => {
-				expect(getComputedStyle($dot[0]!).color).to.not.equal(getComputedStyle($empty[0]!).color);
-			});
+			expect(getComputedStyle($dot[0]!).opacity).to.equal('1');
 		});
 	});
 });

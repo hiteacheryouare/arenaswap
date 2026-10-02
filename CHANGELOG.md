@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Live and upcoming cards wear both teams' colours — 2026-10-01
+
+Live and scheduled cards, the detail header and the opening graphic are now painted in the two teams' colours, with each side's text in white or near-black depending on what reads on that colour, the crest our sources draw for a dark background, and only the tab picker on a dark panel at the bottom; Final cards keep their plain plate. Colour pairing copies Apple Sports, as worked out from 44 of its matchups: when the two colours look alike (CIEDE2000 under 11) the away team switches to its alternate, or to a colour read off its crest when that alternate is white, the old step that swapped near-black primaries for the alternate is gone, and the charts, series dots and the Guide's edges now draw the published colours rather than lightened ones. The table of Apple matchups lives in `colorUtils.test.ts`, minus Red Sox @ Yankees and Lakers @ Kings, the two it gets wrong.
+
 ## Lekton only sets clocks that tick — 2026-09-30
 
 Periods, innings, down and distance, shootout tallies, start times, records, the Guide's ruler, the debug panel and the Ludicrous Speed signs are now DM Sans, and Lekton is left on the live clock, the countdown and the hero and sticky-bar status while a clock is running. `GameStatus.tabular` became `ticking` and is true only for a running clock, so an inning now reads in DM Sans too. The `.font-lekton` utility is gone in favour of rules on those few selectors, while the font files, the licence credit and the docs site's code font stay.

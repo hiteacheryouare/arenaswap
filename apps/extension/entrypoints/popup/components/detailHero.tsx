@@ -51,7 +51,7 @@ const detailHero = ({ game, seriesInfo, records = emptyTeamRecords, monoLogos, i
 		// the re-toning on — every child of this hero was drawn for near-black ink on white.
 		<div className={`gd-poster game-detail-matchup gd-hero gd-hero-live${isDelayed ? ' is-delayed' : ''}`} style={heroStyle}>
 			<div className='game-detail-teams-row'>
-				<DetailTeamPill team={game.awayTeam} side='away' record={records.away} monoMarks={monoLogos.away} color={awayColor} />
+				<DetailTeamPill team={game.awayTeam} side='away' record={records.away} color={awayColor} />
 				<div className='game-detail-center'>
 					{isPre ? (
 						<div className='gd-vs'>{i18n.t('gameCard.vs')}</div>
@@ -66,7 +66,7 @@ const detailHero = ({ game, seriesInfo, records = emptyTeamRecords, monoLogos, i
 						</div>
 					)}
 				</div>
-				<DetailTeamPill team={game.homeTeam} side='home' record={records.home} monoMarks={monoLogos.home} color={homeColor} />
+				<DetailTeamPill team={game.homeTeam} side='home' record={records.home} color={homeColor} />
 				{status.text && (
 					<div className={`game-detail-period${status.ticking ? ' is-ticking' : ''}`}>
 						{isInningSport && <InningHalfIcon topOfInning={game.topOfInning} />}{status.text}

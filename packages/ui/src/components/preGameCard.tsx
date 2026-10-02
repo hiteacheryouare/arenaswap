@@ -1,11 +1,13 @@
 import { createFavoriteTeamKey } from '@arenaswap/core/constants';
 import type { GameCardDisplayProps } from './gameCardTypes';
-import { CardStatusRow, GameMeta, PostseasonLabel, TeamColumn, buildCardHandlers, buildGameCardStyle, formatStartDateTime } from './gameCardShared';
+import { CardStatusRow, GameMeta, PostseasonLabel, TeamColumn, buildCardHandlers, buildGameCardSurface, formatStartDateTime } from './gameCardShared';
 import { conditionIcon, formatTemperature } from './weatherUtils';
 import { useT } from './i18nContext';
+import useSwitchCrest from './useSwitchCrest';
 
 const preGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, onOpenGameDetail, bettingPrefs, weatherPrefs, tabSlot }: GameCardDisplayProps) => {
 	const t = useT();
+	useSwitchCrest(game?.awayTeam ?? {}, game?.homeTeam ?? {});
 	if (!game) return null;
 
 	const awayFavoriteTeamKey = createFavoriteTeamKey(game.league, game.awayTeam.id);
@@ -13,11 +15,12 @@ const preGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, onOpenGameDe
 	const awayFavorited = favoriteTeamIds.has(awayFavoriteTeamKey);
 	const homeFavorited = favoriteTeamIds.has(homeFavoriteTeamKey);
 	const { onClick: onCardClick, onKeyDown: onCardKeyDown } = buildCardHandlers(onOpenGameDetail, game.id);
+	const surface = buildGameCardSurface(game);
 
 	return (
 		<div
-			className='game-card game-card-clickable'
-			style={buildGameCardStyle(game)}
+			className='game-card game-card-clickable is-team-colored'
+			style={surface.style}
 			role='button'
 			tabIndex={0}
 			onClick={onCardClick}
@@ -30,7 +33,7 @@ const preGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, onOpenGameDe
 			{game.postseasonLabel && <CardStatusRow><PostseasonLabel game={game} /></CardStatusRow>}
 
 			<div className='d-flex align-items-center justify-content-center game-card-matchup'>
-				<TeamColumn leagueId={game.league} team={game.awayTeam} isFavorited={awayFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} />
+				<TeamColumn leagueId={game.league} team={game.awayTeam} isFavorited={awayFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} side='away' surface={surface.awayColor} />
 				<div className='d-flex flex-column align-items-center game-card-center'>
 					<span className='pre-game-vs'>{t('gameCard.vs')}</span>
 					{game.startTime && (
@@ -45,10 +48,10 @@ const preGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, onOpenGameDe
 						</div>
 					)}
 				</div>
-				<TeamColumn leagueId={game.league} team={game.homeTeam} isFavorited={homeFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} />
+				<TeamColumn leagueId={game.league} team={game.homeTeam} isFavorited={homeFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} side='home' surface={surface.homeColor} />
 			</div>
-			<GameMeta game={game} bettingPrefs={bettingPrefs} hideBroadcasts />
-			{tabSlot}
+			<GameMeta game={game} bettingPrefs={bettingPrefs} hideBroadcasts dark />
+			<div className='game-card-footer'>{tabSlot}</div>
 		</div>
 	);
 };

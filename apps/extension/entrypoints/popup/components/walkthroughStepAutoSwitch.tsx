@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import Crest from '@arenaswap/ui/src/components/crest';
-import { powerScoreColor } from './gameCardShared';
+import { teamLogoOnColor } from '@arenaswap/core/constants';
+import { matchupSurfaceStyle, powerScoreColor } from './gameCardShared';
 import { i18n } from '#i18n';
 
 interface walkthroughStepAutoSwitchProps {
@@ -28,7 +29,7 @@ interface TeamLogoProps {
 
 const TeamLogo = ({ abbr, color, logoUrl }: TeamLogoProps) => (
 	<Crest
-		logo={logoUrl}
+		logo={teamLogoOnColor(logoUrl)}
 		abbreviation={abbr}
 		className='team-crest-32'
 		fallbackStyle={{ backgroundColor: color, color: '#fff' }}
@@ -48,18 +49,16 @@ const MockCard = ({ abbr1, color1, logo1, abbr2, color2, logo2, score1, score2, 
 	const psPercent = (ps / psMax) * 100;
 	return (
 		<div
-			className='game-card mb-1'
+			className='game-card is-team-colored mb-1'
 			style={{
 				pointerEvents: 'none',
-				borderLeft: `5px solid ${color1}`,
-				borderRight: `5px solid ${color2}`,
-				background: `linear-gradient(to right, ${color1}28, ${color2}28), #ffffff`,
+				...matchupSurfaceStyle(color1, color2),
 				outline: watching ? '2px solid var(--bs-primary)' : undefined,
 				transition: 'outline 0.3s',
 			}}
 		>
 			<div className='d-flex align-items-center justify-content-between mb-1'>
-				<div className='d-flex align-items-center gap-1 fw-bold text-uppercase text-primary live-status-label'>
+				<div className='d-flex align-items-center gap-1 fw-bold text-uppercase live-status-label'>
 					<span className='live-dot' />
 					LIVE
 				</div>
@@ -69,7 +68,7 @@ const MockCard = ({ abbr1, color1, logo1, abbr2, color2, logo2, score1, score2, 
 			</div>
 
 			<div className='d-flex align-items-center justify-content-center game-card-matchup'>
-				<div className='d-flex flex-column align-items-center gap-1 team-column'>
+				<div className='d-flex flex-column align-items-center gap-1 team-column is-away'>
 					<TeamLogo abbr={abbr1} color={color1} logoUrl={logo1} />
 					<span className='fw-bold text-center text-nowrap team-abbreviation'>{abbr1}</span>
 				</div>
@@ -82,7 +81,7 @@ const MockCard = ({ abbr1, color1, logo1, abbr2, color2, logo2, score1, score2, 
 					<span className='game-clock'>{clock}</span>
 					<span className='game-period'>{period}</span>
 				</div>
-				<div className='d-flex flex-column align-items-center gap-1 team-column'>
+				<div className='d-flex flex-column align-items-center gap-1 team-column is-home'>
 					<TeamLogo abbr={abbr2} color={color2} logoUrl={logo2} />
 					<span className='fw-bold text-center text-nowrap team-abbreviation'>{abbr2}</span>
 				</div>
@@ -100,7 +99,7 @@ const MockCard = ({ abbr1, color1, logo1, abbr2, color2, logo2, score1, score2, 
 						aria-valuemax={psMax}
 					/>
 				</div>
-				<span className='game-card-ps-score' style={{ color: psColor, transition: 'color 0.9s ease-out' }}>
+				<span className='game-card-ps-score'>
 					{ps} / {psMax}
 				</span>
 			</div>

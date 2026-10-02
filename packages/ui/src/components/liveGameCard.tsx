@@ -9,11 +9,13 @@ import BsoIndicator from './bsoIndicator';
 import FlipScore from './flipScore';
 import InningHalfIcon from './inningHalfIcon';
 import type { GameCardDisplayProps } from './gameCardTypes';
-import { buildCardHandlers, buildGameCardStyle, CardStatusRow, formatGameClock, formatPeriod, GameMeta, isHalftime, PostseasonLabel, powerScoreColor, TeamColumn } from './gameCardShared';
+import { buildCardHandlers, buildGameCardSurface, CardStatusRow, formatGameClock, formatPeriod, GameMeta, isHalftime, PostseasonLabel, powerScoreColor, TeamColumn } from './gameCardShared';
 import { useT } from './i18nContext';
+import useSwitchCrest from './useSwitchCrest';
 
 const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavoriteTeam, onOpenGameDetail, bettingPrefs, tabSlot }: GameCardDisplayProps) => {
 	const t = useT();
+	useSwitchCrest(game?.awayTeam ?? {}, game?.homeTeam ?? {});
 	if (!game) return null;
 
 	const isOt = game.period > (leagueConfigMap[game.league]?.regularPeriods ?? 4);
@@ -41,17 +43,13 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 	const psBarPercent = Math.min((totalPowerScore / scoreMaxTotal) * 100, 100);
 	const psColor = powerScoreColor(totalPowerScore, scoreMaxTotal);
 	const { onClick: onCardClick, onKeyDown: onCardKeyDown } = buildCardHandlers(onOpenGameDetail, game.id);
+	const surface = buildGameCardSurface(game, isDelayed);
 
-	const delayCardStyle = isDelayed ? {
-		borderLeft: '5px solid #F1C40F',
-		borderRight: '5px solid #F1C40F',
-		background: 'linear-gradient(to right, rgba(241,196,15,0.12), rgba(241,196,15,0.12)), #ffffff',
-	} : buildGameCardStyle(game);
 
 	return (
 		<div
-			className={`game-card game-card-clickable${isOt ? ' is-ot' : ''}${isDelayed ? ' is-delayed' : ''}`}
-			style={delayCardStyle}
+			className={`game-card game-card-clickable is-team-colored${isOt ? ' is-ot' : ''}${isDelayed ? ' is-delayed' : ''}`}
+			style={surface.style}
 			role='button'
 			tabIndex={0}
 			onClick={onCardClick}
@@ -65,7 +63,7 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 						{t('gameCard.delay')}
 					</span>
 				) : (
-					<span className='d-flex align-items-center gap-1 fw-bold text-uppercase text-primary live-status-label'>
+					<span className='d-flex align-items-center gap-1 fw-bold text-uppercase live-status-label'>
 						<span className='live-dot' />
 						{t('gameCard.live')}
 					</span>
@@ -75,7 +73,7 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 			</CardStatusRow>
 
 			<div className='d-flex align-items-center justify-content-center game-card-matchup'>
-				<TeamColumn leagueId={game.league} team={game.awayTeam} isFavorited={awayFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} />
+				<TeamColumn leagueId={game.league} team={game.awayTeam} isFavorited={awayFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} side='away' surface={surface.awayColor} />
 				<div className='d-flex flex-column align-items-center game-card-center'>
 					<div className='d-flex align-items-center game-score-row'>
 						<FlipScore value={game.awayTeam.score} className='fw-bold lh-1 game-score-value' />
@@ -113,10 +111,10 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 						<span className='game-period'>{downDistanceLine}</span>
 					)}
 				</div>
-				<TeamColumn leagueId={game.league} team={game.homeTeam} isFavorited={homeFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} />
+				<TeamColumn leagueId={game.league} team={game.homeTeam} isFavorited={homeFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} side='home' surface={surface.homeColor} />
 			</div>
 
-			<GameMeta game={game} bettingPrefs={bettingPrefs} />
+			<GameMeta game={game} bettingPrefs={bettingPrefs} dark />
 
 			{excitementResult && (
 				<div className='d-flex align-items-center gap-2 game-card-ps-bar-row'>
@@ -131,13 +129,12 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 							aria-valuemax={scoreMaxTotal}
 						/>
 					</div>
-					<span className='game-card-ps-score' style={{ color: psColor }}>
+					<span className='game-card-ps-score'>
 						{totalPowerScore} / {scoreMaxTotal}
 					</span>
 				</div>
 			)}
-
-			{tabSlot}
+			<div className='game-card-footer'>{tabSlot}</div>
 		</div>
 	);
 };

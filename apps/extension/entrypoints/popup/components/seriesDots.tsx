@@ -14,7 +14,7 @@ const seriesDots = ({ info, game }: seriesDotsProps) => {
 	const total = info.totalCompetitions ?? 0;
 	if (total < 2) return null;
 
-	// Mid-grey fallbacks, not near-white: these dots sit on the light matchup card.
+	// The teams' own colours, as published. Each dot is a team, and a lifted navy reads as some other club.
 	const [awayColor, homeColor] = resolveTeamColorPair(game.awayTeam, game.homeTeam, '#6b7280', '#9ca3af');
 	// ESPN returns future games first and completed games last.
 	const events = [...(info.events ?? [])].toSorted((a, b) => {

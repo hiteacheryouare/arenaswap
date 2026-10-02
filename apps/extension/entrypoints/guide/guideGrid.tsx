@@ -16,12 +16,9 @@ import { axisBounds, barHeight, fillAxis, groupByLeague, gutterPx, hourMarks, ms
 
 const formatTime = formatGuideTime;
 
-// Lightened on dark, unlike the game card's pair, because these sit on #0d1117 rather than on a white
-// card. Half the league's primaries are navies that reach nothing like 3:1 against it, and the climb
-// scales the channels rather than mixing toward white, so a blue stays a blue. On light it is the
-// golds that fail instead, and they are darkened.
-const railStyle = (game: Game, theme: ResolvedTheme): CSSProperties => {
-	const [away, home] = resolveTeamColorPair(game.awayTeam, game.homeTeam, '#30363d', '#30363d', theme);
+// The teams' published colours, as on every other surface that stands for a team.
+const railStyle = (game: Game): CSSProperties => {
+	const [away, home] = resolveTeamColorPair(game.awayTeam, game.homeTeam, '#30363d', '#30363d');
 	return { '--guide-away': away, '--guide-home': home } as CSSProperties;
 };
 
@@ -98,7 +95,7 @@ const GuideBar = ({ bar, fromMs, selected, onOpen, mono, theme }: guideBarProps)
 			data-status={game.status}
 			data-game-id={game.id}
 			data-selected={selected ? 'true' : undefined}
-			style={{ left: `${left}px`, height: `${barHeight}px`, '--guide-bar-width': `${width}px`, ...railStyle(game, theme) } as CSSProperties}
+			style={{ left: `${left}px`, height: `${barHeight}px`, '--guide-bar-width': `${width}px`, ...railStyle(game) } as CSSProperties}
 			onClick={() => onOpen(game.id)}
 			title={`${away.name} @ ${home.name} \u00b7 ${formatTime(bar.startMs)}`}
 		>

@@ -1,9 +1,66 @@
-import { crestBacking, readableInkOn, readableTeamInkOnCard, resolveTeamColorPair, teamDisplayInk, teamRowWash, underHeroScrim } from '../src/components/colorUtils';
-import { hexLuminance } from '../src/components/colorMath';
+import { crestBacking, pendingSwitchCrest, readableInkOn, readableTeamInkOnCard, resolveTeamColorPair, teamDisplayInk, teamRowWash } from '../src/components/colorUtils';
+
+jest.mock('../src/components/logoSwitchColor', () => ({
+	cachedLogoSwitchColor: (crest: string) => ({
+		'https://a.espncdn.com/i/teamlogos/ncaa/500-dark/120.png': '#F8DB3F',
+		'https://a.espncdn.com/i/teamlogos/ncaa/500-dark/97.png': '#050403',
+	} as Record<string, string>)[crest],
+}));
+
+// Every matchup Apple Sports was checked against, with the colours ESPN publishes for each team
+// and the colour Apple painted each side. Two are left out on purpose: Lakers @ Kings, where Apple
+// has the Kings in black against ESPN's purple, and Red Sox @ Yankees, a finished game where Apple
+// switched nobody and the rule switches the Red Sox.
+const appleMatchups: [string, { color: string; alternateColor: string; logo?: string }, { color: string; alternateColor: string }, string, string][] = [
+	['PHI @ ATL', { color: '#E81828', alternateColor: '#003278' }, { color: '#0C2340', alternateColor: '#BA0C2F' }, '#E81828', '#0C2340'],
+	['PIT @ PHI', { color: '#000000', alternateColor: '#FDB71A' }, { color: '#FE5823', alternateColor: '#000000' }, '#000000', '#FE5823'],
+	['CHC @ SD', { color: '#0E3386', alternateColor: '#CC3433' }, { color: '#2F241D', alternateColor: '#FFC425' }, '#0E3386', '#2F241D'],
+	['CHW @ HOU', { color: '#000000', alternateColor: '#C4CED4' }, { color: '#002D62', alternateColor: '#EB6E1F' }, '#000000', '#002D62'],
+	['PHI @ NJ', { color: '#FE5823', alternateColor: '#000000' }, { color: '#E30B2B', alternateColor: '#000000' }, '#FE5823', '#E30B2B'],
+	['PIT @ CLE', { color: '#000000', alternateColor: '#FFB612' }, { color: '#472A08', alternateColor: '#FF3C00' }, '#000000', '#472A08'],
+	['SEA @ CGY', { color: '#000D33', alternateColor: '#A3DCE4' }, { color: '#DD1A32', alternateColor: '#000000' }, '#000D33', '#DD1A32'],
+	['IND @ WSH', { color: '#003B75', alternateColor: '#FFFFFF' }, { color: '#5A1414', alternateColor: '#FFB612' }, '#003B75', '#5A1414'],
+	['NY @ PHI', { color: '#1D428A', alternateColor: '#F58426' }, { color: '#1D428A', alternateColor: '#E01234' }, '#F58426', '#1D428A'],
+	['MD @ NEB', { color: '#CE1126', alternateColor: '#FFFFFF', logo: 'https://a.espncdn.com/i/teamlogos/ncaa/500/120.png' }, { color: '#E31937', alternateColor: '#FFFFFF' }, '#F8DB3F', '#E31937'],
+	['NYY @ TB', { color: '#132448', alternateColor: '#C4CED4' }, { color: '#092C5C', alternateColor: '#8FBCE6' }, '#C4CED4', '#092C5C'],
+	['UTSA @ RICE', { color: '#0C2340', alternateColor: '#F15A22' }, { color: '#00205B', alternateColor: '#C1C6C8' }, '#F15A22', '#00205B'],
+	['MIA @ CLEM', { color: '#F47423', alternateColor: '#035131' }, { color: '#F56600', alternateColor: '#FFFFFF' }, '#035131', '#F56600'],
+	['DET @ CAR', { color: '#0076B6', alternateColor: '#BBBBBB' }, { color: '#0085CA', alternateColor: '#000000' }, '#BBBBBB', '#0085CA'],
+	['LOU @ NCSU', { color: '#C9001F', alternateColor: '#FFFFFF', logo: 'https://a.espncdn.com/i/teamlogos/ncaa/500/97.png' }, { color: '#CC0000', alternateColor: '#FFFFFF' }, '#050403', '#CC0000'],
+	['TB @ NYY', { color: '#092C5C', alternateColor: '#8FBCE6' }, { color: '#132448', alternateColor: '#C4CED4' }, '#8FBCE6', '#132448'],
+	['SAC @ LAL', { color: '#5A2D81', alternateColor: '#6A7A82' }, { color: '#552583', alternateColor: '#FDB927' }, '#6A7A82', '#552583'],
+	['BUF @ CBJ', { color: '#00468B', alternateColor: '#FDB71A' }, { color: '#002D62', alternateColor: '#E31937' }, '#FDB71A', '#002D62'],
+	['NE @ BUF', { color: '#002A5C', alternateColor: '#C60C30' }, { color: '#00338D', alternateColor: '#D50A0A' }, '#C60C30', '#00338D'],
+	['ALA @ MSST', { color: '#9E1B32', alternateColor: '#FFFFFF' }, { color: '#5D1725', alternateColor: '#C1C6C8' }, '#9E1B32', '#5D1725'],
+];
+
+describe('resolveTeamColorPair paints a matchup the way Apple Sports does', () => {
+	test.each(appleMatchups)('%s', (_, away, home, awayExpected, homeExpected) => {
+		expect(resolveTeamColorPair(away, home)).toEqual([awayExpected, homeExpected]);
+	});
+});
+
+describe('pendingSwitchCrest', () => {
+	const alabama = { color: '#9E1B32', alternateColor: '#FFFFFF', logo: 'https://a.espncdn.com/i/teamlogos/ncaa/500/333.png' };
+	const redHome = { color: '#A6192E' };
+
+	test('asks for the away crest when a clash needs a colour out of it', () => {
+		expect(pendingSwitchCrest(alabama, redHome)).toEqual({ crest: 'https://a.espncdn.com/i/teamlogos/ncaa/500-dark/333.png', primary: '#9E1B32' });
+	});
+
+	test('asks for nothing once the crest has been read', () => {
+		expect(pendingSwitchCrest(appleMatchups[9]![1], appleMatchups[9]![2])).toBeNull();
+	});
+
+	test('asks for nothing when there is no clash, or the alternate will do', () => {
+		expect(pendingSwitchCrest(alabama, { color: '#0C2340' })).toBeNull();
+		expect(pendingSwitchCrest({ ...alabama, alternateColor: '#000000' }, redHome)).toBeNull();
+	});
+});
 
 describe('resolveTeamColorPair', () => {
 	const away = { color: '#1D428A', alternateColor: '#FFC72C' };
-	const home = { color: '#552583', alternateColor: '#FDB927' };
+	const home = { color: '#F1C40F', alternateColor: '#C8102E' };
 
 	test('keeps both primaries when they are already far apart', () => {
 		expect(resolveTeamColorPair({ color: '#FF0000' }, { color: '#00FF00' })).toEqual(['#FF0000', '#00FF00']);
@@ -21,115 +78,43 @@ describe('resolveTeamColorPair', () => {
 		expect(h).toMatch(/^#[\da-fA-F]{6}$/);
 	});
 
-	test('swaps in an alternate when both primaries clash', () => {
-		const clashAway = { color: '#0A1F44', alternateColor: '#FFC72C' };
-		const clashHome = { color: '#0C2340', alternateColor: '#C8102E' };
-		const [a, h] = resolveTeamColorPair(clashAway, clashHome);
-		expect([a, h]).not.toEqual(['#0A1F44', '#0C2340']);
-	});
-
 	// ESPN's NHL scoreboard sends no alternates at all. A clash with nothing to swap in keeps both
 	// teams' own colours rather than handing one side the default.
 	test('keeps both primaries when a clash has no alternate to swap in', () => {
 		const sabres = { color: '#00468B' };
 		const blueJackets = { color: '#002D62' };
-		expect(resolveTeamColorPair(blueJackets, sabres, '#2274A5', '#F75C03')).toEqual(['#002D62', '#00468B']);
+		expect(resolveTeamColorPair(sabres, blueJackets, '#2274A5', '#F75C03')).toEqual(['#00468B', '#002D62']);
 	});
 
-	test('returns well-separated primaries unchanged when lighten is off', () => {
+	test('changes the away team and leaves the home team, whichever way round they are', () => {
+		const knicks = { color: '#1D428A', alternateColor: '#F58426' };
+		const sixers = { color: '#1D428A', alternateColor: '#E01234' };
+		expect(resolveTeamColorPair(knicks, sixers)[1]).toBe('#1D428A');
+		expect(resolveTeamColorPair(sixers, knicks)[1]).toBe('#1D428A');
+	});
+
+	// A white side is the one thing the card cannot paint, so a white alternate is no alternate.
+	test('keeps both primaries when the away alternate is white and the home team has none', () => {
+		const alabama = { color: '#9E1B32', alternateColor: '#FFFFFF' };
+		const redHome = { color: '#A6192E' };
+		expect(resolveTeamColorPair(alabama, redHome)).toEqual(['#9E1B32', '#A6192E']);
+	});
+
+	test('switches the home team only when the away team has nothing to switch to', () => {
+		const alabama = { color: '#9E1B32', alternateColor: '#FFFFFF' };
+		const redHome = { color: '#A6192E', alternateColor: '#000000' };
+		expect(resolveTeamColorPair(alabama, redHome)).toEqual(['#9E1B32', '#000000']);
+	});
+
+	test('returns well-separated primaries unchanged', () => {
 		const separatedAway = { color: '#1D428A', alternateColor: '#FFC72C' };
 		const separatedHome = { color: '#F1C40F', alternateColor: '#C8102E' };
 		expect(resolveTeamColorPair(separatedAway, separatedHome, '#60a5fa', '#f87171'))
 			.toEqual(['#1D428A', '#F1C40F']);
 	});
 
-	// Warriors navy against Lakers purple sits ~63 apart in RGB, just inside the clash threshold.
-	test('breaks up navy-against-purple rather than drawing both', () => {
-		expect(resolveTeamColorPair(away, home)).not.toEqual(['#1D428A', '#552583']);
-	});
-
-	// Chart lines sit on a dark surface, so a very dark team colour is mixed toward white.
-	test('lightens a near-black colour on a dark surface', () => {
-		const [a] = resolveTeamColorPair({ color: '#000000' }, { color: '#00FF00' }, '#60a5fa', '#f87171', 'dark');
-		expect(a).not.toBe('#000000');
-		expect(a).toMatch(/^#[0-9a-f]{6}$/);
-	});
-
-	test('leaves an already-bright colour alone on a dark surface', () => {
-		const [, h] = resolveTeamColorPair({ color: '#000000' }, { color: '#00FF00' }, '#60a5fa', '#f87171', 'dark');
-		expect(h).toBe('#00FF00');
-	});
-
-	// The 3:1 boundary against the #0d1117 chart background sits at luminance 0.1164. Bemidji
-	// State's #00694E is 0.1065, or 2.82:1, so it has to be lightened. The threshold read 0.10
-	// for a while, and this colour falls in exactly that window.
-	//
-	// The expected value moved from #7ab1a3 to #007c5c when the climb stopped mixing toward white.
-	// Both clear 3:1; only one is still green. Mixing adds the same amount to all three channels,
-	// which pulls them together and drains the hue — #7ab1a3 is a grey-teal, and the same formula
-	// turned Mets navy into #7a92b6 and Yankees navy into #818d9c, two greys that read alike.
-	// Scaling the channels instead leaves their ratios, and so the hue, where they were.
-	test('lightens a colour that clears the old 0.10 threshold but not 3:1, without draining it', () => {
-		const [a] = resolveTeamColorPair({ color: '#00694E' }, { color: '#FFC72C' }, '#60a5fa', '#f87171', 'dark');
-		expect(a).toBe('#007c5c');
-	});
-
-	// #C8102E is luminance 0.1285, or 3.22:1. It already clears the bar, so lightening it would
-	// only wash it out.
-	test('leaves a colour just above the 3:1 boundary alone', () => {
-		const [a] = resolveTeamColorPair({ color: '#C8102E' }, { color: '#FFC72C' }, '#60a5fa', '#f87171', 'dark');
-		expect(a).toBe('#C8102E');
-	});
-
 	test('is deterministic for the same input', () => {
 		expect(resolveTeamColorPair(away, home)).toEqual(resolveTeamColorPair(away, home));
-	});
-});
-
-// Real ESPN palettes, transcribed from `/teams`. Each is a pair whose primaries clash and whose
-// every substitution is unreadable on one side, which is the branch that used to draw ink.
-const houston = { color: '#c8102e', alternateColor: '#ffffff' };
-const texasTech = { color: '#da291c', alternateColor: '#000000' };
-const nationals = { color: '#ab0003', alternateColor: '#11225b' };
-const cardinals = { color: '#be0a14', alternateColor: '#001541' };
-const isInkHex = (value: string): boolean => ['#000000', '#ffffff'].includes(value.toLowerCase());
-
-describe('resolveTeamColorPair keeps a team colour on the card when the primaries clash', () => {
-	// Two red teams, 35.7 apart. Houston publish a white and Texas Tech a black, so the largest
-	// distance in RGB was on the menu and it took both sides. Tech's red survives instead.
-	test('draws Texas Tech in red rather than drawing both teams in ink', () => {
-		expect(resolveTeamColorPair(houston, texasTech, '#dee2e6', '#dee2e6'))
-			.toEqual(['#ffffff', '#da291c']);
-	});
-
-	// Two blues, 21.9 apart, with the same white-and-black pair of alternates behind them.
-	test('does the same for two blues that clash', () => {
-		const navy = { color: '#003594', alternateColor: '#ffffff' };
-		const otherNavy = { color: '#00549f', alternateColor: '#000000' };
-		const [a, h] = resolveTeamColorPair(navy, otherNavy, '#dee2e6', '#dee2e6');
-		expect(isInkHex(a) && isInkHex(h)).toBe(false);
-	});
-
-	// The clash this whole branch exists for: two reds 27.4 apart, separated through a navy. It came
-	// out right before the ranking went in and has to keep coming out right after.
-	test('still separates the two reds it already separated', () => {
-		expect(resolveTeamColorPair(nationals, cardinals, '#dee2e6', '#dee2e6'))
-			.toEqual(['#11225b', '#be0a14']);
-	});
-
-	// Ranking readable sides first must not disturb a pair that had a fully readable substitution all
-	// along: two usable sides still beat one, and distance still decides between them.
-	test('leaves a pair that had a readable substitution on the one it already picked', () => {
-		const lakers = { color: '#552583', alternateColor: '#FDB927' };
-		const warriors = { color: '#1D428A', alternateColor: '#FFC72C' };
-		expect(resolveTeamColorPair(lakers, warriors, '#dee2e6', '#dee2e6'))
-			.toEqual(['#FDB927', '#1D428A']);
-	});
-
-	// The one case where ink is the honest answer: neither team published anything else.
-	test('draws ink when ink is all either team has', () => {
-		const [a, h] = resolveTeamColorPair({ color: '#000000', alternateColor: '#ffffff' }, { color: '#000000', alternateColor: '#ffffff' }, '#dee2e6', '#dee2e6');
-		expect([a, h].every(isInkHex)).toBe(true);
 	});
 });
 
@@ -205,101 +190,6 @@ describe('teamRowWash', () => {
 	});
 });
 
-// The hue of the resulting colour, 0-359, or null for a grey. Written out rather than imported
-// because the point of these tests is that the hue the caller started with survives.
-const hueOf = (hex: string): number | null => {
-	const [red, green, blue] = [1, 3, 5].map(at => Number.parseInt(hex.slice(at, at + 2), 16));
-	const max = Math.max(red!, green!, blue!);
-	const min = Math.min(red!, green!, blue!);
-	if (max === min) return null;
-	const span = max - min;
-	const sector = max === red! ? ((green! - blue!) / span) % 6
-		: max === green! ? ((blue! - red!) / span) + 2
-		: ((red! - green!) / span) + 4;
-	return Math.round(((sector * 60) + 360) % 360);
-};
-
-// Scaling the channels rounds each to an integer, which can shift the hue by a degree or two. The
-// bar is that the colour is still the same colour, not that the arithmetic is exact.
-const expectSameHue = (result: string, source: string): void => {
-	const drift = Math.abs(hueOf(result)! - hueOf(source)!);
-	expect(Math.min(drift, 360 - drift)).toBeLessThanOrEqual(5);
-};
-
-const lightened = (color: string): string => (
-	resolveTeamColorPair({ color }, { color: '#FFC72C' }, '#60a5fa', '#f87171', 'dark')[0]
-);
-
-describe('lightening a chart colour keeps the team recognisable', () => {
-	// Every one of these came back a grey when the climb mixed toward white.
-	test.each([
-		['Mets navy', '#002D72'],
-		['Yankees navy', '#0C2340'],
-		['Packers green', '#203731'],
-		['Vikings purple', '#4F2683'],
-		['Dodgers blue', '#005A9C'],
-	])('%s keeps its hue', (_label, color) => {
-		const result = lightened(color);
-		expect(result).not.toBe(color);
-		expectSameHue(result, color);
-	});
-
-	test('a pure black has no hue to keep, so it does become a grey', () => {
-		const result = lightened('#000000');
-		expect(hueOf(result)).toBeNull();
-	});
-
-	test('a colour already bright enough is returned untouched', () => {
-		expect(lightened('#C8102E')).toBe('#C8102E');
-	});
-});
-
-// The chart background is #0d1117, luminance 0.0055. A chart line is non-text, so it wants 3:1.
-const contrastOnChart = (hex: string): number => {
-	const parsed = hex.replace('#', '');
-	const [red, green, blue] = [0, 2, 4].map(i => Number.parseInt(parsed.slice(i, i + 2), 16));
-	const luminance = 0.2126 * srgbChannel(red!) + 0.7152 * srgbChannel(green!) + 0.0722 * srgbChannel(blue!);
-	return (luminance + 0.05) / (0.0055 + 0.05);
-};
-
-// The mirror of 'every colour it returns clears 4.5:1 on the card'. Without it the lightening side
-// was pinned only on hue and on having moved at all, so a colour that came back still unreadable
-// satisfied every assertion in the block above.
-describe('every chart colour it returns clears 3:1', () => {
-	test.each([
-		['Mets navy', '#002D72'],
-		['Yankees navy', '#0C2340'],
-		['Packers green', '#203731'],
-		['Vikings purple', '#4F2683'],
-		['Dodgers blue', '#005A9C'],
-		['a pure blue', '#0000ff'],
-		['navy', '#000080'],
-		['dark blue', '#00008B'],
-		['a near-black blue', '#010040'],
-		['pure black', '#000000'],
-		['a colour that needs nothing', '#C8102E'],
-	])('%s', (_label, color) => {
-		expect(contrastOnChart(lightened(color))).toBeGreaterThanOrEqual(3);
-	});
-
-	// Scaling every channel by a common factor cannot lift a colour whose brightest channel is
-	// already 255: 255 stays 255 and Math.round(0 * 1.18) is 0, so the whole 24-step climb is a
-	// no-op and a pure blue used to come back byte-identical, at 2.31:1.
-	test('a pure blue is no longer returned unchanged', () => {
-		expect(lightened('#0000ff')).not.toBe('#0000ff');
-	});
-
-	// The five navies the scaling was written for finish the scaling loop on their own, so the
-	// mixing fallback must not touch them.
-	test('the colours scaling already handles are not mixed toward white', () => {
-		expect(lightened('#002D72')).toBe('#0057de');
-		expect(lightened('#0C2340')).toBe('#276ecf');
-		expect(lightened('#203731')).toBe('#3f6b5e');
-		expect(lightened('#4F2683')).toBe('#823fd8');
-		expect(lightened('#005A9C')).toBe('#006ab8');
-	});
-});
-
 const contrastOn = (ink: string, surface: string): number => {
 	const measure = (hex: string): number => {
 		const [red, green, blue] = [1, 3, 5].map(at => Number.parseInt(hex.slice(at, at + 2), 16));
@@ -310,9 +200,8 @@ const contrastOn = (ink: string, surface: string): number => {
 };
 
 // The opening graphic draws a club's name across the card and its tricode at 3.4rem, both on the
-// team's own colour. Penn State is the case that broke it: `apiClient` promotes a near-black primary
-// to the alternate slot, so they reach the popup as #FFFFFF over #061440 and were named in white on
-// a white band.
+// team's own colour. A club whose published colour is white, like this Penn State fixture, was being
+// named in white on a white band.
 describe('teamDisplayInk', () => {
 	const pennState = { color: '#FFFFFF', alternateColor: '#061440' };
 
@@ -468,72 +357,5 @@ describe('crestBacking', () => {
 		expect(crestBacking(null)).toBe('#ffffff');
 		expect(crestBacking('')).toBe('#ffffff');
 		expect(crestBacking('rgb(1,2,3)')).toBe('#ffffff');
-	});
-});
-
-// The hero draws its crests over a scrim, so the surface a crest has to stand off is not the
-// team's published colour — it is that colour with a near-black laid over it at 0.28. Judging the
-// crest against the published hex would call a mark readable on a backdrop it never appears on.
-describe('underHeroScrim', () => {
-	test('lays the scrim over the colour at the alpha the hero uses', () => {
-		// 0.72 of the team colour plus 0.28 of rgb(3, 7, 12), channel by channel.
-		expect(underHeroScrim('#0C2340')).toBe('#091b31');
-		expect(underHeroScrim('#FFFFFF')).toBe('#b8babb');
-	});
-
-	test('darkens every colour, which is the whole reason the crest is judged against it', () => {
-		for (const color of ['#0C2340', '#C8102E', '#FFB81C', '#4B9CD3', '#FFFFFF', '#860038']) {
-			expect(hexLuminance(underHeroScrim(color))).toBeLessThan(hexLuminance(color));
-		}
-	});
-
-	test('always hands back a colour the rest of the arithmetic can read', () => {
-		for (const color of ['#0C2340', '#FFFFFF', '#000000', '#FFB81C']) {
-			expect(underHeroScrim(color)).toMatch(/^#[\da-f]{6}$/);
-		}
-	});
-
-	// A team with no colour still gets a hero, and its crest still has to be judged against
-	// something — the page behind the scrim, which is what the block fades into.
-	test('falls back to the page behind it for a colour it cannot read', () => {
-		expect(underHeroScrim('not-a-color')).toBe('#0d1117');
-		expect(underHeroScrim('')).toBe('#0d1117');
-	});
-
-	// The scrim is near-black rather than black, so a pure black comes back a shade lighter. It
-	// must not come back as something a crest could disappear into by accident.
-	test('leaves a black essentially black', () => {
-		expect(hexLuminance(underHeroScrim('#000000'))).toBeLessThan(0.01);
-	});
-});
-
-// The light theme draws its charts on #ffffff, where the rule turns over: a line has to be dark
-// enough rather than bright enough, and it is the pale golds that fail instead of the navies.
-const onLight = (color: string): string => (
-	resolveTeamColorPair({ color }, { color: '#002D72' }, '#60a5fa', '#f87171', 'light')[0]
-);
-const contrastOnWhite = (hex: string): number => {
-	const parsed = hex.replace('#', '');
-	const [red, green, blue] = [0, 2, 4].map(i => Number.parseInt(parsed.slice(i, i + 2), 16));
-	const luminance = 0.2126 * srgbChannel(red!) + 0.7152 * srgbChannel(green!) + 0.0722 * srgbChannel(blue!);
-	return 1.05 / (luminance + 0.05);
-};
-
-describe('a chart colour on the light surface', () => {
-	test.each([
-		['Penguins gold', '#FCB514'],
-		['Lakers gold', '#FDB927'],
-		['Carolina blue', '#7BAFD4'],
-		['a pale fallback blue', '#60a5fa'],
-		['pure yellow', '#ffff00'],
-	])('%s is darkened to clear 3:1', (_label, color) => {
-		const result = onLight(color);
-		expect(result).not.toBe(color);
-		expect(contrastOnWhite(result)).toBeGreaterThanOrEqual(3);
-		expectSameHue(result, color);
-	});
-
-	test('a navy that already clears 3:1 is returned untouched', () => {
-		expect(onLight('#0C2340')).toBe('#0C2340');
 	});
 });

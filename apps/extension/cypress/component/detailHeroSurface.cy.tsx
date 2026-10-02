@@ -24,7 +24,7 @@ const liveGame: Game = {
 const heroStyle = {
 	backgroundImage:
 		'linear-gradient(180deg, rgba(3, 7, 12, 0.18) 0%, rgba(3, 7, 12, 0.52) 100%), '
-		+ `linear-gradient(to right, ${awayColor} 0%, ${awayColor} 38%, ${homeColor} 62%, ${homeColor} 100%)`,
+		+ `linear-gradient(to right, ${awayColor} 0%, ${awayColor} 30%, ${homeColor} 70%, ${homeColor} 100%)`,
 };
 
 const markUrl = (side: string) => `https://a.espncdn.com/combiner/i?img=/guid/${side}/logos/primary_logo_white.png&w=120&h=120`;
@@ -137,7 +137,6 @@ describe('the detail hero surface', () => {
 					game={{ ...liveGame, status: 'pre', startTime: new Date(Date.now() + 3_600_000).toISOString() }}
 					seriesInfo={null}
 					records={{ home: '3-1', away: '2-2' }}
-					monoLogos={mono}
 					statusText=''
 					heroStyle={heroStyle}
 					awayColor={awayColor}

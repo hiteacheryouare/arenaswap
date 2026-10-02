@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { i18n } from '#i18n';
 import Crest from '@arenaswap/ui/src/components/crest';
-import { powerScoreColor } from './gameCardShared';
+import { teamLogoOnColor } from '@arenaswap/core/constants';
+import { matchupSurfaceStyle, powerScoreColor } from './gameCardShared';
 
 interface walkthroughStepGameDetailProps {
 	onNext: () => void;
@@ -19,7 +20,7 @@ const LOGO_GIANTS = 'https://a.espncdn.com/i/teamlogos/nfl/500/nyg.png';
 
 const TeamLogo = ({ abbr, color, logoUrl }: { abbr: string; color: string; logoUrl: string }) => (
 	<Crest
-		logo={logoUrl}
+		logo={teamLogoOnColor(logoUrl)}
 		abbreviation={abbr}
 		className='team-crest-28'
 		fallbackStyle={{ backgroundColor: color, color: '#fff' }}
@@ -44,11 +45,9 @@ const walkthroughStepGameDetail = ({ onNext, onBack }: walkthroughStepGameDetail
 				<div
 					role='button'
 					tabIndex={0}
-					className='game-card'
+					className='game-card is-team-colored'
 					style={{
-						borderLeft: `4px solid ${eaglesColor}`,
-						borderRight: `4px solid ${giantsColor}`,
-						background: `linear-gradient(to right, ${eaglesColor}28, ${giantsColor}28), #ffffff`,
+						...matchupSurfaceStyle(eaglesColor, giantsColor),
 						cursor: 'pointer',
 						outline: tapped ? `2px solid ${mockPsColor}` : '2px dashed rgba(255,255,255,0.2)',
 						transition: 'outline 0.2s',
@@ -56,13 +55,13 @@ const walkthroughStepGameDetail = ({ onNext, onBack }: walkthroughStepGameDetail
 					onClick={() => setTapped(true)}
 					onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') setTapped(true); }}
 				>
-					<div className='d-flex align-items-center gap-1 fw-bold text-uppercase text-primary live-status-label mb-1'>
+					<div className='d-flex align-items-center gap-1 fw-bold text-uppercase live-status-label mb-1'>
 						<span className='live-dot' />
 						LIVE
 					</div>
 
 					<div className='d-flex align-items-center justify-content-center game-card-matchup'>
-						<div className='d-flex flex-column align-items-center gap-1 team-column'>
+						<div className='d-flex flex-column align-items-center gap-1 team-column is-away'>
 							<TeamLogo abbr='PHI' color={eaglesColor} logoUrl={LOGO_EAGLES} />
 							<span className='fw-bold text-center text-nowrap team-abbreviation'>PHI</span>
 						</div>
@@ -75,7 +74,7 @@ const walkthroughStepGameDetail = ({ onNext, onBack }: walkthroughStepGameDetail
 							<span className='game-clock'>2:14</span>
 							<span className='game-period'>Q4</span>
 						</div>
-						<div className='d-flex flex-column align-items-center gap-1 team-column'>
+						<div className='d-flex flex-column align-items-center gap-1 team-column is-home'>
 							<TeamLogo abbr='NYG' color={giantsColor} logoUrl={LOGO_GIANTS} />
 							<span className='fw-bold text-center text-nowrap team-abbreviation'>NYG</span>
 						</div>
@@ -93,7 +92,7 @@ const walkthroughStepGameDetail = ({ onNext, onBack }: walkthroughStepGameDetail
 								aria-valuemax={mockPsMax}
 							/>
 						</div>
-						<span className='game-card-ps-score' style={{ color: mockPsColor }}>
+						<span className='game-card-ps-score'>
 							{mockPsScore} / {mockPsMax}
 						</span>
 					</div>

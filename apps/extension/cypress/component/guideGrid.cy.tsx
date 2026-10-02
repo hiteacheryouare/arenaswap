@@ -227,16 +227,12 @@ describe('the guide grid', () => {
 		});
 	});
 
-	// Both fixture colours are navies. Drawn raw they would be indistinguishable from the #0d1117
-	// page, which is the whole reason the pair is resolved through the lightening climb.
-	it('lifts a navy off the background rather than drawing it raw', () => {
+	// The edges stand for the two teams, so they carry the colours the teams publish, navies and all.
+	it('draws each edge in the team\'s published colour', () => {
 		mountGrid([bar('a', 'nfl', '2026-09-13T17:00:00Z')]);
 		cy.get('.guide-bar-shape').first().then(([element]: JQuery<HTMLElement>) => {
-			for (const pseudo of ['::before', '::after']) {
-				const [r, g, b] = getComputedStyle(element, pseudo).backgroundColor.match(/\d+/g)!.slice(0, 3).map(Number);
-				const luminance = (0.2126 * r! + 0.7152 * g! + 0.0722 * b!) / 255;
-				expect(luminance, `${pseudo} clears the page background`).to.be.greaterThan(0.12);
-			}
+			const colors = ['::before', '::after'].map(pseudo => getComputedStyle(element, pseudo).backgroundColor);
+			expect(colors).to.have.members(['rgb(11, 22, 42)', 'rgb(0, 34, 68)']);
 		});
 	});
 

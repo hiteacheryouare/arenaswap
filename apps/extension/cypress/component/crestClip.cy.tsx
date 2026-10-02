@@ -7,13 +7,15 @@
 // three quarters of the plate, the share the widest mark in any league needs to land on it.
 import Crest from '@arenaswap/ui/src/components/crest';
 
-// The plate class and the crest class, exactly as each call site passes them to TeamCrest.
-const frames: [string, string][] = [
-	['gd-bar-logo-shell', 'gd-bar-logo'],
-	['gd-poster-crest', 'gd-poster-crest-logo'],
-	['game-detail-team-logo-shell', 'game-detail-team-logo'],
-	['ff-endzone-crest', 'ff-endzone-crest-art'],
-	['ff-logo-shell', 'ff-logo-art'],
+// The plate class and the crest class, exactly as each call site passes them to TeamCrest, and
+// whether that site can plate at all. The poster and the hero sit on the team's own colour and always
+// draw the dark-ground crest bare.
+const frames: [string, string, boolean][] = [
+	['gd-bar-logo-shell', 'gd-bar-logo', true],
+	['gd-poster-crest', 'gd-poster-crest-logo', false],
+	['game-detail-team-logo-shell', 'game-detail-team-logo', false],
+	['ff-endzone-crest', 'ff-endzone-crest-art', true],
+	['ff-logo-shell', 'ff-logo-art', true],
 ];
 
 // `.ff-logo-shell` fills its foreignObject rather than carrying a size, so every frame is mounted
@@ -30,11 +32,13 @@ const mountFrame = (plate: string, art: string, bare: boolean) => {
 };
 
 describe('a round crest frame', () => {
-	frames.forEach(([plate, art]) => {
+	frames.forEach(([plate, art, plates]) => {
 		it(`${plate} draws a bare crest whole`, () => {
 			mountFrame(plate, art, true);
 			cy.get(`.${plate}`).should('have.css', 'overflow', 'visible');
 		});
+
+		if (!plates) return;
 
 		it(`${plate} insets a plated crest to three quarters of the plate`, () => {
 			mountFrame(plate, art, false);

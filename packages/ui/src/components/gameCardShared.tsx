@@ -1,10 +1,10 @@
 import type { ReactNode } from 'react';
 import { useState } from 'react';
-import type { KeyboardEvent, MouseEvent } from 'react';
+import type { CSSProperties, KeyboardEvent, MouseEvent } from 'react';
 import type { Game, LeagueId, Team } from '@arenaswap/core/types';
 import type { BettingDisplayPrefs } from './gameCardTypes';
-import { resolveTeamColorPair } from './colorUtils';
-import Crest from './crest';
+import { matchupSurface, resolveTeamColorPair } from './colorUtils';
+import OnColorCrest from './onColorCrest';
 import HoverTooltip from './hoverTooltip';
 import { useT } from './i18nContext';
 import { formatClock, formatGameClock, formatPeriod, isHalftime } from './gameFormat';
@@ -47,13 +47,37 @@ export const oddsSummary = (game: Game): string | null => {
 	return parts.join(' • ');
 };
 
-export const buildGameCardStyle = (game: Game) => {
-	const [awayColor, homeColor] = resolveTeamColorPair(game.awayTeam, game.homeTeam, '#dee2e6', '#dee2e6');
+// A team with no colour of its own sits on the popup's raised grey, which takes white ink.
+const missingTeamColor = '#30363d';
+
+export interface gameCardSurface {
+	style: CSSProperties;
+	awayColor: string;
+	homeColor: string;
+}
+
+// White ink on a mid-tone — Carolina blue, a bright orange — is the case neither ink wins outright,
+// and a soft shadow is what keeps its edges.
+const inkShadow = (ink: string): string => (ink === '#ffffff' ? '0 1px 2px rgba(3, 7, 12, 0.45)' : 'none');
+
+// The card's and the detail hero's surface as an inline style: the painted background, and the ink
+// and shadow for each side as variables the stylesheet hangs every piece of text on.
+export const matchupSurfaceStyle = (awayColor: string, homeColor: string, delayed = false): CSSProperties => {
+	const { backgroundImage, inks } = matchupSurface(awayColor, homeColor, delayed);
 	return {
-		borderLeft: `5px solid ${awayColor}`,
-		borderRight: `5px solid ${homeColor}`,
-		background: `linear-gradient(to right, ${awayColor}28, ${homeColor}28), #ffffff`,
-	};
+		backgroundImage,
+		'--matchup-ink-away': inks.away,
+		'--matchup-ink-home': inks.home,
+		'--matchup-ink-center': inks.center,
+		'--matchup-shadow-away': inkShadow(inks.away),
+		'--matchup-shadow-home': inkShadow(inks.home),
+		'--matchup-shadow-center': inkShadow(inks.center),
+	} as CSSProperties;
+};
+
+export const buildGameCardSurface = (game: Game, delayed = false): gameCardSurface => {
+	const [awayColor, homeColor] = resolveTeamColorPair(game.awayTeam, game.homeTeam, missingTeamColor, missingTeamColor);
+	return { style: matchupSurfaceStyle(awayColor, homeColor, delayed), awayColor, homeColor };
 };
 
 export const buildCardHandlers = (onOpenGameDetail: (gameId: string) => void, gameId: string) => ({
@@ -74,16 +98,21 @@ export const TeamColumn = ({
 	leagueId,
 	isFavorited,
 	onToggleFavoriteTeam,
+	side,
+	surface,
 }: {
 	team: Team;
 	leagueId: LeagueId;
 	isFavorited: boolean;
 	onToggleFavoriteTeam: (leagueId: LeagueId, teamId: string) => void;
+	side: 'away' | 'home';
+	// The colour this side of the card is painted in, where it is painted in one.
+	surface?: string;
 }) => {
 	const t = useT();
 	return (
-		<div className='d-flex flex-column align-items-center gap-1 team-column'>
-			<Crest logo={team.logo} abbreviation={(team.abbreviation || '?').slice(0, 3)} className='team-crest' />
+		<div className={`d-flex flex-column align-items-center gap-1 team-column is-${side}`}>
+			<OnColorCrest team={team} surface={surface} className='team-crest' />
 			<span className='fw-bold text-center text-nowrap team-abbreviation'>
 				{/* Smaller and greyed rather than same-size, so the tricode stays the thing you read
 				    first. A ranked pair is the widest this column ever gets — see the layout spec. */}

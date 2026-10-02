@@ -1,8 +1,9 @@
 import { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import type { CSSProperties, ReactNode } from 'react';
 import type { Game, Team } from '@arenaswap/core/types';
-import { resolveTeamColorPair, teamDisplayInk } from '@arenaswap/ui/src/components/colorUtils';
-import TeamCrest from '@arenaswap/ui/src/components/teamCrest';
+import { teamDisplayInk } from '@arenaswap/ui/src/components/colorUtils';
+import { buildGameCardSurface } from '@arenaswap/ui/src/components/gameCardShared';
+import OnColorCrest from '@arenaswap/ui/src/components/onColorCrest';
 import RevealNamingScene from './revealNamingScene';
 import {
 	revealAbbrScale,
@@ -63,15 +64,9 @@ const RevealSide = ({ team, surface, side }: { team: Team; surface: string; side
 	<>
 		<span className={`game-card-reveal-wipe is-${side}`}>
 			<span className='game-card-reveal-crest'>
-				<TeamCrest
-					logo={team.logo}
-					abbreviation={(team.abbreviation || '?').slice(0, 3)}
-					background={surface}
-					discClassName='game-card-reveal-crest-plate'
-					crestClassName='game-card-reveal-crest-logo'
-					fallback='blank'
-					loading='eager'
-				/>
+				<span className='game-card-reveal-crest-plate is-bare'>
+					<OnColorCrest team={team} surface={surface} className='game-card-reveal-crest-logo' fallback='blank' loading='eager' />
+				</span>
 			</span>
 		</span>
 		<span className={`game-card-reveal-mask is-${side}`}>
@@ -87,12 +82,8 @@ const RevealSide = ({ team, surface, side }: { team: Team; surface: string; side
 //
 // First the crests: each one on its team's colour, drawn past the edges of the card so the stage's
 // clip cuts them, arriving from their own outer side and settling. Each crest's colour goes across
-// its own half of the card at full size rather than into a disc behind it, and `teamCrest`'s own
-// wrapper is that field — which is what keeps the colour right without this file deciding it. Handed
-// the team's colour as its surface, the component comes back bare when the artwork reads on it and
-// the stylesheet paints the team colour; when it does not, it sets its tinted plate inline and the
-// field becomes that instead. Either way the crest ends up on the colour a disc would have given it,
-// spread across the card.
+// its own half of the card at full size, and the crest is the one drawn for a dark ground, as it is
+// on the card underneath.
 //
 // Then the naming, which re-cuts the same two colours as a horizontal split and names both clubs
 // across the full width of the card. It draws over the fields rather than replacing them, so the
@@ -104,16 +95,9 @@ const RevealSide = ({ team, surface, side }: { team: Team; surface: string; side
 const RevealOpening = ({ game, awayColor, homeColor }: { game: Game; awayColor: string; homeColor: string }) => (
 	<div className='game-card-reveal-opening' aria-hidden='true'>
 		{([['away', game.awayTeam, awayColor], ['home', game.homeTeam, homeColor]] as const).map(([side, team, surface]) => (
-			<TeamCrest
-				key={side}
-				logo={team.logo}
-				abbreviation={(team.abbreviation || '?').slice(0, 3)}
-				background={surface}
-				discClassName={`game-card-reveal-opening-field is-${side}`}
-				crestClassName='game-card-reveal-opening-logo'
-				fallback='blank'
-				loading='eager'
-			/>
+			<span key={side} className={`game-card-reveal-opening-field is-${side} is-bare`}>
+				<OnColorCrest team={team} surface={surface} className='game-card-reveal-opening-logo' fallback='blank' loading='eager' />
+			</span>
 		))}
 		<RevealNamingScene game={game} />
 	</div>
@@ -201,9 +185,9 @@ const gameCardReveal = ({ game, mode, index, skipping, children }: gameCardRevea
 	if (!staged) return <>{children}</>;
 	const playing = mode !== 'none' && !done;
 
-	// The pair `buildGameCardStyle` resolves, down to the fallback, so the colour that retreats off
-	// each edge is the colour of the rail the card has been drawing underneath it the whole time.
-	const [awayColor, homeColor] = resolveTeamColorPair(game.awayTeam, game.homeTeam, '#dee2e6', '#dee2e6');
+	// The pair the card underneath is painted in, down to the fallback, so the colour that retreats
+	// off each side is the colour that side has been all along.
+	const { awayColor, homeColor } = buildGameCardSurface(game);
 
 	return (
 		<div
@@ -239,12 +223,6 @@ const gameCardReveal = ({ game, mode, index, skipping, children }: gameCardRevea
 			{playing && <div className='game-card-reveal-stage' aria-hidden='true'>
 				<span className='game-card-reveal-half is-away' />
 				<span className='game-card-reveal-half is-home' />
-				{/* Judged against the colour it is about to be drawn on rather than against the card's
-				    white, which is the whole reason these are not the card's own crests scaled up.
-				    No `monoMarks`, unlike the detail screens, so a crest that does not read on its own
-				    team colour goes to the tinted plate rather than to ESPN's white mark. Deliberate and
-				    not an oversight: the marks are only on `/teams`, which the popup's state does not
-				    carry, and the maintainer's call was that the plate is what this should draw. */}
 				<RevealSide team={game.awayTeam} surface={awayColor} side='away' />
 				<RevealSide team={game.homeTeam} surface={homeColor} side='home' />
 			</div>}

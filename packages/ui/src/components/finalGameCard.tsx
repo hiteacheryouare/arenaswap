@@ -53,7 +53,7 @@ const finalGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, onOpenGame
 			</CardStatusRow>
 
 			<div className='d-flex align-items-center justify-content-center game-card-matchup'>
-				<TeamColumn leagueId={game.league} team={game.awayTeam} isFavorited={awayFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} />
+				<TeamColumn leagueId={game.league} team={game.awayTeam} isFavorited={awayFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} side='away' />
 				<div className='d-flex flex-column align-items-center game-card-center'>
 					<div className='d-flex align-items-center game-score-row'>
 						<FlipScore value={awayScore} className={scoreClass(awayScore, homeScore)} />
@@ -62,7 +62,7 @@ const finalGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, onOpenGame
 					</div>
 					{shootout && <span className='game-shootout-score'>{shootout}</span>}
 				</div>
-				<TeamColumn leagueId={game.league} team={game.homeTeam} isFavorited={homeFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} />
+				<TeamColumn leagueId={game.league} team={game.homeTeam} isFavorited={homeFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} side='home' />
 			</div>
 
 			{/* The broadcast is gone: a game you cannot watch any more has no channel worth naming.

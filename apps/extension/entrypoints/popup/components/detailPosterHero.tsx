@@ -1,18 +1,16 @@
 import { i18n } from '#i18n';
 import { createFavoriteTeamKey } from '@arenaswap/core/constants';
-import type { Game, LeagueId, Team, TeamMonoMarks } from '@arenaswap/core/types';
-import TeamCrest from '@arenaswap/ui/src/components/teamCrest';
+import type { Game, LeagueId, Team } from '@arenaswap/core/types';
+import OnColorCrest from '@arenaswap/ui/src/components/onColorCrest';
 import SeriesDots from './seriesDots';
 import StartCountdownDisplay from './startCountdownDisplay';
-import { underHeroScrim } from '@arenaswap/ui/src/components/colorUtils';
 import type { CSSProperties } from 'react';
-import type { MonoLogos, SeriesInfo, TeamRecords } from './useSummaryData';
+import type { SeriesInfo, TeamRecords } from './useSummaryData';
 
 interface detailPosterHeroProps {
 	game: Game;
 	seriesInfo: SeriesInfo | null;
 	records: TeamRecords;
-	monoLogos: MonoLogos;
 	// Empty for a normal pre-game game; a postponement or delay is the one thing that has
 	// something to say before the start time, so it is not dropped with the rest of the row.
 	statusText: string;
@@ -28,7 +26,6 @@ interface detailPosterHeroProps {
 const PosterTeam = ({
 	team,
 	color,
-	monoMarks,
 	record,
 	leagueId,
 	isFavorited,
@@ -38,21 +35,15 @@ const PosterTeam = ({
 	color: string;
 	// ESPN's monochrome marks. Reached for only when the colour artwork stops reading against this
 	// team's own half of the poster, which is the hardest surface it faces: a navy crest on navy.
-	monoMarks?: TeamMonoMarks | null;
 	record: string | null;
 	leagueId: LeagueId;
 	isFavorited: boolean;
 	onToggleFavoriteTeam: (leagueId: LeagueId, teamId: string) => void;
 }) => (
 	<div className='gd-poster-team'>
-		<TeamCrest
-			logo={team.logo}
-			monoMarks={monoMarks ?? undefined}
-			abbreviation={team.abbreviation}
-			background={underHeroScrim(color)}
-			discClassName='gd-poster-crest'
-			crestClassName='gd-poster-crest-logo'
-		/>
+		<span className='gd-poster-crest is-bare'>
+			<OnColorCrest team={team} surface={color} className='gd-poster-crest-logo' />
+		</span>
 		<div className='gd-poster-name'>{team.name || team.abbreviation}</div>
 		<div className='gd-poster-meta'>
 			{record && <span className='gd-poster-record'>{record}</span>}
@@ -72,7 +63,7 @@ const PosterTeam = ({
 	</div>
 );
 
-const detailPosterHero = ({ game, seriesInfo, records, monoLogos, statusText, heroStyle, awayColor, homeColor, favoriteTeamIds, onToggleFavoriteTeam }: detailPosterHeroProps) => {
+const detailPosterHero = ({ game, seriesInfo, records, statusText, heroStyle, awayColor, homeColor, favoriteTeamIds, onToggleFavoriteTeam }: detailPosterHeroProps) => {
 	const awayFavorited = favoriteTeamIds.has(createFavoriteTeamKey(game.league, game.awayTeam.id));
 	const homeFavorited = favoriteTeamIds.has(createFavoriteTeamKey(game.league, game.homeTeam.id));
 
@@ -82,7 +73,6 @@ const detailPosterHero = ({ game, seriesInfo, records, monoLogos, statusText, he
 				<PosterTeam
 					team={game.awayTeam}
 					color={awayColor}
-					monoMarks={monoLogos.away}
 					record={records.away}
 					leagueId={game.league}
 					isFavorited={awayFavorited}
@@ -92,7 +82,6 @@ const detailPosterHero = ({ game, seriesInfo, records, monoLogos, statusText, he
 				<PosterTeam
 					team={game.homeTeam}
 					color={homeColor}
-					monoMarks={monoLogos.home}
 					record={records.home}
 					leagueId={game.league}
 					isFavorited={homeFavorited}
