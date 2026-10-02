@@ -152,7 +152,7 @@ const App = () => {
 		const dated = slateGames
 			.filter(game => Number.isFinite(startMs(game)))
 			.toSorted((a, b) => startMs(a) - startMs(b));
-		return groupByDate(dated);
+		return groupByDate(dated, displayLocale());
 	}, [slateGames]);
 
 	// Falls back to today rather than to the first group, which is two days of finals ago.
@@ -258,7 +258,7 @@ const App = () => {
 						<label className='form-check-label' htmlFor='guideBandToggle'>{i18n.t('guide.bestWindow')}</label>
 						{/* Inside the control rather than beside it, so the header's own 1rem column gap cannot open
 						    a hole in the middle of a sentence. */}
-						{showBand && band && <span className='guide-band-summary'>{`\u00b7 ${bandLabel(band)}`}</span>}
+						{showBand && band && <span className='guide-band-summary'>{`\u00b7 ${bandLabel(band, displayLocale())}`}</span>}
 					</div>
 				)}
 			</header>
