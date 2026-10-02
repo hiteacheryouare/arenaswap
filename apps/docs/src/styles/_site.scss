@@ -41,6 +41,34 @@ html {
 	}
 }
 
+// Headlines break into even lines rather than leaving one word stranded ("À chaque / fois."), and
+// body copy avoids a lone last word. Korean keeps words whole, as Korean wraps at spaces; Japanese
+// breaks at phrase boundaries rather than between any two characters.
+.display-lg,
+.display-md,
+.section-title,
+.page-title,
+.release-title,
+.release-latest-title,
+.ps-hero-heading,
+.prose :is(h2, h3, h4) {
+	text-wrap: balance;
+}
+
+.prose :is(p, li),
+.page-lede,
+.section-sub {
+	text-wrap: pretty;
+}
+
+:lang(ko) {
+	word-break: keep-all;
+}
+
+:lang(ja) {
+	word-break: auto-phrase;
+}
+
 body {
 	background: var(--color-bg);
 	color: var(--color-text);
