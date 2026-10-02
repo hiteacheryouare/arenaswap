@@ -42,12 +42,11 @@ const walkthroughStepToggle = ({ onNext }: walkthroughStepToggleProps) => {
 				</div>
 
 				<div
-					className='small text-center lh-base mt-1 rounded px-2 py-1'
+					className='small text-center lh-base mt-1 rounded px-2 py-1 motion-tint'
 					style={{
 						backgroundColor: enabled ? 'rgba(0,204,102,0.12)' : 'rgba(255,255,255,0.06)',
 						color: enabled ? '#00CC66' : '#8b949e',
 						fontSize: '0.72rem',
-						transition: 'all 0.2s',
 					}}
 				>
 					{enabled ? i18n.t('stepToggle.statusActive') : i18n.t('stepToggle.statusPaused')}

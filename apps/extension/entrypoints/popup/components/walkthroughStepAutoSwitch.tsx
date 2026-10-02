@@ -49,12 +49,11 @@ const MockCard = ({ abbr1, color1, logo1, abbr2, color2, logo2, score1, score2, 
 	const psPercent = (ps / psMax) * 100;
 	return (
 		<div
-			className='game-card is-team-colored mb-1'
+			className='game-card is-team-colored mb-1 motion-outline'
 			style={{
 				pointerEvents: 'none',
 				...matchupSurfaceStyle(color1, color2),
-				outline: watching ? '2px solid var(--bs-primary)' : undefined,
-				transition: 'outline 0.3s',
+				outline: watching ? '2px solid var(--bs-primary)' : '2px solid transparent',
 			}}
 		>
 			<div className='d-flex align-items-center justify-content-between mb-1'>
@@ -93,7 +92,7 @@ const MockCard = ({ abbr1, color1, logo1, abbr2, color2, logo2, score1, score2, 
 					<div
 						className='progress-bar'
 						role='progressbar'
-						style={{ width: `${psPercent}%`, backgroundColor: psColor, transition: 'width 0.9s ease-out, background-color 0.9s ease-out' }}
+						style={{ width: `${psPercent}%`, backgroundColor: psColor }}
 						aria-valuenow={ps}
 						aria-valuemin={0}
 						aria-valuemax={psMax}

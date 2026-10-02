@@ -263,6 +263,11 @@ button, input, select, optgroup, textarea {
 
 	animation: lsTextIn 0.2s ease-out;
 
+	&:focus-visible {
+		outline:        2px solid #fff;
+		outline-offset: 2px;
+	}
+
 	&:hover:not(.pressed) {
 		background: #8a0000;
 		border-color: #ff2020;
@@ -412,6 +417,25 @@ button, input, select, optgroup, textarea {
 	50%      { opacity: 0.45; }
 }
 
+// The sequence keeps its cuts and timing, but its strobes go: STOP flashes about nine times a
+// second, which is a photosensitivity risk, and the shakes and blinks are movement for its own
+// sake. Each holds its lit frame instead.
+@include m.reduced-motion {
+	.ludicrous-speed {
+		animation: none;
+		color: #ff8c00;
+		text-shadow: 0 0 10px #ff8c00;
+	}
+
+	.ls-text.announce,
+	.ls-text.go,
+	.ls-text.speedsign.ludicrous,
+	.ls-text.stop,
+	.ls-emergency-brake.pressed {
+		animation: none;
+	}
+}
+
 /* The two walkthrough controls that recolour on state take their palette inline from league and
    team data, so their timing had been sitting inline next to it — and was the only motion in the
    popup the shared scale could not reach. This is the hook they borrow instead. */
@@ -421,8 +445,14 @@ button, input, select, optgroup, textarea {
 	            color            m.$motion-instant m.$motion-ease;
 }
 
+// The same, for the walkthrough's mock cards that ring themselves when they are the one watched.
+.motion-outline {
+	transition: outline-color m.$motion-quick m.$motion-ease;
+}
+
 @include m.reduced-motion {
-	.motion-tint {
+	.motion-tint,
+	.motion-outline {
 		@include m.motion-still;
 	}
 }
@@ -498,7 +528,9 @@ button, input, select, optgroup, textarea {
 	height: 16px;
 	border-radius: 50%;
 	background-color: currentColor;
-	transition: all m.$motion-base m.$motion-ease;
+	transition: transform m.$motion-base m.$motion-ease,
+	            opacity   m.$motion-base m.$motion-ease,
+	            filter    m.$motion-base m.$motion-ease;
 	box-shadow: 0 0 8px currentColor, 0 0 3px currentColor;
 	cursor: pointer;
 
@@ -525,7 +557,7 @@ button, input, select, optgroup, textarea {
 	justify-content: center;
 	margin: 1.5rem auto 2rem;
 	box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
-	transition: all m.$motion-base m.$motion-ease;
+	transition: color m.$motion-base m.$motion-ease, border-color m.$motion-base m.$motion-ease;
 }
 
 /* Progress dots bar */
@@ -546,7 +578,9 @@ button, input, select, optgroup, textarea {
 	border: none;
 	cursor: pointer;
 	padding: 0;
-	transition: all m.$motion-quick m.$motion-ease;
+	transition: transform        m.$motion-quick m.$motion-ease,
+	            background-color m.$motion-quick m.$motion-ease,
+	            box-shadow       m.$motion-quick m.$motion-ease;
 
 	&:hover {
 		background: #8b949e;
@@ -605,6 +639,22 @@ button, input, select, optgroup, textarea {
 
 	&.ps-bloom-shrinking {
 		animation: psBloomOut m.$motion-slow m.$motion-ease-in forwards;
+	}
+}
+
+// The orbit stops turning and the active dot stops pulsing; it stays scaled up, which is enough to
+// say which one is meant. The bloom's classes already hold its start and end states, so without
+// its sweep it simply appears and goes.
+@include m.reduced-motion {
+	.powerscore-orbit-ring,
+	.powerscore-orbit-ring.animating,
+	.powerscore-orbit-dot,
+	.powerscore-orbit-dot.active,
+	.powerscore-boost-icon-container,
+	.powerscore-progress-dot,
+	.ps-bloom-overlay.ps-bloom-blooming,
+	.ps-bloom-overlay.ps-bloom-shrinking {
+		@include m.motion-still;
 	}
 }
 

@@ -46,12 +46,11 @@ const walkthroughStepGameDetail = ({ onNext, onBack }: walkthroughStepGameDetail
 				<div
 					role='button'
 					tabIndex={0}
-					className='game-card is-team-colored'
+					className='game-card is-team-colored motion-outline'
 					style={{
 						...matchupSurfaceStyle(eaglesColor, giantsColor),
 						cursor: 'pointer',
 						outline: tapped ? `2px solid ${mockPsColor}` : '2px dashed rgba(255,255,255,0.2)',
-						transition: 'outline 0.2s',
 					}}
 					onClick={() => setTapped(true)}
 					onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') setTapped(true); }}
