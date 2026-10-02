@@ -3,6 +3,10 @@
 // here is a comfortable measure and a side-nav that stays out of the way.
 @use '@arenaswap/ui/src/motion' as m;
 
+// For dates, outlines and other small secondary text. #6e7681 sat at 4.1:1 on the page, just under
+// the 4.5:1 small text needs; this clears it at 5.1:1 and still reads a step quieter than muted.
+$text-subtle: #7d8590;
+
 .page-head {
 	// Clears the fixed header with room to breathe, on a page whose first element is a heading.
 	padding: 7rem 0 0;
@@ -256,7 +260,7 @@
 
 .docs-hub-empty {
 	font-size: 0.9rem;
-	color: #6e7681;
+	color: $text-subtle;
 	margin: 1.5rem 0 0;
 }
 
@@ -303,7 +307,7 @@
 
 .release-meta {
 	font-size: 0.85rem;
-	color: #6e7681;
+	color: $text-subtle;
 	margin: 0;
 }
 
@@ -373,7 +377,7 @@
 .release-back {
 	display: inline-block;
 	font-size: 0.85rem;
-	color: #6e7681;
+	color: $text-subtle;
 	text-decoration: none;
 
 	&:hover {
@@ -453,7 +457,7 @@
 		display: block;
 		font-size: 0.8rem;
 		line-height: 1.5;
-		color: #6e7681;
+		color: $text-subtle;
 		padding: 0.35rem 0 0.35rem 0.8rem;
 		border-left: 1px solid var(--color-border);
 		text-decoration: none;
@@ -592,7 +596,7 @@
 
 .legal-updated {
 	font-size: 0.85rem;
-	color: #6e7681;
+	color: $text-subtle;
 }
 
 // ─── Credits ─────────────────────────────────────────────────────────────────
@@ -622,7 +626,7 @@
 	}
 
 	.credit-licence {
-		color: #6e7681;
+		color: $text-subtle;
 	}
 }
 
