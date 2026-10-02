@@ -349,7 +349,7 @@ describe('mainView header glow', () => {
 		cy.get('[data-testid="fake-next"]').click();
 		cy.get('.popup-glow').should(([glow]: JQuery<HTMLElement>) => {
 			const transition = glow.getAnimations().find(animation => (animation as CSSTransition).transitionProperty === '--glow-away');
-			expect(transition, 'a running transition on --glow-away').to.exist;
+			expect(transition, 'a running transition on --glow-away').to.not.equal(undefined);
 			transition!.pause();
 			transition!.currentTime = 350;
 			const midway = getComputedStyle(glow).getPropertyValue('--glow-away');
