@@ -9,6 +9,7 @@ import pkg from '../../package.json';
 import { localeCodes } from './src/i18n/locales.ts';
 import sassOptions from '@arenaswap/ui/src/sassOptions.ts';
 import relativeDocLinks from './src/lib/relativeDocLinks.ts';
+import scrollableTables from './src/lib/scrollableTables.ts';
 
 const year = new Date().getFullYear();
 const version = pkg.version;
@@ -47,7 +48,7 @@ export default defineConfig({
 		}),
 	],
 	markdown: {
-		processor: satteri({ hastPlugins: [relativeDocLinks] }),
+		processor: satteri({ hastPlugins: [relativeDocLinks, scrollableTables] }),
 	},
 	// English keeps the root, so every URL this site has ever published still resolves. The other
 	// eleven take one segment: /arenaswap/de/, /arenaswap/pt-BR/ and so on.
