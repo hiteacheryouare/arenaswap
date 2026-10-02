@@ -21,6 +21,7 @@ import {
 } from '../utils/reviewPrompt';
 import {
 	applyDisabledSignals,
+	clampBoostPoints,
 	createDefaultUserPreferences,
 	createFavoriteTeamKey,
 	guideMinUpcomingDays,
@@ -1277,7 +1278,7 @@ export default defineBackground(() => {
 		}
 		if (msg.type === 'SET_GAME_BOOST') {
 			return stateReady.then(async () => {
-				const boost = Math.max(0, Math.round(Number(msg.boost) || 0));
+				const boost = clampBoostPoints(Number(msg.boost));
 				if (boost === 0) {
 					delete gameBoosts[msg.gameId];
 				} else {

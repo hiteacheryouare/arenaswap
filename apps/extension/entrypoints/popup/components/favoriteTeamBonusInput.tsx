@@ -1,4 +1,5 @@
 import { i18n } from '#i18n';
+import BoostPointsInput from './boostPointsInput';
 import SettingTooltipIcon from './settingTooltipIcon';
 
 interface favoriteTeamBonusInputProps {
@@ -17,16 +18,7 @@ const favoriteTeamBonusInput = ({ value, onChange }: favoriteTeamBonusInputProps
 			</div>
 			<span className='fw-semibold setting-value-label'>{i18n.t('favoriteTeamBonus.perTeam', [value])}</span>
 		</div>
-		<input
-			id='favoriteTeamBonusInput'
-			type='number'
-			min={0}
-			step={1}
-			value={value}
-			onChange={e => onChange(Math.max(0, Math.round(Number(e.target.value) || 0)))}
-			className='form-control form-control-sm'
-			inputMode='numeric'
-		/>
+		<BoostPointsInput id='favoriteTeamBonusInput' value={value} onChange={onChange} className='form-control form-control-sm' />
 	</div>
 );
 

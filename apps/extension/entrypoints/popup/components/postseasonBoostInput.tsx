@@ -1,4 +1,5 @@
 import { i18n } from '#i18n';
+import BoostPointsInput from './boostPointsInput';
 import SettingTooltipIcon from './settingTooltipIcon';
 
 interface postseasonBoostInputProps {
@@ -17,16 +18,7 @@ const postseasonBoostInput = ({ value, onChange }: postseasonBoostInputProps) =>
 			</div>
 			<span className='fw-semibold setting-value-label'>{i18n.t('postseasonBoost.points', [value])}</span>
 		</div>
-		<input
-			id='postseasonBoostInput'
-			type='number'
-			min={0}
-			step={1}
-			value={value}
-			onChange={e => onChange(Math.max(0, Math.round(Number(e.target.value) || 0)))}
-			className='form-control form-control-sm'
-			inputMode='numeric'
-		/>
+		<BoostPointsInput id='postseasonBoostInput' value={value} onChange={onChange} className='form-control form-control-sm' />
 	</div>
 );
 
