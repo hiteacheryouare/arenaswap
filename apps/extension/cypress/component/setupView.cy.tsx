@@ -653,7 +653,7 @@ describe('setupView favorites group', () => {
 	it('turns up in the search under a word that is nowhere in its label', () => {
 		cy.mount(<SetupView {...defaultProps} />);
 		cy.get('#settingsSearch').type('franchise');
-		cy.contains('.settings-index-row', 'Teams you follow').should('exist');
+		cy.contains('.settings-index-row', 'Teams You Follow').should('exist');
 	});
 });
 
@@ -664,6 +664,24 @@ describe('setupView leagues group', () => {
 		cy.contains('Basketball').should('exist');
 		cy.get('.league-toggle-row').should('have.length.greaterThan', 0).each($row => {
 			cy.wrap($row).find('img, svg, i[class*="bi-"]').should('exist');
+		});
+	});
+
+	it('keeps every locale\'s select-all and clear labels on one line beside the sport name', () => {
+		cy.viewport(320, 560);
+		cy.mount(<SetupView {...defaultProps} />);
+		openGroup('leagues');
+
+		Object.entries(locales).forEach(([name, locale]) => {
+			[locale.setup.selectAll, locale.setup.selectNone].forEach(label => {
+				cy.get('.league-toggle-group').first().find('button').should(([button]: JQuery<HTMLElement>) => {
+					button.textContent = label;
+					const row = button.parentElement!;
+					const heading = row.firstElementChild!.getBoundingClientRect();
+					expect(button.getBoundingClientRect().height, `"${label}" stays one line in ${name}`).to.be.at.most(24);
+					expect(button.getBoundingClientRect().left, `"${label}" clears the sport name in ${name}`).to.be.greaterThan(heading.right);
+				});
+			});
 		});
 	});
 

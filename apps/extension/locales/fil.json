@@ -224,8 +224,8 @@
 		"signalsExplainer": "Hindi kasama sa scoring ang mga naka-disable na signal. Ina-adjust ulit ang mga score para manatili sa tamang range.",
 		"signalLastActive": "Dapat may kahit isang signal na naka-active",
 		"leaguesExplainer": "Ang mga napiling liga lang ang tine-track at isinasaalang-alang para sa awtomatikong paglipat ng tab.",
-		"selectNone": "wala",
-		"selectAll": "lahat",
+		"selectNone": "I-clear",
+		"selectAll": "Piliin lahat",
 		"noLeaguesWarning": "Walang napiling liga. Hindi makaka-track ang ArenaSwap ng kahit anong laro.",
 		"groupByLeague": "I-group ang mga laro ayon sa liga",
 		"groupByLeagueExplainer": "Kapag naka-off, iisang listahan ang gamit ng lahat ng liga: mga live na laro ayon sa PowerScore, mga susunod ayon sa oras ng simula. Laging nasa itaas ang mga team mo.",
@@ -361,7 +361,7 @@
 		"getReadyKickoff": "Maghanda para sa kickoff",
 		"getReadyPuckDrop": "Maghanda para sa puck drop",
 		"getReadyFirstPitch": "Maghanda para sa first pitch",
-		"getReadyGametime": "Maghanda para sa gametime",
+		"getReadyGametime": "Maghanda para sa game time",
 		"pregameTabExplainer": "Buksan ang larong ito sa isang tab kapag nagsimula na.",
 		"probablePitchers": "Mga Posibleng Pitcher",
 		"probableGoalies": "Mga Posibleng Goalie",
@@ -941,7 +941,7 @@
 		"detail": {
 			"t0": "Pinaghahalo ng PowerScore ang kalapitan ng score, pressure sa huling yugto, momentum, pagbabago ng lead, at comeback. Pagkatapos, inilalapat nito ang volatility boost o penalty base sa kung gaano ka-swing ang win probability.",
 			"t1": "Mag-kick in ang penalty sa naka-stall na clock kapag halos hindi gumagalaw ang game clock sa pagitan ng mga update.",
-			"t2": "Nakakakuha ng maliit na PowerScore hit ang mga 0-0 na laro sa mga sports kung saan hindi exciting ang 0-0.",
+			"t2": "Nakakakuha ng maliit na PowerScore hit ang mga 0–0 na laro sa mga sports kung saan hindi exciting ang 0–0.",
 			"t3": "I-hover ang mga chart para tingnan ang mga partikular na sandali sa laro.",
 			"t4": "Ang paboritong team sa matchup ay nagdadagdag ng bonus points sa PowerScore.",
 			"t5": "Tumataas ang PowerScore habang tumatagal ang laro. Ang maagang close na laro ay unti-unting umiinit papunta sa final buzzer.",
@@ -952,7 +952,7 @@
 	"reviewPrompt": {
 		"title": "Nasisiyahan ka ba sa ArenaSwap?",
 		"copy": "Ang isang mabilisang review ay tumutulong sa mas maraming fans na mahanap ang pinakamagandang laro ❤️",
-		"leaveReview": "Mag-iwan ng Review",
+		"leaveReview": "Mag-iwan ng review",
 		"dismiss": "I-dismiss ang Request ng Review"
 	},
 	"cooldown": {

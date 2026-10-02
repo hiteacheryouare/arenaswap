@@ -6,7 +6,7 @@ const reviewPromptBanner = ({
 	onLeaveReview: () => void;
 }) => (
 	<div data-testid='review-prompt'>
-		<button type='button' onClick={onLeaveReview}>Leave review</button>
+		<button type='button' onClick={onLeaveReview}>Leave a review</button>
 		<button type='button' onClick={onDismiss}>Dismiss</button>
 	</div>
 );

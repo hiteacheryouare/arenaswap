@@ -224,7 +224,7 @@
 		"signalsExplainer": "已停用的信號不計入評分，分數會重新校準以維持在範圍內。",
 		"signalLastActive": "至少須保留一個信號處於啟用狀態",
 		"leaguesExplainer": "只有勾選的聯賽會被追蹤，並納入自動切換的判斷。",
-		"selectNone": "全不選",
+		"selectNone": "清除",
 		"selectAll": "全選",
 		"noLeaguesWarning": "尚未選擇任何聯賽，ArenaSwap 不會追蹤任何比賽。",
 		"groupByLeague": "依聯賽分組比賽",

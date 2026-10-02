@@ -224,8 +224,8 @@
 		"signalsExplainer": "Disabled signals are excluded from scoring. Scores are re-normalized to stay in range.",
 		"signalLastActive": "At least one signal must stay active",
 		"leaguesExplainer": "Only selected leagues are tracked and considered for automatic switching.",
-		"selectNone": "none",
-		"selectAll": "all",
+		"selectNone": "Clear",
+		"selectAll": "Select all",
 		"noLeaguesWarning": "No leagues selected. ArenaSwap won't track any games.",
 		"groupByLeague": "Group games by league",
 		"groupByLeagueExplainer": "Off, every league shares one list: live games ranked by PowerScore, upcoming ones by start time. Your teams stay on top either way.",
@@ -560,7 +560,7 @@
 		"volatility": "Volatility",
 		"signalsTotal": "Signals total",
 		"cappedAt": "(capped at {max})",
-		"signalsNormalizedNote": "Re-scaled to maintain 0–100 range with signals disabled",
+		"signalsNormalizedNote": "Rescaled to keep the 0–100 range with signals off",
 		"tooltipSignalsNormalized": "When signals are turned off, the remaining signals are scaled up proportionally so the score keeps its full 0–100 range.",
 		"clockStallPenalty": "Clock stall penalty",
 		"favoriteBoost": "Favorite boost",
@@ -693,7 +693,7 @@
 		"feature2Title": "You Register Tabs to Games",
 		"feature2Body": "Open each stream in its own tab, then assign it to a game from the extension. ArenaSwap only touches tabs you've registered.",
 		"feature3Title": "You Stay in Control",
-		"feature3Body": "Pause auto-switching anytime. Tune sensitivity and cooldown from Settings.",
+		"feature3Body": "Pause auto-switching any time. Tune sensitivity and cooldown from Settings.",
 		"gotIt": "Got it"
 	},
 	"walkthrough": {
@@ -941,7 +941,7 @@
 		"detail": {
 			"t0": "PowerScore mixes closeness, late-game pressure, momentum, lead changes, and comebacks. Then it applies a volatility boost or penalty based on how much the win probability swings.",
 			"t1": "A clock-stall penalty kicks in when the game clock barely moves between updates.",
-			"t2": "0-0 games take a small PowerScore hit in sports where 0-0 isn't exciting.",
+			"t2": "0–0 games take a small PowerScore hit in sports where 0–0 isn't exciting.",
 			"t3": "Hover the charts to inspect specific moments in the game.",
 			"t4": "A favorite team in the matchup adds bonus points to the PowerScore.",
 			"t5": "PowerScore builds as a game goes on. An early close game ramps up toward the final buzzer.",
@@ -952,7 +952,7 @@
 	"reviewPrompt": {
 		"title": "Enjoying ArenaSwap?",
 		"copy": "A quick review helps more fans find the best game ❤️",
-		"leaveReview": "Leave review",
+		"leaveReview": "Leave a review",
 		"dismiss": "Dismiss review request"
 	},
 	"cooldown": {
