@@ -480,7 +480,21 @@
 		"bso": {
 			"balls": "B",
 			"strikes": "S",
-			"outs": "O"
+			"outs": "O",
+			"ballsSpoken": "1볼 | $1볼",
+			"strikesSpoken": "1스트라이크 | $1스트라이크",
+			"outsSpoken": "1아웃 | $1아웃",
+			"countSpoken": "{balls} {strikes} {outs}"
+		},
+		"bases": {
+			"empty": "주자 없음",
+			"first": "1루 주자",
+			"second": "2루 주자",
+			"third": "3루 주자",
+			"firstSecond": "1, 2루 주자",
+			"firstThird": "1, 3루 주자",
+			"secondThird": "2, 3루 주자",
+			"loaded": "만루"
 		}
 	}
 }

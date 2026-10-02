@@ -586,7 +586,30 @@
 	"bso": {
 		"balls": "B",
 		"strikes": "S",
-		"outs": "O"
+		"outs": "O",
+		"ballsSpoken": {
+			"1": "1ボール",
+			"n": "$1ボール"
+		},
+		"strikesSpoken": {
+			"1": "1ストライク",
+			"n": "$1ストライク"
+		},
+		"outsSpoken": {
+			"1": "1アウト",
+			"n": "$1アウト"
+		},
+		"countSpoken": "{balls}、{strikes}、{outs}"
+	},
+	"bases": {
+		"empty": "走者なし",
+		"first": "一塁に走者",
+		"second": "二塁に走者",
+		"third": "三塁に走者",
+		"firstSecond": "一・二塁に走者",
+		"firstThird": "一・三塁に走者",
+		"secondThird": "二・三塁に走者",
+		"loaded": "満塁"
 	},
 	"onboarding": {
 		"allSetTitle": "準備完了！",

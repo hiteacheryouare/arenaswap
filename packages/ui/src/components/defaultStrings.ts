@@ -68,6 +68,18 @@ export const defaultStrings: Record<string, string> = {
 	'bso.balls': 'B',
 	'bso.strikes': 'S',
 	'bso.outs': 'O',
+	'bso.ballsSpoken': '1 ball | $1 balls',
+	'bso.strikesSpoken': '1 strike | $1 strikes',
+	'bso.outsSpoken': '1 out | $1 outs',
+	'bso.countSpoken': '{balls}, {strikes}, {outs}',
+	'bases.empty': 'Bases empty',
+	'bases.first': 'Runner on first',
+	'bases.second': 'Runner on second',
+	'bases.third': 'Runner on third',
+	'bases.firstSecond': 'Runners on first and second',
+	'bases.firstThird': 'Runners on first and third',
+	'bases.secondThird': 'Runners on second and third',
+	'bases.loaded': 'Bases loaded',
 };
 
 type Substitutions = Record<string, string | number>;

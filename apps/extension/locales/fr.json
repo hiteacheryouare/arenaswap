@@ -586,7 +586,30 @@
 	"bso": {
 		"balls": "B",
 		"strikes": "S",
-		"outs": "O"
+		"outs": "O",
+		"ballsSpoken": {
+			"1": "1 balle",
+			"n": "$1 balles"
+		},
+		"strikesSpoken": {
+			"1": "1 prise",
+			"n": "$1 prises"
+		},
+		"outsSpoken": {
+			"1": "1 retrait",
+			"n": "$1 retraits"
+		},
+		"countSpoken": "{balls}, {strikes}, {outs}"
+	},
+	"bases": {
+		"empty": "Buts vides",
+		"first": "Coureur au premier but",
+		"second": "Coureur au deuxième but",
+		"third": "Coureur au troisième but",
+		"firstSecond": "Coureurs au premier et au deuxième but",
+		"firstThird": "Coureurs au premier et au troisième but",
+		"secondThird": "Coureurs au deuxième et au troisième but",
+		"loaded": "Buts remplis"
 	},
 	"onboarding": {
 		"allSetTitle": "C'est parti !",

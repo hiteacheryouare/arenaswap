@@ -349,6 +349,16 @@ describe('gameDetailView hero', () => {
 		fits('.gd-poster-name');
 	});
 
+	// Three letters and seven dots read aloud as nothing, and the bases were hidden outright.
+	it('speaks the count and the runners in words', () => {
+		mountDetail(makeInningGame(), { excitementResult: excitement });
+		cy.get('.bso-indicator').should('have.attr', 'role', 'img').and('have.attr', 'aria-label', '2 balls, 1 strike, 2 outs');
+		cy.get('.base-diamond').should('have.attr', 'role', 'img').and('have.attr', 'aria-label', 'Runners on first and third');
+		mountDetail({ ...makeInningGame(), baseRunners: { first: true, second: true, third: true }, bso: { balls: 0, strikes: 2, outs: 1 } }, { excitementResult: excitement });
+		cy.get('.bso-indicator').should('have.attr', 'aria-label', '0 balls, 2 strikes, 1 out');
+		cy.get('.base-diamond').should('have.attr', 'aria-label', 'Bases loaded');
+	});
+
 	it('falls back to the abbreviation for a team with no full name', () => {
 		const game = makeLiveGame();
 		mountDetail({ ...game, awayTeam: { ...game.awayTeam, name: '' } }, { excitementResult: excitement });

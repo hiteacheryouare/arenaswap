@@ -586,7 +586,30 @@
 	"bso": {
 		"balls": "B",
 		"strikes": "S",
-		"outs": "O"
+		"outs": "O",
+		"ballsSpoken": {
+			"1": "1 Ball",
+			"n": "$1 Balls"
+		},
+		"strikesSpoken": {
+			"1": "1 Strike",
+			"n": "$1 Strikes"
+		},
+		"outsSpoken": {
+			"1": "1 Out",
+			"n": "$1 Outs"
+		},
+		"countSpoken": "{balls}, {strikes}, {outs}"
+	},
+	"bases": {
+		"empty": "Bases leer",
+		"first": "Läufer auf der ersten Base",
+		"second": "Läufer auf der zweiten Base",
+		"third": "Läufer auf der dritten Base",
+		"firstSecond": "Läufer auf der ersten und zweiten Base",
+		"firstThird": "Läufer auf der ersten und dritten Base",
+		"secondThird": "Läufer auf der zweiten und dritten Base",
+		"loaded": "Alle Bases besetzt"
 	},
 	"onboarding": {
 		"allSetTitle": "Alles fertig!",

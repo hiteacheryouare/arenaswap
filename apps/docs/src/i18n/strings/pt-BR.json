@@ -480,7 +480,21 @@
 		"bso": {
 			"balls": "B",
 			"strikes": "S",
-			"outs": "O"
+			"outs": "O",
+			"ballsSpoken": "1 bola | $1 bolas",
+			"strikesSpoken": "1 strike | $1 strikes",
+			"outsSpoken": "1 out | $1 outs",
+			"countSpoken": "{balls}, {strikes}, {outs}"
+		},
+		"bases": {
+			"empty": "Bases vazias",
+			"first": "Corredor na primeira",
+			"second": "Corredor na segunda",
+			"third": "Corredor na terceira",
+			"firstSecond": "Corredores na primeira e na segunda",
+			"firstThird": "Corredores na primeira e na terceira",
+			"secondThird": "Corredores na segunda e na terceira",
+			"loaded": "Bases lotadas"
 		}
 	}
 }

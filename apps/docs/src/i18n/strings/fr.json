@@ -480,7 +480,21 @@
 		"bso": {
 			"balls": "B",
 			"strikes": "S",
-			"outs": "O"
+			"outs": "O",
+			"ballsSpoken": "1 balle | $1 balles",
+			"strikesSpoken": "1 prise | $1 prises",
+			"outsSpoken": "1 retrait | $1 retraits",
+			"countSpoken": "{balls}, {strikes}, {outs}"
+		},
+		"bases": {
+			"empty": "Buts vides",
+			"first": "Coureur au premier but",
+			"second": "Coureur au deuxième but",
+			"third": "Coureur au troisième but",
+			"firstSecond": "Coureurs au premier et au deuxième but",
+			"firstThird": "Coureurs au premier et au troisième but",
+			"secondThird": "Coureurs au deuxième et au troisième but",
+			"loaded": "Buts remplis"
 		}
 	}
 }

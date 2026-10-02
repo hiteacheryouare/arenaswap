@@ -480,7 +480,21 @@
 		"bso": {
 			"balls": "B",
 			"strikes": "S",
-			"outs": "O"
+			"outs": "O",
+			"ballsSpoken": "1壞球 | $1壞球",
+			"strikesSpoken": "1好球 | $1好球",
+			"outsSpoken": "1出局 | $1出局",
+			"countSpoken": "{balls}，{strikes}，{outs}"
+		},
+		"bases": {
+			"empty": "壘上無人",
+			"first": "一壘有人",
+			"second": "二壘有人",
+			"third": "三壘有人",
+			"firstSecond": "一、二壘有人",
+			"firstThird": "一、三壘有人",
+			"secondThird": "二、三壘有人",
+			"loaded": "滿壘"
 		}
 	}
 }

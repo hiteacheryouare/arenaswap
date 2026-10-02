@@ -586,7 +586,30 @@
 	"bso": {
 		"balls": "B",
 		"strikes": "S",
-		"outs": "O"
+		"outs": "O",
+		"ballsSpoken": {
+			"1": "1个坏球",
+			"n": "$1个坏球"
+		},
+		"strikesSpoken": {
+			"1": "1个好球",
+			"n": "$1个好球"
+		},
+		"outsSpoken": {
+			"1": "1人出局",
+			"n": "$1人出局"
+		},
+		"countSpoken": "{balls}，{strikes}，{outs}"
+	},
+	"bases": {
+		"empty": "垒上无人",
+		"first": "一垒有人",
+		"second": "二垒有人",
+		"third": "三垒有人",
+		"firstSecond": "一、二垒有人",
+		"firstThird": "一、三垒有人",
+		"secondThird": "二、三垒有人",
+		"loaded": "满垒"
 	},
 	"onboarding": {
 		"allSetTitle": "一切就绪！",

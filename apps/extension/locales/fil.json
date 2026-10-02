@@ -586,7 +586,30 @@
 	"bso": {
 		"balls": "B",
 		"strikes": "S",
-		"outs": "O"
+		"outs": "O",
+		"ballsSpoken": {
+			"1": "1 ball",
+			"n": "$1 balls"
+		},
+		"strikesSpoken": {
+			"1": "1 strike",
+			"n": "$1 strikes"
+		},
+		"outsSpoken": {
+			"1": "1 out",
+			"n": "$1 outs"
+		},
+		"countSpoken": "{balls}, {strikes}, {outs}"
+	},
+	"bases": {
+		"empty": "Walang runner sa base",
+		"first": "May runner sa first",
+		"second": "May runner sa second",
+		"third": "May runner sa third",
+		"firstSecond": "May runners sa first at second",
+		"firstThird": "May runners sa first at third",
+		"secondThird": "May runners sa second at third",
+		"loaded": "Bases loaded"
 	},
 	"onboarding": {
 		"allSetTitle": "Handa ka na!",

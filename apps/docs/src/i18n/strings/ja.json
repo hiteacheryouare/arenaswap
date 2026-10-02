@@ -480,7 +480,21 @@
 		"bso": {
 			"balls": "B",
 			"strikes": "S",
-			"outs": "O"
+			"outs": "O",
+			"ballsSpoken": "1ボール | $1ボール",
+			"strikesSpoken": "1ストライク | $1ストライク",
+			"outsSpoken": "1アウト | $1アウト",
+			"countSpoken": "{balls}、{strikes}、{outs}"
+		},
+		"bases": {
+			"empty": "走者なし",
+			"first": "一塁に走者",
+			"second": "二塁に走者",
+			"third": "三塁に走者",
+			"firstSecond": "一・二塁に走者",
+			"firstThird": "一・三塁に走者",
+			"secondThird": "二・三塁に走者",
+			"loaded": "満塁"
 		}
 	}
 }
