@@ -689,8 +689,50 @@
 	color: var(--as-faint);
 }
 
-.popup-error-banner {
-	font-size: 0.7rem;
+// Every notice above the list shares one surface. Bootstrap's alert variants read the
+// *-bg-subtle tokens, which this theme never sets, so they rendered as pale slabs on the dark popup.
+.alert.popup-notice {
+	--as-alert-bg:            var(--as-tertiary-bg);
+	--as-alert-color:         var(--as-body-color);
+	--as-alert-border-color:  var(--as-border-color);
+	--as-alert-padding-x:     0.6rem;
+	--as-alert-padding-y:     0.5rem;
+	--as-alert-margin-bottom: 0.5rem;
+	font-size: 0.72rem;
+	line-height: 1.35;
+
+	.btn-close {
+		font-size: 0.55rem;
+	}
+}
+
+// Bootstrap draws the close X in black and only inverts it under its own dark mode, which this
+// theme leaves off, so the dark default needs the inversion stated.
+:root {
+	--as-btn-close-filter: #{bs.$btn-close-filter-dark};
+}
+
+[data-bs-theme='light'] {
+	--as-btn-close-filter: none;
+}
+
+.popup-notice-title {
+	font-size: 0.78rem;
+}
+
+.popup-notice-icon {
+	color: var(--as-accent-ink);
+	line-height: 1.35;
+}
+
+.popup-notice-icon-danger {
+	color: bs.$danger;
+}
+
+.popup-notice-action {
+	font-size: 0.68rem;
+	white-space: nowrap;
+	flex-shrink: 0;
 }
 
 .popup-no-games-wrap {
@@ -742,11 +784,6 @@
 	border-width: 0.2em;
 }
 
-.popup-error-retry {
-	font-size: 0.65rem;
-	white-space: nowrap;
-	flex-shrink: 0;
-}
 
 .setup-no-leagues-warn {
 	font-size: 0.65rem;
