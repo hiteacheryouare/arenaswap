@@ -49,6 +49,7 @@ describe('resolveStatus', () => {
 
 	test('reads Final once the game is over', () => {
 		expect(resolveStatus(makeGame({ status: 'post' }), false, t).text).toBe('Final');
+		expect(resolveStatus(makeGame({ status: 'post', finalPeriodSuffix: 'OT' }), false, t).text).toBe('Final/OT');
 	});
 
 	test('is empty before tip-off', () => {

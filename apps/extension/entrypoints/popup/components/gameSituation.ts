@@ -17,7 +17,10 @@ export interface GameStatus {
 // change ESPN can report as an intermission is exactly what the inning line already says.
 export const resolveStatus = (game: Game, isInningSport: boolean, t: Translate): GameStatus => {
 	if (game.delayed === true) return { text: game.delayDescription ?? t('gameCard.delayFallback'), ticking: false };
-	if (game.status === 'post') return { text: t('detail.final'), ticking: false };
+	// The same token the list card and the Guide print, so a shootout reads "Final/SO" on all three.
+	if (game.status === 'post') {
+		return { text: game.finalPeriodSuffix ? `${t('detail.final')}/${game.finalPeriodSuffix}` : t('detail.final'), ticking: false };
+	}
 	if (game.status === 'pre') return { text: '', ticking: false };
 	if (isInningSport) return { text: formatPeriod(game, t), ticking: false };
 	if (game.intermission === true) {
