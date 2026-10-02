@@ -17,6 +17,7 @@ import { bandLabel } from './guideFormat';
 import GuideGrid from './guideGrid';
 import { buildBar, buildHeatCurve } from './guideHeat';
 import { msToPx, axisBounds, defaultDayKey, gutterPx } from './guideLayout';
+import { displayLocale } from '../../utils/displayLocale';
 
 // The boost control in the drawer is the real one, not a decoration: a slider that moves and
 // changes nothing is worse than no slider.
@@ -101,7 +102,7 @@ const App = () => {
 		// 'ArenaSwap' is a proper noun and is not translated anywhere else either. extName is the full
 		// store listing name, which is far too long for a tab strip.
 		document.title = `${i18n.t('main.guideButton')} \u00b7 ArenaSwap`;
-		document.documentElement.lang = browser.i18n.getUILanguage();
+		document.documentElement.lang = displayLocale();
 	}, []);
 
 	// Clearing the closing flag matters: picking a second game while the first is animating out has

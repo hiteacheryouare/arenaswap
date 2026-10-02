@@ -8,6 +8,8 @@ import ErrorBoundary from './errorBoundary';
 import { displayLocale } from '../../utils/displayLocale';
 
 const locale = displayLocale();
+// index.html says en, which had screen readers voicing every translation with an English voice.
+document.documentElement.lang = locale;
 
 reactDomClient.createRoot(document.getElementById('root')).render(
 	<React.StrictMode>
