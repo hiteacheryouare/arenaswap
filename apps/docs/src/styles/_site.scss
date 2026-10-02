@@ -541,14 +541,9 @@ body.nav-open {
 	border-radius: 1rem;
 	padding: 2rem;
 	height: 100%;
-	transition: transform m.$motion-quick m.$motion-ease, box-shadow m.$motion-quick m.$motion-ease, border-color m.$motion-quick m.$motion-ease;
 
-	&:hover {
-		transform: translateY(-4px);
-		box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
-		border-color: rgba(247, 92, 3, 0.3);
-	}
-
+	// No hover lift: none of these cards is a link, and the install-command box jumped 4px out from
+	// under the cursor on its way to the Copy button.
 	.feature-icon {
 		font-size: 2rem;
 		color: var(--color-primary);
@@ -573,7 +568,6 @@ body.nav-open {
 }
 
 @include m.reduced-motion {
-	.feature-card,
 	.btn-cta,
 	.btn-outline-secondary-custom {
 		transition: none;
