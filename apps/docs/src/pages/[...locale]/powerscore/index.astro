@@ -70,7 +70,10 @@ const taglineSuffix = t('powerscore.heroTaglineSuffix');
 								<span class='ps-gradient-text' id='ps-gradient-text'>{t('powerscore.heroName')}</span><span
 								class='ps-solid-text' id='ps-solid-text' aria-hidden='true'>{t('powerscore.heroName')}</span>
 							</span><br/>
-							{taglinePrefix}<span class='ps-rotating-phrase'><span id='ps-rotating-token' class='ps-rotating-token' aria-live='polite'>{supportedLeagues[0]}</span><span id='ps-rotating-suffix'>{taglineSuffix}</span></span>
+							{/* The rotation is twelve league names a second and a half apart, which is a lot to have
+							    read aloud. Screen readers get the sentence it settles on instead. */}
+							<span class='visually-hidden'>{taglinePrefix}{t('powerscore.heroRestingToken')}{t('powerscore.heroRestingSuffix')}</span>
+							<span aria-hidden='true'>{taglinePrefix}<span class='ps-rotating-phrase'><span id='ps-rotating-token' class='ps-rotating-token'>{supportedLeagues[0]}</span><span id='ps-rotating-suffix'>{taglineSuffix}</span></span></span>
 						</h1>
 
 						<p class='ps-hero-sub'>{t('powerscore.heroSub')}</p>
@@ -191,7 +194,10 @@ const taglineSuffix = t('powerscore.heroTaglineSuffix');
 		const fadeDurationMs = 240;
 		const displayDurationMs = 1200;
 
-		if (rotatingTokenEl && rotatingSuffixEl && psSupportedLeagues.length > 0) {
+		if (rotatingTokenEl && rotatingSuffixEl && matchMedia('(prefers-reduced-motion: reduce)').matches) {
+			rotatingTokenEl.textContent = restingToken;
+			rotatingSuffixEl.textContent = restingSuffix;
+		} else if (rotatingTokenEl && rotatingSuffixEl && psSupportedLeagues.length > 0) {
 			let index = 0;
 			rotatingTokenEl.textContent = psSupportedLeagues[index];
 
