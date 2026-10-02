@@ -304,3 +304,19 @@ describe('liveGameCard timeout dots', () => {
 		cy.get('.timeout-dots').should('not.exist');
 	});
 });
+
+// The delay used to be said twice: "DELAY" in the status row and the description again in an 8px
+// badge under the score. The status row now says what kind of delay it is, once.
+describe('liveGameCard delay', () => {
+	it('names the delay in the status row and nowhere else', () => {
+		cy.mount(<LiveGameCard {...defaultProps} game={{ ...baseGame, delayed: true, delayDescription: 'Rain Delay' }} />);
+		cy.get('.delay-status-label').should('contain.text', 'Rain Delay');
+		cy.get('.badge').should('not.exist');
+		cy.contains('Rain Delay').should('have.length', 1);
+	});
+
+	it('falls back to the plain label when our sources give no reason', () => {
+		cy.mount(<LiveGameCard {...defaultProps} game={{ ...baseGame, delayed: true }} />);
+		cy.get('.delay-status-label').should('contain.text', 'DELAY');
+	});
+});
