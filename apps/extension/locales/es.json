@@ -518,7 +518,10 @@
 		"shootout": "PEN {away}–{home}",
 		"downDistanceAt": "{downDistance} en {fieldPosition}",
 		"teamRank": "Puesto #{rank}",
-		"timeoutsRemaining": "{team}: {count} tiempos fuera restantes",
+		"timeoutsRemaining": {
+			"1": "{team}: 1 tiempo fuera restante",
+			"n": "{team}: $1 tiempos fuera restantes"
+		},
 		"timeoutsShort": "{count} TO",
 		"powerScore": "PowerScore",
 		"vs": "vs",

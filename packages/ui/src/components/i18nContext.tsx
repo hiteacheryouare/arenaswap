@@ -1,17 +1,29 @@
 import { createContext, useContext } from 'react';
 import { defaultStrings } from './defaultStrings';
 
-type Translator = (key: string, subs?: Record<string, string | number>) => string;
+type Substitutions = Record<string, string | number>;
 
-const defaultT: Translator = (key, subs) => {
-	let str = defaultStrings[key] ?? key;
-	if (subs) {
-		for (const [k, v] of Object.entries(subs)) {
+// The extension's i18n.t: a number picks a plural form and fills $1, an object fills {names}.
+export type Translator = (key: string, countOrSubs?: number | Substitutions, subs?: Substitutions) => string;
+
+// Plural strings outside the extension are written "one | other", the shape WXT compiles them to.
+export const translateFrom = (lookup: (key: string) => string | undefined): Translator => (key, countOrSubs, subs) => {
+	const count = typeof countOrSubs === 'number' ? countOrSubs : undefined;
+	const named = typeof countOrSubs === 'object' ? countOrSubs : subs;
+	let str = lookup(key) ?? key;
+	if (count !== undefined) {
+		const forms = str.split(' | ');
+		str = (forms.length === 2 ? forms[count === 1 ? 0 : 1]! : forms[0]!).split('$1').join(String(count));
+	}
+	if (named) {
+		for (const [k, v] of Object.entries(named)) {
 			str = str.split(`{${k}}`).join(String(v));
 		}
 	}
 	return str;
 };
+
+const defaultT = translateFrom(key => defaultStrings[key]);
 
 export const TranslationContext = createContext<Translator>(defaultT);
 export const useT = () => useContext(TranslationContext);

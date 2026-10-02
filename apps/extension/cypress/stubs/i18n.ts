@@ -29,7 +29,7 @@ const t = (key: string, subsOrCount?: unknown, subs?: unknown): string => {
 		const forms = entry as Record<string, string>;
 		const count = subsOrCount;
 		const form = forms[String(count)] ?? forms.n ?? forms['1'] ?? '';
-		return applySubstitutions(form, subs ?? [count]);
+		return applySubstitutions(applySubstitutions(form, [count]), subs);
 	}
 	return key;
 };

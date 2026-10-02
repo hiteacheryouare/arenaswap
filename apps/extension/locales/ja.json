@@ -518,7 +518,10 @@
 		"shootout": "PK {away}–{home}",
 		"downDistanceAt": "{fieldPosition}で{downDistance}",
 		"teamRank": "ランキング{rank}位",
-		"timeoutsRemaining": "{team}：タイムアウト残り{count}回",
+		"timeoutsRemaining": {
+			"1": "{team}：タイムアウト残り1回",
+			"n": "{team}：タイムアウト残り$1回"
+		},
 		"timeoutsShort": "{count} TO",
 		"powerScore": "PowerScore",
 		"vs": "vs",

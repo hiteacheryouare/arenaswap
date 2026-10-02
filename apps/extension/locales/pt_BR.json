@@ -518,7 +518,10 @@
 		"shootout": "PEN {away}–{home}",
 		"downDistanceAt": "{downDistance} na {fieldPosition}",
 		"teamRank": "Classificado #{rank}",
-		"timeoutsRemaining": "{team}: restam {count} tempos técnicos",
+		"timeoutsRemaining": {
+			"1": "{team}: resta 1 tempo técnico",
+			"n": "{team}: restam $1 tempos técnicos"
+		},
 		"timeoutsShort": "{count} TO",
 		"powerScore": "PowerScore",
 		"vs": "vs",

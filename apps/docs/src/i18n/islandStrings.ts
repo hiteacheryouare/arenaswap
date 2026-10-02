@@ -1,4 +1,4 @@
-import { TranslationContext } from '@arenaswap/ui/src/components/i18nContext';
+import { TranslationContext, translateFrom } from '@arenaswap/ui/src/components/i18nContext';
 
 // An island is hydrated with props alone — it cannot read Astro frontmatter — so a component that
 // renders a shared @arenaswap/ui piece is handed the flat string map and puts it on the context the
@@ -8,16 +8,7 @@ import { TranslationContext } from '@arenaswap/ui/src/components/i18nContext';
 // The same substitution rule as the extension's translator: named `{placeholders}`, replaced in
 // place, and a missing key rendered as itself rather than thrown, since an island failing to
 // hydrate would take the whole demo down over one label.
-export const islandTranslator = (strings: Record<string, string> | undefined) =>
-	(key: string, subs?: Record<string, string | number>) => {
-		let value = strings?.[key] ?? key;
-		if (subs) {
-			for (const [name, replacement] of Object.entries(subs)) {
-				value = value.split(`{${name}}`).join(String(replacement));
-			}
-		}
-		return value;
-	};
+export const islandTranslator = (strings: Record<string, string> | undefined) => translateFrom(key => strings?.[key]);
 
 export interface Slot {
 	slot: string;

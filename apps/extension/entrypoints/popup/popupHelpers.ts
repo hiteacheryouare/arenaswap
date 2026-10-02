@@ -37,7 +37,8 @@ const LOADING_MESSAGE_COUNT = 112;
 
 export const getRandomLoadingMessage = (): string => {
 	const index = Math.floor(Math.random() * LOADING_MESSAGE_COUNT) + 1;
-	return i18n.t(`loading.m${index}` as Parameters<typeof i18n.t>[0]);
+	// Every loading.mN has the same shape as m1, so m1 stands in for the generated key type.
+	return i18n.t(`loading.m${index}` as 'loading.m1');
 };
 
 // Must match the number of `noGames.mN` keys in the locale files.
@@ -46,8 +47,8 @@ const NO_GAMES_MESSAGE_COUNT = 7;
 export const getRandomNoGamesMessage = (): { title: string; sub: string } => {
 	const index = Math.floor(Math.random() * NO_GAMES_MESSAGE_COUNT) + 1;
 	return {
-		title: i18n.t(`noGames.m${index}.title` as Parameters<typeof i18n.t>[0]),
-		sub: i18n.t(`noGames.m${index}.sub` as Parameters<typeof i18n.t>[0]),
+		title: i18n.t(`noGames.m${index}.title` as 'noGames.m1.title'),
+		sub: i18n.t(`noGames.m${index}.sub` as 'noGames.m1.sub'),
 	};
 };
 export const leaguesBySportType = leagueConfigs.reduce<Record<SportType, typeof leagueConfigs>>((groups, config) => {

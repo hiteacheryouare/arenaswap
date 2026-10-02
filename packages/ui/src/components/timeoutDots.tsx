@@ -16,7 +16,7 @@ const timeoutDots = ({ remaining, max = gridironTimeouts, teamAbbreviation }: ti
 	const t = useT();
 	if (!Number.isFinite(remaining) || remaining < 0) return null;
 
-	const label = t('gameCard.timeoutsRemaining', { team: teamAbbreviation, count: remaining });
+	const label = t('gameCard.timeoutsRemaining', remaining, { team: teamAbbreviation });
 	const total = Math.max(max, remaining);
 
 	// A count too wide to draw still has to be readable, so it says the number instead of

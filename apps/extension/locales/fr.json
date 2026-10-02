@@ -518,7 +518,10 @@
 		"shootout": "TAB {away}–{home}",
 		"downDistanceAt": "{downDistance} à {fieldPosition}",
 		"teamRank": "Classé #{rank}",
-		"timeoutsRemaining": "{team} : il reste {count} temps morts",
+		"timeoutsRemaining": {
+			"1": "{team} : il reste 1 temps mort",
+			"n": "{team} : il reste $1 temps morts"
+		},
 		"timeoutsShort": "{count} TO",
 		"powerScore": "PowerScore",
 		"vs": "vs",

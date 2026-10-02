@@ -518,7 +518,10 @@
 		"shootout": "RIG {away}–{home}",
 		"downDistanceAt": "{downDistance} a {fieldPosition}",
 		"teamRank": "Classificato #{rank}",
-		"timeoutsRemaining": "{team}: restano {count} time-out",
+		"timeoutsRemaining": {
+			"1": "{team}: resta 1 time-out",
+			"n": "{team}: restano $1 time-out"
+		},
 		"timeoutsShort": "{count} TO",
 		"powerScore": "PowerScore",
 		"vs": "vs",

@@ -1,4 +1,6 @@
 import LiveGameCard from '@arenaswap/ui/src/components/liveGameCard';
+import { TranslationContext } from '@arenaswap/ui/src/components/i18nContext';
+import { i18n } from '#i18n';
 import type { Game, PowerScoreResult } from '@arenaswap/core/types';
 
 const baseGame: Game = {
@@ -284,6 +286,20 @@ describe('liveGameCard timeout dots', () => {
 	it('names the count for a screen reader, which cannot see the dots', () => {
 		cy.mount(<LiveGameCard {...defaultProps} game={withTimeouts(2, 3)} />);
 		cy.get('.timeout-dots').last().should('have.attr', 'aria-label', 'HOM: 2 timeouts left');
+	});
+
+	// It used to read "1 timeouts left". Checked through both translators: the extension's, which
+	// reads the locale's plural object, and the one the website falls back to.
+	it('says one timeout, not one timeouts', () => {
+		cy.mount(<LiveGameCard {...defaultProps} game={withTimeouts(1, 3)} />);
+		cy.get('.timeout-dots').last().should('have.attr', 'aria-label', 'HOM: 1 timeout left');
+		cy.mount(
+			<TranslationContext.Provider value={i18n.t}>
+				<LiveGameCard {...defaultProps} game={withTimeouts(1, 0)} />
+			</TranslationContext.Provider>,
+		);
+		cy.get('.timeout-dots').last().should('have.attr', 'aria-label', 'HOM: 1 timeout left');
+		cy.get('.timeout-dots').first().should('have.attr', 'aria-label', 'AWY: 0 timeouts left');
 	});
 
 	it('falls back to a numeral for a sport with more timeouts than fit', () => {

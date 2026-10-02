@@ -518,7 +518,10 @@
 		"shootout": "点球 {away}–{home}",
 		"downDistanceAt": "{fieldPosition} {downDistance}",
 		"teamRank": "排名第{rank}",
-		"timeoutsRemaining": "{team}：还剩 {count} 次暂停",
+		"timeoutsRemaining": {
+			"1": "{team}：还剩 1 次暂停",
+			"n": "{team}：还剩 $1 次暂停"
+		},
 		"timeoutsShort": "{count} TO",
 		"powerScore": "PowerScore",
 		"vs": "vs",

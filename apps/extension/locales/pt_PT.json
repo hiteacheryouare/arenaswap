@@ -518,7 +518,10 @@
 		"shootout": "GP {away}–{home}",
 		"downDistanceAt": "{downDistance} na {fieldPosition}",
 		"teamRank": "Classificado #{rank}",
-		"timeoutsRemaining": "{team}: restam {count} tempos mortos",
+		"timeoutsRemaining": {
+			"1": "{team}: resta 1 tempo morto",
+			"n": "{team}: restam $1 tempos mortos"
+		},
 		"timeoutsShort": "{count} TO",
 		"powerScore": "PowerScore",
 		"vs": "vs",

@@ -518,7 +518,10 @@
 		"shootout": "PENS {away}–{home}",
 		"downDistanceAt": "{downDistance} at {fieldPosition}",
 		"teamRank": "Ranked #{rank}",
-		"timeoutsRemaining": "{team}: {count} timeouts left",
+		"timeoutsRemaining": {
+			"1": "{team}: 1 timeout left",
+			"n": "{team}: $1 timeouts left"
+		},
 		"timeoutsShort": "{count} TO",
 		"powerScore": "PowerScore",
 		"vs": "vs",
