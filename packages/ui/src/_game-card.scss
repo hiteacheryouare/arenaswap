@@ -95,18 +95,14 @@
 	}
 }
 
-@keyframes livePulse {
-	0%, 100% { opacity: 1; }
-	50%       { opacity: 0.3; }
-}
-
+// Still, not pulsing: LIVE beside it already says the game is on, and a blink on every live card
+// pulls the eye away from the scores it sits above.
 .live-dot {
 	width:         6px;
 	height:        6px;
 	border-radius: 50%;
 	background:    #e53935;
 	flex-shrink:   0;
-	animation:     livePulse m.$motion-pulse m.$motion-ease-in-out infinite;
 }
 
 .live-status-label {
@@ -925,7 +921,6 @@ button.game-meta-attribution {
 @include m.reduced-motion {
 	.flip-score-digit-out,
 	.flip-score-digit-in,
-	.live-dot,
 	.game-card-ps-progress .progress-bar,
 	.ff-marker,
 	.ff-first-down,
