@@ -38,13 +38,24 @@ const formatTimeLabel = (timestamp: number): string => (
 	new Date(timestamp).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
 );
 
+// Read when an option is built rather than once at load, so a chart drawn after the setting
+// changes follows it. Node has no matchMedia, and the tests there build options with motion on.
+const prefersReducedMotion = (): boolean => (
+	typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches
+);
+
+// ECharts animates every later setOption too, at its own 300ms cubicInOut unless told otherwise,
+// so each poll's update is put on the same scale as the first draw.
 const baseOption = (
 	labels: string[],
 	palette: chartPalette,
 	gridTop = 24,
 ): EChartsOption => ({
+	animation: !prefersReducedMotion(),
 	animationDuration: motionDuration.slow,
 	animationEasing: chartEasing,
+	animationDurationUpdate: motionDuration.base,
+	animationEasingUpdate: chartEasing,
 	tooltip: {
 		trigger: 'axis',
 		backgroundColor: palette.tooltipBackground,

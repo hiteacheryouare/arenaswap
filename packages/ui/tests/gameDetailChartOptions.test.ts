@@ -7,6 +7,7 @@ import {
 	buildTeamScoreOption,
 	buildWinProbabilityOption,
 } from '../src/components/gameDetailChartOptions';
+import { chartEasing, motionDuration } from '../src/motion';
 
 // The four charts on the game detail screen. None of them can fail loudly: a chart handed the wrong
 // field, the wrong team's colour or a label list one short of its data still draws, and what it
@@ -83,6 +84,27 @@ const contrastOnChart = (hex: string): number => {
 	const luminance = 0.2126 * srgbChannel(red!) + 0.7152 * srgbChannel(green!) + 0.0722 * srgbChannel(blue!);
 	return (luminance + 0.05) / (0.0055 + 0.05);
 };
+
+describe('chart motion', () => {
+	const history = [0, 1, 2].map(index => powerPoint(index));
+
+	afterEach(() => {
+		delete (globalThis as { matchMedia?: unknown }).matchMedia;
+	});
+
+	test('puts every later update on the motion scale, not the library default', () => {
+		const option = buildPowerScoreOption(history);
+		expect(option.animation).toBe(true);
+		expect(option.animationDurationUpdate).toBe(motionDuration.base);
+		expect(option.animationEasingUpdate).toBe(chartEasing);
+	});
+
+	test('draws without animating when the reader asks for reduced motion', () => {
+		(globalThis as { matchMedia?: unknown }).matchMedia = (query: string) => ({ matches: query.includes('reduce') });
+		expect(buildPowerScoreOption(history).animation).toBe(false);
+		expect(buildWinProbabilityOption([0.4, 0.5], game).animation).toBe(false);
+	});
+});
 
 describe('buildPowerScoreOption', () => {
 	const history = [0, 1, 2, 3, 4].map(index => powerPoint(index));
