@@ -266,6 +266,7 @@ const useSummaryData = (game: SummaryGameArg): summaryDataResult => {
 		}
 
 		if (gameId.startsWith('mock-')) {
+			// oxlint-disable-next-line react/set-state-in-effect
 			setRecords(mockRecordsMap[gameId] ?? emptyTeamRecords);
 			setGameDurationMins(mockGameDurationMins[gameId] ?? null);
 			// Unlike the rest of the demo state, a table is worth showing before a start: it is
