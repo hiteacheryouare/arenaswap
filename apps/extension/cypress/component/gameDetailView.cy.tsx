@@ -330,6 +330,25 @@ describe('gameDetailView hero', () => {
 		}
 	});
 
+	// The longest one-word club name in a league we carry. A word that will not fit its 80px column
+	// has to break somewhere, and a hyphen is a better place than past the column into the score.
+	it('keeps a long club name inside its column, live and before the start', () => {
+		const longNames = (game: Game): Game => ({
+			...game,
+			league: 'ger.1',
+			sportType: 'soccer',
+			awayTeam: { ...game.awayTeam, name: 'Borussia Mönchengladbach' },
+			homeTeam: { ...game.homeTeam, name: 'Wolverhampton Wanderers' },
+		});
+		const fits = (selector: string) => cy.get(selector).should('have.length', 2).each(([name]: JQuery<HTMLElement>) => {
+			expect(name.scrollWidth, `${name.textContent} inside its column`).to.be.at.most(name.clientWidth + 0.5);
+		});
+		mountDetail(longNames(makeLiveGame()), { excitementResult: excitement });
+		fits('.game-detail-team-name');
+		mountDetail(longNames(makePreGame(2 * hourMs)));
+		fits('.gd-poster-name');
+	});
+
 	it('falls back to the abbreviation for a team with no full name', () => {
 		const game = makeLiveGame();
 		mountDetail({ ...game, awayTeam: { ...game.awayTeam, name: '' } }, { excitementResult: excitement });
