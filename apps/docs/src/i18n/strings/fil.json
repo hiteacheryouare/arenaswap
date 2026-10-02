@@ -435,7 +435,7 @@
 			"sectionOtherLiveGames": "Mga Live na Laro",
 			"sectionUpNext": "Susunod",
 			"enableToggleLabel": "I-enable ang awtomatikong paglipat",
-			"onStandbyStream": "Naka-Standby Stream, naghihintay ng aksyon"
+			"onStandbyStream": "Naka-Standby Stream hanggang may uminit"
 		},
 		"tabAssign": {
 			"placeholder": "— Mag-assign ng tab —"
@@ -450,7 +450,7 @@
 			"groupSwitching": "Paglipat",
 			"groupSwitchingDesc": "Kung gaano kasabik ang ArenaSwap na ilipat ka sa mas magandang laro.",
 			"groupScoring": "Scoring",
-			"groupScoringDesc": "Kung aling mga signal ang bumubuo sa PowerScore, at ano ang nagbibigay ng bonus points.",
+			"groupScoringDesc": "Kung aling mga signal ang bumubuo sa PowerScore, at ano ang nagbibigay ng boost.",
 			"groupLeagues": "Mga Liga",
 			"groupLeaguesDesc": "Kung aling mga liga ang tine-track, at kung may sariling seksyon ba ang bawat isa.",
 			"groupDisplay": "Display",
@@ -472,7 +472,7 @@
 			"off": "Off"
 		},
 		"favoriteTeamBonus": {
-			"label": "Bonus ng Paboritong Team"
+			"label": "Boost ng Paboritong Team"
 		},
 		"postseasonBoost": {
 			"label": "Boost sa Postseason"

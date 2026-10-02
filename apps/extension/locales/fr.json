@@ -238,7 +238,7 @@
 		"groupSwitching": "Changement",
 		"groupSwitchingDesc": "L'empressement d'ArenaSwap à t'emmener vers un meilleur match.",
 		"groupScoring": "Notation",
-		"groupScoringDesc": "Les signaux qui alimentent le PowerScore et ce qui rapporte des points bonus.",
+		"groupScoringDesc": "Les signaux qui alimentent le PowerScore et ce qui rapporte un bonus.",
 		"groupFavorites": "Équipes favorites",
 		"groupFavoritesDesc": "Les équipes que tu suis et ce que rapporte un favori.",
 		"followedTeams": "Équipes que tu suis",
@@ -299,7 +299,7 @@
 		"tourButton": "Visite guidée",
 		"settingsButton": "Paramètres",
 		"guideButton": "Guide",
-		"onStandbyStream": "En Standby Stream, en attente d'action",
+		"onStandbyStream": "Sur Standby Stream jusqu'à ce que ça chauffe",
 		"sectionActiveLiveTabs": "Onglets actifs",
 		"sectionOtherLiveGames": "Matchs en direct",
 		"sectionUpNext": "À suivre",
@@ -583,7 +583,7 @@
 		"tooltipFavoriteBoost": "Ajouté quand une de tes équipes favorites est dans ce match. Avoir deux favoris dans la rencontre rapporte plus qu'un seul.",
 		"tooltipGameBoost": "Points que tu as appliqués manuellement à ce match via le contrôle de coup de boost.",
 		"tooltipScoringOpportunity": "Ajouté selon la position de marque active. Au football américain, c'est la zone rouge ; au baseball et softball, ça s'ajuste au nombre de coureurs sur les bases.",
-		"tooltipPostseasonBoost": "Un bonus fixe appliqué aux matchs de playoffs, finales de conférence et championnats.",
+		"tooltipPostseasonBoost": "Un bonus pour les matchs d'après-saison : playoffs, finales de conférence et championnats.",
 		"reasonJoiner": ", ",
 		"reasonTied": "égalité",
 		"reasonMarginPoints": {
@@ -671,7 +671,7 @@
 		"back": "Retour",
 		"step": "Étape $1 sur $2",
 		"title": "Choisis tes équipes",
-		"explainer": "Les favoris reçoivent un bonus de score pour qu'ArenaSwap privilégie leurs matchs.",
+		"explainer": "Les favoris reçoivent un bonus de PowerScore, pour que leurs matchs remportent plus de changements.",
 		"yourFavorites": "Tes favoris",
 		"leagueNotTracked": "{league} · non suivie",
 		"searchPlaceholder": "Rechercher des équipes…",
@@ -730,7 +730,7 @@
 		"boostsSubtitle": "Les ajustements qui affinent le score",
 		"clockStallPenaltyName": "Pénalité d'horloge gelée",
 		"clockStallPenaltyMeasured": "Appliquée quand l'horloge se fige sur plusieurs mises à jour, réduisant le sous-total des signaux.",
-		"volatilityName": "Bonus / pénalité de volatilité",
+		"volatilityName": "Bonus ou pénalité de volatilité",
 		"volatilityMeasured": "Booste les matchs avec probabilité de victoire proche de 50 %, pénalise les dominations constantes.",
 		"favoriteBoostName": "Bonus favori",
 		"favoriteBoostMeasured": "Ajouté quand une de tes équipes favorites est dans la rencontre.",
@@ -739,7 +739,7 @@
 		"scoringOpportunityMeasured": "Ajouté automatiquement pour les drives en zone rouge (football américain) ou les coureurs sur les bases (baseball/softball).",
 		"scoringOpportunityName": "Occasion de marquer",
 		"postseasonBoostName": "Bonus de playoffs",
-		"postseasonBoostMeasured": "Un bonus fixe appliqué aux matchs de playoffs, finales de conférence et championnats.",
+		"postseasonBoostMeasured": "Un bonus pour les matchs de playoffs, finales de conférence et championnats.",
 		"back": "Retour",
 		"next": "Suivant",
 		"tapHint": "Clique n'importe où pour continuer"
@@ -779,7 +779,7 @@
 		"sensitivityHelp": "Contrôle l'écart de PowerScore nécessaire avant qu'ArenaSwap change d'onglet.",
 		"cooldownLabel": "Délai entre les changements",
 		"cooldownHelp": "Définit le temps minimum entre les changements automatiques pour éviter les basculements rapides.",
-		"moreLeagues": "+ d'autres dans l'onglet Ligues",
+		"moreLeagues": "+ d'autres dans Paramètres → Ligues",
 		"back": "Retour",
 		"next": "Suivant"
 	},
@@ -796,7 +796,7 @@
 		"signalComeback": "Remontée",
 		"detailPreviewCaption": "Des graphiques de score et l'historique complet des signaux sont aussi disponibles.",
 		"body": "Clique sur n'importe quelle fiche de match en direct pour ouvrir la vue détaillée. Tu verras la décomposition complète de chaque signal contribuant à son PowerScore, plus un graphique de l'évolution du score dans le temps.",
-		"bodyAfterTap": "Tu trouveras aussi un curseur de coup de boost pour prioriser temporairement n'importe quel match.",
+		"bodyAfterTap": "Tu trouveras aussi un champ de coup de boost pour faire monter n'importe quel match.",
 		"back": "Retour",
 		"next": "Suivant"
 	},
@@ -835,7 +835,7 @@
 		"returnTitle": "Il revient tout seul",
 		"returnBody": "Dès qu'un match se réchauffe au-dessus de ton seuil, ArenaSwap te ramène dessus immédiatement.",
 		"chooseTitle": "Tu choisis l'onglet de standby",
-		"chooseBody": "Ouvre le flux que tu veux dans un onglet, puis sélectionne-le depuis le menu déroulant dans Paramètres.",
+		"chooseBody": "Ouvre le flux que tu veux dans un onglet, puis choisis-le comme onglet de standby.",
 		"next": "Suivant",
 		"setupTitle": "Comment le configurer",
 		"setupSubtitle": "Deux choses à régler ci-dessous.",
@@ -865,7 +865,7 @@
 		"close": "Fermer"
 	},
 	"notification": {
-		"standbyTitle": "Sur le Standby Stream | ArenaSwap",
+		"standbyTitle": "Garé sur le Standby Stream",
 		"standbyMessage": "Tous les matchs se sont endormis. Positionné sur ton Standby Stream.",
 		"switchedTitle": "Basculé → {score} | ArenaSwap",
 		"switchedMessage": "On t'emmène à {venue} maintenant !",
@@ -902,8 +902,8 @@
 	},
 	"favoriteTeamBonus": {
 		"label": "Bonus d'équipe favorite",
-		"perTeam": "+$1 par équipe",
-		"explainer": "Appliqué une fois par équipe favorite dans un match. Si les deux équipes sont en favoris, le bonus est doublé."
+		"perTeam": "+$1 pts par équipe",
+		"explainer": "Appliqué une fois par équipe favorite dans un match : deux favoris, double bonus."
 	},
 	"postseasonBoost": {
 		"label": "Bonus de playoffs",
@@ -924,18 +924,18 @@
 		"main": {
 			"t0": "Mets une étoile sur tes équipes favorites pour épingler leurs matchs en haut de la liste.",
 			"t1": "Associe un onglet depuis le menu déroulant à côté de chaque match pour qu'ArenaSwap sache où aller.",
-			"t2": "Un PowerScore plus élevé remporte le changement — garde un œil sur les badges colorés.",
+			"t2": "Le PowerScore le plus élevé remporte le changement. Surveille la barre sur chaque fiche.",
 			"t3": "Active « Afficher les matchs à venir » dans Paramètres pour associer des onglets avant le début du match.",
-			"t4": "Pas encore de matchs en direct ? Le Mode démo dans Paramètres te laisse voir ArenaSwap en action avec de faux matchs.",
+			"t4": "Pas encore de matchs en direct ? Le Mode démo dans Paramètres en met quelques-uns en scène pour voir ArenaSwap à l'œuvre.",
 			"t5": "Standby Stream maintient un onglet de secours en lecture quand tous les matchs se calment — active-le dans Paramètres."
 		},
 		"setup": {
-			"t0": "Baisse le délai pour changer plus agressivement pendant les fins de match chaotiques.",
-			"t1": "Monte le bonus d'équipe favorite pour t'assurer que ton équipe remporte presque toujours le changement.",
-			"t2": "Augmente le délai de changement pour te laisser un instant avant que l'onglet bascule vraiment.",
-			"t3": "Le Mode démo lance des matchs simulés, parfait pour régler les curseurs sans attendre l'action en direct.",
-			"t4": "La sensibilité contrôle l'avance de PowerScore nécessaire avant qu'ArenaSwap change.",
-			"t5": "Le Bonus de playoffs donne plus de poids aux playoffs et championnats pour que les grands moments remportent plus de changements.",
+			"t0": "Baisse le délai entre les changements pour basculer plus vite dans une fin de match folle.",
+			"t1": "Monte le bonus d'équipe favorite et ton équipe remportera presque toujours le changement.",
+			"t2": "Augmente le délai de changement pour avoir un instant avant que l'onglet bascule vraiment.",
+			"t3": "Le Mode démo joue des matchs scénarisés, pour régler tes paramètres sans attendre un vrai match.",
+			"t4": "La sensibilité de changement fixe l'avance de PowerScore nécessaire avant qu'ArenaSwap bascule.",
+			"t5": "Le bonus de playoffs donne plus de poids aux playoffs et aux finales, pour que les grands moments remportent plus de changements.",
 			"t6": "Utilise la section Signaux PowerScore pour désactiver ceux qui ne t'intéressent pas — ArenaSwap recalibrera tout automatiquement."
 		},
 		"detail": {

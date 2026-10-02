@@ -238,7 +238,7 @@
 		"groupSwitching": "切换",
 		"groupSwitchingDesc": "ArenaSwap 有多积极把您带到更精彩的比赛。",
 		"groupScoring": "评分",
-		"groupScoringDesc": "哪些信号构成 PowerScore，以及什么能加分。",
+		"groupScoringDesc": "哪些信号构成 PowerScore，以及什么能获得加成。",
 		"groupFavorites": "收藏球队",
 		"groupFavoritesDesc": "您关注的球队，以及收藏能加多少分。",
 		"followedTeams": "您关注的球队",
@@ -299,7 +299,7 @@
 		"tourButton": "引导教程",
 		"settingsButton": "设置",
 		"guideButton": "节目表",
-		"onStandbyStream": "处于 Standby Stream，等待精彩时刻",
+		"onStandbyStream": "在 Standby Stream 待命，等比赛升温",
 		"sectionActiveLiveTabs": "活跃标签页",
 		"sectionOtherLiveGames": "直播比赛",
 		"sectionUpNext": "即将开赛",
@@ -583,7 +583,7 @@
 		"tooltipFavoriteBoost": "当您收藏的球队参与本场比赛时加分。若双方球队均为收藏，加成超过单队收藏。",
 		"tooltipGameBoost": "您通过比赛加速控件手动为本场比赛添加的分数。",
 		"tooltipScoringOpportunity": "根据当前进攻位置自动加分。橄榄球中为红区；棒球和垒球中根据垒上跑者数量递增。",
-		"tooltipPostseasonBoost": "对季后赛、分区决赛和冠军赛等赛事统一给予固定加分。",
+		"tooltipPostseasonBoost": "为季后赛、分区决赛和冠军赛等赛事提供的加成。",
 		"reasonJoiner": "，",
 		"reasonTied": "比分持平",
 		"reasonMarginPoints": {
@@ -671,7 +671,7 @@
 		"back": "返回",
 		"step": "第 $1 步，共 $2 步",
 		"title": "选择您的球队",
-		"explainer": "收藏的球队将获得评分加成，让 ArenaSwap 优先推送这些比赛。",
+		"explainer": "收藏的球队会获得 PowerScore 加成，让它们的比赛赢得更多切换。",
 		"yourFavorites": "您的收藏",
 		"leagueNotTracked": "{league} · 未追踪",
 		"searchPlaceholder": "搜索球队……",
@@ -730,7 +730,7 @@
 		"boostsSubtitle": "对分数进行精细调整的因子",
 		"clockStallPenaltyName": "时钟停滞惩罚",
 		"clockStallPenaltyMeasured": "当比赛时钟在多次更新中停滞时触发，降低信号小计。",
-		"volatilityName": "波动加成 / 惩罚",
+		"volatilityName": "波动加成或惩罚",
 		"volatilityMeasured": "胜率长期接近 50% 的比赛获得加成；一边倒的比赛被扣分。",
 		"favoriteBoostName": "收藏球队加成",
 		"favoriteBoostMeasured": "当您收藏的球队参与本场对阵时加分。",
@@ -739,7 +739,7 @@
 		"scoringOpportunityMeasured": "橄榄球红区进攻或棒球/垒球垒上有人时自动加分。",
 		"scoringOpportunityName": "得分机会",
 		"postseasonBoostName": "季后赛加成",
-		"postseasonBoostMeasured": "对季后赛、分区决赛和冠军赛统一给予固定加分。",
+		"postseasonBoostMeasured": "为季后赛、分区决赛和冠军赛提供的加成。",
 		"back": "返回",
 		"next": "下一步",
 		"tapHint": "点击屏幕任意位置继续"
@@ -779,7 +779,7 @@
 		"sensitivityHelp": "控制 PowerScore 差距需要多大，ArenaSwap 才会切换标签页。",
 		"cooldownLabel": "切换冷却",
 		"cooldownHelp": "设置自动切换之间的最短间隔，防止标签页来回乱跳。",
-		"moreLeagues": "+ 更多联赛在「联赛」标签页",
+		"moreLeagues": "+ 更多联赛见「设置 → 联赛」",
 		"back": "返回",
 		"next": "下一步"
 	},
@@ -796,7 +796,7 @@
 		"signalComeback": "逆转",
 		"detailPreviewCaption": "比分图表和完整信号历史也可在此查看。",
 		"body": "点击任意直播比赛卡片，打开详情视图。您将看到影响 PowerScore 的每项信号的完整分解，以及得分随时间变化的图表。",
-		"bodyAfterTap": "您还可以在此找到手动比赛加速滑块，随时临时提升任意比赛的优先级。",
+		"bodyAfterTap": "您还可以在这里找到比赛加速输入框，把任意比赛往前排。",
 		"back": "返回",
 		"next": "下一步"
 	},
@@ -835,7 +835,7 @@
 		"returnTitle": "它自己会回来",
 		"returnBody": "一旦任意比赛重新升温并超过阈值，ArenaSwap 会立刻将您切换回去。",
 		"chooseTitle": "由您选择待机标签页",
-		"chooseBody": "在标签页中打开任意您想看的直播流，然后在设置的下拉菜单中选择它。",
+		"chooseBody": "在标签页中打开您想看的任意直播流，然后把它设为待机标签页。",
 		"next": "下一步",
 		"setupTitle": "如何设置",
 		"setupSubtitle": "需要配置以下两项。",
@@ -865,7 +865,7 @@
 		"close": "关闭"
 	},
 	"notification": {
-		"standbyTitle": "Standby Stream 中 | ArenaSwap",
+		"standbyTitle": "已停在 Standby Stream",
 		"standbyMessage": "所有比赛都归于平静。已停留在您的 Standby Stream。",
 		"switchedTitle": "已切换 → {score} | ArenaSwap",
 		"switchedMessage": "现在带您前往 {venue}！",
@@ -902,8 +902,8 @@
 	},
 	"favoriteTeamBonus": {
 		"label": "收藏球队加成",
-		"perTeam": "+$1（每支球队）",
-		"explainer": "每场比赛中每支收藏球队各加一次。若双方均为收藏球队，加成翻倍。"
+		"perTeam": "每支球队 +$1 分",
+		"explainer": "比赛中每有一支收藏球队就加一次，所以双方都是收藏球队时加成翻倍。"
 	},
 	"postseasonBoost": {
 		"label": "季后赛加成",
@@ -924,17 +924,17 @@
 		"main": {
 			"t0": "收藏您的球队，将其比赛置顶显示在列表最前。",
 			"t1": "在每场比赛旁的下拉菜单中分配标签页，让 ArenaSwap 知道该切向哪里。",
-			"t2": "PowerScore 更高的比赛赢得切换——留意彩色徽章。",
+			"t2": "PowerScore 更高的比赛赢得切换。留意每张卡片上的进度条。",
 			"t3": "在设置中开启「显示即将开赛的比赛」，提前分配好标签页。",
-			"t4": "还没有直播比赛？设置中的演示模式可让您用模拟比赛体验 ArenaSwap 的运作方式。",
+			"t4": "还没有直播比赛？设置中的演示模式会安排几场，让您看看 ArenaSwap 如何运作。",
 			"t5": "当所有比赛都趋于平淡时，Standby Stream 会保持一个备用标签页继续播放——在设置中启用。"
 		},
 		"setup": {
-			"t0": "降低冷却时间，在混乱的收尾阶段更激进地切换。",
-			"t1": "提高收藏球队加成，确保您的球队几乎总能赢得切换。",
-			"t2": "增加切换延迟，在标签页真正切换前给自己一点缓冲时间。",
-			"t3": "演示模式运行模拟比赛，无需等待实时赛事即可完美调节各项滑块。",
-			"t4": "灵敏度控制 ArenaSwap 切换所需的 PowerScore 领先幅度。",
+			"t0": "调低切换冷却，在混乱的收尾阶段切换得更快。",
+			"t1": "调高收藏球队加成，您的球队几乎总能赢得切换。",
+			"t2": "调高切换延迟，在标签页真正切换前留出一点缓冲。",
+			"t3": "演示模式会播放预设的比赛，无需等待真实比赛即可调整设置。",
+			"t4": "切换灵敏度决定 ArenaSwap 切换前需要多大的 PowerScore 领先。",
 			"t5": "季后赛加成为季后赛和冠军赛额外加权，让最重要的时刻赢得更多切换。",
 			"t6": "使用 PowerScore 信号部分关闭您不关心的信号——ArenaSwap 会自动重新缩放。"
 		},

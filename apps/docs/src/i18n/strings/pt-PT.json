@@ -435,7 +435,7 @@
 			"sectionOtherLiveGames": "Jogos em directo",
 			"sectionUpNext": "A seguir",
 			"enableToggleLabel": "Activar mudança automática",
-			"onStandbyStream": "Em Standby Stream, à espera de acção"
+			"onStandbyStream": "No Standby Stream até algo aquecer"
 		},
 		"tabAssign": {
 			"placeholder": "— Associa um separador —"
@@ -450,7 +450,7 @@
 			"groupSwitching": "Mudanças",
 			"groupSwitchingDesc": "A pressa com que o ArenaSwap te leva para um jogo melhor.",
 			"groupScoring": "Pontuação",
-			"groupScoringDesc": "Que sinais alimentam o PowerScore e o que rende pontos extra.",
+			"groupScoringDesc": "Que sinais alimentam o PowerScore e o que rende um impulso.",
 			"groupLeagues": "Ligas",
 			"groupLeaguesDesc": "Que ligas são monitorizadas e se cada uma tem a sua própria secção.",
 			"groupDisplay": "Apresentação",
@@ -472,7 +472,7 @@
 			"off": "Desactivado"
 		},
 		"favoriteTeamBonus": {
-			"label": "Bónus de equipa favorita"
+			"label": "Impulso de equipa favorita"
 		},
 		"postseasonBoost": {
 			"label": "Impulso de pós-temporada"

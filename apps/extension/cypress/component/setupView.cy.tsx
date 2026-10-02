@@ -219,8 +219,8 @@ describe('setupView search', () => {
 
 	it('does not spill a group description match onto every setting in that group', () => {
 		cy.mount(<SetupView {...defaultProps} />);
-		cy.get('#settingsSearch').type('bonus');
-		cy.contains('.settings-index-row', 'Favorite team bonus').should('exist');
+		cy.get('#settingsSearch').type('boost');
+		cy.contains('.settings-index-row', 'Favorite team boost').should('exist');
 		cy.contains('.settings-index-row', 'Postseason boost').should('exist');
 		cy.contains('.settings-index-row', 'Closeness').should('not.exist');
 	});

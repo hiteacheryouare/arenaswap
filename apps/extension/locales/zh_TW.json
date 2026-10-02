@@ -238,7 +238,7 @@
 		"groupSwitching": "切換",
 		"groupSwitchingDesc": "ArenaSwap 有多積極把你帶到更精彩的比賽。",
 		"groupScoring": "評分",
-		"groupScoringDesc": "哪些信號會影響 PowerScore，以及哪些能加分。",
+		"groupScoringDesc": "哪些信號會影響 PowerScore，以及哪些能獲得加成。",
 		"groupFavorites": "收藏球隊",
 		"groupFavoritesDesc": "你關注的球隊，以及收藏能加多少分。",
 		"followedTeams": "你關注的球隊",
@@ -299,7 +299,7 @@
 		"tourButton": "導覽",
 		"settingsButton": "設定",
 		"guideButton": "節目表",
-		"onStandbyStream": "目前在 Standby Stream，等待精彩時刻",
+		"onStandbyStream": "在 Standby Stream 待命，等比賽升溫",
 		"sectionActiveLiveTabs": "活躍分頁",
 		"sectionOtherLiveGames": "直播比賽",
 		"sectionUpNext": "即將開賽",
@@ -583,7 +583,7 @@
 		"tooltipFavoriteBoost": "當你收藏的球隊參與這場比賽時加分。若雙方都是收藏球隊，加成會比只有一隊時更多。",
 		"tooltipGameBoost": "你透過比賽加成控制項，手動為這場比賽加的分數。",
 		"tooltipScoringOpportunity": "依目前的進攻位置自動加分。美式足球中為紅區進攻；棒球和壘球中則依壘上跑者人數遞增。",
-		"tooltipPostseasonBoost": "對季後賽、聯盟冠軍賽和總冠軍賽等賽事，統一給予固定加分。",
+		"tooltipPostseasonBoost": "為季後賽、聯盟冠軍賽和總冠軍賽等賽事提供的加成。",
 		"reasonJoiner": "，",
 		"reasonTied": "比分平手",
 		"reasonMarginPoints": {
@@ -671,7 +671,7 @@
 		"back": "返回",
 		"step": "第 $1 步，共 $2 步",
 		"title": "選擇你的球隊",
-		"explainer": "收藏的球隊會獲得評分加成，讓 ArenaSwap 更偏好這些比賽。",
+		"explainer": "收藏的球隊會獲得 PowerScore 加成，讓它們的比賽贏得更多切換。",
 		"yourFavorites": "你的收藏",
 		"leagueNotTracked": "{league} · 未追蹤",
 		"searchPlaceholder": "搜尋球隊……",
@@ -730,7 +730,7 @@
 		"boostsSubtitle": "用來微調分數的調整項",
 		"clockStallPenaltyName": "時鐘停滯扣分",
 		"clockStallPenaltyMeasured": "當比賽時鐘連續多次更新都停滯時觸發，降低信號小計。",
-		"volatilityName": "波動加成／扣分",
+		"volatilityName": "波動加成或扣分",
 		"volatilityMeasured": "勝率長期接近 50% 的比賽會獲得加成；一面倒的比賽則會被扣分。",
 		"favoriteBoostName": "收藏球隊加成",
 		"favoriteBoostMeasured": "當你收藏的球隊參與這場對戰時加分。",
@@ -739,7 +739,7 @@
 		"scoringOpportunityMeasured": "美式足球紅區進攻，或棒球／壘球壘上有跑者時自動加分。",
 		"scoringOpportunityName": "得分機會",
 		"postseasonBoostName": "季後賽加成",
-		"postseasonBoostMeasured": "對季後賽、聯盟冠軍賽和總冠軍賽，統一給予固定加分。",
+		"postseasonBoostMeasured": "為季後賽、聯盟冠軍賽和總冠軍賽提供的加成。",
 		"back": "返回",
 		"next": "下一步",
 		"tapHint": "點擊畫面任何位置繼續"
@@ -779,7 +779,7 @@
 		"sensitivityHelp": "控制 PowerScore 差距要多大，ArenaSwap 才會切換分頁。",
 		"cooldownLabel": "切換冷卻",
 		"cooldownHelp": "設定自動切換之間的最短間隔，避免分頁來回亂跳。",
-		"moreLeagues": "+ 更多聯賽在「聯賽」分頁",
+		"moreLeagues": "+ 更多聯賽見「設定 → 聯賽」",
 		"back": "返回",
 		"next": "下一步"
 	},
@@ -796,7 +796,7 @@
 		"signalComeback": "逆轉",
 		"detailPreviewCaption": "這裡也能看到比分圖表和完整的信號歷史。",
 		"body": "點一下任何直播比賽卡片，就能打開詳情畫面。你會看到影響 PowerScore 的每項信號完整分析，還有分數隨時間變化的圖表。",
-		"bodyAfterTap": "這裡還有手動比賽加成滑桿，隨時能臨時提升任何比賽的優先權。",
+		"bodyAfterTap": "這裡還有比賽加成欄位，能把任何比賽往前排。",
 		"back": "返回",
 		"next": "下一步"
 	},
@@ -835,7 +835,7 @@
 		"returnTitle": "它會自己切回來",
 		"returnBody": "只要有比賽重新熱起來、超過門檻，ArenaSwap 就會立刻把你切回去。",
 		"chooseTitle": "由你選擇待機分頁",
-		"chooseBody": "把你想看的直播開在一個分頁，再從設定的下拉選單中選擇它。",
+		"chooseBody": "把你想看的直播開在一個分頁，再把它設為待機分頁。",
 		"next": "下一步",
 		"setupTitle": "怎麼設定",
 		"setupSubtitle": "以下兩項需要設定。",
@@ -865,7 +865,7 @@
 		"close": "關閉"
 	},
 	"notification": {
-		"standbyTitle": "Standby Stream 中 | ArenaSwap",
+		"standbyTitle": "已停在 Standby Stream",
 		"standbyMessage": "所有比賽都冷了下來。已停留在你的 Standby Stream。",
 		"switchedTitle": "已切換 → {score} | ArenaSwap",
 		"switchedMessage": "現在帶你前往 {venue}！",
@@ -902,8 +902,8 @@
 	},
 	"favoriteTeamBonus": {
 		"label": "收藏球隊加成",
-		"perTeam": "+$1（每支球隊）",
-		"explainer": "每場比賽中每支收藏球隊各加一次分；若雙方都是收藏球隊，加成會加倍。"
+		"perTeam": "每支球隊 +$1 分",
+		"explainer": "比賽中每有一支收藏球隊就加一次，所以雙方都是收藏球隊時加成加倍。"
 	},
 	"postseasonBoost": {
 		"label": "季後賽加成",
@@ -924,17 +924,17 @@
 		"main": {
 			"t0": "收藏你喜愛的球隊，把它們的比賽釘在清單最上面。",
 			"t1": "在每場比賽旁的下拉選單指派分頁，讓 ArenaSwap 知道該切到哪裡。",
-			"t2": "PowerScore 較高的比賽會贏得切換——留意彩色徽章。",
+			"t2": "PowerScore 較高的比賽會贏得切換。留意每張卡片上的長條。",
 			"t3": "在設定中開啟「顯示即將開賽的比賽」，就能提前指派好分頁。",
-			"t4": "還沒有直播比賽？設定中的示範模式能讓你用虛構比賽體驗 ArenaSwap 的運作方式。",
+			"t4": "還沒有直播比賽？設定中的示範模式會安排幾場，讓你看看 ArenaSwap 怎麼運作。",
 			"t5": "當所有比賽都冷場時，Standby Stream 會讓一個備用分頁繼續播放——在設定中啟用它。"
 		},
 		"setup": {
-			"t0": "調低冷卻時間，在混亂的收尾階段更積極地切換。",
-			"t1": "調高收藏球隊加成，讓你支持的球隊幾乎每次都能贏得切換。",
-			"t2": "拉長切換延遲，讓分頁真正切換前多給自己一點緩衝時間。",
-			"t3": "示範模式會執行模擬比賽，很適合在不用等待實況的情況下調校各項滑桿。",
-			"t4": "靈敏度控制 ArenaSwap 切換前，PowerScore 需要領先多少。",
+			"t0": "調低切換冷卻，在混亂的收尾階段切得更快。",
+			"t1": "調高收藏球隊加成，你的球隊幾乎每次都能贏得切換。",
+			"t2": "拉長切換延遲，在分頁真正切換前留一點緩衝。",
+			"t3": "示範模式會播放預先排好的比賽，不用等真的比賽就能調整設定。",
+			"t4": "切換靈敏度決定 ArenaSwap 切換前需要多大的 PowerScore 領先。",
 			"t5": "季後賽加成會替季後賽和冠軍賽額外加權，讓最關鍵的時刻贏得更多切換。",
 			"t6": "在 PowerScore 信號區塊停用你不在乎的信號——ArenaSwap 會自動重新校準。"
 		},

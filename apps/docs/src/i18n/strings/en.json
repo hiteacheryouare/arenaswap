@@ -435,7 +435,7 @@
 			"sectionOtherLiveGames": "Live Games",
 			"sectionUpNext": "Up Next",
 			"enableToggleLabel": "Enable auto-switching",
-			"onStandbyStream": "On standby stream, waiting for action"
+			"onStandbyStream": "On Standby Stream until something heats up"
 		},
 		"tabAssign": {
 			"placeholder": "— Assign a tab —"
@@ -450,7 +450,7 @@
 			"groupSwitching": "Switching",
 			"groupSwitchingDesc": "How eager ArenaSwap is to move you to a better game.",
 			"groupScoring": "Scoring",
-			"groupScoringDesc": "Which signals feed a PowerScore, and what earns bonus points.",
+			"groupScoringDesc": "Which signals feed a PowerScore, and what earns a boost.",
 			"groupLeagues": "Leagues",
 			"groupLeaguesDesc": "Which leagues get tracked, and whether each one gets its own section.",
 			"groupDisplay": "Display",
@@ -472,7 +472,7 @@
 			"off": "Off"
 		},
 		"favoriteTeamBonus": {
-			"label": "Favorite team bonus"
+			"label": "Favorite team boost"
 		},
 		"postseasonBoost": {
 			"label": "Postseason boost"

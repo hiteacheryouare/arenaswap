@@ -435,7 +435,7 @@
 			"sectionOtherLiveGames": "Matchs en direct",
 			"sectionUpNext": "À suivre",
 			"enableToggleLabel": "Activer le changement automatique",
-			"onStandbyStream": "En Standby Stream, en attente d'action"
+			"onStandbyStream": "Sur Standby Stream jusqu'à ce que ça chauffe"
 		},
 		"tabAssign": {
 			"placeholder": "— Associer un onglet —"
@@ -450,7 +450,7 @@
 			"groupSwitching": "Changement",
 			"groupSwitchingDesc": "L'empressement d'ArenaSwap à t'emmener vers un meilleur match.",
 			"groupScoring": "Notation",
-			"groupScoringDesc": "Les signaux qui alimentent le PowerScore et ce qui rapporte des points bonus.",
+			"groupScoringDesc": "Les signaux qui alimentent le PowerScore et ce qui rapporte un bonus.",
 			"groupLeagues": "Ligues",
 			"groupLeaguesDesc": "Les ligues suivies et si chacune a sa propre section.",
 			"groupDisplay": "Affichage",

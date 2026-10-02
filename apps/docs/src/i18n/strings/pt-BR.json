@@ -435,7 +435,7 @@
 			"sectionOtherLiveGames": "Jogos ao vivo",
 			"sectionUpNext": "A seguir",
 			"enableToggleLabel": "Ativar troca automática",
-			"onStandbyStream": "No Standby Stream, aguardando ação"
+			"onStandbyStream": "No Standby Stream até algo esquentar"
 		},
 		"tabAssign": {
 			"placeholder": "— Atribuir uma aba —"
@@ -450,7 +450,7 @@
 			"groupSwitching": "Trocas",
 			"groupSwitchingDesc": "O quanto o ArenaSwap corre para te levar a um jogo melhor.",
 			"groupScoring": "Pontuação",
-			"groupScoringDesc": "Quais sinais alimentam o PowerScore e o que rende pontos extras.",
+			"groupScoringDesc": "Quais sinais alimentam o PowerScore e o que rende um impulso.",
 			"groupLeagues": "Ligas",
 			"groupLeaguesDesc": "Quais ligas são monitoradas e se cada uma tem a sua própria seção.",
 			"groupDisplay": "Exibição",
@@ -472,7 +472,7 @@
 			"off": "Desativado"
 		},
 		"favoriteTeamBonus": {
-			"label": "Bônus de time favorito"
+			"label": "Impulso de time favorito"
 		},
 		"postseasonBoost": {
 			"label": "Impulso de pós-temporada"

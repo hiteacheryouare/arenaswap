@@ -435,7 +435,7 @@
 			"sectionOtherLiveGames": "진행 중인 경기",
 			"sectionUpNext": "다음 경기",
 			"enableToggleLabel": "자동 전환 활성화",
-			"onStandbyStream": "Standby Stream 대기 중 — 액션을 기다리고 있어요"
+			"onStandbyStream": "뭔가 뜨거워질 때까지 Standby Stream에서 대기 중"
 		},
 		"tabAssign": {
 			"placeholder": "— 탭 할당 —"
@@ -450,7 +450,7 @@
 			"groupSwitching": "전환",
 			"groupSwitchingDesc": "ArenaSwap이 더 좋은 경기로 얼마나 적극적으로 전환할지 설정해요.",
 			"groupScoring": "점수 계산",
-			"groupScoringDesc": "PowerScore에 반영되는 시그널과 보너스 점수를 얻는 조건이에요.",
+			"groupScoringDesc": "PowerScore에 반영되는 시그널과 부스트를 받는 조건이에요.",
 			"groupLeagues": "리그",
 			"groupLeaguesDesc": "추적할 리그와 리그별 섹션 표시 여부를 설정해요.",
 			"groupDisplay": "화면 표시",
@@ -472,7 +472,7 @@
 			"off": "꺼짐"
 		},
 		"favoriteTeamBonus": {
-			"label": "응원팀 보너스"
+			"label": "응원팀 부스트"
 		},
 		"postseasonBoost": {
 			"label": "포스트시즌 부스트"

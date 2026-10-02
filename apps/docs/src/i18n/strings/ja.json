@@ -435,7 +435,7 @@
 			"sectionOtherLiveGames": "ライブ試合",
 			"sectionUpNext": "次の試合",
 			"enableToggleLabel": "自動切り替えを有効にする",
-			"onStandbyStream": "Standby Stream 中 — アクションを待っています"
+			"onStandbyStream": "何かが盛り上がるまで Standby Stream で待機中"
 		},
 		"tabAssign": {
 			"placeholder": "— タブを割り当て —"
@@ -450,7 +450,7 @@
 			"groupSwitching": "切り替え",
 			"groupSwitchingDesc": "ArenaSwapがどれだけ積極的に良い試合へ移すか。",
 			"groupScoring": "スコアリング",
-			"groupScoringDesc": "PowerScoreを構成するシグナルと、ボーナス点の対象。",
+			"groupScoringDesc": "PowerScoreを構成するシグナルと、ブーストの対象。",
 			"groupLeagues": "リーグ",
 			"groupLeaguesDesc": "追跡するリーグと、リーグごとにセクションを分けるかどうか。",
 			"groupDisplay": "表示",
@@ -472,7 +472,7 @@
 			"off": "オフ"
 		},
 		"favoriteTeamBonus": {
-			"label": "お気に入りチームボーナス"
+			"label": "お気に入りチームブースト"
 		},
 		"postseasonBoost": {
 			"label": "ポストシーズンブースト"

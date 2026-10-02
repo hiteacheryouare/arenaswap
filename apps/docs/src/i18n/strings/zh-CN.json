@@ -435,7 +435,7 @@
 			"sectionOtherLiveGames": "直播比赛",
 			"sectionUpNext": "即将开赛",
 			"enableToggleLabel": "启用自动切换",
-			"onStandbyStream": "处于 Standby Stream，等待精彩时刻"
+			"onStandbyStream": "在 Standby Stream 待命，等比赛升温"
 		},
 		"tabAssign": {
 			"placeholder": "— 分配标签页 —"
@@ -450,7 +450,7 @@
 			"groupSwitching": "切换",
 			"groupSwitchingDesc": "ArenaSwap 有多积极把您带到更精彩的比赛。",
 			"groupScoring": "评分",
-			"groupScoringDesc": "哪些信号构成 PowerScore，以及什么能加分。",
+			"groupScoringDesc": "哪些信号构成 PowerScore，以及什么能获得加成。",
 			"groupLeagues": "联赛",
 			"groupLeaguesDesc": "追踪哪些联赛，以及每个联赛是否单独分区。",
 			"groupDisplay": "显示",

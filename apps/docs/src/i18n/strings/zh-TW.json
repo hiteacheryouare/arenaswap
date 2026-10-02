@@ -435,7 +435,7 @@
 			"sectionOtherLiveGames": "直播比賽",
 			"sectionUpNext": "即將開賽",
 			"enableToggleLabel": "啟用自動切換",
-			"onStandbyStream": "目前在 Standby Stream，等待精彩時刻"
+			"onStandbyStream": "在 Standby Stream 待命，等比賽升溫"
 		},
 		"tabAssign": {
 			"placeholder": "— 指派分頁 —"
@@ -450,7 +450,7 @@
 			"groupSwitching": "切換",
 			"groupSwitchingDesc": "ArenaSwap 有多積極把你帶到更精彩的比賽。",
 			"groupScoring": "評分",
-			"groupScoringDesc": "哪些信號會影響 PowerScore，以及哪些能加分。",
+			"groupScoringDesc": "哪些信號會影響 PowerScore，以及哪些能獲得加成。",
 			"groupLeagues": "聯賽",
 			"groupLeaguesDesc": "追蹤哪些聯賽，以及每個聯賽是否各自獨立成區塊。",
 			"groupDisplay": "顯示",
