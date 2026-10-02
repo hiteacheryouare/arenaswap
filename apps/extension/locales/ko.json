@@ -841,6 +841,7 @@
 		"thresholdBody": "대기 모드가 시작되는 점수 하한선을 정하세요. 낮을수록 더 여유 있게, 높을수록 더 빨리 전환돼요.",
 		"designateTitle": "대기 탭 지정",
 		"designateBody": "Standby Stream을 탭으로 열고 여기로 돌아와 드롭다운에서 선택하세요.",
+		"back": "뒤로",
 		"gotIt": "확인"
 	},
 	"empty": {

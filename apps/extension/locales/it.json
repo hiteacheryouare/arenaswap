@@ -841,6 +841,7 @@
 		"thresholdBody": "Scegli quanto devono scendere i punteggi prima che si attivi lo standby. Più basso è più paziente; più alto si attiva prima.",
 		"designateTitle": "Designa una scheda standby",
 		"designateBody": "Apri il tuo Standby Stream in una scheda, torna qui e selezionala dal menu a tendina.",
+		"back": "Indietro",
 		"gotIt": "Capito"
 	},
 	"empty": {

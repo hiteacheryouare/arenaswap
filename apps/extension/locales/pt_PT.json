@@ -841,6 +841,7 @@
 		"thresholdBody": "Escolhe quão baixas as pontuações têm de descer antes de a espera ser activada. Mais baixo é mais paciente; mais alto activa mais cedo.",
 		"designateTitle": "Designa um separador de espera",
 		"designateBody": "Abre o teu Standby Stream num separador, volta aqui e selecciona-o no menu pendente.",
+		"back": "Voltar",
 		"gotIt": "Percebido"
 	},
 	"empty": {

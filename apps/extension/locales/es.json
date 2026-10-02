@@ -841,6 +841,7 @@
 		"thresholdBody": "Elige qué tan bajo deben caer las puntuaciones antes de que se active la espera. Más bajo es más paciente; más alto se activa antes.",
 		"designateTitle": "Designa una pestaña de espera",
 		"designateBody": "Abre tu Standby Stream en una pestaña, vuelve aquí y elígela en el menú desplegable.",
+		"back": "Atrás",
 		"gotIt": "Entendido"
 	},
 	"empty": {

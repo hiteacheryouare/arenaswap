@@ -841,6 +841,7 @@
 		"thresholdBody": "Escolha o quão baixas as pontuações precisam cair antes de a espera ser ativada. Mais baixo é mais paciente; mais alto ativa mais cedo.",
 		"designateTitle": "Designe uma aba de espera",
 		"designateBody": "Abra seu Standby Stream em uma aba, volte aqui e selecione-o no menu suspenso.",
+		"back": "Voltar",
 		"gotIt": "Entendido"
 	},
 	"empty": {

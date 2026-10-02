@@ -841,6 +841,7 @@
 		"thresholdBody": "選擇分數要低到什麼程度才會觸發待機。門檻越低越有耐心，越高則觸發得越快。",
 		"designateTitle": "指定一個待機分頁",
 		"designateBody": "把你的 Standby Stream 開在一個分頁，回到這裡，再從下拉選單中選擇它。",
+		"back": "返回",
 		"gotIt": "了解"
 	},
 	"empty": {

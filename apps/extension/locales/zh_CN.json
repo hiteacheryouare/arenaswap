@@ -841,6 +841,7 @@
 		"thresholdBody": "选择分数需要低至多少才触发待机。阈值越低越有耐心；阈值越高触发越快。",
 		"designateTitle": "指定待机标签页",
 		"designateBody": "在标签页中打开 Standby Stream，返回此处，在下拉菜单中选择它。",
+		"back": "返回",
 		"gotIt": "明白了"
 	},
 	"empty": {

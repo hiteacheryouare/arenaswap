@@ -841,6 +841,7 @@
 		"thresholdBody": "Choose how low scores need to drop before standby kicks in. Lower is more patient; higher triggers sooner.",
 		"designateTitle": "Designate a standby tab",
 		"designateBody": "Open your standby stream in a tab, come back here, and pick it from the dropdown.",
+		"back": "Back",
 		"gotIt": "Got it"
 	},
 	"empty": {

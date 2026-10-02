@@ -841,6 +841,7 @@
 		"thresholdBody": "Piliin kung gaano kababa dapat bumaba ang score bago mag-kick in ang standby. Mas mababa, mas matiyaga; mas mataas, mas mabilis mag-trigger.",
 		"designateTitle": "Magtakda ng Standby Tab",
 		"designateBody": "Buksan ang Standby Stream mo sa isang tab, bumalik dito, at piliin ito mula sa dropdown.",
+		"back": "Bumalik",
 		"gotIt": "Gets Ko!"
 	},
 	"empty": {

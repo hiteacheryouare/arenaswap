@@ -134,9 +134,15 @@
 	animation: onbFadeSlideUp 0.45s ease 0.58s both;
 }
 
+// The Standby Stream guide has no logo to wait for, so it fades straight in, and again per step.
+.standby-guide-content {
+	animation: onbFadeSlideUp m.$motion-base m.$motion-ease both;
+}
+
 @include m.reduced-motion {
 	.onb-logo-wrap,
-	.onb-content-wrap {
+	.onb-content-wrap,
+	.standby-guide-content {
 		animation: none;
 	}
 }

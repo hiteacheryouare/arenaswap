@@ -10,7 +10,7 @@ const standbyStreamGuide = ({ onDone }: standbyStreamGuideProps) => {
 
 	return (
 		<div className='popup-container d-flex flex-column'>
-			<div className='onb-content-wrap d-flex flex-column'>
+			<div key={step} className='standby-guide-content d-flex flex-column flex-grow-1'>
 				<div className='small text-body-secondary text-uppercase text-center mb-3'>
 					{step === 1 ? i18n.t('standbyGuide.step', [1, 2]) : i18n.t('standbyGuide.step', [2, 2])}
 				</div>
@@ -54,7 +54,7 @@ const standbyStreamGuide = ({ onDone }: standbyStreamGuideProps) => {
 							</div>
 						</div>
 
-						<button className='btn btn-primary w-100 mt-auto' onClick={() => setStep(2)}>
+						<button type='button' className='btn btn-primary w-100 mt-auto' onClick={() => setStep(2)}>
 							{i18n.t('standbyGuide.next')} <i className='bi bi-arrow-right' />
 						</button>
 					</>
@@ -89,9 +89,14 @@ const standbyStreamGuide = ({ onDone }: standbyStreamGuideProps) => {
 							</div>
 						</div>
 
-						<button className='btn btn-primary w-100 mt-auto' onClick={onDone}>
-							{i18n.t('standbyGuide.gotIt')} <i className='bi bi-check-lg' />
-						</button>
+						<div className='d-flex gap-2 mt-auto'>
+							<button type='button' className='btn btn-secondary flex-grow-1' onClick={() => setStep(1)}>
+								<i className='bi bi-arrow-left' /> {i18n.t('standbyGuide.back')}
+							</button>
+							<button type='button' className='btn btn-primary flex-grow-1' onClick={onDone}>
+								{i18n.t('standbyGuide.gotIt')} <i className='bi bi-check-lg' />
+							</button>
+						</div>
 					</>
 				)}
 			</div>

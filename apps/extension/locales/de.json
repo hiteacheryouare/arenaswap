@@ -841,6 +841,7 @@
 		"thresholdBody": "Wähle, wie tief die Punktzahlen fallen müssen, bevor der Standby aktiv wird. Niedriger = geduldiger; höher = früher auslösen.",
 		"designateTitle": "Standby-Tab festlegen",
 		"designateBody": "Öffne deinen Standby Stream in einem Tab, komm hierher zurück und wähle ihn im Dropdown aus.",
+		"back": "Zurück",
 		"gotIt": "Verstanden"
 	},
 	"empty": {

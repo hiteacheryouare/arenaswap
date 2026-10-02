@@ -841,6 +841,7 @@
 		"thresholdBody": "Choisis à quelle hauteur les scores doivent descendre avant que le standby s'active. Plus bas est plus patient ; plus haut se déclenche plus vite.",
 		"designateTitle": "Désigne un onglet de standby",
 		"designateBody": "Ouvre ton Standby Stream dans un onglet, reviens ici et sélectionne-le dans le menu déroulant.",
+		"back": "Retour",
 		"gotIt": "Compris"
 	},
 	"empty": {

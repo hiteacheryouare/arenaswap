@@ -841,6 +841,7 @@
 		"thresholdBody": "スタンバイが有効になるスコアの低さを選びます。低いほど辛抱強く、高いほど早く切り替わります。",
 		"designateTitle": "スタンバイタブを指定",
 		"designateBody": "Standby Streamをタブで開いて、ここに戻りドロップダウンから選択してください。",
+		"back": "戻る",
 		"gotIt": "了解"
 	},
 	"empty": {
