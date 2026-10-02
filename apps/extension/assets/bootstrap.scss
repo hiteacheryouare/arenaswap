@@ -1929,10 +1929,29 @@ button.game-info-attribution {
 	min-width: 0;
 }
 
+// Each score takes an equal half of the row and hugs the divider, the way the list card's do. A
+// score centred in its own box left "7 | 14" with a wider gap on the 7's side. A three-digit score
+// is wider than half the row at this size, so it keeps its width rather than clipping, and only a
+// lopsided "7 | 114" moves the divider off the axis.
 .game-detail-score-row {
 	gap: 0.4rem;
 	justify-content: center;
 	width: 100%;
+
+	> .game-detail-score-value {
+		flex: 1 1 0;
+		min-width: max-content;
+
+		&:first-child {
+			justify-content: flex-end;
+			text-align: right;
+		}
+
+		&:last-child {
+			justify-content: flex-start;
+			text-align: left;
+		}
+	}
 }
 
 .game-detail-score-value {

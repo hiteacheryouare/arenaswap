@@ -304,6 +304,32 @@ describe('gameDetailView hero', () => {
 		});
 	});
 
+	// Measured on the digits rather than their boxes: the gap a reader sees is ink to divider. A
+	// lopsided 7-114 is the one shape that cannot keep the divider centred without clipping a digit.
+	it('sets both scores the same distance off the divider, with the divider on the axis', () => {
+		for (const [away, home] of [[7, 14], [112, 108], [7, 114], [100, 99]]) {
+			const game = makeLiveGame();
+			mountDetail({ ...game, awayTeam: { ...game.awayTeam, score: away! }, homeTeam: { ...game.homeTeam, score: home! } }, { excitementResult: excitement });
+			cy.get('.game-detail-score-row').should(([row]: JQuery<HTMLElement>) => {
+				const values = [...row.querySelectorAll<HTMLElement>('.game-detail-score-value')];
+				const [awayDigit, homeDigit] = values.map(value => {
+					const range = document.createRange();
+					range.selectNodeContents(value);
+					return range.getBoundingClientRect();
+				});
+				const divider = row.querySelector('.game-score-sep')!.getBoundingClientRect();
+				const hero = row.closest('.gd-hero')!.getBoundingClientRect();
+				expect(divider.left - awayDigit!.right, `${away}-${home}: gaps match`).to.be.closeTo(homeDigit!.left - divider.right, 0.5);
+				if (String(away).length === String(home).length) {
+					expect(divider.left + divider.width / 2, `${away}-${home}: divider on the axis`).to.be.closeTo(hero.left + hero.width / 2, 0.5);
+				}
+				for (const value of values) {
+					expect(value.scrollWidth, `${away}-${home}: no digit clipped`).to.be.at.most(value.clientWidth);
+				}
+			});
+		}
+	});
+
 	it('falls back to the abbreviation for a team with no full name', () => {
 		const game = makeLiveGame();
 		mountDetail({ ...game, awayTeam: { ...game.awayTeam, name: '' } }, { excitementResult: excitement });
