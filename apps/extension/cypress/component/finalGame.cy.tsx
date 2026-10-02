@@ -602,7 +602,7 @@ describe('a finished game', () => {
 describe('final card odds', () => {
 	it('leaves the betting line off a decided game even with betting on', () => {
 		const decided: Game = {
-			id: 'odds', status: 'post', league: 'nfl', sportType: 'football', period: 4,
+			id: 'odds', status: 'post', league: 'nfl', sportType: 'football', period: 4, clockSeconds: 0,
 			homeTeam: { id: 'h', name: 'Los Angeles Rams', abbreviation: 'LAR', score: 24 },
 			awayTeam: { id: 'a', name: 'Seattle Seahawks', abbreviation: 'SEA', score: 21 },
 			odds: { details: 'LAR -3.5', overUnder: 47.5, provider: { name: 'Provider' } },

@@ -10,6 +10,7 @@ const game: Game = {
 	league: 'nfl',
 	sportType: 'football',
 	period: 0,
+	clockSeconds: 0,
 	startTime,
 	homeTeam: { id: 'h', name: 'Los Angeles Rams', abbreviation: 'LAR', score: 0 },
 	awayTeam: { id: 'a', name: 'Seattle Seahawks', abbreviation: 'SEA', score: 0 },
