@@ -171,6 +171,11 @@ body.nav-open {
 			color: var(--color-text);
 			background: rgba(230, 237, 243, 0.06);
 		}
+
+		&[aria-current] {
+			color: var(--color-text);
+			background: rgba(230, 237, 243, 0.06);
+		}
 	}
 
 	@media (max-width: 991px) {
@@ -277,7 +282,8 @@ body.nav-open {
 			text-decoration: none;
 			transition: color m.$motion-instant m.$motion-ease;
 
-			&:hover {
+			&:hover,
+			&[aria-current] {
 				color: var(--color-primary);
 			}
 		}
