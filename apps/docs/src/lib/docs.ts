@@ -1,21 +1,15 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
+import type { Translator } from '../i18n/ui';
 
 export type DocsSection = 'extension' | 'powerscore';
 
-// The two trees, and the words that introduce each of them. Written here rather than in a page so
-// the section index, the article pages and the side nav all describe a section the same way.
-export const docsSections = {
-	extension: {
-		title: 'The extension',
-		heading: 'Using ArenaSwap',
-		description: 'Installing ArenaSwap, assigning tabs to games, tuning when it switches, and Standby Stream.',
-	},
-	powerscore: {
-		title: 'PowerScore',
-		heading: 'The PowerScore package',
-		description: 'How a game gets scored. The five signals, the boosts, the penalties and the types.',
-	},
-} as const satisfies Record<DocsSection, { title: string; heading: string; description: string }>;
+// The two trees, and the words that introduce each of them. Read through one helper so the section
+// index, the article pages and the side nav all describe a section the same way.
+export const docsSectionCopy = (t: Translator, section: DocsSection) => ({
+	title: t(`reading.sections.${section}.title`),
+	heading: t(`reading.sections.${section}.heading`),
+	description: t(`reading.sections.${section}.description`),
+});
 
 export const docsSectionOrder = ['extension', 'powerscore'] as const;
 

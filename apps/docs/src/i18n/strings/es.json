@@ -34,6 +34,38 @@
 		"untranslatedHeading": "Esta página aún no se ha traducido.",
 		"untranslatedBody": "La documentación y las notas de versión están escritas en inglés. Todo lo demás en este sitio está disponible en tu idioma."
 	},
+	"reading": {
+		"docsHeading": "Documentación.",
+		"docsMetaTitle": "Documentación de ArenaSwap",
+		"docsMetaDescription": "Guías para ver varios partidos a la vez con ArenaSwap y la referencia para desarrolladores del paquete PowerScore, el que decide qué partido gana.",
+		"docsSectionMetaTitle": "{heading} — Documentación de ArenaSwap",
+		"docsSectionHeading": "{heading}.",
+		"docsNavLabel": "Documentación",
+		"docsBeingWritten": "En preparación.",
+		"commonQuestions": "Preguntas frecuentes",
+		"nearbyArticles": "Artículos relacionados",
+		"releasesHeading": "Notas de versión.",
+		"releasesMetaTitle": "Notas de versión — ArenaSwap",
+		"releasesMetaDescription": "Qué trae cada versión de ArenaSwap y qué significa si lo estás usando.",
+		"releasesRss": "Suscríbete por RSS",
+		"releasesEmpty": "Todavía no hay nada publicado.",
+		"releaseVersion": "Versión {version}",
+		"backToReleases": "Volver a las notas de versión",
+		"inThisRelease": "En esta versión",
+		"otherReleases": "Otras versiones",
+		"sections": {
+			"extension": {
+				"title": "La extensión",
+				"heading": "Cómo usar ArenaSwap",
+				"description": "Instalar ArenaSwap, asignar pestañas a partidos, ajustar cuándo cambia y Transmisión en espera."
+			},
+			"powerscore": {
+				"title": "PowerScore",
+				"heading": "El paquete PowerScore",
+				"description": "Cómo se califica un partido. Las cinco señales, los boosts, las penalizaciones y los tipos."
+			}
+		}
+	},
 	"install": {
 		"addTo": "Añadir a {browser}",
 		"alsoFor": "También para {firefox} y {edge}"
@@ -75,7 +107,8 @@
 			"captionSwitched": "ArenaSwap te cambió de {from} a {to}.",
 			"captionWatching": "Estás viendo {game}, el mejor partido del momento.",
 			"replay": "Reproducir la demo",
-			"tabLabel": "Pestaña {number}: {host}"
+			"tabLabel": "Pestaña {number}: {host}",
+			"browserLabel": "Un navegador con tres partidos en vivo abiertos y ArenaSwap en marcha"
 		},
 		"tabs": {
 			"titleLine1": "Configúralo una vez.",

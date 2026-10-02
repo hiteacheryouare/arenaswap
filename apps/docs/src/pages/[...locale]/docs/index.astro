@@ -1,8 +1,9 @@
 ---
 import Shell from '../../../layouts/Shell.astro';
-import { docPath, docsSectionOrder, docsSections, getSectionDocs } from '../../../lib/docs';
+import { docPath, docsSectionCopy, docsSectionOrder, getSectionDocs } from '../../../lib/docs';
 import UntranslatedNotice from '../../../components/UntranslatedNotice.astro';
-import { localePath, localeRoutes } from '../../../i18n/locales';
+import { defaultLocale, localePath, localeRoutes } from '../../../i18n/locales';
+import { useTranslations } from '../../../i18n/ui';
 
 // The hub. Two trees with two audiences: people watching sports, and people scoring games in their
 // own code. Splitting them at the top means neither has to scroll past the other.
@@ -10,22 +11,24 @@ import { localePath, localeRoutes } from '../../../i18n/locales';
 export const getStaticPaths = localeRoutes;
 
 const { locale } = Astro.props;
+const t = useTranslations(locale);
+const contentLang = locale === defaultLocale ? undefined : 'en';
 
 const trees = await Promise.all(docsSectionOrder.map(async section => ({
 	section,
-	meta: docsSections[section],
+	meta: docsSectionCopy(t, section),
 	pages: await getSectionDocs(section),
 })));
 ---
 <Shell
-	title='ArenaSwap documentation'
-	description='Guides for watching several games at once with ArenaSwap, and the developer reference for the PowerScore package that decides which game wins.'
+	title={t('reading.docsMetaTitle')}
+	description={t('reading.docsMetaDescription')}
 	path='docs/'
 	translated={false}
 >
 	<div class='container'>
 		<div class='page-head'>
-			<h1 class='page-title'>Documentation.</h1>
+			<h1 class='page-title'>{t('reading.docsHeading')}</h1>
 		</div>
 		<div class="p-4">
 			<UntranslatedNotice />
@@ -40,9 +43,9 @@ const trees = await Promise.all(docsSectionOrder.map(async section => ({
 					<p class='docs-hub-lede'>{tree.meta.description}</p>
 
 					{tree.pages.length === 0 ? (
-						<p class='docs-hub-empty'>Being written.</p>
+						<p class='docs-hub-empty'>{t('reading.docsBeingWritten')}</p>
 					) : (
-						<ul class='docs-hub-list'>
+						<ul class='docs-hub-list' lang={contentLang}>
 							{tree.pages.map(page => (
 								<li><a href={localePath(locale, docPath(page))}>{page.data.title}</a></li>
 							))}

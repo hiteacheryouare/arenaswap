@@ -34,6 +34,38 @@
 		"untranslatedHeading": "Esta página ainda não foi traduzida.",
 		"untranslatedBody": "A documentação e as notas de versão estão escritas em inglês. O resto do site está disponível no teu idioma."
 	},
+	"reading": {
+		"docsHeading": "Documentação.",
+		"docsMetaTitle": "Documentação do ArenaSwap",
+		"docsMetaDescription": "Guias para veres vários jogos ao mesmo tempo com o ArenaSwap e a referência para programadores do pacote PowerScore, que decide qual jogo ganha.",
+		"docsSectionMetaTitle": "{heading} — Documentação do ArenaSwap",
+		"docsSectionHeading": "{heading}.",
+		"docsNavLabel": "Documentação",
+		"docsBeingWritten": "Em preparação.",
+		"commonQuestions": "Perguntas frequentes",
+		"nearbyArticles": "Artigos relacionados",
+		"releasesHeading": "Notas de versão.",
+		"releasesMetaTitle": "Notas de versão — ArenaSwap",
+		"releasesMetaDescription": "O que chegou em cada versão do ArenaSwap e o que isso muda para ti.",
+		"releasesRss": "Subscrever por RSS",
+		"releasesEmpty": "Ainda não há nada publicado.",
+		"releaseVersion": "Versão {version}",
+		"backToReleases": "Voltar às notas de versão",
+		"inThisRelease": "Nesta versão",
+		"otherReleases": "Outras versões",
+		"sections": {
+			"extension": {
+				"title": "A extensão",
+				"heading": "Usar o ArenaSwap",
+				"description": "Instalar o ArenaSwap, atribuir separadores a jogos, ajustar quando muda e o Standby Stream."
+			},
+			"powerscore": {
+				"title": "PowerScore",
+				"heading": "O pacote PowerScore",
+				"description": "Como um jogo é pontuado. Os cinco sinais, os boosts, as penalizações e os tipos."
+			}
+		}
+	},
 	"install": {
 		"addTo": "Adicionar ao {browser}",
 		"alsoFor": "Também para {firefox} e {edge}"
@@ -75,7 +107,8 @@
 			"captionSwitched": "O ArenaSwap mudou-te de {from} para {to}.",
 			"captionWatching": "Estás a ver {game}, o melhor jogo do momento.",
 			"replay": "Reproduzir a demo",
-			"tabLabel": "Separador {number}: {host}"
+			"tabLabel": "Separador {number}: {host}",
+			"browserLabel": "Um browser com três jogos em direto abertos e o ArenaSwap a funcionar"
 		},
 		"tabs": {
 			"titleLine1": "Configura uma vez.",

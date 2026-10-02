@@ -34,6 +34,38 @@
 		"untranslatedHeading": "This page has not been translated yet.",
 		"untranslatedBody": "The documentation and release notes are written in English. Everything else on the site is available in your language."
 	},
+	"reading": {
+		"docsHeading": "Documentation.",
+		"docsMetaTitle": "ArenaSwap documentation",
+		"docsMetaDescription": "Guides for watching several games at once with ArenaSwap, and the developer reference for the PowerScore package that decides which game wins.",
+		"docsSectionMetaTitle": "{heading} — ArenaSwap documentation",
+		"docsSectionHeading": "{heading}.",
+		"docsNavLabel": "Documentation",
+		"docsBeingWritten": "Being written.",
+		"commonQuestions": "Common questions",
+		"nearbyArticles": "Nearby articles",
+		"releasesHeading": "Release notes.",
+		"releasesMetaTitle": "Release notes — ArenaSwap",
+		"releasesMetaDescription": "What shipped in each version of ArenaSwap, and what it means if you're using it.",
+		"releasesRss": "Subscribe by RSS",
+		"releasesEmpty": "Nothing published yet.",
+		"releaseVersion": "Version {version}",
+		"backToReleases": "Back to release notes",
+		"inThisRelease": "In this release",
+		"otherReleases": "Other releases",
+		"sections": {
+			"extension": {
+				"title": "The extension",
+				"heading": "Using ArenaSwap",
+				"description": "Installing ArenaSwap, assigning tabs to games, tuning when it switches, and Standby Stream."
+			},
+			"powerscore": {
+				"title": "PowerScore",
+				"heading": "The PowerScore package",
+				"description": "How a game gets scored. The five signals, the boosts, the penalties and the types."
+			}
+		}
+	},
 	"install": {
 		"addTo": "Add to {browser}",
 		"alsoFor": "Also for {firefox} and {edge}"
@@ -75,7 +107,8 @@
 			"captionSwitched": "ArenaSwap moved you off {from} and onto {to}.",
 			"captionWatching": "You are watching {game}, the best game on the board.",
 			"replay": "Play the demo",
-			"tabLabel": "Tab {number}: {host}"
+			"tabLabel": "Tab {number}: {host}",
+			"browserLabel": "A browser with three live games open and ArenaSwap running"
 		},
 		"tabs": {
 			"titleLine1": "Set it once.",

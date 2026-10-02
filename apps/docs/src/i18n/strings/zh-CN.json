@@ -34,6 +34,38 @@
 		"untranslatedHeading": "此页面尚未翻译。",
 		"untranslatedBody": "文档和更新日志使用英文撰写。本网站的其余部分均提供中文版本。"
 	},
+	"reading": {
+		"docsHeading": "文档。",
+		"docsMetaTitle": "ArenaSwap 文档",
+		"docsMetaDescription": "教您用 ArenaSwap 同时观看多场比赛的指南，以及决定哪场比赛胜出的 PowerScore 软件包的开发者参考。",
+		"docsSectionMetaTitle": "{heading} — ArenaSwap 文档",
+		"docsSectionHeading": "{heading}。",
+		"docsNavLabel": "文档",
+		"docsBeingWritten": "正在撰写中。",
+		"commonQuestions": "常见问题",
+		"nearbyArticles": "相关文章",
+		"releasesHeading": "更新日志。",
+		"releasesMetaTitle": "更新日志 — ArenaSwap",
+		"releasesMetaDescription": "ArenaSwap 每个版本带来了什么，以及这对您意味着什么。",
+		"releasesRss": "通过 RSS 订阅",
+		"releasesEmpty": "暂无发布内容。",
+		"releaseVersion": "版本 {version}",
+		"backToReleases": "返回更新日志",
+		"inThisRelease": "本次更新",
+		"otherReleases": "其他版本",
+		"sections": {
+			"extension": {
+				"title": "扩展程序",
+				"heading": "使用 ArenaSwap",
+				"description": "安装 ArenaSwap、为比赛分配标签页、调整切换时机，以及 Standby Stream。"
+			},
+			"powerscore": {
+				"title": "PowerScore",
+				"heading": "PowerScore 软件包",
+				"description": "比赛如何评分。五个信号、加成、扣分以及类型。"
+			}
+		}
+	},
 	"install": {
 		"addTo": "添加到 {browser}",
 		"alsoFor": "同样支持 {firefox} 和 {edge}"
@@ -75,7 +107,8 @@
 			"captionSwitched": "ArenaSwap 已将您从 {from} 切换到了 {to}。",
 			"captionWatching": "您正在观看 {game}，这是当前最值得关注的比赛。",
 			"replay": "播放演示",
-			"tabLabel": "标签页 {number}：{host}"
+			"tabLabel": "标签页 {number}：{host}",
+			"browserLabel": "一个打开了三场直播比赛、正在运行 ArenaSwap 的浏览器"
 		},
 		"tabs": {
 			"titleLine1": "只需设置一次。",

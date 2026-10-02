@@ -41,8 +41,9 @@ const HeroTabSlot = ({ label }: { label: string }) => (
 );
 
 // The hero's own copy, separate from the `strings` map the shared components read: that one
-// mirrors the extension key for key, and these four sentences belong to this page.
+// mirrors the extension key for key, and these lines belong to this page.
 export interface HeroStrings {
+	browserLabel: string;
 	captionSwitched: string;
 	captionWatching: string;
 	replay: string;
@@ -183,7 +184,7 @@ const HeroWindow = ({ copy }: { copy: HeroStrings }) => {
 
 	return (
 		<div className='browser-hero' ref={rootRef}>
-			<div className='browser' role='group' aria-label='A browser with three live games open and ArenaSwap running'>
+			<div className='browser' role='group' aria-label={copy.browserLabel}>
 
 				<div className='browser-titlebar'>
 					<span className='browser-lights' aria-hidden='true'><i /><i /><i /></span>

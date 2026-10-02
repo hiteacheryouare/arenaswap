@@ -34,6 +34,38 @@
 		"untranslatedHeading": "このページはまだ翻訳されていません。",
 		"untranslatedBody": "ドキュメントとリリースノートは英語で書かれています。このサイトの他の部分はすべて日本語でご利用いただけます。"
 	},
+	"reading": {
+		"docsHeading": "ドキュメント。",
+		"docsMetaTitle": "ArenaSwap ドキュメント",
+		"docsMetaDescription": "ArenaSwapで複数の試合を同時に観るためのガイドと、どの試合を映すかを決めるPowerScoreパッケージの開発者向けリファレンス。",
+		"docsSectionMetaTitle": "{heading} — ArenaSwap ドキュメント",
+		"docsSectionHeading": "{heading}。",
+		"docsNavLabel": "ドキュメント",
+		"docsBeingWritten": "執筆中です。",
+		"commonQuestions": "よくある質問",
+		"nearbyArticles": "関連記事",
+		"releasesHeading": "リリースノート。",
+		"releasesMetaTitle": "リリースノート — ArenaSwap",
+		"releasesMetaDescription": "ArenaSwapの各バージョンで何が変わったのか、使う側にとって何を意味するのか。",
+		"releasesRss": "RSSで購読",
+		"releasesEmpty": "まだ公開されたものはありません。",
+		"releaseVersion": "バージョン {version}",
+		"backToReleases": "リリースノートに戻る",
+		"inThisRelease": "このリリースの内容",
+		"otherReleases": "ほかのリリース",
+		"sections": {
+			"extension": {
+				"title": "拡張機能",
+				"heading": "ArenaSwapの使い方",
+				"description": "ArenaSwapのインストール、タブと試合のひも付け、切り替えのタイミング調整、そしてStandby Stream。"
+			},
+			"powerscore": {
+				"title": "PowerScore",
+				"heading": "PowerScoreパッケージ",
+				"description": "試合のスコアの付け方。5つのシグナル、ブースト、ペナルティ、そして型。"
+			}
+		}
+	},
 	"install": {
 		"addTo": "{browser}に追加",
 		"alsoFor": "{firefox}と{edge}にも対応"
@@ -75,7 +107,8 @@
 			"captionSwitched": "ArenaSwapが{from}から{to}へ切り替えました。",
 			"captionWatching": "今、{game}を視聴中です。盤面で最も注目の試合です。",
 			"replay": "デモを再生",
-			"tabLabel": "タブ {number}：{host}"
+			"tabLabel": "タブ {number}：{host}",
+			"browserLabel": "3つのライブ試合を開き、ArenaSwapが動いているブラウザ"
 		},
 		"tabs": {
 			"titleLine1": "一度設定すれば。",

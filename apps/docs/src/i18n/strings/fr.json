@@ -34,6 +34,38 @@
 		"untranslatedHeading": "Cette page n'a pas encore été traduite.",
 		"untranslatedBody": "La documentation et les notes de version sont rédigées en anglais. Tout le reste du site est disponible dans ta langue."
 	},
+	"reading": {
+		"docsHeading": "Documentation.",
+		"docsMetaTitle": "Documentation d'ArenaSwap",
+		"docsMetaDescription": "Des guides pour suivre plusieurs matchs à la fois avec ArenaSwap, et la référence développeur du paquet PowerScore, celui qui décide quel match l'emporte.",
+		"docsSectionMetaTitle": "{heading} — Documentation d'ArenaSwap",
+		"docsSectionHeading": "{heading}.",
+		"docsNavLabel": "Documentation",
+		"docsBeingWritten": "En cours de rédaction.",
+		"commonQuestions": "Questions fréquentes",
+		"nearbyArticles": "Articles voisins",
+		"releasesHeading": "Notes de version.",
+		"releasesMetaTitle": "Notes de version — ArenaSwap",
+		"releasesMetaDescription": "Ce qui arrive dans chaque version d'ArenaSwap, et ce que ça change pour toi.",
+		"releasesRss": "S'abonner par RSS",
+		"releasesEmpty": "Rien de publié pour l'instant.",
+		"releaseVersion": "Version {version}",
+		"backToReleases": "Retour aux notes de version",
+		"inThisRelease": "Dans cette version",
+		"otherReleases": "Autres versions",
+		"sections": {
+			"extension": {
+				"title": "L'extension",
+				"heading": "Utiliser ArenaSwap",
+				"description": "Installer ArenaSwap, associer des onglets aux matchs, régler quand il bascule, et Standby Stream."
+			},
+			"powerscore": {
+				"title": "PowerScore",
+				"heading": "Le paquet PowerScore",
+				"description": "Comment un match est noté. Les cinq signaux, les boosts, les pénalités et les types."
+			}
+		}
+	},
 	"install": {
 		"addTo": "Ajouter à {browser}",
 		"alsoFor": "Aussi pour {firefox} et {edge}"
@@ -75,7 +107,8 @@
 			"captionSwitched": "ArenaSwap t'a fait passer de {from} à {to}.",
 			"captionWatching": "Tu regardes {game}, le meilleur match du moment.",
 			"replay": "Lancer la démo",
-			"tabLabel": "Onglet {number} : {host}"
+			"tabLabel": "Onglet {number} : {host}",
+			"browserLabel": "Un navigateur avec trois matchs en direct ouverts et ArenaSwap en marche"
 		},
 		"tabs": {
 			"titleLine1": "Configure une fois.",

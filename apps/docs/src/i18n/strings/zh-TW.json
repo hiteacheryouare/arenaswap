@@ -34,6 +34,38 @@
 		"untranslatedHeading": "此頁面尚未翻譯。",
 		"untranslatedBody": "文件和更新紀錄以英文撰寫。本網站其餘部分皆提供中文版本。"
 	},
+	"reading": {
+		"docsHeading": "文件。",
+		"docsMetaTitle": "ArenaSwap 文件",
+		"docsMetaDescription": "教你用 ArenaSwap 同時觀看多場比賽的指南，以及決定哪場比賽勝出的 PowerScore 套件的開發者參考。",
+		"docsSectionMetaTitle": "{heading} — ArenaSwap 文件",
+		"docsSectionHeading": "{heading}。",
+		"docsNavLabel": "文件",
+		"docsBeingWritten": "撰寫中。",
+		"commonQuestions": "常見問題",
+		"nearbyArticles": "相關文章",
+		"releasesHeading": "更新紀錄。",
+		"releasesMetaTitle": "更新紀錄 — ArenaSwap",
+		"releasesMetaDescription": "ArenaSwap 每個版本帶來了什麼，以及這對你代表什麼。",
+		"releasesRss": "透過 RSS 訂閱",
+		"releasesEmpty": "目前還沒有發布任何內容。",
+		"releaseVersion": "版本 {version}",
+		"backToReleases": "返回更新紀錄",
+		"inThisRelease": "這次更新",
+		"otherReleases": "其他版本",
+		"sections": {
+			"extension": {
+				"title": "擴充功能",
+				"heading": "使用 ArenaSwap",
+				"description": "安裝 ArenaSwap、替比賽指定分頁、調整切換時機，以及 Standby Stream。"
+			},
+			"powerscore": {
+				"title": "PowerScore",
+				"heading": "PowerScore 套件",
+				"description": "比賽如何評分。五個訊號、加成、扣分以及型別。"
+			}
+		}
+	},
 	"install": {
 		"addTo": "加入 {browser}",
 		"alsoFor": "也支援 {firefox} 和 {edge}"
@@ -75,7 +107,8 @@
 			"captionSwitched": "ArenaSwap 已經把你從 {from} 切換到 {to}。",
 			"captionWatching": "你正在觀看 {game}，目前最值得看的比賽。",
 			"replay": "播放示範",
-			"tabLabel": "分頁 {number}：{host}"
+			"tabLabel": "分頁 {number}：{host}",
+			"browserLabel": "一個開著三場直播比賽、正在執行 ArenaSwap 的瀏覽器"
 		},
 		"tabs": {
 			"titleLine1": "只要設定一次。",

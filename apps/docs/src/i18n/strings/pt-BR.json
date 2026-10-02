@@ -34,6 +34,38 @@
 		"untranslatedHeading": "Esta página ainda não foi traduzida.",
 		"untranslatedBody": "A documentação e as notas de versão são escritas em inglês. Todo o restante do site está disponível no seu idioma."
 	},
+	"reading": {
+		"docsHeading": "Documentação.",
+		"docsMetaTitle": "Documentação do ArenaSwap",
+		"docsMetaDescription": "Guias para assistir a vários jogos ao mesmo tempo com o ArenaSwap e a referência para desenvolvedores do pacote PowerScore, que decide qual jogo vence.",
+		"docsSectionMetaTitle": "{heading} — Documentação do ArenaSwap",
+		"docsSectionHeading": "{heading}.",
+		"docsNavLabel": "Documentação",
+		"docsBeingWritten": "Em produção.",
+		"commonQuestions": "Perguntas frequentes",
+		"nearbyArticles": "Artigos relacionados",
+		"releasesHeading": "Notas de versão.",
+		"releasesMetaTitle": "Notas de versão — ArenaSwap",
+		"releasesMetaDescription": "O que chegou em cada versão do ArenaSwap e o que isso muda para você.",
+		"releasesRss": "Assine via RSS",
+		"releasesEmpty": "Nada publicado ainda.",
+		"releaseVersion": "Versão {version}",
+		"backToReleases": "Voltar às notas de versão",
+		"inThisRelease": "Nesta versão",
+		"otherReleases": "Outras versões",
+		"sections": {
+			"extension": {
+				"title": "A extensão",
+				"heading": "Como usar o ArenaSwap",
+				"description": "Instalar o ArenaSwap, atribuir abas a jogos, ajustar quando ele troca e o Standby Stream."
+			},
+			"powerscore": {
+				"title": "PowerScore",
+				"heading": "O pacote PowerScore",
+				"description": "Como um jogo recebe sua nota. Os cinco sinais, os boosts, as penalidades e os tipos."
+			}
+		}
+	},
 	"install": {
 		"addTo": "Adicionar ao {browser}",
 		"alsoFor": "Também para {firefox} e {edge}"
@@ -75,7 +107,8 @@
 			"captionSwitched": "O ArenaSwap trocou você de {from} para {to}.",
 			"captionWatching": "Você está assistindo {game}, o melhor jogo do momento.",
 			"replay": "Reproduzir a demo",
-			"tabLabel": "Aba {number}: {host}"
+			"tabLabel": "Aba {number}: {host}",
+			"browserLabel": "Um navegador com três jogos ao vivo abertos e o ArenaSwap rodando"
 		},
 		"tabs": {
 			"titleLine1": "Configure uma vez.",

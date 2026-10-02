@@ -34,6 +34,38 @@
 		"untranslatedHeading": "Hindi pa isinalin ang page na ito.",
 		"untranslatedBody": "Nakasulat sa English ang dokumentasyon at ang mga release note. Available sa wika mo ang lahat ng iba pa sa site na ito."
 	},
+	"reading": {
+		"docsHeading": "Dokumentasyon.",
+		"docsMetaTitle": "Dokumentasyon ng ArenaSwap",
+		"docsMetaDescription": "Mga gabay sa panonood ng ilang laro nang sabay gamit ang ArenaSwap, at ang developer reference para sa PowerScore package na nagdedesisyon kung aling laro ang panalo.",
+		"docsSectionMetaTitle": "{heading} — Dokumentasyon ng ArenaSwap",
+		"docsSectionHeading": "{heading}.",
+		"docsNavLabel": "Dokumentasyon",
+		"docsBeingWritten": "Isinusulat pa.",
+		"commonQuestions": "Mga karaniwang tanong",
+		"nearbyArticles": "Mga kalapit na artikulo",
+		"releasesHeading": "Mga release note.",
+		"releasesMetaTitle": "Mga release note — ArenaSwap",
+		"releasesMetaDescription": "Ano ang dumating sa bawat version ng ArenaSwap, at ano ang ibig sabihin nito kung ginagamit mo ito.",
+		"releasesRss": "Mag-subscribe sa RSS",
+		"releasesEmpty": "Wala pang na-publish.",
+		"releaseVersion": "Version {version}",
+		"backToReleases": "Bumalik sa mga release note",
+		"inThisRelease": "Sa release na ito",
+		"otherReleases": "Iba pang release",
+		"sections": {
+			"extension": {
+				"title": "Ang extension",
+				"heading": "Paggamit ng ArenaSwap",
+				"description": "Pag-install ng ArenaSwap, pag-assign ng mga tab sa mga laro, pag-tune kung kailan ito lilipat, at Standby Stream."
+			},
+			"powerscore": {
+				"title": "PowerScore",
+				"heading": "Ang PowerScore package",
+				"description": "Paano naiiskor ang isang laro. Ang limang signal, ang mga boost, ang mga penalty at ang mga type."
+			}
+		}
+	},
 	"install": {
 		"addTo": "Idagdag sa {browser}",
 		"alsoFor": "Available din para sa {firefox} at {edge}"
@@ -75,7 +107,8 @@
 			"captionSwitched": "Nilipat ka ng ArenaSwap mula sa {from} papunta sa {to}.",
 			"captionWatching": "Pinapanood mo ngayon ang {game}, ang pinakamagandang laro sa board.",
 			"replay": "I-play ang demo",
-			"tabLabel": "Tab {number}: {host}"
+			"tabLabel": "Tab {number}: {host}",
+			"browserLabel": "Isang browser na may tatlong live na laro na bukas at tumatakbo ang ArenaSwap"
 		},
 		"tabs": {
 			"titleLine1": "I-set once lang.",

@@ -34,6 +34,38 @@
 		"untranslatedHeading": "Diese Seite wurde noch nicht übersetzt.",
 		"untranslatedBody": "Die Dokumentation und die Versionshinweise sind auf Englisch verfasst. Alles andere auf dieser Website ist in deiner Sprache verfügbar."
 	},
+	"reading": {
+		"docsHeading": "Dokumentation.",
+		"docsMetaTitle": "ArenaSwap-Dokumentation",
+		"docsMetaDescription": "Anleitungen, um mit ArenaSwap mehrere Spiele gleichzeitig zu schauen, und die Entwicklerreferenz für das PowerScore-Paket, das entscheidet, welches Spiel gewinnt.",
+		"docsSectionMetaTitle": "{heading} — ArenaSwap-Dokumentation",
+		"docsSectionHeading": "{heading}.",
+		"docsNavLabel": "Dokumentation",
+		"docsBeingWritten": "In Arbeit.",
+		"commonQuestions": "Häufige Fragen",
+		"nearbyArticles": "Weitere Artikel",
+		"releasesHeading": "Versionshinweise.",
+		"releasesMetaTitle": "Versionshinweise — ArenaSwap",
+		"releasesMetaDescription": "Was in jeder Version von ArenaSwap neu ist und was das für dich bedeutet.",
+		"releasesRss": "Per RSS abonnieren",
+		"releasesEmpty": "Noch nichts veröffentlicht.",
+		"releaseVersion": "Version {version}",
+		"backToReleases": "Zurück zu den Versionshinweisen",
+		"inThisRelease": "In dieser Version",
+		"otherReleases": "Weitere Versionen",
+		"sections": {
+			"extension": {
+				"title": "Die Erweiterung",
+				"heading": "ArenaSwap verwenden",
+				"description": "ArenaSwap installieren, Tabs Spielen zuweisen, festlegen, wann gewechselt wird, und Standby Stream."
+			},
+			"powerscore": {
+				"title": "PowerScore",
+				"heading": "Das PowerScore-Paket",
+				"description": "Wie ein Spiel bewertet wird. Die fünf Signale, die Boosts, die Abzüge und die Typen."
+			}
+		}
+	},
 	"install": {
 		"addTo": "Zu {browser} hinzufügen",
 		"alsoFor": "Auch für {firefox} und {edge}"
@@ -75,7 +107,8 @@
 			"captionSwitched": "ArenaSwap hat dich von {from} weg und zu {to} hin gewechselt.",
 			"captionWatching": "Du schaust gerade {game}, das beste Spiel auf dem Brett.",
 			"replay": "Demo abspielen",
-			"tabLabel": "Tab {number}: {host}"
+			"tabLabel": "Tab {number}: {host}",
+			"browserLabel": "Ein Browser mit drei offenen Live-Spielen, in dem ArenaSwap läuft"
 		},
 		"tabs": {
 			"titleLine1": "Einmal einrichten.",

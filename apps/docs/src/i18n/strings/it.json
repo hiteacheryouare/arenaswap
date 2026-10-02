@@ -34,6 +34,38 @@
 		"untranslatedHeading": "Questa pagina non è ancora stata tradotta.",
 		"untranslatedBody": "La documentazione e le note di rilascio sono scritte in inglese. Tutto il resto del sito è disponibile nella tua lingua."
 	},
+	"reading": {
+		"docsHeading": "Documentazione.",
+		"docsMetaTitle": "Documentazione di ArenaSwap",
+		"docsMetaDescription": "Guide per guardare più partite insieme con ArenaSwap e il riferimento per sviluppatori del pacchetto PowerScore, quello che decide quale partita vince.",
+		"docsSectionMetaTitle": "{heading} — Documentazione di ArenaSwap",
+		"docsSectionHeading": "{heading}.",
+		"docsNavLabel": "Documentazione",
+		"docsBeingWritten": "In lavorazione.",
+		"commonQuestions": "Domande frequenti",
+		"nearbyArticles": "Articoli vicini",
+		"releasesHeading": "Note di rilascio.",
+		"releasesMetaTitle": "Note di rilascio — ArenaSwap",
+		"releasesMetaDescription": "Cosa arriva in ogni versione di ArenaSwap e cosa cambia per te.",
+		"releasesRss": "Iscriviti via RSS",
+		"releasesEmpty": "Ancora niente di pubblicato.",
+		"releaseVersion": "Versione {version}",
+		"backToReleases": "Torna alle note di rilascio",
+		"inThisRelease": "In questa versione",
+		"otherReleases": "Altre versioni",
+		"sections": {
+			"extension": {
+				"title": "L'estensione",
+				"heading": "Usare ArenaSwap",
+				"description": "Installare ArenaSwap, assegnare le schede alle partite, regolare quando cambia e Standby Stream."
+			},
+			"powerscore": {
+				"title": "PowerScore",
+				"heading": "Il pacchetto PowerScore",
+				"description": "Come viene valutata una partita. I cinque segnali, i boost, le penalità e i tipi."
+			}
+		}
+	},
 	"install": {
 		"addTo": "Aggiungi a {browser}",
 		"alsoFor": "Anche per {firefox} ed {edge}"
@@ -75,7 +107,8 @@
 			"captionSwitched": "ArenaSwap ti ha spostato da {from} a {to}.",
 			"captionWatching": "Stai guardando {game}, la partita migliore del momento.",
 			"replay": "Riproduci la demo",
-			"tabLabel": "Scheda {number}: {host}"
+			"tabLabel": "Scheda {number}: {host}",
+			"browserLabel": "Un browser con tre partite in diretta aperte e ArenaSwap in funzione"
 		},
 		"tabs": {
 			"titleLine1": "Impostalo una volta.",

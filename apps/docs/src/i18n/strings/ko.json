@@ -34,6 +34,38 @@
 		"untranslatedHeading": "이 페이지는 아직 번역되지 않았어요.",
 		"untranslatedBody": "문서와 릴리스 노트는 영어로 되어 있어요. 이 사이트의 나머지 부분은 모두 한국어로 이용할 수 있어요."
 	},
+	"reading": {
+		"docsHeading": "문서.",
+		"docsMetaTitle": "ArenaSwap 문서",
+		"docsMetaDescription": "ArenaSwap으로 여러 경기를 동시에 보는 방법과, 어떤 경기를 보여줄지 정하는 PowerScore 패키지의 개발자 레퍼런스예요.",
+		"docsSectionMetaTitle": "{heading} — ArenaSwap 문서",
+		"docsSectionHeading": "{heading}.",
+		"docsNavLabel": "문서",
+		"docsBeingWritten": "작성 중이에요.",
+		"commonQuestions": "자주 묻는 질문",
+		"nearbyArticles": "관련 글",
+		"releasesHeading": "릴리스 노트.",
+		"releasesMetaTitle": "릴리스 노트 — ArenaSwap",
+		"releasesMetaDescription": "ArenaSwap의 버전마다 무엇이 바뀌었고, 사용하는 입장에서 무슨 의미인지 정리했어요.",
+		"releasesRss": "RSS로 구독하기",
+		"releasesEmpty": "아직 게시된 내용이 없어요.",
+		"releaseVersion": "버전 {version}",
+		"backToReleases": "릴리스 노트로 돌아가기",
+		"inThisRelease": "이번 릴리스",
+		"otherReleases": "다른 릴리스",
+		"sections": {
+			"extension": {
+				"title": "확장 프로그램",
+				"heading": "ArenaSwap 사용하기",
+				"description": "ArenaSwap 설치, 탭을 경기에 할당하기, 전환 시점 조정, 그리고 Standby Stream."
+			},
+			"powerscore": {
+				"title": "PowerScore",
+				"heading": "PowerScore 패키지",
+				"description": "경기에 점수를 매기는 방법. 다섯 가지 시그널, 부스트, 페널티, 그리고 타입."
+			}
+		}
+	},
 	"install": {
 		"addTo": "{browser}에 추가",
 		"alsoFor": "{firefox}와 {edge}에서도 사용 가능"
@@ -75,7 +107,8 @@
 			"captionSwitched": "ArenaSwap이 {from}에서 {to}(으)로 전환했어요.",
 			"captionWatching": "지금 {game}을(를) 시청 중이에요. 지금 가장 볼만한 경기예요.",
 			"replay": "데모 재생",
-			"tabLabel": "탭 {number}: {host}"
+			"tabLabel": "탭 {number}: {host}",
+			"browserLabel": "라이브 경기 세 개가 열려 있고 ArenaSwap이 실행 중인 브라우저"
 		},
 		"tabs": {
 			"titleLine1": "한 번만 설정하면.",
