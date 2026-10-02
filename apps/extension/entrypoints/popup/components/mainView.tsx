@@ -278,7 +278,8 @@ const mainView = ({
 		), null),
 		[liveGames, scoreByGameId],
 	);
-	const glow = topLiveGame ? resolveTeamColorPair(topLiveGame.awayTeam, topLiveGame.homeTeam, '#dee2e6', '#dee2e6') : null;
+	// Always drawn, and transparent with nothing live, so the glow fades in and out rather than popping.
+	const glow = topLiveGame ? resolveTeamColorPair(topLiveGame.awayTeam, topLiveGame.homeTeam, '#dee2e6', '#dee2e6') : ['transparent', 'transparent'];
 
 	// The error banner already says the slate did not arrive, so the empty state must not add that
 	// it is a quiet night.
@@ -295,7 +296,7 @@ const mainView = ({
 
 	return (
 		<div ref={scrollerRef} className='popup-container d-flex flex-column'>
-			{glow && <div className='popup-glow' style={{ '--glow-away': glow[0], '--glow-home': glow[1] } as CSSProperties} aria-hidden='true' />}
+			<div className='popup-glow' style={{ '--glow-away': glow[0], '--glow-home': glow[1] } as CSSProperties} aria-hidden='true' />
 			<PopupHeader
 				scroller={scrollerRef}
 				enabled={prefs.enabled}

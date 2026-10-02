@@ -328,7 +328,34 @@ describe('mainView header glow', () => {
 
 	it('glows nothing when nothing is live', () => {
 		cy.mount(<MainView {...defaultProps} games={[makeGame('later', 'pre', { startTime: dayAt(0) })]} />);
-		cy.get('.popup-glow').should('not.exist');
+		cy.get('.popup-glow').should(([glow]: JQuery<HTMLElement>) => {
+			expect(getComputedStyle(glow).getPropertyValue('--glow-away')).to.equal('rgba(0, 0, 0, 0)');
+			expect(getComputedStyle(glow).getPropertyValue('--glow-home')).to.equal('rgba(0, 0, 0, 0)');
+		});
+	});
+
+	// The top game changes whenever a push reorders it, and the glow used to jump straight to the
+	// new pair. Registered colours interpolate, so the change eases instead.
+	it('eases from one pair of colours to the next', () => {
+		const tinted = (away: string) => ({
+			...makeGame('top'),
+			awayTeam: { id: 'top-a', name: 'Away', abbreviation: 'AWY', score: 48, color: away },
+			homeTeam: { id: 'top-h', name: 'Home', abbreviation: 'HOM', score: 50, color: '#860038' },
+		});
+		cy.mount(<SteppingMainView frames={[{ games: [tinted('#0000ff')] }, { games: [tinted('#ff0000')] }]} />);
+		cy.get('.popup-glow').should(([glow]: JQuery<HTMLElement>) => {
+			expect(getComputedStyle(glow).getPropertyValue('--glow-away')).to.equal('rgb(0, 0, 255)');
+		});
+		cy.get('[data-testid="fake-next"]').click();
+		cy.get('.popup-glow').should(([glow]: JQuery<HTMLElement>) => {
+			const transition = glow.getAnimations().find(animation => (animation as CSSTransition).transitionProperty === '--glow-away');
+			expect(transition, 'a running transition on --glow-away').to.exist;
+			transition!.pause();
+			transition!.currentTime = 350;
+			const midway = getComputedStyle(glow).getPropertyValue('--glow-away');
+			expect(midway).to.not.equal('rgb(0, 0, 255)');
+			expect(midway).to.not.equal('rgb(255, 0, 0)');
+		});
 	});
 });
 
