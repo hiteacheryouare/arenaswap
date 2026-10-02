@@ -104,6 +104,26 @@ body {
 	}
 }
 
+// ─── Skip link ────────────────────────────────────────────────────────────────
+// Hidden until a keyboard lands on it, then pinned above the fixed header, which would otherwise
+// paint straight over it.
+.skip-link:focus {
+	position: fixed;
+	top: 0.75rem;
+	left: 0.75rem;
+	z-index: 2000;
+	padding: 0.5rem 1rem;
+	border-radius: 0.5rem;
+	background: var(--color-primary);
+	color: #fff;
+	font-weight: 600;
+	text-decoration: none;
+}
+
+main:focus {
+	outline: none;
+}
+
 // ─── Site header / nav ────────────────────────────────────────────────────────
 body.nav-open {
 	overflow: hidden;

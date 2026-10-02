@@ -147,8 +147,9 @@ const alternates = localized && translated
 	</script>
 </head>
 <body>
+	<a class='visually-hidden-focusable skip-link' href='#main'>{t('nav.skipToContent')}</a>
 	<Nav localized={localized} />
-	<main>
+	<main id='main' tabindex='-1'>
 		<slot />
 	</main>
 	<Footer />
