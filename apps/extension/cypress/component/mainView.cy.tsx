@@ -250,7 +250,7 @@ describe('mainView loading and error states', () => {
 	it('shows error banner when hasError is true', () => {
 		cy.mount(<MainView {...defaultProps} hasError={true} />);
 		cy.get('[role="alert"]').should('exist');
-		cy.contains(/failed to load/i).should('exist');
+		cy.contains(/couldn't load games/i).should('exist');
 	});
 
 	it('does not show loading or error when both are false', () => {

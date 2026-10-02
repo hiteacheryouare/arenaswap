@@ -4,14 +4,14 @@
 	"app": {
 		"welcomeToast": "Bienvenue sur ArenaSwap !",
 		"settingsSavedToast": "Paramètres enregistrés",
-		"gameDetailsUnavailable": "Détails du match indisponibles",
+		"gameDetailsUnavailable": "Ce match a échappé à nos sources.",
 		"backToGames": "Retour aux matchs"
 	},
 	"errorBoundary": {
-		"title": "Une erreur est survenue.",
-		"body": "ArenaSwap a rencontré une erreur inattendue.",
+		"title": "Bon, ça, c'est une perte de balle.",
+		"body": "ArenaSwap a lâché quelque chose qu'il n'aurait pas dû.",
 		"errorLabel": "Erreur :",
-		"tryAgain": "Réessayer"
+		"tryAgain": "On rejoue"
 	},
 	"sport": {
 		"basketball": "Basketball",
@@ -31,7 +31,7 @@
 	},
 	"noGames": {
 		"m1": {
-			"title": "En attente du coup d'envoi. 🕐",
+			"title": "Personne n'est encore entré sur le terrain. 🕐",
 			"sub": "Aucun match en direct dans tes ligues sélectionnées."
 		},
 		"m2": {
@@ -44,7 +44,7 @@
 		},
 		"m4": {
 			"title": "Même les arbitres font la sieste.",
-			"sub": "Aucun match en direct détecté dans tes ligues sélectionnées."
+			"sub": "Nos sources ont sorti les jumelles. Rien en direct dans tes ligues pour l'instant."
 		},
 		"m5": {
 			"title": "Le tableau de score ne bouge pas.",
@@ -52,7 +52,7 @@
 		},
 		"m6": {
 			"title": "Le vendeur de hot-dogs est parti. 🌭",
-			"sub": "Aucune action en direct dans tes ligues. Rien à suivre pour l'instant."
+			"sub": "Aucune action en direct dans tes ligues. Il reviendra quand il y en aura."
 		},
 		"m7": {
 			"title": "On cherche sous les gradins…",
@@ -80,7 +80,7 @@
 		"m18": "On actualise le débat du plus grand de tous les temps…",
 		"m19": "On remplit la tribune de presse…",
 		"m20": "On déroule les bannières…",
-		"m21": "On synchronise le flux de diffusion…",
+		"m21": "On règle les jumelles…",
 		"m22": "On compte les spectateurs…",
 		"m23": "On fait briller les bagues de champion…",
 		"m24": "On booste le moral des mascottes…",
@@ -89,7 +89,7 @@
 		"m27": "On remplit les glacières…",
 		"m28": "On revisionne les temps forts…",
 		"m29": "On siffle le commissaire…",
-		"m30": "On localise les arènes…",
+		"m30": "On envoie des éclaireurs dans chaque arène…",
 		"m31": "On se prend un cheesesteak…",
 		"m32": "On débat avec les habitués du bar à sport…",
 		"m33": "On réorganise le classement de la ligue fantasy…",
@@ -108,7 +108,7 @@
 		"m46": "On sort les peintures pour le visage…",
 		"m47": "On coordonne les tenues de l'équipe…",
 		"m48": "On fait les calculs…",
-		"m49": "On analyse les stats…",
+		"m49": "On débriefe nos sources…",
 		"m50": "On tire le feu d'artifice…",
 		"m51": "On prépare le show laser…",
 		"m52": "On vérifie la météo pour le jour du match…",
@@ -221,12 +221,12 @@
 		"holidayLights": "Lumières",
 		"holidayLeaves": "Feuilles",
 		"signalsSection": "Signaux PowerScore",
-		"signalsExplainer": "Les signaux désactivés sont exclus du calcul. Les scores sont renormalisés pour rester dans la plage.",
-		"signalLastActive": "Au moins un signal doit rester actif",
+		"signalsExplainer": "Coupe un signal et il reste sur le banc. Les autres sont remis à l'échelle pour que les scores aillent toujours de 0 à 100.",
+		"signalLastActive": "Au moins un signal doit rester dans le match.",
 		"leaguesExplainer": "Seules les ligues sélectionnées sont suivies et prises en compte pour le changement automatique.",
 		"selectNone": "Tout retirer",
 		"selectAll": "Tout sélectionner",
-		"noLeaguesWarning": "Aucune ligue sélectionnée. ArenaSwap ne suivra aucun match.",
+		"noLeaguesWarning": "Aucune ligue choisie : ArenaSwap n'a rien à regarder.",
 		"groupByLeague": "Grouper les matchs par ligue",
 		"groupByLeagueExplainer": "Désactivé, toutes les ligues partagent une seule liste : matchs en direct classés par PowerScore, matchs à venir par heure de début. Vos équipes restent en haut dans les deux cas.",
 		"leagueOrderSection": "Ordre d'affichage",
@@ -676,7 +676,7 @@
 		"leagueNotTracked": "{league} · non suivie",
 		"searchPlaceholder": "Rechercher des équipes…",
 		"loading": "Chargement des équipes…",
-		"loadError": "Impossible de charger les équipes.",
+		"loadError": "Nos éclaireurs n'ont pas pu récupérer les effectifs.",
 		"retry": "Réessayer",
 		"removeFavorite": "Retirer {team} des favoris",
 		"addFavorite": "Ajouter {team} aux favoris",
@@ -689,7 +689,7 @@
 		"title": "Bienvenue sur ArenaSwap",
 		"subtitle": "Avant de tout configurer, voici ce à quoi t'attendre.",
 		"feature1Title": "Changement d'onglet automatique",
-		"feature1Body": "ArenaSwap prend le contrôle de la fenêtre du navigateur quand il est actif. Quand un match s'emballe, ArenaSwap active cet onglet même si tu regardes autre chose.",
+		"feature1Body": "Quand un match s'emballe, ArenaSwap saute sur son onglet, même si tu regardes autre chose.",
 		"feature2Title": "Tu associes les onglets aux matchs",
 		"feature2Body": "Ouvre chaque flux dans son propre onglet, puis associe-le à un match depuis l'extension. ArenaSwap ne touche que les onglets que tu as enregistrés.",
 		"feature3Title": "Tu gardes le contrôle",
@@ -704,8 +704,8 @@
 		"title": "L'activer et le désactiver",
 		"subtitle": "Un seul interrupteur contrôle tout.",
 		"tryIt": "↑ essaie",
-		"statusActive": "● ArenaSwap est actif",
-		"statusPaused": "○ Changement automatique en pause",
+		"statusActive": "ArenaSwap change pour toi",
+		"statusPaused": "ArenaSwap est en pause",
 		"bodyBeforeOn": "Quand c'est ",
 		"bodyOn": "activé",
 		"bodyAfterOn": ", ArenaSwap change automatiquement tes onglets vers le match en direct le plus palpitant. Désactive-le à tout moment pour reprendre le contrôle.",
@@ -848,14 +848,14 @@
 	},
 	"empty": {
 		"leaguesTitle": "Choisis des ligues pour commencer",
-		"leaguesCopy": "ArenaSwap a besoin d'au moins une ligue sélectionnée avant de pouvoir trouver des matchs à alterner.",
-		"selectLeagues": "Sélectionner des ligues dans Paramètres",
+		"leaguesCopy": "Choisis au moins une ligue et ArenaSwap partira à la chasse aux matchs.",
+		"selectLeagues": "Choisir des ligues dans Paramètres",
 		"refresh": "Actualiser",
 		"settings": "Paramètres →"
 	},
 	"gameListHeader": {
 		"loading": "Chargement…",
-		"loadFailed": "Impossible de charger les matchs.",
+		"loadFailed": "Nos sources se sont tues. Aucun match chargé.",
 		"retry": "Réessayer"
 	},
 	"toast": {
@@ -866,13 +866,13 @@
 	},
 	"notification": {
 		"standbyTitle": "Garé sur le Standby Stream",
-		"standbyMessage": "Tous les matchs se sont endormis. Positionné sur ton Standby Stream.",
-		"switchedTitle": "Basculé → {score} | ArenaSwap",
-		"switchedMessage": "On t'emmène à {venue} maintenant !",
-		"switchedMessageWithReason": "{reason}. On t'emmène à {venue} maintenant !",
+		"standbyMessage": "Tous les matchs se sont endormis, alors on t'a garé sur ton Standby Stream.",
+		"switchedTitle": "Basculé → {score}",
+		"switchedMessage": "Direction {venue} !",
+		"switchedMessageWithReason": "{reason}. Direction {venue} !",
 		"unknownGame": "Match inconnu",
-		"switchedMessageNoVenue": "On t'emmène au match maintenant !",
-		"switchedMessageWithReasonNoVenue": "{reason}. On t'emmène au match maintenant !"
+		"switchedMessageNoVenue": "Direction le match !",
+		"switchedMessageWithReasonNoVenue": "{reason}. Direction le match !"
 	},
 	"tabAssign": {
 		"placeholder": "— Associer un onglet —",

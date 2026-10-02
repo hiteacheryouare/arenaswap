@@ -4,14 +4,14 @@
 	"app": {
 		"welcomeToast": "Maligayang pagdating sa ArenaSwap!",
 		"settingsSavedToast": "Na-save ang mga setting",
-		"gameDetailsUnavailable": "Hindi available ang detalye ng laro",
+		"gameDetailsUnavailable": "Nakalusot ang larong ito sa mga source namin.",
 		"backToGames": "Bumalik sa mga laro"
 	},
 	"errorBoundary": {
-		"title": "May nangyaring mali.",
-		"body": "Nagkaroon ng unexpected error ang ArenaSwap.",
+		"title": "Ayun, turnover 'yan.",
+		"body": "May nabitawan ang ArenaSwap na hindi dapat.",
 		"errorLabel": "Error:",
-		"tryAgain": "Subukan ulit"
+		"tryAgain": "Ulitin natin"
 	},
 	"sport": {
 		"basketball": "Basketball",
@@ -31,7 +31,7 @@
 	},
 	"noGames": {
 		"m1": {
-			"title": "Naghihintay pa ng tip-off. 🕐",
+			"title": "Wala pang pumapasok sa laro. 🕐",
 			"sub": "Walang live na laro sa mga league mong pinili."
 		},
 		"m2": {
@@ -44,15 +44,15 @@
 		},
 		"m4": {
 			"title": "Nagpapahinga na rin ang mga ref.",
-			"sub": "Walang na-detect na live na laro sa mga league mong pinili."
+			"sub": "Nakalabas na ang binoculars ng mga source namin. Wala pang live sa mga liga mo."
 		},
 		"m5": {
 			"title": "Tahimik ang scoreboard.",
-			"sub": "Tahimik ang mga league mo. Bumalik ka pag nag-tip off na ang mga laro."
+			"sub": "Tahimik ang mga liga mo. Bumalik ka kapag nagsimula na ang mga laro."
 		},
 		"m6": {
 			"title": "Umalis na ang nagtitinda ng hot dog. 🌭",
-			"sub": "Walang live na aksyon sa mga league mo. Wala munang matu-track ngayon."
+			"sub": "Walang live na aksyon sa mga liga mo. Babalik siya pag meron na."
 		},
 		"m7": {
 			"title": "Chine-check sa ilalim ng bleachers…",
@@ -80,7 +80,7 @@
 		"m18": "Ina-update ang debate kung sino ang GOAT…",
 		"m19": "Pinupuno ang press box…",
 		"m20": "Ibinubukas ang mga banner…",
-		"m21": "Sino-sync ang broadcast feed…",
+		"m21": "Ina-adjust ang binoculars…",
 		"m22": "Binibilang ang crowd…",
 		"m23": "Nililinis ang mga championship ring…",
 		"m24": "Hina-hype ang mga mascot…",
@@ -89,7 +89,7 @@
 		"m27": "Pinupuno ang mga cooler…",
 		"m28": "Sinusuri ang mga highlight reel…",
 		"m29": "Bina-boo ang commissioner…",
-		"m30": "Hinahanap ang mga arena…",
+		"m30": "Nagpapadala ng mga scout sa bawat arena…",
 		"m31": "Bumibili ng cheesesteak…",
 		"m32": "Nakikipagtalo sa mga customer ng sports bar…",
 		"m33": "Inaayos ang standings sa fantasy league…",
@@ -108,7 +108,7 @@
 		"m46": "Inihahanda ang face paint…",
 		"m47": "Inaayos ang mga uniform ng team…",
 		"m48": "Kinukwenta ang mga numero…",
-		"m49": "Sinusuri ang mga stats…",
+		"m49": "Kinakausap ang mga source namin…",
 		"m50": "Pinapasabog ang fireworks…",
 		"m51": "Inihahanda ang light show…",
 		"m52": "Tinitingnan ang weather sa game day…",
@@ -221,12 +221,12 @@
 		"holidayLights": "Ilaw",
 		"holidayLeaves": "Dahon",
 		"signalsSection": "PowerScore Signals",
-		"signalsExplainer": "Hindi kasama sa scoring ang mga naka-disable na signal. Ina-adjust ulit ang mga score para manatili sa tamang range.",
-		"signalLastActive": "Dapat may kahit isang signal na naka-active",
+		"signalsExplainer": "Kapag in-off mo ang isang signal, uupo muna ito. Ia-adjust ang iba para 0–100 pa rin ang mga score.",
+		"signalLastActive": "Kailangang may kahit isang signal na nasa laro.",
 		"leaguesExplainer": "Ang mga napiling liga lang ang tine-track at isinasaalang-alang para sa awtomatikong paglipat ng tab.",
 		"selectNone": "I-clear",
 		"selectAll": "Piliin lahat",
-		"noLeaguesWarning": "Walang napiling liga. Hindi makaka-track ang ArenaSwap ng kahit anong laro.",
+		"noLeaguesWarning": "Walang napiling liga, kaya walang mapapanood ang ArenaSwap.",
 		"groupByLeague": "I-group ang mga laro ayon sa liga",
 		"groupByLeagueExplainer": "Kapag naka-off, iisang listahan ang gamit ng lahat ng liga: mga live na laro ayon sa PowerScore, mga susunod ayon sa oras ng simula. Laging nasa itaas ang mga team mo.",
 		"leagueOrderSection": "Ayos ng Display",
@@ -676,7 +676,7 @@
 		"leagueNotTracked": "{league} · hindi tine-track",
 		"searchPlaceholder": "Maghanap ng team…",
 		"loading": "Nilo-load ang mga team…",
-		"loadError": "Hindi na-load ang mga team.",
+		"loadError": "Hindi nakuha ng mga scout namin ang mga roster.",
 		"retry": "Ulitin",
 		"removeFavorite": "Alisin ang {team} sa paborito",
 		"addFavorite": "Idagdag ang {team} sa paborito",
@@ -689,7 +689,7 @@
 		"title": "Maligayang Pagdating sa ArenaSwap",
 		"subtitle": "Bago tayo mag-set up, ito ang aasahan mo.",
 		"feature1Title": "Awtomatikong Paglipat ng Tab",
-		"feature1Body": "Kokontrolin ng ArenaSwap ang browser window kapag active ito. Kapag uminit ang isang laro, ia-activate ng ArenaSwap ang tab na iyon kahit ibang bagay ang pinapanood mo.",
+		"feature1Body": "Kapag uminit ang isang laro, lilipat ang ArenaSwap sa tab nito kahit ibang bagay ang pinapanood mo.",
 		"feature2Title": "Ire-register Mo ang mga Tab sa mga Laro",
 		"feature2Body": "Buksan ang bawat stream sa sarili nitong tab, tapos i-assign ito sa isang laro gamit ang extension. Hihipuin lang ng ArenaSwap ang mga tab na na-register mo.",
 		"feature3Title": "Ikaw pa rin ang may Kontrol",
@@ -704,8 +704,8 @@
 		"title": "Pag-on at Pag-off",
 		"subtitle": "Iisang switch ang kumokontrol sa lahat.",
 		"tryIt": "↑ subukan mo",
-		"statusActive": "● Active ang ArenaSwap",
-		"statusPaused": "○ Naka-pause ang Auto-switching",
+		"statusActive": "Naglilipat ang ArenaSwap para sa'yo",
+		"statusPaused": "Naka-pause ang ArenaSwap",
 		"bodyBeforeOn": "Kapag ",
 		"bodyOn": "naka-on",
 		"bodyAfterOn": ", awtomatikong nililipat ng ArenaSwap ang mga tab mo papunta sa pinaka-exciting na live na laro. I-toggle ito off kahit kailan para bawiin ang kontrol.",
@@ -848,14 +848,14 @@
 	},
 	"empty": {
 		"leaguesTitle": "Pumili ng Liga Para Makapagsimula",
-		"leaguesCopy": "Kailangan ng ArenaSwap ng kahit isang napiling liga bago ito makahanap ng mga larong pagpapalitan.",
-		"selectLeagues": "Pumili ng Liga sa Mga Setting",
+		"leaguesCopy": "Pumili ng kahit isang liga at magsisimulang maghanap ng laro ang ArenaSwap.",
+		"selectLeagues": "Pumili ng liga sa Mga Setting",
 		"refresh": "I-refresh",
 		"settings": "Mga Setting →"
 	},
 	"gameListHeader": {
 		"loading": "Nilo-load…",
-		"loadFailed": "Hindi na-load ang mga laro.",
+		"loadFailed": "Tumahimik ang mga source namin. Hindi na-load ang mga laro.",
 		"retry": "Ulitin"
 	},
 	"toast": {
@@ -866,13 +866,13 @@
 	},
 	"notification": {
 		"standbyTitle": "Naka-park sa Standby Stream",
-		"standbyMessage": "Tumahimik ang lahat ng laro. Naka-park ka sa Standby Stream mo.",
-		"switchedTitle": "Lumipat → {score} | ArenaSwap",
-		"switchedMessage": "Dinadala ka na sa {venue}!",
-		"switchedMessageWithReason": "{reason}. Dinadala ka na sa {venue}!",
+		"standbyMessage": "Tumahimik ang lahat ng laro, kaya ipinark ka namin sa Standby Stream mo.",
+		"switchedTitle": "Lumipat → {score}",
+		"switchedMessage": "Tara sa {venue}!",
+		"switchedMessageWithReason": "{reason}. Tara sa {venue}!",
 		"unknownGame": "Hindi kilalang laro",
-		"switchedMessageNoVenue": "Dinadala ka na sa laro!",
-		"switchedMessageWithReasonNoVenue": "{reason}. Dinadala ka na sa laro!"
+		"switchedMessageNoVenue": "Tara sa laro!",
+		"switchedMessageWithReasonNoVenue": "{reason}. Tara sa laro!"
 	},
 	"tabAssign": {
 		"placeholder": "— Mag-assign ng tab —",

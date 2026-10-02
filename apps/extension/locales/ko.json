@@ -4,14 +4,14 @@
 	"app": {
 		"welcomeToast": "ArenaSwap에 오신 걸 환영해요!",
 		"settingsSavedToast": "설정을 저장했어요",
-		"gameDetailsUnavailable": "경기 상세 정보를 볼 수 없어요",
+		"gameDetailsUnavailable": "이 경기는 정보원들의 눈을 피해 갔어요.",
 		"backToGames": "경기 목록으로"
 	},
 	"errorBoundary": {
-		"title": "문제가 발생했어요.",
-		"body": "ArenaSwap에서 예기치 못한 오류가 발생했어요.",
+		"title": "이런, 턴오버예요.",
+		"body": "ArenaSwap이 놓치면 안 되는 걸 놓쳤어요.",
 		"errorLabel": "오류:",
-		"tryAgain": "다시 시도"
+		"tryAgain": "다시 해 보기"
 	},
 	"sport": {
 		"basketball": "농구",
@@ -31,7 +31,7 @@
 	},
 	"noGames": {
 		"m1": {
-			"title": "아직 점프볼 전이에요. 🕐",
+			"title": "아직 아무도 경기장에 나오지 않았어요. 🕐",
 			"sub": "선택한 리그에 진행 중인 경기가 없어요."
 		},
 		"m2": {
@@ -44,7 +44,7 @@
 		},
 		"m4": {
 			"title": "심판들도 쉬는 시간인가 봐요.",
-			"sub": "선택한 리그에서 진행 중인 경기를 찾지 못했어요."
+			"sub": "정보원들이 쌍안경을 꺼내 들었어요. 리그에 아직 진행 중인 경기가 없어요."
 		},
 		"m5": {
 			"title": "스코어보드도 멈춰 있어요.",
@@ -52,7 +52,7 @@
 		},
 		"m6": {
 			"title": "핫도그 아저씨도 퇴근했어요. 🌭",
-			"sub": "리그에 진행 중인 경기가 없어요. 지금은 추적할 게 없네요."
+			"sub": "리그에 진행 중인 경기가 없어요. 경기가 생기면 돌아올 거예요."
 		},
 		"m7": {
 			"title": "관중석 밑까지 확인해 볼게요…",
@@ -80,7 +80,7 @@
 		"m18": "GOAT 논쟁 업데이트 중…",
 		"m19": "프레스박스 채우는 중…",
 		"m20": "배너 펼치는 중…",
-		"m21": "중계 피드 동기화 중…",
+		"m21": "쌍안경 초점 맞추는 중…",
 		"m22": "관중 수 세는 중…",
 		"m23": "챔피언십 반지 닦는 중…",
 		"m24": "마스코트 분위기 띄우는 중…",
@@ -89,7 +89,7 @@
 		"m27": "아이스박스 채우는 중…",
 		"m28": "하이라이트 영상 확인 중…",
 		"m29": "커미셔너한테 야유 보내는 중…",
-		"m30": "경기장 찾는 중…",
+		"m30": "모든 경기장에 스카우트 파견 중…",
 		"m31": "치즈스테이크 먹으러 가는 중…",
 		"m32": "스포츠 바 손님들과 언쟁 중…",
 		"m33": "판타지 리그 순위 재정렬 중…",
@@ -108,7 +108,7 @@
 		"m46": "페이스페인팅 준비 중…",
 		"m47": "팀 유니폼 맞추는 중…",
 		"m48": "숫자 계산 중…",
-		"m49": "스탯 분석 중…",
+		"m49": "정보원들에게 보고받는 중…",
 		"m50": "불꽃놀이 준비 중…",
 		"m51": "라이트쇼 준비 중…",
 		"m52": "경기 당일 날씨 확인 중…",
@@ -221,12 +221,12 @@
 		"holidayLights": "조명",
 		"holidayLeaves": "낙엽",
 		"signalsSection": "PowerScore 시그널",
-		"signalsExplainer": "비활성화된 시그널은 점수 계산에서 제외돼요. 점수는 범위를 유지하도록 재조정돼요.",
-		"signalLastActive": "최소 하나의 시그널은 활성 상태여야 해요",
+		"signalsExplainer": "시그널을 끄면 벤치로 빠져요. 나머지가 다시 조정돼서 점수는 여전히 0~100이에요.",
+		"signalLastActive": "최소 하나의 시그널은 경기에 남아 있어야 해요.",
 		"leaguesExplainer": "선택한 리그만 추적되며 자동 전환 대상이 돼요.",
 		"selectNone": "선택 해제",
 		"selectAll": "전체 선택",
-		"noLeaguesWarning": "선택된 리그가 없어요. ArenaSwap이 경기를 추적하지 않아요.",
+		"noLeaguesWarning": "선택한 리그가 없어서 ArenaSwap이 볼 게 없어요.",
 		"groupByLeague": "경기를 리그별로 묶기",
 		"groupByLeagueExplainer": "끄면 모든 리그가 하나의 목록을 함께 써요. 진행 중인 경기는 PowerScore 순, 예정된 경기는 시작 시간 순이에요. 응원팀 경기는 어느 쪽이든 맨 위에 있어요.",
 		"leagueOrderSection": "표시 순서",
@@ -676,7 +676,7 @@
 		"leagueNotTracked": "{league} · 추적 안 함",
 		"searchPlaceholder": "팀 검색…",
 		"loading": "팀 불러오는 중…",
-		"loadError": "팀을 불러오지 못했어요.",
+		"loadError": "스카우트가 로스터를 구해 오지 못했어요.",
 		"retry": "재시도",
 		"removeFavorite": "{team} 응원팀에서 해제",
 		"addFavorite": "{team} 응원팀으로 등록",
@@ -689,7 +689,7 @@
 		"title": "ArenaSwap에 오신 걸 환영해요",
 		"subtitle": "설정을 시작하기 전에, 무엇을 기대할 수 있는지 알려드릴게요.",
 		"feature1Title": "자동 탭 전환",
-		"feature1Body": "ArenaSwap이 활성화되면 브라우저 창을 직접 제어해요. 경기가 뜨거워지면 다른 걸 보고 있어도 ArenaSwap이 그 탭을 활성화해요.",
+		"feature1Body": "경기가 뜨거워지면 다른 걸 보고 있어도 ArenaSwap이 그 탭으로 바로 넘어가요.",
 		"feature2Title": "탭을 경기에 등록하는 건 당신이에요",
 		"feature2Body": "각 스트림을 별도의 탭에서 열고, 확장 프로그램에서 경기에 할당하세요. ArenaSwap은 등록한 탭만 건드려요.",
 		"feature3Title": "컨트롤은 항상 당신의 몫이에요",
@@ -704,8 +704,8 @@
 		"title": "켜고 끄기",
 		"subtitle": "스위치 하나로 모든 걸 제어해요.",
 		"tryIt": "↑ 눌러보세요",
-		"statusActive": "● ArenaSwap 작동 중",
-		"statusPaused": "○ 자동 전환 일시정지",
+		"statusActive": "ArenaSwap이 대신 전환하고 있어요",
+		"statusPaused": "ArenaSwap 일시정지됨",
 		"bodyBeforeOn": "",
 		"bodyOn": "켜짐",
 		"bodyAfterOn": "일 때, ArenaSwap이 가장 흥미진진한 라이브 경기로 탭을 자동 전환해요. 언제든 꺼서 다시 컨트롤을 되찾으세요.",
@@ -848,14 +848,14 @@
 	},
 	"empty": {
 		"leaguesTitle": "시작하려면 리그를 선택하세요",
-		"leaguesCopy": "ArenaSwap이 전환할 경기를 찾으려면 최소 하나의 리그를 선택해야 해요.",
+		"leaguesCopy": "리그를 하나 이상 고르면 ArenaSwap이 경기를 찾아 나서요.",
 		"selectLeagues": "설정에서 리그 선택",
 		"refresh": "새로고침",
 		"settings": "설정 →"
 	},
 	"gameListHeader": {
 		"loading": "불러오는 중…",
-		"loadFailed": "경기를 불러오지 못했어요.",
+		"loadFailed": "정보원들이 잠잠해요. 경기를 불러오지 못했어요.",
 		"retry": "재시도"
 	},
 	"toast": {
@@ -866,13 +866,13 @@
 	},
 	"notification": {
 		"standbyTitle": "Standby Stream에서 대기 중",
-		"standbyMessage": "모든 경기가 조용해졌어요. Standby Stream에 머물러 있어요.",
-		"switchedTitle": "전환 → {score} | ArenaSwap",
-		"switchedMessage": "지금 {venue}로 전환해요!",
-		"switchedMessageWithReason": "{reason}. 지금 {venue}로 전환해요!",
+		"standbyMessage": "모든 경기가 조용해져서 Standby Stream으로 옮겨 뒀어요.",
+		"switchedTitle": "전환 → {score}",
+		"switchedMessage": "{venue}로 출발!",
+		"switchedMessageWithReason": "{reason}. {venue}로 출발!",
 		"unknownGame": "알 수 없는 경기",
-		"switchedMessageNoVenue": "지금 경기로 전환해요!",
-		"switchedMessageWithReasonNoVenue": "{reason}. 지금 경기로 전환해요!"
+		"switchedMessageNoVenue": "경기로 출발!",
+		"switchedMessageWithReasonNoVenue": "{reason}. 경기로 출발!"
 	},
 	"tabAssign": {
 		"placeholder": "— 탭 할당 —",

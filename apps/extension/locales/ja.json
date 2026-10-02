@@ -4,14 +4,14 @@
 	"app": {
 		"welcomeToast": "ArenaSwapへようこそ！",
 		"settingsSavedToast": "設定を保存しました",
-		"gameDetailsUnavailable": "試合の詳細を取得できません",
+		"gameDetailsUnavailable": "この試合は情報筋の目をすり抜けました。",
 		"backToGames": "試合一覧に戻る"
 	},
 	"errorBoundary": {
-		"title": "エラーが発生しました。",
-		"body": "ArenaSwap で予期しないエラーが発生しました。",
+		"title": "おっと、ターンオーバーです。",
+		"body": "ArenaSwapが落としてはいけないものを落としました。",
 		"errorLabel": "エラー：",
-		"tryAgain": "再試行"
+		"tryAgain": "もう一度"
 	},
 	"sport": {
 		"basketball": "バスケットボール",
@@ -31,7 +31,7 @@
 	},
 	"noGames": {
 		"m1": {
-			"title": "チップオフを待ち中。🕐",
+			"title": "まだ誰もフィールドに出ていません。🕐",
 			"sub": "選択したリーグにライブ試合はありません。"
 		},
 		"m2": {
@@ -44,7 +44,7 @@
 		},
 		"m4": {
 			"title": "審判まで休憩中です。",
-			"sub": "選択したリーグでライブ試合は検出されませんでした。"
+			"sub": "情報筋は双眼鏡を構えています。リーグにはまだライブ試合がありません。"
 		},
 		"m5": {
 			"title": "スコアボードも動いていません。",
@@ -52,7 +52,7 @@
 		},
 		"m6": {
 			"title": "ホットドッグ屋さんも帰ってしまいました。🌭",
-			"sub": "ライブ試合なし。今は追跡できるものが何もありません。"
+			"sub": "ライブ試合はありません。試合が始まれば戻ってきます。"
 		},
 		"m7": {
 			"title": "スタンドの下を探してみますね…",
@@ -80,7 +80,7 @@
 		"m18": "GOAT論争を更新中…",
 		"m19": "プレスボックスに席を確保中…",
 		"m20": "バナーを広げています…",
-		"m21": "放送フィードを同期中…",
+		"m21": "双眼鏡のピントを合わせています…",
 		"m22": "観客数を数えています…",
 		"m23": "チャンピオンリングを磨いています…",
 		"m24": "マスコットを盛り上げ中…",
@@ -89,7 +89,7 @@
 		"m27": "クーラーを満たしています…",
 		"m28": "ハイライトリールを確認中…",
 		"m29": "コミッショナーにブーイング中…",
-		"m30": "アリーナを探しています…",
+		"m30": "全アリーナにスカウトを派遣中…",
 		"m31": "チーズステーキを食べています…",
 		"m32": "スポーツバーの常連と議論中…",
 		"m33": "ファンタジーリーグの順位を入れ替え中…",
@@ -108,7 +108,7 @@
 		"m46": "フェイスペインティングの準備中…",
 		"m47": "チームユニフォームを整えています…",
 		"m48": "数字を計算中…",
-		"m49": "スタッツを分析中…",
+		"m49": "情報筋から報告を聞いています…",
 		"m50": "花火を打ち上げ中…",
 		"m51": "ライトショーの準備中…",
 		"m52": "試合日の天気を確認中…",
@@ -221,12 +221,12 @@
 		"holidayLights": "ライト",
 		"holidayLeaves": "落ち葉",
 		"signalsSection": "PowerScoreシグナル",
-		"signalsExplainer": "無効なシグナルはスコアリングから除外されます。スコアは範囲内に収まるよう再正規化されます。",
-		"signalLastActive": "少なくとも1つのシグナルは有効にしてください",
+		"signalsExplainer": "シグナルをオフにするとベンチ入り。残りがスケールされ、スコアは引き続き0〜100で表示されます。",
+		"signalLastActive": "少なくとも1つのシグナルは試合に残してください。",
 		"leaguesExplainer": "選択したリーグのみが追跡対象となり、自動切り替えの対象になります。",
 		"selectNone": "クリア",
 		"selectAll": "すべて選択",
-		"noLeaguesWarning": "リーグが選択されていません。ArenaSwapは試合を追跡しません。",
+		"noLeaguesWarning": "リーグが選ばれていないので、ArenaSwapは何も見られません。",
 		"groupByLeague": "試合をリーグごとにグループ化",
 		"groupByLeagueExplainer": "オフにすると、全リーグが 1 つのリストにまとまります。ライブ中の試合はPowerScore順、これからの試合は開始時刻順です。お気に入りのチームはどちらの場合も一番上に表示されます。",
 		"leagueOrderSection": "表示順",
@@ -676,7 +676,7 @@
 		"leagueNotTracked": "{league} · 未追跡",
 		"searchPlaceholder": "チームを検索…",
 		"loading": "チームを読み込み中…",
-		"loadError": "チームを読み込めませんでした。",
+		"loadError": "スカウトがロースターを入手できませんでした。",
 		"retry": "再試行",
 		"removeFavorite": "{team}をお気に入りから削除",
 		"addFavorite": "{team}をお気に入りに追加",
@@ -689,7 +689,7 @@
 		"title": "ArenaSwapへようこそ",
 		"subtitle": "設定を始める前に、何ができるかをご確認ください。",
 		"feature1Title": "タブの自動切り替え",
-		"feature1Body": "ArenaSwapはアクティブ中にブラウザウィンドウを管理します。試合が盛り上がると、他の何かを観ていてもArenaSwapがそのタブに切り替えます。",
+		"feature1Body": "試合が盛り上がると、ほかのものを観ていてもArenaSwapがそのタブへジャンプします。",
 		"feature2Title": "タブを試合に登録するのはあなた",
 		"feature2Body": "各ストリームをそれぞれのタブで開き、拡張機能から試合に割り当てます。ArenaSwapが触るのは登録したタブだけです。",
 		"feature3Title": "コントロールはあなたの手に",
@@ -704,8 +704,8 @@
 		"title": "オン・オフの切り替え",
 		"subtitle": "スイッチひとつですべてをコントロール。",
 		"tryIt": "↑ 試してみて",
-		"statusActive": "● ArenaSwap 稼働中",
-		"statusPaused": "○ 自動切り替え一時停止中",
+		"statusActive": "ArenaSwapが代わりに切り替え中",
+		"statusPaused": "ArenaSwapは一時停止中",
 		"bodyBeforeOn": "",
 		"bodyOn": "オン",
 		"bodyAfterOn": "のとき、ArenaSwapは最も盛り上がっているライブ試合へタブを自動的に切り替えます。コントロールを取り戻したいときはいつでもオフにできます。",
@@ -848,14 +848,14 @@
 	},
 	"empty": {
 		"leaguesTitle": "まずリーグを選んでください",
-		"leaguesCopy": "ArenaSwapが試合を切り替えるには、少なくとも1つのリーグを選択する必要があります。",
+		"leaguesCopy": "リーグを1つ以上選べば、ArenaSwapが試合を探し始めます。",
 		"selectLeagues": "設定でリーグを選択",
 		"refresh": "更新",
 		"settings": "設定 →"
 	},
 	"gameListHeader": {
 		"loading": "読み込み中…",
-		"loadFailed": "試合の読み込みに失敗しました。",
+		"loadFailed": "情報筋が沈黙中。試合を読み込めませんでした。",
 		"retry": "再試行"
 	},
 	"toast": {
@@ -866,13 +866,13 @@
 	},
 	"notification": {
 		"standbyTitle": "Standby Stream で待機中",
-		"standbyMessage": "すべての試合が静かになりました。Standby Streamに留まっています。",
-		"switchedTitle": "切り替え → {score} | ArenaSwap",
-		"switchedMessage": "今すぐ{venue}へ切り替えます！",
-		"switchedMessageWithReason": "{reason}。今すぐ{venue}へ切り替えます！",
+		"standbyMessage": "すべての試合が静かになったので、Standby Streamに切り替えました。",
+		"switchedTitle": "切り替え → {score}",
+		"switchedMessage": "{venue}へGO！",
+		"switchedMessageWithReason": "{reason}。{venue}へGO！",
 		"unknownGame": "不明な試合",
-		"switchedMessageNoVenue": "今すぐ試合へ切り替えます！",
-		"switchedMessageWithReasonNoVenue": "{reason}。今すぐ試合へ切り替えます！"
+		"switchedMessageNoVenue": "試合へGO！",
+		"switchedMessageWithReasonNoVenue": "{reason}。試合へGO！"
 	},
 	"tabAssign": {
 		"placeholder": "— タブを割り当て —",

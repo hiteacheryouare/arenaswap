@@ -186,7 +186,7 @@ describe('favoriteTeamsPage', () => {
 		stubTeamsFetch(true);
 		cy.mount(<Harness />);
 
-		cy.contains("Couldn't load teams.").should('exist');
+		cy.contains("Our scouts couldn't get the rosters.").should('exist');
 		cy.get('#favoriteTeamBonusInput').should('have.value', '8');
 	});
 
@@ -214,7 +214,7 @@ describe('favoriteTeamsPage', () => {
 		stubTeamsFetch(true);
 		cy.mount(<Harness />);
 
-		cy.contains("Couldn't load teams.").should('exist');
+		cy.contains("Our scouts couldn't get the rosters.").should('exist');
 		cy.contains('button', 'Retry').should('exist');
 		cy.contains('Skip for now').should('not.exist');
 	});

@@ -325,19 +325,19 @@ describe('walkthroughView skip', () => {
 describe('walkthroughView step 1 interactive demo', () => {
 	it('shows active status by default', () => {
 		cy.mount(<WalkthroughView onComplete={() => {}} />);
-		cy.contains('ArenaSwap is active').should('exist');
+		cy.contains('ArenaSwap is switching for you').should('exist');
 	});
 
 	it('toggles to paused when the demo checkbox is unchecked', () => {
 		cy.mount(<WalkthroughView onComplete={() => {}} />);
 		cy.get('#wt-toggle-demo').uncheck();
-		cy.contains('Auto-switching paused').should('exist');
+		cy.contains('ArenaSwap is paused').should('exist');
 	});
 
 	it('toggles back to active when re-checked', () => {
 		cy.mount(<WalkthroughView onComplete={() => {}} />);
 		cy.get('#wt-toggle-demo').uncheck();
 		cy.get('#wt-toggle-demo').check();
-		cy.contains('ArenaSwap is active').should('exist');
+		cy.contains('ArenaSwap is switching for you').should('exist');
 	});
 });

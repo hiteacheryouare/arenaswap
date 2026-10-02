@@ -4,14 +4,14 @@
 	"app": {
 		"welcomeToast": "Willkommen bei ArenaSwap!",
 		"settingsSavedToast": "Einstellungen gespeichert",
-		"gameDetailsUnavailable": "Spieldetails nicht verfügbar",
+		"gameDetailsUnavailable": "Dieses Spiel ist unseren Quellen durch die Lappen gegangen.",
 		"backToGames": "Zurück zu den Spielen"
 	},
 	"errorBoundary": {
-		"title": "Etwas ist schiefgelaufen.",
-		"body": "ArenaSwap ist auf einen unerwarteten Fehler gestoßen.",
+		"title": "Tja, das war ein Ballverlust.",
+		"body": "ArenaSwap hat etwas fallen lassen, das es hätte fangen sollen.",
 		"errorLabel": "Fehler:",
-		"tryAgain": "Erneut versuchen"
+		"tryAgain": "Noch mal von vorn"
 	},
 	"sport": {
 		"basketball": "Basketball",
@@ -31,7 +31,7 @@
 	},
 	"noGames": {
 		"m1": {
-			"title": "Warten auf den Anpfiff. 🕐",
+			"title": "Noch hat niemand das Feld betreten. 🕐",
 			"sub": "Keine Live-Spiele in deinen ausgewählten Ligen."
 		},
 		"m2": {
@@ -44,7 +44,7 @@
 		},
 		"m4": {
 			"title": "Sogar die Schiedsrichter machen Pause.",
-			"sub": "Keine Live-Spiele in deinen ausgewählten Ligen gefunden."
+			"sub": "Unsere Quellen haben die Ferngläser gezückt. Noch nichts live in deinen Ligen."
 		},
 		"m5": {
 			"title": "Die Anzeigetafel schweigt.",
@@ -52,7 +52,7 @@
 		},
 		"m6": {
 			"title": "Der Würstchenverkäufer ist gegangen. 🌭",
-			"sub": "Kein Live-Action in deinen Ligen. Nichts zu verfolgen gerade."
+			"sub": "Keine Live-Action in deinen Ligen. Er kommt wieder, wenn's losgeht."
 		},
 		"m7": {
 			"title": "Suche unter den Tribünen…",
@@ -80,7 +80,7 @@
 		"m18": "GOAT-Debatte wird aktualisiert…",
 		"m19": "Pressetribüne wird befüllt…",
 		"m20": "Banner werden entrollt…",
-		"m21": "Übertragungssignal wird synchronisiert…",
+		"m21": "Ferngläser werden scharf gestellt…",
 		"m22": "Zuschauer werden gezählt…",
 		"m23": "Meisterschaftsringe werden poliert…",
 		"m24": "Maskottchen werden aufgestachelt…",
@@ -89,7 +89,7 @@
 		"m27": "Kühlboxen werden gefüllt…",
 		"m28": "Highlight-Reel wird gesichtet…",
 		"m29": "Commissioner wird ausgepfiffen…",
-		"m30": "Arenen werden gesucht…",
+		"m30": "Scouts werden in jede Arena geschickt…",
 		"m31": "Bratwurst holen…",
 		"m32": "Debatte mit den Stammgästen an der Sportsbar…",
 		"m33": "Fantasy-Liga-Tabelle wird umgeworfen…",
@@ -108,7 +108,7 @@
 		"m46": "Fanschminke wird bereitgelegt…",
 		"m47": "Teamtrikots werden koordiniert…",
 		"m48": "Zahlen werden gewälzt…",
-		"m49": "Statistiken werden ausgewertet…",
+		"m49": "Unsere Quellen werden befragt…",
 		"m50": "Feuerwerk wird gezündet…",
 		"m51": "Lichtshow wird vorbereitet…",
 		"m52": "Wetter für den Spieltag wird gecheckt…",
@@ -221,12 +221,12 @@
 		"holidayLights": "Lichter",
 		"holidayLeaves": "Laub",
 		"signalsSection": "PowerScore-Signale",
-		"signalsExplainer": "Deaktivierte Signale werden bei der Bewertung ausgeschlossen. Die Punktzahlen werden neu normiert, um im Bereich zu bleiben.",
-		"signalLastActive": "Mindestens ein Signal muss aktiv bleiben",
+		"signalsExplainer": "Schaltest du ein Signal ab, setzt es aus. Die übrigen werden hochskaliert, damit die Punktzahlen weiter von 0 bis 100 reichen.",
+		"signalLastActive": "Mindestens ein Signal muss im Spiel bleiben.",
 		"leaguesExplainer": "Nur ausgewählte Ligen werden verfolgt und beim automatischen Wechsel berücksichtigt.",
 		"selectNone": "Alle abwählen",
 		"selectAll": "Alle auswählen",
-		"noLeaguesWarning": "Keine Ligen ausgewählt — ArenaSwap verfolgt keine Spiele.",
+		"noLeaguesWarning": "Keine Ligen gewählt, also hat ArenaSwap nichts zu schauen.",
 		"groupByLeague": "Spiele nach Liga gruppieren",
 		"groupByLeagueExplainer": "Aus: Alle Ligen teilen sich eine Liste. Laufende Spiele nach PowerScore, kommende nach Startzeit. Deine Teams bleiben in jedem Fall oben.",
 		"leagueOrderSection": "Anzeigereihenfolge",
@@ -676,7 +676,7 @@
 		"leagueNotTracked": "{league} · nicht verfolgt",
 		"searchPlaceholder": "Teams suchen…",
 		"loading": "Teams werden geladen…",
-		"loadError": "Teams konnten nicht geladen werden.",
+		"loadError": "Unsere Scouts kamen ohne Kader zurück.",
 		"retry": "Erneut versuchen",
 		"removeFavorite": "{team} aus Favoriten entfernen",
 		"addFavorite": "{team} zu Favoriten hinzufügen",
@@ -689,7 +689,7 @@
 		"title": "Willkommen bei ArenaSwap",
 		"subtitle": "Bevor wir einrichten, hier ist, was dich erwartet.",
 		"feature1Title": "Automatischer Tab-Wechsel",
-		"feature1Body": "ArenaSwap übernimmt das Browser-Fenster, wenn es aktiv ist. Wenn ein Spiel heiß wird, aktiviert ArenaSwap diesen Tab — auch wenn du gerade woanders schaust.",
+		"feature1Body": "Wenn ein Spiel heiß wird, springt ArenaSwap zu seinem Tab, auch wenn du gerade etwas anderes schaust.",
 		"feature2Title": "Du weist Tabs Spielen zu",
 		"feature2Body": "Öffne jeden Stream in seinem eigenen Tab, dann weise ihn über die Erweiterung einem Spiel zu. ArenaSwap berührt nur die Tabs, die du registriert hast.",
 		"feature3Title": "Du behältst die Kontrolle",
@@ -704,8 +704,8 @@
 		"title": "Ein- und Ausschalten",
 		"subtitle": "Ein Schalter regelt alles.",
 		"tryIt": "↑ ausprobieren",
-		"statusActive": "● ArenaSwap ist aktiv",
-		"statusPaused": "○ Automatischer Wechsel pausiert",
+		"statusActive": "ArenaSwap wechselt für dich",
+		"statusPaused": "ArenaSwap ist pausiert",
 		"bodyBeforeOn": "Wenn ",
 		"bodyOn": "eingeschaltet",
 		"bodyAfterOn": ", wechselt ArenaSwap deine Tabs automatisch zum spannendsten Live-Spiel. Jederzeit ausschalten, um die Kontrolle zurückzubekommen.",
@@ -848,14 +848,14 @@
 	},
 	"empty": {
 		"leaguesTitle": "Wähle Ligen zum Starten",
-		"leaguesCopy": "ArenaSwap benötigt mindestens eine ausgewählte Liga, um Spiele zum Wechseln zu finden.",
-		"selectLeagues": "Ligen in Einstellungen auswählen",
+		"leaguesCopy": "Wähle mindestens eine Liga, und ArenaSwap geht auf Spielejagd.",
+		"selectLeagues": "Ligen in den Einstellungen wählen",
 		"refresh": "Aktualisieren",
 		"settings": "Einstellungen →"
 	},
 	"gameListHeader": {
 		"loading": "Wird geladen…",
-		"loadFailed": "Spiele konnten nicht geladen werden.",
+		"loadFailed": "Funkstille bei unseren Quellen. Keine Spiele.",
 		"retry": "Erneut versuchen"
 	},
 	"toast": {
@@ -866,13 +866,13 @@
 	},
 	"notification": {
 		"standbyTitle": "Auf dem Standby Stream geparkt",
-		"standbyMessage": "Alle Spiele sind ruhig geworden. Auf deinem Standby Stream geparkt.",
-		"switchedTitle": "Gewechselt → {score} | ArenaSwap",
-		"switchedMessage": "Los geht's jetzt zu {venue}!",
-		"switchedMessageWithReason": "{reason}. Los geht's jetzt zu {venue}!",
+		"standbyMessage": "Alle Spiele sind eingeschlafen, also haben wir dich auf deinem Standby Stream geparkt.",
+		"switchedTitle": "Gewechselt → {score}",
+		"switchedMessage": "Auf geht's: {venue}!",
+		"switchedMessageWithReason": "{reason}. Auf geht's: {venue}!",
 		"unknownGame": "Unbekanntes Spiel",
-		"switchedMessageNoVenue": "Los geht's jetzt zum Spiel!",
-		"switchedMessageWithReasonNoVenue": "{reason}. Los geht's jetzt zum Spiel!"
+		"switchedMessageNoVenue": "Auf geht's zum Spiel!",
+		"switchedMessageWithReasonNoVenue": "{reason}. Auf geht's zum Spiel!"
 	},
 	"tabAssign": {
 		"placeholder": "— Tab zuweisen —",

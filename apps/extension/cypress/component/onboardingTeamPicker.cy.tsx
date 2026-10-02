@@ -110,7 +110,7 @@ describe('onboardingTeamPicker', () => {
 			/>
 		);
 
-		cy.contains("Couldn't load teams.").should('exist');
+		cy.contains("Our scouts couldn't get the rosters.").should('exist');
 		cy.contains('button', 'Retry').click();
 		cy.get('@onRetry').should('have.been.calledOnce');
 

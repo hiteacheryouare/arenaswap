@@ -103,14 +103,14 @@ describe('the report on tabs handed back', () => {
 
 	it('reports the tabs that were closed, in the singular', () => {
 		bootWithNotice({ freed: 0, closed: 1 });
-		cy.contains("Closed 1 finished game's tab.").should('be.visible');
+		cy.contains('Closed the tab for 1 finished game.').should('be.visible');
 	});
 
 	// Both counts are kept, because the setting can change between two polls.
 	it('reports both when the session did both', () => {
 		bootWithNotice({ freed: 1, closed: 3 });
 		cy.contains('1 tab is yours again.').should('be.visible');
-		cy.contains("Closed 3 finished games' tabs.").should('be.visible');
+		cy.contains('Closed the tabs for 3 finished games.').should('be.visible');
 	});
 
 	// It is news rather than state: a second open must not repeat it.

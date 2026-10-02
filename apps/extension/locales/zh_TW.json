@@ -4,14 +4,14 @@
 	"app": {
 		"welcomeToast": "歡迎使用 ArenaSwap！",
 		"settingsSavedToast": "設定已儲存",
-		"gameDetailsUnavailable": "比賽詳情暫時無法取得",
+		"gameDetailsUnavailable": "這場比賽躲過了我們線人的眼睛。",
 		"backToGames": "返回比賽列表"
 	},
 	"errorBoundary": {
-		"title": "出了點問題。",
-		"body": "ArenaSwap 發生了未預期的錯誤。",
+		"title": "好吧，這是一次失誤。",
+		"body": "ArenaSwap 把不該掉的球弄掉了。",
 		"errorLabel": "錯誤：",
-		"tryAgain": "重試"
+		"tryAgain": "再來一次"
 	},
 	"sport": {
 		"basketball": "籃球",
@@ -31,7 +31,7 @@
 	},
 	"noGames": {
 		"m1": {
-			"title": "還在等待開球。🕐",
+			"title": "還沒有人上場。🕐",
 			"sub": "你所選聯賽目前沒有進行中的比賽。"
 		},
 		"m2": {
@@ -44,7 +44,7 @@
 		},
 		"m4": {
 			"title": "連裁判都在偷閒。",
-			"sub": "你所選聯賽中沒有偵測到進行中的比賽。"
+			"sub": "我們的線人已經舉起望遠鏡了。你的聯賽暫時還沒有直播。"
 		},
 		"m5": {
 			"title": "記分板動也不動。",
@@ -52,7 +52,7 @@
 		},
 		"m6": {
 			"title": "賣熱狗的大叔跑路了。🌭",
-			"sub": "你的聯賽目前沒有直播賽事，暫時沒什麼好追的。"
+			"sub": "你的聯賽目前沒有直播賽事。等有比賽了他就回來。"
 		},
 		"m7": {
 			"title": "翻遍了看台底下……",
@@ -80,7 +80,7 @@
 		"m18": "更新史上最強球員排行榜……",
 		"m19": "填滿媒體席……",
 		"m20": "展開布條……",
-		"m21": "同步轉播訊號……",
+		"m21": "調整望遠鏡焦距……",
 		"m22": "清點觀眾人數……",
 		"m23": "擦亮冠軍戒指……",
 		"m24": "給吉祥物打氣……",
@@ -89,7 +89,7 @@
 		"m27": "補滿飲料冰桶……",
 		"m28": "回看精彩集錦……",
 		"m29": "對著聯盟主席噓……",
-		"m30": "尋找各大球場……",
+		"m30": "向每座球場派出球探……",
 		"m31": "去買份起司牛肉潛艇堡……",
 		"m32": "和體育酒吧的球迷吵起來……",
 		"m33": "重新排列夢幻聯盟排行榜……",
@@ -108,7 +108,7 @@
 		"m46": "準備臉部彩繪……",
 		"m47": "協調隊服款式……",
 		"m48": "跑一遍數據……",
-		"m49": "分析統計數據……",
+		"m49": "聽取線人匯報……",
 		"m50": "施放煙火……",
 		"m51": "準備燈光秀……",
 		"m52": "查比賽日的天氣預報……",
@@ -221,12 +221,12 @@
 		"holidayLights": "彩燈",
 		"holidayLeaves": "落葉",
 		"signalsSection": "PowerScore 信號",
-		"signalsExplainer": "已停用的信號不計入評分，分數會重新校準以維持在範圍內。",
-		"signalLastActive": "至少須保留一個信號處於啟用狀態",
+		"signalsExplainer": "關掉某個信號，它就坐板凳。其餘信號會重新縮放，分數仍在 0–100 之間。",
+		"signalLastActive": "至少要留一個信號在場上。",
 		"leaguesExplainer": "只有勾選的聯賽會被追蹤，並納入自動切換的判斷。",
 		"selectNone": "清除",
 		"selectAll": "全選",
-		"noLeaguesWarning": "尚未選擇任何聯賽，ArenaSwap 不會追蹤任何比賽。",
+		"noLeaguesWarning": "還沒選聯賽，ArenaSwap 沒什麼好看的。",
 		"groupByLeague": "依聯賽分組比賽",
 		"groupByLeagueExplainer": "關閉後，所有聯賽共用一份列表：進行中的比賽依 PowerScore 排序，尚未開賽的依開賽時間排序。無論開關，你的球隊都固定在最上方。",
 		"leagueOrderSection": "顯示順序",
@@ -676,7 +676,7 @@
 		"leagueNotTracked": "{league} · 未追蹤",
 		"searchPlaceholder": "搜尋球隊……",
 		"loading": "載入球隊中……",
-		"loadError": "球隊載入失敗。",
+		"loadError": "我們的球探沒能拿到陣容名單。",
 		"retry": "重試",
 		"removeFavorite": "將 {team} 從收藏移除",
 		"addFavorite": "將 {team} 加入收藏",
@@ -689,7 +689,7 @@
 		"title": "歡迎使用 ArenaSwap",
 		"subtitle": "開始設定之前，先了解一下它的運作方式。",
 		"feature1Title": "自動切換分頁",
-		"feature1Body": "ArenaSwap 啟動後會接管瀏覽器視窗。當某場比賽進入高潮，ArenaSwap 會自動切到那個分頁，就算你正在看別的東西也一樣。",
+		"feature1Body": "比賽一進入高潮，ArenaSwap 就會跳到它的分頁，就算你正在看別的也一樣。",
 		"feature2Title": "由你把分頁和比賽綁在一起",
 		"feature2Body": "把每路直播開在各自的分頁，再透過擴充功能指派給對應比賽。ArenaSwap 只會動用你註冊過的分頁。",
 		"feature3Title": "掌控權始終在你手上",
@@ -704,8 +704,8 @@
 		"title": "開啟與關閉",
 		"subtitle": "一個開關，掌控一切。",
 		"tryIt": "↑ 試試看",
-		"statusActive": "● ArenaSwap 運作中",
-		"statusPaused": "○ 自動切換已暫停",
+		"statusActive": "ArenaSwap 正在幫你切換",
+		"statusPaused": "ArenaSwap 已暫停",
 		"bodyBeforeOn": "當開關",
 		"bodyOn": "開啟",
 		"bodyAfterOn": "時，ArenaSwap 會自動把你的分頁切到最精彩的直播比賽。隨時關閉即可拿回手動控制權。",
@@ -848,14 +848,14 @@
 	},
 	"empty": {
 		"leaguesTitle": "選擇聯賽以開始使用",
-		"leaguesCopy": "ArenaSwap 至少需要選擇一個聯賽，才能找到可以切換的比賽。",
+		"leaguesCopy": "至少選擇一個聯賽，ArenaSwap 就會開始搜尋比賽。",
 		"selectLeagues": "在設定中選擇聯賽",
 		"refresh": "重新整理",
 		"settings": "設定 →"
 	},
 	"gameListHeader": {
 		"loading": "載入中……",
-		"loadFailed": "比賽載入失敗。",
+		"loadFailed": "我們的線人沒了動靜，比賽載入失敗。",
 		"retry": "重試"
 	},
 	"toast": {
@@ -866,13 +866,13 @@
 	},
 	"notification": {
 		"standbyTitle": "已停在 Standby Stream",
-		"standbyMessage": "所有比賽都冷了下來。已停留在你的 Standby Stream。",
-		"switchedTitle": "已切換 → {score} | ArenaSwap",
-		"switchedMessage": "現在帶你前往 {venue}！",
-		"switchedMessageWithReason": "{reason}。現在帶你前往 {venue}！",
+		"standbyMessage": "所有比賽都冷了下來，所以先把你停在 Standby Stream。",
+		"switchedTitle": "已切換 → {score}",
+		"switchedMessage": "出發前往 {venue}！",
+		"switchedMessageWithReason": "{reason}。出發前往 {venue}！",
 		"unknownGame": "未知比賽",
-		"switchedMessageNoVenue": "現在帶你前往比賽！",
-		"switchedMessageWithReasonNoVenue": "{reason}。現在帶你前往比賽！"
+		"switchedMessageNoVenue": "出發去看比賽！",
+		"switchedMessageWithReasonNoVenue": "{reason}。出發去看比賽！"
 	},
 	"tabAssign": {
 		"placeholder": "— 指派分頁 —",

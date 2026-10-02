@@ -4,14 +4,14 @@
 	"app": {
 		"welcomeToast": "Bem-vindo ao ArenaSwap!",
 		"settingsSavedToast": "Definições guardadas",
-		"gameDetailsUnavailable": "Detalhes do jogo indisponíveis",
+		"gameDetailsUnavailable": "Este jogo escapou às nossas fontes.",
 		"backToGames": "Voltar aos jogos"
 	},
 	"errorBoundary": {
-		"title": "Algo correu mal.",
-		"body": "ArenaSwap encontrou um erro inesperado.",
+		"title": "Bem, isto foi uma perda de bola.",
+		"body": "O ArenaSwap deixou cair algo que não devia.",
 		"errorLabel": "Erro:",
-		"tryAgain": "Tentar novamente"
+		"tryAgain": "Vamos outra vez"
 	},
 	"sport": {
 		"basketball": "Basquetebol",
@@ -31,7 +31,7 @@
 	},
 	"noGames": {
 		"m1": {
-			"title": "À espera do pontapé inicial. 🕐",
+			"title": "Ainda ninguém entrou em campo. 🕐",
 			"sub": "Sem jogos em directo nas ligas seleccionadas."
 		},
 		"m2": {
@@ -44,7 +44,7 @@
 		},
 		"m4": {
 			"title": "Até os árbitros foram descansar.",
-			"sub": "Nenhum jogo em directo detectado nas tuas ligas seleccionadas."
+			"sub": "As nossas fontes já pegaram nos binóculos. Ainda nada em directo nas tuas ligas."
 		},
 		"m5": {
 			"title": "O marcador está parado.",
@@ -52,7 +52,7 @@
 		},
 		"m6": {
 			"title": "O tipo das bifanas foi embora. 🌭",
-			"sub": "Sem acção em directo nas tuas ligas. Nada para seguir por agora."
+			"sub": "Sem acção em directo nas tuas ligas. Ele volta quando houver."
 		},
 		"m7": {
 			"title": "A procurar debaixo das bancadas…",
@@ -80,7 +80,7 @@
 		"m18": "A actualizar o debate do maior de sempre…",
 		"m19": "A encher a cabine de imprensa…",
 		"m20": "A desenrolar as faixas…",
-		"m21": "A sincronizar o sinal de transmissão…",
+		"m21": "A ajustar os binóculos…",
 		"m22": "A contar o público…",
 		"m23": "A polir os anéis de campeão…",
 		"m24": "A animar as mascotes…",
@@ -89,7 +89,7 @@
 		"m27": "A encher as geleiras…",
 		"m28": "A rever os melhores momentos…",
 		"m29": "A vaiar o comissário…",
-		"m30": "A encontrar as arenas…",
+		"m30": "A enviar olheiros para cada arena…",
 		"m31": "A comer uma bifana…",
 		"m32": "A discutir com os do café desportivo…",
 		"m33": "A reorganizar a tabela da liga de fantasia…",
@@ -108,7 +108,7 @@
 		"m46": "A preparar a tinta para a cara…",
 		"m47": "A coordenar os equipamentos da equipa…",
 		"m48": "A fazer as contas…",
-		"m49": "A analisar as estatísticas…",
+		"m49": "A ouvir o relatório das nossas fontes…",
 		"m50": "A lançar os fogos de artifício…",
 		"m51": "A preparar o espectáculo de luzes…",
 		"m52": "A verificar o tempo para o dia do jogo…",
@@ -221,12 +221,12 @@
 		"holidayLights": "Luzes",
 		"holidayLeaves": "Folhas",
 		"signalsSection": "Sinais do PowerScore",
-		"signalsExplainer": "Os sinais desactivados são excluídos da pontuação. As pontuações são renormalizadas para se manterem no intervalo.",
-		"signalLastActive": "Pelo menos um sinal tem de ficar activo",
+		"signalsExplainer": "Desliga um sinal e ele fica no banco. Os outros são reescalados para a pontuação continuar entre 0 e 100.",
+		"signalLastActive": "Pelo menos um sinal tem de continuar em jogo.",
 		"leaguesExplainer": "Apenas as ligas seleccionadas são monitorizadas e consideradas para mudança automática.",
 		"selectNone": "Limpar",
 		"selectAll": "Seleccionar todas",
-		"noLeaguesWarning": "Nenhuma liga seleccionada — ArenaSwap não irá monitorizar jogos.",
+		"noLeaguesWarning": "Nenhuma liga escolhida, por isso o ArenaSwap não tem nada para ver.",
 		"groupByLeague": "Agrupar jogos por liga",
 		"groupByLeagueExplainer": "Desativado, todas as ligas partilham uma única lista: jogos em direto por PowerScore e próximos jogos por hora de início. As equipas favoritas ficam sempre no topo.",
 		"leagueOrderSection": "Ordem de apresentação",
@@ -676,7 +676,7 @@
 		"leagueNotTracked": "{league} · não monitorizada",
 		"searchPlaceholder": "Pesquisar equipas…",
 		"loading": "A carregar equipas…",
-		"loadError": "Não foi possível carregar as equipas.",
+		"loadError": "Os nossos olheiros não conseguiram os plantéis.",
 		"retry": "Tentar novamente",
 		"removeFavorite": "Remover {team} dos favoritos",
 		"addFavorite": "Adicionar {team} aos favoritos",
@@ -689,7 +689,7 @@
 		"title": "Bem-vindo ao ArenaSwap",
 		"subtitle": "Antes de configurarmos tudo, eis o que podes esperar.",
 		"feature1Title": "Mudança automática de separadores",
-		"feature1Body": "ArenaSwap toma conta da janela do navegador quando está activo. Quando um jogo fica emocionante, ArenaSwap activa esse separador mesmo que estejas a ver outra coisa.",
+		"feature1Body": "Quando um jogo aquece, o ArenaSwap salta para o separador dele, mesmo que estejas a ver outra coisa.",
 		"feature2Title": "Tu é que associas separadores aos jogos",
 		"feature2Body": "Abre cada transmissão no seu próprio separador e depois associa-a a um jogo a partir da extensão. ArenaSwap só toca nos separadores que registaste.",
 		"feature3Title": "Tu é que tens o controlo",
@@ -704,8 +704,8 @@
 		"title": "Ligar e desligar",
 		"subtitle": "Um interruptor controla tudo.",
 		"tryIt": "↑ experimenta",
-		"statusActive": "● ArenaSwap está activo",
-		"statusPaused": "○ Mudança automática em pausa",
+		"statusActive": "ArenaSwap está a mudar por ti",
+		"statusPaused": "ArenaSwap está em pausa",
 		"bodyBeforeOn": "Quando está ",
 		"bodyOn": "ligado",
 		"bodyAfterOn": ", ArenaSwap muda automaticamente os teus separadores para o jogo em directo mais emocionante. Desliga quando quiseres para retomar o controlo.",
@@ -848,14 +848,14 @@
 	},
 	"empty": {
 		"leaguesTitle": "Escolhe ligas para começar",
-		"leaguesCopy": "ArenaSwap precisa de pelo menos uma liga seleccionada para conseguir encontrar jogos entre os quais mudar.",
-		"selectLeagues": "Seleccionar ligas nas Definições",
+		"leaguesCopy": "Escolhe pelo menos uma liga e o ArenaSwap começa à caça de jogos.",
+		"selectLeagues": "Escolher ligas nas Definições",
 		"refresh": "Actualizar",
 		"settings": "Definições →"
 	},
 	"gameListHeader": {
 		"loading": "A carregar…",
-		"loadFailed": "Não foi possível carregar os jogos.",
+		"loadFailed": "As nossas fontes calaram-se. Sem jogos.",
 		"retry": "Tentar novamente"
 	},
 	"toast": {
@@ -866,13 +866,13 @@
 	},
 	"notification": {
 		"standbyTitle": "Estacionado no Standby Stream",
-		"standbyMessage": "Os jogos ficaram todos sossegados. Estacionado no teu Standby Stream.",
-		"switchedTitle": "Mudado → {score} | ArenaSwap",
-		"switchedMessage": "A levar-te agora para {venue}!",
-		"switchedMessageWithReason": "{reason}. A levar-te agora para {venue}!",
+		"standbyMessage": "Os jogos ficaram todos sossegados, por isso estacionámos-te no teu Standby Stream.",
+		"switchedTitle": "Mudado → {score}",
+		"switchedMessage": "Rumo a {venue}!",
+		"switchedMessageWithReason": "{reason}. Rumo a {venue}!",
 		"unknownGame": "Jogo desconhecido",
-		"switchedMessageNoVenue": "A levar-te agora para o jogo!",
-		"switchedMessageWithReasonNoVenue": "{reason}. A levar-te agora para o jogo!"
+		"switchedMessageNoVenue": "Rumo ao jogo!",
+		"switchedMessageWithReasonNoVenue": "{reason}. Rumo ao jogo!"
 	},
 	"tabAssign": {
 		"placeholder": "— Associa um separador —",
