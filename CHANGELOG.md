@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The main list sweats the small stuff too — 2026-10-02
+
+The notices above the list share one surface that reads in both themes, Retry and Refresh show they're working, the no-games joke stays quiet when the load failed, and Up Next cards drop the day the pager already names. Cards stop twitching and blinking (tabular PowerScore figures, a still live dot, a glow that eases between team colours, one delay label instead of two), the star gets a 24px target, final cards lose the stale betting line, and the period label, the timeouts plural and every date now speak the popup's language. The shared Translator in `packages/ui` takes a plural count the way the extension's `i18n.t` does, and overtime reads OT, 2OT, 3OT to match the box score.
+
 ## The website sweats the small stuff — 2026-10-02
 
 A polish pass over the docs site: buttons keep their colour when pressed and show a focus ring, the top nav marks where you are, wide tables scroll on phones, anchors land below the fixed header, docs links keep you in your language, the frame around the English docs and release notes is translated in all 12 locales with dates formatted per locale, and headlines balance their line breaks. The site's own copy no longer names its data source outside the legal pages, and the fine print, small dates, skip link, Escape-to-close menu and a 180px touch icon bring it up to AA. In-article links are rewritten by a Sätteri hast plugin in `src/lib/relativeDocLinks.ts`, since Astro 7's default Markdown processor ignores `rehypePlugins`.
