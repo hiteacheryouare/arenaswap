@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The copy reads like one product, in every language — 2026-10-02
+
+Headings are Title Case in English, every plus is a boost, the tour says click, pro tips quote the real setting labels, Ludicrous Speed stays a name in all 12 locales, and the flat error, empty and notification lines picked up some wit, our sources' binoculars included. The site bundles and `defaultStrings.ts` follow the extension's English, and a new `gameListHeader.cy.tsx` holds the load-failed banner to two lines beside Retry in every locale, which is why German, French and both Portuguese say it more briefly.
+
 ## Settings, onboarding and the tour stop fighting you — 2026-10-02
 
 The boost fields can be cleared and stop at 100, "Settings saved" only appears when something changed, sliders read in your units with digits that hold still, team search ignores accents and the whole row stars a team, the tour can be skipped and ends once, and search results land on the setting they name. Focus follows every step and page change, pickers announce their value, the help buttons are 24px targets, and Ludicrous Speed's strobes hold still under reduced motion. The digits-only `Geist Figures` face in `_fonts.scss` is how a label like "+10 per team" gets steady numbers without re-fonting its words.
