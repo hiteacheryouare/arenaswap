@@ -203,7 +203,7 @@ const setupView = ({
 						<label className='text-body-secondary setting-toggle-label' htmlFor='upcomingDaysSlider'>
 							{i18n.t('setup.upcomingDaysLabel')}
 						</label>
-						<span className='fw-semibold text-body small'>{i18n.t('setup.upcomingDaysValue', prefs.upcomingGamesDays)}</span>
+						<span className='fw-semibold setting-value-label'>{i18n.t('setup.upcomingDaysValue', prefs.upcomingGamesDays)}</span>
 					</div>
 					<input
 						type='range'
@@ -346,7 +346,7 @@ const setupView = ({
 							<label className='text-body-secondary setting-toggle-label' htmlFor='standbyThresholdSlider'>
 								{i18n.t('setup.standbyBelow')}
 							</label>
-							<span className='fw-semibold text-body small'>{prefs.standbyStreamThreshold}</span>
+							<span className='fw-semibold setting-value-label'>{prefs.standbyStreamThreshold}</span>
 						</div>
 						<input
 							type='range'
@@ -354,7 +354,7 @@ const setupView = ({
 							id='standbyThresholdSlider'
 							min={0}
 							max={100}
-							step={1}
+							step={5}
 							value={prefs.standbyStreamThreshold}
 							onChange={e => onStandbyThresholdChange(Number(e.target.value))}
 							disabled={!prefsLoaded}

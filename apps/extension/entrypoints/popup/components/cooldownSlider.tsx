@@ -1,5 +1,6 @@
 import { i18n } from '#i18n';
 import { defaultCooldownSecs } from '@arenaswap/core';
+import { formatSecondsLabel, secondsSliderSteps } from '../../../utils/secondsLabel';
 import SettingTooltipIcon from './settingTooltipIcon';
 
 interface cooldownSliderProps {
@@ -7,15 +8,11 @@ interface cooldownSliderProps {
 	onChange: (val: number) => void;
 }
 
-export const cooldownSteps = [0, 15, 30, 45, 60, 90, 120, 180];
+export const cooldownSteps = secondsSliderSteps;
 
-export const formatCooldownSeconds = (secs: number): string => {
-	if (secs === 0) return i18n.t('cooldown.off');
-	if (secs < 60) return `${secs}s`;
-	const m = Math.floor(secs / 60);
-	const s = secs % 60;
-	return s > 0 ? `${m}m ${s}s` : `${m}m`;
-};
+export const formatCooldownSeconds = (secs: number): string => (
+	secs === 0 ? i18n.t('cooldown.off') : formatSecondsLabel(secs, i18n.t)
+);
 
 const cooldownSlider = ({ value, onChange }: cooldownSliderProps) => {
 	const idx = cooldownSteps.indexOf(value);
@@ -37,6 +34,7 @@ const cooldownSlider = ({ value, onChange }: cooldownSliderProps) => {
 				max={cooldownSteps.length - 1}
 				step={1}
 				value={currentIdx}
+				aria-valuetext={formatCooldownSeconds(cooldownSteps[currentIdx]!)}
 				onChange={e => {
 					const next = cooldownSteps[Number(e.target.value)]!;
 					if (next !== value) onChange(next);
@@ -44,8 +42,8 @@ const cooldownSlider = ({ value, onChange }: cooldownSliderProps) => {
 				className='form-range w-100'
 			/>
 			<div className='d-flex justify-content-between'>
-				<span className='text-body-secondary setting-toggle-label'>{formatCooldownSeconds(cooldownSteps[0]!)}</span>
-				<span className='text-body-secondary setting-toggle-label'>{formatCooldownSeconds(cooldownSteps[cooldownSteps.length - 1]!)}</span>
+				<span className='setting-explainer'>{formatCooldownSeconds(cooldownSteps[0]!)}</span>
+				<span className='setting-explainer'>{formatCooldownSeconds(cooldownSteps[cooldownSteps.length - 1]!)}</span>
 			</div>
 		</div>
 	);

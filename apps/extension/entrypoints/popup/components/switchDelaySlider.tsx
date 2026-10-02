@@ -1,4 +1,5 @@
 import { i18n } from '#i18n';
+import { formatSecondsLabel, secondsSliderSteps } from '../../../utils/secondsLabel';
 import SettingTooltipIcon from './settingTooltipIcon';
 
 interface switchDelaySliderProps {
@@ -6,15 +7,11 @@ interface switchDelaySliderProps {
 	onChange: (val: number) => void;
 }
 
-const steps = [0, 15, 30, 45, 60, 90, 120, 180];
+const steps = secondsSliderSteps;
 
-const formatSeconds = (secs: number): string => {
-	if (secs === 0) return i18n.t('switchDelay.off');
-	if (secs < 60) return `${secs}s`;
-	const m = Math.floor(secs / 60);
-	const s = secs % 60;
-	return s > 0 ? `${m}m ${s}s` : `${m}m`;
-};
+const formatSeconds = (secs: number): string => (
+	secs === 0 ? i18n.t('switchDelay.off') : formatSecondsLabel(secs, i18n.t)
+);
 
 const switchDelaySlider = ({ value, onChange }: switchDelaySliderProps) => {
 	const idx = steps.indexOf(value);
@@ -36,12 +33,13 @@ const switchDelaySlider = ({ value, onChange }: switchDelaySliderProps) => {
 				max={steps.length - 1}
 				step={1}
 				value={currentIdx}
+				aria-valuetext={formatSeconds(steps[currentIdx]!)}
 				onChange={e => onChange(steps[Number(e.target.value)]!)}
 				className='form-range w-100'
 			/>
 			<div className='d-flex justify-content-between'>
-				<span className='text-body-secondary setting-toggle-label'>{formatSeconds(steps[0]!)}</span>
-				<span className='text-body-secondary setting-toggle-label'>{formatSeconds(steps[steps.length - 1]!)}</span>
+				<span className='setting-explainer'>{formatSeconds(steps[0]!)}</span>
+				<span className='setting-explainer'>{formatSeconds(steps[steps.length - 1]!)}</span>
 			</div>
 		</div>
 	);

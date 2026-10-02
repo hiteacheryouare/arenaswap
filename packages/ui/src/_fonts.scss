@@ -40,3 +40,15 @@ $font-base-url: '/fonts' !default;
 // SemiBold carries the detail view's sticky bar, where Bold at 1rem shouts.
 @include as-woff2-face('Geist', 'Geist-SemiBold', 600);
 @include as-woff2-face('Geist', 'Geist-Bold', 700);
+// Geist's digits alone, for labels that set a figure inside words ("+10 per team", "7 days"):
+// the number keeps its width as it changes and the words around it stay DM Sans.
+@each $weight, $file in (600: 'Geist-SemiBold', 700: 'Geist-Bold') {
+	@font-face {
+		font-family: 'Geist Figures';
+		src: url('#{$font-base-url}/#{$file}.woff2') format('woff2');
+		font-weight: $weight;
+		font-style: normal;
+		font-display: swap;
+		unicode-range: U+0030-0039;
+	}
+}
