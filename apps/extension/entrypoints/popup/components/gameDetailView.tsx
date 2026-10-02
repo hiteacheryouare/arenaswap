@@ -40,6 +40,7 @@ import useSummaryData from './useSummaryData';
 import { chartHistory, coversWholeGame } from './wrapCoverage';
 import { resolveDecorations, type holidayDecorationPrefs } from '../../../utils/holidayDecorations';
 import { favoriteScoreFlashColors, scorelineOf, type gameScoreline } from '../../../utils/favoriteScoreFlash';
+import { capitalizeReason, translateReason } from '../../../utils/powerScoreReason';
 import type { BettingDisplayPrefs, WeatherDisplayPrefs } from './gameCardTypes';
 import type { ResolvedTheme } from '@arenaswap/core/types';
 
@@ -162,10 +163,13 @@ const gameDetailView = ({
 	const appliedBoost = activePowerScore?.gameBoost ?? currentBoost;
 	const scoringOpportunityBoost = activePowerScore?.scoringOpportunityBoost ?? 0;
 	const postseasonBoost = activePowerScore?.postseasonBoost ?? 0;
-	const reason = activePowerScore?.reason ?? 'Best Available';
 
 	const chartPalette = theme === 'light' ? lightChartPalette : darkChartPalette;
 	const locale = useDisplayLocale();
+	// The scorer writes its reason in English. Another language gets it rebuilt from locale strings,
+	// or not at all when a fragment has no translation; until a score arrives there is nothing to say.
+	const spokenReason = activePowerScore?.reason ? translateReason(activePowerScore.reason, i18n.t, locale ?? 'en') : undefined;
+	const reason = spokenReason ? capitalizeReason(spokenReason, locale ?? 'en') : undefined;
 	// Before the charts, and handed to them: a clash that needs a colour read off a crest lands on a
 	// render with the same `game`, and a chart memoised on `game` alone would keep the old line.
 	useSwitchCrest(game.awayTeam, game.homeTeam);
@@ -289,7 +293,7 @@ const gameDetailView = ({
 					postseasonBoost={postseasonBoost}
 					postseasonLabel={game?.postseasonLabel}
 					totalLabel={totalLabel}
-					reason={reason ? reason.charAt(0).toUpperCase() + reason.slice(1) : undefined}
+					reason={reason}
 					disabledSignals={disabledSignals}
 				/>
 

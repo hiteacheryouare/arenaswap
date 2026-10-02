@@ -581,7 +581,48 @@
 		"tooltipFavoriteBoost": "Adicionado quando um dos seus times favoritos salvos está neste jogo. Ter dois favoritos no confronto soma mais do que um.",
 		"tooltipGameBoost": "Pontos que você aplicou manualmente a este jogo usando o controle de impulso do jogo.",
 		"tooltipScoringOpportunity": "Adicionado com base na posição ativa de pontuação. No futebol americano é a zona vermelha; no beisebol e softbol escala com o número de corredores nas bases.",
-		"tooltipPostseasonBoost": "Um bônus fixo aplicado a jogos de pós-temporada: playoffs, finais de conferência e campeonatos."
+		"tooltipPostseasonBoost": "Um bônus fixo aplicado a jogos de pós-temporada: playoffs, finais de conferência e campeonatos.",
+		"reasonJoiner": ", ",
+		"reasonTied": "empate",
+		"reasonMarginPoints": {
+			"1": "1 ponto de diferença",
+			"n": "$1 pontos de diferença"
+		},
+		"reasonMarginGoals": {
+			"1": "1 gol de diferença",
+			"n": "$1 gols de diferença"
+		},
+		"reasonMarginRuns": {
+			"1": "1 corrida de diferença",
+			"n": "$1 corridas de diferença"
+		},
+		"reasonOvertime": "prorrogação",
+		"reasonExtraTime": "prorrogação",
+		"reasonShootout": "pênaltis",
+		"reasonExtraInnings": "entradas extras",
+		"reasonInning": "{inning}ª entrada",
+		"reasonClockLeft": "faltam {clock}",
+		"reasonUnderMinutes": {
+			"1": "menos de 1 minuto",
+			"n": "menos de $1 minutos"
+		},
+		"reasonMinutesIn": {
+			"1": "1º minuto",
+			"n": "$1º minuto"
+		},
+		"reasonOvertimeLooming": "empate, prorrogação à vista",
+		"reasonLevelLate": "ainda empatado no fim",
+		"reasonOutscoring": "{team} supera {other} por {run}",
+		"reasonOnARoll": "{team} embalado",
+		"reasonTradingLeads": "liderança trocando de mãos",
+		"reasonJustTookLead": "acabou de virar",
+		"reasonCuttingIn": "{team} diminuindo a diferença",
+		"reasonClosingGap": "{team} encostando",
+		"reasonFallback": "o melhor jogo do momento",
+		"reasonFavoriteBoost": "impulso de favorito (+{points})",
+		"reasonGameBoost": "impulso do jogo (+{points})",
+		"reasonScoringOpportunity": "oportunidade de pontuar (+{points})",
+		"reasonPostseasonBoost": "impulso de pós-temporada (+{points})"
 	},
 	"bso": {
 		"balls": "B",
@@ -827,7 +868,10 @@
 		"standbyMessage": "Todos os jogos esfriaram. Estacionado no seu Standby Stream.",
 		"switchedTitle": "Trocado → {score} | ArenaSwap",
 		"switchedMessage": "Te levando para {venue} agora!",
-		"switchedMessageWithReason": "{reason}. Te levando para {venue} agora!"
+		"switchedMessageWithReason": "{reason}. Te levando para {venue} agora!",
+		"unknownGame": "Jogo desconhecido",
+		"switchedMessageNoVenue": "Te levando para o jogo agora!",
+		"switchedMessageWithReasonNoVenue": "{reason}. Te levando para o jogo agora!"
 	},
 	"tabAssign": {
 		"placeholder": "— Atribuir uma aba —",

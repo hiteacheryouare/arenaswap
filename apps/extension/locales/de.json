@@ -581,7 +581,48 @@
 		"tooltipFavoriteBoost": "Wird hinzugefügt, wenn eines deiner gespeicherten Lieblingsteams in diesem Spiel antritt. Zwei Lieblinge im Spiel zählen mehr als einer.",
 		"tooltipGameBoost": "Punkte, die du diesem Spiel manuell über den Spielboost hinzugefügt hast.",
 		"tooltipScoringOpportunity": "Wird basierend auf aktiver Torgelegenheit hinzugefügt. Im American Football ist das die Red Zone; im Baseball und Softball skaliert es mit der Anzahl der Läufer auf den Bases.",
-		"tooltipPostseasonBoost": "Ein Pauschalbonus für Postseason-Spiele: Playoffs, Conference Finals und Meisterschaften."
+		"tooltipPostseasonBoost": "Ein Pauschalbonus für Postseason-Spiele: Playoffs, Conference Finals und Meisterschaften.",
+		"reasonJoiner": ", ",
+		"reasonTied": "Gleichstand",
+		"reasonMarginPoints": {
+			"1": "1 Punkt Abstand",
+			"n": "$1 Punkte Abstand"
+		},
+		"reasonMarginGoals": {
+			"1": "1 Tor Abstand",
+			"n": "$1 Tore Abstand"
+		},
+		"reasonMarginRuns": {
+			"1": "1 Run Abstand",
+			"n": "$1 Runs Abstand"
+		},
+		"reasonOvertime": "Verlängerung",
+		"reasonExtraTime": "Verlängerung",
+		"reasonShootout": "Elfmeterschießen",
+		"reasonExtraInnings": "Extra-Innings",
+		"reasonInning": "{inning}. Inning",
+		"reasonClockLeft": "noch {clock}",
+		"reasonUnderMinutes": {
+			"1": "weniger als 1 Minute",
+			"n": "weniger als $1 Minuten"
+		},
+		"reasonMinutesIn": {
+			"1": "1. Minute",
+			"n": "$1. Minute"
+		},
+		"reasonOvertimeLooming": "Gleichstand, Verlängerung droht",
+		"reasonLevelLate": "spät noch ausgeglichen",
+		"reasonOutscoring": "{team} zieht gegen {other} davon, {run}",
+		"reasonOnARoll": "{team} läuft heiß",
+		"reasonTradingLeads": "ständige Führungswechsel",
+		"reasonJustTookLead": "gerade in Führung gegangen",
+		"reasonCuttingIn": "{team} verkürzt",
+		"reasonClosingGap": "{team} kommt heran",
+		"reasonFallback": "das beste Spiel gerade",
+		"reasonFavoriteBoost": "Favoritenboost (+{points})",
+		"reasonGameBoost": "Spielboost (+{points})",
+		"reasonScoringOpportunity": "Torgelegenheit (+{points})",
+		"reasonPostseasonBoost": "Postseason-Boost (+{points})"
 	},
 	"bso": {
 		"balls": "B",
@@ -827,7 +868,10 @@
 		"standbyMessage": "Alle Spiele sind ruhig geworden. Auf deinem Standby Stream geparkt.",
 		"switchedTitle": "Gewechselt → {score} | ArenaSwap",
 		"switchedMessage": "Los geht's jetzt zu {venue}!",
-		"switchedMessageWithReason": "{reason}. Los geht's jetzt zu {venue}!"
+		"switchedMessageWithReason": "{reason}. Los geht's jetzt zu {venue}!",
+		"unknownGame": "Unbekanntes Spiel",
+		"switchedMessageNoVenue": "Los geht's jetzt zum Spiel!",
+		"switchedMessageWithReasonNoVenue": "{reason}. Los geht's jetzt zum Spiel!"
 	},
 	"tabAssign": {
 		"placeholder": "— Tab zuweisen —",

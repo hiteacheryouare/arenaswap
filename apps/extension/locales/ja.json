@@ -581,7 +581,48 @@
 		"tooltipFavoriteBoost": "お気に入りに登録したチームがこの試合に出場している場合に追加されます。両チームがお気に入りの場合は1チームより多く加算されます。",
 		"tooltipGameBoost": "ゲームブーストコントロールを使って手動でこの試合に適用したポイントです。",
 		"tooltipScoringOpportunity": "アクティブな得点チャンスに基づいて加算されます。アメリカンフットボールではレッドゾーン、野球とソフトボールでは塁上の走者数に応じてスケールします。",
-		"tooltipPostseasonBoost": "プレーオフ、カンファレンス決勝、チャンピオンシップなどのポストシーズン試合に適用されるフラットボーナスです。"
+		"tooltipPostseasonBoost": "プレーオフ、カンファレンス決勝、チャンピオンシップなどのポストシーズン試合に適用されるフラットボーナスです。",
+		"reasonJoiner": "、",
+		"reasonTied": "同点",
+		"reasonMarginPoints": {
+			"1": "1点差",
+			"n": "$1点差"
+		},
+		"reasonMarginGoals": {
+			"1": "1点差",
+			"n": "$1点差"
+		},
+		"reasonMarginRuns": {
+			"1": "1点差",
+			"n": "$1点差"
+		},
+		"reasonOvertime": "延長戦",
+		"reasonExtraTime": "延長戦",
+		"reasonShootout": "PK戦",
+		"reasonExtraInnings": "延長戦",
+		"reasonInning": "{inning}回",
+		"reasonClockLeft": "残り{clock}",
+		"reasonUnderMinutes": {
+			"1": "残り1分未満",
+			"n": "残り$1分未満"
+		},
+		"reasonMinutesIn": {
+			"1": "1分経過",
+			"n": "$1分経過"
+		},
+		"reasonOvertimeLooming": "同点、延長の気配",
+		"reasonLevelLate": "終盤でも同点",
+		"reasonOutscoring": "{team}が{other}に{run}",
+		"reasonOnARoll": "{team}が勢いづく",
+		"reasonTradingLeads": "リードが入れ替わる展開",
+		"reasonJustTookLead": "逆転したばかり",
+		"reasonCuttingIn": "{team}が追い上げ",
+		"reasonClosingGap": "{team}が差を詰める",
+		"reasonFallback": "今いちばんの試合",
+		"reasonFavoriteBoost": "お気に入りブースト（+{points}）",
+		"reasonGameBoost": "ゲームブースト（+{points}）",
+		"reasonScoringOpportunity": "得点チャンス（+{points}）",
+		"reasonPostseasonBoost": "ポストシーズンブースト（+{points}）"
 	},
 	"bso": {
 		"balls": "B",
@@ -827,7 +868,10 @@
 		"standbyMessage": "すべての試合が静かになりました。Standby Streamに留まっています。",
 		"switchedTitle": "切り替え → {score} | ArenaSwap",
 		"switchedMessage": "今すぐ{venue}へ切り替えます！",
-		"switchedMessageWithReason": "{reason}。今すぐ{venue}へ切り替えます！"
+		"switchedMessageWithReason": "{reason}。今すぐ{venue}へ切り替えます！",
+		"unknownGame": "不明な試合",
+		"switchedMessageNoVenue": "今すぐ試合へ切り替えます！",
+		"switchedMessageWithReasonNoVenue": "{reason}。今すぐ試合へ切り替えます！"
 	},
 	"tabAssign": {
 		"placeholder": "— タブを割り当て —",

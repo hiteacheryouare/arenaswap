@@ -581,7 +581,48 @@
 		"tooltipFavoriteBoost": "Se añade cuando uno de tus equipos favoritos guardados está en este partido. Tener dos favoritos en el encuentro suma más que uno.",
 		"tooltipGameBoost": "Puntos que has aplicado manualmente a este partido usando el control de impulso del partido.",
 		"tooltipScoringOpportunity": "Se añade según la posición activa de anotación. En fútbol americano es la zona roja; en béisbol y sóftbol escala con el número de corredores en base.",
-		"tooltipPostseasonBoost": "Un bono fijo aplicado a los partidos de postemporada — playoffs, finales de conferencia y campeonatos."
+		"tooltipPostseasonBoost": "Un bono fijo aplicado a los partidos de postemporada — playoffs, finales de conferencia y campeonatos.",
+		"reasonJoiner": ", ",
+		"reasonTied": "empate",
+		"reasonMarginPoints": {
+			"1": "a 1 punto",
+			"n": "a $1 puntos"
+		},
+		"reasonMarginGoals": {
+			"1": "a 1 gol",
+			"n": "a $1 goles"
+		},
+		"reasonMarginRuns": {
+			"1": "a 1 carrera",
+			"n": "a $1 carreras"
+		},
+		"reasonOvertime": "tiempo extra",
+		"reasonExtraTime": "tiempo extra",
+		"reasonShootout": "penales",
+		"reasonExtraInnings": "entradas extra",
+		"reasonInning": "{inning}.ª entrada",
+		"reasonClockLeft": "quedan {clock}",
+		"reasonUnderMinutes": {
+			"1": "menos de 1 minuto",
+			"n": "menos de $1 minutos"
+		},
+		"reasonMinutesIn": {
+			"1": "minuto 1",
+			"n": "minuto $1"
+		},
+		"reasonOvertimeLooming": "empate, se asoma el tiempo extra",
+		"reasonLevelLate": "igualados al final",
+		"reasonOutscoring": "{team} supera a {other} {run}",
+		"reasonOnARoll": "{team} está en racha",
+		"reasonTradingLeads": "se alternan la ventaja",
+		"reasonJustTookLead": "acaba de tomar la ventaja",
+		"reasonCuttingIn": "{team} recorta distancia",
+		"reasonClosingGap": "{team} se acerca",
+		"reasonFallback": "el mejor partido disponible",
+		"reasonFavoriteBoost": "impulso de favorito (+{points})",
+		"reasonGameBoost": "impulso del partido (+{points})",
+		"reasonScoringOpportunity": "oportunidad de anotar (+{points})",
+		"reasonPostseasonBoost": "impulso de postemporada (+{points})"
 	},
 	"bso": {
 		"balls": "B",
@@ -827,7 +868,10 @@
 		"standbyMessage": "Todos los partidos se calmaron. Te quedaste en tu Standby Stream.",
 		"switchedTitle": "Cambiado → {score} | ArenaSwap",
 		"switchedMessage": "¡Ya te lleva a {venue}!",
-		"switchedMessageWithReason": "{reason}. ¡Ya te lleva a {venue}!"
+		"switchedMessageWithReason": "{reason}. ¡Ya te lleva a {venue}!",
+		"unknownGame": "Partido desconocido",
+		"switchedMessageNoVenue": "¡Ya te lleva al partido!",
+		"switchedMessageWithReasonNoVenue": "{reason}. ¡Ya te lleva al partido!"
 	},
 	"tabAssign": {
 		"placeholder": "— Asigna una pestaña —",

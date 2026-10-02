@@ -581,7 +581,48 @@
 		"tooltipFavoriteBoost": "Naidadagdag kapag kasama sa larong ito ang isa sa mga naka-save mong paboritong team. Kapag dalawang paborito ang nasa matchup, mas malaki ang dagdag kaysa sa iisa lang.",
 		"tooltipGameBoost": "Ang mga points na manual mong inilapat sa larong ito gamit ang game boost control.",
 		"tooltipScoringOpportunity": "Naidadagdag base sa aktibong scoring position. Sa football, ito ang red zone; sa baseball at softball, depende ito sa bilang ng runners sa base.",
-		"tooltipPostseasonBoost": "Isang flat bonus na inilalapat sa mga postseason na laro: playoffs, conference finals, at championships."
+		"tooltipPostseasonBoost": "Isang flat bonus na inilalapat sa mga postseason na laro: playoffs, conference finals, at championships.",
+		"reasonJoiner": ", ",
+		"reasonTied": "tabla",
+		"reasonMarginPoints": {
+			"1": "1 puntos na lang ang agwat",
+			"n": "$1 puntos na lang ang agwat"
+		},
+		"reasonMarginGoals": {
+			"1": "1 goal na lang ang agwat",
+			"n": "$1 goals na lang ang agwat"
+		},
+		"reasonMarginRuns": {
+			"1": "1 run na lang ang agwat",
+			"n": "$1 runs na lang ang agwat"
+		},
+		"reasonOvertime": "overtime",
+		"reasonExtraTime": "extra time",
+		"reasonShootout": "penalties",
+		"reasonExtraInnings": "extra innings",
+		"reasonInning": "ika-{inning} na inning",
+		"reasonClockLeft": "{clock} na lang",
+		"reasonUnderMinutes": {
+			"1": "wala nang 1 minuto",
+			"n": "wala nang $1 minuto"
+		},
+		"reasonMinutesIn": {
+			"1": "ika-1 minuto",
+			"n": "ika-$1 minuto"
+		},
+		"reasonOvertimeLooming": "tabla, papuntang overtime",
+		"reasonLevelLate": "tabla pa rin sa dulo",
+		"reasonOutscoring": "{team} humahataw laban sa {other}, {run}",
+		"reasonOnARoll": "{team} nag-iinit",
+		"reasonTradingLeads": "palitan ng lamang",
+		"reasonJustTookLead": "kakalamang lang",
+		"reasonCuttingIn": "{team} humahabol",
+		"reasonClosingGap": "{team} lumalapit",
+		"reasonFallback": "pinakamagandang laro ngayon",
+		"reasonFavoriteBoost": "boost ng paborito (+{points})",
+		"reasonGameBoost": "boost ng laro (+{points})",
+		"reasonScoringOpportunity": "pagkakataong mag-score (+{points})",
+		"reasonPostseasonBoost": "boost sa postseason (+{points})"
 	},
 	"bso": {
 		"balls": "B",
@@ -827,7 +868,10 @@
 		"standbyMessage": "Tumahimik ang lahat ng laro. Naka-park ka sa Standby Stream mo.",
 		"switchedTitle": "Lumipat → {score} | ArenaSwap",
 		"switchedMessage": "Dinadala ka na sa {venue}!",
-		"switchedMessageWithReason": "{reason}. Dinadala ka na sa {venue}!"
+		"switchedMessageWithReason": "{reason}. Dinadala ka na sa {venue}!",
+		"unknownGame": "Hindi kilalang laro",
+		"switchedMessageNoVenue": "Dinadala ka na sa laro!",
+		"switchedMessageWithReasonNoVenue": "{reason}. Dinadala ka na sa laro!"
 	},
 	"tabAssign": {
 		"placeholder": "— Mag-assign ng tab —",

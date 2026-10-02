@@ -581,7 +581,48 @@
 		"tooltipFavoriteBoost": "Added when one of your saved favorite teams is in this game. Having two favorites in the matchup adds more than one.",
 		"tooltipGameBoost": "Points you've manually applied to this game using the game boost control.",
 		"tooltipScoringOpportunity": "Added based on active scoring position. In football this is the red zone; in baseball and softball it scales with the number of runners on base.",
-		"tooltipPostseasonBoost": "A flat bonus applied to postseason games: playoffs, conference finals, and championships."
+		"tooltipPostseasonBoost": "A flat bonus applied to postseason games: playoffs, conference finals, and championships.",
+		"reasonJoiner": ", ",
+		"reasonTied": "it's tied",
+		"reasonMarginPoints": {
+			"1": "1-point game",
+			"n": "$1-point game"
+		},
+		"reasonMarginGoals": {
+			"1": "1-goal game",
+			"n": "$1-goal game"
+		},
+		"reasonMarginRuns": {
+			"1": "1-run game",
+			"n": "$1-run game"
+		},
+		"reasonOvertime": "overtime",
+		"reasonExtraTime": "extra time",
+		"reasonShootout": "penalties",
+		"reasonExtraInnings": "extra innings",
+		"reasonInning": "inning {inning}",
+		"reasonClockLeft": "{clock} left",
+		"reasonUnderMinutes": {
+			"1": "under 1 min left",
+			"n": "under $1 min left"
+		},
+		"reasonMinutesIn": {
+			"1": "1 min in",
+			"n": "$1 min in"
+		},
+		"reasonOvertimeLooming": "tied — overtime looming",
+		"reasonLevelLate": "still level late",
+		"reasonOutscoring": "{team} outscoring {other} {run}",
+		"reasonOnARoll": "{team} on a roll",
+		"reasonTradingLeads": "trading leads",
+		"reasonJustTookLead": "just took the lead",
+		"reasonCuttingIn": "{team} cutting into it",
+		"reasonClosingGap": "{team} closing the gap",
+		"reasonFallback": "best game available",
+		"reasonFavoriteBoost": "favorite bonus (+{points})",
+		"reasonGameBoost": "game boost (+{points})",
+		"reasonScoringOpportunity": "scoring opportunity (+{points})",
+		"reasonPostseasonBoost": "postseason (+{points})"
 	},
 	"bso": {
 		"balls": "B",
@@ -827,7 +868,10 @@
 		"standbyMessage": "All games went quiet. Parked on your standby stream.",
 		"switchedTitle": "Switched → {score} | ArenaSwap",
 		"switchedMessage": "Taking you to {venue} now!",
-		"switchedMessageWithReason": "{reason}. Taking you to {venue} now!"
+		"switchedMessageWithReason": "{reason}. Taking you to {venue} now!",
+		"unknownGame": "Unknown game",
+		"switchedMessageNoVenue": "Taking you to the game now!",
+		"switchedMessageWithReasonNoVenue": "{reason}. Taking you to the game now!"
 	},
 	"tabAssign": {
 		"placeholder": "— Assign a tab —",

@@ -581,7 +581,48 @@
 		"tooltipFavoriteBoost": "当您收藏的球队参与本场比赛时加分。若双方球队均为收藏，加成超过单队收藏。",
 		"tooltipGameBoost": "您通过比赛加速控件手动为本场比赛添加的分数。",
 		"tooltipScoringOpportunity": "根据当前进攻位置自动加分。橄榄球中为红区；棒球和垒球中根据垒上跑者数量递增。",
-		"tooltipPostseasonBoost": "对季后赛、分区决赛和冠军赛等赛事统一给予固定加分。"
+		"tooltipPostseasonBoost": "对季后赛、分区决赛和冠军赛等赛事统一给予固定加分。",
+		"reasonJoiner": "，",
+		"reasonTied": "比分持平",
+		"reasonMarginPoints": {
+			"1": "相差1分",
+			"n": "相差$1分"
+		},
+		"reasonMarginGoals": {
+			"1": "相差1球",
+			"n": "相差$1球"
+		},
+		"reasonMarginRuns": {
+			"1": "相差1分",
+			"n": "相差$1分"
+		},
+		"reasonOvertime": "加时赛",
+		"reasonExtraTime": "加时赛",
+		"reasonShootout": "点球大战",
+		"reasonExtraInnings": "延长局",
+		"reasonInning": "第{inning}局",
+		"reasonClockLeft": "还剩{clock}",
+		"reasonUnderMinutes": {
+			"1": "不到1分钟",
+			"n": "不到$1分钟"
+		},
+		"reasonMinutesIn": {
+			"1": "第1分钟",
+			"n": "第$1分钟"
+		},
+		"reasonOvertimeLooming": "比分持平，加时在即",
+		"reasonLevelLate": "临近终场仍平",
+		"reasonOutscoring": "{team}对{other}打出{run}",
+		"reasonOnARoll": "{team}手感正热",
+		"reasonTradingLeads": "比分交替领先",
+		"reasonJustTookLead": "刚刚反超",
+		"reasonCuttingIn": "{team}追分",
+		"reasonClosingGap": "{team}缩小差距",
+		"reasonFallback": "当前最佳比赛",
+		"reasonFavoriteBoost": "收藏球队加成（+{points}）",
+		"reasonGameBoost": "比赛加速（+{points}）",
+		"reasonScoringOpportunity": "得分机会（+{points}）",
+		"reasonPostseasonBoost": "季后赛加成（+{points}）"
 	},
 	"bso": {
 		"balls": "B",
@@ -827,7 +868,10 @@
 		"standbyMessage": "所有比赛都归于平静。已停留在您的 Standby Stream。",
 		"switchedTitle": "已切换 → {score} | ArenaSwap",
 		"switchedMessage": "现在带您前往 {venue}！",
-		"switchedMessageWithReason": "{reason}。现在带您前往 {venue}！"
+		"switchedMessageWithReason": "{reason}。现在带您前往 {venue}！",
+		"unknownGame": "未知比赛",
+		"switchedMessageNoVenue": "现在带您前往比赛！",
+		"switchedMessageWithReasonNoVenue": "{reason}。现在带您前往比赛！"
 	},
 	"tabAssign": {
 		"placeholder": "— 分配标签页 —",

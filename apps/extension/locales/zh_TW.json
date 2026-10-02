@@ -581,7 +581,48 @@
 		"tooltipFavoriteBoost": "當你收藏的球隊參與這場比賽時加分。若雙方都是收藏球隊，加成會比只有一隊時更多。",
 		"tooltipGameBoost": "你透過比賽加成控制項，手動為這場比賽加的分數。",
 		"tooltipScoringOpportunity": "依目前的進攻位置自動加分。美式足球中為紅區進攻；棒球和壘球中則依壘上跑者人數遞增。",
-		"tooltipPostseasonBoost": "對季後賽、聯盟冠軍賽和總冠軍賽等賽事，統一給予固定加分。"
+		"tooltipPostseasonBoost": "對季後賽、聯盟冠軍賽和總冠軍賽等賽事，統一給予固定加分。",
+		"reasonJoiner": "，",
+		"reasonTied": "比分平手",
+		"reasonMarginPoints": {
+			"1": "相差1分",
+			"n": "相差$1分"
+		},
+		"reasonMarginGoals": {
+			"1": "相差1球",
+			"n": "相差$1球"
+		},
+		"reasonMarginRuns": {
+			"1": "相差1分",
+			"n": "相差$1分"
+		},
+		"reasonOvertime": "延長賽",
+		"reasonExtraTime": "延長賽",
+		"reasonShootout": "PK大戰",
+		"reasonExtraInnings": "延長賽",
+		"reasonInning": "第{inning}局",
+		"reasonClockLeft": "還剩{clock}",
+		"reasonUnderMinutes": {
+			"1": "不到1分鐘",
+			"n": "不到$1分鐘"
+		},
+		"reasonMinutesIn": {
+			"1": "第1分鐘",
+			"n": "第$1分鐘"
+		},
+		"reasonOvertimeLooming": "比分平手，延長在即",
+		"reasonLevelLate": "接近終場仍平手",
+		"reasonOutscoring": "{team}對{other}打出{run}",
+		"reasonOnARoll": "{team}手感正燙",
+		"reasonTradingLeads": "比分互有領先",
+		"reasonJustTookLead": "剛剛反超",
+		"reasonCuttingIn": "{team}追分",
+		"reasonClosingGap": "{team}縮小差距",
+		"reasonFallback": "目前最佳比賽",
+		"reasonFavoriteBoost": "收藏球隊加成（+{points}）",
+		"reasonGameBoost": "比賽加成（+{points}）",
+		"reasonScoringOpportunity": "得分機會（+{points}）",
+		"reasonPostseasonBoost": "季後賽加成（+{points}）"
 	},
 	"bso": {
 		"balls": "B",
@@ -827,7 +868,10 @@
 		"standbyMessage": "所有比賽都冷了下來。已停留在你的 Standby Stream。",
 		"switchedTitle": "已切換 → {score} | ArenaSwap",
 		"switchedMessage": "現在帶你前往 {venue}！",
-		"switchedMessageWithReason": "{reason}。現在帶你前往 {venue}！"
+		"switchedMessageWithReason": "{reason}。現在帶你前往 {venue}！",
+		"unknownGame": "未知比賽",
+		"switchedMessageNoVenue": "現在帶你前往比賽！",
+		"switchedMessageWithReasonNoVenue": "{reason}。現在帶你前往比賽！"
 	},
 	"tabAssign": {
 		"placeholder": "— 指派分頁 —",

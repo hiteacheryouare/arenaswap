@@ -581,7 +581,48 @@
 		"tooltipFavoriteBoost": "저장해 둔 응원팀이 이 경기에 있을 때 추가돼요. 매치업에 응원팀이 두 팀이면 한 팀일 때보다 더 많이 추가돼요.",
 		"tooltipGameBoost": "게임 부스트 컨트롤로 이 경기에 직접 적용한 점수예요.",
 		"tooltipScoringOpportunity": "현재 득점 상황에 따라 추가돼요. 미식축구에서는 레드존, 야구와 소프트볼에서는 출루한 주자 수에 따라 점수가 커져요.",
-		"tooltipPostseasonBoost": "플레이오프, 콘퍼런스 파이널, 챔피언십 등 포스트시즌 경기에 적용되는 고정 보너스예요."
+		"tooltipPostseasonBoost": "플레이오프, 콘퍼런스 파이널, 챔피언십 등 포스트시즌 경기에 적용되는 고정 보너스예요.",
+		"reasonJoiner": ", ",
+		"reasonTied": "동점",
+		"reasonMarginPoints": {
+			"1": "1점 차",
+			"n": "$1점 차"
+		},
+		"reasonMarginGoals": {
+			"1": "1골 차",
+			"n": "$1골 차"
+		},
+		"reasonMarginRuns": {
+			"1": "1점 차",
+			"n": "$1점 차"
+		},
+		"reasonOvertime": "연장전",
+		"reasonExtraTime": "연장전",
+		"reasonShootout": "승부차기",
+		"reasonExtraInnings": "연장전",
+		"reasonInning": "{inning}회",
+		"reasonClockLeft": "{clock} 남음",
+		"reasonUnderMinutes": {
+			"1": "1분 미만 남음",
+			"n": "$1분 미만 남음"
+		},
+		"reasonMinutesIn": {
+			"1": "1분 경과",
+			"n": "$1분 경과"
+		},
+		"reasonOvertimeLooming": "동점, 연장 임박",
+		"reasonLevelLate": "막판까지 동점",
+		"reasonOutscoring": "{team}, {other} 상대로 {run}",
+		"reasonOnARoll": "{team} 상승세",
+		"reasonTradingLeads": "역전에 역전",
+		"reasonJustTookLead": "방금 역전",
+		"reasonCuttingIn": "{team} 추격 중",
+		"reasonClosingGap": "{team} 격차 좁히는 중",
+		"reasonFallback": "지금 가장 좋은 경기",
+		"reasonFavoriteBoost": "응원팀 부스트 (+{points})",
+		"reasonGameBoost": "게임 부스트 (+{points})",
+		"reasonScoringOpportunity": "득점 기회 (+{points})",
+		"reasonPostseasonBoost": "포스트시즌 부스트 (+{points})"
 	},
 	"bso": {
 		"balls": "B",
@@ -827,7 +868,10 @@
 		"standbyMessage": "모든 경기가 조용해졌어요. Standby Stream에 머물러 있어요.",
 		"switchedTitle": "전환 → {score} | ArenaSwap",
 		"switchedMessage": "지금 {venue}로 전환해요!",
-		"switchedMessageWithReason": "{reason}. 지금 {venue}로 전환해요!"
+		"switchedMessageWithReason": "{reason}. 지금 {venue}로 전환해요!",
+		"unknownGame": "알 수 없는 경기",
+		"switchedMessageNoVenue": "지금 경기로 전환해요!",
+		"switchedMessageWithReasonNoVenue": "{reason}. 지금 경기로 전환해요!"
 	},
 	"tabAssign": {
 		"placeholder": "— 탭 할당 —",

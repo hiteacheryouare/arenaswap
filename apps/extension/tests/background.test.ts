@@ -172,6 +172,8 @@ const loadBackground = async (options: LoadOptions = {}) => {
 			},
 		},
 		notifications: { create: jest.fn().mockResolvedValue(undefined) },
+		// A switch notification formats its reason in the UI language, as the popup's fake does.
+		i18n: { getUILanguage: () => 'en-US' },
 	};
 
 	fetchMock = (require('@arenaswap/core') as { fetchGamesWithLeagueLogos: jest.Mock }).fetchGamesWithLeagueLogos;
