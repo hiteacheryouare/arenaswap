@@ -215,7 +215,7 @@
 		"temperatureUnitRomer": "°Rø",
 		"openReveal": "Panimulang animation",
 		"openRevealExplainer": "Lalabas ang bawat laro bilang matchup poster kapag binubuksan mo ang ArenaSwap — ang mahabang bersyon minsan sa isang araw, tapos mas mabilis na bersyon pagkatapos noon.",
-		"holidayDecorations": "Holiday decorations",
+		"holidayDecorations": "Mga dekorasyon sa holiday",
 		"holidayDecorationsExplainer": "May snow kapag umuulan ng niyebe sa laro, dahon tuwing linggo ng Thanksgiving, at ilaw buong Disyembre.",
 		"holidaySnow": "Niyebe",
 		"holidayLights": "Ilaw",
@@ -336,7 +336,7 @@
 		"totalLabelBaseMax": "{total} (max na base {max})",
 		"back": "Bumalik",
 		"close": "Isara",
-		"teamRecord": "Record: {record}",
+		"teamRecord": "Rekord: {record}",
 		"unitDays": "d",
 		"unitHours": "h",
 		"unitMinutes": "m",
@@ -537,8 +537,8 @@
 		"periodShootout": "PENS",
 		"powerScore": "PowerScore",
 		"vs": "vs",
-		"topOfInning": "Top of inning",
-		"bottomOfInning": "Bottom of inning"
+		"topOfInning": "Itaas ng inning",
+		"bottomOfInning": "Ibaba ng inning"
 	},
 	"field": {
 		"possession": "Nasa {team} ang bola",
@@ -768,13 +768,13 @@
 		"step": "Step $1 ng $2",
 		"title": "I-tune Ayon sa Gusto Mo",
 		"subtitle": "Buksan ang Mga Setting kahit kailan para i-adjust.",
-		"sensitivity1": "Barely Active",
-		"sensitivity2": "Passive",
-		"sensitivity3": "Conservative",
-		"sensitivity4": "Balanced",
-		"sensitivity5": "Eager",
-		"sensitivity6": "Trigger Happy",
-		"sensitivity7": "Baliw na Bilis",
+		"sensitivity1": "Halos Tulog",
+		"sensitivity2": "Relaks",
+		"sensitivity3": "Maingat",
+		"sensitivity4": "Balanse",
+		"sensitivity5": "Sabik",
+		"sensitivity6": "Atat",
+		"sensitivity7": "Ludicrous Speed",
 		"sensitivityLabel": "Sensitivity ng Paglipat",
 		"sensitivityHelp": "Kinokontrol kung gaano kalaki dapat ang PowerScore gap bago lumipat ng tab ang ArenaSwap.",
 		"cooldownLabel": "Cooldown ng Paglipat",
@@ -971,13 +971,13 @@
 		"explainer": "Kinokontrol kung gaano kalaki dapat ang PowerScore gap bago lumipat ng tab ang ArenaSwap.",
 		"hyperdriveTitle": "I-engage ang hyperdrive…",
 		"level": {
-			"l1": "Barely Active",
-			"l2": "Passive",
-			"l3": "Conservative",
-			"l4": "Balanced",
-			"l5": "Eager",
-			"l6": "Trigger Happy",
-			"l7": "Baliw na Bilis"
+			"l1": "Halos Tulog",
+			"l2": "Relaks",
+			"l3": "Maingat",
+			"l4": "Balanse",
+			"l5": "Sabik",
+			"l6": "Atat",
+			"l7": "Ludicrous Speed"
 		}
 	},
 	"footer": {
@@ -986,51 +986,51 @@
 		"toggleDebug": "I-toggle ang Debug Info"
 	},
 	"ludicrousSpeed": {
-		"skip": "click to skip",
+		"skip": "i-click para i-skip",
 		"announce": "LUDICROUS SPEED…",
 		"go": "GO!",
-		"plaid": "THEY'VE GONE TO PLAID!",
-		"stop": "STOP!",
-		"emergencyBrake": "⚠ EMERGENCY BRAKE — NEVER USE",
+		"plaid": "NAG-PLAID NA SILA!",
+		"stop": "TIGIL!",
+		"emergencyBrake": "⚠ EMERGENCY BRAKE — HUWAG GAMITIN",
 		"intro": {
-			"l1": "Prepare ship for light speed.",
-			"l2": "No, no, light speed is too slow.",
-			"l3": "Light speed too slow?",
-			"l4": "Yes. We're gonna have to go right to",
-			"l5": "ludicrous speed.",
-			"l6": "Ludicrous speed?",
-			"l7": "We've never gone that fast.",
-			"l8": "Maybe the ship can't take it."
+			"l1": "Ihanda ang barko para sa light speed.",
+			"l2": "Hindi, hindi, masyadong mabagal ang light speed.",
+			"l3": "Masyadong mabagal ang light speed?",
+			"l4": "Oo. Kailangan na nating dumiretso sa",
+			"l5": "Ludicrous Speed.",
+			"l6": "Ludicrous Speed?",
+			"l7": "Hindi pa tayo nakakabilis nang ganoon.",
+			"l8": "Baka hindi kayanin ng barko."
 		},
 		"prelaunch": {
-			"l1": "What's the matter, Colonel Sandurz?",
-			"l2": "Chicken?",
-			"l3": "Prepare ship for ludicrous speed.",
-			"l4": "Fasten all seat belts.",
-			"l5": "Seal all entrances and exits.",
-			"l6": "Close all shops in the mall.",
-			"l7": "Cancel the three-ring circus.",
-			"l8": "Secure all animals in the zoo…",
-			"l9": "Shut up, you petty excuse for an officer!",
-			"l10": "Now hear this. Ludicrous speed!",
-			"l11": "Sir, hadn't you better buckle up?",
-			"l12": "Oh, buckle this!"
+			"l1": "Ano'ng problema, Colonel Sandurz?",
+			"l2": "Duwag ka ba?",
+			"l3": "Ihanda ang barko para sa Ludicrous Speed.",
+			"l4": "Ikabit ang lahat ng seat belt.",
+			"l5": "Isara ang lahat ng pasukan at labasan.",
+			"l6": "Isara ang lahat ng tindahan sa mall.",
+			"l7": "Kanselahin ang three-ring circus.",
+			"l8": "Ikulong ang lahat ng hayop sa zoo…",
+			"l9": "Tumahimik ka, walang kwentang opisyal!",
+			"l10": "Makinig kayong lahat. Ludicrous Speed!",
+			"l11": "Sir, hindi ba dapat mag-seat belt kayo?",
+			"l12": "I-buckle mo 'to!"
 		},
 		"gforce": {
-			"l1": "What have I done?",
-			"l2": "My brains… are going into my feet."
+			"l1": "Ano'ng nagawa ko?",
+			"l2": "Ang utak ko… bumababa sa paa ko."
 		},
 		"signs": {
 			"light": "LIGHT SPEED",
 			"ridiculous": "RIDICULOUS SPEED",
-			"ludicrous": "BALIW NA BILIS",
+			"ludicrous": "LUDICROUS SPEED",
 			"plaid": "PLAID"
 		},
 		"panic": {
-			"l1": "We passed them! Stop this thing!",
-			"l2": "We can't stop. It's too dangerous.",
-			"l3": "We've got to slow down first.",
-			"l4": "Just stop this thing! I order you!"
+			"l1": "Nalampasan na natin sila! Itigil ang barkong 'to!",
+			"l2": "Hindi tayo puwedeng huminto. Masyadong delikado.",
+			"l3": "Kailangan muna nating bumagal.",
+			"l4": "Itigil mo na lang 'to! Utos ko 'yan!"
 		}
 	}
 }

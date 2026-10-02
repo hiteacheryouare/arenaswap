@@ -774,7 +774,7 @@
 		"sensitivity4": "Equilibrato",
 		"sensitivity5": "Scattante",
 		"sensitivity6": "Grilletto facile",
-		"sensitivity7": "Velocità smodata",
+		"sensitivity7": "Ludicrous Speed",
 		"sensitivityLabel": "Sensibilità di cambio",
 		"sensitivityHelp": "Controlla quanto deve essere ampio lo scarto di PowerScore prima che ArenaSwap cambi scheda.",
 		"cooldownLabel": "Tempo di attesa tra i cambi",
@@ -977,7 +977,7 @@
 			"l4": "Equilibrato",
 			"l5": "Scattante",
 			"l6": "Grilletto facile",
-			"l7": "Velocità smodata"
+			"l7": "Ludicrous Speed"
 		}
 	},
 	"footer": {
@@ -987,7 +987,7 @@
 	},
 	"ludicrousSpeed": {
 		"skip": "clicca per saltare",
-		"announce": "VELOCITÀ SMODATA…",
+		"announce": "LUDICROUS SPEED…",
 		"go": "VIA!",
 		"plaid": "SONO FINITI NELLA ZONA PLAID!",
 		"stop": "STOP!",
@@ -997,22 +997,22 @@
 			"l2": "No, no, la velocità della luce è troppo lenta.",
 			"l3": "Velocità della luce troppo lenta?",
 			"l4": "Sì. Dobbiamo passare direttamente a",
-			"l5": "velocità smodata.",
-			"l6": "Velocità smodata?",
+			"l5": "Ludicrous Speed.",
+			"l6": "Ludicrous Speed?",
 			"l7": "Non siamo mai andati così veloci.",
 			"l8": "Forse la nave non ce la fa."
 		},
 		"prelaunch": {
 			"l1": "Cosa c'è, colonnello Sandurz?",
 			"l2": "Fifone?",
-			"l3": "Preparate la nave per la velocità smodata.",
+			"l3": "Preparate la nave per la Ludicrous Speed.",
 			"l4": "Allacciate tutte le cinture di sicurezza.",
 			"l5": "Sigillate tutte le entrate e le uscite.",
 			"l6": "Chiudete tutti i negozi del centro commerciale.",
 			"l7": "Annullate il circo a tre piste.",
 			"l8": "Mettete in sicurezza tutti gli animali dello zoo…",
 			"l9": "Silenzio, patetica scusa di ufficiale!",
-			"l10": "Ora ascoltate. Velocità smodata!",
+			"l10": "Ora ascoltate. Ludicrous Speed!",
 			"l11": "Signore, non farebbe meglio ad allacciarsi la cintura?",
 			"l12": "Ah, allacciati questa!"
 		},
@@ -1023,7 +1023,7 @@
 		"signs": {
 			"light": "VELOCITÀ DELLA LUCE",
 			"ridiculous": "VELOCITÀ RIDICOLA",
-			"ludicrous": "VELOCITÀ SMODATA",
+			"ludicrous": "LUDICROUS SPEED",
 			"plaid": "PLAID"
 		},
 		"panic": {

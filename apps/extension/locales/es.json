@@ -774,7 +774,7 @@
 		"sensitivity4": "Equilibrado",
 		"sensitivity5": "Ansioso",
 		"sensitivity6": "Gatillo fácil",
-		"sensitivity7": "Velocidad absurda",
+		"sensitivity7": "Ludicrous Speed",
 		"sensitivityLabel": "Sensibilidad de cambio",
 		"sensitivityHelp": "Controla qué tan grande debe ser la diferencia de PowerScore antes de que ArenaSwap cambie de pestaña.",
 		"cooldownLabel": "Tiempo de espera entre cambios",
@@ -977,7 +977,7 @@
 			"l4": "Equilibrado",
 			"l5": "Ansioso",
 			"l6": "Gatillo fácil",
-			"l7": "Velocidad absurda"
+			"l7": "Ludicrous Speed"
 		}
 	},
 	"footer": {
@@ -987,7 +987,7 @@
 	},
 	"ludicrousSpeed": {
 		"skip": "haz clic para omitir",
-		"announce": "VELOCIDAD ABSURDA…",
+		"announce": "LUDICROUS SPEED…",
 		"go": "¡VAMOS!",
 		"plaid": "¡HAN IDO A CUADROS!",
 		"stop": "¡ALTO!",
@@ -997,22 +997,22 @@
 			"l2": "No, no, la velocidad de luz es demasiado lenta.",
 			"l3": "¿Velocidad de luz demasiado lenta?",
 			"l4": "Sí. Vamos a tener que ir directamente a",
-			"l5": "velocidad absurda.",
-			"l6": "¿Velocidad absurda?",
+			"l5": "Ludicrous Speed.",
+			"l6": "¿Ludicrous Speed?",
 			"l7": "Nunca hemos ido tan rápido.",
 			"l8": "Quizás la nave no pueda aguantarlo."
 		},
 		"prelaunch": {
 			"l1": "¿Qué pasa, coronel Sandurz?",
 			"l2": "¿Gallina?",
-			"l3": "Prepare la nave para velocidad absurda.",
+			"l3": "Prepare la nave para Ludicrous Speed.",
 			"l4": "Abróchense todos los cinturones.",
 			"l5": "Sellen todas las entradas y salidas.",
 			"l6": "Cierren todas las tiendas del centro comercial.",
 			"l7": "Cancelen el circo de tres pistas.",
 			"l8": "Aseguren todos los animales en el zoológico…",
 			"l9": "¡Cállese, miserable excusa de oficial!",
-			"l10": "¡Atención! ¡Velocidad absurda!",
+			"l10": "¡Atención! ¡Ludicrous Speed!",
 			"l11": "Señor, ¿no debería abrocharse el cinturón?",
 			"l12": "¡Al diablo el cinturón!"
 		},
@@ -1023,7 +1023,7 @@
 		"signs": {
 			"light": "VELOCIDAD DE LUZ",
 			"ridiculous": "VELOCIDAD RIDÍCULA",
-			"ludicrous": "VELOCIDAD ABSURDA",
+			"ludicrous": "LUDICROUS SPEED",
 			"plaid": "CUADROS"
 		},
 		"panic": {

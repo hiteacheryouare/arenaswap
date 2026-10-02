@@ -774,7 +774,7 @@
 		"sensitivity4": "均衡",
 		"sensitivity5": "积极",
 		"sensitivity6": "手痒难耐",
-		"sensitivity7": "荒唐速度",
+		"sensitivity7": "Ludicrous Speed",
 		"sensitivityLabel": "切换灵敏度",
 		"sensitivityHelp": "控制 PowerScore 差距需要多大，ArenaSwap 才会切换标签页。",
 		"cooldownLabel": "切换冷却",
@@ -977,7 +977,7 @@
 			"l4": "均衡",
 			"l5": "积极",
 			"l6": "手痒难耐",
-			"l7": "荒唐速度"
+			"l7": "Ludicrous Speed"
 		}
 	},
 	"footer": {
@@ -987,7 +987,7 @@
 	},
 	"ludicrousSpeed": {
 		"skip": "点击跳过",
-		"announce": "荒唐速度……",
+		"announce": "LUDICROUS SPEED……",
 		"go": "冲！",
 		"plaid": "他们突破格子极限了！",
 		"stop": "停！",
@@ -997,22 +997,22 @@
 			"l2": "不不，光速太慢了。",
 			"l3": "光速太慢？",
 			"l4": "对。我们必须直接上",
-			"l5": "荒唐速度。",
-			"l6": "荒唐速度？",
+			"l5": "Ludicrous Speed。",
+			"l6": "Ludicrous Speed？",
 			"l7": "我们从来没跑那么快过。",
 			"l8": "也许飞船承受不了。"
 		},
 		"prelaunch": {
 			"l1": "怎么了，桑德兹上校？",
 			"l2": "怕了？",
-			"l3": "准备飞船，进入荒唐速度。",
+			"l3": "准备飞船，进入 Ludicrous Speed。",
 			"l4": "所有人系好安全带。",
 			"l5": "封闭所有出入口。",
 			"l6": "商场所有店铺全部打烊。",
 			"l7": "马戏团三环表演全部取消。",
 			"l8": "动物园所有动物全部固定好……",
 			"l9": "闭嘴，你这个不称职的废物！",
-			"l10": "注意了！荒唐速度！",
+			"l10": "注意了！Ludicrous Speed！",
 			"l11": "长官，您是不是该系安全带了？",
 			"l12": "把安全带塞哪儿去吧！"
 		},
@@ -1023,7 +1023,7 @@
 		"signs": {
 			"light": "光速",
 			"ridiculous": "荒谬速度",
-			"ludicrous": "荒唐速度",
+			"ludicrous": "LUDICROUS SPEED",
 			"plaid": "格子"
 		},
 		"panic": {

@@ -774,7 +774,7 @@
 		"sensitivity4": "균형",
 		"sensitivity5": "적극적",
 		"sensitivity6": "성급함",
-		"sensitivity7": "미친 속도",
+		"sensitivity7": "Ludicrous Speed",
 		"sensitivityLabel": "전환 민감도",
 		"sensitivityHelp": "ArenaSwap이 탭을 전환하기 위해 필요한 PowerScore 차이를 설정해요.",
 		"cooldownLabel": "전환 쿨다운",
@@ -977,7 +977,7 @@
 			"l4": "균형",
 			"l5": "적극적",
 			"l6": "성급함",
-			"l7": "미친 속도"
+			"l7": "Ludicrous Speed"
 		}
 	},
 	"footer": {
@@ -987,7 +987,7 @@
 	},
 	"ludicrousSpeed": {
 		"skip": "클릭해서 건너뛰기",
-		"announce": "미친 속도…",
+		"announce": "LUDICROUS SPEED…",
 		"go": "발사!",
 		"plaid": "체크무늬로 돌입!!",
 		"stop": "멈춰!!",
@@ -997,22 +997,22 @@
 			"l2": "아니, 아니, 광속은 너무 느려.",
 			"l3": "광속이 너무 느리다고?",
 			"l4": "그래. 우리는 곧바로 가야 해",
-			"l5": "미친 속도로.",
-			"l6": "미친 속도라고?",
+			"l5": "Ludicrous Speed로.",
+			"l6": "Ludicrous Speed라고?",
 			"l7": "그렇게 빨리 가본 적이 없는데.",
 			"l8": "배가 견디지 못할 수도 있어."
 		},
 		"prelaunch": {
 			"l1": "무슨 문제라도 있나, 샌더즈 대령?",
 			"l2": "겁먹었나?",
-			"l3": "우주선을 미친 속도로 준비하라.",
+			"l3": "우주선을 Ludicrous Speed로 준비하라.",
 			"l4": "전원 안전벨트를 착용하라.",
 			"l5": "모든 출입구를 봉쇄하라.",
 			"l6": "쇼핑몰의 모든 상점을 닫아라.",
 			"l7": "서커스 공연을 취소하라.",
 			"l8": "동물원의 모든 동물을 가둬라…",
 			"l9": "닥쳐, 이 형편없는 장교 놈아!",
-			"l10": "전원 주목. 미친 속도 발동!",
+			"l10": "전원 주목. Ludicrous Speed 발동!",
 			"l11": "각하, 안전벨트를 매셔야 하지 않을까요?",
 			"l12": "닥치고 이거나 매!"
 		},
@@ -1023,7 +1023,7 @@
 		"signs": {
 			"light": "광속",
 			"ridiculous": "황당한 속도",
-			"ludicrous": "미친 속도",
+			"ludicrous": "LUDICROUS SPEED",
 			"plaid": "체크무늬"
 		},
 		"panic": {

@@ -774,7 +774,7 @@
 		"sensitivity4": "Equilibrado",
 		"sensitivity5": "Ansioso",
 		"sensitivity6": "Gatilho fácil",
-		"sensitivity7": "Velocidade Absurda",
+		"sensitivity7": "Ludicrous Speed",
 		"sensitivityLabel": "Sensibilidade de troca",
 		"sensitivityHelp": "Controla o tamanho da diferença de PowerScore necessária antes de ArenaSwap trocar de aba.",
 		"cooldownLabel": "Cooldown entre trocas",
@@ -977,7 +977,7 @@
 			"l4": "Equilibrado",
 			"l5": "Ansioso",
 			"l6": "Gatilho fácil",
-			"l7": "Velocidade Absurda"
+			"l7": "Ludicrous Speed"
 		}
 	},
 	"footer": {
@@ -987,7 +987,7 @@
 	},
 	"ludicrousSpeed": {
 		"skip": "clique para pular",
-		"announce": "VELOCIDADE ABSURDA…",
+		"announce": "LUDICROUS SPEED…",
 		"go": "VAI!",
 		"plaid": "FORAM PRO XADREZ!",
 		"stop": "PARA!",
@@ -997,22 +997,22 @@
 			"l2": "Não, não, a velocidade da luz é lenta demais.",
 			"l3": "A velocidade da luz é lenta demais?",
 			"l4": "Sim. Vamos ter que ir direto pra",
-			"l5": "velocidade absurda.",
-			"l6": "Velocidade absurda?",
+			"l5": "Ludicrous Speed.",
+			"l6": "Ludicrous Speed?",
 			"l7": "Nunca fomos tão rápido assim.",
 			"l8": "Talvez a nave não aguente."
 		},
 		"prelaunch": {
 			"l1": "O que foi, coronel Sandurz?",
 			"l2": "Galinha?",
-			"l3": "Prepare a nave para velocidade absurda.",
+			"l3": "Prepare a nave para Ludicrous Speed.",
 			"l4": "Apertem todos os cintos.",
 			"l5": "Fechem todas as entradas e saídas.",
 			"l6": "Fechem todas as lojas do shopping.",
 			"l7": "Cancelem o circo com três picadeiros.",
 			"l8": "Prendam todos os animais do zoológico…",
 			"l9": "Cale a boca, sua desculpa miserável de oficial!",
-			"l10": "Atenção. Velocidade absurda!",
+			"l10": "Atenção. Ludicrous Speed!",
 			"l11": "Senhor, não deveria apertar o cinto?",
 			"l12": "Que se dane o cinto!"
 		},
@@ -1023,7 +1023,7 @@
 		"signs": {
 			"light": "VELOCIDADE DA LUZ",
 			"ridiculous": "VELOCIDADE RIDÍCULA",
-			"ludicrous": "VELOCIDADE ABSURDA",
+			"ludicrous": "LUDICROUS SPEED",
 			"plaid": "XADREZ"
 		},
 		"panic": {

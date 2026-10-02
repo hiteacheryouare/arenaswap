@@ -333,7 +333,7 @@
 		"startsSoon": "Commence bientôt",
 		"final": "Fin",
 		"totalLabel": "{total} / {max}",
-		"totalLabelBaseMax": "{total} (base max {max})",
+		"totalLabelBaseMax": "{total} (max de base {max})",
 		"back": "Retour",
 		"close": "Fermer",
 		"teamRecord": "Bilan : {record}",
@@ -774,7 +774,7 @@
 		"sensitivity4": "Équilibré",
 		"sensitivity5": "Dynamique",
 		"sensitivity6": "Gâchette facile",
-		"sensitivity7": "Vitesse démesurée",
+		"sensitivity7": "Ludicrous Speed",
 		"sensitivityLabel": "Sensibilité de changement",
 		"sensitivityHelp": "Contrôle l'écart de PowerScore nécessaire avant qu'ArenaSwap change d'onglet.",
 		"cooldownLabel": "Délai entre les changements",
@@ -977,7 +977,7 @@
 			"l4": "Équilibré",
 			"l5": "Dynamique",
 			"l6": "Gâchette facile",
-			"l7": "Vitesse démesurée"
+			"l7": "Ludicrous Speed"
 		}
 	},
 	"footer": {
@@ -987,7 +987,7 @@
 	},
 	"ludicrousSpeed": {
 		"skip": "cliquer pour passer",
-		"announce": "VITESSE DÉMESURÉE…",
+		"announce": "LUDICROUS SPEED…",
 		"go": "GO !",
 		"plaid": "ILS SONT PASSÉS AUX CARREAUX !",
 		"stop": "STOP !",
@@ -997,22 +997,22 @@
 			"l2": "Non, non, la vitesse de la lumière est trop lente.",
 			"l3": "La vitesse de la lumière trop lente ?",
 			"l4": "Oui. On va devoir passer directement à la",
-			"l5": "vitesse démesurée.",
-			"l6": "Vitesse démesurée ?",
+			"l5": "Ludicrous Speed.",
+			"l6": "Ludicrous Speed ?",
 			"l7": "On n'est jamais allés aussi vite.",
 			"l8": "Le vaisseau ne tiendra peut-être pas."
 		},
 		"prelaunch": {
 			"l1": "Qu'est-ce qui se passe, colonel Sandurz ?",
 			"l2": "Poule mouillée ?",
-			"l3": "Préparez le vaisseau pour la vitesse démesurée.",
+			"l3": "Préparez le vaisseau pour la Ludicrous Speed.",
 			"l4": "Attachez toutes les ceintures.",
 			"l5": "Fermez toutes les entrées et sorties.",
 			"l6": "Fermez toutes les boutiques du centre commercial.",
 			"l7": "Annulez le cirque à trois pistes.",
 			"l8": "Sécurisez tous les animaux du zoo…",
 			"l9": "Silence, pauvre excuse d'officier !",
-			"l10": "Écoutez bien. Vitesse démesurée !",
+			"l10": "Écoutez bien. Ludicrous Speed !",
 			"l11": "Monsieur, vous ne devriez pas boucler votre ceinture ?",
 			"l12": "Au diable la ceinture !"
 		},
@@ -1023,7 +1023,7 @@
 		"signs": {
 			"light": "VITESSE DE LA LUMIÈRE",
 			"ridiculous": "VITESSE RIDICULE",
-			"ludicrous": "VITESSE DÉMESURÉE",
+			"ludicrous": "LUDICROUS SPEED",
 			"plaid": "CARREAUX"
 		},
 		"panic": {

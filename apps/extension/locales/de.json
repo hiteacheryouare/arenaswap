@@ -772,9 +772,9 @@
 		"sensitivity2": "Passiv",
 		"sensitivity3": "Konservativ",
 		"sensitivity4": "Ausgewogen",
-		"sensitivity5": "Scharf",
-		"sensitivity6": "Abzugsfinger",
-		"sensitivity7": "Wahnwitzige Geschwindigkeit",
+		"sensitivity5": "Eifrig",
+		"sensitivity6": "Schießwütig",
+		"sensitivity7": "Ludicrous Speed",
 		"sensitivityLabel": "Wechselempfindlichkeit",
 		"sensitivityHelp": "Legt fest, wie groß der PowerScore-Abstand sein muss, bevor ArenaSwap Tabs wechselt.",
 		"cooldownLabel": "Wechsel-Cooldown",
@@ -975,9 +975,9 @@
 			"l2": "Passiv",
 			"l3": "Konservativ",
 			"l4": "Ausgewogen",
-			"l5": "Scharf",
-			"l6": "Abzugsfinger",
-			"l7": "Wahnwitzige Geschwindigkeit"
+			"l5": "Eifrig",
+			"l6": "Schießwütig",
+			"l7": "Ludicrous Speed"
 		}
 	},
 	"footer": {
@@ -1023,7 +1023,7 @@
 		"signs": {
 			"light": "LICHTGESCHWINDIGKEIT",
 			"ridiculous": "LÄCHERLICHE GESCHWINDIGKEIT",
-			"ludicrous": "WAHNWITZIGE GESCHWINDIGKEIT",
+			"ludicrous": "LUDICROUS SPEED",
 			"plaid": "KAROMUSTER"
 		},
 		"panic": {
