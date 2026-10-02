@@ -14,11 +14,13 @@ import TimeoutDots from './timeoutDots';
 export { formatClock, formatGameClock, formatPeriod, isHalftime };
 
 
+export const formatStartTime = (iso: string): string => (
+	new Date(iso).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
+);
+
 export const formatStartDateTime = (iso: string): string => {
-	const date = new Date(iso);
-	const day = date.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' });
-	const time = date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-	return `${day} • ${time}`;
+	const day = new Date(iso).toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' });
+	return `${day} • ${formatStartTime(iso)}`;
 };
 
 // Gradient from muted slate rgb(139,148,158) at 0 to orange rgb(247,92,3) at max.

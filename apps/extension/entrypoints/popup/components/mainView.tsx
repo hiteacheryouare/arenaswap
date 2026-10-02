@@ -49,6 +49,7 @@ interface gameSectionProps {
 	weatherPrefs: WeatherDisplayPrefs;
 	reveal: cardRevealPlan;
 	afterTitle?: ReactNode;
+	dayNamedAbove?: boolean;
 	first?: boolean;
 }
 
@@ -105,6 +106,7 @@ const gameSection = ({
 	weatherPrefs,
 	reveal,
 	afterTitle,
+	dayNamedAbove,
 	first,
 }: gameSectionProps) => {
 	const card = (game: Game) => (
@@ -131,6 +133,7 @@ const gameSection = ({
 					onOpenGameDetail={onOpenGameDetail}
 					bettingPrefs={bettingPrefs}
 					weatherPrefs={weatherPrefs}
+					dayNamedAbove={dayNamedAbove}
 					leagueSlot={grouped ? undefined : <LeagueMark league={game.league} logos={leagueLogos} onColor={game.status !== 'post'} />}
 				/>
 			</GameCardReveal>
@@ -354,6 +357,7 @@ const mainView = ({
 				bettingPrefs,
 				weatherPrefs,
 				reveal,
+				dayNamedAbove: true,
 				afterTitle: (
 					<UpcomingDayPager
 						dayLabel={selectedDay.dateLabel}
