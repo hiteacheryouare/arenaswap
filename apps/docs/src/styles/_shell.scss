@@ -427,6 +427,10 @@
 	position: sticky;
 	top: 6rem;
 	grid-column: 3;
+	// 2.0.0 has fifteen sections, which on a laptop screen runs past the bottom of a sticky aside.
+	max-height: calc(100vh - 7rem);
+	overflow-y: auto;
+	overscroll-behavior: contain;
 
 	ul {
 		list-style: none;
