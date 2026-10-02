@@ -4,8 +4,6 @@ import SwitchDelaySlider from '../../entrypoints/popup/components/switchDelaySli
 // The digits-only face is fetched on first use, so it is asked for outright rather than awaited.
 const figuresLoaded = () => cy.document().then(doc => doc.fonts.load('600 10px "Geist Figures"', '0123456789'));
 
-const valueWidth = (selector: string) => cy.get(selector).parent().find('.setting-value-label')
-	.then(([label]: JQuery<HTMLElement>) => label!.getBoundingClientRect().width);
 
 describe('the seconds sliders', () => {
 	// DM Sans has no tabular figures, so "15s" and "45s" used to differ by a few pixels and the
@@ -13,10 +11,13 @@ describe('the seconds sliders', () => {
 	it('holds the value label at one width while the digits change', () => {
 		cy.mount(<CooldownSlider value={15} onChange={() => {}} />);
 		figuresLoaded();
-		valueWidth('#cooldown-range').then(narrow => {
-			cy.mount(<CooldownSlider value={45} onChange={() => {}} />);
-			figuresLoaded();
-			valueWidth('#cooldown-range').should('be.closeTo', narrow, 0.01);
+		cy.get('#cooldown-range').parent().find('.setting-value-label').should(([label]: JQuery<HTMLElement>) => {
+			const widthOf = (text: string) => {
+				label!.textContent = text;
+				return label!.getBoundingClientRect().width;
+			};
+			expect(widthOf('45s')).to.be.closeTo(widthOf('15s'), 0.01);
+			expect(widthOf('1m 30s')).to.be.closeTo(widthOf('3m 45s'), 0.01);
 		});
 	});
 

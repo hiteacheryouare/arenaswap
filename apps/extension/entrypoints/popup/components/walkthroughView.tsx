@@ -9,7 +9,6 @@ import WalkthroughStepSettings from './walkthroughStepSettings';
 import WalkthroughStepGameDetail from './walkthroughStepGameDetail';
 import WalkthroughStepLeaguesFavorites from './walkthroughStepLeaguesFavorites';
 import WalkthroughStepReAccess from './walkthroughStepReAccess';
-import useStepTitleFocus from './useStepTitleFocus';
 
 type walkthroughStep = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
 
@@ -31,7 +30,6 @@ const celebrate = async () => {
 const walkthroughView = ({ onComplete, leagues }: walkthroughViewProps) => {
 	const [step, setStep] = useState<walkthroughStep>(1);
 	const [initialSubStep, setInitialSubStep] = useState<number>(0);
-	const shellRef = useStepTitleFocus(step);
 
 	const next = () => setStep(prev => {
 		if (prev === 1) {
@@ -66,7 +64,7 @@ const walkthroughView = ({ onComplete, leagues }: walkthroughViewProps) => {
 
 	return (
 		<div className='popup-root'>
-			<div ref={shellRef} className='popup-view-shell position-relative'>
+			<div className='popup-view-shell position-relative'>
 				<button type='button' className='btn btn-link btn-sm walkthrough-skip' onClick={onComplete}>
 					{i18n.t('walkthrough.skipTour')}
 				</button>

@@ -1,4 +1,5 @@
 import { i18n } from '#i18n';
+import focusStepTitle from './stepTitleFocus';
 
 interface walkthroughStepReAccessProps {
 	onNext: () => void;
@@ -11,7 +12,7 @@ const walkthroughStepReAccess = ({ onNext, onBack }: walkthroughStepReAccessProp
 			{i18n.t('stepReAccess.step', [8, 8])}
 		</div>
 
-		<div className='fw-bold fs-5 text-center mb-1 popup-step-title' role='heading' aria-level={1} tabIndex={-1} data-step-title>{i18n.t('stepReAccess.title')}</div>
+		<div className='fw-bold fs-5 text-center mb-1 popup-step-title' role='heading' aria-level={1} tabIndex={-1} ref={focusStepTitle} data-step-title>{i18n.t('stepReAccess.title')}</div>
 		<div className='text-body-secondary small text-center mb-3 lh-base'>
 			{i18n.t('stepReAccess.subtitle')}
 		</div>

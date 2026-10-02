@@ -1,5 +1,4 @@
-// Nothing to import: these are bare elements wearing the shipped classes. The export makes it a module.
-export {};
+import { Fragment } from 'react';
 
 const emulateReducedMotion = (on: boolean) => Cypress.automation('remote:debugger:protocol', {
 	command: 'Emulation.setEmulatedMedia',
@@ -25,7 +24,7 @@ describe('looping animations under reduced motion', () => {
 	});
 
 	it('run when motion is welcome', () => {
-		cy.mount(<div>{loops.map(([name, className]) => <span key={name} className={className} data-loop={name} />)}</div>);
+		cy.mount(<Fragment>{loops.map(([name, className]) => <span key={name} className={className} data-loop={name} />)}</Fragment>);
 		cy.get('[data-loop]').each(element => {
 			expect(getComputedStyle(element[0]!).animationName, element.attr('data-loop')).not.to.equal('none');
 		});
@@ -33,7 +32,7 @@ describe('looping animations under reduced motion', () => {
 
 	it('all hold still when reduced motion is asked for', () => {
 		cy.wrap(emulateReducedMotion(true));
-		cy.mount(<div>{loops.map(([name, className]) => <span key={name} className={className} data-loop={name} />)}</div>);
+		cy.mount(<Fragment>{loops.map(([name, className]) => <span key={name} className={className} data-loop={name} />)}</Fragment>);
 		cy.get('[data-loop]').each(element => {
 			expect(getComputedStyle(element[0]!).animationName, element.attr('data-loop')).to.equal('none');
 		});
