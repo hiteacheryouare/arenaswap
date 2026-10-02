@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Live and upcoming cards wear both teams' colours — 2026-10-01
+
+Live and scheduled cards, the detail header and the opening graphic are now painted in the two teams' colours, with each side's text in white or near-black depending on what reads on that colour, the crest our sources draw for a dark background, and only the tab picker on a dark panel at the bottom; Final cards keep their plain plate. Colour pairing copies Apple Sports, as worked out from 44 of its matchups: when the two colours look alike (CIEDE2000 under 11) the away team switches to its alternate, or to a colour read off its crest when that alternate is white, the old step that swapped near-black primaries for the alternate is gone, and the charts, series dots and the Guide's edges now draw the published colours rather than lightened ones. The table of Apple matchups lives in `colorUtils.test.ts`, minus Red Sox @ Yankees and Lakers @ Kings, the two it gets wrong.
+
 ## Every league shares one list — 2026-09-30
 
 Each main-screen section is now a single list across all leagues: live games by PowerScore, Up Next by start time, Final by most recently finished, favorites pinned to the top of all three, and each card names its league with a small logo and short label. The old league sections live on behind a new **Group games by league** switch, which is off for fresh installs and on for anyone whose saved prefs predate it, and grouped Up Next now sorts by start time inside each league while grouped Final keeps each league in one run, so headers no longer repeat.

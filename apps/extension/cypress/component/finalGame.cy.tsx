@@ -579,7 +579,7 @@ describe('a finished game', () => {
 			cy.get('.game-detail-score-value').then(([away, home]: JQuery<HTMLElement>) => {
 				expect(Number(getComputedStyle(home).fontWeight))
 					.to.be.greaterThan(Number(getComputedStyle(away).fontWeight));
-				expect(getComputedStyle(away).color).to.not.equal(getComputedStyle(home).color);
+				expect(Number(getComputedStyle(away).opacity)).to.be.lessThan(Number(getComputedStyle(home).opacity));
 			});
 		});
 

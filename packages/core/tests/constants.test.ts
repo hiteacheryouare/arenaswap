@@ -13,6 +13,7 @@ import {
 	createDefaultUserPreferences,
 	normalizeUserPreferences,
 	resolveLeagueLogoUrl,
+	teamLogoOnColor,
 	scoreMaxCloseness,
 	scoreMaxComeback,
 	scoreMaxSignalsSubtotal,
@@ -330,5 +331,24 @@ describe('constants', () => {
 		expect(resolveLeagueLogoUrl('epl')).toBe(leagueLogoFallbacks.epl);
 		expect(resolveLeagueLogoUrl('fifawc', 'https://cdn.example/fifawc.png')).toBe('https://cdn.example/fifawc.png');
 		expect(resolveLeagueLogoUrl('fifawc')).toBe(leagueLogoFallbacks.fifawc);
+	});
+
+	describe('teamLogoOnColor', () => {
+		test('swaps a scoreboard crest for the one drawn on a dark ground', () => {
+			expect(teamLogoOnColor('https://a.espncdn.com/i/teamlogos/mlb/500/scoreboard/bos.png'))
+				.toBe('https://a.espncdn.com/i/teamlogos/mlb/500-dark/scoreboard/bos.png');
+			expect(teamLogoOnColor('https://a.espncdn.com/i/teamlogos/ncaa/500/120.png'))
+				.toBe('https://a.espncdn.com/i/teamlogos/ncaa/500-dark/120.png');
+		});
+
+		test('leaves a crest that is already the dark variant alone', () => {
+			const dark = 'https://a.espncdn.com/i/teamlogos/soccer/500-dark/359.png';
+			expect(teamLogoOnColor(dark)).toBe(dark);
+		});
+
+		test('leaves artwork from anywhere else as it came', () => {
+			expect(teamLogoOnColor('https://example.com/500/logo.png')).toBe('https://example.com/500/logo.png');
+			expect(teamLogoOnColor(undefined)).toBeUndefined();
+		});
 	});
 });

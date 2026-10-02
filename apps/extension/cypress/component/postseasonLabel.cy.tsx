@@ -109,13 +109,17 @@ describe('the postseason label on a card', () => {
 
 	// Muted grey rather than the accent the breakdown's postseason row uses: two coloured items on
 	// one row makes the reader choose between them, and LIVE should win that outright.
-	it('stays muted so the LIVE marker is the only loud thing on the row', () => {
+	// On a team colour the round takes the same ink as everything else on its side, since a grey picked
+	// for one colour is wrong on the next. It steps back by weight, size and case instead.
+	it('stays quieter than the LIVE marker beside it', () => {
 		mountLive({ ...baseGame, isPostseason: true, postseasonLabel: 'NBA Finals · Game 7' });
-		cy.get('.game-postseason-label').should('have.css', 'color', 'rgb(108, 117, 125)');
 		cy.get('.live-status-label').then($live => {
-			const live = getComputedStyle($live[0]!).color;
+			const live = getComputedStyle($live[0]!);
 			cy.get('.game-postseason-label').should($label => {
-				expect(getComputedStyle($label[0]!).color).to.not.equal(live);
+				const label = getComputedStyle($label[0]!);
+				expect(Number(label.fontWeight)).to.be.lessThan(Number(live.fontWeight));
+				expect(label.textTransform).to.equal('none');
+				expect(live.textTransform).to.equal('uppercase');
 			});
 		});
 	});

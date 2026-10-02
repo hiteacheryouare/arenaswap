@@ -536,6 +536,129 @@ button.game-meta-attribution {
 }
 
 
+// ── Live and scheduled cards, painted in the two teams' colours ──────────────
+// The surface and the three inks come from `matchupSurface`, inline. Everything on the colour takes
+// the ink of the side it stands on, and anything quieter is that ink at a lower opacity rather
+// than a grey of its own — a grey picked for one team colour is wrong on the next. Final cards
+// keep the plain plate above and none of this.
+//
+// Secondary text keeps the full ink and steps down by size alone: on a mid-tone neither ink has
+// contrast to spare, and an opacity spends what little there is.
+.game-card.is-team-colored {
+	color: var(--matchup-ink-center);
+	text-shadow: var(--matchup-shadow-center);
+	// The gradient is laid out on the padding box by default and tiles out under the 1px border, so
+	// each edge showed a sliver of the other team's colour.
+	background-origin: border-box;
+
+	&:not(.is-ot) {
+		// A black team on the dark popup has no edge without this, and a white one on the light page.
+		border-color: rgba(255, 255, 255, 0.1);
+
+		:root[data-bs-theme='light'] & { border-color: rgba(13, 17, 23, 0.12); }
+	}
+
+	.game-card-status-row > :first-child,
+	.team-column.is-away,
+	.game-score-row > .game-score-value:first-child,
+	.game-card-ps-label {
+		color: var(--matchup-ink-away);
+		text-shadow: var(--matchup-shadow-away);
+	}
+
+	.game-card-status-row > :last-child:not(:first-child),
+	.team-column.is-home,
+	.game-score-row > .game-score-value:last-child,
+	.game-card-ps-score {
+		color: var(--matchup-ink-home);
+		text-shadow: var(--matchup-shadow-home);
+	}
+
+	.game-card-center {
+		color: var(--matchup-ink-center);
+		text-shadow: var(--matchup-shadow-center);
+	}
+
+	.live-status-label,
+	.delay-status-label,
+	.game-postseason-label,
+	.team-abbreviation,
+	.team-rank,
+	.game-clock,
+	.game-period,
+	.game-shootout-score,
+	.pre-game-vs,
+	.pre-game-start-time,
+	.pre-game-weather,
+	.bso-label,
+	.bso-dot,
+	.timeout-dot,
+	.timeout-dots-numeric,
+	[data-team-star='true'] {
+		color: inherit;
+	}
+
+	.game-meta-venue,
+	.game-meta-networks,
+	.game-meta-odds { color: inherit; }
+
+	// A dark track, so the bar keeps its slate-to-orange reading on any team colour — an orange fill
+	// straight on the Flyers' orange would not be there.
+	.game-card-ps-progress { background-color: rgba(3, 7, 12, 0.4); }
+
+	.live-dot { background: currentColor; }
+	.game-score-sep { background: currentColor; opacity: 0.4; }
+
+	// Lit and unlit by opacity alone. Yellow bases and green balls were colours chosen to stand off a
+	// white card, and on a team colour they are as likely to vanish into it as to stand out.
+	.base-marker {
+		color: inherit;
+		opacity: 0.35;
+
+		&.occupied { color: inherit; opacity: 1; }
+	}
+
+	.bso-dot.is-empty,
+	.timeout-dot.is-empty {
+		color: inherit;
+		opacity: 0.55;
+	}
+
+	.team-crest .crest-fallback {
+		background: rgba(255, 255, 255, 0.16);
+		color: inherit;
+	}
+
+	// The yellow shade and the DELAY label carry a delay here. Dimming the score as the plate card
+	// did would spend the contrast its ink was chosen for.
+	&.is-delayed {
+		.game-score-value,
+		.game-clock { opacity: 1; }
+	}
+}
+
+// The tab picker, on a panel of dark glass across the bottom, so the control reads as a control
+// whatever the two colours above it are.
+.game-card-footer {
+	margin-top: 0.4rem;
+	padding: 0.3rem;
+	border-radius: 0.375rem;
+	background: rgba(3, 7, 12, 0.4);
+	color: #ffffff;
+	text-shadow: none;
+
+	&:empty { display: none; }
+
+	.game-card-tab-assign { margin-top: 0; }
+
+	.game-card-tab-assign .form-select {
+		--as-form-select-bg-img: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+		background-color: rgba(255, 255, 255, 0.1);
+		color: #ffffff;
+		border-color: rgba(255, 255, 255, 0.18);
+	}
+}
+
 // The football field. Drawn in yards through the SVG viewBox, so the only thing this stylesheet
 // sets is colour, weight and motion — never a position.
 .ff-strip {

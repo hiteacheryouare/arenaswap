@@ -335,7 +335,9 @@ describe('the clubs named over the opening beat', () => {
 	// line-per-word block could reach on the same card.
 	([
 		[club('Washington Commanders'), club('Massachusetts Minutemen'), 0.65],
-		[club('Miami Marlins'), club('Boston Celtics'), 0.45],
+		// Two short words stack once the card is tall enough that two lines out-size one, which is the
+		// fit choosing the bigger type, so this pair is held to a lower share of the width.
+		[club('Miami Marlins'), club('Boston Celtics'), 0.4],
 	] as const).forEach(([away, home, share]) => {
 		it(`names a club across the live card: ${away.name} v ${home.name}`, () => {
 			cy.mount(<Harness away={away} home={home} powerScore={scored} />);

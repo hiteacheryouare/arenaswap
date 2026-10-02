@@ -42,6 +42,9 @@ interface crestProps {
 	// hand and the answer is not.
 	verdict?: crestVerdict;
 	onLoaded?: (image: HTMLImageElement) => void;
+	// For a caller with a second piece of artwork to try, which is the team card asking for the
+	// dark-ground variant of a crest the CDN might not have drawn.
+	onFailed?: () => void;
 }
 
 // Keyed on the URL rather than on a boolean, so a crest that fails once retries when the URL
@@ -71,6 +74,7 @@ const Crest = ({
 	crossOrigin,
 	verdict,
 	onLoaded,
+	onFailed,
 }: crestProps) => {
 	const [outcome, setOutcome] = useState<crestOutcome | null>(null);
 
@@ -79,6 +83,8 @@ const Crest = ({
 	// render. Seeded from the first render, since `settle` fires at commit, before any effect.
 	const onLoadedRef = useRef(onLoaded);
 	useEffect(() => { onLoadedRef.current = onLoaded; }, [onLoaded]);
+	const onFailedRef = useRef(onFailed);
+	useEffect(() => { onFailedRef.current = onFailed; }, [onFailed]);
 
 	// Not defensive padding: the docs site hydrates its islands on load or on intersection, by
 	// which point the crest has usually fired `load` already and the event is gone, leaving the
@@ -89,6 +95,7 @@ const Crest = ({
 		const status = image.naturalWidth > 0 ? 'loaded' : 'failed';
 		setOutcome({ src: logo, status });
 		if (status === 'loaded') onLoadedRef.current?.(image);
+		else onFailedRef.current?.();
 	}, [logo]);
 
 	return (
@@ -118,7 +125,10 @@ const Crest = ({
 						setOutcome({ src: logo, status: 'loaded' });
 						onLoadedRef.current?.(event.currentTarget);
 					}}
-					onError={() => setOutcome({ src: logo, status: 'failed' })}
+					onError={() => {
+						setOutcome({ src: logo, status: 'failed' });
+						onFailedRef.current?.();
+					}}
 				/>
 			)}
 		</span>

@@ -32,6 +32,8 @@ import {
 	lightChartPalette,
 } from './gameDetailChartOptions';
 import { resolveTeamColorPair } from '@arenaswap/ui/src/components/colorUtils';
+import { matchupSurfaceStyle } from '@arenaswap/ui/src/components/gameCardShared';
+import useSwitchCrest from '@arenaswap/ui/src/components/useSwitchCrest';
 import useSummaryData from './useSummaryData';
 import { chartHistory, coversWholeGame } from './wrapCoverage';
 import { resolveDecorations, type holidayDecorationPrefs } from '../../../utils/holidayDecorations';
@@ -158,25 +160,28 @@ const gameDetailView = ({
 	const reason = activePowerScore?.reason ?? 'Best Available';
 
 	const chartPalette = theme === 'light' ? lightChartPalette : darkChartPalette;
+	// Before the charts, and handed to them: a clash that needs a colour read off a crest lands on a
+	// render with the same `game`, and a chart memoised on `game` alone would keep the old line.
+	useSwitchCrest(game.awayTeam, game.homeTeam);
+	const [awayLineColor, homeLineColor] = resolveTeamColorPair(game.awayTeam, game.homeTeam, '#60a5fa', '#f87171');
 	const powerScoreOption = useMemo(() => (
 		buildPowerScoreOption(orderedPowerScoreHistory, chartPalette)
 	), [orderedPowerScoreHistory, chartPalette]);
 	const scoreTrendOption = useMemo(() => (
-		buildTeamScoreOption(orderedScoreHistory, game, chartPalette)
-	), [orderedScoreHistory, game, chartPalette]);
+		buildTeamScoreOption(orderedScoreHistory, game, chartPalette, [awayLineColor, homeLineColor])
+	), [orderedScoreHistory, game, chartPalette, awayLineColor, homeLineColor]);
 	const componentOption = useMemo(() => (
 		buildComponentContributionOption(orderedPowerScoreHistory, chartPalette)
 	), [orderedPowerScoreHistory, chartPalette]);
 	const { winProbability, seriesInfo, records, monoLogos, boxScore, standings, gameDurationMins } = useSummaryData(game);
 	const winProbabilityOption = useMemo(() => (
-		buildWinProbabilityOption(winProbability, game, chartPalette)
-	), [winProbability, game, chartPalette]);
+		buildWinProbabilityOption(winProbability, game, chartPalette, [awayLineColor, homeLineColor])
+	), [winProbability, game, chartPalette, awayLineColor, homeLineColor]);
 	// Read from the scorer, not recomputed from the line fetched above: that would put a different
 	// number here than on the card you tapped. Undefined means ESPN gave too little data.
 	const winProbabilityVariance = activePowerScore?.winProbabilityVariance;
 	const total = activePowerScore?.total ?? 0;
 
-	const [awayLineColor, homeLineColor] = resolveTeamColorPair(game.awayTeam, game.homeTeam, '#60a5fa', '#f87171', chartPalette.surface);
 	const teamLegendItems = useMemo(() => ([
 		{ label: game.awayTeam.abbreviation, color: awayLineColor },
 		{ label: game.homeTeam.abbreviation, color: homeLineColor },
@@ -191,17 +196,9 @@ const gameDetailView = ({
 	const chartsCoverGame = !isFinal
 		|| (coversWholeGame(orderedPowerScoreHistory, game) && coversWholeGame(orderedScoreHistory, game));
 	const [awayAccent, homeAccent] = resolveTeamColorPair(game.awayTeam, game.homeTeam, '#2274A5', '#F75C03');
-	// One hero surface for all three states: a band of the two teams' colours with a dark scrim over
-	// them — over, not under, so white type stays readable against a pale team colour without this
-	// having to know which colours those are. A delay tints the scrim yellow rather than draining
-	// the hero, which is what the white card used to do with an opacity.
-	const heroStyle = {
-		backgroundImage: isDelayed
-			? 'linear-gradient(180deg, rgba(28, 22, 3, 0.34) 0%, rgba(28, 22, 3, 0.62) 100%), '
-				+ `linear-gradient(to right, ${awayAccent} 0%, ${awayAccent} 38%, ${homeAccent} 62%, ${homeAccent} 100%)`
-			: 'linear-gradient(180deg, rgba(3, 7, 12, 0.18) 0%, rgba(3, 7, 12, 0.52) 100%), '
-				+ `linear-gradient(to right, ${awayAccent} 0%, ${awayAccent} 38%, ${homeAccent} 62%, ${homeAccent} 100%)`,
-	};
+	// One hero surface for all three states, and the same one the list card is painted with: the two
+	// teams' colours under a shade, with each side written in whichever ink reads on its colour.
+	const heroStyle = matchupSurfaceStyle(awayAccent, homeAccent, isDelayed);
 	const isInningSport = leagueConfigMap[game.league]?.periodFormat === 'innings';
 	const status = resolveStatus(game, isInningSport, i18n.t);
 	const totalLabel = total > scoreMaxTotal
@@ -347,7 +344,6 @@ const gameDetailView = ({
 						game={game}
 						seriesInfo={seriesInfo}
 						records={records}
-						monoLogos={monoLogos}
 						statusText={status.text}
 						heroStyle={heroStyle}
 						awayColor={awayAccent}

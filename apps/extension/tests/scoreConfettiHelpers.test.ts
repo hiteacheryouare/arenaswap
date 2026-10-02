@@ -122,6 +122,16 @@ describe('buildLiveGameSnapshots', () => {
 		});
 	});
 
+	test('celebrates a near-black club in its alternate, which is visible on the dark popup', () => {
+		const snapshot = buildLiveGameSnapshots([
+			makeLiveGame({
+				id: 'g1',
+				homeTeam: { id: 'home-1', name: 'Penguins', abbreviation: 'PIT', score: 1, color: '#000000', alternateColor: '#FDB71A' },
+			}),
+		]).get('g1');
+		expect(snapshot?.homeColor).toBe('#FDB71A');
+	});
+
 	test('keeps undefined when a team has no color set', () => {
 		const snapshot = buildLiveGameSnapshots([
 			makeLiveGame({

@@ -221,24 +221,6 @@ export const buildDayWindowKeys = (days: number, now: Date = new Date(), pastDay
 // is still filed under yesterday while it is on screen after Eastern midnight.
 export const buildCurrentDayKeys = (now: Date = new Date()): string[] => buildDayWindowKeys(0, now, 1);
 
-const ch = (n: number): number => {
-	const c = n / 255;
-	return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
-};
-
-// WCAG relative luminance.
-const hexLuminance = (hex: string): number => {
-	const matched = /^#([\da-fA-F]{6})$/.exec(hex);
-	if (!matched) return 0;
-	const h = matched[1]!;
-	return (0.2126 * ch(parseInt(h.slice(0, 2), 16)))
-		+ (0.7152 * ch(parseInt(h.slice(2, 4), 16)))
-		+ (0.0722 * ch(parseInt(h.slice(4, 6), 16)));
-};
-
-// Colors with luminance below this threshold risk blending into the black app background
-const darkOnBlackThreshold = 0.04;
-
 const normalizeOne = (value?: string): string | undefined => {
 	if (!value) return undefined;
 	const clean = value.trim().replace('#', '');
@@ -257,11 +239,6 @@ const resolveTeamColors = (primary?: string, alternate?: string): { color?: stri
 	const p = normalizeOne(primary);
 	const a = normalizeOne(alternate);
 	if (!p) return { color: a };
-	// Primary is too dark for the UI. Keep it as the alternate so the pair-resolver can still
-	// lighten it for charts.
-	if (hexLuminance(p) < darkOnBlackThreshold && a && hexLuminance(a) > hexLuminance(p)) {
-		return { color: a, alternateColor: p };
-	}
 	return { color: p, alternateColor: a };
 };
 

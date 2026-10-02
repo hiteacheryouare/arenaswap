@@ -1,5 +1,6 @@
 import Crest from '@arenaswap/ui/src/components/crest';
-import { powerScoreColor } from './gameCardShared';
+import { teamLogoOnColor } from '@arenaswap/core/constants';
+import { matchupSurfaceStyle, powerScoreColor } from './gameCardShared';
 import { i18n } from '#i18n';
 import SelectDropdown from './selectDropdown';
 
@@ -27,7 +28,7 @@ interface TeamLogoProps {
 
 const TeamLogo = ({ abbr, color, logoUrl }: TeamLogoProps) => (
 	<Crest
-		logo={logoUrl}
+		logo={teamLogoOnColor(logoUrl)}
 		abbreviation={abbr}
 		className='team-crest-32'
 		fallbackStyle={{ backgroundColor: color, color: '#fff' }}
@@ -44,20 +45,18 @@ const walkthroughStepTabAssign = ({ onNext, onBack }: walkthroughStepTabAssignPr
 		</div>
 
 		<div
-			className='game-card mb-1'
+			className='game-card is-team-colored mb-1'
 			style={{
-				borderLeft: `5px solid ${eaglesColor}`,
-				borderRight: `5px solid ${giantsColor}`,
-				background: `linear-gradient(to right, ${eaglesColor}28, ${giantsColor}28), #ffffff`,
+				...matchupSurfaceStyle(eaglesColor, giantsColor),
 			}}
 		>
-			<div className='d-flex align-items-center gap-1 fw-bold text-uppercase text-primary live-status-label mb-1'>
+			<div className='d-flex align-items-center gap-1 fw-bold text-uppercase live-status-label mb-1'>
 				<span className='live-dot' />
 				LIVE
 			</div>
 
 			<div className='d-flex align-items-center justify-content-center game-card-matchup'>
-				<div className='d-flex flex-column align-items-center gap-1 team-column'>
+				<div className='d-flex flex-column align-items-center gap-1 team-column is-away'>
 					<TeamLogo abbr='PHI' color={eaglesColor} logoUrl={LOGO_EAGLES} />
 					<span className='fw-bold text-center text-nowrap team-abbreviation'>PHI</span>
 				</div>
@@ -72,7 +71,7 @@ const walkthroughStepTabAssign = ({ onNext, onBack }: walkthroughStepTabAssignPr
 					<span className='game-period'>Q2</span>
 				</div>
 
-				<div className='d-flex flex-column align-items-center gap-1 team-column'>
+				<div className='d-flex flex-column align-items-center gap-1 team-column is-home'>
 					<TeamLogo abbr='NYG' color={giantsColor} logoUrl={LOGO_GIANTS} />
 					<span className='fw-bold text-center text-nowrap team-abbreviation'>NYG</span>
 				</div>
@@ -90,20 +89,21 @@ const walkthroughStepTabAssign = ({ onNext, onBack }: walkthroughStepTabAssignPr
 						aria-valuemax={mockPsMax}
 					/>
 				</div>
-				<span className='game-card-ps-score' style={{ color: mockPsColor }}>{mockPsScore} / {mockPsMax}</span>
+				<span className='game-card-ps-score'>{mockPsScore} / {mockPsMax}</span>
 			</div>
-
-			<div className='d-flex flex-column gap-0 mt-2'>
-				<SelectDropdown
-					value=''
-					onChange={() => {}}
-					options={[
-						{ value: '', label: i18n.t('stepTabAssign.assignPlaceholder') },
-						{ value: '1', label: 'youtube.com/watch?v=Philly_stream' },
-						{ value: '2', label: 'nfl.com/watch/live' },
-					]}
-				/>
-				<span className='text-primary fw-semibold ms-1 mt-1' style={{ fontSize: '0.65rem' }}>{i18n.t('stepTabAssign.linkHint')}</span>
+			<div className='game-card-footer'>
+				<div className='d-flex flex-column gap-0 game-card-tab-assign'>
+					<SelectDropdown
+						value=''
+						onChange={() => {}}
+						options={[
+							{ value: '', label: i18n.t('stepTabAssign.assignPlaceholder') },
+							{ value: '1', label: 'youtube.com/watch?v=Philly_stream' },
+							{ value: '2', label: 'nfl.com/watch/live' },
+						]}
+					/>
+					<span className='text-primary fw-semibold ms-1 mt-1' style={{ fontSize: '0.65rem' }}>{i18n.t('stepTabAssign.linkHint')}</span>
+				</div>
 			</div>
 		</div>
 

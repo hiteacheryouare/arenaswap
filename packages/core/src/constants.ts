@@ -239,6 +239,14 @@ export const resolveLeagueLogoUrl = (leagueId: LeagueId, espnLogoUrl?: string, s
 	return surface === 'light' ? url.replace('/500-dark/', '/500/') : url;
 };
 
+// A team's crest as it is drawn on its own colour. The scoreboard hands over the light-ground
+// artwork at `/500/`, which is a navy NY on a navy card; the CDN keeps the variant drawn for a dark
+// ground beside it, and that variant is what Apple Sports puts on every team colour, the Red Sox's
+// red B and the Padres' gold SD included. Anything off that CDN is returned as it came.
+export const teamLogoOnColor = (logo: string | undefined): string | undefined => (
+	logo?.replace(/(\/i\/teamlogos\/[^/]+)\/500\//, '$1/500-dark/')
+);
+
 const isLeagueId = (value: unknown): value is LeagueId => (
 	typeof value === 'string' && allLeagueIds.includes(value as LeagueId)
 );

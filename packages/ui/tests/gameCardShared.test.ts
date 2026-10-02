@@ -1,4 +1,4 @@
-import { buildGameCardStyle, formatClock, formatGameClock, formatPeriod, isHalftime, oddsSummary, powerScoreColor } from '../src/components/gameCardShared';
+import { buildGameCardSurface, formatClock, formatGameClock, formatPeriod, isHalftime, oddsSummary, powerScoreColor } from '../src/components/gameCardShared';
 import { leagueConfigs, scoreMaxTotal } from '@arenaswap/core/constants';
 import type { Game, LeagueId } from '@arenaswap/core/types';
 
@@ -212,35 +212,43 @@ describe('oddsSummary', () => {
 	});
 });
 
-// The two rails down the sides of a card are the only thing distinguishing one matchup from the
-// next in a list of thirty.
-describe('buildGameCardStyle', () => {
-	test('paints each rail in the colour resolved for that side', () => {
-		const game = makeGame('nba', {
-			awayTeam: { id: 'a', name: 'Away', abbreviation: 'AWY', score: 0, color: '#FF0000' },
-			homeTeam: { id: 'h', name: 'Home', abbreviation: 'HOM', score: 0, color: '#00FF00' },
-		});
-		const style = buildGameCardStyle(game);
-		expect(style.borderLeft).toBe('5px solid #FF0000');
-		expect(style.borderRight).toBe('5px solid #00FF00');
-		expect(style.background).toBe('linear-gradient(to right, #FF000028, #00FF0028), #ffffff');
+const style = (game: Game) => buildGameCardSurface(game).style as Record<string, string>;
+
+const team = (abbreviation: string, color: string, alternateColor?: string) => (
+	{ id: abbreviation, name: abbreviation, abbreviation, score: 0, color, alternateColor }
+);
+
+describe('buildGameCardSurface', () => {
+	test('paints the away colour on the left and the home colour on the right', () => {
+		const surface = buildGameCardSurface(makeGame('nba', { awayTeam: team('AWY', '#FF0000'), homeTeam: team('HOM', '#00FF00') }));
+		expect([surface.awayColor, surface.homeColor]).toEqual(['#FF0000', '#00FF00']);
+		expect(surface.style.backgroundImage).toContain('linear-gradient(to right, #FF0000 0%, #FF0000 30%, #00FF00 70%, #00FF00 100%)');
 	});
 
-	test('falls back to the neutral rail for a team with no published colour', () => {
-		const style = buildGameCardStyle(makeGame('nba'));
-		expect(style.borderLeft).toBe('5px solid #dee2e6');
-		expect(style.borderRight).toBe('5px solid #dee2e6');
+	test('falls back to the raised grey for a team with no published colour', () => {
+		const surface = buildGameCardSurface(makeGame('nba'));
+		expect([surface.awayColor, surface.homeColor]).toEqual(['#30363d', '#30363d']);
+		expect(style(makeGame('nba'))['--matchup-ink-away']).toBe('#ffffff');
 	});
 
-	// Two clubs who publish near-identical navies would otherwise get two rails nobody can tell
-	// apart, which is the whole reason the pair is resolved rather than read straight off.
-	test('keeps the two rails distinguishable when both clubs publish the same navy', () => {
-		const derby = makeGame('mlb', {
-			sportType: 'baseball',
-			awayTeam: { id: 'a', name: 'Away', abbreviation: 'NYY', score: 0, color: '#0C2340', alternateColor: '#FFFFFF' },
-			homeTeam: { id: 'h', name: 'Home', abbreviation: 'DET', score: 0, color: '#0C2340', alternateColor: '#FA4616' },
-		});
-		const style = buildGameCardStyle(derby);
-		expect(style.borderLeft).not.toBe(style.borderRight);
+	test('keeps the two sides distinguishable when both clubs publish the same navy', () => {
+		const derby = makeGame('mlb', { sportType: 'baseball', awayTeam: team('NYY', '#0C2340', '#FFFFFF'), homeTeam: team('DET', '#0C2340', '#FA4616') });
+		const surface = buildGameCardSurface(derby);
+		expect(surface.awayColor).not.toBe(surface.homeColor);
+	});
+
+	// Sabres gold, Lions silver and Carolina blue all take the near-black; the navies and reds keep white.
+	test('writes in near-black on a light team and in white on a dark one', () => {
+		const inks = style(makeGame('nhl', { awayTeam: team('BUF', '#FDB71A'), homeTeam: team('PHI', '#0C2340') }));
+		expect(inks['--matchup-ink-away']).toBe('#111827');
+		expect(inks['--matchup-ink-home']).toBe('#ffffff');
+		expect(inks['--matchup-shadow-away']).toBe('none');
+		expect(inks['--matchup-shadow-home']).not.toBe('none');
+	});
+
+	test('turns the shade yellow for a delayed game', () => {
+		const game = makeGame('mlb', { awayTeam: team('AWY', '#FF0000'), homeTeam: team('HOM', '#00FF00') });
+		expect(buildGameCardSurface(game, true).style.backgroundImage).toContain('rgba(28, 22, 3');
+		expect(buildGameCardSurface(game).style.backgroundImage).toContain('rgba(3, 7, 12');
 	});
 });

@@ -1,5 +1,6 @@
 import { createFavoriteTeamKey, leagueConfigMap } from '@arenaswap/core/constants';
-import type { Game, LeagueId } from '@arenaswap/core/types';
+import type { Game, LeagueId, Team } from '@arenaswap/core/types';
+import { hexLuminance, isHex } from '@arenaswap/ui/src/components/colorMath';
 
 interface liveGameSnapshot {
 	league: LeagueId;
@@ -66,6 +67,17 @@ export const createTeamColorShadePalette = (teamColor: string | undefined): stri
 	return [...new Set(shades)];
 };
 
+// Confetti falls over the dark popup, where a black or near-black club's own colour is not there at
+// all. Those clubs celebrate in their alternate — the Penguins in gold, the Steelers in yellow.
+const nearBlackLuminance = 0.04;
+
+const confettiColor = (team: Team): string | undefined => (
+	isHex(team.color) && hexLuminance(team.color) < nearBlackLuminance && isHex(team.alternateColor)
+		&& hexLuminance(team.alternateColor) > hexLuminance(team.color)
+		? team.alternateColor
+		: team.color
+);
+
 export const buildLiveGameSnapshots = (games: Game[]): Map<string, liveGameSnapshot> => {
 	const snapshots = new Map<string, liveGameSnapshot>();
 	for (const game of games) {
@@ -77,8 +89,8 @@ export const buildLiveGameSnapshots = (games: Game[]): Map<string, liveGameSnaps
 			awayTeamId: game.awayTeam.id,
 			homeScore: game.homeTeam.score,
 			awayScore: game.awayTeam.score,
-			homeColor: game.homeTeam.color,
-			awayColor: game.awayTeam.color,
+			homeColor: confettiColor(game.homeTeam),
+			awayColor: confettiColor(game.awayTeam),
 		});
 	}
 	return snapshots;

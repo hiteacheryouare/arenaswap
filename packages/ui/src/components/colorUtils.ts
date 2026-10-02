@@ -1,59 +1,18 @@
-import type { ResolvedTheme } from '@arenaswap/core/types';
-import { contrastBetween, hexLuminance as luminance, hexToRgb, isHex, rgbToHex, whiteInkContrast } from './colorMath';
+import { teamLogoOnColor } from '@arenaswap/core/constants';
+import type { Rgb } from './colorMath';
+import { colorDifference, contrastBetween, hexLuminance as luminance, hexToLab, hexToRgb, isHex, labChroma, rgbToHex, whiteInkContrast } from './colorMath';
+import { cachedLogoSwitchColor } from './logoSwitchColor';
 
-const mixTowardWhite = (value: string, amount: number): string => {
-	const rgb = hexToRgb(value);
-	if (!rgb) return value;
-	const toward = (channel: number): number => channel + (255 - channel) * amount;
-	return rgbToHex(toward(rgb.red), toward(rgb.green), toward(rgb.blue));
-};
-
-// Scales every channel by the same factor, which raises lightness while leaving the ratios
-// between the channels — and so the hue — where they were. Mixing toward white instead adds an
-// equal amount to all three, which pulls them together and drains the colour: Mets navy came out
-// #7a92b6 and Yankees navy came out #818d9c, two greys that read as the same non-colour.
+// Scales every channel by the same factor, which leaves the ratios between them — and so the hue —
+// where they were, so a darkened gold is a bronze rather than a muddy grey.
 const brighten = (value: string, factor: number): string => {
 	const rgb = hexToRgb(value);
 	if (!rgb) return value;
 	return rgbToHex(rgb.red * factor, rgb.green * factor, rgb.blue * factor);
 };
 
-// A pure black or near-black has no hue to preserve, so scaling it does nothing at all. Only these
-// fall back to a grey, and they are the one case where a grey is the honest answer.
-const hasHue = (value: string): boolean => {
-	const rgb = hexToRgb(value);
-	return rgb !== null && Math.max(rgb.red, rgb.green, rgb.blue) >= 12;
-};
-
-// Chart lines are non-text, so WCAG wants 3:1 against the chart background. That background is
-// #0d1117 (luminance 0.0055), which puts the 3:1 boundary at luminance 0.1164.
-const seriesLuminanceFloor = 0.1164;
-
-const resolveReadableSeriesColor = (value: string | undefined, fallback: string): string => {
-	if (!value || !hexToRgb(value)) return fallback;
-	if (luminance(value) >= seriesLuminanceFloor) return value;
-	if (!hasHue(value)) return mixTowardWhite(value, 0.48);
-	// Climbed rather than solved: luminance is not linear in the scale factor, and a loop of a
-	// dozen steps is cheaper to read than the inverse of the sRGB transfer function.
-	let brightened = value;
-	for (let step = 0; step < 24 && luminance(brightened) < seriesLuminanceFloor; step++) {
-		brightened = brighten(brightened, 1.18);
-	}
-	// Scaling has a ceiling, and a pure blue is sitting on it: its brightest channel is already 255
-	// while the other two round straight back to themselves, so the loop above runs 24 times and
-	// returns the colour it was given. Mixing toward white is the only way up from there, so a hue
-	// that cannot clear the floor by scaling gives up some of its saturation rather than staying
-	// unreadable. Nothing that already clears the floor reaches this — all five of the league navies
-	// the scaling was written for finish the loop above with room to spare.
-	for (let step = 0; step < 24 && luminance(brightened) < seriesLuminanceFloor; step++) {
-		brightened = mixTowardWhite(brightened, 0.12);
-	}
-	return brightened;
-};
-
-// The mirror of the above, for team text printed on one of the light detail cards. Those are
-// #f8fafc (luminance 0.9536) and the text is small, so it needs 4.5:1 rather than the 3:1 a chart
-// line or a large score gets — which puts the ceiling at luminance 0.173. Half the league fails
+// For team text printed on one of the light detail cards. Those are #f8fafc (luminance 0.9536) and
+// the text is small, so it needs 4.5:1 — which puts the ceiling at luminance 0.173. Half the league fails
 // it, and the Penguins' and Bruins' gold reaches only 1.7:1 untouched.
 const smallCardTextLuminanceCeiling = 0.173;
 
@@ -70,38 +29,60 @@ const resolveReadableCardTextColor = (
 	return darkened;
 };
 
-// A chart line on the light page, which is #ffffff, clears the same 3:1 at luminance 0.30 or under.
-// So the light side is the card-text rule with a looser ceiling: gold goes bronze, navy is left alone.
-const seriesOnLightLuminanceCeiling = 0.3;
+// What Apple Sports does when two teams look alike, worked out from 44 of its matchups: the away
+// team changes and the home team never does. "Alike" is CIEDE2000 under 11 — Sabres navy against
+// Blue Jackets navy at 8.9 switched, Alabama crimson against Mississippi State maroon at 13.4
+// did not. A team that switches takes its alternate, unless that is white: Apple never paints a
+// side white, and goes to a colour out of the crest instead (Maryland's gold, Louisville's black).
+const clashDifference = 11;
 
-const colorDistance = (a: string, b: string): number => {
-	const ra = hexToRgb(a);
-	const rb = hexToRgb(b);
-	if (!ra || !rb) return 0;
-	return Math.sqrt((ra.red - rb.red) ** 2 + (ra.green - rb.green) ** 2 + (ra.blue - rb.blue) ** 2);
+const isNearWhite = (hex: string): boolean => {
+	const lab = hexToLab(hex);
+	return lab !== null && lab.lightness > 95 && labChroma(lab) < 5;
 };
 
-const clashThreshold = 65;
+interface matchupTeam {
+	color?: string;
+	alternateColor?: string;
+	logo?: string;
+}
 
-const isUsable = (hex: string): boolean => { const l = luminance(hex); return l >= 0.03 && l <= 0.95; };
-
-const readableSides = ([away, home]: [string, string]): number => (
-	Number(isUsable(away)) + Number(isUsable(home))
+const primaryOf = (team: matchupTeam): string | undefined => (
+	isHex(team.color) ? team.color : isHex(team.alternateColor) ? team.alternateColor : undefined
 );
 
-// Ranked rather than filtered. Discarding every candidate that is not readable on both sides leaves
-// nothing to choose between but the discards, and the farthest-apart of those is black against
-// white — 441.7, the largest distance RGB contains, so it wins by construction. Houston publish a
-// white and Texas Tech a black, and two red teams drew as ink. Reading a candidate's readable sides
-// first keeps Tech's red on the card; distance still decides between candidates that tie.
-const pickPair = (ap: string, aa: string, hp: string, ha: string): [string, string] => {
-	if (colorDistance(ap, hp) >= clashThreshold) return [ap, hp];
-	const candidates: [string, string][] = [[ap, ha], [aa, hp], [aa, ha]];
-	const best = candidates.toSorted((a, b) => (
-		readableSides(b) - readableSides(a)
-		|| colorDistance(b[0], b[1]) - colorDistance(a[0], a[1])
-	))[0]!;
-	return colorDistance(best[0], best[1]) > colorDistance(ap, hp) ? best : [ap, hp];
+const usableAlternate = (team: matchupTeam): string | undefined => (
+	isHex(team.alternateColor) && !isNearWhite(team.alternateColor) ? team.alternateColor : undefined
+);
+
+// Undefined where the switch colour is still to be read off a crest, or the crest has none to give.
+const switchColor = (team: matchupTeam, primary: string): string | undefined => {
+	const alternate = usableAlternate(team);
+	if (alternate) return alternate;
+	const crest = teamLogoOnColor(team.logo);
+	return crest ? cachedLogoSwitchColor(crest, primary) ?? undefined : undefined;
+};
+
+// The crest a card has to read before it can paint the away side, if any. Lets a component ask for
+// the measurement without knowing anything about the rule above.
+export const pendingSwitchCrest = (away: matchupTeam, home: matchupTeam): { crest: string; primary: string } | null => {
+	const awayPrimary = primaryOf(away);
+	const homePrimary = primaryOf(home);
+	if (!awayPrimary || !homePrimary || colorDifference(awayPrimary, homePrimary) >= clashDifference) return null;
+	if (usableAlternate(away)) return null;
+	const crest = teamLogoOnColor(away.logo);
+	if (!crest || cachedLogoSwitchColor(crest, awayPrimary) !== undefined) return null;
+	return { crest, primary: awayPrimary };
+};
+
+const pickPair = (away: matchupTeam, home: matchupTeam, awayPrimary: string, homePrimary: string): [string, string] => {
+	if (colorDifference(awayPrimary, homePrimary) >= clashDifference) return [awayPrimary, homePrimary];
+	// A switch that still looks like the home side has not fixed anything.
+	const awaySwitch = switchColor(away, awayPrimary);
+	if (awaySwitch && colorDifference(awaySwitch, homePrimary) >= clashDifference) return [awaySwitch, homePrimary];
+	// Apple's own data always has an away colour to give. Ours sometimes does not, and two identical
+	// sides is worse than the home team stepping aside.
+	return [awayPrimary, usableAlternate(home) ?? homePrimary];
 };
 
 // White on a team colour is fine for the navies and reds and unreadable on a gold. Neither ink
@@ -119,9 +100,8 @@ export const readableInkOn = (background: string, light = '#ffffff', dark = '#11
 
 // Display type drawn on a team's own colour, which is what the opening graphic sets: a club named
 // across the width of the card, and a tricode at 3.4rem. White is right for most of the league and
-// wrong for the clubs whose published colour is a white or a silver — `apiClient` promotes a
-// near-black primary to its lighter alternate before any of this sees it, so Penn State arrive here
-// as #FFFFFF over their navy and were being named in white on a white band.
+// wrong for the clubs whose published colour is a white or a silver, which would be named in white
+// on a white band.
 //
 // 3:1 rather than `readableInkOn`'s 4.5:1, which is the allowance the size of this type earns: at
 // the small-text bar a Carolina blue flips too, and inverting a card nobody struggled to read is a
@@ -147,8 +127,8 @@ export const teamDisplayInk = (
 
 // A crest sits on a white disc tinted with its own colour rather than on the surface behind it: a
 // navy logo on a navy half of a poster is invisible, and every league has at least one. `28` is the
-// alpha the matchup card already uses for its team-colour washes. No colour leaves the disc plain
-// white, which still separates the crest from a dark background.
+// alpha the row washes below use. No colour leaves the disc plain white, which still separates the
+// crest from a dark background.
 export const crestBacking = (color: string | null | undefined): string => (
 	isHex(color)
 		? `linear-gradient(160deg, ${color}14, ${color}28), #ffffff`
@@ -157,8 +137,8 @@ export const crestBacking = (color: string | null | undefined): string => (
 
 // A team-colour wash across a row, fading out to the right so whatever sits at the end of the row
 // — a leader's stat line, a line score's R-H-E — lands on the plain card rather than on colour.
-// `28` is the same alpha the matchup card and the crest disc use, so one team's colour reads the
-// same weight everywhere it appears. Read by the pre-game leader rows and the box score's line
+// `28` is the same alpha the crest disc uses, so one team's colour reads the same weight everywhere
+// it appears. Read by the pre-game leader rows and the box score's line
 // score; a second copy of the formula is how the two would drift.
 export const teamRowWash = (color: string | null | undefined): string | undefined => (
 	isHex(color)
@@ -175,45 +155,74 @@ export const readableTeamInkOnCard = (color: string | null | undefined, fallback
 );
 
 export const resolveTeamColorPair = (
-	away: { color?: string; alternateColor?: string },
-	home: { color?: string; alternateColor?: string },
+	away: matchupTeam,
+	home: matchupTeam,
 	awayFallback = '#60a5fa',
 	homeFallback = '#f87171',
-	// Set for a chart line, to the surface it is drawn on. Left unset, the pair comes back as published.
-	surface?: ResolvedTheme,
 ): [string, string] => {
-	const awayPrimary = isHex(away.color) ? away.color : awayFallback;
-	const homePrimary = isHex(home.color) ? home.color : homeFallback;
-	const [a, h] = pickPair(
-		awayPrimary,
-		away.alternateColor ?? awayPrimary,
-		homePrimary,
-		home.alternateColor ?? homePrimary,
-	);
-	if (surface === 'dark') return [resolveReadableSeriesColor(a, awayFallback), resolveReadableSeriesColor(h, homeFallback)];
-	if (surface === 'light') {
-		return [
-			resolveReadableCardTextColor(a, awayFallback, seriesOnLightLuminanceCeiling),
-			resolveReadableCardTextColor(h, homeFallback, seriesOnLightLuminanceCeiling),
-		];
-	}
-	return [a, h];
+	const awayPrimary = primaryOf(away) ?? awayFallback;
+	const homePrimary = primaryOf(home) ?? homeFallback;
+	return pickPair(away, home, awayPrimary, homePrimary);
 };
 
-// The alpha the hero's scrim sits at where the crests are — the gradient ramps 0.18 to 0.52 down the
-// block and the crests are in its upper third.
-const heroScrimAlpha = 0.28;
-const heroScrimColor = { red: 3, green: 7, blue: 12 };
+// ── A matchup painted in its two colours ─────────────────────────────────────
+// The card and the detail hero share one surface: the away colour on the left, the home colour on
+// the right, crossing between `blendFrom` and `blendTo`, under a shade that deepens toward the bottom. A delayed
+// game turns the shade yellow instead of dimming the card.
+interface matchupScrim {
+	rgb: Rgb;
+	top: number;
+	bottom: number;
+}
 
-// A team colour as it actually appears under the hero's scrim, which is the surface a crest drawn on
-// that hero has to stand off — not the published colour, which is a good deal lighter.
-export const underHeroScrim = (color: string): string => {
-	const rgb = hexToRgb(color);
-	if (!rgb) return '#0d1117';
-	const mix = (ink: number, over: number): number => ink + (over - ink) * heroScrimAlpha;
-	return rgbToHex(
-		mix(rgb.red, heroScrimColor.red),
-		mix(rgb.green, heroScrimColor.green),
-		mix(rgb.blue, heroScrimColor.blue),
-	);
+// Where the away colour starts giving way to the home colour, and where it is gone.
+const blendFrom = 30;
+const blendTo = 70;
+
+const liveScrim: matchupScrim = { rgb: { red: 3, green: 7, blue: 12 }, top: 0.18, bottom: 0.52 };
+const delayedScrim: matchupScrim = { rgb: { red: 28, green: 22, blue: 3 }, top: 0.34, bottom: 0.62 };
+
+const mixHex = (from: string, to: Rgb, amount: number): string => {
+	const rgb = hexToRgb(from) ?? to;
+	const toward = (channel: number, target: number): number => channel + ((target - channel) * amount);
+	return rgbToHex(toward(rgb.red, to.red), toward(rgb.green, to.green), toward(rgb.blue, to.blue));
 };
+
+// Text runs from the status row to the PowerScore line just above the tab picker, so it is judged
+// under the shade from the top edge to most of the way down. A side's own text sits on its own
+// colour; the middle's sits on the blend of the two, which is what `blend` mixes toward.
+const inkSurfaces = (color: string, other: string, scrim: matchupScrim, blend: number): string[] => {
+	const lower = scrim.top + ((scrim.bottom - scrim.top) * 0.85);
+	const surface = mixHex(color, hexToRgb(other) ?? scrim.rgb, blend);
+	return [scrim.top, lower].map(alpha => mixHex(surface, scrim.rgb, alpha));
+};
+
+const darkInk = '#111827';
+
+// The ink that stays readable on the worst of the surfaces it crosses. White for most of the
+// league; near-black where a team's colour is a gold, a light blue or a silver.
+const inkAcross = (surfaces: string[]): string => {
+	const worst = (ink: string): number => Math.min(...surfaces.map(surface => contrastBetween(luminance(surface), luminance(ink))));
+	return worst(darkInk) > worst('#ffffff') ? darkInk : '#ffffff';
+};
+
+export interface matchupInks {
+	away: string;
+	home: string;
+	center: string;
+}
+
+export const matchupSurface = (awayColor: string, homeColor: string, delayed = false): { backgroundImage: string; inks: matchupInks } => {
+	const scrim = delayed ? delayedScrim : liveScrim;
+	const shade = `${scrim.rgb.red}, ${scrim.rgb.green}, ${scrim.rgb.blue}`;
+	return {
+		backgroundImage: `linear-gradient(180deg, rgba(${shade}, ${scrim.top}) 0%, rgba(${shade}, ${scrim.bottom}) 100%), `
+			+ `linear-gradient(to right, ${awayColor} 0%, ${awayColor} ${blendFrom}%, ${homeColor} ${blendTo}%, ${homeColor} 100%)`,
+		inks: {
+			away: inkAcross(inkSurfaces(awayColor, homeColor, scrim, 0)),
+			home: inkAcross(inkSurfaces(homeColor, awayColor, scrim, 0)),
+			center: inkAcross(inkSurfaces(awayColor, homeColor, scrim, 0.5)),
+		},
+	};
+};
+

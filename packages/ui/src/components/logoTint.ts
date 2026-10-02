@@ -52,7 +52,7 @@ export const dominantColorFromPixels = (pixels: Uint8ClampedArray): string | nul
 // consecutive crests cannot bleed into each other.
 let sampler: { canvas: HTMLCanvasElement; context: CanvasRenderingContext2D } | null = null;
 
-const samplePixels = (image: HTMLImageElement, size: number): Uint8ClampedArray | null => {
+export const samplePixels = (image: HTMLImageElement, size: number): Uint8ClampedArray | null => {
 	try {
 		if (!sampler) {
 			const canvas = document.createElement('canvas');
@@ -271,9 +271,9 @@ const persistLegibility = (): void => {
 	}, persistDelayMs);
 };
 
-// Lowercased, because the same surface arrives written both ways: `underHeroScrim` builds its hex in
-// lower case and `normalizeOne` uppercases every colour ESPN publishes, so an end zone would
-// otherwise never share a verdict with anything else.
+// Lowercased, because the same surface arrives written both ways: `rgbToHex` builds its hex in lower
+// case and `normalizeOne` uppercases every colour ESPN publishes, so an end zone would otherwise
+// never share a verdict with anything else.
 const legibilityKey = (src: string, background: string): string => `${src}|${background.toLowerCase()}`;
 
 // The answer for a crest already measured, or undefined if it has never been sampled. Lets a caller

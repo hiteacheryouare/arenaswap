@@ -207,13 +207,9 @@ describe('the popup open reveal', () => {
 	});
 
 	// Each crest's colour goes across its own half of the card at full size rather than into a disc.
-	// `teamCrest`'s own wrapper is that field, which is what keeps the colour right without this file
-	// deciding it: where the artwork reads on its team's colour the component comes back bare and the
-	// stylesheet paints the team colour.
 	it('lays each team\'s colour across its own half of the card', () => {
 		cy.mount(<Harness mode='full' />);
 		awaitCrests();
-		// Arizona's gold on Arizona's red reads, so the field is the team colour.
 		cy.get('.game-card-reveal-opening-field.is-home')
 			.should('have.class', 'is-bare')
 			.and('have.css', 'background-color', 'rgb(167, 25, 48)')
@@ -221,16 +217,13 @@ describe('the popup open reveal', () => {
 			.and('have.css', 'border-radius', '0px');
 	});
 
-	// And where it does not read, the crest component's tinted plate wins on an inline style — which is
-	// the right way round: that plate exists for exactly the crest that cannot be seen on its team's
-	// colour, and here it becomes the lighter field that crest needs rather than a disc behind it.
-	it('takes the crest\'s own plate colour for that half where the artwork cannot read', () => {
+	// Navy on navy is the case a plate used to exist for. The crest drawn for a dark ground is what
+	// goes there now (see teamColoredCard.cy.tsx), so the field stays the team's own colour.
+	it('keeps the team colour behind a crest that matches it', () => {
 		cy.mount(<Harness mode='full' />);
-		awaitCrests();
-		// Miami's navy on Miami's navy does not read, and the popup carries no monochrome marks.
 		cy.get('.game-card-reveal-opening-field.is-away')
-			.should('not.have.class', 'is-bare')
-			.and('have.css', 'background-color', 'rgb(255, 255, 255)');
+			.should('have.class', 'is-bare')
+			.and('have.css', 'background-color', 'rgb(12, 35, 64)');
 	});
 
 	// The two fields cover the card between them, the way the poster's halves do at full width — so
@@ -503,9 +496,9 @@ describe('the popup open reveal', () => {
 	});
 
 	// The last beat takes the colour off the edge it came in from rather than parking a rectangle on
-	// the card's rounded border. What is left is the card's own 5px rail, in the same colour, which
-	// has been painted underneath since the first frame.
-	it('takes the colour all the way off, onto the rail the card draws for itself', () => {
+	// the card's rounded border. What is left is the card painted in the same two colours, which has
+	// been underneath since the first frame.
+	it('takes the colour all the way off, onto the card painted in the same colours', () => {
 		cy.mount(<Harness mode='full' />);
 		scrubTo(spineMs(revealBaseDurationMs) + 50);
 		cy.get('.game-card-reveal-half.is-away').should($el => {
@@ -514,8 +507,8 @@ describe('the popup open reveal', () => {
 		cy.get('.game-card-reveal-half.is-home').should($el => {
 			expect($el[0].getBoundingClientRect().width).to.be.closeTo(0, 0.5);
 		});
-		cy.get('.game-card').should('have.css', 'border-left-width', '5px');
-		cy.get('.game-card').should('have.css', 'border-right-width', '5px');
+		cy.get('.game-card').should('have.class', 'is-team-colored')
+			.and('have.css', 'background-image').and('contain', 'rgb(12, 35, 64)');
 	});
 
 	// A finished game is the one flat card in the product — grey on both edges, no team colour — and

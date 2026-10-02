@@ -56,3 +56,85 @@ export const contrastBetween = (a: number, b: number): number => (
 export const whiteInkContrast = (backdrop: number): number => 1.05 / (backdrop + 0.05);
 
 export const blackInkContrast = (backdrop: number): number => (backdrop + 0.05) / 0.05;
+
+export interface Lab {
+	lightness: number;
+	a: number;
+	b: number;
+}
+
+// D65 white, which is what sRGB is defined against.
+const labPivot = (value: number): number => (value > 216 / 24389 ? Math.cbrt(value) : ((24389 / 27) * value + 16) / 116);
+
+export const hexToLab = (hex: string): Lab | null => {
+	const rgb = hexToRgb(hex);
+	if (!rgb) return null;
+	const red = channelLuminance(rgb.red);
+	const green = channelLuminance(rgb.green);
+	const blue = channelLuminance(rgb.blue);
+	const x = labPivot(((0.4124564 * red) + (0.3575761 * green) + (0.1804375 * blue)) / 0.95047);
+	const y = labPivot((0.2126729 * red) + (0.7151522 * green) + (0.0721750 * blue));
+	const z = labPivot(((0.0193339 * red) + (0.1191920 * green) + (0.9503041 * blue)) / 1.08883);
+	return { lightness: (116 * y) - 16, a: 500 * (x - y), b: 200 * (y - z) };
+};
+
+export const labChroma = (lab: Lab): number => Math.hypot(lab.a, lab.b);
+
+const toDegrees = (radians: number): number => {
+	const degrees = (radians * 180) / Math.PI;
+	return degrees < 0 ? degrees + 360 : degrees;
+};
+
+const toRadians = (degrees: number): number => (degrees * Math.PI) / 180;
+
+// CIEDE2000, Sharma, Wu and Dalal (2005). Plain RGB distance calls two navies far apart and a
+// red and a maroon close, which is backwards from how either pair looks on a card.
+export const labDifference = (one: Lab, two: Lab): number => {
+	const meanChroma = (labChroma(one) + labChroma(two)) / 2;
+	const chromaWeight = 0.5 * (1 - Math.sqrt(meanChroma ** 7 / (meanChroma ** 7 + 25 ** 7)));
+	const aOne = one.a * (1 + chromaWeight);
+	const aTwo = two.a * (1 + chromaWeight);
+	const chromaOne = Math.hypot(aOne, one.b);
+	const chromaTwo = Math.hypot(aTwo, two.b);
+	const hueOne = aOne === 0 && one.b === 0 ? 0 : toDegrees(Math.atan2(one.b, aOne));
+	const hueTwo = aTwo === 0 && two.b === 0 ? 0 : toDegrees(Math.atan2(two.b, aTwo));
+
+	const lightnessDelta = two.lightness - one.lightness;
+	const chromaDelta = chromaTwo - chromaOne;
+	let hueGap = hueTwo - hueOne;
+	if (chromaOne * chromaTwo === 0) hueGap = 0;
+	else if (hueGap > 180) hueGap -= 360;
+	else if (hueGap < -180) hueGap += 360;
+	const hueDelta = 2 * Math.sqrt(chromaOne * chromaTwo) * Math.sin(toRadians(hueGap / 2));
+
+	const meanLightness = (one.lightness + two.lightness) / 2;
+	const meanPrimeChroma = (chromaOne + chromaTwo) / 2;
+	let meanHue = hueOne + hueTwo;
+	if (chromaOne * chromaTwo !== 0) {
+		if (Math.abs(hueOne - hueTwo) <= 180) meanHue /= 2;
+		else meanHue = hueOne + hueTwo < 360 ? (meanHue + 360) / 2 : (meanHue - 360) / 2;
+	}
+
+	const hueWeight = 1
+		- (0.17 * Math.cos(toRadians(meanHue - 30)))
+		+ (0.24 * Math.cos(toRadians(2 * meanHue)))
+		+ (0.32 * Math.cos(toRadians((3 * meanHue) + 6)))
+		- (0.20 * Math.cos(toRadians((4 * meanHue) - 63)));
+	const rotation = 30 * Math.exp(-(((meanHue - 275) / 25) ** 2));
+	const rotationScale = 2 * Math.sqrt(meanPrimeChroma ** 7 / (meanPrimeChroma ** 7 + 25 ** 7));
+	const lightnessScale = 1 + ((0.015 * ((meanLightness - 50) ** 2)) / Math.sqrt(20 + ((meanLightness - 50) ** 2)));
+	const chromaScale = 1 + (0.045 * meanPrimeChroma);
+	const hueScale = 1 + (0.015 * meanPrimeChroma * hueWeight);
+	const rotationTerm = -Math.sin(toRadians(2 * rotation)) * rotationScale;
+
+	const lightnessPart = lightnessDelta / lightnessScale;
+	const chromaPart = chromaDelta / chromaScale;
+	const huePart = hueDelta / hueScale;
+	return Math.sqrt((lightnessPart ** 2) + (chromaPart ** 2) + (huePart ** 2) + (rotationTerm * chromaPart * huePart));
+};
+
+export const colorDifference = (first: string, second: string): number => {
+	const one = hexToLab(first);
+	const two = hexToLab(second);
+	return one && two ? labDifference(one, two) : Number.POSITIVE_INFINITY;
+};

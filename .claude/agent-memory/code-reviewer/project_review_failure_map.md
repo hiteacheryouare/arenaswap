@@ -55,3 +55,14 @@ one by the other for the poll jitter. Equal today, so nothing fails; edit one co
 silently mis-scales with no test or type error.
 **How to apply:** when a `packages/core` constant looks duplicated, grep both files and check which
 path each consumer imports from before concluding the values agree.
+
+**Team-coloured card change (2026-10-01).** Things that bit (or nearly bit) during review of the team-coloured card change, 2026-10-01:
+
+- **`tsc -p cypress` is part of `npm run typecheck`** in apps/extension. Removing a component prop breaks any Cypress spec still passing it, even though `wxt build` is fine.
+- **Detail hero (`.gd-hero-live` in apps/extension/assets/bootstrap.scss) is a flat grid.** `.game-detail-period` is a sibling of `.game-detail-center`, not a child, so a `color: inherit` on it falls through to the body colour (near-black in light theme). Look for same-specificity rules later in the block that undo an earlier one.
+- **Direct readers of `team.color`** (not via `resolveTeamColorPair`): scoreConfettiHelpers, favoriteScoreFlash, seriesDots (inline dot colour on the dark hero), mainView popup glow. Any change to how core normalises colours (apiClient `resolveTeamColors`) reaches all of them.
+- **Hand-built copies of the list card** live in the onboarding walkthrough (walkthroughStepTabAssign/AutoSwitch/GameDetail.tsx). They drift whenever the real card's surface changes.
+- **Memoised chart options** in gameDetailView key on `game`, so anything that changes colours without a new `game` object (module caches like logoSwitchColor) leaves charts stale while non-memoised legends update.
+- Running the full suite rebuilds tracked `docs/` output, so a working tree mid-test shows ~400 modified docs files. Not the author's change.
+
+**How to apply:** check these seams first when a diff touches card/hero styling, colour resolution, or component props.
