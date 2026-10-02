@@ -201,11 +201,12 @@ const setupView = ({
 	const displayPage = (
 		<>
 			<div>
-				<label className='text-body-secondary setting-toggle-label d-block mb-1' htmlFor='themeSelect'>
+				<label className='text-body-secondary setting-toggle-label d-block mb-1' id='themeSelectLabel' htmlFor='themeSelect'>
 					{i18n.t('setup.theme')}
 				</label>
 				<SelectDropdown<ThemePreference>
 					id='themeSelect'
+					labelId='themeSelectLabel'
 					value={prefs.theme}
 					onChange={onThemeChange}
 					disabled={!prefsLoaded}
@@ -259,11 +260,12 @@ const setupView = ({
 			<div className='setting-explainer mt-1'>{i18n.t('setup.keepFinalGamesExplainer')}</div>
 
 			<div className='mt-3'>
-				<label className='text-body-secondary setting-toggle-label d-block mb-1' htmlFor='finishedTabSelect'>
+				<label className='text-body-secondary setting-toggle-label d-block mb-1' id='finishedTabSelectLabel' htmlFor='finishedTabSelect'>
 					{i18n.t('setup.finishedTabAction')}
 				</label>
 				<SelectDropdown<FinishedTabAction>
 					id='finishedTabSelect'
+					labelId='finishedTabSelectLabel'
 					value={prefs.finishedTabAction}
 					onChange={onFinishedTabActionChange}
 					disabled={!prefsLoaded}
@@ -424,9 +426,10 @@ const setupView = ({
 
 			{demoMode && (
 				<div className='mt-3'>
-					<label className='text-body-secondary setting-toggle-label d-block mb-1' htmlFor='demoSeasonSelect'>{i18n.t('setup.demoSeason')}</label>
+					<label className='text-body-secondary setting-toggle-label d-block mb-1' id='demoSeasonSelectLabel' htmlFor='demoSeasonSelect'>{i18n.t('setup.demoSeason')}</label>
 					<SelectDropdown<demoSeason>
 						id='demoSeasonSelect'
+					labelId='demoSeasonSelectLabel'
 						value={demoSeason}
 						onChange={onDemoSeasonChange}
 						options={[
