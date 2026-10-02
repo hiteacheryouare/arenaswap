@@ -2,6 +2,7 @@
 import './_screenshot.scss';
 import { Image } from 'astro:assets';
 import ScreenshotCard from '../../components/ScreenshotCard';
+import ScreenshotCrests from '../../components/ScreenshotCrests.astro';
 import logoImg from '../../assets/full_logo_white_on_transparent.svg';
 
 const nflGame = {
@@ -376,5 +377,6 @@ const nhlScore = { gameId: 'fl7-nhl', total: 82, closeness: 28, lateGame: 20, mo
 			display: block;
 		}
 	</style>
+	<ScreenshotCrests />
 </body>
 </html>

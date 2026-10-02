@@ -2,6 +2,7 @@
 import { Image } from 'astro:assets';
 import './_screenshot.scss';
 import ScreenshotCard from '../../components/ScreenshotCard';
+import ScreenshotCrests from '../../components/ScreenshotCrests.astro';
 import logoImg from '../../assets/full_logo_white_on_transparent.svg';
 
 const wvuPittGame = {
@@ -189,5 +190,6 @@ const bosNyyScore = { gameId: 'sc-mlb', total: 71, closeness: 20, lateGame: 15, 
 			top: 26px;
 		}
 	</style>
+	<ScreenshotCrests />
 </body>
 </html>

@@ -1,0 +1,20 @@
+---
+// The store screenshot pages render ScreenshotCard as static markup with no island, so the shared
+// Crest component never runs its load check and every crest stays `pending`. The abbreviation
+// placeholder then shows through the transparent parts of the logo ("WVU" behind the flying WV).
+// This settles them by hand, under the same contract TeamStrip.astro uses.
+---
+<script>
+	document.querySelectorAll<HTMLElement>('.crest[data-crest-state="pending"]').forEach(crest => {
+		const image = crest.querySelector('img');
+		if (!image) return;
+
+		const settle = (state: 'loaded' | 'failed') => { crest.dataset.crestState = state; };
+		if (image.complete) {
+			settle(image.naturalWidth > 0 ? 'loaded' : 'failed');
+			return;
+		}
+		image.addEventListener('load', () => settle('loaded'), { once: true });
+		image.addEventListener('error', () => settle('failed'), { once: true });
+	});
+</script>

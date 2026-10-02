@@ -2,6 +2,7 @@
 import './_screenshot.scss';
 import { Image } from 'astro:assets';
 import ScreenshotCard from '../../components/ScreenshotCard';
+import ScreenshotCrests from '../../components/ScreenshotCrests.astro';
 import logoImg from '../../assets/full_logo_white_on_transparent.svg';
 
 const bossTorGame = {
@@ -270,5 +271,6 @@ const sfDalScore = { gameId: 's9-nfl', total: 83, closeness: 26, lateGame: 26, m
 			display: block;
 		}
 	</style>
+	<ScreenshotCrests />
 </body>
 </html>
