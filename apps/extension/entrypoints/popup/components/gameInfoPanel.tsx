@@ -1,6 +1,7 @@
 import { i18n } from '#i18n';
 import type { Game } from '@arenaswap/core/types';
 import HoverTooltip from '@arenaswap/ui/src/components/hoverTooltip';
+import { useDisplayLocale } from '@arenaswap/ui/src/components/i18nContext';
 import { OddsProvider, oddsSummary } from './gameCardShared';
 import { conditionIcon, formatTemperature } from './weatherUtils';
 import type { BettingDisplayPrefs, WeatherDisplayPrefs } from './gameCardTypes';
@@ -16,12 +17,12 @@ interface gameInfoPanelProps {
 
 // ESPN publishes no completion timestamp anywhere, so this is the only honest finish time in the
 // product: the start it did publish plus the duration it did publish. Both have to be there.
-const finishedAt = (startTime: string | undefined, durationMins: number | null | undefined): string | null => {
+const finishedAt = (startTime: string | undefined, durationMins: number | null | undefined, locale: string | undefined): string | null => {
 	if (!startTime || !durationMins) return null;
 	const startMs = new Date(startTime).getTime();
 	if (!Number.isFinite(startMs)) return null;
 	return new Date(startMs + (durationMins * 60 * 1000))
-		.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+		.toLocaleTimeString(locale, { hour: 'numeric', minute: '2-digit' });
 };
 
 const InfoRow = ({ icon, label, children }: { icon: string; label: string; children: React.ReactNode }) => (
@@ -33,6 +34,7 @@ const InfoRow = ({ icon, label, children }: { icon: string; label: string; child
 );
 
 const GameInfoPanel = ({ game, bettingPrefs, weatherPrefs, gameDurationMins }: gameInfoPanelProps) => {
+	const locale = useDisplayLocale();
 	const networks = game.broadcasts?.join(' • ');
 	const venueName = game.venueName;
 	const venueLocation = game.venueLocation;
@@ -45,7 +47,7 @@ const GameInfoPanel = ({ game, bettingPrefs, weatherPrefs, gameDurationMins }: g
 	// the gate: a status check beside it could only ever agree. Grouped by the venue rather than
 	// the score, because how many people came is a fact about the building.
 	const attendance = game.attendance;
-	const endedAt = finishedAt(game.startTime, gameDurationMins);
+	const endedAt = finishedAt(game.startTime, gameDurationMins, locale);
 	if (!networks && !hasVenue && !weather && !odds && !hasOddsProvider && attendance === undefined && !endedAt) return null;
 
 	// Conditions belong to the venue, so they ride in its row rather than claiming a line of their
@@ -93,7 +95,7 @@ const GameInfoPanel = ({ game, bettingPrefs, weatherPrefs, gameDurationMins }: g
 
 			{attendance !== undefined && (
 				<InfoRow icon='bi-people' label={i18n.t('detail.infoAttendance')}>
-					<span className='game-info-value-strong'>{attendance.toLocaleString()}</span>
+					<span className='game-info-value-strong'>{attendance.toLocaleString(locale)}</span>
 				</InfoRow>
 			)}
 

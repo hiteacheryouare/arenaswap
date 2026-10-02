@@ -35,8 +35,9 @@ export const lightChartPalette: chartPalette = {
 	surface: 'light',
 };
 
-const formatTimeLabel = (timestamp: number): string => (
-	new Date(timestamp).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
+// `locale` is the language the popup's strings are in. Left undefined, it is the browser's own.
+const formatTimeLabel = (timestamp: number, locale?: string): string => (
+	new Date(timestamp).toLocaleTimeString(locale, { hour: 'numeric', minute: '2-digit' })
 );
 
 // Read when an option is built rather than once at load, so a chart drawn after the setting
@@ -84,8 +85,8 @@ const baseOption = (
 	},
 });
 
-export const buildPowerScoreOption = (powerHistory: PowerScoreSnapshot[], palette = darkChartPalette): EChartsOption => {
-	const labels = powerHistory.map(point => formatTimeLabel(point.timestamp));
+export const buildPowerScoreOption = (powerHistory: PowerScoreSnapshot[], palette = darkChartPalette, locale?: string): EChartsOption => {
+	const labels = powerHistory.map(point => formatTimeLabel(point.timestamp, locale));
 	const totals = powerHistory.map(point => point.total);
 	const showSinglePointSymbols = totals.length === 1;
 	const option = baseOption(labels, palette);
@@ -121,8 +122,9 @@ export const buildTeamScoreOption = (
 	game: Game,
 	palette = darkChartPalette,
 	[awayColor, homeColor] = chartTeamColors(game, palette),
+	locale?: string,
 ): EChartsOption => {
-	const labels = scoreHistory.map(point => formatTimeLabel(point.timestamp));
+	const labels = scoreHistory.map(point => formatTimeLabel(point.timestamp, locale));
 	const awayScores = scoreHistory.map(point => point.awayScore);
 	const homeScores = scoreHistory.map(point => point.homeScore);
 	const showSinglePointSymbols = scoreHistory.length === 1;
@@ -233,8 +235,9 @@ export const buildComponentContributionOption = (
 	powerHistory: PowerScoreSnapshot[],
 	palette = darkChartPalette,
 	signalLabels = englishSignalLabels,
+	locale?: string,
 ): EChartsOption => {
-	const labels = powerHistory.map(point => formatTimeLabel(point.timestamp));
+	const labels = powerHistory.map(point => formatTimeLabel(point.timestamp, locale));
 	const closeness = powerHistory.map(point => point.closeness);
 	const lateGame = powerHistory.map(point => point.lateGame);
 	const momentum = powerHistory.map(point => point.momentum);

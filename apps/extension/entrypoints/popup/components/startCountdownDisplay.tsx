@@ -1,6 +1,7 @@
 import { i18n } from '#i18n';
 import FlipScore from './flipScore';
 import { formatStartDateTime } from './gameCardShared';
+import { useDisplayLocale } from '@arenaswap/ui/src/components/i18nContext';
 import { countdownShowsSeconds, useStartCountdown } from './startCountdown';
 
 interface startCountdownDisplayProps {
@@ -18,6 +19,7 @@ interface segment {
 // spans and leaves the hero, the breakdown and the four ECharts canvases untouched.
 const startCountdownDisplay = ({ startTime }: startCountdownDisplayProps) => {
 	const parts = useStartCountdown(startTime);
+	const locale = useDisplayLocale();
 
 	if (!parts || parts.remainingMs <= 0) {
 		return <div className='gd-countdown-soon'>{i18n.t('detail.startsSoon')}</div>;
@@ -37,7 +39,7 @@ const startCountdownDisplay = ({ startTime }: startCountdownDisplayProps) => {
 
 	return (
 		<div className='gd-countdown'>
-			{startTime && <div className='gd-countdown-when'>{formatStartDateTime(startTime)}</div>}
+			{startTime && <div className='gd-countdown-when'>{formatStartDateTime(startTime, locale)}</div>}
 			<div className='gd-countdown-clock'>
 				{segments.map(({ value, unit, padded }) => (
 					<span key={unit} className='gd-countdown-seg'>

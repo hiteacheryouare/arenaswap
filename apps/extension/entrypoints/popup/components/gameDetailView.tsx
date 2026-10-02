@@ -34,6 +34,7 @@ import {
 import { resolveChartLineColors, resolveTeamColorPair } from '@arenaswap/ui/src/components/colorUtils';
 import { matchupSurfaceStyle } from '@arenaswap/ui/src/components/gameCardShared';
 import { signalColors } from '@arenaswap/ui/src/components/signalColors';
+import { useDisplayLocale } from '@arenaswap/ui/src/components/i18nContext';
 import useSwitchCrest from '@arenaswap/ui/src/components/useSwitchCrest';
 import useSummaryData from './useSummaryData';
 import { chartHistory, coversWholeGame } from './wrapCoverage';
@@ -164,19 +165,20 @@ const gameDetailView = ({
 	const reason = activePowerScore?.reason ?? 'Best Available';
 
 	const chartPalette = theme === 'light' ? lightChartPalette : darkChartPalette;
+	const locale = useDisplayLocale();
 	// Before the charts, and handed to them: a clash that needs a colour read off a crest lands on a
 	// render with the same `game`, and a chart memoised on `game` alone would keep the old line.
 	useSwitchCrest(game.awayTeam, game.homeTeam);
 	const [awayLineColor, homeLineColor] = resolveChartLineColors(game.awayTeam, game.homeTeam, chartPalette.surface);
 	const powerScoreOption = useMemo(() => (
-		buildPowerScoreOption(orderedPowerScoreHistory, chartPalette)
-	), [orderedPowerScoreHistory, chartPalette]);
+		buildPowerScoreOption(orderedPowerScoreHistory, chartPalette, locale)
+	), [orderedPowerScoreHistory, chartPalette, locale]);
 	const scoreTrendOption = useMemo(() => (
-		buildTeamScoreOption(orderedScoreHistory, game, chartPalette, [awayLineColor, homeLineColor])
-	), [orderedScoreHistory, game, chartPalette, awayLineColor, homeLineColor]);
+		buildTeamScoreOption(orderedScoreHistory, game, chartPalette, [awayLineColor, homeLineColor], locale)
+	), [orderedScoreHistory, game, chartPalette, awayLineColor, homeLineColor, locale]);
 	const componentOption = useMemo(() => (
-		buildComponentContributionOption(orderedPowerScoreHistory, chartPalette, componentSignalLabels)
-	), [orderedPowerScoreHistory, chartPalette]);
+		buildComponentContributionOption(orderedPowerScoreHistory, chartPalette, componentSignalLabels, locale)
+	), [orderedPowerScoreHistory, chartPalette, locale]);
 	const { winProbability, seriesInfo, records, monoLogos, boxScore, standings, gameDurationMins } = useSummaryData(game);
 	const winProbabilityOption = useMemo(() => (
 		buildWinProbabilityOption(winProbability, game, chartPalette, [awayLineColor, homeLineColor])

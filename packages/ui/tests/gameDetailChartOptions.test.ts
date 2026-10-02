@@ -333,6 +333,17 @@ describe('buildWinProbabilityOption', () => {
 	});
 });
 
+describe('chart time labels', () => {
+	// The popup's strings follow the browser UI language, and the axis has to agree with them rather
+	// than with navigator.language.
+	test('format in the locale they are handed', () => {
+		const history = [powerPoint(0)];
+		const expected = new Date(history[0]!.timestamp).toLocaleTimeString('de', { hour: 'numeric', minute: '2-digit' });
+		expect(labelsOf(buildPowerScoreOption(history, undefined, 'de'))).toEqual([expected]);
+		expect(labelsOf(buildComponentContributionOption(history, undefined, undefined, 'de'))).toEqual([expected]);
+	});
+});
+
 describe('win probability series order', () => {
 	test('lists the away team first, like the legend under it', () => {
 		const names = seriesOf(buildWinProbabilityOption([0.4, 0.6], game)).map(series => series.name);
