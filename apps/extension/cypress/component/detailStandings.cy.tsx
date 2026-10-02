@@ -44,29 +44,29 @@ const noTable = demoGame('mock-10');
 // TEM v PSU, pre-game.
 const preGame = demoGame('mock-6');
 
-const mount = (game: Game) => {
-	cy.mount(
-		<GameDetailView
-			game={game}
-			excitementResult={undefined}
-			scoreHistory={[]}
-			powerScoreHistory={[]}
-			proTipsEnabled={false}
-			gameBoosts={{}}
-			bettingPrefs={{ bettingEnabled: false }}
-			weatherPrefs={{ temperatureUnit: 'F' }}
-			decorationPrefs={{ holidayDecorationsEnabled: false, holidaySnowEnabled: false, holidayLightsEnabled: false, holidayLeavesEnabled: false }}
-			favoriteTeamIds={new Set<string>()}
-			openTabs={[] as never}
-			registry={[]}
-			onToggleFavoriteTeam={() => {}}
-			onRegistryChange={() => {}}
-			formatTabLabel={() => ''}
-			onSetGameBoost={() => {}}
-			onBack={() => {}}
-		/>,
-	);
-};
+const detail = (game: Game) => (
+	<GameDetailView
+		game={game}
+		excitementResult={undefined}
+		scoreHistory={[]}
+		powerScoreHistory={[]}
+		proTipsEnabled={false}
+		gameBoosts={{}}
+		bettingPrefs={{ bettingEnabled: false }}
+		weatherPrefs={{ temperatureUnit: 'F' }}
+		decorationPrefs={{ holidayDecorationsEnabled: false, holidaySnowEnabled: false, holidayLightsEnabled: false, holidayLeavesEnabled: false }}
+		favoriteTeamIds={new Set<string>()}
+		openTabs={[] as never}
+		registry={[]}
+		onToggleFavoriteTeam={() => {}}
+		onRegistryChange={() => {}}
+		formatTabLabel={() => ''}
+		onSetGameBoost={() => {}}
+		onBack={() => {}}
+	/>
+);
+
+const mount = (game: Game) => cy.mount(detail(game));
 
 const openStandings = (game: Game) => {
 	mount(game);
@@ -130,6 +130,16 @@ describe('detail screen tab strip', () => {
 		cy.get('.tab-pane.active').should('have.length', 1);
 		cy.get('.tab-pane.active').should('have.id', `gd-pane-${football.id}-box`);
 		cy.get('.tab-pane.active .gd-box').should('exist');
+	});
+
+	it('keeps the reader on the tab they chose when the game goes final', () => {
+		mount(football).then(({ rerender }) => {
+			cy.get(`#gd-tab-${football.id}-box`).click();
+			cy.get('.tab-pane.active').should('have.id', `gd-pane-${football.id}-box`);
+			rerender(detail({ ...football, status: 'post' }));
+		});
+		cy.get('.gd-tabs .nav-link.active').should('have.text', en.box.heading);
+		cy.get('.tab-pane.active').should('have.id', `gd-pane-${football.id}-box`);
 	});
 
 	it('labels the shown pane with the tab that opened it', () => {

@@ -245,24 +245,25 @@ const useSummaryData = (game: SummaryGameArg): summaryDataResult => {
 		gameRef.current = game;
 	});
 
-	// The effect below also runs when a game goes from pre to in, and a team's monochrome marks do
-	// not change when it kicks off. Clearing them there dropped a crest that had settled on a mark
-	// back to a tinted plate for the length of the refetch, on a sticky bar that stays mounted
-	// across the transition.
 	const lastGameIdRef = useRef<string | null>(null);
 	useEffect(() => {
 		const sameGame = lastGameIdRef.current === gameId;
 		lastGameIdRef.current = gameId;
 
-		// A detail view reused for a different game must not keep the previous game's line.
-		// oxlint-disable-next-line react/set-state-in-effect
-		setWinProbability([]);
-		setSeriesInfo(null);
-		setRecords(emptyTeamRecords);
-		if (!sameGame) setMonoLogos(emptyMonoLogos);
-		setBoxScore(emptyBoxScore);
-		setStandings(emptyStandings);
-		setGameDurationMins(null);
+		// A detail view reused for a different game must not keep the previous game's line. The same
+		// game changing status keeps what it has until the refetch replaces it: clearing there took
+		// the Box and Standings tabs away at tip-off and at the final, dropping the reader back on
+		// Overview, and turned a crest settled on its monochrome mark back into a tinted plate.
+		if (!sameGame) {
+			// oxlint-disable-next-line react/set-state-in-effect
+			setWinProbability([]);
+			setSeriesInfo(null);
+			setRecords(emptyTeamRecords);
+			setMonoLogos(emptyMonoLogos);
+			setBoxScore(emptyBoxScore);
+			setStandings(emptyStandings);
+			setGameDurationMins(null);
+		}
 
 		if (gameId.startsWith('mock-')) {
 			setRecords(mockRecordsMap[gameId] ?? emptyTeamRecords);
