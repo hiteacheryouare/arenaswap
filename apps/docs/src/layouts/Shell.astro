@@ -5,7 +5,8 @@ import OrangeDots from '../components/OrangeDots.astro';
 import '../styles/tailwind.css';
 import '../styles/global.scss';
 import { chromeWebStore, edgeAddons, firefoxAddons } from '../lib/installTargets';
-import { defaultLocale, localePath, locales } from '../i18n/locales';
+import { defaultLocale, findLocale, localePath, locales } from '../i18n/locales';
+import publicImageSize from '../lib/publicImageSize';
 import { currentLocale, useTranslations } from '../i18n/ui';
 
 interface Props {
@@ -54,7 +55,9 @@ const t = useTranslations(locale);
 
 const site = Astro.site ?? new URL('https://hiteacheryouare.github.io');
 const canonical = new URL(localePath(translated ? locale : defaultLocale, path), site);
-const socialImage = new URL(image ?? `${import.meta.env.BASE_URL}images/social-card.png`, site);
+const socialImagePath = image ?? `${import.meta.env.BASE_URL}images/social-card.png`;
+const socialImage = new URL(socialImagePath, site);
+const socialImageSize = socialImagePath.startsWith('http') ? undefined : publicImageSize(socialImagePath);
 
 // x-default points at English, which is the copy that answers a request carrying no language
 // preference and the only one guaranteed to exist for every path on the site.
@@ -71,6 +74,7 @@ const alternates = localized && translated
 	<meta charset='UTF-8' />
 	<meta name='viewport' content='width=device-width, initial-scale=1.0' />
 	<meta name='description' content={description} />
+	<meta name='theme-color' content='#0d1117' />
 	{noindex
 		? <meta name='robots' content='noindex' />
 		: <link rel='canonical' href={canonical.href} />}
@@ -84,13 +88,17 @@ const alternates = localized && translated
 	<meta property='og:description' content={description} />
 	<meta property='og:type' content={ogType} />
 	<meta property='og:url' content={canonical.href} />
-	<meta property='og:locale' content={locale.replace('-', '_')} />
+	<meta property='og:site_name' content='ArenaSwap' />
+	<meta property='og:locale' content={findLocale(locale).ogLocale} />
 	<meta property='og:image' content={socialImage.href} />
+	{socialImageSize && <meta property='og:image:width' content={String(socialImageSize.width)} />}
+	{socialImageSize && <meta property='og:image:height' content={String(socialImageSize.height)} />}
 	<meta property='og:image:alt' content={imageAlt ?? ogTitle ?? title} />
 	<meta name='twitter:card' content='summary_large_image' />
 	<meta name='twitter:image' content={socialImage.href} />
 	<title>{title}</title>
-	<link rel='shortcut icon' href={`${import.meta.env.BASE_URL}images/128.png`} type='image/x-icon' />
+	<link rel='icon' href={`${import.meta.env.BASE_URL}images/128.png`} type='image/png' sizes='128x128' />
+	<link rel='apple-touch-icon' href={`${import.meta.env.BASE_URL}images/apple-touch-icon.png`} />
 	<link rel='alternate' type='application/rss+xml' title={t('meta.releaseFeedTitle')} href={`${import.meta.env.BASE_URL}releases/rss.xml`} />
 	<noscript><style>.reveal { opacity: 1 !important; transform: none !important; }</style></noscript>
 

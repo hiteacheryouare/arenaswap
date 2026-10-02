@@ -24,21 +24,23 @@ export interface Locale {
 	// Windows ships no colour flag glyphs, so these render there as boxed letter pairs — US, DE —
 	// which still reads, and is why the name beside it is doing the work.
 	flag: string;
+	// Open Graph wants language_TERRITORY, and the territory is the one the flag already names.
+	ogLocale: string;
 }
 
 export const locales = [
-	{ code: 'en', extensionCode: 'en', label: 'English', shortLabel: 'English', flag: '🇺🇸' },
-	{ code: 'de', extensionCode: 'de', label: 'Deutsch', shortLabel: 'Deutsch', flag: '🇩🇪' },
-	{ code: 'es', extensionCode: 'es', label: 'Español', shortLabel: 'Español', flag: '🇲🇽' },
-	{ code: 'fil', extensionCode: 'fil', label: 'Filipino', shortLabel: 'Filipino', flag: '🇵🇭' },
-	{ code: 'fr', extensionCode: 'fr', label: 'Français', shortLabel: 'Français', flag: '🇫🇷' },
-	{ code: 'it', extensionCode: 'it', label: 'Italiano', shortLabel: 'Italiano', flag: '🇮🇹' },
-	{ code: 'ja', extensionCode: 'ja', label: '日本語', shortLabel: '日本語', flag: '🇯🇵' },
-	{ code: 'ko', extensionCode: 'ko', label: '한국어', shortLabel: '한국어', flag: '🇰🇷' },
-	{ code: 'pt-BR', extensionCode: 'pt_BR', label: 'Português (Brasil)', shortLabel: 'Português BR', flag: '🇧🇷' },
-	{ code: 'pt-PT', extensionCode: 'pt_PT', label: 'Português (Portugal)', shortLabel: 'Português PT', flag: '🇵🇹' },
-	{ code: 'zh-CN', extensionCode: 'zh_CN', label: '简体中文', shortLabel: '简体中文', flag: '🇨🇳' },
-	{ code: 'zh-TW', extensionCode: 'zh_TW', label: '繁體中文', shortLabel: '繁體中文', flag: '🇹🇼' },
+	{ code: 'en', extensionCode: 'en', label: 'English', shortLabel: 'English', flag: '🇺🇸', ogLocale: 'en_US' },
+	{ code: 'de', extensionCode: 'de', label: 'Deutsch', shortLabel: 'Deutsch', flag: '🇩🇪', ogLocale: 'de_DE' },
+	{ code: 'es', extensionCode: 'es', label: 'Español', shortLabel: 'Español', flag: '🇲🇽', ogLocale: 'es_MX' },
+	{ code: 'fil', extensionCode: 'fil', label: 'Filipino', shortLabel: 'Filipino', flag: '🇵🇭', ogLocale: 'fil_PH' },
+	{ code: 'fr', extensionCode: 'fr', label: 'Français', shortLabel: 'Français', flag: '🇫🇷', ogLocale: 'fr_FR' },
+	{ code: 'it', extensionCode: 'it', label: 'Italiano', shortLabel: 'Italiano', flag: '🇮🇹', ogLocale: 'it_IT' },
+	{ code: 'ja', extensionCode: 'ja', label: '日本語', shortLabel: '日本語', flag: '🇯🇵', ogLocale: 'ja_JP' },
+	{ code: 'ko', extensionCode: 'ko', label: '한국어', shortLabel: '한국어', flag: '🇰🇷', ogLocale: 'ko_KR' },
+	{ code: 'pt-BR', extensionCode: 'pt_BR', label: 'Português (Brasil)', shortLabel: 'Português BR', flag: '🇧🇷', ogLocale: 'pt_BR' },
+	{ code: 'pt-PT', extensionCode: 'pt_PT', label: 'Português (Portugal)', shortLabel: 'Português PT', flag: '🇵🇹', ogLocale: 'pt_PT' },
+	{ code: 'zh-CN', extensionCode: 'zh_CN', label: '简体中文', shortLabel: '简体中文', flag: '🇨🇳', ogLocale: 'zh_CN' },
+	{ code: 'zh-TW', extensionCode: 'zh_TW', label: '繁體中文', shortLabel: '繁體中文', flag: '🇹🇼', ogLocale: 'zh_TW' },
 ] as const satisfies readonly Locale[];
 
 export type LocaleCode = (typeof locales)[number]['code'];
