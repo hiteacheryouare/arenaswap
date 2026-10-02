@@ -41,6 +41,11 @@ describe('matchesTeamQuery', () => {
 		expect(matchesTeamQuery(celtics, 'boston')).toBe(true);
 	});
 
+	test('ignores accents on either side, as the settings search does', () => {
+		expect(matchesTeamQuery(team('laliga', '1068', 'Atlético Madrid', 'ATM'), 'atletico')).toBe(true);
+		expect(matchesTeamQuery(team('mls', '9720', 'CF Montreal', 'MTL'), 'montréal')).toBe(true);
+	});
+
 	test('matches the abbreviation', () => {
 		expect(matchesTeamQuery(celtics, 'bos')).toBe(true);
 	});

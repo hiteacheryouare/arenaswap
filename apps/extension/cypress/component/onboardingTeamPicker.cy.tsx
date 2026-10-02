@@ -39,6 +39,18 @@ const StatefulPicker = () => {
 };
 
 describe('onboardingTeamPicker', () => {
+	// Our sources hand teams over in their own order; the 76ers arrive before the Bulls.
+	it('sorts each league\'s teams by name', () => {
+		cy.mount(<OnboardingTeamPicker {...defaultProps} />);
+		cy.get('.team-pick-row .fw-semibold').then(names => [...names].map(name => name.textContent))
+			.should('deep.equal', ['Chicago Bulls', 'Philadelphia 76ers', 'Philadelphia Eagles']);
+	});
+
+	it('gives the search field a name of its own', () => {
+		cy.mount(<OnboardingTeamPicker {...defaultProps} />);
+		cy.get('input[type="search"]').should('have.attr', 'aria-label', 'Search teams…');
+	});
+
 	it('renders the teams grouped by league', () => {
 		cy.mount(<OnboardingTeamPicker {...defaultProps} />);
 

@@ -838,6 +838,30 @@
 	border-radius: 50%;
 }
 
+.team-pick-row {
+	width:         100%;
+	padding-inline: 0;
+	border:        0;
+	background:    transparent;
+	color:         inherit;
+	text-align:    start;
+
+	&:focus-visible {
+		outline:        1px solid bs.$primary;
+		outline-offset: 2px;
+		border-radius:  0.25rem;
+	}
+}
+
+// Hovering an unstarred row previews the gold it would take.
+.team-pick-star {
+	color:      var(--as-secondary-color);
+	transition: color m.$motion-snap m.$motion-ease;
+
+	.team-pick-row:hover &,
+	&[data-favorited='true'] { color: rgb(var(--as-warning-rgb)); }
+}
+
 // The same white disc the pre-game poster puts its crests on, at list size, tinted with a colour
 // sampled from the crest itself. A navy or black logo on the dark popup is otherwise a silhouette.
 .team-pick-crest {

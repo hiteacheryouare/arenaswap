@@ -2,6 +2,7 @@ import type { EspnTeamEntry } from '@arenaswap/core';
 import { createFavoriteTeamKey, parseFavoriteTeamKey } from '@arenaswap/core/constants';
 import type { LeagueId } from '@arenaswap/core/types';
 import { leagueOrder } from '../entrypoints/popup/popupHelpers';
+import { foldForSearch } from './searchText';
 
 export interface favoriteTeamRow {
 	key: string;
@@ -26,11 +27,11 @@ export const leaguesForFavoritePicker = (
 };
 
 export const matchesTeamQuery = (team: EspnTeamEntry, query: string): boolean => {
-	const needle = query.trim().toLowerCase();
+	const needle = foldForSearch(query);
 	if (!needle) return true;
 
-	return (team.name ?? '').toLowerCase().includes(needle)
-		|| (team.abbreviation ?? '').toLowerCase().includes(needle);
+	return foldForSearch(team.name ?? '').includes(needle)
+		|| foldForSearch(team.abbreviation ?? '').includes(needle);
 };
 
 // A stored key with no team behind it — a league whose fetch failed, or a team ESPN has since

@@ -6,6 +6,7 @@ import type { LeagueId } from '@arenaswap/core/types';
 import TeamPickerRow from './teamPickerRow';
 import { matchesTeamQuery } from '../../../utils/favoriteTeams';
 import { leagueLabels, leagueOrder } from '../popupHelpers';
+import { useDisplayLocale } from '@arenaswap/ui/src/components/i18nContext';
 
 interface teamPickerListProps {
 	teams: EspnTeamEntry[];
@@ -32,6 +33,9 @@ const teamPickerList = ({
 	teams, query, onQueryChange, isLoading, hasError, selectedFavorites, onToggleFavorite, onRetry, onSkip, leading, pinned,
 }: teamPickerListProps) => {
 	const filteredTeams = teams.filter(team => matchesTeamQuery(team, query));
+	// Our sources list a league's teams in their own order, which reads as no order at all.
+	const collator = new Intl.Collator(useDisplayLocale());
+	const byName = (a: EspnTeamEntry, b: EspnTeamEntry) => collator.compare(a.name ?? '', b.name ?? '');
 
 	const grouped = filteredTeams.reduce<Partial<Record<LeagueId, EspnTeamEntry[]>>>((acc, team) => {
 		(acc[team.leagueId] ??= []).push(team);
@@ -48,6 +52,7 @@ const teamPickerList = ({
 				type='search'
 				className='form-control form-control-sm mb-2'
 				placeholder={i18n.t('teamPicker.searchPlaceholder')}
+				aria-label={i18n.t('teamPicker.searchPlaceholder')}
 				value={query}
 				onChange={e => onQueryChange(e.target.value)}
 			/>
@@ -85,7 +90,7 @@ const teamPickerList = ({
 								<div className='fw-bold text-uppercase popup-section-label mt-2'>
 									{leagueLabels[leagueId] ?? leagueId.toUpperCase()}
 								</div>
-								{(grouped[leagueId] ?? []).map(team => (
+								{(grouped[leagueId] ?? []).toSorted(byName).map(team => (
 									<TeamPickerRow
 										key={team.id}
 										team={team}

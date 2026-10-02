@@ -1,4 +1,5 @@
 import { i18n, type GeneratedI18nStructure } from '#i18n';
+import { foldForSearch } from '../../../utils/searchText';
 
 export type settingsGroupId = 'switching' | 'scoring' | 'favorites' | 'leagues' | 'display' | 'standby' | 'demo';
 
@@ -66,10 +67,7 @@ export const settingsEntries: readonly settingsEntry[] = [
 	{ group: 'demo', labelKey: 'setup.demoMode', keywordsKey: 'setup.keywordsDemo' },
 ] as const;
 
-// Strips diacritics and case so "prevision" reaches "Previsión" and "COOLDOWN" reaches "Cooldown".
-// Locales without a Latin script are unaffected, which is correct — they match on their own glyphs.
-export const normalize = (value: string): string =>
-	value.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase().trim();
+export const normalize = foldForSearch;
 
 export interface settingsSearchResult {
 	group: settingsGroup;
