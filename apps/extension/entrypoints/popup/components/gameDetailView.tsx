@@ -31,7 +31,7 @@ import {
 	darkChartPalette,
 	lightChartPalette,
 } from './gameDetailChartOptions';
-import { resolveTeamColorPair } from '@arenaswap/ui/src/components/colorUtils';
+import { resolveChartLineColors, resolveTeamColorPair } from '@arenaswap/ui/src/components/colorUtils';
 import { matchupSurfaceStyle } from '@arenaswap/ui/src/components/gameCardShared';
 import useSwitchCrest from '@arenaswap/ui/src/components/useSwitchCrest';
 import useSummaryData from './useSummaryData';
@@ -163,7 +163,7 @@ const gameDetailView = ({
 	// Before the charts, and handed to them: a clash that needs a colour read off a crest lands on a
 	// render with the same `game`, and a chart memoised on `game` alone would keep the old line.
 	useSwitchCrest(game.awayTeam, game.homeTeam);
-	const [awayLineColor, homeLineColor] = resolveTeamColorPair(game.awayTeam, game.homeTeam, '#60a5fa', '#f87171');
+	const [awayLineColor, homeLineColor] = resolveChartLineColors(game.awayTeam, game.homeTeam, chartPalette.surface);
 	const powerScoreOption = useMemo(() => (
 		buildPowerScoreOption(orderedPowerScoreHistory, chartPalette)
 	), [orderedPowerScoreHistory, chartPalette]);

@@ -1,18 +1,61 @@
 import { teamLogoOnColor } from '@arenaswap/core/constants';
+import type { ResolvedTheme } from '@arenaswap/core/types';
 import type { Rgb } from './colorMath';
 import { colorDifference, contrastBetween, hexLuminance as luminance, hexToLab, hexToRgb, isHex, labChroma, rgbToHex, whiteInkContrast } from './colorMath';
 import { cachedLogoSwitchColor } from './logoSwitchColor';
 
-// Scales every channel by the same factor, which leaves the ratios between them — and so the hue —
-// where they were, so a darkened gold is a bronze rather than a muddy grey.
+const mixTowardWhite = (value: string, amount: number): string => {
+	const rgb = hexToRgb(value);
+	if (!rgb) return value;
+	const toward = (channel: number): number => channel + (255 - channel) * amount;
+	return rgbToHex(toward(rgb.red), toward(rgb.green), toward(rgb.blue));
+};
+
+// Scales every channel by the same factor, which raises lightness while leaving the ratios
+// between the channels — and so the hue — where they were. Mixing toward white instead adds an
+// equal amount to all three, which pulls them together and drains the colour: Mets navy came out
+// #7a92b6 and Yankees navy came out #818d9c, two greys that read as the same non-colour.
 const brighten = (value: string, factor: number): string => {
 	const rgb = hexToRgb(value);
 	if (!rgb) return value;
 	return rgbToHex(rgb.red * factor, rgb.green * factor, rgb.blue * factor);
 };
 
-// For team text printed on one of the light detail cards. Those are #f8fafc (luminance 0.9536) and
-// the text is small, so it needs 4.5:1 — which puts the ceiling at luminance 0.173. Half the league fails
+// A pure black or near-black has no hue to preserve, so scaling it does nothing at all. Only these
+// fall back to a grey, and they are the one case where a grey is the honest answer.
+const hasHue = (value: string): boolean => {
+	const rgb = hexToRgb(value);
+	return rgb !== null && Math.max(rgb.red, rgb.green, rgb.blue) >= 12;
+};
+
+// Chart lines are non-text, so WCAG wants 3:1 against the chart background. That background is
+// #0d1117 (luminance 0.0055), which puts the 3:1 boundary at luminance 0.1164.
+const seriesLuminanceFloor = 0.1164;
+
+const resolveReadableSeriesColor = (value: string | undefined, fallback: string): string => {
+	if (!value || !hexToRgb(value)) return fallback;
+	if (luminance(value) >= seriesLuminanceFloor) return value;
+	if (!hasHue(value)) return mixTowardWhite(value, 0.48);
+	// Climbed rather than solved: luminance is not linear in the scale factor, and a loop of a
+	// dozen steps is cheaper to read than the inverse of the sRGB transfer function.
+	let brightened = value;
+	for (let step = 0; step < 24 && luminance(brightened) < seriesLuminanceFloor; step++) {
+		brightened = brighten(brightened, 1.18);
+	}
+	// Scaling has a ceiling, and a pure blue is sitting on it: its brightest channel is already 255
+	// while the other two round straight back to themselves, so the loop above runs 24 times and
+	// returns the colour it was given. Mixing toward white is the only way up from there, so a hue
+	// that cannot clear the floor by scaling gives up some of its saturation rather than staying
+	// unreadable.
+	for (let step = 0; step < 24 && luminance(brightened) < seriesLuminanceFloor; step++) {
+		brightened = mixTowardWhite(brightened, 0.12);
+	}
+	return brightened;
+};
+
+// The mirror of the above, for team text printed on one of the light detail cards. Those are
+// #f8fafc (luminance 0.9536) and the text is small, so it needs 4.5:1 rather than the 3:1 a chart
+// line gets — which puts the ceiling at luminance 0.173. Half the league fails
 // it, and the Penguins' and Bruins' gold reaches only 1.7:1 untouched.
 const smallCardTextLuminanceCeiling = 0.173;
 
@@ -28,6 +71,10 @@ const resolveReadableCardTextColor = (
 	}
 	return darkened;
 };
+
+// A chart line on the light page, which is #ffffff, clears the same 3:1 at luminance 0.30 or under.
+// So the light side is the card-text rule with a looser ceiling: gold goes bronze, navy is left alone.
+const seriesOnLightLuminanceCeiling = 0.3;
 
 // What Apple Sports does when two teams look alike, worked out from 44 of its matchups: the away
 // team changes and the home team never does. "Alike" is CIEDE2000 under 11 — Sabres navy against
@@ -163,6 +210,24 @@ export const resolveTeamColorPair = (
 	const awayPrimary = primaryOf(away) ?? awayFallback;
 	const homePrimary = primaryOf(home) ?? homeFallback;
 	return pickPair(away, home, awayPrimary, homePrimary);
+};
+
+// The one place a team's colour is adjusted rather than drawn as published: a chart line, which has
+// to be seen against the chart it is drawn on. Navies are lifted on the dark chart and golds are
+// darkened on the light one, keeping their hue.
+export const resolveChartLineColors = (
+	away: matchupTeam,
+	home: matchupTeam,
+	surface: ResolvedTheme,
+	awayFallback = '#60a5fa',
+	homeFallback = '#f87171',
+): [string, string] => {
+	const [a, h] = resolveTeamColorPair(away, home, awayFallback, homeFallback);
+	if (surface === 'dark') return [resolveReadableSeriesColor(a, awayFallback), resolveReadableSeriesColor(h, homeFallback)];
+	return [
+		resolveReadableCardTextColor(a, awayFallback, seriesOnLightLuminanceCeiling),
+		resolveReadableCardTextColor(h, homeFallback, seriesOnLightLuminanceCeiling),
+	];
 };
 
 // ── A matchup painted in its two colours ─────────────────────────────────────

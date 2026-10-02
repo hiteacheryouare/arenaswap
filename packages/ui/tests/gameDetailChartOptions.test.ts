@@ -72,6 +72,18 @@ const scorePoint = (index: number, awayScore: number, homeScore: number): ScoreS
 	homeScore,
 });
 
+// The chart surface is #0d1117. A line on it is non-text, so WCAG wants 3:1.
+const srgbChannel = (value: number): number => {
+	const scaled = value / 255;
+	return scaled <= 0.04045 ? scaled / 12.92 : ((scaled + 0.055) / 1.055) ** 2.4;
+};
+
+const contrastOnChart = (hex: string): number => {
+	const [red, green, blue] = [1, 3, 5].map(at => Number.parseInt(hex.slice(at, at + 2), 16));
+	const luminance = 0.2126 * srgbChannel(red!) + 0.7152 * srgbChannel(green!) + 0.0722 * srgbChannel(blue!);
+	return (luminance + 0.05) / (0.0055 + 0.05);
+};
+
 describe('buildPowerScoreOption', () => {
 	const history = [0, 1, 2, 3, 4].map(index => powerPoint(index));
 
@@ -147,10 +159,13 @@ describe('buildTeamScoreOption', () => {
 		expect(yAxisOf(buildTeamScoreOption(history, game))!.scale).toBe(true);
 	});
 
-	test('draws each team in its published colour', () => {
+	test('tells the two teams apart, and reads both against the dark chart', () => {
 		const option = buildTeamScoreOption(history, game);
-		expect(byName(option, 'BOS').lineStyle!.color).toBe('#007A33');
-		expect(byName(option, 'CLE').lineStyle!.color).toBe('#860038');
+		const away = byName(option, 'BOS').lineStyle!.color!;
+		const home = byName(option, 'CLE').lineStyle!.color!;
+		expect(away).not.toBe(home);
+		expect(contrastOnChart(away)).toBeGreaterThanOrEqual(3);
+		expect(contrastOnChart(home)).toBeGreaterThanOrEqual(3);
 	});
 
 	// The dot and the line have to be the same colour or a one-point chart draws a mark in the
@@ -276,10 +291,13 @@ describe('buildWinProbabilityOption', () => {
 		expect(rendered).toContain('color:#00a544');
 	});
 
-	test('draws each team in its published colour', () => {
+	test('tells the two teams apart, and reads both against the dark chart', () => {
 		const option = buildWinProbabilityOption(drift(20), game);
-		expect(byName(option, 'CLE').lineStyle!.color).toBe('#860038');
-		expect(byName(option, 'BOS').lineStyle!.color).toBe('#007A33');
+		const home = byName(option, 'CLE').lineStyle!.color!;
+		const away = byName(option, 'BOS').lineStyle!.color!;
+		expect(home).not.toBe(away);
+		expect(contrastOnChart(home)).toBeGreaterThanOrEqual(3);
+		expect(contrastOnChart(away)).toBeGreaterThanOrEqual(3);
 	});
 
 	// Both charts read the same pair off `resolveTeamColorPair`, so a team is the same colour

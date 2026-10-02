@@ -1,7 +1,7 @@
 import type { EChartsOption } from 'echarts';
 import { scoreMaxTotal } from '@arenaswap/core/constants';
 import type { Game, PowerScoreSnapshot, ResolvedTheme, ScoreSnapshot } from '@arenaswap/core/types';
-import { resolveTeamColorPair } from './colorUtils';
+import { resolveChartLineColors } from './colorUtils';
 import { chartEasing, motionDuration } from '../motion';
 
 // ECharts draws to a canvas, so these cannot follow the page's CSS variables: whoever builds an
@@ -100,15 +100,15 @@ export const buildPowerScoreOption = (powerHistory: PowerScoreSnapshot[], palett
 
 // The line colours are a parameter so a caller that already holds them can pass the same pair its
 // legend is drawn in, and memoise on them.
-const chartTeamColors = (game: Game): [string, string] => (
-	resolveTeamColorPair(game.awayTeam, game.homeTeam, '#60a5fa', '#f87171')
+const chartTeamColors = (game: Game, palette: chartPalette): [string, string] => (
+	resolveChartLineColors(game.awayTeam, game.homeTeam, palette.surface)
 );
 
 export const buildTeamScoreOption = (
 	scoreHistory: ScoreSnapshot[],
 	game: Game,
 	palette = darkChartPalette,
-	[awayColor, homeColor] = chartTeamColors(game),
+	[awayColor, homeColor] = chartTeamColors(game, palette),
 ): EChartsOption => {
 	const labels = scoreHistory.map(point => formatTimeLabel(point.timestamp));
 	const awayScores = scoreHistory.map(point => point.awayScore);
@@ -149,7 +149,7 @@ export const buildWinProbabilityOption = (
 	homeWinPcts: number[],
 	game: Game,
 	palette = darkChartPalette,
-	[awayColor, homeColor] = chartTeamColors(game),
+	[awayColor, homeColor] = chartTeamColors(game, palette),
 ): EChartsOption => {
 	if (homeWinPcts.length === 0) return {};
 	const step = Math.max(1, Math.floor(homeWinPcts.length / 80));
