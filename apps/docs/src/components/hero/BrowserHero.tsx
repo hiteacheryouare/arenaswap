@@ -4,6 +4,7 @@ import GameCard from '@arenaswap/ui/src/components/gameCard';
 import LeagueMark from '@arenaswap/ui/src/components/leagueMark';
 import { PopupHeader, PopupSectionTitle } from '@arenaswap/ui/src/components/popupChrome';
 import { useT } from '@arenaswap/ui/src/components/i18nContext';
+import useReorderGlide from '@arenaswap/ui/src/components/useReorderGlide';
 import { TranslationContext, islandTranslator, tokenize } from '../../i18n/islandStrings';
 import { heroGames, heroTickCount, heroTickMs } from './heroGames';
 import { cooldownTicks, openingIndex, replayThrough, scoreBoardAt, shouldSwitch } from './heroTimeline';
@@ -171,6 +172,8 @@ const HeroWindow = ({ copy }: { copy: HeroStrings }) => {
 		body.scrollTo({ top: Math.max(0, top - 12), behavior: reduced ? 'auto' : 'smooth' });
 	}, [onScreenIndex, reduced, lastSwitch]);
 
+	useReorderGlide(popupBodyRef);
+
 	const onScreen = heroGames[onScreenIndex];
 	// The popup's own order with nothing favorited: one list, best PowerScore on top.
 	const ranked = useMemo(
@@ -256,7 +259,7 @@ const HeroWindow = ({ copy }: { copy: HeroStrings }) => {
 					/>
 					<PopupSectionTitle first>{t('main.sectionActiveLiveTabs')}</PopupSectionTitle>
 					{ranked.map(entry => (
-						<div key={entry.id} data-hero-card={entry.id}>
+						<div key={entry.id} data-hero-card={entry.id} data-glide-key={entry.id}>
 							<GameCard
 								game={entry.game}
 								excitementResult={entry.result}

@@ -27,4 +27,6 @@ export const motionLoop = {
 // ease-out, and `quinticOut` is the closest thing ECharts draws to it.
 export const chartEasing = 'quinticOut';
 
+export const motionEase = 'cubic-bezier(0.22, 1, 0.36, 1)';
+
 export default motionDuration;

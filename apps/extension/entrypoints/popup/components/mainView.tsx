@@ -22,6 +22,7 @@ import ReviewPromptBanner from './reviewPromptBanner';
 import SuggestBanner from './suggestBanner';
 import UpcomingDayPager from './upcomingDayPager';
 import LeagueMark from '@arenaswap/ui/src/components/leagueMark';
+import useReorderGlide from '@arenaswap/ui/src/components/useReorderGlide';
 import { buildFinalComparator, buildLeagueRank, buildLiveComparator, buildUpcomingComparator, getRandomLoadingMessage, groupByDate, groupByLeague, resolveSelectedDayIndex } from '../popupHelpers';
 import type { BettingDisplayPrefs, WeatherDisplayPrefs } from './gameCardTypes';
 import useRestoredScroll from '../useRestoredScroll';
@@ -110,29 +111,30 @@ const gameSection = ({
 		// A game the plan does not name is one that arrived after the plan was fixed, and it gets
 		// nothing: a card that has been sitting there plainly for two seconds must not suddenly grow
 		// a poster over itself.
-		<GameCardReveal
-			key={game.id}
-			game={game}
-			mode={reveal.order.has(game.id) ? revealModeForIndex(reveal.mode, reveal.order.get(game.id)!) : 'none'}
-			index={reveal.order.get(game.id) ?? 0}
-			skipping={reveal.skipping}
-		>
-			<GameCard
+		<div key={game.id} data-glide-key={game.id}>
+			<GameCardReveal
 				game={game}
-				excitementResult={scoreMap.get(game.id)}
-				favoriteTeamIds={favoriteTeamIds}
-				onToggleFavoriteTeam={onToggleFavoriteTeam}
-				gameBoosts={gameBoosts}
-				openTabs={openTabs}
-				registry={registry}
-				onRegistryChange={onRegistryChange}
-				formatTabLabel={formatTabLabel}
-				onOpenGameDetail={onOpenGameDetail}
-				bettingPrefs={bettingPrefs}
-				weatherPrefs={weatherPrefs}
-				leagueSlot={grouped ? undefined : <LeagueMark league={game.league} logos={leagueLogos} onColor={game.status !== 'post'} />}
-			/>
-		</GameCardReveal>
+				mode={reveal.order.has(game.id) ? revealModeForIndex(reveal.mode, reveal.order.get(game.id)!) : 'none'}
+				index={reveal.order.get(game.id) ?? 0}
+				skipping={reveal.skipping}
+			>
+				<GameCard
+					game={game}
+					excitementResult={scoreMap.get(game.id)}
+					favoriteTeamIds={favoriteTeamIds}
+					onToggleFavoriteTeam={onToggleFavoriteTeam}
+					gameBoosts={gameBoosts}
+					openTabs={openTabs}
+					registry={registry}
+					onRegistryChange={onRegistryChange}
+					formatTabLabel={formatTabLabel}
+					onOpenGameDetail={onOpenGameDetail}
+					bettingPrefs={bettingPrefs}
+					weatherPrefs={weatherPrefs}
+					leagueSlot={grouped ? undefined : <LeagueMark league={game.league} logos={leagueLogos} onColor={game.status !== 'post'} />}
+				/>
+			</GameCardReveal>
+		</div>
 	);
 
 	return (
@@ -186,6 +188,7 @@ const mainView = ({
 	revealSkipping = false,
 }: mainViewProps) => {
 	const scrollerRef = useRestoredScroll(scrollOffsetRef);
+	useReorderGlide(scrollerRef);
 	const noLeaguesSelected = prefs.enabledLeagues.length === 0;
 	const loadingMessage = useMemo(() => getRandomLoadingMessage(), []);
 	const scoreByGameId = useMemo(() => new Map(scores.map(s => [s.gameId, s.total])), [scores]);

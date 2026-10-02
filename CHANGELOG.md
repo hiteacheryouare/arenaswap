@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Cards glide when the order changes — 2026-10-02
+
+When a PowerScore push reorders the list, or a game moves between Active Tabs and Live Games, every card that moved slides from its old spot to its new one over 400ms instead of jumping, in the popup and the landing page hero alike. Only an actual reorder starts a glide: a game arriving or leaving still pushes the cards below it without animation, and reduced motion turns the glide off.
+
 ## Every forecast gets its own icon, moons included — 2026-10-02
 
 Weather icons now come from the AccuWeather icon number our sources send next to the condition, so all 40 codes are covered, the night codes draw a moon instead of a sun, and the label map is only a fallback. Labels like "Mostly cloudy w/ t-storms" were being split on their slash and falling through to a plain cloud, and the snow decoration had the same bug, so "Mostly cloudy w/ snow" never snowed.

@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import type { ComponentProps } from 'react';
 import MainView from '../../entrypoints/popup/components/mainView';
 import type { UserPreferences } from '@arenaswap/core/types';
 
@@ -543,5 +544,101 @@ describe('mainView up next day pager', () => {
 		// And neither card's place in the cascade moved with it.
 		cy.get('[data-testid="game-card-slow"]').closest('.game-card-reveal').should('have.css', '--reveal-delay', '0ms');
 		cy.get('[data-testid="game-card-fast"]').closest('.game-card-reveal').should('have.css', '--reveal-delay', '104ms');
+	});
+});
+
+// Each click hands the view the next frame's props, the way successive score pushes and tab
+// assignments would. The stub cards are empty, so they are given a real card's height to travel.
+const SteppingMainView = ({ frames }: { frames: Partial<ComponentProps<typeof MainView>>[] }) => {
+	const [step, setStep] = useState(0);
+	return (
+		<>
+			<style>{'[data-testid^="game-card-"] { height: 120px; }'}</style>
+			<button type='button' data-testid='fake-next' onClick={() => setStep(current => current + 1)}>Next</button>
+			<MainView {...defaultProps} {...frames[step]} />
+		</>
+	);
+};
+
+const glideOf = (gameId: string) => cy.get(`[data-testid="game-card-${gameId}"]`).closest('[data-glide-key]');
+const topOf = (gameId: string) => glideOf(gameId).then($glide => $glide[0]!.getBoundingClientRect().top);
+const scrubGlides = (ms: number) => cy.document().then(doc => doc.getAnimations().forEach(animation => {
+	animation.pause();
+	animation.currentTime = ms;
+}));
+
+const swapFrames = [
+	{ games: [makeGame('slow'), makeGame('fast')], scores: [score('slow', 90), score('fast', 10)] },
+	{ games: [makeGame('slow'), makeGame('fast')], scores: [score('slow', 10), score('fast', 90)] },
+];
+
+describe('mainView reorder glide', () => {
+	it('glides two cards past each other when a score push swaps them', () => {
+		cy.mount(<SteppingMainView frames={swapFrames} />);
+		topOf('slow').then(slowTop => topOf('fast').then(fastTop => {
+			cy.get('[data-testid="fake-next"]').click();
+			cardOrder().should('deep.equal', ['game-card-fast', 'game-card-slow']);
+
+			scrubGlides(0);
+			topOf('fast').should('be.closeTo', fastTop, 0.5);
+			topOf('slow').should('be.closeTo', slowTop, 0.5);
+
+			scrubGlides(40);
+			topOf('fast').should('be.within', slowTop + 10, fastTop - 10);
+
+			cy.document().then(doc => doc.getAnimations().forEach(animation => animation.finish()));
+			topOf('fast').should('be.closeTo', slowTop, 0.5);
+			topOf('slow').should('be.closeTo', fastTop, 0.5);
+		}));
+	});
+
+	it('picks a card up from where it is when the order changes again mid-glide', () => {
+		cy.mount(<SteppingMainView frames={[...swapFrames, swapFrames[0]!]} />);
+		cy.get('[data-testid="fake-next"]').click();
+		cardOrder().should('deep.equal', ['game-card-fast', 'game-card-slow']);
+		scrubGlides(120);
+
+		topOf('fast').then(caughtTop => {
+			cy.get('[data-testid="fake-next"]').click();
+			cardOrder().should('deep.equal', ['game-card-slow', 'game-card-fast']);
+			scrubGlides(0);
+			topOf('fast').should('be.closeTo', caughtTop, 0.5);
+		});
+	});
+
+	it('carries a card across from Live Games to Active Tabs', () => {
+		const games = [makeGame('top'), makeGame('picked')];
+		const scores = [score('top', 90), score('picked', 10)];
+		cy.mount(<SteppingMainView frames={[{ games, scores }, { games, scores, registry: [{ gameId: 'picked', tabId: 1 }] }]} />);
+		topOf('picked').then(pickedTop => {
+			cy.get('[data-testid="fake-next"]').click();
+			sectionTitleOf('picked').should('have.text', 'Active Tabs');
+
+			scrubGlides(0);
+			topOf('picked').should('be.closeTo', pickedTop, 0.5);
+		});
+	});
+
+	it('lets a game that just started push the list down without gliding it', () => {
+		cy.mount(<SteppingMainView frames={[
+			{ games: [makeGame('a'), makeGame('b')], scores: [score('a', 60), score('b', 40)] },
+			{ games: [makeGame('new'), makeGame('a'), makeGame('b')], scores: [score('new', 90), score('a', 60), score('b', 40)] },
+		]} />);
+		cy.get('[data-testid="fake-next"]').click();
+		cardOrder().should('deep.equal', ['game-card-new', 'game-card-a', 'game-card-b']);
+		cy.get('[data-glide-key]').each($glide => expect($glide[0]!.getAnimations()).to.have.length(0));
+	});
+
+	it('jumps straight to the new order under reduced motion', () => {
+		cy.mount(<SteppingMainView frames={swapFrames} />);
+		cy.window().then(win => {
+			const realMatchMedia = win.matchMedia.bind(win);
+			cy.stub(win, 'matchMedia').callsFake((query: string) => (
+				query.includes('prefers-reduced-motion') ? { ...realMatchMedia(query), matches: true } : realMatchMedia(query)
+			));
+		});
+		cy.get('[data-testid="fake-next"]').click();
+		cardOrder().should('deep.equal', ['game-card-fast', 'game-card-slow']);
+		cy.get('[data-glide-key]').each($glide => expect($glide[0]!.getAnimations()).to.have.length(0));
 	});
 });
