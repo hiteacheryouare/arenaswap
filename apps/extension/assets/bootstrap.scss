@@ -1372,6 +1372,19 @@
 	tfoot td { font-weight: 700; }
 }
 
+// The player tables and the standings are read down a column, so their stats sit flush right in
+// Geist's tabular figures, where ".276" lands under ".301" digit for digit. DM Sans has no tabular
+// figures, so the `tabular-nums` above did nothing on it. The line score and the team comparison
+// stay centred under their headings.
+.gd-box-table:not(.gd-box-line-table, .gd-box-compare-table) {
+	td:not(.gd-box-name, .gd-box-dnp) {
+		@include gc.scoreboard-figures;
+		text-align: right;
+	}
+
+	th:not(.gd-box-name) { text-align: right; }
+}
+
 // A truncated name is still readable and a truncated stat is not, so the name column takes all the
 // slack and gives way first. `max-width: 0` is what lets a percentage-width table cell actually
 // ellipsize — without it the cell grows to its content instead.

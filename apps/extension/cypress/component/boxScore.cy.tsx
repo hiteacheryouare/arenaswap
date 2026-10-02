@@ -309,6 +309,18 @@ describe('box score', () => {
 	});
 
 	describe('player tables', () => {
+		// DM Sans has no tabular figures, so a column of stats only lines up digit for digit in Geist,
+		// and only when the column is flush right.
+		it('sets every stat flush right in tabular figures, under a heading flush right with it', () => {
+			mount(games.basketball);
+			cy.get('.gd-box-table:not(.gd-box-line-table):not(.gd-box-compare-table) tbody td:not(.gd-box-name)').first()
+				.should('have.css', 'text-align', 'right')
+				.and(([cell]: JQuery<HTMLElement>) => expect(getComputedStyle(cell).fontFamily).to.match(/^"?Geist/));
+			cy.get('.gd-box-table:not(.gd-box-line-table):not(.gd-box-compare-table) thead th:not(.gd-box-name)').first()
+				.should('have.css', 'text-align', 'right');
+			cy.get('.gd-box-line-table tbody td').first().should('have.css', 'text-align', 'center');
+		});
+
 		it('opens on the away team and switches to the home team', () => {
 			mount(games.basketball);
 			cy.get('.gd-box-tabs .nav-link').should('have.length', 2);
