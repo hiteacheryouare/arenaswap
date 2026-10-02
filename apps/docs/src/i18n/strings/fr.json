@@ -86,7 +86,7 @@
 		"firefoxAddons": "Firefox Add-ons",
 		"edgeAddons": "Edge Add-ons",
 		"iscLicense": "ISC License",
-		"disclaimer": "Non affilié à ESPN, la NFL, la NBA, la NHL, la MLB, la MLS ni à aucune autre ligue suivie par cette extension, et non soutenu par elles.",
+		"disclaimer": "Non affilié à la NFL, la NBA, la NHL, la MLB, la MLS ni à aucune autre ligue suivie par cette extension, et non soutenu par elles.",
 		"legalNotices": "Mentions légales",
 		"madeWith": "Fait avec ❤️ à Philadelphie & Boston par {name}"
 	},
@@ -198,11 +198,11 @@
 			},
 			{
 				"q": "Ai-je besoin d'un compte ou d'un abonnement ?",
-				"a": "Non. ArenaSwap est gratuit, ne demande aucun compte, et ne collecte rien. Il tourne entièrement dans ton navigateur et lit les scores publics d'ESPN. Rien de ce que tu regardes n'est envoyé où que ce soit."
+				"a": "Non. ArenaSwap est gratuit, ne demande aucun compte, et ne collecte rien. Il tourne entièrement dans ton navigateur et lit les scores publics de nos sources, qui gardent leurs jumelles braquées sur chaque match. Rien de ce que tu regardes n'est envoyé où que ce soit."
 			},
 			{
 				"q": "Fonctionnera-t-il avec mon service de streaming ?",
-				"a": "Tout stream qui se lit dans un onglet de navigateur fonctionne, parce qu'ArenaSwap change et met en sourdine des onglets plutôt que de s'intégrer à un service. Ça couvre ESPN+, Peacock, Paramount+, YouTube TV, Hulu Live, Fubo et les streams gratuits des ligues. Il ne peut rien pour une appli native ou un boîtier décodeur."
+				"a": "Tout stream qui se lit dans un onglet de navigateur fonctionne, parce qu'ArenaSwap change et met en sourdine des onglets plutôt que de s'intégrer à un service. Ça couvre Peacock, Paramount+, Prime Video, YouTube TV, Hulu Live, Fubo et les streams gratuits des ligues. Il ne peut rien pour une appli native ou un boîtier décodeur."
 			},
 			{
 				"q": "Comment fonctionne PowerScore ?",

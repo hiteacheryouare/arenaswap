@@ -86,7 +86,7 @@
 		"firefoxAddons": "Firefox Add-ons",
 		"edgeAddons": "Edge Add-ons",
 		"iscLicense": "ISC License",
-		"disclaimer": "ESPN、NFL、NBA、NHL、MLB、MLS、その他この拡張機能が追跡するいかなるリーグとも提携・承認関係にありません。",
+		"disclaimer": "NFL、NBA、NHL、MLB、MLS、その他この拡張機能が追跡するいかなるリーグとも提携・承認関係にありません。",
 		"legalNotices": "法的通知",
 		"madeWith": "{name}がPhiladelphia & Bostonで❤️を込めて制作"
 	},
@@ -198,11 +198,11 @@
 			},
 			{
 				"q": "アカウントやサブスクリプションは必要ですか？",
-				"a": "いいえ。ArenaSwapは無料で、アカウントは不要、何も収集しません。すべてブラウザ内で完結し、ESPNの公開スコアを読み取るだけです。あなたが見ているものは、どこにも送信されません。"
+				"a": "いいえ。ArenaSwapは無料で、アカウントは不要、何も収集しません。すべてブラウザ内で完結し、私たちの情報筋が双眼鏡で見張っている公開スコアを読み取るだけです。あなたが見ているものは、どこにも送信されません。"
 			},
 			{
 				"q": "自分のストリーミングサービスでも使えますか？",
-				"a": "ブラウザタブで再生されるストリームであれば何でも使えます。ArenaSwapはサービスと連携するのではなく、タブの切り替えとミュートを行うためです。ESPN+、Peacock、Paramount+、YouTube TV、Hulu Live、Fubo、各リーグの無料配信をカバーします。ネイティブアプリやセットトップボックスには対応できません。"
+				"a": "ブラウザタブで再生されるストリームであれば何でも使えます。ArenaSwapはサービスと連携するのではなく、タブの切り替えとミュートを行うためです。Peacock、Paramount+、Prime Video、YouTube TV、Hulu Live、Fubo、各リーグの無料配信をカバーします。ネイティブアプリやセットトップボックスには対応できません。"
 			},
 			{
 				"q": "PowerScoreはどのように機能しますか？",

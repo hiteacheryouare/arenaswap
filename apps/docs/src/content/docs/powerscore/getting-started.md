@@ -5,8 +5,8 @@ description: Install the powerscore package and score one live game in a few lin
 section: powerscore
 order: 1
 faq:
-  - q: Does powerscore need an ESPN API key or account?
-    a: No. It only scores the game state you hand it. Fetching that state from ESPN, or anywhere else, is your own code's job.
+  - q: Does powerscore need an API key or account?
+    a: No. It only scores the game state you hand it. Fetching that state, from wherever your scores come from, is your own code's job.
   - q: Does powerscore run in the browser?
     a: Yes. It has no runtime dependencies and touches nothing but plain objects and math. It bundles into a browser extension the same way it runs in Node.
 ---

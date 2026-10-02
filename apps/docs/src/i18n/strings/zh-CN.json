@@ -86,7 +86,7 @@
 		"firefoxAddons": "Firefox Add-ons",
 		"edgeAddons": "Edge Add-ons",
 		"iscLicense": "ISC License",
-		"disclaimer": "本扩展程序与 ESPN、NFL、NBA、NHL、MLB、MLS 及其追踪的任何其他联赛均无隶属或认可关系。",
+		"disclaimer": "本扩展程序与 NFL、NBA、NHL、MLB、MLS 及其追踪的任何其他联赛均无隶属或认可关系。",
 		"legalNotices": "法律声明",
 		"madeWith": "由 {name} 在费城和波士顿用 ❤️ 打造"
 	},
@@ -198,11 +198,11 @@
 			},
 			{
 				"q": "需要账户或订阅吗？",
-				"a": "不需要。ArenaSwap 完全免费，无需账户，也不收集任何信息。它完全在您的浏览器中运行，读取 ESPN 公开的比分数据。您观看的任何内容都不会被发送到任何地方。"
+				"a": "不需要。ArenaSwap 完全免费，无需账户，也不收集任何信息。它完全在您的浏览器中运行，读取我们的消息来源公开的比分数据——他们拿着望远镜盯着每一场比赛。您观看的任何内容都不会被发送到任何地方。"
 			},
 			{
 				"q": "它能配合我使用的流媒体服务吗？",
-				"a": "任何能在浏览器标签页中播放的直播流都可以配合使用，因为 ArenaSwap 是通过切换和静音标签页来工作的，而不是与某个服务进行集成。这涵盖了 ESPN+、Peacock、Paramount+、YouTube TV、Hulu Live、Fubo 以及各联赛的免费直播。但它无法帮助原生应用或机顶盒。"
+				"a": "任何能在浏览器标签页中播放的直播流都可以配合使用，因为 ArenaSwap 是通过切换和静音标签页来工作的，而不是与某个服务进行集成。这涵盖了 Peacock、Paramount+、Prime Video、YouTube TV、Hulu Live、Fubo 以及各联赛的免费直播。但它无法帮助原生应用或机顶盒。"
 			},
 			{
 				"q": "PowerScore 是如何运作的？",

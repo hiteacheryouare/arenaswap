@@ -86,7 +86,7 @@
 		"firefoxAddons": "Firefox Add-ons",
 		"edgeAddons": "Edge Add-ons",
 		"iscLicense": "ISC License",
-		"disclaimer": "Non affiliato con e non sostenuto da ESPN, NFL, NBA, NHL, MLB, MLS o qualsiasi altro campionato monitorato da questa estensione.",
+		"disclaimer": "Non affiliato con e non sostenuto da NFL, NBA, NHL, MLB, MLS o qualsiasi altro campionato monitorato da questa estensione.",
 		"legalNotices": "Note legali",
 		"madeWith": "Fatto con ❤️ a Philadelphia e Boston da {name}"
 	},
@@ -198,11 +198,11 @@
 			},
 			{
 				"q": "Serve un account o un abbonamento?",
-				"a": "No. ArenaSwap è gratis, non ha account e non raccoglie nulla. Funziona interamente nel tuo browser e legge i punteggi pubblici di ESPN. Niente di ciò che guardi viene inviato da nessuna parte."
+				"a": "No. ArenaSwap è gratis, non ha account e non raccoglie nulla. Funziona interamente nel tuo browser e legge i punteggi pubblici dalle nostre fonti, che tengono il binocolo puntato su ogni partita. Niente di ciò che guardi viene inviato da nessuna parte."
 			},
 			{
 				"q": "Funzionerà con il mio servizio di streaming?",
-				"a": "Qualsiasi stream che si riproduce in una scheda del browser funziona, perché ArenaSwap cambia e silenzia schede invece di integrarsi con un servizio. Questo copre ESPN+, Peacock, Paramount+, YouTube TV, Hulu Live, Fubo e gli stream gratuiti dei campionati. Non può aiutare con un'app nativa o un decoder."
+				"a": "Qualsiasi stream che si riproduce in una scheda del browser funziona, perché ArenaSwap cambia e silenzia schede invece di integrarsi con un servizio. Questo copre Peacock, Paramount+, Prime Video, YouTube TV, Hulu Live, Fubo e gli stream gratuiti dei campionati. Non può aiutare con un'app nativa o un decoder."
 			},
 			{
 				"q": "Come funziona PowerScore?",

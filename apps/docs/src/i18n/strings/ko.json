@@ -86,7 +86,7 @@
 		"firefoxAddons": "Firefox Add-ons",
 		"edgeAddons": "Edge Add-ons",
 		"iscLicense": "ISC License",
-		"disclaimer": "ESPN, NFL, NBA, NHL, MLB, MLS, 그리고 이 확장 프로그램이 추적하는 그 어떤 리그와도 제휴하거나 그들의 지지를 받지 않아요.",
+		"disclaimer": "NFL, NBA, NHL, MLB, MLS, 그리고 이 확장 프로그램이 추적하는 그 어떤 리그와도 제휴하거나 그들의 지지를 받지 않아요.",
 		"legalNotices": "법적 고지",
 		"madeWith": "{name}이 Philadelphia & Boston에서 ❤️를 담아 만들었어요"
 	},
@@ -198,11 +198,11 @@
 			},
 			{
 				"q": "계정이나 구독이 필요한가요?",
-				"a": "아니요. ArenaSwap은 무료고, 계정이 필요 없고, 아무것도 수집하지 않아요. 브라우저 안에서만 완전히 작동하고 ESPN의 공개 점수를 읽어올 뿐이에요. 당신이 보는 내용은 어디로도 전송되지 않아요."
+				"a": "아니요. ArenaSwap은 무료고, 계정이 필요 없고, 아무것도 수집하지 않아요. 브라우저 안에서만 완전히 작동하고 모든 경기를 쌍안경으로 지켜보는 저희 소식통의 공개 점수를 읽어올 뿐이에요. 당신이 보는 내용은 어디로도 전송되지 않아요."
 			},
 			{
 				"q": "제 스트리밍 서비스에서도 작동하나요?",
-				"a": "브라우저 탭에서 재생되는 스트림이라면 무엇이든 작동해요. ArenaSwap은 서비스와 연동하는 대신 탭을 전환하고 음소거하기 때문이에요. ESPN+, Peacock, Paramount+, YouTube TV, Hulu Live, Fubo, 그리고 각 리그의 무료 스트림까지 다 지원해요. 네이티브 앱이나 셋톱박스는 도와줄 수 없어요."
+				"a": "브라우저 탭에서 재생되는 스트림이라면 무엇이든 작동해요. ArenaSwap은 서비스와 연동하는 대신 탭을 전환하고 음소거하기 때문이에요. Peacock, Paramount+, Prime Video, YouTube TV, Hulu Live, Fubo, 그리고 각 리그의 무료 스트림까지 다 지원해요. 네이티브 앱이나 셋톱박스는 도와줄 수 없어요."
 			},
 			{
 				"q": "PowerScore는 어떻게 작동하나요?",

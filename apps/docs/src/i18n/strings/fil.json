@@ -86,7 +86,7 @@
 		"firefoxAddons": "Firefox Add-ons",
 		"edgeAddons": "Edge Add-ons",
 		"iscLicense": "ISC License",
-		"disclaimer": "Hindi affiliated sa o sinusuportahan ng ESPN, NFL, NBA, NHL, MLB, MLS, o anumang iba pang liga na tine-track ng extension na ito.",
+		"disclaimer": "Hindi affiliated sa o sinusuportahan ng NFL, NBA, NHL, MLB, MLS, o anumang iba pang liga na tine-track ng extension na ito.",
 		"legalNotices": "Legal Notices",
 		"madeWith": "Ginawa nang may ❤️ sa Philadelphia & Boston ni {name}"
 	},
@@ -198,11 +198,11 @@
 			},
 			{
 				"q": "Kailangan ba ng account o subscription?",
-				"a": "Hindi. Libre ang ArenaSwap, walang account, at walang kinokolekta. Tumatakbo ito nang buo sa browser mo at nagbabasa ng public na score mula sa ESPN. Wala sa pinapanood mo ang ipinapadala kahit saan."
+				"a": "Hindi. Libre ang ArenaSwap, walang account, at walang kinokolekta. Tumatakbo ito nang buo sa browser mo at nagbabasa ng public na score mula sa aming mga source, na laging may binocular sa bawat laro. Wala sa pinapanood mo ang ipinapadala kahit saan."
 			},
 			{
 				"q": "Gagana ba ito sa streaming service ko?",
-				"a": "Anumang stream na tumatakbo sa browser tab ay gagana, dahil ang ArenaSwap ay lumilipat at nagmu-mute ng mga tab sa halip na mag-integrate sa isang service. Kasama dito ang ESPN+, Peacock, Paramount+, YouTube TV, Hulu Live, Fubo, at ang mga libreng stream ng liga. Hindi ito makakatulong sa native app o set-top box."
+				"a": "Anumang stream na tumatakbo sa browser tab ay gagana, dahil ang ArenaSwap ay lumilipat at nagmu-mute ng mga tab sa halip na mag-integrate sa isang service. Kasama dito ang Peacock, Paramount+, Prime Video, YouTube TV, Hulu Live, Fubo, at ang mga libreng stream ng liga. Hindi ito makakatulong sa native app o set-top box."
 			},
 			{
 				"q": "Paano gumagana ang PowerScore?",

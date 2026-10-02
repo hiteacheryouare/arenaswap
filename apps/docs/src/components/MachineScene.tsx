@@ -167,7 +167,7 @@ const GameCard = ({ active, chartElRef, strings }: { active: boolean; chartElRef
 );
 
 const TABS = [
-	{ service: 'ESPN', game: 'Lakers @ Celtics', color: '#d50a0a' },
+	{ service: 'League Pass', game: 'Lakers @ Celtics', color: '#d50a0a' },
 	{ service: 'Peacock', game: 'Eagles @ Cowboys', color: '#7c3aed' },
 	{ service: 'MLB.TV', game: 'Yankees @ Astros', color: '#1e56a0' },
 	{ service: 'Sportsnet', game: 'Rangers @ Panthers', color: '#e5a00d' },
