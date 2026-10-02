@@ -969,7 +969,7 @@
 		"label": "전환 민감도",
 		"valueLabel": "{label} (격차 ≥ {gap})",
 		"explainer": "ArenaSwap이 탭을 전환하기 위해 필요한 PowerScore 격차를 설정해요.",
-		"hyperdriveTitle": "하이퍼드라이브 가동...",
+		"hyperdriveTitle": "하이퍼드라이브 가동…",
 		"level": {
 			"l1": "거의 반응 없음",
 			"l2": "소극적",
