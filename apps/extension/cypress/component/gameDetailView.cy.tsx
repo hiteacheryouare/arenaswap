@@ -545,6 +545,21 @@ describe('gameDetailView sticky bar', () => {
 		cy.get('.gd-bar-compact').should('have.css', 'opacity', '0');
 	});
 
+	// Bootstrap's `:active` and `:focus-visible` rules read these variables. Left undefined, a press
+	// went transparent and a keyboard focus drew no ring at all.
+	it('keeps its fill when pressed and rings itself on keyboard focus', () => {
+		mountDetail(makeLiveGame(), { excitementResult: excitement, powerScoreHistory });
+		cy.get('.game-detail-back-button').then(([button]: JQuery<HTMLElement>) => {
+			const style = getComputedStyle(button);
+			expect(style.getPropertyValue('--as-btn-active-bg').trim(), 'pressed fill').to.equal(style.getPropertyValue('--as-control-hover-bg').trim());
+			expect(style.getPropertyValue('--as-btn-active-border-color').trim(), 'pressed border').to.not.equal('');
+			button.focus();
+		});
+		cy.get('.game-detail-back-button').should(([button]: JQuery<HTMLElement>) => expect(button.matches(':focus-visible')).to.equal(true))
+			.and('have.css', 'outline-style', 'solid')
+			.and('have.css', 'outline-color', 'rgb(247, 92, 3)');
+	});
+
 	it('fades the compact matchup in once the card scrolls away', () => {
 		mountDetail(makeLiveGame(), { excitementResult: excitement, powerScoreHistory });
 		cy.get('.popup-container').scrollTo('bottom');

@@ -1788,19 +1788,29 @@ button.game-info-attribution {
 	border-bottom: 1px solid var(--as-border-color);
 }
 
+// Through Bootstrap's own variables rather than raw `background` and `:hover`. Its `:active` and
+// `:focus-visible` rules read these too, and with them undefined a press drew no fill and a
+// keyboard focus drew no ring.
 .game-detail-back-button {
+	--as-btn-color:               var(--as-body-color);
+	--as-btn-bg:                  var(--as-control-bg);
+	--as-btn-border-color:        var(--as-border-color);
+	--as-btn-hover-color:         var(--as-control-hover-color);
+	--as-btn-hover-bg:            var(--as-control-hover-bg);
+	--as-btn-hover-border-color:  var(--as-border-color);
+	--as-btn-active-color:        var(--as-control-hover-color);
+	--as-btn-active-bg:           var(--as-control-hover-bg);
+	--as-btn-active-border-color: var(--as-border-color);
 	display: inline-flex;
 	align-items: center;
 	flex-shrink: 0;
 	gap: 0.35rem;
-	border: 1px solid var(--as-border-color);
-	color: var(--as-body-color);
-	background: var(--as-control-bg);
 	font-size: 0.68rem;
 
-	&:hover {
-		background: var(--as-control-hover-bg);
-		color: var(--as-control-hover-color);
+	&:focus-visible {
+		outline: 2px solid bs.$primary;
+		outline-offset: 2px;
+		box-shadow: none;
 	}
 }
 
