@@ -79,7 +79,7 @@ body {
 }
 
 // ─── Orange dots ─────────────────────────────────────────────────────────────
-// Brand flourish: every period in body copy is painted ArenaSwap orange. Wrapped
+// Brand flourish: every sentence-ending period in body copy is painted ArenaSwap orange. Wrapped
 // at runtime by OrangeDots.astro, and inside React islands by their own markup.
 .as-dot {
 	color: var(--color-primary);
