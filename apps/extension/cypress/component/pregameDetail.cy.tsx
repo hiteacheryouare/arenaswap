@@ -160,6 +160,20 @@ describe('pre-game detail screen', () => {
 		cy.wrap(toggled).should('deep.equal', ['3']);
 	});
 
+	// The glyph is about 12px across. The list card's star answers 10px off it, and this one matches.
+	it('answers a tap a few pixels off the glyph', () => {
+		const toggled: string[] = [];
+		mountPre(preGame, { onToggleFavoriteTeam: (_league, teamId) => toggled.push(teamId) });
+		cy.get('.gd-poster-team').eq(0).find('.gd-poster-star').then($star => {
+			const box = $star[0]!.getBoundingClientRect();
+			const x = box.right + 4;
+			const y = box.top + (box.height / 2);
+			expect(document.elementFromPoint(x, y)?.closest('.gd-poster-star')).to.equal($star[0]);
+			cy.wrap($star).click(box.width + 4, box.height / 2);
+		});
+		cy.wrap(toggled).should('deep.equal', ['3']);
+	});
+
 	it('offers the tab picker and the boost, and no favourites row', () => {
 		mountPre(preGame);
 		cy.get('.gd-setup .game-card-tab-assign .form-select').should('exist');
