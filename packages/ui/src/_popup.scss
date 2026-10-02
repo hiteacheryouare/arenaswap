@@ -166,12 +166,12 @@
 // `:not(:disabled)` is what keeps it off the website, which renders this same header as a
 // picture of the popup with both buttons disabled. A disabled button still matches `:hover`,
 // and a control that answers the pointer and then does nothing is worse than an inert one.
-.popup-settings-button .bi-gear-fill::before {
+.popup-settings-button .bi-gear::before {
 	transition: transform m.$motion-slow m.$motion-ease;
 }
 
-.popup-settings-button:not(:disabled):hover .bi-gear-fill::before,
-.popup-settings-button:focus-visible .bi-gear-fill::before {
+.popup-settings-button:not(:disabled):hover .bi-gear::before,
+.popup-settings-button:focus-visible .bi-gear::before {
 	transform: rotate(90deg);
 }
 
@@ -223,12 +223,12 @@
 @include m.reduced-motion {
 	.popup-view-shell,
 	.game-card-clickable,
-	.popup-settings-button .bi-gear-fill::before {
+	.popup-settings-button .bi-gear::before {
 		@include m.motion-still;
 	}
 
-	.popup-settings-button:not(:disabled):hover .bi-gear-fill::before,
-	.popup-settings-button:focus-visible .bi-gear-fill::before {
+	.popup-settings-button:not(:disabled):hover .bi-gear::before,
+	.popup-settings-button:focus-visible .bi-gear::before {
 		transform: none;
 	}
 }
