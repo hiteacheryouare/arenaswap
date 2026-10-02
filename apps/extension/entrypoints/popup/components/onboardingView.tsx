@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { i18n } from '#i18n';
 import { fetchTeamsForLeagues } from '@arenaswap/core';
 import type { EspnTeamEntry } from '@arenaswap/core';
@@ -47,18 +47,24 @@ const onboardingView = ({ leagueLogos, onComplete, onStartWalkthrough }: onboard
 		});
 	};
 
+	const rosterRequestRef = useRef(0);
+
+	// The picker opens straight away on its own loading state; a roster for a slate of many leagues
+	// takes seconds behind the request throttle. Only the newest request may land, so a double click,
+	// or a trip back to change leagues, can't overwrite the roster with an older answer.
 	const onNext = async () => {
+		const request = ++rosterRequestRef.current;
+		setStep(3);
 		setTeamsLoading(true);
 		setTeamsError(false);
 		try {
 			const fetched = await fetchTeamsForLeagues([...selectedLeagues]);
-			setTeams(fetched);
+			if (request === rosterRequestRef.current) setTeams(fetched);
 		} catch {
-			setTeamsError(true);
+			if (request === rosterRequestRef.current) setTeamsError(true);
 		} finally {
-			setTeamsLoading(false);
+			if (request === rosterRequestRef.current) setTeamsLoading(false);
 		}
-		setStep(3);
 	};
 
 	const onToggleFavorite = (key: string) => {

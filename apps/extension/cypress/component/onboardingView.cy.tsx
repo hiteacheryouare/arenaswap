@@ -97,6 +97,27 @@ describe('onboardingView', () => {
 		cy.contains('Philadelphia Phillies').should('not.exist');
 	});
 
+	// A slate of many leagues takes seconds to roster, and Next used to sit there doing nothing
+	// visible until every one had answered.
+	it('opens the team picker on its spinner while the rosters load', () => {
+		cy.mount(<OnboardingView {...defaultProps} />);
+		goToLeaguePicker();
+
+		const pending: (() => void)[] = [];
+		const answer = () => pending.forEach(release => release());
+		cy.window().then(win => {
+			cy.stub(win, 'fetch').callsFake(() => new Promise(resolve => {
+				pending.push(() => resolve({ ok: true, json: () => Promise.resolve(teamsPayload(teamsByLeague.nba!)) } as unknown as Response));
+			}));
+		});
+		cy.contains('button', 'Next').click();
+
+		cy.contains('Pick your teams').should('exist');
+		cy.get('.popup-loading-spinner').should('exist').then(() => answer());
+		cy.get('.popup-loading-spinner').should('not.exist');
+		cy.contains('Philadelphia 76ers').should('exist');
+	});
+
 	it('hands the picked leagues and favorites to onComplete', () => {
 		cy.mount(<OnboardingView {...defaultProps} onComplete={cy.spy().as('onComplete')} />);
 
