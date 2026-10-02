@@ -873,7 +873,7 @@ describe('gameDetailView latest play', () => {
 
 	it('gives the play a heading of its own', () => {
 		mountDetail(makeLiveGame({ lastPlay: 'J.Tatum makes 26-foot three point jumper' }), { excitementResult: excitement });
-		cy.get('.gd-play-heading').should('have.text', 'Latest play');
+		cy.get('.gd-play-heading').should('have.text', 'Latest Play');
 		cy.get('.gd-play-text').should('have.text', 'J.Tatum makes 26-foot three point jumper');
 	});
 

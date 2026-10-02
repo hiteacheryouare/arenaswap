@@ -21,7 +21,7 @@ describe('walkthroughView step navigation', () => {
 	it('opens on step 1 — toggle', () => {
 		cy.mount(<WalkthroughView onComplete={() => {}} />);
 		cy.contains('Step 1 of 8').should('exist');
-		cy.contains('Turning it on & off').should('exist');
+		cy.contains('Turning It On & Off').should('exist');
 	});
 
 	it('advances to step 2 when Next is clicked', () => {
@@ -68,7 +68,7 @@ describe('walkthroughView step navigation', () => {
 			cy.get('button.btn-primary').last().click();
 		}
 		cy.contains('Step 3 of 8').should('exist');
-		cy.contains('Assign tabs to games').should('exist');
+		cy.contains('Assign Tabs to Games').should('exist');
 	});
 
 	it('goes back to step 2 from step 3', () => {
@@ -91,7 +91,7 @@ describe('walkthroughView step navigation', () => {
 		}
 		cy.contains('button', 'Next').click(); // 3 -> 4
 		cy.contains('Step 4 of 8').should('exist');
-		cy.contains('Watch it work').should('exist');
+		cy.contains('Watch It Work').should('exist');
 	});
 
 	it('goes back to step 3 from step 4', () => {
@@ -130,7 +130,7 @@ describe('walkthroughView step navigation', () => {
 		cy.tick(2500);
 		cy.get('button.btn-primary').last().click(); // 4 -> 5
 		cy.contains('Step 5 of 8').should('exist');
-		cy.contains('Tune it your way').should('exist');
+		cy.contains('Tune It Your Way').should('exist');
 	});
 
 	it('goes back to step 4 from step 5', () => {
@@ -159,7 +159,7 @@ describe('walkthroughView step navigation', () => {
 		cy.get('button.btn-primary').last().click(); // 4 -> 5
 		cy.contains('button', 'Next').click(); // 5 -> 6
 		cy.contains('Step 6 of 8').should('exist');
-		cy.contains('Dive into any game').should('exist');
+		cy.contains('Dive Into Any Game').should('exist');
 	});
 
 	it('goes back to step 5 from step 6', () => {
@@ -206,7 +206,7 @@ describe('walkthroughView step navigation', () => {
 		cy.contains('button', 'Next').click(); // 5 -> 6
 		cy.contains('button', 'Next').click(); // 6 -> 7
 		cy.contains('Step 7 of 8').should('exist');
-		cy.contains('Leagues & favorites').should('exist');
+		cy.contains('Leagues & Favorites').should('exist');
 	});
 
 	it('step 7 tab switcher shows leagues and favorites content', () => {
@@ -241,7 +241,7 @@ describe('walkthroughView step navigation', () => {
 		cy.contains('button', 'Next').click(); // 6 -> 7
 		cy.contains('button', 'Next').click(); // 7 -> 8
 		cy.contains('Step 8 of 8').should('exist');
-		cy.contains('Coming back here').should('exist');
+		cy.contains('Coming Back Here').should('exist');
 	});
 
 	// Onboarding has just said "You're all set", so the tour finishes on its own last step.

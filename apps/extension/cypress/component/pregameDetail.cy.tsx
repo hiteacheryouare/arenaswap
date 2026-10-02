@@ -189,12 +189,12 @@ describe('pre-game detail screen', () => {
 
 	it('names what the countdown is counting down to, per sport', () => {
 		const cases: [SportType, string][] = [
-			['basketball', 'tip-off'],
-			['football', 'kickoff'],
-			['soccer', 'kickoff'],
-			['hockey', 'puck drop'],
-			['baseball', 'first pitch'],
-			['softball', 'first pitch'],
+			['basketball', 'Tip-Off'],
+			['football', 'Kickoff'],
+			['soccer', 'Kickoff'],
+			['hockey', 'Puck Drop'],
+			['baseball', 'First Pitch'],
+			['softball', 'First Pitch'],
 		];
 		for (const [sportType, phrase] of cases) {
 			mountPre({ ...preGame, sportType });
@@ -202,9 +202,9 @@ describe('pre-game detail screen', () => {
 		}
 	});
 
-	it('falls back to gametime for a sport with no word of its own', () => {
+	it('falls back to game time for a sport with no word of its own', () => {
 		mountPre({ ...preGame, sportType: undefined as unknown as SportType });
-		cy.get('.gd-setup-heading').should('contain.text', 'gametime');
+		cy.get('.gd-setup-heading').should('contain.text', 'Game Time');
 	});
 
 	// A postponement is the one thing with something to say before the start time.
@@ -380,7 +380,7 @@ describe('pre-game detail screen', () => {
 
 		it('shows a goalie with a status and no stat line', () => {
 			mountPre(goalies);
-			cy.contains('.gd-setup-heading', 'Probable goalies').should('exist');
+			cy.contains('.gd-setup-heading', 'Probable Goalies').should('exist');
 			cy.get('.gd-pregame-starter-line').should('not.exist');
 			cy.get('.gd-pregame-stat').should('not.exist');
 			cy.get('.gd-pregame-starter-status').eq(0).should('have.text', 'Expected');
@@ -506,7 +506,7 @@ describe('pre-game detail screen', () => {
 
 		it('renders one row per team per category, grouped under the category', () => {
 			mountPre(pitchers);
-			cy.contains('.gd-setup-heading', 'Team leaders').should('exist');
+			cy.contains('.gd-setup-heading', 'Team Leaders').should('exist');
 			cy.get('.gd-pregame-category').should('have.length', 2);
 			cy.get('.gd-pregame-category').eq(0).should('have.text', 'HR');
 			cy.get('.gd-pregame-leader-row').should('have.length', 4);

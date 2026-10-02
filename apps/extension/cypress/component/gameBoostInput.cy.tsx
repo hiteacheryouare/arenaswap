@@ -3,7 +3,7 @@ import GameBoostInput from '../../entrypoints/popup/components/gameBoostInput';
 describe('GameBoostInput', () => {
 	it('renders the heading and input', () => {
 		cy.mount(<GameBoostInput gameId='g1' currentBoost={0} onSetGameBoost={() => {}} />);
-		cy.contains('Game boost').should('exist');
+		cy.contains('Game Boost').should('exist');
 		cy.get('input[type="number"]').should('exist');
 	});
 

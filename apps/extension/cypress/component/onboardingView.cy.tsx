@@ -47,7 +47,7 @@ const goToTeamPicker = () => {
 	cy.contains('button', 'Next').click();
 	// Proves the teams came from the stub rather than a live ESPN call.
 	cy.get('@teamsFetch').should('have.been.called');
-	cy.contains('Pick your teams').should('exist');
+	cy.contains('Pick Your Teams').should('exist');
 };
 
 describe('onboardingView', () => {
@@ -112,7 +112,7 @@ describe('onboardingView', () => {
 		});
 		cy.contains('button', 'Next').click();
 
-		cy.contains('Pick your teams').should('exist');
+		cy.contains('Pick Your Teams').should('exist');
 		cy.get('.popup-loading-spinner').should('exist').then(() => answer());
 		cy.get('.popup-loading-spinner').should('not.exist');
 		cy.contains('Philadelphia 76ers').should('exist');

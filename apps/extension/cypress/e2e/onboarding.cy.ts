@@ -8,7 +8,7 @@ describe('onboarding', () => {
 	it('opens on the tab-control step', () => {
 		cy.contains('Step 1 of 3').should('be.visible');
 		cy.contains('Welcome to ArenaSwap').should('be.visible');
-		cy.contains('Automatic tab switching').should('be.visible');
+		cy.contains('Automatic Tab Switching').should('be.visible');
 	});
 
 	it('walks all three steps and lands on the games list', () => {
@@ -21,7 +21,7 @@ describe('onboarding', () => {
 
 		cy.wait('@espnTeams');
 		cy.contains('Step 3 of 3').should('be.visible');
-		cy.contains('Pick your teams').should('be.visible');
+		cy.contains('Pick Your Teams').should('be.visible');
 		cy.get('[aria-label="Add Philadelphia 76ers to favorites"]').click();
 		cy.contains('button', 'Done').click();
 

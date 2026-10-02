@@ -441,10 +441,10 @@
 			"placeholder": "— Assign a tab —"
 		},
 		"detail": {
-			"chartPowerScoreTitle": "PowerScore over time",
-			"chartScoreTitle": "Game score over time",
-			"chartWinProbTitle": "Win probability",
-			"chartComponentsTitle": "PowerScore components over time"
+			"chartPowerScoreTitle": "PowerScore Over Time",
+			"chartScoreTitle": "Game Score Over Time",
+			"chartWinProbTitle": "Win Probability",
+			"chartComponentsTitle": "PowerScore Components Over Time"
 		},
 		"setup": {
 			"groupSwitching": "Switching",
@@ -457,7 +457,7 @@
 			"groupDisplayDesc": "What shows up on the main screen.",
 			"groupStandby": "Standby Stream",
 			"groupStandbyDesc": "Where to park you when every game goes quiet.",
-			"groupDemo": "Demo mode",
+			"groupDemo": "Demo Mode",
 			"groupDemoDesc": "Scripted games, so you can watch a switch happen on demand.",
 			"switchNotifications": "Switch notifications"
 		},

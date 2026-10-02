@@ -54,7 +54,7 @@ describe('onboardingTeamPicker', () => {
 	it('renders the teams grouped by league', () => {
 		cy.mount(<OnboardingTeamPicker {...defaultProps} />);
 
-		cy.contains('Pick your teams').should('exist');
+		cy.contains('Pick Your Teams').should('exist');
 		cy.contains('Step 3 of 3').should('exist');
 		cy.get('.popup-section-label').should('have.length', 2);
 		cy.get('.popup-section-label').first().should('have.text', 'NBA');
