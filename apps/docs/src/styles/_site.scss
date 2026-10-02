@@ -415,6 +415,18 @@ body.nav-open {
 }
 
 .btn-cta {
+	// Bootstrap's :active and :focus-visible rules outrank this class and read their colours from
+	// these variables, so leaving them unset turned a pressed button transparent and ringless.
+	--as-btn-color: #fff;
+	--as-btn-bg: var(--color-primary);
+	--as-btn-border-color: transparent;
+	--as-btn-hover-color: #fff;
+	--as-btn-hover-bg: #ff6a1a;
+	--as-btn-hover-border-color: transparent;
+	--as-btn-active-color: #fff;
+	--as-btn-active-bg: #e05200;
+	--as-btn-active-border-color: transparent;
+	--as-btn-focus-shadow-rgb: 247, 92, 3;
 	background: var(--color-primary);
 	color: #fff;
 	border: none;
@@ -439,6 +451,16 @@ body.nav-open {
 }
 
 .btn-outline-secondary-custom {
+	--as-btn-color: var(--color-text);
+	--as-btn-bg: transparent;
+	--as-btn-border-color: var(--color-border);
+	--as-btn-hover-color: var(--color-text);
+	--as-btn-hover-bg: transparent;
+	--as-btn-hover-border-color: var(--color-text);
+	--as-btn-active-color: var(--color-text);
+	--as-btn-active-bg: rgba(230, 237, 243, 0.06);
+	--as-btn-active-border-color: var(--color-text);
+	--as-btn-focus-shadow-rgb: 230, 237, 243;
 	background: transparent;
 	color: var(--color-text);
 	border: 1px solid var(--color-border);
