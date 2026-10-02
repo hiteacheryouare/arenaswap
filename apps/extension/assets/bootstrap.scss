@@ -1651,6 +1651,14 @@
 	border-top:  1px solid var(--as-border-color);
 }
 
+// Opening a tab pane, either section sits right under the strip's own rule, and its top rule drew a
+// second hairline a few pixels below it. The strip's rule does the job there, at the same distance
+// above the heading a section rule keeps everywhere else.
+.tab-pane > :is(.gd-play-panel, .game-info-panel):first-child {
+	margin-top: 0;
+	border-top: 0;
+}
+
 .game-info-heading {
 	font-size:     0.62rem;
 	font-weight:   700;

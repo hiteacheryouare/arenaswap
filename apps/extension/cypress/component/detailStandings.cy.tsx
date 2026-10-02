@@ -157,6 +157,15 @@ describe('detail screen tab strip', () => {
 		cy.get('.tab-pane.active .powerscore-breakdown').should('have.attr', 'data-probe', 'kept');
 	});
 
+	// A finished game opens its overview on the info panel, whose top rule used to draw a second
+	// hairline just under the strip's own.
+	it('draws one rule between the strip and the first section, not two', () => {
+		mount({ ...football, status: 'post' });
+		cy.get('.gd-tabs .nav-link').should('have.length.at.least', 2);
+		cy.get('.tab-pane.active > :first-child').should('have.class', 'game-info-panel')
+			.and('have.css', 'border-top-width', '0px');
+	});
+
 	it('labels the shown pane with the tab that opened it', () => {
 		mount(football);
 		cy.get(`#gd-tab-${football.id}-standings`).click();
