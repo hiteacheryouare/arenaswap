@@ -52,7 +52,6 @@ const onboardingTeamPicker = ({
 				selectedFavorites={selectedFavorites}
 				onToggleFavorite={team => onToggleFavorite(createFavoriteTeamKey(team.leagueId, team.id))}
 				onRetry={onRetry}
-				onSkip={onSkip}
 			/>
 
 			<div className='d-flex align-items-center justify-content-between mt-3 pt-2 border-top'>

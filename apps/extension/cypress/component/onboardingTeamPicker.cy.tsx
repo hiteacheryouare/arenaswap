@@ -98,7 +98,8 @@ describe('onboardingTeamPicker', () => {
 		cy.contains('Loading teams').should('exist');
 	});
 
-	it('offers a retry and a skip when the fetch failed', () => {
+	// The footer's Skip is always there, so the error offers Retry alone rather than a second skip.
+	it('offers a retry and one skip when the fetch failed', () => {
 		cy.mount(
 			<OnboardingTeamPicker
 				{...defaultProps}
@@ -113,7 +114,8 @@ describe('onboardingTeamPicker', () => {
 		cy.contains('button', 'Retry').click();
 		cy.get('@onRetry').should('have.been.calledOnce');
 
-		cy.contains('button', 'Skip for now').click();
+		cy.contains('button', 'Skip for now').should('not.exist');
+		cy.get('button').filter(':contains("Skip")').should('have.length', 1).click();
 		cy.get('@onSkip').should('have.been.calledOnce');
 	});
 

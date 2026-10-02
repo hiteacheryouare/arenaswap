@@ -678,7 +678,6 @@
 		"loading": "팀 불러오는 중…",
 		"loadError": "팀을 불러오지 못했어요.",
 		"retry": "재시도",
-		"skipForNow": "나중에 하기",
 		"removeFavorite": "{team} 응원팀에서 해제",
 		"addFavorite": "{team} 응원팀으로 등록",
 		"noMatch": "\"{query}\"와 일치하는 팀이 없어요",

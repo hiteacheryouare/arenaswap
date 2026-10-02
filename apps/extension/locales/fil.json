@@ -678,7 +678,6 @@
 		"loading": "Nilo-load ang mga team…",
 		"loadError": "Hindi na-load ang mga team.",
 		"retry": "Ulitin",
-		"skipForNow": "Laktawan Muna",
 		"removeFavorite": "Alisin ang {team} sa paborito",
 		"addFavorite": "Idagdag ang {team} sa paborito",
 		"noMatch": "Walang team na tumutugma sa \"{query}\"",

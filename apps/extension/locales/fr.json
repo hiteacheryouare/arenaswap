@@ -678,7 +678,6 @@
 		"loading": "Chargement des équipes…",
 		"loadError": "Impossible de charger les équipes.",
 		"retry": "Réessayer",
-		"skipForNow": "Passer pour l'instant",
 		"removeFavorite": "Retirer {team} des favoris",
 		"addFavorite": "Ajouter {team} aux favoris",
 		"noMatch": "Aucune équipe ne correspond à \"{query}\"",

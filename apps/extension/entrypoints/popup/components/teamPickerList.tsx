@@ -18,8 +18,6 @@ interface teamPickerListProps {
 	selectedFavorites: ReadonlySet<string>;
 	onToggleFavorite: (team: EspnTeamEntry) => void;
 	onRetry: () => void;
-	// Onboarding can walk away from a failed load; settings has nowhere to walk to.
-	onSkip?: () => void;
 	// Scrolls away with the list. The search box is what has to stay put.
 	leading?: ReactNode;
 	// Sits above the league groups. Callers drop it while a search is running rather than filtering
@@ -30,7 +28,7 @@ interface teamPickerListProps {
 // A fragment rather than a wrapper, so the search box and the scrolling list stay siblings of
 // whatever chrome the caller puts around them — onboarding pins its footer against that column.
 const teamPickerList = ({
-	teams, query, onQueryChange, isLoading, hasError, selectedFavorites, onToggleFavorite, onRetry, onSkip, leading, pinned,
+	teams, query, onQueryChange, isLoading, hasError, selectedFavorites, onToggleFavorite, onRetry, leading, pinned,
 }: teamPickerListProps) => {
 	const filteredTeams = teams.filter(team => matchesTeamQuery(team, query));
 	// Our sources list a league's teams in their own order, which reads as no order at all.
@@ -75,10 +73,7 @@ const teamPickerList = ({
 				{hasError && !isLoading && (
 					<div className='text-center mt-3'>
 						<div className='small text-danger mb-2'>{i18n.t('teamPicker.loadError')}</div>
-						<div className='d-flex justify-content-center gap-2'>
-							<button type='button' className='btn btn-sm btn-outline-secondary' onClick={onRetry}>{i18n.t('teamPicker.retry')}</button>
-							{onSkip && <button type='button' className='btn btn-sm btn-link p-0 text-body-secondary' onClick={onSkip}>{i18n.t('teamPicker.skipForNow')}</button>}
-						</div>
+						<button type='button' className='btn btn-sm btn-outline-secondary' onClick={onRetry}>{i18n.t('teamPicker.retry')}</button>
 					</div>
 				)}
 

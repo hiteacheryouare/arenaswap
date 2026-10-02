@@ -678,7 +678,6 @@
 		"loading": "Teams werden geladen…",
 		"loadError": "Teams konnten nicht geladen werden.",
 		"retry": "Erneut versuchen",
-		"skipForNow": "Vorerst überspringen",
 		"removeFavorite": "{team} aus Favoriten entfernen",
 		"addFavorite": "{team} zu Favoriten hinzufügen",
 		"noMatch": "Keine Teams passen zu \"{query}\"",

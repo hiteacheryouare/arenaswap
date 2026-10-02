@@ -678,7 +678,6 @@
 		"loading": "加载球队中……",
 		"loadError": "球队加载失败。",
 		"retry": "重试",
-		"skipForNow": "暂时跳过",
 		"removeFavorite": "从收藏中移除 {team}",
 		"addFavorite": "将 {team} 加入收藏",
 		"noMatch": "没有与「{query}」匹配的球队",

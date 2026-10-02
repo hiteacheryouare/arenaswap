@@ -678,7 +678,6 @@
 		"loading": "チームを読み込み中…",
 		"loadError": "チームを読み込めませんでした。",
 		"retry": "再試行",
-		"skipForNow": "今はスキップ",
 		"removeFavorite": "{team}をお気に入りから削除",
 		"addFavorite": "{team}をお気に入りに追加",
 		"noMatch": "「{query}」に一致するチームはありません",

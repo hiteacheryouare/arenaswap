@@ -678,7 +678,6 @@
 		"loading": "載入球隊中……",
 		"loadError": "球隊載入失敗。",
 		"retry": "重試",
-		"skipForNow": "暫時跳過",
 		"removeFavorite": "將 {team} 從收藏移除",
 		"addFavorite": "將 {team} 加入收藏",
 		"noMatch": "沒有與「{query}」相符的球隊",

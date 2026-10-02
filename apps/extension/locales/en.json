@@ -678,7 +678,6 @@
 		"loading": "Loading teams…",
 		"loadError": "Couldn't load teams.",
 		"retry": "Retry",
-		"skipForNow": "Skip for now",
 		"removeFavorite": "Remove {team} from favorites",
 		"addFavorite": "Add {team} to favorites",
 		"noMatch": "No teams match \"{query}\"",
