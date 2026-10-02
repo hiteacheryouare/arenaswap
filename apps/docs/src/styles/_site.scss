@@ -111,25 +111,14 @@ body {
 	}
 }
 
-// ─── Live pulse dot ──────────────────────────────────────────────────────────
-@keyframes pulse-live {
-	0%, 100% { opacity: 1; transform: scale(1); }
-	50%       { opacity: 0.4; transform: scale(0.85); }
-}
-
+// ─── Live dot ────────────────────────────────────────────────────────────────
+// Static, like the one on the popup's cards: the LIVE beside it already says the game is on.
 .live-dot {
 	display: inline-block;
 	width: 7px;
 	height: 7px;
 	border-radius: 50%;
 	background: #e53935;
-	animation: pulse-live m.$motion-pulse m.$motion-ease-in-out infinite;
-}
-
-@include m.reduced-motion {
-	.live-dot {
-		animation: none;
-	}
 }
 
 // ─── Skip link ────────────────────────────────────────────────────────────────
