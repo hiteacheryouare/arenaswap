@@ -34,6 +34,11 @@
 	width: 100%;
 	height: 100%;
 	animation: popupViewSlideIn m.$motion-base m.$motion-ease;
+
+	// The view the popup opens on is where it starts, not somewhere it went, so it arrives in place.
+	&.is-opening-view {
+		animation: none;
+	}
 }
 
 .popup-section-title {
