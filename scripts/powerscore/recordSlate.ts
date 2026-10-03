@@ -2,7 +2,8 @@
 // re-score them with any version of core and the engine.
 //
 // Run: npm run powerscore:record -- [leagueId ...]   (no leagues = every league)
-// Output: scripts/powerscore/recordings/<YYYY-MM-DD>/<HH>.jsonl.gz, one hour per file.
+// Output: scripts/powerscore/recordings/<YYYY-MM-DD>/<HH>-<process start>.jsonl.gz, one hour per
+// file and a new file per run, so a restart never appends to a file a killed run left unfinished.
 import { createWriteStream, mkdirSync, type WriteStream } from 'node:fs';
 import { join } from 'node:path';
 import { constants as zlibConstants, createGzip, type Gzip } from 'node:zlib';
@@ -22,6 +23,8 @@ const summaryEveryMs = 60_000;
 const standingsEveryMs = 30 * 60_000;
 const flushEveryMs = 30_000;
 const maxConcurrentRequests = 6;
+const requestTimeoutMs = 10_000;
+const startedAt = Date.now();
 
 const situationSports = new Set(['hockey', 'basketball']);
 const standingsLeagues = new Set<LeagueId>(['nba', 'wnba', 'nhl', 'mlb', 'nfl', 'mls', 'epl', 'laliga', 'bundesliga', 'seriea', 'ligamx', 'nwsl']);
@@ -44,7 +47,7 @@ const withSlot = async <T>(run: () => Promise<T>): Promise<T> => {
 };
 
 const getJson = (url: string): Promise<unknown> => withSlot(async () => {
-	const res = await fetch(url, { headers: { Accept: 'application/json' } });
+	const res = await fetch(url, { headers: { Accept: 'application/json' }, signal: AbortSignal.timeout(requestTimeoutMs) });
 	if (!res.ok) throw new Error(`HTTP ${res.status} for ${url}`);
 	return await res.json();
 });
@@ -77,15 +80,17 @@ const closeFile = () => new Promise<void>(resolve => {
 	fileStream = null;
 });
 
-const write = async (line: Record<string, unknown>): Promise<void> => {
+// Rotates without awaiting anything, so a write that arrives mid-rotation can't open a second
+// stream on the same file.
+const write = (line: Record<string, unknown>): void => {
 	const { day, hour } = easternParts(new Date());
 	const fileKey = `${day}/${hour}`;
 	if (fileKey !== currentFileKey) {
-		await closeFile();
+		gzip?.end();
 		currentFileKey = fileKey;
 		mkdirSync(join(recordingsDir, day), { recursive: true });
 		gzip = createGzip();
-		fileStream = createWriteStream(join(recordingsDir, day, `${hour}.jsonl.gz`), { flags: 'a' });
+		fileStream = createWriteStream(join(recordingsDir, day, `${hour}-${startedAt}.jsonl.gz`), { flags: 'wx' });
 		gzip.pipe(fileStream);
 		gzip.write(`${JSON.stringify({ t: 'meta', v: 1, ts: Date.now(), leagues, gitSha })}\n`);
 	}
@@ -131,7 +136,7 @@ const recordSummary = async (league: LeagueId, eventId: string): Promise<void> =
 	const config = leagueConfigMap[league]!;
 	const raw = await getJson(`${siteBase}/${config.espnPath}/summary?event=${encodeURIComponent(eventId)}`) as Record<string, unknown>;
 	const { winprobability, pickcenter, boxscore, predictor, header } = raw;
-	await write({ t: 'summary', ts: Date.now(), league, gameId: eventId, raw: { winprobability, pickcenter, boxscore, predictor, header } });
+	write({ t: 'summary', ts: Date.now(), league, gameId: eventId, raw: { winprobability, pickcenter, boxscore, predictor, header } });
 	stats.summaries++;
 };
 
@@ -141,14 +146,14 @@ const recordSituation = async (league: LeagueId, event: RawEvent): Promise<void>
 	const [sport, leaguePath] = config.espnPath.split('/');
 	const url = `${coreBase}/${sport}/leagues/${leaguePath}/events/${event.id}/competitions/${competitionId}/situation`;
 	const raw = await getJson(url);
-	await write({ t: 'situation', ts: Date.now(), league, gameId: event.id, raw });
+	write({ t: 'situation', ts: Date.now(), league, gameId: event.id, raw });
 	stats.situations++;
 };
 
 const recordStandings = async (league: LeagueId): Promise<void> => {
 	const config = leagueConfigMap[league]!;
 	const raw = await getJson(`${standingsBase}/${config.espnPath}/standings?level=3`);
-	await write({ t: 'standings', ts: Date.now(), league, raw });
+	write({ t: 'standings', ts: Date.now(), league, raw });
 	stats.standings++;
 };
 
@@ -179,6 +184,9 @@ const pollLeague = async (league: LeagueId): Promise<boolean> => {
 		if (state === 'post') {
 			if (finalsWritten.has(id) || !lastWritten.has(id)) continue;
 			finalsWritten.add(id);
+			lastWritten.delete(id);
+			events.push(event);
+			continue;
 		}
 		if (state === 'in') live.push(event);
 		const serialized = JSON.stringify(event);
@@ -192,7 +200,7 @@ const pollLeague = async (league: LeagueId): Promise<boolean> => {
 
 	stats.polls++;
 	stats.liveEvents += live.length;
-	if (events.length > 0 || unchanged.length > 0) await write({ t: 'scoreboard', ts: now, league, events, unchanged });
+	if (events.length > 0 || unchanged.length > 0) write({ t: 'scoreboard', ts: now, league, events, unchanged });
 
 	const extras: Promise<unknown>[] = [];
 	for (const event of live) {
@@ -214,8 +222,9 @@ const sleep = (ms: number) => new Promise<void>(resolve => setTimeout(resolve, m
 
 const runLeague = async (league: LeagueId, startDelayMs: number): Promise<void> => {
 	await sleep(startDelayMs);
+	// A failed poll keeps the cadence it had, so one bad response can't leave a hole in a live game.
+	let hasLive = false;
 	for (;;) {
-		let hasLive = false;
 		try {
 			hasLive = await pollLeague(league);
 		} catch (error) {

@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The slate recorder survives a busy hour and a restart — 2026-10-03
+
+The recorder now rotates its hourly file without awaiting, so writes that land mid-rotation can no longer open a second stream on the same file, and each run writes its own files rather than appending to one a killed run left without a gzip trailer. A failed poll keeps the live cadence instead of dropping to the five-minute idle one, and every request gives up after ten seconds.
+
 ## Recorded slates replay through 2.2.0 and PowerScore 3 side by side — 2026-10-03
 
 `npm run powerscore:replay` plays a recording through the frozen 2.2.0 pipeline and the working tree's engine, simulates a viewer switching tabs with each, and scores them against labelled flip-to moments in `scripts/powerscore/fixtures/labels/`; `--diff` lists where they disagree on the top game and `--timeline` writes a minute-by-minute slate to label from. It drives the same core helpers background.ts does, so on the first recorded night v2 and v3 Classic agreed on all 591 polls.
