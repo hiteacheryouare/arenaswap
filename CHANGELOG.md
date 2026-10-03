@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Pre-game screens get a Matchup tab and a ticket link — 2026-10-02
+
+Before a game starts, a Matchup tab shows each team's last five results, how they compare on a few season stats, and who is out or questionable, with basketball and hockey adding rest days, all from the summary request the screen already made, and it disappears once the game starts. Game Info also gets a "Want to go in person?" link to the seller page for that game, and our sources' referral tag is stripped off so the link carries no affiliate code.
+
 ## Best time to watch follows the crowd — 2026-10-02
 
 The guide's Best time to watch band now goes mostly by how many games are on at once, since that's when ArenaSwap is most useful, instead of by how late in their games they are. Late game counts for a quarter of each game's weight, enough to pick the end of a stretch where the same games run all afternoon but never enough to beat a moment with more games on.

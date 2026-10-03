@@ -105,9 +105,10 @@ describe('detail screen tab strip', () => {
 
 	it('offers a table but no box score before a start', () => {
 		mount(preGame);
-		cy.get('.gd-tabs .nav-link').then($tabs => {
+		// `should`, not `then`: the Matchup fixture arrives on a dynamic import, a beat after the table.
+		cy.get('.gd-tabs .nav-link').should($tabs => {
 			expect([...$tabs].map(tab => tab.textContent?.trim()))
-				.to.deep.equal([en.detail.tabOverview, en.detail.tabStandings]);
+				.to.deep.equal([en.detail.tabOverview, en.detail.tabMatchup, en.detail.tabStandings]);
 		});
 	});
 

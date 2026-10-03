@@ -17,6 +17,8 @@ import HolidayDrift from './holidayDrift';
 import HolidayFall from './holidayFall';
 import HolidayLights from './holidayLights';
 import LatestPlayPanel from './latestPlayPanel';
+import MatchupPanel from './matchupPanel';
+import { hasMatchupContent } from './matchupParse';
 import PowerScoreBreakdown from './powerScoreBreakdown';
 import PregameSetup from './pregameSetup';
 import PregameStats from './pregameStats';
@@ -183,7 +185,7 @@ const gameDetailView = ({
 	const componentOption = useMemo(() => (
 		buildComponentContributionOption(orderedPowerScoreHistory, chartPalette, componentSignalLabels, locale)
 	), [orderedPowerScoreHistory, chartPalette, locale]);
-	const { winProbability, seriesInfo, records, monoLogos, boxScore, standings, gameDurationMins } = useSummaryData(game);
+	const { winProbability, seriesInfo, records, monoLogos, boxScore, standings, gameDurationMins, matchup, tickets } = useSummaryData(game);
 	const winProbabilityOption = useMemo(() => (
 		buildWinProbabilityOption(winProbability, game, chartPalette, [awayLineColor, homeLineColor])
 	), [winProbability, game, chartPalette, awayLineColor, homeLineColor]);
@@ -267,7 +269,7 @@ const gameDetailView = ({
 					tabAssignEnabled={tabAssignEnabled}
 				/>
 				<PregameStats game={game} />
-				<GameInfoPanel game={game} bettingPrefs={bettingPrefs} weatherPrefs={weatherPrefs} />
+				<GameInfoPanel game={game} bettingPrefs={bettingPrefs} weatherPrefs={weatherPrefs} tickets={tickets} />
 			</>
 		) : (
 			<>
@@ -328,6 +330,9 @@ const gameDetailView = ({
 	// after the screen opens — and stays absent for the leagues that never fill either one.
 	const tabs: DetailTab[] = [
 		{ id: 'overview', label: i18n.t('detail.tabOverview') },
+		...(isPreGame && hasMatchupContent(matchup)
+			? [{ id: 'matchup' as const, label: i18n.t('detail.tabMatchup') }]
+			: []),
 		...(!isPreGame && hasBoxScoreContent(game.sportType, boxScore)
 			? [{ id: 'box' as const, label: i18n.t('box.heading') }]
 			: []),
@@ -343,7 +348,8 @@ const gameDetailView = ({
 	const paneFor = (id: DetailTabId) => (
 		id === 'standings' ? <StandingsTable game={game} standings={standings} />
 			: id === 'box' ? <BoxScore game={game} boxScore={boxScore} />
-				: overviewPanel
+				: id === 'matchup' ? <MatchupPanel game={game} matchup={matchup} />
+					: overviewPanel
 	);
 
 	return (

@@ -786,7 +786,7 @@ describe('gameDetailView sticky bar before a start', () => {
 			// absolutely positioned at a fixed max-width: its box does not depend on its content or
 			// on anything beside it, so a locale that clips here clips exactly the same way mounted.
 			// The string itself comes from the real formatter reading the real locale file.
-			const t = (key: string) => (locale.detail as Record<string, string>)[key.split('.')[1]];
+			const t = (key: string) => (locale.detail as unknown as Record<string, string>)[key.split('.')[1]];
 			Object.entries(shapes).forEach(([shape, offset]) => {
 				cy.get('.gd-bar-status').should(([el]: JQuery<HTMLElement>) => {
 					el.textContent = formatCompactCountdown(countdownParts(target + offset, target), t);

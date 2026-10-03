@@ -1408,6 +1408,209 @@
 	white-space: nowrap;
 }
 
+// ── Matchup ──────────────────────────────────────────────────────────────────
+// Recent form, the season stats side by side, and the injury report, in the same light card the
+// starters and leaders sit on.
+
+.gd-form {
+	padding: 0.14rem 0 0.2rem;
+}
+
+// The team column is wide enough for "Back-to-back" under a three-letter abbreviation, so both
+// rows start their five results on the same edge.
+.gd-form-row {
+	display:               grid;
+	grid-template-columns: 3.4rem 1fr;
+	align-items:           center;
+	column-gap:            0.3rem;
+
+	& + & { margin-top: 0.22rem; }
+}
+
+.gd-form-team {
+	display:        flex;
+	flex-direction: column;
+	min-width:      0;
+	line-height:    1.2;
+}
+
+.gd-form-abbreviation {
+	font-size:      0.62rem;
+	font-weight:    700;
+	letter-spacing: 0.02em;
+}
+
+.gd-form-rest {
+	font-size: 0.5rem;
+	color:     #6b7280;
+}
+
+.gd-form-results {
+	display:               grid;
+	grid-template-columns: repeat(5, 1fr);
+	column-gap:            0.14rem;
+}
+
+// The quiet weight is the loss. A win reads in full ink and a draw sits between them, so the row
+// scans as a run of results without a colour having to say which.
+.gd-form-cell {
+	display:        flex;
+	flex-direction: column;
+	align-items:    center;
+	gap:            0.04rem;
+	padding:        0.12rem 0 0.1rem;
+	line-height:    1.1;
+	color:          #6b7280;
+
+	&[data-result='W'] { color: #111827; }
+	&[data-result='D'],
+	&[data-result='T'] { color: #4b5563; }
+}
+
+.gd-form-crest {
+	width:  14px;
+	height: 14px;
+}
+
+.gd-form-letter {
+	font-size:   0.62rem;
+	font-weight: 700;
+}
+
+.gd-form-score {
+	font-size:            0.52rem;
+	font-variant-numeric: tabular-nums;
+	white-space:          nowrap;
+}
+
+// The two abbreviations sit over the columns they head, which is the whole legend the bars need.
+.gd-compare-heading {
+	display:         flex;
+	justify-content: space-between;
+}
+
+.gd-compare {
+	padding: 0.06rem 0 0.2rem;
+}
+
+// Value, label, value, and the bar on a line of its own under all three.
+.gd-compare-row {
+	display:               grid;
+	grid-template-columns: 1fr auto 1fr;
+	align-items:           baseline;
+	column-gap:            0.3rem;
+	padding:               0.14rem 0;
+
+	& + & { border-top: 1px solid #e5e7eb; }
+}
+
+.gd-compare-value {
+	display:              flex;
+	align-items:          baseline;
+	gap:                  0.2rem;
+	font-size:            0.64rem;
+	color:                #4b5563;
+	font-variant-numeric: tabular-nums;
+
+	&[data-better='true'] {
+		font-weight: 700;
+		color:       #111827;
+	}
+}
+
+// The home value is the row's third child. Its rank goes on the inside too, so both ranks sit
+// against the label.
+.gd-compare-row > .gd-compare-value:nth-child(3) {
+	justify-content: flex-end;
+
+	.gd-compare-rank { order: -1; }
+}
+
+.gd-compare-rank {
+	font-size:   0.5rem;
+	font-weight: 600;
+	color:       #6b7280;
+}
+
+.gd-compare-label {
+	font-size:      0.54rem;
+	font-weight:    600;
+	color:          #6b7280;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	text-align:     center;
+}
+
+.gd-compare-bar {
+	grid-column:   1 / -1;
+	display:       flex;
+	gap:           2px;
+	height:        3px;
+	margin-top:    0.14rem;
+	border-radius: 2px;
+	overflow:      hidden;
+}
+
+.gd-injuries {
+	padding-bottom: 0.14rem;
+}
+
+.gd-injury-team + .gd-injury-team { margin-top: 0.2rem; }
+
+.gd-injury-row {
+	display:               grid;
+	grid-template-columns: 20px 1fr auto;
+	align-items:           center;
+	column-gap:            0.3rem;
+	padding:               0.11rem 0.24rem 0.11rem 0.14rem;
+	border-radius:         0.2rem;
+
+	& + & { margin-top: 0.08rem; }
+}
+
+.gd-injury-player {
+	display:        flex;
+	flex-direction: column;
+	min-width:      0;
+	line-height:    1.2;
+}
+
+.gd-injury-name,
+.gd-injury-detail {
+	overflow:      hidden;
+	text-overflow: ellipsis;
+	white-space:   nowrap;
+}
+
+.gd-injury-name {
+	font-size:   0.62rem;
+	font-weight: 600;
+	color:       #111827;
+}
+
+.gd-injury-detail {
+	font-size: 0.52rem;
+	color:     #6b7280;
+}
+
+.gd-injury-status {
+	font-size:   0.58rem;
+	font-weight: 600;
+	color:       #4b5563;
+	white-space: nowrap;
+
+	&[data-status='out'] {
+		font-weight: 700;
+		color:       #111827;
+	}
+}
+
+.gd-injury-none {
+	font-size: 0.58rem;
+	color:     #6b7280;
+	padding:   0.06rem 0.14rem;
+}
+
 // ── Box score ────────────────────────────────────────────────────────────────
 // The line score, the team comparison and one team's player tables, in the same light card family
 // as the blocks above. Everything below is Bootstrap's .table doing the work; these rules only
@@ -1807,6 +2010,17 @@
 	align-items: center;
 	gap:         0.25rem;
 	margin-top:  0.08rem;
+	font-size:   0.58rem;
+	color:       var(--as-secondary-color);
+}
+
+.game-info-link {
+	font-weight: 600;
+	color:       var(--as-accent-ink);
+}
+
+.game-info-price {
+	margin-left: 0.35rem;
 	font-size:   0.58rem;
 	color:       var(--as-secondary-color);
 }

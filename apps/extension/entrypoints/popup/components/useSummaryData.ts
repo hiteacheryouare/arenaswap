@@ -6,6 +6,8 @@ import { emptyBoxScore, parseBoxScore } from './boxScoreParse';
 import type { BoxScore } from './boxScoreParse';
 import { emptyStandings, parseLeagueStandings, parseStandings, usesFullLeagueStandings } from './standingsParse';
 import type { StandingsGroup } from './standingsParse';
+import { emptyMatchup, parseMatchup, parseTickets } from './matchupParse';
+import type { Matchup, TicketLink } from './matchupParse';
 import { mockStandingsPayloads } from './mockStandings';
 
 export interface SeriesCompetitor {
@@ -52,6 +54,10 @@ interface summaryDataResult {
 	// finish time knowable: ESPN publishes no completion timestamp anywhere, so the wrap screen
 	// adds this to the start rather than printing an estimate.
 	gameDurationMins: number | null;
+	// Pre-game only. Once a game starts the `boxscore` block holds that game's numbers rather than
+	// the season's, and recent form and the injury report are context for a game not yet begun.
+	matchup: Matchup;
+	tickets: TicketLink | null;
 }
 
 interface RecordEntry {
@@ -224,6 +230,8 @@ const useSummaryData = (game: SummaryGameArg): summaryDataResult => {
 	const [boxScore, setBoxScore] = useState<BoxScore>(emptyBoxScore);
 	const [standings, setStandings] = useState<StandingsGroup[]>(emptyStandings);
 	const [gameDurationMins, setGameDurationMins] = useState<number | null>(null);
+	const [matchup, setMatchup] = useState<Matchup>(emptyMatchup);
+	const [tickets, setTickets] = useState<TicketLink | null>(null);
 	// The scoreboard's records win when it has them; the summary is the fallback for the leagues
 	// and dates where it does not.
 	const resolvedRecords: TeamRecords = {
@@ -263,6 +271,8 @@ const useSummaryData = (game: SummaryGameArg): summaryDataResult => {
 			setBoxScore(emptyBoxScore);
 			setStandings(emptyStandings);
 			setGameDurationMins(null);
+			setMatchup(emptyMatchup);
+			setTickets(null);
 		}
 
 		if (gameId.startsWith('mock-')) {
@@ -277,7 +287,16 @@ const useSummaryData = (game: SummaryGameArg): summaryDataResult => {
 			setStandings(usesFullLeagueStandings(league)
 				? parseLeagueStandings(canned, gameRef.current.sportType)
 				: parseStandings(canned, gameRef.current.sportType, teamIdsRef.current.home, teamIdsRef.current.away));
-			if (status === 'pre') return;
+			if (status === 'pre') {
+				let cancelled = false;
+				import('./mockMatchup').then(({ mockMatchupPayloads }) => {
+					const payload = mockMatchupPayloads[gameId];
+					if (cancelled || !payload) return;
+					setMatchup(parseMatchup(payload, gameRef.current.sportType, teamIdsRef.current));
+					setTickets(parseTickets(payload));
+				}).catch(err => logWarn(`Failed to load demo matchup for ${gameId}.`, err));
+				return () => { cancelled = true; };
+			}
 			setWinProbability(generateMockWinProbs(gameId, scoreRef.current.home, scoreRef.current.away));
 			setSeriesInfo(mockSeriesMap[gameId] ?? null);
 			// The fixtures are ~22KB no real game can reach, so they stay out of the popup chunk.
@@ -336,6 +355,10 @@ const useSummaryData = (game: SummaryGameArg): summaryDataResult => {
 					abbreviationsRef.current.home,
 					abbreviationsRef.current.away,
 				));
+				if (status === 'pre') {
+					setMatchup(parseMatchup(data, gameRef.current.sportType, teamIdsRef.current));
+					setTickets(parseTickets(data));
+				}
 			})
 			.catch(err => {
 				if (err instanceof DOMException && err.name === 'AbortError') return;
@@ -364,7 +387,7 @@ const useSummaryData = (game: SummaryGameArg): summaryDataResult => {
 		return () => controller.abort();
 	}, [gameId, league, status]);
 
-	return { winProbability, seriesInfo, records: resolvedRecords, monoLogos, boxScore, standings, gameDurationMins };
+	return { winProbability, seriesInfo, records: resolvedRecords, monoLogos, boxScore, standings, gameDurationMins, matchup, tickets };
 };
 
 export default useSummaryData;

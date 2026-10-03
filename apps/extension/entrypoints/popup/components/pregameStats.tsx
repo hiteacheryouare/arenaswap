@@ -1,9 +1,9 @@
 import { i18n } from '#i18n';
 import { Fragment } from 'react';
 import type { Game, ProbableStarter, Team, TeamLeader } from '@arenaswap/core/types';
-import Crest from '@arenaswap/ui/src/components/crest';
-import { readableInkOn, readableTeamInkOnCard, resolveTeamColorPair, teamRowWash } from '@arenaswap/ui/src/components/colorUtils';
-import { leaderLabelKey, playerInitials, starterHeadingKey } from './pregameLabels';
+import { readableTeamInkOnCard, resolveTeamColorPair, teamRowWash } from '@arenaswap/ui/src/components/colorUtils';
+import PlayerShot from './playerShot';
+import { leaderLabelKey, starterHeadingKey } from './pregameLabels';
 
 interface pregameStatsProps {
 	game: Game;
@@ -13,33 +13,6 @@ const starterStatusKeys = {
 	confirmed: 'detail.starterConfirmed',
 	expected: 'detail.starterExpected',
 } as const;
-
-const isHex = (color: string): boolean => /^#[\da-fA-F]{6}$/.test(color);
-
-// The team colour lives on the disc, not on the placeholder. ESPN headshots are cut-outs with
-// transparent backgrounds, so the disc is what the player is standing on — and it has to survive
-// the placeholder being hidden the moment the image lands.
-//
-// Soccer sends a headshot for barely one leader in ten, so the initials are the common case there
-// rather than a rare failure. Crest already does the URL-keyed retry and the text fallback.
-const PlayerShot = ({ url, name, color, className }: {
-	url?: string;
-	name: string;
-	color: string;
-	className: string;
-}) => (
-	<span className={`gd-pregame-disc ${className}`} style={isHex(color) ? { background: color } : undefined}>
-		<Crest
-			logo={url}
-			abbreviation={playerInitials(name)}
-			className='gd-pregame-disc-crest'
-			// Transparent so the disc shows through, and the initials take whichever ink stays
-			// readable on it.
-			fallbackStyle={{ background: 'transparent', color: readableInkOn(color) }}
-			loading='lazy'
-		/>
-	</span>
-);
 
 const hasLabelledStats = (starter: ProbableStarter): boolean => (
 	starter.winLoss !== undefined || starter.era !== undefined
