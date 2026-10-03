@@ -39,19 +39,21 @@ describe('walkthroughView step navigation', () => {
 	});
 
 	it('navigates through step 2 PowerScore sub-steps and progress dots', () => {
+		// Signal sub-steps raise a full-bleed bloom on a 150ms + 450ms timer, and it covers Back as
+		// well as the dots, so tapping it is the only way on. The clock is held so no click races it.
+		cy.clock();
 		cy.mount(<WalkthroughView onComplete={() => {}} />);
 		cy.contains('button', 'Next').click(); // 1 -> 2
 		cy.contains('Explore Formula').should('exist');
 
 		cy.get('.powerscore-progress-dot').eq(1).click();
+		cy.tick(600);
+		cy.get('.ps-bloom-overlay.ps-bloom-visible').should('exist');
 		cy.contains('Closeness').should('exist');
 		cy.contains('Scored from the current point margin').should('exist');
 
-		// Signal sub-steps raise a full-bleed bloom over the orbit and its dots on a 150ms + 450ms
-		// timer, and the whole overlay is the "tap anywhere to continue" target, so the dots are
-		// deliberately unreachable while it is up. Step back off the signal sub-steps and wait for
-		// the overlay to go rather than racing the bloom-in timer to the next dot.
-		cy.contains('button', 'Back').click();
+		cy.get('.ps-bloom-overlay').click();
+		cy.tick(400);
 		cy.get('.ps-bloom-overlay').should('not.exist');
 
 		cy.get('.powerscore-progress-dot').eq(11).click();

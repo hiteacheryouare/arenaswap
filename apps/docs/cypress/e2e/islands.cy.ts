@@ -185,6 +185,7 @@ describe('the package install commands', () => {
 		cy.visit('/powerscore/');
 		cy.contains('h2', /./).should('exist');
 		cy.get('.btn-cta').contains('npm').scrollIntoView();
+		cy.get('astro-island[component-url*="PowerScoreInstallCommands"]').should('not.have.attr', 'ssr');
 
 		cy.contains('code', 'npm install powerscore').should('be.visible');
 
@@ -207,6 +208,7 @@ describe('the package install commands', () => {
 		});
 
 		cy.get('.btn-cta').contains('npm').scrollIntoView();
+		cy.get('astro-island[component-url*="PowerScoreInstallCommands"]').should('not.have.attr', 'ssr');
 		cy.contains('button', 'yarn').click();
 		cy.contains('code', 'yarn add powerscore').should('be.visible');
 		cy.contains('code', 'yarn add powerscore').parent().find('button').click();
