@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Recorded slates replay through 2.2.0 and PowerScore 3 side by side — 2026-10-03
+
+`npm run powerscore:replay` plays a recording through the frozen 2.2.0 pipeline and the working tree's engine, simulates a viewer switching tabs with each, and scores them against labelled flip-to moments in `scripts/powerscore/fixtures/labels/`; `--diff` lists where they disagree on the top game and `--timeline` writes a minute-by-minute slate to label from. It drives the same core helpers background.ts does, so on the first recorded night v2 and v3 Classic agreed on all 591 polls.
+
 ## The background scores through PowerScore 3, and the switch rule lives in core — 2026-10-03
 
 Every live game is now scored by `scoreGame` through `scoreLiveGame` in `packages/core/src/scoring.ts`, which also took over the snapshot windowing, the clock-stall count and the switch rule (`chooseSwitchTarget`) from background.ts, so the replay harness runs exactly the code the extension does. The popup still gets the flat 2.x result through `toLegacyPowerScoreResult` until it learns to draw modes, and `Game` is now generic over its league id so a feed with its own leagues can use `Game<string>`.

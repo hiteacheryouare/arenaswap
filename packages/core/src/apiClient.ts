@@ -1135,14 +1135,26 @@ export const fetchWinProbability = async (game: Pick<Game, 'id' | 'league'>, ini
 	const res = await fetch(url, { headers: { 'Accept': 'application/json' }, signal: init?.signal });
 	if (!res.ok) throw new Error(`Failed to fetch win probability for ${game.id}: HTTP ${res.status}`);
 
-	const parsed = EspnSummarySchema.safeParse(await res.json());
-	if (!parsed.success) return [];
+	return parseWinProbability(await res.json());
+};
 
+// The home side's win probability over the game so far, from a summary payload.
+export const parseWinProbability = (raw: unknown): number[] => {
+	const parsed = EspnSummarySchema.safeParse(raw);
+	if (!parsed.success) return [];
 	return (parsed.data.winprobability ?? [])
 		.map(entry => entry.homeWinPercentage)
 		.filter((p): p is number => typeof p === 'number' && Number.isFinite(p))
 		.map(p => Math.min(Math.max(p, 0), 1));
 };
+
+// A raw scoreboard payload into games, exactly as a live fetch would parse it. For replaying
+// recorded slates.
+export const parseScoreboardEvents = (raw: unknown, league: LeagueId): Game[] => (
+	parseScoreboard(raw).events
+		.map(event => parseEvent(event, league))
+		.filter((game): game is Game => game !== null)
+);
 
 // ESPN sends `gameInfo.gameDuration` as "3:14" — hours and minutes, not a clock time. It is
 // baseball-only among the leagues sampled, which is why the row it feeds is absent rather than

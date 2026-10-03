@@ -1,5 +1,5 @@
 export { fetchGames, fetchLiveGames, fetchLeagueLogos, fetchGamesWithLeagueLogos,
-	fetchTeamMonoLogos, fetchNextScheduledStart, fetchTeamsForLeagues, fetchWinProbability, fetchGameDurationMins, parseGameDurationMins,
+	fetchTeamMonoLogos, fetchNextScheduledStart, fetchTeamsForLeagues, fetchWinProbability, fetchGameDurationMins, parseGameDurationMins, parseScoreboardEvents, parseWinProbability,
 	monoMarksFromLogos, scoreboardRefreshMs } from './apiClient';
 export { logWarn, logError, setVerboseLogging, isVerboseLogging } from './logger';
 export { computeEagerIntervalMs, computeHebetudinousIntervalMs, computeLeagueIntervalMs, earliestUpcomingStartMs, pollWinProbabilityMs } from './pollIntervalComputer';
