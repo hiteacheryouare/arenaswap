@@ -98,6 +98,7 @@
 @use '@arenaswap/ui/src/motion' as m;
 @use '@arenaswap/ui/src/popup';
 @use '@arenaswap/ui/src/theme';
+@use 'collegeFilter';
 
 // After the Bootstrap load above, so this beats its `:root, [data-bs-theme=light]` block on source
 // order. Dark needs no block of its own: it is what :root already carries.

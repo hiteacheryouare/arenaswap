@@ -1086,5 +1086,41 @@
 			"l3": "먼저 속도를 줄여야 해.",
 			"l4": "그냥 이거 멈추라고! 명령이다!"
 		}
+	},
+	"collegeFilter": {
+		"lede": "대학 스포츠에서 보고 싶은 부분만 골라 보세요. 켜 둔 항목 중 하나라도 해당되는 경기는 표시되고, 응원팀 경기는 항상 표시돼요.",
+		"divisionsHeading": "디비전",
+		"conferencesHeading": "컨퍼런스",
+		"divisionConferencesHeading": "{division} 컨퍼런스",
+		"division": {
+			"fbs": "FBS",
+			"fcs": "FCS",
+			"d1": "디비전 I",
+			"d2": "디비전 II",
+			"d3": "디비전 III"
+		},
+		"divisionShort": {
+			"fbs": "FBS",
+			"fcs": "FCS",
+			"d1": "D-I",
+			"d2": "D-II",
+			"d3": "D-III"
+		},
+		"ranked": "상위 {count}",
+		"otherConferences": "기타 컨퍼런스",
+		"coveredBy": "{division}에 이미 포함돼 있어요",
+		"nothingPicked": "선택한 항목이 없어서 {league} 경기가 표시되지 않아요.",
+		"loading": "스카우트들이 컨퍼런스 목록을 염탐하고 있어요…",
+		"loadFailed": "스카우트들이 빈손으로 돌아왔어요. 디비전과 랭킹은 그대로 쓸 수 있어요.",
+		"retry": "다시 시도",
+		"open": "{league}의 디비전과 컨퍼런스 선택",
+		"summaryNothing": "선택 없음",
+		"summaryAll": "D-I 전체",
+		"summaryConferences": {
+			"1": "컨퍼런스 1개",
+			"n": "컨퍼런스 $1개"
+		},
+		"searchLabel": "대학 스포츠 디비전 및 컨퍼런스",
+		"keywords": "college ncaa division conference fbs fcs d1 d2 d3 di dii diii top 25 ranked poll sec big ten acc big 12 ivy 대학 대학스포츠 디비전 컨퍼런스 콘퍼런스 랭킹 순위 톱25 상위 투표"
 	}
 }

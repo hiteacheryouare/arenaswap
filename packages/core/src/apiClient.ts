@@ -1,3 +1,4 @@
+import { collegeFetchGroups } from './college';
 import { isWithinFinalRetention, leagueConfigMap, pollLookaheadDays, pollMinEagerMs, resolveLeagueLogoUrl, upcomingGamesDaysMax } from './constants';
 import { parseClockToSeconds } from './gameClock';
 import { toLeagueSchedule } from './leagueSchedule';
@@ -39,7 +40,7 @@ const espnBase = 'https://site.api.espn.com/apis/site/v2/sports';
    for the whole span. */
 export const espnRequestPoolSize = 6;
 
-const settledInPool = async <T, R>(
+export const settledInPool = async <T, R>(
 	items: T[],
 	run: (item: T) => Promise<R>,
 	size = espnRequestPoolSize,
@@ -83,7 +84,7 @@ export const espnSustainedPerSecond = 10;
 let requestTokens = espnBurstCapacity;
 let tokensRefilledAt = Date.now();
 
-const takeRequestSlot = async (): Promise<void> => {
+export const takeRequestSlot = async (): Promise<void> => {
 	for (;;) {
 		const now = Date.now();
 		const refill = ((now - tokensRefilledAt) / 1000) * espnSustainedPerSecond;
@@ -433,6 +434,7 @@ const parseCuratedRank = (competitor: EspnCompetitor): number | undefined => {
 const parseTeamContext = (competitor: EspnCompetitor, state: Game['status']) => ({
 	record: parseCompetitorRecord(competitor),
 	rank: parseCuratedRank(competitor),
+	conferenceId: competitor.team.conferenceId || undefined,
 	probableStarter: state === 'pre' ? parseProbableStarter(competitor) : undefined,
 	leaders: state === 'pre' ? parseTeamLeaders(competitor) : undefined,
 });
@@ -715,6 +717,8 @@ export interface LeagueFetchOptions {
 	// Off by default, so every consumer of this package that does not ask for finished games keeps
 	// getting exactly what it got before.
 	includeFinal?: boolean;
+	// The `groups=` values to fetch per league, one request each. A league left out gets its default.
+	groupsByLeague?: Partial<Record<LeagueId, string[]>>;
 }
 
 interface LeagueGamesResult {
@@ -742,7 +746,7 @@ const fetchScoreboard = async (url: string, leagueId: LeagueId, warnKey: string 
 	return parsed;
 };
 
-/* `groups` is required for reliable coverage in the two NCAA basketball leagues.
+/* `groups` is required for reliable coverage in the college leagues; see `collegeDivisions`.
 
    `limit` lifts a server-side cap we had been eating silently. The published reference says to pass
    a high limit alongside `groups` to get a full NCAA slate, and measured, an MLB month query
@@ -752,10 +756,9 @@ const fetchScoreboard = async (url: string, leagueId: LeagueId, warnKey: string 
    leagues on a single-date query: identical answers, so it only ever lifts a cap. */
 const scoreboardEventLimit = 500;
 
-const scoreboardParams = (config: LeagueConfig): URLSearchParams => {
+const scoreboardParams = (groups?: string): URLSearchParams => {
 	const params = new URLSearchParams();
-	if (config.id === 'ncaab') params.set('groups', '50');
-	if (config.id === 'ncaaw') params.set('groups', '49');
+	if (groups) params.set('groups', groups);
 	params.set('limit', String(scoreboardEventLimit));
 	return params;
 };
@@ -851,9 +854,10 @@ const fetchDayFromEspn = async (
 	dayKey: string,
 	todayKey: string,
 	cached: CachedDay | undefined,
+	groups?: string,
 ): Promise<CachedDay> => {
-	const cacheKey = `${config.id}:${dayKey}`;
-	const params = scoreboardParams(config);
+	const cacheKey = dayCacheKey(config.id, dayKey, groups);
+	const params = scoreboardParams(groups);
 	params.set('dates', dayKey);
 	const url = `${espnBase}/${config.espnPath}/scoreboard?${params.toString()}`;
 
@@ -861,7 +865,8 @@ const fetchDayFromEspn = async (
 		const response = await fetchScoreboard(url, config.id, cacheKey);
 		const games = (response.events ?? [])
 			.map(event => parseEvent(event, config.id))
-			.filter((game): game is Game => game !== null);
+			.filter((game): game is Game => game !== null)
+			.map(game => (groups ? { ...game, collegeGroups: [groups] } : game));
 		const entry: CachedDay = {
 			games,
 			espnLogo: pickLeagueLogo(response.leagues?.[0]?.logos),
@@ -879,8 +884,17 @@ const fetchDayFromEspn = async (
 	}
 };
 
-const fetchDayGames = async (config: LeagueConfig, dayKey: string, todayKey: string): Promise<CachedDay> => {
-	const cacheKey = `${config.id}:${dayKey}`;
+const dayCacheKey = (leagueId: LeagueId, dayKey: string, groups?: string): string => (
+	groups ? `${leagueId}#${groups}:${dayKey}` : `${leagueId}:${dayKey}`
+);
+
+const fetchDayGames = async (
+	config: LeagueConfig,
+	dayKey: string,
+	todayKey: string,
+	groups: string | undefined = collegeFetchGroups(config.id)[0],
+): Promise<CachedDay> => {
+	const cacheKey = dayCacheKey(config.id, dayKey, groups);
 	const cached = dayCache.get(cacheKey);
 	/* `dayKey !== todayKey` is the half that matters, and it has to be asked here rather than
 	   inferred from the TTL written when the entry was made. A calendar day moves future → today →
@@ -898,7 +912,7 @@ const fetchDayGames = async (config: LeagueConfig, dayKey: string, todayKey: str
 	const running = dayRequests.get(cacheKey);
 	if (running) return await running;
 
-	const pending = fetchDayFromEspn(config, dayKey, todayKey, cached);
+	const pending = fetchDayFromEspn(config, dayKey, todayKey, cached, groups);
 	dayRequests.set(cacheKey, pending);
 	try {
 		return await pending;
@@ -907,8 +921,32 @@ const fetchDayGames = async (config: LeagueConfig, dayKey: string, todayKey: str
 	}
 };
 
+// One day across several divisions, as one answer. A game two divisions both return keeps both tags.
+const fetchDayAcrossGroups = async (config: LeagueConfig, dayKey: string, todayKey: string, groups: string[]): Promise<CachedDay> => {
+	if (groups.length <= 1) return await fetchDayGames(config, dayKey, todayKey, groups[0]);
+	const days = await Promise.all(groups.map(group => fetchDayGames(config, dayKey, todayKey, group)));
+	const byId = new Map<string, Game>();
+	for (const day of days) {
+		for (const game of day.games) {
+			const seen = byId.get(game.id);
+			byId.set(game.id, seen
+				? { ...seen, collegeGroups: [...new Set([...(seen.collegeGroups ?? []), ...(game.collegeGroups ?? [])])] }
+				: game);
+		}
+	}
+	const [first] = days;
+	return {
+		games: [...byId.values()],
+		espnLogo: days.find(day => day.espnLogo)?.espnLogo,
+		schedule: first!.schedule,
+		fetchedAt: Math.min(...days.map(day => day.fetchedAt)),
+		ttlMs: Math.min(...days.map(day => day.ttlMs)),
+	};
+};
+
 const fetchLeagueGames = async (config: LeagueConfig, options: LeagueFetchOptions = {}): Promise<LeagueGamesResult> => {
 	const { includeUpcoming = true, upcomingDays = 7, includeFinal = false } = options;
+	const groups = options.groupsByLeague?.[config.id] ?? collegeFetchGroups(config.id);
 	// Declared once so nothing below can disagree about which games survive. A final game is kept
 	// only while it is inside the retention window, so an ageing one falls off on its own rather
 	// than needing a sweep.
@@ -935,7 +973,7 @@ const fetchLeagueGames = async (config: LeagueConfig, options: LeagueFetchOption
 
 	const results = await settledInPool(
 		dayKeys,
-		dayKey => fetchDayGames(config, dayKey, todayKey),
+		dayKey => fetchDayAcrossGroups(config, dayKey, todayKey, groups),
 		espnDayPoolSize,
 	);
 	/* On the live window, today's own answer is the whole point and its failure sinks the league.

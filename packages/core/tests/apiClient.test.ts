@@ -608,7 +608,8 @@ describe('apiClient', () => {
 		expect(calledUrls.every(url => url.includes('groups=50'))).toBe(true);
 	});
 
-	test('adds NCAA womens basketball groups=49 query parameter', async () => {
+	// 49 looked right and answered every dated query with no games at all.
+	test('adds NCAA womens basketball groups=50 query parameter', async () => {
 		const fetchMock = jest.fn().mockResolvedValue(createResponse({ events: [makeEvent({
 			id: 'ncaaw-live',
 			state: 'live',
@@ -626,7 +627,7 @@ describe('apiClient', () => {
 
 		const calledUrls = fetchMock.mock.calls.map(([url]) => String(url));
 		expect(calledUrls.length).toBeGreaterThan(1);
-		expect(calledUrls.every(url => url.includes('groups=49'))).toBe(true);
+		expect(calledUrls.every(url => url.includes('groups=50'))).toBe(true);
 		expect(calledUrls[0]).toContain('/basketball/womens-college-basketball/scoreboard');
 	});
 
@@ -2672,7 +2673,7 @@ describe('the polling lookahead', () => {
 
 		const second = mockEvents([]);
 		await second.fetchNextScheduledStart('ncaaw', { now });
-		expect(new URL(toUrl(second.fetchMock.mock.calls[0]![0] as RequestInfo)).searchParams.get('groups')).toBe('49');
+		expect(new URL(toUrl(second.fetchMock.mock.calls[0]![0] as RequestInfo)).searchParams.get('groups')).toBe('50');
 	});
 
 	// Null is what puts a league to sleep for half an hour, so a failed request must not produce it.

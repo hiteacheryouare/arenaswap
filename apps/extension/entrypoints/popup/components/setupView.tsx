@@ -1,7 +1,10 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { i18n } from '#i18n';
-import type { FinishedTabAction, LeagueId, LeagueLogoMap, LeagueScheduleMap, SignalName, SportType, ThemePreference, UserPreferences } from '@arenaswap/core/types';
+import { isCollegeLeagueId, leagueConfigMap, resolveCollegeFilter } from '@arenaswap/core/constants';
+import type { CollegeFilter, CollegeLeagueId, FinishedTabAction, LeagueId, LeagueLogoMap, LeagueScheduleMap, SignalName, SportType, ThemePreference, UserPreferences } from '@arenaswap/core/types';
 import type { Browser } from 'wxt/browser';
+import CollegeFilterPage from './collegeFilterPage';
+import CollegeLeagueButton from './collegeLeagueButton';
 import CooldownSlider from './cooldownSlider';
 import FavoriteTeamBonusInput from './favoriteTeamBonusInput';
 import FavoriteTeamsPage from './favoriteTeamsPage';
@@ -42,6 +45,7 @@ interface setupViewProps {
 	onToggleSport: (sport: SportType, selectAll: boolean) => void;
 	onReorderLeague: (fromIndex: number, toIndex: number) => void;
 	onResetLeagueOrder: () => void;
+	onCollegeFilterChange: (leagueId: CollegeLeagueId, filter: CollegeFilter) => void;
 	onToggleGroupByLeague: () => void;
 	onToggleShowUpcoming: () => void;
 	onToggleKeepFinalGames: () => void;
@@ -79,7 +83,7 @@ const setupSignalMeta = [
 const setupView = ({
 	prefs, prefsLoaded, demoMode, demoSeason, leagueLogos, leagueSchedules, favoriteTeamIds, standbyStreamTabId, standbyOnboardingDone,
 	openTabs, formatTabLabel, onClose, onSensitivityChange, onCooldownChange, onSwitchDelayChange,
-	onFavoriteTeamBonusChange, onToggleFavoriteTeam, onToggleLeague, onToggleSport, onReorderLeague, onResetLeagueOrder,
+	onFavoriteTeamBonusChange, onToggleFavoriteTeam, onToggleLeague, onToggleSport, onReorderLeague, onResetLeagueOrder, onCollegeFilterChange,
 	onToggleGroupByLeague, onToggleShowUpcoming, onToggleKeepFinalGames, onFinishedTabActionChange, onThemeChange, onUpcomingGamesDaysChange,
 	onToggleProTips, onToggleNotifications, onToggleDemo, onDemoSeasonChange, onToggleStandbyStream, onStandbyThresholdChange,
 	onSetStandbyTab, onStandbyOnboardingDone, onToggleBetting, onToggleTemperatureUnit, onUnlockRomer, onToggleOpenReveal,
@@ -88,13 +92,15 @@ const setupView = ({
 	onToggleSignal,
 }: setupViewProps) => {
 	const [page, setPage] = useState<settingsGroupId | null>(null);
+	const [collegeLeague, setCollegeLeague] = useState<CollegeLeagueId | null>(null);
+	const pageRef = useRef<HTMLDivElement>(null);
+	const leaguesScrollTop = useRef<number | null>(null);
 	const [query, setQuery] = useState('');
 	const [showStandbyGuide, setShowStandbyGuide] = useState(false);
 
 	const results = useMemo(() => searchSettings(query), [query]);
 	const noLeaguesSelected = prefsLoaded && prefs.enabledLeagues.length === 0;
 
-	const pageRef = useRef<HTMLDivElement>(null);
 	const lastGroupRef = useRef<settingsGroupId | null>(null);
 	const pendingControlRef = useRef<string | undefined>(undefined);
 
@@ -102,6 +108,7 @@ const setupView = ({
 		lastGroupRef.current = id;
 		pendingControlRef.current = controlId;
 		setPage(id);
+		setCollegeLeague(null);
 		setQuery('');
 	};
 
@@ -121,6 +128,18 @@ const setupView = ({
 		}
 		if (lastGroupRef.current) document.getElementById(`settingsGroup-${lastGroupRef.current}`)?.focus({ preventScroll: true });
 	}, [page]);
+
+	const openCollegeLeague = (leagueId: CollegeLeagueId) => {
+		leaguesScrollTop.current = pageRef.current?.scrollTop ?? 0;
+		setCollegeLeague(leagueId);
+	};
+
+	// Back from a college picker lands where the tile was, not at the top of the Leagues page.
+	useLayoutEffect(() => {
+		if (collegeLeague || page !== 'leagues' || leaguesScrollTop.current === null) return;
+		if (pageRef.current) pageRef.current.scrollTop = leaguesScrollTop.current;
+		leaguesScrollTop.current = null;
+	}, [collegeLeague, page]);
 
 	const handleToggleStandbyStream = () => {
 		if (!prefs.standbyStreamEnabled && !standbyOnboardingDone) {
@@ -519,7 +538,18 @@ const setupView = ({
 													/>
 												</div>
 											</div>
-											<label className='mb-0 league-toggle-label' htmlFor={`league-${league.id}`}>{labelBody}</label>
+											{isCollegeLeagueId(league.id) ? (
+												<CollegeLeagueButton
+													leagueId={league.id}
+													leagueLabel={league.label}
+													filter={resolveCollegeFilter(prefs.collegeFilters, league.id)}
+													onOpen={() => openCollegeLeague(league.id as CollegeLeagueId)}
+												>
+													{labelBody}
+												</CollegeLeagueButton>
+											) : (
+												<label className='mb-0 league-toggle-label' htmlFor={`league-${league.id}`}>{labelBody}</label>
+											)}
 										</div>
 									);
 								})}
@@ -544,6 +574,26 @@ const setupView = ({
 		display: displayPage,
 		standby: standbyPage,
 	};
+
+	if (page === 'leagues' && collegeLeague) {
+		const league = { ...leagueConfigMap[collegeLeague], id: collegeLeague };
+		return (
+			<div className='popup-container'>
+				<button type='button' className='setup-header' onClick={() => setCollegeLeague(null)}>
+					<i className='bi bi-arrow-left' />
+					{league.label}
+				</button>
+				<div className='settings-page-lede'>{i18n.t('collegeFilter.lede')}</div>
+				<CollegeFilterPage
+					league={league}
+					leagueLogos={leagueLogos}
+					filter={resolveCollegeFilter(prefs.collegeFilters, collegeLeague)}
+					disabled={!prefsLoaded}
+					onChange={filter => onCollegeFilterChange(collegeLeague, filter)}
+				/>
+			</div>
+		);
+	}
 
 	if (page) {
 		const group = settingsGroups.find(candidate => candidate.id === page);

@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import useSWR from 'swr';
 import { fetchGamesWithLeagueLogos } from '@arenaswap/core';
-import { allLeagueIds, allSignalNames, createDefaultUserPreferences, createFavoriteTeamKey, normalizeUserPreferences } from '@arenaswap/core/constants';
-import type { LeagueId, LeagueLogoMap, LeagueScheduleMap, SignalName, SportType, TabRegistration, UserPreferences } from '@arenaswap/core/types';
+import { allLeagueIds, allSignalNames, createDefaultUserPreferences, createFavoriteTeamKey, normalizeUserPreferences, withCollegeFilter } from '@arenaswap/core/constants';
+import type { CollegeFilter, CollegeLeagueId, LeagueId, LeagueLogoMap, LeagueScheduleMap, SignalName, SportType, TabRegistration, UserPreferences } from '@arenaswap/core/types';
 import type { Browser } from 'wxt/browser';
 import GameDetailView from './components/gameDetailView';
 import MainView from './components/mainView';
@@ -377,6 +377,13 @@ export default () => {
 		}));
 	};
 
+	const onCollegeFilterChange = (leagueId: CollegeLeagueId, filter: CollegeFilter) => {
+		persistPrefs(currentPrefs => ({
+			...currentPrefs,
+			collegeFilters: withCollegeFilter(currentPrefs.collegeFilters, leagueId, filter),
+		}));
+	};
+
 
 	const onToggleSignal = (signal: SignalName) => {
 		persistPrefs(currentPrefs => {
@@ -537,6 +544,7 @@ export default () => {
 						onToggleSport={onToggleSport}
 						onReorderLeague={onReorderLeague}
 						onResetLeagueOrder={onResetLeagueOrder}
+						onCollegeFilterChange={onCollegeFilterChange}
 						onToggleGroupByLeague={() => persistPrefs(currentPrefs => ({ ...currentPrefs, groupByLeague: !currentPrefs.groupByLeague }))}
 						onToggleShowUpcoming={() => persistPrefs(currentPrefs => ({ ...currentPrefs, showUpcomingGames: !currentPrefs.showUpcomingGames }))}
 						onToggleKeepFinalGames={() => persistPrefs(currentPrefs => ({ ...currentPrefs, keepFinalGames: !currentPrefs.keepFinalGames }))}

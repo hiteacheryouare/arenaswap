@@ -1086,5 +1086,41 @@
 			"l3": "Precisamos reduzir primeiro.",
 			"l4": "Para agora! Estou ordenando!"
 		}
+	},
+	"collegeFilter": {
+		"lede": "Afunile a grade para o seu cantinho do esporte universitário. Um jogo aparece se bater com qualquer coisa que você ativar, e seus times favoritos sempre entram.",
+		"divisionsHeading": "Divisões",
+		"conferencesHeading": "Conferências",
+		"divisionConferencesHeading": "Conferências {division}",
+		"division": {
+			"fbs": "FBS",
+			"fcs": "FCS",
+			"d1": "Divisão I",
+			"d2": "Divisão II",
+			"d3": "Divisão III"
+		},
+		"divisionShort": {
+			"fbs": "FBS",
+			"fcs": "FCS",
+			"d1": "D-I",
+			"d2": "D-II",
+			"d3": "D-III"
+		},
+		"ranked": "Top {count}",
+		"otherConferences": "Outras conferências",
+		"coveredBy": "Já incluída em {division}",
+		"nothingPicked": "Nada escolhido, então nenhum jogo de {league} vai aparecer.",
+		"loading": "Nossos olheiros estão de binóculo atrás da lista de conferências…",
+		"loadFailed": "Nossos olheiros voltaram de mãos vazias. Divisões e rankings continuam funcionando.",
+		"retry": "Tentar novamente",
+		"open": "Escolher divisões e conferências para {league}",
+		"summaryNothing": "Nada escolhido",
+		"summaryAll": "Toda a D-I",
+		"summaryConferences": {
+			"1": "1 conferência",
+			"n": "$1 conferências"
+		},
+		"searchLabel": "Divisões e conferências universitárias",
+		"keywords": "college ncaa division conference fbs fcs d1 d2 d3 di dii diii top 25 ranked poll sec big ten acc big 12 ivy faculdade universidade universitário universitária divisão divisões conferência conferências ranking classificação votação"
 	}
 }

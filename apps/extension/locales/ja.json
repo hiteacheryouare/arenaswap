@@ -1086,5 +1086,41 @@
 			"l3": "まず減速しないといけない。",
 			"l4": "止めろ！命令だ！"
 		}
+	},
+	"collegeFilter": {
+		"lede": "大学スポーツの中から、気になるところだけに絞り込めます。オンにした条件のどれかに当てはまる試合が表示され、お気に入りチームの試合は常に表示されます。",
+		"divisionsHeading": "ディビジョン",
+		"conferencesHeading": "カンファレンス",
+		"divisionConferencesHeading": "{division}のカンファレンス",
+		"division": {
+			"fbs": "FBS",
+			"fcs": "FCS",
+			"d1": "ディビジョンI",
+			"d2": "ディビジョンII",
+			"d3": "ディビジョンIII"
+		},
+		"divisionShort": {
+			"fbs": "FBS",
+			"fcs": "FCS",
+			"d1": "D-I",
+			"d2": "D-II",
+			"d3": "D-III"
+		},
+		"ranked": "トップ{count}",
+		"otherConferences": "その他のカンファレンス",
+		"coveredBy": "{division}に含まれています",
+		"nothingPicked": "何も選ばれていないため、{league}の試合は表示されません。",
+		"loading": "スカウトがカンファレンス一覧を偵察中です…",
+		"loadFailed": "スカウトが手ぶらで戻ってきました。ディビジョンとランキングは引き続き使えます。",
+		"retry": "再試行",
+		"open": "{league}のディビジョンとカンファレンスを選択",
+		"summaryNothing": "未選択",
+		"summaryAll": "D-Iすべて",
+		"summaryConferences": {
+			"1": "1カンファレンス",
+			"n": "$1カンファレンス"
+		},
+		"searchLabel": "大学スポーツのディビジョンとカンファレンス",
+		"keywords": "college ncaa division conference fbs fcs d1 d2 d3 di dii diii top 25 ranked poll sec big ten acc big 12 ivy 大学 大学スポーツ カレッジ ディビジョン カンファレンス ランキング 順位 トップ25 投票"
 	}
 }

@@ -1086,5 +1086,41 @@
 			"l3": "我們得先減速。",
 			"l4": "快停下這東西！這是命令！"
 		}
+	},
+	"collegeFilter": {
+		"lede": "把賽程縮小到你關心的大學運動範圍。只要比賽符合你開啟的任一項目就會顯示，而你收藏的球隊一定會顯示。",
+		"divisionsHeading": "級別",
+		"conferencesHeading": "聯盟",
+		"divisionConferencesHeading": "{division} 聯盟",
+		"division": {
+			"fbs": "FBS",
+			"fcs": "FCS",
+			"d1": "第一級",
+			"d2": "第二級",
+			"d3": "第三級"
+		},
+		"divisionShort": {
+			"fbs": "FBS",
+			"fcs": "FCS",
+			"d1": "D-I",
+			"d2": "D-II",
+			"d3": "D-III"
+		},
+		"ranked": "前 {count} 名",
+		"otherConferences": "其他聯盟",
+		"coveredBy": "已包含在 {division} 中",
+		"nothingPicked": "尚未選擇任何項目，因此不會顯示任何 {league} 比賽。",
+		"loading": "我們的球探正舉著望遠鏡打探聯盟名單……",
+		"loadFailed": "我們的球探空手而歸。級別和排名仍可正常使用。",
+		"retry": "重試",
+		"open": "選擇 {league} 的級別和聯盟",
+		"summaryNothing": "未選擇",
+		"summaryAll": "全部 D-I",
+		"summaryConferences": {
+			"1": "1 個聯盟",
+			"n": "$1 個聯盟"
+		},
+		"searchLabel": "大學運動級別與聯盟",
+		"keywords": "college ncaa division conference fbs fcs d1 d2 d3 di dii diii top 25 ranked poll sec big ten acc big 12 ivy 大學 大專 學院 級別 分級 聯盟 分區 排名 排行榜 前25 票選 民調"
 	}
 }

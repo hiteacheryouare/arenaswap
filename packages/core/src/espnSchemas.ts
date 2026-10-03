@@ -40,6 +40,7 @@ const EspnTeamSchema = z.object({
 	logo: z.optional(z.string()),
 	color: z.optional(z.string()),
 	alternateColor: z.optional(z.string()),
+	conferenceId: z.optional(espnNumericText),
 });
 
 const EspnAthleteRefSchema = z.object({

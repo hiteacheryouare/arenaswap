@@ -206,6 +206,7 @@ const setupProps = {
 	onToggleSport: () => {},
 	onReorderLeague: () => {},
 	onResetLeagueOrder: () => {},
+	onCollegeFilterChange: () => {},
 	onToggleShowUpcoming: () => {},
 	onToggleKeepFinalGames: () => {},
 	onToggleGroupByLeague: () => {},

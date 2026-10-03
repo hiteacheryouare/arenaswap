@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## College leagues filter by division, conference and Top 25 — 2026-10-02
+
+Each college league tile in Settings → Leagues opens a picker of divisions, Top 25 and conference crests, and a game shows if it matches anything picked, with favorite teams always let through. Conference ids differ by sport (the SEC is 8 in football and 23 in basketball), so crests are looked up by name and never by id, and hockey, baseball and softball games carry no conference at all, so their teams are matched through a weekly cached conference list. Football can now fetch FCS, D-II and D-III, which it never showed before, and women's basketball asks for `groups=50`, because `49` returned no games on any date.
+
 ## Settings marks the leagues that are out of season — 2026-10-02
 
 Each tile in Settings → Leagues now says "Back Nov 1 (30 days)" under a league that hasn't started yet, or "Offseason" when its season is over and no next date is known. It reads the calendar in the scoreboard reply the league pickers already fetch weekly, not the season type, which calls college basketball "Regular Season" a month before tip-off, and it waits two weeks past the last listed day because playoff dates are added to the calendar late. When the label is too long for the tile, the count moves to its own line in one piece; that is the only place the line can break.

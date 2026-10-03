@@ -75,6 +75,7 @@ describe('constants', () => {
 			postseasonBoostPoints: 8,
 			upcomingGamesDays: 7,
 			disabledSignals: [],
+			collegeFilters: {},
 		});
 	});
 
@@ -169,6 +170,7 @@ describe('constants', () => {
 			postseasonBoostPoints: 8,
 			upcomingGamesDays: 7,
 			disabledSignals: [],
+			collegeFilters: {},
 		});
 	});
 

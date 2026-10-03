@@ -1086,5 +1086,41 @@
 			"l3": "Kailangan muna nating bumagal.",
 			"l4": "Itigil mo na lang 'to! Utos ko 'yan!"
 		}
+	},
+	"collegeFilter": {
+		"lede": "Ibagay ang listahan ng laro sa paborito mong sulok ng college sports. Lalabas ang isang laro kung tugma ito sa kahit anong i-on mo, at laging pasok ang mga paboritong team mo.",
+		"divisionsHeading": "Mga Division",
+		"conferencesHeading": "Mga Conference",
+		"divisionConferencesHeading": "Mga Conference ng {division}",
+		"division": {
+			"fbs": "FBS",
+			"fcs": "FCS",
+			"d1": "Division I",
+			"d2": "Division II",
+			"d3": "Division III"
+		},
+		"divisionShort": {
+			"fbs": "FBS",
+			"fcs": "FCS",
+			"d1": "D-I",
+			"d2": "D-II",
+			"d3": "D-III"
+		},
+		"ranked": "Top {count}",
+		"otherConferences": "Iba pang conference",
+		"coveredBy": "Kasama na sa {division}",
+		"nothingPicked": "Walang napili, kaya walang laro ng {league} na lalabas.",
+		"loading": "Sinisilip ng mga scout namin ang listahan ng mga conference…",
+		"loadFailed": "Walang napala ang mga scout namin. Gumagana pa rin ang mga division at ranking.",
+		"retry": "Subukan ulit",
+		"open": "Pumili ng mga division at conference para sa {league}",
+		"summaryNothing": "Walang napili",
+		"summaryAll": "Lahat ng D-I",
+		"summaryConferences": {
+			"1": "1 conference",
+			"n": "$1 na conference"
+		},
+		"searchLabel": "Mga division at conference sa college",
+		"keywords": "college ncaa division conference fbs fcs d1 d2 d3 di dii diii top 25 ranked poll sec big ten acc big 12 ivy kolehiyo unibersidad pamantasan liga division conference ranggo ranking"
 	}
 }

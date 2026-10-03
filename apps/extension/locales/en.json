@@ -1086,5 +1086,41 @@
 			"l3": "We've got to slow down first.",
 			"l4": "Just stop this thing! I order you!"
 		}
+	},
+	"collegeFilter": {
+		"lede": "Narrow the slate to your corner of college sports. A game shows up if it matches anything you turn on, and your favorite teams always get in.",
+		"divisionsHeading": "Divisions",
+		"conferencesHeading": "Conferences",
+		"divisionConferencesHeading": "{division} conferences",
+		"division": {
+			"fbs": "FBS",
+			"fcs": "FCS",
+			"d1": "Division I",
+			"d2": "Division II",
+			"d3": "Division III"
+		},
+		"divisionShort": {
+			"fbs": "FBS",
+			"fcs": "FCS",
+			"d1": "D-I",
+			"d2": "D-II",
+			"d3": "D-III"
+		},
+		"ranked": "Top {count}",
+		"otherConferences": "Other conferences",
+		"coveredBy": "Already included with {division}",
+		"nothingPicked": "Nothing's picked, so no {league} games will show up.",
+		"loading": "Our scouts are fetching the conference list…",
+		"loadFailed": "Our scouts came back empty-handed. Divisions and rankings still work.",
+		"retry": "Try again",
+		"open": "Choose divisions and conferences for {league}",
+		"summaryNothing": "Nothing picked",
+		"summaryAll": "All of D-I",
+		"summaryConferences": {
+			"1": "1 conference",
+			"n": "$1 conferences"
+		},
+		"searchLabel": "College divisions and conferences",
+		"keywords": "college ncaa division conference fbs fcs d1 d2 d3 di dii diii top 25 ranked poll sec big ten acc big 12 ivy"
 	}
 }

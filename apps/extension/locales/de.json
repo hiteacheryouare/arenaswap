@@ -1086,5 +1086,41 @@
 			"l3": "Wir müssen erst langsamer werden.",
 			"l4": "Halt dieses Ding an! Ich befehle es!"
 		}
+	},
+	"collegeFilter": {
+		"lede": "Schneide den Spielplan auf deine Ecke des College-Sports zu. Ein Spiel erscheint, sobald es zu irgendeiner aktiven Auswahl passt, und deine Lieblingsteams kommen immer durch.",
+		"divisionsHeading": "Divisionen",
+		"conferencesHeading": "Conferences",
+		"divisionConferencesHeading": "{division}-Conferences",
+		"division": {
+			"fbs": "FBS",
+			"fcs": "FCS",
+			"d1": "Division I",
+			"d2": "Division II",
+			"d3": "Division III"
+		},
+		"divisionShort": {
+			"fbs": "FBS",
+			"fcs": "FCS",
+			"d1": "D-I",
+			"d2": "D-II",
+			"d3": "D-III"
+		},
+		"ranked": "Top {count}",
+		"otherConferences": "Andere Conferences",
+		"coveredBy": "Bereits in {division} enthalten",
+		"nothingPicked": "Nichts ausgewählt, also erscheinen keine {league}-Spiele.",
+		"loading": "Unsere Scouts kundschaften die Conference-Liste aus…",
+		"loadFailed": "Unsere Scouts sind mit leeren Händen zurückgekommen. Divisionen und Rankings funktionieren trotzdem.",
+		"retry": "Erneut versuchen",
+		"open": "Divisionen und Conferences für {league} auswählen",
+		"summaryNothing": "Nichts ausgewählt",
+		"summaryAll": "Ganz D-I",
+		"summaryConferences": {
+			"1": "1 Conference",
+			"n": "$1 Conferences"
+		},
+		"searchLabel": "College-Divisionen und -Conferences",
+		"keywords": "college ncaa division conference fbs fcs d1 d2 d3 di dii diii top 25 ranked poll sec big ten acc big 12 ivy universität hochschule uni unisport collegesport divisionen konferenz konferenzen rangliste ranking umfrage"
 	}
 }

@@ -1086,5 +1086,41 @@
 			"l3": "我们得先减速。",
 			"l4": "停下来！这是命令！"
 		}
+	},
+	"collegeFilter": {
+		"lede": "把赛程缩小到您关心的大学体育范围。只要比赛符合您开启的任意一项就会显示，您的收藏球队则一定会显示。",
+		"divisionsHeading": "级别",
+		"conferencesHeading": "联盟",
+		"divisionConferencesHeading": "{division} 联盟",
+		"division": {
+			"fbs": "FBS",
+			"fcs": "FCS",
+			"d1": "一级",
+			"d2": "二级",
+			"d3": "三级"
+		},
+		"divisionShort": {
+			"fbs": "FBS",
+			"fcs": "FCS",
+			"d1": "D-I",
+			"d2": "D-II",
+			"d3": "D-III"
+		},
+		"ranked": "前 {count} 名",
+		"otherConferences": "其他联盟",
+		"coveredBy": "已包含在 {division} 中",
+		"nothingPicked": "未选择任何项目，因此不会显示任何 {league} 比赛。",
+		"loading": "我们的球探正举着望远镜打探联盟名单……",
+		"loadFailed": "我们的球探空手而归。级别和排名仍可正常使用。",
+		"retry": "重试",
+		"open": "选择 {league} 的级别和联盟",
+		"summaryNothing": "未选择",
+		"summaryAll": "全部 D-I",
+		"summaryConferences": {
+			"1": "1 个联盟",
+			"n": "$1 个联盟"
+		},
+		"searchLabel": "大学体育级别与联盟",
+		"keywords": "college ncaa division conference fbs fcs d1 d2 d3 di dii diii top 25 ranked poll sec big ten acc big 12 ivy 大学 高校 学院 级别 分级 联盟 分区 排名 排行 前25 投票 民调"
 	}
 }

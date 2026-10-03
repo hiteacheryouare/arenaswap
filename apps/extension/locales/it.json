@@ -1086,5 +1086,41 @@
 			"l3": "Dobbiamo prima rallentare.",
 			"l4": "Fermate questa cosa! Ve lo ordino!"
 		}
+	},
+	"collegeFilter": {
+		"lede": "Restringi il palinsesto al tuo angolo di sport universitario. Una partita compare se corrisponde a qualcosa che attivi, e le tue squadre preferite entrano sempre.",
+		"divisionsHeading": "Division",
+		"conferencesHeading": "Conference",
+		"divisionConferencesHeading": "Conference {division}",
+		"division": {
+			"fbs": "FBS",
+			"fcs": "FCS",
+			"d1": "Division I",
+			"d2": "Division II",
+			"d3": "Division III"
+		},
+		"divisionShort": {
+			"fbs": "FBS",
+			"fcs": "FCS",
+			"d1": "D-I",
+			"d2": "D-II",
+			"d3": "D-III"
+		},
+		"ranked": "Top {count}",
+		"otherConferences": "Altre conference",
+		"coveredBy": "Già inclusa con {division}",
+		"nothingPicked": "Non hai scelto nulla, quindi non compariranno partite di {league}.",
+		"loading": "I nostri osservatori sono in appostamento per l'elenco delle conference…",
+		"loadFailed": "I nostri osservatori sono tornati a mani vuote. Division e classifiche funzionano comunque.",
+		"retry": "Riprova",
+		"open": "Scegli division e conference per {league}",
+		"summaryNothing": "Nessuna scelta",
+		"summaryAll": "Tutta la D-I",
+		"summaryConferences": {
+			"1": "1 conference",
+			"n": "$1 conference"
+		},
+		"searchLabel": "Division e conference universitarie",
+		"keywords": "college ncaa division conference fbs fcs d1 d2 d3 di dii diii top 25 ranked poll sec big ten acc big 12 ivy università universitario universitaria divisione divisioni classifica ranking sondaggio"
 	}
 }

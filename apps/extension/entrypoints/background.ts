@@ -11,6 +11,7 @@ import {
 	normalizeFinishedTabNotice,
 	resolveFinishedTabs,
 } from '../utils/finishedTabs';
+import { loadConferenceDirectory } from '../utils/collegeConferences';
 import { loadStoredUserPreferences } from '../utils/prefsStorage';
 import { boostReasonParts, capitalizeReason, translateReason } from '../utils/powerScoreReason';
 import { displayLocale } from '../utils/displayLocale';
@@ -22,10 +23,17 @@ import {
 import {
 	applyDisabledSignals,
 	clampBoostPoints,
+	collegeFetchGroups,
 	createDefaultUserPreferences,
 	createFavoriteTeamKey,
+	filterCollegeGames,
 	guideMinUpcomingDays,
+	isCollegeLeagueId,
+	isFavoriteTeamGame,
+	needsConferenceDirectory,
 	normalizeUserPreferences,
+	parseFavoriteTeamKey,
+	resolveCollegeFilter,
 	pollIntervalMs,
 	pollDormantMinMs,
 	pollDormantMaxMs,
@@ -36,6 +44,8 @@ import {
 	sportTypeConfigMap,
 } from '@arenaswap/core/constants';
 import type {
+	CollegeLeagueId,
+	ConferenceDirectory,
 	DebugState,
 	ExtensionMessage,
 	Game,
@@ -690,6 +700,51 @@ export default defineBackground(() => {
 		}, prefs.switchDelaySeconds * 1000);
 	};
 
+	const collegeDirectories: Partial<Record<CollegeLeagueId, ConferenceDirectory>> = {};
+
+	const favoriteTeamIdsIn = (leagueId: LeagueId): string[] => prefs.favoriteTeamIds
+		.map(parseFavoriteTeamKey)
+		.filter((key): key is NonNullable<typeof key> => key?.leagueId === leagueId)
+		.map(key => key.teamId);
+
+	// What decides which college games are fetched and kept, so a change to it refetches.
+	const collegeFetchKey = (): string => JSON.stringify([
+		prefs.collegeFilters,
+		prefs.favoriteTeamIds.filter(key => isCollegeLeagueId(parseFavoriteTeamKey(key)?.leagueId)),
+	]);
+
+	// Only the leagues whose filter cannot work without a conference list load one.
+	const warmCollegeDirectories = async (): Promise<void> => {
+		const needed = prefs.enabledLeagues.filter(isCollegeLeagueId).filter(leagueId => needsConferenceDirectory(
+			leagueId,
+			resolveCollegeFilter(prefs.collegeFilters, leagueId),
+			favoriteTeamIdsIn(leagueId).length > 0,
+		));
+		await Promise.all(needed.map(async leagueId => {
+			try {
+				collegeDirectories[leagueId] = await loadConferenceDirectory(leagueId);
+			} catch (err) {
+				logWarn(`Could not load the ${leagueId} conference list.`, err);
+			}
+		}));
+	};
+
+	const keepCollegeGames = (list: Game[]): Game[] => {
+		const favoriteTeamIds = new Set(prefs.favoriteTeamIds);
+		return filterCollegeGames(list, prefs.collegeFilters, collegeDirectories, game => isFavoriteTeamGame(game, favoriteTeamIds));
+	};
+
+	// Every scoreboard read goes through here, so a college game outside the user's divisions and
+	// conferences never reaches the slate, the guide or the switcher.
+	const fetchFilteredGames = async (leagues: LeagueId[], options: Parameters<typeof fetchGamesWithLeagueLogos>[1]) => {
+		const groupsByLeague = Object.fromEntries(leagues.filter(isCollegeLeagueId).map(leagueId => [
+			leagueId,
+			collegeFetchGroups(leagueId, resolveCollegeFilter(prefs.collegeFilters, leagueId), collegeDirectories[leagueId], favoriteTeamIdsIn(leagueId)),
+		]));
+		const result = await fetchGamesWithLeagueLogos(leagues, { ...options, groupsByLeague });
+		return { ...result, games: keepCollegeGames(result.games) };
+	};
+
 	/* Asks for exactly what the display preferences want and no more. Widening this to cover the guide
 	   as well looked free — `includeUpcoming` already makes it two requests per league, so a wider
 	   `dates` range changes the payload and not the request count — and it cost the future. ESPN caps
@@ -704,7 +759,7 @@ export default defineBackground(() => {
 			return;
 		}
 		try {
-			const result = await fetchGamesWithLeagueLogos(prefs.enabledLeagues, {
+			const result = await fetchFilteredGames(prefs.enabledLeagues, {
 				includeUpcoming: true,
 				upcomingDays: prefs.upcomingGamesDays,
 				includeFinal: prefs.keepFinalGames,
@@ -975,7 +1030,7 @@ export default defineBackground(() => {
 		} else {
 			let fetched: Game[];
 			try {
-				const fetchResult = await fetchGamesWithLeagueLogos(enabledLeagues, { includeUpcoming: false, includeFinal: wantsFinalGames() });
+				const fetchResult = await fetchFilteredGames(enabledLeagues, { includeUpcoming: false, includeFinal: wantsFinalGames() });
 				// Every league refused is not an empty slate, it is no answer at all. Replacing `games`
 				// from it would clear a live list and report a quiet night to the popup.
 				if (fetchResult.shedLeagues.length === enabledLeagues.length) {
@@ -1008,7 +1063,7 @@ export default defineBackground(() => {
 		let fetchSucceeded = false;
 		let finishedGames: Game[] = [];
 		try {
-			const fetchResult = await fetchGamesWithLeagueLogos([leagueId], { includeUpcoming: false, includeFinal: wantsFinalGames() });
+			const fetchResult = await fetchFilteredGames([leagueId], { includeUpcoming: false, includeFinal: wantsFinalGames() });
 			// Thrown rather than merged: a shed league comes back with no games, and the tail of this
 			// function would read that as a successful tick with nothing live, hand it to
 			// `recordPollResult`, and walk a league down into dormant while its games are being played.
@@ -1185,6 +1240,7 @@ export default defineBackground(() => {
 		await reconcileClosedTabs().catch(err => {
 			logWarn('Failed to reconcile the tab registry against open tabs.', err);
 		});
+		await warmCollegeDirectories();
 		await refreshSlate().catch(() => {});
 		await refreshScores(false).catch(err => {
 			logError('Initial score refresh failed; starting polling anyway.', err);
@@ -1219,12 +1275,15 @@ export default defineBackground(() => {
 						// needs no help — the refreshScores at the end lands in afterFetch, which
 						// syncs it against whatever prefs.enabled ends up as.
 						const previousLeagues = new Set(prefs.enabledLeagues);
+						const previousCollegeKey = collegeFetchKey();
 						try {
 							prefs = await loadStoredUserPreferences();
 						} catch { /* keep current in-memory prefs */ }
 						const newLeagues = new Set(prefs.enabledLeagues);
 						const leaguesChanged = previousLeagues.size !== newLeagues.size ||
 							[...previousLeagues].some(leagueId => !newLeagues.has(leagueId));
+						const collegeChanged = collegeFetchKey() !== previousCollegeKey;
+						if ((leaguesChanged || collegeChanged) && !demoMode) await warmCollegeDirectories();
 						if (leaguesChanged && !demoMode) {
 							startLeaguePolling();
 							// A league switched off keeps its cached lines until the next sweep otherwise.
@@ -1243,6 +1302,7 @@ export default defineBackground(() => {
 				const prevKeepFinalGames = prefs.keepFinalGames;
 				const prevUpcomingGamesDays = prefs.upcomingGamesDays;
 				const prevLeagues = new Set(prefs.enabledLeagues);
+				const prevCollegeKey = collegeFetchKey();
 				prefs = normalizeUserPreferences(msg.prefs);
 				if (wasEnabled && !prefs.enabled) setLastSwitchTime(0);
 				clearPendingSwitch();
@@ -1261,9 +1321,11 @@ export default defineBackground(() => {
 				const newLeagues = new Set(prefs.enabledLeagues);
 				const leaguesChanged = prevLeagues.size !== newLeagues.size ||
 					[...prevLeagues].some(l => !newLeagues.has(l as LeagueId));
-				if (leaguesChanged && !demoMode) {
+				const collegeChanged = collegeFetchKey() !== prevCollegeKey;
+				if ((leaguesChanged || collegeChanged) && !demoMode) {
+					await warmCollegeDirectories();
 					await refreshSlate();
-					games = [...games.filter(g => g.status === 'in'), ...upcomingGames, ...liveRetainedFinals()];
+					games = [...keepCollegeGames(games.filter(g => g.status === 'in')), ...upcomingGames, ...liveRetainedFinals()];
 					broadcastScoresUpdated();
 					startLeaguePolling();
 					// A league switched off keeps its cached lines until the next sweep otherwise.
@@ -1373,7 +1435,7 @@ export default defineBackground(() => {
 				// target and the poll cadence read that same array, so extra entries would change
 				// which game the extension switches to.
 				try {
-					const result = await fetchGamesWithLeagueLogos(prefs.enabledLeagues, {
+					const result = await fetchFilteredGames(prefs.enabledLeagues, {
 						includeUpcoming: true,
 						// Follows the Up Next setting so the two surfaces agree about how far ahead the
 						// product looks, floored so a guide that can only ever show today still has a

@@ -46,6 +46,7 @@ const defaultPrefs: UserPreferences = {
 	postseasonBoostPoints: 0,
 	upcomingGamesDays: 7,
 	disabledSignals: [],
+	collegeFilters: {},
 };
 
 const defaultProps = {
@@ -70,6 +71,7 @@ const defaultProps = {
 	onToggleSport: () => {},
 	onReorderLeague: () => {},
 	onResetLeagueOrder: () => {},
+	onCollegeFilterChange: () => {},
 	onToggleShowUpcoming: () => {},
 	onToggleKeepFinalGames: () => {},
 	onToggleGroupByLeague: () => {},
@@ -98,6 +100,7 @@ const defaultProps = {
 
 const openGroup = (id: string) => cy.get(`#settingsGroup-${id}`).click();
 
+// College tiles carry a button where the other leagues carry a label, so a tile is found by its switch.
 const leagueLabel = (id: string) => cy.get(`#league-${id}`).closest('.league-toggle-row').find('.league-toggle-label');
 
 // React tracks an input's last value on the element itself and swallows a change event whose value
