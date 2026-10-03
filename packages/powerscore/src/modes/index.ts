@@ -1,10 +1,12 @@
 import { classicMode } from './classic';
+import { blowoutsMode } from './blowouts';
+import { fantasyMode } from './fantasy';
 import type { BuiltInModeId, PowerScoreMode } from '../types';
 
 export const builtInModes: Record<BuiltInModeId, PowerScoreMode> = {
 	classic: classicMode,
-	blowouts: classicMode,
-	fantasy: classicMode,
+	blowouts: blowoutsMode,
+	fantasy: fantasyMode,
 };
 
 // Checks a custom mode once, up front, rather than on every score.
@@ -25,4 +27,4 @@ export const getMode = (mode: BuiltInModeId | PowerScoreMode | undefined): Power
 	return mode;
 };
 
-export { classicMode };
+export { blowoutsMode, classicMode, fantasyMode };

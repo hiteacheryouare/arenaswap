@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## PowerScore gets Blowouts and Fantasy modes — 2026-10-03
+
+Blowouts (#86) scores margin, a lead held, an early rout and a leader still piling on, and floors every game at 30% of its Classic score so a close game stays eligible but never outranks a real beatdown. Fantasy (#85) scores what your rostered players are doing (football down to who has the ball and whether your kicker is in range), their recent fantasy points and how many of them are playing, blended 60/40 with Classic, and `computeFantasyPoints` carries the analyst's default scoring with bounds for every rule.
+
 ## The background feeds the new boosts — 2026-10-03
 
 The 60-second summary sweep now hands its payload to core's live-extras tracker for the closing line and box-score lead changes, live hockey games within three goals fetch the power-play and empty-net situation after each poll, and leagues with late-season races refresh their standings every half hour. A game already past its blowout margin is summarised every three minutes instead of every one, which is where the extra requests are paid for.

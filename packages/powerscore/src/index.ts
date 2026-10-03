@@ -1,5 +1,16 @@
 export { scoreGame, createSignalInput, signalPoints, boostPoints } from './compose';
-export { builtInModes, classicMode, defineMode, getMode } from './modes';
+export { builtInModes, blowoutsMode, classicMode, defineMode, fantasyMode, getMode } from './modes';
+export { blowoutsSignals } from './signals/blowouts';
+export { fantasySignals } from './signals/fantasy';
+export { computeFantasyPoints, defaultFantasyScoring, fantasySportOf, resolveFantasyScoring } from './fantasyScoring';
+export type { FantasyRule, FantasySport } from './fantasyScoring';
+export { goAheadRunBoost } from './boosts/goAheadRun';
+export { twoMinuteDrillBoost } from './boosts/twoMinuteDrill';
+export { noHitterBoost } from './boosts/noHitter';
+export { redCardBoost } from './boosts/redCard';
+export { emptyNetBoost, powerPlayBoost } from './boosts/hockey';
+export { upsetWatchBoost, upsetRoutBoost, underdogProbability } from './boosts/upsetWatch';
+export { stakesBoost } from './boosts/stakes';
 export { classicSignals, closenessSignal, lateGameSignal, momentumSignal, leadChangesSignal, comebackSignal, applyProgressFloor, findLeadChanges } from './signals/classic';
 export { scoringOpportunityBoost } from './boosts/scoringOpportunity';
 export { postseasonBoostShare } from './postseason';

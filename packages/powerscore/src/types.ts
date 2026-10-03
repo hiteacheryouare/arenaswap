@@ -186,6 +186,10 @@ export interface ScorerTunables {
 		fallback: string;
 		// English label for each boost's reason fragment, keyed by boost id.
 		boosts?: Record<string, string>;
+		blowoutMarginSuffix?: string;
+		leadHeld?: string;
+		earlyRout?: string;
+		pilingOn?: string;
 	};
 }
 
@@ -281,16 +285,21 @@ export interface PregameLine {
 	drawMoneyline?: number;
 }
 
-export type FantasyPosition = 'QB' | 'RB' | 'WR' | 'TE' | 'K' | 'DST' | 'player';
+// Football positions, plus a pitcher and a hitter for baseball and a generic player elsewhere.
+export type FantasyPosition = 'QB' | 'RB' | 'WR' | 'TE' | 'K' | 'DST' | 'P' | 'H' | 'player';
 
 export interface FantasyPlayerState {
 	id: string;
+	// For reasons, e.g. "Mahomes has the ball".
+	name?: string;
 	side: Side;
 	position: FantasyPosition;
-	// Live fantasy points in this game, if the caller tracks them (see computeFantasyPoints).
-	points?: number;
 	// False when the feed says the player is out of the game (benched, injured, ejected).
 	active?: boolean;
+	// Baseball: where the player is in the inning.
+	role?: 'atBat' | 'onDeck' | 'inHole' | 'pitching';
+	// Fantasy points as they came in, so recent production can fade like any other event.
+	pointEvents?: { at: number; points: number }[];
 }
 
 export interface ScoringContext {

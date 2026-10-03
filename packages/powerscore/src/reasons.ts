@@ -34,6 +34,20 @@ export const renderReasonEnglish = ({ key, params }: ReasonFragment): string => 
 		case 'cuttingIn': return `${text(params, 'team')} ${reasons.comebackBig ?? 'cutting into it'}`;
 		case 'closingGap': return `${text(params, 'team')} ${reasons.comebackModerate ?? 'closing the gap'}`;
 		case 'fallback': return reasons.fallback;
+		case 'blowoutMargin': return `${text(params, 'margin')}-${text(params, 'unit')} ${reasons.blowoutMarginSuffix ?? 'lead'}`;
+		case 'leadHeld': return `${text(params, 'team')} ${reasons.leadHeld ?? 'in control'}`;
+		case 'earlyRout': return reasons.earlyRout ?? 'plenty of rout left';
+		case 'pilingOn': return `${text(params, 'team')} ${reasons.pilingOn ?? 'piling on'}`;
+		case 'fantasyHasBall': return `${text(params, 'name')} has the ball`;
+		case 'fantasyRedZone': return `${text(params, 'name')} in the red zone`;
+		case 'fantasyFieldGoalRange': return `${text(params, 'name')} in field goal range`;
+		case 'fantasyDefense': return `${text(params, 'name')} on the field`;
+		case 'fantasyAtBat': return `${text(params, 'name')} at bat`;
+		case 'fantasyOnDeck': return `${text(params, 'name')} on deck`;
+		case 'fantasyPitching': return `${text(params, 'name')} pitching`;
+		case 'fantasyInGame': return `${text(params, 'name')} in the game`;
+		case 'fantasyPoints': return `${text(params, 'name')} +${text(params, 'points')} fantasy points`;
+		case 'fantasyRostered': return `${text(params, 'count')} of your players`;
 		default: {
 			const label = reasons.boosts?.[key];
 			if (label !== undefined && params?.points !== undefined) return `${label} (+${params.points})`;
