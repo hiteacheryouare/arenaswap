@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Live slates get recorded for the PowerScore replay — 2026-10-03
+
+`npm run powerscore:record` polls every league and writes what our sources send, raw, to gzipped hourly files under `scripts/powerscore/recordings/`, with live games at 15 seconds and the summary, hockey and basketball situation, and standings alongside. It keeps payloads raw on purpose, so a slate recorded today can be re-parsed by whatever version of core and PowerScore the replay is testing later.
+
 ## The title rounds get past the college filter — 2026-10-02
 
 Each college league's picker has a switch, on by default, that lets the national tournament through whatever else is picked: the men's bracket from the Round of 64, the women's from the Sweet 16, every Playoff game, the hockey tournament and both World Series, with the cutoffs set by the sports analyst in `readCollegeBracket`. Top 25 ignores the rank on a seeded bracket game, since our sources put the seed there and every team in the field would pass. The same review named the college switches for screen readers, pointed the poll lookahead at the divisions the filter fetches, kept preseason out of an NFL team's recent form, and stopped the docs deploy running from anywhere but the newest mega.
