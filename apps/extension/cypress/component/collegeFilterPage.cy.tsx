@@ -197,7 +197,7 @@ describe('college leagues on the Leagues page', () => {
 		const onToggleLeague = cy.stub().as('onToggleLeague');
 		mountSetup({ onToggleLeague });
 		cy.get('#settingsGroup-leagues').click();
-		cy.get('#league-ncaaf').click();
+		cy.get('#league-ncaaf').should('have.attr', 'aria-label', 'NCAA Football').click();
 		cy.get('@onToggleLeague').should('have.been.calledWith', 'ncaaf');
 		cy.get('.setup-header').should('not.contain.text', 'NCAA Football');
 	});

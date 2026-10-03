@@ -1502,7 +1502,7 @@ describe('polling a league with nothing on', () => {
 		await loadBackground({ prefs: nbaOnly, initialSystemTime: startMs, fetchReturnValue: emptySlate });
 		await goQuiet();
 		expect(lookahead()).toHaveBeenCalledTimes(1);
-		expect(lookahead()).toHaveBeenCalledWith('nba');
+		expect(lookahead()).toHaveBeenCalledWith('nba', { groups: [] });
 
 		await pollOnce(pollHebetudinousMaxMs + 60_000);
 		await pollOnce(pollHebetudinousMaxMs + 60_000);

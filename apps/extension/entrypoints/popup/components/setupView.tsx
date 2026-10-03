@@ -535,6 +535,7 @@ const setupView = ({
 														checked={prefs.enabledLeagues.includes(league.id)}
 														onChange={() => onToggleLeague(league.id)}
 														disabled={!prefsLoaded}
+														aria-label={isCollegeLeagueId(league.id) ? league.label : undefined}
 													/>
 												</div>
 											</div>

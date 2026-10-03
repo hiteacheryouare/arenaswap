@@ -1080,16 +1080,20 @@ export const fetchGamesWithLeagueLogos = async (enabledLeagues: LeagueId[], opti
    sleep, so a failure throws rather than returning it. */
 export const fetchNextScheduledStart = async (
 	leagueId: LeagueId,
-	options: { days?: number; now?: Date } = {},
+	options: { days?: number; now?: Date; groups?: string[] } = {},
 ): Promise<number | null> => {
 	const config = leagueConfigMap[leagueId];
 	if (!config) return null;
-	const { days = pollLookaheadDays, now = new Date() } = options;
+	// A college league asks for the divisions its filter fetches, or an FCS-only league would sleep
+	// until the next FBS kickoff.
+	const { days = pollLookaheadDays, now = new Date(), groups = [] } = options;
 	const todayKey = toQueryDate(now);
 	const nowMs = now.getTime();
 
 	for (const dayKey of buildDayWindowKeys(days, now)) {
-		const { games } = await fetchDayGames(config, dayKey, todayKey);
+		const { games } = groups.length > 0
+			? await fetchDayAcrossGroups(config, dayKey, todayKey, groups)
+			: await fetchDayGames(config, dayKey, todayKey);
 		let earliest: number | null = null;
 		for (const game of games) {
 			if (!game.startTime) continue;

@@ -736,11 +736,14 @@ export default defineBackground(() => {
 
 	// Every scoreboard read goes through here, so a college game outside the user's divisions and
 	// conferences never reaches the slate, the guide or the switcher.
+	const collegeGroupsFor = (leagueId: LeagueId): string[] => (
+		isCollegeLeagueId(leagueId)
+			? collegeFetchGroups(leagueId, resolveCollegeFilter(prefs.collegeFilters, leagueId), collegeDirectories[leagueId], favoriteTeamIdsIn(leagueId))
+			: []
+	);
+
 	const fetchFilteredGames = async (leagues: LeagueId[], options: Parameters<typeof fetchGamesWithLeagueLogos>[1]) => {
-		const groupsByLeague = Object.fromEntries(leagues.filter(isCollegeLeagueId).map(leagueId => [
-			leagueId,
-			collegeFetchGroups(leagueId, resolveCollegeFilter(prefs.collegeFilters, leagueId), collegeDirectories[leagueId], favoriteTeamIdsIn(leagueId)),
-		]));
+		const groupsByLeague = Object.fromEntries(leagues.filter(isCollegeLeagueId).map(leagueId => [leagueId, collegeGroupsFor(leagueId)]));
 		const result = await fetchGamesWithLeagueLogos(leagues, { ...options, groupsByLeague });
 		return { ...result, games: keepCollegeGames(result.games) };
 	};
@@ -1109,7 +1112,7 @@ export default defineBackground(() => {
 			// replaces; a failure leaves the league dormant, which is the faster of the two.
 			if (fetchSucceeded && pollModeTracker.needsLookahead(leagueId)) {
 				try {
-					pollModeTracker.recordLookahead(leagueId, await fetchNextScheduledStart(leagueId));
+					pollModeTracker.recordLookahead(leagueId, await fetchNextScheduledStart(leagueId, { groups: collegeGroupsFor(leagueId) }));
 				} catch (err) {
 					logWarn(`Failed to look ahead for ${leagueId}.`, err);
 				}

@@ -2676,6 +2676,14 @@ describe('the polling lookahead', () => {
 		expect(new URL(toUrl(second.fetchMock.mock.calls[0]![0] as RequestInfo)).searchParams.get('groups')).toBe('50');
 	});
 
+	// An FCS-only filter has to wake for the next FCS kickoff, not the next FBS one.
+	test('asks for the divisions it is given', async () => {
+		const { fetchMock, fetchNextScheduledStart } = mockEvents([]);
+		await fetchNextScheduledStart('ncaaf', { now, groups: ['81', '58'] });
+		const asked = new Set(fetchMock.mock.calls.map(call => new URL(toUrl(call[0] as RequestInfo)).searchParams.get('groups')));
+		expect([...asked].toSorted()).toEqual(['58', '81']);
+	});
+
 	// Null is what puts a league to sleep for half an hour, so a failed request must not produce it.
 	test('a failed request throws rather than reading as nothing scheduled', async () => {
 		const fetchMock = jest.fn().mockResolvedValue(createResponse({}, { ok: false, status: 503 }));
