@@ -1107,6 +1107,15 @@
 			"d3": "D-III"
 		},
 		"ranked": "상위 {count}",
+		"titleRounds": {
+			"ncaaf": "칼리지 풋볼 플레이오프",
+			"ncaab": "March Madness",
+			"ncaaw": "스위트 16 이후",
+			"ncaamh": "NCAA 토너먼트",
+			"cbase": "칼리지 월드시리즈",
+			"csoft": "칼리지 월드시리즈"
+		},
+		"titleRoundsHint": "다른 걸 뭘 골라도 이 경기들은 표시돼요.",
 		"otherConferences": "기타 컨퍼런스",
 		"coveredBy": "{division}에 이미 포함돼 있어요",
 		"nothingPicked": "선택한 항목이 없어서 {league} 경기가 표시되지 않아요.",
@@ -1121,6 +1130,6 @@
 			"n": "컨퍼런스 $1개"
 		},
 		"searchLabel": "대학 스포츠 디비전 및 컨퍼런스",
-		"keywords": "college ncaa division conference fbs fcs d1 d2 d3 di dii diii top 25 ranked poll sec big ten acc big 12 ivy 대학 대학스포츠 디비전 컨퍼런스 콘퍼런스 랭킹 순위 톱25 상위 투표"
+		"keywords": "college ncaa division conference fbs fcs d1 d2 d3 di dii diii top 25 ranked poll sec big ten acc big 12 ivy 대학 대학스포츠 디비전 컨퍼런스 콘퍼런스 랭킹 순위 톱25 상위 투표 march madness playoff cfp tournament bracket frozen four college world series 마치 매드니스 플레이오프 토너먼트 대진표 프로즌 포 칼리지 월드시리즈 대학야구 미식축구"
 	}
 }

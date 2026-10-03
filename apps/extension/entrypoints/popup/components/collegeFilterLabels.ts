@@ -19,6 +19,15 @@ export const collegeDivisionShortLabel = (name: CollegeDivisionName): string => 
 	d3: i18n.t('collegeFilter.divisionShort.d3'),
 })[name];
 
+export const collegeTitleRoundsLabel = (leagueId: CollegeLeagueId): string => ({
+	ncaaf: i18n.t('collegeFilter.titleRounds.ncaaf'),
+	ncaab: i18n.t('collegeFilter.titleRounds.ncaab'),
+	ncaaw: i18n.t('collegeFilter.titleRounds.ncaaw'),
+	ncaamh: i18n.t('collegeFilter.titleRounds.ncaamh'),
+	cbase: i18n.t('collegeFilter.titleRounds.cbase'),
+	csoft: i18n.t('collegeFilter.titleRounds.csoft'),
+})[leagueId];
+
 export const collegeRankedLabel = (leagueId: CollegeLeagueId): string => (
 	i18n.t('collegeFilter.ranked', { count: String(collegeRankedPollSize[leagueId]) })
 );

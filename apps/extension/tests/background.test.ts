@@ -2295,7 +2295,7 @@ describe('college division filters', () => {
 		return state.games.map(g => g.id);
 	};
 
-	const fcsOnly = { ncaaf: { divisions: ['81'], conferences: [], ranked: false } };
+	const fcsOnly = { ncaaf: { divisions: ['81'], conferences: [], ranked: false, titleRounds: false } };
 
 	test('asks for the divisions the filter needs and keeps only what it lets through', async () => {
 		await loadBackground({
@@ -2340,7 +2340,7 @@ describe('college division filters', () => {
 	test('baseball reads conferences from the stored conference list', async () => {
 		const baseballGame = (id: string, homeId: string): Game => ({ ...cfb(id, []), league: 'cbase' as LeagueId, sportType: 'baseball', collegeGroups: undefined, homeTeam: { id: homeId, name: 'H', abbreviation: 'H', score: 1 } });
 		await loadBackground({
-			prefs: { enabledLeagues: ['cbase' as LeagueId], collegeFilters: { cbase: { divisions: [], conferences: ['58'], ranked: false } } },
+			prefs: { enabledLeagues: ['cbase' as LeagueId], collegeFilters: { cbase: { divisions: [], conferences: ['58'], ranked: false, titleRounds: false } } },
 			storedLocal: {
 				'arenaswap.collegeConferences.cbase': {
 					leagueId: 'cbase',

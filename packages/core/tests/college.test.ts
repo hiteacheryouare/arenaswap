@@ -7,6 +7,7 @@ import {
 	needsConferenceDirectory,
 	normalizeCollegeFilters,
 	passesCollegeFilter,
+	readCollegeBracket,
 	resolveConferenceCrest,
 	withCollegeFilter,
 } from '../src/college';
@@ -27,7 +28,7 @@ const game = (league: LeagueId, home: Partial<Team> & { id: string }, away: Part
 	...extra,
 });
 
-const filter = (partial: Partial<CollegeFilter>): CollegeFilter => ({ divisions: [], conferences: [], ranked: false, ...partial });
+const filter = (partial: Partial<CollegeFilter>): CollegeFilter => ({ divisions: [], conferences: [], ranked: false, titleRounds: false, ...partial });
 
 const footballDirectory: ConferenceDirectory = {
 	leagueId: 'ncaaf',
@@ -57,14 +58,14 @@ describe('college filter preferences', () => {
 			ncaab: { divisions: [], conferences: ['23', '23', 7, ''], ranked: true },
 			nba: { divisions: ['50'], conferences: [], ranked: true },
 		})).toEqual({
-			ncaab: { divisions: [], conferences: ['23'], ranked: true },
+			ncaab: { divisions: [], conferences: ['23'], ranked: true, titleRounds: true },
 		});
 	});
 
 	test('drops divisions a league does not have', () => {
 		expect(normalizeCollegeFilters({ ncaab: { divisions: ['80', '50'], conferences: [], ranked: 'yes' } })).toEqual({});
 		expect(normalizeCollegeFilters({ ncaaf: { divisions: ['81', 'd1'] } })).toEqual({
-			ncaaf: { divisions: ['81'], conferences: [], ranked: false },
+			ncaaf: { divisions: ['81'], conferences: [], ranked: false, titleRounds: true },
 		});
 	});
 
@@ -76,7 +77,7 @@ describe('college filter preferences', () => {
 
 	test('setting a league back to its default removes it', () => {
 		const changed = withCollegeFilter({}, 'ncaaf', filter({ divisions: ['80', '81'] }));
-		expect(changed).toEqual({ ncaaf: { divisions: ['80', '81'], conferences: [], ranked: false } });
+		expect(changed).toEqual({ ncaaf: { divisions: ['80', '81'], conferences: [], ranked: false, titleRounds: false } });
 		expect(withCollegeFilter(changed, 'ncaaf', defaultCollegeFilter('ncaaf'))).toEqual({});
 	});
 });
@@ -220,5 +221,52 @@ describe('conference crests', () => {
 		expect(conferenceCrestSlug('cbase', 'Big 10')).toBe('big_ten');
 		expect(conferenceCrestSlug('ncaamh', 'IND')).toBeUndefined();
 		expect(resolveConferenceCrest(undefined, 'dark')).toEqual({ drawnForDark: false });
+	});
+});
+
+describe('the title rounds', () => {
+	test('read off the round headline, per sport', () => {
+		expect(readCollegeBracket('ncaab', "NCAA Men's Basketball Championship - East Region - 1st Round")).toEqual({ collegeTitleRound: true, collegeSeeded: true });
+		expect(readCollegeBracket('ncaab', "NCAA Men's Basketball Championship - West Region - First Four").collegeTitleRound).toBeUndefined();
+		expect(readCollegeBracket('ncaab', 'NIT - 1st Round')).toEqual({});
+		expect(readCollegeBracket('ncaaw', "NCAA Women's Basketball Championship - Regional 3 in Fort Worth - 1st Round").collegeTitleRound).toBeUndefined();
+		expect(readCollegeBracket('ncaaw', "NCAA Women's Basketball Championship - Regional 1 in Fort Worth - Sweet 16").collegeTitleRound).toBe(true);
+		expect(readCollegeBracket('ncaaw', "Women's NIT - 3rd Round")).toEqual({});
+		expect(readCollegeBracket('ncaaf', 'College Football Playoff First Round Game')).toEqual({ collegeTitleRound: true, collegeSeeded: true });
+		expect(readCollegeBracket('ncaaf', 'FCS Championship - Semifinals')).toEqual({});
+		expect(readCollegeBracket('ncaaf', 'Pop-Tarts Bowl')).toEqual({});
+		expect(readCollegeBracket('ncaamh', "NCAA Men's Hockey Championship - Albany Regional Semifinal").collegeTitleRound).toBe(true);
+		expect(readCollegeBracket('cbase', "Men's College World Series - Elimination Game").collegeTitleRound).toBe(true);
+		expect(readCollegeBracket('cbase', 'NCAA Baseball Championship - Athens Super Regional - Game 1')).toEqual({});
+		expect(readCollegeBracket('csoft', "Women's College World Series - Finals - Game 1").collegeTitleRound).toBe(true);
+		expect(readCollegeBracket('nba', 'NBA Finals - Game 1')).toEqual({});
+	});
+
+	test('get past a filter that would otherwise drop them, while the switch is on', () => {
+		const bigTenOnly = filter({ conferences: ['7'] });
+		const eliteEight = game('ncaab', { id: 'a', conferenceId: '2' }, { id: 'b', conferenceId: '8' }, { collegeTitleRound: true });
+		expect(passesCollegeFilter(eliteEight, { ...bigTenOnly, titleRounds: true }, undefined, false)).toBe(true);
+		expect(passesCollegeFilter(eliteEight, bigTenOnly, undefined, false)).toBe(false);
+	});
+
+	// In March the rank field holds the seed, and every team in the field has one.
+	test('Top 25 ignores a seed, and still trusts a bowl\'s poll rank', () => {
+		const rankedOnly = filter({ ranked: true });
+		const sixteenSeeds = game('ncaab', { id: 'a', rank: 16 }, { id: 'b', rank: 1 }, { collegeSeeded: true });
+		const rankedBowl = game('ncaaf', { id: 'a', rank: 12 }, { id: 'b', rank: 22 }, { collegeGroups: ['80'] });
+		expect(passesCollegeFilter(sixteenSeeds, rankedOnly, undefined, false)).toBe(false);
+		expect(passesCollegeFilter(rankedBowl, rankedOnly, undefined, false)).toBe(true);
+	});
+
+	test('are on by default, and a switched-off one is stored', () => {
+		expect(defaultCollegeFilter('ncaab').titleRounds).toBe(true);
+		expect(normalizeCollegeFilters({ ncaab: { divisions: ['50'], conferences: [], ranked: false, titleRounds: false } })).toEqual({
+			ncaab: { divisions: ['50'], conferences: [], ranked: false, titleRounds: false },
+		});
+	});
+
+	test('keep FBS on the fetch list for an FCS-only football filter, since the Playoff is FBS', () => {
+		expect(collegeFetchGroups('ncaaf', filter({ divisions: ['81'], titleRounds: true }))).toEqual(['80', '81']);
+		expect(collegeFetchGroups('ncaaf', filter({ divisions: ['81'] }))).toEqual(['81']);
 	});
 });

@@ -1107,6 +1107,15 @@
 			"d3": "D-III"
 		},
 		"ranked": "前 {count} 名",
+		"titleRounds": {
+			"ncaaf": "大学橄榄球季后赛",
+			"ncaab": "March Madness",
+			"ncaaw": "甜蜜16强起",
+			"ncaamh": "NCAA 锦标赛",
+			"cbase": "大学世界大赛",
+			"csoft": "大学世界大赛"
+		},
+		"titleRoundsHint": "无论您还选了什么，这些比赛都会显示。",
 		"otherConferences": "其他联盟",
 		"coveredBy": "已包含在 {division} 中",
 		"nothingPicked": "未选择任何项目，因此不会显示任何 {league} 比赛。",
@@ -1121,6 +1130,6 @@
 			"n": "$1 个联盟"
 		},
 		"searchLabel": "大学体育级别与联盟",
-		"keywords": "college ncaa division conference fbs fcs d1 d2 d3 di dii diii top 25 ranked poll sec big ten acc big 12 ivy 大学 高校 学院 级别 分级 联盟 分区 排名 排行 前25 投票 民调"
+		"keywords": "college ncaa division conference fbs fcs d1 d2 d3 di dii diii top 25 ranked poll sec big ten acc big 12 ivy 大学 高校 学院 级别 分级 联盟 分区 排名 排行 前25 投票 民调 march madness playoff cfp tournament bracket frozen four college world series 疯狂三月 季后赛 锦标赛 淘汰赛 对阵表 冰冻四强 大学世界大赛"
 	}
 }

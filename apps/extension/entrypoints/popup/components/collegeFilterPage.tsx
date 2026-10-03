@@ -5,7 +5,7 @@ import { collegeDivisions, collegeLeaguesWithOtherConferences, isConferenceCover
 import type { CollegeFilter, CollegeLeagueId, ConferenceDirectory, ConferenceEntry, LeagueLogoMap } from '@arenaswap/core/types';
 import ConferenceCrest from '@arenaswap/ui/src/components/conferenceCrest';
 import { loadConferenceDirectory } from '../../../utils/collegeConferences';
-import { collegeDivisionLabel, collegeDivisionShortLabel, collegeRankedLabel } from './collegeFilterLabels';
+import { collegeDivisionLabel, collegeDivisionShortLabel, collegeRankedLabel, collegeTitleRoundsLabel } from './collegeFilterLabels';
 import LeagueLogo, { type leagueConfig } from './leagueLogo';
 
 interface collegeFilterPageProps {
@@ -144,6 +144,15 @@ const CollegeFilterPage = ({ league, leagueLogos, filter, disabled, onChange }: 
 						checked={filter.ranked}
 						disabled={disabled}
 						onChange={() => onChange({ ...filter, ranked: !filter.ranked })}
+					/>
+					<FilterTile
+						id='college-title-rounds'
+						crest={<span className='league-toggle-logo college-filter-icon' aria-hidden='true'><i className='bi bi-diagram-3' /></span>}
+						label={collegeTitleRoundsLabel(leagueId)}
+						title={i18n.t('collegeFilter.titleRoundsHint')}
+						checked={filter.titleRounds}
+						disabled={disabled}
+						onChange={() => onChange({ ...filter, titleRounds: !filter.titleRounds })}
 					/>
 				</div>
 			</div>

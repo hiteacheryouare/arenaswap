@@ -1107,6 +1107,15 @@
 			"d3": "D-III"
 		},
 		"ranked": "Top {count}",
+		"titleRounds": {
+			"ncaaf": "College Football Playoff",
+			"ncaab": "March Madness",
+			"ncaaw": "Desde los Sweet 16",
+			"ncaamh": "Torneo de la NCAA",
+			"cbase": "College World Series",
+			"csoft": "College World Series"
+		},
+		"titleRoundsHint": "Estos partidos aparecen sin importar qué más elijas.",
 		"otherConferences": "Otras conferencias",
 		"coveredBy": "Ya incluida en {division}",
 		"nothingPicked": "No hay nada elegido, así que no aparecerá ningún partido de {league}.",
@@ -1121,6 +1130,6 @@
 			"n": "$1 conferencias"
 		},
 		"searchLabel": "Divisiones y conferencias universitarias",
-		"keywords": "college ncaa division conference fbs fcs d1 d2 d3 di dii diii top 25 ranked poll sec big ten acc big 12 ivy universidad universitario universitaria colegial deporte universitario división divisiones conferencia conferencias ranking clasificación encuesta"
+		"keywords": "college ncaa division conference fbs fcs d1 d2 d3 di dii diii top 25 ranked poll sec big ten acc big 12 ivy universidad universitario universitaria colegial deporte universitario división divisiones conferencia conferencias ranking clasificación encuesta march madness playoff cfp tournament bracket frozen four college world series torneo playoffs eliminatorias cuadro llave postemporada"
 	}
 }

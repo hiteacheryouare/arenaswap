@@ -1107,6 +1107,15 @@
 			"d3": "D-III"
 		},
 		"ranked": "Top {count}",
+		"titleRounds": {
+			"ncaaf": "College Football Playoff",
+			"ncaab": "March Madness",
+			"ncaaw": "Sweet 16 onward",
+			"ncaamh": "NCAA Tournament",
+			"cbase": "College World Series",
+			"csoft": "College World Series"
+		},
+		"titleRoundsHint": "These games show up whatever else you pick.",
 		"otherConferences": "Other conferences",
 		"coveredBy": "Already included with {division}",
 		"nothingPicked": "Nothing's picked, so no {league} games will show up.",
@@ -1121,6 +1130,6 @@
 			"n": "$1 conferences"
 		},
 		"searchLabel": "College divisions and conferences",
-		"keywords": "college ncaa division conference fbs fcs d1 d2 d3 di dii diii top 25 ranked poll sec big ten acc big 12 ivy"
+		"keywords": "college ncaa division conference fbs fcs d1 d2 d3 di dii diii top 25 ranked poll sec big ten acc big 12 ivy march madness playoff cfp tournament bracket frozen four college world series"
 	}
 }

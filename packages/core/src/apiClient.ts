@@ -1,8 +1,8 @@
-import { collegeFetchGroups } from './college';
+import { collegeFetchGroups, readCollegeBracket } from './college';
 import { isWithinFinalRetention, leagueConfigMap, pollLookaheadDays, pollMinEagerMs, resolveLeagueLogoUrl, upcomingGamesDaysMax } from './constants';
 import { parseClockToSeconds } from './gameClock';
 import { toLeagueSchedule } from './leagueSchedule';
-import { gradePostseason } from './postseasonRound';
+import { gradePostseason, readEventHeadline } from './postseasonRound';
 import {
 	EspnSummarySchema,
 	parseScoreboard,
@@ -706,6 +706,7 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 		// regular-season oddity like an NFL London game carries a typed note too.
 		postseasonRound: grade?.round,
 		postseasonLabel: grade?.label,
+		...(postseason ? readCollegeBracket(league, readEventHeadline(comp.notes)) : {}),
 		delayed: isDelayed || undefined,
 		delayDescription,
 	};

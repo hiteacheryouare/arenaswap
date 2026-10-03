@@ -202,6 +202,11 @@ export interface Game {
 	// The college division scoreboards that returned this game (`groups=` values). An FBS vs FCS
 	// game comes back from both.
 	collegeGroups?: string[];
+	// A college postseason game the filter lets through when its title-rounds switch is on. See
+	// readCollegeBracket in college.ts.
+	collegeTitleRound?: boolean;
+	// A seeded national bracket, where the rank field carries the seed rather than a poll rank.
+	collegeSeeded?: boolean;
 }
 
 // What becomes of a registered tab once its game is over. 'keep' is what ArenaSwap has always
@@ -264,6 +269,8 @@ export interface CollegeFilter {
 	divisions: string[];
 	conferences: string[];
 	ranked: boolean;
+	// The national tournament's later rounds get through whatever else is picked.
+	titleRounds: boolean;
 }
 
 export type CollegeFilterMap = Partial<Record<CollegeLeagueId, CollegeFilter>>;
