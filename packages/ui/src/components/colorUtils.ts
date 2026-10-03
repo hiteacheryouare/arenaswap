@@ -222,12 +222,29 @@ export const resolveChartLineColors = (
 	awayFallback = '#60a5fa',
 	homeFallback = '#f87171',
 ): [string, string] => {
+	const lift = (color: string, fallback: string): string => (
+		surface === 'dark'
+			? resolveReadableSeriesColor(color, fallback)
+			: resolveReadableCardTextColor(color, fallback, seriesOnLightLuminanceCeiling)
+	);
 	const [a, h] = resolveTeamColorPair(away, home, awayFallback, homeFallback);
-	if (surface === 'dark') return [resolveReadableSeriesColor(a, awayFallback), resolveReadableSeriesColor(h, homeFallback)];
-	return [
-		resolveReadableCardTextColor(a, awayFallback, seriesOnLightLuminanceCeiling),
-		resolveReadableCardTextColor(h, homeFallback, seriesOnLightLuminanceCeiling),
-	];
+	const awayLine = lift(a, awayFallback);
+	const homeLine = lift(h, homeFallback);
+	if (colorDifference(awayLine, homeLine) >= clashDifference) return [awayLine, homeLine];
+
+	// Lifting pulls every navy toward the same mid-blue, so two sides that were clearly apart as
+	// published can meet on the chart. The same switch the card makes is tried again on the lines.
+	const awaySwitch = switchColor(away, primaryOf(away) ?? awayFallback);
+	if (awaySwitch && awaySwitch !== a) {
+		const switched = lift(awaySwitch, awayFallback);
+		if (colorDifference(switched, homeLine) >= clashDifference) return [switched, homeLine];
+	}
+	const homeAlternate = usableAlternate(home);
+	if (homeAlternate && homeAlternate !== h) {
+		const switched = lift(homeAlternate, homeFallback);
+		if (colorDifference(awayLine, switched) >= clashDifference) return [awayLine, switched];
+	}
+	return [awayLine, homeLine];
 };
 
 // ── A matchup painted in its two colours ─────────────────────────────────────

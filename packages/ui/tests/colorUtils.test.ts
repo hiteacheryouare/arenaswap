@@ -1,3 +1,4 @@
+import { colorDifference } from '../src/components/colorMath';
 import { crestBacking, pendingSwitchCrest, resolveChartLineColors, readableInkOn, readableTeamInkOnCard, resolveTeamColorPair, teamDisplayInk, teamRowWash } from '../src/components/colorUtils';
 
 jest.mock('../src/components/logoSwitchColor', () => ({
@@ -393,6 +394,16 @@ describe('resolveChartLineColors', () => {
 	test('leaves a colour just above the 3:1 boundary alone', () => {
 		const [a] = resolveChartLineColors({ color: '#C8102E' }, { color: '#FFC72C' }, 'dark');
 		expect(a).toBe('#C8102E');
+	});
+
+	// Yankees navy and Dodger blue are 20 apart as published and 4.5 apart once both are lifted, so
+	// the card keeps both primaries and the chart has to switch a side of its own accord.
+	test('switches a side when lifting brings two distinct blues together', () => {
+		const yankees = { color: '#0C2340', alternateColor: '#C4CED3' };
+		const dodgers = { color: '#005A9C', alternateColor: '#EF3E42' };
+		expect(resolveTeamColorPair(yankees, dodgers)).toEqual(['#0C2340', '#005A9C']);
+		const [a, h] = resolveChartLineColors(yankees, dodgers, 'dark');
+		expect(colorDifference(a, h)).toBeGreaterThanOrEqual(11);
 	});
 });
 
