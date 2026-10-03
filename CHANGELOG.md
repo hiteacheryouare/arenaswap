@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The title rounds get past the college filter — 2026-10-02
+
+Each college league's picker has a switch, on by default, that lets the national tournament through whatever else is picked: the men's bracket from the Round of 64, the women's from the Sweet 16, every Playoff game, the hockey tournament and both World Series, with the cutoffs set by the sports analyst in `readCollegeBracket`. Top 25 ignores the rank on a seeded bracket game, since our sources put the seed there and every team in the field would pass. The same review named the college switches for screen readers, pointed the poll lookahead at the divisions the filter fetches, kept preseason out of an NFL team's recent form, and stopped the docs deploy running from anywhere but the newest mega.
+
 ## College leagues filter by division, conference and Top 25 — 2026-10-02
 
 Each college league tile in Settings → Leagues opens a picker of divisions, Top 25 and conference crests, and a game shows if it matches anything picked, with favorite teams always let through. Conference ids differ by sport (the SEC is 8 in football and 23 in basketball), so crests are looked up by name and never by id, and hockey, baseball and softball games carry no conference at all, so their teams are matched through a weekly cached conference list. Football can now fetch FCS, D-II and D-III, which it never showed before, and women's basketball asks for `groups=50`, because `49` returned no games on any date.
