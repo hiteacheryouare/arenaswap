@@ -1,4 +1,6 @@
 import { scoreGame, signalPoints, boostPoints } from '../src/compose';
+import { classicMode } from '../src/modes';
+import { scoringOpportunityBoost } from '../src/boosts/scoringOpportunity';
 import { leagueConfigs } from '../src/constants';
 import type { Game, ScoreSnapshot } from '../src/types';
 import { scoreGameV2, type V2PostseasonRound, type V2SignalName } from './legacy/v2/compose';
@@ -85,6 +87,10 @@ const buildWinProbability = (random: Random): number[] => {
 	return Array.from({ length }, () => (random.chance(0.03) ? Number.NaN : Math.min(1, Math.max(0, center + (random.next() - 0.5) * 0.4))));
 };
 
+// Classic with only the boost 2.2.0 had, so the sweep pins the pipeline itself. The boosts added
+// since are tested on their own.
+const classicAsShipped = { ...classicMode, boosts: [scoringOpportunityBoost] };
+
 describe('v3 Classic matches the 2.2.0 pipeline', () => {
 	const random = createRandom(20261003);
 	const cases = 20_000;
@@ -114,7 +120,7 @@ describe('v3 Classic matches the 2.2.0 pipeline', () => {
 				gameBoost,
 			});
 			const v3 = scoreGame(game, { history, stallCount, winProbability }, {
-				mode: 'classic',
+				mode: classicAsShipped,
 				disabledSignals,
 				favoriteTeamCount,
 				favoriteBoostPoints,

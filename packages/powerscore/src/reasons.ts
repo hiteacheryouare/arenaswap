@@ -31,11 +31,11 @@ export const renderReasonEnglish = ({ key, params }: ReasonFragment): string => 
 		case 'onARoll': return `${text(params, 'team')} ${reasons.momentumRolling}`;
 		case 'tradingLeads': return reasons.leadChangeMultiple;
 		case 'justTookLead': return reasons.leadChangeSingle;
-		case 'cuttingIn': return `${text(params, 'team')} ${reasons.comebackBig}`;
-		case 'closingGap': return `${text(params, 'team')} ${reasons.comebackModerate}`;
+		case 'cuttingIn': return `${text(params, 'team')} ${reasons.comebackBig ?? 'cutting into it'}`;
+		case 'closingGap': return `${text(params, 'team')} ${reasons.comebackModerate ?? 'closing the gap'}`;
 		case 'fallback': return reasons.fallback;
 		default: {
-			const label = reasons.boosts[key];
+			const label = reasons.boosts?.[key];
 			if (label !== undefined && params?.points !== undefined) return `${label} (+${params.points})`;
 			return label ?? key;
 		}

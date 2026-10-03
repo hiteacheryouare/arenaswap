@@ -68,6 +68,7 @@ export interface Game<League extends string = LeagueId> {
 	postseasonRound?: PostseasonRound;
 	series?: SeriesState;
 	redCards?: RedCard[];
+	seasonType?: 'regular' | 'postseason';
 }
 
 export type PostseasonRound = 0 | 1 | 2 | 3;
@@ -179,11 +180,12 @@ export interface ScorerTunables {
 		momentumRolling: string;
 		leadChangeMultiple: string;
 		leadChangeSingle: string;
-		comebackBig: string;
-		comebackModerate: string;
+		// Optional so a 2.x tunables object still type-checks; the built-in English fills the gaps.
+		comebackBig?: string;
+		comebackModerate?: string;
 		fallback: string;
 		// English label for each boost's reason fragment, keyed by boost id.
-		boosts: Record<string, string>;
+		boosts?: Record<string, string>;
 	};
 }
 
@@ -254,21 +256,29 @@ export interface LeagueRunMinutes {
 
 // ── v3 ────────────────────────────────────────────────────────────────────────────────────────
 
+// Late-season race flags for one team, regular season only.
 export interface TeamStakes {
-	// Winning this game can clinch a playoff spot, a division or a title.
+	// Winning this game clinches a playoff spot, a division or a title whatever else happens.
 	canClinch?: boolean;
-	// Losing this game can knock the team out of contention.
+	// Losing this game knocks the team out of contention.
 	canBeEliminated?: boolean;
-	// Within reach of a table line late in the season: a playoff cut, a European place, relegation.
-	nearLine?: boolean;
+	// Still in the playoff hunt, neither safe nor out.
+	inRace?: boolean;
+	// Within a few points of a table line: the title, relegation, the top European places, or any
+	// other line (a lesser European place, a playoff cut).
+	nearLine?: 'title' | 'relegation' | 'topQualification' | 'other';
 }
 
+// The line as it stood before the game: a live line moves with the score and would erase an upset.
 export interface PregameLine {
 	favorite: Side;
-	// Points (or goals/runs) the favorite was laid. Absent when only a moneyline is known.
+	// Points the favorite was laid (positive). Only read for basketball and football.
 	spread?: number;
-	// The favorite's American moneyline, e.g. -240.
-	moneyline?: number;
+	// American moneylines, e.g. -240 and +190. With both, the vig is removed before use.
+	favoriteMoneyline?: number;
+	underdogMoneyline?: number;
+	// Soccer's three-way line.
+	drawMoneyline?: number;
 }
 
 export type FantasyPosition = 'QB' | 'RB' | 'WR' | 'TE' | 'K' | 'DST' | 'player';
@@ -295,9 +305,12 @@ export interface ScoringContext {
 	stakes?: Partial<Record<Side, TeamStakes>>;
 	// A side when the feed says who has it, `true` when it only says one is on.
 	powerPlay?: Side | boolean;
+	// Set only once the feed has reported it on two polls in a row: a goalie pulled for a delayed
+	// penalty is back within seconds.
 	emptyNet?: Side | boolean;
-	// Lead changes counted by the feed's own play log, which sees flips that happen between polls.
-	leadChanges?: number;
+	// Lead changes inside the history window counted by the feed's own play log, which sees flips
+	// that happen between polls, and when the latest one happened.
+	recentLeadChanges?: { count: number; lastAt?: number };
 	fantasy?: FantasyPlayerState[];
 }
 
@@ -336,6 +349,8 @@ export interface BoostOutput extends SignalOutput {
 
 export interface BoostDefinition {
 	id: string;
+	// Boosts in one bucket share the mode's cap for that bucket.
+	bucket?: string;
 	compute: (input: SignalInput) => BoostOutput;
 }
 
@@ -351,6 +366,8 @@ export interface PowerScoreMode {
 	signals: readonly SignalDefinition[];
 	// Automatic boosts this mode pays, in display order.
 	boosts: readonly BoostDefinition[];
+	// Most a bucket of boosts may add together. Earlier boosts in the list are paid first.
+	bucketCaps?: Readonly<Record<string, number>>;
 	// Signal ids in the order their reasons are worth reading.
 	reasonPriority: readonly string[];
 	reasonLimit: number;

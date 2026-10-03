@@ -32,7 +32,8 @@ export const computeScoringOpportunity = ({ game, sport, margin }: Pick<SignalIn
 	if (isPlayFrozen(game)) return 0;
 	if (game.sportType === 'baseball' || game.sportType === 'softball') {
 		const r = game.baseRunners;
-		if (!r) return 0;
+		// Runners can linger on the scoreboard for a poll after the third out.
+		if (!r || (game.outs ?? 0) >= 3) return 0;
 		return scoringOpportunityBaseRunnerBoosts[[r.first, r.second, r.third].filter(Boolean).length] ?? 0;
 	}
 	if (game.sportType === 'football' && game.isRedZone) return getRedZoneBoost(game, sport, margin);
@@ -41,5 +42,6 @@ export const computeScoringOpportunity = ({ game, sport, margin }: Pick<SignalIn
 
 export const scoringOpportunityBoost: BoostDefinition = {
 	id: 'scoringOpportunity',
+	bucket: 'moment',
 	compute: input => ({ points: computeScoringOpportunity(input) }),
 };

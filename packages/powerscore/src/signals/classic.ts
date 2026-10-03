@@ -1,4 +1,5 @@
 import {
+	redCardTunables,
 	scorerTunables,
 	scoreMaxCloseness,
 	scoreMaxLateGame,
@@ -8,6 +9,7 @@ import {
 } from '../constants';
 import { ageSince, clamp, decayFactor } from '../math';
 import { getClockSecondsRemaining } from '../progress';
+import { shorthandedSide } from '../boosts/redCard';
 import { formatClock } from '../reasons';
 import type {
 	BaseballLateGameCurveConfig,
@@ -67,7 +69,12 @@ export const computeCloseness = ({ game, sport, progress, margin }: SignalInput)
 		tier = scores.closeness.none;
 	}
 
-	return { points: applyProgressFloor(tier, scores.closenessFlatFloor, progress), reason };
+	const points = applyProgressFloor(tier, scores.closenessFlatFloor, progress);
+	// Ten men protecting a one-goal lead concede far more often than a full side does, so the game
+	// is closer than the score says.
+	const shorthanded = margin === 1 ? shorthandedSide(game) : undefined;
+	const underSiege = shorthanded !== undefined && (shorthanded === 'home' ? game.homeTeam.score > game.awayTeam.score : game.awayTeam.score > game.homeTeam.score);
+	return { points: underSiege ? Math.min(scoreMaxCloseness, points + redCardTunables.siegeClosenessBump) : points, reason };
 };
 
 type LateGamePhase = 'previous' | 'final';
@@ -252,7 +259,12 @@ export const computeLeadChanges = ({ context, sport, now }: SignalInput): Signal
 	const history = context.history ?? [];
 	if (history.length < 3) return none;
 
-	const { count, lastTimestamp } = findLeadChanges(history);
+	const seen = findLeadChanges(history);
+	// The feed's play log catches a lead that flips and flips back between two polls.
+	const logged = context.recentLeadChanges;
+	const fromLog = logged !== undefined && logged.count > seen.count;
+	const count = fromLog ? logged.count : seen.count;
+	const lastTimestamp = fromLog ? (logged.lastAt ?? seen.lastTimestamp ?? now) : seen.lastTimestamp;
 	let tier: number;
 	let reason: ReasonFragment;
 	if (count >= 2) {

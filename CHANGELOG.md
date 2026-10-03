@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Classic PowerScore learns the moments fans flip to — 2026-10-03
+
+Classic now pays for a go-ahead run on base (#161), a one-score two-minute drill (#166), a no-hit bid from the 6th (#159), a fresh red card in a close match (#162), a late power play or empty net (#163), an underdog hanging around late (#157) and what the result decides: a series on the brink, two ranked teams, a late-season race (#158). The sports analyst set every number, and the boosts share caps (20 for moments, 70 for a no-hitter, 16 for upset plus stakes) so they can't stack past a late one-score swing; runners on base also stop paying once the third out is made.
+
 ## The slate recorder survives a busy hour and a restart — 2026-10-03
 
 The recorder now rotates its hourly file without awaiting, so writes that land mid-rotation can no longer open a second stream on the same file, and each run writes its own files rather than appending to one a killed run left without a gzip trailer. A failed poll keeps the live cadence instead of dropping to the five-minute idle one, and every request gives up after ten seconds.

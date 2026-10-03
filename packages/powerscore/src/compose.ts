@@ -1,6 +1,6 @@
 import { scoreMaxTotal, stallPenaltySteps } from './constants';
 import { resolveLeagueConfig, resolveSportConfig } from './config';
-import { clamp, isFiniteNumber, sum } from './math';
+import { clamp, isFiniteNumber, sum, toFiniteNumber } from './math';
 import { classicMode, getMode } from './modes';
 import { postseasonBoostShare } from './postseason';
 import { getGameProgress, isPlayFrozen, scoreMargin } from './progress';
@@ -60,15 +60,20 @@ const stallPenaltyFor = (stallCount: number | undefined): number | undefined => 
 // Disabled signals score nothing and the survivors are rescaled to the mode's full signal ceiling,
 // not to 100: the subtotal is pre-cap and the total is capped at 100 afterwards, so scaling to 100
 // here would cap twice and deflate every score. Disabling everything disables nothing.
-const runMode = (mode: PowerScoreMode, input: SignalInput, disabledSignals: readonly string[] = []): ModeRun => {
+// Switching every signal off switches none of them off.
+const disabledSetFor = (mode: PowerScoreMode, disabledSignals: readonly string[] = []): ReadonlySet<string> => {
 	const disabled = new Set(disabledSignals);
-	const everythingOff = mode.signals.every(signal => disabled.has(signal.id));
-	const isOff = (id: string) => !everythingOff && disabled.has(id);
+	return mode.signals.every(signal => disabled.has(signal.id)) ? new Set() : disabled;
+};
+
+const runMode = (mode: PowerScoreMode, input: SignalInput, disabledSignals?: readonly string[]): ModeRun => {
+	const disabled = disabledSetFor(mode, disabledSignals);
+	const isOff = (id: string) => disabled.has(id);
 
 	const outputs = mode.signals.map(signal => ({ signal, output: signal.compute(input) }));
 	const signals: ScoredSignal[] = outputs.map(({ signal, output }) => ({
 		id: signal.id,
-		points: isOff(signal.id) ? 0 : clamp(Math.round(output.points), 0, signal.ceiling),
+		points: isOff(signal.id) ? 0 : clamp(Math.round(toFiniteNumber(output.points)), 0, signal.ceiling),
 		ceiling: signal.ceiling,
 		disabled: isOff(signal.id),
 	}));
@@ -94,9 +99,15 @@ const runMode = (mode: PowerScoreMode, input: SignalInput, disabledSignals: read
 		.filter((reason): reason is ReasonFragment => reason !== undefined)
 		.slice(0, mode.reasonLimit);
 
+	const bucketRoom = new Map(Object.entries(mode.bucketCaps ?? {}));
 	const boosts = mode.boosts.map((boost): ScoredBoost => {
 		const output = boost.compute(input);
-		const points = Math.max(0, Math.round(output.points));
+		let points = Math.max(0, Math.round(toFiniteNumber(output.points)));
+		const room = boost.bucket === undefined ? undefined : bucketRoom.get(boost.bucket);
+		if (room !== undefined) {
+			points = Math.min(points, room);
+			bucketRoom.set(boost.bucket!, room - points);
+		}
 		return output.meta ? { id: boost.id, points, meta: output.meta } : { id: boost.id, points };
 	});
 
@@ -123,11 +134,11 @@ const blendWithClassic = (own: number, classic: number, blend: ClassicBlend): nu
 
 const nonNegative = (value: number | undefined): number => (isFiniteNumber(value) ? Math.max(0, Math.round(value)) : 0);
 
-const frozenScore = (game: Game<string>, mode: PowerScoreMode, options: ScoreOptions): PowerScore => ({
+const frozenScore = (game: Game<string>, mode: PowerScoreMode, options: ScoreOptions, disabledSignals?: readonly string[]): PowerScore => ({
 	gameId: game.id,
 	modeId: mode.id,
 	total: 0,
-	signals: mode.signals.map(signal => ({ id: signal.id, points: 0, ceiling: signal.ceiling, disabled: options.disabledSignals?.includes(signal.id) === true })),
+	signals: mode.signals.map(signal => ({ id: signal.id, points: 0, ceiling: signal.ceiling, disabled: disabledSetFor(mode, disabledSignals).has(signal.id) })),
 	signalsSubtotal: 0,
 	scaledSubtotal: 0,
 	signalCeiling: sum(mode.signals.map(signal => signal.ceiling)),
@@ -136,7 +147,7 @@ const frozenScore = (game: Game<string>, mode: PowerScoreMode, options: ScoreOpt
 	stallPenalty: 0,
 	baseTotal: 0,
 	boosts: [
-		...(options.favoriteTeamCount !== undefined ? [{ id: 'favoriteBoost', points: 0 }] : []),
+		...(options.favoriteTeamCount !== undefined ? [{ id: 'favoriteBoost', points: 0, meta: { teams: nonNegative(options.favoriteTeamCount) } }] : []),
 		...(options.gameBoost !== undefined ? [{ id: 'gameBoost', points: 0 }] : []),
 		...mode.boosts.map(boost => ({ id: boost.id, points: 0 })),
 		...(options.postseasonBoostPoints !== undefined ? [{ id: 'postseasonBoost', points: 0 }] : []),
@@ -153,11 +164,14 @@ const frozenScore = (game: Game<string>, mode: PowerScoreMode, options: ScoreOpt
 */
 export const scoreGame = (game: Game<string>, context: ScoringContext = {}, options: ScoreOptions = {}): PowerScore => {
 	const requested = getMode(options.mode);
-	const mode = requested.appliesTo && !requested.appliesTo(game, context) ? classicMode : requested;
-	if (isPlayFrozen(game)) return frozenScore(game, mode, options);
+	const fellBack = requested.appliesTo !== undefined && !requested.appliesTo(game, context);
+	const mode = fellBack ? classicMode : requested;
+	// A game scored as Classic in place of another mode takes Classic's own switches.
+	const disabledSignals = fellBack ? options.classicDisabledSignals : options.disabledSignals;
+	if (isPlayFrozen(game)) return frozenScore(game, mode, options, disabledSignals);
 
 	const input = createSignalInput(game, context, options);
-	const run = runMode(mode, input, options.disabledSignals);
+	const run = runMode(mode, input, disabledSignals);
 
 	const blend = mode === classicMode ? undefined : (options.classicBlend ?? mode.classicBlend);
 	const classicRun = blend ? runMode(classicMode, input, options.classicDisabledSignals) : undefined;
