@@ -1,3 +1,11 @@
+export { scoreGame, createSignalInput, signalPoints, boostPoints } from './compose';
+export { builtInModes, classicMode, defineMode, getMode } from './modes';
+export { classicSignals, closenessSignal, lateGameSignal, momentumSignal, leadChangesSignal, comebackSignal, applyProgressFloor, findLeadChanges } from './signals/classic';
+export { scoringOpportunityBoost } from './boosts/scoringOpportunity';
+export { postseasonBoostShare } from './postseason';
+export { renderReasonEnglish, renderReasonsEnglish } from './reasons';
+export { resolveLeagueConfig, resolveSportConfig } from './config';
+export { getGameProgress, scoreMargin } from './progress';
 export { computeGameProgress, computePowerScore, computeScoringOpportunityBoost, computeWinProbVarianceScore, isPlayFrozen, normalizePowerScoreResult } from './scorer';
 export * from './types';
 export * from './constants';

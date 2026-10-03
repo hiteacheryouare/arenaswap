@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## PowerScore 3's engine scores every mode through one pipeline — 2026-10-03
+
+`scoreGame(game, context, options)` returns each signal and boost as a list with structured `{ key, params }` reasons, and folds in the favorite, postseason and manual boosts that background.ts used to add by hand, so a mode is just a list of signals and boosts. `computePowerScore` and the 2.x types still work as thin wrappers, and `tests/classicParity.test.ts` pins Classic against a frozen copy of 2.2.0 over 20,000 seeded games; the only differences are that a disabled signal's reason no longer reaches the line, and the disabled path floors before adding win probability, the way the normal path always did.
+
 ## Live slates get recorded for the PowerScore replay — 2026-10-03
 
 `npm run powerscore:record` polls every league and writes what our sources send, raw, to gzipped hourly files under `scripts/powerscore/recordings/`, with live games at 15 seconds and the summary, hockey and basketball situation, and standings alongside. It keeps payloads raw on purpose, so a slate recorded today can be re-parsed by whatever version of core and PowerScore the replay is testing later.

@@ -8,12 +8,40 @@ export type LeagueId = 'nba' | 'wnba' | 'nhl' | 'ncaamh' | 'mlb' | 'nfl' | 'ncaa
 /** @deprecated Use LeagueId */
 export type SportId = LeagueId;
 
+export type Side = 'home' | 'away';
+
+export interface TeamState {
+	score: number;
+	abbreviation?: string;
+	// A poll ranking (1 is best). Leave it out for an unranked team, and for a bracket seed.
+	rank?: number;
+	// Baseball and softball.
+	hits?: number;
+	errors?: number;
+	// Timeouts the team has left in the current half or game.
+	timeouts?: number;
+}
+
+export interface SeriesState {
+	homeWins: number;
+	awayWins: number;
+	// Games in the series, e.g. 7 for best-of-seven.
+	bestOf: number;
+}
+
+export interface RedCard {
+	side: Side;
+	// Elapsed game minute the card was shown.
+	minute: number;
+}
+
 export interface Game {
 	id: string;
-	league: LeagueId;
+	// Any string works: an id the built-in table doesn't know falls back to the sport's defaults.
+	league: LeagueId | (string & {});
 	sportType: SportType;
-	homeTeam: { score: number; abbreviation?: string };
-	awayTeam: { score: number; abbreviation?: string };
+	homeTeam: TeamState;
+	awayTeam: TeamState;
 	period?: number;
 	// Absent means unknown, not 0:00: the late-game ramp holds at the period start rather than
 	// paying out the buzzer ceiling.
@@ -25,12 +53,23 @@ export interface Game {
 	// Baseball and softball. Top of the inning = true, bottom = false, absent = unknown.
 	topOfInning?: boolean;
 	baseRunners?: { first: boolean; second: boolean; third: boolean };
+	outs?: number;
 	// Football only. `down` scales the red-zone boost: a 4th-down snap decides something.
 	isRedZone?: boolean;
 	down?: number;
 	distance?: number;
 	isGoalToGo?: boolean;
+	// Which team has the ball (football) or the puck/possession where a feed reports it.
+	possession?: Side;
+	// Football: yards the team with the ball needs to reach the end zone.
+	yardsToEndZone?: number;
+	// 0 decides the title, 1 a semifinal, 2 a quarterfinal, 3 anything earlier.
+	postseasonRound?: PostseasonRound;
+	series?: SeriesState;
+	redCards?: RedCard[];
 }
+
+export type PostseasonRound = 0 | 1 | 2 | 3;
 
 export interface ScoreSnapshot {
 	gameId: string;
@@ -139,7 +178,11 @@ export interface ScorerTunables {
 		momentumRolling: string;
 		leadChangeMultiple: string;
 		leadChangeSingle: string;
+		comebackBig: string;
+		comebackModerate: string;
 		fallback: string;
+		// English label for each boost's reason fragment, keyed by boost id.
+		boosts: Record<string, string>;
 	};
 }
 
@@ -206,4 +249,175 @@ export interface LeagueRunMinutes {
 	// Bounds on the occupancy taper — the probability the game is still running at a given moment.
 	p25: number;
 	p99: number;
+}
+
+// ── v3 ────────────────────────────────────────────────────────────────────────────────────────
+
+export interface TeamStakes {
+	// Winning this game can clinch a playoff spot, a division or a title.
+	canClinch?: boolean;
+	// Losing this game can knock the team out of contention.
+	canBeEliminated?: boolean;
+	// Within reach of a table line late in the season: a playoff cut, a European place, relegation.
+	nearLine?: boolean;
+}
+
+export interface PregameLine {
+	favorite: Side;
+	// Points (or goals/runs) the favorite was laid. Absent when only a moneyline is known.
+	spread?: number;
+	// The favorite's American moneyline, e.g. -240.
+	moneyline?: number;
+}
+
+export type FantasyPosition = 'QB' | 'RB' | 'WR' | 'TE' | 'K' | 'DST' | 'player';
+
+export interface FantasyPlayerState {
+	id: string;
+	side: Side;
+	position: FantasyPosition;
+	// Live fantasy points in this game, if the caller tracks them (see computeFantasyPoints).
+	points?: number;
+	// False when the feed says the player is out of the game (benched, injured, ejected).
+	active?: boolean;
+}
+
+export interface ScoringContext {
+	// Score snapshots, oldest first, ending at or before this poll. Event ages are measured from the
+	// newest one, so a replay scores exactly like the live run did.
+	history?: ScoreSnapshot[];
+	// Consecutive polls with an unchanged clock (clock sports only).
+	stallCount?: number;
+	// Home win probability over the whole game, 0–1.
+	winProbability?: number[];
+	pregameLine?: PregameLine;
+	stakes?: Partial<Record<Side, TeamStakes>>;
+	// A side when the feed says who has it, `true` when it only says one is on.
+	powerPlay?: Side | boolean;
+	emptyNet?: Side | boolean;
+	// Lead changes counted by the feed's own play log, which sees flips that happen between polls.
+	leadChanges?: number;
+	fantasy?: FantasyPlayerState[];
+}
+
+export interface ReasonFragment {
+	key: string;
+	params?: Record<string, string | number>;
+}
+
+export interface SignalInput {
+	game: Game;
+	context: ScoringContext;
+	sport: SportTypeConfig;
+	league: LeagueConfig;
+	// 0 at the start, 1 at the end of regulation and through overtime.
+	progress: number;
+	// Timestamp of the newest snapshot (0 with no history).
+	now: number;
+	margin: number;
+}
+
+export interface SignalOutput {
+	points: number;
+	reason?: ReasonFragment;
+}
+
+export interface SignalDefinition {
+	id: string;
+	ceiling: number;
+	compute: (input: SignalInput) => SignalOutput;
+}
+
+export interface BoostOutput extends SignalOutput {
+	// Anything a UI might want to say about the boost, e.g. { inning: 8 } for a no-hitter.
+	meta?: Record<string, number>;
+}
+
+export interface BoostDefinition {
+	id: string;
+	compute: (input: SignalInput) => BoostOutput;
+}
+
+export type ClassicBlend =
+	// total = max(own, factor × classic): the mode leads, ordinary games stay eligible below it.
+	| { kind: 'floor'; factor: number }
+	// total = weight × own + (1 − weight) × classic.
+	| { kind: 'mix'; weight: number };
+
+export interface PowerScoreMode {
+	id: string;
+	// In display order.
+	signals: readonly SignalDefinition[];
+	// Automatic boosts this mode pays, in display order.
+	boosts: readonly BoostDefinition[];
+	// Signal ids in the order their reasons are worth reading.
+	reasonPriority: readonly string[];
+	reasonLimit: number;
+	usesStallPenalty: boolean;
+	usesWinProbability: boolean;
+	classicBlend?: ClassicBlend;
+	// The mode has nothing to say about this game (e.g. Fantasy with no rostered player in it), so
+	// the game is scored as Classic.
+	appliesTo?: (game: Game, context: ScoringContext) => boolean;
+}
+
+export type BuiltInModeId = 'classic' | 'blowouts' | 'fantasy';
+
+export interface ScoreOptions {
+	mode?: BuiltInModeId | PowerScoreMode;
+	// Signal ids of the active mode to switch off. The rest are rescaled to the mode's full range.
+	disabledSignals?: readonly string[];
+	// Signal ids to switch off in Classic when it's blended in or used as a floor.
+	classicDisabledSignals?: readonly string[];
+	// Overrides the mode's own blend, e.g. a user's Fantasy/Classic slider.
+	classicBlend?: ClassicBlend;
+	favoriteTeamCount?: number;
+	// Points per favorite team in the game.
+	favoriteBoostPoints?: number;
+	// Points for a title-deciding game; earlier rounds get a share.
+	postseasonBoostPoints?: number;
+	// A manual boost. The only thing allowed to push the total past 100.
+	gameBoost?: number;
+	// For leagues or sports the built-in tables don't know, or to tune them.
+	sport?: Partial<SportTypeConfig>;
+	league?: Partial<LeagueConfig>;
+}
+
+export interface ScoredSignal {
+	id: string;
+	points: number;
+	ceiling: number;
+	disabled: boolean;
+}
+
+export interface ScoredBoost {
+	id: string;
+	points: number;
+	meta?: Record<string, number>;
+}
+
+export interface PowerScore {
+	gameId: string;
+	// The mode that actually scored the game: a mode that doesn't apply falls back to 'classic'.
+	modeId: string;
+	// 0–100, or above 100 only through gameBoost.
+	total: number;
+	signals: ScoredSignal[];
+	// Sum of the enabled signals before any rescaling.
+	signalsSubtotal: number;
+	// The same after rescaling for disabled signals, capped at signalCeiling.
+	scaledSubtotal: number;
+	signalCeiling: number;
+	stalled: boolean;
+	stallPenalty: number;
+	// −5 to +5; absent without enough win-probability data.
+	winProbabilityVariance?: number;
+	// Signals less stall plus variance, 0–100, before any boost.
+	baseTotal: number;
+	// Classic's own total when the mode blends with it or uses it as a floor.
+	classicTotal?: number;
+	boosts: ScoredBoost[];
+	reasons: ReasonFragment[];
+	// The reasons in English, joined. For display where the caller has no translations.
+	reason: string;
 }

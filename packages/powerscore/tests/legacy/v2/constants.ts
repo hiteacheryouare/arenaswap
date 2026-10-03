@@ -126,15 +126,7 @@ export const scorerTunables: ScorerTunables = {
 		momentumRolling: 'on a roll',
 		leadChangeMultiple: 'trading leads',
 		leadChangeSingle: 'just took the lead',
-		comebackBig: 'cutting into it',
-		comebackModerate: 'closing the gap',
 		fallback: 'best game available',
-		boosts: {
-			favoriteBoost: 'favorite bonus',
-			gameBoost: 'game boost',
-			scoringOpportunity: 'scoring opportunity',
-			postseasonBoost: 'postseason',
-		},
 	},
 };
 
