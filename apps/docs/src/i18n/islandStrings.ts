@@ -1,3 +1,4 @@
+import { defaultStrings } from '@arenaswap/ui/src/components/defaultStrings';
 import { TranslationContext, translateFrom } from '@arenaswap/ui/src/components/i18nContext';
 
 // An island is hydrated with props alone — it cannot read Astro frontmatter — so a component that
@@ -6,9 +7,9 @@ import { TranslationContext, translateFrom } from '@arenaswap/ui/src/components/
 // everything around it does not.
 //
 // The same substitution rule as the extension's translator: named `{placeholders}`, replaced in
-// place, and a missing key rendered as itself rather than thrown, since an island failing to
-// hydrate would take the whole demo down over one label.
-export const islandTranslator = (strings: Record<string, string> | undefined) => translateFrom(key => strings?.[key]);
+// place, and a key the site's bundle lacks falls back to the shared English, then to itself, rather
+// than throwing, since an island failing to hydrate would take the whole demo down over one label.
+export const islandTranslator = (strings: Record<string, string> | undefined) => translateFrom(key => strings?.[key] ?? defaultStrings[key]);
 
 export interface Slot {
 	slot: string;
