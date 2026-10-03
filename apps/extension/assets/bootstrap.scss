@@ -230,6 +230,14 @@
 	padding:               0.12rem 0;
 }
 
+// Chrome 110–116 has no subgrid. Each row keeps its own copy of the columns there, so the bars
+// lose their shared start line but every row stays on one line.
+@supports not (grid-template-columns: subgrid) {
+	.powerscore-signal-row {
+		grid-template-columns: auto max-content auto minmax(0, 1fr) auto;
+	}
+}
+
 .powerscore-signal-row + .powerscore-signal-row {
 	border-top: 1px solid #d1d5db;
 }
