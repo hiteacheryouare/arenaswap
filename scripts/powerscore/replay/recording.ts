@@ -20,8 +20,8 @@ type RecordedLine =
 export type ReplayEvent =
 	// One league's poll: every game live in that league right now.
 	| { kind: 'poll'; ts: number; league: LeagueId; live: Game[] }
-	| { kind: 'summary'; ts: number; gameId: string; winProbability: number[]; raw: Record<string, unknown> }
-	| { kind: 'situation'; ts: number; gameId: string; raw: Record<string, unknown> }
+	| { kind: 'summary'; ts: number; league: LeagueId; gameId: string; winProbability: number[]; raw: Record<string, unknown> }
+	| { kind: 'situation'; ts: number; league: LeagueId; gameId: string; raw: Record<string, unknown> }
 	| { kind: 'standings'; ts: number; league: LeagueId; raw: unknown };
 
 // Recordings are hourly files under <dir>/<YYYY-MM-DD>/<HH>.jsonl.gz; a path may also name one
@@ -68,9 +68,9 @@ export const readRecording = async function* (files: string[], until?: number): 
 					.filter((game): game is Game => game != null && game.status === 'in');
 				yield { kind: 'poll', ts: line.ts, league: line.league, live };
 			} else if (line.t === 'summary') {
-				yield { kind: 'summary', ts: line.ts, gameId: line.gameId, winProbability: parseWinProbability(line.raw), raw: line.raw };
+				yield { kind: 'summary', ts: line.ts, league: line.league, gameId: line.gameId, winProbability: parseWinProbability(line.raw), raw: line.raw };
 			} else if (line.t === 'situation') {
-				yield { kind: 'situation', ts: line.ts, gameId: line.gameId, raw: line.raw };
+				yield { kind: 'situation', ts: line.ts, league: line.league, gameId: line.gameId, raw: line.raw };
 			} else if (line.t === 'standings') {
 				yield { kind: 'standings', ts: line.ts, league: line.league, raw: line.raw };
 			}

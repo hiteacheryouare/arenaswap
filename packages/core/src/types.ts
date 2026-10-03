@@ -105,6 +105,24 @@ export interface Team {
 	// Timeouts left. Live games only, and only in the sports that send them, which among the
 	// leagues we ship is the two gridiron ones.
 	timeouts?: number;
+	// Baseball and softball, live and final.
+	hits?: number;
+	errors?: number;
+}
+
+export interface SeriesState {
+	// 'season' is MLB's regular-season series, which nobody is eliminated from.
+	kind: 'playoff' | 'season';
+	homeWins: number;
+	awayWins: number;
+	bestOf: number;
+}
+
+export interface RedCardEvent {
+	teamId: string;
+	// Elapsed game minute, from the match clock.
+	minute: number;
+	player?: string;
 }
 
 export interface GameCondition {
@@ -207,6 +225,10 @@ export interface Game {
 	collegeTitleRound?: boolean;
 	// A seeded national bracket, where the rank field carries the seed rather than a poll rank.
 	collegeSeeded?: boolean;
+	series?: SeriesState;
+	// Soccer, in the order they were shown. Not `redCards`: the engine's Game uses that name for its
+	// own side-keyed shape, and a core Game has to stay assignable to it.
+	redCardEvents?: RedCardEvent[];
 }
 
 // What becomes of a registered tab once its game is over. 'keep' is what ArenaSwap has always

@@ -11,13 +11,8 @@ export type PostseasonRound = 0 | 1 | 2 | 3;
 // the same, which is the analyst's ruling and also what falls out of the arithmetic.
 const earliestRound: PostseasonRound = 3;
 
-// Shares of the user's postseasonBoostPoints ceiling, indexed by distance. Even quarters: at the
-// default of 8 the ladder is 2/4/6/8, which is legible at a glance and never rounds two rungs onto
-// the same integer.
-const roundShares: Record<PostseasonRound, number> = { 0: 1, 1: 0.75, 2: 0.5, 3: 0.25 };
-
-export const postseasonBoostShare = (round: PostseasonRound | undefined): number =>
-	round === undefined ? 0 : roundShares[round];
+// The ladder of shares lives with the scorer that pays it.
+export { postseasonBoostShare } from 'powerscore';
 
 // ESPN puts the round in `competition.notes[].headline` for the US leagues, and the note carries
 // `type: 'event'`. Regular-season oddities (an NFL London game) also carry a typed note with no

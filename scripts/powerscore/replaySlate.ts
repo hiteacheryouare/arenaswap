@@ -15,7 +15,6 @@ import { dirname, join } from 'node:path';
 import { listRecordingFiles, readRecording } from './replay/recording';
 import { createReplaySession, type Frame, type Scorer } from './replay/session';
 import { createV3Scorer, replayPrefs, v2Scorer } from './replay/scorers';
-import { readReplayExtras } from './replay/extras';
 import { describeGame } from './replay/describe';
 import type { BuiltInModeId } from '../../packages/powerscore/src/types';
 
@@ -59,7 +58,7 @@ const readLabels = (): LabelFile[] => {
 	return files.map(file => JSON.parse(readFileSync(file, 'utf8')) as LabelFile);
 };
 
-const scorers: Scorer[] = [v2Scorer, ...modes.map(mode => createV3Scorer(mode, readReplayExtras))];
+const scorers: Scorer[] = [v2Scorer, ...modes.map(mode => createV3Scorer(mode))];
 
 const formatTime = (ts: number): string => new Date(ts).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', second: '2-digit' });
 

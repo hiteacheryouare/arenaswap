@@ -102,6 +102,26 @@ const EspnCompetitorSchema = z.object({
 	// ESPN's poll position. Sent by the pro leagues too, where it is permanently 99 — its code for
 	// unranked — so the reader gates on the value rather than on the key being present.
 	curatedRank: z.optional(z.object({ current: z.optional(z.number()) })),
+	// Baseball and softball, live and final. A malformed value drops the field rather than the game,
+	// and never reads as 0: zero hits is what a no-hitter is made of.
+	hits: z.catch(z.optional(z.number()), undefined),
+	errors: z.catch(z.optional(z.number()), undefined),
+});
+
+// A playoff series on the US leagues' scoreboards. MLB also sends `type: 'season'` for a
+// regular-season series, which is not a series anyone can be eliminated from.
+const EspnSeriesSchema = z.object({
+	type: z.optional(z.string()),
+	totalCompetitions: z.optional(z.number()),
+	competitors: z.optional(z.array(z.object({ id: espnNumericText, wins: z.optional(z.number()) }))),
+});
+
+// Soccer's key events: goals, cards, penalties. Only red cards are read so far.
+const EspnCompetitionDetailSchema = z.object({
+	redCard: z.optional(z.boolean()),
+	clock: z.optional(z.object({ value: z.optional(z.number()) })),
+	team: z.optional(z.object({ id: z.optional(espnNumericText) })),
+	athletesInvolved: z.optional(z.array(z.object({ displayName: z.optional(z.string()) }))),
 });
 
 const EspnCompetitionStatusSchema = z.object({
@@ -250,6 +270,8 @@ const EspnCompetitionSchema = z.object({
 	geoBroadcasts: z.optional(z.array(EspnCompetitionGeoBroadcastSchema)),
 	odds: z.optional(z.array(z.nullable(EspnCompetitionOddsSchema))),
 	notes: z.optional(z.array(EspnCompetitionNoteSchema)),
+	series: z.catch(z.optional(EspnSeriesSchema), undefined),
+	details: z.catch(z.optional(z.array(z.catch(EspnCompetitionDetailSchema, {}))), undefined),
 });
 
 const EspnSeasonSchema = z.object({

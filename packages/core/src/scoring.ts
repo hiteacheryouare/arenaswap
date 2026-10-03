@@ -23,7 +23,13 @@ const toTeamState = (team: Team, seeded: boolean): ScoringGame['homeTeam'] => ({
 	...(team.abbreviation ? { abbreviation: team.abbreviation } : {}),
 	...(team.rank !== undefined && !seeded ? { rank: team.rank } : {}),
 	...(team.timeouts !== undefined ? { timeouts: team.timeouts } : {}),
+	...(team.hits !== undefined ? { hits: team.hits } : {}),
+	...(team.errors !== undefined ? { errors: team.errors } : {}),
 });
+
+const toRedCards = (game: Game): ScoringGame['redCards'] => game.redCardEvents
+	?.map(card => ({ side: sideOf(game, card.teamId), minute: card.minute }))
+	.filter((card): card is { side: Side; minute: number } => card.side !== undefined);
 
 export const toScoringGame = (game: Game): ScoringGame => {
 	const possession = sideOf(game, game.possessionTeamId);
@@ -50,6 +56,9 @@ export const toScoringGame = (game: Game): ScoringGame => {
 		...(possession !== undefined ? { possession } : {}),
 		...(yards !== undefined ? { yardsToEndZone: yards } : {}),
 		...(game.postseasonRound !== undefined ? { postseasonRound: game.postseasonRound } : {}),
+		seasonType: game.isPostseason ? 'postseason' : 'regular',
+		...(game.series?.kind === 'playoff' ? { series: { homeWins: game.series.homeWins, awayWins: game.series.awayWins, bestOf: game.series.bestOf } } : {}),
+		...(game.redCardEvents ? { redCards: toRedCards(game) } : {}),
 	};
 };
 

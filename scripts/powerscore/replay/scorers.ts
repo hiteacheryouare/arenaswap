@@ -3,10 +3,12 @@ import { createDefaultUserPreferences } from '../../../packages/core/src/constan
 import { scoreOptionsFor, scoringContextFor, toScoringGame } from '../../../packages/core/src/scoring';
 import { scoreGameV2 } from '../../../packages/powerscore/tests/legacy/v2/compose';
 import type { Game as V2Game } from '../../../packages/powerscore/tests/legacy/v2/types';
-import type { BuiltInModeId, ScoringContext } from '../../../packages/powerscore/src/types';
-import type { GameExtrasRecord, Scorer } from './session';
+import type { BuiltInModeId } from '../../../packages/powerscore/src/types';
+import type { Scorer } from './session';
 
 export const replayPrefs = createDefaultUserPreferences();
+
+const universalBoosts = new Set(['favoriteBoost', 'gameBoost', 'postseasonBoost']);
 
 // 2.2.0 exactly as it shipped: the frozen scorer plus the arithmetic background.ts did after it.
 export const v2Scorer: Scorer = {
@@ -25,18 +27,12 @@ export const v2Scorer: Scorer = {
 	},
 };
 
-export type ExtrasReader = (input: Parameters<Scorer['score']>[0], extras: GameExtrasRecord) => Partial<ScoringContext>;
-
 // The working tree's engine through core's adapter, as the background calls it.
-export const createV3Scorer = (mode: BuiltInModeId = 'classic', readExtras?: ExtrasReader, name = `v3-${mode}`): Scorer => ({
+export const createV3Scorer = (mode: BuiltInModeId = 'classic', name = `v3-${mode}`): Scorer => ({
 	name,
-	score: (input, extras) => {
-		const score = scoreGame(
-			toScoringGame(input.game),
-			{ ...scoringContextFor(input), ...readExtras?.(input, extras) },
-			{ ...scoreOptionsFor(input.game, replayPrefs, 0), mode },
-		);
-		const boosts = Object.fromEntries(score.boosts.filter(boost => boost.points > 0 && !['favoriteBoost', 'gameBoost', 'postseasonBoost'].includes(boost.id)).map(boost => [boost.id, boost.points]));
+	score: input => {
+		const score = scoreGame(toScoringGame(input.game), scoringContextFor(input), { ...scoreOptionsFor(input.game, replayPrefs, 0), mode });
+		const boosts = Object.fromEntries(score.boosts.filter(boost => boost.points > 0 && !universalBoosts.has(boost.id)).map(boost => [boost.id, boost.points]));
 		return { gameId: score.gameId, total: score.total, reason: score.reason, boosts };
 	},
 });

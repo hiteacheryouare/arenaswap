@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Core reads series, hits, red cards and the closing line — 2026-10-03
+
+The scoreboard parse now keeps each team's hits and errors, the playoff series and soccer's red cards (as `redCardEvents`, so a core game still fits the engine's `Game`), and `liveExtras.ts` reads the summary's closing line and box-score lead changes, the hockey situation and the standings' race markers into the engine's context. The replay drives the same tracker, so on recorded slates the new boosts see exactly what the extension will.
+
 ## Classic PowerScore learns the moments fans flip to — 2026-10-03
 
 Classic now pays for a go-ahead run on base (#161), a one-score two-minute drill (#166), a no-hit bid from the 6th (#159), a fresh red card in a close match (#162), a late power play or empty net (#163), an underdog hanging around late (#157) and what the result decides: a series on the brink, two ranked teams, a late-season race (#158). The sports analyst set every number, and the boosts share caps (20 for moments, 70 for a no-hitter, 16 for upset plus stakes) so they can't stack past a late one-score swing; runners on base also stop paying once the third out is made.

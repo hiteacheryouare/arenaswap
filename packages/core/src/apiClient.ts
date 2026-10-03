@@ -20,7 +20,7 @@ import type {
 	EspnVenueAddress,
 } from './espnSchemas';
 import { logWarn } from './logger';
-import type { AtBat, AtBatPlayer, Game, GameCondition, GameOdds, LeagueConfig, LeagueId, LeagueLogoMap, LeagueSchedule, LeagueScheduleMap, ProbableStarter, TeamLeader, TeamMonoLogoMap, TeamMonoMarks } from './types';
+import type { AtBat, AtBatPlayer, Game, GameCondition, RedCardEvent, SeriesState, GameOdds, LeagueConfig, LeagueId, LeagueLogoMap, LeagueSchedule, LeagueScheduleMap, ProbableStarter, TeamLeader, TeamMonoLogoMap, TeamMonoMarks } from './types';
 
 const espnBase = 'https://site.api.espn.com/apis/site/v2/sports';
 
@@ -603,6 +603,27 @@ const parseTopOfInning = (shortDetail?: string): boolean | undefined => {
 	return undefined;
 };
 
+const parseSeries = (comp: EspnCompetition, homeId: string, awayId: string): SeriesState | undefined => {
+	const series = comp.series;
+	if (!series?.totalCompetitions || !series.competitors) return undefined;
+	const winsOf = (id: string) => series.competitors!.find(entry => entry.id === id)?.wins;
+	const homeWins = winsOf(homeId);
+	const awayWins = winsOf(awayId);
+	if (homeWins === undefined || awayWins === undefined) return undefined;
+	return { kind: series.type === 'playoff' ? 'playoff' : 'season', homeWins, awayWins, bestOf: series.totalCompetitions };
+};
+
+const parseRedCards = (comp: EspnCompetition): RedCardEvent[] | undefined => {
+	const cards = (comp.details ?? [])
+		.filter(detail => detail.redCard === true && detail.team?.id !== undefined && typeof detail.clock?.value === 'number')
+		.map((detail): RedCardEvent => ({
+			teamId: detail.team!.id!,
+			minute: detail.clock!.value! / 60,
+			...(detail.athletesInvolved?.[0]?.displayName ? { player: detail.athletesInvolved[0].displayName } : {}),
+		}));
+	return cards.length > 0 ? cards : undefined;
+};
+
 const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 	const comp = event.competitions[0];
 	if (!comp) return null;
@@ -640,6 +661,7 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 			...resolveTeamColors(home.team.color, home.team.alternateColor),
 			...parseTeamContext(home, state),
 			timeouts: liveSituation ? situation.homeTimeouts : undefined,
+			...(isInningSport && home.hits !== undefined ? { hits: home.hits, errors: home.errors } : {}),
 		},
 		awayTeam: {
 			id: away.id,
@@ -652,6 +674,7 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 			...resolveTeamColors(away.team.color, away.team.alternateColor),
 			...parseTeamContext(away, state),
 			timeouts: liveSituation ? situation.awayTimeouts : undefined,
+			...(isInningSport && away.hits !== undefined ? { hits: away.hits, errors: away.errors } : {}),
 		},
 		venueName: comp.venue?.fullName ?? comp.venue?.name ?? undefined,
 		venueLocation: parseVenueLocation(comp.venue?.address),
@@ -709,6 +732,8 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 		...(postseason ? readCollegeBracket(league, readEventHeadline(comp.notes)) : {}),
 		delayed: isDelayed || undefined,
 		delayDescription,
+		series: parseSeries(comp, home.id, away.id),
+		redCardEvents: leagueConfig.sportType === 'soccer' ? parseRedCards(comp) : undefined,
 	};
 };
 
