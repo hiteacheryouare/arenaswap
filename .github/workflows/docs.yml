@@ -1,15 +1,14 @@
 name: Deploy Docs
 
 on:
-  push:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
     branches: [mega]
-    paths:
-      - 'apps/docs/**'
-      - 'packages/ui/**'
-      - 'packages/core/**'
-      - 'packages/powerscore/**'
-      - 'package-lock.json'
   workflow_dispatch:
+
+concurrency:
+  group: docs-deploy
 
 permissions:
   contents: write
@@ -17,9 +16,13 @@ permissions:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' || (github.event.workflow_run.event == 'push' && github.event.workflow_run.conclusion == 'success')
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+        with:
+          # Build the commit CI just passed, not whatever mega has moved on to since.
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
       - name: Setup Node
         uses: actions/setup-node@v7
@@ -43,7 +46,7 @@ jobs:
           # Another push can land between the checkout and here; rebase onto it
           # rather than failing the deploy outright.
           for attempt in 1 2 3; do
-            git pull --rebase origin mega && git push && exit 0
+            git pull --rebase origin mega && git push origin HEAD:mega && exit 0
             sleep 5
           done
           exit 1

@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## CI runs on every pull request — 2026-10-02
+
+A new CI workflow runs lint and typecheck, unit and component tests, e2e, and a build and zip for each browser as parallel jobs on every PR and every push to mega, with Turbo's local cache carried between runs through GitHub's cache and nothing remote. The docs deploy now waits for a green CI run on mega and builds that exact commit, so it fires after every passing push instead of only when docs paths change.
+
 ## Loose ends from the polish review — 2026-10-02
 
 Two chart lines that lifting pulled onto the same blue now switch a side, the league logo follows its side's ink so it survives a gold card, the breakdown rows stay on one line on Chrome builds without subgrid, and the site's skip link clears AA. Two specs that raced a timer and an island's hydration now wait for them, since CI would otherwise go red at random.

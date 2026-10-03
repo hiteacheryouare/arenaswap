@@ -1,0 +1,83 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [mega]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    name: Lint & typecheck
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
+        with:
+          turbo-cache-key: checks
+      - run: npx turbo run lint typecheck --continue
+
+  test:
+    name: Unit & component tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
+        with:
+          turbo-cache-key: test
+      - run: npx turbo run test
+      - name: Upload Cypress screenshots
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: component-screenshots
+          path: apps/extension/cypress/screenshots
+          if-no-files-found: ignore
+
+  e2e:
+    name: E2E tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
+        with:
+          turbo-cache-key: e2e
+      - run: npx turbo run test:e2e
+      - name: Upload Cypress screenshots
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: e2e-screenshots
+          path: apps/extension/cypress/screenshots
+          if-no-files-found: ignore
+
+  build:
+    name: Build & zip (${{ matrix.browser }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - browser: chrome
+            tasks: build zip
+          - browser: edge
+            tasks: build:edge zip:edge
+          - browser: firefox
+            tasks: build:firefox zip:firefox
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
+        with:
+          turbo-cache-key: build-${{ matrix.browser }}
+      - run: npx turbo run ${{ matrix.tasks }}
