@@ -3,8 +3,8 @@ import { leagueConfigMap } from '@arenaswap/core/constants';
 import type { Game, LeagueRunMinutes, SportType } from '@arenaswap/core/types';
 
 // How much of the good part of a game is happening at a given fraction of its run, as
-// [fraction, value] pairs read piecewise-linearly. This is what makes late afternoon on an NFL
-// Sunday beat one o'clock: nine games in the fourth quarter beats nine games in the first.
+// [fraction, value] pairs read piecewise-linearly. It only breaks ties between moments with a
+// similar number of games on: see lateGameWeight below.
 //
 // Dead zones sit at a hard zero rather than at a low point on a smooth ramp. Nearly a quarter of a
 // hockey broadcast is intermission, and a curve that smooths through that is lying about a fifth of
@@ -135,6 +135,10 @@ export interface heatCurveResult {
 }
 
 const bandSampleMs = 5 * 60_000;
+// ArenaSwap earns its keep when there are a lot of games to switch between, so a game counts for
+// at least 1 - lateGameWeight however early it is, and the leverage curve only covers the rest.
+// Four games in their first quarter beat three in their fourth.
+const lateGameWeight = 0.25;
 // The band is every moment within 10% of the day's peak, rather than the single instant of it.
 const bandThreshold = 0.9;
 // And never narrower than this, however sharp the peak. Bar lengths are ~p75 estimates with tens of
@@ -165,7 +169,10 @@ export const buildHeatCurve = (
 	const points: { t: number; heat: number }[] = [];
 	for (let t = from; t <= to; t += bandSampleMs) {
 		let heat = 0;
-		for (const bar of bars) heat += occupancy(bar, t) * leverage(bar, t) * weightOf(bar);
+		for (const bar of bars) {
+			const stakes = 1 - lateGameWeight + lateGameWeight * leverage(bar, t);
+			heat += occupancy(bar, t) * stakes * weightOf(bar);
+		}
 		points.push({ t, heat });
 	}
 

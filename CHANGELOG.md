@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Best time to watch follows the crowd — 2026-10-02
+
+The guide's Best time to watch band now goes mostly by how many games are on at once, since that's when ArenaSwap is most useful, instead of by how late in their games they are. Late game counts for a quarter of each game's weight, enough to pick the end of a stretch where the same games run all afternoon but never enough to beat a moment with more games on.
+
 ## The debug panel matches the rest of the popup — 2026-10-02
 
 The heart's hidden debug panel no longer sits in its own fixed-height scroll box, where a three-column league grid wider than the popup gave it a sideways scrollbar. It now flows with the popup's scroll and is laid out like the settings pages, with Bootstrap-icon section headings, label and value rows, plain coloured mode words in place of badges, PowerScore progress bars, and theme colours so it follows light mode.
