@@ -26,8 +26,14 @@ const boostPointsInput = ({ id, value, onChange, className, ariaLabel }: boostPo
 			inputMode='numeric'
 			value={draft ?? String(value)}
 			onChange={e => {
-				setDraft(e.target.value);
-				if (e.target.value.trim() !== '') onChange(clampBoostPoints(Number(e.target.value)));
+				const typed = e.target.value;
+				if (typed.trim() === '') {
+					setDraft(typed);
+					return;
+				}
+				const points = clampBoostPoints(Number(typed));
+				setDraft(Number(typed) > boostPointsMax ? String(points) : typed);
+				onChange(points);
 			}}
 			onBlur={settle}
 			onKeyDown={e => {
