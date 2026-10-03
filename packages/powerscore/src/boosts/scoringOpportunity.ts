@@ -10,7 +10,7 @@ import type { BoostDefinition, Game, SignalInput, SportTypeConfig } from '../typ
 
 // An unknown down (between plays, or a feed that doesn't report one) falls through to `other`, so a
 // missing field costs the boost its bonus rather than the whole thing.
-const getRedZoneDownMultiplier = (game: Game): number => {
+const getRedZoneDownMultiplier = (game: Game<string>): number => {
 	if (game.down === 4) return game.isGoalToGo ? redZoneDownMultipliers.fourthDownGoalToGo : redZoneDownMultipliers.fourthDown;
 	if (game.down === 3 && typeof game.distance === 'number' && game.distance <= thirdAndShortDistance) return redZoneDownMultipliers.thirdAndShort;
 	return redZoneDownMultipliers.other;
@@ -18,7 +18,7 @@ const getRedZoneDownMultiplier = (game: Game): number => {
 
 // Gated on the margin because closeness and lateGame have already scored a blowout correctly low,
 // and an unconditional +10 on top would undo that.
-const getRedZoneBoost = (game: Game, sport: SportTypeConfig, margin: number): number => {
+const getRedZoneBoost = (game: Game<string>, sport: SportTypeConfig, margin: number): number => {
 	const [, t2, t3] = sport.closenessMargins;
 	const base = margin <= t2 ? scoringOpportunityRedZoneBoost : margin <= t3 ? scoringOpportunityRedZoneFringeBoost : 0;
 	if (base === 0) return 0;

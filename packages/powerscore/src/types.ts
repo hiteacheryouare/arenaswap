@@ -35,10 +35,11 @@ export interface RedCard {
 	minute: number;
 }
 
-export interface Game {
+// A feed with its own league ids uses Game<string>; an id the built-in table doesn't know is scored
+// with its sport's defaults.
+export interface Game<League extends string = LeagueId> {
 	id: string;
-	// Any string works: an id the built-in table doesn't know falls back to the sport's defaults.
-	league: LeagueId | (string & {});
+	league: League;
 	sportType: SportType;
 	homeTeam: TeamState;
 	awayTeam: TeamState;
@@ -306,7 +307,7 @@ export interface ReasonFragment {
 }
 
 export interface SignalInput {
-	game: Game;
+	game: Game<string>;
 	context: ScoringContext;
 	sport: SportTypeConfig;
 	league: LeagueConfig;
@@ -358,7 +359,7 @@ export interface PowerScoreMode {
 	classicBlend?: ClassicBlend;
 	// The mode has nothing to say about this game (e.g. Fantasy with no rostered player in it), so
 	// the game is scored as Classic.
-	appliesTo?: (game: Game, context: ScoringContext) => boolean;
+	appliesTo?: (game: Game<string>, context: ScoringContext) => boolean;
 }
 
 export type BuiltInModeId = 'classic' | 'blowouts' | 'fantasy';
@@ -408,6 +409,8 @@ export interface PowerScore {
 	// The same after rescaling for disabled signals, capped at signalCeiling.
 	scaledSubtotal: number;
 	signalCeiling: number;
+	// Halftime, an intermission or a delay: everything scores 0 until play resumes.
+	frozen: boolean;
 	stalled: boolean;
 	stallPenalty: number;
 	// −5 to +5; absent without enough win-probability data.

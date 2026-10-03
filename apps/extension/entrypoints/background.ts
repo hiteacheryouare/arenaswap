@@ -1,6 +1,7 @@
 import { i18n } from '#i18n';
 import { randomInRange } from '@porkyproductions/hat';
-import { fetchGamesWithLeagueLogos, fetchGameDurationMins, fetchTeamMonoLogos, fetchWinProbability, computePowerScore, isWithinFinalRetention, computeScoringOpportunityBoost, isPlayFrozen, normalizePowerScoreResult, scoreMaxTotal, MockGameSimulator, createPollModeTracker, isObjectRecord, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts, computeLeagueIntervalMs, computeHebetudinousIntervalMs, earliestUpcomingStartMs, fetchNextScheduledStart, scoreboardRefreshMs, pollWinProbabilityMs as winProbPollIntervalMs, logWarn, logError, postseasonBoostShare } from '@arenaswap/core';
+import { fetchGamesWithLeagueLogos, fetchGameDurationMins, fetchTeamMonoLogos, fetchWinProbability, isWithinFinalRetention, MockGameSimulator, createPollModeTracker, isObjectRecord, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts, computeLeagueIntervalMs, computeHebetudinousIntervalMs, earliestUpcomingStartMs, fetchNextScheduledStart, scoreboardRefreshMs, pollWinProbabilityMs as winProbPollIntervalMs, logWarn, logError, chooseSwitchTarget, getHistoryWindowMsForGame, maxSnapshotsPerGame, nextClockStall, retainSnapshots, scoreLiveGame, toLegacyPowerScoreResult, toScoreSnapshot } from '@arenaswap/core';
+import type { ClockStallEntry } from '@arenaswap/core';
 import { computeStandbyStreamDecision } from '../utils/standbyStreamLogic';
 import { gameEndTimes, gameEndTimesKey, gamesNeedingDuration, pruneGameEndRecords, readGameEndRecords, recordGameEnds } from '../utils/gameEndTimes';
 import type { gameEndRecords } from '../utils/gameEndTimes';
@@ -13,7 +14,7 @@ import {
 } from '../utils/finishedTabs';
 import { loadConferenceDirectory } from '../utils/collegeConferences';
 import { loadStoredUserPreferences } from '../utils/prefsStorage';
-import { boostReasonParts, capitalizeReason, translateReason } from '../utils/powerScoreReason';
+import { capitalizeReason, translateReason } from '../utils/powerScoreReason';
 import { displayLocale } from '../utils/displayLocale';
 import {
 	normalizeReviewPromptState,
@@ -21,11 +22,9 @@ import {
 	reviewPromptStorageKey,
 } from '../utils/reviewPrompt';
 import {
-	applyDisabledSignals,
 	clampBoostPoints,
 	collegeFetchGroups,
 	createDefaultUserPreferences,
-	createFavoriteTeamKey,
 	filterCollegeGames,
 	guideMinUpcomingDays,
 	isCollegeLeagueId,
@@ -38,10 +37,7 @@ import {
 	pollDormantMinMs,
 	pollDormantMaxMs,
 	pollMaxEagerMs,
-	historyWindowMs,
 	resolveLeagueLogoUrl,
-	sensitivityThresholds,
-	sportTypeConfigMap,
 } from '@arenaswap/core/constants';
 import type {
 	CollegeLeagueId,
@@ -82,87 +78,11 @@ const readStoredSwitchTime = (value: unknown, now: number): number => (
 	typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= now ? value : 0
 );
 
-const getFavoriteTeamCount = (game: Game, favoriteTeamIds: Set<string>): number => {
-	let count = 0;
-	const homeFavoriteTeamKey = createFavoriteTeamKey(game.league, game.homeTeam.id);
-	const awayFavoriteTeamKey = createFavoriteTeamKey(game.league, game.awayTeam.id);
-	if (favoriteTeamIds.has(homeFavoriteTeamKey)) count++;
-	if (favoriteTeamIds.has(awayFavoriteTeamKey)) count++;
-	return count;
-};
-
-const getHistoryWindowMsForGame = (game: Game): number => {
-	const sportConfig = sportTypeConfigMap[game.sportType] ?? sportTypeConfigMap.basketball;
-	return sportConfig.historyWindowMs ?? historyWindowMs;
-};
-
-// Backstop only — the thinning below is the real policy. Stops the arrays growing without bound if
-// polling ever runs faster than expected. A thinned football game is about 100 coarse samples plus
-// soccer's worst-case 200 inside its window, so this leaves headroom without letting a runaway loop
-// fill session storage.
-const maxSnapshotsPerGame = 400;
-
-// Snapshots older than the scorer's window are only ever drawn as a chart line, and a wrap screen
-// draws the whole game rather than the last few minutes of it — so the tail is thinned to this
-// spacing instead of being discarded. Two minutes puts about 100 samples across a football game's
-// first three hours, which is more than 300px of chart can resolve anyway.
-const coarseSampleIntervalMs = 120_000;
-
 // How long the guide will draw the slate the last wide fetch produced. Generous because the live
 // polls merge their answers into it, so what ages here is only the roster of games — a kickoff
 // being added to the day — rather than any score or clock on screen.
 const guideSlateTtlMs = 10 * 60 * 1000;
 const switchNotificationId = 'arenaswap-switch';
-
-// Dropping the oldest snapshots would take the start of the game with them, and the start is the
-// end the chart gate measures from. So the cap is met by thinning the already-coarse tail further,
-// which costs resolution rather than span.
-const thinToCap = <T extends { timestamp: number }>(coarse: T[], recent: T[]): T[] => {
-	let kept = coarse;
-	while (kept.length + recent.length > maxSnapshotsPerGame && kept.length > 2) {
-		kept = kept.filter((_, index) => index % 2 === 0 || index === kept.length - 1);
-	}
-	return [...kept, ...recent].slice(-maxSnapshotsPerGame);
-};
-
-// What the scorer sees, which is byte-identical to what the old single-window trim left behind.
-const recentSnapshots = <T extends { timestamp: number }>(snapshots: readonly T[], cutoff: number): T[] => {
-	const recent = snapshots.filter(snapshot => snapshot.timestamp >= cutoff);
-	return recent.length > 0 ? recent : snapshots.slice(-1);
-};
-
-// Everything inside the scorer's window is kept exactly as it arrived, because that is the slice
-// computePowerScore reads. Everything before it is thinned rather than dropped — but only when the
-// wrap screen it exists for is reachable at all. A finished game leaves the list entirely unless
-// Keep finished games is on, so with the setting off there is nothing to draw the tail on and this
-// is the plain window it has always been, at the storage cost it has always had. That matters
-// because both maps are written to session storage on every poll, and a busy Saturday is thirty
-// live games at once.
-const retainSnapshots = <T extends { timestamp: number }>(
-	snapshots: T[],
-	cutoff: number,
-	keepWholeGame: boolean,
-): T[] => {
-	if (!keepWholeGame) return recentSnapshots(snapshots, cutoff);
-	const coarse: T[] = [];
-	const recent: T[] = [];
-	for (const snapshot of snapshots) {
-		if (snapshot.timestamp >= cutoff) {
-			recent.push(snapshot);
-			continue;
-		}
-		const previous = coarse[coarse.length - 1];
-		if (!previous || snapshot.timestamp - previous.timestamp >= coarseSampleIntervalMs) coarse.push(snapshot);
-	}
-	// A game whose entire history predates the window still has to report a current value, and the
-	// thinning may not have kept its newest snapshot.
-	if (recent.length === 0) {
-		const newest = snapshots[snapshots.length - 1];
-		if (newest && coarse[coarse.length - 1] !== newest) coarse.push(newest);
-	}
-	return thinToCap(coarse, recent);
-};
-
 
 const getOpenTabIds = async (): Promise<Set<number>> => {
 	const allTabs = await browser.tabs.query({});
@@ -309,7 +229,7 @@ export default defineBackground(() => {
 
 	const history = new Map<string, ScoreSnapshot[]>();
 	const powerScoreHistory = new Map<string, PowerScoreSnapshot[]>();
-	const clockStallMap = new Map<string, { lastClock: number; stallCount: number }>();
+	const clockStallMap = new Map<string, ClockStallEntry>();
 	let tabRegistry: TabRegistration[] = [];
 	let gameBoosts: Record<string, number> = {};
 	let demoMode = false;
@@ -388,12 +308,7 @@ export default defineBackground(() => {
 		const now = Date.now();
 		currentGames.forEach(game => {
 			const snapshots = history.get(game.id) ?? [];
-			snapshots.push({
-				gameId: game.id,
-				timestamp: now,
-				homeScore: game.homeTeam.score,
-				awayScore: game.awayTeam.score,
-			});
+			snapshots.push(toScoreSnapshot(game, now));
 			history.set(game.id, retainSnapshots(snapshots, now - getHistoryWindowMsForGame(game), prefs.keepFinalGames));
 		});
 	};
@@ -633,36 +548,15 @@ export default defineBackground(() => {
 
 	// Reads `currentScores` so a switch that waited out `switchDelaySeconds` re-targets against
 	// what the games are doing when it fires, not the decision made a minute ago.
-	const resolveSwitchTarget = (
-		openTabIds: Set<number>,
-		activeTabId: number,
-	): { tabId: number; gameId: string; reason?: string } | null => {
-		const liveRegistry = tabRegistry.filter(reg => openTabIds.has(reg.tabId));
-		const activeReg = liveRegistry.find(reg => reg.tabId === activeTabId);
-		const activeScore = currentScores.find(s => s.gameId === activeReg?.gameId)?.total ?? 0;
-
-		const registeredGameIds = new Set(liveRegistry.map(reg => reg.gameId));
-		const candidates = currentScores.filter(s => registeredGameIds.has(s.gameId));
-		if (candidates.length === 0) return null;
-
-		const best = candidates.reduce((a, b) => a.total > b.total ? a : b);
-		// With several tabs on the same game, picking any but the focused one would switch the
-		// user between two tabs of the game they are already watching.
-		const bestReg = activeReg?.gameId === best.gameId
-			? activeReg
-			: liveRegistry.find(reg => reg.gameId === best.gameId)!;
-		if (bestReg.tabId === activeTabId) return null;
-
-		const threshold = sensitivityThresholds[prefs.sensitivity] ?? 0;
-		// With no game tab in focus the threshold has nothing to measure against, so the best game
-		// wins by default. Every frozen game scores 0, so without the `> 0` guard a league sitting
-		// at halftime would pull the user off whatever they were actually doing.
-		const notWatchingAGame = !activeReg && best.total > 0;
-		if (!notWatchingAGame && best.total < activeScore + threshold) return null;
-		if (prefs.cooldownSeconds > 0 && Date.now() - lastSwitchTime <= prefs.cooldownSeconds * 1000) return null;
-
-		return { tabId: bestReg.tabId, gameId: best.gameId, reason: best.reason };
-	};
+	const resolveSwitchTarget = (openTabIds: Set<number>, activeTabId: number) => chooseSwitchTarget({
+		registry: tabRegistry.filter(reg => openTabIds.has(reg.tabId)),
+		scores: currentScores,
+		activeTabId,
+		sensitivity: prefs.sensitivity,
+		cooldownSeconds: prefs.cooldownSeconds,
+		lastSwitchTime,
+		now: Date.now(),
+	});
 
 	const executePendingSwitch = async () => {
 		const queuedSwitch = pendingSwitch;
@@ -884,76 +778,24 @@ export default defineBackground(() => {
 		const freshGames = changedLeagueId ? liveGames.filter(g => g.league === changedLeagueId) : liveGames;
 
 		for (const game of freshGames) {
-			const config = sportTypeConfigMap[game.sportType];
-			if (!config?.clockBased) continue;
-
-			const entry = clockStallMap.get(game.id);
-			if (!entry) {
-				clockStallMap.set(game.id, { lastClock: game.clockSeconds, stallCount: 0 });
-			} else if (game.clockSeconds === entry.lastClock) {
-				entry.stallCount++;
-			} else {
-				entry.lastClock = game.clockSeconds;
-				entry.stallCount = 0;
-			}
+			const stall = nextClockStall(game, clockStallMap.get(game.id));
+			if (stall) clockStallMap.set(game.id, stall);
 		}
 
 		const favoriteTeamIds = new Set(prefs.favoriteTeamIds);
-		const favoriteBonusPoints = prefs.favoriteTeamBonusPoints;
-		const postseasonBoostPoints = prefs.postseasonBoostPoints;
-		const scores = liveGames.map(g => {
-			const stallCount = clockStallMap.get(g.id)?.stallCount ?? 0;
-			// The window, not the whole retained series: the thinned tail below it exists for the wrap
-			// screen's charts, and feeding three hours of a game to a scorer tuned to the last few
-			// minutes would change every signal it computes.
-			const scored = recentSnapshots(history.get(g.id) ?? [], Date.now() - getHistoryWindowMsForGame(g));
-			const baseScore = applyDisabledSignals(
-				normalizePowerScoreResult(
-					computePowerScore(g, scored, stallCount, winProbHistory.get(g.id) ?? []),
-				),
-				prefs.disabledSignals,
-			);
-			const favoriteTeamCount = getFavoriteTeamCount(g, favoriteTeamIds);
-			// computePowerScore already zeroes a frozen game's signals, and the boosts have to follow
-			// it down: otherwise a game sitting at halftime with a favorite in it still out-scores the
-			// games actually being played.
-			const frozen = isPlayFrozen(g);
-			const favoriteBonus = frozen ? 0 : favoriteTeamCount * favoriteBonusPoints;
-			const gameBoost = frozen ? 0 : (gameBoosts[g.id] ?? 0);
-			const scoringOpportunityBoost = computeScoringOpportunityBoost(g);
-			// Scaled by how close the game is to deciding a trophy rather than paid flat, so a Wild
-			// Card game stops being worth the same as a Super Bowl. A postseason game we could not
-			// grade, or one that deliberately scores nothing like a non-playoff bowl, pays a share
-			// of 0.25 and 0 respectively — see gradePostseason.
-			const postseasonBoost = frozen
-				? 0
-				: Math.round(postseasonBoostPoints * postseasonBoostShare(g.postseasonRound));
-			// Automatic scoring saturates at 100; only a manual game boost may push the headline
-			// total past the ceiling.
-			const automaticTotal = Math.min(
-				scoreMaxTotal,
-				baseScore.total + favoriteBonus + scoringOpportunityBoost + postseasonBoost,
-			);
-			const reasonParts = [
-				baseScore.reason,
-				...boostReasonParts({ favoriteBonus, gameBoost, scoringOpportunityBoost, postseasonBoost }),
-			].filter(Boolean);
-
-			return normalizePowerScoreResult(
-				{
-					...baseScore,
-					signalsSubtotal: baseScore.signalsSubtotal ?? baseScore.total,
-					favoriteBonus,
-					favoriteTeamCount,
-					gameBoost,
-					scoringOpportunityBoost,
-					postseasonBoost,
-					total: automaticTotal + gameBoost,
-					reason: reasonParts.join(', '),
-				},
-				{ allowTotalOverflow: true },
-			);
-		});
+		const now = Date.now();
+		const scores = liveGames.map(g => toLegacyPowerScoreResult(scoreLiveGame(
+			{
+				game: g,
+				history: history.get(g.id) ?? [],
+				stallCount: clockStallMap.get(g.id)?.stallCount ?? 0,
+				winProbability: winProbHistory.get(g.id) ?? [],
+				now,
+			},
+			prefs,
+			gameBoosts[g.id] ?? 0,
+			favoriteTeamIds,
+		)));
 		currentScores = scores;
 		updateHistory(freshGames);
 		updatePowerScoreHistory(liveGames, scores, changedLeagueId);

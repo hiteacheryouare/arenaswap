@@ -55,14 +55,14 @@ export const computePowerScore = (
 };
 
 /** @deprecated Use scoreGame; the boost is in its `boosts` list as 'scoringOpportunity'. */
-export const computeScoringOpportunityBoost = (game: Game): number => {
+export const computeScoringOpportunityBoost = (game: Game<string>): number => {
 	const input = createSignalInput(game, {});
 	return computeScoringOpportunity(input);
 };
 
 // Public so a consumer drawing a game on a timeline projects its end from the same clock the
 // lateGame signal reads, rather than from a second copy of it.
-export const computeGameProgress = (game: Game): number => (
+export const computeGameProgress = (game: Game<string>): number => (
 	getGameProgress(game, resolveSportConfig(game.sportType), resolveLeagueConfig(game))
 );
 

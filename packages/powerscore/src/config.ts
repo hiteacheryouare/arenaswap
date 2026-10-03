@@ -17,7 +17,7 @@ export const resolveSportConfig = (sportType: SportType, override?: Partial<Spor
 	return override ? { ...base, ...override } : base;
 };
 
-export const resolveLeagueConfig = (game: Pick<Game, 'league' | 'sportType'>, override?: Partial<LeagueConfig>): LeagueConfig => {
+export const resolveLeagueConfig = (game: Pick<Game<string>, 'league' | 'sportType'>, override?: Partial<LeagueConfig>): LeagueConfig => {
 	const base = leagueConfigMap[game.league as LeagueId]
 		?? leagueConfigMap[defaultLeagueBySport[game.sportType] ?? 'nba'];
 	return override ? { ...base, ...override } : base;

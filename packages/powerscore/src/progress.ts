@@ -3,14 +3,14 @@ import type { Game, LeagueConfig, SportTypeConfig } from './types';
 
 // Halftime, an intermission, and a delay all mean no play can happen, so nothing about the game
 // state is worth scoring until it resumes.
-export const isPlayFrozen = (game: Game): boolean => game.intermission === true || game.delayed === true;
+export const isPlayFrozen = (game: Game<string>): boolean => game.intermission === true || game.delayed === true;
 
-export const scoreMargin = (game: Game): number => Math.abs(game.homeTeam.score - game.awayTeam.score);
+export const scoreMargin = (game: Game<string>): number => Math.abs(game.homeTeam.score - game.awayTeam.score);
 
 // Null when the feed reports no clock. Coercing a missing clock to 0 read as the final buzzer on a
 // countdown sport — paying the full late-game ceiling — and as kickoff on a count-up one.
 export const getClockSecondsRemaining = (
-	game: Game,
+	game: Game<string>,
 	sport: SportTypeConfig,
 	periodDurationSecs: number,
 ): number | null => {
@@ -29,7 +29,7 @@ export const getClockSecondsRemaining = (
 };
 
 // 0 at the opening tip, 1 at the end of the final regulation period and during overtime.
-export const getGameProgress = (game: Game, sport: SportTypeConfig, league: LeagueConfig): number => {
+export const getGameProgress = (game: Game<string>, sport: SportTypeConfig, league: LeagueConfig): number => {
 	if (game.period == null) return 0;
 	const regularPeriods = Math.max(1, league.regularPeriods);
 	if (game.period > regularPeriods) return 1;
@@ -52,7 +52,7 @@ export const getGameProgress = (game: Game, sport: SportTypeConfig, league: Leag
 };
 
 // Elapsed game minutes on a count-up clock (soccer), or null when the clock is unknown.
-export const getElapsedMinutes = (game: Game, sport: SportTypeConfig, league: LeagueConfig): number | null => {
+export const getElapsedMinutes = (game: Game<string>, sport: SportTypeConfig, league: LeagueConfig): number | null => {
 	if (typeof game.clockSeconds !== 'number' || !Number.isFinite(game.clockSeconds)) return null;
 	if (sport.clockIsFullGameElapsed) return game.clockSeconds / 60;
 	const periodDuration = Math.max(1, league.periodDurationSecs);

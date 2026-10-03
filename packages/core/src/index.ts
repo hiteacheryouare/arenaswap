@@ -7,6 +7,8 @@ export type { EspnTeamEntry } from './apiClient';
 export { computeGameProgress, computePowerScore, computeScoringOpportunityBoost, computeWinProbVarianceScore, isPlayFrozen, normalizePowerScoreResult } from 'powerscore';
 export { scoreMaxTotal } from 'powerscore';
 export { MockGameSimulator } from './mockGames';
+export { chooseSwitchTarget, getFavoriteTeamCount, getHistoryWindowMsForGame, maxSnapshotsPerGame, nextClockStall, recentSnapshots, retainSnapshots, scoreLiveGame, scoreOptionsFor, scoringContextFor, toLegacyPowerScoreResult, toScoreSnapshot, toScoringGame } from './scoring';
+export type { ClockStallEntry, LiveScoringInput, ScoringPrefs, SwitchCandidateTab, SwitchPolicyInput, SwitchTarget } from './scoring';
 export { offseasonGraceMs, resolveOffseason, toLeagueSchedule } from './leagueSchedule';
 export type { LeagueOffseason } from './leagueSchedule';
 export { gradePostseason, postseasonBoostShare, reduceEventName } from './postseasonRound';

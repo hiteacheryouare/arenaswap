@@ -34,11 +34,11 @@ export const applyProgressFloor = (tierCeiling: number, flatFloor: number, progr
 
 const none: SignalOutput = { points: 0 };
 
-const closenessUnit = (game: Game): string => (
+const closenessUnit = (game: Game<string>): string => (
 	scorerTunables.reasons.closenessUnitBySportType[game.sportType] ?? scorerTunables.reasons.defaultClosenessUnit
 );
 
-const shouldScoreZeroZeroAsFullTie = (game: Game, sport: SportTypeConfig): boolean => (
+const shouldScoreZeroZeroAsFullTie = (game: Game<string>, sport: SportTypeConfig): boolean => (
 	sport.zeroZeroAsFullTie && (game.period == null || sport.zeroZeroPenaltyPeriods?.includes(game.period) !== true)
 );
 
@@ -82,7 +82,7 @@ const mapLinearLateGame = (phase: LateGamePhase, fraction: number, ceiling: numb
 };
 
 // Tied games telegraph overtime. Clock sports only; disabled when otPreBoostWindowSecs is 0.
-const getOtPreBoost = (game: Game, sport: SportTypeConfig, secsRemaining: number): number => {
+const getOtPreBoost = (game: Game<string>, sport: SportTypeConfig, secsRemaining: number): number => {
 	const window = Math.max(0, sport.otPreBoostWindowSecs);
 	if (window <= 0) return 0;
 	if (game.homeTeam.score !== game.awayTeam.score) return 0;
@@ -109,7 +109,7 @@ const getLateGameCeiling = (margin: number, sport: SportTypeConfig): number => {
 
 // Keyed on sportType the same way the card's period label is: soccer plays two extra-time halves
 // and then a shootout, none of which is overtime.
-const getOvertimeReason = (game: Game, regularPeriods: number): ReasonFragment => {
+const getOvertimeReason = (game: Game<string>, regularPeriods: number): ReasonFragment => {
 	if (game.sportType !== 'soccer') return { key: 'overtime' };
 	return { key: (game.period ?? 0) - regularPeriods > 2 ? 'shootout' : 'extraTime' };
 };
@@ -117,7 +117,7 @@ const getOvertimeReason = (game: Game, regularPeriods: number): ReasonFragment =
 // A count-up clock has no countdown to render — soccer's stoppage time is never published ahead of
 // time — so it reports elapsed minutes instead of a 0:00 that never arrives.
 const getFinalStretchReason = (
-	game: Game,
+	game: Game<string>,
 	sport: SportTypeConfig,
 	periodDurationSecs: number,
 	secsRemaining: number,
@@ -210,7 +210,7 @@ const decaySignal = (tier: number, reason: ReasonFragment, ageMs: number, halfLi
 	return points <= 0 ? none : { points, reason };
 };
 
-const abbreviation = (team: Game['homeTeam']): string => team.abbreviation ?? '?';
+const abbreviation = (team: Game<string>['homeTeam']): string => team.abbreviation ?? '?';
 
 export const computeMomentum = ({ game, context, sport, now }: SignalInput): SignalOutput => {
 	const { scores } = scorerTunables;

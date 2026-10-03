@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The background scores through PowerScore 3, and the switch rule lives in core — 2026-10-03
+
+Every live game is now scored by `scoreGame` through `scoreLiveGame` in `packages/core/src/scoring.ts`, which also took over the snapshot windowing, the clock-stall count and the switch rule (`chooseSwitchTarget`) from background.ts, so the replay harness runs exactly the code the extension does. The popup still gets the flat 2.x result through `toLegacyPowerScoreResult` until it learns to draw modes, and `Game` is now generic over its league id so a feed with its own leagues can use `Game<string>`.
+
 ## PowerScore 3's engine scores every mode through one pipeline — 2026-10-03
 
 `scoreGame(game, context, options)` returns each signal and boost as a list with structured `{ key, params }` reasons, and folds in the favorite, postseason and manual boosts that background.ts used to add by hand, so a mode is just a list of signals and boosts. `computePowerScore` and the 2.x types still work as thin wrappers, and `tests/classicParity.test.ts` pins Classic against a frozen copy of 2.2.0 over 20,000 seeded games; the only differences are that a disabled signal's reason no longer reaches the line, and the disabled path floors before adding win probability, the way the normal path always did.

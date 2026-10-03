@@ -39,7 +39,7 @@ const newestTimestamp = (context: ScoringContext): number => {
 	return history && history.length > 0 ? history[history.length - 1]!.timestamp : 0;
 };
 
-export const createSignalInput = (game: Game, context: ScoringContext, options: ScoreOptions = {}): SignalInput => {
+export const createSignalInput = (game: Game<string>, context: ScoringContext, options: ScoreOptions = {}): SignalInput => {
 	const sport = resolveSportConfig(game.sportType, options.sport);
 	const league = resolveLeagueConfig(game, options.league);
 	return {
@@ -123,7 +123,7 @@ const blendWithClassic = (own: number, classic: number, blend: ClassicBlend): nu
 
 const nonNegative = (value: number | undefined): number => (isFiniteNumber(value) ? Math.max(0, Math.round(value)) : 0);
 
-const frozenScore = (game: Game, mode: PowerScoreMode, options: ScoreOptions): PowerScore => ({
+const frozenScore = (game: Game<string>, mode: PowerScoreMode, options: ScoreOptions): PowerScore => ({
 	gameId: game.id,
 	modeId: mode.id,
 	total: 0,
@@ -131,6 +131,7 @@ const frozenScore = (game: Game, mode: PowerScoreMode, options: ScoreOptions): P
 	signalsSubtotal: 0,
 	scaledSubtotal: 0,
 	signalCeiling: sum(mode.signals.map(signal => signal.ceiling)),
+	frozen: true,
 	stalled: false,
 	stallPenalty: 0,
 	baseTotal: 0,
@@ -150,7 +151,7 @@ const frozenScore = (game: Game, mode: PowerScoreMode, options: ScoreOptions): P
 	favorite and postseason boosts (capped at 100) → the manual game boost, the only thing allowed
 	past 100.
 */
-export const scoreGame = (game: Game, context: ScoringContext = {}, options: ScoreOptions = {}): PowerScore => {
+export const scoreGame = (game: Game<string>, context: ScoringContext = {}, options: ScoreOptions = {}): PowerScore => {
 	const requested = getMode(options.mode);
 	const mode = requested.appliesTo && !requested.appliesTo(game, context) ? classicMode : requested;
 	if (isPlayFrozen(game)) return frozenScore(game, mode, options);
@@ -190,6 +191,7 @@ export const scoreGame = (game: Game, context: ScoringContext = {}, options: Sco
 		signalsSubtotal: run.signalsSubtotal,
 		scaledSubtotal: run.scaledSubtotal,
 		signalCeiling: run.signalCeiling,
+		frozen: false,
 		stalled: run.stalled,
 		stallPenalty: run.stallPenalty,
 		...(run.winProbabilityVariance !== undefined ? { winProbabilityVariance: run.winProbabilityVariance } : {}),
