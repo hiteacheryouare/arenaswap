@@ -235,6 +235,12 @@
 		"leagueMoveUp": "{label} 위로 이동",
 		"leagueMoveDown": "{label} 아래로 이동",
 		"leagueDragHandle": "드래그하여 순서 변경",
+		"leagueOffseason": "오프시즌",
+		"leagueReturns": "{date} 개막 ({days})",
+		"leagueReturnsDays": {
+			"1": "1일",
+			"n": "$1일"
+		},
 		"groupSwitching": "전환",
 		"groupSwitchingDesc": "ArenaSwap이 얼마나 적극적으로 전환할지, 그리고 남겨진 탭을 어떻게 할지 설정해요.",
 		"groupScoring": "점수 계산",

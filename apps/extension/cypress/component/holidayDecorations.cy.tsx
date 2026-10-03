@@ -190,6 +190,7 @@ const setupProps = {
 	demoMode: false,
 	demoSeason: 'real' as const,
 	leagueLogos: {},
+	leagueSchedules: {},
 	favoriteTeamIds: new Set<string>(),
 	standbyStreamTabId: null,
 	standbyOnboardingDone: true,

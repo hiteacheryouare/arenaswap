@@ -18,7 +18,7 @@ describe('what the league pickers can draw without asking ESPN', () => {
 });
 
 describe('how long a fetched set of league logos is kept', () => {
-	const fresh = { fetchedAt: 1_000_000, logos: { nba: 'https://example/nba.png' } };
+	const fresh = { fetchedAt: 1_000_000, logos: { nba: 'https://example/nba.png' }, schedules: {} };
 
 	it('keeps it for the week after it was written', () => {
 		expect(isLeagueLogoCacheFresh(fresh, fresh.fetchedAt)).toBe(true);
@@ -41,5 +41,10 @@ describe('how long a fetched set of league logos is kept', () => {
 		expect(isLeagueLogoCacheFresh({ logos: {} }, 1_000_000)).toBe(false);
 		expect(isLeagueLogoCacheFresh({ fetchedAt: 1_000_000 }, 1_000_000)).toBe(false);
 		expect(isLeagueLogoCacheFresh({ fetchedAt: Number.NaN, logos: {} }, 1_000_000)).toBe(false);
+	});
+
+	// A copy written before schedules were kept would hide every offseason label for up to a week.
+	it('refetches a copy written before it carried schedules', () => {
+		expect(isLeagueLogoCacheFresh({ fetchedAt: 1_000_000, logos: {} }, 1_000_000)).toBe(false);
 	});
 });

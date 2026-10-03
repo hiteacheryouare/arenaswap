@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { i18n } from '#i18n';
-import type { FinishedTabAction, LeagueId, LeagueLogoMap, SignalName, SportType, ThemePreference, UserPreferences } from '@arenaswap/core/types';
+import type { FinishedTabAction, LeagueId, LeagueLogoMap, LeagueScheduleMap, SignalName, SportType, ThemePreference, UserPreferences } from '@arenaswap/core/types';
 import type { Browser } from 'wxt/browser';
 import CooldownSlider from './cooldownSlider';
 import FavoriteTeamBonusInput from './favoriteTeamBonusInput';
 import FavoriteTeamsPage from './favoriteTeamsPage';
 import LeagueLogo from './leagueLogo';
+import leagueOffseasonLabel from './leagueOffseasonLabel';
 import LeagueOrderList from './leagueOrderList';
 import PostseasonBoostInput from './postseasonBoostInput';
 import SensitivitySlider from './sensitivitySlider';
@@ -25,6 +26,7 @@ interface setupViewProps {
 	demoMode: boolean;
 	demoSeason: demoSeason;
 	leagueLogos: LeagueLogoMap;
+	leagueSchedules: LeagueScheduleMap;
 	favoriteTeamIds: ReadonlySet<string>;
 	standbyStreamTabId: number | null;
 	standbyOnboardingDone: boolean;
@@ -75,7 +77,7 @@ const setupSignalMeta = [
 ] as const;
 
 const setupView = ({
-	prefs, prefsLoaded, demoMode, demoSeason, leagueLogos, favoriteTeamIds, standbyStreamTabId, standbyOnboardingDone,
+	prefs, prefsLoaded, demoMode, demoSeason, leagueLogos, leagueSchedules, favoriteTeamIds, standbyStreamTabId, standbyOnboardingDone,
 	openTabs, formatTabLabel, onClose, onSensitivityChange, onCooldownChange, onSwitchDelayChange,
 	onFavoriteTeamBonusChange, onToggleFavoriteTeam, onToggleLeague, onToggleSport, onReorderLeague, onResetLeagueOrder,
 	onToggleGroupByLeague, onToggleShowUpcoming, onToggleKeepFinalGames, onFinishedTabActionChange, onThemeChange, onUpcomingGamesDaysChange,
@@ -472,6 +474,7 @@ const setupView = ({
 		</>
 	);
 
+	const now = Date.now();
 	const leaguesPage = (
 		<>
 			{(Object.keys(sportTypeOrder) as SportType[])
@@ -493,24 +496,33 @@ const setupView = ({
 								</button>
 							</div>
 							<div className='league-toggle-grid'>
-								{leagues.map(league => (
-									<div key={league.id} className='league-toggle-row'>
-										<div className='league-toggle-row-top'>
-											<LeagueLogo league={league} logos={leagueLogos} />
-											<div className='form-check form-switch mb-0'>
-												<input
-													className='form-check-input'
-													type='checkbox'
-													id={`league-${league.id}`}
-													checked={prefs.enabledLeagues.includes(league.id)}
-													onChange={() => onToggleLeague(league.id)}
-													disabled={!prefsLoaded}
-												/>
+								{leagues.map(league => {
+									const offseasonLabel = leagueOffseasonLabel(leagueSchedules[league.id], now);
+									const labelBody = (
+										<>
+											<span className='d-block fw-semibold text-body'>{league.label}</span>
+											{offseasonLabel && <span className='d-block text-body-secondary league-offseason'>{offseasonLabel}</span>}
+										</>
+									);
+									return (
+										<div key={league.id} className='league-toggle-row'>
+											<div className='league-toggle-row-top'>
+												<LeagueLogo league={league} logos={leagueLogos} />
+												<div className='form-check form-switch mb-0'>
+													<input
+														className='form-check-input'
+														type='checkbox'
+														id={`league-${league.id}`}
+														checked={prefs.enabledLeagues.includes(league.id)}
+														onChange={() => onToggleLeague(league.id)}
+														disabled={!prefsLoaded}
+													/>
+												</div>
 											</div>
+											<label className='mb-0 league-toggle-label' htmlFor={`league-${league.id}`}>{labelBody}</label>
 										</div>
-										<label className='fw-semibold text-body mb-0 league-toggle-label' htmlFor={`league-${league.id}`}>{league.label}</label>
-									</div>
-								))}
+									);
+								})}
 							</div>
 						</div>
 					);

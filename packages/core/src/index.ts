@@ -7,6 +7,8 @@ export type { EspnTeamEntry } from './apiClient';
 export { computeGameProgress, computePowerScore, computeScoringOpportunityBoost, computeWinProbVarianceScore, isPlayFrozen, normalizePowerScoreResult } from 'powerscore';
 export { scoreMaxTotal } from 'powerscore';
 export { MockGameSimulator } from './mockGames';
+export { offseasonGraceMs, resolveOffseason, toLeagueSchedule } from './leagueSchedule';
+export type { LeagueOffseason } from './leagueSchedule';
 export { gradePostseason, postseasonBoostShare, reduceEventName } from './postseasonRound';
 export type { PostseasonGrade, PostseasonRound } from './postseasonRound';
 export { createPollModeTracker } from './pollModeTracker';

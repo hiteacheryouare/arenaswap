@@ -947,6 +947,11 @@
 	line-height: 1.25;
 }
 
+// CJK can break between any two characters; this holds it to the one break left before the count.
+.league-offseason {
+	word-break: keep-all;
+}
+
 .league-order-list {
 	display:        flex;
 	flex-direction: column;

@@ -235,6 +235,12 @@
 		"leagueMoveUp": "{label} nach oben verschieben",
 		"leagueMoveDown": "{label} nach unten verschieben",
 		"leagueDragHandle": "Zum Umsortieren ziehen",
+		"leagueOffseason": "Saisonpause",
+		"leagueReturns": "Ab {date} ({days})",
+		"leagueReturnsDays": {
+			"1": "1 Tag",
+			"n": "$1 Tage"
+		},
 		"groupSwitching": "Wechseln",
 		"groupSwitchingDesc": "Wie schnell ArenaSwap dich weiterschickt und was mit den Tabs passiert, die es zurücklässt.",
 		"groupScoring": "Bewertung",

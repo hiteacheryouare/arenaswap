@@ -235,6 +235,12 @@
 		"leagueMoveUp": "Déplacer {label} vers le haut",
 		"leagueMoveDown": "Déplacer {label} vers le bas",
 		"leagueDragHandle": "Glisser pour réorganiser",
+		"leagueOffseason": "Intersaison",
+		"leagueReturns": "Retour le {date} ({days})",
+		"leagueReturnsDays": {
+			"1": "1 jour",
+			"n": "$1 jours"
+		},
 		"groupSwitching": "Changement",
 		"groupSwitchingDesc": "L'empressement d'ArenaSwap à te faire changer de match, et ce qu'il advient des onglets laissés derrière.",
 		"groupScoring": "Notation",

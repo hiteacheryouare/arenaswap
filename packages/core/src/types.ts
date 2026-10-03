@@ -257,6 +257,14 @@ export interface TabRegistration {
 
 export type LeagueLogoMap = Partial<Record<LeagueId, string>>;
 
+// The first and last moments a league has games scheduled, both empty when ESPN sent no calendar.
+export interface LeagueSchedule {
+	startsAt?: number;
+	endsAt?: number;
+}
+
+export type LeagueScheduleMap = Partial<Record<LeagueId, LeagueSchedule>>;
+
 // ESPN's two monochrome marks for a team. They are drawn as a pair — of 916 teams sampled across
 // six leagues, 453 have both and not one has only one of them — so a team either has this or has
 // nothing, and a team with nothing keeps the tinted disc.

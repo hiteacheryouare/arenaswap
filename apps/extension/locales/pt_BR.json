@@ -235,6 +235,12 @@
 		"leagueMoveUp": "Mover {label} para cima",
 		"leagueMoveDown": "Mover {label} para baixo",
 		"leagueDragHandle": "Arraste para reordenar",
+		"leagueOffseason": "Fora de temporada",
+		"leagueReturns": "Volta em {date} ({days})",
+		"leagueReturnsDays": {
+			"1": "1 dia",
+			"n": "$1 dias"
+		},
 		"groupSwitching": "Trocas",
 		"groupSwitchingDesc": "O quanto o ArenaSwap corre para te levar a outro jogo e o que acontece com as abas que ele deixa para trás.",
 		"groupScoring": "Pontuação",

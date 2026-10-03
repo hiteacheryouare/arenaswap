@@ -1,5 +1,6 @@
 import { isWithinFinalRetention, leagueConfigMap, pollLookaheadDays, pollMinEagerMs, resolveLeagueLogoUrl, upcomingGamesDaysMax } from './constants';
 import { parseClockToSeconds } from './gameClock';
+import { toLeagueSchedule } from './leagueSchedule';
 import { gradePostseason } from './postseasonRound';
 import {
 	EspnSummarySchema,
@@ -18,7 +19,7 @@ import type {
 	EspnVenueAddress,
 } from './espnSchemas';
 import { logWarn } from './logger';
-import type { AtBat, AtBatPlayer, Game, GameCondition, GameOdds, LeagueConfig, LeagueId, LeagueLogoMap, ProbableStarter, TeamLeader, TeamMonoLogoMap, TeamMonoMarks } from './types';
+import type { AtBat, AtBatPlayer, Game, GameCondition, GameOdds, LeagueConfig, LeagueId, LeagueLogoMap, LeagueSchedule, LeagueScheduleMap, ProbableStarter, TeamLeader, TeamMonoLogoMap, TeamMonoMarks } from './types';
 
 const espnBase = 'https://site.api.espn.com/apis/site/v2/sports';
 
@@ -720,6 +721,7 @@ interface LeagueGamesResult {
 	leagueId: LeagueId;
 	games: Game[];
 	logoUrl: string;
+	schedule?: LeagueSchedule;
 }
 
 const fetchScoreboard = async (url: string, leagueId: LeagueId, warnKey: string = leagueId): Promise<EspnScoreboardResponse> => {
@@ -793,6 +795,7 @@ export const espnDayPoolSize = 3;
 interface CachedDay {
 	games: Game[];
 	espnLogo?: string;
+	schedule: LeagueSchedule;
 	fetchedAt: number;
 	ttlMs: number;
 }
@@ -862,6 +865,7 @@ const fetchDayFromEspn = async (
 		const entry: CachedDay = {
 			games,
 			espnLogo: pickLeagueLogo(response.leagues?.[0]?.logos),
+			schedule: toLeagueSchedule(response.leagues?.[0]?.calendar),
 			fetchedAt: Date.now(),
 			ttlMs: dayTtlMs(dayKey, todayKey, games),
 		};
@@ -979,7 +983,9 @@ const fetchLeagueGames = async (config: LeagueConfig, options: LeagueFetchOption
 	const games = [...byId.values()].filter(keepGame);
 
 	const espnLogo = answered.find(day => day.espnLogo)?.espnLogo;
-	return { leagueId: config.id, games, logoUrl: resolveLeagueLogoUrl(config.id, espnLogo) };
+	// Every day of a league carries the same calendar, so the first day that has one speaks for it.
+	const schedule = answered.find(day => day.schedule.startsAt !== undefined)?.schedule ?? answered[0]?.schedule;
+	return { leagueId: config.id, games, logoUrl: resolveLeagueLogoUrl(config.id, espnLogo), schedule };
 };
 
 const getEnabledLeagueConfigs = (enabledLeagues: LeagueId[]): LeagueConfig[] => (
@@ -994,10 +1000,10 @@ const getEnabledLeagueConfigs = (enabledLeagues: LeagueId[]): LeagueConfig[] => 
    the per-league poll recorded a successful tick with nothing live and walked a league down into
    dormant while its games were being played. The games still come back best-effort; what changed is
    that the caller can now tell an empty answer from an unanswered one. */
-export const fetchGamesWithLeagueLogos = async (enabledLeagues: LeagueId[], options: LeagueFetchOptions = {}): Promise<{ games: Game[]; leagueLogos: LeagueLogoMap; shedLeagues: LeagueId[] }> => {
-	if (enabledLeagues.length === 0) return { games: [], leagueLogos: {}, shedLeagues: [] };
+export const fetchGamesWithLeagueLogos = async (enabledLeagues: LeagueId[], options: LeagueFetchOptions = {}): Promise<{ games: Game[]; leagueLogos: LeagueLogoMap; leagueSchedules: LeagueScheduleMap; shedLeagues: LeagueId[] }> => {
+	if (enabledLeagues.length === 0) return { games: [], leagueLogos: {}, leagueSchedules: {}, shedLeagues: [] };
 	const leagueConfigs = getEnabledLeagueConfigs(enabledLeagues);
-	if (leagueConfigs.length === 0) return { games: [], leagueLogos: {}, shedLeagues: [] };
+	if (leagueConfigs.length === 0) return { games: [], leagueLogos: {}, leagueSchedules: {}, shedLeagues: [] };
 
 	const results = await settledInPool(leagueConfigs, config => fetchLeagueGames(config, options));
 
@@ -1012,7 +1018,11 @@ export const fetchGamesWithLeagueLogos = async (enabledLeagues: LeagueId[], opti
 		acc[result.leagueId] = result.logoUrl;
 		return acc;
 	}, {});
-	return { games, leagueLogos, shedLeagues };
+	const leagueSchedules = fulfilled.reduce<LeagueScheduleMap>((acc, result) => {
+		if (result.schedule) acc[result.leagueId] = result.schedule;
+		return acc;
+	}, {});
+	return { games, leagueLogos, leagueSchedules, shedLeagues };
 };
 
 /* When the next kickoff a league carries is asked for and the answer matters more than the games

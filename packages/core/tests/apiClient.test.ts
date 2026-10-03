@@ -165,7 +165,7 @@ describe('apiClient', () => {
 		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
 
 		const { fetchGamesWithLeagueLogos, fetchGames } = loadApiClient();
-		expect(await fetchGamesWithLeagueLogos([])).toEqual({ games: [], leagueLogos: {}, shedLeagues: [] });
+		expect(await fetchGamesWithLeagueLogos([])).toEqual({ games: [], leagueLogos: {}, leagueSchedules: {}, shedLeagues: [] });
 		expect(await fetchGames([])).toEqual([]);
 		expect(fetchMock).not.toHaveBeenCalled();
 	});

@@ -235,6 +235,12 @@
 		"leagueMoveUp": "Itaas ang {label}",
 		"leagueMoveDown": "Ibaba ang {label}",
 		"leagueDragHandle": "I-drag para iayos",
+		"leagueOffseason": "Offseason",
+		"leagueReturns": "Balik sa {date} ({days})",
+		"leagueReturnsDays": {
+			"1": "1 araw",
+			"n": "$1 na araw"
+		},
 		"groupSwitching": "Paglipat",
 		"groupSwitchingDesc": "Kung gaano kasabik ang ArenaSwap na ilipat ka, at kung ano ang mangyayari sa mga tab na naiiwan nito.",
 		"groupScoring": "Scoring",

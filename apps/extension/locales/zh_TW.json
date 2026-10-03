@@ -235,6 +235,12 @@
 		"leagueMoveUp": "將 {label} 上移",
 		"leagueMoveDown": "將 {label} 下移",
 		"leagueDragHandle": "拖曳以重新排序",
+		"leagueOffseason": "休賽季",
+		"leagueReturns": "{date}開賽（{days}）",
+		"leagueReturnsDays": {
+			"1": "1 天",
+			"n": "$1 天"
+		},
 		"groupSwitching": "切換",
 		"groupSwitchingDesc": "ArenaSwap 有多積極帶你換場，以及被留下的分頁要怎麼處理。",
 		"groupScoring": "評分",

@@ -235,6 +235,12 @@
 		"leagueMoveUp": "Move {label} up",
 		"leagueMoveDown": "Move {label} down",
 		"leagueDragHandle": "Drag to reorder",
+		"leagueOffseason": "Offseason",
+		"leagueReturns": "Back {date} ({days})",
+		"leagueReturnsDays": {
+			"1": "1 day",
+			"n": "$1 days"
+		},
 		"groupSwitching": "Switching",
 		"groupSwitchingDesc": "How eager ArenaSwap is to move you, and what happens to the tabs it leaves behind.",
 		"groupScoring": "Scoring",

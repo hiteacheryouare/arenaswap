@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Settings marks the leagues that are out of season — 2026-10-02
+
+Each tile in Settings → Leagues now says "Back Nov 1 (30 days)" under a league that hasn't started yet, or "Offseason" when its season is over and no next date is known. It reads the calendar in the scoreboard reply the league pickers already fetch weekly, not the season type, which calls college basketball "Regular Season" a month before tip-off, and it waits two weeks past the last listed day because playoff dates are added to the calendar late. When the label is too long for the tile, the count moves to its own line in one piece; that is the only place the line can break.
+
 ## Pre-game screens get a Matchup tab and a ticket link — 2026-10-02
 
 Before a game starts, a Matchup tab shows each team's last five results, how they compare on a few season stats, and who is out or questionable, with basketball and hockey adding rest days, all from the summary request the screen already made, and it disappears once the game starts. Game Info also gets a "Want to go in person?" link to the seller page for that game, and our sources' referral tag is stripped off so the link carries no affiliate code.

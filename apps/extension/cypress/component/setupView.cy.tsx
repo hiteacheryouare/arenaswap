@@ -1,4 +1,5 @@
 import SetupView from '../../entrypoints/popup/components/setupView';
+import { keepCountTogether } from '../../entrypoints/popup/components/leagueOffseasonLabel';
 import { settingsEntries } from '../../entrypoints/popup/components/settingsCatalog';
 import type { UserPreferences } from '@arenaswap/core/types';
 import de from '../../locales/de.json';
@@ -53,6 +54,7 @@ const defaultProps = {
 	demoMode: false,
 	demoSeason: 'real' as const,
 	leagueLogos: {},
+	leagueSchedules: {},
 	favoriteTeamIds: new Set<string>(),
 	standbyStreamTabId: null,
 	standbyOnboardingDone: true,
@@ -95,6 +97,8 @@ const defaultProps = {
 };
 
 const openGroup = (id: string) => cy.get(`#settingsGroup-${id}`).click();
+
+const leagueLabel = (id: string) => cy.get(`#league-${id}`).closest('.league-toggle-row').find('.league-toggle-label');
 
 // React tracks an input's last value on the element itself and swallows a change event whose value
 // it thinks it already has, so the value goes in through the native setter the tracker patched.
@@ -734,6 +738,74 @@ describe('setupView leagues group', () => {
 		openGroup('leagues');
 		cy.get('#groupByLeagueToggle').should('not.exist');
 		cy.get('.league-order-row').should('not.exist');
+	});
+
+	it('marks the leagues between seasons, with the date they come back when it is known', () => {
+		const dayMs = 24 * 60 * 60 * 1000;
+		const today = new Date();
+		const tipOff = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate() + 30, 7);
+		const tipOffLabel = new Date(tipOff).toLocaleDateString([], { month: 'short', day: 'numeric', timeZone: 'UTC' });
+		const leagueSchedules = {
+			nba: { startsAt: Date.now() - 10 * dayMs, endsAt: Date.now() + 100 * dayMs },
+			ncaab: { startsAt: tipOff, endsAt: tipOff + 120 * dayMs },
+			cbase: {},
+		};
+		cy.mount(<SetupView {...defaultProps} leagueSchedules={leagueSchedules} />);
+		openGroup('leagues');
+		leagueLabel('ncaab').should('contain.text', keepCountTogether(`Back ${tipOffLabel} (30 days)`));
+		leagueLabel('cbase').should('contain.text', 'Offseason');
+		leagueLabel('nba').should('not.contain.text', 'Offseason').and('not.contain.text', 'Back');
+		// A league nothing was heard back about stays unmarked rather than guessing.
+		leagueLabel('nfl').should('not.contain.text', 'Offseason');
+	});
+
+	it('drops the count to its own line whole when the two do not fit together', () => {
+		const tipOff = Date.UTC(new Date().getFullYear() + 1, 10, 30, 7);
+		cy.mount(<SetupView {...defaultProps} leagueSchedules={{ ncaab: { startsAt: tipOff, endsAt: tipOff + 1 } }} />);
+		openGroup('leagues');
+		leagueLabel('ncaab').find('.league-offseason').should(([line]: JQuery<HTMLElement>) => {
+			const text = line.firstChild!;
+			const at = (start: number, end: number) => {
+				const range = document.createRange();
+				range.setStart(text, start);
+				range.setEnd(text, end);
+				return range.getBoundingClientRect();
+			};
+			const open = text.textContent!.indexOf('(');
+			expect(at(open, open + 1).top, 'the count starts a new line').to.be.greaterThan(at(0, 1).top);
+			expect(at(open, text.textContent!.length).height, 'the count stays on one line').to.be.lessThan(at(0, 1).height * 1.5);
+			expect(at(0, open).height, 'the date stays on one line').to.be.lessThan(at(0, 1).height * 1.5);
+		});
+	});
+
+	it('fits the date and the count each on a line of their own in every locale', () => {
+		cy.mount(<SetupView {...defaultProps} leagueSchedules={{ cbase: {} }} />);
+		openGroup('leagues');
+		leagueLabel('cbase').find('.league-offseason').should(([line]: JQuery<HTMLElement>) => {
+			const style = getComputedStyle(line);
+			const ruler = document.createElement('span');
+			ruler.style.position = 'absolute';
+			ruler.style.visibility = 'hidden';
+			ruler.style.whiteSpace = 'nowrap';
+			ruler.style.font = style.font;
+			ruler.style.letterSpacing = style.letterSpacing;
+			line.ownerDocument.body.appendChild(ruler);
+			try {
+				for (const [name, locale] of Object.entries(locales)) {
+					const setup = locale.setup as unknown as Record<string, string>;
+					const days = (locale.setup.leagueReturnsDays as { n: string }).n.replace('$1', '30');
+					const date = new Date(Date.UTC(2026, 10, 30)).toLocaleDateString(name.replace('_', '-'), { month: 'short', day: 'numeric', timeZone: 'UTC' });
+					const [lead, count] = setup.leagueReturns!.replace('{date}', date).replace('{days}', days).split(/ ?(?=[(（])/);
+					expect(count, `${name} has a count to break before`).to.be.a('string');
+					for (const text of [setup.leagueOffseason!, lead!, count!]) {
+						ruler.textContent = text;
+						expect(ruler.getBoundingClientRect().width, `${name} "${text}" fits`).to.be.at.most(line.clientWidth);
+					}
+				}
+			} finally {
+				ruler.remove();
+			}
+		});
 	});
 });
 

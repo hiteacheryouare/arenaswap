@@ -1,5 +1,5 @@
 import { allLeagueIds, resolveLeagueLogoUrl } from '@arenaswap/core/constants';
-import type { LeagueLogoMap } from '@arenaswap/core/types';
+import type { LeagueLogoMap, LeagueScheduleMap } from '@arenaswap/core/types';
 
 /* Filling the league pickers used to cost 31 parallel scoreboard requests on every popup open, with
    the answer held in component state and thrown away when the popup closed. That is more than
@@ -22,17 +22,21 @@ export const leagueLogoCacheKey = 'arenaswap.allLeagueLogos';
 // season and long enough that opening the popup is free.
 export const leagueLogoCacheTtlMs = 7 * 24 * 60 * 60 * 1000;
 
+// The same 31 answers carry each league's calendar, which is what the settings grid reads its
+// offseason labels from. A schedule shifts by days, not weeks, so it shares the logos' TTL.
 export interface storedLeagueLogos {
 	fetchedAt: number;
 	logos: LeagueLogoMap;
+	schedules: LeagueScheduleMap;
 }
 
 // A stamp in the future is treated as stale rather than as fresh forever, which is what a clock that
 // moved backwards after a write would otherwise leave behind.
 export const isLeagueLogoCacheFresh = (stored: unknown, now: number): stored is storedLeagueLogos => {
 	if (typeof stored !== 'object' || stored === null) return false;
-	const { fetchedAt, logos } = stored as Partial<storedLeagueLogos>;
+	const { fetchedAt, logos, schedules } = stored as Partial<storedLeagueLogos>;
 	if (typeof fetchedAt !== 'number' || !Number.isFinite(fetchedAt)) return false;
 	if (typeof logos !== 'object' || logos === null) return false;
+	if (typeof schedules !== 'object' || schedules === null) return false;
 	return now >= fetchedAt && now - fetchedAt < leagueLogoCacheTtlMs;
 };
