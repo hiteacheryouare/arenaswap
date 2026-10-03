@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Loose ends from the polish review — 2026-10-02
+
+Two chart lines that lifting pulled onto the same blue now switch a side, the league logo follows its side's ink so it survives a gold card, the breakdown rows stay on one line on Chrome builds without subgrid, and the site's skip link clears AA. Two specs that raced a timer and an island's hydration now wait for them, since CI would otherwise go red at random.
+
 ## The copy reads like one product, in every language — 2026-10-02
 
 Headings are Title Case in English, every plus is a boost, the tour says click, pro tips quote the real setting labels, Ludicrous Speed stays a name in all 12 locales, and the flat error, empty and notification lines picked up some wit, our sources' binoculars included. The site bundles and `defaultStrings.ts` follow the extension's English, and a new `gameListHeader.cy.tsx` holds the load-failed banner to two lines beside Retry in every locale, which is why German, French and both Portuguese say it more briefly.
