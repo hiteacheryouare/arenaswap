@@ -16,6 +16,8 @@ const formEvent = (id: string, atVs: string, gameDate: string, homeTeamId: strin
 	opponentLogo: `https://a.espncdn.com/i/teamlogos/nfl/500/${opponent.toLowerCase()}.png`,
 });
 
+const inWeek = (event: ReturnType<typeof formEvent>, week: number) => ({ ...event, week, leagueAbbreviation: 'NFL' });
+
 const nflIds = { home: '28', away: '11' };
 
 const nflSummary = {
@@ -98,6 +100,40 @@ describe('parseRecentForm', () => {
 		const form = parseRecentForm(data, { home: '111', away: 'ncaamh-57' });
 		expect(form.away).toHaveLength(1);
 		expect(form.home).toEqual([]);
+	});
+
+	// Commanders, 2026-10-02: two August preseason games, then weeks 1–3. A 1-2 team read L L L L W.
+	it('leaves out the preseason games the NFL sends ahead of week 1', () => {
+		const data = {
+			...nflSummary,
+			lastFiveGames: [{
+				team: { id: '28' },
+				events: [
+					inWeek(formEvent('401873601', '@', '2026-08-22T16:00Z', '8', '17', '13', 'L', 'DET'), 3),
+					inWeek(formEvent('401873302', '@', '2026-08-28T22:00Z', '33', '41', '3', 'L', 'BAL'), 4),
+					inWeek(formEvent('401872929', '@', '2026-09-13T20:25Z', '21', '24', '22', 'L', 'PHI'), 1),
+					inWeek(formEvent('401872944', '@', '2026-09-20T20:25Z', '6', '37', '20', 'L', 'DAL'), 2),
+					inWeek(formEvent('401872955', 'vs', '2026-09-27T17:00Z', '28', '33', '31', 'W', 'LV'), 3),
+				],
+			}],
+		};
+		expect(parseRecentForm(data, nflIds).home.map(result => result.id)).toEqual(['401872929', '401872944', '401872955']);
+	});
+
+	// The playoffs start counting from 1 again too, but after week 18, so a playoff run keeps its regular season.
+	it('keeps the regular season ahead of a playoff game', () => {
+		const data = {
+			...nflSummary,
+			lastFiveGames: [{
+				team: { id: '28' },
+				events: [
+					inWeek(formEvent('a', 'vs', '2026-12-27T18:00Z', '28', '20', '17', 'W', 'DAL'), 17),
+					inWeek(formEvent('b', '@', '2027-01-03T18:00Z', '6', '10', '24', 'W', 'PHI'), 18),
+					inWeek(formEvent('c', 'vs', '2027-01-10T18:00Z', '28', '27', '24', 'W', 'GB'), 1),
+				],
+			}],
+		};
+		expect(parseRecentForm(data, nflIds).home.map(result => result.id)).toEqual(['a', 'b', 'c']);
 	});
 
 	it('drops a block it cannot pin to either side', () => {

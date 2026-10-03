@@ -117,6 +117,8 @@ const pairBlock = <T>(
 
 interface RawFormEvent {
 	id?: unknown;
+	week?: unknown;
+	leagueAbbreviation?: unknown;
 	atVs?: unknown;
 	gameDate?: unknown;
 	homeTeamId?: unknown;
@@ -131,11 +133,30 @@ const formResultOf = (value: unknown): FormResult['result'] | undefined => (
 	value === 'W' || value === 'L' || value === 'D' || value === 'T' ? value : undefined
 );
 
+// The NFL sends preseason games in the last five with nothing to mark them but the week count
+// starting over at 1 when the regular season does. Preseason runs at most four weeks, which keeps a
+// playoff run, where week 18 also goes back to 1, from being cut the same way.
+const preseasonWeeks = 4;
+
+const dropPreseason = (events: RawFormEvent[]): RawFormEvent[] => {
+	const ordered = events.toSorted((a, b) => Date.parse(String(a.gameDate)) - Date.parse(String(b.gameDate)));
+	let seasonStart = 0;
+	for (let index = 1; index < ordered.length; index++) {
+		const previous = ordered[index - 1]!;
+		const current = ordered[index]!;
+		const previousWeek = Number(previous.week);
+		const currentWeek = Number(current.week);
+		const sameCompetition = previous.leagueAbbreviation === current.leagueAbbreviation;
+		if (sameCompetition && currentWeek < previousWeek && previousWeek <= preseasonWeeks) seasonStart = index;
+	}
+	return ordered.slice(seasonStart);
+};
+
 const parseFormEvents = (entry: unknown, teamId: string): FormResult[] => {
 	const events = (entry as { events?: RawFormEvent[] }).events;
 	if (!Array.isArray(events)) return [];
 	const results: FormResult[] = [];
-	for (const event of events) {
+	for (const event of dropPreseason(events)) {
 		const result = formResultOf(event.gameResult);
 		const date = str(event.gameDate);
 		const homeScore = str(event.homeTeamScore);
