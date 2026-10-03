@@ -3,6 +3,8 @@ import { i18n } from '#i18n';
 import Crest from '@arenaswap/ui/src/components/crest';
 import { teamLogoOnColor } from '@arenaswap/core/constants';
 import { matchupSurfaceStyle, powerScoreColor } from './gameCardShared';
+import { signalColors } from '@arenaswap/ui/src/components/signalColors';
+import focusStepTitle from './stepTitleFocus';
 
 interface walkthroughStepGameDetailProps {
 	onNext: () => void;
@@ -36,7 +38,7 @@ const walkthroughStepGameDetail = ({ onNext, onBack }: walkthroughStepGameDetail
 				{i18n.t('stepGameDetail.step', [6, 8])}
 			</div>
 
-			<div className='fw-bold fs-5 text-center mb-1'>{i18n.t('stepGameDetail.title')}</div>
+			<div className='fw-bold fs-5 text-center mb-1 popup-step-title' role='heading' aria-level={1} tabIndex={-1} ref={focusStepTitle} data-step-title>{i18n.t('stepGameDetail.title')}</div>
 			<div className='text-body-secondary small text-center mb-3 lh-base'>
 				{i18n.t('stepGameDetail.subtitle')}
 			</div>
@@ -45,19 +47,18 @@ const walkthroughStepGameDetail = ({ onNext, onBack }: walkthroughStepGameDetail
 				<div
 					role='button'
 					tabIndex={0}
-					className='game-card is-team-colored'
+					className='game-card is-team-colored motion-outline'
 					style={{
 						...matchupSurfaceStyle(eaglesColor, giantsColor),
 						cursor: 'pointer',
 						outline: tapped ? `2px solid ${mockPsColor}` : '2px dashed rgba(255,255,255,0.2)',
-						transition: 'outline 0.2s',
 					}}
 					onClick={() => setTapped(true)}
 					onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') setTapped(true); }}
 				>
 					<div className='d-flex align-items-center gap-1 fw-bold text-uppercase live-status-label mb-1'>
 						<span className='live-dot' />
-						LIVE
+						{i18n.t('gameCard.live')}
 					</div>
 
 					<div className='d-flex align-items-center justify-content-center game-card-matchup'>
@@ -133,11 +134,11 @@ const walkthroughStepGameDetail = ({ onNext, onBack }: walkthroughStepGameDetail
 					</div>
 					<div className='d-flex flex-column gap-1'>
 						{[
-							{ label: i18n.t('stepGameDetail.signalCloseness'), val: 18, color: '#22c55e' },
-							{ label: i18n.t('stepGameDetail.signalLateGame'), val: 22, color: '#f75c03' },
-							{ label: i18n.t('stepGameDetail.signalMomentum'), val: 14, color: '#2274a5' },
-							{ label: i18n.t('stepGameDetail.signalLeadChanges'), val: 9, color: '#f1c40f' },
-							{ label: i18n.t('stepGameDetail.signalComeback'), val: 8, color: '#d90368' },
+							{ label: i18n.t('stepGameDetail.signalCloseness'), val: 18, color: signalColors.closeness },
+							{ label: i18n.t('stepGameDetail.signalLateGame'), val: 22, color: signalColors.lateGame },
+							{ label: i18n.t('stepGameDetail.signalMomentum'), val: 14, color: signalColors.momentum },
+							{ label: i18n.t('stepGameDetail.signalLeadChanges'), val: 9, color: signalColors.leadChanges },
+							{ label: i18n.t('stepGameDetail.signalComeback'), val: 8, color: signalColors.comeback },
 						].map(({ label, val, color }) => (
 							<div key={label} className='d-flex align-items-center gap-2'>
 								<span className='text-body-secondary' style={{ minWidth: '5.5rem' }}>{label}</span>

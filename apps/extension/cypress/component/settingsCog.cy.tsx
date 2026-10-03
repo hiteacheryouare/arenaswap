@@ -19,22 +19,22 @@ const quarterTurn = 'matrix(0, 1, -1, 0, 0, 0)';
 describe('the settings cog', () => {
 	it('sits square until the button is reached', () => {
 		mountHeader();
-		glyphTransform('.bi-gear-fill').should('equal', 'none');
+		glyphTransform('.bi-gear').should('equal', 'none');
 	});
 
 	// Read through a retrying assertion rather than a one-shot `then`: the turn is a transition, so
 	// the first frame after focus is still the identity matrix.
 	it('turns a quarter when the button takes focus', () => {
 		mountHeader();
-		cy.get('.bi-gear-fill').parent().focus();
-		cy.get('.bi-gear-fill').should(([icon]: JQuery<HTMLElement>) => {
+		cy.get('.bi-gear').parent().focus();
+		cy.get('.bi-gear').should(([icon]: JQuery<HTMLElement>) => {
 			expect(getComputedStyle(icon, '::before').transform).to.equal(quarterTurn);
 		});
 	});
 
 	it('takes the turn slowly enough to be a turn rather than a jump', () => {
 		mountHeader();
-		cy.get('.bi-gear-fill').then(([icon]: JQuery<HTMLElement>) => {
+		cy.get('.bi-gear').then(([icon]: JQuery<HTMLElement>) => {
 			const before = getComputedStyle(icon, '::before');
 			expect(before.transitionProperty).to.equal('transform');
 			expect(parseFloat(before.transitionDuration)).to.be.greaterThan(0);
@@ -59,8 +59,8 @@ describe('the settings cog', () => {
 			params: { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] },
 		}));
 		mountHeader();
-		cy.get('.bi-gear-fill').parent().focus();
-		glyphTransform('.bi-gear-fill').should('equal', 'none');
+		cy.get('.bi-gear').parent().focus();
+		glyphTransform('.bi-gear').should('equal', 'none');
 		cy.then(() => Cypress.automation('remote:debugger:protocol', {
 			command: 'Emulation.setEmulatedMedia',
 			params: { features: [] },
@@ -76,11 +76,11 @@ describe('the settings cog', () => {
 	// the guard is checked as the rule's own selector against the two rendered states.
 	it('stays inert on a header that is only being shown', () => {
 		mountHeader(false);
-		cy.get('.bi-gear-fill').parent().should(([button]: JQuery<HTMLElement>) => {
+		cy.get('.bi-gear').parent().should(([button]: JQuery<HTMLElement>) => {
 			expect(button.matches('.popup-settings-button:not(:disabled)')).to.equal(false);
 		});
 		mountHeader();
-		cy.get('.bi-gear-fill').parent().should(([button]: JQuery<HTMLElement>) => {
+		cy.get('.bi-gear').parent().should(([button]: JQuery<HTMLElement>) => {
 			expect(button.matches('.popup-settings-button:not(:disabled)')).to.equal(true);
 		});
 	});
@@ -89,7 +89,7 @@ describe('the settings cog', () => {
 	// so nothing in the header may move under it.
 	it('moves no part of the header with it', () => {
 		mountHeader();
-		cy.get('.bi-gear-fill').parent().then(([button]: JQuery<HTMLElement>) => {
+		cy.get('.bi-gear').parent().then(([button]: JQuery<HTMLElement>) => {
 			const resting = button.getBoundingClientRect();
 			button.focus();
 			const turned = button.getBoundingClientRect();

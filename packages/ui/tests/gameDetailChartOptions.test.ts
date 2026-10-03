@@ -7,6 +7,8 @@ import {
 	buildTeamScoreOption,
 	buildWinProbabilityOption,
 } from '../src/components/gameDetailChartOptions';
+import { chartEasing, motionDuration } from '../src/motion';
+import { signalColors } from '../src/components/signalColors';
 
 // The four charts on the game detail screen. None of them can fail loudly: a chart handed the wrong
 // field, the wrong team's colour or a label list one short of its data still draws, and what it
@@ -70,6 +72,39 @@ const scorePoint = (index: number, awayScore: number, homeScore: number): ScoreS
 	timestamp: firstPoll + index * minute,
 	awayScore,
 	homeScore,
+});
+
+// The chart surface is #0d1117. A line on it is non-text, so WCAG wants 3:1.
+const srgbChannel = (value: number): number => {
+	const scaled = value / 255;
+	return scaled <= 0.04045 ? scaled / 12.92 : ((scaled + 0.055) / 1.055) ** 2.4;
+};
+
+const contrastOnChart = (hex: string): number => {
+	const [red, green, blue] = [1, 3, 5].map(at => Number.parseInt(hex.slice(at, at + 2), 16));
+	const luminance = 0.2126 * srgbChannel(red!) + 0.7152 * srgbChannel(green!) + 0.0722 * srgbChannel(blue!);
+	return (luminance + 0.05) / (0.0055 + 0.05);
+};
+
+describe('chart motion', () => {
+	const history = [0, 1, 2].map(index => powerPoint(index));
+
+	afterEach(() => {
+		delete (globalThis as { matchMedia?: unknown }).matchMedia;
+	});
+
+	test('puts every later update on the motion scale, not the library default', () => {
+		const option = buildPowerScoreOption(history);
+		expect(option.animation).toBe(true);
+		expect(option.animationDurationUpdate).toBe(motionDuration.base);
+		expect(option.animationEasingUpdate).toBe(chartEasing);
+	});
+
+	test('draws without animating when the reader asks for reduced motion', () => {
+		(globalThis as { matchMedia?: unknown }).matchMedia = (query: string) => ({ matches: query.includes('reduce') });
+		expect(buildPowerScoreOption(history).animation).toBe(false);
+		expect(buildWinProbabilityOption([0.4, 0.5], game).animation).toBe(false);
+	});
 });
 
 describe('buildPowerScoreOption', () => {
@@ -147,10 +182,13 @@ describe('buildTeamScoreOption', () => {
 		expect(yAxisOf(buildTeamScoreOption(history, game))!.scale).toBe(true);
 	});
 
-	test('draws each team in its published colour', () => {
+	test('tells the two teams apart, and reads both against the dark chart', () => {
 		const option = buildTeamScoreOption(history, game);
-		expect(byName(option, 'BOS').lineStyle!.color).toBe('#007A33');
-		expect(byName(option, 'CLE').lineStyle!.color).toBe('#860038');
+		const away = byName(option, 'BOS').lineStyle!.color!;
+		const home = byName(option, 'CLE').lineStyle!.color!;
+		expect(away).not.toBe(home);
+		expect(contrastOnChart(away)).toBeGreaterThanOrEqual(3);
+		expect(contrastOnChart(home)).toBeGreaterThanOrEqual(3);
 	});
 
 	// The dot and the line have to be the same colour or a one-point chart draws a mark in the
@@ -276,10 +314,13 @@ describe('buildWinProbabilityOption', () => {
 		expect(rendered).toContain('color:#00a544');
 	});
 
-	test('draws each team in its published colour', () => {
+	test('tells the two teams apart, and reads both against the dark chart', () => {
 		const option = buildWinProbabilityOption(drift(20), game);
-		expect(byName(option, 'CLE').lineStyle!.color).toBe('#860038');
-		expect(byName(option, 'BOS').lineStyle!.color).toBe('#007A33');
+		const home = byName(option, 'CLE').lineStyle!.color!;
+		const away = byName(option, 'BOS').lineStyle!.color!;
+		expect(home).not.toBe(away);
+		expect(contrastOnChart(home)).toBeGreaterThanOrEqual(3);
+		expect(contrastOnChart(away)).toBeGreaterThanOrEqual(3);
 	});
 
 	// Both charts read the same pair off `resolveTeamColorPair`, so a team is the same colour
@@ -292,6 +333,24 @@ describe('buildWinProbabilityOption', () => {
 	});
 });
 
+describe('chart time labels', () => {
+	// The popup's strings follow the browser UI language, and the axis has to agree with them rather
+	// than with navigator.language.
+	test('format in the locale they are handed', () => {
+		const history = [powerPoint(0)];
+		const expected = new Date(history[0]!.timestamp).toLocaleTimeString('de', { hour: 'numeric', minute: '2-digit' });
+		expect(labelsOf(buildPowerScoreOption(history, undefined, 'de'))).toEqual([expected]);
+		expect(labelsOf(buildComponentContributionOption(history, undefined, undefined, 'de'))).toEqual([expected]);
+	});
+});
+
+describe('win probability series order', () => {
+	test('lists the away team first, like the legend under it', () => {
+		const names = seriesOf(buildWinProbabilityOption([0.4, 0.6], game)).map(series => series.name);
+		expect(names).toEqual([game.awayTeam.abbreviation, game.homeTeam.abbreviation]);
+	});
+});
+
 describe('buildComponentContributionOption', () => {
 	// One distinct value per signal, so a bar reading the wrong field cannot pass.
 	const history = [powerPoint(0, {
@@ -301,6 +360,19 @@ describe('buildComponentContributionOption', () => {
 		leadChanges: 9,
 		comeback: 4,
 	})];
+
+	// The tooltip prints the series name, so the popup hands over the legend's translated names.
+	test('names each signal in the language it is given', () => {
+		const labels = { closeness: 'Ausgeglichenheit', lateGame: 'Spätphase', momentum: 'Momentum', leadChanges: 'Führungswechsel', comeback: 'Aufholjagd' };
+		const option = buildComponentContributionOption(history, undefined, labels);
+		expect(byName(option, 'Ausgeglichenheit').data).toEqual([21]);
+		expect(byName(option, 'Aufholjagd').data).toEqual([4]);
+	});
+
+	test('draws each signal in the shared signal palette', () => {
+		const option = buildComponentContributionOption(history);
+		expect(byName(option, 'Momentum').itemStyle!.color).toBe(signalColors.momentum);
+	});
 
 	test('puts each signal under its own name, reading its own field', () => {
 		const option = buildComponentContributionOption(history);

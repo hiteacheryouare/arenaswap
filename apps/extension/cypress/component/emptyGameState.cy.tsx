@@ -68,3 +68,60 @@ describe('empty game state message', () => {
 		});
 	});
 });
+
+// A refresh that comes back with the same empty slate changes nothing on screen, so the button has
+// to show the request itself, or it reads as broken.
+describe('empty game state refresh', () => {
+	it('holds the button busy, at the same width, until the refresh settles', () => {
+		let settle: (() => void) | undefined;
+		const onRefresh = () => new Promise<void>(resolve => { settle = resolve; });
+		cy.viewport(popupWidth, 600);
+		cy.mount(<EmptyGameState noLeaguesSelected={false} noGames onOpenSetup={() => {}} onRefresh={onRefresh} />);
+		cy.contains('button', en.empty.refresh).then($idle => {
+			const idleWidth = $idle[0]!.getBoundingClientRect().width;
+			cy.wrap($idle).click();
+			cy.contains('button', en.empty.refresh)
+				.should('be.disabled')
+				.and('have.attr', 'aria-busy', 'true')
+				.find('.spinner-border')
+				.should('exist');
+			cy.contains('button', en.empty.refresh).should($busy => {
+				expect($busy[0]!.getBoundingClientRect().width).to.be.closeTo(idleWidth, 0.5);
+			});
+			cy.then(() => settle!());
+			cy.contains('button', en.empty.refresh).should('not.be.disabled').find('.spinner-border').should('not.exist');
+		});
+	});
+});
+
+// The heading was text-white, which in the light theme put white type on an 8% orange wash over
+// white. Read in both themes, against the page it actually sits on.
+const channels = (value: string) => /rgba?\((\d+),\s*(\d+),\s*(\d+)/.exec(value)!.slice(1).map(Number);
+
+const luminance = (value: string) => {
+	const [red, green, blue] = channels(value).map(channel => {
+		const scaled = channel / 255;
+		return scaled <= 0.04045 ? scaled / 12.92 : ((scaled + 0.055) / 1.055) ** 2.4;
+	});
+	return (0.2126 * red!) + (0.7152 * green!) + (0.0722 * blue!);
+};
+
+describe('empty game state in both themes', () => {
+	afterEach(() => {
+		document.documentElement.removeAttribute('data-bs-theme');
+	});
+
+	for (const theme of ['dark', 'light']) {
+		it(`sets the pick-your-leagues heading apart from the ${theme} page`, () => {
+			if (theme === 'light') document.documentElement.setAttribute('data-bs-theme', 'light');
+			cy.viewport(popupWidth, 600);
+			cy.mount(<EmptyGameState noLeaguesSelected noGames={false} onOpenSetup={() => {}} onRefresh={() => {}} />);
+			cy.get('.popup-empty-leagues-title').should($title => {
+				const ink = luminance(getComputedStyle($title[0]!).color);
+				const page = luminance(getComputedStyle(document.body).backgroundColor);
+				const ratio = (Math.max(ink, page) + 0.05) / (Math.min(ink, page) + 0.05);
+				expect(ratio).to.be.at.least(4.5);
+			});
+		});
+	}
+});

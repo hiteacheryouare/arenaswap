@@ -23,7 +23,7 @@ const toastContainer = ({ toasts, onDismiss }: toastContainerProps) => {
 						<div className='toast-header'>
 							<i className={`bi ${icon} me-2`} />
 							<strong className='me-auto'>{label}</strong>
-							<button type='button' className='btn-close btn-close-white' onClick={() => onDismiss(toast.id)} aria-label={i18n.t('toast.close')} />
+							<button type='button' className='btn-close' onClick={() => onDismiss(toast.id)} aria-label={i18n.t('toast.close')} />
 						</div>
 						<div className='toast-body'>{toast.message}</div>
 					</div>

@@ -21,4 +21,6 @@ export interface GameCardDisplayProps {
 	tabSlot?: ReactNode;
 	// Absent while the list groups games under league headers, which already name the league.
 	leagueSlot?: ReactNode;
+	// Set under the Up Next day pager, which already names the day, so a card there shows the time alone.
+	dayNamedAbove?: boolean;
 }

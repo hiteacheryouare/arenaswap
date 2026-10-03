@@ -1,0 +1,57 @@
+name: Fix proposal
+description: Propose or document a fix for an existing issue
+body:
+  - type: input
+    id: issue
+    attributes:
+      label: Issue
+      description: The issue this fixes.
+      placeholder: '#123'
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What is wrong, in a sentence or two?
+    validations:
+      required: true
+  - type: textarea
+    id: fix
+    attributes:
+      label: Proposed fix
+      description: Describe the implementation approach.
+    validations:
+      required: true
+  - type: dropdown
+    id: workspaces
+    attributes:
+      label: Workspaces
+      description: Which workspaces will change?
+      multiple: true
+      options:
+        - apps/extension
+        - apps/docs
+        - packages/core
+        - packages/powerscore
+        - packages/ui
+    validations:
+      required: true
+  - type: textarea
+    id: risk
+    attributes:
+      label: Risk assessment
+      description: Side effects, migrations or behavior changes.
+  - type: checkboxes
+    id: validation
+    attributes:
+      label: Validation plan
+      options:
+        - label: 'The everything command passes from the repository root: `npm run lint typecheck test test:e2e build build:edge build:firefox zip zip:edge zip:firefox`'
+        - label: New or changed user-facing strings are updated in all 12 locales
+        - label: Hand-tested in the browser against a live or demo game
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Related issues or PRs, screenshots, design notes.

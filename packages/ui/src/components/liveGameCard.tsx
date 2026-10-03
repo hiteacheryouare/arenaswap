@@ -61,7 +61,7 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 				status={isDelayed ? (
 					<span className='d-flex align-items-center gap-1 fw-bold text-uppercase delay-status-label'>
 						<i className='bi bi-pause-fill' />
-						{t('gameCard.delay')}
+						{game.delayDescription ?? t('gameCard.delay')}
 					</span>
 				) : (
 					<span className='d-flex align-items-center gap-1 fw-bold text-uppercase live-status-label'>
@@ -96,16 +96,11 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 					{!shootout && (
 						<span className='game-period'>
 							{isInningSport && <InningHalfIcon topOfInning={game.topOfInning} />}
-							{atHalftime ? t('detail.halftime') : formatPeriod(game)}
+							{atHalftime ? t('detail.halftime') : formatPeriod(game, t)}
 						</span>
 					)}
 					{shootout && (
 						<span className='game-shootout-score'>{shootout}</span>
-					)}
-					{isDelayed && (
-						<span className='badge bg-warning text-dark delay-type-badge mt-1'>
-							{game.delayDescription ?? t('gameCard.delayFallback')}
-						</span>
 					)}
 					{isInningSport && game.bso && <BsoIndicator {...game.bso} />}
 					{game.sportType === 'football' && game.downDistance && (

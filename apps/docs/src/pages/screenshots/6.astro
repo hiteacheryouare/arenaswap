@@ -2,14 +2,15 @@
 import './_screenshot.scss';
 import { Image } from 'astro:assets';
 import ScreenshotCard from '../../components/ScreenshotCard';
+import ScreenshotCrests from '../../components/ScreenshotCrests.astro';
 import logoImg from '../../assets/full_logo_white_on_transparent.svg';
 
 const chiPhiGame = {
 	id: 'fl6-nba',
 	league: 'nba',
 	sportType: 'basketball',
-	awayTeam: { id: '4', name: 'Chicago Bulls', abbreviation: 'CHI', score: 87, logo: 'https://a.espncdn.com/i/teamlogos/nba/500/4.png', color: '#CE1141', alternateColor: '#000000' },
-	homeTeam: { id: '20', name: 'Philadelphia 76ers', abbreviation: 'PHI', score: 85, logo: 'https://a.espncdn.com/i/teamlogos/nba/500/20.png', color: '#006BB6', alternateColor: '#ED174C' },
+	awayTeam: { id: '4', name: 'Chicago Bulls', abbreviation: 'CHI', score: 87, logo: 'https://a.espncdn.com/i/teamlogos/nba/500/chi.png', color: '#CE1141', alternateColor: '#000000' },
+	homeTeam: { id: '20', name: 'Philadelphia 76ers', abbreviation: 'PHI', score: 85, logo: 'https://a.espncdn.com/i/teamlogos/nba/500/phi.png', color: '#006BB6', alternateColor: '#ED174C' },
 	period: 4, clockSeconds: 68, status: 'in',
 	venueName: 'Xfinity Mobile Arena · Philadelphia, PA',
 	broadcasts: ['NBA League Pass'],
@@ -56,8 +57,8 @@ const bosNyyScore = { gameId: 'fl6-mlb', total: 74, closeness: 22, lateGame: 20,
 						</div>
 						<div class='fl-tabs'>
 							<div class='fl-tab'>
-								<div class='fl-fav' style='background:#CC0000'>E</div>
-								<span>ESPN+</span>
+								<div class='fl-fav' style='background:#00A8E1'>P</div>
+								<span>Prime Video</span>
 							</div>
 							<div class='fl-tab fl-tab-active'>
 								<div class='fl-fav' style='background:#1D428A'>N</div>
@@ -111,7 +112,7 @@ const bosNyyScore = { gameId: 'fl6-mlb', total: 74, closeness: 22, lateGame: 20,
 					<div class='fl-step-num'>1</div>
 					<div class='fl-step-body'>
 						<div class='fl-step-title'>Open your streams</div>
-						<div class='fl-step-desc'>Pull up each game in its own browser tab. ESPN+, Peacock, YouTube TV, Paramount+ — any stream in a browser works.</div>
+						<div class='fl-step-desc'>Pull up each game in its own browser tab. Peacock, Prime Video, YouTube TV, Paramount+ — any stream in a browser works.</div>
 					</div>
 				</div>
 				<div class='fl-step'>
@@ -364,5 +365,6 @@ const bosNyyScore = { gameId: 'fl6-mlb', total: 74, closeness: 22, lateGame: 20,
 			display: block;
 		}
 	</style>
+	<ScreenshotCrests />
 </body>
 </html>

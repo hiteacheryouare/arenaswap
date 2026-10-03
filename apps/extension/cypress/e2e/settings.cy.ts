@@ -38,6 +38,22 @@ describe('settings round-trip', () => {
 		});
 	});
 
+	// Every change saves the moment it is made, so the toast only means something when there was one.
+	it('says settings were saved only when something changed', () => {
+		openSettings();
+		openGroup('switching');
+		cy.get('button.setup-header').click();
+		cy.get('button.setup-header').click();
+		cy.get('.toast').should('not.exist');
+
+		openSettings();
+		openGroup('switching');
+		cy.get('#sensitivity-range').setInputValue(2);
+		cy.get('button.setup-header').click();
+		cy.get('button.setup-header').click();
+		cy.contains('.toast', 'Settings saved').should('be.visible');
+	});
+
 	it('survives a close and reopen with the stored prefs', () => {
 		openSettings();
 		openGroup('display');
@@ -90,7 +106,7 @@ describe('settings round-trip', () => {
 		cy.get('#league-nba').uncheck({ force: true });
 		cy.get('#league-nfl').uncheck({ force: true });
 
-		cy.contains('.setup-no-leagues-warn', /No leagues selected/).scrollIntoView().should('be.visible');
+		cy.contains('.setup-no-leagues-warn', /No leagues picked/).scrollIntoView().should('be.visible');
 		cy.get('button.setup-header').click();
 		cy.get('#settingsGroup-leagues').find('.settings-index-warn').should('exist');
 	});

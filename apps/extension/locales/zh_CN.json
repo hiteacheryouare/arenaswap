@@ -4,14 +4,14 @@
 	"app": {
 		"welcomeToast": "欢迎使用 ArenaSwap！",
 		"settingsSavedToast": "设置已保存",
-		"gameDetailsUnavailable": "比赛详情暂时无法获取",
+		"gameDetailsUnavailable": "这场比赛躲过了我们线人的眼睛。",
 		"backToGames": "返回比赛列表"
 	},
 	"errorBoundary": {
-		"title": "出了点问题。",
-		"body": "ArenaSwap 遇到了意外错误。",
+		"title": "好吧，这是一次失误。",
+		"body": "ArenaSwap 把不该丢的球弄丢了。",
 		"errorLabel": "错误：",
-		"tryAgain": "重试"
+		"tryAgain": "再来一次"
 	},
 	"sport": {
 		"basketball": "篮球",
@@ -31,7 +31,7 @@
 	},
 	"noGames": {
 		"m1": {
-			"title": "还在等待开球。🕐",
+			"title": "还没有人上场。🕐",
 			"sub": "您所选联赛中暂无正在进行的比赛。"
 		},
 		"m2": {
@@ -44,7 +44,7 @@
 		},
 		"m4": {
 			"title": "连裁判都在休息。",
-			"sub": "您所选联赛中未检测到正在进行的比赛。"
+			"sub": "我们的线人已经举起望远镜了。您的联赛暂时还没有直播。"
 		},
 		"m5": {
 			"title": "记分牌纹丝不动。",
@@ -52,7 +52,7 @@
 		},
 		"m6": {
 			"title": "卖热狗的大叔跑路了。🌭",
-			"sub": "您的联赛暂无实时赛事。暂时没什么可追的。"
+			"sub": "您的联赛暂无实时赛事。等有比赛了他就回来。"
 		},
 		"m7": {
 			"title": "翻遍了看台下面……",
@@ -80,7 +80,7 @@
 		"m18": "更新史上最强球员排行榜……",
 		"m19": "填满媒体席……",
 		"m20": "展开横幅……",
-		"m21": "同步转播信号……",
+		"m21": "调整望远镜焦距……",
 		"m22": "清点观众人数……",
 		"m23": "擦亮冠军戒指……",
 		"m24": "给吉祥物打鸡血……",
@@ -89,7 +89,7 @@
 		"m27": "填满饮料冰桶……",
 		"m28": "回看精彩集锦……",
 		"m29": "对着联盟主席嘘……",
-		"m30": "寻找各大球场……",
+		"m30": "向每座球场派出球探……",
 		"m31": "去买份芝士牛肉堡……",
 		"m32": "和体育酒吧里的球迷吵架……",
 		"m33": "重新排列梦幻联赛积分榜……",
@@ -108,7 +108,7 @@
 		"m46": "准备脸部彩绘……",
 		"m47": "协调队服统一……",
 		"m48": "跑一遍数据……",
-		"m49": "分析统计数据……",
+		"m49": "听取线人汇报……",
 		"m50": "发射焰火……",
 		"m51": "准备灯光秀……",
 		"m52": "查比赛日天气预报……",
@@ -221,12 +221,12 @@
 		"holidayLights": "彩灯",
 		"holidayLeaves": "落叶",
 		"signalsSection": "PowerScore 信号",
-		"signalsExplainer": "已禁用的信号不计入评分。分数将重新归一化以保持在范围内。",
-		"signalLastActive": "至少需要保留一个信号处于启用状态",
+		"signalsExplainer": "关掉某个信号，它就坐上替补席。其余信号会重新缩放，分数仍在 0–100 之间。",
+		"signalLastActive": "至少要留一个信号在场上。",
 		"leaguesExplainer": "只有已选联赛会被追踪并参与自动切换的判断。",
-		"selectNone": "全不选",
+		"selectNone": "清除",
 		"selectAll": "全选",
-		"noLeaguesWarning": "未选择任何联赛。ArenaSwap 不会追踪任何比赛。",
+		"noLeaguesWarning": "还没选联赛，ArenaSwap 没什么可看的。",
 		"groupByLeague": "按联赛分组比赛",
 		"groupByLeagueExplainer": "关闭后，所有联赛共用一个列表：进行中的比赛按 PowerScore 排序，未开赛的按开赛时间排序。无论开关，你的球队始终置顶。",
 		"leagueOrderSection": "显示顺序",
@@ -238,7 +238,7 @@
 		"groupSwitching": "切换",
 		"groupSwitchingDesc": "ArenaSwap 有多积极把您带到更精彩的比赛。",
 		"groupScoring": "评分",
-		"groupScoringDesc": "哪些信号构成 PowerScore，以及什么能加分。",
+		"groupScoringDesc": "哪些信号构成 PowerScore，以及什么能获得加成。",
 		"groupFavorites": "收藏球队",
 		"groupFavoritesDesc": "您关注的球队，以及收藏能加多少分。",
 		"followedTeams": "您关注的球队",
@@ -281,7 +281,9 @@
 		"keywordsStandby": "备用, 后备, 空闲, 替补, 冷场",
 		"keywordsStandbyThreshold": "分数, 阈值, 下限, 低于, 冷场",
 		"keywordsStandbyTab": "标签页, 窗口, 页面, 目标",
-		"keywordsDemo": "虚构, 示例, 测试, 预览, 沙盒"
+		"keywordsDemo": "虚构, 示例, 测试, 预览, 沙盒",
+		"aboutSetting": "关于{setting}",
+		"moreInfo": "更多信息"
 	},
 	"finishedTabs": {
 		"toastFreed": {
@@ -297,7 +299,7 @@
 		"tourButton": "引导教程",
 		"settingsButton": "设置",
 		"guideButton": "节目表",
-		"onStandbyStream": "处于 Standby Stream，等待精彩时刻",
+		"onStandbyStream": "在 Standby Stream 待命，等比赛升温",
 		"sectionActiveLiveTabs": "活跃标签页",
 		"sectionOtherLiveGames": "直播比赛",
 		"sectionUpNext": "即将开赛",
@@ -518,8 +520,21 @@
 		"shootout": "点球 {away}–{home}",
 		"downDistanceAt": "{fieldPosition} {downDistance}",
 		"teamRank": "排名第{rank}",
-		"timeoutsRemaining": "{team}：还剩 {count} 次暂停",
+		"timeoutsRemaining": {
+			"1": "{team}：还剩 1 次暂停",
+			"n": "{team}：还剩 $1 次暂停"
+		},
 		"timeoutsShort": "{count} TO",
+		"periodQuarter": "第{count}节",
+		"periodFirstHalf": "上半场",
+		"periodSecondHalf": "下半场",
+		"period": "第{count}节",
+		"periodInning": "第{count}局",
+		"periodOvertime": "OT",
+		"periodOvertimeNumbered": "{count}OT",
+		"periodExtraTimeFirst": "加1",
+		"periodExtraTimeSecond": "加2",
+		"periodShootout": "点球",
 		"powerScore": "PowerScore",
 		"vs": "vs",
 		"topOfInning": "上半局",
@@ -568,12 +583,76 @@
 		"tooltipFavoriteBoost": "当您收藏的球队参与本场比赛时加分。若双方球队均为收藏，加成超过单队收藏。",
 		"tooltipGameBoost": "您通过比赛加速控件手动为本场比赛添加的分数。",
 		"tooltipScoringOpportunity": "根据当前进攻位置自动加分。橄榄球中为红区；棒球和垒球中根据垒上跑者数量递增。",
-		"tooltipPostseasonBoost": "对季后赛、分区决赛和冠军赛等赛事统一给予固定加分。"
+		"tooltipPostseasonBoost": "为季后赛、分区决赛和冠军赛等赛事提供的加成。",
+		"reasonJoiner": "，",
+		"reasonTied": "比分持平",
+		"reasonMarginPoints": {
+			"1": "相差1分",
+			"n": "相差$1分"
+		},
+		"reasonMarginGoals": {
+			"1": "相差1球",
+			"n": "相差$1球"
+		},
+		"reasonMarginRuns": {
+			"1": "相差1分",
+			"n": "相差$1分"
+		},
+		"reasonOvertime": "加时赛",
+		"reasonExtraTime": "加时赛",
+		"reasonShootout": "点球大战",
+		"reasonExtraInnings": "延长局",
+		"reasonInning": "第{inning}局",
+		"reasonClockLeft": "还剩{clock}",
+		"reasonUnderMinutes": {
+			"1": "不到1分钟",
+			"n": "不到$1分钟"
+		},
+		"reasonMinutesIn": {
+			"1": "第1分钟",
+			"n": "第$1分钟"
+		},
+		"reasonOvertimeLooming": "比分持平，加时在即",
+		"reasonLevelLate": "临近终场仍平",
+		"reasonOutscoring": "{team}对{other}打出{run}",
+		"reasonOnARoll": "{team}手感正热",
+		"reasonTradingLeads": "比分交替领先",
+		"reasonJustTookLead": "刚刚反超",
+		"reasonCuttingIn": "{team}追分",
+		"reasonClosingGap": "{team}缩小差距",
+		"reasonFallback": "当前最佳比赛",
+		"reasonFavoriteBoost": "收藏球队加成（+{points}）",
+		"reasonGameBoost": "比赛加速（+{points}）",
+		"reasonScoringOpportunity": "得分机会（+{points}）",
+		"reasonPostseasonBoost": "季后赛加成（+{points}）"
 	},
 	"bso": {
 		"balls": "B",
 		"strikes": "S",
-		"outs": "O"
+		"outs": "O",
+		"ballsSpoken": {
+			"1": "1个坏球",
+			"n": "$1个坏球"
+		},
+		"strikesSpoken": {
+			"1": "1个好球",
+			"n": "$1个好球"
+		},
+		"outsSpoken": {
+			"1": "1人出局",
+			"n": "$1人出局"
+		},
+		"countSpoken": "{balls}，{strikes}，{outs}"
+	},
+	"bases": {
+		"empty": "垒上无人",
+		"first": "一垒有人",
+		"second": "二垒有人",
+		"third": "三垒有人",
+		"firstSecond": "一、二垒有人",
+		"firstThird": "一、三垒有人",
+		"secondThird": "二、三垒有人",
+		"loaded": "满垒"
 	},
 	"onboarding": {
 		"allSetTitle": "一切就绪！",
@@ -592,14 +671,13 @@
 		"back": "返回",
 		"step": "第 $1 步，共 $2 步",
 		"title": "选择您的球队",
-		"explainer": "收藏的球队将获得评分加成，让 ArenaSwap 优先推送这些比赛。",
+		"explainer": "收藏的球队会获得 PowerScore 加成，让它们的比赛赢得更多切换。",
 		"yourFavorites": "您的收藏",
 		"leagueNotTracked": "{league} · 未追踪",
 		"searchPlaceholder": "搜索球队……",
 		"loading": "加载球队中……",
-		"loadError": "球队加载失败。",
+		"loadError": "我们的球探没能拿到阵容名单。",
 		"retry": "重试",
-		"skipForNow": "暂时跳过",
 		"removeFavorite": "从收藏中移除 {team}",
 		"addFavorite": "将 {team} 加入收藏",
 		"noMatch": "没有与「{query}」匹配的球队",
@@ -611,7 +689,7 @@
 		"title": "欢迎使用 ArenaSwap",
 		"subtitle": "开始配置之前，先了解一下它的工作方式。",
 		"feature1Title": "自动切换标签页",
-		"feature1Body": "ArenaSwap 激活后会接管浏览器窗口。当某场比赛进入高潮，ArenaSwap 会自动切换到那个标签页，哪怕您正在看别的东西。",
+		"feature1Body": "比赛一进入高潮，ArenaSwap 就会跳到它的标签页，哪怕您正在看别的。",
 		"feature2Title": "由您将标签页与比赛绑定",
 		"feature2Body": "在各自的标签页打开每路直播流，再通过插件将其分配给对应比赛。ArenaSwap 只操作您注册过的标签页。",
 		"feature3Title": "您始终掌握控制权",
@@ -619,17 +697,15 @@
 		"gotIt": "明白了"
 	},
 	"walkthrough": {
-		"allSet": "一切就绪！",
-		"allSetSubtitle": "准备好随时观看最精彩的比赛了吗？",
-		"letsGo": "出发！"
+		"skipTour": "跳过引导教程"
 	},
 	"stepToggle": {
 		"step": "第 $1 步，共 $2 步",
 		"title": "开启与关闭",
 		"subtitle": "一个开关，掌控一切。",
 		"tryIt": "↑ 试试看",
-		"statusActive": "● ArenaSwap 已激活",
-		"statusPaused": "○ 自动切换已暂停",
+		"statusActive": "ArenaSwap 正在为您切换",
+		"statusPaused": "ArenaSwap 已暂停",
 		"bodyBeforeOn": "当",
 		"bodyOn": "开启",
 		"bodyAfterOn": "时，ArenaSwap 会自动将您的标签页切换到最精彩的直播比赛。随时关闭以恢复手动控制。",
@@ -654,15 +730,16 @@
 		"boostsSubtitle": "对分数进行精细调整的因子",
 		"clockStallPenaltyName": "时钟停滞惩罚",
 		"clockStallPenaltyMeasured": "当比赛时钟在多次更新中停滞时触发，降低信号小计。",
-		"volatilityName": "波动加成 / 惩罚",
+		"volatilityName": "波动加成或惩罚",
 		"volatilityMeasured": "胜率长期接近 50% 的比赛获得加成；一边倒的比赛被扣分。",
 		"favoriteBoostName": "收藏球队加成",
 		"favoriteBoostMeasured": "当您收藏的球队参与本场对阵时加分。",
 		"gameBoostName": "比赛加速",
 		"gameBoostMeasured": "您手动添加的分数，用于临时提升特定比赛的优先级。",
 		"scoringOpportunityMeasured": "橄榄球红区进攻或棒球/垒球垒上有人时自动加分。",
+		"scoringOpportunityName": "得分机会",
 		"postseasonBoostName": "季后赛加成",
-		"postseasonBoostMeasured": "对季后赛、分区决赛和冠军赛统一给予固定加分。",
+		"postseasonBoostMeasured": "为季后赛、分区决赛和冠军赛提供的加成。",
 		"back": "返回",
 		"next": "下一步",
 		"tapHint": "点击屏幕任意位置继续"
@@ -697,12 +774,12 @@
 		"sensitivity4": "均衡",
 		"sensitivity5": "积极",
 		"sensitivity6": "手痒难耐",
-		"sensitivity7": "荒唐速度",
+		"sensitivity7": "Ludicrous Speed",
 		"sensitivityLabel": "切换灵敏度",
 		"sensitivityHelp": "控制 PowerScore 差距需要多大，ArenaSwap 才会切换标签页。",
 		"cooldownLabel": "切换冷却",
 		"cooldownHelp": "设置自动切换之间的最短间隔，防止标签页来回乱跳。",
-		"moreLeagues": "+ 更多联赛在「联赛」标签页",
+		"moreLeagues": "+ 更多联赛见「设置 → 联赛」",
 		"back": "返回",
 		"next": "下一步"
 	},
@@ -719,7 +796,7 @@
 		"signalComeback": "逆转",
 		"detailPreviewCaption": "比分图表和完整信号历史也可在此查看。",
 		"body": "点击任意直播比赛卡片，打开详情视图。您将看到影响 PowerScore 的每项信号的完整分解，以及得分随时间变化的图表。",
-		"bodyAfterTap": "您还可以在此找到手动比赛加速滑块，随时临时提升任意比赛的优先级。",
+		"bodyAfterTap": "您还可以在这里找到比赛加速输入框，把任意比赛往前排。",
 		"back": "返回",
 		"next": "下一步"
 	},
@@ -758,7 +835,7 @@
 		"returnTitle": "它自己会回来",
 		"returnBody": "一旦任意比赛重新升温并超过阈值，ArenaSwap 会立刻将您切换回去。",
 		"chooseTitle": "由您选择待机标签页",
-		"chooseBody": "在标签页中打开任意您想看的直播流，然后在设置的下拉菜单中选择它。",
+		"chooseBody": "在标签页中打开您想看的任意直播流，然后把它设为待机标签页。",
 		"next": "下一步",
 		"setupTitle": "如何设置",
 		"setupSubtitle": "需要配置以下两项。",
@@ -766,18 +843,19 @@
 		"thresholdBody": "选择分数需要低至多少才触发待机。阈值越低越有耐心；阈值越高触发越快。",
 		"designateTitle": "指定待机标签页",
 		"designateBody": "在标签页中打开 Standby Stream，返回此处，在下拉菜单中选择它。",
+		"back": "返回",
 		"gotIt": "明白了"
 	},
 	"empty": {
 		"leaguesTitle": "选择联赛以开始使用",
-		"leaguesCopy": "ArenaSwap 需要至少选择一个联赛，才能找到可切换的比赛。",
+		"leaguesCopy": "至少选择一个联赛，ArenaSwap 就会开始搜寻比赛。",
 		"selectLeagues": "在设置中选择联赛",
 		"refresh": "刷新",
 		"settings": "设置 →"
 	},
 	"gameListHeader": {
 		"loading": "加载中……",
-		"loadFailed": "比赛加载失败。",
+		"loadFailed": "我们的线人没了动静，比赛加载失败。",
 		"retry": "重试"
 	},
 	"toast": {
@@ -787,11 +865,14 @@
 		"close": "关闭"
 	},
 	"notification": {
-		"standbyTitle": "Standby Stream 中 | ArenaSwap",
-		"standbyMessage": "所有比赛都归于平静。已停留在您的 Standby Stream。",
-		"switchedTitle": "已切换 → {score} | ArenaSwap",
-		"switchedMessage": "现在带您前往 {venue}！",
-		"switchedMessageWithReason": "{reason}。现在带您前往 {venue}！"
+		"standbyTitle": "已停在 Standby Stream",
+		"standbyMessage": "所有比赛都归于平静，我们已为您停在 Standby Stream。",
+		"switchedTitle": "已切换 → {score}",
+		"switchedMessage": "出发前往 {venue}！",
+		"switchedMessageWithReason": "{reason}。出发前往 {venue}！",
+		"unknownGame": "未知比赛",
+		"switchedMessageNoVenue": "出发去看比赛！",
+		"switchedMessageWithReasonNoVenue": "{reason}。出发去看比赛！"
 	},
 	"tabAssign": {
 		"placeholder": "— 分配标签页 —",
@@ -821,8 +902,8 @@
 	},
 	"favoriteTeamBonus": {
 		"label": "收藏球队加成",
-		"perTeam": "+$1（每支球队）",
-		"explainer": "每场比赛中每支收藏球队各加一次。若双方均为收藏球队，加成翻倍。"
+		"perTeam": "每支球队 +$1 分",
+		"explainer": "比赛中每有一支收藏球队就加一次，所以双方都是收藏球队时加成翻倍。"
 	},
 	"postseasonBoost": {
 		"label": "季后赛加成",
@@ -843,24 +924,24 @@
 		"main": {
 			"t0": "收藏您的球队，将其比赛置顶显示在列表最前。",
 			"t1": "在每场比赛旁的下拉菜单中分配标签页，让 ArenaSwap 知道该切向哪里。",
-			"t2": "PowerScore 更高的比赛赢得切换——留意彩色徽章。",
+			"t2": "PowerScore 更高的比赛赢得切换。留意每张卡片上的进度条。",
 			"t3": "在设置中开启「显示即将开赛的比赛」，提前分配好标签页。",
-			"t4": "还没有直播比赛？设置中的演示模式可让您用模拟比赛体验 ArenaSwap 的运作方式。",
+			"t4": "还没有直播比赛？设置中的演示模式会安排几场，让您看看 ArenaSwap 如何运作。",
 			"t5": "当所有比赛都趋于平淡时，Standby Stream 会保持一个备用标签页继续播放——在设置中启用。"
 		},
 		"setup": {
-			"t0": "降低冷却时间，在混乱的收尾阶段更激进地切换。",
-			"t1": "提高收藏球队加成，确保您的球队几乎总能赢得切换。",
-			"t2": "增加切换延迟，在标签页真正切换前给自己一点缓冲时间。",
-			"t3": "演示模式运行模拟比赛，无需等待实时赛事即可完美调节各项滑块。",
-			"t4": "灵敏度控制 ArenaSwap 切换所需的 PowerScore 领先幅度。",
+			"t0": "调低切换冷却，在混乱的收尾阶段切换得更快。",
+			"t1": "调高收藏球队加成，您的球队几乎总能赢得切换。",
+			"t2": "调高切换延迟，在标签页真正切换前留出一点缓冲。",
+			"t3": "演示模式会播放预设的比赛，无需等待真实比赛即可调整设置。",
+			"t4": "切换灵敏度决定 ArenaSwap 切换前需要多大的 PowerScore 领先。",
 			"t5": "季后赛加成为季后赛和冠军赛额外加权，让最重要的时刻赢得更多切换。",
 			"t6": "使用 PowerScore 信号部分关闭您不关心的信号——ArenaSwap 会自动重新缩放。"
 		},
 		"detail": {
 			"t0": "PowerScore 融合了接近度、关键时刻压力、势头、领先权易手和逆转，再根据胜率波动幅度给予波动加成或扣分。",
 			"t1": "当比赛时钟在两次更新之间几乎不动时，会触发时钟停滞惩罚。",
-			"t2": "在 0-0 不够刺激的运动中，0-0 的比赛会有小幅 PowerScore 扣分。",
+			"t2": "在 0–0 不够刺激的运动中，0–0 的比赛会有小幅 PowerScore 扣分。",
 			"t3": "将鼠标悬停在图表上，可查看比赛特定时刻的数据。",
 			"t4": "对阵中有收藏球队，会为 PowerScore 加分。",
 			"t5": "PowerScore 随比赛进行持续累积。早期的激烈对决会在最后鸣哨前急速攀升。",
@@ -896,7 +977,7 @@
 			"l4": "均衡",
 			"l5": "积极",
 			"l6": "手痒难耐",
-			"l7": "荒唐速度"
+			"l7": "Ludicrous Speed"
 		}
 	},
 	"footer": {
@@ -906,7 +987,7 @@
 	},
 	"ludicrousSpeed": {
 		"skip": "点击跳过",
-		"announce": "荒唐速度……",
+		"announce": "LUDICROUS SPEED……",
 		"go": "冲！",
 		"plaid": "他们突破格子极限了！",
 		"stop": "停！",
@@ -916,22 +997,22 @@
 			"l2": "不不，光速太慢了。",
 			"l3": "光速太慢？",
 			"l4": "对。我们必须直接上",
-			"l5": "荒唐速度。",
-			"l6": "荒唐速度？",
+			"l5": "Ludicrous Speed。",
+			"l6": "Ludicrous Speed？",
 			"l7": "我们从来没跑那么快过。",
 			"l8": "也许飞船承受不了。"
 		},
 		"prelaunch": {
 			"l1": "怎么了，桑德兹上校？",
 			"l2": "怕了？",
-			"l3": "准备飞船，进入荒唐速度。",
+			"l3": "准备飞船，进入 Ludicrous Speed。",
 			"l4": "所有人系好安全带。",
 			"l5": "封闭所有出入口。",
 			"l6": "商场所有店铺全部打烊。",
 			"l7": "马戏团三环表演全部取消。",
 			"l8": "动物园所有动物全部固定好……",
 			"l9": "闭嘴，你这个不称职的废物！",
-			"l10": "注意了！荒唐速度！",
+			"l10": "注意了！Ludicrous Speed！",
 			"l11": "长官，您是不是该系安全带了？",
 			"l12": "把安全带塞哪儿去吧！"
 		},
@@ -942,7 +1023,7 @@
 		"signs": {
 			"light": "光速",
 			"ridiculous": "荒谬速度",
-			"ludicrous": "荒唐速度",
+			"ludicrous": "LUDICROUS SPEED",
 			"plaid": "格子"
 		},
 		"panic": {

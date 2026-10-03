@@ -1,12 +1,13 @@
 import { createFavoriteTeamKey } from '@arenaswap/core/constants';
 import type { GameCardDisplayProps } from './gameCardTypes';
-import { CardStatusRow, GameMeta, PostseasonLabel, TeamColumn, buildCardHandlers, buildGameCardSurface, formatStartDateTime } from './gameCardShared';
+import { CardStatusRow, GameMeta, PostseasonLabel, TeamColumn, buildCardHandlers, buildGameCardSurface, formatStartDateTime, formatStartTime } from './gameCardShared';
 import { conditionIcon, formatTemperature } from './weatherUtils';
-import { useT } from './i18nContext';
+import { useDisplayLocale, useT } from './i18nContext';
 import useSwitchCrest from './useSwitchCrest';
 
-const preGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, onOpenGameDetail, bettingPrefs, weatherPrefs, tabSlot, leagueSlot }: GameCardDisplayProps) => {
+const preGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, onOpenGameDetail, bettingPrefs, weatherPrefs, tabSlot, leagueSlot, dayNamedAbove = false }: GameCardDisplayProps) => {
 	const t = useT();
+	const locale = useDisplayLocale();
 	useSwitchCrest(game?.awayTeam ?? {}, game?.homeTeam ?? {});
 	if (!game) return null;
 
@@ -39,12 +40,12 @@ const preGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, onOpenGameDe
 					<span className='pre-game-vs'>{t('gameCard.vs')}</span>
 					{game.startTime && (
 						<span className='text-center text-nowrap pre-game-start-time'>
-							{formatStartDateTime(game.startTime)}
+							{dayNamedAbove ? formatStartTime(game.startTime, locale) : formatStartDateTime(game.startTime, locale)}
 						</span>
 					)}
 					{game.weather && weatherPrefs && (
 						<div className='pre-game-weather' aria-hidden='true'>
-							<i className={`bi ${conditionIcon(game.weather.conditionLabel)}`} />
+							<i className={`bi ${conditionIcon(game.weather.conditionLabel, game.weather.conditionCode)}`} />
 							<span>{formatTemperature(game.weather.temperatureF, weatherPrefs.temperatureUnit)}</span>
 						</div>
 					)}

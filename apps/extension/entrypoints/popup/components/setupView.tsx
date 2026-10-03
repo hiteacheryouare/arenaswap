@@ -1,4 +1,4 @@
-import { useMemo, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { i18n } from '#i18n';
 import type { FinishedTabAction, LeagueId, LeagueLogoMap, SignalName, SportType, ThemePreference, UserPreferences } from '@arenaswap/core/types';
 import type { Browser } from 'wxt/browser';
@@ -8,6 +8,7 @@ import LeagueLogo from './leagueLogo';
 import LeagueOrderList from './leagueOrderList';
 import PostseasonBoostInput from './postseasonBoostInput';
 import SensitivitySlider from './sensitivitySlider';
+import { signalColors } from '@arenaswap/ui/src/components/signalColors';
 import SettingTooltipIcon from './settingTooltipIcon';
 import SwitchDelaySlider from './switchDelaySlider';
 import TemperatureUnitToggle from './temperatureUnitToggle';
@@ -65,11 +66,11 @@ interface setupViewProps {
 }
 
 const setupSignalMeta = [
-	{ name: 'closeness' as SignalName, labelKey: 'powerScore.signalCloseness' as const, color: '#22c55e' },
-	{ name: 'lateGame' as SignalName, labelKey: 'powerScore.signalLateGame' as const, color: '#f75c03' },
-	{ name: 'momentum' as SignalName, labelKey: 'powerScore.signalMomentum' as const, color: '#2274a5' },
-	{ name: 'leadChanges' as SignalName, labelKey: 'powerScore.signalLeadChanges' as const, color: '#f1c40f' },
-	{ name: 'comeback' as SignalName, labelKey: 'powerScore.signalComeback' as const, color: '#d90368' },
+	{ name: 'closeness' as SignalName, labelKey: 'powerScore.signalCloseness' as const, color: signalColors.closeness },
+	{ name: 'lateGame' as SignalName, labelKey: 'powerScore.signalLateGame' as const, color: signalColors.lateGame },
+	{ name: 'momentum' as SignalName, labelKey: 'powerScore.signalMomentum' as const, color: signalColors.momentum },
+	{ name: 'leadChanges' as SignalName, labelKey: 'powerScore.signalLeadChanges' as const, color: signalColors.leadChanges },
+	{ name: 'comeback' as SignalName, labelKey: 'powerScore.signalComeback' as const, color: signalColors.comeback },
 ] as const;
 
 const setupView = ({
@@ -90,10 +91,33 @@ const setupView = ({
 	const results = useMemo(() => searchSettings(query), [query]);
 	const noLeaguesSelected = prefsLoaded && prefs.enabledLeagues.length === 0;
 
-	const openGroup = (id: settingsGroupId) => {
+	const pageRef = useRef<HTMLDivElement>(null);
+	const lastGroupRef = useRef<settingsGroupId | null>(null);
+	const pendingControlRef = useRef<string | undefined>(undefined);
+
+	const openGroup = (id: settingsGroupId, controlId?: string) => {
+		lastGroupRef.current = id;
+		pendingControlRef.current = controlId;
 		setPage(id);
 		setQuery('');
 	};
+
+	// The button that was clicked unmounts with the page it was on, which would leave keyboard focus
+	// on <body>. A page takes focus on its own header, and the index hands it back to the group
+	// button it was opened from.
+	useEffect(() => {
+		if (page) {
+			// A search result lands on the setting it named, not on top of a dozen others.
+			const control = pendingControlRef.current ? document.getElementById(pendingControlRef.current) : null;
+			pendingControlRef.current = undefined;
+			control?.scrollIntoView({ block: 'center' });
+			control?.focus({ preventScroll: true });
+			// A section heading scrolls into view but can't hold focus, so the page header keeps it.
+			if (!control || document.activeElement !== control) pageRef.current?.querySelector<HTMLElement>('.setup-header')?.focus({ preventScroll: true });
+			return;
+		}
+		if (lastGroupRef.current) document.getElementById(`settingsGroup-${lastGroupRef.current}`)?.focus({ preventScroll: true });
+	}, [page]);
 
 	const handleToggleStandbyStream = () => {
 		if (!prefs.standbyStreamEnabled && !standbyOnboardingDone) {
@@ -124,7 +148,7 @@ const setupView = ({
 			<div className='fw-bold popup-section-label'>
 				<i className='bi bi-sliders' />
 				{i18n.t('setup.signalsSection')}
-				<SettingTooltipIcon text={i18n.t('setup.signalsExplainer')} />
+				<SettingTooltipIcon text={i18n.t('setup.signalsExplainer')} label={i18n.t('setup.signalsSection')} />
 			</div>
 			{setupSignalMeta.map(sig => {
 				const isDisabled = prefs.disabledSignals.includes(sig.name);
@@ -146,12 +170,16 @@ const setupView = ({
 								checked={!isDisabled}
 								onChange={() => onToggleSignal(sig.name)}
 								disabled={!prefsLoaded || isLastEnabled}
-								title={isLastEnabled ? i18n.t('setup.signalLastActive') : undefined}
+								aria-describedby={isLastEnabled ? 'signalLastActiveNote' : undefined}
 							/>
 						</div>
 					</div>
 				);
 			})}
+
+			{prefs.disabledSignals.length === setupSignalMeta.length - 1 && (
+				<div id='signalLastActiveNote' className='setting-explainer mt-2'>{i18n.t('setup.signalLastActive')}</div>
+			)}
 
 			<div className='fw-bold popup-section-label mt-3'><i className='bi bi-plus-slash-minus' />{i18n.t('setup.bonusesSection')}</div>
 			<div className='settings-stack'>
@@ -173,11 +201,12 @@ const setupView = ({
 	const displayPage = (
 		<>
 			<div>
-				<label className='text-body-secondary setting-toggle-label d-block mb-1' htmlFor='themeSelect'>
+				<label className='text-body-secondary setting-toggle-label d-block mb-1' id='themeSelectLabel' htmlFor='themeSelect'>
 					{i18n.t('setup.theme')}
 				</label>
 				<SelectDropdown<ThemePreference>
 					id='themeSelect'
+					labelId='themeSelectLabel'
 					value={prefs.theme}
 					onChange={onThemeChange}
 					disabled={!prefsLoaded}
@@ -202,7 +231,7 @@ const setupView = ({
 						<label className='text-body-secondary setting-toggle-label' htmlFor='upcomingDaysSlider'>
 							{i18n.t('setup.upcomingDaysLabel')}
 						</label>
-						<span className='fw-semibold text-body small'>{i18n.t('setup.upcomingDaysValue', prefs.upcomingGamesDays)}</span>
+						<span className='fw-semibold setting-value-label'>{i18n.t('setup.upcomingDaysValue', prefs.upcomingGamesDays)}</span>
 					</div>
 					<input
 						type='range'
@@ -231,11 +260,12 @@ const setupView = ({
 			<div className='setting-explainer mt-1'>{i18n.t('setup.keepFinalGamesExplainer')}</div>
 
 			<div className='mt-3'>
-				<label className='text-body-secondary setting-toggle-label d-block mb-1' htmlFor='finishedTabSelect'>
+				<label className='text-body-secondary setting-toggle-label d-block mb-1' id='finishedTabSelectLabel' htmlFor='finishedTabSelect'>
 					{i18n.t('setup.finishedTabAction')}
 				</label>
 				<SelectDropdown<FinishedTabAction>
 					id='finishedTabSelect'
+					labelId='finishedTabSelectLabel'
 					value={prefs.finishedTabAction}
 					onChange={onFinishedTabActionChange}
 					disabled={!prefsLoaded}
@@ -285,7 +315,7 @@ const setupView = ({
 			<div className='d-flex justify-content-between align-items-center mt-2'>
 				<div className='d-flex align-items-center gap-1'>
 					<label className='text-body-secondary setting-toggle-label' htmlFor='openRevealToggle'>{i18n.t('setup.openReveal')}</label>
-					<SettingTooltipIcon text={i18n.t('setup.openRevealExplainer')} />
+					<SettingTooltipIcon text={i18n.t('setup.openRevealExplainer')} label={i18n.t('setup.openReveal')} />
 				</div>
 				<div className='form-check form-switch mb-0'>
 					<input className='form-check-input' type='checkbox' id='openRevealToggle' checked={prefs.openRevealEnabled} onChange={onToggleOpenReveal} disabled={!prefsLoaded} />
@@ -295,7 +325,7 @@ const setupView = ({
 			<div className='d-flex justify-content-between align-items-center mt-2'>
 				<div className='d-flex align-items-center gap-1'>
 					<label className='text-body-secondary setting-toggle-label' htmlFor='holidayDecorationsToggle'>{i18n.t('setup.holidayDecorations')}</label>
-					<SettingTooltipIcon text={i18n.t('setup.holidayDecorationsExplainer')} />
+					<SettingTooltipIcon text={i18n.t('setup.holidayDecorationsExplainer')} label={i18n.t('setup.holidayDecorations')} />
 				</div>
 				<div className='form-check form-switch mb-0'>
 					<input className='form-check-input' type='checkbox' id='holidayDecorationsToggle' checked={prefs.holidayDecorationsEnabled} onChange={onToggleHolidayDecorations} disabled={!prefsLoaded} />
@@ -345,7 +375,7 @@ const setupView = ({
 							<label className='text-body-secondary setting-toggle-label' htmlFor='standbyThresholdSlider'>
 								{i18n.t('setup.standbyBelow')}
 							</label>
-							<span className='fw-semibold text-body small'>{prefs.standbyStreamThreshold}</span>
+							<span className='fw-semibold setting-value-label'>{prefs.standbyStreamThreshold}</span>
 						</div>
 						<input
 							type='range'
@@ -353,7 +383,7 @@ const setupView = ({
 							id='standbyThresholdSlider'
 							min={0}
 							max={100}
-							step={1}
+							step={5}
 							value={prefs.standbyStreamThreshold}
 							onChange={e => onStandbyThresholdChange(Number(e.target.value))}
 							disabled={!prefsLoaded}
@@ -396,9 +426,10 @@ const setupView = ({
 
 			{demoMode && (
 				<div className='mt-3'>
-					<label className='text-body-secondary setting-toggle-label d-block mb-1' htmlFor='demoSeasonSelect'>{i18n.t('setup.demoSeason')}</label>
+					<label className='text-body-secondary setting-toggle-label d-block mb-1' id='demoSeasonSelectLabel' htmlFor='demoSeasonSelect'>{i18n.t('setup.demoSeason')}</label>
 					<SelectDropdown<demoSeason>
 						id='demoSeasonSelect'
+					labelId='demoSeasonSelectLabel'
 						value={demoSeason}
 						onChange={onDemoSeasonChange}
 						options={[
@@ -424,10 +455,10 @@ const setupView = ({
 			<div className='setting-explainer mt-1'>{i18n.t('setup.groupByLeagueExplainer')}</div>
 			{prefs.groupByLeague && prefs.enabledLeagues.length > 1 && (
 				<>
-					<div className='fw-bold popup-section-label'>
+					<div id='leagueOrderSection' className='fw-bold popup-section-label'>
 						<i className='bi bi-arrow-down-up' />
 						{i18n.t('setup.leagueOrderSection')}
-						<SettingTooltipIcon text={i18n.t('setup.leagueOrderExplainer')} />
+						<SettingTooltipIcon text={i18n.t('setup.leagueOrderExplainer')} label={i18n.t('setup.leagueOrderSection')} />
 					</div>
 					<LeagueOrderList
 						order={prefs.enabledLeagues}
@@ -441,7 +472,7 @@ const setupView = ({
 			<div className='fw-bold popup-section-label'>
 				<i className='bi bi-trophy' />
 				{i18n.t('setup.groupLeagues')}
-				<SettingTooltipIcon text={i18n.t('setup.leaguesExplainer')} />
+				<SettingTooltipIcon text={i18n.t('setup.leaguesExplainer')} label={i18n.t('setup.groupLeagues')} />
 			</div>
 			{(Object.keys(sportTypeOrder) as SportType[])
 				.toSorted((a, b) => sportTypeOrder[a] - sportTypeOrder[b])
@@ -509,8 +540,8 @@ const setupView = ({
 		// that has to keep its own search box in view, so it takes the column and scrolls inside it.
 		const scrollsWithin = page === 'favorites';
 		return (
-			<div className={`popup-container${scrollsWithin ? ' d-flex flex-column' : ''}`}>
-				<button className='setup-header' onClick={() => setPage(null)}>
+			<div ref={pageRef} className={`popup-container${scrollsWithin ? ' d-flex flex-column' : ''}`}>
+				<button type='button' className='setup-header' onClick={() => setPage(null)}>
 					<i className='bi bi-arrow-left' />
 					{group ? i18n.t(group.labelKey) : i18n.t('setup.header')}
 				</button>
@@ -522,7 +553,7 @@ const setupView = ({
 
 	return (
 		<div className='popup-container'>
-			<button className='setup-header' onClick={onClose}>
+			<button type='button' className='setup-header' onClick={onClose}>
 				<i className='bi bi-arrow-left' />
 				{i18n.t('setup.header')}
 			</button>
@@ -549,7 +580,7 @@ const setupView = ({
 								key={`${result.group.id}-${String(result.labelKey)}`}
 								type='button'
 								className='settings-index-row'
-								onClick={() => openGroup(result.group.id)}
+								onClick={() => openGroup(result.group.id, result.controlId)}
 								aria-label={`${result.label}, ${result.sublabel}`}
 							>
 								<span className='settings-index-text'>

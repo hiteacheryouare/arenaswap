@@ -90,23 +90,19 @@
 	}
 
 	&:focus-visible {
-		outline: 2px solid rgba(#f97316, 0.9);
+		outline: 2px solid bs.$primary;
 		outline-offset: 2px;
 	}
 }
 
-@keyframes livePulse {
-	0%, 100% { opacity: 1; }
-	50%       { opacity: 0.3; }
-}
-
+// Still, not pulsing: LIVE beside it already says the game is on, and a blink on every live card
+// pulls the eye away from the scores it sits above.
 .live-dot {
 	width:         6px;
 	height:        6px;
 	border-radius: 50%;
 	background:    #e53935;
 	flex-shrink:   0;
-	animation:     livePulse m.$motion-pulse m.$motion-ease-in-out infinite;
 }
 
 .live-status-label {
@@ -126,12 +122,6 @@
 	color:          bs.shade-color(bs.$warning, 40%);
 }
 
-.delay-type-badge {
-	font-size:      0.5rem;
-	letter-spacing: 0.05em;
-	text-transform: uppercase;
-}
-
 .game-card-ps-bar-row {
 	margin-top: 0.3rem;
 }
@@ -145,13 +135,15 @@
 	}
 }
 
+// Ticks on every push, so it needs the figures that hold still; in DM Sans "71" and "88" differ in
+// width and the bar beside it twitched with each update.
 .game-card-ps-score {
-	font-size:            0.6rem;
-	font-weight:          700;
-	letter-spacing:       0.01em;
-	white-space:          nowrap;
-	flex-shrink:          0;
-	font-variant-numeric: tabular-nums;
+	@include scoreboard-figures;
+	font-size:      0.6rem;
+	font-weight:    700;
+	letter-spacing: 0.01em;
+	white-space:    nowrap;
+	flex-shrink:    0;
 }
 
 .game-card-ps-label {
@@ -430,14 +422,36 @@ $pre-game-time-color: bs.shade-color(bs.$warning, 60%);
 	letter-spacing: 0.02em;
 }
 
+// Bootstrap's .btn-link turns its text orange on hover and press through these variables, so the
+// star sets them rather than its colour, or a press would flash the link colour over it.
 [data-team-star='true'] {
+	--as-btn-color:        #6c757d;
+	--as-btn-hover-color:  #6c757d;
+	--as-btn-active-color: #6c757d;
+	position: relative;
 	font-size: 0.78rem;
 	text-decoration: none;
-	color: #6c757d;
+	opacity: 0.75;
+	transition: color m.$motion-snap m.$motion-ease, opacity m.$motion-snap m.$motion-ease;
+
+	// The glyph is 12px across. The target around it is 24px without moving anything.
+	&::after {
+		content: '';
+		position: absolute;
+		inset: -6px;
+	}
+
+	&:hover,
+	&:focus-visible {
+		opacity: 1;
+	}
 }
 
 [data-team-star='true'][data-favorited='true'] {
-	color: #f1c40f;
+	--as-btn-color:        #f1c40f;
+	--as-btn-hover-color:  #f1c40f;
+	--as-btn-active-color: #f1c40f;
+	opacity: 1;
 }
 
 .odds-provider-wrap {
@@ -579,6 +593,7 @@ button.game-meta-attribution {
 		text-shadow: var(--matchup-shadow-center);
 	}
 
+	.game-card-league,
 	.live-status-label,
 	.delay-status-label,
 	.game-postseason-label,
@@ -593,8 +608,15 @@ button.game-meta-attribution {
 	.bso-label,
 	.bso-dot,
 	.timeout-dot,
-	.timeout-dots-numeric,
+	.timeout-dots-numeric {
+		color: inherit;
+	}
+
+	// currentColor on the element's own colour is the inherited ink, the team-side text colour.
 	[data-team-star='true'] {
+		--as-btn-color:        currentColor;
+		--as-btn-hover-color:  currentColor;
+		--as-btn-active-color: currentColor;
 		color: inherit;
 	}
 
@@ -899,7 +921,6 @@ button.game-meta-attribution {
 @include m.reduced-motion {
 	.flip-score-digit-out,
 	.flip-score-digit-in,
-	.live-dot,
 	.game-card-ps-progress .progress-bar,
 	.ff-marker,
 	.ff-first-down,

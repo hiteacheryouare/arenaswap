@@ -2,6 +2,7 @@
 import './_screenshot.scss';
 import { Image } from 'astro:assets';
 import ScreenshotCard from '../../components/ScreenshotCard';
+import ScreenshotCrests from '../../components/ScreenshotCrests.astro';
 import logoImg from '../../assets/full_logo_white_on_transparent.svg';
 
 const buNuGame = {
@@ -12,7 +13,7 @@ const buNuGame = {
 	homeTeam: { id: '111', name: 'Northeastern', abbreviation: 'NU', score: 68, logo: 'https://a.espncdn.com/i/teamlogos/ncaa/500/111.png', color: '#000000', alternateColor: '#CC0000' },
 	period: 2, clockSeconds: 142, status: 'in',
 	venueName: 'Matthews Arena · Boston, MA',
-	broadcasts: ['ESPN'],
+	broadcasts: ['FloHoops'],
 };
 const buNuScore = { gameId: 's8-ncaam', total: 88, closeness: 28, lateGame: 26, momentum: 18, leadChanges: 14, comeback: 2, reason: '' };
 
@@ -20,8 +21,8 @@ const celLalGame = {
 	id: 's8-nba',
 	league: 'nba',
 	sportType: 'basketball',
-	awayTeam: { id: '2', name: 'Boston Celtics', abbreviation: 'BOS', score: 102, logo: 'https://a.espncdn.com/i/teamlogos/nba/500/2.png', color: '#007A33', alternateColor: '#BA9653' },
-	homeTeam: { id: '13', name: 'Los Angeles Lakers', abbreviation: 'LAL', score: 99, logo: 'https://a.espncdn.com/i/teamlogos/nba/500/13.png', color: '#552583', alternateColor: '#FDB927' },
+	awayTeam: { id: '2', name: 'Boston Celtics', abbreviation: 'BOS', score: 102, logo: 'https://a.espncdn.com/i/teamlogos/nba/500/bos.png', color: '#007A33', alternateColor: '#BA9653' },
+	homeTeam: { id: '13', name: 'Los Angeles Lakers', abbreviation: 'LAL', score: 99, logo: 'https://a.espncdn.com/i/teamlogos/nba/500/lal.png', color: '#552583', alternateColor: '#FDB927' },
 	period: 4, clockSeconds: 195, status: 'in',
 	venueName: 'Crypto.com Arena · Los Angeles, CA',
 	broadcasts: ['NBA League Pass'],
@@ -54,8 +55,8 @@ const celLalScore = { gameId: 's8-nba', total: 81, closeness: 24, lateGame: 24, 
 						</div>
 						<div class='fl-tabs'>
 							<div class='fl-tab fl-tab-active'>
-								<div class='fl-fav' style='background:#CC0000'>E</div>
-								<span>ESPN</span>
+								<div class='fl-fav' style='background:#E3201B'>F</div>
+								<span>FloHoops</span>
 							</div>
 							<div class='fl-tab'>
 								<div class='fl-fav' style='background:#1D428A'>N</div>
@@ -87,7 +88,7 @@ const celLalScore = { gameId: 's8-nba', total: 81, closeness: 24, lateGame: 24, 
 							</div>
 							<div class='popup-section-title'>Active Tabs</div>
 							<div class='popup-league-label'>NCAA BASKETBALL</div>
-							<ScreenshotCard game={buNuGame} excitementResult={buNuScore} tabLabel='Tab 1: ESPN' />
+							<ScreenshotCard game={buNuGame} excitementResult={buNuScore} tabLabel='Tab 1: FloHoops' />
 							<div class='popup-league-label'>NBA</div>
 							<ScreenshotCard game={celLalGame} excitementResult={celLalScore} tabLabel='Tab 2: NBA League Pass' />
 						</div>
@@ -270,5 +271,6 @@ const celLalScore = { gameId: 's8-nba', total: 81, closeness: 24, lateGame: 24, 
 			display: block;
 		}
 	</style>
+	<ScreenshotCrests />
 </body>
 </html>

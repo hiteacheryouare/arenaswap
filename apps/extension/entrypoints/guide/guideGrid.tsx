@@ -8,13 +8,17 @@ import TeamCrest from '@arenaswap/ui/src/components/teamCrest';
 import { leagueLabels } from '@arenaswap/ui/src/components/popupChrome';
 import { useRef, type CSSProperties } from 'react';
 import { resolveStatus } from '../popup/components/gameSituation';
+import { useDisplayLocale } from '@arenaswap/ui/src/components/i18nContext';
 import { formatGuideTime } from './guideFormat';
 import type { guideBand, guideBar } from './guideHeat';
 import useEdgeClipping from './useEdgeClipping';
 import type { ResolvedTheme } from '@arenaswap/core/types';
 import { axisBounds, barHeight, fillAxis, groupByLeague, gutterPx, hourMarks, msToPx, rowHeight } from './guideLayout';
 
-const formatTime = formatGuideTime;
+const useFormatTime = () => {
+	const locale = useDisplayLocale();
+	return (ms: number) => formatGuideTime(ms, locale);
+};
 
 // The teams' published colours, as on every other surface that stands for a team.
 const railStyle = (game: Game): CSSProperties => {
@@ -51,6 +55,7 @@ const BarTeam = ({ team, mono, score, lost, theme }: { team: Team; mono?: TeamMo
 // What a card says in its status row, at bar size: the period and clock while a game is on, the
 // result once it is over, and before it the kickoff and the network it is on.
 const BarStatus = ({ game, startMs }: { game: Game; startMs: number }) => {
+	const formatTime = useFormatTime();
 	if (game.status === 'pre') return <span className='guide-bar-time'>{formatTime(startMs)}</span>;
 	if (game.status === 'post') {
 		const final = i18n.t('gameCard.final');
@@ -80,6 +85,7 @@ interface guideBarProps {
 // the bar itself has scrolled away: sticky content cannot leave its box, and when that box was the
 // bar, a game that ended an hour ago was an empty row or a scrap like 'F @ MIA' under the gutter.
 const GuideBar = ({ bar, fromMs, selected, onOpen, mono, theme }: guideBarProps) => {
+	const formatTime = useFormatTime();
 	const { game } = bar;
 	const left = msToPx(bar.startMs, fromMs);
 	const width = Math.max(msToPx(bar.endMs, fromMs) - left, 24);
@@ -97,7 +103,7 @@ const GuideBar = ({ bar, fromMs, selected, onOpen, mono, theme }: guideBarProps)
 			data-selected={selected ? 'true' : undefined}
 			style={{ left: `${left}px`, height: `${barHeight}px`, '--guide-bar-width': `${width}px`, ...railStyle(game) } as CSSProperties}
 			onClick={() => onOpen(game.id)}
-			title={`${away.name} @ ${home.name} \u00b7 ${formatTime(bar.startMs)}`}
+			title={`${away.name} ${i18n.t('guide.at')} ${home.name} \u00b7 ${formatTime(bar.startMs)}`}
 		>
 			<span className='guide-bar-shape' aria-hidden='true' />
 			<span className='guide-bar-content'>
@@ -140,6 +146,7 @@ const GuideGrid = ({
 	onOpen: (gameId: string) => void;
 	theme?: ResolvedTheme;
 }) => {
+	const formatTime = useFormatTime();
 	const canvasRef = useRef<HTMLDivElement | null>(null);
 	useEdgeClipping(canvasRef);
 	const bounds = axisBounds(bars);

@@ -28,11 +28,44 @@
 		"faq": "FAQ",
 		"legal": "Legal",
 		"openMenu": "Abrir menu",
+		"skipToContent": "Saltar para o conteúdo",
 		"language": "Idioma",
 		"chooseLanguage": "Escolhe um idioma",
 		"englishOnly": "Esta página só está disponível em inglês.",
 		"untranslatedHeading": "Esta página ainda não foi traduzida.",
 		"untranslatedBody": "A documentação e as notas de versão estão escritas em inglês. O resto do site está disponível no teu idioma."
+	},
+	"reading": {
+		"docsHeading": "Documentação.",
+		"docsMetaTitle": "Documentação do ArenaSwap",
+		"docsMetaDescription": "Guias para veres vários jogos ao mesmo tempo com o ArenaSwap e a referência para programadores do pacote PowerScore, que decide qual jogo ganha.",
+		"docsSectionMetaTitle": "{heading} — Documentação do ArenaSwap",
+		"docsSectionHeading": "{heading}.",
+		"docsNavLabel": "Documentação",
+		"docsBeingWritten": "Em preparação.",
+		"commonQuestions": "Perguntas frequentes",
+		"nearbyArticles": "Artigos relacionados",
+		"releasesHeading": "Notas de versão.",
+		"releasesMetaTitle": "Notas de versão — ArenaSwap",
+		"releasesMetaDescription": "O que chegou em cada versão do ArenaSwap e o que isso muda para ti.",
+		"releasesRss": "Subscrever por RSS",
+		"releasesEmpty": "Ainda não há nada publicado.",
+		"releaseVersion": "Versão {version}",
+		"backToReleases": "Voltar às notas de versão",
+		"inThisRelease": "Nesta versão",
+		"otherReleases": "Outras versões",
+		"sections": {
+			"extension": {
+				"title": "A extensão",
+				"heading": "Usar o ArenaSwap",
+				"description": "Instalar o ArenaSwap, atribuir separadores a jogos, ajustar quando muda e o Standby Stream."
+			},
+			"powerscore": {
+				"title": "PowerScore",
+				"heading": "O pacote PowerScore",
+				"description": "Como um jogo é pontuado. Os cinco sinais, os boosts, as penalizações e os tipos."
+			}
+		}
 	},
 	"install": {
 		"addTo": "Adicionar ao {browser}",
@@ -54,7 +87,7 @@
 		"firefoxAddons": "Firefox Add-ons",
 		"edgeAddons": "Edge Add-ons",
 		"iscLicense": "ISC License",
-		"disclaimer": "Sem afiliação com a ESPN, a NFL, a NBA, a NHL, a MLB, a MLS ou qualquer outra liga rastreada por esta extensão, e sem o seu apoio.",
+		"disclaimer": "Sem afiliação com a NFL, a NBA, a NHL, a MLB, a MLS ou qualquer outra liga rastreada por esta extensão, e sem o seu apoio.",
 		"legalNotices": "Avisos legais",
 		"madeWith": "Feito com ❤️ em Philadelphia e Boston por {name}"
 	},
@@ -75,7 +108,8 @@
 			"captionSwitched": "O ArenaSwap mudou-te de {from} para {to}.",
 			"captionWatching": "Estás a ver {game}, o melhor jogo do momento.",
 			"replay": "Reproduzir a demo",
-			"tabLabel": "Separador {number}: {host}"
+			"tabLabel": "Separador {number}: {host}",
+			"browserLabel": "Um browser com três jogos em direto abertos e o ArenaSwap a funcionar"
 		},
 		"tabs": {
 			"titleLine1": "Configura uma vez.",
@@ -165,11 +199,11 @@
 			},
 			{
 				"q": "Preciso de conta ou subscrição?",
-				"a": "Não. O ArenaSwap é gratuito, não tem conta e não recolhe nada. Funciona inteiramente no teu browser e lê marcadores públicos da ESPN. Nada do que vês é enviado para lado nenhum."
+				"a": "Não. O ArenaSwap é gratuito, não tem conta e não recolhe nada. Funciona inteiramente no teu browser e lê marcadores públicos das nossas fontes, que não tiram os binóculos de nenhum jogo. Nada do que vês é enviado para lado nenhum."
 			},
 			{
 				"q": "Vai funcionar com o meu serviço de streaming?",
-				"a": "Qualquer stream que seja reproduzido num separador do browser funciona, porque o ArenaSwap muda e silencia separadores em vez de se integrar com um serviço. Isto cobre a ESPN+, a Peacock, a Paramount+, a YouTube TV, a Hulu Live, a Fubo e os streams gratuitos das ligas. Não pode ajudar com uma app nativa ou uma set-top box."
+				"a": "Qualquer stream que seja reproduzido num separador do browser funciona, porque o ArenaSwap muda e silencia separadores em vez de se integrar com um serviço. Isto cobre a Peacock, a Paramount+, o Prime Video, a YouTube TV, a Hulu Live, a Fubo e os streams gratuitos das ligas. Não pode ajudar com uma app nativa ou uma set-top box."
 			},
 			{
 				"q": "Como funciona o PowerScore?",
@@ -372,12 +406,22 @@
 			"addToFavorites": "Adicionar {team} aos favoritos",
 			"removeFromFavorites": "Remover {team} dos favoritos",
 			"openDetails": "Abrir detalhes de {away} vs {home}",
-			"delay": "SUSPENSO",
-			"delayFallback": "Suspenso",
+			"delay": "ATRASO",
+			"delayFallback": "Atraso",
 			"vs": "vs",
 			"topOfInning": "Início da entrada",
 			"bottomOfInning": "Fim da entrada",
 			"shootout": "GP {away}–{home}",
+			"periodQuarter": "{count}.º P",
+			"periodFirstHalf": "1.ª P",
+			"periodSecondHalf": "2.ª P",
+			"period": "{count}.º P",
+			"periodInning": "Inn. {count}",
+			"periodOvertime": "OT",
+			"periodOvertimeNumbered": "{count}OT",
+			"periodExtraTimeFirst": "PR1",
+			"periodExtraTimeSecond": "PR2",
+			"periodShootout": "GP",
 			"downDistanceAt": "{downDistance} na {fieldPosition}"
 		},
 		"field": {
@@ -391,7 +435,7 @@
 			"sectionOtherLiveGames": "Jogos em directo",
 			"sectionUpNext": "A seguir",
 			"enableToggleLabel": "Activar mudança automática",
-			"onStandbyStream": "Em Standby Stream, à espera de acção"
+			"onStandbyStream": "No Standby Stream até algo aquecer"
 		},
 		"tabAssign": {
 			"placeholder": "— Associa um separador —"
@@ -406,7 +450,7 @@
 			"groupSwitching": "Mudanças",
 			"groupSwitchingDesc": "A pressa com que o ArenaSwap te leva para um jogo melhor.",
 			"groupScoring": "Pontuação",
-			"groupScoringDesc": "Que sinais alimentam o PowerScore e o que rende pontos extra.",
+			"groupScoringDesc": "Que sinais alimentam o PowerScore e o que rende um impulso.",
 			"groupLeagues": "Ligas",
 			"groupLeaguesDesc": "Que ligas são monitorizadas e se cada uma tem a sua própria secção.",
 			"groupDisplay": "Apresentação",
@@ -428,7 +472,7 @@
 			"off": "Desactivado"
 		},
 		"favoriteTeamBonus": {
-			"label": "Bónus de equipa favorita"
+			"label": "Impulso de equipa favorita"
 		},
 		"postseasonBoost": {
 			"label": "Impulso de pós-temporada"
@@ -436,7 +480,21 @@
 		"bso": {
 			"balls": "B",
 			"strikes": "S",
-			"outs": "O"
+			"outs": "O",
+			"ballsSpoken": "1 bola | $1 bolas",
+			"strikesSpoken": "1 strike | $1 strikes",
+			"outsSpoken": "1 out | $1 outs",
+			"countSpoken": "{balls}, {strikes}, {outs}"
+		},
+		"bases": {
+			"empty": "Bases vazias",
+			"first": "Corredor na primeira",
+			"second": "Corredor na segunda",
+			"third": "Corredor na terceira",
+			"firstSecond": "Corredores na primeira e na segunda",
+			"firstThird": "Corredores na primeira e na terceira",
+			"secondThird": "Corredores na segunda e na terceira",
+			"loaded": "Bases cheias"
 		}
 	}
 }

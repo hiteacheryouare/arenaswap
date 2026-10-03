@@ -39,10 +39,22 @@ const StatefulPicker = () => {
 };
 
 describe('onboardingTeamPicker', () => {
+	// Our sources hand teams over in their own order; the 76ers arrive before the Bulls.
+	it('sorts each league\'s teams by name', () => {
+		cy.mount(<OnboardingTeamPicker {...defaultProps} />);
+		cy.get('.team-pick-row .fw-semibold').then(names => [...names].map(name => name.textContent))
+			.should('deep.equal', ['Chicago Bulls', 'Philadelphia 76ers', 'Philadelphia Eagles']);
+	});
+
+	it('gives the search field a name of its own', () => {
+		cy.mount(<OnboardingTeamPicker {...defaultProps} />);
+		cy.get('input[type="search"]').should('have.attr', 'aria-label', 'Search teams…');
+	});
+
 	it('renders the teams grouped by league', () => {
 		cy.mount(<OnboardingTeamPicker {...defaultProps} />);
 
-		cy.contains('Pick your teams').should('exist');
+		cy.contains('Pick Your Teams').should('exist');
 		cy.contains('Step 3 of 3').should('exist');
 		cy.get('.popup-section-label').should('have.length', 2);
 		cy.get('.popup-section-label').first().should('have.text', 'NBA');
@@ -86,7 +98,8 @@ describe('onboardingTeamPicker', () => {
 		cy.contains('Loading teams').should('exist');
 	});
 
-	it('offers a retry and a skip when the fetch failed', () => {
+	// The footer's Skip is always there, so the error offers Retry alone rather than a second skip.
+	it('offers a retry and one skip when the fetch failed', () => {
 		cy.mount(
 			<OnboardingTeamPicker
 				{...defaultProps}
@@ -97,11 +110,12 @@ describe('onboardingTeamPicker', () => {
 			/>
 		);
 
-		cy.contains("Couldn't load teams.").should('exist');
+		cy.contains("Our scouts couldn't get the rosters.").should('exist');
 		cy.contains('button', 'Retry').click();
 		cy.get('@onRetry').should('have.been.calledOnce');
 
-		cy.contains('button', 'Skip for now').click();
+		cy.contains('button', 'Skip for now').should('not.exist');
+		cy.get('button').filter(':contains("Skip")').should('have.length', 1).click();
 		cy.get('@onSkip').should('have.been.calledOnce');
 	});
 

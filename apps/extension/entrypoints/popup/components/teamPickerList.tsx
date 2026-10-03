@@ -6,6 +6,7 @@ import type { LeagueId } from '@arenaswap/core/types';
 import TeamPickerRow from './teamPickerRow';
 import { matchesTeamQuery } from '../../../utils/favoriteTeams';
 import { leagueLabels, leagueOrder } from '../popupHelpers';
+import { useDisplayLocale } from '@arenaswap/ui/src/components/i18nContext';
 
 interface teamPickerListProps {
 	teams: EspnTeamEntry[];
@@ -17,8 +18,6 @@ interface teamPickerListProps {
 	selectedFavorites: ReadonlySet<string>;
 	onToggleFavorite: (team: EspnTeamEntry) => void;
 	onRetry: () => void;
-	// Onboarding can walk away from a failed load; settings has nowhere to walk to.
-	onSkip?: () => void;
 	// Scrolls away with the list. The search box is what has to stay put.
 	leading?: ReactNode;
 	// Sits above the league groups. Callers drop it while a search is running rather than filtering
@@ -29,9 +28,12 @@ interface teamPickerListProps {
 // A fragment rather than a wrapper, so the search box and the scrolling list stay siblings of
 // whatever chrome the caller puts around them — onboarding pins its footer against that column.
 const teamPickerList = ({
-	teams, query, onQueryChange, isLoading, hasError, selectedFavorites, onToggleFavorite, onRetry, onSkip, leading, pinned,
+	teams, query, onQueryChange, isLoading, hasError, selectedFavorites, onToggleFavorite, onRetry, leading, pinned,
 }: teamPickerListProps) => {
 	const filteredTeams = teams.filter(team => matchesTeamQuery(team, query));
+	// Our sources list a league's teams in their own order, which reads as no order at all.
+	const collator = new Intl.Collator(useDisplayLocale());
+	const byName = (a: EspnTeamEntry, b: EspnTeamEntry) => collator.compare(a.name ?? '', b.name ?? '');
 
 	const grouped = filteredTeams.reduce<Partial<Record<LeagueId, EspnTeamEntry[]>>>((acc, team) => {
 		(acc[team.leagueId] ??= []).push(team);
@@ -48,6 +50,7 @@ const teamPickerList = ({
 				type='search'
 				className='form-control form-control-sm mb-2'
 				placeholder={i18n.t('teamPicker.searchPlaceholder')}
+				aria-label={i18n.t('teamPicker.searchPlaceholder')}
 				value={query}
 				onChange={e => onQueryChange(e.target.value)}
 			/>
@@ -70,10 +73,7 @@ const teamPickerList = ({
 				{hasError && !isLoading && (
 					<div className='text-center mt-3'>
 						<div className='small text-danger mb-2'>{i18n.t('teamPicker.loadError')}</div>
-						<div className='d-flex justify-content-center gap-2'>
-							<button type='button' className='btn btn-sm btn-outline-secondary' onClick={onRetry}>{i18n.t('teamPicker.retry')}</button>
-							{onSkip && <button type='button' className='btn btn-sm btn-link p-0 text-body-secondary' onClick={onSkip}>{i18n.t('teamPicker.skipForNow')}</button>}
-						</div>
+						<button type='button' className='btn btn-sm btn-outline-secondary' onClick={onRetry}>{i18n.t('teamPicker.retry')}</button>
 					</div>
 				)}
 
@@ -85,7 +85,7 @@ const teamPickerList = ({
 								<div className='fw-bold text-uppercase popup-section-label mt-2'>
 									{leagueLabels[leagueId] ?? leagueId.toUpperCase()}
 								</div>
-								{(grouped[leagueId] ?? []).map(team => (
+								{(grouped[leagueId] ?? []).toSorted(byName).map(team => (
 									<TeamPickerRow
 										key={team.id}
 										team={team}

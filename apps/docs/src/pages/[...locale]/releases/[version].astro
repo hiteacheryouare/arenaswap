@@ -3,7 +3,10 @@ import { getCollection, render } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
 import Shell from '../../../layouts/Shell.astro';
 import UntranslatedNotice from '../../../components/UntranslatedNotice.astro';
-import { localePath, localeRoutesFor, type LocaleCode } from '../../../i18n/locales';
+import { defaultLocale, localePath, localeRoutesFor, type LocaleCode } from '../../../i18n/locales';
+import { useTranslations } from '../../../i18n/ui';
+import formatReleaseDate from '../../../lib/releaseDate';
+import publicImageSize from '../../../lib/publicImageSize';
 
 // A release note reads like an announcement, so it is laid out like one: centred masthead, an
 // optional lead image, one column of prose, and the note's own section headings pinned beside it.
@@ -37,9 +40,10 @@ const { Content, headings } = await render(release);
 // an outline.
 const sections = headings.filter(heading => heading.depth === 2);
 
-const formatted = release.data.date.toLocaleDateString('en-US', {
-	month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC',
-});
+const t = useTranslations(locale);
+const contentLang = locale === defaultLocale ? undefined : 'en';
+const formatted = formatReleaseDate(release.data.date, locale);
+const imageSize = release.data.image ? publicImageSize(release.data.image) : undefined;
 ---
 <Shell
 	title={`${release.data.title} — ArenaSwap ${release.data.version}`}
@@ -53,7 +57,7 @@ const formatted = release.data.date.toLocaleDateString('en-US', {
 	<div class='release-page'>
 		<div class='container'>
 			<a class='release-back' href={localePath(locale, 'releases/')}>
-				<span aria-hidden='true'>←</span> Back to release notes
+				<span aria-hidden='true'>←</span> {t('reading.backToReleases')}
 			</a>
 			<UntranslatedNotice />
 		</div>
@@ -63,14 +67,14 @@ const formatted = release.data.date.toLocaleDateString('en-US', {
 				<p class='release-meta'>
 					<time datetime={release.data.date.toISOString()}>{formatted}</time>
 					<span aria-hidden='true'> · </span>
-					Version {release.data.version}
+					{t('reading.releaseVersion', { version: release.data.version })}
 				</p>
-				<h1 class='release-title'>{release.data.title}</h1>
-				<p class='release-summary'>{release.data.summary}</p>
+				<h1 class='release-title' lang={contentLang}>{release.data.title}</h1>
+				<p class='release-summary' lang={contentLang}>{release.data.summary}</p>
 
 				{release.data.image && (
 					<figure class='release-figure'>
-						<img src={release.data.image} alt={release.data.imageAlt ?? ''} loading='eager' />
+						<img src={release.data.image} alt={release.data.imageAlt ?? ''} width={imageSize?.width} height={imageSize?.height} loading='eager' />
 					</figure>
 				)}
 			</div>
@@ -78,12 +82,12 @@ const formatted = release.data.date.toLocaleDateString('en-US', {
 
 		<div class='container'>
 			<div class='release-body'>
-				<article class='prose' id='release-prose'>
+				<article class='prose' id='release-prose' lang={contentLang}>
 					<Content />
 				</article>
 
 				{sections.length > 1 && (
-					<aside class='release-toc' aria-label='In this release'>
+					<aside class='release-toc' aria-label={t('reading.inThisRelease')} lang={contentLang}>
 						<ul>
 							{sections.map(section => (
 								<li><a href={`#${section.slug}`} data-toc-link={section.slug}>{section.text}</a></li>
@@ -94,7 +98,7 @@ const formatted = release.data.date.toLocaleDateString('en-US', {
 			</div>
 
 			{(newer || older) && (
-				<nav class='release-adjacent' aria-label='Other releases'>
+				<nav class='release-adjacent' aria-label={t('reading.otherReleases')} lang={contentLang}>
 					{older && (
 						<a href={localePath(locale, `releases/${older.data.version}/`)}>
 							<span aria-hidden='true'>← </span>{older.data.version}<span aria-hidden='true'> · </span>{older.data.title}

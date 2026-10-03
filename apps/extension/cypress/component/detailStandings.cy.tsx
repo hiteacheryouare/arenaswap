@@ -1,6 +1,8 @@
 import GameDetailView from '../../entrypoints/popup/components/gameDetailView';
 import { MockGameSimulator } from '@arenaswap/core';
 import type { Game } from '@arenaswap/core/types';
+import { mockBoxScorePayloads } from '../../entrypoints/popup/components/mockBoxScores';
+import { mockStandingsPayloads } from '../../entrypoints/popup/components/mockStandings';
 import de from '../../locales/de.json';
 import en from '../../locales/en.json';
 import es from '../../locales/es.json';
@@ -44,29 +46,29 @@ const noTable = demoGame('mock-10');
 // TEM v PSU, pre-game.
 const preGame = demoGame('mock-6');
 
-const mount = (game: Game) => {
-	cy.mount(
-		<GameDetailView
-			game={game}
-			excitementResult={undefined}
-			scoreHistory={[]}
-			powerScoreHistory={[]}
-			proTipsEnabled={false}
-			gameBoosts={{}}
-			bettingPrefs={{ bettingEnabled: false }}
-			weatherPrefs={{ temperatureUnit: 'F' }}
-			decorationPrefs={{ holidayDecorationsEnabled: false, holidaySnowEnabled: false, holidayLightsEnabled: false, holidayLeavesEnabled: false }}
-			favoriteTeamIds={new Set<string>()}
-			openTabs={[] as never}
-			registry={[]}
-			onToggleFavoriteTeam={() => {}}
-			onRegistryChange={() => {}}
-			formatTabLabel={() => ''}
-			onSetGameBoost={() => {}}
-			onBack={() => {}}
-		/>,
-	);
-};
+const detail = (game: Game) => (
+	<GameDetailView
+		game={game}
+		excitementResult={undefined}
+		scoreHistory={[]}
+		powerScoreHistory={[]}
+		proTipsEnabled={false}
+		gameBoosts={{}}
+		bettingPrefs={{ bettingEnabled: false }}
+		weatherPrefs={{ temperatureUnit: 'F' }}
+		decorationPrefs={{ holidayDecorationsEnabled: false, holidaySnowEnabled: false, holidayLightsEnabled: false, holidayLeavesEnabled: false }}
+		favoriteTeamIds={new Set<string>()}
+		openTabs={[] as never}
+		registry={[]}
+		onToggleFavoriteTeam={() => {}}
+		onRegistryChange={() => {}}
+		formatTabLabel={() => ''}
+		onSetGameBoost={() => {}}
+		onBack={() => {}}
+	/>
+);
+
+const mount = (game: Game) => cy.mount(detail(game));
 
 const openStandings = (game: Game) => {
 	mount(game);
@@ -130,6 +132,38 @@ describe('detail screen tab strip', () => {
 		cy.get('.tab-pane.active').should('have.length', 1);
 		cy.get('.tab-pane.active').should('have.id', `gd-pane-${football.id}-box`);
 		cy.get('.tab-pane.active .gd-box').should('exist');
+	});
+
+	it('keeps the reader on the tab they chose when the game goes final', () => {
+		mount(football).then(({ rerender }) => {
+			cy.get(`#gd-tab-${football.id}-box`).click();
+			cy.get('.tab-pane.active').should('have.id', `gd-pane-${football.id}-box`);
+			rerender(detail({ ...football, status: 'post' }));
+		});
+		cy.get('.gd-tabs .nav-link.active').should('have.text', en.box.heading);
+		cy.get('.tab-pane.active').should('have.id', `gd-pane-${football.id}-box`);
+	});
+
+	// A real id, so the summary goes to the network and the strip arrives a beat after the screen
+	// has drawn with none. The overview's node is marked before that and must survive it.
+	it('keeps the overview mounted when the strip arrives', () => {
+		const live = { ...football, id: '401000005' };
+		cy.intercept({ url: /\/summary\?event=401000005/ }, { body: mockBoxScorePayloads['mock-5'], delay: 300 });
+		cy.intercept({ url: /\/standings\?level=3/ }, { body: mockStandingsPayloads['mock-5'], delay: 300 });
+		mount(live);
+		cy.get('.gd-tabs').should('not.exist');
+		cy.get('.powerscore-breakdown').then($breakdown => { $breakdown[0]!.dataset.probe = 'kept'; });
+		cy.get('.gd-tabs .nav-link').should('have.length', 3);
+		cy.get('.tab-pane.active .powerscore-breakdown').should('have.attr', 'data-probe', 'kept');
+	});
+
+	// A finished game opens its overview on the info panel, whose top rule used to draw a second
+	// hairline just under the strip's own.
+	it('draws one rule between the strip and the first section, not two', () => {
+		mount({ ...football, status: 'post' });
+		cy.get('.gd-tabs .nav-link').should('have.length.at.least', 2);
+		cy.get('.tab-pane.active > :first-child').should('have.class', 'game-info-panel')
+			.and('have.css', 'border-top-width', '0px');
 	});
 
 	it('labels the shown pane with the tab that opened it', () => {

@@ -59,6 +59,8 @@ const isScoreUpdateMessage = (value: unknown): value is { type: 'SCORES_UPDATED'
 
 export default () => {
 	const [view, setView] = useState<popupView>('main');
+	const [navigated, setNavigated] = useState(false);
+	if (!navigated && view !== 'main') setNavigated(true);
 	const [selectedGameId, setSelectedGameId] = useState<string | null>(null);
 	// Held here rather than inside MainView: the view shell is keyed on `view`, so anything the main
 	// view owns itself is thrown away the moment you open a game, a setting or the suggestion sheet.
@@ -432,9 +434,17 @@ export default () => {
 		void browser.storage.local.set({ standbyOnboardingDone: true });
 	};
 
+	const settingsSnapshot = () => JSON.stringify([prefsRef.current, demoMode, demoSeason, standbyStreamTabId]);
+	const settingsOnOpenRef = useRef('');
+
+	const openSetup = () => {
+		settingsOnOpenRef.current = settingsSnapshot();
+		setView('setup');
+	};
+
 	const closeSetup = () => {
 		setView('main');
-		showToast(i18n.t('app.settingsSavedToast'), 'success');
+		if (settingsSnapshot() !== settingsOnOpenRef.current) showToast(i18n.t('app.settingsSavedToast'), 'success');
 		void (async () => {
 			await prefsSyncRef.current.catch(() => {});
 			const refreshed = await fetchState(true);
@@ -488,7 +498,7 @@ export default () => {
 	if (walkthroughActive) {
 		return (
 			<TranslationContext.Provider value={i18n.t}>
-				<WalkthroughView onComplete={() => setWalkthroughActive(false)} />
+				<WalkthroughView onComplete={() => setWalkthroughActive(false)} leagues={prefs.enabledLeagues} />
 			</TranslationContext.Provider>
 		);
 	}
@@ -498,7 +508,7 @@ export default () => {
 		<div className='popup-root'>
 			<canvas ref={confettiCanvasRef} className='popup-confetti-canvas' aria-hidden='true' />
 			<ToastContainer toasts={toasts} onDismiss={dismissToast} />
-			<div key={view} className='popup-view-shell'>
+			<div key={view} className={`popup-view-shell${navigated ? '' : ' is-opening-view'}`}>
 				{view === 'setup' && (
 					<SetupView
 						prefs={prefs}
@@ -560,7 +570,7 @@ export default () => {
 						prefsLoaded={prefsLoaded}
 						isLoading={isLoading || !settled}
 						hasError={Boolean(error && !data) || slateUnvouchable}
-						onRefresh={() => void mutate(() => fetchState(true), { revalidate: false })}
+						onRefresh={() => mutate(() => fetchState(true), { revalidate: false })}
 						games={games}
 						scores={scores}
 						leagueLogos={leagueLogos}
@@ -570,7 +580,7 @@ export default () => {
 						openTabs={openTabs}
 						onStandbyStream={onStandbyStream}
 						onOpenGameDetail={openGameDetail}
-						onOpenSetup={() => setView('setup')}
+						onOpenSetup={openSetup}
 						suggestionCount={suggestions.length}
 						onReviewSuggestions={() => setView('suggest')}
 						onDismissSuggestions={onDismissSuggestions}

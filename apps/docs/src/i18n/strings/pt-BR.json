@@ -28,11 +28,44 @@
 		"faq": "FAQ",
 		"legal": "Legal",
 		"openMenu": "Abrir menu",
+		"skipToContent": "Pular para o conteúdo",
 		"language": "Idioma",
 		"chooseLanguage": "Escolha um idioma",
 		"englishOnly": "Esta página só está disponível em inglês.",
 		"untranslatedHeading": "Esta página ainda não foi traduzida.",
 		"untranslatedBody": "A documentação e as notas de versão são escritas em inglês. Todo o restante do site está disponível no seu idioma."
+	},
+	"reading": {
+		"docsHeading": "Documentação.",
+		"docsMetaTitle": "Documentação do ArenaSwap",
+		"docsMetaDescription": "Guias para assistir a vários jogos ao mesmo tempo com o ArenaSwap e a referência para desenvolvedores do pacote PowerScore, que decide qual jogo vence.",
+		"docsSectionMetaTitle": "{heading} — Documentação do ArenaSwap",
+		"docsSectionHeading": "{heading}.",
+		"docsNavLabel": "Documentação",
+		"docsBeingWritten": "Em produção.",
+		"commonQuestions": "Perguntas frequentes",
+		"nearbyArticles": "Artigos relacionados",
+		"releasesHeading": "Notas de versão.",
+		"releasesMetaTitle": "Notas de versão — ArenaSwap",
+		"releasesMetaDescription": "O que chegou em cada versão do ArenaSwap e o que isso muda para você.",
+		"releasesRss": "Assine via RSS",
+		"releasesEmpty": "Nada publicado ainda.",
+		"releaseVersion": "Versão {version}",
+		"backToReleases": "Voltar às notas de versão",
+		"inThisRelease": "Nesta versão",
+		"otherReleases": "Outras versões",
+		"sections": {
+			"extension": {
+				"title": "A extensão",
+				"heading": "Como usar o ArenaSwap",
+				"description": "Instalar o ArenaSwap, atribuir abas a jogos, ajustar quando ele troca e o Standby Stream."
+			},
+			"powerscore": {
+				"title": "PowerScore",
+				"heading": "O pacote PowerScore",
+				"description": "Como um jogo recebe sua nota. Os cinco sinais, os boosts, as penalidades e os tipos."
+			}
+		}
 	},
 	"install": {
 		"addTo": "Adicionar ao {browser}",
@@ -54,7 +87,7 @@
 		"firefoxAddons": "Firefox Add-ons",
 		"edgeAddons": "Edge Add-ons",
 		"iscLicense": "ISC License",
-		"disclaimer": "Sem afiliação com ESPN, NFL, NBA, NHL, MLB, MLS ou qualquer outra liga rastreada por esta extensão, e sem endosso delas.",
+		"disclaimer": "Sem afiliação com NFL, NBA, NHL, MLB, MLS ou qualquer outra liga rastreada por esta extensão, e sem endosso delas.",
 		"legalNotices": "Avisos legais",
 		"madeWith": "Feito com ❤️ em Philadelphia e Boston por {name}"
 	},
@@ -75,7 +108,8 @@
 			"captionSwitched": "O ArenaSwap trocou você de {from} para {to}.",
 			"captionWatching": "Você está assistindo {game}, o melhor jogo do momento.",
 			"replay": "Reproduzir a demo",
-			"tabLabel": "Aba {number}: {host}"
+			"tabLabel": "Aba {number}: {host}",
+			"browserLabel": "Um navegador com três jogos ao vivo abertos e o ArenaSwap rodando"
 		},
 		"tabs": {
 			"titleLine1": "Configure uma vez.",
@@ -165,11 +199,11 @@
 			},
 			{
 				"q": "Preciso de conta ou assinatura?",
-				"a": "Não. O ArenaSwap é grátis, não tem conta e não coleta nada. Ele roda inteiramente no seu navegador e lê placares públicos da ESPN. Nada do que você assiste é enviado para lugar nenhum."
+				"a": "Não. O ArenaSwap é grátis, não tem conta e não coleta nada. Ele roda inteiramente no seu navegador e lê placares públicos das nossas fontes, que não tiram o binóculo de nenhum jogo. Nada do que você assiste é enviado para lugar nenhum."
 			},
 			{
 				"q": "Vai funcionar com meu serviço de streaming?",
-				"a": "Qualquer stream que rode em uma aba do navegador funciona, porque o ArenaSwap troca e silencia abas em vez de se integrar a um serviço. Isso cobre ESPN+, Peacock, Paramount+, YouTube TV, Hulu Live, Fubo e os streams gratuitos das ligas. Ele não ajuda com um app nativo ou uma set-top box."
+				"a": "Qualquer stream que rode em uma aba do navegador funciona, porque o ArenaSwap troca e silencia abas em vez de se integrar a um serviço. Isso cobre Peacock, Paramount+, Prime Video, YouTube TV, Hulu Live, Fubo e os streams gratuitos das ligas. Ele não ajuda com um app nativo ou uma set-top box."
 			},
 			{
 				"q": "Como funciona o PowerScore?",
@@ -378,6 +412,16 @@
 			"topOfInning": "Início da entrada",
 			"bottomOfInning": "Fim da entrada",
 			"shootout": "PEN {away}–{home}",
+			"periodQuarter": "{count}º Q",
+			"periodFirstHalf": "1ºT",
+			"periodSecondHalf": "2ºT",
+			"period": "{count}º P",
+			"periodInning": "Inn. {count}",
+			"periodOvertime": "OT",
+			"periodOvertimeNumbered": "{count}OT",
+			"periodExtraTimeFirst": "PR1",
+			"periodExtraTimeSecond": "PR2",
+			"periodShootout": "PEN",
 			"downDistanceAt": "{downDistance} na {fieldPosition}"
 		},
 		"field": {
@@ -391,7 +435,7 @@
 			"sectionOtherLiveGames": "Jogos ao vivo",
 			"sectionUpNext": "A seguir",
 			"enableToggleLabel": "Ativar troca automática",
-			"onStandbyStream": "No Standby Stream, aguardando ação"
+			"onStandbyStream": "No Standby Stream até algo esquentar"
 		},
 		"tabAssign": {
 			"placeholder": "— Atribuir uma aba —"
@@ -406,7 +450,7 @@
 			"groupSwitching": "Trocas",
 			"groupSwitchingDesc": "O quanto o ArenaSwap corre para te levar a um jogo melhor.",
 			"groupScoring": "Pontuação",
-			"groupScoringDesc": "Quais sinais alimentam o PowerScore e o que rende pontos extras.",
+			"groupScoringDesc": "Quais sinais alimentam o PowerScore e o que rende um impulso.",
 			"groupLeagues": "Ligas",
 			"groupLeaguesDesc": "Quais ligas são monitoradas e se cada uma tem a sua própria seção.",
 			"groupDisplay": "Exibição",
@@ -428,7 +472,7 @@
 			"off": "Desativado"
 		},
 		"favoriteTeamBonus": {
-			"label": "Bônus de time favorito"
+			"label": "Impulso de time favorito"
 		},
 		"postseasonBoost": {
 			"label": "Impulso de pós-temporada"
@@ -436,7 +480,21 @@
 		"bso": {
 			"balls": "B",
 			"strikes": "S",
-			"outs": "O"
+			"outs": "O",
+			"ballsSpoken": "1 bola | $1 bolas",
+			"strikesSpoken": "1 strike | $1 strikes",
+			"outsSpoken": "1 out | $1 outs",
+			"countSpoken": "{balls}, {strikes}, {outs}"
+		},
+		"bases": {
+			"empty": "Bases vazias",
+			"first": "Corredor na primeira",
+			"second": "Corredor na segunda",
+			"third": "Corredor na terceira",
+			"firstSecond": "Corredores na primeira e na segunda",
+			"firstThird": "Corredores na primeira e na terceira",
+			"secondThird": "Corredores na segunda e na terceira",
+			"loaded": "Bases lotadas"
 		}
 	}
 }

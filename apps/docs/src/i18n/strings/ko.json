@@ -28,11 +28,44 @@
 		"faq": "자주 묻는 질문",
 		"legal": "법적 고지",
 		"openMenu": "메뉴 열기",
+		"skipToContent": "본문으로 건너뛰기",
 		"language": "언어",
 		"chooseLanguage": "언어 선택",
 		"englishOnly": "이 페이지는 영어로만 제공돼요.",
 		"untranslatedHeading": "이 페이지는 아직 번역되지 않았어요.",
 		"untranslatedBody": "문서와 릴리스 노트는 영어로 되어 있어요. 이 사이트의 나머지 부분은 모두 한국어로 이용할 수 있어요."
+	},
+	"reading": {
+		"docsHeading": "문서.",
+		"docsMetaTitle": "ArenaSwap 문서",
+		"docsMetaDescription": "ArenaSwap으로 여러 경기를 동시에 보는 방법과, 어떤 경기를 보여줄지 정하는 PowerScore 패키지의 개발자 레퍼런스예요.",
+		"docsSectionMetaTitle": "{heading} — ArenaSwap 문서",
+		"docsSectionHeading": "{heading}.",
+		"docsNavLabel": "문서",
+		"docsBeingWritten": "작성 중이에요.",
+		"commonQuestions": "자주 묻는 질문",
+		"nearbyArticles": "관련 글",
+		"releasesHeading": "릴리스 노트.",
+		"releasesMetaTitle": "릴리스 노트 — ArenaSwap",
+		"releasesMetaDescription": "ArenaSwap의 버전마다 무엇이 바뀌었고, 사용하는 입장에서 무슨 의미인지 정리했어요.",
+		"releasesRss": "RSS로 구독하기",
+		"releasesEmpty": "아직 게시된 내용이 없어요.",
+		"releaseVersion": "버전 {version}",
+		"backToReleases": "릴리스 노트로 돌아가기",
+		"inThisRelease": "이번 릴리스",
+		"otherReleases": "다른 릴리스",
+		"sections": {
+			"extension": {
+				"title": "확장 프로그램",
+				"heading": "ArenaSwap 사용하기",
+				"description": "ArenaSwap 설치, 탭을 경기에 할당하기, 전환 시점 조정, 그리고 Standby Stream."
+			},
+			"powerscore": {
+				"title": "PowerScore",
+				"heading": "PowerScore 패키지",
+				"description": "경기에 점수를 매기는 방법. 다섯 가지 시그널, 부스트, 페널티, 그리고 타입."
+			}
+		}
 	},
 	"install": {
 		"addTo": "{browser}에 추가",
@@ -54,7 +87,7 @@
 		"firefoxAddons": "Firefox Add-ons",
 		"edgeAddons": "Edge Add-ons",
 		"iscLicense": "ISC License",
-		"disclaimer": "ESPN, NFL, NBA, NHL, MLB, MLS, 그리고 이 확장 프로그램이 추적하는 그 어떤 리그와도 제휴하거나 그들의 지지를 받지 않아요.",
+		"disclaimer": "NFL, NBA, NHL, MLB, MLS, 그리고 이 확장 프로그램이 추적하는 그 어떤 리그와도 제휴하거나 그들의 지지를 받지 않아요.",
 		"legalNotices": "법적 고지",
 		"madeWith": "{name}이 Philadelphia & Boston에서 ❤️를 담아 만들었어요"
 	},
@@ -75,7 +108,8 @@
 			"captionSwitched": "ArenaSwap이 {from}에서 {to}(으)로 전환했어요.",
 			"captionWatching": "지금 {game}을(를) 시청 중이에요. 지금 가장 볼만한 경기예요.",
 			"replay": "데모 재생",
-			"tabLabel": "탭 {number}: {host}"
+			"tabLabel": "탭 {number}: {host}",
+			"browserLabel": "라이브 경기 세 개가 열려 있고 ArenaSwap이 실행 중인 브라우저"
 		},
 		"tabs": {
 			"titleLine1": "한 번만 설정하면.",
@@ -165,11 +199,11 @@
 			},
 			{
 				"q": "계정이나 구독이 필요한가요?",
-				"a": "아니요. ArenaSwap은 무료고, 계정이 필요 없고, 아무것도 수집하지 않아요. 브라우저 안에서만 완전히 작동하고 ESPN의 공개 점수를 읽어올 뿐이에요. 당신이 보는 내용은 어디로도 전송되지 않아요."
+				"a": "아니요. ArenaSwap은 무료고, 계정이 필요 없고, 아무것도 수집하지 않아요. 브라우저 안에서만 완전히 작동하고 모든 경기를 쌍안경으로 지켜보는 저희 소식통의 공개 점수를 읽어올 뿐이에요. 당신이 보는 내용은 어디로도 전송되지 않아요."
 			},
 			{
 				"q": "제 스트리밍 서비스에서도 작동하나요?",
-				"a": "브라우저 탭에서 재생되는 스트림이라면 무엇이든 작동해요. ArenaSwap은 서비스와 연동하는 대신 탭을 전환하고 음소거하기 때문이에요. ESPN+, Peacock, Paramount+, YouTube TV, Hulu Live, Fubo, 그리고 각 리그의 무료 스트림까지 다 지원해요. 네이티브 앱이나 셋톱박스는 도와줄 수 없어요."
+				"a": "브라우저 탭에서 재생되는 스트림이라면 무엇이든 작동해요. ArenaSwap은 서비스와 연동하는 대신 탭을 전환하고 음소거하기 때문이에요. Peacock, Paramount+, Prime Video, YouTube TV, Hulu Live, Fubo, 그리고 각 리그의 무료 스트림까지 다 지원해요. 네이티브 앱이나 셋톱박스는 도와줄 수 없어요."
 			},
 			{
 				"q": "PowerScore는 어떻게 작동하나요?",
@@ -378,6 +412,16 @@
 			"topOfInning": "초",
 			"bottomOfInning": "말",
 			"shootout": "PK {away}–{home}",
+			"periodQuarter": "{count}쿼터",
+			"periodFirstHalf": "전반",
+			"periodSecondHalf": "후반",
+			"period": "{count}피리어드",
+			"periodInning": "{count}회",
+			"periodOvertime": "OT",
+			"periodOvertimeNumbered": "{count}OT",
+			"periodExtraTimeFirst": "ET1",
+			"periodExtraTimeSecond": "ET2",
+			"periodShootout": "PK",
 			"downDistanceAt": "{fieldPosition}에서 {downDistance}"
 		},
 		"field": {
@@ -391,7 +435,7 @@
 			"sectionOtherLiveGames": "진행 중인 경기",
 			"sectionUpNext": "다음 경기",
 			"enableToggleLabel": "자동 전환 활성화",
-			"onStandbyStream": "Standby Stream 대기 중 — 액션을 기다리고 있어요"
+			"onStandbyStream": "뭔가 뜨거워질 때까지 Standby Stream에서 대기 중"
 		},
 		"tabAssign": {
 			"placeholder": "— 탭 할당 —"
@@ -406,7 +450,7 @@
 			"groupSwitching": "전환",
 			"groupSwitchingDesc": "ArenaSwap이 더 좋은 경기로 얼마나 적극적으로 전환할지 설정해요.",
 			"groupScoring": "점수 계산",
-			"groupScoringDesc": "PowerScore에 반영되는 시그널과 보너스 점수를 얻는 조건이에요.",
+			"groupScoringDesc": "PowerScore에 반영되는 시그널과 부스트를 받는 조건이에요.",
 			"groupLeagues": "리그",
 			"groupLeaguesDesc": "추적할 리그와 리그별 섹션 표시 여부를 설정해요.",
 			"groupDisplay": "화면 표시",
@@ -428,7 +472,7 @@
 			"off": "꺼짐"
 		},
 		"favoriteTeamBonus": {
-			"label": "응원팀 보너스"
+			"label": "응원팀 부스트"
 		},
 		"postseasonBoost": {
 			"label": "포스트시즌 부스트"
@@ -436,7 +480,21 @@
 		"bso": {
 			"balls": "B",
 			"strikes": "S",
-			"outs": "O"
+			"outs": "O",
+			"ballsSpoken": "1볼 | $1볼",
+			"strikesSpoken": "1스트라이크 | $1스트라이크",
+			"outsSpoken": "1아웃 | $1아웃",
+			"countSpoken": "{balls} {strikes} {outs}"
+		},
+		"bases": {
+			"empty": "주자 없음",
+			"first": "1루 주자",
+			"second": "2루 주자",
+			"third": "3루 주자",
+			"firstSecond": "1, 2루 주자",
+			"firstThird": "1, 3루 주자",
+			"secondThird": "2, 3루 주자",
+			"loaded": "만루"
 		}
 	}
 }

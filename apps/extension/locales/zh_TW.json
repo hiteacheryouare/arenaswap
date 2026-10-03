@@ -4,14 +4,14 @@
 	"app": {
 		"welcomeToast": "歡迎使用 ArenaSwap！",
 		"settingsSavedToast": "設定已儲存",
-		"gameDetailsUnavailable": "比賽詳情暫時無法取得",
+		"gameDetailsUnavailable": "這場比賽躲過了我們線人的眼睛。",
 		"backToGames": "返回比賽列表"
 	},
 	"errorBoundary": {
-		"title": "出了點問題。",
-		"body": "ArenaSwap 發生了未預期的錯誤。",
+		"title": "好吧，這是一次失誤。",
+		"body": "ArenaSwap 把不該掉的球弄掉了。",
 		"errorLabel": "錯誤：",
-		"tryAgain": "重試"
+		"tryAgain": "再來一次"
 	},
 	"sport": {
 		"basketball": "籃球",
@@ -31,7 +31,7 @@
 	},
 	"noGames": {
 		"m1": {
-			"title": "還在等待開球。🕐",
+			"title": "還沒有人上場。🕐",
 			"sub": "你所選聯賽目前沒有進行中的比賽。"
 		},
 		"m2": {
@@ -44,7 +44,7 @@
 		},
 		"m4": {
 			"title": "連裁判都在偷閒。",
-			"sub": "你所選聯賽中沒有偵測到進行中的比賽。"
+			"sub": "我們的線人已經舉起望遠鏡了。你的聯賽暫時還沒有直播。"
 		},
 		"m5": {
 			"title": "記分板動也不動。",
@@ -52,7 +52,7 @@
 		},
 		"m6": {
 			"title": "賣熱狗的大叔跑路了。🌭",
-			"sub": "你的聯賽目前沒有直播賽事，暫時沒什麼好追的。"
+			"sub": "你的聯賽目前沒有直播賽事。等有比賽了他就回來。"
 		},
 		"m7": {
 			"title": "翻遍了看台底下……",
@@ -80,7 +80,7 @@
 		"m18": "更新史上最強球員排行榜……",
 		"m19": "填滿媒體席……",
 		"m20": "展開布條……",
-		"m21": "同步轉播訊號……",
+		"m21": "調整望遠鏡焦距……",
 		"m22": "清點觀眾人數……",
 		"m23": "擦亮冠軍戒指……",
 		"m24": "給吉祥物打氣……",
@@ -89,7 +89,7 @@
 		"m27": "補滿飲料冰桶……",
 		"m28": "回看精彩集錦……",
 		"m29": "對著聯盟主席噓……",
-		"m30": "尋找各大球場……",
+		"m30": "向每座球場派出球探……",
 		"m31": "去買份起司牛肉潛艇堡……",
 		"m32": "和體育酒吧的球迷吵起來……",
 		"m33": "重新排列夢幻聯盟排行榜……",
@@ -108,7 +108,7 @@
 		"m46": "準備臉部彩繪……",
 		"m47": "協調隊服款式……",
 		"m48": "跑一遍數據……",
-		"m49": "分析統計數據……",
+		"m49": "聽取線人匯報……",
 		"m50": "施放煙火……",
 		"m51": "準備燈光秀……",
 		"m52": "查比賽日的天氣預報……",
@@ -221,12 +221,12 @@
 		"holidayLights": "彩燈",
 		"holidayLeaves": "落葉",
 		"signalsSection": "PowerScore 信號",
-		"signalsExplainer": "已停用的信號不計入評分，分數會重新校準以維持在範圍內。",
-		"signalLastActive": "至少須保留一個信號處於啟用狀態",
+		"signalsExplainer": "關掉某個信號，它就坐板凳。其餘信號會重新縮放，分數仍在 0–100 之間。",
+		"signalLastActive": "至少要留一個信號在場上。",
 		"leaguesExplainer": "只有勾選的聯賽會被追蹤，並納入自動切換的判斷。",
-		"selectNone": "全不選",
+		"selectNone": "清除",
 		"selectAll": "全選",
-		"noLeaguesWarning": "尚未選擇任何聯賽，ArenaSwap 不會追蹤任何比賽。",
+		"noLeaguesWarning": "還沒選聯賽，ArenaSwap 沒什麼好看的。",
 		"groupByLeague": "依聯賽分組比賽",
 		"groupByLeagueExplainer": "關閉後，所有聯賽共用一份列表：進行中的比賽依 PowerScore 排序，尚未開賽的依開賽時間排序。無論開關，你的球隊都固定在最上方。",
 		"leagueOrderSection": "顯示順序",
@@ -238,7 +238,7 @@
 		"groupSwitching": "切換",
 		"groupSwitchingDesc": "ArenaSwap 有多積極把你帶到更精彩的比賽。",
 		"groupScoring": "評分",
-		"groupScoringDesc": "哪些信號會影響 PowerScore，以及哪些能加分。",
+		"groupScoringDesc": "哪些信號會影響 PowerScore，以及哪些能獲得加成。",
 		"groupFavorites": "收藏球隊",
 		"groupFavoritesDesc": "你關注的球隊，以及收藏能加多少分。",
 		"followedTeams": "你關注的球隊",
@@ -281,7 +281,9 @@
 		"keywordsStandby": "備用, 後備, 閒置, 替補, 冷場",
 		"keywordsStandbyThreshold": "分數, 閾值, 下限, 低於, 冷場",
 		"keywordsStandbyTab": "分頁, 視窗, 頁面, 目標",
-		"keywordsDemo": "虛構, 範例, 測試, 預覽, 沙盒"
+		"keywordsDemo": "虛構, 範例, 測試, 預覽, 沙盒",
+		"aboutSetting": "關於{setting}",
+		"moreInfo": "更多資訊"
 	},
 	"finishedTabs": {
 		"toastFreed": {
@@ -297,7 +299,7 @@
 		"tourButton": "導覽",
 		"settingsButton": "設定",
 		"guideButton": "節目表",
-		"onStandbyStream": "目前在 Standby Stream，等待精彩時刻",
+		"onStandbyStream": "在 Standby Stream 待命，等比賽升溫",
 		"sectionActiveLiveTabs": "活躍分頁",
 		"sectionOtherLiveGames": "直播比賽",
 		"sectionUpNext": "即將開賽",
@@ -515,11 +517,24 @@
 		"final": "終場",
 		"delay": "延誤",
 		"delayFallback": "延誤",
-		"shootout": "PENS {away}–{home}",
+		"shootout": "點球 {away}–{home}",
 		"downDistanceAt": "{fieldPosition} {downDistance}",
 		"teamRank": "排名第{rank}",
-		"timeoutsRemaining": "{team}：還剩 {count} 次暫停",
+		"timeoutsRemaining": {
+			"1": "{team}：還剩 1 次暫停",
+			"n": "{team}：還剩 $1 次暫停"
+		},
 		"timeoutsShort": "{count} TO",
+		"periodQuarter": "第{count}節",
+		"periodFirstHalf": "上半場",
+		"periodSecondHalf": "下半場",
+		"period": "第{count}節",
+		"periodInning": "第{count}局",
+		"periodOvertime": "OT",
+		"periodOvertimeNumbered": "{count}OT",
+		"periodExtraTimeFirst": "加1",
+		"periodExtraTimeSecond": "加2",
+		"periodShootout": "點球",
 		"powerScore": "PowerScore",
 		"vs": "vs",
 		"topOfInning": "上半局",
@@ -568,12 +583,76 @@
 		"tooltipFavoriteBoost": "當你收藏的球隊參與這場比賽時加分。若雙方都是收藏球隊，加成會比只有一隊時更多。",
 		"tooltipGameBoost": "你透過比賽加成控制項，手動為這場比賽加的分數。",
 		"tooltipScoringOpportunity": "依目前的進攻位置自動加分。美式足球中為紅區進攻；棒球和壘球中則依壘上跑者人數遞增。",
-		"tooltipPostseasonBoost": "對季後賽、聯盟冠軍賽和總冠軍賽等賽事，統一給予固定加分。"
+		"tooltipPostseasonBoost": "為季後賽、聯盟冠軍賽和總冠軍賽等賽事提供的加成。",
+		"reasonJoiner": "，",
+		"reasonTied": "比分平手",
+		"reasonMarginPoints": {
+			"1": "相差1分",
+			"n": "相差$1分"
+		},
+		"reasonMarginGoals": {
+			"1": "相差1球",
+			"n": "相差$1球"
+		},
+		"reasonMarginRuns": {
+			"1": "相差1分",
+			"n": "相差$1分"
+		},
+		"reasonOvertime": "延長賽",
+		"reasonExtraTime": "延長賽",
+		"reasonShootout": "PK大戰",
+		"reasonExtraInnings": "延長賽",
+		"reasonInning": "第{inning}局",
+		"reasonClockLeft": "還剩{clock}",
+		"reasonUnderMinutes": {
+			"1": "不到1分鐘",
+			"n": "不到$1分鐘"
+		},
+		"reasonMinutesIn": {
+			"1": "第1分鐘",
+			"n": "第$1分鐘"
+		},
+		"reasonOvertimeLooming": "比分平手，延長在即",
+		"reasonLevelLate": "接近終場仍平手",
+		"reasonOutscoring": "{team}對{other}打出{run}",
+		"reasonOnARoll": "{team}手感正燙",
+		"reasonTradingLeads": "比分互有領先",
+		"reasonJustTookLead": "剛剛反超",
+		"reasonCuttingIn": "{team}追分",
+		"reasonClosingGap": "{team}縮小差距",
+		"reasonFallback": "目前最佳比賽",
+		"reasonFavoriteBoost": "收藏球隊加成（+{points}）",
+		"reasonGameBoost": "比賽加成（+{points}）",
+		"reasonScoringOpportunity": "得分機會（+{points}）",
+		"reasonPostseasonBoost": "季後賽加成（+{points}）"
 	},
 	"bso": {
 		"balls": "B",
 		"strikes": "S",
-		"outs": "O"
+		"outs": "O",
+		"ballsSpoken": {
+			"1": "1壞球",
+			"n": "$1壞球"
+		},
+		"strikesSpoken": {
+			"1": "1好球",
+			"n": "$1好球"
+		},
+		"outsSpoken": {
+			"1": "1出局",
+			"n": "$1出局"
+		},
+		"countSpoken": "{balls}，{strikes}，{outs}"
+	},
+	"bases": {
+		"empty": "壘上無人",
+		"first": "一壘有人",
+		"second": "二壘有人",
+		"third": "三壘有人",
+		"firstSecond": "一、二壘有人",
+		"firstThird": "一、三壘有人",
+		"secondThird": "二、三壘有人",
+		"loaded": "滿壘"
 	},
 	"onboarding": {
 		"allSetTitle": "一切就緒！",
@@ -592,14 +671,13 @@
 		"back": "返回",
 		"step": "第 $1 步，共 $2 步",
 		"title": "選擇你的球隊",
-		"explainer": "收藏的球隊會獲得評分加成，讓 ArenaSwap 更偏好這些比賽。",
+		"explainer": "收藏的球隊會獲得 PowerScore 加成，讓它們的比賽贏得更多切換。",
 		"yourFavorites": "你的收藏",
 		"leagueNotTracked": "{league} · 未追蹤",
 		"searchPlaceholder": "搜尋球隊……",
 		"loading": "載入球隊中……",
-		"loadError": "球隊載入失敗。",
+		"loadError": "我們的球探沒能拿到陣容名單。",
 		"retry": "重試",
-		"skipForNow": "暫時跳過",
 		"removeFavorite": "將 {team} 從收藏移除",
 		"addFavorite": "將 {team} 加入收藏",
 		"noMatch": "沒有與「{query}」相符的球隊",
@@ -611,7 +689,7 @@
 		"title": "歡迎使用 ArenaSwap",
 		"subtitle": "開始設定之前，先了解一下它的運作方式。",
 		"feature1Title": "自動切換分頁",
-		"feature1Body": "ArenaSwap 啟動後會接管瀏覽器視窗。當某場比賽進入高潮，ArenaSwap 會自動切到那個分頁，就算你正在看別的東西也一樣。",
+		"feature1Body": "比賽一進入高潮，ArenaSwap 就會跳到它的分頁，就算你正在看別的也一樣。",
 		"feature2Title": "由你把分頁和比賽綁在一起",
 		"feature2Body": "把每路直播開在各自的分頁，再透過擴充功能指派給對應比賽。ArenaSwap 只會動用你註冊過的分頁。",
 		"feature3Title": "掌控權始終在你手上",
@@ -619,17 +697,15 @@
 		"gotIt": "了解"
 	},
 	"walkthrough": {
-		"allSet": "一切就緒！",
-		"allSetSubtitle": "準備好隨時鎖定最精彩的比賽了嗎？",
-		"letsGo": "出發！"
+		"skipTour": "略過導覽"
 	},
 	"stepToggle": {
 		"step": "第 $1 步，共 $2 步",
 		"title": "開啟與關閉",
 		"subtitle": "一個開關，掌控一切。",
 		"tryIt": "↑ 試試看",
-		"statusActive": "● ArenaSwap 運作中",
-		"statusPaused": "○ 自動切換已暫停",
+		"statusActive": "ArenaSwap 正在幫你切換",
+		"statusPaused": "ArenaSwap 已暫停",
 		"bodyBeforeOn": "當開關",
 		"bodyOn": "開啟",
 		"bodyAfterOn": "時，ArenaSwap 會自動把你的分頁切到最精彩的直播比賽。隨時關閉即可拿回手動控制權。",
@@ -654,15 +730,16 @@
 		"boostsSubtitle": "用來微調分數的調整項",
 		"clockStallPenaltyName": "時鐘停滯扣分",
 		"clockStallPenaltyMeasured": "當比賽時鐘連續多次更新都停滯時觸發，降低信號小計。",
-		"volatilityName": "波動加成／扣分",
+		"volatilityName": "波動加成或扣分",
 		"volatilityMeasured": "勝率長期接近 50% 的比賽會獲得加成；一面倒的比賽則會被扣分。",
 		"favoriteBoostName": "收藏球隊加成",
 		"favoriteBoostMeasured": "當你收藏的球隊參與這場對戰時加分。",
 		"gameBoostName": "比賽加成",
 		"gameBoostMeasured": "由你手動加的分數，用來臨時提升特定比賽的優先權。",
 		"scoringOpportunityMeasured": "美式足球紅區進攻，或棒球／壘球壘上有跑者時自動加分。",
+		"scoringOpportunityName": "得分機會",
 		"postseasonBoostName": "季後賽加成",
-		"postseasonBoostMeasured": "對季後賽、聯盟冠軍賽和總冠軍賽，統一給予固定加分。",
+		"postseasonBoostMeasured": "為季後賽、聯盟冠軍賽和總冠軍賽提供的加成。",
 		"back": "返回",
 		"next": "下一步",
 		"tapHint": "點擊畫面任何位置繼續"
@@ -697,12 +774,12 @@
 		"sensitivity4": "均衡",
 		"sensitivity5": "積極",
 		"sensitivity6": "手癢難耐",
-		"sensitivity7": "荒唐速度",
+		"sensitivity7": "Ludicrous Speed",
 		"sensitivityLabel": "切換靈敏度",
 		"sensitivityHelp": "控制 PowerScore 差距要多大，ArenaSwap 才會切換分頁。",
 		"cooldownLabel": "切換冷卻",
 		"cooldownHelp": "設定自動切換之間的最短間隔，避免分頁來回亂跳。",
-		"moreLeagues": "+ 更多聯賽在「聯賽」分頁",
+		"moreLeagues": "+ 更多聯賽見「設定 → 聯賽」",
 		"back": "返回",
 		"next": "下一步"
 	},
@@ -719,7 +796,7 @@
 		"signalComeback": "逆轉",
 		"detailPreviewCaption": "這裡也能看到比分圖表和完整的信號歷史。",
 		"body": "點一下任何直播比賽卡片，就能打開詳情畫面。你會看到影響 PowerScore 的每項信號完整分析，還有分數隨時間變化的圖表。",
-		"bodyAfterTap": "這裡還有手動比賽加成滑桿，隨時能臨時提升任何比賽的優先權。",
+		"bodyAfterTap": "這裡還有比賽加成欄位，能把任何比賽往前排。",
 		"back": "返回",
 		"next": "下一步"
 	},
@@ -758,7 +835,7 @@
 		"returnTitle": "它會自己切回來",
 		"returnBody": "只要有比賽重新熱起來、超過門檻，ArenaSwap 就會立刻把你切回去。",
 		"chooseTitle": "由你選擇待機分頁",
-		"chooseBody": "把你想看的直播開在一個分頁，再從設定的下拉選單中選擇它。",
+		"chooseBody": "把你想看的直播開在一個分頁，再把它設為待機分頁。",
 		"next": "下一步",
 		"setupTitle": "怎麼設定",
 		"setupSubtitle": "以下兩項需要設定。",
@@ -766,18 +843,19 @@
 		"thresholdBody": "選擇分數要低到什麼程度才會觸發待機。門檻越低越有耐心，越高則觸發得越快。",
 		"designateTitle": "指定一個待機分頁",
 		"designateBody": "把你的 Standby Stream 開在一個分頁，回到這裡，再從下拉選單中選擇它。",
+		"back": "返回",
 		"gotIt": "了解"
 	},
 	"empty": {
 		"leaguesTitle": "選擇聯賽以開始使用",
-		"leaguesCopy": "ArenaSwap 至少需要選擇一個聯賽，才能找到可以切換的比賽。",
+		"leaguesCopy": "至少選擇一個聯賽，ArenaSwap 就會開始搜尋比賽。",
 		"selectLeagues": "在設定中選擇聯賽",
 		"refresh": "重新整理",
 		"settings": "設定 →"
 	},
 	"gameListHeader": {
 		"loading": "載入中……",
-		"loadFailed": "比賽載入失敗。",
+		"loadFailed": "我們的線人沒了動靜，比賽載入失敗。",
 		"retry": "重試"
 	},
 	"toast": {
@@ -787,11 +865,14 @@
 		"close": "關閉"
 	},
 	"notification": {
-		"standbyTitle": "Standby Stream 中 | ArenaSwap",
-		"standbyMessage": "所有比賽都冷了下來。已停留在你的 Standby Stream。",
-		"switchedTitle": "已切換 → {score} | ArenaSwap",
-		"switchedMessage": "現在帶你前往 {venue}！",
-		"switchedMessageWithReason": "{reason}。現在帶你前往 {venue}！"
+		"standbyTitle": "已停在 Standby Stream",
+		"standbyMessage": "所有比賽都冷了下來，所以先把你停在 Standby Stream。",
+		"switchedTitle": "已切換 → {score}",
+		"switchedMessage": "出發前往 {venue}！",
+		"switchedMessageWithReason": "{reason}。出發前往 {venue}！",
+		"unknownGame": "未知比賽",
+		"switchedMessageNoVenue": "出發去看比賽！",
+		"switchedMessageWithReasonNoVenue": "{reason}。出發去看比賽！"
 	},
 	"tabAssign": {
 		"placeholder": "— 指派分頁 —",
@@ -821,8 +902,8 @@
 	},
 	"favoriteTeamBonus": {
 		"label": "收藏球隊加成",
-		"perTeam": "+$1（每支球隊）",
-		"explainer": "每場比賽中每支收藏球隊各加一次分；若雙方都是收藏球隊，加成會加倍。"
+		"perTeam": "每支球隊 +$1 分",
+		"explainer": "比賽中每有一支收藏球隊就加一次，所以雙方都是收藏球隊時加成加倍。"
 	},
 	"postseasonBoost": {
 		"label": "季後賽加成",
@@ -843,17 +924,17 @@
 		"main": {
 			"t0": "收藏你喜愛的球隊，把它們的比賽釘在清單最上面。",
 			"t1": "在每場比賽旁的下拉選單指派分頁，讓 ArenaSwap 知道該切到哪裡。",
-			"t2": "PowerScore 較高的比賽會贏得切換——留意彩色徽章。",
+			"t2": "PowerScore 較高的比賽會贏得切換。留意每張卡片上的長條。",
 			"t3": "在設定中開啟「顯示即將開賽的比賽」，就能提前指派好分頁。",
-			"t4": "還沒有直播比賽？設定中的示範模式能讓你用虛構比賽體驗 ArenaSwap 的運作方式。",
+			"t4": "還沒有直播比賽？設定中的示範模式會安排幾場，讓你看看 ArenaSwap 怎麼運作。",
 			"t5": "當所有比賽都冷場時，Standby Stream 會讓一個備用分頁繼續播放——在設定中啟用它。"
 		},
 		"setup": {
-			"t0": "調低冷卻時間，在混亂的收尾階段更積極地切換。",
-			"t1": "調高收藏球隊加成，讓你支持的球隊幾乎每次都能贏得切換。",
-			"t2": "拉長切換延遲，讓分頁真正切換前多給自己一點緩衝時間。",
-			"t3": "示範模式會執行模擬比賽，很適合在不用等待實況的情況下調校各項滑桿。",
-			"t4": "靈敏度控制 ArenaSwap 切換前，PowerScore 需要領先多少。",
+			"t0": "調低切換冷卻，在混亂的收尾階段切得更快。",
+			"t1": "調高收藏球隊加成，你的球隊幾乎每次都能贏得切換。",
+			"t2": "拉長切換延遲，在分頁真正切換前留一點緩衝。",
+			"t3": "示範模式會播放預先排好的比賽，不用等真的比賽就能調整設定。",
+			"t4": "切換靈敏度決定 ArenaSwap 切換前需要多大的 PowerScore 領先。",
 			"t5": "季後賽加成會替季後賽和冠軍賽額外加權，讓最關鍵的時刻贏得更多切換。",
 			"t6": "在 PowerScore 信號區塊停用你不在乎的信號——ArenaSwap 會自動重新校準。"
 		},
@@ -896,7 +977,7 @@
 			"l4": "均衡",
 			"l5": "積極",
 			"l6": "手癢難耐",
-			"l7": "荒唐速度"
+			"l7": "Ludicrous Speed"
 		}
 	},
 	"footer": {
@@ -906,7 +987,7 @@
 	},
 	"ludicrousSpeed": {
 		"skip": "點擊跳過",
-		"announce": "荒唐速度……",
+		"announce": "LUDICROUS SPEED……",
 		"go": "衝！",
 		"plaid": "他們衝到格紋境界了！",
 		"stop": "停！",
@@ -916,22 +997,22 @@
 			"l2": "不不，光速太慢了。",
 			"l3": "光速太慢？",
 			"l4": "對，我們得直接衝到",
-			"l5": "荒唐速度。",
-			"l6": "荒唐速度？",
+			"l5": "Ludicrous Speed。",
+			"l6": "Ludicrous Speed？",
 			"l7": "我們從來沒開那麼快過。",
 			"l8": "也許這艘船撐不住。"
 		},
 		"prelaunch": {
 			"l1": "怎麼了，桑德茲上校？",
 			"l2": "膽怯了？",
-			"l3": "準備飛船，進入荒唐速度。",
+			"l3": "準備飛船，進入 Ludicrous Speed。",
 			"l4": "所有人繫好安全帶。",
 			"l5": "封閉所有出入口。",
 			"l6": "商場所有店鋪全部打烊。",
 			"l7": "三環馬戲團表演全部取消。",
 			"l8": "動物園裡所有動物都固定好……",
 			"l9": "閉嘴，你這個不入流的官員！",
-			"l10": "都聽好了，荒唐速度！",
+			"l10": "都聽好了，Ludicrous Speed！",
 			"l11": "長官，您是不是該繫上安全帶了？",
 			"l12": "安全帶塞哪兒去吧！"
 		},
@@ -942,7 +1023,7 @@
 		"signs": {
 			"light": "光速",
 			"ridiculous": "荒謬速度",
-			"ludicrous": "荒唐速度",
+			"ludicrous": "LUDICROUS SPEED",
 			"plaid": "格紋"
 		},
 		"panic": {

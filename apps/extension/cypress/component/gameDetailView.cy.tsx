@@ -220,6 +220,13 @@ describe('gameDetailView countdown', () => {
 		cy.get('.gd-countdown-clock').should('not.contain.text', 's');
 	});
 
+	it('leaves the countdown off a game that has been postponed', () => {
+		mountDetail({ ...makeScheduledSlate(5 * hourMs), delayed: true, delayDescription: 'Postponed' });
+		cy.get('.gd-poster-status').should('have.text', 'Postponed');
+		cy.get('.gd-countdown-clock').should('not.exist');
+		cy.get('.gd-countdown-when').should('not.exist');
+	});
+
 	it('switches to hours, minutes and seconds inside the final day', () => {
 		mountDetail(makePreGame(5 * hourMs + 13 * minuteMs + 42_000));
 		cy.get('.gd-countdown-seg').should('have.length', 3);
@@ -271,6 +278,18 @@ describe('gameDetailView countdown', () => {
 	});
 });
 
+const withLongNames = (game: Game): Game => ({
+	...game,
+	league: 'bundesliga',
+	sportType: 'soccer',
+	awayTeam: { ...game.awayTeam, name: 'Borussia Mönchengladbach' },
+	homeTeam: { ...game.homeTeam, name: 'Wolverhampton Wanderers' },
+});
+
+const expectNamesInColumn = (selector: string) => cy.get(selector).should('have.length', 2).each(([name]: JQuery<HTMLElement>) => {
+	expect(name.scrollWidth, `${name.textContent} inside its column`).to.be.at.most(name.clientWidth + 0.5);
+});
+
 describe('gameDetailView hero', () => {
 	beforeEach(() => {
 		cy.viewport(320, 560);
@@ -295,6 +314,51 @@ describe('gameDetailView hero', () => {
 			expect($crest[0]!.querySelector('.crest-fallback')!.getBoundingClientRect())
 				.to.deep.include({ width: 46, height: 46 });
 		});
+	});
+
+	// Measured on the digits rather than their boxes: the gap a reader sees is ink to divider. A
+	// lopsided 7-114 is the one shape that cannot keep the divider centred without clipping a digit.
+	it('sets both scores the same distance off the divider, with the divider on the axis', () => {
+		for (const [away, home] of [[7, 14], [112, 108], [7, 114], [100, 99]]) {
+			const game = makeLiveGame();
+			mountDetail({ ...game, awayTeam: { ...game.awayTeam, score: away! }, homeTeam: { ...game.homeTeam, score: home! } }, { excitementResult: excitement });
+			cy.get('.game-detail-score-row').should(([row]: JQuery<HTMLElement>) => {
+				const values = [...row.querySelectorAll<HTMLElement>('.game-detail-score-value')];
+				const [awayDigit, homeDigit] = values.map(value => {
+					const range = document.createRange();
+					range.selectNodeContents(value);
+					return range.getBoundingClientRect();
+				});
+				const divider = row.querySelector('.game-score-sep')!.getBoundingClientRect();
+				const hero = row.closest('.gd-hero')!.getBoundingClientRect();
+				expect(divider.left - awayDigit!.right, `${away}-${home}: gaps match`).to.be.closeTo(homeDigit!.left - divider.right, 0.5);
+				if (String(away).length === String(home).length) {
+					expect(divider.left + divider.width / 2, `${away}-${home}: divider on the axis`).to.be.closeTo(hero.left + hero.width / 2, 0.5);
+				}
+				for (const value of values) {
+					expect(value.scrollWidth, `${away}-${home}: no digit clipped`).to.be.at.most(value.clientWidth);
+				}
+			});
+		}
+	});
+
+	// The longest one-word club name in a league we carry. A word that will not fit its 80px column
+	// has to break somewhere, and a hyphen is a better place than past the column into the score.
+	it('keeps a long club name inside its column, live and before the start', () => {
+		mountDetail(withLongNames(makeLiveGame()), { excitementResult: excitement });
+		expectNamesInColumn('.game-detail-team-name');
+		mountDetail(withLongNames(makePreGame(2 * hourMs)));
+		expectNamesInColumn('.gd-poster-name');
+	});
+
+	// Three letters and seven dots read aloud as nothing, and the bases were hidden outright.
+	it('speaks the count and the runners in words', () => {
+		mountDetail(makeInningGame(), { excitementResult: excitement });
+		cy.get('.bso-indicator').should('have.attr', 'role', 'img').and('have.attr', 'aria-label', '2 balls, 1 strike, 2 outs');
+		cy.get('.base-diamond').should('have.attr', 'role', 'img').and('have.attr', 'aria-label', 'Runners on first and third');
+		mountDetail({ ...makeInningGame(), baseRunners: { first: true, second: true, third: true }, bso: { balls: 0, strikes: 2, outs: 1 } }, { excitementResult: excitement });
+		cy.get('.bso-indicator').should('have.attr', 'aria-label', '0 balls, 2 strikes, 1 out');
+		cy.get('.base-diamond').should('have.attr', 'aria-label', 'Bases loaded');
 	});
 
 	it('falls back to the abbreviation for a team with no full name', () => {
@@ -545,12 +609,49 @@ describe('gameDetailView sticky bar', () => {
 		cy.get('.gd-bar-compact').should('have.css', 'opacity', '0');
 	});
 
+	// Bootstrap's `:active` and `:focus-visible` rules read these variables. Left undefined, a press
+	// went transparent and a keyboard focus drew no ring at all.
+	it('keeps its fill when pressed and rings itself on keyboard focus', () => {
+		mountDetail(makeLiveGame(), { excitementResult: excitement, powerScoreHistory });
+		cy.get('.game-detail-back-button').then(([button]: JQuery<HTMLElement>) => {
+			const style = getComputedStyle(button);
+			expect(style.getPropertyValue('--as-btn-active-bg').trim(), 'pressed fill').to.equal(style.getPropertyValue('--as-control-hover-bg').trim());
+			expect(style.getPropertyValue('--as-btn-active-border-color').trim(), 'pressed border').to.not.equal('');
+			button.focus();
+		});
+		cy.get('.game-detail-back-button').should(([button]: JQuery<HTMLElement>) => expect(button.matches(':focus-visible')).to.equal(true))
+			.and('have.css', 'outline-style', 'solid')
+			.and('have.css', 'outline-color', 'rgb(247, 92, 3)');
+	});
+
 	it('fades the compact matchup in once the card scrolls away', () => {
 		mountDetail(makeLiveGame(), { excitementResult: excitement, powerScoreHistory });
 		cy.get('.popup-container').scrollTo('bottom');
 		cy.get('.gd-bar-compact').should('have.class', 'is-visible');
 		cy.get('.gd-bar-compact').should('have.css', 'opacity', '1');
 		cy.get('.gd-bar-compact').should('contain.text', '108').and('contain.text', '112');
+	});
+
+	// The hero runs on below the score with the count, the bases and the at-bat panel. Waiting for
+	// all of that to leave left a stretch of scrolling with no score on screen anywhere.
+	it('takes over the score as soon as it slides under the bar', () => {
+		const atBat = {
+			pitcher: { name: 'Will Dion', jersey: '76', position: 'RP', summary: '1.1 IP, 0 ER, H, BB' },
+			batter: { name: 'Nathan Church', jersey: '27', position: 'CF', summary: '0-2, K' },
+		};
+		mountDetail({ ...makeInningGame(), atBat }, { excitementResult: excitement, powerScoreHistory });
+		cy.get('.popup-container').then(([container]: JQuery<HTMLElement>) => {
+			const header = container.querySelector<HTMLElement>('.game-detail-header')!;
+			const centre = container.querySelector<HTMLElement>('.game-detail-center')!;
+			const hiddenAt = centre.getBoundingClientRect().bottom - header.getBoundingClientRect().bottom;
+			cy.get('.popup-container').scrollTo(0, hiddenAt - 4);
+			cy.get('.gd-bar-compact').should('not.have.class', 'is-visible');
+			cy.get('.popup-container').scrollTo(0, hiddenAt + 4);
+			cy.get('.gd-bar-compact').should('have.class', 'is-visible');
+			cy.get('.gd-poster').should(([hero]: JQuery<HTMLElement>) => {
+				expect(hero.getBoundingClientRect().bottom, 'the rest of the hero is still on screen').to.be.greaterThan(header.getBoundingClientRect().bottom + 20);
+			});
+		});
 	});
 
 	it('centres the compact matchup on the card axis', () => {
@@ -772,7 +873,7 @@ describe('gameDetailView latest play', () => {
 
 	it('gives the play a heading of its own', () => {
 		mountDetail(makeLiveGame({ lastPlay: 'J.Tatum makes 26-foot three point jumper' }), { excitementResult: excitement });
-		cy.get('.gd-play-heading').should('have.text', 'Latest play');
+		cy.get('.gd-play-heading').should('have.text', 'Latest Play');
 		cy.get('.gd-play-text').should('have.text', 'J.Tatum makes 26-foot three point jumper');
 	});
 

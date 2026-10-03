@@ -7,7 +7,7 @@ import { useT } from './i18nContext';
 // A finished game offers nothing to act on, so this card is the live one with every affordance
 // taken away: no tab dropdown, no PowerScore bar, no clock, no broadcast line. What is left is the
 // result, and the result is what the card is styled around.
-const finalGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, onOpenGameDetail, bettingPrefs, leagueSlot }: GameCardDisplayProps) => {
+const finalGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, onOpenGameDetail, leagueSlot }: GameCardDisplayProps) => {
 	const t = useT();
 	if (!game) return null;
 
@@ -65,9 +65,10 @@ const finalGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, onOpenGame
 				<TeamColumn leagueId={game.league} team={game.homeTeam} isFavorited={homeFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} side='home' />
 			</div>
 
-			{/* The broadcast is gone: a game you cannot watch any more has no channel worth naming.
-			    The venue stays, because where it was played is still true. */}
-			<GameMeta game={game} bettingPrefs={bettingPrefs} hideBroadcasts />
+			{/* The broadcast and the line are gone: a game you cannot watch any more has no channel
+			    worth naming, and a decided game has nothing left to bet on. The venue stays, because
+			    where it was played is still true. */}
+			<GameMeta game={game} hideBroadcasts />
 		</div>
 	);
 };

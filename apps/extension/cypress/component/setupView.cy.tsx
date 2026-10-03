@@ -1,4 +1,5 @@
 import SetupView from '../../entrypoints/popup/components/setupView';
+import { settingsEntries } from '../../entrypoints/popup/components/settingsCatalog';
 import type { UserPreferences } from '@arenaswap/core/types';
 import de from '../../locales/de.json';
 import en from '../../locales/en.json';
@@ -156,6 +157,15 @@ describe('setupView navigation', () => {
 		cy.get('@onClose').should('not.have.been.called');
 	});
 
+	// Both the group button and the page's back button unmount when they're clicked.
+	it('moves focus onto the page it opens, and back to the group it came from', () => {
+		cy.mount(<SetupView {...defaultProps} />);
+		openGroup('display');
+		cy.focused().should('have.class', 'setup-header');
+		cy.get('button.setup-header').click();
+		cy.focused().should('have.id', 'settingsGroup-display');
+	});
+
 	it('shows the group description as the sub-page lede', () => {
 		cy.mount(<SetupView {...defaultProps} />);
 		openGroup('standby');
@@ -164,6 +174,22 @@ describe('setupView navigation', () => {
 });
 
 describe('setupView search', () => {
+	it('lands on the setting a result names, not the top of its page', () => {
+		cy.mount(<SetupView {...defaultProps} />);
+		cy.get('#settingsSearch').type('holiday');
+		cy.contains('.settings-index-row', 'Holiday decorations').click();
+		cy.focused().should('have.id', 'holidayDecorationsToggle');
+	});
+
+	// A control id that drifts from the page it names fails quietly, back to the top of the page.
+	it('points every searchable setting at a control that exists on its page', () => {
+		settingsEntries.filter(entry => entry.controlId).forEach(entry => {
+			cy.mount(<SetupView {...defaultProps} prefs={{ ...defaultPrefs, standbyStreamEnabled: true, showUpcomingGames: true, groupByLeague: true, enabledLeagues: ['nba', 'nfl'] }} />);
+			openGroup(entry.group);
+			cy.get(`#${entry.controlId}`).should('exist');
+		});
+	});
+
 	it('matches a setting by its label', () => {
 		cy.mount(<SetupView {...defaultProps} />);
 		cy.get('#settingsSearch').type('cooldown');
@@ -193,8 +219,8 @@ describe('setupView search', () => {
 
 	it('does not spill a group description match onto every setting in that group', () => {
 		cy.mount(<SetupView {...defaultProps} />);
-		cy.get('#settingsSearch').type('bonus');
-		cy.contains('.settings-index-row', 'Favorite team bonus').should('exist');
+		cy.get('#settingsSearch').type('boost');
+		cy.contains('.settings-index-row', 'Favorite team boost').should('exist');
 		cy.contains('.settings-index-row', 'Postseason boost').should('exist');
 		cy.contains('.settings-index-row', 'Closeness').should('not.exist');
 	});
@@ -627,7 +653,7 @@ describe('setupView favorites group', () => {
 	it('turns up in the search under a word that is nowhere in its label', () => {
 		cy.mount(<SetupView {...defaultProps} />);
 		cy.get('#settingsSearch').type('franchise');
-		cy.contains('.settings-index-row', 'Teams you follow').should('exist');
+		cy.contains('.settings-index-row', 'Teams You Follow').should('exist');
 	});
 });
 
@@ -638,6 +664,24 @@ describe('setupView leagues group', () => {
 		cy.contains('Basketball').should('exist');
 		cy.get('.league-toggle-row').should('have.length.greaterThan', 0).each($row => {
 			cy.wrap($row).find('img, svg, i[class*="bi-"]').should('exist');
+		});
+	});
+
+	it('keeps every locale\'s select-all and clear labels on one line beside the sport name', () => {
+		cy.viewport(320, 560);
+		cy.mount(<SetupView {...defaultProps} />);
+		openGroup('leagues');
+
+		Object.entries(locales).forEach(([name, locale]) => {
+			[locale.setup.selectAll, locale.setup.selectNone].forEach(label => {
+				cy.get('.league-toggle-group').first().find('button').should(([button]: JQuery<HTMLElement>) => {
+					button.textContent = label;
+					const row = button.parentElement!;
+					const heading = row.firstElementChild!.getBoundingClientRect();
+					expect(button.getBoundingClientRect().height, `"${label}" stays one line in ${name}`).to.be.at.most(24);
+					expect(button.getBoundingClientRect().left, `"${label}" clears the sport name in ${name}`).to.be.greaterThan(heading.right);
+				});
+			});
 		});
 	});
 

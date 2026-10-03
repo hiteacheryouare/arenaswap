@@ -116,11 +116,6 @@
 	color: #00854a !important;
 }
 
-@keyframes livePulse {
-	0%, 100% { opacity: 1; }
-	50%       { opacity: 0.3; }
-}
-
 @keyframes onbLogoRise {
 	from { transform: translateY(200px); }
 	to   { transform: translateY(0);     }
@@ -139,9 +134,19 @@
 	animation: onbFadeSlideUp 0.45s ease 0.58s both;
 }
 
+// Step titles take focus when a step opens so screen readers announce it. Focus put there by the
+// code, not by the reader, shouldn't draw a ring around a heading.
+.popup-step-title:focus { outline: none; }
+
+// The Standby Stream guide has no logo to wait for, so it fades straight in, and again per step.
+.standby-guide-content {
+	animation: onbFadeSlideUp m.$motion-base m.$motion-ease both;
+}
+
 @include m.reduced-motion {
 	.onb-logo-wrap,
-	.onb-content-wrap {
+	.onb-content-wrap,
+	.standby-guide-content {
 		animation: none;
 	}
 }
@@ -204,12 +209,33 @@
 	}
 }
 
+// The numbers down the right edge change every poll, so they take the tabular face and stay put.
+.powerscore-breakdown-value { @include gc.scoreboard-figures; }
+
+// The five rows share one set of columns, so the name column is as wide as the widest name in the
+// reader's language and the bars still start on one line. A fixed 4.7rem held English but broke
+// "Ausgeglichenheit" mid-word and wrapped "Mudanças de liderança" onto two lines.
+.powerscore-signal-list {
+	display:               grid;
+	grid-template-columns: auto max-content auto minmax(0, 1fr) auto;
+	column-gap:            0.28rem;
+}
+
 .powerscore-signal-row {
-	display:     flex;
-	align-items: center;
-	gap:         0.28rem;
-	font-size:   0.6rem;
-	padding:     0.12rem 0;
+	display:               grid;
+	grid-column:           1 / -1;
+	grid-template-columns: subgrid;
+	align-items:           center;
+	font-size:             0.6rem;
+	padding:               0.12rem 0;
+}
+
+// Chrome 110–116 has no subgrid. Each row keeps its own copy of the columns there, so the bars
+// lose their shared start line but every row stays on one line.
+@supports not (grid-template-columns: subgrid) {
+	.powerscore-signal-row {
+		grid-template-columns: auto max-content auto minmax(0, 1fr) auto;
+	}
 }
 
 .powerscore-signal-row + .powerscore-signal-row {
@@ -233,8 +259,7 @@
 }
 
 .powerscore-signal-name {
-	flex-shrink: 0;
-	width:       4.7rem;
+	white-space: nowrap;
 	color:       #374151;
 }
 
@@ -243,8 +268,8 @@
 }
 
 .powerscore-signal-value {
+	@include gc.scoreboard-figures;
 	font-weight:          700;
-	font-variant-numeric: tabular-nums;
 	text-align:           right;
 	flex-shrink:          0;
 	width:                2.5rem;
@@ -268,7 +293,13 @@
 .setting-tooltip-btn {
 	display:     inline-flex;
 	align-items: center;
-	padding:     0;
+	// A 10px glyph is a 24px target: the padding is the hit area and the margin hands the space back,
+	// so nothing around it moves.
+	justify-content: center;
+	min-width:   24px;
+	min-height:  24px;
+	padding:     7px;
+	margin:      -7px;
 	border:      none;
 	background:  transparent;
 	color:       var(--as-faint);
@@ -280,18 +311,18 @@
 	&:hover  { color: var(--as-body-color); }
 	&:focus-visible {
 		outline:        1px solid bs.$primary;
-		outline-offset: 1px;
-		border-radius:  2px;
+		outline-offset: -6px;
+		border-radius:  50%;
 	}
 }
 
-// The breakdown is the popup's one light card, so the icon re-tones for it.
+// The breakdown is the popup's one light card, so the icon re-tones for it: #9ca3af was 2.4:1 on
+// the card, under the 3:1 an icon needs. Focus keeps the brand ring every other control draws.
 .powerscore-breakdown .setting-tooltip-btn {
-	color:     #9ca3af;
+	color:     #6b7280;
 	font-size: 0.55rem;
 
-	&:hover { color: #6b7280; }
-	&:focus-visible { outline-color: #6366f1; }
+	&:hover { color: #374151; }
 }
 
 .powerscore-breakdown-row-subtotal {
@@ -306,7 +337,7 @@
 .powerscore-subtotal-raw {
 	font-weight:     400;
 	letter-spacing:  0;
-	color:           #9ca3af;
+	color:           #6b7280;
 	text-decoration: line-through;
 }
 
@@ -357,10 +388,12 @@
 	color:         #111827;
 	font-weight:   700;
 
+	// The same ring the tab picker beside it draws, rather than an indigo one at 12% alpha that
+	// barely showed.
 	&:focus {
 		outline:      none;
-		border-color: #6366f1;
-		box-shadow:   0 0 0 2px #6366f120;
+		border-color: #F75C03;
+		box-shadow:   0 0 0 0.15rem rgba(#F75C03, 0.2);
 	}
 }
 
@@ -689,8 +722,63 @@
 	color: var(--as-faint);
 }
 
-.popup-error-banner {
-	font-size: 0.7rem;
+// Every notice above the list shares one surface. Bootstrap's alert variants read the
+// *-bg-subtle tokens, which this theme never sets, so they rendered as pale slabs on the dark popup.
+.alert.popup-notice {
+	--as-alert-bg:            var(--as-tertiary-bg);
+	--as-alert-color:         var(--as-body-color);
+	--as-alert-border-color:  var(--as-border-color);
+	--as-alert-padding-x:     0.6rem;
+	--as-alert-padding-y:     0.5rem;
+	--as-alert-margin-bottom: 0.5rem;
+	font-size: 0.72rem;
+	line-height: 1.35;
+
+	.btn-close {
+		font-size: 0.55rem;
+	}
+}
+
+// Bootstrap draws the close X in black and only inverts it under its own dark mode, which this
+// theme leaves off, so the dark default needs the inversion stated.
+:root {
+	--as-btn-close-filter: #{bs.$btn-close-filter-dark};
+}
+
+[data-bs-theme='light'] {
+	--as-btn-close-filter: none;
+}
+
+.popup-notice-title {
+	font-size: 0.78rem;
+}
+
+.popup-notice-icon {
+	color: var(--as-accent-ink);
+	line-height: 1.35;
+}
+
+.popup-notice-icon-danger {
+	color: bs.$danger;
+}
+
+.refresh-button {
+	position: relative;
+}
+
+.refresh-button-spinner {
+	position: absolute;
+	inset: 0;
+	width: 0.7rem;
+	height: 0.7rem;
+	margin: auto;
+	border-width: 0.12em;
+}
+
+.popup-notice-action {
+	font-size: 0.68rem;
+	white-space: nowrap;
+	flex-shrink: 0;
 }
 
 .popup-no-games-wrap {
@@ -717,6 +805,8 @@
 
 .setting-value-label {
 	font-size: 0.6rem;
+	font-family: 'Geist Figures', 'DM Sans', system-ui, sans-serif;
+	font-variant-numeric: tabular-nums;
 }
 
 .temperature-unit-toggle {
@@ -742,11 +832,6 @@
 	border-width: 0.2em;
 }
 
-.popup-error-retry {
-	font-size: 0.65rem;
-	white-space: nowrap;
-	flex-shrink: 0;
-}
 
 .setup-no-leagues-warn {
 	font-size: 0.65rem;
@@ -775,6 +860,30 @@
 	width:         28px;
 	height:        28px;
 	border-radius: 50%;
+}
+
+.team-pick-row {
+	width:         100%;
+	padding-inline: 0;
+	border:        0;
+	background:    transparent;
+	color:         inherit;
+	text-align:    start;
+
+	&:focus-visible {
+		outline:        1px solid bs.$primary;
+		outline-offset: 2px;
+		border-radius:  0.25rem;
+	}
+}
+
+// Hovering an unstarred row previews the gold it would take.
+.team-pick-star {
+	color:      var(--as-secondary-color);
+	transition: color m.$motion-snap m.$motion-ease;
+
+	.team-pick-row:hover &,
+	&[data-favorited='true'] { color: rgb(var(--as-warning-rgb)); }
 }
 
 // The same white disc the pre-game poster puts its crests on, at list size, tinted with a colour
@@ -1010,11 +1119,26 @@
 // The fill says favourited, not a gold: on the Sabres' or the Packers' own colour a gold star is
 // not there at all.
 .gd-poster-star {
+	--as-btn-color:        currentColor;
+	--as-btn-hover-color:  currentColor;
+	--as-btn-active-color: currentColor;
+	position: relative;
 	font-size: 0.72rem;
 	color: inherit;
 	text-decoration: none;
+	opacity: 0.75;
+	transition: opacity m.$motion-snap m.$motion-ease;
 
-	&:hover:not(:disabled) { color: inherit; }
+	// The same 24px target and the same rest-then-brighten hover as the list card's star.
+	&::after {
+		content: '';
+		position: absolute;
+		inset: -6px;
+	}
+
+	&:hover,
+	&:focus-visible,
+	&[data-favorited='true'] { opacity: 1; }
 }
 
 .gd-poster-status {
@@ -1327,6 +1451,19 @@
 	tfoot td { font-weight: 700; }
 }
 
+// The player tables and the standings are read down a column, so their stats sit flush right in
+// Geist's tabular figures, where ".276" lands under ".301" digit for digit. DM Sans has no tabular
+// figures, so the `tabular-nums` above did nothing on it. The line score and the team comparison
+// stay centred under their headings.
+.gd-box-table:not(.gd-box-line-table, .gd-box-compare-table) {
+	td:not(.gd-box-name, .gd-box-dnp) {
+		@include gc.scoreboard-figures;
+		text-align: right;
+	}
+
+	th:not(.gd-box-name) { text-align: right; }
+}
+
 // A truncated name is still readable and a truncated stat is not, so the name column takes all the
 // slack and gives way first. `max-width: 0` is what lets a percentage-width table cell actually
 // ellipsize — without it the cell grows to its content instead.
@@ -1593,6 +1730,14 @@
 	border-top:  1px solid var(--as-border-color);
 }
 
+// Opening a tab pane, either section sits right under the strip's own rule, and its top rule drew a
+// second hairline a few pixels below it. The strip's rule does the job there, at the same distance
+// above the heading a section rule keeps everywhere else.
+.tab-pane > :is(.gd-play-panel, .game-info-panel):first-child {
+	margin-top: 0;
+	border-top: 0;
+}
+
 .game-info-heading {
 	font-size:     0.62rem;
 	font-weight:   700;
@@ -1743,19 +1888,29 @@ button.game-info-attribution {
 	border-bottom: 1px solid var(--as-border-color);
 }
 
+// Through Bootstrap's own variables rather than raw `background` and `:hover`. Its `:active` and
+// `:focus-visible` rules read these too, and with them undefined a press drew no fill and a
+// keyboard focus drew no ring.
 .game-detail-back-button {
+	--as-btn-color:               var(--as-body-color);
+	--as-btn-bg:                  var(--as-control-bg);
+	--as-btn-border-color:        var(--as-border-color);
+	--as-btn-hover-color:         var(--as-control-hover-color);
+	--as-btn-hover-bg:            var(--as-control-hover-bg);
+	--as-btn-hover-border-color:  var(--as-border-color);
+	--as-btn-active-color:        var(--as-control-hover-color);
+	--as-btn-active-bg:           var(--as-control-hover-bg);
+	--as-btn-active-border-color: var(--as-border-color);
 	display: inline-flex;
 	align-items: center;
 	flex-shrink: 0;
 	gap: 0.35rem;
-	border: 1px solid var(--as-border-color);
-	color: var(--as-body-color);
-	background: var(--as-control-bg);
 	font-size: 0.68rem;
 
-	&:hover {
-		background: var(--as-control-hover-bg);
-		color: var(--as-control-hover-color);
+	&:focus-visible {
+		outline: 2px solid bs.$primary;
+		outline-offset: 2px;
+		box-shadow: none;
 	}
 }
 
@@ -1861,10 +2016,29 @@ button.game-info-attribution {
 	min-width: 0;
 }
 
+// Each score takes an equal half of the row and hugs the divider, the way the list card's do. A
+// score centred in its own box left "7 | 14" with a wider gap on the 7's side. A three-digit score
+// is wider than half the row at this size, so it keeps its width rather than clipping, and only a
+// lopsided "7 | 114" moves the divider off the axis.
 .game-detail-score-row {
 	gap: 0.4rem;
 	justify-content: center;
 	width: 100%;
+
+	> .game-detail-score-value {
+		flex: 1 1 0;
+		min-width: max-content;
+
+		&:first-child {
+			justify-content: flex-end;
+			text-align: right;
+		}
+
+		&:last-child {
+			justify-content: flex-start;
+			text-align: left;
+		}
+	}
 }
 
 .game-detail-score-value {
@@ -2581,4 +2755,16 @@ button.game-info-attribution {
 	color: white;
 	font-size: 0.6rem;
 	letter-spacing: 0.02em;
+
+	// The debug panel hides behind this heart, and a pointer cursor would give the secret away.
+	// Nested to outrank Reboot's button:not(:disabled) pointer.
+	.popup-signature-heart {
+		margin: 0 1px;
+		padding: 0;
+		border: 0;
+		background: transparent;
+		color: inherit;
+		line-height: 1;
+		cursor: default;
+	}
 }

@@ -2,6 +2,7 @@
 import './_screenshot.scss';
 import { Image } from 'astro:assets';
 import ScreenshotCard from '../../components/ScreenshotCard';
+import ScreenshotCrests from '../../components/ScreenshotCrests.astro';
 import logoImg from '../../assets/full_logo_white_on_transparent.svg';
 
 const nflGame = {
@@ -33,10 +34,10 @@ const nhlGame = {
 	league: 'nhl',
 	sportType: 'hockey',
 	awayTeam: { id: 'bos', name: 'Boston Bruins', abbreviation: 'BOS', score: 3, logo: 'https://a.espncdn.com/i/teamlogos/nhl/500/bos.png', color: '#FFB81C', alternateColor: '#000000' },
-	homeTeam: { id: 'tbl', name: 'Tampa Bay Lightning', abbreviation: 'TBL', score: 3, logo: 'https://a.espncdn.com/i/teamlogos/nhl/500/tbl.png', color: '#002868', alternateColor: '#FFFFFF' },
+	homeTeam: { id: 'tbl', name: 'Tampa Bay Lightning', abbreviation: 'TBL', score: 3, logo: 'https://a.espncdn.com/i/teamlogos/nhl/500/tb.png', color: '#002868', alternateColor: '#FFFFFF' },
 	period: 3, clockSeconds: 120, status: 'in',
 	venueName: 'Amalie Arena · Tampa, FL',
-	broadcasts: ['ESPN+'],
+	broadcasts: ['TNT'],
 };
 const nhlScore = { gameId: 'fl7-nhl', total: 82, closeness: 28, lateGame: 20, momentum: 16, leadChanges: 12, comeback: 6, reason: '' };
 ---
@@ -75,8 +76,8 @@ const nhlScore = { gameId: 'fl7-nhl', total: 82, closeness: 28, lateGame: 20, mo
 								<span>Peacock</span>
 							</div>
 							<div class='fl-tab'>
-								<div class='fl-fav' style='background:#CC0000'>E</div>
-								<span>ESPN+</span>
+								<div class='fl-fav' style='background:#111111'>T</div>
+								<span>TNT Sports</span>
 							</div>
 							<div class='fl-tab'>
 								<div class='fl-fav' style='background:#041E42'>M</div>
@@ -112,7 +113,7 @@ const nhlScore = { gameId: 'fl7-nhl', total: 82, closeness: 28, lateGame: 20, mo
 							<div class='popup-league-label'>PREMIER LEAGUE</div>
 							<ScreenshotCard game={plGame} excitementResult={plScore} tabLabel='Tab 2: Peacock' />
 							<div class='popup-league-label'>NHL</div>
-							<ScreenshotCard game={nhlGame} excitementResult={nhlScore} tabLabel='Tab 3: ESPN+' />
+							<ScreenshotCard game={nhlGame} excitementResult={nhlScore} tabLabel='Tab 3: TNT Sports' />
 						</div>
 					</div>
 				</div>
@@ -376,5 +377,6 @@ const nhlScore = { gameId: 'fl7-nhl', total: 82, closeness: 28, lateGame: 20, mo
 			display: block;
 		}
 	</style>
+	<ScreenshotCrests />
 </body>
 </html>

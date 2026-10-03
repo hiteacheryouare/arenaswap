@@ -38,6 +38,22 @@ describe('teamPickerRow', () => {
 			.and('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
 	});
 
+	// The star used to be the only target, about 16px at the end of a 300px row.
+	it('toggles from anywhere on the row, the team name included', () => {
+		const onToggle = cy.spy().as('toggle');
+		cy.mount(<TeamPickerRow team={team()} isFavorite={false} onToggle={onToggle} />);
+		cy.contains('Boston Celtics').click();
+		cy.get('@toggle').should('have.been.calledOnce');
+		cy.get('button[aria-label="Add Boston Celtics to favorites"]').should('have.length', 1);
+	});
+
+	it('takes the gold once starred', () => {
+		cy.mount(<TeamPickerRow team={team()} isFavorite onToggle={() => {}} />);
+		cy.get('.team-pick-star').should('have.class', 'bi-star-fill').and(([star]: JQuery<HTMLElement>) => {
+			expect(getComputedStyle(star).color).to.equal('rgb(241, 196, 15)');
+		});
+	});
+
 	it('asks the browser for a crest it is allowed to read back', () => {
 		cy.mount(<TeamPickerRow team={team({ logo: greenCrest })} isFavorite={false} onToggle={() => {}} />);
 

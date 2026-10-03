@@ -1,9 +1,10 @@
 ---
 import Shell from '../../../../layouts/Shell.astro';
 import DocsNav from '../../../../components/DocsNav.astro';
-import { docPath, docsSections, getSectionDocs, type DocsSection } from '../../../../lib/docs';
+import { docPath, docsSectionCopy, getSectionDocs, type DocsSection } from '../../../../lib/docs';
 import UntranslatedNotice from '../../../../components/UntranslatedNotice.astro';
-import { localePath, localeRoutesFor } from '../../../../i18n/locales';
+import { defaultLocale, localePath, localeRoutesFor } from '../../../../i18n/locales';
+import { useTranslations } from '../../../../i18n/ui';
 
 // Written out rather than derived from docsSectionOrder: Astro hoists getStaticPaths into its own
 // module, so it cannot see the component scope.
@@ -15,19 +16,21 @@ export const getStaticPaths = () =>
 
 const { locale } = Astro.props;
 const section = Astro.params.section as DocsSection;
-const meta = docsSections[section];
+const t = useTranslations(locale);
+const meta = docsSectionCopy(t, section);
+const contentLang = locale === defaultLocale ? undefined : 'en';
 
 const pages = await getSectionDocs(section);
 ---
 <Shell
-	title={`${meta.heading} — ArenaSwap documentation`}
+	title={t('reading.docsSectionMetaTitle', { heading: meta.heading })}
 	description={meta.description}
 	path={`docs/${section}/`}
 	translated={false}
 >
 	<div class='container'>
 		<div class='page-head'>
-			<h1 class='page-title'>{meta.heading}.</h1>
+			<h1 class='page-title'>{t('reading.docsSectionHeading', { heading: meta.heading })}</h1>
 			<p class='page-lede'>{meta.description}</p>
 		</div>
 
@@ -38,7 +41,7 @@ const pages = await getSectionDocs(section);
 
 			<div>
 				{pages.length === 0 ? (
-					<div class='prose'>
+					<div class='prose' lang={contentLang}>
 						<p>
 							This section is being written. In the meantime, the
 							<a href={localePath(locale, 'faq/')}>FAQ</a> answers most of what people ask and the
@@ -46,7 +49,7 @@ const pages = await getSectionDocs(section);
 						</p>
 					</div>
 				) : (
-					<ul class='docs-index'>
+					<ul class='docs-index' lang={contentLang}>
 						{pages.map(page => (
 							<li>
 								<h2><a href={localePath(locale, docPath(page))}>{page.data.title}</a></h2>

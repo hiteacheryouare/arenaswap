@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { allLeagueIds, computePowerScore, leagueConfigMap } from 'powerscore';
 import type { Game, LeagueId, ScoreSnapshot } from 'powerscore';
@@ -6,6 +6,7 @@ import type { Game, LeagueId, ScoreSnapshot } from 'powerscore';
 // island can read them without dragging zod or the card's React tree onto a marketing page.
 import { parseClockToSeconds } from '@arenaswap/core/gameClock';
 import { formatGameClock, formatPeriod } from '@arenaswap/ui/src/components/gameFormat';
+import { islandTranslator } from '../i18n/islandStrings';
 
 interface EspnCompetitor {
 	id: string;
@@ -158,7 +159,8 @@ interface Strings {
 // `card.reason` is not in here. It is composed by the `powerscore` package from the game state, and
 // translating it means translating the package, which is a change to something published on npm on
 // its own rather than to this page.
-const LivePowerScores = ({ strings }: { strings: Strings }) => {
+const LivePowerScores = ({ strings, ui }: { strings: Strings; ui?: Record<string, string> }) => {
+	const t = useMemo(() => islandTranslator(ui), [ui]);
 	const [cards, setCards] = useState<LiveScoreCard[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
@@ -329,7 +331,7 @@ const LivePowerScores = ({ strings }: { strings: Strings }) => {
 								<span className='text-[var(--color-muted)]'>{card.game.awayTeam.score}</span>
 							</div>
 							<div className='text-center text-[0.78rem] text-[var(--color-muted)]'>
-								<div>{formatPeriod(card.game)}</div>
+								<div>{formatPeriod(card.game, t)}</div>
 								<div>{card.game.sportType === 'baseball' ? strings.live : formatGameClock(card.game)}</div>
 							</div>
 							<div className='d-flex align-items-center gap-2'>

@@ -184,3 +184,26 @@ describe('liveGameCard faces', () => {
 		});
 	});
 });
+
+// The PowerScore changes on every push. In proportional figures "11 / 100" is narrower than
+// "88 / 100", so the bar beside it changed length with each update.
+describe('liveGameCard PowerScore figures', () => {
+	const widthAt = (total: number) => {
+		cy.viewport(popupWidth, 600);
+		cy.mount(
+			<div style={{ width: `${popupWidth}px` }}>
+				<LiveGameCard {...defaultProps} excitementResult={{ ...result, total }} game={nflGame} />
+			</div>,
+		);
+		cy.document().its('fonts.ready');
+		return cy.get('.game-card-ps-score').then($score => $score[0]!.getBoundingClientRect().width);
+	};
+
+	it('holds the same width whatever the score', () => {
+		widthAt(11).then(narrow => {
+			widthAt(88).then(wide => {
+				expect(wide).to.be.closeTo(narrow, 0.01);
+			});
+		});
+	});
+});

@@ -27,10 +27,46 @@
 	box-sizing: border-box;
 }
 
+// The header is fixed at 64px, so a jump to an anchor would otherwise land the heading under it.
 html {
 	scroll-behavior: smooth;
+	scroll-padding-top: 5rem;
 	overflow-x: hidden;
 	max-width: 100%;
+}
+
+@include m.reduced-motion {
+	html {
+		scroll-behavior: auto;
+	}
+}
+
+// Headlines break into even lines rather than leaving one word stranded ("À chaque / fois."), and
+// body copy avoids a lone last word. Korean keeps words whole, as Korean wraps at spaces; Japanese
+// breaks at phrase boundaries rather than between any two characters.
+.display-lg,
+.display-md,
+.section-title,
+.page-title,
+.release-title,
+.release-latest-title,
+.ps-hero-heading,
+.prose :is(h2, h3, h4) {
+	text-wrap: balance;
+}
+
+.prose :is(p, li),
+.page-lede,
+.section-sub {
+	text-wrap: pretty;
+}
+
+:lang(ko) {
+	word-break: keep-all;
+}
+
+:lang(ja) {
+	word-break: auto-phrase;
 }
 
 body {
@@ -43,7 +79,7 @@ body {
 }
 
 // ─── Orange dots ─────────────────────────────────────────────────────────────
-// Brand flourish: every period in body copy is painted ArenaSwap orange. Wrapped
+// Brand flourish: every sentence-ending period in body copy is painted ArenaSwap orange. Wrapped
 // at runtime by OrangeDots.astro, and inside React islands by their own markup.
 .as-dot {
 	color: var(--color-primary);
@@ -63,7 +99,7 @@ body {
 }
 
 @for $i from 1 through 5 {
-	.reveal-delay-#{$i} { transition-delay: #{$i * 0.1}s; }
+	.reveal-delay-#{$i} { transition-delay: m.$motion-instant * $i; }
 }
 
 // Fail-safe: users who prefer reduced motion get the content immediately, with no reveal animation.
@@ -75,25 +111,34 @@ body {
 	}
 }
 
-// ─── Live pulse dot ──────────────────────────────────────────────────────────
-@keyframes pulse-live {
-	0%, 100% { opacity: 1; transform: scale(1); }
-	50%       { opacity: 0.4; transform: scale(0.85); }
-}
-
+// ─── Live dot ────────────────────────────────────────────────────────────────
+// Static, like the one on the popup's cards: the LIVE beside it already says the game is on.
 .live-dot {
 	display: inline-block;
 	width: 7px;
 	height: 7px;
 	border-radius: 50%;
 	background: #e53935;
-	animation: pulse-live m.$motion-pulse m.$motion-ease-in-out infinite;
 }
 
-@include m.reduced-motion {
-	.live-dot {
-		animation: none;
-	}
+// ─── Skip link ────────────────────────────────────────────────────────────────
+// Hidden until a keyboard lands on it, then pinned above the fixed header, which would otherwise
+// paint straight over it.
+.skip-link:focus {
+	position: fixed;
+	top: 0.75rem;
+	left: 0.75rem;
+	z-index: 2000;
+	padding: 0.5rem 1rem;
+	border-radius: 0.5rem;
+	background: var(--color-primary);
+	color: var(--color-bg);
+	font-weight: 600;
+	text-decoration: none;
+}
+
+main:focus {
+	outline: none;
 }
 
 // ─── Site header / nav ────────────────────────────────────────────────────────
@@ -168,6 +213,11 @@ body.nav-open {
 		white-space: nowrap;
 
 		&:hover {
+			color: var(--color-text);
+			background: rgba(230, 237, 243, 0.06);
+		}
+
+		&[aria-current] {
 			color: var(--color-text);
 			background: rgba(230, 237, 243, 0.06);
 		}
@@ -277,7 +327,8 @@ body.nav-open {
 			text-decoration: none;
 			transition: color m.$motion-instant m.$motion-ease;
 
-			&:hover {
+			&:hover,
+			&[aria-current] {
 				color: var(--color-primary);
 			}
 		}
@@ -415,6 +466,18 @@ body.nav-open {
 }
 
 .btn-cta {
+	// Bootstrap's :active and :focus-visible rules outrank this class and read their colours from
+	// these variables, so leaving them unset turned a pressed button transparent and ringless.
+	--as-btn-color: #fff;
+	--as-btn-bg: var(--color-primary);
+	--as-btn-border-color: transparent;
+	--as-btn-hover-color: #fff;
+	--as-btn-hover-bg: #ff6a1a;
+	--as-btn-hover-border-color: transparent;
+	--as-btn-active-color: #fff;
+	--as-btn-active-bg: #e05200;
+	--as-btn-active-border-color: transparent;
+	--as-btn-focus-shadow-rgb: 247, 92, 3;
 	background: var(--color-primary);
 	color: #fff;
 	border: none;
@@ -439,6 +502,16 @@ body.nav-open {
 }
 
 .btn-outline-secondary-custom {
+	--as-btn-color: var(--color-text);
+	--as-btn-bg: transparent;
+	--as-btn-border-color: var(--color-border);
+	--as-btn-hover-color: var(--color-text);
+	--as-btn-hover-bg: transparent;
+	--as-btn-hover-border-color: var(--color-text);
+	--as-btn-active-color: var(--color-text);
+	--as-btn-active-bg: rgba(230, 237, 243, 0.06);
+	--as-btn-active-border-color: var(--color-text);
+	--as-btn-focus-shadow-rgb: 230, 237, 243;
 	background: transparent;
 	color: var(--color-text);
 	border: 1px solid var(--color-border);
@@ -485,14 +558,9 @@ body.nav-open {
 	border-radius: 1rem;
 	padding: 2rem;
 	height: 100%;
-	transition: transform m.$motion-quick m.$motion-ease, box-shadow m.$motion-quick m.$motion-ease, border-color m.$motion-quick m.$motion-ease;
 
-	&:hover {
-		transform: translateY(-4px);
-		box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
-		border-color: rgba(247, 92, 3, 0.3);
-	}
-
+	// No hover lift: none of these cards is a link, and the install-command box jumped 4px out from
+	// under the cursor on its way to the Copy button.
 	.feature-icon {
 		font-size: 2rem;
 		color: var(--color-primary);
@@ -517,7 +585,6 @@ body.nav-open {
 }
 
 @include m.reduced-motion {
-	.feature-card,
 	.btn-cta,
 	.btn-outline-secondary-custom {
 		transition: none;
@@ -660,7 +727,7 @@ body.nav-open {
 
 .footer-disclaimer {
 	font-size: 0.72rem;
-	color: var(--color-border);
+	color: var(--color-muted);
 	margin: 1.5rem 0 0;
 	line-height: 1.5;
 }

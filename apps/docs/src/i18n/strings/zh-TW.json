@@ -28,11 +28,44 @@
 		"faq": "常見問題",
 		"legal": "法律聲明",
 		"openMenu": "開啟選單",
+		"skipToContent": "跳到主要內容",
 		"language": "語言",
 		"chooseLanguage": "選擇語言",
 		"englishOnly": "這個頁面只有英文版本。",
 		"untranslatedHeading": "此頁面尚未翻譯。",
 		"untranslatedBody": "文件和更新紀錄以英文撰寫。本網站其餘部分皆提供中文版本。"
+	},
+	"reading": {
+		"docsHeading": "文件。",
+		"docsMetaTitle": "ArenaSwap 文件",
+		"docsMetaDescription": "教你用 ArenaSwap 同時觀看多場比賽的指南，以及決定哪場比賽勝出的 PowerScore 套件的開發者參考。",
+		"docsSectionMetaTitle": "{heading} — ArenaSwap 文件",
+		"docsSectionHeading": "{heading}。",
+		"docsNavLabel": "文件",
+		"docsBeingWritten": "撰寫中。",
+		"commonQuestions": "常見問題",
+		"nearbyArticles": "相關文章",
+		"releasesHeading": "更新紀錄。",
+		"releasesMetaTitle": "更新紀錄 — ArenaSwap",
+		"releasesMetaDescription": "ArenaSwap 每個版本帶來了什麼，以及這對你代表什麼。",
+		"releasesRss": "透過 RSS 訂閱",
+		"releasesEmpty": "目前還沒有發布任何內容。",
+		"releaseVersion": "版本 {version}",
+		"backToReleases": "返回更新紀錄",
+		"inThisRelease": "這次更新",
+		"otherReleases": "其他版本",
+		"sections": {
+			"extension": {
+				"title": "擴充功能",
+				"heading": "使用 ArenaSwap",
+				"description": "安裝 ArenaSwap、替比賽指定分頁、調整切換時機，以及 Standby Stream。"
+			},
+			"powerscore": {
+				"title": "PowerScore",
+				"heading": "PowerScore 套件",
+				"description": "比賽如何評分。五個訊號、加成、扣分以及型別。"
+			}
+		}
 	},
 	"install": {
 		"addTo": "加入 {browser}",
@@ -54,7 +87,7 @@
 		"firefoxAddons": "Firefox Add-ons",
 		"edgeAddons": "Edge Add-ons",
 		"iscLicense": "ISC License",
-		"disclaimer": "與 ESPN、NFL、NBA、NHL、MLB、MLS，以及這個擴充功能所追蹤的任何其他聯盟都沒有隸屬或認可關係。",
+		"disclaimer": "與 NFL、NBA、NHL、MLB、MLS，以及這個擴充功能所追蹤的任何其他聯盟都沒有隸屬或認可關係。",
 		"legalNotices": "法律聲明",
 		"madeWith": "由 {name} 在費城和波士頓用 ❤️ 打造"
 	},
@@ -75,7 +108,8 @@
 			"captionSwitched": "ArenaSwap 已經把你從 {from} 切換到 {to}。",
 			"captionWatching": "你正在觀看 {game}，目前最值得看的比賽。",
 			"replay": "播放示範",
-			"tabLabel": "分頁 {number}：{host}"
+			"tabLabel": "分頁 {number}：{host}",
+			"browserLabel": "一個開著三場直播比賽、正在執行 ArenaSwap 的瀏覽器"
 		},
 		"tabs": {
 			"titleLine1": "只要設定一次。",
@@ -165,11 +199,11 @@
 			},
 			{
 				"q": "需要帳號或訂閱嗎？",
-				"a": "不需要。ArenaSwap 完全免費，不需要帳號，也不會收集任何資料。它完全在你的瀏覽器裡執行，讀取 ESPN 公開的比分資料。你看的任何內容都不會被傳送到任何地方。"
+				"a": "不需要。ArenaSwap 完全免費，不需要帳號，也不會收集任何資料。它完全在你的瀏覽器裡執行，讀取我們的消息來源公開的比分資料——他們拿著望遠鏡盯著每一場比賽。你看的任何內容都不會被傳送到任何地方。"
 			},
 			{
 				"q": "它能搭配我使用的串流服務嗎？",
-				"a": "任何能在瀏覽器分頁中播放的串流都可以搭配使用，因為 ArenaSwap 是透過切換和靜音分頁來運作，而不是與特定服務整合。這涵蓋了 ESPN+、Peacock、Paramount+、YouTube TV、Hulu Live、Fubo，以及各聯盟的免費直播。但它沒辦法幫上原生 App 或機上盒的忙。"
+				"a": "任何能在瀏覽器分頁中播放的串流都可以搭配使用，因為 ArenaSwap 是透過切換和靜音分頁來運作，而不是與特定服務整合。這涵蓋了 Peacock、Paramount+、Prime Video、YouTube TV、Hulu Live、Fubo，以及各聯盟的免費直播。但它沒辦法幫上原生 App 或機上盒的忙。"
 			},
 			{
 				"q": "PowerScore 是怎麼運作的？",
@@ -377,7 +411,17 @@
 			"vs": "vs",
 			"topOfInning": "上半局",
 			"bottomOfInning": "下半局",
-			"shootout": "PENS {away}–{home}",
+			"shootout": "點球 {away}–{home}",
+			"periodQuarter": "第{count}節",
+			"periodFirstHalf": "上半場",
+			"periodSecondHalf": "下半場",
+			"period": "第{count}節",
+			"periodInning": "第{count}局",
+			"periodOvertime": "OT",
+			"periodOvertimeNumbered": "{count}OT",
+			"periodExtraTimeFirst": "加1",
+			"periodExtraTimeSecond": "加2",
+			"periodShootout": "點球",
 			"downDistanceAt": "{fieldPosition} {downDistance}"
 		},
 		"field": {
@@ -391,7 +435,7 @@
 			"sectionOtherLiveGames": "直播比賽",
 			"sectionUpNext": "即將開賽",
 			"enableToggleLabel": "啟用自動切換",
-			"onStandbyStream": "目前在 Standby Stream，等待精彩時刻"
+			"onStandbyStream": "在 Standby Stream 待命，等比賽升溫"
 		},
 		"tabAssign": {
 			"placeholder": "— 指派分頁 —"
@@ -406,7 +450,7 @@
 			"groupSwitching": "切換",
 			"groupSwitchingDesc": "ArenaSwap 有多積極把你帶到更精彩的比賽。",
 			"groupScoring": "評分",
-			"groupScoringDesc": "哪些信號會影響 PowerScore，以及哪些能加分。",
+			"groupScoringDesc": "哪些信號會影響 PowerScore，以及哪些能獲得加成。",
 			"groupLeagues": "聯賽",
 			"groupLeaguesDesc": "追蹤哪些聯賽，以及每個聯賽是否各自獨立成區塊。",
 			"groupDisplay": "顯示",
@@ -436,7 +480,21 @@
 		"bso": {
 			"balls": "B",
 			"strikes": "S",
-			"outs": "O"
+			"outs": "O",
+			"ballsSpoken": "1壞球 | $1壞球",
+			"strikesSpoken": "1好球 | $1好球",
+			"outsSpoken": "1出局 | $1出局",
+			"countSpoken": "{balls}，{strikes}，{outs}"
+		},
+		"bases": {
+			"empty": "壘上無人",
+			"first": "一壘有人",
+			"second": "二壘有人",
+			"third": "三壘有人",
+			"firstSecond": "一、二壘有人",
+			"firstThird": "一、三壘有人",
+			"secondThird": "二、三壘有人",
+			"loaded": "滿壘"
 		}
 	}
 }

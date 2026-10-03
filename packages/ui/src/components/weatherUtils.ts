@@ -44,13 +44,68 @@ const conditionIconMap: Record<string, string> = {
 	'breezy': 'bi-wind',
 	'hot': 'bi-thermometer-high',
 	'cold': 'bi-thermometer-low',
+	'intermittent clouds': 'bi-cloud-sun',
+	'dreary': 'bi-clouds',
+	'dreary (overcast)': 'bi-clouds',
+	'hazy moonlight': 'bi-cloud-haze',
+	'freezing rain': 'bi-cloud-sleet',
+	'rain and snow': 'bi-cloud-sleet',
 };
 
-export const conditionIcon = (label: string): string => {
-	// Compound labels like "Partly Cloudy/Windy" reduce to the primary condition.
-	const primary = (label.split('/')[0] ?? label).trim().toLowerCase();
-	return conditionIconMap[primary] ?? 'bi-cloud';
+// AccuWeather's icon numbers: https://apidev.accuweather.com/developers/weather-icons
+// Bootstrap Icons has no moon-with-rain glyph, so night precipitation shares the day icon.
+const conditionCodeIconMap: Record<number, string> = {
+	1: 'bi-sun',
+	2: 'bi-sun',
+	3: 'bi-cloud-sun',
+	4: 'bi-cloud-sun',
+	5: 'bi-cloud-haze2',
+	6: 'bi-clouds',
+	7: 'bi-clouds',
+	8: 'bi-clouds',
+	11: 'bi-cloud-fog2',
+	12: 'bi-cloud-drizzle',
+	13: 'bi-cloud-drizzle',
+	14: 'bi-cloud-drizzle',
+	15: 'bi-cloud-lightning-rain',
+	16: 'bi-cloud-lightning-rain',
+	17: 'bi-cloud-lightning-rain',
+	18: 'bi-cloud-rain',
+	19: 'bi-cloud-snow',
+	20: 'bi-cloud-snow',
+	21: 'bi-cloud-snow',
+	22: 'bi-cloud-snow',
+	23: 'bi-cloud-snow',
+	24: 'bi-cloud-sleet',
+	25: 'bi-cloud-sleet',
+	26: 'bi-cloud-sleet',
+	29: 'bi-cloud-sleet',
+	30: 'bi-thermometer-high',
+	31: 'bi-thermometer-low',
+	32: 'bi-wind',
+	33: 'bi-moon-stars',
+	34: 'bi-moon-stars',
+	35: 'bi-cloud-moon',
+	36: 'bi-cloud-moon',
+	37: 'bi-cloud-haze',
+	38: 'bi-clouds',
+	39: 'bi-cloud-drizzle',
+	40: 'bi-cloud-drizzle',
+	41: 'bi-cloud-lightning-rain',
+	42: 'bi-cloud-lightning-rain',
+	43: 'bi-cloud-snow',
+	44: 'bi-cloud-snow',
 };
+
+// "Mostly cloudy w/ showers" reduces to the showers, "Partly Cloudy/Windy" to the partly cloudy.
+export const primaryCondition = (label: string): string => {
+	const normalized = label.trim().toLowerCase();
+	const precipitation = normalized.split(' w/ ')[1] ?? normalized;
+	return (precipitation.split('/')[0] ?? precipitation).trim();
+};
+
+export const conditionIcon = (label: string, code?: number): string =>
+	(code !== undefined && conditionCodeIconMap[code]) || conditionIconMap[primaryCondition(label)] || 'bi-cloud';
 
 export const formatTemperature = (tempF: number, unit: temperatureDisplayUnit): string => {
 	if (unit === 'C') return `${Math.round((tempF - 32) * 5 / 9)}°C`;

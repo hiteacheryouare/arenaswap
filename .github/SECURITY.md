@@ -14,7 +14,7 @@ Security updates are provided for the following versions:
 | Prior versions in active use* | ✅ Actively supported |
 | Versions with no active users | ❌ Not supported |
 
-*Active use is determined by Chrome Web Store analytics. Once a version has been fully replaced through automatic browser updates, it is no longer eligible for security fixes.
+*Active use is determined by install statistics from the Chrome Web Store, Firefox Add-ons and Microsoft Edge Add-ons. Once a version has been fully replaced through automatic browser updates, it is no longer eligible for security fixes.
 
 ## Reporting a Vulnerability
 

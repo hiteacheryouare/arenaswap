@@ -28,11 +28,44 @@
 		"faq": "FAQ",
 		"legal": "Rechtliches",
 		"openMenu": "Menü öffnen",
+		"skipToContent": "Zum Inhalt springen",
 		"language": "Sprache",
 		"chooseLanguage": "Sprache auswählen",
 		"englishOnly": "Diese Seite ist nur auf Englisch verfügbar.",
 		"untranslatedHeading": "Diese Seite wurde noch nicht übersetzt.",
 		"untranslatedBody": "Die Dokumentation und die Versionshinweise sind auf Englisch verfasst. Alles andere auf dieser Website ist in deiner Sprache verfügbar."
+	},
+	"reading": {
+		"docsHeading": "Dokumentation.",
+		"docsMetaTitle": "ArenaSwap-Dokumentation",
+		"docsMetaDescription": "Anleitungen, um mit ArenaSwap mehrere Spiele gleichzeitig zu schauen, und die Entwicklerreferenz für das PowerScore-Paket, das entscheidet, welches Spiel gewinnt.",
+		"docsSectionMetaTitle": "{heading} — ArenaSwap-Dokumentation",
+		"docsSectionHeading": "{heading}.",
+		"docsNavLabel": "Dokumentation",
+		"docsBeingWritten": "In Arbeit.",
+		"commonQuestions": "Häufige Fragen",
+		"nearbyArticles": "Weitere Artikel",
+		"releasesHeading": "Versionshinweise.",
+		"releasesMetaTitle": "Versionshinweise — ArenaSwap",
+		"releasesMetaDescription": "Was in jeder Version von ArenaSwap neu ist und was das für dich bedeutet.",
+		"releasesRss": "Per RSS abonnieren",
+		"releasesEmpty": "Noch nichts veröffentlicht.",
+		"releaseVersion": "Version {version}",
+		"backToReleases": "Zurück zu den Versionshinweisen",
+		"inThisRelease": "In dieser Version",
+		"otherReleases": "Weitere Versionen",
+		"sections": {
+			"extension": {
+				"title": "Die Erweiterung",
+				"heading": "ArenaSwap verwenden",
+				"description": "ArenaSwap installieren, Tabs Spielen zuweisen, festlegen, wann gewechselt wird, und Standby Stream."
+			},
+			"powerscore": {
+				"title": "PowerScore",
+				"heading": "Das PowerScore-Paket",
+				"description": "Wie ein Spiel bewertet wird. Die fünf Signale, die Boosts, die Abzüge und die Typen."
+			}
+		}
 	},
 	"install": {
 		"addTo": "Zu {browser} hinzufügen",
@@ -54,7 +87,7 @@
 		"firefoxAddons": "Firefox Add-ons",
 		"edgeAddons": "Edge Add-ons",
 		"iscLicense": "ISC License",
-		"disclaimer": "Nicht verbunden mit oder unterstützt von ESPN, der NFL, NBA, NHL, MLB, MLS oder einer anderen von dieser Erweiterung erfassten Liga.",
+		"disclaimer": "Nicht verbunden mit oder unterstützt von der NFL, NBA, NHL, MLB, MLS oder einer anderen von dieser Erweiterung erfassten Liga.",
 		"legalNotices": "Rechtliche Hinweise",
 		"madeWith": "Mit ❤️ in Philadelphia & Boston gemacht von {name}"
 	},
@@ -75,7 +108,8 @@
 			"captionSwitched": "ArenaSwap hat dich von {from} weg und zu {to} hin gewechselt.",
 			"captionWatching": "Du schaust gerade {game}, das beste Spiel auf dem Brett.",
 			"replay": "Demo abspielen",
-			"tabLabel": "Tab {number}: {host}"
+			"tabLabel": "Tab {number}: {host}",
+			"browserLabel": "Ein Browser mit drei offenen Live-Spielen, in dem ArenaSwap läuft"
 		},
 		"tabs": {
 			"titleLine1": "Einmal einrichten.",
@@ -165,11 +199,11 @@
 			},
 			{
 				"q": "Brauche ich ein Konto oder ein Abo?",
-				"a": "Nein. ArenaSwap ist kostenlos, kommt ohne Konto aus und sammelt nichts. Es läuft komplett in deinem Browser und liest öffentliche Spielstände von ESPN. Nichts davon, was du schaust, wird irgendwohin gesendet."
+				"a": "Nein. ArenaSwap ist kostenlos, kommt ohne Konto aus und sammelt nichts. Es läuft komplett in deinem Browser und liest öffentliche Spielstände von unseren Quellen, die jedes Spiel durchs Fernglas im Blick behalten. Nichts davon, was du schaust, wird irgendwohin gesendet."
 			},
 			{
 				"q": "Funktioniert es mit meinem Streaming-Dienst?",
-				"a": "Jeder Stream, der in einem Browser-Tab läuft, funktioniert, weil ArenaSwap Tabs wechselt und stummschaltet, statt sich in einen Dienst zu integrieren. Das deckt ESPN+, Peacock, Paramount+, YouTube TV, Hulu Live, Fubo und die kostenlosen Liga-Streams ab. Bei einer nativen App oder einer Set-Top-Box kann es nicht helfen."
+				"a": "Jeder Stream, der in einem Browser-Tab läuft, funktioniert, weil ArenaSwap Tabs wechselt und stummschaltet, statt sich in einen Dienst zu integrieren. Das deckt Peacock, Paramount+, Prime Video, YouTube TV, Hulu Live, Fubo und die kostenlosen Liga-Streams ab. Bei einer nativen App oder einer Set-Top-Box kann es nicht helfen."
 			},
 			{
 				"q": "Wie funktioniert PowerScore?",
@@ -378,6 +412,16 @@
 			"topOfInning": "Anfang des Innings",
 			"bottomOfInning": "Ende des Innings",
 			"shootout": "I.E. {away}–{home}",
+			"periodQuarter": "Q{count}",
+			"periodFirstHalf": "1. HZ",
+			"periodSecondHalf": "2. HZ",
+			"period": "{count}. Drittel",
+			"periodInning": "{count}. Inning",
+			"periodOvertime": "OT",
+			"periodOvertimeNumbered": "{count}OT",
+			"periodExtraTimeFirst": "V1",
+			"periodExtraTimeSecond": "V2",
+			"periodShootout": "I.E.",
 			"downDistanceAt": "{downDistance} an {fieldPosition}"
 		},
 		"field": {
@@ -391,7 +435,7 @@
 			"sectionOtherLiveGames": "Live-Spiele",
 			"sectionUpNext": "Als Nächstes",
 			"enableToggleLabel": "Automatisches Wechseln aktivieren",
-			"onStandbyStream": "Im Standby Stream, wartet auf Action"
+			"onStandbyStream": "Im Standby Stream, bis es wieder heiß wird"
 		},
 		"tabAssign": {
 			"placeholder": "— Tab zuweisen —"
@@ -406,7 +450,7 @@
 			"groupSwitching": "Wechseln",
 			"groupSwitchingDesc": "Wie schnell ArenaSwap dich zu einem besseren Spiel bringt.",
 			"groupScoring": "Bewertung",
-			"groupScoringDesc": "Welche Signale in den PowerScore einfließen und was Bonuspunkte bringt.",
+			"groupScoringDesc": "Welche Signale in den PowerScore einfließen und was einen Boost bringt.",
 			"groupLeagues": "Ligen",
 			"groupLeaguesDesc": "Welche Ligen verfolgt werden und ob jede einen eigenen Abschnitt bekommt.",
 			"groupDisplay": "Anzeige",
@@ -428,7 +472,7 @@
 			"off": "Aus"
 		},
 		"favoriteTeamBonus": {
-			"label": "Lieblingsteam-Bonus"
+			"label": "Lieblingsteam-Boost"
 		},
 		"postseasonBoost": {
 			"label": "Postseason-Boost"
@@ -436,7 +480,21 @@
 		"bso": {
 			"balls": "B",
 			"strikes": "S",
-			"outs": "O"
+			"outs": "O",
+			"ballsSpoken": "1 Ball | $1 Balls",
+			"strikesSpoken": "1 Strike | $1 Strikes",
+			"outsSpoken": "1 Out | $1 Outs",
+			"countSpoken": "{balls}, {strikes}, {outs}"
+		},
+		"bases": {
+			"empty": "Bases leer",
+			"first": "Läufer auf der ersten Base",
+			"second": "Läufer auf der zweiten Base",
+			"third": "Läufer auf der dritten Base",
+			"firstSecond": "Läufer auf der ersten und zweiten Base",
+			"firstThird": "Läufer auf der ersten und dritten Base",
+			"secondThird": "Läufer auf der zweiten und dritten Base",
+			"loaded": "Alle Bases besetzt"
 		}
 	}
 }

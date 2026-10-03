@@ -2,7 +2,7 @@
 import Wordmark from '@arenaswap/ui/src/components/wordmark';
 import InstallCta from './InstallCta.astro';
 import LanguageSwitcher from './LanguageSwitcher.astro';
-import { localePath } from '../i18n/locales';
+import { localePath, stripLocale } from '../i18n/locales';
 import { currentLocale, useTranslations } from '../i18n/ui';
 
 interface Props {
@@ -18,12 +18,21 @@ const t = useTranslations(locale);
 // Sending those to the English URL is what made the navigation, the footer and the language
 // switcher all change language at once the moment somebody followed a link to the documentation.
 const links = [
-	{ href: localePath(locale), label: t('nav.home') },
-	{ href: localePath(locale, 'powerscore/'), label: t('nav.powerscore') },
-	{ href: localePath(locale, 'docs/'), label: t('nav.docs') },
-	{ href: localePath(locale, 'releases/'), label: t('nav.releases') },
-	{ href: localePath(locale, 'faq/'), label: t('nav.faq') },
+	{ path: '', label: t('nav.home') },
+	{ path: 'powerscore/', label: t('nav.powerscore') },
+	{ path: 'docs/', label: t('nav.docs') },
+	{ path: 'releases/', label: t('nav.releases') },
+	{ path: 'faq/', label: t('nav.faq') },
 ];
+const legal = { path: 'legal/', label: t('nav.legal') };
+
+// A section's own index is the page; anything under it, like a single release note, is still in
+// that section and is marked so without claiming to be the page itself.
+const current = stripLocale(Astro.url.pathname);
+const currentFor = (path: string) => {
+	if (current === path) return 'page';
+	return path !== '' && current.startsWith(path) ? 'true' : undefined;
+};
 ---
 <header id="site-header" class="site-header">
 	<nav class="site-nav">
@@ -38,13 +47,13 @@ const links = [
 				</a>
 
 				<ul class="nav-desktop-links">
-					{links.map(link => <li><a href={link.href}>{link.label}</a></li>)}
+					{links.map(link => <li><a href={localePath(locale, link.path)} aria-current={currentFor(link.path)}>{link.label}</a></li>)}
 				</ul>
 
 				<div class="nav-end">
 					<LanguageSwitcher localized={localized} />
 					<InstallCta class="nav-cta-desktop" />
-					<button class="nav-hamburger" id="nav-toggle" aria-label={t('nav.openMenu')} aria-expanded="false">
+					<button class="nav-hamburger" id="nav-toggle" aria-label={t('nav.openMenu')} aria-controls="nav-drawer" aria-expanded="false">
 						<span class="ham-bar"></span>
 						<span class="ham-bar"></span>
 						<span class="ham-bar"></span>
@@ -57,8 +66,7 @@ const links = [
 
 	<div class="nav-drawer" id="nav-drawer" aria-hidden="true">
 		<ul>
-			{links.map(link => <li><a href={link.href}>{link.label}</a></li>)}
-			<li><a href={localePath(locale, 'legal/')}>{t('nav.legal')}</a></li>
+			{[...links, legal].map(link => <li><a href={localePath(locale, link.path)} aria-current={currentFor(link.path)}>{link.label}</a></li>)}
 		</ul>
 		<div class="nav-drawer-cta">
 			<InstallCta class="d-block text-center" />
@@ -74,23 +82,28 @@ const toggle = document.getElementById('nav-toggle');
 const drawer = document.getElementById('nav-drawer');
 const header = document.getElementById('site-header');
 
-toggle?.addEventListener('click', () => {
-	const open = toggle.getAttribute('aria-expanded') === 'true';
-	toggle.setAttribute('aria-expanded', String(!open));
-	toggle.classList.toggle('open', !open);
-	drawer?.classList.toggle('open', !open);
-	drawer?.setAttribute('aria-hidden', String(open));
-	document.body.classList.toggle('nav-open', !open);
-});
+const isOpen = () => toggle?.getAttribute('aria-expanded') === 'true';
+
+const setOpen = (open: boolean) => {
+	toggle?.setAttribute('aria-expanded', String(open));
+	toggle?.classList.toggle('open', open);
+	drawer?.classList.toggle('open', open);
+	drawer?.setAttribute('aria-hidden', String(!open));
+	document.body.classList.toggle('nav-open', open);
+};
+
+toggle?.addEventListener('click', () => setOpen(!isOpen()));
 
 drawer?.querySelectorAll('a').forEach(a => {
-	a.addEventListener('click', () => {
-		toggle?.setAttribute('aria-expanded', 'false');
-		toggle?.classList.remove('open');
-		drawer?.classList.remove('open');
-		drawer?.setAttribute('aria-hidden', 'true');
-		document.body.classList.remove('nav-open');
-	});
+	a.addEventListener('click', () => setOpen(false));
+});
+
+// Escape closes the drawer and hands focus back to the button that opened it, rather than leaving
+// it on a link that is about to disappear.
+document.addEventListener('keydown', event => {
+	if (event.key !== 'Escape' || !isOpen()) return;
+	setOpen(false);
+	toggle?.focus();
 });
 
 // The bar keeps its 64px — the drawer hangs off that height and the hero measures against it — so

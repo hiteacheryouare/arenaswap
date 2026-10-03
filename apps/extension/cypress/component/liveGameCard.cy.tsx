@@ -1,4 +1,6 @@
 import LiveGameCard from '@arenaswap/ui/src/components/liveGameCard';
+import { TranslationContext } from '@arenaswap/ui/src/components/i18nContext';
+import { i18n } from '#i18n';
 import type { Game, PowerScoreResult } from '@arenaswap/core/types';
 
 const baseGame: Game = {
@@ -286,6 +288,20 @@ describe('liveGameCard timeout dots', () => {
 		cy.get('.timeout-dots').last().should('have.attr', 'aria-label', 'HOM: 2 timeouts left');
 	});
 
+	// It used to read "1 timeouts left". Checked through both translators: the extension's, which
+	// reads the locale's plural object, and the one the website falls back to.
+	it('says one timeout, not one timeouts', () => {
+		cy.mount(<LiveGameCard {...defaultProps} game={withTimeouts(1, 3)} />);
+		cy.get('.timeout-dots').last().should('have.attr', 'aria-label', 'HOM: 1 timeout left');
+		cy.mount(
+			<TranslationContext.Provider value={i18n.t}>
+				<LiveGameCard {...defaultProps} game={withTimeouts(1, 0)} />
+			</TranslationContext.Provider>,
+		);
+		cy.get('.timeout-dots').last().should('have.attr', 'aria-label', 'HOM: 1 timeout left');
+		cy.get('.timeout-dots').first().should('have.attr', 'aria-label', 'AWY: 0 timeouts left');
+	});
+
 	it('falls back to a numeral for a sport with more timeouts than fit', () => {
 		// The NBA carries seven. Seven rings do not fit a 60px column, and a row silently clipped
 		// to three would misreport the count rather than merely look wrong.
@@ -302,5 +318,21 @@ describe('liveGameCard timeout dots', () => {
 	it('draws nothing when the sport sends no timeouts at all', () => {
 		cy.mount(<LiveGameCard {...defaultProps} game={baseGame} />);
 		cy.get('.timeout-dots').should('not.exist');
+	});
+});
+
+// The delay used to be said twice: "DELAY" in the status row and the description again in an 8px
+// badge under the score. The status row now says what kind of delay it is, once.
+describe('liveGameCard delay', () => {
+	it('names the delay in the status row and nowhere else', () => {
+		cy.mount(<LiveGameCard {...defaultProps} game={{ ...baseGame, delayed: true, delayDescription: 'Rain Delay' }} />);
+		cy.get('.delay-status-label').should('contain.text', 'Rain Delay');
+		cy.get('.badge').should('not.exist');
+		cy.contains('Rain Delay').should('have.length', 1);
+	});
+
+	it('falls back to the plain label when our sources give no reason', () => {
+		cy.mount(<LiveGameCard {...defaultProps} game={{ ...baseGame, delayed: true }} />);
+		cy.get('.delay-status-label').should('contain.text', 'DELAY');
 	});
 });

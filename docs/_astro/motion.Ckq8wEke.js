@@ -1,0 +1,2 @@
+/*! ArenaSwap v2.2.0 Copyright (c) 2026 Ryan Mullin, Lattice & Company, and Contributors. All rights reserved. */
+var e={instant:100,snap:140,quick:180,base:240,slow:400,deliberate:700,epic:1e3},t=`quinticOut`,n=`cubic-bezier(0.22, 1, 0.36, 1)`;export{e as n,n as r,t};

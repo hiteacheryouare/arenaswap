@@ -1,4 +1,5 @@
 import { i18n } from '#i18n';
+import BoostPointsInput from './boostPointsInput';
 
 interface gameBoostInputProps {
 	gameId: string;
@@ -11,15 +12,12 @@ interface gameBoostInputProps {
 const BoostRow = ({ gameId, currentBoost, onSetGameBoost }: gameBoostInputProps) => (
 	<div className='game-detail-boost-row'>
 		<span className='game-detail-boost-explainer'>{i18n.t('gameBoost.explainer')}</span>
-		<input
+		<BoostPointsInput
 			id={`boost-detail-${gameId}`}
-			type='number'
-			min={0}
-			step={1}
 			value={currentBoost}
-			onChange={e => onSetGameBoost(gameId, Math.max(0, Math.round(Number(e.target.value) || 0)))}
+			onChange={boost => onSetGameBoost(gameId, boost)}
 			className='powerscore-boost-input'
-			aria-label={i18n.t('gameBoost.heading')}
+			ariaLabel={i18n.t('gameBoost.heading')}
 		/>
 	</div>
 );

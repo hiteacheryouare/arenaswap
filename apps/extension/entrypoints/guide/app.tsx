@@ -17,6 +17,7 @@ import { bandLabel } from './guideFormat';
 import GuideGrid from './guideGrid';
 import { buildBar, buildHeatCurve } from './guideHeat';
 import { msToPx, axisBounds, defaultDayKey, gutterPx } from './guideLayout';
+import { displayLocale } from '../../utils/displayLocale';
 
 // The boost control in the drawer is the real one, not a decoration: a slider that moves and
 // changes nothing is worse than no slider.
@@ -101,7 +102,7 @@ const App = () => {
 		// 'ArenaSwap' is a proper noun and is not translated anywhere else either. extName is the full
 		// store listing name, which is far too long for a tab strip.
 		document.title = `${i18n.t('main.guideButton')} \u00b7 ArenaSwap`;
-		document.documentElement.lang = browser.i18n.getUILanguage();
+		document.documentElement.lang = displayLocale();
 	}, []);
 
 	// Clearing the closing flag matters: picking a second game while the first is animating out has
@@ -151,7 +152,7 @@ const App = () => {
 		const dated = slateGames
 			.filter(game => Number.isFinite(startMs(game)))
 			.toSorted((a, b) => startMs(a) - startMs(b));
-		return groupByDate(dated);
+		return groupByDate(dated, displayLocale());
 	}, [slateGames]);
 
 	// Falls back to today rather than to the first group, which is two days of finals ago.
@@ -257,7 +258,7 @@ const App = () => {
 						<label className='form-check-label' htmlFor='guideBandToggle'>{i18n.t('guide.bestWindow')}</label>
 						{/* Inside the control rather than beside it, so the header's own 1rem column gap cannot open
 						    a hole in the middle of a sentence. */}
-						{showBand && band && <span className='guide-band-summary'>{`\u00b7 ${bandLabel(band)}`}</span>}
+						{showBand && band && <span className='guide-band-summary'>{`\u00b7 ${bandLabel(band, displayLocale())}`}</span>}
 					</div>
 				)}
 			</header>
@@ -276,7 +277,7 @@ const App = () => {
 				   there: a wait is a spinner with a line of patter, and only an answer is news. */
 				<div className='guide-status'>
 					{slate
-						? <NoGamesMessage onRefresh={() => void loadSlate()} />
+						? <NoGamesMessage onRefresh={() => loadSlate()} />
 						: <GameListHeader isLoading hasError={false} loadingMessage={loadingMessage} onRefresh={() => void loadSlate()} />}
 				</div>
 			)}

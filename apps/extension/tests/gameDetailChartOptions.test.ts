@@ -33,9 +33,9 @@ describe('buildWinProbabilityOption', () => {
 	test('home series values equal round(p*100) and away values equal 100 minus home', () => {
 		const probs = [0.3, 0.5, 0.7, 0.25, 0.9];
 		const option = buildWinProbabilityOption(probs, makeGame());
-		const series = option.series as Array<{ data: number[] }>;
-		const homeSeries = series[0]!;
-		const awaySeries = series[1]!;
+		const series = option.series as Array<{ name: string; data: number[] }>;
+		const homeSeries = series.find(entry => entry.name === 'HOM')!;
+		const awaySeries = series.find(entry => entry.name === 'AWY')!;
 
 		for (let i = 0; i < homeSeries.data.length; i++) {
 			const home = homeSeries.data[i]!;
@@ -47,7 +47,7 @@ describe('buildWinProbabilityOption', () => {
 	test('home series rounds probabilities to integers', () => {
 		const probs = [0.333, 0.667];
 		const option = buildWinProbabilityOption(probs, makeGame());
-		const homeSeries = (option.series as Array<{ data: number[] }>)[0]!;
+		const homeSeries = (option.series as Array<{ name: string; data: number[] }>).find(entry => entry.name === 'HOM')!;
 		expect(homeSeries.data[0]).toBe(33);
 		expect(homeSeries.data[1]).toBe(67);
 	});
@@ -82,7 +82,8 @@ describe('buildWinProbabilityOption', () => {
 	test.each([200, 2_000, 20_000])('draws a readable line from a %i-point win probability history', length => {
 		const line = Array.from({ length }, (_, i) => i / length);
 		const option = buildWinProbabilityOption(line, makeGame());
-		const [home, away] = option.series as Array<{ data: number[] }>;
+		// Away is drawn first, to match the legend.
+		const [away, home] = option.series as Array<{ data: number[] }>;
 
 		expect(home!.data.length).toBeLessThanOrEqual(161);
 		expect(home!.data.length).toBeGreaterThanOrEqual(Math.min(80, length));

@@ -1,4 +1,5 @@
-import { crestBacking, pendingSwitchCrest, readableInkOn, readableTeamInkOnCard, resolveTeamColorPair, teamDisplayInk, teamRowWash } from '../src/components/colorUtils';
+import { colorDifference } from '../src/components/colorMath';
+import { crestBacking, pendingSwitchCrest, resolveChartLineColors, readableInkOn, readableTeamInkOnCard, resolveTeamColorPair, teamDisplayInk, teamRowWash } from '../src/components/colorUtils';
 
 jest.mock('../src/components/logoSwitchColor', () => ({
 	cachedLogoSwitchColor: (crest: string) => ({
@@ -357,5 +358,177 @@ describe('crestBacking', () => {
 		expect(crestBacking(null)).toBe('#ffffff');
 		expect(crestBacking('')).toBe('#ffffff');
 		expect(crestBacking('rgb(1,2,3)')).toBe('#ffffff');
+	});
+});
+
+// A chart line is the one place a team's colour is adjusted: it has to be seen against the chart.
+describe('resolveChartLineColors', () => {
+	// Chart lines sit on a dark surface, so a very dark team colour is mixed toward white.
+	test('lightens a near-black colour on a dark surface', () => {
+		const [a] = resolveChartLineColors({ color: '#000000' }, { color: '#00FF00' }, 'dark');
+		expect(a).not.toBe('#000000');
+		expect(a).toMatch(/^#[0-9a-f]{6}$/);
+	});
+
+	test('leaves an already-bright colour alone on a dark surface', () => {
+		const [, h] = resolveChartLineColors({ color: '#000000' }, { color: '#00FF00' }, 'dark');
+		expect(h).toBe('#00FF00');
+	});
+
+	// The 3:1 boundary against the #0d1117 chart background sits at luminance 0.1164. Bemidji
+	// State's #00694E is 0.1065, or 2.82:1, so it has to be lightened. The threshold read 0.10
+	// for a while, and this colour falls in exactly that window.
+	//
+	// The expected value moved from #7ab1a3 to #007c5c when the climb stopped mixing toward white.
+	// Both clear 3:1; only one is still green. Mixing adds the same amount to all three channels,
+	// which pulls them together and drains the hue — #7ab1a3 is a grey-teal, and the same formula
+	// turned Mets navy into #7a92b6 and Yankees navy into #818d9c, two greys that read alike.
+	// Scaling the channels instead leaves their ratios, and so the hue, where they were.
+	test('lightens a colour that clears the old 0.10 threshold but not 3:1, without draining it', () => {
+		const [a] = resolveChartLineColors({ color: '#00694E' }, { color: '#FFC72C' }, 'dark');
+		expect(a).toBe('#007c5c');
+	});
+
+	// #C8102E is luminance 0.1285, or 3.22:1. It already clears the bar, so lightening it would
+	// only wash it out.
+	test('leaves a colour just above the 3:1 boundary alone', () => {
+		const [a] = resolveChartLineColors({ color: '#C8102E' }, { color: '#FFC72C' }, 'dark');
+		expect(a).toBe('#C8102E');
+	});
+
+	// Yankees navy and Dodger blue are 20 apart as published and 4.5 apart once both are lifted, so
+	// the card keeps both primaries and the chart has to switch a side of its own accord.
+	test('switches a side when lifting brings two distinct blues together', () => {
+		const yankees = { color: '#0C2340', alternateColor: '#C4CED3' };
+		const dodgers = { color: '#005A9C', alternateColor: '#EF3E42' };
+		expect(resolveTeamColorPair(yankees, dodgers)).toEqual(['#0C2340', '#005A9C']);
+		const [a, h] = resolveChartLineColors(yankees, dodgers, 'dark');
+		expect(colorDifference(a, h)).toBeGreaterThanOrEqual(11);
+	});
+});
+
+// The hue of the resulting colour, 0-359, or null for a grey. Written out rather than imported
+// because the point of these tests is that the hue the caller started with survives.
+const hueOf = (hex: string): number | null => {
+	const [red, green, blue] = [1, 3, 5].map(at => Number.parseInt(hex.slice(at, at + 2), 16));
+	const max = Math.max(red!, green!, blue!);
+	const min = Math.min(red!, green!, blue!);
+	if (max === min) return null;
+	const span = max - min;
+	const sector = max === red! ? ((green! - blue!) / span) % 6
+		: max === green! ? ((blue! - red!) / span) + 2
+		: ((red! - green!) / span) + 4;
+	return Math.round(((sector * 60) + 360) % 360);
+};
+
+// Scaling the channels rounds each to an integer, which can shift the hue by a degree or two. The
+// bar is that the colour is still the same colour, not that the arithmetic is exact.
+const expectSameHue = (result: string, source: string): void => {
+	const drift = Math.abs(hueOf(result)! - hueOf(source)!);
+	expect(Math.min(drift, 360 - drift)).toBeLessThanOrEqual(5);
+};
+
+const lightened = (color: string): string => (
+	resolveChartLineColors({ color }, { color: '#FFC72C' }, 'dark')[0]
+);
+
+describe('lightening a chart colour keeps the team recognisable', () => {
+	// Every one of these came back a grey when the climb mixed toward white.
+	test.each([
+		['Mets navy', '#002D72'],
+		['Yankees navy', '#0C2340'],
+		['Packers green', '#203731'],
+		['Vikings purple', '#4F2683'],
+		['Dodgers blue', '#005A9C'],
+	])('%s keeps its hue', (_label, color) => {
+		const result = lightened(color);
+		expect(result).not.toBe(color);
+		expectSameHue(result, color);
+	});
+
+	test('a pure black has no hue to keep, so it does become a grey', () => {
+		const result = lightened('#000000');
+		expect(hueOf(result)).toBeNull();
+	});
+
+	test('a colour already bright enough is returned untouched', () => {
+		expect(lightened('#C8102E')).toBe('#C8102E');
+	});
+});
+
+// The chart background is #0d1117, luminance 0.0055. A chart line is non-text, so it wants 3:1.
+const contrastOnChart = (hex: string): number => {
+	const parsed = hex.replace('#', '');
+	const [red, green, blue] = [0, 2, 4].map(i => Number.parseInt(parsed.slice(i, i + 2), 16));
+	const luminance = 0.2126 * srgbChannel(red!) + 0.7152 * srgbChannel(green!) + 0.0722 * srgbChannel(blue!);
+	return (luminance + 0.05) / (0.0055 + 0.05);
+};
+
+// The mirror of 'every colour it returns clears 4.5:1 on the card'. Without it the lightening side
+// was pinned only on hue and on having moved at all, so a colour that came back still unreadable
+// satisfied every assertion in the block above.
+describe('every chart colour it returns clears 3:1', () => {
+	test.each([
+		['Mets navy', '#002D72'],
+		['Yankees navy', '#0C2340'],
+		['Packers green', '#203731'],
+		['Vikings purple', '#4F2683'],
+		['Dodgers blue', '#005A9C'],
+		['a pure blue', '#0000ff'],
+		['navy', '#000080'],
+		['dark blue', '#00008B'],
+		['a near-black blue', '#010040'],
+		['pure black', '#000000'],
+		['a colour that needs nothing', '#C8102E'],
+	])('%s', (_label, color) => {
+		expect(contrastOnChart(lightened(color))).toBeGreaterThanOrEqual(3);
+	});
+
+	// Scaling every channel by a common factor cannot lift a colour whose brightest channel is
+	// already 255: 255 stays 255 and Math.round(0 * 1.18) is 0, so the whole 24-step climb is a
+	// no-op and a pure blue used to come back byte-identical, at 2.31:1.
+	test('a pure blue is no longer returned unchanged', () => {
+		expect(lightened('#0000ff')).not.toBe('#0000ff');
+	});
+
+	// The five navies the scaling was written for finish the scaling loop on their own, so the
+	// mixing fallback must not touch them.
+	test('the colours scaling already handles are not mixed toward white', () => {
+		expect(lightened('#002D72')).toBe('#0057de');
+		expect(lightened('#0C2340')).toBe('#276ecf');
+		expect(lightened('#203731')).toBe('#3f6b5e');
+		expect(lightened('#4F2683')).toBe('#823fd8');
+		expect(lightened('#005A9C')).toBe('#006ab8');
+	});
+});
+
+// The light theme draws its charts on #ffffff, where the rule turns over: a line has to be dark
+// enough rather than bright enough, and it is the pale golds that fail instead of the navies.
+const onLight = (color: string): string => (
+	resolveChartLineColors({ color }, { color: '#002D72' }, 'light')[0]
+);
+const contrastOnWhite = (hex: string): number => {
+	const parsed = hex.replace('#', '');
+	const [red, green, blue] = [0, 2, 4].map(i => Number.parseInt(parsed.slice(i, i + 2), 16));
+	const luminance = 0.2126 * srgbChannel(red!) + 0.7152 * srgbChannel(green!) + 0.0722 * srgbChannel(blue!);
+	return 1.05 / (luminance + 0.05);
+};
+
+describe('a chart colour on the light surface', () => {
+	test.each([
+		['Penguins gold', '#FCB514'],
+		['Lakers gold', '#FDB927'],
+		['Carolina blue', '#7BAFD4'],
+		['a pale fallback blue', '#60a5fa'],
+		['pure yellow', '#ffff00'],
+	])('%s is darkened to clear 3:1', (_label, color) => {
+		const result = onLight(color);
+		expect(result).not.toBe(color);
+		expect(contrastOnWhite(result)).toBeGreaterThanOrEqual(3);
+		expectSameHue(result, color);
+	});
+
+	test('a navy that already clears 3:1 is returned untouched', () => {
+		expect(onLight('#0C2340')).toBe('#0C2340');
 	});
 });

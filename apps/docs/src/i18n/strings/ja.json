@@ -28,11 +28,44 @@
 		"faq": "よくある質問",
 		"legal": "法的通知",
 		"openMenu": "メニューを開く",
+		"skipToContent": "本文へスキップ",
 		"language": "言語",
 		"chooseLanguage": "言語を選択",
 		"englishOnly": "このページは英語版のみ利用可能です。",
 		"untranslatedHeading": "このページはまだ翻訳されていません。",
 		"untranslatedBody": "ドキュメントとリリースノートは英語で書かれています。このサイトの他の部分はすべて日本語でご利用いただけます。"
+	},
+	"reading": {
+		"docsHeading": "ドキュメント。",
+		"docsMetaTitle": "ArenaSwap ドキュメント",
+		"docsMetaDescription": "ArenaSwapで複数の試合を同時に観るためのガイドと、どの試合を映すかを決めるPowerScoreパッケージの開発者向けリファレンス。",
+		"docsSectionMetaTitle": "{heading} — ArenaSwap ドキュメント",
+		"docsSectionHeading": "{heading}。",
+		"docsNavLabel": "ドキュメント",
+		"docsBeingWritten": "執筆中です。",
+		"commonQuestions": "よくある質問",
+		"nearbyArticles": "関連記事",
+		"releasesHeading": "リリースノート。",
+		"releasesMetaTitle": "リリースノート — ArenaSwap",
+		"releasesMetaDescription": "ArenaSwapの各バージョンで何が変わったのか、使う側にとって何を意味するのか。",
+		"releasesRss": "RSSで購読",
+		"releasesEmpty": "まだ公開されたものはありません。",
+		"releaseVersion": "バージョン {version}",
+		"backToReleases": "リリースノートに戻る",
+		"inThisRelease": "このリリースの内容",
+		"otherReleases": "ほかのリリース",
+		"sections": {
+			"extension": {
+				"title": "拡張機能",
+				"heading": "ArenaSwapの使い方",
+				"description": "ArenaSwapのインストール、タブと試合のひも付け、切り替えのタイミング調整、そしてStandby Stream。"
+			},
+			"powerscore": {
+				"title": "PowerScore",
+				"heading": "PowerScoreパッケージ",
+				"description": "試合のスコアの付け方。5つのシグナル、ブースト、ペナルティ、そして型。"
+			}
+		}
 	},
 	"install": {
 		"addTo": "{browser}に追加",
@@ -54,7 +87,7 @@
 		"firefoxAddons": "Firefox Add-ons",
 		"edgeAddons": "Edge Add-ons",
 		"iscLicense": "ISC License",
-		"disclaimer": "ESPN、NFL、NBA、NHL、MLB、MLS、その他この拡張機能が追跡するいかなるリーグとも提携・承認関係にありません。",
+		"disclaimer": "NFL、NBA、NHL、MLB、MLS、その他この拡張機能が追跡するいかなるリーグとも提携・承認関係にありません。",
 		"legalNotices": "法的通知",
 		"madeWith": "{name}がPhiladelphia & Bostonで❤️を込めて制作"
 	},
@@ -75,7 +108,8 @@
 			"captionSwitched": "ArenaSwapが{from}から{to}へ切り替えました。",
 			"captionWatching": "今、{game}を視聴中です。盤面で最も注目の試合です。",
 			"replay": "デモを再生",
-			"tabLabel": "タブ {number}：{host}"
+			"tabLabel": "タブ {number}：{host}",
+			"browserLabel": "3つのライブ試合を開き、ArenaSwapが動いているブラウザ"
 		},
 		"tabs": {
 			"titleLine1": "一度設定すれば。",
@@ -165,11 +199,11 @@
 			},
 			{
 				"q": "アカウントやサブスクリプションは必要ですか？",
-				"a": "いいえ。ArenaSwapは無料で、アカウントは不要、何も収集しません。すべてブラウザ内で完結し、ESPNの公開スコアを読み取るだけです。あなたが見ているものは、どこにも送信されません。"
+				"a": "いいえ。ArenaSwapは無料で、アカウントは不要、何も収集しません。すべてブラウザ内で完結し、私たちの情報筋が双眼鏡で見張っている公開スコアを読み取るだけです。あなたが見ているものは、どこにも送信されません。"
 			},
 			{
 				"q": "自分のストリーミングサービスでも使えますか？",
-				"a": "ブラウザタブで再生されるストリームであれば何でも使えます。ArenaSwapはサービスと連携するのではなく、タブの切り替えとミュートを行うためです。ESPN+、Peacock、Paramount+、YouTube TV、Hulu Live、Fubo、各リーグの無料配信をカバーします。ネイティブアプリやセットトップボックスには対応できません。"
+				"a": "ブラウザタブで再生されるストリームであれば何でも使えます。ArenaSwapはサービスと連携するのではなく、タブの切り替えとミュートを行うためです。Peacock、Paramount+、Prime Video、YouTube TV、Hulu Live、Fubo、各リーグの無料配信をカバーします。ネイティブアプリやセットトップボックスには対応できません。"
 			},
 			{
 				"q": "PowerScoreはどのように機能しますか？",
@@ -378,6 +412,16 @@
 			"topOfInning": "イニングの表",
 			"bottomOfInning": "イニングの裏",
 			"shootout": "PK {away}–{home}",
+			"periodQuarter": "第{count}Q",
+			"periodFirstHalf": "前半",
+			"periodSecondHalf": "後半",
+			"period": "第{count}P",
+			"periodInning": "{count}回",
+			"periodOvertime": "OT",
+			"periodOvertimeNumbered": "{count}OT",
+			"periodExtraTimeFirst": "延前",
+			"periodExtraTimeSecond": "延後",
+			"periodShootout": "PK",
 			"downDistanceAt": "{fieldPosition}で{downDistance}"
 		},
 		"field": {
@@ -391,7 +435,7 @@
 			"sectionOtherLiveGames": "ライブ試合",
 			"sectionUpNext": "次の試合",
 			"enableToggleLabel": "自動切り替えを有効にする",
-			"onStandbyStream": "Standby Stream 中 — アクションを待っています"
+			"onStandbyStream": "何かが盛り上がるまで Standby Stream で待機中"
 		},
 		"tabAssign": {
 			"placeholder": "— タブを割り当て —"
@@ -406,7 +450,7 @@
 			"groupSwitching": "切り替え",
 			"groupSwitchingDesc": "ArenaSwapがどれだけ積極的に良い試合へ移すか。",
 			"groupScoring": "スコアリング",
-			"groupScoringDesc": "PowerScoreを構成するシグナルと、ボーナス点の対象。",
+			"groupScoringDesc": "PowerScoreを構成するシグナルと、ブーストの対象。",
 			"groupLeagues": "リーグ",
 			"groupLeaguesDesc": "追跡するリーグと、リーグごとにセクションを分けるかどうか。",
 			"groupDisplay": "表示",
@@ -428,7 +472,7 @@
 			"off": "オフ"
 		},
 		"favoriteTeamBonus": {
-			"label": "お気に入りチームボーナス"
+			"label": "お気に入りチームブースト"
 		},
 		"postseasonBoost": {
 			"label": "ポストシーズンブースト"
@@ -436,7 +480,21 @@
 		"bso": {
 			"balls": "B",
 			"strikes": "S",
-			"outs": "O"
+			"outs": "O",
+			"ballsSpoken": "1ボール | $1ボール",
+			"strikesSpoken": "1ストライク | $1ストライク",
+			"outsSpoken": "1アウト | $1アウト",
+			"countSpoken": "{balls}、{strikes}、{outs}"
+		},
+		"bases": {
+			"empty": "走者なし",
+			"first": "一塁に走者",
+			"second": "二塁に走者",
+			"third": "三塁に走者",
+			"firstSecond": "一・二塁に走者",
+			"firstThird": "一・三塁に走者",
+			"secondThird": "二・三塁に走者",
+			"loaded": "満塁"
 		}
 	}
 }

@@ -2,9 +2,10 @@
 import { getCollection, render } from 'astro:content';
 import Shell from '../../../../layouts/Shell.astro';
 import DocsNav from '../../../../components/DocsNav.astro';
-import { docPath, docSlug, docsSections, type DocsSection } from '../../../../lib/docs';
+import { docPath, docSlug, docsSectionCopy, type DocsSection } from '../../../../lib/docs';
 import UntranslatedNotice from '../../../../components/UntranslatedNotice.astro';
 import { defaultLocale, localePath, localeRoutesFor } from '../../../../i18n/locales';
+import { useTranslations } from '../../../../i18n/ui';
 
 // One article, one URL per locale. Drafts are excluded from the route table, so a draft is a 404
 // rather than a page nothing links to.
@@ -20,7 +21,10 @@ export const getStaticPaths = async () => {
 const { page, locale } = Astro.props;
 const { title, description, faq } = page.data;
 const section = page.data.section as DocsSection;
-const meta = docsSections[section];
+const t = useTranslations(locale);
+// The breadcrumb's structured data describes the English article, so it names the section in English.
+const englishMeta = docsSectionCopy(useTranslations(defaultLocale), section);
+const contentLang = locale === defaultLocale ? undefined : 'en';
 const path = docPath(page);
 
 const { Content } = await render(page);
@@ -62,7 +66,7 @@ const structuredData: Record<string, unknown>[] = [
 		'@type': 'BreadcrumbList',
 		itemListElement: [
 			{ '@type': 'ListItem', position: 1, name: 'Documentation', item: new URL(localePath(defaultLocale, 'docs/'), site).href },
-			{ '@type': 'ListItem', position: 2, name: meta.title, item: new URL(localePath(defaultLocale, `docs/${section}/`), site).href },
+			{ '@type': 'ListItem', position: 2, name: englishMeta.title, item: new URL(localePath(defaultLocale, `docs/${section}/`), site).href },
 			{ '@type': 'ListItem', position: 3, name: title, item: url },
 		],
 	},
@@ -88,7 +92,7 @@ if (faq?.length) {
 	ogType='article'
 >
 	<div class='container'>
-		<div class='page-head'>
+		<div class='page-head' lang={contentLang}>
 			<h1 class='page-title docs-title'>{title}</h1>
 			<p class='page-lede'>{description}</p>
 		</div>
@@ -99,12 +103,12 @@ if (faq?.length) {
 			<DocsNav current={path} />
 
 			<div>
-				<article class='prose'>
+				<article class='prose' lang={contentLang}>
 					<Content />
 				</article>
 
 				{faq?.length && (
-					<section class='docs-faq' aria-label='Common questions'>
+					<section class='docs-faq' aria-label={t('reading.commonQuestions')} lang={contentLang}>
 						<div class='faq-list'>
 							{faq.map((item, position) => (
 								<details class='faq-item' open={position === 0}>
@@ -117,14 +121,14 @@ if (faq?.length) {
 				)}
 
 				{(previous || next) && (
-					<nav class='docs-adjacent' aria-label='Nearby articles'>
+					<nav class='docs-adjacent' aria-label={t('reading.nearbyArticles')}>
 						{previous && (
-							<a href={localePath(locale, docPath(previous))}>
+							<a href={localePath(locale, docPath(previous))} lang={contentLang}>
 								<span aria-hidden='true'>← </span>{previous.data.title}
 							</a>
 						)}
 						{next && (
-							<a class='docs-adjacent-next' href={localePath(locale, docPath(next))}>
+							<a class='docs-adjacent-next' href={localePath(locale, docPath(next))} lang={contentLang}>
 								{next.data.title}<span aria-hidden='true'> →</span>
 							</a>
 						)}

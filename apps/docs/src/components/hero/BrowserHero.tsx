@@ -2,8 +2,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { LeagueId } from '@arenaswap/core/types';
 import GameCard from '@arenaswap/ui/src/components/gameCard';
 import LeagueMark from '@arenaswap/ui/src/components/leagueMark';
+import { leagueMarkOnColor } from '@arenaswap/ui/src/components/gameCardShared';
 import { PopupHeader, PopupSectionTitle } from '@arenaswap/ui/src/components/popupChrome';
 import { useT } from '@arenaswap/ui/src/components/i18nContext';
+import useReorderGlide from '@arenaswap/ui/src/components/useReorderGlide';
 import { TranslationContext, islandTranslator, tokenize } from '../../i18n/islandStrings';
 import { heroGames, heroTickCount, heroTickMs } from './heroGames';
 import { cooldownTicks, openingIndex, replayThrough, scoreBoardAt, shouldSwitch } from './heroTimeline';
@@ -40,8 +42,9 @@ const HeroTabSlot = ({ label }: { label: string }) => (
 );
 
 // The hero's own copy, separate from the `strings` map the shared components read: that one
-// mirrors the extension key for key, and these four sentences belong to this page.
+// mirrors the extension key for key, and these lines belong to this page.
 export interface HeroStrings {
+	browserLabel: string;
 	captionSwitched: string;
 	captionWatching: string;
 	replay: string;
@@ -171,6 +174,8 @@ const HeroWindow = ({ copy }: { copy: HeroStrings }) => {
 		body.scrollTo({ top: Math.max(0, top - 12), behavior: reduced ? 'auto' : 'smooth' });
 	}, [onScreenIndex, reduced, lastSwitch]);
 
+	useReorderGlide(popupBodyRef);
+
 	const onScreen = heroGames[onScreenIndex];
 	// The popup's own order with nothing favorited: one list, best PowerScore on top.
 	const ranked = useMemo(
@@ -180,7 +185,7 @@ const HeroWindow = ({ copy }: { copy: HeroStrings }) => {
 
 	return (
 		<div className='browser-hero' ref={rootRef}>
-			<div className='browser' role='group' aria-label='A browser with three live games open and ArenaSwap running'>
+			<div className='browser' role='group' aria-label={copy.browserLabel}>
 
 				<div className='browser-titlebar'>
 					<span className='browser-lights' aria-hidden='true'><i /><i /><i /></span>
@@ -256,7 +261,7 @@ const HeroWindow = ({ copy }: { copy: HeroStrings }) => {
 					/>
 					<PopupSectionTitle first>{t('main.sectionActiveLiveTabs')}</PopupSectionTitle>
 					{ranked.map(entry => (
-						<div key={entry.id} data-hero-card={entry.id}>
+						<div key={entry.id} data-hero-card={entry.id} data-glide-key={entry.id}>
 							<GameCard
 								game={entry.game}
 								excitementResult={entry.result}
@@ -265,7 +270,7 @@ const HeroWindow = ({ copy }: { copy: HeroStrings }) => {
 								onOpenGameDetail={noop}
 								bettingPrefs={{ bettingEnabled: false }}
 								tabSlot={<HeroTabSlot label={copy.tabLabel.split('{number}').join(String(entry.index + 1)).split('{host}').join(heroGames[entry.index].tabHost)} />}
-								leagueSlot={<LeagueMark league={entry.game.league} logos={emptyLeagueLogos} />}
+								leagueSlot={<LeagueMark league={entry.game.league} logos={emptyLeagueLogos} onColor={leagueMarkOnColor(entry.game)} />}
 							/>
 						</div>
 					))}

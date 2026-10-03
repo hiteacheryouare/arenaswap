@@ -47,7 +47,7 @@ const goToTeamPicker = () => {
 	cy.contains('button', 'Next').click();
 	// Proves the teams came from the stub rather than a live ESPN call.
 	cy.get('@teamsFetch').should('have.been.called');
-	cy.contains('Pick your teams').should('exist');
+	cy.contains('Pick Your Teams').should('exist');
 };
 
 describe('onboardingView', () => {
@@ -95,6 +95,27 @@ describe('onboardingView', () => {
 		cy.contains('Philadelphia 76ers').should('exist');
 		cy.contains('Philadelphia Eagles').should('exist');
 		cy.contains('Philadelphia Phillies').should('not.exist');
+	});
+
+	// A slate of many leagues takes seconds to roster, and Next used to sit there doing nothing
+	// visible until every one had answered.
+	it('opens the team picker on its spinner while the rosters load', () => {
+		cy.mount(<OnboardingView {...defaultProps} />);
+		goToLeaguePicker();
+
+		const pending: (() => void)[] = [];
+		const answer = () => pending.forEach(release => release());
+		cy.window().then(win => {
+			cy.stub(win, 'fetch').callsFake(() => new Promise(resolve => {
+				pending.push(() => resolve({ ok: true, json: () => Promise.resolve(teamsPayload(teamsByLeague.nba!)) } as unknown as Response));
+			}));
+		});
+		cy.contains('button', 'Next').click();
+
+		cy.contains('Pick Your Teams').should('exist');
+		cy.get('.popup-loading-spinner').should('exist').then(() => answer());
+		cy.get('.popup-loading-spinner').should('not.exist');
+		cy.contains('Philadelphia 76ers').should('exist');
 	});
 
 	it('hands the picked leagues and favorites to onComplete', () => {

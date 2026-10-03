@@ -1,7 +1,8 @@
 import type { EChartsOption } from 'echarts';
 import { scoreMaxTotal } from '@arenaswap/core/constants';
-import type { Game, PowerScoreSnapshot, ResolvedTheme, ScoreSnapshot } from '@arenaswap/core/types';
-import { resolveTeamColorPair } from './colorUtils';
+import type { Game, PowerScoreSnapshot, ResolvedTheme, ScoreSnapshot, SignalName } from '@arenaswap/core/types';
+import { resolveChartLineColors } from './colorUtils';
+import { signalColors } from './signalColors';
 import { chartEasing, motionDuration } from '../motion';
 
 // ECharts draws to a canvas, so these cannot follow the page's CSS variables: whoever builds an
@@ -34,17 +35,29 @@ export const lightChartPalette: chartPalette = {
 	surface: 'light',
 };
 
-const formatTimeLabel = (timestamp: number): string => (
-	new Date(timestamp).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
+// `locale` is the language the popup's strings are in. Left undefined, it is the browser's own.
+const formatTimeLabel = (timestamp: number, locale?: string): string => (
+	new Date(timestamp).toLocaleTimeString(locale, { hour: 'numeric', minute: '2-digit' })
 );
 
+// Read when an option is built rather than once at load, so a chart drawn after the setting
+// changes follows it. Node has no matchMedia, and the tests there build options with motion on.
+const prefersReducedMotion = (): boolean => (
+	typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches
+);
+
+// ECharts animates every later setOption too, at its own 300ms cubicInOut unless told otherwise,
+// so each poll's update is put on the same scale as the first draw.
 const baseOption = (
 	labels: string[],
 	palette: chartPalette,
 	gridTop = 24,
 ): EChartsOption => ({
+	animation: !prefersReducedMotion(),
 	animationDuration: motionDuration.slow,
 	animationEasing: chartEasing,
+	animationDurationUpdate: motionDuration.base,
+	animationEasingUpdate: chartEasing,
 	tooltip: {
 		trigger: 'axis',
 		backgroundColor: palette.tooltipBackground,
@@ -72,8 +85,8 @@ const baseOption = (
 	},
 });
 
-export const buildPowerScoreOption = (powerHistory: PowerScoreSnapshot[], palette = darkChartPalette): EChartsOption => {
-	const labels = powerHistory.map(point => formatTimeLabel(point.timestamp));
+export const buildPowerScoreOption = (powerHistory: PowerScoreSnapshot[], palette = darkChartPalette, locale?: string): EChartsOption => {
+	const labels = powerHistory.map(point => formatTimeLabel(point.timestamp, locale));
 	const totals = powerHistory.map(point => point.total);
 	const showSinglePointSymbols = totals.length === 1;
 	const option = baseOption(labels, palette);
@@ -100,17 +113,18 @@ export const buildPowerScoreOption = (powerHistory: PowerScoreSnapshot[], palett
 
 // The line colours are a parameter so a caller that already holds them can pass the same pair its
 // legend is drawn in, and memoise on them.
-const chartTeamColors = (game: Game): [string, string] => (
-	resolveTeamColorPair(game.awayTeam, game.homeTeam, '#60a5fa', '#f87171')
+const chartTeamColors = (game: Game, palette: chartPalette): [string, string] => (
+	resolveChartLineColors(game.awayTeam, game.homeTeam, palette.surface)
 );
 
 export const buildTeamScoreOption = (
 	scoreHistory: ScoreSnapshot[],
 	game: Game,
 	palette = darkChartPalette,
-	[awayColor, homeColor] = chartTeamColors(game),
+	[awayColor, homeColor] = chartTeamColors(game, palette),
+	locale?: string,
 ): EChartsOption => {
-	const labels = scoreHistory.map(point => formatTimeLabel(point.timestamp));
+	const labels = scoreHistory.map(point => formatTimeLabel(point.timestamp, locale));
 	const awayScores = scoreHistory.map(point => point.awayScore);
 	const homeScores = scoreHistory.map(point => point.homeScore);
 	const showSinglePointSymbols = scoreHistory.length === 1;
@@ -149,7 +163,7 @@ export const buildWinProbabilityOption = (
 	homeWinPcts: number[],
 	game: Game,
 	palette = darkChartPalette,
-	[awayColor, homeColor] = chartTeamColors(game),
+	[awayColor, homeColor] = chartTeamColors(game, palette),
 ): EChartsOption => {
 	if (homeWinPcts.length === 0) return {};
 	const step = Math.max(1, Math.floor(homeWinPcts.length / 80));
@@ -181,17 +195,8 @@ export const buildWinProbabilityOption = (
 				return arr.map(p => `<span style="color:${p.color}">●</span> ${p.seriesName}: ${p.value}%`).join('<br/>');
 			},
 		},
+		// Away first, so the tooltip lists the teams in the order the legend and the hero do.
 		series: [
-			{
-				type: 'line',
-				name: game.homeTeam.abbreviation,
-				data: homeVals,
-				smooth: true,
-				showSymbol: showSinglePointSymbols,
-				symbolSize: showSinglePointSymbols ? 7 : 0,
-				lineStyle: { width: 2, color: homeColor },
-				itemStyle: { color: homeColor },
-			},
 			{
 				type: 'line',
 				name: game.awayTeam.abbreviation,
@@ -202,12 +207,37 @@ export const buildWinProbabilityOption = (
 				lineStyle: { width: 2, color: awayColor },
 				itemStyle: { color: awayColor },
 			},
+			{
+				type: 'line',
+				name: game.homeTeam.abbreviation,
+				data: homeVals,
+				smooth: true,
+				showSymbol: showSinglePointSymbols,
+				symbolSize: showSinglePointSymbols ? 7 : 0,
+				lineStyle: { width: 2, color: homeColor },
+				itemStyle: { color: homeColor },
+			},
 		],
 	};
 };
 
-export const buildComponentContributionOption = (powerHistory: PowerScoreSnapshot[], palette = darkChartPalette): EChartsOption => {
-	const labels = powerHistory.map(point => formatTimeLabel(point.timestamp));
+// The tooltip prints these, so the popup passes the same translated names its legend uses. English
+// is the fallback for the website, which renders its charts without a translator.
+const englishSignalLabels: Record<SignalName, string> = {
+	closeness: 'Closeness',
+	lateGame: 'Late-game',
+	momentum: 'Momentum',
+	leadChanges: 'Lead changes',
+	comeback: 'Comeback',
+};
+
+export const buildComponentContributionOption = (
+	powerHistory: PowerScoreSnapshot[],
+	palette = darkChartPalette,
+	signalLabels = englishSignalLabels,
+	locale?: string,
+): EChartsOption => {
+	const labels = powerHistory.map(point => formatTimeLabel(point.timestamp, locale));
 	const closeness = powerHistory.map(point => point.closeness);
 	const lateGame = powerHistory.map(point => point.lateGame);
 	const momentum = powerHistory.map(point => point.momentum);
@@ -216,11 +246,11 @@ export const buildComponentContributionOption = (powerHistory: PowerScoreSnapsho
 	return {
 		...baseOption(labels, palette, 24),
 		series: [
-			{ type: 'bar', stack: 'signals', name: 'Closeness', data: closeness, itemStyle: { color: '#22c55e' } },
-			{ type: 'bar', stack: 'signals', name: 'Late-game', data: lateGame, itemStyle: { color: '#f75c03' } },
-			{ type: 'bar', stack: 'signals', name: 'Momentum', data: momentum, itemStyle: { color: '#2274a5' } },
-			{ type: 'bar', stack: 'signals', name: 'Lead changes', data: leadChanges, itemStyle: { color: '#f1c40f' } },
-			{ type: 'bar', stack: 'signals', name: 'Comeback', data: comeback, itemStyle: { color: '#d90368' } },
+			{ type: 'bar', stack: 'signals', name: signalLabels.closeness, data: closeness, itemStyle: { color: signalColors.closeness } },
+			{ type: 'bar', stack: 'signals', name: signalLabels.lateGame, data: lateGame, itemStyle: { color: signalColors.lateGame } },
+			{ type: 'bar', stack: 'signals', name: signalLabels.momentum, data: momentum, itemStyle: { color: signalColors.momentum } },
+			{ type: 'bar', stack: 'signals', name: signalLabels.leadChanges, data: leadChanges, itemStyle: { color: signalColors.leadChanges } },
+			{ type: 'bar', stack: 'signals', name: signalLabels.comeback, data: comeback, itemStyle: { color: signalColors.comeback } },
 		],
 	};
 };

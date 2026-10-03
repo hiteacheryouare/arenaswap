@@ -31,13 +31,16 @@ import {
 	darkChartPalette,
 	lightChartPalette,
 } from './gameDetailChartOptions';
-import { resolveTeamColorPair } from '@arenaswap/ui/src/components/colorUtils';
+import { resolveChartLineColors, resolveTeamColorPair } from '@arenaswap/ui/src/components/colorUtils';
 import { matchupSurfaceStyle } from '@arenaswap/ui/src/components/gameCardShared';
+import { signalColors } from '@arenaswap/ui/src/components/signalColors';
+import { useDisplayLocale } from '@arenaswap/ui/src/components/i18nContext';
 import useSwitchCrest from '@arenaswap/ui/src/components/useSwitchCrest';
 import useSummaryData from './useSummaryData';
 import { chartHistory, coversWholeGame } from './wrapCoverage';
 import { resolveDecorations, type holidayDecorationPrefs } from '../../../utils/holidayDecorations';
 import { favoriteScoreFlashColors, scorelineOf, type gameScoreline } from '../../../utils/favoriteScoreFlash';
+import { capitalizeReason, translateReason } from '../../../utils/powerScoreReason';
 import type { BettingDisplayPrefs, WeatherDisplayPrefs } from './gameCardTypes';
 import type { ResolvedTheme } from '@arenaswap/core/types';
 
@@ -74,15 +77,18 @@ const noFavorites: ReadonlySet<string> = new Set();
 
 const favoriteFlashMs = 5000;
 
-// The signal palette belongs to the PowerScore breakdown card above this chart, so momentum
-// keeps that card's #2274a5 rather than the dark-surface $secondary. Same signal, one colour.
-const componentLegendItems = [
-	{ label: i18n.t('detail.legendCloseness'), color: '#22c55e' },
-	{ label: i18n.t('detail.legendLateGame'), color: '#f75c03' },
-	{ label: i18n.t('detail.legendMomentum'), color: '#2274a5' },
-	{ label: i18n.t('detail.legendLeadChanges'), color: '#f1c40f' },
-	{ label: i18n.t('detail.legendComeback'), color: '#d90368' },
-];
+// The legend and the chart's tooltip print the same names, so a hover reads in the same language
+// as the swatches under it.
+const componentSignalLabels: Record<SignalName, string> = {
+	closeness: i18n.t('detail.legendCloseness'),
+	lateGame: i18n.t('detail.legendLateGame'),
+	momentum: i18n.t('detail.legendMomentum'),
+	leadChanges: i18n.t('detail.legendLeadChanges'),
+	comeback: i18n.t('detail.legendComeback'),
+};
+
+const componentLegendItems = (Object.keys(componentSignalLabels) as SignalName[])
+	.map(signal => ({ label: componentSignalLabels[signal], color: signalColors[signal] }));
 
 const gameDetailView = ({
 	game,
@@ -157,22 +163,26 @@ const gameDetailView = ({
 	const appliedBoost = activePowerScore?.gameBoost ?? currentBoost;
 	const scoringOpportunityBoost = activePowerScore?.scoringOpportunityBoost ?? 0;
 	const postseasonBoost = activePowerScore?.postseasonBoost ?? 0;
-	const reason = activePowerScore?.reason ?? 'Best Available';
 
 	const chartPalette = theme === 'light' ? lightChartPalette : darkChartPalette;
+	const locale = useDisplayLocale();
+	// The scorer writes its reason in English. Another language gets it rebuilt from locale strings,
+	// or not at all when a fragment has no translation; until a score arrives there is nothing to say.
+	const spokenReason = activePowerScore?.reason ? translateReason(activePowerScore.reason, i18n.t, locale ?? 'en') : undefined;
+	const reason = spokenReason ? capitalizeReason(spokenReason, locale ?? 'en') : undefined;
 	// Before the charts, and handed to them: a clash that needs a colour read off a crest lands on a
 	// render with the same `game`, and a chart memoised on `game` alone would keep the old line.
 	useSwitchCrest(game.awayTeam, game.homeTeam);
-	const [awayLineColor, homeLineColor] = resolveTeamColorPair(game.awayTeam, game.homeTeam, '#60a5fa', '#f87171');
+	const [awayLineColor, homeLineColor] = resolveChartLineColors(game.awayTeam, game.homeTeam, chartPalette.surface);
 	const powerScoreOption = useMemo(() => (
-		buildPowerScoreOption(orderedPowerScoreHistory, chartPalette)
-	), [orderedPowerScoreHistory, chartPalette]);
+		buildPowerScoreOption(orderedPowerScoreHistory, chartPalette, locale)
+	), [orderedPowerScoreHistory, chartPalette, locale]);
 	const scoreTrendOption = useMemo(() => (
-		buildTeamScoreOption(orderedScoreHistory, game, chartPalette, [awayLineColor, homeLineColor])
-	), [orderedScoreHistory, game, chartPalette, awayLineColor, homeLineColor]);
+		buildTeamScoreOption(orderedScoreHistory, game, chartPalette, [awayLineColor, homeLineColor], locale)
+	), [orderedScoreHistory, game, chartPalette, awayLineColor, homeLineColor, locale]);
 	const componentOption = useMemo(() => (
-		buildComponentContributionOption(orderedPowerScoreHistory, chartPalette)
-	), [orderedPowerScoreHistory, chartPalette]);
+		buildComponentContributionOption(orderedPowerScoreHistory, chartPalette, componentSignalLabels, locale)
+	), [orderedPowerScoreHistory, chartPalette, locale]);
 	const { winProbability, seriesInfo, records, monoLogos, boxScore, standings, gameDurationMins } = useSummaryData(game);
 	const winProbabilityOption = useMemo(() => (
 		buildWinProbabilityOption(winProbability, game, chartPalette, [awayLineColor, homeLineColor])
@@ -205,24 +215,28 @@ const gameDetailView = ({
 		? i18n.t('detail.totalLabelBaseMax', { total, max: scoreMaxTotal })
 		: i18n.t('detail.totalLabel', { total, max: scoreMaxTotal });
 
-	// Observing the card itself rather than a scroll offset keeps the sticky-bar handoff exact at
-	// any hero height — pre-game, inning sports and postseason all differ.
+	// Observing the scoreline itself rather than a scroll offset keeps the sticky-bar handoff exact
+	// at any hero height — pre-game, inning sports and postseason all differ. It is the scoreline
+	// and not the whole hero, and the root is trimmed by the bar, so the compact matchup arrives as
+	// the score slides under the bar rather than once the at-bat panel or field strip below it has.
 	const shellRef = useRef<HTMLDivElement>(null);
 	const heroRef = useRef<HTMLDivElement>(null);
 	const [heroScrolledAway, setHeroScrolledAway] = useState(false);
 
 	useEffect(() => {
 		const root = shellRef.current;
-		const target = heroRef.current;
-		if (!root || !target || typeof IntersectionObserver === 'undefined') return;
+		const hero = heroRef.current;
+		if (!root || !hero || typeof IntersectionObserver === 'undefined') return;
+		const target = hero.querySelector('.game-detail-center, .gd-poster-teams') ?? hero;
+		const barHeight = root.querySelector<HTMLElement>('.game-detail-header')?.offsetHeight ?? 0;
 
 		const observer = new IntersectionObserver(
 			entries => { for (const entry of entries) setHeroScrolledAway(!entry.isIntersecting); },
-			{ root, threshold: 0 },
+			{ root, threshold: 0, rootMargin: `-${barHeight}px 0px 0px 0px` },
 		);
 		observer.observe(target);
 		return () => observer.disconnect();
-	}, []);
+	}, [isPreGame]);
 
 	// Everything that is not the box score or the table: the PowerScore and what explains
 	// it, what is happening in the game, and where it is being played. Lifted out of the
@@ -279,7 +293,7 @@ const gameDetailView = ({
 					postseasonBoost={postseasonBoost}
 					postseasonLabel={game?.postseasonLabel}
 					totalLabel={totalLabel}
-					reason={reason ? reason.charAt(0).toUpperCase() + reason.slice(1) : undefined}
+					reason={reason}
 					disabledSignals={disabledSignals}
 				/>
 
@@ -367,31 +381,32 @@ const gameDetailView = ({
 				)}
 			</div>
 
-			{tabbed ? (
-				<>
-					<DetailTabs tabs={tabs} tabId={tabId} paneId={paneId} />
-					{/* No `fade`. These three are one screen's worth of the same game seen three ways, not
-					    three places to travel between, and crossfading them puts a beat of half-legible
-					    scoreline between a tap and the table it asked for. Bootstrap reads the class to
-					    decide whether to wait on a transition before revealing the pane, so dropping it is
-					    what makes the swap synchronous — `show` is inert without it and is left on to match
-					    what the plugin adds to every pane it activates. */}
-					<div className='tab-content'>
-						{tabs.map((tab, index) => (
-							<div
-								key={tab.id}
-								id={paneId(tab.id)}
-								className={`tab-pane${index === 0 ? ' show active' : ''}`}
-								role='tabpanel'
-								aria-labelledby={tabId(tab.id)}
-								tabIndex={0}
-							>
-								{paneFor(tab.id)}
-							</div>
-						))}
+			{tabbed && <DetailTabs tabs={tabs} tabId={tabId} paneId={paneId} />}
+			{/* No `fade`. These three are one screen's worth of the same game seen three ways, not
+			    three places to travel between, and crossfading them puts a beat of half-legible
+			    scoreline between a tap and the table it asked for. Bootstrap reads the class to
+			    decide whether to wait on a transition before revealing the pane, so dropping it is
+			    what makes the swap synchronous — `show` is inert without it and is left on to match
+			    what the plugin adds to every pane it activates.
+
+			    The wrapper and the overview pane render even with one tab, so the summary arriving
+			    and growing the strip does not remount the overview and replay its charts. Untabbed,
+			    the pane drops its classes: a pane Bootstrap had deactivated would otherwise stay
+			    hidden, since React leaves a className alone that did not change between renders. */}
+			<div className='tab-content'>
+				{tabs.map((tab, index) => (
+					<div
+						key={tab.id}
+						id={paneId(tab.id)}
+						className={tabbed ? `tab-pane${index === 0 ? ' show active' : ''}` : undefined}
+						role={tabbed ? 'tabpanel' : undefined}
+						aria-labelledby={tabbed ? tabId(tab.id) : undefined}
+						tabIndex={tabbed ? 0 : undefined}
+					>
+						{paneFor(tab.id)}
 					</div>
-				</>
-			) : overviewPanel}
+				))}
+			</div>
 
 			{decorations.falling && <HolidayDrift kind={decorations.falling} depth={decorations.depth} theme={theme} />}
 		</div>

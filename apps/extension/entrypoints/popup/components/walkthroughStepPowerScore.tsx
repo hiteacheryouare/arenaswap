@@ -7,6 +7,8 @@ import {
 	scoreMaxMomentum,
 } from '@arenaswap/core/constants';
 import { i18n } from '#i18n';
+import { signalColors } from '@arenaswap/ui/src/components/signalColors';
+import focusStepTitle from './stepTitleFocus';
 
 interface walkthroughStepPowerScoreProps {
 	onNext: () => void;
@@ -21,7 +23,7 @@ const signalMeta = [
 		tooltipKey: 'powerScore.tooltipCloseness',
 		measuredKey: 'stepPowerScore.closenessMeasured',
 		max: scoreMaxCloseness,
-		color: '#22c55e',
+		color: signalColors.closeness,
 	},
 	{
 		name: 'lateGame',
@@ -29,7 +31,7 @@ const signalMeta = [
 		tooltipKey: 'powerScore.tooltipLateGame',
 		measuredKey: 'stepPowerScore.lateGameMeasured',
 		max: scoreMaxLateGame,
-		color: '#f75c03',
+		color: signalColors.lateGame,
 	},
 	{
 		name: 'momentum',
@@ -37,7 +39,7 @@ const signalMeta = [
 		tooltipKey: 'powerScore.tooltipMomentum',
 		measuredKey: 'stepPowerScore.momentumMeasured',
 		max: scoreMaxMomentum,
-		color: '#2274a5',
+		color: signalColors.momentum,
 	},
 	{
 		name: 'leadChanges',
@@ -45,7 +47,7 @@ const signalMeta = [
 		tooltipKey: 'powerScore.tooltipLeadChanges',
 		measuredKey: 'stepPowerScore.leadChangesMeasured',
 		max: scoreMaxLeadChanges,
-		color: '#f1c40f',
+		color: signalColors.leadChanges,
 	},
 	{
 		name: 'comeback',
@@ -53,7 +55,7 @@ const signalMeta = [
 		tooltipKey: 'powerScore.tooltipComeback',
 		measuredKey: 'stepPowerScore.comebackMeasured',
 		max: scoreMaxComeback,
-		color: '#d90368',
+		color: signalColors.comeback,
 	},
 ] as const;
 
@@ -92,7 +94,7 @@ const boostPenaltyMeta = [
 	},
 	{
 		name: 'scoringOpp',
-		labelKey: 'powerScore.scoringOpportunity',
+		labelKey: 'stepPowerScore.scoringOpportunityName',
 		descriptionKey: 'powerScore.tooltipScoringOpportunity',
 		measuredKey: 'stepPowerScore.scoringOpportunityMeasured',
 		color: '#f75c03',
@@ -346,7 +348,7 @@ const walkthroughStepPowerScore = ({ onNext, onBack, initialSubStep = 0 }: walkt
 		if (subStep === 0) {
 			return (
 				<>
-					<div className='fw-bold fs-5 text-center mb-1'>{i18n.t('stepPowerScore.introTitle')}</div>
+					<div className='fw-bold fs-5 text-center mb-1 popup-step-title' role='heading' aria-level={1} tabIndex={-1} ref={focusStepTitle} data-step-title>{i18n.t('stepPowerScore.introTitle')}</div>
 					<div className='text-body-secondary small text-center mb-3 lh-base'>
 						{i18n.t('stepPowerScore.subtitle')}
 					</div>
@@ -363,7 +365,7 @@ const walkthroughStepPowerScore = ({ onNext, onBack, initialSubStep = 0 }: walkt
 			const activeDot = dots[subStep - 1]!;
 			return (
 				<>
-					<div className='fw-bold fs-5 text-center mb-1'>{i18n.t('stepPowerScore.title')}</div>
+					<div className='fw-bold fs-5 text-center mb-1 popup-step-title' role='heading' aria-level={1} tabIndex={-1} ref={focusStepTitle} data-step-title>{i18n.t('stepPowerScore.title')}</div>
 					<div className='text-body-secondary small text-center mb-3 lh-base'>
 						{i18n.t('stepPowerScore.subtitle')}
 					</div>

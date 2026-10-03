@@ -12,6 +12,8 @@ import {
 	resolveFinishedTabs,
 } from '../utils/finishedTabs';
 import { loadStoredUserPreferences } from '../utils/prefsStorage';
+import { boostReasonParts, capitalizeReason, translateReason } from '../utils/powerScoreReason';
+import { displayLocale } from '../utils/displayLocale';
 import {
 	normalizeReviewPromptState,
 	recordSuccessfulReviewPromptSwitch,
@@ -19,6 +21,7 @@ import {
 } from '../utils/reviewPrompt';
 import {
 	applyDisabledSignals,
+	clampBoostPoints,
 	createDefaultUserPreferences,
 	createFavoriteTeamKey,
 	guideMinUpcomingDays,
@@ -99,6 +102,7 @@ const coarseSampleIntervalMs = 120_000;
 // polls merge their answers into it, so what ages here is only the roster of games — a kickoff
 // being added to the day — rather than any score or clock on screen.
 const guideSlateTtlMs = 10 * 60 * 1000;
+const switchNotificationId = 'arenaswap-switch';
 
 // Dropping the oldest snapshots would take the start of the game with them, and the start is the
 // end the chart gate measures from. So the cap is met by thinning the already-coarse tail further,
@@ -149,7 +153,6 @@ const retainSnapshots = <T extends { timestamp: number }>(
 	return thinToCap(coarse, recent);
 };
 
-const capitalizeFirst = (s: string) => s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
 
 const getOpenTabIds = async (): Promise<Set<number>> => {
 	const allTabs = await browser.tabs.query({});
@@ -457,12 +460,7 @@ export default defineBackground(() => {
 
 	const getGameLabel = (gameId: string): string => {
 		const game = games.find(g => g.id === gameId);
-		return game ? `${game.awayTeam.abbreviation} vs ${game.homeTeam.abbreviation}` : 'Unknown Game';
-	};
-
-	const getVenueName = (gameId: string): string => {
-		const game = games.find(g => g.id === gameId);
-		return game?.venueName ?? 'the arena';
+		return game ? `${game.awayTeam.abbreviation} ${i18n.t('gameCard.vs')} ${game.homeTeam.abbreviation}` : i18n.t('notification.unknownGame');
 	};
 
 	// The standby tab lives outside the game registry but is still ours to mute — otherwise it
@@ -589,8 +587,10 @@ export default defineBackground(() => {
 		if (gameId) await recordSuccessfulSwitchForReviewPrompt(lastSwitchTime);
 
 		if (prefs.notificationsEnabled) {
+			// One id for every switch, so each notification replaces the last instead of a long game
+			// leaving dozens of them stacked in the notification centre.
 			if (!gameId) {
-				await browser.notifications.create({
+				await browser.notifications.create(switchNotificationId, {
 					type: 'basic',
 					iconUrl: 'icon/128.png',
 					title: i18n.t('notification.standbyTitle'),
@@ -599,16 +599,19 @@ export default defineBackground(() => {
 			} else {
 				const game = games.find(g => g.id === gameId);
 				const scoreTitle = game
-					? `${game.awayTeam.abbreviation} ${game.awayTeam.score}-${game.homeTeam.score} ${game.homeTeam.abbreviation}`
+					? `${game.awayTeam.abbreviation} ${game.awayTeam.score}–${game.homeTeam.score} ${game.homeTeam.abbreviation}`
 					: getGameLabel(gameId);
-				const venue = getVenueName(gameId);
-				// `reason` is generated English text from the powerscore engine, so it stays English
-				// in every locale — the same way it already reads on the game detail screen.
-				const message = reason
-					? i18n.t('notification.switchedMessageWithReason', { reason: capitalizeFirst(reason), venue })
-					: i18n.t('notification.switchedMessage', { venue });
+				const venue = game?.venueName;
+				// A reason this language cannot be given drops out, leaving the plain message, and a
+				// game with no venue we know says where it is going without naming a building.
+				const locale = displayLocale();
+				const spoken = reason ? translateReason(reason, i18n.t, locale) : undefined;
+				const said = spoken ? capitalizeReason(spoken, locale) : undefined;
+				const message = venue
+					? (said ? i18n.t('notification.switchedMessageWithReason', { reason: said, venue }) : i18n.t('notification.switchedMessage', { venue }))
+					: (said ? i18n.t('notification.switchedMessageWithReasonNoVenue', { reason: said }) : i18n.t('notification.switchedMessageNoVenue'));
 
-				await browser.notifications.create({
+				await browser.notifications.create(switchNotificationId, {
 					type: 'basic',
 					iconUrl: 'icon/128.png',
 					title: i18n.t('notification.switchedTitle', { score: scoreTitle }),
@@ -875,10 +878,7 @@ export default defineBackground(() => {
 			);
 			const reasonParts = [
 				baseScore.reason,
-				favoriteBonus > 0 && `favorite bonus (+${favoriteBonus})`,
-				gameBoost > 0 && `game boost (+${gameBoost})`,
-				scoringOpportunityBoost > 0 && `scoring opportunity (+${scoringOpportunityBoost})`,
-				postseasonBoost > 0 && `postseason (+${postseasonBoost})`,
+				...boostReasonParts({ favoriteBonus, gameBoost, scoringOpportunityBoost, postseasonBoost }),
 			].filter(Boolean);
 
 			return normalizePowerScoreResult(
@@ -1281,7 +1281,7 @@ export default defineBackground(() => {
 		}
 		if (msg.type === 'SET_GAME_BOOST') {
 			return stateReady.then(async () => {
-				const boost = Math.max(0, Math.round(Number(msg.boost) || 0));
+				const boost = clampBoostPoints(Number(msg.boost));
 				if (boost === 0) {
 					delete gameBoosts[msg.gameId];
 				} else {

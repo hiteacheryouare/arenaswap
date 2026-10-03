@@ -15,9 +15,31 @@ describe('conditionIcon', () => {
 		expect(conditionIcon('Thunderstorms/Wind')).toBe('bi-cloud-lightning-rain');
 	});
 
+	// Our sources' "w/" phrasing contains a slash, so splitting on it alone left "mostly cloudy w".
+	test('reads the precipitation out of a "w/" label', () => {
+		expect(conditionIcon('Mostly cloudy w/ t-storms')).toBe('bi-cloud-lightning-rain');
+		expect(conditionIcon('Mostly cloudy w/ showers')).toBe('bi-cloud-drizzle');
+		expect(conditionIcon('Partly sunny w/ flurries')).toBe('bi-cloud-snow');
+	});
+
 	test('falls back to a generic cloud for anything unrecognized', () => {
 		expect(conditionIcon('Volcanic Ash')).toBe('bi-cloud');
 		expect(conditionIcon('')).toBe('bi-cloud');
+	});
+
+	test('prefers the AccuWeather code over the label', () => {
+		expect(conditionIcon('Thunderstorms', 15)).toBe('bi-cloud-lightning-rain');
+		expect(conditionIcon('Some new phrasing', 26)).toBe('bi-cloud-sleet');
+	});
+
+	test('draws a moon for the night codes', () => {
+		expect(conditionIcon('Clear', 33)).toBe('bi-moon-stars');
+		expect(conditionIcon('Intermittent clouds', 36)).toBe('bi-cloud-moon');
+		expect(conditionIcon('Intermittent clouds', 4)).toBe('bi-cloud-sun');
+	});
+
+	test('falls back to the label for a code AccuWeather never assigns', () => {
+		expect(conditionIcon('Rain', 9)).toBe('bi-cloud-rain');
 	});
 });
 

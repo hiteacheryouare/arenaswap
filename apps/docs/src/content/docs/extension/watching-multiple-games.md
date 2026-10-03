@@ -8,7 +8,7 @@ faq:
   - q: How do I watch multiple games at once in one browser?
     a: Open each game's stream in its own tab. Then assign that tab to the matching game in ArenaSwap. ArenaSwap switches your active tab to whichever assigned game is most exciting and mutes the rest.
   - q: Does ArenaSwap work with any streaming service?
-    a: Yes. ArenaSwap switches and mutes browser tabs rather than plugging into a service, so it works with any site that plays a stream in a tab. That includes ESPN+, Peacock, YouTube TV, and your cable provider's site.
+    a: Yes. ArenaSwap switches and mutes browser tabs rather than plugging into a service, so it works with any site that plays a stream in a tab. That includes Peacock, Prime Video, YouTube TV, and your cable provider's site.
   - q: How many games can I track at once?
     a: There's no fixed limit. Assign as many tabs as you have open streams for.
 ---
@@ -17,7 +17,7 @@ Watching several games at once used to mean a wall of muted tabs and constant al
 
 ## Open each stream in its own tab
 
-Start each game the way you already do, in whatever tab and on whatever service you stream it from. ESPN+, Peacock, YouTube TV, your cable provider's site, a free league stream, it doesn't matter. ArenaSwap only cares that the stream lives in its own browser tab.
+Start each game the way you already do, in whatever tab and on whatever service you stream it from. Peacock, Prime Video, YouTube TV, your cable provider's site, a free league stream, it doesn't matter. ArenaSwap only cares that the stream lives in its own browser tab.
 
 ## Assign a tab to each game
 

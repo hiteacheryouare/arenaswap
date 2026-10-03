@@ -1,0 +1,58 @@
+name: Translation issue
+description: Report a wrong, awkward or missing translation
+labels: [i18n]
+body:
+  - type: dropdown
+    id: locale
+    attributes:
+      label: Language
+      options:
+        - de (German)
+        - en (English)
+        - es (Spanish)
+        - fil (Filipino)
+        - fr (French)
+        - it (Italian)
+        - ja (Japanese)
+        - ko (Korean)
+        - pt_BR (Portuguese, Brazil)
+        - pt_PT (Portuguese, Portugal)
+        - zh_CN (Chinese, Simplified)
+        - zh_TW (Chinese, Traditional)
+    validations:
+      required: true
+  - type: dropdown
+    id: where
+    attributes:
+      label: Where it appears
+      options:
+        - Extension popup
+        - Guide
+        - Onboarding or tour
+        - Notifications
+        - Browser store listing
+        - Website
+    validations:
+      required: true
+  - type: textarea
+    id: current
+    attributes:
+      label: Current text
+      description: Copy the text exactly as it appears, or describe what's missing.
+    validations:
+      required: true
+  - type: textarea
+    id: suggested
+    attributes:
+      label: Suggested text
+      description: What it should say, if you know.
+  - type: textarea
+    id: why
+    attributes:
+      label: What's wrong with it
+      description: Mistranslation, wrong register, too long for its space, untranslated English, …
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: Screenshot
+      description: A screenshot helps when the problem is length or context.

@@ -4,6 +4,7 @@ import type { LeagueId, LeagueLogoMap, SportType } from '@arenaswap/core/types';
 import Crest from '@arenaswap/ui/src/components/crest';
 import { toLeagueInitials, type leagueConfig } from './leagueLogo';
 import { leaguesBySportType, sportTypeLabels, sportTypeOrder } from '../popupHelpers';
+import focusStepTitle from './stepTitleFocus';
 
 interface onboardingLeaguePickerProps {
 	selectedLeagues: Set<LeagueId>;
@@ -47,7 +48,7 @@ const onboardingLeaguePicker = ({
 			</button>
 			<span className='small text-body-secondary text-uppercase ms-auto'>{i18n.t('leaguePicker.step', [2, 3])}</span>
 		</div>
-		<div className='fw-bold lh-sm mb-3 fs-5'>{i18n.t('leaguePicker.title')}</div>
+		<div className='fw-bold lh-sm mb-3 fs-5 popup-step-title' role='heading' aria-level={1} tabIndex={-1} ref={focusStepTitle} data-step-title>{i18n.t('leaguePicker.title')}</div>
 
 		<div>
 			{(Object.keys(sportTypeOrder) as SportType[])

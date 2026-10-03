@@ -3,6 +3,7 @@ import { i18n } from '#i18n';
 import type { EspnTeamEntry } from '@arenaswap/core';
 import { createFavoriteTeamKey } from '@arenaswap/core/constants';
 import TeamPickerList from './teamPickerList';
+import focusStepTitle from './stepTitleFocus';
 
 interface onboardingTeamPickerProps {
 	teams: EspnTeamEntry[];
@@ -38,7 +39,7 @@ const onboardingTeamPicker = ({
 				<span className='small text-body-secondary text-uppercase ms-auto'>{i18n.t('teamPicker.step', [3, 3])}</span>
 			</div>
 
-			<div className='fw-bold lh-sm mb-1 fs-5'>{i18n.t('teamPicker.title')}</div>
+			<div className='fw-bold lh-sm mb-1 fs-5 popup-step-title' role='heading' aria-level={1} tabIndex={-1} ref={focusStepTitle} data-step-title>{i18n.t('teamPicker.title')}</div>
 			<div className='setting-explainer mb-2'>
 				{i18n.t('teamPicker.explainer')}
 			</div>
@@ -52,7 +53,6 @@ const onboardingTeamPicker = ({
 				selectedFavorites={selectedFavorites}
 				onToggleFavorite={team => onToggleFavorite(createFavoriteTeamKey(team.leagueId, team.id))}
 				onRetry={onRetry}
-				onSkip={onSkip}
 			/>
 
 			<div className='d-flex align-items-center justify-content-between mt-3 pt-2 border-top'>

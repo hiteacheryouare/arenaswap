@@ -2,11 +2,12 @@
 import { Image } from 'astro:assets';
 import './_screenshot.scss';
 import ScreenshotCard from '../../components/ScreenshotCard';
+import ScreenshotCrests from '../../components/ScreenshotCrests.astro';
 import logoImg from '../../assets/full_logo_white_on_transparent.svg';
 import iconImg from '../../assets/icon_white_on_transparent.svg';
 
 const tabs = [
-	{ name: 'ESPN+',           color: '#CC0000', initial: 'E' },
+	{ name: 'Prime Video',     color: '#00A8E1', initial: 'P' },
 	{ name: 'NBA League Pass', color: '#1D428A', initial: 'N' },
 	{ name: 'NFL+',            color: '#013369', initial: 'F' },
 	{ name: 'NHL.tv',          color: '#000000', initial: 'H' },
@@ -19,8 +20,8 @@ const chiPhiGame = {
 	id: 'sc2-nba',
 	league: 'nba',
 	sportType: 'basketball',
-	awayTeam: { id: '4', name: 'Chicago Bulls', abbreviation: 'CHI', score: 65, logo: 'https://a.espncdn.com/i/teamlogos/nba/500/4.png', color: '#CE1141', alternateColor: '#000000' },
-	homeTeam: { id: '20', name: 'Philadelphia 76ers', abbreviation: 'PHI', score: 68, logo: 'https://a.espncdn.com/i/teamlogos/nba/500/20.png', color: '#006BB6', alternateColor: '#ED174C' },
+	awayTeam: { id: '4', name: 'Chicago Bulls', abbreviation: 'CHI', score: 65, logo: 'https://a.espncdn.com/i/teamlogos/nba/500/chi.png', color: '#CE1141', alternateColor: '#000000' },
+	homeTeam: { id: '20', name: 'Philadelphia 76ers', abbreviation: 'PHI', score: 68, logo: 'https://a.espncdn.com/i/teamlogos/nba/500/phi.png', color: '#006BB6', alternateColor: '#ED174C' },
 	period: 3, clockSeconds: 284, status: 'in',
 	venueName: 'Xfinity Mobile Arena · Philadelphia, PA',
 	broadcasts: ['NBA League Pass'],
@@ -121,7 +122,7 @@ const bosNyyScore = { gameId: 'sc2-mlb', total: 71, closeness: 20, lateGame: 15,
 						<div class='popup-header'>
 							<Image src={logoImg} alt='ArenaSwap' class='popup-logo' />
 							<div class='popup-header-right'>
-								<i class='bi bi-gear-fill' style='color:#8b949e;font-size:0.9rem;'></i>
+								<i class='bi bi-gear' style='color:#8b949e;font-size:0.9rem;'></i>
 								<div class='popup-switch'>
 									<div class='popup-switch-thumb'></div>
 								</div>
@@ -428,5 +429,6 @@ const bosNyyScore = { gameId: 'sc2-mlb', total: 71, closeness: 20, lateGame: 15,
 			width: 300px;
 		}
 	</style>
+	<ScreenshotCrests />
 </body>
 </html>

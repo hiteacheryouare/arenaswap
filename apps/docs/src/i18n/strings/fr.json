@@ -28,11 +28,44 @@
 		"faq": "FAQ",
 		"legal": "Mentions légales",
 		"openMenu": "Ouvrir le menu",
+		"skipToContent": "Aller au contenu",
 		"language": "Langue",
 		"chooseLanguage": "Choisir une langue",
 		"englishOnly": "Cette page n'est disponible qu'en anglais.",
 		"untranslatedHeading": "Cette page n'a pas encore été traduite.",
 		"untranslatedBody": "La documentation et les notes de version sont rédigées en anglais. Tout le reste du site est disponible dans ta langue."
+	},
+	"reading": {
+		"docsHeading": "Documentation.",
+		"docsMetaTitle": "Documentation d'ArenaSwap",
+		"docsMetaDescription": "Des guides pour suivre plusieurs matchs à la fois avec ArenaSwap, et la référence développeur du paquet PowerScore, celui qui décide quel match l'emporte.",
+		"docsSectionMetaTitle": "{heading} — Documentation d'ArenaSwap",
+		"docsSectionHeading": "{heading}.",
+		"docsNavLabel": "Documentation",
+		"docsBeingWritten": "En cours de rédaction.",
+		"commonQuestions": "Questions fréquentes",
+		"nearbyArticles": "Articles voisins",
+		"releasesHeading": "Notes de version.",
+		"releasesMetaTitle": "Notes de version — ArenaSwap",
+		"releasesMetaDescription": "Ce qui arrive dans chaque version d'ArenaSwap, et ce que ça change pour toi.",
+		"releasesRss": "S'abonner par RSS",
+		"releasesEmpty": "Rien de publié pour l'instant.",
+		"releaseVersion": "Version {version}",
+		"backToReleases": "Retour aux notes de version",
+		"inThisRelease": "Dans cette version",
+		"otherReleases": "Autres versions",
+		"sections": {
+			"extension": {
+				"title": "L'extension",
+				"heading": "Utiliser ArenaSwap",
+				"description": "Installer ArenaSwap, associer des onglets aux matchs, régler quand il bascule, et Standby Stream."
+			},
+			"powerscore": {
+				"title": "PowerScore",
+				"heading": "Le paquet PowerScore",
+				"description": "Comment un match est noté. Les cinq signaux, les boosts, les pénalités et les types."
+			}
+		}
 	},
 	"install": {
 		"addTo": "Ajouter à {browser}",
@@ -54,7 +87,7 @@
 		"firefoxAddons": "Firefox Add-ons",
 		"edgeAddons": "Edge Add-ons",
 		"iscLicense": "ISC License",
-		"disclaimer": "Non affilié à ESPN, la NFL, la NBA, la NHL, la MLB, la MLS ni à aucune autre ligue suivie par cette extension, et non soutenu par elles.",
+		"disclaimer": "Non affilié à la NFL, la NBA, la NHL, la MLB, la MLS ni à aucune autre ligue suivie par cette extension, et non soutenu par elles.",
 		"legalNotices": "Mentions légales",
 		"madeWith": "Fait avec ❤️ à Philadelphie & Boston par {name}"
 	},
@@ -75,7 +108,8 @@
 			"captionSwitched": "ArenaSwap t'a fait passer de {from} à {to}.",
 			"captionWatching": "Tu regardes {game}, le meilleur match du moment.",
 			"replay": "Lancer la démo",
-			"tabLabel": "Onglet {number} : {host}"
+			"tabLabel": "Onglet {number} : {host}",
+			"browserLabel": "Un navigateur avec trois matchs en direct ouverts et ArenaSwap en marche"
 		},
 		"tabs": {
 			"titleLine1": "Configure une fois.",
@@ -165,11 +199,11 @@
 			},
 			{
 				"q": "Ai-je besoin d'un compte ou d'un abonnement ?",
-				"a": "Non. ArenaSwap est gratuit, ne demande aucun compte, et ne collecte rien. Il tourne entièrement dans ton navigateur et lit les scores publics d'ESPN. Rien de ce que tu regardes n'est envoyé où que ce soit."
+				"a": "Non. ArenaSwap est gratuit, ne demande aucun compte, et ne collecte rien. Il tourne entièrement dans ton navigateur et lit les scores publics de nos sources, qui gardent leurs jumelles braquées sur chaque match. Rien de ce que tu regardes n'est envoyé où que ce soit."
 			},
 			{
 				"q": "Fonctionnera-t-il avec mon service de streaming ?",
-				"a": "Tout stream qui se lit dans un onglet de navigateur fonctionne, parce qu'ArenaSwap change et met en sourdine des onglets plutôt que de s'intégrer à un service. Ça couvre ESPN+, Peacock, Paramount+, YouTube TV, Hulu Live, Fubo et les streams gratuits des ligues. Il ne peut rien pour une appli native ou un boîtier décodeur."
+				"a": "Tout stream qui se lit dans un onglet de navigateur fonctionne, parce qu'ArenaSwap change et met en sourdine des onglets plutôt que de s'intégrer à un service. Ça couvre Peacock, Paramount+, Prime Video, YouTube TV, Hulu Live, Fubo et les streams gratuits des ligues. Il ne peut rien pour une appli native ou un boîtier décodeur."
 			},
 			{
 				"q": "Comment fonctionne PowerScore ?",
@@ -378,6 +412,16 @@
 			"topOfInning": "Début de la manche",
 			"bottomOfInning": "Fin de la manche",
 			"shootout": "TAB {away}–{home}",
+			"periodQuarter": "QT{count}",
+			"periodFirstHalf": "1re MT",
+			"periodSecondHalf": "2e MT",
+			"period": "P{count}",
+			"periodInning": "Man. {count}",
+			"periodOvertime": "OT",
+			"periodOvertimeNumbered": "{count}OT",
+			"periodExtraTimeFirst": "PR1",
+			"periodExtraTimeSecond": "PR2",
+			"periodShootout": "TAB",
 			"downDistanceAt": "{downDistance} à {fieldPosition}"
 		},
 		"field": {
@@ -391,7 +435,7 @@
 			"sectionOtherLiveGames": "Matchs en direct",
 			"sectionUpNext": "À suivre",
 			"enableToggleLabel": "Activer le changement automatique",
-			"onStandbyStream": "En Standby Stream, en attente d'action"
+			"onStandbyStream": "Sur Standby Stream jusqu'à ce que ça chauffe"
 		},
 		"tabAssign": {
 			"placeholder": "— Associer un onglet —"
@@ -406,7 +450,7 @@
 			"groupSwitching": "Changement",
 			"groupSwitchingDesc": "L'empressement d'ArenaSwap à t'emmener vers un meilleur match.",
 			"groupScoring": "Notation",
-			"groupScoringDesc": "Les signaux qui alimentent le PowerScore et ce qui rapporte des points bonus.",
+			"groupScoringDesc": "Les signaux qui alimentent le PowerScore et ce qui rapporte un bonus.",
 			"groupLeagues": "Ligues",
 			"groupLeaguesDesc": "Les ligues suivies et si chacune a sa propre section.",
 			"groupDisplay": "Affichage",
@@ -436,7 +480,21 @@
 		"bso": {
 			"balls": "B",
 			"strikes": "S",
-			"outs": "O"
+			"outs": "O",
+			"ballsSpoken": "1 balle | $1 balles",
+			"strikesSpoken": "1 prise | $1 prises",
+			"outsSpoken": "1 retrait | $1 retraits",
+			"countSpoken": "{balls}, {strikes}, {outs}"
+		},
+		"bases": {
+			"empty": "Buts vides",
+			"first": "Coureur au premier but",
+			"second": "Coureur au deuxième but",
+			"third": "Coureur au troisième but",
+			"firstSecond": "Coureurs au premier et au deuxième but",
+			"firstThird": "Coureurs au premier et au troisième but",
+			"secondThird": "Coureurs au deuxième et au troisième but",
+			"loaded": "Buts remplis"
 		}
 	}
 }

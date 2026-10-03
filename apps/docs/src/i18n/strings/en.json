@@ -28,11 +28,44 @@
 		"faq": "FAQ",
 		"legal": "Legal notices",
 		"openMenu": "Open menu",
+		"skipToContent": "Skip to content",
 		"language": "Language",
 		"chooseLanguage": "Choose a language",
 		"englishOnly": "This page is only available in English.",
 		"untranslatedHeading": "This page has not been translated yet.",
 		"untranslatedBody": "The documentation and release notes are written in English. Everything else on the site is available in your language."
+	},
+	"reading": {
+		"docsHeading": "Documentation.",
+		"docsMetaTitle": "ArenaSwap documentation",
+		"docsMetaDescription": "Guides for watching several games at once with ArenaSwap, and the developer reference for the PowerScore package that decides which game wins.",
+		"docsSectionMetaTitle": "{heading} — ArenaSwap documentation",
+		"docsSectionHeading": "{heading}.",
+		"docsNavLabel": "Documentation",
+		"docsBeingWritten": "Being written.",
+		"commonQuestions": "Common questions",
+		"nearbyArticles": "Nearby articles",
+		"releasesHeading": "Release notes.",
+		"releasesMetaTitle": "Release notes — ArenaSwap",
+		"releasesMetaDescription": "What shipped in each version of ArenaSwap, and what it means if you're using it.",
+		"releasesRss": "Subscribe by RSS",
+		"releasesEmpty": "Nothing published yet.",
+		"releaseVersion": "Version {version}",
+		"backToReleases": "Back to release notes",
+		"inThisRelease": "In this release",
+		"otherReleases": "Other releases",
+		"sections": {
+			"extension": {
+				"title": "The extension",
+				"heading": "Using ArenaSwap",
+				"description": "Installing ArenaSwap, assigning tabs to games, tuning when it switches, and Standby Stream."
+			},
+			"powerscore": {
+				"title": "PowerScore",
+				"heading": "The PowerScore package",
+				"description": "How a game gets scored. The five signals, the boosts, the penalties and the types."
+			}
+		}
 	},
 	"install": {
 		"addTo": "Add to {browser}",
@@ -54,7 +87,7 @@
 		"firefoxAddons": "Firefox Add-ons",
 		"edgeAddons": "Edge Add-ons",
 		"iscLicense": "ISC License",
-		"disclaimer": "Not affiliated with or endorsed by ESPN, the NFL, NBA, NHL, MLB, MLS, or any other league tracked by this extension.",
+		"disclaimer": "Not affiliated with or endorsed by the NFL, NBA, NHL, MLB, MLS, or any other league tracked by this extension.",
 		"legalNotices": "Legal notices",
 		"madeWith": "Made with ❤️ in Philadelphia & Boston by {name}"
 	},
@@ -75,7 +108,8 @@
 			"captionSwitched": "ArenaSwap moved you off {from} and onto {to}.",
 			"captionWatching": "You are watching {game}, the best game on the board.",
 			"replay": "Play the demo",
-			"tabLabel": "Tab {number}: {host}"
+			"tabLabel": "Tab {number}: {host}",
+			"browserLabel": "A browser with three live games open and ArenaSwap running"
 		},
 		"tabs": {
 			"titleLine1": "Set it once.",
@@ -165,11 +199,11 @@
 			},
 			{
 				"q": "Do I need an account or a subscription?",
-				"a": "No. ArenaSwap is free, has no account, and collects nothing. It runs entirely in your browser and reads public scores from ESPN. Nothing about what you watch is sent anywhere."
+				"a": "No. ArenaSwap is free, has no account, and collects nothing. It runs entirely in your browser and reads public scores from our sources, who keep their binoculars on every game. Nothing about what you watch is sent anywhere."
 			},
 			{
 				"q": "Will it work with my streaming service?",
-				"a": "Any stream that plays in a browser tab works, because ArenaSwap switches and mutes tabs rather than integrating with a service. That covers ESPN+, Peacock, Paramount+, YouTube TV, Hulu Live, Fubo and the free league streams. It cannot help with a native app or a set-top box."
+				"a": "Any stream that plays in a browser tab works, because ArenaSwap switches and mutes tabs rather than integrating with a service. That covers Peacock, Paramount+, Prime Video, YouTube TV, Hulu Live, Fubo and the free league streams. It cannot help with a native app or a set-top box."
 			},
 			{
 				"q": "How does PowerScore work?",
@@ -378,6 +412,16 @@
 			"topOfInning": "Top of inning",
 			"bottomOfInning": "Bottom of inning",
 			"shootout": "PENS {away}–{home}",
+			"periodQuarter": "Q{count}",
+			"periodFirstHalf": "1H",
+			"periodSecondHalf": "2H",
+			"period": "P{count}",
+			"periodInning": "Inn {count}",
+			"periodOvertime": "OT",
+			"periodOvertimeNumbered": "{count}OT",
+			"periodExtraTimeFirst": "ET1",
+			"periodExtraTimeSecond": "ET2",
+			"periodShootout": "PENS",
 			"downDistanceAt": "{downDistance} at {fieldPosition}"
 		},
 		"field": {
@@ -391,29 +435,29 @@
 			"sectionOtherLiveGames": "Live Games",
 			"sectionUpNext": "Up Next",
 			"enableToggleLabel": "Enable auto-switching",
-			"onStandbyStream": "On standby stream, waiting for action"
+			"onStandbyStream": "On Standby Stream until something heats up"
 		},
 		"tabAssign": {
 			"placeholder": "— Assign a tab —"
 		},
 		"detail": {
-			"chartPowerScoreTitle": "PowerScore over time",
-			"chartScoreTitle": "Game score over time",
-			"chartWinProbTitle": "Win probability",
-			"chartComponentsTitle": "PowerScore components over time"
+			"chartPowerScoreTitle": "PowerScore Over Time",
+			"chartScoreTitle": "Game Score Over Time",
+			"chartWinProbTitle": "Win Probability",
+			"chartComponentsTitle": "PowerScore Components Over Time"
 		},
 		"setup": {
 			"groupSwitching": "Switching",
 			"groupSwitchingDesc": "How eager ArenaSwap is to move you to a better game.",
 			"groupScoring": "Scoring",
-			"groupScoringDesc": "Which signals feed a PowerScore, and what earns bonus points.",
+			"groupScoringDesc": "Which signals feed a PowerScore, and what earns a boost.",
 			"groupLeagues": "Leagues",
 			"groupLeaguesDesc": "Which leagues get tracked, and whether each one gets its own section.",
 			"groupDisplay": "Display",
 			"groupDisplayDesc": "What shows up on the main screen.",
 			"groupStandby": "Standby Stream",
 			"groupStandbyDesc": "Where to park you when every game goes quiet.",
-			"groupDemo": "Demo mode",
+			"groupDemo": "Demo Mode",
 			"groupDemoDesc": "Scripted games, so you can watch a switch happen on demand.",
 			"switchNotifications": "Switch notifications"
 		},
@@ -428,7 +472,7 @@
 			"off": "Off"
 		},
 		"favoriteTeamBonus": {
-			"label": "Favorite team bonus"
+			"label": "Favorite team boost"
 		},
 		"postseasonBoost": {
 			"label": "Postseason boost"
@@ -436,7 +480,21 @@
 		"bso": {
 			"balls": "B",
 			"strikes": "S",
-			"outs": "O"
+			"outs": "O",
+			"ballsSpoken": "1 ball | $1 balls",
+			"strikesSpoken": "1 strike | $1 strikes",
+			"outsSpoken": "1 out | $1 outs",
+			"countSpoken": "{balls}, {strikes}, {outs}"
+		},
+		"bases": {
+			"empty": "Bases empty",
+			"first": "Runner on first",
+			"second": "Runner on second",
+			"third": "Runner on third",
+			"firstSecond": "Runners on first and second",
+			"firstThird": "Runners on first and third",
+			"secondThird": "Runners on second and third",
+			"loaded": "Bases loaded"
 		}
 	}
 }

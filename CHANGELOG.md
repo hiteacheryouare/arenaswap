@@ -5,9 +5,49 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Loose ends from the polish review — 2026-10-02
+
+Two chart lines that lifting pulled onto the same blue now switch a side, the league logo follows its side's ink so it survives a gold card, the breakdown rows stay on one line on Chrome builds without subgrid, and the site's skip link clears AA. Two specs that raced a timer and an island's hydration now wait for them, since CI would otherwise go red at random.
+
+## The copy reads like one product, in every language — 2026-10-02
+
+Headings are Title Case in English, every plus is a boost, the tour says click, pro tips quote the real setting labels, Ludicrous Speed stays a name in all 12 locales, and the flat error, empty and notification lines picked up some wit, our sources' binoculars included. The site bundles and `defaultStrings.ts` follow the extension's English, and a new `gameListHeader.cy.tsx` holds the load-failed banner to two lines beside Retry in every locale, which is why German, French and both Portuguese say it more briefly.
+
+## Settings, onboarding and the tour stop fighting you — 2026-10-02
+
+The boost fields can be cleared and stop at 100, "Settings saved" only appears when something changed, sliders read in your units with digits that hold still, team search ignores accents and the whole row stars a team, the tour can be skipped and ends once, and search results land on the setting they name. Focus follows every step and page change, pickers announce their value, the help buttons are 24px targets, and Ludicrous Speed's strobes hold still under reduced motion. The digits-only `Geist Figures` face in `_fonts.scss` is how a label like "+10 per team" gets steady numbers without re-fonting its words.
+
+## The detail screen holds its place and speaks your language — 2026-10-02
+
+Tip-off and the final whistle no longer throw you back to Overview, the overview no longer remounts and replays its charts when the tab strip arrives, the sticky bar takes over the score the moment it slides under, and the Back button keeps its fill and focus ring. Stats line up flush right in Geist, the breakdown's numbers clear 4.5:1 with real minus signs and a name column that fits every language, the count and the bases are read aloud, and the charts honour reduced motion and translate their tooltips. The PowerScore reason is rebuilt from locale strings by `utils/powerScoreReason.ts`, which drops a line it can't fully translate rather than mixing languages, and a test over the scorer's tunables catches any upstream rewording.
+
+## The main list sweats the small stuff too — 2026-10-02
+
+The notices above the list share one surface that reads in both themes, Retry and Refresh show they're working, the no-games joke stays quiet when the load failed, and Up Next cards drop the day the pager already names. Cards stop twitching and blinking (tabular PowerScore figures, a still live dot, a glow that eases between team colours, one delay label instead of two), the star gets a 24px target, final cards lose the stale betting line, and the period label, the timeouts plural and every date now speak the popup's language. The shared Translator in `packages/ui` takes a plural count the way the extension's `i18n.t` does, and overtime reads OT, 2OT, 3OT to match the box score.
+
+## The website sweats the small stuff — 2026-10-02
+
+A polish pass over the docs site: buttons keep their colour when pressed and show a focus ring, the top nav marks where you are, wide tables scroll on phones, anchors land below the fixed header, docs links keep you in your language, the frame around the English docs and release notes is translated in all 12 locales with dates formatted per locale, and headlines balance their line breaks. The site's own copy no longer names its data source outside the legal pages, and the fine print, small dates, skip link, Escape-to-close menu and a 180px touch icon bring it up to AA. In-article links are rewritten by a Sätteri hast plugin in `src/lib/relativeDocLinks.ts`, since Astro 7's default Markdown processor ignores `rehypePlugins`.
+
+## The contribution docs describe this repo again — 2026-10-02
+
+CONTRIBUTING.md had drifted into describing Firebase, an apps/web workspace and a ban on the Jest and Cypress suites the repo actually runs; it now matches the real workspaces, tooling, everything command, 12-locale rule and robotic label, with its governance voice unchanged. The issue templates are now issue forms, joined by a translation form and a pull request template, and Code of Conduct reports go to a channel that exists.
+
+## Cards glide when the order changes — 2026-10-02
+
+When a PowerScore push reorders the list, or a game moves between Active Tabs and Live Games, every card that moved slides from its old spot to its new one over 400ms instead of jumping, in the popup and the landing page hero alike. Only an actual reorder starts a glide: a game arriving or leaving still pushes the cards below it without animation, and reduced motion turns the glide off.
+
+## Every forecast gets its own icon, moons included — 2026-10-02
+
+Weather icons now come from the AccuWeather icon number our sources send next to the condition, so all 40 codes are covered, the night codes draw a moon instead of a sun, and the label map is only a fallback. Labels like "Mostly cloudy w/ t-storms" were being split on their slash and falling through to a plain cloud, and the snow decoration had the same bug, so "Mostly cloudy w/ snow" never snowed.
+
+## The league mark reads on team colour — 2026-10-02
+
+The league label on a live or scheduled card now takes the text colour of the side it sits on instead of the grey it had on the white plate, and its logo is the version drawn for a dark ground. Final cards keep the grey label and the light-ground logo.
+
 ## Live and upcoming cards wear both teams' colours — 2026-10-01
 
-Live and scheduled cards, the detail header and the opening graphic are now painted in the two teams' colours, with each side's text in white or near-black depending on what reads on that colour, the crest our sources draw for a dark background, and only the tab picker on a dark panel at the bottom; Final cards keep their plain plate. Colour pairing copies Apple Sports, as worked out from 44 of its matchups: when the two colours look alike (CIEDE2000 under 11) the away team switches to its alternate, or to a colour read off its crest when that alternate is white, the old step that swapped near-black primaries for the alternate is gone, and the charts, series dots and the Guide's edges now draw the published colours rather than lightened ones. The table of Apple matchups lives in `colorUtils.test.ts`, minus Red Sox @ Yankees and Lakers @ Kings, the two it gets wrong.
+Live and scheduled cards, the detail header and the opening graphic are now painted in the two teams' colours, with each side's text in white or near-black depending on what reads on that colour, the crest our sources draw for a dark background, and only the tab picker on a dark panel at the bottom; Final cards keep their plain plate. Colour pairing copies Apple Sports, as worked out from 44 of its matchups: when the two colours look alike (CIEDE2000 under 11) the away team switches to its alternate, or to a colour read off its crest when that alternate is white, the old step that swapped near-black primaries for the alternate is gone, and the series dots and the Guide's edges now draw the published colours rather than lightened ones; chart lines alone are still lifted or darkened to read against the chart. The table of Apple matchups lives in `colorUtils.test.ts`, minus Red Sox @ Yankees and Lakers @ Kings, the two it gets wrong.
 
 ## Every league shares one list — 2026-09-30
 

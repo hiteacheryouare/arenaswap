@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { i18n } from '#i18n';
+import focusStepTitle from './stepTitleFocus';
 
 interface walkthroughStepLeaguesFavoritesProps {
 	onNext: () => void;
@@ -82,7 +83,7 @@ const walkthroughStepLeaguesFavorites = ({ onNext, onBack }: walkthroughStepLeag
 				{i18n.t('stepLeaguesFavorites.step', [7, 8])}
 			</div>
 
-			<div className='fw-bold fs-5 text-center mb-1'>{i18n.t('stepLeaguesFavorites.title')}</div>
+			<div className='fw-bold fs-5 text-center mb-1 popup-step-title' role='heading' aria-level={1} tabIndex={-1} ref={focusStepTitle} data-step-title>{i18n.t('stepLeaguesFavorites.title')}</div>
 			<div className='text-body-secondary small text-center mb-3 lh-base'>
 				{i18n.t('stepLeaguesFavorites.subtitle')}
 			</div>

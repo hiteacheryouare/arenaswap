@@ -3,6 +3,8 @@ import { getCollection } from 'astro:content';
 import Shell from '../../../layouts/Shell.astro';
 import UntranslatedNotice from '../../../components/UntranslatedNotice.astro';
 import { defaultLocale, localePath, localeRoutes } from '../../../i18n/locales';
+import { useTranslations } from '../../../i18n/ui';
+import formatReleaseDate from '../../../lib/releaseDate';
 
 // The home of the release notes: the newest one gets the room, everything before it gets a line.
 // No side nav — it used to list every version beside a page that is already a list of every
@@ -11,45 +13,45 @@ import { defaultLocale, localePath, localeRoutes } from '../../../i18n/locales';
 export const getStaticPaths = localeRoutes;
 
 const { locale } = Astro.props;
+const t = useTranslations(locale);
+const contentLang = locale === defaultLocale ? undefined : 'en';
 const releases = (await getCollection('releases', ({ data }) => !data.draft))
 	.toSorted((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
 const [latest, ...earlier] = releases;
 
-// UTC on purpose: a date-only frontmatter value is midnight UTC, and rendering it in the build
-// machine's zone shifts it a day west of Greenwich.
-const formatDate = (date: Date) => date.toLocaleDateString('en-US', {
-	month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC',
-});
+const formatDate = (date: Date) => formatReleaseDate(date, locale);
 ---
 <Shell
-	title='Release notes — ArenaSwap'
-	description="What shipped in each version of ArenaSwap, and what it means if you're using it."
+	title={t('reading.releasesMetaTitle')}
+	description={t('reading.releasesMetaDescription')}
 	path='releases/'
 	translated={false}
 >
 	<div class='container release-index-page'>
 		<div class='page-head'>
-			<h1 class='page-title pb-2'>Release notes.</h1>
-			<a href={`${localePath(defaultLocale)}releases/rss.xml`}>Subscribe by RSS <i class="bi bi-rss-fill"></i></a>.
+			<h1 class='page-title'>{t('reading.releasesHeading')}</h1>
+			<p class='page-lede release-feed'>
+				<a href={`${localePath(defaultLocale)}releases/rss.xml`}><i class='bi bi-rss-fill me-2' aria-hidden='true'></i>{t('reading.releasesRss')}</a>
+			</p>
 		</div>
 
 		<UntranslatedNotice />
 
 		<div class='release-index'>
-			{!latest && <p class='page-lede'>Nothing published yet.</p>}
+			{!latest && <p class='page-lede'>{t('reading.releasesEmpty')}</p>}
 
 			{latest && (
 				<article class='release-latest'>
 					<p class='release-meta'>
 						<time datetime={latest.data.date.toISOString()}>{formatDate(latest.data.date)}</time>
 						<span aria-hidden='true'> · </span>
-						Version {latest.data.version}
+						{t('reading.releaseVersion', { version: latest.data.version })}
 					</p>
-					<h2 class='release-latest-title'>
+					<h2 class='release-latest-title' lang={contentLang}>
 						<a href={localePath(locale, `releases/${latest.data.version}/`)}>{latest.data.title}</a>
 					</h2>
-					<p class='release-latest-summary'>{latest.data.summary}</p>
+					<p class='release-latest-summary' lang={contentLang}>{latest.data.summary}</p>
 				</article>
 			)}
 
@@ -60,12 +62,12 @@ const formatDate = (date: Date) => date.toLocaleDateString('en-US', {
 							<p class='release-meta'>
 								<time datetime={release.data.date.toISOString()}>{formatDate(release.data.date)}</time>
 								<span aria-hidden='true'> · </span>
-								Version {release.data.version}
+								{t('reading.releaseVersion', { version: release.data.version })}
 							</p>
-							<h3>
+							<h3 lang={contentLang}>
 								<a href={localePath(locale, `releases/${release.data.version}/`)}>{release.data.title}</a>
 							</h3>
-							<p class='release-list-summary'>{release.data.summary}</p>
+							<p class='release-list-summary' lang={contentLang}>{release.data.summary}</p>
 						</li>
 					))}
 				</ul>

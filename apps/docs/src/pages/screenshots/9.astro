@@ -2,6 +2,7 @@
 import './_screenshot.scss';
 import { Image } from 'astro:assets';
 import ScreenshotCard from '../../components/ScreenshotCard';
+import ScreenshotCrests from '../../components/ScreenshotCrests.astro';
 import logoImg from '../../assets/full_logo_white_on_transparent.svg';
 
 const bossTorGame = {
@@ -12,7 +13,7 @@ const bossTorGame = {
 	homeTeam: { id: 'tor', name: 'Toronto Maple Leafs', abbreviation: 'TOR', score: 3, logo: 'https://a.espncdn.com/i/teamlogos/nhl/500/tor.png', color: '#00205B', alternateColor: '#FFFFFF' },
 	period: 4, clockSeconds: 180, status: 'in',
 	venueName: 'Scotiabank Arena · Toronto, ON',
-	broadcasts: ['ESPN+'],
+	broadcasts: ['TNT'],
 };
 const bossTorScore = { gameId: 's9-nhl', total: 86, closeness: 30, lateGame: 24, momentum: 18, leadChanges: 12, comeback: 2, reason: '' };
 
@@ -54,8 +55,8 @@ const sfDalScore = { gameId: 's9-nfl', total: 83, closeness: 26, lateGame: 26, m
 						</div>
 						<div class='fl-tabs'>
 							<div class='fl-tab fl-tab-active'>
-								<div class='fl-fav' style='background:#CC0000'>E</div>
-								<span>ESPN+</span>
+								<div class='fl-fav' style='background:#111111'>T</div>
+								<span>TNT Sports</span>
 							</div>
 							<div class='fl-tab'>
 								<div class='fl-fav' style='background:#013369'>F</div>
@@ -87,7 +88,7 @@ const sfDalScore = { gameId: 's9-nfl', total: 83, closeness: 26, lateGame: 26, m
 							</div>
 							<div class='popup-section-title'>Active Tabs</div>
 							<div class='popup-league-label'>NHL</div>
-							<ScreenshotCard game={bossTorGame} excitementResult={bossTorScore} tabLabel='Tab 1: ESPN+' />
+							<ScreenshotCard game={bossTorGame} excitementResult={bossTorScore} tabLabel='Tab 1: TNT Sports' />
 							<div class='popup-league-label'>NFL</div>
 							<ScreenshotCard game={sfDalGame} excitementResult={sfDalScore} tabLabel='Tab 2: FOX Sports' />
 						</div>
@@ -270,5 +271,6 @@ const sfDalScore = { gameId: 's9-nfl', total: 83, closeness: 26, lateGame: 26, m
 			display: block;
 		}
 	</style>
+	<ScreenshotCrests />
 </body>
 </html>

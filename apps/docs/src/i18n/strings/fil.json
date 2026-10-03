@@ -28,11 +28,44 @@
 		"faq": "FAQ",
 		"legal": "Legal",
 		"openMenu": "Buksan ang menu",
+		"skipToContent": "Lumaktaw sa nilalaman",
 		"language": "Wika",
 		"chooseLanguage": "Pumili ng wika",
 		"englishOnly": "Available lang ang page na ito sa English.",
 		"untranslatedHeading": "Hindi pa isinalin ang page na ito.",
 		"untranslatedBody": "Nakasulat sa English ang dokumentasyon at ang mga release note. Available sa wika mo ang lahat ng iba pa sa site na ito."
+	},
+	"reading": {
+		"docsHeading": "Dokumentasyon.",
+		"docsMetaTitle": "Dokumentasyon ng ArenaSwap",
+		"docsMetaDescription": "Mga gabay sa panonood ng ilang laro nang sabay gamit ang ArenaSwap, at ang developer reference para sa PowerScore package na nagdedesisyon kung aling laro ang panalo.",
+		"docsSectionMetaTitle": "{heading} — Dokumentasyon ng ArenaSwap",
+		"docsSectionHeading": "{heading}.",
+		"docsNavLabel": "Dokumentasyon",
+		"docsBeingWritten": "Isinusulat pa.",
+		"commonQuestions": "Mga karaniwang tanong",
+		"nearbyArticles": "Mga kalapit na artikulo",
+		"releasesHeading": "Mga release note.",
+		"releasesMetaTitle": "Mga release note — ArenaSwap",
+		"releasesMetaDescription": "Ano ang dumating sa bawat version ng ArenaSwap, at ano ang ibig sabihin nito kung ginagamit mo ito.",
+		"releasesRss": "Mag-subscribe sa RSS",
+		"releasesEmpty": "Wala pang na-publish.",
+		"releaseVersion": "Version {version}",
+		"backToReleases": "Bumalik sa mga release note",
+		"inThisRelease": "Sa release na ito",
+		"otherReleases": "Iba pang release",
+		"sections": {
+			"extension": {
+				"title": "Ang extension",
+				"heading": "Paggamit ng ArenaSwap",
+				"description": "Pag-install ng ArenaSwap, pag-assign ng mga tab sa mga laro, pag-tune kung kailan ito lilipat, at Standby Stream."
+			},
+			"powerscore": {
+				"title": "PowerScore",
+				"heading": "Ang PowerScore package",
+				"description": "Paano naiiskor ang isang laro. Ang limang signal, ang mga boost, ang mga penalty at ang mga type."
+			}
+		}
 	},
 	"install": {
 		"addTo": "Idagdag sa {browser}",
@@ -54,7 +87,7 @@
 		"firefoxAddons": "Firefox Add-ons",
 		"edgeAddons": "Edge Add-ons",
 		"iscLicense": "ISC License",
-		"disclaimer": "Hindi affiliated sa o sinusuportahan ng ESPN, NFL, NBA, NHL, MLB, MLS, o anumang iba pang liga na tine-track ng extension na ito.",
+		"disclaimer": "Hindi affiliated sa o sinusuportahan ng NFL, NBA, NHL, MLB, MLS, o anumang iba pang liga na tine-track ng extension na ito.",
 		"legalNotices": "Legal Notices",
 		"madeWith": "Ginawa nang may ❤️ sa Philadelphia & Boston ni {name}"
 	},
@@ -75,7 +108,8 @@
 			"captionSwitched": "Nilipat ka ng ArenaSwap mula sa {from} papunta sa {to}.",
 			"captionWatching": "Pinapanood mo ngayon ang {game}, ang pinakamagandang laro sa board.",
 			"replay": "I-play ang demo",
-			"tabLabel": "Tab {number}: {host}"
+			"tabLabel": "Tab {number}: {host}",
+			"browserLabel": "Isang browser na may tatlong live na laro na bukas at tumatakbo ang ArenaSwap"
 		},
 		"tabs": {
 			"titleLine1": "I-set once lang.",
@@ -165,11 +199,11 @@
 			},
 			{
 				"q": "Kailangan ba ng account o subscription?",
-				"a": "Hindi. Libre ang ArenaSwap, walang account, at walang kinokolekta. Tumatakbo ito nang buo sa browser mo at nagbabasa ng public na score mula sa ESPN. Wala sa pinapanood mo ang ipinapadala kahit saan."
+				"a": "Hindi. Libre ang ArenaSwap, walang account, at walang kinokolekta. Tumatakbo ito nang buo sa browser mo at nagbabasa ng public na score mula sa aming mga source, na laging may binocular sa bawat laro. Wala sa pinapanood mo ang ipinapadala kahit saan."
 			},
 			{
 				"q": "Gagana ba ito sa streaming service ko?",
-				"a": "Anumang stream na tumatakbo sa browser tab ay gagana, dahil ang ArenaSwap ay lumilipat at nagmu-mute ng mga tab sa halip na mag-integrate sa isang service. Kasama dito ang ESPN+, Peacock, Paramount+, YouTube TV, Hulu Live, Fubo, at ang mga libreng stream ng liga. Hindi ito makakatulong sa native app o set-top box."
+				"a": "Anumang stream na tumatakbo sa browser tab ay gagana, dahil ang ArenaSwap ay lumilipat at nagmu-mute ng mga tab sa halip na mag-integrate sa isang service. Kasama dito ang Peacock, Paramount+, Prime Video, YouTube TV, Hulu Live, Fubo, at ang mga libreng stream ng liga. Hindi ito makakatulong sa native app o set-top box."
 			},
 			{
 				"q": "Paano gumagana ang PowerScore?",
@@ -375,9 +409,19 @@
 			"delay": "DELAY",
 			"delayFallback": "Delay",
 			"vs": "vs",
-			"topOfInning": "Top of inning",
-			"bottomOfInning": "Bottom of inning",
+			"topOfInning": "Itaas ng inning",
+			"bottomOfInning": "Ibaba ng inning",
 			"shootout": "PENS {away}–{home}",
+			"periodQuarter": "Q{count}",
+			"periodFirstHalf": "1H",
+			"periodSecondHalf": "2H",
+			"period": "P{count}",
+			"periodInning": "Inn {count}",
+			"periodOvertime": "OT",
+			"periodOvertimeNumbered": "{count}OT",
+			"periodExtraTimeFirst": "ET1",
+			"periodExtraTimeSecond": "ET2",
+			"periodShootout": "PENS",
 			"downDistanceAt": "{downDistance} sa {fieldPosition}"
 		},
 		"field": {
@@ -391,7 +435,7 @@
 			"sectionOtherLiveGames": "Mga Live na Laro",
 			"sectionUpNext": "Susunod",
 			"enableToggleLabel": "I-enable ang awtomatikong paglipat",
-			"onStandbyStream": "Naka-Standby Stream, naghihintay ng aksyon"
+			"onStandbyStream": "Naka-Standby Stream hanggang may uminit"
 		},
 		"tabAssign": {
 			"placeholder": "— Mag-assign ng tab —"
@@ -406,7 +450,7 @@
 			"groupSwitching": "Paglipat",
 			"groupSwitchingDesc": "Kung gaano kasabik ang ArenaSwap na ilipat ka sa mas magandang laro.",
 			"groupScoring": "Scoring",
-			"groupScoringDesc": "Kung aling mga signal ang bumubuo sa PowerScore, at ano ang nagbibigay ng bonus points.",
+			"groupScoringDesc": "Kung aling mga signal ang bumubuo sa PowerScore, at ano ang nagbibigay ng boost.",
 			"groupLeagues": "Mga Liga",
 			"groupLeaguesDesc": "Kung aling mga liga ang tine-track, at kung may sariling seksyon ba ang bawat isa.",
 			"groupDisplay": "Display",
@@ -428,7 +472,7 @@
 			"off": "Off"
 		},
 		"favoriteTeamBonus": {
-			"label": "Bonus ng Paboritong Team"
+			"label": "Boost ng Paboritong Team"
 		},
 		"postseasonBoost": {
 			"label": "Boost sa Postseason"
@@ -436,7 +480,21 @@
 		"bso": {
 			"balls": "B",
 			"strikes": "S",
-			"outs": "O"
+			"outs": "O",
+			"ballsSpoken": "1 ball | $1 balls",
+			"strikesSpoken": "1 strike | $1 strikes",
+			"outsSpoken": "1 out | $1 outs",
+			"countSpoken": "{balls}, {strikes}, {outs}"
+		},
+		"bases": {
+			"empty": "Walang runner sa base",
+			"first": "May runner sa first",
+			"second": "May runner sa second",
+			"third": "May runner sa third",
+			"firstSecond": "May runners sa first at second",
+			"firstThird": "May runners sa first at third",
+			"secondThird": "May runners sa second at third",
+			"loaded": "Bases loaded"
 		}
 	}
 }

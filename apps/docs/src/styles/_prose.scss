@@ -45,10 +45,12 @@
 		text-underline-offset: 2px;
 	}
 
+	// A long identifier in a sentence would otherwise push the column wider than a phone.
 	code {
 		font-family: var(--font-mono);
 		font-size: 0.9em;
 		color: var(--color-primary);
+		overflow-wrap: anywhere;
 	}
 
 	pre {
@@ -107,6 +109,16 @@
 		border: 0;
 		border-top: 1px solid #21262d;
 		margin: 2.4rem 0;
+	}
+
+	// Inside a table an identifier keeps its shape and the table scrolls, rather than every column
+	// collapsing to its narrowest break.
+	.prose-table {
+		overflow-x: auto;
+
+		code {
+			overflow-wrap: normal;
+		}
 	}
 
 	table {

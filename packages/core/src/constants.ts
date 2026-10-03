@@ -350,6 +350,17 @@ const normalizeSecondsPreference = (value: unknown, fallback: number): number =>
 		: fallback
 );
 
+// A boost of the whole scale already wins every switch, so anything past it is a typo.
+export const boostPointsMax = scoreMaxTotal;
+
+export const clampBoostPoints = (value: number): number => (
+	Number.isFinite(value) ? Math.max(0, Math.min(boostPointsMax, Math.round(value))) : 0
+);
+
+const normalizeBoostPreference = (value: unknown, fallback: number): number => (
+	typeof value === 'number' && Number.isFinite(value) ? clampBoostPoints(value) : fallback
+);
+
 const normalizeFavoriteTeamIds = (value: unknown): string[] => {
 	if (!Array.isArray(value)) return [];
 
@@ -434,7 +445,7 @@ export const normalizeUserPreferences = (storedPrefs: unknown): UserPreferences 
 		enabled: typeof candidate.enabled === 'boolean' ? candidate.enabled : defaults.enabled,
 		enabledLeagues: hasEnabledLeaguesField ? parsedEnabledLeagues : allLeagueIds,
 		favoriteTeamIds: normalizeFavoriteTeamIds(candidate.favoriteTeamIds),
-		favoriteTeamBonusPoints: normalizeSecondsPreference(candidate.favoriteTeamBonusPoints, defaults.favoriteTeamBonusPoints),
+		favoriteTeamBonusPoints: normalizeBoostPreference(candidate.favoriteTeamBonusPoints, defaults.favoriteTeamBonusPoints),
 		showUpcomingGames: typeof candidate.showUpcomingGames === 'boolean' ? candidate.showUpcomingGames : defaults.showUpcomingGames,
 		// Saved prefs that predate the setting belong to someone who has only ever seen league
 		// sections, so they keep them. Only a fresh install starts on the mixed list.
@@ -458,7 +469,7 @@ export const normalizeUserPreferences = (storedPrefs: unknown): UserPreferences 
 		holidaySnowEnabled: typeof candidate.holidaySnowEnabled === 'boolean' ? candidate.holidaySnowEnabled : defaults.holidaySnowEnabled,
 		holidayLightsEnabled: typeof candidate.holidayLightsEnabled === 'boolean' ? candidate.holidayLightsEnabled : defaults.holidayLightsEnabled,
 		holidayLeavesEnabled: typeof candidate.holidayLeavesEnabled === 'boolean' ? candidate.holidayLeavesEnabled : defaults.holidayLeavesEnabled,
-		postseasonBoostPoints: normalizeSecondsPreference(candidate.postseasonBoostPoints, defaults.postseasonBoostPoints),
+		postseasonBoostPoints: normalizeBoostPreference(candidate.postseasonBoostPoints, defaults.postseasonBoostPoints),
 		upcomingGamesDays: typeof candidate.upcomingGamesDays === 'number' && Number.isFinite(candidate.upcomingGamesDays)
 			? Math.max(upcomingGamesDaysMin, Math.min(upcomingGamesDaysMax, Math.round(candidate.upcomingGamesDays)))
 			: defaults.upcomingGamesDays,

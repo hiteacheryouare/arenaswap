@@ -3,6 +3,7 @@ import { teamLogoOnColor } from '@arenaswap/core/constants';
 import { matchupSurfaceStyle, powerScoreColor } from './gameCardShared';
 import { i18n } from '#i18n';
 import SelectDropdown from './selectDropdown';
+import focusStepTitle from './stepTitleFocus';
 
 interface walkthroughStepTabAssignProps {
 	onNext: () => void;
@@ -39,7 +40,7 @@ const walkthroughStepTabAssign = ({ onNext, onBack }: walkthroughStepTabAssignPr
 	<div className='popup-container d-flex flex-column'>
 		<div className='small text-body-secondary text-uppercase text-center pt-3 pb-2'>{i18n.t('stepTabAssign.step', [3, 8])}</div>
 
-		<div className='fw-bold fs-5 text-center mb-1'>{i18n.t('stepTabAssign.title')}</div>
+		<div className='fw-bold fs-5 text-center mb-1 popup-step-title' role='heading' aria-level={1} tabIndex={-1} ref={focusStepTitle} data-step-title>{i18n.t('stepTabAssign.title')}</div>
 		<div className='text-body-secondary small text-center mb-3 lh-base'>
 			{i18n.t('stepTabAssign.subtitle')}
 		</div>

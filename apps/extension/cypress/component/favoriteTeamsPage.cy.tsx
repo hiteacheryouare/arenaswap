@@ -119,8 +119,8 @@ describe('favoriteTeamsPage', () => {
 	it('pins what is already starred above the league groups', () => {
 		mountPage({ initialFavorites: ['nba:20'] });
 
-		cy.get('.popup-section-label').first().should('have.text', 'Your favorites');
-		cy.contains('.popup-section-label', 'Your favorites')
+		cy.get('.popup-section-label').first().should('have.text', 'Your Favorites');
+		cy.contains('.popup-section-label', 'Your Favorites')
 			.next()
 			.should('contain', 'Philadelphia 76ers')
 			.and('contain', 'NBA');
@@ -138,21 +138,21 @@ describe('favoriteTeamsPage', () => {
 	it('drops a team out of the pinned list when it is unstarred there', () => {
 		mountPage({ initialFavorites: ['nba:20'] });
 
-		cy.contains('.popup-section-label', 'Your favorites').should('exist');
+		cy.contains('.popup-section-label', 'Your Favorites').should('exist');
 		cy.get('[aria-label="Remove Philadelphia 76ers from favorites"]').first().click();
 
-		cy.contains('.popup-section-label', 'Your favorites').should('not.exist');
+		cy.contains('.popup-section-label', 'Your Favorites').should('not.exist');
 		cy.contains('Philadelphia 76ers').should('exist');
 	});
 
 	it('takes the pinned list away while a search is running', () => {
 		mountPage({ initialFavorites: ['nba:20'] });
 
-		cy.contains('.popup-section-label', 'Your favorites').should('exist');
+		cy.contains('.popup-section-label', 'Your Favorites').should('exist');
 		cy.get('input[type=search]').type('bulls');
 
 		cy.contains('Chicago Bulls').should('exist');
-		cy.contains('.popup-section-label', 'Your favorites').should('not.exist');
+		cy.contains('.popup-section-label', 'Your Favorites').should('not.exist');
 	});
 
 	it('shows a starred team once, in its league, while searching', () => {
@@ -168,10 +168,10 @@ describe('favoriteTeamsPage', () => {
 		mountPage({ initialFavorites: ['nba:20'] });
 
 		cy.get('input[type=search]').type('bulls');
-		cy.contains('.popup-section-label', 'Your favorites').should('not.exist');
+		cy.contains('.popup-section-label', 'Your Favorites').should('not.exist');
 
 		cy.get('input[type=search]').clear();
-		cy.contains('.popup-section-label', 'Your favorites').should('exist');
+		cy.contains('.popup-section-label', 'Your Favorites').should('exist');
 	});
 
 	it('says when nothing matches at all', () => {
@@ -186,7 +186,7 @@ describe('favoriteTeamsPage', () => {
 		stubTeamsFetch(true);
 		cy.mount(<Harness />);
 
-		cy.contains("Couldn't load teams.").should('exist');
+		cy.contains("Our scouts couldn't get the rosters.").should('exist');
 		cy.get('#favoriteTeamBonusInput').should('have.value', '8');
 	});
 
@@ -214,7 +214,7 @@ describe('favoriteTeamsPage', () => {
 		stubTeamsFetch(true);
 		cy.mount(<Harness />);
 
-		cy.contains("Couldn't load teams.").should('exist');
+		cy.contains("Our scouts couldn't get the rosters.").should('exist');
 		cy.contains('button', 'Retry').should('exist');
 		cy.contains('Skip for now').should('not.exist');
 	});

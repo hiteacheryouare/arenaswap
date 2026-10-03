@@ -5,14 +5,14 @@ interface emptyGameStateProps {
 	noLeaguesSelected: boolean;
 	noGames: boolean;
 	onOpenSetup: () => void;
-	onRefresh: () => void;
+	onRefresh: () => unknown;
 }
 
 const emptyGameState = ({ noLeaguesSelected, noGames, onOpenSetup, onRefresh }: emptyGameStateProps) => {
 	if (noLeaguesSelected) {
 		return (
 			<div className='text-center rounded mt-2 mb-3 p-3 popup-empty-leagues'>
-				<h2 className='fw-bold text-white lh-sm mb-2 popup-empty-leagues-title'>{i18n.t('empty.leaguesTitle')}</h2>
+				<h2 className='fw-bold text-body lh-sm mb-2 popup-empty-leagues-title'>{i18n.t('empty.leaguesTitle')}</h2>
 				<p className='mb-2 lh-sm popup-empty-leagues-copy'>
 					{i18n.t('empty.leaguesCopy')}
 				</p>

@@ -1,7 +1,7 @@
 ---
-import { docPath, docsSectionOrder, docsSections, getSectionDocs } from '../lib/docs';
-import { localePath } from '../i18n/locales';
-import { currentLocale } from '../i18n/ui';
+import { docPath, docsSectionCopy, docsSectionOrder, getSectionDocs } from '../lib/docs';
+import { defaultLocale, localePath } from '../i18n/locales';
+import { currentLocale, useTranslations } from '../i18n/ui';
 
 interface Props {
 	// Path without the base, e.g. `docs/extension/installing/`. Marks the matching link as current.
@@ -10,17 +10,19 @@ interface Props {
 
 const { current = '' } = Astro.props;
 const locale = currentLocale(Astro.currentLocale);
+const t = useTranslations(locale);
+const contentLang = locale === defaultLocale ? undefined : 'en';
 
 // Both trees, always, with the articles under them. A reader on a PowerScore page can see the
 // extension pages exist without going back to a hub to find out.
 const trees = await Promise.all(docsSectionOrder.map(async section => ({
 	section,
-	label: docsSections[section].title,
+	label: docsSectionCopy(t, section).title,
 	index: `docs/${section}/`,
 	pages: await getSectionDocs(section),
 })));
 ---
-<nav class='reading-nav docs-nav' aria-label='Documentation'>
+<nav class='reading-nav docs-nav' aria-label={t('reading.docsNavLabel')}>
 	{trees.map(tree => (
 		<Fragment>
 			<h2>
@@ -28,7 +30,7 @@ const trees = await Promise.all(docsSectionOrder.map(async section => ({
 					{tree.label}
 				</a>
 			</h2>
-			<ul>
+			<ul lang={contentLang}>
 				{tree.pages.map(page => (
 					<li>
 						<a

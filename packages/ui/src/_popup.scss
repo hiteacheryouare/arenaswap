@@ -34,6 +34,11 @@
 	width: 100%;
 	height: 100%;
 	animation: popupViewSlideIn m.$motion-base m.$motion-ease;
+
+	// The view the popup opens on is where it starts, not somewhere it went, so it arrives in place.
+	&.is-opening-view {
+		animation: none;
+	}
 }
 
 .popup-section-title {
@@ -115,6 +120,20 @@
 	overflow-y: auto;
 }
 
+// Registered so a change of top game, or the first game going live, eases between colours instead
+// of snapping. An unregistered custom property is a string and cannot be interpolated.
+@property --glow-away {
+	syntax: '<color>';
+	inherits: false;
+	initial-value: transparent;
+}
+
+@property --glow-home {
+	syntax: '<color>';
+	inherits: false;
+	initial-value: transparent;
+}
+
 // The top live game's two colours, glowing down from the top corners behind the header and fading
 // into the page. Below the list's own content, and it scrolls away with it.
 .popup-glow {
@@ -127,6 +146,7 @@
 		radial-gradient(120% 100% at 0% 0%, color-mix(in srgb, var(--glow-away) var(--glow-share), transparent), transparent 70%),
 		radial-gradient(120% 100% at 100% 0%, color-mix(in srgb, var(--glow-home) var(--glow-share), transparent), transparent 70%);
 	pointer-events: none;
+	transition: --glow-away m.$motion-deliberate m.$motion-ease, --glow-home m.$motion-deliberate m.$motion-ease;
 
 	[data-bs-theme='light'] & {
 		--glow-share: 22%;
@@ -151,12 +171,12 @@
 // `:not(:disabled)` is what keeps it off the website, which renders this same header as a
 // picture of the popup with both buttons disabled. A disabled button still matches `:hover`,
 // and a control that answers the pointer and then does nothing is worse than an inert one.
-.popup-settings-button .bi-gear-fill::before {
+.popup-settings-button .bi-gear::before {
 	transition: transform m.$motion-slow m.$motion-ease;
 }
 
-.popup-settings-button:not(:disabled):hover .bi-gear-fill::before,
-.popup-settings-button:focus-visible .bi-gear-fill::before {
+.popup-settings-button:not(:disabled):hover .bi-gear::before,
+.popup-settings-button:focus-visible .bi-gear::before {
 	transform: rotate(90deg);
 }
 
@@ -208,12 +228,12 @@
 @include m.reduced-motion {
 	.popup-view-shell,
 	.game-card-clickable,
-	.popup-settings-button .bi-gear-fill::before {
+	.popup-settings-button .bi-gear::before {
 		@include m.motion-still;
 	}
 
-	.popup-settings-button:not(:disabled):hover .bi-gear-fill::before,
-	.popup-settings-button:focus-visible .bi-gear-fill::before {
+	.popup-settings-button:not(:disabled):hover .bi-gear::before,
+	.popup-settings-button:focus-visible .bi-gear::before {
 		transform: none;
 	}
 }

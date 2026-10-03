@@ -14,11 +14,13 @@ import TimeoutDots from './timeoutDots';
 export { formatClock, formatGameClock, formatPeriod, isHalftime };
 
 
-export const formatStartDateTime = (iso: string): string => {
-	const date = new Date(iso);
-	const day = date.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' });
-	const time = date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-	return `${day} • ${time}`;
+export const formatStartTime = (iso: string, locale?: string): string => (
+	new Date(iso).toLocaleTimeString(locale, { hour: 'numeric', minute: '2-digit' })
+);
+
+export const formatStartDateTime = (iso: string, locale?: string): string => {
+	const day = new Date(iso).toLocaleDateString(locale, { weekday: 'short', month: 'short', day: 'numeric' });
+	return `${day} • ${formatStartTime(iso, locale)}`;
 };
 
 // Gradient from muted slate rgb(139,148,158) at 0 to orange rgb(247,92,3) at max.
@@ -78,6 +80,14 @@ export const matchupSurfaceStyle = (awayColor: string, homeColor: string, delaye
 export const buildGameCardSurface = (game: Game, delayed = false): gameCardSurface => {
 	const [awayColor, homeColor] = resolveTeamColorPair(game.awayTeam, game.homeTeam, missingTeamColor, missingTeamColor);
 	return { style: matchupSurfaceStyle(awayColor, homeColor, delayed), awayColor, homeColor };
+};
+
+// The league mark heads the away side, so it takes the logo drawn for that side's ink: the dark-ground
+// one under white ink, and the light-ground one on a gold or a final card's light plate.
+export const leagueMarkOnColor = (game: Game): boolean => {
+	if (game.status === 'post') return false;
+	const [awayColor, homeColor] = resolveTeamColorPair(game.awayTeam, game.homeTeam, missingTeamColor, missingTeamColor);
+	return matchupSurface(awayColor, homeColor, game.delayed === true).inks.away === '#ffffff';
 };
 
 export const buildCardHandlers = (onOpenGameDetail: (gameId: string) => void, gameId: string) => ({

@@ -22,6 +22,9 @@ import ReviewPromptBanner from './reviewPromptBanner';
 import SuggestBanner from './suggestBanner';
 import UpcomingDayPager from './upcomingDayPager';
 import LeagueMark from '@arenaswap/ui/src/components/leagueMark';
+import { leagueMarkOnColor } from '@arenaswap/ui/src/components/gameCardShared';
+import { useDisplayLocale } from '@arenaswap/ui/src/components/i18nContext';
+import useReorderGlide from '@arenaswap/ui/src/components/useReorderGlide';
 import { buildFinalComparator, buildLeagueRank, buildLiveComparator, buildUpcomingComparator, getRandomLoadingMessage, groupByDate, groupByLeague, resolveSelectedDayIndex } from '../popupHelpers';
 import type { BettingDisplayPrefs, WeatherDisplayPrefs } from './gameCardTypes';
 import useRestoredScroll from '../useRestoredScroll';
@@ -48,6 +51,7 @@ interface gameSectionProps {
 	weatherPrefs: WeatherDisplayPrefs;
 	reveal: cardRevealPlan;
 	afterTitle?: ReactNode;
+	dayNamedAbove?: boolean;
 	first?: boolean;
 }
 
@@ -71,7 +75,7 @@ interface mainViewProps {
 	onDismissSuggestions: () => void;
 	onStartWalkthrough: () => void;
 	onOpenGuide: () => void;
-	onRefresh: () => void;
+	onRefresh: () => unknown;
 	showReviewPrompt: boolean;
 	onToggleEnabled: () => void;
 	onDismissReviewPrompt: () => void;
@@ -104,35 +108,38 @@ const gameSection = ({
 	weatherPrefs,
 	reveal,
 	afterTitle,
+	dayNamedAbove,
 	first,
 }: gameSectionProps) => {
 	const card = (game: Game) => (
 		// A game the plan does not name is one that arrived after the plan was fixed, and it gets
 		// nothing: a card that has been sitting there plainly for two seconds must not suddenly grow
 		// a poster over itself.
-		<GameCardReveal
-			key={game.id}
-			game={game}
-			mode={reveal.order.has(game.id) ? revealModeForIndex(reveal.mode, reveal.order.get(game.id)!) : 'none'}
-			index={reveal.order.get(game.id) ?? 0}
-			skipping={reveal.skipping}
-		>
-			<GameCard
+		<div key={game.id} data-glide-key={game.id}>
+			<GameCardReveal
 				game={game}
-				excitementResult={scoreMap.get(game.id)}
-				favoriteTeamIds={favoriteTeamIds}
-				onToggleFavoriteTeam={onToggleFavoriteTeam}
-				gameBoosts={gameBoosts}
-				openTabs={openTabs}
-				registry={registry}
-				onRegistryChange={onRegistryChange}
-				formatTabLabel={formatTabLabel}
-				onOpenGameDetail={onOpenGameDetail}
-				bettingPrefs={bettingPrefs}
-				weatherPrefs={weatherPrefs}
-				leagueSlot={grouped ? undefined : <LeagueMark league={game.league} logos={leagueLogos} />}
-			/>
-		</GameCardReveal>
+				mode={reveal.order.has(game.id) ? revealModeForIndex(reveal.mode, reveal.order.get(game.id)!) : 'none'}
+				index={reveal.order.get(game.id) ?? 0}
+				skipping={reveal.skipping}
+			>
+				<GameCard
+					game={game}
+					excitementResult={scoreMap.get(game.id)}
+					favoriteTeamIds={favoriteTeamIds}
+					onToggleFavoriteTeam={onToggleFavoriteTeam}
+					gameBoosts={gameBoosts}
+					openTabs={openTabs}
+					registry={registry}
+					onRegistryChange={onRegistryChange}
+					formatTabLabel={formatTabLabel}
+					onOpenGameDetail={onOpenGameDetail}
+					bettingPrefs={bettingPrefs}
+					weatherPrefs={weatherPrefs}
+					dayNamedAbove={dayNamedAbove}
+					leagueSlot={grouped ? undefined : <LeagueMark league={game.league} logos={leagueLogos} onColor={leagueMarkOnColor(game)} />}
+				/>
+			</GameCardReveal>
+		</div>
 	);
 
 	return (
@@ -186,6 +193,8 @@ const mainView = ({
 	revealSkipping = false,
 }: mainViewProps) => {
 	const scrollerRef = useRestoredScroll(scrollOffsetRef);
+	const locale = useDisplayLocale();
+	useReorderGlide(scrollerRef);
 	const noLeaguesSelected = prefs.enabledLeagues.length === 0;
 	const loadingMessage = useMemo(() => getRandomLoadingMessage(), []);
 	const scoreByGameId = useMemo(() => new Map(scores.map(s => [s.gameId, s.total])), [scores]);
@@ -225,7 +234,7 @@ const mainView = ({
 		[games, sortUpcomingGames, upcomingCutoffMs],
 	);
 	// Grouping runs before any truncation, so what Up Next shows is always exactly one whole day.
-	const upcomingDays = useMemo(() => groupByDate(upcomingGames), [upcomingGames]);
+	const upcomingDays = useMemo(() => groupByDate(upcomingGames, locale), [upcomingGames, locale]);
 	const selectedDayIndex = resolveSelectedDayIndex(upcomingDays, selectedDayKey);
 	const selectedDay = upcomingDays[selectedDayIndex];
 	const registeredGameIds = useMemo(() => new Set(registry.map(r => r.gameId)), [registry]);
@@ -272,9 +281,12 @@ const mainView = ({
 		), null),
 		[liveGames, scoreByGameId],
 	);
-	const glow = topLiveGame ? resolveTeamColorPair(topLiveGame.awayTeam, topLiveGame.homeTeam, '#dee2e6', '#dee2e6') : null;
+	// Always drawn, and transparent with nothing live, so the glow fades in and out rather than popping.
+	const glow = topLiveGame ? resolveTeamColorPair(topLiveGame.awayTeam, topLiveGame.homeTeam, '#dee2e6', '#dee2e6') : ['transparent', 'transparent'];
 
-	const showNoGames = !isLoading && !noLeaguesSelected && liveGames.length === 0
+	// The error banner already says the slate did not arrive, so the empty state must not add that
+	// it is a quiet night.
+	const showNoGames = !isLoading && !hasError && !noLeaguesSelected && liveGames.length === 0
 		&& registry.length === 0 && finalGames.length === 0
 		&& (!prefs.showUpcomingGames || upcomingGames.length === 0);
 
@@ -287,7 +299,7 @@ const mainView = ({
 
 	return (
 		<div ref={scrollerRef} className='popup-container d-flex flex-column'>
-			{glow && <div className='popup-glow' style={{ '--glow-away': glow[0], '--glow-home': glow[1] } as CSSProperties} aria-hidden='true' />}
+			<div className='popup-glow' style={{ '--glow-away': glow[0], '--glow-home': glow[1] } as CSSProperties} aria-hidden='true' />
 			<PopupHeader
 				scroller={scrollerRef}
 				enabled={prefs.enabled}
@@ -309,14 +321,15 @@ const mainView = ({
 			)}
 			{/* The only banner here whose condition does not come from the fetch: eligibility is read
 			    out of storage.local and lands well before the slate does. The other two self-suppress
-			    because their inputs are empty until `data` arrives, so this one states the gate. */}
-			{!isLoading && !hasError && showReviewPrompt && (
+			    because their inputs are empty until `data` arrives, so this one states the gate. It also
+			    waits its turn behind the suggest banner, so two notices never stack above the first game. */}
+			{!isLoading && !hasError && showReviewPrompt && suggestionCount === 0 && (
 				<ReviewPromptBanner onDismiss={onDismissReviewPrompt} onLeaveReview={onLeaveReview} />
 			)}
 
 			{onStandbyStream && (
-				<div className='d-flex align-items-center gap-2 px-2 py-1 mb-1 rounded text-body-secondary small bg-body-secondary' data-testid='standby-banner'>
-					<i className='bi bi-broadcast text-primary' />
+				<div className='alert popup-notice d-flex align-items-center gap-2' role='status' data-testid='standby-banner'>
+					<i className='bi bi-broadcast popup-notice-icon' aria-hidden='true' />
 					<span>{i18n.t('main.onStandbyStream')}</span>
 				</div>
 			)}
@@ -348,6 +361,7 @@ const mainView = ({
 				bettingPrefs,
 				weatherPrefs,
 				reveal,
+				dayNamedAbove: true,
 				afterTitle: (
 					<UpcomingDayPager
 						dayLabel={selectedDay.dateLabel}

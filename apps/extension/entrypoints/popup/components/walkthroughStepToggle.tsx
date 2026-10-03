@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { i18n } from '#i18n';
+import focusStepTitle from './stepTitleFocus';
 
 interface walkthroughStepToggleProps {
 	onNext: () => void;
@@ -12,7 +13,7 @@ const walkthroughStepToggle = ({ onNext }: walkthroughStepToggleProps) => {
 		<div className='popup-container d-flex flex-column'>
 			<div className='small text-body-secondary text-uppercase text-center pt-3 pb-2'>{i18n.t('stepToggle.step', [1, 8])}</div>
 
-			<div className='fw-bold fs-5 text-center mb-1'>{i18n.t('stepToggle.title')}</div>
+			<div className='fw-bold fs-5 text-center mb-1 popup-step-title' role='heading' aria-level={1} tabIndex={-1} ref={focusStepTitle} data-step-title>{i18n.t('stepToggle.title')}</div>
 			<div className='text-body-secondary small text-center mb-3 lh-base'>
 				{i18n.t('stepToggle.subtitle')}
 			</div>
@@ -25,7 +26,7 @@ const walkthroughStepToggle = ({ onNext }: walkthroughStepToggleProps) => {
 						className='arenaswap-logo'
 					/>
 					<div className='d-flex align-items-center gap-2'>
-						<i className='bi bi-gear-fill text-secondary opacity-50' style={{ fontSize: '1rem' }} />
+						<i className='bi bi-gear text-secondary opacity-50' style={{ fontSize: '1rem' }} />
 						<div className='d-flex flex-column align-items-center gap-0'>
 							<div className='form-check form-switch mb-0'>
 								<input
@@ -42,12 +43,11 @@ const walkthroughStepToggle = ({ onNext }: walkthroughStepToggleProps) => {
 				</div>
 
 				<div
-					className='small text-center lh-base mt-1 rounded px-2 py-1'
+					className='small text-center lh-base mt-1 rounded px-2 py-1 motion-tint'
 					style={{
 						backgroundColor: enabled ? 'rgba(0,204,102,0.12)' : 'rgba(255,255,255,0.06)',
 						color: enabled ? '#00CC66' : '#8b949e',
 						fontSize: '0.72rem',
-						transition: 'all 0.2s',
 					}}
 				>
 					{enabled ? i18n.t('stepToggle.statusActive') : i18n.t('stepToggle.statusPaused')}

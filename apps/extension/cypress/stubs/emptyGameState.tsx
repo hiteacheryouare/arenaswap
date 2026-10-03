@@ -8,7 +8,7 @@ const emptyGameState = ({
 	onRefresh: () => void;
 }) => (
 	<>
-		{noLeaguesSelected && <div data-testid='empty-no-leagues'>Choose leagues to get started</div>}
+		{noLeaguesSelected && <div data-testid='empty-no-leagues'>Choose Leagues to Get Started</div>}
 		{noGames && <div data-testid='empty-no-games'>No games right now</div>}
 	</>
 );

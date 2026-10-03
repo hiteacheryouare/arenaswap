@@ -122,6 +122,12 @@ describe('constants', () => {
 		expect(normalizeUserPreferences({ finishedTabAction: value }).finishedTabAction).toBe('keep');
 	});
 
+	test('caps the favorite and postseason boosts at the top of the scale', () => {
+		const normalized = normalizeUserPreferences({ favoriteTeamBonusPoints: 99999, postseasonBoostPoints: -4 });
+		expect(normalized.favoriteTeamBonusPoints).toBe(100);
+		expect(normalized.postseasonBoostPoints).toBe(0);
+	});
+
 	test('normalizes invalid user preference input safely', () => {
 		expect(normalizeUserPreferences(null)).toEqual(createDefaultUserPreferences());
 

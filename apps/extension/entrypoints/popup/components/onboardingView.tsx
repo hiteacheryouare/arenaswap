@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { i18n } from '#i18n';
 import { fetchTeamsForLeagues } from '@arenaswap/core';
 import type { EspnTeamEntry } from '@arenaswap/core';
@@ -7,6 +7,7 @@ import { leaguesBySportType } from '../popupHelpers';
 import OnboardingTabControl from './onboardingTabControl';
 import OnboardingLeaguePicker from './onboardingLeaguePicker';
 import OnboardingTeamPicker from './onboardingTeamPicker';
+import focusStepTitle from './stepTitleFocus';
 
 interface onboardingViewProps {
 	leagueLogos: LeagueLogoMap;
@@ -47,18 +48,24 @@ const onboardingView = ({ leagueLogos, onComplete, onStartWalkthrough }: onboard
 		});
 	};
 
+	const rosterRequestRef = useRef(0);
+
+	// The picker opens straight away on its own loading state; a roster for a slate of many leagues
+	// takes seconds behind the request throttle. Only the newest request may land, so a double click,
+	// or a trip back to change leagues, can't overwrite the roster with an older answer.
 	const onNext = async () => {
+		const request = ++rosterRequestRef.current;
+		setStep(3);
 		setTeamsLoading(true);
 		setTeamsError(false);
 		try {
 			const fetched = await fetchTeamsForLeagues([...selectedLeagues]);
-			setTeams(fetched);
+			if (request === rosterRequestRef.current) setTeams(fetched);
 		} catch {
-			setTeamsError(true);
+			if (request === rosterRequestRef.current) setTeamsError(true);
 		} finally {
-			setTeamsLoading(false);
+			if (request === rosterRequestRef.current) setTeamsLoading(false);
 		}
-		setStep(3);
 	};
 
 	const onToggleFavorite = (key: string) => {
@@ -78,7 +85,8 @@ const onboardingView = ({ leagueLogos, onComplete, onStartWalkthrough }: onboard
 
 	return (
 		<div className='popup-root'>
-			<div className='popup-view-shell'>
+			{/* Onboarding is what the popup opens on, so it starts in place rather than sliding in. */}
+			<div className='popup-view-shell is-opening-view'>
 				{step === 1 && (
 					<OnboardingTabControl onNext={() => setStep(2)} />
 				)}
@@ -115,7 +123,7 @@ const onboardingView = ({ leagueLogos, onComplete, onStartWalkthrough }: onboard
 							/>
 						</div>
 						<div className='onb-content-wrap d-flex flex-column'>
-							<div className='fw-bold lh-sm mb-2 fs-4 text-center'>{i18n.t('onboarding.allSetTitle')}</div>
+							<div className='fw-bold lh-sm mb-2 fs-4 text-center popup-step-title' role='heading' aria-level={1} tabIndex={-1} ref={focusStepTitle} data-step-title>{i18n.t('onboarding.allSetTitle')}</div>
 							<div className='text-body-secondary fs-6 text-center mb-4 lh-base'>
 								{i18n.t('onboarding.allSetSubtitle')}
 							</div>

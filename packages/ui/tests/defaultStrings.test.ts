@@ -179,7 +179,9 @@ describe('defaultStrings covers every label the shared components render', () =>
 		expect(placeholders(defaultStrings['gameCard.removeFromFavorites']!)).toEqual(['team']);
 		expect(placeholders(defaultStrings['gameCard.openDetails']!)).toEqual(['away', 'home']);
 		expect(placeholders(defaultStrings['gameCard.teamRank']!)).toEqual(['rank']);
-		expect(placeholders(defaultStrings['gameCard.timeoutsRemaining']!)).toEqual(['team', 'count']);
+		// Both plural forms, "one | other", and the count goes in as $1 rather than by name.
+		expect(placeholders(defaultStrings['gameCard.timeoutsRemaining']!)).toEqual(['team', 'team']);
+		expect(defaultStrings['gameCard.timeoutsRemaining']).toContain('$1');
 		expect(placeholders(defaultStrings['gameCard.downDistanceAt']!)).toEqual(['downDistance', 'fieldPosition']);
 		expect(placeholders(defaultStrings['field.possession']!)).toEqual(['team']);
 	});
