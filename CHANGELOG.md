@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Settings regrouped into six pages — 2026-10-02
+
+Display was holding a dozen unrelated switches, so notifications, finished-tab handling and demo mode moved into Switching, league grouping and order moved into Display, and the favorite team bonus rejoined the postseason boost under Scoring. Switching and Display are split by section headings, and Demo mode no longer has its own row on the index.
+
 ## The header glow follows the top card — 2026-10-02
 
 The glow behind the header now takes its colours from whichever live card sits at the top of the list, not the game with the best PowerScore. With a favorite team playing, those were two different games, so the header wore one matchup's colours above another's card.

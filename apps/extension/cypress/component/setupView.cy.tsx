@@ -113,7 +113,7 @@ describe('setupView index', () => {
 
 	it('lists every settings group with a description', () => {
 		cy.mount(<SetupView {...defaultProps} />);
-		cy.get('.settings-index-row').should('have.length', 7);
+		cy.get('.settings-index-row').should('have.length', 6);
 		cy.get('#settingsGroup-switching').find('.settings-index-desc').should('not.be.empty');
 	});
 
@@ -153,7 +153,7 @@ describe('setupView navigation', () => {
 		cy.mount(<SetupView {...defaultProps} onClose={spy} />);
 		openGroup('display');
 		cy.get('button.setup-header').click();
-		cy.get('.settings-index-row').should('have.length', 7);
+		cy.get('.settings-index-row').should('have.length', 6);
 		cy.get('@onClose').should('not.have.been.called');
 	});
 
@@ -245,7 +245,7 @@ describe('setupView search', () => {
 		cy.contains('.settings-index-row', 'Switch cooldown').click();
 		cy.get('button.setup-header').click();
 		cy.get('#settingsSearch').should('have.value', '');
-		cy.get('.settings-index-row').should('have.length', 7);
+		cy.get('.settings-index-row').should('have.length', 6);
 	});
 });
 
@@ -493,16 +493,16 @@ describe('setupView Rømer unlock', () => {
 	});
 });
 
-describe('setupView demo group', () => {
-	it('shows demo mode toggle', () => {
+describe('setupView demo mode', () => {
+	it('sits at the bottom of the switching page', () => {
 		cy.mount(<SetupView {...defaultProps} />);
-		openGroup('demo');
+		openGroup('switching');
 		cy.get('#demoToggle').should('exist').and('not.be.checked');
 	});
 
 	it('shows demo toggle checked when demoMode is true', () => {
 		cy.mount(<SetupView {...defaultProps} demoMode={true} />);
-		openGroup('demo');
+		openGroup('switching');
 		cy.get('#demoToggle').should('be.checked');
 	});
 });
@@ -591,11 +591,11 @@ describe('setupView scoring group', () => {
 		cy.get('#signal-closeness').should('be.disabled');
 	});
 
-	it('renders the postseason boost, the bonus that stayed behind', () => {
+	it('keeps every bonus together under Bonuses', () => {
 		cy.mount(<SetupView {...defaultProps} />);
 		openGroup('scoring');
 		cy.get('#postseasonBoostInput').should('exist');
-		cy.get('#favoriteTeamBonusInput').should('not.exist');
+		cy.get('#favoriteTeamBonusInput').should('exist');
 	});
 });
 
@@ -612,11 +612,11 @@ const stubTeamsFetch = (entries: [string, string][] = [['1', 'Atlanta Hawks']]) 
 });
 
 describe('setupView favorites group', () => {
-	it('opens the picker, with the bonus that moved here out of Scoring', () => {
+	it('opens the picker, leaving the bonus to Scoring', () => {
 		stubTeamsFetch();
 		cy.mount(<SetupView {...defaultProps} />);
 		openGroup('favorites');
-		cy.get('#favoriteTeamBonusInput').should('exist');
+		cy.get('#favoriteTeamBonusInput').should('not.exist');
 		cy.get('input[type=search]').should('exist');
 	});
 
@@ -693,7 +693,7 @@ describe('setupView leagues group', () => {
 
 	it('shows the display order list with a row per enabled league', () => {
 		cy.mount(<SetupView {...defaultProps} />);
-		openGroup('leagues');
+		openGroup('display');
 		cy.contains(/display order/i).should('exist');
 		cy.get('.league-order-row').should('have.length', 2);
 	});
@@ -701,21 +701,21 @@ describe('setupView leagues group', () => {
 	it('reorders an enabled league from the display order list', () => {
 		const onReorderLeague = cy.spy().as('onReorderLeague');
 		cy.mount(<SetupView {...defaultProps} onReorderLeague={onReorderLeague} />);
-		openGroup('leagues');
+		openGroup('display');
 		cy.get('#league-order-down-nba').click();
 		cy.get('@onReorderLeague').should('have.been.calledWith', 0, 1);
 	});
 
 	it('hides the display order list when only one league is enabled', () => {
 		cy.mount(<SetupView {...defaultProps} prefs={{ ...defaultPrefs, enabledLeagues: ['nba'] }} />);
-		openGroup('leagues');
+		openGroup('display');
 		cy.contains(/display order/i).should('not.exist');
 		cy.get('.league-order-row').should('not.exist');
 	});
 
 	it('hides the display order list while games share one list, since there is no order to show', () => {
 		cy.mount(<SetupView {...defaultProps} prefs={{ ...defaultPrefs, groupByLeague: false }} />);
-		openGroup('leagues');
+		openGroup('display');
 		cy.get('#groupByLeagueToggle').should('not.be.checked');
 		cy.contains(/display order/i).should('not.exist');
 		cy.get('.league-order-row').should('not.exist');
@@ -724,16 +724,16 @@ describe('setupView leagues group', () => {
 	it('flips league grouping from its switch', () => {
 		const onToggleGroupByLeague = cy.spy().as('onToggleGroupByLeague');
 		cy.mount(<SetupView {...defaultProps} onToggleGroupByLeague={onToggleGroupByLeague} />);
-		openGroup('leagues');
+		openGroup('display');
 		cy.get('#groupByLeagueToggle').should('be.checked').click();
 		cy.get('@onToggleGroupByLeague').should('have.been.calledOnce');
 	});
 
-	it('keeps the leagues heading and its tooltip when the order list is hidden', () => {
-		cy.mount(<SetupView {...defaultProps} prefs={{ ...defaultPrefs, enabledLeagues: ['nba'] }} />);
+	it('leaves list layout to the display page', () => {
+		cy.mount(<SetupView {...defaultProps} />);
 		openGroup('leagues');
-		cy.get('.popup-section-label').contains('Leagues').should('exist');
-		cy.get('.setting-tooltip-btn').should('exist');
+		cy.get('#groupByLeagueToggle').should('not.exist');
+		cy.get('.league-order-row').should('not.exist');
 	});
 });
 
@@ -795,14 +795,14 @@ describe('the theme setting', () => {
 describe('what happens to a tab once its game finishes', () => {
 	const optionKeys = ['finishedTabKeep', 'finishedTabFree', 'finishedTabClose'] as const;
 
-	const openDisplay = (prefs: UserPreferences = defaultPrefs, props = {}) => {
+	const openSwitching = (prefs: UserPreferences = defaultPrefs, props = {}) => {
 		cy.viewport(320, 560);
 		cy.mount(<SetupView {...defaultProps} {...props} prefs={prefs} />);
-		openGroup('display');
+		openGroup('switching');
 	};
 
 	it('offers the three choices and opens on leaving the tab alone', () => {
-		openDisplay();
+		openSwitching();
 		cy.get('#finishedTabSelect').should('contain.text', 'Leave the tab alone');
 		cy.get('#finishedTabSelect').parent().find('.dropdown-item').then((items: JQuery<HTMLElement>) => {
 			expect([...items].map(item => item.textContent?.trim())).to.deep.equal(['Leave the tab alone', 'Free it from ArenaSwap', 'Close the tab']);
@@ -810,33 +810,33 @@ describe('what happens to a tab once its game finishes', () => {
 	});
 
 	it('reflects a stored choice', () => {
-		openDisplay({ ...defaultPrefs, finishedTabAction: 'close' });
+		openSwitching({ ...defaultPrefs, finishedTabAction: 'close' });
 		cy.get('#finishedTabSelect').should('contain.text', 'Close the tab');
 	});
 
 	it('reports the choice that was made', () => {
 		const spy = cy.spy().as('onFinishedTabActionChange');
-		openDisplay(defaultPrefs, { onFinishedTabActionChange: spy });
+		openSwitching(defaultPrefs, { onFinishedTabActionChange: spy });
 		cy.get('#finishedTabSelect').choose('Free it from ArenaSwap');
 		cy.get('@onFinishedTabActionChange').should('have.been.calledOnceWith', 'free');
 	});
 
 	// Nothing is being taken while it says keep, so there is nothing to explain.
 	it('says nothing extra while it is set to keep', () => {
-		openDisplay();
+		openSwitching();
 		cy.contains(en.setup.finishedTabActiveExplainer).should('not.exist');
 		cy.contains(en.setup.finishedTabCloseExplainer).should('not.exist');
 	});
 
 	it('warns about the tab in front of you as soon as it is doing anything', () => {
-		openDisplay({ ...defaultPrefs, finishedTabAction: 'free' });
+		openSwitching({ ...defaultPrefs, finishedTabAction: 'free' });
 		cy.contains(en.setup.finishedTabActiveExplainer).should('exist');
 		// Nothing is closing, so the sole-tab rule has nothing to say.
 		cy.contains(en.setup.finishedTabCloseExplainer).should('not.exist');
 	});
 
 	it('adds the last-tab rule only when it is closing', () => {
-		openDisplay({ ...defaultPrefs, finishedTabAction: 'close' });
+		openSwitching({ ...defaultPrefs, finishedTabAction: 'close' });
 		cy.contains(en.setup.finishedTabActiveExplainer).should('exist');
 		cy.contains(en.setup.finishedTabCloseExplainer).should('exist');
 	});
@@ -844,7 +844,7 @@ describe('what happens to a tab once its game finishes', () => {
 	// A native select clips rather than wraps, so a string that does not fit is silently
 	// truncated to an ellipsis — measuring the rendered box would never notice.
 	it('fits all three options inside the select in every locale', () => {
-		openDisplay();
+		openSwitching();
 		cy.get('#finishedTabSelect').should(([select]: JQuery<HTMLElement>) => {
 			const style = getComputedStyle(select);
 			// .form-select keeps its right-hand padding for the chevron, so the text gets the
@@ -878,7 +878,7 @@ describe('what happens to a tab once its game finishes', () => {
 	});
 
 	it('keeps every locale\'s label on one line above it', () => {
-		openDisplay();
+		openSwitching();
 		cy.get('label[for="finishedTabSelect"]').then(([label]: JQuery<HTMLElement>) => {
 			const oneLine = label.getBoundingClientRect().height;
 			for (const [name, locale] of Object.entries(locales)) {

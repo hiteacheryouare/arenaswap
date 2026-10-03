@@ -3,6 +3,7 @@ import { i18n } from '#i18n';
 import type { FinishedTabAction, LeagueId, LeagueLogoMap, SignalName, SportType, ThemePreference, UserPreferences } from '@arenaswap/core/types';
 import type { Browser } from 'wxt/browser';
 import CooldownSlider from './cooldownSlider';
+import FavoriteTeamBonusInput from './favoriteTeamBonusInput';
 import FavoriteTeamsPage from './favoriteTeamsPage';
 import LeagueLogo from './leagueLogo';
 import LeagueOrderList from './leagueOrderList';
@@ -136,11 +137,73 @@ const setupView = ({
 	}
 
 	const switchingPage = (
-		<div className='settings-stack'>
-			<SensitivitySlider value={prefs.sensitivity} onChange={onSensitivityChange} />
-			<CooldownSlider value={prefs.cooldownSeconds} onChange={onCooldownChange} />
-			<SwitchDelaySlider value={prefs.switchDelaySeconds} onChange={onSwitchDelayChange} />
-		</div>
+		<>
+			<div className='fw-bold popup-section-label'><i className='bi bi-speedometer2' />{i18n.t('setup.whenToSwitchSection')}</div>
+			<div className='settings-stack'>
+				<SensitivitySlider value={prefs.sensitivity} onChange={onSensitivityChange} />
+				<CooldownSlider value={prefs.cooldownSeconds} onChange={onCooldownChange} />
+				<SwitchDelaySlider value={prefs.switchDelaySeconds} onChange={onSwitchDelayChange} />
+			</div>
+
+			<div className='fw-bold popup-section-label mt-3'><i className='bi bi-window-stack' />{i18n.t('setup.tabsSection')}</div>
+			<div className='d-flex justify-content-between align-items-center'>
+				<label className='text-body-secondary setting-toggle-label' htmlFor='notificationsToggle'>{i18n.t('setup.switchNotifications')}</label>
+				<div className='form-check form-switch mb-0'>
+					<input className='form-check-input' type='checkbox' id='notificationsToggle' checked={prefs.notificationsEnabled} onChange={onToggleNotifications} disabled={!prefsLoaded} />
+				</div>
+			</div>
+
+			<div className='mt-3'>
+				<label className='text-body-secondary setting-toggle-label d-block mb-1' id='finishedTabSelectLabel' htmlFor='finishedTabSelect'>
+					{i18n.t('setup.finishedTabAction')}
+				</label>
+				<SelectDropdown<FinishedTabAction>
+					id='finishedTabSelect'
+					labelId='finishedTabSelectLabel'
+					value={prefs.finishedTabAction}
+					onChange={onFinishedTabActionChange}
+					disabled={!prefsLoaded}
+					options={[
+						{ value: 'keep', label: i18n.t('setup.finishedTabKeep') },
+						{ value: 'free', label: i18n.t('setup.finishedTabFree') },
+						{ value: 'close', label: i18n.t('setup.finishedTabClose') },
+					]}
+				/>
+				{prefs.finishedTabAction !== 'keep' && (
+					<div className='setting-explainer mt-1'>{i18n.t('setup.finishedTabActiveExplainer')}</div>
+				)}
+				{prefs.finishedTabAction === 'close' && (
+					<div className='setting-explainer mt-1'>{i18n.t('setup.finishedTabCloseExplainer')}</div>
+				)}
+			</div>
+
+			<div className='fw-bold popup-section-label mt-3'><i className='bi bi-joystick' />{i18n.t('setup.demoSection')}</div>
+			<div className='d-flex justify-content-between align-items-center'>
+				<label className='text-body-secondary setting-toggle-label' htmlFor='demoToggle'>{i18n.t('setup.demoMode')}</label>
+				<div className='form-check form-switch mb-0'>
+					<input className='form-check-input' type='checkbox' id='demoToggle' checked={demoMode} onChange={onToggleDemo} />
+				</div>
+			</div>
+			<div className='setting-explainer mt-1'>{i18n.t('setup.demoModeExplainer')}</div>
+
+			{demoMode && (
+				<div className='mt-3'>
+					<label className='text-body-secondary setting-toggle-label d-block mb-1' id='demoSeasonSelectLabel' htmlFor='demoSeasonSelect'>{i18n.t('setup.demoSeason')}</label>
+					<SelectDropdown<demoSeason>
+						id='demoSeasonSelect'
+						labelId='demoSeasonSelectLabel'
+						value={demoSeason}
+						onChange={onDemoSeasonChange}
+						options={[
+							{ value: 'real', label: i18n.t('setup.demoSeasonReal') },
+							{ value: 'thanksgiving', label: i18n.t('setup.demoSeasonThanksgiving') },
+							{ value: 'december', label: i18n.t('setup.demoSeasonDecember') },
+						]}
+					/>
+					<div className='setting-explainer mt-1'>{i18n.t('setup.demoSeasonExplainer')}</div>
+				</div>
+			)}
+		</>
 	);
 
 	const scoringPage = (
@@ -184,6 +247,7 @@ const setupView = ({
 			<div className='fw-bold popup-section-label mt-3'><i className='bi bi-plus-slash-minus' />{i18n.t('setup.bonusesSection')}</div>
 			<div className='settings-stack'>
 				<PostseasonBoostInput value={prefs.postseasonBoostPoints} onChange={onPostseasonBoostChange} />
+				<FavoriteTeamBonusInput value={prefs.favoriteTeamBonusPoints} onChange={onFavoriteTeamBonusChange} />
 			</div>
 		</>
 	);
@@ -192,33 +256,14 @@ const setupView = ({
 		<FavoriteTeamsPage
 			enabledLeagues={prefs.enabledLeagues}
 			favoriteTeamIds={favoriteTeamIds}
-			favoriteTeamBonusPoints={prefs.favoriteTeamBonusPoints}
-			onFavoriteTeamBonusChange={onFavoriteTeamBonusChange}
 			onToggleFavoriteTeam={onToggleFavoriteTeam}
 		/>
 	);
 
 	const displayPage = (
 		<>
-			<div>
-				<label className='text-body-secondary setting-toggle-label d-block mb-1' id='themeSelectLabel' htmlFor='themeSelect'>
-					{i18n.t('setup.theme')}
-				</label>
-				<SelectDropdown<ThemePreference>
-					id='themeSelect'
-					labelId='themeSelectLabel'
-					value={prefs.theme}
-					onChange={onThemeChange}
-					disabled={!prefsLoaded}
-					options={[
-						{ value: 'light', label: i18n.t('setup.themeLight'), icon: 'bi-sun' },
-						{ value: 'dark', label: i18n.t('setup.themeDark'), icon: 'bi-moon-stars' },
-						{ value: 'system', label: i18n.t('setup.themeSystem'), icon: 'bi-circle-half' },
-					]}
-				/>
-			</div>
-
-			<div className='d-flex justify-content-between align-items-center mt-3'>
+			<div className='fw-bold popup-section-label'><i className='bi bi-list-ul' />{i18n.t('setup.gameListSection')}</div>
+			<div className='d-flex justify-content-between align-items-center'>
 				<label className='text-body-secondary setting-toggle-label' htmlFor='upcomingToggle'>{i18n.t('setup.showUpcoming')}</label>
 				<div className='form-check form-switch mb-0'>
 					<input className='form-check-input' type='checkbox' id='upcomingToggle' checked={prefs.showUpcomingGames} onChange={onToggleShowUpcoming} disabled={!prefsLoaded} />
@@ -259,28 +304,11 @@ const setupView = ({
 			</div>
 			<div className='setting-explainer mt-1'>{i18n.t('setup.keepFinalGamesExplainer')}</div>
 
-			<div className='mt-3'>
-				<label className='text-body-secondary setting-toggle-label d-block mb-1' id='finishedTabSelectLabel' htmlFor='finishedTabSelect'>
-					{i18n.t('setup.finishedTabAction')}
-				</label>
-				<SelectDropdown<FinishedTabAction>
-					id='finishedTabSelect'
-					labelId='finishedTabSelectLabel'
-					value={prefs.finishedTabAction}
-					onChange={onFinishedTabActionChange}
-					disabled={!prefsLoaded}
-					options={[
-						{ value: 'keep', label: i18n.t('setup.finishedTabKeep') },
-						{ value: 'free', label: i18n.t('setup.finishedTabFree') },
-						{ value: 'close', label: i18n.t('setup.finishedTabClose') },
-					]}
-				/>
-				{prefs.finishedTabAction !== 'keep' && (
-					<div className='setting-explainer mt-1'>{i18n.t('setup.finishedTabActiveExplainer')}</div>
-				)}
-				{prefs.finishedTabAction === 'close' && (
-					<div className='setting-explainer mt-1'>{i18n.t('setup.finishedTabCloseExplainer')}</div>
-				)}
+			<div className='d-flex justify-content-between align-items-center mt-2'>
+				<label className='text-body-secondary setting-toggle-label' htmlFor='bettingToggle'>{i18n.t('setup.showBetting')}</label>
+				<div className='form-check form-switch mb-0'>
+					<input className='form-check-input' type='checkbox' id='bettingToggle' checked={prefs.bettingEnabled} onChange={onToggleBetting} disabled={!prefsLoaded} />
+				</div>
 			</div>
 
 			<div className='d-flex justify-content-between align-items-center mt-2'>
@@ -291,17 +319,46 @@ const setupView = ({
 			</div>
 
 			<div className='d-flex justify-content-between align-items-center mt-2'>
-				<label className='text-body-secondary setting-toggle-label' htmlFor='notificationsToggle'>{i18n.t('setup.switchNotifications')}</label>
+				<label className='text-body-secondary setting-toggle-label' htmlFor='groupByLeagueToggle'>{i18n.t('setup.groupByLeague')}</label>
 				<div className='form-check form-switch mb-0'>
-					<input className='form-check-input' type='checkbox' id='notificationsToggle' checked={prefs.notificationsEnabled} onChange={onToggleNotifications} disabled={!prefsLoaded} />
+					<input className='form-check-input' type='checkbox' id='groupByLeagueToggle' checked={prefs.groupByLeague} onChange={onToggleGroupByLeague} disabled={!prefsLoaded} />
 				</div>
 			</div>
+			<div className='setting-explainer mt-1'>{i18n.t('setup.groupByLeagueExplainer')}</div>
+			{prefs.groupByLeague && prefs.enabledLeagues.length > 1 && (
+				<>
+					<div id='leagueOrderSection' className='fw-bold popup-section-label mt-3'>
+						<i className='bi bi-arrow-down-up' />
+						{i18n.t('setup.leagueOrderSection')}
+						<SettingTooltipIcon text={i18n.t('setup.leagueOrderExplainer')} label={i18n.t('setup.leagueOrderSection')} />
+					</div>
+					<LeagueOrderList
+						order={prefs.enabledLeagues}
+						leagueLogos={leagueLogos}
+						disabled={!prefsLoaded}
+						onReorder={onReorderLeague}
+						onReset={onResetLeagueOrder}
+					/>
+				</>
+			)}
 
-			<div className='d-flex justify-content-between align-items-center mt-2'>
-				<label className='text-body-secondary setting-toggle-label' htmlFor='bettingToggle'>{i18n.t('setup.showBetting')}</label>
-				<div className='form-check form-switch mb-0'>
-					<input className='form-check-input' type='checkbox' id='bettingToggle' checked={prefs.bettingEnabled} onChange={onToggleBetting} disabled={!prefsLoaded} />
-				</div>
+			<div className='fw-bold popup-section-label mt-3'><i className='bi bi-palette' />{i18n.t('setup.lookAndFeelSection')}</div>
+			<div>
+				<label className='text-body-secondary setting-toggle-label d-block mb-1' id='themeSelectLabel' htmlFor='themeSelect'>
+					{i18n.t('setup.theme')}
+				</label>
+				<SelectDropdown<ThemePreference>
+					id='themeSelect'
+					labelId='themeSelectLabel'
+					value={prefs.theme}
+					onChange={onThemeChange}
+					disabled={!prefsLoaded}
+					options={[
+						{ value: 'light', label: i18n.t('setup.themeLight'), icon: 'bi-sun' },
+						{ value: 'dark', label: i18n.t('setup.themeDark'), icon: 'bi-moon-stars' },
+						{ value: 'system', label: i18n.t('setup.themeSystem'), icon: 'bi-circle-half' },
+					]}
+				/>
 			</div>
 
 			<TemperatureUnitToggle
@@ -415,65 +472,8 @@ const setupView = ({
 		</>
 	);
 
-	const demoPage = (
-		<>
-			<div className='d-flex justify-content-between align-items-center'>
-				<label className='text-body-secondary setting-toggle-label' htmlFor='demoToggle'>{i18n.t('setup.demoMode')}</label>
-				<div className='form-check form-switch mb-0'>
-					<input className='form-check-input' type='checkbox' id='demoToggle' checked={demoMode} onChange={onToggleDemo} />
-				</div>
-			</div>
-
-			{demoMode && (
-				<div className='mt-3'>
-					<label className='text-body-secondary setting-toggle-label d-block mb-1' id='demoSeasonSelectLabel' htmlFor='demoSeasonSelect'>{i18n.t('setup.demoSeason')}</label>
-					<SelectDropdown<demoSeason>
-						id='demoSeasonSelect'
-					labelId='demoSeasonSelectLabel'
-						value={demoSeason}
-						onChange={onDemoSeasonChange}
-						options={[
-							{ value: 'real', label: i18n.t('setup.demoSeasonReal') },
-							{ value: 'thanksgiving', label: i18n.t('setup.demoSeasonThanksgiving') },
-							{ value: 'december', label: i18n.t('setup.demoSeasonDecember') },
-						]}
-					/>
-					<div className='setting-explainer mt-1'>{i18n.t('setup.demoSeasonExplainer')}</div>
-				</div>
-			)}
-		</>
-	);
-
 	const leaguesPage = (
 		<>
-			<div className='d-flex justify-content-between align-items-center'>
-				<label className='text-body-secondary setting-toggle-label' htmlFor='groupByLeagueToggle'>{i18n.t('setup.groupByLeague')}</label>
-				<div className='form-check form-switch mb-0'>
-					<input className='form-check-input' type='checkbox' id='groupByLeagueToggle' checked={prefs.groupByLeague} onChange={onToggleGroupByLeague} disabled={!prefsLoaded} />
-				</div>
-			</div>
-			<div className='setting-explainer mt-1'>{i18n.t('setup.groupByLeagueExplainer')}</div>
-			{prefs.groupByLeague && prefs.enabledLeagues.length > 1 && (
-				<>
-					<div id='leagueOrderSection' className='fw-bold popup-section-label'>
-						<i className='bi bi-arrow-down-up' />
-						{i18n.t('setup.leagueOrderSection')}
-						<SettingTooltipIcon text={i18n.t('setup.leagueOrderExplainer')} label={i18n.t('setup.leagueOrderSection')} />
-					</div>
-					<LeagueOrderList
-						order={prefs.enabledLeagues}
-						leagueLogos={leagueLogos}
-						disabled={!prefsLoaded}
-						onReorder={onReorderLeague}
-						onReset={onResetLeagueOrder}
-					/>
-				</>
-			)}
-			<div className='fw-bold popup-section-label'>
-				<i className='bi bi-trophy' />
-				{i18n.t('setup.groupLeagues')}
-				<SettingTooltipIcon text={i18n.t('setup.leaguesExplainer')} label={i18n.t('setup.groupLeagues')} />
-			</div>
 			{(Object.keys(sportTypeOrder) as SportType[])
 				.toSorted((a, b) => sportTypeOrder[a] - sportTypeOrder[b])
 				.map(sportType => {
@@ -531,7 +531,6 @@ const setupView = ({
 		leagues: leaguesPage,
 		display: displayPage,
 		standby: standbyPage,
-		demo: demoPage,
 	};
 
 	if (page) {
