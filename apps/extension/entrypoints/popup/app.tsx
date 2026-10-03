@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import useSWR from 'swr';
-import { fetchLeagueLogos } from '@arenaswap/core';
-import { allLeagueIds, allSignalNames, createDefaultUserPreferences, createFavoriteTeamKey, normalizeUserPreferences } from '@arenaswap/core/constants';
-import type { LeagueId, LeagueLogoMap, SignalName, SportType, TabRegistration, UserPreferences } from '@arenaswap/core/types';
+import { fetchGamesWithLeagueLogos } from '@arenaswap/core';
+import { allLeagueIds, allSignalNames, createDefaultUserPreferences, createFavoriteTeamKey, normalizeUserPreferences, withCollegeFilter } from '@arenaswap/core/constants';
+import type { CollegeFilter, CollegeLeagueId, LeagueId, LeagueLogoMap, LeagueScheduleMap, SignalName, SportType, TabRegistration, UserPreferences } from '@arenaswap/core/types';
 import type { Browser } from 'wxt/browser';
 import GameDetailView from './components/gameDetailView';
 import MainView from './components/mainView';
@@ -89,6 +89,7 @@ export default () => {
 	// Seeded rather than empty: every league already has a pinned or fallback URL, so the pickers are
 	// correct on the first frame and the refresh below is an upgrade rather than the only source.
 	const [allLeagueLogoCache, setAllLeagueLogoCache] = useState<LeagueLogoMap>(seededLeagueLogos);
+	const [leagueSchedules, setLeagueSchedules] = useState<LeagueScheduleMap>({});
 	const settledRef = useRef(false);
 	const prefsSyncRef = useRef<Promise<void>>(Promise.resolve());
 	const { toasts, showToast, dismissToast } = useToast();
@@ -178,13 +179,17 @@ export default () => {
 			try {
 				const stored = (await browser.storage.local.get(leagueLogoCacheKey))[leagueLogoCacheKey];
 				if (isLeagueLogoCacheFresh(stored, Date.now())) {
-					if (!cancelled) setAllLeagueLogoCache(current => ({ ...current, ...stored.logos }));
+					if (cancelled) return;
+					setAllLeagueLogoCache(current => ({ ...current, ...stored.logos }));
+					setLeagueSchedules(stored.schedules);
 					return;
 				}
-				const logos = await fetchLeagueLogos(allLeagueIds, { includeUpcoming: false });
+				const { leagueLogos: logos, leagueSchedules: schedules } = await fetchGamesWithLeagueLogos(allLeagueIds, { includeUpcoming: false });
 				if (Object.keys(logos).length === 0) return;
-				await browser.storage.local.set({ [leagueLogoCacheKey]: { fetchedAt: Date.now(), logos } });
-				if (!cancelled) setAllLeagueLogoCache(current => ({ ...current, ...logos }));
+				await browser.storage.local.set({ [leagueLogoCacheKey]: { fetchedAt: Date.now(), logos, schedules } });
+				if (cancelled) return;
+				setAllLeagueLogoCache(current => ({ ...current, ...logos }));
+				setLeagueSchedules(schedules);
 			} catch {
 				// Storage unavailable, or ESPN shed the whole fan-out. The seed is already drawable.
 			}
@@ -372,6 +377,13 @@ export default () => {
 		}));
 	};
 
+	const onCollegeFilterChange = (leagueId: CollegeLeagueId, filter: CollegeFilter) => {
+		persistPrefs(currentPrefs => ({
+			...currentPrefs,
+			collegeFilters: withCollegeFilter(currentPrefs.collegeFilters, leagueId, filter),
+		}));
+	};
+
 
 	const onToggleSignal = (signal: SignalName) => {
 		persistPrefs(currentPrefs => {
@@ -516,6 +528,7 @@ export default () => {
 						demoMode={demoMode}
 						demoSeason={demoSeason}
 						leagueLogos={leagueLogos}
+						leagueSchedules={leagueSchedules}
 						favoriteTeamIds={favoriteTeamIds}
 						standbyStreamTabId={standbyStreamTabId}
 						standbyOnboardingDone={standbyOnboardingDone}
@@ -531,6 +544,7 @@ export default () => {
 						onToggleSport={onToggleSport}
 						onReorderLeague={onReorderLeague}
 						onResetLeagueOrder={onResetLeagueOrder}
+						onCollegeFilterChange={onCollegeFilterChange}
 						onToggleGroupByLeague={() => persistPrefs(currentPrefs => ({ ...currentPrefs, groupByLeague: !currentPrefs.groupByLeague }))}
 						onToggleShowUpcoming={() => persistPrefs(currentPrefs => ({ ...currentPrefs, showUpcomingGames: !currentPrefs.showUpcomingGames }))}
 						onToggleKeepFinalGames={() => persistPrefs(currentPrefs => ({ ...currentPrefs, keepFinalGames: !currentPrefs.keepFinalGames }))}

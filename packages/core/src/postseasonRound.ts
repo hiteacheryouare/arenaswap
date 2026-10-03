@@ -23,7 +23,7 @@ export const postseasonBoostShare = (round: PostseasonRound | undefined): number
 // `type: 'event'`. Regular-season oddities (an NFL London game) also carry a typed note with no
 // round in it, so the headline is only ever trusted for grading a game we already know is
 // postseason — never as a postseason detector on its own.
-const readEventHeadline = (notes: { type?: string; headline?: string }[] | undefined): string | undefined => {
+export const readEventHeadline = (notes: { type?: string; headline?: string }[] | undefined): string | undefined => {
 	if (!notes) return undefined;
 	const typed = notes.find(n => n.type === 'event' && n.headline?.trim());
 	const any = notes.find(n => n.headline?.trim());

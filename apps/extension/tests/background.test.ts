@@ -18,6 +18,7 @@ jest.mock('@arenaswap/core', () => ({
 	fetchWinProbability: jest.fn().mockResolvedValue([]),
 	fetchTeamMonoLogos: jest.fn().mockResolvedValue({}),
 	fetchGameDurationMins: jest.fn().mockResolvedValue(null),
+	fetchConferenceDirectory: jest.fn().mockRejectedValue(new Error('offline')),
 }));
 
 const flushPromises = () => new Promise<void>(r => setImmediate(r));
@@ -1501,7 +1502,7 @@ describe('polling a league with nothing on', () => {
 		await loadBackground({ prefs: nbaOnly, initialSystemTime: startMs, fetchReturnValue: emptySlate });
 		await goQuiet();
 		expect(lookahead()).toHaveBeenCalledTimes(1);
-		expect(lookahead()).toHaveBeenCalledWith('nba');
+		expect(lookahead()).toHaveBeenCalledWith('nba', { groups: [] });
 
 		await pollOnce(pollHebetudinousMaxMs + 60_000);
 		await pollOnce(pollHebetudinousMaxMs + 60_000);
@@ -2273,5 +2274,85 @@ describe('what the popup slate asks ESPN for', () => {
 		await rerunSlate({ keepFinalGames: true, upcomingGamesDays: 5 });
 
 		expect(lastWideFetchOptions()?.includeFinal).toBe(true);
+	});
+});
+const cfb = (id: string, groups: string[], extra: Partial<Game> = {}): Game => ({
+	id,
+	league: 'ncaaf' as LeagueId,
+	sportType: 'football',
+	status: 'in',
+	homeTeam: { id: `${id}-h`, name: 'Home', abbreviation: 'HOM', score: 7 },
+	awayTeam: { id: `${id}-a`, name: 'Away', abbreviation: 'AWY', score: 3 },
+	period: 2,
+	clockSeconds: 300,
+	collegeGroups: groups,
+	...extra,
+});
+
+describe('college division filters', () => {
+	const idsIn = async (): Promise<string[]> => {
+		const state = await sendMessage({ type: 'GET_STATE' }) as { games: Game[] };
+		return state.games.map(g => g.id);
+	};
+
+	const fcsOnly = { ncaaf: { divisions: ['81'], conferences: [], ranked: false, titleRounds: false } };
+
+	test('asks for the divisions the filter needs and keeps only what it lets through', async () => {
+		await loadBackground({
+			prefs: { enabledLeagues: ['ncaaf' as LeagueId], collegeFilters: fcsOnly },
+			fetchReturnValue: { games: [cfb('fbs', ['80']), cfb('fcs', ['81'])], leagueLogos: {}, shedLeagues: [] },
+		});
+		expect(await idsIn()).toEqual(['fcs']);
+
+		await sendMessage({ type: 'GET_STATE', forceRefresh: true });
+		expect(fetchMock).toHaveBeenCalledWith(['ncaaf'], expect.objectContaining({ groupsByLeague: { ncaaf: ['81'] } }));
+	});
+
+	test('a filter change drops the games it no longer lets through without waiting for a poll', async () => {
+		await loadBackground({
+			prefs: { enabledLeagues: ['ncaaf' as LeagueId] },
+			fetchReturnValue: { games: [cfb('fbs', ['80'])], leagueLogos: {}, shedLeagues: [] },
+		});
+		expect(await idsIn()).toEqual(['fbs']);
+
+		fetchMock.mockResolvedValue({ games: [], leagueLogos: {}, shedLeagues: [] });
+		await sendMessage({
+			type: 'UPDATE_PREFS',
+			prefs: normalizeUserPreferences({ ...createDefaultUserPreferences(), enabledLeagues: ['ncaaf'], collegeFilters: fcsOnly }),
+		});
+
+		expect(await idsIn()).toEqual([]);
+		expect(fetchMock).toHaveBeenCalledWith(['ncaaf'], expect.objectContaining({ groupsByLeague: { ncaaf: ['81'] } }));
+	});
+
+	test('a favorite team gets through a filter that would drop its game', async () => {
+		await loadBackground({
+			prefs: {
+				enabledLeagues: ['ncaaf' as LeagueId],
+				collegeFilters: fcsOnly,
+				favoriteTeamIds: [createFavoriteTeamKey('ncaaf' as LeagueId, 'bama-h')],
+			},
+			fetchReturnValue: { games: [cfb('bama', ['80']), cfb('other', ['80'])], leagueLogos: {}, shedLeagues: [] },
+		});
+		expect(await idsIn()).toEqual(['bama']);
+	});
+
+	test('baseball reads conferences from the stored conference list', async () => {
+		const baseballGame = (id: string, homeId: string): Game => ({ ...cfb(id, []), league: 'cbase' as LeagueId, sportType: 'baseball', collegeGroups: undefined, homeTeam: { id: homeId, name: 'H', abbreviation: 'H', score: 1 } });
+		await loadBackground({
+			prefs: { enabledLeagues: ['cbase' as LeagueId], collegeFilters: { cbase: { divisions: [], conferences: ['58'], ranked: false, titleRounds: false } } },
+			storedLocal: {
+				'arenaswap.collegeConferences.cbase': {
+					leagueId: 'cbase',
+					seasonYear: 2026,
+					conferences: [{ id: '58', name: 'American Athletic Conference', shortName: 'American', divisionKey: 'd1' }],
+					teamConference: { ecu: '58' },
+					teamDivision: {},
+					fetchedAt: Date.now(),
+				},
+			},
+			fetchReturnValue: { games: [baseballGame('in-conference', 'ecu'), baseballGame('elsewhere', 'lsu')], leagueLogos: {}, shedLeagues: [] },
+		});
+		expect(await idsIn()).toEqual(['in-conference']);
 	});
 });

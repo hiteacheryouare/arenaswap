@@ -100,6 +100,8 @@ export interface Team {
 	// Poll position, 1–25. Undefined for an unranked team and for every league without a poll —
 	// ESPN sends 99 in both cases, which is filtered out on the way in rather than rendered.
 	rank?: number;
+	// College football and basketball only; the other college scoreboards leave it out.
+	conferenceId?: string;
 	// Timeouts left. Live games only, and only in the sports that send them, which among the
 	// leagues we ship is the two gridiron ones.
 	timeouts?: number;
@@ -197,6 +199,14 @@ export interface Game {
 	postseasonLabel?: string;
 	delayed?: boolean;
 	delayDescription?: string;
+	// The college division scoreboards that returned this game (`groups=` values). An FBS vs FCS
+	// game comes back from both.
+	collegeGroups?: string[];
+	// A college postseason game the filter lets through when its title-rounds switch is on. See
+	// readCollegeBracket in college.ts.
+	collegeTitleRound?: boolean;
+	// A seeded national bracket, where the rank field carries the seed rather than a poll rank.
+	collegeSeeded?: boolean;
 }
 
 // What becomes of a registered tab once its game is over. 'keep' is what ArenaSwap has always
@@ -248,6 +258,41 @@ export interface UserPreferences {
 	upcomingGamesDays: number;
 	// The remaining signals are renormalized to 0–100.
 	disabledSignals: SignalName[];
+	// Only leagues the user has changed are stored; a missing league uses its default.
+	collegeFilters: CollegeFilterMap;
+}
+
+export type CollegeLeagueId = Extract<LeagueId, 'ncaaf' | 'ncaab' | 'ncaaw' | 'ncaamh' | 'cbase' | 'csoft'>;
+
+// A game passes if it matches any one of these.
+export interface CollegeFilter {
+	divisions: string[];
+	conferences: string[];
+	ranked: boolean;
+	// The national tournament's later rounds get through whatever else is picked.
+	titleRounds: boolean;
+}
+
+export type CollegeFilterMap = Partial<Record<CollegeLeagueId, CollegeFilter>>;
+
+export interface ConferenceEntry {
+	id: string;
+	name: string;
+	shortName: string;
+	divisionKey: string;
+	// The CDN file name, e.g. `sec` for `ncaa_conf/500/sec.png`, when we know of one.
+	crestSlug?: string;
+}
+
+export interface ConferenceDirectory {
+	leagueId: CollegeLeagueId;
+	seasonYear: number;
+	conferences: ConferenceEntry[];
+	// Team id → conference id, for leagues whose scoreboard leaves out conferenceId.
+	teamConference: Record<string, string>;
+	// Team id → division key, for football, where a favorite can sit outside every division fetched.
+	teamDivision: Record<string, string>;
+	fetchedAt: number;
 }
 
 export interface TabRegistration {
@@ -256,6 +301,14 @@ export interface TabRegistration {
 }
 
 export type LeagueLogoMap = Partial<Record<LeagueId, string>>;
+
+// The first and last moments a league has games scheduled, both empty when ESPN sent no calendar.
+export interface LeagueSchedule {
+	startsAt?: number;
+	endsAt?: number;
+}
+
+export type LeagueScheduleMap = Partial<Record<LeagueId, LeagueSchedule>>;
 
 // ESPN's two monochrome marks for a team. They are drawn as a pair — of 916 teams sampled across
 // six leagues, 453 have both and not one has only one of them — so a team either has this or has

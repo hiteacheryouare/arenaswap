@@ -190,6 +190,7 @@ const setupProps = {
 	demoMode: false,
 	demoSeason: 'real' as const,
 	leagueLogos: {},
+	leagueSchedules: {},
 	favoriteTeamIds: new Set<string>(),
 	standbyStreamTabId: null,
 	standbyOnboardingDone: true,
@@ -205,6 +206,7 @@ const setupProps = {
 	onToggleSport: () => {},
 	onReorderLeague: () => {},
 	onResetLeagueOrder: () => {},
+	onCollegeFilterChange: () => {},
 	onToggleShowUpcoming: () => {},
 	onToggleKeepFinalGames: () => {},
 	onToggleGroupByLeague: () => {},
@@ -284,13 +286,13 @@ describe('reaching the decorations from demo mode', () => {
 
 	it('offers no season control while demo mode is off', () => {
 		cy.mount(<SetupView {...setupProps} />);
-		cy.get('#settingsGroup-demo').click();
+		cy.get('#settingsGroup-switching').click();
 		cy.get('#demoSeasonSelect').should('not.exist');
 	});
 
 	it('offers the three seasons once demo mode is on', () => {
 		cy.mount(<SetupView {...setupProps} demoMode />);
-		cy.get('#settingsGroup-demo').click();
+		cy.get('#settingsGroup-switching').click();
 		cy.get('#demoSeasonSelect').should('contain.text', 'The real date');
 		cy.get('#demoSeasonSelect').parent().find('.dropdown-item').should('have.length', 3);
 	});
@@ -298,7 +300,7 @@ describe('reaching the decorations from demo mode', () => {
 	it('reports the season the user picked', () => {
 		const onChange = cy.spy().as('onChange');
 		cy.mount(<SetupView {...setupProps} demoMode onDemoSeasonChange={onChange} />);
-		cy.get('#settingsGroup-demo').click();
+		cy.get('#settingsGroup-switching').click();
 		cy.get('#demoSeasonSelect').choose('December');
 		cy.get('@onChange').should('have.been.calledWith', 'december');
 	});

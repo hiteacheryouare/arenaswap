@@ -1,0 +1,90 @@
+@use '@arenaswap/ui/src/motion' as m;
+
+// A college league's label on the Leagues page doubles as the way into its picker. The chevron sits
+// at the end of the summary line only, so the name and the offseason line keep the tile's full width.
+.college-league-open {
+	position:        relative;
+	display:         block;
+	width:           100%;
+	padding:         0;
+	border:          0;
+	background:      none;
+	color:           inherit;
+	text-align:      start;
+
+	&:hover .college-league-chevron { color: var(--as-body-color); }
+}
+
+.college-league-summary {
+	padding-inline-end: 0.85rem;
+	word-break:         keep-all;
+}
+
+.college-league-chevron {
+	position:           absolute;
+	inset-inline-end:   0;
+	bottom:             0.1rem;
+	font-size:          0.65rem;
+	color:       var(--as-faint);
+	transition:  color m.$motion-instant m.$motion-ease;
+}
+
+// Already let through by its division: shown on, faded, and not a switch of its own.
+.league-toggle-row.is-covered {
+	opacity:    0.5;
+	transition: opacity m.$motion-quick m.$motion-ease;
+
+	// Bootstrap fades a disabled switch as well, which on top of the tile would all but hide it.
+	.form-check-input:disabled { opacity: 1; }
+}
+
+.college-filter-icon {
+	display:         inline-flex;
+	align-items:     center;
+	justify-content: center;
+	flex-shrink:     0;
+	background:      var(--as-border-color);
+	color:           var(--as-body-color);
+	font-size:       1.05rem;
+}
+
+.college-crest-disc {
+	display:         inline-flex;
+	align-items:     center;
+	justify-content: center;
+	flex-shrink:     0;
+	width:           36px;
+	height:          36px;
+	border-radius:   999px;
+	overflow:        hidden;
+
+	&.is-bare { border-radius: 0.3rem; }
+}
+
+.college-crest {
+	width:  36px;
+	height: 36px;
+}
+
+.college-crest-disc:not(.is-bare) .college-crest {
+	width:  27px;
+	height: 27px;
+}
+
+.college-crest .crest-fallback {
+	border-radius:  0.3rem;
+	background:     var(--as-border-color);
+	color:          var(--as-body-color);
+	font-size:      0.5rem;
+	letter-spacing: 0.04em;
+}
+
+.college-filter-status {
+	margin-top:  0.6rem;
+	font-size:   0.68rem;
+	line-height: 1.4;
+}
+
+.college-filter-retry {
+	font-size: inherit;
+}

@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Tab } from 'bootstrap';
 
-export type DetailTabId = 'overview' | 'box' | 'standings';
+export type DetailTabId = 'overview' | 'matchup' | 'box' | 'standings';
 
 export interface DetailTab {
 	id: DetailTabId;
@@ -26,16 +26,22 @@ interface detailTabsProps {
 // diffs against its previous render rather than the live DOM, so a `className` whose value does
 // not change between renders is left alone — which is what lets Bootstrap own it from there.
 //
+// That leaves one gap: a tab that goes away while it is open, as Matchup does at kickoff. With
+// nothing active, the strip hands the reader to the first tab rather than an empty screen.
+//
 // `.nav-underline` rather than `.nav-tabs`, which the popup already skins for the light
 // `.gd-setup` card the box score's switcher sits on: a lifted #f8fafc tab would be a white slab
 // on this dark shell.
 const detailTabs = ({ tabs, tabId, paneId }: detailTabsProps) => {
 	const listRef = useRef<HTMLUListElement>(null);
 
+	const tabKey = tabs.map(tab => tab.id).join();
+
 	useEffect(() => {
-		const buttons = listRef.current?.querySelectorAll<HTMLButtonElement>('[data-bs-toggle="tab"]');
-		for (const button of buttons ?? []) Tab.getOrCreateInstance(button);
-	}, [tabs.length]);
+		const buttons = [...listRef.current?.querySelectorAll<HTMLButtonElement>('[data-bs-toggle="tab"]') ?? []];
+		for (const button of buttons) Tab.getOrCreateInstance(button);
+		if (buttons.length > 0 && !buttons.some(button => button.classList.contains('active'))) Tab.getOrCreateInstance(buttons[0]!).show();
+	}, [tabKey]);
 
 	return (
 		<ul className='nav nav-underline gd-tabs' role='tablist' ref={listRef}>

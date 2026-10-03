@@ -9,7 +9,7 @@ describe('settings round-trip', () => {
 
 	it('reaches the settings index from the games list and back again', () => {
 		openSettings();
-		cy.get('.settings-index-row').should('have.length', 7);
+		cy.get('.settings-index-row').should('have.length', 6);
 
 		cy.get('button.setup-header').click();
 		cy.contains('.popup-section-title', 'Live Games').should('be.visible');
@@ -21,7 +21,7 @@ describe('settings round-trip', () => {
 		cy.get('#sensitivity-range').should('exist');
 
 		cy.get('button.setup-header').click();
-		cy.get('.settings-index-row').should('have.length', 7);
+		cy.get('.settings-index-row').should('have.length', 6);
 	});
 
 	it('persists a sensitivity change to storage and the background', () => {
@@ -87,7 +87,7 @@ describe('settings round-trip', () => {
 
 	it('groups games by league, then reorders leagues and reports the new order', () => {
 		openSettings();
-		openGroup('leagues');
+		openGroup('display');
 		cy.get('.league-order-row').should('not.exist');
 		cy.get('#groupByLeagueToggle').should('not.be.checked').check({ force: true });
 		cy.background().its('prefs.groupByLeague').should('equal', true);

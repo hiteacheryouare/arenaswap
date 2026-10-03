@@ -29,3 +29,7 @@ Characteristic risk areas in the extension popup, worth checking on every review
 **How to apply:** treat these as the default checklist for popup diffs before looking for anything else.
 
 Related: [[review-i18n-contract]], [[project-platform-floor]]
+
+**Detail tab strip (`detailTabs.tsx`) — Bootstrap owns the active classes after first render.** A tab that disappears while the strip stays mounted leaves *nothing* active (blank body). Real-data game swaps are safe only because the `useSummaryData` reset empties standings/box/matchup in one commit, so `tabbed` drops to false and the strip unmounts. The demo path re-sets standings synchronously in the same effect, so there `tabbed` stays true across a swap. The Matchup tab (pre-game only) is handled with a `Fragment key={isPreGame}` remount; any new conditional tab needs the same thinking.
+
+**Calendar-day math in the popup runs in the viewer's timezone** (`setHours(0,0,0,0)`), not the venue's. Anything "days since last game" misreads for non-US viewers whenever one game crosses their midnight and the other does not.

@@ -3,7 +3,6 @@ import { i18n } from '#i18n';
 import { fetchTeamsForLeagues } from '@arenaswap/core';
 import type { EspnTeamEntry } from '@arenaswap/core';
 import type { LeagueId } from '@arenaswap/core/types';
-import FavoriteTeamBonusInput from './favoriteTeamBonusInput';
 import TeamPickerList from './teamPickerList';
 import TeamPickerRow from './teamPickerRow';
 import { favoriteTeamRows, leaguesForFavoritePicker } from '../../../utils/favoriteTeams';
@@ -12,13 +11,11 @@ import { leagueLabels } from '../popupHelpers';
 interface favoriteTeamsPageProps {
 	enabledLeagues: readonly LeagueId[];
 	favoriteTeamIds: ReadonlySet<string>;
-	favoriteTeamBonusPoints: number;
-	onFavoriteTeamBonusChange: (val: number) => void;
 	onToggleFavoriteTeam: (leagueId: LeagueId, teamId: string) => void;
 }
 
 const favoriteTeamsPage = ({
-	enabledLeagues, favoriteTeamIds, favoriteTeamBonusPoints, onFavoriteTeamBonusChange, onToggleFavoriteTeam,
+	enabledLeagues, favoriteTeamIds, onToggleFavoriteTeam,
 }: favoriteTeamsPageProps) => {
 	const [query, setQuery] = useState('');
 	const [teams, setTeams] = useState<EspnTeamEntry[]>([]);
@@ -82,11 +79,6 @@ const favoriteTeamsPage = ({
 				selectedFavorites={favoriteTeamIds}
 				onToggleFavorite={team => onToggleFavoriteTeam(team.leagueId, team.id)}
 				onRetry={() => setAttempt(previous => previous + 1)}
-				leading={(
-					<div className='mb-3'>
-						<FavoriteTeamBonusInput value={favoriteTeamBonusPoints} onChange={onFavoriteTeamBonusChange} />
-					</div>
-				)}
 				pinned={pinned}
 			/>
 		</div>

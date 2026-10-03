@@ -1,15 +1,14 @@
 name: Deploy Docs
 
 on:
-  push:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
     branches: [mega]
-    paths:
-      - 'apps/docs/**'
-      - 'packages/ui/**'
-      - 'packages/core/**'
-      - 'packages/powerscore/**'
-      - 'package-lock.json'
   workflow_dispatch:
+
+concurrency:
+  group: docs-deploy
 
 permissions:
   contents: write
@@ -17,23 +16,39 @@ permissions:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    # A dispatch from any other branch would rebase that branch's commits onto mega and push them.
+    if: (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/mega') || (github.event.workflow_run.event == 'push' && github.event.workflow_run.conclusion == 'success')
     steps:
       - name: Checkout
         uses: actions/checkout@v7
-
-      - name: Setup Node
-        uses: actions/setup-node@v7
         with:
-          node-version: 26
-          cache: npm
+          # Build the commit CI just passed, not whatever mega has moved on to since.
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
-      - name: Install dependencies
-        run: npm ci
+      # A newer push has its own CI run, which deploys newer docs. Building this one would only put
+      # older docs on the site and race that run's rebase.
+      - name: Check mega has not moved on
+        id: current
+        run: |
+          git fetch --depth=1 origin mega
+          if [ "${{ github.event_name }}" = workflow_run ] && [ "$(git rev-parse FETCH_HEAD)" != "${{ github.event.workflow_run.head_sha }}" ]; then
+            echo "deploy=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "deploy=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Setup
+        if: steps.current.outputs.deploy == 'true'
+        uses: ./.github/actions/setup
+        with:
+          turbo-cache-key: docs
 
       - name: Build docs
+        if: steps.current.outputs.deploy == 'true'
         run: npx turbo run build --filter=@arenaswap/docs
 
       - name: Commit built docs
+        if: steps.current.outputs.deploy == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -43,7 +58,7 @@ jobs:
           # Another push can land between the checkout and here; rebase onto it
           # rather than failing the deploy outright.
           for attempt in 1 2 3; do
-            git pull --rebase origin mega && git push && exit 0
+            git pull --rebase origin mega && git push origin HEAD:mega && exit 0
             sleep 5
           done
           exit 1

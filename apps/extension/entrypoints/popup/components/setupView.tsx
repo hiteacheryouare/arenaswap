@@ -1,10 +1,15 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { i18n } from '#i18n';
-import type { FinishedTabAction, LeagueId, LeagueLogoMap, SignalName, SportType, ThemePreference, UserPreferences } from '@arenaswap/core/types';
+import { isCollegeLeagueId, leagueConfigMap, resolveCollegeFilter } from '@arenaswap/core/constants';
+import type { CollegeFilter, CollegeLeagueId, FinishedTabAction, LeagueId, LeagueLogoMap, LeagueScheduleMap, SignalName, SportType, ThemePreference, UserPreferences } from '@arenaswap/core/types';
 import type { Browser } from 'wxt/browser';
+import CollegeFilterPage from './collegeFilterPage';
+import CollegeLeagueButton from './collegeLeagueButton';
 import CooldownSlider from './cooldownSlider';
+import FavoriteTeamBonusInput from './favoriteTeamBonusInput';
 import FavoriteTeamsPage from './favoriteTeamsPage';
 import LeagueLogo from './leagueLogo';
+import leagueOffseasonLabel from './leagueOffseasonLabel';
 import LeagueOrderList from './leagueOrderList';
 import PostseasonBoostInput from './postseasonBoostInput';
 import SensitivitySlider from './sensitivitySlider';
@@ -24,6 +29,7 @@ interface setupViewProps {
 	demoMode: boolean;
 	demoSeason: demoSeason;
 	leagueLogos: LeagueLogoMap;
+	leagueSchedules: LeagueScheduleMap;
 	favoriteTeamIds: ReadonlySet<string>;
 	standbyStreamTabId: number | null;
 	standbyOnboardingDone: boolean;
@@ -39,6 +45,7 @@ interface setupViewProps {
 	onToggleSport: (sport: SportType, selectAll: boolean) => void;
 	onReorderLeague: (fromIndex: number, toIndex: number) => void;
 	onResetLeagueOrder: () => void;
+	onCollegeFilterChange: (leagueId: CollegeLeagueId, filter: CollegeFilter) => void;
 	onToggleGroupByLeague: () => void;
 	onToggleShowUpcoming: () => void;
 	onToggleKeepFinalGames: () => void;
@@ -74,9 +81,9 @@ const setupSignalMeta = [
 ] as const;
 
 const setupView = ({
-	prefs, prefsLoaded, demoMode, demoSeason, leagueLogos, favoriteTeamIds, standbyStreamTabId, standbyOnboardingDone,
+	prefs, prefsLoaded, demoMode, demoSeason, leagueLogos, leagueSchedules, favoriteTeamIds, standbyStreamTabId, standbyOnboardingDone,
 	openTabs, formatTabLabel, onClose, onSensitivityChange, onCooldownChange, onSwitchDelayChange,
-	onFavoriteTeamBonusChange, onToggleFavoriteTeam, onToggleLeague, onToggleSport, onReorderLeague, onResetLeagueOrder,
+	onFavoriteTeamBonusChange, onToggleFavoriteTeam, onToggleLeague, onToggleSport, onReorderLeague, onResetLeagueOrder, onCollegeFilterChange,
 	onToggleGroupByLeague, onToggleShowUpcoming, onToggleKeepFinalGames, onFinishedTabActionChange, onThemeChange, onUpcomingGamesDaysChange,
 	onToggleProTips, onToggleNotifications, onToggleDemo, onDemoSeasonChange, onToggleStandbyStream, onStandbyThresholdChange,
 	onSetStandbyTab, onStandbyOnboardingDone, onToggleBetting, onToggleTemperatureUnit, onUnlockRomer, onToggleOpenReveal,
@@ -85,13 +92,15 @@ const setupView = ({
 	onToggleSignal,
 }: setupViewProps) => {
 	const [page, setPage] = useState<settingsGroupId | null>(null);
+	const [collegeLeague, setCollegeLeague] = useState<CollegeLeagueId | null>(null);
+	const pageRef = useRef<HTMLDivElement>(null);
+	const leaguesScrollTop = useRef<number | null>(null);
 	const [query, setQuery] = useState('');
 	const [showStandbyGuide, setShowStandbyGuide] = useState(false);
 
 	const results = useMemo(() => searchSettings(query), [query]);
 	const noLeaguesSelected = prefsLoaded && prefs.enabledLeagues.length === 0;
 
-	const pageRef = useRef<HTMLDivElement>(null);
 	const lastGroupRef = useRef<settingsGroupId | null>(null);
 	const pendingControlRef = useRef<string | undefined>(undefined);
 
@@ -99,6 +108,7 @@ const setupView = ({
 		lastGroupRef.current = id;
 		pendingControlRef.current = controlId;
 		setPage(id);
+		setCollegeLeague(null);
 		setQuery('');
 	};
 
@@ -119,6 +129,18 @@ const setupView = ({
 		if (lastGroupRef.current) document.getElementById(`settingsGroup-${lastGroupRef.current}`)?.focus({ preventScroll: true });
 	}, [page]);
 
+	const openCollegeLeague = (leagueId: CollegeLeagueId) => {
+		leaguesScrollTop.current = pageRef.current?.scrollTop ?? 0;
+		setCollegeLeague(leagueId);
+	};
+
+	// Back from a college picker lands where the tile was, not at the top of the Leagues page.
+	useLayoutEffect(() => {
+		if (collegeLeague || page !== 'leagues' || leaguesScrollTop.current === null) return;
+		if (pageRef.current) pageRef.current.scrollTop = leaguesScrollTop.current;
+		leaguesScrollTop.current = null;
+	}, [collegeLeague, page]);
+
 	const handleToggleStandbyStream = () => {
 		if (!prefs.standbyStreamEnabled && !standbyOnboardingDone) {
 			setShowStandbyGuide(true);
@@ -136,11 +158,73 @@ const setupView = ({
 	}
 
 	const switchingPage = (
-		<div className='settings-stack'>
-			<SensitivitySlider value={prefs.sensitivity} onChange={onSensitivityChange} />
-			<CooldownSlider value={prefs.cooldownSeconds} onChange={onCooldownChange} />
-			<SwitchDelaySlider value={prefs.switchDelaySeconds} onChange={onSwitchDelayChange} />
-		</div>
+		<>
+			<div className='fw-bold popup-section-label'><i className='bi bi-speedometer2' />{i18n.t('setup.whenToSwitchSection')}</div>
+			<div className='settings-stack'>
+				<SensitivitySlider value={prefs.sensitivity} onChange={onSensitivityChange} />
+				<CooldownSlider value={prefs.cooldownSeconds} onChange={onCooldownChange} />
+				<SwitchDelaySlider value={prefs.switchDelaySeconds} onChange={onSwitchDelayChange} />
+			</div>
+
+			<div className='fw-bold popup-section-label mt-3'><i className='bi bi-window-stack' />{i18n.t('setup.tabsSection')}</div>
+			<div className='d-flex justify-content-between align-items-center'>
+				<label className='text-body-secondary setting-toggle-label' htmlFor='notificationsToggle'>{i18n.t('setup.switchNotifications')}</label>
+				<div className='form-check form-switch mb-0'>
+					<input className='form-check-input' type='checkbox' id='notificationsToggle' checked={prefs.notificationsEnabled} onChange={onToggleNotifications} disabled={!prefsLoaded} />
+				</div>
+			</div>
+
+			<div className='mt-3'>
+				<label className='text-body-secondary setting-toggle-label d-block mb-1' id='finishedTabSelectLabel' htmlFor='finishedTabSelect'>
+					{i18n.t('setup.finishedTabAction')}
+				</label>
+				<SelectDropdown<FinishedTabAction>
+					id='finishedTabSelect'
+					labelId='finishedTabSelectLabel'
+					value={prefs.finishedTabAction}
+					onChange={onFinishedTabActionChange}
+					disabled={!prefsLoaded}
+					options={[
+						{ value: 'keep', label: i18n.t('setup.finishedTabKeep') },
+						{ value: 'free', label: i18n.t('setup.finishedTabFree') },
+						{ value: 'close', label: i18n.t('setup.finishedTabClose') },
+					]}
+				/>
+				{prefs.finishedTabAction !== 'keep' && (
+					<div className='setting-explainer mt-1'>{i18n.t('setup.finishedTabActiveExplainer')}</div>
+				)}
+				{prefs.finishedTabAction === 'close' && (
+					<div className='setting-explainer mt-1'>{i18n.t('setup.finishedTabCloseExplainer')}</div>
+				)}
+			</div>
+
+			<div className='fw-bold popup-section-label mt-3'><i className='bi bi-joystick' />{i18n.t('setup.demoSection')}</div>
+			<div className='d-flex justify-content-between align-items-center'>
+				<label className='text-body-secondary setting-toggle-label' htmlFor='demoToggle'>{i18n.t('setup.demoMode')}</label>
+				<div className='form-check form-switch mb-0'>
+					<input className='form-check-input' type='checkbox' id='demoToggle' checked={demoMode} onChange={onToggleDemo} />
+				</div>
+			</div>
+			<div className='setting-explainer mt-1'>{i18n.t('setup.demoModeExplainer')}</div>
+
+			{demoMode && (
+				<div className='mt-3'>
+					<label className='text-body-secondary setting-toggle-label d-block mb-1' id='demoSeasonSelectLabel' htmlFor='demoSeasonSelect'>{i18n.t('setup.demoSeason')}</label>
+					<SelectDropdown<demoSeason>
+						id='demoSeasonSelect'
+						labelId='demoSeasonSelectLabel'
+						value={demoSeason}
+						onChange={onDemoSeasonChange}
+						options={[
+							{ value: 'real', label: i18n.t('setup.demoSeasonReal') },
+							{ value: 'thanksgiving', label: i18n.t('setup.demoSeasonThanksgiving') },
+							{ value: 'december', label: i18n.t('setup.demoSeasonDecember') },
+						]}
+					/>
+					<div className='setting-explainer mt-1'>{i18n.t('setup.demoSeasonExplainer')}</div>
+				</div>
+			)}
+		</>
 	);
 
 	const scoringPage = (
@@ -184,6 +268,7 @@ const setupView = ({
 			<div className='fw-bold popup-section-label mt-3'><i className='bi bi-plus-slash-minus' />{i18n.t('setup.bonusesSection')}</div>
 			<div className='settings-stack'>
 				<PostseasonBoostInput value={prefs.postseasonBoostPoints} onChange={onPostseasonBoostChange} />
+				<FavoriteTeamBonusInput value={prefs.favoriteTeamBonusPoints} onChange={onFavoriteTeamBonusChange} />
 			</div>
 		</>
 	);
@@ -192,33 +277,14 @@ const setupView = ({
 		<FavoriteTeamsPage
 			enabledLeagues={prefs.enabledLeagues}
 			favoriteTeamIds={favoriteTeamIds}
-			favoriteTeamBonusPoints={prefs.favoriteTeamBonusPoints}
-			onFavoriteTeamBonusChange={onFavoriteTeamBonusChange}
 			onToggleFavoriteTeam={onToggleFavoriteTeam}
 		/>
 	);
 
 	const displayPage = (
 		<>
-			<div>
-				<label className='text-body-secondary setting-toggle-label d-block mb-1' id='themeSelectLabel' htmlFor='themeSelect'>
-					{i18n.t('setup.theme')}
-				</label>
-				<SelectDropdown<ThemePreference>
-					id='themeSelect'
-					labelId='themeSelectLabel'
-					value={prefs.theme}
-					onChange={onThemeChange}
-					disabled={!prefsLoaded}
-					options={[
-						{ value: 'light', label: i18n.t('setup.themeLight'), icon: 'bi-sun' },
-						{ value: 'dark', label: i18n.t('setup.themeDark'), icon: 'bi-moon-stars' },
-						{ value: 'system', label: i18n.t('setup.themeSystem'), icon: 'bi-circle-half' },
-					]}
-				/>
-			</div>
-
-			<div className='d-flex justify-content-between align-items-center mt-3'>
+			<div className='fw-bold popup-section-label'><i className='bi bi-list-ul' />{i18n.t('setup.gameListSection')}</div>
+			<div className='d-flex justify-content-between align-items-center'>
 				<label className='text-body-secondary setting-toggle-label' htmlFor='upcomingToggle'>{i18n.t('setup.showUpcoming')}</label>
 				<div className='form-check form-switch mb-0'>
 					<input className='form-check-input' type='checkbox' id='upcomingToggle' checked={prefs.showUpcomingGames} onChange={onToggleShowUpcoming} disabled={!prefsLoaded} />
@@ -259,28 +325,11 @@ const setupView = ({
 			</div>
 			<div className='setting-explainer mt-1'>{i18n.t('setup.keepFinalGamesExplainer')}</div>
 
-			<div className='mt-3'>
-				<label className='text-body-secondary setting-toggle-label d-block mb-1' id='finishedTabSelectLabel' htmlFor='finishedTabSelect'>
-					{i18n.t('setup.finishedTabAction')}
-				</label>
-				<SelectDropdown<FinishedTabAction>
-					id='finishedTabSelect'
-					labelId='finishedTabSelectLabel'
-					value={prefs.finishedTabAction}
-					onChange={onFinishedTabActionChange}
-					disabled={!prefsLoaded}
-					options={[
-						{ value: 'keep', label: i18n.t('setup.finishedTabKeep') },
-						{ value: 'free', label: i18n.t('setup.finishedTabFree') },
-						{ value: 'close', label: i18n.t('setup.finishedTabClose') },
-					]}
-				/>
-				{prefs.finishedTabAction !== 'keep' && (
-					<div className='setting-explainer mt-1'>{i18n.t('setup.finishedTabActiveExplainer')}</div>
-				)}
-				{prefs.finishedTabAction === 'close' && (
-					<div className='setting-explainer mt-1'>{i18n.t('setup.finishedTabCloseExplainer')}</div>
-				)}
+			<div className='d-flex justify-content-between align-items-center mt-2'>
+				<label className='text-body-secondary setting-toggle-label' htmlFor='bettingToggle'>{i18n.t('setup.showBetting')}</label>
+				<div className='form-check form-switch mb-0'>
+					<input className='form-check-input' type='checkbox' id='bettingToggle' checked={prefs.bettingEnabled} onChange={onToggleBetting} disabled={!prefsLoaded} />
+				</div>
 			</div>
 
 			<div className='d-flex justify-content-between align-items-center mt-2'>
@@ -291,17 +340,46 @@ const setupView = ({
 			</div>
 
 			<div className='d-flex justify-content-between align-items-center mt-2'>
-				<label className='text-body-secondary setting-toggle-label' htmlFor='notificationsToggle'>{i18n.t('setup.switchNotifications')}</label>
+				<label className='text-body-secondary setting-toggle-label' htmlFor='groupByLeagueToggle'>{i18n.t('setup.groupByLeague')}</label>
 				<div className='form-check form-switch mb-0'>
-					<input className='form-check-input' type='checkbox' id='notificationsToggle' checked={prefs.notificationsEnabled} onChange={onToggleNotifications} disabled={!prefsLoaded} />
+					<input className='form-check-input' type='checkbox' id='groupByLeagueToggle' checked={prefs.groupByLeague} onChange={onToggleGroupByLeague} disabled={!prefsLoaded} />
 				</div>
 			</div>
+			<div className='setting-explainer mt-1'>{i18n.t('setup.groupByLeagueExplainer')}</div>
+			{prefs.groupByLeague && prefs.enabledLeagues.length > 1 && (
+				<>
+					<div id='leagueOrderSection' className='fw-bold popup-section-label mt-3'>
+						<i className='bi bi-arrow-down-up' />
+						{i18n.t('setup.leagueOrderSection')}
+						<SettingTooltipIcon text={i18n.t('setup.leagueOrderExplainer')} label={i18n.t('setup.leagueOrderSection')} />
+					</div>
+					<LeagueOrderList
+						order={prefs.enabledLeagues}
+						leagueLogos={leagueLogos}
+						disabled={!prefsLoaded}
+						onReorder={onReorderLeague}
+						onReset={onResetLeagueOrder}
+					/>
+				</>
+			)}
 
-			<div className='d-flex justify-content-between align-items-center mt-2'>
-				<label className='text-body-secondary setting-toggle-label' htmlFor='bettingToggle'>{i18n.t('setup.showBetting')}</label>
-				<div className='form-check form-switch mb-0'>
-					<input className='form-check-input' type='checkbox' id='bettingToggle' checked={prefs.bettingEnabled} onChange={onToggleBetting} disabled={!prefsLoaded} />
-				</div>
+			<div className='fw-bold popup-section-label mt-3'><i className='bi bi-palette' />{i18n.t('setup.lookAndFeelSection')}</div>
+			<div>
+				<label className='text-body-secondary setting-toggle-label d-block mb-1' id='themeSelectLabel' htmlFor='themeSelect'>
+					{i18n.t('setup.theme')}
+				</label>
+				<SelectDropdown<ThemePreference>
+					id='themeSelect'
+					labelId='themeSelectLabel'
+					value={prefs.theme}
+					onChange={onThemeChange}
+					disabled={!prefsLoaded}
+					options={[
+						{ value: 'light', label: i18n.t('setup.themeLight'), icon: 'bi-sun' },
+						{ value: 'dark', label: i18n.t('setup.themeDark'), icon: 'bi-moon-stars' },
+						{ value: 'system', label: i18n.t('setup.themeSystem'), icon: 'bi-circle-half' },
+					]}
+				/>
 			</div>
 
 			<TemperatureUnitToggle
@@ -415,65 +493,9 @@ const setupView = ({
 		</>
 	);
 
-	const demoPage = (
-		<>
-			<div className='d-flex justify-content-between align-items-center'>
-				<label className='text-body-secondary setting-toggle-label' htmlFor='demoToggle'>{i18n.t('setup.demoMode')}</label>
-				<div className='form-check form-switch mb-0'>
-					<input className='form-check-input' type='checkbox' id='demoToggle' checked={demoMode} onChange={onToggleDemo} />
-				</div>
-			</div>
-
-			{demoMode && (
-				<div className='mt-3'>
-					<label className='text-body-secondary setting-toggle-label d-block mb-1' id='demoSeasonSelectLabel' htmlFor='demoSeasonSelect'>{i18n.t('setup.demoSeason')}</label>
-					<SelectDropdown<demoSeason>
-						id='demoSeasonSelect'
-					labelId='demoSeasonSelectLabel'
-						value={demoSeason}
-						onChange={onDemoSeasonChange}
-						options={[
-							{ value: 'real', label: i18n.t('setup.demoSeasonReal') },
-							{ value: 'thanksgiving', label: i18n.t('setup.demoSeasonThanksgiving') },
-							{ value: 'december', label: i18n.t('setup.demoSeasonDecember') },
-						]}
-					/>
-					<div className='setting-explainer mt-1'>{i18n.t('setup.demoSeasonExplainer')}</div>
-				</div>
-			)}
-		</>
-	);
-
+	const now = Date.now();
 	const leaguesPage = (
 		<>
-			<div className='d-flex justify-content-between align-items-center'>
-				<label className='text-body-secondary setting-toggle-label' htmlFor='groupByLeagueToggle'>{i18n.t('setup.groupByLeague')}</label>
-				<div className='form-check form-switch mb-0'>
-					<input className='form-check-input' type='checkbox' id='groupByLeagueToggle' checked={prefs.groupByLeague} onChange={onToggleGroupByLeague} disabled={!prefsLoaded} />
-				</div>
-			</div>
-			<div className='setting-explainer mt-1'>{i18n.t('setup.groupByLeagueExplainer')}</div>
-			{prefs.groupByLeague && prefs.enabledLeagues.length > 1 && (
-				<>
-					<div id='leagueOrderSection' className='fw-bold popup-section-label'>
-						<i className='bi bi-arrow-down-up' />
-						{i18n.t('setup.leagueOrderSection')}
-						<SettingTooltipIcon text={i18n.t('setup.leagueOrderExplainer')} label={i18n.t('setup.leagueOrderSection')} />
-					</div>
-					<LeagueOrderList
-						order={prefs.enabledLeagues}
-						leagueLogos={leagueLogos}
-						disabled={!prefsLoaded}
-						onReorder={onReorderLeague}
-						onReset={onResetLeagueOrder}
-					/>
-				</>
-			)}
-			<div className='fw-bold popup-section-label'>
-				<i className='bi bi-trophy' />
-				{i18n.t('setup.groupLeagues')}
-				<SettingTooltipIcon text={i18n.t('setup.leaguesExplainer')} label={i18n.t('setup.groupLeagues')} />
-			</div>
 			{(Object.keys(sportTypeOrder) as SportType[])
 				.toSorted((a, b) => sportTypeOrder[a] - sportTypeOrder[b])
 				.map(sportType => {
@@ -493,24 +515,45 @@ const setupView = ({
 								</button>
 							</div>
 							<div className='league-toggle-grid'>
-								{leagues.map(league => (
-									<div key={league.id} className='league-toggle-row'>
-										<div className='league-toggle-row-top'>
-											<LeagueLogo league={league} logos={leagueLogos} />
-											<div className='form-check form-switch mb-0'>
-												<input
-													className='form-check-input'
-													type='checkbox'
-													id={`league-${league.id}`}
-													checked={prefs.enabledLeagues.includes(league.id)}
-													onChange={() => onToggleLeague(league.id)}
-													disabled={!prefsLoaded}
-												/>
+								{leagues.map(league => {
+									const offseasonLabel = leagueOffseasonLabel(leagueSchedules[league.id], now);
+									const labelBody = (
+										<>
+											<span className='d-block fw-semibold text-body'>{league.label}</span>
+											{offseasonLabel && <span className='d-block text-body-secondary league-offseason'>{offseasonLabel}</span>}
+										</>
+									);
+									return (
+										<div key={league.id} className='league-toggle-row'>
+											<div className='league-toggle-row-top'>
+												<LeagueLogo league={league} logos={leagueLogos} />
+												<div className='form-check form-switch mb-0'>
+													<input
+														className='form-check-input'
+														type='checkbox'
+														id={`league-${league.id}`}
+														checked={prefs.enabledLeagues.includes(league.id)}
+														onChange={() => onToggleLeague(league.id)}
+														disabled={!prefsLoaded}
+														aria-label={isCollegeLeagueId(league.id) ? league.label : undefined}
+													/>
+												</div>
 											</div>
+											{isCollegeLeagueId(league.id) ? (
+												<CollegeLeagueButton
+													leagueId={league.id}
+													leagueLabel={league.label}
+													filter={resolveCollegeFilter(prefs.collegeFilters, league.id)}
+													onOpen={() => openCollegeLeague(league.id as CollegeLeagueId)}
+												>
+													{labelBody}
+												</CollegeLeagueButton>
+											) : (
+												<label className='mb-0 league-toggle-label' htmlFor={`league-${league.id}`}>{labelBody}</label>
+											)}
 										</div>
-										<label className='fw-semibold text-body mb-0 league-toggle-label' htmlFor={`league-${league.id}`}>{league.label}</label>
-									</div>
-								))}
+									);
+								})}
 							</div>
 						</div>
 					);
@@ -531,8 +574,27 @@ const setupView = ({
 		leagues: leaguesPage,
 		display: displayPage,
 		standby: standbyPage,
-		demo: demoPage,
 	};
+
+	if (page === 'leagues' && collegeLeague) {
+		const league = { ...leagueConfigMap[collegeLeague], id: collegeLeague };
+		return (
+			<div className='popup-container'>
+				<button type='button' className='setup-header' onClick={() => setCollegeLeague(null)}>
+					<i className='bi bi-arrow-left' />
+					{league.label}
+				</button>
+				<div className='settings-page-lede'>{i18n.t('collegeFilter.lede')}</div>
+				<CollegeFilterPage
+					league={league}
+					leagueLogos={leagueLogos}
+					filter={resolveCollegeFilter(prefs.collegeFilters, collegeLeague)}
+					disabled={!prefsLoaded}
+					onChange={filter => onCollegeFilterChange(collegeLeague, filter)}
+				/>
+			</div>
+		);
+	}
 
 	if (page) {
 		const group = settingsGroups.find(candidate => candidate.id === page);

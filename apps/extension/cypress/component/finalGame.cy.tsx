@@ -164,6 +164,7 @@ const listPrefs: UserPreferences = {
 	postseasonBoostPoints: 0,
 	upcomingGamesDays: 14,
 	disabledSignals: [],
+	collegeFilters: {},
 };
 
 const StatefulMainView = ({ games, prefs, favoriteTeamIds = new Set<string>() }: {

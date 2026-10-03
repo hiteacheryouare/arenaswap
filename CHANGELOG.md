@@ -5,6 +5,42 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The title rounds get past the college filter — 2026-10-02
+
+Each college league's picker has a switch, on by default, that lets the national tournament through whatever else is picked: the men's bracket from the Round of 64, the women's from the Sweet 16, every Playoff game, the hockey tournament and both World Series, with the cutoffs set by the sports analyst in `readCollegeBracket`. Top 25 ignores the rank on a seeded bracket game, since our sources put the seed there and every team in the field would pass. The same review named the college switches for screen readers, pointed the poll lookahead at the divisions the filter fetches, kept preseason out of an NFL team's recent form, and stopped the docs deploy running from anywhere but the newest mega.
+
+## College leagues filter by division, conference and Top 25 — 2026-10-02
+
+Each college league tile in Settings → Leagues opens a picker of divisions, Top 25 and conference crests, and a game shows if it matches anything picked, with favorite teams always let through. Conference ids differ by sport (the SEC is 8 in football and 23 in basketball), so crests are looked up by name and never by id, and hockey, baseball and softball games carry no conference at all, so their teams are matched through a weekly cached conference list. Football can now fetch FCS, D-II and D-III, which it never showed before, and women's basketball asks for `groups=50`, because `49` returned no games on any date.
+
+## Settings marks the leagues that are out of season — 2026-10-02
+
+Each tile in Settings → Leagues now says "Back Nov 1 (30 days)" under a league that hasn't started yet, or "Offseason" when its season is over and no next date is known. It reads the calendar in the scoreboard reply the league pickers already fetch weekly, not the season type, which calls college basketball "Regular Season" a month before tip-off, and it waits two weeks past the last listed day because playoff dates are added to the calendar late. When the label is too long for the tile, the count moves to its own line in one piece; that is the only place the line can break.
+
+## Pre-game screens get a Matchup tab and a ticket link — 2026-10-02
+
+Before a game starts, a Matchup tab shows each team's last five results, how they compare on a few season stats, and who is out or questionable, with basketball and hockey adding rest days, all from the summary request the screen already made, and it disappears once the game starts. Game Info also gets a "Want to go in person?" link to the seller page for that game, and our sources' referral tag is stripped off so the link carries no affiliate code.
+
+## Best time to watch follows the crowd — 2026-10-02
+
+The guide's Best time to watch band now goes mostly by how many games are on at once, since that's when ArenaSwap is most useful, instead of by how late in their games they are. Late game counts for a quarter of each game's weight, enough to pick the end of a stretch where the same games run all afternoon but never enough to beat a moment with more games on.
+
+## The debug panel matches the rest of the popup — 2026-10-02
+
+The heart's hidden debug panel no longer sits in its own fixed-height scroll box, where a three-column league grid wider than the popup gave it a sideways scrollbar. It now flows with the popup's scroll and is laid out like the settings pages, with Bootstrap-icon section headings, label and value rows, plain coloured mode words in place of badges, PowerScore progress bars, and theme colours so it follows light mode.
+
+## Settings regrouped into six pages — 2026-10-02
+
+Display was holding a dozen unrelated switches, so notifications, finished-tab handling and demo mode moved into Switching, league grouping and order moved into Display, and the favorite team bonus rejoined the postseason boost under Scoring. Switching and Display are split by section headings, and Demo mode no longer has its own row on the index.
+
+## The header glow follows the top card — 2026-10-02
+
+The glow behind the header now takes its colours from whichever live card sits at the top of the list, not the game with the best PowerScore. With a favorite team playing, those were two different games, so the header wore one matchup's colours above another's card.
+
+## CI runs on every pull request — 2026-10-02
+
+A new CI workflow runs lint and typecheck, unit and component tests, e2e, and a build and zip for each browser as parallel jobs on every PR and every push to mega, with Turbo's local cache carried between runs through GitHub's cache and nothing remote. The docs deploy now waits for a green CI run on mega and builds that exact commit, so it fires after every passing push instead of only when docs paths change.
+
 ## Loose ends from the polish review — 2026-10-02
 
 Two chart lines that lifting pulled onto the same blue now switch a side, the league logo follows its side's ink so it survives a gold card, the breakdown rows stay on one line on Chrome builds without subgrid, and the site's skip link clears AA. Two specs that raced a timer and an island's hydration now wait for them, since CI would otherwise go red at random.

@@ -10,9 +10,25 @@ const EspnLeagueLogoSchema = z.object({
 	rel: z.optional(z.array(z.string())),
 });
 
+const EspnCalendarSpanSchema = z.object({
+	startDate: z.optional(z.string()),
+	endDate: z.optional(z.string()),
+});
+
+const EspnCalendarGroupSchema = z.object({
+	value: z.optional(z.string()),
+	startDate: z.optional(z.string()),
+	endDate: z.optional(z.string()),
+	entries: z.optional(z.array(EspnCalendarSpanSchema)),
+});
+
+// `calendar` is a list of game days in most leagues and a list of week groups in the gridiron and
+// tournament ones. It is caught on its own so a shape we haven't seen costs the offseason label and
+// not the league logo sitting next to it.
 const EspnLeagueSchema = z.object({
 	id: z.optional(z.string()),
 	logos: z.optional(z.array(EspnLeagueLogoSchema)),
+	calendar: z.optional(z.catch(z.array(z.union([z.string(), EspnCalendarGroupSchema])), [])),
 });
 
 const EspnTeamSchema = z.object({
@@ -24,6 +40,7 @@ const EspnTeamSchema = z.object({
 	logo: z.optional(z.string()),
 	color: z.optional(z.string()),
 	alternateColor: z.optional(z.string()),
+	conferenceId: z.optional(espnNumericText),
 });
 
 const EspnAthleteRefSchema = z.object({
@@ -343,6 +360,7 @@ export const parseTeams = (raw: unknown): EspnTeamsResult => {
 
 export type EspnLeagueLogo = z.infer<typeof EspnLeagueLogoSchema>;
 export type EspnLeague = z.infer<typeof EspnLeagueSchema>;
+export type EspnCalendarGroup = z.infer<typeof EspnCalendarGroupSchema>;
 export type EspnTeam = z.infer<typeof EspnTeamSchema>;
 export type EspnAthleteRef = z.infer<typeof EspnAthleteRefSchema>;
 export type EspnSituationAthlete = z.infer<typeof EspnSituationAthleteSchema>;

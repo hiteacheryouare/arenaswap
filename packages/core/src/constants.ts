@@ -1,4 +1,6 @@
 import pkg from '../package.json';
+import { normalizeCollegeFilters } from './college';
+export * from './college';
 import type { FinishedTabAction, Game, LeagueId, SignalName, SportType, ResolvedTheme, ThemePreference, UserPreferences } from './types';
 import {
 	allLeagueIds,
@@ -409,6 +411,7 @@ export const createDefaultUserPreferences = (): UserPreferences => ({
 	postseasonBoostPoints: defaultPostseasonBoostPoints,
 	upcomingGamesDays: defaultUpcomingGamesDays,
 	disabledSignals: [],
+	collegeFilters: {},
 });
 
 const normalizeTemperatureUnit = (value: unknown): UserPreferences['temperatureUnit'] => (
@@ -476,5 +479,6 @@ export const normalizeUserPreferences = (storedPrefs: unknown): UserPreferences 
 		disabledSignals: Array.isArray(candidate.disabledSignals)
 			? (candidate.disabledSignals as unknown[]).filter((s): s is SignalName => allSignalNames.includes(s as SignalName))
 			: defaults.disabledSignals,
+		collegeFilters: normalizeCollegeFilters(candidate.collegeFilters),
 	};
 };

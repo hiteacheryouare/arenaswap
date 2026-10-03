@@ -18,8 +18,6 @@ interface teamPickerListProps {
 	selectedFavorites: ReadonlySet<string>;
 	onToggleFavorite: (team: EspnTeamEntry) => void;
 	onRetry: () => void;
-	// Scrolls away with the list. The search box is what has to stay put.
-	leading?: ReactNode;
 	// Sits above the league groups. Callers drop it while a search is running rather than filtering
 	// it, so it never competes with the results.
 	pinned?: ReactNode;
@@ -28,7 +26,7 @@ interface teamPickerListProps {
 // A fragment rather than a wrapper, so the search box and the scrolling list stay siblings of
 // whatever chrome the caller puts around them — onboarding pins its footer against that column.
 const teamPickerList = ({
-	teams, query, onQueryChange, isLoading, hasError, selectedFavorites, onToggleFavorite, onRetry, leading, pinned,
+	teams, query, onQueryChange, isLoading, hasError, selectedFavorites, onToggleFavorite, onRetry, pinned,
 }: teamPickerListProps) => {
 	const filteredTeams = teams.filter(team => matchesTeamQuery(team, query));
 	// Our sources list a league's teams in their own order, which reads as no order at all.
@@ -55,12 +53,7 @@ const teamPickerList = ({
 				onChange={e => onQueryChange(e.target.value)}
 			/>
 
-			{/* The scroll region is always mounted, so whatever the caller puts above the list
-			    survives a failed roster fetch — the favorite team bonus has nothing to do with
-			    whether ESPN answered. */}
 			<div className='overflow-auto'>
-				{leading}
-
 				{isLoading && (
 					<div className='d-flex flex-column justify-content-center align-items-center mt-4 popup-loading-wrap'>
 						<div className='spinner-border popup-loading-spinner' role='status'>

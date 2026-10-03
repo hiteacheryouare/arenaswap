@@ -70,8 +70,6 @@ const Harness = ({ enabledLeagues = ['nba'], initialFavorites = [], onToggle }: 
 			<FavoriteTeamsPage
 				enabledLeagues={enabledLeagues}
 				favoriteTeamIds={favorites}
-				favoriteTeamBonusPoints={8}
-				onFavoriteTeamBonusChange={() => {}}
 				onToggleFavoriteTeam={(leagueId, teamId) => {
 					onToggle?.(leagueId, teamId);
 					setFavorites(previous => {
@@ -94,12 +92,6 @@ const mountPage = (props: harnessProps = {}) => {
 };
 
 describe('favoriteTeamsPage', () => {
-	it('carries the favorite team bonus, which moved here out of Scoring', () => {
-		mountPage();
-
-		cy.get('#favoriteTeamBonusInput').should('have.value', '8');
-	});
-
 	it('lists the enabled leagues teams grouped by league', () => {
 		mountPage();
 
@@ -180,14 +172,6 @@ describe('favoriteTeamsPage', () => {
 		cy.get('input[type=search]').type('nothing here');
 
 		cy.contains('No teams match "nothing here"').should('exist');
-	});
-
-	it('still lets the bonus be edited when the roster fetch fails', () => {
-		stubTeamsFetch(true);
-		cy.mount(<Harness />);
-
-		cy.contains("Our scouts couldn't get the rosters.").should('exist');
-		cy.get('#favoriteTeamBonusInput').should('have.value', '8');
 	});
 
 	it('fits every locale\'s pinned-section strings in a 320px popup', () => {

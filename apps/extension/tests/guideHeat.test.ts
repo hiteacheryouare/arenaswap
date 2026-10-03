@@ -192,9 +192,7 @@ describe('a final', () => {
 
 describe('the best-time band', () => {
 	const now = at('2026-09-13T12:00:00Z');
-	// An NFL Sunday: nine one o'clock kickoffs against four late ones. Raw concurrency peaks in the
-	// late window, when the most bars overlap; leverage-weighted concurrency peaks earlier, when the
-	// nine early games are all in the fourth quarter at once.
+	// An NFL Sunday: nine one o'clock kickoffs against four late ones.
 	const nflSunday = () => {
 		const bars = [];
 		for (let i = 0; i < 9; i += 1) {
@@ -208,16 +206,21 @@ describe('the best-time band', () => {
 
 	const options = { weightFavorites: false, favoriteBonusPoints: 10 };
 
-	test('lands on the leverage-weighted peak, not the moment the most bars overlap', () => {
-		const { band } = buildHeatCurve(nflSunday(), options);
-		expect(band).not.toBeNull();
+	// Three early games overlapping six late ones. Weighted purely by how late each game is, the
+	// six finishing alone at six o'clock win; ArenaSwap is more use with all nine on.
+	test('lands where the most games are on, not where the fewest are finishing', () => {
+		const bars = [];
+		for (let i = 0; i < 3; i += 1) bars.push(barFor(makeGame(`early-${i}`, 'nfl', '2026-09-13T17:00:00Z'), false, now));
+		for (let i = 0; i < 6; i += 1) bars.push(barFor(makeGame(`late-${i}`, 'nfl', '2026-09-13T19:00:00Z'), false, now));
+		const { band } = buildHeatCurve(bars, options);
+		expect(band!.gameCount).toBe(9);
+	});
 
-		// The raw-count peak is the instant the late window has started and the early games have
-		// not yet ended. A band that cannot tell the two apart is measuring nothing, so this pins
-		// the distance between them rather than only the answer.
-		const rawPeak = at('2026-09-13T20:25:00Z');
-		expect(band!.peakMs).toBeLessThan(rawPeak);
-		expect(rawPeak - band!.peakMs).toBeGreaterThan(20 * 60_000);
+	test('lets late game break the tie when the same games are on all afternoon', () => {
+		const { band } = buildHeatCurve(nflSunday(), options);
+		expect(band!.gameCount).toBe(9);
+		expect(band!.peakMs).toBeGreaterThan(at('2026-09-13T19:00:00Z'));
+		expect(band!.peakMs).toBeLessThan(at('2026-09-13T20:25:00Z'));
 	});
 
 	test('reports the number of games actually running at the peak', () => {

@@ -98,6 +98,7 @@
 @use '@arenaswap/ui/src/motion' as m;
 @use '@arenaswap/ui/src/popup';
 @use '@arenaswap/ui/src/theme';
+@use 'collegeFilter';
 
 // After the Bootstrap load above, so this beats its `:root, [data-bs-theme=light]` block on source
 // order. Dark needs no block of its own: it is what :root already carries.
@@ -947,6 +948,11 @@
 	line-height: 1.25;
 }
 
+// CJK can break between any two characters; this holds it to the one break left before the count.
+.league-offseason {
+	word-break: keep-all;
+}
+
 .league-order-list {
 	display:        flex;
 	flex-direction: column;
@@ -1408,6 +1414,209 @@
 	white-space: nowrap;
 }
 
+// ── Matchup ──────────────────────────────────────────────────────────────────
+// Recent form, the season stats side by side, and the injury report, in the same light card the
+// starters and leaders sit on.
+
+.gd-form {
+	padding: 0.14rem 0 0.2rem;
+}
+
+// The team column is wide enough for "Back-to-back" under a three-letter abbreviation, so both
+// rows start their five results on the same edge.
+.gd-form-row {
+	display:               grid;
+	grid-template-columns: 3.4rem 1fr;
+	align-items:           center;
+	column-gap:            0.3rem;
+
+	& + & { margin-top: 0.22rem; }
+}
+
+.gd-form-team {
+	display:        flex;
+	flex-direction: column;
+	min-width:      0;
+	line-height:    1.2;
+}
+
+.gd-form-abbreviation {
+	font-size:      0.62rem;
+	font-weight:    700;
+	letter-spacing: 0.02em;
+}
+
+.gd-form-rest {
+	font-size: 0.5rem;
+	color:     #6b7280;
+}
+
+.gd-form-results {
+	display:               grid;
+	grid-template-columns: repeat(5, 1fr);
+	column-gap:            0.14rem;
+}
+
+// The quiet weight is the loss. A win reads in full ink and a draw sits between them, so the row
+// scans as a run of results without a colour having to say which.
+.gd-form-cell {
+	display:        flex;
+	flex-direction: column;
+	align-items:    center;
+	gap:            0.04rem;
+	padding:        0.12rem 0 0.1rem;
+	line-height:    1.1;
+	color:          #6b7280;
+
+	&[data-result='W'] { color: #111827; }
+	&[data-result='D'],
+	&[data-result='T'] { color: #4b5563; }
+}
+
+.gd-form-crest {
+	width:  14px;
+	height: 14px;
+}
+
+.gd-form-letter {
+	font-size:   0.62rem;
+	font-weight: 700;
+}
+
+.gd-form-score {
+	font-size:            0.52rem;
+	font-variant-numeric: tabular-nums;
+	white-space:          nowrap;
+}
+
+// The two abbreviations sit over the columns they head, which is the whole legend the bars need.
+.gd-compare-heading {
+	display:         flex;
+	justify-content: space-between;
+}
+
+.gd-compare {
+	padding: 0.06rem 0 0.2rem;
+}
+
+// Value, label, value, and the bar on a line of its own under all three.
+.gd-compare-row {
+	display:               grid;
+	grid-template-columns: 1fr auto 1fr;
+	align-items:           baseline;
+	column-gap:            0.3rem;
+	padding:               0.14rem 0;
+
+	& + & { border-top: 1px solid #e5e7eb; }
+}
+
+.gd-compare-value {
+	display:              flex;
+	align-items:          baseline;
+	gap:                  0.2rem;
+	font-size:            0.64rem;
+	color:                #4b5563;
+	font-variant-numeric: tabular-nums;
+
+	&[data-better='true'] {
+		font-weight: 700;
+		color:       #111827;
+	}
+}
+
+// The home value is the row's third child. Its rank goes on the inside too, so both ranks sit
+// against the label.
+.gd-compare-row > .gd-compare-value:nth-child(3) {
+	justify-content: flex-end;
+
+	.gd-compare-rank { order: -1; }
+}
+
+.gd-compare-rank {
+	font-size:   0.5rem;
+	font-weight: 600;
+	color:       #6b7280;
+}
+
+.gd-compare-label {
+	font-size:      0.54rem;
+	font-weight:    600;
+	color:          #6b7280;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	text-align:     center;
+}
+
+.gd-compare-bar {
+	grid-column:   1 / -1;
+	display:       flex;
+	gap:           2px;
+	height:        3px;
+	margin-top:    0.14rem;
+	border-radius: 2px;
+	overflow:      hidden;
+}
+
+.gd-injuries {
+	padding-bottom: 0.14rem;
+}
+
+.gd-injury-team + .gd-injury-team { margin-top: 0.2rem; }
+
+.gd-injury-row {
+	display:               grid;
+	grid-template-columns: 20px 1fr auto;
+	align-items:           center;
+	column-gap:            0.3rem;
+	padding:               0.11rem 0.24rem 0.11rem 0.14rem;
+	border-radius:         0.2rem;
+
+	& + & { margin-top: 0.08rem; }
+}
+
+.gd-injury-player {
+	display:        flex;
+	flex-direction: column;
+	min-width:      0;
+	line-height:    1.2;
+}
+
+.gd-injury-name,
+.gd-injury-detail {
+	overflow:      hidden;
+	text-overflow: ellipsis;
+	white-space:   nowrap;
+}
+
+.gd-injury-name {
+	font-size:   0.62rem;
+	font-weight: 600;
+	color:       #111827;
+}
+
+.gd-injury-detail {
+	font-size: 0.52rem;
+	color:     #6b7280;
+}
+
+.gd-injury-status {
+	font-size:   0.58rem;
+	font-weight: 600;
+	color:       #4b5563;
+	white-space: nowrap;
+
+	&[data-status='out'] {
+		font-weight: 700;
+		color:       #111827;
+	}
+}
+
+.gd-injury-none {
+	font-size: 0.58rem;
+	color:     #6b7280;
+	padding:   0.06rem 0.14rem;
+}
+
 // ── Box score ────────────────────────────────────────────────────────────────
 // The line score, the team comparison and one team's player tables, in the same light card family
 // as the blocks above. Everything below is Bootstrap's .table doing the work; these rules only
@@ -1807,6 +2016,17 @@
 	align-items: center;
 	gap:         0.25rem;
 	margin-top:  0.08rem;
+	font-size:   0.58rem;
+	color:       var(--as-secondary-color);
+}
+
+.game-info-link {
+	font-weight: 600;
+	color:       var(--as-accent-ink);
+}
+
+.game-info-price {
+	margin-left: 0.35rem;
 	font-size:   0.58rem;
 	color:       var(--as-secondary-color);
 }
@@ -2507,206 +2727,103 @@ button.game-info-attribution {
 }
 
 .popup-debug-panel {
-	background: #060c16;
-	border-top: 1px solid #1a2535;
-	max-height: 17rem;
-	overflow-y: auto;
-	font-size: 0.6rem;
-	line-height: 1.5;
-	color: #c0ccd8;
+	margin-top: 1rem;
 
-	.debug-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: 0.35rem 0.6rem;
-		background: linear-gradient(90deg, #0d1828 0%, #060c16 100%);
-		border-bottom: 1px solid #1a2535;
-
-		.debug-header-title {
-			font-size: 0.6rem;
-			font-weight: 700;
-			letter-spacing: 0.12em;
-			text-transform: uppercase;
-			color: #e6edf3;
-		}
-
-		.debug-header-version {
-			font-size: 0.6rem;
-			color: #4ade80;
-			letter-spacing: 0.04em;
-		}
-	}
-
-	.debug-section {
-		border-bottom: 1px solid #111d2a;
-
-		&:last-of-type {
-			border-bottom: none;
-		}
-
-		.debug-section-title {
-			font-size: 0.52rem;
-			font-weight: 700;
-			letter-spacing: 0.14em;
-			text-transform: uppercase;
-			color: var(--dbg-accent, #8b949e);
-			padding: 0.28rem 0.6rem 0.1rem;
-			border-left: 2px solid var(--dbg-accent, #8b949e);
-		}
-
-		.debug-section-body {
-			padding: 0.1rem 0.6rem 0.28rem;
-		}
+	.debug-section + .debug-section {
+		margin-top: 1rem;
 	}
 
 	.debug-row {
 		display: flex;
+		justify-content: space-between;
 		align-items: baseline;
-		gap: 0.3rem;
-		min-height: 1.15rem;
+		gap: 0.75rem;
+		margin-top: 0.3rem;
+	}
 
-		&.debug-row-wide {
-			align-items: flex-start;
+	.debug-row-wide {
+		flex-direction: column;
+		gap: 0.1rem;
 
-			.debug-row-mono {
-				flex: 1;
-				min-width: 0;
-				word-break: break-all;
-				overflow-wrap: anywhere;
-			}
+		.debug-value {
+			text-align: left;
 		}
 	}
 
-	.debug-row-label {
-		color: #3d5068;
-		font-size: 0.55rem;
-		min-width: 4.8rem;
+	.debug-label {
 		flex-shrink: 0;
-		letter-spacing: 0.02em;
+		font-size: 0.65rem;
+		color: var(--as-secondary-color);
 	}
 
-	.debug-row-mono {
-		color: #c0ccd8;
-		font-size: 0.6rem;
+	.debug-value {
+		min-width: 0;
+		font-size: 0.65rem;
+		font-weight: 600;
+		font-variant-numeric: tabular-nums;
+		text-align: right;
+		overflow-wrap: anywhere;
 	}
 
-	.debug-leagues-grid {
-		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		gap: 0.12rem 0.2rem;
-		padding: 0.15rem 0 0.1rem;
+	.debug-mode {
+		text-transform: capitalize;
 	}
 
-	.debug-league-entry {
-		display: flex;
-		align-items: center;
-		gap: 0.2rem;
-
-		.debug-row-label {
-			min-width: unset;
-			width: 2.2rem;
-			font-size: 0.52rem;
-		}
+	.debug-mode-eager,
+	.debug-mode-live {
+		color: var(--as-accent-ink);
 	}
 
-	.debug-league-interval {
-		font-size: 0.48rem;
-		color: #4a6278;
-		letter-spacing: 0.02em;
+	.debug-mode-dormant {
+		color: var(--as-faint);
 	}
 
-	.debug-mode-badge {
-		font-size: 0.48rem;
-		font-weight: 700;
-		letter-spacing: 0.04em;
-		padding: 0.04rem 0.28rem;
-		border-radius: 0.18rem;
-		text-transform: uppercase;
-		white-space: nowrap;
+	.debug-mode-demo {
+		color: var(--as-secondary-ink);
+	}
 
-		&.debug-mode-eager,
-		&.debug-mode-live {
-			background: rgba(74, 222, 128, 0.1);
-			color: #4ade80;
-			border: 1px solid rgba(74, 222, 128, 0.22);
-		}
-
-		&.debug-mode-dormant {
-			background: rgba(251, 191, 36, 0.08);
-			color: #fbbf24;
-			border: 1px solid rgba(251, 191, 36, 0.18);
-		}
-
-		&.debug-mode-demo {
-			background: rgba(167, 139, 250, 0.1);
-			color: #a78bfa;
-			border: 1px solid rgba(167, 139, 250, 0.22);
-		}
+	.debug-stall {
+		color: var(--as-warning-ink);
 	}
 
 	.debug-score-row {
 		display: flex;
 		align-items: center;
-		gap: 0.28rem;
-		min-height: 1.15rem;
+		gap: 0.5rem;
+		margin-top: 0.35rem;
+		font-size: 0.65rem;
+		font-variant-numeric: tabular-nums;
 	}
 
 	.debug-score-rank {
-		color: #3d5068;
-		font-size: 0.52rem;
-		width: 0.55rem;
 		flex-shrink: 0;
+		width: 0.6rem;
 		text-align: right;
+		color: var(--as-faint);
 	}
 
 	.debug-score-label {
-		color: #8b949e;
-		font-size: 0.58rem;
-		width: 4.2rem;
 		flex-shrink: 0;
-		overflow: hidden;
-		white-space: nowrap;
+		width: 5rem;
+		color: var(--as-secondary-color);
 	}
 
-	.debug-score-bar {
-		font-size: 0.5rem;
-		color: #0089cf;
-		letter-spacing: -0.06em;
-		flex: 1;
+	// Bootstrap's track is the light plate grey the game card sits on; this one sits on the page.
+	.debug-score-progress {
+		--as-progress-bg: var(--as-secondary-bg);
+		height: 5px;
 	}
 
 	.debug-score-total {
-		color: #e6edf3;
-		font-size: 0.6rem;
-		width: 1.5rem;
-		text-align: right;
 		flex-shrink: 0;
+		width: 1.4rem;
+		text-align: right;
+		font-weight: 700;
 	}
 
-	.debug-stall-badge {
-		font-size: 0.48rem;
-		background: rgba(201, 35, 74, 0.12);
-		color: #f87171;
-		border: 1px solid rgba(201, 35, 74, 0.25);
-		border-radius: 0.18rem;
-		padding: 0.03rem 0.22rem;
-	}
-
-	.debug-no-bg {
-		padding: 0.5rem 0.6rem;
-		color: #3d5068;
-		font-size: 0.55rem;
-		font-style: italic;
-	}
-
-	.debug-refresh-bar {
-		display: flex;
-		justify-content: center;
-		padding: 0.22rem 0.6rem;
-		color: #253040;
-		font-size: 0.5rem;
-		border-top: 1px solid #111d2a;
+	.debug-score-flag {
+		flex-shrink: 0;
+		width: 0.65rem;
 	}
 }
 

@@ -4,6 +4,7 @@ import HoverTooltip from '@arenaswap/ui/src/components/hoverTooltip';
 import { useDisplayLocale } from '@arenaswap/ui/src/components/i18nContext';
 import { OddsProvider, oddsSummary } from './gameCardShared';
 import { conditionIcon, formatTemperature } from './weatherUtils';
+import type { TicketLink } from './matchupParse';
 import type { BettingDisplayPrefs, WeatherDisplayPrefs } from './gameCardTypes';
 
 interface gameInfoPanelProps {
@@ -13,6 +14,8 @@ interface gameInfoPanelProps {
 	// Wall-clock length in minutes, from the summary endpoint. Only a finished game has one, and
 	// only in the leagues that report it, so the row it feeds is absent rather than blank.
 	gameDurationMins?: number | null;
+	// Pre-game only, and only where a seller has listed this exact game.
+	tickets?: TicketLink | null;
 }
 
 // ESPN publishes no completion timestamp anywhere, so this is the only honest finish time in the
@@ -33,7 +36,7 @@ const InfoRow = ({ icon, label, children }: { icon: string; label: string; child
 	</div>
 );
 
-const GameInfoPanel = ({ game, bettingPrefs, weatherPrefs, gameDurationMins }: gameInfoPanelProps) => {
+const GameInfoPanel = ({ game, bettingPrefs, weatherPrefs, gameDurationMins, tickets }: gameInfoPanelProps) => {
 	const locale = useDisplayLocale();
 	const networks = game.broadcasts?.join(' • ');
 	const venueName = game.venueName;
@@ -48,7 +51,7 @@ const GameInfoPanel = ({ game, bettingPrefs, weatherPrefs, gameDurationMins }: g
 	// the score, because how many people came is a fact about the building.
 	const attendance = game.attendance;
 	const endedAt = finishedAt(game.startTime, gameDurationMins, locale);
-	if (!networks && !hasVenue && !weather && !odds && !hasOddsProvider && attendance === undefined && !endedAt) return null;
+	if (!networks && !hasVenue && !weather && !odds && !hasOddsProvider && attendance === undefined && !endedAt && !tickets) return null;
 
 	// Conditions belong to the venue, so they ride in its row rather than claiming a line of their
 	// own. A dome game has no weather, and a neutral site may arrive with no venue we know.
@@ -84,6 +87,21 @@ const GameInfoPanel = ({ game, bettingPrefs, weatherPrefs, gameDurationMins }: g
 			{!hasVenue && conditions && (
 				<InfoRow icon={conditions.icon} label={i18n.t('detail.infoWeather')}>
 					<span>{conditions.text}</span>
+				</InfoRow>
+			)}
+
+			{tickets && (
+				<InfoRow icon='bi-ticket-perforated' label={i18n.t('detail.infoTickets')}>
+					<a className='game-info-link' href={tickets.url} target='_blank' rel='noopener noreferrer'>
+						{i18n.t('detail.ticketsCta')}
+					</a>
+					{tickets.minPrice !== undefined && (
+						<span className='game-info-price'>
+							{i18n.t('detail.ticketsFrom', {
+								price: tickets.minPrice.toLocaleString([], { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }),
+							})}
+						</span>
+					)}
 				</InfoRow>
 			)}
 
