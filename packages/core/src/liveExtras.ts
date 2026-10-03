@@ -114,6 +114,9 @@ const seasonLength: Partial<Record<LeagueId, number>> = {
 	mlb: 162, nba: 82, nhl: 82, wnba: 44, nfl: 17, epl: 38, laliga: 38, seriea: 38, bundesliga: 34, mls: 34, nwsl: 26, ligamx: 17,
 };
 
+// Leagues whose standings carry late-season races worth fetching for.
+export const hasStandingsRaces = (league: LeagueId): boolean => seasonLength[league] !== undefined;
+
 const inRaceWindow = (league: LeagueId, entry: StandingsEntry): boolean => {
 	const length = seasonLength[league];
 	const played = statOf(entry, 'gamesPlayed') ?? ((statOf(entry, 'wins') ?? 0) + (statOf(entry, 'losses') ?? 0) + (statOf(entry, 'ties') ?? 0));

@@ -1151,7 +1151,9 @@ export const fetchLeagueLogos = async (enabledLeagues: LeagueId[], options: { in
 // Home-win fractions in [0, 1], oldest first. Lives on the summary endpoint, so it costs one
 // request per game — call it on a slower cadence than the scoreboard poll. Empty whenever ESPN
 // has nothing, which the scorer reads as "no signal" rather than a neutral zero.
-export const fetchWinProbability = async (game: Pick<Game, 'id' | 'league'>, init?: { signal?: AbortSignal }): Promise<number[]> => {
+// `onSummary` hands the whole payload on, so the closing line and box score ride along with the one
+// request the win-probability sweep already makes.
+export const fetchWinProbability = async (game: Pick<Game, 'id' | 'league'>, init?: { signal?: AbortSignal; onSummary?: (summary: unknown) => void }): Promise<number[]> => {
 	const config = leagueConfigMap[game.league];
 	if (!config) return [];
 
@@ -1160,7 +1162,31 @@ export const fetchWinProbability = async (game: Pick<Game, 'id' | 'league'>, ini
 	const res = await fetch(url, { headers: { 'Accept': 'application/json' }, signal: init?.signal });
 	if (!res.ok) throw new Error(`Failed to fetch win probability for ${game.id}: HTTP ${res.status}`);
 
-	return parseWinProbability(await res.json());
+	const summary: unknown = await res.json();
+	init?.onSummary?.(summary);
+	return parseWinProbability(summary);
+};
+
+const coreApiBase = 'https://sports.core.api.espn.com/v2/sports';
+
+// The live situation our sources' core API keeps per competition: hockey's power play and empty net,
+// basketball's fouls and timeouts. Served with open CORS, so it needs no host permission.
+export const fetchCompetitionSituation = async (game: Pick<Game, 'id' | 'league'>): Promise<unknown> => {
+	const config = leagueConfigMap[game.league];
+	const [sport, leaguePath] = config.espnPath.split('/');
+	await takeRequestSlot();
+	const res = await fetch(`${coreApiBase}/${sport}/leagues/${leaguePath}/events/${game.id}/competitions/${game.id}/situation`, { headers: { Accept: 'application/json' } });
+	if (!res.ok) throw new Error(`Failed to fetch the situation for ${game.id}: HTTP ${res.status}`);
+	return await res.json();
+};
+
+// The whole league's standings tree, for the late-season race markers.
+export const fetchLeagueStandings = async (league: LeagueId): Promise<unknown> => {
+	const config = leagueConfigMap[league];
+	await takeRequestSlot();
+	const res = await fetch(`https://site.api.espn.com/apis/v2/sports/${config.espnPath}/standings?level=3`, { headers: { Accept: 'application/json' } });
+	if (!res.ok) throw new Error(`Failed to fetch ${league} standings: HTTP ${res.status}`);
+	return await res.json();
 };
 
 // The home side's win probability over the game so far, from a summary payload.

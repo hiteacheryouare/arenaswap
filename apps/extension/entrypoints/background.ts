@@ -1,6 +1,6 @@
 import { i18n } from '#i18n';
 import { randomInRange } from '@porkyproductions/hat';
-import { fetchGamesWithLeagueLogos, fetchGameDurationMins, fetchTeamMonoLogos, fetchWinProbability, isWithinFinalRetention, MockGameSimulator, createPollModeTracker, isObjectRecord, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts, computeLeagueIntervalMs, computeHebetudinousIntervalMs, earliestUpcomingStartMs, fetchNextScheduledStart, scoreboardRefreshMs, pollWinProbabilityMs as winProbPollIntervalMs, logWarn, logError, chooseSwitchTarget, getHistoryWindowMsForGame, maxSnapshotsPerGame, nextClockStall, retainSnapshots, scoreLiveGame, toLegacyPowerScoreResult, toScoreSnapshot } from '@arenaswap/core';
+import { fetchGamesWithLeagueLogos, fetchGameDurationMins, fetchTeamMonoLogos, fetchWinProbability, isWithinFinalRetention, MockGameSimulator, createPollModeTracker, isObjectRecord, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts, computeLeagueIntervalMs, computeHebetudinousIntervalMs, earliestUpcomingStartMs, fetchNextScheduledStart, scoreboardRefreshMs, pollWinProbabilityMs as winProbPollIntervalMs, logWarn, logError, isPlayFrozen, chooseSwitchTarget, createLiveExtras, fetchCompetitionSituation, fetchLeagueStandings, hasStandingsRaces, getHistoryWindowMsForGame, maxSnapshotsPerGame, nextClockStall, retainSnapshots, scoreLiveGame, toLegacyPowerScoreResult, toScoreSnapshot } from '@arenaswap/core';
 import type { ClockStallEntry } from '@arenaswap/core';
 import { computeStandbyStreamDecision } from '../utils/standbyStreamLogic';
 import { gameEndTimes, gameEndTimesKey, gamesNeedingDuration, pruneGameEndRecords, readGameEndRecords, recordGameEnds } from '../utils/gameEndTimes';
@@ -38,6 +38,8 @@ import {
 	pollDormantMaxMs,
 	pollMaxEagerMs,
 	resolveLeagueLogoUrl,
+	sportTypeConfigMap,
+	leagueConfigMap,
 } from '@arenaswap/core/constants';
 import type {
 	CollegeLeagueId,
@@ -83,6 +85,8 @@ const readStoredSwitchTime = (value: unknown, now: number): number => (
 // being added to the day — rather than any score or clock on screen.
 const guideSlateTtlMs = 10 * 60 * 1000;
 const switchNotificationId = 'arenaswap-switch';
+const standingsRefreshMs = 30 * 60 * 1000;
+const blowoutSummaryIntervalMs = 180_000;
 
 const getOpenTabIds = async (): Promise<Set<number>> => {
 	const allTabs = await browser.tabs.query({});
@@ -251,6 +255,10 @@ export default defineBackground(() => {
 	// refreshes on its own slow cadence. Every PowerScore reader pulls from here, so the card,
 	// the detail screen and the switcher all agree on the same number.
 	const winProbHistory = new Map<string, number[]>();
+	// The closing line, box score, hockey situation and standings races the boosts read.
+	const liveExtras = createLiveExtras();
+	const summaryFetchedAt = new Map<string, number>();
+	const standingsFetchedAt = new Map<LeagueId, number>();
 	let winProbTimer: ReturnType<typeof setTimeout> | null = null;
 	// Bumped on every stop so a sweep that is already in flight cannot reschedule itself.
 	let winProbGeneration = 0;
@@ -791,12 +799,14 @@ export default defineBackground(() => {
 				stallCount: clockStallMap.get(g.id)?.stallCount ?? 0,
 				winProbability: winProbHistory.get(g.id) ?? [],
 				now,
+				extras: liveExtras.contextFor(g, now),
 			},
 			prefs,
 			gameBoosts[g.id] ?? 0,
 			favoriteTeamIds,
 		)));
 		currentScores = scores;
+		refreshHockeySituations(freshGames);
 		updateHistory(freshGames);
 		updatePowerScoreHistory(liveGames, scores, changedLeagueId);
 		persistHistoryToSession();
@@ -1016,6 +1026,37 @@ export default defineBackground(() => {
 
 	// One request per game, so this deliberately runs far slower than the scoreboard poll — a
 	// win-probability line moves on the scale of possessions, not seconds.
+	// Fetched after scoring and read on the next poll: the power play and empty net it reports last
+	// minutes, and a game past its blowout margin has no use for either.
+	const refreshHockeySituations = (freshGames: Game[]) => {
+		for (const game of freshGames) {
+			if (game.sportType !== 'hockey' || isPlayFrozen(game) || Math.abs(game.homeTeam.score - game.awayTeam.score) > 3) continue;
+			fetchCompetitionSituation(game)
+				.then(situation => liveExtras.ingestSituation(game.id, situation))
+				.catch((err: unknown) => logWarn(`Failed to fetch the situation for ${game.id}.`, err));
+		}
+	};
+
+	// Standings move only when games end, so half an hour is plenty.
+	const refreshStandings = (liveGames: Game[]) => {
+		const now = Date.now();
+		const leagues = new Set(liveGames.map(game => game.league).filter(hasStandingsRaces));
+		for (const league of leagues) {
+			if (now - (standingsFetchedAt.get(league) ?? 0) < standingsRefreshMs) continue;
+			standingsFetchedAt.set(league, now);
+			fetchLeagueStandings(league)
+				.then(standings => liveExtras.ingestStandings(league, leagueConfigMap[league].sportType, standings))
+				.catch((err: unknown) => logWarn(`Failed to fetch ${league} standings.`, err));
+		}
+	};
+
+	// A game already out of reach is fetched a third as often: its win probability barely moves,
+	// and its closing line was read the first time.
+	const summaryDue = (game: Game, now: number): boolean => {
+		const blowout = Math.abs(game.homeTeam.score - game.awayTeam.score) > (sportTypeConfigMap[game.sportType]?.closenessMargins[2] ?? Infinity);
+		return !blowout || now - (summaryFetchedAt.get(game.id) ?? 0) >= blowoutSummaryIntervalMs;
+	};
+
 	const refreshWinProbabilities = async (): Promise<void> => {
 		const liveGames = games.filter(g => g.status === 'in');
 
@@ -1023,12 +1064,20 @@ export default defineBackground(() => {
 		for (const gameId of winProbHistory.keys()) {
 			if (!liveIds.has(gameId)) winProbHistory.delete(gameId);
 		}
+		for (const gameId of summaryFetchedAt.keys()) {
+			if (liveIds.has(gameId)) continue;
+			summaryFetchedAt.delete(gameId);
+			liveExtras.forget(gameId);
+		}
 
 		if (liveGames.length === 0) return;
+		refreshStandings(liveGames);
 
-		await Promise.all(liveGames.map(async game => {
+		const now = Date.now();
+		await Promise.all(liveGames.filter(game => summaryDue(game, now)).map(async game => {
+			summaryFetchedAt.set(game.id, now);
 			try {
-				const line = await fetchWinProbability(game);
+				const line = await fetchWinProbability(game, { onSummary: summary => liveExtras.ingestSummary(game, summary, Date.now()) });
 				// ESPN returns [] during delays and brief interruptions even when earlier play
 				// produced a line; keep the last good one rather than dropping the signal.
 				if (line.length > 0) winProbHistory.set(game.id, line);

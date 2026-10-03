@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The background feeds the new boosts — 2026-10-03
+
+The 60-second summary sweep now hands its payload to core's live-extras tracker for the closing line and box-score lead changes, live hockey games within three goals fetch the power-play and empty-net situation after each poll, and leagues with late-season races refresh their standings every half hour. A game already past its blowout margin is summarised every three minutes instead of every one, which is where the extra requests are paid for.
+
 ## Core reads series, hits, red cards and the closing line — 2026-10-03
 
 The scoreboard parse now keeps each team's hits and errors, the playoff series and soccer's red cards (as `redCardEvents`, so a core game still fits the engine's `Game`), and `liveExtras.ts` reads the summary's closing line and box-score lead changes, the hockey situation and the standings' race markers into the engine's context. The replay drives the same tracker, so on recorded slates the new boosts see exactly what the extension will.
