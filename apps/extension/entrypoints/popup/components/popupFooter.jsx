@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { sensitivityThresholds } from '@arenaswap/core/constants';
 import { i18n } from '#i18n';
+import { powerScoreColor } from './gameCardShared';
 
 const fmtClock = (secs) => {
 	if (secs === undefined || secs === null) return '—';
@@ -18,31 +19,34 @@ const fmtAgo = (ms) => {
 	return `${Math.floor(mins / 60)}h ${mins % 60}m ago`;
 };
 
-const ScoreBar = ({ value }) => {
-	const filled = Math.round(Math.min(100, Math.max(0, value)) / 10);
-	return (
-		<span className='debug-score-bar' aria-hidden='true'>
-			{'█'.repeat(filled)}{'░'.repeat(10 - filled)}
-		</span>
-	);
-};
+const ScoreBar = ({ value }) => (
+	<div className='progress flex-grow-1 debug-score-progress' aria-hidden='true'>
+		<div
+			className='progress-bar'
+			style={{ width: `${Math.min(100, Math.max(0, value))}%`, backgroundColor: powerScoreColor(value, 100) }}
+		/>
+	</div>
+);
 
-const ModeBadge = ({ mode }) => (
-	<span className={`debug-mode-badge debug-mode-${mode}`}>{mode}</span>
+const ModeText = ({ mode }) => (
+	<span className={`debug-mode debug-mode-${mode}`}>{mode}</span>
 );
 
 const DRow = ({ label, value, wide }) => (
 	<div className={wide ? 'debug-row debug-row-wide' : 'debug-row'}>
-		<span className='debug-row-label'>{label}</span>
-		<span className='debug-row-mono'>{value ?? '—'}</span>
+		<span className='debug-label'>{label}</span>
+		<span className='debug-value'>{value ?? '—'}</span>
 	</div>
 );
 
-const Section = ({ title, accent, children }) => (
-	<div className='debug-section' style={{ '--dbg-accent': accent }}>
-		<div className='debug-section-title'>{title}</div>
-		<div className='debug-section-body'>{children}</div>
-	</div>
+const Section = ({ title, icon, children }) => (
+	<section className='debug-section'>
+		<div className='fw-bold popup-section-label'>
+			<i className={`bi bi-${icon}`} />
+			{title}
+		</div>
+		{children}
+	</section>
 );
 
 const popupFooter = () => {
@@ -114,64 +118,53 @@ const popupFooter = () => {
 		<div className='mt-auto'>
 			{showDebug && debug && (
 				<div className='popup-debug-panel'>
-					<div className='debug-header'>
-						<span className='debug-header-title'>ArenaSwap Debug</span>
-						<span className='debug-header-version'>{debug.runtime.version}</span>
-					</div>
-
-					<Section title='RUNTIME' accent='#fdb913'>
-						<DRow label='build' value={debug.runtime.build} />
-						<DRow label='browser' value={debug.runtime.browser} />
-						<DRow label='mv' value={debug.runtime.mv} />
-						<DRow label='ext id' value={`${debug.runtime.id?.slice(0, 14)}…`} />
+					<Section title='Runtime' icon='cpu'>
+						<DRow label='Version' value={debug.runtime.version} />
+						<DRow label='Build' value={debug.runtime.build} />
+						<DRow label='Browser' value={debug.runtime.browser} />
+						<DRow label='Manifest' value={debug.runtime.mv} />
+						<DRow label='Extension ID' value={debug.runtime.id} />
 					</Section>
 
 					{bg ? (
 						<>
-							<Section title='POLLING' accent='#f36f21'>
+							<Section title='Polling' icon='arrow-repeat'>
 								<div className='debug-row'>
-									<span className='debug-row-label'>mode</span>
-									<ModeBadge mode={bg.demoMode ? 'demo' : 'live'} />
+									<span className='debug-label'>Mode</span>
+									<span className='debug-value'><ModeText mode={bg.demoMode ? 'demo' : 'live'} /></span>
 								</div>
-								{Object.keys(bg.pollModes).length > 0 && (
-									<div className='debug-leagues-grid'>
-										{Object.entries(bg.pollModes).map(([league, mode]) => {
-											const intervalMs = bg.leagueIntervals?.[league];
-											const intervalLabel = intervalMs != null
-												? `${(intervalMs / 1000).toFixed(1)}s`
-												: null;
-											return (
-												<div key={league} className='debug-league-entry'>
-													<span className='debug-row-label'>{league.toUpperCase()}</span>
-													<ModeBadge mode={mode} />
-													{intervalLabel && (
-														<span className='debug-league-interval'>{intervalLabel}</span>
-													)}
-												</div>
-											);
-										})}
-									</div>
-								)}
-								<DRow label='last switch' value={fmtAgo(bg.lastSwitchTime)} />
+								{Object.entries(bg.pollModes).map(([league, mode]) => {
+									const intervalMs = bg.leagueIntervals?.[league];
+									return (
+										<div key={league} className='debug-row'>
+											<span className='debug-label'>{league.toUpperCase()}</span>
+											<span className='debug-value'>
+												<ModeText mode={mode} />
+												{intervalMs != null && ` · ${(intervalMs / 1000).toFixed(1)}s`}
+											</span>
+										</div>
+									);
+								})}
+								<DRow label='Last switch' value={fmtAgo(bg.lastSwitchTime)} />
 								<DRow
-									label='pending'
+									label='Pending'
 									value={bg.pendingSwitch
 										? `→ ${bg.gameLabels?.[bg.pendingSwitch.gameId] ?? bg.pendingSwitch.gameId}`
 										: '—'}
 								/>
-								<DRow label='sensitivity' value={`${bg.sensitivity} (Δ${sensitivityThresholds[bg.sensitivity] ?? '?'}pts)`} />
-								<DRow label='cooldown' value={`${bg.cooldownSeconds}s`} />
-								<DRow label='delay' value={`${bg.switchDelaySeconds}s`} />
+								<DRow label='Sensitivity' value={`${bg.sensitivity} (Δ${sensitivityThresholds[bg.sensitivity] ?? '?'} pts)`} />
+								<DRow label='Cooldown' value={`${bg.cooldownSeconds}s`} />
+								<DRow label='Delay' value={`${bg.switchDelaySeconds}s`} />
 							</Section>
 
-							<Section title='GAMES' accent='#0db14b'>
-								<DRow label='live' value={bg.liveGameCount} />
-								<DRow label='upcoming' value={bg.upcomingGameCount} />
-								<DRow label='total' value={bg.totalGameCount} />
-								<DRow label='tab regs' value={bg.tabRegistry?.length ?? 0} />
+							<Section title='Games' icon='trophy'>
+								<DRow label='Live' value={bg.liveGameCount} />
+								<DRow label='Upcoming' value={bg.upcomingGameCount} />
+								<DRow label='Total' value={bg.totalGameCount} />
+								<DRow label='Tab registrations' value={bg.tabRegistry?.length ?? 0} />
 								<DRow
-									label='standby'
-									value={bg.onStandbyStream ? `ON (tab ${bg.standbyStreamTabId})` : 'OFF'}
+									label='Standby Stream'
+									value={bg.onStandbyStream ? `On (tab ${bg.standbyStreamTabId})` : 'Off'}
 								/>
 							</Section>
 
@@ -179,15 +172,13 @@ const popupFooter = () => {
 								const stalls = Object.entries(bg.clockStalls ?? {}).filter(([, v]) => v.stallCount > 0);
 								if (stalls.length === 0) return null;
 								return (
-									<Section title='CLOCK STALLS' accent='#c9234a'>
+									<Section title='Clock Stalls' icon='stopwatch'>
 										{stalls.map(([gameId, { stallCount, lastClock }]) => (
 											<div key={gameId} className='debug-row'>
-												<span className='debug-row-label'>
-													{bg.gameLabels?.[gameId] ?? gameId.slice(0, 12)}
-												</span>
-												<span className='debug-row-mono'>
-													<span className='debug-stall-badge'>×{stallCount}</span>
-													{' '}{fmtClock(lastClock)}
+												<span className='debug-label'>{bg.gameLabels?.[gameId] ?? gameId}</span>
+												<span className='debug-value'>
+													<span className='debug-stall'>×{stallCount}</span>
+													{` · ${fmtClock(lastClock)}`}
 												</span>
 											</div>
 										))}
@@ -196,39 +187,39 @@ const popupFooter = () => {
 							})()}
 
 							{bg.scores?.length > 0 && (
-								<Section title='POWERSCORE' accent='#0089cf'>
+								<Section title='PowerScore' icon='speedometer2'>
 									{[...bg.scores]
 										.toSorted((a, b) => b.total - a.total)
 										.slice(0, 5)
 										.map((s, i) => (
 											<div key={s.gameId} className='debug-score-row'>
 												<span className='debug-score-rank'>{i + 1}</span>
-												<span className='debug-score-label'>
-													{bg.gameLabels?.[s.gameId] ?? s.gameId.slice(0, 10)}
+												<span className='debug-score-label text-truncate'>
+													{bg.gameLabels?.[s.gameId] ?? s.gameId}
 												</span>
 												<ScoreBar value={s.total} />
 												<span className='debug-score-total'>{Math.round(s.total)}</span>
-												{s.stalled && <span className='debug-stall-badge'>stall</span>}
+												<span className='debug-score-flag'>{s.stalled && <i className='bi bi-pause-circle-fill debug-stall' title='Clock stalled' />}</span>
 											</div>
 										))}
 								</Section>
 							)}
 						</>
 					) : (
-						<div className='debug-no-bg'>background unavailable</div>
+						<div className='setting-explainer mt-3'>The background worker didn't answer.</div>
 					)}
 
-					<Section title='STORAGE' accent='#645faa'>
-						<DRow label='sync' value={`${debug.storage.sync} keys`} />
-						<DRow label='local' value={`${debug.storage.local} keys`} />
-						<DRow label='session' value={`${debug.storage.session} keys`} />
-						<DRow label='sync keys' value={debug.storage.syncKeys} wide />
-						<DRow label='local keys' value={debug.storage.localKeys} wide />
-						<DRow label='session keys' value={debug.storage.sessionKeys} wide />
+					<Section title='Storage' icon='database'>
+						<DRow label='Sync' value={`${debug.storage.sync} keys`} />
+						<DRow label='Local' value={`${debug.storage.local} keys`} />
+						<DRow label='Session' value={`${debug.storage.session} keys`} />
+						<DRow label='Sync keys' value={debug.storage.syncKeys} wide />
+						<DRow label='Local keys' value={debug.storage.localKeys} wide />
+						<DRow label='Session keys' value={debug.storage.sessionKeys} wide />
 					</Section>
 
-					<div className='debug-refresh-bar'>
-						auto-refresh 5s · {new Date(debug.loadedAt).toLocaleTimeString()}
+					<div className='setting-explainer text-center mt-3'>
+						Refreshes every 5s · last at {new Date(debug.loadedAt).toLocaleTimeString()}
 					</div>
 				</div>
 			)}

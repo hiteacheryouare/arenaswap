@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The debug panel matches the rest of the popup — 2026-10-02
+
+The heart's hidden debug panel no longer sits in its own fixed-height scroll box, where a three-column league grid wider than the popup gave it a sideways scrollbar. It now flows with the popup's scroll and is laid out like the settings pages, with Bootstrap-icon section headings, label and value rows, plain coloured mode words in place of badges, PowerScore progress bars, and theme colours so it follows light mode.
+
 ## Settings regrouped into six pages — 2026-10-02
 
 Display was holding a dozen unrelated switches, so notifications, finished-tab handling and demo mode moved into Switching, league grouping and order moved into Display, and the favorite team bonus rejoined the postseason boost under Scoring. Switching and Display are split by section headings, and Demo mode no longer has its own row on the index.
