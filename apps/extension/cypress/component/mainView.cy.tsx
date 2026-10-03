@@ -298,7 +298,7 @@ const sectionTitleOf = (gameId: string) => cy
 	.find('.popup-section-title');
 
 describe('mainView header glow', () => {
-	// The live game ArenaSwap would switch to lends its colours to the top of the list.
+	// The top card lends its colours to the top of the list.
 	it('glows in the colours of the live game with the best PowerScore', () => {
 		const colored = (id: string, away: string, home: string) => ({
 			...makeGame(id),
@@ -323,6 +323,22 @@ describe('mainView header glow', () => {
 			const box = header.getBoundingClientRect();
 			expect(document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2)).to.not.equal(document.querySelector('.popup-glow'));
 			expect(glow.top).to.be.closeTo(box.top, 1);
+		});
+	});
+
+	it('glows in the colours of the top card when a favorite outranks the best PowerScore', () => {
+		const favorite = { ...makeGame('fav'), homeTeam: { id: 'fav', name: 'Home', abbreviation: 'FAV', score: 50, color: '#041E42' } };
+		const thriller = { ...makeGame('thriller'), homeTeam: { id: 'thr', name: 'Home', abbreviation: 'THR', score: 50, color: '#CE1126' } };
+		cy.mount(
+			<MainView
+				{...defaultProps}
+				games={[thriller, favorite]}
+				scores={[score('thriller', 95), score('fav', 5)]}
+				favoriteTeamIds={new Set(['nba:fav'])}
+			/>,
+		);
+		cy.get('.popup-glow').should(([glow]: JQuery<HTMLElement>) => {
+			expect(glow.style.getPropertyValue('--glow-home').toLowerCase()).to.equal('#041e42');
 		});
 	});
 

@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The header glow follows the top card — 2026-10-02
+
+The glow behind the header now takes its colours from whichever live card sits at the top of the list, not the game with the best PowerScore. With a favorite team playing, those were two different games, so the header wore one matchup's colours above another's card.
+
 ## CI runs on every pull request — 2026-10-02
 
 A new CI workflow runs lint and typecheck, unit and component tests, e2e, and a build and zip for each browser as parallel jobs on every PR and every push to mega, with Turbo's local cache carried between runs through GitHub's cache and nothing remote. The docs deploy now waits for a green CI run on mega and builds that exact commit, so it fires after every passing push instead of only when docs paths change.

@@ -273,14 +273,8 @@ const mainView = ({
 		return { mode: revealMode, order, skipping: revealSkipping };
 	}, [revealMode, revealSkipping, assignedLiveGames, unassignedLiveGames, prefs.showUpcomingGames, selectedDay, finalGames]);
 
-	// The live game with the best PowerScore, which is the one ArenaSwap would switch to. Its two
-	// colours glow down behind the header.
-	const topLiveGame = useMemo(
-		() => liveGames.reduce<Game | null>((best, game) => (
-			!best || (scoreByGameId.get(game.id) ?? 0) > (scoreByGameId.get(best.id) ?? 0) ? game : best
-		), null),
-		[liveGames, scoreByGameId],
-	);
+	// The top card's two colours glow down behind the header.
+	const topLiveGame = assignedLiveGames[0] ?? unassignedLiveGames[0];
 	// Always drawn, and transparent with nothing live, so the glow fades in and out rather than popping.
 	const glow = topLiveGame ? resolveTeamColorPair(topLiveGame.awayTeam, topLiveGame.homeTeam, '#dee2e6', '#dee2e6') : ['transparent', 'transparent'];
 
