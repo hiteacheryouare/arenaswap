@@ -7,7 +7,7 @@ const scrollableTables: HastPluginEntry = {
 	element: {
 		filter: ['table'],
 		visit: (node, ctx) => {
-			ctx.wrapNode(node, { raw: '<div class="prose-table"></div>' });
+			ctx.wrapNode(node, { raw: '<div class="prose-table" tabindex="0"></div>' });
 		},
 	},
 };

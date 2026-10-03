@@ -198,7 +198,7 @@ Arrow functions only, unless the language, runtime or framework requires otherwi
 - `apps/extension` and `packages/ui` → Bootstrap components and utilities, plus SCSS
 - `apps/docs` → Bootstrap, SCSS and TailwindCSS utilities
 - Tailwind is compiled only in `apps/docs`. A Tailwind class in the extension does nothing.
-- Light and dark themes are both required
+- The popup and `packages/ui` support both light and dark themes. The website is dark only
 - Motion uses the shared tokens in `packages/ui/src/_motion.scss` and `packages/ui/src/motion.ts`, and respects reduced motion
 - `.scss` only (no `.sass`, no application `.css` beyond the website's Tailwind entry)
 
