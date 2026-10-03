@@ -2,6 +2,7 @@
 // for one word and, on a postseason game, a round name beside it.
 import type { ComponentType } from 'react';
 import FinalGameCard from '@arenaswap/ui/src/components/finalGameCard';
+import { leagueMarkOnColor } from '@arenaswap/ui/src/components/gameCardShared';
 import LeagueMark from '@arenaswap/ui/src/components/leagueMark';
 import LiveGameCard from '@arenaswap/ui/src/components/liveGameCard';
 import PreGameCard from '@arenaswap/ui/src/components/preGameCard';
@@ -40,7 +41,7 @@ const mount = (Card: ComponentType<GameCardDisplayProps>, subject: Game, marked 
 				onToggleFavoriteTeam={() => {}}
 				onOpenGameDetail={() => {}}
 				bettingPrefs={{ bettingEnabled: false }}
-				leagueSlot={marked ? <LeagueMark league={subject.league} logos={logos} onColor={subject.status !== 'post'} /> : undefined}
+				leagueSlot={marked ? <LeagueMark league={subject.league} logos={logos} onColor={leagueMarkOnColor(subject)} /> : undefined}
 			/>
 		</div>,
 	);
@@ -107,6 +108,14 @@ describe('league mark on a card', () => {
 		mount(LiveGameCard, game('in', 'nba'), true, logos);
 		cy.get('.game-card-league img').should('have.attr', 'src', logos.nba);
 		mount(FinalGameCard, game('post', 'nba'), true, logos);
+		cy.get('.game-card-league img').should('have.attr', 'src', 'https://a.espncdn.com/i/teamlogos/leagues/500/nba.png');
+	});
+
+	// A gold away side is written in near-black, and the white dark-ground logo would vanish into it.
+	it('takes the light-ground logo when its side is written in dark ink', () => {
+		const logos: LeagueLogoMap = { nba: 'https://a.espncdn.com/i/teamlogos/leagues/500-dark/nba.png' };
+		const live = game('in', 'nba');
+		mount(LiveGameCard, { ...live, awayTeam: { ...live.awayTeam, color: '#FDB71A' }, homeTeam: { ...live.homeTeam, color: '#0C2340' } }, true, logos);
 		cy.get('.game-card-league img').should('have.attr', 'src', 'https://a.espncdn.com/i/teamlogos/leagues/500/nba.png');
 	});
 });

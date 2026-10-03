@@ -82,6 +82,14 @@ export const buildGameCardSurface = (game: Game, delayed = false): gameCardSurfa
 	return { style: matchupSurfaceStyle(awayColor, homeColor, delayed), awayColor, homeColor };
 };
 
+// The league mark heads the away side, so it takes the logo drawn for that side's ink: the dark-ground
+// one under white ink, and the light-ground one on a gold or a final card's light plate.
+export const leagueMarkOnColor = (game: Game): boolean => {
+	if (game.status === 'post') return false;
+	const [awayColor, homeColor] = resolveTeamColorPair(game.awayTeam, game.homeTeam, missingTeamColor, missingTeamColor);
+	return matchupSurface(awayColor, homeColor, game.delayed === true).inks.away === '#ffffff';
+};
+
 export const buildCardHandlers = (onOpenGameDetail: (gameId: string) => void, gameId: string) => ({
 	onClick: (event: MouseEvent<HTMLDivElement>) => {
 		if (isInteractiveCardTarget(event.target)) return;

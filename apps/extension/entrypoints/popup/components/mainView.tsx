@@ -22,6 +22,7 @@ import ReviewPromptBanner from './reviewPromptBanner';
 import SuggestBanner from './suggestBanner';
 import UpcomingDayPager from './upcomingDayPager';
 import LeagueMark from '@arenaswap/ui/src/components/leagueMark';
+import { leagueMarkOnColor } from '@arenaswap/ui/src/components/gameCardShared';
 import { useDisplayLocale } from '@arenaswap/ui/src/components/i18nContext';
 import useReorderGlide from '@arenaswap/ui/src/components/useReorderGlide';
 import { buildFinalComparator, buildLeagueRank, buildLiveComparator, buildUpcomingComparator, getRandomLoadingMessage, groupByDate, groupByLeague, resolveSelectedDayIndex } from '../popupHelpers';
@@ -135,7 +136,7 @@ const gameSection = ({
 					bettingPrefs={bettingPrefs}
 					weatherPrefs={weatherPrefs}
 					dayNamedAbove={dayNamedAbove}
-					leagueSlot={grouped ? undefined : <LeagueMark league={game.league} logos={leagueLogos} onColor={game.status !== 'post'} />}
+					leagueSlot={grouped ? undefined : <LeagueMark league={game.league} logos={leagueLogos} onColor={leagueMarkOnColor(game)} />}
 				/>
 			</GameCardReveal>
 		</div>

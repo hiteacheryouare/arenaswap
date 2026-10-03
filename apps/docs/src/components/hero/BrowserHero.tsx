@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { LeagueId } from '@arenaswap/core/types';
 import GameCard from '@arenaswap/ui/src/components/gameCard';
 import LeagueMark from '@arenaswap/ui/src/components/leagueMark';
+import { leagueMarkOnColor } from '@arenaswap/ui/src/components/gameCardShared';
 import { PopupHeader, PopupSectionTitle } from '@arenaswap/ui/src/components/popupChrome';
 import { useT } from '@arenaswap/ui/src/components/i18nContext';
 import useReorderGlide from '@arenaswap/ui/src/components/useReorderGlide';
@@ -269,7 +270,7 @@ const HeroWindow = ({ copy }: { copy: HeroStrings }) => {
 								onOpenGameDetail={noop}
 								bettingPrefs={{ bettingEnabled: false }}
 								tabSlot={<HeroTabSlot label={copy.tabLabel.split('{number}').join(String(entry.index + 1)).split('{host}').join(heroGames[entry.index].tabHost)} />}
-								leagueSlot={<LeagueMark league={entry.game.league} logos={emptyLeagueLogos} onColor />}
+								leagueSlot={<LeagueMark league={entry.game.league} logos={emptyLeagueLogos} onColor={leagueMarkOnColor(entry.game)} />}
 							/>
 						</div>
 					))}
