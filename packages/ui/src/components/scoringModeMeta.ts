@@ -34,7 +34,6 @@ export type BoostId = (typeof boostIds)[number];
 export interface SignalPresentation {
 	labelKey: string;
 	tooltipKey: string;
-	measuredKey: string;
 	color: string;
 }
 
@@ -73,18 +72,18 @@ export interface ModePresentation {
 // Each Blowouts signal takes the tone of the Classic signal it turns inside out: margin for
 // closeness, a lead held for lead changes, an early rout for late-game, piling on for momentum.
 export const signalPresentation = {
-	closeness: { labelKey: 'powerScore.signalCloseness', tooltipKey: 'powerScore.tooltipCloseness', measuredKey: 'stepPowerScore.closenessMeasured', color: signalColors.closeness },
-	lateGame: { labelKey: 'powerScore.signalLateGame', tooltipKey: 'powerScore.tooltipLateGame', measuredKey: 'stepPowerScore.lateGameMeasured', color: signalColors.lateGame },
-	momentum: { labelKey: 'powerScore.signalMomentum', tooltipKey: 'powerScore.tooltipMomentum', measuredKey: 'stepPowerScore.momentumMeasured', color: signalColors.momentum },
-	leadChanges: { labelKey: 'powerScore.signalLeadChanges', tooltipKey: 'powerScore.tooltipLeadChanges', measuredKey: 'stepPowerScore.leadChangesMeasured', color: signalColors.leadChanges },
-	comeback: { labelKey: 'powerScore.signalComeback', tooltipKey: 'powerScore.tooltipComeback', measuredKey: 'stepPowerScore.comebackMeasured', color: signalColors.comeback },
-	blowoutMargin: { labelKey: 'powerScore.signalBlowoutMargin', tooltipKey: 'powerScore.tooltipBlowoutMargin', measuredKey: 'stepPowerScore.blowoutMarginMeasured', color: signalColors.closeness },
-	sustained: { labelKey: 'powerScore.signalSustained', tooltipKey: 'powerScore.tooltipSustained', measuredKey: 'stepPowerScore.sustainedMeasured', color: signalColors.leadChanges },
-	timing: { labelKey: 'powerScore.signalTiming', tooltipKey: 'powerScore.tooltipTiming', measuredKey: 'stepPowerScore.timingMeasured', color: signalColors.lateGame },
-	pileOn: { labelKey: 'powerScore.signalPileOn', tooltipKey: 'powerScore.tooltipPileOn', measuredKey: 'stepPowerScore.pileOnMeasured', color: signalColors.momentum },
-	situation: { labelKey: 'powerScore.signalSituation', tooltipKey: 'powerScore.tooltipSituation', measuredKey: 'stepPowerScore.situationMeasured', color: signalColors.lateGame },
-	production: { labelKey: 'powerScore.signalProduction', tooltipKey: 'powerScore.tooltipProduction', measuredKey: 'stepPowerScore.productionMeasured', color: signalColors.momentum },
-	exposure: { labelKey: 'powerScore.signalExposure', tooltipKey: 'powerScore.tooltipExposure', measuredKey: 'stepPowerScore.exposureMeasured', color: signalColors.leadChanges },
+	closeness: { labelKey: 'powerScore.signalCloseness', tooltipKey: 'powerScore.tooltipCloseness', color: signalColors.closeness },
+	lateGame: { labelKey: 'powerScore.signalLateGame', tooltipKey: 'powerScore.tooltipLateGame', color: signalColors.lateGame },
+	momentum: { labelKey: 'powerScore.signalMomentum', tooltipKey: 'powerScore.tooltipMomentum', color: signalColors.momentum },
+	leadChanges: { labelKey: 'powerScore.signalLeadChanges', tooltipKey: 'powerScore.tooltipLeadChanges', color: signalColors.leadChanges },
+	comeback: { labelKey: 'powerScore.signalComeback', tooltipKey: 'powerScore.tooltipComeback', color: signalColors.comeback },
+	blowoutMargin: { labelKey: 'powerScore.signalBlowoutMargin', tooltipKey: 'powerScore.tooltipBlowoutMargin', color: signalColors.closeness },
+	sustained: { labelKey: 'powerScore.signalSustained', tooltipKey: 'powerScore.tooltipSustained', color: signalColors.leadChanges },
+	timing: { labelKey: 'powerScore.signalTiming', tooltipKey: 'powerScore.tooltipTiming', color: signalColors.lateGame },
+	pileOn: { labelKey: 'powerScore.signalPileOn', tooltipKey: 'powerScore.tooltipPileOn', color: signalColors.momentum },
+	situation: { labelKey: 'powerScore.signalSituation', tooltipKey: 'powerScore.tooltipSituation', color: signalColors.lateGame },
+	production: { labelKey: 'powerScore.signalProduction', tooltipKey: 'powerScore.tooltipProduction', color: signalColors.momentum },
+	exposure: { labelKey: 'powerScore.signalExposure', tooltipKey: 'powerScore.tooltipExposure', color: signalColors.leadChanges },
 } as const satisfies Record<ModeSignalId, SignalPresentation>;
 
 // No two boosts that can pay in one game share an icon. The live moments take scoring
