@@ -1,6 +1,6 @@
 import { i18n } from '#i18n';
 import { randomInRange } from '@porkyproductions/hat';
-import { fetchGamesWithLeagueLogos, fetchGameDurationMins, fetchTeamMonoLogos, fetchWinProbability, isWithinFinalRetention, MockGameSimulator, createPollModeTracker, isObjectRecord, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts, computeLeagueIntervalMs, computeHebetudinousIntervalMs, earliestUpcomingStartMs, fetchNextScheduledStart, scoreboardRefreshMs, pollWinProbabilityMs as winProbPollIntervalMs, logWarn, logError, isPlayFrozen, chooseSwitchTarget, createLiveExtras, fetchCompetitionSituation, fetchLeagueStandings, hasStandingsRaces, getHistoryWindowMsForGame, maxSnapshotsPerGame, nextClockStall, retainSnapshots, scoreLiveGame, toLegacyPowerScoreResult, toScoreSnapshot } from '@arenaswap/core';
+import { fetchGamesWithLeagueLogos, fetchGameDurationMins, fetchTeamMonoLogos, fetchWinProbability, isWithinFinalRetention, MockGameSimulator, createPollModeTracker, isObjectRecord, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts, computeLeagueIntervalMs, computeHebetudinousIntervalMs, earliestUpcomingStartMs, fetchNextScheduledStart, scoreboardRefreshMs, pollWinProbabilityMs as winProbPollIntervalMs, logWarn, logError, isPlayFrozen, chooseSwitchTarget, createLiveExtras, fetchCompetitionSituation, fetchLeagueStandings, hasStandingsRaces, getHistoryWindowMsForGame, maxSnapshotsPerGame, nextClockStall, retainSnapshots, scoreLiveGame, toLiveScore, toScoreSnapshot } from '@arenaswap/core';
 import type { ClockStallEntry } from '@arenaswap/core';
 import { computeStandbyStreamDecision } from '../utils/standbyStreamLogic';
 import { gameEndTimes, gameEndTimesKey, gamesNeedingDuration, pruneGameEndRecords, readGameEndRecords, recordGameEnds } from '../utils/gameEndTimes';
@@ -50,7 +50,7 @@ import type {
 	Game,
 	GuideSlate,
 	LeagueId,
-	PowerScoreResult,
+	LiveScore,
 	PowerScoreSnapshot,
 	LeagueLogoMap,
 	TeamMonoLogoMap,
@@ -147,7 +147,7 @@ export default defineBackground(() => {
 	// Per worker rather than persisted: a final whose summary has no duration would otherwise cost a
 	// request on every guide open, and a new worker trying once more is cheap.
 	const durationRequested = new Set<string>();
-	let currentScores: PowerScoreResult[] = [];
+	let currentScores: LiveScore[] = [];
 	let leagueLogos: LeagueLogoMap = {};
 	// ESPN's white team marks, which only `/teams` carries — the scoreboard has a single logo per
 	// competitor and no variants. Held for the guide, which is the one surface that draws a crest per
@@ -322,7 +322,7 @@ export default defineBackground(() => {
 		});
 	};
 
-	const updatePowerScoreHistory = (liveGames: Game[], scores: PowerScoreResult[], changedLeagueId: LeagueId | null) => {
+	const updatePowerScoreHistory = (liveGames: Game[], scores: LiveScore[], changedLeagueId: LeagueId | null) => {
 		const now = Date.now();
 		const liveGameById = new Map(liveGames.map(game => [game.id, game]));
 		scores.forEach(score => {
@@ -349,6 +349,12 @@ export default defineBackground(() => {
 				postseasonBoost: score.postseasonBoost ?? 0,
 				stalled: score.stalled ?? false,
 				reason: score.reason,
+				...(score.breakdown ? {
+					modeId: score.breakdown.modeId,
+					signals: Object.fromEntries(score.breakdown.signals.map(signal => [signal.id, signal.points])),
+					boosts: Object.fromEntries(score.breakdown.boosts.filter(boost => boost.points > 0).map(boost => [boost.id, boost.points])),
+					reasons: score.breakdown.reasons,
+				} : {}),
 			});
 			powerScoreHistory.set(score.gameId, retainSnapshots(snapshots, now - getHistoryWindowMsForGame(game), prefs.keepFinalGames));
 		});
@@ -794,7 +800,7 @@ export default defineBackground(() => {
 		const favoriteTeamIds = new Set(prefs.favoriteTeamIds);
 		const now = Date.now();
 		liveExtras.setFantasyScoring(prefs.fantasyScoring);
-		const scores = liveGames.map(g => toLegacyPowerScoreResult(scoreLiveGame(
+		const scores = liveGames.map(g => toLiveScore(scoreLiveGame(
 			{
 				game: g,
 				history: history.get(g.id) ?? [],

@@ -2,7 +2,7 @@ import { scoreGame, signalPoints, boostPoints, sportTypeConfigMap } from 'powers
 import type { Game as ScoringGame, PowerScore, PowerScoreResult, ScoreOptions, ScoringContext, ScoreSnapshot, Side } from 'powerscore';
 import { createFavoriteTeamKey, historyWindowMs, sensitivityThresholds } from './constants';
 import { resolveModeForGame } from './scoringMode';
-import type { Game, Team, UserPreferences } from './types';
+import type { Game, LiveScore, Team, UserPreferences } from './types';
 
 // Our sources' shape → the engine's neutral one. Everything source-specific (team ids, the
 // home-anchored yard line, a seed sitting in the rank field) is resolved here so the engine never
@@ -181,7 +181,22 @@ export const scoreLiveGame = (input: LiveScoringInput, prefs: ScoringPrefs, game
 	scoreGame(toScoringGame(input.game), scoringContextFor(input), scoreOptionsFor(input.game, prefs, gameBoost, favoriteTeamIds))
 );
 
-// The flat 2.x shape the popup still reads.
+// The flat 2.x fields the popup's screens read, with the full breakdown alongside.
+export const toLiveScore = (score: PowerScore): LiveScore => ({
+	...toLegacyPowerScoreResult(score),
+	breakdown: {
+		modeId: score.modeId,
+		signals: score.signals,
+		boosts: score.boosts,
+		reasons: score.reasons,
+		frozen: score.frozen,
+		scaledSubtotal: score.scaledSubtotal,
+		signalCeiling: score.signalCeiling,
+		...(score.classicTotal !== undefined ? { classicTotal: score.classicTotal } : {}),
+	},
+});
+
+// The flat 2.x shape.
 export const toLegacyPowerScoreResult = (score: PowerScore): PowerScoreResult => ({
 	gameId: score.gameId,
 	total: score.total,

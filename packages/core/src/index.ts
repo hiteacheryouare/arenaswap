@@ -13,7 +13,7 @@ export type { FantasyRosterEntry, FantasyBoxScore } from './fantasy';
 export type { FantasyScoringOverrides } from './liveExtras';
 export { createLiveExtras, hasStandingsRaces, readBoxLeadChanges, readHockeySituation, readPregameLine, readStandingsStakes } from './liveExtras';
 export type { LiveExtras } from './liveExtras';
-export { chooseSwitchTarget, getFavoriteTeamCount, getHistoryWindowMsForGame, maxSnapshotsPerGame, nextClockStall, recentSnapshots, retainSnapshots, scoreLiveGame, scoreOptionsFor, scoringContextFor, toLegacyPowerScoreResult, toScoreSnapshot, toScoringGame } from './scoring';
+export { chooseSwitchTarget, getFavoriteTeamCount, getHistoryWindowMsForGame, maxSnapshotsPerGame, nextClockStall, recentSnapshots, retainSnapshots, scoreLiveGame, scoreOptionsFor, scoringContextFor, toLegacyPowerScoreResult, toLiveScore, toScoreSnapshot, toScoringGame } from './scoring';
 export type { ClockStallEntry, LiveScoringInput, ScoringPrefs, SwitchCandidateTab, SwitchPolicyInput, SwitchTarget } from './scoring';
 export { offseasonGraceMs, resolveOffseason, toLeagueSchedule } from './leagueSchedule';
 export type { LeagueOffseason } from './leagueSchedule';

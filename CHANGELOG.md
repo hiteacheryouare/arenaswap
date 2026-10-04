@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Scores reach the popup with their full breakdown — 2026-10-03
+
+Every score the background sends now carries a `breakdown` (the mode that scored it, each signal and boost as a list, and the reasons as keys) beside the flat 2.x fields, and history snapshots record the same, so screens can move over to modes one at a time while everything else keeps reading the fields it always has. `normalizeScores` validates a breakdown whole or drops it whole, so a half-formed one can never draw a chart that disagrees with itself.
+
 ## Modes reach the extension's scoring, and Fantasy reads the box score — 2026-10-03
 
 Prefs gain `scoringMode` (Classic, Blowouts, Fantasy or Custom, with `leagueModes` picking per league under Custom), switched-off signals for the non-Classic modes, a Fantasy blend and scoring overrides, all normalized and checked against the engine's own definitions; `disabledSignals` stays as Classic's list so no stored prefs need migrating. The fantasy roster lives under its own storage key, and every summary turns each rostered player's box-score line into fantasy points, with the first total seen taken as a baseline so a player picked up mid-game doesn't count as a sudden burst.

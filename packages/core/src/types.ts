@@ -10,6 +10,9 @@ import type {
 	LeagueRunMinutes,
 	BuiltInModeId,
 	FantasySport,
+	ReasonFragment,
+	ScoredBoost,
+	ScoredSignal,
 } from 'powerscore';
 
 export type ScoringModeChoice = BuiltInModeId | 'custom';
@@ -27,6 +30,9 @@ export type {
 	LeagueRunMinutes,
 	BuiltInModeId,
 	FantasySport,
+	ReasonFragment,
+	ScoredBoost,
+	ScoredSignal,
 };
 
 // Baseball pitchers and hockey goalies arrive in the same `probables` structure, so this is not
@@ -379,6 +385,31 @@ export interface PowerScoreSnapshot {
 	stalled: boolean;
 	stallPenalty?: number;
 	reason: string;
+	// PowerScore 3. Absent on a snapshot from before modes, which is then Classic.
+	modeId?: string;
+	signals?: Record<string, number>;
+	boosts?: Record<string, number>;
+	reasons?: ReasonFragment[];
+}
+
+// The full PowerScore 3 picture of a score: which mode scored it, every signal and boost as a list,
+// and the reasons as keys a translation can read.
+export interface ScoreBreakdown {
+	modeId: string;
+	signals: ScoredSignal[];
+	boosts: ScoredBoost[];
+	reasons: ReasonFragment[];
+	frozen: boolean;
+	scaledSubtotal: number;
+	signalCeiling: number;
+	// Classic's total when the mode blends with it or uses it as a floor.
+	classicTotal?: number;
+}
+
+// What the background hands the popup: the flat 2.x fields every screen already reads, plus the
+// breakdown the mode-aware ones read.
+export interface LiveScore extends PowerScoreResult {
+	breakdown?: ScoreBreakdown;
 }
 
 export type PowerScoreHistoryMap = Record<string, PowerScoreSnapshot[]>;
