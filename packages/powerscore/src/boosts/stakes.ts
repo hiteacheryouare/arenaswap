@@ -1,5 +1,5 @@
 import { stakesTunables } from '../constants';
-import { isLive, isPostseason, none } from './shared';
+import { isDecided, isLive, isPostseason, none } from './shared';
 import type { BoostDefinition, Game, SeriesState, TeamStakes } from '../types';
 
 const decisiveValue: Record<number, number> = { 7: 10, 5: 9, 3: 8 };
@@ -43,8 +43,8 @@ const teamRaceValue = (stakes: TeamStakes | undefined): number => {
 export const stakesBoost: BoostDefinition = {
 	id: 'stakes',
 	bucket: 'context',
-	compute: ({ game, context, sport, progress, margin }) => {
-		if (!isLive(game)) return none;
+	compute: ({ game, context, sport, league, progress, margin }) => {
+		if (!isLive(game) || isDecided({ game, sport, league, margin })) return none;
 		let stakes = 0;
 		if (isPostseason(game)) {
 			if (game.series) stakes += seriesStakes(game.series);

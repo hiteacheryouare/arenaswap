@@ -1,6 +1,6 @@
 import { upsetTunables } from '../constants';
 import { clamp } from '../math';
-import { isLive, leadOf, none, otherSide } from './shared';
+import { isDecided, isLive, leadOf, none, otherSide } from './shared';
 import type { BoostDefinition, PregameLine, SignalInput, SportType } from '../types';
 
 // Spread → win probability uses the spread of final margins around the line.
@@ -12,8 +12,8 @@ const sizeRange: Record<SportType, [number, number]> = {
 	basketball: [0.38, 0.1],
 	football: [0.38, 0.1],
 	hockey: [0.42, 0.25],
-	baseball: [0.42, 0.28],
-	softball: [0.42, 0.28],
+	baseball: [0.38, 0.25],
+	softball: [0.38, 0.25],
 	soccer: [0.35, 0.15],
 };
 
@@ -47,9 +47,10 @@ export const underdogProbability = (line: PregameLine, sportType: SportType, lea
 	return undefined;
 };
 
-const upsetParts = ({ game, context, sport, progress }: Pick<SignalInput, 'game' | 'context' | 'sport' | 'progress'>) => {
+const upsetParts = (input: Pick<SignalInput, 'game' | 'context' | 'sport' | 'progress' | 'league' | 'margin'>) => {
+	const { game, context, sport, progress } = input;
 	const line = context.pregameLine;
-	if (!line || !isLive(game)) return undefined;
+	if (!line || !isLive(game) || isDecided({ game, sport, league: input.league, margin: input.margin })) return undefined;
 	const p = underdogProbability(line, game.sportType, game.league);
 	if (p === undefined) return undefined;
 	const [zero, full] = sizeRange[game.sportType];

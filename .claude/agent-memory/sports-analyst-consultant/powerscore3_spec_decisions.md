@@ -32,6 +32,13 @@ decisions that matter if that file is gone:
 - **Fantasy (#85):** situation 50 / production 35 / exposure 15; default blend **w = 0.6**; FG range
   NFL yte <= 37, NCAAF yte <= 30.
 
+**Review 1 (2026-10-04, `temporary/powerscore3/calibrationReview1.md`), recommended, not yet applied:**
+drill clock control `0.85 + 0.05*TO` (was 0.7+0.1); go-ahead inning factor `earlyFactor + (1-earlyFactor)*ramp`
+(6th..9th = 0.5..1.0, was 0.75..1.0); baseball/softball upset range `[0.38, 0.25]` (was 0.42/0.28).
+Together: hit@1 0.647 → 0.662, 0 regressions, in-sample. Held back: own-20 field factor 0.7, 0:00
+decided-game gate, `inningEnded` → bottom-of-N with 3 outs (core/src/scoring.ts). ESPN `TO a-b` in the
+replay timeline is away-home.
+
 **Why:** Ryan is building PowerScore 3 against recorded slates (`scripts/powerscore/recordSlate.ts`)
 and wants every number pinned so the replay can test it.
 

@@ -1,6 +1,6 @@
 import { twoMinuteDrillTunables } from '../constants';
 import { clamp } from '../math';
-import { isLive, leadOf, none, secondsLeftInPeriod, teamOf } from './shared';
+import { isDecided, isLive, leadOf, none, secondsLeftInPeriod, teamOf } from './shared';
 import type { BoostDefinition } from '../types';
 
 interface FootballLeagueRules {
@@ -33,7 +33,7 @@ export const twoMinuteDrillBoost: BoostDefinition = {
 	id: 'twoMinuteDrill',
 	bucket: 'moment',
 	compute: ({ game, sport, league }) => {
-		if (game.sportType !== 'football' || !isLive(game) || game.period === undefined) return none;
+		if (game.sportType !== 'football' || !isLive(game) || game.period === undefined || isDecided({ game, sport, league, margin: Math.abs(game.homeTeam.score - game.awayTeam.score) })) return none;
 		const rules: FootballLeagueRules = { oneScore: twoMinuteDrillTunables.oneScore, peakYards: twoMinuteDrillTunables.peakYards, ...footballRules[game.league] };
 		if (game.period < league.regularPeriods || (rules.untimedOvertime && game.period > league.regularPeriods)) return none;
 		if (game.possession === undefined || game.yardsToEndZone === undefined) return none;
@@ -53,7 +53,8 @@ export const twoMinuteDrillBoost: BoostDefinition = {
 			? 1
 			: twoMinuteDrillTunables.ownTwentyFactor + (1 - twoMinuteDrillTunables.ownTwentyFactor) * clamp((80 - yards) / (80 - rules.peakYards), 0, 1);
 		const timeouts = teamOf(game, game.possession).timeouts;
-		const clockControl = timeouts === undefined ? 0.85 : 0.7 + 0.1 * clamp(timeouts, 0, 3);
+		// Timeouts move the win odds more than whether a fan wants to watch, so they nudge rather than gate.
+		const clockControl = timeouts === undefined ? 0.925 : 0.85 + 0.05 * clamp(timeouts, 0, 3);
 		const points = Math.round(twoMinuteDrillTunables.max * time * field * clockControl * marginFactor(trailBy));
 		return points > 0 ? { points, meta: { secondsLeft: secsLeft, trailBy } } : none;
 	},

@@ -25,7 +25,9 @@ export const goAheadRunBoost: BoostDefinition = {
 			? 1
 			: inning < curve.regulationStartInning
 				? goAheadRunTunables.earlyFactor
-				: 0.75 + 0.25 * ramp(inning, curve.regulationStartInning, curve.regulationInnings);
+				// Climbs to full value in the last inning, with leverage: a 7th-inning chance shouldn't
+				// outrank a late drive elsewhere.
+				: goAheadRunTunables.earlyFactor + (1 - goAheadRunTunables.earlyFactor) * ramp(inning, curve.regulationStartInning, curve.regulationInnings);
 		// The last chance: the home team's go-ahead run is the winning run, and a trailing road team
 		// may not bat again.
 		const lastChance = inning >= curve.regulationInnings && (battingHome || deficit > 0);

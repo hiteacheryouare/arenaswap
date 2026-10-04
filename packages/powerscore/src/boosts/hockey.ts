@@ -1,5 +1,5 @@
 import { hockeyTunables } from '../constants';
-import { isLive, leadOf, none, secondsLeftInPeriod } from './shared';
+import { isDecided, isLive, leadOf, none, secondsLeftInPeriod } from './shared';
 import type { BoostDefinition, Side } from '../types';
 
 const sideOf = (value: Side | boolean | undefined): Side | undefined => (value === 'home' || value === 'away' ? value : undefined);
@@ -37,8 +37,8 @@ const sidedValue = (margin: number, trailingOnPowerPlay: boolean, late: boolean)
 export const powerPlayBoost: BoostDefinition = {
 	id: 'powerPlay',
 	bucket: 'moment',
-	compute: ({ game, context, league, margin }) => {
-		if (game.sportType !== 'hockey' || !isLive(game) || !context.powerPlay || game.period === undefined) return none;
+	compute: ({ game, context, sport, league, margin }) => {
+		if (game.sportType !== 'hockey' || !isLive(game) || !context.powerPlay || game.period === undefined || isDecided({ game, sport, league, margin })) return none;
 		const late = game.period >= league.regularPeriods;
 		const side = sideOf(context.powerPlay);
 		const points = side === undefined ? sideFreeValue(margin, late) : sidedValue(margin, leadOf(game, side) < 0, late);

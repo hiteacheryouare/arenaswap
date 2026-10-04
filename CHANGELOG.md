@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The new boosts are tuned against the first night's labels — 2026-10-04
+
+After a calibration pass with the sports analyst, a go-ahead run climbs from half value in the 6th to full in the 9th, the two-minute drill leans less on timeouts, a baseball underdog needs a longer price before upset watch pays, and none of the new boosts pay on a clock game sitting at 0:00 with a winner. An end-of-inning break now scores as the bottom half with three outs rather than the next inning, so it can't outrank the live play before it; against 286 blind-labelled minutes v3 Classic now ranks the labelled game first 67.3% of the time to 2.2.0's 60.3%.
+
 ## Basketball shows the bonus and timeouts, soccer shows red cards — 2026-10-04
 
 A live basketball game's detail screen now shows each team's timeouts under its name and one plain line for the bonus and fouls to give (#165), read from our sources' live situation only while that screen is open, and the box score adds lead changes and the largest lead. Soccer's Latest Play section lists every red card with its minute, stoppage time included ("90+6'"), built from the player and team ourselves since the source text is English only (#162).

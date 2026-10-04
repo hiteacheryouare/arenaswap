@@ -32,10 +32,10 @@ const toRedCards = (game: Game): ScoringGame['redCards'] => game.redCardEvents
 	?.map(card => ({ side: sideOf(game, card.teamId), minute: card.minute }))
 	.filter((card): card is { side: Side; minute: number } => card.side !== undefined);
 
-// The break after an inning is the next inning before its first pitch, so a no-hit bid or a late
-// inning keeps counting through it instead of reading as an unknown half.
+// The break after an inning is its bottom half with three outs, so a no-hit bid or a late inning keeps
+// counting through it instead of reading as an unknown half, and never as later than the play before.
 const inningState = (game: Game): Pick<ScoringGame, 'period' | 'topOfInning' | 'outs' | 'baseRunners'> => {
-	if (game.inningEnded) return { period: game.period + 1, topOfInning: true, outs: 0, baseRunners: { first: false, second: false, third: false } };
+	if (game.inningEnded) return { period: game.period, topOfInning: false, outs: 3, baseRunners: { first: false, second: false, third: false } };
 	return {
 		period: game.period,
 		...(game.topOfInning !== undefined ? { topOfInning: game.topOfInning } : {}),

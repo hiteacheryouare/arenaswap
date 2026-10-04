@@ -11,7 +11,9 @@ const bidValue = (game: Game<string>, sport: SportTypeConfig, side: Side): numbe
 
 	// Home pitches the tops, the road team the bottoms.
 	const pitching = side === 'home' ? game.topOfInning : !game.topOfInning;
-	const completed = side === 'home' && !game.topOfInning ? game.period : game.period - 1;
+	// The bottom half with three outs is the break after the inning, when both halves are done.
+	const inningOver = !game.topOfInning && (game.outs ?? 0) >= 3;
+	const completed = (side === 'home' && !game.topOfInning) || inningOver ? game.period : game.period - 1;
 	const stage = completed - (curve.regulationInnings - 4);
 	if (stage < 0) return 0;
 

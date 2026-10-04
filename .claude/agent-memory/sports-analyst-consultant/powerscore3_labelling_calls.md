@@ -46,6 +46,9 @@ Calls added from slate b (2026-10-03, 8 to 10 PM; 114 moments, 87 at 3, 27 at 2)
 - A down-4 kickoff wait at about 2:00 (the trailing team about to receive) beats a tied mid-Q4 kickoff at level 2, even though margin units favour the tied game. Its two-minute drive is about to start.
 - A stalled last drive (no situation shown, clock frozen) keeps 3 and still wins tiebreak 2 over tied hockey, because a tied game has no empty net.
 
+Known label error (review 1): slate b 9:37:59 should flip to UIW@SFA (401868309, down 2 at 0:22,
+onside pending, frozen), not tied CAR@PHI. It broke the two calls above; recommended relabel, not yet done.
+
 **Why:** the replay scores the engine against these labels; inconsistent calls across slates
 would read as engine regressions.
 

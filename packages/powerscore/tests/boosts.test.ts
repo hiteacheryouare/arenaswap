@@ -66,8 +66,8 @@ describe('the go-ahead run on base', () => {
 	test('the same go-ahead threat is worth half in the 3rd and grows through the late innings', () => {
 		const tiedRunnerOn = (inning: number) => boostPoints(classic(ballgame({ inning, half: 'top', home: 1, away: 1, on: [true, false, false] })), 'goAheadRun');
 		expect(tiedRunnerOn(3)).toBe(4);
-		expect(tiedRunnerOn(6)).toBe(6);
-		expect(tiedRunnerOn(7)).toBe(7);
+		expect(tiedRunnerOn(6)).toBe(4);
+		expect(tiedRunnerOn(7)).toBe(5);
 		// A tied road team in the 9th is guaranteed nothing extra: the home team still bats.
 		expect(tiedRunnerOn(9)).toBe(8);
 	});
@@ -222,9 +222,9 @@ describe('the two-minute drill', () => {
 		const drill = (possession: Possession) => boostPoints(classic(drive(possession)), 'twoMinuteDrill');
 		expect(drill({ secs: 241, yards: 75, trailBy: 4 })).toBe(0);
 		expect(drill({ secs: 240, yards: 75, trailBy: 4 })).toBe(2);
-		expect(drill({ secs: 120, yards: 50, trailBy: 4, timeouts: 2 })).toBe(4);
-		expect(drill({ secs: 60, yards: 30, trailBy: 4, timeouts: 1 })).toBe(7);
-		expect(drill({ secs: 28, yards: 12, trailBy: 4, timeouts: 1 })).toBe(8);
+		expect(drill({ secs: 120, yards: 50, trailBy: 4, timeouts: 2 })).toBe(5);
+		expect(drill({ secs: 60, yards: 30, trailBy: 4, timeouts: 1 })).toBe(8);
+		expect(drill({ secs: 28, yards: 12, trailBy: 4, timeouts: 1 })).toBe(9);
 
 		const afterTouchdown: Game<string> = { ...drive({ secs: 22, yards: 2, trailBy: 4 }), homeTeam: { abbreviation: 'KC', score: 27, timeouts: 1 }, down: -1 };
 		expect(boostPoints(classic(afterTouchdown), 'twoMinuteDrill')).toBe(0);
