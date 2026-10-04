@@ -105,8 +105,10 @@ const readRow = (category: string | undefined, keys: readonly string[], stats: r
 		add(line, 'receivingYards', toNumber(at('receivingYards')));
 		add(line, 'receivingTouchdowns', toNumber(at('receivingTouchdowns')));
 	} else if (has('fumblesLost')) {
+		// `fumblesRecovered` counts an offense falling on its own fumble too, so the opposing defense is
+		// credited from this team's fumbles lost instead (see readFantasyBoxScore).
 		add(line, 'fumblesLost', toNumber(at('fumblesLost')));
-		add(defense, 'takeaways', toNumber(at('fumblesRecovered')));
+		add(defense, 'offenseFumblesLost', toNumber(at('fumblesLost')));
 	} else if (category === 'defensive') {
 		add(defense, 'sacks', toNumber(at('sacks')));
 		add(defense, 'defensiveTouchdowns', toNumber(at('defensiveTouchdowns')));
@@ -120,7 +122,10 @@ const readRow = (category: string | undefined, keys: readonly string[], stats: r
 	} else if (has('fieldGoalsMade/fieldGoalAttempts')) {
 		const [fieldGoals, fieldGoalTries] = madeAttempted(at('fieldGoalsMade/fieldGoalAttempts'));
 		const [extraPoints, extraPointTries] = madeAttempted(at('extraPointsMade/extraPointAttempts'));
-		add(line, 'fieldGoals0To39', fieldGoals);
+		// Only the longest make's distance is known: it gets its own tier, the rest the shortest one.
+		const longest = toNumber(at('longFieldGoalMade'));
+		if (fieldGoals > 0) add(line, longest >= 50 ? 'fieldGoals50Plus' : longest >= 40 ? 'fieldGoals40To49' : 'fieldGoals0To39', 1);
+		add(line, 'fieldGoals0To39', Math.max(0, fieldGoals - 1));
 		add(line, 'fieldGoalsMissed', fieldGoalTries - fieldGoals);
 		add(line, 'extraPointsMade', extraPoints);
 		add(line, 'extraPointsMissed', extraPointTries - extraPoints);
@@ -152,13 +157,13 @@ const readRow = (category: string | undefined, keys: readonly string[], stats: r
 	}
 };
 
-// The rules a box score lets us fill. The rest (two-point tries, long field goals, steals of a base,
+// The rules a box score lets us fill. The rest (two-point tries, steals of a base,
 // pitcher wins and saves, goalie wins) need play-by-play we don't read, so a settings screen hides them.
 export const fantasyRulesRead: Record<'football' | 'basketball' | 'baseball' | 'hockey', readonly string[]> = {
 	football: [
 		'passingYards', 'passingTouchdowns', 'interceptionsThrown', 'rushingYards', 'rushingTouchdowns', 'receptions',
 		'receivingYards', 'receivingTouchdowns', 'fumblesLost', 'returnTouchdowns', 'extraPointsMade', 'extraPointsMissed',
-		'fieldGoals0To39', 'fieldGoalsMissed', 'sacks', 'takeaways', 'defensiveTouchdowns', 'pointsAllowed0', 'pointsAllowed1To6',
+		'fieldGoals0To39', 'fieldGoals40To49', 'fieldGoals50Plus', 'fieldGoalsMissed', 'sacks', 'takeaways', 'defensiveTouchdowns', 'pointsAllowed0', 'pointsAllowed1To6',
 		'pointsAllowed7To13', 'pointsAllowed14To20', 'pointsAllowed21To27', 'pointsAllowed28To34', 'pointsAllowed35Plus',
 	],
 	basketball: ['points', 'rebounds', 'assists', 'steals', 'blocks', 'turnovers'],
@@ -187,10 +192,12 @@ export const readFantasyBoxScore = (summary: unknown, game: Pick<Game, 'homeTeam
 	}
 	const parsed = BoxScorePlayersSchema.safeParse(summary);
 	if (!parsed.success) return { lines, inactive, teamsWithLineups };
+	const defenses = new Map<string, StatLine>();
 	for (const team of parsed.data.boxscore?.players ?? []) {
 		const teamId = String(team.team?.id ?? '');
 		if (teamId && (team.statistics ?? []).some(category => (category.athletes ?? []).length > 0)) teamsWithLineups.add(teamId);
 		const defense: StatLine = {};
+		defenses.set(teamId, defense);
 		for (const category of team.statistics ?? []) {
 			const keys = category.keys ?? [];
 			for (const row of category.athletes ?? []) {
@@ -202,9 +209,15 @@ export const readFantasyBoxScore = (summary: unknown, game: Pick<Game, 'homeTeam
 				lines.set(String(id), line);
 			}
 		}
-		if (game.sportType === 'football' && teamId) {
+	}
+	if (game.sportType === 'football') {
+		for (const [teamId, defense] of defenses) {
+			if (!teamId) continue;
+			const opponentId = teamId === game.homeTeam.id ? game.awayTeam.id : game.homeTeam.id;
 			const opponent = teamId === game.homeTeam.id ? game.awayTeam : game.homeTeam;
-			lines.set(`dst:${teamId}`, { ...defense, pointsAllowed: opponent.score });
+			const { offenseFumblesLost: _ownFumbles, ...stats } = defense;
+			const recovered = defenses.get(opponentId)?.offenseFumblesLost ?? 0;
+			lines.set(`dst:${teamId}`, { ...stats, ...(recovered ? { takeaways: (stats.takeaways ?? 0) + recovered } : {}), pointsAllowed: opponent.score });
 		}
 	}
 	return { lines, inactive, teamsWithLineups };

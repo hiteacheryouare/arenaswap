@@ -8,6 +8,7 @@ import {
 	type LiveScoringInput,
 } from '../../../packages/core/src/scoring';
 import { createLiveExtras } from '../../../packages/core/src/liveExtras';
+import type { FantasyRosterEntry } from '../../../packages/core/src/fantasy';
 import { leagueConfigMap } from '../../../packages/powerscore/src/constants';
 import type { Game, LeagueId, UserPreferences } from '../../../packages/core/src/types';
 import type { ScoreSnapshot } from '../../../packages/powerscore/src/types';
@@ -49,18 +50,21 @@ interface Viewer {
 // stalls for that league, score every live game against the history so far, then record the poll.
 const sportOf = (league: LeagueId) => leagueConfigMap[league]?.sportType ?? 'basketball';
 
-export const createReplaySession = (scorers: Scorer[], prefs: Pick<UserPreferences, 'sensitivity' | 'cooldownSeconds'>) => {
+export const createReplaySession = (scorers: Scorer[], prefs: Pick<UserPreferences, 'sensitivity' | 'cooldownSeconds'>, roster: FantasyRosterEntry[] = []) => {
 	const liveByLeague = new Map<LeagueId, Game[]>();
 	const history = new Map<string, ScoreSnapshot[]>();
 	const stalls = new Map<string, ClockStallEntry>();
 	const winProbability = new Map<string, number[]>();
 	const liveExtras = createLiveExtras();
+	liveExtras.setRoster(roster);
 	const viewers = new Map(scorers.map(scorer => [scorer.name, { lastSwitchTime: 0, switches: 0, voluntarySwitches: 0 } as Viewer]));
 
 	const handle = (event: ReplayEvent): Frame | null => {
 		if (event.kind === 'summary') {
 			if (event.winProbability.length > 0) winProbability.set(event.gameId, event.winProbability);
-			liveExtras.ingestSummary({ id: event.gameId, sportType: sportOf(event.league) }, event.raw, event.ts);
+			// The live game, not just its id: Fantasy needs the teams to find rostered players.
+			const game = liveByLeague.get(event.league)?.find(live => live.id === event.gameId);
+			liveExtras.ingestSummary(game ?? { id: event.gameId, sportType: sportOf(event.league) }, event.raw, event.ts);
 			return null;
 		}
 		if (event.kind === 'situation') {

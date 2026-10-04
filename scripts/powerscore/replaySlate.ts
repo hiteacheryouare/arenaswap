@@ -11,12 +11,14 @@
 //   --blind              leave the scores out of the timeline, so labels can't echo a scorer
 //   --diff               list the stretches where the first two scorers disagree on the top game
 //   --json <file>        write the scorecard as JSON
+//   --roster <file>      a fantasy roster (JSON array of roster entries) for Fantasy mode
 import { mkdirSync, readdirSync, readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { listRecordingFiles, readRecording } from './replay/recording';
 import { createReplaySession, type Frame, type Scorer } from './replay/session';
 import { createV3Scorer, replayPrefs, v2Scorer } from './replay/scorers';
 import { describeGame } from './replay/describe';
+import { normalizeFantasyRoster } from '../../packages/core/src/fantasy';
 import type { BuiltInModeId } from '../../packages/powerscore/src/types';
 
 interface LabelledMoment {
@@ -65,7 +67,9 @@ const formatTime = (ts: number): string => new Date(ts).toLocaleTimeString('en-U
 
 const main = async () => {
 	const files = listRecordingFiles(recordingPath);
-	const session = createReplaySession(scorers, replayPrefs);
+	const rosterPath = option('roster');
+	const roster = rosterPath ? normalizeFantasyRoster(JSON.parse(readFileSync(rosterPath, 'utf8'))) : [];
+	const session = createReplaySession(scorers, replayPrefs, roster);
 	const frames: Frame[] = [];
 	const switchesInWindow = new Map(scorers.map(scorer => [scorer.name, 0]));
 

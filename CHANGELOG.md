@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Fantasy defenses get credit for the right fumbles — 2026-10-04
+
+Checked against the London game's real box score: a defense's takeaways are now its own interceptions plus the fumbles the other offense lost, since our sources' `fumblesRecovered` also counts an offense falling on its own fumble, and a kicker's longest make is scored at its distance tier instead of every field goal counting as a short one. The replay can now take a fantasy roster (`--roster`) and hands each summary the live game, which Fantasy needed to find rostered players.
+
 ## Quieter boost shading, livelier player search — 2026-10-04
 
 The bands that shade boost moments on the PowerScore chart no longer print the boost's name inside the chart (hovering still names it), and the Fantasy roster search shows one of the game list's own loading lines while it looks for players instead of a fixed message.
