@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The docs site explains modes and every new boost — 2026-10-03
+
+The PowerScore pages on the docs site now cover all three modes and their signals, every new boost with when it pays and its cap, the PowerScore 3 types and `scoreGame` API (with 2.x kept as deprecated but working), and how to use the engine with a feed of your own; a new extension page explains Classic, Blowouts, Fantasy and Custom. The settings page's postseason default was also wrong (it said 5; it's 8).
+
 ## Six fixes from testing the boosts against real payloads — 2026-10-03
 
 A no-hit bid no longer drops to zero during every "End of inning" break (our sources report it live with no half-inning, so it now scores as the next inning before its first pitch), a red card shown in stoppage time pays in full instead of half-faded, and box-score lead changes are dated between the two polls around them rather than between two increases, so a flip after a quiet stretch no longer reads as minutes old. Standings are fetched only for leagues whose tables carry race markers (not the NBA, NHL or WNBA), the top of a soccer conference table counts as a seed rather than a title line, and the tests behind all of this run on payloads recorded or fetched from our sources.

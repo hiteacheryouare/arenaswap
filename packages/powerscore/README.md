@@ -228,7 +228,7 @@ Boosts are the smaller, moment-shaped inputs. They pay nothing while the game is
 
 Boosts share caps. All of the moment boosts together can add at most **20**. The no-hitter has its own cap of **70**, because a bid lasts innings and has to lift a 6-0 game past tied ones. Upset watch and stakes together add at most **16**, so context never outranks live action.
 
-Blowouts' Upset Rout is the underdog running the favorite off the field. It pays whenever the pregame underdog leads by more than two scores.
+Blowouts' Upset Rout is the underdog running the favorite off the field. It pays whenever the pregame underdog leads by more than the sport's blowout margin (its third closeness margin: 18 points in basketball, 14 in football, 3 goals, 5 runs).
 
 ---
 

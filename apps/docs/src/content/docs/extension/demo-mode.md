@@ -2,7 +2,7 @@
 title: Try ArenaSwap with Demo mode
 description: Turn on Demo mode to run 15 scripted games through the real PowerScore engine and watch a tab switch without waiting for a live game.
 section: extension
-order: 7
+order: 8
 navLabel: Demo mode
 faq:
   - q: Can I try ArenaSwap without a live game to watch?
