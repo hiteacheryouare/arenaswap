@@ -1,8 +1,108 @@
-// The PowerScore reason is English prose the scorer writes, plus the boost fragments background.ts
-// adds after it, joined with ", ". The scorer cannot be taught other languages, so for every other
-// language the line is read back here fragment by fragment and rebuilt from locale strings.
+import type { ReasonFragment } from '@arenaswap/core/types';
+import type { BoostId } from '@arenaswap/ui/src/components/scoringModeMeta';
+
+// A PowerScore 3 score carries its reasons as keys with parameters, and each one is rebuilt from
+// locale strings. A score from before then carries only English prose, which the fallback below
+// reads back fragment by fragment.
 
 type translate = (key: string, subsOrCount?: unknown, subs?: unknown) => string;
+
+const text = (params: ReasonFragment['params'], name: string): string => String(params?.[name] ?? '');
+const count = (params: ReasonFragment['params'], name: string): number => Number(params?.[name] ?? 0);
+
+const marginKeys: Record<string, string> = { point: 'powerScore.reasonMarginPoints', goal: 'powerScore.reasonMarginGoals', run: 'powerScore.reasonMarginRuns' };
+const blowoutKeys: Record<string, string> = { point: 'powerScore.reasonBlowoutPoints', goal: 'powerScore.reasonBlowoutGoals', run: 'powerScore.reasonBlowoutRuns' };
+
+const boostReasonKeys: Record<BoostId, string> = {
+	favoriteBoost: 'powerScore.reasonFavoriteBoost',
+	gameBoost: 'powerScore.reasonGameBoost',
+	scoringOpportunity: 'powerScore.reasonScoringOpportunity',
+	goAheadRun: 'powerScore.reasonGoAheadRun',
+	twoMinuteDrill: 'powerScore.reasonTwoMinuteDrill',
+	emptyNet: 'powerScore.reasonEmptyNet',
+	powerPlay: 'powerScore.reasonPowerPlay',
+	redCard: 'powerScore.reasonRedCard',
+	noHitter: 'powerScore.reasonNoHitter',
+	upsetWatch: 'powerScore.reasonUpsetWatch',
+	upsetRout: 'powerScore.reasonUpsetRout',
+	stakes: 'powerScore.reasonStakes',
+	postseasonBoost: 'powerScore.reasonPostseasonBoost',
+};
+
+const plainReasonKeys: Record<string, string> = {
+	tied: 'powerScore.reasonTied',
+	overtime: 'powerScore.reasonOvertime',
+	extraTime: 'powerScore.reasonExtraTime',
+	shootout: 'powerScore.reasonShootout',
+	extraInnings: 'powerScore.reasonExtraInnings',
+	overtimeLooming: 'powerScore.reasonOvertimeLooming',
+	levelLate: 'powerScore.reasonLevelLate',
+	tradingLeads: 'powerScore.reasonTradingLeads',
+	justTookLead: 'powerScore.reasonJustTookLead',
+	fallback: 'powerScore.reasonFallback',
+	earlyRout: 'powerScore.reasonEarlyRout',
+};
+
+const teamReasonKeys: Record<string, string> = {
+	onARoll: 'powerScore.reasonOnARoll',
+	cuttingIn: 'powerScore.reasonCuttingIn',
+	closingGap: 'powerScore.reasonClosingGap',
+	leadHeld: 'powerScore.reasonLeadHeld',
+	pilingOn: 'powerScore.reasonPilingOn',
+};
+
+const playerReasonKeys: Record<string, string> = {
+	fantasyHasBall: 'powerScore.reasonFantasyHasBall',
+	fantasyRedZone: 'powerScore.reasonFantasyRedZone',
+	fantasyFieldGoalRange: 'powerScore.reasonFantasyFieldGoalRange',
+	fantasyDefense: 'powerScore.reasonFantasyDefense',
+	fantasyAtBat: 'powerScore.reasonFantasyAtBat',
+	fantasyOnDeck: 'powerScore.reasonFantasyOnDeck',
+	fantasyPitching: 'powerScore.reasonFantasyPitching',
+	fantasyInGame: 'powerScore.reasonFantasyInGame',
+};
+
+const translateKeyedFragment = ({ key, params }: ReasonFragment, t: translate): string | undefined => {
+	const plain = plainReasonKeys[key];
+	if (plain) return t(plain);
+	const team = teamReasonKeys[key];
+	if (team) return t(team, { team: text(params, 'team') });
+	const player = playerReasonKeys[key];
+	if (player) return t(player, { name: text(params, 'name') });
+	const boost = (boostReasonKeys as Record<string, string>)[key];
+	if (boost) return t(boost, { points: text(params, 'points') });
+	switch (key) {
+		case 'margin': {
+			const unitKey = marginKeys[text(params, 'unit')];
+			return unitKey ? t(unitKey, count(params, 'margin')) : undefined;
+		}
+		case 'blowoutMargin': {
+			const unitKey = blowoutKeys[text(params, 'unit')];
+			return unitKey ? t(unitKey, count(params, 'margin')) : undefined;
+		}
+		case 'inning': return t('powerScore.reasonInning', { inning: text(params, 'inning') });
+		case 'clockLeft': return t('powerScore.reasonClockLeft', { clock: text(params, 'clock') });
+		case 'minutesIn': return t('powerScore.reasonMinutesIn', count(params, 'minutes'));
+		case 'underMinutes': return t('powerScore.reasonUnderMinutes', count(params, 'minutes'));
+		case 'outscoring': return t('powerScore.reasonOutscoring', {
+			team: text(params, 'team'),
+			other: text(params, 'other'),
+			run: `${text(params, 'scoredFor')}–${text(params, 'scoredAgainst')}`,
+		});
+		case 'fantasyPoints': return t('powerScore.reasonFantasyPoints', { name: text(params, 'name'), points: text(params, 'points') });
+		case 'fantasyRostered': return t('powerScore.reasonFantasyRostered', count(params, 'count'));
+		default: return undefined;
+	}
+};
+
+// Like the English fallback, a line with one key this does not know (a custom mode's own) is
+// dropped whole rather than printed half translated.
+export const translateReasonFragments = (fragments: readonly ReasonFragment[], t: translate): string | undefined => {
+	if (fragments.length === 0) return undefined;
+	const parts = fragments.map(fragment => translateKeyedFragment(fragment, t));
+	if (parts.some(part => part === undefined)) return undefined;
+	return parts.join(t('powerScore.reasonJoiner'));
+};
 
 interface boosts {
 	favoriteBonus: number;
@@ -72,6 +172,20 @@ export const translateReason = (reason: string, t: translate, locale: string): s
 	const parts = reason.split(', ').map(fragment => translateFragment(fragment, t));
 	if (parts.some(part => part === undefined)) return undefined;
 	return parts.join(t('powerScore.reasonJoiner'));
+};
+
+interface spokenScore {
+	reason: string;
+	// A live score's.
+	breakdown?: { reasons: readonly ReasonFragment[] };
+	// A history snapshot's.
+	reasons?: readonly ReasonFragment[];
+}
+
+export const speakReason = (score: spokenScore, t: translate, locale: string): string | undefined => {
+	if (locale.toLowerCase().startsWith('en')) return score.reason || undefined;
+	const keyed = score.breakdown?.reasons ?? score.reasons;
+	return keyed ? translateReasonFragments(keyed, t) : translateReason(score.reason, t, locale);
 };
 
 export const capitalizeReason = (reason: string, locale: string): string => (

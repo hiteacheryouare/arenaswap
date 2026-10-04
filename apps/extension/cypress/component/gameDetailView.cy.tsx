@@ -1,6 +1,6 @@
 import GameDetailView from '../../entrypoints/popup/components/gameDetailView';
 import LiveGameCard from '@arenaswap/ui/src/components/liveGameCard';
-import type { Game, PowerScoreResult, PowerScoreSnapshot, ScoreSnapshot } from '@arenaswap/core/types';
+import type { Game, LiveScore, PowerScoreResult, PowerScoreSnapshot, ScoreSnapshot } from '@arenaswap/core/types';
 import { countdownParts, formatCompactCountdown } from '../../entrypoints/popup/components/startCountdown';
 import de from '../../locales/de.json';
 import en from '../../locales/en.json';
@@ -78,7 +78,7 @@ const makeScheduledSlate = (msUntilStart: number): Game => ({
 });
 
 interface MountOverrides {
-	excitementResult?: PowerScoreResult;
+	excitementResult?: LiveScore;
 	scoreHistory?: ScoreSnapshot[];
 	powerScoreHistory?: PowerScoreSnapshot[];
 	proTipsEnabled?: boolean;
@@ -1090,5 +1090,62 @@ describe('gameDetailView hero timeouts', () => {
 	it('leaves the hero untouched for a sport with no timeouts', () => {
 		mountDetail(makeLiveGame(), { excitementResult: excitement });
 		cy.get('.gd-hero-live .timeout-dots').should('not.exist');
+	});
+});
+
+const chartTitles = () => cy.get('[data-testid="game-detail-chart"] .game-detail-chart-title').then($titles => [...$titles].map(title => title.textContent));
+
+describe('gameDetailView scoring modes', () => {
+	const scoreHistory: ScoreSnapshot[] = Array.from({ length: 6 }, (_, i) => ({
+		gameId: liveGameId,
+		timestamp: now.getTime() - (6 - i) * minuteMs,
+		awayScore: 90 + i * 4,
+		homeScore: 80 + i,
+	}));
+
+	const blowoutScore: LiveScore = {
+		...excitement,
+		reason: '24-point lead, OKC piling on',
+		breakdown: {
+			modeId: 'blowouts',
+			signals: [
+				{ id: 'blowoutMargin', points: 41, ceiling: 50, disabled: false },
+				{ id: 'sustained', points: 22, ceiling: 30, disabled: false },
+				{ id: 'timing', points: 9, ceiling: 25, disabled: false },
+				{ id: 'pileOn', points: 6, ceiling: 15, disabled: false },
+			],
+			boosts: [{ id: 'favoriteBoost', points: 0, meta: { teams: 0 } }, { id: 'gameBoost', points: 0 }, { id: 'postseasonBoost', points: 0 }],
+			reasons: [{ key: 'blowoutMargin', params: { margin: 24, unit: 'point' } }, { key: 'pilingOn', params: { team: 'OKC' } }],
+			frozen: false,
+			scaledSubtotal: 78,
+			signalCeiling: 120,
+			classicTotal: 31,
+		},
+	};
+
+	it('leaves the lead tracker off a Classic game', () => {
+		cy.clock(now.getTime(), ['Date']);
+		mountDetail(makeLiveGame(), { excitementResult: excitement, scoreHistory, powerScoreHistory });
+		chartTitles().should('not.include', 'Lead Over Time');
+		cy.get('.powerscore-breakdown-heading').should('have.text', 'PowerScore Breakdown');
+	});
+
+	it('adds the lead tracker under the score chart for a game Blowouts is scoring', () => {
+		cy.clock(now.getTime(), ['Date']);
+		mountDetail(makeLiveGame(), { excitementResult: blowoutScore, scoreHistory, powerScoreHistory });
+		chartTitles().then(titles => {
+			const score = titles.indexOf('Game Score Over Time');
+			expect(score).to.be.at.least(0);
+			expect(titles[score + 1]).to.equal('Lead Over Time');
+		});
+		cy.get('.powerscore-breakdown-heading').should('have.text', 'Blowouts Breakdown');
+		cy.get('.powerscore-breakdown-reason').should('have.text', '24-point lead, OKC piling on');
+	});
+
+	it('reads the mode off the newest reading when there is no live score', () => {
+		cy.clock(now.getTime(), ['Date']);
+		const history = powerScoreHistory.map(snapshot => ({ ...snapshot, modeId: 'blowouts', signals: { blowoutMargin: 30, sustained: 10, timing: 5, pileOn: 0 } }));
+		mountDetail(makeLiveGame(), { scoreHistory, powerScoreHistory: history });
+		chartTitles().should('include', 'Lead Over Time');
 	});
 });

@@ -15,7 +15,7 @@ import {
 import { loadConferenceDirectory } from '../utils/collegeConferences';
 import { loadStoredUserPreferences } from '../utils/prefsStorage';
 import { loadFantasyRoster } from '../utils/fantasyRosterStorage';
-import { capitalizeReason, translateReason } from '../utils/powerScoreReason';
+import { capitalizeReason, speakReason } from '../utils/powerScoreReason';
 import { displayLocale } from '../utils/displayLocale';
 import {
 	normalizeReviewPromptState,
@@ -545,7 +545,9 @@ export default defineBackground(() => {
 				// A reason this language cannot be given drops out, leaving the plain message, and a
 				// game with no venue we know says where it is going without naming a building.
 				const locale = displayLocale();
-				const spoken = reason ? translateReason(reason, i18n.t, locale) : undefined;
+				// The keyed reasons are read only while they still describe the line being announced.
+				const current = currentScores.find(score => score.gameId === gameId && score.reason === reason);
+				const spoken = reason ? speakReason({ reason, breakdown: current?.breakdown }, i18n.t, locale) : undefined;
 				const said = spoken ? capitalizeReason(spoken, locale) : undefined;
 				const message = venue
 					? (said ? i18n.t('notification.switchedMessageWithReason', { reason: said, venue }) : i18n.t('notification.switchedMessage', { venue }))

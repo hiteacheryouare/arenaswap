@@ -343,3 +343,81 @@ describe('walkthroughView step 1 interactive demo', () => {
 		cy.contains('ArenaSwap is switching for you').should('exist');
 	});
 });
+
+// Angle and distance of each signal dot from the ring's centre, read off the rendered boxes.
+const ringGeometry = () => cy.get('.powerscore-orbit-ring').then(([ring]: JQuery<HTMLElement>) => {
+	const box = ring.getBoundingClientRect();
+	const centreX = box.left + box.width / 2;
+	const centreY = box.top + box.height / 2;
+	return [...ring.querySelectorAll<HTMLElement>('.powerscore-orbit-dot')].map(dot => {
+		const dotBox = dot.getBoundingClientRect();
+		const dx = dotBox.left + dotBox.width / 2 - centreX;
+		const dy = dotBox.top + dotBox.height / 2 - centreY;
+		return { angle: (Math.atan2(dy, dx) * 180) / Math.PI, distance: Math.hypot(dx, dy) };
+	});
+});
+
+const openSignals = () => {
+	cy.clock();
+	cy.contains('button', 'Next').click();
+	cy.get('.powerscore-progress-dot').eq(1).click();
+};
+
+const expectRing = (angles: number[]) => ringGeometry().then(dots => {
+	expect(dots).to.have.length(angles.length);
+	dots.forEach((dot, index) => {
+		const off = Math.abs(((dot.angle - angles[index]! + 540) % 360) - 180);
+		expect(off, `dot ${index} angle`).to.be.at.most(0.5);
+		expect(Math.abs(dot.distance - 50), `dot ${index} radius`).to.be.at.most(0.5);
+	});
+});
+
+describe('walkthroughView PowerScore signals by scoring mode', () => {
+	it('keeps Classic\'s five dots 72° apart, starting at the top', () => {
+		cy.mount(<WalkthroughView onComplete={() => {}} />);
+		openSignals();
+		expectRing([-90, -18, 54, 126, 198]);
+		cy.get('.powerscore-progress-dot').should('have.length', 12);
+	});
+
+	it('shows Classic for a reader on Custom', () => {
+		cy.mount(<WalkthroughView onComplete={() => {}} scoringMode='custom' />);
+		openSignals();
+		expectRing([-90, -18, 54, 126, 198]);
+	});
+
+	it('spaces Blowouts\' four signals a quarter turn apart and walks through them', () => {
+		cy.mount(<WalkthroughView onComplete={() => {}} scoringMode='blowouts' />);
+		openSignals();
+		expectRing([-90, 0, 90, 180]);
+		cy.get('.powerscore-progress-dot').should('have.length', 11);
+		cy.tick(600);
+		cy.get('.ps-bloom-overlay.ps-bloom-visible').should('contain', 'Margin');
+		cy.get('.ps-bloom-overlay').click();
+		cy.tick(400);
+		cy.get('.powerscore-progress-dot').eq(4).click();
+		cy.tick(600);
+		cy.get('.ps-bloom-overlay.ps-bloom-visible').should('contain', 'Piling on');
+		cy.get('.ps-bloom-overlay').click();
+		cy.tick(400);
+		cy.get('.powerscore-progress-dot').eq(5).click();
+		cy.contains('Clock Stall Penalty').should('exist');
+	});
+
+	it('spaces Fantasy\'s three signals a third of a turn apart', () => {
+		cy.mount(<WalkthroughView onComplete={() => {}} scoringMode='fantasy' />);
+		openSignals();
+		expectRing([-90, 30, 150]);
+		cy.get('.powerscore-progress-dot').should('have.length', 10);
+	});
+
+	it('comes back from step 3 onto the last boost, whatever the signal count', () => {
+		cy.mount(<WalkthroughView onComplete={() => {}} scoringMode='blowouts' />);
+		cy.contains('button', 'Next').click();
+		for (let i = 0; i < 11; i++) cy.get('button.btn-primary').last().click();
+		cy.contains('Step 3 of 8').should('exist');
+		cy.contains('button', 'Back').click();
+		cy.contains('Postseason Boost').should('exist');
+		cy.get('.powerscore-progress-dot').last().should('have.attr', 'aria-current', 'step');
+	});
+});

@@ -1,63 +1,20 @@
-import { useEffect, useRef, useState } from 'react';
-import {
-	scoreMaxCloseness,
-	scoreMaxComeback,
-	scoreMaxLateGame,
-	scoreMaxLeadChanges,
-	scoreMaxMomentum,
-} from '@arenaswap/core/constants';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import type { BuiltInModeId } from '@arenaswap/core/types';
 import { i18n } from '#i18n';
-import { signalColors } from '@arenaswap/ui/src/components/signalColors';
+import { boostPresentation, modeSignalIds, penaltyPresentation, signalPresentation } from '@arenaswap/ui/src/components/scoringModeMeta';
 import focusStepTitle from './stepTitleFocus';
 
 interface walkthroughStepPowerScoreProps {
 	onNext: () => void;
 	onBack: () => void;
 	initialSubStep?: number;
+	// The mode the reader scores with, so the tour shows the signals they will actually see.
+	modeId?: BuiltInModeId;
 }
 
-const signalMeta = [
-	{
-		name: 'closeness',
-		labelKey: 'powerScore.signalCloseness',
-		tooltipKey: 'powerScore.tooltipCloseness',
-		measuredKey: 'stepPowerScore.closenessMeasured',
-		max: scoreMaxCloseness,
-		color: signalColors.closeness,
-	},
-	{
-		name: 'lateGame',
-		labelKey: 'powerScore.signalLateGame',
-		tooltipKey: 'powerScore.tooltipLateGame',
-		measuredKey: 'stepPowerScore.lateGameMeasured',
-		max: scoreMaxLateGame,
-		color: signalColors.lateGame,
-	},
-	{
-		name: 'momentum',
-		labelKey: 'powerScore.signalMomentum',
-		tooltipKey: 'powerScore.tooltipMomentum',
-		measuredKey: 'stepPowerScore.momentumMeasured',
-		max: scoreMaxMomentum,
-		color: signalColors.momentum,
-	},
-	{
-		name: 'leadChanges',
-		labelKey: 'powerScore.signalLeadChanges',
-		tooltipKey: 'powerScore.tooltipLeadChanges',
-		measuredKey: 'stepPowerScore.leadChangesMeasured',
-		max: scoreMaxLeadChanges,
-		color: signalColors.leadChanges,
-	},
-	{
-		name: 'comeback',
-		labelKey: 'powerScore.signalComeback',
-		tooltipKey: 'powerScore.tooltipComeback',
-		measuredKey: 'stepPowerScore.comebackMeasured',
-		max: scoreMaxComeback,
-		color: signalColors.comeback,
-	},
-] as const;
+const signalMetaFor = (modeId: BuiltInModeId) => modeSignalIds[modeId].map(name => ({ name, ...signalPresentation[name] }));
+
+type walkthroughSignal = ReturnType<typeof signalMetaFor>[number];
 
 const boostPenaltyMeta = [
 	{
@@ -65,54 +22,57 @@ const boostPenaltyMeta = [
 		labelKey: 'stepPowerScore.clockStallPenaltyName',
 		descriptionKey: 'powerScore.tooltipClockStallPenalty',
 		measuredKey: 'stepPowerScore.clockStallPenaltyMeasured',
-		color: '#ef4444',
-		icon: 'hourglass-split',
+		color: penaltyPresentation.clockStall.color,
+		icon: penaltyPresentation.clockStall.icon,
 	},
 	{
 		name: 'volatility',
 		labelKey: 'stepPowerScore.volatilityName',
 		descriptionKey: 'powerScore.tooltipVolatility',
 		measuredKey: 'stepPowerScore.volatilityMeasured',
-		color: '#a855f7',
-		icon: 'activity',
+		color: penaltyPresentation.volatility.color,
+		icon: penaltyPresentation.volatility.icon,
 	},
 	{
 		name: 'favorite',
 		labelKey: 'stepPowerScore.favoriteBoostName',
 		descriptionKey: 'powerScore.tooltipFavoriteBoost',
 		measuredKey: 'stepPowerScore.favoriteBoostMeasured',
-		color: '#f1c40f',
-		icon: 'star-fill',
+		color: boostPresentation.favoriteBoost.color,
+		icon: boostPresentation.favoriteBoost.icon,
 	},
 	{
 		name: 'gameBoost',
 		labelKey: 'stepPowerScore.gameBoostName',
 		descriptionKey: 'powerScore.tooltipGameBoost',
 		measuredKey: 'stepPowerScore.gameBoostMeasured',
-		color: '#22c55e',
-		icon: 'lightning-fill',
+		color: boostPresentation.gameBoost.color,
+		icon: boostPresentation.gameBoost.icon,
 	},
 	{
 		name: 'scoringOpp',
 		labelKey: 'stepPowerScore.scoringOpportunityName',
 		descriptionKey: 'powerScore.tooltipScoringOpportunity',
 		measuredKey: 'stepPowerScore.scoringOpportunityMeasured',
-		color: '#f75c03',
-		icon: 'bullseye',
+		color: boostPresentation.scoringOpportunity.color,
+		icon: boostPresentation.scoringOpportunity.icon,
 	},
 	{
 		name: 'postseason',
 		labelKey: 'stepPowerScore.postseasonBoostName',
 		descriptionKey: 'powerScore.tooltipPostseasonBoost',
 		measuredKey: 'stepPowerScore.postseasonBoostMeasured',
-		color: '#2274a5',
-		icon: 'trophy-fill',
+		color: boostPresentation.postseasonBoost.color,
+		icon: boostPresentation.postseasonBoost.icon,
 	},
 ] as const;
 
-const buildDots = () =>
-	signalMeta.map((sig, idx) => {
-		const angle = -Math.PI / 2 + (idx * 72 * Math.PI) / 180;
+// The last sub-step: the intro, one per signal, then the boosts and penalties.
+export const lastPowerScoreSubStep = (modeId: BuiltInModeId = 'classic'): number => modeSignalIds[modeId].length + boostPenaltyMeta.length;
+
+const buildDots = (signals: readonly walkthroughSignal[]) =>
+	signals.map((sig, idx) => {
+		const angle = -Math.PI / 2 + (idx * (360 / signals.length) * Math.PI) / 180;
 		const radius = 50;
 		const x = Math.cos(angle) * radius;
 		const y = Math.sin(angle) * radius;
@@ -129,8 +89,6 @@ const buildDots = () =>
 		};
 	});
 
-const dots = buildDots();
-
 const contrastText = (hex: string): string => {
 	const r = parseInt(hex.slice(1, 3), 16);
 	const g = parseInt(hex.slice(3, 5), 16);
@@ -141,7 +99,7 @@ const contrastText = (hex: string): string => {
 
 
 interface BloomOverlayProps {
-	signal: (typeof signalMeta)[number];
+	signal: walkthroughSignal;
 	dotPxX: number;
 	dotPxY: number;
 	phase: 'blooming' | 'visible' | 'shrinking';
@@ -208,10 +166,13 @@ const BloomOverlay = ({ signal, dotPxX, dotPxY, phase, onClick }: BloomOverlayPr
 const BLOOM_IN_DURATION = 450;
 const BLOOM_OUT_DURATION = 400;
 
-const isSignalSubStep = (s: number) => s >= 1 && s <= 5;
-
-const walkthroughStepPowerScore = ({ onNext, onBack, initialSubStep = 0 }: walkthroughStepPowerScoreProps) => {
-	const [subStep, setSubStep] = useState<number>(initialSubStep);
+const walkthroughStepPowerScore = ({ onNext, onBack, initialSubStep = 0, modeId = 'classic' }: walkthroughStepPowerScoreProps) => {
+	const signalMeta = useMemo(() => signalMetaFor(modeId), [modeId]);
+	const dots = useMemo(() => buildDots(signalMeta), [signalMeta]);
+	const signalCount = signalMeta.length;
+	const lastSubStep = signalCount + boostPenaltyMeta.length;
+	const isSignalSubStep = (s: number) => s >= 1 && s <= signalCount;
+	const [subStep, setSubStep] = useState<number>(Math.min(initialSubStep, lastSubStep));
 	const [bloomPhase, setBloomPhase] = useState<'blooming' | 'visible' | 'shrinking' | null>(null);
 	const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -259,7 +220,7 @@ const walkthroughStepPowerScore = ({ onNext, onBack, initialSubStep = 0 }: walkt
 	};
 
 	const handleNext = () => {
-		if (subStep < 11) {
+		if (subStep < lastSubStep) {
 			advanceTo(subStep + 1);
 		} else {
 			onNext();
@@ -331,7 +292,7 @@ const walkthroughStepPowerScore = ({ onNext, onBack, initialSubStep = 0 }: walkt
 			);
 		}
 
-		const activeBoost = boostPenaltyMeta[subStep - 6]!;
+		const activeBoost = boostPenaltyMeta[subStep - signalCount - 1]!;
 		return (
 			<div className='powerscore-orbit-container'>
 				<div
@@ -383,7 +344,7 @@ const walkthroughStepPowerScore = ({ onNext, onBack, initialSubStep = 0 }: walkt
 			);
 		}
 
-		const activeBoost = boostPenaltyMeta[subStep - 6]!;
+		const activeBoost = boostPenaltyMeta[subStep - signalCount - 1]!;
 		return (
 			<>
 				<div className='fw-bold fs-5 text-center mb-1'>{i18n.t('stepPowerScore.boostsHeading')}</div>
@@ -412,15 +373,15 @@ const walkthroughStepPowerScore = ({ onNext, onBack, initialSubStep = 0 }: walkt
 			{renderContent()}
 
 			<ul className='powerscore-progress-dots' aria-label={i18n.t('stepPowerScore.progressAriaLabel')}>
-				{Array.from({ length: 12 }).map((_, idx) => {
+				{Array.from({ length: lastSubStep + 1 }).map((_, idx) => {
 					let dotColor = '#8b949e';
 					let label = i18n.t('stepPowerScore.introDotLabel');
-					if (idx >= 1 && idx <= 5) {
+					if (isSignalSubStep(idx)) {
 						const sig = signalMeta[idx - 1]!;
 						dotColor = sig.color;
 						label = i18n.t(sig.labelKey);
-					} else if (idx >= 6) {
-						const boost = boostPenaltyMeta[idx - 6]!;
+					} else if (idx > signalCount) {
+						const boost = boostPenaltyMeta[idx - signalCount - 1]!;
 						dotColor = boost.color;
 						label = i18n.t(boost.labelKey);
 					}

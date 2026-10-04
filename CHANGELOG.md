@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The popup draws whichever mode scored the game — 2026-10-03
+
+The breakdown card, the signal chart and the walkthrough now draw the active mode's own signals with their own names and colours from one table in `packages/ui/src/components/scoringModeMeta.ts`, boost rows come from the score's own list, and reasons are translated from their keys instead of being read back out of English. The PowerScore chart shades the stretches where a moment boost was paying, and Blowouts games get a lead tracker; a Classic score sent with its breakdown renders exactly as it did before, measured row by row.
+
 ## The docs site explains modes and every new boost — 2026-10-03
 
 The PowerScore pages on the docs site now cover all three modes and their signals, every new boost with when it pays and its cap, the PowerScore 3 types and `scoreGame` API (with 2.x kept as deprecated but working), and how to use the engine with a feed of your own; a new extension page explains Classic, Blowouts, Fantasy and Custom. The settings page's postseason default was also wrong (it said 5; it's 8).

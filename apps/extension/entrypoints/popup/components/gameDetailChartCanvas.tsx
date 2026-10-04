@@ -1,14 +1,15 @@
 import { useEffect, useRef } from 'react';
 import * as echarts from 'echarts/core';
 import { BarChart, LineChart } from 'echarts/charts';
-import { GridComponent, TooltipComponent } from 'echarts/components';
+import { GridComponent, MarkAreaComponent, TooltipComponent } from 'echarts/components';
 import { CanvasRenderer } from 'echarts/renderers';
 import type { EChartsOption, EChartsType } from 'echarts';
 
 // The option builders in @arenaswap/ui only ever emit line and bar series on a cartesian grid with
-// an axis tooltip, so registering those five keeps the full echarts bundle (1.1MB) out of this
-// chunk in favour of 513KB. apps/docs renders the same four builders off this same registration.
-echarts.use([LineChart, BarChart, GridComponent, TooltipComponent, CanvasRenderer]);
+// an axis tooltip, plus the shaded boost stretches on the PowerScore line, so registering those six
+// keeps the full echarts bundle (1.1MB) out of this chunk. apps/docs registers the same set minus
+// the mark areas, which its scripted history never pays.
+echarts.use([LineChart, BarChart, GridComponent, TooltipComponent, MarkAreaComponent, CanvasRenderer]);
 
 interface gameDetailChartCanvasProps {
 	option: EChartsOption;
