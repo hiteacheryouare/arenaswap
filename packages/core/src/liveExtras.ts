@@ -1,5 +1,7 @@
 import * as z from 'zod/mini';
-import type { PregameLine, ScoringContext, Side, TeamStakes } from 'powerscore';
+import { computeFantasyPoints, fantasySportOf } from 'powerscore';
+import type { FantasyPlayerState, FantasySport, PregameLine, ScoringContext, Side, TeamStakes } from 'powerscore';
+import { readFantasyBoxScore, rosterInGame, type FantasyRosterEntry } from './fantasy';
 import { getHistoryWindowMsForGame } from './scoring';
 import type { Game, LeagueId } from './types';
 
@@ -198,7 +200,13 @@ interface GameExtras {
 	boxLeadChanges: { ts: number; count: number }[];
 	powerPlay?: boolean;
 	emptyNetPolls: number;
+	// Rostered players' running fantasy totals, and every rise as an event.
+	fantasyTotals: Map<string, number>;
+	fantasyEvents: Map<string, { at: number; points: number }[]>;
+	fantasyInactive: Set<string>;
 }
+
+export type FantasyScoringOverrides = Partial<Record<FantasySport, Partial<Record<string, number>>>>;
 
 // Changes inside the scorer's window, measured from the oldest box sample in it: the first sample
 // of a game is a baseline, never a burst of recent changes.
@@ -216,19 +224,49 @@ const recentLeadChanges = (game: Game, state: GameExtras, now: number): ScoringC
 export const createLiveExtras = () => {
 	const games = new Map<string, GameExtras>();
 	const stakesByLeague = new Map<LeagueId, Map<string, TeamStakes>>();
+	let roster: FantasyRosterEntry[] = [];
+	let fantasyScoring: FantasyScoringOverrides = {};
+
+	const setRoster = (entries: FantasyRosterEntry[]) => {
+		roster = entries;
+	};
+	const setFantasyScoring = (overrides: FantasyScoringOverrides) => {
+		fantasyScoring = overrides;
+	};
 
 	const stateOf = (gameId: string): GameExtras => {
 		let state = games.get(gameId);
 		if (!state) {
-			state = { boxLeadChanges: [], emptyNetPolls: 0 };
+			state = { boxLeadChanges: [], emptyNetPolls: 0, fantasyTotals: new Map(), fantasyEvents: new Map(), fantasyInactive: new Set() };
 			games.set(gameId, state);
 		}
 		return state;
 	};
 
-	const ingestSummary = (game: Pick<Game, 'id' | 'sportType'>, summary: unknown, ts: number) => {
+	// The first total seen is a baseline: a player picked up mid-game hasn't just scored them all.
+	const ingestFantasy = (game: Game, state: GameExtras, summary: unknown, ts: number) => {
+		const players = rosterInGame(roster, game);
+		const sport = fantasySportOf(game.sportType);
+		if (players.length === 0 || !sport) return;
+		const box = readFantasyBoxScore(summary, game);
+		state.fantasyInactive = box.inactive;
+		for (const player of players) {
+			const id = player.position === 'DST' ? `dst:${player.teamId}` : player.athleteId;
+			const line = box.lines.get(id);
+			if (!line) continue;
+			const total = computeFantasyPoints(sport, line, fantasyScoring[sport]);
+			const previous = state.fantasyTotals.get(id);
+			state.fantasyTotals.set(id, total);
+			if (previous === undefined || total === previous) continue;
+			const events = [...(state.fantasyEvents.get(id) ?? []), { at: ts, points: total - previous }].slice(-20);
+			state.fantasyEvents.set(id, events);
+		}
+	};
+
+	const ingestSummary = (game: Pick<Game, 'id' | 'sportType'> & Partial<Game>, summary: unknown, ts: number) => {
 		const state = stateOf(game.id);
 		state.pregameLine ??= readPregameLine(summary);
+		if (game.homeTeam && game.awayTeam && game.league) ingestFantasy(game as Game, state, summary, ts);
 		if (game.sportType !== 'basketball') return;
 		const count = readBoxLeadChanges(summary);
 		const last = state.boxLeadChanges[state.boxLeadChanges.length - 1];
@@ -248,8 +286,27 @@ export const createLiveExtras = () => {
 		stakesByLeague.set(league, readStandingsStakes(standings, league, sportType));
 	};
 
+	const fantasyFor = (game: Game, state: GameExtras | undefined): FantasyPlayerState[] => rosterInGame(roster, game).map(player => {
+		const id = player.position === 'DST' ? `dst:${player.teamId}` : player.athleteId;
+		const side: Side = player.teamId === game.homeTeam.id ? 'home' : 'away';
+		const batter = game.atBat?.batter?.name;
+		const pitcher = game.atBat?.pitcher?.name;
+		const role = batter === player.name ? 'atBat' : pitcher === player.name ? 'pitching' : undefined;
+		const events = state?.fantasyEvents.get(id);
+		return {
+			id,
+			name: player.name,
+			side,
+			position: player.position,
+			...(state?.fantasyInactive.has(id) ? { active: false } : {}),
+			...(role ? { role } : {}),
+			...(events ? { pointEvents: events } : {}),
+		};
+	});
+
 	const contextFor = (game: Game, now: number): Partial<ScoringContext> => {
 		const state = games.get(game.id);
+		const fantasy = roster.length > 0 ? fantasyFor(game, state) : [];
 		const leagueStakes = stakesByLeague.get(game.league);
 		const homeStakes = leagueStakes?.get(game.homeTeam.id);
 		const awayStakes = leagueStakes?.get(game.awayTeam.id);
@@ -261,12 +318,13 @@ export const createLiveExtras = () => {
 			// Two polls in a row: a goalie out for a delayed penalty is back within seconds.
 			...(state && state.emptyNetPolls >= 2 ? { emptyNet: true } : {}),
 			...(leadChanges ? { recentLeadChanges: leadChanges } : {}),
+			...(fantasy.length > 0 ? { fantasy } : {}),
 		};
 	};
 
 	const forget = (gameId: string) => games.delete(gameId);
 
-	return { ingestSummary, ingestSituation, ingestStandings, contextFor, forget };
+	return { ingestSummary, ingestSituation, ingestStandings, contextFor, forget, setRoster, setFantasyScoring };
 };
 
 export type LiveExtras = ReturnType<typeof createLiveExtras>;

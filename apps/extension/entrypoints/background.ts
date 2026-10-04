@@ -14,6 +14,7 @@ import {
 } from '../utils/finishedTabs';
 import { loadConferenceDirectory } from '../utils/collegeConferences';
 import { loadStoredUserPreferences } from '../utils/prefsStorage';
+import { loadFantasyRoster } from '../utils/fantasyRosterStorage';
 import { capitalizeReason, translateReason } from '../utils/powerScoreReason';
 import { displayLocale } from '../utils/displayLocale';
 import {
@@ -792,6 +793,7 @@ export default defineBackground(() => {
 
 		const favoriteTeamIds = new Set(prefs.favoriteTeamIds);
 		const now = Date.now();
+		liveExtras.setFantasyScoring(prefs.fantasyScoring);
 		const scores = liveGames.map(g => toLegacyPowerScoreResult(scoreLiveGame(
 			{
 				game: g,
@@ -1072,6 +1074,8 @@ export default defineBackground(() => {
 
 		if (liveGames.length === 0) return;
 		refreshStandings(liveGames);
+		// Read once a sweep rather than watched: the popup writes it, and a minute is soon enough.
+		liveExtras.setRoster(await loadFantasyRoster().catch(() => []));
 
 		const now = Date.now();
 		await Promise.all(liveGames.filter(game => summaryDue(game, now)).map(async game => {
@@ -1111,8 +1115,10 @@ export default defineBackground(() => {
 		loadStoredUserPreferences(),
 		browser.storage.session.get({ tabRegistry: [], standbyStreamTabId: null, lastSwitchTime: 0, ...historyStorageDefaults }),
 		browser.storage.local.get({ demoMode: false, [gameEndTimesKey]: {} }),
-	]).then(([storedPrefs, sessionResult, demoResult]) => {
+		loadFantasyRoster().catch(() => []),
+	]).then(([storedPrefs, sessionResult, demoResult, roster]) => {
 		prefs = storedPrefs;
+		liveExtras.setRoster(roster);
 		tabRegistry = sessionResult.tabRegistry as TabRegistration[];
 		standbyStreamTabId = (sessionResult.standbyStreamTabId as number | null) ?? null;
 		lastSwitchTime = readStoredSwitchTime(sessionResult.lastSwitchTime, Date.now());

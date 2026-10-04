@@ -75,6 +75,11 @@ describe('constants', () => {
 			postseasonBoostPoints: 8,
 			upcomingGamesDays: 7,
 			disabledSignals: [],
+			scoringMode: 'classic',
+			leagueModes: {},
+			modeDisabledSignals: {},
+			fantasyBlend: 60,
+			fantasyScoring: {},
 			collegeFilters: {},
 		});
 	});
@@ -170,6 +175,11 @@ describe('constants', () => {
 			postseasonBoostPoints: 8,
 			upcomingGamesDays: 7,
 			disabledSignals: [],
+			scoringMode: 'classic',
+			leagueModes: {},
+			modeDisabledSignals: {},
+			fantasyBlend: 60,
+			fantasyScoring: {},
 			collegeFilters: {},
 		});
 	});

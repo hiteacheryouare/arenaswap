@@ -46,6 +46,11 @@ const defaultPrefs: UserPreferences = {
 	postseasonBoostPoints: 0,
 	upcomingGamesDays: 7,
 	disabledSignals: [],
+	scoringMode: 'classic',
+	leagueModes: {},
+	modeDisabledSignals: {},
+	fantasyBlend: 60,
+	fantasyScoring: {},
 	collegeFilters: {},
 };
 

@@ -1,6 +1,7 @@
 import { scoreGame, signalPoints, boostPoints, sportTypeConfigMap } from 'powerscore';
 import type { Game as ScoringGame, PowerScore, PowerScoreResult, ScoreOptions, ScoringContext, ScoreSnapshot, Side } from 'powerscore';
 import { createFavoriteTeamKey, historyWindowMs, sensitivityThresholds } from './constants';
+import { resolveModeForGame } from './scoringMode';
 import type { Game, Team, UserPreferences } from './types';
 
 // Our sources' shape → the engine's neutral one. Everything source-specific (team ids, the
@@ -158,16 +159,23 @@ export const scoringContextFor = ({ game, history, stallCount, winProbability, n
 	winProbability,
 });
 
-export type ScoringPrefs = Pick<UserPreferences, 'favoriteTeamIds' | 'favoriteTeamBonusPoints' | 'postseasonBoostPoints' | 'disabledSignals'>;
+export type ScoringPrefs = Pick<UserPreferences, 'favoriteTeamIds' | 'favoriteTeamBonusPoints' | 'postseasonBoostPoints' | 'disabledSignals'>
+	& Partial<Pick<UserPreferences, 'scoringMode' | 'leagueModes' | 'modeDisabledSignals' | 'fantasyBlend'>>;
 
-export const scoreOptionsFor = (game: Game, prefs: ScoringPrefs, gameBoost: number, favoriteTeamIds = new Set(prefs.favoriteTeamIds)): ScoreOptions => ({
-	mode: 'classic',
-	disabledSignals: prefs.disabledSignals,
-	favoriteTeamCount: getFavoriteTeamCount(game, favoriteTeamIds),
-	favoriteBoostPoints: prefs.favoriteTeamBonusPoints,
-	postseasonBoostPoints: prefs.postseasonBoostPoints,
-	gameBoost,
-});
+export const scoreOptionsFor = (game: Game, prefs: ScoringPrefs, gameBoost: number, favoriteTeamIds = new Set(prefs.favoriteTeamIds)): ScoreOptions => {
+	const mode = resolveModeForGame({ scoringMode: prefs.scoringMode ?? 'classic', leagueModes: prefs.leagueModes ?? {} }, game);
+	return {
+		mode,
+		disabledSignals: mode === 'classic' ? prefs.disabledSignals : (prefs.modeDisabledSignals?.[mode] ?? []),
+		classicDisabledSignals: prefs.disabledSignals,
+		...(mode === 'fantasy' && prefs.fantasyBlend !== undefined ? { classicBlend: { kind: 'mix', weight: prefs.fantasyBlend / 100 } } : {}),
+		favoriteTeamCount: getFavoriteTeamCount(game, favoriteTeamIds),
+		favoriteBoostPoints: prefs.favoriteTeamBonusPoints,
+		postseasonBoostPoints: prefs.postseasonBoostPoints,
+		gameBoost,
+	};
+};
+
 
 export const scoreLiveGame = (input: LiveScoringInput, prefs: ScoringPrefs, gameBoost: number, favoriteTeamIds?: Set<string>): PowerScore => (
 	scoreGame(toScoringGame(input.game), scoringContextFor(input), scoreOptionsFor(input.game, prefs, gameBoost, favoriteTeamIds))

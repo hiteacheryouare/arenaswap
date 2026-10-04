@@ -8,7 +8,11 @@ import type {
 	ScorerTunables,
 	LeagueConfig,
 	LeagueRunMinutes,
+	BuiltInModeId,
+	FantasySport,
 } from 'powerscore';
+
+export type ScoringModeChoice = BuiltInModeId | 'custom';
 
 export type SignalName = 'closeness' | 'lateGame' | 'momentum' | 'leadChanges' | 'comeback';
 export type {
@@ -21,6 +25,8 @@ export type {
 	ScorerTunables,
 	LeagueConfig,
 	LeagueRunMinutes,
+	BuiltInModeId,
+	FantasySport,
 };
 
 // Baseball pitchers and hockey goalies arrive in the same `probables` structure, so this is not
@@ -278,8 +284,18 @@ export interface UserPreferences {
 	postseasonBoostPoints: number;
 	// 1–14.
 	upcomingGamesDays: number;
-	// The remaining signals are renormalized to 0–100.
+	// Classic's switched-off signals. The rest are rescaled to the full range.
 	disabledSignals: SignalName[];
+	// Which question PowerScore answers. 'custom' picks a mode per league from `leagueModes`.
+	scoringMode: ScoringModeChoice;
+	// Custom only. A league left out scores as Classic.
+	leagueModes: Partial<Record<LeagueId, BuiltInModeId>>;
+	// Switched-off signals for the modes other than Classic, by mode.
+	modeDisabledSignals: Partial<Record<Exclude<BuiltInModeId, 'classic'>, string[]>>;
+	// Fantasy's share of the blend with Classic, 0–100.
+	fantasyBlend: number;
+	// Only the rules a user changed; the rest keep the analyst's defaults.
+	fantasyScoring: Partial<Record<FantasySport, Partial<Record<string, number>>>>;
 	// Only leagues the user has changed are stored; a missing league uses its default.
 	collegeFilters: CollegeFilterMap;
 }

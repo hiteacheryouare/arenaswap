@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Modes reach the extension's scoring, and Fantasy reads the box score — 2026-10-03
+
+Prefs gain `scoringMode` (Classic, Blowouts, Fantasy or Custom, with `leagueModes` picking per league under Custom), switched-off signals for the non-Classic modes, a Fantasy blend and scoring overrides, all normalized and checked against the engine's own definitions; `disabledSignals` stays as Classic's list so no stored prefs need migrating. The fantasy roster lives under its own storage key, and every summary turns each rostered player's box-score line into fantasy points, with the first total seen taken as a baseline so a player picked up mid-game doesn't count as a sudden burst.
+
 ## PowerScore gets Blowouts and Fantasy modes — 2026-10-03
 
 Blowouts (#86) scores margin, a lead held, an early rout and a leader still piling on, and floors every game at 30% of its Classic score so a close game stays eligible but never outranks a real beatdown. Fantasy (#85) scores what your rostered players are doing (football down to who has the ball and whether your kicker is in range), their recent fantasy points and how many of them are playing, blended 60/40 with Classic, and `computeFantasyPoints` carries the analyst's default scoring with bounds for every rule.
