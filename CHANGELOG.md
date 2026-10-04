@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## PowerScore 3 speaks all twelve languages — 2026-10-04
+
+Every string the modes, the new boosts, Fantasy's roster and scoring pages and the new detail-screen lines added (211 keys) is translated into the eleven other locales, with each mode named the way that language's fans would say it and fantasy terms kept as the loanwords fantasy players there actually use. The breakdown, Settings and Fantasy specs measure every language for overflow at popup width, and nothing needed shortening.
+
 ## The new boosts are tuned against the first night's labels — 2026-10-04
 
 After a calibration pass with the sports analyst, a go-ahead run climbs from half value in the 6th to full in the 9th, the two-minute drill leans less on timeouts, a baseball underdog needs a longer price before upset watch pays, and none of the new boosts pay on a clock game sitting at 0:00 with a winner. An end-of-inning break now scores as the bottom half with three outs rather than the next inning, so it can't outrank the live play before it; against 286 blind-labelled minutes v3 Classic now ranks the labelled game first 67.3% of the time to 2.2.0's 60.3%.
