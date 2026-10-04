@@ -16,3 +16,4 @@
 - [Postseason boost side trophies](postseason_boost_side_trophies.md) — whose-trophy rule: bowls get zero, NIT/Crown/conference finals capped at bottom tier, CFB needs an affirmative round signal
 - [live_moment_signals_audit.md](live_moment_signals_audit.md) — 2026-10-01 missed live moments per sport, verified Core situation/lastPlay fields, no WP for NHL/soccer, new-sport order
 - [powerscore3_spec_decisions.md](powerscore3_spec_decisions.md) — PowerScore 3 spec numbers: boost caps 20/16/70, per-boost values, Blowouts floor 0.3, Fantasy blend 0.6
+- [powerscore3_labelling_calls.md](powerscore3_labelling_calls.md) — Slate-labelling judgement calls (tiebreak needs possessor, punts, garbled OT, mid-inning) from 2026-10-03-a

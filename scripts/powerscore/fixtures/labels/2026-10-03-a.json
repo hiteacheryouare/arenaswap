@@ -1,0 +1,401 @@
+{
+	"slate": "2026-10-03-a",
+	"labeller": "analyst",
+	"moments": [
+		{
+			"ts": "2026-10-03T23:11:58.949Z",
+			"flipTo": "401868359",
+			"acceptable": [],
+			"level": 3,
+			"note": "Down 3, ball at the 25, 2:19 left"
+		},
+		{
+			"ts": "2026-10-03T23:12:59.341Z",
+			"flipTo": "401868359",
+			"acceptable": [],
+			"level": 3,
+			"note": "Down 3, ball at the 25, 2:19 left"
+		},
+		{
+			"ts": "2026-10-03T23:13:59.811Z",
+			"flipTo": "401868359",
+			"acceptable": [],
+			"level": 3,
+			"note": "Trailing team driving, one score, 2:19"
+		},
+		{
+			"ts": "2026-10-03T23:14:53.981Z",
+			"flipTo": "401868359",
+			"acceptable": [],
+			"level": 3,
+			"note": "Trailing team driving, one score, 2:19"
+		},
+		{
+			"ts": "2026-10-03T23:15:55.479Z",
+			"flipTo": "401868359",
+			"acceptable": [],
+			"level": 3,
+			"note": "Second and 25, still down 3 late"
+		},
+		{
+			"ts": "2026-10-03T23:16:56.456Z",
+			"flipTo": "401868359",
+			"acceptable": [],
+			"level": 3,
+			"note": "Third and 20, down 3, last drive"
+		},
+		{
+			"ts": "2026-10-03T23:17:57.577Z",
+			"flipTo": "401868359",
+			"acceptable": [],
+			"level": 3,
+			"note": "Two-minute drill, 0:56, down 3"
+		},
+		{
+			"ts": "2026-10-03T23:18:58.691Z",
+			"flipTo": "401868359",
+			"acceptable": [],
+			"level": 3,
+			"note": "Goal-line dead ball, keeps previous level"
+		},
+		{
+			"ts": "2026-10-03T23:19:59.888Z",
+			"flipTo": "401904404",
+			"acceptable": [],
+			"level": 3,
+			"note": "Tied, 26 seconds left in the third"
+		},
+		{
+			"ts": "2026-10-03T23:20:57.258Z",
+			"flipTo": "401904457",
+			"acceptable": [
+				"401868359"
+			],
+			"level": 2,
+			"note": "One-goal third at 3:04, no level 3"
+		},
+		{
+			"ts": "2026-10-03T23:21:58.430Z",
+			"flipTo": "401904457",
+			"acceptable": [],
+			"level": 3,
+			"note": "Within one, 2:53 left in the third"
+		},
+		{
+			"ts": "2026-10-03T23:22:59.589Z",
+			"flipTo": "401904457",
+			"acceptable": [],
+			"level": 3,
+			"note": "Within one, 2:18 left in the third"
+		},
+		{
+			"ts": "2026-10-03T23:23:59.959Z",
+			"flipTo": "401904404",
+			"acceptable": [],
+			"level": 3,
+			"note": "Overtime, tied"
+		},
+		{
+			"ts": "2026-10-03T23:24:56.837Z",
+			"flipTo": "401904404",
+			"acceptable": [],
+			"level": 3,
+			"note": "Overtime, tied"
+		},
+		{
+			"ts": "2026-10-03T23:25:57.390Z",
+			"flipTo": "401904404",
+			"acceptable": [],
+			"level": 3,
+			"note": "Overtime, tied"
+		},
+		{
+			"ts": "2026-10-03T23:26:57.949Z",
+			"flipTo": "401904404",
+			"acceptable": [],
+			"level": 3,
+			"note": "Overtime beats Kentucky red zone drive"
+		},
+		{
+			"ts": "2026-10-03T23:27:58.505Z",
+			"flipTo": "401904404",
+			"acceptable": [],
+			"level": 3,
+			"note": "Overtime, clock stalled, still tied"
+		},
+		{
+			"ts": "2026-10-03T23:28:59.093Z",
+			"flipTo": "401904404",
+			"acceptable": [],
+			"level": 3,
+			"note": "Overtime, clock stalled, still tied"
+		},
+		{
+			"ts": "2026-10-03T23:29:59.798Z",
+			"flipTo": "401868197",
+			"acceptable": [
+				"401904404"
+			],
+			"level": 3,
+			"note": "Down 7, own ball, 0:52; likely shootout elsewhere"
+		},
+		{
+			"ts": "2026-10-03T23:30:58.703Z",
+			"flipTo": "401868197",
+			"acceptable": [
+				"401904404"
+			],
+			"level": 3,
+			"note": "Down 7, near midfield, 0:52"
+		},
+		{
+			"ts": "2026-10-03T23:31:59.247Z",
+			"flipTo": "401868197",
+			"acceptable": [],
+			"level": 3,
+			"note": "Down 7, last possession, 0:52"
+		},
+		{
+			"ts": "2026-10-03T23:32:59.892Z",
+			"flipTo": "401868197",
+			"acceptable": [],
+			"level": 3,
+			"note": "Down 7, last possession, 0:52"
+		},
+		{
+			"ts": "2026-10-03T23:33:57.385Z",
+			"flipTo": "401868197",
+			"acceptable": [],
+			"level": 3,
+			"note": "Last possession beats tied fourth-down punt"
+		},
+		{
+			"ts": "2026-10-03T23:34:57.902Z",
+			"flipTo": "401868197",
+			"acceptable": [],
+			"level": 3,
+			"note": "Down 7, 0:13, Hail Mary range"
+		},
+		{
+			"ts": "2026-10-03T23:35:58.751Z",
+			"flipTo": "401868197",
+			"acceptable": [
+				"401856709"
+			],
+			"level": 3,
+			"note": "Final play beats two-minute warning"
+		},
+		{
+			"ts": "2026-10-03T23:36:59.295Z",
+			"flipTo": "401856709",
+			"acceptable": [
+				"401868197"
+			],
+			"level": 3,
+			"note": "Tied at two minutes; WIU feed contradicts"
+		},
+		{
+			"ts": "2026-10-03T23:37:59.908Z",
+			"flipTo": "401856709",
+			"acceptable": [],
+			"level": 3,
+			"note": "Tied, two-minute warning"
+		},
+		{
+			"ts": "2026-10-03T23:38:58.745Z",
+			"flipTo": "401856709",
+			"acceptable": [],
+			"level": 3,
+			"note": "Tied, Kentucky driving, 1:31"
+		},
+		{
+			"ts": "2026-10-03T23:39:59.846Z",
+			"flipTo": "401856709",
+			"acceptable": [],
+			"level": 3,
+			"note": "Tied, Kentucky driving, 0:43"
+		},
+		{
+			"ts": "2026-10-03T23:40:56.259Z",
+			"flipTo": "401856709",
+			"acceptable": [],
+			"level": 3,
+			"note": "Tied, final minute"
+		},
+		{
+			"ts": "2026-10-03T23:41:57.788Z",
+			"flipTo": "401856709",
+			"acceptable": [],
+			"level": 3,
+			"note": "Tied, Kentucky near midfield, 0:32"
+		},
+		{
+			"ts": "2026-10-03T23:42:59.409Z",
+			"flipTo": "401856709",
+			"acceptable": [],
+			"level": 3,
+			"note": "Tied, Kentucky near midfield, 0:27"
+		},
+		{
+			"ts": "2026-10-03T23:43:52.986Z",
+			"flipTo": "401856709",
+			"acceptable": [],
+			"level": 3,
+			"note": "Tied, Kentucky near midfield, 0:23"
+		},
+		{
+			"ts": "2026-10-03T23:44:52.237Z",
+			"flipTo": "401856709",
+			"acceptable": [],
+			"level": 3,
+			"note": "Tied, 0:18 left"
+		},
+		{
+			"ts": "2026-10-03T23:45:53.322Z",
+			"flipTo": "401856709",
+			"acceptable": [],
+			"level": 3,
+			"note": "Tied, Kentucky at the 39, 0:18"
+		},
+		{
+			"ts": "2026-10-03T23:46:54.730Z",
+			"flipTo": "401856709",
+			"acceptable": [],
+			"level": 3,
+			"note": "Tied, Kentucky at the 39, 0:18"
+		},
+		{
+			"ts": "2026-10-03T23:47:56.487Z",
+			"flipTo": "401856709",
+			"acceptable": [],
+			"level": 3,
+			"note": "Tied, 0:03, field goal try looming"
+		},
+		{
+			"ts": "2026-10-03T23:48:58.310Z",
+			"flipTo": "401907985",
+			"acceptable": [],
+			"level": 2,
+			"note": "Playoff 1-0, Yankees hitless; overtime not started"
+		},
+		{
+			"ts": "2026-10-03T23:49:55.822Z",
+			"flipTo": "401907985",
+			"acceptable": [],
+			"level": 2,
+			"note": "Playoff 1-0, Yankees hitless, runner on"
+		},
+		{
+			"ts": "2026-10-03T23:50:57.224Z",
+			"flipTo": "401907985",
+			"acceptable": [],
+			"level": 2,
+			"note": "Playoff 1-0, Yankees hitless, runner on"
+		},
+		{
+			"ts": "2026-10-03T23:51:58.222Z",
+			"flipTo": "401907985",
+			"acceptable": [],
+			"level": 2,
+			"note": "Playoff 1-0, Yankees hitless, runner on"
+		},
+		{
+			"ts": "2026-10-03T23:52:59.659Z",
+			"flipTo": "401907985",
+			"acceptable": [],
+			"level": 2,
+			"note": "Playoff 1-0 between innings, best of quiet slate"
+		},
+		{
+			"ts": "2026-10-03T23:53:59.401Z",
+			"flipTo": "401856709",
+			"acceptable": [],
+			"level": 3,
+			"note": "Overtime, South Carolina at the 25"
+		},
+		{
+			"ts": "2026-10-03T23:54:57.160Z",
+			"flipTo": "401856709",
+			"acceptable": [],
+			"level": 3,
+			"note": "Overtime, South Carolina in the red zone"
+		},
+		{
+			"ts": "2026-10-03T23:55:57.951Z",
+			"flipTo": "401856709",
+			"acceptable": [],
+			"level": 3,
+			"note": "Overtime, South Carolina scores"
+		},
+		{
+			"ts": "2026-10-03T23:56:58.894Z",
+			"flipTo": "401856709",
+			"acceptable": [],
+			"level": 3,
+			"note": "Overtime, Kentucky must answer"
+		},
+		{
+			"ts": "2026-10-03T23:57:59.798Z",
+			"flipTo": "401856709",
+			"acceptable": [],
+			"level": 3,
+			"note": "Overtime, Kentucky must answer"
+		},
+		{
+			"ts": "2026-10-03T23:58:55.055Z",
+			"flipTo": "401856709",
+			"acceptable": [],
+			"level": 3,
+			"note": "Overtime, Kentucky must answer"
+		},
+		{
+			"ts": "2026-10-03T23:59:55.705Z",
+			"flipTo": "401856709",
+			"acceptable": [],
+			"level": 3,
+			"note": "Overtime, Kentucky must answer"
+		},
+		{
+			"ts": "2026-10-04T00:00:56.220Z",
+			"flipTo": "401856709",
+			"acceptable": [],
+			"level": 3,
+			"note": "Overtime, Kentucky in the red zone, down 7"
+		},
+		{
+			"ts": "2026-10-04T00:01:56.780Z",
+			"flipTo": "401856709",
+			"acceptable": [],
+			"level": 3,
+			"note": "Overtime, Kentucky scores, try pending"
+		},
+		{
+			"ts": "2026-10-04T00:02:57.284Z",
+			"flipTo": "401907985",
+			"acceptable": [],
+			"level": 2,
+			"note": "Playoff 1-0, Yankees hitless through five"
+		},
+		{
+			"ts": "2026-10-04T00:03:57.653Z",
+			"flipTo": "401907985",
+			"acceptable": [],
+			"level": 2,
+			"note": "Playoff 1-0, Yankees hitless through five"
+		},
+		{
+			"ts": "2026-10-04T00:04:58.054Z",
+			"flipTo": "401907985",
+			"acceptable": [],
+			"level": 2,
+			"note": "Playoff 1-0, Yankees hitless through five"
+		},
+		{
+			"ts": "2026-10-04T00:05:39.726Z",
+			"flipTo": "401907985",
+			"acceptable": [],
+			"level": 2,
+			"note": "Playoff 1-0, Yankees hitless through five"
+		}
+	]
+}
