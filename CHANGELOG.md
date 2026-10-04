@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Fantasy lifts your players' games instead of blending them down — 2026-10-03
+
+Fantasy's 60/40 mix with Classic ranked a game with your player below the same game without one (a late one-point game fell from 67 to 57), so your players' Fantasy score is now added on top of Classic at the slider's weight, capped at 100: their games pull ahead when they matter and can never sink below a game without them. The same review stopped Blowouts paying the postseason boost, made a scoring rule changed mid-game rescore both sides instead of reading as points just scored, counted players missing from a posted lineup or listed out as inactive, fetched hockey situations only for the NHL and only on its own poll, and halved what each history snapshot costs in session storage.
+
 ## The popup draws whichever mode scored the game — 2026-10-03
 
 The breakdown card, the signal chart and the walkthrough now draw the active mode's own signals with their own names and colours from one table in `packages/ui/src/components/scoringModeMeta.ts`, boost rows come from the score's own list, and reasons are translated from their keys instead of being read back out of English. The PowerScore chart shades the stretches where a moment boost was paying, and Blowouts games get a lead tracker; a Classic score sent with its breakdown renders exactly as it did before, measured row by row.

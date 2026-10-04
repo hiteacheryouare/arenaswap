@@ -59,6 +59,13 @@ const isScoredItem = (value: unknown): value is { id: string; points: number; ce
 	isObjectRecord(value) && typeof value.id === 'string' && isFiniteNumber(value.points)
 );
 
+const isBlendResult = (value: unknown): value is ScoreBreakdown['blend'] => (
+	isObjectRecord(value)
+	&& (value.kind === 'floor' || value.kind === 'mix' || value.kind === 'boost')
+	&& isFiniteNumber(value.weight) && isFiniteNumber(value.ownTotal) && isFiniteNumber(value.classicTotal)
+	&& (value.floorApplied === undefined || typeof value.floorApplied === 'boolean')
+);
+
 // Validated whole or dropped whole: half a breakdown would draw a chart that disagrees with itself.
 const normalizeBreakdown = (value: unknown): ScoreBreakdown | undefined => {
 	if (!isObjectRecord(value) || typeof value.modeId !== 'string') return undefined;
@@ -75,6 +82,7 @@ const normalizeBreakdown = (value: unknown): ScoreBreakdown | undefined => {
 		scaledSubtotal: isFiniteNumber(value.scaledSubtotal) ? value.scaledSubtotal : 0,
 		signalCeiling: isFiniteNumber(value.signalCeiling) ? value.signalCeiling : 0,
 		...(isFiniteNumber(value.classicTotal) ? { classicTotal: value.classicTotal } : {}),
+		...(isBlendResult(value.blend) ? { blend: value.blend } : {}),
 	};
 };
 

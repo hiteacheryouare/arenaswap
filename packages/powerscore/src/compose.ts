@@ -7,6 +7,7 @@ import { getGameProgress, isPlayFrozen, scoreMargin } from './progress';
 import { renderReasonsEnglish } from './reasons';
 import { computeWinProbVarianceScore } from './winProbability';
 import type {
+	BlendResult,
 	ClassicBlend,
 	Game,
 	PowerScore,
@@ -126,10 +127,17 @@ const runMode = (mode: PowerScoreMode, input: SignalInput, disabledSignals?: rea
 	};
 };
 
-const blendWithClassic = (own: number, classic: number, blend: ClassicBlend): number => {
-	if (blend.kind === 'floor') return Math.max(own, Math.round(clamp(blend.factor, 0, 1) * classic));
+const blendWithClassic = (own: number, classic: number, blend: ClassicBlend): { total: number; result: BlendResult } => {
+	if (blend.kind === 'floor') {
+		const factor = clamp(blend.factor, 0, 1);
+		const floor = Math.round(factor * classic);
+		return { total: Math.max(own, floor), result: { kind: 'floor', weight: factor, ownTotal: own, classicTotal: classic, floorApplied: floor > own } };
+	}
 	const weight = clamp(blend.weight, 0, 1);
-	return Math.round(weight * own + (1 - weight) * classic);
+	const total = blend.kind === 'boost'
+		? Math.min(scoreMaxTotal, classic + Math.round(weight * own))
+		: Math.round(weight * own + (1 - weight) * classic);
+	return { total, result: { kind: blend.kind, weight, ownTotal: own, classicTotal: classic } };
 };
 
 const nonNegative = (value: number | undefined): number => (isFiniteNumber(value) ? Math.max(0, Math.round(value)) : 0);
@@ -150,7 +158,7 @@ const frozenScore = (game: Game<string>, mode: PowerScoreMode, options: ScoreOpt
 		...(options.favoriteTeamCount !== undefined ? [{ id: 'favoriteBoost', points: 0, meta: { teams: nonNegative(options.favoriteTeamCount) } }] : []),
 		...(options.gameBoost !== undefined ? [{ id: 'gameBoost', points: 0 }] : []),
 		...mode.boosts.map(boost => ({ id: boost.id, points: 0 })),
-		...(options.postseasonBoostPoints !== undefined ? [{ id: 'postseasonBoost', points: 0 }] : []),
+		...(options.postseasonBoostPoints !== undefined && mode.paysPostseason !== false ? [{ id: 'postseasonBoost', points: 0 }] : []),
 	],
 	reasons: [],
 	reason: '',
@@ -175,12 +183,12 @@ export const scoreGame = (game: Game<string>, context: ScoringContext = {}, opti
 
 	const blend = mode === classicMode ? undefined : (options.classicBlend ?? mode.classicBlend);
 	const classicRun = blend ? runMode(classicMode, input, options.classicDisabledSignals) : undefined;
-	const combinedTotal = blend && classicRun
-		? blendWithClassic(run.automaticTotal, classicRun.automaticTotal, blend)
-		: run.automaticTotal;
+	const blended = blend && classicRun ? blendWithClassic(run.automaticTotal, classicRun.automaticTotal, blend) : undefined;
+	const combinedTotal = blended?.total ?? run.automaticTotal;
+	const paysPostseason = mode.paysPostseason !== false;
 
 	const favoriteBoost = nonNegative((options.favoriteTeamCount ?? 0) * (options.favoriteBoostPoints ?? 0));
-	const postseasonBoost = nonNegative((options.postseasonBoostPoints ?? 0) * postseasonBoostShare(game.postseasonRound));
+	const postseasonBoost = paysPostseason ? nonNegative((options.postseasonBoostPoints ?? 0) * postseasonBoostShare(game.postseasonRound)) : 0;
 	const gameBoost = nonNegative(options.gameBoost);
 	const automaticTotal = Math.min(scoreMaxTotal, combinedTotal + favoriteBoost + postseasonBoost);
 
@@ -188,7 +196,7 @@ export const scoreGame = (game: Game<string>, context: ScoringContext = {}, opti
 		...(options.favoriteTeamCount !== undefined ? [{ id: 'favoriteBoost', points: favoriteBoost, meta: { teams: nonNegative(options.favoriteTeamCount) } }] : []),
 		...(options.gameBoost !== undefined ? [{ id: 'gameBoost', points: gameBoost }] : []),
 		...run.boosts,
-		...(options.postseasonBoostPoints !== undefined ? [{ id: 'postseasonBoost', points: postseasonBoost }] : []),
+		...(options.postseasonBoostPoints !== undefined && paysPostseason ? [{ id: 'postseasonBoost', points: postseasonBoost }] : []),
 	];
 
 	const signalReasons = run.reasons.length > 0 ? run.reasons : [{ key: 'fallback' }];
@@ -211,6 +219,7 @@ export const scoreGame = (game: Game<string>, context: ScoringContext = {}, opti
 		...(run.winProbabilityVariance !== undefined ? { winProbabilityVariance: run.winProbabilityVariance } : {}),
 		baseTotal: run.baseTotal,
 		...(classicRun ? { classicTotal: classicRun.automaticTotal } : {}),
+		...(blended ? { blend: blended.result } : {}),
 		boosts,
 		reasons,
 		reason: renderReasonsEnglish(reasons),

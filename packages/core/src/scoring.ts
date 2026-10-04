@@ -177,7 +177,7 @@ export const scoreOptionsFor = (game: Game, prefs: ScoringPrefs, gameBoost: numb
 		mode,
 		disabledSignals: mode === 'classic' ? prefs.disabledSignals : (prefs.modeDisabledSignals?.[mode] ?? []),
 		classicDisabledSignals: prefs.disabledSignals,
-		...(mode === 'fantasy' && prefs.fantasyBlend !== undefined ? { classicBlend: { kind: 'mix', weight: prefs.fantasyBlend / 100 } } : {}),
+		...(mode === 'fantasy' && prefs.fantasyBlend !== undefined ? { classicBlend: { kind: 'boost', weight: prefs.fantasyBlend / 100 } } : {}),
 		favoriteTeamCount: getFavoriteTeamCount(game, favoriteTeamIds),
 		favoriteBoostPoints: prefs.favoriteTeamBonusPoints,
 		postseasonBoostPoints: prefs.postseasonBoostPoints,
@@ -202,6 +202,7 @@ export const toLiveScore = (score: PowerScore): LiveScore => ({
 		scaledSubtotal: score.scaledSubtotal,
 		signalCeiling: score.signalCeiling,
 		...(score.classicTotal !== undefined ? { classicTotal: score.classicTotal } : {}),
+		...(score.blend ? { blend: score.blend } : {}),
 	},
 });
 

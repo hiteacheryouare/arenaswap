@@ -98,13 +98,19 @@ const tint = (hex: string, alpha: number): string => {
 };
 
 // The moment boost paying most at this reading. One per reading, so two at once shade one stretch.
+// These last for innings or a whole game. Shading them by size would hide every short live moment
+// inside them, so they only shade a stretch where nothing live is happening.
+const contextBoostIds: ReadonlySet<string> = new Set(['noHitter', 'upsetWatch', 'stakes']);
+
 const momentOf = (snapshot: PowerScoreSnapshot): BoostId | undefined => {
 	let strongest: BoostId | undefined;
-	let strongestPoints = 0;
+	let strongestRank = 0;
 	for (const [id, points] of Object.entries(snapshot.boosts ?? {})) {
-		if (!isBoostId(id) || !boostPresentation[id].moment || points <= strongestPoints) continue;
+		if (!isBoostId(id) || !boostPresentation[id].moment || points <= 0) continue;
+		const rank = (contextBoostIds.has(id) ? 0 : 1000) + points;
+		if (rank <= strongestRank) continue;
 		strongest = id;
-		strongestPoints = points;
+		strongestRank = rank;
 	}
 	return strongest;
 };

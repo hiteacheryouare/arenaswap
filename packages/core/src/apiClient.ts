@@ -1176,7 +1176,8 @@ export const fetchCompetitionSituation = async (game: Pick<Game, 'id' | 'league'
 	const config = leagueConfigMap[game.league];
 	const [sport, leaguePath] = config.espnPath.split('/');
 	await takeRequestSlot();
-	const res = await fetch(`${coreApiBase}/${sport}/leagues/${leaguePath}/events/${game.id}/competitions/${game.id}/situation`, { headers: { Accept: 'application/json' } });
+	// Its replies are cacheable for seconds and stale for hours, so it's always asked afresh.
+	const res = await fetch(`${coreApiBase}/${sport}/leagues/${leaguePath}/events/${game.id}/competitions/${game.id}/situation`, { headers: { Accept: 'application/json' }, cache: 'no-cache' });
 	if (!res.ok) throw new Error(`Failed to fetch the situation for ${game.id}: HTTP ${res.status}`);
 	return await res.json();
 };

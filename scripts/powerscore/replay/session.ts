@@ -64,7 +64,11 @@ export const createReplaySession = (scorers: Scorer[], prefs: Pick<UserPreferenc
 			return null;
 		}
 		if (event.kind === 'situation') {
-			liveExtras.ingestSituation(event.gameId, event.raw);
+			// The same gate background.ts applies before fetching, so an empty-net streak counts the
+			// polls the extension would actually have seen.
+			const game = liveByLeague.get(event.league)?.find(live => live.id === event.gameId);
+			const margin = game ? Math.abs(game.homeTeam.score - game.awayTeam.score) : Infinity;
+			if (game && game.league === 'nhl' && !game.intermission && !game.delayed && margin <= 3) liveExtras.ingestSituation(event.gameId, event.raw);
 			return null;
 		}
 		if (event.kind === 'standings') {

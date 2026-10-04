@@ -367,7 +367,21 @@ export type ClassicBlend =
 	// total = max(own, factor × classic): the mode leads, ordinary games stay eligible below it.
 	| { kind: 'floor'; factor: number }
 	// total = weight × own + (1 − weight) × classic.
-	| { kind: 'mix'; weight: number };
+	| { kind: 'mix'; weight: number }
+	// total = classic + weight × own, capped at 100: the mode can only lift a game, never sink it.
+	| { kind: 'boost'; weight: number };
+
+// How a blended mode reached its total, so a breakdown can show the arithmetic.
+export interface BlendResult {
+	kind: ClassicBlend['kind'];
+	// The floor factor or the weight.
+	weight: number;
+	// The mode's own total and Classic's, each with their own boosts, before blending.
+	ownTotal: number;
+	classicTotal: number;
+	// For a floor, whether Classic's share won.
+	floorApplied?: boolean;
+}
 
 export interface PowerScoreMode {
 	id: string;
@@ -383,6 +397,9 @@ export interface PowerScoreMode {
 	usesStallPenalty: boolean;
 	usesWinProbability: boolean;
 	classicBlend?: ClassicBlend;
+	// False for a mode that grades something other than the result, where a playoff game is no more
+	// worth watching. Defaults to true.
+	paysPostseason?: boolean;
 	// The mode has nothing to say about this game (e.g. Fantasy with no rostered player in it), so
 	// the game is scored as Classic.
 	appliesTo?: (game: Game<string>, context: ScoringContext) => boolean;
@@ -445,6 +462,7 @@ export interface PowerScore {
 	baseTotal: number;
 	// Classic's own total when the mode blends with it or uses it as a floor.
 	classicTotal?: number;
+	blend?: BlendResult;
 	boosts: ScoredBoost[];
 	reasons: ReasonFragment[];
 	// The reasons in English, joined. For display where the caller has no translations.

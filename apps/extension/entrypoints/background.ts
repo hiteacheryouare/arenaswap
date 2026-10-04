@@ -349,13 +349,17 @@ export default defineBackground(() => {
 				postseasonBoost: score.postseasonBoost ?? 0,
 				stalled: score.stalled ?? false,
 				reason: score.reason,
+				// Classic's signals are already the flat fields above, and only the newest snapshot keeps its
+				// reasons: session storage holds every live game's history and is small on older Chrome.
 				...(score.breakdown ? {
 					modeId: score.breakdown.modeId,
-					signals: Object.fromEntries(score.breakdown.signals.map(signal => [signal.id, signal.points])),
+					...(score.breakdown.modeId === 'classic' ? {} : { signals: Object.fromEntries(score.breakdown.signals.map(signal => [signal.id, signal.points])) }),
 					boosts: Object.fromEntries(score.breakdown.boosts.filter(boost => boost.points > 0).map(boost => [boost.id, boost.points])),
 					reasons: score.breakdown.reasons,
 				} : {}),
 			});
+			const previous = snapshots[snapshots.length - 2];
+			if (previous?.reasons) delete previous.reasons;
 			powerScoreHistory.set(score.gameId, retainSnapshots(snapshots, now - getHistoryWindowMsForGame(game), prefs.keepFinalGames));
 		});
 	};
@@ -816,7 +820,7 @@ export default defineBackground(() => {
 			favoriteTeamIds,
 		)));
 		currentScores = scores;
-		refreshHockeySituations(freshGames);
+		if (changedLeagueId !== null) refreshHockeySituations(freshGames);
 		updateHistory(freshGames);
 		updatePowerScoreHistory(liveGames, scores, changedLeagueId);
 		persistHistoryToSession();
@@ -1034,13 +1038,15 @@ export default defineBackground(() => {
 		return inFlightRefresh;
 	};
 
-	// One request per game, so this deliberately runs far slower than the scoreboard poll — a
-	// win-probability line moves on the scale of possessions, not seconds.
 	// Fetched after scoring and read on the next poll: the power play and empty net it reports last
-	// minutes, and a game past its blowout margin has no use for either.
+	// minutes, and a game past its blowout margin has no use for either. Only from the league's own
+	// poll, so the empty-net check counts polls rather than re-scores, and only the NHL: college
+	// hockey's situation carries neither flag.
 	const refreshHockeySituations = (freshGames: Game[]) => {
+		if (demoMode) return;
+		const blowoutMargin = sportTypeConfigMap.hockey?.closenessMargins[2] ?? 3;
 		for (const game of freshGames) {
-			if (game.sportType !== 'hockey' || isPlayFrozen(game) || Math.abs(game.homeTeam.score - game.awayTeam.score) > 3) continue;
+			if (game.league !== 'nhl' || isPlayFrozen(game) || Math.abs(game.homeTeam.score - game.awayTeam.score) > blowoutMargin) continue;
 			fetchCompetitionSituation(game)
 				.then(situation => liveExtras.ingestSituation(game.id, situation))
 				.catch((err: unknown) => logWarn(`Failed to fetch the situation for ${game.id}.`, err));
@@ -1050,7 +1056,8 @@ export default defineBackground(() => {
 	// Standings move only when games end, so half an hour is plenty.
 	const refreshStandings = (liveGames: Game[]) => {
 		const now = Date.now();
-		const leagues = new Set(liveGames.map(game => game.league).filter(hasStandingsRaces));
+		// Races only count in the regular season.
+		const leagues = new Set(liveGames.filter(game => !game.isPostseason).map(game => game.league).filter(hasStandingsRaces));
 		for (const league of leagues) {
 			if (now - (standingsFetchedAt.get(league) ?? 0) < standingsRefreshMs) continue;
 			standingsFetchedAt.set(league, now);
@@ -1064,9 +1071,12 @@ export default defineBackground(() => {
 	// and its closing line was read the first time.
 	const summaryDue = (game: Game, now: number): boolean => {
 		const blowout = Math.abs(game.homeTeam.score - game.awayTeam.score) > (sportTypeConfigMap[game.sportType]?.closenessMargins[2] ?? Infinity);
-		return !blowout || now - (summaryFetchedAt.get(game.id) ?? 0) >= blowoutSummaryIntervalMs;
+		// Garbage time is when fantasy points pile up, so a game with a rostered player keeps the pace.
+		return !blowout || liveExtras.hasRosteredPlayer(game) || now - (summaryFetchedAt.get(game.id) ?? 0) >= blowoutSummaryIntervalMs;
 	};
 
+	// One request per game, so this deliberately runs far slower than the scoreboard poll — a
+	// win-probability line moves on the scale of possessions, not seconds.
 	const refreshWinProbabilities = async (): Promise<void> => {
 		const liveGames = games.filter(g => g.status === 'in');
 

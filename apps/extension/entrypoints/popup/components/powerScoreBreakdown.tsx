@@ -124,6 +124,13 @@ const PowerScoreBreakdown = ({
 	const showsStall = clockBased && (mode?.usesStallPenalty ?? true);
 	const blendTooltipKey = mode && 'blendTooltipKey' in mode ? mode.blendTooltipKey : undefined;
 	const classicTotal = breakdown?.classicTotal;
+	const blend = breakdown?.blend;
+	const blendPercent = blend ? Math.round(blend.weight * 100) : 0;
+	// A floor only shows when it won; a boost adds the mode's weighted share on top of Classic.
+	const showsClassicRow = classicTotal !== undefined && blendTooltipKey !== undefined && (blend?.kind !== 'floor' || blend.floorApplied === true);
+	const classicRowValue = blend?.kind === 'floor'
+		? `${blend.classicTotal} × ${blendPercent}% = ${Math.round(blend.classicTotal * blend.weight)}`
+		: blend?.kind === 'mix' ? `${blend.classicTotal} × ${100 - blendPercent}%` : `${classicTotal}`;
 
 	const rawSignalsSum = signalRows.reduce((total, row) => total + row.points, 0);
 	const scaledSubtotal = breakdown?.scaledSubtotal ?? signalsSubtotal;
@@ -220,14 +227,25 @@ const PowerScoreBreakdown = ({
 					</span>
 				</div>
 			)}
-			{classicTotal !== undefined && blendTooltipKey && (
+			{showsClassicRow && (
 				<div className='powerscore-breakdown-row'>
 					<span className='d-flex align-items-center gap-1'>
 						<FactorIcon icon='layers-half' color={unknownFactorColor} />
 						{i18n.t('powerScore.blendClassic')}
 						<SettingTooltipIcon text={i18n.t(blendTooltipKey)} label={i18n.t('powerScore.blendClassic')} />
 					</span>
-					<span className='powerscore-breakdown-value'>{classicTotal}</span>
+					<span className='powerscore-breakdown-value'>{classicRowValue}</span>
+				</div>
+			)}
+			{blend && blend.kind !== 'floor' && mode && (
+				<div className='powerscore-breakdown-row'>
+					<span className='d-flex align-items-center gap-1'>
+						<FactorIcon icon='layers-half' color={unknownFactorColor} />
+						{`${i18n.t(mode.nameKey)} × ${blendPercent}%`}
+					</span>
+					<span className='powerscore-breakdown-value'>
+						{blend.kind === 'boost' ? `+${Math.round(blend.ownTotal * blend.weight)}` : `${blend.ownTotal} × ${blendPercent}%`}
+					</span>
 				</div>
 			)}
 			{boostRows.map(boost => {

@@ -8,7 +8,7 @@
 - [i18n review contract](review_i18n_contract.md) — how to verify keys against locales/en.json and where the key check is blind
 - [Known false positives](project_review_false_positives.md) — i18n substitution, lowercase JSX helpers, packages/ui "duplication", the stale gc2TeamLogo finding
 - [PowerScore reason strings](project_powerscore_reason_strings.md) — English-only by design inside the npm package; not an i18n miss
-- [PowerScore failure map](review_powerscore_failure_map.md) — v3 seams: parity sweep skips core toScoringGame/legacy shape, English reason round-trip, unknown-league fallback, README drift
+- [PowerScore failure map](review_powerscore_failure_map.md) — v3 seams: core adapter, mode blends (Fantasy/Blowouts math), in-memory liveExtras, reason-key locale parity
 - [Review targets and commands](reference_review_targets.md) — verification commands, reading refs without touching the shared checkout
 - [Docs site + design system map](review_docs_site_map.md) — token shadowing, "compute don't hardcode" for PowerScore numbers, hand-maintained font dirs, where dead code collects
 - [History window footgun](review_history_window_footgun.md) — score/PowerScore history is a 5–20 min rolling window; any "whole game" history assumption is dead on arrival

@@ -39,6 +39,15 @@ export const rosterInGame = (roster: readonly FantasyRosterEntry[], game: Pick<G
 	roster.filter(entry => entry.league === game.league && (entry.teamId === game.homeTeam.id || entry.teamId === game.awayTeam.id))
 );
 
+const InjuriesSchema = z.object({
+	injuries: z.catch(z.optional(z.array(z.object({
+		injuries: z.optional(z.array(z.object({
+			type: z.optional(z.object({ name: z.optional(z.string()) })),
+			athlete: z.optional(z.object({ id: z.optional(z.union([z.string(), z.number()])) })),
+		}))),
+	}))), undefined),
+});
+
 const BoxScorePlayersSchema = z.object({
 	boxscore: z.catch(z.optional(z.object({
 		players: z.optional(z.array(z.object({
@@ -146,17 +155,27 @@ const readRow = (category: string | undefined, keys: readonly string[], stats: r
 export interface FantasyBoxScore {
 	// Neutral stat lines by athlete id, plus `dst:<teamId>` for each team's defense.
 	lines: Map<string, StatLine>;
-	// Athletes the box score marks as not playing.
+	// Athletes the box score marks as not playing, or the injury report lists as out.
 	inactive: Set<string>;
+	// Teams whose box score already lists players: anyone of theirs missing from it isn't playing.
+	teamsWithLineups: Set<string>;
 }
 
 export const readFantasyBoxScore = (summary: unknown, game: Pick<Game, 'homeTeam' | 'awayTeam' | 'sportType'>): FantasyBoxScore => {
 	const lines = new Map<string, StatLine>();
 	const inactive = new Set<string>();
+	const teamsWithLineups = new Set<string>();
+	const injuries = InjuriesSchema.safeParse(summary);
+	for (const team of (injuries.success ? injuries.data.injuries : undefined) ?? []) {
+		for (const injury of team.injuries ?? []) {
+			if (injury.type?.name === 'INJURY_STATUS_OUT' && injury.athlete?.id !== undefined) inactive.add(String(injury.athlete.id));
+		}
+	}
 	const parsed = BoxScorePlayersSchema.safeParse(summary);
-	if (!parsed.success) return { lines, inactive };
+	if (!parsed.success) return { lines, inactive, teamsWithLineups };
 	for (const team of parsed.data.boxscore?.players ?? []) {
 		const teamId = String(team.team?.id ?? '');
+		if (teamId && (team.statistics ?? []).some(category => (category.athletes ?? []).length > 0)) teamsWithLineups.add(teamId);
 		const defense: StatLine = {};
 		for (const category of team.statistics ?? []) {
 			const keys = category.keys ?? [];
@@ -174,5 +193,5 @@ export const readFantasyBoxScore = (summary: unknown, game: Pick<Game, 'homeTeam
 			lines.set(`dst:${teamId}`, { ...defense, pointsAllowed: opponent.score });
 		}
 	}
-	return { lines, inactive };
+	return { lines, inactive, teamsWithLineups };
 };

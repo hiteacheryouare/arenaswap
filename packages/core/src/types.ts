@@ -13,6 +13,7 @@ import type {
 	ReasonFragment,
 	ScoredBoost,
 	ScoredSignal,
+	BlendResult,
 } from 'powerscore';
 
 export type ScoringModeChoice = BuiltInModeId | 'custom';
@@ -33,6 +34,7 @@ export type {
 	ReasonFragment,
 	ScoredBoost,
 	ScoredSignal,
+	BlendResult,
 };
 
 // Baseball pitchers and hockey goalies arrive in the same `probables` structure, so this is not
@@ -407,6 +409,7 @@ export interface ScoreBreakdown {
 	signalCeiling: number;
 	// Classic's total when the mode blends with it or uses it as a floor.
 	classicTotal?: number;
+	blend?: BlendResult;
 }
 
 // What the background hands the popup: the flat 2.x fields every screen already reads, plus the

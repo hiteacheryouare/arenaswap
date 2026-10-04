@@ -203,8 +203,9 @@ interface GameExtras {
 	boxLeadChanges: { ts: number; count: number }[];
 	powerPlay?: boolean;
 	emptyNetPolls: number;
-	// Rostered players' running fantasy totals, and every rise as an event.
-	fantasyTotals: Map<string, number>;
+	// Rostered players' latest box-score lines, kept as stats rather than points so a rule changed
+	// mid-game rescores both sides of the comparison instead of reading as points just scored.
+	fantasyLines: Map<string, Record<string, number>>;
 	fantasyEvents: Map<string, { at: number; points: number }[]>;
 	fantasyInactive: Set<string>;
 }
@@ -229,6 +230,7 @@ const recentLeadChanges = (game: Game, state: GameExtras, now: number): ScoringC
 
 export const createLiveExtras = () => {
 	const games = new Map<string, GameExtras>();
+	const forgotten = new Set<string>();
 	const stakesByLeague = new Map<LeagueId, Map<string, TeamStakes>>();
 	let roster: FantasyRosterEntry[] = [];
 	let fantasyScoring: FantasyScoringOverrides = {};
@@ -243,7 +245,7 @@ export const createLiveExtras = () => {
 	const stateOf = (gameId: string): GameExtras => {
 		let state = games.get(gameId);
 		if (!state) {
-			state = { boxLeadChanges: [], emptyNetPolls: 0, fantasyTotals: new Map(), fantasyEvents: new Map(), fantasyInactive: new Set() };
+			state = { boxLeadChanges: [], emptyNetPolls: 0, fantasyLines: new Map(), fantasyEvents: new Map(), fantasyInactive: new Set() };
 			games.set(gameId, state);
 		}
 		return state;
@@ -255,15 +257,23 @@ export const createLiveExtras = () => {
 		const sport = fantasySportOf(game.sportType);
 		if (players.length === 0 || !sport) return;
 		const box = readFantasyBoxScore(summary, game);
-		state.fantasyInactive = box.inactive;
+		const rules = fantasyScoring[sport];
+		// Football box scores list only players with a stat, so absence means nothing there; elsewhere
+		// a player missing from a lineup that's already out isn't playing.
+		const absent = players.filter(player => (
+			sport !== 'football' && player.position !== 'DST' && box.teamsWithLineups.has(player.teamId) && !box.lines.has(player.athleteId)
+		));
+		state.fantasyInactive = new Set([...box.inactive, ...absent.map(player => player.athleteId)]);
 		for (const player of players) {
 			const id = player.position === 'DST' ? `dst:${player.teamId}` : player.athleteId;
 			const line = box.lines.get(id);
 			if (!line) continue;
-			const total = computeFantasyPoints(sport, line, fantasyScoring[sport]);
-			const previous = state.fantasyTotals.get(id);
-			state.fantasyTotals.set(id, total);
-			if (previous === undefined || total === previous) continue;
+			const previousLine = state.fantasyLines.get(id);
+			state.fantasyLines.set(id, line);
+			if (!previousLine) continue;
+			const total = computeFantasyPoints(sport, line, rules);
+			const previous = computeFantasyPoints(sport, previousLine, rules);
+			if (total === previous) continue;
 			const events = [...(state.fantasyEvents.get(id) ?? []), { at: ts, points: total - previous }].slice(-20);
 			state.fantasyEvents.set(id, events);
 		}
@@ -284,6 +294,8 @@ export const createLiveExtras = () => {
 	};
 
 	const ingestSituation = (gameId: string, situation: unknown) => {
+		// A reply that lands after the game was forgotten mustn't bring it back.
+		if (forgotten.has(gameId)) return;
 		const state = stateOf(gameId);
 		const { powerPlay, emptyNet } = readHockeySituation(situation);
 		state.powerPlay = powerPlay;
@@ -330,9 +342,14 @@ export const createLiveExtras = () => {
 		};
 	};
 
-	const forget = (gameId: string) => games.delete(gameId);
+	const forget = (gameId: string) => {
+		games.delete(gameId);
+		forgotten.add(gameId);
+	};
 
-	return { ingestSummary, ingestSituation, ingestStandings, contextFor, forget, setRoster, setFantasyScoring };
+	const hasRosteredPlayer = (game: Game): boolean => rosterInGame(roster, game).length > 0;
+
+	return { ingestSummary, ingestSituation, ingestStandings, contextFor, forget, setRoster, setFantasyScoring, hasRosteredPlayer };
 };
 
 export type LiveExtras = ReturnType<typeof createLiveExtras>;

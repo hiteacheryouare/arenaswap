@@ -1,6 +1,6 @@
 ---
 name: review-powerscore-failure-map
-description: Where packages/powerscore breaks — v3 pipeline seams (core toScoringGame, legacy flat shape, English reason round-trip), soccer "overtime" strings, README drift, unknown-league fallback
+description: Where packages/powerscore breaks — v3 seams (core adapter, mode blends, in-memory liveExtras state, locale parity of reason keys), soccer "overtime" strings, README drift, unknown-league fallback
 metadata:
   type: project
 ---
@@ -21,10 +21,21 @@ where those do not look.
 - **The parity sweep only pins the engine, not core's adapter.** It calls `scoreGame` directly with
   known leagues, so `toScoringGame` field mapping, `toLegacyPowerScoreResult`, unknown-league
   fallbacks, and the frozen-game legacy fields are untested by it. Check those by hand.
-- **Reasons still round-trip through English.** The popup's `translateReason` regex-parses the
-  English `reason` string; boost labels exist twice (`scorerTunables.reasons.boosts` in powerscore
-  and `boostLabels` in `apps/extension/utils/powerScoreReason.ts`). Any label change must touch both
-  until the popup reads structured `reasons`.
+- **Reasons: the popup now translates structured `breakdown.reasons` keys** (b36ffe59), so the
+  English round-trip is only the fallback for scores without a breakdown. New reason keys must be
+  mapped in `apps/extension/utils/powerScoreReason.ts` AND translated in all 12 locales; PS3 shipped
+  75 en-only keys (mixed-language reason lines like "Gleichstand, Mahomes has the ball").
+- **Mode blends are where PS3 math goes wrong, not the boost files.** The boosts matched the analyst
+  spec (`temporary/powerscore3/analystSpec.md`) line by line on 2026-10-03. The defects were in
+  composition: Fantasy's 0.6/0.4 mix plus "no rostered player → plain Classic" makes a game WITH
+  your player score below an identical game without one (verified: 57 vs 67, late close NBA);
+  `compose.ts` adds the postseason boost in every mode though the spec drops it from Blowouts. For
+  any blend/floor change, score the same game with and without the mode's trigger and compare.
+- **`createLiveExtras` (core) is in-memory, per worker.** Anything "first seen" (pregame line,
+  fantasy baselines, box lead-change baseline) resets on every worker start, and anything derived
+  from a user setting (fantasy scoring overrides) must re-baseline when the setting changes or it
+  reads as a fresh event. Situation fetches ride `afterFetch`, which also runs on popup refresh,
+  game-boost clicks and demo ticks, so "per poll" counters there count fetches, not polls.
 - **Unknown league fallback changed in 3.x:** v2 fell back to NBA config; `resolveLeagueConfig` now
   falls back by sport (soccer → MLS). Affects 2.x wrappers (`computePowerScore`,
   `computeGameProgress`) for npm consumers with their own league ids.
