@@ -16,11 +16,18 @@ const situationText = (game: Game): string => {
 	if (game.sportType === 'baseball' || game.sportType === 'softball') {
 		const r = game.baseRunners;
 		const runners = r ? `${r.first ? '1' : '-'}${r.second ? '2' : '-'}${r.third ? '3' : '-'}` : '---';
-		return `${runners} ${game.bso?.outs ?? '?'}out`;
+		const hits = game.homeTeam.hits !== undefined ? ` H ${game.awayTeam.hits ?? '?'}-${game.homeTeam.hits}` : '';
+		return `${runners} ${game.bso?.outs ?? '?'}out${hits}`;
 	}
 	if (game.sportType === 'football' && game.down) {
 		const side = game.possessionTeamId === game.homeTeam.id ? game.homeTeam.abbreviation : game.possessionTeamId === game.awayTeam.id ? game.awayTeam.abbreviation : '?';
-		return `${side} ${game.down}&${game.distance ?? '?'} @${game.yardLine ?? '?'}${game.isRedZone ? ' RZ' : ''}`;
+		const toGo = game.yardLine === undefined || side === '?' ? '?' : game.possessionTeamId === game.homeTeam.id ? 100 - game.yardLine : game.yardLine;
+		const timeouts = `TO ${game.awayTeam.timeouts ?? '?'}-${game.homeTeam.timeouts ?? '?'}`;
+		return `${side} ${game.down}&${game.distance ?? '?'}, ${toGo} to go${game.isRedZone ? ' RZ' : ''} ${timeouts}`;
+	}
+	if (game.redCardEvents?.length) {
+		const cards = game.redCardEvents.map(card => `${card.teamId === game.homeTeam.id ? game.homeTeam.abbreviation : game.awayTeam.abbreviation} red ${Math.round(card.minute)}'`);
+		return cards.join(' ');
 	}
 	return '';
 };
@@ -29,5 +36,6 @@ const rank = (team: Game['homeTeam']) => (team.rank ? `#${team.rank} ` : '');
 
 export const describeGame = (game: Game | undefined): string => {
 	if (!game) return '(not live)';
-	return `${game.league} ${rank(game.awayTeam)}${game.awayTeam.abbreviation} ${game.awayTeam.score} @ ${rank(game.homeTeam)}${game.homeTeam.abbreviation} ${game.homeTeam.score} ${clockText(game)} ${situationText(game)}`.trim();
+	const series = game.series?.kind === 'playoff' ? ` [series ${game.series.awayWins}-${game.series.homeWins} of ${game.series.bestOf}]` : '';
+	return `${game.league}${series} ${rank(game.awayTeam)}${game.awayTeam.abbreviation} ${game.awayTeam.score} @ ${rank(game.homeTeam)}${game.homeTeam.abbreviation} ${game.homeTeam.score} ${clockText(game)} ${situationText(game)}`.trim();
 };

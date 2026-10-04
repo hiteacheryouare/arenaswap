@@ -8,6 +8,7 @@
 //   --labels <file>      labelled moments to score against (default: fixtures/labels/*.json)
 //   --modes a,b          v3 modes to run beside v2 (default: classic)
 //   --timeline <file>    write a minute-by-minute slate for labelling
+//   --blind              leave the scores out of the timeline, so labels can't echo a scorer
 //   --diff               list the stretches where the first two scorers disagree on the top game
 //   --json <file>        write the scorecard as JSON
 import { mkdirSync, readdirSync, readFileSync, writeFileSync, existsSync } from 'node:fs';
@@ -170,8 +171,14 @@ const main = async () => {
 			if (minute === lastMinute || (next && Math.floor(next.ts / 60_000) === minute)) continue;
 			lastMinute = minute;
 			lines.push(`\n== ${new Date(frame.ts).toISOString()} (${formatTime(frame.ts)})`);
-			const order = frame.rankings.get(scorers[scorers.length - 1]!.name)!;
+			const order = flag('blind')
+				? frame.rankings.get(scorers[0]!.name)!.toSorted((a, b) => describeGame(frame.games.get(a.gameId)).localeCompare(describeGame(frame.games.get(b.gameId))))
+				: frame.rankings.get(scorers[scorers.length - 1]!.name)!;
 			for (const score of order) {
+				if (flag('blind')) {
+					lines.push(`  ${score.gameId.padEnd(10)} ${describeGame(frame.games.get(score.gameId))}`);
+					continue;
+				}
 				const totals = scorers.map(scorer => `${scorer.name}=${frame.rankings.get(scorer.name)!.find(s => s.gameId === score.gameId)?.total ?? '-'}`).join(' ');
 				const boosts = Object.entries(score.boosts ?? {}).map(([id, points]) => `${id}+${points}`).join(' ');
 				lines.push(`  ${score.gameId.padEnd(10)} ${describeGame(frame.games.get(score.gameId)).padEnd(58)} ${totals}${boosts ? `  [${boosts}]` : ''}`);
