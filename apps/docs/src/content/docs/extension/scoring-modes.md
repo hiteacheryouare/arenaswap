@@ -37,11 +37,13 @@ Closeness turned inside out. A game pays nothing until it's two scores apart, th
 
 Blowouts floors every game at 30% of its Classic score. A close game stays in the running on a night with no beatdown, but never outranks one. Any real beatdown beats the best close game.
 
+Blowouts also skips the postseason boost. A playoff blowout has settled its result, so the round adds nothing.
+
 ### Fantasy
 
 Scores what your players are doing, using a roster you build. It looks at where they are in the game (who has the ball, whether your kicker is in range, who's at bat or pitching), the fantasy points they've scored lately, and how many of them are playing in it.
 
-Fantasy is blended with Classic, 60% Fantasy and 40% Classic by default. That way a dead game with one of your players in it doesn't beat a classic without one. You can move the blend toward Fantasy to make your roster count for more, or toward Classic to make it a tiebreaker.
+Fantasy is added on top of Classic. By default, 60% of a game's Fantasy score is added to its Classic score. That means a game with one of your players in it can only rise, and a game without one scores as plain Classic. Raise the blend to make your roster count for more, or lower it to make it a tiebreaker.
 
 A game with none of your players in it has nothing for Fantasy to say, so it's scored as Classic.
 
@@ -76,7 +78,7 @@ Each mode keeps its own list of signals you can turn off, the same way Classic a
 Some points come from you, not from the game, and they apply in every mode:
 
 - **Favorite team bonus**, for each favorited team in the game. See [favorite teams](/arenaswap/docs/extension/favorite-teams/).
-- **Postseason boost**, for playoff and knockout games.
+- **Postseason boost**, for playoff and knockout games. Blowouts is the exception, since a settled result isn't worth chasing.
 - **Standby Stream**, which compares the same 0 to 100 score against your threshold. See [Standby Stream](/arenaswap/docs/extension/standby-stream/).
 
 ## Where the numbers come from

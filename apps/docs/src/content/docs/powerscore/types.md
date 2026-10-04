@@ -219,6 +219,7 @@ interface PowerScore {
 | `winProbabilityVariance?` | −5 to +5. Absent, not `0`, without enough win-probability data. |
 | `baseTotal` | Signals less the stall deduction plus the modifier, 0 to 100, before any boost. |
 | `classicTotal?` | Classic's own total, when the mode blends with it. |
+| `blend?` | How a blended mode reached its total. See [`BlendResult`](#blendresult). |
 | `boosts` | Every boost the mode pays, at 0 when it isn't paying. Plus `favoriteBoost`, `postseasonBoost`, and `gameBoost` once you've asked for them. |
 | `reasons` | Structured fragments, ready to translate. |
 | `reason` | The same in English, joined with commas. Display text, not an API: it can change wording between versions. Don't match on it. |
@@ -259,6 +260,7 @@ interface PowerScoreMode {
 | `reasonPriority`, `reasonLimit` | Signal ids in the order their reasons are worth reading, and how many reach `reason`. |
 | `usesStallPenalty`, `usesWinProbability` | Whether the stall deduction and the ±5 modifier apply. |
 | `classicBlend` | How the mode combines with Classic. |
+| `paysPostseason?` | `false` withholds the postseason boost in this mode. Defaults to `true`. Blowouts sets it to `false`, since a playoff blowout has settled its result. |
 | `appliesTo` | Returns `false` for a game the mode has nothing to say about, and the game is scored as Classic. |
 
 ### SignalDefinition and BoostDefinition
@@ -299,10 +301,25 @@ What `compute` receives.
 ```ts
 type ClassicBlend =
 	| { kind: 'floor'; factor: number } // total = max(own, factor × classic)
-	| { kind: 'mix'; weight: number };  // total = weight × own + (1 − weight) × classic
+	| { kind: 'mix'; weight: number }   // total = weight × own + (1 − weight) × classic
+	| { kind: 'boost'; weight: number }; // total = min(100, classic + weight × own)
 ```
 
-Blowouts uses a floor with a factor of 0.3. Fantasy uses a mix with a weight of 0.6.
+Blowouts uses a floor with a factor of 0.3. Fantasy uses a boost with a weight of 0.6, so your players' games can only rise above their Classic score. The built-in modes don't use `mix`, but it's there for modes of your own.
+
+### BlendResult
+
+```ts
+interface BlendResult {
+	kind: ClassicBlend['kind'];
+	weight: number;         // the floor factor or the weight
+	ownTotal: number;       // the mode's own total, with its boosts, before blending
+	classicTotal: number;   // Classic's, likewise
+	floorApplied?: boolean; // for a floor, whether Classic's share won
+}
+```
+
+`score.blend` carries one when a mode blended with Classic, so a breakdown can show the arithmetic.
 
 ## SportTypeConfig and LeagueConfig
 

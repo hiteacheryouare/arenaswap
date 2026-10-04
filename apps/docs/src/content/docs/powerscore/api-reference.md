@@ -38,8 +38,8 @@ The total is built in a fixed order:
 2. The stall deduction comes off.
 3. The win probability modifier is added (Classic only). The result is clamped to 0 to 100.
 4. The mode's own boosts are added, within their bucket caps, and the total is capped at 100.
-5. If the mode blends with Classic, that happens here.
-6. The favorite and postseason boosts are added, and the total is capped at 100 again.
+5. If the mode blends with Classic (floor, mix, or boost), that happens here.
+6. The favorite and postseason boosts are added, and the total is capped at 100 again. A mode with `paysPostseason: false` skips the postseason boost.
 7. `gameBoost` is added last. It's the only thing allowed past 100.
 
 ```ts

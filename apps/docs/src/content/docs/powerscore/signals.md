@@ -16,7 +16,7 @@ A signal measures one thing about a game and ignores everything else, including 
 
 Pick one with `options.mode`. In the ids as they appear in `score.signals`, that's `closeness`, `lateGame`, `momentum`, `leadChanges`, `comeback`; `blowoutMargin`, `sustained`, `timing`, `pileOn`; and `situation`, `production`, `exposure`.
 
-Blowouts and Fantasy don't replace Classic. Each is blended with it, so a game with nothing to say in the new mode still has a sensible score. [How the modes blend](#how-the-modes-blend-with-classic) covers the arithmetic.
+Blowouts and Fantasy don't replace Classic. Each builds on it, so a game with nothing to say in the new mode still has a sensible score. [How the modes blend](#how-the-modes-blend-with-classic) covers the arithmetic.
 
 ## Why the ceilings add up to more than the total
 
@@ -107,6 +107,8 @@ Closeness turned inside out. Blowouts pays nothing until a game is two scores ap
 
 What Blowouts ignores: how a close game is going. A game inside two scores scores next to nothing here. That's where the blend comes in.
 
+Blowouts also pays no postseason boost. A playoff blowout has settled its result, so the round adds nothing to it. The mode sets `paysPostseason: false`.
+
 ## Fantasy
 
 Scores what your players are doing. It reads `context.fantasy`, one entry per rostered player, so it has nothing to say until you hand it a roster.
@@ -121,23 +123,23 @@ Football is the only sport with a live feel for who has the ball. Basketball and
 
 ## How the modes blend with Classic
 
-Neither of the new modes stands on its own. Each one is blended with Classic, so a quiet game never falls off the map.
+Neither of the new modes stands on its own. Each one is combined with Classic, so a quiet game never falls off the map.
 
 | Mode | Blend | Formula | Why |
 |---|---|---|---|
 | Blowouts | Floor | `total = max(blowouts, 0.3 × classic)` | A close game keeps 30% of its Classic score, so a night with no beatdown still has something to switch to. Any real beatdown outranks the best of them. |
-| Fantasy | Mix | `total = 0.6 × fantasy + 0.4 × classic` | A dead game with your player in it doesn't beat a classic without one. |
+| Fantasy | Boost | `total = min(100, classic + 0.6 × fantasy)` | Your players' games can only rise above their Classic score, and a game without them is plain Classic. An earlier 0.6/0.4 mix ranked a late one-point game with your player below the identical game without one. |
 
 Change Fantasy's weight with `options.classicBlend`:
 
 ```ts
 scoreGame(game, context, {
 	mode: 'fantasy',
-	classicBlend: { kind: 'mix', weight: 0.8 },
+	classicBlend: { kind: 'boost', weight: 0.8 },
 });
 ```
 
-A game with no active player in it has nothing for Fantasy to say. It's scored as Classic, and `score.modeId` says `'classic'` so you can tell. `score.classicTotal` carries Classic's own total whenever a mode blends with it.
+A game with no active player in it has nothing for Fantasy to say. It's scored as Classic, and `score.modeId` says `'classic'` so you can tell. `score.classicTotal` carries Classic's own total whenever a mode blends with it, and `score.blend` carries the arithmetic: `{ kind, weight, ownTotal, classicTotal, floorApplied? }`. A breakdown can use it to show "Classic 70 × 30% = 21" when the floor won, or "+30" for a Fantasy score of 50 at a weight of 0.6.
 
 ## Where these numbers come from
 

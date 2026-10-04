@@ -17,10 +17,10 @@ Every boost a mode pays shows up in `score.boosts` as `{ id, points, meta? }`, a
 | Mode | Boosts |
 |---|---|
 | Classic | Every boost on this page, plus the win probability modifier and the stall deduction |
-| Blowouts | No-hitter and Upset Rout, plus the stall deduction |
+| Blowouts | No-hitter and Upset Rout, plus the stall deduction. No postseason boost, since a playoff blowout has settled its result. |
 | Fantasy | None, and no stall deduction |
 
-The favorite, postseason, and manual boosts at the [bottom of the page](#favorite-postseason-and-manual-boosts) apply in every mode.
+The favorite, postseason, and manual boosts at the [bottom of the page](#favorite-postseason-and-manual-boosts) apply in every mode, except that Blowouts skips the postseason boost.
 
 ## Classic's moment boosts
 
@@ -222,7 +222,7 @@ The deduction comes straight off the signals subtotal rather than scaling it. A 
 
 ## Favorite, postseason, and manual boosts
 
-These three come from you, not from the game, and they work in every mode. Pass them in `options`:
+These three come from you, not from the game, and they work in every mode. The one exception is Blowouts, which never pays the postseason boost. Pass them in `options`:
 
 | Option | What it does |
 |---|---|

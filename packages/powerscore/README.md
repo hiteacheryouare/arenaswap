@@ -179,6 +179,8 @@ Closeness turned inside out. Nothing until the game is two scores apart (the spo
 
 Blowouts is blended with Classic as a **floor**: `total = max(blowouts, 0.3 × classic)`. A close game keeps 30% of its Classic score, so a night with no beatdown still has something to switch to. Any real beatdown outranks the best of them.
 
+Blowouts pays no postseason boost. A playoff blowout has settled its result, so it is no more worth switching to than a regular-season one. The mode sets `paysPostseason: false` to say so.
+
 ### Fantasy
 
 Scores what your players are doing. It reads `context.fantasy`, one entry per rostered player.
@@ -199,12 +201,12 @@ const score = scoreGame(game, {
 | Production | 35 | Fantasy points scored lately, fading like a lead change. Negative plays don't count. |
 | Exposure | 15 | How many of your players are in the game: 5 each, up to 15. |
 
-Fantasy is blended with Classic as a **mix**: `total = 0.6 × fantasy + 0.4 × classic`, so a dead game with your player in it doesn't beat a classic without one. Change the weight with `options.classicBlend`:
+Fantasy is added on top of Classic as a **boost**: `total = min(100, classic + 0.6 × fantasy)`. Your players' games can only rise above their Classic score, and a game without them is plain Classic. An earlier 0.6/0.4 mix ranked a game with your player below the identical game without one, which is the opposite of the point. Change the weight with `options.classicBlend`:
 
 ```ts
 scoreGame(game, context, {
 	mode: 'fantasy',
-	classicBlend: { kind: 'mix', weight: 0.8 },
+	classicBlend: { kind: 'boost', weight: 0.8 },
 });
 ```
 
@@ -264,7 +266,7 @@ scoreGame(game, context, { mode: overtimeOnly });
 
 A signal's `compute` gets the game, the context, the resolved sport and league config, the game's `progress` (0 at the start, 1 at the end of regulation and through overtime) and the `margin`. It returns `points` (clamped to the ceiling) and an optional `reason`.
 
-A mode can also carry `boosts`, `bucketCaps`, a `classicBlend` (`{ kind: 'floor', factor }` or `{ kind: 'mix', weight }`) and an `appliesTo(game, context)` that sends games it has nothing to say about to Classic.
+A mode can also carry `boosts`, `bucketCaps`, a `classicBlend` (`{ kind: 'floor', factor }`, `{ kind: 'mix', weight }` for `total = weight × own + (1 − weight) × classic`, or `{ kind: 'boost', weight }` for `total = min(100, classic + weight × own)`), `paysPostseason` (default `true`; `false` withholds the postseason boost) and an `appliesTo(game, context)` that sends games it has nothing to say about to Classic.
 
 Reason keys the built-in modes know render as English in `score.reason`. A key of your own renders as itself, so translate from `score.reasons` rather than from the string.
 
@@ -289,6 +291,7 @@ interface PowerScore {
 	winProbabilityVariance?: number; // −5 to +5, absent without enough history
 	baseTotal: number;              // signals less stall plus variance, before any boost
 	classicTotal?: number;          // Classic's own total, when the mode blends with it
+	blend?: BlendResult;            // { kind, weight, ownTotal, classicTotal, floorApplied? }, to show the arithmetic
 	boosts: ScoredBoost[];          // { id, points, meta? }
 	reasons: ReasonFragment[];      // { key, params? }, ready to translate
 	reason: string;                 // the same, in English
@@ -309,8 +312,8 @@ The order is fixed:
 2. The stall deduction comes off.
 3. The win probability modifier is added (Classic only). The result is clamped to 0–100.
 4. The mode's own boosts are added, within their caps, and the total is capped at 100.
-5. If the mode blends with Classic (floor or mix), that happens here.
-6. The favorite and postseason boosts are added. Capped at 100 again.
+5. If the mode blends with Classic (floor, mix, or boost), that happens here.
+6. The favorite and postseason boosts are added. Capped at 100 again. A mode with `paysPostseason: false` skips the postseason boost.
 7. `gameBoost`, a manual per-game boost, is added last. **It is the only thing allowed past 100.**
 
 The options that feed steps 6 and 7:
