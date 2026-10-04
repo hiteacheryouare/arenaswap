@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Everything is 3.0.0 — 2026-10-04
+
+Every package moves to 3.0.0 for ArenaSwap 3, and `powerscore` publishes as its next major: modes, the moment boosts and `scoreGame`, with the 2.x API still working as deprecated wrappers. The lockfile's workspace versions moved with them, by hand rather than through an install.
+
 ## PowerScore 3 speaks all twelve languages — 2026-10-04
 
 Every string the modes, the new boosts, Fantasy's roster and scoring pages and the new detail-screen lines added (211 keys) is translated into the eleven other locales, with each mode named the way that language's fans would say it and fantasy terms kept as the loanwords fantasy players there actually use. The breakdown, Settings and Fantasy specs measure every language for overflow at popup width, and nothing needed shortening.
