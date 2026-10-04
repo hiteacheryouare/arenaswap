@@ -3,10 +3,12 @@ import { i18n } from '#i18n';
 import type { Browser } from 'wxt/browser';
 import { leagueConfigMap, scoreMaxTotal, sportTypeConfigMap } from '@arenaswap/core/constants';
 import type { Game, LeagueId, LiveScore, PowerScoreSnapshot, ScoreSnapshot, SignalName, TabRegistration } from '@arenaswap/core/types';
+import type { FantasyRosterEntry } from '@arenaswap/core';
 import DetailHero from './detailHero';
 import DetailPosterHero from './detailPosterHero';
 import DetailStickyBar from './detailStickyBar';
 import DetailTabs from './detailTabs';
+import FantasyPlayersPanel from './fantasyPlayersPanel';
 import type { DetailTab, DetailTabId } from './detailTabs';
 import StandingsTable from './standingsTable';
 import { hasBoxScoreContent } from './boxScoreColumns';
@@ -61,6 +63,7 @@ interface gameDetailViewProps {
 	// Demo mode borrows a date so the calendar-gated decorations are reachable in September.
 	decorationDate?: Date;
 	disabledSignals?: readonly SignalName[];
+	fantasyRoster?: readonly FantasyRosterEntry[];
 	// Pre-game only: the setup card and the poster's favourite stars need these. They are
 	// optional so the live screen, and anything mounting it, is unaffected.
 	favoriteTeamIds?: ReadonlySet<string>;
@@ -78,6 +81,7 @@ interface gameDetailViewProps {
 }
 
 const noFavorites: ReadonlySet<string> = new Set();
+const noRoster: readonly FantasyRosterEntry[] = [];
 
 const favoriteFlashMs = 5000;
 
@@ -101,6 +105,7 @@ const gameDetailView = ({
 	decorationPrefs,
 	decorationDate,
 	disabledSignals = [],
+	fantasyRoster = noRoster,
 	favoriteTeamIds = noFavorites,
 	openTabs = [],
 	registry = [],
@@ -259,6 +264,7 @@ const gameDetailView = ({
 				    value would read as a verdict on the game rather than as the switching signal
 				    it actually was. The boost input goes for the same reason: it can only ever
 				    change a score that will never be computed again. */}
+				<FantasyPlayersPanel game={game} roster={fantasyRoster} boxScore={boxScore} />
 				<GameInfoPanel game={game} bettingPrefs={bettingPrefs} weatherPrefs={weatherPrefs} gameDurationMins={gameDurationMins} />
 			</>
 		) : isPreGame ? (
@@ -274,6 +280,7 @@ const gameDetailView = ({
 					tabAssignEnabled={tabAssignEnabled}
 				/>
 				<PregameStats game={game} />
+				<FantasyPlayersPanel game={game} roster={fantasyRoster} boxScore={boxScore} />
 				<GameInfoPanel game={game} bettingPrefs={bettingPrefs} weatherPrefs={weatherPrefs} tickets={tickets} />
 			</>
 		) : (
@@ -282,6 +289,7 @@ const gameDetailView = ({
 				    the most time-sensitive thing on this screen, and putting it beside the
 				    venue and the networks is what made it read as venue chrome on the card. */}
 				<LatestPlayPanel game={game} awayColor={awayLineColor} homeColor={homeLineColor} />
+				<FantasyPlayersPanel game={game} roster={fantasyRoster} boxScore={boxScore} />
 
 				<PowerScoreBreakdown
 					closeness={closeness}

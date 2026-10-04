@@ -152,6 +152,20 @@ const readRow = (category: string | undefined, keys: readonly string[], stats: r
 	}
 };
 
+// The rules a box score lets us fill. The rest (two-point tries, long field goals, steals of a base,
+// pitcher wins and saves, goalie wins) need play-by-play we don't read, so a settings screen hides them.
+export const fantasyRulesRead: Record<'football' | 'basketball' | 'baseball' | 'hockey', readonly string[]> = {
+	football: [
+		'passingYards', 'passingTouchdowns', 'interceptionsThrown', 'rushingYards', 'rushingTouchdowns', 'receptions',
+		'receivingYards', 'receivingTouchdowns', 'fumblesLost', 'returnTouchdowns', 'extraPointsMade', 'extraPointsMissed',
+		'fieldGoals0To39', 'fieldGoalsMissed', 'sacks', 'takeaways', 'defensiveTouchdowns', 'pointsAllowed0', 'pointsAllowed1To6',
+		'pointsAllowed7To13', 'pointsAllowed14To20', 'pointsAllowed21To27', 'pointsAllowed28To34', 'pointsAllowed35Plus',
+	],
+	basketball: ['points', 'rebounds', 'assists', 'steals', 'blocks', 'turnovers'],
+	baseball: ['totalBases', 'runs', 'runsBattedIn', 'walks', 'strikeouts', 'outsRecorded', 'hitsAllowed', 'earnedRuns', 'walksAllowed', 'pitcherStrikeouts'],
+	hockey: ['goals', 'assists', 'shotsOnGoal', 'blockedShots', 'plusMinus', 'saves', 'goalsAgainst'],
+};
+
 export interface FantasyBoxScore {
 	// Neutral stat lines by athlete id, plus `dst:<teamId>` for each team's defense.
 	lines: Map<string, StatLine>;

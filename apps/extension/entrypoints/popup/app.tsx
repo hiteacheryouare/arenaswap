@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import useSWR from 'swr';
 import { fetchGamesWithLeagueLogos } from '@arenaswap/core';
-import { allLeagueIds, allSignalNames, createDefaultUserPreferences, createFavoriteTeamKey, normalizeUserPreferences, withCollegeFilter } from '@arenaswap/core/constants';
+import { allLeagueIds, createDefaultUserPreferences, createFavoriteTeamKey, normalizeUserPreferences, withCollegeFilter } from '@arenaswap/core/constants';
+import type { FantasyRosterEntry } from '@arenaswap/core';
 import type { CollegeFilter, CollegeLeagueId, LeagueId, LeagueLogoMap, LeagueScheduleMap, SignalName, SportType, TabRegistration, UserPreferences } from '@arenaswap/core/types';
 import type { Browser } from 'wxt/browser';
 import GameDetailView from './components/gameDetailView';
@@ -29,6 +30,8 @@ import {
 } from '../../utils/tabSuggestions';
 import { finishedTabNoticeKey, normalizeFinishedTabNotice } from '../../utils/finishedTabs';
 import { loadStoredUserPreferencesWithPresence, persistStoredUserPreferences } from '../../utils/prefsStorage';
+import { loadFantasyRoster, saveFantasyRoster } from '../../utils/fantasyRosterStorage';
+import { toggleModeSignal, withFantasyRule, withLeagueMode, withoutFantasySport } from '../../utils/scoringPrefs';
 import { nextTemperatureUnit } from '../../utils/temperatureUnitCycle';
 import { useTheme } from '../../utils/theme';
 import { isDemoSeason, resolveDecorationDate, type demoSeason } from '../../utils/holidayDecorations';
@@ -69,6 +72,8 @@ export default () => {
 	const [prefs, setPrefs] = useState<UserPreferences>(createDefaultUserPreferences());
 	const prefsRef = useRef<UserPreferences>(createDefaultUserPreferences());
 	const [prefsLoaded, setPrefsLoaded] = useState(false);
+	const [fantasyRoster, setFantasyRoster] = useState<FantasyRosterEntry[]>([]);
+	const fantasyRosterRef = useRef<FantasyRosterEntry[]>([]);
 	const [registry, setRegistry] = useState<TabRegistration[]>([]);
 	const [openTabs, setOpenTabs] = useState<Browser.tabs.Tab[]>([]);
 	const [demoMode, setDemoMode] = useState(false);
@@ -233,7 +238,7 @@ export default () => {
 		const init = async () => {
 			// Both reads land before the first paint, so they go out together rather than one
 			// awaiting the other.
-			const [{ prefs: normalizedPrefs, hasStored: hasStoredPrefs }, localResult] = await Promise.all([
+			const [{ prefs: normalizedPrefs, hasStored: hasStoredPrefs }, localResult, storedRoster] = await Promise.all([
 				loadStoredUserPreferencesWithPresence(),
 				browser.storage.local.get({
 					demoMode: false,
@@ -242,8 +247,11 @@ export default () => {
 					standbyOnboardingDone: false,
 					[reviewPromptStorageKey]: null,
 				}),
+				loadFantasyRoster().catch(() => []),
 			]);
 			prefsRef.current = normalizedPrefs;
+			fantasyRosterRef.current = storedRoster;
+			setFantasyRoster(storedRoster);
 			setPrefs(normalizedPrefs);
 			setPrefsLoaded(true);
 			setDemoMode(localResult.demoMode as boolean);
@@ -386,17 +394,15 @@ export default () => {
 
 
 	const onToggleSignal = (signal: SignalName) => {
-		persistPrefs(currentPrefs => {
-			const current = new Set(currentPrefs.disabledSignals);
-			if (current.has(signal)) {
-				current.delete(signal);
-			} else {
-				const wouldRemainEnabled = allSignalNames.filter(s => !current.has(s) && s !== signal).length;
-				if (wouldRemainEnabled === 0) return currentPrefs;
-				current.add(signal);
-			}
-			return { ...currentPrefs, disabledSignals: [...current] };
-		});
+		persistPrefs(currentPrefs => toggleModeSignal(currentPrefs, 'classic', signal));
+	};
+
+	// The background reads the roster from storage on its own schedule, so saving it is the whole hand-off.
+	const onFantasyRosterChange = (update: (current: FantasyRosterEntry[]) => FantasyRosterEntry[]) => {
+		const next = update(fantasyRosterRef.current);
+		fantasyRosterRef.current = next;
+		setFantasyRoster(next);
+		void saveFantasyRoster(next);
 	};
 
 	const onRegistryChange = (updated: TabRegistration[]) => {
@@ -446,7 +452,7 @@ export default () => {
 		void browser.storage.local.set({ standbyOnboardingDone: true });
 	};
 
-	const settingsSnapshot = () => JSON.stringify([prefsRef.current, demoMode, demoSeason, standbyStreamTabId]);
+	const settingsSnapshot = () => JSON.stringify([prefsRef.current, demoMode, demoSeason, standbyStreamTabId, fantasyRosterRef.current]);
 	const settingsOnOpenRef = useRef('');
 
 	const openSetup = () => {
@@ -576,6 +582,14 @@ export default () => {
 						onToggleHolidayLeaves={() => persistPrefs(currentPrefs => ({ ...currentPrefs, holidayLeavesEnabled: !currentPrefs.holidayLeavesEnabled }))}
 						onPostseasonBoostChange={val => persistPrefs(currentPrefs => ({ ...currentPrefs, postseasonBoostPoints: val }))}
 						onToggleSignal={onToggleSignal}
+						onToggleModeSignal={(mode, signal) => persistPrefs(currentPrefs => toggleModeSignal(currentPrefs, mode, signal))}
+						onScoringModeChange={mode => persistPrefs(currentPrefs => ({ ...currentPrefs, scoringMode: mode }))}
+						onLeagueModeChange={(league, mode) => persistPrefs(currentPrefs => ({ ...currentPrefs, leagueModes: withLeagueMode(currentPrefs.leagueModes, league, mode) }))}
+						onFantasyBlendChange={value => persistPrefs(currentPrefs => ({ ...currentPrefs, fantasyBlend: value }))}
+						onFantasyRuleChange={(sport, rule, points) => persistPrefs(currentPrefs => ({ ...currentPrefs, fantasyScoring: withFantasyRule(currentPrefs.fantasyScoring, sport, rule, points) }))}
+						onFantasyRulesReset={sport => persistPrefs(currentPrefs => ({ ...currentPrefs, fantasyScoring: withoutFantasySport(currentPrefs.fantasyScoring, sport) }))}
+						fantasyRoster={fantasyRoster}
+						onFantasyRosterChange={onFantasyRosterChange}
 					/>
 				)}
 				{view === 'main' && (
@@ -646,6 +660,7 @@ export default () => {
 						}}
 						decorationDate={resolveDecorationDate(new Date(), demoMode ? demoSeason : 'real')}
 						disabledSignals={prefs.disabledSignals}
+						fantasyRoster={fantasyRoster}
 						favoriteTeamIds={favoriteTeamIds}
 						openTabs={openTabs}
 						registry={registry}

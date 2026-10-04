@@ -8,7 +8,7 @@ export { computeGameProgress, computePowerScore, computeScoringOpportunityBoost,
 export { scoreMaxTotal } from 'powerscore';
 export { MockGameSimulator } from './mockGames';
 export { resolveModeForGame, modesInUse, isScoringModeChoice } from './scoringMode';
-export { fantasyRosterLimit, fantasyRosterStorageKey, normalizeFantasyRoster, readFantasyBoxScore, rosterInGame } from './fantasy';
+export { fantasyRulesRead, fantasyRosterLimit, fantasyRosterStorageKey, normalizeFantasyRoster, readFantasyBoxScore, rosterInGame } from './fantasy';
 export type { FantasyRosterEntry, FantasyBoxScore } from './fantasy';
 export type { FantasyScoringOverrides } from './liveExtras';
 export { defenseRosterEntry, fantasyLeagues, foldName, nameMatchScore, parsePlayerSearch, resolveRosterEntry, searchPlayers, toFantasyPosition } from './playerSearch';

@@ -1,4 +1,5 @@
 import { i18n, type GeneratedI18nStructure } from '#i18n';
+import type { ScoringModeChoice } from '@arenaswap/core/types';
 import { foldForSearch } from '../../../utils/searchText';
 
 export type settingsGroupId = 'switching' | 'scoring' | 'favorites' | 'leagues' | 'display' | 'standby';
@@ -6,7 +7,7 @@ export type settingsGroupId = 'switching' | 'scoring' | 'favorites' | 'leagues' 
 // i18n.t is overloaded, so Parameters<> on it collapses to never. Narrowing the generated
 // structure gives the catalog a real key type. Named substitutions are reported alongside
 // `substitutions: 0`, so keys carrying them have to be excluded separately.
-type plainMessageKey = {
+export type plainMessageKey = {
 	[K in keyof GeneratedI18nStructure]: GeneratedI18nStructure[K] extends { substitutions: 0 }
 		? GeneratedI18nStructure[K] extends { namedSubstitutions: readonly string[] } ? never : K
 		: never;
@@ -25,6 +26,8 @@ export interface settingsEntry {
 	keywordsKey: plainMessageKey;
 	// The control a search result lands on. Entries without one open their page at the top.
 	controlId?: string;
+	// A control that only exists while this mode is in use, so search leaves it out otherwise.
+	requires?: ScoringModeChoice;
 }
 
 export const settingsGroups: readonly settingsGroup[] = [
@@ -43,11 +46,23 @@ export const settingsEntries: readonly settingsEntry[] = [
 	{ group: 'switching', labelKey: 'setup.switchNotifications', keywordsKey: 'setup.keywordsNotifications', controlId: 'notificationsToggle' },
 	{ group: 'switching', labelKey: 'setup.finishedTabAction', keywordsKey: 'setup.keywordsFinishedTab', controlId: 'finishedTabSelect' },
 	{ group: 'switching', labelKey: 'setup.demoMode', keywordsKey: 'setup.keywordsDemo', controlId: 'demoToggle' },
-	{ group: 'scoring', labelKey: 'powerScore.signalCloseness', keywordsKey: 'setup.keywordsCloseness', controlId: 'signal-closeness' },
-	{ group: 'scoring', labelKey: 'powerScore.signalLateGame', keywordsKey: 'setup.keywordsLateGame', controlId: 'signal-lateGame' },
-	{ group: 'scoring', labelKey: 'powerScore.signalMomentum', keywordsKey: 'setup.keywordsMomentum', controlId: 'signal-momentum' },
-	{ group: 'scoring', labelKey: 'powerScore.signalLeadChanges', keywordsKey: 'setup.keywordsLeadChanges', controlId: 'signal-leadChanges' },
-	{ group: 'scoring', labelKey: 'powerScore.signalComeback', keywordsKey: 'setup.keywordsComeback', controlId: 'signal-comeback' },
+	{ group: 'scoring', labelKey: 'setup.scoringMode', keywordsKey: 'setup.keywordsScoringMode', controlId: 'scoringModeSelect' },
+	{ group: 'scoring', labelKey: 'setup.leagueModes', keywordsKey: 'setup.keywordsLeagueModes', controlId: 'leagueModeList', requires: 'custom' },
+	{ group: 'scoring', labelKey: 'setup.fantasyBlend', keywordsKey: 'setup.keywordsFantasyBlend', controlId: 'fantasyBlendSlider', requires: 'fantasy' },
+	{ group: 'scoring', labelKey: 'setup.fantasyRoster', keywordsKey: 'setup.keywordsFantasyRoster', controlId: 'fantasyRosterOpen', requires: 'fantasy' },
+	{ group: 'scoring', labelKey: 'setup.fantasyRules', keywordsKey: 'setup.keywordsFantasyRules', controlId: 'fantasyRulesOpen', requires: 'fantasy' },
+	{ group: 'scoring', labelKey: 'powerScore.signalCloseness', keywordsKey: 'setup.keywordsCloseness', controlId: 'signal-closeness', requires: 'classic' },
+	{ group: 'scoring', labelKey: 'powerScore.signalLateGame', keywordsKey: 'setup.keywordsLateGame', controlId: 'signal-lateGame', requires: 'classic' },
+	{ group: 'scoring', labelKey: 'powerScore.signalMomentum', keywordsKey: 'setup.keywordsMomentum', controlId: 'signal-momentum', requires: 'classic' },
+	{ group: 'scoring', labelKey: 'powerScore.signalLeadChanges', keywordsKey: 'setup.keywordsLeadChanges', controlId: 'signal-leadChanges', requires: 'classic' },
+	{ group: 'scoring', labelKey: 'powerScore.signalComeback', keywordsKey: 'setup.keywordsComeback', controlId: 'signal-comeback', requires: 'classic' },
+	{ group: 'scoring', labelKey: 'powerScore.signalBlowoutMargin', keywordsKey: 'setup.keywordsBlowoutMargin', controlId: 'signal-blowouts-blowoutMargin', requires: 'blowouts' },
+	{ group: 'scoring', labelKey: 'powerScore.signalSustained', keywordsKey: 'setup.keywordsSustained', controlId: 'signal-blowouts-sustained', requires: 'blowouts' },
+	{ group: 'scoring', labelKey: 'powerScore.signalTiming', keywordsKey: 'setup.keywordsTiming', controlId: 'signal-blowouts-timing', requires: 'blowouts' },
+	{ group: 'scoring', labelKey: 'powerScore.signalPileOn', keywordsKey: 'setup.keywordsPileOn', controlId: 'signal-blowouts-pileOn', requires: 'blowouts' },
+	{ group: 'scoring', labelKey: 'powerScore.signalSituation', keywordsKey: 'setup.keywordsSituation', controlId: 'signal-fantasy-situation', requires: 'fantasy' },
+	{ group: 'scoring', labelKey: 'powerScore.signalProduction', keywordsKey: 'setup.keywordsProduction', controlId: 'signal-fantasy-production', requires: 'fantasy' },
+	{ group: 'scoring', labelKey: 'powerScore.signalExposure', keywordsKey: 'setup.keywordsExposure', controlId: 'signal-fantasy-exposure', requires: 'fantasy' },
 	{ group: 'scoring', labelKey: 'postseasonBoost.label', keywordsKey: 'setup.keywordsPostseasonBoost', controlId: 'postseasonBoostInput' },
 	{ group: 'scoring', labelKey: 'favoriteTeamBonus.label', keywordsKey: 'setup.keywordsFavoriteBonus', controlId: 'favoriteTeamBonusInput' },
 	{ group: 'favorites', labelKey: 'setup.followedTeams', keywordsKey: 'setup.keywordsFavoriteTeams' },
@@ -80,7 +95,8 @@ export interface settingsSearchResult {
 
 // Group text is matched per group, never folded into each entry's haystack: "bonus" appears in
 // the Scoring description, and mixing the two returned all five signals for it.
-export const searchSettings = (query: string): settingsSearchResult[] => {
+// `available` is every mode whose controls are on screen; without it, nothing is left out.
+export const searchSettings = (query: string, available?: ReadonlySet<ScoringModeChoice>): settingsSearchResult[] => {
 	const needle = normalize(query);
 	if (!needle) return [];
 
@@ -92,7 +108,7 @@ export const searchSettings = (query: string): settingsSearchResult[] => {
 
 	const entryHits = settingsEntries.flatMap(entry => {
 		const group = groupById.get(entry.group);
-		if (!group) return [];
+		if (!group || (entry.requires && available && !available.has(entry.requires))) return [];
 
 		const label = i18n.t(entry.labelKey);
 		if (!normalize(`${label} ${i18n.t(entry.keywordsKey)}`).includes(needle)) return [];

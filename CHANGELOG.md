@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Settings picks the mode, and Fantasy gets a roster — 2026-10-03
+
+The top of Settings → Scoring now picks Classic, Blowouts, Fantasy or Custom, where each enabled league gets its own mode, with signal switches for every mode in use (Classic's stay whenever Blowouts or Fantasy is, since both lean on a Classic score). Fantasy adds a slider for how much your players lift their games, a roster page that searches players by name and NFL defenses by team, and a scoring rules page that only offers the rules a box score can actually fill; a game with your players in it lists their lines under "Your Players". Both sub-pages load on demand, so they cost the popup nothing until opened.
+
 ## Fantasy lifts your players' games instead of blending them down — 2026-10-03
 
 Fantasy's 60/40 mix with Classic ranked a game with your player below the same game without one (a late one-point game fell from 67 to 57), so your players' Fantasy score is now added on top of Classic at the slider's weight, capped at 100: their games pull ahead when they matter and can never sink below a game without them. The same review stopped Blowouts paying the postseason boost, made a scoring rule changed mid-game rescore both sides instead of reading as points just scored, counted players missing from a posted lineup or listed out as inactive, fetched hockey situations only for the NHL and only on its own poll, and halved what each history snapshot costs in session storage.
