@@ -1,0 +1,907 @@
+{
+	"_source": "standings mlb, recorded 2026-10-03T23:44:05.133Z (recordings/2026-10-03); trimmed; American League only",
+	"name": "Major League Baseball",
+	"abbreviation": "MLB",
+	"children": [
+		{
+			"name": "American League",
+			"abbreviation": "AL",
+			"children": [
+				{
+					"name": "American League East",
+					"abbreviation": "ALE",
+					"standings": {
+						"entries": [
+							{
+								"team": {
+									"id": "10",
+									"abbreviation": "NYY"
+								},
+								"stats": [
+									{
+										"name": "clincher",
+										"value": 2,
+										"displayValue": "y"
+									},
+									{
+										"name": "gamesPlayed",
+										"value": 161,
+										"displayValue": "161"
+									},
+									{
+										"name": "losses",
+										"value": 68,
+										"displayValue": "68"
+									},
+									{
+										"name": "playoffSeed",
+										"value": 4,
+										"displayValue": "4"
+									},
+									{
+										"name": "points",
+										"value": 12.5,
+										"displayValue": "12.5"
+									},
+									{
+										"name": "ties",
+										"value": 0,
+										"displayValue": "0"
+									},
+									{
+										"name": "wins",
+										"value": 93,
+										"displayValue": "93"
+									},
+									{
+										"name": "magicNumberDivision",
+										"value": 6,
+										"displayValue": "6"
+									},
+									{
+										"name": "magicNumberWildcard",
+										"value": -8,
+										"displayValue": "-8"
+									},
+									{
+										"name": "playoffPercent",
+										"value": 100,
+										"displayValue": "100.0%"
+									}
+								]
+							},
+							{
+								"team": {
+									"id": "2",
+									"abbreviation": "BOS"
+								},
+								"stats": [
+									{
+										"name": "clincher",
+										"value": 2,
+										"displayValue": "y"
+									},
+									{
+										"name": "gamesPlayed",
+										"value": 162,
+										"displayValue": "162"
+									},
+									{
+										"name": "losses",
+										"value": 75,
+										"displayValue": "75"
+									},
+									{
+										"name": "playoffSeed",
+										"value": 5,
+										"displayValue": "5"
+									},
+									{
+										"name": "points",
+										"value": 6,
+										"displayValue": "6.0"
+									},
+									{
+										"name": "ties",
+										"value": 0,
+										"displayValue": "0"
+									},
+									{
+										"name": "wins",
+										"value": 87,
+										"displayValue": "87"
+									},
+									{
+										"name": "magicNumberDivision",
+										"value": 12,
+										"displayValue": "12"
+									},
+									{
+										"name": "magicNumberWildcard",
+										"value": -2,
+										"displayValue": "-2"
+									},
+									{
+										"name": "playoffPercent",
+										"value": 100,
+										"displayValue": "100.0%"
+									}
+								]
+							},
+							{
+								"team": {
+									"id": "1",
+									"abbreviation": "BAL"
+								},
+								"stats": [
+									{
+										"name": "clincher",
+										"value": 4,
+										"displayValue": "e"
+									},
+									{
+										"name": "gamesPlayed",
+										"value": 161,
+										"displayValue": "161"
+									},
+									{
+										"name": "losses",
+										"value": 82,
+										"displayValue": "82"
+									},
+									{
+										"name": "playoffSeed",
+										"value": 8,
+										"displayValue": "8"
+									},
+									{
+										"name": "points",
+										"value": -1.5,
+										"displayValue": "-1.5"
+									},
+									{
+										"name": "ties",
+										"value": 0,
+										"displayValue": "0"
+									},
+									{
+										"name": "wins",
+										"value": 79,
+										"displayValue": "79"
+									},
+									{
+										"name": "magicNumberDivision",
+										"value": 20,
+										"displayValue": "20"
+									},
+									{
+										"name": "magicNumberWildcard",
+										"value": 9,
+										"displayValue": "9"
+									},
+									{
+										"name": "playoffPercent",
+										"value": 0,
+										"displayValue": "0.0%"
+									}
+								]
+							},
+							{
+								"team": {
+									"id": "14",
+									"abbreviation": "TOR"
+								},
+								"stats": [
+									{
+										"name": "clincher",
+										"value": 4,
+										"displayValue": "e"
+									},
+									{
+										"name": "gamesPlayed",
+										"value": 162,
+										"displayValue": "162"
+									},
+									{
+										"name": "losses",
+										"value": 83,
+										"displayValue": "83"
+									},
+									{
+										"name": "playoffSeed",
+										"value": 9,
+										"displayValue": "9"
+									},
+									{
+										"name": "points",
+										"value": -2,
+										"displayValue": "-2.0"
+									},
+									{
+										"name": "ties",
+										"value": 0,
+										"displayValue": "0"
+									},
+									{
+										"name": "wins",
+										"value": 79,
+										"displayValue": "79"
+									},
+									{
+										"name": "magicNumberDivision",
+										"value": 20,
+										"displayValue": "20"
+									},
+									{
+										"name": "magicNumberWildcard",
+										"value": 9,
+										"displayValue": "9"
+									},
+									{
+										"name": "playoffPercent",
+										"value": 0,
+										"displayValue": "0.0%"
+									}
+								]
+							},
+							{
+								"team": {
+									"id": "30",
+									"abbreviation": "TB"
+								},
+								"stats": [
+									{
+										"name": "clincher",
+										"value": 5,
+										"displayValue": "*"
+									},
+									{
+										"name": "gamesPlayed",
+										"value": 162,
+										"displayValue": "162"
+									},
+									{
+										"name": "losses",
+										"value": 64,
+										"displayValue": "64"
+									},
+									{
+										"name": "playoffSeed",
+										"value": 1,
+										"displayValue": "1"
+									},
+									{
+										"name": "points",
+										"value": 17,
+										"displayValue": "17.0"
+									},
+									{
+										"name": "ties",
+										"value": 0,
+										"displayValue": "0"
+									},
+									{
+										"name": "wins",
+										"value": 98,
+										"displayValue": "98"
+									},
+									{
+										"name": "magicNumberDivision",
+										"value": -3,
+										"displayValue": "-3"
+									},
+									{
+										"name": "magicNumberWildcard",
+										"value": -13,
+										"displayValue": "-13"
+									},
+									{
+										"name": "playoffPercent",
+										"value": 100,
+										"displayValue": "100.0%"
+									}
+								]
+							}
+						]
+					}
+				},
+				{
+					"name": "American League Central",
+					"abbreviation": "ALC",
+					"standings": {
+						"entries": [
+							{
+								"team": {
+									"id": "4",
+									"abbreviation": "CHW"
+								},
+								"stats": [
+									{
+										"name": "clincher",
+										"value": 2,
+										"displayValue": "y"
+									},
+									{
+										"name": "gamesPlayed",
+										"value": 162,
+										"displayValue": "162"
+									},
+									{
+										"name": "losses",
+										"value": 78,
+										"displayValue": "78"
+									},
+									{
+										"name": "playoffSeed",
+										"value": 6,
+										"displayValue": "6"
+									},
+									{
+										"name": "points",
+										"value": 3,
+										"displayValue": "3.0"
+									},
+									{
+										"name": "ties",
+										"value": 0,
+										"displayValue": "0"
+									},
+									{
+										"name": "wins",
+										"value": 84,
+										"displayValue": "84"
+									},
+									{
+										"name": "magicNumberDivision",
+										"value": 2,
+										"displayValue": "2"
+									},
+									{
+										"name": "magicNumberWildcard",
+										"value": 4,
+										"displayValue": "4"
+									},
+									{
+										"name": "playoffPercent",
+										"value": 100,
+										"displayValue": "100.0%"
+									}
+								]
+							},
+							{
+								"team": {
+									"id": "5",
+									"abbreviation": "CLE"
+								},
+								"stats": [
+									{
+										"name": "clincher",
+										"value": 1,
+										"displayValue": "x"
+									},
+									{
+										"name": "gamesPlayed",
+										"value": 162,
+										"displayValue": "162"
+									},
+									{
+										"name": "losses",
+										"value": 77,
+										"displayValue": "77"
+									},
+									{
+										"name": "playoffSeed",
+										"value": 2,
+										"displayValue": "2"
+									},
+									{
+										"name": "points",
+										"value": 4,
+										"displayValue": "4.0"
+									},
+									{
+										"name": "ties",
+										"value": 0,
+										"displayValue": "0"
+									},
+									{
+										"name": "wins",
+										"value": 85,
+										"displayValue": "85"
+									},
+									{
+										"name": "magicNumberDivision",
+										"value": 0,
+										"displayValue": "0"
+									},
+									{
+										"name": "magicNumberWildcard",
+										"value": 0,
+										"displayValue": "0"
+									},
+									{
+										"name": "playoffPercent",
+										"value": 100,
+										"displayValue": "100.0%"
+									}
+								]
+							},
+							{
+								"team": {
+									"id": "9",
+									"abbreviation": "MIN"
+								},
+								"stats": [
+									{
+										"name": "clincher",
+										"value": 4,
+										"displayValue": "e"
+									},
+									{
+										"name": "gamesPlayed",
+										"value": 162,
+										"displayValue": "162"
+									},
+									{
+										"name": "losses",
+										"value": 85,
+										"displayValue": "85"
+									},
+									{
+										"name": "playoffSeed",
+										"value": 10,
+										"displayValue": "10"
+									},
+									{
+										"name": "points",
+										"value": -4,
+										"displayValue": "-4.0"
+									},
+									{
+										"name": "ties",
+										"value": 0,
+										"displayValue": "0"
+									},
+									{
+										"name": "wins",
+										"value": 77,
+										"displayValue": "77"
+									},
+									{
+										"name": "magicNumberDivision",
+										"value": 9,
+										"displayValue": "9"
+									},
+									{
+										"name": "magicNumberWildcard",
+										"value": 11,
+										"displayValue": "11"
+									},
+									{
+										"name": "playoffPercent",
+										"value": 0,
+										"displayValue": "0.0%"
+									}
+								]
+							},
+							{
+								"team": {
+									"id": "6",
+									"abbreviation": "DET"
+								},
+								"stats": [
+									{
+										"name": "clincher",
+										"value": 4,
+										"displayValue": "e"
+									},
+									{
+										"name": "gamesPlayed",
+										"value": 162,
+										"displayValue": "162"
+									},
+									{
+										"name": "losses",
+										"value": 86,
+										"displayValue": "86"
+									},
+									{
+										"name": "playoffSeed",
+										"value": 11,
+										"displayValue": "11"
+									},
+									{
+										"name": "points",
+										"value": -5,
+										"displayValue": "-5.0"
+									},
+									{
+										"name": "ties",
+										"value": 0,
+										"displayValue": "0"
+									},
+									{
+										"name": "wins",
+										"value": 76,
+										"displayValue": "76"
+									},
+									{
+										"name": "magicNumberDivision",
+										"value": 10,
+										"displayValue": "10"
+									},
+									{
+										"name": "magicNumberWildcard",
+										"value": 12,
+										"displayValue": "12"
+									},
+									{
+										"name": "playoffPercent",
+										"value": 0,
+										"displayValue": "0.0%"
+									}
+								]
+							},
+							{
+								"team": {
+									"id": "7",
+									"abbreviation": "KC"
+								},
+								"stats": [
+									{
+										"name": "clincher",
+										"value": 4,
+										"displayValue": "e"
+									},
+									{
+										"name": "gamesPlayed",
+										"value": 162,
+										"displayValue": "162"
+									},
+									{
+										"name": "losses",
+										"value": 93,
+										"displayValue": "93"
+									},
+									{
+										"name": "playoffSeed",
+										"value": 13,
+										"displayValue": "13"
+									},
+									{
+										"name": "points",
+										"value": -12,
+										"displayValue": "-12.0"
+									},
+									{
+										"name": "ties",
+										"value": 0,
+										"displayValue": "0"
+									},
+									{
+										"name": "wins",
+										"value": 69,
+										"displayValue": "69"
+									},
+									{
+										"name": "magicNumberDivision",
+										"value": 17,
+										"displayValue": "17"
+									},
+									{
+										"name": "magicNumberWildcard",
+										"value": 19,
+										"displayValue": "19"
+									},
+									{
+										"name": "playoffPercent",
+										"value": 0,
+										"displayValue": "0.0%"
+									}
+								]
+							}
+						]
+					}
+				},
+				{
+					"name": "American League West",
+					"abbreviation": "ALW",
+					"standings": {
+						"entries": [
+							{
+								"team": {
+									"id": "18",
+									"abbreviation": "HOU"
+								},
+								"stats": [
+									{
+										"name": "clincher",
+										"value": 1,
+										"displayValue": "x"
+									},
+									{
+										"name": "gamesPlayed",
+										"value": 162,
+										"displayValue": "162"
+									},
+									{
+										"name": "losses",
+										"value": 81,
+										"displayValue": "81"
+									},
+									{
+										"name": "playoffSeed",
+										"value": 3,
+										"displayValue": "3"
+									},
+									{
+										"name": "points",
+										"value": 0,
+										"displayValue": "0.0"
+									},
+									{
+										"name": "ties",
+										"value": 0,
+										"displayValue": "0"
+									},
+									{
+										"name": "wins",
+										"value": 81,
+										"displayValue": "81"
+									},
+									{
+										"name": "magicNumberDivision",
+										"value": 0,
+										"displayValue": "0"
+									},
+									{
+										"name": "magicNumberWildcard",
+										"value": 4,
+										"displayValue": "4"
+									},
+									{
+										"name": "playoffPercent",
+										"value": 100,
+										"displayValue": "100.0%"
+									}
+								]
+							},
+							{
+								"team": {
+									"id": "13",
+									"abbreviation": "TEX"
+								},
+								"stats": [
+									{
+										"name": "clincher",
+										"value": 4,
+										"displayValue": "e"
+									},
+									{
+										"name": "gamesPlayed",
+										"value": 162,
+										"displayValue": "162"
+									},
+									{
+										"name": "losses",
+										"value": 82,
+										"displayValue": "82"
+									},
+									{
+										"name": "playoffSeed",
+										"value": 7,
+										"displayValue": "7"
+									},
+									{
+										"name": "points",
+										"value": -1,
+										"displayValue": "-1.0"
+									},
+									{
+										"name": "ties",
+										"value": 0,
+										"displayValue": "0"
+									},
+									{
+										"name": "wins",
+										"value": 80,
+										"displayValue": "80"
+									},
+									{
+										"name": "magicNumberDivision",
+										"value": 2,
+										"displayValue": "2"
+									},
+									{
+										"name": "magicNumberWildcard",
+										"value": 8,
+										"displayValue": "8"
+									},
+									{
+										"name": "playoffPercent",
+										"value": 0,
+										"displayValue": "0.0%"
+									}
+								]
+							},
+							{
+								"team": {
+									"id": "12",
+									"abbreviation": "SEA"
+								},
+								"stats": [
+									{
+										"name": "clincher",
+										"value": 4,
+										"displayValue": "e"
+									},
+									{
+										"name": "gamesPlayed",
+										"value": 162,
+										"displayValue": "162"
+									},
+									{
+										"name": "losses",
+										"value": 86,
+										"displayValue": "86"
+									},
+									{
+										"name": "playoffSeed",
+										"value": 12,
+										"displayValue": "12"
+									},
+									{
+										"name": "points",
+										"value": -5,
+										"displayValue": "-5.0"
+									},
+									{
+										"name": "ties",
+										"value": 0,
+										"displayValue": "0"
+									},
+									{
+										"name": "wins",
+										"value": 76,
+										"displayValue": "76"
+									},
+									{
+										"name": "magicNumberDivision",
+										"value": 6,
+										"displayValue": "6"
+									},
+									{
+										"name": "magicNumberWildcard",
+										"value": 12,
+										"displayValue": "12"
+									},
+									{
+										"name": "playoffPercent",
+										"value": 0,
+										"displayValue": "0.0%"
+									}
+								]
+							},
+							{
+								"team": {
+									"id": "11",
+									"abbreviation": "ATH"
+								},
+								"stats": [
+									{
+										"name": "clincher",
+										"value": 4,
+										"displayValue": "e"
+									},
+									{
+										"name": "gamesPlayed",
+										"value": 162,
+										"displayValue": "162"
+									},
+									{
+										"name": "losses",
+										"value": 98,
+										"displayValue": "98"
+									},
+									{
+										"name": "playoffSeed",
+										"value": 14,
+										"displayValue": "14"
+									},
+									{
+										"name": "points",
+										"value": -17,
+										"displayValue": "-17.0"
+									},
+									{
+										"name": "ties",
+										"value": 0,
+										"displayValue": "0"
+									},
+									{
+										"name": "wins",
+										"value": 64,
+										"displayValue": "64"
+									},
+									{
+										"name": "magicNumberDivision",
+										"value": 18,
+										"displayValue": "18"
+									},
+									{
+										"name": "magicNumberWildcard",
+										"value": 24,
+										"displayValue": "24"
+									},
+									{
+										"name": "playoffPercent",
+										"value": 0,
+										"displayValue": "0.0%"
+									}
+								]
+							},
+							{
+								"team": {
+									"id": "3",
+									"abbreviation": "LAA"
+								},
+								"stats": [
+									{
+										"name": "clincher",
+										"value": 4,
+										"displayValue": "e"
+									},
+									{
+										"name": "gamesPlayed",
+										"value": 162,
+										"displayValue": "162"
+									},
+									{
+										"name": "losses",
+										"value": 100,
+										"displayValue": "100"
+									},
+									{
+										"name": "playoffSeed",
+										"value": 15,
+										"displayValue": "15"
+									},
+									{
+										"name": "points",
+										"value": -19,
+										"displayValue": "-19.0"
+									},
+									{
+										"name": "ties",
+										"value": 0,
+										"displayValue": "0"
+									},
+									{
+										"name": "wins",
+										"value": 62,
+										"displayValue": "62"
+									},
+									{
+										"name": "magicNumberDivision",
+										"value": 20,
+										"displayValue": "20"
+									},
+									{
+										"name": "magicNumberWildcard",
+										"value": 26,
+										"displayValue": "26"
+									},
+									{
+										"name": "playoffPercent",
+										"value": 0,
+										"displayValue": "0.0%"
+									}
+								]
+							}
+						]
+					}
+				}
+			]
+		}
+	]
+}

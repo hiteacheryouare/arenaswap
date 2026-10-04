@@ -1,0 +1,815 @@
+{
+	"_source": "standings epl ?level=3, fetched 2026-10-03; trimmed",
+	"name": "English Premier League",
+	"abbreviation": "Premier League",
+	"children": [
+		{
+			"name": "2026-27 English Premier League",
+			"abbreviation": "2026-2027",
+			"standings": {
+				"entries": [
+					{
+						"team": {
+							"id": "382",
+							"abbreviation": "MNC"
+						},
+						"note": {
+							"color": "#81D6AC",
+							"description": "Champions League",
+							"rank": 1
+						},
+						"stats": [
+							{
+								"name": "gamesPlayed",
+								"value": 5,
+								"displayValue": "5"
+							},
+							{
+								"name": "losses",
+								"value": 0,
+								"displayValue": "0"
+							},
+							{
+								"name": "points",
+								"value": 15,
+								"displayValue": "15"
+							},
+							{
+								"name": "ties",
+								"value": 0,
+								"displayValue": "0"
+							},
+							{
+								"name": "wins",
+								"value": 5,
+								"displayValue": "5"
+							},
+							{
+								"name": "rank",
+								"value": 1,
+								"displayValue": "1"
+							}
+						]
+					},
+					{
+						"team": {
+							"id": "359",
+							"abbreviation": "ARS"
+						},
+						"note": {
+							"color": "#81D6AC",
+							"description": "Champions League",
+							"rank": 2
+						},
+						"stats": [
+							{
+								"name": "gamesPlayed",
+								"value": 5,
+								"displayValue": "5"
+							},
+							{
+								"name": "losses",
+								"value": 1,
+								"displayValue": "1"
+							},
+							{
+								"name": "points",
+								"value": 12,
+								"displayValue": "12"
+							},
+							{
+								"name": "ties",
+								"value": 0,
+								"displayValue": "0"
+							},
+							{
+								"name": "wins",
+								"value": 4,
+								"displayValue": "4"
+							},
+							{
+								"name": "rank",
+								"value": 2,
+								"displayValue": "2"
+							}
+						]
+					},
+					{
+						"team": {
+							"id": "331",
+							"abbreviation": "BHA"
+						},
+						"note": {
+							"color": "#81D6AC",
+							"description": "Champions League",
+							"rank": 3
+						},
+						"stats": [
+							{
+								"name": "gamesPlayed",
+								"value": 5,
+								"displayValue": "5"
+							},
+							{
+								"name": "losses",
+								"value": 1,
+								"displayValue": "1"
+							},
+							{
+								"name": "points",
+								"value": 10,
+								"displayValue": "10"
+							},
+							{
+								"name": "ties",
+								"value": 1,
+								"displayValue": "1"
+							},
+							{
+								"name": "wins",
+								"value": 3,
+								"displayValue": "3"
+							},
+							{
+								"name": "rank",
+								"value": 3,
+								"displayValue": "3"
+							}
+						]
+					},
+					{
+						"team": {
+							"id": "337",
+							"abbreviation": "BRE"
+						},
+						"note": {
+							"color": "#81D6AC",
+							"description": "Champions League",
+							"rank": 4
+						},
+						"stats": [
+							{
+								"name": "gamesPlayed",
+								"value": 5,
+								"displayValue": "5"
+							},
+							{
+								"name": "losses",
+								"value": 0,
+								"displayValue": "0"
+							},
+							{
+								"name": "points",
+								"value": 9,
+								"displayValue": "9"
+							},
+							{
+								"name": "ties",
+								"value": 3,
+								"displayValue": "3"
+							},
+							{
+								"name": "wins",
+								"value": 2,
+								"displayValue": "2"
+							},
+							{
+								"name": "rank",
+								"value": 4,
+								"displayValue": "4"
+							}
+						]
+					},
+					{
+						"team": {
+							"id": "357",
+							"abbreviation": "LEE"
+						},
+						"note": {
+							"color": "##B5E7CE",
+							"description": "Europa League",
+							"rank": 5
+						},
+						"stats": [
+							{
+								"name": "gamesPlayed",
+								"value": 5,
+								"displayValue": "5"
+							},
+							{
+								"name": "losses",
+								"value": 0,
+								"displayValue": "0"
+							},
+							{
+								"name": "points",
+								"value": 9,
+								"displayValue": "9"
+							},
+							{
+								"name": "ties",
+								"value": 3,
+								"displayValue": "3"
+							},
+							{
+								"name": "wins",
+								"value": 2,
+								"displayValue": "2"
+							},
+							{
+								"name": "rank",
+								"value": 5,
+								"displayValue": "5"
+							}
+						]
+					},
+					{
+						"team": {
+							"id": "364",
+							"abbreviation": "LIV"
+						},
+						"stats": [
+							{
+								"name": "gamesPlayed",
+								"value": 5,
+								"displayValue": "5"
+							},
+							{
+								"name": "losses",
+								"value": 0,
+								"displayValue": "0"
+							},
+							{
+								"name": "points",
+								"value": 9,
+								"displayValue": "9"
+							},
+							{
+								"name": "ties",
+								"value": 3,
+								"displayValue": "3"
+							},
+							{
+								"name": "wins",
+								"value": 2,
+								"displayValue": "2"
+							},
+							{
+								"name": "rank",
+								"value": 6,
+								"displayValue": "6"
+							}
+						]
+					},
+					{
+						"team": {
+							"id": "368",
+							"abbreviation": "EVE"
+						},
+						"stats": [
+							{
+								"name": "gamesPlayed",
+								"value": 5,
+								"displayValue": "5"
+							},
+							{
+								"name": "losses",
+								"value": 0,
+								"displayValue": "0"
+							},
+							{
+								"name": "points",
+								"value": 9,
+								"displayValue": "9"
+							},
+							{
+								"name": "ties",
+								"value": 3,
+								"displayValue": "3"
+							},
+							{
+								"name": "wins",
+								"value": 2,
+								"displayValue": "2"
+							},
+							{
+								"name": "rank",
+								"value": 7,
+								"displayValue": "7"
+							}
+						]
+					},
+					{
+						"team": {
+							"id": "306",
+							"abbreviation": "HUL"
+						},
+						"stats": [
+							{
+								"name": "gamesPlayed",
+								"value": 5,
+								"displayValue": "5"
+							},
+							{
+								"name": "losses",
+								"value": 1,
+								"displayValue": "1"
+							},
+							{
+								"name": "points",
+								"value": 8,
+								"displayValue": "8"
+							},
+							{
+								"name": "ties",
+								"value": 2,
+								"displayValue": "2"
+							},
+							{
+								"name": "wins",
+								"value": 2,
+								"displayValue": "2"
+							},
+							{
+								"name": "rank",
+								"value": 8,
+								"displayValue": "8"
+							}
+						]
+					},
+					{
+						"team": {
+							"id": "361",
+							"abbreviation": "NEW"
+						},
+						"stats": [
+							{
+								"name": "gamesPlayed",
+								"value": 5,
+								"displayValue": "5"
+							},
+							{
+								"name": "losses",
+								"value": 1,
+								"displayValue": "1"
+							},
+							{
+								"name": "points",
+								"value": 8,
+								"displayValue": "8"
+							},
+							{
+								"name": "ties",
+								"value": 2,
+								"displayValue": "2"
+							},
+							{
+								"name": "wins",
+								"value": 2,
+								"displayValue": "2"
+							},
+							{
+								"name": "rank",
+								"value": 9,
+								"displayValue": "9"
+							}
+						]
+					},
+					{
+						"team": {
+							"id": "363",
+							"abbreviation": "CHE"
+						},
+						"stats": [
+							{
+								"name": "gamesPlayed",
+								"value": 5,
+								"displayValue": "5"
+							},
+							{
+								"name": "losses",
+								"value": 2,
+								"displayValue": "2"
+							},
+							{
+								"name": "points",
+								"value": 7,
+								"displayValue": "7"
+							},
+							{
+								"name": "ties",
+								"value": 1,
+								"displayValue": "1"
+							},
+							{
+								"name": "wins",
+								"value": 2,
+								"displayValue": "2"
+							},
+							{
+								"name": "rank",
+								"value": 10,
+								"displayValue": "10"
+							}
+						]
+					},
+					{
+						"team": {
+							"id": "373",
+							"abbreviation": "IPS"
+						},
+						"stats": [
+							{
+								"name": "gamesPlayed",
+								"value": 5,
+								"displayValue": "5"
+							},
+							{
+								"name": "losses",
+								"value": 3,
+								"displayValue": "3"
+							},
+							{
+								"name": "points",
+								"value": 6,
+								"displayValue": "6"
+							},
+							{
+								"name": "ties",
+								"value": 0,
+								"displayValue": "0"
+							},
+							{
+								"name": "wins",
+								"value": 2,
+								"displayValue": "2"
+							},
+							{
+								"name": "rank",
+								"value": 11,
+								"displayValue": "11"
+							}
+						]
+					},
+					{
+						"team": {
+							"id": "360",
+							"abbreviation": "MAN"
+						},
+						"stats": [
+							{
+								"name": "gamesPlayed",
+								"value": 5,
+								"displayValue": "5"
+							},
+							{
+								"name": "losses",
+								"value": 2,
+								"displayValue": "2"
+							},
+							{
+								"name": "points",
+								"value": 5,
+								"displayValue": "5"
+							},
+							{
+								"name": "ties",
+								"value": 2,
+								"displayValue": "2"
+							},
+							{
+								"name": "wins",
+								"value": 1,
+								"displayValue": "1"
+							},
+							{
+								"name": "rank",
+								"value": 12,
+								"displayValue": "12"
+							}
+						]
+					},
+					{
+						"team": {
+							"id": "393",
+							"abbreviation": "NFO"
+						},
+						"stats": [
+							{
+								"name": "gamesPlayed",
+								"value": 5,
+								"displayValue": "5"
+							},
+							{
+								"name": "losses",
+								"value": 2,
+								"displayValue": "2"
+							},
+							{
+								"name": "points",
+								"value": 5,
+								"displayValue": "5"
+							},
+							{
+								"name": "ties",
+								"value": 2,
+								"displayValue": "2"
+							},
+							{
+								"name": "wins",
+								"value": 1,
+								"displayValue": "1"
+							},
+							{
+								"name": "rank",
+								"value": 13,
+								"displayValue": "13"
+							}
+						]
+					},
+					{
+						"team": {
+							"id": "366",
+							"abbreviation": "SUN"
+						},
+						"stats": [
+							{
+								"name": "gamesPlayed",
+								"value": 5,
+								"displayValue": "5"
+							},
+							{
+								"name": "losses",
+								"value": 3,
+								"displayValue": "3"
+							},
+							{
+								"name": "points",
+								"value": 4,
+								"displayValue": "4"
+							},
+							{
+								"name": "ties",
+								"value": 1,
+								"displayValue": "1"
+							},
+							{
+								"name": "wins",
+								"value": 1,
+								"displayValue": "1"
+							},
+							{
+								"name": "rank",
+								"value": 14,
+								"displayValue": "14"
+							}
+						]
+					},
+					{
+						"team": {
+							"id": "384",
+							"abbreviation": "CRY"
+						},
+						"stats": [
+							{
+								"name": "gamesPlayed",
+								"value": 5,
+								"displayValue": "5"
+							},
+							{
+								"name": "losses",
+								"value": 3,
+								"displayValue": "3"
+							},
+							{
+								"name": "points",
+								"value": 4,
+								"displayValue": "4"
+							},
+							{
+								"name": "ties",
+								"value": 1,
+								"displayValue": "1"
+							},
+							{
+								"name": "wins",
+								"value": 1,
+								"displayValue": "1"
+							},
+							{
+								"name": "rank",
+								"value": 15,
+								"displayValue": "15"
+							}
+						]
+					},
+					{
+						"team": {
+							"id": "362",
+							"abbreviation": "AVL"
+						},
+						"stats": [
+							{
+								"name": "gamesPlayed",
+								"value": 5,
+								"displayValue": "5"
+							},
+							{
+								"name": "losses",
+								"value": 3,
+								"displayValue": "3"
+							},
+							{
+								"name": "points",
+								"value": 4,
+								"displayValue": "4"
+							},
+							{
+								"name": "ties",
+								"value": 1,
+								"displayValue": "1"
+							},
+							{
+								"name": "wins",
+								"value": 1,
+								"displayValue": "1"
+							},
+							{
+								"name": "rank",
+								"value": 16,
+								"displayValue": "16"
+							}
+						]
+					},
+					{
+						"team": {
+							"id": "349",
+							"abbreviation": "BOU"
+						},
+						"stats": [
+							{
+								"name": "gamesPlayed",
+								"value": 5,
+								"displayValue": "5"
+							},
+							{
+								"name": "losses",
+								"value": 2,
+								"displayValue": "2"
+							},
+							{
+								"name": "points",
+								"value": 3,
+								"displayValue": "3"
+							},
+							{
+								"name": "ties",
+								"value": 3,
+								"displayValue": "3"
+							},
+							{
+								"name": "wins",
+								"value": 0,
+								"displayValue": "0"
+							},
+							{
+								"name": "rank",
+								"value": 17,
+								"displayValue": "17"
+							}
+						]
+					},
+					{
+						"team": {
+							"id": "388",
+							"abbreviation": "COV"
+						},
+						"note": {
+							"color": "#FF7F84",
+							"description": "Relegation",
+							"rank": 18
+						},
+						"stats": [
+							{
+								"name": "gamesPlayed",
+								"value": 5,
+								"displayValue": "5"
+							},
+							{
+								"name": "losses",
+								"value": 4,
+								"displayValue": "4"
+							},
+							{
+								"name": "points",
+								"value": 3,
+								"displayValue": "3"
+							},
+							{
+								"name": "ties",
+								"value": 0,
+								"displayValue": "0"
+							},
+							{
+								"name": "wins",
+								"value": 1,
+								"displayValue": "1"
+							},
+							{
+								"name": "rank",
+								"value": 18,
+								"displayValue": "18"
+							}
+						]
+					},
+					{
+						"team": {
+							"id": "370",
+							"abbreviation": "FUL"
+						},
+						"note": {
+							"color": "#FF7F84",
+							"description": "Relegation",
+							"rank": 19
+						},
+						"stats": [
+							{
+								"name": "gamesPlayed",
+								"value": 5,
+								"displayValue": "5"
+							},
+							{
+								"name": "losses",
+								"value": 3,
+								"displayValue": "3"
+							},
+							{
+								"name": "points",
+								"value": 2,
+								"displayValue": "2"
+							},
+							{
+								"name": "ties",
+								"value": 2,
+								"displayValue": "2"
+							},
+							{
+								"name": "wins",
+								"value": 0,
+								"displayValue": "0"
+							},
+							{
+								"name": "rank",
+								"value": 19,
+								"displayValue": "19"
+							}
+						]
+					},
+					{
+						"team": {
+							"id": "367",
+							"abbreviation": "TOT"
+						},
+						"note": {
+							"color": "#FF7F84",
+							"description": "Relegation",
+							"rank": 20
+						},
+						"stats": [
+							{
+								"name": "gamesPlayed",
+								"value": 5,
+								"displayValue": "5"
+							},
+							{
+								"name": "losses",
+								"value": 3,
+								"displayValue": "3"
+							},
+							{
+								"name": "points",
+								"value": 2,
+								"displayValue": "2"
+							},
+							{
+								"name": "ties",
+								"value": 2,
+								"displayValue": "2"
+							},
+							{
+								"name": "wins",
+								"value": 0,
+								"displayValue": "0"
+							},
+							{
+								"name": "rank",
+								"value": 20,
+								"displayValue": "20"
+							}
+						]
+					}
+				]
+			}
+		}
+	]
+}

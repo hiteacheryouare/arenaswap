@@ -113,10 +113,11 @@ const tablesOf = (node: StandingsNode): StandingsEntry[][] => {
 
 // Regular-season length, for the race window: the last 15% of the season, or the last four games.
 const seasonLength: Partial<Record<LeagueId, number>> = {
-	mlb: 162, nba: 82, nhl: 82, wnba: 44, nfl: 17, epl: 38, laliga: 38, seriea: 38, bundesliga: 34, mls: 34, nwsl: 26, ligamx: 17,
+	mlb: 162, nfl: 17, epl: 38, laliga: 38, seriea: 38, bundesliga: 34, mls: 34, nwsl: 30, ligamx: 17,
 };
 
-// Leagues whose standings carry late-season races worth fetching for.
+// Leagues whose standings carry race markers we can read. The NBA, NHL and WNBA tables send no magic
+// numbers or playoff odds, so they aren't fetched.
 export const hasStandingsRaces = (league: LeagueId): boolean => seasonLength[league] !== undefined;
 
 const inRaceWindow = (league: LeagueId, entry: StandingsEntry): boolean => {
@@ -135,7 +136,7 @@ const lineKind = (above: string | undefined, below: string | undefined): TeamSta
 
 // Soccer: a line sits wherever two neighbours' notes differ, plus the title line between 1st and
 // 2nd. A team within three points of the team across a line is in that race.
-const soccerStakes = (table: StandingsEntry[], stakes: Map<string, TeamStakes>, league: LeagueId) => {
+const soccerStakes = (table: StandingsEntry[], stakes: Map<string, TeamStakes>, league: LeagueId, hasTitleLine: boolean) => {
 	const ordered = table.toSorted((a, b) => (statOf(a, 'rank') ?? 99) - (statOf(b, 'rank') ?? 99));
 	const mark = (entry: StandingsEntry, kind: TeamStakes['nearLine']) => {
 		if (!inRaceWindow(league, entry)) return;
@@ -147,7 +148,8 @@ const soccerStakes = (table: StandingsEntry[], stakes: Map<string, TeamStakes>, 
 	for (let i = 0; i < ordered.length - 1; i++) {
 		const upper = ordered[i]!;
 		const lower = ordered[i + 1]!;
-		const isTitleLine = i === 0;
+		// Top of a conference table is a seed, not the title.
+		const isTitleLine = i === 0 && hasTitleLine;
 		const crossesZone = upper.note?.description !== lower.note?.description;
 		if (!isTitleLine && !crossesZone) continue;
 		const kind = isTitleLine ? 'title' : lineKind(upper.note?.description, lower.note?.description);
@@ -175,7 +177,8 @@ export const readStandingsStakes = (standings: unknown, league: LeagueId, sportT
 	if (typeof standings !== 'object' || standings === null) return stakes;
 	const root = standings as StandingsNode;
 	if (sportType === 'soccer') {
-		for (const table of tablesOf(root)) soccerStakes(table, stakes, league);
+		const tables = tablesOf(root);
+		for (const table of tables) soccerStakes(table, stakes, league, tables.length === 1);
 		return stakes;
 	}
 	if (league === 'nfl') {
@@ -208,17 +211,20 @@ interface GameExtras {
 
 export type FantasyScoringOverrides = Partial<Record<FantasySport, Partial<Record<string, number>>>>;
 
-// Changes inside the scorer's window, measured from the oldest box sample in it: the first sample
-// of a game is a baseline, never a burst of recent changes.
+// Changes inside the scorer's window: the count now less the count at the window's start (the last
+// sample before it). With no sample before the window, the game's first sample is the baseline, so a
+// full-game total is never read as recent. The latest change is dated midway between the last poll
+// before it and the first poll that showed it.
 const recentLeadChanges = (game: Game, state: GameExtras, now: number): ScoringContext['recentLeadChanges'] => {
-	const cutoff = now - getHistoryWindowMsForGame(game);
 	const samples = state.boxLeadChanges;
-	const baselineIndex = samples.findIndex(sample => sample.ts >= cutoff);
-	const baseline = baselineIndex > 0 ? samples[baselineIndex - 1] : samples[0];
 	const latest = samples[samples.length - 1];
-	if (!baseline || !latest || latest.count <= baseline.count) return undefined;
-	const before = samples[samples.length - 2]!;
-	return { count: latest.count - baseline.count, lastAt: Math.round((before.ts + latest.ts) / 2) };
+	if (!latest || latest.ts < now - getHistoryWindowMsForGame(game)) return undefined;
+	const cutoff = now - getHistoryWindowMsForGame(game);
+	const baseline = samples.findLast(sample => sample.ts < cutoff) ?? samples[0]!;
+	if (latest.count <= baseline.count) return undefined;
+	const firstAtLatest = samples.findIndex(sample => sample.count === latest.count);
+	const before = samples[firstAtLatest - 1] ?? samples[firstAtLatest]!;
+	return { count: latest.count - baseline.count, lastAt: Math.round((before.ts + samples[firstAtLatest]!.ts) / 2) };
 };
 
 export const createLiveExtras = () => {
@@ -270,9 +276,11 @@ export const createLiveExtras = () => {
 		if (game.sportType !== 'basketball') return;
 		const count = readBoxLeadChanges(summary);
 		const last = state.boxLeadChanges[state.boxLeadChanges.length - 1];
-		// A stat correction that lowers the count neither counts nor moves the baseline.
-		if (count !== undefined && (!last || count > last.count)) state.boxLeadChanges.push({ ts, count });
-		if (state.boxLeadChanges.length > 30) state.boxLeadChanges.shift();
+		if (count === undefined) return;
+		// Every poll is kept, so a change can be dated between the two polls either side of it. A stat
+		// correction that lowers the count is ignored.
+		state.boxLeadChanges.push({ ts, count: Math.max(count, last?.count ?? 0) });
+		if (state.boxLeadChanges.length > 40) state.boxLeadChanges.shift();
 	};
 
 	const ingestSituation = (gameId: string, situation: unknown) => {

@@ -264,7 +264,8 @@ export const computeLeadChanges = ({ context, sport, now }: SignalInput): Signal
 	const logged = context.recentLeadChanges;
 	const fromLog = logged !== undefined && logged.count > seen.count;
 	const count = fromLog ? logged.count : seen.count;
-	const lastTimestamp = fromLog ? (logged.lastAt ?? seen.lastTimestamp ?? now) : seen.lastTimestamp;
+	// A change the snapshots saw keeps their timestamp; the log only dates the ones they missed.
+	const lastTimestamp = fromLog ? (seen.lastTimestamp ?? logged.lastAt ?? now) : seen.lastTimestamp;
 	let tier: number;
 	let reason: ReasonFragment;
 	if (count >= 2) {

@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Six fixes from testing the boosts against real payloads — 2026-10-03
+
+A no-hit bid no longer drops to zero during every "End of inning" break (our sources report it live with no half-inning, so it now scores as the next inning before its first pitch), a red card shown in stoppage time pays in full instead of half-faded, and box-score lead changes are dated between the two polls around them rather than between two increases, so a flip after a quiet stretch no longer reads as minutes old. Standings are fetched only for leagues whose tables carry race markers (not the NBA, NHL or WNBA), the top of a soccer conference table counts as a seed rather than a title line, and the tests behind all of this run on payloads recorded or fetched from our sources.
+
 ## PowerScore's README covers 3.0, and Fantasy can search for players — 2026-10-03
 
 The package README now starts from `scoreGame` with the least a feed can send, shows what each optional field switches on, how to use it with any data source and your own league ids, the three modes, building your own with `defineMode`, and what migrating from 2.x changes (nothing breaks). Core's `searchPlayers` finds players in Fantasy's leagues by name, forgiving accents, word order, a surname prefix and one typo, and `resolveRosterEntry` looks up a pick's position and team once when it's added.

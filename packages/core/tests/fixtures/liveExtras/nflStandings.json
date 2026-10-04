@@ -1,0 +1,979 @@
+{
+	"_source": "standings nfl ?level=3, fetched 2026-10-03; trimmed",
+	"name": "National Football League",
+	"abbreviation": "NFL",
+	"children": [
+		{
+			"name": "American Football Conference",
+			"abbreviation": "AFC",
+			"children": [
+				{
+					"name": "AFC East",
+					"abbreviation": "EAST",
+					"standings": {
+						"entries": [
+							{
+								"team": {
+									"id": "2",
+									"abbreviation": "BUF"
+								},
+								"stats": [
+									{
+										"name": "losses",
+										"value": 0,
+										"displayValue": "0"
+									},
+									{
+										"name": "playoffSeed",
+										"value": 2,
+										"displayValue": "2"
+									},
+									{
+										"name": "ties",
+										"value": 0,
+										"displayValue": "0"
+									},
+									{
+										"name": "wins",
+										"value": 3,
+										"displayValue": "3"
+									}
+								]
+							},
+							{
+								"team": {
+									"id": "20",
+									"abbreviation": "NYJ"
+								},
+								"stats": [
+									{
+										"name": "losses",
+										"value": 2,
+										"displayValue": "2"
+									},
+									{
+										"name": "playoffSeed",
+										"value": 10,
+										"displayValue": "10"
+									},
+									{
+										"name": "ties",
+										"value": 0,
+										"displayValue": "0"
+									},
+									{
+										"name": "wins",
+										"value": 1,
+										"displayValue": "1"
+									}
+								]
+							},
+							{
+								"team": {
+									"id": "17",
+									"abbreviation": "NE"
+								},
+								"stats": [
+									{
+										"name": "losses",
+										"value": 2,
+										"displayValue": "2"
+									},
+									{
+										"name": "playoffSeed",
+										"value": 11,
+										"displayValue": "11"
+									},
+									{
+										"name": "ties",
+										"value": 0,
+										"displayValue": "0"
+									},
+									{
+										"name": "wins",
+										"value": 1,
+										"displayValue": "1"
+									}
+								]
+							},
+							{
+								"team": {
+									"id": "15",
+									"abbreviation": "MIA"
+								},
+								"stats": [
+									{
+										"name": "losses",
+										"value": 3,
+										"displayValue": "3"
+									},
+									{
+										"name": "playoffSeed",
+										"value": 13,
+										"displayValue": "13"
+									},
+									{
+										"name": "ties",
+										"value": 0,
+										"displayValue": "0"
+									},
+									{
+										"name": "wins",
+										"value": 0,
+										"displayValue": "0"
+									}
+								]
+							}
+						]
+					}
+				},
+				{
+					"name": "AFC North",
+					"abbreviation": "NORTH",
+					"standings": {
+						"entries": [
+							{
+								"team": {
+									"id": "5",
+									"abbreviation": "CLE"
+								},
+								"stats": [
+									{
+										"name": "losses",
+										"value": 1,
+										"displayValue": "1"
+									},
+									{
+										"name": "playoffSeed",
+										"value": 3,
+										"displayValue": "3"
+									},
+									{
+										"name": "ties",
+										"value": 0,
+										"displayValue": "0"
+									},
+									{
+										"name": "wins",
+										"value": 3,
+										"displayValue": "3"
+									}
+								]
+							},
+							{
+								"team": {
+									"id": "33",
+									"abbreviation": "BAL"
+								},
+								"stats": [
+									{
+										"name": "losses",
+										"value": 1,
+										"displayValue": "1"
+									},
+									{
+										"name": "playoffSeed",
+										"value": 6,
+										"displayValue": "6"
+									},
+									{
+										"name": "ties",
+										"value": 0,
+										"displayValue": "0"
+									},
+									{
+										"name": "wins",
+										"value": 2,
+										"displayValue": "2"
+									}
+								]
+							},
+							{
+								"team": {
+									"id": "4",
+									"abbreviation": "CIN"
+								},
+								"stats": [
+									{
+										"name": "losses",
+										"value": 1,
+										"displayValue": "1"
+									},
+									{
+										"name": "playoffSeed",
+										"value": 8,
+										"displayValue": "8"
+									},
+									{
+										"name": "ties",
+										"value": 0,
+										"displayValue": "0"
+									},
+									{
+										"name": "wins",
+										"value": 2,
+										"displayValue": "2"
+									}
+								]
+							},
+							{
+								"team": {
+									"id": "23",
+									"abbreviation": "PIT"
+								},
+								"stats": [
+									{
+										"name": "losses",
+										"value": 2,
+										"displayValue": "2"
+									},
+									{
+										"name": "playoffSeed",
+										"value": 9,
+										"displayValue": "9"
+									},
+									{
+										"name": "ties",
+										"value": 0,
+										"displayValue": "0"
+									},
+									{
+										"name": "wins",
+										"value": 2,
+										"displayValue": "2"
+									}
+								]
+							}
+						]
+					}
+				},
+				{
+					"name": "AFC South",
+					"abbreviation": "SOUTH",
+					"standings": {
+						"entries": [
+							{
+								"team": {
+									"id": "30",
+									"abbreviation": "JAX"
+								},
+								"stats": [
+									{
+										"name": "losses",
+										"value": 1,
+										"displayValue": "1"
+									},
+									{
+										"name": "playoffSeed",
+										"value": 4,
+										"displayValue": "4"
+									},
+									{
+										"name": "ties",
+										"value": 0,
+										"displayValue": "0"
+									},
+									{
+										"name": "wins",
+										"value": 2,
+										"displayValue": "2"
+									}
+								]
+							},
+							{
+								"team": {
+									"id": "11",
+									"abbreviation": "IND"
+								},
+								"stats": [
+									{
+										"name": "losses",
+										"value": 2,
+										"displayValue": "2"
+									},
+									{
+										"name": "playoffSeed",
+										"value": 12,
+										"displayValue": "12"
+									},
+									{
+										"name": "ties",
+										"value": 0,
+										"displayValue": "0"
+									},
+									{
+										"name": "wins",
+										"value": 1,
+										"displayValue": "1"
+									}
+								]
+							},
+							{
+								"team": {
+									"id": "10",
+									"abbreviation": "TEN"
+								},
+								"stats": [
+									{
+										"name": "losses",
+										"value": 3,
+										"displayValue": "3"
+									},
+									{
+										"name": "playoffSeed",
+										"value": 15,
+										"displayValue": "15"
+									},
+									{
+										"name": "ties",
+										"value": 0,
+										"displayValue": "0"
+									},
+									{
+										"name": "wins",
+										"value": 0,
+										"displayValue": "0"
+									}
+								]
+							},
+							{
+								"team": {
+									"id": "34",
+									"abbreviation": "HOU"
+								},
+								"stats": [
+									{
+										"name": "losses",
+										"value": 3,
+										"displayValue": "3"
+									},
+									{
+										"name": "playoffSeed",
+										"value": 16,
+										"displayValue": "16"
+									},
+									{
+										"name": "ties",
+										"value": 0,
+										"displayValue": "0"
+									},
+									{
+										"name": "wins",
+										"value": 0,
+										"displayValue": "0"
+									}
+								]
+							}
+						]
+					}
+				},
+				{
+					"name": "AFC West",
+					"abbreviation": "WEST",
+					"standings": {
+						"entries": [
+							{
+								"team": {
+									"id": "12",
+									"abbreviation": "KC"
+								},
+								"stats": [
+									{
+										"name": "losses",
+										"value": 0,
+										"displayValue": "0"
+									},
+									{
+										"name": "playoffSeed",
+										"value": 1,
+										"displayValue": "1"
+									},
+									{
+										"name": "ties",
+										"value": 0,
+										"displayValue": "0"
+									},
+									{
+										"name": "wins",
+										"value": 3,
+										"displayValue": "3"
+									}
+								]
+							},
+							{
+								"team": {
+									"id": "13",
+									"abbreviation": "LV"
+								},
+								"stats": [
+									{
+										"name": "losses",
+										"value": 0,
+										"displayValue": "0"
+									},
+									{
+										"name": "playoffSeed",
+										"value": 5,
+										"displayValue": "5"
+									},
+									{
+										"name": "ties",
+										"value": 0,
+										"displayValue": "0"
+									},
+									{
+										"name": "wins",
+										"value": 3,
+										"displayValue": "3"
+									}
+								]
+							},
+							{
+								"team": {
+									"id": "7",
+									"abbreviation": "DEN"
+								},
+								"stats": [
+									{
+										"name": "losses",
+										"value": 1,
+										"displayValue": "1"
+									},
+									{
+										"name": "playoffSeed",
+										"value": 7,
+										"displayValue": "7"
+									},
+									{
+										"name": "ties",
+										"value": 0,
+										"displayValue": "0"
+									},
+									{
+										"name": "wins",
+										"value": 2,
+										"displayValue": "2"
+									}
+								]
+							},
+							{
+								"team": {
+									"id": "24",
+									"abbreviation": "LAC"
+								},
+								"stats": [
+									{
+										"name": "losses",
+										"value": 3,
+										"displayValue": "3"
+									},
+									{
+										"name": "playoffSeed",
+										"value": 14,
+										"displayValue": "14"
+									},
+									{
+										"name": "ties",
+										"value": 0,
+										"displayValue": "0"
+									},
+									{
+										"name": "wins",
+										"value": 0,
+										"displayValue": "0"
+									}
+								]
+							}
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "National Football Conference",
+			"abbreviation": "NFC",
+			"children": [
+				{
+					"name": "NFC East",
+					"abbreviation": "EAST",
+					"standings": {
+						"entries": [
+							{
+								"team": {
+									"id": "21",
+									"abbreviation": "PHI"
+								},
+								"stats": [
+									{
+										"name": "losses",
+										"value": 1,
+										"displayValue": "1"
+									},
+									{
+										"name": "playoffSeed",
+										"value": 3,
+										"displayValue": "3"
+									},
+									{
+										"name": "ties",
+										"value": 0,
+										"displayValue": "0"
+									},
+									{
+										"name": "wins",
+										"value": 2,
+										"displayValue": "2"
+									}
+								]
+							},
+							{
+								"team": {
+									"id": "19",
+									"abbreviation": "NYG"
+								},
+								"stats": [
+									{
+										"name": "losses",
+										"value": 1,
+										"displayValue": "1"
+									},
+									{
+										"name": "playoffSeed",
+										"value": 8,
+										"displayValue": "8"
+									},
+									{
+										"name": "ties",
+										"value": 0,
+										"displayValue": "0"
+									},
+									{
+										"name": "wins",
+										"value": 2,
+										"displayValue": "2"
+									}
+								]
+							},
+							{
+								"team": {
+									"id": "6",
+									"abbreviation": "DAL"
+								},
+								"stats": [
+									{
+										"name": "losses",
+										"value": 2,
+										"displayValue": "2"
+									},
+									{
+										"name": "playoffSeed",
+										"value": 10,
+										"displayValue": "10"
+									},
+									{
+										"name": "ties",
+										"value": 0,
+										"displayValue": "0"
+									},
+									{
+										"name": "wins",
+										"value": 1,
+										"displayValue": "1"
+									}
+								]
+							},
+							{
+								"team": {
+									"id": "28",
+									"abbreviation": "WSH"
+								},
+								"stats": [
+									{
+										"name": "losses",
+										"value": 2,
+										"displayValue": "2"
+									},
+									{
+										"name": "playoffSeed",
+										"value": 11,
+										"displayValue": "11"
+									},
+									{
+										"name": "ties",
+										"value": 0,
+										"displayValue": "0"
+									},
+									{
+										"name": "wins",
+										"value": 1,
+										"displayValue": "1"
+									}
+								]
+							}
+						]
+					}
+				},
+				{
+					"name": "NFC North",
+					"abbreviation": "NORTH",
+					"standings": {
+						"entries": [
+							{
+								"team": {
+									"id": "16",
+									"abbreviation": "MIN"
+								},
+								"stats": [
+									{
+										"name": "losses",
+										"value": 0,
+										"displayValue": "0"
+									},
+									{
+										"name": "playoffSeed",
+										"value": 1,
+										"displayValue": "1"
+									},
+									{
+										"name": "ties",
+										"value": 0,
+										"displayValue": "0"
+									},
+									{
+										"name": "wins",
+										"value": 3,
+										"displayValue": "3"
+									}
+								]
+							},
+							{
+								"team": {
+									"id": "8",
+									"abbreviation": "DET"
+								},
+								"stats": [
+									{
+										"name": "losses",
+										"value": 1,
+										"displayValue": "1"
+									},
+									{
+										"name": "playoffSeed",
+										"value": 5,
+										"displayValue": "5"
+									},
+									{
+										"name": "ties",
+										"value": 0,
+										"displayValue": "0"
+									},
+									{
+										"name": "wins",
+										"value": 2,
+										"displayValue": "2"
+									}
+								]
+							},
+							{
+								"team": {
+									"id": "3",
+									"abbreviation": "CHI"
+								},
+								"stats": [
+									{
+										"name": "losses",
+										"value": 1,
+										"displayValue": "1"
+									},
+									{
+										"name": "playoffSeed",
+										"value": 6,
+										"displayValue": "6"
+									},
+									{
+										"name": "ties",
+										"value": 0,
+										"displayValue": "0"
+									},
+									{
+										"name": "wins",
+										"value": 2,
+										"displayValue": "2"
+									}
+								]
+							},
+							{
+								"team": {
+									"id": "9",
+									"abbreviation": "GB"
+								},
+								"stats": [
+									{
+										"name": "losses",
+										"value": 2,
+										"displayValue": "2"
+									},
+									{
+										"name": "playoffSeed",
+										"value": 14,
+										"displayValue": "14"
+									},
+									{
+										"name": "ties",
+										"value": 0,
+										"displayValue": "0"
+									},
+									{
+										"name": "wins",
+										"value": 1,
+										"displayValue": "1"
+									}
+								]
+							}
+						]
+					}
+				},
+				{
+					"name": "NFC South",
+					"abbreviation": "SOUTH",
+					"standings": {
+						"entries": [
+							{
+								"team": {
+									"id": "29",
+									"abbreviation": "CAR"
+								},
+								"stats": [
+									{
+										"name": "losses",
+										"value": 2,
+										"displayValue": "2"
+									},
+									{
+										"name": "playoffSeed",
+										"value": 4,
+										"displayValue": "4"
+									},
+									{
+										"name": "ties",
+										"value": 0,
+										"displayValue": "0"
+									},
+									{
+										"name": "wins",
+										"value": 1,
+										"displayValue": "1"
+									}
+								]
+							},
+							{
+								"team": {
+									"id": "18",
+									"abbreviation": "NO"
+								},
+								"stats": [
+									{
+										"name": "losses",
+										"value": 2,
+										"displayValue": "2"
+									},
+									{
+										"name": "playoffSeed",
+										"value": 12,
+										"displayValue": "12"
+									},
+									{
+										"name": "ties",
+										"value": 0,
+										"displayValue": "0"
+									},
+									{
+										"name": "wins",
+										"value": 1,
+										"displayValue": "1"
+									}
+								]
+							},
+							{
+								"team": {
+									"id": "1",
+									"abbreviation": "ATL"
+								},
+								"stats": [
+									{
+										"name": "losses",
+										"value": 2,
+										"displayValue": "2"
+									},
+									{
+										"name": "playoffSeed",
+										"value": 13,
+										"displayValue": "13"
+									},
+									{
+										"name": "ties",
+										"value": 0,
+										"displayValue": "0"
+									},
+									{
+										"name": "wins",
+										"value": 1,
+										"displayValue": "1"
+									}
+								]
+							},
+							{
+								"team": {
+									"id": "27",
+									"abbreviation": "TB"
+								},
+								"stats": [
+									{
+										"name": "losses",
+										"value": 3,
+										"displayValue": "3"
+									},
+									{
+										"name": "playoffSeed",
+										"value": 16,
+										"displayValue": "16"
+									},
+									{
+										"name": "ties",
+										"value": 0,
+										"displayValue": "0"
+									},
+									{
+										"name": "wins",
+										"value": 0,
+										"displayValue": "0"
+									}
+								]
+							}
+						]
+					}
+				},
+				{
+					"name": "NFC West",
+					"abbreviation": "WEST",
+					"standings": {
+						"entries": [
+							{
+								"team": {
+									"id": "25",
+									"abbreviation": "SF"
+								},
+								"stats": [
+									{
+										"name": "losses",
+										"value": 0,
+										"displayValue": "0"
+									},
+									{
+										"name": "playoffSeed",
+										"value": 2,
+										"displayValue": "2"
+									},
+									{
+										"name": "ties",
+										"value": 0,
+										"displayValue": "0"
+									},
+									{
+										"name": "wins",
+										"value": 3,
+										"displayValue": "3"
+									}
+								]
+							},
+							{
+								"team": {
+									"id": "26",
+									"abbreviation": "SEA"
+								},
+								"stats": [
+									{
+										"name": "losses",
+										"value": 1,
+										"displayValue": "1"
+									},
+									{
+										"name": "playoffSeed",
+										"value": 7,
+										"displayValue": "7"
+									},
+									{
+										"name": "ties",
+										"value": 0,
+										"displayValue": "0"
+									},
+									{
+										"name": "wins",
+										"value": 2,
+										"displayValue": "2"
+									}
+								]
+							},
+							{
+								"team": {
+									"id": "14",
+									"abbreviation": "LAR"
+								},
+								"stats": [
+									{
+										"name": "losses",
+										"value": 2,
+										"displayValue": "2"
+									},
+									{
+										"name": "playoffSeed",
+										"value": 9,
+										"displayValue": "9"
+									},
+									{
+										"name": "ties",
+										"value": 0,
+										"displayValue": "0"
+									},
+									{
+										"name": "wins",
+										"value": 1,
+										"displayValue": "1"
+									}
+								]
+							},
+							{
+								"team": {
+									"id": "22",
+									"abbreviation": "ARI"
+								},
+								"stats": [
+									{
+										"name": "losses",
+										"value": 2,
+										"displayValue": "2"
+									},
+									{
+										"name": "playoffSeed",
+										"value": 15,
+										"displayValue": "15"
+									},
+									{
+										"name": "ties",
+										"value": 0,
+										"displayValue": "0"
+									},
+									{
+										"name": "wins",
+										"value": 1,
+										"displayValue": "1"
+									}
+								]
+							}
+						]
+					}
+				}
+			]
+		}
+	]
+}

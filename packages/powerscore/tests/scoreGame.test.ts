@@ -299,7 +299,7 @@ describe('a mode that has nothing to say about a game', () => {
 	});
 
 	test('scores the game itself once a player it cares about is on the floor', () => {
-		const context: ScoringContext = { ...denverRun(), fantasy: [{ id: 'jokic', side: 'home', position: 'player', points: 41 }] };
+		const context: ScoringContext = { ...denverRun(), fantasy: [{ id: 'jokic', side: 'home', position: 'player', pointEvents: [{ at: 0, points: 41 }] }] };
 		const score = scoreGame(tiedFinalMinute(), context, { mode: rosterMode(hasRosteredPlayer) });
 		expect(score.modeId).toBe('roster');
 		expect(score.classicTotal).toBeDefined();

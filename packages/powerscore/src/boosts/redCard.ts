@@ -21,6 +21,17 @@ const cardMagnitude = (game: Game<string>, card: RedCard): number => {
 	return 0;
 };
 
+// The match clock in a red card stops at the end of regulation for the half (45, 90, and 105 or 120
+// in extra time), so a card shown in stoppage time reads as shown at the whistle. While that same
+// stoppage is still being played it counts as just shown; the game clock can't say how long ago.
+const stoppageEnds = [45, 90, 105, 120];
+
+const minutesSince = (card: RedCard, minute: number, period: number | undefined): number => {
+	const stoppageEnd = stoppageEnds.findIndex(end => Math.abs(card.minute - end) < 0.02);
+	if (stoppageEnd >= 0 && period === stoppageEnd + 1 && minute >= card.minute) return 0;
+	return minute - card.minute;
+};
+
 // A red card in a tied or one-goal game, fading over the next ten game minutes. Re-gated on the
 // score every poll, so a goal that opens the game up ends it early.
 export const redCardBoost: BoostDefinition = {
@@ -33,7 +44,7 @@ export const redCardBoost: BoostDefinition = {
 		const { fullMinutes, fadeMinutes, secondCardFactor } = redCardTunables;
 		let best = 0;
 		game.redCards.forEach((card, index) => {
-			const since = minute - card.minute;
+			const since = minutesSince(card, minute, game.period);
 			if (since < 0 || since >= fadeMinutes) return;
 			const fade = since <= fullMinutes ? 1 : 1 - (since - fullMinutes) / (fadeMinutes - fullMinutes);
 			const earlierForSameTeam = game.redCards!.slice(0, index).some(other => other.side === card.side);

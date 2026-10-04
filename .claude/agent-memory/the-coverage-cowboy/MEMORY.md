@@ -9,4 +9,5 @@
 - [LivePowerScores soccer bug](project_livepowerscores_duplicated_helpers.md) — period+parse fixed; soccer clock format still divergent (95:00 vs 95') with a red spec standing on it
 - [gameClock decimal discontinuity](project_gameclock_decimal_discontinuity.md) — OPEN, one red jest test; "1.0" reads 1s and "0.9" reads 54s
 - [core package.json inlined into the site](project_core_package_json_inlined.md) — why grepping the docs bundle for "zod" gives a false positive
-- [PowerScore 3 open questions](project_powerscore3_open_questions.md) — appliesTo fallback ignores classicDisabledSignals, NaN poisoning, one-poll scoring lag
+- [PowerScore 3 open questions](project_powerscore3_open_questions.md) — 6 red tests (stoppage red card, End-of-inning no-hitter, box lead changes) + open spec gaps
+- [Recordings + ESPN extras facts](reference_recordings_and_espn_extras.md) — reading torn .jsonl.gz recordings; stoppage clock cap, standings fields per league

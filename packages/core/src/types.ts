@@ -183,6 +183,9 @@ export interface Game {
 	intermission?: boolean;
 	// Top of inning = true, bottom = false.
 	topOfInning?: boolean;
+	// "End 6th": both halves are done and the next inning hasn't started. Reported live, for a couple
+	// of minutes at a time, with no half-inning to read.
+	inningEnded?: boolean;
 	baseRunners?: { first: boolean; second: boolean; third: boolean };
 	bso?: { balls: number; strikes: number; outs: number };
 	// Inning sports only. Dropped between innings, which is what makes the panel come and go.

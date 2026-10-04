@@ -697,6 +697,7 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 		odds: parseOdds(comp),
 		intermission: /HALFTIME|END_PERIOD|INTERMISSION/i.test(status.type?.name ?? ''),
 		topOfInning: isInningSport ? parseTopOfInning(status.type?.shortDetail) : undefined,
+		inningEnded: isInningSport && status.type?.shortDetail?.startsWith('End') ? true : undefined,
 		baseRunners: isInningSport && situation ? {
 			first: situation.onFirst ?? false,
 			second: situation.onSecond ?? false,

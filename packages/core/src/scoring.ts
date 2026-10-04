@@ -32,6 +32,18 @@ const toRedCards = (game: Game): ScoringGame['redCards'] => game.redCardEvents
 	?.map(card => ({ side: sideOf(game, card.teamId), minute: card.minute }))
 	.filter((card): card is { side: Side; minute: number } => card.side !== undefined);
 
+// The break after an inning is the next inning before its first pitch, so a no-hit bid or a late
+// inning keeps counting through it instead of reading as an unknown half.
+const inningState = (game: Game): Pick<ScoringGame, 'period' | 'topOfInning' | 'outs' | 'baseRunners'> => {
+	if (game.inningEnded) return { period: game.period + 1, topOfInning: true, outs: 0, baseRunners: { first: false, second: false, third: false } };
+	return {
+		period: game.period,
+		...(game.topOfInning !== undefined ? { topOfInning: game.topOfInning } : {}),
+		...(game.baseRunners !== undefined ? { baseRunners: game.baseRunners } : {}),
+		...(game.bso !== undefined ? { outs: game.bso.outs } : {}),
+	};
+};
+
 export const toScoringGame = (game: Game): ScoringGame => {
 	const possession = sideOf(game, game.possessionTeamId);
 	const seeded = game.collegeSeeded === true;
@@ -42,14 +54,11 @@ export const toScoringGame = (game: Game): ScoringGame => {
 		sportType: game.sportType,
 		homeTeam: toTeamState(game.homeTeam, seeded),
 		awayTeam: toTeamState(game.awayTeam, seeded),
-		...(game.period !== undefined ? { period: game.period } : {}),
+		...(game.period !== undefined ? inningState(game) : {}),
 		...(game.clockSeconds !== undefined ? { clockSeconds: game.clockSeconds } : {}),
 		...(game.intermission !== undefined ? { intermission: game.intermission } : {}),
 		...(game.delayed !== undefined ? { delayed: game.delayed } : {}),
 		...(game.status !== undefined ? { status: game.status } : {}),
-		...(game.topOfInning !== undefined ? { topOfInning: game.topOfInning } : {}),
-		...(game.baseRunners !== undefined ? { baseRunners: game.baseRunners } : {}),
-		...(game.bso !== undefined ? { outs: game.bso.outs } : {}),
 		...(game.isRedZone !== undefined ? { isRedZone: game.isRedZone } : {}),
 		...(game.down !== undefined ? { down: game.down } : {}),
 		...(game.distance !== undefined ? { distance: game.distance } : {}),
