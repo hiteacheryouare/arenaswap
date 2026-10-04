@@ -616,11 +616,15 @@ const parseSeries = (comp: EspnCompetition, homeId: string, awayId: string): Ser
 const parseRedCards = (comp: EspnCompetition): RedCardEvent[] | undefined => {
 	const cards = (comp.details ?? [])
 		.filter(detail => detail.redCard === true && detail.team?.id !== undefined && typeof detail.clock?.value === 'number')
-		.map((detail): RedCardEvent => ({
-			teamId: detail.team!.id!,
-			minute: detail.clock!.value! / 60,
-			...(detail.athletesInvolved?.[0]?.displayName ? { player: detail.athletesInvolved[0].displayName } : {}),
-		}));
+		.map((detail): RedCardEvent => {
+			const added = Number(/\+(\d+)/.exec(detail.clock!.displayValue ?? '')?.[1]);
+			return {
+				teamId: detail.team!.id!,
+				minute: detail.clock!.value! / 60,
+				...(added > 0 ? { addedMinutes: added } : {}),
+				...(detail.athletesInvolved?.[0]?.displayName ? { player: detail.athletesInvolved[0].displayName } : {}),
+			};
+		});
 	return cards.length > 0 ? cards : undefined;
 };
 

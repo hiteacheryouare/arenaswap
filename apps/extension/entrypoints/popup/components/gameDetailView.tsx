@@ -42,6 +42,7 @@ import { matchupSurfaceStyle } from '@arenaswap/ui/src/components/gameCardShared
 import { boostPresentation, isBoostId, isModeSignalId, signalColorOf, signalPresentation } from '@arenaswap/ui/src/components/scoringModeMeta';
 import { useDisplayLocale } from '@arenaswap/ui/src/components/i18nContext';
 import useSwitchCrest from '@arenaswap/ui/src/components/useSwitchCrest';
+import useBasketballSituation from './useBasketballSituation';
 import useSummaryData from './useSummaryData';
 import { chartHistory, coversWholeGame } from './wrapCoverage';
 import { resolveDecorations, type holidayDecorationPrefs } from '../../../utils/holidayDecorations';
@@ -196,6 +197,7 @@ const gameDetailView = ({
 		scoredModeId === 'blowouts' ? buildLeadTrackerOption(orderedScoreHistory, game, chartPalette, [awayLineColor, homeLineColor], locale, describeLead) : undefined
 	), [scoredModeId, orderedScoreHistory, game, chartPalette, awayLineColor, homeLineColor, locale]);
 	const { winProbability, seriesInfo, records, monoLogos, boxScore, standings, gameDurationMins, matchup, tickets } = useSummaryData(game);
+	const basketballSituation = useBasketballSituation(game);
 	const winProbabilityOption = useMemo(() => (
 		buildWinProbabilityOption(winProbability, game, chartPalette, [awayLineColor, homeLineColor])
 	), [winProbability, game, chartPalette, awayLineColor, homeLineColor]);
@@ -401,6 +403,7 @@ const gameDetailView = ({
 						heroStyle={heroStyle}
 						awayColor={awayAccent}
 						homeColor={homeAccent}
+						basketballSituation={basketballSituation}
 					/>
 				)}
 			</div>

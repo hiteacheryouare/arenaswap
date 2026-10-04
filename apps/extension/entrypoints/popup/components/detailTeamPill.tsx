@@ -8,12 +8,13 @@ interface detailTeamPillProps {
 	side: 'away' | 'home';
 	record?: string | null;
 	color: string;
+	timeoutMax?: number;
 }
 
 // Crest, name and record are emitted as separate grid children via `display: contents`, which
 // is what holds the two sides level: a name that wraps to two lines pushes its own row taller
 // without shifting the logo or the record beside it.
-const detailTeamPill = ({ team, side, record, color }: detailTeamPillProps) => (
+const detailTeamPill = ({ team, side, record, color, timeoutMax }: detailTeamPillProps) => (
 	<div className={`game-detail-team-wrap is-${side}`}>
 		{/* Blank rather than lettered — the abbreviation is directly below it. */}
 		<span className={`game-detail-team-logo-shell is-bare gd-area-${side}-crest`}>
@@ -41,7 +42,7 @@ const detailTeamPill = ({ team, side, record, color }: detailTeamPillProps) => (
 		    one team's name wraps and the other's does not — the same reason the record has one. */}
 		{team.timeouts !== undefined && (
 			<div className={`gd-area-${side}-timeouts`}>
-				<TimeoutDots remaining={team.timeouts} teamAbbreviation={team.abbreviation} />
+				<TimeoutDots remaining={team.timeouts} max={timeoutMax} teamAbbreviation={team.abbreviation} />
 			</div>
 		)}
 	</div>

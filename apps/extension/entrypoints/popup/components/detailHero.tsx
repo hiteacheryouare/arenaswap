@@ -1,12 +1,13 @@
 import { i18n } from '#i18n';
-import type { Game } from '@arenaswap/core/types';
+import type { BasketballSituation } from '@arenaswap/core';
+import type { Game, Team } from '@arenaswap/core/types';
 import AtBatPanel from './atBatPanel';
 import BaseDiamond from './baseDiamond';
 import BsoIndicator from './bsoIndicator';
 import DetailTeamPill from './detailTeamPill';
 import FlipScore from './flipScore';
 import FootballFieldStrip from './footballFieldStrip';
-import type { GameStatus } from './gameSituation';
+import { basketballTimeoutAllotment, describeBasketballFouls, type GameStatus } from './gameSituation';
 import InningHalfIcon from './inningHalfIcon';
 import SeriesDots from './seriesDots';
 import StartCountdownDisplay from './startCountdownDisplay';
@@ -23,9 +24,14 @@ interface detailHeroProps {
 	heroStyle: React.CSSProperties;
 	awayColor: string;
 	homeColor: string;
+	basketballSituation?: BasketballSituation | null;
 }
 
-const detailHero = ({ game, seriesInfo, records = emptyTeamRecords, monoLogos, isDelayed, isInningSport, status, heroStyle, awayColor, homeColor }: detailHeroProps) => {
+const withTimeouts = (team: Team, timeoutsLeft: number | undefined): Team => (
+	timeoutsLeft === undefined ? team : { ...team, timeouts: timeoutsLeft }
+);
+
+const detailHero = ({ game, seriesInfo, records = emptyTeamRecords, monoLogos, isDelayed, isInningSport, status, heroStyle, awayColor, homeColor, basketballSituation }: detailHeroProps) => {
 	const isPre = game.status === 'pre';
 	// The list card carries this line itself; on the detail screen it is the field strip's caption,
 	// and it is the only place the down, the distance and the yard marker appear as words.
@@ -34,6 +40,14 @@ const detailHero = ({ game, seriesInfo, records = emptyTeamRecords, monoLogos, i
 		: game.downDistance;
 	const showField = game.sportType === 'football' && game.status === 'in'
 		&& (typeof game.yardLine === 'number' || downDistanceLine !== undefined);
+
+	// Basketball's answer to the down and distance. Between periods the fouls have already reset
+	// for the next one, so the line waits for play rather than announcing a clean slate.
+	const situation = game.sportType === 'basketball' && game.status === 'in' ? basketballSituation : null;
+	const foulsLine = situation && game.intermission !== true ? describeBasketballFouls(situation, game, i18n.t) : undefined;
+	const timeoutMax = situation ? basketballTimeoutAllotment(game.league) : undefined;
+	const awayTeam = withTimeouts(game.awayTeam, situation?.away.timeoutsLeft);
+	const homeTeam = withTimeouts(game.homeTeam, situation?.home.timeoutsLeft);
 
 	// Only once the game is over. During play a dimmed score would read as the team that is behind
 	// rather than the team that lost, and it would flip back and forth on every basket. The weight
@@ -51,7 +65,7 @@ const detailHero = ({ game, seriesInfo, records = emptyTeamRecords, monoLogos, i
 		// the re-toning on — every child of this hero was drawn for near-black ink on white.
 		<div className={`gd-poster game-detail-matchup gd-hero gd-hero-live${isDelayed ? ' is-delayed' : ''}`} style={heroStyle}>
 			<div className='game-detail-teams-row'>
-				<DetailTeamPill team={game.awayTeam} side='away' record={records.away} color={awayColor} />
+				<DetailTeamPill team={awayTeam} side='away' record={records.away} color={awayColor} timeoutMax={timeoutMax} />
 				<div className='game-detail-center'>
 					{isPre ? (
 						<div className='gd-vs'>{i18n.t('gameCard.vs')}</div>
@@ -66,7 +80,7 @@ const detailHero = ({ game, seriesInfo, records = emptyTeamRecords, monoLogos, i
 						</div>
 					)}
 				</div>
-				<DetailTeamPill team={game.homeTeam} side='home' record={records.home} color={homeColor} />
+				<DetailTeamPill team={homeTeam} side='home' record={records.home} color={homeColor} timeoutMax={timeoutMax} />
 				{status.text && (
 					<div className={`game-detail-period${status.ticking ? ' is-ticking' : ''}`}>
 						{isInningSport && <InningHalfIcon topOfInning={game.topOfInning} />}{status.text}
@@ -81,6 +95,8 @@ const detailHero = ({ game, seriesInfo, records = emptyTeamRecords, monoLogos, i
 			{/* Directly under the count, because the count is the question this answers: who is
 			    the game waiting on. Absent between innings, when ESPN drops the pair. */}
 			<AtBatPanel game={game} />
+
+			{foulsLine && <div className='gd-fouls-line'>{foulsLine}</div>}
 
 			{showField && (
 				<div className='gd-field-row'>

@@ -1,7 +1,7 @@
 import { boostPoints, scoreGame, signalPoints, underdogProbability } from 'powerscore';
 import type { TeamStakes } from 'powerscore';
 import { parseScoreboardEvents } from '../src/apiClient';
-import { createLiveExtras, readBoxLeadChanges, readHockeySituation, readPregameLine, readStandingsStakes } from '../src/liveExtras';
+import { createLiveExtras, readBasketballSituation, readBoxLeadChanges, readHockeySituation, readPregameLine, readStandingsStakes } from '../src/liveExtras';
 import { scoreLiveGame, toScoringGame } from '../src/scoring';
 import type { Game } from '../src/types';
 import mlbScoreboard from './fixtures/liveExtras/mlbPostseasonScoreboard.json';
@@ -9,6 +9,7 @@ import mlsScoreboard from './fixtures/liveExtras/mlsRedCardScoreboard.json';
 import summaryLines from './fixtures/liveExtras/summaryLines.json';
 import nbaBoxScores from './fixtures/liveExtras/nbaBoxScores.json';
 import hockeySituations from './fixtures/liveExtras/hockeySituations.json';
+import basketballSituations from './fixtures/liveExtras/basketballSituations.json';
 import mlbStandings from './fixtures/liveExtras/mlbStandings.json';
 import nwslStandings from './fixtures/liveExtras/nwslStandings.json';
 import nflStandings from './fixtures/liveExtras/nflStandings.json';
@@ -133,7 +134,7 @@ const liveAt = (displayClock: string, home: number, away: number, detailsThrough
 describe('soccer red cards from the scoreboard', () => {
 	test('reads only the red card, with its team and player, not the dozen yellows around it', () => {
 		const game = mlsEvent();
-		expect(game.redCardEvents).toEqual([{ teamId: '20232', minute: 90, player: 'Santiago Morales' }]);
+		expect(game.redCardEvents).toEqual([{ teamId: '20232', minute: 90, addedMinutes: 6, player: 'Santiago Morales' }]);
 		expect(toScoringGame(game).redCards).toEqual([{ side: 'away', minute: 90 }]);
 	});
 
@@ -312,6 +313,63 @@ describe('box-score lead changes', () => {
 			0,
 		);
 		expect(signalPoints(score, 'leadChanges')).toBe(12);
+	});
+});
+
+const basketball = basketballSituations as Json;
+
+describe('the basketball situation', () => {
+	test('reads each side\'s timeouts, fouls this period and fouls to give', () => {
+		expect(readBasketballSituation(basketball.firstQuarter.raw)).toEqual({
+			home: { timeoutsLeft: 7, foulsToGive: 2, periodFouls: 2 },
+			away: { timeoutsLeft: 7, foulsToGive: 4, periodFouls: 0 },
+		});
+	});
+
+	// The away side running out of fouls to give is what puts the home side in the bonus, so the
+	// flag sits on the team that shoots, not on the team that fouled.
+	test('puts the bonus on the side that shoots the free throws', () => {
+		const situation = readBasketballSituation(basketball.homeInBonus.raw)!;
+		expect(situation.home.bonus).toBe('double');
+		expect(situation.away.bonus).toBeUndefined();
+		expect(situation.away.foulsToGive).toBe(0);
+		expect(readBasketballSituation(basketball.bothInBonus.raw)).toMatchObject({ home: { bonus: 'double' }, away: { bonus: 'double' } });
+	});
+
+	test('a new quarter clears the fouls and keeps the timeouts', () => {
+		expect(readBasketballSituation(basketball.quarterReset.raw)).toEqual({
+			home: { timeoutsLeft: 5, foulsToGive: 4, periodFouls: 0 },
+			away: { timeoutsLeft: 7, foulsToGive: 4, periodFouls: 0 },
+		});
+	});
+
+	// Inside the last minutes the league caps what a team may still call, and the current count is
+	// the one that says so: the away side had four left a moment earlier without calling one.
+	test('reads the timeouts a team can still call, not the ones it has not used', () => {
+		expect(readBasketballSituation(basketball.lastMinutes.raw)).toMatchObject({ home: { timeoutsLeft: 1 }, away: { timeoutsLeft: 2 } });
+	});
+
+	test('reads BONUS as the one-and-one and ignores a state it does not know', () => {
+		const raw = clone(basketball.firstQuarter.raw);
+		raw.homeFouls.bonusState = 'BONUS';
+		raw.awayFouls.bonusState = 'PENALTY';
+		const situation = readBasketballSituation(raw)!;
+		expect(situation.home.bonus).toBe('bonus');
+		expect(situation.away).not.toHaveProperty('bonus');
+	});
+
+	test('drops a malformed count rather than the whole side', () => {
+		const raw = clone(basketball.firstQuarter.raw);
+		raw.homeFouls.foulsToGive = '2';
+		raw.homeTimeouts.timeoutsRemainingCurrent = -1;
+		expect(readBasketballSituation(raw)!.home).toEqual({ periodFouls: 2 });
+	});
+
+	test('reads nothing from a hockey situation or a bare reference', () => {
+		expect(readBasketballSituation((hockeySituations as Json).nhlPowerPlay.raw)).toBeUndefined();
+		expect(readBasketballSituation({ $ref: basketball.final.raw.$ref })).toBeUndefined();
+		expect(readBasketballSituation(null)).toBeUndefined();
+		expect(readBasketballSituation('situation')).toBeUndefined();
 	});
 });
 

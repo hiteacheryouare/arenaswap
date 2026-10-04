@@ -15,6 +15,7 @@ import ptBR from '../../locales/pt_BR.json';
 import ptPT from '../../locales/pt_PT.json';
 import zhCN from '../../locales/zh_CN.json';
 import zhTW from '../../locales/zh_TW.json';
+import basketballSituations from '../../../../packages/core/tests/fixtures/liveExtras/basketballSituations.json';
 
 const locales = { de, en, es, fil, fr, it: itLocale, ja, ko, pt_BR: ptBR, pt_PT: ptPT, zh_CN: zhCN, zh_TW: zhTW };
 
@@ -1147,5 +1148,224 @@ describe('gameDetailView scoring modes', () => {
 		const history = powerScoreHistory.map(snapshot => ({ ...snapshot, modeId: 'blowouts', signals: { blowoutMargin: 30, sustained: 10, timing: 5, pileOn: 0 } }));
 		mountDetail(makeLiveGame(), { scoreHistory, powerScoreHistory: history });
 		chartTitles().should('include', 'Lead Over Time');
+	});
+});
+
+// Bonus, fouls to give and timeouts, read from the situation resource while the screen is open. A
+// real game id rather than a `mock-` one, so the fetch actually runs; every request it makes is
+// answered here, and nothing reaches the network.
+describe('gameDetailView basketball situation', () => {
+	const situationUrl = /sports\.core\.api\.espn\.com\/.*\/situation/;
+	const realId = '401902644';
+
+	const answer = (raw: unknown) => {
+		cy.intercept({ url: /site\.api\.espn\.com/ }, { body: {} });
+		cy.intercept({ url: situationUrl }, { body: raw }).as('situation');
+	};
+
+	const liveBasketball = (overrides: Partial<Game> = {}) => makeLiveGame({ id: realId, period: 4, clockSeconds: 95, ...overrides });
+
+	beforeEach(() => {
+		cy.viewport(320, 560);
+	});
+
+	it('says who is in the bonus and what they can still give, under the period', () => {
+		answer(basketballSituations.homeInBonus.raw);
+		mountDetail(liveBasketball(), { excitementResult: excitement });
+		cy.get('.gd-fouls-line').should('have.text', 'BOS in the bonus with 1 foul to give');
+		cy.get('.game-detail-period').then(([period]: JQuery<HTMLElement>) => {
+			cy.get('.gd-fouls-line').then(([line]: JQuery<HTMLElement>) => {
+				const a = period.getBoundingClientRect();
+				const b = line.getBoundingClientRect();
+				expect(b.top, 'below the period line').to.be.at.least(a.bottom);
+				expect((b.left + b.right) / 2, 'on the hero axis').to.be.closeTo((a.left + a.right) / 2, 1);
+			});
+		});
+	});
+
+	it('gives the NBA its timeouts as a number, level on both sides and under each name', () => {
+		answer(basketballSituations.homeInBonus.raw);
+		mountDetail(liveBasketball(), { excitementResult: excitement });
+		cy.get('.gd-area-away-timeouts .timeout-dots-numeric').should('have.text', '7 TO');
+		cy.get('.gd-area-home-timeouts .timeout-dots-numeric').should('have.text', '6 TO');
+		cy.get('.gd-area-away-timeouts, .gd-area-home-timeouts').then(($rows: JQuery<HTMLElement>) => {
+			const [away, home] = [...$rows].map(el => el.getBoundingClientRect());
+			expect(away!.top, 'level').to.be.closeTo(home!.top, 0.5);
+		});
+		(['away', 'home'] as const).forEach(side => {
+			cy.get(`.gd-area-${side}-label`).then(([name]: JQuery<HTMLElement>) => {
+				cy.get(`.gd-area-${side}-timeouts`).then(([dots]: JQuery<HTMLElement>) => {
+					const a = name.getBoundingClientRect();
+					const b = dots.getBoundingClientRect();
+					expect((b.left + b.right) / 2, `${side} timeouts under the name`).to.be.closeTo((a.left + a.right) / 2, 1);
+				});
+			});
+		});
+	});
+
+	it('draws the dots for a league whose allotment fits', () => {
+		answer(basketballSituations.lastMinutes.raw);
+		mountDetail(liveBasketball({ league: 'wnba' }), { excitementResult: excitement });
+		cy.get('.gd-area-away-timeouts .timeout-dot').should('have.length', 4);
+		cy.get('.gd-area-away-timeouts .timeout-dot:not(.is-empty)').should('have.length', 2);
+		cy.get('.gd-area-home-timeouts .timeout-dot:not(.is-empty)').should('have.length', 1);
+	});
+
+	it('says both teams once when both are in the bonus', () => {
+		answer(basketballSituations.bothInBonus.raw);
+		mountDetail(liveBasketball(), { excitementResult: excitement });
+		cy.get('.gd-fouls-line').should('have.text', 'Both teams in the bonus');
+	});
+
+	// The longest English line the hero gets. It may not push past the hero's edge, and at popup
+	// width it fits on one line.
+	it('keeps the longest line on one line, inside the hero', () => {
+		answer(basketballSituations.firstQuarter.raw);
+		mountDetail(liveBasketball(), { excitementResult: excitement });
+		cy.get('.gd-fouls-line').should('have.text', 'OKC has 4 fouls to give, BOS has 2').then(([line]: JQuery<HTMLElement>) => {
+			expectSingleLine(line, 'fouls line');
+			cy.get('.gd-hero').then(([hero]: JQuery<HTMLElement>) => {
+				const a = hero.getBoundingClientRect();
+				const b = line.getBoundingClientRect();
+				expect(b.left, 'left edge').to.be.at.least(a.left);
+				expect(b.right, 'right edge').to.be.at.most(a.right);
+				expect(hero.scrollWidth, 'no sideways scroll').to.be.at.most(hero.clientWidth);
+			});
+		});
+	});
+
+	// A timeout row and a caption line. It measures 193 against the plain hero's 190, and the
+	// breakdown still starts by 200, inside the 206 the records hero is allowed.
+	it('keeps the hero and the breakdown inside their pixel budgets', () => {
+		answer(basketballSituations.firstQuarter.raw);
+		mountDetail(liveBasketball(), { excitementResult: excitement });
+		cy.get('.gd-fouls-line').should('exist');
+		cy.get('.game-detail-header').then(([header]: JQuery<HTMLElement>) => {
+			cy.get('.gd-hero').then(([hero]: JQuery<HTMLElement>) => {
+				const height = hero.getBoundingClientRect().bottom - header.getBoundingClientRect().top;
+				expect(height, 'hero height').to.be.at.most(196);
+			});
+		});
+		cy.get('.powerscore-breakdown').then(([el]: JQuery<HTMLElement>) => {
+			expect(el.getBoundingClientRect().top, 'breakdown still on the first screen').to.be.at.most(206);
+		});
+	});
+
+	// Between periods the fouls have already reset for the next one. The timeouts carry over.
+	it('drops the fouls line between periods and keeps the timeouts', () => {
+		answer(basketballSituations.quarterReset.raw);
+		mountDetail(liveBasketball({ intermission: true, period: 2 }), { excitementResult: excitement });
+		cy.get('.gd-area-home-timeouts .timeout-dots-numeric').should('have.text', '5 TO');
+		cy.get('.gd-fouls-line').should('not.exist');
+	});
+
+	it('asks again at the scoreboard\'s pace while the screen is open', () => {
+		cy.clock(now.getTime(), ['Date', 'setInterval', 'clearInterval']);
+		answer(basketballSituations.firstQuarter.raw);
+		mountDetail(liveBasketball(), { excitementResult: excitement });
+		cy.wait('@situation');
+		cy.intercept({ url: situationUrl }, { body: basketballSituations.homeInBonus.raw }).as('again');
+		cy.tick(15_000);
+		cy.wait('@again');
+		cy.get('.gd-fouls-line').should('have.text', 'BOS in the bonus with 1 foul to give');
+	});
+
+	it('never asks for a game that is not live basketball', () => {
+		answer(basketballSituations.homeInBonus.raw);
+		mountDetail(liveBasketball({ status: 'post' }), { excitementResult: excitement });
+		mountDetail(liveBasketball({ league: 'nfl', sportType: 'football' }), { excitementResult: excitement });
+		mountDetail(makeLiveGame(), { excitementResult: excitement });
+		cy.get('.game-detail-period').should('exist');
+		cy.get('@situation.all').should('have.length', 0);
+		cy.get('.gd-fouls-line').should('not.exist');
+	});
+});
+
+// Soccer sends no play, so a red card is what fills the section: one line a card, each under its
+// own team's rule, the way the play above is drawn for every other sport.
+describe('gameDetailView red cards', () => {
+	beforeEach(() => {
+		cy.viewport(320, 560);
+	});
+
+	const soccer = (overrides: Partial<Game> = {}) => makeLiveGame({
+		league: 'mls',
+		sportType: 'soccer',
+		period: 2,
+		clockSeconds: 5400,
+		homeTeam: { id: '183', name: 'Atlanta United FC', abbreviation: 'ATL', score: 1, color: '#80000A' },
+		awayTeam: { id: '20232', name: 'Inter Miami CF', abbreviation: 'MIA', score: 1, color: '#F7B5CD' },
+		...overrides,
+	});
+
+	const twoCards = soccer({
+		redCardEvents: [
+			{ teamId: '183', minute: 1580 / 60, player: 'Brais Méndez' },
+			{ teamId: '20232', minute: 90, addedMinutes: 6, player: 'Santiago Morales' },
+		],
+	});
+
+	it('lists each card with its minute, player and team', () => {
+		mountDetail(twoCards, { excitementResult: excitement });
+		cy.get('.gd-play-heading').should('have.text', 'Red Cards');
+		cy.get('.gd-red-card .gd-play-text').then(($lines: JQuery<HTMLElement>) => {
+			expect([...$lines].map(el => el.textContent)).to.deep.equal([
+				'27\' Brais Méndez, Atlanta United FC',
+				'90+6\' Santiago Morales, Inter Miami CF',
+			]);
+		});
+	});
+
+	it('marks each card in its own team\'s colour', () => {
+		mountDetail(twoCards, { excitementResult: excitement });
+		cy.get('.gd-red-card').should('have.length', 2).then(($cards: JQuery<HTMLElement>) => {
+			const [home, away] = [...$cards];
+			expect(home).to.have.class('has-accent');
+			expect(away).to.have.class('has-accent');
+			expect(getComputedStyle(home!).borderLeftWidth).to.equal('3px');
+			expect(getComputedStyle(home!).borderLeftColor, 'the two sides are not drawn alike').to.not.equal(getComputedStyle(away!).borderLeftColor);
+		});
+	});
+
+	it('sets the cards on the same indent as a play, with room between them', () => {
+		mountDetail(twoCards, { excitementResult: excitement });
+		cy.get('.gd-red-card').then(($cards: JQuery<HTMLElement>) => {
+			const [first, second] = [...$cards].map(el => el.getBoundingClientRect());
+			expect(second!.left, 'same left edge').to.be.closeTo(first!.left, 0.5);
+			expect(second!.top - first!.bottom, 'a gap between two cards').to.be.greaterThan(2);
+		});
+		cy.get('.gd-play-heading').then(([heading]: JQuery<HTMLElement>) => {
+			cy.get('.gd-red-card').first().then(([card]: JQuery<HTMLElement>) => {
+				expect(card.getBoundingClientRect().left, 'rule level with the heading').to.be.closeTo(heading.getBoundingClientRect().left, 0.5);
+			});
+		});
+	});
+
+	it('wraps a long name inside the screen rather than pushing it wider', () => {
+		mountDetail(soccer({
+			redCardEvents: [{ teamId: '183', minute: 88, addedMinutes: 12, player: 'Sékou Tidiany Bangoura-Hernández de la Fuente' }],
+		}), { excitementResult: excitement });
+		cy.get('.gd-red-card .gd-play-text').then(([el]: JQuery<HTMLElement>) => {
+			expect(el.scrollWidth, 'no horizontal overflow').to.be.at.most(el.clientWidth);
+			expect(el.getBoundingClientRect().right).to.be.at.most(320);
+		});
+		cy.get('.game-detail-shell').then(([shell]: JQuery<HTMLElement>) => {
+			expect(shell.scrollWidth, 'no sideways scroll').to.be.at.most(shell.clientWidth);
+		});
+	});
+
+	it('is absent for a match with no red card', () => {
+		mountDetail(soccer(), { excitementResult: excitement });
+		cy.get('.gd-play-panel').should('not.exist');
+	});
+
+	it('keeps the heading on one line in every locale', () => {
+		mountDetail(twoCards, { excitementResult: excitement });
+		Object.entries(locales).forEach(([name, locale]) => {
+			cy.get('.gd-play-heading').should(([el]: JQuery<HTMLElement>) => {
+				el.textContent = (locale.detail as Record<string, unknown>).redCardsHeading as string ?? en.detail.redCardsHeading;
+				expect(el.scrollWidth, `no overflow in ${name}`).to.be.at.most(el.clientWidth);
+			});
+		});
 	});
 });

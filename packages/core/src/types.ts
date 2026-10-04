@@ -136,6 +136,8 @@ export interface RedCardEvent {
 	teamId: string;
 	// Elapsed game minute, from the match clock.
 	minute: number;
+	// Stoppage time, which the clock leaves out: a card at 90'+6' has a `minute` of 90.
+	addedMinutes?: number;
 	player?: string;
 }
 

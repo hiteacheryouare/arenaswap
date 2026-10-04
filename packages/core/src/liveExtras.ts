@@ -75,6 +75,56 @@ export const readHockeySituation = (situation: unknown): { powerPlay?: boolean; 
 	return parsed.success ? parsed.data : {};
 };
 
+const situationCount = z.catch(z.optional(z.int().check(z.nonnegative())), undefined);
+
+const BasketballSideSchema = z.object({
+	timeouts: z.catch(z.optional(z.object({ timeoutsRemainingCurrent: situationCount })), undefined),
+	fouls: z.catch(z.optional(z.object({
+		teamFoulsCurrent: situationCount,
+		foulsToGive: situationCount,
+		bonusState: z.catch(z.optional(z.string()), undefined),
+	})), undefined),
+});
+
+export interface BasketballTeamSituation {
+	timeoutsLeft?: number;
+	// Whether this team shoots free throws on the other side's next foul. Only men's college
+	// basketball has a one-and-one, so only there does 'double' differ from 'bonus' on the floor.
+	bonus?: 'bonus' | 'double';
+	// How many more this team can commit before the other side is in the bonus.
+	foulsToGive?: number;
+	periodFouls?: number;
+}
+
+export interface BasketballSituation {
+	home: BasketballTeamSituation;
+	away: BasketballTeamSituation;
+}
+
+const readBasketballSide = (timeouts: unknown, fouls: unknown): BasketballTeamSituation => {
+	const parsed = BasketballSideSchema.safeParse({ timeouts, fouls });
+	if (!parsed.success) return {};
+	const { timeouts: timeoutBlock, fouls: foulBlock } = parsed.data;
+	const bonus = foulBlock?.bonusState === 'BONUS' ? 'bonus' : foulBlock?.bonusState === 'DOUBLE' ? 'double' : undefined;
+	return {
+		...(timeoutBlock?.timeoutsRemainingCurrent !== undefined ? { timeoutsLeft: timeoutBlock.timeoutsRemainingCurrent } : {}),
+		...(bonus ? { bonus } : {}),
+		...(foulBlock?.foulsToGive !== undefined ? { foulsToGive: foulBlock.foulsToGive } : {}),
+		...(foulBlock?.teamFoulsCurrent !== undefined ? { periodFouls: foulBlock.teamFoulsCurrent } : {}),
+	};
+};
+
+// Timeouts, fouls and the bonus from the core situation resource. Undefined when it carries none of
+// them, as a hockey situation or a bare reference does.
+export const readBasketballSituation = (situation: unknown): BasketballSituation | undefined => {
+	if (typeof situation !== 'object' || situation === null) return undefined;
+	const raw = situation as Record<string, unknown>;
+	const home = readBasketballSide(raw.homeTimeouts, raw.homeFouls);
+	const away = readBasketballSide(raw.awayTimeouts, raw.awayFouls);
+	if (Object.keys(home).length === 0 && Object.keys(away).length === 0) return undefined;
+	return { home, away };
+};
+
 const StandingsEntrySchema = z.object({
 	team: z.object({ id: espnNumber }),
 	note: z.optional(z.object({ description: z.optional(z.string()) })),

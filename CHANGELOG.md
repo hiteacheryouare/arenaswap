@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Basketball shows the bonus and timeouts, soccer shows red cards — 2026-10-04
+
+A live basketball game's detail screen now shows each team's timeouts under its name and one plain line for the bonus and fouls to give (#165), read from our sources' live situation only while that screen is open, and the box score adds lead changes and the largest lead. Soccer's Latest Play section lists every red card with its minute, stoppage time included ("90+6'"), built from the player and team ourselves since the source text is English only (#162).
+
 ## Settings picks the mode, and Fantasy gets a roster — 2026-10-03
 
 The top of Settings → Scoring now picks Classic, Blowouts, Fantasy or Custom, where each enabled league gets its own mode, with signal switches for every mode in use (Classic's stay whenever Blowouts or Fantasy is, since both lean on a Classic score). Fantasy adds a slider for how much your players lift their games, a roster page that searches players by name and NFL defenses by team, and a scoring rules page that only offers the rules a box score can actually fill; a game with your players in it lists their lines under "Your Players". Both sub-pages load on demand, so they cost the popup nothing until opened.

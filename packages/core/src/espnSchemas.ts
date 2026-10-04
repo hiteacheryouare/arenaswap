@@ -119,7 +119,7 @@ const EspnSeriesSchema = z.object({
 // Soccer's key events: goals, cards, penalties. Only red cards are read so far.
 const EspnCompetitionDetailSchema = z.object({
 	redCard: z.optional(z.boolean()),
-	clock: z.optional(z.object({ value: z.optional(z.number()) })),
+	clock: z.optional(z.object({ value: z.optional(z.number()), displayValue: z.optional(z.string()) })),
 	team: z.optional(z.object({ id: z.optional(espnNumericText) })),
 	athletesInvolved: z.optional(z.array(z.object({ displayName: z.optional(z.string()) }))),
 });

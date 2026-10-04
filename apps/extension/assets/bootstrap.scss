@@ -1931,6 +1931,16 @@
 	color:      var(--as-secondary-color);
 }
 
+// One line per card, each under its own team's rule, with a gap so two bars from the same side
+// still read as two cards.
+.gd-red-card + .gd-red-card {
+	margin-top: 0.2rem;
+}
+
+.gd-play-body + .gd-play-heading {
+	margin-top: 0.34rem;
+}
+
 // Venue / broadcast / odds / weather, as one titled section rather than four stacked centred
 // lines. Takes the chart cards' treatment, not the breakdown's white card: everything below the
 // PowerScore math reads as one dark column of sections.
@@ -2626,6 +2636,22 @@ button.game-info-attribution {
 	text-align: center;
 	white-space: nowrap;
 	margin-bottom: 0.22rem;
+}
+
+// Basketball's bonus and fouls to give, set like the field caption it stands in for. In the centre
+// ink rather than fixed white, since it sits under the period line on whatever the two teams'
+// colours blend to. It may wrap, but balanced, so a long pair never leaves one word on a line.
+.gd-fouls-line {
+	margin-top: 0.3rem;
+	padding: 0 0.3rem;
+	font-size: 0.66rem;
+	font-weight: 700;
+	line-height: 1.3;
+	letter-spacing: 0.01em;
+	text-align: center;
+	text-wrap: balance;
+	color: var(--matchup-ink-center, #ffffff);
+	text-shadow: var(--matchup-shadow-center, none);
 }
 
 .gd-countdown {

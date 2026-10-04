@@ -391,8 +391,39 @@
 		"chartComponentsTitle": "PowerScore Components Over Time",
 		"gameInfoHeading": "Game Info",
 		"latestPlayHeading": "Latest Play",
+		"redCardsHeading": "Red Cards",
+		"redCardLine": "{minute} {player}, {team}",
+		"redCardPlayer": "{minute} {player}",
+		"redCardTeam": "{minute} {team}",
+		"matchMinute": "{minute}'",
+		"matchMinuteAdded": "{minute}+{added}'",
 		"pitchingLabel": "Pitching",
 		"atBatLabel": "At bat",
+		"foulsBothBonus": "Both teams in the bonus",
+		"foulsBothDoubleBonus": "Both teams in the double bonus",
+		"foulsMixedBonus": "{first} in the double bonus, {second} in the bonus",
+		"foulsBonus": "{team} in the bonus",
+		"foulsDoubleBonus": "{team} in the double bonus",
+		"foulsBonusToGive": {
+			"1": "{team} in the bonus with 1 foul to give",
+			"n": "{team} in the bonus with $1 fouls to give"
+		},
+		"foulsDoubleBonusToGive": {
+			"1": "{team} in the double bonus with 1 foul to give",
+			"n": "{team} in the double bonus with $1 fouls to give"
+		},
+		"foulsToGive": {
+			"1": "{team} has 1 foul to give",
+			"n": "{team} has $1 fouls to give"
+		},
+		"foulsBothToGive": {
+			"1": "Both teams have 1 foul to give",
+			"n": "Both teams have $1 fouls to give"
+		},
+		"foulsEachToGive": {
+			"1": "{first} has 1 foul to give, {second} has {count}",
+			"n": "{first} has $1 fouls to give, {second} has {count}"
+		},
 		"infoWatch": "Watch",
 		"infoVenue": "Venue",
 		"infoEnded": "Ended",
@@ -586,6 +617,8 @@
 		"assistsTotal": "Assists",
 		"steals": "Steals",
 		"blocks": "Blocks",
+		"largestLead": "Largest lead",
+		"leadChanges": "Lead changes",
 		"shotsOnGoal": "Shots on goal",
 		"powerPlayGoals": "Power play goals",
 		"powerPlayChances": "Power play chances",
