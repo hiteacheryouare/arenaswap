@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { i18n } from '#i18n';
 import {
 	defenseRosterEntry,
@@ -14,7 +14,7 @@ import type { EspnTeamEntry, FantasyRosterEntry, PlayerSearchResult } from '@are
 import type { FantasyPosition } from 'powerscore';
 import CrestDisc from '@arenaswap/ui/src/components/crestDisc';
 import PlayerShot from './playerShot';
-import { leagueLabels } from '../popupHelpers';
+import { getRandomLoadingMessage, leagueLabels } from '../popupHelpers';
 import { matchesTeamQuery } from '../../../utils/favoriteTeams';
 import { addToRoster, groupRosterByLeague, isRosterFull, removeFromRoster, rosterHeadshot, rosterKey } from '../../../utils/fantasyRoster';
 
@@ -122,6 +122,8 @@ const fantasyRosterPage = ({ roster, onRosterChange, services = liveServices }: 
 
 	const searchable = foldName(query).length >= 2;
 	const current = searchable && outcome?.query === query ? outcome : undefined;
+	// A fresh one of the game list's loading lines for each search.
+	const searchingMessage = useMemo(() => getRandomLoadingMessage(), [query]);
 	const searching = searchable && !current;
 
 	useEffect(() => {
@@ -194,7 +196,7 @@ const fantasyRosterPage = ({ roster, onRosterChange, services = liveServices }: 
 			{searching && (
 				<div className='d-flex align-items-center gap-2 mt-2 setting-explainer' role='status'>
 					<span className='spinner-border spinner-border-sm fantasy-pick-spinner' aria-hidden='true' />
-					{i18n.t('fantasy.searching')}
+					{searchingMessage}
 				</div>
 			)}
 

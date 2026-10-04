@@ -191,6 +191,8 @@ export const buildPowerScoreOption = (
 				...(moments.length > 0 ? {
 					markArea: {
 						silent: true,
+						// The tooltip names the moment; a label inside each band crowds the line.
+						label: { show: false },
 						data: moments.map(moment => [
 							{ name: boostLabel(moment.id), xAxis: moment.start, itemStyle: { color: tint(boostPresentation[moment.id].color, 0.16) } },
 							{ xAxis: moment.end },

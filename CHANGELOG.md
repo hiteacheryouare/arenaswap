@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Quieter boost shading, livelier player search — 2026-10-04
+
+The bands that shade boost moments on the PowerScore chart no longer print the boost's name inside the chart (hovering still names it), and the Fantasy roster search shows one of the game list's own loading lines while it looks for players instead of a fixed message.
+
 ## Everything is 3.0.0 — 2026-10-04
 
 Every package moves to 3.0.0 for ArenaSwap 3, and `powerscore` publishes as its next major: modes, the moment boosts and `scoreGame`, with the 2.x API still working as deprecated wrappers. The lockfile's workspace versions moved with them, by hand rather than through an install.

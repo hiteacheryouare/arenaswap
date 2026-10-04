@@ -486,6 +486,7 @@ describe('boost moments on the PowerScore line', () => {
 		]);
 		const area = markAreaOf(buildPowerScoreOption(history))!;
 		expect(area.silent).toBe(true);
+		expect(area.label).toEqual({ show: false });
 		expect(area.data).toHaveLength(2);
 		expect(area.data![0]![0].name).toBe('Two-minute drill');
 		expect(area.data![0]![0].xAxis).toBe(1);

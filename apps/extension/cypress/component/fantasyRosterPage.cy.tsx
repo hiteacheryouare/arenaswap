@@ -88,7 +88,9 @@ describe('fantasy roster page', () => {
 		search('jokic');
 		cy.tick(searchDebounceMs - 50);
 		cy.get('@searchPlayers').should('not.have.been.called');
-		cy.contains(en.fantasy.searching).should('exist');
+		// One of the game list's own loading lines.
+		const loadingLines = Object.entries(en.loading).filter(([key]) => /^m\d+$/.test(key)).map(([, line]) => line as string);
+		cy.get('[role="status"]').invoke('text').should(text => expect(loadingLines).to.include(text.trim()));
 		cy.tick(60);
 		cy.get('@searchPlayers').should('have.been.calledOnce').its('firstCall.args.0').should('eq', 'jokic');
 	});
