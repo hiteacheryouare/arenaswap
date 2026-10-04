@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## PowerScore's README covers 3.0, and Fantasy can search for players — 2026-10-03
+
+The package README now starts from `scoreGame` with the least a feed can send, shows what each optional field switches on, how to use it with any data source and your own league ids, the three modes, building your own with `defineMode`, and what migrating from 2.x changes (nothing breaks). Core's `searchPlayers` finds players in Fantasy's leagues by name, forgiving accents, word order, a surname prefix and one typo, and `resolveRosterEntry` looks up a pick's position and team once when it's added.
+
 ## Scores reach the popup with their full breakdown — 2026-10-03
 
 Every score the background sends now carries a `breakdown` (the mode that scored it, each signal and boost as a list, and the reasons as keys) beside the flat 2.x fields, and history snapshots record the same, so screens can move over to modes one at a time while everything else keeps reading the fields it always has. `normalizeScores` validates a breakdown whole or drops it whole, so a half-formed one can never draw a chart that disagrees with itself.

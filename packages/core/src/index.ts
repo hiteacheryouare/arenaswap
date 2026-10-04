@@ -11,6 +11,8 @@ export { resolveModeForGame, modesInUse, isScoringModeChoice } from './scoringMo
 export { fantasyRosterLimit, fantasyRosterStorageKey, normalizeFantasyRoster, readFantasyBoxScore, rosterInGame } from './fantasy';
 export type { FantasyRosterEntry, FantasyBoxScore } from './fantasy';
 export type { FantasyScoringOverrides } from './liveExtras';
+export { defenseRosterEntry, fantasyLeagues, foldName, nameMatchScore, parsePlayerSearch, resolveRosterEntry, searchPlayers, toFantasyPosition } from './playerSearch';
+export type { PlayerSearchResult } from './playerSearch';
 export { createLiveExtras, hasStandingsRaces, readBoxLeadChanges, readHockeySituation, readPregameLine, readStandingsStakes } from './liveExtras';
 export type { LiveExtras } from './liveExtras';
 export { chooseSwitchTarget, getFavoriteTeamCount, getHistoryWindowMsForGame, maxSnapshotsPerGame, nextClockStall, recentSnapshots, retainSnapshots, scoreLiveGame, scoreOptionsFor, scoringContextFor, toLegacyPowerScoreResult, toLiveScore, toScoreSnapshot, toScoringGame } from './scoring';
