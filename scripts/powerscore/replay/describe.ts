@@ -2,6 +2,7 @@ import type { Game } from '../../../packages/core/src/types';
 
 const clockText = (game: Game): string => {
 	if (game.sportType === 'baseball' || game.sportType === 'softball') {
+		if (game.inningEnded) return `End ${game.period}`;
 		const half = game.topOfInning === undefined ? '' : game.topOfInning ? 'T' : 'B';
 		return `${half}${game.period}`;
 	}
@@ -21,9 +22,10 @@ const situationText = (game: Game): string => {
 	}
 	if (game.sportType === 'football' && game.down) {
 		const side = game.possessionTeamId === game.homeTeam.id ? game.homeTeam.abbreviation : game.possessionTeamId === game.awayTeam.id ? game.awayTeam.abbreviation : '?';
-		const toGo = game.yardLine === undefined || side === '?' ? '?' : game.possessionTeamId === game.homeTeam.id ? 100 - game.yardLine : game.yardLine;
+		const toGo = game.yardLine === undefined || side === '?' ? undefined : game.possessionTeamId === game.homeTeam.id ? 100 - game.yardLine : game.yardLine;
+		const spot = toGo === undefined ? 'ball on ?' : toGo <= 50 ? `ball on opp ${toGo}` : `ball on own ${100 - toGo}`;
 		const timeouts = `TO ${game.awayTeam.timeouts ?? '?'}-${game.homeTeam.timeouts ?? '?'}`;
-		return `${side} ${game.down}&${game.distance ?? '?'}, ${toGo} to go${game.isRedZone ? ' RZ' : ''} ${timeouts}`;
+		return `${side} ${game.down}&${game.distance ?? '?'}, ${spot}${game.isRedZone ? ' RZ' : ''} ${timeouts}`;
 	}
 	if (game.redCardEvents?.length) {
 		const cards = game.redCardEvents.map(card => `${card.teamId === game.homeTeam.id ? game.homeTeam.abbreviation : game.awayTeam.abbreviation} red ${Math.round(card.minute)}'`);

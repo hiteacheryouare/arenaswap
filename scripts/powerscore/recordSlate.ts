@@ -1,13 +1,16 @@
 // Records live slates from our sources as raw payloads, so the replay harness can re-parse and
 // re-score them with any version of core and the engine.
 //
-// Run: npm run powerscore:record -- [leagueId ...]   (no leagues = every league)
+// Run: npm run powerscore:record -- [--detach] [leagueId ...]   (no leagues = every league)
+//   --detach   keep recording after the terminal or session that started it goes away; logs to
+//              recordings/recorder.log. Stop it with `kill $(cat scripts/powerscore/recordings/recorder.pid)`.
 // Output: scripts/powerscore/recordings/<YYYY-MM-DD>/<HH>-<process start>.jsonl.gz, one hour per
 // file and a new file per run, so a restart never appends to a file a killed run left unfinished.
-import { createWriteStream, mkdirSync, type WriteStream } from 'node:fs';
+// Every file starts with each live game in full, so any hour replays on its own.
+import { createWriteStream, existsSync, mkdirSync, openSync, readFileSync, rmSync, writeFileSync, type WriteStream } from 'node:fs';
 import { join } from 'node:path';
 import { constants as zlibConstants, createGzip, type Gzip } from 'node:zlib';
-import { execSync } from 'node:child_process';
+import { execSync, spawn } from 'node:child_process';
 import { allLeagueIds, leagueConfigMap } from '../../packages/powerscore/src/constants';
 import { collegeDivisions } from '../../packages/core/src/college';
 import type { LeagueId } from '../../packages/powerscore/src/types';
@@ -16,6 +19,8 @@ const siteBase = 'https://site.api.espn.com/apis/site/v2/sports';
 const standingsBase = 'https://site.api.espn.com/apis/v2/sports';
 const coreBase = 'https://sports.core.api.espn.com/v2/sports';
 const recordingsDir = join(__dirname, 'recordings');
+const pidFile = join(recordingsDir, 'recorder.pid');
+const logFile = join(recordingsDir, 'recorder.log');
 
 const livePollMs = 15_000;
 const idlePollMs = 5 * 60_000;
@@ -26,11 +31,43 @@ const maxConcurrentRequests = 6;
 const requestTimeoutMs = 10_000;
 const startedAt = Date.now();
 
-const situationSports = new Set(['hockey', 'basketball']);
+// Only the NHL's situation is read by anything (power play, empty net); college hockey's is empty.
+const situationLeagues = new Set<LeagueId>(['nhl']);
 const standingsLeagues = new Set<LeagueId>(['nba', 'wnba', 'nhl', 'mlb', 'nfl', 'mls', 'epl', 'laliga', 'bundesliga', 'seriea', 'ligamx', 'nwsl']);
 
-const requestedLeagues = process.argv.slice(2).filter((id): id is LeagueId => allLeagueIds.includes(id as LeagueId));
+const args = process.argv.slice(2);
+const requestedLeagues = args.filter((id): id is LeagueId => allLeagueIds.includes(id as LeagueId));
 const leagues = requestedLeagues.length > 0 ? requestedLeagues : allLeagueIds;
+
+const isAlive = (pid: number): boolean => {
+	try {
+		process.kill(pid, 0);
+		return true;
+	} catch {
+		return false;
+	}
+};
+
+mkdirSync(recordingsDir, { recursive: true });
+const runningPid = existsSync(pidFile) ? Number(readFileSync(pidFile, 'utf8')) : NaN;
+// Two recorders alive in the same hour would interleave their files and replay out of order.
+if (Number.isFinite(runningPid) && runningPid !== process.pid && isAlive(runningPid)) {
+	console.error(`A recorder is already running (pid ${runningPid}). Stop it with: kill ${runningPid}`);
+	process.exit(1);
+}
+
+// Re-launches itself in its own session, so it outlives the terminal that started it.
+if (args.includes('--detach')) {
+	const log = openSync(logFile, 'a');
+	const child = spawn(process.execPath, [process.argv[1]!, ...args.filter(arg => arg !== '--detach')], { detached: true, stdio: ['ignore', log, log] });
+	child.unref();
+	console.log(`Recording in the background (pid ${child.pid}), logging to ${logFile}. Stop it with: kill ${child.pid}`);
+	process.exit(0);
+}
+
+writeFileSync(pidFile, String(process.pid));
+// Keeps the Mac awake exactly as long as this process lives.
+if (process.platform === 'darwin') spawn('caffeinate', ['-i', '-w', String(process.pid)], { detached: true, stdio: 'ignore' }).unref();
 
 let activeRequests = 0;
 const waiting: (() => void)[] = [];
@@ -89,8 +126,18 @@ const write = (line: Record<string, unknown>): void => {
 		gzip?.end();
 		currentFileKey = fileKey;
 		mkdirSync(join(recordingsDir, day), { recursive: true });
+		// A clock that steps back across the hour would land on a file this run already closed.
+		const base = join(recordingsDir, day, `${hour}-${startedAt}`);
+		const path = existsSync(`${base}.jsonl.gz`) ? `${base}-${Date.now()}.jsonl.gz` : `${base}.jsonl.gz`;
 		gzip = createGzip();
-		fileStream = createWriteStream(join(recordingsDir, day, `${hour}-${startedAt}.jsonl.gz`), { flags: 'wx' });
+		fileStream = createWriteStream(path, { flags: 'wx' });
+		const onError = (error: Error) => {
+			stats.errors++;
+			console.error(`  ! writing ${path}: ${error.message}`);
+			currentFileKey = '';
+		};
+		gzip.on('error', onError);
+		fileStream.on('error', onError);
 		gzip.pipe(fileStream);
 		gzip.write(`${JSON.stringify({ t: 'meta', v: 1, ts: Date.now(), leagues, gitSha })}\n`);
 	}
@@ -112,6 +159,7 @@ const lastWritten = new Map<string, string>();
 const finalsWritten = new Set<string>();
 const lastSummaryAt = new Map<string, number>();
 const lastStandingsAt = new Map<LeagueId, number>();
+const lastFileKeyByLeague = new Map<LeagueId, string>();
 const stats = { polls: 0, liveEvents: 0, summaries: 0, situations: 0, standings: 0, errors: 0 };
 
 const groupsFor = (league: LeagueId): (string | undefined)[] => {
@@ -135,8 +183,8 @@ const scoreboardUrls = (league: LeagueId): string[] => {
 const recordSummary = async (league: LeagueId, eventId: string): Promise<void> => {
 	const config = leagueConfigMap[league]!;
 	const raw = await getJson(`${siteBase}/${config.espnPath}/summary?event=${encodeURIComponent(eventId)}`) as Record<string, unknown>;
-	const { winprobability, pickcenter, boxscore, predictor, header } = raw;
-	write({ t: 'summary', ts: Date.now(), league, gameId: eventId, raw: { winprobability, pickcenter, boxscore, predictor, header } });
+	const { winprobability, pickcenter, boxscore, predictor, header, injuries } = raw;
+	write({ t: 'summary', ts: Date.now(), league, gameId: eventId, raw: { winprobability, pickcenter, boxscore, predictor, header, injuries } });
 	stats.summaries++;
 };
 
@@ -170,12 +218,15 @@ const settle = async (work: Promise<unknown>[]): Promise<void> => {
 // and every final once. An unchanged live event is written as a bare id so the replay still sees
 // the poll happen, which is what stall detection counts.
 const pollLeague = async (league: LeagueId): Promise<boolean> => {
-	const config = leagueConfigMap[league]!;
 	const responses = await Promise.all(scoreboardUrls(league).map(url => getJson(url) as Promise<{ events?: RawEvent[] }>));
 	const byId = new Map<string, RawEvent>();
 	for (const response of responses) for (const event of response.events ?? []) if (event.id) byId.set(event.id, event);
 
 	const now = Date.now();
+	// The first poll a league writes into a new hour's file writes every game in full.
+	const { day, hour } = easternParts(new Date(now));
+	const newFile = lastFileKeyByLeague.get(league) !== `${day}/${hour}`;
+	lastFileKeyByLeague.set(league, `${day}/${hour}`);
 	const events: unknown[] = [];
 	const unchanged: string[] = [];
 	const live: RawEvent[] = [];
@@ -190,7 +241,7 @@ const pollLeague = async (league: LeagueId): Promise<boolean> => {
 		}
 		if (state === 'in') live.push(event);
 		const serialized = JSON.stringify(event);
-		if (lastWritten.get(id) === serialized) {
+		if (!newFile && lastWritten.get(id) === serialized) {
 			if (state === 'in') unchanged.push(id);
 			continue;
 		}
@@ -208,7 +259,7 @@ const pollLeague = async (league: LeagueId): Promise<boolean> => {
 			lastSummaryAt.set(event.id!, now);
 			extras.push(recordSummary(league, event.id!));
 		}
-		if (situationSports.has(config.sportType)) extras.push(recordSituation(league, event));
+		if (situationLeagues.has(league)) extras.push(recordSituation(league, event));
 	}
 	if (live.length > 0 && standingsLeagues.has(league) && (now - (lastStandingsAt.get(league) ?? 0)) >= standingsEveryMs) {
 		lastStandingsAt.set(league, now);
@@ -241,10 +292,12 @@ setInterval(() => {
 
 const shutdown = async () => {
 	await closeFile();
+	if (existsSync(pidFile) && readFileSync(pidFile, 'utf8') === String(process.pid)) rmSync(pidFile);
 	process.exit(0);
 };
 process.on('SIGINT', shutdown);
 process.on('SIGTERM', shutdown);
+process.on('SIGHUP', shutdown);
 
 console.log(`Recording ${leagues.length} leagues to ${recordingsDir} (Ctrl-C to stop).`);
 leagues.forEach((league, index) => void runLeague(league, index * 400));

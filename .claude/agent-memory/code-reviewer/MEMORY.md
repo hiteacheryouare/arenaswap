@@ -14,3 +14,4 @@
 - [History window footgun](review_history_window_footgun.md) — score/PowerScore history is a 5–20 min rolling window; any "whole game" history assumption is dead on arrival
 - [Background slate lifecycle](review_background_slate_lifecycle.md) — refreshSlate runs on every worker start and now costs a request per Eastern day per league; 2 empty polls walk a league quiet
 - [Popup open reveal](review_popup_open_reveal.md) — measured DM Sans tricode widths, the harness/production nesting mismatch, the 3400ms JS↔SCSS duplication
+- [PowerScore replay harness](review_powerscore_replay_harness.md) — hit@1 tie-break luck, dist+src engine mix, non-self-contained hourly files, recorder dies with the session

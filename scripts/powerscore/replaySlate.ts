@@ -11,14 +11,16 @@
 //   --blind              leave the scores out of the timeline, so labels can't echo a scorer
 //   --diff               list the stretches where the first two scorers disagree on the top game
 //   --json <file>        write the scorecard as JSON
+//   --include-cold       also score labels on games seen for less than one history window
 //   --roster <file>      a fantasy roster (JSON array of roster entries) for Fantasy mode
 import { mkdirSync, readdirSync, readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
-import { listRecordingFiles, readRecording } from './replay/recording';
+import { listRecordingFiles, readRecording, unreadableLines } from './replay/recording';
 import { createReplaySession, type Frame, type Scorer } from './replay/session';
 import { createV3Scorer, replayPrefs, v2Scorer } from './replay/scorers';
 import { describeGame } from './replay/describe';
 import { normalizeFantasyRoster } from '../../packages/core/src/fantasy';
+import { getHistoryWindowMsForGame } from '../../packages/core/src/scoring';
 import type { BuiltInModeId } from '../../packages/powerscore/src/types';
 
 interface LabelledMoment {
@@ -63,6 +65,8 @@ const readLabels = (): LabelFile[] => {
 
 const scorers: Scorer[] = [v2Scorer, ...modes.map(mode => createV3Scorer(mode))];
 
+const historyWindowOf = (gameId: string, frame: Frame) => getHistoryWindowMsForGame(frame.games.get(gameId) ?? { sportType: 'basketball' });
+
 const formatTime = (ts: number): string => new Date(ts).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', second: '2-digit' });
 
 const main = async () => {
@@ -77,14 +81,16 @@ const main = async () => {
 		const frame = session.handle(event);
 		if (!frame || (from !== undefined && frame.ts < from)) continue;
 		frames.push(frame);
-		for (const scorer of scorers) if (frame.switched.get(scorer.name)) switchesInWindow.set(scorer.name, switchesInWindow.get(scorer.name)! + 1);
+		for (const scorer of scorers) if (frame.switchedAway.get(scorer.name)) switchesInWindow.set(scorer.name, switchesInWindow.get(scorer.name)! + 1);
 	}
 	if (frames.length === 0) {
 		console.log('No live polls in that recording window.');
 		return;
 	}
 
-	const hours = Math.max(1 / 60, (frames[frames.length - 1]!.ts - frames[0]!.ts) / 3_600_000);
+	// Hours with polls in them: a recorder gap (the machine asleep, a restart) isn't time anyone watched.
+	const polledMs = frames.slice(1).reduce((total, frame, i) => total + Math.min(frame.ts - frames[i]!.ts, 5 * 60_000), 0);
+	const hours = Math.max(1 / 60, polledMs / 3_600_000);
 	const labels = readLabels().flatMap(file => file.moments.map(moment => ({ ...moment, ts: toTime(moment.ts)! })))
 		.filter(moment => moment.ts >= frames[0]!.ts && moment.ts <= frames[frames.length - 1]!.ts);
 
@@ -97,33 +103,58 @@ const main = async () => {
 		return found && ts - found.ts <= 90_000 ? found : undefined;
 	};
 
+	// A game first seen moments ago has no momentum or lead-change history yet, so neither scorer can
+	// be judged on it. Those labels are left out unless asked for.
+	const isCold = (moment: { ts: number; flipTo: string }, frame: Frame) => {
+		const seen = frame.firstSeen.get(moment.flipTo);
+		return seen === undefined || moment.ts - seen < historyWindowOf(moment.flipTo, frame);
+	};
+	let coldSkipped = 0;
+	const scorable = labels.filter(moment => {
+		const frame = frameAt(moment.ts);
+		if (!frame || flag('include-cold') || !isCold(moment, frame)) return true;
+		coldSkipped++;
+		return false;
+	});
+
 	const scorecard = scorers.map(scorer => {
 		let hits = 0;
 		let caught = 0;
 		let rankSum = 0;
 		let weight = 0;
+		let ties = 0;
 		const misses: string[] = [];
-		for (const moment of labels) {
+		for (const moment of scorable) {
 			const allowed = new Set([moment.flipTo, ...(moment.acceptable ?? [])]);
 			const frame = frameAt(moment.ts);
 			if (!frame) continue;
 			const ranking = frame.rankings.get(scorer.name)!;
 			const momentWeight = moment.level ?? 1;
 			weight += momentWeight;
-			const rank = ranking.findIndex(score => score.gameId === moment.flipTo) + 1 || ranking.length;
-			rankSum += rank * momentWeight;
-			if (allowed.has(ranking[0]?.gameId ?? '')) hits += momentWeight;
-			else misses.push(`${formatTime(moment.ts)} wanted ${describeGame(frame.games.get(moment.flipTo))}, top was ${describeGame(frame.games.get(ranking[0]?.gameId ?? ''))} (${ranking[0]?.total})`);
+			// Totals are whole numbers, so ties at the top are common: each tied game gets an even share
+			// of the credit rather than whichever one the sort happened to leave first.
+			const top = ranking[0]?.total;
+			const tied = ranking.filter(score => score.total === top);
+			if (tied.length > 1) ties++;
+			const share = tied.filter(score => allowed.has(score.gameId)).length / Math.max(1, tied.length);
+			hits += momentWeight * share;
+			// The best place any acceptable game holds, with tied games sharing a place.
+			const placeOf = (gameId: string) => {
+				const total = ranking.find(score => score.gameId === gameId)?.total;
+				return total === undefined ? ranking.length + 1 : 1 + ranking.filter(score => score.total > total).length;
+			};
+			rankSum += Math.min(...[...allowed].map(placeOf)) * momentWeight;
+			if (share < 1) misses.push(`${formatTime(moment.ts)} wanted ${describeGame(frame.games.get(moment.flipTo))}, top was ${describeGame(frame.games.get(ranking[0]?.gameId ?? ''))} (${ranking[0]?.total})`);
 			const wasWatched = frames.some(f => f.ts >= moment.ts - 30_000 && f.ts <= moment.ts + 90_000 && allowed.has(f.watching.get(scorer.name) ?? ''));
 			if (wasWatched) caught += momentWeight;
 		}
-		const viewer = session.viewers.get(scorer.name)!;
 		return {
 			scorer: scorer.name,
 			frames: frames.length,
 			switchesPerHour: Number((switchesInWindow.get(scorer.name)! / hours).toFixed(1)),
-			voluntarySwitchesTotal: viewer.voluntarySwitches,
-			labelledMoments: labels.length,
+			labelledMoments: scorable.length,
+			coldSkipped,
+			tiesAtTop: ties,
 			hitAt1: weight > 0 ? Number((hits / weight).toFixed(3)) : null,
 			caught: weight > 0 ? Number((caught / weight).toFixed(3)) : null,
 			meanRank: weight > 0 ? Number((rankSum / weight).toFixed(2)) : null,
@@ -133,6 +164,8 @@ const main = async () => {
 
 	console.log(`\nReplayed ${frames.length} polls, ${formatTime(frames[0]!.ts)} → ${formatTime(frames[frames.length - 1]!.ts)} (${hours.toFixed(1)} h), ${labels.length} labelled moments\n`);
 	console.table(scorecard.map(({ misses: _misses, ...row }) => row));
+	const unreadable = [...unreadableLines.values()].reduce((total, count) => total + count, 0);
+	if (unreadable > unreadableLines.size) console.log(`${unreadable} unreadable lines across ${unreadableLines.size} files (expected: at most one torn tail each).`);
 	for (const row of scorecard) {
 		if (row.misses.length === 0) continue;
 		console.log(`\n${row.scorer} missed:`);

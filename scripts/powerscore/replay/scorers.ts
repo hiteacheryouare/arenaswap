@@ -31,7 +31,7 @@ export const v2Scorer: Scorer = {
 export const createV3Scorer = (mode: BuiltInModeId = 'classic', name = `v3-${mode}`): Scorer => ({
 	name,
 	score: input => {
-		const score = scoreGame(toScoringGame(input.game), scoringContextFor(input), { ...scoreOptionsFor(input.game, replayPrefs, 0), mode });
+		const score = scoreGame(toScoringGame(input.game), scoringContextFor(input), scoreOptionsFor(input.game, { ...replayPrefs, scoringMode: mode }, 0));
 		const boosts = Object.fromEntries(score.boosts.filter(boost => boost.points > 0 && !universalBoosts.has(boost.id)).map(boost => [boost.id, boost.points]));
 		return { gameId: score.gameId, total: score.total, reason: score.reason, boosts };
 	},

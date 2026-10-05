@@ -9,7 +9,7 @@ import {
 } from '../../../packages/core/src/scoring';
 import { createLiveExtras } from '../../../packages/core/src/liveExtras';
 import type { FantasyRosterEntry } from '../../../packages/core/src/fantasy';
-import { leagueConfigMap } from '../../../packages/powerscore/src/constants';
+import { leagueConfigMap, sportTypeConfigMap } from '../../../packages/powerscore/src/constants';
 import type { Game, LeagueId, UserPreferences } from '../../../packages/core/src/types';
 import type { ScoreSnapshot } from '../../../packages/powerscore/src/types';
 import type { ReplayEvent } from './recording';
@@ -36,6 +36,10 @@ export interface Frame {
 	// The game each simulated viewer is watching after this poll.
 	watching: Map<string, string | undefined>;
 	switched: Map<string, boolean>;
+	// A switch away from a game still being played, not the first tune-in or a game ending.
+	switchedAway: Map<string, boolean>;
+	// When each live game was first seen, so a scorecard can leave out games with no history yet.
+	firstSeen: ReadonlyMap<string, number>;
 }
 
 interface Viewer {
@@ -54,6 +58,7 @@ export const createReplaySession = (scorers: Scorer[], prefs: Pick<UserPreferenc
 	const liveByLeague = new Map<LeagueId, Game[]>();
 	const history = new Map<string, ScoreSnapshot[]>();
 	const stalls = new Map<string, ClockStallEntry>();
+	const firstSeen = new Map<string, number>();
 	const winProbability = new Map<string, number[]>();
 	const liveExtras = createLiveExtras();
 	liveExtras.setRoster(roster);
@@ -72,7 +77,7 @@ export const createReplaySession = (scorers: Scorer[], prefs: Pick<UserPreferenc
 			// polls the extension would actually have seen.
 			const game = liveByLeague.get(event.league)?.find(live => live.id === event.gameId);
 			const margin = game ? Math.abs(game.homeTeam.score - game.awayTeam.score) : Infinity;
-			if (game && game.league === 'nhl' && !game.intermission && !game.delayed && margin <= 3) liveExtras.ingestSituation(event.gameId, event.raw);
+			if (game && game.league === 'nhl' && !game.intermission && !game.delayed && margin <= (sportTypeConfigMap.hockey?.closenessMargins[2] ?? 3)) liveExtras.ingestSituation(event.gameId, event.raw);
 			return null;
 		}
 		if (event.kind === 'standings') {
@@ -82,6 +87,7 @@ export const createReplaySession = (scorers: Scorer[], prefs: Pick<UserPreferenc
 
 		const { ts, league, live } = event;
 		liveByLeague.set(league, live);
+		for (const game of live) if (!firstSeen.has(game.id)) firstSeen.set(game.id, ts);
 		for (const game of live) {
 			const stall = nextClockStall(game, stalls.get(game.id));
 			if (stall) stalls.set(game.id, stall);
@@ -92,6 +98,7 @@ export const createReplaySession = (scorers: Scorer[], prefs: Pick<UserPreferenc
 		const rankings = new Map<string, ReplayScore[]>();
 		const watching = new Map<string, string | undefined>();
 		const switched = new Map<string, boolean>();
+		const switchedAway = new Map<string, boolean>();
 
 		for (const scorer of scorers) {
 			const scores = allLive.map(game => scorer.score({
@@ -109,7 +116,9 @@ export const createReplaySession = (scorers: Scorer[], prefs: Pick<UserPreferenc
 			const activeTabId = registry.find(tab => tab.gameId === viewer.watching)?.tabId ?? -1;
 			const target = chooseSwitchTarget({ registry, scores, activeTabId, sensitivity: prefs.sensitivity, cooldownSeconds: prefs.cooldownSeconds, lastSwitchTime: viewer.lastSwitchTime, now: ts });
 			if (target) {
-				if (viewer.watching !== undefined && games.has(viewer.watching)) viewer.voluntarySwitches++;
+				const away = viewer.watching !== undefined && games.has(viewer.watching);
+				if (away) viewer.voluntarySwitches++;
+				switchedAway.set(scorer.name, away);
 				if (viewer.watching !== undefined) viewer.switches++;
 				viewer.watching = target.gameId;
 				viewer.lastSwitchTime = ts;
@@ -124,7 +133,7 @@ export const createReplaySession = (scorers: Scorer[], prefs: Pick<UserPreferenc
 			history.set(game.id, retainSnapshots(snapshots, ts - getHistoryWindowMsForGame(game), false));
 		}
 
-		return { ts, league, games, rankings, watching, switched };
+		return { ts, league, games, rankings, watching, switched, switchedAway, firstSeen };
 	};
 
 	return { handle, viewers };
