@@ -39,8 +39,8 @@ describe('fantasy scoring rules page', () => {
 
 	it('shows every rule the box score can fill at its default, with the default written under it', () => {
 		cy.mount(<Harness />);
-		cy.get('.fantasy-rule-row').should('have.length', 24);
-		['twoPointConversions', 'fieldGoals40To49', 'fieldGoals50Plus', 'safetiesAndBlocks'].forEach(rule => cy.get(`#fantasyRule-football-${rule}`).should('not.exist'));
+		cy.get('.fantasy-rule-row').should('have.length', 26);
+		['twoPointConversions', 'safetiesAndBlocks'].forEach(rule => cy.get(`#fantasyRule-football-${rule}`).should('not.exist'));
 		cy.get('#fantasyRule-football-passingYards').should('have.value', '0.04');
 		cy.get('#fantasyRule-football-receptions').should('have.value', '1');
 		cy.get('#fantasyRule-football-receptions-default').should('have.text', 'Default 1');

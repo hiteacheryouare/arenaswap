@@ -23,7 +23,7 @@ The header's settings button is back to the filled `bi-gear-fill`, along with th
 
 ## Fantasy defenses get credit for the right fumbles — 2026-10-04
 
-Checked against the London game's real box score: a defense's takeaways are now its own interceptions plus the fumbles the other offense lost, since our sources' `fumblesRecovered` also counts an offense falling on its own fumble, and a kicker's longest make is scored at its distance tier instead of every field goal counting as a short one. The replay can now take a fantasy roster (`--roster`) and hands each summary the live game, which Fantasy needed to find rostered players.
+Checked against the London game's real box score: a defense's takeaways are now its own interceptions plus the fumbles the other offense lost, since our sources' `fumblesRecovered` also counts an offense falling on its own fumble, and a kicker's longest make is scored at its distance tier instead of every field goal counting as a short one, so the Fantasy rules page now lists the 40–49 and 50+ yard rules too. The replay can now take a fantasy roster (`--roster`) and hands each summary the live game, which Fantasy needed to find rostered players.
 
 ## Quieter boost shading, livelier player search — 2026-10-04
 
