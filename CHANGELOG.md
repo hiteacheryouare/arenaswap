@@ -115,7 +115,7 @@ Every live game is now scored by `scoreGame` through `scoreLiveGame` in `package
 
 ## The Standings tab is in standings order — 2026-10-03
 
-Every table on the Standings tab is now sorted by record: winning percentage, points in hockey, league position in soccer, and conference record for the college fallback. Our sources sent some tables alphabetized or by playoff seed, so the sort is stable and teams level on record keep the order they arrived in, which is where the official tiebreakers live.
+Every table on the Standings tab is now sorted by record: winning percentage, points in hockey, league position in soccer, and conference record for the college fallback. Our sources sent some tables alphabetized or by playoff seed, so the sort is stable and teams level on record keep the order they arrived in, which is where the official tiebreakers live. A team yet to play a conference game sits at .500, between the unbeaten and the winless.
 
 ## The ticket row asks the question and the link names the price — 2026-10-03
 

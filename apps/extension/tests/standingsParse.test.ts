@@ -300,6 +300,25 @@ describe('parseStandings, the summary fallback', () => {
 		expect(group?.rows.map(row => row.name)).toEqual(['Miami', 'Wake Forest', 'Virginia Tech', 'Syracuse']);
 	});
 
+	test('puts a team yet to play in conference between the unbeaten and the winless', () => {
+		const conference = {
+			standings: {
+				groups: [{
+					header: '2026 Atlantic Coast Conference Standings',
+					standings: {
+						entries: [
+							{ team: 'Syracuse', id: '183', stats: [stat('overall', '2-1'), stat('vs. Conf.', '0-1')] },
+							{ team: 'Wake Forest', id: '154', stats: [stat('overall', '3-0'), stat('vs. Conf.', '0-0')] },
+							{ team: 'Miami', id: '2390', stats: [stat('overall', '3-0'), stat('vs. Conf.', '1-0')] },
+						],
+					},
+				}],
+			},
+		};
+		const [group] = parseStandings(conference, 'football', '154', '2390');
+		expect(group?.rows.map(row => row.name)).toEqual(['Miami', 'Wake Forest', 'Syracuse']);
+	});
+
 	test('trims the word the tab above the table already says', () => {
 		const [group] = parseStandings(college, 'football', '154', '2390');
 		expect(group?.header).toBe('2026 Atlantic Coast Conference');

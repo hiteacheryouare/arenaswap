@@ -197,11 +197,13 @@ const numberOf = (entry: RawEntry, statName: string): number | null => {
 	return Number.isFinite(value) ? value : null;
 };
 
-// "9-3" or "9-3-1", with a tie worth half a win the way the NFL counts one.
+// "9-3" or "9-3-1", with a tie worth half a win the way the NFL counts one. A team yet to play sits
+// at .500, between the unbeaten and the winless, the way an early-season conference table reads.
 const recordPercent = (record: string): number | null => {
 	const [wins = Number.NaN, losses = Number.NaN, ties = 0] = record.split('-').map(Number);
 	const played = wins + losses + ties;
-	return played > 0 ? (wins + ties / 2) / played : null;
+	if (!Number.isFinite(played)) return null;
+	return played > 0 ? (wins + ties / 2) / played : 0.5;
 };
 
 const winPercent: Standing = entry => numberOf(entry, 'winPercent');
