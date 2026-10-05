@@ -28,8 +28,8 @@ const finishedAt = (startTime: string | undefined, durationMins: number | null |
 		.toLocaleTimeString(locale, { hour: 'numeric', minute: '2-digit' });
 };
 
-const InfoRow = ({ icon, label, children }: { icon: string; label: string; children: React.ReactNode }) => (
-	<div className='game-info-row'>
+const InfoRow = ({ icon, label, stacked, children }: { icon: string; label: string; stacked?: boolean; children: React.ReactNode }) => (
+	<div className={stacked ? 'game-info-row game-info-row-stacked' : 'game-info-row'}>
 		<i className={`bi ${icon} game-info-icon`} aria-hidden='true' />
 		<span className='game-info-label'>{label}</span>
 		<div className='game-info-value'>{children}</div>
@@ -91,17 +91,14 @@ const GameInfoPanel = ({ game, bettingPrefs, weatherPrefs, gameDurationMins, tic
 			)}
 
 			{tickets && (
-				<InfoRow icon='bi-ticket-perforated' label={i18n.t('detail.infoTickets')}>
+				<InfoRow icon='bi-ticket-perforated' label={i18n.t('detail.infoTickets')} stacked>
 					<a className='game-info-link' href={tickets.url} target='_blank' rel='noopener noreferrer'>
-						{i18n.t('detail.ticketsCta')}
-					</a>
-					{tickets.minPrice !== undefined && (
-						<span className='game-info-price'>
-							{i18n.t('detail.ticketsFrom', {
+						{tickets.minPrice === undefined
+							? i18n.t('detail.ticketsCta')
+							: i18n.t('detail.ticketsFrom', {
 								price: tickets.minPrice.toLocaleString([], { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }),
 							})}
-						</span>
-					)}
+					</a>
 				</InfoRow>
 			)}
 

@@ -478,9 +478,9 @@
 		"injuryQuestionable": "Dúvida",
 		"injuryDayToDay": "Dia a dia",
 		"injuriesNone": "Enfermaria vazia",
-		"infoTickets": "Ingressos",
-		"ticketsCta": "Quer ver de perto?",
-		"ticketsFrom": "a partir de {price}",
+		"infoTickets": "Quer ver de perto?",
+		"ticketsCta": "Ingressos",
+		"ticketsFrom": "Ingressos a partir de {price}",
 		"chartLeadTitle": "Vantagem ao longo do tempo",
 		"leadTied": "Empatado",
 		"leadBy": "{team} por {margin}"

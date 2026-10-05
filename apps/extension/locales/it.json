@@ -478,9 +478,9 @@
 		"injuryQuestionable": "Incerto",
 		"injuryDayToDay": "Giorno per giorno",
 		"injuriesNone": "Infermeria vuota",
-		"infoTickets": "Biglietti",
-		"ticketsCta": "Vuoi esserci dal vivo?",
-		"ticketsFrom": "da {price}",
+		"infoTickets": "Vuoi esserci dal vivo?",
+		"ticketsCta": "Biglietti",
+		"ticketsFrom": "Biglietti da {price}",
 		"chartLeadTitle": "Vantaggio nel tempo",
 		"leadTied": "Parità",
 		"leadBy": "{team} di {margin}"

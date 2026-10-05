@@ -478,9 +478,9 @@
 		"injuryQuestionable": "Questionable",
 		"injuryDayToDay": "Day-to-day",
 		"injuriesNone": "Clean bill of health",
-		"infoTickets": "Tickets",
-		"ticketsCta": "Want to go in person?",
-		"ticketsFrom": "from {price}",
+		"infoTickets": "Want to go in person?",
+		"ticketsCta": "Tickets",
+		"ticketsFrom": "Tickets from {price}",
 		"chartLeadTitle": "Lead Over Time",
 		"leadTied": "Tied",
 		"leadBy": "{team} by {margin}"

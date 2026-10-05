@@ -109,6 +109,10 @@ Every live game is now scored by `scoreGame` through `scoreLiveGame` in `package
 
 Every table on the Standings tab is now sorted by record: winning percentage, points in hockey, league position in soccer, and conference record for the college fallback. Our sources sent some tables alphabetized or by playoff seed, so the sort is stable and teams level on record keep the order they arrived in, which is where the official tiebreakers live.
 
+## The ticket row asks the question and the link names the price — 2026-10-03
+
+The tickets row in a game's info panel is now labelled "Want to go in person?", with a link under it that reads "Tickets from $34", or just "Tickets" when the seller lists no price. The row stacks through `InfoRow`'s `stacked` prop, since a question that long wraps in the label column the other rows share. The two strings traded places in every locale, so `infoTickets` is the label and `ticketsCta` is the bare link again.
+
 ## The title rounds get past the college filter — 2026-10-02
 
 Each college league's picker has a switch, on by default, that lets the national tournament through whatever else is picked: the men's bracket from the Round of 64, the women's from the Sweet 16, every Playoff game, the hockey tournament and both World Series, with the cutoffs set by the sports analyst in `readCollegeBracket`. Top 25 ignores the rank on a seeded bracket game, since our sources put the seed there and every team in the field would pass. The same review named the college switches for screen readers, pointed the poll lookahead at the divisions the filter fetches, kept preseason out of an NFL team's recent form, and stopped the docs deploy running from anywhere but the newest mega.

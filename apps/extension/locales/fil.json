@@ -478,9 +478,9 @@
 		"injuryQuestionable": "Questionable",
 		"injuryDayToDay": "Day-to-day",
 		"injuriesNone": "Fit lahat!",
-		"infoTickets": "Tickets",
-		"ticketsCta": "Gusto mong manood nang personal?",
-		"ticketsFrom": "mula {price}",
+		"infoTickets": "Gusto mong manood nang personal?",
+		"ticketsCta": "Tickets",
+		"ticketsFrom": "Tickets mula {price}",
 		"chartLeadTitle": "Pag-usad ng Lead",
 		"leadTied": "Tabla",
 		"leadBy": "Lamang ang {team} ng {margin}"

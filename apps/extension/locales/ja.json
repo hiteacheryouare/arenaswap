@@ -478,9 +478,9 @@
 		"injuryQuestionable": "出場微妙",
 		"injuryDayToDay": "日々判断",
 		"injuriesNone": "全員ピンピン",
-		"infoTickets": "チケット",
-		"ticketsCta": "現地で観戦しませんか？",
-		"ticketsFrom": "{price}から",
+		"infoTickets": "現地で観戦しませんか？",
+		"ticketsCta": "チケット",
+		"ticketsFrom": "チケットは{price}から",
 		"chartLeadTitle": "リードの推移",
 		"leadTied": "同点",
 		"leadBy": "{team}が{margin}点リード"

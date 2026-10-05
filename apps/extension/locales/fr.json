@@ -478,9 +478,9 @@
 		"injuryQuestionable": "Incertain",
 		"injuryDayToDay": "Au jour le jour",
 		"injuriesNone": "Infirmerie vide",
-		"infoTickets": "Billets",
-		"ticketsCta": "Envie d'y être en vrai ?",
-		"ticketsFrom": "dès {price}",
+		"infoTickets": "Envie d'y être en vrai ?",
+		"ticketsCta": "Billets",
+		"ticketsFrom": "Billets dès {price}",
 		"chartLeadTitle": "Avance dans le temps",
 		"leadTied": "Égalité",
 		"leadBy": "{team} de {margin}"

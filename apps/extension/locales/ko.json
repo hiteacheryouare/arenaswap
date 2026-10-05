@@ -478,9 +478,9 @@
 		"injuryQuestionable": "출전 불확실",
 		"injuryDayToDay": "일일 점검",
 		"injuriesNone": "전원 쌩쌩",
-		"infoTickets": "티켓",
-		"ticketsCta": "직관하러 갈까요?",
-		"ticketsFrom": "{price}부터",
+		"infoTickets": "직관하러 갈까요?",
+		"ticketsCta": "티켓",
+		"ticketsFrom": "티켓 {price}부터",
 		"chartLeadTitle": "시간별 리드",
 		"leadTied": "동점",
 		"leadBy": "{team} {margin}점 차 리드"

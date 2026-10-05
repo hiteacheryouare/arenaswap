@@ -478,9 +478,9 @@
 		"injuryQuestionable": "Fraglich",
 		"injuryDayToDay": "Tag für Tag",
 		"injuriesNone": "Alle topfit",
-		"infoTickets": "Tickets",
-		"ticketsCta": "Live dabei sein?",
-		"ticketsFrom": "ab {price}",
+		"infoTickets": "Live dabei sein?",
+		"ticketsCta": "Tickets",
+		"ticketsFrom": "Tickets ab {price}",
 		"chartLeadTitle": "Führung über die Zeit",
 		"leadTied": "Unentschieden",
 		"leadBy": "{team} mit {margin}"

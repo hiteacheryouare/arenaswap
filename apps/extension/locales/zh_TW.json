@@ -478,9 +478,9 @@
 		"injuryQuestionable": "出賽存疑",
 		"injuryDayToDay": "每日觀察",
 		"injuriesNone": "全員滿血",
-		"infoTickets": "門票",
-		"ticketsCta": "想到現場看嗎？",
-		"ticketsFrom": "{price} 起",
+		"infoTickets": "想到現場看嗎？",
+		"ticketsCta": "門票",
+		"ticketsFrom": "門票 {price} 起",
 		"chartLeadTitle": "領先分差走勢",
 		"leadTied": "平手",
 		"leadBy": "{team}領先 {margin}"

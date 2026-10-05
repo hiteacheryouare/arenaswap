@@ -1974,6 +1974,20 @@
 	& + & { border-top: 1px solid var(--as-secondary-bg); }
 }
 
+// For a label that reads as a sentence: it takes the full line, and the value drops beneath it,
+// indented past the icon so both start at the same edge.
+.game-info-row-stacked {
+	flex-wrap: wrap;
+	row-gap:   0.06rem;
+
+	.game-info-label { width: auto; }
+
+	.game-info-value {
+		flex-basis:   100%;
+		padding-left: calc(0.68rem + 0.3rem);
+	}
+}
+
 // Same marker column as the breakdown's factor icons, so the two sections share a left edge.
 .game-info-icon {
 	display:     inline-flex;
@@ -2034,12 +2048,6 @@
 .game-info-link {
 	font-weight: 600;
 	color:       var(--as-accent-ink);
-}
-
-.game-info-price {
-	margin-left: 0.35rem;
-	font-size:   0.58rem;
-	color:       var(--as-secondary-color);
 }
 
 // Matches the shape of Reboot's `[type="button"]:not(:disabled)` so the help cursor survives it.
