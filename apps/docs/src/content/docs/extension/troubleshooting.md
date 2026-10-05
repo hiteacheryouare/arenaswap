@@ -2,7 +2,7 @@
 title: Troubleshoot ArenaSwap
 description: Fixes for the most common ArenaSwap problems, from an empty game list to switches that never happen, traced back to what the extension is actually doing.
 section: extension
-order: 8
+order: 9
 navLabel: Troubleshooting
 faq:
   - q: Why doesn't ArenaSwap show any games?

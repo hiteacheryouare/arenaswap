@@ -1,0 +1,663 @@
+{
+	"_source": "standings nwsl, recorded 2026-10-03T23:44:14.732Z (recordings/2026-10-03); trimmed",
+	"name": "NWSL",
+	"abbreviation": "NWSL",
+	"children": [
+		{
+			"name": "NWSL Regular Season",
+			"abbreviation": "2026",
+			"standings": {
+				"entries": [
+					{
+						"team": {
+							"id": "15364",
+							"abbreviation": "GFC"
+						},
+						"note": {
+							"color": "#81D6AC",
+							"description": "NWSL Shield; Qualifies for playoffs + Concacaf W Champions Cup",
+							"rank": 1
+						},
+						"stats": [
+							{
+								"name": "gamesPlayed",
+								"value": 26,
+								"displayValue": "26"
+							},
+							{
+								"name": "losses",
+								"value": 4,
+								"displayValue": "4"
+							},
+							{
+								"name": "points",
+								"value": 54,
+								"displayValue": "54"
+							},
+							{
+								"name": "ties",
+								"value": 6,
+								"displayValue": "6"
+							},
+							{
+								"name": "wins",
+								"value": 16,
+								"displayValue": "16"
+							},
+							{
+								"name": "rank",
+								"value": 1,
+								"displayValue": "1"
+							}
+						]
+					},
+					{
+						"team": {
+							"id": "21423",
+							"abbreviation": "SD"
+						},
+						"note": {
+							"color": "#B2BFD0",
+							"description": "Qualifies for playoffs + Concacaf W Champions Cup",
+							"rank": 2
+						},
+						"stats": [
+							{
+								"name": "gamesPlayed",
+								"value": 27,
+								"displayValue": "27"
+							},
+							{
+								"name": "losses",
+								"value": 8,
+								"displayValue": "8"
+							},
+							{
+								"name": "points",
+								"value": 51,
+								"displayValue": "51"
+							},
+							{
+								"name": "ties",
+								"value": 3,
+								"displayValue": "3"
+							},
+							{
+								"name": "wins",
+								"value": 16,
+								"displayValue": "16"
+							},
+							{
+								"name": "rank",
+								"value": 2,
+								"displayValue": "2"
+							}
+						]
+					},
+					{
+						"team": {
+							"id": "15365",
+							"abbreviation": "WAS"
+						},
+						"note": {
+							"color": "#B5E7CE",
+							"description": "Qualifies for playoffs",
+							"rank": 3
+						},
+						"stats": [
+							{
+								"name": "gamesPlayed",
+								"value": 26,
+								"displayValue": "26"
+							},
+							{
+								"name": "losses",
+								"value": 8,
+								"displayValue": "8"
+							},
+							{
+								"name": "points",
+								"value": 46,
+								"displayValue": "46"
+							},
+							{
+								"name": "ties",
+								"value": 4,
+								"displayValue": "4"
+							},
+							{
+								"name": "wins",
+								"value": 14,
+								"displayValue": "14"
+							},
+							{
+								"name": "rank",
+								"value": 3,
+								"displayValue": "3"
+							}
+						]
+					},
+					{
+						"team": {
+							"id": "19141",
+							"abbreviation": "UTA"
+						},
+						"note": {
+							"color": "#B5E7CE",
+							"description": "Qualifies for playoffs",
+							"rank": 4
+						},
+						"stats": [
+							{
+								"name": "gamesPlayed",
+								"value": 27,
+								"displayValue": "27"
+							},
+							{
+								"name": "losses",
+								"value": 9,
+								"displayValue": "9"
+							},
+							{
+								"name": "points",
+								"value": 46,
+								"displayValue": "46"
+							},
+							{
+								"name": "ties",
+								"value": 4,
+								"displayValue": "4"
+							},
+							{
+								"name": "wins",
+								"value": 14,
+								"displayValue": "14"
+							},
+							{
+								"name": "rank",
+								"value": 4,
+								"displayValue": "4"
+							}
+						]
+					},
+					{
+						"team": {
+							"id": "15362",
+							"abbreviation": "POR"
+						},
+						"note": {
+							"color": "#B5E7CE",
+							"description": "Qualifies for playoffs",
+							"rank": 5
+						},
+						"stats": [
+							{
+								"name": "gamesPlayed",
+								"value": 26,
+								"displayValue": "26"
+							},
+							{
+								"name": "losses",
+								"value": 7,
+								"displayValue": "7"
+							},
+							{
+								"name": "points",
+								"value": 43,
+								"displayValue": "43"
+							},
+							{
+								"name": "ties",
+								"value": 7,
+								"displayValue": "7"
+							},
+							{
+								"name": "wins",
+								"value": 12,
+								"displayValue": "12"
+							},
+							{
+								"name": "rank",
+								"value": 5,
+								"displayValue": "5"
+							}
+						]
+					},
+					{
+						"team": {
+							"id": "21422",
+							"abbreviation": "LA"
+						},
+						"note": {
+							"color": "#B5E7CE",
+							"description": "Qualifies for playoffs",
+							"rank": 6
+						},
+						"stats": [
+							{
+								"name": "gamesPlayed",
+								"value": 26,
+								"displayValue": "26"
+							},
+							{
+								"name": "losses",
+								"value": 8,
+								"displayValue": "8"
+							},
+							{
+								"name": "points",
+								"value": 42,
+								"displayValue": "42"
+							},
+							{
+								"name": "ties",
+								"value": 6,
+								"displayValue": "6"
+							},
+							{
+								"name": "wins",
+								"value": 12,
+								"displayValue": "12"
+							},
+							{
+								"name": "rank",
+								"value": 6,
+								"displayValue": "6"
+							}
+						]
+					},
+					{
+						"team": {
+							"id": "15366",
+							"abbreviation": "NC"
+						},
+						"note": {
+							"color": "#B5E7CE",
+							"description": "Qualifies for playoffs",
+							"rank": 7
+						},
+						"stats": [
+							{
+								"name": "gamesPlayed",
+								"value": 27,
+								"displayValue": "27"
+							},
+							{
+								"name": "losses",
+								"value": 11,
+								"displayValue": "11"
+							},
+							{
+								"name": "points",
+								"value": 42,
+								"displayValue": "42"
+							},
+							{
+								"name": "ties",
+								"value": 3,
+								"displayValue": "3"
+							},
+							{
+								"name": "wins",
+								"value": 13,
+								"displayValue": "13"
+							},
+							{
+								"name": "rank",
+								"value": 7,
+								"displayValue": "7"
+							}
+						]
+					},
+					{
+						"team": {
+							"id": "20907",
+							"abbreviation": "KC"
+						},
+						"note": {
+							"color": "#B5E7CE",
+							"description": "Qualifies for playoffs",
+							"rank": 8
+						},
+						"stats": [
+							{
+								"name": "gamesPlayed",
+								"value": 26,
+								"displayValue": "26"
+							},
+							{
+								"name": "losses",
+								"value": 9,
+								"displayValue": "9"
+							},
+							{
+								"name": "points",
+								"value": 41,
+								"displayValue": "41"
+							},
+							{
+								"name": "ties",
+								"value": 5,
+								"displayValue": "5"
+							},
+							{
+								"name": "wins",
+								"value": 12,
+								"displayValue": "12"
+							},
+							{
+								"name": "rank",
+								"value": 8,
+								"displayValue": "8"
+							}
+						]
+					},
+					{
+						"team": {
+							"id": "15363",
+							"abbreviation": "SEA"
+						},
+						"stats": [
+							{
+								"name": "gamesPlayed",
+								"value": 27,
+								"displayValue": "27"
+							},
+							{
+								"name": "losses",
+								"value": 11,
+								"displayValue": "11"
+							},
+							{
+								"name": "points",
+								"value": 40,
+								"displayValue": "40"
+							},
+							{
+								"name": "ties",
+								"value": 4,
+								"displayValue": "4"
+							},
+							{
+								"name": "wins",
+								"value": 12,
+								"displayValue": "12"
+							},
+							{
+								"name": "rank",
+								"value": 9,
+								"displayValue": "9"
+							}
+						]
+					},
+					{
+						"team": {
+							"id": "131563",
+							"abbreviation": "DEN"
+						},
+						"stats": [
+							{
+								"name": "gamesPlayed",
+								"value": 26,
+								"displayValue": "26"
+							},
+							{
+								"name": "losses",
+								"value": 9,
+								"displayValue": "9"
+							},
+							{
+								"name": "points",
+								"value": 35,
+								"displayValue": "35"
+							},
+							{
+								"name": "ties",
+								"value": 8,
+								"displayValue": "8"
+							},
+							{
+								"name": "wins",
+								"value": 9,
+								"displayValue": "9"
+							},
+							{
+								"name": "rank",
+								"value": 10,
+								"displayValue": "10"
+							}
+						]
+					},
+					{
+						"team": {
+							"id": "18206",
+							"abbreviation": "ORL"
+						},
+						"stats": [
+							{
+								"name": "gamesPlayed",
+								"value": 27,
+								"displayValue": "27"
+							},
+							{
+								"name": "losses",
+								"value": 14,
+								"displayValue": "14"
+							},
+							{
+								"name": "points",
+								"value": 33,
+								"displayValue": "33"
+							},
+							{
+								"name": "ties",
+								"value": 3,
+								"displayValue": "3"
+							},
+							{
+								"name": "wins",
+								"value": 10,
+								"displayValue": "10"
+							},
+							{
+								"name": "rank",
+								"value": 11,
+								"displayValue": "11"
+							}
+						]
+					},
+					{
+						"team": {
+							"id": "17346",
+							"abbreviation": "HOU"
+						},
+						"stats": [
+							{
+								"name": "gamesPlayed",
+								"value": 26,
+								"displayValue": "26"
+							},
+							{
+								"name": "losses",
+								"value": 12,
+								"displayValue": "12"
+							},
+							{
+								"name": "points",
+								"value": 30,
+								"displayValue": "30"
+							},
+							{
+								"name": "ties",
+								"value": 6,
+								"displayValue": "6"
+							},
+							{
+								"name": "wins",
+								"value": 8,
+								"displayValue": "8"
+							},
+							{
+								"name": "rank",
+								"value": 12,
+								"displayValue": "12"
+							}
+						]
+					},
+					{
+						"team": {
+							"id": "22187",
+							"abbreviation": "BAY"
+						},
+						"stats": [
+							{
+								"name": "gamesPlayed",
+								"value": 26,
+								"displayValue": "26"
+							},
+							{
+								"name": "losses",
+								"value": 14,
+								"displayValue": "14"
+							},
+							{
+								"name": "points",
+								"value": 26,
+								"displayValue": "26"
+							},
+							{
+								"name": "ties",
+								"value": 5,
+								"displayValue": "5"
+							},
+							{
+								"name": "wins",
+								"value": 7,
+								"displayValue": "7"
+							},
+							{
+								"name": "rank",
+								"value": 13,
+								"displayValue": "13"
+							}
+						]
+					},
+					{
+						"team": {
+							"id": "131562",
+							"abbreviation": "BOS"
+						},
+						"stats": [
+							{
+								"name": "gamesPlayed",
+								"value": 26,
+								"displayValue": "26"
+							},
+							{
+								"name": "losses",
+								"value": 14,
+								"displayValue": "14"
+							},
+							{
+								"name": "points",
+								"value": 26,
+								"displayValue": "26"
+							},
+							{
+								"name": "ties",
+								"value": 5,
+								"displayValue": "5"
+							},
+							{
+								"name": "wins",
+								"value": 7,
+								"displayValue": "7"
+							},
+							{
+								"name": "rank",
+								"value": 14,
+								"displayValue": "14"
+							}
+						]
+					},
+					{
+						"team": {
+							"id": "20905",
+							"abbreviation": "LOU"
+						},
+						"stats": [
+							{
+								"name": "gamesPlayed",
+								"value": 27,
+								"displayValue": "27"
+							},
+							{
+								"name": "losses",
+								"value": 17,
+								"displayValue": "17"
+							},
+							{
+								"name": "points",
+								"value": 24,
+								"displayValue": "24"
+							},
+							{
+								"name": "ties",
+								"value": 3,
+								"displayValue": "3"
+							},
+							{
+								"name": "wins",
+								"value": 7,
+								"displayValue": "7"
+							},
+							{
+								"name": "rank",
+								"value": 15,
+								"displayValue": "15"
+							}
+						]
+					},
+					{
+						"team": {
+							"id": "15360",
+							"abbreviation": "CHI"
+						},
+						"stats": [
+							{
+								"name": "gamesPlayed",
+								"value": 26,
+								"displayValue": "26"
+							},
+							{
+								"name": "losses",
+								"value": 19,
+								"displayValue": "19"
+							},
+							{
+								"name": "points",
+								"value": 17,
+								"displayValue": "17"
+							},
+							{
+								"name": "ties",
+								"value": 2,
+								"displayValue": "2"
+							},
+							{
+								"name": "wins",
+								"value": 5,
+								"displayValue": "5"
+							},
+							{
+								"name": "rank",
+								"value": 16,
+								"displayValue": "16"
+							}
+						]
+					}
+				]
+			}
+		}
+	]
+}

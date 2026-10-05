@@ -2,11 +2,15 @@ import type { EChartsOption } from 'echarts';
 import { scoreMaxTotal } from '@arenaswap/core/constants';
 import type { Game, PowerScoreSnapshot, ScoreSnapshot } from '@arenaswap/core/types';
 import {
+	boostMoments,
 	buildComponentContributionOption,
+	buildLeadTrackerOption,
 	buildPowerScoreOption,
 	buildTeamScoreOption,
 	buildWinProbabilityOption,
+	contributionSignalIds,
 } from '../src/components/gameDetailChartOptions';
+import { boostPresentation, signalPresentation } from '../src/components/scoringModeMeta';
 import { chartEasing, motionDuration } from '../src/motion';
 import { signalColors } from '../src/components/signalColors';
 
@@ -363,8 +367,8 @@ describe('buildComponentContributionOption', () => {
 
 	// The tooltip prints the series name, so the popup hands over the legend's translated names.
 	test('names each signal in the language it is given', () => {
-		const labels = { closeness: 'Ausgeglichenheit', lateGame: 'Spätphase', momentum: 'Momentum', leadChanges: 'Führungswechsel', comeback: 'Aufholjagd' };
-		const option = buildComponentContributionOption(history, undefined, labels);
+		const labels: Record<string, string> = { closeness: 'Ausgeglichenheit', lateGame: 'Spätphase', momentum: 'Momentum', leadChanges: 'Führungswechsel', comeback: 'Aufholjagd' };
+		const option = buildComponentContributionOption(history, undefined, id => labels[id]!);
 		expect(byName(option, 'Ausgeglichenheit').data).toEqual([21]);
 		expect(byName(option, 'Aufholjagd').data).toEqual([4]);
 	});
@@ -405,5 +409,151 @@ describe('buildComponentContributionOption', () => {
 
 	test('draws an empty stack rather than throwing on a game with no readings yet', () => {
 		for (const bar of seriesOf(buildComponentContributionOption([]))) expect(bar.data).toEqual([]);
+	});
+});
+
+describe('buildComponentContributionOption across modes', () => {
+	const blowout = (index: number) => powerPoint(index, {
+		modeId: 'blowouts',
+		signals: { blowoutMargin: 41, sustained: 22, timing: 9, pileOn: 6 },
+	});
+
+	test('draws a Blowouts game in its own four signals, each in its own tone', () => {
+		const option = buildComponentContributionOption([blowout(0), blowout(1)]);
+		const bars = seriesOf(option);
+		expect(bars.map(bar => bar.name)).toEqual(['Margin', 'Lead held', 'Early rout', 'Piling on']);
+		expect(byName(option, 'Margin').data).toEqual([41, 41]);
+		expect(byName(option, 'Piling on').itemStyle!.color).toBe(signalPresentation.pileOn.color);
+		expect(new Set(bars.map(bar => bar.itemStyle!.color)).size).toBe(4);
+		expect(new Set(bars.map(bar => bar.stack))).toEqual(new Set(['signals']));
+	});
+
+	test('reads a Fantasy game from its own signals', () => {
+		const option = buildComponentContributionOption([powerPoint(0, { modeId: 'fantasy', signals: { situation: 38, production: 20, exposure: 10 } })]);
+		expect(seriesOf(option).map(bar => [bar.name, bar.data])).toEqual([
+			['In the action', [38]],
+			['Fantasy points', [20]],
+			['Your players', [10]],
+		]);
+	});
+
+	// A switch of mode mid-game keeps both sets of bars, each reading zero where it was not scored,
+	// and a reading from before modes counts as Classic.
+	test('draws every signal any reading carried when the mode changed mid-game', () => {
+		const history = [powerPoint(0), powerPoint(1, { modeId: 'classic', signals: { closeness: 30, lateGame: 0, momentum: 0, leadChanges: 0, comeback: 0 } }), blowout(2)];
+		expect(contributionSignalIds(history)).toEqual(['closeness', 'lateGame', 'momentum', 'leadChanges', 'comeback', 'blowoutMargin', 'sustained', 'timing', 'pileOn']);
+		const option = buildComponentContributionOption(history);
+		expect(byName(option, 'Closeness').data).toEqual([20, 30, 0]);
+		expect(byName(option, 'Margin').data).toEqual([0, 0, 41]);
+	});
+
+	test('falls back to Classic\'s five before any reading arrives', () => {
+		expect(contributionSignalIds([])).toEqual(['closeness', 'lateGame', 'momentum', 'leadChanges', 'comeback']);
+	});
+});
+
+interface markAreaLike {
+	silent?: boolean;
+	data?: [{ name?: string; xAxis?: number; itemStyle?: { color?: string } }, { xAxis?: number }][];
+}
+
+const markAreaOf = (option: EChartsOption): markAreaLike | undefined => (
+	(seriesOf(option)[0] as { markArea?: markAreaLike } | undefined)?.markArea
+);
+
+const point = (index: number) => [{ axisValueLabel: 'x', dataIndex: index, marker: '', seriesName: 'PowerScore', value: 60 + index }];
+
+describe('boost moments on the PowerScore line', () => {
+	test('shades nothing, and keeps the stock tooltip, on a game with no moment boosts', () => {
+		const option = buildPowerScoreOption([powerPoint(0), powerPoint(1, { boosts: { favoriteBoost: 10 } })]);
+		expect(markAreaOf(option)).toBeUndefined();
+		expect((option.tooltip as { formatter?: unknown }).formatter).toBeUndefined();
+	});
+
+	// The stretch ends at the first reading that no longer pays, since the moment ended somewhere
+	// between the two.
+	test('shades each stretch a moment boost paid, in that boost\'s tone', () => {
+		const history = [
+			powerPoint(0),
+			powerPoint(1, { boosts: { twoMinuteDrill: 8 } }),
+			powerPoint(2, { boosts: { twoMinuteDrill: 10 } }),
+			powerPoint(3),
+			powerPoint(4, { boosts: { redCard: 6 } }),
+		];
+		expect(boostMoments(history)).toEqual([
+			{ id: 'twoMinuteDrill', start: 1, end: 3 },
+			{ id: 'redCard', start: 4, end: 4 },
+		]);
+		const area = markAreaOf(buildPowerScoreOption(history))!;
+		expect(area.silent).toBe(true);
+		expect(area.label).toEqual({ show: false });
+		expect(area.data).toHaveLength(2);
+		expect(area.data![0]![0].name).toBe('Two-minute drill');
+		expect(area.data![0]![0].xAxis).toBe(1);
+		expect(area.data![0]![1].xAxis).toBe(3);
+		expect(area.data![0]![0].itemStyle!.color).toBe('rgba(247, 92, 3, 0.16)');
+		expect(area.data![1]![0].itemStyle!.color).toBe('rgba(239, 68, 68, 0.16)');
+	});
+
+	test('names the strongest moment when two pay at once, and leaves out the boosts that are not moments', () => {
+		const history = [powerPoint(0, { boosts: { scoringOpportunity: 3, goAheadRun: 8, favoriteBoost: 10, postseasonBoost: 5 } })];
+		expect(boostMoments(history)).toEqual([{ id: 'goAheadRun', start: 0, end: 0 }]);
+	});
+
+	test('splits the stretch where one moment hands over to another', () => {
+		const history = [powerPoint(0, { boosts: { powerPlay: 4 } }), powerPoint(1, { boosts: { emptyNet: 9 } })];
+		expect(boostMoments(history).map(moment => moment.id)).toEqual(['powerPlay', 'emptyNet']);
+	});
+
+	test('names the boost in the tooltip, in the language it is given', () => {
+		const history = [powerPoint(0), powerPoint(1, { boosts: { noHitter: 22 } })];
+		const option = buildPowerScoreOption(history, undefined, undefined, id => `<${id}>`);
+		const formatter = (option.tooltip as { formatter: (params: unknown) => string }).formatter;
+		expect(formatter(point(1))).toContain('<noHitter>');
+		expect(formatter(point(1))).toContain(boostPresentation.noHitter.color);
+		expect(formatter(point(0))).not.toContain('noHitter');
+	});
+});
+
+describe('buildLeadTrackerOption', () => {
+	const scores = [scorePoint(0, 10, 4), scorePoint(1, 12, 12), scorePoint(2, 14, 30)];
+
+	// Boston is away: its lead reads above zero, Cleveland's below, each filled in its own colour.
+	test('splits the signed margin into each team\'s side of zero', () => {
+		const option = buildLeadTrackerOption(scores, game);
+		const [away, home] = seriesOf(option) as (seriesLike & { areaStyle?: { color?: string } })[];
+		expect(away!.name).toBe('BOS');
+		expect(away!.data).toEqual([6, 0, 0]);
+		expect(home!.name).toBe('CLE');
+		expect(home!.data).toEqual([0, 0, -16]);
+		expect(away!.areaStyle!.color).toBe(away!.lineStyle!.color);
+		expect(home!.areaStyle!.color).toBe(home!.lineStyle!.color);
+		expect(away!.lineStyle!.color).not.toBe(home!.lineStyle!.color);
+	});
+
+	test('uses the same team colours as the score chart', () => {
+		const lead = buildLeadTrackerOption(scores, game);
+		const score = buildTeamScoreOption(scores, game);
+		expect(byName(lead, 'BOS').lineStyle!.color).toBe(byName(score, 'BOS').lineStyle!.color);
+		expect(byName(lead, 'CLE').lineStyle!.color).toBe(byName(score, 'CLE').lineStyle!.color);
+	});
+
+	test('labels the axis in margins, not signs', () => {
+		const formatter = (buildLeadTrackerOption(scores, game).yAxis as { axisLabel: { formatter: (value: number) => string } }).axisLabel.formatter;
+		expect(formatter(-10)).toBe('10');
+		expect(formatter(10)).toBe('10');
+	});
+
+	test('says who leads and by how much at each reading', () => {
+		const formatter = (buildLeadTrackerOption(scores, game).tooltip as { formatter: (params: unknown) => string }).formatter;
+		const at = (index: number) => formatter([{ axisValueLabel: 't', dataIndex: index, marker: '', seriesName: '', value: 0 }]);
+		expect(at(0)).toContain('BOS by 6');
+		expect(at(1)).toContain('Tied');
+		expect(at(2)).toContain('CLE by 16');
+	});
+
+	test('draws a single reading as a point', () => {
+		const [away] = seriesOf(buildLeadTrackerOption([scorePoint(0, 3, 1)], game));
+		expect(away!.showSymbol).toBe(true);
 	});
 });

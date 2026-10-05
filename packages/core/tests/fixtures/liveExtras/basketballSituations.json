@@ -1,0 +1,195 @@
+{
+	"_source": "core API competitions/{id}/situation, basketball/nba 401902644, recordings/2026-10-03",
+	"firstQuarter": {
+		"t": "situation",
+		"ts": 1791069377231,
+		"league": "nba",
+		"gameId": "401902644",
+		"raw": {
+			"$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/events/401902644/competitions/401902644/situation?lang=en&region=us",
+			"lastPlay": {
+				"$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/events/401902644/competitions/401902644/plays/40190264423?lang=en&region=us"
+			},
+			"homeTimeouts": {
+				"timeoutsCurrent": 0,
+				"timeoutsRemainingCurrent": 7
+			},
+			"awayTimeouts": {
+				"timeoutsCurrent": 0,
+				"timeoutsRemainingCurrent": 7
+			},
+			"homeFouls": {
+				"teamFouls": 2,
+				"teamFoulsCurrent": 2,
+				"foulsToGive": 2,
+				"bonusState": "NONE"
+			},
+			"awayFouls": {
+				"teamFouls": 0,
+				"teamFoulsCurrent": 0,
+				"foulsToGive": 4,
+				"bonusState": "NONE"
+			}
+		}
+	},
+	"homeInBonus": {
+		"t": "situation",
+		"ts": 1791069999482,
+		"league": "nba",
+		"gameId": "401902644",
+		"raw": {
+			"$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/events/401902644/competitions/401902644/situation?lang=en&region=us",
+			"lastPlay": {
+				"$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/events/401902644/competitions/401902644/plays/40190264480?lang=en&region=us"
+			},
+			"homeTimeouts": {
+				"timeoutsCurrent": 1,
+				"timeoutsRemainingCurrent": 6
+			},
+			"awayTimeouts": {
+				"timeoutsCurrent": 0,
+				"timeoutsRemainingCurrent": 7
+			},
+			"homeFouls": {
+				"teamFouls": 5,
+				"teamFoulsCurrent": 5,
+				"foulsToGive": 1,
+				"bonusState": "DOUBLE"
+			},
+			"awayFouls": {
+				"teamFouls": 4,
+				"teamFoulsCurrent": 4,
+				"foulsToGive": 0,
+				"bonusState": "NONE"
+			}
+		}
+	},
+	"bothInBonus": {
+		"t": "situation",
+		"ts": 1791070045015,
+		"league": "nba",
+		"gameId": "401902644",
+		"raw": {
+			"$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/events/401902644/competitions/401902644/situation?lang=en&region=us",
+			"lastPlay": {
+				"$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/events/401902644/competitions/401902644/plays/40190264484?lang=en&region=us"
+			},
+			"homeTimeouts": {
+				"timeoutsCurrent": 1,
+				"timeoutsRemainingCurrent": 6
+			},
+			"awayTimeouts": {
+				"timeoutsCurrent": 0,
+				"timeoutsRemainingCurrent": 7
+			},
+			"homeFouls": {
+				"teamFouls": 6,
+				"teamFoulsCurrent": 6,
+				"foulsToGive": 0,
+				"bonusState": "DOUBLE"
+			},
+			"awayFouls": {
+				"teamFouls": 4,
+				"teamFoulsCurrent": 4,
+				"foulsToGive": 0,
+				"bonusState": "DOUBLE"
+			}
+		}
+	},
+	"quarterReset": {
+		"t": "situation",
+		"ts": 1791071164556,
+		"league": "nba",
+		"gameId": "401902644",
+		"raw": {
+			"$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/events/401902644/competitions/401902644/situation?lang=en&region=us",
+			"lastPlay": {
+				"$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/events/401902644/competitions/401902644/plays/401902644216?lang=en&region=us"
+			},
+			"homeTimeouts": {
+				"timeoutsCurrent": 0,
+				"timeoutsRemainingCurrent": 5
+			},
+			"awayTimeouts": {
+				"timeoutsCurrent": 0,
+				"timeoutsRemainingCurrent": 7
+			},
+			"homeFouls": {
+				"teamFouls": 10,
+				"teamFoulsCurrent": 0,
+				"foulsToGive": 4,
+				"bonusState": "NONE"
+			},
+			"awayFouls": {
+				"teamFouls": 4,
+				"teamFoulsCurrent": 0,
+				"foulsToGive": 4,
+				"bonusState": "NONE"
+			}
+		}
+	},
+	"lastMinutes": {
+		"t": "situation",
+		"ts": 1791077349639,
+		"league": "nba",
+		"gameId": "401902644",
+		"raw": {
+			"$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/events/401902644/competitions/401902644/situation?lang=en&region=us",
+			"lastPlay": {
+				"$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/events/401902644/competitions/401902644/plays/401902644763?lang=en&region=us"
+			},
+			"homeTimeouts": {
+				"timeoutsCurrent": 2,
+				"timeoutsRemainingCurrent": 1
+			},
+			"awayTimeouts": {
+				"timeoutsCurrent": 0,
+				"timeoutsRemainingCurrent": 2
+			},
+			"homeFouls": {
+				"teamFouls": 30,
+				"teamFoulsCurrent": 7,
+				"foulsToGive": 0,
+				"bonusState": "DOUBLE"
+			},
+			"awayFouls": {
+				"teamFouls": 24,
+				"teamFoulsCurrent": 5,
+				"foulsToGive": 0,
+				"bonusState": "DOUBLE"
+			}
+		}
+	},
+	"final": {
+		"t": "situation",
+		"ts": 1791077940192,
+		"league": "nba",
+		"gameId": "401902644",
+		"raw": {
+			"$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/events/401902644/competitions/401902644/situation?lang=en&region=us",
+			"lastPlay": {
+				"$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/events/401902644/competitions/401902644/plays/401902644797?lang=en&region=us"
+			},
+			"homeTimeouts": {
+				"timeoutsCurrent": 0,
+				"timeoutsRemainingCurrent": 0
+			},
+			"awayTimeouts": {
+				"timeoutsCurrent": 0,
+				"timeoutsRemainingCurrent": 0
+			},
+			"homeFouls": {
+				"teamFouls": 30,
+				"teamFoulsCurrent": 7,
+				"foulsToGive": 0,
+				"bonusState": "DOUBLE"
+			},
+			"awayFouls": {
+				"teamFouls": 24,
+				"teamFoulsCurrent": 5,
+				"foulsToGive": 0,
+				"bonusState": "DOUBLE"
+			}
+		}
+	}
+}

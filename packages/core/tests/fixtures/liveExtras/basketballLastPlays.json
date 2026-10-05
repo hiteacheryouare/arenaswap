@@ -1,0 +1,636 @@
+{
+	"_source": "scoreboard competitions[0].situation.lastPlay, basketball/nba preseason, recordings/2026-10-03 and 2026-10-04",
+	"missedLastWithoutTeam": {
+		"homeId": "28",
+		"awayId": "14",
+		"lastPlay": {
+			"id": "40190264423",
+			"type": {
+				"id": "99",
+				"text": "Free Throw - 2 of 2"
+			},
+			"text": "misses free throw 2 of 2",
+			"team": null,
+			"scoreValue": 0
+		}
+	},
+	"offensiveFoulTurnover": {
+		"homeId": "28",
+		"awayId": "14",
+		"lastPlay": {
+			"id": "40190264426",
+			"type": {
+				"id": "84",
+				"text": "Offensive Foul Turnover"
+			},
+			"text": "Scottie Barnes offensive foul turnover",
+			"team": {
+				"id": "28"
+			},
+			"scoreValue": 0
+		}
+	},
+	"missedShot": {
+		"homeId": "28",
+		"awayId": "14",
+		"lastPlay": {
+			"id": "40190264429",
+			"type": {
+				"id": "91",
+				"text": "No Shot (Default Shot)"
+			},
+			"text": "Andrew Wiggins misses shot",
+			"team": {
+				"id": "14"
+			},
+			"scoreValue": 0
+		}
+	},
+	"defensiveRebound": {
+		"homeId": "28",
+		"awayId": "14",
+		"lastPlay": {
+			"id": "40190264432",
+			"type": {
+				"id": "155",
+				"text": "Defensive Rebound"
+			},
+			"text": "Bam Adebayo defensive rebound",
+			"team": {
+				"id": "14"
+			},
+			"scoreValue": 0
+		}
+	},
+	"shootingFoul": {
+		"homeId": "28",
+		"awayId": "14",
+		"lastPlay": {
+			"id": "40190264440",
+			"type": {
+				"id": "44",
+				"text": "Shooting Foul"
+			},
+			"text": "Scottie Barnes shooting foul",
+			"team": {
+				"id": "28"
+			},
+			"scoreValue": 0
+		}
+	},
+	"madeLastOfOne": {
+		"homeId": "28",
+		"awayId": "14",
+		"lastPlay": {
+			"id": "40190264442",
+			"type": {
+				"id": "97",
+				"text": "Free Throw - 1 of 1"
+			},
+			"text": "Giannis Antetokounmpo makes free throw 1 of 1",
+			"team": {
+				"id": "14"
+			},
+			"scoreValue": 1
+		}
+	},
+	"substitution": {
+		"homeId": "28",
+		"awayId": "14",
+		"lastPlay": {
+			"id": "40190264447",
+			"type": {
+				"id": "584",
+				"text": "Substitution"
+			},
+			"text": "Collin Murray-Boyles enters the game for Scottie Barnes",
+			"team": {
+				"id": "28"
+			},
+			"scoreValue": 0
+		}
+	},
+	"offensiveRebound": {
+		"homeId": "28",
+		"awayId": "14",
+		"lastPlay": {
+			"id": "40190264451",
+			"type": {
+				"id": "156",
+				"text": "Offensive Rebound"
+			},
+			"text": "Collin Murray-Boyles offensive rebound",
+			"team": {
+				"id": "28"
+			},
+			"scoreValue": 0
+		}
+	},
+	"stealTurnover": {
+		"homeId": "28",
+		"awayId": "14",
+		"lastPlay": {
+			"id": "40190264458",
+			"type": {
+				"id": "63",
+				"text": "Lost Ball Turnover"
+			},
+			"text": "Giannis Antetokounmpo lost ball turnover (Jamal Shead steals)",
+			"team": {
+				"id": "14"
+			},
+			"scoreValue": 0
+		}
+	},
+	"fullTimeout": {
+		"homeId": "28",
+		"awayId": "14",
+		"lastPlay": {
+			"id": "40190264477",
+			"type": {
+				"id": "16",
+				"text": "Full Timeout"
+			},
+			"text": "Raptors Full timeout",
+			"team": {
+				"id": "28"
+			},
+			"scoreValue": 0
+		}
+	},
+	"personalFoul": {
+		"homeId": "28",
+		"awayId": "14",
+		"lastPlay": {
+			"id": "40190264485",
+			"type": {
+				"id": "45",
+				"text": "Personal Foul"
+			},
+			"text": "Collin Murray-Boyles personal foul",
+			"team": {
+				"id": "28"
+			},
+			"scoreValue": 0
+		}
+	},
+	"teamOffensiveRebound": {
+		"homeId": "28",
+		"awayId": "14",
+		"lastPlay": {
+			"id": "40190264490",
+			"type": {
+				"id": "156",
+				"text": "Offensive Rebound"
+			},
+			"text": "Heat offensive team rebound",
+			"team": {
+				"id": "14"
+			},
+			"scoreValue": 0
+		}
+	},
+	"madeFirstOfTwo": {
+		"homeId": "28",
+		"awayId": "14",
+		"lastPlay": {
+			"id": "401902644133",
+			"type": {
+				"id": "98",
+				"text": "Free Throw - 1 of 2"
+			},
+			"text": "Nikola Jovic makes free throw 1 of 2",
+			"team": {
+				"id": "14"
+			},
+			"scoreValue": 1
+		}
+	},
+	"madeThree": {
+		"homeId": "28",
+		"awayId": "14",
+		"lastPlay": {
+			"id": "401902644171",
+			"type": {
+				"id": "92",
+				"text": "Jump Shot"
+			},
+			"text": "Nimari Burnett makes 23-foot three point jumper (Chucky Hepburn assists)",
+			"team": {
+				"id": "28"
+			},
+			"scoreValue": 3
+		}
+	},
+	"madeDunk": {
+		"homeId": "28",
+		"awayId": "14",
+		"lastPlay": {
+			"id": "401902644175",
+			"type": {
+				"id": "151",
+				"text": "Cutting Dunk Shot"
+			},
+			"text": "Scottie Barnes makes 1-foot dunk (Nimari Burnett assists)",
+			"team": {
+				"id": "28"
+			},
+			"scoreValue": 2
+		}
+	},
+	"reboundWithoutTeam": {
+		"homeId": "28",
+		"awayId": "14",
+		"lastPlay": {
+			"id": "401902644182",
+			"type": {
+				"id": "155",
+				"text": "Defensive Rebound"
+			},
+			"text": null,
+			"team": null,
+			"scoreValue": 0
+		}
+	},
+	"endPeriod": {
+		"homeId": "28",
+		"awayId": "14",
+		"lastPlay": {
+			"id": "401902644198",
+			"type": {
+				"id": "412",
+				"text": "End Period"
+			},
+			"text": "End of the 1st Quarter",
+			"team": null,
+			"scoreValue": 0
+		}
+	},
+	"badPassTurnover": {
+		"homeId": "28",
+		"awayId": "14",
+		"lastPlay": {
+			"id": "401902644284",
+			"type": {
+				"id": "62",
+				"text": "Bad Pass\nTurnover"
+			},
+			"text": "Davion Mitchell bad pass\nturnover (Jakob Poeltl steals)",
+			"team": {
+				"id": "14"
+			},
+			"scoreValue": 0
+		}
+	},
+	"looseBallFoul": {
+		"homeId": "28",
+		"awayId": "14",
+		"lastPlay": {
+			"id": "401902644316",
+			"type": {
+				"id": "43",
+				"text": "Loose Ball Foul"
+			},
+			"text": "Immanuel Quickley loose ball foul",
+			"team": {
+				"id": "28"
+			},
+			"scoreValue": 0
+		}
+	},
+	"missedLastOfTwo": {
+		"homeId": "28",
+		"awayId": "14",
+		"lastPlay": {
+			"id": "401902644341",
+			"type": {
+				"id": "99",
+				"text": "Free Throw - 2 of 2"
+			},
+			"text": "Nimari Burnett misses free throw 2 of 2",
+			"team": {
+				"id": "28"
+			},
+			"scoreValue": 0
+		}
+	},
+	"offensiveFoul": {
+		"homeId": "28",
+		"awayId": "14",
+		"lastPlay": {
+			"id": "401902644455",
+			"type": {
+				"id": "42",
+				"text": "Offensive Foul"
+			},
+			"text": "Nick Richards offensive foul",
+			"team": {
+				"id": "14"
+			},
+			"scoreValue": 0
+		}
+	},
+	"violation": {
+		"homeId": "28",
+		"awayId": "14",
+		"lastPlay": {
+			"id": "401902644686",
+			"type": {
+				"id": "7",
+				"text": "No Violation"
+			},
+			"text": "Vladislav Goldin violation",
+			"team": {
+				"id": "14"
+			},
+			"scoreValue": 0
+		}
+	},
+	"blockedShot": {
+		"homeId": "12",
+		"awayId": "9",
+		"lastPlay": {
+			"id": "401918010100",
+			"type": {
+				"id": "91",
+				"text": "No Shot (Default Shot)"
+			},
+			"text": "Isaiah Jackson blocks Gui Santos 's 1-foot shot",
+			"team": {
+				"id": "9"
+			},
+			"scoreValue": 0
+		}
+	},
+	"traveling": {
+		"homeId": "7",
+		"awayId": "26",
+		"lastPlay": {
+			"id": "401914127351",
+			"type": {
+				"id": "64",
+				"text": "Traveling"
+			},
+			"text": "Darryn Peterson traveling turnover",
+			"team": {
+				"id": "26"
+			},
+			"scoreValue": 0
+		}
+	},
+	"challengeOverturned": {
+		"homeId": "7",
+		"awayId": "26",
+		"lastPlay": {
+			"id": "401914127435",
+			"type": {
+				"id": "215",
+				"text": "Coach's Challenge (Overturned)"
+			},
+			"text": "(09:10) [Jazz] COACH'S CHALLENGE (CALL OVERTURNED) [Jazz] retain their timeout",
+			"team": null,
+			"scoreValue": 0
+		}
+	},
+	"eightSeconds": {
+		"homeId": "7",
+		"awayId": "26",
+		"lastPlay": {
+			"id": "401914127571",
+			"type": {
+				"id": "69",
+				"text": "8-Second Turnover"
+			},
+			"text": "8 second turnover",
+			"team": {
+				"id": "26"
+			},
+			"scoreValue": 0
+		}
+	},
+	"challengeSupported": {
+		"homeId": "12",
+		"awayId": "9",
+		"lastPlay": {
+			"id": "401918010640",
+			"type": {
+				"id": "214",
+				"text": "Coach's Challenge (Supported)"
+			},
+			"text": "(09:11) [Warriors] COACH'S CHALLENGE (REPLAY SUPPORTS CALL) [Warriors] charged with a timeout",
+			"team": null,
+			"scoreValue": 0
+		}
+	},
+	"madeSecondOfThree": {
+		"homeId": "12",
+		"awayId": "9",
+		"lastPlay": {
+			"id": "401918010693",
+			"type": {
+				"id": "101",
+				"text": "Free Throw - 2 of 3"
+			},
+			"text": "Keaton Wagler makes free throw 2 of 3",
+			"team": {
+				"id": "12"
+			},
+			"scoreValue": 1
+		}
+	},
+	"scoreboard": {
+		"events": [
+			{
+				"id": "401918010",
+				"uid": "s:40~l:46~e:401918010",
+				"date": "2026-10-04T23:00Z",
+				"name": "Golden State Warriors at LA Clippers",
+				"shortName": "GS VS LAC",
+				"season": {
+					"year": 2027,
+					"type": 1,
+					"slug": "preseason"
+				},
+				"competitions": [
+					{
+						"id": "401918010",
+						"uid": "s:40~l:46~e:401918010~c:401918010",
+						"date": "2026-10-04T23:00Z",
+						"attendance": 0,
+						"type": {
+							"id": "1",
+							"abbreviation": "STD"
+						},
+						"timeValid": true,
+						"neutralSite": true,
+						"conferenceCompetition": false,
+						"playByPlayAvailable": true,
+						"recent": true,
+						"venue": {
+							"id": "540",
+							"fullName": "Stan Sheriff Center",
+							"address": {
+								"city": "Honolulu",
+								"state": "HI"
+							},
+							"indoor": true
+						},
+						"competitors": [
+							{
+								"id": "12",
+								"uid": "s:40~l:46~t:12",
+								"type": "team",
+								"order": 0,
+								"homeAway": "home",
+								"team": {
+									"id": "12",
+									"uid": "s:40~l:46~t:12",
+									"location": "LA",
+									"name": "Clippers",
+									"abbreviation": "LAC",
+									"displayName": "LA Clippers",
+									"shortDisplayName": "Clippers",
+									"color": "12173f",
+									"alternateColor": "c8102e",
+									"isActive": true,
+									"venue": {
+										"id": "1841"
+									},
+									"logo": "https://a.espncdn.com/i/teamlogos/nba/500/scoreboard/lac.png"
+								},
+								"score": "8",
+								"linescores": [
+									{
+										"value": 8,
+										"displayValue": "8",
+										"period": 1
+									}
+								],
+								"records": [
+									{
+										"name": "overall",
+										"abbreviation": "Total",
+										"type": "total",
+										"summary": "0-0"
+									},
+									{
+										"name": "Home",
+										"type": "home",
+										"summary": "0-0"
+									},
+									{
+										"name": "Road",
+										"type": "road",
+										"summary": "0-0"
+									}
+								]
+							},
+							{
+								"id": "9",
+								"uid": "s:40~l:46~t:9",
+								"type": "team",
+								"order": 1,
+								"homeAway": "away",
+								"team": {
+									"id": "9",
+									"uid": "s:40~l:46~t:9",
+									"location": "Golden State",
+									"name": "Warriors",
+									"abbreviation": "GS",
+									"displayName": "Golden State Warriors",
+									"shortDisplayName": "Warriors",
+									"color": "fdb927",
+									"alternateColor": "1d428a",
+									"isActive": true,
+									"venue": {
+										"id": "2465"
+									},
+									"logo": "https://a.espncdn.com/i/teamlogos/nba/500/scoreboard/gs.png"
+								},
+								"score": "11",
+								"linescores": [
+									{
+										"value": 11,
+										"displayValue": "11",
+										"period": 1
+									}
+								],
+								"records": [
+									{
+										"name": "overall",
+										"abbreviation": "Total",
+										"type": "total",
+										"summary": "0-0"
+									},
+									{
+										"name": "Home",
+										"type": "home",
+										"summary": "0-0"
+									},
+									{
+										"name": "Road",
+										"type": "road",
+										"summary": "0-0"
+									}
+								]
+							}
+						],
+						"notes": [],
+						"situation": {
+							"lastPlay": {
+								"id": "40191801055",
+								"type": {
+									"id": "155",
+									"text": "Defensive Rebound"
+								},
+								"text": "Isaiah Jackson defensive rebound",
+								"scoreValue": 0,
+								"team": {
+									"id": "12"
+								}
+							}
+						},
+						"status": {
+							"clock": 474,
+							"displayClock": "7:54",
+							"period": 1,
+							"type": {
+								"id": "2",
+								"name": "STATUS_IN_PROGRESS",
+								"state": "in",
+								"completed": false,
+								"description": "In Progress",
+								"detail": "7:54 - 1st Quarter",
+								"shortDetail": "7:54 - 1st"
+							}
+						},
+						"broadcasts": [],
+						"format": {
+							"regulation": {
+								"periods": 4
+							}
+						},
+						"startDate": "2026-10-04T23:00Z",
+						"broadcast": "",
+						"geoBroadcasts": [],
+						"highlights": []
+					}
+				],
+				"status": {
+					"clock": 474,
+					"displayClock": "7:54",
+					"period": 1,
+					"type": {
+						"id": "2",
+						"name": "STATUS_IN_PROGRESS",
+						"state": "in",
+						"completed": false,
+						"description": "In Progress",
+						"detail": "7:54 - 1st Quarter",
+						"shortDetail": "7:54 - 1st"
+					}
+				}
+			}
+		]
+	}
+}

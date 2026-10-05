@@ -561,6 +561,52 @@ describe('box score', () => {
 			});
 		});
 
+		it('closes basketball with the largest lead and the lead changes, in the same rows as the rest', () => {
+			mount(games.basketball);
+			cy.get('.gd-box-compare tbody .gd-box-compare-label').then($labels => {
+				expect([...$labels].slice(-3).map(el => el.textContent?.trim())).to.deep.equal([
+					en.box.blocks, en.box.largestLead, en.box.leadChanges,
+				]);
+			});
+			cy.contains('.gd-box-compare-label', en.box.largestLead).parent().find('td')
+				.then($td => expect([...$td].map(el => el.textContent?.trim())).to.deep.equal(['4', '7']));
+			cy.contains('.gd-box-compare-label', en.box.leadChanges).parent().find('td')
+				.then($td => expect([...$td].map(el => el.textContent?.trim())).to.deep.equal(['9', '9']));
+			// Same height, same columns and the same baseline as the row above, so the two new rows
+			// read as part of the table rather than as something appended under it.
+			cy.contains('.gd-box-compare-label', en.box.blocks).parent().then(([blocks]) => {
+				cy.contains('.gd-box-compare-label', en.box.largestLead).parent().then(([lead]) => {
+					const above = blocks.getBoundingClientRect();
+					const below = lead.getBoundingClientRect();
+					expect(below.height, 'row height').to.be.closeTo(above.height, 0.5);
+					expect(below.top, 'directly under').to.be.closeTo(above.bottom, 1);
+					[...blocks.children].forEach((cell, index) => {
+						const next = lead.children[index]!.getBoundingClientRect();
+						expect(next.left, `column ${index} left`).to.be.closeTo(cell.getBoundingClientRect().left, 0.5);
+						expect(next.right, `column ${index} right`).to.be.closeTo(cell.getBoundingClientRect().right, 0.5);
+					});
+				});
+			});
+		});
+
+		// The label cell wraps rather than overflowing, so a second line would show up as a taller row.
+		it('keeps both lead labels on one line in every locale', () => {
+			mount(games.basketball);
+			cy.contains('.gd-box-compare-label', en.box.blocks).then(([blocks]) => {
+				const oneLine = blocks.getBoundingClientRect().height;
+				(['largestLead', 'leadChanges'] as const).forEach(key => {
+					cy.contains('.gd-box-compare-label', en.box[key]).then(([el]) => {
+						Object.entries(locales).forEach(([name, locale]) => {
+							el.textContent = (locale.box as Record<string, string>)[key] ?? en.box[key];
+							expect(el.getBoundingClientRect().height, `${key} in ${name}`).to.be.closeTo(oneLine, 0.5);
+							expect(el.scrollWidth, `${key} in ${name}`).to.be.at.most(el.clientWidth);
+						});
+						el.textContent = en.box[key];
+					});
+				});
+			});
+		});
+
 		it('reads nothing from the nested tree baseball sends', () => {
 			mount(games.baseball);
 			cy.get('.gd-box-compare').should('not.exist');

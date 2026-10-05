@@ -215,3 +215,43 @@ describe('the postseason label on the other two card states', () => {
 		});
 	});
 });
+
+// Preseason has no round for ESPN to name, so the card supplies its own word in the same spot.
+describe('the preseason label', () => {
+	const mountFinal = (game: Game) =>
+		cy.mount(
+			<div style={{ width: popupWidth, padding: '0.75rem', background: '#0d1117' }}>
+				<FinalGameCard {...defaultProps} excitementResult={undefined} game={game} />
+			</div>,
+		);
+
+	it('names a preseason game on the live card\'s status row', () => {
+		mountLive({ ...baseGame, isPreseason: true });
+		cy.get('.game-postseason-label').should('have.text', 'Preseason');
+		cy.get('.live-status-label').then($live => {
+			cy.get('.game-postseason-label').then($label => {
+				expect(Math.abs($live[0]!.getBoundingClientRect().top - $label[0]!.getBoundingClientRect().top)).to.be.lessThan(2);
+			});
+		});
+	});
+
+	it('calls baseball\'s spring training by its name', () => {
+		mountFinal({ ...baseGame, league: 'mlb', sportType: 'baseball', status: 'post', period: 9, isPreseason: true });
+		cy.get('.game-postseason-label').should('have.text', 'Spring Training');
+	});
+
+	it('says nothing on a regular-season game', () => {
+		mountFinal({ ...baseGame, status: 'post', isPreseason: false });
+		cy.get('.game-postseason-label').should('not.exist');
+	});
+
+	it('brings its own row to a scheduled preseason card', () => {
+		cy.mount(
+			<div style={{ width: popupWidth, padding: '0.75rem', background: '#0d1117' }}>
+				<PreGameCard {...defaultProps} excitementResult={undefined} game={{ ...baseGame, league: 'nhl', sportType: 'hockey', status: 'pre', startTime: '2026-10-04T23:00Z', isPreseason: true }} />
+			</div>,
+		);
+		cy.get('.game-card-status-row').should('exist');
+		cy.get('.game-postseason-label').should('have.text', 'Preseason');
+	});
+});

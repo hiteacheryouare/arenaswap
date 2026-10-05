@@ -26,7 +26,7 @@ const walkthroughStepToggle = ({ onNext }: walkthroughStepToggleProps) => {
 						className='arenaswap-logo'
 					/>
 					<div className='d-flex align-items-center gap-2'>
-						<i className='bi bi-gear text-secondary opacity-50' style={{ fontSize: '1rem' }} />
+						<i className='bi bi-gear-fill text-secondary opacity-50' style={{ fontSize: '1rem' }} />
 						<div className='d-flex flex-column align-items-center gap-0'>
 							<div className='form-check form-switch mb-0'>
 								<input

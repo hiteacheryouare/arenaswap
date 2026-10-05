@@ -1,0 +1,1021 @@
+{
+	"slate": "2026-10-03-b",
+	"labeller": "analyst",
+	"moments": [
+		{
+			"ts": "2026-10-04T00:06:58.916Z",
+			"flipTo": "401907985",
+			"acceptable": [
+				"401904581",
+				"401904917"
+			],
+			"level": 2,
+			"note": "Playoff 1-0, Yankees hitless through five"
+		},
+		{
+			"ts": "2026-10-04T00:07:59.500Z",
+			"flipTo": "401907985",
+			"acceptable": [
+				"401904581",
+				"401904917",
+				"401868328"
+			],
+			"level": 2,
+			"note": "Playoff 1-0, Yankees hitless through five"
+		},
+		{
+			"ts": "2026-10-04T00:08:59.996Z",
+			"flipTo": "401907985",
+			"acceptable": [
+				"401904917",
+				"401868328"
+			],
+			"level": 2,
+			"note": "Playoff 1-0, Yankees hitless through five"
+		},
+		{
+			"ts": "2026-10-04T00:09:52.160Z",
+			"flipTo": "401868328",
+			"acceptable": [
+				"401907985"
+			],
+			"level": 2,
+			"note": "Down 6, midfield drive; baseball between innings"
+		},
+		{
+			"ts": "2026-10-04T00:10:52.763Z",
+			"flipTo": "401868328",
+			"acceptable": [
+				"401907985"
+			],
+			"level": 2,
+			"note": "Down 6, driving at the 38"
+		},
+		{
+			"ts": "2026-10-04T00:11:53.516Z",
+			"flipTo": "401868328",
+			"acceptable": [
+				"401907985"
+			],
+			"level": 2,
+			"note": "Down 6, second and 10 at the 28"
+		},
+		{
+			"ts": "2026-10-04T00:12:54.207Z",
+			"flipTo": "401868328",
+			"acceptable": [
+				"401907985"
+			],
+			"level": 2,
+			"note": "Down 6, third and 5 at the 23"
+		},
+		{
+			"ts": "2026-10-04T00:13:54.778Z",
+			"flipTo": "401868328",
+			"acceptable": [],
+			"level": 3,
+			"note": "Down 6, fourth and 1 in the red zone"
+		},
+		{
+			"ts": "2026-10-04T00:14:55.342Z",
+			"flipTo": "401907985",
+			"acceptable": [
+				"401904581",
+				"401868328"
+			],
+			"level": 2,
+			"note": "Hitless through five; leader has the ball elsewhere"
+		},
+		{
+			"ts": "2026-10-04T00:15:56.035Z",
+			"flipTo": "401904668",
+			"acceptable": [],
+			"level": 3,
+			"note": "Within one, 1:39 left in the third"
+		},
+		{
+			"ts": "2026-10-04T00:16:56.980Z",
+			"flipTo": "401907985",
+			"acceptable": [
+				"401904917",
+				"401904581"
+			],
+			"level": 2,
+			"note": "Hitless bid in the sixth; hockey at 4:40"
+		},
+		{
+			"ts": "2026-10-04T00:17:58.408Z",
+			"flipTo": "401907985",
+			"acceptable": [
+				"401904917",
+				"401904581"
+			],
+			"level": 2,
+			"note": "Hitless bid in the sixth; hockey at 4:14"
+		},
+		{
+			"ts": "2026-10-04T00:18:59.645Z",
+			"flipTo": "401904917",
+			"acceptable": [
+				"401907985"
+			],
+			"level": 2,
+			"note": "Within one, 3:52 left, nearly level 3"
+		},
+		{
+			"ts": "2026-10-04T00:19:58.493Z",
+			"flipTo": "401904917",
+			"acceptable": [
+				"401907985"
+			],
+			"level": 2,
+			"note": "Within one, 3:43 left in the third"
+		},
+		{
+			"ts": "2026-10-04T00:20:58.970Z",
+			"flipTo": "401904917",
+			"acceptable": [
+				"401907985"
+			],
+			"level": 2,
+			"note": "Within one, 3:08 left in the third"
+		},
+		{
+			"ts": "2026-10-04T00:21:59.728Z",
+			"flipTo": "401904917",
+			"acceptable": [],
+			"level": 3,
+			"note": "Within one, 2:53 left in the third"
+		},
+		{
+			"ts": "2026-10-04T00:22:59.934Z",
+			"flipTo": "401904917",
+			"acceptable": [],
+			"level": 3,
+			"note": "Within one, 2:45 left in the third"
+		},
+		{
+			"ts": "2026-10-04T00:23:58.889Z",
+			"flipTo": "401904917",
+			"acceptable": [],
+			"level": 3,
+			"note": "Within one, 1:39 left in the third"
+		},
+		{
+			"ts": "2026-10-04T00:24:59.263Z",
+			"flipTo": "401904917",
+			"acceptable": [],
+			"level": 3,
+			"note": "Within one, 1:28 left in the third"
+		},
+		{
+			"ts": "2026-10-04T00:25:59.666Z",
+			"flipTo": "401904917",
+			"acceptable": [
+				"401907985",
+				"401866653"
+			],
+			"level": 3,
+			"note": "Within one at 0:35 beats seventh-inning no-hitter"
+		},
+		{
+			"ts": "2026-10-04T00:26:54.810Z",
+			"flipTo": "401907985",
+			"acceptable": [
+				"401866653"
+			],
+			"level": 3,
+			"note": "Playoff 1-0, no-hit bid in the seventh"
+		},
+		{
+			"ts": "2026-10-04T00:27:55.891Z",
+			"flipTo": "401868328",
+			"acceptable": [
+				"401904581",
+				"401907985"
+			],
+			"level": 3,
+			"note": "Down 6, last drive, 0:38 left"
+		},
+		{
+			"ts": "2026-10-04T00:28:57.097Z",
+			"flipTo": "401868328",
+			"acceptable": [
+				"401904581",
+				"401907985"
+			],
+			"level": 3,
+			"note": "Down 6, last drive, 0:38 left"
+		},
+		{
+			"ts": "2026-10-04T00:29:58.359Z",
+			"flipTo": "401868328",
+			"acceptable": [
+				"401904581",
+				"401907985"
+			],
+			"level": 3,
+			"note": "Down 6, last drive, 0:38 left"
+		},
+		{
+			"ts": "2026-10-04T00:30:59.619Z",
+			"flipTo": "401868328",
+			"acceptable": [
+				"401904581",
+				"401907985"
+			],
+			"level": 3,
+			"note": "Last drive stalled at 0:38, keeps level"
+		},
+		{
+			"ts": "2026-10-04T00:31:52.862Z",
+			"flipTo": "401904581",
+			"acceptable": [
+				"401868328",
+				"401907985"
+			],
+			"level": 3,
+			"note": "One-goal final minute outranks down-6 stalled drive"
+		},
+		{
+			"ts": "2026-10-04T00:32:53.754Z",
+			"flipTo": "401904581",
+			"acceptable": [
+				"401868328",
+				"401907985"
+			],
+			"level": 3,
+			"note": "One-goal final minute; ALST needs 88 yards"
+		},
+		{
+			"ts": "2026-10-04T00:33:54.692Z",
+			"flipTo": "401904581",
+			"acceptable": [
+				"401868295",
+				"401907985"
+			],
+			"level": 3,
+			"note": "Within one, 0:40 left; leader has ALST ball"
+		},
+		{
+			"ts": "2026-10-04T00:34:55.647Z",
+			"flipTo": "401904581",
+			"acceptable": [
+				"401907985",
+				"401868295"
+			],
+			"level": 3,
+			"note": "One-goal final second still counts as last chance"
+		},
+		{
+			"ts": "2026-10-04T00:35:56.470Z",
+			"flipTo": "401907985",
+			"acceptable": [],
+			"level": 3,
+			"note": "No-hit bid, two outs, bottom seventh"
+		},
+		{
+			"ts": "2026-10-04T00:36:57.244Z",
+			"flipTo": "401907985",
+			"acceptable": [],
+			"level": 3,
+			"note": "Playoff 1-0, no-hit bid through seven"
+		},
+		{
+			"ts": "2026-10-04T00:37:57.970Z",
+			"flipTo": "401907985",
+			"acceptable": [],
+			"level": 3,
+			"note": "Playoff 1-0, no-hit bid through seven"
+		},
+		{
+			"ts": "2026-10-04T00:38:59.066Z",
+			"flipTo": "401907985",
+			"acceptable": [
+				"401868295"
+			],
+			"level": 3,
+			"note": "Between innings, no-hit bid through seven"
+		},
+		{
+			"ts": "2026-10-04T00:39:58.091Z",
+			"flipTo": "401907985",
+			"acceptable": [],
+			"level": 3,
+			"note": "Between innings, no-hit bid through seven"
+		},
+		{
+			"ts": "2026-10-04T00:40:58.673Z",
+			"flipTo": "401907985",
+			"acceptable": [],
+			"level": 3,
+			"note": "No-hit bid, top of the eighth"
+		},
+		{
+			"ts": "2026-10-04T00:41:59.567Z",
+			"flipTo": "401907985",
+			"acceptable": [],
+			"level": 3,
+			"note": "No-hit bid, top of the eighth, one out"
+		},
+		{
+			"ts": "2026-10-04T00:42:56.120Z",
+			"flipTo": "401907985",
+			"acceptable": [
+				"401868173"
+			],
+			"level": 3,
+			"note": "No-hit bid beats one-score red zone drive"
+		},
+		{
+			"ts": "2026-10-04T00:43:56.555Z",
+			"flipTo": "401907985",
+			"acceptable": [
+				"401868173"
+			],
+			"level": 3,
+			"note": "No-hit bid, two outs, top of the eighth"
+		},
+		{
+			"ts": "2026-10-04T00:44:57.112Z",
+			"flipTo": "401866657",
+			"acceptable": [
+				"401868173"
+			],
+			"level": 3,
+			"note": "Tied, fourth and 1 at the 44"
+		},
+		{
+			"ts": "2026-10-04T00:45:57.553Z",
+			"flipTo": "401866657",
+			"acceptable": [
+				"401868173"
+			],
+			"level": 3,
+			"note": "Tied, fourth-down result missing, carried once"
+		},
+		{
+			"ts": "2026-10-04T00:46:58.080Z",
+			"flipTo": "401868173",
+			"acceptable": [
+				"401866657",
+				"401907985"
+			],
+			"level": 2,
+			"note": "Tied, 10:57, kickoff; nothing at level 3"
+		},
+		{
+			"ts": "2026-10-04T00:47:58.591Z",
+			"flipTo": "401868173",
+			"acceptable": [
+				"401866657",
+				"401907985"
+			],
+			"level": 2,
+			"note": "Tied, 10:57; nothing at level 3"
+		},
+		{
+			"ts": "2026-10-04T00:48:59.207Z",
+			"flipTo": "401868173",
+			"acceptable": [
+				"401866657",
+				"401907985"
+			],
+			"level": 2,
+			"note": "Tied, 10:57; nothing at level 3"
+		},
+		{
+			"ts": "2026-10-04T00:49:59.889Z",
+			"flipTo": "401868309",
+			"acceptable": [],
+			"level": 3,
+			"note": "One-point game, first and goal at the 8"
+		},
+		{
+			"ts": "2026-10-04T00:50:57.130Z",
+			"flipTo": "401866657",
+			"acceptable": [
+				"401868309",
+				"401868173",
+				"401907985"
+			],
+			"level": 2,
+			"note": "Tied, third and 4; nothing at level 3"
+		},
+		{
+			"ts": "2026-10-04T00:51:58.533Z",
+			"flipTo": "401868173",
+			"acceptable": [
+				"401866657",
+				"401907985"
+			],
+			"level": 2,
+			"note": "Tied fourth quarter, nothing at level 3"
+		},
+		{
+			"ts": "2026-10-04T00:52:58.364Z",
+			"flipTo": "401866657",
+			"acceptable": [
+				"401868173",
+				"401907985"
+			],
+			"level": 2,
+			"note": "Tied, third and 10 at the 30"
+		},
+		{
+			"ts": "2026-10-04T00:53:59.200Z",
+			"flipTo": "401868173",
+			"acceptable": [
+				"401866657",
+				"401907985"
+			],
+			"level": 2,
+			"note": "Tied, 7:29 left, nothing at level 3"
+		},
+		{
+			"ts": "2026-10-04T00:54:59.348Z",
+			"flipTo": "401868173",
+			"acceptable": [
+				"401866657",
+				"401907985"
+			],
+			"level": 2,
+			"note": "Tied, 7:29 left, nothing at level 3"
+		},
+		{
+			"ts": "2026-10-04T00:55:56.099Z",
+			"flipTo": "401866657",
+			"acceptable": [],
+			"level": 3,
+			"note": "Tied, first and goal at the 5"
+		},
+		{
+			"ts": "2026-10-04T00:56:56.479Z",
+			"flipTo": "401866657",
+			"acceptable": [],
+			"level": 3,
+			"note": "Tied, dead ball at the goal line, carried"
+		},
+		{
+			"ts": "2026-10-04T00:57:56.845Z",
+			"flipTo": "401868173",
+			"acceptable": [
+				"401866657",
+				"401907985"
+			],
+			"level": 2,
+			"note": "Tied, 7:29, punting on fourth and 4"
+		},
+		{
+			"ts": "2026-10-04T00:58:57.386Z",
+			"flipTo": "401866653",
+			"acceptable": [
+				"401868173",
+				"401907985"
+			],
+			"level": 2,
+			"note": "Down 9, fourth and goal at the 5"
+		},
+		{
+			"ts": "2026-10-04T00:59:58.257Z",
+			"flipTo": "401866653",
+			"acceptable": [],
+			"level": 3,
+			"note": "Two-point try to tie, 0:39 left"
+		},
+		{
+			"ts": "2026-10-04T01:00:58.940Z",
+			"flipTo": "401866653",
+			"acceptable": [
+				"401907985"
+			],
+			"level": 3,
+			"note": "Down 2, onside kick coming, carried once"
+		},
+		{
+			"ts": "2026-10-04T01:01:59.703Z",
+			"flipTo": "401866653",
+			"acceptable": [
+				"401907985"
+			],
+			"level": 3,
+			"note": "Down 2, onside kick pending, 0:39"
+		},
+		{
+			"ts": "2026-10-04T01:02:59.373Z",
+			"flipTo": "401907985",
+			"acceptable": [],
+			"level": 3,
+			"note": "Playoff one-run game, top of the ninth"
+		},
+		{
+			"ts": "2026-10-04T01:03:59.892Z",
+			"flipTo": "401907985",
+			"acceptable": [],
+			"level": 3,
+			"note": "Playoff one-run game, top of the ninth"
+		},
+		{
+			"ts": "2026-10-04T01:04:54.968Z",
+			"flipTo": "401907985",
+			"acceptable": [],
+			"level": 3,
+			"note": "Playoff one-run game, top of the ninth"
+		},
+		{
+			"ts": "2026-10-04T01:05:56.061Z",
+			"flipTo": "401866653",
+			"acceptable": [
+				"401907985"
+			],
+			"level": 3,
+			"note": "Down 2, ball at the 28, 0:27"
+		},
+		{
+			"ts": "2026-10-04T01:06:57.930Z",
+			"flipTo": "401866653",
+			"acceptable": [
+				"401907985"
+			],
+			"level": 3,
+			"note": "Down 2, field goal range, 0:25"
+		},
+		{
+			"ts": "2026-10-04T01:07:59.060Z",
+			"flipTo": "401866653",
+			"acceptable": [
+				"401907985"
+			],
+			"level": 3,
+			"note": "Down 2, ball at the 8, 0:04"
+		},
+		{
+			"ts": "2026-10-04T01:08:59.996Z",
+			"flipTo": "401866653",
+			"acceptable": [
+				"401907985"
+			],
+			"level": 3,
+			"note": "Down 2, field goal to win, 0:04"
+		},
+		{
+			"ts": "2026-10-04T01:09:56.976Z",
+			"flipTo": "401866653",
+			"acceptable": [],
+			"level": 3,
+			"note": "Winning field goal set up, clock stalled"
+		},
+		{
+			"ts": "2026-10-04T01:10:57.483Z",
+			"flipTo": "401866653",
+			"acceptable": [
+				"401868143"
+			],
+			"level": 3,
+			"note": "Winning field goal set up, clock stalled"
+		},
+		{
+			"ts": "2026-10-04T01:11:58.106Z",
+			"flipTo": "401866653",
+			"acceptable": [
+				"401868143",
+				"401868173"
+			],
+			"level": 3,
+			"note": "Winning field goal set up, clock stalled"
+		},
+		{
+			"ts": "2026-10-04T01:12:58.816Z",
+			"flipTo": "401866653",
+			"acceptable": [
+				"401868309"
+			],
+			"level": 2,
+			"note": "Go-ahead field goal, kickoff with 0:04 left"
+		},
+		{
+			"ts": "2026-10-04T01:13:59.466Z",
+			"flipTo": "401868143",
+			"acceptable": [
+				"401866653"
+			],
+			"level": 3,
+			"note": "Up 4, fourth down in the red zone"
+		},
+		{
+			"ts": "2026-10-04T01:14:57.669Z",
+			"flipTo": "401904432",
+			"acceptable": [
+				"401868143"
+			],
+			"level": 3,
+			"note": "Within one, 2:51 left in the third"
+		},
+		{
+			"ts": "2026-10-04T01:15:58.086Z",
+			"flipTo": "401868143",
+			"acceptable": [
+				"401866657",
+				"401904432"
+			],
+			"level": 3,
+			"note": "Down 4, ball at own 25, 3:05"
+		},
+		{
+			"ts": "2026-10-04T01:16:58.583Z",
+			"flipTo": "401868143",
+			"acceptable": [
+				"401904432",
+				"401866657"
+			],
+			"level": 3,
+			"note": "Down-4 drive beats tied hockey at 2:00"
+		},
+		{
+			"ts": "2026-10-04T01:17:59.085Z",
+			"flipTo": "401866657",
+			"acceptable": [
+				"401904432"
+			],
+			"level": 3,
+			"note": "Down 7, last drive stalled at 2:38"
+		},
+		{
+			"ts": "2026-10-04T01:18:59.853Z",
+			"flipTo": "401866657",
+			"acceptable": [
+				"401904432"
+			],
+			"level": 3,
+			"note": "Down 7, last drive stalled at 2:38"
+		},
+		{
+			"ts": "2026-10-04T01:19:58.089Z",
+			"flipTo": "401866657",
+			"acceptable": [
+				"401904549"
+			],
+			"level": 3,
+			"note": "Down 7, second and 12 at the 42"
+		},
+		{
+			"ts": "2026-10-04T01:20:59.608Z",
+			"flipTo": "401866657",
+			"acceptable": [
+				"401904549"
+			],
+			"level": 3,
+			"note": "Down 7, last drive, clock stalled"
+		},
+		{
+			"ts": "2026-10-04T01:21:54.013Z",
+			"flipTo": "401866657",
+			"acceptable": [
+				"401904549"
+			],
+			"level": 3,
+			"note": "Down 7, last drive, clock stalled"
+		},
+		{
+			"ts": "2026-10-04T01:22:54.433Z",
+			"flipTo": "401904432",
+			"acceptable": [
+				"401904549",
+				"401866657",
+				"401868143"
+			],
+			"level": 3,
+			"note": "Overtime, garbled score after the break"
+		},
+		{
+			"ts": "2026-10-04T01:23:55.046Z",
+			"flipTo": "401904432",
+			"acceptable": [
+				"401868143",
+				"401866657"
+			],
+			"level": 3,
+			"note": "Overtime, tied"
+		},
+		{
+			"ts": "2026-10-04T01:24:55.588Z",
+			"flipTo": "401904432",
+			"acceptable": [
+				"401866657"
+			],
+			"level": 3,
+			"note": "Overtime beats fourth and 5 at the 35"
+		},
+		{
+			"ts": "2026-10-04T01:25:56.230Z",
+			"flipTo": "401904549",
+			"acceptable": [
+				"401904432"
+			],
+			"level": 3,
+			"note": "Live overtime; other overtime clock frozen"
+		},
+		{
+			"ts": "2026-10-04T01:26:57.306Z",
+			"flipTo": "401904549",
+			"acceptable": [
+				"401904432"
+			],
+			"level": 3,
+			"note": "Live overtime; other overtime clock frozen"
+		},
+		{
+			"ts": "2026-10-04T01:27:58.668Z",
+			"flipTo": "401904549",
+			"acceptable": [],
+			"level": 3,
+			"note": "Overtime, garbled score"
+		},
+		{
+			"ts": "2026-10-04T01:28:57.623Z",
+			"flipTo": "401904549",
+			"acceptable": [],
+			"level": 3,
+			"note": "Overtime, 2:38 left"
+		},
+		{
+			"ts": "2026-10-04T01:29:58.245Z",
+			"flipTo": "401904549",
+			"acceptable": [],
+			"level": 3,
+			"note": "Overtime, tied"
+		},
+		{
+			"ts": "2026-10-04T01:30:58.759Z",
+			"flipTo": "401904549",
+			"acceptable": [
+				"401868309"
+			],
+			"level": 3,
+			"note": "Overtime, 2:36 left"
+		},
+		{
+			"ts": "2026-10-04T01:31:59.226Z",
+			"flipTo": "401904549",
+			"acceptable": [],
+			"level": 3,
+			"note": "Overtime, 2:07 left"
+		},
+		{
+			"ts": "2026-10-04T01:32:59.669Z",
+			"flipTo": "401904549",
+			"acceptable": [
+				"401868309"
+			],
+			"level": 3,
+			"note": "Overtime beats down-8 last drive"
+		},
+		{
+			"ts": "2026-10-04T01:33:57.166Z",
+			"flipTo": "401904549",
+			"acceptable": [
+				"401868309",
+				"401891776"
+			],
+			"level": 3,
+			"note": "Overtime, 1:46 left"
+		},
+		{
+			"ts": "2026-10-04T01:34:57.696Z",
+			"flipTo": "401868309",
+			"acceptable": [
+				"401892435",
+				"401891776"
+			],
+			"level": 3,
+			"note": "Two-point try to tie, 0:22 left"
+		},
+		{
+			"ts": "2026-10-04T01:35:58.426Z",
+			"flipTo": "401868309",
+			"acceptable": [
+				"401891776",
+				"401892435"
+			],
+			"level": 3,
+			"note": "Two-point try pending, clock stalled"
+		},
+		{
+			"ts": "2026-10-04T01:36:59.451Z",
+			"flipTo": "401868309",
+			"acceptable": [
+				"401891776",
+				"401892435",
+				"401869942"
+			],
+			"level": 3,
+			"note": "Try result missing, carried once"
+		},
+		{
+			"ts": "2026-10-04T01:37:59.697Z",
+			"flipTo": "401868309",
+			"acceptable": [
+				"401892435",
+				"401892437"
+			],
+			"level": 3,
+			"note": "UIW down 2, onside pending at 0:22"
+		},
+		{
+			"ts": "2026-10-04T01:38:58.378Z",
+			"flipTo": "401892435",
+			"acceptable": [
+				"401892437",
+				"401869942"
+			],
+			"level": 3,
+			"note": "Tied, 0:29 left in the third"
+		},
+		{
+			"ts": "2026-10-04T01:39:59.021Z",
+			"flipTo": "401867840",
+			"acceptable": [
+				"401892437",
+				"401891826",
+				"401856818"
+			],
+			"level": 3,
+			"note": "Tied, first and 10 at the 10"
+		},
+		{
+			"ts": "2026-10-04T01:40:59.891Z",
+			"flipTo": "401867840",
+			"acceptable": [
+				"401892437",
+				"401891826"
+			],
+			"level": 3,
+			"note": "Tied, third and 7 at the 7"
+		},
+		{
+			"ts": "2026-10-04T01:41:59.987Z",
+			"flipTo": "401892435",
+			"acceptable": [
+				"401867840",
+				"401892437",
+				"401891826"
+			],
+			"level": 3,
+			"note": "Overtime, 4:41 left"
+		},
+		{
+			"ts": "2026-10-04T01:42:55.718Z",
+			"flipTo": "401892435",
+			"acceptable": [],
+			"level": 3,
+			"note": "Overtime, 3:50 left"
+		},
+		{
+			"ts": "2026-10-04T01:43:56.117Z",
+			"flipTo": "401892435",
+			"acceptable": [],
+			"level": 3,
+			"note": "Overtime, 3:25 left"
+		},
+		{
+			"ts": "2026-10-04T01:44:56.529Z",
+			"flipTo": "401892435",
+			"acceptable": [],
+			"level": 3,
+			"note": "Overtime, 3:11 left"
+		},
+		{
+			"ts": "2026-10-04T01:45:56.898Z",
+			"flipTo": "401892435",
+			"acceptable": [],
+			"level": 3,
+			"note": "Overtime, 2:39 left"
+		},
+		{
+			"ts": "2026-10-04T01:46:57.296Z",
+			"flipTo": "401892434",
+			"acceptable": [
+				"401867840"
+			],
+			"level": 3,
+			"note": "Within one, 1:47 left; overtime game just ended"
+		},
+		{
+			"ts": "2026-10-04T01:47:57.691Z",
+			"flipTo": "401892434",
+			"acceptable": [
+				"401867840"
+			],
+			"level": 3,
+			"note": "Within one, 1:32 left in the third"
+		},
+		{
+			"ts": "2026-10-04T01:48:58.287Z",
+			"flipTo": "401892434",
+			"acceptable": [
+				"401867840",
+				"401856818"
+			],
+			"level": 3,
+			"note": "Within one, 0:30 left in the third"
+		},
+		{
+			"ts": "2026-10-04T01:49:58.719Z",
+			"flipTo": "401892434",
+			"acceptable": [
+				"401862788",
+				"401867840",
+				"401869942"
+			],
+			"level": 3,
+			"note": "One-goal final seconds beat two-point red zone"
+		},
+		{
+			"ts": "2026-10-04T01:50:59.200Z",
+			"flipTo": "401862788",
+			"acceptable": [
+				"401867840",
+				"401869942"
+			],
+			"level": 3,
+			"note": "Two-point game, third and 5 in red zone"
+		},
+		{
+			"ts": "2026-10-04T01:51:59.626Z",
+			"flipTo": "401862788",
+			"acceptable": [
+				"401868248",
+				"401867840"
+			],
+			"level": 3,
+			"note": "Two-point game, fourth and 8 at the 18"
+		},
+		{
+			"ts": "2026-10-04T01:52:59.452Z",
+			"flipTo": "401867840",
+			"acceptable": [
+				"401868248",
+				"401862788"
+			],
+			"level": 2,
+			"note": "Down 4, 2:08, waiting on kickoff"
+		},
+		{
+			"ts": "2026-10-04T01:53:59.265Z",
+			"flipTo": "401867840",
+			"acceptable": [
+				"401868248",
+				"401862788"
+			],
+			"level": 2,
+			"note": "Down 4, 2:08, kickoff unresolved"
+		},
+		{
+			"ts": "2026-10-04T01:54:59.873Z",
+			"flipTo": "401867840",
+			"acceptable": [
+				"401868248",
+				"401862788"
+			],
+			"level": 2,
+			"note": "Down 4, 2:08, kickoff unresolved"
+		},
+		{
+			"ts": "2026-10-04T01:55:57.265Z",
+			"flipTo": "401867840",
+			"acceptable": [],
+			"level": 3,
+			"note": "Down 4, ball at own 30, 2:03"
+		},
+		{
+			"ts": "2026-10-04T01:56:57.730Z",
+			"flipTo": "401867840",
+			"acceptable": [],
+			"level": 3,
+			"note": "Down 4, last drive, clock stalled"
+		},
+		{
+			"ts": "2026-10-04T01:57:58.130Z",
+			"flipTo": "401867840",
+			"acceptable": [],
+			"level": 3,
+			"note": "Down 4, last drive, clock stalled"
+		},
+		{
+			"ts": "2026-10-04T01:58:58.532Z",
+			"flipTo": "401867840",
+			"acceptable": [],
+			"level": 3,
+			"note": "Down 4, last drive, clock stalled"
+		},
+		{
+			"ts": "2026-10-04T01:59:58.925Z",
+			"flipTo": "401867840",
+			"acceptable": [
+				"401891822"
+			],
+			"level": 3,
+			"note": "Down 4, last drive, 2:03"
+		}
+	]
+}

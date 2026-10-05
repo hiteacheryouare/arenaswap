@@ -1,6 +1,6 @@
 {
 	"name": "@arenaswap/core",
-	"version": "2.2.0",
+	"version": "3.0.0",
 	"description": "ESPN API client, game model, and preferences for ArenaSwap",
 	"type": "module",
 	"main": "./dist/index.js",

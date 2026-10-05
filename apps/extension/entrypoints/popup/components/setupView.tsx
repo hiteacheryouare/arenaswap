@@ -1,19 +1,24 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { lazy, Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { i18n } from '#i18n';
 import { isCollegeLeagueId, leagueConfigMap, resolveCollegeFilter } from '@arenaswap/core/constants';
-import type { CollegeFilter, CollegeLeagueId, FinishedTabAction, LeagueId, LeagueLogoMap, LeagueScheduleMap, SignalName, SportType, ThemePreference, UserPreferences } from '@arenaswap/core/types';
+import { modesInUse } from '@arenaswap/core';
+import type { FantasyRosterEntry } from '@arenaswap/core';
+import type { BuiltInModeId, CollegeFilter, CollegeLeagueId, FinishedTabAction, LeagueId, LeagueLogoMap, LeagueScheduleMap, ScoringModeChoice, SignalName, SportType, ThemePreference, UserPreferences } from '@arenaswap/core/types';
+import { fantasySportOf, type FantasySport } from 'powerscore';
 import type { Browser } from 'wxt/browser';
 import CollegeFilterPage from './collegeFilterPage';
 import CollegeLeagueButton from './collegeLeagueButton';
 import CooldownSlider from './cooldownSlider';
 import FavoriteTeamBonusInput from './favoriteTeamBonusInput';
 import FavoriteTeamsPage from './favoriteTeamsPage';
+import FantasySettingsSection from './fantasySettingsSection';
 import LeagueLogo from './leagueLogo';
 import leagueOffseasonLabel from './leagueOffseasonLabel';
 import LeagueOrderList from './leagueOrderList';
+import ModeSignalSwitches from './modeSignalSwitches';
 import PostseasonBoostInput from './postseasonBoostInput';
 import SensitivitySlider from './sensitivitySlider';
-import { signalColors } from '@arenaswap/ui/src/components/signalColors';
+import ScoringModeSection from './scoringModeSection';
 import SettingTooltipIcon from './settingTooltipIcon';
 import SwitchDelaySlider from './switchDelaySlider';
 import TemperatureUnitToggle from './temperatureUnitToggle';
@@ -22,6 +27,13 @@ import StandbyStreamGuide from './standbyStreamGuide';
 import { searchSettings, settingsGroups, type settingsGroupId } from './settingsCatalog';
 import type { demoSeason } from '../../../utils/holidayDecorations';
 import { leaguesBySportType, sportTypeLabels, sportTypeOrder } from '../popupHelpers';
+import { changedFantasyRuleCount } from '../../../utils/scoringPrefs';
+
+// Both pages pull in code nothing else in the popup needs, so they load when opened.
+const FantasyRosterPage = lazy(() => import('./fantasyRosterPage'));
+const FantasyScoringPage = lazy(() => import('./fantasyScoringPage'));
+
+type scoringSubPage = 'roster' | 'rules';
 
 interface setupViewProps {
 	prefs: UserPreferences;
@@ -70,15 +82,32 @@ interface setupViewProps {
 	onToggleHolidayLeaves: () => void;
 	onPostseasonBoostChange: (val: number) => void;
 	onToggleSignal: (signal: SignalName) => void;
+	onToggleModeSignal: (mode: BuiltInModeId, signal: string) => void;
+	onScoringModeChange: (mode: ScoringModeChoice) => void;
+	onLeagueModeChange: (league: LeagueId, mode: BuiltInModeId) => void;
+	onFantasyBlendChange: (value: number) => void;
+	onFantasyRuleChange: (sport: FantasySport, rule: string, points: number) => void;
+	onFantasyRulesReset: (sport: FantasySport) => void;
+	fantasyRoster: readonly FantasyRosterEntry[];
+	onFantasyRosterChange: (update: (current: FantasyRosterEntry[]) => FantasyRosterEntry[]) => void;
 }
 
-const setupSignalMeta = [
-	{ name: 'closeness' as SignalName, labelKey: 'powerScore.signalCloseness' as const, color: signalColors.closeness },
-	{ name: 'lateGame' as SignalName, labelKey: 'powerScore.signalLateGame' as const, color: signalColors.lateGame },
-	{ name: 'momentum' as SignalName, labelKey: 'powerScore.signalMomentum' as const, color: signalColors.momentum },
-	{ name: 'leadChanges' as SignalName, labelKey: 'powerScore.signalLeadChanges' as const, color: signalColors.leadChanges },
-	{ name: 'comeback' as SignalName, labelKey: 'powerScore.signalComeback' as const, color: signalColors.comeback },
-] as const;
+// The rules page opens on the sport of the first league you follow that Fantasy can score.
+const firstFantasySport = (leagues: readonly LeagueId[]): FantasySport => {
+	for (const league of leagues) {
+		const sport = fantasySportOf(leagueConfigMap[league]?.sportType ?? '');
+		if (sport) return sport;
+	}
+	return 'football';
+};
+
+const pageFallback = (
+	<div className='d-flex justify-content-center mt-4'>
+		<div className='spinner-border popup-loading-spinner' role='status'>
+			<span className='visually-hidden'>{i18n.t('fantasy.loading')}</span>
+		</div>
+	</div>
+);
 
 const setupView = ({
 	prefs, prefsLoaded, demoMode, demoSeason, leagueLogos, leagueSchedules, favoriteTeamIds, standbyStreamTabId, standbyOnboardingDone,
@@ -89,16 +118,22 @@ const setupView = ({
 	onSetStandbyTab, onStandbyOnboardingDone, onToggleBetting, onToggleTemperatureUnit, onUnlockRomer, onToggleOpenReveal,
 	onPostseasonBoostChange,
 	onToggleHolidayDecorations, onToggleHolidaySnow, onToggleHolidayLights, onToggleHolidayLeaves,
-	onToggleSignal,
+	onToggleSignal, onToggleModeSignal, onScoringModeChange, onLeagueModeChange, onFantasyBlendChange, onFantasyRuleChange,
+	onFantasyRulesReset, fantasyRoster, onFantasyRosterChange,
 }: setupViewProps) => {
 	const [page, setPage] = useState<settingsGroupId | null>(null);
 	const [collegeLeague, setCollegeLeague] = useState<CollegeLeagueId | null>(null);
+	const [scoringPage, setScoringPage] = useState<scoringSubPage | null>(null);
 	const pageRef = useRef<HTMLDivElement>(null);
-	const leaguesScrollTop = useRef<number | null>(null);
+	const subPageScrollTop = useRef<number | null>(null);
 	const [query, setQuery] = useState('');
 	const [showStandbyGuide, setShowStandbyGuide] = useState(false);
 
-	const results = useMemo(() => searchSettings(query), [query]);
+	const modes = modesInUse(prefs);
+	const fantasyInUse = modes.includes('fantasy');
+	// Search only offers a mode's controls while they are on the page.
+	const availableModesKey = [...modes, prefs.scoringMode].join(',');
+	const results = useMemo(() => searchSettings(query, new Set(availableModesKey.split(',') as ScoringModeChoice[])), [query, availableModesKey]);
 	const noLeaguesSelected = prefsLoaded && prefs.enabledLeagues.length === 0;
 
 	const lastGroupRef = useRef<settingsGroupId | null>(null);
@@ -109,6 +144,7 @@ const setupView = ({
 		pendingControlRef.current = controlId;
 		setPage(id);
 		setCollegeLeague(null);
+		setScoringPage(null);
 		setQuery('');
 	};
 
@@ -130,16 +166,33 @@ const setupView = ({
 	}, [page]);
 
 	const openCollegeLeague = (leagueId: CollegeLeagueId) => {
-		leaguesScrollTop.current = pageRef.current?.scrollTop ?? 0;
+		subPageScrollTop.current = pageRef.current?.scrollTop ?? 0;
 		setCollegeLeague(leagueId);
 	};
 
-	// Back from a college picker lands where the tile was, not at the top of the Leagues page.
+	const openScoringPage = (subPage: scoringSubPage) => {
+		subPageScrollTop.current = pageRef.current?.scrollTop ?? 0;
+		setScoringPage(subPage);
+	};
+
+	const lastScoringPageRef = useRef<scoringSubPage | null>(null);
+	useEffect(() => {
+		if (scoringPage) {
+			lastScoringPageRef.current = scoringPage;
+			pageRef.current?.querySelector<HTMLElement>('.setup-header')?.focus({ preventScroll: true });
+			return;
+		}
+		const last = lastScoringPageRef.current;
+		lastScoringPageRef.current = null;
+		if (last) document.getElementById(last === 'roster' ? 'fantasyRosterOpen' : 'fantasyRulesOpen')?.focus({ preventScroll: true });
+	}, [scoringPage]);
+
+	// Back from a college picker or a Fantasy page lands where its row was, not at the top of the page.
 	useLayoutEffect(() => {
-		if (collegeLeague || page !== 'leagues' || leaguesScrollTop.current === null) return;
-		if (pageRef.current) pageRef.current.scrollTop = leaguesScrollTop.current;
-		leaguesScrollTop.current = null;
-	}, [collegeLeague, page]);
+		if (collegeLeague || scoringPage || subPageScrollTop.current === null) return;
+		if (pageRef.current) pageRef.current.scrollTop = subPageScrollTop.current;
+		subPageScrollTop.current = null;
+	}, [collegeLeague, scoringPage, page]);
 
 	const handleToggleStandbyStream = () => {
 		if (!prefs.standbyStreamEnabled && !standbyOnboardingDone) {
@@ -227,43 +280,34 @@ const setupView = ({
 		</>
 	);
 
-	const scoringPage = (
+	const scoringIndexPage = (
 		<>
-			<div className='fw-bold popup-section-label'>
-				<i className='bi bi-sliders' />
-				{i18n.t('setup.signalsSection')}
-				<SettingTooltipIcon text={i18n.t('setup.signalsExplainer')} label={i18n.t('setup.signalsSection')} />
-			</div>
-			{setupSignalMeta.map(sig => {
-				const isDisabled = prefs.disabledSignals.includes(sig.name);
-				const isLastEnabled = !isDisabled && prefs.disabledSignals.length === setupSignalMeta.length - 1;
-				return (
-					<div key={sig.name} className='d-flex justify-content-between align-items-center mt-2'>
-						<label className='text-body-secondary setting-toggle-label' htmlFor={`signal-${sig.name}`}>
-							<span
-								className='d-inline-block rounded-circle me-1'
-								style={{ width: '8px', height: '8px', backgroundColor: isDisabled ? '#6c757d' : sig.color, verticalAlign: 'middle' }}
-							/>
-							{i18n.t(sig.labelKey)}
-						</label>
-						<div className='form-check form-switch mb-0'>
-							<input
-								className='form-check-input'
-								type='checkbox'
-								id={`signal-${sig.name}`}
-								checked={!isDisabled}
-								onChange={() => onToggleSignal(sig.name)}
-								disabled={!prefsLoaded || isLastEnabled}
-								aria-describedby={isLastEnabled ? 'signalLastActiveNote' : undefined}
-							/>
-						</div>
-					</div>
-				);
-			})}
+			<ScoringModeSection
+				prefs={prefs}
+				leagueLogos={leagueLogos}
+				disabled={!prefsLoaded}
+				onScoringModeChange={onScoringModeChange}
+				onLeagueModeChange={onLeagueModeChange}
+			/>
 
-			{prefs.disabledSignals.length === setupSignalMeta.length - 1 && (
-				<div id='signalLastActiveNote' className='setting-explainer mt-2'>{i18n.t('setup.signalLastActive')}</div>
+			{fantasyInUse && (
+				<FantasySettingsSection
+					blend={prefs.fantasyBlend}
+					rosterSize={fantasyRoster.length}
+					changedRules={changedFantasyRuleCount(prefs.fantasyScoring)}
+					disabled={!prefsLoaded}
+					onBlendChange={onFantasyBlendChange}
+					onOpenRoster={() => openScoringPage('roster')}
+					onOpenRules={() => openScoringPage('rules')}
+				/>
 			)}
+
+			<ModeSignalSwitches
+				prefs={prefs}
+				disabled={!prefsLoaded}
+				onToggleSignal={onToggleSignal}
+				onToggleModeSignal={onToggleModeSignal}
+			/>
 
 			<div className='fw-bold popup-section-label mt-3'><i className='bi bi-plus-slash-minus' />{i18n.t('setup.bonusesSection')}</div>
 			<div className='settings-stack'>
@@ -569,12 +613,38 @@ const setupView = ({
 
 	const pages: Record<settingsGroupId, ReactNode> = {
 		switching: switchingPage,
-		scoring: scoringPage,
+		scoring: scoringIndexPage,
 		favorites: favoritesPage,
 		leagues: leaguesPage,
 		display: displayPage,
 		standby: standbyPage,
 	};
+
+	if (page === 'scoring' && scoringPage) {
+		const isRoster = scoringPage === 'roster';
+		return (
+			<div ref={pageRef} className={`popup-container${isRoster ? ' d-flex flex-column' : ''}`}>
+				<button type='button' className='setup-header' onClick={() => setScoringPage(null)}>
+					<i className='bi bi-arrow-left' />
+					{isRoster ? i18n.t('setup.fantasyRoster') : i18n.t('setup.fantasyRules')}
+				</button>
+				<div className='settings-page-lede'>{isRoster ? i18n.t('fantasy.rosterLede') : i18n.t('fantasy.rulesLede')}</div>
+				<Suspense fallback={pageFallback}>
+					{isRoster ? (
+						<FantasyRosterPage roster={fantasyRoster} onRosterChange={onFantasyRosterChange} />
+					) : (
+						<FantasyScoringPage
+							scoring={prefs.fantasyScoring}
+							initialSport={firstFantasySport(prefs.enabledLeagues)}
+							disabled={!prefsLoaded}
+							onRuleChange={onFantasyRuleChange}
+							onResetSport={onFantasyRulesReset}
+						/>
+					)}
+				</Suspense>
+			</div>
+		);
+	}
 
 	if (page === 'leagues' && collegeLeague) {
 		const league = { ...leagueConfigMap[collegeLeague], id: collegeLeague };

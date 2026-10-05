@@ -1,0 +1,277 @@
+{
+	"_source": "summary boxscore.players, football/nfl 401872965 (IND 30 @ WSH 13, London, 2026-10-04); fumbles, interceptions, kicking, and the defenders with a sack only",
+	"summary": {
+		"boxscore": {
+			"players": [
+				{
+					"team": {
+						"id": "11",
+						"abbreviation": "IND"
+					},
+					"statistics": [
+						{
+							"name": "fumbles",
+							"keys": [
+								"fumbles",
+								"fumblesLost",
+								"fumblesRecovered"
+							],
+							"athletes": [
+								{
+									"athlete": {
+										"id": "3917792",
+										"displayName": "Daniel Jones"
+									},
+									"stats": [
+										"1",
+										"1",
+										"0"
+									]
+								}
+							]
+						},
+						{
+							"name": "defensive",
+							"keys": [
+								"totalTackles",
+								"soloTackles",
+								"sacks",
+								"tacklesForLoss",
+								"passesDefended",
+								"QBHits",
+								"defensiveTouchdowns"
+							],
+							"athletes": [
+								{
+									"athlete": {
+										"id": "4682909",
+										"displayName": "Justin Walley"
+									},
+									"stats": [
+										"8",
+										"5",
+										"1",
+										"1",
+										"0",
+										"1",
+										"0"
+									]
+								},
+								{
+									"athlete": {
+										"id": "4426473",
+										"displayName": "Laiatu Latu"
+									},
+									"stats": [
+										"3",
+										"1",
+										"0.5",
+										"0",
+										"0",
+										"4",
+										"0"
+									]
+								},
+								{
+									"athlete": {
+										"id": "4427635",
+										"displayName": "Adetomiwa Adebawore"
+									},
+									"stats": [
+										"1",
+										"0",
+										"0.5",
+										"0",
+										"0",
+										"2",
+										"0"
+									]
+								}
+							]
+						},
+						{
+							"name": "interceptions",
+							"keys": [
+								"interceptions",
+								"interceptionYards",
+								"interceptionTouchdowns"
+							],
+							"athletes": [
+								{
+									"athlete": {
+										"id": "4601021",
+										"displayName": "Jaylon Carlies"
+									},
+									"stats": [
+										"1",
+										"7",
+										"0"
+									]
+								}
+							]
+						},
+						{
+							"name": "kicking",
+							"keys": [
+								"fieldGoalsMade/fieldGoalAttempts",
+								"fieldGoalPct",
+								"longFieldGoalMade",
+								"extraPointsMade/extraPointAttempts",
+								"totalKickingPoints"
+							],
+							"athletes": [
+								{
+									"athlete": {
+										"id": "4571557",
+										"displayName": "Spencer Shrader"
+									},
+									"stats": [
+										"3/3",
+										"100.0",
+										"52",
+										"3/3",
+										"12"
+									]
+								}
+							]
+						}
+					]
+				},
+				{
+					"team": {
+						"id": "28",
+						"abbreviation": "WSH"
+					},
+					"statistics": [
+						{
+							"name": "fumbles",
+							"keys": [
+								"fumbles",
+								"fumblesLost",
+								"fumblesRecovered"
+							],
+							"athletes": [
+								{
+									"athlete": {
+										"id": "4361422",
+										"displayName": "Odafe Oweh"
+									},
+									"stats": [
+										"0",
+										"0",
+										"1"
+									]
+								}
+							]
+						},
+						{
+							"name": "defensive",
+							"keys": [
+								"totalTackles",
+								"soloTackles",
+								"sacks",
+								"tacklesForLoss",
+								"passesDefended",
+								"QBHits",
+								"defensiveTouchdowns"
+							],
+							"athletes": [
+								{
+									"athlete": {
+										"id": "4242205",
+										"displayName": "K'Lavon Chaisson"
+									},
+									"stats": [
+										"4",
+										"0",
+										"0.5",
+										"0",
+										"0",
+										"1",
+										"0"
+									]
+								},
+								{
+									"athlete": {
+										"id": "3929956",
+										"displayName": "Tim Settle"
+									},
+									"stats": [
+										"2",
+										"0",
+										"0.5",
+										"0",
+										"0",
+										"1",
+										"0"
+									]
+								},
+								{
+									"athlete": {
+										"id": "4361422",
+										"displayName": "Odafe Oweh"
+									},
+									"stats": [
+										"1",
+										"1",
+										"1",
+										"1",
+										"0",
+										"1",
+										"0"
+									]
+								}
+							]
+						},
+						{
+							"name": "interceptions",
+							"keys": [
+								"interceptions",
+								"interceptionYards",
+								"interceptionTouchdowns"
+							],
+							"athletes": [
+								{
+									"athlete": {
+										"id": "3943270",
+										"displayName": "Rasul Douglas"
+									},
+									"stats": [
+										"1",
+										"3",
+										"0"
+									]
+								}
+							]
+						},
+						{
+							"name": "kicking",
+							"keys": [
+								"fieldGoalsMade/fieldGoalAttempts",
+								"fieldGoalPct",
+								"longFieldGoalMade",
+								"extraPointsMade/extraPointAttempts",
+								"totalKickingPoints"
+							],
+							"athletes": [
+								{
+									"athlete": {
+										"id": "5081335",
+										"displayName": "Drew Stevens"
+									},
+									"stats": [
+										"2/2",
+										"100.0",
+										"31",
+										"1/1",
+										"7"
+									]
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	}
+}

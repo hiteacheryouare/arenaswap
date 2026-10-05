@@ -102,6 +102,26 @@ const EspnCompetitorSchema = z.object({
 	// ESPN's poll position. Sent by the pro leagues too, where it is permanently 99 — its code for
 	// unranked — so the reader gates on the value rather than on the key being present.
 	curatedRank: z.optional(z.object({ current: z.optional(z.number()) })),
+	// Baseball and softball, live and final. A malformed value drops the field rather than the game,
+	// and never reads as 0: zero hits is what a no-hitter is made of.
+	hits: z.catch(z.optional(z.number()), undefined),
+	errors: z.catch(z.optional(z.number()), undefined),
+});
+
+// A playoff series on the US leagues' scoreboards. MLB also sends `type: 'season'` for a
+// regular-season series, which is not a series anyone can be eliminated from.
+const EspnSeriesSchema = z.object({
+	type: z.optional(z.string()),
+	totalCompetitions: z.optional(z.number()),
+	competitors: z.optional(z.array(z.object({ id: espnNumericText, wins: z.optional(z.number()) }))),
+});
+
+// Soccer's key events: goals, cards, penalties. Only red cards are read so far.
+const EspnCompetitionDetailSchema = z.object({
+	redCard: z.optional(z.boolean()),
+	clock: z.optional(z.object({ value: z.optional(z.number()), displayValue: z.optional(z.string()) })),
+	team: z.optional(z.object({ id: z.optional(espnNumericText) })),
+	athletesInvolved: z.optional(z.array(z.object({ displayName: z.optional(z.string()) }))),
 });
 
 const EspnCompetitionStatusSchema = z.object({
@@ -126,7 +146,13 @@ const EspnDriveSchema = z.object({
 });
 
 const EspnLastPlaySchema = z.object({
+	// "Defensive Rebound", "Free Throw - 2 of 2", "Full Timeout". Basketball reads its possession
+	// off this, and nothing else depends on it, so a shape we don't expect drops the field rather
+	// than the scoreboard.
+	type: z.catch(z.optional(z.object({ text: z.optional(z.string()) })), undefined),
 	team: z.optional(z.object({ id: z.optional(espnNumericText) })),
+	// Points the play put on the board: 0 for a miss, 1 to 3 for a make.
+	scoreValue: z.catch(z.optional(z.number()), undefined),
 	drive: z.optional(EspnDriveSchema),
 	// A sentence describing the play that just happened. Arrives on every sport that sends a
 	// situation at all, and routinely carries a leading space and an embedded newline — a penalty
@@ -250,6 +276,8 @@ const EspnCompetitionSchema = z.object({
 	geoBroadcasts: z.optional(z.array(EspnCompetitionGeoBroadcastSchema)),
 	odds: z.optional(z.array(z.nullable(EspnCompetitionOddsSchema))),
 	notes: z.optional(z.array(EspnCompetitionNoteSchema)),
+	series: z.catch(z.optional(EspnSeriesSchema), undefined),
+	details: z.catch(z.optional(z.array(z.catch(EspnCompetitionDetailSchema, {}))), undefined),
 });
 
 const EspnSeasonSchema = z.object({
@@ -371,6 +399,7 @@ export type EspnLeaderCategory = z.infer<typeof EspnLeaderCategorySchema>;
 export type EspnCompetitor = z.infer<typeof EspnCompetitorSchema>;
 export type EspnCompetitionStatus = z.infer<typeof EspnCompetitionStatusSchema>;
 export type EspnSituation = z.infer<typeof EspnSituationSchema>;
+export type EspnLastPlay = z.infer<typeof EspnLastPlaySchema>;
 export type EspnCompetitionVenue = z.infer<typeof EspnCompetitionVenueSchema>;
 export type EspnVenueAddress = z.infer<typeof EspnVenueAddressSchema>;
 export type EspnCompetitionBroadcast = z.infer<typeof EspnCompetitionBroadcastSchema>;

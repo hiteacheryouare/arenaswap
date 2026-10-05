@@ -489,6 +489,10 @@ const comparisonSpecs = {
 		{ name: 'totalTurnovers', labelKey: 'box.turnovers' },
 		{ name: 'steals', labelKey: 'box.steals' },
 		{ name: 'blocks', labelKey: 'box.blocks' },
+		// How the game went rather than what either side did. Lead changes is one count for the game,
+		// sent on both teams, so it prints the same on both sides.
+		{ name: 'largestLead', labelKey: 'box.largestLead' },
+		{ name: 'leadChanges', labelKey: 'box.leadChanges' },
 	],
 	hockey: [
 		{ name: 'shotsTotal', labelKey: 'box.shotsOnGoal' },

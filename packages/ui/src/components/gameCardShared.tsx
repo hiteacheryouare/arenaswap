@@ -180,9 +180,14 @@ export const OddsProvider = ({ game, dark }: { game: Game; dark?: boolean }) => 
 //
 // Present on games that score nothing. A non-playoff bowl gets no boost and still gets its name,
 // because the label and the boost answer different questions.
-export const PostseasonLabel = ({ game }: { game: Game }) => (
-	game.postseasonLabel ? <span className='game-postseason-label'>{game.postseasonLabel}</span> : null
-);
+//
+// A preseason game takes the same spot with our own word instead, since ESPN names no round for it.
+export const SeasonLabel = ({ game }: { game: Game }) => {
+	const t = useT();
+	const label = game.postseasonLabel
+		?? (game.isPreseason ? t(game.league === 'mlb' ? 'gameCard.springTraining' : 'gameCard.preseason') : undefined);
+	return label ? <span className='game-postseason-label'>{label}</span> : null;
+};
 
 // The row every card puts its status on. The postseason label shares it, which costs no vertical
 // space on a card that has none to spare — and when the label is too wide to share, the row wraps

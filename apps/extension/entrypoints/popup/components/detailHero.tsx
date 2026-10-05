@@ -1,13 +1,15 @@
 import { i18n } from '#i18n';
-import type { Game } from '@arenaswap/core/types';
+import type { BasketballSituation } from '@arenaswap/core';
+import type { Game, Team } from '@arenaswap/core/types';
 import AtBatPanel from './atBatPanel';
 import BaseDiamond from './baseDiamond';
 import BsoIndicator from './bsoIndicator';
 import DetailTeamPill from './detailTeamPill';
 import FlipScore from './flipScore';
 import FootballFieldStrip from './footballFieldStrip';
-import type { GameStatus } from './gameSituation';
+import { basketballTimeoutAllotment, bonusKind, type GameStatus } from './gameSituation';
 import InningHalfIcon from './inningHalfIcon';
+import PossessionArrow from './possessionArrow';
 import SeriesDots from './seriesDots';
 import StartCountdownDisplay from './startCountdownDisplay';
 import { emptyTeamRecords, type MonoLogos, type SeriesInfo, type TeamRecords } from './useSummaryData';
@@ -23,9 +25,15 @@ interface detailHeroProps {
 	heroStyle: React.CSSProperties;
 	awayColor: string;
 	homeColor: string;
+	basketballSituation?: BasketballSituation | null;
+	possession?: 'home' | 'away';
 }
 
-const detailHero = ({ game, seriesInfo, records = emptyTeamRecords, monoLogos, isDelayed, isInningSport, status, heroStyle, awayColor, homeColor }: detailHeroProps) => {
+const withTimeouts = (team: Team, timeoutsLeft: number | undefined): Team => (
+	timeoutsLeft === undefined ? team : { ...team, timeouts: timeoutsLeft }
+);
+
+const detailHero = ({ game, seriesInfo, records = emptyTeamRecords, monoLogos, isDelayed, isInningSport, status, heroStyle, awayColor, homeColor, basketballSituation, possession }: detailHeroProps) => {
 	const isPre = game.status === 'pre';
 	// The list card carries this line itself; on the detail screen it is the field strip's caption,
 	// and it is the only place the down, the distance and the yard marker appear as words.
@@ -34,6 +42,16 @@ const detailHero = ({ game, seriesInfo, records = emptyTeamRecords, monoLogos, i
 		: game.downDistance;
 	const showField = game.sportType === 'football' && game.status === 'in'
 		&& (typeof game.yardLine === 'number' || downDistanceLine !== undefined);
+
+	const liveBasketball = game.sportType === 'basketball' && game.status === 'in';
+	const situation = liveBasketball ? basketballSituation : null;
+	const timeoutMax = situation ? basketballTimeoutAllotment(game.league) : undefined;
+	// Between periods the fouls have already reset for the next one, so nobody is in the bonus.
+	const bonusOf = (side: 'home' | 'away') => (
+		situation && game.intermission !== true ? bonusKind(situation[side], game.league) : undefined
+	);
+	const awayTeam = withTimeouts(game.awayTeam, situation?.away.timeoutsLeft);
+	const homeTeam = withTimeouts(game.homeTeam, situation?.home.timeoutsLeft);
 
 	// Only once the game is over. During play a dimmed score would read as the team that is behind
 	// rather than the team that lost, and it would flip back and forth on every basket. The weight
@@ -51,22 +69,24 @@ const detailHero = ({ game, seriesInfo, records = emptyTeamRecords, monoLogos, i
 		// the re-toning on — every child of this hero was drawn for near-black ink on white.
 		<div className={`gd-poster game-detail-matchup gd-hero gd-hero-live${isDelayed ? ' is-delayed' : ''}`} style={heroStyle}>
 			<div className='game-detail-teams-row'>
-				<DetailTeamPill team={game.awayTeam} side='away' record={records.away} color={awayColor} />
+				<DetailTeamPill team={awayTeam} side='away' record={records.away} color={awayColor} timeoutMax={timeoutMax} bonus={bonusOf('away')} bonusSlot={Boolean(situation)} />
 				<div className='game-detail-center'>
 					{isPre ? (
 						<div className='gd-vs'>{i18n.t('gameCard.vs')}</div>
 					) : (
 						<div className='d-flex align-items-center game-detail-score-row'>
 							<FlipScore value={game.awayTeam.score} className={scoreClass(game.awayTeam.score, game.homeTeam.score)} />
+							{liveBasketball && <PossessionArrow side='away' possession={possession} team={game.awayTeam} />}
 							{isInningSport && game.baseRunners
 								? <BaseDiamond {...game.baseRunners} />
 								// Without a divider two three-digit scores read as one number: "112108".
 								: <span className='game-score-sep' aria-hidden='true' />}
+							{liveBasketball && <PossessionArrow side='home' possession={possession} team={game.homeTeam} />}
 							<FlipScore value={game.homeTeam.score} className={scoreClass(game.homeTeam.score, game.awayTeam.score)} />
 						</div>
 					)}
 				</div>
-				<DetailTeamPill team={game.homeTeam} side='home' record={records.home} color={homeColor} />
+				<DetailTeamPill team={homeTeam} side='home' record={records.home} color={homeColor} timeoutMax={timeoutMax} bonus={bonusOf('home')} bonusSlot={Boolean(situation)} />
 				{status.text && (
 					<div className={`game-detail-period${status.ticking ? ' is-ticking' : ''}`}>
 						{isInningSport && <InningHalfIcon topOfInning={game.topOfInning} />}{status.text}

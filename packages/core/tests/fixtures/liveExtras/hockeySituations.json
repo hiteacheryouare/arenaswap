@@ -1,0 +1,49 @@
+{
+	"_source": "core API competitions/{id}/situation, recordings/2026-10-03",
+	"nhlPowerPlay": {
+		"t": "situation",
+		"ts": 1791069169580,
+		"league": "nhl",
+		"gameId": "401892436",
+		"raw": {
+			"$ref": "http://sports.core.api.espn.com/v2/sports/hockey/leagues/nhl/events/401892436/competitions/401892436/situation?lang=en&region=us",
+			"lastPlay": {
+				"$ref": "http://sports.core.api.espn.com/v2/sports/hockey/leagues/nhl/events/401892436/competitions/401892436/plays/401892436000000890?lang=en&region=us"
+			},
+			"powerPlay": true,
+			"emptyNet": false
+		}
+	},
+	"nhlEvenStrength": {
+		"t": "situation",
+		"ts": 1791069078356,
+		"league": "nhl",
+		"gameId": "401891776",
+		"raw": {
+			"$ref": "http://sports.core.api.espn.com/v2/sports/hockey/leagues/nhl/events/401891776/competitions/401891776/situation?lang=en&region=us",
+			"lastPlay": {
+				"$ref": "http://sports.core.api.espn.com/v2/sports/hockey/leagues/nhl/events/401891776/competitions/401891776/plays/401891776000000740?lang=en&region=us"
+			},
+			"powerPlay": false,
+			"emptyNet": false
+		}
+	},
+	"nhlBare": {
+		"t": "situation",
+		"ts": 1791069260634,
+		"league": "nhl",
+		"gameId": "401892434",
+		"raw": {
+			"$ref": "http://sports.core.api.espn.com/v2/sports/hockey/leagues/nhl/events/401892434/competitions/401892434/situation?lang=en&region=us"
+		}
+	},
+	"ncaamhBare": {
+		"t": "situation",
+		"ts": 1791069078603,
+		"league": "ncaamh",
+		"gameId": "401904917",
+		"raw": {
+			"$ref": "http://sports.core.api.espn.com/v2/sports/hockey/leagues/mens-college-hockey/events/401904917/competitions/401904917/situation?lang=en&region=us"
+		}
+	}
+}

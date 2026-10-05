@@ -1,6 +1,6 @@
 import GameDetailView from '../../entrypoints/popup/components/gameDetailView';
 import LiveGameCard from '@arenaswap/ui/src/components/liveGameCard';
-import type { Game, PowerScoreResult, PowerScoreSnapshot, ScoreSnapshot } from '@arenaswap/core/types';
+import type { Game, LiveScore, PowerScoreResult, PowerScoreSnapshot, ScoreSnapshot } from '@arenaswap/core/types';
 import { countdownParts, formatCompactCountdown } from '../../entrypoints/popup/components/startCountdown';
 import de from '../../locales/de.json';
 import en from '../../locales/en.json';
@@ -15,6 +15,7 @@ import ptBR from '../../locales/pt_BR.json';
 import ptPT from '../../locales/pt_PT.json';
 import zhCN from '../../locales/zh_CN.json';
 import zhTW from '../../locales/zh_TW.json';
+import basketballSituations from '../../../../packages/core/tests/fixtures/liveExtras/basketballSituations.json';
 
 const locales = { de, en, es, fil, fr, it: itLocale, ja, ko, pt_BR: ptBR, pt_PT: ptPT, zh_CN: zhCN, zh_TW: zhTW };
 
@@ -78,30 +79,30 @@ const makeScheduledSlate = (msUntilStart: number): Game => ({
 });
 
 interface MountOverrides {
-	excitementResult?: PowerScoreResult;
+	excitementResult?: LiveScore;
 	scoreHistory?: ScoreSnapshot[];
 	powerScoreHistory?: PowerScoreSnapshot[];
 	proTipsEnabled?: boolean;
 	bettingEnabled?: boolean;
 }
 
-const mountDetail = (game: Game, overrides: MountOverrides = {}) => {
-	cy.mount(
-		<GameDetailView
-			game={game}
-			excitementResult={overrides.excitementResult}
-			scoreHistory={overrides.scoreHistory ?? []}
-			powerScoreHistory={overrides.powerScoreHistory ?? []}
-			proTipsEnabled={overrides.proTipsEnabled ?? false}
-			gameBoosts={{}}
-			bettingPrefs={{ bettingEnabled: overrides.bettingEnabled ?? false }}
-			weatherPrefs={{ temperatureUnit: 'F' }}
-			decorationPrefs={{ holidayDecorationsEnabled: false, holidaySnowEnabled: false, holidayLightsEnabled: false, holidayLeavesEnabled: false }}
-			onSetGameBoost={() => {}}
-			onBack={() => {}}
-		/>,
-	);
-};
+const detailView = (game: Game, overrides: MountOverrides = {}) => (
+	<GameDetailView
+		game={game}
+		excitementResult={overrides.excitementResult}
+		scoreHistory={overrides.scoreHistory ?? []}
+		powerScoreHistory={overrides.powerScoreHistory ?? []}
+		proTipsEnabled={overrides.proTipsEnabled ?? false}
+		gameBoosts={{}}
+		bettingPrefs={{ bettingEnabled: overrides.bettingEnabled ?? false }}
+		weatherPrefs={{ temperatureUnit: 'F' }}
+		decorationPrefs={{ holidayDecorationsEnabled: false, holidaySnowEnabled: false, holidayLightsEnabled: false, holidayLeavesEnabled: false }}
+		onSetGameBoost={() => {}}
+		onBack={() => {}}
+	/>
+);
+
+const mountDetail = (game: Game, overrides: MountOverrides = {}) => cy.mount(detailView(game, overrides));
 
 // `mock-` ids short-circuit useSummaryData to a deterministic LCG, so nothing hits the network.
 // Only mock-4/14/16 also carry a canned playoff series.
@@ -1087,8 +1088,424 @@ describe('gameDetailView hero timeouts', () => {
 		});
 	});
 
+	// The NBA's seven are drawn a size down. Gridiron's three must not be.
+	it('keeps gridiron\'s three at full size', () => {
+		mountDetail(gridiron, { excitementResult: excitement });
+		cy.get('.gd-hero-live .timeout-dots').should('have.length', 2).and('not.have.class', 'is-compact');
+		cy.get('.gd-hero-live .timeout-dot').first().should(([el]: JQuery<HTMLElement>) => {
+			expect(getComputedStyle(el).fontSize).to.equal('7.2px');
+		});
+		cy.get('.gd-bonus').should('not.exist');
+	});
+
 	it('leaves the hero untouched for a sport with no timeouts', () => {
 		mountDetail(makeLiveGame(), { excitementResult: excitement });
 		cy.get('.gd-hero-live .timeout-dots').should('not.exist');
+	});
+});
+
+const chartTitles = () => cy.get('[data-testid="game-detail-chart"] .game-detail-chart-title').then($titles => [...$titles].map(title => title.textContent));
+
+describe('gameDetailView scoring modes', () => {
+	const scoreHistory: ScoreSnapshot[] = Array.from({ length: 6 }, (_, i) => ({
+		gameId: liveGameId,
+		timestamp: now.getTime() - (6 - i) * minuteMs,
+		awayScore: 90 + i * 4,
+		homeScore: 80 + i,
+	}));
+
+	const blowoutScore: LiveScore = {
+		...excitement,
+		reason: '24-point lead, OKC piling on',
+		breakdown: {
+			modeId: 'blowouts',
+			signals: [
+				{ id: 'blowoutMargin', points: 41, ceiling: 50, disabled: false },
+				{ id: 'sustained', points: 22, ceiling: 30, disabled: false },
+				{ id: 'timing', points: 9, ceiling: 25, disabled: false },
+				{ id: 'pileOn', points: 6, ceiling: 15, disabled: false },
+			],
+			boosts: [{ id: 'favoriteBoost', points: 0, meta: { teams: 0 } }, { id: 'gameBoost', points: 0 }, { id: 'postseasonBoost', points: 0 }],
+			reasons: [{ key: 'blowoutMargin', params: { margin: 24, unit: 'point' } }, { key: 'pilingOn', params: { team: 'OKC' } }],
+			frozen: false,
+			scaledSubtotal: 78,
+			signalCeiling: 120,
+			classicTotal: 31,
+		},
+	};
+
+	it('leaves the lead tracker off a Classic game', () => {
+		cy.clock(now.getTime(), ['Date']);
+		mountDetail(makeLiveGame(), { excitementResult: excitement, scoreHistory, powerScoreHistory });
+		chartTitles().should('not.include', 'Lead Over Time');
+		cy.get('.powerscore-breakdown-heading').should('have.text', 'PowerScore Breakdown');
+	});
+
+	it('adds the lead tracker under the score chart for a game Blowouts is scoring', () => {
+		cy.clock(now.getTime(), ['Date']);
+		mountDetail(makeLiveGame(), { excitementResult: blowoutScore, scoreHistory, powerScoreHistory });
+		chartTitles().then(titles => {
+			const score = titles.indexOf('Game Score Over Time');
+			expect(score).to.be.at.least(0);
+			expect(titles[score + 1]).to.equal('Lead Over Time');
+		});
+		cy.get('.powerscore-breakdown-heading').should('have.text', 'Blowouts Breakdown');
+		cy.get('.powerscore-breakdown-reason').should('have.text', '24-point lead, OKC piling on');
+	});
+
+	it('reads the mode off the newest reading when there is no live score', () => {
+		cy.clock(now.getTime(), ['Date']);
+		const history = powerScoreHistory.map(snapshot => ({ ...snapshot, modeId: 'blowouts', signals: { blowoutMargin: 30, sustained: 10, timing: 5, pileOn: 0 } }));
+		mountDetail(makeLiveGame(), { scoreHistory, powerScoreHistory: history });
+		chartTitles().should('include', 'Lead Over Time');
+	});
+});
+
+const centreX = (el: HTMLElement) => {
+	const rect = el.getBoundingClientRect();
+	return (rect.left + rect.right) / 2;
+};
+
+const scoreLefts = () => cy.get('.game-detail-score-row').then(([row]: JQuery<HTMLElement>) => (
+	[...row.querySelectorAll('.game-detail-score-value, .game-score-sep')].map(el => el.getBoundingClientRect().left)
+));
+
+// The bonus and timeouts, read from the situation resource while the screen is open. A real game
+// id rather than a `mock-` one, so the fetch actually runs; every request it makes is answered
+// here, and nothing reaches the network.
+describe('gameDetailView basketball situation', () => {
+	const situationUrl = /sports\.core\.api\.espn\.com\/.*\/situation/;
+	const realId = '401902644';
+
+	const answer = (raw: unknown) => {
+		cy.intercept({ url: /site\.api\.espn\.com/ }, { body: {} });
+		cy.intercept({ url: situationUrl }, { body: raw }).as('situation');
+	};
+
+	const liveBasketball = (overrides: Partial<Game> = {}) => makeLiveGame({ id: realId, period: 4, clockSeconds: 95, ...overrides });
+
+	beforeEach(() => {
+		cy.viewport(320, 560);
+	});
+
+	it('marks the team in the bonus under its own timeouts, centred under the name', () => {
+		answer(basketballSituations.homeInBonus.raw);
+		mountDetail(liveBasketball(), { excitementResult: excitement });
+		cy.get('.gd-area-home-timeouts .gd-bonus').should('not.have.class', 'invisible').should(([bonus]: JQuery<HTMLElement>) => {
+			expect(getComputedStyle(bonus).textTransform).to.equal('uppercase');
+			expect(bonus.querySelector('[aria-hidden="true"]')!.textContent).to.equal('Bonus');
+			expect(bonus.querySelector('.visually-hidden')!.textContent).to.equal('BOS in the bonus');
+		});
+		cy.get('.gd-area-away-timeouts .gd-bonus').should('have.class', 'invisible').and('have.attr', 'aria-hidden', 'true');
+		cy.get('.gd-area-home-label').then(([name]: JQuery<HTMLElement>) => {
+			cy.get('.gd-area-home-timeouts .timeout-dots').then(([dots]: JQuery<HTMLElement>) => {
+				cy.get('.gd-area-home-timeouts .gd-bonus').then(([bonus]: JQuery<HTMLElement>) => {
+					expect(centreX(bonus), 'under the dots').to.be.closeTo(centreX(dots), 0.5);
+					expect(centreX(bonus), 'under the name').to.be.closeTo(centreX(name), 1);
+					expect(bonus.getBoundingClientRect().top, 'below the dots').to.be.at.least(dots.getBoundingClientRect().bottom);
+				});
+			});
+		});
+	});
+
+	it('marks both teams when both are in it', () => {
+		answer(basketballSituations.bothInBonus.raw);
+		mountDetail(liveBasketball(), { excitementResult: excitement });
+		cy.get('.gd-bonus:not(.invisible)').should('have.length', 2);
+	});
+
+	// Only the men's college game has a one-and-one, so only there does DOUBLE get its own words.
+	it('says double bonus to a screen reader in men\'s college basketball', () => {
+		answer(basketballSituations.homeInBonus.raw);
+		mountDetail(liveBasketball({ league: 'ncaab' }), { excitementResult: excitement });
+		cy.get('.gd-area-home-timeouts .gd-bonus .visually-hidden').should('have.text', 'BOS in the double bonus');
+		cy.get('.gd-area-home-timeouts .gd-bonus [aria-hidden="true"]').should('have.text', 'Bonus');
+	});
+
+	it('keeps the hero the same height whether anyone is in the bonus or not', () => {
+		answer(basketballSituations.firstQuarter.raw);
+		mountDetail(liveBasketball(), { excitementResult: excitement });
+		cy.get('.gd-bonus.invisible').should('have.length', 2);
+		cy.get('.gd-hero').then(([before]: JQuery<HTMLElement>) => {
+			const height = before.getBoundingClientRect().height;
+			answer(basketballSituations.bothInBonus.raw);
+			mountDetail(liveBasketball(), { excitementResult: excitement });
+			cy.get('.gd-bonus:not(.invisible)').should('have.length', 2);
+			cy.get('.gd-hero').should(([after]: JQuery<HTMLElement>) => {
+				expect(after.getBoundingClientRect().height).to.equal(height);
+			});
+		});
+	});
+
+	it('fits the bonus inside its column in every locale', () => {
+		answer(basketballSituations.bothInBonus.raw);
+		mountDetail(liveBasketball(), { excitementResult: excitement });
+		cy.get('.gd-bonus:not(.invisible)').should('have.length', 2);
+		Object.entries(locales).forEach(([name, locale]) => {
+			cy.get('.gd-area-home-timeouts .gd-bonus [aria-hidden="true"]').then(([text]: JQuery<HTMLElement>) => {
+				text.textContent = locale.detail.bonus;
+			});
+			cy.get('.gd-area-home-label').then(([label]: JQuery<HTMLElement>) => {
+				cy.get('.gd-area-home-timeouts .gd-bonus').should(([bonus]: JQuery<HTMLElement>) => {
+					const rect = bonus.getBoundingClientRect();
+					expect(rect.width, `${name} fits the 80px column`).to.be.at.most(80);
+					expect(centreX(bonus), `${name} centred`).to.be.closeTo(centreX(label), 1);
+				});
+			});
+			cy.get('.gd-hero').should(([hero]: JQuery<HTMLElement>) => {
+				expect(hero.scrollWidth, `${name}: no sideways scroll`).to.be.at.most(hero.clientWidth);
+			});
+		});
+	});
+
+	// Seven full-size rings were once thought too wide, so the NBA got "7 TO". They are drawn now,
+	// a size down, and they have to sit under the name the way gridiron's three do.
+	it('draws the NBA\'s seven timeouts as dots, level on both sides and under each name', () => {
+		answer(basketballSituations.homeInBonus.raw);
+		mountDetail(liveBasketball(), { excitementResult: excitement });
+		cy.get('.gd-area-away-timeouts .timeout-dots').should('have.class', 'is-compact').find('.timeout-dot').should('have.length', 7);
+		cy.get('.gd-area-away-timeouts .timeout-dot:not(.is-empty)').should('have.length', 7);
+		cy.get('.gd-area-home-timeouts .timeout-dot:not(.is-empty)').should('have.length', 6);
+		cy.get('.gd-area-home-timeouts .timeout-dot.is-empty').should('have.length', 1);
+		cy.get('.timeout-dots-numeric').should('not.exist');
+		cy.get('.gd-area-away-timeouts .timeout-dots').should('have.attr', 'aria-label', 'OKC: 7 timeouts left');
+		cy.get('.gd-area-away-timeouts, .gd-area-home-timeouts').then(($rows: JQuery<HTMLElement>) => {
+			const [away, home] = [...$rows].map(el => el.getBoundingClientRect());
+			expect(away!.top, 'level').to.be.closeTo(home!.top, 0.5);
+		});
+		(['away', 'home'] as const).forEach(side => {
+			cy.get(`.gd-area-${side}-label`).then(([name]: JQuery<HTMLElement>) => {
+				cy.get(`.gd-area-${side}-timeouts .timeout-dots`).then(([dots]: JQuery<HTMLElement>) => {
+					const rect = dots.getBoundingClientRect();
+					expect(centreX(dots), `${side} timeouts under the name`).to.be.closeTo(centreX(name), 1);
+					expect(rect.width, `${side} row inside the 80px column`).to.be.at.most(80);
+					expect(dots.scrollWidth, `${side} row does not overflow`).to.be.at.most(Math.ceil(rect.width));
+				});
+			});
+		});
+		cy.get('.gd-hero').should(([hero]: JQuery<HTMLElement>) => {
+			expect(hero.scrollWidth, 'no sideways scroll').to.be.at.most(hero.clientWidth);
+		});
+	});
+
+	it('draws a smaller allotment at gridiron\'s size', () => {
+		answer(basketballSituations.lastMinutes.raw);
+		mountDetail(liveBasketball({ league: 'wnba' }), { excitementResult: excitement });
+		cy.get('.gd-area-away-timeouts .timeout-dots').should('not.have.class', 'is-compact');
+		cy.get('.gd-area-away-timeouts .timeout-dot').should('have.length', 4);
+		cy.get('.gd-area-away-timeouts .timeout-dot:not(.is-empty)').should('have.length', 2);
+		cy.get('.gd-area-home-timeouts .timeout-dot:not(.is-empty)').should('have.length', 1);
+	});
+
+	// A timeout row and a bonus line under it. The fouls sentence that used to sit under the period
+	// is gone, so this is the whole of what basketball adds.
+	it('keeps the hero and the breakdown inside their pixel budgets', () => {
+		answer(basketballSituations.homeInBonus.raw);
+		mountDetail(liveBasketball(), { excitementResult: excitement });
+		cy.get('.gd-bonus:not(.invisible)').should('exist');
+		cy.get('.game-detail-header').then(([header]: JQuery<HTMLElement>) => {
+			cy.get('.gd-hero').then(([hero]: JQuery<HTMLElement>) => {
+				const height = hero.getBoundingClientRect().bottom - header.getBoundingClientRect().top;
+				expect(height, 'hero height').to.be.at.most(196);
+			});
+		});
+		cy.get('.powerscore-breakdown').then(([el]: JQuery<HTMLElement>) => {
+			expect(el.getBoundingClientRect().top, 'breakdown still on the first screen').to.be.at.most(206);
+		});
+	});
+
+	it('never writes out the fouls', () => {
+		answer(basketballSituations.firstQuarter.raw);
+		mountDetail(liveBasketball(), { excitementResult: excitement });
+		cy.get('.gd-bonus').should('have.length', 2);
+		cy.get('.gd-hero').invoke('text').should('not.match', /foul/i);
+	});
+
+	// Between periods the fouls have already reset for the next one. The timeouts carry over.
+	it('clears the bonus between periods and keeps the timeouts', () => {
+		answer(basketballSituations.homeInBonus.raw);
+		mountDetail(liveBasketball({ intermission: true, period: 2 }), { excitementResult: excitement });
+		cy.get('.gd-area-home-timeouts .timeout-dot:not(.is-empty)').should('have.length', 6);
+		cy.get('.gd-bonus.invisible').should('have.length', 2);
+	});
+
+	it('asks again at the scoreboard\'s pace while the screen is open', () => {
+		cy.clock(now.getTime(), ['Date', 'setInterval', 'clearInterval']);
+		answer(basketballSituations.firstQuarter.raw);
+		mountDetail(liveBasketball(), { excitementResult: excitement });
+		cy.wait('@situation');
+		cy.get('.gd-bonus.invisible').should('have.length', 2);
+		cy.intercept({ url: situationUrl }, { body: basketballSituations.homeInBonus.raw }).as('again');
+		cy.tick(15_000);
+		cy.wait('@again');
+		cy.get('.gd-area-home-timeouts .gd-bonus').should('not.have.class', 'invisible');
+	});
+
+	it('never asks for a game that is not live basketball', () => {
+		answer(basketballSituations.homeInBonus.raw);
+		mountDetail(liveBasketball({ status: 'post' }), { excitementResult: excitement });
+		mountDetail(liveBasketball({ league: 'nfl', sportType: 'football' }), { excitementResult: excitement });
+		mountDetail(makeLiveGame(), { excitementResult: excitement });
+		cy.get('.game-detail-period').should('exist');
+		cy.get('@situation.all').should('have.length', 0);
+		cy.get('.gd-bonus').should('not.exist');
+	});
+});
+
+// Read off the last play by core, and held here through the plays that don't say.
+describe('gameDetailView possession arrow', () => {
+	beforeEach(() => {
+		cy.viewport(320, 560);
+	});
+
+	it('points at the score of the team with the ball, beside the divider', () => {
+		mountDetail(makeLiveGame({ possessionSide: 'away' }), { excitementResult: excitement });
+		cy.get('.game-detail-score-row .bi-caret-left-fill').should('have.length', 1).and('have.attr', 'aria-label', 'OKC has the ball');
+		cy.get('.game-detail-score-row .bi-caret-right-fill').should('not.exist');
+		cy.get('.game-detail-score-row').then(([row]: JQuery<HTMLElement>) => {
+			const [away, sep] = [row.querySelector('.game-detail-score-value')!, row.querySelector('.game-score-sep')!].map(el => el.getBoundingClientRect());
+			const arrow = row.querySelector('.bi-caret-left-fill')!.getBoundingClientRect();
+			expect(arrow.left, 'right of the away score').to.be.at.least(away!.right);
+			expect(arrow.right, 'left of the divider').to.be.at.most(sep!.left);
+		});
+
+		mountDetail(makeLiveGame({ possessionSide: 'home' }), { excitementResult: excitement });
+		cy.get('.game-detail-score-row .bi-caret-right-fill').should('have.attr', 'aria-label', 'BOS has the ball');
+	});
+
+	it('never moves the scores when the ball changes hands', () => {
+		mountDetail(makeLiveGame({ possessionSide: 'away' }), { excitementResult: excitement });
+		scoreLefts().then(withAway => {
+			mountDetail(makeLiveGame({ possessionSide: 'home' }), { excitementResult: excitement });
+			cy.get('.bi-caret-right-fill').should('exist');
+			scoreLefts().should('deep.equal', withAway);
+			mountDetail(makeLiveGame(), { excitementResult: excitement });
+			cy.get('.gd-possession').should('have.length', 2);
+			cy.get('.gd-possession i').should('not.exist');
+			scoreLefts().should('deep.equal', withAway);
+		});
+	});
+
+	it('holds the ball through a timeout and lets it go at the end of the period', () => {
+		const game = makeLiveGame({ period: 2, possessionSide: 'home' });
+		mountDetail(game, { excitementResult: excitement }).then(({ rerender }) => {
+			cy.get('.bi-caret-right-fill').should('exist');
+			cy.then(() => rerender(detailView({ ...game, possessionSide: undefined }, { excitementResult: excitement })));
+			cy.get('.bi-caret-right-fill').should('exist');
+			cy.then(() => rerender(detailView({ ...game, possessionSide: 'away' }, { excitementResult: excitement })));
+			cy.get('.bi-caret-left-fill').should('exist');
+			cy.then(() => rerender(detailView({ ...game, possessionSide: undefined, intermission: true }, { excitementResult: excitement })));
+			cy.get('.gd-possession i').should('not.exist');
+			cy.then(() => rerender(detailView({ ...game, possessionSide: undefined, period: 3 }, { excitementResult: excitement })));
+			cy.get('.gd-possession').should('have.length', 2);
+			cy.get('.gd-possession i').should('not.exist');
+		});
+	});
+
+	it('starts a new period with nothing even when the intermission was missed', () => {
+		const game = makeLiveGame({ period: 1, possessionSide: 'away' });
+		mountDetail(game, { excitementResult: excitement }).then(({ rerender }) => {
+			cy.get('.bi-caret-left-fill').should('exist');
+			cy.then(() => rerender(detailView({ ...game, period: 2, possessionSide: undefined }, { excitementResult: excitement })));
+			cy.get('.gd-possession i').should('not.exist');
+		});
+	});
+
+	it('leaves every other score row alone', () => {
+		mountDetail(makeLiveGame({ league: 'nfl', sportType: 'football', possessionSide: 'away' }), { excitementResult: excitement });
+		cy.get('.game-detail-score-row').should('exist');
+		cy.get('.gd-possession').should('not.exist');
+		mountDetail(makeLiveGame({ status: 'post', possessionSide: 'away' }), { excitementResult: excitement });
+		cy.get('.game-detail-score-row').should('exist');
+		cy.get('.gd-possession').should('not.exist');
+	});
+});
+
+// Soccer sends no play, so a red card is what fills the section: one line a card, each under its
+// own team's rule, the way the play above is drawn for every other sport.
+describe('gameDetailView red cards', () => {
+	beforeEach(() => {
+		cy.viewport(320, 560);
+	});
+
+	const soccer = (overrides: Partial<Game> = {}) => makeLiveGame({
+		league: 'mls',
+		sportType: 'soccer',
+		period: 2,
+		clockSeconds: 5400,
+		homeTeam: { id: '183', name: 'Atlanta United FC', abbreviation: 'ATL', score: 1, color: '#80000A' },
+		awayTeam: { id: '20232', name: 'Inter Miami CF', abbreviation: 'MIA', score: 1, color: '#F7B5CD' },
+		...overrides,
+	});
+
+	const twoCards = soccer({
+		redCardEvents: [
+			{ teamId: '183', minute: 1580 / 60, player: 'Brais Méndez' },
+			{ teamId: '20232', minute: 90, addedMinutes: 6, player: 'Santiago Morales' },
+		],
+	});
+
+	it('lists each card with its minute, player and team', () => {
+		mountDetail(twoCards, { excitementResult: excitement });
+		cy.get('.gd-play-heading').should('have.text', 'Red Cards');
+		cy.get('.gd-red-card .gd-play-text').then(($lines: JQuery<HTMLElement>) => {
+			expect([...$lines].map(el => el.textContent)).to.deep.equal([
+				'27\' Brais Méndez, Atlanta United FC',
+				'90+6\' Santiago Morales, Inter Miami CF',
+			]);
+		});
+	});
+
+	it('marks each card in its own team\'s colour', () => {
+		mountDetail(twoCards, { excitementResult: excitement });
+		cy.get('.gd-red-card').should('have.length', 2).then(($cards: JQuery<HTMLElement>) => {
+			const [home, away] = [...$cards];
+			expect(home).to.have.class('has-accent');
+			expect(away).to.have.class('has-accent');
+			expect(getComputedStyle(home!).borderLeftWidth).to.equal('3px');
+			expect(getComputedStyle(home!).borderLeftColor, 'the two sides are not drawn alike').to.not.equal(getComputedStyle(away!).borderLeftColor);
+		});
+	});
+
+	it('sets the cards on the same indent as a play, with room between them', () => {
+		mountDetail(twoCards, { excitementResult: excitement });
+		cy.get('.gd-red-card').then(($cards: JQuery<HTMLElement>) => {
+			const [first, second] = [...$cards].map(el => el.getBoundingClientRect());
+			expect(second!.left, 'same left edge').to.be.closeTo(first!.left, 0.5);
+			expect(second!.top - first!.bottom, 'a gap between two cards').to.be.greaterThan(2);
+		});
+		cy.get('.gd-play-heading').then(([heading]: JQuery<HTMLElement>) => {
+			cy.get('.gd-red-card').first().then(([card]: JQuery<HTMLElement>) => {
+				expect(card.getBoundingClientRect().left, 'rule level with the heading').to.be.closeTo(heading.getBoundingClientRect().left, 0.5);
+			});
+		});
+	});
+
+	it('wraps a long name inside the screen rather than pushing it wider', () => {
+		mountDetail(soccer({
+			redCardEvents: [{ teamId: '183', minute: 88, addedMinutes: 12, player: 'Sékou Tidiany Bangoura-Hernández de la Fuente' }],
+		}), { excitementResult: excitement });
+		cy.get('.gd-red-card .gd-play-text').then(([el]: JQuery<HTMLElement>) => {
+			expect(el.scrollWidth, 'no horizontal overflow').to.be.at.most(el.clientWidth);
+			expect(el.getBoundingClientRect().right).to.be.at.most(320);
+		});
+		cy.get('.game-detail-shell').then(([shell]: JQuery<HTMLElement>) => {
+			expect(shell.scrollWidth, 'no sideways scroll').to.be.at.most(shell.clientWidth);
+		});
+	});
+
+	it('is absent for a match with no red card', () => {
+		mountDetail(soccer(), { excitementResult: excitement });
+		cy.get('.gd-play-panel').should('not.exist');
+	});
+
+	it('keeps the heading on one line in every locale', () => {
+		mountDetail(twoCards, { excitementResult: excitement });
+		Object.entries(locales).forEach(([name, locale]) => {
+			cy.get('.gd-play-heading').should(([el]: JQuery<HTMLElement>) => {
+				el.textContent = (locale.detail as Record<string, unknown>).redCardsHeading as string ?? en.detail.redCardsHeading;
+				expect(el.scrollWidth, `no overflow in ${name}`).to.be.at.most(el.clientWidth);
+			});
+		});
 	});
 });

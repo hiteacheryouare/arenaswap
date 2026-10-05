@@ -2,11 +2,13 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { i18n } from '#i18n';
 import type { Browser } from 'wxt/browser';
 import { leagueConfigMap, scoreMaxTotal, sportTypeConfigMap } from '@arenaswap/core/constants';
-import type { Game, LeagueId, PowerScoreResult, PowerScoreSnapshot, ScoreSnapshot, SignalName, TabRegistration } from '@arenaswap/core/types';
+import type { Game, LeagueId, LiveScore, PowerScoreSnapshot, ScoreSnapshot, SignalName, TabRegistration } from '@arenaswap/core/types';
+import type { FantasyRosterEntry } from '@arenaswap/core';
 import DetailHero from './detailHero';
 import DetailPosterHero from './detailPosterHero';
 import DetailStickyBar from './detailStickyBar';
 import DetailTabs from './detailTabs';
+import FantasyPlayersPanel from './fantasyPlayersPanel';
 import type { DetailTab, DetailTabId } from './detailTabs';
 import StandingsTable from './standingsTable';
 import { hasBoxScoreContent } from './boxScoreColumns';
@@ -27,28 +29,32 @@ import ProTip from './proTip';
 import { resolveStatus } from './gameSituation';
 import {
 	buildComponentContributionOption,
+	buildLeadTrackerOption,
 	buildPowerScoreOption,
 	buildTeamScoreOption,
 	buildWinProbabilityOption,
+	contributionSignalIds,
 	darkChartPalette,
 	lightChartPalette,
 } from './gameDetailChartOptions';
 import { resolveChartLineColors, resolveTeamColorPair } from '@arenaswap/ui/src/components/colorUtils';
 import { matchupSurfaceStyle } from '@arenaswap/ui/src/components/gameCardShared';
-import { signalColors } from '@arenaswap/ui/src/components/signalColors';
+import { boostPresentation, isBoostId, isModeSignalId, signalColorOf, signalPresentation } from '@arenaswap/ui/src/components/scoringModeMeta';
 import { useDisplayLocale } from '@arenaswap/ui/src/components/i18nContext';
 import useSwitchCrest from '@arenaswap/ui/src/components/useSwitchCrest';
+import useBasketballPossession from './useBasketballPossession';
+import useBasketballSituation from './useBasketballSituation';
 import useSummaryData from './useSummaryData';
 import { chartHistory, coversWholeGame } from './wrapCoverage';
 import { resolveDecorations, type holidayDecorationPrefs } from '../../../utils/holidayDecorations';
 import { favoriteScoreFlashColors, scorelineOf, type gameScoreline } from '../../../utils/favoriteScoreFlash';
-import { capitalizeReason, translateReason } from '../../../utils/powerScoreReason';
+import { capitalizeReason, speakReason } from '../../../utils/powerScoreReason';
 import type { BettingDisplayPrefs, WeatherDisplayPrefs } from './gameCardTypes';
 import type { ResolvedTheme } from '@arenaswap/core/types';
 
 interface gameDetailViewProps {
 	game: Game;
-	excitementResult: PowerScoreResult | undefined;
+	excitementResult: LiveScore | undefined;
 	scoreHistory: ScoreSnapshot[];
 	powerScoreHistory: PowerScoreSnapshot[];
 	proTipsEnabled: boolean;
@@ -59,6 +65,7 @@ interface gameDetailViewProps {
 	// Demo mode borrows a date so the calendar-gated decorations are reachable in September.
 	decorationDate?: Date;
 	disabledSignals?: readonly SignalName[];
+	fantasyRoster?: readonly FantasyRosterEntry[];
 	// Pre-game only: the setup card and the poster's favourite stars need these. They are
 	// optional so the live screen, and anything mounting it, is unaffected.
 	favoriteTeamIds?: ReadonlySet<string>;
@@ -76,21 +83,17 @@ interface gameDetailViewProps {
 }
 
 const noFavorites: ReadonlySet<string> = new Set();
+const noRoster: readonly FantasyRosterEntry[] = [];
 
 const favoriteFlashMs = 5000;
 
 // The legend and the chart's tooltip print the same names, so a hover reads in the same language
 // as the swatches under it.
-const componentSignalLabels: Record<SignalName, string> = {
-	closeness: i18n.t('detail.legendCloseness'),
-	lateGame: i18n.t('detail.legendLateGame'),
-	momentum: i18n.t('detail.legendMomentum'),
-	leadChanges: i18n.t('detail.legendLeadChanges'),
-	comeback: i18n.t('detail.legendComeback'),
-};
-
-const componentLegendItems = (Object.keys(componentSignalLabels) as SignalName[])
-	.map(signal => ({ label: componentSignalLabels[signal], color: signalColors[signal] }));
+const signalLabel = (id: string): string => (isModeSignalId(id) ? i18n.t(signalPresentation[id].labelKey) : id);
+const boostLabel = (id: string): string => (isBoostId(id) ? i18n.t(boostPresentation[id].labelKey) : id);
+const describeLead = (team: string | undefined, margin: number): string => (
+	team === undefined || margin === 0 ? i18n.t('detail.leadTied') : i18n.t('detail.leadBy', { team, margin })
+);
 
 const gameDetailView = ({
 	game,
@@ -104,6 +107,7 @@ const gameDetailView = ({
 	decorationPrefs,
 	decorationDate,
 	disabledSignals = [],
+	fantasyRoster = noRoster,
 	favoriteTeamIds = noFavorites,
 	openTabs = [],
 	registry = [],
@@ -170,22 +174,32 @@ const gameDetailView = ({
 	const locale = useDisplayLocale();
 	// The scorer writes its reason in English. Another language gets it rebuilt from locale strings,
 	// or not at all when a fragment has no translation; until a score arrives there is nothing to say.
-	const spokenReason = activePowerScore?.reason ? translateReason(activePowerScore.reason, i18n.t, locale ?? 'en') : undefined;
+	const spokenReason = activePowerScore?.reason ? speakReason(activePowerScore, i18n.t, locale ?? 'en') : undefined;
 	const reason = spokenReason ? capitalizeReason(spokenReason, locale ?? 'en') : undefined;
 	// Before the charts, and handed to them: a clash that needs a colour read off a crest lands on a
 	// render with the same `game`, and a chart memoised on `game` alone would keep the old line.
 	useSwitchCrest(game.awayTeam, game.homeTeam);
 	const [awayLineColor, homeLineColor] = resolveChartLineColors(game.awayTeam, game.homeTeam, chartPalette.surface);
 	const powerScoreOption = useMemo(() => (
-		buildPowerScoreOption(orderedPowerScoreHistory, chartPalette, locale)
+		buildPowerScoreOption(orderedPowerScoreHistory, chartPalette, locale, boostLabel)
 	), [orderedPowerScoreHistory, chartPalette, locale]);
 	const scoreTrendOption = useMemo(() => (
 		buildTeamScoreOption(orderedScoreHistory, game, chartPalette, [awayLineColor, homeLineColor], locale)
 	), [orderedScoreHistory, game, chartPalette, awayLineColor, homeLineColor, locale]);
 	const componentOption = useMemo(() => (
-		buildComponentContributionOption(orderedPowerScoreHistory, chartPalette, componentSignalLabels, locale)
+		buildComponentContributionOption(orderedPowerScoreHistory, chartPalette, signalLabel, locale)
 	), [orderedPowerScoreHistory, chartPalette, locale]);
+	const componentLegendItems = useMemo(() => (
+		contributionSignalIds(orderedPowerScoreHistory).map(id => ({ label: signalLabel(id), color: signalColorOf(id) }))
+	), [orderedPowerScoreHistory]);
+	// Only a game Blowouts is scoring gets the lead tracker: the margin is what that mode is about.
+	const scoredModeId = excitementResult?.breakdown?.modeId ?? orderedPowerScoreHistory[orderedPowerScoreHistory.length - 1]?.modeId;
+	const leadTrackerOption = useMemo(() => (
+		scoredModeId === 'blowouts' ? buildLeadTrackerOption(orderedScoreHistory, game, chartPalette, [awayLineColor, homeLineColor], locale, describeLead) : undefined
+	), [scoredModeId, orderedScoreHistory, game, chartPalette, awayLineColor, homeLineColor, locale]);
 	const { winProbability, seriesInfo, records, monoLogos, boxScore, standings, gameDurationMins, matchup, tickets } = useSummaryData(game);
+	const basketballSituation = useBasketballSituation(game);
+	const possession = useBasketballPossession(game);
 	const winProbabilityOption = useMemo(() => (
 		buildWinProbabilityOption(winProbability, game, chartPalette, [awayLineColor, homeLineColor])
 	), [winProbability, game, chartPalette, awayLineColor, homeLineColor]);
@@ -254,6 +268,7 @@ const gameDetailView = ({
 				    value would read as a verdict on the game rather than as the switching signal
 				    it actually was. The boost input goes for the same reason: it can only ever
 				    change a score that will never be computed again. */}
+				<FantasyPlayersPanel game={game} roster={fantasyRoster} boxScore={boxScore} />
 				<GameInfoPanel game={game} bettingPrefs={bettingPrefs} weatherPrefs={weatherPrefs} gameDurationMins={gameDurationMins} />
 			</>
 		) : isPreGame ? (
@@ -269,6 +284,7 @@ const gameDetailView = ({
 					tabAssignEnabled={tabAssignEnabled}
 				/>
 				<PregameStats game={game} />
+				<FantasyPlayersPanel game={game} roster={fantasyRoster} boxScore={boxScore} />
 				<GameInfoPanel game={game} bettingPrefs={bettingPrefs} weatherPrefs={weatherPrefs} tickets={tickets} />
 			</>
 		) : (
@@ -277,6 +293,7 @@ const gameDetailView = ({
 				    the most time-sensitive thing on this screen, and putting it beside the
 				    venue and the networks is what made it read as venue chrome on the card. */}
 				<LatestPlayPanel game={game} awayColor={awayLineColor} homeColor={homeLineColor} />
+				<FantasyPlayersPanel game={game} roster={fantasyRoster} boxScore={boxScore} />
 
 				<PowerScoreBreakdown
 					closeness={closeness}
@@ -297,6 +314,7 @@ const gameDetailView = ({
 					totalLabel={totalLabel}
 					reason={reason}
 					disabledSignals={disabledSignals}
+					breakdown={excitementResult?.breakdown}
 				/>
 
 				<GameBoostInput gameId={game.id} currentBoost={currentBoost} onSetGameBoost={onSetGameBoost} />
@@ -313,6 +331,10 @@ const gameDetailView = ({
 
 		{chartsCoverGame && orderedScoreHistory.length > 0 && (
 			<GameDetailChart title={i18n.t('detail.chartScoreTitle')} option={scoreTrendOption} legendItems={teamLegendItems} />
+		)}
+
+		{chartsCoverGame && leadTrackerOption && orderedScoreHistory.length > 0 && (
+			<GameDetailChart title={i18n.t('detail.chartLeadTitle')} option={leadTrackerOption} legendItems={teamLegendItems} />
 		)}
 
 		{winProbability.length > 0 && (
@@ -383,6 +405,8 @@ const gameDetailView = ({
 						heroStyle={heroStyle}
 						awayColor={awayAccent}
 						homeColor={homeAccent}
+						basketballSituation={basketballSituation}
+						possession={possession}
 					/>
 				)}
 			</div>

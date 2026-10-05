@@ -246,11 +246,11 @@ describe('Matchup tab', () => {
 		it('links this game\'s seller page without the referral tag, priced from the lowest seat', () => {
 			cy.mount(detailView(baseball));
 			cy.get('.game-info-link')
-				.should('have.text', en.detail.ticketsCta)
+				.should('have.text', en.detail.ticketsFrom.replace('{price}', (34).toLocaleString([], { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })))
 				.and('have.attr', 'target', '_blank')
 				.and('have.attr', 'rel', 'noopener noreferrer')
 				.and('have.attr', 'href', 'https://www.vividseats.com/new-york-mets-tickets');
-			cy.get('.game-info-price').should('have.text', en.detail.ticketsFrom.replace('{price}', (34).toLocaleString([], { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })));
+			cy.get('.game-info-row:has(.game-info-link) .game-info-label').should('have.text', en.detail.infoTickets);
 		});
 
 		it('is not offered once the game is under way', () => {

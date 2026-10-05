@@ -2,7 +2,7 @@
 title: ArenaSwap settings reference
 description: Every setting in the ArenaSwap popup, grouped the way the popup itself groups them, with its default value and its full range.
 section: extension
-order: 6
+order: 7
 navLabel: Settings
 ---
 
@@ -20,15 +20,16 @@ Settings live behind the gear icon in the popup's top bar, grouped into six cate
 
 | Setting | Default | Range | What it does |
 | --- | --- | --- | --- |
-| Closeness | On | On/off | Whether the Closeness signal contributes to PowerScore. |
-| Late-game | On | On/off | Whether the Late-game signal contributes to PowerScore. |
-| Momentum | On | On/off | Whether the Momentum signal contributes to PowerScore. |
-| Lead changes | On | On/off | Whether the Lead changes signal contributes to PowerScore. |
-| Comeback | On | On/off | Whether the Comeback signal contributes to PowerScore. |
-| Favorite team bonus | 10 | 0 or higher | Points added once for each favorited team in a game. Doubled when both teams are favorited. |
-| Postseason boost | 5 | 0 or higher | Points added to every game classified as postseason: playoffs, tournaments, and knockout rounds. |
+| Scoring mode | Classic | Classic, Blowouts, Fantasy, or Custom | Which question PowerScore asks of every game. Classic looks for the closest, tensest game. Blowouts looks for a team running away with it. Fantasy looks for the game your rostered players are in. Custom picks one of the three for each league. |
+| Mode for each league | Classic | Classic, Blowouts, or Fantasy, per league | Only used when the scoring mode is Custom. A league you leave alone scores as Classic. |
+| Signals | All on | On/off for each signal in the mode | Whether a signal contributes to the score. Each mode keeps its own list: Classic's are Closeness, Late-game, Momentum, Lead changes, and Comeback. Blowouts' are Blowout margin, Sustained, Timing, and Pile-on. Fantasy's are Situation, Production, and Exposure. You only see the lists for modes you're using. |
+| Fantasy blend | 60% | 0 to 100% | How much of your players' Fantasy score is added on top of Classic. 0 is pure Classic. 100 adds the full Fantasy score. Only used when a game is scored in Fantasy. |
+| Fantasy roster | Empty | Up to 50 players | The players Fantasy follows. Add them by searching their name. Covers the NFL, NBA, WNBA, MLB, and NHL. |
+| Fantasy scoring rules | The usual defaults for each sport | Each rule has its own minimum and maximum | How many fantasy points each stat is worth, for football, basketball, baseball, and hockey. Only the rules you change are saved. |
+| Favorite team bonus | 10 | 0 or higher | Points added once for each favorited team in a game. Doubled when both teams are favorited. Applies in every mode. |
+| Postseason boost | 8 | 0 or higher | The most a title-deciding game can add. Earlier rounds add a share of it: 75% for a semifinal, 50% for a quarterfinal, and 25% for anything before that. Applies in every mode except Blowouts, where a settled result is not worth chasing. |
 
-At least one signal has to stay on. If a signal is off, ArenaSwap re-normalizes the rest so the total still spans the full 0–100 range. See the [PowerScore page](/arenaswap/powerscore/) for how each signal is calculated.
+At least one signal has to stay on in a mode. If a signal is off, ArenaSwap re-normalizes the rest so the total still spans the full 0 to 100 range. Fantasy only has something to say about a game with one of your players in it. Every other game is scored as Classic. [How to change what ArenaSwap looks for in a game](/arenaswap/docs/extension/scoring-modes/) covers the modes and the roster. See the [PowerScore page](/arenaswap/powerscore/) for how each signal is calculated.
 
 ## Leagues
 
@@ -68,6 +69,7 @@ At least one signal has to stay on. If a signal is off, ArenaSwap re-normalizes 
 ## Related
 
 - [How to control when ArenaSwap switches tabs](/arenaswap/docs/extension/switching-and-sensitivity/) covers what to do with the Switching settings.
+- [How to change what ArenaSwap looks for in a game](/arenaswap/docs/extension/scoring-modes/) covers the scoring modes, the Fantasy roster, and its scoring rules.
 - [How to set favorite teams in ArenaSwap](/arenaswap/docs/extension/favorite-teams/) covers where the favorite team bonus comes from.
 - [How to set up Standby Stream](/arenaswap/docs/extension/standby-stream/) covers the fallback tab and its threshold.
 - [Try ArenaSwap with Demo mode](/arenaswap/docs/extension/demo-mode/) covers the scripted games and how they behave.

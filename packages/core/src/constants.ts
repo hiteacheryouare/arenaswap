@@ -1,7 +1,8 @@
 import pkg from '../package.json';
 import { normalizeCollegeFilters } from './college';
 export * from './college';
-import type { FinishedTabAction, Game, LeagueId, SignalName, SportType, ResolvedTheme, ThemePreference, UserPreferences } from './types';
+import type { BuiltInModeId, FinishedTabAction, Game, LeagueId, ScoringModeChoice, SignalName, SportType, ResolvedTheme, ThemePreference, UserPreferences } from './types';
+import type { FantasyRule, FantasySport } from 'powerscore';
 import {
 	allLeagueIds,
 	stallPenaltySteps,
@@ -18,6 +19,8 @@ import {
 	sportTypeConfigMap,
 	leagueConfigs,
 	leagueConfigMap,
+	builtInModes,
+	defaultFantasyScoring,
 } from 'powerscore';
 
 export {
@@ -133,6 +136,8 @@ export const defaultFavoriteTeamBonusPoints = 10;
 // gives 2/4/6/8 and every rung lands a whole point clear of the one below. At the previous default
 // of 5 the bottom two rungs rounded onto 1 and 3, which is most of the ladder inside two points.
 export const defaultPostseasonBoostPoints = 8;
+// Fantasy's share of its blend with Classic, the analyst's default.
+export const defaultFantasyBlend = 60;
 export const defaultUpcomingGamesDays = 7;
 export const upcomingGamesDaysMin = 1;
 export const upcomingGamesDaysMax = 14;
@@ -249,7 +254,7 @@ export const teamLogoOnColor = (logo: string | undefined): string | undefined =>
 	logo?.replace(/(\/i\/teamlogos\/[^/]+)\/500\//, '$1/500-dark/')
 );
 
-const isLeagueId = (value: unknown): value is LeagueId => (
+export const isLeagueId = (value: unknown): value is LeagueId => (
 	typeof value === 'string' && allLeagueIds.includes(value as LeagueId)
 );
 
@@ -411,6 +416,11 @@ export const createDefaultUserPreferences = (): UserPreferences => ({
 	postseasonBoostPoints: defaultPostseasonBoostPoints,
 	upcomingGamesDays: defaultUpcomingGamesDays,
 	disabledSignals: [],
+	scoringMode: 'classic' as const,
+	leagueModes: {},
+	modeDisabledSignals: {},
+	fantasyBlend: defaultFantasyBlend,
+	fantasyScoring: {},
 	collegeFilters: {},
 });
 
@@ -428,6 +438,45 @@ const normalizeFinishedTabAction = (value: unknown): FinishedTabAction => (
 const normalizeTheme = (value: unknown): ThemePreference => (
 	value === 'light' || value === 'system' ? value : 'dark'
 );
+
+const builtInModeIds: readonly BuiltInModeId[] = ['classic', 'blowouts', 'fantasy'];
+const isBuiltInModeId = (value: unknown): value is BuiltInModeId => builtInModeIds.includes(value as BuiltInModeId);
+
+const normalizeScoringMode = (value: unknown): ScoringModeChoice => (isBuiltInModeId(value) || value === 'custom' ? value : 'classic');
+
+const normalizeLeagueModes = (value: unknown): UserPreferences['leagueModes'] => {
+	if (!value || typeof value !== 'object') return {};
+	return Object.fromEntries(Object.entries(value).filter(([league, mode]) => isLeagueId(league) && isBuiltInModeId(mode)));
+};
+
+// Signal ids are checked against the mode that declares them, so a renamed signal can't linger.
+const normalizeModeDisabledSignals = (value: unknown): UserPreferences['modeDisabledSignals'] => {
+	if (!value || typeof value !== 'object') return {};
+	const result: UserPreferences['modeDisabledSignals'] = {};
+	for (const mode of ['blowouts', 'fantasy'] as const) {
+		const stored = (value as Record<string, unknown>)[mode];
+		if (!Array.isArray(stored)) continue;
+		const known = new Set(builtInModes[mode].signals.map(signal => signal.id));
+		const kept = [...new Set(stored.filter((id): id is string => typeof id === 'string' && known.has(id)))];
+		// Every signal off would switch none off, so a list like that is dropped rather than stored.
+		if (kept.length > 0 && kept.length < known.size) result[mode] = kept;
+	}
+	return result;
+};
+
+const normalizeFantasyScoring = (value: unknown): UserPreferences['fantasyScoring'] => {
+	if (!value || typeof value !== 'object') return {};
+	const result: UserPreferences['fantasyScoring'] = {};
+	for (const [sport, rules] of Object.entries(defaultFantasyScoring) as [FantasySport, Record<string, FantasyRule>][]) {
+		const stored = (value as Record<string, unknown>)[sport];
+		if (!stored || typeof stored !== 'object') continue;
+		const kept = Object.fromEntries(Object.entries(stored).filter(([key, points]) => (
+			rules[key] !== undefined && typeof points === 'number' && Number.isFinite(points) && points >= rules[key].min && points <= rules[key].max
+		)));
+		if (Object.keys(kept).length > 0) result[sport] = kept;
+	}
+	return result;
+};
 
 export const normalizeUserPreferences = (storedPrefs: unknown): UserPreferences => {
 	const defaults = createDefaultUserPreferences();
@@ -479,6 +528,13 @@ export const normalizeUserPreferences = (storedPrefs: unknown): UserPreferences 
 		disabledSignals: Array.isArray(candidate.disabledSignals)
 			? (candidate.disabledSignals as unknown[]).filter((s): s is SignalName => allSignalNames.includes(s as SignalName))
 			: defaults.disabledSignals,
+		scoringMode: normalizeScoringMode(candidate.scoringMode),
+		leagueModes: normalizeLeagueModes(candidate.leagueModes),
+		modeDisabledSignals: normalizeModeDisabledSignals(candidate.modeDisabledSignals),
+		fantasyBlend: typeof candidate.fantasyBlend === 'number' && Number.isFinite(candidate.fantasyBlend)
+			? Math.max(0, Math.min(100, Math.round(candidate.fantasyBlend)))
+			: defaults.fantasyBlend,
+		fantasyScoring: normalizeFantasyScoring(candidate.fantasyScoring),
 		collegeFilters: normalizeCollegeFilters(candidate.collegeFilters),
 	};
 };

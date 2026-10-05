@@ -1,0 +1,1185 @@
+{
+	"slate": "2026-10-04-d",
+	"labeller": "analyst",
+	"moments": [
+		{
+			"ts": "2026-10-04T04:00:54.375Z",
+			"flipTo": "401908002",
+			"acceptable": [],
+			"level": 3,
+			"note": "Playoff, down one, tying run on first, top 9"
+		},
+		{
+			"ts": "2026-10-04T04:01:54.816Z",
+			"flipTo": "401908002",
+			"acceptable": [],
+			"level": 3,
+			"note": "Playoff one-run game, tying run on, one out"
+		},
+		{
+			"ts": "2026-10-04T04:02:55.128Z",
+			"flipTo": "401908002",
+			"acceptable": [],
+			"level": 3,
+			"note": "Playoff one-run game, tying run on, one out"
+		},
+		{
+			"ts": "2026-10-04T04:03:47.057Z",
+			"flipTo": "401908002",
+			"acceptable": [],
+			"level": 3,
+			"note": "Playoff one-run game, tying run on, one out"
+		},
+		{
+			"ts": "2026-10-04T04:08:37.564Z",
+			"flipTo": "401908002",
+			"acceptable": [],
+			"level": 3,
+			"note": "Top 9 one-run game; feed looks stale"
+		},
+		{
+			"ts": "2026-10-04T04:24:48.474Z",
+			"flipTo": "401892440",
+			"acceptable": [],
+			"level": 2,
+			"note": "Tied third period; nothing at level 3"
+		},
+		{
+			"ts": "2026-10-04T04:25:49.087Z",
+			"flipTo": "401892440",
+			"acceptable": [
+				"401892441"
+			],
+			"level": 2,
+			"note": "Tied third beats one-goal third on margin"
+		},
+		{
+			"ts": "2026-10-04T04:26:49.529Z",
+			"flipTo": "401892440",
+			"acceptable": [
+				"401892441"
+			],
+			"level": 2,
+			"note": "Tied third beats one-goal third on margin"
+		},
+		{
+			"ts": "2026-10-04T04:27:49.988Z",
+			"flipTo": "401892440",
+			"acceptable": [
+				"401892441"
+			],
+			"level": 2,
+			"note": "Tied third beats one-goal third on margin"
+		},
+		{
+			"ts": "2026-10-04T04:28:50.458Z",
+			"flipTo": "401892440",
+			"acceptable": [
+				"401892441"
+			],
+			"level": 2,
+			"note": "Tied third beats one-goal third on margin"
+		},
+		{
+			"ts": "2026-10-04T04:29:50.946Z",
+			"flipTo": "401892440",
+			"acceptable": [
+				"401892441"
+			],
+			"level": 2,
+			"note": "Tied third beats one-goal third on margin"
+		},
+		{
+			"ts": "2026-10-04T04:30:51.432Z",
+			"flipTo": "401892440",
+			"acceptable": [
+				"401892441"
+			],
+			"level": 2,
+			"note": "Tied third beats one-goal third on margin"
+		},
+		{
+			"ts": "2026-10-04T04:31:51.901Z",
+			"flipTo": "401892440",
+			"acceptable": [
+				"401892441"
+			],
+			"level": 2,
+			"note": "Tied third beats one-goal third on margin"
+		},
+		{
+			"ts": "2026-10-04T04:32:52.309Z",
+			"flipTo": "401892440",
+			"acceptable": [
+				"401892441"
+			],
+			"level": 2,
+			"note": "Tied third beats one-goal third on margin"
+		},
+		{
+			"ts": "2026-10-04T04:33:52.774Z",
+			"flipTo": "401892440",
+			"acceptable": [
+				"401892441"
+			],
+			"level": 2,
+			"note": "Tied third beats one-goal third on margin"
+		},
+		{
+			"ts": "2026-10-04T04:34:53.366Z",
+			"flipTo": "401892440",
+			"acceptable": [
+				"401892441"
+			],
+			"level": 2,
+			"note": "Tied third beats one-goal third on margin"
+		},
+		{
+			"ts": "2026-10-04T04:35:53.856Z",
+			"flipTo": "401892441",
+			"acceptable": [
+				"401892440"
+			],
+			"level": 2,
+			"note": "One-goal third at 5:00; tied clock stuck"
+		},
+		{
+			"ts": "2026-10-04T04:36:54.397Z",
+			"flipTo": "401892441",
+			"acceptable": [
+				"401892440"
+			],
+			"level": 2,
+			"note": "Tied at 4:51, less time than the other"
+		},
+		{
+			"ts": "2026-10-04T04:37:54.833Z",
+			"flipTo": "401892441",
+			"acceptable": [
+				"401892440"
+			],
+			"level": 2,
+			"note": "Tied, 4:12 left in the third"
+		},
+		{
+			"ts": "2026-10-04T04:38:55.391Z",
+			"flipTo": "401892441",
+			"acceptable": [
+				"401892440"
+			],
+			"level": 2,
+			"note": "Tied, 3:28 left in the third"
+		},
+		{
+			"ts": "2026-10-04T04:39:55.879Z",
+			"flipTo": "401892441",
+			"acceptable": [],
+			"level": 3,
+			"note": "Tied, 2:52 left in the third"
+		},
+		{
+			"ts": "2026-10-04T04:40:56.288Z",
+			"flipTo": "401892441",
+			"acceptable": [],
+			"level": 3,
+			"note": "Tied, 1:58 left in the third"
+		},
+		{
+			"ts": "2026-10-04T04:41:56.695Z",
+			"flipTo": "401892441",
+			"acceptable": [],
+			"level": 3,
+			"note": "Tied, 0:53 left in the third"
+		},
+		{
+			"ts": "2026-10-04T04:42:57.091Z",
+			"flipTo": "401892440",
+			"acceptable": [
+				"401892441"
+			],
+			"level": 2,
+			"note": "Pre-overtime gap elsewhere; one-goal third at 7:14"
+		},
+		{
+			"ts": "2026-10-04T04:43:57.580Z",
+			"flipTo": "401892440",
+			"acceptable": [],
+			"level": 2,
+			"note": "Overtime intermission elsewhere; one-goal third"
+		},
+		{
+			"ts": "2026-10-04T04:44:58.069Z",
+			"flipTo": "401892441",
+			"acceptable": [],
+			"level": 3,
+			"note": "Overtime starting, tied"
+		},
+		{
+			"ts": "2026-10-04T04:45:58.522Z",
+			"flipTo": "401892441",
+			"acceptable": [],
+			"level": 3,
+			"note": "Overtime, tied"
+		},
+		{
+			"ts": "2026-10-04T04:46:58.937Z",
+			"flipTo": "401892441",
+			"acceptable": [],
+			"level": 3,
+			"note": "Overtime, tied"
+		},
+		{
+			"ts": "2026-10-04T04:47:59.602Z",
+			"flipTo": "401892441",
+			"acceptable": [],
+			"level": 3,
+			"note": "Overtime, tied"
+		},
+		{
+			"ts": "2026-10-04T04:48:59.349Z",
+			"flipTo": "401892441",
+			"acceptable": [],
+			"level": 3,
+			"note": "Overtime, tied"
+		},
+		{
+			"ts": "2026-10-04T04:49:59.693Z",
+			"flipTo": "401892440",
+			"acceptable": [],
+			"level": 2,
+			"note": "Overtime goal ended it; one-goal third at 4:02"
+		},
+		{
+			"ts": "2026-10-04T04:50:59.717Z",
+			"flipTo": "401892440",
+			"acceptable": [],
+			"level": 2,
+			"note": "One-goal third under 4:00, no level 3"
+		},
+		{
+			"ts": "2026-10-04T04:51:46.177Z",
+			"flipTo": "401892440",
+			"acceptable": [],
+			"level": 2,
+			"note": "One-goal third under 4:00, no level 3"
+		},
+		{
+			"ts": "2026-10-04T04:52:46.691Z",
+			"flipTo": "401892440",
+			"acceptable": [],
+			"level": 2,
+			"note": "One-goal third under 4:00, no level 3"
+		},
+		{
+			"ts": "2026-10-04T04:53:47.162Z",
+			"flipTo": "401892440",
+			"acceptable": [
+				"401904702"
+			],
+			"level": 2,
+			"note": "One-goal third at 3:27 beats one at 15:43"
+		},
+		{
+			"ts": "2026-10-04T04:54:47.613Z",
+			"flipTo": "401904702",
+			"acceptable": [
+				"401892440"
+			],
+			"level": 2,
+			"note": "One-goal third beats a two-goal deficit"
+		},
+		{
+			"ts": "2026-10-04T04:55:48.104Z",
+			"flipTo": "401904702",
+			"acceptable": [
+				"401892440"
+			],
+			"level": 2,
+			"note": "One-goal third beats a two-goal deficit"
+		},
+		{
+			"ts": "2026-10-04T04:56:48.500Z",
+			"flipTo": "401904702",
+			"acceptable": [],
+			"level": 2,
+			"note": "One-goal third period, nothing closer"
+		},
+		{
+			"ts": "2026-10-04T04:57:48.924Z",
+			"flipTo": "401904702",
+			"acceptable": [],
+			"level": 2,
+			"note": "One-goal third period, nothing closer"
+		},
+		{
+			"ts": "2026-10-04T04:58:49.489Z",
+			"flipTo": "401904702",
+			"acceptable": [],
+			"level": 2,
+			"note": "One-goal third period, nothing closer"
+		},
+		{
+			"ts": "2026-10-04T04:59:49.886Z",
+			"flipTo": "401904702",
+			"acceptable": [],
+			"level": 2,
+			"note": "One-goal third period, nothing closer"
+		},
+		{
+			"ts": "2026-10-04T05:00:50.292Z",
+			"flipTo": "401904702",
+			"acceptable": [],
+			"level": 2,
+			"note": "One-goal third period, nothing closer"
+		},
+		{
+			"ts": "2026-10-04T05:01:50.784Z",
+			"flipTo": "401904702",
+			"acceptable": [],
+			"level": 2,
+			"note": "One-goal third period, nothing closer"
+		},
+		{
+			"ts": "2026-10-04T05:02:51.221Z",
+			"flipTo": "401904702",
+			"acceptable": [],
+			"level": 2,
+			"note": "One-goal third period, nothing closer"
+		},
+		{
+			"ts": "2026-10-04T05:03:51.722Z",
+			"flipTo": "401904702",
+			"acceptable": [],
+			"level": 2,
+			"note": "One-goal third period, nothing closer"
+		},
+		{
+			"ts": "2026-10-04T05:04:52.220Z",
+			"flipTo": "401904702",
+			"acceptable": [],
+			"level": 2,
+			"note": "One-goal third period, nothing closer"
+		},
+		{
+			"ts": "2026-10-04T05:05:52.616Z",
+			"flipTo": "401904702",
+			"acceptable": [],
+			"level": 2,
+			"note": "One-goal third period, nothing closer"
+		},
+		{
+			"ts": "2026-10-04T05:06:53.097Z",
+			"flipTo": "401904702",
+			"acceptable": [],
+			"level": 2,
+			"note": "One-goal third period, nothing closer"
+		},
+		{
+			"ts": "2026-10-04T05:07:53.562Z",
+			"flipTo": "401904702",
+			"acceptable": [],
+			"level": 2,
+			"note": "One-goal third period, nothing closer"
+		},
+		{
+			"ts": "2026-10-04T05:08:54.157Z",
+			"flipTo": "401904702",
+			"acceptable": [],
+			"level": 2,
+			"note": "One-goal third period, nothing closer"
+		},
+		{
+			"ts": "2026-10-04T05:09:54.630Z",
+			"flipTo": "401904702",
+			"acceptable": [
+				"401860900"
+			],
+			"level": 1,
+			"note": "Two-goal third edges down 7 in the third"
+		},
+		{
+			"ts": "2026-10-04T05:10:55.022Z",
+			"flipTo": "401904702",
+			"acceptable": [
+				"401860900"
+			],
+			"level": 1,
+			"note": "Two-goal third edges down 7 in the third"
+		},
+		{
+			"ts": "2026-10-04T05:11:55.486Z",
+			"flipTo": "401904702",
+			"acceptable": [
+				"401860900"
+			],
+			"level": 1,
+			"note": "Two-goal third edges down 7 in the third"
+		},
+		{
+			"ts": "2026-10-04T05:12:55.884Z",
+			"flipTo": "401904702",
+			"acceptable": [
+				"401860900"
+			],
+			"level": 1,
+			"note": "Two-goal third edges down 7 in the third"
+		},
+		{
+			"ts": "2026-10-04T05:13:56.338Z",
+			"flipTo": "401904702",
+			"acceptable": [
+				"401860900"
+			],
+			"level": 1,
+			"note": "Two-goal third edges down 7 in the third"
+		},
+		{
+			"ts": "2026-10-04T05:14:56.818Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 2,
+			"note": "Down 7 in the fourth, driving"
+		},
+		{
+			"ts": "2026-10-04T05:15:57.311Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 2,
+			"note": "Down 7 in the fourth, driving"
+		},
+		{
+			"ts": "2026-10-04T05:16:57.731Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 2,
+			"note": "Down 7 in the fourth, driving"
+		},
+		{
+			"ts": "2026-10-04T05:17:58.244Z",
+			"flipTo": "401904702",
+			"acceptable": [
+				"401860900"
+			],
+			"level": 2,
+			"note": "Down two under 3:00 edges down 7 on margin"
+		},
+		{
+			"ts": "2026-10-04T05:18:58.650Z",
+			"flipTo": "401904702",
+			"acceptable": [
+				"401860900"
+			],
+			"level": 2,
+			"note": "Down two under 3:00 edges down 7 on margin"
+		},
+		{
+			"ts": "2026-10-04T05:19:59.074Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 3,
+			"note": "Down 7, fourth and 9 at the 27"
+		},
+		{
+			"ts": "2026-10-04T05:20:59.502Z",
+			"flipTo": "401860900",
+			"acceptable": [
+				"401904702"
+			],
+			"level": 2,
+			"note": "Field goal cuts it to 4, kicking off"
+		},
+		{
+			"ts": "2026-10-04T05:21:59.951Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 2,
+			"note": "Down 4, kickoff pending, 12:13 left"
+		},
+		{
+			"ts": "2026-10-04T05:22:59.296Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 2,
+			"note": "Down 4, kickoff pending, 12:13 left"
+		},
+		{
+			"ts": "2026-10-04T05:23:59.684Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 2,
+			"note": "Down 4, kickoff pending, 12:13 left"
+		},
+		{
+			"ts": "2026-10-04T05:24:46.146Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 2,
+			"note": "Up 4, leader has the ball, 12:03"
+		},
+		{
+			"ts": "2026-10-04T05:25:46.539Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 2,
+			"note": "Leader punting on fourth and 7"
+		},
+		{
+			"ts": "2026-10-04T05:26:46.984Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 2,
+			"note": "Down 4, driving, over 4:00 left"
+		},
+		{
+			"ts": "2026-10-04T05:27:47.576Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 2,
+			"note": "Down 4, driving, over 4:00 left"
+		},
+		{
+			"ts": "2026-10-04T05:28:47.985Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 2,
+			"note": "Down 4, driving, over 4:00 left"
+		},
+		{
+			"ts": "2026-10-04T05:29:48.380Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 2,
+			"note": "Down 4, driving, over 4:00 left"
+		},
+		{
+			"ts": "2026-10-04T05:30:48.861Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 2,
+			"note": "Down 4, driving, over 4:00 left"
+		},
+		{
+			"ts": "2026-10-04T05:31:49.409Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 2,
+			"note": "Down 4, driving, over 4:00 left"
+		},
+		{
+			"ts": "2026-10-04T05:32:50.022Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 2,
+			"note": "Down 4, driving, over 4:00 left"
+		},
+		{
+			"ts": "2026-10-04T05:33:50.482Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 2,
+			"note": "Down 4, driving, over 4:00 left"
+		},
+		{
+			"ts": "2026-10-04T05:34:50.888Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 2,
+			"note": "Down 4, driving, over 4:00 left"
+		},
+		{
+			"ts": "2026-10-04T05:35:51.333Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 2,
+			"note": "Down 4, driving, over 4:00 left"
+		},
+		{
+			"ts": "2026-10-04T05:36:51.975Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 3,
+			"note": "Down 4, first and 10 at the 17"
+		},
+		{
+			"ts": "2026-10-04T05:37:52.576Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 3,
+			"note": "Down 4, first and goal at the 4"
+		},
+		{
+			"ts": "2026-10-04T05:38:53.035Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 3,
+			"note": "Down 4, second and goal at the 8"
+		},
+		{
+			"ts": "2026-10-04T05:39:53.509Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 3,
+			"note": "Down 4, fourth and 2 at the 2"
+		},
+		{
+			"ts": "2026-10-04T05:40:53.957Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 2,
+			"note": "Stopped on downs; leader pinned at own 1"
+		},
+		{
+			"ts": "2026-10-04T05:41:54.530Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 2,
+			"note": "Stopped on downs; leader pinned at own 1"
+		},
+		{
+			"ts": "2026-10-04T05:42:55.062Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 2,
+			"note": "Stopped on downs; leader pinned at own 1"
+		},
+		{
+			"ts": "2026-10-04T05:43:55.552Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 2,
+			"note": "Stopped on downs; leader pinned at own 1"
+		},
+		{
+			"ts": "2026-10-04T05:44:56.023Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 2,
+			"note": "Stopped on downs; leader pinned at own 1"
+		},
+		{
+			"ts": "2026-10-04T05:45:56.478Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 2,
+			"note": "Stopped on downs; leader pinned at own 1"
+		},
+		{
+			"ts": "2026-10-04T05:46:56.892Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 2,
+			"note": "Stopped on downs; leader pinned at own 1"
+		},
+		{
+			"ts": "2026-10-04T05:47:57.304Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 2,
+			"note": "Stopped on downs; leader pinned at own 1"
+		},
+		{
+			"ts": "2026-10-04T05:48:57.729Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 2,
+			"note": "Safety; down 2, free kick coming at 3:02"
+		},
+		{
+			"ts": "2026-10-04T05:49:58.122Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 3,
+			"note": "Down 2, own 30, 2:55 left"
+		},
+		{
+			"ts": "2026-10-04T05:50:58.598Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 2,
+			"note": "Defensive score, down 8, try pending"
+		},
+		{
+			"ts": "2026-10-04T05:51:59.164Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 2,
+			"note": "Down 9, kickoff pending at 2:47"
+		},
+		{
+			"ts": "2026-10-04T05:52:59.640Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 2,
+			"note": "Down 9, kickoff pending at 2:47"
+		},
+		{
+			"ts": "2026-10-04T05:53:57.045Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 2,
+			"note": "Down 9, kickoff pending at 2:47"
+		},
+		{
+			"ts": "2026-10-04T05:54:57.509Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 2,
+			"note": "Down 9, driving, under 3:00"
+		},
+		{
+			"ts": "2026-10-04T05:55:57.938Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 2,
+			"note": "Down 9, driving, under 3:00"
+		},
+		{
+			"ts": "2026-10-04T05:56:58.480Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 2,
+			"note": "Down 9 at the two-minute warning"
+		},
+		{
+			"ts": "2026-10-04T05:57:58.935Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 2,
+			"note": "Down 9 at the two-minute warning"
+		},
+		{
+			"ts": "2026-10-04T05:58:59.452Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 2,
+			"note": "Down 9 at the two-minute warning"
+		},
+		{
+			"ts": "2026-10-04T05:59:59.856Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 2,
+			"note": "Down 9 at the two-minute warning"
+		},
+		{
+			"ts": "2026-10-04T06:00:48.450Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 3,
+			"note": "Touchdown, down 2, try to tie pending"
+		},
+		{
+			"ts": "2026-10-04T06:01:48.941Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 3,
+			"note": "Down 2, kicking off at 1:54, onside likely"
+		},
+		{
+			"ts": "2026-10-04T06:02:49.421Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 3,
+			"note": "Down 2, kickoff pending at 1:51"
+		},
+		{
+			"ts": "2026-10-04T06:03:49.943Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 3,
+			"note": "Kickoff over, possession missing; carried one snapshot"
+		},
+		{
+			"ts": "2026-10-04T06:04:50.397Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 2,
+			"note": "Down 2 under 2:00, possessor not shown"
+		},
+		{
+			"ts": "2026-10-04T06:05:50.810Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 2,
+			"note": "Down 2 under 2:00, possessor not shown"
+		},
+		{
+			"ts": "2026-10-04T06:06:51.349Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 3,
+			"note": "Leader on fourth and 3 at 1:35"
+		},
+		{
+			"ts": "2026-10-04T06:07:51.890Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 3,
+			"note": "Fourth-down play stalled, clock frozen at 1:35"
+		},
+		{
+			"ts": "2026-10-04T06:08:52.367Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 3,
+			"note": "Down 2, ball at own 6, 1:26"
+		},
+		{
+			"ts": "2026-10-04T06:09:52.776Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 3,
+			"note": "Down 2, own 25, 1:05 left"
+		},
+		{
+			"ts": "2026-10-04T06:10:53.294Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 3,
+			"note": "Down 2, second and 10, 0:54"
+		},
+		{
+			"ts": "2026-10-04T06:11:53.695Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 3,
+			"note": "Down 2, fourth and 6, 0:31"
+		},
+		{
+			"ts": "2026-10-04T06:12:54.194Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 3,
+			"note": "Fourth down stalled at 0:31"
+		},
+		{
+			"ts": "2026-10-04T06:13:54.720Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 3,
+			"note": "Converted; down 2 at the 44, 0:15"
+		},
+		{
+			"ts": "2026-10-04T06:14:55.274Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 3,
+			"note": "Clock 0:00 but not final, fourth down"
+		},
+		{
+			"ts": "2026-10-04T06:15:55.714Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 3,
+			"note": "One second restored, last play coming"
+		},
+		{
+			"ts": "2026-10-04T06:16:56.142Z",
+			"flipTo": "401860900",
+			"acceptable": [],
+			"level": 3,
+			"note": "Last play pending at 0:01"
+		},
+		{
+			"ts": "2026-10-04T06:17:56.586Z",
+			"flipTo": "401864513",
+			"acceptable": [],
+			"level": 1,
+			"note": "Up 8 in the third; everything else decided"
+		},
+		{
+			"ts": "2026-10-04T06:18:57.000Z",
+			"flipTo": "401864513",
+			"acceptable": [],
+			"level": 1,
+			"note": "Down 2 after a touchdown, third quarter"
+		},
+		{
+			"ts": "2026-10-04T06:19:57.490Z",
+			"flipTo": "401864513",
+			"acceptable": [],
+			"level": 1,
+			"note": "One-point game, third quarter kickoff"
+		},
+		{
+			"ts": "2026-10-04T06:20:57.913Z",
+			"flipTo": "401864513",
+			"acceptable": [],
+			"level": 1,
+			"note": "One-point game, third quarter kickoff"
+		},
+		{
+			"ts": "2026-10-04T06:21:58.413Z",
+			"flipTo": "401864513",
+			"acceptable": [],
+			"level": 1,
+			"note": "One-point game, third quarter kickoff"
+		},
+		{
+			"ts": "2026-10-04T06:22:58.947Z",
+			"flipTo": "401864513",
+			"acceptable": [],
+			"level": 1,
+			"note": "One-point game, leader driving late third"
+		},
+		{
+			"ts": "2026-10-04T06:23:59.397Z",
+			"flipTo": "401864513",
+			"acceptable": [],
+			"level": 1,
+			"note": "One-point game, leader driving late third"
+		},
+		{
+			"ts": "2026-10-04T06:24:59.795Z",
+			"flipTo": "401864513",
+			"acceptable": [],
+			"level": 1,
+			"note": "One-point game, leader driving late third"
+		},
+		{
+			"ts": "2026-10-04T06:25:56.305Z",
+			"flipTo": "401864513",
+			"acceptable": [],
+			"level": 1,
+			"note": "Four-point game, end of third"
+		},
+		{
+			"ts": "2026-10-04T06:26:56.711Z",
+			"flipTo": "401864513",
+			"acceptable": [],
+			"level": 1,
+			"note": "Four-point game, end of third"
+		},
+		{
+			"ts": "2026-10-04T06:27:57.176Z",
+			"flipTo": "401864513",
+			"acceptable": [],
+			"level": 1,
+			"note": "Four-point game, end of third"
+		},
+		{
+			"ts": "2026-10-04T06:28:57.609Z",
+			"flipTo": "401864513",
+			"acceptable": [],
+			"level": 1,
+			"note": "Four-point game, end of third"
+		},
+		{
+			"ts": "2026-10-04T06:29:58.047Z",
+			"flipTo": "401864513",
+			"acceptable": [],
+			"level": 1,
+			"note": "Four-point game, end of third"
+		},
+		{
+			"ts": "2026-10-04T06:30:58.467Z",
+			"flipTo": "401864513",
+			"acceptable": [],
+			"level": 1,
+			"note": "Clock jumped back; still the third"
+		},
+		{
+			"ts": "2026-10-04T06:31:58.879Z",
+			"flipTo": "401864513",
+			"acceptable": [],
+			"level": 1,
+			"note": "Clock jumped back; still the third"
+		},
+		{
+			"ts": "2026-10-04T06:32:59.348Z",
+			"flipTo": "401864513",
+			"acceptable": [],
+			"level": 2,
+			"note": "Down 4 in the fourth, driving"
+		},
+		{
+			"ts": "2026-10-04T06:33:59.759Z",
+			"flipTo": "401864513",
+			"acceptable": [],
+			"level": 2,
+			"note": "Down 4 in the fourth, driving"
+		},
+		{
+			"ts": "2026-10-04T06:34:49.311Z",
+			"flipTo": "401864513",
+			"acceptable": [],
+			"level": 2,
+			"note": "Down 4 in the fourth, driving"
+		},
+		{
+			"ts": "2026-10-04T06:35:49.806Z",
+			"flipTo": "401864513",
+			"acceptable": [],
+			"level": 3,
+			"note": "Down 4, fourth and 12 at the 26"
+		},
+		{
+			"ts": "2026-10-04T06:36:50.256Z",
+			"flipTo": "401864513",
+			"acceptable": [],
+			"level": 2,
+			"note": "Field goal, down 1, kickoff pending"
+		},
+		{
+			"ts": "2026-10-04T06:37:50.671Z",
+			"flipTo": "401864513",
+			"acceptable": [],
+			"level": 2,
+			"note": "Field goal, down 1, kickoff pending"
+		},
+		{
+			"ts": "2026-10-04T06:38:51.072Z",
+			"flipTo": "401864513",
+			"acceptable": [],
+			"level": 2,
+			"note": "Field goal, down 1, kickoff pending"
+		},
+		{
+			"ts": "2026-10-04T06:39:51.559Z",
+			"flipTo": "401864513",
+			"acceptable": [],
+			"level": 2,
+			"note": "Leader has the ball, one-point game"
+		},
+		{
+			"ts": "2026-10-04T06:40:51.992Z",
+			"flipTo": "401864513",
+			"acceptable": [],
+			"level": 2,
+			"note": "Leader has the ball, one-point game"
+		},
+		{
+			"ts": "2026-10-04T06:41:52.437Z",
+			"flipTo": "401864513",
+			"acceptable": [],
+			"level": 2,
+			"note": "Leader has the ball, one-point game"
+		},
+		{
+			"ts": "2026-10-04T06:42:52.883Z",
+			"flipTo": "401864513",
+			"acceptable": [],
+			"level": 2,
+			"note": "Leader has the ball, one-point game"
+		},
+		{
+			"ts": "2026-10-04T06:43:53.361Z",
+			"flipTo": "401864513",
+			"acceptable": [],
+			"level": 2,
+			"note": "Leader has the ball, one-point game"
+		},
+		{
+			"ts": "2026-10-04T06:44:53.760Z",
+			"flipTo": "401864513",
+			"acceptable": [],
+			"level": 3,
+			"note": "Leader on fourth and 5 at the 24"
+		},
+		{
+			"ts": "2026-10-04T06:45:54.150Z",
+			"flipTo": "401864513",
+			"acceptable": [],
+			"level": 3,
+			"note": "Fourth-down result missing; carried one snapshot"
+		},
+		{
+			"ts": "2026-10-04T06:46:54.611Z",
+			"flipTo": "401864513",
+			"acceptable": [],
+			"level": 2,
+			"note": "One-point game, possession not shown"
+		},
+		{
+			"ts": "2026-10-04T06:47:55.088Z",
+			"flipTo": "401864513",
+			"acceptable": [],
+			"level": 2,
+			"note": "One-point game, possession not shown"
+		},
+		{
+			"ts": "2026-10-04T06:48:55.541Z",
+			"flipTo": "401864513",
+			"acceptable": [],
+			"level": 2,
+			"note": "Down 1, trailing team has it, over 4:00"
+		},
+		{
+			"ts": "2026-10-04T06:49:56.007Z",
+			"flipTo": "401864513",
+			"acceptable": [],
+			"level": 2,
+			"note": "Down 1, trailing team has it, over 4:00"
+		},
+		{
+			"ts": "2026-10-04T06:50:56.504Z",
+			"flipTo": "401864513",
+			"acceptable": [],
+			"level": 2,
+			"note": "Leader has the ball, one-point game"
+		},
+		{
+			"ts": "2026-10-04T06:51:56.986Z",
+			"flipTo": "401864513",
+			"acceptable": [],
+			"level": 2,
+			"note": "Leader has the ball, one-point game"
+		},
+		{
+			"ts": "2026-10-04T06:52:57.457Z",
+			"flipTo": "401864513",
+			"acceptable": [],
+			"level": 2,
+			"note": "One-point game, possession not shown"
+		},
+		{
+			"ts": "2026-10-04T06:53:57.841Z",
+			"flipTo": "401864513",
+			"acceptable": [],
+			"level": 2,
+			"note": "Leader at the 21, 5:35 left"
+		},
+		{
+			"ts": "2026-10-04T06:54:58.299Z",
+			"flipTo": "401864513",
+			"acceptable": [],
+			"level": 3,
+			"note": "One-point game, leader in the red zone"
+		},
+		{
+			"ts": "2026-10-04T06:55:58.767Z",
+			"flipTo": "401864513",
+			"acceptable": [],
+			"level": 2,
+			"note": "Leader back out of the red zone"
+		},
+		{
+			"ts": "2026-10-04T06:56:59.181Z",
+			"flipTo": "401864513",
+			"acceptable": [],
+			"level": 2,
+			"note": "One-point game under 3:00, possessor not shown"
+		},
+		{
+			"ts": "2026-10-04T06:57:59.512Z",
+			"flipTo": "401864513",
+			"acceptable": [],
+			"level": 2,
+			"note": "One-point game under 3:00, possessor not shown"
+		},
+		{
+			"ts": "2026-10-04T06:58:59.850Z",
+			"flipTo": "401864513",
+			"acceptable": [],
+			"level": 2,
+			"note": "One-point game under 3:00, possessor not shown"
+		},
+		{
+			"ts": "2026-10-04T06:59:57.120Z",
+			"flipTo": "401864513",
+			"acceptable": [],
+			"level": 2,
+			"note": "One-point game under 3:00, possessor not shown"
+		}
+	]
+}

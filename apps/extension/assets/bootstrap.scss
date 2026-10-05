@@ -99,6 +99,7 @@
 @use '@arenaswap/ui/src/popup';
 @use '@arenaswap/ui/src/theme';
 @use 'collegeFilter';
+@use 'scoringSettings';
 
 // After the Bootstrap load above, so this beats its `:root, [data-bs-theme=light]` block on source
 // order. Dark needs no block of its own: it is what :root already carries.
@@ -1930,6 +1931,16 @@
 	color:      var(--as-secondary-color);
 }
 
+// One line per card, each under its own team's rule, with a gap so two bars from the same side
+// still read as two cards.
+.gd-red-card + .gd-red-card {
+	margin-top: 0.2rem;
+}
+
+.gd-play-body + .gd-play-heading {
+	margin-top: 0.34rem;
+}
+
 // Venue / broadcast / odds / weather, as one titled section rather than four stacked centred
 // lines. Takes the chart cards' treatment, not the breakdown's white card: everything below the
 // PowerScore math reads as one dark column of sections.
@@ -1961,6 +1972,20 @@
 	padding:     0.14rem 0;
 
 	& + & { border-top: 1px solid var(--as-secondary-bg); }
+}
+
+// For a label that reads as a sentence: it takes the full line, and the value drops beneath it,
+// indented past the icon so both start at the same edge.
+.game-info-row-stacked {
+	flex-wrap: wrap;
+	row-gap:   0.06rem;
+
+	.game-info-label { width: auto; }
+
+	.game-info-value {
+		flex-basis:   100%;
+		padding-left: calc(0.68rem + 0.3rem);
+	}
 }
 
 // Same marker column as the breakdown's factor icons, so the two sections share a left edge.
@@ -2023,12 +2048,6 @@
 .game-info-link {
 	font-weight: 600;
 	color:       var(--as-accent-ink);
-}
-
-.game-info-price {
-	margin-left: 0.35rem;
-	font-size:   0.58rem;
-	color:       var(--as-secondary-color);
 }
 
 // Matches the shape of Reboot's `[type="button"]:not(:disabled)` so the help cursor survives it.
@@ -2625,6 +2644,30 @@ button.game-info-attribution {
 	text-align: center;
 	white-space: nowrap;
 	margin-bottom: 0.22rem;
+}
+
+// Under the team's timeouts, in the same small bold caps as the count's B S O.
+.gd-bonus {
+	margin-top: 0.1rem;
+	font-size: 0.5rem;
+	font-weight: 700;
+	line-height: 1;
+	letter-spacing: 0.04em;
+	text-align: center;
+	text-transform: uppercase;
+	white-space: nowrap;
+}
+
+// Fixed width whether lit or not, pulled in toward the divider so the pair reads as part of it.
+.gd-possession {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	width: 0.7rem;
+	margin-inline: -0.2rem;
+	font-size: 0.7rem;
+	line-height: 1;
 }
 
 .gd-countdown {

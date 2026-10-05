@@ -46,6 +46,11 @@ const defaultPrefs: UserPreferences = {
 	postseasonBoostPoints: 0,
 	upcomingGamesDays: 7,
 	disabledSignals: [],
+	scoringMode: 'classic',
+	leagueModes: {},
+	modeDisabledSignals: {},
+	fantasyBlend: 60,
+	fantasyScoring: {},
 	collegeFilters: {},
 };
 
@@ -96,6 +101,14 @@ const defaultProps = {
 	onToggleHolidayLeaves: () => {},
 	onPostseasonBoostChange: () => {},
 	onToggleSignal: () => {},
+	onToggleModeSignal: () => {},
+	onScoringModeChange: () => {},
+	onLeagueModeChange: () => {},
+	onFantasyBlendChange: () => {},
+	onFantasyRuleChange: () => {},
+	onFantasyRulesReset: () => {},
+	fantasyRoster: [],
+	onFantasyRosterChange: () => {},
 };
 
 const openGroup = (id: string) => cy.get(`#settingsGroup-${id}`).click();
@@ -190,8 +203,18 @@ describe('setupView search', () => {
 
 	// A control id that drifts from the page it names fails quietly, back to the top of the page.
 	it('points every searchable setting at a control that exists on its page', () => {
+		// Custom with a league in each mode, so every mode's controls are on the page at once.
+		const everyModePrefs: UserPreferences = {
+			...defaultPrefs,
+			standbyStreamEnabled: true,
+			showUpcomingGames: true,
+			groupByLeague: true,
+			enabledLeagues: ['nba', 'nfl', 'nhl'],
+			scoringMode: 'custom',
+			leagueModes: { nfl: 'fantasy', nhl: 'blowouts' },
+		};
 		settingsEntries.filter(entry => entry.controlId).forEach(entry => {
-			cy.mount(<SetupView {...defaultProps} prefs={{ ...defaultPrefs, standbyStreamEnabled: true, showUpcomingGames: true, groupByLeague: true, enabledLeagues: ['nba', 'nfl'] }} />);
+			cy.mount(<SetupView {...defaultProps} prefs={everyModePrefs} />);
 			openGroup(entry.group);
 			cy.get(`#${entry.controlId}`).should('exist');
 		});
@@ -603,6 +626,205 @@ describe('setupView scoring group', () => {
 		openGroup('scoring');
 		cy.get('#postseasonBoostInput').should('exist');
 		cy.get('#favoriteTeamBonusInput').should('exist');
+	});
+});
+
+const middle = (rect: DOMRect) => rect.top + rect.height / 2;
+
+const chooseOption = (selector: string, label: string) => {
+	cy.get(selector).click();
+	cy.contains('.dropdown-menu.show .dropdown-item', label).click();
+};
+
+const customPrefs: UserPreferences = {
+	...defaultPrefs,
+	enabledLeagues: ['nba', 'nfl', 'epl'],
+	scoringMode: 'custom',
+	leagueModes: { nba: 'blowouts', nfl: 'fantasy' },
+};
+
+const expectNoSideways = () => cy.get('.popup-container').should(([el]: JQuery<HTMLElement>) => {
+	expect(el.scrollWidth, 'nothing pokes out sideways').to.be.at.most(el.clientWidth);
+});
+
+describe('setupView scoring mode', () => {
+	beforeEach(() => cy.viewport(320, 560));
+
+	it('opens on Classic, says what it does, and offers the four modes with their icons', () => {
+		cy.mount(<SetupView {...defaultProps} />);
+		openGroup('scoring');
+		cy.get('#scoringModeSelect').should('contain.text', 'Classic').find('.bi-lightning-charge').should('exist');
+		cy.contains('.setting-explainer', en.setup.modeExplainerClassic).should('exist');
+		cy.get('#scoringModeSelect').click();
+		cy.get('.dropdown-menu.show .dropdown-item').then($items => {
+			expect([...$items].map(item => item.textContent?.trim())).to.deep.equal(['Classic', 'Blowouts', 'Fantasy', 'Custom']);
+		});
+		cy.get('.dropdown-menu.show .dropdown-item .bi').should('have.length.at.least', 4);
+	});
+
+	it('reports the mode that was picked', () => {
+		const spy = cy.spy().as('onScoringModeChange');
+		cy.mount(<SetupView {...defaultProps} onScoringModeChange={spy} />);
+		openGroup('scoring');
+		chooseOption('#scoringModeSelect', 'Blowouts');
+		cy.get('@onScoringModeChange').should('have.been.calledOnceWith', 'blowouts');
+	});
+
+	it('shows the mode in use with Classic\'s switches beside it, since Blowouts floors on Classic', () => {
+		cy.mount(<SetupView {...defaultProps} prefs={{ ...defaultPrefs, scoringMode: 'blowouts' }} />);
+		openGroup('scoring');
+		cy.get('#signal-closeness').should('be.checked');
+		['blowoutMargin', 'sustained', 'timing', 'pileOn'].forEach(id => cy.get(`#signal-blowouts-${id}`).should('be.checked'));
+		cy.get('.mode-signals-heading').should('have.length', 2);
+		cy.get('#fantasyBlendSlider').should('not.exist');
+	});
+
+	it('hands a Blowouts switch back with its mode', () => {
+		const spy = cy.spy().as('onToggleModeSignal');
+		cy.mount(<SetupView {...defaultProps} prefs={{ ...defaultPrefs, scoringMode: 'blowouts' }} onToggleModeSignal={spy} />);
+		openGroup('scoring');
+		cy.get('#signal-blowouts-pileOn').uncheck({ force: true });
+		cy.get('@onToggleModeSignal').should('have.been.calledOnceWith', 'blowouts', 'pileOn');
+	});
+
+	it('locks a mode\'s last signal and says why, without touching another mode\'s', () => {
+		cy.mount(<SetupView {...defaultProps} prefs={{ ...customPrefs, modeDisabledSignals: { fantasy: ['situation', 'production'] } }} />);
+		openGroup('scoring');
+		cy.get('#signal-fantasy-exposure').should('be.disabled').and('have.attr', 'aria-describedby', 'signalLastActiveNote-fantasy');
+		cy.get('#signalLastActiveNote-fantasy').should('exist');
+		cy.get('#signal-blowouts-pileOn').should('not.be.disabled');
+		cy.get('#signalLastActiveNote').should('not.exist');
+	});
+
+	it('heads each mode\'s switches once more than one mode is in use', () => {
+		cy.mount(<SetupView {...defaultProps} prefs={customPrefs} />);
+		openGroup('scoring');
+		cy.get('.mode-signals-heading').then($headings => {
+			expect([...$headings].map(heading => heading.textContent)).to.deep.equal(['Classic', 'Blowouts', 'Fantasy']);
+		});
+		cy.get('#signal-closeness').should('exist');
+		cy.get('#signal-fantasy-situation').should('exist');
+	});
+
+	it('gives every followed league its own picker under Custom, in the user\'s order', () => {
+		cy.mount(<SetupView {...defaultProps} prefs={customPrefs} />);
+		openGroup('scoring');
+		cy.get('.league-mode-row .league-order-label').then($labels => {
+			expect([...$labels].map(label => label.textContent)).to.deep.equal(['NBA', 'NFL', 'English Premier League']);
+		});
+		cy.get('#leagueMode-nba').should('contain.text', 'Blowouts');
+		cy.get('#leagueMode-nfl').should('contain.text', 'Fantasy');
+		cy.get('#leagueMode-epl').should('contain.text', 'Classic');
+		cy.contains('.setting-explainer', en.setup.modeFantasyLeagues).should('exist');
+	});
+
+	it('will not put a league with no fantasy players into Fantasy', () => {
+		const spy = cy.spy().as('onLeagueModeChange');
+		cy.mount(<SetupView {...defaultProps} prefs={customPrefs} onLeagueModeChange={spy} />);
+		openGroup('scoring');
+		cy.get('#leagueMode-epl').click();
+		cy.contains('.dropdown-menu.show .dropdown-item', 'Fantasy').should('be.disabled');
+		cy.contains('.dropdown-menu.show .dropdown-item', 'Blowouts').click();
+		cy.get('@onLeagueModeChange').should('have.been.calledOnceWith', 'epl', 'blowouts');
+	});
+
+	it('lines each league\'s mark, name and picker up on one row, inside the popup', () => {
+		cy.mount(<SetupView {...defaultProps} prefs={customPrefs} />);
+		openGroup('scoring');
+		cy.get('.league-mode-row').each(([row]: JQuery<HTMLElement>) => {
+			const logo = row.querySelector('.league-toggle-logo')!.getBoundingClientRect();
+			const label = row.querySelector('.league-order-label')!.getBoundingClientRect();
+			const picker = row.querySelector('.form-select')!.getBoundingClientRect();
+			const box = row.getBoundingClientRect();
+			expect(Math.abs(middle(logo) - middle(picker)), 'mark and picker share a centre line').to.be.at.most(1.5);
+			expect(Math.abs(middle(label) - middle(picker)), 'name and picker share a centre line').to.be.at.most(1.5);
+			expect(label.right, 'name stops before the picker').to.be.at.most(picker.left);
+			expect(picker.right, 'picker stays inside its tile').to.be.at.most(box.right);
+		});
+		cy.get('#leagueMode-nba').should(([picker]: JQuery<HTMLElement>) => {
+			expect(picker.scrollWidth, 'the longest mode name fits its picker').to.be.at.most(picker.clientWidth);
+		});
+		expectNoSideways();
+	});
+
+	it('shows Fantasy\'s blend and pages only while Fantasy is in use', () => {
+		const spy = cy.spy().as('onFantasyBlendChange');
+		cy.mount(<SetupView {...defaultProps} prefs={{ ...defaultPrefs, scoringMode: 'fantasy' }} onFantasyBlendChange={spy} fantasyRoster={[]} />);
+		openGroup('scoring');
+		cy.get('#fantasyBlendSlider').should('have.value', '60');
+		cy.contains('.setting-value-label', '60%').should('exist');
+		dragRangeTo('#fantasyBlendSlider', 80);
+		cy.get('@onFantasyBlendChange').should('have.been.calledWith', 80);
+		cy.get('#fantasyRosterOpen').should('contain.text', en.setup.fantasyRosterEmpty);
+		cy.get('#fantasyRulesOpen').should('contain.text', en.setup.fantasyRulesDefault);
+		expectNoSideways();
+	});
+
+	it('keeps the blend\'s name, its info button and its value on one line', () => {
+		cy.mount(<SetupView {...defaultProps} prefs={{ ...defaultPrefs, scoringMode: 'fantasy', fantasyBlend: 100 }} />);
+		openGroup('scoring');
+		cy.get('label[for="fantasyBlendSlider"]').should(([label]: JQuery<HTMLElement>) => {
+			const row = label.closest('.justify-content-between')!;
+			const value = row.querySelector('.setting-value-label')!.getBoundingClientRect();
+			const name = label.getBoundingClientRect();
+			expect(name.height, 'the name stays on one line').to.be.at.most(parseFloat(getComputedStyle(label).lineHeight) + 1);
+			expect(name.right, 'the name stops before the value').to.be.lessThan(value.left);
+		});
+	});
+
+	it('counts the roster and the changed rules on the rows that open them', () => {
+		const roster = [
+			{ league: 'nba' as const, athleteId: '1', name: 'A', teamId: '1', position: 'player' as const },
+			{ league: 'nfl' as const, athleteId: '2', name: 'B', teamId: '2', position: 'QB' as const },
+		];
+		cy.mount(<SetupView {...defaultProps} prefs={{ ...defaultPrefs, scoringMode: 'fantasy', fantasyScoring: { football: { receptions: 0.5 } } }} fantasyRoster={roster} />);
+		openGroup('scoring');
+		cy.get('#fantasyRosterOpen').should('contain.text', '2 players');
+		cy.get('#fantasyRulesOpen').should('contain.text', '1 rule changed');
+	});
+
+	it('opens the scoring rules on the sport of the first league followed, and comes back to the row', () => {
+		cy.mount(<SetupView {...defaultProps} prefs={{ ...defaultPrefs, scoringMode: 'fantasy', enabledLeagues: ['nhl', 'nba'] }} />);
+		openGroup('scoring');
+		cy.get('#fantasyRulesOpen').click();
+		cy.get('#fantasySportSelect').should('contain.text', 'Hockey');
+		cy.get('#fantasyRule-hockey-goals').should('have.value', '3');
+		cy.get('button.setup-header').should('contain.text', en.setup.fantasyRules).click();
+		cy.focused().should('have.id', 'fantasyRulesOpen');
+	});
+
+	it('opens the roster page', () => {
+		cy.window().then(win => {
+			cy.stub(win, 'fetch').resolves({ ok: true, json: () => Promise.resolve({ sports: [{ leagues: [{ teams: [] }] }] }) } as unknown as Response);
+		});
+		cy.mount(<SetupView {...defaultProps} prefs={{ ...defaultPrefs, scoringMode: 'fantasy' }} />);
+		openGroup('scoring');
+		cy.get('#fantasyRosterOpen').click();
+		cy.get('#fantasyPlayerSearch').should('exist');
+		cy.contains(en.fantasy.rosterEmpty).should('exist');
+		cy.get('button.setup-header').click();
+		cy.focused().should('have.id', 'fantasyRosterOpen');
+	});
+
+	it('finds the mode picker under the words people use for it', () => {
+		cy.mount(<SetupView {...defaultProps} />);
+		['blowouts', 'fantasy', 'custom', 'mode'].forEach(word => {
+			cy.get('#settingsSearch').clear().type(word);
+			cy.contains('.settings-index-row', en.setup.scoringMode).should('exist');
+		});
+		cy.contains('.settings-index-row', en.setup.scoringMode).click();
+		cy.focused().should('have.id', 'scoringModeSelect');
+	});
+
+	it('only offers a mode\'s controls in search while that mode is in use', () => {
+		cy.mount(<SetupView {...defaultProps} />);
+		cy.get('#settingsSearch').type('roster');
+		cy.contains('.settings-index-row', en.setup.fantasyRoster).should('not.exist');
+
+		cy.mount(<SetupView {...defaultProps} prefs={{ ...defaultPrefs, scoringMode: 'fantasy' }} />);
+		cy.get('#settingsSearch').type('roster');
+		cy.contains('.settings-index-row', en.setup.fantasyRoster).click();
+		cy.focused().should('have.id', 'fantasyRosterOpen');
 	});
 });
 

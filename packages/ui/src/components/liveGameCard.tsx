@@ -9,7 +9,7 @@ import BsoIndicator from './bsoIndicator';
 import FlipScore from './flipScore';
 import InningHalfIcon from './inningHalfIcon';
 import type { GameCardDisplayProps } from './gameCardTypes';
-import { buildCardHandlers, buildGameCardSurface, CardStatusRow, formatGameClock, formatPeriod, GameMeta, isHalftime, PostseasonLabel, powerScoreColor, TeamColumn } from './gameCardShared';
+import { buildCardHandlers, buildGameCardSurface, CardStatusRow, formatGameClock, formatPeriod, GameMeta, isHalftime, SeasonLabel, powerScoreColor, TeamColumn } from './gameCardShared';
 import { useT } from './i18nContext';
 import useSwitchCrest from './useSwitchCrest';
 
@@ -70,7 +70,7 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 					</span>
 				)}
 			>
-				<PostseasonLabel game={game} />
+				<SeasonLabel game={game} />
 			</CardStatusRow>
 
 			<div className='d-flex align-items-center justify-content-center game-card-matchup'>

@@ -44,7 +44,7 @@ describe('the guide button', () => {
 		cy.get('.bi-calendar-week').should('not.exist');
 		// The other two are still there, so the absence above is the prop rather than a broken mount.
 		cy.get('.bi-question-circle').should('exist');
-		cy.get('.bi-gear').should('exist');
+		cy.get('.bi-gear-fill').should('exist');
 	});
 
 	// settingsCog.cy.tsx addresses the cog through its own glyph now, but the ordering is still the
@@ -55,7 +55,7 @@ describe('the guide button', () => {
 			expect($buttons).to.have.length(3);
 			expect($buttons[0]!.querySelector('.bi-calendar-week')).to.not.equal(null);
 			expect($buttons[1]!.querySelector('.bi-question-circle')).to.not.equal(null);
-			expect($buttons[2]!.querySelector('.bi-gear')).to.not.equal(null);
+			expect($buttons[2]!.querySelector('.bi-gear-fill')).to.not.equal(null);
 		});
 	});
 
@@ -66,7 +66,7 @@ describe('the guide button', () => {
 			.and('have.attr', 'tabindex', '-1');
 	});
 
-	// The cog's quarter turn is hung on `.bi-gear` rather than on the shared
+	// The cog's quarter turn is hung on `.bi-gear-fill` rather than on the shared
 	// `.popup-settings-icon`, so a calendar must inherit none of it.
 	it('does not inherit the cog spin', () => {
 		mountHeader();

@@ -2,18 +2,24 @@ import { i18n } from '#i18n';
 import type { Team } from '@arenaswap/core/types';
 import OnColorCrest from '@arenaswap/ui/src/components/onColorCrest';
 import TimeoutDots from '@arenaswap/ui/src/components/timeoutDots';
+import BonusMark from './bonusMark';
 
 interface detailTeamPillProps {
 	team: Team;
 	side: 'away' | 'home';
 	record?: string | null;
 	color: string;
+	timeoutMax?: number;
+	// Basketball only. Undefined with a slot still kept is a team not in the bonus: the row holds its
+	// height, so the hero doesn't grow and shrink as the bonus comes and goes.
+	bonus?: 'bonus' | 'double';
+	bonusSlot?: boolean;
 }
 
 // Crest, name and record are emitted as separate grid children via `display: contents`, which
 // is what holds the two sides level: a name that wraps to two lines pushes its own row taller
 // without shifting the logo or the record beside it.
-const detailTeamPill = ({ team, side, record, color }: detailTeamPillProps) => (
+const detailTeamPill = ({ team, side, record, color, timeoutMax, bonus, bonusSlot = false }: detailTeamPillProps) => (
 	<div className={`game-detail-team-wrap is-${side}`}>
 		{/* Blank rather than lettered — the abbreviation is directly below it. */}
 		<span className={`game-detail-team-logo-shell is-bare gd-area-${side}-crest`}>
@@ -39,9 +45,12 @@ const detailTeamPill = ({ team, side, record, color }: detailTeamPillProps) => (
 		)}
 		{/* Its own grid row rather than tucked beside the record, so the two sides stay level when
 		    one team's name wraps and the other's does not — the same reason the record has one. */}
-		{team.timeouts !== undefined && (
-			<div className={`gd-area-${side}-timeouts`}>
-				<TimeoutDots remaining={team.timeouts} teamAbbreviation={team.abbreviation} />
+		{(team.timeouts !== undefined || bonusSlot) && (
+			<div className={`gd-area-${side}-timeouts${bonusSlot ? ' text-center' : ''}`}>
+				{team.timeouts !== undefined && (
+					<TimeoutDots remaining={team.timeouts} max={timeoutMax} teamAbbreviation={team.abbreviation} />
+				)}
+				{bonusSlot && <BonusMark bonus={bonus} teamAbbreviation={team.abbreviation} />}
 			</div>
 		)}
 	</div>

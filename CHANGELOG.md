@@ -5,6 +5,122 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Basketball's hero reads like a scorebug — 2026-10-04
+
+The fouls sentence under a live basketball hero is gone: a caret beside the score points at the team with the ball, BONUS sits under a team's timeout dots once it's in the bonus, and the NBA's seven timeouts draw as dots, a size down, instead of a numeral. Our sources send no possession for basketball, so core reads it off the last play's type, and the popup holds the last side named through timeouts and substitutions until the period ends.
+
+## Preseason games say so — 2026-10-04
+
+A preseason game now carries "Preseason" (or "Spring Training" in MLB) in the spot on its card where a playoff round's name goes, in every shipped language. It is read off `season.slug` rather than `season.type`, because soccer's type is a per-competition id that could land on 1, and PowerScore treats the game exactly as before.
+
+## The replay scores itself honestly, and the recorder outlives its terminal — 2026-10-04
+
+A tie at the top of the replay's ranking now earns its share of credit instead of whichever game the sort left first, labels on games seen for less than one history window are left out (both scorers are cold there), switches per hour counts only real switches over hours that had polls, and the replay bundles one engine, the working tree's, instead of mixing in a stale dist. Rescored that way, v3 Classic leads 2.2.0 by 5.5 points on the first night and 2.0 on the out-of-sample late slate. `npm run powerscore:record -- --detach` keeps recording after the session that started it ends, refuses to start a second copy, keeps the Mac awake, writes every live game in full at the top of each hour so any hour replays alone, and records the injury report Fantasy reads.
+
+## The settings cog is filled again — 2026-10-04
+
+The header's settings button is back to the filled `bi-gear-fill`, along with the tour's drawings of it and the store screenshots, undoing the outline swap from 2026-10-02 in both themes. The calendar and question mark beside it stay outline, so the cog stands out on purpose.
+
+## Fantasy defenses get credit for the right fumbles — 2026-10-04
+
+Checked against the London game's real box score: a defense's takeaways are now its own interceptions plus the fumbles the other offense lost, since our sources' `fumblesRecovered` also counts an offense falling on its own fumble, and a kicker's longest make is scored at its distance tier instead of every field goal counting as a short one, so the Fantasy rules page now lists the 40–49 and 50+ yard rules too. The replay can now take a fantasy roster (`--roster`) and hands each summary the live game, which Fantasy needed to find rostered players.
+
+## Quieter boost shading, livelier player search — 2026-10-04
+
+The bands that shade boost moments on the PowerScore chart no longer print the boost's name inside the chart (hovering still names it), and the Fantasy roster search shows one of the game list's own loading lines while it looks for players instead of a fixed message, drawn once per search so a screen reader isn't handed a new one on every keystroke.
+
+## Everything is 3.0.0 — 2026-10-04
+
+Every package moves to 3.0.0 for ArenaSwap 3, and `powerscore` publishes as its next major: modes, the moment boosts and `scoreGame`, with the 2.x API still working as deprecated wrappers. The lockfile's workspace versions moved with them, by hand rather than through an install.
+
+## PowerScore 3 speaks all twelve languages — 2026-10-04
+
+Every string the modes, the new boosts, Fantasy's roster and scoring pages and the new detail-screen lines added (211 keys) is translated into the eleven other locales, with each mode named the way that language's fans would say it and fantasy terms kept as the loanwords fantasy players there actually use. The breakdown, Settings and Fantasy specs measure every language for overflow at popup width, and nothing needed shortening.
+
+## The new boosts are tuned against the first night's labels — 2026-10-04
+
+After a calibration pass with the sports analyst, a go-ahead run climbs from half value in the 6th to full in the 9th, the two-minute drill leans less on timeouts, a baseball underdog needs a longer price before upset watch pays, and none of the new boosts pay on a clock game sitting at 0:00 with a winner. An end-of-inning break now scores as the bottom half with three outs rather than the next inning, so it can't outrank the live play before it; against 286 blind-labelled minutes v3 Classic now ranks the labelled game first 67.3% of the time to 2.2.0's 60.3%.
+
+## Basketball shows the bonus and timeouts, soccer shows red cards — 2026-10-04
+
+A live basketball game's detail screen now shows each team's timeouts under its name and one plain line for the bonus and fouls to give (#165), read from our sources' live situation only while that screen is open, and the box score adds lead changes and the largest lead. Soccer's Latest Play section lists every red card with its minute, stoppage time included ("90+6'"), built from the player and team ourselves since the source text is English only (#162).
+
+## Settings picks the mode, and Fantasy gets a roster — 2026-10-03
+
+The top of Settings → Scoring now picks Classic, Blowouts, Fantasy or Custom, where each enabled league gets its own mode, with signal switches for every mode in use (Classic's stay whenever Blowouts or Fantasy is, since both lean on a Classic score). Fantasy adds a slider for how much your players lift their games, a roster page that searches players by name and NFL defenses by team, and a scoring rules page that only offers the rules a box score can actually fill; a game with your players in it lists their lines under "Your Players". Both sub-pages load on demand, so they cost the popup nothing until opened.
+
+## Fantasy lifts your players' games instead of blending them down — 2026-10-03
+
+Fantasy's 60/40 mix with Classic ranked a game with your player below the same game without one (a late one-point game fell from 67 to 57), so your players' Fantasy score is now added on top of Classic at the slider's weight, capped at 100: their games pull ahead when they matter and can never sink below a game without them. The same review stopped Blowouts paying the postseason boost, made a scoring rule changed mid-game rescore both sides instead of reading as points just scored, counted players missing from a posted lineup or listed out as inactive, fetched hockey situations only for the NHL and only on its own poll, and halved what each history snapshot costs in session storage.
+
+## The popup draws whichever mode scored the game — 2026-10-03
+
+The breakdown card, the signal chart and the walkthrough now draw the active mode's own signals with their own names and colours from one table in `packages/ui/src/components/scoringModeMeta.ts`, boost rows come from the score's own list, and reasons are translated from their keys instead of being read back out of English. The PowerScore chart shades the stretches where a moment boost was paying, and Blowouts games get a lead tracker; a Classic score sent with its breakdown renders exactly as it did before, measured row by row.
+
+## The docs site explains modes and every new boost — 2026-10-03
+
+The PowerScore pages on the docs site now cover all three modes and their signals, every new boost with when it pays and its cap, the PowerScore 3 types and `scoreGame` API (with 2.x kept as deprecated but working), and how to use the engine with a feed of your own; a new extension page explains Classic, Blowouts, Fantasy and Custom. The settings page's postseason default was also wrong (it said 5; it's 8).
+
+## Six fixes from testing the boosts against real payloads — 2026-10-03
+
+A no-hit bid no longer drops to zero during every "End of inning" break (our sources report it live with no half-inning, so it now scores as the next inning before its first pitch), a red card shown in stoppage time pays in full instead of half-faded, and box-score lead changes are dated between the two polls around them rather than between two increases, so a flip after a quiet stretch no longer reads as minutes old. Standings are fetched only for leagues whose tables carry race markers (not the NBA, NHL or WNBA), the top of a soccer conference table counts as a seed rather than a title line, and the tests behind all of this run on payloads recorded or fetched from our sources.
+
+## PowerScore's README covers 3.0, and Fantasy can search for players — 2026-10-03
+
+The package README now starts from `scoreGame` with the least a feed can send, shows what each optional field switches on, how to use it with any data source and your own league ids, the three modes, building your own with `defineMode`, and what migrating from 2.x changes (nothing breaks). Core's `searchPlayers` finds players in Fantasy's leagues by name, forgiving accents, word order, a surname prefix and one typo, and `resolveRosterEntry` looks up a pick's position and team once when it's added.
+
+## Scores reach the popup with their full breakdown — 2026-10-03
+
+Every score the background sends now carries a `breakdown` (the mode that scored it, each signal and boost as a list, and the reasons as keys) beside the flat 2.x fields, and history snapshots record the same, so screens can move over to modes one at a time while everything else keeps reading the fields it always has. `normalizeScores` validates a breakdown whole or drops it whole, so a half-formed one can never draw a chart that disagrees with itself.
+
+## Modes reach the extension's scoring, and Fantasy reads the box score — 2026-10-03
+
+Prefs gain `scoringMode` (Classic, Blowouts, Fantasy or Custom, with `leagueModes` picking per league under Custom), switched-off signals for the non-Classic modes, a Fantasy blend and scoring overrides, all normalized and checked against the engine's own definitions; `disabledSignals` stays as Classic's list so no stored prefs need migrating. The fantasy roster lives under its own storage key, and every summary turns each rostered player's box-score line into fantasy points, with the first total seen taken as a baseline so a player picked up mid-game doesn't count as a sudden burst.
+
+## PowerScore gets Blowouts and Fantasy modes — 2026-10-03
+
+Blowouts (#86) scores margin, a lead held, an early rout and a leader still piling on, and floors every game at 30% of its Classic score so a close game stays eligible but never outranks a real beatdown. Fantasy (#85) scores what your rostered players are doing (football down to who has the ball and whether your kicker is in range), their recent fantasy points and how many of them are playing, blended 60/40 with Classic, and `computeFantasyPoints` carries the analyst's default scoring with bounds for every rule.
+
+## The background feeds the new boosts — 2026-10-03
+
+The 60-second summary sweep now hands its payload to core's live-extras tracker for the closing line and box-score lead changes, live hockey games within three goals fetch the power-play and empty-net situation after each poll, and leagues with late-season races refresh their standings every half hour. A game already past its blowout margin is summarised every three minutes instead of every one, which is where the extra requests are paid for.
+
+## Core reads series, hits, red cards and the closing line — 2026-10-03
+
+The scoreboard parse now keeps each team's hits and errors, the playoff series and soccer's red cards (as `redCardEvents`, so a core game still fits the engine's `Game`), and `liveExtras.ts` reads the summary's closing line and box-score lead changes, the hockey situation and the standings' race markers into the engine's context. The replay drives the same tracker, so on recorded slates the new boosts see exactly what the extension will.
+
+## Classic PowerScore learns the moments fans flip to — 2026-10-03
+
+Classic now pays for a go-ahead run on base (#161), a one-score two-minute drill (#166), a no-hit bid from the 6th (#159), a fresh red card in a close match (#162), a late power play or empty net (#163), an underdog hanging around late (#157) and what the result decides: a series on the brink, two ranked teams, a late-season race (#158). The sports analyst set every number, and the boosts share caps (20 for moments, 70 for a no-hitter, 16 for upset plus stakes) so they can't stack past a late one-score swing; runners on base also stop paying once the third out is made.
+
+## The slate recorder survives a busy hour and a restart — 2026-10-03
+
+The recorder now rotates its hourly file without awaiting, so writes that land mid-rotation can no longer open a second stream on the same file, and each run writes its own files rather than appending to one a killed run left without a gzip trailer. A failed poll keeps the live cadence instead of dropping to the five-minute idle one, and every request gives up after ten seconds.
+
+## Recorded slates replay through 2.2.0 and PowerScore 3 side by side — 2026-10-03
+
+`npm run powerscore:replay` plays a recording through the frozen 2.2.0 pipeline and the working tree's engine, simulates a viewer switching tabs with each, and scores them against labelled flip-to moments in `scripts/powerscore/fixtures/labels/`; `--diff` lists where they disagree on the top game and `--timeline` writes a minute-by-minute slate to label from. It drives the same core helpers background.ts does, so on the first recorded night v2 and v3 Classic agreed on all 591 polls.
+
+## The background scores through PowerScore 3, and the switch rule lives in core — 2026-10-03
+
+Every live game is now scored by `scoreGame` through `scoreLiveGame` in `packages/core/src/scoring.ts`, which also took over the snapshot windowing, the clock-stall count and the switch rule (`chooseSwitchTarget`) from background.ts, so the replay harness runs exactly the code the extension does. The popup still gets the flat 2.x result through `toLegacyPowerScoreResult` until it learns to draw modes, and `Game` is now generic over its league id so a feed with its own leagues can use `Game<string>`.
+
+## PowerScore 3's engine scores every mode through one pipeline — 2026-10-03
+
+`scoreGame(game, context, options)` returns each signal and boost as a list with structured `{ key, params }` reasons, and folds in the favorite, postseason and manual boosts that background.ts used to add by hand, so a mode is just a list of signals and boosts. `computePowerScore` and the 2.x types still work as thin wrappers, and `tests/classicParity.test.ts` pins Classic against a frozen copy of 2.2.0 over 20,000 seeded games; the only differences are that a disabled signal's reason no longer reaches the line, and the disabled path floors before adding win probability, the way the normal path always did.
+
+## Live slates get recorded for the PowerScore replay — 2026-10-03
+
+`npm run powerscore:record` polls every league and writes what our sources send, raw, to gzipped hourly files under `scripts/powerscore/recordings/`, with live games at 15 seconds and the summary, hockey and basketball situation, and standings alongside. It keeps payloads raw on purpose, so a slate recorded today can be re-parsed by whatever version of core and PowerScore the replay is testing later.
+
+## The Standings tab is in standings order — 2026-10-03
+
+Every table on the Standings tab is now sorted by record: winning percentage, points in hockey, league position in soccer, and conference record for the college fallback. Our sources sent some tables alphabetized or by playoff seed, so the sort is stable and teams level on record keep the order they arrived in, which is where the official tiebreakers live. A team yet to play a conference game sits at .500, between the unbeaten and the winless.
+
+## The ticket row asks the question and the link names the price — 2026-10-03
+
+The tickets row in a game's info panel is now labelled "Want to go in person?", with a link under it that reads "Tickets from $34", or just "Tickets" when the seller lists no price. The row stacks through `InfoRow`'s `stacked` prop, since a question that long wraps in the label column the other rows share. The two strings traded places in every locale, so `infoTickets` is the label and `ticketsCta` is the bare link again.
+
 ## The title rounds get past the college filter — 2026-10-02
 
 Each college league's picker has a switch, on by default, that lets the national tournament through whatever else is picked: the men's bracket from the Round of 64, the women's from the Sweet 16, every Playoff game, the hockey tournament and both World Series, with the cutoffs set by the sports analyst in `readCollegeBracket`. Top 25 ignores the rank on a seeded bracket game, since our sources put the seed there and every team in the field would pass. The same review named the college switches for screen readers, pointed the poll lookahead at the divisions the filter fetches, kept preseason out of an NFL team's recent form, and stopped the docs deploy running from anywhere but the newest mega.

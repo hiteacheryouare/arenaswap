@@ -231,6 +231,14 @@ const setupProps = {
 	onToggleHolidayLeaves: () => {},
 	onPostseasonBoostChange: () => {},
 	onToggleSignal: () => {},
+	onToggleModeSignal: () => {},
+	onScoringModeChange: () => {},
+	onLeagueModeChange: () => {},
+	onFantasyBlendChange: () => {},
+	onFantasyRuleChange: () => {},
+	onFantasyRulesReset: () => {},
+	fantasyRoster: [],
+	onFantasyRosterChange: () => {},
 };
 
 describe('holiday decoration settings', () => {

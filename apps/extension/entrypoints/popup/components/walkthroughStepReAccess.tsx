@@ -50,7 +50,7 @@ const walkthroughStepReAccess = ({ onNext, onBack }: walkthroughStepReAccessProp
 						className='btn btn-sm p-0 popup-settings-button opacity-25'
 						style={{ pointerEvents: 'none' }}
 					>
-						<i className='bi bi-gear popup-settings-icon' />
+						<i className='bi bi-gear-fill popup-settings-icon' />
 					</div>
 
 					<div className='form-check form-switch mb-0 opacity-25'>

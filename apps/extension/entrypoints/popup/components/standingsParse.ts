@@ -189,13 +189,60 @@ const trimStandingsSuffix = (header: string): string => (
 	header.replace(/\s+standings\s*$/i, '').trim()
 );
 
-const columnsFor = (sportType: SportType, entries: RawEntry[]): AnyStandingsSpec[] => {
+// Higher is better, null sinks to the bottom.
+type Standing = (entry: RawEntry) => number | null;
+
+const numberOf = (entry: RawEntry, statName: string): number | null => {
+	const value = Number.parseFloat(displayOf(statValue(entry, statName)));
+	return Number.isFinite(value) ? value : null;
+};
+
+// "9-3" or "9-3-1", with a tie worth half a win the way the NFL counts one. A team yet to play sits
+// at .500, between the unbeaten and the winless, the way an early-season conference table reads.
+const recordPercent = (record: string): number | null => {
+	const [wins = Number.NaN, losses = Number.NaN, ties = 0] = record.split('-').map(Number);
+	const played = wins + losses + ties;
+	if (!Number.isFinite(played)) return null;
+	return played > 0 ? (wins + ties / 2) / played : 0.5;
+};
+
+const winPercent: Standing = entry => numberOf(entry, 'winPercent');
+
+const sportStandings = {
+	football: winPercent,
+	basketball: winPercent,
+	baseball: winPercent,
+	softball: winPercent,
+	hockey: entry => numberOf(entry, 'points'),
+	// The published position rather than points, because it already settles a points tie on goal
+	// difference.
+	soccer: entry => {
+		const rank = numberOf(entry, 'rank');
+		return rank === null ? null : -rank;
+	},
+} as const satisfies Record<SportType, Standing>;
+
+const conferenceStanding: Standing = entry => recordPercent(displayOf(statValue(entry, 'vs. Conf.')));
+
+const tableFor = (sportType: SportType, entries: RawEntry[]): { specs: AnyStandingsSpec[]; standing: Standing } => {
 	const present = (specs: readonly AnyStandingsSpec[]) => specs.filter(spec => (
 		entries.some(entry => displayOf(statValue(entry, spec.statName)).length > 0)
 	));
 	const numeric = present(numericSpecs[sportType] as readonly AnyStandingsSpec[]);
-	return numeric.length > 0 ? numeric : present(recordSpecs);
+	return numeric.length > 0
+		? { specs: numeric, standing: sportStandings[sportType] }
+		: { specs: present(recordSpecs), standing: conferenceStanding };
 };
+
+// Our sources send some tables in order and others alphabetized or by playoff seed — MLB divisions,
+// MLS conferences — so the order is set here. The sort is stable on purpose: teams level on record
+// keep the order they arrived in, which is the one place the official tiebreakers show up.
+const inStandingsOrder = (entries: RawEntry[], standing: Standing): RawEntry[] => (
+	entries
+		.map(entry => ({ entry, value: standing(entry) ?? Number.NEGATIVE_INFINITY }))
+		.toSorted((a, b) => (a.value === b.value ? 0 : b.value - a.value))
+		.map(({ entry }) => entry)
+);
 
 const buildRows = (
 	entries: RawEntry[],
@@ -244,8 +291,8 @@ const collectNodes = (
 ): void => {
 	const entries = node.standings?.entries ?? [];
 	if (entries.length >= minimumRows) {
-		const specs = columnsFor(sportType, entries);
-		const rows = specs.length === 0 ? [] : buildRows(entries, specs, teamObjectIdentity);
+		const { specs, standing } = tableFor(sportType, entries);
+		const rows = specs.length === 0 ? [] : buildRows(inStandingsOrder(entries, standing), specs, teamObjectIdentity);
 		if (rows.length >= minimumRows) {
 			into.push({
 				header: trimStandingsSuffix(text(node.name)),
@@ -305,11 +352,11 @@ const buildSummaryGroup = (
 	// the whole-league walk above, where every group is wanted.
 	if (!entries.some(entry => matchupIds.has(text(entry.id)))) return null;
 
-	const specs = columnsFor(sportType, entries);
+	const { specs, standing } = tableFor(sportType, entries);
 	// Olympic hockey sends the four teams in the group and an empty `stats` on every one of them.
 	if (specs.length === 0) return null;
 
-	const rows = buildRows(entries, specs, summaryIdentity);
+	const rows = buildRows(inStandingsOrder(entries, standing), specs, summaryIdentity);
 	if (rows.length === 0) return null;
 
 	return {

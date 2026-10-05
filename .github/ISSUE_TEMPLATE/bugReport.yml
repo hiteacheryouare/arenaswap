@@ -91,7 +91,7 @@ body:
     attributes:
       label: ArenaSwap version
       description: Shown on your browser's extensions page.
-      placeholder: 2.2.0
+      placeholder: 3.0.0
     validations:
       required: true
   - type: dropdown

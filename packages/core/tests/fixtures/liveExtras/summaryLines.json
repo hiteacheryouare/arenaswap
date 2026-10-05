@@ -1,0 +1,288 @@
+{
+	"_source": "summary pickcenter, recordings/2026-10-03; trimmed to the line fields",
+	"nhlHomeFavorite": {
+		"ts": 1791069078226,
+		"league": "nhl",
+		"gameId": "401891776",
+		"raw": {
+			"pickcenter": [
+				{
+					"provider": {
+						"id": "100",
+						"name": "DraftKings"
+					},
+					"details": "BUF -230",
+					"overUnder": 6.5,
+					"spread": -1.5,
+					"awayTeamOdds": {
+						"favorite": false,
+						"underdog": true,
+						"moneyLine": 190,
+						"spreadOdds": -130,
+						"teamId": "4",
+						"favoriteAtOpen": false
+					},
+					"homeTeamOdds": {
+						"favorite": true,
+						"underdog": false,
+						"moneyLine": -230,
+						"spreadOdds": 110,
+						"teamId": "2",
+						"favoriteAtOpen": true
+					}
+				}
+			]
+		}
+	},
+	"nhlAwayFavorite": {
+		"ts": 1791069078308,
+		"league": "nhl",
+		"gameId": "401892435",
+		"raw": {
+			"pickcenter": [
+				{
+					"provider": {
+						"id": "100",
+						"name": "DraftKings"
+					},
+					"details": "CAR -135",
+					"overUnder": 5.5,
+					"spread": 1.5,
+					"awayTeamOdds": {
+						"favorite": true,
+						"underdog": false,
+						"moneyLine": -135,
+						"spreadOdds": 190,
+						"teamId": "7",
+						"favoriteAtOpen": true
+					},
+					"homeTeamOdds": {
+						"favorite": false,
+						"underdog": true,
+						"moneyLine": 114,
+						"spreadOdds": -230,
+						"teamId": "15",
+						"favoriteAtOpen": false
+					}
+				}
+			]
+		}
+	},
+	"mlbHomeFavorite": {
+		"ts": 1791069079019,
+		"league": "mlb",
+		"gameId": "401907985",
+		"raw": {
+			"pickcenter": [
+				{
+					"provider": {
+						"id": "100",
+						"name": "DraftKings"
+					},
+					"details": "TB -143",
+					"overUnder": 7,
+					"spread": -1.5,
+					"awayTeamOdds": {
+						"favorite": false,
+						"underdog": true,
+						"moneyLine": 119,
+						"teamId": "10",
+						"favoriteAtOpen": false
+					},
+					"homeTeamOdds": {
+						"favorite": true,
+						"underdog": false,
+						"moneyLine": -143,
+						"teamId": "30",
+						"favoriteAtOpen": true
+					}
+				}
+			]
+		}
+	},
+	"ncaafSpreadAndMoneyline": {
+		"ts": 1791069079898,
+		"league": "ncaaf",
+		"gameId": "401858472",
+		"raw": {
+			"pickcenter": [
+				{
+					"provider": {
+						"id": "100",
+						"name": "DraftKings"
+					},
+					"details": "ILL -9.5",
+					"overUnder": 62.5,
+					"spread": -9.5,
+					"awayTeamOdds": {
+						"favorite": false,
+						"underdog": true,
+						"moneyLine": 285,
+						"spreadOdds": -108,
+						"teamId": "2509",
+						"favoriteAtOpen": false
+					},
+					"homeTeamOdds": {
+						"favorite": true,
+						"underdog": false,
+						"moneyLine": -360,
+						"spreadOdds": -112,
+						"teamId": "356",
+						"favoriteAtOpen": true
+					}
+				}
+			]
+		}
+	},
+	"ncaafSpreadOnly": {
+		"ts": 1791069080148,
+		"league": "ncaaf",
+		"gameId": "401862790",
+		"raw": {
+			"pickcenter": [
+				{
+					"provider": {
+						"id": "100",
+						"name": "DraftKings"
+					},
+					"details": "FAU -47.5",
+					"overUnder": 62.5,
+					"spread": -47.5,
+					"awayTeamOdds": {
+						"favorite": false,
+						"underdog": true,
+						"spreadOdds": -115,
+						"teamId": "2640",
+						"favoriteAtOpen": false
+					},
+					"homeTeamOdds": {
+						"favorite": true,
+						"underdog": false,
+						"spreadOdds": -105,
+						"teamId": "2226",
+						"favoriteAtOpen": true
+					}
+				}
+			]
+		}
+	},
+	"nwslThreeWay": {
+		"ts": 1791069088645,
+		"league": "nwsl",
+		"gameId": "401854018",
+		"raw": {
+			"pickcenter": [
+				{
+					"provider": {
+						"id": "100",
+						"name": "DraftKings"
+					},
+					"details": "KC -225",
+					"overUnder": 3.5,
+					"spread": -1.5,
+					"awayTeamOdds": {
+						"favorite": false,
+						"underdog": true,
+						"moneyLine": 450,
+						"spreadOdds": -155,
+						"teamId": "22187",
+						"favoriteAtOpen": false
+					},
+					"homeTeamOdds": {
+						"favorite": true,
+						"underdog": false,
+						"moneyLine": -225,
+						"spreadOdds": 110,
+						"teamId": "20907",
+						"favoriteAtOpen": true
+					},
+					"drawOdds": {
+						"moneyLine": 390
+					}
+				}
+			]
+		}
+	},
+	"nbaPreseasonNoLine": {
+		"ts": 1791069377381,
+		"league": "nba",
+		"gameId": "401902644",
+		"raw": {
+			"pickcenter": []
+		}
+	},
+	"ncaamhNoPickcenter": {
+		"ts": 1791069078646,
+		"league": "ncaamh",
+		"gameId": "401904404",
+		"raw": {}
+	},
+	"ncaafEarly": {
+		"ts": 1791070565534,
+		"league": "ncaaf",
+		"gameId": "401858478",
+		"raw": {
+			"pickcenter": [
+				{
+					"provider": {
+						"id": "100",
+						"name": "DraftKings"
+					},
+					"details": "USC -7.5",
+					"overUnder": 58.5,
+					"spread": -7.5,
+					"awayTeamOdds": {
+						"favorite": false,
+						"underdog": true,
+						"moneyLine": 270,
+						"spreadOdds": -115,
+						"teamId": "264",
+						"favoriteAtOpen": false
+					},
+					"homeTeamOdds": {
+						"favorite": true,
+						"underdog": false,
+						"moneyLine": -340,
+						"spreadOdds": -105,
+						"teamId": "30",
+						"favoriteAtOpen": true
+					}
+				}
+			]
+		}
+	},
+	"ncaafMoved": {
+		"ts": 1791070995608,
+		"league": "ncaaf",
+		"gameId": "401858478",
+		"raw": {
+			"pickcenter": [
+				{
+					"provider": {
+						"id": "100",
+						"name": "DraftKings"
+					},
+					"details": "USC -7.5",
+					"overUnder": 58.5,
+					"spread": -7.5,
+					"awayTeamOdds": {
+						"favorite": false,
+						"underdog": true,
+						"moneyLine": 245,
+						"spreadOdds": -120,
+						"teamId": "264",
+						"favoriteAtOpen": false
+					},
+					"homeTeamOdds": {
+						"favorite": true,
+						"underdog": false,
+						"moneyLine": -305,
+						"spreadOdds": 100,
+						"teamId": "30",
+						"favoriteAtOpen": true
+					}
+				}
+			]
+		}
+	}
+}

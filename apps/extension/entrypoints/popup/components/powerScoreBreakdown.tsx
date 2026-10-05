@@ -1,3 +1,4 @@
+import { Fragment } from 'react';
 import {
 	scoreMaxCloseness,
 	scoreMaxComeback,
@@ -6,9 +7,19 @@ import {
 	scoreMaxMomentum,
 	scoreMaxTotal,
 } from '@arenaswap/core/constants';
-import type { SignalName } from '@arenaswap/core/types';
+import type { ScoreBreakdown, SignalName } from '@arenaswap/core/types';
 import { i18n } from '#i18n';
-import { signalColors } from '@arenaswap/ui/src/components/signalColors';
+import {
+	boostPresentation,
+	isBoostId,
+	isBuiltInModeId,
+	isModeSignalId,
+	modePresentation,
+	modeSignalIds,
+	penaltyPresentation,
+	signalPresentation,
+	unknownFactorColor,
+} from '@arenaswap/ui/src/components/scoringModeMeta';
 import SettingTooltipIcon from './settingTooltipIcon';
 
 interface powerScoreBreakdownProps {
@@ -34,35 +45,42 @@ interface powerScoreBreakdownProps {
 	totalLabel: string;
 	reason?: string;
 	disabledSignals?: readonly SignalName[];
+	// A PowerScore 3 score. Without one, the flat fields above draw Classic.
+	breakdown?: ScoreBreakdown;
 }
 
-const signalMeta = [
-	{ name: 'closeness' as SignalName, labelKey: 'powerScore.signalCloseness', tooltipKey: 'powerScore.tooltipCloseness', max: scoreMaxCloseness, color: signalColors.closeness },
-	{ name: 'lateGame' as SignalName, labelKey: 'powerScore.signalLateGame', tooltipKey: 'powerScore.tooltipLateGame', max: scoreMaxLateGame, color: signalColors.lateGame },
-	{ name: 'momentum' as SignalName, labelKey: 'powerScore.signalMomentum', tooltipKey: 'powerScore.tooltipMomentum', max: scoreMaxMomentum, color: signalColors.momentum },
-	{ name: 'leadChanges' as SignalName, labelKey: 'powerScore.signalLeadChanges', tooltipKey: 'powerScore.tooltipLeadChanges', max: scoreMaxLeadChanges, color: signalColors.leadChanges },
-	{ name: 'comeback' as SignalName, labelKey: 'powerScore.signalComeback', tooltipKey: 'powerScore.tooltipComeback', max: scoreMaxComeback, color: signalColors.comeback },
-] as const;
+interface signalRow {
+	id: string;
+	points: number;
+	max: number;
+	disabled: boolean;
+}
 
-// Per-factor colors and icons mirror the walkthrough's boost/penalty legend (walkthroughStepPowerScore.tsx).
-// `color` is for the icon, which only needs 3:1 to be seen. `ink` is the same hue darkened for the
-// number beside it, which is small text on this #f8fafc card and needs 4.5:1: the gold managed 1.6
-// and the green 2.2 in the icon colours.
-const boostPenaltyMeta = {
-	clockStall: { color: '#ef4444', ink: '#b91c1c', icon: 'hourglass-split' },
-	volatility: { color: '#a855f7', ink: '#7e22ce', icon: 'activity' },
-	favorite: { color: '#f1c40f', ink: '#8a6100', icon: 'star-fill' },
-	gameBoost: { color: '#22c55e', ink: '#15803d', icon: 'lightning-fill' },
-	scoringOpp: { color: '#f75c03', ink: '#c2410c', icon: 'bullseye' },
-	postseason: { color: '#2274a5', ink: '#2274a5', icon: 'trophy-fill' },
-} as const;
+interface boostRow {
+	id: string;
+	points: number;
+}
 
-const minus = '\u2212';
+const classicMax: Record<SignalName, number> = {
+	closeness: scoreMaxCloseness,
+	lateGame: scoreMaxLateGame,
+	momentum: scoreMaxMomentum,
+	leadChanges: scoreMaxLeadChanges,
+	comeback: scoreMaxComeback,
+};
 
-const FactorIcon = ({ factor }: { factor: keyof typeof boostPenaltyMeta }) => (
+// Shown at zero as well, the way the card always has. Every other boost appears only while it pays.
+const alwaysShownBoosts: ReadonlySet<string> = new Set(['favoriteBoost', 'gameBoost', 'scoringOpportunity', 'postseasonBoost']);
+
+const minus = '−';
+
+const signalLabel = (id: string): string => (isModeSignalId(id) ? i18n.t(signalPresentation[id].labelKey) : id);
+const boostLabel = (id: string): string => (isBoostId(id) ? i18n.t(boostPresentation[id].labelKey) : id);
+
+const FactorIcon = ({ icon, color }: { icon: string; color: string }) => (
 	<i
-		className={`bi bi-${boostPenaltyMeta[factor].icon} powerscore-factor-icon`}
-		style={{ color: boostPenaltyMeta[factor].color }}
+		className={`bi bi-${icon} powerscore-factor-icon`}
+		style={{ color }}
 		aria-hidden='true'
 	/>
 );
@@ -86,46 +104,76 @@ const PowerScoreBreakdown = ({
 	totalLabel,
 	reason,
 	disabledSignals = [],
+	breakdown,
 }: powerScoreBreakdownProps) => {
-	const disabledSet = new Set<SignalName>(disabledSignals);
-	const signalValues = [closeness, lateGame, momentum, leadChanges, comeback];
-	const rawSignalsSum = closeness + lateGame + momentum + leadChanges + comeback;
+	const disabledSet = new Set<string>(disabledSignals);
+	const flatValues: Record<SignalName, number> = { closeness, lateGame, momentum, leadChanges, comeback };
+	const signalRows: signalRow[] = breakdown
+		? breakdown.signals.map(signal => ({ id: signal.id, points: signal.disabled ? 0 : signal.points, max: signal.ceiling, disabled: signal.disabled }))
+		: modeSignalIds.classic.map(id => ({ id, points: disabledSet.has(id) ? 0 : flatValues[id], max: classicMax[id], disabled: disabledSet.has(id) }));
+	const boostRows: boostRow[] = breakdown
+		? breakdown.boosts.filter(boost => boost.points > 0 || alwaysShownBoosts.has(boost.id))
+		: [
+			{ id: 'favoriteBoost', points: favoriteBonus },
+			{ id: 'gameBoost', points: currentBoost },
+			{ id: 'scoringOpportunity', points: scoringOpportunityBoost },
+			{ id: 'postseasonBoost', points: postseasonBoost },
+		];
+	const modeId = breakdown?.modeId;
+	const mode = isBuiltInModeId(modeId) ? modePresentation[modeId] : undefined;
+	const showsStall = clockBased && (mode?.usesStallPenalty ?? true);
+	const blendTooltipKey = mode && 'blendTooltipKey' in mode ? mode.blendTooltipKey : undefined;
+	const classicTotal = breakdown?.classicTotal;
+	const blend = breakdown?.blend;
+	const blendPercent = blend ? Math.round(blend.weight * 100) : 0;
+	// A floor only shows when it won; a boost adds the mode's weighted share on top of Classic.
+	const showsClassicRow = classicTotal !== undefined && blendTooltipKey !== undefined && (blend?.kind !== 'floor' || blend.floorApplied === true);
+	const classicRowValue = blend?.kind === 'floor'
+		? `${blend.classicTotal} × ${blendPercent}% = ${Math.round(blend.classicTotal * blend.weight)}`
+		: blend?.kind === 'mix' ? `${blend.classicTotal} × ${100 - blendPercent}%` : `${classicTotal}`;
+
+	const rawSignalsSum = signalRows.reduce((total, row) => total + row.points, 0);
+	const scaledSubtotal = breakdown?.scaledSubtotal ?? signalsSubtotal;
 	const hasWinProbVariance = winProbabilityVariance !== undefined;
 	const variance = winProbabilityVariance ?? 0;
-	// applyDisabledSignals scales the survivors up into the full signals-subtotal space, so
-	// signalsSubtotal is the scaled result while rawSignalsSum stays raw. Both are pre-cap; the 100
-	// cap lands on `total`.
-	const isSignalNormalized = disabledSet.size > 0 && signalsSubtotal !== rawSignalsSum;
+	// Switching signals off scales the survivors up into the full signals-subtotal space, so the
+	// scaled subtotal differs from rawSignalsSum. Both are pre-cap; the 100 cap lands on `total`.
+	const isSignalNormalized = signalRows.some(row => row.disabled) && scaledSubtotal !== rawSignalsSum;
+	const heading = mode && modeId !== 'classic'
+		? i18n.t('powerScore.headingMode', { mode: i18n.t(mode.nameKey) })
+		: i18n.t('powerScore.heading');
 
 	return (
 		<section className='powerscore-breakdown game-detail-formula-card'>
-			<div className='powerscore-breakdown-heading'>{i18n.t('powerScore.heading')}</div>
+			<div className='powerscore-breakdown-heading'>{heading}</div>
 			<div className='powerscore-signal-list'>
-				{signalMeta.map((sig, i) => {
-					const isDisabled = disabledSet.has(sig.name);
-					const val = isDisabled ? 0 : (signalValues[i] ?? 0);
-					const pct = !isDisabled && sig.max > 0 ? Math.min((val / sig.max) * 100, 100) : 0;
+				{signalRows.map(row => {
+					const color = isModeSignalId(row.id) ? signalPresentation[row.id].color : unknownFactorColor;
+					const pct = !row.disabled && row.max > 0 ? Math.min((row.points / row.max) * 100, 100) : 0;
+					const label = signalLabel(row.id);
 					return (
-						<div key={sig.labelKey} className={`powerscore-signal-row${isDisabled ? ' opacity-50' : ''}`}>
-							<span className='powerscore-signal-dot' style={{ backgroundColor: isDisabled ? '#6c757d' : sig.color }} />
-							<span className='powerscore-signal-name'>{i18n.t(sig.labelKey)}</span>
-							{isDisabled
+						<div key={row.id} className={`powerscore-signal-row${row.disabled ? ' opacity-50' : ''}`}>
+							<span className='powerscore-signal-dot' style={{ backgroundColor: row.disabled ? '#6c757d' : color }} />
+							<span className='powerscore-signal-name'>{label}</span>
+							{row.disabled
 								? <span className='powerscore-signal-off-badge'>{i18n.t('powerScore.signalOff')}</span>
-								: <SettingTooltipIcon text={i18n.t(sig.tooltipKey)} label={i18n.t(sig.labelKey)} />
+								: isModeSignalId(row.id)
+									? <SettingTooltipIcon text={i18n.t(signalPresentation[row.id].tooltipKey)} label={label} />
+									: <span />
 							}
 							<div className='progress powerscore-signal-progress'>
 								<div
 									className='progress-bar'
 									role='progressbar'
-									style={{ width: `${pct}%`, backgroundColor: sig.color }}
-									aria-valuenow={val}
+									style={{ width: `${pct}%`, backgroundColor: color }}
+									aria-valuenow={row.points}
 									aria-valuemin={0}
-									aria-valuemax={sig.max}
+									aria-valuemax={row.max}
 								/>
 							</div>
-							{isDisabled
+							{row.disabled
 								? <span className='powerscore-signal-value text-muted'>—</span>
-								: <span className='powerscore-signal-value'>{val}<span className='powerscore-signal-max'>/{sig.max}</span></span>
+								: <span className='powerscore-signal-value'>{row.points}<span className='powerscore-signal-max'>/{row.max}</span></span>
 							}
 						</div>
 					);
@@ -140,7 +188,7 @@ const PowerScoreBreakdown = ({
 					<span className='d-flex align-items-center gap-1'>
 						<span className='powerscore-subtotal-raw'>{rawSignalsSum}</span>
 						<span>→</span>
-						<span>{signalsSubtotal}{(signalsSubtotal ?? 0) > scoreMaxTotal ? ` ${i18n.t('powerScore.cappedAt', { max: scoreMaxTotal })}` : ''}</span>
+						<span>{scaledSubtotal}{scaledSubtotal > scoreMaxTotal ? ` ${i18n.t('powerScore.cappedAt', { max: scoreMaxTotal })}` : ''}</span>
 					</span>
 				) : (
 					<span>{rawSignalsSum}{rawSignalsSum > scoreMaxTotal ? ` ${i18n.t('powerScore.cappedAt', { max: scoreMaxTotal })}` : ''}</span>
@@ -151,14 +199,14 @@ const PowerScoreBreakdown = ({
 					{i18n.t('powerScore.signalsNormalizedNote')}
 				</div>
 			)}
-			{clockBased && (
+			{showsStall && (
 				<div className='powerscore-breakdown-row powerscore-breakdown-row-penalty'>
 					<span className='d-flex align-items-center gap-1'>
-						<FactorIcon factor='clockStall' />
+						<FactorIcon icon={penaltyPresentation.clockStall.icon} color={penaltyPresentation.clockStall.color} />
 						{i18n.t('powerScore.clockStallPenalty')}
 						<SettingTooltipIcon text={i18n.t('powerScore.tooltipClockStallPenalty')} label={i18n.t('powerScore.clockStallPenalty')} />
 					</span>
-					<span className='powerscore-breakdown-value' style={{ color: stallPenalty > 0 ? boostPenaltyMeta.clockStall.ink : undefined }}>
+					<span className='powerscore-breakdown-value' style={{ color: stallPenalty > 0 ? penaltyPresentation.clockStall.ink : undefined }}>
 						{stallPenalty > 0 ? `${minus}${stallPenalty}` : '0'}
 					</span>
 				</div>
@@ -166,7 +214,7 @@ const PowerScoreBreakdown = ({
 			{hasWinProbVariance && (
 				<div className='powerscore-breakdown-row'>
 					<span className='d-flex align-items-center gap-1'>
-						<FactorIcon factor='volatility' />
+						<FactorIcon icon={penaltyPresentation.volatility.icon} color={penaltyPresentation.volatility.color} />
 						{variance > 0
 							? i18n.t('powerScore.volatilityBoost')
 							: variance < 0
@@ -174,45 +222,50 @@ const PowerScoreBreakdown = ({
 								: i18n.t('powerScore.volatility')}
 						<SettingTooltipIcon text={i18n.t('powerScore.tooltipVolatility')} label={i18n.t('powerScore.volatility')} />
 					</span>
-					<span className='powerscore-breakdown-value' style={{ color: variance > 0 ? boostPenaltyMeta.volatility.ink : variance < 0 ? boostPenaltyMeta.clockStall.ink : undefined }}>
+					<span className='powerscore-breakdown-value' style={{ color: variance > 0 ? penaltyPresentation.volatility.ink : variance < 0 ? penaltyPresentation.clockStall.ink : undefined }}>
 						{variance > 0 ? `+${variance}` : variance < 0 ? `${minus}${Math.abs(variance)}` : '0'}
 					</span>
 				</div>
 			)}
-			<div className='powerscore-breakdown-row'>
-				<span className='d-flex align-items-center gap-1'>
-					<FactorIcon factor='favorite' />
-					{i18n.t('powerScore.favoriteBoost')}
-					<SettingTooltipIcon text={i18n.t('powerScore.tooltipFavoriteBoost')} label={i18n.t('powerScore.favoriteBoost')} />
-				</span>
-				<span className='powerscore-breakdown-value' style={{ color: favoriteBonus > 0 ? boostPenaltyMeta.favorite.ink : undefined }}>{favoriteBonus > 0 ? `+${favoriteBonus}` : '0'}</span>
-			</div>
-			{favoriteBonus > 0 && <div className='powerscore-breakdown-note'>{i18n.t('powerScore.favoriteTeamsInMatchup', favoriteTeamCount)}</div>}
-			<div className='powerscore-breakdown-row'>
-				<span className='d-flex align-items-center gap-1'>
-					<FactorIcon factor='gameBoost' />
-					{i18n.t('powerScore.gameBoost')}
-					<SettingTooltipIcon text={i18n.t('powerScore.tooltipGameBoost')} label={i18n.t('powerScore.gameBoost')} />
-				</span>
-				<span className='powerscore-breakdown-value' style={{ color: currentBoost > 0 ? boostPenaltyMeta.gameBoost.ink : undefined }}>{currentBoost > 0 ? `+${currentBoost}` : '0'}</span>
-			</div>
-			<div className='powerscore-breakdown-row'>
-				<span className='d-flex align-items-center gap-1'>
-					<FactorIcon factor='scoringOpp' />
-					{i18n.t('powerScore.scoringOpportunity')}
-					<SettingTooltipIcon text={i18n.t('powerScore.tooltipScoringOpportunity')} label={i18n.t('powerScore.scoringOpportunity')} />
-				</span>
-				<span className='powerscore-breakdown-value' style={{ color: scoringOpportunityBoost > 0 ? boostPenaltyMeta.scoringOpp.ink : undefined }}>{scoringOpportunityBoost > 0 ? `+${scoringOpportunityBoost}` : '0'}</span>
-			</div>
-			<div className='powerscore-breakdown-row'>
-				<span className='d-flex align-items-center gap-1'>
-					<FactorIcon factor='postseason' />
-					{i18n.t('powerScore.postseasonBoost')}
-					{postseasonLabel && <span className='powerscore-breakdown-qualifier'>· {postseasonLabel}</span>}
-					<SettingTooltipIcon text={i18n.t('powerScore.tooltipPostseasonBoost')} label={i18n.t('powerScore.postseasonBoost')} />
-				</span>
-				<span className='powerscore-breakdown-value' style={{ color: postseasonBoost > 0 ? boostPenaltyMeta.postseason.ink : undefined }}>{postseasonBoost > 0 ? `+${postseasonBoost}` : '0'}</span>
-			</div>
+			{showsClassicRow && (
+				<div className='powerscore-breakdown-row'>
+					<span className='d-flex align-items-center gap-1'>
+						<FactorIcon icon='layers-half' color={unknownFactorColor} />
+						{i18n.t('powerScore.blendClassic')}
+						<SettingTooltipIcon text={i18n.t(blendTooltipKey)} label={i18n.t('powerScore.blendClassic')} />
+					</span>
+					<span className='powerscore-breakdown-value'>{classicRowValue}</span>
+				</div>
+			)}
+			{blend && blend.kind !== 'floor' && mode && (
+				<div className='powerscore-breakdown-row'>
+					<span className='d-flex align-items-center gap-1'>
+						<FactorIcon icon='layers-half' color={unknownFactorColor} />
+						{`${i18n.t(mode.nameKey)} × ${blendPercent}%`}
+					</span>
+					<span className='powerscore-breakdown-value'>
+						{blend.kind === 'boost' ? `+${Math.round(blend.ownTotal * blend.weight)}` : `${blend.ownTotal} × ${blendPercent}%`}
+					</span>
+				</div>
+			)}
+			{boostRows.map(boost => {
+				const meta = isBoostId(boost.id) ? boostPresentation[boost.id] : undefined;
+				const label = boostLabel(boost.id);
+				return (
+					<Fragment key={boost.id}>
+						<div className='powerscore-breakdown-row'>
+							<span className='d-flex align-items-center gap-1'>
+								<FactorIcon icon={meta?.icon ?? 'plus-circle'} color={meta?.color ?? unknownFactorColor} />
+								{label}
+								{boost.id === 'postseasonBoost' && postseasonLabel && <span className='powerscore-breakdown-qualifier'>· {postseasonLabel}</span>}
+								{meta && <SettingTooltipIcon text={i18n.t(meta.tooltipKey)} label={label} />}
+							</span>
+							<span className='powerscore-breakdown-value' style={{ color: boost.points > 0 ? meta?.ink : undefined }}>{boost.points > 0 ? `+${boost.points}` : '0'}</span>
+						</div>
+						{boost.id === 'favoriteBoost' && boost.points > 0 && <div className='powerscore-breakdown-note'>{i18n.t('powerScore.favoriteTeamsInMatchup', favoriteTeamCount)}</div>}
+					</Fragment>
+				);
+			})}
 			<div className='powerscore-breakdown-row powerscore-breakdown-row-total'><span>{i18n.t('powerScore.finalPowerScore')}</span><span>{totalLabel}</span></div>
 			{reason && <div className='powerscore-breakdown-reason'>{reason}</div>}
 		</section>

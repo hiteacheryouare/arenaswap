@@ -106,6 +106,8 @@ const basketball = {
 				['totalTurnovers', 'Total Turnovers', '9'],
 				['steals', 'Steals', '4'],
 				['blocks', 'Blocks', '2'],
+				['largestLead', 'Largest Lead', '4'],
+				['leadChanges', 'Lead Changes', '9'],
 			]),
 			teamStats('20', 'home', [
 				['fieldGoalsMade-fieldGoalsAttempted', 'FG', '27-63'],
@@ -116,6 +118,8 @@ const basketball = {
 				['totalTurnovers', 'Total Turnovers', '6'],
 				['steals', 'Steals', '6'],
 				['blocks', 'Blocks', '5'],
+				['largestLead', 'Largest Lead', '7'],
+				['leadChanges', 'Lead Changes', '9'],
 			]),
 		],
 	},

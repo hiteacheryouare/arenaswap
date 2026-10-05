@@ -16,6 +16,8 @@ jest.mock('@arenaswap/core', () => ({
 	fetchGamesWithLeagueLogos: jest.fn(),
 	fetchNextScheduledStart: jest.fn().mockResolvedValue(null),
 	fetchWinProbability: jest.fn().mockResolvedValue([]),
+	fetchCompetitionSituation: jest.fn().mockResolvedValue({}),
+	fetchLeagueStandings: jest.fn().mockResolvedValue({}),
 	fetchTeamMonoLogos: jest.fn().mockResolvedValue({}),
 	fetchGameDurationMins: jest.fn().mockResolvedValue(null),
 	fetchConferenceDirectory: jest.fn().mockRejectedValue(new Error('offline')),

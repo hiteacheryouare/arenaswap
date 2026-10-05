@@ -1,5 +1,5 @@
 export { fetchGames, fetchLiveGames, fetchLeagueLogos, fetchGamesWithLeagueLogos,
-	fetchTeamMonoLogos, fetchNextScheduledStart, fetchTeamsForLeagues, fetchWinProbability, fetchGameDurationMins, parseGameDurationMins,
+	fetchTeamMonoLogos, fetchNextScheduledStart, fetchTeamsForLeagues, fetchWinProbability, fetchGameDurationMins, parseGameDurationMins, parseScoreboardEvents, parseWinProbability, fetchCompetitionSituation, fetchLeagueStandings,
 	monoMarksFromLogos, scoreboardRefreshMs } from './apiClient';
 export { logWarn, logError, setVerboseLogging, isVerboseLogging } from './logger';
 export { computeEagerIntervalMs, computeHebetudinousIntervalMs, computeLeagueIntervalMs, earliestUpcomingStartMs, pollWinProbabilityMs } from './pollIntervalComputer';
@@ -7,6 +7,16 @@ export type { EspnTeamEntry } from './apiClient';
 export { computeGameProgress, computePowerScore, computeScoringOpportunityBoost, computeWinProbVarianceScore, isPlayFrozen, normalizePowerScoreResult } from 'powerscore';
 export { scoreMaxTotal } from 'powerscore';
 export { MockGameSimulator } from './mockGames';
+export { resolveModeForGame, modesInUse, isScoringModeChoice } from './scoringMode';
+export { fantasyRulesRead, fantasyRosterLimit, fantasyRosterStorageKey, normalizeFantasyRoster, readFantasyBoxScore, rosterInGame } from './fantasy';
+export type { FantasyRosterEntry, FantasyBoxScore } from './fantasy';
+export type { FantasyScoringOverrides } from './liveExtras';
+export { defenseRosterEntry, fantasyLeagues, foldName, nameMatchScore, parsePlayerSearch, resolveRosterEntry, searchPlayers, toFantasyPosition } from './playerSearch';
+export type { PlayerSearchResult } from './playerSearch';
+export { createLiveExtras, hasStandingsRaces, readBasketballSituation, readBoxLeadChanges, readHockeySituation, readPregameLine, readStandingsStakes } from './liveExtras';
+export type { BasketballSituation, BasketballTeamSituation, LiveExtras } from './liveExtras';
+export { chooseSwitchTarget, getFavoriteTeamCount, getHistoryWindowMsForGame, maxSnapshotsPerGame, nextClockStall, recentSnapshots, retainSnapshots, scoreLiveGame, scoreOptionsFor, scoringContextFor, toLegacyPowerScoreResult, toLiveScore, toScoreSnapshot, toScoringGame } from './scoring';
+export type { ClockStallEntry, LiveScoringInput, ScoringPrefs, SwitchCandidateTab, SwitchPolicyInput, SwitchTarget } from './scoring';
 export { offseasonGraceMs, resolveOffseason, toLeagueSchedule } from './leagueSchedule';
 export type { LeagueOffseason } from './leagueSchedule';
 export { gradePostseason, postseasonBoostShare, reduceEventName } from './postseasonRound';

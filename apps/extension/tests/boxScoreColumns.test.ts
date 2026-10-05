@@ -508,6 +508,22 @@ describe('buildComparison', () => {
 		expect(zeroish).toHaveLength(1);
 	});
 
+	// The box score's own count, which sees every change; ours only sees the ones a poll lands on.
+	test('closes basketball with the largest lead and the lead changes, after the team stats', () => {
+		const built = buildComparison('basketball', rows([
+			['leadChanges', '9', '9'],
+			['fouls', '18', '21'],
+			['largestLead', '4', '7'],
+			['blocks', '2', '5'],
+			['leadPercentage', '0', '0'],
+		]));
+		expect(built).toEqual([
+			{ labelKey: 'box.blocks', away: '2', home: '5' },
+			{ labelKey: 'box.largestLead', away: '4', home: '7' },
+			{ labelKey: 'box.leadChanges', away: '9', home: '9' },
+		]);
+	});
+
 	test('reads nothing for baseball, whose team stats are the R-H-E above', () => {
 		expect(buildComparison('baseball', rows([['atBats', '29', '29']]))).toEqual([]);
 	});

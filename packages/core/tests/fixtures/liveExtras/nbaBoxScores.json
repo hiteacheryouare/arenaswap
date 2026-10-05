@@ -1,0 +1,203 @@
+{
+	"_source": "summary boxscore basketball/nba 401902644, recordings/2026-10-03; consecutive polls; statistics trimmed",
+	"polls": [
+		{
+			"ts": 1791069377381,
+			"gameId": "401902644",
+			"raw": {
+				"boxscore": {
+					"teams": [
+						{
+							"team": {
+								"id": "14",
+								"abbreviation": "MIA"
+							},
+							"statistics": [
+								{
+									"name": "fouls",
+									"displayValue": "0",
+									"label": "Fouls"
+								},
+								{
+									"name": "largestLead",
+									"displayValue": "1",
+									"label": "Largest Lead"
+								},
+								{
+									"name": "leadChanges",
+									"displayValue": "2",
+									"label": "Lead Changes"
+								},
+								{
+									"name": "leadPercentage",
+									"displayValue": "0",
+									"label": "Percent Led"
+								}
+							]
+						},
+						{
+							"team": {
+								"id": "28",
+								"abbreviation": "TOR"
+							},
+							"statistics": [
+								{
+									"name": "fouls",
+									"displayValue": "1",
+									"label": "Fouls"
+								},
+								{
+									"name": "largestLead",
+									"displayValue": "2",
+									"label": "Largest Lead"
+								},
+								{
+									"name": "leadChanges",
+									"displayValue": "2",
+									"label": "Lead Changes"
+								},
+								{
+									"name": "leadPercentage",
+									"displayValue": "0",
+									"label": "Percent Led"
+								}
+							]
+						}
+					]
+				}
+			}
+		},
+		{
+			"ts": 1791069438258,
+			"gameId": "401902644",
+			"raw": {
+				"boxscore": {
+					"teams": [
+						{
+							"team": {
+								"id": "14",
+								"abbreviation": "MIA"
+							},
+							"statistics": [
+								{
+									"name": "fouls",
+									"displayValue": "0",
+									"label": "Fouls"
+								},
+								{
+									"name": "largestLead",
+									"displayValue": "1",
+									"label": "Largest Lead"
+								},
+								{
+									"name": "leadChanges",
+									"displayValue": "3",
+									"label": "Lead Changes"
+								},
+								{
+									"name": "leadPercentage",
+									"displayValue": "0",
+									"label": "Percent Led"
+								}
+							]
+						},
+						{
+							"team": {
+								"id": "28",
+								"abbreviation": "TOR"
+							},
+							"statistics": [
+								{
+									"name": "fouls",
+									"displayValue": "2",
+									"label": "Fouls"
+								},
+								{
+									"name": "largestLead",
+									"displayValue": "2",
+									"label": "Largest Lead"
+								},
+								{
+									"name": "leadChanges",
+									"displayValue": "3",
+									"label": "Lead Changes"
+								},
+								{
+									"name": "leadPercentage",
+									"displayValue": "0",
+									"label": "Percent Led"
+								}
+							]
+						}
+					]
+				}
+			}
+		},
+		{
+			"ts": 1791069498752,
+			"gameId": "401902644",
+			"raw": {
+				"boxscore": {
+					"teams": [
+						{
+							"team": {
+								"id": "14",
+								"abbreviation": "MIA"
+							},
+							"statistics": [
+								{
+									"name": "fouls",
+									"displayValue": "0",
+									"label": "Fouls"
+								},
+								{
+									"name": "largestLead",
+									"displayValue": "3",
+									"label": "Largest Lead"
+								},
+								{
+									"name": "leadChanges",
+									"displayValue": "3",
+									"label": "Lead Changes"
+								},
+								{
+									"name": "leadPercentage",
+									"displayValue": "0",
+									"label": "Percent Led"
+								}
+							]
+						},
+						{
+							"team": {
+								"id": "28",
+								"abbreviation": "TOR"
+							},
+							"statistics": [
+								{
+									"name": "fouls",
+									"displayValue": "3",
+									"label": "Fouls"
+								},
+								{
+									"name": "largestLead",
+									"displayValue": "2",
+									"label": "Largest Lead"
+								},
+								{
+									"name": "leadChanges",
+									"displayValue": "3",
+									"label": "Lead Changes"
+								},
+								{
+									"name": "leadPercentage",
+									"displayValue": "0",
+									"label": "Percent Led"
+								}
+							]
+						}
+					]
+				}
+			}
+		}
+	]
+}

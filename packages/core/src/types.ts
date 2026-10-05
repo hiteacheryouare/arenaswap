@@ -8,7 +8,15 @@ import type {
 	ScorerTunables,
 	LeagueConfig,
 	LeagueRunMinutes,
+	BuiltInModeId,
+	FantasySport,
+	ReasonFragment,
+	ScoredBoost,
+	ScoredSignal,
+	BlendResult,
 } from 'powerscore';
+
+export type ScoringModeChoice = BuiltInModeId | 'custom';
 
 export type SignalName = 'closeness' | 'lateGame' | 'momentum' | 'leadChanges' | 'comeback';
 export type {
@@ -21,6 +29,12 @@ export type {
 	ScorerTunables,
 	LeagueConfig,
 	LeagueRunMinutes,
+	BuiltInModeId,
+	FantasySport,
+	ReasonFragment,
+	ScoredBoost,
+	ScoredSignal,
+	BlendResult,
 };
 
 // Baseball pitchers and hockey goalies arrive in the same `probables` structure, so this is not
@@ -105,6 +119,26 @@ export interface Team {
 	// Timeouts left. Live games only, and only in the sports that send them, which among the
 	// leagues we ship is the two gridiron ones.
 	timeouts?: number;
+	// Baseball and softball, live and final.
+	hits?: number;
+	errors?: number;
+}
+
+export interface SeriesState {
+	// 'season' is MLB's regular-season series, which nobody is eliminated from.
+	kind: 'playoff' | 'season';
+	homeWins: number;
+	awayWins: number;
+	bestOf: number;
+}
+
+export interface RedCardEvent {
+	teamId: string;
+	// Elapsed game minute, from the match clock.
+	minute: number;
+	// Stoppage time, which the clock leaves out: a card at 90'+6' has a `minute` of 90.
+	addedMinutes?: number;
+	player?: string;
 }
 
 export interface GameCondition {
@@ -153,6 +187,9 @@ export interface Game {
 	intermission?: boolean;
 	// Top of inning = true, bottom = false.
 	topOfInning?: boolean;
+	// "End 6th": both halves are done and the next inning hasn't started. Reported live, for a couple
+	// of minutes at a time, with no half-inning to read.
+	inningEnded?: boolean;
 	baseRunners?: { first: boolean; second: boolean; third: boolean };
 	bso?: { balls: number; strikes: number; outs: number };
 	// Inning sports only. Dropped between innings, which is what makes the panel come and go.
@@ -182,6 +219,9 @@ export interface Game {
 	yardLine?: number;
 	// Matches `homeTeam.id` or `awayTeam.id`.
 	possessionTeamId?: string;
+	// Basketball only: whose ball it is after the last play, or undefined when that play doesn't say
+	// (a timeout, a substitution, a missed shot still in the air). See deriveBasketballPossession.
+	possessionSide?: 'home' | 'away';
 	// Where the current drive began, in the same coordinates as `yardLine`.
 	driveStartYardLine?: number;
 	weather?: GameCondition;
@@ -197,6 +237,9 @@ export interface Game {
 	// beside it. Present on games that score nothing, because a bowl's name is worth showing even
 	// when the game is not.
 	postseasonLabel?: string;
+	// An exhibition before the regular season: NBA and NHL preseason, NFL preseason, MLB spring
+	// training. Read off `season.slug` alone — see resolvePreseason in apiClient.ts.
+	isPreseason?: boolean;
 	delayed?: boolean;
 	delayDescription?: string;
 	// The college division scoreboards that returned this game (`groups=` values). An FBS vs FCS
@@ -207,6 +250,10 @@ export interface Game {
 	collegeTitleRound?: boolean;
 	// A seeded national bracket, where the rank field carries the seed rather than a poll rank.
 	collegeSeeded?: boolean;
+	series?: SeriesState;
+	// Soccer, in the order they were shown. Not `redCards`: the engine's Game uses that name for its
+	// own side-keyed shape, and a core Game has to stay assignable to it.
+	redCardEvents?: RedCardEvent[];
 }
 
 // What becomes of a registered tab once its game is over. 'keep' is what ArenaSwap has always
@@ -256,8 +303,18 @@ export interface UserPreferences {
 	postseasonBoostPoints: number;
 	// 1–14.
 	upcomingGamesDays: number;
-	// The remaining signals are renormalized to 0–100.
+	// Classic's switched-off signals. The rest are rescaled to the full range.
 	disabledSignals: SignalName[];
+	// Which question PowerScore answers. 'custom' picks a mode per league from `leagueModes`.
+	scoringMode: ScoringModeChoice;
+	// Custom only. A league left out scores as Classic.
+	leagueModes: Partial<Record<LeagueId, BuiltInModeId>>;
+	// Switched-off signals for the modes other than Classic, by mode.
+	modeDisabledSignals: Partial<Record<Exclude<BuiltInModeId, 'classic'>, string[]>>;
+	// Fantasy's share of the blend with Classic, 0–100.
+	fantasyBlend: number;
+	// Only the rules a user changed; the rest keep the analyst's defaults.
+	fantasyScoring: Partial<Record<FantasySport, Partial<Record<string, number>>>>;
 	// Only leagues the user has changed are stored; a missing league uses its default.
 	collegeFilters: CollegeFilterMap;
 }
@@ -341,6 +398,32 @@ export interface PowerScoreSnapshot {
 	stalled: boolean;
 	stallPenalty?: number;
 	reason: string;
+	// PowerScore 3. Absent on a snapshot from before modes, which is then Classic.
+	modeId?: string;
+	signals?: Record<string, number>;
+	boosts?: Record<string, number>;
+	reasons?: ReasonFragment[];
+}
+
+// The full PowerScore 3 picture of a score: which mode scored it, every signal and boost as a list,
+// and the reasons as keys a translation can read.
+export interface ScoreBreakdown {
+	modeId: string;
+	signals: ScoredSignal[];
+	boosts: ScoredBoost[];
+	reasons: ReasonFragment[];
+	frozen: boolean;
+	scaledSubtotal: number;
+	signalCeiling: number;
+	// Classic's total when the mode blends with it or uses it as a floor.
+	classicTotal?: number;
+	blend?: BlendResult;
+}
+
+// What the background hands the popup: the flat 2.x fields every screen already reads, plus the
+// breakdown the mode-aware ones read.
+export interface LiveScore extends PowerScoreResult {
+	breakdown?: ScoreBreakdown;
 }
 
 export type PowerScoreHistoryMap = Record<string, PowerScoreSnapshot[]>;

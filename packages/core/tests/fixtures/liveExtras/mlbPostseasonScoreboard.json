@@ -1,0 +1,159 @@
+{
+	"_source": "scoreboard baseball/mlb, recorded 2026-10-03T23:58:30.209Z (recordings/2026-10-03); trimmed",
+	"events": [
+		{
+			"id": "401907985",
+			"uid": "s:1~l:10~e:401907985",
+			"date": "2026-10-03T22:30Z",
+			"name": "New York Yankees at Tampa Bay Rays",
+			"shortName": "NYY @ TB",
+			"season": {
+				"year": 2026,
+				"type": 3,
+				"slug": "post-season"
+			},
+			"competitions": [
+				{
+					"id": "401907985",
+					"uid": "s:1~l:10~e:401907985~c:401907985",
+					"date": "2026-10-03T22:30Z",
+					"attendance": 0,
+					"type": {
+						"id": "15",
+						"abbreviation": "QTR"
+					},
+					"timeValid": true,
+					"neutralSite": false,
+					"conferenceCompetition": true,
+					"playByPlayAvailable": true,
+					"recent": true,
+					"wasSuspended": false,
+					"venue": {
+						"id": "31",
+						"fullName": "Tropicana Field"
+					},
+					"competitors": [
+						{
+							"id": "30",
+							"uid": "s:1~l:10~t:30",
+							"type": "team",
+							"order": 0,
+							"homeAway": "home",
+							"score": "1",
+							"hits": 5,
+							"errors": 0,
+							"team": {
+								"id": "30",
+								"uid": "s:1~l:10~t:30",
+								"location": "Tampa Bay",
+								"name": "Rays",
+								"abbreviation": "TB",
+								"displayName": "Tampa Bay Rays",
+								"shortDisplayName": "Rays",
+								"color": "092c5c",
+								"alternateColor": "8fbce6",
+								"logo": "https://a.espncdn.com/i/teamlogos/mlb/500/scoreboard/tb.png"
+							}
+						},
+						{
+							"id": "10",
+							"uid": "s:1~l:10~t:10",
+							"type": "team",
+							"order": 1,
+							"homeAway": "away",
+							"score": "0",
+							"hits": 0,
+							"errors": 0,
+							"team": {
+								"id": "10",
+								"uid": "s:1~l:10~t:10",
+								"location": "New York",
+								"name": "Yankees",
+								"abbreviation": "NYY",
+								"displayName": "New York Yankees",
+								"shortDisplayName": "Yankees",
+								"color": "132448",
+								"alternateColor": "c4ced4",
+								"logo": "https://a.espncdn.com/i/teamlogos/mlb/500/scoreboard/nyy.png"
+							}
+						}
+					],
+					"notes": [
+						{
+							"type": "event",
+							"headline": "ALDS - Game 1"
+						}
+					],
+					"situation": {
+						"lastPlay": {
+							"id": "4019079850899990058",
+							"text": "Middle of the 5th inning"
+						},
+						"balls": 0,
+						"strikes": 0,
+						"outs": 0,
+						"onFirst": false,
+						"onSecond": false,
+						"onThird": false
+					},
+					"status": {
+						"clock": 0,
+						"displayClock": "0:00",
+						"period": 5,
+						"type": {
+							"id": "2",
+							"name": "STATUS_IN_PROGRESS",
+							"state": "in",
+							"completed": false,
+							"description": "In Progress",
+							"detail": "Middle 5th",
+							"shortDetail": "Mid 5th"
+						}
+					},
+					"format": {
+						"regulation": {
+							"periods": 9
+						}
+					},
+					"startDate": "2026-10-03T22:30Z",
+					"series": {
+						"type": "playoff",
+						"title": "Playoff Series",
+						"summary": "",
+						"completed": false,
+						"totalCompetitions": 5,
+						"competitors": [
+							{
+								"id": "30",
+								"uid": "s:1~l:10~t:30",
+								"wins": 0,
+								"ties": 0
+							},
+							{
+								"id": "10",
+								"uid": "s:1~l:10~t:10",
+								"wins": 0,
+								"ties": 0
+							}
+						]
+					},
+					"outsText": "0 Outs"
+				}
+			],
+			"status": {
+				"clock": 0,
+				"displayClock": "0:00",
+				"period": 5,
+				"type": {
+					"id": "2",
+					"name": "STATUS_IN_PROGRESS",
+					"state": "in",
+					"completed": false,
+					"description": "In Progress",
+					"detail": "Middle 5th",
+					"shortDetail": "Mid 5th"
+				}
+			}
+		}
+	]
+}

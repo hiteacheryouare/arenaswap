@@ -1,3 +1,4 @@
+import { deriveBasketballPossession } from './basketballPossession';
 import { collegeFetchGroups, readCollegeBracket } from './college';
 import { isWithinFinalRetention, leagueConfigMap, pollLookaheadDays, pollMinEagerMs, resolveLeagueLogoUrl, upcomingGamesDaysMax } from './constants';
 import { parseClockToSeconds } from './gameClock';
@@ -20,7 +21,7 @@ import type {
 	EspnVenueAddress,
 } from './espnSchemas';
 import { logWarn } from './logger';
-import type { AtBat, AtBatPlayer, Game, GameCondition, GameOdds, LeagueConfig, LeagueId, LeagueLogoMap, LeagueSchedule, LeagueScheduleMap, ProbableStarter, TeamLeader, TeamMonoLogoMap, TeamMonoMarks } from './types';
+import type { AtBat, AtBatPlayer, Game, GameCondition, RedCardEvent, SeriesState, GameOdds, LeagueConfig, LeagueId, LeagueLogoMap, LeagueSchedule, LeagueScheduleMap, ProbableStarter, TeamLeader, TeamMonoLogoMap, TeamMonoMarks } from './types';
 
 const espnBase = 'https://site.api.espn.com/apis/site/v2/sports';
 
@@ -587,6 +588,10 @@ const resolvePostseason = (event: EspnEvent, comp: EspnCompetition, league: Leag
 	return false;
 };
 
+// The slug rather than `type === 1`: soccer's `season.type` is a per-competition id (the NWSL's
+// regular season is 14024), so a number could collide where the slug cannot.
+const resolvePreseason = (event: EspnEvent): boolean => event.season?.slug?.trim().toLowerCase() === 'preseason';
+
 // ESPN's own suffix, not ours. `Final/SO` for a shootout and `Final/3OT` for a triple overtime are
 // broadcast conventions this project would otherwise have to reproduce per sport from the period
 // number, and the shootout one it could not reproduce at all.
@@ -601,6 +606,31 @@ const parseTopOfInning = (shortDetail?: string): boolean | undefined => {
 	if (shortDetail.startsWith('Top')) return true;
 	if (shortDetail.startsWith('Bot') || shortDetail.startsWith('Mid')) return false;
 	return undefined;
+};
+
+const parseSeries = (comp: EspnCompetition, homeId: string, awayId: string): SeriesState | undefined => {
+	const series = comp.series;
+	if (!series?.totalCompetitions || !series.competitors) return undefined;
+	const winsOf = (id: string) => series.competitors!.find(entry => entry.id === id)?.wins;
+	const homeWins = winsOf(homeId);
+	const awayWins = winsOf(awayId);
+	if (homeWins === undefined || awayWins === undefined) return undefined;
+	return { kind: series.type === 'playoff' ? 'playoff' : 'season', homeWins, awayWins, bestOf: series.totalCompetitions };
+};
+
+const parseRedCards = (comp: EspnCompetition): RedCardEvent[] | undefined => {
+	const cards = (comp.details ?? [])
+		.filter(detail => detail.redCard === true && detail.team?.id !== undefined && typeof detail.clock?.value === 'number')
+		.map((detail): RedCardEvent => {
+			const added = Number(/\+(\d+)/.exec(detail.clock!.displayValue ?? '')?.[1]);
+			return {
+				teamId: detail.team!.id!,
+				minute: detail.clock!.value! / 60,
+				...(added > 0 ? { addedMinutes: added } : {}),
+				...(detail.athletesInvolved?.[0]?.displayName ? { player: detail.athletesInvolved[0].displayName } : {}),
+			};
+		});
+	return cards.length > 0 ? cards : undefined;
 };
 
 const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
@@ -640,6 +670,7 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 			...resolveTeamColors(home.team.color, home.team.alternateColor),
 			...parseTeamContext(home, state),
 			timeouts: liveSituation ? situation.homeTimeouts : undefined,
+			...(isInningSport && home.hits !== undefined ? { hits: home.hits, errors: home.errors } : {}),
 		},
 		awayTeam: {
 			id: away.id,
@@ -652,6 +683,7 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 			...resolveTeamColors(away.team.color, away.team.alternateColor),
 			...parseTeamContext(away, state),
 			timeouts: liveSituation ? situation.awayTimeouts : undefined,
+			...(isInningSport && away.hits !== undefined ? { hits: away.hits, errors: away.errors } : {}),
 		},
 		venueName: comp.venue?.fullName ?? comp.venue?.name ?? undefined,
 		venueLocation: parseVenueLocation(comp.venue?.address),
@@ -674,6 +706,7 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 		odds: parseOdds(comp),
 		intermission: /HALFTIME|END_PERIOD|INTERMISSION/i.test(status.type?.name ?? ''),
 		topOfInning: isInningSport ? parseTopOfInning(status.type?.shortDetail) : undefined,
+		inningEnded: isInningSport && status.type?.shortDetail?.startsWith('End') ? true : undefined,
 		baseRunners: isInningSport && situation ? {
 			first: situation.onFirst ?? false,
 			second: situation.onSecond ?? false,
@@ -694,6 +727,9 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 		isGoalToGo: isGridironSituation ? parseGoalToGo(situation) : undefined,
 		yardLine: isGridironSituation ? situation.yardLine : undefined,
 		possessionTeamId: isGridironSituation ? parsePossession(situation, home.id, away.id) : undefined,
+		possessionSide: leagueConfig.sportType === 'basketball' && liveSituation
+			? deriveBasketballPossession(situation.lastPlay, home.id, away.id)
+			: undefined,
 		driveStartYardLine: isGridironSituation ? situation.lastPlay?.drive?.start?.yardLine : undefined,
 		atBat: isInningSport && liveSituation ? parseAtBat(situation) : undefined,
 		// No sport gate: baseball and hockey describe their last play as readily as football does.
@@ -706,9 +742,12 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 		// regular-season oddity like an NFL London game carries a typed note too.
 		postseasonRound: grade?.round,
 		postseasonLabel: grade?.label,
+		isPreseason: resolvePreseason(event),
 		...(postseason ? readCollegeBracket(league, readEventHeadline(comp.notes)) : {}),
 		delayed: isDelayed || undefined,
 		delayDescription,
+		series: parseSeries(comp, home.id, away.id),
+		redCardEvents: leagueConfig.sportType === 'soccer' ? parseRedCards(comp) : undefined,
 	};
 };
 
@@ -1126,7 +1165,9 @@ export const fetchLeagueLogos = async (enabledLeagues: LeagueId[], options: { in
 // Home-win fractions in [0, 1], oldest first. Lives on the summary endpoint, so it costs one
 // request per game — call it on a slower cadence than the scoreboard poll. Empty whenever ESPN
 // has nothing, which the scorer reads as "no signal" rather than a neutral zero.
-export const fetchWinProbability = async (game: Pick<Game, 'id' | 'league'>, init?: { signal?: AbortSignal }): Promise<number[]> => {
+// `onSummary` hands the whole payload on, so the closing line and box score ride along with the one
+// request the win-probability sweep already makes.
+export const fetchWinProbability = async (game: Pick<Game, 'id' | 'league'>, init?: { signal?: AbortSignal; onSummary?: (summary: unknown) => void }): Promise<number[]> => {
 	const config = leagueConfigMap[game.league];
 	if (!config) return [];
 
@@ -1135,14 +1176,51 @@ export const fetchWinProbability = async (game: Pick<Game, 'id' | 'league'>, ini
 	const res = await fetch(url, { headers: { 'Accept': 'application/json' }, signal: init?.signal });
 	if (!res.ok) throw new Error(`Failed to fetch win probability for ${game.id}: HTTP ${res.status}`);
 
-	const parsed = EspnSummarySchema.safeParse(await res.json());
-	if (!parsed.success) return [];
+	const summary: unknown = await res.json();
+	init?.onSummary?.(summary);
+	return parseWinProbability(summary);
+};
 
+const coreApiBase = 'https://sports.core.api.espn.com/v2/sports';
+
+// The live situation our sources' core API keeps per competition: hockey's power play and empty net,
+// basketball's fouls and timeouts. Served with open CORS, so it needs no host permission.
+export const fetchCompetitionSituation = async (game: Pick<Game, 'id' | 'league'>): Promise<unknown> => {
+	const config = leagueConfigMap[game.league];
+	const [sport, leaguePath] = config.espnPath.split('/');
+	await takeRequestSlot();
+	// Its replies are cacheable for seconds and stale for hours, so it's always asked afresh.
+	const res = await fetch(`${coreApiBase}/${sport}/leagues/${leaguePath}/events/${game.id}/competitions/${game.id}/situation`, { headers: { Accept: 'application/json' }, cache: 'no-cache' });
+	if (!res.ok) throw new Error(`Failed to fetch the situation for ${game.id}: HTTP ${res.status}`);
+	return await res.json();
+};
+
+// The whole league's standings tree, for the late-season race markers.
+export const fetchLeagueStandings = async (league: LeagueId): Promise<unknown> => {
+	const config = leagueConfigMap[league];
+	await takeRequestSlot();
+	const res = await fetch(`https://site.api.espn.com/apis/v2/sports/${config.espnPath}/standings?level=3`, { headers: { Accept: 'application/json' } });
+	if (!res.ok) throw new Error(`Failed to fetch ${league} standings: HTTP ${res.status}`);
+	return await res.json();
+};
+
+// The home side's win probability over the game so far, from a summary payload.
+export const parseWinProbability = (raw: unknown): number[] => {
+	const parsed = EspnSummarySchema.safeParse(raw);
+	if (!parsed.success) return [];
 	return (parsed.data.winprobability ?? [])
 		.map(entry => entry.homeWinPercentage)
 		.filter((p): p is number => typeof p === 'number' && Number.isFinite(p))
 		.map(p => Math.min(Math.max(p, 0), 1));
 };
+
+// A raw scoreboard payload into games, exactly as a live fetch would parse it. For replaying
+// recorded slates.
+export const parseScoreboardEvents = (raw: unknown, league: LeagueId): Game[] => (
+	parseScoreboard(raw).events
+		.map(event => parseEvent(event, league))
+		.filter((game): game is Game => game !== null)
+);
 
 // ESPN sends `gameInfo.gameDuration` as "3:14" — hours and minutes, not a clock time. It is
 // baseball-only among the leagues sampled, which is why the row it feeds is absent rather than

@@ -1,6 +1,6 @@
 {
 	"name": "@arenaswap/docs",
-	"version": "2.2.0",
+	"version": "3.0.0",
 	"private": true,
 	"scripts": {
 		"dev": "ASTRO_DEV_BACKGROUND=1 astro dev",

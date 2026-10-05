@@ -8,9 +8,10 @@
 - [i18n review contract](review_i18n_contract.md) — how to verify keys against locales/en.json and where the key check is blind
 - [Known false positives](project_review_false_positives.md) — i18n substitution, lowercase JSX helpers, packages/ui "duplication", the stale gc2TeamLogo finding
 - [PowerScore reason strings](project_powerscore_reason_strings.md) — English-only by design inside the npm package; not an i18n miss
-- [PowerScore failure map](review_powerscore_failure_map.md) — unknown-clock→0:00, NaN eating the stall penalty, soccer "overtime", README drift, untypechecked tests
+- [PowerScore failure map](review_powerscore_failure_map.md) — v3 seams: core adapter, mode blends (Fantasy/Blowouts math), in-memory liveExtras, reason-key locale parity
 - [Review targets and commands](reference_review_targets.md) — verification commands, reading refs without touching the shared checkout
 - [Docs site + design system map](review_docs_site_map.md) — token shadowing, "compute don't hardcode" for PowerScore numbers, hand-maintained font dirs, where dead code collects
 - [History window footgun](review_history_window_footgun.md) — score/PowerScore history is a 5–20 min rolling window; any "whole game" history assumption is dead on arrival
 - [Background slate lifecycle](review_background_slate_lifecycle.md) — refreshSlate runs on every worker start and now costs a request per Eastern day per league; 2 empty polls walk a league quiet
 - [Popup open reveal](review_popup_open_reveal.md) — measured DM Sans tricode widths, the harness/production nesting mismatch, the 3400ms JS↔SCSS duplication
+- [PowerScore replay harness](review_powerscore_replay_harness.md) — hit@1 tie-break luck, dist+src engine mix, non-self-contained hourly files, recorder dies with the session

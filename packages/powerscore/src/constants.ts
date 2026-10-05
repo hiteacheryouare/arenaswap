@@ -126,7 +126,24 @@ export const scorerTunables: ScorerTunables = {
 		momentumRolling: 'on a roll',
 		leadChangeMultiple: 'trading leads',
 		leadChangeSingle: 'just took the lead',
+		comebackBig: 'cutting into it',
+		comebackModerate: 'closing the gap',
 		fallback: 'best game available',
+		boosts: {
+			favoriteBoost: 'favorite bonus',
+			gameBoost: 'game boost',
+			scoringOpportunity: 'scoring opportunity',
+			postseasonBoost: 'postseason',
+			goAheadRun: 'go-ahead run on base',
+			twoMinuteDrill: 'two-minute drill',
+			emptyNet: 'empty net',
+			powerPlay: 'power play',
+			redCard: 'red card',
+			noHitter: 'no-hitter',
+			upsetWatch: 'upset watch',
+			upsetRout: 'upset',
+			stakes: 'stakes',
+		},
 	},
 };
 
@@ -597,3 +614,34 @@ export const allLeagueIds = leagueConfigs.map(c => c.id) as LeagueId[];
 export const leagueConfigMap = Object.fromEntries(
 	leagueConfigs.map(c => [c.id, c])
 ) as Record<LeagueId, LeagueConfig>;
+
+// PowerScore 3 boosts. Values from the sports analyst's spec (2026-10-03); each boost file explains
+// its own shape.
+export const boostBucketCaps = {
+	// Runners, go-ahead run, red zone, two-minute drill, empty net, power play, red card. A tied
+	// buzzer (80) plus a full moment reaches 100; a one-score final minute (~68) reaches the high 80s.
+	moment: 20,
+	// A no-hit bid lasts innings and has to lift a 6-0 game past tied ones.
+	noHitter: 70,
+	// Upset plus stakes stay below a late one-score swing, so context never outranks live action.
+	context: 16,
+} as const;
+
+export const goAheadRunTunables = { goAhead: 8, tyingRun: 5, earlyFactor: 0.5, lastChanceFactor: 1.25 } as const;
+
+export const twoMinuteDrillTunables = { max: 12, oneScore: 8, peakYards: 35, ownTwentyFactor: 0.4 } as const;
+
+export const noHitterTunables = {
+	ladder: [10, 22, 38, 52] as const,
+	finalStagePerOut: 5,
+	battingFactor: 0.7,
+	softballFactor: 0.6,
+} as const;
+
+export const redCardTunables = { fullMinutes: 2, fadeMinutes: 10, secondCardFactor: 1.5, siegeClosenessBump: 4 } as const;
+
+export const upsetTunables = { max: 12 } as const;
+
+export const stakesTunables = { max: 10, raceMax: 6 } as const;
+
+export const hockeyTunables = { emptyNetWindowSecs: 240 } as const;
