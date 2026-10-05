@@ -181,6 +181,67 @@ describe('parseLeagueStandings', () => {
 		expect(group?.rows.map(row => row.rank)).toEqual([null, null]);
 	});
 
+	test('orders a division by record when it arrives by playoff seed, which is how MLB sends one', () => {
+		const team = (id: string, location: string, wins: string, losses: string, pct: string) => ({
+			team: { id, location, logos: [] },
+			stats: [stat('wins', wins), stat('losses', losses), stat('winPercent', pct)],
+		});
+		const alEast = {
+			name: 'American League East',
+			isConference: false,
+			standings: {
+				entries: [
+					team('10', 'New York', '93', '68', '.578'),
+					team('2', 'Boston', '87', '75', '.537'),
+					team('1', 'Baltimore', '79', '82', '.491'),
+					team('30', 'Tampa Bay', '98', '64', '.605'),
+				],
+			},
+		};
+		const [group] = parseLeagueStandings(alEast, 'baseball');
+		expect(group?.rows.map(row => row.name)).toEqual(['Tampa Bay', 'New York', 'Boston', 'Baltimore']);
+	});
+
+	test('orders hockey by points and keeps the arrival order for teams level on them', () => {
+		const team = (id: string, location: string, wins: string, otLosses: string, points: string) => ({
+			team: { id, location, logos: [] },
+			stats: [stat('wins', wins), stat('losses', '0'), stat('otLosses', otLosses), stat('points', points)],
+		});
+		const atlantic = {
+			name: 'Atlantic Division',
+			isConference: false,
+			standings: {
+				entries: [
+					team('6', 'Montreal', '1', '0', '2'),
+					team('21', 'Toronto', '1', '0', '2'),
+					team('26', 'Florida', '1', '1', '3'),
+				],
+			},
+		};
+		const [group] = parseLeagueStandings(atlantic, 'hockey');
+		expect(group?.rows.map(row => row.name)).toEqual(['Florida', 'Montreal', 'Toronto']);
+	});
+
+	test('orders a soccer table by league position when it arrives alphabetized, which is MLS', () => {
+		const club = (id: string, location: string, points: string, rank: string) => ({
+			team: { id, location, logos: [] },
+			stats: [stat('gamesPlayed', '30'), stat('points', points), stat('rank', rank)],
+		});
+		const east = {
+			name: 'Eastern Conference',
+			isConference: false,
+			standings: {
+				entries: [
+					club('1', 'Atlanta', '40', '3'),
+					club('2', 'Charlotte', '50', '2'),
+					club('3', 'Cincinnati', '50', '1'),
+				],
+			},
+		};
+		const [group] = parseLeagueStandings(east, 'soccer');
+		expect(group?.rows.map(row => row.name)).toEqual(['Cincinnati', 'Charlotte', 'Atlanta']);
+	});
+
 	test('reads nothing from an unrecognized payload or an unknown sport', () => {
 		expect(parseLeagueStandings(undefined, 'football')).toEqual([]);
 		expect(parseLeagueStandings(nflLeague, undefined)).toEqual([]);
@@ -217,6 +278,26 @@ describe('parseStandings, the summary fallback', () => {
 		const [group] = parseStandings(college, 'football', '154', '2390');
 		expect(group?.columns.map(column => column.labelKey)).toEqual(['standings.conference', 'standings.overall']);
 		expect(group?.rows[0]?.values).toEqual(['2-0', '3-0']);
+	});
+
+	test('orders a conference by its conference record, leaving teams level on it as they arrived', () => {
+		const conference = {
+			standings: {
+				groups: [{
+					header: '2026 Atlantic Coast Conference Standings',
+					standings: {
+						entries: [
+							{ team: 'Syracuse', id: '183', stats: [stat('overall', '1-2'), stat('vs. Conf.', '0-2')] },
+							{ team: 'Wake Forest', id: '154', stats: [stat('overall', '3-1'), stat('vs. Conf.', '1-1')] },
+							{ team: 'Virginia Tech', id: '259', stats: [stat('overall', '4-1'), stat('vs. Conf.', '1-1')] },
+							{ team: 'Miami', id: '2390', stats: [stat('overall', '4-0'), stat('vs. Conf.', '2-0')] },
+						],
+					},
+				}],
+			},
+		};
+		const [group] = parseStandings(conference, 'football', '154', '2390');
+		expect(group?.rows.map(row => row.name)).toEqual(['Miami', 'Wake Forest', 'Virginia Tech', 'Syracuse']);
 	});
 
 	test('trims the word the tab above the table already says', () => {
