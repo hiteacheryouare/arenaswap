@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { i18n } from '#i18n';
 import {
 	defenseRosterEntry,
@@ -123,7 +123,12 @@ const fantasyRosterPage = ({ roster, onRosterChange, services = liveServices }: 
 	const searchable = foldName(query).length >= 2;
 	const current = searchable && outcome?.query === query ? outcome : undefined;
 	// A fresh one of the game list's loading lines for each search.
-	const searchingMessage = useMemo(() => getRandomLoadingMessage(), [query]);
+	const [searchingMessage, setSearchingMessage] = useState(getRandomLoadingMessage);
+	const [messageQuery, setMessageQuery] = useState(query);
+	if (messageQuery !== query) {
+		setMessageQuery(query);
+		setSearchingMessage(getRandomLoadingMessage());
+	}
 	const searching = searchable && !current;
 
 	useEffect(() => {
