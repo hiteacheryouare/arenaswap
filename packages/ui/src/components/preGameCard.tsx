@@ -1,6 +1,6 @@
 import { createFavoriteTeamKey } from '@arenaswap/core/constants';
 import type { GameCardDisplayProps } from './gameCardTypes';
-import { CardStatusRow, GameMeta, PostseasonLabel, TeamColumn, buildCardHandlers, buildGameCardSurface, formatStartDateTime, formatStartTime } from './gameCardShared';
+import { CardStatusRow, GameMeta, SeasonLabel, TeamColumn, buildCardHandlers, buildGameCardSurface, formatStartDateTime, formatStartTime } from './gameCardShared';
 import { conditionIcon, formatTemperature } from './weatherUtils';
 import { useDisplayLocale, useT } from './i18nContext';
 import useSwitchCrest from './useSwitchCrest';
@@ -30,8 +30,8 @@ const preGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, onOpenGameDe
 		>
 			{/* A scheduled card has no status row of its own, so the league mark or the round name
 			    brings one. Without either, the card keeps the height it has always had. */}
-			{(leagueSlot || game.postseasonLabel) && (
-				<CardStatusRow status={leagueSlot}><PostseasonLabel game={game} /></CardStatusRow>
+			{(leagueSlot || game.postseasonLabel || game.isPreseason) && (
+				<CardStatusRow status={leagueSlot}><SeasonLabel game={game} /></CardStatusRow>
 			)}
 
 			<div className='d-flex align-items-center justify-content-center game-card-matchup'>

@@ -588,6 +588,10 @@ const resolvePostseason = (event: EspnEvent, comp: EspnCompetition, league: Leag
 	return false;
 };
 
+// The slug rather than `type === 1`: soccer's `season.type` is a per-competition id (the NWSL's
+// regular season is 14024), so a number could collide where the slug cannot.
+const resolvePreseason = (event: EspnEvent): boolean => event.season?.slug?.trim().toLowerCase() === 'preseason';
+
 // ESPN's own suffix, not ours. `Final/SO` for a shootout and `Final/3OT` for a triple overtime are
 // broadcast conventions this project would otherwise have to reproduce per sport from the period
 // number, and the shootout one it could not reproduce at all.
@@ -738,6 +742,7 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 		// regular-season oddity like an NFL London game carries a typed note too.
 		postseasonRound: grade?.round,
 		postseasonLabel: grade?.label,
+		isPreseason: resolvePreseason(event),
 		...(postseason ? readCollegeBracket(league, readEventHeadline(comp.notes)) : {}),
 		delayed: isDelayed || undefined,
 		delayDescription,

@@ -638,6 +638,8 @@
 		"periodShootout": "PK",
 		"powerScore": "PowerScore",
 		"vs": "vs",
+		"preseason": "프리시즌",
+		"springTraining": "시범경기",
 		"topOfInning": "초",
 		"bottomOfInning": "말"
 	},

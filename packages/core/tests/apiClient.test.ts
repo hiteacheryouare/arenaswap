@@ -1885,12 +1885,34 @@ describe('apiClient', () => {
 			expect(result.games.find(g => g.id === 'no-season')?.isPostseason).toBe(false);
 		});
 
-		test('sets isPostseason false when season.type is 1 (preseason)', async () => {
+		// The season object a real NBA preseason game arrived with.
+		test('marks a preseason game as preseason and not postseason', async () => {
 			const { fetchGamesWithLeagueLogos } = fetchWith([
-				makeEvent({ id: 'pre-season', state: 'in', period: 1, clock: '10:00', homeScore: '0', awayScore: '0', season: { year: 2025, type: 1, slug: 'pre-season' } }),
+				makeEvent({ id: 'preseason', state: 'in', period: 1, clock: '10:00', homeScore: '0', awayScore: '0', season: { year: 2027, type: 1, slug: 'preseason' } }),
 			]);
 			const result = await fetchGamesWithLeagueLogos(['nba'], { includeUpcoming: false });
-			expect(result.games.find(g => g.id === 'pre-season')?.isPostseason).toBe(false);
+			const game = result.games.find(g => g.id === 'preseason');
+			expect(game?.isPreseason).toBe(true);
+			expect(game?.isPostseason).toBe(false);
+		});
+
+		test('does not mark a regular-season or postseason game as preseason', async () => {
+			const { fetchGamesWithLeagueLogos } = fetchWith([
+				makeEvent({ id: 'regular', state: 'in', period: 1, clock: '10:00', homeScore: '0', awayScore: '0', season: { year: 2027, type: 2, slug: 'regular-season' } }),
+				makeEvent({ id: 'playoff', state: 'in', period: 1, clock: '10:00', homeScore: '0', awayScore: '0', season: { year: 2026, type: 3, slug: 'post-season' } }),
+				makeEvent({ id: 'no-season', state: 'in', period: 1, clock: '10:00', homeScore: '0', awayScore: '0' }),
+			]);
+			const result = await fetchGamesWithLeagueLogos(['nba'], { includeUpcoming: false });
+			expect(result.games.map(g => [g.id, g.isPreseason])).toEqual(expect.arrayContaining([['regular', false], ['playoff', false], ['no-season', false]]));
+		});
+
+		// Soccer's season.type is a per-competition id, so a type of 1 says nothing about the calendar.
+		test('ignores a season.type of 1 that is not slugged preseason', async () => {
+			const { fetchGamesWithLeagueLogos } = fetchWith([
+				makeEvent({ id: 'odd-type', state: 'in', period: 1, clock: '10:00', homeScore: '0', awayScore: '0', season: { year: 2026, type: 1, slug: 'regular-season' } }),
+			]);
+			const result = await fetchGamesWithLeagueLogos(['nba'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'odd-type')?.isPreseason).toBe(false);
 		});
 
 		// These competitions use a per-tournament type id that is never 3, so slug is the only

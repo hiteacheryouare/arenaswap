@@ -237,6 +237,9 @@ export interface Game {
 	// beside it. Present on games that score nothing, because a bowl's name is worth showing even
 	// when the game is not.
 	postseasonLabel?: string;
+	// An exhibition before the regular season: NBA and NHL preseason, NFL preseason, MLB spring
+	// training. Read off `season.slug` alone — see resolvePreseason in apiClient.ts.
+	isPreseason?: boolean;
 	delayed?: boolean;
 	delayDescription?: string;
 	// The college division scoreboards that returned this game (`groups=` values). An FBS vs FCS

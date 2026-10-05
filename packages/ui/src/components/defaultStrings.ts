@@ -20,6 +20,8 @@ export const defaultStrings: Record<string, string> = {
 	'gameCard.delay': 'DELAY',
 	'gameCard.delayFallback': 'Delay',
 	'gameCard.vs': 'vs',
+	'gameCard.preseason': 'Preseason',
+	'gameCard.springTraining': 'Spring Training',
 	'gameCard.topOfInning': 'Top of inning',
 	'gameCard.bottomOfInning': 'Bottom of inning',
 	'gameCard.shootout': 'PENS {away}–{home}',
