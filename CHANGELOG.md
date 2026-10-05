@@ -19,7 +19,7 @@ A tie at the top of the replay's ranking now earns its share of credit instead o
 
 ## The settings cog is filled again — 2026-10-04
 
-The header's settings button is back to the filled `bi-gear-fill`, along with the tour's drawings of it, undoing the outline swap from 2026-10-02 in both themes. The calendar and question mark beside it stay outline, so the cog stands out on purpose.
+The header's settings button is back to the filled `bi-gear-fill`, along with the tour's drawings of it and the store screenshots, undoing the outline swap from 2026-10-02 in both themes. The calendar and question mark beside it stay outline, so the cog stands out on purpose.
 
 ## Fantasy defenses get credit for the right fumbles — 2026-10-04
 
