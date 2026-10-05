@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Three films of a real Saturday night — 2026-10-05
+
+`npm run film` renders 15, 30 and 60-second ads in 16:9 and 9:16 from Saturday, October 3, replaying the recorded slate through the real popup, the real PowerScore engine and the shipped switch rule, so every score, switch and burst of confetti on screen happened. The popup runs inside headless Chrome on a virtual clock with every CSS animation scrubbed to it, and the soundtrack is synthesized in `scripts/film/audio`; `scripts/film/README.md` covers rebuilding, retiming and translating them.
+
 ## Basketball's hero reads like a scorebug — 2026-10-04
 
 The fouls sentence under a live basketball hero is gone: a caret beside the score points at the team with the ball, BONUS sits under a team's timeout dots once it's in the bonus, and the NBA's seven timeouts draw as dots, a size down, instead of a numeral. Our sources send no possession for basketball, so core reads it off the last play's type, and the popup holds the last side named through timeouts and substitutions until the period ends.

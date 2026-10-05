@@ -15,6 +15,9 @@
 		"build:e2e": {
 			"dependsOn": ["^build"]
 		},
+		"build:film": {
+			"dependsOn": ["^build"]
+		},
 		"zip": {
 			"dependsOn": ["^build", "build"],
 			"cache": false
