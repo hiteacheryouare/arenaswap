@@ -408,6 +408,13 @@ $pre-game-time-color: bs.shade-color(bs.$warning, 60%);
 	color: #374151;
 }
 
+// The NBA's seven, sized to sit under a team name the way gridiron's three do.
+.timeout-dots.is-compact {
+	gap: 0.1rem;
+
+	.timeout-dot { font-size: 0.4rem; }
+}
+
 // The unlit half of the allotment carries as much of the reading as the lit half — two timeouts
 // left only means anything against a row of three. `bi-circle` is a hairline ring, so at anything
 // lighter than this it disappears on the card's tinted plate and a 2-of-3 row looks like a 2.

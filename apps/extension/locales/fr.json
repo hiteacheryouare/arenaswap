@@ -399,31 +399,9 @@
 		"matchMinuteAdded": "{minute}+{added}'",
 		"pitchingLabel": "Lancer",
 		"atBatLabel": "Au bâton",
-		"foulsBothBonus": "Les deux équipes en bonus",
-		"foulsBothDoubleBonus": "Les deux équipes en double bonus",
-		"foulsMixedBonus": "{first} en double bonus, {second} en bonus",
+		"bonus": "Bonus",
 		"foulsBonus": "{team} en bonus",
 		"foulsDoubleBonus": "{team} en double bonus",
-		"foulsBonusToGive": {
-			"1": "{team} en bonus avec 1 faute à donner",
-			"n": "{team} en bonus avec $1 fautes à donner"
-		},
-		"foulsDoubleBonusToGive": {
-			"1": "{team} en double bonus avec 1 faute à donner",
-			"n": "{team} en double bonus avec $1 fautes à donner"
-		},
-		"foulsToGive": {
-			"1": "{team} a 1 faute à donner",
-			"n": "{team} a $1 fautes à donner"
-		},
-		"foulsBothToGive": {
-			"1": "Les deux équipes ont 1 faute à donner",
-			"n": "Les deux équipes ont $1 fautes à donner"
-		},
-		"foulsEachToGive": {
-			"1": "{first} a 1 faute à donner, {second} en a {count}",
-			"n": "{first} a $1 fautes à donner, {second} en a {count}"
-		},
 		"infoWatch": "Diffusion",
 		"infoVenue": "Lieu",
 		"infoEnded": "Fin",

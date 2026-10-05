@@ -1,3 +1,4 @@
+import { deriveBasketballPossession } from './basketballPossession';
 import { collegeFetchGroups, readCollegeBracket } from './college';
 import { isWithinFinalRetention, leagueConfigMap, pollLookaheadDays, pollMinEagerMs, resolveLeagueLogoUrl, upcomingGamesDaysMax } from './constants';
 import { parseClockToSeconds } from './gameClock';
@@ -722,6 +723,9 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 		isGoalToGo: isGridironSituation ? parseGoalToGo(situation) : undefined,
 		yardLine: isGridironSituation ? situation.yardLine : undefined,
 		possessionTeamId: isGridironSituation ? parsePossession(situation, home.id, away.id) : undefined,
+		possessionSide: leagueConfig.sportType === 'basketball' && liveSituation
+			? deriveBasketballPossession(situation.lastPlay, home.id, away.id)
+			: undefined,
 		driveStartYardLine: isGridironSituation ? situation.lastPlay?.drive?.start?.yardLine : undefined,
 		atBat: isInningSport && liveSituation ? parseAtBat(situation) : undefined,
 		// No sport gate: baseball and hockey describe their last play as readily as football does.

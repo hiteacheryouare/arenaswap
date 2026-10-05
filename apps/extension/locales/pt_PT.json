@@ -399,31 +399,9 @@
 		"matchMinuteAdded": "{minute}+{added}'",
 		"pitchingLabel": "Lançamentos",
 		"atBatLabel": "A rebater",
-		"foulsBothBonus": "As duas equipas em bónus",
-		"foulsBothDoubleBonus": "As duas equipas em bónus duplo",
-		"foulsMixedBonus": "{first} em bónus duplo, {second} em bónus",
+		"bonus": "Bónus",
 		"foulsBonus": "{team} em bónus",
 		"foulsDoubleBonus": "{team} em bónus duplo",
-		"foulsBonusToGive": {
-			"1": "{team} em bónus com 1 falta para dar",
-			"n": "{team} em bónus com $1 faltas para dar"
-		},
-		"foulsDoubleBonusToGive": {
-			"1": "{team} em bónus duplo com 1 falta para dar",
-			"n": "{team} em bónus duplo com $1 faltas para dar"
-		},
-		"foulsToGive": {
-			"1": "{team} tem 1 falta para dar",
-			"n": "{team} tem $1 faltas para dar"
-		},
-		"foulsBothToGive": {
-			"1": "As duas equipas têm 1 falta para dar",
-			"n": "As duas equipas têm $1 faltas para dar"
-		},
-		"foulsEachToGive": {
-			"1": "{first} tem 1 falta para dar, {second} tem {count}",
-			"n": "{first} tem $1 faltas para dar, {second} tem {count}"
-		},
 		"infoWatch": "Ver em",
 		"infoVenue": "Local",
 		"infoEnded": "Fim",

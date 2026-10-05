@@ -399,31 +399,9 @@
 		"matchMinuteAdded": "{minute}+{added}'",
 		"pitchingLabel": "투구",
 		"atBatLabel": "타석",
-		"foulsBothBonus": "양 팀 모두 보너스",
-		"foulsBothDoubleBonus": "양 팀 모두 더블 보너스",
-		"foulsMixedBonus": "{first} 더블 보너스, {second} 보너스",
+		"bonus": "보너스",
 		"foulsBonus": "{team} 보너스",
 		"foulsDoubleBonus": "{team} 더블 보너스",
-		"foulsBonusToGive": {
-			"1": "{team} 보너스, 파울 1개 여유",
-			"n": "{team} 보너스, 파울 $1개 여유"
-		},
-		"foulsDoubleBonusToGive": {
-			"1": "{team} 더블 보너스, 파울 1개 여유",
-			"n": "{team} 더블 보너스, 파울 $1개 여유"
-		},
-		"foulsToGive": {
-			"1": "{team} 파울 1개 여유",
-			"n": "{team} 파울 $1개 여유"
-		},
-		"foulsBothToGive": {
-			"1": "양 팀 모두 파울 1개 여유",
-			"n": "양 팀 모두 파울 $1개 여유"
-		},
-		"foulsEachToGive": {
-			"1": "{first} 파울 1개 여유, {second} {count}개 여유",
-			"n": "{first} 파울 $1개 여유, {second} {count}개 여유"
-		},
 		"infoWatch": "시청",
 		"infoVenue": "경기장",
 		"infoEnded": "종료 시각",

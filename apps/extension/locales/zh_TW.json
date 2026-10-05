@@ -399,31 +399,9 @@
 		"matchMinuteAdded": "{minute}+{added}'",
 		"pitchingLabel": "投球",
 		"atBatLabel": "打席",
-		"foulsBothBonus": "雙方都進入罰球",
-		"foulsBothDoubleBonus": "雙方都進入雙倍罰球",
-		"foulsMixedBonus": "{first}進入雙倍罰球，{second}進入罰球",
+		"bonus": "罰球",
 		"foulsBonus": "{team}進入罰球",
 		"foulsDoubleBonus": "{team}進入雙倍罰球",
-		"foulsBonusToGive": {
-			"1": "{team}進入罰球，還能犯規 1 次",
-			"n": "{team}進入罰球，還能犯規 $1 次"
-		},
-		"foulsDoubleBonusToGive": {
-			"1": "{team}進入雙倍罰球，還能犯規 1 次",
-			"n": "{team}進入雙倍罰球，還能犯規 $1 次"
-		},
-		"foulsToGive": {
-			"1": "{team}還能犯規 1 次",
-			"n": "{team}還能犯規 $1 次"
-		},
-		"foulsBothToGive": {
-			"1": "雙方都還能犯規 1 次",
-			"n": "雙方都還能犯規 $1 次"
-		},
-		"foulsEachToGive": {
-			"1": "{first}還能犯規 1 次，{second}還能犯規 {count} 次",
-			"n": "{first}還能犯規 $1 次，{second}還能犯規 {count} 次"
-		},
 		"infoWatch": "轉播",
 		"infoVenue": "場館",
 		"infoEnded": "結束",

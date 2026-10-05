@@ -302,16 +302,39 @@ describe('liveGameCard timeout dots', () => {
 		cy.get('.timeout-dots').first().should('have.attr', 'aria-label', 'AWY: 0 timeouts left');
 	});
 
-	it('falls back to a numeral for a sport with more timeouts than fit', () => {
-		// The NBA carries seven. Seven rings do not fit a 60px column, and a row silently clipped
-		// to three would misreport the count rather than merely look wrong.
+	// Past four the row draws a size down, so the NBA's seven fit under a tricode.
+	it('draws a larger allotment a size down, inside the team column', () => {
+		cy.viewport(320, 560);
+		cy.mount(
+			<div style={{ width: 320 }}>
+				<LiveGameCard {...defaultProps} game={{
+					...baseGame,
+					homeTeam: { ...baseGame.homeTeam, timeouts: 6 },
+				}} />
+			</div>,
+		);
+		cy.get('.timeout-dots').should('have.class', 'is-compact').find('.timeout-dot').should('have.length', 6);
+		cy.get('.timeout-dots-numeric').should('not.exist');
+		cy.get('.team-column.is-home').then(([column]: JQuery<HTMLElement>) => {
+			cy.get('.timeout-dots').should(([dots]: JQuery<HTMLElement>) => {
+				const outer = column.getBoundingClientRect();
+				const inner = dots.getBoundingClientRect();
+				expect(inner.left, 'inside the column').to.be.at.least(outer.left);
+				expect(inner.right, 'inside the column').to.be.at.most(outer.right);
+				expect((inner.left + inner.right) / 2, 'centred').to.be.closeTo((outer.left + outer.right) / 2, 1);
+			});
+		});
+	});
+
+	// Past seven a row would no longer fit, and one silently clipped would misreport the count.
+	it('falls back to a numeral past seven', () => {
 		cy.mount(
 			<LiveGameCard {...defaultProps} game={{
 				...baseGame,
-				homeTeam: { ...baseGame.homeTeam, timeouts: 6 },
+				homeTeam: { ...baseGame.homeTeam, timeouts: 8 },
 			}} />,
 		);
-		cy.get('.timeout-dots-numeric').should('have.length', 1).should('have.text', '6 TO');
+		cy.get('.timeout-dots-numeric').should('have.length', 1).should('have.text', '8 TO');
 		cy.get('.timeout-dot').should('not.exist');
 	});
 

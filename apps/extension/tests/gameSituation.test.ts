@@ -1,7 +1,6 @@
 import { i18n } from '#i18n';
 import type { Game } from '@arenaswap/core/types';
-import type { BasketballSituation } from '@arenaswap/core';
-import { basketballTimeoutAllotment, describeBasketballFouls, describeRedCard, formatMatchMinute, resolveStatus } from '../entrypoints/popup/components/gameSituation';
+import { basketballTimeoutAllotment, bonusKind, describeRedCard, formatMatchMinute, resolveStatus } from '../entrypoints/popup/components/gameSituation';
 
 const t = i18n.t;
 
@@ -68,45 +67,18 @@ describe('resolveStatus', () => {
 	});
 });
 
-const situation = (away: BasketballSituation['away'], home: BasketballSituation['home']): BasketballSituation => ({ away, home });
-
-describe('describeBasketballFouls', () => {
-	const game = makeGame();
-
-	test('says how many each side can still give before the other is in the bonus', () => {
-		expect(describeBasketballFouls(situation({ foulsToGive: 2 }, { foulsToGive: 4 }), game, t)).toBe('AWY has 2 fouls to give, HOM has 4');
-		expect(describeBasketballFouls(situation({ foulsToGive: 1 }, { foulsToGive: 3 }), game, t)).toBe('AWY has 1 foul to give, HOM has 3');
+// Our sources send DOUBLE for every league once a team is past the limit. Only the men's college
+// game has a one-and-one, so only there is DOUBLE a different thing from the bonus.
+describe('bonusKind', () => {
+	test('reads DOUBLE as the bonus everywhere but men\'s college basketball', () => {
+		expect(bonusKind({ bonus: 'double' }, 'nba')).toBe('bonus');
+		expect(bonusKind({ bonus: 'double' }, 'ncaaw')).toBe('bonus');
+		expect(bonusKind({ bonus: 'double' }, 'ncaab')).toBe('double');
+		expect(bonusKind({ bonus: 'bonus' }, 'ncaab')).toBe('bonus');
 	});
 
-	test('says it once when both sides have the same number to give', () => {
-		expect(describeBasketballFouls(situation({ foulsToGive: 4 }, { foulsToGive: 4 }), game, t)).toBe('Both teams have 4 fouls to give');
-		expect(describeBasketballFouls(situation({ foulsToGive: 1 }, { foulsToGive: 1 }), game, t)).toBe('Both teams have 1 foul to give');
-	});
-
-	// Home in the bonus is away out of fouls, so "AWY has 0 to give" would say the same thing twice.
-	test('names the team in the bonus and what that team can still give', () => {
-		expect(describeBasketballFouls(situation({ foulsToGive: 0 }, { bonus: 'double', foulsToGive: 1 }), game, t)).toBe('HOM in the bonus with 1 foul to give');
-		expect(describeBasketballFouls(situation({ bonus: 'double', foulsToGive: 3 }, { foulsToGive: 0 }), game, t)).toBe('AWY in the bonus with 3 fouls to give');
-		expect(describeBasketballFouls(situation({ foulsToGive: 0 }, { bonus: 'double', foulsToGive: 0 }), game, t)).toBe('HOM in the bonus');
-	});
-
-	test('says both teams once when both are in it', () => {
-		expect(describeBasketballFouls(situation({ bonus: 'double', foulsToGive: 0 }, { bonus: 'double', foulsToGive: 0 }), game, t)).toBe('Both teams in the bonus');
-	});
-
-	// Only the men's college game has a one-and-one, so only there is DOUBLE a different thing.
-	test('keeps the double bonus for men\'s college basketball', () => {
-		const college = makeGame({ league: 'ncaab' });
-		expect(describeBasketballFouls(situation({ bonus: 'bonus' }, { bonus: 'double' }), college, t)).toBe('HOM in the double bonus, AWY in the bonus');
-		expect(describeBasketballFouls(situation({ bonus: 'double' }, { bonus: 'double' }), college, t)).toBe('Both teams in the double bonus');
-		expect(describeBasketballFouls(situation({ foulsToGive: 0 }, { bonus: 'double', foulsToGive: 2 }), college, t)).toBe('HOM in the double bonus with 2 fouls to give');
-		expect(describeBasketballFouls(situation({ bonus: 'bonus' }, { foulsToGive: 0 }), college, t)).toBe('AWY in the bonus');
-		expect(describeBasketballFouls(situation({ bonus: 'double' }, { bonus: 'bonus' }), makeGame({ league: 'ncaaw' }), t)).toBe('Both teams in the bonus');
-	});
-
-	test('says what it knows when only one side reports fouls, and nothing when neither does', () => {
-		expect(describeBasketballFouls(situation({}, { foulsToGive: 2 }), game, t)).toBe('HOM has 2 fouls to give');
-		expect(describeBasketballFouls(situation({ timeoutsLeft: 3 }, { timeoutsLeft: 2 }), game, t)).toBeUndefined();
+	test('is nothing for a team that is not in it', () => {
+		expect(bonusKind({ foulsToGive: 2, timeoutsLeft: 3 }, 'nba')).toBeUndefined();
 	});
 });
 

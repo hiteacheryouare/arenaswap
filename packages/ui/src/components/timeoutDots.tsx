@@ -2,15 +2,16 @@ import { useT } from './i18nContext';
 
 interface timeoutDotsProps {
 	remaining: number;
-	// What a full allotment looks like in this sport. Gridiron is 3 a half, which is the only
-	// value the leagues we ship ever send — but the NBA carries 7, and seven dots do not fit in a
-	// 60px column, so the ceiling is a parameter and anything above it falls back to a numeral.
+	// What a full allotment looks like in this sport: 3 a half in gridiron, 7 a game in the NBA.
 	max?: number;
 	teamAbbreviation: string;
 }
 
 export const gridironTimeouts = 3;
-const maxDrawableDots = 4;
+// Past four the dots shrink so the NBA's seven still fit under a team name. Past seven they would
+// not, and the row says the number instead.
+const maxFullSizeDots = 4;
+const maxDrawableDots = 7;
 
 const timeoutDots = ({ remaining, max = gridironTimeouts, teamAbbreviation }: timeoutDotsProps) => {
 	const t = useT();
@@ -30,7 +31,7 @@ const timeoutDots = ({ remaining, max = gridironTimeouts, teamAbbreviation }: ti
 	}
 
 	return (
-		<span className='timeout-dots' role='img' title={label} aria-label={label}>
+		<span className={`timeout-dots${total > maxFullSizeDots ? ' is-compact' : ''}`} role='img' title={label} aria-label={label}>
 			{Array.from({ length: total }, (_, i) => (
 				<i
 					key={i}

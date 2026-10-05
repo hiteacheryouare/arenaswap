@@ -42,6 +42,7 @@ import { matchupSurfaceStyle } from '@arenaswap/ui/src/components/gameCardShared
 import { boostPresentation, isBoostId, isModeSignalId, signalColorOf, signalPresentation } from '@arenaswap/ui/src/components/scoringModeMeta';
 import { useDisplayLocale } from '@arenaswap/ui/src/components/i18nContext';
 import useSwitchCrest from '@arenaswap/ui/src/components/useSwitchCrest';
+import useBasketballPossession from './useBasketballPossession';
 import useBasketballSituation from './useBasketballSituation';
 import useSummaryData from './useSummaryData';
 import { chartHistory, coversWholeGame } from './wrapCoverage';
@@ -198,6 +199,7 @@ const gameDetailView = ({
 	), [scoredModeId, orderedScoreHistory, game, chartPalette, awayLineColor, homeLineColor, locale]);
 	const { winProbability, seriesInfo, records, monoLogos, boxScore, standings, gameDurationMins, matchup, tickets } = useSummaryData(game);
 	const basketballSituation = useBasketballSituation(game);
+	const possession = useBasketballPossession(game);
 	const winProbabilityOption = useMemo(() => (
 		buildWinProbabilityOption(winProbability, game, chartPalette, [awayLineColor, homeLineColor])
 	), [winProbability, game, chartPalette, awayLineColor, homeLineColor]);
@@ -404,6 +406,7 @@ const gameDetailView = ({
 						awayColor={awayAccent}
 						homeColor={homeAccent}
 						basketballSituation={basketballSituation}
+						possession={possession}
 					/>
 				)}
 			</div>

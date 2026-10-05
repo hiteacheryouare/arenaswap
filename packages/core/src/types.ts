@@ -219,6 +219,9 @@ export interface Game {
 	yardLine?: number;
 	// Matches `homeTeam.id` or `awayTeam.id`.
 	possessionTeamId?: string;
+	// Basketball only: whose ball it is after the last play, or undefined when that play doesn't say
+	// (a timeout, a substitution, a missed shot still in the air). See deriveBasketballPossession.
+	possessionSide?: 'home' | 'away';
 	// Where the current drive began, in the same coordinates as `yardLine`.
 	driveStartYardLine?: number;
 	weather?: GameCondition;

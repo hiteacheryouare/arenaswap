@@ -2638,20 +2638,28 @@ button.game-info-attribution {
 	margin-bottom: 0.22rem;
 }
 
-// Basketball's bonus and fouls to give, set like the field caption it stands in for. In the centre
-// ink rather than fixed white, since it sits under the period line on whatever the two teams'
-// colours blend to. It may wrap, but balanced, so a long pair never leaves one word on a line.
-.gd-fouls-line {
-	margin-top: 0.3rem;
-	padding: 0 0.3rem;
-	font-size: 0.66rem;
+// Under the team's timeouts, in the same small bold caps as the count's B S O.
+.gd-bonus {
+	margin-top: 0.1rem;
+	font-size: 0.5rem;
 	font-weight: 700;
-	line-height: 1.3;
-	letter-spacing: 0.01em;
+	line-height: 1;
+	letter-spacing: 0.04em;
 	text-align: center;
-	text-wrap: balance;
-	color: var(--matchup-ink-center, #ffffff);
-	text-shadow: var(--matchup-shadow-center, none);
+	text-transform: uppercase;
+	white-space: nowrap;
+}
+
+// Fixed width whether lit or not, pulled in toward the divider so the pair reads as part of it.
+.gd-possession {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	width: 0.7rem;
+	margin-inline: -0.2rem;
+	font-size: 0.7rem;
+	line-height: 1;
 }
 
 .gd-countdown {

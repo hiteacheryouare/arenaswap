@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Basketball's hero reads like a scorebug — 2026-10-04
+
+The fouls sentence under a live basketball hero is gone: a caret beside the score points at the team with the ball, BONUS sits under a team's timeout dots once it's in the bonus, and the NBA's seven timeouts draw as dots, a size down, instead of a numeral. Our sources send no possession for basketball, so core reads it off the last play's type, and the popup holds the last side named through timeouts and substitutions until the period ends.
+
 ## The replay scores itself honestly, and the recorder outlives its terminal — 2026-10-04
 
 A tie at the top of the replay's ranking now earns its share of credit instead of whichever game the sort left first, labels on games seen for less than one history window are left out (both scorers are cold there), switches per hour counts only real switches over hours that had polls, and the replay bundles one engine, the working tree's, instead of mixing in a stale dist. Rescored that way, v3 Classic leads 2.2.0 by 5.5 points on the first night and 2.0 on the out-of-sample late slate. `npm run powerscore:record -- --detach` keeps recording after the session that started it ends, refuses to start a second copy, keeps the Mac awake, writes every live game in full at the top of each hour so any hour replays alone, and records the injury report Fantasy reads.

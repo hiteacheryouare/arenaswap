@@ -399,31 +399,9 @@
 		"matchMinuteAdded": "{minute}+{added}'",
 		"pitchingLabel": "Arremessos",
 		"atBatLabel": "Rebatendo",
-		"foulsBothBonus": "Os dois times no bônus",
-		"foulsBothDoubleBonus": "Os dois times no bônus duplo",
-		"foulsMixedBonus": "{first} no bônus duplo, {second} no bônus",
+		"bonus": "Bônus",
 		"foulsBonus": "{team} no bônus",
 		"foulsDoubleBonus": "{team} no bônus duplo",
-		"foulsBonusToGive": {
-			"1": "{team} no bônus com 1 falta sobrando",
-			"n": "{team} no bônus com $1 faltas sobrando"
-		},
-		"foulsDoubleBonusToGive": {
-			"1": "{team} no bônus duplo com 1 falta sobrando",
-			"n": "{team} no bônus duplo com $1 faltas sobrando"
-		},
-		"foulsToGive": {
-			"1": "{team} tem 1 falta sobrando",
-			"n": "{team} tem $1 faltas sobrando"
-		},
-		"foulsBothToGive": {
-			"1": "Os dois times têm 1 falta sobrando",
-			"n": "Os dois times têm $1 faltas sobrando"
-		},
-		"foulsEachToGive": {
-			"1": "{first} tem 1 falta sobrando, {second} tem {count}",
-			"n": "{first} tem $1 faltas sobrando, {second} tem {count}"
-		},
 		"infoWatch": "Assistir",
 		"infoVenue": "Local",
 		"infoEnded": "Fim",

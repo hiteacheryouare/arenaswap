@@ -399,31 +399,9 @@
 		"matchMinuteAdded": "{minute}+{added}'",
 		"pitchingLabel": "投球",
 		"atBatLabel": "打席",
-		"foulsBothBonus": "両チームがボーナス",
-		"foulsBothDoubleBonus": "両チームがダブルボーナス",
-		"foulsMixedBonus": "{first}はダブルボーナス、{second}はボーナス",
+		"bonus": "ボーナス",
 		"foulsBonus": "{team}がボーナス",
 		"foulsDoubleBonus": "{team}がダブルボーナス",
-		"foulsBonusToGive": {
-			"1": "{team}がボーナス、ファウルあと1回まで余裕",
-			"n": "{team}がボーナス、ファウルあと$1回まで余裕"
-		},
-		"foulsDoubleBonusToGive": {
-			"1": "{team}がダブルボーナス、ファウルあと1回まで余裕",
-			"n": "{team}がダブルボーナス、ファウルあと$1回まで余裕"
-		},
-		"foulsToGive": {
-			"1": "{team}はファウルあと1回まで余裕",
-			"n": "{team}はファウルあと$1回まで余裕"
-		},
-		"foulsBothToGive": {
-			"1": "両チームともファウルあと1回まで余裕",
-			"n": "両チームともファウルあと$1回まで余裕"
-		},
-		"foulsEachToGive": {
-			"1": "{first}はファウルあと1回、{second}はあと{count}回まで余裕",
-			"n": "{first}はファウルあと$1回、{second}はあと{count}回まで余裕"
-		},
 		"infoWatch": "放送",
 		"infoVenue": "会場",
 		"infoEnded": "終了時刻",

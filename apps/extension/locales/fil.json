@@ -399,31 +399,9 @@
 		"matchMinuteAdded": "{minute}+{added}'",
 		"pitchingLabel": "Pitching",
 		"atBatLabel": "At Bat",
-		"foulsBothBonus": "Parehong team nasa bonus",
-		"foulsBothDoubleBonus": "Parehong team nasa double bonus",
-		"foulsMixedBonus": "{first} nasa double bonus, {second} nasa bonus",
+		"bonus": "Bonus",
 		"foulsBonus": "Nasa bonus ang {team}",
 		"foulsDoubleBonus": "Nasa double bonus ang {team}",
-		"foulsBonusToGive": {
-			"1": "Nasa bonus ang {team}, may natitirang 1 foul",
-			"n": "Nasa bonus ang {team}, may natitirang $1 na foul"
-		},
-		"foulsDoubleBonusToGive": {
-			"1": "Nasa double bonus ang {team}, may natitirang 1 foul",
-			"n": "Nasa double bonus ang {team}, may natitirang $1 na foul"
-		},
-		"foulsToGive": {
-			"1": "May natitirang 1 foul ang {team}",
-			"n": "May natitirang $1 na foul ang {team}"
-		},
-		"foulsBothToGive": {
-			"1": "May natitirang 1 foul ang parehong team",
-			"n": "May natitirang $1 na foul ang parehong team"
-		},
-		"foulsEachToGive": {
-			"1": "May natitirang 1 foul ang {first}, {count} naman ang {second}",
-			"n": "May natitirang $1 na foul ang {first}, {count} naman ang {second}"
-		},
 		"infoWatch": "Panoorin",
 		"infoVenue": "Venue",
 		"infoEnded": "Natapos",
