@@ -88,8 +88,7 @@ const add = (line: StatLine, key: string, value: number) => {
 	if (value) line[key] = (line[key] ?? 0) + value;
 };
 
-// One box-score row into the engine's neutral stat names. Football field goals arrive without
-// distances, so every make scores at the base tier.
+// One box-score row into the engine's neutral stat names.
 const readRow = (category: string | undefined, keys: readonly string[], stats: readonly string[], line: StatLine, defense: StatLine) => {
 	const at = (key: string) => stats[keys.indexOf(key)];
 	const has = (key: string) => keys.includes(key);
