@@ -100,7 +100,7 @@ export const PopupHeader = ({
 					<i className='bi bi-question-circle popup-settings-icon' />
 				</button>
 				<button className='btn btn-sm p-0 popup-settings-button' onClick={onOpenSettings} title={t('main.settingsButton')} aria-label={t('main.settingsButton')} disabled={!interactive} tabIndex={interactive ? undefined : -1}>
-					<i className='bi bi-gear popup-settings-icon' />
+					<i className='bi bi-gear-fill popup-settings-icon' />
 				</button>
 				<div className='form-check form-switch mb-0'>
 					<input className='form-check-input' type='checkbox' id={toggleId} checked={enabled} onChange={onToggleEnabled} disabled={!prefsLoaded || !interactive} tabIndex={interactive ? undefined : -1} aria-label={t('main.enableToggleLabel')} />
