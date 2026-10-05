@@ -91,7 +91,7 @@ const encoder = (ffmpeg: string, size: { width: number; height: number }, audioF
 	'-f', 'image2pipe', '-framerate', String(fps), '-c:v', 'png', '-i', 'pipe:0',
 	'-i', audioFile,
 	'-map', '0:v', '-map', '1:a',
-	'-vf', `scale=${size.width}:${size.height}:out_color_matrix=bt709:out_range=tv,format=yuv420p`,
+	'-vf', `scale=${size.width}:${size.height}:out_color_matrix=bt709:out_range=tv,format=yuv420p,setparams=color_primaries=bt709:color_trc=bt709:colorspace=bt709:range=tv`,
 	'-c:v', 'libx264', '-preset', 'slow', '-crf', '16', '-profile:v', 'high', '-tune', 'animation',
 	'-colorspace', 'bt709', '-color_primaries', 'bt709', '-color_trc', 'bt709', '-color_range', 'tv',
 	'-c:a', 'aac', '-b:a', '256k',

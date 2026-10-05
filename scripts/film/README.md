@@ -41,7 +41,7 @@ A full set of six takes roughly 20 minutes on an Apple-silicon Mac with `--jobs 
   (`/Applications/kdenlive.app/Contents/MacOS/ffmpeg`), or set `FFMPEG_PATH`.
 - A network connection the first time only. Team crests and league marks are fetched from our
   sources' image servers once and kept in `scripts/film/.cache/` (gitignored); after that a render
-  is offline and byte-for-byte repeatable.
+  needs no network.
 
 ## How it works
 
@@ -71,7 +71,9 @@ out/*.mp4
 - **Time is virtual.** Chrome's virtual time drives timers, `requestAnimationFrame` and `Date`.
   CSS animations, transitions and Web Animations run on the compositor's clock instead, so
   `render/pageClock.ts` pauses every one of them each frame and sets it from the virtual clock.
-  `Math.random` is seeded. A frame comes out the same however long it takes to render.
+  `Math.random` is seeded. A frame comes out the same however long it takes to render, with one
+  exception: the popup launches confetti from an effect that runs after a paint, so a burst can
+  start a frame apart between two renders and scatter a little differently.
 - **The cuts are data.** `stage/cuts/cut15.ts`, `cut30.ts` and `cut60.ts` list, in bars at 128 BPM:
   the shots, the supers, which popups exist and the night's clock for each, which tab is in front
   and why, the sound cues, and the music's sections. 8, 16 and 32 bars land on exactly 15, 30 and
