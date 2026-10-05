@@ -122,14 +122,15 @@ const fantasyRosterPage = ({ roster, onRosterChange, services = liveServices }: 
 
 	const searchable = foldName(query).length >= 2;
 	const current = searchable && outcome?.query === query ? outcome : undefined;
-	// A fresh one of the game list's loading lines for each search.
-	const [searchingMessage, setSearchingMessage] = useState(getRandomLoadingMessage);
-	const [messageQuery, setMessageQuery] = useState(query);
-	if (messageQuery !== query) {
-		setMessageQuery(query);
-		setSearchingMessage(getRandomLoadingMessage());
-	}
 	const searching = searchable && !current;
+	// One of the game list's loading lines, drawn when a search starts rather than per keystroke: the
+	// line sits in a live region, so swapping it while the user types would be read out each time.
+	const [searchingMessage, setSearchingMessage] = useState(getRandomLoadingMessage);
+	const [wasSearching, setWasSearching] = useState(searching);
+	if (wasSearching !== searching) {
+		setWasSearching(searching);
+		if (searching) setSearchingMessage(getRandomLoadingMessage());
+	}
 
 	useEffect(() => {
 		let cancelled = false;

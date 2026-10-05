@@ -27,7 +27,7 @@ Checked against the London game's real box score: a defense's takeaways are now 
 
 ## Quieter boost shading, livelier player search — 2026-10-04
 
-The bands that shade boost moments on the PowerScore chart no longer print the boost's name inside the chart (hovering still names it), and the Fantasy roster search shows one of the game list's own loading lines while it looks for players instead of a fixed message.
+The bands that shade boost moments on the PowerScore chart no longer print the boost's name inside the chart (hovering still names it), and the Fantasy roster search shows one of the game list's own loading lines while it looks for players instead of a fixed message, drawn once per search so a screen reader isn't handed a new one on every keystroke.
 
 ## Everything is 3.0.0 — 2026-10-04
 

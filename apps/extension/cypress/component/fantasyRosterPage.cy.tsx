@@ -95,6 +95,19 @@ describe('fantasy roster page', () => {
 		cy.get('@searchPlayers').should('have.been.calledOnce').its('firstCall.args.0').should('eq', 'jokic');
 	});
 
+	// The line sits in a live region, so it holds still while the name is typed out.
+	it('keeps one loading line for the whole search', () => {
+		cy.clock();
+		cy.mount(<Harness stubs={services()} />);
+		search('jo');
+		cy.get('[role="status"]').invoke('text').then(first => {
+			['k', 'i', 'c'].forEach(letter => {
+				cy.get('#fantasyPlayerSearch').type(letter, { delay: 0 });
+				cy.get('[role="status"]').should('have.text', first);
+			});
+		});
+	});
+
 	it('does not search on a single letter', () => {
 		cy.mount(<Harness stubs={services()} />);
 		search('j');
