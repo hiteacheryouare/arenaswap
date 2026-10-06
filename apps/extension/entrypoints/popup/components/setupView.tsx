@@ -540,6 +540,12 @@ const setupView = ({
 	const now = Date.now();
 	const leaguesPage = (
 		<>
+			{noLeaguesSelected && (
+				<div className='setup-no-leagues-warn mb-2'>
+					<i className='bi bi-exclamation-circle me-1' />
+					{i18n.t('setup.noLeaguesWarning')}
+				</div>
+			)}
 			{(Object.keys(sportTypeOrder) as SportType[])
 				.toSorted((a, b) => sportTypeOrder[a] - sportTypeOrder[b])
 				.map(sportType => {
@@ -602,12 +608,6 @@ const setupView = ({
 						</div>
 					);
 				})}
-			{noLeaguesSelected && (
-				<div className='setup-no-leagues-warn mt-2 mb-1'>
-					<i className='bi bi-exclamation-circle me-1' />
-					{i18n.t('setup.noLeaguesWarning')}
-				</div>
-			)}
 		</>
 	);
 

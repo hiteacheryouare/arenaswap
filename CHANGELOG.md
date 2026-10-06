@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The no-leagues notice sits at the top — 2026-10-05
+
+The "No leagues picked" notice on the league picker now shows above the sport groups instead of below them, so it's visible without scrolling to the bottom of the list.
+
 ## Three films of a real Saturday night — 2026-10-05
 
 `npm run film` renders 15, 30 and 60-second ads in 16:9 and 9:16 from Saturday, October 3, replaying the recorded slate through the real popup, the real PowerScore engine and the shipped switch rule, so every score, switch and burst of confetti on screen happened. The popup runs inside headless Chrome on a virtual clock with every CSS animation scrubbed to it, and the soundtrack is synthesized in `scripts/film/audio`; `scripts/film/README.md` covers rebuilding, retiming and translating them.
