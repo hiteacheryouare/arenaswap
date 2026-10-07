@@ -8,6 +8,7 @@ const node = { platform: 'node' as const, resolve: { alias }, logLevel: 'silent'
 
 export default defineConfig([
 	{ ...node, input: 'scripts/film/extract/extractSlate.ts', output: { file: 'scripts/film/extract/extractSlate.cjs', format: 'cjs' } },
+	{ ...node, input: 'scripts/film/extract/fetchPregame.ts', output: { file: 'scripts/film/extract/fetchPregame.cjs', format: 'cjs' } },
 	{ ...node, input: 'scripts/film/render/render.ts', output: { file: 'scripts/film/render/render.cjs', format: 'cjs' } },
 	{ ...node, input: 'scripts/film/audio/cli.ts', output: { file: 'scripts/film/audio/cli.cjs', format: 'cjs' } },
 	// Runs inside each popup before the app does, so it is one classic script with nothing to import.

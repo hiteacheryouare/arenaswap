@@ -1,6 +1,6 @@
 import { allLeagueIds } from '../../../../packages/powerscore/src/constants';
 import { resolveLeagueLogoUrl } from '../../../../packages/core/src/constants';
-import { easeIn, easeInOut, easeSignature, progress, spring } from '../timing';
+import { easeIn, easeSignature, progress, spring } from '../timing';
 import type { PopupPlacement, ShotContext, ShotModule } from './shotTypes';
 
 const Empty = () => null;
@@ -22,46 +22,17 @@ const popupShot = (id: string): ShotModule => ({
 	popups: ctx => [featured(ctx, id)],
 });
 
-const cardSelector = (gameId: string) => `[data-glide-key="${gameId}"] .game-card`;
-
-// Two cards, each filling the frame for half a bar: Kentucky's field strip and down and distance,
-// then the Rays' bases and count.
-const scorebugs: ShotModule = {
-	Component: Empty,
-	popups: ctx => {
-		const half = (ctx.shot.to - ctx.shot.from) / 2;
-		const gameId = ctx.local < half ? '401856709' : '401907985';
-		const doc = ctx.host.runtimes.get('list')?.frame?.contentDocument;
-		const card = doc?.querySelector<HTMLElement>(cardSelector(gameId));
-		if (!card) return [];
-		const rect = card.getBoundingClientRect();
-		const scale = ctx.format === 'portrait' ? 3.1 : 3.0;
-		const top = rect.top - 6;
-		const height = rect.height + 12;
-		const arrive = easeSignature(progress(ctx.local % half, 0, 0.4));
-		const drift = (ctx.local % half) * 14;
-		return [{
-			id: 'list',
-			x: (ctx.width - 320 * scale) / 2,
-			y: (ctx.height - height * scale) / 2 + (1 - arrive) * 40 - drift,
-			scale,
-			opacity: arrive,
-			crop: { top, right: 0, bottom: Math.max(0, 560 - top - height), left: 0 },
-		}];
-	},
-};
-
+// The night ahead, still, so it can be read.
 const guide: ShotModule = {
 	Component: Empty,
 	popups: ctx => {
 		const arrive = easeSignature(progress(ctx.local, 0, 0.5));
-		const push = easeInOut(progress(ctx.local, 0.2, ctx.shot.to - ctx.shot.from));
 		if (ctx.format === 'portrait') {
-			const scale = 1.42 + 0.06 * push;
-			return [{ id: 'guide', x: 40 - 220 * push, y: 560 + (1 - arrive) * 50, scale, opacity: arrive, crop: { top: 0, right: 520, bottom: 0, left: 0 } }];
+			return [{ id: 'guide', x: 40, y: 560, scale: 1.42, opacity: arrive, crop: { top: 0, right: 520, bottom: 0, left: 0 } }];
 		}
-		const scale = 1.36 + 0.05 * push;
-		return [{ id: 'guide', x: (ctx.width - 1280 * scale) / 2, y: (ctx.height - 720 * scale) / 2 + (1 - arrive) * 50, scale, opacity: arrive }];
+		// Below the line of copy at the top of the frame.
+		const scale = 1.2;
+		return [{ id: 'guide', x: (ctx.width - 1280 * scale) / 2, y: 190, scale, opacity: arrive }];
 	},
 };
 
@@ -86,6 +57,12 @@ const leagueCell = (ctx: ShotContext, index: number) => {
 };
 
 const popInSeconds = 0.95;
+
+// The square the dot takes, where an orange card that follows the grid grows from.
+export const leagueDotPoint = (ctx: ShotContext) => {
+	const cell = leagueCell(ctx, markUrls(ctx).length);
+	return { point: { x: cell.x + cell.size / 2, y: cell.y + cell.size / 2 }, radius: cell.size * 0.2 };
+};
 
 const Leagues = ({ ctx }: { ctx: ShotContext }) => {
 	const length = ctx.shot.to - ctx.shot.from;
@@ -120,6 +97,6 @@ const leagues: ShotModule = {
 };
 
 export const detail = popupShot('detail');
-export const boxScore = popupShot('box');
 export const settings = popupShot('settings');
-export { scorebugs, guide, leagues };
+export const pregame = popupShot('pregame');
+export { guide, leagues };

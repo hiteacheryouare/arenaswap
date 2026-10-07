@@ -38,6 +38,7 @@ body {
 .stage-overlay {
 	position: absolute;
 	inset: 0;
+	z-index: 1;
 	pointer-events: none;
 }
 
@@ -66,6 +67,7 @@ body {
 .supers {
 	position: absolute;
 	inset: 0;
+	z-index: 2;
 	pointer-events: none;
 }
 
@@ -83,13 +85,43 @@ body {
 	display: block;
 }
 
+.super-word {
+	display: inline-block;
+}
+
 .super-stop {
 	color: $dot-orange;
+}
+
+// Black type on the full-frame orange the dot opens up behind it.
+.super.is-card {
+	left: 0;
+	right: 0;
+	top: 50%;
+	transform: translateY(-50%);
+	align-items: center;
+	text-align: center;
+	color: #000000;
+	letter-spacing: -0.045em;
+
+	.super-stop {
+		color: #000000;
+	}
 }
 
 .supers.is-landscape {
 	.super {
 		font-size: 76px;
+	}
+
+	.super.is-card {
+		font-size: 168px;
+	}
+
+	// A line that drops in word by word stays on one line across the card.
+	.super.is-card.is-words {
+		font-size: 124px;
+		white-space: nowrap;
 	}
 
 	.super.is-top {
@@ -124,6 +156,10 @@ body {
 		font-size: 84px;
 		left: 70px;
 		right: 70px;
+	}
+
+	.super.is-card {
+		font-size: 150px;
 	}
 
 	.super.is-top,
@@ -184,22 +220,9 @@ body {
 	overflow: hidden;
 }
 
-.stream-field,
-.stream-light,
-.stream-vignette {
+.stream-field {
 	position: absolute;
 	inset: 0;
-}
-
-.stream-flash {
-	position: absolute;
-	inset: 0;
-	background: radial-gradient(70% 80% at 50% 45%, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.08) 70%);
-	mix-blend-mode: screen;
-}
-
-.stream-vignette {
-	background: radial-gradient(120% 90% at 50% 45%, transparent 55%, rgba(0, 0, 0, 0.42) 100%);
 }
 
 .stream-crests {
@@ -221,6 +244,52 @@ body {
 	justify-content: center;
 	font-size: 4rem;
 	font-weight: 700;
+}
+
+// The Standby Stream's studio channel.
+.channel-set {
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(160deg, #10224a 0%, #0a1733 55%, #050b1c 100%);
+}
+
+.channel-lower-third {
+	position: absolute;
+	left: 6%;
+	right: 6%;
+	bottom: 9%;
+	display: flex;
+	justify-content: space-between;
+	padding: 0.9rem 1.4rem;
+	border-radius: 0.5rem;
+	background: #ffffff;
+	color: #0a1733;
+	font-family: 'Geist', 'DM Sans', sans-serif;
+	font-size: 1.15rem;
+	font-weight: 600;
+	font-variant-numeric: tabular-nums;
+	letter-spacing: -0.01em;
+
+	b {
+		font-weight: 800;
+	}
+}
+
+.channel-score-divider {
+	display: inline-block;
+	width: 1px;
+	height: 0.9em;
+	margin: 0 0.35em;
+	vertical-align: -0.1em;
+	background: rgba(10, 23, 51, 0.25);
+}
+
+.film-tab-channel {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 0.75rem;
+	color: #9aa4b2;
 }
 
 // ─── The wall ────────────────────────────────────────────────────────────────────────────────
@@ -288,6 +357,74 @@ body {
 	object-fit: contain;
 }
 
+// ─── Credits ──────────────────────────────────────────────────────────────────────────────────
+// The parent lockup is DM Serif Text, never DM Sans, and the mark is never recoloured.
+.credits {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.credits-lattice {
+	display: flex;
+	align-items: center;
+	gap: 28px;
+}
+
+.credits-lattice-word {
+	font-family: 'DM Serif Text', Georgia, serif;
+	line-height: 1;
+	color: $ink;
+}
+
+.credits-lattice-amp {
+	color: $ink-secondary;
+}
+
+.credits-signature {
+	width: 460px;
+}
+
+.credits.is-portrait .credits-signature {
+	width: 560px;
+}
+
+.legal {
+	position: absolute;
+	inset: 0;
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	align-content: center;
+	gap: 44px 56px;
+	padding: 0 120px;
+	color: $ink-secondary;
+}
+
+.legal-heading {
+	margin: 0 0 10px;
+	font-size: 22px;
+	font-weight: 600;
+	color: $ink;
+}
+
+.legal-body {
+	margin: 0;
+	font-size: 16px;
+	line-height: 1.5;
+}
+
+.legal.is-portrait {
+	grid-template-columns: 1fr;
+	gap: 30px;
+	padding: 0 80px;
+
+	.legal-body {
+		font-size: 18px;
+	}
+}
+
 // ─── End card ────────────────────────────────────────────────────────────────────────────────
 .end-card {
 	position: absolute;
@@ -304,6 +441,37 @@ body {
 
 .end-mark {
 	position: absolute;
+	overflow: visible;
+}
+
+// Kentucky's LIVE badge at centre stage, drawn above the popup it was lifted from.
+.end-live {
+	position: absolute;
+	z-index: 2;
+	display: flex;
+	align-items: center;
+	font-weight: 700;
+	line-height: 1;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	transform-origin: 0 0;
+	white-space: nowrap;
+}
+
+.end-live-dot {
+	display: block;
+	flex-shrink: 0;
+	border-radius: 50%;
+}
+
+.end-live-word {
+	display: block;
+}
+
+.end-stage {
+	position: absolute;
+	inset: 0;
+	z-index: 2;
 	overflow: visible;
 }
 

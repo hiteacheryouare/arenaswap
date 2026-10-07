@@ -5,6 +5,14 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The films open on the problem — 2026-10-07
+
+Every scene now carries the benefit it shows, opening on "Too many games on?", cutting the switches and box scores that only filled time, demonstrating Standby Stream end to end, and leaving college hockey (no team colours) out of the viewer's leagues. The ending lifts Kentucky's LIVE badge to centre stage and turns its dot into each sport's ball before it becomes the wordmark's period, and the 60 runs on into credits with the Lattice & Company rosette, Ryan Mullin's wordmark and the site's own disclaimers. The score is now a synthesized college pep band, a brass stand tune over sousaphones and a marching drumline, still on the 128 BPM bar grid.
+
+## The films trade arrows for the orange dot — 2026-10-06
+
+The swap arrows, the stream glow and every camera push are gone: the popup holds still beside the browser, and the night runs at real speed while it opens, so its cards never re-sort mid-reveal. The dot opens two full-frame orange cards that shrink back about the point they grew from, and the ending is Kentucky's LIVE dot coming loose to become the tagline's full stop, then the wordmark's. The copy is rewritten benefit-first, and the 60 adds Standby Stream (the real 7:14 PM lull) and a pre-game Matchup screen for Bears at Packers, since Saturday's recording kept no pre-game data.
+
 ## The no-leagues notice sits at the top — 2026-10-05
 
 The "No leagues picked" notice on the league picker now shows above the sport groups instead of below them, so it's visible without scrolling to the bottom of the list.

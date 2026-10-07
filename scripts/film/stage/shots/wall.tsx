@@ -15,6 +15,9 @@ interface Grid {
 	gap: number;
 }
 
+// The grid sits a little below centre in landscape, leaving the top of the frame to the copy.
+const gridDrop: Record<Format, number> = { landscape: 56, portrait: 0 };
+
 const grids: Record<Format, Grid> = {
 	landscape: { columns: 8, tileWidth: 204, tileHeight: 120, gap: 18 },
 	portrait: { columns: 6, tileWidth: 160, tileHeight: 104, gap: 14 },
@@ -31,7 +34,7 @@ const cellOf = (index: number, count: number, format: Format, width: number, hei
 	const row = Math.floor(index / grid.columns);
 	return {
 		x: (width - gridWidth) / 2 + column * (grid.tileWidth + grid.gap) + grid.tileWidth / 2,
-		y: (height - gridHeight) / 2 + row * (grid.tileHeight + grid.gap) + grid.tileHeight / 2,
+		y: (height - gridHeight) / 2 + gridDrop[format] + row * (grid.tileHeight + grid.gap) + grid.tileHeight / 2,
 	};
 };
 
@@ -48,14 +51,15 @@ const Tile = ({ game, index, count, ctx }: { game: WallGame; index: number; coun
 	const local = ctx.local / pace(ctx);
 	const grid = grids[format];
 	const cell = cellOf(index, count, format, width, height);
-	const distance = Math.hypot(cell.x - width / 2, cell.y - height / 2) / Math.hypot(width / 2, height / 2);
+	const centreY = height / 2 + gridDrop[format];
+	const distance = Math.hypot(cell.x - width / 2, cell.y - centreY) / Math.hypot(width / 2, height / 2);
 	const travel = easeSignature(progress(local, splitAt + distance * 0.28, splitAt + distance * 0.28 + 0.62));
 	const bloom = spring(local - (bloomAt + distance * 0.22), 0.7);
 	const fall = easeIn(progress(local, fallAt + (1 - distance) * 0.25, fallAt + (1 - distance) * 0.25 + 0.55));
 	if (local < splitAt) return null;
 
 	const x = lerp(width / 2, cell.x, travel);
-	const y = lerp(height / 2, cell.y, travel) + fall * 40;
+	const y = lerp(centreY, cell.y, travel) + fall * 40;
 	const tileWidth = lerp(16, grid.tileWidth, clamp(bloom));
 	const tileHeight = lerp(16, grid.tileHeight, clamp(bloom));
 	const away = toTeam(game.away, `${game.id}-a`);
@@ -98,14 +102,13 @@ const Wall = ({ ctx }: { ctx: ShotContext }) => {
 
 const wall: ShotModule = {
 	Component: Wall,
-	camera: ctx => ({ scale: 1 + 0.05 * easeInOut(progress(ctx.local / pace(ctx), 0.6, 4.4)), originX: ctx.width / 2, originY: ctx.height / 2 }),
 	overlay: ctx => {
 		const local = ctx.local / pace(ctx);
 		const { width, height } = ctx;
 		return {
 			dot: {
 				x: width / 2,
-				y: height / 2,
+				y: height / 2 + gridDrop[ctx.format],
 				radius: 14 * clamp(spring(local - 0.12, 0.45), 0, 1.2) * (1 - progress(local, splitAt, splitAt + 0.1)),
 				opacity: 1,
 			},

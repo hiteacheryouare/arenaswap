@@ -1,4 +1,4 @@
-import type { Arrangement, DrumKind } from './arrangement';
+import type { Arrangement, DrumHit } from './arrangement';
 import { gainToDb, integratedLoudness, samplePeak, truePeak } from './loudness';
 import type { Cue, RenderedAudio } from './score';
 
@@ -22,7 +22,21 @@ export interface AudioReport {
 	lastSample: [number, number];
 }
 
-const drumSpan: Record<DrumKind, number> = { kick: 0.42, boom: 0.9, clap: 0.4, snare: 0.22, closedHat: 0.09, openHat: 0.38, crash: 2.6 };
+const drumSpan = (hit: DrumHit): number => {
+	switch (hit.kind) {
+		case 'snare': return 0.25;
+		case 'rimshot': return 0.33;
+		case 'buzz': return 0.13;
+		case 'click': return 0.05;
+		case 'tenor': return 0.56;
+		case 'bass': return 0.9;
+		case 'crash': return 3;
+		case 'choke': return 0.27;
+		case 'tap': return 0.29;
+		case 'sizzle': return hit.length + 0.02;
+		case 'boom': return 0.9;
+	}
+};
 
 const cueSpan = (cue: Cue, barLength: number): number => {
 	switch (cue.kind) {
@@ -40,9 +54,8 @@ const cueSpan = (cue: Cue, barLength: number): number => {
 // Everything percussive or noise-based, for its full sounding length: a jump inside one of these is
 // the sound itself, not a fault.
 export const transientWindows = (arrangement: Arrangement): TimeWindow[] => [
-	...arrangement.drums.map(hit => ({ from: hit.time - 0.002, to: hit.time + drumSpan[hit.kind] })),
+	...arrangement.drums.map(hit => ({ from: hit.time - 0.002, to: hit.time + 0.003 + drumSpan(hit) })),
 	...arrangement.cues.map(cue => ({ from: cue.at - 0.002, to: cue.at + cueSpan(cue, arrangement.barLength) })),
-	...arrangement.risers.map(riser => ({ from: riser.time - 0.002, to: riser.time + riser.length + 0.01 })),
 ];
 
 const maskOf = (windows: TimeWindow[], length: number, sampleRate: number): Uint8Array => {

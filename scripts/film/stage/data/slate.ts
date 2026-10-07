@@ -1,5 +1,5 @@
 import type { BackgroundState, Game, GuideSlate, LiveScore, PowerScoreResult, PowerScoreSnapshot, ScoreSnapshot } from '../../../../packages/core/src/types';
-import type { FilmSlate, ScoreEntry, ScoreTotal } from './slateTypes';
+import type { FilmSlate, PregameData, ScoreEntry, ScoreTotal } from './slateTypes';
 
 // The popup's live charts keep this much history, the same windows as core's scoring config.
 const historyWindowMs: Record<string, number> = { basketball: 5 * 60_000, hockey: 16 * 60_000, soccer: 20 * 60_000 };
@@ -71,11 +71,12 @@ export interface Slate {
 	gameAt: (gameId: string, ts: number) => Game | undefined;
 	scoreAt: (profile: Profile, gameId: string, ts: number) => LiveScore | undefined;
 	stateAt: (profile: Profile, ts: number) => BackgroundState;
+	pregameState: () => BackgroundState;
 	guideAt: (ts: number) => GuideSlate;
 	summaryAt: (gameId: string, ts: number) => Record<string, unknown> | undefined;
 }
 
-const createSlate = (raw: FilmSlate): Slate => {
+const createSlate = (raw: FilmSlate, pregame: PregameData): Slate => {
 	// Every frame of every game, applied once up front, so any moment is a binary search away.
 	const states = new Map<string, [number, Game][]>();
 	for (const [gameId, track] of Object.entries(raw.games)) {
@@ -155,6 +156,18 @@ const createSlate = (raw: FilmSlate): Slate => {
 		};
 	};
 
+	const pregameState = (): BackgroundState => ({
+		games: [pregame.game],
+		scores: [],
+		leagueLogos: raw.leagueLogos,
+		scoreHistory: {},
+		powerScoreHistory: {},
+		gameBoosts: {},
+		onStandbyStream: false,
+		standbyStreamTabId: null,
+		slateShedLeagues: [],
+	});
+
 	const guideAt = (ts: number): GuideSlate => ({
 		...raw.guide,
 		games: raw.guide.games.map(game => gameAt(game.id, ts) ?? game),
@@ -163,6 +176,7 @@ const createSlate = (raw: FilmSlate): Slate => {
 	// The recorded box score from the last moment kept before `ts`, carrying the win probability
 	// recorded at `ts` itself.
 	const summaryAt = (gameId: string, ts: number) => {
+		if (gameId === pregame.game.id) return pregame.summary;
 		const summaries = raw.summaries[gameId] ?? [];
 		if (summaries.length === 0) return undefined;
 		const index = Math.max(0, lastAtOrBefore(summaries, ts));
@@ -173,7 +187,7 @@ const createSlate = (raw: FilmSlate): Slate => {
 		return summary;
 	};
 
-	return { raw, gameAt, scoreAt, stateAt, guideAt, summaryAt };
+	return { raw, gameAt, scoreAt, stateAt, pregameState, guideAt, summaryAt };
 };
 
 export default createSlate;

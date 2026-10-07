@@ -36,39 +36,18 @@ export interface Point {
 	y: number;
 }
 
-export interface ArrowState {
-	kind: 'solid' | 'dashed';
-	from: Point;
-	to: Point;
-	// How much of the line is drawn, from `from`.
-	drawn: number;
-	opacity: number;
-	// Thickness of the line in px; the head scales with it.
-	weight: number;
-}
-
 export interface DotState extends Point {
 	radius: number;
 	opacity: number;
+	color?: string;
 }
 
 export interface OverlayState {
 	dot?: DotState;
-	arrows?: ArrowState[];
-}
-
-export interface Camera {
-	scale: number;
-	// The point in the frame that stays put while the camera scales.
-	originX: number;
-	originY: number;
-	x?: number;
-	y?: number;
 }
 
 export interface ShotModule {
 	Component: (props: { ctx: ShotContext }) => ReactNode;
 	popups?: (ctx: ShotContext) => PopupPlacement[];
 	overlay?: (ctx: ShotContext, measure: Measure) => OverlayState;
-	camera?: (ctx: ShotContext) => Camera;
 }

@@ -3,7 +3,7 @@ import { createStereo, sumStereo } from './buffers';
 import { masterReel } from './master';
 import { renderCueLayer, renderReturns, type Sends } from './mixer';
 import type { Cue, RenderedAudio } from './score';
-import { aSix, bMinor11, gMajor9, tonic } from './theory';
+import { eFlat, fSeven, tonic } from './theory';
 
 type Kind = Cue['kind'];
 
@@ -27,7 +27,7 @@ const reels: Record<Kind, { cues: ResolvedCue[]; harmony: HarmonyChange[] }> = {
 			hop(3.6, 0, -0.3), hop(4.07, 2, 0.1), hop(4.53, 4, 0.35),
 			hop(5.1, 0),
 		],
-		harmony: [{ time: 0, chord: tonic }, { time: 2.1, chord: bMinor11 }, { time: 3.5, chord: aSix }, { time: 5, chord: tonic }],
+		harmony: [{ time: 0, chord: tonic }, { time: 2.1, chord: eFlat }, { time: 3.5, chord: fSeven }, { time: 5, chord: tonic }],
 	},
 	swap: { cues: [0.4, 1.4, 2.4, 3.4, 4.4].map((time, index) => at(time, 'swap', { pan: [-0.3, 0.3, 0, -0.15, 0.15][index] })), harmony: [] },
 	whoosh: {
@@ -38,7 +38,7 @@ const reels: Record<Kind, { cues: ResolvedCue[]; harmony: HarmonyChange[] }> = {
 		cues: [0.4, 0.55, 0.78, 0.9, 1.25, 1.31, 1.6, 2, 3, 3.12, 3.24, 3.36, 3.48, 3.6].map((time, index) => at(time, 'tick', { gain: 0.8, pan: ((index % 5) - 2) * 0.2 })),
 		harmony: [],
 	},
-	confetti: { cues: [at(0.4, 'confetti'), at(3, 'confetti')], harmony: [{ time: 0, chord: tonic }, { time: 2.5, chord: gMajor9 }] },
+	confetti: { cues: [at(0.4, 'confetti'), at(3, 'confetti')], harmony: [{ time: 0, chord: tonic }, { time: 2.5, chord: eFlat }] },
 	impact: { cues: [at(0.3, 'impact')], harmony: [] },
 	swell: { cues: [at(0.3, 'swell', { length: 2.5 }), at(3.5, 'swell', { length: 1.875 })], harmony: [] },
 	riser: { cues: [at(0.3, 'riser', { length: beat * 4 }), at(3.5, 'riser', { length: beat })], harmony: [] },

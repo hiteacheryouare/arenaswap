@@ -1,3 +1,4 @@
+import type { UserPreferences } from '../../../../packages/core/src/types';
 import type { Cue, ScoreSection } from '../../audio/score';
 import type { Profile } from '../data/slate';
 
@@ -17,23 +18,32 @@ export type ShotKind =
 	| 'assign'
 	| 'swaps'
 	| 'detail'
-	| 'scorebugs'
-	| 'boxScore'
 	| 'settings'
 	| 'guide'
 	| 'leagues'
 	| 'favorite'
 	| 'payoff'
-	| 'endCard';
+	| 'card'
+	| 'pregame'
+	| 'standby'
+	| 'endCard'
+	| 'credits'
+	| 'signature'
+	| 'legal';
+
+// Where an orange card's dot grows from: an element in a popup, or the league grid's last square.
+export type CardOrigin = { popup: string; selector: string } | 'leagueDot';
 
 // Seconds into the cut. `from` is inclusive, `to` exclusive; shots may overlap for a transition.
 export interface Shot {
 	kind: ShotKind;
 	from: number;
 	to: number;
+	origin?: CardOrigin;
 }
 
-export type SuperPlace = 'top' | 'center' | 'left' | 'bottom';
+// 'card' is black type on a full-frame orange card.
+export type SuperPlace = 'top' | 'center' | 'left' | 'bottom' | 'card';
 
 export interface Super {
 	// A key in stage/locales/<locale>.json.
@@ -41,6 +51,8 @@ export interface Super {
 	from: number;
 	to: number;
 	place: SuperPlace;
+	// 'words' drops the line in a word at a time.
+	animate?: 'words';
 }
 
 // Film time to the moment of the night a popup is showing. Linear between keys, held outside them.
@@ -54,7 +66,8 @@ export type PopupAction =
 	| { at: number; kind: 'scroll'; selector: string; to: number; over: number }
 	| { at: number; kind: 'scrollTo'; selector: string; target: string; offset?: number; over: number }
 	| { at: number; kind: 'profile'; profile: Profile }
-	| { at: number; kind: 'value'; selector: string; value: string };
+	| { at: number; kind: 'value'; selector: string; value: string }
+	| { at: number; kind: 'hide'; selector: string };
 
 export interface PopupPlan {
 	id: string;
@@ -66,6 +79,12 @@ export interface PopupPlan {
 	clock: ClockKey[];
 	// Tabs registered before the popup loads; the main popup instead assigns them on camera.
 	registered: boolean;
+	// 'pregame' shows the game a week out instead of Saturday night.
+	source?: 'pregame';
+	// Settings this popup's viewer has changed from the film's defaults.
+	prefs?: Partial<UserPreferences>;
+	// Film time from which the background reports the browser parked on the Standby Stream.
+	standbyAt?: number;
 	actions: PopupAction[];
 	width?: number;
 	height?: number;
@@ -75,9 +94,9 @@ export interface PopupPlan {
 export interface TabSwitch {
 	at: number;
 	tabId: number;
-	// 'swap' is ArenaSwap switching (solid arrow), 'back' is ArenaSwap returning (dashed arrow),
-	// 'flick' is somebody hammering Ctrl+Tab.
-	via: 'cut' | 'swap' | 'back' | 'flick';
+	// 'swap' is ArenaSwap switching, 'back' is ArenaSwap returning, 'standby' is ArenaSwap parking
+	// on the Standby Stream, 'flick' is somebody hammering Ctrl+Tab.
+	via: 'cut' | 'swap' | 'back' | 'standby' | 'flick';
 }
 
 export interface Cut {

@@ -1,14 +1,17 @@
 # The films
 
 Three cuts of an ArenaSwap ad (15, 30 and 60 seconds), each in 16:9 (1920×1080) and 9:16
-(1080×1920), at 60 fps with a soundtrack. They are rendered from code, so every frame can be
+(1080×1920), at 60 fps with a soundtrack. The 60 runs on into about nine seconds of credits: the
+Lattice & Company lockup, Ryan Mullin's wordmark, and the site's own disclaimers. They are rendered from code, so every frame can be
 rebuilt, retimed or translated.
 
 Nothing on screen is mocked up. The popup is the shipped extension, built and running inside the
 frame. The scores, clocks, PowerScores and tab switches are Saturday, October 3, 2026, as
 `scripts/powerscore/recordSlate.ts` recorded it, scored by the PowerScore engine in this repo and
-switched by the shipped rule (sensitivity 4, 45-second cooldown). The music and sound effects are
-synthesized here too, in `audio/`.
+switched by the shipped rule (sensitivity 4, 45-second cooldown). The one exception is the 60's
+pre-game beat: Saturday's recording kept no pre-game data, so it shows Bears at Packers (Sun., Oct.
+11), fetched before kickoff by `npm run film:pregame` into `data/pregame.json`. The music and sound
+effects are synthesized here too, in `audio/`.
 
 ## Make them
 
@@ -52,7 +55,7 @@ scripts/powerscore/recordings/2026-10-03   (gitignored, 180 MB, made by powersco
 data/saturday.json      the night, compacted: every game's frames, PowerScores, box scores
         │
 stage/                  a React page that composes the frame: the wall of scores, the browser
-        │               window, the supers, the dot and the arrows, the end card, and an iframe
+        │               window, the supers, the dot and its orange cards, the end card, and an iframe
         │               for each popup on screen, running the built extension
         ▼
 render/render.ts        headless Chrome on a virtual clock, one screenshot per frame, piped
@@ -77,18 +80,22 @@ out/*.mp4
 - **The cuts are data.** `stage/cuts/cut15.ts`, `cut30.ts` and `cut60.ts` list, in bars at 128 BPM:
   the shots, the supers, which popups exist and the night's clock for each, which tab is in front
   and why, the sound cues, and the music's sections. 8, 16 and 32 bars land on exactly 15, 30 and
-  60 seconds. The last eight beats, the end card, are the same frames in all three.
+  60 seconds; the 60's five bars of credits come after. The end card lifts Kentucky's LIVE badge to
+  centre stage, turns its dot into each sport's ball and lands it as the wordmark's period, in
+  twelve beats in the 30 and the 60 and eight in the 15.
 
 ## Changing things
 
 | To change | Edit |
 |---|---|
 | Words on screen | `stage/locales/*.json` (every locale, keys match `en.json`) |
+| The disclaimers in the credits | Read from the site, `apps/docs/src/i18n/strings/*.json` (`legal.terms`) |
 | When things happen | `stage/cuts/cut*.ts` |
 | How a shot looks or moves | `stage/shots/*.tsx`, `stage/styles/stage.scss` |
 | Which streams are open | `stage/data/tabs.ts` |
-| The music | `audio/arrangement.ts`, `audio/theory.ts`; audition with `node scripts/film/audio/cli.cjs --demo 60 --out x.wav` after `npm run film:build` |
+| The music | A college pep band: the stand tune in `audio/arrangement.ts` and `audio/theory.ts`, the brass in `audio/brass.ts`, the drumline's cadences in `audio/cadences.ts`. Audition with `node scripts/film/audio/cli.cjs --demo 60 --out x.wav` after `npm run film:build`; `--drumline` plays the drums alone |
 | The night | `extract/slateConfig.ts`, then `npm run film:extract` (needs the recording) |
+| The pre-game game | `npm run film:pregame -- <game id>` (only before kickoff) |
 
 A popup's clock keys are `{ at: film seconds, slate: sat('7:33:16') }`. Between two keys the night
 runs linearly; two keys at the same film time are a cut; outside its keys a clock runs at real
@@ -96,6 +103,7 @@ speed. Real events worth landing on a beat (all Eastern, all from the recording)
 
 | Time | What happened |
 |---|---|
+| 7:14:00 | A lull: every open tab is under 45, so a Standby Stream threshold of 45 parks the browser on the channel |
 | 7:28:40 | Kentucky ties South Carolina 27–27 with a field goal, 4:17 left |
 | 7:33:00 | Cal scores at UNLV with 0:31 left; ArenaSwap switches at 7:33:16 |
 | 7:34:17 | Aranda homers, Rays 1, Yankees 0 |

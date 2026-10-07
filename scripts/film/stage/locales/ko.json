@@ -1,13 +1,20 @@
 {
-	"watchOne": "한 경기만 볼 수 있어요.",
-	"otherGames": "나머지 47경기는 ArenaSwap이 지켜봐요.",
-	"powerScore": "경기마다 PowerScore가 매겨져요.",
-	"switches": "전환은 알아서 해줘요.",
-	"andBack": "그리고 다시 원래대로.",
-	"seeWhy": "이유를 확인하세요.",
-	"yours": "나만의 방식으로.",
+	"tooMany": "경기가 너무 많아요?",
+	"flipping": "아직도 탭을 일일이 넘기고 있어요?",
+	"watchesAll": "ArenaSwap이 모든 경기를 지켜봐요.",
+	"setup": "몇 초면 설정 끝이에요.",
+	"switches": "ArenaSwap이 대신 전환해 주니까",
+	"bestOne": "가장 좋은 경기만 골라 볼 수 있어요.",
+	"seeWhy": "볼 만한 이유까지 알려줘요.",
+	"beforeKickoff": "킥오프 전부터 준비 완료예요.",
+	"yours": "원하는 방식으로 보세요.",
+	"slowDown": "경기가 시들해져도",
+	"neverBoring": "지루한 경기에 갇힐 일은 없어요.",
+	"upNext": "다음 경기를 미리 알 수 있어요.",
+	"leagueRange": "NFL부터 NWSL까지.",
 	"gotTeam": "응원팀 있어요?",
+	"prioritize": "응원팀 경기를 먼저 보여줘요.",
 	"tagline": "그 순간을 놓치지 마세요.",
 	"cta": "Chrome, Firefox, Edge에서 무료",
-	"finePrint": "2026년 10월 3일(토)의 실제 경기예요. 영상은 일부 줄였어요. 팀 이름과 로고는 각 소유자의 상표예요."
+	"finePrint": "영상은 일부 줄였어요. 팀 이름과 로고는 각 소유자의 상표예요."
 }

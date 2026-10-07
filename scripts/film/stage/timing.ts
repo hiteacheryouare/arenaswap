@@ -38,6 +38,8 @@ export const easeSignature = cubicBezier(0.22, 1, 0.36, 1);
 export const easeInOut = cubicBezier(0.65, 0, 0.35, 1);
 export const easeIn = cubicBezier(0.55, 0, 1, 0.45);
 export const easeOut = cubicBezier(0, 0, 0.58, 1);
+// Lattice & Company's own curve, which its rosette draws on.
+export const easeStandard = cubicBezier(0.4, 0, 0.2, 1);
 
 // A spring with no bounce, in closed form: settles in about `duration` seconds and never overshoots.
 export const spring = (t: number, duration: number) => {

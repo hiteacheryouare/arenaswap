@@ -88,6 +88,14 @@ export const highShelfBiquad = (cutoff: number, q: number, gainDb: number, sampl
 	);
 };
 
+export const peakingBiquad = (centre: number, q: number, gainDb: number, sampleRate: number): Biquad => {
+	const a = 10 ** (gainDb / 40);
+	const w0 = 2 * Math.PI * centre / sampleRate;
+	const cos = Math.cos(w0);
+	const alpha = Math.sin(w0) / (2 * q);
+	return normalise(1 + alpha * a, -2 * cos, 1 - alpha * a, 1 + alpha / a, -2 * cos, 1 - alpha / a);
+};
+
 export const tickBiquad = (filter: Biquad, input: number): number => {
 	const output = filter.b0 * input + filter.z1;
 	filter.z1 = filter.b1 * input - filter.a1 * output + filter.z2;

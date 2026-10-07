@@ -1,13 +1,20 @@
 {
-	"watchOne": "観られるのは、1試合だけ。",
-	"otherGames": "残りの47試合は、ArenaSwapが観ている。",
-	"powerScore": "すべての試合に、PowerScoreがつく。",
-	"switches": "切り替えは、お任せ。",
-	"andBack": "そして、元の試合へ。",
-	"seeWhy": "理由が、わかる。",
-	"yours": "あなた好みに。",
+	"tooMany": "試合が多すぎる？",
+	"flipping": "タブを手動で切り替えてばかり？",
+	"watchesAll": "ArenaSwapがすべての試合を観ている。",
+	"setup": "セットアップは、数秒で。",
+	"switches": "ArenaSwapが代わりに切り替えるから",
+	"bestOne": "最高の1試合を、観られる。",
+	"seeWhy": "観る価値が、ひと目でわかる。",
+	"beforeKickoff": "キックオフ前から、準備万端。",
+	"yours": "観かたは、あなた次第。",
+	"slowDown": "試合が静かになっても",
+	"neverBoring": "退屈な試合に付き合わなくていい。",
+	"upNext": "このあとの試合が、わかる。",
+	"leagueRange": "NFLからNWSLまで。",
 	"gotTeam": "ひいきのチーム、ある？",
+	"prioritize": "チームの試合を、最優先に。",
 	"tagline": "その瞬間を、もう見逃さない。",
 	"cta": "Chrome、Firefox、Edgeで無料",
-	"finePrint": "2026年10月3日（土）に行われた実際の試合です。映像は短縮しています。チーム名とロゴは、それぞれの権利者の商標です。"
+	"finePrint": "映像は短縮しています。チーム名とロゴは、それぞれの権利者の商標です。"
 }

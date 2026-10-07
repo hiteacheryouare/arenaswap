@@ -1,8 +1,9 @@
 export interface Chord {
 	name: string;
 	bass: number;
-	pad: number[];
-	arp: number[];
+	low: number[];
+	middle: number[];
+	high: number[];
 	bell: number[];
 }
 
@@ -15,111 +16,115 @@ export interface PhraseNote {
 	step: number;
 	length: number;
 	midi: number;
-}
-
-export interface BassStep {
-	step: number;
-	length: number;
-	interval: number;
-	velocity: number;
+	scoop: number;
 }
 
 export const midiToFrequency = (midi: number): number => 440 * 2 ** ((midi - 69) / 12);
 
-// Pad voicings keep A3 and F#4 as common tones so only the inner voice and root move between bars.
-// `bell` is the ladder the dot climbs: step 0 is the root, and every ladder tops out at F#6.
-export const dMajor9: Chord = {
-	name: 'Dmaj9',
-	bass: 38,
-	pad: [50, 57, 61, 64, 66],
-	arp: [62, 66, 69, 73, 76, 78, 81],
-	bell: [74, 78, 81, 85, 88, 90],
+const note = (step: number, length: number, midi: number, scoop = 0): PhraseNote => ({ step, length, midi, scoop });
+
+// Concert B-flat, where a band lives. `bass` is the sousaphones, `low` the trombones and baritones,
+// `middle` the mellophones and `high` the trumpets. `bell` is the ladder the dot climbs: chord tones
+// from B-flat 5, just above the trumpets, so a dot never lands inside the riff.
+export const bFlat: Chord = {
+	name: 'Bb',
+	bass: 34,
+	low: [46, 53, 58],
+	middle: [62, 65],
+	high: [70, 74, 77],
+	bell: [82, 84, 86, 89, 91, 94],
 };
 
-export const bMinor11: Chord = {
-	name: 'Bm11',
-	bass: 35,
-	pad: [47, 57, 62, 64, 66],
-	arp: [59, 62, 66, 69, 73, 76, 78],
-	bell: [71, 74, 78, 81, 85, 86, 90],
+export const eFlat: Chord = {
+	name: 'Eb',
+	bass: 39,
+	low: [51, 55, 58],
+	middle: [63, 67],
+	high: [70, 75, 79],
+	bell: [82, 84, 87, 89, 91, 94],
 };
 
-export const gMajor9: Chord = {
-	name: 'Gmaj9',
-	bass: 31,
-	pad: [43, 57, 59, 62, 66],
-	arp: [55, 59, 62, 66, 69, 71, 74],
-	bell: [67, 71, 74, 78, 81, 83, 86, 90],
+export const aFlat: Chord = {
+	name: 'Ab',
+	bass: 32,
+	low: [44, 51, 56],
+	middle: [60, 63],
+	high: [68, 72, 75],
+	bell: [82, 84, 87, 89, 92, 94],
 };
 
-export const aSixSus4: Chord = {
-	name: 'A6sus4',
-	bass: 33,
-	pad: [45, 57, 62, 64, 66],
-	arp: [57, 62, 64, 66, 69, 74, 76],
-	bell: [69, 74, 76, 78, 81, 86, 88, 90],
+export const fSeven: Chord = {
+	name: 'F7',
+	bass: 41,
+	low: [53, 57, 63],
+	middle: [65, 69],
+	high: [72, 75, 81],
+	bell: [81, 84, 87, 89, 91, 93],
 };
 
-export const aSix: Chord = {
-	name: 'A6',
-	bass: 33,
-	pad: [45, 57, 61, 64, 66],
-	arp: [57, 61, 64, 66, 69, 73, 76],
-	bell: [69, 73, 76, 78, 81, 85, 88, 90],
+// The last hit, with the screamers' D6 on top.
+export const finale: Chord = {
+	name: 'Bb',
+	bass: 34,
+	low: [46, 53, 58, 62],
+	middle: [65, 70],
+	high: [74, 77, 82, 86],
+	bell: bFlat.bell,
 };
 
-export const tonic = dMajor9;
+// What the horns hold under the credits: B-flat with an added ninth, nothing above C5.
+export const amen: Chord = {
+	name: 'Bbadd9',
+	bass: 34,
+	low: [46, 53],
+	middle: [58, 62, 65, 72],
+	high: [],
+	bell: bFlat.bell,
+};
+
+export const tonic = bFlat;
+
+export const dominant = fSeven;
 
 export const dominantSlot = 3;
 
+// I, IV, then the rock-band bVII to IV, then V.
 export const progression: ChordSpan[][] = [
-	[{ offset: 0, chord: dMajor9 }],
-	[{ offset: 0, chord: bMinor11 }],
-	[{ offset: 0, chord: gMajor9 }],
-	[{ offset: 0, chord: aSixSus4 }, { offset: 0.5, chord: aSix }],
+	[{ offset: 0, chord: bFlat }],
+	[{ offset: 0, chord: eFlat }],
+	[{ offset: 0, chord: aFlat }, { offset: 0.5, chord: eFlat }],
+	[{ offset: 0, chord: fSeven }],
 ];
 
-// A call on the I and IV bars, an answer that hangs (and throws into the delay) on the vi and V.
-// The V answer holds the sus4 over the resolution and only lands on C# at step 10.
-export const hookPhrases: PhraseNote[][] = [
-	[
-		{ step: 0, length: 3, midi: 78 },
-		{ step: 3, length: 3, midi: 76 },
-		{ step: 6, length: 4, midi: 81 },
-		{ step: 10, length: 2, midi: 78 },
-		{ step: 12, length: 4, midi: 76 },
-	],
-	[
-		{ step: 0, length: 3, midi: 74 },
-		{ step: 3, length: 3, midi: 78 },
-		{ step: 6, length: 10, midi: 76 },
-	],
-	[
-		{ step: 0, length: 3, midi: 78 },
-		{ step: 3, length: 3, midi: 74 },
-		{ step: 6, length: 4, midi: 81 },
-		{ step: 10, length: 2, midi: 78 },
-		{ step: 12, length: 4, midi: 83 },
-	],
-	[
-		{ step: 0, length: 3, midi: 76 },
-		{ step: 3, length: 3, midi: 78 },
-		{ step: 6, length: 4, midi: 74 },
-		{ step: 10, length: 6, midi: 73 },
-	],
+export const run: PhraseNote[] = [note(12, 1, 72), note(13, 1, 74), note(14, 1, 75), note(15, 1, 76)];
+
+// The stand tune, one bar per chord: short enough for a student section to shout back. The held
+// note on step 8 smears up from the blue note a semitone under it. Steps 12 to 15 are left open for
+// the low brass to answer, except on the V, which climbs into the next downbeat.
+export const riff: PhraseNote[][] = [
+	[note(0, 2, 77), note(3, 1, 77), note(4, 2, 79), note(6, 2, 77), note(8, 2, 74, 1), note(10, 2, 70)],
+	[note(0, 2, 79), note(3, 1, 79), note(4, 2, 80), note(6, 2, 79), note(8, 2, 75, 1), note(10, 2, 70)],
+	[note(0, 2, 75), note(3, 1, 75), note(4, 2, 77), note(6, 2, 75), note(8, 2, 79), note(10, 2, 77)],
+	[note(0, 2, 77), note(3, 2, 79), note(6, 2, 81), note(8, 2, 75), note(10, 2, 69), ...run],
 ];
 
-export const bassPattern: BassStep[] = [
-	{ step: 0, length: 2, interval: 0, velocity: 0.95 },
-	{ step: 3, length: 2, interval: 0, velocity: 0.8 },
-	{ step: 6, length: 2, interval: 0, velocity: 0.85 },
-	{ step: 10, length: 1, interval: 12, velocity: 0.6 },
-	{ step: 11, length: 2, interval: 0, velocity: 0.8 },
-	{ step: 14, length: 2, interval: 0, velocity: 0.85 },
+// The mellophones' line under the riff when the band goes big: a third or a fourth below.
+export const riffHarmony: PhraseNote[][] = [
+	[note(0, 2, 74), note(3, 1, 74), note(4, 2, 75), note(6, 2, 74), note(8, 2, 70, 1), note(10, 2, 65)],
+	[note(0, 2, 75), note(3, 1, 75), note(4, 2, 77), note(6, 2, 75), note(8, 2, 70, 1), note(10, 2, 67)],
+	[note(0, 2, 72), note(3, 1, 72), note(4, 2, 72), note(6, 2, 72), note(8, 2, 75), note(10, 2, 70)],
+	[note(0, 2, 72), note(3, 2, 75), note(6, 2, 77), note(8, 2, 72), note(10, 2, 65), note(12, 1, 69), note(13, 1, 70), note(14, 1, 72), note(15, 1, 73)],
 ];
 
-export const arpEighths = [0, 2, 1, 3, 2, 4, 3, 5];
+export const answers: PhraseNote[][] = [
+	[note(12, 1, 53), note(13, 1, 55), note(14, 2, 58)],
+	[note(12, 1, 58), note(13, 1, 60), note(14, 2, 63)],
+	[note(12, 1, 55), note(13, 1, 56), note(14, 2, 57)],
+	[],
+];
 
-export const arpSixteenths = [0, 2, 4, 2, 1, 3, 5, 3, 2, 4, 6, 4, 3, 5, 4, 2];
+// Root, third, fifth, sixth, flat seven and back down, one per eighth: the sousaphones' bounce.
+export const boogie = [0, 4, 7, 9, 10, 9, 7, 4];
 
-export const stabVoicing = [62, 69, 73, 76, 78, 86];
+// The sousaphones on the V: E-flat and A after the hits, then down the scale onto the B-flat.
+export const walkDown: PhraseNote[] = [note(8, 2, 39), note(10, 2, 45), note(12, 1, 41), note(13, 1, 39), note(14, 1, 38), note(15, 1, 36)];

@@ -14,7 +14,7 @@ export interface Cue {
 export interface ScoreSection {
 	fromBar: number;
 	toBar: number;
-	part: 'intro' | 'build' | 'drop' | 'groove' | 'break' | 'peak' | 'outro';
+	part: 'intro' | 'build' | 'drop' | 'groove' | 'break' | 'peak' | 'outro' | 'tail';
 }
 
 export interface ScorePlan {

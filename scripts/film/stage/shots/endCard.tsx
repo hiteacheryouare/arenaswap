@@ -1,9 +1,11 @@
 import { aPath, arenPath, chevronFrom, chevronTo, headFrom, headTo, sPath, wapPath } from '../../../../packages/ui/src/components/wordmarkShapes';
 import { ringPath } from '../../../../packages/ui/src/components/wordmarkPose';
 import { barCentreRest, barJoint, barRest, barStrokeRest, dashCentreRest, dashFirstCapRest, dashLastCapRest, dashStrokeRest, restBox } from '../../../../packages/ui/src/components/wordmarkFrame';
-import { splitEnding } from '../components/supers';
+import { dotOrange } from '../components/overlay';
+import SportBall, { ballOrder, type BallKind } from '../components/sportBalls';
+import { ending, liveBadgeSelector, liveDotSelector } from '../cuts/shared';
 import { beats, easeIn, easeInOut, easeSignature, lerp, progress, spring } from '../timing';
-import { deskLayouts } from './desk';
+import { Desk, deskLayouts } from './desk';
 import type { ShotContext, ShotModule } from './shotTypes';
 
 // The dot's rest position in the wordmark's own units.
@@ -11,39 +13,129 @@ const dotRest = { cx: 1761.1208, cy: 368.38882, r: 27.6 };
 const barStart = barRest + barStrokeRest / 2;
 const barLength = barJoint - barStart;
 
-// Everything is timed back from the end of the cut, so the last eight beats are the same frames in
-// the 15, the 30 and the 60. Longer cuts get the dot's flight in from the scene before as a pre-roll.
-const fromEnd = (ctx: ShotContext, beatsBeforeEnd: number) => ctx.shot.to - beats(beatsBeforeEnd);
+// Timed in beats back from the end of the cut, and squeezed evenly into a shorter ending, so the 15,
+// the 30 and the 60 all finish on the same moves.
+const paceOf = (ctx: ShotContext) => Math.min(1, (ctx.shot.to - ctx.shot.from) / beats(ending.beats));
+const fromEnd = (ctx: ShotContext, beatsBeforeEnd: number) => ctx.shot.to - beats(beatsBeforeEnd * paceOf(ctx));
+const between = (ctx: ShotContext, from: number, to: number) => progress(ctx.t, fromEnd(ctx, from), fromEnd(ctx, to));
+
+// The dot, then each ball, then the dot again. Each change happens in three clean steps: the old
+// markings fade, the orange shape becomes the next one's, then the new markings come in as it settles.
+type Face = BallKind | 'plain';
+const faces: Face[] = ['plain', ...ballOrder, 'plain'];
+const changeSeconds = 0.36;
+
+const FaceView = ({ face, x, y, r, rotate = 0, opacity = 1, detail = 1 }: { face: Face; x: number; y: number; r: number; rotate?: number; opacity?: number; detail?: number }) => (face === 'plain'
+	? <circle cx={x} cy={y} r={r} fill={dotOrange} opacity={opacity} />
+	: <SportBall kind={face} x={x} y={y} r={r} rotate={rotate} opacity={opacity} detail={detail} />);
 
 const layoutFor = (ctx: ShotContext) => (ctx.format === 'portrait'
-	? { markWidth: 900, markY: 700, taglineY: 1040, ctaY: 1150, finePrintY: 1800 }
-	: { markWidth: 860, markY: 300, taglineY: 660, ctaY: 760, finePrintY: 1010 });
+	? { markWidth: 900, markY: 720, taglineY: 1010, ctaY: 1130, finePrintY: 1800, liveSize: 150, ballRadius: 136 }
+	: { markWidth: 860, markY: 330, taglineY: 610, ctaY: 720, finePrintY: 1010, liveSize: 132, ballRadius: 116 });
+
+// The badge's proportions on the card: a 6px dot and a 4px gap beside 0.65rem of text.
+const badgeDot = 0.58;
+const badgeGap = 0.38;
+const badgeTracking = 0.08;
+
+const channels = (hex: string) => [1, 3, 5].map(index => Number.parseInt(hex.slice(index, index + 2), 16));
+
+const mixHex = (from: string, to: string, amount: number) => {
+	const [a, b] = [channels(from), channels(to)];
+	return `rgb(${a.map((value, index) => Math.round(lerp(value, b[index]!, amount))).join(',')})`;
+};
+
+const measureCanvas = new OffscreenCanvas(1, 1).getContext('2d')!;
+
+const textWidth = (text: string, size: number) => {
+	measureCanvas.font = `700 ${size}px "DM Sans"`;
+	return measureCanvas.measureText(text).width + text.length * badgeTracking * size;
+};
+
+interface Badge {
+	x: number;
+	y: number;
+	diameter: number;
+	label: string;
+}
+
+// Kentucky's badge as it sat on the card before the card started to fall.
+const badges = new Map<number, Badge>();
+
+const fallOf = (ctx: ShotContext) => easeIn(between(ctx, 13.6, 12.4));
 
 const EndCard = ({ ctx }: { ctx: ShotContext }) => {
-	const { t } = ctx;
+	const { t, width, height } = ctx;
 	const layout = layoutFor(ctx);
 	const scale = layout.markWidth / restBox.width;
 	const markHeight = restBox.height * scale;
+	const markLeft = (width - layout.markWidth) / 2;
+	const period = { x: markLeft + dotRest.cx * scale, y: layout.markY + dotRest.cy * scale, r: dotRest.r * scale };
 	const at = (beatsBeforeEnd: number) => fromEnd(ctx, beatsBeforeEnd);
+	const fall = fallOf(ctx);
+	const desk = deskLayouts[ctx.format];
+	const badge = badges.get(ctx.shot.from);
 
-	const arena = easeSignature(progress(t, at(8), at(7)));
-	const bar = easeInOut(progress(t, at(7.4), at(6.4)));
-	const head = spring(t - at(6.5), 0.35);
-	const swap = easeSignature(progress(t, at(7), at(6)));
-	const dashes = easeInOut(progress(t, at(6.6), at(5.6)));
-	const chevron = spring(t - at(5.7), 0.35);
-	const [taglineBody, taglineStop] = splitEnding(ctx.copy('tagline'));
-	const tagline = easeSignature(progress(t, at(4), at(3)));
-	const cta = easeSignature(progress(t, at(3.2), at(2.2)));
-	const finePrint = easeSignature(progress(t, at(2.6), at(1.6)));
+	// The badge travels to centre stage, the word steps aside, and the dot becomes every ball.
+	const size = layout.liveSize;
+	const dotNatural = badgeDot * size;
+	const label = badge?.label ?? 'LIVE';
+	const groupWidth = dotNatural + badgeGap * size + textWidth(label, size);
+	const travel = easeInOut(between(ctx, 13.9, 12.9));
+	const startScale = badge ? badge.diameter / dotNatural : 1;
+	const badgeScale = lerp(startScale, 1, travel);
+	const groupX = lerp(badge ? badge.x - (dotNatural / 2) * startScale : width / 2, (width - groupWidth) / 2, travel);
+	const groupY = lerp(badge ? badge.y - (size / 2) * startScale : height / 2, (height - size) / 2, travel);
+	const turnOrange = easeInOut(between(ctx, 14, 13.6));
+	// The word leaves first; only then does the dot take the middle of the frame.
+	const stepAside = easeInOut(between(ctx, 11.9, 11.6));
+	const takeCentre = easeInOut(between(ctx, 11.7, 11.2));
+	const centre = { x: width / 2, y: height / 2 };
+	const groupDot = { x: groupX + (dotNatural / 2) * badgeScale, y: groupY + (size / 2) * badgeScale };
+	const changes = [...ending.balls, ending.plainAgain].map(beat => at(beat));
+	const passed = changes.filter(change => t >= change).length;
+	const change = passed > 0 ? progress(t - changes[passed - 1]!, 0, changeSeconds * paceOf(ctx)) : 1;
+	const markingsOut = easeInOut(progress(change, 0, 0.4));
+	const shapeSwap = easeInOut(progress(change, 0.3, 0.6));
+	const markingsIn = easeInOut(progress(change, 0.55, 1));
+	const arrive = easeSignature(progress(change, 0.3, 1));
+	const settle = easeInOut(between(ctx, 5, ending.lands));
+	const ballRadius = lerp(dotNatural / 2, layout.ballRadius, easeSignature(takeCentre));
+
+	const arena = easeSignature(progress(t, at(4.7), at(3.9)));
+	const bar = easeInOut(progress(t, at(4.3), at(3.5)));
+	const head = spring(t - at(3.6), 0.35);
+	const swap = easeSignature(progress(t, at(4.1), at(3.3)));
+	const dashes = easeInOut(progress(t, at(3.8), at(3)));
+	const chevron = spring(t - at(3.1), 0.35);
+	const tagline = easeSignature(progress(t, at(3), at(2.3)));
+	const cta = easeSignature(progress(t, at(2.5), at(1.8)));
+	const finePrint = easeSignature(progress(t, at(2.1), at(1.4)));
 	const dashReveal = lerp(dashLastCapRest + dashStrokeRest, dashFirstCapRest - dashStrokeRest, dashes);
+
+	const dotX = settle > 0 ? lerp(centre.x, period.x, settle) : lerp(groupDot.x, centre.x, takeCentre);
+	const dotY = settle > 0 ? lerp(centre.y, period.y, settle) - Math.sin(Math.PI * settle) * 60 : lerp(groupDot.y, centre.y, takeCentre);
+	const dotR = settle > 0 ? lerp(layout.ballRadius, period.r, settle) : ballRadius;
 
 	return (
 		<div className='end-card'>
+			{fall < 1 && <Desk ctx={ctx} rect={desk.window} zoom={desk.windowZoom} style={{ opacity: 1 - fall, transform: `translateY(${(fall * 260) / desk.windowZoom}px)` }} />}
+			{badge && takeCentre === 0 && (
+				<div className='end-live' style={{ left: groupX, top: groupY, fontSize: size, transform: `scale(${badgeScale})` }}>
+					<span className='end-live-dot' style={{ width: dotNatural, height: dotNatural, marginRight: badgeGap * size, background: mixHex('#ffffff', dotOrange, turnOrange) }} />
+					<span className='end-live-word' style={{ opacity: 1 - stepAside, transform: `translateX(${stepAside * 0.3}em)` }}>{label}</span>
+				</div>
+			)}
+			{badge && takeCentre > 0 && (
+				<svg className='end-stage' width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
+					{change >= 0.3 && <FaceView face={faces[passed]!} x={dotX} y={dotY} r={dotR * lerp(0.94, 1, arrive)} rotate={lerp(-12, 0, arrive)} detail={markingsIn} />}
+					{shapeSwap < 1 && <FaceView face={faces[passed - 1]!} x={dotX} y={dotY} r={dotR} opacity={1 - shapeSwap} detail={1 - markingsOut} />}
+				</svg>
+			)}
 			<svg
 				className='end-mark'
 				viewBox={`${restBox.x} ${restBox.y} ${restBox.width} ${restBox.height}`}
-				style={{ left: (ctx.width - layout.markWidth) / 2, top: layout.markY, width: layout.markWidth, height: markHeight }}
+				style={{ left: markLeft, top: layout.markY, width: layout.markWidth, height: markHeight }}
 			>
 				<defs>
 					<clipPath id='end-dashes'>
@@ -83,11 +175,8 @@ const EndCard = ({ ctx }: { ctx: ShotContext }) => {
 					clipPath='url(#end-dashes)'
 				/>
 				<path d={ringPath(chevronFrom, chevronTo, 0)} fill='#ffffff' style={{ transformOrigin: `${dashFirstCapRest - 40}px ${dashCentreRest}px`, transform: `scale(${chevron})` }} />
-				<ellipse data-end-dot cx={dotRest.cx} cy={dotRest.cy} rx={dotRest.r} ry={dotRest.r} fill='none' />
 			</svg>
-			<p className='end-tagline' style={{ top: layout.taglineY, opacity: tagline, transform: `translateY(${(1 - tagline) * 24}px)` }}>
-				{taglineBody}<span className='super-stop'>{taglineStop}</span>
-			</p>
+			<p className='end-tagline' style={{ top: layout.taglineY, opacity: tagline, transform: `translateY(${(1 - tagline) * 24}px)` }}>{ctx.copy('tagline')}</p>
 			<p className='end-cta' style={{ top: layout.ctaY, opacity: cta }}>{ctx.copy('cta')}</p>
 			<p className='end-fine-print' style={{ top: layout.finePrintY, opacity: finePrint }}>{ctx.copy('finePrint')}</p>
 		</div>
@@ -96,34 +185,19 @@ const EndCard = ({ ctx }: { ctx: ShotContext }) => {
 
 const endCard: ShotModule = {
 	Component: EndCard,
-	// The scene before hands its popup over still in place for the dot to leave from.
 	popups: ctx => {
-		const plan = ctx.cut.popups.find(candidate => candidate.id === 'main');
-		if (!plan) return [];
-		const fade = 1 - easeIn(progress(ctx.local, 0, 0.5));
+		const fall = fallOf(ctx);
 		const { popup } = deskLayouts[ctx.format];
-		return fade > 0 ? [{ id: 'main', x: popup.x, y: popup.y, scale: popup.scale, opacity: fade }] : [];
+		return fall < 1 ? [{ id: 'main', x: popup.x, y: popup.y + fall * 260, scale: popup.scale, opacity: 1 - fall }] : [];
 	},
+	// Measures the badge off Kentucky's card while the card is still in place; the end card draws it
+	// from there.
 	overlay: (ctx, measure) => {
-		const landing = measure.inStage('[data-end-dot]');
-		if (!landing) return {};
-		const centre = { x: ctx.width / 2, y: ctx.height / 2 };
-		const radius = landing.width / 2;
-		const card = measure.inPopup('main', '[data-glide-key="401856709"] .game-card');
-		const start = card ? { x: card.cx, y: card.cy } : centre;
-		const fly = easeInOut(progress(ctx.t, ctx.shot.from, fromEnd(ctx, 8)));
-		const settle = easeSignature(progress(ctx.t, fromEnd(ctx, 6), fromEnd(ctx, 5)));
-		const arrive = ctx.shot.to - ctx.shot.from > beats(8.5) ? 1 : spring(ctx.t - fromEnd(ctx, 8), 0.4);
-		const flight = ctx.t < fromEnd(ctx, 8) ? { x: lerp(start.x, centre.x, fly), y: lerp(start.y, centre.y, fly) - Math.sin(Math.PI * fly) * 120 } : centre;
-		const hop = Math.sin(Math.PI * settle) * 90;
-		return {
-			dot: {
-				x: lerp(flight.x, landing.cx, settle),
-				y: lerp(flight.y, landing.cy, settle) - hop,
-				radius: lerp(10, radius, settle) * arrive,
-				opacity: 1,
-			},
-		};
+		const dot = measure.inPopup('main', liveDotSelector);
+		const label = ctx.host.runtimes.get('main')?.frame?.contentDocument?.querySelector(liveBadgeSelector)?.textContent?.trim();
+		if (dot && fallOf(ctx) === 0) badges.set(ctx.shot.from, { x: dot.cx, y: dot.cy, diameter: dot.width, label: label || 'LIVE' });
+		if (!badges.has(ctx.shot.from)) console.error('End card found no LIVE badge on Kentucky\'s card');
+		return {};
 	},
 };
 

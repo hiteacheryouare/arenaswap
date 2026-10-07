@@ -40,10 +40,12 @@ FilmDate.prototype = RealDate.prototype;
 Object.assign(FilmDate, { now: slateNow, parse: RealDate.parse, UTC: RealDate.UTC });
 (window as unknown as { Date: unknown }).Date = FilmDate;
 
-// Box scores and win probability come from the recording, as of the moment on screen.
+// Box scores and win probability come from the recording, as of the moment on screen. Standings are
+// refused rather than fetched live, so a render never depends on the table on render day.
 const realFetch = window.fetch.bind(window);
 window.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
 	const url = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url;
+	if (url.includes('/standings')) return new Response('{}', { status: 404, headers: { 'Content-Type': 'application/json' } });
 	const summary = /\/summary\?event=(\d+)/.exec(url);
 	if (summary) {
 		const recorded = host.summaryAt(summary[1]!, slateNow());

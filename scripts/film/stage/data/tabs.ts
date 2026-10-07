@@ -53,5 +53,25 @@ export const filmTabs: FilmTab[] = [
 	},
 ];
 
-export const tabById = (id: number) => filmTabs.find(tab => tab.id === id)!;
-export const tabForGame = (gameId: string) => filmTabs.find(tab => tab.gameId === gameId)!;
+// A 24/7 studio channel, open all night as the viewer's Standby Stream.
+export interface ChannelTab {
+	id: number;
+	title: string;
+	url: string;
+	host: string;
+}
+
+export const standbyTab: ChannelTab = {
+	id: 106,
+	title: 'CBS Sports HQ - Watch Live | CBS Sports',
+	url: 'https://www.cbssports.com/watch/cbs-sports-hq',
+	host: 'cbssports.com',
+};
+
+export type BrowserTab = FilmTab | ChannelTab;
+
+export const browserTabs: BrowserTab[] = [...filmTabs, standbyTab];
+
+export const isGameTab = (tab: BrowserTab): tab is FilmTab => 'gameId' in tab;
+
+export const tabById = (id: number) => browserTabs.find(tab => tab.id === id)!;

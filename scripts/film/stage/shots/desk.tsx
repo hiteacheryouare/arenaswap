@@ -46,22 +46,22 @@ export const tabViewAt = (cut: Cut, t: number): TabView => {
 	const current = happened[happened.length - 1] ?? cut.tabs[0]!;
 	const previous = happened[happened.length - 2];
 	const managed = t >= cut.managedFrom;
-	if ((current.via === 'swap' || current.via === 'back') && previous) {
+	if ((current.via === 'swap' || current.via === 'back' || current.via === 'standby') && previous) {
 		return {
 			activeTabId: current.tabId,
 			previousTabId: previous.tabId,
 			wipe: easeSignature(progress(t, current.at, current.at + wipeSeconds)),
-			wipeFrom: current.via === 'swap' ? 'left' : 'right',
+			wipeFrom: current.via === 'back' ? 'right' : 'left',
 			managed,
 		};
 	}
 	return { activeTabId: current.tabId, managed };
 };
 
-// The moment of the night the browser shows: the main popup's, once it exists.
-export const browserSlateTime = (ctx: ShotContext) => {
-	const main = ctx.cut.popups.find(plan => plan.id === 'main')!;
-	return slateTimeAt(main.clock, ctx.t);
+// The moment of the night the browser shows: that of the popup beside it.
+export const browserSlateTime = (ctx: ShotContext, popupId = 'main') => {
+	const plan = ctx.cut.popups.find(candidate => candidate.id === popupId) ?? ctx.cut.popups.find(candidate => candidate.id === 'main')!;
+	return slateTimeAt(plan.clock, ctx.t);
 };
 
 export const mixRect = (from: Rect, to: Rect, amount: number): Rect => ({
@@ -71,16 +71,15 @@ export const mixRect = (from: Rect, to: Rect, amount: number): Rect => ({
 	height: lerp(from.height, to.height, amount),
 });
 
-export const Desk = ({ ctx, rect, zoom, style, flash }: { ctx: ShotContext; rect: Rect; zoom: number; style?: CSSProperties; flash?: number }) => (
+export const Desk = ({ ctx, rect, zoom, style, popupId }: { ctx: ShotContext; rect: Rect; zoom: number; style?: CSSProperties; popupId?: string }) => (
 	<BrowserWindow
 		view={tabViewAt(ctx.cut, ctx.t)}
 		slate={ctx.slate}
-		slateTime={browserSlateTime(ctx)}
+		slateTime={browserSlateTime(ctx, popupId)}
 		t={ctx.t}
 		width={rect.width}
 		height={rect.height}
 		zoom={zoom}
-		flash={flash}
 		style={{ position: 'absolute', left: rect.x / zoom, top: rect.y / zoom, ...style }}
 	/>
 );

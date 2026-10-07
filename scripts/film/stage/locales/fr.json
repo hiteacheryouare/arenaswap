@@ -1,13 +1,20 @@
 {
-	"watchOne": "Tu peux en regarder un.",
-	"otherGames": "ArenaSwap surveille les 47 autres.",
-	"powerScore": "Chaque match a son PowerScore.",
-	"switches": "Il bascule pour toi.",
-	"andBack": "Et retour.",
-	"seeWhy": "Vois pourquoi.",
-	"yours": "À ta façon.",
+	"tooMany": "Trop de matchs en même temps ?",
+	"flipping": "Tu zappes encore à la main ?",
+	"watchesAll": "ArenaSwap surveille tous les matchs.",
+	"setup": "Configuré en quelques secondes.",
+	"switches": "ArenaSwap bascule pour toi",
+	"bestOne": "pour que tu regardes le meilleur.",
+	"seeWhy": "Vois pourquoi il vaut le coup.",
+	"beforeKickoff": "Prêt avant le coup d'envoi.",
+	"yours": "Regarde à ta façon.",
+	"slowDown": "Et si ça traîne",
+	"neverBoring": "tu ne subis jamais de matchs ennuyeux.",
+	"upNext": "Sache ce qui vient après.",
+	"leagueRange": "De la NFL à la NWSL.",
 	"gotTeam": "Une équipe de cœur ?",
+	"prioritize": "Priorité à leurs matchs.",
 	"tagline": "Ne rate plus jamais le moment.",
 	"cta": "Gratuit pour Chrome, Firefox et Edge",
-	"finePrint": "Matchs réels du sam. 3 oct. 2026. Séquences raccourcies. Les noms et logos des équipes sont des marques déposées de leurs propriétaires respectifs."
+	"finePrint": "Séquences raccourcies. Les noms et logos des équipes sont des marques déposées de leurs propriétaires respectifs."
 }

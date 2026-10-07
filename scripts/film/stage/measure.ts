@@ -12,7 +12,7 @@ export interface Box {
 const toBox = (x: number, y: number, width: number, height: number): Box => ({ x, y, width, height, cx: x + width / 2, cy: y + height / 2 });
 
 // Everything the overlay draws is placed in frame pixels, read back off the laid-out page, so the
-// dot and the arrows land on the real card and the real tab rather than on a guess at where they are.
+// dot lands on the real card and the real tab rather than on a guess at where they are.
 const createMeasure = (stage: HTMLElement, host: PopupHostApi) => {
 	const stageBox = () => stage.getBoundingClientRect();
 

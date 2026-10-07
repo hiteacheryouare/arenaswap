@@ -4,15 +4,17 @@
 //   node scripts/film/audio/cli.cjs --demo 30 --out temporary/adfilm/audioTests/demo30.wav --report
 //   node scripts/film/audio/cli.cjs --plan plan.json --out film.wav [--bits 16] [--seed 7]
 //   node scripts/film/audio/cli.cjs --sfx dot --out temporary/adfilm/audioTests/sfx/dot.wav
+//   node scripts/film/audio/cli.cjs --demo 30 --drumline --out temporary/adfilm/audioTests/drumline30.wav
 //
 // --report prints duration, loudness, true peak, DC, click and tail checks; --arc prints the loudness
-// of every half bar; --stems prints each stem's share of the raw mix.
+// of every half bar; --stems prints each stem's share of the raw mix; --drumline renders the drums alone.
 import { readFileSync } from 'node:fs';
 import { parseArgs } from 'node:util';
 import analyzeAudio, { loudnessArc, transientWindows, type TimeWindow } from './analyze';
-import arrange, { demoPlans } from './arrangement';
+import arrange, { demoPlans, type Arrangement } from './arrangement';
 import { sumStereo } from './buffers';
 import { gainToDb, integratedLoudness, samplePeak } from './loudness';
+import masterMix from './master';
 import renderStems, { stemNames } from './mixer';
 import renderSfxReel, { reelKinds } from './reel';
 import renderScore, { type Cue, type RenderedAudio, type ScorePlan } from './score';
@@ -29,11 +31,12 @@ const { values } = parseArgs({
 		report: { type: 'boolean', default: false },
 		stems: { type: 'boolean', default: false },
 		arc: { type: 'boolean', default: false },
+		drumline: { type: 'boolean', default: false },
 	},
 });
 
 const fail = (message: string): never => {
-	console.error(`${message}\nUsage: cli.cjs (--demo 15|30|60 | --plan file.json | --sfx ${reelKinds.join('|')}) --out file.wav [--bits 16|24] [--seed n] [--report] [--arc] [--stems]`);
+	console.error(`${message}\nUsage: cli.cjs (--demo 15|30|60 | --plan file.json | --sfx ${reelKinds.join('|')}) --out file.wav [--bits 16|24] [--seed n] [--report] [--arc] [--stems] [--drumline]`);
 	process.exit(1);
 };
 
@@ -51,15 +54,27 @@ const printReport = (audio: RenderedAudio, windows: TimeWindow[]): void => {
 	console.log(`  last 50 ms    peak ${decibels(report.tailPeakDb)}, final sample L ${report.lastSample[0]} R ${report.lastSample[1]}`);
 };
 
-const printStems = (plan: ScorePlan): void => {
+const arrangementOf = (plan: ScorePlan): Arrangement => {
 	const arrangement = arrange(plan);
+	return values.drumline ? { ...arrangement, brass: [], bells: [], cues: [] } : arrangement;
+};
+
+const render = (plan: ScorePlan): RenderedAudio => {
+	if (!values.drumline) return renderScore(plan);
+	const arrangement = arrangementOf(plan);
+	const { left, right } = masterMix(renderStems(arrangement, 48000, plan.seed ?? 1), arrangement, 48000);
+	return { sampleRate: 48000, left, right };
+};
+
+const printStems = (plan: ScorePlan): void => {
+	const arrangement = arrangementOf(plan);
 	const stems = renderStems(arrangement, 48000, plan.seed ?? 1);
 	const length = stems.drums.left.length;
 	const whole = integratedLoudness(sumStereo(stemNames.map(name => stems[name]), length), 48000);
 	console.log(`raw mix ${whole.toFixed(2)} LUFS`);
 	for (const name of stemNames) {
 		const loudness = integratedLoudness(stems[name], 48000);
-		console.log(`  ${name.padEnd(7)} ${loudness.toFixed(2).padStart(7)} LUFS  ${(loudness - whole).toFixed(2).padStart(7)} LU  peak ${decibels(gainToDb(samplePeak(stems[name])))}`);
+		console.log(`  ${name.padEnd(8)} ${loudness.toFixed(2).padStart(7)} LUFS  ${(loudness - whole).toFixed(2).padStart(7)} LU  peak ${decibels(gainToDb(samplePeak(stems[name])))}`);
 	}
 };
 
@@ -80,14 +95,14 @@ if (values.sfx) {
 		? JSON.parse(readFileSync(values.plan, 'utf8'))
 		: demo && demo in demoPlans ? demoPlans[demo] : fail('Pass --plan or --demo 15|30|60.');
 	const plan: ScorePlan = values.seed === undefined ? loaded : { ...loaded, seed: Number(values.seed) };
-	const audio = renderScore(plan);
+	const audio = render(plan);
 	const seconds = (performance.now() - started) / 1000;
 	writeWav(out, audio, bits);
 	const expected = Math.round(plan.bars * 4 * 60 / plan.bpm * audio.sampleRate);
 	console.log(`${out}: ${audio.left.length} samples (expected ${expected}), rendered in ${seconds.toFixed(2)} s`);
-	if (values.report) printReport(audio, transientWindows(arrange(plan)));
+	if (values.report) printReport(audio, transientWindows(arrangementOf(plan)));
 	if (values.arc) {
-		for (const point of loudnessArc(audio, arrange(plan))) {
+		for (const point of loudnessArc(audio, arrangementOf(plan))) {
 			const lufs = Number.isFinite(point.lufs) ? point.lufs : -70;
 			console.log(`  ${point.time.toFixed(2).padStart(6)} s  bar ${String(point.bar).padStart(2)}  ${point.part.padEnd(6)} ${lufs.toFixed(1).padStart(6)} LUFS ${'#'.repeat(Math.max(0, Math.round(lufs + 40)))}`);
 		}

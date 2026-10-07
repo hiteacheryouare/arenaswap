@@ -11,7 +11,6 @@ const BrowserShot = ({ ctx }: { ctx: ShotContext }) => {
 
 const browserShot: ShotModule = {
 	Component: BrowserShot,
-	camera: ({ local, width, height }) => ({ scale: 1.035 - 0.035 * easeSignature(progress(local, 0, 7.5)), originX: width / 2, originY: height * 0.6 }),
 };
 
 export default browserShot;

@@ -3,7 +3,7 @@ import { flushSync } from 'react-dom';
 import cuts from './cuts';
 import type { Format } from './cuts/cutTypes';
 import createSlate from './data/slate';
-import type { FilmSlate } from './data/slateTypes';
+import type { FilmSlate, PregameData } from './data/slateTypes';
 import Film, { contextsAt } from './film';
 import createMeasure from './measure';
 import createPopupHost from './popup/popupHost';
@@ -21,15 +21,16 @@ const format = (params.get('format') ?? 'landscape') as Format;
 const locale = params.get('locale') ?? 'en';
 
 const boot = async () => {
-	const [rawSlate, messages] = await Promise.all([
+	const [rawSlate, pregame, messages] = await Promise.all([
 		fetch('/film/data/saturday.json').then(response => response.json() as Promise<FilmSlate>),
+		fetch('/film/data/pregame.json').then(response => response.json() as Promise<PregameData>),
 		fetch(`/_locales/${locale}/messages.json`).then(response => response.json() as Promise<Record<string, { message: string }>>),
 	]);
 	const strings = copyFiles[`./locales/${locale}.json`]?.default ?? copyFiles['./locales/en.json']!.default;
 	const english = copyFiles['./locales/en.json']!.default;
 	const copy = (key: string) => strings[key] ?? english[key] ?? key;
 
-	const slate = createSlate(rawSlate);
+	const slate = createSlate(rawSlate, pregame);
 	const host = createPopupHost(cut, slate, messages);
 	document.documentElement.lang = locale.replace('_', '-');
 
@@ -48,10 +49,7 @@ const boot = async () => {
 		const contexts = contextsAt({ t, cut, format, slate, host, copy });
 		const states = contexts.map(ctx => shotModules[ctx.shot.kind].overlay?.(ctx, measure)).filter((state): state is OverlayState => state !== undefined);
 		if (states.length === 0) return null;
-		return {
-			dot: states.map(state => state.dot).filter(Boolean).pop(),
-			arrows: states.flatMap(state => state.arrows ?? []),
-		};
+		return { dot: states.map(state => state.dot).filter(dot => dot !== undefined && dot.radius > 0 && dot.opacity > 0).pop() };
 	};
 
 	const frame = (index: number) => {

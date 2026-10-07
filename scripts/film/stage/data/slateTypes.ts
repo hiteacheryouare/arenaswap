@@ -29,6 +29,13 @@ export interface WallGame {
 	home: WallTeam;
 }
 
+// A game a week out, before kickoff, for the pre-game screens Saturday's recording never kept.
+export interface PregameData {
+	fetchedAt: number;
+	game: Game;
+	summary: Record<string, unknown>;
+}
+
 export interface FilmSlate {
 	source: {
 		recording: string;

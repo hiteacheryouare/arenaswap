@@ -1,8 +1,9 @@
 import type { CSSProperties } from 'react';
 import { resolveLeagueLogoUrl } from '../../../../packages/core/src/constants';
+import type { Game } from '../../../../packages/core/src/types';
 import type { Slate } from '../data/slate';
-import { filmTabs, tabById } from '../data/tabs';
-import StreamView from './streamView';
+import { browserTabs, filmTabs, isGameTab, tabById, type BrowserTab } from '../data/tabs';
+import StreamView, { ChannelView } from './streamView';
 
 export interface TabView {
 	activeTabId: number;
@@ -24,17 +25,32 @@ interface BrowserWindowProps {
 	style?: CSSProperties;
 	// The chrome is drawn at the docs hero's rem sizes and zoomed up to the frame.
 	zoom: number;
-	// Light thrown across the stream when something big happens in it.
-	flash?: number;
 }
 
-// The docs hero's Chrome window (apps/docs/src/styles/_browser-hero.scss) with the five streams of
-// the night in it, so the film and the homepage show the same browser.
-const BrowserWindow = ({ view, slate, slateTime, t, width, height, style, zoom, flash }: BrowserWindowProps) => {
+const registeredIds = new Set(filmTabs.map(tab => tab.id));
+
+// The night's other live scores, as of the moment on screen, for the studio channel's lower third.
+const channelGames = (slate: Slate, slateTime: number) => Object.keys(slate.raw.games)
+	.filter(gameId => !filmTabs.some(tab => tab.gameId === gameId))
+	.map(gameId => slate.gameAt(gameId, slateTime))
+	.filter((game): game is Game => game?.status === 'in')
+	.slice(0, 4);
+
+const TabPicture = ({ tab, slate, slateTime, t, style }: { tab: BrowserTab; slate: Slate; slateTime: number; t: number; style?: CSSProperties }) => {
+	if (!isGameTab(tab)) return <ChannelView games={channelGames(slate, slateTime)} style={style} />;
+	const game = slate.gameAt(tab.gameId, slateTime);
+	return game ? <StreamView game={game} t={t} style={style} /> : null;
+};
+
+const Favicon = ({ tab, slate }: { tab: BrowserTab; slate: Slate }) => (isGameTab(tab)
+	? <img src={resolveLeagueLogoUrl(tab.league, slate.raw.leagueLogos[tab.league])} alt='' className='browser-tab-favicon' />
+	: <i className='bi bi-broadcast browser-tab-favicon film-tab-channel' />);
+
+// The docs hero's Chrome window (apps/docs/src/styles/_browser-hero.scss) with the night's streams
+// in it, so the film and the homepage show the same browser.
+const BrowserWindow = ({ view, slate, slateTime, t, width, height, style, zoom }: BrowserWindowProps) => {
 	const active = tabById(view.activeTabId);
-	const game = slate.gameAt(active.gameId, slateTime);
 	const previous = view.previousTabId !== undefined && view.wipe !== undefined && view.wipe < 1 ? tabById(view.previousTabId) : undefined;
-	const previousGame = previous ? slate.gameAt(previous.gameId, slateTime) : undefined;
 	const wipe = view.wipe ?? 1;
 	const reveal = view.wipeFrom === 'right' ? `inset(0 0 0 ${(1 - wipe) * 100}%)` : `inset(0 ${(1 - wipe) * 100}% 0 0)`;
 
@@ -44,13 +60,14 @@ const BrowserWindow = ({ view, slate, slateTime, t, width, height, style, zoom, 
 				<div className='browser-titlebar'>
 					<span className='browser-lights'><i /><i /><i /></span>
 					<div className='browser-tabs'>
-						{filmTabs.map(tab => {
+						{browserTabs.map(tab => {
 							const isActive = tab.id === view.activeTabId;
+							const audible = view.managed && (isActive || registeredIds.has(tab.id));
 							return (
 								<span key={tab.id} className={`browser-tab${isActive ? ' is-active' : ''}`} data-film-tab={tab.id}>
-									<img src={resolveLeagueLogoUrl(tab.league, slate.raw.leagueLogos[tab.league])} alt='' className='browser-tab-favicon' />
+									<Favicon tab={tab} slate={slate} />
 									<span className='browser-tab-title'>{tab.title}</span>
-									{view.managed && <i className={`bi ${isActive ? 'bi-volume-up-fill' : 'bi-volume-mute-fill'} film-tab-audio`} />}
+									{audible && <i className={`bi ${isActive ? 'bi-volume-up-fill' : 'bi-volume-mute-fill'} film-tab-audio`} />}
 									<span className='browser-tab-close'><i className='bi bi-x-lg' /></span>
 									<span className='browser-tab-flare' />
 								</span>
@@ -82,8 +99,8 @@ const BrowserWindow = ({ view, slate, slateTime, t, width, height, style, zoom, 
 					</span>
 				</div>
 				<div className='browser-viewport film-viewport'>
-					{previousGame && <StreamView game={previousGame} t={t} />}
-					{game && <StreamView game={game} t={t} flash={flash} style={previousGame ? { clipPath: reveal } : undefined} />}
+					{previous && <TabPicture tab={previous} slate={slate} slateTime={slateTime} t={t} />}
+					<TabPicture tab={active} slate={slate} slateTime={slateTime} t={t} style={previous ? { clipPath: reveal } : undefined} />
 				</div>
 			</div>
 		</div>

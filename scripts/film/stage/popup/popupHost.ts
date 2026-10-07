@@ -1,13 +1,15 @@
 import { allLeagueIds } from '../../../../packages/powerscore/src/constants';
 import { createDefaultUserPreferences, resolveLeagueLogoUrl } from '../../../../packages/core/src/constants';
-import type { UserPreferences } from '../../../../packages/core/src/types';
+import type { BackgroundState, UserPreferences } from '../../../../packages/core/src/types';
 import type { ClockKey, Cut, PopupAction, PopupPlan } from '../cuts/cutTypes';
 import type { Profile, Slate } from '../data/slate';
-import { filmTabs } from '../data/tabs';
+import { browserTabs, filmTabs, standbyTab } from '../data/tabs';
 import { lerp, progress, easeInOut } from '../timing';
 import type { FilmHost, PopupBoot, PopupHandle } from './hostTypes';
 
-const viewerLeagues = ['ncaaf', 'mlb', 'nhl', 'nwsl', 'ncaamh', 'nba'] as const;
+// The viewer's leagues. College hockey is left out: its teams carry no colours, and a grey card at
+// the top of the list reads as a broken one.
+const viewerLeagues = ['ncaaf', 'mlb', 'nhl', 'nwsl', 'nba'] as const;
 const kentuckyKey = 'ncaaf:96';
 
 export const viewerPrefs = (profile: Profile): UserPreferences => ({
@@ -93,15 +95,39 @@ const createPopupHost = (cut: Cut, slate: Slate, messages: Record<string, { mess
 		return runtime ? Math.round(slateTimeAt(runtime.plan.clock, filmTime)) : Date.now();
 	};
 
+	// What the background would hand this popup: only the viewer's leagues, and from `standbyAt` on,
+	// parked on the Standby Stream.
+	const stateFor = (runtime: PopupRuntime, now: number): BackgroundState => {
+		const { plan } = runtime;
+		if (plan.source === 'pregame') return slate.pregameState();
+		const state = slate.stateAt(runtime.profile, now);
+		const games = state.games.filter(game => (viewerLeagues as readonly string[]).includes(game.league));
+		const shown = new Set(games.map(game => game.id));
+		const standby = plan.standbyAt !== undefined && filmTime >= plan.standbyAt;
+		return {
+			...state,
+			games,
+			scores: state.scores.filter(score => shown.has(score.gameId)),
+			onStandbyStream: standby,
+			standbyStreamTabId: standby ? standbyTab.id : null,
+		};
+	};
+
 	const boot = (popupId: string): PopupBoot => {
 		const runtime = runtimes.get(popupId)!;
 		const { plan } = runtime;
 		const now = slateNow(popupId);
-		const prefs = { ...viewerPrefs(runtime.profile), openRevealEnabled: plan.reveal !== 'off' };
+		const viewer = viewerPrefs(runtime.profile);
+		const prefs = {
+			...viewer,
+			enabledLeagues: plan.source === 'pregame' ? [...viewer.enabledLeagues, 'nfl' as const] : viewer.enabledLeagues,
+			openRevealEnabled: plan.reveal !== 'off',
+			...plan.prefs,
+		};
 		return {
 			messages,
-			state: slate.stateAt(runtime.profile, now),
-			tabs: filmTabs.map(({ id, title, url }) => ({ id, title, url })),
+			state: stateFor(runtime, now),
+			tabs: browserTabs.map(({ id, title, url }) => ({ id, title, url })),
 			local: {
 				onboardingCompleted: true,
 				standbyOnboardingDone: true,
@@ -115,6 +141,7 @@ const createPopupHost = (cut: Cut, slate: Slate, messages: Record<string, { mess
 			},
 			session: {
 				tabRegistry: plan.registered ? filmTabs.map(tab => ({ tabId: tab.id, gameId: tab.gameId })) : [],
+				standbyStreamTabId: standbyTab.id,
 			},
 			sync: { prefs, prefsUpdatedAt: now - 3_600_000 },
 			guideSlate: slate.guideAt(now),
@@ -141,6 +168,12 @@ const createPopupHost = (cut: Cut, slate: Slate, messages: Record<string, { mess
 			const target = doc.querySelector<HTMLElement>(action.selector);
 			if (!target) return false;
 			target.click();
+			return true;
+		}
+		if (action.kind === 'hide') {
+			const target = doc.querySelector<HTMLElement>(action.selector);
+			if (!target) return false;
+			target.style.visibility = 'hidden';
 			return true;
 		}
 		if (action.kind === 'value') {
@@ -189,7 +222,7 @@ const createPopupHost = (cut: Cut, slate: Slate, messages: Record<string, { mess
 			const now = slateNow(runtime.plan.id);
 			const due = t - runtime.lastPushedAt >= pushEverySeconds - 1e-6;
 			if (now !== runtime.lastPushedSlate && due) {
-				handle.push(slate.stateAt(runtime.profile, now));
+				handle.push(stateFor(runtime, now));
 				runtime.lastPushedSlate = now;
 				runtime.lastPushedAt = t;
 			}
