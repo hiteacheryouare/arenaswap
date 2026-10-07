@@ -1,6 +1,6 @@
 # ArenaSwap — code-reviewer memory
 
-- [CI and enforcement](project_ci_and_enforcement.md) — nothing gates PRs; oxlint has no react-hooks plugin, so hook bugs are always worth reporting
+- [CI and enforcement](project_ci_and_enforcement.md) — ci.yml runs lint/typecheck/test/e2e/zip on workspaces only; scripts/ is never checked; no react-hooks lint
 - [Platform floor](project_platform_floor.md) — RESOLVED in PR #18 (Chrome 110 / FF 115 declared). Still check new ES built-ins + the storage.session 1MB quota below Chrome 112
 - [Repo failure map](project_review_failure_map.md) — Firefox-only DnD, the walkthrough overlay that blocks its own nav, the empty-merge gate, defaultStrings, team-colour card seams (hero grid inherit, direct team.color readers, walkthrough card copies)
 - [Popup failure map](review_popup_failure_map.md) — 320x560 geometry, JS/SCSS duration coupling, scroll container, tab strip active-state trap, viewer-tz day math
@@ -15,3 +15,4 @@
 - [Background slate lifecycle](review_background_slate_lifecycle.md) — refreshSlate runs on every worker start and now costs a request per Eastern day per league; 2 empty polls walk a league quiet
 - [Popup open reveal](review_popup_open_reveal.md) — measured DM Sans tricode widths, the harness/production nesting mismatch, the 3400ms JS↔SCSS duplication
 - [PowerScore replay harness](review_powerscore_replay_harness.md) — hit@1 tie-break luck, dist+src engine mix, non-self-contained hourly files, recorder dies with the session
+- [Cypress test strength](review_cypress_test_strength.md) — StrictMode wrappers do not double-run effects here; growing alias counts; CI skips Cypress when jest fails; mutation recipe
