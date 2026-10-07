@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Finished-game tests stop expiring — 2026-10-06
+
+Two core tests built their finished games on the fixtures' default date of October 5, then read the real clock, so the 24-hour final retention dropped those games once that date passed and the tests failed on every branch. They now stamp the game with the current time, like the rest of the finished-game tests, and two more post-game checks that were passing on a missing game now see one.
+
 ## Basketball's hero reads like a scorebug — 2026-10-04
 
 The fouls sentence under a live basketball hero is gone: a caret beside the score points at the team with the ball, BONUS sits under a team's timeout dots once it's in the bonus, and the NBA's seven timeouts draw as dots, a size down, instead of a numeral. Our sources send no possession for basketball, so core reads it off the last play's type, and the popup holds the last side named through timeouts and substitutions until the period ends.
