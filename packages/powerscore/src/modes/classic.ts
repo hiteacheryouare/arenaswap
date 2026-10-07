@@ -4,7 +4,6 @@ import { scoringOpportunityBoost } from '../boosts/scoringOpportunity';
 import { goAheadRunBoost } from '../boosts/goAheadRun';
 import { twoMinuteDrillBoost } from '../boosts/twoMinuteDrill';
 import { redCardBoost } from '../boosts/redCard';
-import { emptyNetBoost, powerPlayBoost } from '../boosts/hockey';
 import { noHitterBoost } from '../boosts/noHitter';
 import { upsetWatchBoost } from '../boosts/upsetWatch';
 import { stakesBoost } from '../boosts/stakes';
@@ -17,8 +16,6 @@ export const classicMode: PowerScoreMode = {
 		scoringOpportunityBoost,
 		goAheadRunBoost,
 		twoMinuteDrillBoost,
-		emptyNetBoost,
-		powerPlayBoost,
 		redCardBoost,
 		noHitterBoost,
 		upsetWatchBoost,

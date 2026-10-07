@@ -26,11 +26,9 @@ The favorite, postseason, and manual boosts at the [bottom of the page](#favorit
 
 | Boost | Id | Pays for | Max |
 |---|---|---|---|
-| [Scoring opportunity](#scoring-opportunity) | `scoringOpportunity` | Runners on base, or a football drive inside the red zone | 15 |
+| [Scoring opportunity](#scoring-opportunity) | `scoringOpportunity` | Runners on base, a football drive inside the red zone, or a hockey power play or empty net | 20 |
 | [Go-ahead run](#go-ahead-run) | `goAheadRun` | The go-ahead or tying run on base in baseball and softball | 10 |
 | [Two-minute drill](#two-minute-drill) | `twoMinuteDrill` | A football team with the ball, tied or down one score, in the closing minutes | 12 |
-| [Empty net](#empty-net-and-power-play) | `emptyNet` | A pulled goalie in a close hockey game | 12 |
-| [Power play](#empty-net-and-power-play) | `powerPlay` | A man advantage in a close hockey game | 10 |
 | [Red card](#red-card) | `redCard` | A sending-off in a tied or one-goal soccer match | 15 |
 | [No-hitter](#no-hitter) | `noHitter` | A baseball or softball game with a team still hitless | 70 |
 | [Upset watch](#upset-watch) | `upsetWatch` | The pregame underdog leading or within a score | 12 |
@@ -44,7 +42,7 @@ Boosts share caps, so a lot of small things happening at once can't push a game 
 
 | Bucket | Cap | What's in it | Why |
 |---|---|---|---|
-| Moments | 20 | Scoring opportunity, go-ahead run, two-minute drill, empty net, power play, red card | A tied game at the buzzer scores about 80 before boosts, so a full moment lifts it to 100. A one-score final minute lands in the high 80s, and not every tight game pins at 100. |
+| Moments | 20 | Scoring opportunity, go-ahead run, two-minute drill, red card | A tied game at the buzzer scores about 80 before boosts, so a full moment lifts it to 100. A one-score final minute lands in the high 80s, and not every tight game pins at 100. |
 | No-hitter | 70 | No-hitter | A bid lasts innings, not a moment, and it has to lift a 6-0 game past tied ones. |
 | Context | 16 | Upset watch, stakes | They can happen together (a ranked underdog), but together they stay below a late one-score swing, so context never outranks live action. |
 
@@ -84,7 +82,27 @@ The base value is then weighted by down:
 
 A base value of `0` stays `0` no matter the down. An unconditional boost on top of a blowout would undo what closeness and late-game pressure already scored correctly low. Goal-to-go only raises the multiplier on 4th down, since on an earlier down it describes the odds of a score rather than what decides possession.
 
+**Hockey** pays for a [power play or an empty net](#power-play-and-empty-net).
+
 The exported constants behind these tables are `scoringOpportunityBaseRunnerBoosts`, `scoringOpportunityRedZoneBoost`, `scoringOpportunityRedZoneFringeBoost`, `redZoneDownMultipliers`, and `thirdAndShortDistance`.
+
+### Power play and empty net
+
+Hockey's scoring opportunity. Both read `context`, because they come from the situation feed rather than the scoreboard. A 6-on-4 is both at once, so the two add up and the moments cap holds the sum at 20.
+
+**Empty net** pays in the last 4 minutes of the 3rd period when the game is one or two goals apart: **12** at one goal, **7** at two. When the feed says whose net is empty, it only pays for the trailing team's. A leader's empty net means a delayed penalty, and the goalie is back in seconds. Set `context.emptyNet` only once the feed has reported it on two polls in a row, for the same reason.
+
+**Power play** pays in tied and one- or two-goal games. Late (3rd period or later) it pays more:
+
+| Game | Late | Earlier |
+|---|---|---|
+| Tied | 10 | 4 |
+| One goal, the trailing team has the man advantage | 10 | 4 |
+| One goal, the leading team has it | 5 | 2 |
+| Two goals, the trailing team has it | 5 | 2 |
+| Two goals, the leading team has it | 0 | 0 |
+
+When the feed only says that a power play is on, not whose, the boost assumes the trailing team is as likely to have it as not and pays a little less: 7 or 3 at one goal, 3 or 2 at two.
 
 ## Go-ahead run
 
@@ -114,24 +132,6 @@ Football. Needs `possession`, `yardsToEndZone`, and a live `down`. Pays in the 4
 A team running out the clock with a lead pays nothing. Neither does an NCAA overtime, which has no game clock.
 
 The 12 points are scaled by four things: how little time is left (full at 40 seconds), field position (full from the opponent's 35, or 30 in college, down to 40% at your own 20), timeouts left (70% with none, 100% with three), and the margin (full when tied or down 1 or 2, shrinking to 70% at 8 down). Between plays, after a score, a feed sends a down that means nothing, and the boost pays 0 until the next snap.
-
-## Empty net and power play
-
-Hockey. Both read `context`, because they come from the situation feed rather than the scoreboard.
-
-**Empty net** pays in the last 4 minutes of the 3rd period when the game is one or two goals apart: **12** at one goal, **7** at two. When the feed says whose net is empty, it only pays for the trailing team's. A leader's empty net means a delayed penalty, and the goalie is back in seconds. Set `context.emptyNet` only once the feed has reported it on two polls in a row, for the same reason.
-
-**Power play** pays in tied and one- or two-goal games. Late (3rd period or later) it pays more:
-
-| Game | Late | Earlier |
-|---|---|---|
-| Tied | 10 | 4 |
-| One goal, the trailing team has the man advantage | 10 | 4 |
-| One goal, the leading team has it | 5 | 2 |
-| Two goals, the trailing team has it | 5 | 2 |
-| Two goals, the leading team has it | 0 | 0 |
-
-When the feed only says that a power play is on, not whose, power play assumes the trailing team is as likely to have it as not and pays a little less: 7 or 3 at one goal, 3 or 2 at two.
 
 ## Red card
 

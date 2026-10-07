@@ -6,6 +6,7 @@ import {
 	thirdAndShortDistance,
 } from '../constants';
 import { isPlayFrozen } from '../progress';
+import { hockeyScoringOpportunity, hockeyScoringOpportunityDetails } from './hockey';
 import type { BoostDefinition, Game, ReasonFragment, SignalInput, SportTypeConfig } from '../types';
 
 // An unknown down (between plays, or a feed that doesn't report one) falls through to `other`, so a
@@ -25,7 +26,8 @@ const getRedZoneBoost = (game: Game<string>, sport: SportTypeConfig, margin: num
 	return Math.round(base * getRedZoneDownMultiplier(game));
 };
 
-export const computeScoringOpportunity = ({ game, sport, margin }: Pick<SignalInput, 'game' | 'sport' | 'margin'>): number => {
+export const computeScoringOpportunity = (input: SignalInput): number => {
+	const { game, sport, margin } = input;
 	if (game.status !== 'in') return 0;
 	// A freeze holds the situation in place (runners stay on base, the offense stays in the red
 	// zone), so the boost would otherwise keep paying out while nothing can happen.
@@ -37,6 +39,7 @@ export const computeScoringOpportunity = ({ game, sport, margin }: Pick<SignalIn
 		return scoringOpportunityBaseRunnerBoosts[[r.first, r.second, r.third].filter(Boolean).length] ?? 0;
 	}
 	if (game.sportType === 'football' && game.isRedZone) return getRedZoneBoost(game, sport, margin);
+	if (game.sportType === 'hockey') return hockeyScoringOpportunity(input);
 	return 0;
 };
 
@@ -57,21 +60,23 @@ const redZoneKey = (game: Game<string>): string => {
 };
 
 // Says nothing when the boost has nothing to read: a game not yet live, or play stopped.
-const scoringOpportunityDetail = (game: Game<string>, points: number): ReasonFragment | undefined => {
-	if (game.status !== 'in' || isPlayFrozen(game)) return undefined;
+const scoringOpportunityDetails = (input: SignalInput, points: number): ReasonFragment[] => {
+	const { game } = input;
+	if (game.status !== 'in' || isPlayFrozen(game)) return [];
 	if (game.sportType === 'baseball' || game.sportType === 'softball') {
 		const r = game.baseRunners;
-		if ((game.outs ?? 0) >= 3) return { key: 'inningOver' };
-		if (!r) return undefined;
-		return { key: baseKeys[[r.first, r.second, r.third].map(Number).join('')] ?? 'basesEmpty' };
+		if ((game.outs ?? 0) >= 3) return [{ key: 'inningOver' }];
+		if (!r) return [];
+		return [{ key: baseKeys[[r.first, r.second, r.third].map(Number).join('')] ?? 'basesEmpty' }];
 	}
 	if (game.sportType === 'football') {
-		if (!game.isRedZone) return { key: 'outsideRedZone' };
+		if (!game.isRedZone) return [{ key: 'outsideRedZone' }];
 		const team = game.possession && (game.possession === 'home' ? game.homeTeam : game.awayTeam).abbreviation;
-		if (!team) return undefined;
-		return { key: points > 0 ? redZoneKey(game) : 'redZoneNotClose', params: { team } };
+		if (!team) return [];
+		return [{ key: points > 0 ? redZoneKey(game) : 'redZoneNotClose', params: { team } }];
 	}
-	return { key: 'noScoringPosition' };
+	if (game.sportType === 'hockey') return hockeyScoringOpportunityDetails(input);
+	return [{ key: 'noScoringPosition' }];
 };
 
 export const scoringOpportunityBoost: BoostDefinition = {
@@ -79,7 +84,7 @@ export const scoringOpportunityBoost: BoostDefinition = {
 	bucket: 'moment',
 	compute: input => {
 		const points = computeScoringOpportunity(input);
-		const detail = scoringOpportunityDetail(input.game, points);
-		return detail ? { points, details: [detail] } : { points };
+		const details = scoringOpportunityDetails(input, points);
+		return details.length > 0 ? { points, details } : { points };
 	},
 };

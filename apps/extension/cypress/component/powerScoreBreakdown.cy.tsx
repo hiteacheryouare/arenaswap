@@ -244,7 +244,7 @@ const classicBreakdown: ScoreBreakdown = {
 	],
 	boosts: [
 		{ id: 'favoriteBoost', points: 0, meta: { teams: 0 } },
-		...zeroBoosts(['gameBoost', 'scoringOpportunity', 'goAheadRun', 'twoMinuteDrill', 'emptyNet', 'powerPlay', 'redCard', 'noHitter', 'upsetWatch', 'stakes', 'postseasonBoost']),
+		...zeroBoosts(['gameBoost', 'scoringOpportunity', 'goAheadRun', 'twoMinuteDrill', 'redCard', 'noHitter', 'upsetWatch', 'stakes', 'postseasonBoost']),
 	],
 	reasons: [],
 	frozen: false,
@@ -385,7 +385,7 @@ describe('PowerScoreBreakdown from a PowerScore 3 breakdown', () => {
 		atPopupWidth({ breakdown: paying });
 		cy.get('.powerscore-breakdown').then(([card]: JQuery<HTMLElement>) => {
 			const ground = luminance(getComputedStyle(card).backgroundColor);
-			cy.get('.powerscore-breakdown-value').should('have.length', 13).each(([value]: JQuery<HTMLElement>) => {
+			cy.get('.powerscore-breakdown-value').should('have.length', 11).each(([value]: JQuery<HTMLElement>) => {
 				const ratio = (ground + 0.05) / (luminance(getComputedStyle(value).color) + 0.05);
 				expect(ratio, value.textContent ?? '').to.be.at.least(4.5);
 			});
@@ -422,7 +422,7 @@ describe('PowerScoreBreakdown from a PowerScore 3 breakdown', () => {
 
 	it('keeps every new boost row on one line in each language', () => {
 		const paying = { ...classicBreakdown, boosts: classicBreakdown.boosts.map(boost => ({ ...boost, points: 4 })) };
-		const labelKeys = ['goAheadRun', 'twoMinuteDrill', 'emptyNet', 'powerPlay', 'redCard', 'noHitter', 'upsetWatch', 'stakes'] as const;
+		const labelKeys = ['goAheadRun', 'twoMinuteDrill', 'redCard', 'noHitter', 'upsetWatch', 'stakes'] as const;
 		atPopupWidth({ breakdown: paying });
 		cy.get('.powerscore-breakdown-row').eq(1).then(([reference]: JQuery<HTMLElement>) => {
 			const oneLine = reference.getBoundingClientRect().height;

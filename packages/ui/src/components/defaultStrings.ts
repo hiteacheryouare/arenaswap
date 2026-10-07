@@ -72,8 +72,6 @@ export const defaultStrings: Record<string, string> = {
 	'powerScore.scoringOpportunity': 'Scoring opportunity',
 	'powerScore.goAheadRun': 'Go-ahead run on base',
 	'powerScore.twoMinuteDrill': 'Two-minute drill',
-	'powerScore.emptyNet': 'Empty net',
-	'powerScore.powerPlay': 'Power play',
 	'powerScore.redCard': 'Red card',
 	'powerScore.noHitter': 'No-hitter',
 	'powerScore.upsetWatch': 'Upset watch',

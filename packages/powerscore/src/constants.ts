@@ -136,8 +136,6 @@ export const scorerTunables: ScorerTunables = {
 			postseasonBoost: 'postseason',
 			goAheadRun: 'go-ahead run on base',
 			twoMinuteDrill: 'two-minute drill',
-			emptyNet: 'empty net',
-			powerPlay: 'power play',
 			redCard: 'red card',
 			noHitter: 'no-hitter',
 			upsetWatch: 'upset watch',
@@ -618,8 +616,8 @@ export const leagueConfigMap = Object.fromEntries(
 // PowerScore 3 boosts. Values from the sports analyst's spec (2026-10-03); each boost file explains
 // its own shape.
 export const boostBucketCaps = {
-	// Runners, go-ahead run, red zone, two-minute drill, empty net, power play, red card. A tied
-	// buzzer (80) plus a full moment reaches 100; a one-score final minute (~68) reaches the high 80s.
+	// Scoring opportunity, go-ahead run, two-minute drill, red card. A tied buzzer (80) plus a full
+	// moment reaches 100; a one-score final minute (~68) reaches the high 80s.
 	moment: 20,
 	// A no-hit bid lasts innings and has to lift a 6-0 game past tied ones.
 	noHitter: 70,

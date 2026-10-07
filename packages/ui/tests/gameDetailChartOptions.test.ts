@@ -501,8 +501,8 @@ describe('boost moments on the PowerScore line', () => {
 	});
 
 	test('splits the stretch where one moment hands over to another', () => {
-		const history = [powerPoint(0, { boosts: { powerPlay: 4 } }), powerPoint(1, { boosts: { emptyNet: 9 } })];
-		expect(boostMoments(history).map(moment => moment.id)).toEqual(['powerPlay', 'emptyNet']);
+		const history = [powerPoint(0, { boosts: { twoMinuteDrill: 6 } }), powerPoint(1, { boosts: { scoringOpportunity: 9 } })];
+		expect(boostMoments(history).map(moment => moment.id)).toEqual(['twoMinuteDrill', 'scoringOpportunity']);
 	});
 
 	test('names the boost in the tooltip, in the language it is given', () => {

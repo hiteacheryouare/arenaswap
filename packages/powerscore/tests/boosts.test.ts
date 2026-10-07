@@ -1,7 +1,7 @@
 import { boostPoints, boostBucketCaps, scoreGame, signalPoints } from '../src';
 import type { Game, PowerScore, RedCard, ScoringContext, Side } from '../src';
 
-const momentBoostIds = ['scoringOpportunity', 'goAheadRun', 'twoMinuteDrill', 'emptyNet', 'powerPlay', 'redCard'];
+const momentBoostIds = ['scoringOpportunity', 'goAheadRun', 'twoMinuteDrill', 'redCard'];
 
 const momentTotal = (score: PowerScore): number => momentBoostIds.reduce((total, id) => total + boostPoints(score, id), 0);
 
@@ -364,9 +364,11 @@ const rink = ({ period, secs, home, away }: Rink): Game<string> => ({
 	status: 'in',
 });
 
-describe('hockey: the empty net and the power play', () => {
+describe('hockey: the empty net and the power play are scoring opportunities', () => {
+	const chance = (game: Game<string>, context: ScoringContext) => boostPoints(classic(game, context), 'scoringOpportunity');
+
 	test('a pulled goalie late in the 3rd pays 12 down one and 7 down two', () => {
-		const pulled = (home: number, away: number, secs = 90) => boostPoints(classic(rink({ period: 3, secs, home, away }), { emptyNet: true }), 'emptyNet');
+		const pulled = (home: number, away: number, secs = 90) => chance(rink({ period: 3, secs, home, away }), { emptyNet: true });
 		expect(pulled(2, 1)).toBe(12);
 		expect(pulled(3, 1)).toBe(7);
 		expect(pulled(2, 2)).toBe(0);
@@ -375,25 +377,25 @@ describe('hockey: the empty net and the power play', () => {
 	});
 
 	test('the leader\'s empty net is a delayed penalty and pays nothing', () => {
-		const net = (side: Side) => boostPoints(classic(rink({ period: 3, secs: 90, home: 2, away: 1 }), { emptyNet: side }), 'emptyNet');
+		const net = (side: Side) => chance(rink({ period: 3, secs: 90, home: 2, away: 1 }), { emptyNet: side });
 		expect(net('away')).toBe(12);
 		expect(net('home')).toBe(0);
 	});
 
 	test('no empty net in overtime or the 2nd period', () => {
-		expect(boostPoints(classic(rink({ period: 4, secs: 90, home: 2, away: 2 }), { emptyNet: true }), 'emptyNet')).toBe(0);
-		expect(boostPoints(classic(rink({ period: 2, secs: 90, home: 2, away: 1 }), { emptyNet: true }), 'emptyNet')).toBe(0);
+		expect(chance(rink({ period: 4, secs: 90, home: 2, away: 2 }), { emptyNet: true })).toBe(0);
+		expect(chance(rink({ period: 2, secs: 90, home: 2, away: 1 }), { emptyNet: true })).toBe(0);
 	});
 
 	test('a power play without a side follows the side-free table', () => {
-		const pp = (period: number, home: number, away: number) => boostPoints(classic(rink({ period, secs: 600, home, away }), { powerPlay: true }), 'powerPlay');
+		const pp = (period: number, home: number, away: number) => chance(rink({ period, secs: 600, home, away }), { powerPlay: true });
 		expect([pp(1, 1, 1), pp(2, 2, 1), pp(2, 3, 1), pp(2, 4, 1)]).toEqual([4, 3, 2, 0]);
 		expect([pp(3, 1, 1), pp(3, 2, 1), pp(3, 3, 1), pp(3, 4, 1)]).toEqual([10, 7, 3, 0]);
 		expect(pp(4, 2, 2)).toBe(10);
 	});
 
 	test('with a side, the trailing team\'s power play is worth twice the leader\'s', () => {
-		const pp = (side: Side, period: number, home: number, away: number) => boostPoints(classic(rink({ period, secs: 600, home, away }), { powerPlay: side }), 'powerPlay');
+		const pp = (side: Side, period: number, home: number, away: number) => chance(rink({ period, secs: 600, home, away }), { powerPlay: side });
 		expect(pp('away', 3, 2, 1)).toBe(10);
 		expect(pp('home', 3, 2, 1)).toBe(5);
 		expect(pp('away', 3, 3, 1)).toBe(5);
@@ -404,9 +406,14 @@ describe('hockey: the empty net and the power play', () => {
 
 	test('a 6-on-4 stacks both, and the moment cap holds it at 20', () => {
 		const sixOnFour = classic(rink({ period: 3, secs: 60, home: 2, away: 1 }), { emptyNet: 'away', powerPlay: 'away' });
-		expect(boostPoints(sixOnFour, 'emptyNet')).toBe(12);
-		expect(boostPoints(sixOnFour, 'powerPlay')).toBe(8);
+		expect(boostPoints(sixOnFour, 'scoringOpportunity')).toBe(boostBucketCaps.moment);
 		expect(momentTotal(sixOnFour)).toBe(boostBucketCaps.moment);
+	});
+
+	test('neither is a line item of its own', () => {
+		const ids = classic(rink({ period: 3, secs: 60, home: 2, away: 1 }), { emptyNet: 'away', powerPlay: 'away' }).boosts.map(boost => boost.id);
+		expect(ids).not.toContain('powerPlay');
+		expect(ids).not.toContain('emptyNet');
 	});
 
 	test('pays nothing during an intermission', () => {

@@ -19,8 +19,6 @@ const boostReasonKeys: Record<BoostId, string> = {
 	scoringOpportunity: 'powerScore.reasonScoringOpportunity',
 	goAheadRun: 'powerScore.reasonGoAheadRun',
 	twoMinuteDrill: 'powerScore.reasonTwoMinuteDrill',
-	emptyNet: 'powerScore.reasonEmptyNet',
-	powerPlay: 'powerScore.reasonPowerPlay',
 	redCard: 'powerScore.reasonRedCard',
 	noHitter: 'powerScore.reasonNoHitter',
 	upsetWatch: 'powerScore.reasonUpsetWatch',

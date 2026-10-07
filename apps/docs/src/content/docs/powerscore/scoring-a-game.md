@@ -65,7 +65,7 @@ Each optional field turns on the part of the engine that needs it. Leave one out
 | `context.stakes` | `context` | Stakes: a late-season race. |
 | `pregameLine` | `context` | Upset watch. Use the line from before the game. |
 | `redCards` | `game` | The red card boost, soccer. |
-| `powerPlay`, `emptyNet` | `context` | The power play and empty net boosts, hockey. |
+| `powerPlay`, `emptyNet` | `context` | Hockey's scoring opportunity. |
 | `fantasy` | `context` | The Fantasy mode. |
 
 The fields are all on [the types page](/arenaswap/docs/powerscore/types/#game), and what each boost pays is in [Boosts and penalties](/arenaswap/docs/powerscore/boosts-and-penalties/).
@@ -144,7 +144,7 @@ score.boosts.filter(boost => boost.points > 0);
 // ]
 ```
 
-Those two together fill the moments bucket's cap of 20. Football gets the red zone and the two-minute drill from `possession`, `yardsToEndZone`, and `down`. Hockey needs `context.powerPlay` and `context.emptyNet`. Soccer needs `redCards`.
+Those two together fill the moments bucket's cap of 20. Football gets the red zone and the two-minute drill from `possession`, `yardsToEndZone`, and `down`. Hockey's scoring opportunity needs `context.powerPlay` and `context.emptyNet`. Soccer needs `redCards`.
 
 ## Score it in a different mode
 

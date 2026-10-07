@@ -125,7 +125,7 @@ The pieces the built-in modes are made of are exported too, so a custom mode can
 |---|---|
 | `classicSignals`, `blowoutsSignals`, `fantasySignals` | Each mode's signal list. |
 | `closenessSignal`, `lateGameSignal`, `momentumSignal`, `leadChangesSignal`, `comebackSignal` | Classic's five, one by one. |
-| `scoringOpportunityBoost`, `goAheadRunBoost`, `twoMinuteDrillBoost`, `noHitterBoost`, `redCardBoost`, `powerPlayBoost`, `emptyNetBoost`, `upsetWatchBoost`, `upsetRoutBoost`, `stakesBoost` | Each boost's `BoostDefinition`. What each one pays is in [Boosts and penalties](/arenaswap/docs/powerscore/boosts-and-penalties/). |
+| `scoringOpportunityBoost`, `goAheadRunBoost`, `twoMinuteDrillBoost`, `noHitterBoost`, `redCardBoost`, `upsetWatchBoost`, `upsetRoutBoost`, `stakesBoost` | Each boost's `BoostDefinition`. What each one pays is in [Boosts and penalties](/arenaswap/docs/powerscore/boosts-and-penalties/). |
 | `underdogProbability(line, sportType, league)` | The underdog's chance before the game, from a `PregameLine`. `undefined` when the line can't say. |
 | `postseasonBoostShare(round)` | The share of the postseason boost a round earns: 1, 0.75, 0.5, 0.25, or 0 with no round. |
 | `applyProgressFloor`, `findLeadChanges` | The two helpers behind closeness and lead changes. |
@@ -248,7 +248,7 @@ Never throws. Returns an all-zero result immediately when `isPlayFrozen(game)` i
 function computeScoringOpportunityBoost(game: Game<string>): number
 ```
 
-Deprecated: the number is in `scoreGame`'s `boosts` list as `scoringOpportunity`. Returns `0` unless `game.status === 'in'` and the game isn't frozen. Otherwise returns 0 to 10 for baseball and softball, by runner count, or 0 to 15 for football, by red-zone margin and down. Returns `0` for every other `sportType`. Not included in `computePowerScore`'s `total`.
+Deprecated: the number is in `scoreGame`'s `boosts` list as `scoringOpportunity`. Returns `0` unless `game.status === 'in'` and the game isn't frozen. Otherwise returns 0 to 10 for baseball and softball, by runner count, or 0 to 15 for football, by red-zone margin and down. Returns `0` for every other `sportType`, hockey included, since its power play and empty net come from `context`, which this function doesn't take. Not included in `computePowerScore`'s `total`.
 
 ### computeWinProbVarianceScore
 

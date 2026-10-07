@@ -8,7 +8,6 @@ export { goAheadRunBoost } from './boosts/goAheadRun';
 export { twoMinuteDrillBoost } from './boosts/twoMinuteDrill';
 export { noHitterBoost } from './boosts/noHitter';
 export { redCardBoost } from './boosts/redCard';
-export { emptyNetBoost, powerPlayBoost } from './boosts/hockey';
 export { upsetWatchBoost, upsetRoutBoost, underdogProbability } from './boosts/upsetWatch';
 export { stakesBoost } from './boosts/stakes';
 export { classicSignals, closenessSignal, lateGameSignal, momentumSignal, leadChangesSignal, comebackSignal, applyProgressFloor, findLeadChanges } from './signals/classic';

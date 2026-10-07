@@ -71,7 +71,7 @@ That minimum gets you the two score-and-clock signals (Closeness and Late-Game P
 | `context.stakes` | `context` | Stakes: a late-season race (clinch, elimination, a table line). |
 | `pregameLine` | `context` | Upset watch. Use the line from *before* the game. A live line moves with the score and would erase the upset. |
 | `redCards` | `game` | The red card boost (soccer). |
-| `powerPlay`, `emptyNet` | `context` | The power play and empty net boosts (hockey). |
+| `powerPlay`, `emptyNet` | `context` | Hockey's scoring opportunity. |
 | `fantasy` | `context` | The Fantasy mode. |
 
 Here is a fuller call: a football game in the final two minutes, trailing team with the ball.
@@ -218,11 +218,9 @@ Boosts are the smaller, moment-shaped inputs. They pay nothing while the game is
 
 | Boost | Id | Pays for | Max |
 |---|---|---|---|
-| Scoring opportunity | `scoringOpportunity` | Runners on base; a football drive inside the red zone, weighted by down. | 15 |
+| Scoring opportunity | `scoringOpportunity` | Runners on base; a football drive inside the red zone, weighted by down; a hockey power play in a tied or one- or two-goal game, or a pulled goalie in the last 4 minutes of the 3rd. | 20 |
 | Go-ahead run | `goAheadRun` | Baseball and softball. The batting team has the go-ahead run on base, or failing that the tying run. Stronger late, and strongest when it's the last chance. Pays nothing at 3 outs. | 10 |
 | Two-minute drill | `twoMinuteDrill` | Football. The team with the ball is tied or down one score, inside the last 2 minutes (4 when trailing), weighted by field position and timeouts. | 12 |
-| Empty net | `emptyNet` | Hockey. A pulled goalie in the last 4 minutes of the 3rd of a one- or two-goal game. | 12 |
-| Power play | `powerPlay` | Hockey. A man advantage in a tied or one- or two-goal game. | 10 |
 | Red card | `redCard` | Soccer. A red card in a tied or one-goal game, fading over the next 10 game minutes. | 15 |
 | No-hitter | `noHitter` | Baseball and softball. One team has no hits, from the 6th inning (the 4th in softball), growing with each hitless inning. | 70 |
 | Upset watch | `upsetWatch` | The pregame underdog leading, level or within one score, past halfway. Bigger the longer the odds. | 12 |

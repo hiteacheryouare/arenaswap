@@ -95,8 +95,8 @@ Everything the game itself doesn't carry. Every field is optional, and `scoreGam
 | `winProbability?` | `number[]` | Home win probability over the game, 0 to 1. Needs 5 finite values to matter. No modifier otherwise. |
 | `pregameLine?` | [`PregameLine`](#pregameline) | Upset watch and Upset Rout pay 0. |
 | `stakes?` | `Partial<Record<'home' \| 'away', TeamStakes>>` | No race stakes. See [`TeamStakes`](#teamstakes). |
-| `powerPlay?` | `'home' \| 'away' \| boolean` | No power play boost. A side when the feed says whose, `true` when it only says one is on. |
-| `emptyNet?` | `'home' \| 'away' \| boolean` | No empty net boost. Set it only once the feed has reported it on two polls in a row. |
+| `powerPlay?` | `'home' \| 'away' \| boolean` | No power play in the scoring opportunity boost. A side when the feed says whose, `true` when it only says one is on. |
+| `emptyNet?` | `'home' \| 'away' \| boolean` | No empty net in the scoring opportunity boost. Set it only once the feed has reported it on two polls in a row. |
 | `recentLeadChanges?` | `{ count: number; lastAt?: number }` | Lead changes counted from a feed's own play log, which sees flips between polls, with the time of the latest. Used when it counts more than `history` shows. Lead Changes still needs the 3 snapshots. |
 | `fantasy?` | [`FantasyPlayerState[]`](#fantasyplayerstate) | Fantasy has no players, and the game is scored as Classic. |
 

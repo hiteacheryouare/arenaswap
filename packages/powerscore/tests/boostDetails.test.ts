@@ -101,12 +101,25 @@ describe('the moments name the team they are about', () => {
 
 	test('an empty net without a side goes to the trailing team', () => {
 		const pulled = game('hockey', 'nhl', 'BOS', 'TOR', { period: 3, clockSeconds: 80, homeTeam: { abbreviation: 'BOS', score: 2 }, awayTeam: { abbreviation: 'TOR', score: 1 } });
-		expect(detailsOf(pulled, 'emptyNet', { emptyNet: true })).toEqual([{ key: 'emptyNet', params: { team: 'TOR', margin: 1, clock: '1:20' } }]);
+		expect(detailsOf(pulled, 'scoringOpportunity', { emptyNet: true })).toEqual([{ key: 'emptyNet', params: { team: 'TOR', margin: 1, clock: '1:20' } }]);
 	});
 
 	test('a power play says whether the team on it trails', () => {
 		const powerPlay = game('hockey', 'nhl', 'BOS', 'TOR', { period: 3, clockSeconds: 600, homeTeam: { abbreviation: 'BOS', score: 2 }, awayTeam: { abbreviation: 'TOR', score: 1 } });
-		expect(detailsOf(powerPlay, 'powerPlay', { powerPlay: 'away' })).toEqual([{ key: 'powerPlayTeamTrailing', params: { team: 'TOR', margin: 1 } }]);
+		expect(detailsOf(powerPlay, 'scoringOpportunity', { powerPlay: 'away' })).toEqual([{ key: 'powerPlayTeamTrailing', params: { team: 'TOR', margin: 1 } }]);
+	});
+
+	test('a 6-on-4 names the pulled goalie and the power play', () => {
+		const sixOnFour = game('hockey', 'nhl', 'BOS', 'TOR', { period: 3, clockSeconds: 80, homeTeam: { abbreviation: 'BOS', score: 2 }, awayTeam: { abbreviation: 'TOR', score: 1 } });
+		expect(detailsOf(sixOnFour, 'scoringOpportunity', { emptyNet: 'away', powerPlay: 'away' })).toEqual([
+			{ key: 'emptyNet', params: { team: 'TOR', margin: 1, clock: '1:20' } },
+			{ key: 'powerPlayTeamTrailing', params: { team: 'TOR', margin: 1 } },
+		]);
+	});
+
+	test('hockey at even strength falls back to the general rule', () => {
+		const evenStrength = game('hockey', 'nhl', 'BOS', 'TOR', { period: 2, clockSeconds: 600 });
+		expect(detailsOf(evenStrength, 'scoringOpportunity')).toBeUndefined();
 	});
 
 	test('a second red card leaves the team with nine', () => {

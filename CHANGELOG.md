@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## A power play is a scoring opportunity — 2026-10-06
+
+Hockey's power play and empty net no longer get line items of their own: they are the hockey case of the `scoringOpportunity` boost, so the breakdown, reasons and chart show one Scoring opportunity row in every sport. The `powerPlay` and `emptyNet` boost ids and their `BoostDefinition` exports are gone from powerscore 3.0.0, which hasn't been published yet, and the points they pay are unchanged. Their tooltip sentences come along, so hovering Scoring opportunity in hockey names the pulled goalie or the power play, and both on a 6-on-4.
+
 ## Only the clock ticks in Lekton — 2026-10-06
 
 The detail hero, its sticky bar and the Guide's bars set a running clock's period ("Q3", "P1") in DM Sans and only the digits after it in Lekton, where before the whole string went monospace. `resolveStatus` now hands the clock back on its own, and `gameStatusText` renders the pair.
