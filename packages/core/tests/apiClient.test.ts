@@ -2416,6 +2416,7 @@ describe('apiClient', () => {
 		test('leaves leaders off a finished game, where the categories hold that game box line', async () => {
 			const { fetchGamesWithLeagueLogos } = mockSingleEvent(makeEvent({
 				id: 'post-ldr', state: 'post', period: 9, clock: '0:00', homeScore: '5', awayScore: '2',
+				date: new Date().toISOString(),
 				homeExtra: { leaders: [leaderCategory('homeRuns', 'HR', 'J. Soto', '1-4, HR, 4 RBI, 2 R, BB')] },
 			}));
 			// includeFinal, or the game is filtered out before the assertion can see it and this
@@ -3173,6 +3174,7 @@ describe('rank, timeouts and the last play', () => {
 				clock: '8:00',
 				homeScore: '7',
 				awayScore: '7',
+				date: new Date().toISOString(),
 				situation: params.situation,
 				homeExtra: params.homeExtra,
 				awayExtra: params.awayExtra,
