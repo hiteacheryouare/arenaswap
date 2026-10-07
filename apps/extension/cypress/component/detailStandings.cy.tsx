@@ -1,8 +1,10 @@
+import { StrictMode } from 'react';
 import GameDetailView from '../../entrypoints/popup/components/gameDetailView';
 import { MockGameSimulator } from '@arenaswap/core';
 import type { Game } from '@arenaswap/core/types';
 import { mockBoxScorePayloads } from '../../entrypoints/popup/components/mockBoxScores';
 import { mockStandingsPayloads } from '../../entrypoints/popup/components/mockStandings';
+import { prefetchGameDetail } from '../../entrypoints/popup/components/summaryFetch';
 import de from '../../locales/de.json';
 import en from '../../locales/en.json';
 import es from '../../locales/es.json';
@@ -156,6 +158,43 @@ describe('detail screen tab strip', () => {
 		cy.get('.powerscore-breakdown').then($breakdown => { $breakdown[0]!.dataset.probe = 'kept'; });
 		cy.get('.gd-tabs .nav-link').should('have.length', 3);
 		cy.get('.tab-pane.active .powerscore-breakdown').should('have.attr', 'data-probe', 'kept');
+	});
+
+	// The card's hover answered before the click, so the screen opens on that rather than asking
+	// a second time.
+	it('opens on the requests a hover already finished', () => {
+		const live = { ...football, id: '401000005' };
+		cy.intercept({ url: /\/summary\?event=401000005/ }, { body: mockBoxScorePayloads['mock-5'] }).as('summary');
+		cy.intercept({ url: /\/standings\?level=3/ }, { body: mockStandingsPayloads['mock-5'] }).as('standings');
+		cy.then(() => prefetchGameDetail(live));
+		cy.wait(['@summary', '@standings']);
+		mount(live);
+		cy.get('.gd-tabs .nav-link').should('have.length', 3);
+		cy.get('@summary.all').should('have.length', 1);
+		cy.get('@standings.all').should('have.length', 1);
+	});
+
+	it('asks again at tip-off, since the pre-game answer has no box score in it', () => {
+		const live = { ...football, id: '401000005' };
+		cy.intercept({ url: /\/summary\?event=401000005/ }, { body: mockBoxScorePayloads['mock-5'] }).as('summary');
+		cy.intercept({ url: /\/standings\?level=3/ }, { body: mockStandingsPayloads['mock-5'] });
+		mount({ ...live, status: 'pre' }).then(({ rerender }) => {
+			cy.wait('@summary');
+			cy.then(() => rerender(detail(live)));
+		});
+		cy.get(`#gd-tab-${live.id}-box`).should('exist');
+		cy.get('@summary.all').should('have.length', 2);
+	});
+
+	// Development builds run every effect twice; the second run must reuse the first's request.
+	it('asks once under StrictMode', () => {
+		const live = { ...football, id: '401000005' };
+		cy.intercept({ url: /\/summary\?event=401000005/ }, { body: mockBoxScorePayloads['mock-5'] }).as('summary');
+		cy.intercept({ url: /\/standings\?level=3/ }, { body: mockStandingsPayloads['mock-5'] }).as('standings');
+		cy.mount(<StrictMode>{detail(live)}</StrictMode>);
+		cy.get('.gd-tabs .nav-link').should('have.length', 3);
+		cy.get('@summary.all').should('have.length', 1);
+		cy.get('@standings.all').should('have.length', 1);
 	});
 
 	// A finished game opens its overview on the info panel, whose top rule used to draw a second
