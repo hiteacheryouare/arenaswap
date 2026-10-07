@@ -1,4 +1,3 @@
-import { StrictMode } from 'react';
 import GameDetailView from '../../entrypoints/popup/components/gameDetailView';
 import { MockGameSimulator } from '@arenaswap/core';
 import type { Game } from '@arenaswap/core/types';
@@ -186,12 +185,16 @@ describe('detail screen tab strip', () => {
 		cy.get('@summary.all').should('have.length', 2);
 	});
 
-	// Development builds run every effect twice; the second run must reuse the first's request.
-	it('asks once under StrictMode', () => {
+	// Each mount waits on tabs that need the summary, so a second request would have landed
+	// before the counts are read.
+	it('reopens on the same requests when the screen is left and opened again', () => {
 		const live = { ...football, id: '401000005' };
 		cy.intercept({ url: /\/summary\?event=401000005/ }, { body: mockBoxScorePayloads['mock-5'] }).as('summary');
 		cy.intercept({ url: /\/standings\?level=3/ }, { body: mockStandingsPayloads['mock-5'] }).as('standings');
-		cy.mount(<StrictMode>{detail(live)}</StrictMode>);
+		mount(live);
+		cy.get('.gd-tabs .nav-link').should('have.length', 3);
+		cy.mount(<div />);
+		mount(live);
 		cy.get('.gd-tabs .nav-link').should('have.length', 3);
 		cy.get('@summary.all').should('have.length', 1);
 		cy.get('@standings.all').should('have.length', 1);
