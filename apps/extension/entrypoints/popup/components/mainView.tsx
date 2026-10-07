@@ -28,6 +28,7 @@ import useReorderGlide from '@arenaswap/ui/src/components/useReorderGlide';
 import { buildFinalComparator, buildLeagueRank, buildLiveComparator, buildUpcomingComparator, getRandomLoadingMessage, groupByDate, groupByLeague, resolveSelectedDayIndex } from '../popupHelpers';
 import type { BettingDisplayPrefs, WeatherDisplayPrefs } from './gameCardTypes';
 import useRestoredScroll from '../useRestoredScroll';
+import { prefetchOnIntent } from './summaryFetch';
 import { revealModeForIndex, type cardRevealPlan, type revealMode } from '../cardReveal';
 
 const emptyScoreMap = new Map<string, PowerScoreResult>();
@@ -115,7 +116,7 @@ const gameSection = ({
 		// A game the plan does not name is one that arrived after the plan was fixed, and it gets
 		// nothing: a card that has been sitting there plainly for two seconds must not suddenly grow
 		// a poster over itself.
-		<div key={game.id} data-glide-key={game.id}>
+		<div key={game.id} data-glide-key={game.id} {...prefetchOnIntent(game)}>
 			<GameCardReveal
 				game={game}
 				mode={reveal.order.has(game.id) ? revealModeForIndex(reveal.mode, reveal.order.get(game.id)!) : 'none'}

@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Game details start loading on hover — 2026-10-06
+
+Resting the pointer on a game card for 100ms (or tabbing to it) now starts the summary and standings requests the detail screen needs, so the chart, records and tabs are usually there by the time the click lands instead of arriving half a second later. Both go through a small in-popup cache that keeps a response for 15 seconds, because our sources' own `max-age` is five seconds at most and already counted down by the time the popup sees it; a summary only answers for the game status it was fetched under, so a hover just before tip-off can't hide the box score after it.
+
 ## Basketball's hero reads like a scorebug — 2026-10-04
 
 The fouls sentence under a live basketball hero is gone: a caret beside the score points at the team with the ball, BONUS sits under a team's timeout dots once it's in the bonus, and the NBA's seven timeouts draw as dots, a size down, instead of a numeral. Our sources send no possession for basketball, so core reads it off the last play's type, and the popup holds the last side named through timeouts and substitutions until the period ends.
