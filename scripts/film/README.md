@@ -1,9 +1,9 @@
 # The films
 
 Three cuts of an ArenaSwap ad (15, 30 and 60 seconds), each in 16:9 (1920×1080) and 9:16
-(1080×1920), at 60 fps with a soundtrack. The 60 runs on into about nine seconds of credits: the
-Lattice & Company lockup, Ryan Mullin's wordmark, and the site's own disclaimers. They are rendered from code, so every frame can be
-rebuilt, retimed or translated.
+(1080×1920), at 60 fps with a soundtrack. Each runs on into credits: the Lattice & Company lockup
+and Ryan Mullin's wordmark, then, in the 60 only, the site's own disclaimers. They are rendered from
+code, so every frame can be rebuilt, retimed or translated.
 
 Nothing on screen is mocked up. The popup is the shipped extension, built and running inside the
 frame. The scores, clocks, PowerScores and tab switches are Saturday, October 3, 2026, as
@@ -80,9 +80,9 @@ out/*.mp4
 - **The cuts are data.** `stage/cuts/cut15.ts`, `cut30.ts` and `cut60.ts` list, in bars at 128 BPM:
   the shots, the supers, which popups exist and the night's clock for each, which tab is in front
   and why, the sound cues, and the music's sections. 8, 16 and 32 bars land on exactly 15, 30 and
-  60 seconds; the 60's five bars of credits come after. The end card lifts Kentucky's LIVE badge to
-  centre stage, turns its dot into each sport's ball and lands it as the wordmark's period, in
-  twelve beats in the 30 and the 60 and eight in the 15.
+  60 seconds; the credits come after, three bars in the 15 and the 30 and five in the 60. The end
+  card lifts Kentucky's LIVE badge to centre stage, turns its dot into each sport's ball and lands it
+  as the wordmark's period, in fourteen beats in the 30 and the 60 and eight in the 15.
 
 ## Changing things
 

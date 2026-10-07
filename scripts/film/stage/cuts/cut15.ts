@@ -9,16 +9,18 @@ const toCal = b(5) + beats(2);
 const payoffAt = b(6) + beats(2);
 
 // 8 bars: the problem, the popup, the orange card on the drop, the switch, the win, the sign-off.
+// Then three of credits.
 const cut15: Cut = {
 	id: '15',
-	bars: 8,
-	duration: 8 * barSeconds,
+	bars: 11,
+	duration: 11 * barSeconds,
 	sections: [
 		{ fromBar: 1, toBar: 3, part: 'intro' },
 		{ fromBar: 4, toBar: 4, part: 'drop' },
 		{ fromBar: 5, toBar: 5, part: 'groove' },
 		{ fromBar: 6, toBar: 6, part: 'peak' },
 		{ fromBar: 7, toBar: 8, part: 'outro' },
+		{ fromBar: 9, toBar: 11, part: 'tail' },
 	],
 	shots: [
 		{ kind: 'wall', from: 0, to: b(2) + 0.5 },
@@ -28,6 +30,8 @@ const cut15: Cut = {
 		{ kind: 'swaps', from: cardUnder(b(4)), to: payoffAt },
 		{ kind: 'payoff', from: payoffAt, to: b(7) },
 		{ kind: 'endCard', from: b(7), to: endAt },
+		{ kind: 'credits', from: endAt, to: endAt + beats(7) },
+		{ kind: 'signature', from: endAt + beats(7), to: b(12) },
 	],
 	supers: [
 		{ key: 'tooMany', from: 0.6, to: b(2), place: 'top' },

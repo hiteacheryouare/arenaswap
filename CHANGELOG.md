@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The 15 and the 30 sign off with the credits — 2026-10-07
+
+The 15 and the 30 now run on into three bars of credits after the film, the Lattice & Company rosette and then Ryan Mullin's wordmark, without the 60's disclaimers. The 30 also asks "Got a team?" on a second orange card that grows out of Kentucky's LIVE dot and shrinks back into it, as the 60 does.
+
 ## The films open on the problem — 2026-10-07
 
 Every scene now carries the benefit it shows, opening on "Too many games on?", cutting the switches and box scores that only filled time, demonstrating Standby Stream end to end, and leaving college hockey (no team colours) out of the viewer's leagues. The ending lifts Kentucky's LIVE badge to centre stage and turns its dot into each sport's ball before it becomes the wordmark's period, and the 60 runs on into credits with the Lattice & Company rosette, Ryan Mullin's wordmark and the site's own disclaimers. The score is now a synthesized college pep band, a brass stand tune over sousaphones and a marching drumline, still on the 128 BPM bar grid.
