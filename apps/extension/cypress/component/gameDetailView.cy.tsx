@@ -573,11 +573,12 @@ describe('gameDetailView hero', () => {
 		cy.get('.game-detail-period').should('contain.text', 'Halftime');
 	});
 
-	// Lekton is there to hold a ticking clock's digits still. An inning or a word has nothing that
-	// moves, so it reads in the body face.
+	// Lekton is there to hold a ticking clock's digits still. The period beside the clock, an inning
+	// and a word have nothing that moves, so they read in the body face.
 	it('keeps only a running clock in Lekton', () => {
 		mountDetail(makeLiveGame(), { excitementResult: excitement });
-		cy.get('.game-detail-period').should($el => expect(face($el), 'a running clock').to.equal('Lekton'));
+		cy.get('.game-detail-period').should($el => expect(face($el), 'the period').to.equal('DM Sans'));
+		cy.get('.game-detail-period .game-status-clock').should($el => expect(face($el), 'a running clock').to.equal('Lekton'));
 
 		mountDetail(makeInningGame(), { excitementResult: excitement });
 		cy.get('.game-detail-period').should($el => expect(face($el), 'an inning').to.equal('DM Sans'));

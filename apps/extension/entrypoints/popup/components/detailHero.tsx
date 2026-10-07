@@ -8,6 +8,7 @@ import DetailTeamPill from './detailTeamPill';
 import FlipScore from './flipScore';
 import FootballFieldStrip from './footballFieldStrip';
 import { basketballTimeoutAllotment, bonusKind, type GameStatus } from './gameSituation';
+import GameStatusText from './gameStatusText';
 import InningHalfIcon from './inningHalfIcon';
 import PossessionArrow from './possessionArrow';
 import SeriesDots from './seriesDots';
@@ -88,8 +89,8 @@ const detailHero = ({ game, seriesInfo, records = emptyTeamRecords, monoLogos, i
 				</div>
 				<DetailTeamPill team={homeTeam} side='home' record={records.home} color={homeColor} timeoutMax={timeoutMax} bonus={bonusOf('home')} bonusSlot={Boolean(situation)} />
 				{status.text && (
-					<div className={`game-detail-period${status.ticking ? ' is-ticking' : ''}`}>
-						{isInningSport && <InningHalfIcon topOfInning={game.topOfInning} />}{status.text}
+					<div className='game-detail-period'>
+						{isInningSport && <InningHalfIcon topOfInning={game.topOfInning} />}<GameStatusText status={status} />
 					</div>
 				)}
 			</div>

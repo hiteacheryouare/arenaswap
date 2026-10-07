@@ -2309,11 +2309,12 @@ button.game-info-attribution {
 	color: #6c757d;
 	text-align: center;
 	white-space: nowrap;
+}
 
-	&.is-ticking {
-		font-family: 'Lekton', monospace;
-		font-variant-numeric: tabular-nums;
-	}
+// The popup's stylesheet also loads on the Guide, which uses this for its bars.
+.game-status-clock {
+	font-family: 'Lekton', monospace;
+	font-variant-numeric: tabular-nums;
 }
 
 // Spans the full card rather than the narrow centre column so the longest

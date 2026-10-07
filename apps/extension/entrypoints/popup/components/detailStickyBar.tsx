@@ -2,6 +2,7 @@ import { i18n } from '#i18n';
 import type { Game, ResolvedTheme, Team, TeamMonoMarks } from '@arenaswap/core/types';
 import TeamCrest from '@arenaswap/ui/src/components/teamCrest';
 import type { GameStatus } from './gameSituation';
+import GameStatusText from './gameStatusText';
 import { formatCompactCountdown, useStartCountdown } from './startCountdown';
 import type { MonoLogos } from './useSummaryData';
 
@@ -40,15 +41,14 @@ interface barSlotProps {
 const BarSlot = ({ game, status, compact }: barSlotProps) => {
 	const parts = useStartCountdown(game.status === 'pre' ? game.startTime : undefined);
 	const countdown = status.text ? '' : formatCompactCountdown(parts, i18n.t);
-	const text = status.text || countdown;
 
-	if (!text) return null;
+	if (!status.text && !countdown) return null;
 	return (
 		<span
-			className={`gd-bar-status${compact ? ' is-visible' : ''}${status.ticking || countdown ? ' is-ticking' : ''}`}
+			className={`gd-bar-status${compact ? ' is-visible' : ''}${countdown ? ' is-ticking' : ''}`}
 			aria-hidden={!compact}
 		>
-			{text}
+			{countdown || <GameStatusText status={status} />}
 		</span>
 	);
 };

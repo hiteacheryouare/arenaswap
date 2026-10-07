@@ -562,13 +562,8 @@ $guide-ruler-height: 2.5rem;
 }
 
 .guide-bar-time,
-.guide-bar-status.is-ticking {
+.guide-bar-status .game-status-clock {
 	font-size: 0.7rem;
-}
-
-.guide-bar-status.is-ticking {
-	font-family: 'Lekton', monospace;
-	font-variant-numeric: tabular-nums;
 }
 
 .guide-bar-time {

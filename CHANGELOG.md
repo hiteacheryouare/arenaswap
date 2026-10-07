@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Only the clock ticks in Lekton — 2026-10-06
+
+The detail hero, its sticky bar and the Guide's bars set a running clock's period ("Q3", "P1") in DM Sans and only the digits after it in Lekton, where before the whole string went monospace. `resolveStatus` now hands the clock back on its own, and `gameStatusText` renders the pair.
+
 ## Open tab menus sit above the Up Next day pager — 2026-10-07
 
 The tab picker on a live card no longer tucks behind the orange day label ("Today") of the Up Next pager when its menu opens downward over it. The open card now climbs to 4, past Bootstrap's active page link at 3 and still under the sticky header at 5.

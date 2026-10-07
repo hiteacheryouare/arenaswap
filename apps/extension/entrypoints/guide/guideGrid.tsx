@@ -8,6 +8,7 @@ import TeamCrest from '@arenaswap/ui/src/components/teamCrest';
 import { leagueLabels } from '@arenaswap/ui/src/components/popupChrome';
 import { useRef, type CSSProperties } from 'react';
 import { resolveStatus } from '../popup/components/gameSituation';
+import GameStatusText from '../popup/components/gameStatusText';
 import { useDisplayLocale } from '@arenaswap/ui/src/components/i18nContext';
 import { formatGuideTime } from './guideFormat';
 import type { guideBand, guideBar } from './guideHeat';
@@ -64,9 +65,9 @@ const BarStatus = ({ game, startMs }: { game: Game; startMs: number }) => {
 	const isInningSport = leagueConfigMap[game.league]?.periodFormat === 'innings';
 	const status = resolveStatus(game, isInningSport, i18n.t);
 	return (
-		<span className={`guide-bar-status${status.ticking ? ' is-ticking' : ''}`}>
+		<span className='guide-bar-status'>
 			{isInningSport && <InningHalfIcon topOfInning={game.topOfInning} />}
-			{status.text}
+			<GameStatusText status={status} />
 		</span>
 	);
 };

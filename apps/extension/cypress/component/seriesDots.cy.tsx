@@ -40,7 +40,7 @@ const mountSeries = (seriesInfo: SeriesInfo) => {
 				monoLogos={{ away: null, home: null }}
 				isDelayed={false}
 				isInningSport
-				status={{ text: 'Final', ticking: false }}
+				status={{ text: 'Final' }}
 				heroStyle={heroStyle}
 				awayColor={awayColor}
 				homeColor={homeColor}

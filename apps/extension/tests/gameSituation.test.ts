@@ -18,7 +18,7 @@ const makeGame = (overrides: Partial<Game> = {}): Game => ({
 
 describe('resolveStatus', () => {
 	test('shows period and clock for a live clock sport', () => {
-		expect(resolveStatus(makeGame(), false, t).text).toBe('Q3 • 6:40');
+		expect(resolveStatus(makeGame(), false, t)).toEqual({ text: 'Q3', clock: '6:40' });
 	});
 
 	test('shows the inning without a clock for inning sports', () => {
@@ -27,7 +27,7 @@ describe('resolveStatus', () => {
 	});
 
 	test('formats overtime', () => {
-		expect(resolveStatus(makeGame({ period: 5 }), false, t).text).toBe('OT • 6:40');
+		expect(resolveStatus(makeGame({ period: 5 }), false, t)).toEqual({ text: 'OT', clock: '6:40' });
 	});
 
 	test('says halftime rather than showing a frozen clock', () => {
@@ -56,14 +56,12 @@ describe('resolveStatus', () => {
 		expect(resolveStatus(makeGame({ status: 'pre' }), false, t).text).toBe('');
 	});
 
-	// The caller picks the face off this, and only a running clock gets the monospaced one.
-	test('marks only a running clock as ticking', () => {
-		expect(resolveStatus(makeGame(), false, t).ticking).toBe(true);
-		expect(resolveStatus(makeGame({ league: 'mlb', sportType: 'baseball' }), true, t).ticking).toBe(false);
-		expect(resolveStatus(makeGame({ intermission: true, period: 2 }), false, t).ticking).toBe(false);
-		expect(resolveStatus(makeGame({ intermission: true, period: 3 }), false, t).ticking).toBe(false);
-		expect(resolveStatus(makeGame({ status: 'post' }), false, t).ticking).toBe(false);
-		expect(resolveStatus(makeGame({ delayed: true }), false, t).ticking).toBe(false);
+	test('hands back a clock only while one is running', () => {
+		expect(resolveStatus(makeGame({ league: 'mlb', sportType: 'baseball' }), true, t).clock).toBeUndefined();
+		expect(resolveStatus(makeGame({ intermission: true, period: 2 }), false, t).clock).toBeUndefined();
+		expect(resolveStatus(makeGame({ intermission: true, period: 3 }), false, t).clock).toBeUndefined();
+		expect(resolveStatus(makeGame({ status: 'post' }), false, t).clock).toBeUndefined();
+		expect(resolveStatus(makeGame({ delayed: true }), false, t).clock).toBeUndefined();
 	});
 });
 
