@@ -201,19 +201,6 @@ export const readableTeamInkOnCard = (color: string | null | undefined, fallback
 	resolveReadableCardTextColor(color ?? undefined, fallback, smallCardTextLuminanceCeiling)
 );
 
-// The ring around a series dot, which is how a navy or black win stays visible on the dark hero.
-// It is the team's other published colour when that one can carry it — seen on the dark ground
-// at the chart line's 3:1, and not so close to the fill that the ring vanishes into it.
-export const seriesDotRingFallback = 'rgba(255, 255, 255, 0.7)';
-
-export const seriesDotRing = (team: matchupTeam, fill: string): string => {
-	const other = [team.color, team.alternateColor]
-		.find(color => isHex(color) && color.toLowerCase() !== fill.toLowerCase());
-	return isHex(other) && luminance(other) >= seriesLuminanceFloor && colorDifference(other, fill) >= clashDifference
-		? other
-		: seriesDotRingFallback;
-};
-
 export const resolveTeamColorPair = (
 	away: matchupTeam,
 	home: matchupTeam,

@@ -2092,12 +2092,6 @@ button.game-info-attribution {
 	font-size: 0.72rem;
 }
 
-// A won game is the team colour inside a ring of the team's other colour, two Bootstrap glyphs
-// deep: `bi-circle`'s stroke is under a pixel at this size, too thin to rescue a navy dot.
-.series-dot-core {
-	font-size: 0.7em;
-}
-
 .series-dot-empty,
 .series-dot-not-needed {
 	color: #374151;
