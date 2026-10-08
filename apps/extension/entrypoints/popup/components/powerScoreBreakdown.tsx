@@ -222,7 +222,7 @@ const PowerScoreBreakdown = ({
 								: i18n.t('powerScore.volatility')}
 						<SettingTooltipIcon text={i18n.t('powerScore.tooltipVolatility')} label={i18n.t('powerScore.volatility')} />
 					</span>
-					<span className='powerscore-breakdown-value' style={{ color: variance > 0 ? penaltyPresentation.volatility.ink : variance < 0 ? penaltyPresentation.clockStall.ink : undefined }}>
+					<span className='powerscore-breakdown-value' style={{ color: variance !== 0 ? penaltyPresentation.volatility.ink : undefined }}>
 						{variance > 0 ? `+${variance}` : variance < 0 ? `${minus}${Math.abs(variance)}` : '0'}
 					</span>
 				</div>

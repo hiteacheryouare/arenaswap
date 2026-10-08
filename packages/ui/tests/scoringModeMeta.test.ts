@@ -64,19 +64,20 @@ describe('scoringModeMeta colours', () => {
 		}
 	});
 
-	test('takes every boost and penalty tone from the breakdown\'s existing six', () => {
+	const factors = [...Object.values(boostPresentation), ...Object.values(penaltyPresentation)];
+
+	test('takes every boost and penalty tone from the breakdown\'s palette', () => {
 		const tones = new Set(Object.values(factorTones).map(tone => `${tone.color} ${tone.ink}`));
-		for (const entry of [...Object.values(boostPresentation), ...Object.values(penaltyPresentation)]) {
-			expect(tones.has(`${entry.color} ${entry.ink}`)).toBe(true);
-		}
+		for (const entry of factors) expect(tones.has(`${entry.color} ${entry.ink}`)).toBe(true);
 	});
 
-	// The breakdown card can show every boost a mode pays at once, plus the two penalties.
-	test('never gives two factors that can share a card the same icon', () => {
-		for (const mode of modes) {
-			const ids = ['favoriteBoost', 'gameBoost', 'postseasonBoost', ...builtInModes[mode].boosts.map(boost => boost.id)] as (keyof typeof boostPresentation)[];
-			const icons = [...ids.map(id => boostPresentation[id].icon), penaltyPresentation.clockStall.icon, penaltyPresentation.volatility.icon, 'layers-half'];
-			expect(new Set(icons).size).toBe(icons.length);
-		}
+	test('gives every boost and penalty its own colour', () => {
+		expect(new Set(factors.map(entry => entry.color)).size).toBe(factors.length);
+		expect(new Set(factors.map(entry => entry.ink)).size).toBe(factors.length);
+	});
+
+	test('gives every boost and penalty its own icon, apart from the blend rows\' too', () => {
+		const icons = [...factors.map(entry => entry.icon), 'layers-half'];
+		expect(new Set(icons).size).toBe(icons.length);
 	});
 });

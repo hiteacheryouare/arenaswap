@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Every boost and penalty gets its own colour — 2026-10-07
+
+The breakdown's palette grew from six tones to fifteen, so no two boosts or penalties share a colour, and the go-ahead run, upset rout and clock stall swap the icons they borrowed from elsewhere in the popup for a home plate, a tornado and a pause button. Hues that sit close together go to factors that never land on the same card, and a test now holds every colour and icon unique.
+
 ## The films play a real track — 2026-10-07
 
 The films are scored to Otis McDonald's "Put It On The Floor", sped up 1% to 96 BPM so three of its beats fill one of the cut's bars, and lined up so its last hit lands as the dot drops into the wordmark; the recording stays out of the repo in `scripts/film/music/`, and the synthesized pep band plays when it's missing. The sound effects are now a drumline (tenors for the dots, basses for a switch, stick clicks, cymbals), every ball change sits on one of the track's beats, and the five balls are redrawn as flat filled icons in the style of Bootstrap Icons.

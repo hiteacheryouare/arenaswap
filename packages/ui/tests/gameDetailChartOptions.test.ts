@@ -491,7 +491,7 @@ describe('boost moments on the PowerScore line', () => {
 		expect(area.data![0]![0].name).toBe('Two-minute drill');
 		expect(area.data![0]![0].xAxis).toBe(1);
 		expect(area.data![0]![1].xAxis).toBe(3);
-		expect(area.data![0]![0].itemStyle!.color).toBe('rgba(247, 92, 3, 0.16)');
+		expect(area.data![0]![0].itemStyle!.color).toBe('rgba(244, 63, 94, 0.16)');
 		expect(area.data![1]![0].itemStyle!.color).toBe('rgba(239, 68, 68, 0.16)');
 	});
 

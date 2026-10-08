@@ -46,11 +46,20 @@ export interface FactorTone {
 
 export const factorTones = {
 	red: { color: '#ef4444', ink: '#b91c1c' },
-	purple: { color: '#a855f7', ink: '#7e22ce' },
-	gold: { color: '#f1c40f', ink: '#8a6100' },
-	green: { color: '#22c55e', ink: '#15803d' },
+	rose: { color: '#f43f5e', ink: '#be123c' },
 	orange: { color: '#f75c03', ink: '#c2410c' },
+	amber: { color: '#f59e0b', ink: '#b45309' },
+	gold: { color: '#f1c40f', ink: '#8a6100' },
+	lime: { color: '#84cc16', ink: '#4d7c0f' },
+	green: { color: '#22c55e', ink: '#15803d' },
+	teal: { color: '#14b8a6', ink: '#0f766e' },
+	sky: { color: '#0ea5e9', ink: '#0369a1' },
 	blue: { color: '#2274a5', ink: '#2274a5' },
+	indigo: { color: '#6366f1', ink: '#4338ca' },
+	violet: { color: '#8b5cf6', ink: '#6d28d9' },
+	purple: { color: '#a855f7', ink: '#7e22ce' },
+	fuchsia: { color: '#d946ef', ink: '#a21caf' },
+	pink: { color: '#ec4899', ink: '#be185d' },
 } as const satisfies Record<string, FactorTone>;
 
 export interface BoostPresentation extends FactorTone {
@@ -86,28 +95,27 @@ export const signalPresentation = {
 	exposure: { labelKey: 'powerScore.signalExposure', tooltipKey: 'powerScore.tooltipExposure', color: signalColors.leadChanges },
 } as const satisfies Record<ModeSignalId, SignalPresentation>;
 
-// No two boosts that can pay in one game share an icon. The live moments take scoring
-// opportunity's orange, what the result decides takes the postseason's blue, and the rare
-// once-a-season things take volatility's purple.
+// Every boost and penalty has its own icon and tone. Hues that sit close together go to factors
+// that never share a card: the sport-only boosts and Blowouts' pair against Classic's.
 export const boostPresentation = {
 	favoriteBoost: { labelKey: 'powerScore.favoriteBoost', tooltipKey: 'powerScore.tooltipFavoriteBoost', icon: 'star-fill', moment: false, ...factorTones.gold },
 	gameBoost: { labelKey: 'powerScore.gameBoost', tooltipKey: 'powerScore.tooltipGameBoost', icon: 'lightning-fill', moment: false, ...factorTones.green },
 	scoringOpportunity: { labelKey: 'powerScore.scoringOpportunity', tooltipKey: 'powerScore.tooltipScoringOpportunity', icon: 'bullseye', moment: true, ...factorTones.orange },
-	goAheadRun: { labelKey: 'powerScore.goAheadRun', tooltipKey: 'powerScore.tooltipGoAheadRun', icon: 'diamond-fill', moment: true, ...factorTones.orange },
-	twoMinuteDrill: { labelKey: 'powerScore.twoMinuteDrill', tooltipKey: 'powerScore.tooltipTwoMinuteDrill', icon: 'stopwatch-fill', moment: true, ...factorTones.orange },
-	emptyNet: { labelKey: 'powerScore.emptyNet', tooltipKey: 'powerScore.tooltipEmptyNet', icon: 'door-open-fill', moment: true, ...factorTones.orange },
-	powerPlay: { labelKey: 'powerScore.powerPlay', tooltipKey: 'powerScore.tooltipPowerPlay', icon: 'person-plus-fill', moment: true, ...factorTones.orange },
+	goAheadRun: { labelKey: 'powerScore.goAheadRun', tooltipKey: 'powerScore.tooltipGoAheadRun', icon: 'pentagon-fill', moment: true, ...factorTones.lime },
+	twoMinuteDrill: { labelKey: 'powerScore.twoMinuteDrill', tooltipKey: 'powerScore.tooltipTwoMinuteDrill', icon: 'stopwatch-fill', moment: true, ...factorTones.rose },
+	emptyNet: { labelKey: 'powerScore.emptyNet', tooltipKey: 'powerScore.tooltipEmptyNet', icon: 'door-open-fill', moment: true, ...factorTones.amber },
+	powerPlay: { labelKey: 'powerScore.powerPlay', tooltipKey: 'powerScore.tooltipPowerPlay', icon: 'person-plus-fill', moment: true, ...factorTones.violet },
 	redCard: { labelKey: 'powerScore.redCard', tooltipKey: 'powerScore.tooltipRedCard', icon: 'file-fill', moment: true, ...factorTones.red },
-	noHitter: { labelKey: 'powerScore.noHitter', tooltipKey: 'powerScore.tooltipNoHitter', icon: 'slash-circle-fill', moment: true, ...factorTones.purple },
-	upsetWatch: { labelKey: 'powerScore.upsetWatch', tooltipKey: 'powerScore.tooltipUpsetWatch', icon: 'binoculars-fill', moment: true, ...factorTones.purple },
-	upsetRout: { labelKey: 'powerScore.upsetRout', tooltipKey: 'powerScore.tooltipUpsetRout', icon: 'arrow-down-up', moment: false, ...factorTones.purple },
-	stakes: { labelKey: 'powerScore.stakes', tooltipKey: 'powerScore.tooltipStakes', icon: 'flag-fill', moment: true, ...factorTones.blue },
+	noHitter: { labelKey: 'powerScore.noHitter', tooltipKey: 'powerScore.tooltipNoHitter', icon: 'slash-circle-fill', moment: true, ...factorTones.fuchsia },
+	upsetWatch: { labelKey: 'powerScore.upsetWatch', tooltipKey: 'powerScore.tooltipUpsetWatch', icon: 'binoculars-fill', moment: true, ...factorTones.indigo },
+	upsetRout: { labelKey: 'powerScore.upsetRout', tooltipKey: 'powerScore.tooltipUpsetRout', icon: 'tornado', moment: false, ...factorTones.sky },
+	stakes: { labelKey: 'powerScore.stakes', tooltipKey: 'powerScore.tooltipStakes', icon: 'flag-fill', moment: true, ...factorTones.teal },
 	postseasonBoost: { labelKey: 'powerScore.postseasonBoost', tooltipKey: 'powerScore.tooltipPostseasonBoost', icon: 'trophy-fill', moment: false, ...factorTones.blue },
 } as const satisfies Record<BoostId, BoostPresentation>;
 
 // The two adjustments that are not boosts: they come from the clock and the win-probability line.
 export const penaltyPresentation = {
-	clockStall: { icon: 'hourglass-split', ...factorTones.red },
+	clockStall: { icon: 'pause-circle-fill', ...factorTones.pink },
 	volatility: { icon: 'activity', ...factorTones.purple },
 } as const;
 
