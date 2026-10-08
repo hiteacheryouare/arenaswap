@@ -1,6 +1,7 @@
 import type { Game } from '@arenaswap/core/types';
 import type { SeriesInfo } from './useSummaryData';
-import { resolveTeamColorPair } from '@arenaswap/ui/src/components/colorUtils';
+import { resolveTeamColorPair, seriesDotRing, seriesDotRingFallback } from '@arenaswap/ui/src/components/colorUtils';
+import { seriesSlots } from './seriesSlots';
 
 export const seriesSports = new Set(['baseball', 'basketball', 'hockey', 'softball']);
 
@@ -16,26 +17,25 @@ const seriesDots = ({ info, game }: seriesDotsProps) => {
 
 	// The teams' own colours, as published. Each dot is a team, and a lifted navy reads as some other club.
 	const [awayColor, homeColor] = resolveTeamColorPair(game.awayTeam, game.homeTeam, '#6b7280', '#9ca3af');
-	// ESPN returns future games first and completed games last.
-	const events = [...(info.events ?? [])].toSorted((a, b) => {
-		const aComp = a.statusType?.completed ? 1 : 0;
-		const bComp = b.statusType?.completed ? 1 : 0;
-		return bComp - aComp;
-	});
-	const dots = Array.from({ length: total }, (_, i) => {
-		const ev = events[i];
-		if (!ev?.statusType?.completed) {
-			return <i key={i} className='bi bi-circle series-dot series-dot-empty' />;
-		}
-		const winner = ev.competitors?.find(c => c.winner);
-		let color = '#8b949e';
-		// seriesInfo is the one summary field that never passes a schema, so team may be absent.
-		const winnerTeamId = winner?.team?.id;
-		if (winnerTeamId !== undefined) {
-			if (winnerTeamId === game.homeTeam.id) color = homeColor;
-			else if (winnerTeamId === game.awayTeam.id) color = awayColor;
-		}
-		return <i key={i} className='bi bi-circle-fill series-dot' style={{ color }} />;
+	// seriesInfo is the one summary field that never passes a schema, so team may be absent.
+	const sideOf = (teamId: string | undefined) => {
+		if (teamId === game.homeTeam.id) return { team: game.homeTeam, fill: homeColor };
+		if (teamId === game.awayTeam.id) return { team: game.awayTeam, fill: awayColor };
+		return null;
+	};
+	const dots = seriesSlots(info).map((slot, i) => {
+		if (slot.kind === 'upcoming') return <i key={i} className='bi bi-circle series-dot series-dot-empty' />;
+		if (slot.kind === 'ifNecessary') return <i key={i} className='bi bi-circle series-dot series-dot-empty is-if-necessary' />;
+		if (slot.kind === 'notNeeded') return <i key={i} className='bi bi-dash series-dot series-dot-not-needed' />;
+		const side = sideOf(slot.teamId);
+		const fill = side?.fill ?? '#8b949e';
+		const ring = side ? seriesDotRing(side.team, side.fill) : seriesDotRingFallback;
+		return (
+			<span key={i} className='series-dot position-relative d-inline-flex align-items-center justify-content-center'>
+				<i className='bi bi-circle-fill' style={{ color: ring }} />
+				<i className='bi bi-circle-fill series-dot-core position-absolute' style={{ color: fill }} />
+			</span>
+		);
 	});
 
 	return (

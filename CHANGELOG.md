@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Series dots get rings, and dash out the games nobody plays — 2026-10-07
+
+A won game is now the winner's colour inside a ring of their other colour, or a soft white when that one would be lost on the dark hero, so navy and black wins stop disappearing. Playoff series dash out the games a clinch made unnecessary and fade the ones that only happen if the trailing side keeps winning. The dots read the playoff series entry first, since NBA and NHL summaries carry no current one and MLB's shrinks to the games played once a side clinches.
+
 ## Finished-game tests stop expiring — 2026-10-06
 
 Two core tests built their finished games on the fixtures' default date of October 5, then read the real clock, so the 24-hour final retention dropped those games once that date passed and the tests failed on every branch. They now stamp the game with the current time, like the rest of the finished-game tests, and two more post-game checks that were passing on a missing game now see one.

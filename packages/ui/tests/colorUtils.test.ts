@@ -1,5 +1,5 @@
 import { colorDifference } from '../src/components/colorMath';
-import { crestBacking, pendingSwitchCrest, resolveChartLineColors, readableInkOn, readableTeamInkOnCard, resolveTeamColorPair, teamDisplayInk, teamRowWash } from '../src/components/colorUtils';
+import { crestBacking, pendingSwitchCrest, resolveChartLineColors, readableInkOn, readableTeamInkOnCard, resolveTeamColorPair, seriesDotRing, seriesDotRingFallback, teamDisplayInk, teamRowWash } from '../src/components/colorUtils';
 
 jest.mock('../src/components/logoSwitchColor', () => ({
 	cachedLogoSwitchColor: (crest: string) => ({
@@ -530,5 +530,31 @@ describe('a chart colour on the light surface', () => {
 
 	test('a navy that already clears 3:1 is returned untouched', () => {
 		expect(onLight('#0C2340')).toBe('#0C2340');
+	});
+});
+
+// Colours as ESPN publishes them for each club.
+describe('seriesDotRing', () => {
+	test('rings a navy or black win in the club\'s other colour, so it shows on the dark hero', () => {
+		expect(seriesDotRing({ color: '#002b5c', alternateColor: '#e31937' }, '#002b5c')).toBe('#e31937');
+		expect(seriesDotRing({ color: '#000000', alternateColor: '#c4ced4' }, '#000000')).toBe('#c4ced4');
+	});
+
+	test('rings an away side that switched to its alternate in its primary', () => {
+		expect(seriesDotRing({ color: '#fdb927', alternateColor: '#1d428a' }, '#1d428a')).toBe('#fdb927');
+	});
+
+	test('falls back to a soft white when the other colour is too dark to see', () => {
+		expect(seriesDotRing({ color: '#ce1141', alternateColor: '#000000' }, '#ce1141')).toBe(seriesDotRingFallback);
+		expect(seriesDotRing({ color: '#c4ced4', alternateColor: '#132448' }, '#c4ced4')).toBe(seriesDotRingFallback);
+	});
+
+	test('falls back to a soft white when the other colour is the fill all over again', () => {
+		expect(seriesDotRing({ color: '#c8102e', alternateColor: '#ce1141' }, '#c8102e')).toBe(seriesDotRingFallback);
+	});
+
+	test('falls back to a soft white for a club with one colour or none', () => {
+		expect(seriesDotRing({ color: '#002b5c' }, '#002b5c')).toBe(seriesDotRingFallback);
+		expect(seriesDotRing({}, '#6b7280')).toBe(seriesDotRingFallback);
 	});
 });
