@@ -136,7 +136,7 @@ const addToTemplate = "Zu {browser} hinzufügen";
 <tr>
 <td><code>powerPlay</code>, <code>emptyNet</code></td>
 <td><code>context</code></td>
-<td>The power play and empty net boosts, hockey.</td>
+<td>Hockey’s scoring opportunity.</td>
 </tr>
 <tr>
 <td><code>fantasy</code></td>
@@ -199,7 +199,7 @@ const addToTemplate = "Zu {browser} hinzufügen";
 <span class="line"><span style="color:#6A737D">//   { id: 'scoringOpportunity', points: 10 },</span></span>
 <span class="line"><span style="color:#6A737D">//   { id: 'goAheadRun', points: 10 },</span></span>
 <span class="line"><span style="color:#6A737D">// ]</span></span></code></pre>
-<p>Those two together fill the moments bucket’s cap of 20. Football gets the red zone and the two-minute drill from <code>possession</code>, <code>yardsToEndZone</code>, and <code>down</code>. Hockey needs <code>context.powerPlay</code> and <code>context.emptyNet</code>. Soccer needs <code>redCards</code>.</p>
+<p>Those two together fill the moments bucket’s cap of 20. Football gets the red zone and the two-minute drill from <code>possession</code>, <code>yardsToEndZone</code>, and <code>down</code>. Hockey’s scoring opportunity needs <code>context.powerPlay</code> and <code>context.emptyNet</code>. Soccer needs <code>redCards</code>.</p>
 <h2 id="score-it-in-a-different-mode">Score it in a different mode</h2>
 <p>Pick a mode with <code>options.mode</code>. Blowouts needs nothing extra. Fantasy needs your roster in the context, one entry per player:</p>
 <pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="ts"><code><span class="line"><span style="color:#F97583">const</span><span style="color:#79B8FF"> score</span><span style="color:#F97583"> =</span><span style="color:#B392F0"> scoreGame</span><span style="color:#E1E4E8">(game, {</span></span>

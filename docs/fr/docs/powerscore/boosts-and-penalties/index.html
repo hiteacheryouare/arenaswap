@@ -82,8 +82,8 @@ const addToTemplate = "Ajouter à {browser}";
 <tr>
 <td><a href="#scoring-opportunity">Scoring opportunity</a></td>
 <td><code>scoringOpportunity</code></td>
-<td>Runners on base, or a football drive inside the red zone</td>
-<td>15</td>
+<td>Runners on base, a football drive inside the red zone, or a hockey power play or empty net</td>
+<td>20</td>
 </tr>
 <tr>
 <td><a href="#go-ahead-run">Go-ahead run</a></td>
@@ -96,18 +96,6 @@ const addToTemplate = "Ajouter à {browser}";
 <td><code>twoMinuteDrill</code></td>
 <td>A football team with the ball, tied or down one score, in the closing minutes</td>
 <td>12</td>
-</tr>
-<tr>
-<td><a href="#empty-net-and-power-play">Empty net</a></td>
-<td><code>emptyNet</code></td>
-<td>A pulled goalie in a close hockey game</td>
-<td>12</td>
-</tr>
-<tr>
-<td><a href="#empty-net-and-power-play">Power play</a></td>
-<td><code>powerPlay</code></td>
-<td>A man advantage in a close hockey game</td>
-<td>10</td>
 </tr>
 <tr>
 <td><a href="#red-card">Red card</a></td>
@@ -151,7 +139,7 @@ const addToTemplate = "Ajouter à {browser}";
 <tr>
 <td>Moments</td>
 <td>20</td>
-<td>Scoring opportunity, go-ahead run, two-minute drill, empty net, power play, red card</td>
+<td>Scoring opportunity, go-ahead run, two-minute drill, red card</td>
 <td>A tied game at the buzzer scores about 80 before boosts, so a full moment lifts it to 100. A one-score final minute lands in the high 80s, and not every tight game pins at 100.</td>
 </tr>
 <tr>
@@ -250,45 +238,10 @@ const addToTemplate = "Ajouter à {browser}";
 </tbody>
 </table></div>
 <p>A base value of <code>0</code> stays <code>0</code> no matter the down. An unconditional boost on top of a blowout would undo what closeness and late-game pressure already scored correctly low. Goal-to-go only raises the multiplier on 4th down, since on an earlier down it describes the odds of a score rather than what decides possession.</p>
+<p><strong>Hockey</strong> pays for a <a href="#power-play-and-empty-net">power play or an empty net</a>.</p>
 <p>The exported constants behind these tables are <code>scoringOpportunityBaseRunnerBoosts</code>, <code>scoringOpportunityRedZoneBoost</code>, <code>scoringOpportunityRedZoneFringeBoost</code>, <code>redZoneDownMultipliers</code>, and <code>thirdAndShortDistance</code>.</p>
-<h2 id="go-ahead-run">Go-ahead run</h2>
-<p>Baseball and softball. Needs <code>baseRunners</code>, <code>topOfInning</code>, <code>outs</code>, and <code>period</code>. Pays on top of the runner count above, and only when the batting team has the run that matters on base:</p>
-<div class="prose-table" tabindex="0"><table>
-<thead>
-<tr>
-<th>On base</th>
-<th>Pays</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>The go-ahead run: tied with anyone on, down one with two on, down two with the bases loaded</td>
-<td>8</td>
-</tr>
-<tr>
-<td>The tying run: down one with one on, down two with two on, down three with the bases loaded</td>
-<td>5</td>
-</tr>
-</tbody>
-</table></div>
-<p>Only the higher row applies. The base value is then weighted by inning:</p>
-<ul>
-<li>Before the 6th inning (the 5th in softball), half. A threat in the 3rd is real, but the game has plenty of innings to answer it.</li>
-<li>From there to the last regulation inning, 75% rising to 100%.</li>
-<li>Extra innings, 100%.</li>
-<li>×1.25 when it’s the last chance: the home team batting in the final inning or later, where the go-ahead run is the winning run, or a trailing road team in the top of it, which may not bat again.</li>
-</ul>
-<p>The maximum is 10: an 8 at full weight, times the last-chance bump. At 3 outs it pays nothing.</p>
-<h2 id="two-minute-drill">Two-minute drill</h2>
-<p>Football. Needs <code>possession</code>, <code>yardsToEndZone</code>, and a live <code>down</code>. Pays in the 4th quarter and overtime, and only to the team with the ball, and only when it can still tie or win with one score:</p>
-<ul>
-<li><strong>Tied:</strong> the last 2 minutes.</li>
-<li><strong>Trailing by one score</strong> (8 points, or 9 in the UFL, where a try can be worth 3): the last 4 minutes.</li>
-</ul>
-<p>A team running out the clock with a lead pays nothing. Neither does an NCAA overtime, which has no game clock.</p>
-<p>The 12 points are scaled by four things: how little time is left (full at 40 seconds), field position (full from the opponent’s 35, or 30 in college, down to 40% at your own 20), timeouts left (70% with none, 100% with three), and the margin (full when tied or down 1 or 2, shrinking to 70% at 8 down). Between plays, after a score, a feed sends a down that means nothing, and the boost pays 0 until the next snap.</p>
-<h2 id="empty-net-and-power-play">Empty net and power play</h2>
-<p>Hockey. Both read <code>context</code>, because they come from the situation feed rather than the scoreboard.</p>
+<h3 id="power-play-and-empty-net">Power play and empty net</h3>
+<p>Hockey’s scoring opportunity. Both read <code>context</code>, because they come from the situation feed rather than the scoreboard. A 6-on-4 is both at once, so the two add up and the moments cap holds the sum at 20.</p>
 <p><strong>Empty net</strong> pays in the last 4 minutes of the 3rd period when the game is one or two goals apart: <strong>12</strong> at one goal, <strong>7</strong> at two. When the feed says whose net is empty, it only pays for the trailing team’s. A leader’s empty net means a delayed penalty, and the goalie is back in seconds. Set <code>context.emptyNet</code> only once the feed has reported it on two polls in a row, for the same reason.</p>
 <p><strong>Power play</strong> pays in tied and one- or two-goal games. Late (3rd period or later) it pays more:</p>
 <div class="prose-table" tabindex="0"><table>
@@ -327,7 +280,43 @@ const addToTemplate = "Ajouter à {browser}";
 </tr>
 </tbody>
 </table></div>
-<p>When the feed only says that a power play is on, not whose, power play assumes the trailing team is as likely to have it as not and pays a little less: 7 or 3 at one goal, 3 or 2 at two.</p>
+<p>When the feed only says that a power play is on, not whose, the boost assumes the trailing team is as likely to have it as not and pays a little less: 7 or 3 at one goal, 3 or 2 at two.</p>
+<h2 id="go-ahead-run">Go-ahead run</h2>
+<p>Baseball and softball. Needs <code>baseRunners</code>, <code>topOfInning</code>, <code>outs</code>, and <code>period</code>. Pays on top of the runner count above, and only when the batting team has the run that matters on base:</p>
+<div class="prose-table" tabindex="0"><table>
+<thead>
+<tr>
+<th>On base</th>
+<th>Pays</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The go-ahead run: tied with anyone on, down one with two on, down two with the bases loaded</td>
+<td>8</td>
+</tr>
+<tr>
+<td>The tying run: down one with one on, down two with two on, down three with the bases loaded</td>
+<td>5</td>
+</tr>
+</tbody>
+</table></div>
+<p>Only the higher row applies. The base value is then weighted by inning:</p>
+<ul>
+<li>Before the 6th inning (the 5th in softball), half. A threat in the 3rd is real, but the game has plenty of innings to answer it.</li>
+<li>From there to the last regulation inning, 75% rising to 100%.</li>
+<li>Extra innings, 100%.</li>
+<li>×1.25 when it’s the last chance: the home team batting in the final inning or later, where the go-ahead run is the winning run, or a trailing road team in the top of it, which may not bat again.</li>
+</ul>
+<p>The maximum is 10: an 8 at full weight, times the last-chance bump. At 3 outs it pays nothing.</p>
+<h2 id="two-minute-drill">Two-minute drill</h2>
+<p>Football. Needs <code>possession</code>, <code>yardsToEndZone</code>, and a live <code>down</code>. Pays in the 4th quarter and overtime, and only to the team with the ball, and only when it can still tie or win with one score:</p>
+<ul>
+<li><strong>Tied:</strong> the last 2 minutes.</li>
+<li><strong>Trailing by one score</strong> (8 points, or 9 in the UFL, where a try can be worth 3): the last 4 minutes.</li>
+</ul>
+<p>A team running out the clock with a lead pays nothing. Neither does an NCAA overtime, which has no game clock.</p>
+<p>The 12 points are scaled by four things: how little time is left (full at 40 seconds), field position (full from the opponent’s 35, or 30 in college, down to 40% at your own 20), timeouts left (70% with none, 100% with three), and the margin (full when tied or down 1 or 2, shrinking to 70% at 8 down). Between plays, after a score, a feed sends a down that means nothing, and the boost pays 0 until the next snap.</p>
 <h2 id="red-card">Red card</h2>
 <p>Soccer. Needs <code>redCards</code>, a list of <code>{ side, minute }</code>. A red card in a tied or one-goal match is the kind of thing a fan flips over for, and it pays most right after it happens:</p>
 <div class="prose-table" tabindex="0"><table>
